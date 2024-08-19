@@ -41,6 +41,7 @@ LaneOwnedObjectImpl<RegionT>::set_lane (TrackLaneT &lane)
       region->id_.lane_pos_ = lane.pos_;
       region->id_.track_name_hash_ = lane.track_->get_name_hash ();
     }
+  track_name_hash_ = lane.track_->get_name_hash ();
 }
 
 template class LaneOwnedObjectImpl<MidiRegion>;

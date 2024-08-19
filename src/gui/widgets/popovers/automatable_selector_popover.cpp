@@ -43,7 +43,7 @@ on_closed (AutomatableSelectorPopoverWidget * self, gpointer user_data)
       /* swap indices */
       auto selected_at = atl->get_at_from_port (*self->selected_port);
       z_return_if_fail (selected_at);
-      atl->set_at_index (*self->owner, selected_at->index_, F_NO_PUSH_DOWN);
+      atl->set_at_index (*self->owner, selected_at->index_, false);
 
       selected_at->created_ = true;
       atl->set_at_visible (*selected_at, true);

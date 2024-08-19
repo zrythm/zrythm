@@ -31,8 +31,6 @@
 #include "dsp/stretcher.h"
 #include "utils/logger.h"
 #include "utils/math.h"
-#include "utils/mem.h"
-#include "utils/objects.h"
 
 #include "ext/juce/juce.h"
 #include "gtk_wrapper.h"
@@ -56,6 +54,8 @@ stretcher_new_rubberband (
   double       pitch_ratio,
   bool         realtime)
 {
+  z_return_val_if_fail (samplerate > 0, nullptr);
+
   Stretcher * self = new Stretcher ();
 
   RubberBandOptions opts = 0;

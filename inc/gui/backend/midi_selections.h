@@ -32,6 +32,8 @@ class MidiSelections final
       public ISerializable<MidiSelections>
 {
 public:
+  MidiSelections ();
+
   MidiNote * get_highest_note ();
 
   MidiNote * get_lowest_note ();

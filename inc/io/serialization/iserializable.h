@@ -549,14 +549,26 @@ public:
     z_debug (
       "serializing '{}' v{}.{} to JSON...", document_type, format_major_version,
       format_minor_version);
+    yyjson_mut_obj_add_str (doc, root, "type", document_type.c_str ());
+    yyjson_mut_obj_add_int (doc, root, "formatMajor", format_major_version);
+    yyjson_mut_obj_add_int (doc, root, "formatMinor", format_minor_version);
+
     Context ctx (
       doc, root, document_type, format_major_version, format_minor_version);
     serialize (ctx);
-    char * json =
-      yyjson_mut_write (doc, YYJSON_WRITE_PRETTY_TWO_SPACES, nullptr);
+    yyjson_write_err write_err;
+    char *           json = yyjson_mut_write_opts (
+      doc, YYJSON_WRITE_PRETTY_TWO_SPACES, nullptr, nullptr, &write_err);
+    yyjson_mut_write_file ("/tmp/zrythm.json", doc, 0, nullptr, nullptr);
     z_debug ("done serializing to json");
-
     yyjson_mut_doc_free (doc);
+
+    if (!json)
+      {
+        throw ZrythmException (
+          fmt::format ("Failed to serialize to JSON:\n{}", write_err.msg));
+      }
+
     return CStringRAII (json);
   }
 
@@ -633,7 +645,10 @@ public:
         yyjson_mut_val * child_obj = yyjson_mut_obj_add_obj (doc, obj, key);
         ctx.mut_obj_ = child_obj;
         value.ISerializable<T>::serialize (ctx);
-        yyjson_mut_obj_add_val (doc, obj, key, child_obj);
+        if (!yyjson_mut_obj_add_val (doc, obj, key, child_obj))
+          {
+            throw ZrythmException ("Failed to add field");
+          }
       }
     else if constexpr (is_convertible_pointer_v<T, VariantT>)
       {
@@ -647,7 +662,10 @@ public:
                 value_ptr->ISerializable<CurType>::serialize (ctx);
               },
               convert_to_variant<VariantT> (value.get ()));
-            yyjson_mut_obj_add_val (doc, obj, key, child_obj);
+            if (!yyjson_mut_obj_add_val (doc, obj, key, child_obj))
+              {
+                throw ZrythmException ("Failed to add field");
+              }
           }
         else if (optional)
           {
@@ -666,7 +684,10 @@ public:
             yyjson_mut_val * child_obj = yyjson_mut_obj_add_obj (doc, obj, key);
             ctx.mut_obj_ = child_obj;
             value->ISerializable<ObjType>::serialize (ctx);
-            yyjson_mut_obj_add_val (doc, obj, key, child_obj);
+            if (!yyjson_mut_obj_add_val (doc, obj, key, child_obj))
+              {
+                throw ZrythmException ("Failed to add field");
+              }
           }
         else if (optional)
           {
@@ -687,11 +708,28 @@ public:
       }
     else if constexpr (std::is_same_v<T, float>)
       {
-        yyjson_mut_obj_add_real (doc, obj, key, static_cast<double> (value));
+        if (std::isnan (value) || std::isinf (value))
+          {
+            throw ZrythmException (
+              fmt::format ("Invalid float value for '{}':{}", key, value));
+          }
+        if (
+          !yyjson_mut_obj_add_real (doc, obj, key, static_cast<double> (value)))
+          {
+            throw ZrythmException (fmt::format ("Failed to add field {}", key));
+          }
       }
     else if constexpr (std::is_same_v<T, double>)
       {
-        yyjson_mut_obj_add_real (doc, obj, key, value);
+        if (std::isnan (value) || std::isinf (value))
+          {
+            throw ZrythmException (
+              fmt::format ("Invalid float value for '{}':{}", key, value));
+          }
+        if (!yyjson_mut_obj_add_real (doc, obj, key, value))
+          {
+            throw ZrythmException (fmt::format ("Failed to add field {}", key));
+          }
       }
     else if constexpr (std::is_same_v<T, bool>)
       {
@@ -710,7 +748,16 @@ public:
         yyjson_mut_val * arr = yyjson_mut_arr (doc);
         for (float v : value)
           {
-            yyjson_mut_arr_add_real (doc, arr, static_cast<double> (v));
+            if (std::isnan (v) || std::isinf (v))
+              {
+                throw ZrythmException (
+                  fmt::format ("Invalid float value for '{}':{}", key, value));
+              }
+            if (!yyjson_mut_arr_add_real (doc, arr, static_cast<double> (v)))
+              {
+                throw ZrythmException (
+                  fmt::format ("Failed to add field {}", key));
+              }
           }
         yyjson_mut_obj_add_val (doc, obj, key, arr);
       }
@@ -719,7 +766,16 @@ public:
         yyjson_mut_val * arr = yyjson_mut_arr (doc);
         for (double v : value)
           {
-            yyjson_mut_arr_add_real (doc, arr, v);
+            if (std::isnan (v) || std::isinf (v))
+              {
+                throw ZrythmException (
+                  fmt::format ("Invalid float value for '{}':{}", key, value));
+              }
+            if (!yyjson_mut_arr_add_real (doc, arr, v))
+              {
+                throw ZrythmException (
+                  fmt::format ("Failed to add field {}", key));
+              }
           }
         yyjson_mut_obj_add_val (doc, obj, key, arr);
       }
@@ -750,14 +806,22 @@ public:
       }
     else if constexpr (std::is_enum_v<T>)
       {
-        yyjson_mut_obj_add_int (doc, obj, key, static_cast<int64_t> (value));
+        if (
+          !yyjson_mut_obj_add_int (doc, obj, key, static_cast<int64_t> (value)))
+          {
+            throw ZrythmException (fmt::format ("Failed to add field {}", key));
+          }
       }
     else if constexpr (SignedIntegralContainer<T>)
       {
         yyjson_mut_val * arr = yyjson_mut_arr (doc);
         for (auto v : value)
           {
-            yyjson_mut_arr_add_int (doc, arr, static_cast<int64_t> (v));
+            if (!yyjson_mut_arr_add_int (doc, arr, static_cast<int64_t> (v)))
+              {
+                throw ZrythmException (
+                  fmt::format ("Failed to add field {}", key));
+              }
           }
         yyjson_mut_obj_add_val (doc, obj, key, arr);
       }
@@ -861,6 +925,7 @@ public:
 
         ctx.obj_ = val;
         value.ISerializable<T>::deserialize (ctx);
+        return;
       }
     else if constexpr (is_serializable_pointer_v<T>)
       {
@@ -875,10 +940,12 @@ public:
               static_assert (false, "Unsupported pointer type");
             ctx.obj_ = val;
             value->ISerializable<ObjType>::deserialize (ctx);
+            return;
           }
         else if (yyjson_is_null (val))
           {
             value.reset ();
+            return;
           }
         else
           {

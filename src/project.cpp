@@ -141,9 +141,9 @@ Project::make_project_dirs (bool is_backup)
 {
   for (
     auto type :
-    { ProjectPath::EXPORTS, ProjectPath::EXPORTS_STEMS, ProjectPath::POOL,
-      ProjectPath::PluginStates, ProjectPath::PLUGIN_EXT_COPIES,
-      ProjectPath::PLUGIN_EXT_LINKS })
+    { ProjectPath::BACKUPS, ProjectPath::EXPORTS, ProjectPath::EXPORTS_STEMS,
+      ProjectPath::POOL, ProjectPath::PluginStates,
+      ProjectPath::PLUGIN_EXT_COPIES, ProjectPath::PLUGIN_EXT_LINKS })
     {
       std::string dir = get_path (type, is_backup);
       z_return_if_fail (dir.length () > 0);
@@ -347,7 +347,7 @@ Project::add_default_tracks ()
     static_assert (std::derived_from<T, Track>, "T must be derived from Track");
 
     z_debug ("adding {} track...", typeid (T).name ());
-    tracklist_->append_track (
+    return tracklist_->append_track (
       *T::create_unique (tracklist_->tracks_.size ()), false, false);
   };
 
@@ -372,7 +372,7 @@ Project::add_default_tracks ()
   add_track.operator()<ModulatorTrack> ();
 
   /* marker */
-  add_track.operator()<MarkerTrack> ();
+  add_track.operator()<MarkerTrack> ()->add_default_markers ();
 
   tracklist_->pinned_tracks_cutoff_ = tracklist_->tracks_.size ();
 
@@ -1045,6 +1045,7 @@ Project::init_after_cloning (const Project &other)
   title_ = other.title_;
   datetime_str_ = other.datetime_str_;
   version_ = other.version_;
+  audio_engine_ = audio_engine_->clone_unique ();
   tracklist_ = other.tracklist_->clone_shared ();
   clip_editor_ = other.clip_editor_;
   timeline_ = std::make_unique<Timeline> (*other.timeline_);
@@ -1054,7 +1055,6 @@ Project::init_after_cloning (const Project &other)
     std::make_unique<QuantizeOptions> (*other.quantize_opts_timeline_);
   quantize_opts_editor_ =
     std::make_unique<QuantizeOptions> (*other.quantize_opts_editor_);
-  audio_engine_ = audio_engine_->clone_unique ();
   mixer_selections_ =
     std::make_unique<ProjectMixerSelections> (*other.mixer_selections_);
   timeline_selections_ = other.timeline_selections_->clone_unique ();

@@ -8,6 +8,8 @@
 
 #include "gtk_wrapper.h"
 
+MidiSelections::MidiSelections () : ArrangerSelections (Type::Midi) { }
+
 auto mn_compare_func = [] (const auto &a, const auto &b) {
   return dynamic_cast<MidiNote &> (*a).val_ < dynamic_cast<MidiNote &> (*b).val_;
 };

@@ -30,6 +30,8 @@ class ChordSelections final
       public ISerializable<ChordSelections>
 {
 public:
+  ChordSelections ();
+
   void sort_by_indices (bool desc) override;
 
   void init_after_cloning (const ChordSelections &other) override

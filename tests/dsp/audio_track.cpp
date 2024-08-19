@@ -19,10 +19,8 @@ constexpr int LARGE_BUFFER_SIZE = 2000;
 
 constexpr int LOOP_BAR = 4;
 
-TEST_CASE ("fill when region starts on loop end")
+TEST_CASE_FIXTURE (ZrythmFixture, "fill when region starts on loop end")
 {
-  test_helper_zrythm_init ();
-
   test_project_stop_dummy_engine ();
 
   TRANSPORT->play_state_ = Transport::PlayState::Rolling;
@@ -45,8 +43,8 @@ TEST_CASE ("fill when region starts on loop end")
   /*transport_request_roll (TRANSPORT);*/
   TRANSPORT->play_state_ = Transport::PlayState::Rolling;
 
-  StereoPorts ports (
-    false, "ports", "ports", PortIdentifier::OwnerType::Track, track);
+  StereoPorts ports (false, "ports", "ports");
+  ports.set_owner (dynamic_cast<Track *> (track));
   ports.allocate_bufs ();
 
   /* run until loop end and make sure sample is
@@ -90,8 +88,6 @@ TEST_CASE ("fill when region starts on loop end")
           REQUIRE_GT (std::abs (ports.get_r ().buf_[j]), 0.0000001f);
         }
     }
-
-  test_helper_zrythm_cleanup ();
 }
 
 TEST_SUITE_END;

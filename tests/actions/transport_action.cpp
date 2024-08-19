@@ -16,17 +16,15 @@
 
 TEST_SUITE_BEGIN ("actions/transport action");
 
-TEST_CASE ("change BPM and time signature")
+TEST_CASE_FIXTURE (ZrythmFixture, "change BPM and time signature")
 {
-  test_helper_zrythm_init ();
-
   /* import audio */
   FileDescriptor file_descr (fs::path (TESTS_SRCDIR) / "test.wav");
   Position       pos;
   pos.set_to_bar (4);
   Track::create_with_action (
-    Track::Type::Audio, nullptr, &file_descr, &pos, TRACKLIST->tracks.size (),
-    1, -1, nullptr);
+    Track::Type::Audio, nullptr, &file_descr, &pos,
+    TRACKLIST->get_num_tracks (), 1, -1, nullptr);
   auto audio_track =
     TRACKLIST->get_track<AudioTrack> (TRACKLIST->get_num_tracks () - 1);
   int audio_track_pos = audio_track->pos_;
@@ -136,14 +134,10 @@ TEST_CASE ("change BPM and time signature")
 
   /* validate */
   REQUIRE (audio_track->lanes_[0]->regions_[0]->validate (true, 0));
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("change BPM twice during playback")
+TEST_CASE_FIXTURE (ZrythmFixture, "change BPM twice during playback")
 {
-  test_helper_zrythm_init ();
-
   /* import audio */
   char audio_file_path[2000];
   sprintf (
@@ -194,8 +188,6 @@ TEST_CASE ("change BPM twice during playback")
 
   /* validate */
   REQUIRE (audio_track->lanes_.front ()->regions_.front ()->validate (true, 0));
-
-  test_helper_zrythm_cleanup ();
 }
 
 TEST_SUITE_END;

@@ -143,8 +143,7 @@ timeline_ruler_on_drag_begin_no_marker_hit (
         }
       else
         {
-          TRANSPORT->move_playhead (
-            &pos, F_PANIC, F_NO_SET_CUE_POINT, F_PUBLISH_EVENTS);
+          TRANSPORT->move_playhead (&pos, F_PANIC, F_NO_SET_CUE_POINT, true);
         }
       self->drag_start_pos = pos;
       self->last_set_pos = pos;
@@ -341,7 +340,7 @@ timeline_ruler_on_drag_update (
               if (tmp >= timeline_start && tmp <= timeline_end)
                 {
                   TRANSPORT->move_playhead (
-                    &tmp, F_PANIC, F_NO_SET_CUE_POINT, F_PUBLISH_EVENTS);
+                    &tmp, F_PANIC, F_NO_SET_CUE_POINT, true);
                   self->last_set_pos = tmp;
                 }
 

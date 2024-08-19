@@ -17,6 +17,43 @@
 
 TEST_SUITE_BEGIN ("dsp/audio region");
 
+TEST_CASE_FIXTURE (ZrythmFixture, "change samplerate")
+{
+  Position pos;
+  pos.set_to_bar (2);
+
+  /* create audio track with region */
+  FileDescriptor file (fs::path (TESTS_SRCDIR) / "test_start_with_signal.mp3");
+  int            num_tracks_before = TRACKLIST->get_num_tracks ();
+  Track::create_with_action (
+    Track::Type::Audio, nullptr, &file, &pos, num_tracks_before, 1, -1, nullptr);
+
+  /*Track * track =*/
+  /*TRACKLIST->tracks[num_tracks_before];*/
+
+  /* save the project */
+  PROJECT->save (PROJECT->dir_, false, false, false);
+  auto prj_file = fs::path (PROJECT->dir_) / PROJECT_FILE;
+
+  /* adjust the samplerate to be given at startup */
+  zrythm_app->samplerate = (int) AUDIO_ENGINE->sample_rate_ * 2;
+
+  PROJECT.reset ();
+
+  /* reload */
+  test_project_reload (prj_file);
+
+  /* stop engine to process manually */
+  test_project_stop_dummy_engine ();
+
+  pos.from_frames (301824);
+  TRANSPORT->move_playhead (&pos, F_NO_PANIC, false, false);
+  TRANSPORT->request_roll (true);
+
+  /* process manually */
+  AUDIO_ENGINE->process (256);
+}
+
 TEST_CASE_FIXTURE (ZrythmFixture, "fill stereo ports")
 {
   test_project_stop_dummy_engine ();
@@ -44,7 +81,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "fill stereo ports")
   }
   ports.allocate_bufs ();
 
-  TRANSPORT->move_playhead (&pos, F_NO_PANIC, false, F_NO_PUBLISH_EVENTS);
+  TRANSPORT->move_playhead (&pos, F_NO_PANIC, false, false);
   TRANSPORT->add_to_playhead (-20);
   const EngineProcessTimeInfo time_nfo = {
     .g_start_frame_ = (unsigned_frame_t) PLAYHEAD.frames_,
@@ -71,45 +108,6 @@ TEST_CASE_FIXTURE (ZrythmFixture, "fill stereo ports")
     }
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "change samplerate")
-{
-  Position pos;
-  pos.set_to_bar (2);
-
-  /* create audio track with region */
-  char * filepath =
-    g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", nullptr);
-  FileDescriptor file = FileDescriptor (filepath);
-  int            num_tracks_before = TRACKLIST->get_num_tracks ();
-  Track::create_with_action (
-    Track::Type::Audio, nullptr, &file, &pos, num_tracks_before, 1, -1, nullptr);
-
-  /*Track * track =*/
-  /*TRACKLIST->tracks[num_tracks_before];*/
-
-  /* save the project */
-  PROJECT->save (PROJECT->dir_, 0, 0, F_NO_ASYNC);
-  auto prj_file = fs::path (PROJECT->dir_) / PROJECT_FILE;
-
-  /* adjust the samplerate to be given at startup */
-  zrythm_app->samplerate = (int) AUDIO_ENGINE->sample_rate_ * 2;
-
-  PROJECT.reset ();
-
-  /* reload */
-  test_project_reload (prj_file);
-
-  /* stop engine to process manually */
-  test_project_stop_dummy_engine ();
-
-  pos.from_frames (301824);
-  TRANSPORT->move_playhead (&pos, F_NO_PANIC, false, F_NO_PUBLISH_EVENTS);
-  TRANSPORT->request_roll (true);
-
-  /* process manually */
-  AUDIO_ENGINE->process (256);
-}
-
 TEST_CASE_FIXTURE (ZrythmFixture, "load project with selected audio region")
 {
   Position pos;
@@ -124,7 +122,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "load project with selected audio region")
   /* select region */
   auto  track = TRACKLIST->get_track<AudioTrack> (num_tracks_before);
   auto &r = track->lanes_[0]->regions_[0];
-  r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  r->select (true, false, false);
 
   test_project_save_and_reload ();
 }
@@ -183,7 +181,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "detect BPM")
 
   /* select region */
   auto &r = track->lanes_[0]->regions_[0];
-  r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  r->select (true, false, false);
 
   std::vector<float> candidates;
   float              bpm = r->detect_bpm (candidates);

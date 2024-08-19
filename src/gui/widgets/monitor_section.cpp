@@ -86,7 +86,7 @@ on_unsolo_all_clicked (GtkButton * btn, MonitorSectionWidget * self)
   auto tracks_before = TRACKLIST_SELECTIONS->track_names_;
 
   /* unsolo all */
-  TRACKLIST->select_all (F_SELECT, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->select_all (true, false);
   try
     {
       UNDO_MANAGER->perform (std::make_unique<SoloTracksAction> (
@@ -101,7 +101,7 @@ on_unsolo_all_clicked (GtkButton * btn, MonitorSectionWidget * self)
   for (auto &track_name : tracks_before)
     {
       auto tr = TRACKLIST->find_track_by_name (track_name);
-      tr->select (F_SELECT, track_name == tracks_before[0], false);
+      tr->select (true, track_name == tracks_before[0], false);
     }
 }
 
@@ -112,7 +112,7 @@ on_unmute_all_clicked (GtkButton * btn, MonitorSectionWidget * self)
   auto tracks_before = TRACKLIST_SELECTIONS->track_names_;
 
   /* unmute all */
-  TRACKLIST->select_all (F_SELECT, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->select_all (true, false);
   try
     {
       UNDO_MANAGER->perform (std::make_unique<MuteTracksAction> (
@@ -127,7 +127,7 @@ on_unmute_all_clicked (GtkButton * btn, MonitorSectionWidget * self)
   for (auto &track_name : tracks_before)
     {
       auto tr = TRACKLIST->find_track_by_name (track_name);
-      tr->select (F_SELECT, track_name == tracks_before[0], false);
+      tr->select (true, track_name == tracks_before[0], false);
     }
 }
 
@@ -138,7 +138,7 @@ on_unlisten_all_clicked (GtkButton * btn, MonitorSectionWidget * self)
   auto tracks_before = TRACKLIST_SELECTIONS->track_names_;
 
   /* unlisten all */
-  TRACKLIST->select_all (F_SELECT, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->select_all (true, false);
   try
     {
       UNDO_MANAGER->perform (std::make_unique<ListenTracksAction> (
@@ -153,7 +153,7 @@ on_unlisten_all_clicked (GtkButton * btn, MonitorSectionWidget * self)
   for (auto &track_name : tracks_before)
     {
       auto tr = TRACKLIST->find_track_by_name (track_name);
-      tr->select (F_SELECT, track_name == tracks_before[0], false);
+      tr->select (true, track_name == tracks_before[0], false);
     }
 }
 
@@ -161,7 +161,7 @@ static void
 on_mono_toggled (GtkToggleButton * btn, MonitorSectionWidget * self)
 {
   bool active = gtk_toggle_button_get_active (btn);
-  MONITOR_FADER->set_mono_compat_enabled (active, F_NO_PUBLISH_EVENTS);
+  MONITOR_FADER->set_mono_compat_enabled (active, false);
   g_settings_set_boolean (S_MONITOR, "mono", active);
 }
 

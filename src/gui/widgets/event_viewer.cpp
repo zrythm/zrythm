@@ -354,8 +354,8 @@ selection_func (
           ArrangerObject * obj = NULL;
           gtk_tree_model_get (
             model, &iter, obj_column, &obj, -1);
-          obj->select ( !path_currently_selected, F_APPEND,
-            F_PUBLISH_EVENTS);
+          obj->select ( !path_currently_selected, true,
+            true);
         }
     }
 

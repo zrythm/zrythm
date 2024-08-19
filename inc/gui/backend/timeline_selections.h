@@ -26,7 +26,7 @@ class TimelineSelections final
       public ISerializable<TimelineSelections>
 {
 public:
-  TimelineSelections () : ArrangerSelections (Type::Timeline) { }
+  TimelineSelections ();
 
   /**
    * Creates a new TimelineSelections instance for the given range.

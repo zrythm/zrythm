@@ -365,7 +365,8 @@ get_ext_ports_from_jack (
   PortType              type,
   PortFlow              flow,
   bool                  hw,
-  std::vector<ExtPort> &ports)
+  std::vector<ExtPort> &ports,
+  AudioEngine          &engine)
 {
   unsigned long flags = 0;
   if (hw)
@@ -378,22 +379,21 @@ get_ext_ports_from_jack (
   if (!jtype)
     return;
 
-  if (!AUDIO_ENGINE->client_)
+  if (!engine.client_)
     {
       z_error (
         "JACK client is NULL. make sure to call engine_pre_setup() before calling this");
       return;
     }
 
-  const char ** jports =
-    jack_get_ports (AUDIO_ENGINE->client_, nullptr, jtype, flags);
+  const char ** jports = jack_get_ports (engine.client_, nullptr, jtype, flags);
 
   if (!jports)
     return;
 
   for (size_t i = 0; jports[i] != nullptr; ++i)
     {
-      jack_port_t * jport = jack_port_by_name (AUDIO_ENGINE->client_, jports[i]);
+      jack_port_t * jport = jack_port_by_name (engine.client_, jports[i]);
 
       ports.emplace_back (jport);
     }
@@ -466,12 +466,14 @@ ext_port_from_rtmidi (unsigned int id)
 }
 
 static void
-get_ext_ports_from_rtmidi (PortFlow flow, std::vector<ExtPort> &ports)
+get_ext_ports_from_rtmidi (
+  PortFlow              flow,
+  std::vector<ExtPort> &ports,
+  AudioEngine          &engine)
 {
   if (flow == PortFlow::Output)
     {
-      unsigned int num_ports =
-        engine_rtmidi_get_num_in_ports (AUDIO_ENGINE.get ());
+      unsigned int num_ports = engine_rtmidi_get_num_in_ports (&engine);
       for (unsigned int i = 0; i < num_ports; i++)
         {
           ports.push_back (*ext_port_from_rtmidi (i));
@@ -513,19 +515,22 @@ ext_port_from_rtaudio (
 }
 
 static void
-get_ext_ports_from_rtaudio (PortFlow flow, std::vector<ExtPort> &ports)
+get_ext_ports_from_rtaudio (
+  PortFlow              flow,
+  std::vector<ExtPort> &ports,
+  AudioEngine          &engine)
 {
   /* note: this is an output port from the graph side that will be used as an
    * input port on the zrythm side */
   if (flow == PortFlow::Output || flow == PortFlow::Input)
     {
       bool      reuse_rtaudio = true;
-      rtaudio_t rtaudio = AUDIO_ENGINE->rtaudio_;
+      rtaudio_t rtaudio = engine.rtaudio_;
       if (!rtaudio)
         {
           reuse_rtaudio = false;
-          rtaudio = engine_rtaudio_create_rtaudio (
-            AUDIO_ENGINE.get (), AUDIO_ENGINE->audio_backend_);
+          rtaudio =
+            engine_rtaudio_create_rtaudio (&engine, engine.audio_backend_);
         }
       if (!rtaudio)
         {
@@ -568,15 +573,16 @@ ExtPort::ext_ports_get (
   PortType              type,
   PortFlow              flow,
   bool                  hw,
-  std::vector<ExtPort> &ports)
+  std::vector<ExtPort> &ports,
+  AudioEngine          &engine)
 {
   if (type == PortType::Audio)
     {
-      switch (AUDIO_ENGINE->audio_backend_)
+      switch (engine.audio_backend_)
         {
 #ifdef HAVE_JACK
         case AudioBackend::AUDIO_BACKEND_JACK:
-          get_ext_ports_from_jack (type, flow, hw, ports);
+          get_ext_ports_from_jack (type, flow, hw, ports, engine);
           break;
 #endif
 #ifdef HAVE_RTAUDIO
@@ -586,7 +592,7 @@ ExtPort::ext_ports_get (
         case AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO:
         case AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO:
         case AudioBackend::AUDIO_BACKEND_ASIO_RTAUDIO:
-          get_ext_ports_from_rtaudio (flow, ports);
+          get_ext_ports_from_rtaudio (flow, ports, engine);
           break;
 #endif
 #ifdef HAVE_ALSA
@@ -599,11 +605,11 @@ ExtPort::ext_ports_get (
     }
   else if (type == PortType::Event)
     {
-      switch (AUDIO_ENGINE->midi_backend_)
+      switch (engine.midi_backend_)
         {
 #ifdef HAVE_JACK
         case MidiBackend::MIDI_BACKEND_JACK:
-          get_ext_ports_from_jack (type, flow, hw, ports);
+          get_ext_ports_from_jack (type, flow, hw, ports, engine);
           break;
 #endif
 #ifdef HAVE_ALSA
@@ -623,7 +629,7 @@ ExtPort::ext_ports_get (
 #  ifdef HAVE_RTMIDI_6
         case MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
 #  endif
-          get_ext_ports_from_rtmidi (flow, ports);
+          get_ext_ports_from_rtmidi (flow, ports, engine);
           break;
 #endif
         default:

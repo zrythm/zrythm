@@ -100,9 +100,6 @@ test_project_check_vs_original_state (
   Position * p2,
   int        check_selections);
 
-void
-test_project_rebootstrap_timeline (Position * p1, Position * p2);
-
 fs::path
 test_project_save ()
 {
@@ -155,10 +152,10 @@ public:
     // modulator_track_clear (P_MODULATOR_TRACK);
     for (auto &track : TRACKLIST->tracks_ | std::views::reverse)
       {
-        bool is_master = track->is_master ();
-        TRACKLIST->remove_track (*track, true, true, false, false);
-        if (is_master)
-          break;
+        if (track->is_deletable ())
+          {
+            TRACKLIST->remove_track (*track, true, true, false, false);
+          }
       }
     P_MASTER_TRACK->clear_objects ();
 
@@ -166,11 +163,13 @@ public:
     p1_.set_to_bar (2);
     p2_.set_to_bar (4);
     {
-      auto midi_track =
-        *MidiTrack::create_unique (MIDI_TRACK_NAME, TRACKLIST->tracks_.size ());
-      TRACKLIST->append_track (std::move (midi_track), false, false);
+      auto midi_track = TRACKLIST->append_track (
+        *MidiTrack::create_unique (MIDI_TRACK_NAME, TRACKLIST->tracks_.size ()),
+        false, false);
+      REQUIRE_NONEMPTY (midi_track->name_);
       const auto midi_track_name_hash = midi_track->get_name_hash ();
-      auto       mr = std::make_shared<MidiRegion> (
+      REQUIRE_NE (midi_track_name_hash, 0);
+      auto mr = std::make_shared<MidiRegion> (
         p1_, p2_, midi_track_name_hash, MIDI_REGION_LANE, 0);
       REQUIRE_NOTHROW (
         midi_track->add_region (mr, nullptr, MIDI_REGION_LANE, true, false));
@@ -407,8 +406,8 @@ public:
 void
 test_project_stop_dummy_engine ()
 {
-  AUDIO_ENGINE->dummy_audio_thread_->request_stop ();
-  AUDIO_ENGINE->dummy_audio_thread_->join ();
+  AUDIO_ENGINE->dummy_audio_thread_->signalThreadShouldExit ();
+  AUDIO_ENGINE->dummy_audio_thread_->waitForThreadToExit (1'000);
 }
 
 /**

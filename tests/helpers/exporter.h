@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -12,60 +12,12 @@
 
 #include "zrythm-test-config.h"
 
-#include "dsp/tracklist.h"
-
-char *
-test_exporter_export_audio (ExportTimeRange time_range, ExportMode mode);
+#include "dsp/exporter.h"
 
 /**
  * Convenient quick export.
  */
-char *
-test_exporter_export_audio (ExportTimeRange time_range, ExportMode mode)
-{
-  g_assert_false (TRANSPORT->is_rolling ());
-  g_assert_cmpint (TRANSPORT->playhead_pos.frames, ==, 0);
-  char *           filename = g_strdup ("test_export.wav");
-  ExportSettings * settings = export_settings_new ();
-  settings->format = Exporter::Format::EXPORT_FORMAT_WAV;
-  settings->artist = g_strdup ("Test Artist");
-  settings->title = g_strdup ("Test Title");
-  settings->genre = g_strdup ("Test Genre");
-  settings->depth = BitDepth::BIT_DEPTH_16;
-  settings->time_range = time_range;
-  if (mode == ExportMode::EXPORT_MODE_FULL)
-    {
-      settings->mode = ExportMode::EXPORT_MODE_FULL;
-      tracklist_mark_all_tracks_for_bounce (TRACKLIST, F_NO_BOUNCE);
-      settings->bounce_with_parents = false;
-    }
-  else
-    {
-      settings->mode = ExportMode::EXPORT_MODE_TRACKS;
-      tracklist_mark_all_tracks_for_bounce (TRACKLIST, F_BOUNCE);
-      settings->bounce_with_parents = true;
-    }
-  char * exports_dir = project_get_path (PROJECT, ProjectPath::EXPORTS, false);
-  settings->file_uri = g_build_filename (exports_dir, filename, nullptr);
-
-  EngineState state;
-  GPtrArray * conns = exporter_prepare_tracks_for_export (settings, &state);
-
-  /* start exporting in a new thread */
-  GThread * thread = g_thread_new (
-    "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
-
-  g_thread_join (thread);
-
-  exporter_post_export (settings, conns, &state);
-
-  g_assert_false (AUDIO_ENGINE->exporting);
-  g_free (filename);
-
-  char * file = g_strdup (settings->file_uri);
-  export_settings_free (settings);
-
-  return file;
-}
+std::string
+test_exporter_export_audio (Exporter::TimeRange time_range, Exporter::Mode mode);
 
 #endif /* __TEST_HELPERS_EXPORTER_H__ */

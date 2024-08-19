@@ -490,27 +490,6 @@ string_array_sort_and_remove_duplicates (char ** str_arr)
   z_return_val_if_reached (nullptr);
 }
 
-void
-string_copy_w_realloc (char ** dest, const char * src)
-{
-  z_return_if_fail (dest && ((!*dest && !src) || (*dest != src)));
-  if (src)
-    {
-      size_t strlen_src = strlen (src);
-      *dest = static_cast<char *> (
-        g_realloc (*dest, (strlen_src + 1) * sizeof (char)));
-      strcpy (*dest, src);
-    }
-  else
-    {
-      if (*dest)
-        {
-          g_free (*dest);
-          *dest = NULL;
-        }
-    }
-}
-
 /**
  * Returns a new string with only ASCII alphanumeric
  * characters and replaces the rest with underscore.

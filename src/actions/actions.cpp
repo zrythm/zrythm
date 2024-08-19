@@ -984,7 +984,7 @@ activate_cut (GSimpleAction * action, GVariant * variant, gpointer user_data)
           try
             {
               UNDO_MANAGER->perform (
-                std::make_unique<ArrangerSelectionsAction::DeleteAction> (*sel));
+                std::make_unique<DeleteArrangerSelectionsAction> (*sel));
             }
           catch (const ZrythmException &e)
             {
@@ -1210,7 +1210,7 @@ activate_delete (
           try
             {
               UNDO_MANAGER->perform (
-                std::make_unique<ArrangerSelectionsAction::DeleteAction> (*sel));
+                std::make_unique<DeleteArrangerSelectionsAction> (*sel));
             }
           catch (const ZrythmException &e)
             {
@@ -1306,11 +1306,11 @@ activate_select_all (
     case Project::SelectionType::Editor:
       if (sel)
         {
-          sel->select_all (F_PUBLISH_EVENTS);
+          sel->select_all (true);
         }
       break;
     case Project::SelectionType::Tracklist:
-      TRACKLIST->select_all (F_SELECT, F_PUBLISH_EVENTS);
+      TRACKLIST->select_all (true, true);
       break;
     case Project::SelectionType::Insert:
     case Project::SelectionType::MidiFX:
@@ -2835,7 +2835,7 @@ DEFINE_SIMPLE (activate_add_region)
 DEFINE_SIMPLE (activate_go_to_start)
 {
   Position pos;
-  TRANSPORT->move_playhead (&pos, F_PANIC, F_SET_CUE_POINT, F_PUBLISH_EVENTS);
+  TRANSPORT->move_playhead (&pos, F_PANIC, F_SET_CUE_POINT, true);
 }
 
 DEFINE_SIMPLE (activate_input_bpm)
@@ -3511,7 +3511,7 @@ DEFINE_SIMPLE (activate_reset_fader)
   if (fader->type_ == Fader::Type::AudioChannel)
     {
       Channel * ch = fader->get_channel ();
-      ch->reset_fader (F_PUBLISH_EVENTS);
+      ch->reset_fader (true);
     }
   else
     {

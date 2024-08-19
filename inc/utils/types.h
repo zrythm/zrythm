@@ -357,7 +357,7 @@ operator| (R &&r, type_is<T>)
 {
   return std::forward<R> (r) | std::views::transform ([] (const auto &u) {
            using U = std::decay_t<decltype (u)>;
-           if constexpr (is_unique_ptr<U>::value)
+           if constexpr (is_unique_ptr_v<U> || is_shared_ptr_v<U>)
              {
                using PtrType = typename std::pointer_traits<U>::element_type;
                return dynamic_cast<T *> (static_cast<PtrType *> (u.get ()));

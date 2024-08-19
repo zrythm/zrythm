@@ -169,7 +169,7 @@ TempoTrack::set_beat_unit_from_enum (BeatUnit ebeat_unit)
     || (ROUTER && ROUTER->is_processing_kickoff_thread ()));
 
   beat_unit_port_->set_control_value (
-    static_cast<float> (ebeat_unit), F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
+    static_cast<float> (ebeat_unit), F_NOT_NORMALIZED, true);
   EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, nullptr);
 }
 
@@ -206,8 +206,7 @@ TempoTrack::set_beats_per_bar (int beats_per_bar)
     !AUDIO_ENGINE->run_.load ()
     || (ROUTER && ROUTER->is_processing_kickoff_thread ()));
 
-  beats_per_bar_port_->set_control_value (
-    beats_per_bar, F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
+  beats_per_bar_port_->set_control_value (beats_per_bar, F_NOT_NORMALIZED, true);
   EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, nullptr);
 }
 

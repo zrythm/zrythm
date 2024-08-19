@@ -20,7 +20,7 @@ test_new_track (void)
   test_helper_zrythm_init ();
 
   Track * track = track_new (
-    TrackType::TRACK_TYPE_INSTRUMENT, TRACKLIST->tracks.size (),
+    Track::Type::Instrument, TRACKLIST->tracks.size (),
     "Test Instrument Track 1", F_WITH_LANE);
   g_assert_true (IS_TRACK_AND_NONNULL (track));
 
@@ -37,21 +37,21 @@ test_get_direct_folder_parent (void)
   test_helper_zrythm_init ();
 
   Track * audio_group =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_GROUP, NULL);
+    track_create_empty_with_action (Track::Type::AudioGroup, nullptr);
   g_assert_nonnull (audio_group);
 
   Track * audio_group2 =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_GROUP, NULL);
+    track_create_empty_with_action (Track::Type::AudioGroup, nullptr);
   g_assert_nonnull (audio_group2);
-  track_select (audio_group2, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track_select (audio_group2, true, false, false);
   tracklist_handle_move_or_copy (
     TRACKLIST, audio_group, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
 
   Track * audio_group3 =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_AUDIO_GROUP, NULL);
+    track_create_empty_with_action (Track::Type::AudioGroup, nullptr);
   g_assert_nonnull (audio_group3);
-  track_select (audio_group3, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track_select (audio_group3, true, false, false);
   tracklist_handle_move_or_copy (
     TRACKLIST, audio_group2,
     TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE, GDK_ACTION_MOVE);
@@ -72,7 +72,7 @@ test_get_direct_folder_parent (void)
 int
 main (int argc, char * argv[])
 {
-  g_test_init (&argc, &argv, NULL);
+  g_test_init (&argc, &argv, nullptr);
 
 #define TEST_PREFIX "/audio/track/"
 

@@ -134,14 +134,14 @@ RecordingManager::handle_stop_recording (bool is_automation)
     {
       auto found_obj = obj->find_in_project ();
       z_return_if_fail (found_obj);
-      found_obj->select (F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+      found_obj->select (true, true, false);
     }
 
   /* free the temporary selections */
   selections_before_start_.reset ();
 
   /* disarm transport record button */
-  TRANSPORT->set_recording (false, true, F_PUBLISH_EVENTS);
+  TRANSPORT->set_recording (false, true, true);
 
   num_active_recordings_--;
   recorded_ids_.clear ();

@@ -671,6 +671,10 @@ template <typename T>
 void
 Port::set_owner (T * owner)
 {
+  auto get_track_name_hash = [] (const auto &track) -> Track::NameHashT {
+    return track->name_.empty () ? 0 : track->get_name_hash ();
+  };
+
   if constexpr (std::derived_from<T, Plugin>)
     {
       id_.plugin_id_ = owner->id_;
@@ -689,15 +693,15 @@ Port::set_owner (T * owner)
   else if constexpr (std::derived_from<T, TrackProcessor>)
     {
       auto track = owner->get_track ();
-      z_return_if_fail (track && !track->name_.empty ());
-      id_.track_name_hash_ = track->get_name_hash ();
+      z_return_if_fail (track);
+      id_.track_name_hash_ = get_track_name_hash (track);
       id_.owner_type_ = PortIdentifier::OwnerType::TrackProcessor;
     }
   else if constexpr (std::derived_from<T, Channel>)
     {
       auto track = owner->get_track ();
-      z_return_if_fail (!track->name_.empty ());
-      id_.track_name_hash_ = track->get_name_hash ();
+      z_return_if_fail (track);
+      id_.track_name_hash_ = get_track_name_hash (track);
       id_.owner_type_ = PortIdentifier::OwnerType::Channel;
     }
   else if constexpr (std::derived_from<T, ExtPort>)
@@ -741,8 +745,8 @@ Port::set_owner (T * owner)
         || owner->type_ == Fader::Type::MidiChannel)
         {
           auto track = owner->get_track ();
-          z_return_if_fail (track && !track->name_.empty ());
-          id_.track_name_hash_ = track->get_name_hash ();
+          z_return_if_fail (track);
+          id_.track_name_hash_ = get_track_name_hash (track);
           if (owner->passthrough_)
             {
               id_.flags2_ |= PortIdentifier::Flags2::Prefader;

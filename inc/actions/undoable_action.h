@@ -64,11 +64,7 @@ public:
 
   UndoableAction () = default;
   UndoableAction (Type type);
-  UndoableAction (Type type, double frames_per_tick, sample_rate_t sample_rate)
-      : undoable_action_type_ (type), frames_per_tick_ (frames_per_tick),
-        sample_rate_ (sample_rate)
-  {
-  }
+  UndoableAction (Type type, double frames_per_tick, sample_rate_t sample_rate);
   virtual ~UndoableAction () = default;
 
   /**

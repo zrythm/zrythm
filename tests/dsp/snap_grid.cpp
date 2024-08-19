@@ -1,58 +1,34 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
 
-#include <cmath>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "dsp/audio_track.h"
-#include "dsp/engine_dummy.h"
 #include "project.h"
-#include "utils/flags.h"
 #include "zrythm.h"
-
-#include <glib.h>
 
 #include "tests/helpers/zrythm_helper.h"
 
-#include <locale.h>
+TEST_SUITE_BEGIN ("dsp/snap grid");
 
-static void
-test_update_snap_points (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "test update snap points")
 {
-  test_helper_zrythm_init ();
+  SnapGrid sg (SnapGrid::Type::Timeline, NoteLength::NOTE_LENGTH_1_128, false);
 
-  SnapGrid sg;
-  gint64   before, after;
+#define TEST_WITH_MAX_BARS(x) {
+  auto before = g_get_monotonic_time ();
+  auto after = g_get_monotonic_time ();
+  z_info ("time {}", after - before);
+}
 
-  snap_grid_init (
-    &sg, SnapGridType::SNAP_GRID_TYPE_TIMELINE, NoteLength::NOTE_LENGTH_1_128,
-    false);
-
-#define TEST_WITH_MAX_BARS(x) \
-  before = g_get_monotonic_time (); \
-  after = g_get_monotonic_time (); \
-  g_message ("time %ld", after - before)
-
-  TEST_WITH_MAX_BARS (100);
-  TEST_WITH_MAX_BARS (1000);
+// ????
+TEST_WITH_MAX_BARS (100);
+TEST_WITH_MAX_BARS (1000);
 #if 0
   TEST_WITH_MAX_BARS (10000);
   TEST_WITH_MAX_BARS (100000);
 #endif
-
-  test_helper_zrythm_cleanup ();
 }
 
-int
-main (int argc, char * argv[])
-{
-  g_test_init (&argc, &argv, NULL);
-
-#define TEST_PREFIX "/audio/snap grid/"
-
-  g_test_add_func (
-    TEST_PREFIX "test update snap points", (GTestFunc) test_update_snap_points);
-
-  return g_test_run ();
-}
+TEST_SUITE_END;

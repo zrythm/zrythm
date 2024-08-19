@@ -153,7 +153,7 @@ apply_plugin (
   gtk_widget_set_vexpand (GTK_WIDGET (pl->ev_box), true);
 
   /* open */
-  plugin_gtk_open_generic_ui (pl, F_NO_PUBLISH_EVENTS);
+  plugin_gtk_open_generic_ui (pl, false);
 
   ret = z_gtk_dialog_run (GTK_DIALOG (pl->window), false);
 

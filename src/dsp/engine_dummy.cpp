@@ -7,25 +7,42 @@
 #include "dsp/tempo_track.h"
 #include "dsp/tracklist.h"
 #include "project.h"
+#include "utils/dsp.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
 #include "gtk_wrapper.h"
 
-static void
-process_cb (std::stop_token stop_token, AudioEngine &engine)
+class DummyEngineThread : public juce::Thread
 {
-  double secs_per_block = (double) engine.block_length_ / engine.sample_rate_;
-  gulong sleep_time = (gulong) (secs_per_block * 1000.0 * 1000);
+public:
+  DummyEngineThread (AudioEngine &engine)
+      : juce::Thread ("DummyEngineThread"), engine_ (engine)
+  {
+  }
 
-  z_info ("Running dummy audio engine for first time");
+  void run () override
+  {
+    double secs_per_block =
+      (double) engine_.block_length_ / engine_.sample_rate_;
+    auto sleep_time = (gulong) (secs_per_block * 1000.0 * 1000);
 
-  while (!stop_token.stop_requested ())
-    {
-      engine.process (engine.block_length_);
-      std::this_thread::sleep_for (std::chrono::microseconds (sleep_time));
-    }
-}
+    z_info ("Running dummy audio engine for first time");
+
+#ifdef HAVE_LSP_DSP
+    LspDspContextRAII lsp_dsp_context_raii;
+#endif
+
+    while (!threadShouldExit ())
+      {
+        engine_.process (engine_.block_length_);
+        std::this_thread::sleep_for (std::chrono::microseconds (sleep_time));
+      }
+  }
+
+public:
+  AudioEngine &engine_;
+};
 
 int
 engine_dummy_setup (AudioEngine * self)
@@ -74,24 +91,23 @@ engine_dummy_activate (AudioEngine * self, bool activate)
 {
   if (activate)
     {
-      z_info ("{}: activating...", __func__);
+      z_info ("activating...");
 
       int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
       self->update_frames_per_tick (
         beats_per_bar, P_TEMPO_TRACK->get_current_bpm (), self->sample_rate_,
         true, true, false);
 
-      self->dummy_audio_thread_ =
-        std::make_unique<std::jthread> (process_cb, std::ref (*self));
+      self->dummy_audio_thread_ = std::make_unique<DummyEngineThread> (*self);
     }
   else
     {
-      z_info ("{}: deactivating...", __func__);
-      self->dummy_audio_thread_->request_stop ();
-      self->dummy_audio_thread_->join ();
+      z_info ("deactivating...");
+      self->dummy_audio_thread_->signalThreadShouldExit ();
+      self->dummy_audio_thread_->waitForThreadToExit (1'000);
     }
 
-  z_info ("{}: done", __func__);
+  z_info ("done");
 
   return 0;
 }

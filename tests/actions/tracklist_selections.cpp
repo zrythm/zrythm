@@ -37,12 +37,12 @@ TEST_SUITE_BEGIN ("actions/tracklist_selections");
 
 static auto perform_create_arranger_sel = [] (const auto &selections) {
   UNDO_MANAGER->perform (
-    std::make_unique<ArrangerSelectionsAction::CreateAction> (*selections));
+    std::make_unique<CreateArrangerSelectionsAction> (*selections));
 };
 
 static auto perform_delete_arranger_sel = [] (const auto &selections) {
   UNDO_MANAGER->perform (
-    std::make_unique<ArrangerSelectionsAction::DeleteAction> (*selections));
+    std::make_unique<DeleteArrangerSelectionsAction> (*selections));
 };
 
 static auto perform_delete = [] () {
@@ -63,13 +63,13 @@ static auto perform_move_to_end = [] () {
 };
 
 static auto perform_delete_track = [] (const auto &track) {
-  track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track->select (true, true, false);
   UNDO_MANAGER->perform (std::make_unique<DeleteTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
 };
 
 static auto perform_set_direct_out = [] (const auto &from, const auto &to) {
-  from->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  from->select (true, true, false);
   UNDO_MANAGER->perform (std::make_unique<ChangeTracksDirectOutAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
     *to));
@@ -158,7 +158,7 @@ _test_port_and_plugin_track_pos_after_duplication (
   /* select it */
   auto src_track = TRACKLIST->get_track<ChannelTrack> (src_track_pos);
   REQUIRE_NONNULL (src_track);
-  src_track->select (F_SELECT, true, F_NO_PUBLISH_EVENTS);
+  src_track->select (true, true, false);
 
   /* get an automation track */
   auto &at = src_track->automation_tracklist_->ats_.back ();
@@ -172,8 +172,8 @@ _test_port_and_plugin_track_pos_after_duplication (
   const auto track_name_hash = src_track->get_name_hash ();
   auto       region = std::make_shared<AutomationRegion> (
     start_pos, end_pos, track_name_hash, at->index_, at->regions_.size ());
-  src_track->add_region (region, at.get (), -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
-  region->select (true, false, F_NO_PUBLISH_EVENTS);
+  src_track->add_region (region, at.get (), -1, true, false);
+  region->select (true, false, false);
   perform_create_arranger_sel (TL_SELECTIONS);
 
   /* create some automation points */
@@ -185,7 +185,7 @@ _test_port_and_plugin_track_pos_after_duplication (
   auto ap =
     std::make_shared<AutomationPoint> (port->deff_, normalized_val, start_pos);
   region->append_object (ap);
-  ap->select (true, false, F_NO_PUBLISH_EVENTS);
+  ap->select (true, false, false);
   perform_create_arranger_sel (AUTOMATION_SELECTIONS);
   math_assert_nonnann (ap->fvalue_);
   math_assert_nonnann (ap->normalized_val_);
@@ -218,11 +218,11 @@ _test_port_and_plugin_track_pos_after_duplication (
   /* move automation in 2nd track and undo/redo */
   const auto &atl = dest_track->get_automation_tracklist ();
   ap = atl.ats_.front ()->regions_.at (0)->aps_.at (0);
-  ap->select (true, false, F_NO_PUBLISH_EVENTS);
+  ap->select (true, false, false);
   float prev_norm_val = ap->normalized_val_;
   math_assert_nonnann (ap->normalized_val_);
   math_assert_nonnann (prev_norm_val);
-  ap->set_fvalue (prev_norm_val - 0.1f, F_NORMALIZED, F_NO_PUBLISH_EVENTS);
+  ap->set_fvalue (prev_norm_val - 0.1f, F_NORMALIZED, false);
   UNDO_MANAGER->perform (
     std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateAutomationAction> (
       *AUTOMATION_SELECTIONS, true, 0, 0.1, true));
@@ -292,7 +292,7 @@ _test_undo_track_deletion (
   /* select it */
   auto helm_track =
     TRACKLIST->get_track<InstrumentTrack> (TRACKLIST->get_num_tracks () - 1);
-  helm_track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  helm_track->select (true, true, false);
 
   /* get an automation track */
   const auto &at = helm_track->automation_tracklist_->ats_.at (40);
@@ -306,9 +306,8 @@ _test_undo_track_deletion (
   const auto track_name_hash = helm_track->get_name_hash ();
   auto       region = std::make_shared<AutomationRegion> (
     start_pos, end_pos, track_name_hash, at->index_, at->regions_.size ());
-  helm_track->add_region (
-    region, at.get (), -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
-  region->select (true, false, F_NO_PUBLISH_EVENTS);
+  helm_track->add_region (region, at.get (), -1, true, false);
+  region->select (true, false, false);
   perform_create_arranger_sel (TL_SELECTIONS);
 
   /* create some automation points */
@@ -318,7 +317,7 @@ _test_undo_track_deletion (
   auto ap = std::make_shared<AutomationPoint> (
     port->deff_, port->real_val_to_normalized (port->deff_), &start_pos);
   region->append_object (ap);
-  ap->select (true, false, F_NO_PUBLISH_EVENTS);
+  ap->select (true, false, false);
   perform_create_arranger_sel (AUTOMATION_SELECTIONS);
 
   REQUIRE (helm_track->validate ());
@@ -394,7 +393,7 @@ TEST_CASE ("group track deletion")
 
   /* delete the group track and check that each fx track has its output set to
    * none */
-  group->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  group->select (true, true, false);
   perform_delete ();
   REQUIRE_FALSE (audio_fx1->channel_->has_output_);
   REQUIRE_FALSE (audio_fx2->channel_->has_output_);
@@ -605,8 +604,7 @@ test_track_deletion_with_sends (
   if (test_deleting_target)
     {
       /* delete the receiving track and check that the sends are gone */
-      audio_fx_for_receiving->select (
-        F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+      audio_fx_for_receiving->select (true, true, false);
       perform_delete ();
       assert_sends_connected (
         audio_fx_for_sending, nullptr, false, out_port_idx, in_port_idx);
@@ -627,7 +625,7 @@ test_track_deletion_with_sends (
       AUDIO_ENGINE->wait_n_cycles (40);
 
       /* delete the sending track */
-      audio_fx_for_sending->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+      audio_fx_for_sending->select (true, true, false);
       perform_delete ();
       audio_fx_for_receiving_pos = audio_fx_for_receiving->pos_;
 
@@ -678,7 +676,7 @@ TEST_CASE ("delete audio track")
   auto track = Track::create_empty_with_action<AudioTrack> ();
 
   /* delete track and undo */
-  track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track->select (true, true, false);
 
   /* set input gain and mono */
   track->processor_->input_gain_->set_control_value (1.4f, false, false);
@@ -708,7 +706,7 @@ TEST_CASE ("delete track with LV2 worker")
   /* delete track and undo */
   auto track =
     TRACKLIST->get_track<InstrumentTrack> (TRACKLIST->get_num_tracks () - 1);
-  track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track->select (true, true, false);
 
   perform_delete ();
 
@@ -732,7 +730,7 @@ TEST_CASE ("delete track with plugin")
   /* delete track and undo */
   auto track =
     TRACKLIST->get_track<AudioBusTrack> (TRACKLIST->get_num_tracks () - 1);
-  track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track->select (true, true, false);
 
   perform_delete ();
 
@@ -764,7 +762,7 @@ TEST_CASE ("delete instrument track with automation")
   /* select the track */
   auto track =
     TRACKLIST->get_track<InstrumentTrack> (TRACKLIST->get_num_tracks () - 1);
-  track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track->select (true, true, false);
 
   /* add an effect */
   auto setting = test_plugin_manager_get_plugin_setting (
@@ -787,8 +785,8 @@ TEST_CASE ("delete instrument track with automation")
   auto region = std::make_shared<AutomationRegion> (
     start_pos, end_pos, track->get_name_hash (), at->index_,
     at->regions_.size ());
-  track->add_region (region, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
-  region->select (true, false, F_NO_PUBLISH_EVENTS);
+  track->add_region (region, at, -1, true, false);
+  region->select (true, false, false);
   perform_create_arranger_sel (TL_SELECTIONS);
 
   /* create some automation points */
@@ -797,7 +795,7 @@ TEST_CASE ("delete instrument track with automation")
   auto ap = std::make_shared<AutomationPoint> (
     port->deff_, port->real_val_to_normalized (port->deff_), start_pos);
   region->append_object (ap);
-  ap->select (true, false, F_NO_PUBLISH_EVENTS);
+  ap->select (true, false, false);
   perform_create_arranger_sel (AUTOMATION_SELECTIONS);
 
   REQUIRE (track->validate ());
@@ -813,8 +811,8 @@ TEST_CASE ("delete instrument track with automation")
   region = std::make_shared<AutomationRegion> (
     start_pos, end_pos, track->get_name_hash (), at->index_,
     at->regions_.size ());
-  track->add_region (region, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
-  region->select (true, false, F_NO_PUBLISH_EVENTS);
+  track->add_region (region, at, -1, true, false);
+  region->select (true, false, false);
   perform_create_arranger_sel (TL_SELECTIONS);
 
   /* create some automation points */
@@ -823,7 +821,7 @@ TEST_CASE ("delete instrument track with automation")
   ap = std::make_shared<AutomationPoint> (
     port->deff_, port->real_val_to_normalized (port->deff_), start_pos);
   region->append_object (ap);
-  ap->select (true, false, F_NO_PUBLISH_EVENTS);
+  ap->select (true, false, false);
   perform_create_arranger_sel (AUTOMATION_SELECTIONS);
 
   REQUIRE (track->validate ());
@@ -869,7 +867,7 @@ TEST_CASE ("check no visible tracks after deleting track")
   /* assert a track is selected */
   REQUIRE_NONEMPTY (TRACKLIST_SELECTIONS->track_names_);
 
-  track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track->select (true, true, false);
 
   /* delete the track */
   perform_delete ();
@@ -893,7 +891,7 @@ _test_move_tracks (
 {
   /* move markers track to the top */
   int prev_pos = P_MARKER_TRACK->pos_;
-  P_MARKER_TRACK->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  P_MARKER_TRACK->select (true, true, false);
   UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), 0));
 
@@ -946,16 +944,15 @@ _test_move_tracks (
   auto ar = std::make_shared<AutomationRegion> (
     pos, end_pos, fx_track->get_name_hash (), 0, 0);
   fx_track->add_region (
-    ar, fx_track->automation_tracklist_->ats_[0].get (), -1, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
-  ar->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+    ar, fx_track->automation_tracklist_->ats_[0].get (), -1, true, false);
+  ar->select (true, false, false);
   perform_create_arranger_sel (TL_SELECTIONS);
 
   /* make the region the clip editor region */
-  CLIP_EDITOR->set_region (ar.get (), F_NO_PUBLISH_EVENTS);
+  CLIP_EDITOR->set_region (ar.get (), false);
 
   /* swap tracks */
-  ins_track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  ins_track->select (true, true, false);
   AUDIO_ENGINE->wait_n_cycles (40);
   UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), 5));
@@ -1105,12 +1102,9 @@ TEST_CASE ("multi-track duplicate")
   REQUIRE (TRACKLIST->tracks_[start_pos + 2]->is_audio ());
 
   /* select and duplicate */
-  TRACKLIST->tracks_[start_pos]->select (
-    F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  TRACKLIST->tracks_[start_pos + 1]->select (
-    F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  TRACKLIST->tracks_[start_pos + 2]->select (
-    F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->tracks_[start_pos]->select (true, true, false);
+  TRACKLIST->tracks_[start_pos + 1]->select (true, false, false);
+  TRACKLIST->tracks_[start_pos + 2]->select (true, false, false);
   UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
     start_pos + 3));
@@ -1130,12 +1124,9 @@ TEST_CASE ("multi-track duplicate")
   REQUIRE (TRACKLIST->tracks_[start_pos + 2]->is_audio ());
 
   /* select and duplicate after first */
-  TRACKLIST->tracks_[start_pos]->select (
-    F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  TRACKLIST->tracks_[start_pos + 1]->select (
-    F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  TRACKLIST->tracks_[start_pos + 2]->select (
-    F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->tracks_[start_pos]->select (true, true, false);
+  TRACKLIST->tracks_[start_pos + 1]->select (true, false, false);
+  TRACKLIST->tracks_[start_pos + 2]->select (true, false, false);
   UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
     start_pos + 1));
@@ -1190,7 +1181,7 @@ TEST_CASE ("marker track unpin")
 
   require_pin_status (true);
 
-  P_MARKER_TRACK->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  P_MARKER_TRACK->select (true, true, false);
 
   UNDO_MANAGER->perform (std::make_unique<UnpinTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
@@ -1249,8 +1240,7 @@ TEST_CASE ("duplicate with output and send")
   perform_set_direct_out (TRACKLIST->get_track (start_pos + 1), group_track2);
 
   /* duplicate audio track and group track */
-  TRACKLIST->tracks_[start_pos]->select (
-    F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  TRACKLIST->tracks_[start_pos]->select (true, false, false);
   REQUIRE_SIZE_EQ (TRACKLIST_SELECTIONS->track_names_, 2);
   REQUIRE_EQ (TRACKLIST_SELECTIONS->track_names_[0], group_track->name_);
   REQUIRE_EQ (TRACKLIST_SELECTIONS->track_names_[1], audio_track->name_);
@@ -1320,7 +1310,7 @@ TEST_CASE ("test track deletion with mixer selections")
   REQUIRE (MIXER_SELECTIONS->has_any_);
   REQUIRE_EQ (MIXER_SELECTIONS->track_name_hash_, pl_track->get_name_hash ());
 
-  first_track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  first_track->select (true, true, false);
   perform_delete ();
 
   test_helper_zrythm_cleanup ();
@@ -1352,7 +1342,7 @@ TEST_CASE ("test instrument track duplicate with send")
     *PORT_CONNECTIONS_MGR));
 
   /* duplicate the instrument track */
-  ins_track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  ins_track->select (true, true, false);
   AUDIO_ENGINE->wait_n_cycles (40);
   UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
@@ -1401,8 +1391,8 @@ TEST_CASE ("move multiple tracks")
   const auto &track3 = TRACKLIST->tracks_[TRACKLIST->tracks_.size () - 3];
   const auto &track4 = TRACKLIST->tracks_[TRACKLIST->tracks_.size () - 2];
   const auto &track5 = TRACKLIST->tracks_[TRACKLIST->tracks_.size () - 1];
-  track1->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track2->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track1->select (true, true, false);
+  track2->select (true, false, false);
   REQUIRE_LT (track1->pos_, track2->pos_);
   perform_move_to_end ();
 
@@ -1434,8 +1424,8 @@ TEST_CASE ("move multiple tracks")
   REQUIRE_EQ (track5->pos_, TRACKLIST->tracks_.size () - 1);
 
   /* same (move first 2 tracks to end), but select in different order */
-  track2->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track1->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track2->select (true, true, false);
+  track1->select (true, false, false);
   perform_move_to_end ();
 
   REQUIRE_EQ (track3->pos_, TRACKLIST->tracks_.size () - 5);
@@ -1466,8 +1456,8 @@ TEST_CASE ("move multiple tracks")
   REQUIRE_EQ (track5->pos_, TRACKLIST->tracks_.size () - 1);
 
   /* move the last 2 tracks up */
-  track4->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track5->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track4->select (true, true, false);
+  track5->select (true, false, false);
   REQUIRE_LT (track4->pos_, track5->pos_);
   UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
@@ -1501,8 +1491,8 @@ TEST_CASE ("move multiple tracks")
   REQUIRE_EQ (track5->pos_, TRACKLIST->tracks_.size () - 1);
 
   /* move the first and last tracks to the middle */
-  track1->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track5->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track1->select (true, true, false);
+  track5->select (true, false, false);
   UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
     TRACKLIST->get_num_tracks () - 2));
@@ -1556,7 +1546,7 @@ _test_move_inside (
   /* move audio fx inside folder */
   REQUIRE_EQ (folder->size_, 1);
   auto audio_fx = TRACKLIST->tracks_.back ().get ();
-  audio_fx->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  audio_fx->select (true, true, false);
   TRACKLIST->handle_move_or_copy (
     *folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
@@ -1574,8 +1564,8 @@ _test_move_inside (
 
   /* create audio group and move folder inside group */
   auto audio_group = Track::create_empty_with_action<AudioGroupTrack> ();
-  folder->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  audio_fx->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  folder->select (true, true, false);
+  audio_fx->select (true, false, false);
   TRACKLIST->handle_move_or_copy (
     *audio_group, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
@@ -1607,8 +1597,8 @@ _test_move_inside (
   auto audio_fx3 = Track::create_empty_with_action<AudioBusTrack> ();
 
   /* move 2 new fx tracks to folder */
-  audio_fx2->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  audio_fx3->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  audio_fx2->select (true, true, false);
+  audio_fx3->select (true, false, false);
   TRACKLIST->handle_move_or_copy (
     *folder2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
@@ -1701,7 +1691,7 @@ _test_move_inside (
   REQUIRE_EQ (audio_fx2->pos_, 10);
 
   /* move folder 2 into folder 1 */
-  folder2->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  folder2->select (true, true, false);
   TRACKLIST->handle_move_or_copy (
     *folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
@@ -1769,7 +1759,7 @@ _test_move_inside (
    */
 
   /* move audio fx 2 above master */
-  audio_fx2->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  audio_fx2->select (true, true, false);
   TRACKLIST->handle_move_or_copy (
     *P_MASTER_TRACK, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_TOP,
     GDK_ACTION_MOVE);
@@ -1822,7 +1812,7 @@ _test_move_inside (
    */
 
   /* move audio fx 2 to audio group */
-  audio_fx2->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  audio_fx2->select (true, true, false);
   TRACKLIST->handle_move_or_copy (
     *audio_group, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
@@ -1837,7 +1827,7 @@ _test_move_inside (
   REQUIRE_EQ (audio_fx->pos_, 10);
 
   /* move audio fx 2 to folder */
-  audio_fx2->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  audio_fx2->select (true, true, false);
   TRACKLIST->handle_move_or_copy (
     *folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
@@ -1888,14 +1878,14 @@ _test_move_inside (
    */
 
   /* move folder inside itself */
-  folder->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  folder->select (true, true, false);
   TRACKLIST->handle_move_or_copy (
     *folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
 
   /* move chanel-less track into folder and get
    * status */
-  P_MARKER_TRACK->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  P_MARKER_TRACK->select (true, true, false);
   TRACKLIST->handle_move_or_copy (
     *folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
@@ -1993,7 +1983,7 @@ TEST_CASE ("move multiple inside")
   auto audio_fx2 = Track::create_empty_with_action<AudioBusTrack> ();
 
   /* move audio fx 1 inside folder */
-  audio_fx1->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  audio_fx1->select (true, true, false);
   TRACKLIST->handle_move_or_copy (
     *folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
@@ -2018,8 +2008,8 @@ TEST_CASE ("move multiple inside")
   auto audio_group = Track::create_empty_with_action<AudioGroupTrack> ();
 
   /* move folder to audio group */
-  folder->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  audio_fx1->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  folder->select (true, true, false);
+  audio_fx1->select (true, false, false);
   TRACKLIST->handle_move_or_copy (
     *audio_group, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
@@ -2063,8 +2053,8 @@ TEST_CASE ("move multiple inside")
   REQUIRE_NONNULL (midi);
   auto midi2 = Track::create_empty_with_action<MidiTrack> ();
   REQUIRE_NONNULL (midi2);
-  midi->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  midi2->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  midi->select (true, true, false);
+  midi2->select (true, false, false);
 
   REQUIRE_EQ (folder->size_, 2);
   REQUIRE_EQ (audio_fx2->pos_, 5);
@@ -2114,7 +2104,7 @@ TEST_CASE ("copy multiple inside")
   auto audio_fx2 = Track::create_empty_with_action<AudioBusTrack> ();
 
   /* move audio fx 1 inside folder */
-  audio_fx1->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  audio_fx1->select (true, true, false);
   TRACKLIST->handle_move_or_copy (
     *folder, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
@@ -2123,8 +2113,8 @@ TEST_CASE ("copy multiple inside")
   auto audio_group = Track::create_empty_with_action<AudioGroupTrack> ();
 
   /* move folder to audio group */
-  folder->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  audio_fx1->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  folder->select (true, true, false);
+  audio_fx1->select (true, false, false);
   TRACKLIST->handle_move_or_copy (
     *audio_group, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
@@ -2133,9 +2123,9 @@ TEST_CASE ("copy multiple inside")
   auto folder2 = Track::create_empty_with_action<FolderTrack> ();
 
   /* copy-move audio group inside new folder */
-  audio_group->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  folder->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  audio_fx1->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  audio_group->select (true, true, false);
+  folder->select (true, false, false);
+  audio_fx1->select (true, false, false);
   TRACKLIST->handle_move_or_copy (
     *folder2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_COPY);
@@ -2206,8 +2196,8 @@ TEST_CASE ("copy multiple inside")
   auto midi2 = Track::create_empty_with_action<MidiTrack> ();
   REQUIRE_NONNULL (midi2);
 
-  midi->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  midi2->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  midi->select (true, true, false);
+  midi2->select (true, false, false);
   TRACKLIST->handle_move_or_copy (
     *audio_group2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_TOP,
     GDK_ACTION_COPY);
@@ -2302,8 +2292,8 @@ TEST_CASE ("copy multiple inside")
    */
 
   /* move MIDI tracks to Folder Track 2 */
-  midi->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  midi2->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  midi->select (true, true, false);
+  midi2->select (true, false, false);
   REQUIRE_EQ (TRACKLIST_SELECTIONS->get_num_tracks (), 2);
   TRACKLIST->handle_move_or_copy (
     *folder3, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM,
@@ -2320,8 +2310,8 @@ TEST_CASE ("copy multiple inside")
   REQUIRE_EQ (audio_fx3->pos_, 14);
 
   /* clone the midi tracks at the end */
-  midi->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  midi2->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  midi->select (true, true, false);
+  midi2->select (true, false, false);
   TRACKLIST->handle_move_or_copy (
     *audio_fx3, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM,
     GDK_ACTION_COPY);
@@ -2361,15 +2351,15 @@ TEST_CASE ("copy multiple inside")
    */
 
   /* move MIDI tracks below master */
-  midi3->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  midi4->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  midi3->select (true, true, false);
+  midi4->select (true, false, false);
   TRACKLIST->handle_move_or_copy (
     *P_MASTER_TRACK, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM,
     GDK_ACTION_MOVE);
 
   /* copy MIDI tracks below MIDI Track 1 */
-  midi3->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  midi4->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  midi3->select (true, true, false);
+  midi4->select (true, false, false);
   TRACKLIST->handle_move_or_copy (
     *midi2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM,
     GDK_ACTION_COPY);
@@ -2401,7 +2391,7 @@ TEST_CASE ("copy multiple inside")
   REQUIRE_EQ (audio_fx3->pos_, 16);
 
   /* move MIDI Track 3 at the end */
-  midi4->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  midi4->select (true, true, false);
   TRACKLIST->handle_move_or_copy (
     *audio_fx3, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM,
     GDK_ACTION_MOVE);
@@ -2419,8 +2409,8 @@ TEST_CASE ("copy multiple inside")
 
   /* copy MIDI Track 3 and MIDI Track 2 below
    * MIDI Track 1 */
-  midi3->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  midi4->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  midi3->select (true, true, false);
+  midi4->select (true, false, false);
   TRACKLIST->handle_move_or_copy (
     *midi2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM,
     GDK_ACTION_COPY);
@@ -2457,8 +2447,8 @@ TEST_CASE ("copy multiple inside")
 
   /* move MIDI Track 3 and MIDI Track 2 below
    * MIDI Track 1 */
-  midi3->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  midi4->select (F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  midi3->select (true, true, false);
+  midi4->select (true, false, false);
   TRACKLIST->handle_move_or_copy (
     *midi2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_BOTTOM,
     GDK_ACTION_MOVE);
@@ -2492,7 +2482,7 @@ TEST_CASE ("copy track after uninstalling plugin")
 
   Track * helm_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
-  track_select (helm_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track_select (helm_track, true, true, false);
 
   /* unload bundle */
   /*test_plugin_manager_reload_lilv_world_w_path ("/tmp");*/
@@ -2537,10 +2527,10 @@ TEST_CASE ("move track with clip editor region")
     Track::Type::Midi, nullptr, &file, &PLAYHEAD, num_tracks_before, 1, -1,
     nullptr));
   auto first_track = TRACKLIST->get_track<MidiTrack> (num_tracks_before);
-  first_track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  first_track->select (true, true, false);
   const auto &r = first_track->lanes_[0]->regions_[0];
-  r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  CLIP_EDITOR->set_region (r.get (), F_NO_PUBLISH_EVENTS);
+  r->select (true, false, false);
+  CLIP_EDITOR->set_region (r.get (), false);
   auto clip_editor_region = CLIP_EDITOR->get_region ();
   REQUIRE_NONNULL (clip_editor_region);
   perform_move_to_end ();

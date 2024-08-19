@@ -113,7 +113,7 @@ HardwareProcessor::rescan_ext_ports (HardwareProcessor * self)
   // Function to collect and add ports
   auto collect_and_add_ports = [&] (PortType type) {
     std::vector<ExtPort> ports;
-    ExtPort::ext_ports_get (type, flow, true, ports);
+    ExtPort::ext_ports_get (type, flow, true, ports, *self->engine_);
 
     for (const auto &ext_port : ports)
       {

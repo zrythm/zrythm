@@ -28,8 +28,8 @@ MarkerTrack::MarkerTrack (int track_pos)
   color_ = Color ("#813D9C");
 }
 
-bool
-MarkerTrack::initialize ()
+void
+MarkerTrack::add_default_markers ()
 {
   /* add start and end markers */
   auto     marker_name = fmt::format ("[{}]", _ ("start"));
@@ -46,7 +46,11 @@ MarkerTrack::initialize ()
   marker->pos_setter (&pos);
   marker->marker_type_ = Marker::Type::End;
   add_marker (marker);
+}
 
+bool
+MarkerTrack::initialize ()
+{
   return true;
 }
 

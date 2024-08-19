@@ -774,7 +774,6 @@ ProjectInitFlowManager::load_from_file ()
     {
       PROJECT->backup_dir_.clear ();
       PROJECT->backup_dir_ = PROJECT->get_newer_backup ();
-      ;
       if (!PROJECT->backup_dir_.empty ())
         {
           z_debug ("newer backup found {}", PROJECT->backup_dir_);
@@ -818,9 +817,12 @@ ProjectInitFlowManager::
   ProjectInitFlowManager * flow_mgr = (ProjectInitFlowManager *) user_data;
   if (!success)
     {
-      GreeterWidget * greeter =
-        greeter_widget_new (zrythm_app.get (), nullptr, false, false);
-      gtk_window_present (GTK_WINDOW (greeter));
+      if (ZRYTHM_HAVE_UI)
+        {
+          GreeterWidget * greeter =
+            greeter_widget_new (zrythm_app.get (), nullptr, false, false);
+          gtk_window_present (GTK_WINDOW (greeter));
+        }
 
       flow_mgr->call_last_callback_fail (error);
       return;

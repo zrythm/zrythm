@@ -311,8 +311,7 @@ midi_arranger_widget_gen_context_menu (ArrangerWidget * self, double x, double y
     }
   else
     {
-      arranger_widget_select_all (
-        (ArrangerWidget *) self, F_NO_SELECT, F_PUBLISH_EVENTS);
+      arranger_widget_select_all ((ArrangerWidget *) self, F_NO_SELECT, true);
       MIDI_SELECTIONS->clear (false);
 
       menuitem = CREATE_PASTE_MENU_ITEM ("app.paste");
@@ -492,7 +491,7 @@ midi_arranger_on_drag_end (ArrangerWidget * self)
         case UiOverlayAction::AUTOFILLING:
           {
             UNDO_MANAGER->perform (
-              std::make_unique<ArrangerSelectionsAction::CreateAction> (
+              std::make_unique<CreateArrangerSelectionsAction> (
                 *MIDI_SELECTIONS));
           }
           break;

@@ -60,7 +60,7 @@ _test_edit_tracks (
       g_assert_true (ins_track->channel->inserts[0]->activated);
     }
 
-  track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track_select (ins_track, true, true, false);
 
   UndoableAction * ua = NULL;
   switch (type)
@@ -89,7 +89,7 @@ _test_edit_tracks (
         /* create a MIDI track */
         track_create_empty_at_idx_with_action (Track::Type::MIDI, 2, nullptr);
         Track * midi_track = TRACKLIST->tracks[2];
-        track_select (midi_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+        track_select (midi_track, true, true, false);
 
         g_assert_true (!midi_track->channel->has_output);
 
@@ -113,7 +113,7 @@ _test_edit_tracks (
         UNDO_MANAGER->redo ();
         ins_track = TRACKLIST->tracks[4];
         g_assert_true (ins_track->type == Track::Type::INSTRUMENT);
-        track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+        track_select (ins_track, true, true, false);
         tracklist_selections_action_perform_move (
           TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, 1, nullptr);
         UNDO_MANAGER->undo ();
@@ -125,7 +125,7 @@ _test_edit_tracks (
         UNDO_MANAGER->undo ();
         UNDO_MANAGER->redo ();
         Track * audio_group = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-        track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+        track_select (ins_track, true, true, false);
         tracklist_selections_action_perform_set_direct_out (
           TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, audio_group, nullptr);
         UNDO_MANAGER->undo ();
@@ -150,12 +150,12 @@ _test_edit_tracks (
 
         /* route the instrument to the group
          * track */
-        track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+        track_select (ins_track, true, true, false);
         tracklist_selections_action_perform_set_direct_out (
           TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, group_track, nullptr);
 
         /* solo the group track */
-        track_select (group_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+        track_select (group_track, true, true, false);
         tracklist_selections_action_perform_edit_solo (
           TRACKLIST_SELECTIONS, true, nullptr);
 
@@ -304,7 +304,7 @@ _test_edit_tracks (
       {
         GdkRGBA new_color = { 0.8f, 0.7f, 0.2f, 1.f };
         GdkRGBA color_before = ins_track->color;
-        track_set_color (ins_track, &new_color, F_UNDOABLE, F_NO_PUBLISH_EVENTS);
+        track_set_color (ins_track, &new_color, F_UNDOABLE, false);
         g_assert_true (color_is_same (&ins_track->color, &new_color));
 
         test_project_save_and_reload ();
@@ -326,7 +326,7 @@ _test_edit_tracks (
       {
         const char * new_icon = "icon2";
         char *       icon_before = g_strdup (ins_track->icon_name);
-        track_set_icon (ins_track, new_icon, F_UNDOABLE, F_NO_PUBLISH_EVENTS);
+        track_set_icon (ins_track, new_icon, F_UNDOABLE, false);
         g_assert_true (string_is_equal (ins_track->icon_name, new_icon));
 
         test_project_save_and_reload ();
@@ -426,7 +426,7 @@ test_edit_midi_direct_out_to_ins (void)
   test_plugin_manager_create_tracks_from_plugin (
     HELM_BUNDLE, HELM_URI, true, false, 1);
   Track * ins_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track_select (ins_track, true, true, false);
 
   char ** midi_files = io_get_files_in_dir_ending_in (
     MIDILIB_TEST_MIDI_FILES_PATH, F_RECURSIVE, ".MID", false);
@@ -438,7 +438,7 @@ test_edit_midi_direct_out_to_ins (void)
     Track::Type::MIDI, nullptr, &file, PLAYHEAD, TRACKLIST->tracks.size (), 1,
     -1, nullptr, nullptr);
   Track * midi_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  track_select (midi_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track_select (midi_track, true, true, false);
   g_strfreev (midi_files);
 
   /* route the MIDI track to the instrument track */
@@ -453,7 +453,7 @@ test_edit_midi_direct_out_to_ins (void)
 
   /* delete the instrument, undo and verify that
    * the MIDI track's output is the instrument */
-  track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track_select (ins_track, true, true, false);
 
   tracklist_selections_action_perform_delete (
     TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, nullptr);
@@ -489,8 +489,8 @@ test_edit_multi_track_direct_out (void)
     track_create_empty_with_action (Track::Type::AUDIO_GROUP, nullptr);
 
   /* route the ins tracks to the audio group */
-  track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (ins_track2, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track_select (ins_track, true, true, false);
+  track_select (ins_track2, true, false, false);
   tracklist_selections_action_perform_set_direct_out (
     TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, audio_group, nullptr);
 
@@ -511,7 +511,7 @@ test_edit_multi_track_direct_out (void)
 
   /* delete the audio group, undo and verify that
    * the ins track output is the audio group */
-  track_select (audio_group, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track_select (audio_group, true, true, false);
   tracklist_selections_action_perform_delete (
     TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, nullptr);
 
@@ -522,8 +522,8 @@ test_edit_multi_track_direct_out (void)
 
   /* as a second action, route the tracks to
    * master */
-  track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (ins_track2, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track_select (ins_track, true, true, false);
+  track_select (ins_track2, true, false, false);
   tracklist_selections_action_perform_set_direct_out (
     TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, P_MASTER_TRACK, nullptr);
   UndoableAction * ua = undo_manager_get_last_action (UNDO_MANAGER);
@@ -563,7 +563,7 @@ test_rename_midi_track_with_events (void)
     -1, nullptr, nullptr);
   Track * midi_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
-  track_select (midi_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track_select (midi_track, true, true, false);
   g_strfreev (midi_files);
 
   /* change the name of the track */

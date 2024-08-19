@@ -25,6 +25,76 @@
 
 #include <glib/gi18n.h>
 
+ArrangerSelectionsAction::ArrangerSelectionsAction () { }
+
+ArrangerSelectionsAction::ArrangerSelectionsAction (
+  const ArrangerSelections &sel,
+  Type                      type)
+    : UndoableAction (UndoableAction::Type::ArrangerSelections), type_ (type)
+{
+  set_before_selections (sel);
+}
+
+CreateOrDeleteArrangerSelectionsAction::CreateOrDeleteArrangerSelectionsAction (
+  const ArrangerSelections &sel,
+  bool                      create)
+    : ArrangerSelectionsAction (sel, create ? Type::Create : Type::Delete)
+{
+  z_return_if_fail (sel.has_any ());
+
+  if (sel.contains_undeletable_object ())
+    {
+      throw ZrythmException (
+        _ ("Arranger selections contain an undeletable object"));
+    }
+}
+
+void
+ArrangerSelectionsAction::init_after_cloning (
+  const ArrangerSelectionsAction &other)
+{
+  type_ = other.type_;
+  if (other.sel_)
+    sel_ =
+      clone_unique_with_variant<ArrangerSelectionsVariant> (other.sel_.get ());
+  if (other.sel_after_)
+    sel_after_ = clone_unique_with_variant<ArrangerSelectionsVariant> (
+      other.sel_after_.get ());
+  edit_type_ = other.edit_type_;
+  ticks_ = other.ticks_;
+  delta_tracks_ = other.delta_tracks_;
+  delta_lanes_ = other.delta_lanes_;
+  delta_chords_ = other.delta_chords_;
+  delta_pitch_ = other.delta_pitch_;
+  delta_vel_ = other.delta_vel_;
+  delta_normalized_amount_ = other.delta_normalized_amount_;
+  if (other.target_port_)
+    target_port_ = std::make_unique<PortIdentifier> (*other.target_port_);
+  str_ = other.str_;
+  pos_ = other.pos_;
+  for (auto &r : other.r1_)
+    {
+      r1_.push_back (
+        clone_unique_with_variant<LengthableObjectVariant> (r.get ()));
+    }
+  for (auto &r : other.r2_)
+    {
+      r2_.push_back (
+        clone_unique_with_variant<LengthableObjectVariant> (r.get ()));
+    }
+  num_split_objs_ = other.num_split_objs_;
+  first_run_ = other.first_run_;
+  if (other.opts_)
+    opts_ = std::make_unique<QuantizeOptions> (*other.opts_);
+  if (other.region_before_)
+    region_before_ =
+      clone_unique_with_variant<RegionVariant> (other.region_before_.get ());
+  if (other.region_after_)
+    region_after_ =
+      clone_unique_with_variant<RegionVariant> (other.region_after_.get ());
+  resize_type_ = other.resize_type_;
+}
+
 void
 ArrangerSelectionsAction::init_loaded_impl ()
 {
@@ -80,15 +150,6 @@ ArrangerSelectionsAction::set_after_selections (const ArrangerSelections &src)
       src.validate ();
       sel_after_->validate ();
     }
-}
-
-ArrangerSelectionsAction::ArrangerSelectionsAction (
-  const ArrangerSelections &sel,
-  Type                      type)
-    : type_ (type)
-{
-  undoable_action_type_ = UndoableAction::Type::ArrangerSelections;
-  set_before_selections (sel);
 }
 
 ArrangerSelections *
@@ -156,20 +217,6 @@ ArrangerSelectionsAction::LinkAction::LinkAction (
   delta_lanes_ = delta_lanes;
 
   set_after_selections (sel_after);
-}
-
-ArrangerSelectionsAction::CreateOrDeleteAction::CreateOrDeleteAction (
-  const ArrangerSelections &sel,
-  bool                      create)
-    : ArrangerSelectionsAction (sel, create ? Type::Create : Type::Delete)
-{
-  z_return_if_fail (sel.has_any ());
-
-  if (sel.contains_undeletable_object ())
-    {
-      throw ZrythmException (
-        _ ("Arranger selections contain an undeletable object"));
-    }
 }
 
 ArrangerSelectionsAction::RecordAction::RecordAction (
@@ -751,7 +798,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
             }
 
           /* add to track. */
-          auto added_obj_ref = obj->add_clone_to_project (F_NO_PUBLISH_EVENTS);
+          auto added_obj_ref = obj->add_clone_to_project (false);
 
           /* edit both project object and the copy */
           if (!math_doubles_equal (ticks, 0.0))
@@ -811,12 +858,12 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
               ap->set_fvalue (
                 ap->normalized_val_
                   + static_cast<float> (delta_normalized_amount),
-                true, F_NO_PUBLISH_EVENTS);
+                true, false);
               auto &own_ap = dynamic_cast<AutomationPoint &> (*own_obj);
               own_ap.set_fvalue (
                 own_ap.normalized_val_
                   + static_cast<float> (delta_normalized_amount),
-                true, F_NO_PUBLISH_EVENTS);
+                true, false);
             }
 
           if (obj->type_ == ArrangerObject::Type::Region)
@@ -896,7 +943,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
             }
 
           /* select it */
-          added_obj_ref->select (true, true, F_NO_PUBLISH_EVENTS);
+          added_obj_ref->select (true, true, false);
 
           /* remember the identifier */
           own_obj->copy_identifier (*added_obj_ref);
@@ -967,7 +1014,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
               own_ap.set_fvalue (
                 own_ap.normalized_val_
                   + static_cast<float> (delta_normalized_amount),
-                true, F_NO_PUBLISH_EVENTS);
+                true, false);
             }
 
         } /* endif undo */
@@ -1050,7 +1097,7 @@ ArrangerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                 }
 
               /* select it */
-              prj_obj->select (true, true, F_NO_PUBLISH_EVENTS);
+              prj_obj->select (true, true, false);
 
               /* remember new info */
               own_obj->copy_identifier (*prj_obj);
@@ -1177,7 +1224,7 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
               auto prj_obj = own_after_obj->add_clone_to_project (false);
 
               /* select it */
-              prj_obj->select (true, true, F_NO_PUBLISH_EVENTS);
+              prj_obj->select (true, true, false);
 
               /* remember new info */
               own_after_obj->copy_identifier (*prj_obj);
@@ -1222,7 +1269,7 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
               auto prj_obj = own_before_obj->add_clone_to_project (false);
 
               /* select it */
-              prj_obj->select (true, true, F_NO_PUBLISH_EVENTS);
+              prj_obj->select (true, true, false);
 
               /* remember new info */
               own_before_obj->copy_identifier (*prj_obj);

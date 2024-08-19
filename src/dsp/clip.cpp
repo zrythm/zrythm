@@ -82,7 +82,7 @@ AudioClip::init_from_file (const std::string &full_path, bool set_bpm)
   catch (ZrythmException &e)
     {
       throw ZrythmException (
-        fmt::sprintf ("Failed to read frames from file '%s'", full_path));
+        fmt::format ("Failed to read frames from file '{}'", full_path));
     }
   num_frames_ = ch_frames_.getNumSamples ();
   channels_ = ch_frames_.getNumChannels ();
@@ -114,7 +114,7 @@ AudioClip::init_loaded ()
   catch (ZrythmException &e)
     {
       throw ZrythmException (
-        fmt::sprintf ("Failed to initialize audio file: %s", e.what ()));
+        fmt::format ("Failed to initialize audio file: {}", e.what ()));
     }
   bpm_ = bpm;
 }
@@ -276,7 +276,7 @@ AudioClip::write_to_pool (bool parts, bool is_backup)
   if (need_new_write)
     {
       z_debug (
-        "writing clip %s to pool (parts %d, is backup  %d): '%s'", name_, parts,
+        "writing clip {} to pool (parts {}, is backup  {}): '{}'", name_, parts,
         is_backup, new_path);
       write_to_file (new_path, parts);
       if (!parts)
@@ -296,7 +296,7 @@ AudioClip::write_to_file (const std::string &filepath, bool parts)
   z_return_if_fail (frames_written_ < SIZE_MAX);
   size_t           before_frames = (size_t) frames_written_;
   unsigned_frame_t ch_offset = parts ? frames_written_ : 0;
-  unsigned_frame_t offset = ch_offset * channels_;
+  // unsigned_frame_t offset = ch_offset * channels_;
 
   size_t nframes;
   if (parts)
@@ -313,9 +313,14 @@ AudioClip::write_to_file (const std::string &filepath, bool parts)
     }
   try
     {
+#if 0
       audio_write_raw_file (
         frames_.getReadPointer (0) + offset, ch_offset, nframes,
         (uint32_t) samplerate_, use_flac_, bit_depth_, channels_, filepath);
+#endif
+      audio_write_raw_file (
+        ch_frames_, ch_offset, nframes, (uint32_t) samplerate_, use_flac_,
+        bit_depth_, channels_, filepath);
     }
   catch (const ZrythmException &e)
     {
@@ -338,11 +343,11 @@ AudioClip::write_to_file (const std::string &filepath, bool parts)
         {
           z_warning ("{} != {}", num_frames_, new_clip.num_frames_);
         }
-      float epsilon = 0.0001f;
-      z_warn_if_fail (audio_frames_equal (
+      constexpr float epsilon = 0.0001f;
+      z_return_if_fail (audio_frames_equal (
         ch_frames_.getReadPointer (0), new_clip.ch_frames_.getReadPointer (0),
         (size_t) new_clip.num_frames_, epsilon));
-      z_warn_if_fail (audio_frames_equal (
+      z_return_if_fail (audio_frames_equal (
         frames_.getReadPointer (0), new_clip.frames_.getReadPointer (0),
         (size_t) new_clip.num_frames_ * new_clip.channels_, epsilon));
     }
@@ -409,7 +414,7 @@ AudioClip::edit_in_ext_program ()
   if (!tmp_dir)
     {
       throw ZrythmException (
-        fmt::sprintf ("Failed to create tmp dir: %s", err->message));
+        fmt::format ("Failed to create tmp dir: {}", err->message));
     }
   std::string abs_path = Glib::build_filename (tmp_dir, "tmp.wav");
   try
@@ -419,7 +424,7 @@ AudioClip::edit_in_ext_program ()
   catch (ZrythmException &e)
     {
       throw ZrythmException (
-        fmt::sprintf ("Failed to write audio file '%s'", abs_path));
+        fmt::format ("Failed to write audio file '{}'", abs_path));
     }
 
   GFile *     file = g_file_new_for_path (abs_path.c_str ());
@@ -429,7 +434,7 @@ AudioClip::edit_in_ext_program ()
   if (!file_info)
     {
       throw ZrythmException (
-        fmt::sprintf ("Failed to query file info for %s", abs_path));
+        fmt::format ("Failed to query file info for {}", abs_path));
     }
   const char * content_type = g_file_info_get_content_type (file_info);
 

@@ -476,8 +476,7 @@ LengthableObject::
         {
           at = self.get_automation_track ();
         }
-      track->add_region (
-        r1, at, self.id_.lane_pos_, F_GEN_NAME, F_PUBLISH_EVENTS);
+      track->add_region (r1, at, self.id_.lane_pos_, true, true);
 
       if (!r2->is_looped ())
         {
@@ -499,8 +498,7 @@ LengthableObject::
             }
         }
 
-      track->add_region (
-        r2, at, self.id_.lane_pos_, F_GEN_NAME, F_PUBLISH_EVENTS);
+      track->add_region (r2, at, self.id_.lane_pos_, true, true);
     }
   else if constexpr (std::is_same_v<SelfT, MidiNote>)
     {
@@ -589,8 +587,7 @@ LengthableObject::unsplit (T &r1, T &r2, bool fire_events)
         {
           at = r1.get_automation_track ();
         }
-      r1.get_track ()->add_region (
-        obj, at, r1.id_.lane_pos_, F_GEN_NAME, fire_events);
+      r1.get_track ()->add_region (obj, at, r1.id_.lane_pos_, true, fire_events);
     }
   else if constexpr (std::is_same_v<T, MidiNote>)
     {

@@ -47,8 +47,7 @@ track_icon_chooser_dialog_widget_run (TrackIconChooserDialogWidget * self)
       /* if changed, apply the change */
       if (std::string (self->selected_icon) != self->track->icon_name_)
         {
-          self->track->set_icon (
-            self->selected_icon, F_UNDOABLE, F_PUBLISH_EVENTS);
+          self->track->set_icon (self->selected_icon, F_UNDOABLE, true);
         }
     }
   gtk_window_destroy (GTK_WINDOW (self->dialog));

@@ -51,7 +51,7 @@ UndoStack::init_after_cloning (const UndoStack &other)
     }
 
   /* init loaded to load the actions on the stack */
-  init_loaded ();
+  // init_loaded ();
 }
 
 std::string

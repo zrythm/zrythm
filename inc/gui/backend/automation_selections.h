@@ -31,6 +31,8 @@ class AutomationSelections final
       public ISerializable<AutomationSelections>
 {
 public:
+  AutomationSelections ();
+
   const AutomationPoint * get_automation_point (int index) const
   {
     return dynamic_cast<AutomationPoint *> (objects_[index].get ());

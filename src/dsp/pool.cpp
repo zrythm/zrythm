@@ -328,8 +328,7 @@ AudioPool::write_to_disk (bool is_backup)
 
   GError *      err = NULL;
   GThreadPool * thread_pool = g_thread_pool_new (
-    write_clip_thread, this, (int) g_get_num_processors (), F_NOT_EXCLUSIVE,
-    &err);
+    write_clip_thread, this, (int) g_get_num_processors (), false, &err);
   if (err)
     {
       throw ZrythmException (

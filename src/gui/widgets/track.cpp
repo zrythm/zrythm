@@ -882,11 +882,11 @@ on_right_click_pressed (
     {
       if (state & GDK_SHIFT_MASK || state & GDK_CONTROL_MASK)
         {
-          track->select (F_SELECT, F_NOT_EXCLUSIVE, F_PUBLISH_EVENTS);
+          track->select (true, false, true);
         }
       else
         {
-          track->select (F_SELECT, F_EXCLUSIVE, F_PUBLISH_EVENTS);
+          track->select (true, true, true);
         }
     }
   if (n_press == 1)
@@ -986,7 +986,7 @@ click_released (
       /* if track not selected, select it */
       if (!track->is_selected ())
         {
-          track->select (F_SELECT, F_EXCLUSIVE, F_PUBLISH_EVENTS);
+          track->select (true, true, true);
         }
 
       if ((Track *) cb->owner == track)
@@ -995,13 +995,12 @@ click_released (
           if (TRACK_CB_ICON_IS (MONO_COMPAT))
             {
               ch_track->channel_->set_mono_compat_enabled (
-                !ch_track->channel_->get_mono_compat_enabled (),
-                F_PUBLISH_EVENTS);
+                !ch_track->channel_->get_mono_compat_enabled (), true);
             }
           else if (TRACK_CB_ICON_IS (SWAP_PHASE))
             {
               ch_track->channel_->set_swap_phase (
-                !ch_track->channel_->get_swap_phase (), F_PUBLISH_EVENTS);
+                !ch_track->channel_->get_swap_phase (), true);
             }
           else if (TRACK_CB_ICON_IS (RECORD))
             {
@@ -1010,26 +1009,23 @@ click_released (
           else if (TRACK_CB_ICON_IS (SOLO))
             {
               ch_track->set_soloed (
-                !ch_track->get_soloed (), F_TRIGGER_UNDO, F_AUTO_SELECT,
-                F_PUBLISH_EVENTS);
+                !ch_track->get_soloed (), F_TRIGGER_UNDO, F_AUTO_SELECT, true);
             }
           else if (TRACK_CB_ICON_IS (MUTE))
             {
               ch_track->set_muted (
-                !ch_track->get_muted (), F_TRIGGER_UNDO, F_AUTO_SELECT,
-                F_PUBLISH_EVENTS);
+                !ch_track->get_muted (), F_TRIGGER_UNDO, F_AUTO_SELECT, true);
             }
           else if (TRACK_CB_ICON_IS (LISTEN))
             {
               ch_track->set_listened (
-                !ch_track->get_listened (), F_TRIGGER_UNDO, F_AUTO_SELECT,
-                F_PUBLISH_EVENTS);
+                !ch_track->get_listened (), F_TRIGGER_UNDO, F_AUTO_SELECT, true);
             }
           else if (TRACK_CB_ICON_IS (MONITOR_AUDIO))
             {
               auto ptrack = dynamic_cast<ProcessableTrack *> (track);
               ptrack->set_monitor_audio (
-                !ptrack->get_monitor_audio (), F_AUTO_SELECT, F_PUBLISH_EVENTS);
+                !ptrack->get_monitor_audio (), F_AUTO_SELECT, true);
             }
           else if (TRACK_CB_ICON_IS (SHOW_TRACK_LANES))
             {
@@ -1048,8 +1044,7 @@ click_released (
             {
               auto foldable_tr = dynamic_cast<FoldableTrack *> (track);
               foldable_tr->set_folded (
-                !foldable_tr->folded_, F_TRIGGER_UNDO, F_AUTO_SELECT,
-                F_PUBLISH_EVENTS);
+                !foldable_tr->folded_, F_TRIGGER_UNDO, F_AUTO_SELECT, true);
             }
           else if (TRACK_CB_ICON_IS (FREEZE))
             {
@@ -1067,8 +1062,7 @@ click_released (
             {
               std::visit (
                 [&] (auto &&lane) {
-                  lane->set_soloed (
-                    !lane->get_soloed (), F_TRIGGER_UNDO, F_PUBLISH_EVENTS);
+                  lane->set_soloed (!lane->get_soloed (), F_TRIGGER_UNDO, true);
                 },
                 convert_to_variant<TrackLanePtrVariant> (lane));
             }
@@ -1076,8 +1070,7 @@ click_released (
             {
               std::visit (
                 [&] (auto &&lane) {
-                  lane->set_muted (
-                    !lane->get_muted (), F_TRIGGER_UNDO, F_PUBLISH_EVENTS);
+                  lane->set_muted (!lane->get_muted (), F_TRIGGER_UNDO, true);
                 },
                 convert_to_variant<TrackLanePtrVariant> (lane));
             }
@@ -1146,7 +1139,7 @@ click_released (
           at->swap_record_mode ();
           am->init ();
         }
-      at->set_automation_mode (am->hit_mode_, F_PUBLISH_EVENTS);
+      at->set_automation_mode (am->hit_mode_, true);
     }
   else if (n_press == 2)
     {
@@ -1213,7 +1206,7 @@ on_drag_begin (
           /* no control & not selected */
           if (!ctrl && !selected)
             {
-              TRACKLIST_SELECTIONS->select_single (*track, F_PUBLISH_EVENTS);
+              TRACKLIST_SELECTIONS->select_single (*track, true);
             }
           else if (!ctrl && selected)
             {
@@ -1471,7 +1464,7 @@ track_widget_on_record_toggled (TrackWidget * self)
   z_return_if_fail (track);
 
   /* toggle record flag */
-  track->set_recording (!self->was_armed, F_PUBLISH_EVENTS);
+  track->set_recording (!self->was_armed, true);
   track->record_set_automatically_ = false;
   z_debug ("{} recording: {}", track->name_, track->get_recording ());
 

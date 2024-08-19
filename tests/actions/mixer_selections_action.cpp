@@ -55,7 +55,7 @@ _test_copy_plugins (
 
   /* select track */
   auto selected_track = TRACKLIST->get_last_track ();
-  track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track->select (true, true, false);
 
   UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
@@ -88,7 +88,7 @@ _test_copy_plugins (
       undo_manager_perform (UNDO_MANAGER, ua);
 
       mixer_selections_clear (
-        MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
+        MIXER_SELECTIONS, false);
       mixer_selections_add_slot (
         MIXER_SELECTIONS, new_track,
         PluginSlotType::Insert, 0, F_NO_CLONE);
@@ -106,7 +106,7 @@ _test_copy_plugins (
     {
       MIXER_SELECTIONS->clear (false);
       MIXER_SELECTIONS->add_slot (
-        *selected_track, PluginSlotType::Insert, 0, F_NO_PUBLISH_EVENTS);
+        *selected_track, PluginSlotType::Insert, 0, false);
       UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCopyAction> (
         *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
         PluginSlotType::Insert, new_track, 1));
@@ -159,7 +159,7 @@ TEST_CASE ("MIDI FX slot deletion")
   port->set_control_value (120.f, F_NOT_NORMALIZED, false);
 
   /* delete slot */
-  pl->select (F_SELECT, F_EXCLUSIVE);
+  pl->select (true, true);
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsDeleteAction> (
     *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR));
 
@@ -245,7 +245,7 @@ _test_create_plugins (
     }
 
   /* duplicate the track */
-  src_track->select (F_SELECT, true, F_NO_PUBLISH_EVENTS);
+  src_track->select (true, true, false);
   REQUIRE (src_track->validate ());
   UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
@@ -351,7 +351,7 @@ _test_port_and_plugin_track_pos_after_move (
 
   /* select it */
   auto src_track = TRACKLIST->get_track<AutomatableTrack> (src_track_pos);
-  src_track->select (F_SELECT, true, F_NO_PUBLISH_EVENTS);
+  src_track->select (true, true, false);
 
   /* get an automation track */
   auto       &atl = src_track->get_automation_tracklist ();
@@ -366,10 +366,10 @@ _test_port_and_plugin_track_pos_after_move (
   auto region = std::make_shared<AutomationRegion> (
     start_pos, end_pos, src_track->get_name_hash (), at->index_,
     at->regions_.size ());
-  src_track->add_region (region, at.get (), -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
-  region->select (true, false, F_NO_PUBLISH_EVENTS);
+  src_track->add_region (region, at.get (), -1, true, false);
+  region->select (true, false, false);
   UNDO_MANAGER->perform (
-    std::make_unique<ArrangerSelectionsAction::CreateAction> (*TL_SELECTIONS));
+    std::make_unique<CreateArrangerSelectionsAction> (*TL_SELECTIONS));
 
   /* create some automation points */
   auto port = Port::find_from_identifier<ControlPort> (at->port_id_);
@@ -377,9 +377,9 @@ _test_port_and_plugin_track_pos_after_move (
   auto ap = std::make_shared<AutomationPoint> (
     port->deff_, port->real_val_to_normalized (port->deff_), &start_pos);
   region->append_object (ap);
-  ap->select (true, false, F_NO_PUBLISH_EVENTS);
-  UNDO_MANAGER->perform (std::make_unique<ArrangerSelectionsAction::CreateAction> (
-    *AUTOMATION_SELECTIONS));
+  ap->select (true, false, false);
+  UNDO_MANAGER->perform (
+    std::make_unique<CreateArrangerSelectionsAction> (*AUTOMATION_SELECTIONS));
 
   /* duplicate it */
   REQUIRE (src_track->validate ());
@@ -394,8 +394,7 @@ _test_port_and_plugin_track_pos_after_move (
 
   /* move plugin from 1st track to 2nd track and undo/redo */
   MIXER_SELECTIONS->clear ();
-  MIXER_SELECTIONS->add_slot (
-    *src_track, PluginSlotType::Insert, 0, F_NO_PUBLISH_EVENTS);
+  MIXER_SELECTIONS->add_slot (*src_track, PluginSlotType::Insert, 0, false);
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
     *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
     PluginSlotType::Insert, dest_track, 1));
@@ -420,8 +419,7 @@ _test_port_and_plugin_track_pos_after_move (
 
   /* move plugin from 1st slot to the 2nd slot and undo/redo */
   MIXER_SELECTIONS->clear ();
-  MIXER_SELECTIONS->add_slot (
-    *src_track, PluginSlotType::Insert, 0, F_NO_PUBLISH_EVENTS);
+  MIXER_SELECTIONS->add_slot (*src_track, PluginSlotType::Insert, 0, false);
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
     *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
     PluginSlotType::Insert, src_track, 1));
@@ -434,8 +432,7 @@ _test_port_and_plugin_track_pos_after_move (
   /* move the plugin to a new track */
   MIXER_SELECTIONS->clear ();
   src_track = TRACKLIST->get_track<AutomatableTrack> (src_track_pos);
-  MIXER_SELECTIONS->add_slot (
-    *src_track, PluginSlotType::Insert, 1, F_NO_PUBLISH_EVENTS);
+  MIXER_SELECTIONS->add_slot (*src_track, PluginSlotType::Insert, 1, false);
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
     *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
     PluginSlotType::Insert, nullptr, 0));
@@ -510,7 +507,7 @@ TEST_CASE ("move two plugins one slot up")
 
   /* select it */
   auto track = get_track_and_validate ();
-  track->select (F_SELECT, true, F_NO_PUBLISH_EVENTS);
+  track->select (true, true, false);
 
   /* save and reload the project */
   test_project_save_and_reload ();
@@ -530,10 +527,10 @@ TEST_CASE ("move two plugins one slot up")
     auto region = std::make_shared<AutomationRegion> (
       start_pos, end_pos, track->get_name_hash (), at->index_,
       at->regions_.size ());
-    track->add_region (region, at.get (), -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
-    region->select (true, false, F_NO_PUBLISH_EVENTS);
+    track->add_region (region, at.get (), -1, true, false);
+    region->select (true, false, false);
     UNDO_MANAGER->perform (
-      std::make_unique<ArrangerSelectionsAction::CreateAction> (*TL_SELECTIONS));
+      std::make_unique<CreateArrangerSelectionsAction> (*TL_SELECTIONS));
     UNDO_MANAGER->undo ();
     UNDO_MANAGER->redo ();
   }
@@ -554,9 +551,9 @@ TEST_CASE ("move two plugins one slot up")
   auto        ap = std::make_shared<AutomationPoint> (
     port->deff_, port->real_val_to_normalized (port->deff_), start_pos);
   region->append_object (ap);
-  ap->select (true, false, F_NO_PUBLISH_EVENTS);
-  UNDO_MANAGER->perform (std::make_unique<ArrangerSelectionsAction::CreateAction> (
-    *AUTOMATION_SELECTIONS));
+  ap->select (true, false, false);
+  UNDO_MANAGER->perform (
+    std::make_unique<CreateArrangerSelectionsAction> (*AUTOMATION_SELECTIONS));
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->redo ();
 
@@ -566,8 +563,7 @@ TEST_CASE ("move two plugins one slot up")
 
   /* duplicate the plugin to the 2nd slot */
   MIXER_SELECTIONS->clear ();
-  MIXER_SELECTIONS->add_slot (
-    *track, PluginSlotType::Insert, 0, F_NO_PUBLISH_EVENTS);
+  MIXER_SELECTIONS->add_slot (*track, PluginSlotType::Insert, 0, false);
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCopyAction> (
     *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
     PluginSlotType::Insert, track, 1));
@@ -579,8 +575,7 @@ TEST_CASE ("move two plugins one slot up")
 
   /* remove slot #0 and undo */
   MIXER_SELECTIONS->clear ();
-  MIXER_SELECTIONS->add_slot (
-    *track, PluginSlotType::Insert, 0, F_NO_PUBLISH_EVENTS);
+  MIXER_SELECTIONS->add_slot (*track, PluginSlotType::Insert, 0, false);
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsDeleteAction> (
     *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR));
   UNDO_MANAGER->undo ();
@@ -594,10 +589,8 @@ TEST_CASE ("move two plugins one slot up")
   /* move the 2 plugins to start at slot#1 (2nd
    * slot) */
   MIXER_SELECTIONS->clear ();
-  MIXER_SELECTIONS->add_slot (
-    *track, PluginSlotType::Insert, 0, F_NO_PUBLISH_EVENTS);
-  MIXER_SELECTIONS->add_slot (
-    *track, PluginSlotType::Insert, 1, F_NO_PUBLISH_EVENTS);
+  MIXER_SELECTIONS->add_slot (*track, PluginSlotType::Insert, 0, false);
+  MIXER_SELECTIONS->add_slot (*track, PluginSlotType::Insert, 1, false);
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
     *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
     PluginSlotType::Insert, track, 1));
@@ -614,10 +607,8 @@ TEST_CASE ("move two plugins one slot up")
   /* move the 2 plugins to start at slot 2 (3rd
    * slot) */
   MIXER_SELECTIONS->clear ();
-  MIXER_SELECTIONS->add_slot (
-    *track, PluginSlotType::Insert, 1, F_NO_PUBLISH_EVENTS);
-  MIXER_SELECTIONS->add_slot (
-    *track, PluginSlotType::Insert, 2, F_NO_PUBLISH_EVENTS);
+  MIXER_SELECTIONS->add_slot (*track, PluginSlotType::Insert, 1, false);
+  MIXER_SELECTIONS->add_slot (*track, PluginSlotType::Insert, 2, false);
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
     *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
     PluginSlotType::Insert, track, 2));
@@ -634,10 +625,8 @@ TEST_CASE ("move two plugins one slot up")
   /* move the 2 plugins to start at slot 1 (2nd
    * slot) */
   MIXER_SELECTIONS->clear ();
-  MIXER_SELECTIONS->add_slot (
-    *track, PluginSlotType::Insert, 2, F_NO_PUBLISH_EVENTS);
-  MIXER_SELECTIONS->add_slot (
-    *track, PluginSlotType::Insert, 3, F_NO_PUBLISH_EVENTS);
+  MIXER_SELECTIONS->add_slot (*track, PluginSlotType::Insert, 2, false);
+  MIXER_SELECTIONS->add_slot (*track, PluginSlotType::Insert, 3, false);
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
     *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
     PluginSlotType::Insert, track, 1));
@@ -654,10 +643,8 @@ TEST_CASE ("move two plugins one slot up")
   /* move the 2 plugins to start back at slot 0 (1st
    * slot) */
   MIXER_SELECTIONS->clear ();
-  MIXER_SELECTIONS->add_slot (
-    *track, PluginSlotType::Insert, 2, F_NO_PUBLISH_EVENTS);
-  MIXER_SELECTIONS->add_slot (
-    *track, PluginSlotType::Insert, 1, F_NO_PUBLISH_EVENTS);
+  MIXER_SELECTIONS->add_slot (*track, PluginSlotType::Insert, 2, false);
+  MIXER_SELECTIONS->add_slot (*track, PluginSlotType::Insert, 1, false);
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
     *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
     PluginSlotType::Insert, track, 0));
@@ -670,8 +657,7 @@ TEST_CASE ("move two plugins one slot up")
 
   /* move 2nd plugin to 1st plugin (replacing it) */
   MIXER_SELECTIONS->clear ();
-  MIXER_SELECTIONS->add_slot (
-    *track, PluginSlotType::Insert, 1, F_NO_PUBLISH_EVENTS);
+  MIXER_SELECTIONS->add_slot (*track, PluginSlotType::Insert, 1, false);
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
     *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
     PluginSlotType::Insert, track, 0));
@@ -729,8 +715,7 @@ TEST_CASE ("move two plugins one slot up")
 
   /* move 2nd plugin to 1st plugin (replacing it) */
   MIXER_SELECTIONS->clear ();
-  MIXER_SELECTIONS->add_slot (
-    *track, PluginSlotType::Insert, 1, F_NO_PUBLISH_EVENTS);
+  MIXER_SELECTIONS->add_slot (*track, PluginSlotType::Insert, 1, false);
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
     *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
     PluginSlotType::Insert, track, 0));
@@ -823,7 +808,7 @@ TEST_CASE ("create modulator")
   auto sel = std::make_unique<FullMixerSelections> ();
   sel->add_slot (
     *P_MODULATOR_TRACK, PluginSlotType::Modulator,
-    P_MODULATOR_TRACK->modulators_.size () - 2, F_NO_PUBLISH_EVENTS);
+    P_MODULATOR_TRACK->modulators_.size () - 2, false);
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsDeleteAction> (
     *sel, *PORT_CONNECTIONS_MGR));
   UNDO_MANAGER->undo ();
@@ -882,7 +867,7 @@ TEST_CASE ("move plugin after duplicating track")
     sidechain_port->id_));
 
   /* duplicate instrument track */
-  ins_track->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  ins_track->select (true, true, false);
   UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
     TRACKLIST->get_num_tracks ()));
@@ -891,8 +876,7 @@ TEST_CASE ("move plugin after duplicating track")
 
   /* move lsp plugin to newly created track */
   MIXER_SELECTIONS->clear ();
-  MIXER_SELECTIONS->add_slot (
-    *lsp_track, PluginSlotType::Insert, 0, F_NO_PUBLISH_EVENTS);
+  MIXER_SELECTIONS->add_slot (*lsp_track, PluginSlotType::Insert, 0, false);
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
     *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
     PluginSlotType::Insert, dest_track, 1));
@@ -916,12 +900,11 @@ TEST_CASE ("move plugin from inserts to midi fx")
     PluginSlotType::Insert, *track, 0, setting, 1));
 
   /* select it */
-  track->select (F_SELECT, true, F_NO_PUBLISH_EVENTS);
+  track->select (true, true, false);
 
   /* move to midi fx */
   MIXER_SELECTIONS->clear ();
-  MIXER_SELECTIONS->add_slot (
-    *track, PluginSlotType::Insert, 0, F_NO_PUBLISH_EVENTS);
+  MIXER_SELECTIONS->add_slot (*track, PluginSlotType::Insert, 0, false);
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
     *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
     PluginSlotType::MidiFx, track, 0));
@@ -968,8 +951,8 @@ TEST_CASE ("undo deletion of multiple inserts")
   auto no_delay_line = ins_track->channel_->inserts_[1].get ();
   REQUIRE_NONNULL (compressor);
   REQUIRE_NONNULL (no_delay_line);
-  compressor->select (F_SELECT, F_EXCLUSIVE);
-  no_delay_line->select (F_SELECT, F_NOT_EXCLUSIVE);
+  compressor->select (true, true);
+  no_delay_line->select (true, false);
 
   /* delete inserts */
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsDeleteAction> (
@@ -1086,10 +1069,10 @@ _test_replace_instrument (
   auto region = std::make_shared<AutomationRegion> (
     start_pos, end_pos, src_track->get_name_hash (), at->index_,
     at->regions_.size ());
-  src_track->add_region (region, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
-  region->select (true, false, F_NO_PUBLISH_EVENTS);
+  src_track->add_region (region, at, -1, true, false);
+  region->select (true, false, false);
   UNDO_MANAGER->perform (
-    std::make_unique<ArrangerSelectionsAction::CreateAction> (*TL_SELECTIONS));
+    std::make_unique<CreateArrangerSelectionsAction> (*TL_SELECTIONS));
   REQUIRE_EQ (atl->get_num_regions (), 1);
 
   /* create some automation points */
@@ -1098,9 +1081,9 @@ _test_replace_instrument (
   auto ap = std::make_shared<AutomationPoint> (
     port->deff_, port->real_val_to_normalized (port->deff_), start_pos);
   region->append_object (ap);
-  ap->select (true, false, F_NO_PUBLISH_EVENTS);
-  UNDO_MANAGER->perform (std::make_unique<ArrangerSelectionsAction::CreateAction> (
-    *AUTOMATION_SELECTIONS));
+  ap->select (true, false, false);
+  UNDO_MANAGER->perform (
+    std::make_unique<CreateArrangerSelectionsAction> (*AUTOMATION_SELECTIONS));
   REQUIRE_EQ (atl->get_num_regions (), 1);
 
   const int num_ats = atl->ats_.size ();
@@ -1172,7 +1155,7 @@ _test_replace_instrument (
 
   /* duplicate the track */
   src_track = TRACKLIST->get_track<SrcTrackType> (src_track_pos);
-  src_track->select (F_SELECT, true, F_NO_PUBLISH_EVENTS);
+  src_track->select (true, true, false);
   REQUIRE (src_track->validate ());
   UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,

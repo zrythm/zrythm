@@ -326,7 +326,7 @@ get_stack_size ()
 
 GraphThread::GraphThread (const int id, const bool is_main, Graph &graph)
     : juce::Thread (
-        is_main ? "MainGraphThread" : fmt::format ("GraphWorkerThread{}", id),
+        is_main ? "GraphWorkerMain" : fmt::format ("GraphWorker{}", id),
         THREAD_STACK_SIZE + get_stack_size ()),
       id_ (id), is_main_ (is_main), graph_ (graph)
 {

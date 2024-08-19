@@ -185,8 +185,7 @@ stop_clicked_cb (GtkButton * button, gpointer user_data)
 static void
 record_toggled_cb (GtkToggleButton * tg, gpointer user_data)
 {
-  TRANSPORT->set_recording (
-    gtk_toggle_button_get_active (tg), true, F_PUBLISH_EVENTS);
+  TRANSPORT->set_recording (gtk_toggle_button_get_active (tg), true, true);
 }
 
 static void

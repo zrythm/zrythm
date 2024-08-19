@@ -225,7 +225,7 @@ ModulatorTrack::remove_modulator (
       if (plugin->is_selected ())
         {
           MIXER_SELECTIONS->remove_slot (
-            plugin->id_.slot_, PluginSlotType::Modulator, F_PUBLISH_EVENTS);
+            plugin->id_.slot_, PluginSlotType::Modulator, true);
         }
 
       plugin->disconnect ();

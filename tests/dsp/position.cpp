@@ -1,7 +1,9 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
+
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "dsp/position.h"
 #include "utils/math.h"
@@ -9,320 +11,218 @@
 
 #include "tests/helpers/zrythm_helper.h"
 
-static void
-test_conversions (void)
+TEST_SUITE_BEGIN ("dsp/position");
+
+TEST_CASE_FIXTURE (ZrythmFixture, "conversions")
 {
-  test_helper_zrythm_init ();
-
   Position pos;
-  position_init (&pos);
-  position_from_ticks (&pos, 10000);
-  g_assert_cmpint (pos.frames, >, 0);
+  pos.from_ticks (10'000);
+  REQUIRE_GT (pos.frames_, 0);
 
-  position_init (&pos);
-  position_from_frames (&pos, 10000);
-  g_assert_cmpint ((int) pos.ticks, >, 0);
-
-  test_helper_zrythm_cleanup ();
+  pos.zero();
+  pos.from_frames (10'000);
+  REQUIRE_GT (pos.ticks_, 0);
 }
 
-static void
-test_get_totals (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "get totals")
 {
-  test_helper_zrythm_init ();
-
   Position pos;
-  position_init (&pos);
-  int ret = position_get_total_beats (&pos, false);
-  g_assert_cmpint (ret, ==, 0);
+  REQUIRE_EQ (pos.get_total_beats (false), 0);
 
-  ret = position_get_total_beats (&pos, false);
-  g_assert_cmpint (ret, ==, 0);
+  REQUIRE_EQ (pos.get_total_beats (false), 0);
 
-  ret = position_get_total_sixteenths (&pos, false);
-  g_assert_cmpint (ret, ==, 0);
+  REQUIRE_EQ (pos.get_total_sixteenths (false), 0);
 
-  position_add_sixteenths (&pos, 1);
+  pos.add_sixteenths (1);
 
-  ret = position_get_total_bars (&pos, false);
-  g_assert_cmpint (ret, ==, 0);
-  ret = position_get_total_bars (&pos, true);
-  g_assert_cmpint (ret, ==, 0);
+  REQUIRE_EQ (pos.get_total_bars (false), 0);
+  REQUIRE_EQ (pos.get_total_bars (true), 0);
 
-  ret = position_get_total_beats (&pos, false);
-  g_assert_cmpint (ret, ==, 0);
-  ret = position_get_total_beats (&pos, true);
-  g_assert_cmpint (ret, ==, 0);
+  REQUIRE_EQ (pos.get_total_beats (false), 0);
+  REQUIRE_EQ (pos.get_total_beats (true), 0);
 
-  ret = position_get_total_sixteenths (&pos, false);
-  g_assert_cmpint (ret, ==, 0);
-  ret = position_get_total_sixteenths (&pos, true);
-  g_assert_cmpint (ret, ==, 1);
+  REQUIRE_EQ (pos.get_total_sixteenths (false), 0);
+  REQUIRE_EQ (pos.get_total_sixteenths (true), 1);
 
-  position_init (&pos);
-  position_add_beats (&pos, 1);
+  pos.zero ();
+  pos.add_beats (1);
 
-  ret = position_get_total_bars (&pos, false);
-  g_assert_cmpint (ret, ==, 0);
-  ret = position_get_total_bars (&pos, true);
-  g_assert_cmpint (ret, ==, 0);
+  REQUIRE_EQ (pos.get_total_bars (false), 0);
+  REQUIRE_EQ (pos.get_total_bars (true), 0);
 
-  ret = position_get_total_beats (&pos, false);
-  g_assert_cmpint (ret, ==, 0);
-  ret = position_get_total_beats (&pos, true);
-  g_assert_cmpint (ret, ==, 1);
+  REQUIRE_EQ (pos.get_total_beats (false), 0);
+  REQUIRE_EQ (pos.get_total_beats (true), 1);
 
-  ret = position_get_total_sixteenths (&pos, false);
-  g_assert_cmpint (
-    ret, ==,
-    position_get_total_beats (&pos, true) * (int) TRANSPORT->sixteenths_per_beat
-      - 1);
-  ret = position_get_total_sixteenths (&pos, true);
-  g_assert_cmpint (
-    ret, ==,
-    position_get_total_beats (&pos, true) * (int) TRANSPORT->sixteenths_per_beat);
+  REQUIRE_EQ (
+    pos.get_total_sixteenths (false),
+    pos.get_total_beats (true) * (int) TRANSPORT->sixteenths_per_beat_ - 1);
+  REQUIRE_EQ (
+    pos.get_total_sixteenths (true),
+    pos.get_total_beats (true) * (int) TRANSPORT->sixteenths_per_beat_);
 
-  position_init (&pos);
-  position_add_bars (&pos, 1);
+  pos.zero ();
+  pos.add_bars (1);
 
-  ret = position_get_total_bars (&pos, false);
-  g_assert_cmpint (ret, ==, 0);
-  ret = position_get_total_bars (&pos, true);
-  g_assert_cmpint (ret, ==, 1);
+  REQUIRE_EQ (pos.get_total_bars (false), 0);
+  REQUIRE_EQ (pos.get_total_bars (true), 1);
 
-  ret = position_get_total_beats (&pos, false);
-  g_assert_cmpint (ret, ==, 3);
-  ret = position_get_total_beats (&pos, true);
-  g_assert_cmpint (ret, ==, 4);
+  REQUIRE_EQ (pos.get_total_beats (false), 3);
+  REQUIRE_EQ (pos.get_total_beats (true), 4);
 
-  ret = position_get_total_sixteenths (&pos, false);
-  g_assert_cmpint (
-    ret, ==,
-    position_get_total_beats (&pos, true) * (int) TRANSPORT->sixteenths_per_beat
-      - 1);
-  ret = position_get_total_sixteenths (&pos, true);
-  g_assert_cmpint (
-    ret, ==,
-    position_get_total_beats (&pos, true) * (int) TRANSPORT->sixteenths_per_beat);
-
-  test_helper_zrythm_cleanup ();
+  REQUIRE_EQ (
+    pos.get_total_sixteenths (false),
+    pos.get_total_beats (true) * (int) TRANSPORT->sixteenths_per_beat_ - 1);
+  REQUIRE_EQ (
+    pos.get_total_sixteenths (true),
+    pos.get_total_beats (true) * (int) TRANSPORT->sixteenths_per_beat_);
 }
 
-static void
-test_set_to (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "set to x")
 {
-  test_helper_zrythm_init ();
+  auto check_after_set_to_bar = [] (const int bar, const char * expect) {
+    Position pos;
+    pos.set_to_bar (bar);
+    auto res = pos.to_string ();
+    REQUIRE (string_contains_substr (res.c_str (), expect));
+  };
 
-  Position     pos;
-  const char * expect = "4.1.1.0";
-  char         res[400];
-
-  position_set_to_bar (&pos, 4);
-  position_to_string (&pos, res);
-  g_assert_true (string_contains_substr (res, expect));
-
-  expect = "1.1.1.0";
-  position_set_to_bar (&pos, 1);
-  position_to_string (&pos, res);
-  g_assert_true (string_contains_substr (res, expect));
-
-  test_helper_zrythm_cleanup ();
+  check_after_set_to_bar (4, "4.1.1.0");
+  check_after_set_to_bar (1, "1.1.1.0");
 }
 
-static void
-test_print_position (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "print position")
 {
-  test_helper_zrythm_init ();
-
-  g_debug ("---");
+  z_debug ("---");
 
   Position pos;
-  position_init (&pos);
   for (int i = 0; i < 2000; i++)
     {
-      position_add_ticks (&pos, 2.1);
-      position_print (&pos);
+      pos.add_ticks (2.1);
+      pos.print ();
     }
 
-  g_debug ("---");
+  z_debug ("---");
 
   for (int i = 0; i < 2000; i++)
     {
-      position_add_ticks (&pos, -4.1);
-      position_print (&pos);
+      pos.add_ticks (-4.1);
+      pos.print ();
     }
 
-  g_debug ("---");
-
-  test_helper_zrythm_cleanup ();
+  z_debug ("---");
 }
 
-static void
-test_position_from_ticks (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "position from ticks")
 {
-  test_helper_zrythm_init ();
+  Position pos;
+  double   ticks =
+    50'000.0;
 
+    /* assert values are correct */
+    pos.from_ticks (ticks);
+  REQUIRE_EQ (
+    pos.get_bars (true),
+    math_round_double_to_signed_32 (ticks / TRANSPORT->ticks_per_bar_ + 1));
+  REQUIRE_GT (pos.get_bars (true), 0);
+}
+
+TEST_CASE_FIXTURE (ZrythmFixture, "position to frames")
+{
   Position pos;
   double   ticks = 50000.0;
 
   /* assert values are correct */
-  position_from_ticks (&pos, ticks);
-  g_assert_cmpint (
-    position_get_bars (&pos, true), ==,
-    math_round_double_to_signed_32 (ticks / TRANSPORT->ticks_per_bar + 1));
-  g_assert_cmpint (position_get_bars (&pos, true), >, 0);
-
-  test_helper_zrythm_cleanup ();
+  pos.from_ticks (ticks);
+  auto frames = pos.frames_;
+  REQUIRE_EQ (
+    frames,
+    math_round_double_to_signed_64 (AUDIO_ENGINE->frames_per_tick_ * ticks));
 }
 
-static void
-test_position_to_frames (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "get total beats")
 {
-  test_helper_zrythm_init ();
-
-  Position pos;
-  double   ticks = 50000.0;
-
-  /* assert values are correct */
-  position_from_ticks (&pos, ticks);
-  long frames = position_to_frames (&pos);
-  g_assert_cmpint (
-    frames, ==,
-    math_round_double_to_signed_64 (AUDIO_ENGINE->frames_per_tick * ticks));
-
-  test_helper_zrythm_cleanup ();
-}
-
-static void
-test_get_total_beats (void)
-{
-  test_helper_zrythm_init ();
-
-  Position start_pos = { .ticks = 4782.3818594104323, .frames = 69376 };
-  Position end_pos = { .ticks = 4800.0290249433119, .frames = 69632 };
-  position_from_ticks (&start_pos, 4782.3818594104323);
-  position_from_ticks (&end_pos, 4800);
+  Position start_pos{ 4782.3818594104323 };
+  Position end_pos{ 4800.0290249433119 };
+  end_pos.frames_ = 69632;
+  start_pos.from_ticks (4782.3818594104323);
+  end_pos.from_ticks (4800);
 
   int beats = 0;
-  beats = position_get_total_beats (&start_pos, false);
-  g_assert_cmpint (beats, ==, 4);
-  beats = position_get_total_beats (&end_pos, false);
-  g_assert_cmpint (beats, ==, 4);
+  beats = start_pos.get_total_beats (false);
+  REQUIRE_EQ (beats, 4);
+  beats = end_pos.get_total_beats (false);
+  REQUIRE_EQ (beats, 4);
 
-  position_from_ticks (&end_pos, 4800.0290249433119);
-  beats = position_get_total_beats (&end_pos, false);
-  g_assert_cmpint (beats, ==, 5);
-
-  test_helper_zrythm_cleanup ();
+  end_pos.from_ticks (4800.0290249433119);
+  beats = end_pos.get_total_beats (false);
+  REQUIRE_EQ (beats, 5);
 }
 
-static void
-test_position_benchmarks (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "position benchmarks")
 {
-  test_helper_zrythm_init ();
-
   double   ticks = 50000.0;
   gint64   loop_times = 5;
   gint     total_time;
-  Position pos;
-  position_from_ticks (&pos, ticks);
+  Position pos{ ticks };
 
-  g_message ("add frames");
+  z_info ("add frames");
   total_time = 0;
   for (int j = 0; j < loop_times; j++)
     {
       gint64 before = g_get_monotonic_time ();
       for (int i = 0; i < 100000; i++)
         {
-          position_add_frames (&pos, 1000);
+          pos.add_frames (1000);
         }
       gint64 after = g_get_monotonic_time ();
       total_time += after - before;
     }
-  g_message ("time: %ld", total_time / loop_times);
-
-  test_helper_zrythm_cleanup ();
+  z_info ("time: {}", total_time / loop_times);
 }
 
-static void
-test_snap (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "snap")
 {
-  test_helper_zrythm_init ();
-
-  g_assert_cmpenum (
-    SNAP_GRID_TIMELINE->snap_note_length, ==, NoteLength::NOTE_LENGTH_BAR);
+  REQUIRE_EQ (
+    SNAP_GRID_TIMELINE->snap_note_length_, NoteLength::NOTE_LENGTH_BAR);
 
   /* test without keep offset */
   Position start_pos;
-  position_set_to_bar (&start_pos, 4);
+  start_pos.set_to_bar (4);
   Position cur_pos;
-  position_set_to_bar (&cur_pos, 4);
-  position_add_ticks (&cur_pos, 2 * TICKS_PER_QUARTER_NOTE + 10);
+  cur_pos.set_to_bar (4);
+  cur_pos.add_ticks (2 * TICKS_PER_QUARTER_NOTE + 10);
   Position test_pos;
-  position_set_to_bar (&test_pos, 5);
-  position_snap (&start_pos, &cur_pos, NULL, NULL, SNAP_GRID_TIMELINE);
-  g_assert_cmppos (&cur_pos, &test_pos);
+  test_pos.set_to_bar (5);
+  cur_pos.snap (&start_pos, nullptr, nullptr, *SNAP_GRID_TIMELINE);
+  REQUIRE_POSITION_EQ (cur_pos, test_pos);
 
-  position_set_to_bar (&cur_pos, 4);
-  position_set_to_bar (&test_pos, 4);
-  position_add_ticks (&cur_pos, 2 * TICKS_PER_QUARTER_NOTE - 10);
-  position_snap (&start_pos, &cur_pos, NULL, NULL, SNAP_GRID_TIMELINE);
-  g_assert_cmppos (&cur_pos, &test_pos);
+  cur_pos.set_to_bar (4);
+  test_pos.set_to_bar (4);
+  cur_pos.add_ticks (2 * TICKS_PER_QUARTER_NOTE - 10);
+  cur_pos.snap (&start_pos, nullptr, nullptr, *SNAP_GRID_TIMELINE);
+  REQUIRE_POSITION_EQ (cur_pos, test_pos);
 
-  g_message ("-----");
+  z_info ("-----");
 
   /* test keep offset */
-  SNAP_GRID_TIMELINE->snap_to_grid_keep_offset = true;
-  position_set_to_bar (&start_pos, 4);
-  position_add_ticks (&start_pos, 2 * TICKS_PER_QUARTER_NOTE);
-  position_set_to_pos (&cur_pos, &start_pos);
-  position_add_ticks (&cur_pos, 10);
-  position_set_to_pos (&test_pos, &start_pos);
-  position_snap (&start_pos, &cur_pos, NULL, NULL, SNAP_GRID_TIMELINE);
-  char buf1[100];
-  char buf2[100];
-  position_to_string (&cur_pos, buf1);
-  position_to_string (&test_pos, buf2);
-  g_message ("cur pos %s test pos %s", buf1, buf2);
-  g_assert_cmppos (&cur_pos, &test_pos);
+  SNAP_GRID_TIMELINE->snap_to_grid_keep_offset_ = true;
+  start_pos.set_to_bar (4);
+  start_pos.add_ticks (2 * TICKS_PER_QUARTER_NOTE);
+  cur_pos = start_pos;
+  cur_pos.add_ticks (10);
+  test_pos = start_pos;
+  cur_pos.snap (&start_pos, nullptr, nullptr, *SNAP_GRID_TIMELINE);
+  z_info ("cur pos {} test pos {}", cur_pos.to_string (), test_pos.to_string ());
+  REQUIRE_POSITION_EQ (cur_pos, test_pos);
 
-  position_set_to_bar (&start_pos, 4);
-  position_add_ticks (&start_pos, 2 * TICKS_PER_QUARTER_NOTE);
-  position_set_to_pos (&cur_pos, &start_pos);
-  position_add_ticks (&cur_pos, -10);
-  position_set_to_pos (&test_pos, &start_pos);
-  position_snap (&start_pos, &cur_pos, NULL, NULL, SNAP_GRID_TIMELINE);
-  position_to_string (&cur_pos, buf1);
-  position_to_string (&test_pos, buf2);
-  g_message ("cur pos %s test pos %s", buf1, buf2);
-  g_assert_cmppos (&cur_pos, &test_pos);
-
-  test_helper_zrythm_cleanup ();
+  start_pos.set_to_bar (4);
+  start_pos.add_ticks (2 * TICKS_PER_QUARTER_NOTE);
+  cur_pos = start_pos;
+  cur_pos.add_ticks (-10);
+  test_pos = start_pos;
+  cur_pos.snap (&start_pos, nullptr, nullptr, *SNAP_GRID_TIMELINE);
+  z_info ("cur pos {} test pos {}", cur_pos, test_pos);
+  REQUIRE_POSITION_EQ (cur_pos, test_pos);
 }
 
-int
-main (int argc, char * argv[])
-{
-  g_test_init (&argc, &argv, NULL);
-
-#define TEST_PREFIX "/audio/position/"
-
-  g_test_add_func (TEST_PREFIX "test snap", (GTestFunc) test_snap);
-  g_test_add_func (
-    TEST_PREFIX "test print position", (GTestFunc) test_print_position);
-  g_test_add_func (TEST_PREFIX "test conversions", (GTestFunc) test_conversions);
-  g_test_add_func (TEST_PREFIX "test get totals", (GTestFunc) test_get_totals);
-  g_test_add_func (TEST_PREFIX "test set to", (GTestFunc) test_set_to);
-  g_test_add_func (
-    TEST_PREFIX "test position from ticks",
-    (GTestFunc) test_position_from_ticks);
-  g_test_add_func (
-    TEST_PREFIX "test position to frames", (GTestFunc) test_position_to_frames);
-  g_test_add_func (
-    TEST_PREFIX "test get total beats", (GTestFunc) test_get_total_beats);
-  g_test_add_func (
-    TEST_PREFIX "test position benchmarks",
-    (GTestFunc) test_position_benchmarks);
-
-  return g_test_run ();
-}
+TEST_SUITE_END;

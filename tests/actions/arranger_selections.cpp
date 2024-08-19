@@ -48,12 +48,12 @@ auto REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK =
 
 auto perform_create = [] (const auto &selections) {
   UNDO_MANAGER->perform (
-    std::make_unique<ArrangerSelectionsAction::CreateAction> (*selections));
+    std::make_unique<CreateArrangerSelectionsAction> (*selections));
 };
 
 auto perform_delete = [] (const auto &selections) {
   UNDO_MANAGER->perform (
-    std::make_unique<ArrangerSelectionsAction::DeleteAction> (*selections));
+    std::make_unique<DeleteArrangerSelectionsAction> (*selections));
 };
 
 auto perform_split = [] (const auto &selections, const Position &pos) {
@@ -562,8 +562,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "test move audio region and lower bpm")
   REQUIRE_NONNULL (track);
 
   /* move the region */
-  track->lanes_[0]->regions_[0]->select (
-    F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  track->lanes_[0]->regions_[0]->select (true, false, false);
   UNDO_MANAGER->perform (
     std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
       *TL_SELECTIONS, true, MOVE_TICKS, 0, 0, nullptr, false));
@@ -615,8 +614,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move audio region and lower samplerate")
   REQUIRE_NONNULL (track);
 
   /* move the region */
-  track->lanes_[0]->regions_[0]->select (
-    F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  track->lanes_[0]->regions_[0]->select (true, false, false);
   UNDO_MANAGER->perform (
     std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
       *TL_SELECTIONS, true, MOVE_TICKS, 0, 0, nullptr, false));
@@ -793,7 +791,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "duplicate automation region")
 
   constexpr float curviness_after = 0.8f;
   ap = r1->aps_[0];
-  ap->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  ap->select (true, false, false);
   auto before = AUTOMATION_SELECTIONS->clone_unique ();
   ap->curve_opts_.curviness_ = curviness_after;
   UNDO_MANAGER->perform (std::make_unique<ArrangerSelectionsAction::EditAction> (
@@ -811,7 +809,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "duplicate automation region")
   ap = r1->aps_[0];
   REQUIRE_FLOAT_NEAR (ap->curve_opts_.curviness_, curviness_after, 0.00001f);
 
-  r1->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  r1->select (true, false, false);
 
   UNDO_MANAGER->perform (
     std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
@@ -917,7 +915,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link and delete")
   REQUIRE_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 1);
 
   /* create another linked object */
-  r2->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  r2->select (true, false, false);
   move_and_perform_link ();
   r = midi_track->lanes_[lane_idx]->regions_.at (0);
   r2 = midi_track->lanes_[lane_idx]->regions_.at (1);
@@ -935,11 +933,11 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link and delete")
   auto r4 = std::make_shared<MidiRegion> (
     pos, end_pos, midi_track->get_name_hash (), 0, lane->regions_.size ());
   midi_track->add_region (r4, nullptr, lane->pos_, true, false);
-  r4->select (F_SELECT, F_NO_APPEND, F_PUBLISH_EVENTS);
+  r4->select (true, false, true);
   perform_create (TL_SELECTIONS);
 
   /* create a linked object (new link group with r4/r5) */
-  r4->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  r4->select (true, false, false);
   move_and_perform_link ();
   r = midi_track->lanes_[lane_idx]->regions_[0];
   r2 = midi_track->lanes_[lane_idx]->regions_[1];
@@ -954,7 +952,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link and delete")
   REQUIRE_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 2);
 
   /* delete the middle linked object */
-  r2->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  r2->select (true, false, false);
   perform_delete (TL_SELECTIONS);
   r = midi_track->lanes_[lane_idx]->regions_[0];
   r2 = midi_track->lanes_[lane_idx]->regions_[1];
@@ -977,7 +975,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link and delete")
   REQUIRE_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 2);
 
   /* delete the first object in 2nd link group */
-  r4->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  r4->select (true, false, false);
   perform_delete (TL_SELECTIONS);
   r = midi_track->lanes_[lane_idx]->regions_[0];
   r2 = midi_track->lanes_[lane_idx]->regions_[1];
@@ -1084,10 +1082,10 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link then duplicate")
             TRACKLIST->find_track_by_name<AudioTrack> (TARGET_AUDIO_TRACK_NAME);
           auto &mr = midi_track->lanes_[MIDI_REGION_LANE]->regions_[0];
           mr->move_to_track (new_midi_track, -1, -1);
-          mr->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+          mr->select (true, false, false);
           auto ar = audio_track->lanes_[AUDIO_REGION_LANE]->regions_[0];
           ar->move_to_track (new_audio_track, -1, -1);
-          ar->select (F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+          ar->select (true, true, false);
         }
       else
         {
@@ -1151,7 +1149,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link then duplicate")
       end.set_to_bar (2);
       auto mn = std::make_shared<MidiNote> (r->id_, start, end, 45, 45);
       r->append_object (mn);
-      mn->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+      mn->select (true, false, false);
       perform_create (MIDI_SELECTIONS);
 
       /* undo MIDI note */
@@ -1188,7 +1186,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "edit marker")
 {
   /* create marker with name "aa" */
   auto m = std::make_shared<Marker> ("aa");
-  m->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  m->select (true, false, false);
   REQUIRE_NOTHROW (
     m = std::dynamic_pointer_cast<Marker> (m->add_clone_to_project (false)));
   perform_create (TL_SELECTIONS);
@@ -1261,9 +1259,8 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "split region")
   pos.set_to_bar (2);
   end_pos.set_to_bar (4);
   auto r = std::make_shared<ChordRegion> (pos, end_pos, 0);
-  P_CHORD_TRACK->Track::add_region (
-    r, nullptr, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
-  r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  P_CHORD_TRACK->Track::add_region (r, nullptr, -1, true, false);
+  r->select (true, false, false);
 
   perform_create (TL_SELECTIONS);
 
@@ -1294,7 +1291,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "split region")
 
   auto &region = lane->regions_[0];
   region->validate (false, 0);
-  region->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  region->select (true, false, false);
   auto clip = region->get_clip ();
   REQUIRE_NONNULL (clip);
   float first_frame = clip->frames_.getSample (0, 0);
@@ -1332,8 +1329,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "split large audio file")
     pos, track_name_hash, AUDIO_REGION_LANE, 0);
   auto clip = r->get_clip ();
   REQUIRE_EQ (clip->num_frames_, 79380000);
-  REQUIRE_NOTHROW (
-    track->add_region (r, nullptr, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS));
+  REQUIRE_NOTHROW (track->add_region (r, nullptr, 0, true, false));
   TL_SELECTIONS->add_object_ref (r);
 
   /* attempt split */
@@ -1389,7 +1385,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "audio functions")
   auto &lane = audio_track->lanes_.at (3);
   REQUIRE_SIZE_EQ (lane->regions_, 1);
   auto &region = lane->regions_.at (0);
-  region->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  region->select (true, false, false);
   AUDIO_SELECTIONS->region_id_ = region->id_;
   AUDIO_SELECTIONS->has_selection_ = true;
   AUDIO_SELECTIONS->sel_start_ = region->pos_;
@@ -1449,11 +1445,11 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "automation fill")
 
   auto ap = std::make_shared<AutomationPoint> (0.5f, 0.5f, start_pos);
   r1->append_object (ap);
-  ap->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  ap->select (true, false, false);
   start_pos.add_frames (14);
   ap = std::make_unique<AutomationPoint> (0.6f, 0.6f, start_pos);
   r1->append_object (ap);
-  ap->select (F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+  ap->select (true, true, false);
   UNDO_MANAGER->perform (
     std::make_unique<ArrangerSelectionsAction::AutomationFillAction> (
       *r1_clone, *r1, true));
@@ -1476,9 +1472,8 @@ TEST_CASE_FIXTURE (
   end_pos.set_to_bar (4);
   auto r1 = std::make_shared<MidiRegion> (
     pos, end_pos, midi_track->get_name_hash (), 0, lane->regions_.size ());
-  midi_track->add_region (
-    r1, nullptr, lane->pos_, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
-  r1->select (F_SELECT, F_NO_APPEND, F_PUBLISH_EVENTS);
+  midi_track->add_region (r1, nullptr, lane->pos_, true, false);
+  r1->select (true, false, true);
   perform_create (TL_SELECTIONS);
   REQUIRE_SIZE_EQ (lane->regions_, 1);
 
@@ -1486,15 +1481,14 @@ TEST_CASE_FIXTURE (
   end_pos.set_to_bar (7);
   auto r2 = std::make_shared<MidiRegion> (
     pos, end_pos, midi_track->get_name_hash (), 0, lane->regions_.size ());
-  midi_track->add_region (
-    r2, nullptr, lane->pos_, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
-  r2->select (F_SELECT, F_NO_APPEND, F_PUBLISH_EVENTS);
+  midi_track->add_region (r2, nullptr, lane->pos_, true, false);
+  r2->select (true, false, true);
   perform_create (TL_SELECTIONS);
   REQUIRE_SIZE_EQ (lane->regions_, 2);
 
   /* select the regions */
-  r2->select (F_SELECT, F_NO_APPEND, F_PUBLISH_EVENTS);
-  r1->select (F_SELECT, F_APPEND, F_PUBLISH_EVENTS);
+  r2->select (true, false, true);
+  r1->select (true, true, true);
 
   auto new_midi_track =
     TRACKLIST->find_track_by_name<MidiTrack> (TARGET_MIDI_TRACK_NAME);
@@ -1543,9 +1537,8 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "midi region split")
   end_pos.set_to_bar (5);
   auto r = std::make_shared<MidiRegion> (
     pos, end_pos, midi_track->get_name_hash (), 0, lane->regions_.size ());
-  midi_track->add_region (
-    r, nullptr, lane->pos_, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
-  r->select (F_SELECT, F_NO_APPEND, F_PUBLISH_EVENTS);
+  midi_track->add_region (r, nullptr, lane->pos_, true, false);
+  r->select (true, false, true);
   perform_create (TL_SELECTIONS);
   REQUIRE_SIZE_EQ (lane->regions_, 1);
 
@@ -1556,13 +1549,13 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "midi region split")
       end_pos.set_to_bar (i + 2);
       auto mn = std::make_shared<MidiNote> (r->id_, pos, end_pos, 34 + i, 70);
       r->append_object (mn);
-      mn->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+      mn->select (true, false, false);
       perform_create (MIDI_SELECTIONS);
       REQUIRE_SIZE_EQ (r->midi_notes_, i + 1);
     }
 
   /* select the region */
-  r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  r->select (true, false, false);
 
   /* split at bar 2 */
   pos.set_to_bar (2);
@@ -1575,7 +1568,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "midi region split")
 
   /* split at bar 4 */
   pos.set_to_bar (4);
-  r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  r->select (true, false, false);
   perform_split (TL_SELECTIONS, pos);
   REQUIRE_SIZE_EQ (lane->regions_, 3);
 
@@ -1599,9 +1592,9 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "midi region split")
 
   /* split at bar 3 */
   r = lane->regions_[1];
-  r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  r->select (true, false, false);
   pos.set_to_bar (3);
-  r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  r->select (true, false, false);
   perform_split (TL_SELECTIONS, pos);
   REQUIRE_SIZE_EQ (lane->regions_, 4);
 
@@ -1716,7 +1709,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "midi region split")
 
   /* delete middle cut */
   r = lane->regions_[1];
-  r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  r->select (true, false, false);
   perform_delete (TL_SELECTIONS);
 
   REQUIRE_SIZE_EQ (lane->regions_, 2);
@@ -1759,7 +1752,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "midi region split")
 TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "Pin/Unpin")
 {
   auto &r = P_CHORD_TRACK->regions_.at (0);
-  P_CHORD_TRACK->select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  P_CHORD_TRACK->select (true, true, false);
   UNDO_MANAGER->perform (std::make_unique<UnpinTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
 
@@ -1777,7 +1770,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete markers")
     {
       auto m = std::make_shared<Marker> (names[i]);
       P_MARKER_TRACK->add_marker (m);
-      m->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+      m->select (true, false, false);
       perform_create (TL_SELECTIONS);
 
       if (i == 2)
@@ -1791,11 +1784,11 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete markers")
     }
 
   /* delete C */
-  m_c->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  m_c->select (true, false, false);
   perform_delete (TL_SELECTIONS);
 
   /* delete D */
-  m_d->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  m_d->select (true, false, false);
   perform_delete (TL_SELECTIONS);
 
   for (int i = 0; i < 6; i++)
@@ -1815,7 +1808,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete scale objects")
         ENUM_INT_TO_VALUE (MusicalNote, i));
       auto m = std::make_shared<ScaleObject> (ms);
       P_CHORD_TRACK->add_scale (m);
-      m->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+      m->select (true, false, false);
       perform_create (TL_SELECTIONS);
 
       if (i == 2)
@@ -1829,11 +1822,11 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete scale objects")
     }
 
   /* delete C */
-  m_c->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  m_c->select (true, false, false);
   perform_delete (TL_SELECTIONS);
 
   /* delete D */
-  m_d->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  m_d->select (true, false, false);
   perform_delete (TL_SELECTIONS);
 
   for (int i = 0; i < 6; i++)
@@ -1848,7 +1841,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete chord objects")
   pos1.set_to_bar (1);
   pos2.set_to_bar (4);
   auto r = std::make_shared<ChordRegion> (pos1, pos2, 0);
-  P_CHORD_TRACK->Track::add_region (r, nullptr, 0, F_GEN_NAME, 0);
+  P_CHORD_TRACK->Track::add_region (r, nullptr, 0, true, 0);
   TL_SELECTIONS->add_object_ref (r);
   perform_create (TL_SELECTIONS);
 
@@ -1858,7 +1851,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete chord objects")
     {
       auto m = std::make_shared<ChordObject> (r->id_, i, i);
       r->append_object (m);
-      m->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+      m->select (true, false, false);
       perform_create (CHORD_SELECTIONS);
 
       if (i == 2)
@@ -1872,11 +1865,11 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete chord objects")
     }
 
   /* delete C */
-  m_c->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  m_c->select (true, false, false);
   perform_delete (CHORD_SELECTIONS);
 
   /* delete D */
-  m_d->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  m_d->select (true, false, false);
   perform_delete (CHORD_SELECTIONS);
 
   for (int i = 0; i < 6; i++)
@@ -1895,7 +1888,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete automation points")
   REQUIRE_NONNULL (at);
   auto r = std::make_shared<AutomationRegion> (
     pos1, pos2, P_MASTER_TRACK->get_name_hash (), at->index_, 0);
-  P_MASTER_TRACK->add_region (r, at, 0, F_GEN_NAME, false);
+  P_MASTER_TRACK->add_region (r, at, 0, true, false);
   TL_SELECTIONS->add_object_ref (r);
   perform_create (TL_SELECTIONS);
 
@@ -1905,7 +1898,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete automation points")
     {
       auto m = std::make_shared<AutomationPoint> (1.f, 1.f, pos1);
       r->append_object (m);
-      m->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+      m->select (true, false, false);
       perform_create (AUTOMATION_SELECTIONS);
 
       if (i == 2)
@@ -1919,11 +1912,11 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete automation points")
     }
 
   /* delete C */
-  m_c->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  m_c->select (true, false, false);
   perform_delete (AUTOMATION_SELECTIONS);
 
   /* delete D */
-  m_d->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  m_d->select (true, false, false);
   perform_delete (AUTOMATION_SELECTIONS);
 
   for (int i = 0; i < 6; i++)
@@ -1944,8 +1937,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "duplicate audio regions")
     Track::Type::Audio, nullptr, &file, &pos1, track_pos, 1, -1, nullptr);
   auto track = TRACKLIST->get_track<AudioTrack> (track_pos);
 
-  track->lanes_[0]->regions_[0]->select (
-    F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  track->lanes_[0]->regions_[0]->select (true, false, false);
   UNDO_MANAGER->perform (
     std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
       *TL_SELECTIONS, false, MOVE_TICKS, 0, 0, nullptr, false));
@@ -1971,14 +1963,13 @@ TEST_CASE_FIXTURE (ZrythmFixture, "undo moving midi region to other lane")
       int idx_inside_lane = (i == 3) ? 0 : i;
       r = std::make_shared<MidiRegion> (
         start, end, midi_track->get_name_hash (), lane_pos, idx_inside_lane);
-      midi_track->add_region (
-        r, nullptr, lane_pos, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
-      r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+      midi_track->add_region (r, nullptr, lane_pos, true, false);
+      r->select (true, false, false);
       perform_create (TL_SELECTIONS);
     }
 
   /* move last region to top lane */
-  r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  r->select (true, false, false);
   UNDO_MANAGER->perform (
     std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
       *TL_SELECTIONS, true, MOVE_TICKS, 0, -2, nullptr, false));
@@ -2002,9 +1993,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "delete multiple regions")
       end_pos.set_to_bar (4 + i);
       auto r1 = std::make_shared<MidiRegion> (
         pos, end_pos, midi_track->get_name_hash (), 0, lane->regions_.size ());
-      midi_track->add_region (
-        r1, nullptr, lane->pos_, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
-      r1->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+      midi_track->add_region (r1, nullptr, lane->pos_, true, false);
+      r1->select (true, false, false);
       perform_create (TL_SELECTIONS);
       REQUIRE_SIZE_EQ (lane->regions_, i + 1);
     }
@@ -2014,8 +2004,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "delete multiple regions")
     {
       int idx1 = rand () % 6;
       int idx2 = rand () % 6;
-      lane->regions_[idx1]->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-      lane->regions_[idx2]->select (F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+      lane->regions_[idx1]->select (true, false, false);
+      lane->regions_[idx2]->select (true, true, false);
 
       /* do delete */
       REQUIRE_NOTHROW (perform_delete (TL_SELECTIONS));
@@ -2043,8 +2033,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "split and merge midi unlooped")
   end_pos.set_to_bar (10);
   auto r1 = std::make_shared<MidiRegion> (
     pos, end_pos, midi_track->get_name_hash (), 0, lane->regions_.size ());
-  midi_track->add_region (r1, nullptr, lane->pos_, F_GEN_NAME, false);
-  r1->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  midi_track->add_region (r1, nullptr, lane->pos_, true, false);
+  r1->select (true, false, false);
   perform_create (TL_SELECTIONS);
   REQUIRE_SIZE_EQ (lane->regions_, 1);
 
@@ -2062,7 +2052,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "split and merge midi unlooped")
         }
       auto mn = std::make_shared<MidiNote> (r1->id_, pos, end_pos, 45, 45);
       r1->append_object (mn);
-      mn->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+      mn->select (true, false, false);
       perform_create (MIDI_SELECTIONS);
     }
 
@@ -2070,7 +2060,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "split and merge midi unlooped")
   auto r = lane->regions_[0];
   tmp.set_to_bar (2);
   REQUIRE_POSITION_EQ (r->pos_, tmp);
-  r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  r->select (true, false, false);
   Position split_pos;
   split_pos.set_to_bar (4);
   REQUIRE_NOTHROW (perform_split (TL_SELECTIONS, split_pos));
@@ -2118,8 +2108,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "split and merge midi unlooped")
   REQUIRE_POSITION_EQ (mn->end_pos_, tmp);
 
   /* merge */
-  lane->regions_[0]->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  lane->regions_[1]->select (F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+  lane->regions_[0]->select (true, false, false);
+  lane->regions_[1]->select (true, true, false);
   REQUIRE_NOTHROW (UNDO_MANAGER->perform (
     std::make_unique<ArrangerSelectionsAction::MergeAction> (*TL_SELECTIONS)));
 
@@ -2261,7 +2251,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "split and merge audio unlooped")
     r = lane->regions_[0];
     tmp.set_to_bar (2);
     REQUIRE_POSITION_EQ (r->pos_, tmp);
-    r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+    r->select (true, false, false);
     Position split_pos;
     split_pos.set_to_bar (3);
     perform_split (TL_SELECTIONS, split_pos);
@@ -2312,8 +2302,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "split and merge audio unlooped")
       (size_t) r2_clip->num_frames_, 0.0001f));
 
     /* merge */
-    lane->regions_[0]->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-    lane->regions_[1]->select (F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+    lane->regions_[0]->select (true, false, false);
+    lane->regions_[1]->select (true, true, false);
     UNDO_MANAGER->perform (
       std::make_unique<ArrangerSelectionsAction::MergeAction> (*TL_SELECTIONS));
 
@@ -2480,7 +2470,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "resize-loop from left side")
   double loop_len_ticks = r->get_loop_length_in_ticks ();
 
   /* resize L */
-  r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  r->select (true, false, false);
   const double move_ticks = 100.0;
   UNDO_MANAGER->perform (std::make_unique<ArrangerSelectionsAction::ResizeAction> (
     *TL_SELECTIONS, nullptr, ArrangerSelectionsAction::ResizeType::LLoop,
@@ -2516,8 +2506,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "delete MIDI notes")
   end.set_to_bar (6);
   auto r = std::make_shared<MidiRegion> (
     start, end, midi_track->get_name_hash (), 0, 0);
-  midi_track->add_region (r, nullptr, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
-  r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  midi_track->add_region (r, nullptr, 0, true, false);
+  r->select (true, false, false);
   perform_create (TL_SELECTIONS);
 
   /* create 4 MIDI notes */
@@ -2527,7 +2517,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "delete MIDI notes")
       end.set_to_bar (2 + i);
       auto mn = std::make_shared<MidiNote> (r->id_, start, end, 45, 45);
       r->append_object (mn);
-      mn->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+      mn->select (true, false, false);
       perform_create (MIDI_SELECTIONS);
     }
 
@@ -2547,10 +2537,10 @@ TEST_CASE_FIXTURE (ZrythmFixture, "delete MIDI notes")
       {
         int   idx = rand () % r->midi_notes_.size ();
         auto &mn = r->midi_notes_[idx];
-        mn->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+        mn->select (true, false, false);
         idx = rand () % r->midi_notes_.size ();
         mn = r->midi_notes_[idx];
-        mn->select (F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+        mn->select (true, true, false);
         perform_create (MIDI_SELECTIONS);
       }
 
@@ -2583,7 +2573,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "cut automation region")
   REQUIRE_NONNULL (at);
   auto r = std::make_shared<AutomationRegion> (
     pos1, pos2, P_MASTER_TRACK->get_name_hash (), at->index_, 0);
-  P_MASTER_TRACK->add_region (r, at, 0, F_GEN_NAME, false);
+  P_MASTER_TRACK->add_region (r, at, 0, true, false);
   TL_SELECTIONS->add_object_ref (r);
   perform_create (TL_SELECTIONS);
 
@@ -2592,13 +2582,13 @@ TEST_CASE_FIXTURE (ZrythmFixture, "cut automation region")
     {
       pos1.set_to_bar (i == 0 ? 3 : 5);
       auto ap = std::make_shared<AutomationPoint> (1.f, 1.f, pos1);
-      r->append_object (ap, F_NO_PUBLISH_EVENTS);
-      ap->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+      r->append_object (ap, false);
+      ap->select (true, false, false);
       perform_create (AUTOMATION_SELECTIONS);
     }
 
   /* split between the 2 points */
-  r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  r->select (true, false, false);
   pos1.set_to_bar (4);
   perform_split (TL_SELECTIONS, pos1);
 
@@ -2610,7 +2600,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "cut automation region")
 
   /* split before the first point */
   r = at->regions_[0];
-  r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  r->select (true, false, false);
   pos1.set_to_bar (2);
   perform_split (TL_SELECTIONS, pos1);
 
@@ -2632,17 +2622,17 @@ TEST_CASE_FIXTURE (ZrythmFixture, "copy and move automation regions")
   REQUIRE_NONNULL (fader_at);
   auto r = std::make_shared<AutomationRegion> (
     pos1, pos2, P_MASTER_TRACK->get_name_hash (), fader_at->index_, 0);
-  P_MASTER_TRACK->add_region (r, fader_at, 0, F_GEN_NAME, false);
+  P_MASTER_TRACK->add_region (r, fader_at, 0, true, false);
   TL_SELECTIONS->add_object_ref (r);
   perform_create (TL_SELECTIONS);
 
   auto ap = std::make_shared<AutomationPoint> (0.5f, 0.5f, pos1);
   r->append_object (ap);
-  ap->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  ap->select (true, false, false);
   perform_create (AUTOMATION_SELECTIONS);
   ap = std::make_shared<AutomationPoint> (0.6f, 0.6f, pos2);
   r->append_object (ap);
-  ap->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  ap->select (true, false, false);
   perform_create (AUTOMATION_SELECTIONS);
 
   auto mute_at = audio_track->channel_->get_automation_track (
@@ -2699,13 +2689,13 @@ TEST_CASE_FIXTURE (ZrythmFixture, "copy and move automation regions")
   /* 2nd test */
 
   /* create 2 copies in the empty lane a bit behind */
-  fader_at->regions_[0]->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  fader_at->regions_[0]->select (true, false, false);
   UNDO_MANAGER->perform (
     std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
       *TL_SELECTIONS, false, -200, 0, 0, &mute_at->port_id_, false));
   REQUIRE_SIZE_EQ (fader_at->regions_, 1);
   REQUIRE_SIZE_EQ (mute_at->regions_, 1);
-  fader_at->regions_[0]->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  fader_at->regions_[0]->select (true, false, false);
   UNDO_MANAGER->perform (
     std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
       *TL_SELECTIONS, false, -400, 0, 0, &mute_at->port_id_, false));
@@ -2713,7 +2703,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "copy and move automation regions")
   REQUIRE_SIZE_EQ (mute_at->regions_, 2);
 
   /* move the copy to the first lane */
-  mute_at->regions_[0]->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  mute_at->regions_[0]->select (true, false, false);
   UNDO_MANAGER->perform (
     std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
       *TL_SELECTIONS, true, 0, 0, 0, &mute_at->port_id_, false));
@@ -2749,9 +2739,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "moving a region from lane 3 to lane 1")
   end_pos.set_to_bar (4);
   auto r1 = std::make_shared<MidiRegion> (
     pos, end_pos, track->get_name_hash (), 0, orig_lane->regions_.size ());
-  track->add_region (
-    r1, nullptr, orig_lane->pos_, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
-  r1->select (F_SELECT, F_NO_APPEND, F_PUBLISH_EVENTS);
+  track->add_region (r1, nullptr, orig_lane->pos_, true, false);
+  r1->select (true, false, true);
   perform_create (TL_SELECTIONS);
   REQUIRE_SIZE_EQ (orig_lane->regions_, 1);
 
@@ -2776,7 +2765,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "moving a region from lane 3 to lane 1")
       TRACKLIST->get_last_track (Tracklist::PinOption::Both, true));
     auto &lane = track->lanes_[2];
     r1 = lane->regions_[0];
-    r1->select (F_SELECT, F_NO_APPEND, F_PUBLISH_EVENTS);
+    r1->select (true, false, true);
   }
 
   {
@@ -2798,7 +2787,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "stretch")
     REQUIRE_SIZE_EQ (lane->regions_, 1);
 
     auto &region = lane->regions_[0];
-    region->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+    region->select (true, false, false);
 
     auto orig_clip = region->get_clip ();
     total_orig_frames = (size_t) orig_clip->num_frames_ * orig_clip->channels_;

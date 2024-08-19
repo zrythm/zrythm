@@ -701,11 +701,11 @@ public:
    *
    * Used during tests or when no audio backend is available.
    *
-   * Use @ref std::jthread::request_stop() to stop the thread.
+   * Use signalThreadShouldExit() to stop the thread.
    *
    * @note The thread will join automatically when the engine is destroyed.
    */
-  std::unique_ptr<std::jthread> dummy_audio_thread_;
+  std::unique_ptr<juce::Thread> dummy_audio_thread_;
 
   /**
    * Timeline metadata like BPM, time signature, etc.
@@ -837,6 +837,9 @@ public:
 
   /** Whether the engine is currently activated. */
   bool activated_ = false;
+
+  /** Whether the engine is currently undergoing destruction. */
+  bool destroying_ = false;
 
   /** Pointer to owner project, if any. */
   Project * project_ = nullptr;

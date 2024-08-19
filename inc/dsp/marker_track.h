@@ -35,6 +35,11 @@ public:
   void init_loaded () override;
 
   /**
+   * @brief Adds the start/end markers.
+   */
+  void add_default_markers ();
+
+  /**
    * Inserts a marker to the track.
    */
   MarkerPtr insert_marker (MarkerPtr marker, int pos);

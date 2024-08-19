@@ -3,18 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#include <cstdlib>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "utils/system.h"
-
-#include <glib.h>
-
-int
-main (int argc, char * argv[])
-{
-  g_test_init (&argc, &argv, NULL);
-
-#define TEST_PREFIX "/utils/utils/"
-
-  return g_test_run ();
-}

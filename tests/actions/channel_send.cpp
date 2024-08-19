@@ -16,10 +16,8 @@
 
 TEST_SUITE_BEGIN ("actions/channel send");
 
-TEST_CASE ("route master send to fx")
+TEST_CASE_FIXTURE (ZrythmFixture, "route master send to fx")
 {
-  test_helper_zrythm_init ();
-
   /* create audio fx track */
   auto audio_fx = Track::create_empty_with_action<AudioBusTrack> ();
 
@@ -29,8 +27,6 @@ TEST_CASE ("route master send to fx")
       *P_MASTER_TRACK->channel_->sends_[0], *audio_fx->processor_->stereo_in_,
       *PORT_CONNECTIONS_MGR));
     , ZrythmException);
-
-  test_helper_zrythm_cleanup ();
 }
 
 TEST_SUITE_END;

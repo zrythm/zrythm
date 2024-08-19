@@ -29,16 +29,14 @@ perform_create_region_action ()
     std::make_shared<AutomationRegion> (p1, p2, track->get_name_hash (), 0, 0);
   const auto &atl = track->get_automation_tracklist ();
   const auto &at = atl.ats_.front ();
-  track->add_region (r, at.get (), -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
-  r->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  track->add_region (r, at.get (), -1, true, false);
+  r->select (true, false, false);
   UNDO_MANAGER->perform (
-    std::make_unique<ArrangerSelectionsAction::CreateAction> (*TL_SELECTIONS));
+    std::make_unique<CreateArrangerSelectionsAction> (*TL_SELECTIONS));
 }
 
-TEST_CASE ("perform many actions")
+TEST_CASE_FIXTURE (ZrythmFixture, "perform many actions")
 {
-  test_helper_zrythm_init ();
-
   for (int i = 0; !UNDO_MANAGER->undo_stack_->is_full (); ++i)
     {
       if (i % 2 == 0)
@@ -86,14 +84,10 @@ TEST_CASE ("perform many actions")
           UNDO_MANAGER->redo ();
         }
     }
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("multi actions")
+TEST_CASE_FIXTURE (ZrythmFixture, "multi actions")
 {
-  test_helper_zrythm_init ();
-
   int       max_actions = 3;
   const int num_tracks_at_start = TRACKLIST->get_num_tracks ();
   for (int i = 0; i < max_actions; i++)
@@ -127,14 +121,10 @@ TEST_CASE ("multi actions")
   REQUIRE_SIZE_EQ (TRACKLIST->tracks_, num_tracks_at_start);
   REQUIRE_EMPTY (*UNDO_MANAGER->undo_stack_);
   REQUIRE_SIZE_EQ (*UNDO_MANAGER->redo_stack_, max_actions);
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("fill stack")
+TEST_CASE_FIXTURE (ZrythmFixture, "fill stack")
 {
-  test_helper_zrythm_init ();
-
   const auto max_len = UNDO_MANAGER->undo_stack_->max_size_;
   for (size_t i = 0; i < max_len + 8; ++i)
     {
@@ -142,8 +132,6 @@ TEST_CASE ("fill stack")
     }
 
   test_project_save_and_reload ();
-
-  test_helper_zrythm_cleanup ();
 }
 
 TEST_SUITE_END;

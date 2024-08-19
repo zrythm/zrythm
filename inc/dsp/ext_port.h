@@ -26,8 +26,9 @@
 #  include <rtmidi_c.h>
 #endif
 
-class WindowsMmeDevice;
 class HardwareProcessor;
+enum class AudioBackend;
+enum class MidiBackend;
 
 /**
  * @addtogroup dsp
@@ -161,7 +162,8 @@ connect (
     PortType              type,
     PortFlow              flow,
     bool                  hw,
-    std::vector<ExtPort> &ports);
+    std::vector<ExtPort> &ports,
+    AudioEngine          &engine);
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

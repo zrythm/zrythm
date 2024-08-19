@@ -236,7 +236,7 @@ set_port_value (void * data, float val)
   auto self = static_cast<InspectorPortWidget *> (data);
   auto ctrl = dynamic_cast<ControlPort *> (self->port);
   ctrl->set_control_value (
-    ctrl->normalized_val_to_real (val), F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
+    ctrl->normalized_val_to_real (val), F_NOT_NORMALIZED, true);
 }
 
 static void
@@ -260,7 +260,7 @@ val_change_finished (void * data, float val)
       /* set port to previous val */
       ctrl->set_control_value (
         ctrl->normalized_val_to_real (self->normalized_init_port_val),
-        F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
+        F_NOT_NORMALIZED, false);
 
       try
         {

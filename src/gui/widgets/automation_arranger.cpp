@@ -259,7 +259,7 @@ automation_arranger_on_drag_end (ArrangerWidget * self)
         case UiOverlayAction::CREATING_MOVING:
           {
             UNDO_MANAGER->perform (
-              std::make_unique<ArrangerSelectionsAction::CreateAction> (
+              std::make_unique<CreateArrangerSelectionsAction> (
                 *AUTOMATION_SELECTIONS));
           }
           break;

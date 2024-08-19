@@ -35,8 +35,7 @@ class MidiNote final
       public ISerializable<MidiNote>
 {
 public:
-  // Rule of 0
-  MidiNote () : ArrangerObject (Type::MidiNote) {};
+  MidiNote ();
 
   /**
    * Creates a new MidiNote.
@@ -46,14 +45,7 @@ public:
     Position                start_pos,
     Position                end_pos,
     uint8_t                 val,
-    uint8_t                 vel)
-      : RegionOwnedObjectImpl (region_id),
-        vel_ (std::make_shared<Velocity> (this, vel)), val_ (val)
-  {
-    MidiNote ();
-    pos_ = start_pos;
-    end_pos_ = end_pos;
-  }
+    uint8_t                 vel);
 
   void init_loaded () override
   {

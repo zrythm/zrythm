@@ -10,6 +10,8 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
+AudioSelections::AudioSelections () : ArrangerSelections (Type::Audio) { }
+
 void
 AudioSelections::set_has_range (bool has_range)
 {

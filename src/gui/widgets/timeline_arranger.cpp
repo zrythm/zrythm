@@ -972,8 +972,7 @@ on_dnd_drop (
       try
         {
           UNDO_MANAGER->perform (
-            std::make_unique<ArrangerSelectionsAction::CreateAction> (
-              *TL_SELECTIONS));
+            std::make_unique<CreateArrangerSelectionsAction> (*TL_SELECTIONS));
         }
       catch (const ZrythmException &e)
         {
@@ -1321,7 +1320,7 @@ timeline_arranger_on_drag_end (ArrangerWidget * self)
           if (sel->has_any ())
             {
               UNDO_MANAGER->perform (
-                std::make_unique<ArrangerSelectionsAction::CreateAction> (*sel));
+                std::make_unique<CreateArrangerSelectionsAction> (*sel));
             }
           break;
         case UiOverlayAction::DELETE_SELECTING:

@@ -105,7 +105,7 @@ Project::define_fields (const Context &ctx)
   T::serialize_fields (
     ctx, T::make_field ("title", title_),
     T::make_field ("datetime", datetime_str_),
-    T::make_field ("version", version_), T::make_field ("tracklist", tracklist_),
+    T::make_field ("version", version_),
     T::make_field ("clipEditor", clip_editor_),
     T::make_field ("timeline", timeline_),
     T::make_field ("snapGridTimeline", snap_grid_timeline_),
@@ -113,6 +113,7 @@ Project::define_fields (const Context &ctx)
     T::make_field ("quantizeOptsTimeline", quantize_opts_timeline_),
     T::make_field ("quantizeOptsEditor", quantize_opts_editor_),
     T::make_field ("audioEngine", audio_engine_),
+    T::make_field ("tracklist", tracklist_),
     T::make_field ("mixerSelections", mixer_selections_, true),
     T::make_field ("timelineSelections", timeline_selections_, true),
     T::make_field ("midiArrangerSelections", midi_selections_, true),

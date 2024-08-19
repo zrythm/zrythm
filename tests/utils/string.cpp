@@ -1,18 +1,17 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
 
-#include <cstdlib>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "utils/string.h"
 
-#include <glib.h>
+#include "ext/doctest/doctest.h"
 
-#include "tests/helpers/zrythm_helper.h"
+TEST_SUITE_BEGIN ("utils/string");
 
-static void
-test_get_int_after_last_space (void)
+TEST_CASE ("get int after last space")
 {
   const char * strs[] = {
     "helloЧитатьハロー・ワールド 1",
@@ -22,18 +21,17 @@ test_get_int_after_last_space (void)
     "testハロー 34 56",
   };
 
-  int ret = string_get_int_after_last_space (strs[0], NULL);
-  g_assert_cmpint (ret, ==, 1);
-  ret = string_get_int_after_last_space (strs[1], NULL);
-  g_assert_cmpint (ret, ==, 22);
-  ret = string_get_int_after_last_space (strs[2], NULL);
-  g_assert_cmpint (ret, ==, -1);
-  ret = string_get_int_after_last_space (strs[4], NULL);
-  g_assert_cmpint (ret, ==, 56);
+  auto ret = string_get_int_after_last_space (strs[0]);
+  REQUIRE_EQ (ret.first, 1);
+  ret = string_get_int_after_last_space (strs[1]);
+  REQUIRE_EQ (ret.first, 22);
+  ret = string_get_int_after_last_space (strs[2]);
+  REQUIRE_EQ (ret.first, -1);
+  ret = string_get_int_after_last_space (strs[4]);
+  REQUIRE_EQ (ret.first, 56);
 }
 
-static void
-test_contains_substr (void)
+TEST_CASE ("contains substr")
 {
   const char * strs[] = {
     "helloЧитатьハロー・ワールド 1",
@@ -43,21 +41,20 @@ test_contains_substr (void)
     "testハロー 34 56",
   };
 
-  g_assert_true (string_contains_substr (strs[0], "Читать"));
-  g_assert_true (string_contains_substr_case_insensitive (strs[1], "abc"));
-  g_assert_false (string_contains_substr (strs[0], "Чатитать"));
-  g_assert_false (string_contains_substr_case_insensitive (strs[1], "abd"));
+  REQUIRE (string_contains_substr (strs[0], "Читать"));
+  REQUIRE (string_contains_substr_case_insensitive (strs[1], "abc"));
+  REQUIRE_FALSE (string_contains_substr (strs[0], "Чатитать"));
+  REQUIRE_FALSE (string_contains_substr_case_insensitive (strs[1], "abd"));
 }
 
-static void
-test_is_equal (void)
+TEST_CASE ("is equal")
 {
-  g_assert_true (string_is_equal ("", ""));
-  g_assert_true (string_is_equal (NULL, NULL));
-  g_assert_true (string_is_equal ("abc", "abc"));
-  g_assert_false (string_is_equal ("abc", "aabc"));
-  g_assert_false (string_is_equal ("", "aabc"));
-  g_assert_false (string_is_equal (NULL, ""));
+  REQUIRE (string_is_equal ("", ""));
+  REQUIRE (string_is_equal (nullptr, nullptr));
+  REQUIRE (string_is_equal ("abc", "abc"));
+  REQUIRE_FALSE (string_is_equal ("abc", "aabc"));
+  REQUIRE_FALSE (string_is_equal ("", "aabc"));
+  REQUIRE_FALSE (string_is_equal (nullptr, ""));
 
 #if 0
   /* pwgen -c -n -s 48 50 */
@@ -112,7 +109,7 @@ test_is_equal (void)
     "DpH0Od367J0R3XSpeHY4VEV6AsrQGXUh5BIDglCSmXHO00wz",
     "2M9ZqPLtUm4GpsuKHy5Bw40yV8XJakx5WBv1UyIC5EOt9URk",
     "ds0gCrUUX7u840LnBdtuPu6IMBEnF3G2Hjq5rV4wd0snqfjg",
-    NULL,
+    nullptr,
   };
 
   test_helper_zrythm_init ();
@@ -133,7 +130,7 @@ test_is_equal (void)
     }
   gint64 end = g_get_monotonic_time ();
   gint64 orig_time = end - start;
-  g_message ("orig: %ld us", orig_time);
+  z_info ("orig: {} us", orig_time);
 
   start = g_get_monotonic_time ();
   for (int j = 0; j < test_times; j++)
@@ -149,7 +146,7 @@ test_is_equal (void)
     }
   end = g_get_monotonic_time ();
   gint64 fast_time = end - start;
-  g_message ("fast: %ld us", fast_time);
+  z_info ("fast: {} us", fast_time);
 
   g_assert_cmpint (fast_time, <, orig_time);
 
@@ -157,44 +154,7 @@ test_is_equal (void)
 #endif
 }
 
-static void
-test_copy_w_realloc (void)
-{
-  char * str = g_strdup ("aa");
-  string_copy_w_realloc (&str, "");
-  g_assert_true (string_is_equal (str, ""));
-  string_copy_w_realloc (&str, "aa");
-  g_assert_true (string_is_equal (str, "aa"));
-  string_copy_w_realloc (&str, "あああ");
-  g_assert_true (string_is_equal (str, "あああ"));
-  string_copy_w_realloc (&str, "あああ");
-  g_assert_true (string_is_equal (str, "あああ"));
-  string_copy_w_realloc (&str, "aa");
-  g_assert_true (string_is_equal (str, "aa"));
-  string_copy_w_realloc (&str, "");
-  g_assert_nonnull (str);
-  g_assert_true (string_is_equal (str, ""));
-
-  string_copy_w_realloc (&str, NULL);
-  g_assert_null (str);
-  string_copy_w_realloc (&str, NULL);
-  g_assert_null (str);
-  string_copy_w_realloc (&str, "");
-  g_assert_nonnull (str);
-  g_assert_true (string_is_equal (str, ""));
-  string_copy_w_realloc (&str, "aaa");
-  g_assert_true (string_is_equal (str, "aaa"));
-  string_copy_w_realloc (&str, "aaa");
-  g_assert_true (string_is_equal (str, "aaa"));
-  string_copy_w_realloc (&str, "aa");
-  g_assert_true (string_is_equal (str, "aa"));
-
-  string_copy_w_realloc (&str, "[Zrythm] Enabled");
-  g_assert_true (string_is_equal (str, "[Zrythm] Enabled"));
-}
-
-static void
-test_replace_regex (void)
+TEST_CASE ("replace regex")
 {
   const char *replace_str, *regex;
   char *      src_str;
@@ -218,23 +178,4 @@ test_replace_regex (void)
   g_assert_cmpstr (src_str, ==, "??? ...\n??? abc\n??? ...\n??? test");
 }
 
-int
-main (int argc, char * argv[])
-{
-  g_test_init (&argc, &argv, NULL);
-
-#define TEST_PREFIX "/utils/string/"
-
-  g_test_add_func (TEST_PREFIX "test is equal", (GTestFunc) test_is_equal);
-  g_test_add_func (
-    TEST_PREFIX "test replace regex", (GTestFunc) test_replace_regex);
-  g_test_add_func (
-    TEST_PREFIX "test get int after last space",
-    (GTestFunc) test_get_int_after_last_space);
-  g_test_add_func (
-    TEST_PREFIX "test contains substr", (GTestFunc) test_contains_substr);
-  g_test_add_func (
-    TEST_PREFIX "test copy w realloc", (GTestFunc) test_copy_w_realloc);
-
-  return g_test_run ();
-}
+TEST_SUITE_END;

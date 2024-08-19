@@ -8,6 +8,11 @@
 #include "project.h"
 #include "zrythm.h"
 
+AutomationSelections::AutomationSelections ()
+    : ArrangerSelections (Type::Automation)
+{
+}
+
 bool
 AutomationSelections::can_be_pasted_at_impl (const Position pos, const int idx)
   const

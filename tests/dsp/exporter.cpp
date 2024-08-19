@@ -28,7 +28,7 @@ print_progress_and_sleep (ProgressInfo &info)
       double      progress;
       std::string progress_str;
       std::tie (progress, progress_str) = info.get_progress ();
-      g_message ("progress: %.1f", progress * 100.0);
+      z_info ("progress: {:.1f}", progress * 100.0);
       g_usleep (10000);
     }
 }
@@ -38,14 +38,14 @@ test_export_wav (void)
 {
   test_helper_zrythm_init ();
 
-  char *         filepath = g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
+  char * filepath = g_build_filename (TESTS_SRCDIR, "test.wav", nullptr);
   FileDescriptor file = FileDescriptor (filepath);
   track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, &file, PLAYHEAD,
-    TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
+    Track::Type::Audio, nullptr, &file, PLAYHEAD, TRACKLIST->tracks.size (), 1,
+    -1, nullptr, nullptr);
 
-  char * tmp_dir = g_dir_make_tmp ("test_wav_prj_XXXXXX", NULL);
-  bool   success = project_save (PROJECT, tmp_dir, 0, 0, F_NO_ASYNC, NULL);
+  char * tmp_dir = g_dir_make_tmp ("test_wav_prj_XXXXXX", nullptr);
+  bool   success = project_save (PROJECT, tmp_dir, 0, 0, F_NO_ASYNC, nullptr);
   g_assert_true (success);
   g_free (tmp_dir);
 

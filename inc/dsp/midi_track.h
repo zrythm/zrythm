@@ -36,15 +36,7 @@ public:
     return ChannelTrack::validate () && PianoRollTrack::validate ();
   }
 
-  void init_after_cloning (const MidiTrack &other) override
-  {
-    PianoRollTrack::copy_members_from (other);
-    ChannelTrack::copy_members_from (other);
-    ProcessableTrack::copy_members_from (other);
-    AutomatableTrack::copy_members_from (other);
-    RecordableTrack::copy_members_from (other);
-    LanedTrackImpl::copy_members_from (other);
-  }
+  void init_after_cloning (const MidiTrack &other) override;
 
 private:
   MidiTrack (const std::string &label = "", int pos = 0);

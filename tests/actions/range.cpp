@@ -80,79 +80,78 @@ static int audio_track_pos = -1;
 
 static auto perform_create_arranger_sel = [] (const auto &selections) {
   UNDO_MANAGER->perform (
-    std::make_unique<ArrangerSelectionsAction::CreateAction> (*selections));
-};
-
-static auto perform_delete_arranger_sel = [] (const auto &selections) {
-  UNDO_MANAGER->perform (
-    std::make_unique<ArrangerSelectionsAction::DeleteAction> (*selections));
+    std::make_unique<CreateArrangerSelectionsAction> (*selections));
 };
 
 TEST_SUITE_BEGIN ("actions/range");
 
-static void
-test_prepare_common ()
+class RangeActionTestFixture : public ZrythmFixture
 {
-  test_helper_zrythm_init ();
+public:
+  RangeActionTestFixture ()
+  {
+    /* create MIDI track with region */
+    auto midi_track = Track::create_empty_with_action<MidiTrack> ();
+    midi_track_pos = midi_track->pos_;
 
-  /* create MIDI track with region */
-  auto midi_track = Track::create_empty_with_action<MidiTrack> ();
-  midi_track_pos = midi_track->pos_;
+    auto add_midi_region = [&] (const auto start_bar, const auto end_bar) {
+      Position start, end;
+      start.set_to_bar (start_bar);
+      end.set_to_bar (end_bar);
+      auto midi_region = std::make_shared<MidiRegion> (
+        start, end, midi_track->get_name_hash (), 0,
+        midi_track->lanes_[0]->regions_.size ());
+      REQUIRE_NOTHROW (
+        midi_track->add_region (midi_region, nullptr, 0, true, false));
+      REQUIRE_GE (midi_region->id_.idx_, 0);
+      midi_region->select (true, false, false);
+      perform_create_arranger_sel (TL_SELECTIONS);
+    };
 
-  auto add_midi_region = [&] (const auto start_bar, const auto end_bar) {
-    Position start, end;
-    start.set_to_bar (start_bar);
-    end.set_to_bar (end_bar);
-    auto midi_region = std::make_shared<MidiRegion> (
-      start, end, midi_track->get_name_hash (), 0,
-      midi_track->lanes_[0]->regions_.size ());
-    REQUIRE_NOTHROW (midi_track->add_region (
-      midi_region, nullptr, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS));
-    REQUIRE_GE (midi_region->id_.idx_, 0);
-    midi_region->select (F_SELECT, F_NO_APPEND, false);
-    perform_create_arranger_sel (TL_SELECTIONS);
-  };
+    /* add all the midi regions */
+    add_midi_region (MIDI_REGION_START_BAR, MIDI_REGION_END_BAR);
+    add_midi_region (MIDI_REGION2_START_BAR, MIDI_REGION2_END_BAR);
+    add_midi_region (MIDI_REGION3_START_BAR, MIDI_REGION3_END_BAR);
+    add_midi_region (MIDI_REGION4_START_BAR, MIDI_REGION4_END_BAR);
+    add_midi_region (MIDI_REGION5_START_BAR, MIDI_REGION5_END_BAR);
+    add_midi_region (MIDI_REGION6_START_BAR, MIDI_REGION6_END_BAR);
+    add_midi_region (MIDI_REGION7_START_BAR, MIDI_REGION7_END_BAR);
 
-  /* add all the midi regions */
-  add_midi_region (MIDI_REGION_START_BAR, MIDI_REGION_END_BAR);
-  add_midi_region (MIDI_REGION2_START_BAR, MIDI_REGION2_END_BAR);
-  add_midi_region (MIDI_REGION3_START_BAR, MIDI_REGION3_END_BAR);
-  add_midi_region (MIDI_REGION4_START_BAR, MIDI_REGION4_END_BAR);
-  add_midi_region (MIDI_REGION5_START_BAR, MIDI_REGION5_END_BAR);
-  add_midi_region (MIDI_REGION6_START_BAR, MIDI_REGION6_END_BAR);
-  add_midi_region (MIDI_REGION7_START_BAR, MIDI_REGION7_END_BAR);
+    /* create audio track with region */
+    FileDescriptor file (fs::path (TESTS_SRCDIR) / "test.wav");
+    Position       start, end;
+    start.set_to_bar (AUDIO_REGION_START_BAR);
+    end.set_to_bar (AUDIO_REGION_END_BAR);
+    Track::create_with_action (
+      Track::Type::Audio, nullptr, &file, &start, TRACKLIST->get_num_tracks (),
+      1, -1, nullptr);
+    auto audio_track = dynamic_cast<AudioTrack *> (
+      TRACKLIST->get_last_track (Tracklist::PinOption::Both, false));
+    audio_track_pos = audio_track->pos_;
+    const auto &audio_region = audio_track->lanes_[0]->regions_[0];
 
-  /* create audio track with region */
-  FileDescriptor file (fs::path (TESTS_SRCDIR) / "test.wav");
-  Position       start, end;
-  start.set_to_bar (AUDIO_REGION_START_BAR);
-  end.set_to_bar (AUDIO_REGION_END_BAR);
-  Track::create_with_action (
-    Track::Type::Audio, nullptr, &file, &start, TRACKLIST->get_num_tracks (), 1,
-    -1, nullptr);
-  auto audio_track = dynamic_cast<AudioTrack *> (
-    TRACKLIST->get_last_track (Tracklist::PinOption::Both, false));
-  audio_track_pos = audio_track->pos_;
-  const auto &audio_region = audio_track->lanes_[0]->regions_[0];
+    /* resize audio region */
+    audio_region->select (true, false, false);
+    auto   sel_before = TL_SELECTIONS->clone_unique ();
+    double audio_region_size_ticks = audio_region->get_length_in_ticks ();
+    double missing_ticks = (end.ticks_ - start.ticks_) - audio_region_size_ticks;
+    REQUIRE_NOTHROW (audio_region->resize (
+      false, ArrangerObject::ResizeType::RESIZE_LOOP, missing_ticks, false));
+    UNDO_MANAGER->perform (
+      std::make_unique<ArrangerSelectionsAction::ResizeAction> (
+        *sel_before, TL_SELECTIONS.get (),
+        ArrangerSelectionsAction::ResizeType::RLoop, missing_ticks));
+    REQUIRE_POSITION_EQ (end, audio_region->end_pos_);
 
-  /* resize audio region */
-  audio_region->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  auto   sel_before = TL_SELECTIONS->clone_unique ();
-  double audio_region_size_ticks = audio_region->get_length_in_ticks ();
-  double missing_ticks = (end.ticks_ - start.ticks_) - audio_region_size_ticks;
-  REQUIRE_NOTHROW (audio_region->resize (
-    false, ArrangerObject::ResizeType::RESIZE_LOOP, missing_ticks, false));
-  UNDO_MANAGER->perform (std::make_unique<ArrangerSelectionsAction::ResizeAction> (
-    *sel_before, TL_SELECTIONS.get (),
-    ArrangerSelectionsAction::ResizeType::RLoop, missing_ticks));
-  REQUIRE_POSITION_EQ (end, audio_region->end_pos_);
+    /* set transport positions */
+    TRANSPORT->cue_pos_.set_to_bar (CUE_BEFORE);
+    TRANSPORT->playhead_pos_.set_to_bar (PLAYHEAD_BEFORE);
+    TRANSPORT->loop_start_pos_.set_to_bar (LOOP_START_BEFORE);
+    TRANSPORT->loop_end_pos_.set_to_bar (LOOP_END_BEFORE);
+  }
 
-  /* set transport positions */
-  TRANSPORT->cue_pos_.set_to_bar (CUE_BEFORE);
-  TRANSPORT->playhead_pos_.set_to_bar (PLAYHEAD_BEFORE);
-  TRANSPORT->loop_start_pos_.set_to_bar (LOOP_START_BEFORE);
-  TRANSPORT->loop_end_pos_.set_to_bar (LOOP_END_BEFORE);
-}
+  ~RangeActionTestFixture () = default;
+};
 
 static void
 check_start_end_markers ()
@@ -310,10 +309,8 @@ check_after_insert ()
   check_start_end_markers ();
 }
 
-TEST_CASE ("insert silence")
+TEST_CASE_FIXTURE (RangeActionTestFixture, "insert silence")
 {
-  test_prepare_common ();
-
   /* create inset silence action */
   Position start, end;
   start.set_to_bar (RANGE_START_BAR);
@@ -338,12 +335,10 @@ TEST_CASE ("insert silence")
   UNDO_MANAGER->redo ();
 
   check_after_insert ();
-
-  test_helper_zrythm_cleanup ();
 }
 
 static void
-check_after_remove (void)
+check_after_remove ()
 {
 #define GET_MIDI_REGION(name, idx) \
   const auto &name = midi_track->lanes_[0]->regions_[idx]
@@ -428,10 +423,8 @@ check_after_remove (void)
   check_start_end_markers ();
 }
 
-TEST_CASE ("remove range")
+TEST_CASE_FIXTURE (RangeActionTestFixture, "remove range")
 {
-  test_prepare_common ();
-
   /* create remove range action */
   Position start, end;
   start.set_to_bar (RANGE_START_BAR);
@@ -451,14 +444,10 @@ TEST_CASE ("remove range")
   UNDO_MANAGER->redo ();
 
   check_after_remove ();
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("remove range with start marker")
+TEST_CASE_FIXTURE (ZrythmFixture, "remove range with start marker")
 {
-  test_helper_zrythm_init ();
-
   /* create audio track */
   audio_track_pos = TRACKLIST->get_num_tracks ();
   FileDescriptor file (TEST_WAV2);
@@ -478,14 +467,10 @@ TEST_CASE ("remove range with start marker")
   UNDO_MANAGER->undo ();
 
   check_start_end_markers ();
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("remove range with objects inside")
+TEST_CASE_FIXTURE (ZrythmFixture, "remove range with objects inside")
 {
-  test_helper_zrythm_init ();
-
   /* create midi track with region */
   midi_track_pos = TRACKLIST->get_num_tracks ();
   FileDescriptor file (fs::path (TESTS_SRCDIR) / "1_track_with_data.mid");
@@ -498,7 +483,7 @@ TEST_CASE ("remove range with objects inside")
   MusicalScale ms ((MusicalScale::Type) 0, (MusicalNote) 0);
   auto         so = std::make_shared<ScaleObject> (ms);
   P_CHORD_TRACK->add_scale (so);
-  so->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  so->select (true, false, false);
   perform_create_arranger_sel (TL_SELECTIONS);
 
   /* remove range */
@@ -521,8 +506,6 @@ TEST_CASE ("remove range with objects inside")
   /* check scale and midi region added */
   REQUIRE_SIZE_EQ (midi_track->lanes_[0]->regions_, 1);
   REQUIRE_SIZE_EQ (P_CHORD_TRACK->scales_, 2);
-
-  test_helper_zrythm_cleanup ();
 }
 
 TEST_SUITE_END ();

@@ -783,8 +783,7 @@ AudioEngine::wait_for_pause (State &state, bool force_pause, bool with_fadeout)
     }
 
   if (
-    with_fadeout && state.running_
-    && !dummy_audio_thread_->get_stop_source ().stop_requested ()
+    with_fadeout && state.running_ && !dummy_audio_thread_->threadShouldExit ()
     && has_handled_buffer_size_change ())
     {
       z_debug (
@@ -807,8 +806,11 @@ AudioEngine::wait_for_pause (State &state, bool force_pause, bool with_fadeout)
         }
     }
 
-  /* send panic */
-  midi_in_->midi_events_.panic_all ();
+  if (!destroying_)
+    {
+      /* send panic */
+      midi_in_->midi_events_.panic_all ();
+    }
 
   if (state.playing_)
     {
@@ -822,7 +824,7 @@ AudioEngine::wait_for_pause (State &state, bool force_pause, bool with_fadeout)
         {
           while (
             transport_->play_state_ == Transport::PlayState::PauseRequested
-            && !dummy_audio_thread_->get_stop_source ().stop_requested ())
+            && !dummy_audio_thread_->threadShouldExit ())
             {
               std::this_thread::sleep_for (std::chrono::microseconds (100));
             }
@@ -837,8 +839,8 @@ AudioEngine::wait_for_pause (State &state, bool force_pause, bool with_fadeout)
     }
   z_debug ("cycle finished");
 
-  /* scan for new ports here for now (TODO move this to a new thread that runs
-   * periodically) */
+  /* scan for new ports here for now (why???) (TODO move this to a new thread
+   * that runs periodically) */
   hw_in_processor_->rescan_ext_ports (hw_in_processor_.get ());
 
   control_room_->monitor_fader_->fading_out_.store (false);
@@ -1645,6 +1647,7 @@ AudioEngine::is_in_active_project () const
 AudioEngine::~AudioEngine ()
 {
   z_debug ("freeing engine...");
+  destroying_ = true;
 
   stop_events ();
 

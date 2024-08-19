@@ -119,13 +119,9 @@ public:
     EditorFunction,
   };
 
-  // Rule of 0
-  ArrangerSelectionsAction () = default;
+  ArrangerSelectionsAction ();
   virtual ~ArrangerSelectionsAction () = default;
 
-  class CreateOrDeleteAction;
-  class CreateAction;
-  class DeleteAction;
   class RecordAction;
   class MoveOrDuplicateAction;
   class MoveOrDuplicateTimelineAction;
@@ -145,49 +141,7 @@ public:
 
   bool contains_clip (const AudioClip &clip) const override;
 
-  void init_after_cloning (const ArrangerSelectionsAction &other) final
-  {
-    type_ = other.type_;
-    if (other.sel_)
-      sel_ = clone_unique_with_variant<ArrangerSelectionsVariant> (
-        other.sel_.get ());
-    if (other.sel_after_)
-      sel_after_ = clone_unique_with_variant<ArrangerSelectionsVariant> (
-        other.sel_after_.get ());
-    edit_type_ = other.edit_type_;
-    ticks_ = other.ticks_;
-    delta_tracks_ = other.delta_tracks_;
-    delta_lanes_ = other.delta_lanes_;
-    delta_chords_ = other.delta_chords_;
-    delta_pitch_ = other.delta_pitch_;
-    delta_vel_ = other.delta_vel_;
-    delta_normalized_amount_ = other.delta_normalized_amount_;
-    if (other.target_port_)
-      target_port_ = std::make_unique<PortIdentifier> (*other.target_port_);
-    str_ = other.str_;
-    pos_ = other.pos_;
-    for (auto &r : other.r1_)
-      {
-        r1_.push_back (
-          clone_unique_with_variant<LengthableObjectVariant> (r.get ()));
-      }
-    for (auto &r : other.r2_)
-      {
-        r2_.push_back (
-          clone_unique_with_variant<LengthableObjectVariant> (r.get ()));
-      }
-    num_split_objs_ = other.num_split_objs_;
-    first_run_ = other.first_run_;
-    if (other.opts_)
-      opts_ = std::make_unique<QuantizeOptions> (*other.opts_);
-    if (other.region_before_)
-      region_before_ =
-        clone_unique_with_variant<RegionVariant> (other.region_before_.get ());
-    if (other.region_after_)
-      region_after_ =
-        clone_unique_with_variant<RegionVariant> (other.region_after_.get ());
-    resize_type_ = other.resize_type_;
-  }
+  void init_after_cloning (const ArrangerSelectionsAction &other) final;
 
   bool needs_transport_total_bar_update (bool perform) const override
   {
@@ -351,31 +305,37 @@ public:
   ResizeType resize_type_ = (ResizeType) 0;
 };
 
-class ArrangerSelectionsAction::CreateOrDeleteAction
-    : virtual public ArrangerSelectionsAction
+class CreateOrDeleteArrangerSelectionsAction : public ArrangerSelectionsAction
 {
 public:
+  virtual ~CreateOrDeleteArrangerSelectionsAction () = default;
+
+protected:
   /**
    * Creates a new action for creating/deleting objects.
    *
-   * @param create If this is true, the action will create objects. If false, it
-   * will delete them.
+   * @param create If this is true, the action will create objects. If false,
+   * it will delete them.
    */
-  CreateOrDeleteAction (const ArrangerSelections &sel, bool create);
+  CreateOrDeleteArrangerSelectionsAction (
+    const ArrangerSelections &sel,
+    bool                      create);
 };
 
-class ArrangerSelectionsAction::CreateAction final : public CreateOrDeleteAction
+class CreateArrangerSelectionsAction
+  final : public CreateOrDeleteArrangerSelectionsAction
 {
 public:
-  CreateAction (const ArrangerSelections &sel)
-      : CreateOrDeleteAction (sel, true) {};
+  CreateArrangerSelectionsAction (const ArrangerSelections &sel)
+      : CreateOrDeleteArrangerSelectionsAction (sel, true) {};
 };
 
-class ArrangerSelectionsAction::DeleteAction final : public CreateOrDeleteAction
+class DeleteArrangerSelectionsAction
+  final : public CreateOrDeleteArrangerSelectionsAction
 {
 public:
-  DeleteAction (const ArrangerSelections &sel)
-      : CreateOrDeleteAction (sel, false) {};
+  DeleteArrangerSelectionsAction (const ArrangerSelections &sel)
+      : CreateOrDeleteArrangerSelectionsAction (sel, false) {};
 };
 
 class ArrangerSelectionsAction::RecordAction : public ArrangerSelectionsAction

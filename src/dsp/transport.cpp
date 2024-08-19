@@ -323,7 +323,7 @@ Transport::request_pause (bool with_wait)
   playhead_before_pause_ = playhead_pos_;
   if (!ZRYTHM_TESTING && g_settings_get_boolean (S_TRANSPORT, "return-to-cue"))
     {
-      move_playhead (&cue_pos_, F_PANIC, F_NO_SET_CUE_POINT, F_PUBLISH_EVENTS);
+      move_playhead (&cue_pos_, F_PANIC, F_NO_SET_CUE_POINT, true);
     }
 
   if (with_wait)

@@ -22,6 +22,10 @@
 
 #include "gtk_wrapper.h"
 
+TimelineSelections::TimelineSelections () : ArrangerSelections (Type::Timeline)
+{
+}
+
 TimelineSelections::TimelineSelections (
   const Position &start_pos,
   const Position &end_pos)
@@ -698,16 +702,16 @@ TimelineSelections::contains_only_regions () const
 }
 
 bool
-TimelineSelections::contains_only_region_types (RegionType types) const
+TimelineSelections::contains_only_region_types (RegionType type) const
 {
   if (!contains_only_regions ())
     return false;
 
-  return std::all_of (objects_.begin (), objects_.end (), [types] (const auto &obj) {
-    auto region = dynamic_cast<Region *> (obj.get ());
-    return region
-           && (static_cast<int> (region->get_type ()) & static_cast<int> (types));
-  });
+  return std::all_of (
+    objects_.begin (), objects_.end (), [type] (const auto &obj) {
+      auto region = dynamic_cast<Region *> (obj.get ());
+      return region && region->get_type () == type;
+    });
 }
 
 bool

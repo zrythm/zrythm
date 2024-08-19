@@ -28,16 +28,13 @@
 
 /**
  * Type of Region.
- *
- * Bitfield instead of plain enum so multiple values can be passed to some
- * functions (eg to collect all Regions of the given types in a Track).
  */
 enum class RegionType
 {
-  Midi = 1 << 0,
-  Audio = 1 << 1,
-  Automation = 1 << 2,
-  Chord = 1 << 3,
+  Midi,
+  Audio,
+  Automation,
+  Chord,
 };
 
 DEFINE_ENUM_FORMATTER (

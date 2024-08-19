@@ -52,9 +52,9 @@ prepare_region_with_note_at_start_to_end (
   Position start_pos;
   position_init (&start_pos);
   Position end_pos;
-  position_set_to_bar (&end_pos, 3);
+  end_pos.set_to_bar (3);
   position_add_beats (&end_pos, 1);
-  position_add_ticks (&end_pos, 3);
+  end_pos.add_ticks (3);
   position_update_frames_from_ticks (&start_pos, 0.0);
   position_update_frames_from_ticks (&end_pos, 0.0);
   Region * r =

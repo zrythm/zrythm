@@ -22,6 +22,14 @@
 
 #include <fmt/format.h>
 
+UndoableAction::
+  UndoableAction (Type type, double frames_per_tick, sample_rate_t sample_rate)
+    : undoable_action_type_ (type), frames_per_tick_ (frames_per_tick),
+      sample_rate_ (sample_rate)
+{
+  z_return_if_fail (!std::isnan (frames_per_tick));
+}
+
 UndoableAction::UndoableAction (Type type)
     : UndoableAction (type, AUDIO_ENGINE->frames_per_tick_, AUDIO_ENGINE->sample_rate_)
 {

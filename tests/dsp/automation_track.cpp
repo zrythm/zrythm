@@ -13,17 +13,13 @@
 #include "project.h"
 #include "zrythm.h"
 
-#include <glib.h>
-
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
 TEST_SUITE_BEGIN ("dsp/automation track");
 
-TEST_CASE ("set automation track index")
+TEST_CASE_FIXTURE (ZrythmFixture, "set automation track index")
 {
-  test_helper_zrythm_init ();
-
   auto master = P_MASTER_TRACK;
   master->set_automation_visible (true);
   auto &atl = master->get_automation_tracklist ();
@@ -35,20 +31,18 @@ TEST_CASE ("set automation track index")
   end.set_to_bar (4);
   auto region = std::make_shared<AutomationRegion> (
     start, end, master->get_name_hash (), first_vis_at->index_, 0);
-  master->add_region (region, first_vis_at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
-  region->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  master->add_region (region, first_vis_at, -1, true, false);
+  region->select (true, false, false);
   UNDO_MANAGER->perform (
-    std::make_unique<ArrangerSelectionsAction::CreateAction> (*TL_SELECTIONS));
+    std::make_unique<CreateArrangerSelectionsAction> (*TL_SELECTIONS));
 
-  CLIP_EDITOR->set_region (region.get (), F_NO_PUBLISH_EVENTS);
+  CLIP_EDITOR->set_region (region.get (), false);
 
   auto first_invisible_at = atl.get_first_invisible_at ();
-  atl.set_at_index (*first_invisible_at, first_vis_at->index_, F_NO_PUSH_DOWN);
+  atl.set_at_index (*first_invisible_at, first_vis_at->index_, false);
 
   /* check that clip editor region can be found */
   CLIP_EDITOR->get_region ();
-
-  test_helper_zrythm_cleanup ();
 }
 
 /**
@@ -58,10 +52,8 @@ TEST_CASE ("set automation track index")
  *
  * This replicates the issue and tests that this does not happen.
  */
-TEST_CASE ("region in 2nd automation track get muted")
+TEST_CASE_FIXTURE (ZrythmFixture, "region in 2nd automation track get muted")
 {
-  test_helper_zrythm_init ();
-
   auto master = P_MASTER_TRACK;
   master->set_automation_visible (true);
   auto &atl = master->get_automation_tracklist ();
@@ -83,25 +75,21 @@ TEST_CASE ("region in 2nd automation track get muted")
   end.set_to_bar (4);
   auto region = std::make_shared<AutomationRegion> (
     start, end, master->get_name_hash (), new_at->index_, 0);
-  master->add_region (region, new_at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
-  region->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  master->add_region (region, new_at, -1, true, false);
+  region->select (true, false, false);
   UNDO_MANAGER->perform (
-    std::make_unique<ArrangerSelectionsAction::CreateAction> (*TL_SELECTIONS));
+    std::make_unique<CreateArrangerSelectionsAction> (*TL_SELECTIONS));
 
-  CLIP_EDITOR->set_region (region.get (), F_NO_PUBLISH_EVENTS);
+  CLIP_EDITOR->set_region (region.get (), false);
 
   AUDIO_ENGINE->wait_n_cycles (3);
 
   /* assert not muted */
   REQUIRE_FALSE (region->get_muted (true));
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("curve value")
+TEST_CASE_FIXTURE (ZrythmFixture, "curve value")
 {
-  test_helper_zrythm_init ();
-
   /* stop engine to run manually */
   test_project_stop_dummy_engine ();
 
@@ -124,10 +112,10 @@ TEST_CASE ("curve value")
   end.set_to_bar (5);
   auto region = std::make_shared<AutomationRegion> (
     start, end, master->get_name_hash (), fader_at->index_, 0);
-  master->add_region (region, fader_at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
-  region->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  master->add_region (region, fader_at, -1, true, false);
+  region->select (true, false, false);
   UNDO_MANAGER->perform (
-    std::make_unique<ArrangerSelectionsAction::CreateAction> (*TL_SELECTIONS));
+    std::make_unique<CreateArrangerSelectionsAction> (*TL_SELECTIONS));
 
   /* create a triangle curve and test the value at various
    * points */
@@ -135,21 +123,21 @@ TEST_CASE ("curve value")
   pos.set_to_bar (1);
   auto ap = std::make_shared<AutomationPoint> (0.0f, 0.0f, pos);
   region->append_object (ap);
-  ap->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  UNDO_MANAGER->perform (std::make_unique<ArrangerSelectionsAction::CreateAction> (
-    *AUTOMATION_SELECTIONS));
+  ap->select (true, false, false);
+  UNDO_MANAGER->perform (
+    std::make_unique<CreateArrangerSelectionsAction> (*AUTOMATION_SELECTIONS));
   pos.set_to_bar (2);
   ap = std::make_shared<AutomationPoint> (2.0f, 1.0f, pos);
   region->append_object (ap);
-  ap->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  UNDO_MANAGER->perform (std::make_unique<ArrangerSelectionsAction::CreateAction> (
-    *AUTOMATION_SELECTIONS));
+  ap->select (true, false, false);
+  UNDO_MANAGER->perform (
+    std::make_unique<CreateArrangerSelectionsAction> (*AUTOMATION_SELECTIONS));
   pos.set_to_bar (3);
   ap = std::make_shared<AutomationPoint> (0.0f, 0.0f, pos);
   region->append_object (ap);
-  ap->select (F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  UNDO_MANAGER->perform (std::make_unique<ArrangerSelectionsAction::CreateAction> (
-    *AUTOMATION_SELECTIONS));
+  ap->select (true, false, false);
+  UNDO_MANAGER->perform (
+    std::make_unique<CreateArrangerSelectionsAction> (*AUTOMATION_SELECTIONS));
   REQUIRE_SIZE_EQ (region->aps_, 3);
 
   TRANSPORT->request_roll (true);
@@ -164,8 +152,6 @@ TEST_CASE ("curve value")
   AUDIO_ENGINE->process (40);
 
   REQUIRE_FLOAT_NEAR (port->control_, 2.32830644e-10, 0.0001f);
-
-  test_helper_zrythm_cleanup ();
 }
 
 TEST_SUITE_END;

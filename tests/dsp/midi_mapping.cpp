@@ -27,12 +27,11 @@ test_midi_mappping (void)
 
   midi_byte_t buf[3] = { 0xB0, 0x07, 121 };
   midi_mappings_bind_device (
-    MIDI_MAPPINGS, buf, ext_port, P_MASTER_TRACK->channel->fader->amp,
-    F_NO_PUBLISH_EVENTS);
+    MIDI_MAPPINGS, buf, ext_port, P_MASTER_TRACK->channel->fader->amp, false);
   g_assert_cmpint (MIDI_MAPPINGS->num_mappings, ==, 1);
 
   int size = midi_mappings_get_for_port (
-    MIDI_MAPPINGS, P_MASTER_TRACK->channel->fader->amp, NULL);
+    MIDI_MAPPINGS, P_MASTER_TRACK->channel->fader->amp, nullptr);
   g_assert_cmpint (size, ==, 1);
 
   midi_mappings_apply (MIDI_MAPPINGS, buf);
@@ -46,7 +45,7 @@ test_midi_mappping (void)
 int
 main (int argc, char * argv[])
 {
-  g_test_init (&argc, &argv, NULL);
+  g_test_init (&argc, &argv, nullptr);
 
   test_helper_zrythm_init ();
 

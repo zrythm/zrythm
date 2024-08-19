@@ -21,6 +21,22 @@
 
 #include <fmt/format.h>
 
+MidiNote::MidiNote () : ArrangerObject (Type::MidiNote) {};
+
+MidiNote::MidiNote (
+  const RegionIdentifier &region_id,
+  Position                start_pos,
+  Position                end_pos,
+  uint8_t                 val,
+  uint8_t                 vel)
+    : ArrangerObject (Type::MidiNote), RegionOwnedObjectImpl (region_id),
+      vel_ (std::make_shared<Velocity> (this, vel)), val_ (val)
+{
+  MidiNote ();
+  pos_ = start_pos;
+  end_pos_ = end_pos;
+}
+
 std::string
 MidiNote::print_to_str () const
 {

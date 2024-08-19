@@ -22,116 +22,62 @@
 
 void
 audio_write_raw_file (
-  const float *      buff,
-  size_t             frames_already_written,
-  size_t             nframes,
-  uint32_t           samplerate,
-  bool               flac,
-  BitDepth           bit_depth,
-  channels_t         channels,
-  const std::string &filename)
+  const juce::AudioSampleBuffer &buff,
+  size_t                         frames_already_written,
+  size_t                         nframes,
+  uint32_t                       samplerate,
+  bool                           flac,
+  BitDepth                       bit_depth,
+  channels_t                     channels,
+  const std::string             &filename)
 {
   z_return_if_fail (samplerate < 10000000);
 
   z_debug (
-    "writing raw file: already written %zu, "
-    "nframes %zu, samplerate {}, channels {}, "
-    "filename %s, flac? %d",
+    "writing raw file: already written {}, "
+    "nframes {}, samplerate {}, channels {}, "
+    "filename {}, flac? {}",
     frames_already_written, nframes, samplerate, channels, filename, flac);
 
-  SF_INFO info;
+  juce::File file (filename);
+  std::unique_ptr<juce::FileOutputStream> outputStream = file.createOutputStream (
+    nframes * channels * (audio_bit_depth_enum_to_int (bit_depth) / 8));
 
-  memset (&info, 0, sizeof (info));
-  info.channels = (int) channels;
-  info.samplerate = (int) samplerate;
-  int type_major = flac ? SF_FORMAT_FLAC : SF_FORMAT_WAV;
-  int type_minor = 0;
-  switch (bit_depth)
+  if (frames_already_written > 0 && file.existsAsFile ())
     {
-    case BitDepth::BIT_DEPTH_16:
-      type_minor = SF_FORMAT_PCM_16;
-      break;
-    case BitDepth::BIT_DEPTH_24:
-      type_minor = SF_FORMAT_PCM_24;
-      break;
-    case BitDepth::BIT_DEPTH_32:
-      z_return_if_fail (!flac);
-      type_minor = SF_FORMAT_PCM_32;
-      break;
+      // reuse existing file
     }
-  info.format = type_major | type_minor;
-
-  if (!flac)
+  else
     {
-      info.seekable = 1;
-      info.sections = 1;
+      outputStream->setPosition (0);
     }
 
-  bool write_chunk =
-    (frames_already_written > 0)
-    && Glib::file_test (filename, Glib::FileTest::IS_REGULAR);
-
-  if (flac && write_chunk)
-    {
-      z_error ("cannot write chunks for flac");
-      return;
-    }
-
-  if (!sf_format_check (&info))
-    {
-      z_error ("Invalid SFINFO: {}", sf_strerror (nullptr));
-      return;
-    }
-
-  SNDFILE * sndfile =
-    sf_open (filename.c_str (), flac ? SFM_WRITE : SFM_RDWR, &info);
-  if (!sndfile)
+  if (outputStream == nullptr)
     {
       throw ZrythmException (
-        fmt::format ("Error opening sndfile: {}", sf_strerror (nullptr)));
+        "Failed to create output stream for file: " + filename);
     }
 
-  if (info.format != (type_major | type_minor))
-    {
-      z_error (
-        "Invalid SNDFILE format: 0x%08X != 0x%08X", info.format,
-        type_major | type_minor);
-      return;
-    }
+  auto format = std::unique_ptr<juce::AudioFormat> (
+    flac ? static_cast<juce::AudioFormat *> (new juce::FlacAudioFormat ())
+         : static_cast<juce::AudioFormat *> (new juce::WavAudioFormat ()));
 
-  sf_set_string (sndfile, SF_STR_SOFTWARE, PROGRAM_NAME);
+  auto writer = std::unique_ptr<juce::AudioFormatWriter> (format->createWriterFor (
+    outputStream.release (), samplerate, channels,
+    audio_bit_depth_enum_to_int (bit_depth), {}, 0));
 
-  if (!flac)
-    {
-      size_t seek_to = write_chunk ? frames_already_written : 0;
-      z_debug ("seeking to {}", seek_to);
-      int ret = sf_seek (sndfile, (sf_count_t) seek_to, SEEK_SET | SFM_WRITE);
-      if (ret == -1 || ret != (int) seek_to)
-        {
-          throw ZrythmException (
-            fmt::format ("Seek error {}: {}", ret, sf_strerror (nullptr)));
-        }
-    }
-
-  sf_count_t _nframes = (sf_count_t) nframes;
-  z_debug ("nframes = {}", _nframes);
-  sf_count_t count = sf_writef_float (sndfile, buff, (sf_count_t) _nframes);
-  if (count != (sf_count_t) nframes)
-    {
-      throw ZrythmException (fmt::format (
-        "Mismatch: expected {} frames, got {}: {}", _nframes, count,
-        sf_strerror (sndfile)));
-    }
-
-  sf_write_sync (sndfile);
-
-  if (sf_close (sndfile) != 0)
+  if (writer == nullptr)
     {
       throw ZrythmException (
-        fmt::format ("Failed to close sndfile: {}", sf_strerror (nullptr)));
+        "Failed to create audio writer for file: " + filename);
     }
 
-  z_debug ("wrote {} frames to '{}'", count, filename);
+  writer->writeFromAudioSampleBuffer (buff, frames_already_written, nframes);
+  writer->flush ();
+
+  z_debug (
+    "wrote {} frames to '{}' starting at frame {}", nframes, filename,
+    frames_already_written);
 }
 
 /**

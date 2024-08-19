@@ -31,7 +31,7 @@ test_add_marker (void)
       Marker *         marker = marker_new ("start");
       ArrangerObject * m_obj = (ArrangerObject *) marker;
       Position         pos;
-      position_set_to_bar (&pos, 1);
+      pos.set_to_bar (1);
       arranger_object_pos_setter (m_obj, &pos);
       marker->type = MarkerType::MARKER_TYPE_START;
 
@@ -51,7 +51,7 @@ test_add_marker (void)
 int
 main (int argc, char * argv[])
 {
-  g_test_init (&argc, &argv, NULL);
+  g_test_init (&argc, &argv, nullptr);
 
 #define TEST_PREFIX "/audio/marker track/"
 

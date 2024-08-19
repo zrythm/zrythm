@@ -14,14 +14,15 @@ void
 PortIdentifier::define_fields (const Context &ctx)
 {
   serialize_fields (
-    ctx, make_field ("label", label_), make_field ("symbol", sym_),
-    make_field ("uri", uri_), make_field ("comment", comment_),
+    ctx, make_field ("label", label_, true), make_field ("symbol", sym_, true),
+    make_field ("uri", uri_, true), make_field ("comment", comment_, true),
     make_field ("ownerType", owner_type_), make_field ("type", type_),
     make_field ("flow", flow_), make_field ("unit", unit_),
     make_field ("flags", flags_), make_field ("flags2", flags2_),
     make_field ("trackNameHash", track_name_hash_),
-    make_field ("pluginId", plugin_id_), make_field ("portGroup", port_group_),
-    make_field ("externalPortId", ext_port_id_),
+    make_field ("pluginId", plugin_id_),
+    make_field ("portGroup", port_group_, true),
+    make_field ("externalPortId", ext_port_id_, true),
     make_field ("portIndex", port_index_));
 }
 

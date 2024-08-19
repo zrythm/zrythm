@@ -25,8 +25,8 @@ fixture_set_up (
     AUDIO_ENGINE, 4, 140, 44000);
 
   Position start_pos, end_pos;
-  position_set_to_bar (&start_pos, 2);
-  position_set_to_bar (&end_pos, 6);
+  start_pos.set_to_bar (2);
+  end_pos.set_to_bar (6);
   fixture->region =
     midi_region_new (
       &start_pos, &end_pos, 0, 0, 0);
@@ -42,8 +42,8 @@ test_new_midi_note ()
 
   int val = 23, vel = 90;
   Position start_pos, end_pos;
-  position_set_to_bar (&start_pos, 2);
-  position_set_to_bar (&end_pos, 3);
+  start_pos.set_to_bar (2);
+  end_pos.set_to_bar (3);
   MidiNote * mn =
     midi_note_new (
       &fixture->region->id,
@@ -58,7 +58,7 @@ test_new_midi_note ()
       &start_pos, &mn_obj->pos));
   g_assert_true (
     position_is_equal (
-      &end_pos, &mn_obj->end_pos));
+      &end_pos, &mn_obj->end_pos_));
 
   g_assert_cmpint (mn->vel->vel, ==, vel);
   g_assert_cmpint (mn->val, ==, val);
@@ -91,7 +91,7 @@ test_new_midi_note ()
 int
 main (int argc, char * argv[])
 {
-  g_test_init (&argc, &argv, NULL);
+  g_test_init (&argc, &argv, nullptr);
 
 #define TEST_PREFIX "/audio/midi_note/"
 

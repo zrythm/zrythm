@@ -993,7 +993,7 @@ move_items_y (ArrangerWidget * self, double offset_y)
               ap.set_fvalue (
                 start_ap.normalized_val_
                   + static_cast<float> (offset_y_normalized),
-                F_NORMALIZED, F_PUBLISH_EVENTS);
+                F_NORMALIZED, true);
             }
           z_return_if_fail (self->start_object);
         }
@@ -1312,8 +1312,8 @@ on_right_click (
     {
       if (!arranger_object_is_selected (obj))
         {
-          obj->select ( F_SELECT, F_NO_APPEND,
-            F_NO_PUBLISH_EVENTS);
+          obj->select ( true, false,
+            false);
         }
     }
 
@@ -3209,7 +3209,7 @@ arranger_widget_handle_erase_action (ArrangerWidget * self)
           try
             {
               UNDO_MANAGER->perform (
-                std::make_unique<ArrangerSelectionsAction::DeleteAction> (
+                std::make_unique<DeleteArrangerSelectionsAction> (
                   *self->sel_to_delete));
             }
           catch (ZrythmException &e)
@@ -3248,14 +3248,14 @@ drag_end (
       /* if was selected, deselect it */
       if (self->start_object_was_selected)
         {
-          self->start_object->select (F_NO_SELECT, F_APPEND, F_PUBLISH_EVENTS);
+          self->start_object->select (F_NO_SELECT, true, true);
           z_debug ("ctrl-deselecting object");
         }
       /* if was deselected, select it */
       else
         {
           /* select it */
-          self->start_object->select (F_SELECT, F_APPEND, F_PUBLISH_EVENTS);
+          self->start_object->select (true, true, true);
           z_debug ("ctrl-selecting object");
         }
     }

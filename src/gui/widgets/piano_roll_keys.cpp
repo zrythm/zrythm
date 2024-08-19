@@ -420,7 +420,7 @@ select_notes_in_pitch (int pitch, bool append)
 {
   if (!append)
     {
-      MIDI_SELECTIONS->clear (F_PUBLISH_EVENTS);
+      MIDI_SELECTIONS->clear (true);
     }
   auto r = CLIP_EDITOR->get_region<MidiRegion> ();
   z_return_if_fail (r);
@@ -429,7 +429,7 @@ select_notes_in_pitch (int pitch, bool append)
     {
       if (mn->val_ == pitch)
         {
-          mn->select (F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+          mn->select (true, true, false);
         }
     }
 }
@@ -442,7 +442,7 @@ activate_select_notes_in_pitch (
 {
   int pitch = (int) g_variant_get_int32 (variant);
 
-  select_notes_in_pitch (pitch, F_NO_APPEND);
+  select_notes_in_pitch (pitch, false);
 }
 
 static void
@@ -453,7 +453,7 @@ activate_append_notes_in_pitch (
 {
   int pitch = (int) g_variant_get_int32 (variant);
 
-  select_notes_in_pitch (pitch, F_APPEND);
+  select_notes_in_pitch (pitch, true);
 }
 
 static void

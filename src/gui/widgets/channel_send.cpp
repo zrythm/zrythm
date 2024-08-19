@@ -187,7 +187,7 @@ on_drag_end (
 
   float send_amount_at_end = self->send->amount_->control_;
   self->send->amount_->set_control_value (
-    self->send_amount_at_start, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
+    self->send_amount_at_start, F_NOT_NORMALIZED, false);
 
   if (self->send->is_enabled () && self->n_press != 2)
     {

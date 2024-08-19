@@ -1,79 +1,52 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
 
-#include <cmath>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "dsp/master_track.h"
 #include "dsp/track_processor.h"
-#include "project.h"
-#include "utils/flags.h"
-#include "zrythm.h"
-
-#include <glib.h>
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
-#include <locale.h>
+TEST_SUITE_BEGIN ("dsp/track processor");
 
-/**
- * Run track_processor_process() on master and check
- * that the output buffer matches the input buffer.
- */
-static void
-test_process_master (void)
+TEST_CASE_FIXTURE (
+  ZrythmFixture,
+  "process master"
+    * doctest::description (
+      "Run TrackProcessor::process() on master and check that the output buffer matches the input buffer"))
 {
-  test_helper_zrythm_init ();
+  /* stop dummy audio engine processing so we can process manually */
+  test_project_stop_dummy_engine ();
 
-  /* stop dummy audio engine processing so we can
-   * process manually */
-  AUDIO_ENGINE->stop_dummy_audio_thread = true;
-  g_usleep (1000000);
-
-  g_message ("testing...");
-
-  for (nframes_t i = 0; i < AUDIO_ENGINE->block_length; i++)
+  for (nframes_t i = 0; i < AUDIO_ENGINE->block_length_; i++)
     {
-      P_MASTER_TRACK->processor->stereo_in->get_l ().buf_[i] = (float) (i + 1);
+      P_MASTER_TRACK->processor_->stereo_in_->get_l ().buf_[i] = (float) (i + 1);
     }
 
   nframes_t             local_offset = 60;
   EngineProcessTimeInfo time_nfo = {
-    .g_start_frame = 0,
-    .g_start_frame_w_offset = 0,
-    .local_offset = 0,
-    .nframes = local_offset,
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = local_offset,
   };
-  track_processor_process (P_MASTER_TRACK->processor, &time_nfo);
-  time_nfo.g_start_frame = 0;
-  time_nfo.g_start_frame_w_offset = local_offset;
-  time_nfo.local_offset = local_offset;
-  time_nfo.nframes = AUDIO_ENGINE->block_length - local_offset;
-  track_processor_process (P_MASTER_TRACK->processor, &time_nfo);
+  P_MASTER_TRACK->processor_->process (time_nfo);
+  time_nfo.g_start_frame_ = 0;
+  time_nfo.g_start_frame_w_offset_ = local_offset;
+  time_nfo.local_offset_ = local_offset;
+  time_nfo.nframes_ = AUDIO_ENGINE->block_length_ - local_offset;
+  P_MASTER_TRACK->processor_->process (time_nfo);
 
-  for (nframes_t i = 0; i < AUDIO_ENGINE->block_length; i++)
+  for (nframes_t i = 0; i < AUDIO_ENGINE->block_length_; i++)
     {
-      g_assert_cmpfloat_with_epsilon (
-        P_MASTER_TRACK->processor->stereo_out->get_l ().buf_[i],
+      REQUIRE_FLOAT_NEAR (
+        P_MASTER_TRACK->processor_->stereo_out_->get_l ().buf_[i],
         (float) (i + 1), 0.000001f);
     }
-
-  test_helper_zrythm_cleanup ();
 }
 
-int
-main (int argc, char * argv[])
-{
-  g_test_init (&argc, &argv, NULL);
-
-  /*yaml_set_log_level (CYAML_LOG_INFO);*/
-
-#define TEST_PREFIX "/audio/tracklist/"
-
-  g_test_add_func (
-    TEST_PREFIX "test process master", (GTestFunc) test_process_master);
-
-  return g_test_run ();
-}
+TEST_SUITE_END;

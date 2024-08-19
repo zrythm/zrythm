@@ -34,6 +34,8 @@ class AudioSelections final
       public ISerializable<AudioSelections>
 {
 public:
+  AudioSelections ();
+
   /**
    * Sets whether a range selection exists and sends events to update the UI.
    */

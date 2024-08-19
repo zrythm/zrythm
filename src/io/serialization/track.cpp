@@ -34,7 +34,7 @@ Track::define_base_fields (const Context &ctx)
     make_field ("enabled", enabled_), make_field ("color", color_),
     make_field ("inSignalType", in_signal_type_),
     make_field ("outSignalType", out_signal_type_),
-    make_field ("comment", comment_), make_field ("frozen", frozen_),
+    make_field ("comment", comment_, true), make_field ("frozen", frozen_),
     make_field ("poolId", pool_id_));
 }
 
@@ -205,8 +205,48 @@ ModulatorTrack::define_fields (const Context &ctx)
     }
   else
     {
-      // TODO modulators
-      z_return_if_reached ();
+      yyjson_obj_iter it = yyjson_obj_iter_with (ctx.obj_);
+
+      auto handle_plugin = [&] (yyjson_val * pl_obj, auto &plugin) {
+        if (pl_obj == nullptr || yyjson_is_null (pl_obj))
+          {
+            plugin = nullptr;
+          }
+        else
+          {
+            auto          pl_it = yyjson_obj_iter_with (pl_obj);
+            auto          setting_obj = yyjson_obj_iter_get (&pl_it, "setting");
+            PluginSetting setting;
+            setting.deserialize (Context (setting_obj, ctx));
+            auto pl =
+              Plugin::create_unique_from_hosting_type (setting.hosting_type_);
+            std::visit (
+              [&] (auto &&p) {
+                using PluginT = base_type<decltype (p)>;
+                p->ISerializable<PluginT>::deserialize (Context (pl_obj, ctx));
+              },
+              convert_to_variant<PluginPtrVariant> (pl.get ()));
+            plugin = std::move (pl);
+          }
+      };
+
+      auto handle_plugin_array = [&] (const auto &key, auto &plugins) {
+        yyjson_val * arr = yyjson_obj_iter_get (&it, key);
+        if (!arr)
+          {
+            throw ZrythmException ("No plugins array");
+          }
+        yyjson_arr_iter pl_arr_it = yyjson_arr_iter_with (arr);
+        yyjson_val *    pl_obj = NULL;
+        auto            size = yyjson_arr_size (arr);
+        for (size_t i = 0; i < size; ++i)
+          {
+            pl_obj = yyjson_arr_iter_next (&pl_arr_it);
+            handle_plugin (pl_obj, plugins[i]);
+          }
+      };
+
+      handle_plugin_array ("modulators", modulators_);
     }
 
   T::serialize_fields (

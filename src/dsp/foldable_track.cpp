@@ -119,7 +119,7 @@ FoldableTrack::
   z_info ("Setting track {} folded ({})", name_, folded);
   if (auto_select)
     {
-      select (F_SELECT, F_EXCLUSIVE, fire_events);
+      select (true, true, fire_events);
     }
 
   if (trigger_undo)

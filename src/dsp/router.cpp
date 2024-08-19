@@ -99,7 +99,7 @@ Router::start_cycle (EngineProcessTimeInfo time_nfo)
       if (ENUM_BITSET_TEST (
             PortIdentifier::Flags, change.flag1, PortIdentifier::Flags::Bpm))
         {
-          P_TEMPO_TRACK->set_bpm (change.real_val, 0.f, true, F_PUBLISH_EVENTS);
+          P_TEMPO_TRACK->set_bpm (change.real_val, 0.f, true, true);
         }
       else if (
         ENUM_BITSET_TEST (

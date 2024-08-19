@@ -189,12 +189,13 @@ public:
     return true;
   }
 
-  static bool type_can_have_direct_out (Type type)
+  static constexpr bool type_can_have_direct_out (Type type)
   {
     return type != Type::Master;
   }
 
-  static bool type_can_have_region_type (Type type, RegionType region_type)
+  static constexpr bool
+  type_can_have_region_type (Type type, RegionType region_type)
   {
     switch (region_type)
       {
@@ -211,13 +212,13 @@ public:
     z_return_val_if_reached (false);
   }
 
-  static bool type_is_foldable (Type type)
+  static constexpr bool type_is_foldable (Type type)
   {
     return type == Type::Folder || type == Type::MidiGroup
            || type == Type::AudioGroup;
   }
 
-  static bool type_is_copyable (Type type)
+  static constexpr bool type_is_copyable (Type type)
   {
     return type != Type::Master && type != Type::Tempo && type != Type::Chord
            && type != Type::Modulator && type != Type::Marker;
@@ -226,7 +227,10 @@ public:
   /**
    * Returns whether a track of the given type should be deletable by the user.
    */
-  static bool type_is_deletable (Type type) { return type_is_copyable (type); }
+  static constexpr bool type_is_deletable (Type type)
+  {
+    return type_is_copyable (type);
+  }
 
   static Type type_get_from_plugin_descriptor (const PluginDescriptor &descr);
 

@@ -15,9 +15,8 @@
 #include "dsp/tracklist.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
+#include "utils/io.h"
 #include "zrythm.h"
-
-#include <glib.h>
 
 #include "tests/helpers/zrythm_helper.h"
 

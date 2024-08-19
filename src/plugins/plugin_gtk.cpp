@@ -301,7 +301,7 @@ plugin_gtk_create_window (Plugin * plugin)
 static void
 set_float_control (Plugin * pl, ControlPort * port, float value)
 {
-  port->set_control_value (value, F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
+  port->set_control_value (value, F_NOT_NORMALIZED, true);
 
   PluginGtkController * controller = (PluginGtkController *) port->widget_;
   if (

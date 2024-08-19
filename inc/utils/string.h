@@ -284,16 +284,6 @@ char **
 string_array_sort_and_remove_duplicates (char ** str_arr);
 
 /**
- * Copies the string src to the buffer in @ref dest after reallocating the
- * buffer in @ref dest to the length of @ref src.
- *
- * If @ref src is nullptr, the string at @ref dest is free'd and the pointer is
- * set to NULL.
- */
-void
-string_copy_w_realloc (char ** dest, const char * src);
-
-/**
  * Returns a new string with only ASCII alphanumeric
  * characters and replaces the rest with underscore.
  */

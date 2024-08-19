@@ -268,7 +268,7 @@ static inline void
 select_ctrl_pl_no_ch (ChannelSlotWidget * self, bool fire_events)
 {
   /* make it the only selection */
-  MIXER_SELECTIONS->clear (F_NO_PUBLISH_EVENTS);
+  MIXER_SELECTIONS->clear (false);
   MIXER_SELECTIONS->add_slot (
     *self->track, self->type, self->slot_index, fire_events);
 }
@@ -376,7 +376,7 @@ drag_end (
       if (state & GDK_CONTROL_MASK)
         ctrl = 1;
 
-      select_plugin (self, ctrl, F_PUBLISH_EVENTS);
+      select_plugin (self, ctrl, true);
 
       /*self->deselected = 0;*/
       /*self->reselected = 0;*/
@@ -621,7 +621,7 @@ on_right_click (
   GdkModifierType state = gtk_event_controller_get_current_event_state (
     GTK_EVENT_CONTROLLER (gesture));
 
-  select_plugin (self, state & GDK_CONTROL_MASK, F_NO_PUBLISH_EVENTS);
+  select_plugin (self, state & GDK_CONTROL_MASK, false);
 
   show_context_menu (self, x, y);
 }

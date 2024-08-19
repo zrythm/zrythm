@@ -730,8 +730,7 @@ ArrangerSelections::paste_to_pos (const Position &pos, bool undoable)
           try
             {
               UNDO_MANAGER->perform (
-                std::make_unique<ArrangerSelectionsAction::CreateAction> (
-                  *clone_sel));
+                std::make_unique<CreateArrangerSelectionsAction> (*clone_sel));
             }
           catch (const ZrythmException &e)
             {

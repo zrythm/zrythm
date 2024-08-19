@@ -330,6 +330,7 @@ if get_option ('tests')
   test_link_libs += get_option('static_tests') ? zrythm_lib.get_static_lib () : zrythm_lib.get_shared_lib()
 
   helper_sources = files([
+    'helpers/exporter.cpp',
     'helpers/zrythm.cpp',
     ])
 

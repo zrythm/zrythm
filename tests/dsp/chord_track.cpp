@@ -1,7 +1,9 @@
-// SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
+
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "actions/tracklist_selections.h"
 #include "dsp/midi_region.h"
@@ -15,93 +17,74 @@
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
-static void
-test_get_chord_at_pos (void)
-{
-  test_helper_zrythm_init ();
+TEST_SUITE_BEGIN ("dsp/chord track");
 
+TEST_CASE_FIXTURE (BootstrapTimelineFixture, "get chord at pos")
+{
   Position p1, p2, loop;
 
-  test_project_rebootstrap_timeline (&p1, &p2);
+  p1.set_to_bar (12);
+  p2.set_to_bar (24);
+  loop.set_to_bar (5);
 
-  position_set_to_bar (&p1, 12);
-  position_set_to_bar (&p2, 24);
-  position_set_to_bar (&loop, 5);
+  auto &r = P_CHORD_TRACK->regions_[0];
+  auto &co1 = r->chord_objects_[0];
+  auto &co2 = r->chord_objects_[1];
+  co1->chord_index_ = 0;
+  co2->chord_index_ = 2;
+  r->set_end_pos_full_size (&p2);
+  r->set_start_pos_full_size (&p1);
+  r->loop_end_pos_setter (&loop);
+  r->print ();
 
-  Region *      r = P_CHORD_TRACK->chord_regions[0];
-  ChordObject * co1 = r->chord_objects[0];
-  ChordObject * co2 = r->chord_objects[1];
-  co1->chord_index = 0;
-  co2->chord_index = 2;
-  arranger_object_set_end_pos_full_size ((ArrangerObject *) r, &p2);
-  arranger_object_set_start_pos_full_size ((ArrangerObject *) r, &p1);
-  arranger_object_loop_end_pos_setter ((ArrangerObject *) r, &loop);
+  Position pos;
 
-  region_print (r);
+  auto assert_chord_at_pos_null = [&] (const Position &pos) {
+    auto chord = P_CHORD_TRACK->get_chord_at_pos (pos);
+    REQUIRE_NULL (chord);
+  };
 
-  Position      pos;
-  ChordObject * co;
+  auto assert_chord_at_pos_eq =
+    [&] (const Position &pos, const auto &expected_chord) {
+      auto chord = P_CHORD_TRACK->get_chord_at_pos (pos);
+      REQUIRE_EQ (chord, expected_chord.get ());
+    };
 
-  position_init (&pos);
-  co = chord_track_get_chord_at_pos (P_CHORD_TRACK, &pos);
-  g_assert_null (co);
+  pos.zero ();
+  assert_chord_at_pos_null (pos);
 
-  position_set_to_bar (&pos, 2);
-  co = chord_track_get_chord_at_pos (P_CHORD_TRACK, &pos);
-  g_assert_null (co);
+  pos.set_to_bar (2);
+  assert_chord_at_pos_null (pos);
 
-  position_set_to_bar (&pos, 3);
-  co = chord_track_get_chord_at_pos (P_CHORD_TRACK, &pos);
-  g_assert_null (co);
+  pos.set_to_bar (3);
+  assert_chord_at_pos_null (pos);
 
-  position_set_to_bar (&pos, 12);
-  co = chord_track_get_chord_at_pos (P_CHORD_TRACK, &pos);
-  g_assert_null (co);
+  pos.set_to_bar (12);
+  assert_chord_at_pos_null (pos);
 
-  position_set_to_bar (&pos, 13);
-  co = chord_track_get_chord_at_pos (P_CHORD_TRACK, &pos);
-  g_assert_true (co == co1);
+  pos.set_to_bar (13);
+  assert_chord_at_pos_eq (pos, co1);
 
-  position_set_to_bar (&pos, 14);
-  co = chord_track_get_chord_at_pos (P_CHORD_TRACK, &pos);
-  g_assert_true (co == co1);
+  pos.set_to_bar (14);
+  assert_chord_at_pos_eq (pos, co1);
 
-  position_set_to_bar (&pos, 15);
-  co = chord_track_get_chord_at_pos (P_CHORD_TRACK, &pos);
-  g_assert_true (co == co2);
+  pos.set_to_bar (15);
+  assert_chord_at_pos_eq (pos, co2);
 
-  position_set_to_bar (&pos, 16);
-  co = chord_track_get_chord_at_pos (P_CHORD_TRACK, &pos);
-  g_assert_null (co);
+  pos.set_to_bar (16);
+  assert_chord_at_pos_null (pos);
 
-  position_set_to_bar (&pos, 17);
-  co = chord_track_get_chord_at_pos (P_CHORD_TRACK, &pos);
-  g_assert_true (co == co1);
+  pos.set_to_bar (17);
+  assert_chord_at_pos_eq (pos, co1);
 
-  position_set_to_bar (&pos, 18);
-  co = chord_track_get_chord_at_pos (P_CHORD_TRACK, &pos);
-  g_assert_true (co == co1);
+  pos.set_to_bar (18);
+  assert_chord_at_pos_eq (pos, co1);
 
-  position_set_to_bar (&pos, 19);
-  co = chord_track_get_chord_at_pos (P_CHORD_TRACK, &pos);
-  g_assert_true (co == co2);
+  pos.set_to_bar (19);
+  assert_chord_at_pos_eq (pos, co2);
 
-  position_set_to_bar (&pos, 100);
-  co = chord_track_get_chord_at_pos (P_CHORD_TRACK, &pos);
-  g_assert_null (co);
-
-  test_helper_zrythm_cleanup ();
+  pos.set_to_bar (100);
+  assert_chord_at_pos_null (pos);
 }
 
-int
-main (int argc, char * argv[])
-{
-  g_test_init (&argc, &argv, NULL);
-
-#define TEST_PREFIX "/audio/chord track/"
-
-  g_test_add_func (
-    TEST_PREFIX "test get chord at pos", (GTestFunc) test_get_chord_at_pos);
-
-  return g_test_run ();
-}
+TEST_SUITE_END;

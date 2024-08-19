@@ -179,7 +179,15 @@ Tracklist::insert_track (
 
   /* throw error if attempted to add a special track (like master) when it
    * already exists */
-  z_return_val_if_fail (!contains_track_type<T> (), nullptr);
+  if (
+    !Track::type_is_deletable (Track::get_type_for_class<T> ())
+    && contains_track_type<T> ())
+    {
+      z_error (
+        "cannot add track of type {} when it already exists",
+        Track::get_type_for_class<T> ());
+      return nullptr;
+    }
 
   /* set to -1 so other logic knows it is a new track */
   track->pos_ = -1;
@@ -189,7 +197,7 @@ Tracklist::insert_track (
     }
 
   /* this needs to be called before appending the track to the tracklist */
-  track->set_name (track->name_, F_NO_PUBLISH_EVENTS);
+  track->set_name (track->name_, false);
 
   /* append the track at the end */
   auto added_track =
@@ -862,7 +870,7 @@ Tracklist::import_regions (
               track->add_region_plain (r, nullptr, 0, gen_name, false);
               r->select (true, false, true);
               UNDO_MANAGER->perform (
-                std::make_unique<ArrangerSelectionsAction::CreateAction> (
+                std::make_unique<CreateArrangerSelectionsAction> (
                   *TL_SELECTIONS));
               ++executed_actions;
             }

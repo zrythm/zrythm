@@ -150,7 +150,7 @@ Track::create_unique_from_type (Type type)
     case Track::Type::Marker:
       return *MarkerTrack::create_unique ();
     case Track::Type::Tempo:
-      return *MarkerTrack::create_unique ();
+      return *TempoTrack::create_unique ();
     case Track::Type::Modulator:
       return *ModulatorTrack::create_unique ();
     default:
@@ -1023,7 +1023,7 @@ Track::set_comment (const std::string &comment, bool undoable)
 {
   if (undoable)
     {
-      select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+      select (true, true, false);
 
       try
         {
@@ -1047,7 +1047,7 @@ Track::set_color (const Color &color, bool undoable, bool fire_events)
 {
   if (undoable)
     {
-      select (F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+      select (true, true, false);
 
       try
         {

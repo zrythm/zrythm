@@ -3,6 +3,8 @@
 
 #include "zrythm-test-config.h"
 
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
 #include "dsp/scale.h"
 
 #include "tests/helpers/zrythm_helper.h"

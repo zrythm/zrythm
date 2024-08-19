@@ -22,21 +22,22 @@ AudioTrack::init_loaded ()
   AutomatableTrack::init_loaded ();
   LanedTrackImpl::init_loaded ();
   ChannelTrack::init_loaded ();
-  auto         tracklist = get_tracklist ();
-  unsigned int samplerate =
+  auto tracklist = get_tracklist ();
+  samplerate_ =
     (tracklist && tracklist->project_)
       ? tracklist->project_->audio_engine_->sample_rate_
       : AUDIO_ENGINE->sample_rate_;
-  rt_stretcher_ = stretcher_new_rubberband (samplerate, 2, 1.0, 1.0, true);
+  rt_stretcher_ = stretcher_new_rubberband (samplerate_, 2, 1.0, 1.0, true);
 }
 
 AudioTrack::AudioTrack (const std::string &name, int pos, unsigned int samplerate)
-    : Track (Track::Type::Audio, name, pos, PortType::Audio, PortType::Audio)
+    : Track (Track::Type::Audio, name, pos, PortType::Audio, PortType::Audio),
+      samplerate_ (samplerate)
 {
   color_ = Color ("#19664c");
   /* signal-audio also works */
   icon_name_ = "view-media-visualization";
-  rt_stretcher_ = stretcher_new_rubberband (samplerate, 2, 1.0, 1.0, true);
+  rt_stretcher_ = stretcher_new_rubberband (samplerate_, 2, 1.0, 1.0, true);
 }
 
 bool

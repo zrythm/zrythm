@@ -13,14 +13,14 @@ test_jack_port_exists (const char * port_name)
 {
   /* get all input ports */
   const char ** ports =
-    jack_get_ports (AUDIO_ENGINE->client, port_name, NULL, 0);
+    jack_get_ports (AUDIO_ENGINE->client, port_name, nullptr, 0);
 
   bool ret = ports && ports[0] != NULL;
 
   if (ports)
     {
       int i = 0;
-      while (ports[i] != NULL)
+      while (ports[i] != nullptr)
         {
           // jack_free (ports[i]);
           i++;

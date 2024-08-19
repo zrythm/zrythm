@@ -22,20 +22,19 @@ static void
 test_region_length_in_ticks (Track * track, int bar_start, int bar_end)
 {
   Position p1, p2;
-  position_set_to_bar (&p1, bar_start);
-  position_set_to_bar (&p2, bar_end);
+  p1.set_to_bar (bar_start);
+  p2.set_to_bar (bar_end);
   Region * r = midi_region_new (&p1, &p2, track_get_name_hash (*track), 0, 0);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   GError *         err = NULL;
-  bool             success =
-    track_add_region (track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
+  bool success = track_add_region (track, r, nullptr, 0, true, false, &err);
   g_assert_true (success);
 
-  arranger_object_select (r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  r_obj->select (true, false, false);
 
   double length = arranger_selections_get_length_in_ticks (
     (ArrangerSelections *) TL_SELECTIONS);
-  g_assert_cmpfloat_with_epsilon (
+  REQUIRE_FLOAT_NEAR (
     length, TRANSPORT->ticks_per_bar * (bar_end - bar_start), 0.00001);
 }
 

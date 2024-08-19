@@ -303,25 +303,32 @@ TrackProcessor::init_after_cloning (const TrackProcessor &other)
     {
       if (!other.midi_cc_[i])
         break;
-      midi_cc_[i] = (other.midi_cc_[i]->clone_unique ());
+
+      z_return_if_fail (midi_cc_.size () == i);
+      midi_cc_.emplace_back (other.midi_cc_[i]->clone_unique ());
     }
   for (size_t i = 0; i < other.pitch_bend_.size (); i++)
     {
       if (!other.pitch_bend_[i])
         break;
-      pitch_bend_[i] = (other.pitch_bend_[i]->clone_unique ());
+      z_return_if_fail (pitch_bend_.size () == i);
+      pitch_bend_.emplace_back (other.pitch_bend_[i]->clone_unique ());
     }
   for (size_t i = 0; i < other.poly_key_pressure_.size (); i++)
     {
       if (!other.poly_key_pressure_[i])
         break;
-      poly_key_pressure_[i] = (other.poly_key_pressure_[i]->clone_unique ());
+      z_return_if_fail (poly_key_pressure_.size () == i);
+      poly_key_pressure_.emplace_back (
+        other.poly_key_pressure_[i]->clone_unique ());
     }
   for (size_t i = 0; i < other.channel_pressure_.size (); i++)
     {
       if (!other.channel_pressure_[i])
         break;
-      channel_pressure_[i] = (other.channel_pressure_[i]->clone_unique ());
+      z_return_if_fail (channel_pressure_.size () == i);
+      channel_pressure_.emplace_back (
+        other.channel_pressure_[i]->clone_unique ());
     }
 }
 

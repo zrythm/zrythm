@@ -178,7 +178,7 @@ on_dnd_drag_begin (GtkDragSource * source, GdkDrag * drag, gpointer user_data)
       /* no control & not selected */
       if (!ctrl && !selected)
         {
-          TRACKLIST_SELECTIONS->select_single (*track, F_PUBLISH_EVENTS);
+          TRACKLIST_SELECTIONS->select_single (*track, true);
         }
       else if (!ctrl && selected)
         {
@@ -432,11 +432,11 @@ on_right_click (
     {
       if (state & GDK_SHIFT_MASK || state & GDK_CONTROL_MASK)
         {
-          track->select (F_SELECT, false, true);
+          track->select (true, false, true);
         }
       else
         {
-          track->select (F_SELECT, true, true);
+          track->select (true, true, true);
         }
     }
   if (n_press == 1)
@@ -450,8 +450,7 @@ on_fold_toggled (GtkToggleButton * toggle, FolderChannelWidget * self)
 {
   bool folded = !gtk_toggle_button_get_active (toggle);
 
-  self->track->set_folded (
-    folded, F_TRIGGER_UNDO, F_AUTO_SELECT, F_PUBLISH_EVENTS);
+  self->track->set_folded (folded, F_TRIGGER_UNDO, F_AUTO_SELECT, true);
 }
 
 static void
