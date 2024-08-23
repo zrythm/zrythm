@@ -18,9 +18,6 @@ TYPEDEF_STRUCT_UNDERSCORED (VelocityWidget);
  * @{
  */
 
-#define velocity_is_selected(r) \
-  arranger_object_is_selected ((ArrangerObject *) r)
-
 /**
  * Default velocity.
  */
@@ -35,8 +32,8 @@ class Velocity final
       public ISerializable<Velocity>
 {
 public:
-  // Rule of 0
-  Velocity () : ArrangerObject (Type::Velocity) {};
+  Velocity ();
+
   /**
    * Creates a new Velocity with the given value.
    */

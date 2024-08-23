@@ -51,12 +51,18 @@
 #include <ext/midilib/src/midifile.h>
 #include <ext/midilib/src/midiutil.h>
 
+MidiRegion::MidiRegion ()
+{
+  unended_notes_.reserve (12000);
+}
+
 MidiRegion::MidiRegion (
   const Position &start_pos,
   const Position &end_pos,
   unsigned int    track_name_hash,
   int             lane_pos,
   int             idx_inside_lane)
+    : MidiRegion ()
 {
   id_.type_ = RegionType::Midi;
 
@@ -68,6 +74,7 @@ MidiRegion::MidiRegion (
   unsigned int     track_name_hash,
   int              lane_pos,
   int              idx_inside_lane)
+    : MidiRegion ()
 {
   int r_length_ticks = SNAP_GRID_TIMELINE->get_default_ticks ();
   int mn_length_ticks = SNAP_GRID_EDITOR->get_default_ticks ();
@@ -251,8 +258,8 @@ MidiRegion::MidiRegion (
             case msgNoteOff:
 handle_note_off:
               z_debug (
-                "Note off at %d "
-                "[ch %d pitch %d]",
+                "Note off at {} "
+                "[ch {} pitch {}]",
                 msg.dwAbsPos, msg.MsgData.NoteOff.iChannel,
                 msg.MsgData.NoteOff.iNote);
               {
@@ -280,8 +287,8 @@ handle_note_off:
                 }
 
               z_debug (
-                "Note on at %d "
-                "[ch %d pitch %d vel %d]",
+                "Note on at {} "
+                "[ch {} pitch {} vel {}]",
                 msg.dwAbsPos, msg.MsgData.NoteOn.iChannel,
                 msg.MsgData.NoteOn.iNote, msg.MsgData.NoteOn.iVolume);
               start_unended_note (
@@ -291,13 +298,13 @@ handle_note_off:
             case msgNoteKeyPressure:
               muGetNameFromNote (str, msg.MsgData.NoteKeyPressure.iNote);
               z_debug (
-                "(%.2d) %s %d", msg.MsgData.NoteKeyPressure.iChannel, str,
+                "(%.2d) {} {}", msg.MsgData.NoteKeyPressure.iChannel, str,
                 msg.MsgData.NoteKeyPressure.iPressure);
               break;
             case msgSetParameter:
               muGetControlName (str, msg.MsgData.NoteParameter.iControl);
               z_debug (
-                "(%.2d) %s -> %d", msg.MsgData.NoteParameter.iChannel, str,
+                "(%.2d) {} -> {}", msg.MsgData.NoteParameter.iChannel, str,
                 msg.MsgData.NoteParameter.iParam);
               break;
             case msgSetProgram:

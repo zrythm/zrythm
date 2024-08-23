@@ -49,8 +49,8 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 public:
-  PortIdentifier src_id_ = {};
-  PortIdentifier dest_id_ = {};
+  PortIdentifier src_id_;
+  PortIdentifier dest_id_;
 
   /**
    * Multiplier to apply, where applicable.

@@ -11,7 +11,7 @@
 #include "zrythm_app.h"
 
 template <typename RegionT>
-void
+bool
 RegionOwnerImpl<RegionT>::remove_region (RegionT &region, bool fire_events)
 {
   before_remove_region (region);
@@ -22,11 +22,13 @@ RegionOwnerImpl<RegionT>::remove_region (RegionT &region, bool fire_events)
   if (it_to_remove == regions_.end ())
     {
       z_warning ("region to remove not found: {}", fmt::ptr (&region));
-      return;
+      return false;
     }
+  z_trace ("removing region: {}", fmt::ptr (&region));
 
   if (is_in_active_project () && !is_auditioner ())
     {
+      // caution: this can remove lanes
       region.disconnect ();
 
 #if 0
@@ -78,6 +80,18 @@ RegionOwnerImpl<RegionT>::remove_region (RegionT &region, bool fire_events)
     }
 
   after_remove_region ();
+  return true;
+}
+
+template <typename RegionT>
+void
+RegionOwnerImpl<RegionT>::clear_regions ()
+{
+  while (!regions_.empty ())
+    {
+      remove_region (*regions_.back (), false);
+    }
+  region_snapshots_.clear ();
 }
 
 template <typename RegionT>

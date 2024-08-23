@@ -14,9 +14,6 @@
 
 TEST_SUITE_BEGIN ("dsp/audio track");
 
-constexpr int BUFFER_SIZE = 20;
-constexpr int LARGE_BUFFER_SIZE = 2000;
-
 constexpr int LOOP_BAR = 4;
 
 TEST_CASE_FIXTURE (ZrythmFixture, "fill when region starts on loop end")
@@ -47,8 +44,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "fill when region starts on loop end")
   ports.set_owner (dynamic_cast<Track *> (track));
   ports.allocate_bufs ();
 
-  /* run until loop end and make sure sample is
-   * never played */
+  /* run until loop end and make sure sample is never played */
   int      nframes = 120;
   Position pos;
   pos.set_to_bar (LOOP_BAR);
@@ -62,12 +58,11 @@ TEST_CASE_FIXTURE (ZrythmFixture, "fill when region starts on loop end")
   track->fill_events (time_nfo, ports);
   for (int j = 0; j < nframes; j++)
     {
-      REQUIRE_FLOAT_NEAR (ports.get_l ().buf_[j], 0.f, 0.0000001f);
-      REQUIRE_FLOAT_NEAR (ports.get_r ().buf_[j], 0.f, 0.0000001f);
+      REQUIRE_FLOAT_EQ (ports.get_l ().buf_[j], 0.f);
+      REQUIRE_FLOAT_EQ (ports.get_r ().buf_[j], 0.f);
     }
 
-  /* run after loop end and make sure sample is
-   * played */
+  /* run after loop end and make sure sample is played */
   pos.set_to_bar (LOOP_BAR);
   time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
   time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
@@ -84,9 +79,21 @@ TEST_CASE_FIXTURE (ZrythmFixture, "fill when region starts on loop end")
         }
       else
         {
-          REQUIRE_GT (std::abs (ports.get_l ().buf_[j]), 0.0000001f);
-          REQUIRE_GT (std::abs (ports.get_r ().buf_[j]), 0.0000001f);
+          REQUIRE_GT (std::abs (ports.get_l ().buf_[j]), 1e-10f);
+          REQUIRE_GT (std::abs (ports.get_r ().buf_[j]), 1e-10f);
         }
+    }
+  for (int i = 0; i < 2; ++i)
+    {
+      const auto clip_frames =
+        track->lanes_[0]->regions_[0]->get_clip ()->ch_frames_.getReadPointer (i);
+      const auto port_frames = ports.get_l ().buf_.data ();
+      const auto last_sample_index = nframes - 1;
+      // check greater than 0
+      REQUIRE_GT (std::abs (clip_frames[last_sample_index]), 1e-7f);
+      REQUIRE_GT (std::abs (port_frames[last_sample_index]), 1e-7f);
+      REQUIRE_FLOAT_EQ (
+        clip_frames[last_sample_index], port_frames[last_sample_index]);
     }
 }
 

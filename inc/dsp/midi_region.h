@@ -37,8 +37,7 @@ class MidiRegion final
       public ISerializable<MidiRegion>
 {
 public:
-  // Rule of 0
-  MidiRegion () = default;
+  MidiRegion ();
 
   /**
    * @brief Construct a new Midi Region object
@@ -304,7 +303,7 @@ public:
    * @note These are present in @ref midi_notes_ and must not be deleted
    * separately.
    */
-  std::vector<MidiNote *> unended_notes_ = std::vector<MidiNote *> (12000);
+  std::vector<MidiNote *> unended_notes_;
 };
 
 inline bool

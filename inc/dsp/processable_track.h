@@ -37,6 +37,19 @@ public:
    */
   void set_monitor_audio (bool monitor, bool auto_select, bool fire_events);
 
+  /**
+   * Wrapper for MIDI/instrument/chord tracks to fill in MidiEvents from the
+   * timeline data.
+   *
+   * @note The engine splits the cycle so transport loop related logic is not
+   * needed.
+   *
+   * @param midi_events MidiEvents to fill.
+   */
+  void fill_midi_events (
+    const EngineProcessTimeInfo &time_nfo,
+    MidiEventVector             &midi_events);
+
 protected:
   /**
    * Common logic for audio and MIDI/instrument tracks to fill in MidiEvents or

@@ -88,9 +88,10 @@ Region::define_base_fields (const Context &ctx)
 void
 RegionOwnedObject::define_base_fields (const Context &ctx)
 {
-  ISerializable<RegionOwnedObject>::serialize_fields (
-    ctx, ISerializable<RegionOwnedObject>::make_field ("regionId", region_id_),
-    ISerializable<RegionOwnedObject>::make_field ("index", index_));
+  using T = ISerializable<RegionOwnedObject>;
+  T::serialize_fields (
+    ctx, T::make_field ("regionId", region_id_),
+    T::make_field ("index", index_));
 }
 
 void
@@ -138,10 +139,9 @@ AutomationPoint::define_fields (const Context &ctx)
 void
 ChordObject::define_fields (const Context &ctx)
 {
-  ArrangerObject::define_base_fields (ctx);
-  MuteableObject::define_base_fields (ctx);
-  RegionOwnedObject::define_base_fields (ctx);
-
+  using T = ISerializable<ChordObject>;
+  T::call_all_base_define_fields<
+    ArrangerObject, MuteableObject, RegionOwnedObject> (ctx);
   ISerializable<ChordObject>::serialize_fields (
     ctx, ISerializable<ChordObject>::make_field ("chordIndex", chord_index_));
 }

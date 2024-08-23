@@ -52,7 +52,6 @@
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/string.h"
-#include "utils/system.h"
 #include "zrythm.h"
 
 #include <glib/gi18n.h>

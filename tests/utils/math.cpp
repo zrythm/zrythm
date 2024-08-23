@@ -1,32 +1,20 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
-
-#include <cstdlib>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "utils/math.h"
 
-#include <glib.h>
+#include "doctest_wrapper.h"
 
-static void
-test_nans_in_conversions (void)
+TEST_SUITE_BEGIN ("utils/math");
+
+TEST_CASE ("NaNs in conversions")
 {
   float ret;
   ret = math_get_fader_val_from_amp (1);
   math_assert_nonnann (ret);
 }
 
-int
-main (int argc, char * argv[])
-{
-  g_test_init (&argc, &argv, NULL);
-
-#define TEST_PREFIX "/utils/math/"
-
-  g_test_add_func (
-    TEST_PREFIX "test nans in conversions",
-    (GTestFunc) test_nans_in_conversions);
-
-  return g_test_run ();
-}
+TEST_SUITE_END;

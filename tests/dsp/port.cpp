@@ -3,6 +3,8 @@
 
 #include "zrythm-test-config.h"
 
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
 #include "tests/helpers/zrythm_helper.h"
 
 TEST_SUITE_BEGIN ("dsp/port");
@@ -20,9 +22,9 @@ test_port_disconnect (void)
     new Port (
       PortType::Audio, PortFlow::Input, "test-port2");
   port->connect_to (*port2, true);
-  g_assert_cmpint (port->dests_.size (), ==, 1);
-  g_assert_cmpint (port2->srcs_.size (), ==, 1);
-  g_assert_true (port->dests_[0] == port2);
+  REQUIRE_EQ (port->dests_.size (), 1);
+  REQUIRE_EQ (port2->srcs_.size (), 1);
+  REQUIRE (port->dests_[0] == port2);
 
   /*port->dests_[0] = NULL;*/
   port->multipliers[0] = 2.f;
@@ -33,10 +35,10 @@ test_port_disconnect (void)
     new Port (
       PortType::Audio, PortFlow::Input, "test-port3");
   port->connect_to (*port3, true);
-  g_assert_cmpint (port->dests_.size (), ==, 2);
-  g_assert_cmpint (port3->srcs_.size (), ==, 1);
-  g_assert_true (port->dests_[0] == port2);
-  g_assert_true (port->dests_[1] == port3);
+  REQUIRE_EQ (port->dests_.size (), 2);
+  REQUIRE_EQ (port3->srcs_.size (), 1);
+  REQUIRE (port->dests_[0] == port2);
+  REQUIRE (port->dests_[1] == port3);
   REQUIRE_FLOAT_NEAR (
     port->multipliers[0], 2.f, FLT_EPSILON);
   g_assert_cmpint (
@@ -51,9 +53,9 @@ test_port_disconnect (void)
     port->dest_enabled[1], ==, 1);
 
   port->disconnect_from (port2);
-  g_assert_cmpint (port->dests_.size (), ==, 1);
-  g_assert_cmpint (port2->srcs_.size (), ==, 0);
-  g_assert_true (
+  REQUIRE_EQ (port->dests_.size (), 1);
+  REQUIRE_EQ (port2->srcs_.size (), 0);
+  REQUIRE (
     port->dests_[0] == port3);
   REQUIRE_FLOAT_NEAR (
     port->multipliers[0], 1, FLT_EPSILON);
@@ -143,10 +145,8 @@ test_serialization (void)
 }
 #endif
 
-TEST_CASE ("get hash")
+TEST_CASE_FIXTURE (ZrythmFixture, "get hash")
 {
-  test_helper_zrythm_init ();
-
   AudioPort port1 ("test-port", PortFlow::Output);
   AudioPort port2 ("test-port", PortFlow::Output);
   AudioPort port3 ("test-port3", PortFlow::Output);
@@ -164,8 +164,6 @@ TEST_CASE ("get hash")
   REQUIRE_EQ (hash1, hash11);
   REQUIRE_EQ (hash2, hash22);
   REQUIRE_EQ (hash3, hash33);
-
-  test_helper_zrythm_cleanup ();
 }
 
 TEST_SUITE_END;

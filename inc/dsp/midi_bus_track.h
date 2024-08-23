@@ -25,6 +25,8 @@ class MidiBusTrack final
 public:
   void init_after_cloning (const MidiBusTrack &other) override;
 
+  void init_loaded () override;
+
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:

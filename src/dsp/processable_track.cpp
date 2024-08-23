@@ -47,6 +47,14 @@ ProcessableTrack::
 }
 
 void
+ProcessableTrack::fill_midi_events (
+  const EngineProcessTimeInfo &time_nfo,
+  MidiEventVector             &midi_events)
+{
+  fill_events_common (time_nfo, &midi_events, nullptr);
+}
+
+void
 ProcessableTrack::fill_events_common (
   const EngineProcessTimeInfo &time_nfo,
   MidiEventVector *            midi_events,
@@ -95,7 +103,7 @@ ProcessableTrack::fill_events_common (
 
         /* skip if region is not hit (inclusive of its last point) */
         if (
-          r.is_hit_by_range (
+          !r.is_hit_by_range (
             (signed_frame_t) time_nfo.g_start_frame_w_offset_,
             (signed_frame_t) (midi_events ? g_end_frames : (g_end_frames - 1)),
             true))

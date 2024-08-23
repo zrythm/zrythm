@@ -169,7 +169,8 @@ AudioFile::read_samples_interleaved (
     }
 
   interleave_buffer (buffer);
-  dsp_copy (samples, buffer.getReadPointer (0), num_frames_to_read);
+  dsp_copy (
+    samples, buffer.getReadPointer (0), num_frames_to_read * metadata_.channels);
 }
 
 void
@@ -185,25 +186,22 @@ AudioFile::read_full (
 
   read_samples_interleaved (
     false, interleaved_buffer.getWritePointer (0), 0, metadata_.num_frames);
+  deinterleave_buffer (interleaved_buffer, metadata_.channels);
 
   if (samplerate.has_value () && samplerate != metadata_.samplerate)
     {
       /* resample to project's sample rate */
       Resampler r (
-        interleaved_buffer.getReadPointer (0), metadata_.num_frames,
-        metadata_.samplerate, *samplerate, metadata_.channels,
+        interleaved_buffer, metadata_.samplerate, *samplerate,
         Resampler::Quality::VeryHigh);
       while (!r.is_done ())
         {
           r.process ();
         }
-      auto out_frames = r.get_out_frames ();
-      interleaved_buffer.setSize (1, out_frames.size ());
-      dsp_copy (
-        interleaved_buffer.getWritePointer (0), out_frames.data (),
-        out_frames.size ());
+      buffer = r.get_out_frames ();
     }
-
-  deinterleave_buffer (interleaved_buffer, metadata_.channels);
-  buffer = std::move (interleaved_buffer);
+  else
+    {
+      buffer = std::move (interleaved_buffer);
+    }
 }

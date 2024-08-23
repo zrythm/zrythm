@@ -298,22 +298,9 @@ protected:
     PortFlow    flow = (PortFlow) 0,
     float       minf = 0.f,
     float       maxf = 1.f,
-    float       zerof = 0.f)
-      : minf_ (minf), maxf_ (maxf), zerof_ (zerof)
-  {
-    id_.label_ = label;
-    id_.type_ = type;
-    id_.flow_ = flow;
-  }
+    float       zerof = 0.f);
 
-  void copy_members_from (const Port &other)
-  {
-    id_ = other.id_;
-    exposed_to_backend_ = other.exposed_to_backend_;
-    minf_ = other.minf_;
-    maxf_ = other.maxf_;
-    zerof_ = other.zerof_;
-  }
+  void copy_members_from (const Port &other);
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
@@ -447,7 +434,7 @@ public:
   /**
    * Buffer to be reallocated every time the buffer size changes.
    *
-   * The buffer size is AUDIO_ENGINE->block_length.
+   * The buffer size is AUDIO_ENGINE->block_length_.
    *
    * Used only by CV and Audio ports.
    */

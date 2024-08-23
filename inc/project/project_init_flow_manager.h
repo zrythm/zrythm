@@ -78,23 +78,11 @@ private:
     std::string              error,
     ProjectInitFlowManager * flow_mgr);
 
-  void append_callback (ProjectInitDoneCallback cb, void * user_data)
-  {
-    callbacks_.push_back (std::make_pair (cb, user_data));
-  }
+  void append_callback (ProjectInitDoneCallback cb, void * user_data);
 
-  void call_last_callback (bool success, std::string error)
-  {
-    auto &cb = callbacks_.back ();
-    cb.first (success, error, cb.second);
-    callbacks_.pop_back ();
-  }
-
-  void call_last_callback_fail (std::string error)
-  {
-    call_last_callback (false, error);
-  }
-  void call_last_callback_success () { call_last_callback (true, ""); }
+  void call_last_callback (bool success, std::string error);
+  void call_last_callback_fail (std::string error);
+  void call_last_callback_success ();
 
   static void recreate_main_window ();
 

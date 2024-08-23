@@ -200,8 +200,12 @@ public:
 
   /**
    * Initializes the selections in the project.
+   *
+   * @param including_arranger_selections Whether to also initialize the
+   * arranger selections to zero (sometimes we want to keep them, eg, when this
+   * is called after deserialization of a project to load).
    */
-  COLD void init_selections ();
+  COLD void init_selections (bool including_arranger_selections = true);
 
   /**
    * Compresses/decompress a project from a file/data to a file/data.

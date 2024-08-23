@@ -22,7 +22,7 @@
 #include "utils/dsp.h"
 #include "utils/flags.h"
 #include "utils/io.h"
-#include "utils/log.h"
+#include "utils/logger.h"
 #include "utils/objects.h"
 #include "utils/ui.h"
 #include "zrythm.h"

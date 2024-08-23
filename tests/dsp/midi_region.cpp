@@ -1,8 +1,10 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: © 2022 Robert Panovics <robert.panovics@gmail.com>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
+
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "actions/tracklist_selections.h"
 #include "dsp/midi_region.h"
@@ -17,57 +19,50 @@
 
 #include "tests/helpers/zrythm_helper.h"
 
-static void
-test_export (void)
+TEST_SUITE_BEGIN ("dsp/midi region");
+
+TEST_CASE ("export")
 {
-  const int max_files = 20;
+  constexpr auto max_files = 20;
 
-  char ** midi_files = io_get_files_in_dir_ending_in (
-    MIDILIB_TEST_MIDI_FILES_PATH, F_RECURSIVE, ".MID", false);
-  g_assert_nonnull (midi_files);
-  char * export_dir = g_dir_make_tmp ("test_midi_export_XXXXXX", NULL);
-  char * midi_file;
+  auto midi_files = io_get_files_in_dir_ending_in (
+    MIDILIB_TEST_MIDI_FILES_PATH, F_RECURSIVE, ".MID");
+  char * export_dir = g_dir_make_tmp ("test_midi_export_XXXXXX", nullptr);
   int    iter = 0;
-  while ((midi_file = midi_files[iter++]))
+  for (auto &midi_file : midi_files)
     {
-      g_message ("testing %s", midi_file);
+      z_info ("testing {}", midi_file);
 
-      test_helper_zrythm_init ();
+      ZrythmFixture fixture;
 
-      FileDescriptor file = FileDescriptor (midi_file);
-      track_create_with_action (
-        TrackType::TRACK_TYPE_MIDI, NULL, &file, PLAYHEAD,
-        TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
+      FileDescriptor file (midi_file.toStdString ());
+      Track::create_with_action (
+        Track::Type::Midi, nullptr, &file, &PLAYHEAD,
+        TRACKLIST->get_num_tracks (), 1, -1, nullptr);
 
-      Track * track = tracklist_get_last_track (
-        TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, true);
+      auto track = TRACKLIST->get_last_track<MidiTrack> ();
 
-      g_assert_cmpint (track->num_lanes, >, 0);
-      g_assert_cmpint (track->lanes[0]->num_regions, >, 0);
-      Region * region = track->lanes[0]->regions[0];
-      g_assert_true (IS_REGION (region));
+      REQUIRE_NONEMPTY (track->lanes_);
+      REQUIRE_NONEMPTY (track->lanes_[0]->regions_);
+      const auto &region = track->lanes_[0]->regions_[0];
 
-      char * basename = g_path_get_basename (midi_file);
-      char * export_filepath = g_build_filename (export_dir, basename, NULL);
+      auto basename = Glib::path_get_basename (midi_file.toStdString ());
+      auto export_filepath = Glib::build_filename (export_dir, basename);
 
       /* export the region again */
-      midi_region_export_to_midi_file (region, export_filepath, 0, false);
-      midi_region_export_to_midi_file (region, export_filepath, 0, true);
+      region->export_to_midi_file (export_filepath, 0, false);
+      region->export_to_midi_file (export_filepath, 0, true);
 
-      g_assert_true (g_file_test (
-        export_filepath, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR));
+      REQUIRE (Glib::file_test (
+        export_filepath, Glib::FileTest::EXISTS | Glib::FileTest::IS_REGULAR));
 
       io_remove (export_filepath);
 
-      g_free (basename);
-      g_free (export_filepath);
+      REQUIRE_FALSE (Glib::file_test (export_filepath, Glib::FileTest::EXISTS));
 
-      test_helper_zrythm_cleanup ();
-
-      if (iter == max_files)
+      if (iter++ == max_files)
         break;
     }
-  g_strfreev (midi_files);
 
   io_rmdir (export_dir, true);
 }
@@ -85,124 +80,84 @@ static const double full_export_test_loop_positions[] = {
   3840.0, 7680.0
 };
 
-static void
-compare_files_hash (const char * filepath1, const char * filepath2)
-{
-  g_message ("Comparing: %s - %s", filepath1, filepath2);
-
-  g_assert_true (
-    g_file_test (filepath1, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR));
-  g_assert_true (
-    g_file_test (filepath2, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR));
-  uint32_t file1_hash = hash_get_from_file_simple (filepath1);
-  uint32_t file2_hash = hash_get_from_file_simple (filepath2);
-
-  g_assert_true (file1_hash == file2_hash);
-}
-
-static void
-setup_region_for_full_export (Region * region)
-{
-  Position clip_start_pos;
-  position_init (&clip_start_pos);
-  position_from_ticks (&clip_start_pos, 1920.0);
-
-  position_add_ticks (&((ArrangerObject *) region)->pos, 1920.0);
-  position_add_ticks (&((ArrangerObject *) region)->end_pos, 960.0);
-  arranger_object_clip_start_pos_setter (
-    (ArrangerObject *) region, &clip_start_pos);
-}
-
-static void
-test_full_export (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "full export")
 {
   const int number_of_loop_tests =
     sizeof (full_export_test_loop_positions) / sizeof (double) / 2;
 
-  char * base_midi_file = g_build_filename (TESTS_SRCDIR, "loopbase.mid", NULL);
+  auto base_midi_file = Glib::build_filename (TESTS_SRCDIR, "loopbase.mid");
 
-  g_assert_true (
-    g_file_test (base_midi_file, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR));
+  REQUIRE (Glib::file_test (
+    base_midi_file, Glib::FileTest::EXISTS | Glib::FileTest::IS_REGULAR));
 
-  char * export_dir = g_dir_make_tmp ("test_midi_full_export_XXXXXX", NULL);
+  char * export_dir = g_dir_make_tmp ("test_midi_full_export_XXXXXX", nullptr);
 
-  test_helper_zrythm_init ();
+  FileDescriptor file (base_midi_file);
+  Track::create_with_action (
+    Track::Type::Midi, nullptr, &file, &PLAYHEAD, TRACKLIST->get_num_tracks (),
+    1, -1, nullptr);
 
-  FileDescriptor file = FileDescriptor (base_midi_file);
-  track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, &file, PLAYHEAD,
-    TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
+  auto track = TRACKLIST->get_last_track<MidiTrack> ();
 
-  Track * track = tracklist_get_last_track (
-    TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, true);
+  REQUIRE_NONEMPTY (track->lanes_);
+  REQUIRE_NONEMPTY (track->lanes_[0]->regions_);
+  auto region = track->lanes_[0]->regions_[0];
 
-  g_assert_cmpint (track->num_lanes, >, 0);
-  g_assert_cmpint (track->lanes[0]->num_regions, >, 0);
-  Region * region = track->lanes[0]->regions[0];
-  g_assert_true (IS_REGION (region));
+  auto setup_region_for_full_export = [] (auto &region) {
+    Position clip_start_pos{ 1920.0 };
+
+    region->pos_.add_ticks (1920.0);
+    region->end_pos_.add_ticks (960.0);
+    region->clip_start_pos_setter (&clip_start_pos);
+  };
 
   setup_region_for_full_export (region);
 
+  auto compare_files_hash = [] (const auto &filepath1, const auto &filepath2) {
+    z_info ("Comparing: {} - {}", filepath1, filepath2);
+
+    REQUIRE (Glib::file_test (
+      filepath1, Glib::FileTest::EXISTS | Glib::FileTest::IS_REGULAR));
+    REQUIRE (Glib::file_test (
+      filepath2, Glib::FileTest::EXISTS | Glib::FileTest::IS_REGULAR));
+    uint32_t file1_hash = hash_get_from_file_simple (filepath1.c_str ());
+    uint32_t file2_hash = hash_get_from_file_simple (filepath2.c_str ());
+
+    REQUIRE_EQ (file1_hash, file2_hash);
+  };
+
   for (int iter = 0; iter < number_of_loop_tests; ++iter)
     {
-      POSITION_INIT_ON_STACK (loop_start_pos);
-      POSITION_INIT_ON_STACK (loop_end_pos);
-      position_from_ticks (
-        &loop_start_pos, full_export_test_loop_positions[iter * 2]);
-      position_from_ticks (
-        &loop_end_pos, full_export_test_loop_positions[iter * 2 + 1]);
+      Position loop_start_pos;
+      Position loop_end_pos;
+      loop_start_pos.from_ticks (full_export_test_loop_positions[iter * 2]);
+      loop_end_pos.from_ticks (full_export_test_loop_positions[iter * 2 + 1]);
 
-      g_message (
-        "testing loop %lf, %lf", loop_start_pos.ticks, loop_end_pos.ticks);
+      region->loop_start_pos_setter (&loop_start_pos);
+      region->loop_end_pos_setter (&loop_end_pos);
 
-      arranger_object_loop_start_pos_setter (
-        (ArrangerObject *) region, &loop_start_pos);
-      arranger_object_loop_end_pos_setter (
-        (ArrangerObject *) region, &loop_end_pos);
+      auto export_file_name = fmt::format ("loopbase{}.mid", iter);
+      auto export_filepath = Glib::build_filename (export_dir, export_file_name);
 
-      char export_file_name[20];
-      sprintf (export_file_name, "loopbase%d.mid", iter);
-      char * export_filepath =
-        g_build_filename (export_dir, export_file_name, NULL);
-
-      midi_region_export_to_midi_file (region, export_filepath, 0, false);
+      region->export_to_midi_file (export_filepath, 0, false);
 
       compare_files_hash (base_midi_file, export_filepath);
 
       io_remove (export_filepath);
-      g_free (export_filepath);
 
-      sprintf (export_file_name, "loop%d.mid", iter);
-      export_filepath = g_build_filename (export_dir, export_file_name, NULL);
+      export_file_name = fmt::format ("loop{}.mid", iter);
+      export_filepath = Glib::build_filename (export_dir, export_file_name);
 
-      char reference_file_name[20];
-      sprintf (reference_file_name, "loop%d_ref.mid", iter);
-      char * reference_filepath =
-        g_build_filename (TESTS_SRCDIR, reference_file_name, NULL);
+      auto reference_file_name = fmt::format ("loop{}_ref.mid", iter);
+      auto reference_filepath =
+        Glib::build_filename (TESTS_SRCDIR, reference_file_name);
 
-      midi_region_export_to_midi_file (region, export_filepath, 0, true);
+      region->export_to_midi_file (export_filepath, 0, true);
 
       compare_files_hash (reference_filepath, export_filepath);
       io_remove (export_filepath);
-
-      g_free (reference_filepath);
-      g_free (export_filepath);
     }
-
-  test_helper_zrythm_cleanup ();
   io_rmdir (export_dir, true);
-  g_free (base_midi_file);
 }
 
-int
-main (int argc, char * argv[])
-{
-  g_test_init (&argc, &argv, NULL);
-
-#define TEST_PREFIX "/audio/midi_region/"
-
-  g_test_add_func (TEST_PREFIX "test full export", (GTestFunc) test_full_export);
-  g_test_add_func (TEST_PREFIX "test export", (GTestFunc) test_export);
-
-  return g_test_run ();
-}
+TEST_SUITE_END;

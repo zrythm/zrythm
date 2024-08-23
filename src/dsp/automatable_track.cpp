@@ -26,12 +26,11 @@ AutomatableTrack::init_loaded ()
 
   std::vector<Port *> ports;
   append_ports (ports, true);
-  const Track &track = dynamic_cast<Track &> (*this);
-  unsigned int name_hash = track.get_name_hash ();
+  unsigned int name_hash = get_name_hash ();
   for (auto &port : ports)
     {
       port->track_ = this;
-      if (track.is_in_active_project ())
+      if (is_in_active_project ())
         {
           z_return_if_fail (port->id_.track_name_hash_ == name_hash);
 

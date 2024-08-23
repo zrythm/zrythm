@@ -355,7 +355,7 @@ RegionImpl<RegionT>::insert_object (
   int                     index,
   bool                    fire_events) requires RegionWithChildren<RegionT>
 {
-  auto objects = get_objects_vector ();
+  auto &objects = get_objects_vector ();
   objects.insert (objects.begin () + index, std::move (obj));
   for (size_t i = index; i < objects.size (); ++i)
     {
@@ -830,6 +830,7 @@ RegionImpl<RegionT>::update_identifier ()
   /* reset link group */
   set_link_group (id_.link_group_, false);
 
+  track_name_hash_ = id_.track_name_hash_;
   if constexpr (RegionWithChildren<RegionT>)
     {
       auto objs = get_objects ();
@@ -871,7 +872,7 @@ RegionImpl<RegionT>::remove_object (ChildT &obj, bool fire_events) requires
   using SharedPtrType = std::shared_ptr<ChildT>;
   using ObjVectorType = std::vector<SharedPtrType>;
 
-  auto remove_type = [&] (ObjVectorType objects, ChildT &_obj) -> SharedPtrType {
+  auto remove_type = [&] (ObjVectorType &objects, ChildT &_obj) -> SharedPtrType {
     /* find the object in the list */
     auto it = std::ranges::find_if (
       objects.begin (), objects.end (),

@@ -20,6 +20,15 @@ MidiGroupTrack::initialize ()
 }
 
 void
+MidiGroupTrack::init_loaded ()
+{
+  // ChannelTrack must be initialized before AutomatableTrack
+  ChannelTrack::init_loaded ();
+  AutomatableTrack::init_loaded ();
+  ProcessableTrack::init_loaded ();
+}
+
+void
 MidiGroupTrack::init_after_cloning (const MidiGroupTrack &other)
 {
   FoldableTrack::copy_members_from (other);

@@ -1,7 +1,9 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
+
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "dsp/master_track.h"
 #include "dsp/midi_mapping.h"
@@ -13,46 +15,33 @@
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
-static void
-test_midi_mappping (void)
+TEST_SUITE_BEGIN ("dsp/midi mapping");
+
+TEST_CASE_FIXTURE (ZrythmFixture, "midi mapping")
 {
-  MidiMappings * mappings = midi_mappings_new ();
-  g_assert_nonnull (mappings);
-  free (mappings);
+  MidiMappings mappings;
 
-  ExtPort * ext_port = object_new (ExtPort);
-  ext_port->type = ExtPortType::EXT_PORT_TYPE_RTAUDIO;
-  ext_port->full_name = g_strdup ("ext port1");
-  ext_port->short_name = g_strdup ("extport1");
+  ExtPort ext_port;
+  ext_port.type_ = ExtPort::Type::RtAudio;
+  ext_port.full_name_ = "ext port1";
+  ext_port.short_name_ = "extport1";
 
-  midi_byte_t buf[3] = { 0xB0, 0x07, 121 };
-  midi_mappings_bind_device (
-    MIDI_MAPPINGS, buf, ext_port, P_MASTER_TRACK->channel->fader->amp, false);
-  g_assert_cmpint (MIDI_MAPPINGS->num_mappings, ==, 1);
+  std::array<midi_byte_t, 3> buf = { 0xB0, 0x07, 121 };
+  MIDI_MAPPINGS->bind_device (
+    buf, &ext_port, *P_MASTER_TRACK->channel_->fader_->amp_, false);
+  REQUIRE_SIZE_EQ (MIDI_MAPPINGS->mappings_, 1);
 
-  int size = midi_mappings_get_for_port (
-    MIDI_MAPPINGS, P_MASTER_TRACK->channel->fader->amp, nullptr);
-  g_assert_cmpint (size, ==, 1);
+  int size = MIDI_MAPPINGS->get_for_port (
+    *P_MASTER_TRACK->channel_->fader_->amp_, nullptr);
+  REQUIRE_EQ (size, 1);
 
-  midi_mappings_apply (MIDI_MAPPINGS, buf);
+  MIDI_MAPPINGS->apply (buf.data ());
 
   test_project_save_and_reload ();
 
-  g_assert_true (
-    P_MASTER_TRACK->channel->fader->amp == MIDI_MAPPINGS->mappings[0]->dest);
+  REQUIRE_EQ (
+    P_MASTER_TRACK->channel_->fader_->amp_.get (),
+    MIDI_MAPPINGS->mappings_[0]->dest_);
 }
 
-int
-main (int argc, char * argv[])
-{
-  g_test_init (&argc, &argv, nullptr);
-
-  test_helper_zrythm_init ();
-
-#define TEST_PREFIX "/audio/midi_mapping/"
-
-  g_test_add_func (
-    TEST_PREFIX "test midi mapping", (GTestFunc) test_midi_mappping);
-
-  return g_test_run ();
-}
+TEST_SUITE_END;

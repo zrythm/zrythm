@@ -93,7 +93,8 @@ AutomationPoint::init_after_cloning (const AutomationPoint &other)
         && math_assert_nonnann (other.fvalue_));
     }
 
-  AutomationPoint (other.fvalue_, other.normalized_val_, other.pos_);
+  fvalue_ = other.fvalue_;
+  normalized_val_ = other.normalized_val_;
   curve_opts_ = other.curve_opts_;
   region_id_ = other.region_id_;
   index_ = other.index_;

@@ -104,11 +104,7 @@ public:
 protected:
   ChannelTrack ();
 
-  void copy_members_from (const ChannelTrack &other)
-  {
-    channel_ = other.channel_->clone_shared ();
-    channel_->track_ = this;
-  }
+  void copy_members_from (const ChannelTrack &other);
 
   /**
    * @brief Initializes the channel.

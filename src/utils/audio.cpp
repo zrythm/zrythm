@@ -183,7 +183,7 @@ audio_files_equal (
  * Returns whether the frame buffer is empty (zero).
  */
 bool
-audio_frames_empty (float * src, size_t num_frames)
+audio_frames_empty (const float * src, size_t num_frames)
 {
   for (size_t i = 0; i < num_frames; i++)
     {
@@ -209,7 +209,7 @@ audio_file_is_silent (const char * filepath)
   float * data =
     static_cast<float *> (calloc ((size_t) buf_size, sizeof (float)));
   sf_count_t frames_read = sf_readf_float (sndfile, data, sfinfo.frames);
-  g_assert_cmpint (frames_read, ==, sfinfo.frames);
+  REQUIRE_EQ (frames_read, sfinfo.frames);
   z_return_val_if_fail (frames_read == sfinfo.frames, true);
   z_debug ("read {} frames for {}", frames_read, filepath);
 

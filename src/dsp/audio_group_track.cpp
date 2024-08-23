@@ -21,6 +21,15 @@ AudioGroupTrack::initialize ()
 }
 
 void
+AudioGroupTrack::init_loaded ()
+{
+  // ChannelTrack must be initialized before AutomatableTrack
+  ChannelTrack::init_loaded ();
+  AutomatableTrack::init_loaded ();
+  ProcessableTrack::init_loaded ();
+}
+
+void
 AudioGroupTrack::init_after_cloning (const AudioGroupTrack &other)
 {
   FoldableTrack::copy_members_from (other);

@@ -1,19 +1,10 @@
-// SPDX-FileCopyrightText: © 2018-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * @file
- *
- * Port identifier.
- */
 
 #ifndef __AUDIO_PORT_IDENTIFIER_H__
 #define __AUDIO_PORT_IDENTIFIER_H__
 
 #include "zrythm-config.h"
-
-#include <cstddef>
-#include <cstdint>
 
 #include "plugins/plugin_identifier.h"
 #include "utils/types.h"

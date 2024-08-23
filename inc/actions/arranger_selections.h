@@ -292,7 +292,7 @@ public:
    *
    * Can be ignored depending on the action.
    */
-  bool first_run_ = true;
+  bool first_run_ = false;
 
   /** QuantizeOptions clone, if quantizing. */
   std::unique_ptr<QuantizeOptions> opts_;

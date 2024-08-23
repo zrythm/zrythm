@@ -50,14 +50,7 @@ public:
     tracks_.emplace_back (clone_unique_with_variant<TrackVariant> (&track));
   }
 
-  void init_after_cloning (const TracklistSelections &other) override
-  {
-    for (auto &track : other.tracks_)
-      {
-        tracks_.emplace_back (
-          clone_unique_with_variant<TrackVariant> (track.get ()));
-      }
-  }
+  void init_after_cloning (const TracklistSelections &other) override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

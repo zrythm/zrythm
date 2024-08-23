@@ -69,6 +69,11 @@ ChordTrack::set_playback_caches ()
 void
 ChordTrack::init_loaded ()
 {
+  // ChannelTrack must be initialized before AutomatableTrack
+  ChannelTrack::init_loaded ();
+  AutomatableTrack::init_loaded ();
+  ProcessableTrack::init_loaded ();
+  RecordableTrack::init_loaded ();
   for (auto &scale : scales_)
     {
       scale->init_loaded ();

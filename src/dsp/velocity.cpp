@@ -15,11 +15,13 @@
 
 #include "gtk_wrapper.h"
 
+Velocity::Velocity () : ArrangerObject (Type::Velocity) {};
+
 Velocity::Velocity (MidiNote * midi_note, const uint8_t vel)
-    : RegionOwnedObjectImpl<MidiRegion> (midi_note->region_id_),
+    : ArrangerObject (Type::Velocity),
+      RegionOwnedObjectImpl<MidiRegion> (midi_note->region_id_),
       midi_note_ (midi_note), vel_ (vel)
 {
-  Velocity ();
 }
 
 ArrangerWidget *

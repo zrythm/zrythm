@@ -82,10 +82,10 @@ InstrumentTrack::init_after_cloning (const InstrumentTrack &other)
 void
 InstrumentTrack::init_loaded ()
 {
+  // ChannelTrack must be initialized before AutomatableTrack
+  ChannelTrack::init_loaded ();
   AutomatableTrack::init_loaded ();
   ProcessableTrack::init_loaded ();
-  ChannelTrack::init_loaded ();
-  GroupTargetTrack::init_loaded ();
   RecordableTrack::init_loaded ();
   LanedTrackImpl<MidiRegion>::init_loaded ();
   PianoRollTrack::init_loaded ();

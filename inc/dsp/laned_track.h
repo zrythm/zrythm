@@ -120,13 +120,7 @@ public:
 
   bool validate () const override;
 
-  void clear_objects () override
-  {
-    for (auto &lane : lanes_)
-      {
-        lane->clear_regions ();
-      }
-  }
+  void clear_objects () override;
 
   void get_regions_in_range (
     std::vector<Region *> &regions,

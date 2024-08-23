@@ -638,7 +638,7 @@ public:
   std::vector<MidiPort *>    midi_in_ports_;
 
   /** Cache. */
-  MidiPort * midi_in_port_;
+  MidiPort * midi_in_port_ = nullptr;
 
   /** Outgoing ports. */
   std::vector<std::unique_ptr<Port>> out_ports_;
@@ -760,7 +760,7 @@ public:
 
   /** Temporary variable to check if plugin is currently undergoing
    * deactivation. */
-  bool deactivating_;
+  bool deactivating_ = false;
 
   /**
    * Set to true to avoid sending multiple ET_PLUGIN_STATE_CHANGED for the
@@ -769,7 +769,7 @@ public:
   std::atomic<bool> state_changed_event_sent_ = false;
 
   /** Whether the plugin is used for functions. */
-  bool is_function_;
+  bool is_function_ = false;
 
   /** Pointer to owner track, if any. */
   AutomatableTrack * track_;

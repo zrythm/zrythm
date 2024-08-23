@@ -447,7 +447,7 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
                   events.add_raw (&beat_msg, 1, midi_time);
 #if 0
                       z_debug (
-                        "(i = %d) time {} / {}", i, midi_time,
+                        "(i = {}) time {} / {}", i, midi_time,
                         time_nfo.local_offset + time_nfo.nframes_);
 #endif
                 }

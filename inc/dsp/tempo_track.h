@@ -48,6 +48,8 @@ public:
    */
   void clear_objects () override;
 
+  void init_loaded () override;
+
   /**
    * Returns the BPM at the given pos.
    */

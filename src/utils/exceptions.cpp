@@ -10,6 +10,12 @@
 
 #include <fmt/format.h>
 
+ZrythmException::ZrythmException (const std::string &message)
+    : message_ (message)
+{
+  z_warning ("Exception:\n" + message);
+}
+
 template <typename... Args>
 AdwDialog *
 ZrythmException::handle (const std::string &format, Args &&... args) const

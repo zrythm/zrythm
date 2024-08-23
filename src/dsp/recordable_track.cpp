@@ -30,7 +30,7 @@ void
 RecordableTrack::set_recording (bool recording, bool fire_events)
 {
   z_debug (
-    "%s: setting recording %d (fire events: %d)", name_, recording, fire_events);
+    "{}: setting recording {} (fire events: {})", name_, recording, fire_events);
 
   recording_->set_toggled (recording, false);
 

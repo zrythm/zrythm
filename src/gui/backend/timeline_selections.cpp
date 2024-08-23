@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <typeinfo>
+
 #include "dsp/chord_track.h"
 #include "dsp/engine.h"
 #include "dsp/marker_track.h"
@@ -98,22 +100,30 @@ TimelineSelections::sort_by_indices (bool desc)
     objects_.begin (), objects_.end (),
     [desc, sort_regions] (const auto &a, const auto &b) {
       bool ret = false;
-      if (a->is_region ())
+      z_trace ("sorting {} {}", typeid (*a).name (), typeid (*b).name ());
+      if (typeid (*a) == typeid (*b))
         {
-          ret = sort_regions (
-            dynamic_cast<Region &> (*a), dynamic_cast<Region &> (*b));
+          if (a->is_region ())
+            {
+              ret = sort_regions (
+                dynamic_cast<Region &> (*a), dynamic_cast<Region &> (*b));
+            }
+          else if (a->is_scale_object ())
+            {
+              ret =
+                dynamic_cast<ScaleObject &> (*a).index_in_chord_track_
+                < dynamic_cast<ScaleObject &> (*b).index_in_chord_track_;
+            }
+          else if (a->is_marker ())
+            {
+              ret =
+                dynamic_cast<Marker &> (*a).marker_track_index_
+                < dynamic_cast<Marker &> (*b).marker_track_index_;
+            }
         }
-      else if (a->is_scale_object ())
+      else
         {
-          ret =
-            dynamic_cast<ScaleObject &> (*a).index_in_chord_track_
-            < dynamic_cast<ScaleObject &> (*b).index_in_chord_track_;
-        }
-      else if (a->is_marker ())
-        {
-          ret =
-            dynamic_cast<Marker &> (*a).marker_track_index_
-            < dynamic_cast<Marker &> (*b).marker_track_index_;
+          ret = std::type_index (typeid (*a)) < std::type_index (typeid (*b));
         }
       return desc ? !ret : ret;
     });

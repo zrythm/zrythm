@@ -25,16 +25,9 @@ class MidiTrack final
   friend class InitializableObjectFactory<MidiTrack>;
 
 public:
-  void init_loaded () override
-  {
-    PianoRollTrack::init_loaded ();
-    ChannelTrack::init_loaded ();
-  }
+  void init_loaded () override;
 
-  bool validate () const override
-  {
-    return ChannelTrack::validate () && PianoRollTrack::validate ();
-  }
+  bool validate () const override;
 
   void init_after_cloning (const MidiTrack &other) override;
 

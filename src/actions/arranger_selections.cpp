@@ -25,12 +25,16 @@
 
 #include <glib/gi18n.h>
 
-ArrangerSelectionsAction::ArrangerSelectionsAction () { }
+ArrangerSelectionsAction::ArrangerSelectionsAction ()
+    : UndoableAction (UndoableAction::Type::ArrangerSelections)
+{
+}
 
 ArrangerSelectionsAction::ArrangerSelectionsAction (
   const ArrangerSelections &sel,
   Type                      type)
-    : UndoableAction (UndoableAction::Type::ArrangerSelections), type_ (type)
+    : UndoableAction (UndoableAction::Type::ArrangerSelections), type_ (type),
+      first_run_ (true)
 {
   set_before_selections (sel);
 }
@@ -53,6 +57,7 @@ void
 ArrangerSelectionsAction::init_after_cloning (
   const ArrangerSelectionsAction &other)
 {
+  UndoableAction::copy_members_from (other);
   type_ = other.type_;
   if (other.sel_)
     sel_ =
@@ -395,12 +400,15 @@ ArrangerSelectionsAction::update_region_link_groups (const auto &objects)
 
       if (obj->owned_by_region ())
         {
-          auto owned_obj = dynamic_cast<const RegionOwnedObject *> (obj.get ());
-          Region * region = owned_obj->get_region ();
-          z_return_if_fail (region);
+          std::visit (
+            [&] (auto &&owned_obj) {
+              Region * region = owned_obj->get_region ();
+              z_return_if_fail (region);
 
-          /* shift all linked objects */
-          region->update_link_group ();
+              /* shift all linked objects */
+              region->update_link_group ();
+            },
+            convert_to_variant<RegionOwnedObjectPtrVariant> (obj.get ()));
         }
     }
 }
@@ -427,116 +435,128 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
     {
       for (auto &own_obj : sel_->objects_)
         {
-          own_obj->flags_ |= ArrangerObject::Flags::NonProject;
+          std::visit (
+            [&] (auto &&own_obj_ptr) {
+              using ObjT = base_type<decltype (own_obj_ptr)>;
+              own_obj_ptr->flags_ |= ArrangerObject::Flags::NonProject;
 
-          /* get the actual object from the project */
-          auto obj = own_obj->find_in_project ();
-          z_return_if_fail (obj);
+              /* get the actual object from the project */
+              auto prj_obj = std::dynamic_pointer_cast<ObjT> (
+                own_obj_ptr->find_in_project ());
+              z_return_if_fail (prj_obj);
 
-          /* remember if automation point */
-          if (obj->type_ == ArrangerObject::Type::AutomationPoint)
-            {
-              auto ap = dynamic_pointer_cast<AutomationPoint> (obj);
-              z_return_if_fail (ap);
-              obj_map[ap.get ()] =
-                dynamic_cast<AutomationPoint *> (own_obj.get ());
-            }
-
-          if (!math_doubles_equal (ticks, 0.0))
-            {
-              /* shift the actual object */
-              obj->move (ticks);
-
-              /* also shift the copy */
-              own_obj->move (ticks);
-            }
-
-          if (delta_tracks != 0 || delta_lanes != 0)
-            {
-              /* shift the actual object */
-              move_obj_by_tracks_and_lanes (
-                *obj, delta_tracks, delta_lanes, false, -1);
-
-              /* remember new info in own copy */
-              own_obj->copy_identifier (*obj);
-            }
-
-          if (delta_pitch != 0)
-            {
-              z_return_if_fail (obj->type_ == ArrangerObject::Type::MidiNote);
-
-              auto mn = dynamic_pointer_cast<MidiNote> (obj);
-
-              /* shift the actual object */
-              mn->shift_pitch (delta_pitch);
-
-              /* also shift the copy so they can match */
-              dynamic_cast<MidiNote *> (own_obj.get ())
-                ->shift_pitch (delta_pitch);
-            }
-
-          if (delta_chords != 0)
-            {
-              z_return_if_fail (obj->type_ == ArrangerObject::Type::ChordObject);
-              auto co = dynamic_pointer_cast<ChordObject> (obj);
-
-              /* shift the actual object */
-              co->chord_index_ += delta_chords;
-
-              /* also shift the copy so they can match */
-              dynamic_cast<ChordObject *> (own_obj.get ())->chord_index_ +=
-                delta_chords;
-            }
-
-          /* if moving automation */
-          if (target_port_)
-            {
-              z_return_if_fail (obj->type_ == ArrangerObject::Type::Region);
-              auto r = dynamic_pointer_cast<AutomationRegion> (obj);
-              z_return_if_fail (r->id_.type_ == RegionType::Automation);
-              auto cur_at = r->get_automation_track ();
-              z_return_if_fail (cur_at);
-              auto port =
-                Port::find_from_identifier<ControlPort> (*target_port_);
-              z_return_if_fail (port);
-              auto track =
-                dynamic_cast<AutomatableTrack *> (port->get_track (true));
-              z_return_if_fail (track);
-              AutomationTrack * at =
-                AutomationTrack::find_from_port (*port, track, true);
-              z_return_if_fail (at);
-
-              /* move the actual object */
-              r->move_to_track (track, at->index_, -1);
-
-              /* remember info in identifier */
-              auto r_own = dynamic_cast<AutomationRegion *> (own_obj.get ());
-              r_own->id_ = r->id_;
-
-              target_port_ = std::make_unique<PortIdentifier> (cur_at->port_id_);
-            }
-
-          if (!math_doubles_equal (delta_normalized_amt, 0.0))
-            {
-              if (obj->type_ == ArrangerObject::Type::AutomationPoint)
+              /* remember if automation point */
+              if constexpr (std::is_same_v<ObjT, AutomationPoint>)
                 {
-                  auto ap = dynamic_pointer_cast<AutomationPoint> (obj);
-
-                  /* shift the actual object */
-                  ap->set_fvalue (
-                    ap->normalized_val_
-                      + static_cast<float> (delta_normalized_amt),
-                    true, false);
-
-                  /* also shift the copy so they can match */
-                  auto copy_ap =
-                    dynamic_cast<AutomationPoint *> (own_obj.get ());
-                  copy_ap->set_fvalue (
-                    copy_ap->normalized_val_
-                      + static_cast<float> (delta_normalized_amt),
-                    true, false);
+                  obj_map[prj_obj.get ()] = own_obj_ptr;
                 }
-            }
+
+              if (!math_doubles_equal (ticks, 0.0))
+                {
+                  /* shift the actual object */
+                  prj_obj->move (ticks);
+
+                  /* also shift the copy */
+                  own_obj_ptr->move (ticks);
+                }
+
+              if (delta_tracks != 0 || delta_lanes != 0)
+                {
+                  /* shift the actual object */
+                  move_obj_by_tracks_and_lanes (
+                    *prj_obj, delta_tracks, delta_lanes, false, -1);
+
+                  /* remember new info in own copy */
+                  own_obj_ptr->copy_identifier (*prj_obj);
+                }
+
+              if (delta_pitch != 0)
+                {
+                  if constexpr (std::is_same_v<ObjT, MidiNote>)
+                    {
+                      /* shift the actual object */
+                      prj_obj->shift_pitch (delta_pitch);
+
+                      /* also shift the copy so they can match */
+                      own_obj_ptr->shift_pitch (delta_pitch);
+                    }
+                  else
+                    {
+                      z_return_if_reached ();
+                    }
+                }
+
+              if (delta_chords != 0)
+                {
+                  if constexpr (std::is_same_v<ObjT, ChordObject>)
+                    {
+                      /* shift the actual object */
+                      prj_obj->chord_index_ += delta_chords;
+
+                      /* also shift the copy so they can match */
+                      own_obj_ptr->chord_index_ += delta_chords;
+                    }
+                  else
+                    {
+                      z_return_if_reached ();
+                    }
+                }
+
+              /* if moving automation */
+              if (target_port_)
+                {
+                  if constexpr (std::is_same_v<ObjT, AutomationRegion>)
+                    {
+                      auto cur_at = prj_obj->get_automation_track ();
+                      z_return_if_fail (cur_at);
+                      auto port =
+                        Port::find_from_identifier<ControlPort> (*target_port_);
+                      z_return_if_fail (port);
+                      auto track = dynamic_cast<AutomatableTrack *> (
+                        port->get_track (true));
+                      z_return_if_fail (track);
+                      AutomationTrack * at =
+                        AutomationTrack::find_from_port (*port, track, true);
+                      z_return_if_fail (at);
+
+                      /* move the actual object */
+                      prj_obj->move_to_track (track, at->index_, -1);
+
+                      /* remember info in identifier */
+                      own_obj_ptr->id_ = prj_obj->id_;
+
+                      target_port_ =
+                        std::make_unique<PortIdentifier> (cur_at->port_id_);
+                    }
+                  else
+                    {
+                      z_return_if_reached ();
+                    }
+                }
+
+              if (!math_doubles_equal (delta_normalized_amt, 0.0))
+                {
+                  if constexpr (std::is_same_v<ObjT, AutomationPoint>)
+                    {
+                      /* shift the actual object */
+                      prj_obj->set_fvalue (
+                        prj_obj->normalized_val_
+                          + static_cast<float> (delta_normalized_amt),
+                        true, false);
+
+                      /* also shift the copy so they can match */
+                      own_obj_ptr->set_fvalue (
+                        own_obj_ptr->normalized_val_
+                          + static_cast<float> (delta_normalized_amt),
+                        true, false);
+                    }
+                  else
+                    {
+                      z_return_if_reached ();
+                    }
+                }
+            },
+            convert_to_variant<ArrangerObjectPtrVariant> (own_obj.get ()));
         }
 
       /* if moving automation points, re-sort the region and remember the new
@@ -596,6 +616,7 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
             ArrangerObjectFlags, obj.flags_, ArrangerObject::Flags::NonProject))
         {
           r->id_.track_name_hash_ = track_to_move_to->get_name_hash ();
+          r->track_name_hash_ = track_to_move_to->get_name_hash ();
         }
       else
         {
@@ -1930,6 +1951,7 @@ ArrangerSelectionsAction::to_string () const
   switch (type_)
     {
     case Type::Create:
+      z_return_val_if_fail (sel_, "");
       switch (sel_->type_)
         {
         case ArrangerSelections::Type::Timeline:

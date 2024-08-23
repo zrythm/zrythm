@@ -5,39 +5,26 @@
 #include "utils/debug.h"
 #include "utils/exceptions.h"
 #include "utils/math.h"
-#include "utils/objects.h"
 #include "utils/resampler.h"
 
-#include <glib/gi18n.h>
-
 #include <soxr.h>
-
-constexpr size_t SOXR_BLOCK_SZ = 1028;
 
 class Resampler::Impl
 {
 public:
   Impl (
-    const float *      in_frames,
-    const size_t       num_in_frames,
-    const double       input_rate,
-    const double       output_rate,
-    const unsigned int num_channels,
-    const Quality      quality)
+    const juce::AudioSampleBuffer &in_frames,
+    const double                   input_rate,
+    const double                   output_rate,
+    const Quality                  quality,
+    size_t                         block_size)
+      : input_rate_ (input_rate), output_rate_ (output_rate),
+        block_size_ (block_size), in_frames_ (in_frames), quality_ (quality)
   {
-    z_return_if_fail (in_frames);
-
     z_debug (
-      "creating new resampler for {} frames at {:.2f} Hz to {:.2f} Hz - {} channels",
-      num_in_frames, input_rate, output_rate, num_channels);
-
-    in_frames_.resize (num_in_frames * num_channels);
-    std::copy_n (in_frames, num_in_frames * num_channels, in_frames_.data ());
-    num_in_frames_ = num_in_frames;
-    input_rate_ = input_rate;
-    output_rate_ = output_rate;
-    num_channels_ = num_channels;
-    quality_ = quality;
+      "creating new resampler for {} frames (per channel) in {} channels at {:.2f} Hz to {:.2f} Hz",
+      in_frames.getNumSamples (), in_frames.getNumChannels (), input_rate,
+      output_rate);
 
     unsigned long quality_recipe, quality_flags = 0;
     switch (quality)
@@ -62,10 +49,12 @@ public:
     soxr_quality_spec_t quality_spec =
       soxr_quality_spec (quality_recipe, quality_flags);
 
+    auto io_spec = soxr_io_spec (SOXR_FLOAT32_I, SOXR_FLOAT32_I);
+
     soxr_error_t serror;
-    soxr_t       soxr = soxr_create (
-      input_rate, output_rate, num_channels, &serror, nullptr, &quality_spec,
-      nullptr);
+    priv_ = soxr_create (
+      input_rate, output_rate, in_frames_.getNumChannels (), &serror, &io_spec,
+      &quality_spec, nullptr);
 
     if (serror)
       {
@@ -73,98 +62,94 @@ public:
           format_str (_ ("Failed to create soxr instance: {}"), serror));
       }
 
-    serror = soxr_set_input_fn (soxr, input_func, this, SOXR_BLOCK_SZ);
+    serror = soxr_set_input_fn (priv_, input_func, this, block_size_);
     if (serror)
       {
         throw ZrythmException (
           format_str (_ ("Failed to set soxr input function: {}"), serror));
       }
-
-    priv_ = soxr;
-
-    double resample_ratio = output_rate / input_rate;
-    num_out_frames_ = (size_t) ceil ((double) num_in_frames_ * resample_ratio);
-    /* soxr accesses a few bytes outside apparently so allocate a bit more */
-    out_frames_.resize ((num_out_frames_ + 8) * num_channels_);
   }
 
   ~Impl () { soxr_delete (priv_); }
 
-  static size_t
-  input_func (void * input_func_state, soxr_in_t * data, size_t requested_len)
+  static size_t input_func (
+    void *                          input_func_state,
+    soxr_in_t /* sorxr_cbufs_t */ * data,
+    size_t                          requested_len)
   {
     auto * self = static_cast<Resampler::Impl *> (input_func_state);
 
-    z_return_val_if_fail_cmp (self->num_in_frames_, >=, self->frames_read_, 0);
-    size_t len_to_provide =
-      std::min (self->num_in_frames_ - self->frames_read_, requested_len);
+    const auto num_channels = self->in_frames_.getNumChannels ();
+    z_return_val_if_fail_cmp (
+      self->in_frames_.getNumSamples (), >=, (int) self->frames_read_, 0);
+    size_t len_to_provide = std::min (
+      self->in_frames_.getNumSamples () - self->frames_read_, requested_len);
 
     if (len_to_provide == 0)
       {
         return 0;
       }
 
-    *data = &self->in_frames_[self->frames_read_ * self->num_channels_];
+    self->interleaved_in_.resize (len_to_provide * num_channels);
+    for (size_t i = 0; i < len_to_provide; ++i)
+      {
+        for (int channel = 0; channel < num_channels; ++channel)
+          {
+            self->interleaved_in_[i * num_channels + channel] =
+              self->in_frames_.getSample (channel, self->frames_read_ + i);
+          }
+      }
+    *data = self->interleaved_in_.data ();
 
     self->frames_read_ += len_to_provide;
 
-#if 0
-  z_debug (
-    "providing %zu frames (%zu requested). total frames read %zu",
-    len_to_provide, requested_len, self->frames_read);
-#endif
+    z_trace (
+      "providing {} frames ({} requested). total frames read {}",
+      len_to_provide, requested_len, self->frames_read_);
 
     return len_to_provide;
   }
 
-  void               process ();
-  bool               is_done () const;
-  std::vector<float> get_out_frames () const;
+  void                    process ();
+  bool                    is_done () const;
+  juce::AudioSampleBuffer get_out_frames () const;
 
 public:
   /** Private data. */
   soxr_t priv_ = nullptr;
 
-  double       input_rate_ = 0;
-  double       output_rate_ = 0;
-  unsigned int num_channels_ = 0;
+  double input_rate_ = 0;
+  double output_rate_ = 0;
+  size_t block_size_ = 0;
 
   /** Given input (interleaved) frames .*/
-  std::vector<float> in_frames_;
-
-  /** Number of frames per channel. */
-  size_t num_in_frames_ = 0;
+  const juce::AudioSampleBuffer &in_frames_;
 
   /** Number of frames read so far. */
   size_t frames_read_ = 0;
 
-  /** Output (interleaved) frames to be allocated during
-   * resampler_new(). */
-  std::vector<float> out_frames_;
-
-  /** Number of frames per channel. */
-  size_t num_out_frames_ = 0;
+  /** Resulting frames. */
+  juce::AudioSampleBuffer out_frames_;
 
   /** Number of frames written so far. */
   size_t frames_written_ = 0;
 
   Quality quality_;
+
+  std::vector<float> interleaved_in_;
+  std::vector<float> interleaved_out_;
+
+  std::atomic_bool done_{ false };
 };
 
 Resampler::Resampler (
-  const float *      in_frames,
-  const size_t       num_in_frames,
-  const double       input_rate,
-  const double       output_rate,
-  const unsigned int num_channels,
-  const Quality      quality)
-    : pimpl_ (std::make_unique<Impl> (
-        in_frames,
-        num_in_frames,
-        input_rate,
-        output_rate,
-        num_channels,
-        quality))
+  const juce::AudioSampleBuffer &in_frames,
+  const double                   input_rate,
+  const double                   output_rate,
+  const Quality                  quality,
+  size_t                         block_size)
+    : pimpl_ (std::make_unique<
+              Impl> (in_frames, input_rate, output_rate, quality, block_size))
 {
 }
 
@@ -174,16 +159,14 @@ Resampler::~Resampler () = default;
 void
 Resampler::Impl::process ()
 {
-  z_return_if_fail (num_out_frames_ > frames_written_);
-  size_t frames_to_write_this_time =
-    std::min (num_out_frames_ - frames_written_, SOXR_BLOCK_SZ);
-  z_return_if_fail_cmp (
-    frames_written_ + frames_to_write_this_time, <=, num_out_frames_);
+  size_t frames_to_write_this_time = block_size_;
+
+  // prepare interlaved buffer
+  const int num_channels = in_frames_.getNumChannels ();
+  interleaved_out_.resize (frames_to_write_this_time * num_channels);
+
   size_t frames_written_now = soxr_output (
-    (soxr_t) priv_, &out_frames_[frames_written_ * num_channels_],
-    frames_to_write_this_time);
-  z_return_if_fail_cmp (
-    frames_written_ + frames_written_now, <=, num_out_frames_);
+    (soxr_t) priv_, interleaved_out_.data (), frames_to_write_this_time);
 
   soxr_error_t serror = soxr_error ((soxr_t) priv_);
   if (serror)
@@ -192,42 +175,49 @@ Resampler::Impl::process ()
         format_str (_ ("soxr_process() error: {}"), serror));
     }
 
-  if (math_doubles_equal (input_rate_, output_rate_))
+  // De-interleave the output data into out_frames_
+  out_frames_.setSize (
+    num_channels, frames_written_ + frames_written_now, true, false, true);
+  for (size_t i = 0; i < frames_written_now; ++i)
     {
-      audio_frames_equal (
-        &in_frames_[frames_written_ * num_channels_],
-        &out_frames_[frames_written_ * num_channels_],
-        frames_written_now * num_channels_, 0.00000001f);
+      for (int channel = 0; channel < num_channels; ++channel)
+        {
+          out_frames_.setSample (
+            channel, frames_written_ + i,
+            interleaved_out_[i * num_channels + channel]);
+        }
     }
 
-  z_return_if_fail (frames_written_ + frames_written_now <= num_out_frames_);
+  if (math_doubles_equal (input_rate_, output_rate_))
+    {
+      for (int i = 0; i < num_channels; ++i)
+        {
+          audio_frames_equal (
+            in_frames_.getReadPointer (i, frames_written_),
+            out_frames_.getReadPointer (i, frames_written_), frames_written_now,
+            0.00000001f);
+        }
+    }
+
   frames_written_ += frames_written_now;
 
-#if 0
-  z_debug (
-    "resampler processed: frames written now %zu, total frames written %zu, expected total frames %zu",
-    frames_written_now, self->frames_written,
-    self->num_out_frames);
-#endif
+  z_trace (
+    "resampler processed: frames written now {}, total frames written {}, expected total frames {}",
+    frames_written_now, frames_written_, in_frames_.getNumSamples ());
 
   if (frames_written_now == 0)
     {
-      /* in case the calculation for out frames is off by 1,
-       * assume finished */
-      z_info (
-        "no more frames to write at %zu frames (expected %zu frames)",
-        frames_written_, num_out_frames_);
-      num_out_frames_ = frames_written_;
+      done_.store (true);
     }
 }
 
 bool
 Resampler::Impl::is_done () const
 {
-  return frames_written_ == num_out_frames_;
+  return done_.load ();
 }
 
-std::vector<float>
+juce::AudioSampleBuffer
 Resampler::Impl::get_out_frames () const
 {
   return out_frames_;
@@ -245,8 +235,14 @@ Resampler::is_done () const
   return pimpl_->is_done ();
 }
 
-std::vector<float>
+juce::AudioSampleBuffer
 Resampler::get_out_frames () const
 {
+  if (!is_done ())
+    {
+      throw ZrythmException ("Cannot get out frames before resampler is done");
+    }
+
+  // resize because we might have allocated more frames than needed
   return pimpl_->get_out_frames ();
 }

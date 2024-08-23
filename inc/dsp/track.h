@@ -358,12 +358,7 @@ protected:
     std::string name,
     int         pos,
     PortType    in_signal_type,
-    PortType    out_signal_type)
-      : pos_ (pos), type_ (type), name_ (std::move (name)),
-        in_signal_type_ (in_signal_type), out_signal_type_ (out_signal_type)
-  {
-    z_debug ("creating track '{}'", name_);
-  }
+    PortType    out_signal_type);
 
 public:
   /**
@@ -858,28 +853,7 @@ public:
   virtual bool get_soloed () const { return false; }
 
 protected:
-  void copy_members_from (const Track &other)
-  {
-    pos_ = other.pos_;
-    type_ = other.type_;
-    name_ = other.name_;
-    name_hash_ = other.name_hash_;
-    icon_name_ = other.icon_name_;
-    visible_ = other.visible_;
-    filtered_ = other.filtered_;
-    main_height_ = other.main_height_;
-    enabled_ = other.enabled_;
-    color_ = other.color_;
-    trigger_midi_activity_ = other.trigger_midi_activity_;
-    in_signal_type_ = other.in_signal_type_;
-    out_signal_type_ = other.out_signal_type_;
-    comment_ = other.comment_;
-    bounce_ = other.bounce_;
-    bounce_to_master_ = other.bounce_to_master_;
-    frozen_ = other.frozen_;
-    pool_id_ = other.pool_id_;
-    disconnecting_ = other.disconnecting_;
-  }
+  void copy_members_from (const Track &other);
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

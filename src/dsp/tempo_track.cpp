@@ -35,6 +35,12 @@ TempoTrack::TempoTrack (int track_pos)
   visible_ = false;
 }
 
+void
+TempoTrack::init_loaded ()
+{
+  AutomatableTrack::init_loaded ();
+}
+
 bool
 TempoTrack::initialize ()
 {

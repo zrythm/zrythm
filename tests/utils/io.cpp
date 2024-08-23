@@ -19,22 +19,22 @@ TEST_CASE ("get parent directory")
 
 #  ifdef _WIN32
   parent = io_path_get_parent_dir ("C:\\ab\\cd\\ef\\gh");
-  g_assert_cmpstr (parent, ==, "C:\\ab\\cd\\ef");
+  REQUIRE_EQ (parent, "C:\\ab\\cd\\ef");
   parent = io_path_get_parent_dir ("C:\\ab\\cd\\ef\\gh\\");
-  g_assert_cmpstr (parent, ==, "C:\\ab\\cd\\ef");
+  REQUIRE_EQ (parent, "C:\\ab\\cd\\ef");
   parent = io_path_get_parent_dir ("C:\\ab");
-  g_assert_cmpstr (parent, ==, "C:\\");
+  REQUIRE_EQ (parent, "C:\\");
   parent = io_path_get_parent_dir ("C:\\");
-  g_assert_cmpstr (parent, ==, "C:\\");
+  REQUIRE_EQ (parent, "C:\\");
 #  else
   parent = io_path_get_parent_dir ("/ab/cd/ef/gh");
-  g_assert_cmpstr (parent, ==, "/ab/cd/ef");
+  REQUIRE_EQ (parent, "/ab/cd/ef");
   parent = io_path_get_parent_dir ("/ab/cd/ef/gh/");
-  g_assert_cmpstr (parent, ==, "/ab/cd/ef");
+  REQUIRE_EQ (parent, "/ab/cd/ef");
   parent = io_path_get_parent_dir ("/ab");
-  g_assert_cmpstr (parent, ==, "/");
+  REQUIRE_EQ (parent, "/");
   parent = io_path_get_parent_dir ("/");
-  g_assert_cmpstr (parent, ==, "/");
+  REQUIRE_EQ (parent, "/");
 #  endif
 }
 #endif

@@ -45,7 +45,14 @@ public:
 
   virtual ~RegionOwnerImpl () = default;
 
-  void remove_region (RegionT &region, bool fire_events);
+  /**
+   * @brief Removes the given region if found.
+   *
+   * @param region
+   * @param fire_events
+   * @return Whether removed.
+   */
+  bool remove_region (RegionT &region, bool fire_events);
 
   /**
    * @see @ref insert_region().
@@ -78,14 +85,7 @@ public:
     return it != regions_.end () ? it->get () : nullptr;
   }
 
-  void clear_regions ()
-  {
-    for (auto &region : std::ranges::reverse_view (regions_))
-      {
-        remove_region (*region, false);
-      }
-    region_snapshots_.clear ();
-  }
+  void clear_regions ();
 
   void unselect_all ()
   {

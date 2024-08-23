@@ -107,6 +107,7 @@ test_project_save ()
   REQUIRE_NOTHROW (PROJECT->save (PROJECT->dir_, 0, 0, false));
   auto prj_file = fs::path (PROJECT->dir_) / PROJECT_FILE;
 
+  AUDIO_ENGINE->activate (false);
   PROJECT.reset ();
 
   return prj_file;
@@ -291,7 +292,9 @@ public:
 
     AUDIO_ENGINE->resume (state);
 
+    REQUIRE_SIZE_EQ (TL_SELECTIONS->objects_, 6);
     test_project_save_and_reload ();
+    REQUIRE_SIZE_EQ (TL_SELECTIONS->objects_, 6);
   }
 
   /**
@@ -350,11 +353,11 @@ check_vs_orig_state:
         PortIdentifier::Flags::StereoBalance);
       REQUIRE_NONNULL (at);
       REQUIRE_SIZE_EQ (at->regions_, 1);
-      auto r = at->regions_[0];
+      auto r = at->regions_.at (0);
       REQUIRE_POSITION_EQ (r->pos_, p1_);
       REQUIRE_POSITION_EQ (r->end_pos_, p2_);
       REQUIRE_SIZE_EQ (r->aps_, 2);
-      auto ap = r->aps_[0];
+      auto ap = r->aps_.at (0);
       REQUIRE_POSITION_EQ (ap->pos_, p1_);
       REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL1, 0.000001f);
       ap = r->aps_[1];

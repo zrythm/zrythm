@@ -3,6 +3,8 @@
 
 #include "zrythm-test-config.h"
 
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
 #include "actions/arranger_selections.h"
 #include "actions/mixer_selections_action.h"
 #include "actions/port_connection_action.h"
@@ -78,7 +80,7 @@ _test_copy_plugins (
 #if 0
       if (!with_carla)
         {
-          g_assert_true (
+          REQUIRE (
             new_track->channel->instrument->lv2->ui);
         }
       ua =
@@ -115,10 +117,8 @@ _test_copy_plugins (
   std::this_thread::sleep_for (std::chrono::microseconds (100));
 }
 
-TEST_CASE ("copy plugins")
+TEST_CASE_FIXTURE (ZrythmFixture, "copy plugins")
 {
-  test_helper_zrythm_init ();
-
   _test_copy_plugins (TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false);
 #ifdef HAVE_CARLA
   _test_copy_plugins (TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, true);
@@ -129,14 +129,10 @@ TEST_CASE ("copy plugins")
   _test_copy_plugins (NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI, false, true);
 #  endif /* HAVE_CARLA */
 #endif   /* HAVE_NO_DELAY_LINE */
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("MIDI FX slot deletion")
+TEST_CASE_FIXTURE (ZrythmFixture, "MIDI FX slot deletion")
 {
-  test_helper_zrythm_init ();
-
   /* create MIDI track */
   Track::create_empty_with_action<MidiTrack> ();
 
@@ -171,8 +167,6 @@ TEST_CASE ("MIDI FX slot deletion")
 
   UNDO_MANAGER->redo ();
 #endif
-
-  test_helper_zrythm_cleanup ();
 }
 
 static void
@@ -283,10 +277,8 @@ _test_create_plugins (
   z_info ("done");
 }
 
-TEST_CASE ("Plugin creation")
+TEST_CASE_FIXTURE (ZrythmFixture, "Plugin creation")
 {
-  test_helper_zrythm_init ();
-
   /* only run with carla */
   for (int i = 1; i < 2; i++)
     {
@@ -327,8 +319,6 @@ TEST_CASE ("Plugin creation")
         i);
 #endif
     }
-
-  test_helper_zrythm_cleanup ();
 }
 
 #ifdef HAVE_LSP_COMPRESSOR
@@ -375,7 +365,7 @@ _test_port_and_plugin_track_pos_after_move (
   auto port = Port::find_from_identifier<ControlPort> (at->port_id_);
   start_pos.set_to_bar (1);
   auto ap = std::make_shared<AutomationPoint> (
-    port->deff_, port->real_val_to_normalized (port->deff_), &start_pos);
+    port->deff_, port->real_val_to_normalized (port->deff_), start_pos);
   region->append_object (ap);
   ap->select (true, false, false);
   UNDO_MANAGER->perform (
@@ -451,38 +441,32 @@ _test_port_and_plugin_track_pos_after_move (
 }
 #endif
 
-TEST_CASE ("port and plugin track position after move")
+TEST_CASE_FIXTURE (ZrythmFixture, "port and plugin track position after move")
 {
   return;
-  test_helper_zrythm_init ();
 
 #ifdef HAVE_LSP_COMPRESSOR
   _test_port_and_plugin_track_pos_after_move (
     LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, false);
 #endif
-
-  test_helper_zrythm_cleanup ();
 }
 
 #ifdef HAVE_CARLA
-TEST_CASE ("port and plugin track position after move with Carla")
+TEST_CASE_FIXTURE (
+  ZrythmFixture,
+  "port and plugin track position after move with Carla")
 {
   return;
-  test_helper_zrythm_init ();
 
 #  ifdef HAVE_LSP_COMPRESSOR
   _test_port_and_plugin_track_pos_after_move (
     LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, true);
 #  endif
-
-  test_helper_zrythm_cleanup ();
 }
 #endif
 
-TEST_CASE ("move two plugins one slot up")
+TEST_CASE_FIXTURE (ZrythmFixture, "move two plugins one slot up")
 {
-  test_helper_zrythm_init ();
-
 #ifdef HAVE_LSP_COMPRESSOR
 
   /* create a track with an insert */
@@ -757,14 +741,10 @@ TEST_CASE ("move two plugins one slot up")
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->undo ();
 #endif // HAVE_LSP_COMPRESSOR
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("create modulator")
+TEST_CASE_FIXTURE (ZrythmFixture, "create modulator")
 {
-  test_helper_zrythm_init ();
-
 #ifdef HAVE_AMS_LFO
 #  ifdef HAVE_CARLA
   /* create a track with an insert */
@@ -822,14 +802,10 @@ TEST_CASE ("create modulator")
 
 #  endif /* HAVE_CARLA */
 #endif   /* HAVE_AMS_LFO */
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("move plugin after duplicating track")
+TEST_CASE_FIXTURE (ZrythmFixture, "move plugin after duplicating track")
 {
-  test_helper_zrythm_init ();
-
 #if defined(HAVE_LSP_SIDECHAIN_COMPRESSOR)
 
   test_plugin_manager_create_tracks_from_plugin (
@@ -882,15 +858,11 @@ TEST_CASE ("move plugin after duplicating track")
     PluginSlotType::Insert, dest_track, 1));
 
 #endif
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("move plugin from inserts to midi fx")
+TEST_CASE_FIXTURE (ZrythmFixture, "move plugin from inserts to midi fx")
 {
 #ifdef HAVE_MIDI_CC_MAP
-  test_helper_zrythm_init ();
-
   /* create a track with an insert */
   auto track = Track::create_empty_with_action<MidiTrack> ();
   int  track_pos = TRACKLIST->get_last_pos ();
@@ -920,15 +892,11 @@ TEST_CASE ("move plugin from inserts to midi fx")
   test_project_save_and_reload ();
   track = TRACKLIST->get_track<MidiTrack> (track_pos);
   REQUIRE (track->validate ());
-
-  test_helper_zrythm_cleanup ();
 #endif
 }
 
-TEST_CASE ("undo deletion of multiple inserts")
+TEST_CASE_FIXTURE (ZrythmFixture, "undo deletion of multiple inserts")
 {
-  test_helper_zrythm_init ();
-
   test_plugin_manager_create_tracks_from_plugin (
     TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false, 1);
 
@@ -960,8 +928,6 @@ TEST_CASE ("undo deletion of multiple inserts")
 
   /* undo deletion */
   UNDO_MANAGER->undo ();
-
-  test_helper_zrythm_cleanup ();
 }
 
 static void
@@ -1191,10 +1157,8 @@ _test_replace_instrument (
 #endif /* HAVE LSP_COMPRESSOR */
 }
 
-TEST_CASE ("replace instrument")
+TEST_CASE_FIXTURE (ZrythmFixture, "replace instrument")
 {
-  test_helper_zrythm_init ();
-
   for (int i = 0; i < 2; i++)
     {
       if (i == 1)
@@ -1216,28 +1180,22 @@ TEST_CASE ("replace instrument")
         PluginProtocol::LV2, CARLA_RACK_BUNDLE, CARLA_RACK_URI, i);
 #endif
     }
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("save modulators")
+TEST_CASE_FIXTURE (ZrythmFixture, "save modulators")
 {
-  test_helper_zrythm_init ();
-
 #if defined(HAVE_CARLA) && defined(HAVE_GEONKICK)
   PluginSetting * setting = test_plugin_manager_get_plugin_setting (
     GEONKICK_BUNDLE, GEONKICK_URI, false);
   z_return_if_fail (setting);
   bool ret = mixer_selections_action_perform_create (
-    PluginSlotType::Modulator, track_get_name_hash (*P_MODULATOR_TRACK),
+    PluginSlotType::Modulator, P_MODULATOR_TRACK->get_name_hash (),
     P_MODULATOR_TRACK->num_modulators, setting, 1, nullptr);
-  g_assert_true (ret);
+  REQUIRE (ret);
   plugin_setting_free (setting);
 
   test_project_save_and_reload ();
 #endif
-
-  test_helper_zrythm_cleanup ();
 }
 
 TEST_SUITE_END;

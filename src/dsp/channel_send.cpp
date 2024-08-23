@@ -102,6 +102,8 @@ ChannelSend::init_loaded (ChannelTrack * track)
 void
 ChannelSend::construct_for_slot (int slot)
 {
+  slot_ = slot;
+
   enabled_ = std::make_unique<ControlPort> (
     format_str (_ ("Channel Send {} enabled"), slot + 1));
   enabled_->id_.sym_ = fmt::format ("channel_send_{}_enabled", slot + 1);
@@ -540,11 +542,22 @@ ChannelSend::get_dest_name () const
 void
 ChannelSend::init_after_cloning (const ChannelSend &other)
 {
-  construct_for_slot (other.slot_);
-  amount_->control_ = other.amount_->control_;
-  enabled_->control_ = other.enabled_->control_;
+  slot_ = other.slot_;
   is_sidechain_ = other.is_sidechain_;
   track_name_hash_ = other.track_name_hash_;
+  enabled_ = other.enabled_->clone_unique ();
+  amount_ = other.amount_->clone_unique ();
+  stereo_in_ = other.stereo_in_->clone_unique ();
+  midi_in_ = other.midi_in_->clone_unique ();
+  stereo_out_ = other.stereo_out_->clone_unique ();
+  midi_out_ = other.midi_out_->clone_unique ();
+
+  std::vector<Port *> ports;
+  append_ports (ports);
+  for (auto port : ports)
+    {
+      port->set_owner (this);
+    }
 }
 
 bool

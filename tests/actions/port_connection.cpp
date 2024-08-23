@@ -208,25 +208,19 @@ _test_port_connection (
 #  endif /* HAVE_AMS_LFO */
 #endif   /* HAVE_CARLA */
 
-TEST_CASE ("port connection")
+TEST_CASE_FIXTURE (ZrythmFixture, "port connection")
 {
-  test_helper_zrythm_init ();
-
 #ifdef HAVE_AMS_LFO
 #  ifdef HAVE_CARLA
   _test_port_connection (AMS_LFO_BUNDLE, AMS_LFO_URI, true, false);
   test_modulator_connection (AMS_LFO_BUNDLE, AMS_LFO_URI, true, false);
 #  endif /* HAVE_CARLA */
 #endif   /* HAVE_AMS_LFO */
-
-  test_helper_zrythm_cleanup ();
 }
 
-TEST_CASE ("CV to control connection")
+TEST_CASE_FIXTURE (ZrythmFixture, "CV to control connection")
 {
 #if defined(HAVE_AMS_LFO)
-  test_helper_zrythm_init ();
-
   test_plugin_manager_create_tracks_from_plugin (
     LOWPASS_FILTER_BUNDLE, LOWPASS_FILTER_URI, false, true, 1);
   test_plugin_manager_create_tracks_from_plugin (
@@ -244,8 +238,6 @@ TEST_CASE ("CV to control connection")
   REQUIRE_NOTHROW (
     UNDO_MANAGER->perform (std::make_unique<PortConnectionConnectAction> (
       cv_out_port->id_, freq_port->id_)));
-
-  test_helper_zrythm_cleanup ();
 #endif // HAVE_AMS_LFO
 }
 

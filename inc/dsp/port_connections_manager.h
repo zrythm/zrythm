@@ -151,15 +151,11 @@ public:
 
   bool contains_connection (const PortConnection &conn) const;
 
-  static void print_ht (ConnectionHashTable &ht);
+  static void print_ht (const ConnectionHashTable &ht);
 
   void print () const;
 
-  void init_after_cloning (const PortConnectionsManager &other) override
-  {
-    connections_ = other.connections_;
-    regenerate_hashtables ();
-  }
+  void init_after_cloning (const PortConnectionsManager &other) override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -175,7 +171,7 @@ private:
 
 public:
   /** Connections. */
-  std::vector<PortConnection> connections_{ 64 };
+  std::vector<PortConnection> connections_;
 
   /**
    * Hashtable to speedup lookup by source port identifier.

@@ -18,6 +18,13 @@ ChannelTrack::init_loaded ()
 }
 
 void
+ChannelTrack::copy_members_from (const ChannelTrack &other)
+{
+  channel_ = other.channel_->clone_shared ();
+  channel_->track_ = this;
+}
+
+void
 ChannelTrack::init_channel ()
 {
   channel_->init ();

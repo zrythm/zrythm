@@ -294,7 +294,7 @@ AudioClip::write_to_file (const std::string &filepath, bool parts)
 {
   z_return_if_fail (samplerate_ > 0);
   z_return_if_fail (frames_written_ < SIZE_MAX);
-  size_t           before_frames = (size_t) frames_written_;
+  auto             before_frames = (size_t) frames_written_;
   unsigned_frame_t ch_offset = parts ? frames_written_ : 0;
   // unsigned_frame_t offset = ch_offset * channels_;
 

@@ -77,6 +77,10 @@ on_main_window_destroy (MainWindowWidget * self, gpointer user_data)
     {
       EVENT_MANAGER->stop_events ();
 
+      if (PROJECT && AUDIO_ENGINE)
+        {
+          AUDIO_ENGINE->activate (false);
+        }
       PROJECT.reset ();
 
 #if 0

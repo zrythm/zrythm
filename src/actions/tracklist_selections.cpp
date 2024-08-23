@@ -436,8 +436,7 @@ TracklistSelectionsAction::create_track (int idx)
           added_pl = channel_track->channel_->add_plugin (
             std::move (pl),
             is_instrument ? PluginSlotType::Instrument : PluginSlotType::Insert,
-            is_instrument ? -1 : pl->id_.slot_, false, false, false, false,
-            false);
+            is_instrument ? -1 : pl->id_.slot_, true, false, true, false, false);
         }
 
       Position start_pos = have_pos_ ? pos_ : Position ();

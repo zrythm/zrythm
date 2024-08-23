@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -76,7 +76,7 @@ DEFINE_ENUM_FORMATTER (
 /**
  * Number of plugin slots per channel.
  */
-#define STRIP_SIZE 9
+constexpr size_t STRIP_SIZE = 9;
 
 /**
  * Writes the buffer as a raw file to the given path.
@@ -136,7 +136,7 @@ audio_files_equal (
  * Returns whether the frame buffer is empty (zero).
  */
 bool
-audio_frames_empty (float * src, size_t num_frames);
+audio_frames_empty (const float * src, size_t num_frames);
 
 /**
  * Detect BPM.

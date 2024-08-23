@@ -12,6 +12,13 @@
 #include <fmt/format.h>
 
 void
+PortConnectionsManager::init_after_cloning (const PortConnectionsManager &other)
+{
+  connections_ = other.connections_;
+  regenerate_hashtables ();
+}
+
+void
 PortConnectionsManager::add_or_replace_connection (
   ConnectionHashTable  &ht,
   const PortIdentifier &id,
@@ -167,8 +174,8 @@ PortConnectionsManager::ensure_connect (
   if (this == PORT_CONNECTIONS_MGR.get ())
     {
       z_debug (
-        "New connection: <{}>; have {} connections",
-        conn.print_to_str ().c_str (), connections_.size ());
+        "New connection: <{}>; have {} connections", conn.print_to_str (),
+        connections_.size ());
     }
 
   regenerate_hashtables ();
@@ -179,7 +186,7 @@ PortConnectionsManager::ensure_connect (
 void
 PortConnectionsManager::remove_connection (const size_t idx)
 {
-  const auto &conn = connections_[idx];
+  const auto conn = connections_[idx];
 
   connections_.erase (connections_.begin () + idx);
 
@@ -248,9 +255,10 @@ PortConnectionsManager::reset (const PortConnectionsManager * other)
 }
 
 void
-PortConnectionsManager::print_ht (ConnectionHashTable &ht)
+PortConnectionsManager::print_ht (const ConnectionHashTable &ht)
 {
   std::string str;
+  z_trace ("ht size: {}", ht.size ());
   for (const auto &[key, value] : ht)
     {
       str += fmt::format ("{}\n", key.get_label ());

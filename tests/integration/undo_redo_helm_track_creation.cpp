@@ -1,26 +1,21 @@
-/*
- * SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
 
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
 #include "actions/tracklist_selections.h"
 #include "actions/undo_manager.h"
-#include "dsp/engine_dummy.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
-#include "utils/arrays.h"
-#include "utils/flags.h"
-#include "utils/io.h"
 #include "zrythm.h"
-
-#include <glib.h>
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
+
+TEST_SUITE_BEGIN ("integration/undo redo helm track creation");
 
 #ifdef HAVE_HELM
 static void
@@ -35,15 +30,15 @@ _test (
     pl_bundle, pl_uri, is_instrument, with_carla, 1);
 
   /* select it */
-  Track * helm_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  track_select (helm_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
+  auto helm_track = TRACKLIST->get_last_track<ChannelTrack> ();
+  helm_track->select (true, true, false);
 
   /* 2. delete track */
-  tracklist_selections_action_perform_delete (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
+  UNDO_MANAGER->perform (std::make_unique<DeleteTracksAction> (
+    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR));
 
   /* 3. undo track deletion */
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
 
   /* let the engine run */
   g_usleep (1000000);
@@ -52,34 +47,21 @@ _test (
   test_project_save_and_reload ();
 
   /* 5. redo track deletion */
-  undo_manager_redo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->redo ();
 
   /* 6. undo track deletion */
-  undo_manager_undo (UNDO_MANAGER, NULL);
+  UNDO_MANAGER->undo ();
 
   /* let the engine run */
   g_usleep (1000000);
 }
 #endif
 
-static void
-test (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "undo redo helm track creation")
 {
 #ifdef HAVE_HELM
   _test (HELM_BUNDLE, HELM_URI, true, false);
 #endif
 }
 
-int
-main (int argc, char * argv[])
-{
-  g_test_init (&argc, &argv, NULL);
-
-  test_helper_zrythm_init ();
-
-#define TEST_PREFIX "/integration/undo_redo_helm_track_creation/"
-
-  g_test_add_func (TEST_PREFIX "test", (GTestFunc) test);
-
-  return g_test_run ();
-}
+TEST_SUITE_END;

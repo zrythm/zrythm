@@ -22,7 +22,7 @@ TEST_CASE ("remove unused")
    * that no files in the main project are removed when saving a backup */
   for (int i = 0; i < 2; i++)
     {
-      ZrythmFixture ();
+      ZrythmFixture fixture;
 
       /* create many audio tracks with region to push the first few off the undo
        * stack */
@@ -60,6 +60,7 @@ TEST_CASE ("remove unused")
           REQUIRE_NONEMPTY (PROJECT->backup_dir_);
 
           /* free the project */
+          AUDIO_ENGINE->activate (false);
           PROJECT.reset ();
 
           /* load the original project */

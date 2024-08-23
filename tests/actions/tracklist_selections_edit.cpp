@@ -1,7 +1,9 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
+
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "actions/tracklist_selections.h"
 #include "actions/undoable_action.h"
@@ -19,48 +21,48 @@
 #include "utils/flags.h"
 #include "zrythm.h"
 
-#include <glib.h>
-
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
 
+TEST_SUITE_BEGIN ("actions/tracklist selections edit");
+
 #if defined(HAVE_CHIPWAVE) || defined(HAVE_HELM) || defined(HAVE_LSP_COMPRESSOR)
-static Track *
+static InstrumentTrack *
 get_ins_track (void)
 {
-  return TRACKLIST->tracks[3];
+  return TRACKLIST->get_track<InstrumentTrack> (3);
 }
 
 static void
 _test_edit_tracks (
-  EditTrackActionType type,
-  const char *        pl_bundle,
-  const char *        pl_uri,
-  bool                is_instrument,
-  bool                with_carla)
+  TracklistSelectionsAction::EditType type,
+  const char *                        pl_bundle,
+  const char *                        pl_uri,
+  bool                                is_instrument,
+  bool                                with_carla)
 {
-  PluginSetting * setting =
+  auto setting =
     test_plugin_manager_get_plugin_setting (pl_bundle, pl_uri, with_carla);
 
   /* create a track with an instrument */
-  track_create_for_plugin_at_idx_w_action (
-    is_instrument ? Track::Type::INSTRUMENT : Track::Type::AUDIO_BUS, setting,
-    3, nullptr);
-  Track * ins_track = get_ins_track ();
+  Track::create_for_plugin_at_idx_w_action (
+    is_instrument ? Track::Type::Instrument : Track::Type::AudioBus, &setting,
+    3);
+  auto ins_track = get_ins_track ();
   if (is_instrument)
     {
-      g_assert_true (ins_track->type == Track::Type::INSTRUMENT);
+      REQUIRE_EQ (ins_track->type_, Track::Type::Instrument);
 
-      g_assert_true (ins_track->channel->instrument->instantiated);
-      g_assert_true (ins_track->channel->instrument->activated);
+      REQUIRE (ins_track->channel_->instrument_->instantiated_);
+      REQUIRE (ins_track->channel_->instrument_->activated_);
     }
   else
     {
-      g_assert_true (ins_track->channel->inserts[0]->instantiated);
-      g_assert_true (ins_track->channel->inserts[0]->activated);
+      REQUIRE (ins_track->channel_->inserts_[0]->instantiated_);
+      REQUIRE (ins_track->channel_->inserts_[0]->activated_);
     }
 
-  track_select (ins_track, true, true, false);
+  ins_track->select (true, true, false);
 
   UndoableAction * ua = NULL;
   switch (type)
@@ -71,13 +73,13 @@ _test_edit_tracks (
           TRACKLIST_SELECTIONS, true, nullptr);
         if (is_instrument)
           {
-            g_assert_true (ins_track->channel->instrument->instantiated);
-            g_assert_true (ins_track->channel->instrument->activated);
+            REQUIRE (ins_track->channel->instrument->instantiated);
+            REQUIRE (ins_track->channel->instrument->activated);
           }
         else
           {
-            g_assert_true (ins_track->channel->inserts[0]->instantiated);
-            g_assert_true (ins_track->channel->inserts[0]->activated);
+            REQUIRE (ins_track->channel->inserts[0]->instantiated);
+            REQUIRE (ins_track->channel->inserts[0]->activated);
           }
       }
       break;
@@ -89,9 +91,9 @@ _test_edit_tracks (
         /* create a MIDI track */
         track_create_empty_at_idx_with_action (Track::Type::MIDI, 2, nullptr);
         Track * midi_track = TRACKLIST->tracks[2];
-        track_select (midi_track, true, true, false);
+        midi_track->select (true, true, false);
 
-        g_assert_true (!midi_track->channel->has_output);
+        REQUIRE (!midi_track->channel->has_output);
 
         /* change the direct out to the
          * instrument */
@@ -99,21 +101,21 @@ _test_edit_tracks (
           TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, ins_track, nullptr);
 
         /* verify direct out established */
-        g_assert_true (midi_track->channel->has_output);
+        REQUIRE (midi_track->channel->has_output);
         g_assert_cmpuint (
           midi_track->channel->output_name_hash, ==,
-          track_get_name_hash (*ins_track));
+          ins_track->get_name_hash ());
 
         /* undo and re-verify */
         UNDO_MANAGER->undo ();
 
-        g_assert_true (!midi_track->channel->has_output);
+        REQUIRE (!midi_track->channel->has_output);
 
         /* redo and test moving track afterwards */
         UNDO_MANAGER->redo ();
         ins_track = TRACKLIST->tracks[4];
-        g_assert_true (ins_track->type == Track::Type::INSTRUMENT);
-        track_select (ins_track, true, true, false);
+        REQUIRE (ins_track->type == Track::Type::INSTRUMENT);
+        ins_track->select (true, true, false);
         tracklist_selections_action_perform_move (
           TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, 1, nullptr);
         UNDO_MANAGER->undo ();
@@ -125,7 +127,7 @@ _test_edit_tracks (
         UNDO_MANAGER->undo ();
         UNDO_MANAGER->redo ();
         Track * audio_group = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-        track_select (ins_track, true, true, false);
+        ins_track->select (true, true, false);
         tracklist_selections_action_perform_set_direct_out (
           TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, audio_group, nullptr);
         UNDO_MANAGER->undo ();
@@ -145,23 +147,22 @@ _test_edit_tracks (
         Track * group_track = TRACKLIST->tracks[2];
 
         g_assert_cmpuint (
-          track_get_name_hash (*ins_track), !=,
-          ins_track->channel->output_name_hash);
+          ins_track->get_name_hash (), !=, ins_track->channel->output_name_hash);
 
         /* route the instrument to the group
          * track */
-        track_select (ins_track, true, true, false);
+        ins_track->select (true, true, false);
         tracklist_selections_action_perform_set_direct_out (
           TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, group_track, nullptr);
 
         /* solo the group track */
-        track_select (group_track, true, true, false);
+        group_track->select (true, true, false);
         tracklist_selections_action_perform_edit_solo (
           TRACKLIST_SELECTIONS, true, nullptr);
 
         /* run the engine for 1 cycle to clear any
          * pending events */
-        engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+        AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
 
         /* play a note on the instrument track
          * and verify that signal comes out
@@ -174,8 +175,8 @@ _test_edit_tracks (
         /* run the engine for 2 cycles (the event
          * does not have enough time to make audible
          * sound in 1 cycle */
-        engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
-        engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+        AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
+        AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
 
         Port &l = ins_track->channel->fader->stereo_out->get_l ();
 #  if 0
@@ -185,7 +186,7 @@ _test_edit_tracks (
           /*"lv2_audio_out_1");*/
           "lv2_audio_out_1");
 #  endif
-        for (nframes_t i = 0; i < AUDIO_ENGINE->block_length; i++)
+        for (nframes_t i = 0; i < AUDIO_ENGINE->block_length_; i++)
           {
 #  if 0
             z_info (
@@ -200,7 +201,7 @@ _test_edit_tracks (
                 break;
               }
           }
-        g_assert_true (has_signal);
+        REQUIRE (has_signal);
 
         /* undo and re-verify */
         UNDO_MANAGER->undo ();
@@ -211,13 +212,13 @@ _test_edit_tracks (
         const char * new_name = "new name";
         char *       name_before = g_strdup (ins_track->name);
         track_set_name_with_action (ins_track, new_name);
-        g_assert_true (string_is_equal (ins_track->name, new_name));
+        REQUIRE (string_is_equal (ins_track->name, new_name));
 
         /* undo/redo and re-verify */
         UNDO_MANAGER->undo ();
-        g_assert_true (string_is_equal (ins_track->name, name_before));
+        REQUIRE (string_is_equal (ins_track->name, name_before));
         UNDO_MANAGER->redo ();
-        g_assert_true (string_is_equal (ins_track->name, new_name));
+        REQUIRE (string_is_equal (ins_track->name, new_name));
 
         g_free (name_before);
 
@@ -231,13 +232,13 @@ _test_edit_tracks (
         TrackLane *  lane = ins_track->lanes[0];
         char *       name_before = g_strdup (lane->name);
         track_lane_rename (lane, new_name, true);
-        g_assert_true (string_is_equal (lane->name, new_name));
+        REQUIRE (string_is_equal (lane->name, new_name));
 
         /* undo/redo and re-verify */
         UNDO_MANAGER->undo ();
-        g_assert_true (string_is_equal (lane->name, name_before));
+        REQUIRE (string_is_equal (lane->name, name_before));
         UNDO_MANAGER->redo ();
-        g_assert_true (string_is_equal (lane->name, new_name));
+        REQUIRE (string_is_equal (lane->name, new_name));
 
         g_free (name_before);
 
@@ -257,7 +258,7 @@ _test_edit_tracks (
         GError * err = NULL;
         ua = tracklist_selections_action_new_edit_single_float (
           type, ins_track, val_before, new_val, false, &err);
-        g_assert_nonnull (ua);
+        REQUIRE_NONNULL (ua);
         undo_manager_perform (UNDO_MANAGER, ua, nullptr);
 
         /* verify */
@@ -305,18 +306,18 @@ _test_edit_tracks (
         GdkRGBA new_color = { 0.8f, 0.7f, 0.2f, 1.f };
         GdkRGBA color_before = ins_track->color;
         track_set_color (ins_track, &new_color, F_UNDOABLE, false);
-        g_assert_true (color_is_same (&ins_track->color, &new_color));
+        REQUIRE (color_is_same (&ins_track->color, &new_color));
 
         test_project_save_and_reload ();
 
         ins_track = get_ins_track ();
-        g_assert_true (color_is_same (&ins_track->color, &new_color));
+        REQUIRE (color_is_same (&ins_track->color, &new_color));
 
         /* undo/redo and re-verify */
         UNDO_MANAGER->undo ();
-        g_assert_true (color_is_same (&ins_track->color, &color_before));
+        REQUIRE (color_is_same (&ins_track->color, &color_before));
         UNDO_MANAGER->redo ();
-        g_assert_true (color_is_same (&ins_track->color, &new_color));
+        REQUIRE (color_is_same (&ins_track->color, &new_color));
 
         /* undo to go back to original state */
         UNDO_MANAGER->undo ();
@@ -327,7 +328,7 @@ _test_edit_tracks (
         const char * new_icon = "icon2";
         char *       icon_before = g_strdup (ins_track->icon_name);
         track_set_icon (ins_track, new_icon, F_UNDOABLE, false);
-        g_assert_true (string_is_equal (ins_track->icon_name, new_icon));
+        REQUIRE (string_is_equal (ins_track->icon_name, new_icon));
 
         test_project_save_and_reload ();
 
@@ -335,9 +336,9 @@ _test_edit_tracks (
 
         /* undo/redo and re-verify */
         UNDO_MANAGER->undo ();
-        g_assert_true (string_is_equal (ins_track->icon_name, icon_before));
+        REQUIRE (string_is_equal (ins_track->icon_name, icon_before));
         UNDO_MANAGER->redo ();
-        g_assert_true (string_is_equal (ins_track->icon_name, new_icon));
+        REQUIRE (string_is_equal (ins_track->icon_name, new_icon));
 
         /* undo to go back to original state */
         UNDO_MANAGER->undo ();
@@ -348,9 +349,9 @@ _test_edit_tracks (
     case EditTrackActionType::EDIT_TRACK_ACTION_TYPE_COMMENT:
       {
         const char * new_icon = "icon2";
-        char *       icon_before = g_strdup (ins_track->comment);
+        char *       icon_before = g_strdup (ins_track->comment_);
         track_set_comment (ins_track, new_icon, F_UNDOABLE);
-        g_assert_true (string_is_equal (ins_track->comment, new_icon));
+        REQUIRE (string_is_equal (ins_track->comment_, new_icon));
 
         test_project_save_and_reload ();
 
@@ -358,9 +359,9 @@ _test_edit_tracks (
 
         /* undo/redo and re-verify */
         UNDO_MANAGER->undo ();
-        g_assert_true (string_is_equal (ins_track->comment, icon_before));
+        REQUIRE (string_is_equal (ins_track->comment_, icon_before));
         UNDO_MANAGER->redo ();
-        g_assert_true (string_is_equal (ins_track->comment, new_icon));
+        REQUIRE (string_is_equal (ins_track->comment_, new_icon));
 
         /* undo to go back to original state */
         UNDO_MANAGER->undo ();
@@ -385,7 +386,8 @@ __test_edit_tracks (bool with_carla)
     {
       EditTrackActionType cur = ENUM_INT_TO_VALUE (EditTrackActionType, i);
       (void) cur;
-      test_helper_zrythm_init ();
+
+      ZrythmFixture fixture;
 
       /* stop dummy audio engine processing so we can
        * process manually */
@@ -402,13 +404,10 @@ __test_edit_tracks (bool with_carla)
       _test_edit_tracks (
         cur, LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, false, with_carla);
 #endif
-
-      test_helper_zrythm_cleanup ();
     }
 }
 
-static void
-test_edit_tracks (void)
+TEST_CASE ("Edit tracks")
 {
   __test_edit_tracks (false);
 #ifdef HAVE_CARLA
@@ -416,21 +415,18 @@ test_edit_tracks (void)
 #endif
 }
 
-static void
-test_edit_midi_direct_out_to_ins (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "Edit MIDI direct out to instrument track")
 {
 #ifdef HAVE_HELM
-  test_helper_zrythm_init ();
-
   /* create the instrument track */
   test_plugin_manager_create_tracks_from_plugin (
     HELM_BUNDLE, HELM_URI, true, false, 1);
   Track * ins_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  track_select (ins_track, true, true, false);
+  ins_track->select (true, true, false);
 
   char ** midi_files = io_get_files_in_dir_ending_in (
     MIDILIB_TEST_MIDI_FILES_PATH, F_RECURSIVE, ".MID", false);
-  g_assert_nonnull (midi_files);
+  REQUIRE_NONNULL (midi_files);
 
   /* create the MIDI track from a MIDI file */
   FileDescriptor file = FileDescriptor (midi_files[0]);
@@ -438,7 +434,7 @@ test_edit_midi_direct_out_to_ins (void)
     Track::Type::MIDI, nullptr, &file, PLAYHEAD, TRACKLIST->tracks.size (), 1,
     -1, nullptr, nullptr);
   Track * midi_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  track_select (midi_track, true, true, false);
+  midi_track->select (true, true, false);
   g_strfreev (midi_files);
 
   /* route the MIDI track to the instrument track */
@@ -447,13 +443,13 @@ test_edit_midi_direct_out_to_ins (void)
 
   Channel * ch = midi_track->channel;
   Track *   direct_out = ch->get_output_track ();
-  g_assert_true (IS_TRACK (direct_out));
-  g_assert_true (direct_out == ins_track);
-  g_assert_cmpint (ins_track->num_children, ==, 1);
+  REQUIRE (IS_TRACK (direct_out));
+  REQUIRE (direct_out == ins_track);
+  REQUIRE_EQ (ins_track->num_children, 1);
 
   /* delete the instrument, undo and verify that
    * the MIDI track's output is the instrument */
-  track_select (ins_track, true, true, false);
+  ins_track->select (true, true, false);
 
   tracklist_selections_action_perform_delete (
     TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, nullptr);
@@ -465,19 +461,14 @@ test_edit_midi_direct_out_to_ins (void)
 
   ins_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 2];
   direct_out = ch->get_output_track ();
-  g_assert_true (IS_TRACK (direct_out));
-  g_assert_true (direct_out == ins_track);
-
-  test_helper_zrythm_cleanup ();
+  REQUIRE (IS_TRACK (direct_out));
+  REQUIRE (direct_out == ins_track);
 #endif
 }
 
-static void
-test_edit_multi_track_direct_out (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "edit multi track direct out")
 {
 #ifdef HAVE_HELM
-  test_helper_zrythm_init ();
-
   /* create 2 instrument tracks */
   test_plugin_manager_create_tracks_from_plugin (
     HELM_BUNDLE, HELM_URI, true, false, 2);
@@ -489,8 +480,8 @@ test_edit_multi_track_direct_out (void)
     track_create_empty_with_action (Track::Type::AUDIO_GROUP, nullptr);
 
   /* route the ins tracks to the audio group */
-  track_select (ins_track, true, true, false);
-  track_select (ins_track2, true, false, false);
+  ins_track->select (true, true, false);
+  ins_track2->select (true, false, false);
   tracklist_selections_action_perform_set_direct_out (
     TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, audio_group, nullptr);
 
@@ -503,15 +494,15 @@ test_edit_multi_track_direct_out (void)
   Channel * ch2 = ins_track2->channel;
   Track *   direct_out = ch->get_output_track ();
   Track *   direct_out2 = ch2->get_output_track ();
-  g_assert_true (IS_TRACK (direct_out));
-  g_assert_true (IS_TRACK (direct_out2));
-  g_assert_true (direct_out == audio_group);
-  g_assert_true (direct_out2 == audio_group);
-  g_assert_cmpint (audio_group->num_children, ==, 2);
+  REQUIRE (IS_TRACK (direct_out));
+  REQUIRE (IS_TRACK (direct_out2));
+  REQUIRE (direct_out == audio_group);
+  REQUIRE (direct_out2 == audio_group);
+  REQUIRE_EQ (audio_group->num_children, 2);
 
   /* delete the audio group, undo and verify that
    * the ins track output is the audio group */
-  track_select (audio_group, true, true, false);
+  audio_group->select (true, true, false);
   tracklist_selections_action_perform_delete (
     TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, nullptr);
 
@@ -522,8 +513,8 @@ test_edit_multi_track_direct_out (void)
 
   /* as a second action, route the tracks to
    * master */
-  track_select (ins_track, true, true, false);
-  track_select (ins_track2, true, false, false);
+  ins_track->select (true, true, false);
+  ins_track2->select (true, false, false);
   tracklist_selections_action_perform_set_direct_out (
     TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, P_MASTER_TRACK, nullptr);
   UndoableAction * ua = undo_manager_get_last_action (UNDO_MANAGER);
@@ -531,50 +522,45 @@ test_edit_multi_track_direct_out (void)
 
   direct_out = ch->get_output_track ();
   direct_out2 = ch2->get_output_track ();
-  g_assert_true (direct_out == P_MASTER_TRACK);
-  g_assert_true (direct_out2 == P_MASTER_TRACK);
+  REQUIRE (direct_out == P_MASTER_TRACK);
+  REQUIRE (direct_out2 == P_MASTER_TRACK);
 
   UNDO_MANAGER->undo ();
 
   audio_group = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   direct_out = ch->get_output_track ();
   direct_out2 = ch2->get_output_track ();
-  g_assert_true (IS_TRACK (direct_out));
-  g_assert_true (IS_TRACK (direct_out2));
-  g_assert_true (direct_out == audio_group);
-  g_assert_true (direct_out2 == audio_group);
-
-  test_helper_zrythm_cleanup ();
+  REQUIRE (IS_TRACK (direct_out));
+  REQUIRE (IS_TRACK (direct_out2));
+  REQUIRE (direct_out == audio_group);
+  REQUIRE (direct_out2 == audio_group);
 #endif
 }
 
-static void
-test_rename_midi_track_with_events (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "rename MIDI track with events")
 {
-  test_helper_zrythm_init ();
-
   /* create a MIDI track from a file */
   char ** midi_files = io_get_files_in_dir_ending_in (
     MIDILIB_TEST_MIDI_FILES_PATH, F_RECURSIVE, ".MID", false);
-  g_assert_nonnull (midi_files);
+  REQUIRE_NONNULL (midi_files);
   FileDescriptor file = FileDescriptor (midi_files[0]);
   track_create_with_action (
     Track::Type::MIDI, nullptr, &file, PLAYHEAD, TRACKLIST->tracks.size (), 1,
     -1, nullptr, nullptr);
   Track * midi_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
-  track_select (midi_track, true, true, false);
+  midi_track->select (true, true, false);
   g_strfreev (midi_files);
 
   /* change the name of the track */
   tracklist_selections_action_perform_edit_rename (
     midi_track, PORT_CONNECTIONS_MGR, "new name", nullptr);
 
-  tracklist_validate (TRACKLIST);
+  TRACKLIST->validate ();
 
   /* play and let engine run */
-  transport_request_roll (TRANSPORT, true);
-  engine_wait_n_cycles (AUDIO_ENGINE, 3);
+  TRANSPORT->request_roll (true);
+  AUDIO_ENGINE->wait_n_cycles (3);
 
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->redo ();
@@ -585,17 +571,12 @@ test_rename_midi_track_with_events (void)
     nullptr);
 
   /* play and let engine run */
-  transport_request_roll (TRANSPORT, true);
-  engine_wait_n_cycles (AUDIO_ENGINE, 3);
-
-  test_helper_zrythm_cleanup ();
+  TRANSPORT->request_roll (true);
+  AUDIO_ENGINE->wait_n_cycles (3);
 }
 
-static void
-test_rename_track_with_send (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "rename track with send")
 {
-  test_helper_zrythm_init ();
-
   /* create an audio group */
   Track * audio_group =
     track_create_empty_with_action (Track::Type::AUDIO_GROUP, nullptr);
@@ -612,50 +593,26 @@ test_rename_track_with_send (void)
   tracklist_selections_action_perform_edit_rename (
     audio_fx, PORT_CONNECTIONS_MGR, "new name", nullptr);
 
-  tracklist_validate (TRACKLIST);
+  TRACKLIST->validate ();
 
   /* play and let engine run */
-  transport_request_roll (TRANSPORT, true);
-  engine_wait_n_cycles (AUDIO_ENGINE, 3);
+  TRANSPORT->request_roll (true);
+  AUDIO_ENGINE->wait_n_cycles (3);
 
   /* change the name of the group track */
   tracklist_selections_action_perform_edit_rename (
     audio_group, PORT_CONNECTIONS_MGR, "new name2", nullptr);
 
-  tracklist_validate (TRACKLIST);
+  TRACKLIST->validate ();
 
   /* play and let engine run */
-  transport_request_roll (TRANSPORT, true);
-  engine_wait_n_cycles (AUDIO_ENGINE, 3);
+  TRANSPORT->request_roll (true);
+  AUDIO_ENGINE->wait_n_cycles (3);
 
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->redo ();
   UNDO_MANAGER->redo ();
-
-  test_helper_zrythm_cleanup ();
 }
 
-int
-main (int argc, char * argv[])
-{
-  g_test_init (&argc, &argv, nullptr);
-
-#define TEST_PREFIX "/actions/tracklist_selections_edit/"
-
-  g_test_add_func (
-    TEST_PREFIX "test rename midi track with events",
-    (GTestFunc) test_rename_midi_track_with_events);
-  g_test_add_func (
-    TEST_PREFIX "test rename track with send",
-    (GTestFunc) test_rename_track_with_send);
-  g_test_add_func (
-    TEST_PREFIX "test edit multi track direct out",
-    (GTestFunc) test_edit_multi_track_direct_out);
-  g_test_add_func (TEST_PREFIX "test_edit_tracks", (GTestFunc) test_edit_tracks);
-  g_test_add_func (
-    TEST_PREFIX "test edit midi direct out to ins",
-    (GTestFunc) test_edit_midi_direct_out_to_ins);
-
-  return g_test_run ();
-}
+TEST_SUITE_END;

@@ -267,6 +267,14 @@ TrackLaneImpl<RegionT>::gen_snapshot () const
 {
   auto ret = this->clone_unique ();
   ret->track_ = track_;
+
+  /* clone_unique above creates the regions in `regions_` but we want them in
+   * `region_snapshots_`... */
+  for (auto &region : ret->regions_)
+    {
+      ret->region_snapshots_.emplace_back (region->clone_unique ());
+    }
+  ret->regions_.clear ();
   return ret;
 }
 

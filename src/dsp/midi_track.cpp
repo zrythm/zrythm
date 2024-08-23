@@ -12,6 +12,24 @@ MidiTrack::MidiTrack (const std::string &label, int pos)
   icon_name_ = "signal-midi";
 }
 
+bool
+MidiTrack::validate () const
+{
+  return ChannelTrack::validate () && PianoRollTrack::validate ();
+}
+
+void
+MidiTrack::init_loaded ()
+{
+  // ChannelTrack must be initialized before AutomatableTrack
+  ChannelTrack::init_loaded ();
+  AutomatableTrack::init_loaded ();
+  ProcessableTrack::init_loaded ();
+  RecordableTrack::init_loaded ();
+  LanedTrackImpl<MidiRegion>::init_loaded ();
+  PianoRollTrack::init_loaded ();
+}
+
 void
 MidiTrack::init_after_cloning (const MidiTrack &other)
 {

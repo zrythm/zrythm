@@ -231,6 +231,7 @@ if get_option ('tests')
     'dsp/audio_track': { 'parallel': true },
     'dsp/automation_track': { 'parallel': true },
     'dsp/channel': { 'parallel': true },
+    'dsp/channel_track': { 'parallel': true },
     'dsp/chord_track': { 'parallel': true },
     'dsp/curve': { 'parallel': true },
     'dsp/fader': { 'parallel': true },
@@ -268,7 +269,6 @@ if get_option ('tests')
     'utils/arrays': { 'parallel': true },
     'utils/compression': { 'parallel': true },
     'utils/file': { 'parallel': true },
-    'utils/general': { 'parallel': true },
     'utils/hash': { 'parallel': true },
     'utils/math': { 'parallel': true },
     'utils/midi': { 'parallel': true },
@@ -300,8 +300,6 @@ if get_option ('tests')
       'integration/run_graph_with_latencies': {
         'parallel': false },
       'integration/undo_redo_helm_track_creation': {
-        'parallel': false },
-      'utils/system': {
         'parallel': false },
       }
   endif

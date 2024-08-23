@@ -38,6 +38,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "change samplerate")
   /* adjust the samplerate to be given at startup */
   zrythm_app->samplerate = (int) AUDIO_ENGINE->sample_rate_ * 2;
 
+  AUDIO_ENGINE->activate (false);
   PROJECT.reset ();
 
   /* reload */
@@ -136,16 +137,15 @@ TEST_CASE ("load project with different sample rate")
       int samplerate_before = samplerates[i];
 
       /* create project @ 48000 Hz */
-      ZrythmFixture (false, samplerate_before, 0, false);
+      ZrythmFixture fixture (false, samplerate_before, 0, false);
 
       Position pos;
       pos.set_to_bar (2);
 
       /* create audio track with region */
-      char * filepath =
-        g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", nullptr);
-      FileDescriptor file = FileDescriptor (filepath);
-      int            num_tracks_before = TRACKLIST->get_num_tracks ();
+      FileDescriptor file (
+        fs::path (TESTS_SRCDIR) / "test_start_with_signal.mp3");
+      int num_tracks_before = TRACKLIST->get_num_tracks ();
       Track::create_with_action (
         Track::Type::Audio, nullptr, &file, &pos, num_tracks_before, 1, -1,
         nullptr);

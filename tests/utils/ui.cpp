@@ -1,33 +1,22 @@
-// SPDX-FileCopyrightText: © 2020, 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
 
-#include <cstdlib>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "utils/ui.h"
 
-#include <glib.h>
+#include "doctest_wrapper.h"
 
-static void
-test_overlay_action_strings (void)
+TEST_SUITE_BEGIN ("utils/ui");
+
+TEST_CASE ("overlay action strings")
 {
-  /* verify that actions were not added/removed
-   * without matching strings */
-  g_assert_cmpstr (
-    ui_overlay_strings[NUM_UI_OVERLAY_ACTIONS], ==, "--INVALID--");
+  /* verify that actions were not added/removed without matching strings */
+  REQUIRE_EQ (
+    UiOverlayAction_to_string (UiOverlayAction::NUM_UI_OVERLAY_ACTIONS),
+    "--INVALID--");
 }
 
-int
-main (int argc, char * argv[])
-{
-  g_test_init (&argc, &argv, NULL);
-
-#define TEST_PREFIX "/utils/ui/"
-
-  g_test_add_func (
-    TEST_PREFIX "test overlay action strings",
-    (GTestFunc) test_overlay_action_strings);
-
-  return g_test_run ();
-}
+TEST_SUITE_END;

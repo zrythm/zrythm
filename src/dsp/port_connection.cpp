@@ -21,7 +21,9 @@ PortConnection::print_to_str () const
 {
   bool         is_send = this->is_send ();
   const char * send_str = is_send ? " (send)" : "";
-  if (gZrythm && PROJECT && PORT_CONNECTIONS_MGR->contains_connection (*this))
+  if (
+    gZrythm && PROJECT && PORT_CONNECTIONS_MGR
+    && PORT_CONNECTIONS_MGR->contains_connection (*this))
     {
       Track * src_track =
         TRACKLIST->find_track_by_name_hash (src_id_.track_name_hash_);

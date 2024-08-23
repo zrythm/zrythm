@@ -19,22 +19,21 @@
 
 TransportAction::
   TransportAction (bpm_t bpm_before, bpm_t bpm_after, bool already_done)
-    : type_ (Type::TempoChange), bpm_before_ (bpm_before),
+    : UndoableAction (UndoableAction::Type::Transport),
+      type_ (Type::TempoChange), bpm_before_ (bpm_before),
       bpm_after_ (bpm_after), already_done_ (already_done),
       musical_mode_ (
         ZRYTHM_TESTING ? false : g_settings_get_boolean (S_UI, "musical-mode"))
 {
-  TransportAction ();
 }
 
 TransportAction::
   TransportAction (Type type, int before, int after, bool already_done)
-    : type_ (type), int_before_ (before), int_after_ (after),
-      already_done_ (already_done),
+    : UndoableAction (UndoableAction::Type::Transport), type_ (type),
+      int_before_ (before), int_after_ (after), already_done_ (already_done),
       musical_mode_ (
         ZRYTHM_TESTING ? false : g_settings_get_boolean (S_UI, "musical-mode"))
 {
-  TransportAction ();
 }
 
 void
@@ -62,7 +61,11 @@ TransportAction::do_or_undo (bool do_it)
   ROUTER->queue_control_port_change (change);
 
   /* run engine to apply the change */
-  AUDIO_ENGINE->process_prepare (1);
+  {
+    SemaphoreRAII<std::counting_semaphore<>> sem (
+      AUDIO_ENGINE->port_operation_lock_, true);
+    AUDIO_ENGINE->process_prepare (1, &sem);
+  }
   EngineProcessTimeInfo time_nfo = {
     .g_start_frame_ = (unsigned_frame_t) PLAYHEAD.frames_,
     .g_start_frame_w_offset_ = (unsigned_frame_t) PLAYHEAD.frames_,

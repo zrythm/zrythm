@@ -330,6 +330,7 @@ TrackProcessor::init_after_cloning (const TrackProcessor &other)
       channel_pressure_.emplace_back (
         other.channel_pressure_[i]->clone_unique ());
     }
+  init_common ();
 }
 
 void
@@ -715,6 +716,7 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
 void
 TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
 {
+  z_return_if_fail (track_);
   auto tr = track_;
   auto track_type = tr->type_;
 
@@ -745,13 +747,11 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
       else if (TRANSPORT->is_rolling () || tr->is_auditioner ())
         {
           /* fill midi events from piano roll data */
-          auto * piano_roll_track = dynamic_cast<PianoRollTrack *> (tr);
 #if 0
           z_info (
             "filling midi events for %s from %ld", tr->name, time_nfo->g_start_frame_w_offset);
 #endif
-          piano_roll_track->fill_events (
-            time_nfo, pr->midi_events_.queued_events_);
+          track_->fill_midi_events (time_nfo, pr->midi_events_.queued_events_);
         }
       pr->midi_events_.dequeue ();
 #if 0

@@ -1,7 +1,9 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
+
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "actions/tracklist_selections.h"
 #include "dsp/engine.h"
@@ -15,6 +17,8 @@
 #include "helpers/project_helper.h"
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/zrythm_helper.h"
+
+TEST_SUITE_BEGIN ("dsp/fader");
 
 static void
 test_fader_process_with_instrument (
@@ -92,7 +96,7 @@ test_track_has_sound (ChannelTrack * track, bool expect_sound)
   REQUIRE (track_has_sound (track) == expect_sound);
 
   TRANSPORT->request_pause (true);
-(AUDIO_ENGINE->process( AUDIO_ENGINE->block_length_);
+  AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
 }
 
 TEST_CASE_FIXTURE (ZrythmFixture, "solo")
@@ -114,20 +118,20 @@ TEST_CASE_FIXTURE (ZrythmFixture, "solo")
   auto group_track = Track::create_empty_with_action<AudioGroupTrack> ();
 
   /* route audio tracks to group track */
-  track_select (audio_track, true, true, false);
-  tracklist_selections_action_perform_set_direct_out (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, group_track, nullptr);
-  track_select (audio_track2, true, true, false);
-  tracklist_selections_action_perform_set_direct_out (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, group_track, nullptr);
+  audio_track->select (true, true, false);
+  UNDO_MANAGER->perform (std::make_unique<ChangeTracksDirectOutAction> (
+    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+    *group_track));
+  audio_track2->select (true, true, false);
+  UNDO_MANAGER->perform (std::make_unique<ChangeTracksDirectOutAction> (
+    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+    *group_track));
 
-  /* stop dummy audio engine processing so we can
-   * process manually */
-  AUDIO_ENGINE->stop_dummy_audio_thread = true;
-  g_usleep (1000000);
+  /* stop dummy audio engine processing so we can process manually */
+  test_project_stop_dummy_engine ();
 
   /* test solo group makes sound */
-  track_set_soloed (group_track, F_SOLO, F_TRIGGER_UNDO, F_AUTO_SELECT, false);
+  group_track->set_soloed (true, true, true, false);
   test_track_has_sound (P_MASTER_TRACK, true);
   test_track_has_sound (group_track, true);
   test_track_has_sound (audio_track, true);
@@ -135,7 +139,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "solo")
   UNDO_MANAGER->undo ();
 
   /* test solo audio track makes sound */
-  track_set_soloed (audio_track, F_SOLO, F_TRIGGER_UNDO, F_AUTO_SELECT, false);
+  audio_track->set_soloed (true, true, true, false);
   test_track_has_sound (P_MASTER_TRACK, true);
   test_track_has_sound (group_track, true);
   test_track_has_sound (audio_track, true);
@@ -143,10 +147,10 @@ TEST_CASE_FIXTURE (ZrythmFixture, "solo")
   UNDO_MANAGER->undo ();
 
   /* test solo both audio tracks */
-  track_select (audio_track, true, true, false);
-  track_select (audio_track2, true, false, false);
-  tracklist_selections_action_perform_edit_solo (
-    TRACKLIST_SELECTIONS, F_SOLO, nullptr);
+  audio_track->select (true, true, false);
+  audio_track2->select (true, false, false);
+  UNDO_MANAGER->perform (std::make_unique<SoloTracksAction> (
+    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), true));
   test_track_has_sound (P_MASTER_TRACK, true);
   test_track_has_sound (group_track, true);
   test_track_has_sound (audio_track, true);
@@ -154,23 +158,23 @@ TEST_CASE_FIXTURE (ZrythmFixture, "solo")
   UNDO_MANAGER->undo ();
 
   /* test undo/redo */
-  track_select (audio_track, true, true, false);
-  tracklist_selections_action_perform_edit_solo (
-    TRACKLIST_SELECTIONS, F_SOLO, nullptr);
-  g_assert_true (track_get_soloed (audio_track));
-  g_assert_false (track_get_soloed (audio_track2));
-  track_select (audio_track, true, true, false);
-  track_select (audio_track2, true, false, false);
-  tracklist_selections_action_perform_edit_solo (
-    TRACKLIST_SELECTIONS, F_SOLO, nullptr);
-  g_assert_true (track_get_soloed (audio_track));
-  g_assert_true (track_get_soloed (audio_track2));
+  audio_track->select (true, true, false);
+  UNDO_MANAGER->perform (std::make_unique<SoloTracksAction> (
+    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), true));
+  REQUIRE (audio_track->get_soloed ());
+  REQUIRE_FALSE (audio_track2->get_soloed ());
+  audio_track->select (true, true, false);
+  audio_track2->select (true, false, false);
+  UNDO_MANAGER->perform (std::make_unique<SoloTracksAction> (
+    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), true));
+  REQUIRE (audio_track->get_soloed ());
+  REQUIRE (audio_track2->get_soloed ());
   UNDO_MANAGER->undo ();
-  g_assert_true (track_get_soloed (audio_track));
-  g_assert_false (track_get_soloed (audio_track2));
+  REQUIRE (audio_track->get_soloed ());
+  REQUIRE_FALSE (audio_track2->get_soloed ());
   UNDO_MANAGER->redo ();
-  g_assert_true (track_get_soloed (audio_track));
-  g_assert_true (track_get_soloed (audio_track2));
+  REQUIRE (audio_track->get_soloed ());
+  REQUIRE (audio_track2->get_soloed ());
 }
 
 TEST_SUITE_END;

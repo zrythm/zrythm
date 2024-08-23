@@ -1,61 +1,45 @@
-// SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
 
-#include "actions/tracklist_selections.h"
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
 #include "dsp/midi_region.h"
-#include "dsp/region.h"
 #include "dsp/transport.h"
 #include "project.h"
-#include "utils/flags.h"
-#include "utils/io.h"
 #include "zrythm.h"
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
-static void
-test_add_marker (void)
-{
-  test_helper_zrythm_init ();
+TEST_SUITE_BEGIN ("dsp/marker track");
 
-  Track * track = P_MARKER_TRACK;
-  g_assert_cmpint (track->num_markers, ==, 2);
+TEST_CASE_FIXTURE (ZrythmFixture, "add marker")
+{
+  auto track = P_MARKER_TRACK;
+  REQUIRE_SIZE_EQ (track->markers_, 2);
 
   for (int i = 0; i < 15; i++)
     {
       test_project_save_and_reload ();
 
       track = P_MARKER_TRACK;
-      Marker *         marker = marker_new ("start");
-      ArrangerObject * m_obj = (ArrangerObject *) marker;
-      Position         pos;
+      auto     marker = std::make_shared<Marker> ("start");
+      Position pos;
       pos.set_to_bar (1);
-      arranger_object_pos_setter (m_obj, &pos);
-      marker->type = MarkerType::MARKER_TYPE_START;
+      marker->pos_setter (&pos);
+      marker->marker_type_ = Marker::Type::Start;
 
-      marker_track_add_marker (track, marker);
+      track->add_marker (marker);
 
-      g_assert_true (marker == track->markers[i + 2]);
+      REQUIRE_EQ (marker.get (), track->markers_[i + 2].get ());
 
       for (int j = 0; j < i + 2; j++)
         {
-          g_assert_true (track->markers[j]);
+          REQUIRE_NONNULL (track->markers_[j]);
         }
     }
-
-  test_helper_zrythm_cleanup ();
 }
 
-int
-main (int argc, char * argv[])
-{
-  g_test_init (&argc, &argv, nullptr);
-
-#define TEST_PREFIX "/audio/marker track/"
-
-  g_test_add_func (TEST_PREFIX "test add marker", (GTestFunc) test_add_marker);
-
-  return g_test_run ();
-}
+TEST_SUITE_END;

@@ -505,5 +505,9 @@ test_helper_project_init_done_cb (
   std::string error,
   void *      user_data)
 {
+  if (!success)
+    {
+      z_warning ("project init failed: {}", error);
+    }
   REQUIRE (success);
 }

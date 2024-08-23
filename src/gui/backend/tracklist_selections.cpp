@@ -508,6 +508,16 @@ SimpleTracklistSelections::gen_tracklist_selections () const
 }
 
 void
+TracklistSelections::init_after_cloning (const TracklistSelections &other)
+{
+  for (auto &track : other.tracks_)
+    {
+      tracks_.emplace_back (
+        clone_unique_with_variant<TrackVariant> (track.get ()));
+    }
+}
+
+void
 TracklistSelections::add_track (std::unique_ptr<Track> &&track)
 {
   tracks_.emplace_back (std::move (track));

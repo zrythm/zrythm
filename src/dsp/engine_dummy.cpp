@@ -27,7 +27,7 @@ public:
       (double) engine_.block_length_ / engine_.sample_rate_;
     auto sleep_time = (gulong) (secs_per_block * 1000.0 * 1000);
 
-    z_info ("Running dummy audio engine for first time");
+    z_info ("Running dummy audio engine thread for first time");
 
 #ifdef HAVE_LSP_DSP
     LspDspContextRAII lsp_dsp_context_raii;
@@ -38,6 +38,8 @@ public:
         engine_.process (engine_.block_length_);
         std::this_thread::sleep_for (std::chrono::microseconds (sleep_time));
       }
+
+    z_info ("Exiting from dummy audio engine thread");
   }
 
 public:
@@ -99,6 +101,7 @@ engine_dummy_activate (AudioEngine * self, bool activate)
         true, true, false);
 
       self->dummy_audio_thread_ = std::make_unique<DummyEngineThread> (*self);
+      self->dummy_audio_thread_->startThread ();
     }
   else
     {

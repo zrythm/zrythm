@@ -6,13 +6,6 @@
 #include "gui/widgets/arranger_object.h"
 #include "zrythm.h"
 
-HOT Region *
-RegionOwnedObject::get_region () const
-{
-  const auto &region = Region::find (region_id_);
-  return region.get ();
-}
-
 template <typename RegionT>
 RegionT *
 RegionOwnedObjectImpl<RegionT>::get_region () const
@@ -21,10 +14,11 @@ RegionOwnedObjectImpl<RegionT>::get_region () const
   return region.get ();
 }
 
+template <typename RegionT>
 void
-RegionOwnedObject::get_global_start_pos (Position &pos) const
+RegionOwnedObjectImpl<RegionT>::get_global_start_pos (Position &pos) const
 {
-  Region * r = get_region ();
+  auto r = get_region ();
   pos = pos_;
   pos.add_ticks (r->pos_.ticks_);
 }

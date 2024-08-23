@@ -3,20 +3,13 @@
 
 #include "zrythm-test-config.h"
 
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
 #include "actions/arranger_selections.h"
 #include "actions/range_action.h"
-#include "actions/tracklist_selections.h"
 #include "actions/undo_manager.h"
-#include "actions/undoable_action.h"
-#include "dsp/audio_region.h"
-#include "dsp/automation_region.h"
-#include "dsp/chord_region.h"
-#include "dsp/control_port.h"
-#include "dsp/master_track.h"
-#include "dsp/midi_note.h"
 #include "dsp/region.h"
 #include "project.h"
-#include "utils/flags.h"
 #include "zrythm.h"
 
 #include <glib.h>

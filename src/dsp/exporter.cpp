@@ -41,6 +41,17 @@
 
 #define AMPLITUDE (1.0 * 0x7F000000)
 
+Exporter::Exporter (
+  Settings                      settings,
+  GtkWidget *                   parent_owner,
+  std::shared_ptr<ProgressInfo> progress_info)
+    : settings_ (std::move (settings)),
+      progress_info_ (
+        progress_info ? progress_info : std::make_shared<ProgressInfo> ()),
+      parent_owner_ (parent_owner)
+{
+}
+
 std::pair<Position, Position>
 Exporter::Settings::get_export_time_range () const
 {
@@ -59,6 +70,12 @@ Exporter::Settings::get_export_time_range () const
     default:
       z_return_val_if_reached (std::make_pair (Position (), Position ()));
     }
+}
+
+fs::path
+Exporter::get_exported_path () const
+{
+  return settings_.file_uri_;
 }
 
 void
@@ -94,8 +111,8 @@ Exporter::export_audio (Settings &info)
       throw ZrythmException ("Failed to create parent directories");
     }
 
-  juce::FileOutputStream file_output_stream (outputFile);
-  if (!file_output_stream.openedOk ())
+  auto file_output_stream = new juce::FileOutputStream (outputFile);
+  if (!file_output_stream->openedOk ())
     {
       throw ZrythmException ("Failed to open output file");
     }
@@ -109,7 +126,7 @@ Exporter::export_audio (Settings &info)
   metadata.set ("software", PROGRAM_NAME);
 
   juce::AudioFormatWriter * writer = format->createWriterFor (
-    &file_output_stream, AUDIO_ENGINE->sample_rate_, EXPORT_CHANNELS,
+    file_output_stream, AUDIO_ENGINE->sample_rate_, EXPORT_CHANNELS,
     audio_bit_depth_enum_to_int (info.depth_), metadata, 0);
   if (writer == nullptr)
     {

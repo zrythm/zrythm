@@ -48,15 +48,19 @@ set_basic_info (
   row = ADW_ACTION_ROW (adw_action_row_new ());
   adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), _ ("Owner"));
   lbl = GTK_LABEL (gtk_label_new (nullptr));
-  if (auto region_owned_obj = dynamic_cast<RegionOwnedObject *> (obj))
+  if (obj->owned_by_region ())
     {
-      auto region = region_owned_obj->get_region ();
-      z_return_if_fail (region);
-      auto tmp = fmt::format (
-        "{} [tr {}, ln {}, at {}, idx {}]", region->name_,
-        region->id_.track_name_hash_, region->id_.lane_pos_,
-        region->id_.at_idx_, region->id_.idx_);
-      gtk_label_set_text (lbl, tmp.c_str ());
+      std::visit (
+        [&] (auto &&region_owned_obj) {
+          auto region = region_owned_obj->get_region ();
+          z_return_if_fail (region);
+          auto tmp = fmt::format (
+            "{} [tr {}, ln {}, at {}, idx {}]", region->name_,
+            region->id_.track_name_hash_, region->id_.lane_pos_,
+            region->id_.at_idx_, region->id_.idx_);
+          gtk_label_set_text (lbl, tmp.c_str ());
+        },
+        convert_to_variant<RegionOwnedObjectPtrVariant> (obj));
     }
   else
     {

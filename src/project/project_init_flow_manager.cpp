@@ -46,6 +46,33 @@ z_project_init_flow_manager_error_quark (void);
 G_DEFINE_QUARK (z - project - init - flow - manager - error - quark, z_project_init_flow_manager_error)
 
 void
+ProjectInitFlowManager::append_callback (
+  ProjectInitDoneCallback cb,
+  void *                  user_data)
+{
+  callbacks_.emplace_back (cb, user_data);
+}
+
+void
+ProjectInitFlowManager::call_last_callback (bool success, std::string error)
+{
+  auto cb = callbacks_.back ();
+  callbacks_.pop_back ();
+  cb.first (success, error, cb.second);
+}
+
+void
+ProjectInitFlowManager::call_last_callback_fail (std::string error)
+{
+  call_last_callback (false, error);
+}
+void
+ProjectInitFlowManager::call_last_callback_success ()
+{
+  call_last_callback (true, "");
+}
+
+void
 ProjectInitFlowManager::recreate_main_window ()
 {
   z_info ("recreating main window...");
@@ -606,7 +633,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
 
   prj->title_ = filepath_noext;
 
-  prj->init_selections ();
+  prj->init_selections (false);
 
   auto engine = prj->audio_engine_.get ();
 

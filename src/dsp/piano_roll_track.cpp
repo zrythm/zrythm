@@ -53,14 +53,6 @@ PianoRollTrack::get_velocities_in_range (
     }
 }
 
-void
-PianoRollTrack::fill_events (
-  const EngineProcessTimeInfo &time_nfo,
-  MidiEventVector             &midi_events)
-{
-  fill_events_common (time_nfo, &midi_events, nullptr);
-}
-
 bool
 PianoRollTrack::validate () const
 {

@@ -197,7 +197,8 @@ z_carla_discovery_plugin_scanned_cb (
       return;
     }
 
-  auto descr = ZCarlaDiscovery::descriptor_from_discovery_info (nfo, sha1);
+  std::string sha1_str = sha1 ? sha1 : "";
+  auto descr = ZCarlaDiscovery::descriptor_from_discovery_info (nfo, sha1_str);
   z_debug ("scanned {}", descr->uri_);
   pm->add_descriptor (*descr);
 
@@ -238,7 +239,7 @@ bool
 ZCarlaDiscovery::idle ()
 {
   bool all_done = true;
-  for (auto [handle, done] : handles_)
+  for (auto &[handle, done] : handles_)
     {
       z_return_val_if_fail (handle, true);
       if (done)
@@ -275,11 +276,11 @@ ZCarlaDiscovery::start (BinaryType btype, PluginProtocol protocol)
   if (!handle)
     {
       z_debug (
-        "no plugins to scan for %s (given paths: %s)", ENUM_NAME (protocol),
+        "no plugins to scan for {} (given paths: {})", ENUM_NAME (protocol),
         paths_separated);
       return;
     }
-  handles_.push_back ({ handle, false });
+  handles_.emplace_back (handle, false);
 }
 
 #endif

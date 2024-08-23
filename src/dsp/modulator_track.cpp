@@ -59,6 +59,9 @@ ModulatorTrack::initialize ()
 void
 ModulatorTrack::init_loaded ()
 {
+  // ChannelTrack must be initialized before AutomatableTrack
+  AutomatableTrack::init_loaded ();
+  ProcessableTrack::init_loaded ();
   for (auto &modulator : modulators_)
     {
       modulator->init_loaded (this, nullptr);
@@ -111,7 +114,7 @@ do_insert (ModulatorImportData * data)
 
   /* insert the modulator */
   z_debug (
-    "Inserting modulator %s at %s:%d", data->modulator->get_name (),
+    "Inserting modulator {} at {}:{}", data->modulator->get_name (),
     self->name_, data->slot);
   auto it = self->modulators_.insert (
     self->modulators_.cbegin () + data->slot, std::move (data->modulator));

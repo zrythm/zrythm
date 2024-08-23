@@ -1,13 +1,10 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/** @file
- */
-
 #ifndef __GUI_WIDGETS_METER_H__
 #define __GUI_WIDGETS_METER_H__
 
-#include "utils/general.h"
+#include "utils/color.h"
 
 #include "gtk_wrapper.h"
 
@@ -15,8 +12,9 @@
 G_DECLARE_FINAL_TYPE (MeterWidget, meter_widget, Z, METER_WIDGET, GtkWidget)
 
 class Meter;
+class Port;
 
-typedef struct _MeterWidget
+using MeterWidget = struct _MeterWidget
 {
   GtkWidget parent_instance;
 
@@ -40,7 +38,7 @@ typedef struct _MeterWidget
   /** ID of the source function. */
   guint     source_id;
   GSource * timeout_source;
-} MeterWidget;
+};
 
 /**
  * Sets up an existing meter and binds it to the given port.

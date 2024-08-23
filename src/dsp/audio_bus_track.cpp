@@ -21,6 +21,15 @@ AudioBusTrack::initialize ()
 }
 
 void
+AudioBusTrack::init_loaded ()
+{
+  // ChannelTrack must be initialized before AutomatableTrack
+  ChannelTrack::init_loaded ();
+  AutomatableTrack::init_loaded ();
+  ProcessableTrack::init_loaded ();
+}
+
+void
 AudioBusTrack::init_after_cloning (const AudioBusTrack &other)
 {
   ChannelTrack::copy_members_from (other);

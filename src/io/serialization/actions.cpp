@@ -116,7 +116,155 @@ ArrangerSelectionsAction::define_fields (const Context &ctx)
     }
   else
     {
-      // TODO
+      yyjson_obj_iter it = yyjson_obj_iter_with (ctx.obj_);
+
+      auto handle_selections = [&] (yyjson_val * sel_obj, auto &sel) {
+        if (sel_obj == nullptr || yyjson_is_null (sel_obj))
+          {
+            sel = nullptr;
+            return;
+          }
+
+        auto sel_obj_it = yyjson_obj_iter_with (sel_obj);
+        yyjson_val * sel_type_id_int = yyjson_obj_iter_get (&sel_obj_it, "type");
+        if (yyjson_is_int (sel_type_id_int))
+          {
+            try
+              {
+                auto sel_type_id = ENUM_INT_TO_VALUE (
+                  ArrangerSelections::Type, yyjson_get_int (sel_type_id_int));
+                auto new_sel = ArrangerSelections::new_from_type (sel_type_id);
+                std::visit (
+                  [&] (auto &&new_sel_casted) {
+                    new_sel_casted
+                      ->ISerializable<base_type<decltype (new_sel_casted)>>::
+                        deserialize (Context (sel_obj, ctx));
+                  },
+                  convert_to_variant<ArrangerSelectionsPtrVariant> (
+                    new_sel.get ()));
+                sel = std::move (new_sel);
+              }
+            catch (std::runtime_error &e)
+              {
+                throw ZrythmException (
+                  "Invalid type id: "
+                  + std::to_string (yyjson_get_uint (sel_type_id_int)));
+              }
+          }
+      };
+
+      auto obj = yyjson_obj_iter_get (&it, "selections");
+      handle_selections (obj, sel_);
+      obj = yyjson_obj_iter_get (&it, "selectionsAfter");
+      handle_selections (obj, sel_after_);
+
+      auto create_region =
+        [&] (yyjson_val * region_obj) -> std::unique_ptr<Region> {
+        if (region_obj == nullptr || yyjson_is_null (region_obj))
+          {
+            return nullptr;
+          }
+
+        auto r_obj_it = yyjson_obj_iter_with (region_obj);
+        yyjson_val * region_id_obj = yyjson_obj_iter_get (&r_obj_it, "regionId");
+        RegionIdentifier region_id;
+        region_id.ISerializable<RegionIdentifier>::deserialize (
+          Context (region_id_obj, ctx));
+        std::unique_ptr<Region> region;
+        switch (region_id.type_)
+          {
+          case RegionType::Audio:
+            region = std::make_unique<AudioRegion> ();
+            break;
+          case RegionType::Midi:
+            region = std::make_unique<MidiRegion> ();
+            break;
+          case RegionType::Automation:
+            region = std::make_unique<AutomationRegion> ();
+            break;
+          case RegionType::Chord:
+            region = std::make_unique<ChordRegion> ();
+          }
+        std::visit (
+          [&] (auto &&region_casted) {
+            region_casted->ISerializable<base_type<decltype (region_casted)>>::
+              deserialize (Context (region_obj, ctx));
+          },
+          convert_to_variant<RegionPtrVariant> (region.get ()));
+        return region;
+      };
+
+      obj = yyjson_obj_iter_get (&it, "regionBefore");
+      region_before_ = create_region (obj);
+      obj = yyjson_obj_iter_get (&it, "regionAfter");
+      region_after_ = create_region (obj);
+
+      auto create_lengthable_obj =
+        [&] (yyjson_val * lo_obj) -> std::unique_ptr<LengthableObject> {
+        if (lo_obj == nullptr || yyjson_is_null (lo_obj))
+          {
+            return nullptr;
+          }
+
+        auto         lo_obj_it = yyjson_obj_iter_with (lo_obj);
+        yyjson_val * lo_type_id_int = yyjson_obj_iter_get (&lo_obj_it, "type");
+        if (yyjson_is_int (lo_type_id_int))
+          {
+            try
+              {
+                auto lo_type_id = ENUM_INT_TO_VALUE (
+                  ArrangerObject::Type, yyjson_get_int (lo_type_id_int));
+                switch (lo_type_id)
+                  {
+                  case ArrangerObject::Type::MidiNote:
+                    {
+                      auto lo_obj_ptr = std::make_unique<MidiNote> ();
+                      lo_obj_ptr->ISerializable<MidiNote>::deserialize (
+                        Context (lo_obj, ctx));
+                      return lo_obj_ptr;
+                    }
+                  case ArrangerObject::Type::Region:
+                    return create_region (lo_obj);
+                  default:
+                    throw ZrythmException (
+                      "Invalid type id: "
+                      + std::to_string (yyjson_get_uint (lo_type_id_int)));
+                  }
+              }
+            catch (std::runtime_error &e)
+              {
+                throw ZrythmException (
+                  "Invalid type id: "
+                  + std::to_string (yyjson_get_uint (lo_type_id_int)));
+              }
+          }
+        else
+          {
+            throw ZrythmException (
+              "Invalid type id: "
+              + std::to_string (yyjson_get_uint (lo_type_id_int)));
+          }
+      };
+
+      auto handle_lo_obj_array = [&] (const auto &key, auto &lo_objs) {
+        yyjson_val * arr = yyjson_obj_iter_get (&it, key);
+        if (!arr)
+          {
+            throw ZrythmException ("No LengthableObject array");
+          }
+        yyjson_arr_iter lo_arr_it = yyjson_arr_iter_with (arr);
+        yyjson_val *    lo_obj = nullptr;
+        auto            size = yyjson_arr_size (arr);
+        for (size_t i = 0; i < size; ++i)
+          {
+            lo_obj = yyjson_arr_iter_next (&lo_arr_it);
+            lo_objs.emplace_back (create_lengthable_obj (lo_obj));
+          }
+      };
+
+      handle_lo_obj_array ("r1", r1_);
+      handle_lo_obj_array ("r2", r2_);
+
       num_split_objs_ = r1_.size ();
     }
 }

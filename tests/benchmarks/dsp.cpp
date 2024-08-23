@@ -191,7 +191,7 @@ _test_run_engine (bool optimized)
   start = g_get_monotonic_time ();
   for (int i = 0; i < NUM_ITERATIONS_ENGINE; i++)
     {
-      engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+      AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
       LOOP_END ("engine cycles", optimized);
 
       z_info ("{}optimized time: {}", optimized ? "" : "un", end - start);

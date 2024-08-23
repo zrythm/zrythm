@@ -28,7 +28,7 @@
 class ZrythmException : public std::nested_exception
 {
 public:
-  explicit ZrythmException (const std::string &message) : message_ (message) { }
+  explicit ZrythmException (const std::string &message);
 
   const char * what () const noexcept;
 

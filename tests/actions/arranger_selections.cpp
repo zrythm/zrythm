@@ -199,7 +199,7 @@ public:
     REQUIRE_GT (audio_track_after->pos_, audio_track_before->pos_);
 
     auto require_correct_track = [&] (auto &region, auto &expected) {
-      auto actual = region->get_track ();
+      const auto actual = region->get_track ();
       REQUIRE_EQ (actual, expected);
       REQUIRE_EQ (region->id_.track_name_hash_, expected->get_name_hash ());
     };
@@ -211,8 +211,8 @@ public:
 
     {
       /* check midi region */
-      auto mr = [&] () {
-        auto track = new_tracks ? midi_track_after : midi_track_before;
+      const auto mr = [&] () {
+        const auto track = new_tracks ? midi_track_after : midi_track_before;
         return track->lanes_[MIDI_REGION_LANE]->regions_[0];
       }();
 
@@ -224,7 +224,7 @@ public:
       require_correct_track (
         mr, new_tracks ? midi_track_after : midi_track_before);
       REQUIRE_SIZE_EQ (mr->midi_notes_, 1);
-      auto mn = mr->midi_notes_[0];
+      const auto mn = mr->midi_notes_[0];
       REQUIRE_EQ (mn->val_, MN_VAL);
       REQUIRE_EQ (mn->vel_->vel_, MN_VEL);
       REQUIRE_POSITION_EQ (mn->pos_, p1_);
@@ -234,8 +234,8 @@ public:
 
     {
       /* check audio region */
-      auto regions = TL_SELECTIONS->get_objects_of_type<Region> ();
-      auto r =
+      const auto regions = TL_SELECTIONS->get_objects_of_type<Region> ();
+      const auto r =
         dynamic_pointer_cast<AudioRegion> (regions.at (new_tracks ? 1 : 3));
       REQUIRE_NONNULL (r);
       REQUIRE (r->is_region ());
@@ -249,17 +249,21 @@ public:
       {
         {
           /* check automation region */
-          auto regions = TL_SELECTIONS->get_objects_of_type<Region> ();
-          auto r = dynamic_pointer_cast<AutomationRegion> (regions.at (1));
+          const auto regions = TL_SELECTIONS->get_objects_of_type<Region> ();
+          const auto r = dynamic_pointer_cast<AutomationRegion> (regions.at (1));
           REQUIRE_POSITION_EQ (r->pos_, p1_after_move);
           REQUIRE_POSITION_EQ (r->end_pos_, p2_after_move);
           REQUIRE_SIZE_EQ (r->aps_, 2);
-          auto &ap = r->aps_[0];
-          REQUIRE_POSITION_EQ (ap->pos_, p1_);
-          REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL1, 0.000001f);
-          ap = r->aps_[1];
-          REQUIRE_POSITION_EQ (ap->pos_, p2_);
-          REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL2, 0.000001f);
+          {
+            const auto &ap = r->aps_[0];
+            REQUIRE_POSITION_EQ (ap->pos_, p1_);
+            REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL1, 0.000001f);
+          }
+          {
+            const auto &ap = r->aps_[1];
+            REQUIRE_POSITION_EQ (ap->pos_, p2_);
+            REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL2, 0.000001f);
+          }
         }
 
         /* check marker */
@@ -464,221 +468,6 @@ public:
       }
   }
 };
-
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "create timeline")
-{
-  /* do create */
-  perform_create (TL_SELECTIONS);
-
-  /* check */
-  REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), TOTAL_TL_SELECTIONS);
-  REQUIRE_EQ (MIDI_SELECTIONS->get_num_objects (), 1);
-  check_vs_original_state (true);
-  check_has_single_undo ();
-
-  /* undo and check that the objects are deleted */
-  UNDO_MANAGER->undo ();
-  REQUIRE_EQ (MIDI_SELECTIONS->get_num_objects (), 0);
-  check_timeline_objects_deleted (1);
-
-  /* redo and check that the objects are there */
-  UNDO_MANAGER->redo ();
-  REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), TOTAL_TL_SELECTIONS);
-  check_vs_original_state (true);
-  check_has_single_undo ();
-}
-
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete timeline")
-{
-  /* do delete */
-  REQUIRE_NOTHROW (perform_delete (TL_SELECTIONS));
-
-  REQUIRE_NULL (CLIP_EDITOR->get_region ());
-
-  /* check */
-  check_timeline_objects_deleted (false);
-  REQUIRE_EQ (MIDI_SELECTIONS->get_num_objects (), 0);
-  REQUIRE_EQ (CHORD_SELECTIONS->get_num_objects (), 0);
-  REQUIRE_EQ (AUTOMATION_SELECTIONS->get_num_objects (), 0);
-
-  /* undo and check that the objects are created */
-  REQUIRE_NOTHROW (UNDO_MANAGER->undo ());
-  REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), TOTAL_TL_SELECTIONS);
-  check_vs_original_state (true);
-  check_has_single_redo ();
-
-  /* redo and check that the objects are gone */
-  UNDO_MANAGER->redo ();
-  REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), 0);
-  REQUIRE_EQ (MIDI_SELECTIONS->get_num_objects (), 0);
-  REQUIRE_EQ (CHORD_SELECTIONS->get_num_objects (), 0);
-  REQUIRE_EQ (AUTOMATION_SELECTIONS->get_num_objects (), 0);
-  check_timeline_objects_deleted (false);
-
-  REQUIRE_NULL (CLIP_EDITOR->get_region ());
-
-  /* undo again to prepare for next test */
-  UNDO_MANAGER->undo ();
-  REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), TOTAL_TL_SELECTIONS);
-  check_vs_original_state (true);
-  check_has_single_redo ();
-}
-
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete chords")
-{
-  auto &r = P_CHORD_TRACK->regions_[0];
-  REQUIRE (r->validate (true, 0));
-
-  /* add another chord */
-  auto c = std::make_shared<ChordObject> (r->id_, 2, 2);
-  r->append_object (c);
-  CHORD_SELECTIONS->add_object_ref (c);
-  perform_create (CHORD_SELECTIONS);
-
-  /* delete the first chord */
-  CHORD_SELECTIONS->clear ();
-  CHORD_SELECTIONS->add_object_ref (r->chord_objects_[0]);
-  perform_delete (CHORD_SELECTIONS);
-  REQUIRE (r->validate (true, 0));
-
-  REQUIRE_NOTHROW (
-    UNDO_MANAGER->undo (); UNDO_MANAGER->redo (); UNDO_MANAGER->undo ();
-    UNDO_MANAGER->undo (); UNDO_MANAGER->redo (); UNDO_MANAGER->undo (););
-}
-
-TEST_CASE_FIXTURE (ZrythmFixture, "test move audio region and lower bpm")
-{
-  char audio_file_path[2000];
-  sprintf (
-    audio_file_path, "%s%s%s", TESTS_SRCDIR, G_DIR_SEPARATOR_S, "test.wav");
-
-  /* create audio track with region */
-  Position       pos;
-  int            track_pos = TRACKLIST->tracks_.size ();
-  FileDescriptor file (audio_file_path);
-  REQUIRE_NOTHROW (Track::create_with_action (
-    Track::Type::Audio, nullptr, &file, &pos, track_pos, 1, -1, nullptr));
-  auto track = TRACKLIST->get_track<AudioTrack> (track_pos);
-  REQUIRE_NONNULL (track);
-
-  /* move the region */
-  track->lanes_[0]->regions_[0]->select (true, false, false);
-  UNDO_MANAGER->perform (
-    std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
-      *TL_SELECTIONS, true, MOVE_TICKS, 0, 0, nullptr, false));
-
-  for (int i = 0; i < 2; i++)
-    {
-      float bpm_diff = (i == 1) ? 20.f : 40.f;
-
-      /* lower BPM and attempt to save */
-      bpm_t  bpm_before = P_TEMPO_TRACK->get_current_bpm ();
-      auto   audio_track = TRACKLIST->get_track<AudioTrack> (5);
-      auto  &r = audio_track->lanes_[0]->regions_[0];
-      long   frames_len = r->get_length_in_frames ();
-      double ticks_len = r->get_length_in_ticks ();
-      auto  &clip = AUDIO_ENGINE->pool_->clips_[r->pool_id_];
-      z_debug (
-        "before | r size: {} (ticks {:f}), clip size {}", frames_len, ticks_len,
-        clip->num_frames_);
-      r->validate (true, 0);
-      P_TEMPO_TRACK->set_bpm (
-        bpm_before - bpm_diff, bpm_before, Z_F_NOT_TEMPORARY, false);
-      frames_len = r->get_length_in_frames ();
-      ;
-      ticks_len = r->get_length_in_ticks ();
-      z_debug (
-        "after | r size: {} (ticks {:f}), clip size {}", frames_len, ticks_len,
-        clip->num_frames_);
-      r->validate (true, 0);
-      test_project_save_and_reload ();
-
-      /* undo lowering BPM */
-      UNDO_MANAGER->undo ();
-    }
-}
-
-TEST_CASE_FIXTURE (ZrythmFixture, "move audio region and lower samplerate")
-{
-  char audio_file_path[2000];
-  sprintf (
-    audio_file_path, "%s%s%s", TESTS_SRCDIR, G_DIR_SEPARATOR_S, "test.wav");
-
-  /* create audio track with region */
-  Position       pos;
-  int            track_pos = TRACKLIST->tracks_.size ();
-  FileDescriptor file (audio_file_path);
-  Track::create_with_action (
-    Track::Type::Audio, nullptr, &file, &pos, track_pos, 1, -1, nullptr);
-  auto track = TRACKLIST->get_track<AudioTrack> (track_pos);
-  REQUIRE_NONNULL (track);
-
-  /* move the region */
-  track->lanes_[0]->regions_[0]->select (true, false, false);
-  UNDO_MANAGER->perform (
-    std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
-      *TL_SELECTIONS, true, MOVE_TICKS, 0, 0, nullptr, false));
-
-  for (int i = 0; i < 4; i++)
-    {
-      /* save the project */
-      REQUIRE_NOTHROW (PROJECT->save (PROJECT->dir_, 0, 0, false));
-      auto prj_file = fs::path (PROJECT->dir_) / PROJECT_FILE;
-
-      /* adjust the samplerate to be given at startup */
-      zrythm_app->samplerate = (int) AUDIO_ENGINE->sample_rate_ / 2;
-
-      PROJECT.reset ();
-
-      /* reload */
-      test_project_reload (prj_file);
-    }
-}
-
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "move timeline")
-{
-  /* when i == 1 we are moving to new tracks */
-  for (int i = 0; i < 2; i++)
-    {
-      int track_diff = i ? 2 : 0;
-      if (track_diff)
-        {
-          select_audio_and_midi_regions_only ();
-        }
-
-      /* check undo/redo stacks */
-      REQUIRE_EMPTY (*UNDO_MANAGER->undo_stack_);
-      REQUIRE_SIZE_EQ (*UNDO_MANAGER->redo_stack_, i ? 1 : 0);
-
-      /* do move ticks */
-      UNDO_MANAGER->perform (
-        std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
-          *TL_SELECTIONS, true, MOVE_TICKS, track_diff, 0, nullptr, false));
-
-      /* check */
-      check_after_move_timeline (i);
-
-      /* undo and check that the objects are at their original state*/
-      UNDO_MANAGER->undo ();
-      REQUIRE_EQ (
-        TL_SELECTIONS->get_num_objects (), i ? 2 : TOTAL_TL_SELECTIONS);
-
-      check_vs_original_state (i ? false : true);
-      check_has_single_redo ();
-
-      /* redo and check that the objects are moved
-       * again */
-      UNDO_MANAGER->redo ();
-      check_after_move_timeline (i);
-
-      /* undo again to prepare for next test */
-      UNDO_MANAGER->undo ();
-      if (track_diff)
-        {
-          REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), 2);
-        }
-    }
-}
 
 TEST_CASE_FIXTURE (
   ArrangerSelectionsFixture,
@@ -2836,6 +2625,253 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "stretch")
   }
 
   UNDO_MANAGER->redo ();
+}
+
+// below pass
+
+TEST_CASE_FIXTURE (ZrythmFixture, "test move audio region and lower bpm")
+{
+  const auto frames_per_tick_at_start = AUDIO_ENGINE->frames_per_tick_;
+
+  auto check_actions = [&] (size_t num_actions_till_now) {
+    REQUIRE_SIZE_EQ (UNDO_MANAGER->undo_stack_->actions_, num_actions_till_now);
+    const auto &undo_stack_actions = UNDO_MANAGER->undo_stack_->actions_;
+
+    auto require_frames_per_tick_eq_to_start = [&] (size_t idx) {
+      REQUIRE_FLOAT_EQ (
+        undo_stack_actions[idx]->frames_per_tick_, frames_per_tick_at_start);
+    };
+
+    if (num_actions_till_now > 0)
+      {
+        require_frames_per_tick_eq_to_start (0);
+        require_frames_per_tick_eq_to_start (1);
+        REQUIRE_EQ (undo_stack_actions[1]->num_actions_, 2);
+      }
+    if (num_actions_till_now > 2)
+      {
+        require_frames_per_tick_eq_to_start (2);
+        REQUIRE_EQ (undo_stack_actions[2]->num_actions_, 1);
+      }
+    if (num_actions_till_now > 3)
+      {
+        require_frames_per_tick_eq_to_start (3);
+        REQUIRE_EQ (undo_stack_actions[3]->num_actions_, 1);
+      }
+  };
+
+  /* create audio track with region */
+  Position       pos;
+  int            track_pos = TRACKLIST->tracks_.size ();
+  FileDescriptor file (fs::path (TESTS_SRCDIR) / "test.wav");
+  REQUIRE_NOTHROW (Track::create_with_action (
+    Track::Type::Audio, nullptr, &file, &pos, track_pos, 1, -1, nullptr));
+  auto track = TRACKLIST->get_track<AudioTrack> (track_pos);
+  REQUIRE_NONNULL (track);
+  check_actions (2);
+
+  /* move the region */
+  track->lanes_[0]->regions_[0]->select (true, false, false);
+  UNDO_MANAGER->perform (
+    std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
+      *TL_SELECTIONS, true, MOVE_TICKS, 0, 0, nullptr, false));
+  check_actions (3);
+
+  for (int i = 0; i < 2; ++i)
+    {
+      check_actions (3);
+      float bpm_diff = (i == 1) ? 20.f : 40.f;
+
+      /* lower BPM and attempt to save */
+      bpm_t bpm_before = P_TEMPO_TRACK->get_current_bpm ();
+      auto  audio_track = TRACKLIST->get_track<AudioTrack> (5);
+      auto &r = audio_track->lanes_[0]->regions_[0];
+      auto &clip = AUDIO_ENGINE->pool_->clips_[r->pool_id_];
+      z_debug (
+        "before | r size: {} (ticks {:f}), clip size {}",
+        r->get_length_in_frames (), r->get_length_in_ticks (),
+        clip->num_frames_);
+      r->validate (true, 0);
+      P_TEMPO_TRACK->set_bpm (
+        bpm_before - bpm_diff, bpm_before, Z_F_NOT_TEMPORARY, false);
+      check_actions (4);
+      z_debug (
+        "after | r size: {} (ticks {:f}), clip size {}",
+        r->get_length_in_frames (), r->get_length_in_ticks (),
+        clip->num_frames_);
+      r->validate (true, 0);
+      test_project_save_and_reload ();
+      check_actions (4);
+
+      /* undo lowering BPM */
+      UNDO_MANAGER->undo ();
+      check_actions (3);
+    }
+}
+
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete chords")
+{
+  REQUIRE (P_CHORD_TRACK->validate ());
+  auto &r = P_CHORD_TRACK->regions_[0];
+  REQUIRE (r->validate (true, 0));
+
+  /* add another chord */
+  auto c = std::make_shared<ChordObject> (r->id_, 2, 2);
+  r->append_object (c);
+  CHORD_SELECTIONS->add_object_ref (c);
+  perform_create (CHORD_SELECTIONS);
+
+  /* delete the first chord */
+  CHORD_SELECTIONS->clear ();
+  CHORD_SELECTIONS->add_object_ref (r->chord_objects_[0]);
+  perform_delete (CHORD_SELECTIONS);
+  REQUIRE (r->validate (true, 0));
+
+  REQUIRE_NOTHROW (
+    UNDO_MANAGER->undo (); UNDO_MANAGER->redo (); UNDO_MANAGER->undo ();
+    UNDO_MANAGER->undo (); UNDO_MANAGER->redo (); UNDO_MANAGER->undo (););
+}
+
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "create timeline")
+{
+  /* do create */
+  perform_create (TL_SELECTIONS);
+
+  /* check */
+  REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), TOTAL_TL_SELECTIONS);
+  REQUIRE_EQ (MIDI_SELECTIONS->get_num_objects (), 1);
+  check_vs_original_state (true);
+  check_has_single_undo ();
+
+  /* undo and check that the objects are deleted */
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (MIDI_SELECTIONS->get_num_objects (), 0);
+  check_timeline_objects_deleted (true);
+
+  /* redo and check that the objects are there */
+  UNDO_MANAGER->redo ();
+  REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), TOTAL_TL_SELECTIONS);
+  check_vs_original_state (true);
+  check_has_single_undo ();
+}
+
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete timeline")
+{
+  /* do delete */
+  REQUIRE_NOTHROW (perform_delete (TL_SELECTIONS));
+
+  REQUIRE_NULL (CLIP_EDITOR->get_region ());
+
+  /* check */
+  check_timeline_objects_deleted (false);
+  REQUIRE_EQ (MIDI_SELECTIONS->get_num_objects (), 0);
+  REQUIRE_EQ (CHORD_SELECTIONS->get_num_objects (), 0);
+  REQUIRE_EQ (AUTOMATION_SELECTIONS->get_num_objects (), 0);
+
+  /* undo and check that the objects are created */
+  REQUIRE_NOTHROW (UNDO_MANAGER->undo ());
+  REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), TOTAL_TL_SELECTIONS);
+  check_vs_original_state (true);
+  check_has_single_redo ();
+
+  /* redo and check that the objects are gone */
+  UNDO_MANAGER->redo ();
+  REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), 0);
+  REQUIRE_EQ (MIDI_SELECTIONS->get_num_objects (), 0);
+  REQUIRE_EQ (CHORD_SELECTIONS->get_num_objects (), 0);
+  REQUIRE_EQ (AUTOMATION_SELECTIONS->get_num_objects (), 0);
+  check_timeline_objects_deleted (false);
+
+  REQUIRE_NULL (CLIP_EDITOR->get_region ());
+
+  /* undo again to prepare for next test */
+  UNDO_MANAGER->undo ();
+  REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), TOTAL_TL_SELECTIONS);
+  check_vs_original_state (true);
+  check_has_single_redo ();
+}
+
+TEST_CASE_FIXTURE (ZrythmFixture, "move audio region and lower samplerate")
+{
+  char audio_file_path[2000];
+  sprintf (
+    audio_file_path, "%s%s%s", TESTS_SRCDIR, G_DIR_SEPARATOR_S, "test.wav");
+
+  /* create audio track with region */
+  Position       pos;
+  int            track_pos = TRACKLIST->tracks_.size ();
+  FileDescriptor file (audio_file_path);
+  Track::create_with_action (
+    Track::Type::Audio, nullptr, &file, &pos, track_pos, 1, -1, nullptr);
+  auto track = TRACKLIST->get_track<AudioTrack> (track_pos);
+  REQUIRE_NONNULL (track);
+
+  /* move the region */
+  track->lanes_[0]->regions_[0]->select (true, false, false);
+  UNDO_MANAGER->perform (
+    std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
+      *TL_SELECTIONS, true, MOVE_TICKS, 0, 0, nullptr, false));
+
+  for (int i = 0; i < 4; i++)
+    {
+      /* save the project */
+      REQUIRE_NOTHROW (PROJECT->save (PROJECT->dir_, 0, 0, false));
+      auto prj_file = fs::path (PROJECT->dir_) / PROJECT_FILE;
+
+      /* adjust the samplerate to be given at startup */
+      zrythm_app->samplerate = (int) AUDIO_ENGINE->sample_rate_ / 2;
+
+      AUDIO_ENGINE->activate (false);
+      PROJECT.reset ();
+
+      /* reload */
+      test_project_reload (prj_file);
+    }
+}
+
+TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "move timeline")
+{
+  /* when i == 1 we are moving to new tracks */
+  for (int i = 0; i < 2; i++)
+    {
+      int track_diff = i ? 2 : 0;
+      if (track_diff)
+        {
+          select_audio_and_midi_regions_only ();
+        }
+
+      /* check undo/redo stacks */
+      REQUIRE_EMPTY (*UNDO_MANAGER->undo_stack_);
+      REQUIRE_SIZE_EQ (*UNDO_MANAGER->redo_stack_, i ? 1 : 0);
+
+      /* do move ticks */
+      UNDO_MANAGER->perform (
+        std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
+          *TL_SELECTIONS, true, MOVE_TICKS, track_diff, 0, nullptr, false));
+
+      /* check */
+      check_after_move_timeline (i);
+
+      /* undo and check that the objects are at their original state*/
+      UNDO_MANAGER->undo ();
+      REQUIRE_EQ (
+        TL_SELECTIONS->get_num_objects (), i ? 2 : TOTAL_TL_SELECTIONS);
+
+      check_vs_original_state (i ? false : true);
+      check_has_single_redo ();
+
+      /* redo and check that the objects are moved
+       * again */
+      UNDO_MANAGER->redo ();
+      check_after_move_timeline (i);
+
+      /* undo again to prepare for next test */
+      UNDO_MANAGER->undo ();
+      if (track_diff)
+        {
+          REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), 2);
+        }
+    }
 }
 
 TEST_SUITE_END ();

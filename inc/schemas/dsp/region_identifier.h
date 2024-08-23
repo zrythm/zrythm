@@ -10,7 +10,6 @@
 #ifndef __SCHEMAS_AUDIO_REGION_IDENTIFIER_H__
 #define __SCHEMAS_AUDIO_REGION_IDENTIFIER_H__
 
-#include "utils/general.h"
 #include "utils/yaml.h"
 
 typedef enum RegionType_v1

@@ -21,6 +21,21 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
+ControlPort::ControlPort (std::string label)
+    : Port (label, PortType::Control, PortFlow::Input, 0.f, 1.f, 0.f)
+{
+}
+
+void
+ControlPort::init_after_cloning (const ControlPort &other)
+{
+  Port::copy_members_from (other);
+  control_ = other.control_;
+  base_value_ = other.base_value_;
+  deff_ = other.deff_;
+  carla_param_id_ = other.carla_param_id_;
+}
+
 void
 ControlPort::set_unit_from_str (const std::string &str)
 {

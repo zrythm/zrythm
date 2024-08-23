@@ -16,15 +16,15 @@ TEST_CASE_FIXTURE (ZrythmFixture, "test update snap points")
 {
   SnapGrid sg (SnapGrid::Type::Timeline, NoteLength::NOTE_LENGTH_1_128, false);
 
-#define TEST_WITH_MAX_BARS(x) {
-  auto before = g_get_monotonic_time ();
-  auto after = g_get_monotonic_time ();
-  z_info ("time {}", after - before);
-}
+  auto TEST_WITH_MAX_BARS = [] (auto x) {
+    auto before = g_get_monotonic_time ();
+    auto after = g_get_monotonic_time ();
+    z_info ("time {}", after - before);
+  };
 
-// ????
-TEST_WITH_MAX_BARS (100);
-TEST_WITH_MAX_BARS (1000);
+  // ????
+  TEST_WITH_MAX_BARS (100);
+  TEST_WITH_MAX_BARS (1000);
 #if 0
   TEST_WITH_MAX_BARS (10000);
   TEST_WITH_MAX_BARS (100000);

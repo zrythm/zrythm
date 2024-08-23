@@ -21,6 +21,15 @@ MasterTrack::initialize ()
 }
 
 void
+MasterTrack::init_loaded ()
+{
+  // ChannelTrack must be initialized before AutomatableTrack
+  ChannelTrack::init_loaded ();
+  AutomatableTrack::init_loaded ();
+  ProcessableTrack::init_loaded ();
+}
+
+void
 MasterTrack::init_after_cloning (const MasterTrack &other)
 {
   Track::copy_members_from (other);

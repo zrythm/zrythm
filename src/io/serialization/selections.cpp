@@ -127,7 +127,7 @@ ArrangerSelections::define_base_fields (const Context &ctx)
                 case ArrangerObject::Type::Region:
                   {
                     auto region_id =
-                      yyjson_obj_iter_get (&arranger_obj_it, "id");
+                      yyjson_obj_iter_get (&arranger_obj_it, "regionId");
                     RegionIdentifier r_id;
                     r_id.deserialize (Context (region_id, ctx));
                     switch (r_id.type_)

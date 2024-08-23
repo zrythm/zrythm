@@ -1,22 +1,26 @@
-// SPDX-FileCopyrightText: © 2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
 
-#include <cstdlib>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "utils/objects.h"
+#include "utils/logger.h"
 #include "utils/string.h"
 #include "utils/yaml.h"
 
 #include <glib.h>
 
+#include "doctest_wrapper.h"
+
+TEST_SUITE_BEGIN ("utils/yaml");
+
 #ifdef HAVE_CYAML
 
-typedef struct float_struct
+using float_struct = struct float_struct
 {
   float fval;
-} float_struct;
+};
 
 static const cyaml_schema_field_t float_struct_fields_schema[] = {
   YAML_FIELD_FLOAT (float_struct, fval),
@@ -28,34 +32,33 @@ static const cyaml_schema_value_t float_struct_schema = {
   CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER, float_struct, float_struct_fields_schema),
 };
 
-static void
-test_load_precise_float (void)
+TEST_CASE ("load precise float")
 {
   yaml_set_log_level (CYAML_LOG_DEBUG);
 
   float_struct my_struct;
   my_struct.fval = 12;
-  char * ret = yaml_serialize (&my_struct, &float_struct_schema, NULL);
-  g_assert_nonnull (ret);
-  g_assert_cmpstr (ret, ==, "---\nfval: 12\n...\n");
+  char * ret = yaml_serialize (&my_struct, &float_struct_schema, nullptr);
+  REQUIRE_NONNULL (ret);
+  REQUIRE (string_is_equal (ret, "---\nfval: 12\n...\n"));
   g_free (ret);
 
   my_struct.fval = 1.55331e-40f;
-  g_message ("my_struct.fval %e %g", my_struct.fval, my_struct.fval);
-  ret = yaml_serialize (&my_struct, &float_struct_schema, NULL);
-  g_assert_nonnull (ret);
-  g_message ("\n%s", ret);
+  z_info ("my_struct.fval %e %g", my_struct.fval, my_struct.fval);
+  ret = yaml_serialize (&my_struct, &float_struct_schema, nullptr);
+  REQUIRE_NONNULL (ret);
+  z_info ("\n{}", ret);
   bool eq = string_is_equal (ret, "---\nfval: 1.55331e-40\n...\n");
   if (!eq)
     {
       eq = string_is_equal (ret, "---\nfval: 0\n...\n");
     }
-  g_assert_true (eq);
+  REQUIRE (eq);
 
   const char *   str1 = "---\nfval: 1.55331e-40\n...\n";
   float_struct * ret2 =
-    (float_struct *) yaml_deserialize (str1, &float_struct_schema, NULL);
-  g_message ("loaded val %g", ret2->fval);
+    (float_struct *) yaml_deserialize (str1, &float_struct_schema, nullptr);
+  z_info ("loaded val %g", ret2->fval);
 
 #  if 0
 
@@ -64,7 +67,7 @@ test_load_precise_float (void)
     float_struct_serialize (&my_struct);
   g_assert_cmpstr (
     ret, ==, "---\nfval: 1e-37\n...\n");
-  g_message ("\n%s", ret);
+  z_info ("\n{}", ret);
 
   const char * str1 = "---\nfval: 1e-37\n...\n";
   float_struct * ret2 =
@@ -74,8 +77,8 @@ test_load_precise_float (void)
 
 #  if 0
 
-  g_message ("FLT_ROUNDS %d", FLT_ROUNDS);
-  g_message ("FLT_EVAL_METHOD %d", FLT_EVAL_METHOD);
+  z_info ("FLT_ROUNDS {}", FLT_ROUNDS);
+  z_info ("FLT_EVAL_METHOD {}", FLT_EVAL_METHOD);
   if (my_struct.fval < FLT_MIN)
     {
       my_struct.fval = 1e+37;
@@ -90,40 +93,27 @@ test_load_precise_float (void)
   errno = 0;
   char * end = NULL;
   float new_val = strtof (fval_str, &end);
-  g_message ("new val for %s: %g", fval_str, (double) new_val);
+  z_info ("new val for {}: %g", fval_str, (double) new_val);
   if (errno == ERANGE)
     {
-      g_warning ("ERANGE1");
+      z_warning("ERANGE1");
     }
 
   errno = 0;
   end = NULL;
   new_val = strtof ("1.55331e-40", &end);
-  g_message ("new val: %f", (double) new_val);
+  z_info ("new val: {:f}", (double) new_val);
   if (errno == ERANGE)
     {
-      g_warning ("ERANGE2");
+      z_warning("ERANGE2");
     }
 
   const char * str1 = "---\nfval: 1.55331e-40\n...\n";
   float_struct * ret2 =
     float_struct_deserialize (str1);
-  g_warning ("%f", (double) ret2->fval);
+  z_warning("{:f}", (double) ret2->fval);
 #  endif
 }
 #endif
 
-int
-main (int argc, char * argv[])
-{
-  g_test_init (&argc, &argv, NULL);
-
-#define TEST_PREFIX "/utils/yaml/"
-
-#ifdef HAVE_CYAML
-  g_test_add_func (
-    TEST_PREFIX "test load precise float", (GTestFunc) test_load_precise_float);
-#endif
-
-  return g_test_run ();
-}
+TEST_SUITE_END;

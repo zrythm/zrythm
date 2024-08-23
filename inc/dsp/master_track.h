@@ -29,6 +29,8 @@ class MasterTrack final
 public:
   friend class InitializableObjectFactory<MasterTrack>;
 
+  void init_loaded () override;
+
   void init_after_cloning (const MasterTrack &other) override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();

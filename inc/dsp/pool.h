@@ -1,17 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Audio file pool.
- */
-
 #ifndef __AUDIO_POOL_H__
 #define __AUDIO_POOL_H__
-
-#include <memory>
-#include <vector>
 
 #include "dsp/clip.h"
 
@@ -127,10 +118,7 @@ public:
 
   void print () const;
 
-  void init_after_cloning (const AudioPool &other) override
-  {
-    clone_ptr_vector (clips_, other.clips_);
-  }
+  void init_after_cloning (const AudioPool &other) override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

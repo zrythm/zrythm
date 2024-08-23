@@ -173,13 +173,7 @@ public:
   Exporter (
     Settings                      settings,
     GtkWidget *                   parent_owner = nullptr,
-    std::shared_ptr<ProgressInfo> progress_info = nullptr)
-      : settings_ (std::move (settings)),
-        progress_info_ (
-          progress_info ? progress_info : std::shared_ptr<ProgressInfo> ()),
-        parent_owner_ (parent_owner)
-  {
-  }
+    std::shared_ptr<ProgressInfo> progress_info = nullptr);
 
   /**
    * This must be called on the main thread after the intended tracks have been
@@ -215,6 +209,11 @@ public:
     if (thread_)
       thread_->join ();
   }
+
+  /**
+   * @brief Returns the exported file path.
+   */
+  fs::path get_exported_path () const;
 
   /**
    * To be called to create and perform an undoable action for creating an audio

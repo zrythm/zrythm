@@ -36,7 +36,7 @@ ClipEditor::set_region (Region * region, bool fire_events)
 
   z_debug (
     "clip editor: setting region to {} ({})", fmt::ptr (region),
-    region ? region->name_ : nullptr);
+    region ? region->name_ : "");
 
   /* if first time showing a region, show the
    * event viewer as necessary */

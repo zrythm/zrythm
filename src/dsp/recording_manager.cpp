@@ -506,7 +506,7 @@ bool
 RecordingManager::handle_resume_event (const RecordingEvent &ev)
 {
   auto * tr =
-    TRACKLIST->find_track_by_name_hash<RecordableTrack> (ev.track_name_hash_);
+    TRACKLIST->find_track_by_name_hash<AutomatableTrack> (ev.track_name_hash_);
   gint64 cur_time = g_get_monotonic_time ();
 
   /* position to resume from */
@@ -516,17 +516,18 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
   Position end_pos = resume_pos;
   end_pos.add_frames (1);
 
+  auto recording_track = dynamic_cast<RecordableTrack *> (tr);
   if (
     ev.type_ == RecordingEvent::Type::Midi
     || ev.type_ == RecordingEvent::Type::Audio)
     {
       /* not paused, nothing to do */
-      if (!tr->recording_paused_)
+      if (!recording_track->recording_paused_)
         {
           return false;
         }
 
-      tr->recording_paused_ = false;
+      recording_track->recording_paused_ = false;
 
       if (
         TRANSPORT->recording_mode_ == Transport::RecordingMode::Takes
@@ -537,9 +538,9 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
           if (
             (TRANSPORT->recording_mode_ == Transport::RecordingMode::TakesMuted
              || (TRANSPORT->recording_mode_ == Transport::RecordingMode::OverwriteEvents && ev.type_ == RecordingEvent::Type::Audio))
-            && tr->recording_region_)
+            && recording_track->recording_region_)
             {
-              tr->recording_region_->set_muted (true, true);
+              recording_track->recording_region_->set_muted (true, true);
             }
 
           auto success = std::visit (
@@ -626,21 +627,24 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
               return false;
             }
         }
-      /* if MIDI and overwriting or merging
-       * events */
-      else if (tr->recording_region_)
+      /* if MIDI and overwriting or merging events */
+      else if (recording_track->recording_region_)
         {
           /* extend the previous region */
-          if (resume_pos < tr->recording_region_->pos_)
+          if (resume_pos < recording_track->recording_region_->pos_)
             {
               double ticks_delta =
-                tr->recording_region_->pos_.ticks_ - resume_pos.ticks_;
-              tr->recording_region_->set_start_pos_full_size (&resume_pos);
-              tr->recording_region_->add_ticks_to_children (ticks_delta);
+                recording_track->recording_region_->pos_.ticks_
+                - resume_pos.ticks_;
+              recording_track->recording_region_->set_start_pos_full_size (
+                &resume_pos);
+              recording_track->recording_region_->add_ticks_to_children (
+                ticks_delta);
             }
-          if (end_pos > tr->recording_region_->end_pos_)
+          if (end_pos > recording_track->recording_region_->end_pos_)
             {
-              tr->recording_region_->set_end_pos_full_size (&end_pos);
+              recording_track->recording_region_->set_end_pos_full_size (
+                &end_pos);
             }
         }
     }
@@ -794,103 +798,108 @@ RecordingManager::handle_midi_event (const RecordingEvent &ev)
   end_pos.from_frames (
     (signed_frame_t) ev.g_start_frame_w_offset_ + (signed_frame_t) ev.nframes_);
 
-  /* get the recording region */
-  auto region = dynamic_cast<MidiRegion *> (tr->recording_region_);
+  std::visit (
+    [&] (auto &&region) {
+      using RegionT = base_type<decltype (region)>;
 
-  /* set region end pos */
-  bool set_end_pos = false;
-  switch (TRANSPORT->recording_mode_)
-    {
-    case Transport::RecordingMode::OverwriteEvents:
-    case Transport::RecordingMode::MergeEvents:
-      if (region->end_pos_ < end_pos)
+      /* set region end pos */
+      bool set_end_pos = false;
+      switch (TRANSPORT->recording_mode_)
         {
+        case Transport::RecordingMode::OverwriteEvents:
+        case Transport::RecordingMode::MergeEvents:
+          if (region->end_pos_ < end_pos)
+            {
+              set_end_pos = true;
+            }
+          break;
+        case Transport::RecordingMode::Takes:
+        case Transport::RecordingMode::TakesMuted:
           set_end_pos = true;
+          break;
         }
-      break;
-    case Transport::RecordingMode::Takes:
-    case Transport::RecordingMode::TakesMuted:
-      set_end_pos = true;
-      break;
-    }
-  if (set_end_pos)
-    {
-      region->set_end_pos_full_size (&end_pos);
-    }
-
-  tr->recording_region_ = region;
-
-  /* get local positions */
-  Position local_pos = start_pos;
-  Position local_end_pos = end_pos;
-  local_pos.add_ticks (-region->pos_.ticks_);
-  local_end_pos.add_ticks (-region->pos_.ticks_);
-
-  /* if overwrite mode, clear any notes inside the range */
-  if (TRANSPORT->recording_mode_ == Transport::RecordingMode::OverwriteEvents)
-    {
-      for (int i = region->midi_notes_.size () - 1; i >= 0; --i)
+      if (set_end_pos)
         {
-          auto &mn = region->midi_notes_[i];
+          region->set_end_pos_full_size (&end_pos);
+        }
 
-          if (mn->is_hit_by_range (local_pos, local_end_pos, false, false, true))
+      tr->recording_region_ = region;
+
+      /* get local positions */
+      Position local_pos = start_pos;
+      Position local_end_pos = end_pos;
+      local_pos.add_ticks (-region->pos_.ticks_);
+      local_end_pos.add_ticks (-region->pos_.ticks_);
+
+      /* if overwrite mode, clear any notes inside the range */
+      if (
+        TRANSPORT->recording_mode_ == Transport::RecordingMode::OverwriteEvents)
+        {
+          if constexpr (std::is_same_v<RegionT, MidiRegion>)
             {
-              region->remove_object (*mn, true);
+              for (int i = region->midi_notes_.size () - 1; i >= 0; --i)
+                {
+                  auto &mn = region->midi_notes_[i];
+
+                  if (mn->is_hit_by_range (
+                        local_pos, local_end_pos, false, false, true))
+                    {
+                      region->remove_object (*mn, true);
+                    }
+                }
             }
         }
-    }
 
-  if (!ev.has_midi_event_)
-    return;
+      if (!ev.has_midi_event_)
+        return;
 
-  /* convert MIDI data to midi notes */
-  MidiNote *  mn;
-  const auto &mev = ev.midi_event_;
-  const auto &buf = mev.raw_buffer_.data ();
+      /* convert MIDI data to midi notes */
+      MidiNote *  mn;
+      const auto &mev = ev.midi_event_;
+      const auto &buf = mev.raw_buffer_.data ();
 
-  if (tr->is_chord ())
-    {
-      if (midi_is_note_on (buf))
+      if constexpr (std::is_same_v<RegionT, ChordRegion>)
         {
-          midi_byte_t             note_number = midi_get_note_number (buf);
-          const ChordDescriptor * descr =
-            CHORD_EDITOR->get_chord_from_note_number (note_number);
-          z_return_if_fail (descr);
-          int  chord_idx = CHORD_EDITOR->get_chord_index (*descr);
-          auto chord_region = dynamic_cast<ChordRegion *> (region);
-          auto co = std::make_shared<ChordObject> (
-            region->id_, chord_idx, chord_region->chord_objects_.size ());
-          chord_region->append_object (std::move (co), true);
-          co->set_position (
-            &local_pos, ArrangerObject::PositionType::Start, false);
-        }
-    }
-  /* else if not chord track */
-  else
-    {
-      if (midi_is_note_on (buf))
-        {
-          z_return_if_fail (region);
-          auto midi_region = dynamic_cast<MidiRegion *> (region);
-          midi_region->start_unended_note (
-            &local_pos, &local_end_pos, midi_get_note_number (buf),
-            midi_get_velocity (buf), true);
-        }
-      else if (midi_is_note_off (buf))
-        {
-          z_return_if_fail (region);
-          auto midi_region = dynamic_cast<MidiRegion *> (region);
-          mn = midi_region->pop_unended_note (midi_get_note_number (buf));
-          if (mn)
+          if (midi_is_note_on (buf))
             {
-              mn->end_pos_setter (&local_end_pos);
+              midi_byte_t             note_number = midi_get_note_number (buf);
+              const ChordDescriptor * descr =
+                CHORD_EDITOR->get_chord_from_note_number (note_number);
+              z_return_if_fail (descr);
+              int  chord_idx = CHORD_EDITOR->get_chord_index (*descr);
+              auto co = std::make_shared<ChordObject> (
+                region->id_, chord_idx, region->chord_objects_.size ());
+              region->append_object (std::move (co), true);
+              co->set_position (
+                &local_pos, ArrangerObject::PositionType::Start, false);
             }
         }
-      else
+      /* else if not chord track */
+      else if constexpr (std::is_same_v<RegionT, MidiRegion>)
         {
-          /* TODO */
+          if (midi_is_note_on (buf))
+            {
+              z_return_if_fail (region);
+              region->start_unended_note (
+                &local_pos, &local_end_pos, midi_get_note_number (buf),
+                midi_get_velocity (buf), true);
+            }
+          else if (midi_is_note_off (buf))
+            {
+              z_return_if_fail (region);
+              mn = region->pop_unended_note (midi_get_note_number (buf));
+              if (mn)
+                {
+                  mn->end_pos_setter (&local_end_pos);
+                }
+            }
+          else
+            {
+              /* TODO */
+            }
         }
-    }
+    },
+    convert_to_variant<RegionPtrVariant> (tr->recording_region_));
 }
 
 void
@@ -992,15 +1001,13 @@ RecordingManager::handle_start_recording (
   bool                  is_automation)
 {
   auto tr =
-    TRACKLIST->find_track_by_name_hash<RecordableTrack> (ev.track_name_hash_);
+    TRACKLIST->find_track_by_name_hash<AutomatableTrack> (ev.track_name_hash_);
+  z_return_if_fail (tr);
   gint64            cur_time = g_get_monotonic_time ();
   AutomationTrack * at = nullptr;
   if (is_automation)
     {
-      auto automatable_track = dynamic_cast<AutomatableTrack *> (tr);
-      at =
-        automatable_track->automation_tracklist_->ats_[ev.automation_track_idx_]
-          .get ();
+      at = tr->automation_tracklist_->ats_[ev.automation_track_idx_].get ();
     }
 
   if (num_active_recordings_ == 0)
@@ -1010,7 +1017,8 @@ RecordingManager::handle_start_recording (
     }
 
   /* this could be called multiple times, ignore if already processed */
-  if (tr->recording_region_ && !is_automation)
+  auto recordable_track = dynamic_cast<RecordableTrack *> (tr);
+  if (!is_automation && recordable_track->recording_region_ && !is_automation)
     {
       z_warning ("record start already processed");
       num_active_recordings_++;
@@ -1058,7 +1066,7 @@ RecordingManager::handle_start_recording (
     }
   else
     {
-      tr->recording_paused_ = false;
+      recordable_track->recording_paused_ = false;
 
       try
         {
@@ -1074,7 +1082,7 @@ RecordingManager::handle_start_recording (
                 nullptr, new_lane_pos, true, true);
               z_return_if_fail (region);
 
-              tr->recording_region_ = region.get ();
+              recordable_track->recording_region_ = region.get ();
               recorded_ids_.push_back (region->id_);
             }
           else if (tr->is_chord ())
@@ -1086,7 +1094,7 @@ RecordingManager::handle_start_recording (
                 nullptr, -1, true, true);
               z_return_if_fail (region);
 
-              tr->recording_region_ = region.get ();
+              recordable_track->recording_region_ = region.get ();
               recorded_ids_.push_back (region->id_);
             }
           else if (tr->type_ == Track::Type::Audio)
@@ -1105,7 +1113,7 @@ RecordingManager::handle_start_recording (
                 nullptr, new_lane_pos, true, true);
               z_return_if_fail (region);
 
-              tr->recording_region_ = region.get ();
+              recordable_track->recording_region_ = region.get ();
               recorded_ids_.push_back (region->id_);
             }
         }

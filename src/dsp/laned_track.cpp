@@ -45,6 +45,21 @@ LanedTrackImpl<RegionT>::remove_empty_last_lanes ()
     }
 }
 
+template <typename RegionT>
+void
+LanedTrackImpl<RegionT>::clear_objects ()
+{
+  while (!lanes_.empty ())
+    {
+      lanes_.back ()->clear_regions ();
+      // lane might have been deleted above
+      if (!lanes_.empty () && lanes_.back ()->regions_.empty ())
+        {
+          lanes_.erase (lanes_.end () - 1);
+        }
+    }
+}
+
 void
 LanedTrack::set_lanes_visible (bool visible)
 {

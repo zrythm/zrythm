@@ -28,7 +28,7 @@ public:
   };
 
 public:
-  RangeAction () : UndoableAction (UndoableAction::Type::Range) { }
+  RangeAction ();
   RangeAction (Type type, Position start_pos, Position end_pos);
 
   std::string to_string () const override;
@@ -84,7 +84,7 @@ public:
   std::unique_ptr<Transport> transport_;
 
   /** Whether this is the first run. */
-  bool first_run_ = true;
+  bool first_run_ = false;
 };
 
 class RangeInsertSilenceAction : public RangeAction

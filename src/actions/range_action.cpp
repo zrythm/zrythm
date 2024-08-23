@@ -11,6 +11,8 @@
 
 #include <glib/gi18n.h>
 
+RangeAction::RangeAction () : UndoableAction (UndoableAction::Type::Range) { }
+
 void
 RangeAction::init_after_cloning (const RangeAction &other)
 {
@@ -25,9 +27,9 @@ RangeAction::init_after_cloning (const RangeAction &other)
 }
 
 RangeAction::RangeAction (Type type, Position start_pos, Position end_pos)
-    : start_pos_ (start_pos), end_pos_ (end_pos), type_ (type), first_run_ (true)
+    : UndoableAction (UndoableAction::Type::Range), start_pos_ (start_pos),
+      end_pos_ (end_pos), type_ (type), first_run_ (true)
 {
-  RangeAction ();
   z_return_if_fail (start_pos.validate () && end_pos.validate ());
 
   /* create selections for overlapping objects */

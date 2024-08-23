@@ -35,6 +35,20 @@
 #include "gtk_wrapper.h"
 #include <fmt/format.h>
 
+Port::Port (
+  std::string label,
+  PortType    type,
+  PortFlow    flow,
+  float       minf,
+  float       maxf,
+  float       zerof)
+    : minf_ (minf), maxf_ (maxf), zerof_ (zerof)
+{
+  id_.label_ = label;
+  id_.type_ = type;
+  id_.flow_ = flow;
+}
+
 std::unique_ptr<Port>
 Port::create_unique_from_type (PortType type)
 {
@@ -990,6 +1004,16 @@ Port::update_track_name_hash (Track &track, unsigned int new_hash)
       this->id_.plugin_id_.track_name_hash_ = new_hash;
     }
   update_identifier (copy, &track, true);
+}
+
+void
+Port::copy_members_from (const Port &other)
+{
+  id_ = other.id_;
+  exposed_to_backend_ = other.exposed_to_backend_;
+  minf_ = other.minf_;
+  maxf_ = other.maxf_;
+  zerof_ = other.zerof_;
 }
 
 void

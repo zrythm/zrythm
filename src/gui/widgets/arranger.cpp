@@ -409,18 +409,22 @@ add_object_if_overlap (ArrangerWidget * self, ObjectOverlapInfo &nfo)
           if (orig_visible)
             g_obj_end_pos_transient = lobj_trans->end_pos_;
         }
-      else
+      else if (obj->owned_by_region ())
         {
-          auto     ro_obj = dynamic_cast<RegionOwnedObject *> (obj);
-          Region * r = ro_obj->get_region ();
-          z_return_val_if_fail (IS_REGION_AND_NONNULL (r), false);
-          g_obj_end_pos = r->pos_;
-          g_obj_end_pos.add_ticks (lobj->end_pos_.ticks_);
-          if (orig_visible)
-            {
-              g_obj_end_pos_transient = r->pos_;
-              g_obj_end_pos_transient.add_ticks (lobj_trans->end_pos_.ticks_);
-            }
+          std::visit (
+            [&] (auto &&ro_obj) {
+              auto r = ro_obj->get_region ();
+              z_return_if_fail (r);
+              g_obj_end_pos = r->pos_;
+              g_obj_end_pos.add_ticks (lobj->end_pos_.ticks_);
+              if (orig_visible)
+                {
+                  g_obj_end_pos_transient = r->pos_;
+                  g_obj_end_pos_transient.add_ticks (
+                    lobj_trans->end_pos_.ticks_);
+                }
+            },
+            convert_to_variant<RegionOwnedObjectPtrVariant> (obj));
         }
       if (g_obj_end_pos < nfo.start_pos_)
         {
@@ -445,17 +449,19 @@ add_object_if_overlap (ArrangerWidget * self, ObjectOverlapInfo &nfo)
     }
   else if (obj->owned_by_region ())
     {
-      RegionOwnedObject * ro_obj = dynamic_cast<RegionOwnedObject *> (obj);
-      z_return_val_if_fail (ro_obj != nullptr, false);
-      Region * r = ro_obj->get_region ();
-      z_return_val_if_fail (IS_REGION_AND_NONNULL (r), false);
-      g_obj_start_pos = r->pos_;
-      g_obj_start_pos.add_ticks (obj->pos_.ticks_);
-      if (orig_visible)
-        {
-          g_obj_start_pos_transient = r->pos_;
-          g_obj_start_pos_transient.add_ticks (obj->transient_->pos_.ticks_);
-        }
+      std::visit (
+        [&] (auto &&ro_obj) {
+          auto r = ro_obj->get_region ();
+          z_return_if_fail (r);
+          g_obj_start_pos = r->pos_;
+          g_obj_start_pos.add_ticks (obj->pos_.ticks_);
+          if (orig_visible)
+            {
+              g_obj_start_pos_transient = r->pos_;
+              g_obj_start_pos_transient.add_ticks (obj->transient_->pos_.ticks_);
+            }
+        },
+        convert_to_variant<RegionOwnedObjectPtrVariant> (obj));
     }
   const double ticks_to_add = -12.0 / ruler->px_per_tick;
   g_obj_start_pos.add_ticks (ticks_to_add);

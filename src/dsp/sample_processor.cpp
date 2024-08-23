@@ -148,10 +148,10 @@ SampleProcessor::process (const nframes_t cycle_offset, const nframes_t nframes)
         [&] (nframes_t fader_buf_offset, nframes_t len) {
           // ensure we don't overflow the fader buffer
           z_return_if_fail_cmp (
-            fader_buf_offset + len, <, AUDIO_ENGINE->block_length_);
+            fader_buf_offset + len, <=, AUDIO_ENGINE->block_length_);
           // ensure we don't overflow the sample playback buffer
           z_return_if_fail_cmp (
-            sp.offset_ + len, <, (unsigned_frame_t) sp.buf_->getNumSamples ());
+            sp.offset_ + len, <=, (unsigned_frame_t) sp.buf_->getNumSamples ());
           dsp_mix2 (
             &l[fader_buf_offset], sp.buf_->getReadPointer (0), 1.f, sp.volume_,
             len);
@@ -441,8 +441,8 @@ SampleProcessor::queue_file_or_chord_preset (
                         start_pos, file->abs_path_,
                         midi_track_ptr->get_name_hash (), 0, 0, i);
                       midi_track_ptr->add_region (
-                        std::move (mr), nullptr, 0,
-                        !mr->name_.empty () ? false : true, false);
+                        mr, nullptr, 0, !mr->name_.empty () ? false : true,
+                        false);
                       file_end_pos_ = std::max (file_end_pos_, mr->end_pos_);
                     }
                   catch (const ZrythmException &e)

@@ -174,9 +174,14 @@ ArrangerObject::remove_from_project (bool fire_events)
   Region * region = nullptr;
   if (owned_by_region ())
     {
-      auto ro_obj = dynamic_cast<RegionOwnedObject *> (this);
-      region = ro_obj->get_region ();
-      z_return_val_if_fail (region, nullptr);
+      auto success = std::visit (
+        [&] (auto &&ro_obj) {
+          region = ro_obj->get_region ();
+          z_return_val_if_fail (region, false);
+          return true;
+        },
+        convert_to_variant<RegionOwnedObjectPtrVariant> (this));
+      z_return_val_if_fail (success, nullptr);
     }
 
   /* get a shared ptr to prevent this from getting deleted (we will also return
@@ -431,7 +436,7 @@ ArrangerObject::copy_identifier (const ArrangerObject &src)
   if (type_has_name (type_))
     {
       auto       &dest = dynamic_cast<NameableObject &> (*this);
-      const auto &src_nameable = dynamic_cast<const Marker &> (src);
+      const auto &src_nameable = dynamic_cast<const NameableObject &> (src);
       dest.name_ = src_nameable.name_;
     }
 
@@ -571,72 +576,60 @@ void
 ArrangerObject::
   update_positions (bool from_ticks, bool bpm_change, UndoableAction * action)
 {
-  signed_frame_t frames_len_before = 0;
-  if (bpm_change && ArrangerObject::type_has_length (type_))
-    {
-      frames_len_before =
-        dynamic_cast<LengthableObject *> (this)->get_length_in_frames ();
-    }
-
-  double ratio = 0.0;
-  if (action)
-    {
-      if (from_ticks)
+  std::visit (
+    [from_ticks, bpm_change, action] (auto &&obj) {
+      using ObjT = base_type<decltype (obj)>;
+      signed_frame_t frames_len_before = 0;
+      if constexpr (std::derived_from<ObjT, LengthableObject>)
         {
-          ratio = action->frames_per_tick_;
-        }
-      else
-        {
-          ratio = 1.0 / action->frames_per_tick_;
-        }
-    }
-
-  pos_.update (from_ticks, ratio);
-  if (ArrangerObject::type_has_length (type_))
-    {
-      dynamic_cast<LengthableObject *> (this)->end_pos_.update (
-        from_ticks, ratio);
-
-      if (ROUTER->is_processing_kickoff_thread ())
-        {
-          /* do some validation */
-          z_return_if_fail (is_position_valid (
-            dynamic_cast<LengthableObject *> (this)->end_pos_,
-            PositionType::End));
-        }
-    }
-  if (can_loop ())
-    {
-      dynamic_cast<LoopableObject *> (this)->clip_start_pos_.update (
-        from_ticks, ratio);
-      dynamic_cast<LoopableObject *> (this)->loop_start_pos_.update (
-        from_ticks, ratio);
-      dynamic_cast<LoopableObject *> (this)->loop_end_pos_.update (
-        from_ticks, ratio);
-    }
-  if (can_fade ())
-    {
-      dynamic_cast<FadeableObject *> (this)->fade_in_pos_.update (
-        from_ticks, ratio);
-      dynamic_cast<FadeableObject *> (this)->fade_out_pos_.update (
-        from_ticks, ratio);
-    }
-
-  Region * r;
-  switch (type_)
-    {
-    case Type::Region:
-      r = dynamic_cast<Region *> (this);
-
-      /* validate */
-      if (r->id_.type_ == RegionType::Audio)
-        {
-          auto audio_region = dynamic_cast<AudioRegion *> (r);
-          if (!audio_region->get_musical_mode ())
+          if (bpm_change)
             {
-              auto           ar = dynamic_cast<AudioRegion *> (r);
-              signed_frame_t frames_len_after =
-                dynamic_cast<LengthableObject *> (this)->get_length_in_frames ();
+              frames_len_before = obj->get_length_in_frames ();
+            }
+        }
+
+      double ratio = 0.0;
+      if (action)
+        {
+          if (from_ticks)
+            {
+              ratio = action->frames_per_tick_;
+            }
+          else
+            {
+              ratio = 1.0 / action->frames_per_tick_;
+            }
+        }
+
+      obj->pos_.update (from_ticks, ratio);
+      if constexpr (std::derived_from<ObjT, LengthableObject>)
+        {
+          obj->end_pos_.update (from_ticks, ratio);
+
+          if (ROUTER->is_processing_kickoff_thread ())
+            {
+              /* do some validation */
+              z_return_if_fail (
+                obj->is_position_valid (obj->end_pos_, PositionType::End));
+            }
+        }
+      if constexpr (std::derived_from<ObjT, LoopableObject>)
+        {
+          obj->clip_start_pos_.update (from_ticks, ratio);
+          obj->loop_start_pos_.update (from_ticks, ratio);
+          obj->loop_end_pos_.update (from_ticks, ratio);
+        }
+      if constexpr (std::derived_from<ObjT, FadeableObject>)
+        {
+          obj->fade_in_pos_.update (from_ticks, ratio);
+          obj->fade_out_pos_.update (from_ticks, ratio);
+        }
+
+      if constexpr (std::is_same_v<ObjT, AudioRegion>)
+        {
+          if (!obj->get_musical_mode ())
+            {
+              signed_frame_t frames_len_after = obj->get_length_in_frames ();
               if (bpm_change && frames_len_after != frames_len_before)
                 {
                   double ticks =
@@ -644,7 +637,7 @@ ArrangerObject::
                     * AUDIO_ENGINE->ticks_per_frame_;
                   try
                     {
-                      dynamic_cast<LengthableObject *> (this)->resize (
+                      obj->resize (
                         false,
                         ArrangerObject::ResizeType::RESIZE_STRETCH_BPM_CHANGE,
                         ticks, false);
@@ -655,20 +648,17 @@ ArrangerObject::
                       return;
                     }
                 }
-              z_return_if_fail_cmp (
-                dynamic_cast<LoopableObject *> (this)->loop_end_pos_.frames_,
-                >=, 0);
-              signed_frame_t tl_frames =
-                dynamic_cast<LengthableObject *> (this)->end_pos_.frames_ - 1;
+              z_return_if_fail_cmp (obj->loop_end_pos_.frames_, >=, 0);
+              signed_frame_t tl_frames = obj->end_pos_.frames_ - 1;
               signed_frame_t local_frames;
               AudioClip *    clip;
-              local_frames = r->timeline_frames_to_local (tl_frames, true);
-              clip = ar->get_clip ();
+              local_frames = obj->timeline_frames_to_local (tl_frames, true);
+              clip = obj->get_clip ();
               z_return_if_fail (clip);
 
-              /* sometimes due to rounding errors, the region frames are 1 frame
-               * more than the clip frames. this works around it by resizing the
-               * region by -1 frame*/
+              /* sometimes due to rounding errors, the region frames are 1
+               * frame more than the clip frames. this works around it by
+               * resizing the region by -1 frame*/
               while (local_frames == (signed_frame_t) clip->num_frames_)
                 {
                   z_debug ("adjusting for rounding error");
@@ -676,7 +666,7 @@ ArrangerObject::
                   z_debug ("ticks {:f}", ticks);
                   try
                     {
-                      dynamic_cast<LengthableObject *> (this)->resize (
+                      obj->resize (
                         false,
                         ArrangerObject::ResizeType::RESIZE_STRETCH_BPM_CHANGE,
                         ticks, false);
@@ -686,7 +676,7 @@ ArrangerObject::
                       e.handle ("Failed to resize object");
                       return;
                     }
-                  local_frames = r->timeline_frames_to_local (tl_frames, true);
+                  local_frames = obj->timeline_frames_to_local (tl_frames, true);
                 }
 
               z_return_if_fail_cmp (
@@ -694,35 +684,31 @@ ArrangerObject::
             }
         } // end if audio region
 
-      if (r->is_midi ())
+      else if constexpr (std::is_same_v<ObjT, MidiRegion>)
         {
-          auto mr = dynamic_cast<MidiRegion *> (r);
-          for (auto &note : mr->midi_notes_)
+          for (auto &note : obj->midi_notes_)
             {
               note->update_positions (from_ticks, bpm_change, action);
             }
         }
 
-      if (r->is_automation ())
+      else if constexpr (std::is_same_v<ObjT, AutomationRegion>)
         {
-          for (auto &ap : dynamic_cast<AutomationRegion *> (r)->aps_)
+          for (auto &ap : obj->aps_)
             {
               ap->update_positions (from_ticks, bpm_change, action);
             }
         }
 
-      if (r->is_chord ())
+      else if constexpr (std::is_same_v<ObjT, ChordRegion>)
         {
-          auto cr = dynamic_cast<ChordRegion *> (r);
-          for (auto &chord : cr->chord_objects_)
+          for (auto &chord : obj->chord_objects_)
             {
               chord->update_positions (from_ticks, bpm_change, action);
             }
         }
-      break;
-    default:
-      break;
-    }
+    },
+    convert_to_variant<ArrangerObjectPtrVariant> (this));
 }
 
 void

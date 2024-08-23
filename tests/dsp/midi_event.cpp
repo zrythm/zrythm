@@ -3,6 +3,8 @@
 
 #include "zrythm-test-config.h"
 
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
 #include "dsp/midi_event.h"
 #include "utils/midi.h"
 
@@ -37,16 +39,16 @@ TEST_CASE ("add pitch bend")
   std::array<midi_byte_t, 3> buf = { 0xE3, 0x54, 0x39 };
 
   events.active_events_.add_event_from_buf (_time, buf.data (), 3);
-  const auto &ev = &events.active_events_.front ();
-  REQUIRE_EQ (ev->time_, _time);
-  REQUIRE (midi_is_pitch_wheel (ev->raw_buffer_.data ()));
+  const auto &ev = events.active_events_.front ();
+  REQUIRE_EQ (ev.time_, _time);
+  REQUIRE (midi_is_pitch_wheel (ev.raw_buffer_.data ()));
   REQUIRE_EQ (
-    midi_get_pitchwheel_value (ev->raw_buffer_.data ()),
+    midi_get_pitchwheel_value (ev.raw_buffer_.data ()),
     midi_get_pitchwheel_value (buf.data ()));
-  REQUIRE_EQ (midi_get_pitchwheel_value (ev->raw_buffer_.data ()), 0x1CD4);
-  REQUIRE_EQ (midi_get_pitchwheel_value (ev->raw_buffer_.data ()), 7380);
-  REQUIRE_GE (midi_get_pitchwheel_value (ev->raw_buffer_.data ()), 0);
-  REQUIRE_LT (midi_get_pitchwheel_value (ev->raw_buffer_.data ()), 0x4000);
+  REQUIRE_EQ (midi_get_pitchwheel_value (ev.raw_buffer_.data ()), 0x1CD4);
+  REQUIRE_EQ (midi_get_pitchwheel_value (ev.raw_buffer_.data ()), 7380);
+  REQUIRE_GE (midi_get_pitchwheel_value (ev.raw_buffer_.data ()), 0);
+  REQUIRE_LT (midi_get_pitchwheel_value (ev.raw_buffer_.data ()), 0x4000);
 }
 
 TEST_SUITE_END ();

@@ -24,6 +24,8 @@ class AudioGroupTrack final
 public:
   void init_after_cloning (const AudioGroupTrack &other) override;
 
+  void init_loaded () override;
+
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:

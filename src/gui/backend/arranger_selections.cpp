@@ -26,8 +26,6 @@
 
 #include <glib/gi18n.h>
 
-#include <limits.h>
-
 void
 ArrangerSelections::init_loaded (bool project, UndoableAction * action)
 {
@@ -37,12 +35,12 @@ ArrangerSelections::init_loaded (bool project, UndoableAction * action)
         convert_to_variant<ArrangerObjectPtrVariant> (obj_sharedptr.get ());
       std::visit (
         [&] (auto &&o) {
+          using ObjectT = base_type<decltype (o)>;
           if (project)
             { /* throws an error otherwise */
-              if constexpr (
-                std::is_same_v<AudioRegion, std::decay_t<decltype (o)>>)
+              if constexpr (std::is_same_v<AudioRegion, ObjectT>)
                 {
-                  o->read_from_pool = true;
+                  o->read_from_pool_ = true;
                   auto clip = o->get_clip ();
                   z_return_if_fail (clip);
                 }
@@ -53,14 +51,12 @@ ArrangerSelections::init_loaded (bool project, UndoableAction * action)
             {
               o->init_loaded ();
               o->update_positions (true, false, action);
-              if constexpr (
-                std::derived_from<std::decay_t<decltype (o)>, Region>)
+              if constexpr (std::derived_from<ObjectT, Region>)
                 {
-                  if constexpr (
-                    std::is_same_v<AudioRegion, std::decay_t<decltype (o)>>)
+                  if constexpr (std::is_same_v<AudioRegion, ObjectT>)
                     {
                       o->fix_positions (action ? action->frames_per_tick_ : 0);
-                      o->validate_with_frames_per_tick (
+                      o->validate (
                         project, action ? action->frames_per_tick_ : 0);
                     }
                   o->validate (project, 0);

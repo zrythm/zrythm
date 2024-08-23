@@ -1,85 +1,98 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
 
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
 #include "dsp/track.h"
 #include "project.h"
-#include "utils/flags.h"
 #include "zrythm.h"
-
-#include <glib.h>
 
 #include "tests/helpers/project_helper.h"
 
-#include <locale.h>
+TEST_SUITE_BEGIN ("dsp/track");
 
-static void
-test_new_track (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "new track")
 {
-  test_helper_zrythm_init ();
-
-  Track * track = track_new (
-    Track::Type::Instrument, TRACKLIST->tracks.size (),
-    "Test Instrument Track 1", F_WITH_LANE);
-  g_assert_true (IS_TRACK_AND_NONNULL (track));
-
-  g_assert_nonnull (track->name);
-
-  object_free_w_func_and_null (track_free, track);
-
-  test_helper_zrythm_cleanup ();
+  auto track = Track::create_track (
+    Track::Type::Instrument, "Test Instrument Track 1",
+    TRACKLIST->get_last_pos ());
+  REQUIRE_NONNULL (track);
+  REQUIRE_NONEMPTY (track->name_);
 }
 
-static void
-test_get_direct_folder_parent (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "add region")
 {
-  test_helper_zrythm_init ();
+  Position start, end;
+  start.set_to_bar (2);
+  end.set_to_bar (4);
 
-  Track * audio_group =
-    track_create_empty_with_action (Track::Type::AudioGroup, nullptr);
-  g_assert_nonnull (audio_group);
+  auto check_track_name_hash = [] (const auto &region, const auto &track) {
+    REQUIRE_NONEMPTY (track->name_);
+    REQUIRE_NE (region->track_name_hash_, 0);
+    REQUIRE_EQ (region->track_name_hash_, track->get_name_hash ());
+    REQUIRE_EQ (region->id_.track_name_hash_, region->track_name_hash_);
+  };
 
-  Track * audio_group2 =
-    track_create_empty_with_action (Track::Type::AudioGroup, nullptr);
-  g_assert_nonnull (audio_group2);
-  track_select (audio_group2, true, false, false);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, audio_group, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
+  SUBCASE ("laned region")
+  {
+    auto           midi_track = Track::create_empty_with_action<MidiTrack> ();
+    constexpr auto lane_pos = 0;
+    auto           region = std::make_shared<MidiRegion> (
+      start, end, midi_track->get_name_hash (), lane_pos, 0);
+    midi_track->add_region (region, nullptr, lane_pos, true, false);
+    check_track_name_hash (region, midi_track);
+  }
+  SUBCASE ("chord region")
+  {
+    auto chord_track = P_CHORD_TRACK;
+    auto region = std::make_shared<ChordRegion> (start, end, 0);
+    chord_track->Track::add_region (region, nullptr, -1, true, false);
+    check_track_name_hash (region, chord_track);
+  }
+  SUBCASE ("automation region")
+  {
+    auto master = P_MASTER_TRACK;
+    master->set_automation_visible (true);
+    auto &atl = master->get_automation_tracklist ();
+    auto  first_vis_at = atl.visible_ats_.front ();
+
+    auto region = std::make_shared<AutomationRegion> (
+      start, end, master->get_name_hash (), first_vis_at->index_, 0);
+    master->add_region (region, first_vis_at, -1, true, false);
+    check_track_name_hash (region, master);
+  }
+}
+
+TEST_CASE_FIXTURE (ZrythmFixture, "get direct folder parent")
+{
+  auto audio_group = Track::create_empty_with_action<AudioGroupTrack> ();
+  REQUIRE_NONNULL (audio_group);
+
+  auto audio_group2 = Track::create_empty_with_action<AudioGroupTrack> ();
+  REQUIRE_NONNULL (audio_group2);
+  audio_group2->select (true, false, false);
+  TRACKLIST->handle_move_or_copy (
+    *audio_group, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
 
-  Track * audio_group3 =
-    track_create_empty_with_action (Track::Type::AudioGroup, nullptr);
-  g_assert_nonnull (audio_group3);
-  track_select (audio_group3, true, false, false);
-  tracklist_handle_move_or_copy (
-    TRACKLIST, audio_group2,
-    TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE, GDK_ACTION_MOVE);
+  auto audio_group3 = Track::create_empty_with_action<AudioGroupTrack> ();
+  REQUIRE_NONNULL (audio_group3);
+  audio_group3->select (true, false, false);
+  TRACKLIST->handle_move_or_copy (
+    *audio_group2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
+    GDK_ACTION_MOVE);
 
-  g_assert_cmpint (audio_group->pos, ==, 5);
-  g_assert_cmpint (audio_group->size, ==, 3);
-  g_assert_cmpint (audio_group2->pos, ==, 6);
-  g_assert_cmpint (audio_group2->size, ==, 2);
-  g_assert_cmpint (audio_group3->pos, ==, 7);
-  g_assert_cmpint (audio_group3->size, ==, 1);
+  REQUIRE_EQ (audio_group->pos_, 5);
+  REQUIRE_EQ (audio_group->size_, 3);
+  REQUIRE_EQ (audio_group2->pos_, 6);
+  REQUIRE_EQ (audio_group2->size_, 2);
+  REQUIRE_EQ (audio_group3->pos_, 7);
+  REQUIRE_EQ (audio_group3->size_, 1);
 
-  Track * direct_folder_parent = track_get_direct_folder_parent (audio_group3);
-  g_assert_true (direct_folder_parent == audio_group2);
-
-  test_helper_zrythm_cleanup ();
+  auto direct_folder_parent = audio_group3->get_direct_folder_parent ();
+  REQUIRE (direct_folder_parent == audio_group2);
 }
 
-int
-main (int argc, char * argv[])
-{
-  g_test_init (&argc, &argv, nullptr);
-
-#define TEST_PREFIX "/audio/track/"
-
-  g_test_add_func (TEST_PREFIX "test new track", (GTestFunc) test_new_track);
-  g_test_add_func (
-    TEST_PREFIX "test get_direct folder parent",
-    (GTestFunc) test_get_direct_folder_parent);
-
-  return g_test_run ();
-}
+TEST_SUITE_END;

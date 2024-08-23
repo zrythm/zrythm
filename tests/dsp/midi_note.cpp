@@ -52,17 +52,17 @@ test_new_midi_note ()
   ArrangerObject * mn_obj =
     (ArrangerObject *) mn;
 
-  g_assert_nonnull (mn);
-  g_assert_true (
+  REQUIRE_NONNULL (mn);
+  REQUIRE (
     position_is_equal (
       &start_pos, &mn_obj->pos));
-  g_assert_true (
+  REQUIRE (
     position_is_equal (
       &end_pos, &mn_obj->end_pos_));
 
-  g_assert_cmpint (mn->vel->vel, ==, vel);
-  g_assert_cmpint (mn->val, ==, val);
-  g_assert_false (mn->muted);
+  REQUIRE_EQ (mn->vel->vel, vel);
+  REQUIRE_EQ (mn->val, val);
+  REQUIRE_FALSE (mn->muted);
 
   Region * region =
     arranger_object_get_region (

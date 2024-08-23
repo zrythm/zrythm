@@ -15,18 +15,6 @@ public:
   virtual ~RegionOwnedObject () = default;
 
   /**
-   * If the object is part of a Region, returns it, otherwise returns NULL.
-   */
-  HOT Region * get_region () const;
-
-  /**
-   * Gets the global (timeline-based) start Position of the object.
-   *
-   * @param[out] pos Position to fill in.
-   */
-  void get_global_start_pos (Position &pos) const;
-
-  /**
    * Sets the region the object belongs to and the related index inside it.
    */
   void set_region_and_index (const Region &region, int index);
@@ -68,6 +56,13 @@ public:
   }
 
   virtual ~RegionOwnedObjectImpl () = default;
+
+  /**
+   * Gets the global (timeline-based) start Position of the object.
+   *
+   * @param[out] pos Position to fill in.
+   */
+  void get_global_start_pos (Position &pos) const;
 
   /**
    * If the object is part of a Region, returns it, otherwise returns NULL.

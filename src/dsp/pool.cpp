@@ -9,19 +9,12 @@
 #include "dsp/track.h"
 #include "dsp/tracklist.h"
 #include "project.h"
-#include "utils/arrays.h"
-#include "utils/error.h"
 #include "utils/file.h"
-#include "utils/flags.h"
 #include "utils/io.h"
-#include "utils/mem.h"
-#include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm.h"
 
 #include <glib/gi18n.h>
-
-#include "gtk_wrapper.h"
 
 void
 AudioPool::init_loaded ()
@@ -31,6 +24,12 @@ AudioPool::init_loaded ()
       if (clip)
         clip->init_loaded ();
     }
+}
+
+void
+AudioPool::init_after_cloning (const AudioPool &other)
+{
+  clone_ptr_vector (clips_, other.clips_);
 }
 
 bool
@@ -69,11 +68,12 @@ AudioPool::ensure_unique_clip_name (AudioClip &clip)
             /* + 2 for the parens */
             (strlen (cur_val_str) + 2);
           /* + 1 for the terminating NULL */
-          size_t tmp_len = len + 1;
-          char   tmp[tmp_len];
-          memset (tmp, 0, tmp_len * sizeof (char));
-          memcpy (tmp, new_name.c_str (), len == 0 ? 0 : len - 1);
-          new_name = fmt::format ("{} ({})", std::string (tmp), cur_val + 1);
+          size_t            tmp_len = len + 1;
+          std::vector<char> tmp (tmp_len);
+          memset (tmp.data (), 0, tmp_len * sizeof (char));
+          memcpy (tmp.data (), new_name.c_str (), len == 0 ? 0 : len - 1);
+          new_name =
+            fmt::format ("{} ({})", std::string (tmp.data ()), cur_val + 1);
         }
       g_free (cur_val_str);
       changed = true;
@@ -179,7 +179,7 @@ std::string
 AudioPool::gen_name_for_recording_clip (const Track &track, int lane)
 {
   return fmt::format (
-    "%s - lane %d - recording", track.name_,
+    "{} - lane {} - recording", track.name_,
     /* add 1 to get human friendly index */
     lane + 1);
 }

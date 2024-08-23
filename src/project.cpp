@@ -499,13 +499,16 @@ Project::get_arranger_selections_for_last_selection ()
 }
 
 void
-Project::init_selections ()
+Project::init_selections (bool including_arranger_selections)
 {
-  automation_selections_ = std::make_unique<AutomationSelections> ();
-  audio_selections_ = std::make_unique<AudioSelections> ();
-  chord_selections_ = std::make_unique<ChordSelections> ();
-  timeline_selections_ = std::make_unique<TimelineSelections> ();
-  midi_selections_ = std::make_unique<MidiSelections> ();
+  if (including_arranger_selections)
+    {
+      automation_selections_ = std::make_unique<AutomationSelections> ();
+      audio_selections_ = std::make_unique<AudioSelections> ();
+      chord_selections_ = std::make_unique<ChordSelections> ();
+      timeline_selections_ = std::make_unique<TimelineSelections> ();
+      midi_selections_ = std::make_unique<MidiSelections> ();
+    }
   mixer_selections_ = std::make_unique<ProjectMixerSelections> ();
 }
 
@@ -1045,7 +1048,7 @@ Project::init_after_cloning (const Project &other)
   title_ = other.title_;
   datetime_str_ = other.datetime_str_;
   version_ = other.version_;
-  audio_engine_ = audio_engine_->clone_unique ();
+  audio_engine_ = other.audio_engine_->clone_unique ();
   tracklist_ = other.tracklist_->clone_shared ();
   clip_editor_ = other.clip_editor_;
   timeline_ = std::make_unique<Timeline> (*other.timeline_);

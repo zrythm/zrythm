@@ -8,6 +8,8 @@
 
 #include "utils/types.h"
 
+#include "ext/juce/juce.h"
+
 /**
  * @addtogroup utils
  *
@@ -42,12 +44,11 @@ public:
    * @throw ZrythmException on error.
    */
   Resampler (
-    const float *      in_frames,
-    const size_t       num_in_frames,
-    const double       input_rate,
-    const double       output_rate,
-    const unsigned int num_channels,
-    const Quality      quality);
+    const juce::AudioSampleBuffer &in_frames,
+    const double                   input_rate,
+    const double                   output_rate,
+    const Quality                  quality,
+    size_t                         block_size = 1024);
 
   ~Resampler ();
 
@@ -69,7 +70,7 @@ public:
    *
    * @ref is_done() must be true before calling this.
    */
-  std::vector<float> get_out_frames () const;
+  juce::AudioSampleBuffer get_out_frames () const;
 
 private:
   class Impl;

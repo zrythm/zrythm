@@ -71,8 +71,8 @@ open_stream (AudioEngine * self)
     {
       const PaDeviceInfo * info = Pa_GetDeviceInfo (i);
       z_info (
-        "device %s (%d) found, "
-        "max channels (in %d, out %d)",
+        "device {} ({}) found, "
+        "max channels (in {}, out {})",
         info->name, i, info->maxInputChannels, info->maxOutputChannels);
     }
 
@@ -92,7 +92,7 @@ open_stream (AudioEngine * self)
 
   z_info (
     "Attempting to open PA stream with input device "
-    "%d and output device %d",
+    "{} and output device {}",
     in_param.device, out_param.device);
 
   /* Open an audio I/O stream. */

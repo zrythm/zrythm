@@ -636,8 +636,7 @@ Channel::connect_plugins ()
           auto add_plugin_ptrs = [] (auto &plugins, std::vector<Plugin *> &dest) {
             for (auto &p : plugins)
               {
-                if (p)
-                  dest.push_back (p.get ());
+                dest.push_back (p.get ());
               }
           };
 
@@ -668,6 +667,7 @@ Channel::connect_plugins ()
               z_return_if_reached ();
             }
 
+          z_return_if_fail (next_plugins.size () == STRIP_SIZE);
           Plugin * next_pl = nullptr;
           for (
             auto k = (slot_type == PluginSlotType::Instrument ? 0 : slot + 1);
@@ -838,6 +838,7 @@ Channel::connect ()
   /* connect sends */
   for (auto &send : sends_)
     {
+      send->track_ = track_;
       send->connect_to_owner ();
     }
 
@@ -865,6 +866,8 @@ Channel::get_output_track () const
 void
 Channel::append_ports (std::vector<Port *> &ports, bool include_plugins)
 {
+  z_return_if_fail (track_);
+
   auto add_port = [&ports] (Port * port) { ports.push_back (port); };
 
   /* add channel ports */
@@ -1250,6 +1253,7 @@ Channel::add_plugin (
       plugin_ptr = midi_fx_[slot].get ();
     }
 
+  plugin_ptr->track_ = track_;
   plugin_ptr->set_track_and_slot (track_->get_name_hash (), slot_type, slot);
 
   if (track_->is_in_active_project ())

@@ -148,7 +148,7 @@ TEST_CASE ("is equal")
   gint64 fast_time = end - start;
   z_info ("fast: {} us", fast_time);
 
-  g_assert_cmpint (fast_time, <, orig_time);
+  REQUIRE_LT (fast_time, orig_time);
 
   test_helper_zrythm_cleanup ();
 #endif
@@ -163,19 +163,19 @@ TEST_CASE ("replace regex")
   regex = "(abc)+\\1";
   src_str = g_strdup ("abcabc");
   string_replace_regex (&src_str, regex, replace_str);
-  g_assert_cmpstr (src_str, ==, "---abc---");
+  REQUIRE (string_is_equal (src_str, "---abc---"));
 
   replace_str = "$1";
   regex = "(\\?\\?\\?\n)+\\1";
   src_str = g_strdup ("???\n???\n???\n???\n??? abc");
   string_replace_regex (&src_str, regex, replace_str);
-  g_assert_cmpstr (src_str, ==, "???\n??? abc");
+  REQUIRE (string_is_equal (src_str, "???\n??? abc"));
 
   replace_str = "??? ...\n";
   regex = "(\\?\\?\\?\n)+\\1";
   src_str = g_strdup ("???\n???\n???\n???\n??? abc\n???\n???\n??? test");
   string_replace_regex (&src_str, regex, replace_str);
-  g_assert_cmpstr (src_str, ==, "??? ...\n??? abc\n??? ...\n??? test");
+  REQUIRE (string_is_equal (src_str, "??? ...\n??? abc\n??? ...\n??? test"));
 }
 
 TEST_SUITE_END;

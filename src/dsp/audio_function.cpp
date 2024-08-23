@@ -202,7 +202,7 @@ apply_plugin (
       r_out = l_out;
     }
 
-  uint32_t step = (uint32_t) MIN (AUDIO_ENGINE->block_length, num_frames);
+  uint32_t step = (uint32_t) MIN (AUDIO_ENGINE->block_length_, num_frames);
   size_t   i = 0; /* frames processed */
   plugin_update_latency (pl);
   nframes_t latency = pl->latency;
@@ -245,7 +245,7 @@ apply_plugin (
 
   /* handle latency */
   i = 0;
-  step = (uint32_t) MIN (AUDIO_ENGINE->block_length, latency);
+  step = (uint32_t) MIN (AUDIO_ENGINE->block_length_, latency);
   while (i < latency)
     {
       for (size_t j = 0; j < step; j++)

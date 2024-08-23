@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "utils/exceptions.h"
+#include "utils/json.h"
 #include "utils/logger.h"
 #include "utils/string.h"
 #include "utils/types.h"
@@ -549,7 +550,7 @@ public:
     z_debug (
       "serializing '{}' v{}.{} to JSON...", document_type, format_major_version,
       format_minor_version);
-    yyjson_mut_obj_add_str (doc, root, "type", document_type.c_str ());
+    yyjson_mut_obj_add_str (doc, root, "documentType", document_type.c_str ());
     yyjson_mut_obj_add_int (doc, root, "formatMajor", format_major_version);
     yyjson_mut_obj_add_int (doc, root, "formatMinor", format_minor_version);
 
@@ -590,7 +591,7 @@ public:
       format_major_version, format_minor_version);
     yyjson_obj_iter it = yyjson_obj_iter_with (root);
     if (!yyjson_equals_str (
-          yyjson_obj_iter_get (&it, "type"), document_type.c_str ()))
+          yyjson_obj_iter_get (&it, "documentType"), document_type.c_str ()))
       {
         throw ZrythmException ("Invalid document type");
       }
@@ -806,10 +807,18 @@ public:
       }
     else if constexpr (std::is_enum_v<T>)
       {
-        if (
-          !yyjson_mut_obj_add_int (doc, obj, key, static_cast<int64_t> (value)))
+        try
           {
-            throw ZrythmException (fmt::format ("Failed to add field {}", key));
+            if (!yyjson_mut_obj_add_int (
+                  doc, obj, key, magic_enum::enum_integer (value)))
+              {
+                throw ZrythmException (
+                  fmt::format ("Failed to add field {}", key));
+              }
+          }
+        catch (const std::exception &e)
+          {
+            throw ZrythmException (fmt::format ("Invalid enum: {}", e.what ()));
           }
       }
     else if constexpr (SignedIntegralContainer<T>)
@@ -913,7 +922,10 @@ public:
         if (optional)
           return;
 
-        throw ZrythmException ("Missing field: " + std::string (key));
+        auto obj_json = json_get_string (ctx.obj_);
+
+        throw ZrythmException (fmt::format (
+          "Missing field '{}' in object:\n{}", key, obj_json.c_str ()));
       }
 
     if constexpr (std::derived_from<T, ISerializable<T>>)
@@ -1272,7 +1284,10 @@ public:
         return;
       }
 
-    throw ZrythmException ("Type mismatch: " + std::string (key));
+    auto val_to_json = json_get_string (val);
+    throw ZrythmException (fmt::format (
+      "Could not deserialize '{}::{}' with the following JSON:\n{}",
+      typeid (Derived).name (), key, val_to_json.c_str ()));
   }
 
 protected:

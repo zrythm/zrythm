@@ -8,6 +8,7 @@
 
 #include <filesystem>
 
+#include "ext/juce/juce.h"
 #include <fmt/format.h>
 #include <magic_enum.hpp>
 
@@ -122,6 +123,17 @@ struct fmt::formatter<std::filesystem::path> : fmt::formatter<std::string_view>
   auto format (const std::filesystem::path &p, FormatContext &ctx) const
   {
     return fmt::formatter<std::string_view>::format (p.c_str (), ctx);
+  }
+};
+
+// Formatter for juce::String
+template <>
+struct fmt::formatter<juce::String> : fmt::formatter<std::string_view>
+{
+  template <typename FormatContext>
+  auto format (const juce::String &s, FormatContext &ctx) const
+  {
+    return fmt::formatter<std::string_view>::format (s.toStdString (), ctx);
   }
 };
 

@@ -61,19 +61,6 @@ public:
     std::vector<Velocity *> &velocities,
     bool                     inside) const;
 
-  /**
-   * Wrapper for MIDI/instrument tracks to fill in MidiEvents from the timeline
-   * data.
-   *
-   * @note The engine splits the cycle so transport loop related logic is not
-   * needed.
-   *
-   * @param midi_events MidiEvents to fill.
-   */
-  void fill_events (
-    const EngineProcessTimeInfo &time_nfo,
-    MidiEventVector             &midi_events);
-
   void clear_objects () override;
 
   bool validate () const override;
@@ -99,8 +86,8 @@ public:
    */
   bool drum_mode_ = false;
 
-  /** MIDI channel. FIXME specify if 0-15 or 1-16 */
-  midi_byte_t midi_ch_ = 0;
+  /** MIDI channel (1-16) */
+  midi_byte_t midi_ch_ = 1;
 
   /**
    * If true, the input received will not be changed to the selected MIDI

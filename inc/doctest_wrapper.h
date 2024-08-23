@@ -41,4 +41,12 @@
     REQUIRE (a == doctest::Approx (b).epsilon (_epsilon))
 #endif
 
+#ifndef REQUIRE_OPTIONAL_HAS_VALUE
+#  define REQUIRE_OPTIONAL_HAS_VALUE(opt) REQUIRE (opt.has_value ())
+#endif
+
+#ifndef REQUIRE_UNREACHABLE
+#  define REQUIRE_UNREACHABLE() REQUIRE (false)
+#endif
+
 #endif // __DOCTEST_WRAPPER_H__

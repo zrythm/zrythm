@@ -16,20 +16,6 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
-void
-AudioTrack::init_loaded ()
-{
-  AutomatableTrack::init_loaded ();
-  LanedTrackImpl::init_loaded ();
-  ChannelTrack::init_loaded ();
-  auto tracklist = get_tracklist ();
-  samplerate_ =
-    (tracklist && tracklist->project_)
-      ? tracklist->project_->audio_engine_->sample_rate_
-      : AUDIO_ENGINE->sample_rate_;
-  rt_stretcher_ = stretcher_new_rubberband (samplerate_, 2, 1.0, 1.0, true);
-}
-
 AudioTrack::AudioTrack (const std::string &name, int pos, unsigned int samplerate)
     : Track (Track::Type::Audio, name, pos, PortType::Audio, PortType::Audio),
       samplerate_ (samplerate)
@@ -37,6 +23,22 @@ AudioTrack::AudioTrack (const std::string &name, int pos, unsigned int samplerat
   color_ = Color ("#19664c");
   /* signal-audio also works */
   icon_name_ = "view-media-visualization";
+  rt_stretcher_ = stretcher_new_rubberband (samplerate_, 2, 1.0, 1.0, true);
+}
+
+void
+AudioTrack::init_loaded ()
+{
+  // ChannelTrack must be initialized before AutomatableTrack
+  ChannelTrack::init_loaded ();
+  AutomatableTrack::init_loaded ();
+  ProcessableTrack::init_loaded ();
+  LanedTrackImpl::init_loaded ();
+  auto tracklist = get_tracklist ();
+  samplerate_ =
+    (tracklist && tracklist->project_)
+      ? tracklist->project_->audio_engine_->sample_rate_
+      : AUDIO_ENGINE->sample_rate_;
   rt_stretcher_ = stretcher_new_rubberband (samplerate_, 2, 1.0, 1.0, true);
 }
 
@@ -76,6 +78,7 @@ AudioTrack::init_after_cloning (const AudioTrack &other)
 {
   samplerate_ = other.samplerate_;
   rt_stretcher_ = stretcher_new_rubberband (samplerate_, 2, 1.0, 1.0, true);
+  Track::copy_members_from (other);
   ChannelTrack::copy_members_from (other);
   ProcessableTrack::copy_members_from (other);
   AutomatableTrack::copy_members_from (other);
