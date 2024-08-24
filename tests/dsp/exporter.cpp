@@ -1,120 +1,106 @@
-// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
 
-#include "actions/tracklist_selections.h"
+#include "actions/arranger_selections.h"
+#include "actions/channel_send_action.h"
+
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
 #include "dsp/exporter.h"
 #include "io/file_descriptor.h"
 #include "project.h"
 #include "utils/chromaprint.h"
-#include "utils/math.h"
-#include "utils/objects.h"
 #include "utils/progress_info.h"
 #include "zrythm.h"
-
-#include <glib.h>
 
 #include "helpers/plugin_manager.h"
 #include "tests/helpers/zrythm_helper.h"
 
 #include <sndfile.h>
 
+TEST_SUITE_BEGIN ("dsp/exporter");
+
+constexpr midi_byte_t DUMMY_NOTE_PITCH = 70;
+constexpr midi_byte_t DUMMY_NOTE_VELOCITY = 70;
+
 static void
 print_progress_and_sleep (ProgressInfo &info)
 {
   while (info.get_status () != ProgressInfo::Status::COMPLETED)
     {
-      double      progress;
-      std::string progress_str;
-      std::tie (progress, progress_str) = info.get_progress ();
+      auto [progress, progress_str] = info.get_progress ();
       z_info ("progress: {:.1f}", progress * 100.0);
-      g_usleep (10000);
+      constexpr auto sleep_time = 10'000; g_usleep (sleep_time);
     }
 }
 
-static void
-test_export_wav (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "export wav")
 {
-  test_helper_zrythm_init ();
-
-  char * filepath = g_build_filename (TESTS_SRCDIR, "test.wav", nullptr);
-  FileDescriptor file = FileDescriptor (filepath);
-  track_create_with_action (
-    Track::Type::Audio, nullptr, &file, PLAYHEAD, TRACKLIST->tracks.size (), 1,
-    -1, nullptr, nullptr);
+  FileDescriptor file (fs::path (TESTS_SRCDIR) / "test.wav");
+  Track::create_with_action (
+    Track::Type::Audio, nullptr, &file, &PLAYHEAD, TRACKLIST->get_num_tracks (),
+    1, -1, nullptr);
 
   char * tmp_dir = g_dir_make_tmp ("test_wav_prj_XXXXXX", nullptr);
-  bool   success = project_save (PROJECT, tmp_dir, 0, 0, F_NO_ASYNC, nullptr);
-  g_assert_true (success);
+  PROJECT->save (tmp_dir, 0, 0, false);
   g_free (tmp_dir);
 
   for (int i = 0; i < 2; i++)
     {
       for (int j = 0; j < 2; j++)
         {
-          g_assert_false (TRANSPORT_IS_ROLLING);
-          g_assert_cmpint (TRANSPORT->playhead_pos.frames, ==, 0);
+          REQUIRE_FALSE (TRANSPORT->is_rolling ());
+          REQUIRE_EQ (TRANSPORT->playhead_pos_.frames_, 0);
 
-          char * filename = g_strdup_printf ("test_wav%d.wav", i);
+          auto filename = fmt::format ("test_wav{}.wav", i);
 
-          ExportSettings * settings = export_settings_new ();
-          settings->format = ExportFormat::EXPORT_FORMAT_WAV;
-          settings->artist = g_strdup ("Test Artist");
-          settings->title = g_strdup ("Test Title");
-          settings->genre = g_strdup ("Test Genre");
-          settings->depth = BitDepth::BIT_DEPTH_16;
-          settings->time_range = ExportTimeRange::TIME_RANGE_LOOP;
+          Exporter::Settings settings;
+          settings.format_ = Exporter::Format::WAV;
+          settings.artist_ = "Test Artist";
+          settings.title_ = "Test Title";
+          settings.genre_ = "Test Genre";
+          settings.depth_ = BitDepth::BIT_DEPTH_16;
+          settings.time_range_ = Exporter::TimeRange::Loop;
           if (j == 0)
             {
-              settings->mode = ExportMode::EXPORT_MODE_FULL;
-              tracklist_mark_all_tracks_for_bounce (TRACKLIST, F_NO_BOUNCE);
-              settings->bounce_with_parents = false;
+              settings.mode_ = Exporter::Mode::Full;
+              TRACKLIST->mark_all_tracks_for_bounce (false);
+              settings.bounce_with_parents_ = false;
             }
           else
             {
-              settings->mode = ExportMode::EXPORT_MODE_TRACKS;
-              tracklist_mark_all_tracks_for_bounce (TRACKLIST, F_BOUNCE);
-              settings->bounce_with_parents = true;
+              settings.mode_ = Exporter::Mode::Tracks;
+              TRACKLIST->mark_all_tracks_for_bounce (true);
+              settings.bounce_with_parents_ = true;
             }
-          char * exports_dir = project_get_path (
-            PROJECT, ProjectPath::PROJECT_PATH_EXPORTS, false);
-          settings->file_uri = g_build_filename (exports_dir, filename, NULL);
-
-          EngineState state;
-          GPtrArray * conns =
-            exporter_prepare_tracks_for_export (settings, &state);
+          auto exports_dir = PROJECT->get_path (ProjectPath::EXPORTS, false);
+          settings.file_uri_ = Glib::build_filename (exports_dir, filename);
+          Exporter exporter (settings);
+          exporter.prepare_tracks_for_export (*AUDIO_ENGINE, *TRANSPORT);
 
           /* start exporting in a new thread */
-          GThread * thread = g_thread_new (
-            "bounce_thread", (GThreadFunc) exporter_generic_export_thread,
-            settings);
+          exporter.begin_generic_thread ();
+          print_progress_and_sleep (*exporter.progress_info_);
+          exporter.join_generic_thread ();
 
-          print_progress_and_sleep (*settings->progress_info);
+          exporter.post_export ();
 
-          g_thread_join (thread);
-
-          exporter_post_export (settings, conns, &state);
-
-          g_assert_false (AUDIO_ENGINE->exporting);
+          REQUIRE_FALSE (AUDIO_ENGINE->exporting_.load ());
 
           z_chromaprint_check_fingerprint_similarity (
-            filepath, settings->file_uri, 83, 6);
-          g_assert_true (
-            audio_files_equal (filepath, settings->file_uri, 151199, 0.0001f));
+            file.abs_path_.c_str (), settings.file_uri_.c_str (), 83, 6);
+          REQUIRE (audio_files_equal (
+            file.abs_path_.c_str (), settings.file_uri_.c_str (), 151199,
+            0.0001f));
 
-          io_remove (settings->file_uri);
-          g_free (filename);
-          export_settings_free (settings);
+          io_remove (settings.file_uri_);
 
-          g_assert_false (TRANSPORT_IS_ROLLING);
-          g_assert_cmpint (TRANSPORT->playhead_pos.frames, ==, 0);
+          REQUIRE_FALSE (TRANSPORT->is_rolling ());
+          REQUIRE_EQ (TRANSPORT->playhead_pos_.frames_, 0);
         }
     }
-
-  g_free (filepath);
-
-  test_helper_zrythm_cleanup ();
 }
 
 static void
@@ -124,8 +110,8 @@ bounce_region (bool with_bpm_automation)
   test_helper_zrythm_init ();
 
   Position pos, end_pos;
-  position_set_to_bar (&pos, 2);
-  position_set_to_bar (&end_pos, 4);
+  pos.set_to_bar (2);
+  end_pos.set_to_bar (4);
 
   if (with_bpm_automation)
     {
@@ -133,43 +119,42 @@ bounce_region (bool with_bpm_automation)
       AutomationTrack * at = automation_track_find_from_port (
         P_TEMPO_TRACK->bpm_port, P_TEMPO_TRACK, false);
       Region * r = automation_region_new (
-        &pos, &end_pos, track_get_name_hash (*P_TEMPO_TRACK), at->index, 0);
-      bool success = track_add_region (P_TEMPO_TRACK, r, at, 0, 1, 0, NULL);
-      g_assert_true (success);
-      position_set_to_bar (&pos, 1);
+        &pos, &end_pos, P_TEMPO_TRACK->get_name_hash (), at->index, 0);
+      bool success = track_add_region (P_TEMPO_TRACK, r, at, 0, 1, 0, nullptr);
+      REQUIRE (success);
+      pos.set_to_bar (1);
       AutomationPoint * ap =
         automation_point_new_float (168.434006f, 0.361445993f, &pos);
-      automation_region_add_ap (r, ap, F_NO_PUBLISH_EVENTS);
-      position_set_to_bar (&pos, 2);
+      automation_region_add_ap (r, ap, false);
+      pos.set_to_bar (2);
       ap = automation_point_new_float (297.348999f, 0.791164994f, &pos);
-      automation_region_add_ap (r, ap, F_NO_PUBLISH_EVENTS);
+      automation_region_add_ap (r, ap, false);
     }
 
   /* create the plugin track */
   test_plugin_manager_create_tracks_from_plugin (
     GEONKICK_BUNDLE, GEONKICK_URI, true, false, 1);
   Track * track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  track_select (track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track->select (true, true, false);
 
   /* create midi region */
   char * midi_file =
-    g_build_filename (MIDILIB_TEST_MIDI_FILES_PATH, "M71.MID", NULL);
+    g_build_filename (MIDILIB_TEST_MIDI_FILES_PATH, "M71.MID", nullptr);
   int      lane_pos = 0;
   int      idx_in_lane = 0;
   Region * region = midi_region_new_from_midi_file (
-    &pos, midi_file, track_get_name_hash (*track), lane_pos, idx_in_lane, 0);
-  bool success = track_add_region (
-    track, region, NULL, lane_pos, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
-  g_assert_true (success);
-  arranger_object_select (
-    (ArrangerObject *) region, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (TL_SELECTIONS, NULL);
+    &pos, midi_file, track->get_name_hash (), lane_pos, idx_in_lane, 0);
+  bool success =
+    track_add_region (track, region, nullptr, lane_pos, true, false, nullptr);
+  REQUIRE (success);
+  (ArrangerObject *) region->select (true, false, false);
+  arranger_selections_action_perform_create (TL_SELECTIONS, nullptr);
 
   /* bounce it */
   ExportSettings * settings = export_settings_new ();
-  settings->mode = ExportMode::EXPORT_MODE_REGIONS;
+  settings->mode = Exporter::Mode::EXPORT_MODE_REGIONS;
   export_settings_set_bounce_defaults (
-    settings, ExportFormat::EXPORT_FORMAT_WAV, NULL, region->name);
+    settings, Exporter::Format::EXPORT_FORMAT_WAV, nullptr, region->name);
   timeline_selections_mark_for_bounce (
     TL_SELECTIONS, settings->bounce_with_parents);
   position_add_ms (&settings->custom_end, 4000);
@@ -190,7 +175,8 @@ bounce_region (bool with_bpm_automation)
   if (!with_bpm_automation)
     {
       char * filepath = g_build_filename (
-        TESTS_SRCDIR, "test_mixdown_midi_routed_to_instrument_track.ogg", NULL);
+        TESTS_SRCDIR, "test_mixdown_midi_routed_to_instrument_track.ogg",
+        nullptr);
       z_chromaprint_check_fingerprint_similarity (
         filepath, settings->file_uri, 97, 34);
       g_free (filepath);
@@ -202,8 +188,7 @@ bounce_region (bool with_bpm_automation)
 #endif
 }
 
-static void
-test_bounce_region (void)
+TEST_CASE ("bounce_region")
 {
   bounce_region (false);
 }
@@ -220,43 +205,42 @@ test_bounce_with_bpm_automation (void)
  * Export the audio mixdown when a MIDI track with
  * data is routed to an instrument track.
  */
-static void
-test_mixdown_midi_routed_to_instrument_track (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "mixdown MIDI routed to instrument track")
 {
 #ifdef HAVE_GEONKICK
-  test_helper_zrythm_init ();
-
   /* create the instrument track */
   test_plugin_manager_create_tracks_from_plugin (
     GEONKICK_BUNDLE, GEONKICK_URI, true, false, 1);
   Track * ins_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  ins_track->select (true, true, false);
 
   char * midi_file =
-    g_build_filename (MIDILIB_TEST_MIDI_FILES_PATH, "M71.MID", NULL);
+    g_build_filename (MIDILIB_TEST_MIDI_FILES_PATH, "M71.MID", nullptr);
 
   /* create the MIDI track from a MIDI file */
   FileDescriptor * file = supported_file_new_from_path (midi_file);
   track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->tracks.size (),
-    1, -1, NULL, NULL);
+    Track::Type::MIDI, nullptr, file, PLAYHEAD, TRACKLIST->tracks.size (), 1,
+    -1, nullptr, nullptr);
   Track * midi_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
-  track_select (midi_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  midi_track->select (true, true, false);
 
   /* route the MIDI track to the instrument track */
   tracklist_selections_action_perform_set_direct_out (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, ins_track, NULL);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, ins_track, nullptr);
 
   for (int k = 0; k < 2; k++)
     {
       /* bounce it */
       ExportSettings * settings = export_settings_new ();
-      settings->mode = ExportMode::EXPORT_MODE_FULL;
+      settings->mode = Exporter::Mode::EXPORT_MODE_FULL;
       export_settings_set_bounce_defaults (
         settings,
-        k == 0 ? ExportFormat::EXPORT_FORMAT_WAV : ExportFormat::EXPORT_FORMAT_FLAC,
-        NULL, __func__);
+        k == 0
+          ? Exporter::Format::EXPORT_FORMAT_WAV
+          : Exporter::Format::EXPORT_FORMAT_FLAC,
+        nullptr, __func__);
       settings->time_range = ExportTimeRange::TIME_RANGE_LOOP;
 
       EngineState state;
@@ -273,114 +257,95 @@ test_mixdown_midi_routed_to_instrument_track (void)
       exporter_post_export (settings, conns, &state);
 
       char * filepath = g_build_filename (
-        TESTS_SRCDIR, "test_mixdown_midi_routed_to_instrument_track.ogg", NULL);
+        TESTS_SRCDIR, "test_mixdown_midi_routed_to_instrument_track.ogg",
+        nullptr);
       z_chromaprint_check_fingerprint_similarity (
         filepath, settings->file_uri, 97, 34);
       g_free (filepath);
 
       export_settings_free (settings);
     }
-
-  test_helper_zrythm_cleanup ();
 #endif
 }
 
-static void
-test_bounce_region_with_first_note (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "bounce region with first note")
 {
 #ifdef HAVE_HELM
-  test_helper_zrythm_init ();
-
   Position pos, end_pos;
-  position_set_to_bar (&pos, 2);
-  position_set_to_bar (&end_pos, 4);
+  pos.set_to_bar (2);
+  end_pos.set_to_bar (4);
 
   /* create the plugin track */
   test_plugin_manager_create_tracks_from_plugin (
     HELM_BUNDLE, HELM_URI, true, false, 1);
-  Track * track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  track_select (track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  auto track = TRACKLIST->get_last_track<InstrumentTrack> ();
+  track->select (true, true, false);
 
   /* create midi region */
-  char * midi_file =
-    g_build_filename (MIDILIB_TEST_MIDI_FILES_PATH, "M1.MID", NULL);
-  int      lane_pos = 0;
-  int      idx_in_lane = 0;
-  Region * region = midi_region_new_from_midi_file (
-    &pos, midi_file, track_get_name_hash (*track), lane_pos, idx_in_lane, 0);
-  ArrangerObject * r_obj = (ArrangerObject *) region;
-  bool             success = track_add_region (
-    track, region, NULL, lane_pos, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
-  g_assert_true (success);
-  arranger_object_select (r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (TL_SELECTIONS, NULL);
+  const auto midi_file =
+    Glib::build_filename (MIDILIB_TEST_MIDI_FILES_PATH, "M1.MID");
+  const int lane_pos = 0;
+  const int idx_in_lane = 0;
+  auto      region = std::make_shared<MidiRegion> (
+    pos, midi_file, track->get_name_hash (), lane_pos, idx_in_lane, 0);
+  track->add_region (region, nullptr, lane_pos, true, false);
+  region->select (true, false, false);
+  UNDO_MANAGER->perform (
+    std::make_unique<CreateArrangerSelectionsAction> (*TL_SELECTIONS));
 
-  position_init (&pos);
-  position_add_beats (&pos, 3);
-  arranger_object_loop_start_pos_setter (r_obj, &pos);
-  arranger_object_clip_start_pos_setter (r_obj, &pos);
+  pos.zero ();
+  pos.add_beats (3);
+  region->loop_start_pos_setter (&pos);
+  region->clip_start_pos_setter (&pos);
 
-  for (int i = region->num_midi_notes - 1; i >= 1; i--)
+  while (region->midi_notes_.size () > 1)
     {
-      MidiNote * mn = region->midi_notes[i];
-      midi_region_remove_midi_note (region, mn, F_FREE, F_NO_PUBLISH_EVENTS);
+      region->remove_object (*region->midi_notes_.back ());
     }
-  g_assert_cmpint (
-    region->midi_notes[0]->base.pos.frames, ==,
-    region->base.loop_start_pos.frames);
+  REQUIRE_EQ (
+    region->midi_notes_[0]->pos_.frames_, region->loop_start_pos_.frames_);
 
   for (int k = 0; k < 2; k++)
     {
       /* bounce it */
-      ExportSettings * settings = export_settings_new ();
-      settings->mode = ExportMode::EXPORT_MODE_REGIONS;
-      export_settings_set_bounce_defaults (
-        settings,
-        k == 0 ? ExportFormat::EXPORT_FORMAT_WAV : ExportFormat::EXPORT_FORMAT_FLAC,
-        NULL, region->name);
-      timeline_selections_mark_for_bounce (
-        TL_SELECTIONS, settings->bounce_with_parents);
-      position_add_ms (&settings->custom_end, 4000);
-
-      EngineState state;
-      GPtrArray * conns = exporter_prepare_tracks_for_export (settings, &state);
+      Exporter::Settings settings;
+      settings.mode_ = Exporter::Mode::Regions;
+      settings.set_bounce_defaults (
+        k == 0 ? Exporter::Format::WAV : Exporter::Format::FLAC, "",
+        region->name_);
+      TL_SELECTIONS->mark_for_bounce (settings.bounce_with_parents_);
+      settings.custom_end_.add_ms (4000);
+      Exporter exporter (settings);
+      exporter.prepare_tracks_for_export (*AUDIO_ENGINE, *TRANSPORT);
 
       /* start exporting in a new thread */
-      GThread * thread = g_thread_new (
-        "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
-
-      print_progress_and_sleep (*settings->progress_info);
-
-      g_thread_join (thread);
-
-      exporter_post_export (settings, conns, &state);
+      exporter.begin_generic_thread ();
+      print_progress_and_sleep (*exporter.progress_info_);
+      exporter.join_generic_thread ();
+      exporter.post_export ();
 
       /* assert non silent */
-      AudioClip * clip = audio_clip_new_from_file (settings->file_uri, NULL);
-      bool        has_audio = false;
-      for (unsigned_frame_t i = 0; i < clip->num_frames; i++)
+      AudioClip clip (exporter.settings_.file_uri_);
+      bool      has_audio = false;
+      for (unsigned_frame_t i = 0; i < clip.num_frames_; i++)
         {
-          for (channels_t j = 0; j < clip->channels; j++)
+          for (channels_t j = 0; j < clip.channels_; j++)
             {
-              if (fabsf (clip->ch_frames[j][i]) > 1e-10f)
+              if (
+                std::abs (clip.ch_frames_.getSample ((int) j, (int) i)) > 1e-10f)
                 {
                   has_audio = true;
                   break;
                 }
             }
         }
-      g_assert_true (has_audio);
-      audio_clip_free (clip);
-
-      export_settings_free (settings);
+      REQUIRE (has_audio);
     }
-
-  test_helper_zrythm_cleanup ();
 #endif
 }
 
 static void
-_test_bounce_midi_track_routed_to_instrument_track (
+test_bounce_midi_track_routed_to_instrument_track (
   BounceStep bounce_step,
   bool       with_parents)
 {
@@ -391,29 +356,29 @@ _test_bounce_midi_track_routed_to_instrument_track (
   test_plugin_manager_create_tracks_from_plugin (
     GEONKICK_BUNDLE, GEONKICK_URI, true, false, 1);
   Track * ins_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  ins_track->select (true, true, false);
 
   char * midi_file =
-    g_build_filename (MIDILIB_TEST_MIDI_FILES_PATH, "M71.MID", NULL);
+    g_build_filename (MIDILIB_TEST_MIDI_FILES_PATH, "M71.MID", nullptr);
 
   /* create the MIDI track from a MIDI file */
   FileDescriptor * file = supported_file_new_from_path (midi_file);
   track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->tracks.size (),
-    1, -1, NULL, NULL);
+    Track::Type::MIDI, nullptr, file, PLAYHEAD, TRACKLIST->tracks.size (), 1,
+    -1, nullptr, nullptr);
   Track * midi_track = tracklist_get_last_track (
     TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
-  track_select (midi_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  midi_track->select (true, true, false);
 
   /* route the MIDI track to the instrument track */
   tracklist_selections_action_perform_set_direct_out (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, ins_track, NULL);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, ins_track, nullptr);
 
   /* bounce it */
   ExportSettings * settings = export_settings_new ();
-  settings->mode = ExportMode::EXPORT_MODE_TRACKS;
+  settings->mode = Exporter::Mode::EXPORT_MODE_TRACKS;
   export_settings_set_bounce_defaults (
-    settings, ExportFormat::EXPORT_FORMAT_WAV, NULL, __func__);
+    settings, Exporter::Format::EXPORT_FORMAT_WAV, nullptr, __func__);
   settings->time_range = ExportTimeRange::TIME_RANGE_LOOP;
   settings->bounce_with_parents = with_parents;
   settings->bounce_step = bounce_step;
@@ -438,17 +403,17 @@ _test_bounce_midi_track_routed_to_instrument_track (
   if (with_parents)
     {
       char * filepath = g_build_filename (
-        TESTS_SRCDIR, "test_mixdown_midi_routed_to_instrument_track.ogg", NULL);
+        TESTS_SRCDIR, "test_mixdown_midi_routed_to_instrument_track.ogg",
+        nullptr);
       z_chromaprint_check_fingerprint_similarity (
         filepath, settings->file_uri, 97, 34);
-      g_assert_true (
-        audio_files_equal (filepath, settings->file_uri, 120000, 0.01f));
+      REQUIRE (audio_files_equal (filepath, settings->file_uri, 120000, 0.01f));
       g_free (filepath);
     }
   else
     {
       /* assume silence */
-      g_assert_true (audio_file_is_silent (settings->file_uri));
+      REQUIRE (audio_file_is_silent (settings->file_uri));
     }
   io_remove (settings->file_uri);
 
@@ -458,65 +423,62 @@ _test_bounce_midi_track_routed_to_instrument_track (
 #endif
 }
 
-static void
-test_bounce_midi_track_routed_to_instrument_track (void)
+TEST_CASE ("bounce MIDI track routed to instrument track")
 {
-  _test_bounce_midi_track_routed_to_instrument_track (
-    BounceStep::BOUNCE_STEP_POST_FADER, true);
-  _test_bounce_midi_track_routed_to_instrument_track (
-    BounceStep::BOUNCE_STEP_POST_FADER, false);
+  test_bounce_midi_track_routed_to_instrument_track (
+    BounceStep::PostFader, true);
+  test_bounce_midi_track_routed_to_instrument_track (
+    BounceStep::PostFader, false);
 }
 
 static void
-_test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
+test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
 {
-  g_message ("=== Bounce instrument track start ===");
+  z_info ("=== Bounce instrument track start ===");
 #if defined(HAVE_GEONKICK) && defined(HAVE_MVERB)
-  test_helper_zrythm_init ();
+  ZrythmFixture fixture;
 
   /* create the instrument track */
   test_plugin_manager_create_tracks_from_plugin (
     GEONKICK_BUNDLE, GEONKICK_URI, true, false, 1);
   Track * ins_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  ins_track->select (true, true, false);
 
   /* CM Kleer Arp */
   /*plugin_set_selected_preset_by_name (*/
   /*ins_track->channel->instrument, "CM Supersaw");*/
-  /*g_warn_if_reached ();*/
+  /*z_warn_if_reached ();*/
 
   /* create a MIDI region on the instrument track */
   char * midi_file =
-    g_build_filename (MIDILIB_TEST_MIDI_FILES_PATH, "M71.MID", NULL);
+    g_build_filename (MIDILIB_TEST_MIDI_FILES_PATH, "M71.MID", nullptr);
   Region * r = midi_region_new_from_midi_file (
-    PLAYHEAD, midi_file, track_get_name_hash (*ins_track), 0, 0, 0);
+    PLAYHEAD, midi_file, ins_track->get_name_hash (), 0, 0, 0);
   g_free (midi_file);
-  bool success = track_add_region (
-    ins_track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
-  g_assert_true (success);
-  arranger_object_select (
-    (ArrangerObject *) r, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (TL_SELECTIONS, NULL);
+  bool success =
+    track_add_region (ins_track, r, nullptr, 0, true, false, nullptr);
+  REQUIRE (success);
+  (ArrangerObject *) r->select (true, false, false);
+  arranger_selections_action_perform_create (TL_SELECTIONS, nullptr);
 
   /* add MVerb insert */
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (MVERB_BUNDLE, MVERB_URI, false);
   mixer_selections_action_perform_create (
-    ZPluginSlotType::Z_PLUGIN_SLOT_INSERT, track_get_name_hash (*ins_track), 0,
-    setting, 1, NULL);
+    PluginSlotType::Insert, ins_track->get_name_hash (), 0, setting, 1, nullptr);
 
   /* adjust fader */
   Fader * fader = track_get_fader (ins_track, true);
   Port *  port = fader->amp;
   port_action_perform (
-    PORT_ACTION_SET_CONTROL_VAL, &port->id_, 0.5f, false, NULL);
-  g_assert_cmpfloat_with_epsilon (port->control, 0.5f, 0.00001f);
+    PORT_ACTION_SET_CONTROL_VAL, &port->id_, 0.5f, false, nullptr);
+  REQUIRE_FLOAT_NEAR (port->control, 0.5f, 0.00001f);
 
   /* bounce it */
   ExportSettings * settings = export_settings_new ();
-  settings->mode = ExportMode::EXPORT_MODE_TRACKS;
+  settings->mode = Exporter::Mode::EXPORT_MODE_TRACKS;
   export_settings_set_bounce_defaults (
-    settings, ExportFormat::EXPORT_FORMAT_WAV, NULL, __func__);
+    settings, Exporter::Format::EXPORT_FORMAT_WAV, nullptr, __func__);
   settings->time_range = ExportTimeRange::TIME_RANGE_LOOP;
   settings->bounce_with_parents = with_parents;
   settings->bounce_step = bounce_step;
@@ -541,10 +503,10 @@ _test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
   }
 
 #  define CHECK_SAME_AS_FILE(dirname, x, match_rate) \
-    char * filepath = g_build_filename (dirname, x, NULL); \
+    char * filepath = g_build_filename (dirname, x, nullptr); \
     if (match_rate == 100) \
       { \
-        g_assert_true ( \
+        REQUIRE ( \
           audio_files_equal (filepath, settings->file_uri, 151199, 0.01f)); \
       } \
     else \
@@ -579,35 +541,32 @@ _test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
   /* --- check bounce song with offset --- */
 
   /* move playhead to bar 3 */
-  transport_set_playhead_to_bar (TRANSPORT, 3);
+  TRANSPORT->set_playhead_to_bar (3);
 
   /* move start marker and region to bar 2 */
   Marker * start_marker = marker_track_get_start_marker (P_MARKER_TRACK);
-  arranger_object_select (
-    (ArrangerObject *) start_marker, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  arranger_object_select (
-    (ArrangerObject *) r, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+  (ArrangerObject *) start_marker->select (true, false, false);
+  (ArrangerObject *) r->select (true, true, false);
   success = arranger_selections_action_perform_move_timeline (
-    TL_SELECTIONS, TRANSPORT->ticks_per_bar, 0, 0, F_NOT_ALREADY_MOVED, NULL,
-    NULL);
-  g_assert_true (success);
+    TL_SELECTIONS, TRANSPORT->ticks_per_bar, 0, 0, F_NOT_ALREADY_MOVED, nullptr,
+    nullptr);
+  REQUIRE (success);
 
   /* move end marker to bar 6 */
   Marker *         end_marker = marker_track_get_end_marker (P_MARKER_TRACK);
   ArrangerObject * end_marker_obj = (ArrangerObject *) end_marker;
-  arranger_object_select (
-    end_marker_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  end_marker_obj->select (true, false, false);
   success = arranger_selections_action_perform_move_timeline (
     TL_SELECTIONS, TRANSPORT->ticks_per_bar * 6 - end_marker_obj->pos.ticks, 0,
-    0, F_NOT_ALREADY_MOVED, NULL, NULL);
-  g_assert_true (success);
+    0, F_NOT_ALREADY_MOVED, nullptr, nullptr);
+  REQUIRE (success);
 
   /* export again */
   export_settings_free (settings);
   settings = export_settings_new ();
-  settings->mode = ExportMode::EXPORT_MODE_TRACKS;
+  settings->mode = Exporter::Mode::EXPORT_MODE_TRACKS;
   export_settings_set_bounce_defaults (
-    settings, ExportFormat::EXPORT_FORMAT_WAV, NULL, __func__);
+    settings, Exporter::Format::EXPORT_FORMAT_WAV, nullptr, __func__);
   settings->time_range = ExportTimeRange::TIME_RANGE_SONG;
   settings->bounce_with_parents = with_parents;
   settings->bounce_step = bounce_step;
@@ -640,132 +599,110 @@ _test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
   Track *  audio_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   Region * bounced_r = audio_track->lanes[0]->regions[0];
   ArrangerObject * bounce_r_obj = (ArrangerObject *) bounced_r;
-  g_assert_cmppos (&start_marker_obj->pos, &bounce_r_obj->pos);
-  g_assert_cmppos (&end_marker_obj->pos, &bounce_r_obj->end_pos);
-
-  test_helper_zrythm_cleanup ();
+  REQUIRE_POSITION_EQ (start_marker_obj->pos, bounce_r_obj->pos);
+  REQUIRE_POSITION_EQ (end_marker_obj->pos, bounce_r_obj->end_pos_);
 #endif
-  g_message ("=== Bounce instrument track end ===");
+  z_info ("=== Bounce instrument track end ===");
 }
 
-static void
-test_bounce_instrument_track (void)
+TEST_CASE ("bounce instrument track")
 {
-  _test_bounce_instrument_track (BounceStep::BOUNCE_STEP_POST_FADER, true);
-  _test_bounce_instrument_track (BounceStep::BOUNCE_STEP_BEFORE_INSERTS, false);
-  _test_bounce_instrument_track (BounceStep::BOUNCE_STEP_PRE_FADER, false);
-  _test_bounce_instrument_track (BounceStep::BOUNCE_STEP_POST_FADER, false);
+  test_bounce_instrument_track (BounceStep::PostFader, true);
+  test_bounce_instrument_track (BounceStep::BeforeInserts, false);
+  test_bounce_instrument_track (BounceStep::PreFader, false);
+  test_bounce_instrument_track (BounceStep::PostFader, false);
 }
 
-static void
-test_bounce_with_note_at_start (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "bounce with note at start")
 {
-  test_helper_zrythm_init ();
-
   /* create the instrument track */
   test_plugin_manager_create_tracks_from_plugin (
     TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false, 1);
-  Track * ins_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  auto ins_track = TRACKLIST->get_last_track<InstrumentTrack> ();
+  ins_track->select (true, true, false);
 
   /* add region with note */
   Position start, end;
-  position_init (&start);
-  position_set_to_bar (&end, 4);
-  Region * r = midi_region_new (&start, &end, ins_track->name_hash, 0, 0);
-  bool     success = track_add_region (
-    ins_track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
-  g_assert_true (success);
-  position_init (&start);
-  position_set_to_bar (&end, 4);
-  MidiNote * mn = midi_note_new (&r->id, &start, &end, 70, 70);
-  midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
-  arranger_object_select (
-    (ArrangerObject *) r, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  start.zero ();
+  end.set_to_bar (4);
+  auto r =
+    std::make_shared<MidiRegion> (start, end, ins_track->name_hash_, 0, 0);
+  ins_track->add_region (r, nullptr, 0, true, false);
+  start.zero ();
+  end.set_to_bar (4);
+  auto mn = std::make_shared<MidiNote> (
+    r->id_, start, end, DUMMY_NOTE_PITCH, DUMMY_NOTE_VELOCITY);
+  r->append_object (mn);
+  r->select (true, false, false);
 
   /* bounce the loop */
-  ExportSettings * settings = export_settings_new ();
-  settings->mode = ExportMode::EXPORT_MODE_REGIONS;
-  export_settings_set_bounce_defaults (
-    settings, ExportFormat::EXPORT_FORMAT_WAV, NULL, r->name);
-  settings->time_range = ExportTimeRange::TIME_RANGE_LOOP;
-  timeline_selections_mark_for_bounce (
-    TL_SELECTIONS, settings->bounce_with_parents);
+  Exporter::Settings settings;
+  settings.mode_ = Exporter::Mode::Regions;
+  settings.set_bounce_defaults (Exporter::Format::WAV, "", r->name_);
+  settings.time_range_ = Exporter::TimeRange::Loop;
+  TL_SELECTIONS->mark_for_bounce (settings.bounce_with_parents_);
 
-  {
-    EngineState state;
-    GPtrArray * conns = exporter_prepare_tracks_for_export (settings, &state);
+  Exporter exporter (settings);
+  exporter.prepare_tracks_for_export (*AUDIO_ENGINE, *TRANSPORT);
 
-    /* start exporting in a new thread */
-    GThread * thread = g_thread_new (
-      "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
+  /* start exporting in a new thread */
+  exporter.begin_generic_thread ();
+  print_progress_and_sleep (*exporter.progress_info_);
+  exporter.join_generic_thread ();
+  exporter.post_export ();
 
-    print_progress_and_sleep (*settings->progress_info);
-
-    g_thread_join (thread);
-
-    exporter_post_export (settings, conns, &state);
-  }
-
-  g_assert_false (audio_file_is_silent (settings->file_uri));
-
-  export_settings_free (settings);
+  REQUIRE_FALSE (audio_file_is_silent (exporter.get_exported_path ().c_str ()));
 }
 
 /**
  * Export the audio mixdown when the chord track with
  * data is routed to an instrument track.
  */
-static void
-test_chord_routed_to_instrument (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "chord track routed to instrument track")
 {
 #ifdef HAVE_GEONKICK
-  test_helper_zrythm_init ();
-
   /* create the instrument track */
   test_plugin_manager_create_tracks_from_plugin (
     GEONKICK_BUNDLE, GEONKICK_URI, true, false, 1);
   Track * ins_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  track_select (ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  ins_track->select (true, true, false);
 
   /* create the chords */
   Position start_pos, end_pos;
-  position_init (&start_pos);
-  position_set_to_bar (&end_pos, 3);
+  start_pos.zero ();
+  end_pos.set_to_bar (3);
   Region * r =
     chord_region_new (&start_pos, &end_pos, P_CHORD_TRACK->num_chord_regions);
-  bool success = track_add_region (
-    P_CHORD_TRACK, r, NULL, -1, F_GEN_NAME, F_PUBLISH_EVENTS, NULL);
-  g_assert_true (success);
+  bool success =
+    track_add_region (P_CHORD_TRACK, r, nullptr, -1, true, true, nullptr);
+  REQUIRE (success);
   ChordObject *    chord = chord_object_new (&r->id, 0, r->num_chord_objects);
   ArrangerObject * chord_obj = (ArrangerObject *) chord;
-  chord_region_add_chord_object (r, chord, F_PUBLISH_EVENTS);
+  chord_region_add_chord_object (r, chord, true);
   arranger_object_set_position (
-    chord_obj, &start_pos,
-    ArrangerObjectPositionType::ARRANGER_OBJECT_POSITION_TYPE_START,
-    F_NO_VALIDATE);
+    chord_obj, &start_pos, ArrangerObject::PositionType::START, F_NO_VALIDATE);
   chord = chord_object_new (&r->id, 0, r->num_chord_objects);
   chord_obj = (ArrangerObject *) chord;
-  chord_region_add_chord_object (r, chord, F_PUBLISH_EVENTS);
-  position_set_to_bar (&start_pos, 2);
+  chord_region_add_chord_object (r, chord, true);
+  start_pos.set_to_bar (2);
   arranger_object_set_position (
-    chord_obj, &start_pos,
-    ArrangerObjectPositionType::ARRANGER_OBJECT_POSITION_TYPE_START,
-    F_NO_VALIDATE);
-  track_select (P_CHORD_TRACK, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+    chord_obj, &start_pos, ArrangerObject::PositionType::START, F_NO_VALIDATE);
+  P_CHORD_TRACK->select (true, true, false);
 
   /* route the chord track to the instrument track */
   tracklist_selections_action_perform_set_direct_out (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, ins_track, NULL);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, ins_track, nullptr);
 
   for (int i = 0; i < 2; i++)
     {
       /* bounce */
       ExportSettings * settings = export_settings_new ();
       settings->mode =
-        i == 0 ? ExportMode::EXPORT_MODE_FULL : ExportMode::EXPORT_MODE_TRACKS;
+        i == 0
+          ? Exporter::Mode::EXPORT_MODE_FULL
+          : Exporter::Mode::EXPORT_MODE_TRACKS;
       export_settings_set_bounce_defaults (
-        settings, ExportFormat::EXPORT_FORMAT_WAV, NULL, __func__);
+        settings, Exporter::Format::EXPORT_FORMAT_WAV, nullptr, __func__);
       settings->time_range = ExportTimeRange::TIME_RANGE_LOOP;
 
       if (i == 1)
@@ -793,35 +730,27 @@ test_chord_routed_to_instrument (void)
 
       exporter_post_export (settings, conns, &state);
 
-      g_assert_false (audio_file_is_silent (settings->file_uri));
+      REQUIRE_FALSE (audio_file_is_silent (settings->file_uri));
 
       export_settings_free (settings);
     }
-
-  test_helper_zrythm_cleanup ();
 #endif
 }
 
 /**
  * Export send track only (stem export).
  */
-static void
-test_export_send (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "export send track only")
 {
-  test_helper_zrythm_init ();
-
   /* create an audio track */
-  char *         filepath = g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
-  FileDescriptor file = FileDescriptor (filepath);
-  track_create_with_action (
-    TrackType::TRACK_TYPE_AUDIO, NULL, &file, PLAYHEAD,
-    TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
-  Track * audio_track = tracklist_get_last_track (
-    TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
+  FileDescriptor file (fs::path (TESTS_SRCDIR) / "test.wav");
+  Track::create_with_action (
+    Track::Type::Audio, nullptr, &file, &PLAYHEAD, TRACKLIST->get_num_tracks (),
+    1, -1, nullptr);
+  auto audio_track = TRACKLIST->get_last_track<AudioTrack> ();
 
   /* create an audio FX track */
-  Track * audio_fx_track = track_create_empty_at_idx_with_action (
-    TrackType::TRACK_TYPE_AUDIO_BUS, TRACKLIST->tracks.size (), NULL);
+  auto audio_fx_track = Track::create_empty_with_action<AudioBusTrack> ();
 
   /* on first iteration, there is no send connected
    * to the audio fx track so we expect it to be
@@ -839,280 +768,185 @@ test_export_send (void)
           if (i == 1)
             {
               /* create a send to the audio fx track */
-              GError * err = NULL;
-              bool     ret = channel_send_action_perform_connect_audio (
-                audio_track->channel
-                  ->sends[j == 0 ? 0 : CHANNEL_SEND_POST_FADER_START_SLOT],
-                audio_fx_track->processor->stereo_in, &err);
-              g_assert_true (ret);
+              REQUIRE_NOTHROW (UNDO_MANAGER->perform (
+                std::make_unique<ChannelSendConnectStereoAction> (
+                  *audio_track->channel_->sends_.at (
+                    j == 0 ? 0 : CHANNEL_SEND_POST_FADER_START_SLOT),
+                  *audio_fx_track->processor_->stereo_in_,
+                  *PORT_CONNECTIONS_MGR)));
             }
 
           /* bounce */
-          ExportSettings * settings = export_settings_new ();
-          export_settings_set_bounce_defaults (
-            settings, ExportFormat::EXPORT_FORMAT_WAV, NULL, __func__);
-          settings->time_range = ExportTimeRange::TIME_RANGE_LOOP;
-          settings->bounce_with_parents = true;
-          settings->mode = ExportMode::EXPORT_MODE_TRACKS;
+          Exporter::Settings settings;
+          settings.set_bounce_defaults (Exporter::Format::WAV, "", __func__);
+          settings.time_range_ = Exporter::TimeRange::Loop;
+          settings.bounce_with_parents_ = true;
+          settings.mode_ = Exporter::Mode::Tracks;
 
           /* unmark all tracks for bounce */
-          tracklist_mark_all_tracks_for_bounce (TRACKLIST, false);
+          TRACKLIST->mark_all_tracks_for_bounce (false);
 
           /* mark only the audio fx track for bounce */
-          track_mark_for_bounce (
-            audio_fx_track, F_BOUNCE, F_MARK_REGIONS, F_MARK_CHILDREN,
-            F_MARK_PARENTS);
+          audio_fx_track->mark_for_bounce (true, true, true, true);
 
-          EngineState state;
-          GPtrArray * conns =
-            exporter_prepare_tracks_for_export (settings, &state);
+          Exporter exporter (settings);
+          exporter.prepare_tracks_for_export (*AUDIO_ENGINE, *TRANSPORT);
 
           /* start exporting in a new thread */
-          GThread * thread = g_thread_new (
-            "bounce_thread", (GThreadFunc) exporter_generic_export_thread,
-            settings);
+          exporter.begin_generic_thread ();
+          print_progress_and_sleep (*exporter.progress_info_);
+          exporter.join_generic_thread ();
+          exporter.post_export ();
 
-          print_progress_and_sleep (*settings->progress_info);
-
-          g_thread_join (thread);
-
-          exporter_post_export (settings, conns, &state);
-
-          if (i == 0)
-            {
-              g_assert_true (audio_file_is_silent (settings->file_uri));
-            }
-          else
-            {
-              g_assert_false (audio_file_is_silent (settings->file_uri));
-            }
-
-          export_settings_free (settings);
+          REQUIRE_EQ (
+            audio_file_is_silent (exporter.get_exported_path ().c_str ()),
+            i == 0);
 
           /* skip unnecessary iteration */
           if (i == 0 && j == 0)
             j = 1;
         }
     }
-
-  test_helper_zrythm_cleanup ();
 }
 
-static void
-test_mixdown_midi (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "mixdown midi")
 {
-  test_helper_zrythm_init ();
-
   /* create a MIDI track with 2 adjacent regions
    * with 1 MIDI note each */
-  Track * track =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_MIDI, NULL);
-  track_select (track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  auto track = Track::create_empty_with_action<MidiTrack> ();
+  track->select (true, true, false);
 
   Position start, end;
-  position_init (&start);
-  position_set_to_bar (&end, 4);
-  Region * r = midi_region_new (&start, &end, track->name_hash, 0, 0);
-  bool     success =
-    track_add_region (track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
-  g_assert_true (success);
+  start.zero ();
+  end.set_to_bar (4);
+  auto r = std::make_shared<MidiRegion> (start, end, track->name_hash_, 0, 0);
+  track->add_region (r, nullptr, 0, true, false);
 
   /* midi note 1 */
-  position_init (&start);
-  position_set_to_bar (&end, 2);
-  MidiNote * mn = midi_note_new (&r->id, &start, &end, 70, 70);
-  midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
+  start.zero ();
+  end.set_to_bar (2);
+  auto mn = std::make_shared<MidiNote> (
+    r->id_, start, end, DUMMY_NOTE_PITCH, DUMMY_NOTE_VELOCITY);
+  r->append_object (mn);
 
   /* midi note 2 */
-  position_set_to_bar (&start, 3);
-  position_set_to_bar (&end, 4);
-  mn = midi_note_new (&r->id, &start, &end, 70, 70);
-  midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
+  start.set_to_bar (3);
+  end.set_to_bar (4);
+  mn = std::make_shared<MidiNote> (
+    r->id_, start, end, DUMMY_NOTE_PITCH, DUMMY_NOTE_VELOCITY);
+  r->append_object (mn);
 
   /* region 2 */
-  position_set_to_bar (&start, 2);
-  position_set_to_bar (&end, 3);
-  r = midi_region_new (&start, &end, track->name_hash, 0, 1);
-  success =
-    track_add_region (track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
-  g_assert_true (success);
+  start.set_to_bar (2);
+  end.set_to_bar (3);
+  r = std::make_shared<MidiRegion> (start, end, track->name_hash_, 0, 1);
+  track->add_region (r, nullptr, 0, true, false);
 
   /* midi note 3 */
-  position_init (&start);
-  position_set_to_bar (&end, 2);
-  mn = midi_note_new (&r->id, &start, &end, 70, 70);
-  midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
+  start.zero ();
+  end.set_to_bar (2);
+  mn = std::make_shared<MidiNote> (
+    r->id_, start, end, DUMMY_NOTE_PITCH, DUMMY_NOTE_VELOCITY);
+  r->append_object (mn);
 
   /* bounce */
-  ExportSettings * settings = export_settings_new ();
-  settings->mode = ExportMode::EXPORT_MODE_FULL;
-  export_settings_set_bounce_defaults (
-    settings, ExportFormat::EXPORT_FORMAT_MIDI1, NULL, __func__);
-  settings->time_range = ExportTimeRange::TIME_RANGE_LOOP;
+  Exporter::Settings settings;
+  settings.mode_ = Exporter::Mode::Full;
+  settings.set_bounce_defaults (Exporter::Format::Midi1, "", __func__);
+  settings.time_range_ = Exporter::TimeRange::Loop;
 
-  EngineState state;
-  GPtrArray * conns = exporter_prepare_tracks_for_export (settings, &state);
+  Exporter exporter (settings);
+  exporter.prepare_tracks_for_export (*AUDIO_ENGINE, *TRANSPORT);
 
   /* start exporting in a new thread */
-  GThread * thread = g_thread_new (
-    "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
-
-  print_progress_and_sleep (*settings->progress_info);
-
-  g_thread_join (thread);
-
-  exporter_post_export (settings, conns, &state);
+  exporter.begin_generic_thread ();
+  print_progress_and_sleep (*exporter.progress_info_);
+  exporter.join_generic_thread ();
+  exporter.post_export ();
 
   /* create a MIDI track from the MIDI file */
-  FileDescriptor file = FileDescriptor (settings->file_uri);
-  track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, &file, PLAYHEAD,
-    TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
-  Track * exported_track = tracklist_get_last_track (
-    TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
+  FileDescriptor file (exporter.get_exported_path ());
+  Track::create_with_action (
+    Track::Type::Midi, nullptr, &file, &PLAYHEAD, TRACKLIST->get_num_tracks (),
+    1, -1, nullptr);
+  auto exported_track = TRACKLIST->get_last_track<MidiTrack> ();
 
   /* verify correct data */
-  g_assert_cmpint (exported_track->num_lanes, ==, 2);
-  g_assert_cmpint (exported_track->lanes[0]->num_regions, ==, 1);
-  g_assert_cmpint (exported_track->lanes[1]->num_regions, ==, 0);
-  r = exported_track->lanes[0]->regions[0];
-  g_assert_cmpint (r->num_midi_notes, ==, 3);
-  mn = r->midi_notes[0];
-  ArrangerObject * mn_obj = (ArrangerObject *) mn;
-  position_set_to_bar (&start, 1);
-  position_set_to_bar (&end, 2);
-  g_assert_cmppos (&mn_obj->pos, &start);
-  g_assert_cmppos (&mn_obj->end_pos, &end);
-  mn = r->midi_notes[1];
-  mn_obj = (ArrangerObject *) mn;
-  position_set_to_bar (&start, 2);
-  position_set_to_bar (&end, 3);
-  g_assert_cmppos (&mn_obj->pos, &start);
-  g_assert_cmppos (&mn_obj->end_pos, &end);
-  mn = r->midi_notes[2];
-  mn_obj = (ArrangerObject *) mn;
-  position_set_to_bar (&start, 3);
-  position_set_to_bar (&end, 4);
-  g_assert_cmppos (&mn_obj->pos, &start);
-  g_assert_cmppos (&mn_obj->end_pos, &end);
-
-  export_settings_free (settings);
-
-  test_helper_zrythm_cleanup ();
+  REQUIRE_SIZE_EQ (exported_track->lanes_, 2);
+  REQUIRE_SIZE_EQ (exported_track->lanes_[0]->regions_, 1);
+  REQUIRE_EMPTY (exported_track->lanes_[1]->regions_);
+  r = exported_track->lanes_[0]->regions_[0];
+  REQUIRE_SIZE_EQ (r->midi_notes_, 3);
+  mn = r->midi_notes_[0];
+  start.set_to_bar (1);
+  end.set_to_bar (2);
+  REQUIRE_POSITION_EQ (mn->pos_, start);
+  REQUIRE_POSITION_EQ (mn->end_pos_, end);
+  mn = r->midi_notes_[1];
+  start.set_to_bar (2);
+  end.set_to_bar (3);
+  REQUIRE_POSITION_EQ (mn->pos_, start);
+  REQUIRE_POSITION_EQ (mn->end_pos_, end);
+  mn = r->midi_notes_[2];
+  start.set_to_bar (3);
+  end.set_to_bar (4);
+  REQUIRE_POSITION_EQ (mn->pos_, start);
+  REQUIRE_POSITION_EQ (mn->end_pos_, end);
 }
 
-static void
-test_export_midi_range (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "export midi range")
 {
-  test_helper_zrythm_init ();
-
   /* create a MIDI track with 1 region with 1 MIDI note */
-  Track * track =
-    track_create_empty_with_action (TrackType::TRACK_TYPE_MIDI, NULL);
-  track_select (track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  auto track = Track::create_empty_with_action<MidiTrack> ();
+  track->select (true, true, false);
 
   Position start, end;
-  position_set_to_bar (&start, 2);
-  position_set_to_bar (&end, 4);
-  Region * r = midi_region_new (&start, &end, track->name_hash, 0, 0);
-  bool     success =
-    track_add_region (track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
-  g_assert_true (success);
+  start.set_to_bar (2);
+  end.set_to_bar (4);
+  auto r = std::make_shared<MidiRegion> (start, end, track->name_hash_, 0, 0);
+  track->add_region (r, nullptr, 0, true, false);
 
   /* midi note 1 */
-  position_init (&start);
-  position_set_to_bar (&end, 2);
-  MidiNote * mn = midi_note_new (&r->id, &start, &end, 70, 70);
-  midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
+  start.zero ();
+  end.set_to_bar (2);
+  auto mn = std::make_shared<MidiNote> (r->id_, start, end, 70, 70);
+  r->append_object (mn);
 
   /* bounce */
-  ExportSettings * settings = export_settings_new ();
-  settings->mode = ExportMode::EXPORT_MODE_FULL;
-  export_settings_set_bounce_defaults (
-    settings, ExportFormat::EXPORT_FORMAT_MIDI1, NULL, __func__);
-  settings->time_range = ExportTimeRange::TIME_RANGE_CUSTOM;
-  position_set_to_bar (&settings->custom_start, 2);
-  position_set_to_bar (&settings->custom_end, 4);
+  Exporter::Settings settings;
+  settings.mode_ = Exporter::Mode::Full;
+  settings.set_bounce_defaults (Exporter::Format::Midi1, "", __func__);
+  settings.time_range_ = Exporter::TimeRange::Custom;
+  settings.custom_start_.set_to_bar (2);
+  settings.custom_end_.set_to_bar (4);
 
-  EngineState state;
-  GPtrArray * conns = exporter_prepare_tracks_for_export (settings, &state);
+  Exporter exporter (settings);
+  exporter.prepare_tracks_for_export (*AUDIO_ENGINE, *TRANSPORT);
 
   /* start exporting in a new thread */
-  GThread * thread = g_thread_new (
-    "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
-
-  print_progress_and_sleep (*settings->progress_info);
-
-  g_thread_join (thread);
-
-  exporter_post_export (settings, conns, &state);
+  exporter.begin_generic_thread ();
+  print_progress_and_sleep (*exporter.progress_info_);
+  exporter.join_generic_thread ();
+  exporter.post_export ();
 
   /* create a MIDI track from the MIDI file */
-  FileDescriptor file = FileDescriptor (settings->file_uri);
-  track_create_with_action (
-    TrackType::TRACK_TYPE_MIDI, NULL, &file, PLAYHEAD,
-    TRACKLIST->tracks.size (), 1, -1, NULL, NULL);
-  Track * exported_track = tracklist_get_last_track (
-    TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
+  FileDescriptor file (exporter.get_exported_path ());
+  Track::create_with_action (
+    Track::Type::Midi, nullptr, &file, &PLAYHEAD, TRACKLIST->get_num_tracks (),
+    1, -1, nullptr);
+  auto exported_track = TRACKLIST->get_last_track<MidiTrack> ();
 
   /* verify correct data */
-  g_assert_cmpint (exported_track->num_lanes, ==, 2);
-  g_assert_cmpint (exported_track->lanes[0]->num_regions, ==, 1);
-  g_assert_cmpint (exported_track->lanes[1]->num_regions, ==, 0);
-  r = exported_track->lanes[0]->regions[0];
-  g_assert_cmpint (r->num_midi_notes, ==, 1);
-  mn = r->midi_notes[0];
-  ArrangerObject * mn_obj = (ArrangerObject *) mn;
-  position_set_to_bar (&start, 1);
-  position_set_to_bar (&end, 2);
-  g_assert_cmppos (&mn_obj->pos, &start);
-  g_assert_cmppos (&mn_obj->end_pos, &end);
-
-  export_settings_free (settings);
-
-  test_helper_zrythm_cleanup ();
+  REQUIRE_SIZE_EQ (exported_track->lanes_, 2);
+  REQUIRE_SIZE_EQ (exported_track->lanes_[0]->regions_, 1);
+  REQUIRE_EMPTY (exported_track->lanes_[1]->regions_);
+  r = exported_track->lanes_[0]->regions_[0];
+  REQUIRE_SIZE_EQ (r->midi_notes_, 1);
+  mn = r->midi_notes_[0];
+  start.set_to_bar (1);
+  end.set_to_bar (2);
+  REQUIRE_POSITION_EQ (mn->pos_, start);
+  REQUIRE_POSITION_EQ (mn->end_pos_, end);
 }
 
-int
-main (int argc, char * argv[])
-{
-  g_test_init (&argc, &argv, NULL);
-
-#define TEST_PREFIX "/audio/exporter/"
-
-  g_test_add_func (
-    TEST_PREFIX "test bounce region with first note",
-    (GTestFunc) test_bounce_region_with_first_note);
-  g_test_add_func (
-    TEST_PREFIX "test export midi range", (GTestFunc) test_export_midi_range);
-  g_test_add_func (
-    TEST_PREFIX "test bounce instrument track",
-    (GTestFunc) test_bounce_instrument_track);
-  g_test_add_func (TEST_PREFIX "test export wav", (GTestFunc) test_export_wav);
-  g_test_add_func (
-    TEST_PREFIX "test mixdown midi routed to instrument track",
-    (GTestFunc) test_mixdown_midi_routed_to_instrument_track);
-  g_test_add_func (
-    TEST_PREFIX "test bounce with note at start",
-    (GTestFunc) test_bounce_with_note_at_start);
-  g_test_add_func (
-    TEST_PREFIX "test mixdown midi", (GTestFunc) test_mixdown_midi);
-  g_test_add_func (TEST_PREFIX "test export send", (GTestFunc) test_export_send);
-  g_test_add_func (
-    TEST_PREFIX "test chord routed to instrument",
-    (GTestFunc) test_chord_routed_to_instrument);
-  g_test_add_func (
-    TEST_PREFIX "test bounce midi track routed to instrument track",
-    (GTestFunc) test_bounce_midi_track_routed_to_instrument_track);
-  g_test_add_func (
-    TEST_PREFIX "test bounce region", (GTestFunc) test_bounce_region);
-#if 0
-  /* TODO re-enable after figuring out how to handle region
-   * caches and BPM automation (maybe remove caching) */
-  g_test_add_func (
-    TEST_PREFIX "test bounce with bpm automation",
-    (GTestFunc) test_bounce_with_bpm_automation);
-#endif
-
-  return g_test_run ();
-}
+TEST_SUITE_END;

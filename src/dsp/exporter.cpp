@@ -52,6 +52,17 @@ Exporter::Exporter (
 {
 }
 
+const char *
+Exporter::format_get_ext (Format format)
+{
+
+  static constexpr const char * format_exts[] = {
+    "aiff", "au",  "caf", "flac", "mp3", "ogg",
+    "ogg",  "raw", "wav", "w64",  "mid", "mid",
+  };
+  return format_exts[static_cast<int> (format)];
+}
+
 std::pair<Position, Position>
 Exporter::Settings::get_export_time_range () const
 {
@@ -209,11 +220,11 @@ Exporter::export_audio (Settings &info)
             i == 0
               ? P_MASTER_TRACK->channel_->stereo_out_->get_l ().buf_
               : P_MASTER_TRACK->channel_->stereo_out_->get_r ().buf_;
-          buffer.copyFrom (i, 0, ch_data.data (), nframes);
+          buffer.copyFrom (i, 0, ch_data.data (), (int) nframes);
         }
 
       /* clipping detection */
-      float max_amp = buffer.getMagnitude (0, nframes);
+      float max_amp = buffer.getMagnitude (0, (int) nframes);
       if (max_amp > 1.f && max_amp > clip_amp)
         {
           clip_amp = max_amp;

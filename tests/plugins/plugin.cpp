@@ -1,18 +1,20 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
+
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "dsp/fader.h"
 #include "dsp/midi_event.h"
 #include "dsp/router.h"
 #include "utils/math.h"
 
-#include <glib.h>
-
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
+
+TEST_SUITE_BEGIN ("plugins/plugin");
 
 #ifdef HAVE_HELM
 static void
@@ -26,118 +28,95 @@ _test_loading_non_existing_plugin (
     pl_bundle, pl_uri, true, with_carla, 1);
 
   /* save the project */
-  char * prj_file = test_project_save ();
-  g_assert_nonnull (prj_file);
+  auto prj_file = test_project_save ();
+  REQUIRE_NONEMPTY (prj_file);
 
   /* unload bundle so plugin can't be found */
   /*LilvNode * path = lilv_new_uri (LILV_WORLD, pl_bundle);*/
   /*lilv_world_unload_bundle (LILV_WORLD, path);*/
   /*lilv_node_free (path);*/
 
+// TODO
+#  if 0
   /* reload project and expect messages */
   LOG->use_structured_for_console = false;
   LOG->min_log_level_for_test_console = G_LOG_LEVEL_WARNING;
   g_test_expect_message (
     G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, "*Instantiation failed for plugin *");
-
+#  endif
   test_project_reload (prj_file);
-  g_free (prj_file);
 
   /* let engine run */
-  engine_wait_n_cycles (AUDIO_ENGINE, 8);
+  AUDIO_ENGINE->wait_n_cycles (8);
 
+// TODO
+#  if 0
   /* assert expected messages */
   g_test_assert_expected_messages ();
+#  endif
 }
 #endif
 
-static void
-test_loading_non_existing_plugin (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "loading non-existing plugin")
 {
-  test_helper_zrythm_init ();
-
 #ifdef HAVE_HELM
   _test_loading_non_existing_plugin (HELM_BUNDLE, HELM_URI, false);
 #endif
-
-  test_helper_zrythm_cleanup ();
 }
 
-static Port *
-get_skew_duty_port (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "loading fully bridged plugin")
 {
-  Track *  track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  Plugin * pl = track->channel->instrument;
-  Port *   port = NULL;
-  for (int i = 0; i < pl->num_in_ports; i++)
-    {
-      Port * cur_port = pl->in_ports[i];
-      if (cur_port->id_.label_ == "OscA Skew/Duty")
-        {
-          port = cur_port;
-          break;
-        }
-    }
-  return port;
-}
-
-static void
-test_loading_fully_bridged_plugin (void)
-{
-  test_helper_zrythm_init ();
-
 #ifdef HAVE_CARLA
 #  ifdef HAVE_CHIPWAVE
   test_plugin_manager_create_tracks_from_plugin (
     CHIPWAVE_BUNDLE, CHIPWAVE_URI, true, true, 1);
 
+  auto get_skew_duty_port = [] () -> ControlPort * {
+    auto  track = TRACKLIST->get_last_track<InstrumentTrack> ();
+    auto &pl = track->channel_->instrument_;
+    auto  it = std::find_if (
+      pl->in_ports_.begin (), pl->in_ports_.end (),
+      [] (const auto &p) { return p->id_.label_ == "OscA Skew/Duty"; });
+    REQUIRE (it != pl->in_ports_.end ());
+    return dynamic_cast<ControlPort *> ((*it).get ());
+  };
+
   Port * port = get_skew_duty_port ();
-  g_return_if_fail (port);
+  z_return_if_fail (port);
   float val_before = port->control_;
   float val_after = 1.f;
-  g_assert_cmpfloat_with_epsilon (val_before, 0.5f, 0.0001f);
-  port->set_control_value (val_after, F_NORMALIZED, F_PUBLISH_EVENTS);
-  g_assert_cmpfloat_with_epsilon (port->control, val_after, 0.0001f);
+  REQUIRE_FLOAT_NEAR (val_before, 0.5f, 0.0001f);
+  port->set_control_value (val_after, F_NORMALIZED, true);
+  REQUIRE_FLOAT_NEAR (port->control, val_after, 0.0001f);
 
   /* save project and reload and check the
    * value is correct */
   test_project_save_and_reload ();
 
   port = get_skew_duty_port ();
-  g_return_if_fail (port);
-  g_assert_cmpfloat_with_epsilon (port->control, val_after, 0.0001f);
+  z_return_if_fail (port);
+  REQUIRE_FLOAT_NEAR (port->control, val_after, 0.0001f);
 #  endif
 #endif
-
-  test_helper_zrythm_cleanup ();
 }
 
-static void
-test_loading_plugins_needing_bridging (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "loading plugins needing bridging")
 {
-  test_helper_zrythm_init ();
-
 #ifdef HAVE_CARLA
 #  ifdef HAVE_CALF_MONOSYNTH
-  PluginSetting * setting = test_plugin_manager_get_plugin_setting (
+  auto setting = test_plugin_manager_get_plugin_setting (
     CALF_MONOSYNTH_BUNDLE, CALF_MONOSYNTH_URI, false);
-  g_return_if_fail (setting);
-  g_assert_true (setting->open_with_carla);
-  g_assert_true (setting->bridge_mode == CarlaBridgeMode::Full);
+  REQUIRE (setting.open_with_carla_);
+  REQUIRE_EQ (setting.bridge_mode_, CarlaBridgeMode::Full);
 
   test_project_save_and_reload ();
 #  endif
 #endif
-
-  test_helper_zrythm_cleanup ();
 }
 
-static void
-test_bypass_state_after_project_load (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "bypass state after project load")
 {
 #ifdef HAVE_LSP_COMPRESSOR
-  test_helper_zrythm_init ();
-
   for (
     int i = 0;
 #  ifdef HAVE_CARLA
@@ -150,77 +129,44 @@ test_bypass_state_after_project_load (void)
       /* create fx track */
       test_plugin_manager_create_tracks_from_plugin (
         LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, false, i == 1, 1);
-      Track *  track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-      Plugin * pl = track->channel->inserts[0];
-      g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
-      /* set bypass */
-      plugin_set_enabled (pl, F_NOT_ENABLED, F_NO_PUBLISH_EVENTS);
-      g_assert_false (plugin_is_enabled (pl, false));
+      {
+        auto  track = TRACKLIST->get_last_track<ChannelTrack> ();
+        auto &pl = track->channel_->inserts_[0];
+        REQUIRE_NONNULL (pl);
+
+        /* set bypass */
+        pl->set_enabled (false, false);
+        REQUIRE_FALSE (pl->is_enabled (false));
+      }
 
       /* reload project */
       test_project_save_and_reload ();
 
-      track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-      pl = track->channel->inserts[0];
-      g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
+      {
+        auto        track = TRACKLIST->get_last_track<ChannelTrack> ();
+        const auto &pl = track->channel_->inserts_[0];
+        REQUIRE_NONNULL (pl);
 
-      /* check bypass */
-      g_assert_false (plugin_is_enabled (pl, false));
+        /* check bypass */
+        REQUIRE_FALSE (pl->is_enabled (false));
+      }
     }
-
-  test_helper_zrythm_cleanup ();
 #endif
 }
 
-static void
-test_plugin_without_outputs (void)
+TEST_CASE_FIXTURE (ZrythmFixture, "plugin without outputs")
 {
 #ifdef HAVE_KXSTUDIO_LFO
-  test_helper_zrythm_init ();
-
   test_plugin_manager_create_tracks_from_plugin (
     KXSTUDIO_LFO_BUNDLE, KXSTUDIO_LFO_URI, false, true, 1);
-  Track *  track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  Plugin * pl = track->channel->inserts[0];
-  g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
+  auto        track = TRACKLIST->get_last_track<ChannelTrack> ();
+  const auto &pl = track->channel_->inserts_[0];
+  REQUIRE_NONNULL (pl);
 
   /* reload project */
   test_project_save_and_reload ();
-
-  test_helper_zrythm_cleanup ();
 #endif
 }
 
-int
-main (int argc, char * argv[])
-{
-  g_test_init (&argc, &argv, NULL);
-
-  (void) get_skew_duty_port;
-
-#define TEST_PREFIX "/plugins/plugin/"
-
-  g_test_add_func (
-    TEST_PREFIX "test plugin without outputs",
-    (GTestFunc) test_plugin_without_outputs);
-  g_test_add_func (
-    TEST_PREFIX "test bypass state after project load",
-    (GTestFunc) test_bypass_state_after_project_load);
-#if 0
-  /* test does not work with carla */
-  g_test_add_func (
-    TEST_PREFIX "test loading non-existing plugin",
-    (GTestFunc) test_loading_non_existing_plugin);
-#endif
-  g_test_add_func (
-    TEST_PREFIX "test loading fully bridged plugin",
-    (GTestFunc) test_loading_fully_bridged_plugin);
-  g_test_add_func (
-    TEST_PREFIX "test loading plugins needing bridging",
-    (GTestFunc) test_loading_plugins_needing_bridging);
-
-  (void) test_loading_non_existing_plugin;
-
-  return g_test_run ();
-}
+TEST_SUITE_END;

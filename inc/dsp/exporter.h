@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_EXPORT_H__
@@ -53,15 +53,7 @@ public:
   /**
    * Returns the audio format as a file extension.
    */
-  static const char * format_get_ext (Format format)
-  {
-
-    static constexpr const char * format_exts[] = {
-      "aiff", "au",  "caf", "flac", "mp3", "ogg",
-      "ogg",  "raw", "wav", "w64",  "mid", "mid",
-    };
-    return format_exts[static_cast<int> (format)];
-  }
+  static const char * format_get_ext (Format format);
 
   /**
    * Time range to export.

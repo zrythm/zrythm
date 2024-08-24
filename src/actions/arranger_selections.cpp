@@ -19,7 +19,6 @@
 #include "gui/widgets/arranger.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
-#include "utils/flags.h"
 #include "utils/math.h"
 #include "zrythm_app.h"
 
@@ -234,7 +233,7 @@ ArrangerSelectionsAction::RecordAction::RecordAction (
   set_after_selections (sel_after);
 }
 
-ArrangerSelectionsAction::EditAction::EditAction (
+EditArrangerSelectionsAction::EditArrangerSelectionsAction (
   const ArrangerSelections  &sel_before,
   const ArrangerSelections * sel_after,
   EditType                   type,
@@ -265,7 +264,8 @@ ArrangerSelectionsAction::EditAction::EditAction (
     }
 }
 
-ArrangerSelectionsAction::EditAction::EditAction (
+std::unique_ptr<EditArrangerSelectionsAction>
+EditArrangerSelectionsAction::create (
   const ArrangerObject &obj_before,
   const ArrangerObject &obj_after,
   EditType              type,
@@ -273,10 +273,12 @@ ArrangerSelectionsAction::EditAction::EditAction (
 {
   auto sel_before = obj_before.create_arranger_selections_from_this ();
   auto sel_after = obj_after.create_arranger_selections_from_this ();
-  EditAction (*sel_before, sel_after.get (), type, already_edited);
+  return std::make_unique<EditArrangerSelectionsAction> (
+    *sel_before, sel_after.get (), type, already_edited);
 }
 
-ArrangerSelectionsAction::EditAction::EditAction (
+std::unique_ptr<EditArrangerSelectionsAction>
+EditArrangerSelectionsAction::create (
   const MidiSelections &sel_before,
   MidiFunctionType      midi_func_type,
   MidiFunctionOpts      opts)
@@ -285,10 +287,12 @@ ArrangerSelectionsAction::EditAction::EditAction (
 
   midi_function_apply (*sel_after, midi_func_type, opts);
 
-  EditAction (sel_before, sel_after.get (), EditType::EditorFunction, false);
+  return std::make_unique<EditArrangerSelectionsAction> (
+    sel_before, sel_after.get (), EditType::EditorFunction, false);
 }
 
-ArrangerSelectionsAction::EditAction::EditAction (
+std::unique_ptr<EditArrangerSelectionsAction>
+EditArrangerSelectionsAction::create (
   const AutomationSelections &sel_before,
   AutomationFunctionType      automation_func_type)
 {
@@ -296,12 +300,13 @@ ArrangerSelectionsAction::EditAction::EditAction (
 
   automation_function_apply (*sel_after, automation_func_type);
 
-  EditAction (
+  return std::make_unique<EditArrangerSelectionsAction> (
     sel_before, sel_after.get (),
     ArrangerSelectionsAction::EditType::EditorFunction, false);
 }
 
-ArrangerSelectionsAction::EditAction::EditAction (
+std::unique_ptr<EditArrangerSelectionsAction>
+EditArrangerSelectionsAction::create (
   const AudioSelections &sel_before,
   AudioFunctionType      audio_func_type,
   AudioFunctionOpts      opts,
@@ -318,7 +323,7 @@ ArrangerSelectionsAction::EditAction::EditAction (
   z_debug ("applying actual audio func...");
   audio_function_apply (*sel_after, audio_func_type, opts, uri);
 
-  EditAction (
+  return std::make_unique<EditArrangerSelectionsAction> (
     *sel_before_clone, sel_after.get (), EditType::EditorFunction, false);
 }
 
@@ -832,7 +837,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
               move_obj_by_tracks_and_lanes (
                 *added_obj_ref, delta_tracks, 0, false, -1);
               move_obj_by_tracks_and_lanes (
-                *own_obj, delta_tracks, false, -1, 0);
+                *own_obj, delta_tracks, 0, false, -1);
             }
           if (delta_lanes != 0)
             {
@@ -1010,7 +1015,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
           if (delta_tracks != 0)
             {
               move_obj_by_tracks_and_lanes (
-                *own_obj, delta_tracks, false, -1, 0);
+                *own_obj, delta_tracks, 0, false, -1);
             }
           if (delta_lanes != 0)
             {
@@ -1461,9 +1466,12 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
                 case EditType::EditorFunction:
                   obj->pos_ = own_dest_obj->pos_;
                   SET_PRIMITIVE (LengthableObject, end_pos_);
-                  SET_PRIMITIVE (LoopableObject, clip_start_pos_);
-                  SET_PRIMITIVE (LoopableObject, loop_start_pos_);
-                  SET_PRIMITIVE (LoopableObject, loop_end_pos_);
+                  if (obj->can_loop ())
+                    {
+                      SET_PRIMITIVE (LoopableObject, clip_start_pos_);
+                      SET_PRIMITIVE (LoopableObject, loop_start_pos_);
+                      SET_PRIMITIVE (LoopableObject, loop_end_pos_);
+                    }
                   switch (obj->type_)
                     {
                     case ArrangerObject::Type::MidiNote:

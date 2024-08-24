@@ -1,11 +1,13 @@
-# SPDX-FileCopyrightText: © 2021 Alexandros Theodotou
+# SPDX-FileCopyrightText: © 2021, 2024 Alexandros Theodotou
 # SPDX-License-Identifier: FSFAP
 ---
 # use '-' to disable checks
-Checks:          '-llvm-include-order,-clang-diagnostic-unused-parameter'
+Checks: '-llvm-include-order,-clang-diagnostic-unused-parameter,bugprone-*,clang-analyzer-*,cppcoreguidelines-*,-cppcoreguidelines-avoid-do-while,-cppcoreguidelines-avoid-magic-numbers,-cppcoreguidelines-non-private-member-variables-in-classes'
 WarningsAsErrors: ''
 FormatStyle:     none
 CheckOptions:
   - key:             cert-dcl16-c.NewSuffixes
     value:           'L;LL;LU;LLU'
+  - key: bugprone-argument-comment.StrictMode
+    value: '1'
 ...

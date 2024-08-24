@@ -370,4 +370,10 @@ DEFINE_ENUM_FORMATTER (
  * @}
  */
 
+extern template std::pair<MidiNote *, Position>
+ArrangerSelections::get_first_object_and_pos (bool global) const;
+
+extern template std::pair<MidiNote *, Position>
+ArrangerSelections::get_last_object_and_pos (bool global, bool ends_last) const;
+
 #endif

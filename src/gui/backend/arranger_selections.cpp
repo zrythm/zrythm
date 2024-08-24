@@ -195,8 +195,7 @@ ArrangerSelections::get_first_object_and_pos (bool global) const
   auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
   std::visit (
     [&] (auto &&sel) {
-      if constexpr (
-        std::is_same_v<AudioSelections, std::decay_t<decltype (sel)>>)
+      if constexpr (std::is_same_v<AudioSelections, base_type<decltype (sel)>>)
         {
           pos = sel->sel_start_;
         }
@@ -204,11 +203,10 @@ ArrangerSelections::get_first_object_and_pos (bool global) const
         {
           for (const auto &obj : objects_)
             {
-              auto obj_variant =
-                convert_to_variant<ArrangerObjectPtrVariant> (obj.get ());
               std::visit (
                 [&] (auto &&o) {
-                  if constexpr (std::derived_from<std::decay_t<decltype (o)>, T>)
+                  using CurObjT = base_type<decltype (o)>;
+                  if constexpr (std::derived_from<CurObjT, T>)
                     {
                       if (o->pos_ < pos)
                         {
@@ -217,7 +215,7 @@ ArrangerSelections::get_first_object_and_pos (bool global) const
                         }
                     }
                 },
-                obj_variant);
+                convert_to_variant<ArrangerObjectPtrVariant> (obj.get ()));
             }
         }
 
@@ -235,18 +233,18 @@ ArrangerSelections::get_first_object_and_pos (bool global) const
   return std::make_pair (ret_obj, pos);
 }
 
-template <typename T>
-requires std::derived_from<T, ArrangerObject> std::pair<T *, Position>
+template <typename RetObjT>
+requires std::derived_from<RetObjT, ArrangerObject> std::pair<RetObjT *, Position>
 ArrangerSelections::get_last_object_and_pos (bool global, bool ends_last) const
 {
   Position pos;
-  T *      ret_obj = nullptr;
+  pos.set_to_bar (-POSITION_MAX_BAR);
+  RetObjT * ret_obj = nullptr;
 
   auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
   std::visit (
     [&] (auto &&sel) {
-      if constexpr (
-        std::is_same_v<AudioSelections, std::decay_t<decltype (sel)>>)
+      if constexpr (std::is_same_v<AudioSelections, base_type<decltype (sel)>>)
         {
           pos = sel->sel_end_;
         }
@@ -258,16 +256,26 @@ ArrangerSelections::get_last_object_and_pos (bool global, bool ends_last) const
                 convert_to_variant<ArrangerObjectPtrVariant> (obj.get ());
               std::visit (
                 [&] (auto &&o) {
-                  if constexpr (
-                    std::derived_from<
-                      std::decay_t<decltype (o)>, LengthableObject>)
+                  using CurObjT = base_type<decltype (o)>;
+                  if constexpr (std::derived_from<CurObjT, RetObjT>)
                     {
-                      if (ends_last)
+                      if constexpr (std::derived_from<CurObjT, LengthableObject>)
                         {
-                          if (o->end_pos_ > pos)
+                          if (ends_last)
                             {
-                              ret_obj = o;
-                              pos = o->end_pos_;
+                              if (o->end_pos_ > pos)
+                                {
+                                  ret_obj = o;
+                                  pos = o->end_pos_;
+                                }
+                            }
+                          else
+                            {
+                              if (o->pos_ > pos)
+                                {
+                                  ret_obj = o;
+                                  pos = o->pos_;
+                                }
                             }
                         }
                       else
@@ -277,14 +285,6 @@ ArrangerSelections::get_last_object_and_pos (bool global, bool ends_last) const
                               ret_obj = o;
                               pos = o->pos_;
                             }
-                        }
-                    }
-                  else
-                    {
-                      if (o->pos_ > pos)
-                        {
-                          ret_obj = o;
-                          pos = o->pos_;
                         }
                     }
                 },
@@ -820,3 +820,9 @@ ArrangerSelections::can_split_at_pos (const Position pos) const
 
   return can_split;
 }
+
+template std::pair<MidiNote *, Position>
+ArrangerSelections::get_first_object_and_pos (bool global) const;
+
+template std::pair<MidiNote *, Position>
+ArrangerSelections::get_last_object_and_pos (bool global, bool ends_last) const;

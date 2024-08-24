@@ -24,9 +24,6 @@ G_DECLARE_FINAL_TYPE (
   EXPORT_PROGRESS_DIALOG_WIDGET,
   GenericProgressDialogWidget)
 
-class ExportSettings;
-class EngineState;
-
 /**
  * @addtogroup widgets
  *

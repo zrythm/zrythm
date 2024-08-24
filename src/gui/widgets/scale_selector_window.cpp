@@ -33,10 +33,9 @@ on_close_request (GtkWindow * window, ScaleSelectorWindowWidget * self)
 
   try
     {
-      UNDO_MANAGER->perform (
-        std::make_unique<ArrangerSelectionsAction::EditAction> (
-          *before, after.get (), ArrangerSelectionsAction::EditType::Scale,
-          false));
+      UNDO_MANAGER->perform (std::make_unique<EditArrangerSelectionsAction> (
+        *before, after.get (), ArrangerSelectionsAction::EditType::Scale,
+        false));
     }
   catch (const ZrythmException &e)
     {

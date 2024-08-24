@@ -20,11 +20,11 @@ fishbowl_creation_func ()
 {
   POSITION_INIT_ON_STACK (start_pos);
   POSITION_INIT_ON_STACK (end_pos);
-  position_set_to_bar (&end_pos, 4);
+  end_pos.set_to_bar (4);
   Region * r = midi_region_new (&start_pos, &end_pos, 1);
-  g_return_val_if_fail (r, NULL);
+  z_return_val_if_fail (r, nullptr);
 
-  region_gen_name (r, "Test Region", NULL, NULL);
+  region_gen_name (r, "Test Region", nullptr, nullptr);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   arranger_object_gen_widget (r_obj);
   gtk_widget_set_size_request (GTK_WIDGET (r_obj->widget), 200, 20);
@@ -42,7 +42,7 @@ test_midi_region_fishbowl ()
 int
 main (int argc, char * argv[])
 {
-  g_test_init (&argc, &argv, NULL);
+  g_test_init (&argc, &argv, nullptr);
 
   test_helper_zrythm_init ();
   test_helper_zrythm_gui_init (argc, argv);

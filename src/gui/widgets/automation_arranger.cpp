@@ -204,7 +204,7 @@ automation_arranger_on_drag_end (ArrangerWidget * self)
             try
               {
                 UNDO_MANAGER->perform (
-                  std::make_unique<ArrangerSelectionsAction::EditAction> (
+                  std::make_unique<EditArrangerSelectionsAction> (
                     *self->sel_at_start, AUTOMATION_SELECTIONS.get (),
                     ArrangerSelectionsAction::EditType::Primitive, true));
               }

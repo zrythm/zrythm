@@ -338,9 +338,8 @@ audio_arranger_on_drag_end (ArrangerWidget * self)
                 z_return_if_reached ();
               }
             sel_before.add_object_owned (std::move (clone_r));
-            UNDO_MANAGER->perform (
-              std::make_unique<ArrangerSelectionsAction::EditAction> (
-                sel_before, &sel, edit_type, true));
+            UNDO_MANAGER->perform (std::make_unique<EditArrangerSelectionsAction> (
+              sel_before, &sel, edit_type, true));
           }
           break;
         default:

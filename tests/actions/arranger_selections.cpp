@@ -583,7 +583,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "duplicate automation region")
   ap->select (true, false, false);
   auto before = AUTOMATION_SELECTIONS->clone_unique ();
   ap->curve_opts_.curviness_ = curviness_after;
-  UNDO_MANAGER->perform (std::make_unique<ArrangerSelectionsAction::EditAction> (
+  UNDO_MANAGER->perform (std::make_unique<EditArrangerSelectionsAction> (
     *before, AUTOMATION_SELECTIONS.get (),
     ArrangerSelectionsAction::EditType::Primitive, true));
 
@@ -985,7 +985,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "edit marker")
     auto clone_sel = TL_SELECTIONS->clone_unique ();
     auto m2 = clone_sel->get_objects_of_type<Marker> ().front ();
     m2->set_name ("bb", false);
-    UNDO_MANAGER->perform (std::make_unique<ArrangerSelectionsAction::EditAction> (
+    UNDO_MANAGER->perform (std::make_unique<EditArrangerSelectionsAction> (
       *TL_SELECTIONS, clone_sel.get (),
       ArrangerSelectionsAction::EditType::Name, false));
   }
@@ -1016,7 +1016,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "mute objects")
 
   auto &r = midi_track->lanes_[MIDI_REGION_LANE]->regions_[0];
 
-  UNDO_MANAGER->perform (std::make_unique<ArrangerSelectionsAction::EditAction> (
+  UNDO_MANAGER->perform (std::make_unique<EditArrangerSelectionsAction> (
     *TL_SELECTIONS, nullptr, ArrangerSelectionsAction::EditType::Mute, false));
 
   auto assert_muted = [&] (bool muted) {
@@ -1197,7 +1197,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "audio functions")
 
   /* invert */
   AudioFunctionOpts opts = {};
-  UNDO_MANAGER->perform (std::make_unique<ArrangerSelectionsAction::EditAction> (
+  UNDO_MANAGER->perform (EditArrangerSelectionsAction::create (
     *AUDIO_SELECTIONS, AudioFunctionType::Invert, opts, nullptr));
 
   verify_audio_function (inverted_frames, frames_per_channel);

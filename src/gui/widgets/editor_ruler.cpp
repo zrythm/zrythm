@@ -181,10 +181,9 @@ editor_ruler_on_drag_end (RulerWidget * self)
     self->drag_start_pos; \
   try \
     { \
-      UNDO_MANAGER->perform ( \
-        std::make_unique<ArrangerSelectionsAction::EditAction> ( \
-          *before_sel, after_sel.get (), \
-          ArrangerSelectionsAction::EditType::Position, false)); \
+      UNDO_MANAGER->perform (std::make_unique<EditArrangerSelectionsAction> ( \
+        *before_sel, after_sel.get (), \
+        ArrangerSelectionsAction::EditType::Position, false)); \
     } \
   catch (const ZrythmException &e) \
     { \

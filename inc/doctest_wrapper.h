@@ -26,6 +26,8 @@
 #  define REQUIRE_SIZE_EQ(ptr, _size) REQUIRE_EQ ((ptr).size (), _size)
 #endif
 
+constexpr double POSITION_EQ_EPSILON = 0.0001;
+
 #ifndef REQUIRE_POSITION_EQ
 #  define REQUIRE_POSITION_EQ(a, b) \
     REQUIRE ((a).ticks_ == doctest::Approx ((b).ticks_).epsilon (0.0001)); \
@@ -42,7 +44,7 @@
 #endif
 
 #ifndef REQUIRE_OPTIONAL_HAS_VALUE
-#  define REQUIRE_OPTIONAL_HAS_VALUE(opt) REQUIRE (opt.has_value ())
+#  define REQUIRE_OPTIONAL_HAS_VALUE(opt) REQUIRE ((opt).has_value ())
 #endif
 
 #ifndef REQUIRE_UNREACHABLE

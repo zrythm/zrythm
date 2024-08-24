@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -74,9 +74,9 @@ midi_function_string_id_to_type (const char * id);
  */
 void
 midi_function_apply (
-  ArrangerSelections &sel,
-  MidiFunctionType    type,
-  MidiFunctionOpts    opts);
+  MidiSelections  &sel,
+  MidiFunctionType type,
+  MidiFunctionOpts opts);
 
 DEFINE_ENUM_FORMATTER (
   MidiFunctionType,

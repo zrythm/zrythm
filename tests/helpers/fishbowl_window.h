@@ -5,7 +5,7 @@
  */
 
 /**
- * \file
+ * @file
  *
  * Fishbowl window
  */
@@ -73,7 +73,8 @@ close_window (FishbowlWindowWidget * win)
 FishbowlWindowWidget *
 fishbowl_window_widget_new (GtkFishCreationFunc creation_func)
 {
-  FishbowlWindowWidget * self = g_object_new (FISHBOWL_WINDOW_WIDGET_TYPE, NULL);
+  FishbowlWindowWidget * self =
+    g_object_new (FISHBOWL_WINDOW_WIDGET_TYPE, nullptr);
 
   gtk_fishbowl_set_creation_func (self->bowl, creation_func);
   gtk_fishbowl_set_update_delay (self->bowl, G_USEC_PER_SEC / 3);
@@ -116,7 +117,7 @@ fishbowl_window_widget_init (FishbowlWindowWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  g_return_if_fail (self->bowl);
+  z_return_if_fail (self->bowl);
 }
 
 static void

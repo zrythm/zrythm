@@ -590,7 +590,7 @@ track_freeze (Track * self, bool freeze, GError ** error)
       self->bounce_to_master = true;
       track_mark_for_bounce (
         self, F_BOUNCE, F_MARK_REGIONS, F_NO_MARK_CHILDREN, F_NO_MARK_PARENTS);
-      data->info->mode = ExportMode::EXPORT_MODE_TRACKS;
+      data->info->mode = Exporter::Mode::EXPORT_MODE_TRACKS;
       export_settings_set_bounce_defaults (
         data->info, Exporter::Format::WAV, nullptr, self->name);
 

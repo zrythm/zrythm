@@ -746,7 +746,7 @@ ArrangerObject::edit_finish (int action_edit_type) const
   z_return_if_fail (arranger->start_object);
   try
     {
-      UNDO_MANAGER->perform (std::make_unique<ArrangerSelectionsAction::EditAction> (
+      UNDO_MANAGER->perform (EditArrangerSelectionsAction::create (
         *arranger->start_object, *this,
         ENUM_INT_TO_VALUE (ArrangerSelectionsAction::EditType, action_edit_type),
         true));

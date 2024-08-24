@@ -1,19 +1,28 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+#include "zrythm-config.h"
+#include "zrythm-test-config.h"
+
+#include <string>
+
+#include "dsp/engine.h"
+#include "project.h"
+#include "zrythm.h"
 
 #ifdef HAVE_JACK
 
 #  include <jack/jack.h>
 
 static bool
-test_jack_port_exists (const char * port_name);
+test_jack_port_exists (const std::string &port_name);
 
 static bool
-test_jack_port_exists (const char * port_name)
+test_jack_port_exists (const std::string &port_name)
 {
   /* get all input ports */
   const char ** ports =
-    jack_get_ports (AUDIO_ENGINE->client, port_name, nullptr, 0);
+    jack_get_ports (AUDIO_ENGINE->client_, port_name.c_str (), nullptr, 0);
 
   bool ret = ports && ports[0] != NULL;
 
@@ -30,7 +39,6 @@ test_jack_port_exists (const char * port_name)
   return ret;
 }
 
-#  define assert_jack_port_exists(name) \
-    g_assert_true (test_jack_port_exists (name))
+#  define assert_jack_port_exists(name) REQUIRE (test_jack_port_exists (name))
 
 #endif // HAVE_JACK

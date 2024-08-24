@@ -1172,10 +1172,9 @@ timeline_arranger_on_drag_end (ArrangerWidget * self)
         case UiOverlayAction::RESIZING_UP_FADE_IN:
         case UiOverlayAction::RESIZING_UP_FADE_OUT:
           {
-            UNDO_MANAGER->perform (
-              std::make_unique<ArrangerSelectionsAction::EditAction> (
-                *self->sel_at_start, TL_SELECTIONS.get (),
-                ArrangerSelectionsAction::EditType::Fades, true));
+            UNDO_MANAGER->perform (std::make_unique<EditArrangerSelectionsAction> (
+              *self->sel_at_start, TL_SELECTIONS.get (),
+              ArrangerSelectionsAction::EditType::Fades, true));
           }
           break;
         case UiOverlayAction::RESIZING_L:

@@ -132,7 +132,6 @@ public:
   class MoveMidiAction;
   class MoveChordAction;
   class LinkAction;
-  class EditAction;
   class AutomationFillAction;
   class SplitAction;
   class MergeAction;
@@ -532,7 +531,7 @@ public:
     bool                      already_moved);
 };
 
-class ArrangerSelectionsAction::EditAction : public ArrangerSelectionsAction
+class EditArrangerSelectionsAction : public ArrangerSelectionsAction
 {
 public:
   /**
@@ -542,7 +541,7 @@ public:
    * @param sel_after The selections after the change.
    * @param type Indication of which field has changed.
    */
-  EditAction (
+  EditArrangerSelectionsAction (
     const ArrangerSelections  &sel_before,
     const ArrangerSelections * sel_after,
     EditType                   type,
@@ -551,7 +550,7 @@ public:
   /**
    * @brief Wrapper for a single object.
    */
-  EditAction (
+  static std::unique_ptr<EditArrangerSelectionsAction> create (
     const ArrangerObject &obj_before,
     const ArrangerObject &obj_after,
     EditType              type,
@@ -560,7 +559,7 @@ public:
   /**
    * @brief Wrapper for MIDI functions.
    */
-  EditAction (
+  static std::unique_ptr<EditArrangerSelectionsAction> create (
     const MidiSelections &sel_before,
     MidiFunctionType      midi_func_type,
     MidiFunctionOpts      opts);
@@ -568,14 +567,14 @@ public:
   /**
    * @brief Wrapper for automation functions.
    */
-  EditAction (
+  static std::unique_ptr<EditArrangerSelectionsAction> create (
     const AutomationSelections &sel_before,
     AutomationFunctionType      automation_func_type);
 
   /**
    * @brief Wrapper for audio functions.
    */
-  EditAction (
+  static std::unique_ptr<EditArrangerSelectionsAction> create (
     const AudioSelections &sel_before,
     AudioFunctionType      audio_func_type,
     AudioFunctionOpts      opts,

@@ -50,9 +50,8 @@ NameableObject::set_name_with_action (const std::string &name)
 
   try
     {
-      UNDO_MANAGER->perform (
-        std::make_unique<ArrangerSelectionsAction::EditAction> (
-          *this, *clone_obj, ArrangerSelectionsAction::EditType::Name, false));
+      UNDO_MANAGER->perform (EditArrangerSelectionsAction::create (
+        *this, *clone_obj, ArrangerSelectionsAction::EditType::Name, false));
     }
   catch (const ZrythmException &e)
     {

@@ -1,7 +1,9 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
+
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "utils/dsp.h"
 #include "utils/objects.h"
@@ -15,28 +17,34 @@
 #  include <lsp-plug.in/dsp/dsp.h>
 #endif
 
-#define BUFFER_SIZE 20
-#define LARGE_BUFFER_SIZE 2000
+TEST_SUITE_BEGIN ("benchmarks/dsp");
 
-#define NUM_ITERATIONS_ENGINE 1000
-#define NUM_ITERATIONS_MANY 30000
+// Buffer sizes
+constexpr int BUFFER_SIZE = 20;
+constexpr int LARGE_BUFFER_SIZE = 2000;
 
-#define F_OPTIMIZED 1
-#define F_NOT_OPTIMIZED 0
+// Iteration counts
+constexpr int NUM_ITERATIONS_ENGINE = 1000;
+constexpr int NUM_ITERATIONS_MANY = 30000;
 
-#define F_LARGE_BUF 1
-#define F_NOT_LARGE_BUF 0
+// Optimization flags
+constexpr int F_OPTIMIZED = 1;
+constexpr int F_NOT_OPTIMIZED = 0;
 
-#define NUM_TRACKS 100
+// Buffer size flags
+constexpr int F_LARGE_BUF = 1;
 
-typedef struct DspBenchmark
+// Track count
+constexpr int NUM_TRACKS = 100;
+
+struct DspBenchmark
 {
   /* function called */
   const char * func_name;
   /* microseconds taken */
   long unoptimized_usec;
   long optimized_usec;
-} DspBenchmark;
+};
 
 static DspBenchmark benchmarks[400];
 static int          num_benchmarks = 0;
@@ -58,13 +66,14 @@ benchmark_find (const char * func_name)
 static void
 _test_dsp_fill (bool optimized, bool large_buff)
 {
+  std::optional<ZrythmFixture> fixture;
   if (optimized)
     {
-      test_helper_zrythm_init_optimized ();
+      fixture.emplace (ZrythmFixtureOptimized ());
     }
   else
     {
-      test_helper_zrythm_init ();
+      fixture.emplace (ZrythmFixture ());
     }
 
   gint64  start, end;
@@ -78,77 +87,94 @@ _test_dsp_fill (bool optimized, bool large_buff)
 
 #define LOOP_START \
   start = g_get_monotonic_time (); \
-  for (int i = 0; i < NUM_ITERATIONS_MANY; i++) \
-    {
+  for (int i = 0; i < NUM_ITERATIONS_MANY; i++)
 
 #define LOOP_END(fname, is_optimized) \
-  } \
-  end = g_get_monotonic_time (); \
-  benchmark = benchmark_find (fname); \
-  if (!benchmark) \
-    { \
-      benchmark = &benchmarks[num_benchmarks]; \
-      num_benchmarks++; \
-    } \
-  benchmark->func_name = fname; \
-  if (is_optimized) \
-    { \
-      benchmark->optimized_usec = end - start; \
-    } \
-  else \
-    { \
-      benchmark->unoptimized_usec = end - start; \
-    }
+  { \
+    end = g_get_monotonic_time (); \
+    benchmark = benchmark_find (fname); \
+    if (!benchmark) \
+      { \
+        benchmark = &benchmarks[num_benchmarks]; \
+        num_benchmarks++; \
+      } \
+    benchmark->func_name = fname; \
+    if (is_optimized) \
+      { \
+        benchmark->optimized_usec = end - start; \
+      } \
+    else \
+      { \
+        benchmark->unoptimized_usec = end - start; \
+      } \
+  }
 
   LOOP_START
-  dsp_fill (buf, val, buf_size);
+  {
+    dsp_fill (buf, val, buf_size);
+  }
   LOOP_END ("fill", optimized);
 
   LOOP_START
-  dsp_limit1 (buf, -1.0f, 1.1f, buf_size);
+  {
+    dsp_limit1 (buf, -1.0f, 1.1f, buf_size);
+  }
   LOOP_END ("limit1", optimized);
 
   LOOP_START
-  dsp_add2 (buf, src, buf_size);
+  {
+    dsp_add2 (buf, src, buf_size);
+  }
   LOOP_END ("add2", optimized);
 
   LOOP_START
-  float abs_max = dsp_abs_max (buf, buf_size);
-  (void) abs_max;
+  {
+    float abs_max = dsp_abs_max (buf, buf_size);
+    (void) abs_max;
+  }
   LOOP_END ("abs_max", optimized);
 
   LOOP_START
-  dsp_min (buf, buf_size);
+  {
+    dsp_min (buf, buf_size);
+  }
   LOOP_END ("min", optimized);
 
   LOOP_START
-  dsp_max (buf, buf_size);
+  {
+    dsp_max (buf, buf_size);
+  }
   LOOP_END ("max", optimized);
 
   LOOP_START
-  dsp_mul_k2 (buf, 0.99f, buf_size);
+  {
+    dsp_mul_k2 (buf, 0.99f, buf_size);
+  }
   LOOP_END ("mul_k2", optimized);
 
   LOOP_START
-  dsp_copy (buf, src, buf_size);
+  {
+    dsp_copy (buf, src, buf_size);
+  }
   LOOP_END ("copy", optimized);
 
   LOOP_START
-  dsp_mix2 (buf, src, 0.1f, 0.2f, buf_size);
+  {
+    dsp_mix2 (buf, src, 0.1f, 0.2f, buf_size);
+  }
   LOOP_END ("mix2", optimized);
 
   LOOP_START
-  dsp_mix_add2 (buf, src, src, 0.1f, 0.2f, buf_size);
+  {
+    dsp_mix_add2 (buf, src, src, 0.1f, 0.2f, buf_size);
+  }
   LOOP_END ("mix_add2", optimized);
 
   free (buf);
   free (src);
-
-  test_helper_zrythm_cleanup ();
 }
 
-static void
-test_dsp_fill (void)
+TEST_CASE ("fill")
 {
   _test_dsp_fill (F_NOT_OPTIMIZED, F_LARGE_BUF);
 #ifdef HAVE_LSP_DSP
@@ -159,17 +185,17 @@ test_dsp_fill (void)
 static void
 _test_run_engine (bool optimized)
 {
+  std::optional<ZrythmFixture> fixture;
   if (optimized)
     {
-      test_helper_zrythm_init_optimized ();
+      fixture.emplace (ZrythmFixtureOptimized ());
     }
   else
     {
-      test_helper_zrythm_init ();
+      fixture.emplace (ZrythmFixture ());
     }
 
-  AUDIO_ENGINE->stop_dummy_audio_thread = true;
-  g_usleep (20000);
+  test_project_stop_dummy_engine ();
 
 #ifdef HAVE_LSP_DSP
   lsp::dsp::context_t ctx;
@@ -192,59 +218,41 @@ _test_run_engine (bool optimized)
   for (int i = 0; i < NUM_ITERATIONS_ENGINE; i++)
     {
       AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
-      LOOP_END ("engine cycles", optimized);
-
-      z_info ("{}optimized time: {}", optimized ? "" : "un", end - start);
-      /*z_warn_if_reached ();*/
-
-#ifdef HAVE_LSP_DSP
-      if (optimized)
-        {
-          lsp::dsp::finish (&ctx);
-        }
-#endif
-
-      test_helper_zrythm_cleanup ();
     }
+  LOOP_END ("engine cycles", optimized);
 
-  static void test_run_engine (void)
-  {
-#ifdef HAVE_LSP_DSP
-    _test_run_engine (F_OPTIMIZED);
-#endif
-    _test_run_engine (F_NOT_OPTIMIZED);
-  }
-
-  static void print_benchmark_results (void)
-  {
-    for (int i = 0; i < num_benchmarks; i++)
-      {
-        DspBenchmark * benchmark = &benchmarks[i];
-        fprintf (
-          stderr,
-          "---- %s ----\n"
-          "unoptimized: %ldms\n"
-          "optimized: %ldms\n",
-          benchmark->func_name, benchmark->unoptimized_usec / 1000,
-          benchmark->optimized_usec / 1000);
-      }
-  }
-
-  int main (int argc, char * argv[])
-  {
-    g_test_init (&argc, &argv, nullptr);
+  z_info ("{}optimized time: {}", optimized ? "" : "un", end - start);
+  /*z_warn_if_reached ();*/
 
 #ifdef HAVE_LSP_DSP
-    lsp::dsp::init ();
+  if (optimized)
+    {
+      lsp::dsp::finish (&ctx);
+    }
 #endif
+}
 
-#define TEST_PREFIX "/benchmarks/dsp/"
+TEST_CASE ("run engine")
+{
+#ifdef HAVE_LSP_DSP
+  _test_run_engine (F_OPTIMIZED);
+#endif
+  _test_run_engine (F_NOT_OPTIMIZED);
+}
 
-    g_test_add_func (TEST_PREFIX "test dsp fill", (GTestFunc) test_dsp_fill);
-    g_test_add_func (TEST_PREFIX "test run engine", (GTestFunc) test_run_engine);
-    g_test_add_func (
-      TEST_PREFIX "print benchmark results",
-      (GTestFunc) print_benchmark_results);
+TEST_CASE ("print benchmark results")
+{
+  for (int i = 0; i < num_benchmarks; i++)
+    {
+      DspBenchmark * benchmark = &benchmarks[i];
+      fprintf (
+        stderr,
+        "---- %s ----\n"
+        "unoptimized: %ldms\n"
+        "optimized: %ldms\n",
+        benchmark->func_name, benchmark->unoptimized_usec / 1000,
+        benchmark->optimized_usec / 1000);
+    }
+}
 
-    return g_test_run ();
-  }
+TEST_SUITE_END;

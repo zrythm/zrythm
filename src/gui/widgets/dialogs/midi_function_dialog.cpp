@@ -242,9 +242,8 @@ on_ok_clicked (GtkButton * btn, MidiFunctionDialogWidget * self)
 
   try
     {
-      UNDO_MANAGER->perform (
-        std::make_unique<ArrangerSelectionsAction::EditAction> (
-          *MIDI_SELECTIONS, self->type, opts));
+      UNDO_MANAGER->perform (EditArrangerSelectionsAction::create (
+        *MIDI_SELECTIONS, self->type, opts));
     }
   catch (const ZrythmException &e)
     {

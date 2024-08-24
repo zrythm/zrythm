@@ -3,13 +3,15 @@
 
 #include "zrythm-test-config.h"
 
+#include "actions/tracklist_selections.h"
+
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
+#include "actions/mixer_selections_action.h"
+#include "dsp/exporter.h"
 #include "dsp/fader.h"
 #include "dsp/router.h"
-#include "plugins/carla_discovery.h"
 #include "plugins/carla_native_plugin.h"
-#include "utils/math.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
@@ -69,29 +71,22 @@ TEST_CASE_FIXTURE (ZrythmFixture, "vst instrument makes sound")
         AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
 
         /* bounce */
-        ExportSettings * settings = export_settings_new ();
-        export_settings_set_bounce_defaults (
-          settings, Exporter::Format::WAV, nullptr, __func__);
-        settings->time_range = ExportTimeRange::TIME_RANGE_LOOP;
-        settings->bounce_with_parents = true;
-        settings->mode = ExportMode::EXPORT_MODE_FULL;
+        Exporter::Settings settings;
+        settings.set_bounce_defaults (Exporter::Format::WAV, nullptr, __func__);
+        settings.time_range_ = Exporter::TimeRange::Loop;
+        settings.bounce_with_parents_ = true;
+        settings.mode_ = Exporter::Mode::Full;
 
-        EngineState state;
-        GPtrArray * conns =
-          exporter_prepare_tracks_for_export (settings, &state);
+        Exporter exporter (settings);
+        exporter.prepare_tracks_for_export (*AUDIO_ENGINE, *TRANSPORT);
 
         /* start exporting in a new thread */
-        GThread * thread = g_thread_new (
-          "bounce_thread", (GThreadFunc) exporter_generic_export_thread,
-          settings);
+        exporter.begin_generic_thread ();
+        exporter.join_generic_thread ();
+        exporter.post_export ();
 
-        g_thread_join (thread);
-
-        exporter_post_export (settings, conns, &state);
-
-        REQUIRE_FALSE (audio_file_is_silent (settings->file_uri));
-
-        export_settings_free (settings);
+        REQUIRE_FALSE (
+          audio_file_is_silent (exporter.get_exported_path ().c_str ()));
       }
     }
 #endif
@@ -105,60 +100,46 @@ TEST_CASE_FIXTURE (ZrythmFixture, "mono plugin")
   test_project_stop_dummy_engine ();
 
   /* create an audio track */
-  char * filepath = g_build_filename (TESTS_SRCDIR, "test.wav", nullptr);
-  FileDescriptor file = FileDescriptor (filepath);
-  track_create_with_action (
-    Track::Type::Audio, nullptr, &file, PLAYHEAD, TRACKLIST->tracks.size (), 1,
-    -1, nullptr, nullptr);
-  Track * audio_track = tracklist_get_last_track (
-    TRACKLIST, TracklistPinOption::TRACKLIST_PIN_OPTION_BOTH, false);
+  FileDescriptor file (fs::path (TESTS_SRCDIR) / "test.wav");
+  Track::create_with_action (
+    Track::Type::Audio, nullptr, &file, &PLAYHEAD, TRACKLIST->get_num_tracks (),
+    1, -1, nullptr);
+  auto audio_track = TRACKLIST->get_last_track<AudioTrack> ();
 
   /* hard pan right */
-  GError *         err = NULL;
-  UndoableAction * ua = tracklist_selections_action_new_edit_single_float (
-    EditTrackActionType::EDIT_TRACK_ACTION_TYPE_PAN, audio_track, 0.5f, 1.f,
-    false, &err);
-  undo_manager_perform (UNDO_MANAGER, ua, nullptr);
+  UNDO_MANAGER->perform (std::make_unique<SingleTrackFloatAction> (
+    SingleTrackFloatAction::EditType::Pan, audio_track, 0.5f, 1.f, false));
 
   /* add a mono insert */
-  PluginSetting * setting = test_plugin_manager_get_plugin_setting (
+  auto setting = test_plugin_manager_get_plugin_setting (
     LSP_COMPRESSOR_MONO_BUNDLE, LSP_COMPRESSOR_MONO_URI, true);
-  z_return_if_fail (setting);
 
-  bool ret = mixer_selections_action_perform_create (
-    PluginSlotType::Insert, audio_track->get_name_hash (), 0, setting, 1,
-    nullptr);
-  REQUIRE (ret);
+  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
+    PluginSlotType::Insert, *audio_track, 0, setting, 1));
 
-  Plugin * pl = audio_track->channel->inserts[0];
-  REQUIRE (IS_PLUGIN_AND_NONNULL (pl));
+  const auto &pl = audio_track->channel_->inserts_[0];
+  REQUIRE_NONNULL (pl);
 
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
 
   /* bounce */
-  ExportSettings * settings = export_settings_new ();
-  export_settings_set_bounce_defaults (
-    settings, Exporter::Format::WAV, nullptr, __func__);
-  settings->time_range = ExportTimeRange::TIME_RANGE_LOOP;
-  settings->bounce_with_parents = true;
-  settings->mode = ExportMode::EXPORT_MODE_FULL;
+  Exporter::Settings settings;
+  settings.set_bounce_defaults (Exporter::Format::WAV, "", __func__);
+  settings.time_range_ = Exporter::TimeRange::Loop;
+  settings.bounce_with_parents_ = true;
+  settings.mode_ = Exporter::Mode::Full;
 
-  EngineState state;
-  GPtrArray * conns = exporter_prepare_tracks_for_export (settings, &state);
+  Exporter exporter (settings);
+  exporter.prepare_tracks_for_export (*AUDIO_ENGINE, *TRANSPORT);
 
   /* start exporting in a new thread */
-  GThread * thread = g_thread_new (
-    "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
+  exporter.begin_generic_thread ();
+  exporter.join_generic_thread ();
+  exporter.post_export ();
 
-  g_thread_join (thread);
-
-  exporter_post_export (settings, conns, &state);
-
-  REQUIRE_FALSE (audio_file_is_silent (settings->file_uri));
-
-  export_settings_free (settings);
+  REQUIRE_FALSE (audio_file_is_silent (exporter.get_exported_path ().c_str ()));
 #endif
 }
 
@@ -191,18 +172,16 @@ TEST_CASE_FIXTURE (ZrythmFixture, "crash handling")
    * process manually */
   test_project_stop_dummy_engine ();
 
-  PluginSetting * setting = test_plugin_manager_get_plugin_setting (
+  auto setting = test_plugin_manager_get_plugin_setting (
     SIGABRT_BUNDLE_URI, SIGABRT_URI, true);
-  z_return_if_fail (setting);
-  setting->bridge_mode_ = CarlaBridgeMode::Full;
+  setting.bridge_mode_ = CarlaBridgeMode::Full;
 
   /* create a track from the plugin */
-  track_create_for_plugin_at_idx_w_action (
-    Track::Type::AudioBus, setting, TRACKLIST->tracks.size (), nullptr);
+  auto track = Track::create_for_plugin_at_idx_w_action<AudioBusTrack> (
+    &setting, TRACKLIST->get_num_tracks ());
 
-  Plugin * pl =
-    TRACKLIST->tracks[TRACKLIST->tracks.size () - 1]->channel->inserts[0];
-  REQUIRE (IS_PLUGIN_AND_NONNULL (pl));
+  const auto &pl = track->channel_->inserts_[0];
+  REQUIRE_NONNULL (pl);
 
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
@@ -216,33 +195,32 @@ TEST_CASE_FIXTURE (ZrythmFixture, "process")
   test_plugin_manager_create_tracks_from_plugin (
     TEST_SIGNAL_BUNDLE, TEST_SIGNAL_URI, false, true, 1);
 
-  Track *  track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
-  Plugin * pl = track->channel->inserts[0];
-  REQUIRE (IS_PLUGIN_AND_NONNULL (pl));
+  auto        track = TRACKLIST->get_last_track<ChannelTrack> ();
+  const auto &pl = track->channel_->inserts_[0];
+  REQUIRE_NONNULL (pl);
 
-  /* stop dummy audio engine processing so we can
-   * process manually */
+  /* stop dummy audio engine processing so we can process manually */
   test_project_stop_dummy_engine ();
 
   /* run plugin and check that output is filled */
-  Port *                out = pl->out_ports[0];
+  const auto           &out = pl->out_ports_[0];
   nframes_t             local_offset = 60;
   EngineProcessTimeInfo time_nfo = {
-    .g_start_frame = 0,
-    .g_start_frame_w_offset = 0,
-    .local_offset = 0,
-    .nframes = local_offset
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = local_offset
   };
-  carla_native_plugin_process (pl->carla, &time_nfo);
+  pl->process (time_nfo);
   for (nframes_t i = 1; i < local_offset; i++)
     {
       REQUIRE (fabsf (out->buf_[i]) > 1e-10f);
     }
-  time_nfo.g_start_frame = 0;
-  time_nfo.g_start_frame_w_offset = local_offset;
-  time_nfo.local_offset = local_offset;
+  time_nfo.g_start_frame_ = 0;
+  time_nfo.g_start_frame_w_offset_ = local_offset;
+  time_nfo.local_offset_ = local_offset;
   time_nfo.nframes_ = AUDIO_ENGINE->block_length_ - local_offset;
-  carla_native_plugin_process (pl->carla, &time_nfo);
+  pl->process (time_nfo);
   for (nframes_t i = local_offset; i < AUDIO_ENGINE->block_length_; i++)
     {
       REQUIRE (fabsf (out->buf_[i]) > 1e-10f);

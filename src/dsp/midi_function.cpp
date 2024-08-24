@@ -50,14 +50,12 @@ midi_function_string_id_to_type (const char * id)
 
 void
 midi_function_apply (
-  ArrangerSelections &sel,
-  MidiFunctionType    type,
-  MidiFunctionOpts    opts)
+  MidiSelections  &sel,
+  MidiFunctionType type,
+  MidiFunctionOpts opts)
 {
   /* TODO */
   z_debug ("applying {}...", MidiFunctionType_to_string (type));
-
-  auto * mas = (MidiSelections *) &sel;
 
   switch (type)
     {
@@ -67,10 +65,11 @@ midi_function_apply (
         curve_opts.algo_ = opts.curve_algo_;
         curve_opts.curviness_ = opts.curviness_;
         int vel_interval = std::abs (opts.end_vel_ - opts.start_vel_);
-        auto [first_obj, first_pos] = mas->get_first_object_and_pos (false);
-        auto first_note = dynamic_cast<MidiNote *> (first_obj);
-        auto [last_obj, last_pos] = mas->get_last_object_and_pos (false, false);
-        auto last_note = dynamic_cast<MidiNote *> (last_obj);
+        auto [first_note, first_pos] =
+          sel.get_first_object_and_pos<MidiNote> (false);
+        auto [last_note, last_pos] =
+          sel.get_last_object_and_pos<MidiNote> (false, false);
+        z_return_if_fail (first_note && last_note);
         if (first_note == last_note)
           {
             first_note->vel_->vel_ = opts.start_vel_;
@@ -78,7 +77,7 @@ midi_function_apply (
           }
 
         double total_ticks = last_pos.ticks_ - first_pos.ticks_;
-        for (auto mn : mas->objects_ | type_is<MidiNote> ())
+        for (auto mn : sel.objects_ | type_is<MidiNote> ())
           {
             double mn_ticks_from_start = mn->pos_.ticks_ - first_pos.ticks_;
             double vel_multiplier = curve_opts.get_normalized_y (
@@ -96,7 +95,7 @@ midi_function_apply (
          * added so currently disabled */
         break;
         std::vector<std::shared_ptr<MidiNote>> new_midi_notes;
-        for (auto mn : mas->objects_ | type_is<MidiNote> ())
+        for (auto mn : sel.objects_ | type_is<MidiNote> ())
           {
             double len = mn->get_length_in_ticks ();
             auto   new_mn = mn->clone_shared ();
@@ -130,13 +129,13 @@ midi_function_apply (
       break;
     case MidiFunctionType::FlipVertical:
       {
-        auto highest_note = mas->get_highest_note ();
-        auto lowest_note = mas->get_lowest_note ();
+        auto highest_note = sel.get_highest_note ();
+        auto lowest_note = sel.get_lowest_note ();
         z_return_if_fail (highest_note && lowest_note);
         int highest_pitch = highest_note->val_;
         int lowest_pitch = lowest_note->val_;
         int diff = highest_pitch - lowest_pitch;
-        for (auto mn : mas->objects_ | type_is<MidiNote> ())
+        for (auto mn : sel.objects_ | type_is<MidiNote> ())
           {
             uint8_t new_val = diff - (mn->val_ - lowest_pitch);
             new_val += lowest_pitch;
@@ -146,17 +145,17 @@ midi_function_apply (
       break;
     case MidiFunctionType::FlipHorizontal:
       {
-        mas->sort_by_positions (false);
+        sel.sort_by_positions (false);
         std::vector<Position> poses;
-        for (auto mn : mas->objects_ | type_is<MidiNote> ())
+        for (auto mn : sel.objects_ | type_is<MidiNote> ())
           {
             poses.push_back (mn->pos_);
           }
         int i = 0;
-        for (auto mn : mas->objects_ | type_is<MidiNote> ())
+        for (auto mn : sel.objects_ | type_is<MidiNote> ())
           {
             double ticks = mn->get_length_in_ticks ();
-            mn->pos_ = poses[(mas->objects_.size () - i) - 1];
+            mn->pos_ = poses[(sel.objects_.size () - i) - 1];
             mn->end_pos_ = mn->pos_;
             mn->end_pos_.add_ticks (ticks);
             ++i;
@@ -165,10 +164,9 @@ midi_function_apply (
       break;
     case MidiFunctionType::Legato:
       {
-        mas->sort_by_positions (false);
+        sel.sort_by_positions (false);
         for (
-          auto it = mas->objects_.begin (); it < (mas->objects_.end () - 1);
-          ++it)
+          auto it = sel.objects_.begin (); it < (sel.objects_.end () - 1); ++it)
           {
             auto mn = dynamic_pointer_cast<MidiNote> (*it);
             auto next_mn = dynamic_pointer_cast<MidiNote> (*(it + 1));
@@ -187,8 +185,7 @@ midi_function_apply (
         sel.sort_by_positions (false);
 
         for (
-          auto it = mas->objects_.begin (); it < (mas->objects_.end () - 1);
-          ++it)
+          auto it = sel.objects_.begin (); it < (sel.objects_.end () - 1); ++it)
           {
             auto mn = dynamic_pointer_cast<MidiNote> (*it);
             auto next_mn = dynamic_pointer_cast<MidiNote> (*(it + 1));
@@ -206,8 +203,7 @@ midi_function_apply (
     case MidiFunctionType::Staccato:
       {
         for (
-          auto it = mas->objects_.begin (); it < (mas->objects_.end () - 1);
-          ++it)
+          auto it = sel.objects_.begin (); it < (sel.objects_.end () - 1); ++it)
           {
             auto mn = dynamic_pointer_cast<MidiNote> (*it);
             mn->end_pos_ = mn->pos_;
@@ -221,15 +217,15 @@ midi_function_apply (
         curve_opts.algo_ = opts.curve_algo_;
         curve_opts.curviness_ = opts.curviness_;
 
-        mas->sort_by_pitch (!opts.ascending_);
+        sel.sort_by_pitch (!opts.ascending_);
         const auto first_mn =
-          dynamic_pointer_cast<MidiNote> (mas->objects_.front ());
-        for (auto it = mas->objects_.begin (); it != mas->objects_.end (); ++it)
+          dynamic_pointer_cast<MidiNote> (sel.objects_.front ());
+        for (auto it = sel.objects_.begin (); it != sel.objects_.end (); ++it)
           {
             auto   mn = dynamic_pointer_cast<MidiNote> (*it);
             double ms_multiplier = curve_opts.get_normalized_y (
-              (double) std::distance (mas->objects_.begin (), it)
-                / (double) mas->get_num_objects (),
+              (double) std::distance (sel.objects_.begin (), it)
+                / (double) sel.get_num_objects (),
               !opts.ascending_);
             double ms_to_add = ms_multiplier * opts.time_;
             z_trace ("multi {:f}, ms {:f}", ms_multiplier, ms_to_add);

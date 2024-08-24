@@ -390,6 +390,7 @@ dsp_make_mono (float * l, float * r, size_t size, bool equal_power);
  */
 class LspDspContextRAII
 {
+#ifdef HAVE_LSP_DSP
 public:
   LspDspContextRAII ()
   {
@@ -407,6 +408,7 @@ public:
 
 private:
   lsp::dsp::context_t ctx_ = {};
+#endif
 };
 
 #endif

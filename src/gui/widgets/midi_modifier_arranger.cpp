@@ -251,10 +251,9 @@ midi_modifier_arranger_on_drag_end (ArrangerWidget * self)
                   }
               }
 
-            UNDO_MANAGER->perform (
-              std::make_unique<ArrangerSelectionsAction::EditAction> (
-                *sel_before, sel_after.get (),
-                ArrangerSelectionsAction::EditType::Primitive, false));
+            UNDO_MANAGER->perform (std::make_unique<EditArrangerSelectionsAction> (
+              *sel_before, sel_after.get (),
+              ArrangerSelectionsAction::EditType::Primitive, false));
           }
         catch (const ZrythmException &e)
           {

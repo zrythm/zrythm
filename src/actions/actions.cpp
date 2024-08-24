@@ -2124,9 +2124,8 @@ activate_mute_selection (
     {
       try
         {
-          UNDO_MANAGER->perform (
-            std::make_unique<ArrangerSelectionsAction::EditAction> (
-              *sel, nullptr, ArrangerSelectionsAction::EditType::Mute, false));
+          UNDO_MANAGER->perform (std::make_unique<EditArrangerSelectionsAction> (
+            *sel, nullptr, ArrangerSelectionsAction::EditType::Mute, false));
         }
       catch (const ZrythmException &e)
         {
@@ -2343,8 +2342,7 @@ do_midi_func (const MidiFunctionType type, const MidiFunctionOpts opts)
         try
           {
             UNDO_MANAGER->perform (
-              std::make_unique<ArrangerSelectionsAction::EditAction> (
-                *sel, type, opts));
+              EditArrangerSelectionsAction::create (*sel, type, opts));
           }
         catch (const ZrythmException &e)
           {
@@ -2376,8 +2374,7 @@ do_automation_func (AutomationFunctionType type)
 
   try
     {
-      UNDO_MANAGER->perform (
-        std::make_unique<ArrangerSelectionsAction::EditAction> (*sel, type));
+      UNDO_MANAGER->perform (EditArrangerSelectionsAction::create (*sel, type));
     }
   catch (const ZrythmException &e)
     {
@@ -2417,8 +2414,7 @@ do_audio_func (
     {
       SemaphoreRAII sem (PROJECT->save_sem_);
       UNDO_MANAGER->perform (
-        std::make_unique<ArrangerSelectionsAction::EditAction> (
-          *sel, type, opts, uri));
+        EditArrangerSelectionsAction::create (*sel, type, opts, uri));
     }
   catch (const ZrythmException &e)
     {
@@ -2731,10 +2727,9 @@ on_region_color_dialog_response (
       /* perform action */
       try
         {
-          UNDO_MANAGER->perform (
-            std::make_unique<ArrangerSelectionsAction::EditAction> (
-              *sel_before, TL_SELECTIONS.get (),
-              ArrangerSelectionsAction::EditType::Primitive, true));
+          UNDO_MANAGER->perform (std::make_unique<EditArrangerSelectionsAction> (
+            *sel_before, TL_SELECTIONS.get (),
+            ArrangerSelectionsAction::EditType::Primitive, true));
         }
       catch (const ZrythmException &e)
         {
@@ -2791,10 +2786,9 @@ DEFINE_SIMPLE (activate_reset_region_color)
   /* perform action */
   try
     {
-      UNDO_MANAGER->perform (
-        std::make_unique<ArrangerSelectionsAction::EditAction> (
-          *sel_before, TL_SELECTIONS.get (),
-          ArrangerSelectionsAction::EditType::Primitive, true));
+      UNDO_MANAGER->perform (std::make_unique<EditArrangerSelectionsAction> (
+        *sel_before, TL_SELECTIONS.get (),
+        ArrangerSelectionsAction::EditType::Primitive, true));
     }
   catch (const ZrythmException &e)
     {
@@ -2967,8 +2961,7 @@ DEFINE_SIMPLE (activate_timeline_function)
       try
         {
           UNDO_MANAGER->perform (
-            std::make_unique<ArrangerSelectionsAction::EditAction> (
-              *sel, type, aopts, nullptr));
+            EditArrangerSelectionsAction::create (*sel, type, aopts, nullptr));
           UndoableAction * ua = UNDO_MANAGER->get_last_action ();
           ua->num_actions_ = ++count;
         }
@@ -3060,10 +3053,9 @@ DEFINE_SIMPLE (activate_set_curve_algorithm)
   /* perform action */
   try
     {
-      UNDO_MANAGER->perform (
-        std::make_unique<ArrangerSelectionsAction::EditAction> (
-          *sel_before, AUTOMATION_SELECTIONS.get (),
-          ArrangerSelectionsAction::EditType::Primitive, true));
+      UNDO_MANAGER->perform (std::make_unique<EditArrangerSelectionsAction> (
+        *sel_before, AUTOMATION_SELECTIONS.get (),
+        ArrangerSelectionsAction::EditType::Primitive, true));
     }
   catch (const ZrythmException &e)
     {
@@ -3106,10 +3098,9 @@ handle_region_fade_algo_preset (const std::string &pset_id, bool fade_in)
 
   try
     {
-      UNDO_MANAGER->perform (
-        std::make_unique<ArrangerSelectionsAction::EditAction> (
-          *sel_before, TL_SELECTIONS.get (),
-          ArrangerSelectionsAction::EditType::Fades, true));
+      UNDO_MANAGER->perform (std::make_unique<EditArrangerSelectionsAction> (
+        *sel_before, TL_SELECTIONS.get (),
+        ArrangerSelectionsAction::EditType::Fades, true));
     }
   catch (const ZrythmException &e)
     {
