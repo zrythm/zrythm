@@ -143,10 +143,6 @@ public:
    * TODO "normalize" parameter.
    */
   inline float get_val () const { return control_; }
-  static float val_getter (void * data)
-  {
-    return ((ControlPort *) data)->get_val ();
-  }
 
   /**
    * Get the current normalized value of the control.
@@ -166,10 +162,6 @@ public:
    * Get the default real value of the control.
    */
   inline float get_default_val () const { return deff_; }
-  static float default_val_getter (void * data)
-  {
-    return ((ControlPort *) data)->get_default_val ();
-  }
 
   /**
    * Get the default real value of the control.
@@ -178,10 +170,6 @@ public:
   {
     set_control_value (val, false, false);
   }
-  static void real_val_setter (void * data, float val)
-  {
-    ((ControlPort *) data)->set_real_val (val);
-  }
 
   /**
    * Get the default real value of the control and sends UI events.
@@ -189,10 +177,6 @@ public:
   void set_real_val_w_events (float val)
   {
     set_control_value (val, false, true);
-  }
-  static void real_val_setter_w_events (void * data, float val)
-  {
-    ((ControlPort *) data)->set_real_val_w_events (val);
   }
 
   /**

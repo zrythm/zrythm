@@ -34,11 +34,7 @@ class TrackLane : virtual public RegionOwner
 public:
   virtual ~TrackLane () = default;
 
-  std::string        get_name () { return this->name_; }
-  static std::string name_getter (void * data)
-  {
-    return ((TrackLane *) data)->get_name ();
-  }
+  std::string get_name () { return this->name_; }
 
   bool get_soloed () const { return solo_; }
 
@@ -81,7 +77,7 @@ public:
    */
   uint8_t midi_ch_ = 0;
 
-  std::vector<CustomButtonWidget> buttons_;
+  std::vector<std::unique_ptr<CustomButtonWidget>> buttons_;
 
   int magic_ = TRACK_LANE_MAGIC;
 };
@@ -172,10 +168,6 @@ public:
   void rename_with_action (const std::string &new_name)
   {
     rename (new_name, true);
-  }
-  static void name_setter_with_action (void * data, const std::string &new_name)
-  {
-    ((TrackLaneImpl *) data)->rename_with_action (new_name);
   }
 
   /**

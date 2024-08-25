@@ -1045,6 +1045,7 @@ Port::set_expose_to_backend (bool expose)
   if (this->id_.type_ == PortType::Audio)
     {
       auto audio_port = static_cast<AudioPort *> (this);
+      (void) audio_port;
       switch (AUDIO_ENGINE->audio_backend_)
         {
         case AudioBackend::AUDIO_BACKEND_DUMMY:
@@ -1072,6 +1073,7 @@ Port::set_expose_to_backend (bool expose)
   else if (this->id_.type_ == PortType::Event)
     {
       auto midi_port = static_cast<MidiPort *> (this);
+      (void) midi_port;
       switch (AUDIO_ENGINE->midi_backend_)
         {
         case MidiBackend::MIDI_BACKEND_DUMMY:

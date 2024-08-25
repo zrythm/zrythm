@@ -17,7 +17,7 @@
 
 TEST_SUITE_BEGIN ("zrythm app");
 
-TEST_CASE_FIXTURE (ZrythmFixture, "version")
+TEST_CASE ("version")
 {
   char * exe_path = NULL;
   int    dirname_length, length;

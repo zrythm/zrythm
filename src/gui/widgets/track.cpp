@@ -100,27 +100,24 @@ track_widget_highlight_to_str (TrackWidgetHighlight highlight)
 CustomButtonWidget *
 track_widget_get_hovered_button (TrackWidget * self, int x, int y)
 {
-  auto is_button_hovered = [x, y] (const CustomButtonWidget &cb) {
+  auto is_button_hovered = [x, y] (const auto &cb) {
     return (
-      x >= cb.x && x <= cb.x + (cb.width ? cb.width : TRACK_BUTTON_SIZE)
-      && y >= cb.y && y <= cb.y + TRACK_BUTTON_SIZE);
+      x >= cb->x && x <= cb->x + (cb->width ? cb->width : TRACK_BUTTON_SIZE)
+      && y >= cb->y && y <= cb->y + TRACK_BUTTON_SIZE);
   };
-#define RETURN_IF_HOVERED(cb) \
-  if (is_button_hovered (cb)) \
-    return &cb;
 
   CustomButtonWidget * cb = nullptr;
   for (auto &cb_ref : self->top_buttons)
     {
-      cb = &cb_ref;
-      RETURN_IF_HOVERED (*cb);
+      if (is_button_hovered (cb_ref))
+        return cb_ref.get ();
     }
   if (TRACK_BOT_BUTTONS_SHOULD_BE_VISIBLE (self->track->main_height_))
     {
       for (auto &cb_ref : self->bot_buttons)
         {
-          cb = &cb_ref;
-          RETURN_IF_HOVERED (*cb);
+          if (is_button_hovered (cb_ref))
+            return cb_ref.get ();
         }
     }
 
@@ -136,7 +133,8 @@ track_widget_get_hovered_button (TrackWidget * self, int x, int y)
                 {
                   for (auto &lane_button : lane->buttons_)
                     {
-                      RETURN_IF_HOVERED (lane_button);
+                      if (is_button_hovered (lane_button))
+                        return lane_button.get ();
                     }
                 }
               return (CustomButtonWidget *) nullptr;
@@ -161,21 +159,25 @@ track_widget_get_hovered_button (TrackWidget * self, int x, int y)
 
               for (auto &button : at->top_left_buttons_)
                 {
-                  RETURN_IF_HOVERED (button);
+                  if (is_button_hovered (button))
+                    return button.get ();
                 }
               for (auto &button : at->top_right_buttons_)
                 {
-                  RETURN_IF_HOVERED (button);
+                  if (is_button_hovered (button))
+                    return button.get ();
                 }
               if (TRACK_BOT_BUTTONS_SHOULD_BE_VISIBLE (at->height_))
                 {
                   for (auto &button : at->bot_left_buttons_)
                     {
-                      RETURN_IF_HOVERED (button);
+                      if (is_button_hovered (button))
+                        return button.get ();
                     }
                   for (auto &button : at->bot_right_buttons_)
                     {
-                      RETURN_IF_HOVERED (button);
+                      if (is_button_hovered (button))
+                        return button.get ();
                     }
                 }
             }
@@ -259,8 +261,8 @@ get_lane_to_resize (TrackWidget * self, int y)
 {
   auto track = dynamic_cast<LanedTrack *> (self->track);
 
-  if (!track->lanes_visible_)
-    return NULL;
+  if (!track || !track->lanes_visible_)
+    return nullptr;
 
   int  total_height = (int) track->main_height_;
   auto laned_track_variant = convert_to_variant<LanedTrackPtrVariant> (track);
@@ -907,7 +909,9 @@ show_edit_name_popover (TrackWidget * self, TrackLane * lane)
         [&] (const auto &lane) {
           editable_label_widget_show_popover_for_widget (
             GTK_WIDGET (self), self->track_name_popover, lane,
-            lane->name_getter, lane->name_setter_with_action);
+            bind_member_function (*lane, &TrackLane::get_name),
+            bind_member_function (
+              *lane, &base_type<decltype (lane)>::rename_with_action));
         },
         convert_to_variant<TrackLanePtrVariant> (lane));
     }
@@ -915,7 +919,8 @@ show_edit_name_popover (TrackWidget * self, TrackLane * lane)
     {
       editable_label_widget_show_popover_for_widget (
         GTK_WIDGET (self), self->track_name_popover, self->track,
-        Track::name_getter, Track::name_setter_with_action);
+        bind_member_function (*self->track, &Track::get_name),
+        bind_member_function (*self->track, &Track::set_name_with_action));
     }
 }
 
@@ -1500,33 +1505,34 @@ track_widget_recreate_group_colors (TrackWidget * self)
  *
  * @param top 1 for top, 0 for bottom.
  */
-static CustomButtonWidget &
+static auto &
 add_button (TrackWidget * self, bool top, const char * icon_name)
 {
-  CustomButtonWidget cb (icon_name, TRACK_BUTTON_SIZE);
-  cb.owner_type = CustomButtonWidget::Owner::TRACK;
-  cb.owner = self->track;
   auto &vec = top ? self->top_buttons : self->bot_buttons;
-  vec.emplace_back (std::move (cb));
-  return vec.back ();
+  vec.emplace_back (
+    std::make_unique<CustomButtonWidget> (icon_name, TRACK_BUTTON_SIZE));
+  auto &cb = vec.back ();
+  cb->owner_type = CustomButtonWidget::Owner::TRACK;
+  cb->owner = self->track;
+  return cb;
 }
 
-static CustomButtonWidget &
+static auto &
 add_solo_button (TrackWidget * self, int top)
 {
   auto &cb = add_button (self, top, TRACK_ICON_NAME_SOLO);
-  cb.toggled_color = UI_COLORS->solo_checked;
-  cb.held_color = UI_COLORS->solo_active;
+  cb->toggled_color = UI_COLORS->solo_checked;
+  cb->held_color = UI_COLORS->solo_active;
 
   return cb;
 }
 
-static CustomButtonWidget &
+static auto &
 add_record_button (TrackWidget * self, int top)
 {
   auto &cb = add_button (self, top, TRACK_ICON_NAME_RECORD);
-  cb.toggled_color = Color (UI_COLOR_RECORD_CHECKED);
-  cb.held_color = Color (UI_COLOR_RECORD_ACTIVE);
+  cb->toggled_color = Color (UI_COLOR_RECORD_CHECKED);
+  cb->held_color = Color (UI_COLOR_RECORD_ACTIVE);
 
   return cb;
 }
@@ -1549,20 +1555,22 @@ track_widget_update_size (TrackWidget * self)
 void
 track_widget_update_icons (TrackWidget * self)
 {
-  for (auto &cb_ref : self->bot_buttons)
+  auto get_new_fold_button = [] (FoldableTrack * track) {
+    auto new_icon_name =
+      track->folded_ ? TRACK_ICON_NAME_FOLD : TRACK_ICON_NAME_FOLD_OPEN;
+    auto cb =
+      std::make_unique<CustomButtonWidget> (new_icon_name, TRACK_BUTTON_SIZE);
+    cb->owner_type = CustomButtonWidget::Owner::TRACK;
+    cb->owner = track;
+    return cb;
+  };
+
+  for (auto &cb : self->bot_buttons)
     {
-      auto cb = &cb_ref;
       if (TRACK_CB_ICON_IS (FOLD_OPEN) || TRACK_CB_ICON_IS (FOLD))
         {
           auto foldable_track = dynamic_cast<FoldableTrack *> (self->track);
-          const std::string new_icon_name =
-            foldable_track->folded_
-              ? TRACK_ICON_NAME_FOLD
-              : TRACK_ICON_NAME_FOLD_OPEN;
-
-          cb_ref = CustomButtonWidget (new_icon_name, TRACK_BUTTON_SIZE);
-          cb_ref.owner_type = CustomButtonWidget::Owner::TRACK;
-          cb_ref.owner = self->track;
+          cb = get_new_fold_button (foldable_track);
         }
     }
 }

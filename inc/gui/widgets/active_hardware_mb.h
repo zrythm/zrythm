@@ -1,11 +1,5 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * @file
- *
- * Active hardware menu button.
- */
 
 #ifndef __GUI_WIDGETS_ACTIVE_HARDWARE_MB_H__
 #define __GUI_WIDGETS_ACTIVE_HARDWARE_MB_H__
@@ -28,13 +22,13 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-typedef struct _ActiveHardwarePopoverWidget ActiveHardwarePopoverWidget;
+TYPEDEF_STRUCT_UNDERSCORED (ActiveHardwarePopoverWidget);
 
 /**
  * A menu button that allows selecting active
  * hardware ports.
  */
-typedef struct _ActiveHardwareMbWidget
+using ActiveHardwareMbWidget = struct _ActiveHardwareMbWidget
 {
   GtkWidget parent_instance;
 
@@ -68,8 +62,7 @@ typedef struct _ActiveHardwareMbWidget
   GtkBox * content;
 
   GenericCallback callback;
-  void *          object;
-} ActiveHardwareMbWidget;
+};
 
 void
 active_hardware_mb_widget_setup (

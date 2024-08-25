@@ -2,7 +2,16 @@
 # SPDX-License-Identifier: FSFAP
 ---
 # use '-' to disable checks
-Checks: '-llvm-include-order,-clang-diagnostic-unused-parameter,bugprone-*,clang-analyzer-*,cppcoreguidelines-*,-cppcoreguidelines-avoid-do-while,-cppcoreguidelines-avoid-magic-numbers,-cppcoreguidelines-non-private-member-variables-in-classes'
+Checks: >
+  bugprone-*,
+  clang-analyzer-*,
+  cppcoreguidelines-*,
+  -llvm-include-order,
+  -clang-diagnostic-unused-parameter,
+  -cppcoreguidelines-avoid-do-while,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-non-private-member-variables-in-classes
+  -cppcoreguidelines-pro-type-member-init
 WarningsAsErrors: ''
 FormatStyle:     none
 CheckOptions:

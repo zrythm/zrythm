@@ -28,11 +28,11 @@ on_open_directory_clicked (ExportProgressDialogWidget * self)
  */
 ExportProgressDialogWidget *
 export_progress_dialog_widget_new (
-  std::shared_ptr<Exporter>         exporter,
-  bool                              autoclose,
-  ExportProgressDialogCloseCallback close_callback,
-  bool                              show_open_dir_btn,
-  bool                              cancelable)
+  std::shared_ptr<Exporter>                        exporter,
+  bool                                             autoclose,
+  std::optional<ExportProgressDialogCloseCallback> close_callback,
+  bool                                             show_open_dir_btn,
+  bool                                             cancelable)
 {
   g_type_ensure (GENERIC_PROGRESS_DIALOG_WIDGET_TYPE);
 
@@ -47,10 +47,17 @@ export_progress_dialog_widget_new (
   char * basename = g_path_get_basename (exporter->settings_.file_uri_.c_str ());
   auto exporting_msg = format_str (_ ("Exporting %s"), basename);
   g_free_and_null (basename);
+  std::optional<GenericCallback> generic_close_callback;
+  if (close_callback.has_value ())
+    {
+      generic_close_callback = [close_callback, exporter] () {
+        close_callback.value () (exporter);
+      };
+    }
   generic_progress_dialog_widget_setup (
     generic_progress_dialog, _ ("Export Progress"),
     self->exporter->progress_info_.get (), exporting_msg.c_str (), autoclose,
-    (GenericCallback) close_callback, self->exporter.get (), cancelable);
+    generic_close_callback, cancelable);
 
   self->show_open_dir_btn = show_open_dir_btn;
 
@@ -58,7 +65,7 @@ export_progress_dialog_widget_new (
     {
       generic_progress_dialog_add_response (
         generic_progress_dialog, "open-directory", _ ("Open Directory"),
-        (GenericCallback) on_open_directory_clicked, self, true);
+        [self] () { on_open_directory_clicked (self); }, true);
     }
 
   return self;

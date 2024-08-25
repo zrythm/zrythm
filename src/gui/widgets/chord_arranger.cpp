@@ -93,7 +93,7 @@ chord_arranger_on_drag_end (ArrangerWidget * self)
     dynamic_pointer_cast<ChordObject> (self->prj_start_object.lock ());
   auto transient_start_chord_in_prj =
     start_chord_in_prj
-      ? dynamic_cast<ChordObject *> (start_chord_in_prj->transient_)
+      ? start_chord_in_prj->get_transient<ChordObject> ()
       : nullptr;
   // const auto chord_at_start =
   // dynamic_cast<ChordObject *> (self->start_object.get ());

@@ -171,9 +171,8 @@ on_double_click (
 /*static const float MAX_TIME = 250000.f;*/
 
 static float
-get_port_value (void * data)
+get_port_value (InspectorPortWidget * self)
 {
-  auto   self = static_cast<InspectorPortWidget *> (data);
   Port * port = self->port;
   switch (port->id_.type_)
     {
@@ -203,9 +202,8 @@ get_port_value (void * data)
 }
 
 static float
-get_snapped_port_value (void * data)
+get_snapped_port_value (InspectorPortWidget * self)
 {
-  auto   self = static_cast<InspectorPortWidget *> (data);
   Port * port = self->port;
   if (port->get_type () == PortType::Control)
     {
@@ -231,27 +229,24 @@ get_snapped_port_value (void * data)
 }
 
 static void
-set_port_value (void * data, float val)
+set_port_value (InspectorPortWidget * self, float val)
 {
-  auto self = static_cast<InspectorPortWidget *> (data);
   auto ctrl = dynamic_cast<ControlPort *> (self->port);
   ctrl->set_control_value (
     ctrl->normalized_val_to_real (val), F_NOT_NORMALIZED, true);
 }
 
 static void
-set_init_port_value (void * data, float val)
+set_init_port_value (InspectorPortWidget * self, float val)
 {
-  auto self = static_cast<InspectorPortWidget *> (data);
   /*z_info (*/
   /*"val change started: {:f}", (double) val);*/
   self->normalized_init_port_val = val;
 }
 
 static void
-val_change_finished (void * data, float val)
+val_change_finished (InspectorPortWidget * self, float val)
 {
-  auto self = static_cast<InspectorPortWidget *> (data);
   /*z_info (*/
   /*"val change finished: {:f}", (double) val);*/
   if (!math_floats_equal (val, self->normalized_init_port_val))
@@ -390,17 +385,24 @@ inspector_port_widget_new (Port * port)
           is_control = 1;
         }
       self->bar_slider = _bar_slider_widget_new (
-        BarSliderType::BAR_SLIDER_TYPE_NORMAL, get_port_value, set_port_value,
-        (void *) self,
+        BarSliderType::BAR_SLIDER_TYPE_NORMAL,
+        [self] () { return get_port_value (self); },
+        [self] (float val) { set_port_value (self, val); }, self,
         /* use normalized vals for controls */
         is_control ? 0.f : minf, is_control ? 1.f : maxf, -1, 20,
         is_control ? 0.f : zerof_, 0, 2, UiDragMode::UI_DRAG_MODE_CURSOR, str,
         "");
-      self->bar_slider->snapped_getter = get_snapped_port_value;
+      self->bar_slider->snapped_getter = [self] () {
+        return get_snapped_port_value (self);
+      };
       self->bar_slider->show_value = 0;
       self->bar_slider->editable = editable;
-      self->bar_slider->init_setter = set_init_port_value;
-      self->bar_slider->end_setter = val_change_finished;
+      self->bar_slider->init_setter = [self] (auto val) {
+        set_init_port_value (self, val);
+      };
+      self->bar_slider->end_setter = [self] (auto val) {
+        val_change_finished (self, val);
+      };
       gtk_overlay_set_child (self->overlay, GTK_WIDGET (self->bar_slider));
       self->minf = minf;
       self->maxf = maxf;

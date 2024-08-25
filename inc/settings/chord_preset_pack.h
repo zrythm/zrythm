@@ -69,16 +69,6 @@ public:
 
   std::string get_name () const { return name_; }
 
-  static std::string name_getter (void * pack)
-  {
-    return ((ChordPresetPack *) pack)->get_name ();
-  }
-
-  static void name_setter (void * pack, const std::string &name)
-  {
-    ((ChordPresetPack *) pack)->set_name (name);
-  }
-
   /**
    * @brief Sets @ref name_ and emits @ref
    * EventType::ET_CHORD_PRESET_PACK_EDITED.

@@ -408,13 +408,12 @@ midi_arranger_on_drag_end (ArrangerWidget * self)
 {
   midi_arranger_listen_notes (self, 0);
 
-  auto start_mn_in_prj =
+  const auto start_mn_in_prj =
     std::dynamic_pointer_cast<MidiNote> (self->prj_start_object.lock ());
-  auto start_mn_transient =
-    dynamic_cast<MidiNote *> (start_mn_in_prj->transient_);
-  double ticks_diff = 0;
-  double end_ticks_diff = 0;
-  int    pitch_diff = 0;
+  const auto start_mn_transient = start_mn_in_prj->get_transient<MidiNote> ();
+  double     ticks_diff = 0;
+  double     end_ticks_diff = 0;
+  int        pitch_diff = 0;
   if (start_mn_in_prj && start_mn_transient)
     {
       ticks_diff =

@@ -35,15 +35,15 @@ vamp_print_all (void)
         {
           const VampPluginDescriptor * descr = vhGetPluginDescriptor (lib, j);
           z_info (
-            "\n[plugin %d: %s]\n"
-            "name: %s\n"
-            "description: %s\n"
-            "maker: %s\n"
-            "plugin version: %d\n"
-            "copyright: %s\n"
+            "\n[plugin {}: {}]\n"
+            "name: {}\n"
+            "description: {}\n"
+            "maker: {}\n"
+            "plugin version: {}\n"
+            "copyright: {}\n"
             "param count: {}\n"
             "program count: {}\n"
-            "vamp API version: %d",
+            "vamp API version: {}",
             j, descr->identifier, descr->name, descr->description, descr->maker,
             descr->pluginVersion, descr->copyright, descr->parameterCount,
             descr->programCount, descr->vampApiVersion);
@@ -147,7 +147,7 @@ vamp_plugin_process (
     Vamp::RealTime::frame2RealTime (timestamp, samplerate);
 #if 0
   z_info (
-    "processing at %s", realtime.toString().c_str());
+    "processing at {}", realtime.toString().c_str());
 #endif
   Vamp::Plugin::FeatureSet fset = pl->process (input_buffers, realtime);
   return gen_feature_set_from_vamp_feature_set (fset, samplerate);
@@ -308,9 +308,9 @@ void
 vamp_plugin_output_print (ZVampOutputDescriptor * self)
 {
   z_info (
-    "identifier: %s\n"
-    "name: %s\n"
-    "description: %s",
+    "identifier: {}\n"
+    "name: {}\n"
+    "description: {}",
     self->identifier, self->name, self->description);
 }
 

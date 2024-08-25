@@ -59,6 +59,17 @@ ArrangerObject::get_selections_for_type (Type type)
 }
 
 void
+ArrangerObject::generate_transient ()
+{
+  std::visit (
+    [this] (auto &&obj_ptr) {
+      obj_ptr->transient_ = obj_ptr->clone_shared ();
+      obj_ptr->transient_->main_ = this->shared_from_this ();
+    },
+    convert_to_variant<ArrangerObjectPtrVariant> (this));
+}
+
+void
 ArrangerObject::select (
   const std::shared_ptr<ArrangerObject> &obj,
   bool                                   select,
@@ -793,6 +804,8 @@ ArrangerObject::get_track () const
 {
   if (track_ != nullptr)
     return track_;
+
+  z_return_val_if_fail (track_name_hash_ != 0, nullptr);
 
   const auto &tracklist =
     is_auditioner_ ? *SAMPLE_PROCESSOR->tracklist_ : *TRACKLIST;

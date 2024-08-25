@@ -44,7 +44,7 @@ accessible_range_set_current_value (
   BarSliderWidget * self = Z_BAR_SLIDER_WIDGET (accessible_range);
   if (self->end_setter)
     {
-      self->end_setter (self->object, REAL_VAL_FROM_BAR_SLIDER (value));
+      self->end_setter (REAL_VAL_FROM_BAR_SLIDER (value));
     }
 
   return TRUE;
@@ -71,11 +71,11 @@ get_real_val (BarSliderWidget * self, bool snapped)
     {
       if (snapped && self->snapped_getter)
         {
-          return self->snapped_getter (self->object);
+          return self->snapped_getter ();
         }
       else
         {
-          return self->getter (self->object);
+          return self->getter ();
         }
     }
 }
@@ -93,7 +93,7 @@ set_real_val (BarSliderWidget * self, float real_val)
     }
   else
     {
-      self->setter (self->object, real_val);
+      self->setter (real_val);
     }
 }
 
@@ -257,8 +257,7 @@ drag_begin (
       double normalized_val = ui_get_normalized_draggable_value (
         width, BAR_SLIDER_VAL_FROM_REAL (get_real_val (self, false)),
         self->start_x, self->start_x, self->start_x, 1.0, self->mode);
-      self->init_setter (
-        self->object, REAL_VAL_FROM_BAR_SLIDER (normalized_val));
+      self->init_setter (REAL_VAL_FROM_BAR_SLIDER (normalized_val));
     }
 }
 
@@ -298,7 +297,7 @@ drag_end (
         width, BAR_SLIDER_VAL_FROM_REAL (get_real_val (self, false)),
         self->start_x, self->start_x + offset_x, self->start_x + self->last_x,
         1.0, self->mode);
-      self->end_setter (self->object, REAL_VAL_FROM_BAR_SLIDER (normalized_val));
+      self->end_setter (REAL_VAL_FROM_BAR_SLIDER (normalized_val));
     }
 
   self->last_x = 0;
@@ -310,20 +309,20 @@ drag_end (
  */
 BarSliderWidget *
 _bar_slider_widget_new (
-  BarSliderType type,
-  float (*get_val) (void *),
-  void (*set_val) (void *, float),
-  void *       object,
-  float        min,
-  float        max,
-  int          w,
-  int          h,
-  float        zero,
-  int          convert_to_percentage,
-  int          decimals,
-  UiDragMode   mode,
-  const char * prefix,
-  const char * suffix)
+  BarSliderType      type,
+  GenericFloatGetter get_val,
+  GenericFloatSetter set_val,
+  void *             object,
+  float              min,
+  float              max,
+  int                w,
+  int                h,
+  float              zero,
+  int                convert_to_percentage,
+  int                decimals,
+  UiDragMode         mode,
+  const char *       prefix,
+  const char *       suffix)
 {
   z_warn_if_fail (object);
 

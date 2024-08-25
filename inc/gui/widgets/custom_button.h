@@ -49,7 +49,7 @@ public:
   };
 
 public:
-  CustomButtonWidget () = default;
+  CustomButtonWidget ();
   CustomButtonWidget (const std::string &icon_name, int size);
   CustomButtonWidget (const CustomButtonWidget &) = delete;
   CustomButtonWidget &operator= (const CustomButtonWidget &) = delete;

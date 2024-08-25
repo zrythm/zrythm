@@ -141,7 +141,10 @@ void
 ArrangerSelections::add_object_ref (const std::shared_ptr<ArrangerObject> &obj)
 {
   if (is_object_allowed (*obj))
-    objects_.emplace_back (obj);
+    {
+      obj->generate_transient ();
+      objects_.emplace_back (obj);
+    }
 }
 
 void

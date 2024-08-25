@@ -134,22 +134,19 @@ class UiTextures
 class UiCursor
 {
 public:
-  UiCursor (std::string name, GdkCursor * cursor, int offset_x, int offset_y)
-      : name_ (std::move (name)), cursor_ (cursor), offset_x_ (offset_x),
-        offset_y_ (offset_y)
-  {
-  }
-  ~UiCursor ()
-  {
-    if (cursor_)
-      g_object_unref (cursor_);
-  }
+  UiCursor () = delete;
+  UiCursor (std::string name, GdkCursor * cursor, int offset_x, int offset_y);
+  UiCursor (const UiCursor &other) = delete;
+  UiCursor &operator= (const UiCursor &other) = delete;
+  UiCursor (UiCursor &&other) = delete;
+  UiCursor &operator= (UiCursor &&other) = delete;
+  ~UiCursor ();
 
 public:
   std::string name_;
-  GdkCursor * cursor_;
-  int         offset_x_;
-  int         offset_y_;
+  GdkCursor * cursor_ = nullptr;
+  int         offset_x_ = 0;
+  int         offset_y_ = 0;
 };
 
 /**
@@ -163,7 +160,7 @@ public:
 public:
   UiColors colors_;
   // UiTextures    textures;
-  std::vector<UiCursor> cursors_;
+  std::vector<std::unique_ptr<UiCursor>> cursors_;
 
   bool     detail_level_set_;
   UiDetail detail_level_;

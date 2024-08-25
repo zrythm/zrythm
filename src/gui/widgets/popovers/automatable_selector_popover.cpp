@@ -252,7 +252,7 @@ setup_ports_listview (
   gtk_list_view_set_model (list_view, GTK_SELECTION_MODEL (single_sel));
 
   self->port_factory =
-    std::make_unique<ItemFactory> (ItemFactory::Type::Text, false, nullptr);
+    std::make_unique<ItemFactory> (ItemFactory::Type::Text, false, "");
   self->port_factory->ellipsize_label_ = false;
   gtk_list_view_set_factory (list_view, self->port_factory->list_item_factory_);
 }

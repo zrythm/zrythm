@@ -53,11 +53,11 @@ get_real_val (KnobWidget * self, bool snapped)
     case KnobType::KNOB_TYPE_NORMAL:
       if (snapped && self->snapped_getter)
         {
-          return self->snapped_getter (self->object);
+          return self->snapped_getter ();
         }
       else
         {
-          return self->getter (self->object);
+          return self->getter ();
         }
     case KnobType::KNOB_TYPE_PORT_MULTIPLIER:
       {
@@ -90,7 +90,7 @@ set_real_val (KnobWidget * self, float real_val)
 {
   if (self->type == KnobType::KNOB_TYPE_NORMAL)
     {
-      self->setter (self->object, real_val);
+      self->setter (real_val);
     }
   else
     {
@@ -323,7 +323,7 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       if (self->hover_str_getter)
         {
           /* draw text */
-          auto str = self->hover_str_getter (self->object);
+          auto str = self->hover_str_getter ();
           cairo_set_source_rgba (cr, 1, 1, 1, 1);
           int we, he;
           z_cairo_get_text_extents_for_widget (
@@ -402,8 +402,8 @@ drag_end (
     self->default_getter && self->setter && !self->drag_updated
     && state & GDK_CONTROL_MASK)
     {
-      float def_fader_val = self->default_getter (self->object);
-      self->setter (self->object, def_fader_val);
+      float def_fader_val = self->default_getter ();
+      self->setter (def_fader_val);
     }
 
   self->last_x = 0;

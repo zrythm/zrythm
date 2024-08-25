@@ -233,8 +233,8 @@ using TrackWidget = struct _TrackWidget
   // gulong              mute_toggled_handler_id;
 
   /** Buttons to be drawin in order. */
-  std::vector<CustomButtonWidget> top_buttons;
-  std::vector<CustomButtonWidget> bot_buttons;
+  std::vector<std::unique_ptr<CustomButtonWidget>> top_buttons;
+  std::vector<std::unique_ptr<CustomButtonWidget>> bot_buttons;
 
   MeterWidget * meter_l;
   MeterWidget * meter_r;

@@ -50,19 +50,19 @@ QuantizeOptions::init (NoteLength note_length)
 }
 
 float
-QuantizeOptions::get_swing ()
+QuantizeOptions::get_swing () const
 {
   return swing_;
 }
 
 float
-QuantizeOptions::get_amount ()
+QuantizeOptions::get_amount () const
 {
   return amount_;
 }
 
 float
-QuantizeOptions::get_randomization ()
+QuantizeOptions::get_randomization () const
 {
   return (float) rand_ticks_;
 }

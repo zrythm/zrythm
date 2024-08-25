@@ -557,11 +557,6 @@ public:
    */
   std::string get_name () const { return name_; };
 
-  static std::string name_getter (void * track)
-  {
-    return static_cast<Track *> (track)->get_name ();
-  }
-
   /**
    * Internally called by set_name_with_action().
    */
@@ -571,11 +566,6 @@ public:
    * Setter to be used by the UI to create an undoable action.
    */
   void set_name_with_action (const std::string &name);
-
-  static void name_setter_with_action (void * track, const std::string &name)
-  {
-    static_cast<Track *> (track)->set_name_with_action (name);
-  }
 
   /**
    * Setter for the track name.
@@ -627,24 +617,17 @@ public:
    */
   void activate_all_plugins (bool activate);
 
-  /**
-   * Comment setter.
-   *
-   * @note This creates an undoable action.
-   */
-  static void comment_setter (void * track, const std::string &comment)
-  {
-    static_cast<Track *> (track)->set_comment (comment, true);
-  }
-  static std::string comment_getter (void * track)
-  {
-    return static_cast<Track *> (track)->comment_;
-  }
+  std::string get_comment () const { return comment_; }
 
   /**
    * @param undoable Create an undable action.
    */
   void set_comment (const std::string &comment, bool undoable);
+
+  void set_comment_with_action (const std::string &comment)
+  {
+    set_comment (comment, true);
+  }
 
   /**
    * Sets the track color.

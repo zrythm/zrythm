@@ -43,7 +43,7 @@ enum class FileBrowserFilterType
 /**
  * File auditioner controls used in file browsers.
  */
-typedef struct _FileBrowserFiltersWidget
+using FileBrowserFiltersWidget = struct _FileBrowserFiltersWidget
 {
   GtkBox parent_instance;
 
@@ -52,9 +52,8 @@ typedef struct _FileBrowserFiltersWidget
   GtkToggleButton * toggle_presets;
 
   /** Callbacks. */
-  GtkWidget *     owner;
   GenericCallback refilter_files;
-} FileBrowserFiltersWidget;
+};
 
 /**
  * Sets up a FileBrowserFiltersWidget.
@@ -62,7 +61,6 @@ typedef struct _FileBrowserFiltersWidget
 void
 file_browser_filters_widget_setup (
   FileBrowserFiltersWidget * self,
-  GtkWidget *                owner,
   GenericCallback            refilter_files_cb);
 
 /**

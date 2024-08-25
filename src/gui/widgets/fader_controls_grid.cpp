@@ -120,8 +120,9 @@ setup_balance_control (FaderControlsGridWidget * self)
       auto ch = ch_track->get_channel ();
       z_return_if_fail (ch);
       self->balance_control = balance_control_widget_new (
-        Channel::balance_control_getter, Channel::balance_control_setter,
-        ch.get (), ch->fader_->balance_.get (), 12);
+        bind_member_function (*ch, &Channel::get_balance_control),
+        bind_member_function (*ch, &Channel::set_balance_control), ch.get (),
+        ch->fader_->balance_.get (), 12);
       gtk_box_append (self->balance_box, GTK_WIDGET (self->balance_control));
       gtk_widget_set_hexpand (GTK_WIDGET (self->balance_control), true);
       z_gtk_widget_set_margin (GTK_WIDGET (self->balance_control), 4);

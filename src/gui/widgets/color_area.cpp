@@ -212,7 +212,8 @@ color_area_widget_set_color (ColorAreaWidget * self, Color color)
 static void
 finalize (ColorAreaWidget * self)
 {
-  self->last_track_icon_name.~basic_string ();
+  std::destroy_at (&self->last_track_icon_name);
+  std::destroy_at (&self->color);
 
   object_free_w_func_and_null (g_object_unref, self->track_icon);
 
@@ -222,7 +223,8 @@ finalize (ColorAreaWidget * self)
 static void
 color_area_widget_init (ColorAreaWidget * self)
 {
-  new (&self->last_track_icon_name) std::string ();
+  std::construct_at (&self->last_track_icon_name);
+  std::construct_at (&self->color);
 
   gtk_widget_set_focusable (GTK_WIDGET (self), true);
   gtk_widget_set_overflow (GTK_WIDGET (self), GTK_OVERFLOW_HIDDEN);

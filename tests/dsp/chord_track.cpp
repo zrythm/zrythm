@@ -39,14 +39,14 @@ TEST_CASE_FIXTURE (BootstrapTimelineFixture, "get chord at pos")
 
   Position pos;
 
-  auto assert_chord_at_pos_null = [&] (const Position &pos) {
-    auto chord = P_CHORD_TRACK->get_chord_at_pos (pos);
+  auto assert_chord_at_pos_null = [&] (const Position &check_pos) {
+    auto chord = P_CHORD_TRACK->get_chord_at_pos (check_pos);
     REQUIRE_NULL (chord);
   };
 
   auto assert_chord_at_pos_eq =
-    [&] (const Position &pos, const auto &expected_chord) {
-      auto chord = P_CHORD_TRACK->get_chord_at_pos (pos);
+    [&] (const Position &check_pos, const auto &expected_chord) {
+      auto chord = P_CHORD_TRACK->get_chord_at_pos (check_pos);
       REQUIRE_EQ (chord, expected_chord.get ());
     };
 

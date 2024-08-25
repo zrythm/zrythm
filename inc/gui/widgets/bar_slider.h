@@ -152,20 +152,20 @@ typedef struct _BarSliderWidget
  */
 BarSliderWidget *
 _bar_slider_widget_new (
-  BarSliderType type,
-  float (*get_val) (void *),
-  void (*set_val) (void *, float),
-  void *       object,
-  float        min,
-  float        max,
-  int          w,
-  int          h,
-  float        zero,
-  int          convert_to_percentage,
-  int          decimals,
-  UiDragMode   mode,
-  const char * prefix,
-  const char * suffix);
+  BarSliderType      type,
+  GenericFloatGetter get_val,
+  GenericFloatSetter set_val,
+  void *             object,
+  float              min,
+  float              max,
+  int                w,
+  int                h,
+  float              zero,
+  int                convert_to_percentage,
+  int                decimals,
+  UiDragMode         mode,
+  const char *       prefix,
+  const char *       suffix);
 
 /**
  * Helper to create a bar slider widget.
@@ -173,9 +173,8 @@ _bar_slider_widget_new (
 #define bar_slider_widget_new( \
   getter, setter, obj, min, max, w, h, zero, dec, mode, suffix) \
   _bar_slider_widget_new ( \
-    BarSliderType::BAR_SLIDER_TYPE_NORMAL, (float (*) (void *)) getter, \
-    (void (*) (void *, float)) setter, (void *) obj, min, max, w, h, zero, 0, \
-    dec, mode, "", suffix)
+    BarSliderType::BAR_SLIDER_TYPE_NORMAL, getter, setter, (void *) obj, min, \
+    max, w, h, zero, 0, dec, mode, "", suffix)
 
 /**
  * Wrapper.

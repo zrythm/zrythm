@@ -1,15 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Box used as destination for DnD.
- */
-
 #include "actions/mixer_selections_action.h"
 #include "actions/tracklist_selections.h"
-#include "dsp/channel.h"
 #include "dsp/modulator_track.h"
 #include "dsp/port_connections_manager.h"
 #include "dsp/track.h"

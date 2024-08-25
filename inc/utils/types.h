@@ -85,33 +85,27 @@ using signed_sec_t = signed_frame_t;
 /**
  * Getter prototype for float values.
  */
-using GenericFloatGetter = std::function<float (void *)>;
+using GenericFloatGetter = std::function<float ()>;
 
 /**
  * Setter prototype for float values.
  */
-using GenericFloatSetter = std::function<void (void *, float)>;
+using GenericFloatSetter = std::function<void (float)>;
 
 /**
  * Getter prototype for strings.
  */
-using GenericStringGetter = std::function<std::string (void *)>;
+using GenericStringGetter = std::function<std::string ()>;
 
 /**
  * Setter prototype for float values.
  */
-using GenericStringSetter = std::function<void (void *, const std::string &)>;
-
-/**
- * Getter prototype for strings to be saved in the
- * given buffer.
- */
-// typedef void (*GenericStringCopyGetter) (void * object, char * buf);
+using GenericStringSetter = std::function<void (const std::string &)>;
 
 /**
  * Generic callback.
  */
-typedef void (*GenericCallback) (void * object);
+using GenericCallback = std::function<void ()>;
 
 /**
  * Generic comparator.
@@ -131,6 +125,32 @@ typedef bool (
  * Function to call to free objects.
  */
 typedef void (*ObjectFreeFunc) (void *);
+
+// For non-const member functions
+template <typename Class, typename Ret, typename... Args, typename ActualClass>
+auto
+bind_member_function (ActualClass &obj, Ret (Class::*func) (Args...))
+  -> std::enable_if_t<
+    std::is_base_of_v<Class, ActualClass>,
+    std::function<Ret (Args...)>>
+{
+  return [&obj, func] (Args... args) {
+    return (obj.*func) (std::forward<Args> (args)...);
+  };
+}
+
+// For const member functions
+template <typename Class, typename Ret, typename... Args, typename ActualClass>
+auto
+bind_member_function (ActualClass &obj, Ret (Class::*func) (Args...) const)
+  -> std::enable_if_t<
+    std::is_base_of_v<Class, ActualClass>,
+    std::function<Ret (Args...)>>
+{
+  return [&obj, func] (Args... args) {
+    return (obj.*func) (std::forward<Args> (args)...);
+  };
+}
 
 enum class AudioValueFormat
 {

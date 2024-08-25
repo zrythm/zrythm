@@ -9,6 +9,8 @@
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
+CustomButtonWidget::CustomButtonWidget () { }
+
 void
 CustomButtonWidget::init ()
 {
@@ -205,6 +207,8 @@ CustomButtonWidget::set_text (
 
 CustomButtonWidget::~CustomButtonWidget ()
 {
-  g_object_unref (layout);
-  g_object_unref (icon_texture);
+  if (layout)
+    g_object_unref (layout);
+  if (icon_texture)
+    g_object_unref (icon_texture);
 }

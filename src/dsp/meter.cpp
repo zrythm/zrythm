@@ -184,7 +184,7 @@ Meter::Meter (Port &port)
           peak_processor_->init (AUDIO_ENGINE->sample_rate_);
         }
 
-      tmp_buf_.reserve (0x4000);
+      tmp_buf_.reserve (AudioPort::AUDIO_RING_SIZE);
     }
   else if (port_->is_event ())
     {

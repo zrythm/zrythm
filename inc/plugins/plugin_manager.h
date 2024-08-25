@@ -56,11 +56,8 @@ public:
     const PluginProtocol   protocol,
     const std::string_view rel_path) const;
 
-  void begin_scan (
-    const double    max_progress,
-    double *        progress,
-    GenericCallback cb,
-    void *          user_data);
+  void
+  begin_scan (const double max_progress, double * progress, GenericCallback cb);
 
   /**
    * Adds a new descriptor.
@@ -139,8 +136,7 @@ public:
 
   std::unique_ptr<ZCarlaDiscovery> carla_discovery_;
 
-  GenericCallback scan_done_cb_ = nullptr;
-  void *          scan_done_cb_data_ = nullptr;
+  GenericCallback scan_done_cb_;
 
   /** Whether the plugin manager has been set up already. */
   bool setup_ = false;

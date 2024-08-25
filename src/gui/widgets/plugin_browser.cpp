@@ -691,7 +691,7 @@ list_view_setup (
             self->plugin_list_view == list_view
               ? ItemFactory::Type::IconAndText
               : ItemFactory::Type::Text,
-            false, nullptr);
+            false, "");
           gtk_list_view_set_factory (list_view, factory->list_item_factory_);
           self->item_factories.emplace_back (std::move (factory));
         }

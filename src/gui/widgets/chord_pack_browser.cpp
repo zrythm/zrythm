@@ -267,8 +267,8 @@ packs_list_view_setup (
   GtkSelectionModel *      selection_model)
 {
   gtk_list_view_set_model (list_view, selection_model);
-  *self->packs_item_factory = std::make_unique<ItemFactory> (
-    ItemFactory::Type::IconAndText, false, nullptr);
+  *self->packs_item_factory =
+    std::make_unique<ItemFactory> (ItemFactory::Type::IconAndText, false, "");
   gtk_list_view_set_factory (
     list_view, (*self->packs_item_factory)->list_item_factory_);
 
@@ -284,8 +284,8 @@ psets_list_view_setup (
   GtkSelectionModel *      selection_model)
 {
   gtk_list_view_set_model (list_view, selection_model);
-  *self->psets_item_factory = std::make_unique<ItemFactory> (
-    ItemFactory::Type::IconAndText, false, nullptr);
+  *self->psets_item_factory =
+    std::make_unique<ItemFactory> (ItemFactory::Type::IconAndText, false, "");
   gtk_list_view_set_factory (
     list_view, (*self->psets_item_factory)->list_item_factory_);
 
@@ -317,7 +317,7 @@ chord_pack_browser_widget_new (void)
 
   file_auditioner_controls_widget_setup (
     self->auditioner_controls, GTK_WIDGET (self), false, get_selected_preset,
-    (GenericCallback) refilter_presets);
+    [self] () { refilter_presets (self); });
 
   /* populate packs */
   self->packs_selection_model =

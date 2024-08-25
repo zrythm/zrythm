@@ -135,6 +135,11 @@ public:
   }
 
   /**
+   * @brief Generate @ref transient_.
+   */
+  void generate_transient ();
+
+  /**
    * Returns if the object type has a length.
    */
   static inline bool type_has_length (Type type)
@@ -301,9 +306,10 @@ public:
 
   void get_position_from_type (Position * pos, PositionType type) const;
 
-  template <typename T = ArrangerObject> T * get_transient () const
+  template <typename T = ArrangerObject>
+  std::shared_ptr<T> get_transient () const
   {
-    return dynamic_cast<T *> (transient_);
+    return dynamic_pointer_cast<T> (transient_);
   };
 
   /**
@@ -538,15 +544,17 @@ public:
   /**
    * A copy ArrangerObject corresponding to this, such as when ctrl+dragging.
    *
+   * This is generated when an object is added to the project selections.
+   *
    * This will be the clone object saved in the cloned arranger selections in
    * each arranger during actions, and would get drawn separately.
    */
-  ArrangerObject * transient_ = nullptr;
+  std::shared_ptr<ArrangerObject> transient_;
 
   /**
    * The opposite of the above. This will be set on the transient objects.
    */
-  ArrangerObject * main_ = nullptr;
+  std::weak_ptr<ArrangerObject> main_;
 
   int magic_ = ARRANGER_OBJECT_MAGIC;
 

@@ -4,6 +4,7 @@
 #include "gui/widgets/active_hardware_mb.h"
 #include "gui/widgets/popovers/active_hardware_popover.h"
 #include "utils/logger.h"
+#include "utils/string.h"
 
 #include <glib/gi18n.h>
 
@@ -38,20 +39,19 @@ active_hardware_mb_widget_refresh (ActiveHardwareMbWidget * self)
   active_hardware_mb_widget_save_settings (self);
   if (self->callback)
     {
-      self->callback (self->object);
+      self->callback ();
     }
 }
 
 void
 active_hardware_mb_widget_save_settings (ActiveHardwareMbWidget * self)
 {
-  char * controllers[40];
-  int    num_controllers = 0;
+  StringArray controllers;
 
   for (
     GtkWidget * child =
       gtk_widget_get_first_child (GTK_WIDGET (self->popover->controllers_box));
-    child != NULL; child = gtk_widget_get_next_sibling (child))
+    child != nullptr; child = gtk_widget_get_next_sibling (child))
     {
       if (!GTK_IS_CHECK_BUTTON (child))
         continue;
@@ -59,14 +59,12 @@ active_hardware_mb_widget_save_settings (ActiveHardwareMbWidget * self)
       GtkCheckButton * chkbtn = GTK_CHECK_BUTTON (child);
       if (gtk_check_button_get_active (chkbtn))
         {
-          controllers[num_controllers++] =
-            g_strdup (gtk_check_button_get_label (chkbtn));
+          controllers.add (gtk_check_button_get_label (chkbtn));
         }
     }
-  controllers[num_controllers] = NULL;
 
   int res = g_settings_set_strv (
-    self->settings, self->key, (const char * const *) controllers);
+    self->settings, self->key, controllers.getNullTerminated ());
   z_return_if_fail (res == 1);
 }
 

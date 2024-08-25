@@ -271,14 +271,14 @@ public:
   bool recording_paused_ = false;
 
   /** Buttons used by the track widget */
-  std::vector<CustomButtonWidget> top_right_buttons_;
-  std::vector<CustomButtonWidget> top_left_buttons_;
-  std::vector<CustomButtonWidget> bot_right_buttons_;
+  std::vector<std::unique_ptr<CustomButtonWidget>> top_right_buttons_;
+  std::vector<std::unique_ptr<CustomButtonWidget>> top_left_buttons_;
+  std::vector<std::unique_ptr<CustomButtonWidget>> bot_right_buttons_;
 
   /** Automation mode button group. */
   std::unique_ptr<AutomationModeWidget> am_widget_;
 
-  std::vector<CustomButtonWidget> bot_left_buttons_;
+  std::vector<std::unique_ptr<CustomButtonWidget>> bot_left_buttons_;
 
   /** Pointer to owner automation tracklist, if any. */
   AutomationTracklist * atl_ = nullptr;

@@ -10,7 +10,8 @@
             "valuesFormatting": "parseText",
             "env": {
                 "GSETTINGS_SCHEMA_DIR": "${workspaceFolder}/_installed/share/glib-2.0/schemas",
-                "G_DEBUG": "fatal_criticals"
+                "G_DEBUG": "fatal_criticals",
+                "ZRYTHM_BREAK_ON_ERROR": "1",
             },
             "arguments": "--dummy"
         }

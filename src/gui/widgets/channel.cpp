@@ -522,7 +522,8 @@ setup_balance_control (ChannelWidget * self)
 {
   auto ch = get_channel (self);
   self->balance_control = balance_control_widget_new (
-    Channel::balance_control_getter, Channel::balance_control_setter, ch.get (),
+    bind_member_function (*ch, &Channel::get_balance_control),
+    bind_member_function (*ch, &Channel::set_balance_control), ch.get (),
     ch->fader_->balance_.get (), 12);
   gtk_box_append (self->balance_control_box, GTK_WIDGET (self->balance_control));
 }
@@ -805,7 +806,8 @@ channel_widget_new (const std::shared_ptr<Channel> &channel)
   setup_balance_control (self);
   setup_instrument_ui_toggle (self);
   editable_label_widget_setup (
-    self->name, track, Track::name_getter, Track::name_setter_with_action);
+    self->name, track, bind_member_function (*track, &Track::get_name),
+    bind_member_function (*track, &Track::set_name_with_action));
   route_target_selector_widget_refresh (self->output, track);
   color_area_widget_setup_track (self->color, track);
 

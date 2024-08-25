@@ -25,9 +25,9 @@ class ProgressInfo;
  * @{
  */
 
-using GenericProgressDialogButton = struct GenericProgressDialogButton
+struct GenericProgressDialogButton
 {
-  char response[200];
+  std::string response;
 
   /**
    * Only show the button when the action is finished.
@@ -35,10 +35,7 @@ using GenericProgressDialogButton = struct GenericProgressDialogButton
   bool only_on_finish;
 
   /** Callback when this response is made. */
-  GenericCallback cb;
-
-  /** Callback object. */
-  void * cb_obj;
+  std::optional<GenericCallback> cb;
 };
 
 /**
@@ -67,14 +64,10 @@ using GenericProgressDialogWidgetPrivate = struct
   /**
    * Additional buttons.
    */
-  GenericProgressDialogButton extra_buttons[10];
-  size_t                      num_extra_buttons;
+  std::vector<GenericProgressDialogButton> extra_buttons;
 
   /** Optional callback when autoclose is requested. */
-  GenericCallback close_cb;
-
-  /** Callback object. */
-  void * close_cb_obj;
+  std::optional<GenericCallback> close_cb;
 };
 
 using GenericProgressDialogWidgetClass = struct _GenericProgressDialogWidgetClass
@@ -87,26 +80,24 @@ using GenericProgressDialogWidgetClass = struct _GenericProgressDialogWidgetClas
  */
 void
 generic_progress_dialog_widget_setup (
-  GenericProgressDialogWidget * self,
-  const char *                  title,
-  ProgressInfo *                progress_info,
-  const char *                  initial_label,
-  bool                          autoclose,
-  GenericCallback               close_callback,
-  void *                        close_callback_object,
-  bool                          cancelable);
+  GenericProgressDialogWidget *  self,
+  const char *                   title,
+  ProgressInfo *                 progress_info,
+  const char *                   initial_label,
+  bool                           autoclose,
+  std::optional<GenericCallback> close_callback,
+  bool                           cancelable);
 
 /**
  * Adds a response to the dialog.
  */
 void
 generic_progress_dialog_add_response (
-  GenericProgressDialogWidget * self,
-  const char *                  response,
-  const char *                  response_label,
-  GenericCallback               callback,
-  void *                        callback_object,
-  bool                          only_on_finish);
+  GenericProgressDialogWidget *  self,
+  const char *                   response,
+  const char *                   response_label,
+  std::optional<GenericCallback> callback,
+  bool                           only_on_finish);
 
 GenericProgressDialogWidget *
 generic_progress_dialog_widget_new (void);

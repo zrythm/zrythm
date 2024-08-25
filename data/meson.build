@@ -209,6 +209,9 @@ install_data (
   install_dir: sourceviewstylesdir,
   rename: 'monokai-extended-zrythm.xml')
 
+# templates
+install_emptydir(zrythmdatadir / 'templates')
+
 # css themes
 subdir ('css-themes')
 

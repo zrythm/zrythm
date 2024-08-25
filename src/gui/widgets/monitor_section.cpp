@@ -27,30 +27,6 @@
 
 G_DEFINE_TYPE (MonitorSectionWidget, monitor_section_widget, GTK_TYPE_BOX)
 
-static const char *
-monitor_out_name_getter (void * obj)
-{
-  return _ ("Monitor");
-}
-
-static const char *
-mute_name_getter (void * obj)
-{
-  return _ ("Mute");
-}
-
-static const char *
-listen_name_getter (void * obj)
-{
-  return _ ("Listen");
-}
-
-static const char *
-dim_name_getter (void * obj)
-{
-  return _ ("Dim");
-}
-
 void
 monitor_section_widget_refresh (MonitorSectionWidget * self)
 {
@@ -211,47 +187,36 @@ monitor_section_widget_setup (
 {
   self->control_room = control_room;
 
-  KnobWidget * knob = knob_widget_new_simple (
-    Fader::fader_val_getter, Fader::default_fader_val_getter,
-    Fader::fader_val_setter, MONITOR_FADER.get (), 0.f, 1.f, 78, 0.f);
-  knob->hover_str_getter = Fader::db_string_getter_static;
-  self->monitor_level = knob_with_name_widget_new (
-    nullptr, monitor_out_name_getter, nullptr, knob, GTK_ORIENTATION_VERTICAL,
-    false, 2);
-  gtk_box_append (
-    GTK_BOX (self->monitor_level_box), GTK_WIDGET (self->monitor_level));
+  auto create_and_add_knob =
+    [] (
+      auto &knob_owner, Fader &fader, auto &container, const char * label,
+      const auto size) {
+      auto knob = knob_widget_new_simple (
+        bind_member_function (fader, &Fader::get_fader_val),
+        bind_member_function (fader, &Fader::get_default_fader_val),
+        bind_member_function (fader, &Fader::set_fader_val), &fader, 0.f, 1.f,
+        size, 0.f);
+      knob->hover_str_getter =
+        bind_member_function (fader, &Fader::db_string_getter);
+      knob_owner = knob_with_name_widget_new (
+        nullptr, [label] () { return label; }, nullptr, knob,
+        GTK_ORIENTATION_VERTICAL, false, 2);
+      gtk_box_append (container, GTK_WIDGET (knob_owner));
+    };
 
-  /* mute */
-  knob = knob_widget_new_simple (
-    Fader::fader_val_getter, Fader::default_fader_val_getter,
-    Fader::fader_val_setter, CONTROL_ROOM->mute_fader_.get (), 0.f, 1.f, 52,
-    0.f);
-  knob->hover_str_getter = Fader::db_string_getter_static;
-  self->mute_level = knob_with_name_widget_new (
-    nullptr, mute_name_getter, nullptr, knob, GTK_ORIENTATION_VERTICAL, false,
-    2);
-  gtk_box_append (GTK_BOX (self->mute_level_box), GTK_WIDGET (self->mute_level));
-
-  /* listen */
-  knob = knob_widget_new_simple (
-    Fader::fader_val_getter, Fader::default_fader_val_getter,
-    Fader::fader_val_setter, CONTROL_ROOM->listen_fader_.get (), 0.f, 1.f, 52,
-    0.f);
-  knob->hover_str_getter = Fader::db_string_getter_static;
-  self->listen_level = knob_with_name_widget_new (
-    nullptr, listen_name_getter, nullptr, knob, GTK_ORIENTATION_VERTICAL, false,
-    2);
-  gtk_box_append (
-    GTK_BOX (self->listen_level_box), GTK_WIDGET (self->listen_level));
-
-  /* dim */
-  knob = knob_widget_new_simple (
-    Fader::fader_val_getter, Fader::default_fader_val_getter,
-    Fader::fader_val_setter, CONTROL_ROOM->dim_fader_.get (), 0.f, 1.f, 52, 0.f);
-  knob->hover_str_getter = Fader::db_string_getter_static;
-  self->dim_level = knob_with_name_widget_new (
-    nullptr, dim_name_getter, nullptr, knob, GTK_ORIENTATION_VERTICAL, false, 2);
-  gtk_box_append (GTK_BOX (self->dim_level_box), GTK_WIDGET (self->dim_level));
+  create_and_add_knob (
+    self->monitor_level, *MONITOR_FADER, self->monitor_level_box, _ ("Monitor"),
+    78);
+  constexpr int basic_knob_size = 52;
+  create_and_add_knob (
+    self->mute_level, *CONTROL_ROOM->mute_fader_, self->mute_level_box,
+    _ ("Mute"), basic_knob_size);
+  create_and_add_knob (
+    self->listen_level, *CONTROL_ROOM->listen_fader_, self->listen_level_box,
+    _ ("Listen"), basic_knob_size);
+  create_and_add_knob (
+    self->dim_level, *CONTROL_ROOM->dim_fader_, self->dim_level_box, _ ("Dim"),
+    basic_knob_size);
 
   z_gtk_button_set_icon_name_and_text (
     GTK_BUTTON (self->mono_toggle), "codicons-merge", _ ("Mono"), true,
@@ -276,16 +241,14 @@ monitor_section_widget_setup (
       self->left_outputs = active_hardware_mb_widget_new ();
       active_hardware_mb_widget_setup (
         self->left_outputs, F_NOT_INPUT, F_NOT_MIDI, S_MONITOR, "l-devices");
-      self->left_outputs->callback = (GenericCallback) on_devices_updated;
-      self->left_outputs->object = self;
+      self->left_outputs->callback = [self] () { on_devices_updated (self); };
       gtk_box_append (
         GTK_BOX (self->left_output_box), GTK_WIDGET (self->left_outputs));
 
       self->right_outputs = active_hardware_mb_widget_new ();
       active_hardware_mb_widget_setup (
         self->right_outputs, F_NOT_INPUT, F_NOT_MIDI, S_MONITOR, "r-devices");
-      self->right_outputs->callback = (GenericCallback) on_devices_updated;
-      self->right_outputs->object = self;
+      self->right_outputs->callback = [self] () { on_devices_updated (self); };
       gtk_box_append (
         GTK_BOX (self->right_output_box), GTK_WIDGET (self->right_outputs));
     }

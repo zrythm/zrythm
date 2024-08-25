@@ -49,7 +49,7 @@ enum class WrappedObjectType
  * To be used in list view models and other APIs that require
  * using a GObject.
  */
-typedef struct _WrappedObjectWithChangeSignal
+using WrappedObjectWithChangeSignal = struct _WrappedObjectWithChangeSignal
 {
   GObject parent_instance;
 
@@ -64,7 +64,7 @@ typedef struct _WrappedObjectWithChangeSignal
   GListModel * child_model;
 
   ObjectFreeFunc free_func;
-} WrappedObjectWithChangeSignal;
+};
 
 /**
  * Fires the signal.

@@ -82,8 +82,8 @@ using GreeterWidget = struct _GreeterWidget
   /** Progress done (0.0 ~ 1.0). */
   double progress;
 
-  char title[800];
-  char description[800];
+  std::string title;
+  std::string description;
 
   /* -- projects page -- */
 
@@ -138,10 +138,10 @@ greeter_widget_new (
  */
 void
 greeter_widget_set_progress_and_status (
-  GreeterWidget * self,
-  const char *    title,
-  const char *    description,
-  const double    perc);
+  GreeterWidget     &self,
+  const std::string &title,
+  const std::string &description,
+  const double       perc);
 
 void
 greeter_widget_set_currently_scanned_plugin (

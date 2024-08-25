@@ -190,13 +190,15 @@ modulator_macro_widget_new (int modulator_macro_idx)
   auto &port = macro->macro_;
 
   KnobWidget * knob = knob_widget_new_simple (
-    ControlPort::val_getter, ControlPort::default_val_getter,
-    ControlPort::real_val_setter, port.get (), port->minf_, port->maxf_, 48,
-    port->zerof_);
+    bind_member_function (*port, &ControlPort::get_val),
+    bind_member_function (*port, &ControlPort::get_default_val),
+    bind_member_function (*port, &ControlPort::set_real_val), port.get (),
+    port->minf_, port->maxf_, 48, port->zerof_);
   self->knob_with_name = knob_with_name_widget_new (
-    macro.get (), ModulatorMacroProcessor::name_getter,
-    ModulatorMacroProcessor::name_setter, knob, GTK_ORIENTATION_VERTICAL, true,
-    2);
+    macro.get (),
+    bind_member_function (*macro, &ModulatorMacroProcessor::get_name),
+    bind_member_function (*macro, &ModulatorMacroProcessor::set_name), knob,
+    GTK_ORIENTATION_VERTICAL, true, 2);
   gtk_grid_attach (
     GTK_GRID (self->grid), GTK_WIDGET (self->knob_with_name), 1, 0, 1, 2);
 

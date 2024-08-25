@@ -239,6 +239,9 @@ meter_widget_new (Port * port, int width)
 static void
 finalize (MeterWidget * self)
 {
+  std::destroy_at (&self->start_color);
+  std::destroy_at (&self->end_color);
+
   object_delete_and_null (self->meter);
 
   G_OBJECT_CLASS (meter_widget_parent_class)->finalize (G_OBJECT (self));
@@ -247,6 +250,9 @@ finalize (MeterWidget * self)
 static void
 meter_widget_init (MeterWidget * self)
 {
+  std::construct_at (&self->start_color);
+  std::construct_at (&self->end_color);
+
   self->start_color = UI_COLORS->z_yellow;
   self->end_color = UI_COLORS->bright_green;
   gtk_accessible_update_property (

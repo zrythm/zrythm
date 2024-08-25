@@ -59,7 +59,7 @@ on_settings_menu_items_changed (
   int                            added,
   FileAuditionerControlsWidget * self)
 {
-  self->refilter_files (self->owner);
+  self->refilter_files ();
 }
 
 static void

@@ -250,8 +250,8 @@ files_list_view_setup (
   GtkSelectionModel *      selection_model)
 {
   gtk_list_view_set_model (list_view, selection_model);
-  *self->files_item_factory = std::make_unique<ItemFactory> (
-    ItemFactory::Type::IconAndText, false, nullptr);
+  *self->files_item_factory =
+    std::make_unique<ItemFactory> (ItemFactory::Type::IconAndText, false, "");
   gtk_list_view_set_factory (
     list_view, (*self->files_item_factory)->list_item_factory_);
 
@@ -352,8 +352,8 @@ bookmarks_list_view_setup (
   GtkSelectionModel *      model)
 {
   gtk_list_view_set_model (list_view, model);
-  *self->bookmarks_item_factory = std::make_unique<ItemFactory> (
-    ItemFactory::Type::IconAndText, false, nullptr);
+  *self->bookmarks_item_factory =
+    std::make_unique<ItemFactory> (ItemFactory::Type::IconAndText, false, "");
   gtk_list_view_set_factory (
     list_view, (*self->bookmarks_item_factory)->list_item_factory_);
 }
@@ -420,9 +420,10 @@ panel_file_browser_widget_new (void)
 
   file_auditioner_controls_widget_setup (
     self->auditioner_controls, GTK_WIDGET (self), true, get_selected_file,
-    (GenericCallback) refilter_files);
-  file_browser_filters_widget_setup (
-    self->filters_toolbar, GTK_WIDGET (self), (GenericCallback) refilter_files);
+    [self] () { refilter_files (self); });
+  file_browser_filters_widget_setup (self->filters_toolbar, [self] () {
+    refilter_files (self);
+  });
 
   /* populate bookmarks */
   GtkSelectionModel * bookmarks_model = create_model_for_locations (self);

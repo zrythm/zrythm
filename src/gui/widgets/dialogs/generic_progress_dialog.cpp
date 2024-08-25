@@ -20,10 +20,10 @@ G_DEFINE_TYPE_WITH_PRIVATE (
   generic_progress_dialog_widget,
   ADW_TYPE_ALERT_DIALOG)
 
-#define GET_PRIVATE(x) \
-  GenericProgressDialogWidgetPrivate * prv = \
-    static_cast<GenericProgressDialogWidgetPrivate *> ( \
-      generic_progress_dialog_widget_get_instance_private (x))
+auto get_private = [] (auto &self) {
+  return static_cast<GenericProgressDialogWidgetPrivate *> (
+    generic_progress_dialog_widget_get_instance_private (self));
+};
 
 static void
 on_response_cb (
@@ -34,12 +34,12 @@ on_response_cb (
 static void
 run_callback_and_force_close (GenericProgressDialogWidget * self)
 {
-  GET_PRIVATE (self);
-  if (prv->close_cb)
+  auto prv = get_private (self);
+  if (prv->close_cb.has_value ())
     {
-      prv->close_cb (prv->close_cb_obj);
+      prv->close_cb.value ();
     }
-  prv->close_cb = NULL;
+  prv->close_cb.reset ();
   g_signal_handlers_disconnect_by_func (self, (gpointer) on_response_cb, self);
   adw_dialog_force_close (ADW_DIALOG (self));
 }
@@ -51,7 +51,7 @@ on_response_cb (
   GenericProgressDialogWidget * self)
 {
   z_debug ("generic progress response: {}", response);
-  GET_PRIVATE (self);
+  auto prv = get_private (self);
   if (string_is_equal (response, "cancel"))
     {
       z_debug ("accepting cancel response");
@@ -66,15 +66,14 @@ on_response_cb (
     }
   else
     {
-      for (size_t i = 0; i < prv->num_extra_buttons; i++)
+      for (auto &btn : prv->extra_buttons)
         {
-          GenericProgressDialogButton * btn = &prv->extra_buttons[i];
-          if (string_is_equal (response, btn->response))
+          if (response == btn.response)
             {
               /* call given callback */
-              if (btn->cb)
+              if (btn.cb.has_value ())
                 {
-                  btn->cb (btn->cb_obj);
+                  btn.cb.value ();
                 }
               break;
             }
@@ -88,7 +87,7 @@ tick_cb (
   GdkFrameClock *               frame_clock,
   GenericProgressDialogWidget * self)
 {
-  GET_PRIVATE (self);
+  auto           prv = get_private (self);
   ProgressInfo * info = prv->progress_info;
 
   double      progress;
@@ -118,13 +117,12 @@ tick_cb (
             ADW_ALERT_DIALOG (self), "ok", true);
           adw_alert_dialog_set_response_enabled (
             ADW_ALERT_DIALOG (self), "cancel", false);
-          for (size_t i = 0; i < prv->num_extra_buttons; i++)
+          for (auto &btn : prv->extra_buttons)
             {
-              GenericProgressDialogButton * btn = &prv->extra_buttons[i];
-              if (btn->only_on_finish)
+              if (btn.only_on_finish)
                 {
                   adw_alert_dialog_set_response_enabled (
-                    ADW_ALERT_DIALOG (self), btn->response, true);
+                    ADW_ALERT_DIALOG (self), btn.response.c_str (), true);
                 }
             }
           gtk_progress_bar_set_text (prv->progress_bar, msg);
@@ -151,27 +149,25 @@ tick_cb (
 
 void
 generic_progress_dialog_add_response (
-  GenericProgressDialogWidget * self,
-  const char *                  response,
-  const char *                  response_label,
-  GenericCallback               callback,
-  void *                        callback_object,
-  bool                          only_on_finish)
+  GenericProgressDialogWidget *  self,
+  const char *                   response,
+  const char *                   response_label,
+  std::optional<GenericCallback> callback,
+  bool                           only_on_finish)
 {
-  GET_PRIVATE (self);
+  auto prv = get_private (self);
 
-  GenericProgressDialogButton * extra_btn =
-    &prv->extra_buttons[prv->num_extra_buttons++];
+  GenericProgressDialogButton btn;
 
   adw_alert_dialog_add_response (
     ADW_ALERT_DIALOG (self), response, response_label);
   adw_alert_dialog_set_response_enabled (
     ADW_ALERT_DIALOG (self), response, !only_on_finish);
 
-  strncpy (extra_btn->response, response, 200);
-  extra_btn->cb = callback;
-  extra_btn->cb_obj = callback_object;
-  extra_btn->only_on_finish = only_on_finish;
+  btn.response = response;
+  btn.cb = callback;
+  btn.only_on_finish = only_on_finish;
+  prv->extra_buttons.emplace_back (std::move (btn));
 }
 
 GenericProgressDialogWidget *
@@ -186,22 +182,20 @@ generic_progress_dialog_widget_new (void)
  */
 void
 generic_progress_dialog_widget_setup (
-  GenericProgressDialogWidget * self,
-  const char *                  title,
-  ProgressInfo *                progress_info,
-  const char *                  initial_label,
-  bool                          autoclose,
-  GenericCallback               close_callback,
-  void *                        close_callback_object,
-  bool                          cancelable)
+  GenericProgressDialogWidget *  self,
+  const char *                   title,
+  ProgressInfo *                 progress_info,
+  const char *                   initial_label,
+  bool                           autoclose,
+  std::optional<GenericCallback> close_callback,
+  bool                           cancelable)
 {
   adw_alert_dialog_set_heading (ADW_ALERT_DIALOG (self), title);
 
-  GET_PRIVATE (self);
+  auto prv = get_private (self);
   prv->progress_info = progress_info;
   prv->autoclose = autoclose;
   prv->close_cb = close_callback;
-  prv->close_cb_obj = close_callback_object;
 
   gtk_progress_bar_set_text (prv->progress_bar, initial_label);
 
@@ -213,6 +207,17 @@ generic_progress_dialog_widget_setup (
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (prv->progress_bar), (GtkTickCallback) tick_cb, self, nullptr);
+}
+
+static void
+generic_progress_dialog_widget_finalize (GObject * object)
+{
+  auto self = Z_GENERIC_PROGRESS_DIALOG_WIDGET (object);
+  auto prv = get_private (self);
+  std::destroy_at (&prv->extra_buttons);
+  std::destroy_at (&prv->close_cb);
+
+  G_OBJECT_CLASS (generic_progress_dialog_widget_parent_class)->finalize (object);
 }
 
 static void
@@ -230,10 +235,17 @@ generic_progress_dialog_widget_class_init (
   gtk_widget_class_bind_template_callback (klass, on_response_cb);
 
 #undef BIND_CHILD
+
+  auto oklass = G_OBJECT_CLASS (_klass);
+  oklass->finalize = generic_progress_dialog_widget_finalize;
 }
 
 static void
 generic_progress_dialog_widget_init (GenericProgressDialogWidget * self)
 {
+  auto prv = get_private (self);
+  std::construct_at (&prv->close_cb);
+  std::construct_at (&prv->extra_buttons);
+
   gtk_widget_init_template (GTK_WIDGET (self));
 }

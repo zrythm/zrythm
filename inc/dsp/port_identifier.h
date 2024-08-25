@@ -357,11 +357,7 @@ public:
   void init ();
 
   const std::string &get_label () const { return label_; }
-  static std::string label_getter (void * data)
-  {
-    return static_cast<PortIdentifier *> (data)->get_label ();
-  }
-  const char * get_label_as_c_str () const { return label_.c_str (); }
+  const char *       get_label_as_c_str () const { return label_.c_str (); }
 
   bool is_control () const { return type_ == PortType::Control; }
   bool is_midi () const { return type_ == PortType::Event; }
@@ -413,16 +409,6 @@ public:
    * @ref p2 are pointers to Port.
    */
   static int port_group_cmp (const void * p1, const void * p2);
-
-  static std::string get_label (void * data)
-  {
-    return static_cast<PortIdentifier *> (data)->get_label ();
-  }
-
-  static uint32_t get_hash (const void * data)
-  {
-    return static_cast<const PortIdentifier *> (data)->get_hash ();
-  }
 
   static void destroy_notify (void * data)
   {

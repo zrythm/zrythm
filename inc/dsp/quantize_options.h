@@ -36,41 +36,17 @@ public:
    */
   void update_quantize_points ();
 
-  float        get_swing ();
-  static float swing_getter (void * data)
-  {
-    return ((QuantizeOptions *) data)->get_swing ();
-  }
+  float get_swing () const;
 
-  float        get_amount ();
-  static float amount_getter (void * data)
-  {
-    return ((QuantizeOptions *) data)->get_amount ();
-  }
+  float get_amount () const;
 
-  float        get_randomization ();
-  static float randomization_getter (void * data)
-  {
-    return ((QuantizeOptions *) data)->get_randomization ();
-  }
+  float get_randomization () const;
 
-  void        set_swing (float swing);
-  static void swing_setter (void * data, float swing)
-  {
-    ((QuantizeOptions *) data)->set_swing (swing);
-  }
+  void set_swing (float swing);
 
-  void        set_amount (float amount);
-  static void amount_setter (void * data, float amount)
-  {
-    ((QuantizeOptions *) data)->set_amount (amount);
-  }
+  void set_amount (float amount);
 
-  void        set_randomization (float randomization);
-  static void randomization_setter (void * data, float randomization)
-  {
-    ((QuantizeOptions *) data)->set_randomization (randomization);
-  }
+  void set_randomization (float randomization);
 
   /**
    * Returns the grid intensity as a human-readable string.

@@ -1163,7 +1163,8 @@ timeline_arranger_on_drag_end (ArrangerWidget * self)
   double ticks_diff = 0;
   if (prj_start_object)
     ticks_diff =
-      prj_start_object->pos_.ticks_ - prj_start_object->transient_->pos_.ticks_;
+      prj_start_object->pos_.ticks_
+      - prj_start_object->get_transient ()->pos_.ticks_;
 
   try
     {
@@ -1210,7 +1211,7 @@ timeline_arranger_on_drag_end (ArrangerWidget * self)
               {
                 auto fo =
                   std::dynamic_pointer_cast<FadeableObject> (prj_start_object);
-                auto fo_trans = dynamic_cast<FadeableObject *> (fo->transient_);
+                auto fo_trans = fo->get_transient<FadeableObject> ();
                 if (is_r (self->action))
                   {
                     ticks_diff =
@@ -1226,8 +1227,7 @@ timeline_arranger_on_drag_end (ArrangerWidget * self)
               {
                 auto lo =
                   dynamic_pointer_cast<LengthableObject> (prj_start_object);
-                auto lo_trans =
-                  dynamic_cast<LengthableObject *> (lo->transient_);
+                auto lo_trans = lo->get_transient<LengthableObject> ();
                 ticks_diff = lo->end_pos_.ticks_ - lo_trans->end_pos_.ticks_;
               }
 
@@ -1352,9 +1352,13 @@ timeline_arranger_on_drag_end (ArrangerWidget * self)
           {
             const auto obj_type_str = prj_start_object->get_type_as_string ();
             auto       str = format_str (_ ("{} name"), obj_type_str);
+            auto       nameable_obj =
+              dynamic_cast<NameableObject *> (prj_start_object.get ());
             StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
-              str, prj_start_object.get (), NameableObject::name_getter,
-              NameableObject::name_setter_with_action);
+              str,
+              bind_member_function (*nameable_obj, &NameableObject::get_name),
+              bind_member_function (
+                *nameable_obj, &NameableObject::set_name_with_action));
             gtk_window_present (GTK_WINDOW (dialog));
             self->action = UiOverlayAction::NONE;
           }

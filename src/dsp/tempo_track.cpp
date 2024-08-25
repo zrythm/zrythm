@@ -99,12 +99,9 @@ TempoTrack::get_current_bpm () const
 }
 
 std::string
-TempoTrack::get_current_bpm_as_str (void * self)
+TempoTrack::get_current_bpm_as_str ()
 {
-  auto t = (TempoTrack *) self;
-  z_return_val_if_fail (t, nullptr);
-
-  auto bpm = t->get_current_bpm ();
+  auto bpm = get_current_bpm ();
   return fmt::format ("{:.2f}", bpm);
 }
 
@@ -151,11 +148,8 @@ TempoTrack::set_bpm (bpm_t bpm, bpm_t start_bpm, bool temporary, bool fire_event
 }
 
 void
-TempoTrack::set_bpm_from_str (void * _self, const std::string &str)
+TempoTrack::set_bpm_from_str (const std::string &str)
 {
-  auto * self = (TempoTrack *) _self;
-  z_return_if_fail (self);
-
   auto bpm = (float) atof (str.c_str ());
   if (math_floats_equal (bpm, 0))
     {
@@ -164,7 +158,7 @@ TempoTrack::set_bpm_from_str (void * _self, const std::string &str)
       return;
     }
 
-  self->set_bpm (bpm, self->get_current_bpm (), false, true);
+  set_bpm (bpm, get_current_bpm (), false, true);
 }
 
 void

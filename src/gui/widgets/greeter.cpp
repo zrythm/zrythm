@@ -208,10 +208,10 @@ greeter_tick_cb (
   GreeterWidget * self)
 {
   SemaphoreRAII lock (self->progress_status_lock);
-  adw_status_page_set_title (self->status_page, self->title);
+  adw_status_page_set_title (self->status_page, self->title.c_str ());
   /*gtk_label_set_text (self->status_title, self->title);*/
   /*gtk_label_set_text (self->status_description, self->description);*/
-  gtk_progress_bar_set_text (self->progress_bar, self->description);
+  gtk_progress_bar_set_text (self->progress_bar, self->description.c_str ());
   /*gtk_progress_bar_set_fraction (self->progress_bar, self->progress);*/
   gtk_progress_bar_pulse (self->progress_bar);
 
@@ -330,21 +330,22 @@ on_config_reset_clicked (GtkButton * btn, GreeterWidget * self)
  */
 void
 greeter_widget_set_progress_and_status (
-  GreeterWidget * self,
-  const char *    title,
-  const char *    description,
-  const double    perc)
+  GreeterWidget     &self,
+  const std::string &title,
+  const std::string &description,
+  const double       perc)
 {
-  SemaphoreRAII lock (self->progress_status_lock);
-  if (title && !description)
+  SemaphoreRAII lock (self.progress_status_lock, true);
+
+  if (!title.empty () && description.empty ())
     {
       z_info ("[{}]", title);
     }
-  else if (!title && description)
+  else if (title.empty () && !description.empty ())
     {
       z_info ("{}", description);
     }
-  else if (title && description)
+  else if (!title.empty () && !description.empty ())
     {
       z_info ("[{}] {}", title, description);
     }
@@ -353,15 +354,15 @@ greeter_widget_set_progress_and_status (
       z_error ("need title and description");
     }
 
-  if (title)
+  if (!title.empty ())
     {
-      strcpy (self->title, title);
+      self.title = title;
     }
-  if (description)
+  if (!description.empty ())
     {
-      strcpy (self->description, description);
+      self.description = description;
     }
-  self->progress = perc;
+  self.progress = perc;
 }
 
 void
@@ -369,9 +370,8 @@ greeter_widget_set_currently_scanned_plugin (
   GreeterWidget * self,
   const char *    filename)
 {
-  char * prog_str = g_strdup_printf (_ ("Scanning %s..."), filename);
-  greeter_widget_set_progress_and_status (self, nullptr, prog_str, 0.5);
-  g_free (prog_str);
+  auto prog_str = format_str (_ ("Scanning {}..."), filename);
+  greeter_widget_set_progress_and_status (*self, "", prog_str, 0.5);
 }
 
 static bool
@@ -686,6 +686,8 @@ finalize (GreeterWidget * self)
   std::destroy_at (&self->recent_projects_item_factories);
   std::destroy_at (&self->templates_item_factories);
   std::destroy_at (&self->progress_status_lock);
+  std::destroy_at (&self->title);
+  std::destroy_at (&self->description);
 
   G_OBJECT_CLASS (greeter_widget_parent_class)->finalize (G_OBJECT (self));
 }
@@ -693,8 +695,11 @@ finalize (GreeterWidget * self)
 static void
 greeter_widget_init (GreeterWidget * self)
 {
-  new (&self->recent_projects_item_factories) ItemFactoryPtrVector ();
-  new (&self->templates_item_factories) ItemFactoryPtrVector ();
+  std::construct_at (&self->recent_projects_item_factories);
+  std::construct_at (&self->templates_item_factories);
+  std::construct_at (&self->progress_status_lock, 1);
+  std::construct_at (&self->title);
+  std::construct_at (&self->description);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -821,8 +826,6 @@ greeter_widget_init (GreeterWidget * self)
 
   /* -- progress part -- */
 
-  /* placement-new */
-  new (&self->progress_status_lock) std::binary_semaphore (1);
   gtk_progress_bar_set_fraction (self->progress_bar, 0.0);
 
   self->tick_cb_id = gtk_widget_add_tick_callback (

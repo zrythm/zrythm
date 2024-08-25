@@ -43,7 +43,8 @@ using ExportProgressDialogWidget = struct _ExportProgressDialogWidget
   std::shared_ptr<Exporter> exporter;
 };
 
-using ExportProgressDialogCloseCallback = void (*) (Exporter *);
+using ExportProgressDialogCloseCallback =
+  std::function<void (std::shared_ptr<Exporter>)>;
 
 /**
  * Creates an export dialog widget and displays it.
@@ -52,11 +53,11 @@ using ExportProgressDialogCloseCallback = void (*) (Exporter *);
  */
 ExportProgressDialogWidget *
 export_progress_dialog_widget_new (
-  std::shared_ptr<Exporter>         exporter,
-  bool                              autoclose,
-  ExportProgressDialogCloseCallback close_callback,
-  bool                              show_open_dir_btn,
-  bool                              cancelable);
+  std::shared_ptr<Exporter>                        exporter,
+  bool                                             autoclose,
+  std::optional<ExportProgressDialogCloseCallback> close_callback,
+  bool                                             show_open_dir_btn,
+  bool                                             cancelable);
 
 /**
  * @}

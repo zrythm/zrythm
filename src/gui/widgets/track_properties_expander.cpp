@@ -36,7 +36,8 @@ track_properties_expander_widget_refresh (
         track->has_channel () ? dynamic_cast<ChannelTrack *> (track) : nullptr);
 
       editable_label_widget_setup (
-        self->name, track, Track::name_getter, Track::name_setter_with_action);
+        self->name, track, bind_member_function (*track, &Track::get_name),
+        bind_member_function (*track, &Track::set_name_with_action));
 
       bool is_instrument = track->is_instrument ();
       gtk_widget_set_visible (GTK_WIDGET (self->instrument_slot), is_instrument);

@@ -109,7 +109,7 @@ it shows more debug info in various elements in
 the UI.
 
 An easy way to test something is to add a
-`G_BREAKPOINT ();`.
+`DEBUG_BREAK ();`.
 
 Below is a GDB cheatsheet. For more information
 about using GDB, see `man gdb`.

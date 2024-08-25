@@ -34,6 +34,26 @@
 
 #include <glib/gi18n.h>
 
+UiCursor::
+  UiCursor (std::string name, GdkCursor * cursor, int offset_x, int offset_y)
+    : name_ (std::move (name)), cursor_ (cursor), offset_x_ (offset_x),
+      offset_y_ (offset_y)
+{
+  if (!cursor || !GDK_IS_CURSOR (cursor))
+    {
+      throw ZrythmException ("cursor is invalid");
+    }
+  g_object_ref (cursor);
+}
+
+UiCursor::~UiCursor ()
+{
+  if (cursor_)
+    {
+      object_free_w_func_and_null (g_object_unref, cursor_);
+    }
+}
+
 /**
  * Sets cursor from icon name.
  */
@@ -50,10 +70,10 @@ ui_set_cursor_from_icon_name (
   for (auto &cursor : UI_CACHES->cursors_)
     {
       if (
-        name == cursor.name_ && cursor.offset_x_ == offset_x
-        && cursor.offset_y_ == offset_y)
+        name == cursor->name_ && cursor->offset_x_ == offset_x
+        && cursor->offset_y_ == offset_y)
         {
-          gtk_widget_set_cursor (widget, cursor.cursor_);
+          gtk_widget_set_cursor (widget, cursor->cursor_);
           return;
         }
     }
@@ -99,11 +119,13 @@ ui_set_cursor_from_icon_name (
   GdkCursor * gdk_cursor = gdk_cursor_new_from_texture (
     texture, adjusted_offset_x, adjusted_offset_y, nullptr);
   g_object_unref (texture);
+  z_return_if_fail (GDK_IS_CURSOR (gdk_cursor));
 
   /* add the cursor to the caches */
-  UI_CACHES->cursors_.emplace_back (name, gdk_cursor, offset_x, offset_y);
+  UI_CACHES->cursors_.emplace_back (
+    std::make_unique<UiCursor> (name, gdk_cursor, offset_x, offset_y));
 
-  gtk_widget_set_cursor (widget, UI_CACHES->cursors_.back ().cursor_);
+  gtk_widget_set_cursor (widget, UI_CACHES->cursors_.back ()->cursor_);
 }
 
 /**

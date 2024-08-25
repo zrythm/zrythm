@@ -39,7 +39,7 @@ on_focus_leave (GtkEventControllerFocus * focus_controller, gpointer user_data)
       gtk_text_buffer_get_end_iter (GTK_TEXT_BUFFER (self->buffer), &end_iter);
       char * content = gtk_text_buffer_get_text (
         GTK_TEXT_BUFFER (self->buffer), &start_iter, &end_iter, false);
-      self->setter (self->obj, content);
+      self->setter (content);
       text_expander_widget_refresh (self);
     }
 }
@@ -54,8 +54,8 @@ text_expander_widget_refresh (TextExpanderWidget * self)
     {
       z_return_if_fail (self->buffer);
       gtk_text_buffer_set_text (
-        GTK_TEXT_BUFFER (self->buffer), self->getter (self->obj).c_str (), -1);
-      gtk_label_set_text (self->label, self->getter (self->obj).c_str ());
+        GTK_TEXT_BUFFER (self->buffer), self->getter ().c_str (), -1);
+      gtk_label_set_text (self->label, self->getter ().c_str ());
     }
 }
 

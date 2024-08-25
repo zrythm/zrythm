@@ -89,7 +89,9 @@ ChordTrack::init_loaded ()
 std::shared_ptr<ScaleObject>
 ChordTrack::insert_scale (std::shared_ptr<ScaleObject> scale, int idx)
 {
-  assert (idx >= 0);
+  z_return_val_if_fail (idx >= 0, nullptr);
+  z_return_val_if_fail (name_hash_ != 0, nullptr);
+  scale->set_track_name_hash (name_hash_);
   scales_.insert (scales_.begin () + idx, std::move (scale));
   for (size_t i = 0; i < scales_.size (); i++)
     {

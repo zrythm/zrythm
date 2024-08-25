@@ -62,8 +62,8 @@ public:
    */
   bpm_t get_current_bpm () const;
 
-  static std::string get_current_bpm_as_str (void * obj);
-  static void        set_bpm_from_str (void * obj, const std::string &str);
+  std::string get_current_bpm_as_str ();
+  void        set_bpm_from_str (const std::string &str);
 
   /**
    * Sets the BPM.

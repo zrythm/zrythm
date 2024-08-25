@@ -534,7 +534,7 @@ init_export_info (
 }
 
 static void
-progress_close_cb (Exporter * exporter)
+progress_close_cb (std::shared_ptr<Exporter> exporter)
 {
   z_debug ("export ready cb");
 

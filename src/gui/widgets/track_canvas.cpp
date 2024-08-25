@@ -210,23 +210,22 @@ draw_buttons (TrackCanvasWidget * self, GtkSnapshot * snapshot, int top, int wid
   Track *              track = tw->track;
   for (size_t i = 0; i < buttons.size (); ++i)
     {
-      auto &cb_ref = buttons[i];
-      auto  cb = &cb_ref;
+      auto &cb = buttons[i];
 
       if (top)
         {
-          cb_ref.x =
+          cb->x =
             width
             - (TRACK_BUTTON_SIZE + TRACK_BUTTON_PADDING) * (buttons.size () - i);
-          cb_ref.y = TRACK_BUTTON_PADDING_FROM_EDGE;
+          cb->y = TRACK_BUTTON_PADDING_FROM_EDGE;
         }
       else
         {
-          cb_ref.x =
+          cb->x =
             width
             - (TRACK_BUTTON_SIZE + TRACK_BUTTON_PADDING)
                 * (tw->bot_buttons.size () - i);
-          cb_ref.y =
+          cb->y =
             track->main_height_
             - (TRACK_BUTTON_PADDING_FROM_EDGE + TRACK_BUTTON_SIZE);
         }
@@ -236,7 +235,7 @@ draw_buttons (TrackCanvasWidget * self, GtkSnapshot * snapshot, int top, int wid
       bool is_solo = TRACK_CB_ICON_IS (SOLO);
 
       auto ch_track = dynamic_cast<ChannelTrack *> (track);
-      if (cb == tw->clicked_button)
+      if (cb.get () == tw->clicked_button)
         {
           /* currently clicked button */
           state = CustomButtonWidget::State::ACTIVE;
@@ -306,12 +305,12 @@ draw_buttons (TrackCanvasWidget * self, GtkSnapshot * snapshot, int top, int wid
         {
           state = CustomButtonWidget::State::TOGGLED;
         }
-      else if (hovered_cb == cb)
+      else if (hovered_cb == cb.get ())
         {
           state = CustomButtonWidget::State::HOVERED;
         }
 
-      cb_ref.draw (snapshot, cb_ref.x, cb_ref.y, state);
+      cb->draw (snapshot, cb->x, cb->y, state);
     }
 }
 
@@ -359,15 +358,17 @@ draw_lanes (TrackCanvasWidget * self, GtkSnapshot * snapshot, int width)
           /* create buttons if necessary */
           if (lane->buttons_.empty ())
             {
-              CustomButtonWidget cb (TRACK_ICON_NAME_SOLO, TRACK_BUTTON_SIZE);
-              cb.owner_type = CustomButtonWidget::Owner::LANE;
-              cb.owner = lane.get ();
-              cb.toggled_color = UI_COLORS->solo_checked;
-              cb.held_color = UI_COLORS->solo_active;
+              auto cb = std::make_unique<CustomButtonWidget> (
+                TRACK_ICON_NAME_SOLO, TRACK_BUTTON_SIZE);
+              cb->owner_type = CustomButtonWidget::Owner::LANE;
+              cb->owner = lane.get ();
+              cb->toggled_color = UI_COLORS->solo_checked;
+              cb->held_color = UI_COLORS->solo_active;
               lane->buttons_.emplace_back (std::move (cb));
-              cb = CustomButtonWidget (TRACK_ICON_NAME_MUTE, TRACK_BUTTON_SIZE);
-              cb.owner_type = CustomButtonWidget::Owner::LANE;
-              cb.owner = lane.get ();
+              cb = std::make_unique<CustomButtonWidget> (
+                TRACK_ICON_NAME_MUTE, TRACK_BUTTON_SIZE);
+              cb->owner_type = CustomButtonWidget::Owner::LANE;
+              cb->owner = lane.get ();
               lane->buttons_.emplace_back (std::move (cb));
             }
 
@@ -376,7 +377,7 @@ draw_lanes (TrackCanvasWidget * self, GtkSnapshot * snapshot, int width)
             tw, (int) tw->last_x, (int) tw->last_y);
           for (size_t j = 0; j < lane->buttons_.size (); ++j)
             {
-              auto cb = &lane->buttons_[j];
+              auto &cb = lane->buttons_[j];
 
               cb->x =
                 width
@@ -386,7 +387,7 @@ draw_lanes (TrackCanvasWidget * self, GtkSnapshot * snapshot, int width)
 
               auto state = CustomButtonWidget::State::NORMAL;
 
-              if (cb == tw->clicked_button)
+              if (cb.get () == tw->clicked_button)
                 {
                   /* currently clicked button */
                   state = CustomButtonWidget::State::ACTIVE;
@@ -399,7 +400,7 @@ draw_lanes (TrackCanvasWidget * self, GtkSnapshot * snapshot, int width)
                 {
                   state = CustomButtonWidget::State::TOGGLED;
                 }
-              else if (hovered_cb == cb)
+              else if (hovered_cb == cb.get ())
                 {
                   state = CustomButtonWidget::State::HOVERED;
                 }
@@ -456,17 +457,17 @@ draw_automation (TrackCanvasWidget * self, GtkSnapshot * snapshot, int width)
       /* create buttons if necessary */
       if (at->top_left_buttons_.empty ())
         {
-          CustomButtonWidget cb (
+          auto cb = std::make_unique<CustomButtonWidget> (
             TRACK_ICON_NAME_SHOW_AUTOMATION_LANES, TRACK_BUTTON_SIZE);
-          cb.owner_type = CustomButtonWidget::Owner::AT;
-          cb.owner = at;
+          cb->owner_type = CustomButtonWidget::Owner::AT;
+          cb->owner = at;
           /*char text[500];*/
           /*sprintf (*/
           /*text, "%d - %s",*/
           /*at->index, at->automatable->label);*/
-          cb.set_text (
+          cb->set_text (
             self->layout, at->port_id_.label_.c_str (), AUTOMATABLE_NAME_FONT);
-          pango_layout_set_ellipsize (cb.layout, PANGO_ELLIPSIZE_END);
+          pango_layout_set_ellipsize (cb->layout, PANGO_ELLIPSIZE_END);
           at->top_left_buttons_.emplace_back (std::move (cb));
         }
       if (at->top_right_buttons_.empty ())
@@ -491,14 +492,16 @@ draw_automation (TrackCanvasWidget * self, GtkSnapshot * snapshot, int width)
         }
       if (at->bot_right_buttons_.empty ())
         {
-          CustomButtonWidget cb (TRACK_ICON_NAME_MINUS, TRACK_BUTTON_SIZE);
-          cb.owner_type = CustomButtonWidget::Owner::AT;
-          cb.owner = at;
+          auto cb = std::make_unique<CustomButtonWidget> (
+            TRACK_ICON_NAME_MINUS, TRACK_BUTTON_SIZE);
+          cb->owner_type = CustomButtonWidget::Owner::AT;
+          cb->owner = at;
           at->bot_right_buttons_.emplace_back (std::move (cb));
 
-          cb = CustomButtonWidget (TRACK_ICON_NAME_PLUS, TRACK_BUTTON_SIZE);
-          cb.owner_type = CustomButtonWidget::Owner::AT;
-          cb.owner = at;
+          cb = std::make_unique<CustomButtonWidget> (
+            TRACK_ICON_NAME_PLUS, TRACK_BUTTON_SIZE);
+          cb->owner_type = CustomButtonWidget::Owner::AT;
+          cb->owner = at;
           at->bot_right_buttons_.emplace_back (std::move (cb));
         }
 
@@ -506,21 +509,19 @@ draw_automation (TrackCanvasWidget * self, GtkSnapshot * snapshot, int width)
       CustomButtonWidget *   hovered_cb = tw->last_hovered_btn;
       AutomationModeWidget * hovered_am = track_widget_get_hovered_am_widget (
         tw, (int) tw->last_x, (int) tw->last_y);
-      for (auto &cb_ref : at->top_left_buttons_)
+      for (auto &cb : at->top_left_buttons_)
         {
-          auto cb = &cb_ref;
-
           cb->x = TRACK_BUTTON_PADDING_FROM_EDGE + TRACK_COLOR_AREA_WIDTH;
           cb->y = total_height + TRACK_BUTTON_PADDING_FROM_EDGE;
 
           auto state = CustomButtonWidget::State::NORMAL;
 
-          if (cb == tw->clicked_button)
+          if (cb.get () == tw->clicked_button)
             {
               /* currently clicked button */
               state = CustomButtonWidget::State::ACTIVE;
             }
-          else if (hovered_cb == cb)
+          else if (hovered_cb == cb.get ())
             {
               state = CustomButtonWidget::State::HOVERED;
             }
@@ -534,11 +535,10 @@ draw_automation (TrackCanvasWidget * self, GtkSnapshot * snapshot, int width)
 
       /* draw automation value */
       PangoLayout * layout = self->automation_value_layout;
-      char          str[50];
-      auto port = Port::find_from_identifier<ControlPort> (at->port_id_);
-      sprintf (str, "%.2f", (double) port->get_val ());
-      auto cb = &at->top_left_buttons_[0];
-      pango_layout_set_text (layout, str, -1);
+      auto  port = Port::find_from_identifier<ControlPort> (at->port_id_);
+      auto  str = fmt::format ("{:.2f}", port->get_val ());
+      auto &cb = at->top_left_buttons_[0];
+      pango_layout_set_text (layout, str.c_str (), -1);
       PangoRectangle pangorect;
       pango_layout_get_pixel_extents (layout, nullptr, &pangorect);
 
@@ -561,27 +561,27 @@ draw_automation (TrackCanvasWidget * self, GtkSnapshot * snapshot, int width)
       /* draw top right buttons */
       for (size_t j = 0; j < at->top_right_buttons_.size (); ++j)
         {
-          cb = &at->top_right_buttons_[j];
+          auto &cur_cb = at->top_right_buttons_[j];
 
-          cb->x =
+          cur_cb->x =
             width
             - (TRACK_BUTTON_SIZE + TRACK_BUTTON_PADDING)
                 * (at->top_right_buttons_.size () - j);
-          cb->y = total_height + TRACK_BUTTON_PADDING_FROM_EDGE;
+          cur_cb->y = total_height + TRACK_BUTTON_PADDING_FROM_EDGE;
 
           auto state = CustomButtonWidget::State::NORMAL;
 
-          if (cb == tw->clicked_button)
+          if (cur_cb.get () == tw->clicked_button)
             {
               /* currently clicked button */
               state = CustomButtonWidget::State::ACTIVE;
             }
-          else if (hovered_cb == cb)
+          else if (hovered_cb == cur_cb.get ())
             {
               state = CustomButtonWidget::State::HOVERED;
             }
 
-          cb->draw (snapshot, cb->x, cb->y, state);
+          cur_cb->draw (snapshot, cur_cb->x, cur_cb->y, state);
         }
 
       if (TRACK_BOT_BUTTONS_SHOULD_BE_VISIBLE (at->height_))
@@ -609,29 +609,29 @@ draw_automation (TrackCanvasWidget * self, GtkSnapshot * snapshot, int width)
 
           for (size_t j = 0; j < at->bot_right_buttons_.size (); ++j)
             {
-              cb = &at->bot_right_buttons_[j];
+              auto &cur_cb = at->bot_right_buttons_[j];
 
-              cb->x =
+              cur_cb->x =
                 width
                 - (TRACK_BUTTON_SIZE + TRACK_BUTTON_PADDING)
                     * (at->bot_right_buttons_.size () - j);
-              cb->y =
+              cur_cb->y =
                 (total_height + at->height_)
                 - (TRACK_BUTTON_PADDING_FROM_EDGE + TRACK_BUTTON_SIZE);
 
               state = CustomButtonWidget::State::NORMAL;
 
-              if (cb == tw->clicked_button)
+              if (cur_cb.get () == tw->clicked_button)
                 {
                   /* currently clicked button */
                   state = CustomButtonWidget::State::ACTIVE;
                 }
-              else if (hovered_cb == cb)
+              else if (hovered_cb == cur_cb.get ())
                 {
                   state = CustomButtonWidget::State::HOVERED;
                 }
 
-              cb->draw (snapshot, cb->x, cb->y, state);
+              cur_cb->draw (snapshot, cur_cb->x, cur_cb->y, state);
             }
         }
       total_height += (int) at->height_;

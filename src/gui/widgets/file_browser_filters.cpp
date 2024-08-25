@@ -64,7 +64,7 @@ toggles_changed (GtkToggleButton * btn, FileBrowserFiltersWidget * self)
         ENUM_VALUE_TO_INT (FileBrowserFilterType::FILE_BROWSER_FILTER_NONE));
     }
 
-  self->refilter_files (self->owner);
+  self->refilter_files ();
 }
 
 /**
@@ -73,10 +73,8 @@ toggles_changed (GtkToggleButton * btn, FileBrowserFiltersWidget * self)
 void
 file_browser_filters_widget_setup (
   FileBrowserFiltersWidget * self,
-  GtkWidget *                owner,
   GenericCallback            refilter_files_cb)
 {
-  self->owner = owner;
   self->refilter_files = refilter_files_cb;
 }
 

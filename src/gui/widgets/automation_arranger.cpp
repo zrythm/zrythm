@@ -240,8 +240,7 @@ automation_arranger_on_drag_end (ArrangerWidget * self)
               start_ap->pos_.ticks_ - start_ap->transient_->pos_.ticks_;
             float value_diff =
               start_ap->normalized_val_
-              - dynamic_cast<AutomationPoint *> (start_ap->transient_)
-                  ->normalized_val_;
+              - start_ap->get_transient<AutomationPoint> ()->normalized_val_;
 
             UNDO_MANAGER->perform (
               std::make_unique<

@@ -43,7 +43,7 @@
 void
 Channel::init_after_cloning (const Channel &other)
 {
-  Channel (*other.track_);
+  track_pos_ = other.track_pos_;
   clone_variant_container<PluginVariant> (midi_fx_, other.midi_fx_);
   clone_variant_container<PluginVariant> (inserts_, other.inserts_);
   if (other.instrument_)
@@ -66,7 +66,6 @@ Channel::init_after_cloning (const Channel &other)
     stereo_out_ = other.stereo_out_->clone_unique ();
   has_output_ = other.has_output_;
   output_name_hash_ = other.output_name_hash_;
-  track_pos_ = other.track_pos_;
   width_ = other.width_;
   track_ = nullptr; // clear previous track
 }
@@ -376,17 +375,17 @@ Channel::init_loaded (ChannelTrack &track)
   };
 
   /* init plugins */
-  for (int i = 0; i < STRIP_SIZE; i++)
+  for (int i = 0; i < (int) STRIP_SIZE; i++)
     {
-      init_plugin (inserts_[i], i, PluginSlotType::Insert);
-      init_plugin (midi_fx_[i], i, PluginSlotType::MidiFx);
+      init_plugin (inserts_.at (i), i, PluginSlotType::Insert);
+      init_plugin (midi_fx_.at (i), i, PluginSlotType::MidiFx);
     }
   init_plugin (instrument_, -1, PluginSlotType::Instrument);
 
   /* init sends */
-  for (int i = 0; i < STRIP_SIZE; i++)
+  for (auto &send : sends_)
     {
-      sends_[i]->init_loaded (track_);
+      send->init_loaded (track_);
     }
 }
 
@@ -552,13 +551,11 @@ Channel::reconnect_ext_input_ports ()
 }
 
 void
-Channel::add_balance_control (void * _channel, float pan)
+Channel::add_balance_control (float pan)
 {
-  auto * channel = static_cast<Channel *> (_channel);
-
-  channel->fader_->balance_->set_control_value (
-    std::clamp<float> (channel->fader_->balance_->control_ + pan, 0.f, 1.f),
-    false, false);
+  fader_->balance_->set_control_value (
+    std::clamp<float> (fader_->balance_->control_ + pan, 0.f, 1.f), false,
+    false);
 }
 
 void
@@ -956,9 +953,9 @@ Channel::init_stereo_out_ports (bool loading)
   stereo_out_->set_owner (this);
 }
 
-Channel::Channel (ChannelTrack &track) : track_ (&track)
+Channel::Channel (ChannelTrack &track)
+    : track_pos_ (track.pos_), track_ (&track)
 {
-  track_pos_ = track.pos_;
 }
 
 void
@@ -999,10 +996,9 @@ Channel::init ()
 }
 
 void
-Channel::set_phase (void * _channel, float phase)
+Channel::set_phase (float phase)
 {
-  Channel * channel = (Channel *) _channel;
-  channel->fader_->phase_ = phase;
+  fader_->phase_ = phase;
 
   /* FIXME use an event */
   /*if (channel->widget)*/
@@ -1011,10 +1007,9 @@ Channel::set_phase (void * _channel, float phase)
 }
 
 float
-Channel::get_phase (void * _channel)
+Channel::get_phase () const
 {
-  Channel * channel = (Channel *) _channel;
-  return channel->fader_->phase_;
+  return fader_->phase_;
 }
 
 void

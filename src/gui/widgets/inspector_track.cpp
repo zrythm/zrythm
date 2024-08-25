@@ -115,8 +115,8 @@ inspector_track_widget_show_tracks (
       gtk_widget_set_visible (GTK_WIDGET (self->comment), true);
 
       text_expander_widget_setup (
-        self->comment, true, Track::comment_getter, Track::comment_setter,
-        track);
+        self->comment, true, bind_member_function (*track, &Track::get_comment),
+        bind_member_function (*track, &Track::set_comment_with_action), track);
       expander_box_widget_set_label (
         Z_EXPANDER_BOX_WIDGET (self->comment), _ ("Notes"));
 

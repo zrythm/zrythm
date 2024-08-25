@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_MODULATOR_MACRO_PROCESSOR_H__
@@ -33,19 +33,11 @@ public:
 
   bool is_in_active_project () const;
 
-  std::string        get_name () const { return name_; }
-  static std::string name_getter (void * data)
-  {
-    return static_cast<ModulatorMacroProcessor *> (data)->get_name ();
-  }
+  std::string get_name () const { return name_; }
 
   COLD void init_loaded (ModulatorTrack &track);
 
-  void        set_name (std::string_view name) { name_ = name; }
-  static void name_setter (void * data, std::string_view name)
-  {
-    static_cast<ModulatorMacroProcessor *> (data)->set_name (name);
-  }
+  void set_name (std::string_view name) { name_ = name; }
 
   ModulatorTrack * get_track () const { return track_; }
 

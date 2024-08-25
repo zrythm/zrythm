@@ -331,6 +331,19 @@ if get_option ('tests')
     'helpers/exporter.cpp',
     'helpers/zrythm.cpp',
     ])
+  helper_lib = static_library (
+    'test-helpers',
+    sources: helper_sources,
+    cpp_args : [
+      common_cflags, strict_cflags,
+      test_c_args,
+    ],
+    dependencies: [
+      zrythm_deps,
+      ],
+    link_with: zrythm_lib.get_static_lib(),
+    include_directories: all_inc)
+  test_link_libs += helper_lib
 
   foreach name, info : tests
     is_parallel = info['parallel']
@@ -366,7 +379,6 @@ if get_option ('tests')
           source,
           test_config_h,
           bundled_plugins_for_tests_tgts,
-          helper_sources,
           ],
         cpp_args : [
           common_cflags, strict_cflags,

@@ -28,7 +28,7 @@ on_response (
     {
       const char * text = gtk_editable_get_text (GTK_EDITABLE (self->entry));
 
-      (*self->setter) (self->obj, text);
+      self->setter (text);
     }
 }
 
@@ -45,7 +45,6 @@ on_entry_activate (GtkEntry * btn, StringEntryDialogWidget * self)
 StringEntryDialogWidget *
 string_entry_dialog_widget_new (
   const std::string  &label,
-  void *              obj,
   GenericStringGetter getter,
   GenericStringSetter setter)
 {
@@ -54,16 +53,15 @@ string_entry_dialog_widget_new (
     STRING_ENTRY_DIALOG_WIDGET_TYPE, "icon-name", "zrythm", "heading",
     label.c_str (), nullptr));
 
-  self->obj = obj;
-  self->getter = new GenericStringGetter (getter);
-  self->setter = new GenericStringSetter (setter);
+  self->getter = getter;
+  self->setter = setter;
 
   gtk_window_set_transient_for (GTK_WINDOW (self), GTK_WINDOW (MAIN_WINDOW));
 
   /*gtk_label_set_text (self->label, label);*/
 
   /* setup text */
-  gtk_editable_set_text (GTK_EDITABLE (self->entry), getter (obj).c_str ());
+  gtk_editable_set_text (GTK_EDITABLE (self->entry), getter ().c_str ());
 
   return self;
 }
@@ -100,8 +98,8 @@ str_set (char ** str, const char * in_str)
 static void
 finalize (StringEntryDialogWidget * self)
 {
-  object_delete_and_null (self->getter);
-  object_delete_and_null (self->setter);
+  std::destroy_at (&self->getter);
+  std::destroy_at (&self->setter);
 }
 
 static void
@@ -125,6 +123,9 @@ string_entry_dialog_widget_class_init (StringEntryDialogWidgetClass * _klass)
 static void
 string_entry_dialog_widget_init (StringEntryDialogWidget * self)
 {
+  std::construct_at (&self->getter);
+  std::construct_at (&self->setter);
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   g_signal_connect (

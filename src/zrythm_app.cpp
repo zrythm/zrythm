@@ -357,7 +357,7 @@ on_load_project (GSimpleAction * action, GVariant * parameter, gpointer user_dat
   ZrythmApp * self = ZRYTHM_APP (user_data);
 
   greeter_widget_set_progress_and_status (
-    self->greeter, nullptr, _ ("Loading Project"), 0.99);
+    *self->greeter, "", _ ("Loading Project"), 0.99);
 
   z_debug (
     "on_load_project called | open filename '{}' | opening template {}",
@@ -381,12 +381,12 @@ zrythm_app_init_thread (ZrythmApp * self)
   z_info ("init thread starting...");
 
   greeter_widget_set_progress_and_status (
-    self->greeter, _ ("Initializing"), _ ("Initializing settings"), 0.0);
+    *self->greeter, _ ("Initializing"), _ ("Initializing settings"), 0.0);
 
   /* init zrythm folders ~/Zrythm */
   auto msg = format_str (_ ("Initializing {} directories"), PROGRAM_NAME);
   greeter_widget_set_progress_and_status (
-    self->greeter, nullptr, msg.c_str (), 0.01);
+    *self->greeter, "", msg.c_str (), 0.01);
   try
     {
       gZrythm->init_user_dirs_and_files ();
@@ -401,7 +401,7 @@ zrythm_app_init_thread (ZrythmApp * self)
 
   /* init log */
   greeter_widget_set_progress_and_status (
-    self->greeter, nullptr, _ ("Initializing logging system"), 0.02);
+    *self->greeter, "", _ ("Initializing logging system"), 0.02);
 // TODO:
 #if 0
   success = log_init_with_file (LOG, nullptr, &err);
@@ -425,18 +425,18 @@ zrythm_app_init_thread (ZrythmApp * self)
 #endif
 
   greeter_widget_set_progress_and_status (
-    self->greeter, nullptr, _ ("Initializing caches"), 0.05);
+    *self->greeter, "", _ ("Initializing caches"), 0.05);
   self->ui_caches = std::make_unique<UiCaches> ();
 
   greeter_widget_set_progress_and_status (
-    self->greeter, nullptr, _ ("Initializing file manager"), 0.06);
+    *self->greeter, "", _ ("Initializing file manager"), 0.06);
   gZrythm->get_file_manager ().load_files ();
 
   greeter_widget_set_progress_and_status (
-    self->greeter, _ ("Scanning Plugins"), _ ("Scanning Plugins"), 0.10);
+    *self->greeter, _ ("Scanning Plugins"), _ ("Scanning Plugins"), 0.10);
   gZrythm->plugin_manager_->begin_scan (
-    0.90, &self->greeter->progress, (GenericCallback) on_plugin_scan_finished,
-    self);
+    0.90, &self->greeter->progress,
+    [self] () { on_plugin_scan_finished (self); });
 
   return nullptr;
 }
@@ -803,14 +803,12 @@ raise_open_file_limit (void)
             {
 
               z_warning (
-                "Could not set system open files "
-                "limit to \"unlimited\"");
+                "Could not set system open files limit to \"unlimited\"");
             }
           else
             {
               z_warning (
-                "Could not set system open files "
-                "limit to %ju",
+                "Could not set system open files limit to {}",
                 (uintmax_t) rl.rlim_cur);
             }
         }
@@ -819,8 +817,7 @@ raise_open_file_limit (void)
           if (rl.rlim_cur != RLIM_INFINITY)
             {
               z_info (
-                "Your system is configured to "
-                "limit {} to %ju open files",
+                "Your system is configured to limit {} to {} open files",
                 PROGRAM_NAME, (uintmax_t) rl.rlim_cur);
             }
         }
@@ -962,7 +959,7 @@ zrythm_app_startup (GApplication * app)
   z_info ("application registered: {}, is remote {}", ret, remote);
 
   z_info (
-    "application resources base path: %s",
+    "application resources base path: {}",
     g_application_get_resource_base_path (G_APPLICATION (app)));
 
   self->default_settings = gtk_settings_get_default ();
@@ -1089,31 +1086,27 @@ zrythm_app_startup (GApplication * app)
   GtkCssProvider * css_provider = gtk_css_provider_new ();
   auto   user_themes_dir = dir_mgr->get_dir (ZrythmDirType::USER_THEMES_CSS);
   char * css_theme_file = g_settings_get_string (S_P_UI_GENERAL, "css-theme");
-  char * css_theme_path =
-    g_build_filename (user_themes_dir.c_str (), css_theme_file, nullptr);
-  if (!g_file_test (css_theme_path, G_FILE_TEST_EXISTS))
+  auto css_theme_path = Glib::build_filename (user_themes_dir, css_theme_file);
+  if (!Glib::file_test (css_theme_path, Glib::FileTest::EXISTS))
     {
       /* fallback to theme in system path */
-      g_free (css_theme_path);
+      auto system_themes_dir =
+        dir_mgr->get_dir (ZrythmDirType::SYSTEM_THEMES_CSS_DIR);
+      css_theme_path = Glib::build_filename (system_themes_dir, css_theme_file);
+    }
+  if (!Glib::file_test (css_theme_path, Glib::FileTest::EXISTS))
+    {
+      /* fallback to zrythm-theme.css */
       auto system_themes_dir =
         dir_mgr->get_dir (ZrythmDirType::SYSTEM_THEMES_CSS_DIR);
       css_theme_path =
-        g_build_filename (system_themes_dir.c_str (), css_theme_file, nullptr);
-    }
-  if (!g_file_test (css_theme_path, G_FILE_TEST_EXISTS))
-    {
-      /* fallback to zrythm-theme.css */
-      g_free (css_theme_path);
-      auto system_themes_dir =
-        dir_mgr->get_dir (ZrythmDirType::SYSTEM_THEMES_CSS_DIR);
-      css_theme_path = g_build_filename (
-        system_themes_dir.c_str (), "zrythm-theme.css", nullptr);
+        Glib::build_filename (system_themes_dir, "zrythm-theme.css");
     }
   g_free (css_theme_file);
   z_info ("CSS theme path: {}", css_theme_path);
 
   /* set default css provider */
-  gtk_css_provider_load_from_path (css_provider, css_theme_path);
+  gtk_css_provider_load_from_path (css_provider, css_theme_path.c_str ());
   gtk_style_context_add_provider_for_display (
     gdk_display_get_default (), GTK_STYLE_PROVIDER (css_provider),
     GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
@@ -1138,53 +1131,59 @@ zrythm_app_startup (GApplication * app)
   /* install accelerators for each action */
   std::string primary;
   std::string secondary;
-#define INSTALL_ACCEL_WITH_SECONDARY(keybind, secondary_keybind, action) \
-  primary = S_USER_SHORTCUTS.get (true, action, keybind); \
-  secondary = S_USER_SHORTCUTS.get (false, action, secondary_keybind); \
-  zrythm_app_install_action_accel ( \
-    self, primary.c_str (), secondary.c_str (), action)
 
-#define INSTALL_ACCEL(keybind, action) \
-  INSTALL_ACCEL_WITH_SECONDARY (keybind, nullptr, action)
+  // Lambda to install accelerator with secondary keybinding
+  auto install_accel_with_secondary =
+    [&] (const auto &keybind, const auto &secondary_keybind, const auto &action) {
+      primary = S_USER_SHORTCUTS.get (true, action, keybind);
+      secondary = S_USER_SHORTCUTS.get (false, action, secondary_keybind);
+      zrythm_app_install_action_accel (
+        self, primary.c_str (), secondary.c_str (), action);
+    };
 
-  INSTALL_ACCEL ("F1", "app.manual");
-  INSTALL_ACCEL ("<Control>q", "app.quit");
-  INSTALL_ACCEL ("F6", "app.cycle-focus");
-  INSTALL_ACCEL ("<Shift>F6", "app.cycle-focus-backwards");
-  INSTALL_ACCEL ("F10", "app.focus-first-widget");
-  INSTALL_ACCEL ("F11", "app.fullscreen");
-  INSTALL_ACCEL ("<Control>comma", "app.preferences");
-  INSTALL_ACCEL ("<Control>n", "app.new");
-  INSTALL_ACCEL ("<Control>o", "app.open");
-  INSTALL_ACCEL ("<Control>s", "app.save");
-  INSTALL_ACCEL ("<Control><Shift>s", "app.save-as");
-  INSTALL_ACCEL ("<Control>e", "app.export-as");
-  INSTALL_ACCEL ("<Control>z", "app.undo");
-  INSTALL_ACCEL ("<Control><Shift>z", "app.redo");
-  INSTALL_ACCEL ("<Control>x", "app.cut");
-  INSTALL_ACCEL ("<Control>c", "app.copy");
-  INSTALL_ACCEL ("<Control>v", "app.paste");
-  INSTALL_ACCEL ("<Control>d", "app.duplicate");
-  INSTALL_ACCEL ("<Shift>F10", "app.toggle-left-panel");
-  INSTALL_ACCEL ("<Shift>F12", "app.toggle-right-panel");
-  INSTALL_ACCEL ("<Shift>F11", "app.toggle-bot-panel");
-  INSTALL_ACCEL_WITH_SECONDARY (
+  // Lambda to install accelerator with optional secondary keybinding
+  auto install_accel = [&] (const auto &keybind, const auto &action) {
+    return install_accel_with_secondary (keybind, "", action);
+  };
+
+  install_accel ("F1", "app.manual");
+  install_accel ("<Control>q", "app.quit");
+  install_accel ("F6", "app.cycle-focus");
+  install_accel ("<Shift>F6", "app.cycle-focus-backwards");
+  install_accel ("F10", "app.focus-first-widget");
+  install_accel ("F11", "app.fullscreen");
+  install_accel ("<Control>comma", "app.preferences");
+  install_accel ("<Control>n", "app.new");
+  install_accel ("<Control>o", "app.open");
+  install_accel ("<Control>s", "app.save");
+  install_accel ("<Control><Shift>s", "app.save-as");
+  install_accel ("<Control>e", "app.export-as");
+  install_accel ("<Control>z", "app.undo");
+  install_accel ("<Control><Shift>z", "app.redo");
+  install_accel ("<Control>x", "app.cut");
+  install_accel ("<Control>c", "app.copy");
+  install_accel ("<Control>v", "app.paste");
+  install_accel ("<Control>d", "app.duplicate");
+  install_accel ("<Shift>F10", "app.toggle-left-panel");
+  install_accel ("<Shift>F12", "app.toggle-right-panel");
+  install_accel ("<Shift>F11", "app.toggle-bot-panel");
+  install_accel_with_secondary (
     "<Control>equal", "<Control>KP_Add", "app.zoom-in::global");
-  INSTALL_ACCEL_WITH_SECONDARY (
+  install_accel_with_secondary (
     "<Control>minus", "<Control>KP_Subtract", "app.zoom-out::global");
-  INSTALL_ACCEL_WITH_SECONDARY (
+  install_accel_with_secondary (
     "<Control>plus", "<Control>0", "app.original-size::global");
-  INSTALL_ACCEL ("<Control>bracketleft", "app.best-fit::global");
-  INSTALL_ACCEL ("<Control>l", "app.loop-selection");
-  INSTALL_ACCEL ("Home", "app.goto-start-marker");
-  INSTALL_ACCEL ("End", "app.goto-end-marker");
-  INSTALL_ACCEL_WITH_SECONDARY (
+  install_accel ("<Control>bracketleft", "app.best-fit::global");
+  install_accel ("<Control>l", "app.loop-selection");
+  install_accel ("Home", "app.goto-start-marker");
+  install_accel ("End", "app.goto-end-marker");
+  install_accel_with_secondary (
     "Page_Up", "<Control>BackSpace", "app.goto-prev-marker");
-  INSTALL_ACCEL ("Page_Down", "app.goto-next-marker");
-  INSTALL_ACCEL ("<Control>space", "app.play-pause");
-  INSTALL_ACCEL ("<Alt>Q", "app.quantize-options::global");
-  INSTALL_ACCEL ("<Control>J", "app.merge-selection");
-  INSTALL_ACCEL (gdk_keyval_name (GDK_KEY_Home), "app.go-to-start");
+  install_accel ("Page_Down", "app.goto-next-marker");
+  install_accel ("<Control>space", "app.play-pause");
+  install_accel ("<Alt>Q", "app.quantize-options::global");
+  install_accel ("<Control>J", "app.merge-selection");
+  install_accel (gdk_keyval_name (GDK_KEY_Home), "app.go-to-start");
 
 #undef INSTALL_ACCEL
 
@@ -1325,8 +1324,8 @@ set_dummy (
   gpointer      data,
   GError **     error)
 {
-  zrythm_app->midi_backend = g_strdup ("none");
-  zrythm_app->audio_backend = g_strdup ("none");
+  zrythm_app->midi_backend = g_strdup ("Dummy");
+  zrythm_app->audio_backend = g_strdup ("Dummy");
 
   return true;
 }
@@ -1463,9 +1462,10 @@ zrythm_app_new (int argc, const char ** argv)
 static void
 finalize (ZrythmApp * self)
 {
-  z_info ("{} ({}): finalizing ZrythmApp...", __func__, __FILE__);
+  z_info ("finalizing ZrythmApp...");
 
   std::destroy_at (&self->ui_caches);
+  std::destroy_at (&self->project_init_flow_mgr);
 
   if (self->default_settings)
     {
@@ -1500,6 +1500,7 @@ static void
 zrythm_app_init (ZrythmApp * self)
 {
   std::construct_at (&self->ui_caches);
+  std::construct_at (&self->project_init_flow_mgr);
 
   gdk_set_allowed_backends (
     /* 1. prefer native backends on windows/mac (avoid x11)

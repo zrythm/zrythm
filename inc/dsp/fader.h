@@ -207,28 +207,16 @@ public:
    */
   void set_swap_phase (bool enabled, bool fire_events);
 
-  float        get_fader_val () const { return fader_val_; }
-  static float fader_val_getter (void * data)
-  {
-    return ((Fader *) data)->get_fader_val ();
-  }
+  float get_fader_val () const { return fader_val_; }
 
   float get_default_fader_val () const
   {
     return math_get_fader_val_from_amp (amp_->deff_);
   }
-  static float default_fader_val_getter (void * data)
-  {
-    return ((Fader *) data)->get_default_fader_val ();
-  }
 
   std::string db_string_getter () const
   {
     return fmt::sprintf ("%.1f", math_amp_to_dbfs (amp_->control_));
-  }
-  static std::string db_string_getter_static (void * data)
-  {
-    return ((Fader *) data)->db_string_getter ();
   }
 
   Channel * get_channel () const;
@@ -246,11 +234,9 @@ public:
    * Sets the fader levels from a normalized value
    * 0.0-1.0 (such as in widgets).
    */
-  void        set_fader_val (float fader_val);
-  static void fader_val_setter (void * data, float val)
-  {
-    ((Fader *) data)->set_fader_val (val);
-  }
+  void set_fader_val (float fader_val);
+
+  void set_fader_val_with_action_from_db (const std::string &str);
 
   /**
    * Disconnects all ports connected to the fader.

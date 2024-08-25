@@ -16,12 +16,12 @@
 
 G_DEFINE_TYPE (BalanceControlWidget, balance_control_widget, GTK_TYPE_WIDGET)
 
-#define GET_VAL (self->getter (self->object))
-#define SET_VAL(real) (self->setter (self->object, real))
+#define GET_VAL (self->getter ())
+#define SET_VAL(real) (self->setter (real))
 
-#define TEXT_FONT "Bold 8"
-#define TEXT_PADDING 3.0
-#define LINE_WIDTH 3.0
+constexpr const char * TEXT_FONT = "Bold 8";
+constexpr double       TEXT_PADDING = 3.0;
+constexpr double       LINE_WIDTH = 3.0;
 
 static void
 perform_action (
@@ -285,9 +285,8 @@ on_right_click (
 }
 
 static void
-set_val_with_action (void * object, const std::string &str)
+set_val_with_action (BalanceControlWidget * self, const std::string &str)
 {
-  auto *       self = (BalanceControlWidget *) object;
   float        val;
   const char * err_value_msg =
     _ ("Please enter a decimal number between -100 and 100");
@@ -319,10 +318,10 @@ set_val_with_action (void * object, const std::string &str)
 }
 
 static std::string
-get_val_as_string (void * object)
+get_val_as_string (BalanceControlWidget * object)
 {
   static char str[60];
-  char *      pan_str = get_pan_string ((BalanceControlWidget *) object, false);
+  char *      pan_str = get_pan_string (object, false);
   strcpy (str, pan_str);
   g_free (pan_str);
   return str;
@@ -351,7 +350,8 @@ on_click (
   else if (n_press == 2)
     {
       StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
-        _ ("Balance Value"), self, get_val_as_string, set_val_with_action);
+        _ ("Balance Value"), [self] () { return get_val_as_string (self); },
+        [self] (const std::string &str) { set_val_with_action (self, str); });
       gtk_window_present (GTK_WINDOW (dialog));
     }
 }

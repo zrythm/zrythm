@@ -342,8 +342,8 @@ setup_view (ChannelSendSelectorWidget * self)
 
   self->view_model = gtk_single_selection_new (G_LIST_MODEL (list_store));
   gtk_list_view_set_model (self->view, GTK_SELECTION_MODEL (self->view_model));
-  self->item_factory = std::make_unique<ItemFactory> (
-    ItemFactory::Type::IconAndText, false, nullptr);
+  self->item_factory =
+    std::make_unique<ItemFactory> (ItemFactory::Type::IconAndText, false, "");
   gtk_list_view_set_factory (self->view, self->item_factory->list_item_factory_);
 
   gtk_selection_model_select_item (

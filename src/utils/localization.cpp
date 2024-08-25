@@ -270,7 +270,7 @@ localization_init (
       if (print_debug_messages)
         {
           z_info (
-            "preferred lang: '%s' (%s)", language_strings[lang],
+            "preferred lang: '{}' ({})", language_strings[lang],
             language_codes[lang]);
         }
 

@@ -37,6 +37,7 @@
 #define ZRYTHM_TESTING (doctest::is_running_in_test)
 #define ZRYTHM_GENERATING_PROJECT (gZrythm->generating_project_)
 #define ZRYTHM_HAVE_UI (gZrythm && gZrythm->have_ui_)
+#define ZRYTHM_BREAK_ON_ERROR (gZrythm && gZrythm->break_on_error_)
 
 #ifdef HAVE_LSP_DSP
 #  define ZRYTHM_USE_OPTIMIZED_DSP (G_LIKELY (gZrythm->use_optimized_dsp_))
@@ -158,11 +159,8 @@ enum class ZrythmDirType
 class ZrythmDirectoryManager
 {
 public:
-  ~ZrythmDirectoryManager ()
-  {
-    remove_testing_dir ();
-    clearSingletonInstance ();
-  }
+  ~ZrythmDirectoryManager ();
+
   /**
    * Returns the prefix or in the case of Windows the root dir (C/program
    * files/zrythm) or in the case of macos the bundle path.
@@ -364,6 +362,9 @@ public:
    * In debug mode or not (determined by GSetting).
    */
   bool debug_ = false;
+
+  /** Whether to abort() on an error log message. */
+  bool break_on_error_ = false;
 
   /** Whether this is a dummy instance used when
    * generating projects. */

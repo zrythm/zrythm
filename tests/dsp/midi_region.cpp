@@ -103,12 +103,12 @@ TEST_CASE_FIXTURE (ZrythmFixture, "full export")
   REQUIRE_NONEMPTY (track->lanes_[0]->regions_);
   auto region = track->lanes_[0]->regions_[0];
 
-  auto setup_region_for_full_export = [] (auto &region) {
+  auto setup_region_for_full_export = [] (auto &r) {
     Position clip_start_pos{ 1920.0 };
 
-    region->pos_.add_ticks (1920.0);
-    region->end_pos_.add_ticks (960.0);
-    region->clip_start_pos_setter (&clip_start_pos);
+    r->pos_.add_ticks (1920.0);
+    r->end_pos_.add_ticks (960.0);
+    r->clip_start_pos_setter (&clip_start_pos);
   };
 
   setup_region_for_full_export (region);

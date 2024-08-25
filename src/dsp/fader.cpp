@@ -565,6 +565,29 @@ Fader::set_fader_val (float fader_val)
     }
 }
 
+void
+Fader::set_fader_val_with_action_from_db (const std::string &str)
+{
+  bool  is_valid = false;
+  float val;
+  if (math_is_string_valid_float (str.c_str (), &val))
+    {
+      if (val <= 6.f)
+        {
+          is_valid = true;
+        }
+    }
+
+  if (is_valid)
+    {
+      set_amp_with_action (get_amp (), math_dbfs_to_amp (val), true);
+    }
+  else
+    {
+      ui_show_error_message (_ ("Invalid Value"), _ ("Invalid value"));
+    }
+}
+
 Channel *
 Fader::get_channel () const
 {

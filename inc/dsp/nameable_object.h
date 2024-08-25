@@ -32,7 +32,7 @@ public:
 
   virtual ~NameableObject () = default;
 
-  virtual void init_loaded () override
+  void init_loaded () override
   {
     ArrangerObject::init_loaded ();
     gen_escaped_name ();
@@ -42,28 +42,6 @@ public:
    * Returns the name of the object.
    */
   virtual std::string get_name () const final { return name_; }
-
-  /**
-   * @brief For use as a string getter.
-   *
-   * @param obj
-   * @return std::string
-   */
-  static std::string name_getter (void * obj)
-  {
-    return static_cast<NameableObject *> (obj)->get_name ();
-  }
-
-  /**
-   * @brief For use as a string setter.
-   *
-   * @param obj
-   * @param name
-   */
-  static void name_setter_with_action (void * obj, const std::string &name)
-  {
-    static_cast<NameableObject *> (obj)->set_name_with_action (name);
-  }
 
   /**
    * Generates the escaped name for the object.

@@ -51,12 +51,6 @@ test_plugin_manager_create_tracks_from_plugin (
   bool         with_carla,
   int          num_tracks = 1);
 
-static void
-on_scan_finished (bool * scan_done)
-{
-  *scan_done = true;
-}
-
 /**
  * Get a plugin setting clone from the given URI in the given
  * bundle.
@@ -99,11 +93,11 @@ test_plugin_manager_get_plugin_setting (
     g_free (tmpdir);
   }
 
-  static bool scan_finished = false;
-  scan_finished = false;
+  bool scan_finished = false;
   PLUGIN_MANAGER->clear_plugins ();
-  PLUGIN_MANAGER->begin_scan (
-    1.0, nullptr, (GenericCallback) on_scan_finished, &scan_finished);
+  PLUGIN_MANAGER->begin_scan (1.0, nullptr, [&scan_finished] () {
+    scan_finished = true;
+  });
   while (!scan_finished)
     {
       g_main_context_iteration (nullptr, true);

@@ -30,7 +30,7 @@ on_cancel_clicked (GtkButton * btn, BounceDialogWidget * self)
 }
 
 static void
-progress_close_cb (Exporter * exporter)
+progress_close_cb (std::shared_ptr<Exporter> exporter)
 {
   exporter->join_generic_thread ();
   exporter->post_export ();
@@ -100,7 +100,7 @@ on_bounce_clicked (GtkButton * btn, BounceDialogWidget * self)
     }
 
   self->exporter =
-    std::make_unique<Exporter> (settings, GTK_WIDGET (self), nullptr);
+    std::make_shared<Exporter> (settings, GTK_WIDGET (self), nullptr);
 
   self->exporter->prepare_tracks_for_export (*AUDIO_ENGINE, *TRANSPORT);
 
@@ -182,8 +182,10 @@ bounce_dialog_widget_finalize (GObject * object)
 {
   BounceDialogWidget * self = Z_BOUNCE_DIALOG_WIDGET (object);
 
-  self->exporter.~shared_ptr<Exporter> ();
-  self->bounce_name.~basic_string ();
+  std::destroy_at (&self->exporter);
+  std::destroy_at (&self->bounce_name);
+
+  G_OBJECT_CLASS (bounce_dialog_widget_parent_class)->finalize (object);
 }
 
 static void
@@ -212,8 +214,8 @@ bounce_dialog_widget_class_init (BounceDialogWidgetClass * _klass)
 static void
 bounce_dialog_widget_init (BounceDialogWidget * self)
 {
-  new (&self->bounce_name) std::string ();
-  new (&self->exporter) std::shared_ptr<Exporter> ();
+  std::construct_at (&self->exporter);
+  std::construct_at (&self->bounce_name);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 

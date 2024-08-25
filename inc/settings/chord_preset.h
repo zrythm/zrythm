@@ -34,16 +34,8 @@ public:
   std::string get_info_text () const;
 
   const std::string &get_name () const { return name_; }
-  static std::string name_getter (void * data)
-  {
-    return static_cast<ChordPreset *> (data)->get_name ();
-  }
 
-  void        set_name (const std::string &name);
-  static void name_setter (void * data, const std::string &name)
-  {
-    static_cast<ChordPreset *> (data)->set_name (name);
-  }
+  void set_name (const std::string &name);
 
   GMenuModel * generate_context_menu () const;
 

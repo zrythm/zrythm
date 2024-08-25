@@ -253,28 +253,16 @@ public:
    */
   void connect ();
 
-  static void set_phase (void * channel, float phase);
+  void set_phase (float phase);
 
-  static float get_phase (void * channel);
-
-  static void balance_control_setter (void * _channel, float pan)
-  {
-    auto * channel = static_cast<Channel *> (_channel);
-    channel->set_balance_control (pan);
-  }
+  float get_phase () const;
 
   void set_balance_control (float val);
 
   /**
    * Adds to (or subtracts from) the pan.
    */
-  static void add_balance_control (void * _channel, float pan);
-
-  static float balance_control_getter (void * _channel)
-  {
-    auto * channel = static_cast<Channel *> (_channel);
-    return channel->get_balance_control ();
-  }
+  void add_balance_control (float pan);
 
   float get_balance_control () const;
 

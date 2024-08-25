@@ -134,9 +134,10 @@ track_input_expander_widget_refresh (
 
       auto &port = track->processor_->input_gain_;
       self->gain = knob_widget_new_simple (
-        ControlPort::val_getter, ControlPort::default_val_getter,
-        ControlPort::real_val_setter_w_events, port.get (), port->minf_,
-        port->maxf_, 24, port->zerof_);
+        bind_member_function (*port, &ControlPort::get_val),
+        bind_member_function (*port, &ControlPort::get_default_val),
+        bind_member_function (*port, &ControlPort::set_real_val_w_events),
+        port.get (), port->minf_, port->maxf_, 24, port->zerof_);
       gtk_box_append (GTK_BOX (self->gain_box), GTK_WIDGET (self->gain));
 
       gtk_toggle_button_set_active (

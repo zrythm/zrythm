@@ -31,6 +31,10 @@
  * ---
  */
 
+#include "zrythm-test-config.h"
+
+#define DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
+
 #include "project/project_init_flow_manager.h"
 #include "settings/g_settings_manager.h"
 #include "utils/io.h"
@@ -43,7 +47,7 @@
 // #include "gtk_wrapper.h"
 
 static void
-_g_test_watcher_remove_pid (GPid pid);
+z_g_test_watcher_remove_pid (GPid pid);
 
 #if defined(__GNUC__) && !defined(__clang__)
 #  pragma GCC diagnostic push
@@ -308,7 +312,7 @@ _g_test_watcher_add_pid (GPid pid)
 }
 
 static void
-_g_test_watcher_remove_pid (GPid pid)
+z_g_test_watcher_remove_pid (GPid pid)
 {
   gchar * command;
 
@@ -332,7 +336,7 @@ stop_daemon (Zrythm * self)
 #else
   kill (self->pipewire_pid_, SIGTERM);
 #endif
-  _g_test_watcher_remove_pid (self->pipewire_pid_);
+  z_g_test_watcher_remove_pid (self->pipewire_pid_);
   g_spawn_close_pid (self->pipewire_pid_);
   self->pipewire_pid_ = 0;
 }

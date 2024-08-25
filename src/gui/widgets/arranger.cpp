@@ -399,10 +399,10 @@ add_object_if_overlap (ArrangerWidget * self, ObjectOverlapInfo &nfo)
   /* skip objects that end before the rect */
   if (obj->has_length ())
     {
-      auto     lobj = dynamic_cast<LengthableObject *> (obj);
-      auto     lobj_trans = dynamic_cast<LengthableObject *> (obj->transient_);
-      Position g_obj_end_pos;
-      Position g_obj_end_pos_transient;
+      auto       lobj = dynamic_cast<LengthableObject *> (obj);
+      const auto lobj_trans = obj->get_transient<LengthableObject> ();
+      Position   g_obj_end_pos;
+      Position   g_obj_end_pos_transient;
       if (ArrangerObject::type_has_global_pos (obj->type_))
         {
           g_obj_end_pos = lobj->end_pos_;
@@ -513,18 +513,18 @@ add_object_if_overlap (ArrangerWidget * self, ObjectOverlapInfo &nfo)
         {
           /* object to check for automation point curve cross (either main
            * object or transient) */
-          AutomationPoint * ap_to_check = nullptr;
+          std::shared_ptr<AutomationPoint> ap_to_check = nullptr;
           if (
             orig_visible
             && ui_is_point_in_rect_hit (
               &obj->transient_->full_rect_, x >= 0 ? true : false,
               y >= 0 ? true : false, x, y, 0, 0))
             {
-              ap_to_check = dynamic_cast<AutomationPoint *> (obj->transient_);
+              ap_to_check = obj->get_transient<AutomationPoint> ();
             }
           else
             {
-              ap_to_check = dynamic_cast<AutomationPoint *> (obj);
+              ap_to_check = obj->shared_from_this_as<AutomationPoint> ();
             }
 
           /* handle special case for automation points */
@@ -2088,9 +2088,12 @@ set_earliest_obj (ArrangerWidget * self)
     {
       auto [start_obj, start_pos] = sel->get_first_object_and_pos (true);
       self->earliest_obj_start_pos = std::make_unique<Position> (start_pos);
+      z_debug ("earliest object position: {}", *self->earliest_obj_start_pos);
     }
-
-  z_debug ("earliest object position: {}", *self->earliest_obj_start_pos);
+  else
+    {
+      z_debug ("cleared earliest object position");
+    }
 }
 
 /**
@@ -2202,8 +2205,9 @@ on_drag_begin_handle_hit_object (
           if (self->n_press == 2 && !self->ctrl_held)
             {
               auto dialog = string_entry_dialog_widget_new (
-                _ ("Marker name"), obj, NameableObject::name_getter,
-                NameableObject::name_setter_with_action);
+                _ ("Marker name"),
+                bind_member_function (*obj, &NameableObject::get_name),
+                bind_member_function (*obj, &NameableObject::set_name));
               gtk_window_present (GTK_WINDOW (dialog));
               self->action = UiOverlayAction::NONE;
               return true;
@@ -3430,18 +3434,24 @@ requires std::derived_from<T, ArrangerSelections> T *
     {
     case TYPE (TIMELINE):
       sel = TL_SELECTIONS.get ();
+      break;
     case TYPE (MIDI):
     case TYPE (MIDI_MODIFIER):
       sel = MIDI_SELECTIONS.get ();
+      break;
     case TYPE (AUTOMATION):
       sel = AUTOMATION_SELECTIONS.get ();
+      break;
     case TYPE (CHORD):
       sel = CHORD_SELECTIONS.get ();
+      break;
     case TYPE (AUDIO):
       sel = AUDIO_SELECTIONS.get ();
+      break;
     default:
       z_error ("should not be reached");
       sel = TL_SELECTIONS.get ();
+      break;
     }
   return static_cast<T *> (sel);
 }
@@ -3720,7 +3730,7 @@ on_motion (
     {
       obj = NULL;
     }
-  self->hovered_object = obj->shared_from_this ();
+  self->hovered_object = obj ? obj->shared_from_this () : nullptr;
 
   if (
     self->action == UiOverlayAction::CUTTING && !self->alt_held
@@ -4894,6 +4904,11 @@ finalize (ArrangerWidget * self)
   std::destroy_at (&self->sel_at_start);
   std::destroy_at (&self->region_at_start);
   std::destroy_at (&self->sel_to_delete);
+  std::destroy_at (&self->fade_pos_at_start);
+  std::destroy_at (&self->start_pos);
+  std::destroy_at (&self->playhead_pos_at_start);
+  std::destroy_at (&self->curr_pos);
+  std::destroy_at (&self->end_pos);
 
   object_free_w_func_and_null (g_object_unref, self->symbolic_link_texture);
   object_free_w_func_and_null (g_object_unref, self->music_note_16th_texture);
@@ -4989,6 +5004,11 @@ arranger_widget_init (ArrangerWidget * self)
   std::construct_at (&self->sel_at_start);
   std::construct_at (&self->region_at_start);
   std::construct_at (&self->sel_to_delete);
+  std::construct_at (&self->fade_pos_at_start);
+  std::construct_at (&self->start_pos);
+  std::construct_at (&self->playhead_pos_at_start);
+  std::construct_at (&self->curr_pos);
+  std::construct_at (&self->end_pos);
 
   self->first_draw = true;
 

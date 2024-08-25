@@ -677,7 +677,7 @@ PluginManager::call_carla_discovery_idle ()
       cached_plugin_descriptors_->serialize_to_file_no_throw ();
       if (scan_done_cb_)
         {
-          scan_done_cb_ (scan_done_cb_data_);
+          scan_done_cb_ ();
         }
 
       return SourceFuncRemove;
@@ -687,17 +687,14 @@ PluginManager::call_carla_discovery_idle ()
 }
 
 void
-PluginManager::begin_scan (
-  const double    max_progress,
-  double *        progress,
-  GenericCallback cb,
-  void *          user_data)
+PluginManager::
+  begin_scan (const double max_progress, double * progress, GenericCallback cb)
 {
   if (getenv ("ZRYTHM_SKIP_PLUGIN_SCAN"))
     {
       if (cb)
         {
-          cb (user_data);
+          cb ();
         }
       return;
     }
@@ -730,12 +727,11 @@ PluginManager::begin_scan (
                 * (max_progress - start_progress);
           z_return_if_fail (zrythm_app->greeter);
           greeter_widget_set_progress_and_status (
-            zrythm_app->greeter, _ ("Scanning Plugins"), nullptr, *progress);
+            *zrythm_app->greeter, _ ("Scanning Plugins"), "", *progress);
         }
     }
 
   scan_done_cb_ = cb;
-  scan_done_cb_data_ = user_data;
 
   Glib::signal_idle ().connect (sigc::track_obj (
     sigc::mem_fun (*this, &PluginManager::call_carla_discovery_idle), *this));

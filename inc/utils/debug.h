@@ -30,6 +30,27 @@
         #b, (gint64) (b)); \
     }
 
+#ifdef _MSC_VER
+#  include <intrin.h>
+#  define DEBUG_BREAK() __debugbreak ()
+#elif defined(__APPLE__)
+#  include <TargetConditionals.h>
+#  if TARGET_OS_MAC
+#    define DEBUG_BREAK() __builtin_debugtrap ()
+#  endif
+#elif defined(__linux__) || defined(__unix__)
+#  include <csignal>
+#  define DEBUG_BREAK() raise (SIGTRAP)
+#else
+#  define DEBUG_BREAK() \
+    do \
+      { \
+        volatile int * p = 0; \
+        *p = 0; \
+      } \
+    while (0)
+#endif
+
 /**
  * @}
  */

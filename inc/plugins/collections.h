@@ -24,16 +24,9 @@
 class PluginCollection final : public ISerializable<PluginCollection>
 {
 public:
-  std::string        get_name () const { return name_; }
-  static std::string name_getter (void * data)
-  {
-    return static_cast<PluginCollection *> (data)->get_name ();
-  }
-  void        set_name (std::string_view name) { name_ = name; }
-  static void name_setter (void * data, const std::string &name)
-  {
-    static_cast<PluginCollection *> (data)->set_name (name);
-  }
+  std::string get_name () const { return name_; }
+
+  void set_name (std::string_view name) { name_ = name; }
 
   void clear () { descriptors_.clear (); }
 

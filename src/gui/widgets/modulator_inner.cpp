@@ -41,9 +41,8 @@ get_modulator (ModulatorInnerWidget * self)
 }
 
 static float
-get_snapped_control_value (void * data)
+get_snapped_control_value (ControlPort * port)
 {
-  auto  port = static_cast<ControlPort *> (data);
   float val = port->get_control_value (false);
   return val;
 }
@@ -159,23 +158,25 @@ modulator_inner_widget_new (ModulatorWidget * parent)
   self->parent = parent;
 
   Plugin * modulator = get_modulator (self);
-  for (auto &port : modulator->in_ports_)
+  for (auto port : modulator->in_ports_ | type_is<ControlPort> ())
     {
       if (
-        port->id_.type_ != PortType::Control || port->id_.flow_ != PortFlow::Input
-        || ENUM_BITSET_TEST (
+        ENUM_BITSET_TEST (
           PortIdentifier::Flags, port->id_.flags_,
           PortIdentifier::Flags::NotOnGui))
         continue;
 
       KnobWidget * knob = knob_widget_new_simple (
-        ControlPort::val_getter, ControlPort::default_val_getter,
-        ControlPort::real_val_setter, port.get (), port->minf_, port->maxf_, 24,
-        port->zerof_);
-      knob->snapped_getter = get_snapped_control_value;
+        bind_member_function (*port, &ControlPort::get_val),
+        bind_member_function (*port, &ControlPort::get_default_val),
+        bind_member_function (*port, &ControlPort::set_real_val), port,
+        port->minf_, port->maxf_, 24, port->zerof_);
+      knob->snapped_getter = [port] () {
+        return get_snapped_control_value (port);
+      };
       KnobWithNameWidget * knob_with_name = knob_with_name_widget_new (
-        &port->id_, PortIdentifier::label_getter, nullptr, knob,
-        GTK_ORIENTATION_HORIZONTAL, false, 3);
+        &port->id_, bind_member_function (port->id_, &PortIdentifier::get_label),
+        nullptr, knob, GTK_ORIENTATION_HORIZONTAL, false, 3);
 
       array_double_size_if_full (
         self->knobs, self->num_knobs, self->knobs_size, KnobWithNameWidget *);
@@ -188,7 +189,7 @@ modulator_inner_widget_new (ModulatorWidget * parent)
       gtk_gesture_single_set_button (
         GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY);
       g_signal_connect (
-        G_OBJECT (mp), "pressed", G_CALLBACK (on_knob_right_click), port.get ());
+        G_OBJECT (mp), "pressed", G_CALLBACK (on_knob_right_click), port);
       gtk_widget_add_controller (
         GTK_WIDGET (knob_with_name), GTK_EVENT_CONTROLLER (mp));
     }

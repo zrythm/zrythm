@@ -249,7 +249,7 @@ on_send_automatically_response (
     generic_progress_dialog_widget_new ();
   generic_progress_dialog_widget_setup (
     progress_dialog, _ ("Sending..."), data->progress_nfo,
-    _ ("Sending data..."), true, nullptr, nullptr, false);
+    _ ("Sending data..."), true, std::nullopt, false);
 
   /* start sending in a new thread */
   data->thread =

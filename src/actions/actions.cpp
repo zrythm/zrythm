@@ -2422,30 +2422,6 @@ do_audio_func (
     }
 }
 
-static void
-set_pitch_ratio (void * object, const std::string &ratio_str)
-{
-  double ratio = strtod (ratio_str.c_str (), nullptr);
-  if (ratio < 0.0001 || ratio > 100.0)
-    {
-      ui_show_error_message (
-        _ ("Invalid Pitch Ratio"),
-        _ ("Please enter a ratio between 0.0001 and 100."));
-      return;
-    }
-
-  AudioFunctionOpts opts;
-  opts.amount_ = ratio;
-  do_audio_func (AudioFunctionType::PitchShift, opts, nullptr);
-}
-
-static std::string
-get_pitch_ratio (void * object)
-{
-  return fmt::format (
-    "{:f}", g_settings_get_double (S_UI, "audio-function-pitch-shift-ratio"));
-}
-
 DEFINE_SIMPLE (activate_editor_function)
 {
   size_t       size;
@@ -2566,10 +2542,29 @@ DEFINE_SIMPLE (activate_editor_function)
                   {
                   case AudioFunctionType::PitchShift:
                     {
-                      StringEntryDialogWidget * dialog =
-                        string_entry_dialog_widget_new (
-                          _ ("Pitch Ratio"), nullptr, get_pitch_ratio,
-                          set_pitch_ratio);
+                      StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
+                        _ ("Pitch Ratio"),
+                        [] () {
+                          return fmt::format (
+                            "{:f}",
+                            g_settings_get_double (
+                              S_UI, "audio-function-pitch-shift-ratio"));
+                        },
+                        [] (auto &&ratio_str) {
+                          double ratio = strtod (ratio_str.c_str (), nullptr);
+                          if (ratio < 0.0001 || ratio > 100.0)
+                            {
+                              ui_show_error_message (
+                                _ ("Invalid Pitch Ratio"),
+                                _ ("Please enter a ratio between 0.0001 and 100."));
+                              return;
+                            }
+
+                          AudioFunctionOpts opts;
+                          opts.amount_ = ratio;
+                          do_audio_func (
+                            AudioFunctionType::PitchShift, opts, nullptr);
+                        });
                       gtk_window_present (GTK_WINDOW (dialog));
                       g_free (audio_func_target);
                     }
@@ -2650,9 +2645,11 @@ DEFINE_SIMPLE (activate_midi_editor_highlighting)
 DEFINE_SIMPLE (activate_rename_track)
 {
   z_return_if_fail (TRACKLIST_SELECTIONS->get_num_tracks () == 1);
+  auto track = TRACKLIST_SELECTIONS->get_highest_track ();
+  z_return_if_fail (track);
   StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
-    _ ("Track name"), TRACKLIST_SELECTIONS->get_highest_track (),
-    Track::name_getter, Track::name_setter_with_action);
+    _ ("Track name"), bind_member_function (*track, &Track::get_name),
+    bind_member_function (*track, &Track::set_name_with_action));
   gtk_window_present (GTK_WINDOW (dialog));
 }
 
@@ -2668,9 +2665,13 @@ DEFINE_SIMPLE (activate_rename_arranger_object)
           auto [obj, pos] = sel->get_first_object_and_pos (true);
           if (obj->has_name ())
             {
+              auto named_obj = dynamic_cast<NameableObject *> (obj);
+              z_return_if_fail (named_obj);
               StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
-                _ ("Object name"), obj, NameableObject::name_getter,
-                NameableObject::name_setter_with_action);
+                _ ("Object name"),
+                bind_member_function (*named_obj, &NameableObject::get_name),
+                bind_member_function (
+                  *named_obj, &NameableObject::set_name_with_action));
               gtk_window_present (GTK_WINDOW (dialog));
             }
         }
@@ -2835,8 +2836,9 @@ DEFINE_SIMPLE (activate_go_to_start)
 DEFINE_SIMPLE (activate_input_bpm)
 {
   StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
-    _ ("Please enter a BPM"), P_TEMPO_TRACK, TempoTrack::get_current_bpm_as_str,
-    TempoTrack::set_bpm_from_str);
+    _ ("Please enter a BPM"),
+    bind_member_function (*P_TEMPO_TRACK, &TempoTrack::get_current_bpm_as_str),
+    bind_member_function (*P_TEMPO_TRACK, &TempoTrack::set_bpm_from_str));
   gtk_window_present (GTK_WINDOW (dialog));
 }
 
@@ -2979,7 +2981,7 @@ DEFINE_SIMPLE (activate_export_midi_regions)
 }
 
 static void
-bounce_progress_close_cb (Exporter * exporter)
+bounce_progress_close_cb (std::shared_ptr<Exporter> exporter)
 {
   exporter->join_generic_thread ();
   exporter->post_export ();
@@ -3237,8 +3239,9 @@ DEFINE_SIMPLE (activate_add_chord_preset_pack)
   auto pack = new ChordPresetPack ("", false);
 
   StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
-    _ ("Preset Pack Name"), pack, ChordPresetPack::name_getter,
-    ChordPresetPack::name_setter);
+    _ ("Preset Pack Name"),
+    bind_member_function (*pack, &ChordPresetPack::get_name),
+    bind_member_function (*pack, &ChordPresetPack::set_name));
   g_signal_connect_after (
     G_OBJECT (dialog), "response",
     G_CALLBACK (on_chord_preset_pack_add_response), pack);
@@ -3290,8 +3293,9 @@ DEFINE_SIMPLE (activate_rename_chord_preset_pack)
   z_return_if_fail (pack);
 
   StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
-    _ ("Preset Pack Name"), pack, ChordPresetPack::name_getter,
-    ChordPresetPack::name_setter);
+    _ ("Preset Pack Name"),
+    bind_member_function (*pack, &ChordPresetPack::get_name),
+    bind_member_function (*pack, &ChordPresetPack::set_name));
   gtk_window_present (GTK_WINDOW (dialog));
 }
 
@@ -3340,7 +3344,8 @@ DEFINE_SIMPLE (activate_rename_chord_preset)
   z_return_if_fail (pset);
 
   StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
-    _ ("Preset Name"), pset, ChordPreset::name_getter, ChordPreset::name_setter);
+    _ ("Preset Name"), bind_member_function (*pset, &ChordPreset::get_name),
+    bind_member_function (*pset, &ChordPreset::set_name));
   gtk_window_present (GTK_WINDOW (dialog));
 }
 
@@ -3770,8 +3775,9 @@ DEFINE_SIMPLE (activate_plugin_collection_add)
   auto * collection = new PluginCollection ();
 
   StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
-    _ ("Collection name"), collection, PluginCollection::name_getter,
-    PluginCollection::name_setter);
+    _ ("Collection name"),
+    bind_member_function (*collection, &PluginCollection::get_name),
+    bind_member_function (*collection, &PluginCollection::set_name));
   g_signal_connect_after (
     G_OBJECT (dialog), "response",
     G_CALLBACK (on_plugin_collection_add_response), collection);
@@ -3799,8 +3805,9 @@ DEFINE_SIMPLE (activate_plugin_collection_rename)
   auto collection = MW_PLUGIN_BROWSER->selected_collections.front ();
 
   StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
-    _ ("Collection name"), collection, PluginCollection::name_getter,
-    PluginCollection::name_setter);
+    _ ("Collection name"),
+    bind_member_function (*collection, &PluginCollection::get_name),
+    bind_member_function (*collection, &PluginCollection::set_name));
   g_signal_connect_after (
     G_OBJECT (dialog), "response",
     G_CALLBACK (on_plugin_collection_rename_response), collection);
@@ -3896,7 +3903,7 @@ DEFINE_SIMPLE (activate_track_set_midi_channel)
 }
 
 static void
-bounce_selected_tracks_progress_close_cb (Exporter * exporter)
+bounce_selected_tracks_progress_close_cb (std::shared_ptr<Exporter> exporter)
 {
   exporter->join_generic_thread ();
 

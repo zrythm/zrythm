@@ -14,6 +14,7 @@ ArrangerWidget *
 TimelineObject::get_arranger () const
 {
   Track * track = get_track ();
+  z_return_val_if_fail (track, nullptr);
   if (track->is_pinned ())
     {
       return (ArrangerWidget *) (MW_PINNED_TIMELINE);

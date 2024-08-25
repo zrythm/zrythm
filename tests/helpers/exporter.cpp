@@ -3,6 +3,8 @@
 
 #include "zrythm-test-config.h"
 
+#define DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
+
 #include "project.h"
 #include "zrythm.h"
 

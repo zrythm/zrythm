@@ -376,38 +376,6 @@ on_right_click (
 }
 
 static void
-set_fader_val_with_action_from_db (void * object, const std::string &str)
-{
-  Fader * fader = (Fader *) object;
-  bool    is_valid = false;
-  float   val;
-  if (math_is_string_valid_float (str.c_str (), &val))
-    {
-      if (val <= 6.f)
-        {
-          is_valid = true;
-        }
-    }
-
-  if (is_valid)
-    {
-      fader->set_amp_with_action (
-        fader->get_amp (), math_dbfs_to_amp (val), true);
-    }
-  else
-    {
-      ui_show_error_message (_ ("Invalid Value"), _ ("Invalid value"));
-    }
-}
-
-static std::string
-get_fader_db_val_as_string (void * object)
-{
-  auto fader = (Fader *) object;
-  return fader->db_string_getter ();
-}
-
-static void
 on_click (
   GtkGestureClick * gesture,
   gint              n_press,
@@ -427,8 +395,10 @@ on_click (
   else if (n_press == 2)
     {
       StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
-        _ ("Fader Value"), self->fader, get_fader_db_val_as_string,
-        set_fader_val_with_action_from_db);
+        _ ("Fader Value"),
+        bind_member_function (*self->fader, &Fader::db_string_getter),
+        bind_member_function (
+          *self->fader, &Fader::set_fader_val_with_action_from_db));
       gtk_window_present (GTK_WINDOW (dialog));
     }
 }

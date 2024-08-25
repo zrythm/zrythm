@@ -142,7 +142,7 @@ draw_arranger_object (
       if (i == 1)
         {
           z_return_if_fail (obj->transient_);
-          obj = obj->transient_;
+          obj = obj->get_transient ().get ();
         }
 
       arranger_object_set_full_rectangle (obj, self);
@@ -365,7 +365,7 @@ draw_timeline_bg (
       /* skip tracks without visible automation */
       if (
         auto automatable_track = dynamic_cast<AutomatableTrack *> (track.get ());
-        automatable_track->automation_visible_)
+        automatable_track && automatable_track->automation_visible_)
         {
           auto &atl = automatable_track->get_automation_tracklist ();
           for (auto at : atl.visible_ats_)

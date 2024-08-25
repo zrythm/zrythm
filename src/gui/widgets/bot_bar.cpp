@@ -296,7 +296,7 @@ bot_bar_widget_refresh (BotBarWidget * self)
 }
 
 static void
-set_buffer_size (void * object, const std::string &text)
+set_buffer_size (const std::string &text)
 {
   const auto parse_uint32 = [&text] (uint32_t &val) {
     return std::from_chars (text.data (), text.data () + text.size (), val).ec
@@ -316,7 +316,7 @@ set_buffer_size (void * object, const std::string &text)
 }
 
 static std::string
-get_buffer_size (void * object)
+get_buffer_size ()
 {
   return fmt::format ("{}", AUDIO_ENGINE->block_length_);
 }
@@ -346,7 +346,7 @@ activate_link (GtkWidget * label, const gchar * uri, gpointer data)
     {
       z_debug ("change buf size pressed");
       StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
-        _ ("Buffer Size"), nullptr, get_buffer_size, set_buffer_size);
+        _ ("Buffer Size"), get_buffer_size, set_buffer_size);
       gtk_window_present (GTK_WINDOW (dialog));
       return true;
     }

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/datetime.h"
+#include "utils/debug.h"
 #include "utils/io.h"
 #include "utils/logger.h"
 #include "zrythm.h"
@@ -15,9 +16,20 @@ protected:
   {
     if (msg.level >= spdlog::level::err)
       {
-        if (ZRYTHM_TESTING)
+        if (ZRYTHM_TESTING || ZRYTHM_BREAK_ON_ERROR)
           {
-            abort ();
+            if (juce::Process::isRunningUnderDebugger ())
+              {
+                DEBUG_BREAK ();
+              }
+            else
+              {
+                abort ();
+              }
+          }
+        else
+          {
+            // TODO: show backtrace etc.
           }
       }
   }

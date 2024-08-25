@@ -44,6 +44,7 @@ Zrythm::pre_init (const char * exe_path, bool have_ui, bool optimized_dsp)
   settings_ = std::make_unique<Settings> ();
 
   debug_ = env_get_int ("ZRYTHM_DEBUG", 0);
+  break_on_error_ = env_get_int ("ZRYTHM_BREAK_ON_ERROR", 0);
 }
 
 void
@@ -542,6 +543,13 @@ Zrythm::init_templates ()
     }
 
   z_info ("done");
+}
+
+ZrythmDirectoryManager::~ZrythmDirectoryManager ()
+{
+  z_info ("Destroying ZrythmDirectoryManager");
+  remove_testing_dir ();
+  clearSingletonInstance ();
 }
 
 Zrythm::~Zrythm ()

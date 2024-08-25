@@ -43,7 +43,7 @@ typedef WrappedObjectWithChangeSignal * (*SelectedFileGetter) (
 /**
  * File auditioner controls used in file browsers.
  */
-typedef struct _FileAuditionerControlsWidget
+using FileAuditionerControlsWidget = struct _FileAuditionerControlsWidget
 {
   GtkBox parent_instance;
 
@@ -66,7 +66,7 @@ typedef struct _FileAuditionerControlsWidget
   GtkWidget *        owner;
   SelectedFileGetter selected_file_getter;
   GenericCallback    refilter_files;
-} FileAuditionerControlsWidget;
+};
 
 /**
  * Sets up a FileAuditionerControlsWidget.

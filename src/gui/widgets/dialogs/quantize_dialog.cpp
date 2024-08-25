@@ -95,16 +95,19 @@ quantize_dialog_widget_new (QuantizeOptions * opts)
 
   int w = 100, h = -1;
   self->amount = bar_slider_widget_new (
-    QuantizeOptions::amount_getter, QuantizeOptions::amount_setter, opts, 0,
-    100, w, h, 0, 0, UiDragMode::UI_DRAG_MODE_CURSOR, "%");
+    bind_member_function (*opts, &QuantizeOptions::get_amount),
+    bind_member_function (*opts, &QuantizeOptions::set_amount), opts, 0, 100, w,
+    h, 0, 0, UiDragMode::UI_DRAG_MODE_CURSOR, "%");
   gtk_box_append (GTK_BOX (self->amount_box), GTK_WIDGET (self->amount));
   self->swing = bar_slider_widget_new (
-    QuantizeOptions::swing_getter, QuantizeOptions::swing_setter, opts, 0, 100,
-    w, h, 0, 0, UiDragMode::UI_DRAG_MODE_CURSOR, "%");
+    bind_member_function (*opts, &QuantizeOptions::get_swing),
+    bind_member_function (*opts, &QuantizeOptions::set_swing), opts, 0, 100, w,
+    h, 0, 0, UiDragMode::UI_DRAG_MODE_CURSOR, "%");
   gtk_box_append (GTK_BOX (self->swing_box), GTK_WIDGET (self->swing));
   self->randomization = bar_slider_widget_new (
-    QuantizeOptions::randomization_getter, QuantizeOptions::randomization_setter,
-    opts, 0.f, 100.f, w, h, 0, 0, UiDragMode::UI_DRAG_MODE_CURSOR, " ticks");
+    bind_member_function (*opts, &QuantizeOptions::get_randomization),
+    bind_member_function (*opts, &QuantizeOptions::set_randomization), opts,
+    0.f, 100.f, w, h, 0, 0, UiDragMode::UI_DRAG_MODE_CURSOR, " ticks");
   gtk_box_append (
     GTK_BOX (self->randomization_box), GTK_WIDGET (self->randomization));
 
