@@ -452,10 +452,9 @@ ui_on_motion_set_status_bar_text_cb (
  */
 AdwDialog *
 ui_show_message_full (
-  GtkWidget *  parent,
-  const char * title,
-  const char * format,
-  ...) G_GNUC_PRINTF (3, 4);
+  GtkWidget *      parent,
+  std::string_view title,
+  std::string_view msg);
 
 #define UI_ACTIVE_WINDOW_OR_NULL \
   (gtk_application_get_active_window (GTK_APPLICATION (zrythm_app.get ())) \
@@ -468,13 +467,14 @@ ui_show_message_full (
  */
 #define ui_show_message_printf(title, fmt, ...) \
   ui_show_message_full ( \
-    GTK_WIDGET (UI_ACTIVE_WINDOW_OR_NULL), title, fmt, __VA_ARGS__)
+    GTK_WIDGET (UI_ACTIVE_WINDOW_OR_NULL), title, \
+    format_str (fmt, __VA_ARGS__))
 
 /**
  * Type can be GTK_MESSAGE_ERROR, etc.
  */
 #define ui_show_message_literal(title, str) \
-  ui_show_message_full (GTK_WIDGET (UI_ACTIVE_WINDOW_OR_NULL), title, "%s", str)
+  ui_show_message_full (GTK_WIDGET (UI_ACTIVE_WINDOW_OR_NULL), title, str)
 
 /**
  * Wrapper to show error message so that no casting

@@ -358,12 +358,12 @@ Port::find_from_identifier (const PortIdentifier &id)
               ENUM_BITSET_TEST (
                 PortIdentifier::Flags2, flags2,
                 PortIdentifier::Flags2::ChannelSendEnabled))
-              return ch->sends_[id.port_index_]->enabled_.get ();
+              return ch->sends_.at (id.port_index_)->enabled_.get ();
             else if (
               ENUM_BITSET_TEST (
                 PortIdentifier::Flags2, flags2,
                 PortIdentifier::Flags2::ChannelSendAmount))
-              return ch->sends_[id.port_index_]->amount_.get ();
+              return ch->sends_.at (id.port_index_)->amount_.get ();
           }
         else
           {
@@ -375,15 +375,15 @@ Port::find_from_identifier (const PortIdentifier &id)
                       ENUM_BITSET_TEST (
                         PortIdentifier::Flags, flags,
                         PortIdentifier::Flags::StereoL))
-                      return &ch->sends_[id.port_index_]->stereo_in_->get_l ();
+                      return &ch->sends_.at (id.port_index_)->stereo_in_->get_l ();
                     else if (
                       ENUM_BITSET_TEST (
                         PortIdentifier::Flags, flags,
                         PortIdentifier::Flags::StereoR))
-                      return &ch->sends_[id.port_index_]->stereo_in_->get_r ();
+                      return &ch->sends_.at (id.port_index_)->stereo_in_->get_r ();
                   }
                 else if constexpr (std::is_same_v<T, MidiPort>)
-                  return ch->sends_[id.port_index_]->midi_in_.get ();
+                  return ch->sends_.at (id.port_index_)->midi_in_.get ();
               }
             else if (id.is_output ())
               {
@@ -393,15 +393,15 @@ Port::find_from_identifier (const PortIdentifier &id)
                       ENUM_BITSET_TEST (
                         PortIdentifier::Flags, flags,
                         PortIdentifier::Flags::StereoL))
-                      return &ch->sends_[id.port_index_]->stereo_out_->get_l ();
+                      return &ch->sends_.at (id.port_index_)->stereo_out_->get_l ();
                     else if (
                       ENUM_BITSET_TEST (
                         PortIdentifier::Flags, flags,
                         PortIdentifier::Flags::StereoR))
-                      return &ch->sends_[id.port_index_]->stereo_out_->get_r ();
+                      return &ch->sends_.at (id.port_index_)->stereo_out_->get_r ();
                   }
                 else if constexpr (std::is_same_v<T, MidiPort>)
-                  return ch->sends_[id.port_index_]->midi_out_.get ();
+                  return ch->sends_.at (id.port_index_)->midi_out_.get ();
               }
           }
         z_return_val_if_reached (nullptr);
@@ -823,47 +823,11 @@ Port::set_owner (T * owner)
     }
 }
 
-#if 0
-void
-Port::set_owner (PortIdentifier::OwnerType owner_type, void * owner)
+std::string
+Port::get_label () const
 {
-  switch (owner_type)
-    {
-    case PortIdentifier::OwnerType::ChannelSend:
-      set_owner (static_cast<ChannelSend *> (owner));
-      break;
-    case PortIdentifier::OwnerType::Fader:
-      set_owner (static_cast<Fader *> (owner));
-      break;
-    case PortIdentifier::OwnerType::Track:
-      set_owner (static_cast<Track *> (owner));
-      break;
-    case PortIdentifier::OwnerType::TrackProcessor:
-      set_owner (static_cast<TrackProcessor *> (owner));
-      break;
-    case PortIdentifier::OwnerType::Channel:
-      set_owner (static_cast<Channel *> (owner));
-      break;
-    case PortIdentifier::OwnerType::Plugin:
-      set_owner (static_cast<Plugin *> (owner));
-      break;
-    case PortIdentifier::OwnerType::Transport:
-      set_owner (static_cast<Transport *> (owner));
-      break;
-    case PortIdentifier::OwnerType::ModulatorMacroProcessor:
-      set_owner (static_cast<ModulatorMacroProcessor *> (owner));
-      break;
-    case PortIdentifier::OwnerType::AudioEngine:
-      set_owner (static_cast<AudioEngine *> (owner));
-      break;
-    case PortIdentifier::OwnerType::HardwareProcessor:
-      set_owner (static_cast<ExtPort *> (owner));
-      break;
-    default:
-      z_return_if_reached ();
-    }
+  return id_.get_label ();
 }
-#endif
 
 bool
 Port::can_be_connected_to (const Port &dest) const

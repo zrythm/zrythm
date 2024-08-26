@@ -691,17 +691,21 @@ on_dnd_drag_prepare (
   double          y,
   ChannelWidget * self)
 {
-  auto                            track = get_track (self);
-  WrappedObjectWithChangeSignal * wrapped_obj =
-    wrapped_object_with_change_signal_new (
-      track, WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK);
-  GdkContentProvider * content_providers[] = {
-    gdk_content_provider_new_typed (
-      WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, wrapped_obj),
-  };
+  auto track = get_track (self);
+  return std::visit (
+    [&] (auto &&derived_track) {
+      WrappedObjectWithChangeSignal * wrapped_obj =
+        wrapped_object_with_change_signal_new (
+          derived_track, WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK);
+      GdkContentProvider * content_providers[] = {
+        gdk_content_provider_new_typed (
+          WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, wrapped_obj),
+      };
 
-  return gdk_content_provider_new_union (
-    content_providers, G_N_ELEMENTS (content_providers));
+      return gdk_content_provider_new_union (
+        content_providers, G_N_ELEMENTS (content_providers));
+    },
+    convert_to_variant<TrackPtrVariant> (track));
 }
 
 static void

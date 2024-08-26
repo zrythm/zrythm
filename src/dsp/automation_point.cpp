@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <cmath>
-
 #include "actions/arranger_selections.h"
 #include "dsp/automation_point.h"
 #include "dsp/automation_region.h"
@@ -180,17 +178,15 @@ AutomationPoint::set_fvalue (float real_val, bool is_normalized, bool pub_events
 }
 
 std::string
-AutomationPoint::get_fvalue_as_string (void * self)
+AutomationPoint::get_fvalue_as_string () const
 {
-  AutomationPoint * ap = static_cast<AutomationPoint *> (self);
-  return fmt::sprintf ("{:f}", ap->fvalue_);
+  return fmt::sprintf ("{:f}", fvalue_);
 }
 
 void
-AutomationPoint::set_fvalue_with_action (void * self, const std::string &fval_str)
+AutomationPoint::set_fvalue_with_action (const std::string &fval_str)
 {
-  auto * ap = static_cast<AutomationPoint *> (self);
-  Port * port = ap->get_port ();
+  Port * port = get_port ();
   z_return_if_fail (IS_PORT_AND_NONNULL (port));
 
   float val;
@@ -198,14 +194,14 @@ AutomationPoint::set_fvalue_with_action (void * self, const std::string &fval_st
   if (res != 1 || res == EOF || val < port->minf_ || val > port->maxf_)
     {
       ui_show_error_message_printf (
-        _ ("Invalid Value"), _ ("Please enter a number between %f and %f"),
+        _ ("Invalid Value"), _ ("Please enter a number between {:f} and {:f}"),
         port->minf_, port->maxf_);
       return;
     }
 
-  ap->edit_begin ();
-  ap->set_fvalue (val, false, false);
-  ap->edit_finish ((int) ArrangerSelectionsAction::EditType::Primitive);
+  edit_begin ();
+  set_fvalue (val, false, false);
+  edit_finish ((int) ArrangerSelectionsAction::EditType::Primitive);
 }
 
 double

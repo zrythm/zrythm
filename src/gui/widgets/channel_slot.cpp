@@ -183,16 +183,21 @@ on_dnd_drop (
 
   WrappedObjectWithChangeSignal * wrapped_obj =
     static_cast<WrappedObjectWithChangeSignal *> (g_value_get_object (value));
-  Plugin *           pl = NULL;
-  PluginDescriptor * descr = NULL;
-  if (wrapped_obj->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_DESCR)
-    {
-      descr = (PluginDescriptor *) wrapped_obj->obj;
-    }
-  else if (wrapped_obj->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN)
-    {
-      pl = (Plugin *) wrapped_obj->obj;
-    }
+  Plugin *           pl = nullptr;
+  PluginDescriptor * descr = nullptr;
+  std::visit (
+    [&] (auto &&obj) {
+      using ObjT = base_type<decltype (obj)>;
+      if constexpr (std::is_same_v<ObjT, PluginDescriptor>)
+        {
+          descr = obj;
+        }
+      else if constexpr (std::derived_from<ObjT, Plugin>)
+        {
+          pl = obj;
+        }
+    },
+    wrapped_obj->obj);
 
   self->track->channel_->handle_plugin_import (
     pl, MIXER_SELECTIONS.get (), descr, self->slot_index, self->type,
@@ -686,9 +691,13 @@ on_dnd_drag_prepare (
   ChannelSlotWidget * self)
 {
   Plugin *                        pl = channel_slot_widget_get_plugin (self);
-  WrappedObjectWithChangeSignal * wrapped_obj =
-    wrapped_object_with_change_signal_new (
-      pl, WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
+  WrappedObjectWithChangeSignal * wrapped_obj = nullptr;
+  std::visit (
+    [&] (auto &&derived_pl) {
+      wrapped_obj = wrapped_object_with_change_signal_new (
+        derived_pl, WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
+    },
+    convert_to_variant<PluginPtrVariant> (pl));
   GdkContentProvider * content_providers[] = {
     gdk_content_provider_new_typed (
       WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, wrapped_obj),

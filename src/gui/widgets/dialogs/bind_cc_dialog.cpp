@@ -72,9 +72,9 @@ tick_cb (
 
       if (ctrl_change_ch > 0)
         {
-          char str[100];
-          sprintf (str, "<b>Ch%d - %s</b>", ctrl_change_ch, ctrl_change);
-          gtk_label_set_markup (self->lbl, str);
+          auto str =
+            fmt::format ("<b>Ch{} - {}</b>", ctrl_change_ch, ctrl_change);
+          gtk_label_set_markup (self->lbl, str.c_str ());
         }
       else if (port_is_toggle)
         {
@@ -85,11 +85,10 @@ tick_cb (
         }
       else
         {
-          char str[100];
-          sprintf (
-            str, "<b><span foreground='red'>%s</span></b>",
+          auto str = fmt::format (
+            "<b><span foreground='red'>{}</span></b>",
             _ ("Not a control change event"));
-          gtk_label_set_markup (self->lbl, str);
+          gtk_label_set_markup (self->lbl, str.c_str ());
 
           gtk_widget_set_sensitive (GTK_WIDGET (self->ok_btn), false);
         }

@@ -81,6 +81,10 @@ operator== (const RegionOwnedObject &lhs, const RegionOwnedObject &rhs)
 template <typename T>
 concept RegionOwnedObjectSubclass = std::derived_from<T, RegionOwnedObject>;
 
+using RegionOwnedObjectVariant =
+  std::variant<Velocity, MidiNote, ChordObject, AutomationPoint>;
+using RegionOwnedObjectPtrVariant = to_pointer_variant<RegionOwnedObjectVariant>;
+
 extern template class RegionOwnedObjectImpl<MidiRegion>;
 extern template class RegionOwnedObjectImpl<AutomationRegion>;
 extern template class RegionOwnedObjectImpl<ChordRegion>;

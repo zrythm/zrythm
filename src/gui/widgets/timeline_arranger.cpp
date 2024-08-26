@@ -366,7 +366,7 @@ snap_region_l (
         }
     }
 
-  return 0;
+  return true;
 }
 
 bool
@@ -409,8 +409,8 @@ timeline_arranger_widget_snap_regions_l (
 
       bool successful = snap_region_l (self, region, &new_pos, dry_run);
 
-      if (successful)
-        return successful;
+      if (!successful)
+        return false;
     }
 
   EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, TL_SELECTIONS.get ());
@@ -499,7 +499,7 @@ snap_region_r (
         }
     }
 
-  return 0;
+  return true;
 }
 
 bool
@@ -510,45 +510,57 @@ timeline_arranger_widget_snap_regions_r (
 {
   auto shared_prj_region = self->prj_start_object.lock ();
   z_return_val_if_fail (shared_prj_region, false);
-  auto region = dynamic_cast<Region *> (shared_prj_region.get ());
-  auto fadeable_region = dynamic_cast<FadeableObject *> (region);
-
-  double delta;
-  if (self->action == UiOverlayAction::RESIZING_R_FADE)
-    {
-      delta =
-        pos->ticks_
-        - (region->pos_.ticks_ + fadeable_region->fade_out_pos_.ticks_);
-    }
-  else
-    {
-      delta = pos->ticks_ - region->end_pos_.ticks_;
-    }
-
-  Position new_pos;
-
-  for (auto region : TL_SELECTIONS->objects_ | type_is<Region> ())
-    {
-      auto fadeable_obj = dynamic_cast<FadeableObject *> (region);
+  return std::visit (
+    [&] (auto &&region) {
+      using RegionT = base_type<decltype (region)>;
+      double delta = 0.0;
       if (self->action == UiOverlayAction::RESIZING_R_FADE)
         {
-          new_pos = fadeable_obj->fade_out_pos_;
+          if constexpr (std::derived_from<RegionT, FadeableObject>)
+            {
+              delta =
+                pos->ticks_
+                - (region->pos_.ticks_ + region->fade_out_pos_.ticks_);
+            }
+          else
+            {
+              z_return_val_if_reached (false);
+            }
         }
       else
         {
-          new_pos = region->end_pos_;
+          delta = pos->ticks_ - region->end_pos_.ticks_;
         }
-      new_pos.add_ticks (delta);
 
-      bool success = snap_region_r (self, region, &new_pos, dry_run);
+      Position new_pos;
+      z_debug ("TEST");
 
-      if (success)
-        return success;
-    }
+      for (auto region : TL_SELECTIONS->objects_ | type_is<Region> ())
+        {
+          if (self->action == UiOverlayAction::RESIZING_R_FADE)
+            {
+              auto fadeable_obj = dynamic_cast<FadeableObject *> (region);
+              new_pos = fadeable_obj->fade_out_pos_;
+            }
+          else
+            {
+              new_pos = region->end_pos_;
+            }
+          new_pos.add_ticks (delta);
 
-  EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, TL_SELECTIONS.get ());
+          bool success = snap_region_r (self, region, &new_pos, dry_run);
+          z_trace ("new pos [success: {}]: {}", success, new_pos.to_string ());
 
-  return true;
+          if (!success)
+            return false;
+        }
+
+      EVENTS_PUSH (
+        EventType::ET_ARRANGER_SELECTIONS_CHANGED, TL_SELECTIONS.get ());
+
+      return true;
+    },
+    convert_to_variant<RegionPtrVariant> (shared_prj_region.get ()));
 }
 
 void
@@ -929,12 +941,12 @@ on_dnd_drop (
         wrapped_obj->type
         == WrappedObjectType::WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
         {
-          file = (FileDescriptor *) wrapped_obj->obj;
+          file = std::get<FileDescriptor *> (wrapped_obj->obj);
         }
       if (
         wrapped_obj->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_CHORD_DESCR)
         {
-          chord_descr = (ChordDescriptor *) wrapped_obj->obj;
+          chord_descr = std::get<ChordDescriptor *> (wrapped_obj->obj);
         }
     }
 
@@ -1058,12 +1070,12 @@ on_dnd_motion (
         wrapped_obj->type
         == WrappedObjectType::WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
         {
-          supported_file = (FileDescriptor *) wrapped_obj->obj;
+          supported_file = std::get<FileDescriptor *> (wrapped_obj->obj);
         }
       else if (
         wrapped_obj->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_CHORD_DESCR)
         {
-          chord_descr = (ChordDescriptor *) wrapped_obj->obj;
+          chord_descr = std::get<ChordDescriptor *> (wrapped_obj->obj);
         }
     }
 

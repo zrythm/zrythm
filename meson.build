@@ -748,7 +748,9 @@ test_strict_cflags = [
   '-Werror=odr',
   '-Werror=mismatched-tags',
   '-Werror=narrowing',
-  '-Werror=overloaded-virtual'
+  '-Werror=overloaded-virtual',
+  '-Werror=return-stack-address',
+  '-Werror=return-local-addr',
   ]
 
 if is_gcc

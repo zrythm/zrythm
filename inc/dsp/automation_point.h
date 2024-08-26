@@ -74,10 +74,10 @@ public:
   void set_fvalue (float real_val, bool is_normalized, bool pub_events);
 
   /** String getter for the value. */
-  static std::string get_fvalue_as_string (void * self);
+  std::string get_fvalue_as_string () const;
 
   /** String setter. */
-  static void set_fvalue_with_action (void * self, const std::string &fval_str);
+  void set_fvalue_with_action (const std::string &fval_str);
 
   /**
    * The function to return a point on the curve.

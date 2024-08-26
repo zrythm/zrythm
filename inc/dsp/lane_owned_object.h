@@ -6,6 +6,9 @@
 
 #include "dsp/timeline_object.h"
 
+class Region;
+template <typename RegionT> class TrackLaneImpl;
+
 class LaneOwnedObject : virtual public TimelineObject
 {
 public:
@@ -53,12 +56,14 @@ public:
   TrackLaneT * owner_lane_ = nullptr;
 };
 
-#if 0
 template <typename RegionT>
-requires RegionSubclass<RegionT> class LaneOwnedObjectImpl<RegionT>
-{
-};
-#endif
+concept LaneOwnedRegionSubclass =
+  DerivedButNotBase<RegionT, Region>
+  && DerivedButNotBase<RegionT, LaneOwnedObjectImpl<RegionT>>;
+
+class MidiRegion;
+class AudioRegion;
+using LaneOwnedObjectVariant = std::variant<MidiRegion, AudioRegion>;
 
 extern template class LaneOwnedObjectImpl<MidiRegion>;
 extern template class LaneOwnedObjectImpl<AudioRegion>;

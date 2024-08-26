@@ -7,8 +7,9 @@
 #include <memory>
 #include <vector>
 
-#include "dsp/arranger_objects.h"
+#include "dsp/arranger_object_all.h"
 #include "utils/icloneable.h"
+#include "utils/traits.h"
 
 class AudioClip;
 
@@ -365,6 +366,20 @@ DEFINE_ENUM_FORMATTER (
   "MIDI",
   "Automation",
   "Audio");
+
+class TimelineSelections;
+class MidiSelections;
+class ChordSelections;
+class AutomationSelections;
+class AudioSelections;
+using ArrangerSelectionsVariant = std::variant<
+  TimelineSelections,
+  MidiSelections,
+  ChordSelections,
+  AutomationSelections,
+  AudioSelections>;
+using ArrangerSelectionsPtrVariant =
+  to_pointer_variant<ArrangerSelectionsVariant>;
 
 /**
  * @}

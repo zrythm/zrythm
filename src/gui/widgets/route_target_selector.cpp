@@ -44,7 +44,8 @@ on_route_target_changed (
     {
       WrappedObjectWithChangeSignal * wobj = Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
         gtk_drop_down_get_selected_item (dropdown));
-      new_direct_out = (GroupTargetTrack *) wobj->obj;
+      new_direct_out = dynamic_cast<GroupTargetTrack *> (
+        wrapped_object_with_change_signal_get_track (wobj));
     }
 
   if (new_direct_out != old_direct_out)
@@ -81,22 +82,28 @@ on_header_bind (
     {
       WrappedObjectWithChangeSignal * wobj =
         Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (item);
-      Track * track = (Track *) wobj->obj;
-      switch (track->type_)
-        {
-        case Track::Type::Master:
-          gtk_label_set_markup (label, _ ("Master"));
-          break;
-        case Track::Type::AudioGroup:
-        case Track::Type::MidiGroup:
-          gtk_label_set_markup (label, _ ("Groups"));
-          break;
-        case Track::Type::Instrument:
-          gtk_label_set_markup (label, _ ("Instruments"));
-          break;
-        default:
-          z_return_if_reached ();
-        }
+      std::visit (
+        [&] (auto &&track) {
+          if constexpr (std::derived_from<base_type<decltype (track)>, Track>)
+            {
+              switch (track->type_)
+                {
+                case Track::Type::Master:
+                  gtk_label_set_markup (label, _ ("Master"));
+                  break;
+                case Track::Type::AudioGroup:
+                case Track::Type::MidiGroup:
+                  gtk_label_set_markup (label, _ ("Groups"));
+                  break;
+                case Track::Type::Instrument:
+                  gtk_label_set_markup (label, _ ("Instruments"));
+                  break;
+                default:
+                  z_return_if_reached ();
+                }
+            }
+        },
+        wobj->obj);
     }
 }
 
@@ -116,7 +123,7 @@ get_str (void * item, gpointer user_data)
     {
       WrappedObjectWithChangeSignal * wobj =
         Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (item);
-      Track * track = (Track *) wobj->obj;
+      Track * track = wrapped_object_with_change_signal_get_track (wobj);
       return track->name_;
     }
 }
@@ -226,10 +233,15 @@ route_target_selector_widget_refresh (
             && cur_track->in_signal_type_ == track->out_signal_type_
             && (cur_track->type_ == Track::Type::AudioGroup || cur_track->type_ == Track::Type::MidiGroup))
             {
-              WrappedObjectWithChangeSignal * wobj =
-                wrapped_object_with_change_signal_new (
-                  cur_track.get (), WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK);
-              g_list_store_append (groups_ls, wobj);
+              std::visit (
+                [&] (auto &&derived_track) {
+                  WrappedObjectWithChangeSignal * wobj =
+                    wrapped_object_with_change_signal_new (
+                      derived_track,
+                      WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK);
+                  g_list_store_append (groups_ls, wobj);
+                },
+                convert_to_variant<TrackPtrVariant> (cur_track.get ()));
             }
         }
     }
@@ -245,7 +257,8 @@ route_target_selector_widget_refresh (
             {
               WrappedObjectWithChangeSignal * wobj =
                 wrapped_object_with_change_signal_new (
-                  cur_track.get (), WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK);
+                  dynamic_cast<InstrumentTrack *> (cur_track.get ()),
+                  WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK);
               g_list_store_append (instruments_ls, wobj);
             }
         }
@@ -277,30 +290,36 @@ route_target_selector_widget_refresh (
       auto direct_out = track->channel_->get_output_track ();
       if (direct_out)
         {
-          WrappedObjectWithChangeSignal * direct_out_wobj =
-            wrapped_object_with_change_signal_new (
-              direct_out, WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK);
-          guint pos;
-          bool  found = g_list_store_find_with_equal_func (
-            master_ls, direct_out_wobj, (GEqualFunc) underlying_track_is_equal,
-            &pos);
-          pos += 1;
-          if (!found)
-            {
-              found = g_list_store_find_with_equal_func (
-                groups_ls, direct_out_wobj,
+          std::visit (
+            [&] (auto &&derived_direct_out) {
+              WrappedObjectWithChangeSignal * direct_out_wobj =
+                wrapped_object_with_change_signal_new (
+                  derived_direct_out,
+                  WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK);
+              guint pos = 0; // ???
+              bool  found = g_list_store_find_with_equal_func (
+                master_ls, direct_out_wobj,
                 (GEqualFunc) underlying_track_is_equal, &pos);
-              pos += 2;
+              pos += 1;
               if (!found)
                 {
                   found = g_list_store_find_with_equal_func (
-                    instruments_ls, direct_out_wobj,
+                    groups_ls, direct_out_wobj,
                     (GEqualFunc) underlying_track_is_equal, &pos);
-                  pos += 2 + g_list_model_get_n_items (G_LIST_MODEL (groups_ls));
-                  z_return_if_fail (found);
+                  pos += 2;
+                  if (!found)
+                    {
+                      found = g_list_store_find_with_equal_func (
+                        instruments_ls, direct_out_wobj,
+                        (GEqualFunc) underlying_track_is_equal, &pos);
+                      pos +=
+                        2 + g_list_model_get_n_items (G_LIST_MODEL (groups_ls));
+                      z_return_if_fail (found);
+                    }
                 }
-            }
-          gtk_drop_down_set_selected (dropdown, pos);
+              gtk_drop_down_set_selected (dropdown, pos);
+            },
+            convert_to_variant<TrackPtrVariant> (direct_out));
         }
       else
         {

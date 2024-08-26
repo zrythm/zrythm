@@ -74,6 +74,37 @@ on_dnd_leave (GtkDropTarget * drop_target, DragDestBoxWidget * self)
 }
 
 static void
+get_available_ptrs_from_wrapped_obj (
+  auto &wrapped_obj,
+  auto &file_descr,
+  auto &pl,
+  auto &pl_descr,
+  auto &track)
+{
+  std::visit (
+    [&] (auto &&obj) {
+      using ObjT = base_type<decltype (obj)>;
+      if constexpr (std::is_same_v<ObjT, FileDescriptor>)
+        {
+          file_descr = obj;
+        }
+      else if constexpr (std::derived_from<ObjT, Plugin>)
+        {
+          pl = obj;
+        }
+      else if constexpr (std::is_same_v<ObjT, PluginDescriptor>)
+        {
+          pl_descr = obj;
+        }
+      else if constexpr (std::derived_from<ObjT, Track>)
+        {
+          track = obj;
+        }
+    },
+    wrapped_obj->obj);
+}
+
+static void
 on_dnd_motion_value_ready (
   GObject *      source_object,
   GAsyncResult * res,
@@ -96,26 +127,8 @@ on_dnd_motion_value_ready (
     {
       WrappedObjectWithChangeSignal * wrapped_obj =
         Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (g_value_get_object (value));
-      if (
-        wrapped_obj->type
-        == WrappedObjectType::WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
-        {
-          supported_file = (FileDescriptor *) wrapped_obj->obj;
-        }
-      else if (
-        wrapped_obj->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN)
-        {
-          pl = (Plugin *) wrapped_obj->obj;
-        }
-      else if (
-        wrapped_obj->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_DESCR)
-        {
-          pl_descr = (PluginDescriptor *) wrapped_obj->obj;
-        }
-      else if (wrapped_obj->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK)
-        {
-          dropped_track = (Track *) wrapped_obj->obj;
-        }
+      get_available_ptrs_from_wrapped_obj (
+        wrapped_obj, supported_file, pl, pl_descr, dropped_track);
     }
 
   bool has_files = false;
@@ -204,26 +217,7 @@ on_dnd_drop (
     {
       WrappedObjectWithChangeSignal * wrapped_obj =
         Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (g_value_get_object (value));
-      if (
-        wrapped_obj->type
-        == WrappedObjectType::WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
-        {
-          file = (FileDescriptor *) wrapped_obj->obj;
-        }
-      else if (
-        wrapped_obj->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN)
-        {
-          pl = (Plugin *) wrapped_obj->obj;
-        }
-      else if (
-        wrapped_obj->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_DESCR)
-        {
-          pd = (PluginDescriptor *) wrapped_obj->obj;
-        }
-      else if (wrapped_obj->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK)
-        {
-          track = (Track *) wrapped_obj->obj;
-        }
+      get_available_ptrs_from_wrapped_obj (wrapped_obj, file, pl, pd, track);
     }
 
   if (

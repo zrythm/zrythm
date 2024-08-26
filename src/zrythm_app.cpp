@@ -380,6 +380,10 @@ zrythm_app_init_thread (ZrythmApp * self)
 {
   z_info ("init thread starting...");
 
+  // sleep for a while otherwise there is a weird issue with the greeter (no idea
+  // what the cause is but it thinks it's NULL inside the function call below)
+  std::this_thread::sleep_for (std::chrono::milliseconds (00));
+
   greeter_widget_set_progress_and_status (
     *self->greeter, _ ("Initializing"), _ ("Initializing settings"), 0.0);
 

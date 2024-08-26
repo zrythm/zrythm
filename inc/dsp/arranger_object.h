@@ -14,6 +14,11 @@ class ArrangerObject;
 class ArrangerSelections;
 TYPEDEF_STRUCT_UNDERSCORED (ArrangerWidget);
 class UndoableAction;
+class ChordObject;
+class ScaleObject;
+class AutomationPoint;
+class Velocity;
+class Marker;
 
 /**
  * @addtogroup dsp
@@ -592,6 +597,36 @@ operator== (const ArrangerObject &lhs, const ArrangerObject &rhs)
   return lhs.type_ == rhs.type_ && lhs.pos_ == rhs.pos_
          && lhs.track_name_hash_ == rhs.track_name_hash_;
 }
+
+class MidiNote;
+class MidiRegion;
+class AudioRegion;
+class AutomationRegion;
+class ChordRegion;
+using ArrangerObjectVariant = std::variant<
+  MidiNote,
+  ChordObject,
+  ScaleObject,
+  MidiRegion,
+  AudioRegion,
+  ChordRegion,
+  AutomationRegion,
+  AutomationPoint,
+  Marker,
+  Velocity>;
+using ArrangerObjectWithoutVelocityVariant = std::variant<
+  MidiNote,
+  ChordObject,
+  ScaleObject,
+  MidiRegion,
+  AudioRegion,
+  ChordRegion,
+  AutomationRegion,
+  Marker,
+  AutomationPoint>;
+using ArrangerObjectPtrVariant = to_pointer_variant<ArrangerObjectVariant>;
+using ArrangerObjectWithoutVelocityPtrVariant =
+  to_pointer_variant<ArrangerObjectWithoutVelocityVariant>;
 
 /**
  * @}

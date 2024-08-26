@@ -28,6 +28,44 @@ class PortConnection;
 constexpr int CHANNEL_SEND_POST_FADER_START_SLOT = 6;
 
 /**
+ * Target type.
+ */
+enum class ChannelSendTargetType
+{
+  /** Remove send. */
+  None,
+
+  /** Send to track inputs. */
+  Track,
+
+  /** Send to plugin sidechain inputs. */
+  PluginSidechain,
+};
+
+/**
+ * Send target (used in list views).
+ */
+struct ChannelSendTarget
+{
+  ChannelSendTargetType type = {};
+
+  int track_pos = 0;
+
+  PluginIdentifier pl_id{};
+
+  std::string port_group;
+
+  /**
+   * Returns a string describing this target (track/plugin name/etc.).
+   */
+  std::string describe () const;
+
+  std::string get_icon () const;
+
+  static void free_func (void * target) { delete (ChannelSendTarget *) target; }
+};
+
+/**
  * Channel send.
  *
  * The actual connection is tracked separately by PortConnectionsManager.
@@ -37,44 +75,6 @@ class ChannelSend final
       public ISerializable<ChannelSend>
 {
 public:
-  /**
-   * Target type.
-   */
-  enum class TargetType
-  {
-    /** Remove send. */
-    None,
-
-    /** Send to track inputs. */
-    Track,
-
-    /** Send to plugin sidechain inputs. */
-    PluginSidechain,
-  };
-
-  /**
-   * Send target (used in list views).
-   */
-  struct Target
-  {
-    TargetType type = {};
-
-    int track_pos = 0;
-
-    PluginIdentifier pl_id{};
-
-    std::string port_group;
-
-    /**
-     * Returns a string describing this target (track/plugin name/etc.).
-     */
-    std::string describe () const;
-
-    std::string get_icon () const;
-
-    static void free_func (void * target) { delete (Target *) target; }
-  };
-
 public:
   ChannelSend () = default;
   /**

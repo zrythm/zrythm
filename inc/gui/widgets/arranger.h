@@ -565,7 +565,7 @@ arranger_widget_select_all (ArrangerWidget * self, bool select, bool fire_events
 
 template <typename T = ArrangerObject>
 requires std::derived_from<T, ArrangerObject> void
-arranger_widget_set_start_object (ArrangerWidget * self, std::shared_ptr<T> &obj)
+arranger_widget_set_start_object (ArrangerWidget * self, std::shared_ptr<T> obj)
 {
   self->start_object = obj->clone_unique ();
   self->prj_start_object = obj;

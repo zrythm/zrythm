@@ -60,7 +60,7 @@ update_plugin_info_label (PluginBrowserWidget * self)
   /* get wrapped object */
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  PluginDescriptor * descr = (PluginDescriptor *) wrapped_obj->obj;
+  PluginDescriptor * descr = std::get<PluginDescriptor *> (wrapped_obj->obj);
 
   auto type_label = fmt::format (
     "{} • {}{}", descr->category_str_,
@@ -219,7 +219,7 @@ on_plugin_row_activated (
   /* get wrapped object */
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  PluginDescriptor * descr = (PluginDescriptor *) wrapped_obj->obj;
+  PluginDescriptor * descr = std::get<PluginDescriptor *> (wrapped_obj->obj);
 
   char tmp[600];
   sprintf (tmp, "%p", descr);
@@ -243,7 +243,7 @@ plugin_filter_func (GObject * item, gpointer user_data)
   PluginBrowserWidget *           self = Z_PLUGIN_BROWSER_WIDGET (user_data);
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (item);
-  PluginDescriptor * descr = (PluginDescriptor *) wrapped_obj->obj;
+  PluginDescriptor * descr = std::get<PluginDescriptor *> (wrapped_obj->obj);
 
   int instruments_active, effects_active, modulators_active,
     midi_modifiers_active;
@@ -403,10 +403,10 @@ plugin_sort_func (const void * _a, const void * _b, gpointer user_data)
 {
   WrappedObjectWithChangeSignal * wrapped_obj_a =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL ((void *) _a);
-  PluginDescriptor * descr_a = (PluginDescriptor *) wrapped_obj_a->obj;
+  PluginDescriptor * descr_a = std::get<PluginDescriptor *> (wrapped_obj_a->obj);
   WrappedObjectWithChangeSignal * wrapped_obj_b =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL ((void *) _b);
-  PluginDescriptor * descr_b = (PluginDescriptor *) wrapped_obj_b->obj;
+  PluginDescriptor * descr_b = std::get<PluginDescriptor *> (wrapped_obj_b->obj);
 
   PluginBrowserSortStyle sort_style = get_sort_style ();
   if (sort_style == PluginBrowserSortStyle::PLUGIN_BROWSER_SORT_ALPHA)
@@ -520,7 +520,7 @@ update_internal_selections (
           WrappedObjectWithChangeSignal * wobj =
             Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
               g_list_model_get_item (G_LIST_MODEL (selection_model), idx));
-          auto * coll = (PluginCollection *) wobj->obj;
+          auto * coll = std::get<PluginCollection *> (wobj->obj);
           if (coll)
             {
               self->selected_collections.push_back (coll);

@@ -75,7 +75,7 @@ files_filter_func (GObject * item, gpointer user_data)
   PanelFileBrowserWidget * self = Z_PANEL_FILE_BROWSER_WIDGET (user_data);
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (item);
-  FileDescriptor * descr = (FileDescriptor *) wrapped_obj->obj;
+  FileDescriptor * descr = std::get<FileDescriptor *> (wrapped_obj->obj);
 
   bool show_audio =
     gtk_toggle_button_get_active (self->filters_toolbar->toggle_audio);
@@ -168,7 +168,7 @@ panel_file_browser_widget_get_selected_bookmark (PanelFileBrowserWidget * self)
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
 
-  return (FileBrowserLocation *) wrapped_obj->obj;
+  return std::get<FileBrowserLocation *> (wrapped_obj->obj);
 }
 
 static GListModel *
@@ -185,7 +185,7 @@ create_model_for_files (PanelFileBrowserWidget * self)
         wrapped_object_with_change_signal_new_with_free_func (
           new FileDescriptor (descr),
           WrappedObjectType::WRAPPED_OBJECT_TYPE_SUPPORTED_FILE,
-          [] (void * obj) { delete reinterpret_cast<FileDescriptor *> (obj); });
+          [] (void * obj) { delete static_cast<FileDescriptor *> (obj); });
       g_list_store_append (store, wobj);
     });
 
@@ -221,7 +221,7 @@ on_files_selection_changed (
   /* get wrapped object */
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  auto descr = (FileDescriptor *) wrapped_obj->obj;
+  auto descr = std::get<FileDescriptor *> (wrapped_obj->obj);
   self->cur_file = descr;
 
   self->selected_files->clear ();
@@ -276,7 +276,7 @@ on_bookmark_row_activated (
   /* get wrapped object */
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  auto * loc = (FileBrowserLocation *) wrapped_obj->obj;
+  auto * loc = std::get<FileBrowserLocation *> (wrapped_obj->obj);
 
   gZrythm->get_file_manager ().set_selection (*loc, true, true);
   self->files_selection_model =
@@ -310,7 +310,7 @@ on_file_row_activated (GtkListView * list_view, guint position, gpointer user_da
   /* get wrapped object */
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  FileDescriptor * descr = (FileDescriptor *) wrapped_obj->obj;
+  FileDescriptor * descr = std::get<FileDescriptor *> (wrapped_obj->obj);
 
   if (
     descr->type_ == FileType::Directory

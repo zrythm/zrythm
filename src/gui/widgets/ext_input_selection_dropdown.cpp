@@ -100,7 +100,7 @@ on_ext_input_changed (
 
       auto wobj = Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
         gtk_drop_down_get_selected_item (dropdown));
-      auto port = static_cast<ExtPort *> (wobj->obj);
+      auto port = std::get<ExtPort *> (wobj->obj);
       if (midi)
         {
           ch.ext_midi_ins_.emplace_back (std::make_unique<ExtPort> (*port));
@@ -181,7 +181,7 @@ preselect_current_port (GtkDropDown * dropdown, ExtPort * ch_port)
     {
       WrappedObjectWithChangeSignal * wobj =
         Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (g_list_model_get_object (model, i));
-      ExtPort * port = (ExtPort *) wobj->obj;
+      ExtPort * port = std::get<ExtPort *> (wobj->obj);
       if (*port == *ch_port)
         {
           gtk_drop_down_set_selected (dropdown, i);

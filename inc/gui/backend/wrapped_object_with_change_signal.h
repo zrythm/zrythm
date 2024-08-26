@@ -4,9 +4,27 @@
 #ifndef __GUI_BACKEND_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_H__
 #define __GUI_BACKEND_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_H__
 
+#include "dsp/track.h"
 #include "utils/types.h"
 
+#include <giomm/listmodel.h>
 #include <glib-object.h>
+
+class PluginDescriptor;
+class ChordDescriptor;
+class ChordPresetPack;
+class ChordPreset;
+class FileDescriptor;
+class MidiMapping;
+struct ProjectInfo;
+class Port;
+struct ChannelSendTarget;
+class PluginCollection;
+class ExtPort;
+struct FileBrowserLocation;
+class ArrangerObject;
+class Track;
+class Plugin;
 
 #define WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE \
   (wrapped_object_with_change_signal_get_type ())
@@ -53,8 +71,28 @@ using WrappedObjectWithChangeSignal = struct _WrappedObjectWithChangeSignal
 {
   GObject parent_instance;
 
+  using ObjVariant = merge_variants_t<
+    TrackVariant,
+    PluginVariant,
+    ArrangerObjectVariant,
+    PortVariant,
+    std::variant<
+      PluginDescriptor,
+      ChordDescriptor,
+      ChordPreset,
+      ChordPresetPack,
+      FileDescriptor,
+      MidiMapping,
+      ProjectInfo,
+      ChannelSendTarget,
+      PluginCollection,
+      ExtPort,
+      FileBrowserLocation>>;
+  using ObjPtrVariant =
+    merge_variants_t<std::variant<std::nullptr_t>, to_pointer_variant<ObjVariant>>;
+
   WrappedObjectType type;
-  void *            obj;
+  ObjPtrVariant     obj = nullptr;
 
   /** Parent model, if using tree model. */
   GListModel * parent_model;
@@ -87,16 +125,34 @@ wrapped_object_with_change_signal_get_display_name (void * data);
  * Instantiates a new WrappedObjectWithChangeSignal.
  */
 WrappedObjectWithChangeSignal *
-wrapped_object_with_change_signal_new (void * obj, WrappedObjectType type);
+wrapped_object_with_change_signal_new (
+  WrappedObjectWithChangeSignal::ObjPtrVariant obj,
+  WrappedObjectType                            type);
 
 /**
  * If this function is not used, the internal object will not be free'd.
  */
 WrappedObjectWithChangeSignal *
 wrapped_object_with_change_signal_new_with_free_func (
-  void *            obj,
-  WrappedObjectType type,
-  ObjectFreeFunc    free_func);
+  WrappedObjectWithChangeSignal::ObjPtrVariant obj,
+  WrappedObjectType                            type,
+  ObjectFreeFunc                               free_func);
+
+ArrangerObject *
+wrapped_object_with_change_signal_get_arranger_object (
+  WrappedObjectWithChangeSignal * self);
+
+Track *
+wrapped_object_with_change_signal_get_track (
+  WrappedObjectWithChangeSignal * self);
+
+Port *
+wrapped_object_with_change_signal_get_port (
+  WrappedObjectWithChangeSignal * self);
+
+Plugin *
+wrapped_object_with_change_signal_get_plugin (
+  WrappedObjectWithChangeSignal * self);
 
 /**
  * @}

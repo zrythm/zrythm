@@ -130,7 +130,7 @@ tick_cb (
 
       if (compl_type == ProgressInfo::CompletionType::HAS_ERROR)
         {
-          ui_show_message_full (GTK_WIDGET (self), _ ("Error"), "%s", msg);
+          ui_show_message_full (GTK_WIDGET (self), _ ("Error"), msg);
         }
       else if (msg)
         {

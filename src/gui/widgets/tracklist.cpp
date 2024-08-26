@@ -305,7 +305,8 @@ on_dnd_drop (
           break;
         case WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_DESCR:
           {
-            PluginDescriptor * descr = (PluginDescriptor *) wrapped_obj->obj;
+            PluginDescriptor * descr =
+              std::get<PluginDescriptor *> (wrapped_obj->obj);
             if (descr->is_instrument () && this_track->is_midi ())
               {
                 /* TODO convert track to instrument */

@@ -1,10 +1,15 @@
-// SPDX-FileCopyrightText: © 2021-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/arranger_object.h"
+#include "dsp/arranger_object_all.h"
 #include "dsp/channel_send.h"
 #include "dsp/ext_port.h"
+#include "dsp/track_all.h"
+#include "gui/backend/file_manager.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
+#include "gui/widgets/greeter.h"
+#include "io/file_descriptor.h"
+#include "plugins/collections.h"
 #include "plugins/plugin_descriptor.h"
 #include "settings/chord_preset_pack.h"
 #include "utils/objects.h"
@@ -50,44 +55,69 @@ wrapped_object_with_change_signal_get_display_name (void * data)
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
 
-  switch (wrapped_obj->type)
-    {
-    case WrappedObjectType::WRAPPED_OBJECT_TYPE_CHORD_PSET_PACK:
-      {
-        auto * pack = (ChordPresetPack *) wrapped_obj->obj;
-        return g_strdup (pack->name_.c_str ());
-      }
-      break;
-    case WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_DESCR:
-      {
-        auto * descr = (PluginDescriptor *) wrapped_obj->obj;
-        return g_strdup (descr->name_.c_str ());
-      }
-      break;
-    case WrappedObjectType::WRAPPED_OBJECT_TYPE_CHANNEL_SEND_TARGET:
-      {
-        auto * target = (ChannelSend::Target *) wrapped_obj->obj;
-        return g_strdup (target->describe ().c_str ());
-      }
-      break;
-    case WrappedObjectType::WRAPPED_OBJECT_TYPE_EXT_PORT:
-      {
-        auto * port = (ExtPort *) wrapped_obj->obj;
-        return g_strdup (port->get_friendly_name ().c_str ());
-      }
-      break;
-    case WrappedObjectType::WRAPPED_OBJECT_TYPE_ARRANGER_OBJECT:
-      {
-        auto * obj = (ArrangerObject *) wrapped_obj->obj;
-        return g_strdup (obj->gen_human_friendly_name ().c_str ());
-      }
-      break;
-    default:
-      z_return_val_if_reached (nullptr);
-      break;
-    }
+  return std::visit (
+    [&] (auto &&obj) -> char * {
+      using ObjT = base_type<decltype (obj)>;
+      if constexpr (
+        std::is_same_v<ChordPresetPack, ObjT>
+        || std::is_same_v<PluginDescriptor, ObjT>)
+        {
+          return g_strdup (obj->name_.c_str ());
+        }
+      else if constexpr (std::is_same_v<ChannelSendTarget, ObjT>)
+        {
+          return g_strdup (obj->describe ().c_str ());
+        }
+      else if constexpr (std::is_same_v<ExtPort, ObjT>)
+        {
+          return g_strdup (obj->get_friendly_name ().c_str ());
+        }
+      else if constexpr (std::derived_from<ObjT, ArrangerObject>)
+        {
+          return g_strdup (obj->gen_human_friendly_name ().c_str ());
+        }
+      else
+        {
+          z_return_val_if_reached (nullptr);
+        }
+    },
+    wrapped_obj->obj);
+}
 
-  z_return_val_if_reached (nullptr);
+ArrangerObject *
+wrapped_object_with_change_signal_get_arranger_object (
+  WrappedObjectWithChangeSignal * self)
+{
+  z_return_val_if_fail (
+    self->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_ARRANGER_OBJECT,
+    nullptr);
+  return get_ptr_variant_as_base_ptr<ArrangerObject> (self->obj);
+}
+
+Track *
+wrapped_object_with_change_signal_get_track (
+  WrappedObjectWithChangeSignal * self)
+{
+  z_return_val_if_fail (
+    self->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK, nullptr);
+  return get_ptr_variant_as_base_ptr<Track> (self->obj);
+}
+
+Port *
+wrapped_object_with_change_signal_get_port (WrappedObjectWithChangeSignal * self)
+{
+  z_return_val_if_fail (
+    self->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK, nullptr);
+  return get_ptr_variant_as_base_ptr<Port> (self->obj);
+}
+
+Plugin *
+wrapped_object_with_change_signal_get_plugin (
+  WrappedObjectWithChangeSignal * self)
+{
+  z_return_val_if_fail (
+    self->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN, nullptr);
+  return get_ptr_variant_as_base_ptr<Plugin> (self->obj);
 }
 
 /**
@@ -96,9 +126,9 @@ wrapped_object_with_change_signal_get_display_name (void * data)
  */
 WrappedObjectWithChangeSignal *
 wrapped_object_with_change_signal_new_with_free_func (
-  void *            obj,
-  WrappedObjectType type,
-  ObjectFreeFunc    free_func)
+  WrappedObjectWithChangeSignal::ObjPtrVariant obj,
+  WrappedObjectType                            type,
+  ObjectFreeFunc                               free_func)
 {
   WrappedObjectWithChangeSignal * self =
     wrapped_object_with_change_signal_new (obj, type);
@@ -108,8 +138,12 @@ wrapped_object_with_change_signal_new_with_free_func (
 }
 
 WrappedObjectWithChangeSignal *
-wrapped_object_with_change_signal_new (void * obj, WrappedObjectType type)
+wrapped_object_with_change_signal_new (
+  WrappedObjectWithChangeSignal::ObjPtrVariant obj,
+  WrappedObjectType                            type)
 {
+  z_return_val_if_fail (std::get_if<std::nullptr_t> (&obj) == nullptr, nullptr);
+
   WrappedObjectWithChangeSignal * self = Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
     g_object_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, nullptr));
 
@@ -131,10 +165,20 @@ dispose (WrappedObjectWithChangeSignal * self)
 static void
 finalize (WrappedObjectWithChangeSignal * self)
 {
-  if (self->free_func && self->obj)
+  if (self->free_func)
     {
-      self->free_func (self->obj);
+      std::visit (
+        [&] (auto &&obj) {
+          if constexpr (
+            !std::is_same_v<std::nullptr_t, base_type<decltype (obj)>>)
+            {
+              self->free_func (obj);
+            }
+        },
+        self->obj);
     }
+
+  std::destroy_at (&self->obj);
 
   G_OBJECT_CLASS (wrapped_object_with_change_signal_parent_class)
     ->finalize (G_OBJECT (self));
@@ -160,4 +204,5 @@ wrapped_object_with_change_signal_class_init (
 static void
 wrapped_object_with_change_signal_init (WrappedObjectWithChangeSignal * self)
 {
+  std::construct_at (&self->obj);
 }

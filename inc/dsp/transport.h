@@ -20,6 +20,7 @@
 class TimelineSelections;
 class Marker;
 class ArrangerSelections;
+class TempoTrack;
 TYPEDEF_STRUCT_UNDERSCORED (ArrangerWidget);
 
 /**

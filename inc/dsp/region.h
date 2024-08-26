@@ -32,6 +32,7 @@ class ChordRegion;
 class ChordObject;
 class AudioRegion;
 class AutomationRegion;
+template <typename RegionT> class RegionOwnerImpl;
 
 /**
  * @addtogroup dsp
@@ -636,6 +637,13 @@ operator== (const Region &lhs, const Region &rhs)
 {
   return lhs.id_ == rhs.id_;
 }
+
+using RegionVariant =
+  std::variant<MidiRegion, ChordRegion, AutomationRegion, AudioRegion>;
+using RegionPtrVariant = to_pointer_variant<RegionVariant>;
+
+template <typename RegionT>
+concept RegionSubclass = DerivedButNotBase<RegionT, Region>;
 
 extern template class RegionImpl<MidiRegion>;
 extern template class RegionImpl<AudioRegion>;

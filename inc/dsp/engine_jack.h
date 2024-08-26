@@ -10,9 +10,9 @@
 
 #ifdef HAVE_JACK
 
-#  include <stdlib.h>
+#  include <cstdlib>
 
-#  define JACK_PORT_T(exp) ((jack_port_t *) exp)
+#  define JACK_PORT_T(exp) (static_cast<jack_port_t *> (exp))
 
 /**
  * Tests if JACK is working properly.

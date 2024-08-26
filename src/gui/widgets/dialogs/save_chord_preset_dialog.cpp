@@ -39,7 +39,7 @@ on_response (GtkDialog * dialog, gint response_id, gpointer user_data)
       z_return_if_fail (
         wrapped_pack->type
         == WrappedObjectType::WRAPPED_OBJECT_TYPE_CHORD_PSET_PACK);
-      ChordPresetPack * pack = (ChordPresetPack *) wrapped_pack->obj;
+      ChordPresetPack * pack = std::get<ChordPresetPack *> (wrapped_pack->obj);
 
       if (!entered_name || strlen (entered_name) < 1)
         {

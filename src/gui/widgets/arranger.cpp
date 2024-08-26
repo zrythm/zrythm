@@ -1843,7 +1843,6 @@ arranger_widget_create_item (
   Track *           track = NULL;
   AutomationTrack * at = NULL;
   int               note, chord_index;
-  Region *          region = NULL;
 
   /* get the position */
   Position pos = arranger_widget_px_to_pos (self, start_x, true);
@@ -1935,42 +1934,47 @@ arranger_widget_create_item (
       }
       break;
     case TYPE (MIDI):
-      /* find the note and region at x,y */
-      note = piano_roll_keys_widget_get_key_from_y (MW_PIANO_ROLL_KEYS, start_y);
-      region = CLIP_EDITOR->get_region ();
+      {
+        /* find the note and region at x,y */
+        note =
+          piano_roll_keys_widget_get_key_from_y (MW_PIANO_ROLL_KEYS, start_y);
+        auto region = CLIP_EDITOR->get_region<MidiRegion> ();
 
-      /* create a note */
-      if (region)
-        {
-          midi_arranger_widget_create_note (
-            self, pos, note, dynamic_cast<MidiRegion &> (*region));
-        }
+        /* create a note */
+        if (region)
+          {
+            midi_arranger_widget_create_note (self, pos, note, *region);
+          }
+      }
       break;
     case TYPE (MIDI_MODIFIER):
     case TYPE (AUDIO):
       break;
     case TYPE (CHORD):
-      /* find the chord and region at x,y */
-      chord_index = chord_arranger_widget_get_chord_at_y (start_y);
-      region = CLIP_EDITOR->get_region ();
+      {
+        /* find the chord and region at x,y */
+        chord_index = chord_arranger_widget_get_chord_at_y (start_y);
+        auto region = CLIP_EDITOR->get_region<ChordRegion> ();
 
-      /* create a chord object */
-      if (
-        region && chord_index < static_cast<int> (CHORD_EDITOR->chords_.size ()))
-        {
-          chord_arranger_widget_create_chord (
-            self, pos, chord_index, dynamic_cast<ChordRegion &> (*region));
-        }
+        /* create a chord object */
+        if (
+          region
+          && chord_index < static_cast<int> (CHORD_EDITOR->chords_.size ()))
+          {
+            chord_arranger_widget_create_chord (self, pos, chord_index, *region);
+          }
+      }
       break;
     case TYPE (AUTOMATION):
-      region = CLIP_EDITOR->get_region ();
+      {
+        auto region = CLIP_EDITOR->get_region<AutomationRegion> ();
 
-      if (region)
-        {
-          automation_arranger_widget_create_ap (
-            self, &pos, start_y, dynamic_cast<AutomationRegion *> (region),
-            autofilling);
-        }
+        if (region)
+          {
+            automation_arranger_widget_create_ap (
+              self, &pos, start_y, region, autofilling);
+          }
+      }
       break;
     }
 
@@ -2113,6 +2117,7 @@ on_drag_begin_handle_hit_object (
 
   return std::visit (
     [&] (auto &&obj) {
+      using ObjT = base_type<decltype (obj)>;
       if (!obj || obj->is_frozen ())
         {
           return false;
@@ -2123,7 +2128,8 @@ on_drag_begin_handle_hit_object (
       int wy = static_cast<int> (y) - obj->full_rect_.y;
 
       /* remember object and pos */
-      self->start_object = obj->clone_unique ();
+      arranger_widget_set_start_object (
+        self, obj->template shared_from_this_as<ObjT> ());
       self->start_pos_px = x;
 
       /* get flags */
@@ -2175,7 +2181,7 @@ on_drag_begin_handle_hit_object (
         }
 
       /* set editor region and show editor if double click */
-      if constexpr (std::derived_from<decltype (obj), Region>)
+      if constexpr (std::derived_from<ObjT, Region>)
         {
           if (self->drag_start_btn == GDK_BUTTON_PRIMARY)
             {
@@ -2190,7 +2196,7 @@ on_drag_begin_handle_hit_object (
             }
         }
       /* if midi note from a ghosted region set the clip editor region */
-      else if constexpr (std::is_same_v<decltype (obj), MidiNote>)
+      else if constexpr (std::is_same_v<ObjT, MidiNote>)
         {
           auto cur_r = CLIP_EDITOR->get_region ();
           auto r = obj->get_region ();
@@ -2200,21 +2206,22 @@ on_drag_begin_handle_hit_object (
             }
         }
       /* if open marker dialog if double click on marker */
-      else if constexpr (std::is_same_v<decltype (obj), Marker>)
+      else if constexpr (std::is_same_v<ObjT, Marker>)
         {
           if (self->n_press == 2 && !self->ctrl_held)
             {
               auto dialog = string_entry_dialog_widget_new (
                 _ ("Marker name"),
                 bind_member_function (*obj, &NameableObject::get_name),
-                bind_member_function (*obj, &NameableObject::set_name));
+                bind_member_function (
+                  *obj, &NameableObject::set_name_with_action));
               gtk_window_present (GTK_WINDOW (dialog));
               self->action = UiOverlayAction::NONE;
               return true;
             }
         }
       /* if double click on scale, open scale selector */
-      else if constexpr (std::is_same_v<decltype (obj), ScaleObject>)
+      else if constexpr (std::is_same_v<ObjT, ScaleObject>)
         {
           if (self->n_press == 2 && !self->ctrl_held)
             {
@@ -2226,14 +2233,16 @@ on_drag_begin_handle_hit_object (
             }
         }
       /* if double click on automation point, ask for value */
-      else if constexpr (std::is_same_v<decltype (obj), AutomationPoint>)
+      else if constexpr (std::is_same_v<ObjT, AutomationPoint>)
         {
           if (self->n_press == 2 && !self->ctrl_held)
             {
               auto dialog = string_entry_dialog_widget_new (
-                _ ("Automation value"), obj,
-                AutomationPoint::get_fvalue_as_string,
-                AutomationPoint::set_fvalue_with_action);
+                _ ("Automation value"),
+                bind_member_function (
+                  *obj, &AutomationPoint::get_fvalue_as_string),
+                bind_member_function (
+                  *obj, &AutomationPoint::set_fvalue_with_action));
               gtk_window_present (GTK_WINDOW (dialog));
               self->action = UiOverlayAction::NONE;
               return true;
@@ -2450,7 +2459,7 @@ on_drag_begin_handle_hit_object (
       std::visit (
         [&] (auto &&orig_selections) {
           constexpr bool is_timeline = std::is_same_v<
-            std::decay_t<decltype (orig_selections)>, TimelineSelections *>;
+            base_type<decltype (orig_selections)>, TimelineSelections *>;
 
           /* set index in prev lane for selected objects if timeline */
           if constexpr (is_timeline)
@@ -2868,7 +2877,11 @@ drag_update (
   self->ctrl_held = state & GDK_CONTROL_MASK;
   self->alt_held = state & GDK_ALT_MASK;
 
-  arranger_widget_print_action (self);
+#if 0
+  z_trace (
+    "shift: {}, ctrl: {}, alt: {}", self->shift_held, self->ctrl_held,
+    self->alt_held);
+#endif
 
   /* get current pos */
   self->curr_pos =
@@ -2877,6 +2890,10 @@ drag_update (
   /* get difference with drag start pos */
   self->curr_ticks_diff_from_start =
     Position::get_ticks_diff (self->curr_pos, self->start_pos, nullptr);
+
+  z_trace (
+    "[action: {}] start position: {}, current position {} ({:.1f},{:.1f})",
+    self->action, self->start_pos, self->curr_pos, offset_x, offset_y);
 
   if (self->earliest_obj_start_pos)
     {
@@ -2987,9 +3004,6 @@ drag_update (
       break;
     }
 
-  /* update visibility */
-  /*arranger_widget_update_visibility (self);*/
-
   switch (self->action)
     {
     /* if drawing a selection */
@@ -3021,11 +3035,11 @@ drag_update (
       /* snap selections based on new pos */
       if (self->type == TYPE (TIMELINE))
         {
-          int ret = timeline_arranger_widget_snap_regions_l (
-            self, &self->curr_pos, F_DRY_RUN);
-          if (!ret)
+          bool success = timeline_arranger_widget_snap_regions_l (
+            self, &self->curr_pos, true);
+          if (success)
             timeline_arranger_widget_snap_regions_l (
-              self, &self->curr_pos, F_NOT_DRY_RUN);
+              self, &self->curr_pos, false);
         }
       else if (self->type == TYPE (AUDIO))
         {
@@ -3042,16 +3056,16 @@ drag_update (
         /* snap selections based on new pos */
         if (self->type == TYPE (TIMELINE))
           {
-            int ret = timeline_arranger_widget_snap_regions_l (
-              self, &self->curr_pos, 1);
-            if (!ret)
+            bool success = timeline_arranger_widget_snap_regions_l (
+              self, &self->curr_pos, true);
+            if (success)
               timeline_arranger_widget_snap_regions_l (self, &self->curr_pos, 0);
           }
         else if (self->type == TYPE (MIDI))
           {
-            int ret = midi_arranger_widget_snap_midi_notes_l (
+            bool success = midi_arranger_widget_snap_midi_notes_l (
               self, self->curr_pos, true);
-            if (!ret)
+            if (success)
               midi_arranger_widget_snap_midi_notes_l (
                 self, self->curr_pos, false);
           }
@@ -3065,20 +3079,19 @@ drag_update (
             timeline_arranger_widget_snap_range_r (self, &self->curr_pos);
           else
             {
-              int ret = timeline_arranger_widget_snap_regions_r (
-                self, &self->curr_pos, F_DRY_RUN);
-              if (!ret)
+              bool success = timeline_arranger_widget_snap_regions_r (
+                self, &self->curr_pos, true);
+              if (success)
                 timeline_arranger_widget_snap_regions_r (
-                  self, &self->curr_pos, F_NOT_DRY_RUN);
+                  self, &self->curr_pos, false);
             }
         }
       else if (self->type == TYPE (AUDIO))
         {
-          bool success = audio_arranger_widget_snap_fade (
-            self, self->curr_pos, false, F_DRY_RUN);
+          bool success =
+            audio_arranger_widget_snap_fade (self, self->curr_pos, false, true);
           if (success)
-            audio_arranger_widget_snap_fade (
-              self, self->curr_pos, false, F_NOT_DRY_RUN);
+            audio_arranger_widget_snap_fade (self, self->curr_pos, false, false);
         }
       break;
     case UiOverlayAction::RESIZING_R:
@@ -3093,20 +3106,20 @@ drag_update (
               }
             else
               {
-                int ret = timeline_arranger_widget_snap_regions_r (
-                  self, &self->curr_pos, F_DRY_RUN);
-                if (!ret)
+                bool success = timeline_arranger_widget_snap_regions_r (
+                  self, &self->curr_pos, true);
+                if (success)
                   {
                     timeline_arranger_widget_snap_regions_r (
-                      self, &self->curr_pos, F_NOT_DRY_RUN);
+                      self, &self->curr_pos, false);
                   }
               }
           }
         else if (self->type == TYPE (MIDI))
           {
-            int ret = midi_arranger_widget_snap_midi_notes_r (
+            bool success = midi_arranger_widget_snap_midi_notes_r (
               self, self->curr_pos, true);
-            if (!ret)
+            if (success)
               {
                 midi_arranger_widget_snap_midi_notes_r (
                   self, self->curr_pos, false);

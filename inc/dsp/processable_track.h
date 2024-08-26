@@ -83,4 +83,18 @@ public:
   std::unique_ptr<TrackProcessor> processor_;
 };
 
+using ProcessableTrackVariant = std::variant<
+  InstrumentTrack,
+  MidiTrack,
+  MasterTrack,
+  MidiGroupTrack,
+  AudioGroupTrack,
+  MidiBusTrack,
+  AudioBusTrack,
+  AudioTrack,
+  ChordTrack,
+  ModulatorTrack,
+  TempoTrack>;
+using ProcessableTrackPtrVariant = to_pointer_variant<ProcessableTrackVariant>;
+
 #endif // __AUDIO_PROCESSABLE_TRACK_H__

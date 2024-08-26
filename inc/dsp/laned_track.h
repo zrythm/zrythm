@@ -179,12 +179,8 @@ public:
   std::vector<std::unique_ptr<TrackLaneT>> lane_snapshots_;
 };
 
-#if 0
-template <typename RegionT>
-requires LaneOwnedRegionSubclass<RegionT> class LanedTrackImpl<RegionT>
-{
-};
-#endif
+using LanedTrackVariant = std::variant<MidiTrack, InstrumentTrack, AudioTrack>;
+using LanedTrackPtrVariant = to_pointer_variant<LanedTrackVariant>;
 
 extern template class LanedTrackImpl<MidiRegion>;
 extern template class LanedTrackImpl<AudioRegion>;

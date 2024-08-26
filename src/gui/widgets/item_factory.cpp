@@ -66,7 +66,7 @@ on_toggled (GtkCheckButton * self, gpointer user_data)
     {
     case WrappedObjectType::WRAPPED_OBJECT_TYPE_MIDI_MAPPING:
       {
-        auto * mapping = (MidiMapping *) obj->obj;
+        auto * mapping = std::get<MidiMapping *> (obj->obj);
         int    mapping_idx = MIDI_MAPPINGS->get_mapping_index (*mapping);
         try
           {
@@ -81,7 +81,7 @@ on_toggled (GtkCheckButton * self, gpointer user_data)
       break;
     case WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK:
       {
-        auto track = (Track *) obj->obj;
+        auto track = wrapped_object_with_change_signal_get_track (obj);
         if (factory.column_name_ == std::string (_ ("Visibility")))
           {
             track->visible_ = active;
@@ -329,7 +329,8 @@ on_editable_label_editing_changed (
     {
     case WrappedObjectType::WRAPPED_OBJECT_TYPE_ARRANGER_OBJECT:
       {
-        auto * obj = (ArrangerObject *) wrapped_obj->obj;
+        auto * obj =
+          wrapped_object_with_change_signal_get_arranger_object (wrapped_obj);
         if (editing)
           {
             obj->edit_begin ();
@@ -563,7 +564,7 @@ item_factory_bind_cb (
             {
               if (self->column_name_ == _ ("On"))
                 {
-                  auto mapping = static_cast<MidiMapping *> (obj->obj);
+                  auto mapping = std::get<MidiMapping *> (obj->obj);
                   gtk_check_button_set_active (
                     GTK_CHECK_BUTTON (check_btn), mapping->enabled_);
                 }
@@ -573,7 +574,7 @@ item_factory_bind_cb (
             {
               if (self->column_name_ == _ ("Visibility"))
                 {
-                  auto track = static_cast<Track *> (obj->obj);
+                  auto track = wrapped_object_with_change_signal_get_track (obj);
                   gtk_check_button_set_active (
                     GTK_CHECK_BUTTON (check_btn), track->visible_);
                 }
@@ -601,7 +602,7 @@ item_factory_bind_cb (
           {
           case WrappedObjectType::WRAPPED_OBJECT_TYPE_MIDI_MAPPING:
             {
-              auto mm = static_cast<MidiMapping *> (obj->obj);
+              auto mm = std::get<MidiMapping *> (obj->obj);
               if (self->column_name_ == _ ("Note/Control"))
                 {
                   char ctrl[60];
@@ -630,7 +631,8 @@ item_factory_bind_cb (
             break;
           case WrappedObjectType::WRAPPED_OBJECT_TYPE_ARRANGER_OBJECT:
             {
-              auto arr_obj = static_cast<ArrangerObject *> (obj->obj);
+              auto arr_obj =
+                wrapped_object_with_change_signal_get_arranger_object (obj);
 
               if (self->column_name_ == _ ("Note"))
                 {
@@ -760,27 +762,27 @@ item_factory_bind_cb (
             break;
           case WrappedObjectType::WRAPPED_OBJECT_TYPE_PROJECT_INFO:
             {
-              auto nfo = static_cast<ProjectInfo *> (obj->obj);
+              auto nfo = std::get<ProjectInfo *> (obj->obj);
 
               if (
                 self->column_name_ == _ ("Name")
                 || self->column_name_ == _ ("Template Name"))
                 {
-                  str = nfo->name;
+                  str = nfo->name_;
                 }
               else if (self->column_name_ == _ ("Path"))
                 {
-                  str = nfo->filename;
+                  str = nfo->filename_;
                 }
               else if (self->column_name_ == _ ("Last Modified"))
                 {
-                  str = nfo->modified_str;
+                  str = nfo->modified_str_;
                 }
             }
             break;
           case WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK:
             {
-              auto track = static_cast<Track *> (obj->obj);
+              auto track = wrapped_object_with_change_signal_get_track (obj);
 
               if (self->column_name_ == _ ("Name"))
                 {
@@ -790,13 +792,13 @@ item_factory_bind_cb (
             break;
           case WrappedObjectType::WRAPPED_OBJECT_TYPE_PORT:
             {
-              auto port = static_cast<Port *> (obj->obj);
+              auto port = wrapped_object_with_change_signal_get_port (obj);
               str = port->get_full_designation ();
             }
             break;
           case WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_COLLECTION:
             {
-              auto coll = static_cast<PluginCollection *> (obj->obj);
+              auto coll = std::get<PluginCollection *> (obj->obj);
               str = coll->get_name ();
               add_plugin_collection_context_menu (bin, coll);
             }
@@ -833,7 +835,7 @@ item_factory_bind_cb (
           {
           case WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_DESCR:
             {
-              auto descr = static_cast<PluginDescriptor *> (obj->obj);
+              auto descr = std::get<PluginDescriptor *> (obj->obj);
               gtk_image_set_from_icon_name (
                 img, descr->get_icon_name ().c_str ());
               gtk_label_set_text (lbl, descr->name_.c_str ());
@@ -857,7 +859,7 @@ item_factory_bind_cb (
             break;
           case WrappedObjectType::WRAPPED_OBJECT_TYPE_SUPPORTED_FILE:
             {
-              auto descr = static_cast<FileDescriptor *> (obj->obj);
+              auto descr = std::get<FileDescriptor *> (obj->obj);
 
               gtk_image_set_from_icon_name (img, descr->get_icon_name ());
               gtk_label_set_text (lbl, descr->label_.c_str ());
@@ -881,7 +883,7 @@ item_factory_bind_cb (
             break;
           case WrappedObjectType::WRAPPED_OBJECT_TYPE_CHORD_PSET_PACK:
             {
-              auto pack = static_cast<ChordPresetPack *> (obj->obj);
+              auto pack = std::get<ChordPresetPack *> (obj->obj);
 
               gtk_image_set_from_icon_name (img, "minuet-chords");
               gtk_label_set_text (lbl, pack->get_name ().c_str ());
@@ -891,7 +893,7 @@ item_factory_bind_cb (
             break;
           case WrappedObjectType::WRAPPED_OBJECT_TYPE_CHORD_PSET:
             {
-              auto pset = static_cast<ChordPreset *> (obj->obj);
+              auto pset = std::get<ChordPreset *> (obj->obj);
 
               gtk_image_set_from_icon_name (img, "minuet-chords");
               gtk_label_set_text (lbl, pset->name_.c_str ());
@@ -901,7 +903,7 @@ item_factory_bind_cb (
             break;
           case WrappedObjectType::WRAPPED_OBJECT_TYPE_CHANNEL_SEND_TARGET:
             {
-              auto target = (ChannelSend::Target *) obj->obj;
+              auto target = std::get<ChannelSendTarget *> (obj->obj);
 
               auto icon_name = target->get_icon ();
               gtk_image_set_from_icon_name (img, icon_name.c_str ());
@@ -912,7 +914,7 @@ item_factory_bind_cb (
             break;
           case WrappedObjectType::WRAPPED_OBJECT_TYPE_FILE_BROWSER_LOCATION:
             {
-              auto * loc = (FileBrowserLocation *) obj->obj;
+              auto * loc = std::get<FileBrowserLocation *> (obj->obj);
 
               const char * icon_name = loc->get_icon_name ();
               gtk_image_set_from_icon_name (img, icon_name);
@@ -934,7 +936,7 @@ item_factory_bind_cb (
           {
           case WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK:
             {
-              auto * track = (Track *) obj->obj;
+              auto * track = wrapped_object_with_change_signal_get_track (obj);
               gtk_image_set_from_icon_name (img, track->icon_name_.c_str ());
             }
             break;
@@ -951,7 +953,7 @@ item_factory_bind_cb (
           {
           case WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK:
             {
-              auto * track = (Track *) obj->obj;
+              auto * track = wrapped_object_with_change_signal_get_track (obj);
               color_area_widget_setup_generic (ca, &track->color_);
             }
             break;
@@ -970,7 +972,7 @@ item_factory_unbind_cb (
   GtkListItem *              listitem,
   gpointer                   user_data)
 {
-  ItemFactory * self = (ItemFactory *) user_data;
+  auto * self = (ItemFactory *) user_data;
 
   GObject * gobj = G_OBJECT (gtk_list_item_get_item (listitem));
   WrappedObjectWithChangeSignal * obj;

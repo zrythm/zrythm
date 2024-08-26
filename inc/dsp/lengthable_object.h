@@ -259,6 +259,10 @@ operator== (const LengthableObject &lhs, const LengthableObject &rhs)
               == static_cast<const ArrangerObject &> (rhs);
 }
 
+using LengthableObjectVariant =
+  std::variant<MidiRegion, AudioRegion, ChordRegion, AutomationRegion, MidiNote>;
+using LengthableObjectPtrVariant = to_pointer_variant<LengthableObjectVariant>;
+
 #define DEFINE_OR_DECLARE_TEMPLATES_FOR_LENGTHABLE_OBJECT(_extern, subclass) \
   _extern template std::pair< \
     std::shared_ptr<subclass>, std::shared_ptr<subclass>> \

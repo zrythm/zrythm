@@ -117,7 +117,7 @@ ports_filter_func (GObject * item, AutomatableSelectorPopoverWidget * self)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (item);
-  Port *         port = (Port *) wrapped_obj->obj;
+  Port * port = wrapped_object_with_change_signal_get_port (wrapped_obj);
   const Plugin * port_pl = port->get_plugin (false);
   const Track *  port_tr = port->get_track (false);
 
@@ -138,7 +138,7 @@ ports_filter_func (GObject * item, AutomatableSelectorPopoverWidget * self)
         {
           WrappedObjectWithChangeSignal * wobj =
             Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (ptr);
-          Plugin * pl = (Plugin *) wobj->obj;
+          Plugin * pl = wrapped_object_with_change_signal_get_plugin (wobj);
           if (pl == port_pl)
             {
               match = true;
@@ -279,7 +279,7 @@ bind_type_cb (
     {
       WrappedObjectWithChangeSignal * wobj =
         Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (obj);
-      Plugin * pl = (Plugin *) wobj->obj;
+      Plugin * pl = wrapped_object_with_change_signal_get_plugin (wobj);
       gtk_label_set_text (lbl, pl->get_name ().c_str ());
     }
   else if (GTK_IS_STRING_OBJECT (obj))
@@ -311,7 +311,7 @@ bind_type_header_cb (
     {
       WrappedObjectWithChangeSignal * wobj =
         Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (obj);
-      Plugin * pl = (Plugin *) wobj->obj;
+      Plugin * pl = wrapped_object_with_change_signal_get_plugin (wobj);
       switch (pl->id_.slot_type_)
         {
         case PluginSlotType::Insert:
@@ -388,11 +388,14 @@ setup_types_listview (
         {
           GListStore * ls =
             g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
-          WrappedObjectWithChangeSignal * wobj =
-            wrapped_object_with_change_signal_new (
-              ch->instrument_.get (),
-              WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
-          g_list_store_append (ls, wobj);
+          std::visit (
+            [&] (auto &&derived_pl) {
+              WrappedObjectWithChangeSignal * wobj =
+                wrapped_object_with_change_signal_new (
+                  derived_pl, WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
+              g_list_store_append (ls, wobj);
+            },
+            convert_to_variant<PluginPtrVariant> (ch->instrument_.get ()));
           g_list_store_append (composite_ls, ls);
         }
 
@@ -404,20 +407,28 @@ setup_types_listview (
         {
           if (plugin)
             {
-              WrappedObjectWithChangeSignal * wobj =
-                wrapped_object_with_change_signal_new (
-                  plugin.get (), WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
-              g_list_store_append (midi_fx_ls, wobj);
+              std::visit (
+                [&] (auto &&derived_pl) {
+                  WrappedObjectWithChangeSignal * wobj =
+                    wrapped_object_with_change_signal_new (
+                      derived_pl, WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
+                  g_list_store_append (midi_fx_ls, wobj);
+                },
+                convert_to_variant<PluginPtrVariant> (plugin.get ()));
             }
         }
       for (auto &plugin : ch->inserts_)
         {
           if (plugin)
             {
-              WrappedObjectWithChangeSignal * wobj =
-                wrapped_object_with_change_signal_new (
-                  plugin.get (), WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
-              g_list_store_append (inserts_ls, wobj);
+              std::visit (
+                [&] (auto &&derived_pl) {
+                  WrappedObjectWithChangeSignal * wobj =
+                    wrapped_object_with_change_signal_new (
+                      derived_pl, WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
+                  g_list_store_append (inserts_ls, wobj);
+                },
+                convert_to_variant<PluginPtrVariant> (plugin.get ()));
             }
         }
       g_list_store_append (composite_ls, midi_fx_ls);
@@ -431,10 +442,14 @@ setup_types_listview (
         {
           if (plugin)
             {
-              WrappedObjectWithChangeSignal * wobj =
-                wrapped_object_with_change_signal_new (
-                  plugin.get (), WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
-              g_list_store_append (modulators_ls, wobj);
+              std::visit (
+                [&] (auto &&derived_pl) {
+                  WrappedObjectWithChangeSignal * wobj =
+                    wrapped_object_with_change_signal_new (
+                      derived_pl, WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
+                  g_list_store_append (modulators_ls, wobj);
+                },
+                convert_to_variant<PluginPtrVariant> (plugin.get ()));
             }
         }
     }
@@ -468,7 +483,7 @@ on_port_selection_changed (
       GTK_SINGLE_SELECTION (selection_model)));
   if (wobj)
     {
-      self->selected_port = (ControlPort *) wobj->obj;
+      self->selected_port = std::get<ControlPort *> (wobj->obj);
       update_info_label (self);
     }
 }

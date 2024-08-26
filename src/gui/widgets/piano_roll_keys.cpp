@@ -116,11 +116,11 @@ piano_roll_keys_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       else
         {
           note_name_inner =
-            fmt::format ("%s (%d)", note_name_to_use, descr->value_);
+            fmt::format ("{} ({})", note_name_to_use, descr->value_);
         }
 
       note_name = fmt::format (
-        "<span size=\"%d\">%s</span>", fontsize * 1000 - 4000, note_name_inner);
+        "<span size=\"{}\">{}</span>", fontsize * 1000 - 4000, note_name_inner);
 
       if (drum_mode)
         {
@@ -147,7 +147,7 @@ piano_roll_keys_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
               auto hex = UI_COLORS->highlight_bass_fg.to_hex ();
               str = fmt::format (
-                R"(%s  <span size="small" foreground="%s">%s</span>)",
+                R"({}  <span size="small" foreground="{}">{}</span>)",
                 note_name, hex, _ ("bass"));
             }
           else if (
@@ -178,7 +178,7 @@ piano_roll_keys_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
               auto hex = UI_COLORS->highlight_scale_fg.to_hex ();
               str = fmt::format (
-                R"(%s  <span size="small" foreground="%s">%s</span>)",
+                R"({}  <span size="small" foreground="{}">{}</span>)",
                 note_name, hex, _ ("scale"));
             }
           else if (
@@ -191,7 +191,7 @@ piano_roll_keys_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
               auto hex = UI_COLORS->highlight_chord_fg.to_hex ();
               str = fmt::format (
-                R"(%s  <span size="small" foreground="%s">%s</span>)",
+                R"({}  <span size="small" foreground="{}">{}</span>)",
                 note_name, hex, _ ("chord"));
             }
           else

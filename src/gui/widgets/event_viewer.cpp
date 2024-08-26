@@ -40,9 +40,13 @@ add_from_object (
   std::vector<WrappedObjectWithChangeSignal *> &arr,
   ArrangerObject *                              obj)
 {
-  auto * wrapped_obj = wrapped_object_with_change_signal_new (
-    obj, WrappedObjectType::WRAPPED_OBJECT_TYPE_ARRANGER_OBJECT);
-  arr.push_back (wrapped_obj);
+  std::visit (
+    [&] (auto &&arr_obj) {
+      auto * wrapped_obj = wrapped_object_with_change_signal_new (
+        arr_obj, WrappedObjectType::WRAPPED_OBJECT_TYPE_ARRANGER_OBJECT);
+      arr.push_back (wrapped_obj);
+    },
+    convert_to_variant<ArrangerObjectPtrVariant> (obj));
 }
 
 static void
@@ -174,7 +178,8 @@ mark_selected_objects_as_selected (EventViewerWidget * self)
     {
       WrappedObjectWithChangeSignal * wrapped_obj =
         Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (g_list_model_get_object (list, i));
-      auto * iter_obj = (ArrangerObject *) wrapped_obj->obj;
+      auto * iter_obj =
+        wrapped_object_with_change_signal_get_arranger_object (wrapped_obj);
 
       for (auto &obj : sel->objects_)
         {
@@ -369,7 +374,8 @@ get_obj_type (void * data)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
-  auto * obj = (ArrangerObject *) wrapped_obj->obj;
+  auto * obj =
+    wrapped_object_with_change_signal_get_arranger_object (wrapped_obj);
 
   const char * untranslated_type = obj->get_type_as_string (obj->type_);
   return g_strdup (_ (untranslated_type));
@@ -380,7 +386,8 @@ get_obj_pos_dbl (void * data, void * param)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
-  auto * obj = (ArrangerObject *) wrapped_obj->obj;
+  auto * obj =
+    wrapped_object_with_change_signal_get_arranger_object (wrapped_obj);
 
   ArrangerObject::PositionType pos_type =
     ENUM_INT_TO_VALUE (ArrangerObject::PositionType, GPOINTER_TO_UINT (param));
@@ -396,7 +403,7 @@ get_midi_note_pitch (void * data)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
-  auto * mn = (MidiNote *) wrapped_obj->obj;
+  auto * mn = std::get<MidiNote *> (wrapped_obj->obj);
 
   return mn->val_;
 }
@@ -406,7 +413,7 @@ get_midi_note_velocity (void * data)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
-  auto * mn = (MidiNote *) wrapped_obj->obj;
+  auto * mn = std::get<MidiNote *> (wrapped_obj->obj);
 
   return mn->vel_->vel_;
 }
@@ -416,7 +423,7 @@ get_automation_point_idx (void * data)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
-  auto * ap = (AutomationPoint *) wrapped_obj->obj;
+  auto * ap = std::get<AutomationPoint *> (wrapped_obj->obj);
 
   return ap->index_;
 }
@@ -426,7 +433,7 @@ get_automation_point_value (void * data)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
-  auto * ap = (AutomationPoint *) wrapped_obj->obj;
+  auto * ap = std::get<AutomationPoint *> (wrapped_obj->obj);
 
   return ap->fvalue_;
 }
@@ -436,7 +443,7 @@ get_automation_point_curviness (void * data)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
-  auto * ap = (AutomationPoint *) wrapped_obj->obj;
+  auto * ap = std::get<AutomationPoint *> (wrapped_obj->obj);
 
   return ap->curve_opts_.curviness_;
 }
@@ -446,7 +453,7 @@ get_automation_point_curve_type_str (void * data)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
-  auto * ap = (AutomationPoint *) wrapped_obj->obj;
+  auto * ap = std::get<AutomationPoint *> (wrapped_obj->obj);
   return g_strdup (
     CurveOptions_Algorithm_to_string (ap->curve_opts_.algo_, true).c_str ());
 }

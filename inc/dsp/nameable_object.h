@@ -4,9 +4,6 @@
 #ifndef __DSP_NAMEABLE_OBJECT_H__
 #define __DSP_NAMEABLE_OBJECT_H__
 
-#include <string>
-#include <utility>
-
 #include "dsp/arranger_object.h"
 
 /**
@@ -101,5 +98,9 @@ operator== (const NameableObject &lhs, const NameableObject &rhs)
 {
   return lhs.name_ == rhs.name_;
 }
+
+using NameableObjectVariant =
+  std::variant<MidiRegion, AudioRegion, ChordRegion, AutomationRegion, Marker>;
+using NameableObjectPtrVariant = to_pointer_variant<NameableObjectVariant>;
 
 #endif // __DSP_NAMEABLE_OBJECT_H__

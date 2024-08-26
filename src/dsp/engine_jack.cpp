@@ -481,8 +481,7 @@ engine_jack_test (GtkWindow * win)
       auto msg = engine_jack_get_error_message (status);
       if (win)
         {
-          ui_show_message_full (
-            GTK_WIDGET (win), _ ("JACK Error"), "%s", msg.c_str ());
+          ui_show_message_full (GTK_WIDGET (win), _ ("JACK Error"), msg);
         }
       else
         {

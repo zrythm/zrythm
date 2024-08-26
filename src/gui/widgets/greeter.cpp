@@ -41,51 +41,36 @@
 
 G_DEFINE_TYPE (GreeterWidget, greeter_widget, ADW_TYPE_WINDOW)
 
-static ProjectInfo *
-project_info_new (const char * name, const char * filename)
+ProjectInfo::ProjectInfo (const std::string &name, const std::string &filename)
+    : name_ (name)
 {
-  ProjectInfo * self = object_new (ProjectInfo);
-  self->name = g_strdup (name);
-  if (filename)
+  if (filename.empty ())
     {
-      self->filename = g_strdup (filename);
-      self->modified = io_file_get_last_modified_datetime (filename);
-      if (self->modified == -1)
-        {
-          self->modified_str = g_strdup (FILE_NOT_FOUND_STR);
-          self->modified = G_MAXINT64;
-        }
-      else
-        {
-          self->modified_str =
-            g_strdup (datetime_epoch_to_str (self->modified).c_str ());
-        }
-      z_return_val_if_fail (self->modified_str, nullptr);
+      filename_ = "-";
+      modified_ = 0;
+      modified_str_ = "-";
     }
   else
     {
-      self->filename = g_strdup ("-");
-      self->modified = 0;
-      self->modified_str = g_strdup ("-");
+      filename_ = filename;
+      modified_ = io_file_get_last_modified_datetime (filename.c_str ());
+      if (modified_ == -1)
+        {
+          modified_str_ = FILE_NOT_FOUND_STR;
+          modified_ = G_MAXINT64;
+        }
+      else
+        {
+          modified_str_ = datetime_epoch_to_str (modified_).c_str ();
+        }
+      z_return_if_fail (!modified_str_.empty ());
     }
-
-  return self;
-}
-
-static void
-project_info_free (ProjectInfo * self)
-{
-  g_free_and_null (self->name);
-  g_free_and_null (self->filename);
-  g_free_and_null (self->modified_str);
-
-  object_zero_and_free (self);
 }
 
 static void
 project_info_destroy_func (void * data)
 {
-  project_info_free ((ProjectInfo *) data);
+  delete (ProjectInfo *) data;
 }
 
 static void
@@ -147,9 +132,9 @@ on_project_row_activated (AdwActionRow * row, GreeterWidget * self)
 {
   auto * nfo = static_cast<ProjectInfo *> (
     g_object_get_data (G_OBJECT (row), "project-info"));
-  z_debug ("activated {}", nfo->filename);
+  z_debug ("activated {}", nfo->filename_);
 
-  gZrythm->open_filename_ = nfo->filename;
+  gZrythm->open_filename_ = nfo->filename_;
   z_return_if_fail (!gZrythm->open_filename_.empty ());
   z_info ("Loading project: {}", gZrythm->open_filename_);
   gZrythm->creating_project_ = false;
@@ -158,11 +143,11 @@ on_project_row_activated (AdwActionRow * row, GreeterWidget * self)
 }
 
 static AdwActionRow *
-create_action_row_from_project_info (GreeterWidget * self, ProjectInfo * nfo)
+create_action_row_from_project_info (GreeterWidget * self, ProjectInfo &nfo)
 {
   AdwActionRow * row = ADW_ACTION_ROW (adw_action_row_new ());
-  adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), nfo->name);
-  adw_action_row_set_subtitle (row, nfo->filename);
+  adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), nfo.name_.c_str ());
+  adw_action_row_set_subtitle (row, nfo.filename_.c_str ());
 
   GtkWidget * img = gtk_image_new_from_icon_name ("go-next-symbolic");
   adw_action_row_add_suffix (row, img);
@@ -170,18 +155,16 @@ create_action_row_from_project_info (GreeterWidget * self, ProjectInfo * nfo)
   g_signal_connect (
     G_OBJECT (row), "activated", G_CALLBACK (on_project_row_activated), self);
 
-  g_object_set_data (G_OBJECT (row), "project-info", nfo);
+  g_object_set_data (G_OBJECT (row), "project-info", &nfo);
   return row;
 }
 
 static void
 refresh_projects (GreeterWidget * self)
 {
-  for (size_t i = 0; i < self->project_infos_arr->len; i++)
+  for (auto &nfo : self->project_infos_arr)
     {
-      ProjectInfo * nfo =
-        (ProjectInfo *) g_ptr_array_index (self->project_infos_arr, i);
-      AdwActionRow * row = create_action_row_from_project_info (self, nfo);
+      AdwActionRow * row = create_action_row_from_project_info (self, *nfo);
       adw_preferences_group_add (
         self->recent_projects_pref_group, GTK_WIDGET (row));
     }
@@ -191,13 +174,13 @@ static void
 refresh_templates (GreeterWidget * self)
 {
   GListModel * templates = adw_combo_row_get_model (self->templates_combo_row);
-  for (size_t i = 0; i < self->templates_arr->len; i++)
+  for (size_t i = 0; i < self->templates_arr.size (); ++i)
     {
-      ProjectInfo * nfo =
-        (ProjectInfo *) g_ptr_array_index (self->templates_arr, i);
-      gtk_string_list_append (GTK_STRING_LIST (templates), nfo->name);
+      auto &nfo = self->templates_arr.at (i);
+      gtk_string_list_append (GTK_STRING_LIST (templates), nfo->name_.c_str ());
       g_object_set_data (
-        G_OBJECT (g_list_model_get_item (templates, i)), "project-info", nfo);
+        G_OBJECT (g_list_model_get_item (templates, i)), "project-info",
+        nfo.get ());
     }
 }
 
@@ -430,14 +413,14 @@ on_create_project_confirm_clicked (GtkButton * btn, GreeterWidget * self)
   gZrythm->creating_project_ = true;
 
   /* if we are loading a blank template */
-  if (selected_template->filename[0] == '-')
+  if (selected_template->filename_[0] == '-')
     {
       gZrythm->open_filename_.clear ();
       z_info ("Creating blank project");
     }
   else
     {
-      gZrythm->open_filename_ = selected_template->filename;
+      gZrythm->open_filename_ = selected_template->filename_;
       z_info ("Creating project from template: {}", gZrythm->open_filename_);
       gZrythm->opening_template_ = true;
     }
@@ -529,42 +512,35 @@ greeter_widget_select_project (
       auto recent_dir = io_get_dir (recent_prj);
       auto project_name = Glib::path_get_basename (recent_dir);
 
-      ProjectInfo * prj_nfo =
-        project_info_new (project_name.c_str (), recent_prj);
+      auto prj_nfo = std::make_unique<ProjectInfo> (project_name, recent_prj);
 
       if (prj_nfo)
         {
           /* if file not found */
-          if (string_is_equal (prj_nfo->modified_str, FILE_NOT_FOUND_STR))
+          if (prj_nfo->modified_str_ == FILE_NOT_FOUND_STR)
             {
               /* remove from gsettings */
-              gZrythm->remove_recent_project (prj_nfo->filename);
-
-              project_info_free (prj_nfo);
+              gZrythm->remove_recent_project (prj_nfo->filename_);
             }
           else
             {
-              g_ptr_array_add (self->project_infos_arr, prj_nfo);
+              self->project_infos_arr.emplace_back (std::move (prj_nfo));
             }
         }
     }
 
   /* fill templates */
   {
-    ProjectInfo * blank_template =
-      project_info_new (_ ("Blank project"), nullptr);
-    g_ptr_array_add (self->templates_arr, blank_template);
+    self->templates_arr.emplace_back (
+      std::make_unique<ProjectInfo> (_ ("Blank project"), ""));
     for (auto &template_str : gZrythm->templates_)
       {
-        char * name = g_path_get_basename (template_str.toRawUTF8 ());
-        char * filename =
-          g_build_filename (template_str.toRawUTF8 (), PROJECT_FILE, nullptr);
+        auto name = Glib::path_get_basename (template_str.toStdString ());
+        auto filename =
+          Glib::build_filename (template_str.toRawUTF8 (), PROJECT_FILE);
 
-        ProjectInfo * template_nfo = project_info_new (name, filename);
-        g_ptr_array_add (self->templates_arr, template_nfo);
-
-        g_free (name);
-        g_free (filename);
+        self->templates_arr.emplace_back (
+          std::make_unique<ProjectInfo> (name, filename));
       }
   }
 
@@ -688,6 +664,8 @@ finalize (GreeterWidget * self)
   std::destroy_at (&self->progress_status_lock);
   std::destroy_at (&self->title);
   std::destroy_at (&self->description);
+  std::destroy_at (&self->project_infos_arr);
+  std::destroy_at (&self->templates_arr);
 
   G_OBJECT_CLASS (greeter_widget_parent_class)->finalize (G_OBJECT (self));
 }
@@ -700,6 +678,8 @@ greeter_widget_init (GreeterWidget * self)
   std::construct_at (&self->progress_status_lock, 1);
   std::construct_at (&self->title);
   std::construct_at (&self->description);
+  std::construct_at (&self->project_infos_arr);
+  std::construct_at (&self->templates_arr);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -707,23 +687,21 @@ greeter_widget_init (GreeterWidget * self)
 
   gtk_widget_set_size_request (GTK_WIDGET (self->welcome_carousel), 640, -1);
 
-  char * read_manual_txt = g_strdup_printf (
-    _ ("If this is your first time using Zrythm, we suggest going through the 'Getting Started' section in the %suser manual%s."),
+  auto read_manual_txt = format_str (
+    _ ("If this is your first time using Zrythm, we suggest going through the 'Getting Started' section in the {}user manual{}."),
     "<a href=\"" USER_MANUAL_URL "\">", "</a>");
   adw_status_page_set_description (
-    self->read_manual_status_page, read_manual_txt);
-  g_free (read_manual_txt);
+    self->read_manual_status_page, read_manual_txt.c_str ());
 
 #if !defined(INSTALLER_VER) || defined(TRIAL_VER)
-  char * donations = g_strdup_printf (
+  auto donations = format_str (
     _ ("Zrythm relies on donations and purchases "
        "to sustain development. If you enjoy the "
-       "software, please consider %sdonating%s or "
-       "%sbuying an installer%s."),
+       "software, please consider {}donating{} or "
+       "{}buying an installer{}."),
     "<a href=\"" DONATION_URL "\">", "</a>", "<a href=\"" PURCHASE_URL "\">",
     "</a>");
-  adw_status_page_set_description (self->donate_status_page, donations);
-  g_free (donations);
+  adw_status_page_set_description (self->donate_status_page, donations.c_str ());
 #else
   adw_carousel_remove (
     self->welcome_carousel, GTK_WIDGET (self->donate_status_page));
@@ -832,11 +810,6 @@ greeter_widget_init (GreeterWidget * self)
     (GtkWidget *) self, (GtkTickCallback) greeter_tick_cb, self, nullptr);
 
   /* -- projects part -- */
-
-  self->project_infos_arr =
-    g_ptr_array_new_with_free_func (project_info_destroy_func);
-  self->templates_arr =
-    g_ptr_array_new_with_free_func (project_info_destroy_func);
 
   self
     ->project_parent_dir_fc = IDE_FILE_CHOOSER_ENTRY (ide_file_chooser_entry_new (

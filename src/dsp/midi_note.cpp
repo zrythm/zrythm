@@ -32,7 +32,6 @@ MidiNote::MidiNote (
     : ArrangerObject (Type::MidiNote), RegionOwnedObjectImpl (region_id),
       vel_ (std::make_shared<Velocity> (this, vel)), val_ (val)
 {
-  MidiNote ();
   pos_ = start_pos;
   end_pos_ = end_pos;
 }

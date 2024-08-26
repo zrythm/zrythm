@@ -29,7 +29,7 @@ psets_filter_func (GObject * item, gpointer user_data)
   ChordPackBrowserWidget * self = Z_CHORD_PACK_BROWSER_WIDGET (user_data);
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (item);
-  ChordPreset * pset = (ChordPreset *) wrapped_obj->obj;
+  ChordPreset * pset = std::get<ChordPreset *> (wrapped_obj->obj);
 
   GObject * pack_gobj = G_OBJECT (
     gtk_single_selection_get_selected_item (self->packs_selection_model));
@@ -38,7 +38,7 @@ psets_filter_func (GObject * item, gpointer user_data)
 
   WrappedObjectWithChangeSignal * wrapped_pack =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (pack_gobj);
-  ChordPresetPack * pack = (ChordPresetPack *) wrapped_pack->obj;
+  ChordPresetPack * pack = std::get<ChordPresetPack *> (wrapped_pack->obj);
 
   if (pack->contains_preset (*pset))
     {
@@ -159,7 +159,7 @@ on_pack_activated (GtkListView * list_view, guint position, gpointer user_data)
   /* get wrapped object */
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  ChordPresetPack * pack = (ChordPresetPack *) wrapped_obj->obj;
+  ChordPresetPack * pack = std::get<ChordPresetPack *> (wrapped_obj->obj);
 
   /* TODO */
   (void) pack;
@@ -178,7 +178,7 @@ on_pset_activated (GtkListView * list_view, guint position, gpointer user_data)
   /* get wrapped object */
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  auto * pset = (ChordPreset *) wrapped_obj->obj;
+  auto * pset = std::get<ChordPreset *> (wrapped_obj->obj);
 
   auto pack = CHORD_PRESET_PACK_MANAGER->get_pack_for_preset (*pset);
   z_return_if_fail (pack);
@@ -213,7 +213,7 @@ on_pack_selection_changed (
   /* get wrapped object */
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  ChordPresetPack * pack = (ChordPresetPack *) wrapped_obj->obj;
+  ChordPresetPack * pack = std::get<ChordPresetPack *> (wrapped_obj->obj);
   self->cur_pack = pack;
 
   self->selected_packs->clear ();
@@ -244,7 +244,7 @@ on_pset_selection_changed (
   /* get wrapped object */
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  ChordPreset * pset = (ChordPreset *) wrapped_obj->obj;
+  ChordPreset * pset = std::get<ChordPreset *> (wrapped_obj->obj);
   self->cur_pset = pset;
 
   self->selected_psets->clear ();

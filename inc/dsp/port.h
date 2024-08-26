@@ -108,9 +108,7 @@ public:
 
   static Port * find_from_identifier (const PortIdentifier &id);
 
-  const std::string &get_label () const { return this->id_.get_label (); }
-
-  const char * get_label_as_c_str () const { return id_.get_label ().c_str (); }
+  std::string get_label () const;
 
   inline bool is_control () const { return id_.is_control (); }
   inline bool is_audio () const { return id_.type_ == PortType::Audio; }
@@ -463,8 +461,16 @@ public:
   size_t last_buf_sz_ = 0;
 };
 
+class MidiPort;
+class AudioPort;
+class CVPort;
+class ControlPort;
+using PortVariant = std::variant<MidiPort, AudioPort, CVPort, ControlPort>;
+using PortPtrVariant = to_pointer_variant<PortVariant>;
+
 class HardwareProcessor;
 class RecordableTrack;
+class TempoTrack;
 extern template MidiPort *
 Port::find_from_identifier<MidiPort> (const PortIdentifier &);
 extern template AudioPort *

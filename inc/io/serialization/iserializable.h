@@ -20,6 +20,7 @@
 #include "utils/json.h"
 #include "utils/logger.h"
 #include "utils/string.h"
+#include "utils/traits.h"
 #include "utils/types.h"
 
 #include <yyjson.h>

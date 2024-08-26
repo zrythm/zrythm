@@ -717,7 +717,7 @@ EventManager::process_event (ZEvent &ev)
       break;
     case EventType::ET_TRACK_AUTOMATION_VISIBILITY_CHANGED:
       {
-        Track * track = (Track *) ev.arg_;
+        auto * track = static_cast<AutomatableTrack *> (ev.arg_);
         if (!IS_TRACK_AND_NONNULL (track))
           {
             z_error ("expected track argument");
@@ -983,7 +983,7 @@ EventManager::process_event (ZEvent &ev)
              zrythm_app->project_load_message_queue))
           != nullptr)
           {
-            ui_show_message_literal (nullptr, ui_msg->msg);
+            ui_show_message_literal (_ ("Error"), ui_msg->msg);
             zrythm_app_ui_message_free (ui_msg);
           }
       }

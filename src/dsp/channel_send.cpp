@@ -40,18 +40,18 @@ ChannelSend::is_in_active_project () const
   return track_ && track_->is_in_active_project ();
 }
 std::string
-ChannelSend::Target::describe () const
+ChannelSendTarget::describe () const
 {
   switch (type)
     {
-    case TargetType::None:
+    case ChannelSendTargetType::None:
       return _ ("None");
-    case TargetType::Track:
+    case ChannelSendTargetType::Track:
       {
         auto tr = TRACKLIST->get_track (track_pos);
         return tr->name_;
       }
-    case TargetType::PluginSidechain:
+    case ChannelSendTargetType::PluginSidechain:
       {
         auto pl = Plugin::find (pl_id);
         return pl->get_full_port_group_designation (port_group);
@@ -63,18 +63,18 @@ ChannelSend::Target::describe () const
 }
 
 std::string
-ChannelSend::Target::get_icon () const
+ChannelSendTarget::get_icon () const
 {
   switch (type)
     {
-    case TargetType::None:
+    case ChannelSendTargetType::None:
       return "edit-none";
-    case TargetType::Track:
+    case ChannelSendTargetType::Track:
       {
         Track * tr = TRACKLIST->get_track (track_pos);
         return tr->icon_name_;
       }
-    case TargetType::PluginSidechain:
+    case ChannelSendTargetType::PluginSidechain:
       return "media-album-track";
     default:
       break;

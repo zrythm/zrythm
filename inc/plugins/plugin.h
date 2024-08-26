@@ -787,6 +787,10 @@ operator< (const Plugin &lhs, const Plugin &rhs)
   return lhs.id_ < rhs.id_;
 }
 
+class CarlaNativePlugin;
+using PluginVariant = std::variant<CarlaNativePlugin>;
+using PluginPtrVariant = to_pointer_variant<PluginVariant>;
+
 extern template Port *
 Plugin::get_port_by_symbol (const std::string &);
 extern template ControlPort *

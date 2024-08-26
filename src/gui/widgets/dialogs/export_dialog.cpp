@@ -88,7 +88,7 @@ get_enabled_child_tracks_recursively (
 {
   if (GPOINTER_TO_INT (g_object_get_data (G_OBJECT (wobj), "checked")))
     {
-      auto * track = (Track *) wobj->obj;
+      auto * track = wrapped_object_with_change_signal_get_track (wobj);
       tracks.push_back (track);
     }
   if (!wobj->child_model)
@@ -343,11 +343,10 @@ update_text (ExportDialogWidget * self)
 
   auto exports_dir = get_exports_dir (self);
   auto str = fmt::format (
-    "%s\n"
-    "<span foreground=\"%s\">%s</span>"
-    "\n\n"
-    "%s\n"
-    "<a href=\"%s\">%s</a>",
+    "{}\n"
+    "<span foreground=\"{}\">{}</span>"
+    "\n\n{}\n"
+    "<a href=\"{}\">{}</a>",
     _ ("The following files will be created:"), matcha, filename,
     _ ("in the directory:"), exports_dir, exports_dir);
   bool is_audio = AUDIO_STACK_VISIBLE (self);
@@ -752,7 +751,7 @@ set_track_toggle_on_parent_recursively (
       return;
     }
 
-  Track * track = (Track *) wobj->obj;
+  Track * track = wrapped_object_with_change_signal_get_track (wobj);
 
   /* enable the parent if toggled */
   GroupTargetTrack * direct_out = nullptr;
@@ -773,7 +772,8 @@ set_track_toggle_on_parent_recursively (
       WrappedObjectWithChangeSignal * parent_wobj =
         Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
           g_list_model_get_item (wobj->parent_model, i));
-      Track * parent_track = (Track *) parent_wobj->obj;
+      Track * parent_track =
+        (Track *) wrapped_object_with_change_signal_get_track (parent_wobj);
       if (parent_track == direct_out)
         {
           g_object_set_data (
@@ -794,7 +794,7 @@ set_track_toggle_recursively (
   if (!wobj->child_model)
     return;
 
-  Track * track = (Track *) wobj->obj;
+  Track * track = wrapped_object_with_change_signal_get_track (wobj);
   z_debug (
     "%s: setting toggle %d on children recursively", track->name_, toggled);
 
@@ -816,7 +816,7 @@ on_track_toggled (GtkCheckButton * check_btn, ExportDialogWidget * self)
 {
   WrappedObjectWithChangeSignal * wobj = Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
     g_object_get_data (G_OBJECT (check_btn), "wobj"));
-  Track * track = (Track *) wobj->obj;
+  Track * track = wrapped_object_with_change_signal_get_track (wobj);
 
   /* get toggled */
   gboolean toggled = gtk_check_button_get_active (check_btn);
@@ -846,30 +846,35 @@ add_group_track_children (
   GListModel *         store,
   Track *              track)
 {
-  /* add the group */
-  WrappedObjectWithChangeSignal * wobj = wrapped_object_with_change_signal_new (
-    track, WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK);
-  g_object_set_data (G_OBJECT (wobj), "checked", GINT_TO_POINTER (true));
-  wobj->parent_model = G_LIST_MODEL (parent_store);
-  g_list_store_append (G_LIST_STORE (store), wobj);
+  std::visit (
+    [&] (auto &&derived_track) {
+      /* add the group */
+      WrappedObjectWithChangeSignal * wobj =
+        wrapped_object_with_change_signal_new (
+          derived_track, WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK);
+      g_object_set_data (G_OBJECT (wobj), "checked", GINT_TO_POINTER (true));
+      wobj->parent_model = G_LIST_MODEL (parent_store);
+      g_list_store_append (G_LIST_STORE (store), wobj);
 
-  z_debug ("track '{}'", track->name_);
+      z_debug ("track '{}'", track->name_);
 
-  auto group_track = dynamic_cast<GroupTargetTrack *> (track);
-  if (!group_track || group_track->children_.empty ())
-    return;
+      auto group_track = dynamic_cast<GroupTargetTrack *> (track);
+      if (!group_track || group_track->children_.empty ())
+        return;
 
-  /* add the children */
-  wobj->child_model =
-    G_LIST_MODEL (g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE));
-  for (auto child_name_hash : group_track->children_)
-    {
-      Track * child = TRACKLIST->find_track_by_name_hash (child_name_hash);
-      z_return_if_fail (child);
+      /* add the children */
+      wobj->child_model = G_LIST_MODEL (
+        g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE));
+      for (auto child_name_hash : group_track->children_)
+        {
+          Track * child = TRACKLIST->find_track_by_name_hash (child_name_hash);
+          z_return_if_fail (child);
 
-      z_debug ("child: '{}'", child->name_);
-      add_group_track_children (self, store, wobj->child_model, child);
-    }
+          z_debug ("child: '{}'", child->name_);
+          add_group_track_children (self, store, wobj->child_model, child);
+        }
+    },
+    convert_to_variant<TrackPtrVariant> (track));
 }
 
 static GListModel *

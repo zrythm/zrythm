@@ -11,6 +11,7 @@
 
 using MIDI_FILE = void;
 class Tracklist;
+template <typename RegionT> class LanedTrackImpl;
 
 /**
  * @addtogroup dsp
@@ -234,6 +235,10 @@ public:
   /** Owner track. */
   LanedTrackT * track_ = nullptr;
 };
+
+using TrackLaneVariant =
+  std::variant<TrackLaneImpl<MidiRegion>, TrackLaneImpl<AudioRegion>>;
+using TrackLanePtrVariant = to_pointer_variant<TrackLaneVariant>;
 
 extern template class TrackLaneImpl<MidiRegion>;
 extern template class TrackLaneImpl<AudioRegion>;

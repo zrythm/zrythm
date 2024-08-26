@@ -105,7 +105,8 @@ item_factory_bind_cb (
 {
   WrappedObjectWithChangeSignal * obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gtk_list_item_get_item (listitem));
-  InspectorPortWidget * ip = inspector_port_widget_new ((Port *) obj->obj);
+  auto                  port = wrapped_object_with_change_signal_get_port (obj);
+  InspectorPortWidget * ip = inspector_port_widget_new (port);
   AdwBin *              bin = ADW_BIN (gtk_list_item_get_child (listitem));
   adw_bin_set_child (bin, GTK_WIDGET (ip));
 }
@@ -269,10 +270,14 @@ ports_expander_widget_setup_plugin (
         g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
       for (auto &p : pg.ports)
         {
-          WrappedObjectWithChangeSignal * wrapped_obj =
-            wrapped_object_with_change_signal_new (
-              p, WrappedObjectType::WRAPPED_OBJECT_TYPE_PORT);
-          g_list_store_append (store, wrapped_obj);
+          std::visit (
+            [&] (auto &&derived_port) {
+              WrappedObjectWithChangeSignal * wrapped_obj =
+                wrapped_object_with_change_signal_new (
+                  derived_port, WrappedObjectType::WRAPPED_OBJECT_TYPE_PORT);
+              g_list_store_append (store, wrapped_obj);
+            },
+            convert_to_variant<PortPtrVariant> (p));
         }
       GtkNoSelection * no_selection =
         gtk_no_selection_new (G_LIST_MODEL (store));

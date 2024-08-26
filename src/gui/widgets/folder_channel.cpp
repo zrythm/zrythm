@@ -75,7 +75,7 @@ on_dnd_drop (
   Track * track = NULL;
   if (wrapped_obj->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK)
     {
-      track = (Track *) wrapped_obj->obj;
+      track = wrapped_object_with_change_signal_get_track (wrapped_obj);
     }
   if (!track)
     {
@@ -144,17 +144,19 @@ on_dnd_drag_prepare (
   double                y,
   FolderChannelWidget * self)
 {
-  Track *                         track = self->track;
-  WrappedObjectWithChangeSignal * wrapped_obj =
-    wrapped_object_with_change_signal_new (
-      track, WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK);
-  GdkContentProvider * content_providers[] = {
-    gdk_content_provider_new_typed (
-      WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, wrapped_obj),
-  };
+  return std::visit (
+    [&] (auto &&this_track) {
+      auto wrapped_obj = wrapped_object_with_change_signal_new (
+        this_track, WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK);
+      GdkContentProvider * content_providers[] = {
+        gdk_content_provider_new_typed (
+          WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, wrapped_obj),
+      };
 
-  return gdk_content_provider_new_union (
-    content_providers, G_N_ELEMENTS (content_providers));
+      return gdk_content_provider_new_union (
+        content_providers, G_N_ELEMENTS (content_providers));
+    },
+    convert_to_variant<TrackPtrVariant> (self->track));
 }
 
 static void

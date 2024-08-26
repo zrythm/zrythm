@@ -22,6 +22,7 @@
 #include "dsp/pool.h"
 #include "dsp/sample_processor.h"
 #include "dsp/transport.h"
+#include "utils/concurrency.h"
 #include "utils/object_pool.h"
 #include "utils/types.h"
 

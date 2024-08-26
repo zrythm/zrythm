@@ -88,7 +88,7 @@ filter_func (void * gobj, void * user_data)
 
   WrappedObjectWithChangeSignal * wrapped_track =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  Track * track = (Track *) wrapped_track->obj;
+  Track * track = wrapped_object_with_change_signal_get_track (wrapped_track);
   z_return_val_if_fail (IS_TRACK_AND_NONNULL (track), false);
 
   bool filtered =
@@ -142,11 +142,14 @@ refresh_track_col_view_items (TrackFilterPopoverWidget * self)
 {
   for (auto &track : TRACKLIST->tracks_)
     {
-      WrappedObjectWithChangeSignal * wrapped_track =
-        wrapped_object_with_change_signal_new (
-          track.get (), WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK);
-
-      g_list_store_append (self->track_list_store, wrapped_track);
+      std::visit (
+        [&] (auto &&derived_track) {
+          WrappedObjectWithChangeSignal * wrapped_track =
+            wrapped_object_with_change_signal_new (
+              derived_track, WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK);
+          g_list_store_append (self->track_list_store, wrapped_track);
+        },
+        convert_to_variant<TrackPtrVariant> (track.get ()));
     }
 }
 

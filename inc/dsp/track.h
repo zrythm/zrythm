@@ -1,12 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * The backend for a timeline track.
- */
-
 #ifndef __AUDIO_TRACK_H__
 #define __AUDIO_TRACK_H__
 
@@ -23,6 +17,19 @@ class FileDescriptor;
 class TracklistSelections;
 class FoldableTrack;
 struct FileImportInfo;
+class MarkerTrack;
+class InstrumentTrack;
+class MidiTrack;
+class MasterTrack;
+class MidiGroupTrack;
+class AudioGroupTrack;
+class FolderTrack;
+class MidiBusTrack;
+class AudioBusTrack;
+class AudioTrack;
+class ChordTrack;
+class ModulatorTrack;
+class TempoTrack;
 
 TYPEDEF_STRUCT_UNDERSCORED (TrackWidget);
 
@@ -1019,6 +1026,22 @@ template <typename T> concept TrackSubclass = std::derived_from<T, Track>;
 
 template <typename TrackT>
 concept FinalTrackSubclass = TrackSubclass<TrackT> && FinalClass<TrackT>;
+
+using TrackVariant = std::variant<
+  MarkerTrack,
+  InstrumentTrack,
+  MidiTrack,
+  MasterTrack,
+  MidiGroupTrack,
+  AudioGroupTrack,
+  FolderTrack,
+  MidiBusTrack,
+  AudioBusTrack,
+  AudioTrack,
+  ChordTrack,
+  ModulatorTrack,
+  TempoTrack>;
+using TrackPtrVariant = to_pointer_variant<TrackVariant>;
 
 extern template FoldableTrack *
 Track::find_by_name (const std::string &);

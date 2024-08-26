@@ -413,7 +413,7 @@ engine_pulse_test (GtkWindow * win)
       if (win)
         {
           ui_show_message_full (
-            GTK_WIDGET (win), _ ("Pulseaudio Backend Test Failed"), "%s", msg);
+            GTK_WIDGET (win), _ ("Pulseaudio Backend Test Failed"), msg);
         }
       else
         {

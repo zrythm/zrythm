@@ -28,11 +28,13 @@ TYPEDEF_STRUCT_UNDERSCORED (CcListRowInfoButton);
  */
 struct ProjectInfo
 {
-  char * name;
+  ProjectInfo (const std::string &name, const std::string &filename);
+
+  std::string name_;
   /** Full path. */
-  char * filename;
-  gint64 modified;
-  char * modified_str;
+  std::string filename_;
+  gint64      modified_ = 0;
+  std::string modified_str_;
 };
 
 /**
@@ -89,22 +91,22 @@ using GreeterWidget = struct _GreeterWidget
 
   AdwNavigationView * open_prj_navigation_view;
 
-  AdwPreferencesGroup * recent_projects_pref_group;
-  GPtrArray *           project_infos_arr;
-  ItemFactoryPtrVector  recent_projects_item_factories;
-  GtkButton *           create_new_project_btn;
-  GtkButton *           select_folder_btn;
+  AdwPreferencesGroup *                     recent_projects_pref_group;
+  std::vector<std::unique_ptr<ProjectInfo>> project_infos_arr;
+  ItemFactoryPtrVector                      recent_projects_item_factories;
+  GtkButton *                               create_new_project_btn;
+  GtkButton *                               select_folder_btn;
 
-  AdwNavigationPage *   create_project_nav_page;
-  AdwEntryRow *         project_title_row;
-  AdwActionRow *        project_parent_dir_row;
-  IdeFileChooserEntry * project_parent_dir_fc;
-  AdwComboRow *         templates_combo_row;
-  CcListRowInfoButton * templates_info_button;
-  GPtrArray *           templates_arr;
-  ItemFactoryPtrVector  templates_item_factories;
-  AdwPreferencesGroup * templates_pref_group;
-  GtkButton *           create_project_confirm_btn;
+  AdwNavigationPage *                       create_project_nav_page;
+  AdwEntryRow *                             project_title_row;
+  AdwActionRow *                            project_parent_dir_row;
+  IdeFileChooserEntry *                     project_parent_dir_fc;
+  AdwComboRow *                             templates_combo_row;
+  CcListRowInfoButton *                     templates_info_button;
+  std::vector<std::unique_ptr<ProjectInfo>> templates_arr;
+  ItemFactoryPtrVector                      templates_item_factories;
+  AdwPreferencesGroup *                     templates_pref_group;
+  GtkButton *                               create_project_confirm_btn;
 
   char * template_;
 

@@ -48,16 +48,14 @@ public:
   double hzoom_level_ = 1.0;
 };
 
-#if 0
-template <typename Derived>
-class EditorSettingsImpl : virtual public EditorSettings
-{
-public:
-  virtual ~EditorSettingsImpl () = default;
-
-  Derived * get_derived () { return static_cast<Derived *> (this); }
-};
-#endif
+class Timeline;
+class PianoRoll;
+class AutomationEditor;
+class ChordEditor;
+class AudioClipEditor;
+using EditorSettingsVariant = std::
+  variant<Timeline, PianoRoll, AutomationEditor, ChordEditor, AudioClipEditor>;
+using EditorSettingsPtrVariant = to_pointer_variant<EditorSettingsVariant>;
 
 /**
  * @}

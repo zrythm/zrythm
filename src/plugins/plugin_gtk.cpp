@@ -531,6 +531,7 @@ make_slider (ControlPort * port, float value)
           char * str = g_markup_printf_escaped (
             "<span font_size=\"small\">%s</span>", point.label_.c_str ());
           gtk_scale_add_mark (GTK_SCALE (scale), point.val_, GTK_POS_TOP, str);
+          g_free (str);
         }
     }
 
@@ -696,7 +697,7 @@ build_control_widget (Plugin * pl, GtkWindow * window)
             port_table, n_rows++,
             (port->id_.label_.empty ()
                ? port->id_.sym_.c_str ()
-               : port->get_label_as_c_str ()),
+               : port->get_label ().c_str ()),
             controller);
 
           /* Set tooltip text from comment, if available */

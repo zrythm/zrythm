@@ -1460,7 +1460,7 @@ activate_delete_midi_cc_bindings (
           WrappedObjectWithChangeSignal * wobj =
             Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
               g_list_model_get_item (G_LIST_MODEL (sel_model), i));
-          MidiMapping * mm = (MidiMapping *) wobj->obj;
+          MidiMapping * mm = std::get<MidiMapping *> (wobj->obj);
           mappings.push_back (mm);
         }
     }
@@ -2921,7 +2921,7 @@ DEFINE_SIMPLE (activate_detect_bpm)
     _ ("Detected BPM: {:.2f}\n\nCandidates: {}"), bpm,
     fmt::join (candidates, ", "));
 
-  ui_show_message_literal (nullptr, str.c_str ());
+  ui_show_message_literal (_ ("Error"), str.c_str ());
 }
 
 DEFINE_SIMPLE (activate_timeline_function)

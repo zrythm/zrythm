@@ -146,49 +146,28 @@ ui_set_pointer_cursor (GtkWidget * widget)
 
 AdwDialog *
 ui_show_message_full (
-  GtkWidget *  parent,
-  const char * title,
-  const char * format,
-  ...)
+  GtkWidget *      parent,
+  std::string_view title,
+  std::string_view msg)
 {
-  va_list args;
-  va_start (args, format);
-
-#define UI_MESSAGE_BUF_SZ 2000
-  char * buf = object_new_n (UI_MESSAGE_BUF_SZ, char);
-  int    printed = vsnprintf (buf, UI_MESSAGE_BUF_SZ, format, args);
-  va_end (args);
-  if (printed == -1)
-    {
-      z_warning ("vsnprintf failed");
-      free (buf);
-      return NULL;
-    }
-  z_return_val_if_fail (printed < UI_MESSAGE_BUF_SZ, nullptr);
-  buf = static_cast<char *> (
-    g_realloc_n (buf, (size_t) (printed + 1), sizeof (char)));
-
-  /* log the message anyway */
-  z_info ("{}: {}", title, buf);
+  /* log the message */
+  z_info ("{}: {}", title, msg);
 
   /* if have UI, also show a message dialog */
-  AdwDialog * win = NULL;
   if (ZRYTHM_HAVE_UI)
     {
       AdwAlertDialog * dialog =
-        ADW_ALERT_DIALOG (adw_alert_dialog_new (title, buf));
+        ADW_ALERT_DIALOG (adw_alert_dialog_new (title.data (), msg.data ()));
       adw_alert_dialog_add_responses (dialog, "ok", _ ("_OK"), nullptr);
       adw_alert_dialog_set_default_response (dialog, "ok");
       adw_alert_dialog_set_response_appearance (
         dialog, "ok", ADW_RESPONSE_SUGGESTED);
       adw_alert_dialog_set_close_response (dialog, "ok");
       adw_dialog_present (ADW_DIALOG (dialog), parent);
-      win = ADW_DIALOG (dialog);
+      return ADW_DIALOG (dialog);
     }
 
-  free (buf);
-
-  return win;
+  return nullptr;
 }
 
 /**
@@ -610,7 +589,6 @@ ui_gen_audio_backends_combo_row (bool with_signal)
   /*AudioBackend_to_string(AudioBackend::AUDIO_BACKEND_ASIO_RTAUDIO),*/
 #  endif
 #endif /* _WIN32 */
-    nullptr,
   };
   auto            clabels = labels.getNullTerminated ();
   GtkStringList * string_list = gtk_string_list_new (clabels);
@@ -698,7 +676,6 @@ ui_gen_midi_backends_combo_row (bool with_signal)
 #  endif
     MidiBackend_to_string (MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI),
 #endif
-    nullptr,
   };
   auto            clabels = labels.getNullTerminated ();
   GtkStringList * string_list = gtk_string_list_new (clabels);

@@ -356,8 +356,8 @@ public:
 
   void init ();
 
-  const std::string &get_label () const { return label_; }
-  const char *       get_label_as_c_str () const { return label_.c_str (); }
+  std::string  get_label () const { return label_; }
+  const char * get_label_as_c_str () const { return label_.c_str (); }
 
   bool is_control () const { return type_ == PortType::Control; }
   bool is_midi () const { return type_ == PortType::Event; }

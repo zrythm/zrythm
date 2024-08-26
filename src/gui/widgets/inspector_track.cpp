@@ -79,7 +79,7 @@ inspector_track_widget_show_tracks (
   bool                        set_notebook_page)
 {
   z_debug (
-    "showing %d tracks (set notebook page: %d)", tls->track_names_.size (),
+    "showing {} tracks (set notebook page: {})", tls->track_names_.size (),
     set_notebook_page);
 
   if (set_notebook_page)

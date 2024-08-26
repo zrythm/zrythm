@@ -1,7 +1,9 @@
-// SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
+
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "dsp/midi_note.h"
 #include "dsp/region.h"
@@ -9,7 +11,10 @@
 #include "utils/flags.h"
 #include "zrythm.h"
 
-#include <glib.h>
+#include "helpers/project_helper.h"
+#include "helpers/zrythm_helper.h"
+
+TEST_SUITE_BEGIN ("dsp/midi note");
 
 #if 0
 typedef struct
@@ -88,16 +93,19 @@ test_new_midi_note ()
 }
 #endif
 
-int
-main (int argc, char * argv[])
+TEST_CASE_FIXTURE (
+  BootstrapTimelineFixture,
+  "midi note has correct track name hash after addding to region")
 {
-  g_test_init (&argc, &argv, nullptr);
-
-#define TEST_PREFIX "/audio/midi_note/"
-
-  /*g_test_add_func (*/
-  /*TEST_PREFIX "test new midi note",*/
-  /*(GTestFunc) test_new_midi_note);*/
-
-  return g_test_run ();
+  auto midi_track = TRACKLIST->get_track_by_type<MidiTrack> (Track::Type::Midi);
+  REQUIRE_NE (midi_track->name_hash_, 0);
+  auto mr = std::make_shared<MidiRegion> (
+    p1_, p2_, midi_track->name_hash_, MIDI_REGION_LANE, 0);
+  midi_track->add_region (mr, nullptr, MIDI_REGION_LANE, true, false);
+  auto mn = std::make_shared<MidiNote> (mr->id_, p1_, p2_, MN_VAL, MN_VEL);
+  mr->append_object (mn);
+  REQUIRE_EQ (mn->track_name_hash_, midi_track->name_hash_);
+  REQUIRE_EQ (mn->vel_->track_name_hash_, midi_track->name_hash_);
 }
+
+TEST_SUITE_END;

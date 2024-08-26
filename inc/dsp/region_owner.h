@@ -129,12 +129,16 @@ public:
   std::vector<std::unique_ptr<RegionT>> region_snapshots_;
 };
 
-#if 0
-template <typename RegionT>
-requires RegionSubclass<RegionT> class RegionOwnerImpl<RegionT>
-{
-};
-#endif
+class MidiRegion;
+class ChordRegion;
+class AutomationRegion;
+class AudioRegion;
+using RegionOwnerVariant = std::variant<
+  RegionOwnerImpl<MidiRegion>,
+  RegionOwnerImpl<ChordRegion>,
+  RegionOwnerImpl<AutomationRegion>,
+  RegionOwnerImpl<AudioRegion>>;
+using RegionOwnerPtrVariant = to_pointer_variant<RegionOwnerVariant>;
 
 extern template class RegionOwnerImpl<AudioRegion>;
 extern template class RegionOwnerImpl<AutomationRegion>;

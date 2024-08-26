@@ -115,7 +115,7 @@ midi_note_draw (MidiNote * self, GtkSnapshot * snapshot)
   if ((DEBUGGING || !drum_mode) && fontsize > 10)
     {
       auto fontize_str = fmt::format (
-        "<span size=\"%d\">%s</span>",
+        "<span size=\"{}\">{}</span>",
         /* subtract half a point for the padding */
         fontsize * 1000 - 4000, str);
 

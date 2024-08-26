@@ -23,9 +23,9 @@ G_DEFINE_TYPE (
   GTK_TYPE_POPOVER)
 
 static ProcessableTrack *
-get_track_from_target (ChannelSend::Target * target)
+get_track_from_target (ChannelSendTarget * target)
 {
-  if (target->type == ChannelSend::TargetType::None)
+  if (target->type == ChannelSendTargetType::None)
     return nullptr;
 
   auto ret = dynamic_cast<ProcessableTrack *> (
@@ -35,9 +35,9 @@ get_track_from_target (ChannelSend::Target * target)
 }
 
 static std::unique_ptr<StereoPorts>
-get_sidechain_from_target (ChannelSend::Target * target)
+get_sidechain_from_target (ChannelSendTarget * target)
 {
-  if (target->type != ChannelSend::TargetType::PluginSidechain)
+  if (target->type != ChannelSendTargetType::PluginSidechain)
     {
       return nullptr;
     }
@@ -80,7 +80,7 @@ on_selection_changed (
   /* get wrapped object */
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  auto * target = (ChannelSend::Target *) wrapped_obj->obj;
+  auto target = std::get<ChannelSendTarget *> (wrapped_obj->obj);
 
   ChannelSend * send = self->send_widget->send;
   bool          is_empty = send->is_empty ();
@@ -90,7 +90,7 @@ on_selection_changed (
   PortConnection *   conn = nullptr;
   switch (target->type)
     {
-    case ChannelSend::TargetType::None:
+    case ChannelSendTargetType::None:
       if (send->is_enabled ())
         {
           try
@@ -105,7 +105,7 @@ on_selection_changed (
             }
         }
       break;
-    case ChannelSend::TargetType::Track:
+    case ChannelSendTargetType::Track:
       dest_track = get_track_from_target (target);
       switch (src_track->out_signal_type_)
         {
@@ -163,7 +163,7 @@ on_selection_changed (
           break;
         }
       break;
-    case ChannelSend::TargetType::PluginSidechain:
+    case ChannelSendTargetType::PluginSidechain:
       {
         auto dest_sidechain = get_sidechain_from_target (target);
         if (
@@ -202,12 +202,12 @@ setup_view (ChannelSendSelectorWidget * self)
     g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
 
   {
-    auto * target = new ChannelSend::Target ();
-    target->type = ChannelSend::TargetType::None;
+    auto * target = new ChannelSendTarget ();
+    target->type = ChannelSendTargetType::None;
     WrappedObjectWithChangeSignal * wobj =
       wrapped_object_with_change_signal_new_with_free_func (
         target, WrappedObjectType::WRAPPED_OBJECT_TYPE_CHANNEL_SEND_TARGET,
-        ChannelSend::Target::free_func);
+        ChannelSendTarget::free_func);
     g_list_store_append (list_store, wobj);
   }
 
@@ -232,15 +232,15 @@ setup_view (ChannelSendSelectorWidget * self)
       z_debug ("adding {}", target_track->name_);
 
       /* create target */
-      auto * target = new ChannelSend::Target ();
-      target->type = ChannelSend::TargetType::Track;
+      auto * target = new ChannelSendTarget ();
+      target->type = ChannelSendTargetType::Track;
       target->track_pos = i;
 
       /* add it to list */
       WrappedObjectWithChangeSignal * wobj =
         wrapped_object_with_change_signal_new_with_free_func (
           target, WrappedObjectType::WRAPPED_OBJECT_TYPE_CHANNEL_SEND_TARGET,
-          ChannelSend::Target::free_func);
+          ChannelSendTarget::free_func);
       g_list_store_append (list_store, wobj);
 
       if (
@@ -313,8 +313,8 @@ setup_view (ChannelSendSelectorWidget * self)
                 }
 
               /* create target */
-              auto * target = new ChannelSend::Target ();
-              target->type = ChannelSend::TargetType::PluginSidechain;
+              auto * target = new ChannelSendTarget ();
+              target->type = ChannelSendTargetType::PluginSidechain;
               target->track_pos = target_track->pos_;
               target->pl_id = pl->id_;
               target->port_group = g_strdup (l->id_.port_group_.c_str ());
@@ -324,7 +324,7 @@ setup_view (ChannelSendSelectorWidget * self)
                 wrapped_object_with_change_signal_new_with_free_func (
                   target,
                   WrappedObjectType::WRAPPED_OBJECT_TYPE_CHANNEL_SEND_TARGET,
-                  ChannelSend::Target::free_func);
+                  ChannelSendTarget::free_func);
               g_list_store_append (list_store, wobj);
 
               if (send->is_target_sidechain ())

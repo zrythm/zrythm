@@ -18,7 +18,7 @@
 
 #include <glib/gi18n.h>
 
-class ArrangerSelections;
+class MidiSelections;
 
 /**
  * @addtogroup dsp

@@ -114,7 +114,7 @@ draw_loop_points (
   Position tmp;
   double   loop_start_ticks = self->loop_start_pos_.ticks_;
   double   loop_end_ticks = self->loop_end_pos_.ticks_;
-  z_warn_if_fail_cmp (loop_end_ticks, >, loop_start_ticks);
+  z_return_if_fail_cmp (loop_end_ticks, >, loop_start_ticks);
   double loop_ticks = self->get_loop_length_in_ticks ();
   double clip_start_ticks = self->clip_start_pos_.ticks_;
 

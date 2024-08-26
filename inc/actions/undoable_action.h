@@ -1,12 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Undoable actions.
- */
-
 #ifndef __UNDO_UNDOABLE_ACTION_H__
 #define __UNDO_UNDOABLE_ACTION_H__
 
@@ -220,6 +214,29 @@ public:
   /** @see port_connections_before_. */
   std::unique_ptr<PortConnectionsManager> port_connections_after_;
 };
+
+class ArrangerSelectionsAction;
+class ChannelSendAction;
+class ChordAction;
+class MidiMappingAction;
+class MixerSelectionsAction;
+class PortAction;
+class PortConnectionAction;
+class RangeAction;
+class TracklistSelectionsAction;
+class TransportAction;
+using UndoableActionVariant = std::variant<
+  ArrangerSelectionsAction,
+  ChannelSendAction,
+  ChordAction,
+  MidiMappingAction,
+  MixerSelectionsAction,
+  PortAction,
+  PortConnectionAction,
+  RangeAction,
+  TracklistSelectionsAction,
+  TransportAction>;
+using UndoableActionPtrVariant = to_pointer_variant<UndoableActionVariant>;
 
 /**
  * @}

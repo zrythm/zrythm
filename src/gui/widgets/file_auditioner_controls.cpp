@@ -35,10 +35,12 @@ on_play_clicked (GtkButton * toolbutton, FileAuditionerControlsWidget * self)
   switch (wrapped_obj->type)
     {
     case WrappedObjectType::WRAPPED_OBJECT_TYPE_SUPPORTED_FILE:
-      SAMPLE_PROCESSOR->queue_file (*(FileDescriptor *) wrapped_obj->obj);
+      SAMPLE_PROCESSOR->queue_file (
+        *std::get<FileDescriptor *> (wrapped_obj->obj));
       break;
     case WrappedObjectType::WRAPPED_OBJECT_TYPE_CHORD_PSET:
-      SAMPLE_PROCESSOR->queue_chord_preset (*(ChordPreset *) wrapped_obj->obj);
+      SAMPLE_PROCESSOR->queue_chord_preset (
+        *std::get<ChordPreset *> (wrapped_obj->obj));
       break;
     default:
       break;
@@ -69,7 +71,8 @@ on_instrument_changed (GObject * gobject, GParamSpec * pspec, void * data)
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
       gtk_drop_down_get_selected_item (dropdown));
-  const PluginDescriptor * descr = (PluginDescriptor *) wrapped_obj->obj;
+  const PluginDescriptor * descr =
+    std::get<PluginDescriptor *> (wrapped_obj->obj);
 
   if (
     SAMPLE_PROCESSOR->instrument_setting_
