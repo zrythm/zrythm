@@ -185,3 +185,6 @@ venv
 
 # CLion
 .idea
+
+# Logging
+/*.log

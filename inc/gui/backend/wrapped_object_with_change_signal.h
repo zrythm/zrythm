@@ -5,6 +5,7 @@
 #define __GUI_BACKEND_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_H__
 
 #include "dsp/track.h"
+#include "gui/backend/project_info.h"
 #include "utils/types.h"
 
 #include <giomm/listmodel.h>
@@ -16,7 +17,6 @@ class ChordPresetPack;
 class ChordPreset;
 class FileDescriptor;
 class MidiMapping;
-struct ProjectInfo;
 class Port;
 struct ChannelSendTarget;
 class PluginCollection;

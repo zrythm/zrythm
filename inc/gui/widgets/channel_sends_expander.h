@@ -45,7 +45,7 @@ enum class ChannelSendsExpanderPosition
  * A TwoColExpanderBoxWidget for showing the ports
  * in the InspectorWidget.
  */
-typedef struct _ChannelSendsExpanderWidget
+using ChannelSendsExpanderWidget = struct _ChannelSendsExpanderWidget
 {
   ExpanderBoxWidget parent_instance;
 
@@ -59,14 +59,14 @@ typedef struct _ChannelSendsExpanderWidget
   GtkBox * box;
 
   /** 1 box for each item. */
-  GtkBox * strip_boxes[STRIP_SIZE];
+  std::vector<GtkBox *> strip_boxes;
 
   /** Send slots. */
-  ChannelSendWidget * slots[STRIP_SIZE];
+  std::vector<ChannelSendWidget *> slots;
 
   /** Owner track. */
   Track * track;
-} ChannelSendsExpanderWidget;
+};
 
 /**
  * Refreshes each field.

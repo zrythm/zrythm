@@ -18,6 +18,7 @@ backend_srcs = [
   'midi_selections.cpp',
   'mixer_selections.cpp',
   'piano_roll.cpp',
+  'project_info.cpp',
   'timeline.cpp',
   'timeline_selections.cpp',
   'tracklist_selections.cpp',

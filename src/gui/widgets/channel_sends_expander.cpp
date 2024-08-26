@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/channel.h"
@@ -33,9 +33,9 @@ G_DEFINE_TYPE (
 void
 channel_sends_expander_widget_refresh (ChannelSendsExpanderWidget * self)
 {
-  for (int i = 0; i < STRIP_SIZE; i++)
+  for (auto &slot : self->slots)
     {
-      gtk_widget_queue_draw (GTK_WIDGET (self->slots[i]));
+      gtk_widget_queue_draw (GTK_WIDGET (slot));
     }
 }
 
@@ -92,16 +92,18 @@ channel_sends_expander_widget_setup (
       if (auto channel_track = dynamic_cast<ChannelTrack *> (track))
         {
           auto &ch = channel_track->channel_;
-          for (int i = 0; i < STRIP_SIZE; i++)
+          self->strip_boxes.clear ();
+          self->slots.clear ();
+          for (size_t i = 0; i < STRIP_SIZE; i++)
             {
               GtkBox * strip_box =
                 GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
               gtk_widget_set_name (
                 GTK_WIDGET (strip_box), "channel-sends-expander-strip-box");
-              self->strip_boxes[i] = strip_box;
+              self->strip_boxes.push_back (strip_box);
               ChannelSendWidget * csw =
-                channel_send_widget_new (ch->sends_[i].get ());
-              self->slots[i] = csw;
+                channel_send_widget_new (ch->sends_.at (i).get ());
+              self->slots.push_back (csw);
               gtk_box_append (strip_box, GTK_WIDGET (csw));
 
               gtk_box_append (self->box, GTK_WIDGET (strip_box));
@@ -129,14 +131,27 @@ channel_sends_expander_widget_setup (
 }
 
 static void
+channel_sends_expander_widget_finalize (GObject * object)
+{
+  ChannelSendsExpanderWidget * self = Z_CHANNEL_SENDS_EXPANDER_WIDGET (object);
+  std::destroy_at (&self->strip_boxes);
+  std::destroy_at (&self->slots);
+  G_OBJECT_CLASS (channel_sends_expander_widget_parent_class)->finalize (object);
+}
+
+static void
 channel_sends_expander_widget_class_init (
   ChannelSendsExpanderWidgetClass * klass)
 {
+  G_OBJECT_CLASS (klass)->finalize = channel_sends_expander_widget_finalize;
 }
 
 static void
 channel_sends_expander_widget_init (ChannelSendsExpanderWidget * self)
 {
+  std::construct_at (&self->strip_boxes);
+  std::construct_at (&self->slots);
+
   self->scroll = GTK_SCROLLED_WINDOW (gtk_scrolled_window_new ());
   gtk_widget_set_name (
     GTK_WIDGET (self->scroll), "channel-sends-expander-scroll");

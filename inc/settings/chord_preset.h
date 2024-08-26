@@ -26,14 +26,14 @@ class ChordPreset final : public ISerializable<ChordPreset>
 {
 public:
   ChordPreset () = default;
-  ChordPreset (const std::string &name) : ChordPreset () { name_ = name; }
+  ChordPreset (const std::string &name);
 
   /**
    * Gets informational text.
    */
   std::string get_info_text () const;
 
-  const std::string &get_name () const { return name_; }
+  std::string get_name () const;
 
   void set_name (const std::string &name);
 

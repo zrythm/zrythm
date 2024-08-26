@@ -37,41 +37,7 @@
 
 #include <glib/gi18n.h>
 
-#define FILE_NOT_FOUND_STR _ ("<File not found>")
-
 G_DEFINE_TYPE (GreeterWidget, greeter_widget, ADW_TYPE_WINDOW)
-
-ProjectInfo::ProjectInfo (const std::string &name, const std::string &filename)
-    : name_ (name)
-{
-  if (filename.empty ())
-    {
-      filename_ = "-";
-      modified_ = 0;
-      modified_str_ = "-";
-    }
-  else
-    {
-      filename_ = filename;
-      modified_ = io_file_get_last_modified_datetime (filename.c_str ());
-      if (modified_ == -1)
-        {
-          modified_str_ = FILE_NOT_FOUND_STR;
-          modified_ = G_MAXINT64;
-        }
-      else
-        {
-          modified_str_ = datetime_epoch_to_str (modified_).c_str ();
-        }
-      z_return_if_fail (!modified_str_.empty ());
-    }
-}
-
-static void
-project_info_destroy_func (void * data)
-{
-  delete (ProjectInfo *) data;
-}
 
 static void
 project_ready_while_zrythm_running_cb (
@@ -517,7 +483,7 @@ greeter_widget_select_project (
       if (prj_nfo)
         {
           /* if file not found */
-          if (prj_nfo->modified_str_ == FILE_NOT_FOUND_STR)
+          if (prj_nfo->modified_str_ == PROJECT_INFO_FILE_NOT_FOUND_STR)
             {
               /* remove from gsettings */
               gZrythm->remove_recent_project (prj_nfo->filename_);

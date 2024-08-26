@@ -13,6 +13,11 @@
 
 #include <glib/gi18n.h>
 
+ChordPreset::ChordPreset (const std::string &name) : ChordPreset ()
+{
+  name_ = name;
+}
+
 std::string
 ChordPreset::get_info_text () const
 {
@@ -35,6 +40,12 @@ ChordPreset::get_info_text () const
     }
 
   return str;
+}
+
+std::string
+ChordPreset::get_name () const
+{
+  return name_;
 }
 
 void

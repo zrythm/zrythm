@@ -4,6 +4,7 @@
 #ifndef __GUI_WIDGETS_GREETER_H__
 #define __GUI_WIDGETS_GREETER_H__
 
+#include "gui/backend/project_info.h"
 #include "gui/widgets/cc-list-row-info-button.h"
 #include "gui/widgets/item_factory.h"
 #include "utils/types.h"
@@ -22,20 +23,6 @@ TYPEDEF_STRUCT_UNDERSCORED (CcListRowInfoButton);
  *
  * @{
  */
-
-/**
- * Project file information.
- */
-struct ProjectInfo
-{
-  ProjectInfo (const std::string &name, const std::string &filename);
-
-  std::string name_;
-  /** Full path. */
-  std::string filename_;
-  gint64      modified_ = 0;
-  std::string modified_str_;
-};
 
 /**
  * This widget handles the UI part of the initialization of Zrythm and presents
