@@ -71,10 +71,10 @@ public:
    */
   enum class ResizeType
   {
-    RESIZE_NORMAL,
-    RESIZE_LOOP,
-    RESIZE_FADE,
-    RESIZE_STRETCH,
+    Normal,
+    Loop,
+    Fade,
+    Stretch,
 
     /**
      * Used when we want to resize to contents when BPM changes.
@@ -597,6 +597,10 @@ operator== (const ArrangerObject &lhs, const ArrangerObject &rhs)
   return lhs.type_ == rhs.type_ && lhs.pos_ == rhs.pos_
          && lhs.track_name_hash_ == rhs.track_name_hash_;
 }
+
+template <typename T>
+concept FinalArrangerObjectSubclass =
+  std::derived_from<T, ArrangerObject> && FinalClass<T> && CompleteType<T>;
 
 class MidiNote;
 class MidiRegion;

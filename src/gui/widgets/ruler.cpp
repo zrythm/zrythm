@@ -1398,7 +1398,7 @@ on_right_click_pressed (
 static void
 set_cursor (RulerWidget * self)
 {
-  if (self->action == UiOverlayAction::NONE)
+  if (self->action == UiOverlayAction::None)
     {
       if (self->hovering)
         {
@@ -1468,8 +1468,8 @@ set_cursor (RulerWidget * self)
     {
       switch (self->action)
         {
-        case UiOverlayAction::STARTING_PANNING:
-        case UiOverlayAction::PANNING:
+        case UiOverlayAction::StartingPanning:
+        case UiOverlayAction::Panning:
           ui_set_cursor_from_name (GTK_WIDGET (self), "all-scroll");
           break;
         case UiOverlayAction::STARTING_MOVING:
@@ -1518,7 +1518,7 @@ drag_begin (
   /* if alt held down, start panning */
   if (self->alt_held || drag_start_btn == GDK_BUTTON_MIDDLE)
     {
-      self->action = UiOverlayAction::STARTING_PANNING;
+      self->action = UiOverlayAction::StartingPanning;
     }
   /* else if one of the markers hit */
   else if (punch_in_hit)
@@ -1607,7 +1607,7 @@ drag_end (
   else if (self->type == TYPE (Editor))
     editor_ruler_on_drag_end (self);
 
-  self->action = UiOverlayAction::NONE;
+  self->action = UiOverlayAction::None;
 
   set_cursor (self);
 }
@@ -1690,9 +1690,9 @@ on_motion (
         {
           self->action = UiOverlayAction::MOVING;
         }
-      else if (ACTION_IS (STARTING_PANNING))
+      else if (ACTION_IS (StartingPanning))
         {
-          self->action = UiOverlayAction::PANNING;
+          self->action = UiOverlayAction::Panning;
         }
 
       /* panning is common */
@@ -1700,7 +1700,7 @@ on_motion (
       double offset_x = total_offset_x - self->last_offset_x;
       double total_offset_y = y - self->start_y;
       double offset_y = total_offset_y - self->last_offset_y;
-      if (self->action == UiOverlayAction::PANNING)
+      if (self->action == UiOverlayAction::Panning)
         {
           if (!math_doubles_equal_epsilon (offset_x, 0.0, 0.1))
             {
@@ -2007,8 +2007,26 @@ dispose (RulerWidget * self)
 }
 
 static void
+ruler_finalize (GObject * object)
+{
+  RulerWidget * self = Z_RULER_WIDGET (object);
+
+  std::destroy_at (&self->range1_start_pos);
+  std::destroy_at (&self->range2_start_pos);
+  std::destroy_at (&self->last_set_pos);
+  std::destroy_at (&self->drag_start_pos);
+
+  G_OBJECT_CLASS (ruler_widget_parent_class)->finalize (object);
+}
+
+static void
 ruler_widget_init (RulerWidget * self)
 {
+  std::construct_at (&self->range1_start_pos);
+  std::construct_at (&self->range2_start_pos);
+  std::construct_at (&self->last_set_pos);
+  std::construct_at (&self->drag_start_pos);
+
   self->popover_menu =
     GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (nullptr));
   gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
@@ -2097,4 +2115,5 @@ ruler_widget_class_init (RulerWidgetClass * klass)
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->dispose = (GObjectFinalizeFunc) dispose;
+  oklass->finalize = ruler_finalize;
 }

@@ -5,6 +5,7 @@
 #define __GUI_WIDGETS_AUTOMATION_ARRANGER_H__
 
 #include "dsp/position.h"
+#include "gui/widgets/arranger.h"
 
 #include "gtk_wrapper.h"
 
@@ -24,6 +25,9 @@ TYPEDEF_STRUCT_UNDERSCORED (RegionWidget);
  */
 
 #define MW_AUTOMATION_ARRANGER MW_AUTOMATION_EDITOR_SPACE->arranger
+
+ArrangerCursor
+automation_arranger_widget_get_cursor (ArrangerWidget * self, Tool tool);
 
 /** Padding to leave before and after the usable vertical range for automation. */
 constexpr int AUTOMATION_ARRANGER_VPADDING = 4;

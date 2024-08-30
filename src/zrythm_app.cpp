@@ -363,7 +363,7 @@ on_load_project (GSimpleAction * action, GVariant * parameter, gpointer user_dat
     "on_load_project called | open filename '{}' | opening template {}",
     gZrythm->open_filename_, gZrythm->opening_template_);
   g_application_hold (g_application_get_default ());
-  ProjectInitFlowManager (
+  zrythm_app->project_init_flow_mgr = std::make_unique<ProjectInitFlowManager> (
     gZrythm->open_filename_, gZrythm->opening_template_,
     project_load_or_create_ready_cb, nullptr);
 }
@@ -1217,6 +1217,7 @@ zrythm_app_on_shutdown (GApplication * application, ZrythmApp * self)
         {
           gZrythm->project_->audio_engine_->activate (false);
         }
+      gZrythm->project_.reset ();
       gZrythm->deleteInstance ();
     }
 
@@ -1225,7 +1226,23 @@ zrythm_app_on_shutdown (GApplication * application, ZrythmApp * self)
 
   gtk_source_finalize ();
 
-  z_info ("done shutting down");
+  std::destroy_at (&self->ui_caches);
+  std::destroy_at (&self->project_init_flow_mgr);
+
+  if (self->default_settings)
+    {
+      g_object_unref (self->default_settings);
+    }
+
+  /* init curl */
+  curl_global_cleanup ();
+
+  ZrythmDirectoryManager::deleteInstance ();
+  PCGRand::deleteInstance ();
+  GSettingsManager::deleteInstance ();
+
+  z_info ("done shutting down - finally deleting logger...");
+  Logger::deleteInstance ();
 }
 
 #if 0
@@ -1466,24 +1483,12 @@ zrythm_app_new (int argc, const char ** argv)
 static void
 finalize (ZrythmApp * self)
 {
-  z_info ("finalizing ZrythmApp...");
-
-  std::destroy_at (&self->ui_caches);
-  std::destroy_at (&self->project_init_flow_mgr);
-
-  if (self->default_settings)
-    {
-      g_object_unref (self->default_settings);
-    }
-
-  /* init curl */
-  curl_global_cleanup ();
-
-  ZrythmDirectoryManager::deleteInstance ();
-  PCGRand::deleteInstance ();
-  GSettingsManager::deleteInstance ();
-
-  z_info ("{}: done", __func__);
+  // note: this function doesn't get called in normal (not testing) mode -
+  // it gets called when ZrythmAppDeleter goes in effect, at the end of exit()
+  // because it is a global variable
+  // (the logger is already deleted so don't attempt to log here)
+  // z_info ("finalizing ZrythmApp...");
+  // z_info ("{}: done", __func__);
 }
 
 static void

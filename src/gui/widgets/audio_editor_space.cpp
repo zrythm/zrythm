@@ -48,8 +48,8 @@ audio_editor_space_widget_setup (AudioEditorSpaceWidget * self)
   if (self->arranger)
     {
       arranger_widget_setup (
-        Z_ARRANGER_WIDGET (self->arranger),
-        ArrangerWidgetType::ARRANGER_WIDGET_TYPE_AUDIO, SNAP_GRID_EDITOR);
+        Z_ARRANGER_WIDGET (self->arranger), ArrangerWidgetType::Audio,
+        SNAP_GRID_EDITOR);
     }
 
   audio_editor_space_widget_refresh (self);
@@ -63,7 +63,7 @@ audio_editor_space_widget_init (AudioEditorSpaceWidget * self)
   gtk_widget_set_hexpand (GTK_WIDGET (self->arranger), true);
   gtk_widget_set_vexpand (GTK_WIDGET (self->arranger), true);
 
-  self->arranger->type = ArrangerWidgetType::ARRANGER_WIDGET_TYPE_AUDIO;
+  self->arranger->type = ArrangerWidgetType::Audio;
 }
 
 static void

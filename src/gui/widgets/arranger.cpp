@@ -94,11 +94,297 @@
 
 G_DEFINE_TYPE (ArrangerWidget, arranger_widget, GTK_TYPE_WIDGET)
 
-#define TYPE(x) ArrangerWidgetType::ARRANGER_WIDGET_TYPE_##x
-
-#define TYPE_IS(x) (self->type == TYPE (x))
+#define TYPE_IS(x) (self->type == ArrangerWidgetType::x)
 
 constexpr int SCROLL_PADDING = 8;
+
+std::pair<ArrangerObject::ResizeType, bool>
+arranger_widget_get_resize_type_and_direction_from_action (
+  UiOverlayAction action)
+{
+  switch (action)
+    {
+    case UiOverlayAction::ResizingL:
+      return std::make_pair (ArrangerObject::ResizeType::Normal, true);
+    case UiOverlayAction::CreatingResizingR:
+    case UiOverlayAction::ResizingR:
+      return std::make_pair (ArrangerObject::ResizeType::Normal, false);
+    case UiOverlayAction::ResizingLLoop:
+      return std::make_pair (ArrangerObject::ResizeType::Loop, true);
+    case UiOverlayAction::ResizingRLoop:
+      return std::make_pair (ArrangerObject::ResizeType::Loop, false);
+    case UiOverlayAction::ResizingLFade:
+      return std::make_pair (ArrangerObject::ResizeType::Fade, true);
+    case UiOverlayAction::ResizingRFade:
+      return std::make_pair (ArrangerObject::ResizeType::Fade, false);
+    case UiOverlayAction::StretchingL:
+      return std::make_pair (ArrangerObject::ResizeType::Stretch, true);
+    case UiOverlayAction::StretchingR:
+      return std::make_pair (ArrangerObject::ResizeType::Stretch, false);
+    default:
+      z_return_val_if_reached (
+        std::make_pair (ArrangerObject::ResizeType::Normal, true));
+    }
+}
+
+/**
+ * Snaps the region's start or end point.
+ *
+ * @param pos Position to snap.
+ * @param dry_run Don't resize notes; just check if the resize is allowed (check
+ * if invalid resizes will happen)
+ *
+ * @return Whether successful.
+ */
+template <FinalArrangerObjectSubclass ObjT>
+bool
+snap_obj_during_resize (
+  ArrangerWidget * self,
+  ObjT            &obj_to_resize,
+  Position        &pos,
+  bool             dry_run)
+{
+  auto [resize_type, left] =
+    arranger_widget_get_resize_type_and_direction_from_action (self->action);
+
+  Region * owner_region = nullptr;
+  Position global_pos_to_snap = pos;
+  if constexpr (std::derived_from<ObjT, RegionOwnedObject>)
+    {
+      owner_region = obj_to_resize.get_region ();
+      global_pos_to_snap.add_ticks (owner_region->pos_.ticks_);
+    }
+  else
+    {
+      if (!pos.is_positive ())
+        return false;
+    }
+
+  if (
+    self->snap_grid->any_snap () && !self->shift_held
+    && resize_type != ArrangerObject::ResizeType::Fade
+    && global_pos_to_snap.is_positive ())
+    {
+      Track * track = nullptr;
+      if constexpr (!RegionOwnedObjectSubclass<ObjT>)
+        {
+          track = obj_to_resize.get_track ();
+          z_return_val_if_fail (track, false);
+        }
+      z_return_val_if_fail (self->earliest_obj_start_pos, false);
+      global_pos_to_snap.snap (
+        self->earliest_obj_start_pos.get (), track, owner_region,
+        *self->snap_grid);
+    }
+
+  // convert global pos back into output pos
+  if constexpr (RegionOwnedObjectSubclass<ObjT>)
+    {
+      global_pos_to_snap.add_ticks (-owner_region->pos_.ticks_);
+    }
+  pos = global_pos_to_snap;
+
+  if (resize_type == ArrangerObject::ResizeType::Fade)
+    {
+      if constexpr (std::derived_from<ObjT, FadeableObject>)
+        {
+          if (left)
+            {
+              if (pos >= obj_to_resize.fade_out_pos_)
+                return false;
+            }
+          else
+            {
+              Position tmp{
+                obj_to_resize.end_pos_.ticks_ - obj_to_resize.pos_.ticks_
+              };
+              if (pos <= obj_to_resize.fade_in_pos_ || pos > tmp)
+                return false;
+            }
+        }
+      else
+        {
+          z_return_val_if_reached (false);
+        }
+    }
+  else
+    {
+      if (left)
+        {
+          if (pos >= obj_to_resize.end_pos_)
+            return false;
+        }
+      else
+        {
+          if (pos <= obj_to_resize.pos_)
+            return false;
+        }
+    }
+
+  bool   is_valid = false;
+  double diff = 0.0;
+
+  if (resize_type == ArrangerObject::ResizeType::Fade)
+    {
+      if constexpr (std::derived_from<ObjT, FadeableObject>)
+        {
+          if (left)
+            {
+              is_valid = obj_to_resize.is_position_valid (
+                pos, ArrangerObject::PositionType::FadeIn);
+              diff = pos.ticks_ - obj_to_resize.fade_in_pos_.ticks_;
+            }
+          else
+            {
+              is_valid = obj_to_resize.is_position_valid (
+                pos, ArrangerObject::PositionType::FadeOut);
+              diff = pos.ticks_ - obj_to_resize.fade_out_pos_.ticks_;
+            }
+        }
+      else
+        {
+          z_return_val_if_reached (false);
+        }
+    }
+  else
+    {
+      if (left)
+        {
+          is_valid = obj_to_resize.is_position_valid (
+            pos, ArrangerObject::PositionType::Start);
+          diff = pos.ticks_ - obj_to_resize.pos_.ticks_;
+        }
+      else
+        {
+          is_valid = obj_to_resize.is_position_valid (
+            pos, ArrangerObject::PositionType::End);
+          diff = pos.ticks_ - obj_to_resize.end_pos_.ticks_;
+        }
+    }
+
+  if (is_valid)
+    {
+      if (!dry_run)
+        {
+          try
+            {
+              obj_to_resize.resize (left, resize_type, diff, true);
+            }
+          catch (const ZrythmException &e)
+            {
+              e.handle ("Failed to resize object");
+              return false;
+            }
+
+          if (self->action == UiOverlayAction::CreatingResizingR)
+            {
+              if constexpr (std::derived_from<ObjT, LoopableObject>)
+                {
+                  double   full_size = obj_to_resize.get_length_in_ticks ();
+                  Position tmp = obj_to_resize.loop_start_pos_;
+                  tmp.add_ticks (full_size);
+                  obj_to_resize.loop_end_pos_setter (&tmp);
+                }
+            }
+          return true;
+        }
+      else
+        {
+          return true;
+        }
+    }
+  else
+    {
+      return false;
+    }
+}
+
+static bool
+snap_selections_during_resize (ArrangerWidget * self, Position * pos, bool dry_run)
+{
+  auto shared_prj_obj = self->prj_start_object.lock ();
+  z_return_val_if_fail (shared_prj_obj, false);
+
+  return std::visit (
+    [&] (auto &&obj) {
+      using ObjT = base_type<decltype (obj)>;
+
+      Region * owner_region = nullptr;
+      if constexpr (std::derived_from<ObjT, RegionOwnedObject>)
+        {
+          owner_region = obj->get_region ();
+          z_return_val_if_fail (owner_region, false);
+        }
+
+      auto [resize_type, left] =
+        arranger_widget_get_resize_type_and_direction_from_action (self->action);
+      double delta_ticks = 0.0;
+      if (resize_type == ArrangerObject::ResizeType::Fade)
+        {
+          if constexpr (std::derived_from<ObjT, FadeableObject>)
+            {
+              const auto &pos_to_add =
+                left ? obj->fade_in_pos_ : obj->fade_out_pos_;
+              delta_ticks = pos->ticks_ - (obj->pos_.ticks_ + pos_to_add.ticks_);
+            }
+          else
+            {
+              z_return_val_if_reached (false);
+            }
+        }
+      else
+        {
+          const auto &pos_to_add = left ? obj->pos_ : obj->end_pos_;
+          if constexpr (std::derived_from<ObjT, RegionOwnedObject>)
+            {
+              delta_ticks =
+                pos->ticks_ - (pos_to_add.ticks_ + owner_region->pos_.ticks_);
+            }
+          else
+            {
+              delta_ticks = pos->ticks_ - pos_to_add.ticks_;
+            }
+        }
+
+      auto selections = arranger_widget_get_selections (self);
+
+      for (auto cur_obj : selections->objects_ | type_is<ObjT> ())
+        {
+          Position new_pos;
+          if (self->action == UiOverlayAction::ResizingLFade)
+            {
+              if constexpr (std::derived_from<ObjT, FadeableObject>)
+                {
+                  new_pos =
+                    left ? cur_obj->fade_in_pos_ : cur_obj->fade_out_pos_;
+                }
+              else
+                {
+                  z_return_val_if_reached (false);
+                }
+            }
+          else
+            {
+              new_pos = left ? cur_obj->pos_ : cur_obj->end_pos_;
+            }
+          new_pos.add_ticks (delta_ticks);
+
+          bool successful =
+            snap_obj_during_resize (self, *cur_obj, new_pos, dry_run);
+
+          if (!successful)
+            return false;
+        }
+
+      if (!dry_run)
+        {
+          EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, selections);
+        }
+
+      return true;
+    },
+    convert_to_variant<LengthableObjectPtrVariant> (shared_prj_obj.get ()));
+}
 
 /**
  * Returns if the arranger can scroll vertically.
@@ -107,9 +393,8 @@ bool
 arranger_widget_can_scroll_vertically (ArrangerWidget * self)
 {
   if (
-    (self->type == TYPE (TIMELINE) && self->is_pinned)
-    || self->type == TYPE (MIDI_MODIFIER) || self->type == TYPE (AUDIO)
-    || self->type == TYPE (AUTOMATION))
+    (TYPE_IS (Timeline) && self->is_pinned) || TYPE_IS (MidiModifier)
+    || TYPE_IS (Audio) || TYPE_IS (Automation))
     return false;
 
   return true;
@@ -151,7 +436,7 @@ arranger_widget_get_type_str (ArrangerWidgetType type)
 bool
 arranger_widget_get_drum_mode_enabled (ArrangerWidget * self)
 {
-  if (self->type != ArrangerWidgetType::ARRANGER_WIDGET_TYPE_MIDI)
+  if (self->type != ArrangerWidgetType::Midi)
     return false;
 
   if (!CLIP_EDITOR->has_region_)
@@ -181,41 +466,41 @@ arranger_widget_set_cursor (ArrangerWidget * self, ArrangerCursor cursor)
 
   switch (cursor)
     {
-    case ArrangerCursor::ARRANGER_CURSOR_SELECT:
+    case ArrangerCursor::Select:
       SET_X_CURSOR (pointer);
       break;
-    case ArrangerCursor::ARRANGER_CURSOR_EDIT:
+    case ArrangerCursor::Edit:
       SET_X_CURSOR (pencil);
       break;
-    case ArrangerCursor::ARRANGER_CURSOR_AUTOFILL:
+    case ArrangerCursor::Autofill:
       SET_X_CURSOR (brush);
       break;
     case ArrangerCursor::ARRANGER_CURSOR_CUT:
       SET_X_CURSOR (cut_clip);
       break;
-    case ArrangerCursor::ARRANGER_CURSOR_RAMP:
+    case ArrangerCursor::Ramp:
       SET_X_CURSOR (line);
       break;
-    case ArrangerCursor::ARRANGER_CURSOR_ERASER:
+    case ArrangerCursor::Eraser:
       SET_X_CURSOR (eraser);
       break;
-    case ArrangerCursor::ARRANGER_CURSOR_AUDITION:
+    case ArrangerCursor::Audition:
       SET_X_CURSOR (speaker);
       break;
-    case ArrangerCursor::ARRANGER_CURSOR_GRAB:
+    case ArrangerCursor::Grab:
       SET_X_CURSOR (hand);
       break;
-    case ArrangerCursor::ARRANGER_CURSOR_GRABBING:
+    case ArrangerCursor::Grabbing:
       SET_CURSOR_FROM_NAME ("grabbing");
       break;
-    case ArrangerCursor::ARRANGER_CURSOR_GRABBING_COPY:
+    case ArrangerCursor::GrabbingCopy:
       SET_CURSOR_FROM_NAME ("copy");
       break;
-    case ArrangerCursor::ARRANGER_CURSOR_GRABBING_LINK:
+    case ArrangerCursor::GrabbingLink:
       SET_CURSOR_FROM_NAME ("link");
       break;
-    case ArrangerCursor::ARRANGER_CURSOR_RESIZING_L:
-    case ArrangerCursor::ARRANGER_CURSOR_RESIZING_L_FADE:
+    case ArrangerCursor::ResizingL:
+    case ArrangerCursor::ResizingLFade:
       SET_X_CURSOR (left_resize);
       break;
     case ArrangerCursor::ARRANGER_CURSOR_STRETCHING_L:
@@ -224,7 +509,7 @@ arranger_widget_set_cursor (ArrangerWidget * self, ArrangerCursor cursor)
     case ArrangerCursor::ARRANGER_CURSOR_RESIZING_L_LOOP:
       SET_X_CURSOR (left_resize_loop);
       break;
-    case ArrangerCursor::ARRANGER_CURSOR_RESIZING_R:
+    case ArrangerCursor::ResizingR:
     case ArrangerCursor::ARRANGER_CURSOR_RESIZING_R_FADE:
       SET_X_CURSOR (right_resize);
       break;
@@ -234,28 +519,28 @@ arranger_widget_set_cursor (ArrangerWidget * self, ArrangerCursor cursor)
     case ArrangerCursor::ARRANGER_CURSOR_RESIZING_R_LOOP:
       SET_X_CURSOR (right_resize_loop);
       break;
-    case ArrangerCursor::ARRANGER_CURSOR_RESIZING_UP:
+    case ArrangerCursor::ResizingUp:
       SET_CURSOR_FROM_NAME ("n-resize");
       break;
-    case ArrangerCursor::ARRANGER_CURSOR_RESIZING_UP_FADE_IN:
+    case ArrangerCursor::ResizingUpFadeIn:
       SET_CURSOR_FROM_NAME ("n-resize");
       break;
-    case ArrangerCursor::ARRANGER_CURSOR_RESIZING_UP_FADE_OUT:
+    case ArrangerCursor::ResizingUpFadeOut:
       SET_CURSOR_FROM_NAME ("n-resize");
       break;
-    case ArrangerCursor::ARRANGER_CURSOR_RANGE:
+    case ArrangerCursor::Range:
       SET_X_CURSOR (time_select);
       break;
-    case ArrangerCursor::ARRANGER_CURSOR_FADE_IN:
+    case ArrangerCursor::FadeIn:
       SET_X_CURSOR (fade_in);
       break;
-    case ArrangerCursor::ARRANGER_CURSOR_FADE_OUT:
+    case ArrangerCursor::FadeOut:
       SET_X_CURSOR (fade_out);
       break;
-    case ArrangerCursor::ARRANGER_CURSOR_RENAME:
+    case ArrangerCursor::Rename:
       SET_CURSOR_FROM_NAME ("text");
       break;
-    case ArrangerCursor::ARRANGER_CURSOR_PANNING:
+    case ArrangerCursor::Panning:
       SET_CURSOR_FROM_NAME ("all-scroll");
       break;
     default:
@@ -264,12 +549,8 @@ arranger_widget_set_cursor (ArrangerWidget * self, ArrangerCursor cursor)
     }
 }
 
-/**
- * Returns whether the cursor  at y is in the top
- * half of the arranger.
- */
-static bool
-is_cursor_in_top_half (ArrangerWidget * self, double y)
+bool
+arranger_widget_is_cursor_in_top_half (ArrangerWidget * self, double y)
 {
   int height = gtk_widget_get_height (GTK_WIDGET (self));
   return y < ((double) height / 2.0);
@@ -281,13 +562,13 @@ is_cursor_in_top_half (ArrangerWidget * self, double y)
 static void
 set_select_type (ArrangerWidget * self, double y)
 {
-  if (self->type == TYPE (TIMELINE))
+  if (self->type == ArrangerWidgetType::Timeline)
     {
       timeline_arranger_widget_set_select_type (self, y);
     }
-  else if (self->type == TYPE (AUDIO))
+  else if (self->type == ArrangerWidgetType::Audio)
     {
-      if (is_cursor_in_top_half (self, y))
+      if (arranger_widget_is_cursor_in_top_half (self, y))
         {
           self->resizing_range = false;
         }
@@ -295,7 +576,7 @@ set_select_type (ArrangerWidget * self, double y)
         {
           self->resizing_range = true;
           self->resizing_range_start = true;
-          self->action = UiOverlayAction::RESIZING_R;
+          self->action = UiOverlayAction::ResizingR;
         }
     }
 }
@@ -611,7 +892,7 @@ get_hit_objects (
 
   switch (self->type)
     {
-    case TYPE (TIMELINE):
+    case ArrangerWidgetType::Timeline:
       if (
         type != ArrangerObject::Type::All && type != ArrangerObject::Type::Region
         && type != ArrangerObject::Type::Marker
@@ -630,7 +911,7 @@ get_hit_objects (
                * doesn't match */
               if (
                 !track->visible_
-                || (TYPE_IS (TIMELINE) && track->is_pinned () != self->is_pinned))
+                || (TYPE_IS (Timeline) && track->is_pinned () != self->is_pinned))
                 {
                   continue;
                 }
@@ -757,7 +1038,7 @@ get_hit_objects (
             }
         }
       break;
-    case TYPE (MIDI):
+    case ArrangerWidgetType::Midi:
       /* add overlapping midi notes */
       if (
         type == ArrangerObject::Type::All
@@ -796,7 +1077,7 @@ get_hit_objects (
             }
         }
       break;
-    case TYPE (MIDI_MODIFIER):
+    case ArrangerWidgetType::MidiModifier:
       /* add overlapping midi notes */
       if (
         type == ArrangerObject::Type::All
@@ -814,7 +1095,7 @@ get_hit_objects (
             }
         }
       break;
-    case TYPE (CHORD):
+    case ArrangerWidgetType::Chord:
       /* add overlapping chord objects */
       if (
         type == ArrangerObject::Type::All
@@ -833,7 +1114,7 @@ get_hit_objects (
             }
         }
       break;
-    case TYPE (AUTOMATION):
+    case ArrangerWidgetType::Automation:
       /* add overlapping midi notes */
       if (
         type == ArrangerObject::Type::All
@@ -850,7 +1131,7 @@ get_hit_objects (
             }
         }
       break;
-    case TYPE (AUDIO):
+    case ArrangerWidgetType::Audio:
       /* no objects in audio arranger yet */
       break;
     default:
@@ -877,7 +1158,7 @@ filter_out_frozen_objects (
   ArrangerWidget *               self,
   std::vector<ArrangerObject *> &objs_arr)
 {
-  if (self->type != ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE)
+  if (self->type != ArrangerWidgetType::Timeline)
     {
       return;
     }
@@ -910,7 +1191,7 @@ arranger_widget_is_in_moving_operation (ArrangerWidget * self)
     || self->action == UiOverlayAction::STARTING_MOVING_COPY
     || self->action == UiOverlayAction::STARTING_MOVING_LINK
     || self->action == UiOverlayAction::MOVING
-    || self->action == UiOverlayAction::MOVING_COPY
+    || self->action == UiOverlayAction::MovingCopy
     || self->action == UiOverlayAction::MOVING_LINK)
     return true;
 
@@ -980,7 +1261,7 @@ move_items_y (ArrangerWidget * self, double offset_y)
 
   switch (self->type)
     {
-    case ArrangerWidgetType::ARRANGER_WIDGET_TYPE_AUTOMATION:
+    case ArrangerWidgetType::Automation:
       if (!sel->objects_.empty ())
         {
           double offset_y_normalized =
@@ -1004,7 +1285,7 @@ move_items_y (ArrangerWidget * self, double offset_y)
           z_return_if_fail (self->start_object);
         }
       break;
-    case ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE:
+    case ArrangerWidgetType::Timeline:
       {
         /* old = original track
          * last = track where last change happened
@@ -1103,7 +1384,7 @@ move_items_y (ArrangerWidget * self, double offset_y)
           }
       }
       break;
-    case ArrangerWidgetType::ARRANGER_WIDGET_TYPE_MIDI:
+    case ArrangerWidgetType::Midi:
       {
         int y_delta;
         /* first note selected */
@@ -1124,7 +1405,7 @@ move_items_y (ArrangerWidget * self, double offset_y)
           }
       }
       break;
-    case ArrangerWidgetType::ARRANGER_WIDGET_TYPE_CHORD:
+    case ArrangerWidgetType::Chord:
       {
         int y_delta;
         /* first chord selected */
@@ -1189,20 +1470,20 @@ arranger_widget_get_editor_settings (ArrangerWidget * self)
 {
   switch (self->type)
     {
-    case ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE:
+    case ArrangerWidgetType::Timeline:
       return PRJ_TIMELINE.get ();
       break;
-    case ArrangerWidgetType::ARRANGER_WIDGET_TYPE_AUTOMATION:
+    case ArrangerWidgetType::Automation:
       return &AUTOMATION_EDITOR;
       break;
-    case ArrangerWidgetType::ARRANGER_WIDGET_TYPE_AUDIO:
+    case ArrangerWidgetType::Audio:
       return &AUDIO_CLIP_EDITOR;
       break;
-    case ArrangerWidgetType::ARRANGER_WIDGET_TYPE_MIDI:
-    case ArrangerWidgetType::ARRANGER_WIDGET_TYPE_MIDI_MODIFIER:
+    case ArrangerWidgetType::Midi:
+    case ArrangerWidgetType::MidiModifier:
       return PIANO_ROLL;
       break;
-    case ArrangerWidgetType::ARRANGER_WIDGET_TYPE_CHORD:
+    case ArrangerWidgetType::Chord:
       return CHORD_EDITOR;
       break;
     default:
@@ -1247,22 +1528,22 @@ show_context_menu (ArrangerWidget * self, gdouble x, gdouble y)
   GMenuItem * menuitem;
   switch (self->type)
     {
-    case TYPE (TIMELINE):
+    case ArrangerWidgetType::Timeline:
       menu = timeline_arranger_widget_gen_context_menu (self, x, y);
       break;
-    case TYPE (MIDI):
+    case ArrangerWidgetType::Midi:
       menu = midi_arranger_widget_gen_context_menu (self, x, y);
       break;
-    case TYPE (MIDI_MODIFIER):
+    case ArrangerWidgetType::MidiModifier:
       menu = gen_context_menu_midi_modifier (self, menu, x, y);
       break;
-    case TYPE (CHORD):
+    case ArrangerWidgetType::Chord:
       menu = gen_context_menu_chord (self, menu, x, y);
       break;
-    case TYPE (AUTOMATION):
+    case ArrangerWidgetType::Automation:
       menu = automation_arranger_widget_gen_context_menu (self, x, y);
       break;
-    case TYPE (AUDIO):
+    case ArrangerWidgetType::Audio:
       menu = gen_context_menu_audio (self, menu, x, y);
       break;
     }
@@ -1277,10 +1558,10 @@ show_context_menu (ArrangerWidget * self, gdouble x, gdouble y)
       GMenu * create_submenu = g_menu_new ();
 
       /* add "create object" menu item */
-      char action_name[500];
-      sprintf (action_name, "app.create-arranger-obj(('%p',%f,%f))", self, x, y);
-      menuitem =
-        z_gtk_create_menu_item (_ ("Create Object"), nullptr, action_name);
+      auto action_name = fmt::sprintf (
+        "app.create-arranger-obj(('%p',%f,%f))", fmt::ptr (self), x, y);
+      menuitem = z_gtk_create_menu_item (
+        _ ("Create Object"), nullptr, action_name.c_str ());
       g_menu_append_item (create_submenu, menuitem);
 
       g_menu_append_section (menu, nullptr, G_MENU_MODEL (create_submenu));
@@ -1335,7 +1616,7 @@ auto_scroll (ArrangerWidget * self, int x, int y)
   switch (self->action)
     {
     case UiOverlayAction::MOVING:
-    case UiOverlayAction::MOVING_COPY:
+    case UiOverlayAction::MovingCopy:
     case UiOverlayAction::MOVING_LINK:
     case UiOverlayAction::CREATING_MOVING:
     case UiOverlayAction::SELECTING:
@@ -1343,11 +1624,11 @@ auto_scroll (ArrangerWidget * self, int x, int y)
       scroll_h = true;
       scroll_v = true;
       break;
-    case UiOverlayAction::RESIZING_R:
-    case UiOverlayAction::RESIZING_L:
-    case UiOverlayAction::STRETCHING_L:
-    case UiOverlayAction::CREATING_RESIZING_R:
-    case UiOverlayAction::STRETCHING_R:
+    case UiOverlayAction::ResizingR:
+    case UiOverlayAction::ResizingL:
+    case UiOverlayAction::StretchingL:
+    case UiOverlayAction::CreatingResizingR:
+    case UiOverlayAction::StretchingR:
     case UiOverlayAction::AUTOFILLING:
     case UiOverlayAction::AUDITIONING:
       scroll_h = true;
@@ -1448,7 +1729,7 @@ arranger_widget_on_key_release (
       if (self->alt_held && self->can_link)
         self->action = UiOverlayAction::MOVING_LINK;
       else if (self->ctrl_held && !sel->contains_unclonable_object ())
-        self->action = UiOverlayAction::MOVING_COPY;
+        self->action = UiOverlayAction::MovingCopy;
       else
         self->action = UiOverlayAction::MOVING;
     }
@@ -1462,21 +1743,21 @@ arranger_widget_on_key_release (
     (self->action == UiOverlayAction::MOVING) && self->ctrl_held
     && !sel->contains_unclonable_object ())
     {
-      self->action = UiOverlayAction::MOVING_COPY;
+      self->action = UiOverlayAction::MovingCopy;
     }
   else if (
     (self->action == UiOverlayAction::MOVING_LINK) && !self->alt_held
     && self->can_link)
     {
       self->action =
-        self->ctrl_held ? UiOverlayAction::MOVING_COPY : UiOverlayAction::MOVING;
+        self->ctrl_held ? UiOverlayAction::MovingCopy : UiOverlayAction::MOVING;
     }
-  else if ((self->action == UiOverlayAction::MOVING_COPY) && !self->ctrl_held)
+  else if ((self->action == UiOverlayAction::MovingCopy) && !self->ctrl_held)
     {
       self->action = UiOverlayAction::MOVING;
     }
 
-  if (self->type == TYPE (TIMELINE))
+  if (TYPE_IS (Timeline))
     {
       timeline_arranger_widget_set_cut_lines_visible (self);
     }
@@ -1519,7 +1800,7 @@ arranger_widget_on_key_press (
   if (self->action == UiOverlayAction::STARTING_MOVING)
     {
       if (self->ctrl_held && !sel->contains_unclonable_object ())
-        self->action = UiOverlayAction::MOVING_COPY;
+        self->action = UiOverlayAction::MovingCopy;
       else
         self->action = UiOverlayAction::MOVING;
     }
@@ -1532,18 +1813,18 @@ arranger_widget_on_key_press (
     self->action == UiOverlayAction::MOVING && self->ctrl_held
     && !sel->contains_unclonable_object ())
     {
-      self->action = UiOverlayAction::MOVING_COPY;
+      self->action = UiOverlayAction::MovingCopy;
     }
   else if (self->action == UiOverlayAction::MOVING_LINK && !self->alt_held)
     {
       self->action =
-        self->ctrl_held ? UiOverlayAction::MOVING_COPY : UiOverlayAction::MOVING;
+        self->ctrl_held ? UiOverlayAction::MovingCopy : UiOverlayAction::MOVING;
     }
-  else if (self->action == UiOverlayAction::MOVING_COPY && !self->ctrl_held)
+  else if (self->action == UiOverlayAction::MovingCopy && !self->ctrl_held)
     {
       self->action = UiOverlayAction::MOVING;
     }
-  else if (self->action == UiOverlayAction::NONE)
+  else if (self->action == UiOverlayAction::None)
     {
       if (sel->has_any ())
         {
@@ -1627,7 +1908,7 @@ arranger_widget_on_key_press (
                           UNDO_MANAGER->perform (
                             std::make_unique<
                               ArrangerSelectionsAction::MoveMidiAction> (
-                              static_cast<MidiSelections &> (*sel), 0,
+                              dynamic_cast<MidiSelections &> (*sel), 0,
                               pitch_delta, false));
 
                           /* scroll down if needed */
@@ -1640,7 +1921,7 @@ arranger_widget_on_key_press (
                       UNDO_MANAGER->perform (
                         std::make_unique<
                           ArrangerSelectionsAction::MoveChordAction> (
-                          static_cast<ChordSelections &> (*sel), 0, 1, false));
+                          dynamic_cast<ChordSelections &> (*sel), 0, 1, false));
                     }
                   else if (self == MW_TIMELINE)
                     {
@@ -1677,7 +1958,7 @@ arranger_widget_on_key_press (
                           UNDO_MANAGER->perform (
                             std::make_unique<
                               ArrangerSelectionsAction::MoveMidiAction> (
-                              static_cast<MidiSelections &> (*sel), 0,
+                              dynamic_cast<MidiSelections &> (*sel), 0,
                               pitch_delta, false));
 
                           /* scroll up if needed */
@@ -1690,7 +1971,7 @@ arranger_widget_on_key_press (
                       UNDO_MANAGER->perform (
                         std::make_unique<
                           ArrangerSelectionsAction::MoveChordAction> (
-                          static_cast<ChordSelections &> (*sel), 0, -1, false));
+                          dynamic_cast<ChordSelections &> (*sel), 0, -1, false));
                     }
                   else if (self == MW_TIMELINE)
                     {
@@ -1708,7 +1989,7 @@ arranger_widget_on_key_press (
               e.handle (_ ("Failed to move selection"));
             }
 
-          if (have_arrow_movement && self->type == TYPE (MIDI))
+          if (have_arrow_movement && TYPE_IS (Midi))
             {
               midi_arranger_listen_notes (self, true);
               g_source_remove_and_zero (self->unlisten_notes_timeout_id);
@@ -1719,7 +2000,7 @@ arranger_widget_on_key_press (
         } /* arranger selections has any */
     }
 
-  if (self->type == TYPE (TIMELINE))
+  if (TYPE_IS (Timeline))
     {
       timeline_arranger_widget_set_cut_lines_visible (self);
     }
@@ -1818,7 +2099,7 @@ click_pressed (
     self->alt_held = 1;
 
   PROJECT->last_selection_ =
-    self->type == ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE
+    self->type == ArrangerWidgetType::Timeline
       ? Project::SelectionType::Timeline
       : Project::SelectionType::Editor;
   EVENTS_PUSH (EventType::ET_PROJECT_SELECTION_TYPE_CHANGED, nullptr);
@@ -1857,7 +2138,7 @@ arranger_widget_create_item (
   if (autofilling || (!self->shift_held && self->snap_grid->any_snap ()))
     {
       Track * track_for_snap = NULL;
-      if (self->type == TYPE (TIMELINE))
+      if (TYPE_IS (Timeline))
         {
           track_for_snap =
             timeline_arranger_widget_get_track_at_y (self, start_y);
@@ -1878,7 +2159,7 @@ arranger_widget_create_item (
 
   switch (self->type)
     {
-    case TYPE (TIMELINE):
+    case ArrangerWidgetType::Timeline:
       {
         /* figure out if we are creating a region or
          * automation point */
@@ -1933,7 +2214,7 @@ arranger_widget_create_item (
           }
       }
       break;
-    case TYPE (MIDI):
+    case ArrangerWidgetType::Midi:
       {
         /* find the note and region at x,y */
         note =
@@ -1947,10 +2228,10 @@ arranger_widget_create_item (
           }
       }
       break;
-    case TYPE (MIDI_MODIFIER):
-    case TYPE (AUDIO):
+    case ArrangerWidgetType::MidiModifier:
+    case ArrangerWidgetType::Audio:
       break;
-    case TYPE (CHORD):
+    case ArrangerWidgetType::Chord:
       {
         /* find the chord and region at x,y */
         chord_index = chord_arranger_widget_get_chord_at_y (start_y);
@@ -1965,7 +2246,7 @@ arranger_widget_create_item (
           }
       }
       break;
-    case TYPE (AUTOMATION):
+    case ArrangerWidgetType::Automation:
       {
         auto region = CLIP_EDITOR->get_region<AutomationRegion> ();
 
@@ -2037,11 +2318,11 @@ autofill (ArrangerWidget * self, double x, double y)
         region_variant);
     }
 
-  if (self->type == TYPE (MIDI_MODIFIER))
+  if (self->type == ArrangerWidgetType::MidiModifier)
     {
       midi_modifier_arranger_set_hit_velocity_vals (self, x, y, true);
     }
-  else if (self->type == TYPE (AUTOMATION))
+  else if (self->type == ArrangerWidgetType::Automation)
     {
       /* move aps or create ap */
       if (!automation_arranger_move_hit_aps (self, x, y))
@@ -2216,7 +2497,7 @@ on_drag_begin_handle_hit_object (
                 bind_member_function (
                   *obj, &NameableObject::set_name_with_action));
               gtk_window_present (GTK_WINDOW (dialog));
-              self->action = UiOverlayAction::NONE;
+              self->action = UiOverlayAction::None;
               return true;
             }
         }
@@ -2228,7 +2509,7 @@ on_drag_begin_handle_hit_object (
               auto scale_selector = scale_selector_window_widget_new (
                 dynamic_cast<ScaleObject *> (obj));
               gtk_window_present (GTK_WINDOW (scale_selector));
-              self->action = UiOverlayAction::NONE;
+              self->action = UiOverlayAction::None;
               return true;
             }
         }
@@ -2244,7 +2525,7 @@ on_drag_begin_handle_hit_object (
                 bind_member_function (
                   *obj, &AutomationPoint::set_fvalue_with_action));
               gtk_window_present (GTK_WINDOW (dialog));
-              self->action = UiOverlayAction::NONE;
+              self->action = UiOverlayAction::None;
               return true;
             }
         }
@@ -2330,26 +2611,26 @@ on_drag_begin_handle_hit_object (
               if (show_cut_lines)
                 SET_ACTION (CUTTING);
               else if (is_fade_in_point)
-                SET_ACTION (RESIZING_L_FADE);
+                SET_ACTION (ResizingLFade);
               else if (is_fade_out_point)
-                SET_ACTION (RESIZING_R_FADE);
+                SET_ACTION (ResizingRFade);
               else if (is_resize_l && is_resize_loop)
-                SET_ACTION (RESIZING_L_LOOP);
+                SET_ACTION (ResizingLLoop);
               else if (is_resize_l)
                 {
                   self->action =
                     self->ctrl_held
-                      ? UiOverlayAction::STRETCHING_L
-                      : UiOverlayAction::RESIZING_L;
+                      ? UiOverlayAction::StretchingL
+                      : UiOverlayAction::ResizingL;
                 }
               else if (is_resize_r && is_resize_loop)
-                SET_ACTION (RESIZING_R_LOOP);
+                SET_ACTION (ResizingRLoop);
               else if (is_resize_r)
                 {
                   self->action =
                     self->ctrl_held
-                      ? UiOverlayAction::STRETCHING_R
-                      : UiOverlayAction::RESIZING_R;
+                      ? UiOverlayAction::StretchingR
+                      : UiOverlayAction::ResizingR;
                 }
               else if (is_rename)
                 SET_ACTION (RENAMING);
@@ -2362,9 +2643,9 @@ on_drag_begin_handle_hit_object (
               break;
             case Tool::Edit:
               if (is_resize_l)
-                SET_ACTION (RESIZING_L);
+                SET_ACTION (ResizingL);
               else if (is_resize_r)
-                SET_ACTION (RESIZING_R);
+                SET_ACTION (ResizingR);
               else
                 SET_ACTION (STARTING_MOVING);
               break;
@@ -2388,9 +2669,9 @@ on_drag_begin_handle_hit_object (
             case Tool::Select:
             case Tool::Edit:
               if ((is_resize_l) && !drum_mode)
-                SET_ACTION (RESIZING_L);
+                SET_ACTION (ResizingL);
               else if (is_resize_r && !drum_mode)
-                SET_ACTION (RESIZING_R);
+                SET_ACTION (ResizingR);
               else
                 SET_ACTION (STARTING_MOVING);
               break;
@@ -2425,7 +2706,7 @@ on_drag_begin_handle_hit_object (
               if (is_resize_up)
                 SET_ACTION (RESIZING_UP);
               else
-                SET_ACTION (NONE);
+                SET_ACTION (None);
               break;
             default:
               break;
@@ -2474,7 +2755,7 @@ on_drag_begin_handle_hit_object (
            */
           if constexpr (is_timeline)
             {
-              if (self->action == UiOverlayAction::STRETCHING_R)
+              if (self->action == UiOverlayAction::StretchingR)
                 {
                   TRANSPORT->prepare_audio_regions_for_stretch (orig_selections);
                 }
@@ -2512,7 +2793,7 @@ drag_begin (
   self->drag_update_started = false;
 
   /* set last project selection type */
-  if (self->type == ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE)
+  if (self->type == ArrangerWidgetType::Timeline)
     {
       PROJECT->last_selection_ = Project::SelectionType::Timeline;
     }
@@ -2540,7 +2821,7 @@ drag_begin (
   z_warn_if_fail (self->drag_start_btn);
 
   /* check if selections can create links */
-  self->can_link = TYPE_IS (TIMELINE) && TL_SELECTIONS->contains_only_regions ();
+  self->can_link = TYPE_IS (Timeline) && TL_SELECTIONS->contains_only_regions ();
 
   if (!gtk_widget_has_focus (GTK_WIDGET (self)))
     gtk_widget_grab_focus (GTK_WIDGET (self));
@@ -2578,7 +2859,7 @@ drag_begin (
             case Tool::Select:
               if (self->drag_start_btn == GDK_BUTTON_MIDDLE || self->alt_held)
                 {
-                  self->action = UiOverlayAction::STARTING_PANNING;
+                  self->action = UiOverlayAction::StartingPanning;
                 }
               else
                 {
@@ -2599,7 +2880,7 @@ drag_begin (
 
                   /* hide range selection if audio arranger and set appropriate
                    * action */
-                  if (self->type == TYPE (AUDIO))
+                  if (self->type == ArrangerWidgetType::Audio)
                     {
                       AUDIO_SELECTIONS->has_selection_ = false;
                       self->action =
@@ -2609,8 +2890,9 @@ drag_begin (
               break;
             case Tool::Edit:
               if (
-                self->type == TYPE (TIMELINE) || self->type == TYPE (MIDI)
-                || self->type == TYPE (CHORD))
+                self->type == ArrangerWidgetType::Timeline
+                || self->type == ArrangerWidgetType::Midi
+                || self->type == ArrangerWidgetType::Chord)
                 {
                   if (self->ctrl_held)
                     {
@@ -2625,8 +2907,8 @@ drag_begin (
                     }
                 }
               else if (
-                self->type == TYPE (MIDI_MODIFIER)
-                || self->type == TYPE (AUTOMATION))
+                self->type == ArrangerWidgetType::MidiModifier
+                || self->type == ArrangerWidgetType::Automation)
                 {
                   /* autofill (also works for
                    * manual edit for velocity and
@@ -2795,18 +3077,18 @@ select_in_range (
 
   switch (self->type)
     {
-    case TYPE (CHORD):
+    case ArrangerWidgetType::Chord:
       add_each_hit_obj_to_sel (ArrangerObject::Type::ChordObject);
       break;
-    case TYPE (AUTOMATION):
+    case ArrangerWidgetType::Automation:
       add_each_hit_obj_to_sel (ArrangerObject::Type::AutomationPoint);
       break;
-    case TYPE (TIMELINE):
+    case ArrangerWidgetType::Timeline:
       add_each_hit_obj_to_sel (ArrangerObject::Type::Region);
       add_each_hit_obj_to_sel (ArrangerObject::Type::ScaleObject);
       add_each_hit_obj_to_sel (ArrangerObject::Type::Marker);
       break;
-    case TYPE (MIDI):
+    case ArrangerWidgetType::Midi:
       {
         add_each_hit_obj_to_sel (ArrangerObject::Type::MidiNote);
         auto prev_midi_selections =
@@ -2815,7 +3097,7 @@ select_in_range (
           static_cast<MidiSelections &> (*arranger_sel));
       }
       break;
-    case TYPE (MIDI_MODIFIER):
+    case ArrangerWidgetType::MidiModifier:
       add_each_hit_obj_to_sel (ArrangerObject::Type::Velocity);
       break;
     default:
@@ -2910,7 +3192,7 @@ drag_update (
       else if (!self->shift_held && self->snap_grid->any_snap ())
         {
           Track * track_for_snap = NULL;
-          if (self->type == TYPE (TIMELINE))
+          if (self->type == ArrangerWidgetType::Timeline)
             {
               track_for_snap = timeline_arranger_widget_get_track_at_y (
                 self, self->start_y + offset_y);
@@ -2960,25 +3242,25 @@ drag_update (
       if (self->alt_held && self->can_link)
         self->action = UiOverlayAction::MOVING_LINK;
       else if (self->ctrl_held && !sel->contains_unclonable_object ())
-        self->action = UiOverlayAction::MOVING_COPY;
+        self->action = UiOverlayAction::MovingCopy;
       else
         self->action = UiOverlayAction::MOVING;
       break;
-    case UiOverlayAction::STARTING_PANNING:
-      self->action = UiOverlayAction::PANNING;
+    case UiOverlayAction::StartingPanning:
+      self->action = UiOverlayAction::Panning;
       break;
     case UiOverlayAction::MOVING:
       if (self->alt_held && self->can_link)
         self->action = UiOverlayAction::MOVING_LINK;
       else if (self->ctrl_held && !sel->contains_unclonable_object ())
-        self->action = UiOverlayAction::MOVING_COPY;
+        self->action = UiOverlayAction::MovingCopy;
       break;
     case UiOverlayAction::MOVING_LINK:
       if (!self->alt_held)
         self->action =
-          self->ctrl_held ? UiOverlayAction::MOVING_COPY : UiOverlayAction::MOVING;
+          self->ctrl_held ? UiOverlayAction::MovingCopy : UiOverlayAction::MOVING;
       break;
-    case UiOverlayAction::MOVING_COPY:
+    case UiOverlayAction::MovingCopy:
       if (!self->ctrl_held)
         self->action =
           self->alt_held && self->can_link
@@ -2987,7 +3269,7 @@ drag_update (
       break;
     case UiOverlayAction::STARTING_RAMP:
       self->action = UiOverlayAction::RAMPING;
-      if (self->type == TYPE (MIDI_MODIFIER))
+      if (self->type == ArrangerWidgetType::MidiModifier)
         {
           midi_modifier_arranger_widget_set_start_vel (self);
         }
@@ -3030,18 +3312,17 @@ drag_update (
       select_in_range (
         self, offset_x, offset_y, F_NOT_IN_RANGE, F_IGNORE_FROZEN, F_DELETE);
       break;
-    case UiOverlayAction::RESIZING_L_FADE:
-    case UiOverlayAction::RESIZING_L_LOOP:
+    case UiOverlayAction::ResizingLFade:
+    case UiOverlayAction::ResizingLLoop:
       /* snap selections based on new pos */
-      if (self->type == TYPE (TIMELINE))
+      if (self->type == ArrangerWidgetType::Timeline)
         {
-          bool success = timeline_arranger_widget_snap_regions_l (
-            self, &self->curr_pos, true);
+          bool success =
+            snap_selections_during_resize (self, &self->curr_pos, true);
           if (success)
-            timeline_arranger_widget_snap_regions_l (
-              self, &self->curr_pos, false);
+            snap_selections_during_resize (self, &self->curr_pos, false);
         }
-      else if (self->type == TYPE (AUDIO))
+      else if (self->type == ArrangerWidgetType::Audio)
         {
           bool success = audio_arranger_widget_snap_fade (
             self, self->curr_pos, true, F_DRY_RUN);
@@ -3050,43 +3331,41 @@ drag_update (
               self, self->curr_pos, true, F_NOT_DRY_RUN);
         }
       break;
-    case UiOverlayAction::RESIZING_L:
-    case UiOverlayAction::STRETCHING_L:
+    case UiOverlayAction::ResizingL:
+    case UiOverlayAction::StretchingL:
       {
         /* snap selections based on new pos */
-        if (self->type == TYPE (TIMELINE))
+        if (self->type == ArrangerWidgetType::Timeline)
           {
-            bool success = timeline_arranger_widget_snap_regions_l (
-              self, &self->curr_pos, true);
+            bool success =
+              snap_selections_during_resize (self, &self->curr_pos, true);
             if (success)
-              timeline_arranger_widget_snap_regions_l (self, &self->curr_pos, 0);
+              snap_selections_during_resize (self, &self->curr_pos, 0);
           }
-        else if (self->type == TYPE (MIDI))
+        else if (self->type == ArrangerWidgetType::Midi)
           {
-            bool success = midi_arranger_widget_snap_midi_notes_l (
-              self, self->curr_pos, true);
+            bool success =
+              snap_selections_during_resize (self, &self->curr_pos, true);
             if (success)
-              midi_arranger_widget_snap_midi_notes_l (
-                self, self->curr_pos, false);
+              snap_selections_during_resize (self, &self->curr_pos, false);
           }
       }
       break;
-    case UiOverlayAction::RESIZING_R_FADE:
-    case UiOverlayAction::RESIZING_R_LOOP:
-      if (self->type == TYPE (TIMELINE))
+    case UiOverlayAction::ResizingRFade:
+    case UiOverlayAction::ResizingRLoop:
+      if (self->type == ArrangerWidgetType::Timeline)
         {
           if (self->resizing_range)
             timeline_arranger_widget_snap_range_r (self, &self->curr_pos);
           else
             {
-              bool success = timeline_arranger_widget_snap_regions_r (
-                self, &self->curr_pos, true);
+              bool success =
+                snap_selections_during_resize (self, &self->curr_pos, true);
               if (success)
-                timeline_arranger_widget_snap_regions_r (
-                  self, &self->curr_pos, false);
+                snap_selections_during_resize (self, &self->curr_pos, false);
             }
         }
-      else if (self->type == TYPE (AUDIO))
+      else if (self->type == ArrangerWidgetType::Audio)
         {
           bool success =
             audio_arranger_widget_snap_fade (self, self->curr_pos, false, true);
@@ -3094,11 +3373,11 @@ drag_update (
             audio_arranger_widget_snap_fade (self, self->curr_pos, false, false);
         }
       break;
-    case UiOverlayAction::RESIZING_R:
-    case UiOverlayAction::STRETCHING_R:
-    case UiOverlayAction::CREATING_RESIZING_R:
+    case UiOverlayAction::ResizingR:
+    case UiOverlayAction::StretchingR:
+    case UiOverlayAction::CreatingResizingR:
       {
-        if (self->type == TYPE (TIMELINE))
+        if (self->type == ArrangerWidgetType::Timeline)
           {
             if (self->resizing_range)
               {
@@ -3106,27 +3385,25 @@ drag_update (
               }
             else
               {
-                bool success = timeline_arranger_widget_snap_regions_r (
-                  self, &self->curr_pos, true);
+                bool success =
+                  snap_selections_during_resize (self, &self->curr_pos, true);
                 if (success)
                   {
-                    timeline_arranger_widget_snap_regions_r (
-                      self, &self->curr_pos, false);
+                    snap_selections_during_resize (self, &self->curr_pos, false);
                   }
               }
           }
-        else if (self->type == TYPE (MIDI))
+        else if (self->type == ArrangerWidgetType::Midi)
           {
-            bool success = midi_arranger_widget_snap_midi_notes_r (
-              self, self->curr_pos, true);
+            bool success =
+              snap_selections_during_resize (self, &self->curr_pos, true);
             if (success)
               {
-                midi_arranger_widget_snap_midi_notes_r (
-                  self, self->curr_pos, false);
+                snap_selections_during_resize (self, &self->curr_pos, false);
               }
             move_items_y (self, offset_y);
           }
-        else if (self->type == TYPE (AUDIO))
+        else if (self->type == ArrangerWidgetType::Audio)
           {
             if (self->resizing_range)
               {
@@ -3138,47 +3415,47 @@ drag_update (
       }
       break;
     case UiOverlayAction::RESIZING_UP:
-      if (self->type == TYPE (MIDI_MODIFIER))
+      if (self->type == ArrangerWidgetType::MidiModifier)
         {
           midi_modifier_arranger_widget_resize_velocities (self, offset_y);
         }
-      else if (self->type == TYPE (AUTOMATION))
+      else if (self->type == ArrangerWidgetType::Automation)
         {
           automation_arranger_widget_resize_curves (self, offset_y);
         }
-      else if (self->type == TYPE (AUDIO))
+      else if (self->type == ArrangerWidgetType::Audio)
         {
           audio_arranger_widget_update_gain (self, offset_y);
         }
       break;
     case UiOverlayAction::RESIZING_UP_FADE_IN:
-      if (self->type == TYPE (TIMELINE))
+      if (self->type == ArrangerWidgetType::Timeline)
         {
           timeline_arranger_widget_fade_up (self, offset_y, true);
         }
-      else if (self->type == TYPE (AUDIO))
+      else if (self->type == ArrangerWidgetType::Audio)
         {
           audio_arranger_widget_fade_up (self, offset_y, true);
         }
       break;
     case UiOverlayAction::RESIZING_UP_FADE_OUT:
-      if (self->type == TYPE (TIMELINE))
+      if (self->type == ArrangerWidgetType::Timeline)
         {
           timeline_arranger_widget_fade_up (self, offset_y, false);
         }
-      else if (self->type == TYPE (AUDIO))
+      else if (self->type == ArrangerWidgetType::Audio)
         {
           audio_arranger_widget_fade_up (self, offset_y, false);
         }
       break;
     case UiOverlayAction::MOVING:
     case UiOverlayAction::CREATING_MOVING:
-    case UiOverlayAction::MOVING_COPY:
+    case UiOverlayAction::MovingCopy:
     case UiOverlayAction::MOVING_LINK:
       move_items_x (self, self->adj_ticks_diff - self->last_adj_ticks_diff);
       move_items_y (self, offset_y);
       break;
-    case UiOverlayAction::PANNING:
+    case UiOverlayAction::Panning:
       pan (self, offset_x, offset_y);
       break;
     case UiOverlayAction::AUTOFILLING:
@@ -3190,7 +3467,7 @@ drag_update (
       break;
     case UiOverlayAction::RAMPING:
       /* find and select objects inside selection */
-      if (self->type == TYPE (MIDI_MODIFIER))
+      if (self->type == ArrangerWidgetType::MidiModifier)
         {
           midi_modifier_arranger_widget_ramp (self, offset_x, offset_y);
         }
@@ -3203,11 +3480,11 @@ drag_update (
       break;
     }
 
-  if (self->action != UiOverlayAction::NONE)
+  if (self->action != UiOverlayAction::None)
     auto_scroll (
       self, (int) (self->start_x + offset_x), (int) (self->start_y + offset_y));
 
-  if (self->type == TYPE (MIDI))
+  if (self->type == ArrangerWidgetType::Midi)
     {
       midi_arranger_listen_notes (self, 1);
     }
@@ -3313,22 +3590,22 @@ drag_end (
 
   switch (self->type)
     {
-    case TYPE (TIMELINE):
+    case ArrangerWidgetType::Timeline:
       timeline_arranger_on_drag_end (self);
       break;
-    case TYPE (AUDIO):
+    case ArrangerWidgetType::Audio:
       audio_arranger_on_drag_end (self);
       break;
-    case TYPE (MIDI):
+    case ArrangerWidgetType::Midi:
       midi_arranger_on_drag_end (self);
       break;
-    case TYPE (MIDI_MODIFIER):
+    case ArrangerWidgetType::MidiModifier:
       midi_modifier_arranger_on_drag_end (self);
       break;
-    case TYPE (CHORD):
+    case ArrangerWidgetType::Chord:
       chord_arranger_on_drag_end (self);
       break;
-    case TYPE (AUTOMATION):
+    case ArrangerWidgetType::Automation:
       automation_arranger_on_drag_end (self);
       break;
     default:
@@ -3378,7 +3655,7 @@ drag_end (
   self->region_at_start.reset ();
 
   /* reset action */
-  self->action = UiOverlayAction::NONE;
+  self->action = UiOverlayAction::None;
 
   /* queue redraw to hide the selection */
   /*gtk_widget_queue_draw (GTK_WIDGET (self->bg));*/
@@ -3401,7 +3678,7 @@ arranger_widget_finish_creating_item_from_action (
   double           x,
   double           y)
 {
-  bool has_action = self->action != UiOverlayAction::NONE;
+  bool has_action = self->action != UiOverlayAction::None;
 
   drag_end (nullptr, x, y, self);
 
@@ -3426,7 +3703,7 @@ arranger_widget_pos_to_px (
   const Position   pos,
   bool             use_padding)
 {
-  if (self->type == TYPE (TIMELINE))
+  if (self->type == ArrangerWidgetType::Timeline)
     {
       return ui_pos_to_px_timeline (pos, use_padding);
     }
@@ -3445,20 +3722,20 @@ requires std::derived_from<T, ArrangerSelections> T *
   ArrangerSelections * sel = nullptr;
   switch (self->type)
     {
-    case TYPE (TIMELINE):
+    case ArrangerWidgetType::Timeline:
       sel = TL_SELECTIONS.get ();
       break;
-    case TYPE (MIDI):
-    case TYPE (MIDI_MODIFIER):
+    case ArrangerWidgetType::Midi:
+    case ArrangerWidgetType::MidiModifier:
       sel = MIDI_SELECTIONS.get ();
       break;
-    case TYPE (AUTOMATION):
+    case ArrangerWidgetType::Automation:
       sel = AUTOMATION_SELECTIONS.get ();
       break;
-    case TYPE (CHORD):
+    case ArrangerWidgetType::Chord:
       sel = CHORD_SELECTIONS.get ();
       break;
-    case TYPE (AUDIO):
+    case ArrangerWidgetType::Audio:
       sel = AUDIO_SELECTIONS.get ();
       break;
     default:
@@ -3498,7 +3775,7 @@ arranger_widget_get_total_height (ArrangerWidget * self)
   int height = 0;
   switch (self->type)
     {
-    case TYPE (TIMELINE):
+    case ArrangerWidgetType::Timeline:
       if (self->is_pinned)
         {
           height = gtk_widget_get_height (GTK_WIDGET (self));
@@ -3508,7 +3785,7 @@ arranger_widget_get_total_height (ArrangerWidget * self)
           height = gtk_widget_get_height (GTK_WIDGET (MW_TRACKLIST));
         }
       break;
-    case TYPE (MIDI):
+    case ArrangerWidgetType::Midi:
       height = gtk_widget_get_height (GTK_WIDGET (MW_PIANO_ROLL_KEYS));
       break;
     default:
@@ -3522,7 +3799,7 @@ arranger_widget_get_total_height (ArrangerWidget * self)
 RulerWidget *
 arranger_widget_get_ruler (ArrangerWidget * self)
 {
-  return self->type == TYPE (TIMELINE) ? MW_RULER : EDITOR_RULER;
+  return self->type == ArrangerWidgetType::Timeline ? MW_RULER : EDITOR_RULER;
 }
 
 /**
@@ -3601,12 +3878,12 @@ on_scroll (
       /* if shift also pressed, handle vertical zoom */
       if (modifier_type & GDK_SHIFT_MASK)
         {
-          if (self->type == TYPE (MIDI))
+          if (self->type == ArrangerWidgetType::Midi)
             {
               midi_arranger_handle_vertical_zoom_scroll (
                 self, scroll_controller, dy);
             }
-          else if (self->type == TYPE (TIMELINE))
+          else if (self->type == ArrangerWidgetType::Timeline)
             {
               tracklist_widget_handle_vertical_zoom_scroll (
                 MW_TRACKLIST, scroll_controller, dy);
@@ -3647,8 +3924,8 @@ on_scroll (
           /* if not midi modifier and not pinned timeline,
            * handle the scroll, otherwise ignore */
           if (
-            self->type != TYPE (MIDI_MODIFIER)
-            && !(self->type == TYPE (TIMELINE) && self->is_pinned))
+            self->type != ArrangerWidgetType::MidiModifier
+            && !(self->type == ArrangerWidgetType::Timeline && self->is_pinned))
             {
               scroll_y = (int) dy;
             }
@@ -3671,17 +3948,17 @@ on_scroll (
           /* auto-scroll linked widgets */
           if (scroll_y != 0)
             {
-              if (self->type == TYPE (TIMELINE) && !self->is_pinned)
+              if (self->type == ArrangerWidgetType::Timeline && !self->is_pinned)
                 {
                   tracklist_widget_set_unpinned_scroll_start_y (
                     MW_TRACKLIST, settings->scroll_start_y_);
                 }
-              else if (self->type == TYPE (MIDI))
+              else if (self->type == ArrangerWidgetType::Midi)
                 {
                   midi_editor_space_widget_set_piano_keys_scroll_start_y (
                     MW_MIDI_EDITOR_SPACE, settings->scroll_start_y_);
                 }
-              else if (self->type == TYPE (CHORD))
+              else if (self->type == ArrangerWidgetType::Chord)
                 {
                   chord_editor_space_widget_set_chord_keys_scroll_start_y (
                     MW_CHORD_EDITOR_SPACE, settings->scroll_start_y_);
@@ -3699,13 +3976,13 @@ on_leave (GtkEventControllerMotion * motion_controller, ArrangerWidget * self)
 {
   switch (self->type)
     {
-    case TYPE (TIMELINE):
+    case ArrangerWidgetType::Timeline:
       timeline_arranger_widget_set_cut_lines_visible (self);
       break;
-    case TYPE (CHORD):
+    case ArrangerWidgetType::Chord:
       self->hovered_chord_index = -1;
       break;
-    case TYPE (MIDI):
+    case ArrangerWidgetType::Midi:
       midi_arranger_widget_set_hovered_note (self, -1);
       break;
     default:
@@ -3749,20 +4026,20 @@ on_motion (
     self->action == UiOverlayAction::CUTTING && !self->alt_held
     && P_TOOL != Tool::Cut)
     {
-      self->action = UiOverlayAction::NONE;
+      self->action = UiOverlayAction::None;
     }
 
   arranger_widget_refresh_cursor (self);
 
   switch (self->type)
     {
-    case TYPE (TIMELINE):
+    case ArrangerWidgetType::Timeline:
       timeline_arranger_widget_set_cut_lines_visible (self);
       break;
-    case TYPE (CHORD):
+    case ArrangerWidgetType::Chord:
       self->hovered_chord_index = chord_arranger_widget_get_chord_at_y (y);
       break;
-    case TYPE (MIDI):
+    case ArrangerWidgetType::Midi:
       midi_arranger_widget_set_hovered_note (
         self, piano_roll_keys_widget_get_key_from_y (MW_PIANO_ROLL_KEYS, y));
       break;
@@ -3786,7 +4063,7 @@ on_focus_leave (GtkEventControllerFocus * focus, ArrangerWidget * self)
 Position
 arranger_widget_px_to_pos (ArrangerWidget * self, double px, bool has_padding)
 {
-  if (self->type == TYPE (TIMELINE))
+  if (self->type == ArrangerWidgetType::Timeline)
     {
       return ui_px_to_pos_timeline (px, has_padding);
     }
@@ -3796,739 +4073,30 @@ arranger_widget_px_to_pos (ArrangerWidget * self, double px, bool has_padding)
     }
 }
 
-static ArrangerCursor
-get_audio_arranger_cursor (ArrangerWidget * self, Tool tool)
-{
-  ArrangerCursor  ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
-  UiOverlayAction action = self->action;
-
-  switch (action)
-    {
-    case UiOverlayAction::NONE:
-      if (P_TOOL == Tool::Select)
-        {
-          /* gain line */
-          if (audio_arranger_widget_is_cursor_gain (
-                self, self->hover_x, self->hover_y))
-            return ArrangerCursor::ARRANGER_CURSOR_RESIZING_UP;
-
-          if (!is_cursor_in_top_half (self, self->hover_y))
-            {
-              /* set cursor to range selection */
-              return ArrangerCursor::ARRANGER_CURSOR_RANGE;
-            }
-
-          /* resize fade in */
-          /* note cursor is opposite */
-          if (audio_arranger_widget_is_cursor_in_fade (
-                *self, self->hover_x, self->hover_y, true, true))
-            {
-              return ArrangerCursor::ARRANGER_CURSOR_RESIZING_R_FADE;
-            }
-          /* resize fade out */
-          if (audio_arranger_widget_is_cursor_in_fade (
-                *self, self->hover_x, self->hover_y, false, true))
-            {
-              return ArrangerCursor::ARRANGER_CURSOR_RESIZING_L_FADE;
-            }
-          /* fade in curviness */
-          if (audio_arranger_widget_is_cursor_in_fade (
-                *self, self->hover_x, self->hover_y, true, false))
-            {
-              return ArrangerCursor::ARRANGER_CURSOR_RESIZING_UP_FADE_IN;
-            }
-          /* fade out curviness */
-          if (audio_arranger_widget_is_cursor_in_fade (
-                *self, self->hover_x, self->hover_y, false, false))
-            {
-              return ArrangerCursor::ARRANGER_CURSOR_RESIZING_UP_FADE_OUT;
-            }
-
-          /* set cursor to normal */
-          return ac;
-        }
-      else if (P_TOOL == Tool::Edit)
-        ac = ArrangerCursor::ARRANGER_CURSOR_EDIT;
-      else if (P_TOOL == Tool::Eraser)
-        ac = ArrangerCursor::ARRANGER_CURSOR_ERASER;
-      else if (P_TOOL == Tool::Ramp)
-        ac = ArrangerCursor::ARRANGER_CURSOR_RAMP;
-      else if (P_TOOL == Tool::Audition)
-        ac = ArrangerCursor::ARRANGER_CURSOR_AUDITION;
-      break;
-    case UiOverlayAction::STARTING_DELETE_SELECTION:
-    case UiOverlayAction::DELETE_SELECTING:
-    case UiOverlayAction::STARTING_ERASING:
-    case UiOverlayAction::ERASING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_ERASER;
-      break;
-    case UiOverlayAction::STARTING_MOVING_COPY:
-    case UiOverlayAction::MOVING_COPY:
-      ac = ArrangerCursor::ARRANGER_CURSOR_GRABBING_COPY;
-      break;
-    case UiOverlayAction::STARTING_MOVING:
-    case UiOverlayAction::MOVING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_GRABBING;
-      break;
-    case UiOverlayAction::STARTING_MOVING_LINK:
-    case UiOverlayAction::MOVING_LINK:
-      ac = ArrangerCursor::ARRANGER_CURSOR_GRABBING_LINK;
-      break;
-    case UiOverlayAction::STARTING_PANNING:
-    case UiOverlayAction::PANNING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_PANNING;
-      break;
-    case UiOverlayAction::RESIZING_UP:
-      ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_UP;
-      break;
-    case UiOverlayAction::RESIZING_UP_FADE_IN:
-      ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_UP_FADE_IN;
-      break;
-    case UiOverlayAction::RESIZING_UP_FADE_OUT:
-      ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_UP_FADE_OUT;
-      break;
-    case UiOverlayAction::RESIZING_L:
-      ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_L;
-      break;
-    case UiOverlayAction::RESIZING_L_FADE:
-      ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_L_FADE;
-      break;
-    case UiOverlayAction::RESIZING_R:
-      ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_R;
-      break;
-    case UiOverlayAction::RESIZING_R_FADE:
-      ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_R_FADE;
-      break;
-    default:
-      ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
-      break;
-    }
-
-  return ac;
-}
-
-static ArrangerCursor
-get_midi_modifier_arranger_cursor (ArrangerWidget * self, Tool tool)
-{
-  ArrangerCursor  ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
-  UiOverlayAction action = self->action;
-
-  switch (action)
-    {
-    case UiOverlayAction::NONE:
-      if (tool == Tool::Select)
-        {
-          ArrangerObject * vel_obj = arranger_widget_get_hit_arranger_object (
-            (ArrangerWidget *) self, ArrangerObject::Type::Velocity,
-            self->hover_x, self->hover_y);
-          int is_hit = vel_obj != NULL;
-
-          if (is_hit)
-            {
-              int is_resize = arranger_object_is_resize_up (
-                vel_obj, (int) self->hover_x - vel_obj->full_rect_.x,
-                (int) self->hover_y - vel_obj->full_rect_.y);
-              if (is_resize)
-                {
-                  return ArrangerCursor::ARRANGER_CURSOR_RESIZING_UP;
-                }
-            }
-
-          return ac;
-        }
-      else if (P_TOOL == Tool::Edit)
-        ac = ArrangerCursor::ARRANGER_CURSOR_EDIT;
-      else if (P_TOOL == Tool::Eraser)
-        ac = ArrangerCursor::ARRANGER_CURSOR_ERASER;
-      else if (P_TOOL == Tool::Ramp)
-        ac = ArrangerCursor::ARRANGER_CURSOR_RAMP;
-      else if (P_TOOL == Tool::Audition)
-        ac = ArrangerCursor::ARRANGER_CURSOR_AUDITION;
-      break;
-    case UiOverlayAction::STARTING_DELETE_SELECTION:
-    case UiOverlayAction::DELETE_SELECTING:
-    case UiOverlayAction::STARTING_ERASING:
-    case UiOverlayAction::ERASING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_ERASER;
-      break;
-    case UiOverlayAction::STARTING_MOVING_COPY:
-    case UiOverlayAction::MOVING_COPY:
-      ac = ArrangerCursor::ARRANGER_CURSOR_GRABBING_COPY;
-      break;
-    case UiOverlayAction::STARTING_MOVING:
-    case UiOverlayAction::MOVING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_GRABBING;
-      break;
-    case UiOverlayAction::STARTING_MOVING_LINK:
-    case UiOverlayAction::MOVING_LINK:
-      ac = ArrangerCursor::ARRANGER_CURSOR_GRABBING_LINK;
-      break;
-    case UiOverlayAction::STARTING_PANNING:
-    case UiOverlayAction::PANNING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_PANNING;
-      break;
-    case UiOverlayAction::RESIZING_L:
-      ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_L;
-      break;
-    case UiOverlayAction::RESIZING_R:
-      ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_R;
-      break;
-    case UiOverlayAction::RESIZING_UP:
-      ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_UP;
-      break;
-    case UiOverlayAction::STARTING_SELECTION:
-    case UiOverlayAction::SELECTING:
-      /* TODO depends on tool */
-      break;
-    case UiOverlayAction::STARTING_RAMP:
-    case UiOverlayAction::RAMPING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_RAMP;
-      break;
-    /* editing */
-    case UiOverlayAction::AUTOFILLING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_EDIT;
-      break;
-    default:
-      z_warn_if_reached ();
-      ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
-      break;
-    }
-
-  return ac;
-}
-
-static ArrangerCursor
-get_chord_arranger_cursor (ArrangerWidget * self, Tool tool)
-{
-  ArrangerCursor  ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
-  UiOverlayAction action = self->action;
-
-  int is_hit =
-    arranger_widget_get_hit_arranger_object (
-      (ArrangerWidget *) self, ArrangerObject::Type::ChordObject, self->hover_x,
-      self->hover_y)
-    != NULL;
-
-  switch (action)
-    {
-    case UiOverlayAction::NONE:
-      switch (P_TOOL)
-        {
-        case Tool::Select:
-          {
-            if (is_hit)
-              {
-                return ArrangerCursor::ARRANGER_CURSOR_GRAB;
-              }
-            else
-              {
-                /* set cursor to normal */
-                return ac;
-              }
-          }
-          break;
-        case Tool::Edit:
-          ac = ArrangerCursor::ARRANGER_CURSOR_EDIT;
-          break;
-        case Tool::Cut:
-          ac = ArrangerCursor::ARRANGER_CURSOR_CUT;
-          break;
-        case Tool::Eraser:
-          ac = ArrangerCursor::ARRANGER_CURSOR_ERASER;
-          break;
-        case Tool::Ramp:
-          ac = ArrangerCursor::ARRANGER_CURSOR_RAMP;
-          break;
-        case Tool::Audition:
-          ac = ArrangerCursor::ARRANGER_CURSOR_AUDITION;
-          break;
-        }
-      break;
-    case UiOverlayAction::STARTING_DELETE_SELECTION:
-    case UiOverlayAction::DELETE_SELECTING:
-    case UiOverlayAction::STARTING_ERASING:
-    case UiOverlayAction::ERASING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_ERASER;
-      break;
-    case UiOverlayAction::STARTING_MOVING_COPY:
-    case UiOverlayAction::MOVING_COPY:
-      ac = ArrangerCursor::ARRANGER_CURSOR_GRABBING_COPY;
-      break;
-    case UiOverlayAction::STARTING_MOVING:
-    case UiOverlayAction::MOVING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_GRABBING;
-      break;
-    case UiOverlayAction::STARTING_MOVING_LINK:
-    case UiOverlayAction::MOVING_LINK:
-      ac = ArrangerCursor::ARRANGER_CURSOR_GRABBING_LINK;
-      break;
-    case UiOverlayAction::STARTING_PANNING:
-    case UiOverlayAction::PANNING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_PANNING;
-      break;
-    case UiOverlayAction::RESIZING_L:
-      ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_L;
-      break;
-    case UiOverlayAction::RESIZING_R:
-      ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_R;
-      break;
-    default:
-      ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
-      break;
-    }
-
-  return ac;
-}
-
-static ArrangerCursor
-get_automation_arranger_cursor (ArrangerWidget * self, Tool tool)
-{
-  ArrangerCursor  ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
-  UiOverlayAction action = self->action;
-
-  auto hit_obj = dynamic_cast<
-    AutomationPoint *> (arranger_widget_get_hit_arranger_object (
-    (ArrangerWidget *) self, ArrangerObject::Type::AutomationPoint,
-    self->hover_x, self->hover_y));
-
-  switch (action)
-    {
-    case UiOverlayAction::NONE:
-      switch (P_TOOL)
-        {
-        case Tool::Select:
-          {
-            if (hit_obj)
-              {
-                if (automation_point_is_point_hit (
-                      *hit_obj, self->hover_x, self->hover_y))
-                  {
-                    return ArrangerCursor::ARRANGER_CURSOR_GRAB;
-                  }
-                else
-                  {
-                    return ArrangerCursor::ARRANGER_CURSOR_RESIZING_UP;
-                  }
-              }
-            else
-              {
-                /* set cursor to normal */
-                return ac;
-              }
-          }
-          break;
-        case Tool::Edit:
-          ac = ArrangerCursor::ARRANGER_CURSOR_EDIT;
-          break;
-        case Tool::Cut:
-          ac = ArrangerCursor::ARRANGER_CURSOR_CUT;
-          break;
-        case Tool::Eraser:
-          ac = ArrangerCursor::ARRANGER_CURSOR_ERASER;
-          break;
-        case Tool::Ramp:
-          ac = ArrangerCursor::ARRANGER_CURSOR_RAMP;
-          break;
-        case Tool::Audition:
-          ac = ArrangerCursor::ARRANGER_CURSOR_AUDITION;
-          break;
-        }
-      break;
-    case UiOverlayAction::STARTING_DELETE_SELECTION:
-    case UiOverlayAction::DELETE_SELECTING:
-    case UiOverlayAction::STARTING_ERASING:
-    case UiOverlayAction::ERASING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_ERASER;
-      break;
-    case UiOverlayAction::STARTING_MOVING_COPY:
-    case UiOverlayAction::MOVING_COPY:
-      ac = ArrangerCursor::ARRANGER_CURSOR_GRABBING_COPY;
-      break;
-    case UiOverlayAction::STARTING_MOVING:
-    case UiOverlayAction::MOVING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_GRABBING;
-      break;
-    case UiOverlayAction::STARTING_MOVING_LINK:
-    case UiOverlayAction::MOVING_LINK:
-      ac = ArrangerCursor::ARRANGER_CURSOR_GRABBING_LINK;
-      break;
-    case UiOverlayAction::STARTING_PANNING:
-    case UiOverlayAction::PANNING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_PANNING;
-      break;
-    case UiOverlayAction::RESIZING_L:
-      ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_L;
-      break;
-    case UiOverlayAction::RESIZING_R:
-      ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_R;
-      break;
-    case UiOverlayAction::RESIZING_UP:
-      ac = ArrangerCursor::ARRANGER_CURSOR_GRABBING;
-      break;
-    case UiOverlayAction::AUTOFILLING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_AUTOFILL;
-      break;
-    case UiOverlayAction::STARTING_SELECTION:
-    case UiOverlayAction::SELECTING:
-    case UiOverlayAction::CREATING_MOVING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
-      break;
-    default:
-      z_warn_if_reached ();
-      ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
-      break;
-    }
-
-  return ac;
-}
-
-static ArrangerCursor
-get_timeline_cursor (ArrangerWidget * self, Tool tool)
-{
-  ArrangerCursor  ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
-  UiOverlayAction action = self->action;
-
-  auto r_obj = dynamic_cast<Region *> (arranger_widget_get_hit_arranger_object (
-    self, ArrangerObject::Type::Region, self->hover_x, self->hover_y));
-  auto s_obj =
-    dynamic_cast<ScaleObject *> (arranger_widget_get_hit_arranger_object (
-      self, ArrangerObject::Type::ScaleObject, self->hover_x, self->hover_y));
-  auto m_obj = dynamic_cast<Marker *> (arranger_widget_get_hit_arranger_object (
-    self, ArrangerObject::Type::Marker, self->hover_x, self->hover_y));
-  if (r_obj && r_obj->is_frozen ())
-    {
-      r_obj = NULL;
-    }
-  if (s_obj && s_obj->is_frozen ())
-    {
-      s_obj = NULL;
-    }
-  if (m_obj && m_obj->is_frozen ())
-    {
-      m_obj = NULL;
-    }
-  bool is_hit = r_obj || s_obj || m_obj;
-
-  switch (action)
-    {
-    case UiOverlayAction::NONE:
-      switch (P_TOOL)
-        {
-        case Tool::Select:
-          {
-            if (is_hit)
-              {
-                if (r_obj)
-                  {
-                    if (self->alt_held)
-                      return ArrangerCursor::ARRANGER_CURSOR_CUT;
-                    int wx = (int) self->hover_x - r_obj->full_rect_.x;
-                    int wy = (int) self->hover_y - r_obj->full_rect_.y;
-                    int is_fade_in_point =
-                      arranger_object_is_fade_in (r_obj, wx, wy, 1, 0);
-                    int is_fade_out_point =
-                      arranger_object_is_fade_out (r_obj, wx, wy, 1, 0);
-                    int is_fade_in_outer_region =
-                      arranger_object_is_fade_in (r_obj, wx, wy, 0, 1);
-                    int is_fade_out_outer_region =
-                      arranger_object_is_fade_out (r_obj, wx, wy, 0, 1);
-                    int is_resize_l = arranger_object_is_resize_l (r_obj, wx);
-                    int is_resize_r = arranger_object_is_resize_r (r_obj, wx);
-                    int is_resize_loop = arranger_object_is_resize_loop (
-                      r_obj, wy, self->ctrl_held);
-                    bool is_rename = arranger_object_is_rename (r_obj, wx, wy);
-                    if (is_fade_in_point)
-                      return ArrangerCursor::ARRANGER_CURSOR_FADE_IN;
-                    else if (is_fade_out_point)
-                      return ArrangerCursor::ARRANGER_CURSOR_FADE_OUT;
-                    else if (is_resize_l && is_resize_loop)
-                      {
-                        return ArrangerCursor::ARRANGER_CURSOR_RESIZING_L_LOOP;
-                      }
-                    else if (is_resize_l)
-                      {
-                        return self->ctrl_held
-                                 ? ArrangerCursor::ARRANGER_CURSOR_STRETCHING_L
-                                 : ArrangerCursor::ARRANGER_CURSOR_RESIZING_L;
-                      }
-                    else if (is_resize_r && is_resize_loop)
-                      return ArrangerCursor::ARRANGER_CURSOR_RESIZING_R_LOOP;
-                    else if (is_resize_r)
-                      {
-                        return self->ctrl_held
-                                 ? ArrangerCursor::ARRANGER_CURSOR_STRETCHING_R
-                                 : ArrangerCursor::ARRANGER_CURSOR_RESIZING_R;
-                      }
-                    else if (is_fade_in_outer_region)
-                      return ArrangerCursor::ARRANGER_CURSOR_FADE_IN;
-                    else if (is_fade_out_outer_region)
-                      return ArrangerCursor::ARRANGER_CURSOR_FADE_OUT;
-                    else if (is_rename)
-                      return ArrangerCursor::ARRANGER_CURSOR_RENAME;
-                  }
-                return ArrangerCursor::ARRANGER_CURSOR_GRAB;
-              }
-            else
-              {
-                Track * track =
-                  timeline_arranger_widget_get_track_at_y (self, self->hover_y);
-
-                if (track)
-                  {
-                    if (track_widget_is_cursor_in_range_select_half (
-                          track->widget_, self->hover_y))
-                      {
-                        /* set cursor to range selection */
-                        return ArrangerCursor::ARRANGER_CURSOR_RANGE;
-                      }
-                    else
-                      {
-                        /* set cursor to normal */
-                        return ac;
-                      }
-                  }
-                else
-                  {
-                    /* set cursor to normal */
-                    return ac;
-                  }
-              }
-          }
-          break;
-        case Tool::Edit:
-          ac = ArrangerCursor::ARRANGER_CURSOR_EDIT;
-          break;
-        case Tool::Cut:
-          ac = ArrangerCursor::ARRANGER_CURSOR_CUT;
-          break;
-        case Tool::Eraser:
-          ac = ArrangerCursor::ARRANGER_CURSOR_ERASER;
-          break;
-        case Tool::Ramp:
-          ac = ArrangerCursor::ARRANGER_CURSOR_RAMP;
-          break;
-        case Tool::Audition:
-          ac = ArrangerCursor::ARRANGER_CURSOR_AUDITION;
-          break;
-        }
-      break;
-    case UiOverlayAction::STARTING_DELETE_SELECTION:
-    case UiOverlayAction::DELETE_SELECTING:
-    case UiOverlayAction::STARTING_ERASING:
-    case UiOverlayAction::ERASING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_ERASER;
-      break;
-    case UiOverlayAction::STARTING_MOVING_COPY:
-    case UiOverlayAction::MOVING_COPY:
-      ac = ArrangerCursor::ARRANGER_CURSOR_GRABBING_COPY;
-      break;
-    case UiOverlayAction::STARTING_MOVING_LINK:
-    case UiOverlayAction::MOVING_LINK:
-      ac = ArrangerCursor::ARRANGER_CURSOR_GRABBING_LINK;
-      break;
-    case UiOverlayAction::STARTING_MOVING:
-    case UiOverlayAction::CREATING_MOVING:
-    case UiOverlayAction::MOVING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_GRABBING;
-      break;
-    case UiOverlayAction::STARTING_PANNING:
-    case UiOverlayAction::PANNING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_PANNING;
-      break;
-    case UiOverlayAction::STRETCHING_L:
-      ac = ArrangerCursor::ARRANGER_CURSOR_STRETCHING_L;
-      break;
-    case UiOverlayAction::RESIZING_L:
-      if (self->resizing_range)
-        ac = ArrangerCursor::ARRANGER_CURSOR_RANGE;
-      else
-        ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_L;
-      break;
-    case UiOverlayAction::RESIZING_L_LOOP:
-      ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_L_LOOP;
-      break;
-    case UiOverlayAction::RESIZING_L_FADE:
-      ac = ArrangerCursor::ARRANGER_CURSOR_FADE_IN;
-      break;
-    case UiOverlayAction::STRETCHING_R:
-      ac = ArrangerCursor::ARRANGER_CURSOR_STRETCHING_R;
-      break;
-    case UiOverlayAction::CREATING_RESIZING_R:
-    case UiOverlayAction::RESIZING_R:
-      if (self->resizing_range)
-        ac = ArrangerCursor::ARRANGER_CURSOR_RANGE;
-      else
-        ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_R;
-      break;
-    case UiOverlayAction::RESIZING_R_LOOP:
-      ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_R_LOOP;
-      break;
-    case UiOverlayAction::RESIZING_R_FADE:
-      ac = ArrangerCursor::ARRANGER_CURSOR_FADE_OUT;
-      break;
-    case UiOverlayAction::RESIZING_UP_FADE_IN:
-      ac = ArrangerCursor::ARRANGER_CURSOR_FADE_IN;
-      break;
-    case UiOverlayAction::RESIZING_UP_FADE_OUT:
-      ac = ArrangerCursor::ARRANGER_CURSOR_FADE_OUT;
-      break;
-    case UiOverlayAction::AUTOFILLING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_AUTOFILL;
-      break;
-    case UiOverlayAction::STARTING_SELECTION:
-    case UiOverlayAction::SELECTING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
-      break;
-    case UiOverlayAction::RENAMING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_RENAME;
-      break;
-    case UiOverlayAction::CUTTING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_CUT;
-      break;
-    case UiOverlayAction::STARTING_AUDITIONING:
-    case UiOverlayAction::AUDITIONING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_AUDITION;
-      break;
-    default:
-      z_warn_if_reached ();
-      ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
-      break;
-    }
-
-  return ac;
-}
-
-static ArrangerCursor
-get_midi_arranger_cursor (ArrangerWidget * self, Tool tool)
-{
-  ArrangerCursor  ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
-  UiOverlayAction action = self->action;
-
-  ArrangerObject * obj = arranger_widget_get_hit_arranger_object (
-    (ArrangerWidget *) self, ArrangerObject::Type::MidiNote, self->hover_x,
-    self->hover_y);
-  int is_hit = obj != NULL;
-
-  bool drum_mode = arranger_widget_get_drum_mode_enabled (self);
-
-  switch (action)
-    {
-    case UiOverlayAction::NONE:
-      if (tool == Tool::Select || tool == Tool::Edit)
-        {
-          int is_resize_l = 0, is_resize_r = 0;
-
-          if (is_hit)
-            {
-              is_resize_l = arranger_object_is_resize_l (
-                obj, (int) self->hover_x - obj->full_rect_.x);
-              is_resize_r = arranger_object_is_resize_r (
-                obj, (int) self->hover_x - obj->full_rect_.x);
-            }
-
-          if (is_hit && is_resize_l && !drum_mode)
-            {
-              return ArrangerCursor::ARRANGER_CURSOR_RESIZING_L;
-            }
-          else if (is_hit && is_resize_r && !drum_mode)
-            {
-              return ArrangerCursor::ARRANGER_CURSOR_RESIZING_R;
-            }
-          else if (is_hit)
-            {
-              return ArrangerCursor::ARRANGER_CURSOR_GRAB;
-            }
-          else
-            {
-              /* set cursor to whatever it is */
-              if (tool == Tool::Edit)
-                return ArrangerCursor::ARRANGER_CURSOR_EDIT;
-              else
-                return ac;
-            }
-        }
-      else if (P_TOOL == Tool::Edit)
-        ac = ArrangerCursor::ARRANGER_CURSOR_EDIT;
-      else if (P_TOOL == Tool::Eraser)
-        ac = ArrangerCursor::ARRANGER_CURSOR_ERASER;
-      else if (P_TOOL == Tool::Ramp)
-        ac = ArrangerCursor::ARRANGER_CURSOR_RAMP;
-      else if (P_TOOL == Tool::Audition)
-        ac = ArrangerCursor::ARRANGER_CURSOR_AUDITION;
-      break;
-    case UiOverlayAction::STARTING_DELETE_SELECTION:
-    case UiOverlayAction::DELETE_SELECTING:
-    case UiOverlayAction::STARTING_ERASING:
-    case UiOverlayAction::ERASING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_ERASER;
-      break;
-    case UiOverlayAction::STARTING_MOVING_COPY:
-    case UiOverlayAction::MOVING_COPY:
-      ac = ArrangerCursor::ARRANGER_CURSOR_GRABBING_COPY;
-      break;
-    case UiOverlayAction::STARTING_MOVING:
-    case UiOverlayAction::MOVING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_GRABBING;
-      break;
-    case UiOverlayAction::STARTING_MOVING_LINK:
-    case UiOverlayAction::MOVING_LINK:
-      ac = ArrangerCursor::ARRANGER_CURSOR_GRABBING_LINK;
-      break;
-    case UiOverlayAction::STARTING_PANNING:
-    case UiOverlayAction::PANNING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_PANNING;
-      break;
-    case UiOverlayAction::RESIZING_L:
-      ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_L;
-      break;
-    case UiOverlayAction::RESIZING_R:
-    case UiOverlayAction::CREATING_RESIZING_R:
-      ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_R;
-      break;
-    case UiOverlayAction::STARTING_SELECTION:
-    case UiOverlayAction::SELECTING:
-      /* TODO depends on tool */
-      break;
-    case UiOverlayAction::AUTOFILLING:
-      ac = ArrangerCursor::ARRANGER_CURSOR_AUTOFILL;
-      break;
-    default:
-      z_warn_if_reached ();
-      ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
-      break;
-    }
-
-  return ac;
-}
-
-/**
- * Gets the cursor based on the current hover
- * position.
- */
 ArrangerCursor
 arranger_widget_get_cursor (ArrangerWidget * self)
 {
-  ArrangerCursor ac = ArrangerCursor::ARRANGER_CURSOR_SELECT;
+  ArrangerCursor ac = ArrangerCursor::Select;
 
   switch (self->type)
     {
-    case TYPE (TIMELINE):
-      ac = get_timeline_cursor (self, P_TOOL);
+    case ArrangerWidgetType::Timeline:
+      ac = timeline_arranger_widget_get_cursor (self, P_TOOL);
       break;
-    case TYPE (AUDIO):
-      ac = get_audio_arranger_cursor (self, P_TOOL);
+    case ArrangerWidgetType::Audio:
+      ac = audio_arranger_widget_get_cursor (self, P_TOOL);
       break;
-    case TYPE (CHORD):
-      ac = get_chord_arranger_cursor (self, P_TOOL);
+    case ArrangerWidgetType::Chord:
+      ac = chord_arranger_widget_get_cursor (self, P_TOOL);
       break;
-    case TYPE (MIDI):
-      ac = get_midi_arranger_cursor (self, P_TOOL);
+    case ArrangerWidgetType::Midi:
+      ac = midi_arranger_widget_get_cursor (self, P_TOOL);
       break;
-    case TYPE (MIDI_MODIFIER):
-      ac = get_midi_modifier_arranger_cursor (self, P_TOOL);
+    case ArrangerWidgetType::MidiModifier:
+      ac = midi_modifier_arranger_widget_get_cursor (self, P_TOOL);
       break;
-    case TYPE (AUTOMATION):
-      ac = get_automation_arranger_cursor (self, P_TOOL);
+    case ArrangerWidgetType::Automation:
+      ac = automation_arranger_widget_get_cursor (self, P_TOOL);
       break;
     default:
       break;
@@ -4575,9 +4143,9 @@ void
 arranger_widget_scroll_until_obj (
   ArrangerWidget * self,
   ArrangerObject * obj,
-  int              horizontal,
-  int              up,
-  int              left,
+  bool             horizontal,
+  bool             up,
+  bool             left,
   int              padding)
 {
   auto settings = arranger_widget_get_editor_settings (self);
@@ -4653,7 +4221,7 @@ bool
 arranger_widget_any_doing_action ()
 {
 #define CHECK_ARRANGER(arranger) \
-  if (arranger && arranger->action != UiOverlayAction::NONE) \
+  if (arranger && arranger->action != UiOverlayAction::None) \
     return true;
 
   CHECK_ARRANGER (MW_TIMELINE);
@@ -4674,14 +4242,14 @@ arranger_widget_get_min_possible_position (ArrangerWidget * self, Position * pos
 {
   switch (self->type)
     {
-    case TYPE (TIMELINE):
+    case ArrangerWidgetType::Timeline:
       pos->set_to_bar (1);
       break;
-    case TYPE (MIDI):
-    case TYPE (MIDI_MODIFIER):
-    case TYPE (CHORD):
-    case TYPE (AUTOMATION):
-    case TYPE (AUDIO):
+    case ArrangerWidgetType::Midi:
+    case ArrangerWidgetType::MidiModifier:
+    case ArrangerWidgetType::Chord:
+    case ArrangerWidgetType::Automation:
+    case ArrangerWidgetType::Audio:
       {
         auto region = CLIP_EDITOR->get_region ();
         z_return_if_fail (region);
@@ -4700,7 +4268,7 @@ arranger_widget_handle_playhead_auto_scroll (ArrangerWidget * self, bool force)
 
   bool scroll_edges = false;
   bool follow = false;
-  if (self->type == ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE)
+  if (self->type == ArrangerWidgetType::Timeline)
     {
       scroll_edges =
         g_settings_get_boolean (S_UI, "timeline-playhead-scroll-edges");
@@ -4789,9 +4357,7 @@ arranger_widget_setup (
 {
   z_debug ("setting up arranger widget...");
 
-  z_return_if_fail (
-    self && type >= ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE
-    && snap_grid);
+  z_return_if_fail (self && type >= ArrangerWidgetType::Timeline && snap_grid);
   self->type = type;
   self->snap_grid = snap_grid;
 
@@ -4799,7 +4365,7 @@ arranger_widget_setup (
   self->region_icon_texture_size = icon_texture_size;
   switch (type)
     {
-    case TYPE (TIMELINE):
+    case ArrangerWidgetType::Timeline:
       /* make drag dest */
       gtk_widget_add_css_class (GTK_WIDGET (self), "timeline-arranger");
       timeline_arranger_setup_drag_dest (self);
@@ -4815,17 +4381,17 @@ arranger_widget_setup (
         "gnome-icon-library-media-playlist-repeat-symbolic", icon_texture_size,
         icon_texture_size, 1);
       break;
-    case TYPE (AUTOMATION):
+    case ArrangerWidgetType::Automation:
       gtk_widget_add_css_class (GTK_WIDGET (self), "automation-arranger");
       self->ap_layout = z_cairo_create_pango_layout_from_string (
         GTK_WIDGET (self), "8", PANGO_ELLIPSIZE_NONE, 0);
       break;
-    case TYPE (MIDI_MODIFIER):
+    case ArrangerWidgetType::MidiModifier:
       gtk_widget_add_css_class (GTK_WIDGET (self), "midi-modifier-arranger");
       self->vel_layout = z_cairo_create_pango_layout_from_string (
         GTK_WIDGET (self), "8", PANGO_ELLIPSIZE_NONE, 0);
       break;
-    case TYPE (AUDIO):
+    case ArrangerWidgetType::Audio:
       gtk_widget_add_css_class (GTK_WIDGET (self), "audio-arranger");
       self->audio_layout = z_cairo_create_pango_layout_from_string (
         GTK_WIDGET (self), "8", PANGO_ELLIPSIZE_NONE, 0);
@@ -5061,32 +4627,11 @@ arranger_widget_init (ArrangerWidget * self)
   gtk_widget_set_overflow (GTK_WIDGET (self), GTK_OVERFLOW_HIDDEN);
 }
 
-void
-instantiate_arranger_widget_templates ();
-
-void
-instantiate_arranger_widget_templates ()
-{
-  ArrangerWidget * self = nullptr;
-  {
-    ArrangerObjectVariant x;
-    std::visit (
-      [&] (auto &&x) {
-        using T = base_type<decltype (x)>;
-        std::shared_ptr<T> obj;
-        arranger_widget_get_hit_arranger_object (
-          self, ArrangerObject::Type::ChordObject, 0, 0);
-      },
-      x);
-  }
-  {
-    ArrangerSelectionsVariant x;
-    std::visit (
-      [&] (auto &&x) {
-        using T = base_type<decltype (x)>;
-        std::shared_ptr<T> obj;
-        arranger_widget_get_selections<T> (self);
-      },
-      x);
-  }
-}
+template MidiSelections *
+arranger_widget_get_selections (ArrangerWidget * self);
+template TimelineSelections *
+arranger_widget_get_selections (ArrangerWidget * self);
+template ChordSelections *
+arranger_widget_get_selections (ArrangerWidget * self);
+template AutomationSelections *
+arranger_widget_get_selections (ArrangerWidget * self);

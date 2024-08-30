@@ -128,15 +128,13 @@ midi_editor_space_widget_setup (MidiEditorSpaceWidget * self)
   if (self->arranger_wrapper)
     {
       arranger_wrapper_widget_setup (
-        self->arranger_wrapper, ArrangerWidgetType::ARRANGER_WIDGET_TYPE_MIDI,
-        SNAP_GRID_EDITOR);
+        self->arranger_wrapper, ArrangerWidgetType::Midi, SNAP_GRID_EDITOR);
     }
   if (self->modifier_arranger)
     {
       arranger_widget_setup (
         Z_ARRANGER_WIDGET (self->modifier_arranger),
-        ArrangerWidgetType::ARRANGER_WIDGET_TYPE_MIDI_MODIFIER,
-        SNAP_GRID_EDITOR);
+        ArrangerWidgetType::MidiModifier, SNAP_GRID_EDITOR);
     }
 
   piano_roll_keys_widget_setup (self->piano_roll_keys);
@@ -189,10 +187,8 @@ midi_editor_space_widget_init (MidiEditorSpaceWidget * self)
   gtk_paned_set_shrink_start_child (self->midi_arranger_velocity_paned, false);
   gtk_paned_set_shrink_end_child (self->midi_arranger_velocity_paned, false);
 
-  self->arranger_wrapper->child->type =
-    ArrangerWidgetType::ARRANGER_WIDGET_TYPE_MIDI;
-  self->modifier_arranger->type =
-    ArrangerWidgetType::ARRANGER_WIDGET_TYPE_MIDI_MODIFIER;
+  self->arranger_wrapper->child->type = ArrangerWidgetType::Midi;
+  self->modifier_arranger->type = ArrangerWidgetType::MidiModifier;
 
   /* doesn't work */
   self->arranger_and_keys_vsize_group =

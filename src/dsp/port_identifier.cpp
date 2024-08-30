@@ -27,8 +27,8 @@ PortIdentifier::port_group_cmp (const void * p1, const void * p2)
   const Port * control1 = *(const Port **) p1;
   const Port * control2 = *(const Port **) p2;
 
-  z_return_val_if_fail (IS_PORT (control1), -1);
-  z_return_val_if_fail (IS_PORT (control2), -1);
+  z_return_val_if_fail (control1, -1);
+  z_return_val_if_fail (control2, -1);
 
   /* use index for now - this assumes that ports inside port groups are declared
    * in sequence */

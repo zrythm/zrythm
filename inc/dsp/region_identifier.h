@@ -54,7 +54,7 @@ class RegionIdentifier : public ISerializable<RegionIdentifier>
 public:
   RegionIdentifier () = default;
   RegionIdentifier (RegionType type) : type_ (type) { }
-  bool validate () const { /* TODO? */ return true; };
+  bool validate () const;
 
   inline bool is_automation () const { return type_ == RegionType::Automation; }
   inline bool is_midi () const { return type_ == RegionType::Midi; }

@@ -154,7 +154,7 @@ bounce_region (bool with_bpm_automation)
   ExportSettings * settings = export_settings_new ();
   settings->mode = Exporter::Mode::EXPORT_MODE_REGIONS;
   export_settings_set_bounce_defaults (
-    settings, Exporter::Format::EXPORT_FORMAT_WAV, nullptr, region->name);
+    settings, Exporter::Format::EXPORT_FORMAT_WAV, "", region->name);
   timeline_selections_mark_for_bounce (
     TL_SELECTIONS, settings->bounce_with_parents);
   position_add_ms (&settings->custom_end, 4000);
@@ -240,7 +240,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "mixdown MIDI routed to instrument track")
         k == 0
           ? Exporter::Format::EXPORT_FORMAT_WAV
           : Exporter::Format::EXPORT_FORMAT_FLAC,
-        nullptr, __func__);
+        "", __func__);
       settings->time_range = ExportTimeRange::TIME_RANGE_LOOP;
 
       EngineState state;
@@ -378,7 +378,7 @@ test_bounce_midi_track_routed_to_instrument_track (
   ExportSettings * settings = export_settings_new ();
   settings->mode = Exporter::Mode::EXPORT_MODE_TRACKS;
   export_settings_set_bounce_defaults (
-    settings, Exporter::Format::EXPORT_FORMAT_WAV, nullptr, __func__);
+    settings, Exporter::Format::EXPORT_FORMAT_WAV, "", __func__);
   settings->time_range = ExportTimeRange::TIME_RANGE_LOOP;
   settings->bounce_with_parents = with_parents;
   settings->bounce_step = bounce_step;
@@ -478,7 +478,7 @@ test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
   ExportSettings * settings = export_settings_new ();
   settings->mode = Exporter::Mode::EXPORT_MODE_TRACKS;
   export_settings_set_bounce_defaults (
-    settings, Exporter::Format::EXPORT_FORMAT_WAV, nullptr, __func__);
+    settings, Exporter::Format::EXPORT_FORMAT_WAV, "", __func__);
   settings->time_range = ExportTimeRange::TIME_RANGE_LOOP;
   settings->bounce_with_parents = with_parents;
   settings->bounce_step = bounce_step;
@@ -566,7 +566,7 @@ test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
   settings = export_settings_new ();
   settings->mode = Exporter::Mode::EXPORT_MODE_TRACKS;
   export_settings_set_bounce_defaults (
-    settings, Exporter::Format::EXPORT_FORMAT_WAV, nullptr, __func__);
+    settings, Exporter::Format::EXPORT_FORMAT_WAV, "", __func__);
   settings->time_range = ExportTimeRange::TIME_RANGE_SONG;
   settings->bounce_with_parents = with_parents;
   settings->bounce_step = bounce_step;
@@ -702,7 +702,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "chord track routed to instrument track")
           ? Exporter::Mode::EXPORT_MODE_FULL
           : Exporter::Mode::EXPORT_MODE_TRACKS;
       export_settings_set_bounce_defaults (
-        settings, Exporter::Format::EXPORT_FORMAT_WAV, nullptr, __func__);
+        settings, Exporter::Format::EXPORT_FORMAT_WAV, "", __func__);
       settings->time_range = ExportTimeRange::TIME_RANGE_LOOP;
 
       if (i == 1)

@@ -365,7 +365,7 @@ DEFINE_SIMPLE (activate_zoom_in)
 
           switch (arranger->type)
             {
-            case ArrangerWidgetType::ARRANGER_WIDGET_TYPE_MIDI:
+            case ArrangerWidgetType::Midi:
               midi_arranger_handle_vertical_zoom_action (arranger, true);
               break;
             default:
@@ -421,7 +421,7 @@ DEFINE_SIMPLE (activate_zoom_out)
 
           switch (arranger->type)
             {
-            case ArrangerWidgetType::ARRANGER_WIDGET_TYPE_MIDI:
+            case ArrangerWidgetType::Midi:
               midi_arranger_handle_vertical_zoom_action (arranger, false);
               break;
             default:

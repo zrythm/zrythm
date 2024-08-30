@@ -78,13 +78,12 @@ MixerSelectionsAction::MixerSelectionsAction (
   int                            num_plugins,
   int                            new_val,
   CarlaBridgeMode                new_bridge_mode)
-    : mixer_selections_action_type_ (type), slot_type_ (slot_type),
+    : UndoableAction (UndoableAction::Type::MixerSelections),
+      mixer_selections_action_type_ (type), slot_type_ (slot_type),
       to_slot_ (to_slot), to_track_name_hash_ (to_track_name_hash),
       new_channel_ (to_track_name_hash == 0), num_plugins_ (num_plugins),
       new_val_ (new_val), new_bridge_mode_ (new_bridge_mode)
 {
-  MixerSelectionsAction ();
-
   if (setting)
     {
       setting_ = std::make_unique<PluginSetting> (*setting);

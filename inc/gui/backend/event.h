@@ -1,13 +1,11 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * UI event.
- */
 #ifndef __GUI_BACKEND_EVENT_H__
 #define __GUI_BACKEND_EVENT_H__
+
+#include "utils/format.h"
+#include "utils/types.h"
 
 /**
  * @addtogroup events
@@ -480,6 +478,16 @@ public:
   /** Backtrace. */
   char * backtrace_ = nullptr;
 };
+
+DEFINE_OBJECT_FORMATTER (
+  ZEvent,
+  fmt::format (
+    "UI Event from {}:{}:{}:\ntype: {}\narg: {}",
+    val.file_,
+    val.func_,
+    val.lineno_,
+    ENUM_NAME (val.type_),
+    fmt::ptr (val.arg_)));
 
 /**
  * @}

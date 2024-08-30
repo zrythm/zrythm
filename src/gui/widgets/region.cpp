@@ -1434,7 +1434,7 @@ region_draw (Region * self, GtkSnapshot * snapshot, GdkRectangle * rect)
       z_gtk_snapshot_append_color (snapshot, color, &graphene_rect);
 
       /* TODO apply stretch ratio */
-      if (MW_TIMELINE->action == UiOverlayAction::STRETCHING_R)
+      if (MW_TIMELINE->action == UiOverlayAction::StretchingR)
         {
 #if 0
           cairo_scale (
@@ -1567,7 +1567,7 @@ region_draw (Region * self, GtkSnapshot * snapshot, GdkRectangle * rect)
  * Returns the lane rectangle for the region.
  */
 void
-region_get_lane_full_rect (Region * self, GdkRectangle * rect)
+region_get_lane_full_rect (const Region * self, GdkRectangle * rect)
 {
   auto track = dynamic_cast<LanedTrack *> (self->get_track ());
   z_return_if_fail (track && track->lanes_visible_);

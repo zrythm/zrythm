@@ -50,7 +50,7 @@
  * @param x X in local coordinates.
  */
 bool
-arranger_object_is_resize_l (ArrangerObject * self, const int x)
+arranger_object_is_resize_l (const ArrangerObject * self, const int x)
 {
   if (!self->has_length ())
     return false;
@@ -72,7 +72,7 @@ arranger_object_is_resize_l (ArrangerObject * self, const int x)
  * @param x X in local coordinates.
  */
 bool
-arranger_object_is_resize_r (ArrangerObject * self, const int x)
+arranger_object_is_resize_r (const ArrangerObject * self, const int x)
 {
   if (!self->has_length ())
     return false;
@@ -80,7 +80,7 @@ arranger_object_is_resize_r (ArrangerObject * self, const int x)
   if (self->full_rect_.width < UI_RESIZE_CURSOR_SPACE * 3)
     return false;
 
-  auto lo = dynamic_cast<LengthableObject *> (self);
+  auto lo = dynamic_cast<const LengthableObject *> (self);
 
   long     size_frames = lo->end_pos_.frames_ - lo->pos_.frames_;
   Position pos{ size_frames };
@@ -95,18 +95,18 @@ arranger_object_is_resize_r (ArrangerObject * self, const int x)
 
 bool
 arranger_object_is_fade (
-  ArrangerObject * self,
-  bool             in,
-  const int        x,
-  int              y,
-  bool             only_handle,
-  bool             only_outer,
-  bool             check_lane)
+  const ArrangerObject * self,
+  bool                   in,
+  const int              x,
+  int                    y,
+  bool                   only_handle,
+  bool                   only_outer,
+  bool                   check_lane)
 {
   if (!self->can_fade ())
     return false;
 
-  auto         fo = dynamic_cast<FadeableObject *> (self);
+  auto         fo = dynamic_cast<const FadeableObject *> (self);
   const int    fade_in_px = ui_pos_to_px_timeline (fo->fade_in_pos_, 0);
   const int    fade_out_px = ui_pos_to_px_timeline (fo->fade_out_pos_, 0);
   const int    fade_pt_halfwidth = ARRANGER_OBJECT_FADE_POINT_HALFWIDTH;
@@ -114,7 +114,7 @@ arranger_object_is_fade (
   auto         track = dynamic_cast<LanedTrack *> (self->get_track ());
   if (check_lane && track && track->lanes_visible_)
     {
-      Region * r = dynamic_cast<Region *> (self);
+      auto r = dynamic_cast<const Region *> (self);
       region_get_lane_full_rect (r, &full_rect);
       y -= full_rect.y - self->full_rect_.y;
     }
@@ -177,7 +177,10 @@ arranger_object_is_fade (
  * @param y Y in local coordinates.
  */
 bool
-arranger_object_is_resize_up (ArrangerObject * self, const int x, const int y)
+arranger_object_is_resize_up (
+  const ArrangerObject * self,
+  const int              x,
+  const int              y)
 {
   if (self->type_ == ArrangerObject::Type::Velocity)
     {
@@ -186,8 +189,8 @@ arranger_object_is_resize_up (ArrangerObject * self, const int x, const int y)
     }
   else if (self->type_ == ArrangerObject::Type::AutomationPoint)
     {
-      AutomationPoint * ap = dynamic_cast<AutomationPoint *> (self);
-      auto              curve_up = ap->curves_up ();
+      auto ap = dynamic_cast<const AutomationPoint *> (self);
+      auto curve_up = ap->curves_up ();
       if (curve_up)
         {
           if (
@@ -206,16 +209,16 @@ arranger_object_is_resize_up (ArrangerObject * self, const int x, const int y)
 
 bool
 arranger_object_is_resize_loop (
-  ArrangerObject * self,
-  const int        y,
-  bool             ctrl_pressed)
+  const ArrangerObject * self,
+  const int              y,
+  bool                   ctrl_pressed)
 {
   if (!self->has_length () || !self->can_loop ())
     return false;
 
   if (self->is_region ())
     {
-      auto r = dynamic_cast<Region *> (self);
+      auto r = dynamic_cast<const Region *> (self);
       if (r->is_audio () && !ctrl_pressed)
         {
           return true;
@@ -249,7 +252,7 @@ arranger_object_is_resize_loop (
  * @param y Y in local coordinates.
  */
 bool
-arranger_object_is_rename (ArrangerObject * self, const int x, const int y)
+arranger_object_is_rename (const ArrangerObject * self, const int x, const int y)
 {
   /* disable for now */
   return false;
@@ -269,7 +272,9 @@ arranger_object_is_rename (ArrangerObject * self, const int x, const int y)
 }
 
 bool
-arranger_object_should_show_cut_lines (ArrangerObject * self, bool alt_pressed)
+arranger_object_should_show_cut_lines (
+  const ArrangerObject * self,
+  bool                   alt_pressed)
 {
   if (!self->has_length ())
     return 0;
@@ -297,7 +302,7 @@ arranger_object_should_show_cut_lines (ArrangerObject * self, bool alt_pressed)
  * allocation of the arranger.
  */
 static int
-get_automation_point_y (AutomationPoint * ap, ArrangerWidget * arranger)
+get_automation_point_y (const AutomationPoint * ap, ArrangerWidget * arranger)
 {
   /* ratio of current value in the range */
   float ap_ratio = ap->normalized_val_;
@@ -389,7 +394,7 @@ arranger_object_set_full_rectangle (
           ui_pos_to_px_editor (tmp, true) - AP_WIDGET_POINT_SIZE / 2;
 
         auto * next_ap = region->get_next_ap (
-          *ap, true, arranger->action == UiOverlayAction::MOVING_COPY);
+          *ap, true, arranger->action == UiOverlayAction::MovingCopy);
 
         if (next_ap)
           {
@@ -805,7 +810,7 @@ arranger_object_should_orig_be_visible (
       return false;
     }
   else if (
-    action == UiOverlayAction::MOVING_COPY
+    action == UiOverlayAction::MovingCopy
     || action == UiOverlayAction::MOVING_LINK)
     {
       return true;

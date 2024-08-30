@@ -94,9 +94,10 @@ Plugin::define_base_fields (const Context &ctx)
 
   if (ctx.is_serializing ())
     {
-      T::make_field<decltype (in_ports_), PortPtrVariant> ("inPorts", in_ports_);
-      T::make_field<decltype (out_ports_), PortPtrVariant> (
-        "outPorts", out_ports_);
+      T::serialize_field<decltype (in_ports_), PortPtrVariant> (
+        "inPorts", in_ports_, ctx);
+      T::serialize_field<decltype (out_ports_), PortPtrVariant> (
+        "outPorts", out_ports_, ctx);
     }
   else
     {
@@ -128,6 +129,7 @@ Plugin::define_base_fields (const Context &ctx)
                       port_ctx);
                   },
                   convert_to_variant<PortPtrVariant> (port.get ()));
+                ports.emplace_back (std::move (port));
               }
           }
       };

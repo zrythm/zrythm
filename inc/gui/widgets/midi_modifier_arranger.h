@@ -1,8 +1,5 @@
-/*
- * SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_MIDI_MODIFIER_ARRANGER_H__
 #define __GUI_WIDGETS_MIDI_MODIFIER_ARRANGER_H__
@@ -15,14 +12,17 @@
 #define MW_MIDI_MODIFIER_ARRANGER (MW_MIDI_EDITOR_SPACE->modifier_arranger)
 
 class Velocity;
-typedef struct _VelocityWidget VelocityWidget;
-typedef struct _ArrangerWidget ArrangerWidget;
+TYPEDEF_STRUCT_UNDERSCORED (VelocityWidget);
+TYPEDEF_STRUCT_UNDERSCORED (ArrangerWidget);
 
 /**
  * @addtogroup widgets
  *
  * @{
  */
+
+ArrangerCursor
+midi_modifier_arranger_widget_get_cursor (ArrangerWidget * self, Tool tool);
 
 /**
  * Sets the start velocities of all velocities in the current region.

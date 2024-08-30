@@ -8,6 +8,7 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/arranger_object.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/clip_editor.h"
@@ -34,6 +35,109 @@
 
 #include "gtk_wrapper.h"
 
+ArrangerCursor
+midi_arranger_widget_get_cursor (ArrangerWidget * self, Tool tool)
+{
+  ArrangerCursor ac = ArrangerCursor::Select;
+  // UiOverlayAction action = self->action;
+
+  const ArrangerObject * obj = arranger_widget_get_hit_arranger_object (
+    (ArrangerWidget *) self, ArrangerObject::Type::MidiNote, self->hover_x,
+    self->hover_y);
+  const int is_hit = obj != nullptr;
+
+  const bool drum_mode = arranger_widget_get_drum_mode_enabled (self);
+
+  switch (self->action)
+    {
+    case UiOverlayAction::None:
+      if (tool == Tool::Select || tool == Tool::Edit)
+        {
+          int is_resize_l = 0, is_resize_r = 0;
+
+          if (is_hit)
+            {
+              is_resize_l = arranger_object_is_resize_l (
+                obj, (int) self->hover_x - obj->full_rect_.x);
+              is_resize_r = arranger_object_is_resize_r (
+                obj, (int) self->hover_x - obj->full_rect_.x);
+            }
+
+          if (is_hit && is_resize_l && !drum_mode)
+            {
+              return ArrangerCursor::ResizingL;
+            }
+          else if (is_hit && is_resize_r && !drum_mode)
+            {
+              return ArrangerCursor::ResizingR;
+            }
+          else if (is_hit)
+            {
+              return ArrangerCursor::Grab;
+            }
+          else
+            {
+              /* set cursor to whatever it is */
+              if (tool == Tool::Edit)
+                return ArrangerCursor::Edit;
+              else
+                return ac;
+            }
+        }
+      else if (P_TOOL == Tool::Edit)
+        ac = ArrangerCursor::Edit;
+      else if (P_TOOL == Tool::Eraser)
+        ac = ArrangerCursor::Eraser;
+      else if (P_TOOL == Tool::Ramp)
+        ac = ArrangerCursor::Ramp;
+      else if (P_TOOL == Tool::Audition)
+        ac = ArrangerCursor::Audition;
+      break;
+    case UiOverlayAction::STARTING_DELETE_SELECTION:
+    case UiOverlayAction::DELETE_SELECTING:
+    case UiOverlayAction::STARTING_ERASING:
+    case UiOverlayAction::ERASING:
+      ac = ArrangerCursor::Eraser;
+      break;
+    case UiOverlayAction::STARTING_MOVING_COPY:
+    case UiOverlayAction::MovingCopy:
+      ac = ArrangerCursor::GrabbingCopy;
+      break;
+    case UiOverlayAction::STARTING_MOVING:
+    case UiOverlayAction::MOVING:
+      ac = ArrangerCursor::Grabbing;
+      break;
+    case UiOverlayAction::STARTING_MOVING_LINK:
+    case UiOverlayAction::MOVING_LINK:
+      ac = ArrangerCursor::GrabbingLink;
+      break;
+    case UiOverlayAction::StartingPanning:
+    case UiOverlayAction::Panning:
+      ac = ArrangerCursor::Panning;
+      break;
+    case UiOverlayAction::ResizingL:
+      ac = ArrangerCursor::ResizingL;
+      break;
+    case UiOverlayAction::ResizingR:
+    case UiOverlayAction::CreatingResizingR:
+      ac = ArrangerCursor::ResizingR;
+      break;
+    case UiOverlayAction::STARTING_SELECTION:
+    case UiOverlayAction::SELECTING:
+      /* TODO depends on tool */
+      break;
+    case UiOverlayAction::AUTOFILLING:
+      ac = ArrangerCursor::Autofill;
+      break;
+    default:
+      z_warn_if_reached ();
+      ac = ArrangerCursor::Select;
+      break;
+    }
+
+  return ac;
+}
+
 void
 midi_arranger_widget_create_note (
   ArrangerWidget * self,
@@ -52,7 +156,7 @@ midi_arranger_widget_create_note (
       if (drum_mode)
         self->action = UiOverlayAction::MOVING;
       else
-        self->action = UiOverlayAction::CREATING_RESIZING_R;
+        self->action = UiOverlayAction::CreatingResizingR;
     }
 
   int default_velocity_type =
@@ -98,61 +202,6 @@ midi_arranger_widget_create_note (
   midi_note->listen (true);
 }
 
-bool
-midi_arranger_widget_snap_midi_notes_l (
-  ArrangerWidget * self,
-  const Position   pos,
-  bool             dry_run)
-{
-  auto region = CLIP_EDITOR->get_region<MidiRegion> ();
-
-  /* get delta with first clicked note's start pos */
-  double delta =
-    pos.ticks_ - (self->start_object->pos_.ticks_ + region->pos_.ticks_);
-  z_debug ("delta {:f}", delta);
-
-  for (auto midi_note : MIDI_SELECTIONS->objects_ | type_is<MidiNote> ())
-    {
-      /* calculate new start pos */
-      Position new_start_pos = midi_note->pos_;
-      new_start_pos.add_ticks (delta);
-
-      /* get the global star pos first to snap it */
-      Position new_global_start_pos = new_start_pos;
-      new_global_start_pos.add_ticks (region->pos_.ticks_);
-
-      /* snap the global pos */
-      if (
-        self->snap_grid->any_snap () && !self->shift_held
-        && new_global_start_pos.is_positive ())
-        {
-          new_global_start_pos.snap (
-            self->earliest_obj_start_pos.get (), nullptr, region,
-            *self->snap_grid);
-        }
-
-      /* convert it back to a local pos */
-      new_start_pos = new_global_start_pos;
-      new_start_pos.add_ticks (-region->pos_.ticks_);
-
-      if (
-        !new_global_start_pos.is_positive ()
-        || new_start_pos >= midi_note->end_pos_)
-        {
-          return false;
-        }
-      else if (!dry_run)
-        {
-          midi_note->pos_setter (&new_start_pos);
-        }
-    }
-
-  EVENTS_PUSH (
-    EventType::ET_ARRANGER_SELECTIONS_CHANGED, MIDI_SELECTIONS.get ());
-
-  return true;
-}
-
 void
 midi_arranger_widget_set_hovered_note (ArrangerWidget * self, int pitch)
 {
@@ -178,59 +227,6 @@ midi_arranger_widget_set_hovered_note (ArrangerWidget * self, int pitch)
           rect.height = (int) adj_px_per_key;
         }
     }
-}
-
-bool
-midi_arranger_widget_snap_midi_notes_r (
-  ArrangerWidget * self,
-  const Position   pos,
-  bool             dry_run)
-{
-  auto region = CLIP_EDITOR->get_region<MidiRegion> ();
-
-  /* get delta with first clicked notes's end pos */
-  auto start_object_lo =
-    dynamic_cast<LengthableObject *> (self->start_object.get ());
-  double delta =
-    pos.ticks_ - (start_object_lo->end_pos_.ticks_ + region->pos_.ticks_);
-  z_debug ("delta {:f}", delta);
-
-  for (auto midi_note : MIDI_SELECTIONS->objects_ | type_is<MidiNote> ())
-    {
-      /* get new end pos by adding delta to the cached end pos */
-      Position new_end_pos = midi_note->end_pos_;
-      new_end_pos.add_ticks (delta);
-
-      /* get the global end pos first to snap it */
-      Position new_global_end_pos = new_end_pos;
-      new_global_end_pos.add_ticks (region->pos_.ticks_);
-
-      /* snap the global pos */
-      if (
-        self->snap_grid->any_snap () && !self->shift_held
-        && new_global_end_pos.is_positive ())
-        {
-          new_global_end_pos.snap (
-            self->earliest_obj_start_pos.get (), nullptr, region,
-            *self->snap_grid);
-        }
-
-      /* convert it back to a local pos */
-      new_end_pos = new_global_end_pos;
-      new_end_pos.add_ticks (-region->pos_.ticks_);
-
-      if (new_end_pos <= midi_note->pos_)
-        return false;
-      else if (!dry_run)
-        {
-          midi_note->end_pos_setter (&new_end_pos);
-        }
-    }
-
-  EVENTS_PUSH (
-    EventType::ET_ARRANGER_SELECTIONS_CHANGED, MIDI_SELECTIONS.get ());
-
-  return true;
 }
 
 int
@@ -428,7 +424,7 @@ midi_arranger_on_drag_end (ArrangerWidget * self)
     {
       switch (self->action)
         {
-        case UiOverlayAction::RESIZING_L:
+        case UiOverlayAction::ResizingL:
           {
             UNDO_MANAGER->perform (
               std::make_unique<ArrangerSelectionsAction::ResizeAction> (
@@ -436,7 +432,7 @@ midi_arranger_on_drag_end (ArrangerWidget * self)
                 ArrangerSelectionsAction::ResizeType::L, ticks_diff));
           }
           break;
-        case UiOverlayAction::RESIZING_R:
+        case UiOverlayAction::ResizingR:
           {
             UNDO_MANAGER->perform (
               std::make_unique<ArrangerSelectionsAction::ResizeAction> (
@@ -473,7 +469,7 @@ midi_arranger_on_drag_end (ArrangerWidget * self)
           }
           break;
         /* if copy/link-moved */
-        case UiOverlayAction::MOVING_COPY:
+        case UiOverlayAction::MovingCopy:
           {
             UNDO_MANAGER->perform (
               std::make_unique<
@@ -481,13 +477,13 @@ midi_arranger_on_drag_end (ArrangerWidget * self)
                 *MIDI_SELECTIONS, false, ticks_diff, pitch_diff, true));
           }
           break;
-        case UiOverlayAction::NONE:
+        case UiOverlayAction::None:
           {
             MIDI_SELECTIONS->clear (false);
           }
           break;
         /* something was created */
-        case UiOverlayAction::CREATING_RESIZING_R:
+        case UiOverlayAction::CreatingResizingR:
         case UiOverlayAction::AUTOFILLING:
           {
             UNDO_MANAGER->perform (

@@ -27,6 +27,108 @@
 
 #include "gtk_wrapper.h"
 
+ArrangerCursor
+automation_arranger_widget_get_cursor (ArrangerWidget * self, Tool tool)
+{
+  ArrangerCursor  ac = ArrangerCursor::Select;
+  UiOverlayAction action = self->action;
+
+  auto hit_obj = dynamic_cast<
+    AutomationPoint *> (arranger_widget_get_hit_arranger_object (
+    (ArrangerWidget *) self, ArrangerObject::Type::AutomationPoint,
+    self->hover_x, self->hover_y));
+
+  switch (action)
+    {
+    case UiOverlayAction::None:
+      switch (P_TOOL)
+        {
+        case Tool::Select:
+          {
+            if (hit_obj)
+              {
+                if (automation_point_is_point_hit (
+                      *hit_obj, self->hover_x, self->hover_y))
+                  {
+                    return ArrangerCursor::Grab;
+                  }
+                else
+                  {
+                    return ArrangerCursor::ResizingUp;
+                  }
+              }
+            else
+              {
+                /* set cursor to normal */
+                return ac;
+              }
+          }
+          break;
+        case Tool::Edit:
+          ac = ArrangerCursor::Edit;
+          break;
+        case Tool::Cut:
+          ac = ArrangerCursor::ARRANGER_CURSOR_CUT;
+          break;
+        case Tool::Eraser:
+          ac = ArrangerCursor::Eraser;
+          break;
+        case Tool::Ramp:
+          ac = ArrangerCursor::Ramp;
+          break;
+        case Tool::Audition:
+          ac = ArrangerCursor::Audition;
+          break;
+        }
+      break;
+    case UiOverlayAction::STARTING_DELETE_SELECTION:
+    case UiOverlayAction::DELETE_SELECTING:
+    case UiOverlayAction::STARTING_ERASING:
+    case UiOverlayAction::ERASING:
+      ac = ArrangerCursor::Eraser;
+      break;
+    case UiOverlayAction::STARTING_MOVING_COPY:
+    case UiOverlayAction::MovingCopy:
+      ac = ArrangerCursor::GrabbingCopy;
+      break;
+    case UiOverlayAction::STARTING_MOVING:
+    case UiOverlayAction::MOVING:
+      ac = ArrangerCursor::Grabbing;
+      break;
+    case UiOverlayAction::STARTING_MOVING_LINK:
+    case UiOverlayAction::MOVING_LINK:
+      ac = ArrangerCursor::GrabbingLink;
+      break;
+    case UiOverlayAction::StartingPanning:
+    case UiOverlayAction::Panning:
+      ac = ArrangerCursor::Panning;
+      break;
+    case UiOverlayAction::ResizingL:
+      ac = ArrangerCursor::ResizingL;
+      break;
+    case UiOverlayAction::ResizingR:
+      ac = ArrangerCursor::ResizingR;
+      break;
+    case UiOverlayAction::RESIZING_UP:
+      ac = ArrangerCursor::Grabbing;
+      break;
+    case UiOverlayAction::AUTOFILLING:
+      ac = ArrangerCursor::Autofill;
+      break;
+    case UiOverlayAction::STARTING_SELECTION:
+    case UiOverlayAction::SELECTING:
+    case UiOverlayAction::CREATING_MOVING:
+      ac = ArrangerCursor::Select;
+      break;
+    default:
+      z_warn_if_reached ();
+      ac = ArrangerCursor::Select;
+      break;
+    }
+
+  return ac;
+}
+
 void
 automation_arranger_widget_create_ap (
   ArrangerWidget *   self,
@@ -232,7 +334,7 @@ automation_arranger_on_drag_end (ArrangerWidget * self)
           }
           break;
           /* if copy-moved */
-        case UiOverlayAction::MOVING_COPY:
+        case UiOverlayAction::MovingCopy:
           {
             auto start_ap =
               dynamic_cast<AutomationPoint *> (self->start_object.get ());
@@ -248,7 +350,7 @@ automation_arranger_on_drag_end (ArrangerWidget * self)
                 *AUTOMATION_SELECTIONS, false, ticks_diff, value_diff, true));
           }
           break;
-        case UiOverlayAction::NONE:
+        case UiOverlayAction::None:
         case UiOverlayAction::STARTING_SELECTION:
           {
             AUTOMATION_SELECTIONS->clear (false);

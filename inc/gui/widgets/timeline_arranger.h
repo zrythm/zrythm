@@ -21,6 +21,9 @@
 #define MW_TIMELINE (MW_TIMELINE_PANEL->timeline)
 #define MW_PINNED_TIMELINE (MW_TIMELINE_PANEL->pinned_timeline)
 
+ArrangerCursor
+timeline_arranger_widget_get_cursor (ArrangerWidget * self, Tool tool);
+
 void
 timeline_arranger_widget_snap_range_r (ArrangerWidget * self, Position * pos);
 
@@ -106,36 +109,6 @@ timeline_arranger_widget_create_marker (
   ArrangerWidget * self,
   Track *          track,
   const Position * pos);
-
-/**
- * Snaps both the transients (to show in the GUI) and the actual regions.
- *
- * @param pos Absolute position in the timeline.
- * @param dry_run Don't resize notes; just check if the resize is allowed (check
- * if invalid resizes will happen).
- *
- * @return Whether successful.
- */
-bool
-timeline_arranger_widget_snap_regions_l (
-  ArrangerWidget * self,
-  Position *       pos,
-  bool             dry_run);
-
-/**
- * Snaps both the transients (to show in the GUI) and the actual regions.
- *
- * @param pos Absolute position in the timeline.
- * @param dry_run Don't resize notes; just check if the resize is allowed (check
- * if invalid resizes will happen)
- *
- * @return Whether successful.
- */
-bool
-timeline_arranger_widget_snap_regions_r (
-  ArrangerWidget * self,
-  Position *       pos,
-  bool             dry_run);
 
 /**
  * Scroll to the given position.

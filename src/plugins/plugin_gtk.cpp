@@ -863,7 +863,7 @@ plugin_gtk_open_generic_ui (Plugin * plugin, bool fire_events)
     "plugin window shown, adding idle timeout. "
     "Update frequency (Hz): %.01f",
     (double) plugin->ui_update_hz_);
-  z_return_if_fail (plugin->ui_update_hz_ >= PLUGIN_MIN_REFRESH_RATE);
+  z_return_if_fail (plugin->ui_update_hz_ >= Plugin::MIN_REFRESH_RATE);
 
   plugin->update_ui_source_id_ = g_timeout_add (
     (guint) (1000.f / plugin->ui_update_hz_),

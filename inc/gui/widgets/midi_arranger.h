@@ -14,6 +14,9 @@
 
 #define MW_MIDI_ARRANGER (MW_MIDI_EDITOR_SPACE->arranger_wrapper->child)
 
+ArrangerCursor
+midi_arranger_widget_get_cursor (ArrangerWidget * self, Tool tool);
+
 /**
  * Called on drag begin in parent when background is double clicked (i.e., a
  * note is created).
@@ -24,38 +27,6 @@ midi_arranger_widget_create_note (
   const Position   pos,
   int              note,
   MidiRegion      &region);
-
-/**
- * Called during drag_update in the parent when resizing the selection. It sets
- * the start Position of the selected MidiNote's.
- *
- * @param pos Absolute position in the arrranger.
- * @param dry_run Don't resize notes; just check if the resize is allowed (check
- * if invalid resizes will happen)
- *
- * @return Whether successful.
- */
-bool
-midi_arranger_widget_snap_midi_notes_l (
-  ArrangerWidget * self,
-  const Position   pos,
-  bool             dry_run);
-
-/**
- * Called during drag_update in the parent when resizing the selection. It sets
- * the end Position of the selected MidiNote's.
- *
- * @param pos Absolute position in the arrranger.
- * @parram dry_run Don't resize notes; just check if the resize is allowed
- * (check if invalid resizes will happen)
- *
- * @return Whether successful.
- */
-bool
-midi_arranger_widget_snap_midi_notes_r (
-  ArrangerWidget * self,
-  const Position   pos,
-  bool             dry_run);
 
 /**
  * Sets the currently hovered note and queues a

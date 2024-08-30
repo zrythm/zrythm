@@ -131,7 +131,7 @@ AutomationRegion::get_next_ap (
     {
       check_transients =
         ZRYTHM_HAVE_UI && MW_AUTOMATION_ARRANGER
-        && MW_AUTOMATION_ARRANGER->action == UiOverlayAction::MOVING_COPY;
+        && MW_AUTOMATION_ARRANGER->action == UiOverlayAction::MovingCopy;
       AutomationPoint * next_ap = nullptr;
       const int         loop_times = check_transients ? 2 : 1;
       for (auto &cur_ap_outer : aps_)

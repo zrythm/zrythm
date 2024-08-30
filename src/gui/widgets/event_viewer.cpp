@@ -306,23 +306,23 @@ event_viewer_widget_refresh_for_arranger (
 {
   switch (arranger->type)
     {
-    case ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE:
+    case ArrangerWidgetType::Timeline:
       event_viewer_widget_refresh (MW_TIMELINE_EVENT_VIEWER, selections_only);
       break;
-    case ArrangerWidgetType::ARRANGER_WIDGET_TYPE_MIDI:
-    case ArrangerWidgetType::ARRANGER_WIDGET_TYPE_MIDI_MODIFIER:
+    case ArrangerWidgetType::Midi:
+    case ArrangerWidgetType::MidiModifier:
       event_viewer_widget_refresh (
         MW_BOT_DOCK_EDGE->event_viewer_midi, selections_only);
       break;
-    case ArrangerWidgetType::ARRANGER_WIDGET_TYPE_CHORD:
+    case ArrangerWidgetType::Chord:
       event_viewer_widget_refresh (
         MW_BOT_DOCK_EDGE->event_viewer_chord, selections_only);
       break;
-    case ArrangerWidgetType::ARRANGER_WIDGET_TYPE_AUTOMATION:
+    case ArrangerWidgetType::Automation:
       event_viewer_widget_refresh (
         MW_BOT_DOCK_EDGE->event_viewer_automation, selections_only);
       break;
-    case ArrangerWidgetType::ARRANGER_WIDGET_TYPE_AUDIO:
+    case ArrangerWidgetType::Audio:
       event_viewer_widget_refresh (
         MW_BOT_DOCK_EDGE->event_viewer_audio, selections_only);
       break;

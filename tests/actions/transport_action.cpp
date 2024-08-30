@@ -33,7 +33,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "change BPM and time signature")
   /* loop the region */
   const auto &r = audio_track->lanes_[0]->regions_[0];
   REQUIRE_NOTHROW (
-    r->resize (false, ArrangerObject::ResizeType::RESIZE_LOOP, 40000, false));
+    r->resize (false, ArrangerObject::ResizeType::Loop, 40000, false));
 
   REQUIRE_EQ (P_TEMPO_TRACK->get_beat_unit (), 4);
 
@@ -156,7 +156,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "change BPM twice during playback")
   /* loop the region */
   const auto &r = audio_track->lanes_.front ()->regions_.front ();
   REQUIRE_NOTHROW (
-    r->resize (false, ArrangerObject::ResizeType::RESIZE_LOOP, 40000, false));
+    r->resize (false, ArrangerObject::ResizeType::Loop, 40000, false));
   REQUIRE (r->validate (true, 0));
 
   /* start playback */

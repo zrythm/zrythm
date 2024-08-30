@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2019, 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2019, 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_CHORD_ARRANGER_H__
@@ -6,6 +6,7 @@
 
 #include "dsp/chord_region.h"
 #include "dsp/position.h"
+#include "gui/widgets/arranger.h"
 
 #include "gtk_wrapper.h"
 
@@ -19,6 +20,9 @@ TYPEDEF_STRUCT_UNDERSCORED (ArrangerWidget);
  *
  * @{
  */
+
+ArrangerCursor
+chord_arranger_widget_get_cursor (ArrangerWidget * self, Tool tool);
 
 /**
  * Returns the chord index at y.

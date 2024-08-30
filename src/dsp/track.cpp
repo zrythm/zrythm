@@ -592,7 +592,7 @@ track_freeze (Track * self, bool freeze, GError ** error)
         self, F_BOUNCE, F_MARK_REGIONS, F_NO_MARK_CHILDREN, F_NO_MARK_PARENTS);
       data->info->mode = Exporter::Mode::EXPORT_MODE_TRACKS;
       export_settings_set_bounce_defaults (
-        data->info, Exporter::Format::WAV, nullptr, self->name);
+        data->info, Exporter::Format::WAV, "", self->name);
 
       data->conns = exporter_prepare_tracks_for_export (data->info, data->state);
 

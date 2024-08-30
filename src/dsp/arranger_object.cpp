@@ -488,6 +488,10 @@ ArrangerObject::set_position (
   z_return_val_if_fail (pos_ptr, false);
   *pos_ptr = *pos;
 
+  z_trace (
+    "set {} position {} to {}", fmt::ptr (this), ENUM_NAME (pos_type),
+    pos->to_string ());
+
   return true;
 }
 

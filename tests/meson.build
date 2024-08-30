@@ -272,6 +272,7 @@ if get_option ('tests')
     'utils/hash': { 'parallel': true },
     'utils/math': { 'parallel': true },
     'utils/midi': { 'parallel': true },
+    'utils/object_pool': { 'parallel': true },
     'utils/io': { 'parallel': true },
     'utils/string': { 'parallel': true },
     'utils/ui': { 'parallel': true },

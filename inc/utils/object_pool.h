@@ -21,17 +21,16 @@ public:
     std::is_default_constructible<T>::value,
     "T must be default-constructible");
 
-  ObjectPool (size_t initial_capacity = 64)
-      : capacity_ (initial_capacity), size_ (0)
-  {
-    expand ();
-  }
+  ObjectPool (size_t initial_capacity = 64) { reserve (initial_capacity); }
 
   T * acquire ()
   {
     T * object;
     if (available_.pop_front (object))
       {
+#ifdef DEBUG_OBJECT_POOL
+        num_in_use.fetch_add (1, std::memory_order_relaxed);
+#endif
         return object;
       }
 
@@ -43,20 +42,37 @@ public:
     return acquire ();
   }
 
-  void release (T * object) { available_.push_back (object); }
+  void release (T * object)
+  {
+    available_.push_back (object);
+#ifdef DEBUG_OBJECT_POOL
+    num_in_use.fetch_add (-1);
+#endif
+  }
 
   void reserve (size_t size)
   {
+    available_.reserve (size);
     while (size_ < size)
       {
         expand ();
       }
   }
 
+#ifdef DEBUG_OBJECT_POOL
+  auto get_num_in_use () const { return num_in_use.load (); }
+  auto get_capacity () const { return capacity_; }
+  auto get_size () const { return size_; }
+#endif
+
 private:
   void expand ()
   {
     size_t old_capacity = capacity_;
+    if (capacity_ == 0)
+      {
+        capacity_ = 1;
+      }
     capacity_ *= 2;
 
     buffer_.reserve (capacity_);
@@ -72,8 +88,13 @@ private:
 
   std::vector<std::unique_ptr<T>> buffer_;
   MPMCQueue<T *>                  available_;
-  size_t                          capacity_;
-  size_t                          size_;
+  size_t                          capacity_ = 0;
+  size_t                          size_ = 0;
+
+#ifdef DEBUG_OBJECT_POOL
+  // Debug counter
+  std::atomic<size_t> num_in_use;
+#endif
 };
 
 #endif

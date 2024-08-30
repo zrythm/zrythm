@@ -34,16 +34,14 @@
 #include <time.h>
 #include <yyjson.h>
 
-typedef enum
+ProjectInitFlowManager::~ProjectInitFlowManager ()
 {
-  Z_PROJECT_INIT_FLOW_MANAGER_ERROR_FAILED,
-} ZProjectInitFlowManagerError;
-
-#define Z_PROJECT_INIT_FLOW_MANAGER_ERROR \
-  z_project_init_flow_manager_error_quark ()
-GQuark
-z_project_init_flow_manager_error_quark (void);
-G_DEFINE_QUARK (z - project - init - flow - manager - error - quark, z_project_init_flow_manager_error)
+  if (open_backup_response_cb_id_)
+    {
+      g_source_remove (open_backup_response_cb_id_);
+      open_backup_response_cb_id_ = 0;
+    }
+}
 
 void
 ProjectInitFlowManager::append_callback (
@@ -756,10 +754,10 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
       ui_show_message_printf (
         _ ("Project Upgraded"),
         _ ("This project has been automatically upgraded "
-           "to v1.%d. Saving this project will overwrite the "
+           "to v{}.{}. Saving this project will overwrite the "
            "old one. If you would like to keep both, please "
            "use 'Save As...'."),
-        prj->get_format_minor_version ());
+        prj->get_format_major_version (), prj->get_format_minor_version ());
     }
 
   call_last_callback_success ();
@@ -780,6 +778,7 @@ on_open_backup_response (
       gtk_widget_set_visible (GTK_WIDGET (MAIN_WINDOW), true);
     }
   flow_mgr->continue_load_from_file_after_open_backup_response ();
+  flow_mgr->open_backup_response_cb_id_ = 0;
 }
 
 void
@@ -827,7 +826,7 @@ ProjectInitFlowManager::load_from_file ()
                 {
                   gtk_widget_set_visible (GTK_WIDGET (MAIN_WINDOW), false);
                 }
-              g_signal_connect (
+              open_backup_response_cb_id_ = g_signal_connect (
                 dialog, "response", G_CALLBACK (on_open_backup_response), this);
               return;
             }

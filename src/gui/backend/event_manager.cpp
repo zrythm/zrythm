@@ -587,6 +587,12 @@ EventManager::soft_recalc_graph_when_paused ()
 void
 EventManager::process_event (ZEvent &ev)
 {
+  /* don't print super-noisy events*/
+  if (ev.type_ != EventType::ET_PLAYHEAD_POS_CHANGED)
+    {
+      z_trace ("processing:\n{}", ev);
+    }
+
   switch (ev.type_)
     {
     case EventType::ET_PLUGIN_LATENCY_CHANGED:

@@ -1,12 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Base plugin.
- */
-
 #ifndef __PLUGINS_BASE_PLUGIN_H__
 #define __PLUGINS_BASE_PLUGIN_H__
 
@@ -42,26 +36,9 @@ using WrappedObjectWithChangeSignal = struct _WrappedObjectWithChangeSignal;
  * @{
  */
 
-#define PLUGIN_SCHEMA_VERSION 1
-
-#define PLUGIN_MAGIC 43198683
+constexpr auto PLUGIN_MAGIC = 43198683;
 #define IS_PLUGIN(x) (((Plugin *) x)->magic_ == PLUGIN_MAGIC)
 #define IS_PLUGIN_AND_NONNULL(x) (x && IS_PLUGIN (x))
-
-#define PLUGIN_DEFAULT_BANK_URI "https://lv2.zrythm.org#default-bank"
-#define PLUGIN_INIT_PRESET_URI "https://lv2.zrythm.org#init-preset"
-
-/**
- * Plugin UI refresh rate limits.
- */
-constexpr float PLUGIN_MIN_REFRESH_RATE = 30.f;
-constexpr float PLUGIN_MAX_REFRESH_RATE = 121.f;
-
-/**
- * Plugin UI scale factor limits.
- */
-constexpr float PLUGIN_MIN_SCALE_FACTOR = 0.5f;
-constexpr float PLUGIN_MAX_SCALE_FACTOR = 4.f;
 
 /**
  * This class provides the core functionality for managing a plugin, including
@@ -138,8 +115,23 @@ public:
     PresetIdentifier id_;
   };
 
+  constexpr static auto DEFAULT_BANK_URI = "https://lv2.zrythm.org#default-bank";
+  constexpr static auto INIT_PRESET_URI = "https://lv2.zrythm.org#init-preset";
+
+  /**
+   * UI refresh rate limits.
+   */
+  constexpr static float MIN_REFRESH_RATE = 30.f;
+  constexpr static float MAX_REFRESH_RATE = 121.f;
+
+  /**
+   * UI scale factor limits.
+   */
+  constexpr static float MIN_SCALE_FACTOR = 0.5f;
+  constexpr static float MAX_SCALE_FACTOR = 4.f;
+
 public:
-  virtual ~Plugin () { z_return_if_fail (!visible_); }
+  virtual ~Plugin ();
 
   static std::unique_ptr<Plugin>
   create_unique_from_hosting_type (PluginSetting::HostingType hosting_type);

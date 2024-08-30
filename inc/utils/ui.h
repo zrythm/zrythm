@@ -242,20 +242,20 @@ enum class UiCursorState
  */
 enum class UiOverlayAction
 {
-  NONE,
-  CREATING_RESIZING_R,
+  None,
+  CreatingResizingR,
   CREATING_MOVING,
-  RESIZING_L,
-  RESIZING_L_LOOP,
-  RESIZING_L_FADE,
-  RESIZING_R,
-  RESIZING_R_LOOP,
-  RESIZING_R_FADE,
+  ResizingL,
+  ResizingLLoop,
+  ResizingLFade,
+  ResizingR,
+  ResizingRLoop,
+  ResizingRFade,
   RESIZING_UP,
   RESIZING_UP_FADE_IN,
   RESIZING_UP_FADE_OUT,
-  STRETCHING_L,
-  STRETCHING_R,
+  StretchingL,
+  StretchingR,
 
   STARTING_AUDITIONING,
   AUDITIONING,
@@ -279,7 +279,7 @@ enum class UiOverlayAction
   STARTING_MOVING_COPY,
   STARTING_MOVING_LINK,
   MOVING,
-  MOVING_COPY,
+  MovingCopy,
   MOVING_LINK,
   STARTING_CHANGING_CURVE,
   CHANGING_CURVE,
@@ -303,8 +303,8 @@ enum class UiOverlayAction
 
   RENAMING,
 
-  STARTING_PANNING,
-  PANNING,
+  StartingPanning,
+  Panning,
   NUM_UI_OVERLAY_ACTIONS,
 };
 

@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2021-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <utility>
-
 #include "actions/arranger_selections.h"
 #include "actions/midi_mapping_action.h"
 #include "dsp/channel_send.h"
@@ -35,8 +33,8 @@
 struct ItemFactoryData
 {
   ItemFactoryData ();
-  ItemFactoryData (const ItemFactory &factory, WrappedObjectWithChangeSignal &obj)
-      : factory_ (factory), obj_ (&obj)
+  ItemFactoryData (ItemFactory &factory, WrappedObjectWithChangeSignal &obj)
+      : factory_ (&factory), obj_ (&obj)
   {
   }
 
@@ -47,7 +45,7 @@ struct ItemFactoryData
   }
 
 public:
-  ItemFactory                     factory_;
+  ItemFactory *                   factory_;
   WrappedObjectWithChangeSignal * obj_;
 };
 
@@ -55,7 +53,7 @@ static void
 on_toggled (GtkCheckButton * self, gpointer user_data)
 {
   ItemFactoryData * data = (ItemFactoryData *) user_data;
-  ItemFactory      &factory = data->factory_;
+  ItemFactory      &factory = *data->factory_;
 
   WrappedObjectWithChangeSignal * obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data->obj_);
@@ -337,8 +335,8 @@ on_editable_label_editing_changed (
           }
         else
           {
-            auto * nfo = object_new (EditableChangedInfo);
-            nfo->column_name = data->factory_.column_name_;
+            auto * nfo = new EditableChangedInfo ();
+            nfo->column_name = data->factory_->column_name_;
             nfo->text = text;
             nfo->obj = obj;
             g_idle_add_full (
@@ -1071,7 +1069,7 @@ ItemFactory::ItemFactory (Type type, bool editable, std::string column_name)
 
 ItemFactory::~ItemFactory ()
 {
-  g_object_unref (list_item_factory_);
+  object_free_w_func_and_null (g_object_unref, list_item_factory_);
 }
 
 std::unique_ptr<ItemFactory> &

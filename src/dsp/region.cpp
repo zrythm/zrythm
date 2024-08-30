@@ -761,6 +761,8 @@ template <typename RegionT>
 std::shared_ptr<RegionT>
 RegionImpl<RegionT>::find (const RegionIdentifier &id)
 {
+  z_return_val_if_fail (id.track_name_hash_ != 0, nullptr);
+
   if constexpr (is_laned ())
     {
       z_return_val_if_fail (id.is_audio () || id.is_midi (), nullptr);

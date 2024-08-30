@@ -41,32 +41,29 @@ Logger::Logger ()
 {
 
   auto set_pattern = [] (auto &sink, bool with_date) {
+
+  // only function name is shown on windows, so show filename too
+#ifdef _WIN32
+#  define FUNCTION_AND_LINE_NO_PART "%s:%!():%#"
+#else
+#  define FUNCTION_AND_LINE_NO_PART "%!:%#"
+#endif
+
+#define TIMESTAMP_PART "%H:%M:%S.%f"
+  // [time] [thread id] [level] [source file:line] message
+#define FINAL_PART "[%t] [%^%l%$] [" FUNCTION_AND_LINE_NO_PART "] %v"
     if (with_date)
       {
-        // [time] [thread id] [level] [source file:line] message
-        sink->set_pattern (
-          "[%Y-%m-%d %H:%M:%S.%e] [%t] [%^%l%$] "
-#ifdef _WIN32
-          "[%s:%!()" // only function name is shown on windows, so show filename
-                     // too
-#else
-          "[%!"
-#endif
-          ":%#] %v");
+        sink->set_pattern ("[%Y-%m-%d" TIMESTAMP_PART "] " FINAL_PART);
       }
     else
       {
-        // [time] [thread id] [level] [source file:line] message
-        sink->set_pattern (
-          "[%H:%M:%S.%e] [%t] [%^%l%$] "
-#ifdef _WIN32
-          "[%s:%!()" // only function name is shown on windows, so show
-                     // filename too
-#else
-          "[%!"
-#endif
-          ":%#] %v");
+        sink->set_pattern ("[" TIMESTAMP_PART "] " FINAL_PART);
       }
+
+#undef FUNCTION_AND_LINE_NO_PART
+#undef TIMESTAMP_PART
+#undef FINAL_PART
   };
 
   // Create a rotating file sink with a maximum size of 10 MB and 5 rotated

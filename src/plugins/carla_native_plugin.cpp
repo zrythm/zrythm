@@ -496,12 +496,12 @@ void
 CarlaNativePlugin::populate_banks ()
 {
   /* add default bank and preset */
-  auto default_bank_uri = std::string (PLUGIN_DEFAULT_BANK_URI);
+  auto default_bank_uri = std::string (DEFAULT_BANK_URI);
   auto pl_def_bank =
     add_bank_if_not_exists (&default_bank_uri, _ ("Default bank"));
   {
     auto pl_def_preset = Preset ();
-    pl_def_preset.uri_ = PLUGIN_INIT_PRESET_URI;
+    pl_def_preset.uri_ = INIT_PRESET_URI;
     pl_def_preset.name_ = _ ("Init");
     pl_def_bank->add_preset (std::move (pl_def_preset));
   }

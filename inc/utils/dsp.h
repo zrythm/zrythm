@@ -395,19 +395,20 @@ public:
   LspDspContextRAII ()
   {
     if (ZRYTHM_USE_OPTIMIZED_DSP)
-      lsp::dsp::start (&ctx_);
+      {
+        ctx_ = std::make_unique<lsp::dsp::context_t> ();
+        lsp::dsp::start (ctx_.get ());
+      }
   }
 
   ~LspDspContextRAII ()
   {
-    if (ZRYTHM_USE_OPTIMIZED_DSP)
-      lsp::dsp::finish (&ctx_);
+    if (ctx_)
+      lsp::dsp::finish (ctx_.get ());
   }
 
-  lsp::dsp::context_t * get () { return &ctx_; }
-
 private:
-  lsp::dsp::context_t ctx_ = {};
+  std::unique_ptr<lsp::dsp::context_t> ctx_;
 #endif
 };
 

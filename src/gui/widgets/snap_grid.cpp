@@ -22,16 +22,16 @@ set_label (SnapGridWidget * self)
     {
       if (sg->length_type_ == NoteLengthType::NOTE_LENGTH_LINK)
         {
-          new_str = fmt::format ("%s - 🔗", snap_str);
+          new_str = fmt::format ("{} - 🔗", snap_str);
         }
       else if (sg->length_type_ == NoteLengthType::NOTE_LENGTH_LAST_OBJECT)
         {
-          new_str = format_str (_ ("%s - Last object"), snap_str);
+          new_str = format_str (_ ("{} - Last object"), snap_str);
         }
       else
         {
           auto default_str = sg->stringize ();
-          new_str = fmt::format ("%s - %s", snap_str, default_str);
+          new_str = fmt::format ("{} - {}", snap_str, default_str);
         }
     }
   else

@@ -53,6 +53,14 @@
 
 #include "gtk_wrapper.h"
 
+Plugin::~Plugin ()
+{
+  if (activated_)
+    {
+      z_return_if_fail (!visible_);
+    }
+}
+
 std::unique_ptr<Plugin>
 Plugin::create_with_setting (
   const PluginSetting &setting,
@@ -124,6 +132,8 @@ Plugin::set_stereo_outs_and_midi_in ()
 void
 Plugin::set_enabled_and_gain ()
 {
+  z_return_if_fail (!in_ports_.empty ());
+
   /* set enabled/gain ports */
   for (auto &port : in_ports_)
     {
@@ -171,9 +181,9 @@ Plugin::init_loaded (AutomatableTrack * track, MixerSelections * ms)
 
   std::vector<Port *> ports;
   append_ports (ports);
+  z_return_if_fail (!ports.empty ());
   for (auto &port : ports)
     {
-      port->magic_ = PORT_MAGIC;
       port->plugin_ = this;
     }
 
@@ -898,29 +908,25 @@ Plugin::set_ui_refresh_rate ()
   }
 
   /* clamp the refresh rate to sensible limits */
-  if (
-    ui_update_hz_ < PLUGIN_MIN_REFRESH_RATE
-    || ui_update_hz_ > PLUGIN_MAX_REFRESH_RATE)
+  if (ui_update_hz_ < MIN_REFRESH_RATE || ui_update_hz_ > MAX_REFRESH_RATE)
     {
       z_warning (
         "Invalid refresh rate of %.01f received, "
         "clamping to reasonable bounds",
         (double) ui_update_hz_);
-      ui_update_hz_ = std::clamp<float> (
-        ui_update_hz_, PLUGIN_MIN_REFRESH_RATE, PLUGIN_MAX_REFRESH_RATE);
+      ui_update_hz_ =
+        std::clamp<float> (ui_update_hz_, MIN_REFRESH_RATE, MAX_REFRESH_RATE);
     }
 
   /* clamp the scale factor to sensible limits */
-  if (
-    ui_scale_factor_ < PLUGIN_MIN_SCALE_FACTOR
-    || ui_scale_factor_ > PLUGIN_MAX_SCALE_FACTOR)
+  if (ui_scale_factor_ < MIN_SCALE_FACTOR || ui_scale_factor_ > MAX_SCALE_FACTOR)
     {
       z_warning (
         "Invalid scale factor of %.01f received, "
         "clamping to reasonable bounds",
         (double) ui_scale_factor_);
       ui_scale_factor_ = std::clamp<float> (
-        ui_scale_factor_, PLUGIN_MIN_SCALE_FACTOR, PLUGIN_MAX_SCALE_FACTOR);
+        ui_scale_factor_, MIN_SCALE_FACTOR, MAX_SCALE_FACTOR);
     }
 
 return_refresh_rate_and_scale_factor:
@@ -1215,11 +1221,17 @@ Plugin::copy_state_dir (
 {
   auto dir_to_use =
     abs_state_dir ? *abs_state_dir : get_abs_state_dir (is_backup, true);
-  auto files_in_dir = io_get_files_in_dir (dir_to_use);
-  z_return_if_fail (!files_in_dir.isEmpty ());
+  {
+    auto files_in_dir = io_get_files_in_dir (dir_to_use);
+    z_return_if_fail (files_in_dir.isEmpty ());
+  }
 
   auto src_dir_to_use = src.get_abs_state_dir (is_backup);
   z_return_if_fail (!src_dir_to_use.empty ());
+  {
+    auto files_in_src_dir = io_get_files_in_dir (src_dir_to_use);
+    z_return_if_fail (!files_in_src_dir.isEmpty ());
+  }
 
   io_copy_dir (dir_to_use, src_dir_to_use, true, true);
 }

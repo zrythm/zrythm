@@ -7,6 +7,7 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/arranger_object.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/midi_modifier_arranger.h"
@@ -15,6 +16,96 @@
 #include "utils/flags.h"
 #include "utils/rt_thread_id.h"
 #include "zrythm_app.h"
+
+ArrangerCursor
+midi_modifier_arranger_widget_get_cursor (ArrangerWidget * self, Tool tool)
+{
+  ArrangerCursor  ac = ArrangerCursor::Select;
+  UiOverlayAction action = self->action;
+
+  switch (action)
+    {
+    case UiOverlayAction::None:
+      if (tool == Tool::Select)
+        {
+          ArrangerObject * vel_obj = arranger_widget_get_hit_arranger_object (
+            (ArrangerWidget *) self, ArrangerObject::Type::Velocity,
+            self->hover_x, self->hover_y);
+          int is_hit = vel_obj != NULL;
+
+          if (is_hit)
+            {
+              int is_resize = arranger_object_is_resize_up (
+                vel_obj, (int) self->hover_x - vel_obj->full_rect_.x,
+                (int) self->hover_y - vel_obj->full_rect_.y);
+              if (is_resize)
+                {
+                  return ArrangerCursor::ResizingUp;
+                }
+            }
+
+          return ac;
+        }
+      else if (P_TOOL == Tool::Edit)
+        ac = ArrangerCursor::Edit;
+      else if (P_TOOL == Tool::Eraser)
+        ac = ArrangerCursor::Eraser;
+      else if (P_TOOL == Tool::Ramp)
+        ac = ArrangerCursor::Ramp;
+      else if (P_TOOL == Tool::Audition)
+        ac = ArrangerCursor::Audition;
+      break;
+    case UiOverlayAction::STARTING_DELETE_SELECTION:
+    case UiOverlayAction::DELETE_SELECTING:
+    case UiOverlayAction::STARTING_ERASING:
+    case UiOverlayAction::ERASING:
+      ac = ArrangerCursor::Eraser;
+      break;
+    case UiOverlayAction::STARTING_MOVING_COPY:
+    case UiOverlayAction::MovingCopy:
+      ac = ArrangerCursor::GrabbingCopy;
+      break;
+    case UiOverlayAction::STARTING_MOVING:
+    case UiOverlayAction::MOVING:
+      ac = ArrangerCursor::Grabbing;
+      break;
+    case UiOverlayAction::STARTING_MOVING_LINK:
+    case UiOverlayAction::MOVING_LINK:
+      ac = ArrangerCursor::GrabbingLink;
+      break;
+    case UiOverlayAction::StartingPanning:
+    case UiOverlayAction::Panning:
+      ac = ArrangerCursor::Panning;
+      break;
+    case UiOverlayAction::ResizingL:
+      ac = ArrangerCursor::ResizingL;
+      break;
+    case UiOverlayAction::ResizingR:
+      ac = ArrangerCursor::ResizingR;
+      break;
+    case UiOverlayAction::RESIZING_UP:
+      ac = ArrangerCursor::ResizingUp;
+      break;
+    case UiOverlayAction::STARTING_SELECTION:
+    case UiOverlayAction::SELECTING:
+      /* TODO depends on tool */
+      break;
+    case UiOverlayAction::STARTING_RAMP:
+    case UiOverlayAction::RAMPING:
+      ac = ArrangerCursor::Ramp;
+      break;
+    /* editing */
+    case UiOverlayAction::AUTOFILLING:
+      ac = ArrangerCursor::Edit;
+      break;
+    default:
+      z_warn_if_reached ();
+      ac = ArrangerCursor::Select;
+      break;
+    }
+
+  return ac;
+}
 
 void
 midi_modifier_arranger_widget_set_start_vel (ArrangerWidget * self)

@@ -129,7 +129,7 @@ public:
     double audio_region_size_ticks = audio_region->get_length_in_ticks ();
     double missing_ticks = (end.ticks_ - start.ticks_) - audio_region_size_ticks;
     REQUIRE_NOTHROW (audio_region->resize (
-      false, ArrangerObject::ResizeType::RESIZE_LOOP, missing_ticks, false));
+      false, ArrangerObject::ResizeType::Loop, missing_ticks, false));
     UNDO_MANAGER->perform (
       std::make_unique<ArrangerSelectionsAction::ResizeAction> (
         *sel_before, TL_SELECTIONS.get (),

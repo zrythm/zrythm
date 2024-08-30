@@ -182,7 +182,7 @@ automation_point_draw (
     {
       std::string text = fmt::format (
         "{}/{} ({})", ap->index_, region->aps_.size (), ap->normalized_val_);
-      if (arranger->action != UiOverlayAction::NONE && !ap->transient_)
+      if (arranger->action != UiOverlayAction::None && !ap->transient_)
         {
           text += " - t";
         }
@@ -196,7 +196,7 @@ automation_point_draw (
     }
   else if (
     g_settings_get_boolean (S_UI, "show-automation-values")
-    && !(arranger->action != UiOverlayAction::NONE && !ap->transient_))
+    && !(arranger->action != UiOverlayAction::None && !ap->transient_))
     {
 #if ZRYTHM_TARGET_VER_MAJ > 1
       std::string text = fmt::format ("{}", ap.fvalue_);

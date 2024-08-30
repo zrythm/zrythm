@@ -28,6 +28,89 @@
 
 #include "gtk_wrapper.h"
 
+ArrangerCursor
+chord_arranger_widget_get_cursor (ArrangerWidget * self, Tool tool)
+{
+  ArrangerCursor  ac = ArrangerCursor::Select;
+  UiOverlayAction action = self->action;
+
+  int is_hit =
+    arranger_widget_get_hit_arranger_object (
+      (ArrangerWidget *) self, ArrangerObject::Type::ChordObject, self->hover_x,
+      self->hover_y)
+    != NULL;
+
+  switch (action)
+    {
+    case UiOverlayAction::None:
+      switch (P_TOOL)
+        {
+        case Tool::Select:
+          {
+            if (is_hit)
+              {
+                return ArrangerCursor::Grab;
+              }
+            else
+              {
+                /* set cursor to normal */
+                return ac;
+              }
+          }
+          break;
+        case Tool::Edit:
+          ac = ArrangerCursor::Edit;
+          break;
+        case Tool::Cut:
+          ac = ArrangerCursor::ARRANGER_CURSOR_CUT;
+          break;
+        case Tool::Eraser:
+          ac = ArrangerCursor::Eraser;
+          break;
+        case Tool::Ramp:
+          ac = ArrangerCursor::Ramp;
+          break;
+        case Tool::Audition:
+          ac = ArrangerCursor::Audition;
+          break;
+        }
+      break;
+    case UiOverlayAction::STARTING_DELETE_SELECTION:
+    case UiOverlayAction::DELETE_SELECTING:
+    case UiOverlayAction::STARTING_ERASING:
+    case UiOverlayAction::ERASING:
+      ac = ArrangerCursor::Eraser;
+      break;
+    case UiOverlayAction::STARTING_MOVING_COPY:
+    case UiOverlayAction::MovingCopy:
+      ac = ArrangerCursor::GrabbingCopy;
+      break;
+    case UiOverlayAction::STARTING_MOVING:
+    case UiOverlayAction::MOVING:
+      ac = ArrangerCursor::Grabbing;
+      break;
+    case UiOverlayAction::STARTING_MOVING_LINK:
+    case UiOverlayAction::MOVING_LINK:
+      ac = ArrangerCursor::GrabbingLink;
+      break;
+    case UiOverlayAction::StartingPanning:
+    case UiOverlayAction::Panning:
+      ac = ArrangerCursor::Panning;
+      break;
+    case UiOverlayAction::ResizingL:
+      ac = ArrangerCursor::ResizingL;
+      break;
+    case UiOverlayAction::ResizingR:
+      ac = ArrangerCursor::ResizingR;
+      break;
+    default:
+      ac = ArrangerCursor::Select;
+      break;
+    }
+
+  return ac;
+}
+
 void
 chord_arranger_widget_create_chord (
   ArrangerWidget * self,
@@ -128,7 +211,7 @@ chord_arranger_on_drag_end (ArrangerWidget * self)
                 *CHORD_SELECTIONS, ticks_diff, chord_diff, true));
           }
           break;
-        case UiOverlayAction::MOVING_COPY:
+        case UiOverlayAction::MovingCopy:
         case UiOverlayAction::MOVING_LINK:
           {
             double ticks_diff =
@@ -143,7 +226,7 @@ chord_arranger_on_drag_end (ArrangerWidget * self)
                 *CHORD_SELECTIONS, false, ticks_diff, chord_diff, true));
           }
           break;
-        case UiOverlayAction::NONE:
+        case UiOverlayAction::None:
         case UiOverlayAction::STARTING_SELECTION:
           {
             CHORD_SELECTIONS->clear (false);

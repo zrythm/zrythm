@@ -237,7 +237,7 @@ AudioRegion::fill_stereo_ports (
   if (
     G_UNLIKELY (
       ZRYTHM_HAVE_UI && MW_TIMELINE
-      && MW_TIMELINE->action == UiOverlayAction::STRETCHING_R))
+      && MW_TIMELINE->action == UiOverlayAction::StretchingR))
     {
       dsp_fill (
         &stereo_ports.get_l ().buf_[time_nfo.local_offset_],

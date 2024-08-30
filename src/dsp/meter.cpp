@@ -32,6 +32,7 @@ Meter::get_value (AudioValueFormat format, float * val, float * max)
         {
           *val = 1e-20f;
           *max = 1e-20f;
+          z_trace ("no blocks to read for port {}", port_->get_label ());
           return;
         }
 
@@ -59,15 +60,15 @@ Meter::get_value (AudioValueFormat format, float * val, float * max)
             &tmp_buf_[start_index], (size_t) num_cycles * block_length);
           break;
         case MeterAlgorithm::METER_ALGORITHM_TRUE_PEAK:
-          true_peak_processor_->process (&port_->buf_[0], block_length);
+          true_peak_processor_->process (port_->buf_.data (), block_length);
           amp = true_peak_processor_->read_f ();
           break;
         case MeterAlgorithm::METER_ALGORITHM_K:
-          kmeter_processor_->process (&port_->buf_[0], block_length);
+          kmeter_processor_->process (port_->buf_.data (), block_length);
           kmeter_processor_->read (&amp, &max_amp);
           break;
         case MeterAlgorithm::METER_ALGORITHM_DIGITAL_PEAK:
-          peak_processor_->process (&port_->buf_[0], block_length);
+          peak_processor_->process (port_->buf_.data (), block_length);
           peak_processor_->read (&amp, &max_amp);
           break;
         default:
@@ -76,12 +77,12 @@ Meter::get_value (AudioValueFormat format, float * val, float * max)
     }
   else if (port_->is_event ())
     {
-      bool on = false;
-      auto port = static_cast<MidiPort *> (port_);
+      bool   on = false;
+      auto * port = dynamic_cast<MidiPort *> (port_);
       if (port_->write_ring_buffers_)
         {
           MidiEvent event;
-          while (port->midi_ring_->peek (event) > 0)
+          while (port->midi_ring_->peek (event))
             {
               if (event.systime_ > last_midi_trigger_time_)
                 {
@@ -105,15 +106,19 @@ Meter::get_value (AudioValueFormat format, float * val, float * max)
       max_amp = amp;
     }
 
+  // z_trace ("port {} amp: {}", port_->get_full_designation (), amp);
+
   /* adjust falloff */
   auto now = SteadyClock::now ();
   if (amp < last_amp_)
     {
       /* calculate new value after falloff */
       float falloff =
-        static_cast<float> (
-          std::chrono::duration_cast<std::chrono::seconds> (now - last_draw_time_)
-            .count ())
+        (static_cast<float> (
+           std::chrono::duration_cast<std::chrono::milliseconds> (
+             now - last_draw_time_)
+             .count ())
+         / 1000.f)
         *
         /* rgareus says 13.3 is the standard */
         13.3f;
@@ -130,7 +135,9 @@ Meter::get_value (AudioValueFormat format, float * val, float * max)
   /* if this is a peak value, set to current falloff
    * if peak is lower */
   if (max_amp < amp)
-    max_amp = amp;
+    {
+      max_amp = amp;
+    }
 
   /* remember vals */
   last_draw_time_ = now;
@@ -154,10 +161,8 @@ Meter::get_value (AudioValueFormat format, float * val, float * max)
     }
 }
 
-Meter::Meter (Port &port)
+Meter::Meter (Port &port) : port_ (&port)
 {
-  port_ = &port;
-
   /* master */
   if (port_->is_audio () || port_->is_cv ())
     {

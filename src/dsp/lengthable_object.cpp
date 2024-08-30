@@ -35,11 +35,15 @@ LengthableObject::resize (
   const double ticks,
   bool         during_ui_action)
 {
+  z_trace (
+    "resizing object{{ left: {}, type: {}, ticks: {}, during UI action: {}}}",
+    left, ENUM_NAME (type), ticks, during_ui_action);
+
   double   before_length = get_length_in_ticks ();
   Position tmp;
   if (left)
     {
-      if (type == ResizeType::RESIZE_FADE)
+      if (type == ResizeType::Fade)
         {
           tmp = dynamic_cast<FadeableObject *> (this)->fade_in_pos_;
           tmp.add_ticks (ticks);
@@ -58,7 +62,7 @@ LengthableObject::resize (
               set_position (&tmp, PositionType::FadeOut, false);
             }
 
-          if (type == ResizeType::RESIZE_LOOP)
+          if (type == ResizeType::Loop)
             {
               auto   lo = dynamic_cast<LoopableObject *> (this);
               double loop_len = lo->get_loop_length_in_ticks ();
@@ -102,7 +106,7 @@ LengthableObject::resize (
   /* else if resizing right side */
   else
     {
-      if (type == ResizeType::RESIZE_FADE)
+      if (type == ResizeType::Fade)
         {
           auto fo = dynamic_cast<FadeableObject *> (this);
           tmp = fo->fade_out_pos_;
@@ -119,13 +123,13 @@ LengthableObject::resize (
           double change_ratio =
             (get_length_in_ticks ()) / (prev_end_pos.ticks_ - pos_.ticks_);
 
-          if (type != ResizeType::RESIZE_LOOP && can_loop ())
+          if (type != ResizeType::Loop && can_loop ())
             {
               auto lo = dynamic_cast<LoopableObject *> (this);
               tmp = lo->loop_end_pos_;
               if (
                 type == ResizeType::RESIZE_STRETCH_BPM_CHANGE
-                || type == ResizeType::RESIZE_STRETCH)
+                || type == ResizeType::Stretch)
                 {
                   tmp.from_ticks (tmp.ticks_ * change_ratio);
                 }
@@ -140,7 +144,7 @@ LengthableObject::resize (
               /* if stretching, also stretch loop start */
               if (
                 type == ResizeType::RESIZE_STRETCH_BPM_CHANGE
-                || type == ResizeType::RESIZE_STRETCH)
+                || type == ResizeType::Stretch)
                 {
                   tmp = lo->loop_start_pos_;
                   tmp.from_ticks (tmp.ticks_ * change_ratio);
@@ -155,7 +159,7 @@ LengthableObject::resize (
               tmp = fo->fade_out_pos_;
               if (
                 type == ResizeType::RESIZE_STRETCH_BPM_CHANGE
-                || type == ResizeType::RESIZE_STRETCH)
+                || type == ResizeType::Stretch)
                 {
                   tmp.from_ticks (tmp.ticks_ * change_ratio);
                 }
@@ -170,7 +174,7 @@ LengthableObject::resize (
               /* if stretching, also stretch fade in */
               if (
                 type == ResizeType::RESIZE_STRETCH_BPM_CHANGE
-                || type == ResizeType::RESIZE_STRETCH)
+                || type == ResizeType::Stretch)
                 {
                   tmp = fo->fade_in_pos_;
                   tmp.from_ticks (tmp.ticks_ * change_ratio);
@@ -180,7 +184,7 @@ LengthableObject::resize (
                 }
             }
 
-          if (type == ResizeType::RESIZE_STRETCH && is_region ())
+          if (type == ResizeType::Stretch && is_region ())
             {
               std::visit (
                 [&] (auto &&region) {

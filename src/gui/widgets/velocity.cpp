@@ -86,7 +86,7 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
   gtk_snapshot_restore (snapshot);
 
   /* draw text */
-  if (arranger->action != UiOverlayAction::NONE)
+  if (arranger->action != UiOverlayAction::None)
     {
       char text[8];
       sprintf (text, "%d", self->vel_);

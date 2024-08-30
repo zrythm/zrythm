@@ -97,8 +97,8 @@ chord_editor_space_widget_setup (ChordEditorSpaceWidget * self)
   if (self->arranger)
     {
       arranger_widget_setup (
-        Z_ARRANGER_WIDGET (self->arranger),
-        ArrangerWidgetType::ARRANGER_WIDGET_TYPE_CHORD, SNAP_GRID_EDITOR);
+        Z_ARRANGER_WIDGET (self->arranger), ArrangerWidgetType::Chord,
+        SNAP_GRID_EDITOR);
     }
 
   for (size_t i = 0; i < CHORD_EDITOR->chords_.size (); i++)
@@ -141,7 +141,7 @@ chord_editor_space_widget_init (ChordEditorSpaceWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->arranger->type = ArrangerWidgetType::ARRANGER_WIDGET_TYPE_CHORD;
+  self->arranger->type = ArrangerWidgetType::Chord;
 
   gtk_widget_set_vexpand (GTK_WIDGET (self->arranger), true);
 

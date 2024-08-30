@@ -38,7 +38,7 @@
 
 /*#include <valgrind/callgrind.h>*/
 
-#define TYPE(x) ArrangerWidgetType::ARRANGER_WIDGET_TYPE_##x
+#define TYPE(x) ArrangerWidgetType::x
 
 static const GdkRGBA thick_grid_line_color = { 0.3f, 0.3f, 0.3f, 0.9f };
 
@@ -156,7 +156,7 @@ draw_arranger_object (
       Track * track = obj->get_track ();
       bool    should_be_visible =
         (track->visible_ && self->is_pinned == track->is_pinned ())
-        || self->type != ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE;
+        || self->type != ArrangerWidgetType::Timeline;
 
       if (rect_hit_or_region && should_be_visible)
         {
@@ -194,7 +194,7 @@ draw_playhead (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
       double hover_x = 0.f;
       switch (self->type)
         {
-        case ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE:
+        case ArrangerWidgetType::Timeline:
           if (MW_TIMELINE->hovered)
             {
               hovered = true;
@@ -206,8 +206,8 @@ draw_playhead (ArrangerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rec
               hover_x = MW_PINNED_TIMELINE->hover_x;
             }
           break;
-        case ArrangerWidgetType::ARRANGER_WIDGET_TYPE_MIDI:
-        case ArrangerWidgetType::ARRANGER_WIDGET_TYPE_MIDI_MODIFIER:
+        case ArrangerWidgetType::Midi:
+        case ArrangerWidgetType::MidiModifier:
           if (MW_MIDI_MODIFIER_ARRANGER->hovered)
             {
               hovered = true;
@@ -1001,7 +1001,7 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   if (TRANSPORT->loop_)
     {
       double start_px = 0, end_px = 0;
-      if (self->type == TYPE (TIMELINE))
+      if (self->type == ArrangerWidgetType::Timeline)
         {
           start_px = ui_pos_to_px_timeline (TRANSPORT->loop_start_pos_, 1);
           end_px = ui_pos_to_px_timeline (TRANSPORT->loop_end_pos_, 1);
@@ -1047,7 +1047,8 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   /* draw range */
   int  range_first_px, range_second_px;
   bool have_range = false;
-  if (self->type == TYPE (AUDIO) && AUDIO_SELECTIONS->has_selection_)
+  if (
+    self->type == ArrangerWidgetType::Audio && AUDIO_SELECTIONS->has_selection_)
     {
       Position *range_first_pos, *range_second_pos;
       if (TRANSPORT->range_1_ <= TRANSPORT->range_2_)
@@ -1065,7 +1066,7 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       range_second_px = ui_pos_to_px_editor (*range_second_pos, 1);
       have_range = true;
     }
-  else if (self->type == TYPE (TIMELINE) && TRANSPORT->has_range_)
+  else if (self->type == ArrangerWidgetType::Timeline && TRANSPORT->has_range_)
     {
       /* in order they appear */
       Position *range_first_pos, *range_second_pos;
@@ -1091,23 +1092,23 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         self, snapshot, range_first_px, range_second_px, &visible_rect_gdk);
     }
 
-  if (self->type == TYPE (TIMELINE))
+  if (self->type == ArrangerWidgetType::Timeline)
     {
       draw_timeline_bg (self, snapshot, &visible_rect_gdk);
     }
-  else if (self->type == TYPE (MIDI))
+  else if (self->type == ArrangerWidgetType::Midi)
     {
       draw_midi_bg (self, snapshot, &visible_rect_gdk);
     }
-  else if (self->type == TYPE (MIDI_MODIFIER))
+  else if (self->type == ArrangerWidgetType::MidiModifier)
     {
       draw_velocity_bg (self, snapshot, &visible_rect_gdk);
     }
-  else if (self->type == TYPE (AUDIO))
+  else if (self->type == ArrangerWidgetType::Audio)
     {
       draw_audio_bg (self, snapshot, &visible_rect_gdk);
     }
-  else if (self->type == TYPE (AUTOMATION))
+  else if (self->type == ArrangerWidgetType::Automation)
     {
       draw_automation_bg (self, snapshot, width, height, &visible_rect_gdk);
     }

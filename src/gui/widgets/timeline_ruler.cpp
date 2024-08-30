@@ -65,11 +65,11 @@ on_drag_begin_range_hit (
   /* update arranger action */
   if (resize_l)
     {
-      self->action = UiOverlayAction::RESIZING_L;
+      self->action = UiOverlayAction::ResizingL;
     }
   else if (resize_r)
     {
-      self->action = UiOverlayAction::RESIZING_R;
+      self->action = UiOverlayAction::ResizingR;
     }
   else
     {
@@ -169,7 +169,7 @@ timeline_ruler_on_drag_begin_no_marker_hit (
         {
           /* set range if project doesn't have range or range is not hit*/
           TRANSPORT->set_has_range (true);
-          self->action = UiOverlayAction::RESIZING_R;
+          self->action = UiOverlayAction::ResizingR;
           TRANSPORT->range_1_ = ui_px_to_pos_timeline (start_x, true);
           if (!self->shift_held && SNAP_GRID_TIMELINE->any_snap ())
             {
@@ -192,8 +192,8 @@ timeline_ruler_on_drag_update (
   /* handle x */
   switch (self->action)
     {
-    case UiOverlayAction::RESIZING_L:
-    case UiOverlayAction::RESIZING_R:
+    case UiOverlayAction::ResizingL:
+    case UiOverlayAction::ResizingR:
       if (self->target == RWTarget::Range)
         {
           Position tmp = ui_px_to_pos_timeline (self->start_x + offset_x, true);
@@ -201,8 +201,8 @@ timeline_ruler_on_drag_update (
           const bool       snap = !self->shift_held;
           bool             range1 = true;
           if (
-            (self->range1_first && ACTION_IS (RESIZING_L))
-            || (!self->range1_first && !ACTION_IS (RESIZING_L)))
+            (self->range1_first && ACTION_IS (ResizingL))
+            || (!self->range1_first && !ACTION_IS (ResizingL)))
             {
               start_pos = &self->range1_start_pos;
               range1 = true;

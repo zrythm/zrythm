@@ -53,8 +53,8 @@ automation_editor_space_widget_setup (AutomationEditorSpaceWidget * self)
   if (self->arranger)
     {
       arranger_widget_setup (
-        Z_ARRANGER_WIDGET (self->arranger),
-        ArrangerWidgetType::ARRANGER_WIDGET_TYPE_AUTOMATION, SNAP_GRID_EDITOR);
+        Z_ARRANGER_WIDGET (self->arranger), ArrangerWidgetType::Automation,
+        SNAP_GRID_EDITOR);
 
       /*automation_editor_legend_widget_setup (*/
       /*self->legend);*/
@@ -73,7 +73,7 @@ automation_editor_space_widget_init (AutomationEditorSpaceWidget * self)
 
   gtk_widget_set_vexpand (GTK_WIDGET (self->arranger), true);
 
-  self->arranger->type = ArrangerWidgetType::ARRANGER_WIDGET_TYPE_AUTOMATION;
+  self->arranger->type = ArrangerWidgetType::Automation;
 }
 
 static void

@@ -62,6 +62,7 @@ public:
     const bool              is_template,
     ProjectInitDoneCallback cb,
     void *                  user_data);
+  ~ProjectInitFlowManager ();
 
   /**
    * @brief This is public because it's called on a flow manager from a GTK
@@ -139,6 +140,9 @@ private:
    *
    */
   void load_from_file ();
+
+public:
+  gulong open_backup_response_cb_id_ = 0;
 
 private:
   /**

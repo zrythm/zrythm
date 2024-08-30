@@ -354,7 +354,7 @@ public:
   {
     if constexpr (std::is_same_v<VariantT, void>)
       {
-        if constexpr (
+        return static_cast<bool> (
           std::derived_from<FieldT, ISerializableBase>
           || is_serializable_pointer_v<FieldT> || std::is_integral_v<FieldT>
           || std::is_floating_point_v<FieldT> || std::is_same_v<FieldT, bool>
@@ -367,11 +367,7 @@ public:
           || std::is_same_v<FieldT, std::vector<std::string>>
           || is_container_of_serializable_objects_v<FieldT>
           || is_container_of_serializable_pointers_v<FieldT>
-          || std::is_enum_v<FieldT> || is_atomic_serializable_v<FieldT>)
-          {
-            return true;
-          }
-        return false;
+          || std::is_enum_v<FieldT> || is_atomic_serializable_v<FieldT>);
       }
     else
       {

@@ -111,7 +111,7 @@ void
 SimpleTracklistSelections::
   add_tracks_in_range (int min_pos, int max_pos, bool fire_events)
 {
-  z_info ("selecting tracks from {} to {}...", min_pos, max_pos);
+  z_debug ("selecting tracks from {} to {}...", min_pos, max_pos);
 
   clear (fire_events);
 
@@ -121,13 +121,13 @@ SimpleTracklistSelections::
       add_track (*track, fire_events);
     }
 
-  z_info ("done");
+  z_debug ("done");
 }
 
 void
 SimpleTracklistSelections::clear (const bool fire_events)
 {
-  z_info ("clearing tracklist selections...");
+  z_debug ("clearing tracklist selections...");
 
   z_return_if_fail (tracklist_);
   for (auto it = track_names_.rbegin (); it != track_names_.rend (); ++it)
@@ -151,7 +151,7 @@ SimpleTracklistSelections::clear (const bool fire_events)
       EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr);
     }
 
-  z_info ("done");
+  z_debug ("done clearing tracklist selections");
 }
 
 void

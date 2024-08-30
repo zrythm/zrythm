@@ -172,7 +172,7 @@ FileManager::FileManager ()
 void
 FileManager::load_files_from_location (FileBrowserLocation &location)
 {
-  locations.clear ();
+  files.clear ();
 
   GDir * dir = g_dir_open (location.path_.c_str (), 0, nullptr);
   if (!dir)
@@ -242,11 +242,9 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
   g_dir_close (dir);
 
   /* sort alphabetically */
-  std::sort (
-    files.begin (), files.end (),
-    [] (const FileDescriptor &a, const FileDescriptor &b) {
-      return a.label_ < b.label_;
-    });
+  std::sort (files.begin (), files.end (), [] (const auto &a, const auto &b) {
+    return a.label_ < b.label_;
+  });
   z_info ("Total files: {}", files.size ());
 }
 

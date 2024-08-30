@@ -19,6 +19,9 @@
 
 #define MW_AUDIO_ARRANGER MW_AUDIO_EDITOR_SPACE->arranger
 
+ArrangerCursor
+audio_arranger_widget_get_cursor (ArrangerWidget * self, Tool tool);
+
 void
 audio_arranger_widget_snap_range_r (ArrangerWidget * self, Position * pos);
 

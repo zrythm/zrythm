@@ -30,35 +30,35 @@ TYPEDEF_STRUCT_UNDERSCORED (RulerWidget);
 enum class ArrangerCursor
 {
   /** Invalid cursor. */
-  ARRANGER_CURSOR_NONE,
-  ARRANGER_CURSOR_SELECT,
-  ARRANGER_CURSOR_SELECT_STRETCH,
-  ARRANGER_CURSOR_EDIT,
-  ARRANGER_CURSOR_AUTOFILL,
+  None,
+  Select,
+  SelectStretch,
+  Edit,
+  Autofill,
   ARRANGER_CURSOR_CUT,
-  ARRANGER_CURSOR_ERASER,
-  ARRANGER_CURSOR_AUDITION,
-  ARRANGER_CURSOR_RAMP,
-  ARRANGER_CURSOR_GRAB,
-  ARRANGER_CURSOR_GRABBING,
-  ARRANGER_CURSOR_RESIZING_L,
-  ARRANGER_CURSOR_RESIZING_L_FADE,
+  Eraser,
+  Audition,
+  Ramp,
+  Grab,
+  Grabbing,
+  ResizingL,
+  ResizingLFade,
   ARRANGER_CURSOR_STRETCHING_L,
   ARRANGER_CURSOR_RESIZING_L_LOOP,
-  ARRANGER_CURSOR_RESIZING_R,
+  ResizingR,
   ARRANGER_CURSOR_RESIZING_R_FADE,
   ARRANGER_CURSOR_STRETCHING_R,
   ARRANGER_CURSOR_RESIZING_R_LOOP,
-  ARRANGER_CURSOR_RESIZING_UP,
-  ARRANGER_CURSOR_RESIZING_UP_FADE_IN,
-  ARRANGER_CURSOR_RESIZING_UP_FADE_OUT,
-  ARRANGER_CURSOR_GRABBING_COPY,
-  ARRANGER_CURSOR_GRABBING_LINK,
-  ARRANGER_CURSOR_RANGE,
-  ARRANGER_CURSOR_FADE_IN,
-  ARRANGER_CURSOR_FADE_OUT,
-  ARRANGER_CURSOR_RENAME,
-  ARRANGER_CURSOR_PANNING,
+  ResizingUp,
+  ResizingUpFadeIn,
+  ResizingUpFadeOut,
+  GrabbingCopy,
+  GrabbingLink,
+  Range,
+  FadeIn,
+  FadeOut,
+  Rename,
+  Panning,
 };
 
 /**
@@ -66,12 +66,12 @@ enum class ArrangerCursor
  */
 enum class ArrangerWidgetType
 {
-  ARRANGER_WIDGET_TYPE_TIMELINE,
-  ARRANGER_WIDGET_TYPE_MIDI,
-  ARRANGER_WIDGET_TYPE_MIDI_MODIFIER,
-  ARRANGER_WIDGET_TYPE_AUDIO,
-  ARRANGER_WIDGET_TYPE_CHORD,
-  ARRANGER_WIDGET_TYPE_AUTOMATION,
+  Timeline,
+  Midi,
+  MidiModifier,
+  Audio,
+  Chord,
+  Automation,
 };
 
 #if 0
@@ -632,9 +632,9 @@ NONNULL void
 arranger_widget_scroll_until_obj (
   ArrangerWidget * self,
   ArrangerObject * obj,
-  int              horizontal,
-  int              up,
-  int              left,
+  bool             horizontal,
+  bool             up,
+  bool             left,
   int              padding);
 
 /**
@@ -743,6 +743,31 @@ arranger_widget_finish_creating_item_from_action (
  */
 int
 arranger_widget_get_total_height (ArrangerWidget * self);
+
+/**
+ * Returns whether the cursor  at y is in the top half of the arranger.
+ */
+bool
+arranger_widget_is_cursor_in_top_half (ArrangerWidget * self, double y);
+
+/**
+ * @brief
+ *
+ * @param action
+ * @return The resize type and whether resizing Left.
+ */
+std::pair<ArrangerObject::ResizeType, bool>
+arranger_widget_get_resize_type_and_direction_from_action (
+  UiOverlayAction action);
+
+extern template MidiSelections *
+arranger_widget_get_selections (ArrangerWidget * self);
+extern template TimelineSelections *
+arranger_widget_get_selections (ArrangerWidget * self);
+extern template ChordSelections *
+arranger_widget_get_selections (ArrangerWidget * self);
+extern template AutomationSelections *
+arranger_widget_get_selections (ArrangerWidget * self);
 
 /**
  * @}

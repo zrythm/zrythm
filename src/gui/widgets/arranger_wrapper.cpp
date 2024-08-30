@@ -27,12 +27,12 @@ arranger_wrapper_widget_setup (
   arranger_widget_setup (self->child, type, snap_grid);
 
   GtkAdjustment * adj_to_bind_to = NULL;
-  if (type == ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE)
+  if (type == ArrangerWidgetType::Timeline)
     {
       adj_to_bind_to =
         gtk_scrolled_window_get_vadjustment (MW_TRACKLIST->unpinned_scroll);
     }
-  else if (type == ArrangerWidgetType::ARRANGER_WIDGET_TYPE_MIDI)
+  else if (type == ArrangerWidgetType::Midi)
     {
       adj_to_bind_to = gtk_scrolled_window_get_vadjustment (
         MW_MIDI_EDITOR_SPACE->piano_roll_keys_scroll);

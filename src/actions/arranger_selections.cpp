@@ -1168,8 +1168,7 @@ ArrangerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
           auto   obj_lo = dynamic_pointer_cast<LengthableObject> (obj);
           double ticks = obj_lo->get_length_in_ticks ();
           auto   arranger = obj->get_arranger ();
-          if (
-            arranger->type == ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE)
+          if (arranger->type == ArrangerWidgetType::Timeline)
             {
               g_settings_set_double (S_UI, "timeline-last-object-length", ticks);
             }
@@ -1719,37 +1718,37 @@ ArrangerSelectionsAction::do_or_undo_resize (bool do_it)
                   : own_obj_after->find_in_project ();
           z_return_if_fail (obj);
 
-          auto type = ArrangerObject::ResizeType::RESIZE_NORMAL;
+          auto type = ArrangerObject::ResizeType::Normal;
           bool left = false;
           switch (resize_type_)
             {
             case ResizeType::L:
-              type = ArrangerObject::ResizeType::RESIZE_NORMAL;
+              type = ArrangerObject::ResizeType::Normal;
               left = true;
               break;
             case ResizeType::LStretch:
-              type = ArrangerObject::ResizeType::RESIZE_STRETCH;
+              type = ArrangerObject::ResizeType::Stretch;
               left = true;
               break;
             case ResizeType::LLoop:
               left = true;
-              type = ArrangerObject::ResizeType::RESIZE_LOOP;
+              type = ArrangerObject::ResizeType::Loop;
               break;
             case ResizeType::LFade:
               left = true;
-              type = ArrangerObject::ResizeType::RESIZE_FADE;
+              type = ArrangerObject::ResizeType::Fade;
               break;
             case ResizeType::R:
-              type = ArrangerObject::ResizeType::RESIZE_NORMAL;
+              type = ArrangerObject::ResizeType::Normal;
               break;
             case ResizeType::RStretch:
-              type = ArrangerObject::ResizeType::RESIZE_STRETCH;
+              type = ArrangerObject::ResizeType::Stretch;
               break;
             case ResizeType::RLoop:
-              type = ArrangerObject::ResizeType::RESIZE_LOOP;
+              type = ArrangerObject::ResizeType::Loop;
               break;
             case ResizeType::RFade:
-              type = ArrangerObject::ResizeType::RESIZE_FADE;
+              type = ArrangerObject::ResizeType::Fade;
               break;
             default:
               z_warn_if_reached ();

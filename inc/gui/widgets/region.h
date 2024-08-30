@@ -36,7 +36,7 @@
  * Returns the lane rectangle for the region.
  */
 void
-region_get_lane_full_rect (Region * self, GdkRectangle * rect);
+region_get_lane_full_rect (const Region * self, GdkRectangle * rect);
 
 /**
  * Draws the Region in the given cairo context in

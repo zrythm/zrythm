@@ -55,7 +55,7 @@ timeline_panel_widget_setup (TimelinePanelWidget * self)
   /* setup unpinned timeline */
   arranger_wrapper_widget_setup (
     Z_ARRANGER_WRAPPER_WIDGET (self->timeline_wrapper),
-    ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE, SNAP_GRID_TIMELINE);
+    ArrangerWidgetType::Timeline, SNAP_GRID_TIMELINE);
 
   /* for some reason the size group in TracklistWidget
    * doesn't work, so just vexpand here */
@@ -65,8 +65,8 @@ timeline_panel_widget_setup (TimelinePanelWidget * self)
   self->pinned_timeline->is_pinned = 1;
   gtk_widget_add_css_class (GTK_WIDGET (self->pinned_timeline), "pinned");
   arranger_widget_setup (
-    Z_ARRANGER_WIDGET (self->pinned_timeline),
-    ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE, SNAP_GRID_TIMELINE);
+    Z_ARRANGER_WIDGET (self->pinned_timeline), ArrangerWidgetType::Timeline,
+    SNAP_GRID_TIMELINE);
 
   timeline_toolbar_widget_setup (self->timeline_toolbar);
 }
@@ -108,9 +108,8 @@ timeline_panel_widget_init (TimelinePanelWidget * self)
   self->timeline = self->timeline_wrapper->child;
 
   self->ruler->type = RulerWidgetType::Timeline;
-  self->timeline->type = ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE;
-  self->pinned_timeline->type =
-    ArrangerWidgetType::ARRANGER_WIDGET_TYPE_TIMELINE;
+  self->timeline->type = ArrangerWidgetType::Timeline;
+  self->pinned_timeline->type = ArrangerWidgetType::Timeline;
   self->pinned_timeline->is_pinned = 1;
 
   self->timeline_ruler_h_size_group =

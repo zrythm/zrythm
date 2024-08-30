@@ -44,6 +44,222 @@ timeline_arranger_widget_set_cut_lines_visible (ArrangerWidget * self)
 {
 }
 
+ArrangerCursor
+timeline_arranger_widget_get_cursor (ArrangerWidget * self, Tool tool)
+{
+  ArrangerCursor  ac = ArrangerCursor::Select;
+  UiOverlayAction action = self->action;
+
+  auto r_obj = dynamic_cast<Region *> (arranger_widget_get_hit_arranger_object (
+    self, ArrangerObject::Type::Region, self->hover_x, self->hover_y));
+  auto s_obj =
+    dynamic_cast<ScaleObject *> (arranger_widget_get_hit_arranger_object (
+      self, ArrangerObject::Type::ScaleObject, self->hover_x, self->hover_y));
+  auto m_obj = dynamic_cast<Marker *> (arranger_widget_get_hit_arranger_object (
+    self, ArrangerObject::Type::Marker, self->hover_x, self->hover_y));
+  if (r_obj && r_obj->is_frozen ())
+    {
+      r_obj = NULL;
+    }
+  if (s_obj && s_obj->is_frozen ())
+    {
+      s_obj = NULL;
+    }
+  if (m_obj && m_obj->is_frozen ())
+    {
+      m_obj = NULL;
+    }
+  bool is_hit = r_obj || s_obj || m_obj;
+
+  switch (action)
+    {
+    case UiOverlayAction::None:
+      switch (P_TOOL)
+        {
+        case Tool::Select:
+          {
+            if (is_hit)
+              {
+                if (r_obj)
+                  {
+                    if (self->alt_held)
+                      return ArrangerCursor::ARRANGER_CURSOR_CUT;
+                    int wx = (int) self->hover_x - r_obj->full_rect_.x;
+                    int wy = (int) self->hover_y - r_obj->full_rect_.y;
+                    int is_fade_in_point =
+                      arranger_object_is_fade_in (r_obj, wx, wy, 1, 0);
+                    int is_fade_out_point =
+                      arranger_object_is_fade_out (r_obj, wx, wy, 1, 0);
+                    int is_fade_in_outer_region =
+                      arranger_object_is_fade_in (r_obj, wx, wy, 0, 1);
+                    int is_fade_out_outer_region =
+                      arranger_object_is_fade_out (r_obj, wx, wy, 0, 1);
+                    int is_resize_l = arranger_object_is_resize_l (r_obj, wx);
+                    int is_resize_r = arranger_object_is_resize_r (r_obj, wx);
+                    int is_resize_loop = arranger_object_is_resize_loop (
+                      r_obj, wy, self->ctrl_held);
+                    bool is_rename = arranger_object_is_rename (r_obj, wx, wy);
+                    if (is_fade_in_point)
+                      return ArrangerCursor::FadeIn;
+                    else if (is_fade_out_point)
+                      return ArrangerCursor::FadeOut;
+                    else if (is_resize_l && is_resize_loop)
+                      {
+                        return ArrangerCursor::ARRANGER_CURSOR_RESIZING_L_LOOP;
+                      }
+                    else if (is_resize_l)
+                      {
+                        return self->ctrl_held
+                                 ? ArrangerCursor::ARRANGER_CURSOR_STRETCHING_L
+                                 : ArrangerCursor::ResizingL;
+                      }
+                    else if (is_resize_r && is_resize_loop)
+                      return ArrangerCursor::ARRANGER_CURSOR_RESIZING_R_LOOP;
+                    else if (is_resize_r)
+                      {
+                        return self->ctrl_held
+                                 ? ArrangerCursor::ARRANGER_CURSOR_STRETCHING_R
+                                 : ArrangerCursor::ResizingR;
+                      }
+                    else if (is_fade_in_outer_region)
+                      return ArrangerCursor::FadeIn;
+                    else if (is_fade_out_outer_region)
+                      return ArrangerCursor::FadeOut;
+                    else if (is_rename)
+                      return ArrangerCursor::Rename;
+                  }
+                return ArrangerCursor::Grab;
+              }
+            else
+              {
+                Track * track =
+                  timeline_arranger_widget_get_track_at_y (self, self->hover_y);
+
+                if (track)
+                  {
+                    if (track_widget_is_cursor_in_range_select_half (
+                          track->widget_, self->hover_y))
+                      {
+                        /* set cursor to range selection */
+                        return ArrangerCursor::Range;
+                      }
+                    else
+                      {
+                        /* set cursor to normal */
+                        return ac;
+                      }
+                  }
+                else
+                  {
+                    /* set cursor to normal */
+                    return ac;
+                  }
+              }
+          }
+          break;
+        case Tool::Edit:
+          ac = ArrangerCursor::Edit;
+          break;
+        case Tool::Cut:
+          ac = ArrangerCursor::ARRANGER_CURSOR_CUT;
+          break;
+        case Tool::Eraser:
+          ac = ArrangerCursor::Eraser;
+          break;
+        case Tool::Ramp:
+          ac = ArrangerCursor::Ramp;
+          break;
+        case Tool::Audition:
+          ac = ArrangerCursor::Audition;
+          break;
+        }
+      break;
+    case UiOverlayAction::STARTING_DELETE_SELECTION:
+    case UiOverlayAction::DELETE_SELECTING:
+    case UiOverlayAction::STARTING_ERASING:
+    case UiOverlayAction::ERASING:
+      ac = ArrangerCursor::Eraser;
+      break;
+    case UiOverlayAction::STARTING_MOVING_COPY:
+    case UiOverlayAction::MovingCopy:
+      ac = ArrangerCursor::GrabbingCopy;
+      break;
+    case UiOverlayAction::STARTING_MOVING_LINK:
+    case UiOverlayAction::MOVING_LINK:
+      ac = ArrangerCursor::GrabbingLink;
+      break;
+    case UiOverlayAction::STARTING_MOVING:
+    case UiOverlayAction::CREATING_MOVING:
+    case UiOverlayAction::MOVING:
+      ac = ArrangerCursor::Grabbing;
+      break;
+    case UiOverlayAction::StartingPanning:
+    case UiOverlayAction::Panning:
+      ac = ArrangerCursor::Panning;
+      break;
+    case UiOverlayAction::StretchingL:
+      ac = ArrangerCursor::ARRANGER_CURSOR_STRETCHING_L;
+      break;
+    case UiOverlayAction::ResizingL:
+      if (self->resizing_range)
+        ac = ArrangerCursor::Range;
+      else
+        ac = ArrangerCursor::ResizingL;
+      break;
+    case UiOverlayAction::ResizingLLoop:
+      ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_L_LOOP;
+      break;
+    case UiOverlayAction::ResizingLFade:
+      ac = ArrangerCursor::FadeIn;
+      break;
+    case UiOverlayAction::StretchingR:
+      ac = ArrangerCursor::ARRANGER_CURSOR_STRETCHING_R;
+      break;
+    case UiOverlayAction::CreatingResizingR:
+    case UiOverlayAction::ResizingR:
+      if (self->resizing_range)
+        ac = ArrangerCursor::Range;
+      else
+        ac = ArrangerCursor::ResizingR;
+      break;
+    case UiOverlayAction::ResizingRLoop:
+      ac = ArrangerCursor::ARRANGER_CURSOR_RESIZING_R_LOOP;
+      break;
+    case UiOverlayAction::ResizingRFade:
+      ac = ArrangerCursor::FadeOut;
+      break;
+    case UiOverlayAction::RESIZING_UP_FADE_IN:
+      ac = ArrangerCursor::FadeIn;
+      break;
+    case UiOverlayAction::RESIZING_UP_FADE_OUT:
+      ac = ArrangerCursor::FadeOut;
+      break;
+    case UiOverlayAction::AUTOFILLING:
+      ac = ArrangerCursor::Autofill;
+      break;
+    case UiOverlayAction::STARTING_SELECTION:
+    case UiOverlayAction::SELECTING:
+      ac = ArrangerCursor::Select;
+      break;
+    case UiOverlayAction::RENAMING:
+      ac = ArrangerCursor::Rename;
+      break;
+    case UiOverlayAction::CUTTING:
+      ac = ArrangerCursor::ARRANGER_CURSOR_CUT;
+      break;
+    case UiOverlayAction::STARTING_AUDITIONING:
+    case UiOverlayAction::AUDITIONING:
+      ac = ArrangerCursor::Audition;
+      break;
+    default:
+      z_warn_if_reached ();
+      ac = ArrangerCursor::Select;
+      break;
+    }
+
+  return ac;
+}
+
 TrackLane *
 timeline_arranger_widget_get_track_lane_at_y (ArrangerWidget * self, double y)
 {
@@ -135,7 +351,7 @@ timeline_arranger_widget_create_region (
   /* if autofilling, the action is already set */
   if (!autofilling)
     {
-      self->action = UiOverlayAction::CREATING_RESIZING_R;
+      self->action = UiOverlayAction::CreatingResizingR;
     }
 
   z_info ("creating region");
@@ -278,7 +494,7 @@ timeline_arranger_widget_set_select_type (ArrangerWidget * self, double y)
         {
           self->resizing_range = true;
           self->resizing_range_start = true;
-          self->action = UiOverlayAction::RESIZING_R;
+          self->action = UiOverlayAction::ResizingR;
         }
       else
         {
@@ -289,278 +505,6 @@ timeline_arranger_widget_set_select_type (ArrangerWidget * self, double y)
     {
       self->resizing_range = false;
     }
-}
-
-/**
- * Snaps the region's start point.
- *
- * @param new_start_pos Position to snap to.
- * @param dry_run Don't resize notes; just check if the resize is allowed (check
- * if invalid resizes will happen)
- *
- * @return Whether successful.
- */
-static bool
-snap_region_l (
-  ArrangerWidget * self,
-  Region *         region,
-  Position *       new_pos,
-  bool             dry_run)
-{
-  auto type = ArrangerObject::ResizeType::RESIZE_NORMAL;
-  if (self->action == UiOverlayAction::RESIZING_L_LOOP)
-    type = ArrangerObject::ResizeType::RESIZE_LOOP;
-  else if (self->action == UiOverlayAction::RESIZING_L_FADE)
-    type = ArrangerObject::ResizeType::RESIZE_FADE;
-  else if (self->action == UiOverlayAction::STRETCHING_L)
-    type = ArrangerObject::ResizeType::RESIZE_STRETCH;
-
-  if (!new_pos->is_positive ())
-    return false;
-
-  if (
-    self->snap_grid->any_snap () && !self->shift_held
-    && type != ArrangerObject::ResizeType::RESIZE_FADE)
-    {
-      auto track = region->get_track ();
-      new_pos->snap (
-        self->earliest_obj_start_pos.get (), track, nullptr, *self->snap_grid);
-    }
-
-  auto        fadeable_obj = dynamic_cast<FadeableObject *> (region);
-  const auto &cmp_pos =
-    type == ArrangerObject::ResizeType::RESIZE_FADE
-      ? fadeable_obj->fade_out_pos_
-      : region->end_pos_;
-  if (*new_pos >= cmp_pos)
-    return false;
-  else if (!dry_run)
-    {
-      bool   is_valid = false;
-      double diff = 0.0;
-
-      if (type == ArrangerObject::ResizeType::RESIZE_FADE)
-        {
-          is_valid = region->is_position_valid (
-            *new_pos, ArrangerObject::PositionType::FadeIn);
-          diff = new_pos->ticks_ - fadeable_obj->fade_in_pos_.ticks_;
-        }
-      else
-        {
-          is_valid = region->is_position_valid (
-            *new_pos, ArrangerObject::PositionType::Start);
-          diff = new_pos->ticks_ - region->pos_.ticks_;
-        }
-
-      if (is_valid)
-        {
-          try
-            {
-              region->resize (true, type, diff, true);
-            }
-          catch (const ZrythmException &e)
-            {
-              e.handle ("Failed to resize object");
-              return false;
-            }
-        }
-    }
-
-  return true;
-}
-
-bool
-timeline_arranger_widget_snap_regions_l (
-  ArrangerWidget * self,
-  Position *       pos,
-  bool             dry_run)
-{
-  auto shared_prj_region = self->prj_start_object.lock ();
-  z_return_val_if_fail (shared_prj_region, false);
-  auto prj_region = shared_prj_region.get ();
-
-  double delta;
-  if (self->action == UiOverlayAction::RESIZING_L_FADE)
-    {
-      auto fadeable_obj = dynamic_cast<FadeableObject *> (prj_region);
-      delta =
-        pos->ticks_
-        - (prj_region->pos_.ticks_ + fadeable_obj->fade_in_pos_.ticks_);
-    }
-  else
-    {
-      delta = pos->ticks_ - prj_region->pos_.ticks_;
-    }
-
-  Position new_pos;
-
-  for (auto region : TL_SELECTIONS->objects_ | type_is<Region> ())
-    {
-      if (self->action == UiOverlayAction::RESIZING_L_FADE)
-        {
-          auto fadeable_obj = dynamic_cast<FadeableObject *> (region);
-          new_pos = fadeable_obj->fade_in_pos_;
-        }
-      else
-        {
-          new_pos = region->pos_;
-        }
-      new_pos.add_ticks (delta);
-
-      bool successful = snap_region_l (self, region, &new_pos, dry_run);
-
-      if (!successful)
-        return false;
-    }
-
-  EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, TL_SELECTIONS.get ());
-
-  return true;
-}
-
-static bool
-snap_region_r (
-  ArrangerWidget * self,
-  Region *         region,
-  Position *       new_pos,
-  bool             dry_run)
-{
-  auto type = ArrangerObject::ResizeType::RESIZE_NORMAL;
-  if (self->action == UiOverlayAction::RESIZING_R_LOOP)
-    type = ArrangerObject::ResizeType::RESIZE_LOOP;
-  else if (self->action == UiOverlayAction::RESIZING_R_FADE)
-    type = ArrangerObject::ResizeType::RESIZE_FADE;
-  else if (self->action == UiOverlayAction::STRETCHING_R)
-    type = ArrangerObject::ResizeType::RESIZE_STRETCH;
-
-  if (!new_pos->is_positive ())
-    return false;
-
-  if (
-    self->snap_grid->any_snap () && !self->shift_held
-    && type != ArrangerObject::ResizeType::RESIZE_FADE)
-    {
-      auto track = region->get_track ();
-      new_pos->snap (
-        self->earliest_obj_start_pos.get (), track, nullptr, *self->snap_grid);
-    }
-
-  if (type == ArrangerObject::ResizeType::RESIZE_FADE)
-    {
-      Position tmp{ region->end_pos_.ticks_ - region->pos_.ticks_ };
-      auto     fadeable_obj = dynamic_cast<FadeableObject *> (region);
-      if (*new_pos <= fadeable_obj->fade_in_pos_ || *new_pos > tmp)
-        return false;
-    }
-  else
-    {
-      if (*new_pos <= region->pos_)
-        return false;
-    }
-
-  if (!dry_run)
-    {
-      bool   is_valid = false;
-      double diff = 0.0;
-      if (type == ArrangerObject::ResizeType::RESIZE_FADE)
-        {
-          is_valid = region->is_position_valid (
-            *new_pos, ArrangerObject::PositionType::FadeOut);
-          auto fadeable_obj = dynamic_cast<FadeableObject *> (region);
-          diff = new_pos->ticks_ - fadeable_obj->fade_out_pos_.ticks_;
-        }
-      else
-        {
-          is_valid = region->is_position_valid (
-            *new_pos, ArrangerObject::PositionType::End);
-          diff = new_pos->ticks_ - region->end_pos_.ticks_;
-        }
-
-      if (is_valid)
-        {
-          try
-            {
-              region->resize (true, type, diff, true);
-            }
-          catch (const ZrythmException &e)
-            {
-              e.handle ("Failed to resize object");
-              return false;
-            }
-
-          if (self->action == UiOverlayAction::CREATING_RESIZING_R)
-            {
-              double   full_size = region->get_length_in_ticks ();
-              Position tmp = region->loop_start_pos_;
-              tmp.add_ticks (full_size);
-
-              region->loop_end_pos_setter (&tmp);
-            }
-        }
-    }
-
-  return true;
-}
-
-bool
-timeline_arranger_widget_snap_regions_r (
-  ArrangerWidget * self,
-  Position *       pos,
-  bool             dry_run)
-{
-  auto shared_prj_region = self->prj_start_object.lock ();
-  z_return_val_if_fail (shared_prj_region, false);
-  return std::visit (
-    [&] (auto &&region) {
-      using RegionT = base_type<decltype (region)>;
-      double delta = 0.0;
-      if (self->action == UiOverlayAction::RESIZING_R_FADE)
-        {
-          if constexpr (std::derived_from<RegionT, FadeableObject>)
-            {
-              delta =
-                pos->ticks_
-                - (region->pos_.ticks_ + region->fade_out_pos_.ticks_);
-            }
-          else
-            {
-              z_return_val_if_reached (false);
-            }
-        }
-      else
-        {
-          delta = pos->ticks_ - region->end_pos_.ticks_;
-        }
-
-      Position new_pos;
-      z_debug ("TEST");
-
-      for (auto region : TL_SELECTIONS->objects_ | type_is<Region> ())
-        {
-          if (self->action == UiOverlayAction::RESIZING_R_FADE)
-            {
-              auto fadeable_obj = dynamic_cast<FadeableObject *> (region);
-              new_pos = fadeable_obj->fade_out_pos_;
-            }
-          else
-            {
-              new_pos = region->end_pos_;
-            }
-          new_pos.add_ticks (delta);
-
-          bool success = snap_region_r (self, region, &new_pos, dry_run);
-          z_trace ("new pos [success: {}]: {}", success, new_pos.to_string ());
-
-          if (!success)
-            return false;
-        }
-
-      EVENTS_PUSH (
-        EventType::ET_ARRANGER_SELECTIONS_CHANGED, TL_SELECTIONS.get ());
-
-      return true;
-    },
-    convert_to_variant<RegionPtrVariant> (shared_prj_region.get ()));
 }
 
 void
@@ -1190,27 +1134,27 @@ timeline_arranger_on_drag_end (ArrangerWidget * self)
               ArrangerSelectionsAction::EditType::Fades, true));
           }
           break;
-        case UiOverlayAction::RESIZING_L:
-        case UiOverlayAction::STRETCHING_L:
-        case UiOverlayAction::RESIZING_L_LOOP:
-        case UiOverlayAction::RESIZING_L_FADE:
-        case UiOverlayAction::RESIZING_R:
-        case UiOverlayAction::STRETCHING_R:
-        case UiOverlayAction::RESIZING_R_LOOP:
-        case UiOverlayAction::RESIZING_R_FADE:
+        case UiOverlayAction::ResizingL:
+        case UiOverlayAction::StretchingL:
+        case UiOverlayAction::ResizingLLoop:
+        case UiOverlayAction::ResizingLFade:
+        case UiOverlayAction::ResizingR:
+        case UiOverlayAction::StretchingR:
+        case UiOverlayAction::ResizingRLoop:
+        case UiOverlayAction::ResizingRFade:
           {
             if (
               self->resizing_range
-              && (self->action == UiOverlayAction::RESIZING_L || self->action == UiOverlayAction::RESIZING_R))
+              && (self->action == UiOverlayAction::ResizingL || self->action == UiOverlayAction::ResizingR))
               break;
 
             auto is_r = [] (auto operation) {
               switch (operation)
                 {
-                case UiOverlayAction::RESIZING_R:
-                case UiOverlayAction::STRETCHING_R:
-                case UiOverlayAction::RESIZING_R_LOOP:
-                case UiOverlayAction::RESIZING_R_FADE:
+                case UiOverlayAction::ResizingR:
+                case UiOverlayAction::StretchingR:
+                case UiOverlayAction::ResizingRLoop:
+                case UiOverlayAction::ResizingRFade:
                   return true;
                 default:
                   return false;
@@ -1218,8 +1162,8 @@ timeline_arranger_on_drag_end (ArrangerWidget * self)
             };
 
             if (
-              self->action == UiOverlayAction::RESIZING_L_FADE
-              || self->action == UiOverlayAction::RESIZING_R_FADE)
+              self->action == UiOverlayAction::ResizingLFade
+              || self->action == UiOverlayAction::ResizingRFade)
               {
                 auto fo =
                   std::dynamic_pointer_cast<FadeableObject> (prj_start_object);
@@ -1246,28 +1190,28 @@ timeline_arranger_on_drag_end (ArrangerWidget * self)
             auto resize_type = [] (auto operation) {
               switch (operation)
                 {
-                case UiOverlayAction::RESIZING_L:
+                case UiOverlayAction::ResizingL:
                   return ArrangerSelectionsAction::ResizeType::L;
-                case UiOverlayAction::STRETCHING_L:
+                case UiOverlayAction::StretchingL:
                   return ArrangerSelectionsAction::ResizeType::LStretch;
-                case UiOverlayAction::RESIZING_L_LOOP:
+                case UiOverlayAction::ResizingLLoop:
                   return ArrangerSelectionsAction::ResizeType::LLoop;
-                case UiOverlayAction::RESIZING_L_FADE:
+                case UiOverlayAction::ResizingLFade:
                   return ArrangerSelectionsAction::ResizeType::LFade;
-                case UiOverlayAction::RESIZING_R:
+                case UiOverlayAction::ResizingR:
                   return ArrangerSelectionsAction::ResizeType::R;
-                case UiOverlayAction::STRETCHING_R:
+                case UiOverlayAction::StretchingR:
                   return ArrangerSelectionsAction::ResizeType::RStretch;
-                case UiOverlayAction::RESIZING_R_LOOP:
+                case UiOverlayAction::ResizingRLoop:
                   return ArrangerSelectionsAction::ResizeType::RLoop;
-                case UiOverlayAction::RESIZING_R_FADE:
+                case UiOverlayAction::ResizingRFade:
                   return ArrangerSelectionsAction::ResizeType::RFade;
                 default:
                   return ArrangerSelectionsAction::ResizeType::L;
                 }
             };
 
-            if (self->action == UiOverlayAction::STRETCHING_R)
+            if (self->action == UiOverlayAction::StretchingR)
               {
                 /* stretch now */
                 TRANSPORT->stretch_regions (
@@ -1307,7 +1251,7 @@ timeline_arranger_on_drag_end (ArrangerWidget * self)
             }
           break;
         case UiOverlayAction::MOVING:
-        case UiOverlayAction::MOVING_COPY:
+        case UiOverlayAction::MovingCopy:
           UNDO_MANAGER->perform (
             std::make_unique<
               ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
@@ -1320,13 +1264,13 @@ timeline_arranger_on_drag_end (ArrangerWidget * self)
               *self->sel_at_start, *TL_SELECTIONS, ticks_diff,
               self->visible_track_diff, self->lane_diff, true));
           break;
-        case UiOverlayAction::NONE:
+        case UiOverlayAction::None:
         case UiOverlayAction::STARTING_SELECTION:
           sel->clear (false);
           break;
         /* if something was created */
         case UiOverlayAction::CREATING_MOVING:
-        case UiOverlayAction::CREATING_RESIZING_R:
+        case UiOverlayAction::CreatingResizingR:
         case UiOverlayAction::AUTOFILLING:
           if (sel->has_any ())
             {
@@ -1372,7 +1316,7 @@ timeline_arranger_on_drag_end (ArrangerWidget * self)
               bind_member_function (
                 *nameable_obj, &NameableObject::set_name_with_action));
             gtk_window_present (GTK_WINDOW (dialog));
-            self->action = UiOverlayAction::NONE;
+            self->action = UiOverlayAction::None;
           }
           break;
         default:

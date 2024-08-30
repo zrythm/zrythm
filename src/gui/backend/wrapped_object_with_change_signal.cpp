@@ -107,7 +107,7 @@ Port *
 wrapped_object_with_change_signal_get_port (WrappedObjectWithChangeSignal * self)
 {
   z_return_val_if_fail (
-    self->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_TRACK, nullptr);
+    self->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_PORT, nullptr);
   return get_ptr_variant_as_base_ptr<Port> (self->obj);
 }
 

@@ -72,7 +72,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "vst instrument makes sound")
 
         /* bounce */
         Exporter::Settings settings;
-        settings.set_bounce_defaults (Exporter::Format::WAV, nullptr, __func__);
+        settings.set_bounce_defaults (Exporter::Format::WAV, "", __func__);
         settings.time_range_ = Exporter::TimeRange::Loop;
         settings.bounce_with_parents_ = true;
         settings.mode_ = Exporter::Mode::Full;
