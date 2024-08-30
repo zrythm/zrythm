@@ -326,7 +326,8 @@ if get_option ('tests')
   # - tests fail to link on windows
   # - global externed variables show as NULL (even though gdb shows actual variables)
   # when using the shared lib
-  test_link_libs += get_option('static_tests') ? zrythm_lib.get_static_lib () : zrythm_lib.get_shared_lib()
+  # - doctest "is currently testing" check only works when linked statically
+  test_link_libs += zrythm_lib.get_static_lib ()
 
   helper_sources = files([
     'helpers/exporter.cpp',

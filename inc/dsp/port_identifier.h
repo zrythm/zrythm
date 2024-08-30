@@ -335,22 +335,6 @@ public:
     MidiClock = 1 << 30,
   };
 
-  struct Hash
-  {
-    size_t operator() (const PortIdentifier &id) const
-    {
-      return id.get_hash ();
-    }
-  };
-
-  struct Compare
-  {
-    bool operator() (const PortIdentifier &lhs, const PortIdentifier &rhs) const
-    {
-      return lhs.get_hash () < rhs.get_hash ();
-    }
-  };
-
 public:
   // Rule of 0
 
@@ -478,6 +462,8 @@ operator== (const PortIdentifier &lhs, const PortIdentifier &rhs)
     {
       eq = eq && lhs.plugin_id_ == rhs.plugin_id_;
     }
+  if (!eq)
+    return false;
 
   /* if LV2 (has symbol) check symbol match, otherwise check index match and
    * label match */
@@ -489,6 +475,8 @@ operator== (const PortIdentifier &lhs, const PortIdentifier &rhs)
     {
       eq = eq && lhs.sym_ == rhs.sym_;
     }
+  if (!eq)
+    return false;
 
   /* do string comparisons at the end */
   eq =
@@ -496,6 +484,14 @@ operator== (const PortIdentifier &lhs, const PortIdentifier &rhs)
     && lhs.ext_port_id_ == rhs.ext_port_id_;
 
   return eq;
+}
+
+namespace std
+{
+template <> struct hash<PortIdentifier>
+{
+  size_t operator() (const PortIdentifier &id) const { return id.get_hash (); }
+};
 }
 
 /**

@@ -29,6 +29,92 @@
 
 TEST_SUITE_BEGIN ("project");
 
+TEST_CASE_FIXTURE (ZrythmFixtureWithPipewire, "exposed ports after load")
+{
+#ifdef HAVE_PIPEWIRE
+  auto        track = Track::create_empty_with_action<AudioTrack> ();
+  std::string buf;
+  {
+    const auto &port = track->channel_->stereo_out_->get_l ();
+    buf = port.get_full_designation ();
+
+    REQUIRE (port.is_exposed_to_backend ());
+    assert_jack_port_exists (buf);
+  }
+  test_project_save_and_reload ();
+
+  track = TRACKLIST->get_last_track<AudioTrack> ();
+  const auto &port = track->channel_->stereo_out_->get_l ();
+  REQUIRE (port.is_exposed_to_backend ());
+  assert_jack_port_exists (buf);
+#endif // HAVE_PIPEWIRE
+}
+
+TEST_CASE_FIXTURE (
+  BootstrapTimelineFixture,
+  "project save backup with pool and plugins")
+{
+  /* add a plugin and create a duplicate track */
+  int track_pos = test_plugin_manager_create_tracks_from_plugin (
+    TEST_INSTRUMENT_BUNDLE_URI, TEST_INSTRUMENT_URI, true, true, 1);
+  auto track = TRACKLIST->get_track<InstrumentTrack> (track_pos);
+  track->select (true, true, false);
+  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
+    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
+    TRACKLIST->get_num_tracks ()));
+
+  auto dir = PROJECT->dir_;
+
+  /* save a project backup */
+  REQUIRE_NOTHROW (PROJECT->save (PROJECT->dir_, true, false, false));
+  REQUIRE_NONEMPTY (PROJECT->backup_dir_);
+  auto backup_dir = PROJECT->backup_dir_;
+
+  /* free the project */
+  AUDIO_ENGINE->activate (false);
+  PROJECT.reset ();
+
+  /* load the backup directly */
+  auto filepath = Glib::build_filename (backup_dir, PROJECT_FILE);
+  test_project_reload (filepath);
+
+  /* undo history not saved with backups anymore */
+#if 0
+  /* test undo and redo cloning the track */
+  UNDO_MANAGER->undo();
+  UNDO_MANAGER->redo();
+#endif
+
+  /* free the project */
+  AUDIO_ENGINE->activate (false);
+  PROJECT.reset ();
+
+  /* attempt to open the latest backup (mimic behavior from UI) */
+  gZrythm->open_newer_backup_ = true;
+  filepath = Glib::build_filename (dir, "project.zpj");
+  test_project_reload (filepath);
+}
+
+TEST_CASE_FIXTURE (BootstrapTimelineFixture, "project save as and load with pool")
+{
+  /* save the project elsewhere */
+  auto orig_dir = PROJECT->dir_;
+  REQUIRE_NONEMPTY (orig_dir);
+  char * new_dir = g_dir_make_tmp ("zrythm_test_project_XXXXXX", nullptr);
+  REQUIRE_NOTHROW (PROJECT->save (new_dir, false, false, false));
+  auto filepath = Glib::build_filename (new_dir, "project.zpj");
+  REQUIRE (fs::exists (filepath));
+
+  /* free the project */
+  AUDIO_ENGINE->activate (false);
+  PROJECT.reset ();
+
+  /* load the new one */
+  test_project_reload (filepath);
+
+  io_rmdir (orig_dir, true);
+}
+
 TEST_CASE_FIXTURE (ZrythmFixture, "empty project save and load")
 {
   REQUIRE_NONNULL (PROJECT);
@@ -114,7 +200,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "project new from template")
 
   REQUIRE_GT (
     dsp_abs_max (
-      &MONITOR_FADER->stereo_out_->get_l ().buf_[0], AUDIO_ENGINE->block_length_),
+      MONITOR_FADER->stereo_out_->get_l ().buf_.data (),
+      AUDIO_ENGINE->block_length_),
     0.0001f);
 
   test_project_save_and_reload ();
@@ -131,7 +218,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "project new from template")
 
   REQUIRE_GT (
     dsp_abs_max (
-      &MONITOR_FADER->stereo_out_->get_l ().buf_[0], AUDIO_ENGINE->block_length_),
+      MONITOR_FADER->stereo_out_->get_l ().buf_.data (),
+      AUDIO_ENGINE->block_length_),
     0.0001f);
 
   /* create a new project using old one as template */
@@ -160,71 +248,6 @@ TEST_CASE_FIXTURE (ZrythmFixture, "project new from template")
     dsp_abs_max (
       &MONITOR_FADER->stereo_out_->get_l ().buf_[0], AUDIO_ENGINE->block_length_),
     0.0001f);
-}
-
-TEST_CASE_FIXTURE (BootstrapTimelineFixture, "project save as and load with pool")
-{
-  /* save the project elsewhere */
-  auto orig_dir = PROJECT->dir_;
-  REQUIRE_NONEMPTY (orig_dir);
-  char * new_dir = g_dir_make_tmp ("zrythm_test_project_XXXXXX", nullptr);
-  REQUIRE_NOTHROW (PROJECT->save (new_dir, false, false, false));
-
-  /* free the project */
-  AUDIO_ENGINE->activate (false);
-  PROJECT.reset ();
-
-  /* load the new one */
-  auto filepath = Glib::build_filename (new_dir, "project.zpj");
-  test_project_reload (filepath);
-
-  io_rmdir (orig_dir, true);
-}
-
-TEST_CASE_FIXTURE (
-  BootstrapTimelineFixture,
-  "project save backup with pool and plugins")
-{
-  /* add a plugin and create a duplicate track */
-  int track_pos = test_plugin_manager_create_tracks_from_plugin (
-    TEST_INSTRUMENT_BUNDLE_URI, TEST_INSTRUMENT_URI, true, true, 1);
-  auto track = TRACKLIST->get_track<InstrumentTrack> (track_pos);
-  track->select (true, true, false);
-  UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
-    *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
-    TRACKLIST->get_num_tracks ()));
-
-  auto dir = PROJECT->dir_;
-
-  /* save a project backup */
-  REQUIRE_NOTHROW (PROJECT->save (PROJECT->dir_, true, false, false));
-  REQUIRE_NONEMPTY (PROJECT->backup_dir_);
-  auto backup_dir = PROJECT->backup_dir_;
-
-  /* free the project */
-  AUDIO_ENGINE->activate (false);
-  PROJECT.reset ();
-
-  /* load the backup directly */
-  auto filepath = Glib::build_filename (backup_dir, PROJECT_FILE);
-  test_project_reload (filepath);
-
-  /* undo history not saved with backups anymore */
-#if 0
-  /* test undo and redo cloning the track */
-  UNDO_MANAGER->undo();
-  UNDO_MANAGER->redo();
-#endif
-
-  /* free the project */
-  AUDIO_ENGINE->activate (false);
-  PROJECT.reset ();
-
-  /* attempt to open the latest backup (mimic
-   * behavior from UI) */
-  gZrythm->open_newer_backup_ = true;
-  filepath = Glib::build_filename (dir, "project.zpj");
-  test_project_reload (filepath);
 }
 
 /**
@@ -295,27 +318,6 @@ TEST_CASE_FIXTURE (ZrythmFixture, "project load v1.0.0-beta.2.1.1")
   /*project_load
    * ("/home/alex/.var/app/org.zrythm.Zrythm/data/zrythm/projects/プロジェクト名未設定
    * (3)/project.zpj", false);*/
-}
-
-TEST_CASE_FIXTURE (ZrythmFixtureWithPipewire, "exposed ports after load")
-{
-#ifdef HAVE_PIPEWIRE
-  auto        track = Track::create_empty_with_action<AudioTrack> ();
-  std::string buf;
-  {
-    const auto &port = track->channel_->stereo_out_->get_l ();
-    buf = port.get_full_designation ();
-
-    REQUIRE (port.is_exposed_to_backend ());
-    assert_jack_port_exists (buf);
-  }
-  test_project_save_and_reload ();
-
-  track = TRACKLIST->get_last_track<AudioTrack> ();
-  const auto &port = track->channel_->stereo_out_->get_l ();
-  REQUIRE (port.is_exposed_to_backend ());
-  assert_jack_port_exists (buf);
-#endif // HAVE_PIPEWIRE
 }
 
 TEST_SUITE_END;

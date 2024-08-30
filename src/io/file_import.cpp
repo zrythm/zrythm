@@ -237,9 +237,9 @@ file_import_finish (FileImport * self, GAsyncResult * result, GError ** error)
   z_return_val_if_fail (
     g_task_is_valid (result, self->owner),
     std::vector<std::shared_ptr<Region>> ());
-  auto regions_array = static_cast<std::vector<std::shared_ptr<Region>> *> (
+  auto * regions_array = static_cast<std::vector<std::shared_ptr<Region>> *> (
     g_task_propagate_pointer ((GTask *) result, error));
-  return *regions_array;
+  return regions_array ? *regions_array : std::vector<std::shared_ptr<Region>> ();
 }
 
 static void

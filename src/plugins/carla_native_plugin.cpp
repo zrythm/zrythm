@@ -207,6 +207,8 @@ host_dispatcher (
       /* TODO handle UI close */
       z_debug ("UI unavailable");
       break;
+    case NATIVE_HOST_OPCODE_INTERNAL_PLUGIN:
+      z_debug ("internal plugin");
     default:
       break;
     }
@@ -460,6 +462,7 @@ carla_engine_callback (
       z_debug ("Embed UI resized: {} - {}x{}", plugin_id, val1, val2);
       break;
     default:
+      z_warning ("unhandled callback");
       break;
     }
 }
@@ -1238,8 +1241,8 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
   const char * carla_filename = carla_get_library_filename ();
   auto         dir =
     fs::path (carla_filename).parent_path ().parent_path ().parent_path ();
-  native_host_descriptor_.resourceDir =
-    (dir / "share" / "carla" / "resources").string ().c_str ();
+  auto res_dir = dir / "share" / "carla" / "resources";
+  native_host_descriptor_.resourceDir = res_dir.c_str ();
 
   native_host_descriptor_.get_buffer_size = host_get_buffer_size;
   native_host_descriptor_.get_sample_rate = host_get_sample_rate;
@@ -1383,6 +1386,11 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
   carla_set_engine_option (
     host_handle_, CarlaBackend::ENGINE_OPTION_PATH_BINARIES, 0,
     carla_binaries_dir.c_str ());
+
+  /* set carla resource paths */
+  carla_set_engine_option (
+    host_handle_, CarlaBackend::ENGINE_OPTION_PATH_RESOURCES, 0,
+    res_dir.c_str ());
 
   /* set plugin paths */
   {

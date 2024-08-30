@@ -33,6 +33,7 @@
 #include <errno.h>
 
 #include "utils/exceptions.h"
+#include "utils/logger.h"
 #ifdef __linux__
 #  include <sys/ioctl.h>
 #  include <sys/stat.h>
@@ -141,19 +142,30 @@ file_symlink (const char * old_path, const char * new_path)
   return ret;
 }
 
-void
+bool
 file_reflink (const std::string &dest, const std::string &src)
 {
 #ifdef __linux__
   int src_fd = g_open (src.c_str (), O_RDONLY);
   if (src_fd == -1)
-    throw ZrythmException ("Failed to open source file");
+    {
+      z_warning ("Failed to open source file {}", src);
+      return false;
+    }
   int dest_fd = g_open (dest.c_str (), O_RDWR | O_CREAT, 0644);
   if (dest_fd == -1)
-    throw ZrythmException ("Failed to open destination file");
+    {
+      z_warning ("Failed to open destination file {}", dest);
+      return false;
+    }
   if (ioctl (dest_fd, FICLONE, src_fd) != 0)
-    throw ZrythmException ("Failed to reflink");
+    {
+      z_warning ("Failed to reflink '{}' to '{}'", src, dest);
+      return false;
+    }
+  return true;
 #else
-  throw ZrythmException ("Reflink not supported on this platform");
+  z_warning ("Reflink not supported on this platform");
+  return false;
 #endif
 }

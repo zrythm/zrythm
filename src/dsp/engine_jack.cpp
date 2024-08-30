@@ -174,7 +174,7 @@ engine_jack_buffer_size_cb (uint32_t nframes, AudioEngine * self)
   /* otherwise if activated wait for gtk thread to process all events */
   else if (self->activated_ && self->run_.load ())
     {
-      while (AUDIO_ENGINE->handled_jack_buffer_size_change_.load () == false)
+      while (!self->handled_jack_buffer_size_change_.load ())
         {
           z_info (
             "-- waiting for engine to handle JACK buffer size change on GUI thread... (engine_process_events)");

@@ -76,6 +76,8 @@ public:
   int find_child (unsigned int track_name_hash);
 
 protected:
+  void copy_members_from (const GroupTargetTrack &other);
+
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
 private:

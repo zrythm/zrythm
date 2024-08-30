@@ -872,6 +872,10 @@ Project::save (
   const bool         show_notification,
   const bool         async)
 {
+  z_info (
+    "Saving project at {}, is backup: {}, show notification: {}, async: {}",
+    _dir, is_backup, show_notification, async);
+
   /* pause engine */
   AudioEngine::State state;
   bool               engine_paused = false;
@@ -890,9 +894,8 @@ Project::save (
 
   validate ();
 
-  std::string dir = _dir;
-
   /* set the dir and create it if it doesn't exist */
+  dir_ = _dir;
   try
     {
       io_mkdir (dir_);
@@ -906,7 +909,7 @@ Project::save (
     }
 
   /* set the title */
-  title_ = Glib::path_get_basename (dir);
+  title_ = Glib::path_get_basename (dir_);
 
   /* save current datetime */
   datetime_str_ = datetime_get_current_as_string ();
@@ -1028,6 +1031,10 @@ Project::save (
     {
       audio_engine_->resume (state);
     }
+
+  z_info (
+    "Saved project at {}, is backup: {}, show notification: {}, async: {}",
+    _dir, is_backup, show_notification, async);
 }
 
 bool

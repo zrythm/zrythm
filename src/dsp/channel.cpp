@@ -40,6 +40,11 @@
 #include "gtk_wrapper.h"
 #include <unistd.h>
 
+Channel::Channel (ChannelTrack &track)
+    : track_pos_ (track.pos_), track_ (&track)
+{
+}
+
 void
 Channel::init_after_cloning (const Channel &other)
 {
@@ -70,8 +75,29 @@ Channel::init_after_cloning (const Channel &other)
   track_ = nullptr; // clear previous track
 }
 
+void
+Channel::set_track_ptr (ChannelTrack &track)
+{
+  track_ = &track;
+
+  prefader_->track_ = track_;
+  fader_->track_ = track_;
+
+  std::vector<Plugin *> pls;
+  get_plugins (pls);
+  for (auto * pl : pls)
+    {
+      pl->track_ = track_;
+    }
+
+  for (auto &send : sends_)
+    {
+      send->track_ = track_;
+    }
+}
+
 bool
-Channel::is_in_active_project ()
+Channel::is_in_active_project () const
 {
   return track_->is_in_active_project ();
 }
@@ -81,7 +107,7 @@ Channel::connect_no_prev_no_next (Plugin &pl)
 {
   z_debug ("connect no prev no next");
 
-  auto track = get_track ();
+  auto * track = get_track ();
 
   /* -----------------------------------------
    * disconnect ports
@@ -464,8 +490,8 @@ Channel::reconnect_ext_input_ports ()
         {
           for (const auto &ext_port : ext_midi_ins_)
             {
-              auto source = HW_IN_PROCESSOR->find_port (ext_port->get_id ());
-              if (!source)
+              auto * source = HW_IN_PROCESSOR->find_port (ext_port->get_id ());
+              if (source == nullptr)
                 {
                   z_warning ("port for {} not found", ext_port->get_id ());
                   continue;
@@ -490,8 +516,8 @@ Channel::reconnect_ext_input_ports ()
         {
           for (const auto &port_id : HW_IN_PROCESSOR->selected_audio_ports_)
             {
-              auto source = HW_IN_PROCESSOR->find_port (port_id);
-              if (!source)
+              auto * source = HW_IN_PROCESSOR->find_port (port_id);
+              if (source == nullptr)
                 {
                   z_warning ("port for {} not found", port_id);
                   continue;
@@ -505,8 +531,8 @@ Channel::reconnect_ext_input_ports ()
           z_debug ("{} L HW ins", ext_stereo_l_ins_.size ());
           for (const auto &ext_port : ext_stereo_l_ins_)
             {
-              auto source = HW_IN_PROCESSOR->find_port (ext_port->get_id ());
-              if (!source)
+              auto * source = HW_IN_PROCESSOR->find_port (ext_port->get_id ());
+              if (source == nullptr)
                 {
                   z_warning ("port for {} not found", ext_port->get_id ());
                   continue;
@@ -520,8 +546,8 @@ Channel::reconnect_ext_input_ports ()
         {
           for (const auto &port_id : HW_IN_PROCESSOR->selected_audio_ports_)
             {
-              auto source = HW_IN_PROCESSOR->find_port (port_id);
-              if (!source)
+              auto * source = HW_IN_PROCESSOR->find_port (port_id);
+              if (source == nullptr)
                 {
                   z_warning ("port for {} not found", port_id);
                   continue;
@@ -951,11 +977,6 @@ Channel::init_stereo_out_ports (bool loading)
 
   stereo_out_ = std::make_unique<StereoPorts> (std::move (l), std::move (r));
   stereo_out_->set_owner (this);
-}
-
-Channel::Channel (ChannelTrack &track)
-    : track_pos_ (track.pos_), track_ (&track)
-{
 }
 
 void
@@ -1637,7 +1658,7 @@ Channel::disconnect (bool remove_pl)
   /* disconnect all ports */
   std::vector<Port *> ports;
   append_ports (ports, true);
-  for (auto port : ports)
+  for (auto * port : ports)
     {
       if (
         !port

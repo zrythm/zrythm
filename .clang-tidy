@@ -17,6 +17,9 @@ Checks: >
   -cppcoreguidelines-pro-type-member-init,
   -readability-magic-numbers,
   -readability-identifier-naming,
+  -readability-identifier-length,
+  -readability-braces-around-statements,
+  -readability-uppercase-literal-suffix,
   -modernize-use-trailing-return-type
 WarningsAsErrors: >
   bugprone-undelegated-constructor,
@@ -33,4 +36,5 @@ CheckOptions:
     value: 'NULL'
   - key: readability-identifier-naming.ClassCase
     value: CamelCase
+HeaderFilterRegex: '^(?!.*/ext/).*'
 ...

@@ -27,6 +27,7 @@ PortConnectionsManager::add_or_replace_connection (
   auto it = ht.find (id);
   if (it != ht.end ())
     {
+      z_return_if_fail (it->first == id);
       it->second.push_back (&conn);
     }
   else

@@ -24,6 +24,44 @@ TEST_SUITE_BEGIN ("actions/mixer selections");
 
 static int num_master_children = 0;
 
+TEST_CASE_FIXTURE (ZrythmFixture, "MIDI FX slot deletion")
+{
+  /* create MIDI track */
+  Track::create_empty_with_action<MidiTrack> ();
+
+#ifdef HAVE_MIDI_CC_MAP
+  /* add plugin to slot */
+  int  slot = 0;
+  auto setting = test_plugin_manager_get_plugin_setting (
+    MIDI_CC_MAP_BUNDLE, MIDI_CC_MAP_URI, false);
+  auto track_pos = TRACKLIST->get_last_pos ();
+  auto track = TRACKLIST->get_track<ChannelTrack> (track_pos);
+  REQUIRE_NOTHROW (
+    UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
+      PluginSlotType::MidiFx, *track, slot, setting)));
+
+  auto pl = track->channel_->midi_fx_[slot].get ();
+
+  /* set the value to check if it is brought
+   * back on undo */
+  auto port = pl->get_port_by_symbol<ControlPort> ("ccin");
+  port->set_control_value (120.f, F_NOT_NORMALIZED, false);
+
+  /* delete slot */
+  pl->select (true, true);
+  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsDeleteAction> (
+    *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR));
+
+  /* undo and check port value is restored */
+  UNDO_MANAGER->undo ();
+  pl = track->channel_->midi_fx_[slot].get ();
+  port = pl->get_port_by_symbol<ControlPort> ("ccin");
+  REQUIRE_FLOAT_NEAR (port->control_, 120.f, 0.0001f);
+
+  UNDO_MANAGER->redo ();
+#endif
+}
+
 static void
 _test_copy_plugins (
   const char * pl_bundle,
@@ -129,44 +167,6 @@ TEST_CASE_FIXTURE (ZrythmFixture, "copy plugins")
   _test_copy_plugins (NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI, false, true);
 #  endif /* HAVE_CARLA */
 #endif   /* HAVE_NO_DELAY_LINE */
-}
-
-TEST_CASE_FIXTURE (ZrythmFixture, "MIDI FX slot deletion")
-{
-  /* create MIDI track */
-  Track::create_empty_with_action<MidiTrack> ();
-
-#ifdef HAVE_MIDI_CC_MAP
-  /* add plugin to slot */
-  int  slot = 0;
-  auto setting = test_plugin_manager_get_plugin_setting (
-    MIDI_CC_MAP_BUNDLE, MIDI_CC_MAP_URI, false);
-  auto track_pos = TRACKLIST->get_last_pos ();
-  auto track = TRACKLIST->get_track<ChannelTrack> (track_pos);
-  REQUIRE_NOTHROW (
-    UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-      PluginSlotType::MidiFx, *track, slot, setting)));
-
-  auto pl = track->channel_->midi_fx_[slot].get ();
-
-  /* set the value to check if it is brought
-   * back on undo */
-  auto port = pl->get_port_by_symbol<ControlPort> ("ccin");
-  port->set_control_value (120.f, F_NOT_NORMALIZED, false);
-
-  /* delete slot */
-  pl->select (true, true);
-  UNDO_MANAGER->perform (std::make_unique<MixerSelectionsDeleteAction> (
-    *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR));
-
-  /* undo and check port value is restored */
-  UNDO_MANAGER->undo ();
-  pl = track->channel_->midi_fx_[slot].get ();
-  port = pl->get_port_by_symbol<ControlPort> ("ccin");
-  REQUIRE_FLOAT_NEAR (port->control_, 120.f, 0.0001f);
-
-  UNDO_MANAGER->redo ();
-#endif
 }
 
 static void

@@ -254,6 +254,7 @@ public:
           AUDIO_TRACK_NAME, TRACKLIST->tracks_.size (),
           AUDIO_ENGINE->sample_rate_),
         false, false);
+      REQUIRE_SIZE_EQ (P_MASTER_TRACK->children_, 1);
       auto       audio_file_path = fs::path (TESTS_SRCDIR) / "test.wav";
       const auto track_name_hash = audio_track->get_name_hash ();
       std::shared_ptr<AudioRegion> r;
@@ -283,6 +284,7 @@ public:
         TARGET_AUDIO_TRACK_NAME, TRACKLIST->tracks_.size (),
         AUDIO_ENGINE->sample_rate_),
       false, false);
+    REQUIRE_SIZE_EQ (P_MASTER_TRACK->children_, 2);
 
     AUDIO_ENGINE->update_frames_per_tick (
       P_TEMPO_TRACK->get_beats_per_bar (), P_TEMPO_TRACK->get_current_bpm (),
@@ -295,6 +297,7 @@ public:
     REQUIRE_SIZE_EQ (TL_SELECTIONS->objects_, 6);
     test_project_save_and_reload ();
     REQUIRE_SIZE_EQ (TL_SELECTIONS->objects_, 6);
+    REQUIRE_SIZE_EQ (P_MASTER_TRACK->children_, 2);
   }
 
   /**

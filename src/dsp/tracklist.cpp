@@ -149,19 +149,26 @@ Tracklist::swap_tracks (const size_t index1, const size_t index2)
   z_return_if_fail (std::max (index1, index2) < tracks_.size ());
   swapping_tracks_ = true;
 
-  auto &src_track = tracks_[index1];
-  auto &dest_track = tracks_[index2];
-  z_debug (
-    "swapping tracks {} [{}] and {} [{}]...",
-    src_track ? src_track->name_ : nullptr, index1,
-    dest_track ? dest_track->name_ : nullptr, index2);
+  {
+    const auto &src_track = tracks_[index1];
+    const auto &dest_track = tracks_[index2];
+    z_debug (
+      "swapping tracks {} [{}] and {} [{}]...",
+      src_track ? src_track->name_ : "(none)", index1,
+      dest_track ? dest_track->name_ : "(none)", index2);
+  }
 
   std::iter_swap (tracks_.begin () + index1, tracks_.begin () + index2);
 
-  if (dest_track)
-    dest_track->pos_ = index1;
-  if (src_track)
-    src_track->pos_ = index2;
+  {
+    const auto &src_track = tracks_[index1];
+    const auto &dest_track = tracks_[index2];
+
+    if (src_track)
+      src_track->pos_ = index1;
+    if (dest_track)
+      dest_track->pos_ = index2;
+  }
 
   swapping_tracks_ = false;
   z_debug ("tracks swapped");
@@ -221,7 +228,7 @@ Tracklist::insert_track (
     {
       std::vector<Port *> ports;
       added_track->append_ports (ports, true);
-      for (auto port : ports)
+      for (auto * port : ports)
         {
           port->id_.flags2_ |= PortIdentifier::Flags2::SampleProcessorTrack;
         }
@@ -230,7 +237,7 @@ Tracklist::insert_track (
   /* if inserting it, swap until it reaches its position */
   if (static_cast<size_t> (pos) != tracks_.size () - 1)
     {
-      for (int i = tracks_.size () - 1; i > pos; --i)
+      for (int i = static_cast<int> (tracks_.size ()) - 1; i > pos; --i)
         {
           swap_tracks (i, i - 1);
         }
@@ -260,7 +267,9 @@ Tracklist::insert_track (
     }
 
   if constexpr (std::derived_from<T, ChannelTrack>)
-    added_track->channel_->connect ();
+    {
+      added_track->channel_->connect ();
+    }
 
   /* if audio output route to master */
   if constexpr (!std::is_same_v<T, MasterTrack>)
@@ -273,7 +282,9 @@ Tracklist::insert_track (
     }
 
   if (is_in_active_project ())
-    added_track->activate_all_plugins (true);
+    {
+      added_track->activate_all_plugins (true);
+    }
 
   if (!is_auditioner ())
     {
@@ -283,7 +294,7 @@ Tracklist::insert_track (
 
   if (ZRYTHM_TESTING)
     {
-      for (auto cur_track : tracks_ | type_is<ChannelTrack> ())
+      for (auto * cur_track : tracks_ | type_is<ChannelTrack> ())
         {
           auto ch = cur_track->channel_;
           if (ch->has_output_)
@@ -360,6 +371,7 @@ template <typename T>
 T *
 Tracklist::find_track_by_name_hash (unsigned int hash) const
 {
+  // z_trace ("called for {}", hash);
   static_assert (TrackSubclass<T>);
   if (
     is_in_active_project () && ROUTER && ROUTER->is_processing_thread ()
@@ -370,12 +382,12 @@ Tracklist::find_track_by_name_hash (unsigned int hash) const
       });
       if (found != tracks_.end ())
         return dynamic_cast<T *> (found->get ());
-      else
-        return nullptr;
+
+      return nullptr;
     }
   else
     {
-      for (auto &track : tracks_)
+      for (const auto &track : tracks_)
         {
           if (ZRYTHM_TESTING)
             {
@@ -441,6 +453,11 @@ Tracklist::validate () const
 
         if (!track->validate ())
           return false;
+
+        if (track->pos_ != get_track_pos (*track))
+          {
+            return false;
+          }
 
         /* validate size */
         int track_size = 1;
@@ -987,10 +1004,11 @@ Tracklist::import_files (
           auto fi = file_import_new (filepath.toStdString ().c_str (), &nfo);
           GError * err = nullptr;
           auto     regions = file_import_sync (fi, &err);
-          if (err)
+          if (err != nullptr)
             {
               throw ZrythmException (format_str (
-                _ ("Failed to import file {}"), filepath.toStdString ()));
+                _ ("Failed to import file {}: {}"), filepath.toStdString (),
+                err->message));
             }
           std::vector<std::vector<std::shared_ptr<Region>>> region_arrays;
           region_arrays.push_back (regions);

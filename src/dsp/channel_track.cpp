@@ -21,7 +21,7 @@ void
 ChannelTrack::copy_members_from (const ChannelTrack &other)
 {
   channel_ = other.channel_->clone_shared ();
-  channel_->track_ = this;
+  channel_->set_track_ptr (*this);
 }
 
 void

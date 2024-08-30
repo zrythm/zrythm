@@ -783,7 +783,8 @@ AudioEngine::wait_for_pause (State &state, bool force_pause, bool with_fadeout)
     }
 
   if (
-    with_fadeout && state.running_ && !dummy_audio_thread_->threadShouldExit ()
+    with_fadeout && state.running_
+    && (dummy_audio_thread_ == nullptr || !dummy_audio_thread_->threadShouldExit ())
     && has_handled_buffer_size_change ())
     {
       z_debug (

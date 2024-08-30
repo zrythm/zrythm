@@ -37,9 +37,9 @@ file_symlink (const char * old_path, const char * new_path);
 /**
  * Do cp --reflink from @ref src to @ref dest.
  *
- * @throw ZrythmException if reflink fails.
+ * @return Whether successful.
  */
-void
+[[nodiscard]] bool
 file_reflink (const std::string &dest, const std::string &src);
 
 /**

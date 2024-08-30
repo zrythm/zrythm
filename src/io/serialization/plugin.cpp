@@ -134,6 +134,7 @@ Plugin::define_base_fields (const Context &ctx)
           }
       };
       handle_ports ("inPorts", in_ports_);
+      z_return_if_fail (!in_ports_.empty ());
       handle_ports ("outPorts", out_ports_);
     }
 

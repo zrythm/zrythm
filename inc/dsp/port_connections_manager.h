@@ -40,8 +40,8 @@ class PortConnectionsManager final
    * Key: Port identifier
    * Value: A vector of PortConnection references from @ref connections_.
    */
-  using ConnectionHashTable = std::
-    map<PortIdentifier, ConnectionHashTableValueType, PortIdentifier::Compare>;
+  using ConnectionHashTable =
+    std::unordered_map<PortIdentifier, ConnectionHashTableValueType>;
 
 public:
   /**
@@ -67,6 +67,18 @@ public:
     std::vector<PortConnection *> * arr,
     const PortIdentifier           &id,
     bool                            sources) const;
+
+  int
+  get_sources (std::vector<PortConnection *> * arr, const PortIdentifier &id) const
+  {
+    return get_sources_or_dests (arr, id, true);
+  }
+
+  int
+  get_dests (std::vector<PortConnection *> * arr, const PortIdentifier &id) const
+  {
+    return get_sources_or_dests (arr, id, false);
+  }
 
   /**
    * Adds the sources/destinations of @ref id in the given array.

@@ -80,9 +80,9 @@ TracklistSelectionsAction::copy_track_positions_from_selections (
   const TracklistSelections &sel)
 {
   num_tracks_ = sel.tracks_.size ();
-  for (size_t i = 0; i < sel.tracks_.size (); i++)
+  for (const auto &track : sel.tracks_)
     {
-      track_positions[i] = sel.tracks_[i]->pos_;
+      track_positions.push_back (track->pos_);
     }
   std::sort (track_positions.begin (), track_positions.end ());
 }
@@ -370,9 +370,8 @@ TracklistSelectionsAction::TracklistSelectionsAction (
       new_txt_ = *new_txt;
     }
 
-  /* TODO: check if needed */
-  // ival_before_.reserve (num_tracks_);
-  // colors_before_.reserve (num_tracks_);
+  ival_before_.resize (num_tracks_, 0);
+  colors_before_.resize (num_tracks_);
 
   if (port_connections_mgr)
     {
@@ -641,8 +640,10 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
         {
           for (int i = num_tracks_ - 1; i >= 0; i--)
             {
-              auto &track = TRACKLIST->tracks_[track_pos_ + i];
+              auto &track = TRACKLIST->tracks_.at (track_pos_ + i);
               z_return_if_fail (track);
+              z_return_if_fail (
+                TRACKLIST->get_track_pos (*track) == track->pos_);
 
               TRACKLIST->remove_track (*track, true, true, false, false);
             }
@@ -858,8 +859,8 @@ TracklistSelectionsAction::
                 {
                   auto own_channel_track =
                     dynamic_cast<ChannelTrack *> (own_track.get ());
-                  outputs_in_prj[i] =
-                    own_channel_track->get_channel ()->get_output_track ();
+                  outputs_in_prj.push_back (
+                    own_channel_track->get_channel ()->get_output_track ());
 
                   for (int j = 0; j < STRIP_SIZE; j++)
                     {
@@ -872,7 +873,7 @@ TracklistSelectionsAction::
                 }
               else
                 {
-                  outputs_in_prj[i] = nullptr;
+                  outputs_in_prj.push_back (nullptr);
                 }
             }
 
@@ -922,7 +923,7 @@ TracklistSelectionsAction::
 
               /* select it */
               added_track->select (true, false, false);
-              new_tracks[i] = added_track;
+              new_tracks.push_back (added_track);
             }
 
           /* reroute new tracks to correct outputs & sends */

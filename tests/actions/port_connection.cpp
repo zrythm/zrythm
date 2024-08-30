@@ -144,6 +144,7 @@ _test_port_connection (
     }
   REQUIRE_NONNULL (src_port1);
   REQUIRE_NONNULL (src_port2);
+  REQUIRE_NE (src_port1->get_hash (), src_port2->get_hash ());
   ports.clear ();
 
   ControlPort * dest_port = nullptr;
@@ -161,35 +162,45 @@ _test_port_connection (
         }
     }
 
+  auto check_num_sources = [&] (const auto &port, const auto num_sources) {
+    REQUIRE_SIZE_EQ (port->srcs_, num_sources);
+    REQUIRE_EQ (
+      PORT_CONNECTIONS_MGR->get_sources (nullptr, port->id_), num_sources);
+  };
+  auto check_num_dests = [&] (const auto &port, const auto num_dests) {
+    REQUIRE_SIZE_EQ (port->dests_, num_dests);
+    REQUIRE_EQ (PORT_CONNECTIONS_MGR->get_dests (nullptr, port->id_), num_dests);
+  };
+
   REQUIRE_NONNULL (dest_port);
   REQUIRE (src_port1->is_in_active_project ());
   REQUIRE (src_port2->is_in_active_project ());
   REQUIRE (dest_port->is_in_active_project ());
-  REQUIRE_EMPTY (dest_port->srcs_);
-  REQUIRE_EMPTY (src_port1->dests_);
+  check_num_sources (dest_port, 0);
+  check_num_dests (src_port1, 0);
 
   UNDO_MANAGER->perform (std::make_unique<PortConnectionConnectAction> (
     src_port1->id_, dest_port->id_));
 
-  REQUIRE_SIZE_EQ (dest_port->srcs_, 1);
-  REQUIRE_SIZE_EQ (src_port1->dests_, 1);
+  check_num_sources (dest_port, 1);
+  check_num_dests (src_port1, 1);
 
   UNDO_MANAGER->undo ();
 
-  REQUIRE_EMPTY (dest_port->srcs_);
-  REQUIRE_EMPTY (src_port1->dests_);
+  check_num_sources (dest_port, 0);
+  check_num_dests (src_port1, 0);
 
   UNDO_MANAGER->redo ();
 
-  REQUIRE_SIZE_EQ (dest_port->srcs_, 1);
-  REQUIRE_SIZE_EQ (src_port1->dests_, 1);
+  check_num_sources (dest_port, 1);
+  check_num_dests (src_port1, 1);
 
   UNDO_MANAGER->perform (std::make_unique<PortConnectionConnectAction> (
     src_port2->id_, dest_port->id_));
 
-  REQUIRE_SIZE_EQ (dest_port->srcs_, 2);
-  REQUIRE_SIZE_EQ (src_port1->dests_, 1);
-  REQUIRE_SIZE_EQ (src_port2->dests_, 1);
+  check_num_sources (dest_port, 2);
+  check_num_dests (src_port1, 1);
+  check_num_dests (src_port2, 1);
   REQUIRE_NONNULL (
     PORT_CONNECTIONS_MGR->find_connection (src_port1->id_, dest_port->id_));
   REQUIRE_NONNULL (

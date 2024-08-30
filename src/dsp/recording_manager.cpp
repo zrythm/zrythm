@@ -53,7 +53,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
     }
 
   z_info (
-    "%s%s", "----- stopped recording", is_automation ? " (automation)" : "");
+    "{}{}", "----- stopped recording", is_automation ? " (automation)" : "");
 
   /* cache the current selections */
   auto prev_selections = std::make_unique<TimelineSelections> (*TL_SELECTIONS);
@@ -155,8 +155,7 @@ RecordingManager::handle_recording (
 {
 #if 0
   z_info (
-    "handling recording from %ld (%" PRIu32
-    " frames)",
+    "handling recording from {} ({} frames)",
     g_start_frames + ev->local_offset, ev->nframes);
 #endif
 
@@ -461,7 +460,7 @@ RecordingManager::handle_pause_event (const RecordingEvent &ev)
   pause_pos.from_frames ((signed_frame_t) ev.g_start_frame_w_offset_);
 
 #if 0
-  z_debug ("track {} pause start frames %" PRIuFAST64 ", nframes {}", tr->name_.c_str(), pause_pos.frames_, ev.nframes_);
+  z_debug ("track {} pause start frames {}, nframes {}", tr->name_.c_str(), pause_pos.frames_, ev.nframes_);
 #endif
 
   if (ev.type_ == RecordingEvent::Type::PauseTrackRecording)
@@ -1017,8 +1016,10 @@ RecordingManager::handle_start_recording (
     }
 
   /* this could be called multiple times, ignore if already processed */
-  auto recordable_track = dynamic_cast<RecordableTrack *> (tr);
-  if (!is_automation && recordable_track->recording_region_ && !is_automation)
+  auto * recordable_track = dynamic_cast<RecordableTrack *> (tr);
+  if (
+    !is_automation && (recordable_track->recording_region_ != nullptr)
+    && !is_automation)
     {
       z_warning ("record start already processed");
       num_active_recordings_++;
@@ -1029,11 +1030,7 @@ RecordingManager::handle_start_recording (
   unsigned_frame_t start_frames = ev.g_start_frame_w_offset_;
   unsigned_frame_t end_frames = start_frames + ev.nframes_;
 
-  z_info (
-    "start %" UNSIGNED_FRAME_FORMAT
-    ", "
-    "end %" UNSIGNED_FRAME_FORMAT,
-    start_frames, end_frames);
+  z_debug ("start {}, end {}", start_frames, end_frames);
 
   z_return_if_fail (start_frames < end_frames);
 
@@ -1046,19 +1043,19 @@ RecordingManager::handle_start_recording (
       /*at->recording_paused = false;*/
 
       /* nothing, wait for event to start writing data */
-      auto  port = Port::find_from_identifier<ControlPort> (at->port_id_);
-      float value = port->get_control_value (false);
+      auto * port = Port::find_from_identifier<ControlPort> (at->port_id_);
+      float  value = port->get_control_value (false);
 
       if (at->should_be_recording (cur_time, true))
         {
           /* set recorded value to something else to force the recorder to start
            * writing */
-          z_info ("SHOULD BE RECORDING");
+          // z_info ("SHOULD BE RECORDING");
           at->last_recorded_value_ = value + 2.f;
         }
       else
         {
-          z_info ("SHOULD NOT BE RECORDING");
+          // z_info ("SHOULD NOT BE RECORDING");
           /** set the current value so that nothing is recorded until it changes
            */
           at->last_recorded_value_ = value;

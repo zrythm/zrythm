@@ -74,15 +74,6 @@ PortConnectionAction::do_or_undo (bool _do)
             }
           PORT_CONNECTIONS_MGR->ensure_connect (
             src->id_, dest->id_, 1.f, false, true);
-          if (ZRYTHM_TESTING)
-            {
-              int num_dests = PORT_CONNECTIONS_MGR->get_sources_or_dests (
-                nullptr, src->id_, false);
-              z_return_if_fail (num_dests > 0);
-              int num_srcs = PORT_CONNECTIONS_MGR->get_sources_or_dests (
-                nullptr, dest->id_, true);
-              z_return_if_fail (num_srcs > 0);
-            }
 
           /* set base value if cv -> control */
           if (

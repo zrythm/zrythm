@@ -71,11 +71,11 @@ std::string
 PortIdentifier::print_to_str () const
 {
   return fmt::format (
-    "[PortIdentifier {} | hash {}]\nlabel: %s\n"
-    "sym: %s\nuri: %s\ncomment: %s\nowner type: %s\n"
-    "type: %s\nflow: %s\nflags: %s %s\nunit: %s\n"
-    "port group: %s\next port id: %s\n"
-    "track name hash: {}\nport idx: %d\nplugin: %s",
+    "[PortIdentifier {} | hash {}]\nlabel: {}\n"
+    "sym: {}\nuri: {}\ncomment: {}\nowner type: {}\n"
+    "type: {}\nflow: {}\nflags: {} {}\nunit: {}\n"
+    "port group: {}\next port id: {}\n"
+    "track name hash: {}\nport idx: {}\nplugin: {}",
     fmt::ptr (this), get_hash (), label_, sym_, uri_, comment_,
     ENUM_NAME (owner_type_), ENUM_NAME (type_), ENUM_NAME (flow_),
     ENUM_BITSET_TO_STRING (PortIdentifier::Flags, flags_),
@@ -101,33 +101,37 @@ OPTIMIZE_O3
 uint32_t
 PortIdentifier::get_hash () const
 {
-  const PortIdentifier * id = static_cast<const PortIdentifier *> (this);
-  uint32_t               hash = 0;
-  if (!id->sym_.empty ())
+  // FIXME this hashing is very very weak, there are guaranteed many collisions
+  // on every project... we need a better hashing style
+  // same goes for other classes too (like PluginIdentifier)
+  // TODO look into std::hash and provide a hash_combine helper
+  uint32_t hash = 0;
+  if (!sym_.empty ())
     {
-      hash = hash ^ g_str_hash (id->sym_.c_str ());
+      hash = hash ^ g_str_hash (sym_.c_str ());
     }
   /* don't check label when have symbol because label might be
    * localized */
-  else if (!id->label_.empty ())
+  else if (!label_.empty ())
     {
-      hash = hash ^ g_str_hash (id->label_.c_str ());
+      hash = hash ^ g_str_hash (label_.c_str ());
     }
 
-  if (!id->uri_.empty ())
-    hash = hash ^ g_str_hash (id->uri_.c_str ());
-  hash = hash ^ g_int_hash (&id->owner_type_);
-  hash = hash ^ g_int_hash (&id->type_);
-  hash = hash ^ g_int_hash (&id->flow_);
-  hash = hash ^ g_int_hash (&id->flags_);
-  hash = hash ^ g_int_hash (&id->flags2_);
-  hash = hash ^ g_int_hash (&id->unit_);
-  hash = hash ^ PluginIdentifier::get_hash (&id->plugin_id_);
-  if (!id->port_group_.empty ())
-    hash = hash ^ g_str_hash (id->port_group_.c_str ());
-  if (!id->ext_port_id_.empty ())
-    hash = hash ^ g_str_hash (id->ext_port_id_.c_str ());
-  hash = hash ^ id->track_name_hash_;
-  hash = hash ^ g_int_hash (&id->port_index_);
+  if (!uri_.empty ())
+    hash = hash ^ g_str_hash (uri_.c_str ());
+  hash = hash ^ g_int_hash (&owner_type_);
+  hash = hash ^ g_int_hash (&type_);
+  hash = hash ^ g_int_hash (&flow_);
+  hash = hash ^ g_int_hash (&flags_);
+  hash = hash ^ g_int_hash (&flags2_);
+  hash = hash ^ g_int_hash (&unit_);
+  hash = hash ^ PluginIdentifier::get_hash (&plugin_id_);
+  if (!port_group_.empty ())
+    hash = hash ^ g_str_hash (port_group_.c_str ());
+  if (!ext_port_id_.empty ())
+    hash = hash ^ g_str_hash (ext_port_id_.c_str ());
+  hash = hash ^ track_name_hash_;
+  hash = hash ^ g_int_hash (&port_index_);
+  // z_trace ("hash for {}: {}", sym_, hash);
   return hash;
 }

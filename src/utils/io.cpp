@@ -351,7 +351,7 @@ io_copy_dir (
 {
 
   z_debug (
-    "attempting to copy dir '%s' to '%s' (recursive: %d)", srcdir_str,
+    "attempting to copy dir '{}' to '{}' (recursive: {})", srcdir_str,
     destdir_str, recursive);
 
   GError * err = NULL;
@@ -359,7 +359,7 @@ io_copy_dir (
   if (!srcdir)
     {
       throw ZrythmException (fmt::format (
-        "Failed opening directory {}: {}", srcdir_str, err->message));
+        "Failed opening directory '{}': {}", srcdir_str, err->message));
     }
 
   io_mkdir (destdir_str.data ());

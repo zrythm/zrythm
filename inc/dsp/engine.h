@@ -279,7 +279,7 @@ public:
   struct State
   {
     /** Engine running. */
-    int running_;
+    bool running_;
     /** Playback. */
     bool playing_;
     /** Transport loop. */

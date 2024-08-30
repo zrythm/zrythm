@@ -219,3 +219,9 @@ GroupTargetTrack::update_children ()
         child->pos_, get_name (), pos_);
     }
 }
+
+void
+GroupTargetTrack::copy_members_from (const GroupTargetTrack &other)
+{
+  children_ = other.children_;
+}

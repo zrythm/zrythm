@@ -591,8 +591,10 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
   /* if backup, copy plugin states */
   if (use_backup)
     {
+      const auto &prev_prj_backup_dir = deserialized_project->backup_dir_;
+      z_return_if_fail (!prev_prj_backup_dir.empty ());
       auto prev_plugins_dir =
-        Glib::build_filename (deserialized_project->dir_, PROJECT_PLUGINS_DIR);
+        Glib::build_filename (prev_prj_backup_dir, PROJECT_PLUGINS_DIR);
       auto new_plugins_dir = Glib::build_filename (dir_, PROJECT_PLUGINS_DIR);
       try
         {
@@ -875,20 +877,18 @@ ProjectInitFlowManager::ProjectInitFlowManager (
       load_from_file ();
       return;
     }
-  /* else if no filename given */
-  else
-    {
-      try
-        {
-          z_return_if_fail (gZrythm);
-          create_default (PROJECT, gZrythm->create_project_path_, false, true);
-        }
-      catch (const ZrythmException &e)
-        {
-          call_last_callback_fail ("Failed to create default project");
-          return;
-        }
 
-      save_and_activate_after_successful_load_or_create ();
+  /* else if no filename given */
+  try
+    {
+      z_return_if_fail (gZrythm);
+      create_default (PROJECT, gZrythm->create_project_path_, false, true);
     }
+  catch (const ZrythmException &e)
+    {
+      call_last_callback_fail ("Failed to create default project");
+      return;
+    }
+
+  save_and_activate_after_successful_load_or_create ();
 }

@@ -63,7 +63,7 @@ public:
    */
   void init ();
 
-  bool is_in_active_project ();
+  bool is_in_active_project () const;
 
   /**
    * Sets fader to 0.0.
@@ -265,6 +265,17 @@ public:
   void add_balance_control (float pan);
 
   float get_balance_control () const;
+
+  /**
+   * @brief Set the track ptr to the channel and all its internals that
+   * reference a track (Plugin, Fader, etc.)
+   *
+   * @param track The owner track.
+   *
+   * This is intended to be used when cloning ChannelTracks where we can't use
+   * the constructor.
+   */
+  void set_track_ptr (ChannelTrack &track);
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

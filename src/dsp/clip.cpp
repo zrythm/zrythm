@@ -245,13 +245,9 @@ AudioClip::write_to_pool (bool parts, bool is_backup)
             "reflinking clip from main project ('{}' to '{}')",
             path_in_main_project, new_path);
 
-          try
+          if (!file_reflink (path_in_main_project, new_path))
             {
-              file_reflink (path_in_main_project, new_path);
-            }
-          catch (const ZrythmException &e1)
-            {
-              z_debug ("failed to reflink ({}), copying instead", e1.what ());
+              z_debug ("failed to reflink, copying instead");
 
               /* copy */
               auto src_file = Gio::File::create_for_path (path_in_main_project);
