@@ -1,22 +1,36 @@
 # SPDX-FileCopyrightText: © 2021, 2024 Alexandros Theodotou
 # SPDX-License-Identifier: FSFAP
 ---
-# use '-' to disable checks
+# prefix with '-' to disable checks
 Checks: >
   bugprone-*,
   clang-analyzer-*,
   cppcoreguidelines-*,
+  modernize-*,
+  performance-*,
+  readability-*,
   -llvm-include-order,
   -clang-diagnostic-unused-parameter,
   -cppcoreguidelines-avoid-do-while,
   -cppcoreguidelines-avoid-magic-numbers,
-  -cppcoreguidelines-non-private-member-variables-in-classes
-  -cppcoreguidelines-pro-type-member-init
-WarningsAsErrors: ''
-FormatStyle:     none
+  -cppcoreguidelines-non-private-member-variables-in-classes,
+  -cppcoreguidelines-pro-type-member-init,
+  -readability-magic-numbers,
+  -readability-identifier-naming,
+  -modernize-use-trailing-return-type
+WarningsAsErrors: >
+  bugprone-undelegated-constructor,
+  bugprone-string-constructor
+FormatStyle: file
 CheckOptions:
-  - key:             cert-dcl16-c.NewSuffixes
-    value:           'L;LL;LU;LLU'
+  - key: cert-dcl16-c.NewSuffixes
+    value: 'L;LL;LU;LLU'
   - key: bugprone-argument-comment.StrictMode
     value: '1'
+  - key: performance-move-const-arg.CheckTriviallyCopyableMove
+    value: '1'
+  - key: modernize-use-nullptr.NullMacros
+    value: 'NULL'
+  - key: readability-identifier-naming.ClassCase
+    value: CamelCase
 ...
