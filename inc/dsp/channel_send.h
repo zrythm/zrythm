@@ -184,7 +184,7 @@ public:
    */
   int append_connection (
     const PortConnectionsManager * mgr,
-    std::vector<PortConnection *> &arr) const;
+    std::vector<PortConnection>   &arr) const;
 
   void prepare_process ();
 

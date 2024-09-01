@@ -36,6 +36,132 @@ print_progress_and_sleep (ProgressInfo &info)
     }
 }
 
+TEST_CASE_FIXTURE (ZrythmFixture, "bounce with note at start")
+{
+  /* create the instrument track */
+  test_plugin_manager_create_tracks_from_plugin (
+    TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false, 1);
+  auto ins_track = TRACKLIST->get_last_track<InstrumentTrack> ();
+  ins_track->select (true, true, false);
+
+  /* add region with note */
+  Position start, end;
+  start.zero ();
+  end.set_to_bar (4);
+  auto r =
+    std::make_shared<MidiRegion> (start, end, ins_track->name_hash_, 0, 0);
+  ins_track->add_region (r, nullptr, 0, true, false);
+  start.zero ();
+  end.set_to_bar (4);
+  auto mn = std::make_shared<MidiNote> (
+    r->id_, start, end, DUMMY_NOTE_PITCH, DUMMY_NOTE_VELOCITY);
+  r->append_object (mn);
+  r->select (true, false, false);
+
+  /* bounce the loop */
+  Exporter::Settings settings;
+  settings.mode_ = Exporter::Mode::Regions;
+  settings.set_bounce_defaults (Exporter::Format::WAV, "", r->name_);
+  settings.time_range_ = Exporter::TimeRange::Loop;
+  TL_SELECTIONS->mark_for_bounce (settings.bounce_with_parents_);
+
+  Exporter exporter (settings);
+  exporter.prepare_tracks_for_export (*AUDIO_ENGINE, *TRANSPORT);
+
+  /* start exporting in a new thread */
+  exporter.begin_generic_thread ();
+  print_progress_and_sleep (*exporter.progress_info_);
+  exporter.join_generic_thread ();
+  exporter.post_export ();
+
+  REQUIRE_FALSE (audio_file_is_silent (exporter.get_exported_path ().c_str ()));
+}
+
+TEST_CASE_FIXTURE (ZrythmFixture, "mixdown midi")
+{
+  /* create a MIDI track with 2 adjacent regions
+   * with 1 MIDI note each */
+  auto track = Track::create_empty_with_action<MidiTrack> ();
+  track->select (true, true, false);
+
+  Position start, end;
+  start.zero ();
+  end.set_to_bar (4);
+  auto r = std::make_shared<MidiRegion> (start, end, track->name_hash_, 0, 0);
+  track->add_region (r, nullptr, 0, true, false);
+
+  /* midi note 1 */
+  start.zero ();
+  end.set_to_bar (2);
+  auto mn = std::make_shared<MidiNote> (
+    r->id_, start, end, DUMMY_NOTE_PITCH, DUMMY_NOTE_VELOCITY);
+  r->append_object (mn);
+
+  /* midi note 2 */
+  start.set_to_bar (3);
+  end.set_to_bar (4);
+  mn = std::make_shared<MidiNote> (
+    r->id_, start, end, DUMMY_NOTE_PITCH, DUMMY_NOTE_VELOCITY);
+  r->append_object (mn);
+
+  /* region 2 */
+  start.set_to_bar (2);
+  end.set_to_bar (3);
+  r = std::make_shared<MidiRegion> (start, end, track->name_hash_, 0, 1);
+  track->add_region (r, nullptr, 0, true, false);
+
+  /* midi note 3 */
+  start.zero ();
+  end.set_to_bar (2);
+  mn = std::make_shared<MidiNote> (
+    r->id_, start, end, DUMMY_NOTE_PITCH, DUMMY_NOTE_VELOCITY);
+  r->append_object (mn);
+
+  /* bounce */
+  Exporter::Settings settings;
+  settings.mode_ = Exporter::Mode::Full;
+  settings.set_bounce_defaults (Exporter::Format::Midi1, "", __func__);
+  settings.time_range_ = Exporter::TimeRange::Loop;
+
+  Exporter exporter (settings);
+  exporter.prepare_tracks_for_export (*AUDIO_ENGINE, *TRANSPORT);
+
+  /* start exporting in a new thread */
+  exporter.begin_generic_thread ();
+  print_progress_and_sleep (*exporter.progress_info_);
+  exporter.join_generic_thread ();
+  exporter.post_export ();
+
+  /* create a MIDI track from the MIDI file */
+  FileDescriptor file (exporter.get_exported_path ());
+  Track::create_with_action (
+    Track::Type::Midi, nullptr, &file, &PLAYHEAD, TRACKLIST->get_num_tracks (),
+    1, -1, nullptr);
+  auto exported_track = TRACKLIST->get_last_track<MidiTrack> ();
+
+  /* verify correct data */
+  REQUIRE_SIZE_EQ (exported_track->lanes_, 2);
+  REQUIRE_SIZE_EQ (exported_track->lanes_[0]->regions_, 1);
+  REQUIRE_EMPTY (exported_track->lanes_[1]->regions_);
+  r = exported_track->lanes_[0]->regions_[0];
+  REQUIRE_SIZE_EQ (r->midi_notes_, 3);
+  mn = r->midi_notes_[0];
+  start.set_to_bar (1);
+  end.set_to_bar (2);
+  REQUIRE_POSITION_EQ (mn->pos_, start);
+  REQUIRE_POSITION_EQ (mn->end_pos_, end);
+  mn = r->midi_notes_[1];
+  start.set_to_bar (2);
+  end.set_to_bar (3);
+  REQUIRE_POSITION_EQ (mn->pos_, start);
+  REQUIRE_POSITION_EQ (mn->end_pos_, end);
+  mn = r->midi_notes_[2];
+  start.set_to_bar (3);
+  end.set_to_bar (4);
+  REQUIRE_POSITION_EQ (mn->pos_, start);
+  REQUIRE_POSITION_EQ (mn->end_pos_, end);
+}
+
 TEST_CASE_FIXTURE (ZrythmFixture, "export wav")
 {
   FileDescriptor file (fs::path (TESTS_SRCDIR) / "test.wav");
@@ -613,47 +739,6 @@ TEST_CASE ("bounce instrument track")
   test_bounce_instrument_track (BounceStep::PostFader, false);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "bounce with note at start")
-{
-  /* create the instrument track */
-  test_plugin_manager_create_tracks_from_plugin (
-    TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false, 1);
-  auto ins_track = TRACKLIST->get_last_track<InstrumentTrack> ();
-  ins_track->select (true, true, false);
-
-  /* add region with note */
-  Position start, end;
-  start.zero ();
-  end.set_to_bar (4);
-  auto r =
-    std::make_shared<MidiRegion> (start, end, ins_track->name_hash_, 0, 0);
-  ins_track->add_region (r, nullptr, 0, true, false);
-  start.zero ();
-  end.set_to_bar (4);
-  auto mn = std::make_shared<MidiNote> (
-    r->id_, start, end, DUMMY_NOTE_PITCH, DUMMY_NOTE_VELOCITY);
-  r->append_object (mn);
-  r->select (true, false, false);
-
-  /* bounce the loop */
-  Exporter::Settings settings;
-  settings.mode_ = Exporter::Mode::Regions;
-  settings.set_bounce_defaults (Exporter::Format::WAV, "", r->name_);
-  settings.time_range_ = Exporter::TimeRange::Loop;
-  TL_SELECTIONS->mark_for_bounce (settings.bounce_with_parents_);
-
-  Exporter exporter (settings);
-  exporter.prepare_tracks_for_export (*AUDIO_ENGINE, *TRANSPORT);
-
-  /* start exporting in a new thread */
-  exporter.begin_generic_thread ();
-  print_progress_and_sleep (*exporter.progress_info_);
-  exporter.join_generic_thread ();
-  exporter.post_export ();
-
-  REQUIRE_FALSE (audio_file_is_silent (exporter.get_exported_path ().c_str ()));
-}
-
 /**
  * Export the audio mixdown when the chord track with
  * data is routed to an instrument track.
@@ -807,91 +892,6 @@ TEST_CASE_FIXTURE (ZrythmFixture, "export send track only")
             j = 1;
         }
     }
-}
-
-TEST_CASE_FIXTURE (ZrythmFixture, "mixdown midi")
-{
-  /* create a MIDI track with 2 adjacent regions
-   * with 1 MIDI note each */
-  auto track = Track::create_empty_with_action<MidiTrack> ();
-  track->select (true, true, false);
-
-  Position start, end;
-  start.zero ();
-  end.set_to_bar (4);
-  auto r = std::make_shared<MidiRegion> (start, end, track->name_hash_, 0, 0);
-  track->add_region (r, nullptr, 0, true, false);
-
-  /* midi note 1 */
-  start.zero ();
-  end.set_to_bar (2);
-  auto mn = std::make_shared<MidiNote> (
-    r->id_, start, end, DUMMY_NOTE_PITCH, DUMMY_NOTE_VELOCITY);
-  r->append_object (mn);
-
-  /* midi note 2 */
-  start.set_to_bar (3);
-  end.set_to_bar (4);
-  mn = std::make_shared<MidiNote> (
-    r->id_, start, end, DUMMY_NOTE_PITCH, DUMMY_NOTE_VELOCITY);
-  r->append_object (mn);
-
-  /* region 2 */
-  start.set_to_bar (2);
-  end.set_to_bar (3);
-  r = std::make_shared<MidiRegion> (start, end, track->name_hash_, 0, 1);
-  track->add_region (r, nullptr, 0, true, false);
-
-  /* midi note 3 */
-  start.zero ();
-  end.set_to_bar (2);
-  mn = std::make_shared<MidiNote> (
-    r->id_, start, end, DUMMY_NOTE_PITCH, DUMMY_NOTE_VELOCITY);
-  r->append_object (mn);
-
-  /* bounce */
-  Exporter::Settings settings;
-  settings.mode_ = Exporter::Mode::Full;
-  settings.set_bounce_defaults (Exporter::Format::Midi1, "", __func__);
-  settings.time_range_ = Exporter::TimeRange::Loop;
-
-  Exporter exporter (settings);
-  exporter.prepare_tracks_for_export (*AUDIO_ENGINE, *TRANSPORT);
-
-  /* start exporting in a new thread */
-  exporter.begin_generic_thread ();
-  print_progress_and_sleep (*exporter.progress_info_);
-  exporter.join_generic_thread ();
-  exporter.post_export ();
-
-  /* create a MIDI track from the MIDI file */
-  FileDescriptor file (exporter.get_exported_path ());
-  Track::create_with_action (
-    Track::Type::Midi, nullptr, &file, &PLAYHEAD, TRACKLIST->get_num_tracks (),
-    1, -1, nullptr);
-  auto exported_track = TRACKLIST->get_last_track<MidiTrack> ();
-
-  /* verify correct data */
-  REQUIRE_SIZE_EQ (exported_track->lanes_, 2);
-  REQUIRE_SIZE_EQ (exported_track->lanes_[0]->regions_, 1);
-  REQUIRE_EMPTY (exported_track->lanes_[1]->regions_);
-  r = exported_track->lanes_[0]->regions_[0];
-  REQUIRE_SIZE_EQ (r->midi_notes_, 3);
-  mn = r->midi_notes_[0];
-  start.set_to_bar (1);
-  end.set_to_bar (2);
-  REQUIRE_POSITION_EQ (mn->pos_, start);
-  REQUIRE_POSITION_EQ (mn->end_pos_, end);
-  mn = r->midi_notes_[1];
-  start.set_to_bar (2);
-  end.set_to_bar (3);
-  REQUIRE_POSITION_EQ (mn->pos_, start);
-  REQUIRE_POSITION_EQ (mn->end_pos_, end);
-  mn = r->midi_notes_[2];
-  start.set_to_bar (3);
-  end.set_to_bar (4);
-  REQUIRE_POSITION_EQ (mn->pos_, start);
-  REQUIRE_POSITION_EQ (mn->end_pos_, end);
 }
 
 TEST_CASE_FIXTURE (ZrythmFixture, "export midi range")

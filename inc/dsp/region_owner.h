@@ -102,13 +102,6 @@ protected:
   }
 
   /**
-   * @brief Optional callback before removing a region.
-   *
-   * @param region
-   */
-  virtual void before_remove_region (RegionT &region) { }
-
-  /**
    * @brief Optional callback after removing a region.
    *
    * @param region
@@ -127,6 +120,12 @@ public:
 
   /** Snapshots used during playback, if applicable. */
   std::vector<std::unique_ptr<RegionT>> region_snapshots_;
+
+protected:
+  /**
+   * @brief Whether currently in the middle of @ref clear_regions().
+   */
+  bool clearing_ = false;
 };
 
 class MidiRegion;

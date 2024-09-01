@@ -33,7 +33,7 @@ class PortConnectionsManager final
     : public ICloneable<PortConnectionsManager>,
       public ISerializable<PortConnectionsManager>
 {
-  using ConnectionHashTableValueType = std::vector<PortConnection *>;
+  using ConnectionsVector = std::vector<PortConnection>;
   /**
    * Hashtable to speedup lookups by port identifier.
    *
@@ -41,7 +41,7 @@ class PortConnectionsManager final
    * Value: A vector of PortConnection references from @ref connections_.
    */
   using ConnectionHashTable =
-    std::unordered_map<PortIdentifier, ConnectionHashTableValueType>;
+    std::unordered_map<PortIdentifier, ConnectionsVector>;
 
 public:
   /**
@@ -64,18 +64,16 @@ public:
    * @return The number of ports found.
    */
   int get_sources_or_dests (
-    std::vector<PortConnection *> * arr,
-    const PortIdentifier           &id,
-    bool                            sources) const;
+    ConnectionsVector *   arr,
+    const PortIdentifier &id,
+    bool                  sources) const;
 
-  int
-  get_sources (std::vector<PortConnection *> * arr, const PortIdentifier &id) const
+  int get_sources (ConnectionsVector * arr, const PortIdentifier &id) const
   {
     return get_sources_or_dests (arr, id, true);
   }
 
-  int
-  get_dests (std::vector<PortConnection *> * arr, const PortIdentifier &id) const
+  int get_dests (ConnectionsVector * arr, const PortIdentifier &id) const
   {
     return get_sources_or_dests (arr, id, false);
   }
@@ -93,9 +91,9 @@ public:
    * @return The number of ports found.
    */
   int get_unlocked_sources_or_dests (
-    std::vector<PortConnection *> * arr,
-    const PortIdentifier           &id,
-    bool                            sources) const;
+    ConnectionsVector *   arr,
+    const PortIdentifier &id,
+    bool                  sources) const;
 
   /**
    * Wrapper over @ref get_sources_or_dests() that returns the first connection.
@@ -103,11 +101,19 @@ public:
    * It is a programming error to call this for ports that are not expected to
    * have exactly 1  matching connection.
    */
-  PortConnection *
+  std::optional<PortConnection>
   get_source_or_dest (const PortIdentifier &id, bool sources) const;
 
-  PortConnection *
+  std::optional<PortConnection>
   find_connection (const PortIdentifier &src, const PortIdentifier &dest) const;
+
+  /**
+   * @brief Replaces the given @p before connection with @p after.
+   *
+   * @return Whether the connection was replaced.
+   */
+  bool
+  replace_connection (const PortConnection &before, const PortConnection &after);
 
   /**
    * Adds the connections matching the given predicate to the given array (if
@@ -159,7 +165,7 @@ public:
    *
    * @param src If non-nullptr, the connections are copied from this to this.
    */
-  void reset (const PortConnectionsManager * other);
+  void reset_connections (const PortConnectionsManager * other);
 
   bool contains_connection (const PortConnection &conn) const;
 
@@ -175,7 +181,7 @@ private:
   void add_or_replace_connection (
     ConnectionHashTable  &ht,
     const PortIdentifier &id,
-    PortConnection       &conn);
+    const PortConnection &conn);
 
   void remove_connection (const size_t idx);
 

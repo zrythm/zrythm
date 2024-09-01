@@ -59,9 +59,9 @@ public:
    * Creates a MIDI region from the given MIDI file path, starting at the given
    * Position.
    *
-   * @param idx The index of this track, starting from 0. This will be
-   * sequential, ie, if idx 1 is requested and the MIDI file only has tracks 5
-   * and 7, it will use track 7.
+   * @param midi_track_idx The index of this track, starting from 0. This will
+   * be sequential, ie, if idx 1 is requested and the MIDI file only has tracks
+   * 5 and 7, it will use track 7.
    *
    * @throw ZrythmException on I/O error.
    */
@@ -71,7 +71,7 @@ public:
     unsigned int       track_name_hash,
     int                lane_pos,
     int                idx_inside_lane,
-    int                idx);
+    int                midi_track_idx);
 
   /**
    * Create a region from the chord descriptor.

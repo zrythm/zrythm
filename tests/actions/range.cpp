@@ -304,7 +304,7 @@ check_after_insert ()
 
 TEST_CASE_FIXTURE (RangeActionTestFixture, "insert silence")
 {
-  /* create inset silence action */
+  /* create insert silence action */
   Position start, end;
   start.set_to_bar (RANGE_START_BAR);
   end.set_to_bar (RANGE_END_BAR);

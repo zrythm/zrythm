@@ -144,7 +144,7 @@ private:
 
 public:
   /** Number of recordings currently in progress. */
-  int num_active_recordings_;
+  int num_active_recordings_ = 0;
 
   /** Event queue. */
   MPMCQueue<RecordingEvent *> event_queue_;

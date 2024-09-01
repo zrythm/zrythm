@@ -3,6 +3,8 @@
 
 #include "zrythm-config.h"
 
+#include <ranges>
+
 #include "actions/mixer_selections_action.h"
 #include "dsp/automation_track.h"
 #include "dsp/automation_tracklist.h"
@@ -305,7 +307,7 @@ Channel::disconnect_prev_next (Plugin &prev_pl, Plugin &pl, Plugin &next_pl)
 }
 
 void
-Channel::prepare_process ()
+Channel::prepare_process (nframes_t nframes)
 {
   PortType out_type = track_->out_signal_type_;
 
@@ -353,7 +355,7 @@ Channel::prepare_process ()
 #endif
 
       /* copy the cached MIDI events to the MIDI events in the MIDI in port */
-      track_->processor_->midi_in_->midi_events_.dequeue ();
+      track_->processor_->midi_in_->midi_events_.dequeue (0, nframes);
     }
 }
 
@@ -561,8 +563,8 @@ Channel::reconnect_ext_input_ports ()
           z_debug ("{} R HW ins", ext_stereo_r_ins_.size ());
           for (const auto &ext_port : ext_stereo_r_ins_)
             {
-              auto source = HW_IN_PROCESSOR->find_port (ext_port->get_id ());
-              if (!source)
+              auto * source = HW_IN_PROCESSOR->find_port (ext_port->get_id ());
+              if (source == nullptr)
                 {
                   z_warning ("port for {} not found", ext_port->get_id ());
                   continue;
@@ -645,9 +647,9 @@ Channel::connect_plugins ()
           else
             {
               slot_type = PluginSlotType::Insert;
-              plugin = inserts_[j].get ();
+              plugin = inserts_.at (j).get ();
             }
-          if (!plugin)
+          if (plugin == nullptr)
             continue;
 
           if (!plugin->instantiated_ && !plugin->instantiation_failed_)
@@ -693,14 +695,14 @@ Channel::connect_plugins ()
           z_return_if_fail (next_plugins.size () == STRIP_SIZE);
           Plugin * next_pl = nullptr;
           for (
-            auto k = (slot_type == PluginSlotType::Instrument ? 0 : slot + 1);
+            size_t k = (slot_type == PluginSlotType::Instrument ? 0 : slot + 1);
             k < STRIP_SIZE; k++)
             {
               next_pl = next_plugins[k];
-              if (next_pl)
+              if (next_pl != nullptr)
                 break;
             }
-          if (!next_pl && slot_type == PluginSlotType::MidiFx)
+          if ((next_pl == nullptr) && slot_type == PluginSlotType::MidiFx)
             {
               if (instrument_)
                 next_pl = instrument_.get ();
@@ -709,7 +711,7 @@ Channel::connect_plugins ()
                   for (auto &insert : inserts_)
                     {
                       next_pl = insert.get ();
-                      if (next_pl)
+                      if (next_pl != nullptr)
                         break;
                     }
                 }
@@ -719,13 +721,11 @@ Channel::connect_plugins ()
           /* if instrument, find previous MIDI FX (if any) */
           if (slot_type == PluginSlotType::Instrument)
             {
-              for (
-                auto it = prev_plugins.rbegin (); it != prev_plugins.rend ();
-                ++it)
+              for (auto &prev_plugin : std::ranges::reverse_view (prev_plugins))
                 {
-                  if (*it)
+                  if (prev_plugin)
                     {
-                      prev_pl = *it;
+                      prev_pl = prev_plugin;
                       break;
                     }
                 }

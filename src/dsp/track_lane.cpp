@@ -107,7 +107,10 @@ template <typename RegionT>
 void
 TrackLaneImpl<RegionT>::after_remove_region ()
 {
-  get_track ()->remove_empty_last_lanes ();
+  if (!RegionOwnerImpl<RegionT>::clearing_)
+    {
+      get_track ()->remove_empty_last_lanes ();
+    }
 }
 
 template <typename RegionT>

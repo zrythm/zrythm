@@ -146,6 +146,15 @@ operator== (const MidiNote &lhs, const MidiNote &rhs)
               == static_cast<const ArrangerObject &> (rhs);
 }
 
+DEFINE_OBJECT_FORMATTER (
+  MidiNote,
+  fmt::format (
+    "MidiNote [{} ~ {}]: note {}, vel {}",
+    val.pos_,
+    val.end_pos_,
+    val.val_,
+    val.vel_->vel_));
+
 /**
  * @}
  */

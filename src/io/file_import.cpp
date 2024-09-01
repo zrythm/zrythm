@@ -77,8 +77,7 @@ file_import_thread_func (
   int num_nonempty_midi_tracks = 0;
   if (track_type == Track::Type::Midi)
     {
-      num_nonempty_midi_tracks =
-        midi_file_get_num_tracks (self->filepath.c_str (), true);
+      num_nonempty_midi_tracks = MidiFile (self->filepath).get_num_tracks (true);
       if (num_nonempty_midi_tracks == 0)
         {
           g_task_return_new_error (

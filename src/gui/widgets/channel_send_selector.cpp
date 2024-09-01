@@ -85,9 +85,9 @@ on_selection_changed (
   ChannelSend * send = self->send_widget->send;
   bool          is_empty = send->is_empty ();
 
-  auto               src_track = send->get_track ();
-  ProcessableTrack * dest_track = nullptr;
-  PortConnection *   conn = nullptr;
+  auto                          src_track = send->get_track ();
+  ProcessableTrack *            dest_track = nullptr;
+  std::optional<PortConnection> conn;
   switch (target->type)
     {
     case ChannelSendTargetType::None:

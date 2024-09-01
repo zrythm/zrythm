@@ -871,18 +871,18 @@ Port::disconnect_all ()
       return;
     }
 
-  std::vector<PortConnection *> srcs;
+  std::vector<PortConnection> srcs;
   PORT_CONNECTIONS_MGR->get_sources_or_dests (&srcs, id_, true);
-  for (auto conn : srcs)
+  for (const auto &conn : srcs)
     {
-      PORT_CONNECTIONS_MGR->ensure_disconnect (conn->src_id_, conn->dest_id_);
+      PORT_CONNECTIONS_MGR->ensure_disconnect (conn.src_id_, conn.dest_id_);
     }
 
-  std::vector<PortConnection *> dests;
+  std::vector<PortConnection> dests;
   PORT_CONNECTIONS_MGR->get_sources_or_dests (&dests, id_, false);
-  for (auto conn : dests)
+  for (const auto &conn : dests)
     {
-      PORT_CONNECTIONS_MGR->ensure_disconnect (conn->src_id_, conn->dest_id_);
+      PORT_CONNECTIONS_MGR->ensure_disconnect (conn.src_id_, conn.dest_id_);
     }
 
 #ifdef HAVE_JACK
@@ -917,38 +917,40 @@ Port::update_identifier (
   if (this->is_in_active_project ())
     {
       /* update in all sources */
-      std::vector<PortConnection *> srcs;
+      std::vector<PortConnection> srcs;
       PORT_CONNECTIONS_MGR->get_sources_or_dests (&srcs, prev_id, true);
-      for (auto conn : srcs)
+      for (const auto &conn : srcs)
         {
-          if (conn->dest_id_ != id_)
+          if (conn.dest_id_ != id_)
             {
-              conn->dest_id_ = id_;
-              PORT_CONNECTIONS_MGR->regenerate_hashtables ();
+              auto new_conn = conn;
+              new_conn.dest_id_ = id_;
+              PORT_CONNECTIONS_MGR->replace_connection (conn, new_conn);
             }
         }
 
       /* update in all dests */
-      std::vector<PortConnection *> dests;
+      std::vector<PortConnection> dests;
       PORT_CONNECTIONS_MGR->get_sources_or_dests (&dests, prev_id, false);
-      for (auto conn : dests)
+      for (const auto &conn : dests)
         {
-          if (conn->src_id_ != id_)
+          if (conn.src_id_ != id_)
             {
-              conn->src_id_ = id_;
-              PORT_CONNECTIONS_MGR->regenerate_hashtables ();
+              auto new_conn = conn;
+              new_conn.src_id_ = id_;
+              PORT_CONNECTIONS_MGR->replace_connection (conn, new_conn);
             }
         }
 
       if (
-        update_automation_track && this->id_.track_name_hash_
+        update_automation_track && (id_.track_name_hash_ != 0)
         && ENUM_BITSET_TEST (
           PortIdentifier::Flags, this->id_.flags_,
           PortIdentifier::Flags::Automatable))
         {
-          auto control_port = static_cast<ControlPort *> (this);
+          auto * control_port = dynamic_cast<ControlPort *> (this);
           /* update automation track's port id */
-          auto automatable_track = dynamic_cast<AutomatableTrack *> (track);
+          auto * automatable_track = dynamic_cast<AutomatableTrack *> (track);
           control_port->at_ = AutomationTrack::find_from_port (
             *control_port, automatable_track, true);
           z_return_if_fail (control_port->at_);
@@ -983,14 +985,13 @@ Port::copy_members_from (const Port &other)
 void
 Port::disconnect_hw_inputs ()
 {
-  std::vector<PortConnection *> srcs;
+  std::vector<PortConnection> srcs;
   PORT_CONNECTIONS_MGR->get_sources_or_dests (&srcs, id_, true);
-  for (auto conn : srcs)
+  for (const auto &conn : srcs)
     {
       if (
-        conn->src_id_.owner_type_
-        == PortIdentifier::OwnerType::HardwareProcessor)
-        PORT_CONNECTIONS_MGR->ensure_disconnect (conn->src_id_, id_);
+        conn.src_id_.owner_type_ == PortIdentifier::OwnerType::HardwareProcessor)
+        PORT_CONNECTIONS_MGR->ensure_disconnect (conn.src_id_, id_);
     }
 }
 
@@ -1321,7 +1322,7 @@ Port::get_hash (const void * ptr)
 bool
 Port::is_connected_to (const Port &dest) const
 {
-  return (PORT_CONNECTIONS_MGR->find_connection (id_, dest.id_) != nullptr);
+  return PORT_CONNECTIONS_MGR->find_connection (id_, dest.id_).has_value ();
 }
 
 bool

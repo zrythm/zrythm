@@ -171,7 +171,7 @@ UndoableAction::save_or_load_port_connections (bool performing)
   else if (performing && port_connections_after_ != nullptr)
     {
       z_debug ("resetting port connections from cached after");
-      PORT_CONNECTIONS_MGR->reset (port_connections_after_.get ());
+      PORT_CONNECTIONS_MGR->reset_connections (port_connections_after_.get ());
       z_return_if_fail (
         PORT_CONNECTIONS_MGR->connections_.size ()
         == port_connections_after_->connections_.size ());
@@ -181,7 +181,7 @@ UndoableAction::save_or_load_port_connections (bool performing)
     {
       /* reset the connections */
       z_debug ("resetting port connections from cached before");
-      PORT_CONNECTIONS_MGR.reset (port_connections_before_.get ());
+      PORT_CONNECTIONS_MGR->reset_connections (port_connections_before_.get ());
       z_return_if_fail (
         PORT_CONNECTIONS_MGR->connections_.size ()
         == port_connections_before_->connections_.size ());

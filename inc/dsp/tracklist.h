@@ -30,6 +30,7 @@ class TempoTrack;
 class ModulatorTrack;
 class MasterTrack;
 class MarkerTrack;
+class StringArray;
 
 /**
  * The Tracklist contains all the tracks in the Project.

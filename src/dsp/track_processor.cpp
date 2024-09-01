@@ -186,9 +186,11 @@ TrackProcessor::init_stereo_out_ports (bool in)
 {
   PortFlow  flow = in ? PortFlow::Input : PortFlow::Output;
   AudioPort l (in ? "TP Stereo in L" : "TP Stereo out L", flow);
-  l.id_.sym_ = ("track_processor_stereo_out_l");
+  l.id_.sym_ =
+    std::string ("track_processor_stereo_") + (in ? "in" : "out") + "_l";
   AudioPort r (in ? "TP Stereo in R" : "TP Stereo out R", flow);
-  r.id_.sym_ = ("track_processor_stereo_out_r");
+  r.id_.sym_ =
+    std::string ("track_processor_stereo_") + (in ? "in" : "out") + "_r";
   if (in)
     {
       l.id_.flags_ |= PortIdentifier::Flags::SendReceivable;
@@ -753,7 +755,7 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
 #endif
           track_->fill_midi_events (time_nfo, pr->midi_events_.queued_events_);
         }
-      pr->midi_events_.dequeue ();
+      pr->midi_events_.dequeue (time_nfo.local_offset_, time_nfo.nframes_);
 #if 0
       if (pr->midi_events->num_events > 0)
         {

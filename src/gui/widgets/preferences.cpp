@@ -427,7 +427,15 @@ make_control (
         (KEY_IS ("UI", "General", "css-theme"))
           ? ZrythmDirType::USER_THEMES_CSS
           : ZrythmDirType::USER_THEMES_ICONS);
-      auto css_themes = io_get_files_in_dir_as_basenames (user_css_theme_path);
+      StringArray css_themes;
+      try
+        {
+          css_themes = io_get_files_in_dir_as_basenames (user_css_theme_path);
+        }
+      catch (const ZrythmException &e)
+        {
+          z_warning ("{}", e.what ());
+        }
       const char * default_themes[] = {
         (KEY_IS ("UI", "General", "css-theme"))
           ? "zrythm-theme.css"

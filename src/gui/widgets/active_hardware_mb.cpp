@@ -4,7 +4,7 @@
 #include "gui/widgets/active_hardware_mb.h"
 #include "gui/widgets/popovers/active_hardware_popover.h"
 #include "utils/logger.h"
-#include "utils/string.h"
+#include "utils/string_array.h"
 
 #include <glib/gi18n.h>
 

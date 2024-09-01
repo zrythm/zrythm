@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -32,57 +32,12 @@
 #include "utils/logger.h"
 #include "utils/objects.h"
 #include "utils/string.h"
-#include "utils/symap.h"
-#include "zrythm.h"
 
 #include "gtk_wrapper.h"
 
 #define PCRE2_CODE_UNIT_WIDTH 8
 #include <pcre2.h>
 #include <regex.h>
-
-StringArray::StringArray (const char * const * strs)
-{
-  int          count = 0;
-  const char * s;
-  while (strs[count])
-    {
-      s = strs[count];
-
-      add (juce::CharPointer_UTF8 (s));
-      count++;
-    }
-}
-
-char **
-StringArray::getNullTerminated () const
-{
-  GStrvBuilder * builder = g_strv_builder_new ();
-  for (size_t i = 0; i < size (); i++)
-    {
-      juce::String str = getReference (i);
-      g_strv_builder_add (builder, str.toStdString ().c_str ());
-    }
-  return g_strv_builder_end (builder);
-}
-
-char *
-StringArray::getCStr (int index)
-{
-  return g_strdup (getReference (index).toRawUTF8 ());
-}
-
-void
-StringArray::print (std::string title) const
-{
-  std::string str = title + ":";
-  for (auto &cur_str : arr_)
-    {
-      str += " " + cur_str.toStdString () + " |";
-    }
-  str.erase (str.size () - 1);
-  z_info ("{}", str);
-}
 
 Glib::ustring
 string_view_to_ustring (std::string_view sv)

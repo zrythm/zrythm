@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cmath>
@@ -547,8 +547,8 @@ ControlPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
   bool first_cv = true;
   for (size_t k = 0; k < srcs_.size (); k++)
     {
-      const auto conn = src_connections_[k];
-      if (!conn->enabled_) [[unlikely]]
+      const auto &conn = src_connections_[k];
+      if (!conn.enabled_) [[unlikely]]
         continue;
 
       Port * src_port = srcs_[k];
@@ -569,7 +569,7 @@ ControlPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
             }
 
           control_ = std::clamp<float> (
-            val_to_use + depth_range * src_port->buf_[0] * conn->multiplier_,
+            val_to_use + depth_range * src_port->buf_[0] * conn.multiplier_,
             minf_, maxf_);
           forward_control_change_event ();
         }

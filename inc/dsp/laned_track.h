@@ -39,10 +39,10 @@ public:
    *
    * Used when moving regions vertically.
    */
-  int last_lane_created_;
+  int last_lane_created_ = 0;
 
   /** Block auto-creating or deleting lanes. */
-  bool block_auto_creation_and_deletion_;
+  bool block_auto_creation_and_deletion_ = false;
 };
 
 /**

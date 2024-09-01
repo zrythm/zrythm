@@ -17,7 +17,6 @@
         "-Dforce_fallback_for=gtk4,libadwaita,libpanel,yyjson,libcyaml",
         "-Dyaml_project_compatibility=enabled",
         // "-Db_sanitize=address",
-        "-Dstatic_tests=true",
         "-Dbackend_max_links=3"
     ],
     "mesonbuild.mesonlsp.linting.disableUnusedVariableCheck": true,

@@ -15,7 +15,7 @@
 #include "project.h"
 #include "settings/chord_preset_pack_manager.h"
 #include "settings/settings.h"
-#include "utils/string.h"
+#include "utils/string_array.h"
 #include "utils/symap.h"
 
 #include <gio/gio.h>
@@ -321,10 +321,10 @@ public:
   std::unique_ptr<Settings> settings_;
 
   /** +1 to ensure last element is NULL in case full. */
-  StringArray recent_projects_{};
+  StringArray recent_projects_;
 
   /** NULL terminated array of project template absolute paths. */
-  StringArray templates_{};
+  StringArray templates_;
 
   /**
    * Demo project template used when running for the first time.

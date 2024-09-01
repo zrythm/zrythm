@@ -56,11 +56,11 @@ port_connections_popover_widget_refresh (
           gtk_label_set_text (self->title, _ ("INPUTS"));
         }
 
-      std::vector<PortConnection *> srcs;
+      std::vector<PortConnection> srcs;
       PORT_CONNECTIONS_MGR->get_sources_or_dests (&srcs, self->port->id_, true);
-      for (auto conn : srcs)
+      for (const auto &conn : srcs)
         {
-          if (!conn->locked_)
+          if (!conn.locked_)
             {
               PortConnectionRowWidget * pcr =
                 port_connection_row_widget_new (self, conn, false);
@@ -75,12 +75,12 @@ port_connections_popover_widget_refresh (
           gtk_label_set_text (self->title, _ ("OUTPUTS"));
         }
 
-      std::vector<PortConnection *> dests;
+      std::vector<PortConnection> dests;
       PORT_CONNECTIONS_MGR->get_sources_or_dests (
         &dests, self->port->id_, false);
-      for (auto conn : dests)
+      for (const auto &conn : dests)
         {
-          if (!conn->locked_)
+          if (!conn.locked_)
             {
               PortConnectionRowWidget * pcr =
                 port_connection_row_widget_new (self, conn, true);

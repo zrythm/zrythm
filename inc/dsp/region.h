@@ -482,11 +482,7 @@ public:
    */
   std::shared_ptr<ChildT>
   append_object (std::shared_ptr<ChildT> obj, bool fire_events = false) requires
-    RegionWithChildren<RegionT>
-  {
-    auto &objects = get_objects_vector ();
-    return insert_object (obj, objects.size (), fire_events);
-  }
+    RegionWithChildren<RegionT>;
 
   /**
    * @brief Removes the given object from this region.

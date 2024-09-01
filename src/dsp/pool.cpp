@@ -287,27 +287,6 @@ struct WriteClipData
   }
 };
 
-/**
- * Thread for writing an audio clip to disk.
- *
- * To be used as a GThreadFunc.
- */
-static void
-write_clip_thread (void * data, void * user_data)
-{
-  auto * write_clip_data = (WriteClipData *) data;
-  try
-    {
-      write_clip_data->clip->write_to_pool (false, write_clip_data->is_backup);
-      write_clip_data->successful = true;
-    }
-  catch (const ZrythmException &e)
-    {
-      write_clip_data->successful = false;
-      write_clip_data->error = e.what ();
-    }
-}
-
 void
 AudioPool::write_to_disk (bool is_backup)
 {
@@ -326,39 +305,42 @@ AudioPool::write_to_disk (bool is_backup)
         }
     }
 
-  GError *      err = NULL;
-  GThreadPool * thread_pool = g_thread_pool_new (
-    write_clip_thread, this, (int) g_get_num_processors (), false, &err);
-  if (err)
-    {
-      throw ZrythmException (
-        fmt::format ("Failed to create thread pool: {}", err->message));
-    }
+  const int        num_threads = juce::SystemStats::getNumCpus ();
+  juce::ThreadPool pool (num_threads);
 
-  std::vector<WriteClipData> clip_data_vec;
+  std::string           error_message;
+  juce::CriticalSection error_mutex;
+
   for (auto &clip : clips_)
     {
       if (clip)
         {
-          clip_data_vec.emplace_back (WriteClipData{ clip.get (), is_backup });
-
-          /* start writing in a new thread */
-          g_thread_pool_push (thread_pool, &clip_data_vec.back (), nullptr);
+          pool.addJob ([&clip, is_backup, &error_message, &error_mutex] () {
+            try
+              {
+                clip->write_to_pool (false, is_backup);
+              }
+            catch (const ZrythmException &e)
+              {
+                const juce::ScopedLock lock (error_mutex);
+                if (error_message.empty ())
+                  {
+                    error_message = fmt::format (
+                      "Failed to write clip {} to disk: {}", clip->name_,
+                      e.what ());
+                  }
+              }
+          });
         }
     }
 
-  z_debug ("waiting for thread pool to finish...");
-  g_thread_pool_free (thread_pool, false, true);
+  z_debug ("waiting for tasks to finish...");
+  pool.removeAllJobs (false, -1);
   z_debug ("done");
 
-  for (auto &clip_data : clip_data_vec)
+  if (!error_message.empty ())
     {
-      if (!clip_data.successful)
-        {
-          throw ZrythmException (fmt::format (
-            "Failed to write clip {}: {}", clip_data.clip->name_,
-            clip_data.error));
-        }
+      throw ZrythmException (error_message);
     }
 }
 

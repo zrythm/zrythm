@@ -34,6 +34,10 @@ TransportAction::
       musical_mode_ (
         ZRYTHM_TESTING ? false : g_settings_get_boolean (S_UI, "musical-mode"))
 {
+  if (type == Type::TempoChange)
+    {
+      z_error ("use the other constructor for tempo changes");
+    }
 }
 
 void

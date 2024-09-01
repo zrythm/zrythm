@@ -20,10 +20,38 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
+MidiPort::MidiPort (std::string label, PortFlow flow)
+    : Port (label, PortType::Event, flow, 0.f, 1.f, 0.f)
+{
+}
+
+MidiPort::~MidiPort ()
+{
+#ifdef HAVE_RTMIDI
+  for (auto &dev : rtmidi_ins_)
+    {
+      dev->close ();
+    }
+#endif
+}
+
+void
+MidiPort::init_after_cloning (const MidiPort &original)
+{
+  Port::copy_members_from (original);
+}
+
 void
 MidiPort::allocate_bufs ()
 {
   midi_ring_ = std::make_unique<RingBuffer<MidiEvent>> (11);
+}
+
+void
+MidiPort::clear_buffer (AudioEngine &engine)
+{
+  midi_events_.active_events_.clear ();
+  // midi_events_.queued_events_.clear ();
 }
 
 #ifdef HAVE_JACK
@@ -119,7 +147,7 @@ MidiPort::sum_data_from_rtmidi (
     midi_backend_is_rtmidi (AUDIO_ENGINE->midi_backend_));
 
   Track * track = get_track (false);
-  auto    channel_track = dynamic_cast<ChannelTrack *> (track);
+  auto *  channel_track = dynamic_cast<ChannelTrack *> (track);
   for (auto &dev : rtmidi_ins_)
     {
       for (auto &ev : dev->events_)
@@ -129,7 +157,7 @@ MidiPort::sum_data_from_rtmidi (
               midi_byte_t channel = ev.raw_buffer_[0] & 0xf;
               if (
                 id_.owner_type_ == PortIdentifier::OwnerType::TrackProcessor
-                && !track) [[unlikely]]
+                && (track == nullptr)) [[unlikely]]
                 {
                   z_return_if_reached ();
                 }
@@ -138,7 +166,7 @@ MidiPort::sum_data_from_rtmidi (
                 id_.owner_type_ == PortIdentifier::OwnerType::TrackProcessor
                 && track->has_piano_roll () && channel_track
                 && !channel_track->channel_->all_midi_channels_
-                && !channel_track->channel_->midi_channels_[channel])
+                && !channel_track->channel_->midi_channels_.at (channel))
                 {
                   /* different channel */
                 }
@@ -257,21 +285,13 @@ MidiPort::expose_to_rtmidi (bool expose)
 }
 #endif // HAVE_RTMIDI
 
-MidiPort::~MidiPort ()
-{
-#ifdef HAVE_RTMIDI
-  for (auto &dev : this->rtmidi_ins_)
-    {
-      dev->close ();
-    }
-#endif
-}
-
 void
 MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
 {
   if (noroll)
     return;
+
+  midi_events_.dequeue (time_nfo.local_offset_, time_nfo.nframes_);
 
   const auto id = id_;
   const auto owner_type = id.owner_type_;
@@ -291,10 +311,12 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
         track = track_;
       z_return_if_fail (track);
     }
-  const auto processable_track = dynamic_cast<ProcessableTrack *> (track);
-  const auto channel_track = dynamic_cast<ChannelTrack *> (track);
-  const auto recordable_track = dynamic_cast<RecordableTrack *> (track);
-  auto      &events = midi_events_.active_events_;
+  const auto * const processable_track =
+    dynamic_cast<const ProcessableTrack *> (track);
+  const auto * const channel_track = dynamic_cast<const ChannelTrack *> (track);
+  const auto * const recordable_track =
+    dynamic_cast<const RecordableTrack *> (track);
+  auto &events = midi_events_.active_events_;
 
   /* if piano roll keys, add the notes to the piano roll "current notes" (to
    * show pressed keys in the UI) */
@@ -334,7 +356,7 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
 
   /* only consider incoming external data if armed for recording (if the port is
    * owner by a track), otherwise always consider incoming external data */
-  if ((owner_type != PortIdentifier::OwnerType::TrackProcessor || (owner_type == PortIdentifier::OwnerType::TrackProcessor && recordable_track && recordable_track->get_recording())) && id.is_input())
+  if ((owner_type != PortIdentifier::OwnerType::TrackProcessor || (owner_type == PortIdentifier::OwnerType::TrackProcessor && (recordable_track != nullptr) && recordable_track->get_recording())) && id.is_input())
     {
       switch (AUDIO_ENGINE->midi_backend_)
         {
@@ -460,13 +482,13 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
   /* append data from each source */
   for (size_t k = 0; k < srcs_.size (); k++)
     {
-      Port *                 src_port = srcs_[k];
-      const PortConnection * conn = src_connections_[k];
-      if (!conn->enabled_)
+      const auto * src_port = srcs_[k];
+      const auto  &conn = src_connections_[k];
+      if (!conn.enabled_)
         continue;
 
       z_return_if_fail (src_port->id_.type_ == PortType::Event);
-      auto src_midi_port = static_cast<MidiPort *> (src_port);
+      const auto * src_midi_port = dynamic_cast<const MidiPort *> (src_port);
 
       /* if hardware device connected to track processor input, only allow
        * signal to pass if armed and MIDI channel is valid */
@@ -475,7 +497,8 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
         && owner_type == PortIdentifier::OwnerType::TrackProcessor)
         {
           /* skip if not armed */
-          if (!recordable_track || !recordable_track->get_recording ())
+          if (
+            (recordable_track == nullptr) || !recordable_track->get_recording ())
             continue;
 
           /* if not set to "all channels", filter-append */

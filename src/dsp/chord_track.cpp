@@ -149,10 +149,9 @@ ChordTrack::remove_scale (ScaleObject &scale)
     });
   z_return_if_fail (it != scales_.end ());
 
+  scale.index_in_chord_track_ = -1;
   int pos = std::distance (scales_.begin (), it);
   scales_.erase (it);
-
-  scale.index_in_chord_track_ = -1;
 
   // Update indices of remaining scales
   for (size_t i = pos; i < scales_.size (); i++)

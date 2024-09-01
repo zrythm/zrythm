@@ -1,11 +1,10 @@
-/*
- * SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_PORT_CONNECTION_ROW_H__
 #define __GUI_WIDGETS_PORT_CONNECTION_ROW_H__
+
+#include "utils/types.h"
 
 #include "gtk_wrapper.h"
 
@@ -17,16 +16,16 @@ G_DECLARE_FINAL_TYPE (
   PORT_CONNECTION_ROW_WIDGET,
   GtkBox)
 
-typedef struct _KnobWidget                   KnobWidget;
-typedef struct _BarSliderWidget              BarSliderWidget;
-typedef struct _PortConnectionsPopoverWidget PortConnectionsPopoverWidget;
+TYPEDEF_STRUCT_UNDERSCORED (KnobWidget);
+TYPEDEF_STRUCT_UNDERSCORED (BarSliderWidget);
+TYPEDEF_STRUCT_UNDERSCORED (PortConnectionsPopoverWidget);
 class PortConnection;
 
-typedef struct _PortConnectionRowWidget
+using PortConnectionRowWidget = struct _PortConnectionRowWidget
 {
   GtkBox parent_instance;
 
-  PortConnection * connection;
+  std::unique_ptr<PortConnection> connection;
 
   /**
    * If this is 1, src is the input port and dest
@@ -45,7 +44,7 @@ typedef struct _PortConnectionRowWidget
   BarSliderWidget * slider;
 
   PortConnectionsPopoverWidget * parent;
-} PortConnectionRowWidget;
+};
 
 /**
  * Creates the popover.
@@ -53,7 +52,7 @@ typedef struct _PortConnectionRowWidget
 PortConnectionRowWidget *
 port_connection_row_widget_new (
   PortConnectionsPopoverWidget * parent,
-  const PortConnection *         connection,
+  const PortConnection          &connection,
   bool                           is_input);
 
 #endif

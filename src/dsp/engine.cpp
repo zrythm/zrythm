@@ -1158,7 +1158,7 @@ AudioEngine::process_prepare (
   /* prepare channels for this cycle */
   for (auto track : project_->tracklist_->tracks_ | type_is<ChannelTrack> ())
     {
-      track->channel_->prepare_process ();
+      track->channel_->prepare_process (nframes);
     }
 
   return false;

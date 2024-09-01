@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "dsp/midi_event.h"
+#include "dsp/port_connection.h"
 #include "dsp/port_identifier.h"
 #include "utils/ring_buffer.h"
 #include "utils/types.h"
@@ -28,7 +29,6 @@ class Fader;
 class Channel;
 class AudioEngine;
 class Track;
-class PortConnection;
 class TrackProcessor;
 class ModulatorMacroProcessor;
 class RtMidiDevice;
@@ -339,8 +339,8 @@ public:
   std::vector<Port *> dests_;
 
   /** Caches filled when recalculating the graph. */
-  std::vector<const PortConnection *> src_connections_;
-  std::vector<const PortConnection *> dest_connections_;
+  std::vector<PortConnection> src_connections_;
+  std::vector<PortConnection> dest_connections_;
 
   /**
    * Indicates whether data or lv2_port should be used.

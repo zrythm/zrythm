@@ -29,14 +29,14 @@ test_fader_process_with_instrument (
   test_plugin_manager_create_tracks_from_plugin (
     pl_bundle, pl_uri, true, with_carla, 1);
 
-  auto track = TRACKLIST->get_last_track<InstrumentTrack> ();
+  auto * track = TRACKLIST->get_last_track<InstrumentTrack> ();
+
+  /* stop dummy audio engine processing so we can process manually */
+  test_project_stop_dummy_engine ();
 
   /* send a note then wait for playback */
   track->processor_->midi_in_->midi_events_.queued_events_.add_note_on (
     1, 82, 74, 2);
-
-  /* stop dummy audio engine processing so we can process manually */
-  test_project_stop_dummy_engine ();
 
   /* run engine twice (running one is not enough to
    * make the note make sound) */
@@ -63,7 +63,7 @@ test_fader_process_with_instrument (
 TEST_CASE_FIXTURE (ZrythmFixture, "fader process")
 {
   test_fader_process_with_instrument (
-    TEST_INSTRUMENT_BUNDLE_URI, TEST_INSTRUMENT_URI, true);
+    TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true);
 }
 
 static bool

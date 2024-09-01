@@ -59,8 +59,11 @@ AutomationRegion::set_automation_track (AutomationTrack &at)
     "setting region automation track to {} {}", at.index_,
     at.port_id_.get_label ());
 
-  /* if clip editor region or region selected,
-   * unselect it */
+  /* this must not be called on non-project regions (or during project
+   * destruction) */
+  z_return_if_fail (PROJECT);
+
+  /* if clip editor region or region selected, unselect it */
   if (id_ == CLIP_EDITOR->region_id_)
     {
       CLIP_EDITOR->set_region (nullptr, true);

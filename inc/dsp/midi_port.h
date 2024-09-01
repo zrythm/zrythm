@@ -23,10 +23,7 @@ class MidiPort final
 {
 public:
   MidiPort () = default;
-  MidiPort (std::string label, PortFlow flow)
-      : Port (label, PortType::Event, flow, 0.f, 1.f, 0.f)
-  {
-  }
+  MidiPort (std::string label, PortFlow flow);
   ~MidiPort ();
 
 #ifdef HAVE_RTMIDI
@@ -70,17 +67,9 @@ public:
 
   void allocate_bufs () override;
 
-  void clear_buffer (AudioEngine &engine) override
-  {
-    midi_events_.active_events_.clear ();
-    midi_events_.queued_events_.clear ();
-  }
+  void clear_buffer (AudioEngine &engine) override;
 
-  void init_after_cloning (const MidiPort &original) override
-  {
-    auto other = dynamic_cast<const MidiPort *> (&original);
-    Port::copy_members_from (*other);
-  }
+  void init_after_cloning (const MidiPort &original) override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

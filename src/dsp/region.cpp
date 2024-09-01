@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/audio_region.h"
@@ -355,7 +355,14 @@ RegionImpl<RegionT>::insert_object (
   int                     index,
   bool                    fire_events) requires RegionWithChildren<RegionT>
 {
+  z_debug ("inserting {} at index {}", obj, index);
   auto &objects = get_objects_vector ();
+
+  // don't allow duplicates
+  z_return_val_if_fail (
+    std::find (objects.begin (), objects.end (), obj) == objects.end (),
+    nullptr);
+
   objects.insert (objects.begin () + index, std::move (obj));
   for (size_t i = index; i < objects.size (); ++i)
     {
@@ -1234,6 +1241,16 @@ RegionImpl<RegionT>::get_region_owner () const
       return dynamic_cast<ChordTrack *> (
         TRACKLIST->find_track_by_name_hash<ChordTrack> (id_.track_name_hash_));
     }
+}
+
+template <typename RegionT>
+std::shared_ptr<typename RegionImpl<RegionT>::ChildT>
+RegionImpl<RegionT>::append_object (
+  std::shared_ptr<ChildT> obj,
+  bool                    fire_events) requires RegionWithChildren<RegionT>
+{
+  auto &objects = get_objects_vector ();
+  return insert_object (obj, objects.size (), fire_events);
 }
 
 template class RegionImpl<MidiRegion>;

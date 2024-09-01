@@ -54,31 +54,31 @@ CVPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
 
   for (size_t k = 0; k < srcs_.size (); k++)
     {
-      auto        src_port = srcs_[k];
-      const auto &conn = src_connections_[k];
-      if (!conn->enabled_)
+      const auto * src_port = srcs_[k];
+      const auto  &conn = src_connections_[k];
+      if (!conn.enabled_)
         continue;
 
       const float depth_range = (maxf_ - minf_) * 0.5f;
-      const float multiplier = depth_range * conn->multiplier_;
+      const float multiplier = depth_range * conn.multiplier_;
 
       /* sum the signals */
       if (math_floats_equal_epsilon (multiplier, 1.f, 0.00001f)) [[likely]]
         {
           dsp_add2 (
-            &buf_.data ()[time_nfo.local_offset_],
-            &src_port->buf_.data ()[time_nfo.local_offset_], time_nfo.nframes_);
+            &buf_[time_nfo.local_offset_],
+            &src_port->buf_[time_nfo.local_offset_], time_nfo.nframes_);
         }
       else
         {
           dsp_mix2 (
-            &buf_.data ()[time_nfo.local_offset_],
-            &src_port->buf_.data ()[time_nfo.local_offset_], 1.f, multiplier,
+            &buf_[time_nfo.local_offset_],
+            &src_port->buf_[time_nfo.local_offset_], 1.f, multiplier,
             time_nfo.nframes_);
         }
 
       float abs_peak =
-        dsp_abs_max (&buf_.data ()[time_nfo.local_offset_], time_nfo.nframes_);
+        dsp_abs_max (&buf_[time_nfo.local_offset_], time_nfo.nframes_);
       if (abs_peak > maxf_)
         {
           /* this limiting wastes around 50% of port processing so only

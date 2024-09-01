@@ -43,8 +43,8 @@ constexpr double POSITION_EQ_EPSILON = 0.0001;
     REQUIRE (a == doctest::Approx (b).epsilon (_epsilon))
 #endif
 
-#ifndef REQUIRE_OPTIONAL_HAS_VALUE
-#  define REQUIRE_OPTIONAL_HAS_VALUE(opt) REQUIRE ((opt).has_value ())
+#ifndef REQUIRE_HAS_VALUE
+#  define REQUIRE_HAS_VALUE(opt) REQUIRE ((opt).has_value ())
 #endif
 
 #ifndef REQUIRE_UNREACHABLE

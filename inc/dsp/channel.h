@@ -94,7 +94,7 @@ public:
    *
    * To be called before the main cycle each time on all channels.
    */
-  void prepare_process ();
+  void prepare_process (nframes_t nframes);
 
   /**
    * @brief Perform processing of the audio signal.

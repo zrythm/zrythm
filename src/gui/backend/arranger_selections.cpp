@@ -154,34 +154,31 @@ ArrangerSelections::add_region_ticks (Position &pos) const
     convert_to_variant<ArrangerSelectionsPtrVariant> (this);
   std::visit (
     [&] (auto &&sel) {
-      if constexpr (
-        std::is_same_v<AudioSelections, std::decay_t<decltype (sel)>>)
+      using SelT = base_type<decltype (sel)>;
+      if constexpr (std::is_same_v<AudioSelections, SelT>)
         {
           auto r = AudioRegion::find (sel->region_id_);
           z_return_if_fail (r);
           pos.add_ticks (r->pos_.ticks_);
         }
-      else if constexpr (
-        std::is_same_v<TimelineSelections, std::decay_t<decltype (sel)>>)
+      else if constexpr (std::is_same_v<TimelineSelections, SelT>)
         {
           // no region...
         }
       else
         {
           z_return_if_fail (objects_.size () > 0);
-          auto obj_variant =
-            convert_to_variant<ArrangerObjectPtrVariant> (objects_[0].get ());
           std::visit (
             [&] (auto &&o) {
-              if constexpr (
-                std::derived_from<std::decay_t<decltype (o)>, RegionOwnedObject>)
+              using ObjT = base_type<decltype (o)>;
+              if constexpr (std::derived_from<ObjT, RegionOwnedObject>)
                 {
                   auto r = o->get_region ();
                   z_return_if_fail (r);
                   pos.add_ticks (r->pos_.ticks_);
                 }
             },
-            obj_variant);
+            convert_to_variant<ArrangerObjectPtrVariant> (objects_[0].get ()));
         }
     },
     arranger_sel_variant);
@@ -198,7 +195,8 @@ ArrangerSelections::get_first_object_and_pos (bool global) const
   auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
   std::visit (
     [&] (auto &&sel) {
-      if constexpr (std::is_same_v<AudioSelections, base_type<decltype (sel)>>)
+      using SelT = base_type<decltype (sel)>;
+      if constexpr (std::is_same_v<AudioSelections, SelT>)
         {
           pos = sel->sel_start_;
         }
@@ -222,8 +220,7 @@ ArrangerSelections::get_first_object_and_pos (bool global) const
             }
         }
 
-      if constexpr (
-        !std::is_same_v<TimelineSelections, std::decay_t<decltype (sel)>>)
+      if constexpr (!std::is_same_v<TimelineSelections, SelT>)
         {
           if (global)
             {
@@ -247,7 +244,8 @@ ArrangerSelections::get_last_object_and_pos (bool global, bool ends_last) const
   auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
   std::visit (
     [&] (auto &&sel) {
-      if constexpr (std::is_same_v<AudioSelections, base_type<decltype (sel)>>)
+      using SelT = base_type<decltype (sel)>;
+      if constexpr (std::is_same_v<AudioSelections, SelT>)
         {
           pos = sel->sel_end_;
         }
@@ -295,8 +293,7 @@ ArrangerSelections::get_last_object_and_pos (bool global, bool ends_last) const
             }
         }
 
-      if constexpr (
-        !std::is_same_v<TimelineSelections, std::decay_t<decltype (sel)>>)
+      if constexpr (!std::is_same_v<TimelineSelections, SelT>)
         {
           if (global)
             {
@@ -315,8 +312,8 @@ ArrangerSelections::add_to_region (Region &region)
   auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
   std::visit (
     [&] (auto &&self) {
-      if constexpr (
-        std::is_same_v<TimelineSelections, std::decay_t<decltype (self)>>)
+      using SelT = base_type<decltype (self)>;
+      if constexpr (std::is_same_v<TimelineSelections, SelT>)
         {
           // no region...
           return;
@@ -327,17 +324,20 @@ ArrangerSelections::add_to_region (Region &region)
             convert_to_variant<ArrangerObjectPtrVariant> (obj.get ());
           std::visit (
             [&] (auto &&o) {
-              if constexpr (
-                std::derived_from<std::decay_t<decltype (o)>, RegionOwnedObject>)
+              using ObjT = base_type<decltype (o)>;
+              if constexpr (std::derived_from<ObjT, RegionOwnedObject>)
                 {
-                  auto region_variant =
-                    convert_to_variant<RegionPtrVariant> (&region);
                   std::visit (
                     [&] (auto &&r) {
-                      auto obj_clone = o->clone_shared ();
-                      r->append_object (obj_clone, false);
+                      using RegionT = base_type<decltype (r)>;
+                      if constexpr (
+                        std::is_same_v<typename RegionT::ChildT, ObjT>)
+                        {
+                          auto obj_clone = o->clone_shared ();
+                          r->append_object (obj_clone, false);
+                        }
                     },
-                    region_variant);
+                    convert_to_variant<RegionPtrVariant> (&region));
                 }
             },
             obj_variant);
@@ -365,24 +365,25 @@ ArrangerSelections::select_all (bool fire_events)
   auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
   std::visit (
     [&] (auto &&self) {
-      if constexpr (
-        std::is_same_v<TimelineSelections, std::decay_t<decltype (self)>>)
+      using SelT = base_type<decltype (self)>;
+      if constexpr (std::is_same_v<TimelineSelections, SelT>)
         {
           /* midi/audio regions */
           for (auto &track : TRACKLIST->tracks_)
             {
               if (auto laned_track = dynamic_cast<LanedTrack *> (track.get ()))
                 {
-                  auto laned_track_variant =
-                    convert_to_variant<LanedTrackPtrVariant> (laned_track);
                   std::visit (
                     [&] (auto &&lt) {
-                      for (auto &region : lt->regions_)
+                      for (auto &lane : lt->lanes_)
                         {
-                          add_object_ref (region);
+                          for (auto &region : lane->regions_)
+                            {
+                              add_object_ref (region);
+                            }
                         }
                     },
-                    laned_track_variant);
+                    convert_to_variant<LanedTrackPtrVariant> (laned_track));
                 }
 
               /* automation regions */
@@ -426,8 +427,7 @@ ArrangerSelections::select_all (bool fire_events)
               add_object_ref (marker);
             }
         }
-      else if constexpr (
-        std::is_same_v<ChordSelections, std::decay_t<decltype (self)>>)
+      else if constexpr (std::is_same_v<ChordSelections, SelT>)
         {
           if (!r || !r->is_chord ())
             return;
@@ -440,8 +440,7 @@ ArrangerSelections::select_all (bool fire_events)
               add_object_ref (co);
             }
         }
-      else if constexpr (
-        std::is_same_v<MidiSelections, std::decay_t<decltype (self)>>)
+      else if constexpr (std::is_same_v<MidiSelections, SelT>)
         {
           if (!r || !r->is_midi ())
             return;
@@ -452,13 +451,11 @@ ArrangerSelections::select_all (bool fire_events)
               add_object_ref (mn);
             }
         }
-      else if constexpr (
-        std::is_same_v<AudioSelections, std::decay_t<decltype (self)>>)
+      else if constexpr (std::is_same_v<AudioSelections, SelT>)
         {
           /* no objects in audio arranger yet */
         }
-      else if constexpr (
-        std::is_same_v<AutomationSelections, std::decay_t<decltype (self)>>)
+      else if constexpr (std::is_same_v<AutomationSelections, SelT>)
         {
           if (!r || !r->is_automation ())
             return;
@@ -489,8 +486,8 @@ ArrangerSelections::clear (bool fire_events)
   auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
   std::visit (
     [&] (auto &&self) {
-      if constexpr (
-        std::is_same_v<AudioSelections, std::decay_t<decltype (self)>>)
+      using SelT = base_type<decltype (self)>;
+      if constexpr (std::is_same_v<AudioSelections, SelT>)
         {
           self->has_selection_ = false;
         }
@@ -519,8 +516,8 @@ ArrangerSelections::validate () const
   auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
   return std::visit (
     [] (auto &&self) {
-      if constexpr (
-        std::is_same_v<AudioSelections, std::decay_t<decltype (self)>>)
+      using SelT = base_type<decltype (self)>;
+      if constexpr (std::is_same_v<AudioSelections, SelT>)
         {
           auto r = RegionImpl<AudioRegion>::find (self->region_id_);
           z_return_val_if_fail (r, false);
@@ -653,6 +650,8 @@ ArrangerSelections::paste_to_pos (const Position &pos, bool undoable)
   auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
   std::visit (
     [&] (auto &&self) {
+      using SelT = base_type<decltype (self)>;
+
       /* note: the objects in these selections will become the actual project
        * objects so they should not be free'd here */
       auto clone_sel = self->clone_unique ();
@@ -664,8 +663,7 @@ ArrangerSelections::paste_to_pos (const Position &pos, bool undoable)
 
       auto first_obj_pair = clone_sel->get_first_object_and_pos (false);
 
-      if constexpr (
-        std::is_same_v<TimelineSelections, std::decay_t<decltype (self)>>)
+      if constexpr (std::is_same_v<TimelineSelections, SelT>)
         {
           auto track = TRACKLIST_SELECTIONS->get_highest_track ();
           z_return_if_fail (track);
@@ -675,22 +673,19 @@ ArrangerSelections::paste_to_pos (const Position &pos, bool undoable)
           /* add selections to track */
           for (auto obj : clone_sel->objects_)
             {
-              auto obj_variant =
-                convert_to_variant<ArrangerObjectPtrVariant> (obj);
               std::visit (
                 [&] (auto &&o) {
-                  if constexpr (
-                    std::derived_from<std::decay_t<decltype (o)>, Region>)
+                  using ObjT = base_type<decltype (o)>;
+                  if constexpr (std::derived_from<ObjT, Region>)
                     {
                       /* automation not allowed to be pasted this way */
-                      if constexpr (
-                        !std::is_same_v<decltype (o), AutomationRegion>)
+                      if constexpr (!std::is_same_v<ObjT, AutomationRegion>)
                         {
                           try
                             {
                               track->add_region (
-                                o->shared_from_this (), nullptr,
-                                o->id_.lane_pos_, false, false);
+                                o->template shared_from_this_as<ObjT> (),
+                                nullptr, o->id_.lane_pos_, false, false);
                             }
                           catch (const ZrythmException &e)
                             {
@@ -699,24 +694,24 @@ ArrangerSelections::paste_to_pos (const Position &pos, bool undoable)
                         }
                     }
 
-                  if constexpr (
-                    std::is_same_v<std::decay_t<decltype (o)>, ScaleObject>)
+                  if constexpr (std::is_same_v<ObjT, ScaleObject>)
                     {
-                      P_CHORD_TRACK->add_scale (o->shared_from_this ());
+                      P_CHORD_TRACK->add_scale (
+                        o->template shared_from_this_as<ObjT> ());
                     }
-                  else if constexpr (
-                    std::is_same_v<std::decay_t<decltype (o)>, Marker>)
+                  else if constexpr (std::is_same_v<ObjT, Marker>)
                     {
-                      P_MARKER_TRACK->add_marker (o->shared_from_this ());
+                      P_MARKER_TRACK->add_marker (
+                        o->template shared_from_this_as<ObjT> ());
                     }
                 },
-                obj_variant);
+                convert_to_variant<ArrangerObjectPtrVariant> (obj.get ()));
             }
         }
       /* else if selections inside region (ie not timeline selections) */
       else
         {
-          auto region = CLIP_EDITOR->get_region ();
+          auto * region = CLIP_EDITOR->get_region ();
 
           /* add selections to region */
           clone_sel->add_to_region (*region);
@@ -765,23 +760,18 @@ ArrangerSelections::can_split_at_pos (const Position pos) const
   auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
   bool can_split = std::visit (
     [&] (auto &&self) {
-      if constexpr (
-        std::is_same_v<TimelineSelections, std::decay_t<decltype (self)>>)
+      using SelT = base_type<decltype (self)>;
+      if constexpr (std::is_same_v<TimelineSelections, SelT>)
         {
           for (auto &obj : objects_)
             {
-              auto obj_variant =
-                convert_to_variant<ArrangerObjectPtrVariant> (obj.get ());
               auto ret = std::visit (
                 [&] (auto &&o) {
-                  if constexpr (
-                    std::derived_from<std::decay_t<decltype (o)>, Region>)
+                  using ObjT = base_type<decltype (o)>;
+                  if constexpr (std::derived_from<ObjT, Region>)
                     {
                       /* don't allow splitting at edges */
-                      if (pos <= o->pos_ || pos >= o->end_pos_)
-                        {
-                          return false;
-                        }
+                      return !(pos <= o->pos_ || pos >= o->end_pos_);
                     }
                   else
                     {
@@ -789,15 +779,14 @@ ArrangerSelections::can_split_at_pos (const Position pos) const
                       return false;
                     }
                 },
-                obj_variant);
+                convert_to_variant<ArrangerObjectPtrVariant> (obj.get ()));
               if (!ret)
                 return false;
             }
 
           return true;
         }
-      else if constexpr (
-        std::is_same_v<MidiSelections, std::decay_t<decltype (self)>>)
+      else if constexpr (std::is_same_v<MidiSelections, SelT>)
         {
           for (auto obj : objects_ | type_is<MidiNote> ())
             {

@@ -19,6 +19,7 @@
 #include "utils/types.h"
 
 class ZCarlaDiscovery;
+class StringArray;
 
 /**
  * @addtogroup plugins

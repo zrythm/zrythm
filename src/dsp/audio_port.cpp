@@ -282,25 +282,25 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
 
   for (size_t k = 0; k < srcs_.size (); k++)
     {
-      auto        src_port = srcs_[k];
-      const auto &conn = src_connections_[k];
-      if (!conn->enabled_)
+      const auto * src_port = srcs_[k];
+      const auto  &conn = src_connections_[k];
+      if (!conn.enabled_)
         continue;
 
-      const float multiplier = conn->multiplier_;
+      const float multiplier = conn.multiplier_;
 
       /* sum the signals */
       if (math_floats_equal_epsilon (multiplier, 1.f, 0.00001f)) [[likely]]
         {
           dsp_add2 (
-            &buf_.data ()[time_nfo.local_offset_],
-            &src_port->buf_.data ()[time_nfo.local_offset_], time_nfo.nframes_);
+            &buf_[time_nfo.local_offset_],
+            &src_port->buf_[time_nfo.local_offset_], time_nfo.nframes_);
         }
       else
         {
           dsp_mix2 (
-            &buf_.data ()[time_nfo.local_offset_],
-            &src_port->buf_.data ()[time_nfo.local_offset_], 1.f, multiplier,
+            &buf_[time_nfo.local_offset_],
+            &src_port->buf_[time_nfo.local_offset_], 1.f, multiplier,
             time_nfo.nframes_);
         }
 
@@ -308,15 +308,14 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
         {
           constexpr float minf = -2.f;
           constexpr float maxf = 2.f;
-          float           abs_peak = dsp_abs_max (
-            &buf_.data ()[time_nfo.local_offset_], time_nfo.nframes_);
+          float           abs_peak =
+            dsp_abs_max (&buf_[time_nfo.local_offset_], time_nfo.nframes_);
           if (abs_peak > maxf)
             {
               /* this limiting wastes around 50% of port processing so only
                * do it on CV connections and faders if they exceed maxf */
               dsp_limit1 (
-                &buf_.data ()[time_nfo.local_offset_], minf, maxf,
-                time_nfo.nframes_);
+                &buf_[time_nfo.local_offset_], minf, maxf, time_nfo.nframes_);
             }
         }
     }
@@ -338,7 +337,7 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
   if (time_nfo.local_offset_ + time_nfo.nframes_ == AUDIO_ENGINE->block_length_)
     {
       audio_ring_->force_write_multiple (
-        &buf_.data ()[0], AUDIO_ENGINE->block_length_);
+        buf_.data (), AUDIO_ENGINE->block_length_);
     }
 
   /* if track output (to be shown on mixer) */
@@ -359,7 +358,7 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
             peak_ = -1.f;
 
           bool changed = dsp_abs_max_with_existing_peak (
-            &buf_.data ()[time_nfo.local_offset_], &peak_, time_nfo.nframes_);
+            &buf_[time_nfo.local_offset_], &peak_, time_nfo.nframes_);
           if (changed)
             {
               peak_timestamp_ = g_get_monotonic_time ();
@@ -372,21 +371,22 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
   if (AUDIO_ENGINE->bounce_mode_ > BounceMode::BOUNCE_OFF && !AUDIO_ENGINE->bounce_with_parents_ && (this == &P_MASTER_TRACK->processor_->stereo_in_->get_l () || this == &P_MASTER_TRACK->processor_->stereo_in_->get_r ())) [[unlikely]]
     {
       dsp_fill (
-        &buf_.data ()[time_nfo.local_offset_],
-        AUDIO_ENGINE->denormal_prevention_val_, time_nfo.nframes_);
+        &buf_[time_nfo.local_offset_], AUDIO_ENGINE->denormal_prevention_val_,
+        time_nfo.nframes_);
     }
 
   /* if bouncing track directly to master (e.g., when bouncing the track on
    * its own without parents), add the buffer to master output */
-  if (AUDIO_ENGINE->bounce_mode_ > BounceMode::BOUNCE_OFF && (owner_type == PortIdentifier::OwnerType::Channel || owner_type == PortIdentifier::OwnerType::TrackProcessor || (owner_type == PortIdentifier::OwnerType::Fader && ENUM_BITSET_TEST (PortIdentifier::Flags2, id.flags2_, PortIdentifier::Flags2::Prefader)) || (owner_type == PortIdentifier::OwnerType::Plugin && id.plugin_id_.slot_type_ == PluginSlotType::Instrument)) && is_stereo && is_output() && track && track->bounce_to_master_) [[unlikely]]
+  if (AUDIO_ENGINE->bounce_mode_ > BounceMode::BOUNCE_OFF 
+  && (owner_type == PortIdentifier::OwnerType::Channel || owner_type == PortIdentifier::OwnerType::TrackProcessor || (owner_type == PortIdentifier::OwnerType::Fader && ENUM_BITSET_TEST (PortIdentifier::Flags2, id.flags2_, PortIdentifier::Flags2::Prefader)) || (owner_type == PortIdentifier::OwnerType::Plugin && id.plugin_id_.slot_type_ == PluginSlotType::Instrument)) && is_stereo && is_output() && (track != nullptr) && track->bounce_to_master_) [[unlikely]]
     {
       auto add_to_master = [&] (const bool left) {
         auto &dest =
           left ? P_MASTER_TRACK->channel_->stereo_out_->get_l ()
                : P_MASTER_TRACK->channel_->stereo_out_->get_r ();
         dsp_add2 (
-          &dest.buf_.data ()[time_nfo.local_offset_],
-          &this->buf_.data ()[time_nfo.local_offset_], time_nfo.nframes_);
+          &dest.buf_[time_nfo.local_offset_],
+          &this->buf_[time_nfo.local_offset_], time_nfo.nframes_);
       };
 
       switch (AUDIO_ENGINE->bounce_step_)

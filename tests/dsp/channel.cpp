@@ -20,7 +20,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "midi fx routing")
 {
   /* create an instrument */
   auto setting = test_plugin_manager_get_plugin_setting (
-    TEST_INSTRUMENT_BUNDLE_URI, TEST_INSTRUMENT_URI, true);
+    TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true);
   auto track = Track::create_for_plugin_at_idx_w_action<InstrumentTrack> (
     &setting, TRACKLIST->get_num_tracks ());
   REQUIRE_NONNULL (track);

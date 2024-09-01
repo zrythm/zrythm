@@ -22,18 +22,35 @@ void
 PortConnectionsManager::add_or_replace_connection (
   ConnectionHashTable  &ht,
   const PortIdentifier &id,
-  PortConnection       &conn)
+  const PortConnection &conn)
 {
   auto it = ht.find (id);
   if (it != ht.end ())
     {
       z_return_if_fail (it->first == id);
-      it->second.push_back (&conn);
+      it->second.push_back (conn);
     }
   else
     {
-      ht.emplace (id, ConnectionHashTableValueType{ &conn });
+      ht.emplace (id, ConnectionsVector{ conn });
     }
+}
+
+bool
+PortConnectionsManager::replace_connection (
+  const PortConnection &before,
+  const PortConnection &after)
+{
+  auto it = std::find (connections_.begin (), connections_.end (), before);
+  if (it == connections_.end ())
+    {
+      z_return_val_if_reached (false);
+    }
+
+  *it = after;
+  regenerate_hashtables ();
+
+  return true;
 }
 
 void
@@ -57,11 +74,12 @@ PortConnectionsManager::regenerate_hashtables ()
     srcs_size, dests_size);
 #endif
 }
+
 int
 PortConnectionsManager::get_sources_or_dests (
-  std::vector<PortConnection *> * arr,
-  const PortIdentifier           &id,
-  bool                            sources) const
+  ConnectionsVector *   arr,
+  const PortIdentifier &id,
+  bool                  sources) const
 {
   /* note: we look at the opposite hashtable */
   const ConnectionHashTable &ht = sources ? dest_ht_ : src_ht_;
@@ -73,9 +91,9 @@ PortConnectionsManager::get_sources_or_dests (
     }
 
   /* append to the given array */
-  if (arr)
+  if (arr != nullptr)
     {
-      for (auto &conn : it->second)
+      for (const auto &conn : it->second)
         {
           arr->push_back (conn);
         }
@@ -87,9 +105,9 @@ PortConnectionsManager::get_sources_or_dests (
 
 int
 PortConnectionsManager::get_unlocked_sources_or_dests (
-  std::vector<PortConnection *> * arr,
-  const PortIdentifier           &id,
-  bool                            sources) const
+  ConnectionsVector *   arr,
+  const PortIdentifier &id,
+  bool                  sources) const
 {
   const ConnectionHashTable &ht = sources ? dest_ht_ : src_ht_;
   auto                       it = ht.find (id);
@@ -98,13 +116,13 @@ PortConnectionsManager::get_unlocked_sources_or_dests (
     return 0;
 
   int ret = 0;
-  for (auto &conn : it->second)
+  for (const auto &conn : it->second)
     {
-      if (!conn->locked_)
+      if (!conn.locked_)
         ret++;
 
       /* append to the given array */
-      if (arr)
+      if (arr != nullptr)
         {
           arr->push_back (conn);
         }
@@ -114,13 +132,13 @@ PortConnectionsManager::get_unlocked_sources_or_dests (
   return (int) ret;
 }
 
-PortConnection *
+std::optional<PortConnection>
 PortConnectionsManager::get_source_or_dest (
   const PortIdentifier &id,
   bool                  sources) const
 {
-  std::vector<PortConnection *> conns;
-  int num_conns = get_sources_or_dests (&conns, id, sources);
+  ConnectionsVector conns;
+  int               num_conns = get_sources_or_dests (&conns, id, sources);
   if (num_conns != 1)
     {
       auto buf = id.print_to_str ();
@@ -128,25 +146,24 @@ PortConnectionsManager::get_source_or_dest (
         "expected 1 {}, found {} "
         "connections for\n{}",
         sources ? "source" : "destination", num_conns, buf);
-      return nullptr;
+      return std::nullopt;
     }
 
-  return const_cast<PortConnection *> (conns[0]);
+  return conns.front ();
 }
-PortConnection *
+
+std::optional<PortConnection>
 PortConnectionsManager::find_connection (
   const PortIdentifier &src,
   const PortIdentifier &dest) const
 {
-  for (const auto &conn : connections_)
-    {
-      if (conn.src_id_ == src && conn.dest_id_ == dest)
-        {
-          return const_cast<PortConnection *> (&conn);
-        }
-    }
-
-  return nullptr;
+  auto it = std::find_if (
+    connections_.begin (), connections_.end (), [&] (const auto &conn) {
+      return conn.src_id_ == src && conn.dest_id_ == dest;
+    });
+  return it != connections_.end ()
+           ? std::make_optional<PortConnection> (*it)
+           : std::nullopt;
 }
 
 const PortConnection *
@@ -244,7 +261,7 @@ PortConnectionsManager::contains_connection (const PortConnection &conn) const
 }
 
 void
-PortConnectionsManager::reset (const PortConnectionsManager * other)
+PortConnectionsManager::reset_connections (const PortConnectionsManager * other)
 {
   clear_connections ();
 
@@ -265,7 +282,7 @@ PortConnectionsManager::print_ht (const ConnectionHashTable &ht)
       str += fmt::format ("{}\n", key.get_label ());
       for (const auto &conn : value)
         {
-          str += fmt::format ("  {}\n", conn->print_to_str ());
+          str += fmt::format ("  {}\n", conn.print_to_str ());
         }
     }
   z_info ("{}", str.c_str ());

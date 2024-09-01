@@ -8,6 +8,8 @@
 
 #include <filesystem>
 
+#include "utils/traits.h"
+
 #include "ext/juce/juce.h"
 #include <fmt/format.h>
 #include <magic_enum.hpp>
@@ -109,7 +111,7 @@
  * literal)
  */
 template <typename... Args>
-inline std::string
+std::string
 format_str (std::string_view format, Args &&... args)
 {
   return fmt::vformat (format, fmt::make_format_args (args...));
@@ -134,6 +136,25 @@ struct fmt::formatter<juce::String> : fmt::formatter<std::string_view>
   auto format (const juce::String &s, FormatContext &ctx) const
   {
     return fmt::formatter<std::string_view>::format (s.toStdString (), ctx);
+  }
+};
+
+// Generic formatter for smart pointers (std::shared_ptr and std::unique_ptr)
+template <SmartPtr Ptr>
+struct fmt::formatter<Ptr> : fmt::formatter<std::string_view>
+{
+  template <typename FormatContext>
+  auto format (const Ptr &ptr, FormatContext &ctx) const
+  {
+    if (ptr)
+      {
+        return fmt::formatter<std::string_view>::format (
+          fmt::format ("{}", *ptr), ctx);
+      }
+    else
+      {
+        return fmt::formatter<std::string_view>::format ("(null)", ctx);
+      }
   }
 };
 

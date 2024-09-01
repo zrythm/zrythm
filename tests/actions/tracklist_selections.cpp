@@ -200,13 +200,12 @@ _test_port_and_plugin_track_pos_after_duplication (
       /* check that track processor is connected to the instrument */
       auto conn = PORT_CONNECTIONS_MGR->get_source_or_dest (
         ins_track->processor_->midi_out_->id_, false);
-      REQUIRE_NONNULL (conn);
+      REQUIRE_HAS_VALUE (conn);
 
-      /* check that instrument is connected to
-       * channel prefader */
+      /* check that instrument is connected to channel prefader */
       conn = PORT_CONNECTIONS_MGR->get_source_or_dest (
         ins_track->channel_->prefader_->stereo_in_->get_l ().id_, true);
-      REQUIRE_NONNULL (conn);
+      REQUIRE_HAS_VALUE (conn);
     }
 
   REQUIRE (src_track->validate ());
@@ -933,10 +932,10 @@ _test_move_tracks (
   REQUIRE_EQ (clip_editor_region, ar.get ());
 
   /* check that the stereo out of the audio fx track points to the master track */
-  REQUIRE_NONNULL (PORT_CONNECTIONS_MGR->find_connection (
+  REQUIRE_HAS_VALUE (PORT_CONNECTIONS_MGR->find_connection (
     fx_track->channel_->stereo_out_->get_l ().id_,
     P_MASTER_TRACK->processor_->stereo_in_->get_l ().id_));
-  REQUIRE_NONNULL (PORT_CONNECTIONS_MGR->find_connection (
+  REQUIRE_HAS_VALUE (PORT_CONNECTIONS_MGR->find_connection (
     fx_track->channel_->stereo_out_->get_r ().id_,
     P_MASTER_TRACK->processor_->stereo_in_->get_r ().id_));
 
@@ -982,10 +981,10 @@ _test_move_tracks (
   }
 
   /* check that the stereo out of the audio fx track points to the master track */
-  REQUIRE_NONNULL (PORT_CONNECTIONS_MGR->find_connection (
+  REQUIRE_HAS_VALUE (PORT_CONNECTIONS_MGR->find_connection (
     fx_track->channel_->stereo_out_->get_l ().id_,
     P_MASTER_TRACK->processor_->stereo_in_->get_l ().id_));
-  REQUIRE_NONNULL (PORT_CONNECTIONS_MGR->find_connection (
+  REQUIRE_HAS_VALUE (PORT_CONNECTIONS_MGR->find_connection (
     fx_track->channel_->stereo_out_->get_r ().id_,
     P_MASTER_TRACK->processor_->stereo_in_->get_r ().id_));
 

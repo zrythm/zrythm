@@ -683,7 +683,7 @@ CarlaNativePlugin::process_impl (const EngineProcessTimeInfo time_nfo)
           events[num_events_written].data[0] = ev.raw_buffer_[0];
           events[num_events_written].data[1] = ev.raw_buffer_[1];
           events[num_events_written].data[2] = ev.raw_buffer_[2];
-          num_events_written++;
+          ++num_events_written;
 
           if (num_events_written == MAX_EVENTS)
             {

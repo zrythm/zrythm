@@ -231,8 +231,8 @@ ChannelSend::get_target_track (const ChannelTrack * owner)
   if (is_empty ())
     return nullptr;
 
-  PortType               type = get_signal_type ();
-  const PortConnection * conn = nullptr;
+  PortType                      type = get_signal_type ();
+  std::optional<PortConnection> conn;
   switch (type)
     {
     case PortType::Audio:
@@ -262,16 +262,16 @@ ChannelSend::get_target_sidechain ()
   PortType type = get_signal_type ();
   z_return_val_if_fail (type == PortType::Audio, nullptr);
 
-  const PortConnection * conn =
+  auto conn =
     PORT_CONNECTIONS_MGR->get_source_or_dest (stereo_out_->get_l ().id_, false);
   z_return_val_if_fail (conn, nullptr);
-  auto l = Port::find_from_identifier<AudioPort> (conn->dest_id_);
+  auto * l = Port::find_from_identifier<AudioPort> (conn->dest_id_);
   z_return_val_if_fail (l, nullptr);
 
   conn =
     PORT_CONNECTIONS_MGR->get_source_or_dest (stereo_out_->get_r ().id_, false);
   z_return_val_if_fail (conn, nullptr);
-  auto r = Port::find_from_identifier<AudioPort> (conn->dest_id_);
+  auto * r = Port::find_from_identifier<AudioPort> (conn->dest_id_);
   z_return_val_if_fail (r, nullptr);
 
   return std::make_unique<StereoPorts> (l->clone_unique (), r->clone_unique ());
@@ -424,7 +424,7 @@ ChannelSend::connect_midi (MidiPort &port, bool recalc_graph, bool validate)
 void
 ChannelSend::disconnect_midi ()
 {
-  const auto * conn =
+  const auto conn =
     PORT_CONNECTIONS_MGR->get_source_or_dest (midi_out_->id_, false);
   if (!conn)
     return;
@@ -441,7 +441,7 @@ ChannelSend::disconnect_audio ()
   for (int i = 0; i < 2; i++)
     {
       auto * src_port = i == 0 ? &stereo_out_->get_l () : &stereo_out_->get_r ();
-      const auto * conn =
+      const auto conn =
         PORT_CONNECTIONS_MGR->get_source_or_dest (src_port->id_, false);
       if (!conn)
         continue;
@@ -499,8 +499,8 @@ ChannelSend::get_dest_name () const
     {
       if (is_prefader ())
         return _ ("Pre-fader send");
-      else
-        return _ ("Post-fader send");
+
+      return _ ("Post-fader send");
     }
   else
     {
@@ -509,7 +509,7 @@ ChannelSend::get_dest_name () const
         (type == PortType::Audio)
           ? static_cast<Port &> (stereo_out_->get_l ())
           : static_cast<Port &> (*midi_out_);
-      const auto * conn =
+      const auto conn =
         PORT_CONNECTIONS_MGR->get_source_or_dest (search_port.id_, false);
       z_return_val_if_fail (conn, {});
       auto * dest = Port::find_from_identifier (conn->dest_id_);
@@ -601,7 +601,7 @@ ChannelSend::is_enabled () const
     }
 
   /* get dest port */
-  const auto * conn =
+  const auto conn =
     PORT_CONNECTIONS_MGR->get_source_or_dest (search_port.id_, false);
   z_return_val_if_fail (conn, false);
   auto * dest = Port::find_from_identifier (conn->dest_id_);
@@ -695,7 +695,7 @@ ChannelSend::append_ports (std::vector<Port *> &ports)
 int
 ChannelSend::append_connection (
   const PortConnectionsManager * mgr,
-  std::vector<PortConnection *> &arr) const
+  std::vector<PortConnection>   &arr) const
 {
   if (is_empty ())
     return 0;
@@ -724,13 +724,13 @@ ChannelSend::append_connection (
 bool
 ChannelSend::is_connected_to (const StereoPorts * stereo, const Port * midi) const
 {
-  std::vector<PortConnection *> conns;
+  std::vector<PortConnection> conns;
   int num_conns = append_connection (PORT_CONNECTIONS_MGR.get (), conns);
   for (int i = 0; i < num_conns; i++)
     {
-      const auto * conn = conns[i];
-      if ((stereo && (conn->dest_id_ == stereo->get_l ().id_ || conn->dest_id_ == stereo->get_r ().id_)) ||
-          (midi && conn->dest_id_ == midi->id_))
+      const auto &conn = conns[i];
+      if (((stereo != nullptr) && (conn.dest_id_ == stereo->get_l ().id_ || conn.dest_id_ == stereo->get_r ().id_)) ||
+          ((midi != nullptr) && conn.dest_id_ == midi->id_))
         {
           return true;
         }

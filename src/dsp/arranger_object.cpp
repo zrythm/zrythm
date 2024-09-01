@@ -182,79 +182,42 @@ ArrangerObject::remove_from_project (bool fire_events)
   /*event_manager_remove_events_for_obj (*/
   /*EVENT_MANAGER, obj);*/
 
-  Region * region = nullptr;
-  if (owned_by_region ())
-    {
-      auto success = std::visit (
-        [&] (auto &&ro_obj) {
-          region = ro_obj->get_region ();
-          z_return_val_if_fail (region, false);
-          return true;
-        },
-        convert_to_variant<RegionOwnedObjectPtrVariant> (this));
-      z_return_val_if_fail (success, nullptr);
-    }
+  return std::visit (
+    [&] (auto &&obj) -> std::shared_ptr<ArrangerObject> {
+      using ObjT = base_type<decltype (obj)>;
 
-  /* get a shared ptr to prevent this from getting deleted (we will also return
-   * this)*/
-  auto ret = shared_from_this ();
+      /* get a shared ptr to prevent this from getting deleted (we will also
+       * return this)*/
+      auto ret = shared_from_this ();
 
-  switch (type_)
-    {
-    case Type::AutomationPoint:
-      {
-        auto ap = dynamic_cast<AutomationPoint *> (this);
-        dynamic_cast<AutomationRegion *> (region)->remove_object (
-          *ap, fire_events);
-      }
-      break;
-    case Type::ChordObject:
-      {
-        auto co = dynamic_cast<ChordObject *> (this);
-        dynamic_cast<ChordRegion *> (region)->remove_object (*co, fire_events);
-      }
-      break;
-    case Type::Region:
-      {
-        auto variant = convert_to_variant<RegionPtrVariant> (this);
-        std::visit (
-          [&] (auto &&r) {
-            auto owner = r->get_region_owner ();
-            owner->remove_region (*r, fire_events);
-          },
-          variant);
-      }
-      break;
-    case Type::ScaleObject:
-      {
-        auto scale = dynamic_cast<ScaleObject *> (this);
-        P_CHORD_TRACK->remove_scale (*scale);
-      }
-      break;
-    case Type::Marker:
-      {
-        auto m = dynamic_cast<Marker *> (this);
-        P_MARKER_TRACK->remove_marker (*m, fire_events);
-      }
-      break;
-    case Type::MidiNote:
-      {
-        auto mn = dynamic_cast<MidiNote *> (this);
-        dynamic_cast<MidiRegion *> (region)->remove_object (*mn, fire_events);
-      }
-      break;
-    case Type::None:
-    case Type::All:
-    case Type::Velocity:
-      z_return_val_if_reached (nullptr);
-    }
-
-  if (region)
-    {
-      region->update_link_group ();
-    }
-
-  return ret;
+      if constexpr (std::is_same_v<ObjT, Velocity>)
+        {
+          // nothing to do
+        }
+      else if constexpr (std::derived_from<ObjT, RegionOwnedObject>)
+        {
+          auto * region = obj->get_region ();
+          z_return_val_if_fail (region, nullptr);
+          region->remove_object (*obj, fire_events);
+          region->update_link_group ();
+        }
+      else if constexpr (std::derived_from<ObjT, Region>)
+        {
+          auto * owner = obj->get_region_owner ();
+          z_return_val_if_fail (owner, nullptr);
+          owner->remove_region (*obj, fire_events);
+        }
+      else if constexpr (std::is_same_v<ObjT, ScaleObject>)
+        {
+          P_CHORD_TRACK->remove_scale (*obj);
+        }
+      else if constexpr (std::is_same_v<ObjT, Marker>)
+        {
+          P_MARKER_TRACK->remove_marker (*obj, fire_events);
+        }
+      return ret;
+    },
+    convert_to_variant<ArrangerObjectPtrVariant> (this));
 }
 
 Position *
@@ -729,6 +692,11 @@ ArrangerObject::
 void
 ArrangerObject::post_deserialize ()
 {
+  if (auto * ar = dynamic_cast<AudioRegion *> (this))
+    {
+      ar->read_from_pool_ = true;
+    }
+
   /* TODO: this acts as if a BPM change happened (and is only effective if so),
    * so if no BPM change happened this is unnecessary, so this should be
    * refactored in the future. this was added to fix copy-pasting audio regions
@@ -737,7 +705,7 @@ ArrangerObject::post_deserialize ()
 
   if (is_region ())
     {
-      auto r = dynamic_cast<Region *> (this);
+      auto * r = dynamic_cast<Region *> (this);
       r->post_deserialize_children ();
     }
 }

@@ -206,7 +206,8 @@ GraphNode::process_internal (const EngineProcessTimeInfo time_nfo)
         /* if midi editor manual press */
         if (port_ == AUDIO_ENGINE->midi_editor_manual_press_.get ())
           {
-            AUDIO_ENGINE->midi_editor_manual_press_->midi_events_.dequeue ();
+            AUDIO_ENGINE->midi_editor_manual_press_->midi_events_.dequeue (
+              time_nfo.local_offset_, time_nfo.nframes_);
           }
 
         /* if exporting and the port is not a project port, ignore it */

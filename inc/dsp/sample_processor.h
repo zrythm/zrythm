@@ -1,12 +1,6 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Sample processor.
- */
-
 #ifndef __AUDIO_SAMPLE_PROCESSOR_H__
 #define __AUDIO_SAMPLE_PROCESSOR_H__
 

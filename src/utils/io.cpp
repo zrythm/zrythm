@@ -342,6 +342,12 @@ append_files_from_dir_ending_in (
     }
 }
 
+StringArray
+io_get_files_in_dir (const std::string &_dir)
+{
+  return io_get_files_in_dir_ending_in (_dir, false, std::nullopt);
+}
+
 void
 io_copy_dir (
   const std::string_view destdir_str,

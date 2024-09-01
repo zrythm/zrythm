@@ -67,7 +67,7 @@ on_del_clicked (GtkButton * btn, PortConnectionRowWidget * self)
 static void
 finalize (PortConnectionRowWidget * self)
 {
-  object_delete_and_null (self->connection);
+  std::destroy_at (&self->connection);
 
   G_OBJECT_CLASS (port_connection_row_widget_parent_class)
     ->finalize (G_OBJECT (self));
@@ -79,13 +79,13 @@ finalize (PortConnectionRowWidget * self)
 PortConnectionRowWidget *
 port_connection_row_widget_new (
   PortConnectionsPopoverWidget * parent,
-  const PortConnection *         connection,
+  const PortConnection          &connection,
   bool                           is_input)
 {
   PortConnectionRowWidget * self = Z_PORT_CONNECTION_ROW_WIDGET (
     g_object_new (PORT_CONNECTION_ROW_WIDGET_TYPE, nullptr));
 
-  self->connection = new PortConnection (*connection);
+  self->connection = std::make_unique<PortConnection> (connection);
 
   self->is_input = is_input;
   self->parent = parent;
@@ -96,7 +96,7 @@ port_connection_row_widget_new (
 
   /* power button */
   GtkToggleButton * btn = z_gtk_toggle_button_new_with_icon ("network-connect");
-  gtk_toggle_button_set_active (btn, connection->enabled_);
+  gtk_toggle_button_set_active (btn, self->connection->enabled_);
   gtk_widget_set_visible (GTK_WIDGET (btn), 1);
   gtk_box_append (GTK_BOX (box), GTK_WIDGET (btn));
   gtk_widget_set_tooltip_text (
@@ -110,16 +110,17 @@ port_connection_row_widget_new (
   gtk_box_append (GTK_BOX (box), GTK_WIDGET (self->overlay));
 
   /* bar slider */
-  const auto &port_id = is_input ? connection->dest_id_ : connection->src_id_;
-  Port *      port = Port::find_from_identifier (port_id);
+  const auto &port_id =
+    is_input ? self->connection->dest_id_ : self->connection->src_id_;
+  Port * port = Port::find_from_identifier (port_id);
   if (!port)
     {
       z_error ("failed to find port for '{}'", port_id.get_label ());
       return nullptr;
     }
   auto designation = port->get_full_designation () + " ";
-  self->slider =
-    bar_slider_widget_new_port_connection (connection, designation.c_str ());
+  self->slider = bar_slider_widget_new_port_connection (
+    self->connection.get (), designation.c_str ());
   gtk_overlay_set_child (GTK_OVERLAY (self->overlay), GTK_WIDGET (self->slider));
 
   /* delete connection button */
@@ -133,7 +134,7 @@ port_connection_row_widget_new (
 
   gtk_box_append (GTK_BOX (self), box);
 
-  gtk_widget_set_sensitive (box, !connection->locked_);
+  gtk_widget_set_sensitive (box, !self->connection->locked_);
 
   return self;
 }
@@ -148,5 +149,7 @@ port_connection_row_widget_class_init (PortConnectionRowWidgetClass * _klass)
 static void
 port_connection_row_widget_init (PortConnectionRowWidget * self)
 {
-  gtk_widget_set_visible (GTK_WIDGET (self), 1);
+  std::construct_at (&self->connection);
+
+  gtk_widget_set_visible (GTK_WIDGET (self), true);
 }

@@ -38,14 +38,27 @@ TimelineSelections::TimelineSelections (
       std::vector<ArrangerObject *> objs;
       track->append_objects (objs);
 
-      for (auto obj : objs)
+      for (auto * obj : objs)
         {
-          if (obj->is_start_hit_by_range (start_pos, end_pos))
-            {
-              std::visit (
-                [&] (auto &&o) { add_object_owned (o->clone_unique ()); },
-                convert_to_variant<ArrangerObjectPtrVariant> (obj));
-            }
+          std::visit (
+            [&] (auto &&o) {
+              using ObjT = base_type<decltype (o)>;
+              if constexpr (std::derived_from<ObjT, LengthableObject>)
+                {
+                  if (o->is_hit_by_range (start_pos, end_pos))
+                    {
+                      add_object_owned (o->clone_unique ());
+                    }
+                }
+              else
+                {
+                  if (o->is_start_hit_by_range (start_pos, end_pos))
+                    {
+                      add_object_owned (o->clone_unique ());
+                    }
+                }
+            },
+            convert_to_variant<ArrangerObjectPtrVariant> (obj));
         }
     }
 }

@@ -70,9 +70,9 @@ static const char * midi_event_type_strings[] = {
 
 void
 MidiEventVector::append (
-  MidiEventVector &src,
-  const nframes_t  local_offset,
-  const nframes_t  nframes)
+  const MidiEventVector &src,
+  const nframes_t        local_offset,
+  const nframes_t        nframes)
 {
   append_w_filter (src, std::nullopt, local_offset, nframes);
 }
@@ -131,7 +131,7 @@ MidiEventVector::transform_chord_and_append (
 
 void
 MidiEventVector::append_w_filter (
-  MidiEventVector                    &src,
+  const MidiEventVector              &src,
   std::optional<std::array<bool, 16>> channels,
   const nframes_t                     local_offset,
   const nframes_t                     nframes)
@@ -281,14 +281,17 @@ MidiEvents::has_note_on (bool check_main, bool check_queued)
 #endif
 
 void
-MidiEvents::dequeue ()
+MidiEvents::dequeue (const nframes_t local_offset, const nframes_t nframes)
 {
   if (ZRYTHM_TESTING) [[unlikely]]
     {
       assert (active_events_.capacity () >= queued_events_.size ());
     }
 
-  active_events_.swap (queued_events_);
+  active_events_.append (queued_events_, local_offset, nframes);
+  queued_events_.remove_if ([local_offset, nframes] (const MidiEvent &ev) {
+    return ev.time_ >= local_offset && ev.time_ < local_offset + nframes;
+  });
 }
 
 void

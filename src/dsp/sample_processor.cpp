@@ -417,7 +417,9 @@ SampleProcessor::queue_file_or_chord_preset (
             false, true, false, false);
 
           int num_tracks =
-            file ? midi_file_get_num_tracks (file->abs_path_.c_str (), true) : 1;
+            (file != nullptr)
+              ? MidiFile (file->abs_path_).get_num_tracks (true)
+              : 1;
           z_debug ("creating {} MIDI tracks...", num_tracks);
           for (int i = 0; i < num_tracks; i++)
             {

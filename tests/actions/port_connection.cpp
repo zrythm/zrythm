@@ -147,20 +147,25 @@ _test_port_connection (
   REQUIRE_NE (src_port1->get_hash (), src_port2->get_hash ());
   ports.clear ();
 
-  ControlPort * dest_port = nullptr;
-  target_track->append_ports (ports, F_INCLUDE_PLUGINS);
-  for (auto port : ports)
-    {
-      if (
-        port->id_.owner_type_ == PortIdentifier::OwnerType::Fader
-        && ENUM_BITSET_TEST (
-          PortIdentifier::Flags, port->id_.flags_,
-          PortIdentifier::Flags::StereoBalance))
-        {
-          dest_port = dynamic_cast<ControlPort *> (port);
-          break;
-        }
-    }
+  auto get_fader_stereo_balance_port = [&target_track] () -> ControlPort * {
+    std::vector<Port *> pts;
+    target_track->append_ports (pts, F_INCLUDE_PLUGINS);
+    for (auto * port : pts)
+      {
+        if (
+          port->id_.owner_type_ == PortIdentifier::OwnerType::Fader
+          && ENUM_BITSET_TEST (
+            PortIdentifier::Flags, port->id_.flags_,
+            PortIdentifier::Flags::StereoBalance))
+          {
+            return dynamic_cast<ControlPort *> (port);
+          }
+      }
+    return nullptr;
+  };
+
+  auto * dest_port = get_fader_stereo_balance_port ();
+  REQUIRE_NONNULL (dest_port);
 
   auto check_num_sources = [&] (const auto &port, const auto num_sources) {
     REQUIRE_SIZE_EQ (port->srcs_, num_sources);
@@ -201,9 +206,9 @@ _test_port_connection (
   check_num_sources (dest_port, 2);
   check_num_dests (src_port1, 1);
   check_num_dests (src_port2, 1);
-  REQUIRE_NONNULL (
+  REQUIRE_HAS_VALUE (
     PORT_CONNECTIONS_MGR->find_connection (src_port1->id_, dest_port->id_));
-  REQUIRE_NONNULL (
+  REQUIRE_HAS_VALUE (
     PORT_CONNECTIONS_MGR->find_connection (src_port2->id_, dest_port->id_));
   REQUIRE_EQ (dest_port->srcs_[0], src_port1);
   REQUIRE_EQ (dest_port, src_port1->dests_[0]);

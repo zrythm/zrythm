@@ -93,8 +93,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "change BPM and time signature")
   REQUIRE_NONNULL (audio_track->lanes_[0]->regions_[0]);
 
   /* perform the change to 150 */
-  UNDO_MANAGER->perform (std::make_unique<TransportAction> (
-    TransportAction::Type::TempoChange, bpm_before, 150.f, false));
+  UNDO_MANAGER->perform (
+    std::make_unique<TransportAction> (bpm_before, 150.f, false));
   REQUIRE_FLOAT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 150.f, 0.001f);
   AUDIO_ENGINE->wait_n_cycles (3);
   REQUIRE_FLOAT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 150.f, 0.001f);
@@ -122,8 +122,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "change BPM and time signature")
   REQUIRE (audio_track->lanes_[0]->regions_[0]->validate (true, 0));
 
   /* perform the change to 130 */
-  UNDO_MANAGER->perform (std::make_unique<TransportAction> (
-    TransportAction::Type::TempoChange, bpm_before, 130.f, false));
+  UNDO_MANAGER->perform (
+    std::make_unique<TransportAction> (bpm_before, 130.f, false));
   REQUIRE_FLOAT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 130.f, 0.001f);
   AUDIO_ENGINE->wait_n_cycles (3);
   REQUIRE_FLOAT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 130.f, 0.001f);
@@ -166,8 +166,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "change BPM twice during playback")
   bpm_t bpm_before = P_TEMPO_TRACK->get_current_bpm ();
 
   /* change BPM to 40 */
-  UNDO_MANAGER->perform (std::make_unique<TransportAction> (
-    TransportAction::Type::TempoChange, bpm_before, 40.f, false));
+  UNDO_MANAGER->perform (
+    std::make_unique<TransportAction> (bpm_before, 40.f, false));
   REQUIRE_FLOAT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 40.f, 0.001f);
   AUDIO_ENGINE->wait_n_cycles (3);
   REQUIRE_FLOAT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 40.f, 0.001f);
@@ -176,8 +176,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "change BPM twice during playback")
   AUDIO_ENGINE->wait_n_cycles (3);
 
   /* change bpm to 140 */
-  UNDO_MANAGER->perform (std::make_unique<TransportAction> (
-    TransportAction::Type::TempoChange, bpm_before, 140.f, false));
+  UNDO_MANAGER->perform (
+    std::make_unique<TransportAction> (bpm_before, 140.f, false));
 
   REQUIRE_FLOAT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 140.f, 0.001f);
   AUDIO_ENGINE->wait_n_cycles (3);

@@ -14,8 +14,6 @@ template <typename RegionT>
 bool
 RegionOwnerImpl<RegionT>::remove_region (RegionT &region, bool fire_events)
 {
-  before_remove_region (region);
-
   auto it_to_remove = std::find_if (
     regions_.begin (), regions_.end (),
     [&region] (const auto &r) { return r.get () == &region; });
@@ -87,11 +85,13 @@ template <typename RegionT>
 void
 RegionOwnerImpl<RegionT>::clear_regions ()
 {
-  while (!regions_.empty ())
+  clearing_ = true;
+  for (size_t i = regions_.size (); i > 0; --i)
     {
-      remove_region (*regions_.back (), false);
+      remove_region (*regions_[i - 1], false);
     }
   region_snapshots_.clear ();
+  clearing_ = false;
 }
 
 template <typename RegionT>

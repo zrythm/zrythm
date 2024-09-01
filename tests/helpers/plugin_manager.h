@@ -125,7 +125,7 @@ test_plugin_manager_get_plugin_setting (
             }
         }
     }
-  REQUIRE_OPTIONAL_HAS_VALUE (descr);
+  REQUIRE_HAS_VALUE (descr);
 
   PluginSetting setting (*descr);
 

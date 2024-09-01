@@ -201,24 +201,24 @@ Graph::add_port (Port &port, const bool drop_if_unnecessary)
     }
 
   /* reset port sources/dests */
-  std::vector<PortConnection *> srcs;
+  std::vector<PortConnection> srcs;
   PORT_CONNECTIONS_MGR->get_sources_or_dests (&srcs, port.id_, true);
   port.srcs_.clear ();
   port.src_connections_.clear ();
-  for (auto conn : srcs)
+  for (const auto &conn : srcs)
     {
-      port.srcs_.push_back (Port::find_from_identifier (conn->src_id_));
+      port.srcs_.push_back (Port::find_from_identifier (conn.src_id_));
       z_return_val_if_fail (port.srcs_.back (), nullptr);
       port.src_connections_.push_back (conn);
     }
 
-  std::vector<PortConnection *> dests;
+  std::vector<PortConnection> dests;
   PORT_CONNECTIONS_MGR->get_sources_or_dests (&dests, port.id_, false);
   port.dests_.clear ();
   port.dest_connections_.clear ();
-  for (auto &conn : dests)
+  for (const auto &conn : dests)
     {
-      port.dests_.push_back (Port::find_from_identifier (conn->dest_id_));
+      port.dests_.push_back (Port::find_from_identifier (conn.dest_id_));
       z_return_val_if_fail (port.dests_.back (), nullptr);
       port.dest_connections_.push_back (conn);
     }

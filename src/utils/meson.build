@@ -34,6 +34,7 @@ util_srcs = [
   'rt_thread_id.cpp',
   'sort.cpp',
   'string.cpp',
+  'string_array.cpp',
   'symap.cpp',
   'ui.cpp',
   'vamp.cpp',

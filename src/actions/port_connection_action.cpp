@@ -31,8 +31,7 @@ PortConnectionAction::PortConnectionAction (
   float                  new_val)
     : type_ (type), val_ (new_val)
 {
-  const PortConnection * conn =
-    PORT_CONNECTIONS_MGR->find_connection (*src_id, *dest_id);
+  const auto conn = PORT_CONNECTIONS_MGR->find_connection (*src_id, *dest_id);
   if (conn)
     connection_ = std::make_unique<PortConnection> (*conn);
   else

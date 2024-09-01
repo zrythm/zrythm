@@ -1,10 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- */
-
 #ifndef __UTILS_IO_H__
 #define __UTILS_IO_H__
 
@@ -14,7 +10,7 @@
 #include <optional>
 #include <string>
 
-#include "utils/string.h"
+#include "utils/string_array.h"
 
 #include <glib.h>
 
@@ -142,11 +138,8 @@ io_create_tmp_dir (const std::string template_name = "zrythm_generic_XXXXXX");
  * @see io_get_files_in_dir_ending_in().
  * @throw ZrythmException If @ref dir cannot be opened.
  */
-static inline StringArray
-io_get_files_in_dir (const std::string &_dir)
-{
-  return io_get_files_in_dir_ending_in (_dir, false, std::nullopt);
-}
+StringArray
+io_get_files_in_dir (const std::string &_dir);
 
 /**
  * Copies a directory.

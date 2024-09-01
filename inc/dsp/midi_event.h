@@ -106,6 +106,12 @@ public:
     return events_.end ();
   }
 
+  void erase (Iterator it, Iterator it_end)
+  {
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
+    events_.erase (it, it_end);
+  }
+
   ConstIterator begin () const
   {
     const std::lock_guard<crill::spin_mutex> lock (lock_);
@@ -182,17 +188,20 @@ public:
     events_.swap (other.events_);
   }
 
+  void remove_if (std::function<bool (const MidiEvent &)> predicate)
+  {
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
+    events_.erase (
+      std::remove_if (events_.begin (), events_.end (), predicate),
+      events_.end ());
+  }
+
   /**
    * @brief Removes all events that match @p event.
    */
   void remove (const MidiEvent &event)
   {
-    const std::lock_guard<crill::spin_mutex> lock (lock_);
-    events_.erase (
-      std::remove_if (
-        events_.begin (), events_.end (),
-        [&event] (const MidiEvent &e) { return e == event; }),
-      events_.end ());
+    remove_if ([&event] (const MidiEvent &e) { return e == event; });
   }
 
   size_t capacity () const
@@ -211,7 +220,7 @@ public:
    * @param nframes Number of frames to process.
    */
   OPTIMIZE_O3 HOT void append_w_filter (
-    MidiEventVector                    &src,
+    const MidiEventVector              &src,
     std::optional<std::array<bool, 16>> channels,
     const nframes_t                     local_offset,
     const nframes_t                     nframes);
@@ -223,9 +232,9 @@ public:
    * @param nframes Number of frames to process.
    */
   void append (
-    MidiEventVector &src,
-    const nframes_t  local_offset,
-    const nframes_t  nframes);
+    const MidiEventVector &src,
+    const nframes_t        local_offset,
+    const nframes_t        nframes);
 
   /**
    * Transforms the given MIDI input to the MIDI notes of the corresponding
@@ -434,8 +443,11 @@ public:
 
   /**
    * Copies the queue contents to the original struct
+   *
+   * @param local_offset The start frame offset from 0 in this cycle.
+   * @param nframes Number of frames to process.
    */
-  void dequeue ();
+  void dequeue (nframes_t local_offset, nframes_t nframes);
 
   /**
    * Queues MIDI note off to event queues.

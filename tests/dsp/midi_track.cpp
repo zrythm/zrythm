@@ -59,6 +59,60 @@ protected:
   MidiEventVector events_;
 };
 
+TEST_CASE_FIXTURE (ZrythmFixture, "fill midi events from engine")
+{
+  /* deactivate audio engine processing so we can process
+   * manually */
+  test_project_stop_dummy_engine ();
+
+  /* create an instrument track for testing */
+  test_plugin_manager_create_tracks_from_plugin (
+    TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false, 1);
+  auto ins_track = TRACKLIST->get_last_track<InstrumentTrack> ();
+
+  auto r =
+    TrackFixture::prepare_region_with_note_at_start_to_end (ins_track, 35, 60);
+  ins_track->add_region (r, nullptr, 0, true, false);
+  AUDIO_ENGINE->run_.store (false);
+  TRACKLIST->set_caches (CacheType::PlaybackSnapshots);
+  AUDIO_ENGINE->run_.store (true);
+
+  TRANSPORT->set_loop (true, true);
+  TRANSPORT->loop_end_pos_ = r->end_pos_;
+  Position pos;
+  pos = r->end_pos_;
+  pos.add_frames (-20);
+  TRANSPORT->set_playhead_pos (pos);
+  TRANSPORT->request_roll (true);
+
+  /* run the engine for 1 cycle */
+  z_info ("--- processing engine...");
+  AUDIO_ENGINE->process (40);
+  z_info ("--- processing recording events...");
+  auto &pl = ins_track->channel_->instrument_;
+  auto  event_in = dynamic_cast<MidiPort *> (pl->in_ports_[2].get ());
+  auto &midi_events = event_in->midi_events_;
+  REQUIRE_SIZE_EQ (midi_events.active_events_, 3);
+  auto ev = midi_events.active_events_.at (0);
+  REQUIRE (midi_is_note_off (ev.raw_buffer_.data ()));
+  REQUIRE_EQ (ev.time_, 19);
+  REQUIRE_EQ (midi_get_note_number (ev.raw_buffer_.data ()), 35);
+  ev = midi_events.active_events_.at (1);
+  REQUIRE (midi_is_all_notes_off (ev.raw_buffer_.data ()));
+  REQUIRE_EQ (ev.time_, 19);
+  ev = midi_events.active_events_.at (2);
+  REQUIRE (midi_is_note_on (ev.raw_buffer_.data ()));
+  REQUIRE_EQ (ev.time_, 20);
+  REQUIRE_EQ (midi_get_note_number (ev.raw_buffer_.data ()), 35);
+  REQUIRE_EQ (midi_get_velocity (ev.raw_buffer_.data ()), 60);
+
+  /* process again and check events are 0 */
+  z_info ("--- processing engine...");
+  AUDIO_ENGINE->process (40);
+  z_info ("--- processing recording events...");
+  REQUIRE_EMPTY (midi_events.active_events_);
+}
+
 TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
 {
   auto     track = midi_track_;
@@ -751,60 +805,6 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     REQUIRE_EQ (ev.time_, 14);
     events.clear ();
   }
-}
-
-TEST_CASE_FIXTURE (ZrythmFixture, "fill midi events from engine")
-{
-  /* deactivate audio engine processing so we can process
-   * manually */
-  test_project_stop_dummy_engine ();
-
-  /* create an instrument track for testing */
-  test_plugin_manager_create_tracks_from_plugin (
-    TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false, 1);
-  auto ins_track = TRACKLIST->get_last_track<InstrumentTrack> ();
-
-  auto r =
-    TrackFixture::prepare_region_with_note_at_start_to_end (ins_track, 35, 60);
-  ins_track->add_region (r, nullptr, 0, true, false);
-  AUDIO_ENGINE->run_.store (false);
-  TRACKLIST->set_caches (CacheType::PlaybackSnapshots);
-  AUDIO_ENGINE->run_.store (true);
-
-  TRANSPORT->set_loop (true, true);
-  TRANSPORT->loop_end_pos_ = r->end_pos_;
-  Position pos;
-  pos = r->end_pos_;
-  pos.add_frames (-20);
-  TRANSPORT->set_playhead_pos (pos);
-  TRANSPORT->request_roll (true);
-
-  /* run the engine for 1 cycle */
-  z_info ("--- processing engine...");
-  AUDIO_ENGINE->process (40);
-  z_info ("--- processing recording events...");
-  auto &pl = ins_track->channel_->instrument_;
-  auto  event_in = dynamic_cast<MidiPort *> (pl->in_ports_[2].get ());
-  auto &midi_events = event_in->midi_events_;
-  REQUIRE_SIZE_EQ (midi_events.active_events_, 3);
-  auto ev = midi_events.active_events_.at (0);
-  REQUIRE (midi_is_note_off (ev.raw_buffer_.data ()));
-  REQUIRE_EQ (ev.time_, 19);
-  REQUIRE_EQ (midi_get_note_number (ev.raw_buffer_.data ()), 35);
-  ev = midi_events.active_events_.at (1);
-  REQUIRE (midi_is_all_notes_off (ev.raw_buffer_.data ()));
-  REQUIRE_EQ (ev.time_, 19);
-  ev = midi_events.active_events_.at (2);
-  REQUIRE (midi_is_note_on (ev.raw_buffer_.data ()));
-  REQUIRE_EQ (ev.time_, 20);
-  REQUIRE_EQ (midi_get_note_number (ev.raw_buffer_.data ()), 35);
-  REQUIRE_EQ (midi_get_velocity (ev.raw_buffer_.data ()), 60);
-
-  /* process again and check events are 0 */
-  z_info ("--- processing engine...");
-  AUDIO_ENGINE->process (40);
-  z_info ("--- processing recording events...");
-  REQUIRE_EMPTY (midi_events.active_events_);
 }
 
 TEST_SUITE_END;

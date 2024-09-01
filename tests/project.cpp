@@ -56,7 +56,7 @@ TEST_CASE_FIXTURE (
 {
   /* add a plugin and create a duplicate track */
   int track_pos = test_plugin_manager_create_tracks_from_plugin (
-    TEST_INSTRUMENT_BUNDLE_URI, TEST_INSTRUMENT_URI, true, true, 1);
+    TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, true, 1);
   auto track = TRACKLIST->get_track<InstrumentTrack> (track_pos);
   track->select (true, true, false);
   UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (

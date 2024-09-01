@@ -120,6 +120,10 @@ operator== (const ChordObject &lhs, const ChordObject &rhs)
               == static_cast<const MuteableObject &> (rhs);
 }
 
+DEFINE_OBJECT_FORMATTER (
+  ChordObject,
+  fmt::format ("ChordObject [{}]: chord index {}", val.pos_, val.chord_index_));
+
 /**
  * @}
  */
