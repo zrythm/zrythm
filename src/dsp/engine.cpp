@@ -143,7 +143,7 @@ AudioEngine::update_frames_per_tick (
 
   z_return_if_fail (
     beats_per_bar > 0 && bpm > 0 && sample_rate > 0
-    && transport_->ticks_per_beat_ > 0);
+    && transport_->ticks_per_bar_ > 0);
 
   z_debug (
     "frames per tick before: {:f} | ticks per frame before: {:f}",
@@ -152,7 +152,7 @@ AudioEngine::update_frames_per_tick (
   frames_per_tick_ =
     (static_cast<double> (sample_rate) * 60.0
      * static_cast<double> (beats_per_bar))
-    / (static_cast<double> (bpm) * static_cast<double> (transport_->ticks_per_beat_));
+    / (static_cast<double> (bpm) * static_cast<double> (transport_->ticks_per_bar_));
   z_return_if_fail (frames_per_tick_ > 1.0);
   ticks_per_frame_ = 1.0 / frames_per_tick_;
 

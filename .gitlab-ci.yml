@@ -69,7 +69,8 @@ exif-check:
 build:
   stage: build
   script:
-    - ninja -C build
+    # limit to 2 jobs to avoid OOM
+    - ninja -C build -j2
 
 test:
   stage: test
