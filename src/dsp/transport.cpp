@@ -25,6 +25,7 @@
 #include "utils/rt_thread_id.h"
 #include "zrythm_app.h"
 
+#include "doctest_wrapper.h"
 #include "gtk_wrapper.h"
 
 /**
@@ -42,19 +43,23 @@ Transport::init_common ()
   /* set playstate */
   play_state_ = PlayState::Paused;
 
-  loop_ = ZRYTHM_TESTING ? true : g_settings_get_boolean (S_TRANSPORT, "loop");
+  const bool testing_or_benchmarking = ZRYTHM_TESTING || ZRYTHM_BENCHMARKING;
+  loop_ =
+    testing_or_benchmarking ? true : g_settings_get_boolean (S_TRANSPORT, "loop");
   metronome_enabled_ =
-    ZRYTHM_TESTING
+    testing_or_benchmarking
       ? true
       : g_settings_get_boolean (S_TRANSPORT, "metronome-enabled");
   punch_mode_ =
-    ZRYTHM_TESTING ? true : g_settings_get_boolean (S_TRANSPORT, "punch-mode");
+    testing_or_benchmarking
+      ? true
+      : g_settings_get_boolean (S_TRANSPORT, "punch-mode");
   start_playback_on_midi_input_ =
-    ZRYTHM_TESTING
+    testing_or_benchmarking
       ? false
       : g_settings_get_boolean (S_TRANSPORT, "start-on-midi-input");
   recording_mode_ =
-    ZRYTHM_TESTING
+    testing_or_benchmarking
       ? RecordingMode::Takes
       : (RecordingMode) g_settings_get_enum (S_TRANSPORT, "recording-mode");
 }
@@ -263,7 +268,7 @@ Transport::set_punch_mode_enabled (bool enabled)
 {
   punch_mode_ = enabled;
 
-  if (!ZRYTHM_TESTING)
+  if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       g_settings_set_boolean (S_TRANSPORT, "punch-mode", enabled);
     }
@@ -281,7 +286,7 @@ Transport::set_recording_mode (RecordingMode mode)
 {
   recording_mode_ = mode;
 
-  if (!ZRYTHM_TESTING)
+  if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       g_settings_set_enum (
         S_TRANSPORT, "recording-mode", ENUM_VALUE_TO_INT (mode));
@@ -321,7 +326,9 @@ Transport::request_pause (bool with_wait)
   play_state_ = PlayState::PauseRequested;
 
   playhead_before_pause_ = playhead_pos_;
-  if (!ZRYTHM_TESTING && g_settings_get_boolean (S_TRANSPORT, "return-to-cue"))
+  if (
+    !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING
+    && g_settings_get_boolean (S_TRANSPORT, "return-to-cue"))
     {
       move_playhead (&cue_pos_, F_PANIC, F_NO_SET_CUE_POINT, true);
     }
@@ -344,7 +351,7 @@ Transport::request_roll (bool with_wait)
       wait_sem.emplace (audio_engine_->port_operation_lock_);
     }
 
-  if (gZrythm && !ZRYTHM_TESTING)
+  if (gZrythm && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       /* handle countin */
       PrerollCountBars bars = ENUM_INT_TO_VALUE (
@@ -641,7 +648,7 @@ Transport::set_loop (bool enabled, bool with_wait)
 
   loop_ = enabled;
 
-  if (gZrythm && !ZRYTHM_TESTING)
+  if (gZrythm && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       g_settings_set_boolean (S_TRANSPORT, "loop", enabled);
     }

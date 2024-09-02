@@ -15,13 +15,13 @@
 #include "project.h"
 #include "settings/chord_preset_pack_manager.h"
 #include "settings/settings.h"
+#include "utils/lsp_dsp_context.h"
 #include "utils/string_array.h"
 #include "utils/symap.h"
 
 #include <gio/gio.h>
 #include <glib.h>
 
-#include "doctest_wrapper.h"
 #include "ext/juce/juce.h"
 
 /**
@@ -34,7 +34,7 @@
 
 #define MAX_RECENT_PROJECTS 20
 #define DEBUGGING (G_UNLIKELY (gZrythm && gZrythm->debug_))
-#define ZRYTHM_TESTING (doctest::is_running_in_test)
+#define ZRYTHM_BENCHMARKING (gZrythm && gZrythm->benchmarking_)
 #define ZRYTHM_GENERATING_PROJECT (gZrythm->generating_project_)
 #define ZRYTHM_HAVE_UI (gZrythm && gZrythm->have_ui_)
 #define ZRYTHM_BREAK_ON_ERROR (gZrythm && gZrythm->break_on_error_)
@@ -423,6 +423,16 @@ public:
    * Should be free'd first, therefore it is the last member.
    */
   std::unique_ptr<Project> project_;
+
+  /**
+   * @brief LSP DSP context for the main thread.
+   */
+  std::unique_ptr<LspDspContextRAII> lsp_dsp_context_;
+
+  /**
+   * @brief Whether currently running under the benchmarker.
+   */
+  bool benchmarking_ = false;
 
   JUCE_DECLARE_SINGLETON_SINGLETHREADED (Zrythm, false)
 

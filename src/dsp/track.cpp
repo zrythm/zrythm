@@ -41,6 +41,8 @@
 
 #include <glib/gi18n.h>
 
+#include "doctest_wrapper.h"
+
 Track::Track (
   Type        type,
   std::string name,

@@ -13,14 +13,15 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
+#include "doctest_wrapper.h"
 #include "gtk_wrapper.h"
 
 Metronome::Metronome (AudioEngine &engine)
 {
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
-      const char * src_root = getenv ("G_TEST_SRC_ROOT_DIR");
-      z_warn_if_fail (src_root);
+      auto src_root = Glib::getenv ("G_TEST_SRC_ROOT_DIR");
+      z_return_if_fail (!src_root.empty ());
       emphasis_path_ = Glib::build_filename (
         src_root, "data", "samples", "klick", "square_emphasis.wav");
       normal_path_ = Glib::build_filename (
@@ -44,7 +45,7 @@ Metronome::Metronome (AudioEngine &engine)
 
   /* set volume */
   volume_ =
-    ZRYTHM_TESTING
+    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? 1.f
       : (float) g_settings_get_double (S_TRANSPORT, "metronome-volume");
 }

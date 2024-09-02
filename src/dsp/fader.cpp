@@ -29,6 +29,8 @@
 
 #include <glib/gi18n.h>
 
+#include "doctest_wrapper.h"
+
 void
 Fader::init_loaded (
   Track *           track,

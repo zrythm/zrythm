@@ -10,14 +10,14 @@
         "-Dstrict_flags=true",
         "-Dcarla=enabled",
         "-Dtests=true",
+        "-Dbenchmarks=true",
         "-Dextra_debug_info=true",
         "-Drtaudio=enabled",
         "-Drtmidi=enabled",
-        // "-Dforce_fallback_for=gtk4,libadwaita,libpanel,xxhash,libcyaml,pangoft2,json-glib,gtksourceview5,rtmidi,rtaudio,zstd,pcre2,libsndfile,libsoxr,yyjson",
         "-Dforce_fallback_for=gtk4,libadwaita,libpanel,yyjson,libcyaml",
         "-Dyaml_project_compatibility=enabled",
-        // "-Db_sanitize=address",
-        "-Dbackend_max_links=3"
+        // "-Db_sanitize=address,undefined",
+        "-Dbackend_max_links=1"
     ],
     "mesonbuild.mesonlsp.linting.disableUnusedVariableCheck": true,
     "mesonbuild.mesonlsp.others.ignoreDiagnosticsFromSubprojects": true,

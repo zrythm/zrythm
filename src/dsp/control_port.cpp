@@ -21,6 +21,8 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
+#include "doctest_wrapper.h"
+
 ControlPort::ControlPort (std::string label)
     : Port (label, PortType::Control, PortFlow::Input, 0.f, 1.f, 0.f)
 {

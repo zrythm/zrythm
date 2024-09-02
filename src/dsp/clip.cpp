@@ -25,6 +25,7 @@
 
 #include <glib/gi18n.h>
 
+#include "doctest_wrapper.h"
 #include "gtk_wrapper.h"
 #include <fmt/printf.h>
 #include <giomm.h>
@@ -170,6 +171,22 @@ AudioClip::AudioClip (
   update_channel_caches (0);
 }
 
+void
+AudioClip::init_after_cloning (const AudioClip &other)
+{
+  name_ = other.name_;
+  frames_ = other.frames_;
+  ch_frames_ = other.ch_frames_;
+  bpm_ = other.bpm_;
+  samplerate_ = other.samplerate_;
+  bit_depth_ = other.bit_depth_;
+  use_flac_ = other.use_flac_;
+  pool_id_ = other.pool_id_;
+  file_hash_ = other.file_hash_;
+  num_frames_ = other.num_frames_;
+  channels_ = other.channels_;
+}
+
 std::string
 AudioClip::get_path_in_pool_from_name (
   const std::string &name,
@@ -290,46 +307,69 @@ AudioClip::write_to_file (const std::string &filepath, bool parts)
 {
   z_return_if_fail (samplerate_ > 0);
   z_return_if_fail (frames_written_ < SIZE_MAX);
-  auto             before_frames = (size_t) frames_written_;
-  unsigned_frame_t ch_offset = parts ? frames_written_ : 0;
-  // unsigned_frame_t offset = ch_offset * channels_;
+  const auto before_frames = (size_t) frames_written_;
 
-  size_t nframes;
+  auto create_writer_for_filepath = [&] () {
+    juce::File file (filepath);
+    auto       out_stream = std::make_unique<juce::FileOutputStream> (file);
+
+    if (!out_stream || !out_stream->openedOk ())
+      {
+        throw ZrythmException (
+          fmt::format ("Failed to open file '{}' for writing", filepath));
+      }
+
+    auto format = std::unique_ptr<juce::AudioFormat> (
+      use_flac_
+        ? static_cast<juce::AudioFormat *> (new juce::FlacAudioFormat ())
+        : static_cast<juce::AudioFormat *> (new juce::WavAudioFormat ()));
+
+    auto writer = std::unique_ptr<
+      juce::AudioFormatWriter> (format->createWriterFor (
+      out_stream.release (), samplerate_, channels_,
+      audio_bit_depth_enum_to_int (bit_depth_), {}, 0));
+
+    if (writer == nullptr)
+      {
+        throw ZrythmException (
+          "Failed to create audio writer for file: " + filepath);
+      }
+    return writer;
+  };
+
   if (parts)
     {
       z_return_if_fail_cmp (num_frames_, >=, frames_written_);
-      unsigned_frame_t _nframes = num_frames_ - frames_written_;
-      z_return_if_fail_cmp (_nframes, <, SIZE_MAX);
-      nframes = _nframes;
+      unsigned_frame_t nframes_to_write_this_time =
+        num_frames_ - frames_written_;
+      z_return_if_fail_cmp (nframes_to_write_this_time, <, SIZE_MAX);
+
+      // create writer if first time
+      if (frames_written_ == 0)
+        {
+          writer_ = create_writer_for_filepath ();
+        }
+      else
+        {
+          z_return_if_fail (writer_ != nullptr);
+        }
+      writer_->writeFromAudioSampleBuffer (
+        ch_frames_, frames_written_, nframes_to_write_this_time);
+
+      frames_written_ = num_frames_;
+      last_write_ = g_get_monotonic_time ();
     }
   else
     {
       z_return_if_fail_cmp (num_frames_, <, SIZE_MAX);
-      nframes = num_frames_;
-    }
-  try
-    {
-#if 0
-      audio_write_raw_file (
-        frames_.getReadPointer (0) + offset, ch_offset, nframes,
-        (uint32_t) samplerate_, use_flac_, bit_depth_, channels_, filepath);
-#endif
-      audio_write_raw_file (
-        ch_frames_, ch_offset, nframes, (uint32_t) samplerate_, use_flac_,
-        bit_depth_, channels_, filepath);
-    }
-  catch (const ZrythmException &e)
-    {
-      throw ZrythmException (
-        fmt::format ("Failed to write audio file '{}'", filepath));
-    }
-  update_channel_caches (before_frames);
+      size_t nframes = num_frames_;
 
-  if (parts)
-    {
-      frames_written_ = num_frames_;
-      last_write_ = g_get_monotonic_time ();
+      auto writer = create_writer_for_filepath ();
+      writer->writeFromAudioSampleBuffer (ch_frames_, 0, nframes);
+      writer->flush ();
     }
+
+  update_channel_caches (before_frames);
 
   /* TODO move this to a unit test for this function */
   if (ZRYTHM_TESTING)
@@ -337,7 +377,7 @@ AudioClip::write_to_file (const std::string &filepath, bool parts)
       AudioClip new_clip (filepath);
       if (num_frames_ != new_clip.num_frames_)
         {
-          z_warning ("{} != {}", num_frames_, new_clip.num_frames_);
+          z_error ("{} != {}", num_frames_, new_clip.num_frames_);
         }
       constexpr float epsilon = 0.0001f;
       z_return_if_fail (audio_frames_equal (

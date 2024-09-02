@@ -28,7 +28,9 @@
  *
  * These should be loaded in the project's sample rate.
  */
-class AudioClip final : public ISerializable<AudioClip>
+class AudioClip final
+    : public ISerializable<AudioClip>,
+      public ICloneable<AudioClip>
 {
 public:
   /* Rule of 0 */
@@ -78,6 +80,8 @@ public:
   return bd < BIT_DEPTH_32;
 #endif
   }
+
+  void init_after_cloning (const AudioClip &other) override;
 
   /**
    * Inits after loading a Project.
@@ -244,6 +248,13 @@ public:
   /** Number of channels. FIXME this might not be needed since we have
    * ch_frames_ */
   channels_t channels_ = 0;
+
+private:
+  /**
+   * @brief Audio writer mainly to be used during recording to write data
+   * continuously.
+   */
+  std::unique_ptr<juce::AudioFormatWriter> writer_;
 };
 
 /**

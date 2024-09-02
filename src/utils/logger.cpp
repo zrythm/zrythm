@@ -7,6 +7,8 @@
 #include "utils/logger.h"
 #include "zrythm.h"
 
+#include "doctest_wrapper.h"
+
 JUCE_IMPLEMENT_SINGLETON (Logger);
 
 class ErrorHandlingSink : public spdlog::sinks::base_sink<std::mutex>
@@ -16,7 +18,7 @@ protected:
   {
     if (msg.level >= spdlog::level::err)
       {
-        if (ZRYTHM_TESTING || ZRYTHM_BREAK_ON_ERROR)
+        if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING || ZRYTHM_BREAK_ON_ERROR)
           {
             if (juce::Process::isRunningUnderDebugger ())
               {
@@ -54,7 +56,7 @@ Logger::Logger ()
 #define FINAL_PART "[%t] [%^%l%$] [" FUNCTION_AND_LINE_NO_PART "] %v"
     if (with_date)
       {
-        sink->set_pattern ("[%Y-%m-%d" TIMESTAMP_PART "] " FINAL_PART);
+        sink->set_pattern ("[%Y-%m-%d " TIMESTAMP_PART "] " FINAL_PART);
       }
     else
       {
@@ -120,7 +122,7 @@ Logger::Logger ()
       // Show a backtrace if needed
       if (need_backtrace () && !RUNNING_ON_VALGRIND)
         {
-        if (!gZrythm || ZRYTHM_TESTING)
+        if (!gZrythm || ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
           {
             z_info ("Backtrace: {}", ev->backtrace);
           }
@@ -151,7 +153,7 @@ Logger::Logger ()
           }
       }
 #endif
-    if (ZRYTHM_TESTING)
+    if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
       abort ();
   });
 }
@@ -159,42 +161,21 @@ Logger::Logger ()
 std::string
 Logger::get_log_file_path () const
 {
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       auto tmp_log_dir = fs::path (g_get_tmp_dir ()) / "zrythm_test_logs";
       REQUIRE_NOTHROW (io_mkdir (tmp_log_dir));
       auto str_datetime = datetime_get_for_filename ();
       return tmp_log_dir / str_datetime;
     }
-  else
-    {
-#if 0
-    char * str_datetime = datetime_get_for_filename ();
-    auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
-    char * user_log_dir = dir_mgr->get_dir (USER_LOG);
-    self->log_filepath = g_strdup_printf (
-      "%s%slog_%s.log", user_log_dir, G_DIR_SEPARATOR_S, str_datetime);
-    GError * err = NULL;
-    bool     success = io_mkdir (user_log_dir, &err);
-    if (!success)
-      {
-        PROPAGATE_PREFIXED_ERROR (
-          error, err, "Failed to make log directory %s", user_log_dir);
-        return false;
-      }
-    self->logfile = fopen (self->log_filepath, "a");
-    if (!self->logfile)
-      {
-        g_set_error (
-          error, Z_UTILS_LOG_ERROR, Z_UTILS_LOG_ERROR_FAILED,
-          "Failed to open logfile at %s", self->log_filepath);
-        return false;
-      }
-    g_free (user_log_dir);
-    g_free (str_datetime);
-#endif
-      return "zrythm.log";
-    }
+
+  auto   str_datetime = datetime_get_for_filename ();
+  auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
+  auto   user_log_dir = dir_mgr->get_dir (ZrythmDirType::USER_LOG);
+  auto   log_filepath =
+    fs::path (user_log_dir) / (std::string ("zrythm_") + str_datetime);
+  io_mkdir (user_log_dir); // note: throws
+  return log_filepath;
 }
 
 bool

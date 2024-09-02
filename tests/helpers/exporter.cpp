@@ -10,6 +10,8 @@
 
 #include "tests/helpers/exporter.h"
 
+#include "doctest_wrapper.h"
+
 std::string
 test_exporter_export_audio (Exporter::TimeRange time_range, Exporter::Mode mode)
 {

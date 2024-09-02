@@ -3,6 +3,8 @@
 
 #include "zrythm-config.h"
 
+#include "doctest_wrapper.h"
+
 #ifdef HAVE_CARLA
 
 #  include "plugins/cached_plugin_descriptors.h"
@@ -34,7 +36,7 @@ ZCarlaDiscovery::get_discovery_path (PluginArchitecture arch)
 #  endif
   carla_discovery_filename += BIN_SUFFIX;
   fs::path carla_discovery_parent_dir;
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM_TESTING || !ZRYTHM_BENCHMARKING)
     {
       carla_discovery_parent_dir = fs::path (CARLA_BINARIES_DIR);
     }

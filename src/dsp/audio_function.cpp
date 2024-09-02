@@ -19,6 +19,7 @@
 
 #include <glib/gi18n.h>
 
+#include "doctest_wrapper.h"
 #include <rubberband/rubberband-c.h>
 
 char *
@@ -600,7 +601,7 @@ audio_function_apply (
     }
 
   if (
-    !ZRYTHM_TESTING && type != AudioFunctionType::Invalid
+    !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING && type != AudioFunctionType::Invalid
     && type != AudioFunctionType::CustomPlugin)
     {
       /* set last action */

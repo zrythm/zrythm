@@ -6,6 +6,8 @@
 #include "gui/widgets/arranger_object.h"
 #include "zrythm.h"
 
+#include "doctest_wrapper.h"
+
 template <typename RegionT>
 RegionT *
 RegionOwnedObjectImpl<RegionT>::get_region () const

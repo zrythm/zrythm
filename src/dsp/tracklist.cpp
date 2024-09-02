@@ -34,6 +34,8 @@
 
 #include <glib/gi18n.h>
 
+#include "doctest_wrapper.h"
+
 void
 Tracklist::init_loaded (Project * project, SampleProcessor * sample_processor)
 {
@@ -996,7 +998,7 @@ Tracklist::import_files (
     pos ? *pos : Position (),
     track ? track->pos_ : (index >= 0 ? index : TRACKLIST->tracks_.size ()));
 
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       for (const auto &filepath : filepaths)
         {
@@ -1196,7 +1198,7 @@ Tracklist::handle_move_or_copy (
         {
           if (TRACKLIST_SELECTIONS->contains_track (this_track))
             {
-              if (!ZRYTHM_TESTING)
+              if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
                 {
                   ui_show_error_message (
                     _ ("Error"), _ ("Cannot drag folder into itself"));

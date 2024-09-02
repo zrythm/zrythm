@@ -38,6 +38,7 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
+#include "doctest_wrapper.h"
 #include <fmt/format.h>
 
 /**
@@ -89,12 +90,14 @@ MidiEventVector::transform_chord_and_append (
       {
         /* only copy events inside the current time range */
         if (
-          ZRYTHM_TESTING
-          && (src_ev.time_ < local_offset || src_ev.time_ >= local_offset + nframes))
+          src_ev.time_ < local_offset || src_ev.time_ >= local_offset + nframes)
           {
-            z_debug (fmt::format (
-              "skipping event: time {} (local offset {} nframes {})",
-              src_ev.time_, local_offset, nframes));
+            if (ZRYTHM_TESTING)
+              {
+                z_debug (fmt::format (
+                  "skipping event: time {} (local offset {} nframes {})",
+                  src_ev.time_, local_offset, nframes));
+              }
             continue;
           }
 
@@ -142,12 +145,14 @@ MidiEventVector::append_w_filter (
       {
         /* only copy events inside the current time range */
         if (
-          ZRYTHM_TESTING
-          && (src_ev.time_ < local_offset || src_ev.time_ >= local_offset + nframes))
+          src_ev.time_ < local_offset || src_ev.time_ >= local_offset + nframes)
           {
-            z_debug (fmt::format (
-              "skipping event: time {} (local offset {} nframes {})",
-              src_ev.time_, local_offset, nframes));
+            if (ZRYTHM_TESTING)
+              {
+                z_debug (fmt::format (
+                  "skipping event: time {} (local offset {} nframes {})",
+                  src_ev.time_, local_offset, nframes));
+              }
             continue;
           }
 

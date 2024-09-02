@@ -31,7 +31,7 @@ SampleProcessor::init_common ()
   midi_events_ = std::make_unique<MidiEvents> ();
   current_samples_.reserve (256);
 
-  if (!ZRYTHM_TESTING)
+  if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       char * _setting_json =
         g_settings_get_string (S_UI_FILE_BROWSER, "instrument");

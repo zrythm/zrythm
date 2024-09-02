@@ -3,6 +3,8 @@
 
 #include "zrythm-config.h"
 
+#include "doctest_wrapper.h"
+
 #ifndef _WIN32
 #  include <sys/mman.h>
 #endif
@@ -16,6 +18,7 @@
 #include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/curl.h"
+#include "utils/dsp.h"
 #include "utils/env.h"
 #include "utils/exceptions.h"
 #include "utils/io.h"
@@ -41,10 +44,15 @@ Zrythm::pre_init (const char * exe_path, bool have_ui, bool optimized_dsp)
 
   have_ui_ = have_ui;
   use_optimized_dsp_ = optimized_dsp;
+  if (use_optimized_dsp_)
+    {
+      lsp_dsp_context_ = std::make_unique<LspDspContextRAII> ();
+    }
   settings_ = std::make_unique<Settings> ();
 
-  debug_ = env_get_int ("ZRYTHM_DEBUG", 0);
-  break_on_error_ = env_get_int ("ZRYTHM_BREAK_ON_ERROR", 0);
+  debug_ = (env_get_int ("ZRYTHM_DEBUG", 0) != 0);
+  break_on_error_ = (env_get_int ("ZRYTHM_BREAK_ON_ERROR", 0) != 0);
+  benchmarking_ = (env_get_int ("ZRYTHM_BENCHMARKING", 0) != 0);
 }
 
 void
@@ -53,8 +61,8 @@ Zrythm::init ()
   settings_->init ();
   recording_manager_ = std::make_unique<RecordingManager> ();
   plugin_manager_ = std::make_unique<PluginManager> ();
-  chord_preset_pack_manager_ =
-    std::make_unique<ChordPresetPackManager> (have_ui_ && !ZRYTHM_TESTING);
+  chord_preset_pack_manager_ = std::make_unique<ChordPresetPackManager> (
+    have_ui_ && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING);
 
   if (have_ui_)
     {
@@ -349,7 +357,7 @@ ZrythmDirectoryManager::get_testing_dir ()
 std::string
 ZrythmDirectoryManager::get_user_dir (bool force_default)
 {
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       return get_testing_dir ();
     }
@@ -518,7 +526,7 @@ Zrythm::init_templates ()
     {
       z_warning ("Failed to init user templates from {}", user_templates_dir);
     }
-  if (!ZRYTHM_TESTING)
+  if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       std::string system_templates_dir =
         dir_mgr->get_dir (ZrythmDirType::SYSTEM_TEMPLATES);

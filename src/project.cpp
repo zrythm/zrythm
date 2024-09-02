@@ -41,11 +41,11 @@
 
 #include <glib/gi18n.h>
 
+#include "doctest_wrapper.h"
 #include "ext/juce/juce.h"
 #include "gtk_wrapper.h"
 #include <fmt/printf.h>
 #include <glibmm.h>
-#include <time.h>
 #include <zstd.h>
 
 Project::Project ()
@@ -795,9 +795,8 @@ Project::idle_saved_callback (SaveContext * ctx)
     }
   else
     {
-      if (!ZRYTHM_TESTING)
+      if (ZRYTHM_HAVE_UI && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
         {
-
           gZrythm->add_to_recent_projects (ctx->project_file_path_);
         }
       if (ctx->show_notification_)

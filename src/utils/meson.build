@@ -24,6 +24,7 @@ util_srcs = [
   'json.cpp',
   'localization.cpp',
   'logger.cpp',
+  'lsp_dsp_context.cpp',
   'math.cpp',
   'mem.cpp',
   'objects.cpp',

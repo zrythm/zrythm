@@ -16,6 +16,8 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
+#include "doctest_wrapper.h"
+
 void
 UndoStack::init_loaded ()
 {
@@ -27,10 +29,11 @@ UndoStack::init_loaded ()
 
 UndoStack::UndoStack ()
 {
-  z_return_if_fail (ZRYTHM_TESTING || G_IS_SETTINGS (S_P_EDITING_UNDO));
+  const bool testing_or_benchmarking = ZRYTHM_TESTING || ZRYTHM_BENCHMARKING;
+  z_return_if_fail (testing_or_benchmarking || G_IS_SETTINGS (S_P_EDITING_UNDO));
 
   int undo_stack_length =
-    ZRYTHM_TESTING
+    testing_or_benchmarking
       ? gZrythm->undo_stack_len_
       : g_settings_get_int (S_P_EDITING_UNDO, "undo-stack-length");
   max_size_ = undo_stack_length;

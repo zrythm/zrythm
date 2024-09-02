@@ -20,6 +20,7 @@
 
 #include <glib/gi18n.h>
 
+#include "doctest_wrapper.h"
 #include "gtk_wrapper.h"
 #include <fmt/printf.h>
 
@@ -125,7 +126,7 @@ SnapGrid::get_snap_ticks () const
 {
   if (snap_adaptive_)
     {
-      if (!ZRYTHM_HAVE_UI || ZRYTHM_TESTING)
+      if (!ZRYTHM_HAVE_UI || ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
         {
           z_error ("can only be used with UI");
           return -1;

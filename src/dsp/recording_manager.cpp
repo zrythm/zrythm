@@ -38,6 +38,7 @@
 
 #include <glib/gi18n.h>
 
+#include "doctest_wrapper.h"
 #include "gtk_wrapper.h"
 
 void
@@ -1229,7 +1230,7 @@ RecordingManager::RecordingManager ()
 {
   recorded_ids_.reserve (8000);
 
-  const size_t max_events = ZRYTHM_TESTING ? 400 : 10000;
+  const size_t max_events = ZRYTHM_TESTING || ZRYTHM_BENCHMARKING ? 400 : 10000;
   event_obj_pool_.reserve (max_events);
   event_queue_.reserve (max_events);
 

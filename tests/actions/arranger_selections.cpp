@@ -27,6 +27,8 @@
 
 #include "tests/helpers/project_helper.h"
 
+#include "doctest_wrapper.h"
+
 TEST_SUITE_BEGIN ("actions/arranger_selections");
 
 auto REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK =

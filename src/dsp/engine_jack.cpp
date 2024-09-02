@@ -3,6 +3,8 @@
 
 #include "zrythm-config.h"
 
+#include "doctest_wrapper.h"
+
 #ifdef HAVE_JACK
 
 #  include "dsp/channel.h"
@@ -424,7 +426,7 @@ engine_jack_set_transport_type (
   AudioEngine *                  self,
   AudioEngine::JackTransportType type)
 {
-  if (!ZRYTHM_TESTING)
+  if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       g_settings_set_enum (
         S_UI, "jack-transport-type", ENUM_VALUE_TO_INT (type));
@@ -504,7 +506,7 @@ engine_jack_setup (AudioEngine * self)
   const char *   client_name = PROGRAM_NAME;
   const char *   server_name = NULL;
   jack_options_t options = JackNoStartServer;
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       server_name = "zrythm-pipewire-0";
       options = options | JackServerName;
@@ -552,7 +554,7 @@ engine_jack_setup (AudioEngine * self)
 
   engine_jack_set_transport_type (
     self,
-    ZRYTHM_TESTING
+    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? AudioEngine::JackTransportType::TransportClient
       : ENUM_INT_TO_VALUE (
           AudioEngine::JackTransportType,
@@ -638,7 +640,7 @@ engine_jack_tear_down (AudioEngine * self)
 bool
 engine_jack_reconnect_monitor (AudioEngine * self, bool left, GError ** error)
 {
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     return true;
 
   gchar ** devices =

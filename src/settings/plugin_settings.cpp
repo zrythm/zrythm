@@ -17,6 +17,7 @@
 
 #include <glib/gi18n.h>
 
+#include "doctest_wrapper.h"
 #include <glibmm.h>
 
 constexpr const char * PLUGIN_SETTINGS_JSON_FILENAME = "plugin-settings.json";
@@ -24,7 +25,7 @@ constexpr const char * PLUGIN_SETTINGS_JSON_FILENAME = "plugin-settings.json";
 PluginSetting::PluginSetting (const PluginDescriptor &descr)
 {
   PluginSetting * existing = nullptr;
-  if (S_PLUGIN_SETTINGS && !ZRYTHM_TESTING)
+  if (S_PLUGIN_SETTINGS && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       existing = S_PLUGIN_SETTINGS->find (descr);
     }

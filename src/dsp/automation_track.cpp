@@ -22,6 +22,8 @@
 
 #include <glib/gi18n.h>
 
+#include "doctest_wrapper.h"
+
 void
 AutomationTrack::init_loaded (AutomationTracklist * atl)
 {

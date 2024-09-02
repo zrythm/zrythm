@@ -11,6 +11,8 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
+#include "doctest_wrapper.h"
+
 static const char * drum_labels[47] = {
   "Acoustic Bass Drum",
   "Bass Drum 1",
@@ -176,7 +178,7 @@ PianoRoll::contains_current_note (int note)
 void
 PianoRoll::init_loaded ()
 {
-  if (!ZRYTHM_TESTING)
+  if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       highlighting_ = ENUM_INT_TO_VALUE (
         Highlighting, g_settings_get_enum (S_UI, "piano-roll-highlight"));
@@ -259,7 +261,7 @@ PianoRoll::init ()
 
   EditorSettings::copy_members_from (PianoRoll ());
 
-  if (!ZRYTHM_TESTING)
+  if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       highlighting_ = ENUM_INT_TO_VALUE (
         Highlighting, g_settings_get_enum (S_UI, "piano-roll-highlight"));

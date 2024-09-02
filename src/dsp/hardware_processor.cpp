@@ -18,6 +18,8 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
+#include "doctest_wrapper.h"
+
 void
 HardwareProcessor::init_loaded (AudioEngine * engine)
 {
@@ -202,7 +204,7 @@ HardwareProcessor::rescan_ext_ports (HardwareProcessor * self)
 void
 HardwareProcessor::setup ()
 {
-  if (ZRYTHM_TESTING || ZRYTHM_GENERATING_PROJECT)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING || ZRYTHM_GENERATING_PROJECT)
     return;
 
   z_return_if_fail (ZRYTHM_APP_IS_GTK_THREAD && S_P_GENERAL_ENGINE);

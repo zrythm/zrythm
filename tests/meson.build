@@ -60,6 +60,9 @@ if get_option ('tests')
     '-DDEBUG_THREADS=1',
     ]
 
+  google_benchmark_dep = dependency (
+    'benchmark', required: get_option('benchmarks'))
+
   # FIXME use kuribu to generate the audio files
   # instead of shipping them in the source code:
   # ./bin/kuribu /path/to/midifile.mid out.wav http://moddevices.com/plugins/mod-devel/arpeggiator http://distrho.sf.net/plugins/Kars
@@ -376,7 +379,7 @@ if get_option ('tests')
     if fs.is_file (source)
       # create CPP executable for CPP runner
       exe = executable (
-        test_name + '_test_exe',
+        test_name + (is_benchmark ? '_benchmark' : '_test') + '_exe',
         sources: [
           source,
           test_config_h,
@@ -388,6 +391,7 @@ if get_option ('tests')
           ],
         dependencies: [
           zrythm_deps,
+          is_benchmark and google_benchmark_dep.found() ? google_benchmark_dep : [],
           ],
         export_dynamic: false,
         link_with: test_link_libs,
@@ -395,15 +399,19 @@ if get_option ('tests')
         #override_options: [ 'b_lto=false', ],
       )
       if is_benchmark
-        benchmark (
-          test_name + '_benchmark', exe,
-          env: test_env, suite: suites,
-          args: 'args' in info ? info['args'] : [],
-          depends: [
-            test_lv2apply_wavs,
-            test_lv2_plugin_libs,
-            ],
-          timeout: timeout)
+        if get_option('benchmarks') and google_benchmark_dep.found()
+          benchmark_env = test_env
+          benchmark_env.set ('ZRYTHM_BENCHMARKING', '1')
+          benchmark (
+            test_name + '_benchmark', exe,
+            env: benchmark_env, suite: suites,
+            args: 'args' in info ? info['args'] : [],
+            depends: [
+              test_lv2apply_wavs,
+              test_lv2_plugin_libs,
+              ],
+            timeout: timeout)
+        endif
       # else if not benchmark
       else
         test (

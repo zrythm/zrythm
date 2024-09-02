@@ -8,6 +8,8 @@
 #include "dsp/cv_port.h"
 #include "utils/rt_thread_id.h"
 
+#include "doctest_wrapper.h"
+
 #ifdef HAVE_CARLA
 
 #  include "dsp/engine.h"
@@ -1411,7 +1413,7 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
   /* set whether UI should stay on top */
   /* disable for now */
 #  if 0
-  if (!ZRYTHM_TESTING &&
+  if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING &&
       g_settings_get_boolean (
         S_P_PLUGINS_UIS, "stay-on-top"))
     {
@@ -1761,7 +1763,7 @@ CarlaNativePlugin::open_custom_ui (bool show)
               1000 / 60, Glib::PRIORITY_DEFAULT);
           }
 
-        if (!ZRYTHM_TESTING)
+        if (ZRYTHM_HAVE_UI)
           {
             EVENTS_PUSH (EventType::ET_PLUGIN_WINDOW_VISIBILITY_CHANGED, this);
           }

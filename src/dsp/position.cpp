@@ -11,6 +11,7 @@
 #include "utils/math.h"
 #include "zrythm.h"
 
+#include "doctest_wrapper.h"
 #include "gtk_wrapper.h"
 #include <fmt/format.h>
 

@@ -11,12 +11,14 @@
 #include "settings/settings.h"
 #include "zrythm.h"
 
+#include "doctest_wrapper.h"
+
 void
 ControlRoom::init_common ()
 {
   /* set the monitor volume */
   float amp =
-    ZRYTHM_TESTING
+    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? 1.f
       : static_cast<float> (g_settings_get_double (S_MONITOR, "monitor-vol"));
   monitor_fader_->set_amp (amp);
@@ -27,15 +29,15 @@ ControlRoom::init_common ()
   mute_fader_ = std::make_unique<Fader> (
     Fader::Type::Generic, false, nullptr, this, nullptr);
   amp =
-    ZRYTHM_TESTING
+    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? 0.f
       : static_cast<float> (g_settings_get_double (S_MONITOR, "mute-vol"));
   mute_fader_->amp_->deff_ =
-    ZRYTHM_TESTING
+    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? 0.f
       : static_cast<float> (GSettingsManager::get_default_value_double (
           GSETTINGS_ZRYTHM_PREFIX ".monitor", "mute-vol"));
-  if (!ZRYTHM_TESTING)
+  if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       GSettingsManager::get_range_double (
         GSETTINGS_ZRYTHM_PREFIX ".monitor", "mute-vol", &lower, &upper);
@@ -47,16 +49,16 @@ ControlRoom::init_common ()
   listen_fader_ = std::make_unique<Fader> (
     Fader::Type::Generic, false, nullptr, this, nullptr);
   amp =
-    ZRYTHM_TESTING
+    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? 1.f
       : static_cast<float> (g_settings_get_double (S_MONITOR, "listen-vol"));
   listen_fader_->amp_->deff_ =
-    ZRYTHM_TESTING
+    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? 1.f
       : static_cast<float> (GSettingsManager::get_default_value_double (
           GSETTINGS_ZRYTHM_PREFIX ".monitor", "listen-vol"));
   listen_fader_->set_amp (amp);
-  if (!ZRYTHM_TESTING)
+  if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       GSettingsManager::get_range_double (
         GSETTINGS_ZRYTHM_PREFIX ".monitor", "listen-vol", &lower, &upper);
@@ -67,15 +69,15 @@ ControlRoom::init_common ()
   dim_fader_ = std::make_unique<Fader> (
     Fader::Type::Generic, false, nullptr, this, nullptr);
   amp =
-    ZRYTHM_TESTING
+    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? 0.1f
       : static_cast<float> (g_settings_get_double (S_MONITOR, "dim-vol"));
   dim_fader_->amp_->deff_ =
-    ZRYTHM_TESTING
+    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? 0.1f
       : static_cast<float> (GSettingsManager::get_default_value_double (
           GSETTINGS_ZRYTHM_PREFIX ".monitor", "dim-vol"));
-  if (!ZRYTHM_TESTING)
+  if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       GSettingsManager::get_range_double (
         GSETTINGS_ZRYTHM_PREFIX ".monitor", "dim-vol", &lower, &upper);
@@ -85,12 +87,19 @@ ControlRoom::init_common ()
   dim_fader_->set_amp (amp);
 
   monitor_fader_->set_mono_compat_enabled (
-    ZRYTHM_TESTING ? false : g_settings_get_boolean (S_MONITOR, "mono"), false);
+    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
+      ? false
+      : g_settings_get_boolean (S_MONITOR, "mono"),
+    false);
 
   dim_output_ =
-    ZRYTHM_TESTING ? false : g_settings_get_boolean (S_MONITOR, "dim-output");
+    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
+      ? false
+      : g_settings_get_boolean (S_MONITOR, "dim-output");
   bool mute =
-    ZRYTHM_TESTING ? false : g_settings_get_boolean (S_MONITOR, "mute");
+    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
+      ? false
+      : g_settings_get_boolean (S_MONITOR, "mute");
   monitor_fader_->mute_->set_control_value (mute ? 1.f : 0.f, false, false);
 }
 

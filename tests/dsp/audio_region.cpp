@@ -137,7 +137,7 @@ TEST_CASE ("load project with different sample rate")
       int samplerate_before = samplerates[i];
 
       /* create project @ 48000 Hz */
-      ZrythmFixture fixture (false, samplerate_before, 0, false);
+      ZrythmFixture fixture (false, samplerate_before, 0, false, true);
 
       Position pos;
       pos.set_to_bar (2);

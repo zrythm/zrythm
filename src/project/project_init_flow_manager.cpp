@@ -29,6 +29,7 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
+#include "doctest_wrapper.h"
 #include "libadwaita_wrapper.h"
 #include <glibmm.h>
 #include <time.h>
@@ -806,7 +807,7 @@ ProjectInitFlowManager::load_from_file ()
         {
           z_debug ("newer backup found {}", PROJECT->backup_dir_);
 
-          if (ZRYTHM_TESTING)
+          if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
             {
               if (!gZrythm->open_newer_backup_)
                 {

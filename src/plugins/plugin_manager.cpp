@@ -41,6 +41,7 @@
 
 #include <glib/gi18n.h>
 
+#include "doctest_wrapper.h"
 #include "gtk_wrapper.h"
 
 /*#include <ctype.h>*/
@@ -100,7 +101,7 @@ PluginManager::get_lv2_paths ()
 {
   auto ret = StringArray ();
 
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       /* add test plugins if testing */
       auto tests_builddir = Glib::getenv ("G_TEST_BUILDDIR");
@@ -180,7 +181,7 @@ PluginManager::get_vst2_paths ()
 {
   auto ret = StringArray ();
 
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       std::vector<Glib::ustring> paths_from_settings = { "${VST_PATH}" };
       add_expanded_paths (ret, paths_from_settings);
@@ -239,7 +240,7 @@ PluginManager::get_vst3_paths ()
 {
   auto ret = StringArray ();
 
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       std::vector<Glib::ustring> paths_from_settings = { "${VST3_PATH}" };
       add_expanded_paths (ret, paths_from_settings);
@@ -294,7 +295,7 @@ PluginManager::get_sf_paths (bool sf2)
 {
   auto ret = StringArray ();
 
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       ret.add (G_SEARCHPATH_SEPARATOR_S);
       return ret;
@@ -313,7 +314,7 @@ PluginManager::get_dssi_paths ()
 {
   auto ret = StringArray ();
 
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       std::vector<Glib::ustring> paths_from_settings = { "${DSSI_PATH}" };
       add_expanded_paths (ret, paths_from_settings);
@@ -364,7 +365,7 @@ PluginManager::get_ladspa_paths ()
 {
   auto ret = StringArray ();
 
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       std::vector<Glib::ustring> paths_from_settings = { "${LADSPA_PATH}" };
       add_expanded_paths (ret, paths_from_settings);
@@ -415,7 +416,7 @@ PluginManager::get_clap_paths ()
   return ret;
 #  endif
 
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       std::vector<Glib::ustring> paths_from_settings = { "${CLAP_PATH}" };
       add_expanded_paths (ret, paths_from_settings);
@@ -471,7 +472,7 @@ PluginManager::get_jsfx_paths ()
 {
   auto ret = StringArray ();
 
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       std::vector<Glib::ustring> paths_from_settings = { "${JSFX_PATH}" };
       add_expanded_paths (ret, paths_from_settings);

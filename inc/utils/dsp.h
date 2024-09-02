@@ -377,39 +377,4 @@ dsp_linear_fade_out_to (
 NONNULL void
 dsp_make_mono (float * l, float * r, size_t size, bool equal_power);
 
-/**
- * RAII class to manage the lifecycle of an LSP DSP context.
- *
- * This class is responsible for starting and finishing the DSP context
- * when the object is constructed and destructed, respectively. It
- * provides access to the underlying DSP context through the `get()`
- * method.
- *
- * The DSP context is only started and finished if the
- * `ZRYTHM_USE_OPTIMIZED_DSP` macro is defined.
- */
-class LspDspContextRAII
-{
-#ifdef HAVE_LSP_DSP
-public:
-  LspDspContextRAII ()
-  {
-    if (ZRYTHM_USE_OPTIMIZED_DSP)
-      {
-        ctx_ = std::make_unique<lsp::dsp::context_t> ();
-        lsp::dsp::start (ctx_.get ());
-      }
-  }
-
-  ~LspDspContextRAII ()
-  {
-    if (ctx_)
-      lsp::dsp::finish (ctx_.get ());
-  }
-
-private:
-  std::unique_ptr<lsp::dsp::context_t> ctx_;
-#endif
-};
-
 #endif

@@ -33,6 +33,7 @@
 
 #include <glib/gi18n.h>
 
+#include "doctest_wrapper.h"
 #include "gtk_wrapper.h"
 
 void
@@ -138,9 +139,10 @@ FileManager::FileManager ()
   g_list_free_full (volumes, g_object_unref);
   g_object_unref (vol_monitor);
 
-  if (!ZRYTHM_TESTING)
+  if (ZRYTHM_HAVE_UI && !ZRYTHM_TESTING)
     {
       /* add bookmarks */
+      z_debug ("adding bookmarks...");
       char ** bookmarks =
         g_settings_get_strv (S_UI_FILE_BROWSER, "file-browser-bookmarks");
       for (size_t i = 0; bookmarks[i] != NULL; i++)

@@ -17,13 +17,17 @@
 
 #include <glib/gi18n.h>
 
+#include "doctest_wrapper.h"
+
 TransportAction::
   TransportAction (bpm_t bpm_before, bpm_t bpm_after, bool already_done)
     : UndoableAction (UndoableAction::Type::Transport),
       type_ (Type::TempoChange), bpm_before_ (bpm_before),
       bpm_after_ (bpm_after), already_done_ (already_done),
       musical_mode_ (
-        ZRYTHM_TESTING ? false : g_settings_get_boolean (S_UI, "musical-mode"))
+        ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
+          ? false
+          : g_settings_get_boolean (S_UI, "musical-mode"))
 {
 }
 
@@ -32,7 +36,9 @@ TransportAction::
     : UndoableAction (UndoableAction::Type::Transport), type_ (type),
       int_before_ (before), int_after_ (after), already_done_ (already_done),
       musical_mode_ (
-        ZRYTHM_TESTING ? false : g_settings_get_boolean (S_UI, "musical-mode"))
+        ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
+          ? false
+          : g_settings_get_boolean (S_UI, "musical-mode"))
 {
   if (type == Type::TempoChange)
     {

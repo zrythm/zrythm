@@ -46,6 +46,7 @@
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
+#include "doctest_wrapper.h"
 #include <fmt/printf.h>
 #define _GNU_SOURCE 1 /* To pick up REG_RIP */
 
@@ -275,7 +276,7 @@ Plugin::init (unsigned int track_name_hash, PluginSlotType slot_type, int slot)
   selected_preset_.idx_ = 0;
   selected_preset_.plugin_id_ = id_;
 
-  if (!ZRYTHM_TESTING)
+  if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       /* save the new setting (may have changed during instantiation) */
       S_PLUGIN_SETTINGS->set (setting_, true);
@@ -868,7 +869,7 @@ Plugin::move_automation (
 void
 Plugin::set_ui_refresh_rate ()
 {
-  if (ZRYTHM_TESTING || ZRYTHM_GENERATING_PROJECT)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING || ZRYTHM_GENERATING_PROJECT)
     {
       ui_update_hz_ = 30.f;
       ui_scale_factor_ = 1.f;

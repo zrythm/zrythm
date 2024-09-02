@@ -73,6 +73,7 @@
 
 #include <glib/gi18n.h>
 
+#include "doctest_wrapper.h"
 #include "gtk_wrapper.h"
 
 #ifdef HAVE_JACK
@@ -464,7 +465,7 @@ AudioEngine::pre_setup ()
 
   if (mret)
     {
-      if (!ZRYTHM_TESTING)
+      if (ZRYTHM_HAVE_UI && !ZRYTHM_TESTING)
         {
           ui_show_message_printf (
             _ ("Backend Initialization Failed"),
@@ -528,7 +529,7 @@ AudioEngine::init_common ()
   router_ = std::make_unique<Router> ();
 
   auto ab_code = AudioBackend::AUDIO_BACKEND_DUMMY;
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       ab_code =
         gZrythm->use_pipewire_in_tests_
@@ -587,7 +588,7 @@ AudioEngine::init_common ()
     }
 
   auto mb_code = MidiBackend::MIDI_BACKEND_DUMMY;
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       mb_code =
         gZrythm->use_pipewire_in_tests_
@@ -631,7 +632,7 @@ AudioEngine::init_common ()
       break;
     }
 
-  if (backend_reset_to_dummy && !ZRYTHM_TESTING)
+  if (backend_reset_to_dummy && ZRYTHM_HAVE_UI && !ZRYTHM_TESTING)
     {
       ui_show_message_printf (
         _ ("Selected Backend Not Found"),
@@ -645,11 +646,11 @@ AudioEngine::init_common ()
     }
 
   pan_law_ =
-    ZRYTHM_TESTING
+    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? PanLaw::PAN_LAW_MINUS_3DB
       : static_cast<PanLaw> (g_settings_get_enum (S_P_DSP_PAN, "pan-law"));
   pan_algo_ =
-    ZRYTHM_TESTING
+    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? PanAlgorithm::PAN_ALGORITHM_SINE_LAW
       : static_cast<PanAlgorithm> (
           g_settings_get_enum (S_P_DSP_PAN, "pan-algorithm"));

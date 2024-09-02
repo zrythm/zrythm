@@ -420,22 +420,22 @@ start_daemon (Zrythm * self)
   _g_test_watcher_add_pid (self->pipewire_pid_);
 }
 
-ZrythmFixture::
-  ZrythmFixture (bool optimized, int samplerate, int buf_size, bool use_pipewire)
+ZrythmFixture::ZrythmFixture (
+  bool optimized,
+  int  samplerate,
+  int  buf_size,
+  bool use_pipewire,
+  bool logging_enabled)
 {
-  static bool glib_inited = false;
-  if (!glib_inited)
-    {
-      Glib::init ();
-      glib_inited = true;
-    }
+  static std::once_flag glib_inited;
+  std::call_once (glib_inited, [] () { Glib::init (); });
 
-  if (gZrythm)
+  /* initialize logger */
+  auto * logger = Logger::getInstance ();
+  if (!logging_enabled)
     {
-      gZrythm->project_.reset ();
-      Zrythm::deleteInstance ();
+      logger->get_logger ()->set_level (spdlog::level::off);
     }
-  Logger::deleteInstance ();
 
   /* dummy ZrythmApp object for testing */
   zrythm_app = zrythm_app_new (0, nullptr);
@@ -453,7 +453,6 @@ ZrythmFixture::
   auto   zrythm_dir = dir_mgr->get_dir (ZrythmDirType::USER_TOP);
   REQUIRE_NONEMPTY (zrythm_dir);
   gZrythm->init ();
-  Logger::getInstance ();
   z_info ("{}", zrythm_dir);
 
   if (use_pipewire)
@@ -482,10 +481,13 @@ ZrythmFixture::
 
   /* set a segv handler */
   signal (SIGSEGV, segv_handler);
+
+  z_info ("ZrythmFixture constructed");
 }
 
 ZrythmFixture::~ZrythmFixture ()
 {
+  z_info ("destroying ZrythmFixture");
   auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
   dir_mgr->remove_testing_dir ();
   gZrythm->project_->audio_engine_->activate (false);

@@ -13,6 +13,8 @@
 #include <glib.h>
 #include <glib/gi18n.h>
 
+#include "doctest_wrapper.h"
+
 #ifdef G_OS_UNIX
 #  include <glib-unix.h>
 #endif
@@ -31,23 +33,28 @@ class ZrythmFixture
 {
 public:
   // To be used in most tests as a fixture.
-  ZrythmFixture () : ZrythmFixture (false, 0, 0, false) { }
+  ZrythmFixture () : ZrythmFixture (false, 0, 0, false, true) { }
 
   // To be used when more control is needed.
-  ZrythmFixture (bool optimized, int samplerate, int buf_size, bool use_pipewire);
+  ZrythmFixture (
+    bool optimized,
+    int  samplerate,
+    int  buf_size,
+    bool use_pipewire,
+    bool logging_enabled);
   virtual ~ZrythmFixture ();
 };
 
 class ZrythmFixtureWithPipewire : public ZrythmFixture
 {
 public:
-  ZrythmFixtureWithPipewire () : ZrythmFixture (false, 0, 0, true) { }
+  ZrythmFixtureWithPipewire () : ZrythmFixture (false, 0, 0, true, true) { }
 };
 
 class ZrythmFixtureOptimized : public ZrythmFixture
 {
 public:
-  ZrythmFixtureOptimized () : ZrythmFixture (true, 0, 0, false) { }
+  ZrythmFixtureOptimized () : ZrythmFixture (true, 0, 0, false, true) { }
 };
 
 void

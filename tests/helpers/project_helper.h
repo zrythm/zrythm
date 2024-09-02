@@ -35,6 +35,8 @@
 
 #include "tests/helpers/zrythm_helper.h"
 
+#include "doctest_wrapper.h"
+
 /**
  * @addtogroup tests
  *

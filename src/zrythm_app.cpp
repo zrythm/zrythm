@@ -884,8 +884,8 @@ zrythm_app_startup (GApplication * app)
   z_info ("Running Zrythm in {}", cur_dir);
   g_free (cur_dir);
 
-  z_info ("GTK_THEME was '{}'. unsetting...", getenv ("GTK_THEME"));
-  g_unsetenv ("GTK_THEME");
+  z_info ("GTK_THEME was '{}'. unsetting...", Glib::getenv ("GTK_THEME"));
+  Glib::unsetenv ("GTK_THEME");
 
   /* install segfault handler */
   z_info ("Installing signal handlers...");
@@ -914,30 +914,6 @@ zrythm_app_startup (GApplication * app)
   z_info ("Making fftw planner thread safe...");
   fftw_make_planner_thread_safe ();
   fftwf_make_planner_thread_safe ();
-
-#ifdef HAVE_LSP_DSP
-  /* init lsp dsp */
-  z_info ("Initing LSP DSP...");
-  lsp::dsp::init ();
-
-  /* output information about the system */
-  lsp::dsp::info_t * info = lsp::dsp::info ();
-  if (info)
-    {
-      z_info (
-        "Architecture:   {}\n"
-        "Processor:      {}\n"
-        "Model:          {}\n"
-        "Features:       {}\n",
-        info->arch, info->cpu, info->model, info->features);
-      free (info);
-    }
-  else
-    {
-      z_warning ("Failed to get system info");
-    }
-
-#endif
 
   /* init curl */
   curl_global_init (CURL_GLOBAL_ALL);

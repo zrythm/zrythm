@@ -4,7 +4,12 @@
 #ifndef __DOCTEST_WRAPPER_H__
 #define __DOCTEST_WRAPPER_H__
 
+#define DOCTEST_CONFIG_SUPER_FAST_ASSERTS 1
+
 #include <doctest/doctest.h>
+
+#define ZRYTHM_TESTING \
+  (doctest::getContextOptions () ? doctest::is_running_in_test : false)
 
 #ifndef REQUIRE_NONNULL
 #  define REQUIRE_NONNULL(ptr) REQUIRE_NE (ptr, nullptr)

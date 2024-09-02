@@ -32,6 +32,7 @@
 
 #include <glib/gi18n.h>
 
+#include "doctest_wrapper.h"
 #include <fmt/printf.h>
 
 AutomationPoint::AutomationPoint (const Position &pos)
@@ -39,7 +40,7 @@ AutomationPoint::AutomationPoint (const Position &pos)
 {
   pos_ = pos;
   curve_opts_.algo_ =
-    ZRYTHM_TESTING
+    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? CurveOptions::Algorithm::SuperEllipse
       : (CurveOptions::Algorithm) g_settings_get_enum (
           S_P_EDITING_AUTOMATION, "curve-algorithm");

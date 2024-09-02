@@ -8,6 +8,7 @@
 #include "dsp/tracklist.h"
 #include "project.h"
 #include "utils/dsp.h"
+#include "utils/lsp_dsp_context.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
@@ -29,9 +30,11 @@ public:
 
     z_info ("Running dummy audio engine thread for first time");
 
-#ifdef HAVE_LSP_DSP
-    LspDspContextRAII lsp_dsp_context_raii;
-#endif
+    std::optional<LspDspContextRAII> lsp_dsp_context;
+    if (ZRYTHM_USE_OPTIMIZED_DSP)
+      {
+        lsp_dsp_context.emplace ();
+      }
 
     while (!threadShouldExit ())
       {

@@ -134,11 +134,13 @@ OPTIMIZE (O3)
 void
 GraphThread::run_worker ()
 {
-  auto graph = &graph_;
+  auto * graph = &graph_;
 
-#ifdef HAVE_LSP_DSP
-  LspDspContextRAII lsp_dsp_context_raii;
-#endif
+  std::optional<LspDspContextRAII> lsp_dsp_context_raii;
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
+    {
+      lsp_dsp_context_raii.emplace ();
+    }
 
   z_info (
     "Worker thread {} created (num threads {})", id_, graph->threads_.size ());

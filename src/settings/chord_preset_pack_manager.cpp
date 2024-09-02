@@ -12,6 +12,7 @@
 
 #include <glib/gi18n.h>
 
+#include "doctest_wrapper.h"
 #include <glibmm.h>
 
 std::string
@@ -395,7 +396,7 @@ ChordPresetPackManager::add_standard_packs ()
 void
 ChordPresetPackManager::add_user_packs ()
 {
-  if (!ZRYTHM_TESTING)
+  if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       /* add user preset packs */
       std::string main_path = get_user_packs_path ();

@@ -18,6 +18,7 @@
 
 #include <glib/gi18n.h>
 
+#include "doctest_wrapper.h"
 #include "gtk_wrapper.h"
 
 #define G_SETTINGS_ENABLE_BACKEND
@@ -27,7 +28,7 @@ JUCE_IMPLEMENT_SINGLETON (GSettingsManager)
 
 GSettingsManager::GSettingsManager ()
 {
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       return;
     }
@@ -302,7 +303,7 @@ GSettingsManager::append_to_strv (
   bool         ignore_if_duplicate)
 {
   if (
-    ignore_if_duplicate && !ZRYTHM_TESTING
+    ignore_if_duplicate && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING
     && strv_contains_str (settings, key, val))
     {
       return;
@@ -313,14 +314,17 @@ GSettingsManager::append_to_strv (
     ignore_if_duplicate);
 
   GStrvBuilder * builder = g_strv_builder_new ();
-  char ** strv = ZRYTHM_TESTING ? NULL : g_settings_get_strv (settings, key);
+  char **        strv =
+    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
+             ? nullptr
+             : g_settings_get_strv (settings, key);
   if (strv)
     g_strv_builder_addv (builder, (const char **) strv);
   g_strv_builder_add (builder, val);
 
   char ** new_strv = g_strv_builder_end (builder);
 
-  if (ZRYTHM_TESTING)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       for (size_t i = 0; new_strv[i] != NULL; i++)
         {

@@ -174,6 +174,12 @@ public:
   std::binary_semaphore processing_sem_{ 1 };
 
   bool freeing_ = false;
+
+private:
+  /**
+   * @brief Thread to be used for writing data in the background (TODO).
+   */
+  std::unique_ptr<juce::TimeSliceThread> time_slice_thread_;
 };
 
 /**

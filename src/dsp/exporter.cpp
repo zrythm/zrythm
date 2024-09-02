@@ -12,6 +12,8 @@
 #include "dsp/tracklist.h"
 #include "utils/logger.h"
 #include "zrythm.h"
+
+#include "doctest_wrapper.h"
 #ifdef HAVE_JACK
 #  include "dsp/engine_jack.h"
 #endif
@@ -406,7 +408,7 @@ Exporter::Settings::set_bounce_defaults (
       break;
     case Mode::Tracks:
       disable_after_bounce_ =
-        ZRYTHM_TESTING
+        ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
           ? false
           : g_settings_get_boolean (S_UI, "disable-after-bounce");
       [[fallthrough]];
@@ -420,14 +422,18 @@ Exporter::Settings::set_bounce_defaults (
       break;
     }
   custom_end_.add_ms (
-    ZRYTHM_TESTING ? 100 : g_settings_get_int (S_UI, "bounce-tail"));
+    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
+      ? 100
+      : g_settings_get_int (S_UI, "bounce-tail"));
 
   bounce_step_ =
-    ZRYTHM_TESTING
+    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? BounceStep::PostFader
       : ENUM_INT_TO_VALUE (BounceStep, g_settings_get_enum (S_UI, "bounce-step"));
   bounce_with_parents_ =
-    ZRYTHM_TESTING ? true : g_settings_get_boolean (S_UI, "bounce-with-parents");
+    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
+      ? true
+      : g_settings_get_boolean (S_UI, "bounce-with-parents");
 
   if (!filepath.empty ())
     {

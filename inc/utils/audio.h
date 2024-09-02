@@ -79,30 +79,6 @@ DEFINE_ENUM_FORMATTER (
 constexpr size_t STRIP_SIZE = 9;
 
 /**
- * Writes the buffer as a raw file to the given path.
- *
- * @param buff Buffer to write. This function will start reading frames from the
- * @p frames_already_written index of this buffer.
- * @param size The number of frames per channel.
- * @param samplerate The samplerate of @ref buff.
- * @param frames_already_written Frames (per channel) already
- *   written. If this is non-zero and the file exists, it will
- *   append to the existing file.
- *
- * @throw ZrythmException on error.
- */
-void
-audio_write_raw_file (
-  const juce::AudioSampleBuffer &buff,
-  size_t                         frames_already_written,
-  size_t                         nframes,
-  uint32_t                       samplerate,
-  bool                           flac,
-  BitDepth                       bit_depth,
-  channels_t                     channels,
-  const std::string             &filename);
-
-/**
  * Returns the number of frames in the given audio
  * file.
  */

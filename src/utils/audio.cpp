@@ -20,66 +20,6 @@
 #  include <sys/sysctl.h>
 #endif
 
-void
-audio_write_raw_file (
-  const juce::AudioSampleBuffer &buff,
-  size_t                         frames_already_written,
-  size_t                         nframes,
-  uint32_t                       samplerate,
-  bool                           flac,
-  BitDepth                       bit_depth,
-  channels_t                     channels,
-  const std::string             &filename)
-{
-  z_return_if_fail (samplerate < 10000000);
-
-  z_debug (
-    "writing raw file: already written {}, "
-    "nframes {}, samplerate {}, channels {}, "
-    "filename {}, flac? {}",
-    frames_already_written, nframes, samplerate, channels, filename, flac);
-
-  juce::File file (filename);
-  std::unique_ptr<juce::FileOutputStream> outputStream = file.createOutputStream (
-    nframes * channels * (audio_bit_depth_enum_to_int (bit_depth) / 8));
-
-  if (frames_already_written > 0 && file.existsAsFile ())
-    {
-      // reuse existing file
-    }
-  else
-    {
-      outputStream->setPosition (0);
-    }
-
-  if (outputStream == nullptr)
-    {
-      throw ZrythmException (
-        "Failed to create output stream for file: " + filename);
-    }
-
-  auto format = std::unique_ptr<juce::AudioFormat> (
-    flac ? static_cast<juce::AudioFormat *> (new juce::FlacAudioFormat ())
-         : static_cast<juce::AudioFormat *> (new juce::WavAudioFormat ()));
-
-  auto writer = std::unique_ptr<juce::AudioFormatWriter> (format->createWriterFor (
-    outputStream.release (), samplerate, channels,
-    audio_bit_depth_enum_to_int (bit_depth), {}, 0));
-
-  if (writer == nullptr)
-    {
-      throw ZrythmException (
-        "Failed to create audio writer for file: " + filename);
-    }
-
-  writer->writeFromAudioSampleBuffer (buff, frames_already_written, nframes);
-  writer->flush ();
-
-  z_debug (
-    "wrote {} frames to '{}' starting at frame {}", nframes, filename,
-    frames_already_written);
-}
-
 /**
  * Returns the number of frames in the given audio
  * file.

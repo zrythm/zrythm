@@ -70,6 +70,8 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
+#include "doctest_wrapper.h"
+
 #ifdef GDK_WINDOWING_WAYLAND
 #  include <gdk/wayland/gdkwayland.h>
 #endif
@@ -119,7 +121,7 @@ z_gtk_get_primary_monitor_scale_factor (void)
   GdkMonitor * monitor;
   int          scale_factor;
 
-  if (ZRYTHM_TESTING || !ZRYTHM_HAVE_UI)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING || !ZRYTHM_HAVE_UI)
     {
       return 1;
     }
@@ -155,7 +157,7 @@ z_gtk_get_primary_monitor_refresh_rate (void)
   GdkMonitor * monitor;
   int          refresh_rate;
 
-  if (ZRYTHM_TESTING || !ZRYTHM_HAVE_UI)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING || !ZRYTHM_HAVE_UI)
     {
       return 30;
     }
@@ -188,7 +190,7 @@ return_default_refresh_rate:
 bool
 z_gtk_is_wayland (void)
 {
-  if (ZRYTHM_TESTING || !ZRYTHM_HAVE_UI)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING || !ZRYTHM_HAVE_UI)
     {
       return false;
     }
