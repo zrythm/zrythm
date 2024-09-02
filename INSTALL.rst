@@ -58,11 +58,11 @@ Required
 `libadwaita (LGPLv2.1+) <https://gitlab.gnome.org/GNOME/libadwaita>`_
   Additional widgets
 
-`libbacktrace (3-Clause BSD) <https://github.com/ianlancetaylor/libbacktrace>`_
-  Backtraces
-
 `libcurl (X11) <https://curl.se/libcurl/>`_
   Network connections
+
+`libdw from elfutils (GPLv2+) <https://sourceware.org/elfutils/>`_
+  Backtraces (GNU/Linux only)
 
 `libpanel (LGPLv3+) <https://gitlab.gnome.org/chergert/libpanel/>`_
   Dock and panel widgets
@@ -74,9 +74,6 @@ Note: if you want detach support use `our fork <https://gitlab.zrythm.org/zrythm
 
 `magic_enum (MIT) <https://github.com/Neargye/magic_enum>`_
   Reflection for C++ enums
-
-`pcre2 (3-Clause BSD) <https://www.pcre.org/>`_
-  Regex
 
 `rubberband (GPLv2+) <https://breakfastquay.com/rubberband/>`_
   Time-stretching and pitch-shifting
@@ -125,12 +122,6 @@ Optional
 
 `libcyaml (ISC) <https://github.com/tlsa/libcyaml/>`_
   Serialization into YAML (only needed to upgrade old projects created before `v1.0.0-beta.5.0`)
-
-Experimental
-++++++++++++
-
-`SDL2 (zlib) <https://www.libsdl.org/>`_
-  Audio backend
 
 Configuration
 -------------

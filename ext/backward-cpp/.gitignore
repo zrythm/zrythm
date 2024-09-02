@@ -1,0 +1,5 @@
+# SPDX-FileCopyrightText: Copyright 2013 Google Inc. All Rights Reserved.
+# SPDX-License-Identifier: MIT
+build*/
+*.pyc
+

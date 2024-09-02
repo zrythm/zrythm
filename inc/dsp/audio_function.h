@@ -62,7 +62,7 @@ public:
   double amount_ = 0;
 };
 
-char *
+std::string
 audio_function_get_action_target_for_type (AudioFunctionType type);
 
 /**
@@ -71,10 +71,10 @@ audio_function_get_action_target_for_type (AudioFunctionType type);
  *
  * @param base_action Base action to use.
  */
-char *
+std::string
 audio_function_get_detailed_action_for_type (
-  AudioFunctionType type,
-  const char *      base_action);
+  AudioFunctionType  type,
+  const std::string &base_action);
 
 #define audio_function_get_detailed_action_for_type_default(type) \
   audio_function_get_detailed_action_for_type (type, "app.editor-function")

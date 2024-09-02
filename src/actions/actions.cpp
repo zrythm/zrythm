@@ -2534,9 +2534,9 @@ DEFINE_SIMPLE (activate_editor_function)
           i < ENUM_VALUE_TO_INT (AudioFunctionType::CustomPlugin); i++)
           {
             AudioFunctionType cur = ENUM_INT_TO_VALUE (AudioFunctionType, i);
-            char *            audio_func_target =
+            auto              audio_func_target =
               audio_function_get_action_target_for_type (cur);
-            if (string_is_equal (str, audio_func_target))
+            if (audio_func_target == str)
               {
                 switch (cur)
                   {
@@ -2566,7 +2566,6 @@ DEFINE_SIMPLE (activate_editor_function)
                             AudioFunctionType::PitchShift, opts, nullptr);
                         });
                       gtk_window_present (GTK_WINDOW (dialog));
-                      g_free (audio_func_target);
                     }
                     return;
                   default:
@@ -2577,7 +2576,6 @@ DEFINE_SIMPLE (activate_editor_function)
                     }
                   }
               }
-            g_free (audio_func_target);
             done = true;
           }
 

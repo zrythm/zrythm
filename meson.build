@@ -1247,13 +1247,6 @@ vamp_host_sdk_dep = dependency (
   'vamp-hostsdk', static: vamp_static)
 vamp_deps = [ vamp_dep, vamp_host_sdk_dep ]
 
-pcre2_dep = dependency (
-  'libpcre2-8',
-  fallback: ['pcre2', 'libpcre2_8'],
-  default_options: [
-    'default_library=static',
-    ])
-
 magic_enum_dep = dependency (
   'magic_enum', version: '>=0.9.5',
   fallback: ['magic_enum', 'magic_enum_dep'],
@@ -1296,7 +1289,6 @@ zrythm_deps = [
   rtmidi_dep,
   zstd_dep,
   dependency ('threads'),
-  pcre2_dep,
   dependency ('rubberband'),
   dependency ('epoxy'),
   cc.find_library ('dl', static: all_static),
@@ -1312,6 +1304,7 @@ zrythm_deps = [
   yyjson_dep,
   magic_enum_dep,
   juce_dep,
+  backward_cpp_dep,
   fmt_dep,
   spdlog_dep,
   doctest_dep,
@@ -1346,15 +1339,6 @@ if os_windows
     cc.find_library ('dbghelp')
   endif
   zrythm_deps += dbg_help_lib
-else # else if not windows
-  libbacktrace_dep = cc.find_library (
-    'backtrace', required: false)
-  if not libbacktrace_dep.found ()
-    libbacktrace_proj = subproject ('libbacktrace')
-    libbacktrace_dep = libbacktrace_proj.get_variable ('libbacktrace_dep')
-  endif
-  zrythm_deps += libbacktrace_dep
-  cdata.set ('HAVE_LIBBACKTRACE', 1)
 endif
 
 if use_weak_jack

@@ -56,13 +56,13 @@ z_g_test_watcher_remove_pid (GPid pid);
 static void
 segv_handler (int sig)
 {
-  char prefix[200];
+  std::string prefix;
 #ifdef _WIN32
-  strcpy (prefix, _ ("Error - Backtrace:\n"));
+  prefix = _ ("Error - Backtrace:\n");
 #else
-  sprintf (prefix, _ ("Error: %s - Backtrace:\n"), strsignal (sig));
+  prefix = format_str (_ ("Error: {} - Backtrace:\n"), strsignal (sig));
 #endif
-  char * bt = backtrace_get (prefix, 100, false);
+  auto bt = Backtrace ().get_backtrace (prefix, 100, false);
 
   z_warning ("{}", bt);
 

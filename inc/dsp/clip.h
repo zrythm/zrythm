@@ -175,6 +175,17 @@ public:
   auto get_num_channels () const { return channels_; };
   auto get_num_frames () const { return num_frames_; };
 
+  /**
+   * @brief Finalizes buffered write to a file (when `parts` is true in @ref
+   * write_to_file()).
+   */
+  void finalize_buffered_write ();
+
+  /**
+   * @brief Used during tests to verify that the recorded file is valid.
+   */
+  bool verify_recorded_file (const fs::path &filepath) const;
+
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
@@ -255,6 +266,7 @@ private:
    * continuously.
    */
   std::unique_ptr<juce::AudioFormatWriter> writer_;
+  std::optional<fs::path>                  writer_path_;
 };
 
 /**

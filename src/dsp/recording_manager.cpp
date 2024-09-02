@@ -121,6 +121,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
           try
             {
               clip->write_to_pool (true, false);
+              clip->finalize_buffered_write ();
             }
           catch (const ZrythmException &ex)
             {
@@ -146,7 +147,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
 
   num_active_recordings_--;
   recorded_ids_.clear ();
-  z_warn_if_fail (num_active_recordings_ == 0);
+  z_return_if_fail (num_active_recordings_ == 0);
 }
 
 void

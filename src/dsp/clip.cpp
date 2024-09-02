@@ -303,6 +303,26 @@ AudioClip::write_to_pool (bool parts, bool is_backup)
 }
 
 void
+AudioClip::finalize_buffered_write ()
+{
+  if (frames_written_ == 0)
+    {
+      z_debug ("nothing to write, skipping");
+      return;
+    }
+
+  z_return_if_fail (writer_);
+  z_return_if_fail (writer_path_.has_value ());
+  writer_->flush ();
+  writer_.reset ();
+  if (ZRYTHM_TESTING)
+    {
+      verify_recorded_file (writer_path_.value ());
+    }
+  writer_path_.reset ();
+}
+
+void
 AudioClip::write_to_file (const std::string &filepath, bool parts)
 {
   z_return_if_fail (samplerate_ > 0);
@@ -348,6 +368,7 @@ AudioClip::write_to_file (const std::string &filepath, bool parts)
       if (frames_written_ == 0)
         {
           writer_ = create_writer_for_filepath ();
+          writer_path_.emplace (filepath);
         }
       else
         {
@@ -367,26 +388,37 @@ AudioClip::write_to_file (const std::string &filepath, bool parts)
       auto writer = create_writer_for_filepath ();
       writer->writeFromAudioSampleBuffer (ch_frames_, 0, nframes);
       writer->flush ();
+      if (ZRYTHM_TESTING)
+        {
+          verify_recorded_file (filepath);
+        }
     }
 
   update_channel_caches (before_frames);
+}
 
-  /* TODO move this to a unit test for this function */
-  if (ZRYTHM_TESTING)
+bool
+AudioClip::verify_recorded_file (const fs::path &filepath) const
+{
+  AudioClip new_clip (filepath);
+  if (num_frames_ != new_clip.num_frames_)
     {
-      AudioClip new_clip (filepath);
-      if (num_frames_ != new_clip.num_frames_)
-        {
-          z_error ("{} != {}", num_frames_, new_clip.num_frames_);
-        }
-      constexpr float epsilon = 0.0001f;
-      z_return_if_fail (audio_frames_equal (
-        ch_frames_.getReadPointer (0), new_clip.ch_frames_.getReadPointer (0),
-        (size_t) new_clip.num_frames_, epsilon));
-      z_return_if_fail (audio_frames_equal (
-        frames_.getReadPointer (0), new_clip.frames_.getReadPointer (0),
-        (size_t) new_clip.num_frames_ * new_clip.channels_, epsilon));
+      z_error ("{} != {}", num_frames_, new_clip.num_frames_);
+      return false;
     }
+
+  constexpr float epsilon = 0.0001f;
+  z_return_val_if_fail (
+    audio_frames_equal (
+      ch_frames_.getReadPointer (0), new_clip.ch_frames_.getReadPointer (0),
+      (size_t) new_clip.num_frames_, epsilon),
+    false);
+  z_return_val_if_fail (
+    audio_frames_equal (
+      frames_.getReadPointer (0), new_clip.frames_.getReadPointer (0),
+      (size_t) new_clip.num_frames_ * new_clip.channels_, epsilon),
+    false);
+  return true;
 }
 
 bool

@@ -58,15 +58,14 @@ update_audio_funcs_menu (EditorToolbarWidget * self)
         || i == ENUM_VALUE_TO_INT (AudioFunctionType::NormalizeLUFS))
         continue;
 
-      char * detailed_action = audio_function_get_detailed_action_for_type (
+      auto detailed_action = audio_function_get_detailed_action_for_type (
         ENUM_INT_TO_VALUE (AudioFunctionType, i),
         "editor-toolbar.editor-function");
       GMenuItem * item = g_menu_item_new (
         AudioFunctionType_to_string (
           ENUM_INT_TO_VALUE (AudioFunctionType, i), true)
           .c_str (),
-        detailed_action);
-      g_free (detailed_action);
+        detailed_action.c_str ());
       const char * icon_name = audio_function_get_icon_name_for_type (
         ENUM_INT_TO_VALUE (AudioFunctionType, i));
       g_menu_item_set_attribute (

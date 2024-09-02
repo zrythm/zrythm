@@ -4,6 +4,7 @@
 #include "utils/logger.h"
 #include "utils/lsp_dsp_context.h"
 
+#ifdef HAVE_LSP_DSP
 LspDspContextRAII::LspDspContextRAII ()
 {
   static std::once_flag init_flag;
@@ -39,3 +40,4 @@ LspDspContextRAII::~LspDspContextRAII ()
   if (ctx_)
     lsp::dsp::finish (ctx_.get ());
 }
+#endif

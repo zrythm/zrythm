@@ -7,7 +7,7 @@
 
 #include "utils/string.h"
 
-#include "ext/doctest/doctest.h"
+#include "doctest_wrapper.h"
 
 TEST_SUITE_BEGIN ("utils/string");
 
@@ -154,28 +154,69 @@ TEST_CASE ("is equal")
 #endif
 }
 
-TEST_CASE ("replace regex")
+TEST_CASE ("string_get_regex_group")
 {
-  const char *replace_str, *regex;
-  char *      src_str;
+  const char * test_str = "Hello, World! 123";
 
-  replace_str = "---$1---";
-  regex = "(abc)+\\1";
-  src_str = g_strdup ("abcabc");
-  string_replace_regex (&src_str, regex, replace_str);
-  REQUIRE (string_is_equal (src_str, "---abc---"));
+  auto result = string_get_regex_group (test_str, R"((\w+),\s(\w+)!)", 1);
+  REQUIRE_EQ (result, "Hello");
 
-  replace_str = "$1";
-  regex = "(\\?\\?\\?\n)+\\1";
-  src_str = g_strdup ("???\n???\n???\n???\n??? abc");
-  string_replace_regex (&src_str, regex, replace_str);
-  REQUIRE (string_is_equal (src_str, "???\n??? abc"));
+  result = string_get_regex_group (test_str, R"((\w+),\s(\w+)!)", 2);
+  REQUIRE_EQ (result, "World");
 
-  replace_str = "??? ...\n";
-  regex = "(\\?\\?\\?\n)+\\1";
-  src_str = g_strdup ("???\n???\n???\n???\n??? abc\n???\n???\n??? test");
-  string_replace_regex (&src_str, regex, replace_str);
-  REQUIRE (string_is_equal (src_str, "??? ...\n??? abc\n??? ...\n??? test"));
+  result = string_get_regex_group (test_str, R"((\d+))", 1);
+  REQUIRE_EQ (result, "123");
+
+  result = string_get_regex_group (test_str, R"(nonexistent)", 1);
+  REQUIRE_EMPTY (result);
+}
+
+TEST_CASE ("string_get_regex_group_as_int")
+{
+  const char * test_str = "Age: 30 Years";
+
+  int result = string_get_regex_group_as_int (test_str, R"(Age:\s(\d+))", 1, -1);
+  REQUIRE_EQ (result, 30);
+
+  result =
+    string_get_regex_group_as_int (test_str, R"(NonExistent:\s(\d+))", 1, -1);
+  REQUIRE_EQ (result, -1);
+}
+
+TEST_CASE ("string_expand_env_vars")
+{
+  setenv ("TEST_VAR", "Hello", 1);
+  setenv ("ANOTHER_VAR", "World", 1);
+
+  std::string input = "This is a ${TEST_VAR} ${ANOTHER_VAR} test";
+  std::string result = string_expand_env_vars (input);
+  REQUIRE_EQ (result, "This is a Hello World test");
+
+  input = "No variables here";
+  result = string_expand_env_vars (input);
+  REQUIRE_EQ (result, input);
+
+  input = "${NONEXISTENT_VAR}";
+  result = string_expand_env_vars (input);
+  REQUIRE_EMPTY (result);
+
+  unsetenv ("TEST_VAR");
+  unsetenv ("ANOTHER_VAR");
+}
+
+TEST_CASE ("string_join")
+{
+  std::vector<std::string> strings = { "Hello", "World", "Test" };
+
+  std::string result = string_join (strings, ", ");
+  REQUIRE (result == "Hello, World, Test");
+
+  result = string_join (strings, " - ");
+  REQUIRE (result == "Hello - World - Test");
+
+  std::vector<std::string> empty_vec;
+  result = string_join (empty_vec, ", ");
+  REQUIRE (result.empty ());
 }
 
 TEST_SUITE_END;

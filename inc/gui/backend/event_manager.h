@@ -137,7 +137,7 @@ private:
                                                                for now */ \
         && false) \
         { \
-          _ev->backtrace_ = backtrace_get ("", 40, false); \
+          _ev->backtrace_ = Backtrace ().get_backtrace ("", 40, false); \
         } \
       /* don't print events that are called \
        * continuously */ \
@@ -167,7 +167,7 @@ private:
       if (/* skip backtrace for now */ \
           false) \
         { \
-          _ev->backtrace_ = backtrace_get ("", 40, false); \
+          _ev->backtrace_ = Backtrace ().get_backtrace ("", 40, false); \
         } \
       /* don't print events that are called continuously */ \
       if (et != EventType::ET_PLAYHEAD_POS_CHANGED) \

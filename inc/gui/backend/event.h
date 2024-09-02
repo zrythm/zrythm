@@ -452,16 +452,11 @@ enum class EventType
 class ZEvent
 {
 public:
-  ZEvent () = default;
-  ~ZEvent ();
+  // Rule of 0
 
 public:
   /** Event type. */
   EventType type_{};
-
-  /* FIXME: cannot be copied */
-  ZEvent &operator= (const ZEvent &other) = delete;
-  ZEvent (const ZEvent &other) = delete;
 
   /** Argument. */
   void * arg_ = nullptr;
@@ -476,7 +471,7 @@ public:
   int lineno_ = 0;
 
   /** Backtrace. */
-  char * backtrace_ = nullptr;
+  std::string backtrace_;
 };
 
 DEFINE_OBJECT_FORMATTER (

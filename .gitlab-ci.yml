@@ -33,7 +33,6 @@ default:
         - subprojects/libpanel
         - subprojects/yyjson
         - subprojects/libcyaml
-        - subprojects/libbacktrace
     - key: "$CI_PIPELINE_ID"
       paths:
         - build

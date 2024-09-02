@@ -464,15 +464,14 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
         {
           yaml_schema_ver = schema_ver;
           /* upgrade YAML and set doc */
-          char * prj_ver_str =
+          auto prj_ver_str =
             string_get_regex_group (text, "\nversion: (.*)\n", 1);
-          if (!prj_ver_str)
+          if (prj_ver_str.empty ())
             {
               call_last_callback_fail (_ ("Invalid project: missing version"));
               return;
             }
           z_info ("project from text (version {})...", prj_ver_str);
-          g_free (prj_ver_str);
 
           schema_ver = string_get_regex_group_as_int (
             text, "---\nschema_version: (.*)\n", 1, -1);

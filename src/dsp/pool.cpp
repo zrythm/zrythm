@@ -54,9 +54,8 @@ AudioPool::ensure_unique_clip_name (AudioClip &clip)
     {
       const auto     prev_new_name = new_name;
       constexpr auto regex = R"(^.*\((\d+)\)$)";
-      char * cur_val_str = string_get_regex_group (new_name.c_str (), regex, 1);
-      int    cur_val =
-        string_get_regex_group_as_int (new_name.c_str (), regex, 1, 0);
+      auto           cur_val_str = string_get_regex_group (new_name, regex, 1);
+      int cur_val = string_get_regex_group_as_int (new_name, regex, 1, 0);
       if (cur_val == 0)
         {
           new_name = fmt::format ("{} (1)", new_name);
@@ -66,7 +65,7 @@ AudioPool::ensure_unique_clip_name (AudioClip &clip)
           size_t len =
             strlen (new_name.c_str ()) -
             /* + 2 for the parens */
-            (strlen (cur_val_str) + 2);
+            (strlen (cur_val_str.c_str ()) + 2);
           /* + 1 for the terminating NULL */
           size_t            tmp_len = len + 1;
           std::vector<char> tmp (tmp_len);
@@ -75,7 +74,6 @@ AudioPool::ensure_unique_clip_name (AudioClip &clip)
           new_name =
             fmt::format ("{} ({})", std::string (tmp.data ()), cur_val + 1);
         }
-      g_free (cur_val_str);
       changed = true;
     }
 

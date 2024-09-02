@@ -1,17 +1,10 @@
-/*
- * SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
-
-/**
- * @file
- *
- * Backtrace utils.
- */
+// SPDX-FileCopyrightText: © 2020, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __UTILS_BACKTRACE_H__
 #define __UTILS_BACKTRACE_H__
+
+#include <string>
 
 /**
  * @addtogroup utils
@@ -19,33 +12,26 @@
  * @{
  */
 
-/**
- * Returns the backtrace with @ref max_lines
- * number of lines and a string prefix.
- *
- * @param exe_path Executable path for running
- *   addr2line.
- * @param with_lines Whether to show line numbers.
- *   This is very slow.
- */
-char *
-_backtrace_get (
-  const char * exe_path,
-  const char * prefix,
-  int          max_lines,
-  bool         with_lines,
-  bool         write_to_file);
+class Backtrace
+{
+public:
+  Backtrace ();
 
-#define backtrace_get(prefix, max_lines, write_to_file) \
-  _backtrace_get (nullptr, prefix, max_lines, false, write_to_file)
+  /**
+   * @brief To be called once at the beginning of the program to setup the
+   * signal handlers.
+   */
+  static void init_signal_handlers ();
 
-#define backtrace_get_with_lines(prefix, max_lines, write_to_file) \
-  _backtrace_get ( \
-    (gZrythm && !gZrythm->exe_path_.empty ()) \
-      ? gZrythm->exe_path_.c_str () \
-      : nullptr, \
-    prefix, max_lines, gZrythm && !gZrythm->exe_path_.empty () ? true : false, \
-    write_to_file)
+public:
+  /**
+   * Returns the backtrace with @p depth number of elements and a string
+   * prefix @p prefix.
+   *
+   * @param write_to_file Whether to write the backtrace to a file.
+   */
+  std::string get_backtrace (std::string prefix, int depth, bool write_to_file);
+};
 
 /**
  * @}

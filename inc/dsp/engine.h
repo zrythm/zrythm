@@ -22,6 +22,7 @@
 #include "dsp/pool.h"
 #include "dsp/sample_processor.h"
 #include "dsp/transport.h"
+#include "utils/backtrace.h"
 #include "utils/concurrency.h"
 #include "utils/object_pool.h"
 #include "utils/types.h"
@@ -102,7 +103,7 @@ constexpr int ENGINE_MAX_EVENTS = 128;
     _ev->float_arg_ = _float_arg; \
     if (ZRYTHM_APP_IS_GTK_THREAD) \
       { \
-        _ev->backtrace_ = backtrace_get ("", 40, false); \
+        _ev->backtrace_ = Backtrace ().get_backtrace ("", 40, false); \
         z_debug ( \
           "pushing engine event " #et " ({}:{}) uint: {} | float: {:f}", \
           __func__, __LINE__, _uint_arg, _float_arg); \
@@ -230,22 +231,7 @@ public:
   class Event
   {
   public:
-    Event ()
-        : type_ (AudioEngineEventType::AUDIO_ENGINE_EVENT_BUFFER_SIZE_CHANGE),
-          arg_ (nullptr), uint_arg_ (0), float_arg_ (0.0f), file_ (nullptr),
-          func_ (nullptr), lineno_ (0), backtrace_ (nullptr)
-    {
-    }
-
-    ~Event ()
-    {
-      if (backtrace_)
-        g_free (backtrace_);
-    }
-
-    // FIXME: copying is not supported because of backtrace_
-    Event (const Event &other) = delete;
-    Event &operator= (const Event &other) = delete;
+    Event () : file_ (nullptr), func_ (nullptr) { }
 
   public:
     AudioEngineEventType type_ =
@@ -256,7 +242,7 @@ public:
     const char * file_ = nullptr;
     const char * func_ = nullptr;
     int          lineno_ = 0;
-    char *       backtrace_ = nullptr;
+    std::string  backtrace_;
   };
 
   /**

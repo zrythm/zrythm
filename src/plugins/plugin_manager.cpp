@@ -82,17 +82,16 @@ add_expanded_paths (
   StringArray                      &arr,
   const std::vector<Glib::ustring> &paths_from_settings)
 {
-  for (auto &path : paths_from_settings)
+  for (const auto &path : paths_from_settings)
     {
-      char * expanded_cur_path = string_expand_env_vars (path.c_str ());
+      auto expanded_cur_path = string_expand_env_vars (path);
       /* split because the env might contain multiple paths */
-      auto expanded_paths =
-        Glib::Regex::split_simple (G_SEARCHPATH_SEPARATOR_S, expanded_cur_path);
+      auto expanded_paths = Glib::Regex::split_simple (
+        G_SEARCHPATH_SEPARATOR_S, expanded_cur_path.c_str ());
       for (auto &expanded_path : expanded_paths)
         {
           arr.add (expanded_path);
         }
-      g_free (expanded_cur_path);
     }
 }
 

@@ -468,17 +468,15 @@ io_open_directory (const char * path)
 {
   z_return_if_fail (g_file_test (path, G_FILE_TEST_IS_DIR));
 
-  char command[800];
+  std::string command;
 #ifdef _WIN32
-  char * canonical_path = g_canonicalize_filename (path, nullptr);
-  char * new_path = string_replace (canonical_path, "\\", "\\\\");
-  g_free (canonical_path);
-  sprintf (command, OPEN_DIR_CMD " \"%s\"", new_path);
-  g_free (new_path);
+  auto canonical_path = Glib::canonicalize_filename (path, nullptr);
+  auto new_path = string_replace (canonical_path, "\\", "\\\\");
+  command = fmt::format ("{} \"{}\"", OPEN_DIR_CMD, new_path);
 #else
-  sprintf (command, OPEN_DIR_CMD " \"%s\"", path);
+  command = fmt::format ("{} \"{}\"", OPEN_DIR_CMD, path);
 #endif
-  system (command);
+  system (command.c_str ());
   z_info ("executed: {}", command);
 }
 

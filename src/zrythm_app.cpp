@@ -112,14 +112,10 @@ segv_handler (int sig)
 
   /* avoid getting backtraces too often if a bug report dialog
    * is already opened - it makes it hard to type due to lag */
-  char * bt;
-  if (zrythm_app->bug_report_dialog)
+  std::string bt;
+  if (!zrythm_app->bug_report_dialog)
     {
-      bt = g_strdup ("");
-    }
-  else
-    {
-      bt = backtrace_get_with_lines (prefix, 100, true);
+      bt = Backtrace ().get_backtrace (prefix, 100, true);
     }
 
   /* call the callback to write queued messages and get last few lines of the
@@ -137,7 +133,7 @@ segv_handler (int sig)
           GtkWindow * win = gtk_application_get_active_window (
             GTK_APPLICATION (zrythm_app.get ()));
           zrythm_app->bug_report_dialog = bug_report_dialog_new (
-            win ? GTK_WIDGET (win) : nullptr, str, bt, true);
+            win ? GTK_WIDGET (win) : nullptr, str, bt.c_str (), true);
 
           adw_dialog_present (
             ADW_DIALOG (zrythm_app->bug_report_dialog),
@@ -844,6 +840,8 @@ zrythm_app_startup (GApplication * app)
   z_info ("Starting up...");
 
   ZrythmApp * self = ZRYTHM_APP (app);
+
+  Backtrace::init_signal_handlers ();
 
   char * exe_path = NULL;
   int    dirname_length, length;

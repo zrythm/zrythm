@@ -22,13 +22,13 @@
 #include "doctest_wrapper.h"
 #include <rubberband/rubberband-c.h>
 
-char *
+std::string
 audio_function_get_action_target_for_type (AudioFunctionType type)
 {
   auto   type_str = AudioFunctionType_to_string (type);
   char * type_str_lower = g_strdup (type_str.c_str ());
   string_to_lower (type_str.c_str (), type_str_lower);
-  char * substituted = string_replace (type_str_lower, " ", "-");
+  auto substituted = string_replace (type_str_lower, " ", "-");
   g_free (type_str_lower);
 
   return substituted;
@@ -40,16 +40,13 @@ audio_function_get_action_target_for_type (AudioFunctionType type)
  *
  * @param base_action Base action to use.
  */
-char *
+std::string
 audio_function_get_detailed_action_for_type (
-  AudioFunctionType type,
-  const char *      base_action)
+  AudioFunctionType  type,
+  const std::string &base_action)
 {
-  char * target = audio_function_get_action_target_for_type (type);
-  auto   ret = fmt::format ("{}::{}", base_action, target);
-  g_free (target);
-
-  return g_strdup (ret.c_str ());
+  auto target = audio_function_get_action_target_for_type (type);
+  return fmt::format ("{}::{}", base_action, target);
 }
 
 const char *

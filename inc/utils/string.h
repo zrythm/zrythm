@@ -131,23 +131,22 @@ string_get_substr_before_suffix (const char * str, const char * suffix);
 char *
 string_remove_until_after_first_match (const char * str, const char * match);
 
-/**
- * Replaces @ref src_str with @ref replace_str in
- * all instances matched by @ref regex.
- */
-void
-string_replace_regex (char ** str, const char * regex, const char * replace_str);
-
-char *
-string_replace (const char * str, const char * from, const char * to);
+std::string
+string_replace (
+  const std::string &str,
+  const std::string &from,
+  const std::string &to);
 
 /**
  * Gets the string in the given regex group.
  *
- * @return A newly allocated string or NULL.
+ * @return The string, or an empty string if nothing found.
  */
-char *
-string_get_regex_group (const char * str, const char * regex, int group);
+std::string
+string_get_regex_group (
+  const std::string &str,
+  const std::string &regex,
+  int                group);
 
 /**
  * Gets the string in the given regex group as an
@@ -159,14 +158,14 @@ string_get_regex_group (const char * str, const char * regex, int group);
  */
 int
 string_get_regex_group_as_int (
-  const char * str,
-  const char * regex,
-  int          group,
-  int          def);
+  const std::string &str,
+  const std::string &regex,
+  int                group,
+  int                def);
 
 /**
- * Returns the integer found at the end of a string like "My String 3" -> 3, or
- * -1 if no number is found.
+ * Returns the integer found at the end of a string like "My String 3" -> 3,
+ * or -1 if no number is found.
  *
  * See https://www.debuggex.com/cheatsheet/regex/pcre for more info.
  *
@@ -205,8 +204,8 @@ string_is_empty (const char * str);
 /**
  * Compares two UTF-8 strings using approximate case-insensitive ordering.
  *
- * @return < 0 if @param s1 compares before @param s2, 0 if they compare equal,
- *          > 0 if @param s1 compares after @param s2
+ * @return < 0 if @param s1 compares before @param s2, 0 if they compare
+ *equal, > 0 if @param s1 compares after @param s2
  *
  * @note Taken from src/libedataserver/e-data-server-util.c in
  *evolution-data-center (e_util_utf8_strcasecmp).
@@ -217,8 +216,8 @@ string_utf8_strcasecmp (const char * s1, const char * s2);
 /**
  * Expands environment variables enclosed in ${} in the given string.
  */
-char *
-string_expand_env_vars (const char * src);
+std::string
+string_expand_env_vars (const std::string &src);
 
 void
 string_print_strv (const char * prefix, char ** strv);

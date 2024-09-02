@@ -28,16 +28,13 @@
  */
 
 #include <cstring>
+#include <regex>
 
 #include "utils/logger.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 
 #include "gtk_wrapper.h"
-
-#define PCRE2_CODE_UNIT_WIDTH 8
-#include <pcre2.h>
-#include <regex.h>
 
 Glib::ustring
 string_view_to_ustring (std::string_view sv)
@@ -219,213 +216,66 @@ string_remove_until_after_first_match (const char * str, const char * match)
   return part;
 }
 
-/**
- * Replaces @ref str with @ref replace_str in
- * all instances matched by @ref regex.
- */
-void
-string_replace_regex (char ** str, const char * regex, const char * replace_str)
+std::string
+string_replace (
+  const std::string &str,
+  const std::string &from,
+  const std::string &to)
 {
-  PCRE2_SIZE   erroffset;
-  int          errorcode;
-  pcre2_code * re = pcre2_compile (
-    (PCRE2_SPTR) regex, PCRE2_ZERO_TERMINATED, 0, &errorcode, &erroffset,
-    nullptr);
-  if (!re)
+  std::string result = str;
+  size_t      start_pos = 0;
+  while ((start_pos = result.find (from, start_pos)) != std::string::npos)
     {
-      PCRE2_UCHAR8 buffer[1200];
-      pcre2_get_error_message (errorcode, buffer, 1200);
-
-      z_warning ("failed to compile regex {}: {}", regex, (const char *) buffer);
-      return;
+      result.replace (start_pos, from.length (), to);
+      start_pos += to.length (); // Move to the end of the replaced string
     }
-
-  static PCRE2_UCHAR8 buf[10000];
-  size_t              buf_sz = 10000;
-  pcre2_substitute (
-    re, (PCRE2_SPTR) *str, PCRE2_ZERO_TERMINATED, 0, PCRE2_SUBSTITUTE_GLOBAL,
-    nullptr, nullptr, (PCRE2_SPTR) replace_str, PCRE2_ZERO_TERMINATED, buf,
-    &buf_sz);
-  pcre2_code_free (re);
-
-  g_free (*str);
-  *str = g_strdup ((char *) buf);
+  return result;
 }
 
-char *
-string_replace (const char * str, const char * from, const char * to)
-{
-  char ** split = g_strsplit (str, from, -1);
-  char *  new_str = g_strjoinv (to, split);
-  g_strfreev (split);
-  return new_str;
-}
-
-/**
- * Gets the string in the given regex group as an
- * integer.
- *
- * @param def Default.
- *
- * @return The int, or default.
- */
 int
 string_get_regex_group_as_int (
-  const char * str,
-  const char * regex,
-  int          group,
-  int          def)
+  const std::string &str,
+  const std::string &regex,
+  int                group,
+  int                def)
 {
-  char * res = string_get_regex_group (str, regex, group);
-  if (res)
+  auto res = string_get_regex_group (str, regex, group);
+  if (!res.empty ())
     {
-      int res_int = atoi (res);
-      g_free (res);
+      int res_int = atoi (res.c_str ());
       return res_int;
     }
-  else
-    return def;
+
+  return def;
 }
 
-/**
- * Gets the string in the given regex group.
- *
- * @return A newly allocated string or NULL.
- */
-char *
-string_get_regex_group (const char * str, const char * regex, int group)
+std::string
+string_get_regex_group (
+  const std::string &str,
+  const std::string &regex,
+  int                group)
 {
-  z_return_val_if_fail (str && regex, nullptr);
-
-  PCRE2_SIZE   erroffset;
-  int          errorcode;
-  pcre2_code * re = pcre2_compile (
-    (PCRE2_SPTR) regex, PCRE2_ZERO_TERMINATED, 0, &errorcode, &erroffset,
-    nullptr);
-
-  if (!re)
+  std::regex  re (regex);
+  std::cmatch match;
+  if (std::regex_search (str.c_str (), match, re) && group < match.size ())
     {
-      PCRE2_UCHAR8 buffer[1200];
-      pcre2_get_error_message (errorcode, buffer, 1200);
-
-      z_warning ("failed to compile regex {}: {}", regex, (const char *) buffer);
-      return NULL;
+      return match[group].str ();
     }
 
-  pcre2_match_data * match_data =
-    pcre2_match_data_create_from_pattern (re, nullptr);
-  int rc =
-    pcre2_match (re, (PCRE2_SPTR) str, strlen (str), 0, 0, match_data, nullptr);
-  if (rc < 0)
-    {
-      switch (rc)
-        {
-        case PCRE2_ERROR_NOMATCH:
-          /*z_info ("String {} didn't match", str);*/
-          break;
-
-        default:
-          z_info ("Error while matching \"{}\": {}", str, rc);
-          break;
-        }
-      pcre2_code_free (re);
-      return NULL;
-    }
-
-  PCRE2_UCHAR * ret_buf;
-  PCRE2_SIZE    ret_buf_sz;
-  int           ret_code = pcre2_substring_get_bynumber (
-    match_data, (uint32_t) group, &ret_buf, &ret_buf_sz);
-  if (ret_code != 0)
-    {
-      z_debug ("Error while matching \"{}\": {}", str, rc);
-      pcre2_code_free (re);
-      pcre2_match_data_free (match_data);
-      return NULL;
-    }
-  pcre2_match_data_free (match_data);
-  char * ret_str = g_strdup ((char *) ret_buf);
-  pcre2_substring_free (ret_buf);
-  pcre2_code_free (re);
-  return ret_str;
+  z_warning ("not found: regex '{}', str '{}'", regex, str);
+  return "";
 }
 
 std::pair<int, std::string>
 string_get_int_after_last_space (const std::string &str)
 {
-  const char * regex = "(.*) ([\\d]+)";
-  PCRE2_SIZE   erroffset;
-  int          errorcode;
-  pcre2_code * re = pcre2_compile (
-    (PCRE2_SPTR) regex, PCRE2_ZERO_TERMINATED, 0, &errorcode, &erroffset,
-    nullptr);
-  if (!re)
+  std::regex  re (R"((.*) (\d+))");
+  std::smatch match;
+  if (std::regex_match (str, match, re))
     {
-      PCRE2_UCHAR8 buffer[1200];
-      pcre2_get_error_message (errorcode, buffer, 1200);
-
-      g_error ("failed to compile regex %s: %s", regex, buffer);
-      return std::make_pair (-1, "");
+      return { std::stoi (match[2]), match[1] };
     }
-
-  pcre2_match_data * match_data =
-    pcre2_match_data_create_from_pattern (re, nullptr);
-  int rc = pcre2_match (
-    re, (PCRE2_SPTR) str.c_str (), strlen (str.c_str ()), 0, 0, match_data,
-    nullptr);
-  if (rc < 0)
-    {
-      switch (rc)
-        {
-        case PCRE2_ERROR_NOMATCH:
-          z_debug ("String {} didn't match", str);
-          break;
-
-        default:
-          z_debug ("Error while matching \"{}\": {}", str, rc);
-          break;
-        }
-      pcre2_code_free (re);
-      return std::make_pair (-1, "");
-    }
-
-  PCRE2_UCHAR * num_ret_buf;
-  PCRE2_SIZE    num_ret_buf_sz;
-  int           ret_code = pcre2_substring_get_bynumber (
-    match_data, (uint32_t) 2, &num_ret_buf, &num_ret_buf_sz);
-  if (ret_code != 0)
-    {
-      z_debug ("Error while matching \"{}\": {}", str, rc);
-      pcre2_code_free (re);
-      pcre2_match_data_free (match_data);
-      return std::make_pair (-1, "");
-    }
-
-  std::string str_without_num;
-  {
-    PCRE2_UCHAR * str_ret_buf;
-    PCRE2_SIZE    str_ret_buf_sz;
-    ret_code = pcre2_substring_get_bynumber (
-      match_data, (uint32_t) 1, &str_ret_buf, &str_ret_buf_sz);
-    if (ret_code != 0)
-      {
-        z_debug ("Error while matching \"{}\": {}", str, rc);
-        pcre2_code_free (re);
-        pcre2_match_data_free (match_data);
-        return std::make_pair (-1, "");
-      }
-    str_without_num = (char *) str_ret_buf;
-    pcre2_substring_free (str_ret_buf);
-  }
-
-  pcre2_match_data_free (match_data);
-  char * num_ret_str = g_strdup ((char *) num_ret_buf);
-  int    ret_num = atoi (num_ret_str);
-  pcre2_substring_free (num_ret_buf);
-  pcre2_code_free (re);
-  g_free (num_ret_str);
-
-  return std::make_pair (ret_num, str_without_num);
+  return { -1, "" };
 }
 
 /**
@@ -511,29 +361,22 @@ string_utf8_strcasecmp (const char * s1, const char * s2)
   return retval;
 }
 
-char *
-string_expand_env_vars (const char * src)
+std::string
+string_expand_env_vars (const std::string &src)
 {
-  static const char * env_part_regex = "(.*)(\\$\\{.*\\})(.*)";
-  char *              expanded_str = g_strdup (src);
-  do
+  std::regex  env_var_regex (R"(\$\{([^}]+)\})");
+  std::string result = src;
+  std::smatch match;
+
+  while (std::regex_search (result, match, env_var_regex))
     {
-      char * env_var_part =
-        string_get_regex_group (expanded_str, env_part_regex, 2);
-      if (!env_var_part)
-        break;
-
-      char * old = expanded_str;
-      char * env_var_part_inside = g_strdup (&env_var_part[2]);
-      env_var_part_inside[strlen (env_var_part_inside) - 1] = '\0';
-      const char * env_val = g_getenv (env_var_part_inside);
-      expanded_str = string_replace (old, env_var_part, env_val ? env_val : "");
-      g_free (env_var_part_inside);
-      g_free (old);
+      std::string  env_var = match[1].str ();
+      const char * env_val = std::getenv (env_var.c_str ());
+      std::string  replacement = env_val ? env_val : "";
+      result = string_replace (result, match[0].str (), replacement);
     }
-  while (true);
 
-  return expanded_str;
+  return result;
 }
 
 void

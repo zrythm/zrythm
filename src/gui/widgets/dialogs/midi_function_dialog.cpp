@@ -18,13 +18,12 @@ G_DEFINE_TYPE (
   midi_function_dialog_widget,
   ADW_TYPE_WINDOW)
 
-static char *
+static auto
 get_g_settings_schema_id (MidiFunctionType type)
 {
-  char * type_id = midi_function_type_to_string_id (type);
-  char * ret = g_strdup_printf (
-    "%s%s", GSETTINGS_ZRYTHM_PREFIX ".ui.midi-functions.", type_id);
-  g_free (type_id);
+  auto type_id = midi_function_type_to_string_id (type);
+  auto ret = fmt::format (
+    "{}{}", GSETTINGS_ZRYTHM_PREFIX ".ui.midi-functions.", type_id);
   return ret;
 }
 
@@ -273,9 +272,8 @@ midi_function_dialog_widget_new (GtkWindow * parent, MidiFunctionType type)
       gtk_window_set_transient_for (GTK_WINDOW (self), parent);
     }
 
-  char * schema_id = get_g_settings_schema_id (self->type);
-  self->settings = g_settings_new (schema_id);
-  g_free (schema_id);
+  auto schema_id = get_g_settings_schema_id (self->type);
+  self->settings = g_settings_new (schema_id.c_str ());
 
   init_fields (self);
 

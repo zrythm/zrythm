@@ -16,13 +16,13 @@
 /**
  * Returns a string identifier for the type.
  */
-char *
+std::string
 midi_function_type_to_string_id (MidiFunctionType type)
 {
   const auto type_str = MidiFunctionType_to_string (type);
   char *     type_str_lower = g_strdup (type_str.c_str ());
   string_to_lower (type_str.c_str (), type_str_lower);
-  char * substituted = string_replace (type_str_lower, " ", "-");
+  auto substituted = string_replace (type_str_lower, " ", "-");
   g_free (type_str_lower);
 
   return substituted;
@@ -39,9 +39,8 @@ midi_function_string_id_to_type (const char * id)
     i <= ENUM_VALUE_TO_INT (MidiFunctionType::Strum); i++)
     {
       MidiFunctionType cur = ENUM_INT_TO_VALUE (MidiFunctionType, i);
-      char *           str = midi_function_type_to_string_id (cur);
-      bool             eq = string_is_equal (str, id);
-      g_free (str);
+      auto             str = midi_function_type_to_string_id (cur);
+      bool             eq = str == id;
       if (eq)
         return cur;
     }

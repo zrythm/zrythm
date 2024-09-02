@@ -56,7 +56,7 @@ public:
 /**
  * Returns a string identifier for the type.
  */
-char *
+std::string
 midi_function_type_to_string_id (MidiFunctionType type);
 
 /**
