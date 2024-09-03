@@ -16,6 +16,22 @@ ScaleObject::ScaleObject (const MusicalScale &descr)
 {
 }
 
+void
+ScaleObject::init_after_cloning (const ScaleObject &other)
+{
+  index_in_chord_track_ = other.index_in_chord_track_;
+  scale_ = other.scale_;
+  TimelineObject::copy_members_from (other);
+  MuteableObject::copy_members_from (other);
+  ArrangerObject::copy_members_from (other);
+}
+
+void
+ScaleObject::init_loaded ()
+{
+  ArrangerObject::init_loaded_base ();
+}
+
 std::string
 ScaleObject::print_to_str () const
 {

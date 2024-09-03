@@ -62,6 +62,13 @@ AutomationPoint::AutomationPoint (
   normalized_val_ = normalized_val;
 }
 
+void
+AutomationPoint::init_loaded ()
+{
+  ArrangerObject::init_loaded_base ();
+  RegionOwnedObjectImpl::init_loaded_base ();
+}
+
 std::string
 AutomationPoint::print_to_str () const
 {

@@ -29,11 +29,7 @@ public:
 
   virtual ~NameableObject () = default;
 
-  void init_loaded () override
-  {
-    ArrangerObject::init_loaded ();
-    gen_escaped_name ();
-  }
+  void init_loaded_base ();
 
   /**
    * Returns the name of the object.
@@ -71,10 +67,7 @@ public:
    */
   virtual void set_name_with_action (const std::string &name) final;
 
-  virtual std::string gen_human_friendly_name () const override final
-  {
-    return name_;
-  }
+  std::string gen_human_friendly_name () const final { return name_; }
 
 protected:
   void copy_members_from (const NameableObject &other)

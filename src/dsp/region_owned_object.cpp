@@ -8,6 +8,18 @@
 
 #include "doctest_wrapper.h"
 
+void
+RegionOwnedObject::copy_members_from (const RegionOwnedObject &other)
+{
+  region_id_ = other.region_id_;
+  index_ = other.index_;
+}
+
+void
+RegionOwnedObject::init_loaded_base ()
+{
+}
+
 template <typename RegionT>
 RegionT *
 RegionOwnedObjectImpl<RegionT>::get_region () const

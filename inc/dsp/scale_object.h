@@ -31,14 +31,9 @@ public:
 
   ScaleObject (const MusicalScale &descr);
 
-  void init_after_cloning (const ScaleObject &other) override
-  {
-    index_in_chord_track_ = other.index_in_chord_track_;
-    scale_ = other.scale_;
-    TimelineObject::copy_members_from (other);
-    MuteableObject::copy_members_from (other);
-    ArrangerObject::copy_members_from (other);
-  }
+  void init_after_cloning (const ScaleObject &other) override;
+
+  void init_loaded () override;
 
   void set_index_in_chord_track (int index);
 

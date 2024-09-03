@@ -26,13 +26,7 @@ public:
   void get_fade_out_pos (Position * pos) const { *pos = fade_out_pos_; }
 
 protected:
-  void copy_members_from (const FadeableObject &other)
-  {
-    fade_in_pos_ = other.fade_in_pos_;
-    fade_out_pos_ = other.fade_out_pos_;
-    fade_in_opts_ = other.fade_in_opts_;
-    fade_out_opts_ = other.fade_out_opts_;
-  }
+  void copy_members_from (const FadeableObject &other);
 
   bool are_members_valid (bool is_project) const;
 

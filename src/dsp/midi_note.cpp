@@ -36,6 +36,15 @@ MidiNote::MidiNote (
   end_pos_ = end_pos;
 }
 
+void
+MidiNote::init_loaded ()
+{
+  ArrangerObject::init_loaded_base ();
+  RegionOwnedObjectImpl::init_loaded_base ();
+  vel_->midi_note_ = this;
+  vel_->init_loaded ();
+}
+
 std::string
 MidiNote::print_to_str () const
 {

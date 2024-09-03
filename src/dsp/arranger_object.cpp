@@ -800,3 +800,19 @@ ArrangerObject::is_hovered () const
 {
   return arranger_object_is_hovered (this, nullptr);
 }
+
+void
+ArrangerObject::copy_members_from (const ArrangerObject &other)
+{
+  pos_ = other.pos_;
+  type_ = other.type_;
+  track_name_hash_ = other.track_name_hash_;
+  deleted_temporarily_ = other.deleted_temporarily_;
+  flags_ = other.flags_;
+}
+
+void
+ArrangerObject::init_loaded_base ()
+{
+  z_return_if_fail (type_ > Type::None);
+};

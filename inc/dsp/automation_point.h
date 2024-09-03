@@ -123,6 +123,8 @@ public:
 
   void init_after_cloning (const AutomationPoint &other) override;
 
+  void init_loaded () override;
+
   ArrangerObjectPtr add_clone_to_project (bool fire_events) const override;
 
   ArrangerObjectPtr insert_clone_to_project () const override;

@@ -24,6 +24,7 @@ dsp_srcs = files([
   'chord_region.cpp',
   'chord_track.cpp',
   'clip.cpp',
+  'colored_object.cpp',
   'control_port.cpp',
   'control_room.cpp',
   'cv_port.cpp',

@@ -7,6 +7,23 @@
 #include "project.h"
 #include "zrythm.h"
 
+void
+Marker::init_loaded ()
+{
+  ArrangerObject::init_loaded_base ();
+  NameableObject::init_loaded_base ();
+}
+
+void
+Marker::init_after_cloning (const Marker &other)
+{
+  marker_type_ = other.marker_type_;
+  marker_track_index_ = other.marker_track_index_;
+  NameableObject::copy_members_from (other);
+  TimelineObject::copy_members_from (other);
+  ArrangerObject::copy_members_from (other);
+}
+
 Marker *
 Marker::find_by_name (const std::string &name)
 {

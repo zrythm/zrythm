@@ -33,6 +33,18 @@ AutomationRegion::AutomationRegion (
 }
 
 void
+AutomationRegion::init_loaded ()
+{
+  ArrangerObject::init_loaded_base ();
+  TimelineObject::init_loaded_base ();
+  NameableObject::init_loaded_base ();
+  for (auto &ap : aps_)
+    {
+      ap->init_loaded ();
+    }
+}
+
+void
 AutomationRegion::print_automation () const
 {
   for (const auto &ap : aps_)

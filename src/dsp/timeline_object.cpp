@@ -10,6 +10,16 @@
 #include "gui/widgets/timeline_panel.h"
 #include "zrythm_app.h"
 
+void
+TimelineObject::copy_members_from (const TimelineObject &other)
+{
+}
+
+void
+TimelineObject::init_loaded_base ()
+{
+}
+
 ArrangerWidget *
 TimelineObject::get_arranger () const
 {

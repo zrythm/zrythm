@@ -24,6 +24,22 @@ Velocity::Velocity (MidiNote * midi_note, const uint8_t vel)
 {
 }
 
+void
+Velocity::init_after_cloning (const Velocity &other)
+{
+  vel_ = other.vel_;
+  vel_at_start_ = other.vel_at_start_;
+  RegionOwnedObject::copy_members_from (other);
+  ArrangerObject::copy_members_from (other);
+}
+
+void
+Velocity::init_loaded ()
+{
+  ArrangerObject::init_loaded_base ();
+  RegionOwnedObject::init_loaded_base ();
+}
+
 ArrangerWidget *
 Velocity::get_arranger () const
 {

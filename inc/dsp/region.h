@@ -280,11 +280,7 @@ public:
     bool              include_region_end = false);
 
 protected:
-  void copy_members_from (const Region &other)
-  {
-    id_ = other.id_;
-    bounce_ = other.bounce_;
-  }
+  void copy_members_from (const Region &other);
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

@@ -111,11 +111,7 @@ public:
     int                              lane_pos,
     int                              idx_inside_lane);
 
-  void init_loaded () override
-  {
-    read_from_pool_ = true;
-    z_return_if_fail (get_clip ());
-  }
+  void init_loaded () override;
 
   /**
    * Returns the audio clip associated with the Region.

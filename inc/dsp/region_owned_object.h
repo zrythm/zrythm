@@ -23,17 +23,15 @@ public:
   operator== (const RegionOwnedObject &lhs, const RegionOwnedObject &rhs);
 
 protected:
-  void copy_members_from (const RegionOwnedObject &other)
-  {
-    region_id_ = other.region_id_;
-    index_ = other.index_;
-  }
+  void copy_members_from (const RegionOwnedObject &other);
+
+  void init_loaded_base ();
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
 public:
   /** Parent region identifier for objects that are part of a region. */
-  RegionIdentifier region_id_ = {};
+  RegionIdentifier region_id_;
 
   /** Index in the owner region. */
   int index_ = -1;

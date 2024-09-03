@@ -105,6 +105,17 @@ MidiRegion::MidiRegion (
 }
 
 void
+MidiRegion::init_loaded ()
+{
+  ArrangerObject::init_loaded_base ();
+  NameableObject::init_loaded_base ();
+  for (auto &note : midi_notes_)
+    {
+      note->init_loaded ();
+    }
+}
+
+void
 MidiRegion::print_midi_notes () const
 {
   for (const auto &mn : midi_notes_)

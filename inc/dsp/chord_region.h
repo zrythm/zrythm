@@ -37,13 +37,7 @@ public:
 
   using RegionT = RegionImpl<ChordRegion>;
 
-  void init_loaded () override
-  {
-    for (auto &chord : chord_objects_)
-      {
-        chord->init_loaded ();
-      }
-  }
+  void init_loaded () override;
 
   bool validate (bool is_project, double frames_per_tick) const override;
 

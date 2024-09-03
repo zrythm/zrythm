@@ -47,11 +47,7 @@ public:
     uint8_t                 val,
     uint8_t                 vel);
 
-  void init_loaded () override
-  {
-    vel_->midi_note_ = this;
-    vel_->init_loaded ();
-  }
+  void init_loaded () override;
 
   void set_cache_val (const uint8_t val) { cache_val_ = val; }
 

@@ -18,6 +18,23 @@
 
 #include <fmt/format.h>
 
+void
+ChordObject::init_after_cloning (const ChordObject &other)
+{
+  MuteableObject::copy_members_from (other);
+  RegionOwnedObjectImpl::copy_members_from (other);
+  ArrangerObject::copy_members_from (other);
+  chord_index_ = other.chord_index_;
+}
+
+void
+ChordObject::init_loaded ()
+{
+  ArrangerObject::init_loaded_base ();
+  RegionOwnedObjectImpl::init_loaded_base ();
+  MuteableObject::init_loaded_base ();
+}
+
 /**
  * Returns the ChordDescriptor associated with this ChordObject.
  */

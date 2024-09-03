@@ -622,6 +622,15 @@ AudioRegion::validate (bool is_project, double frames_per_tick) const
 }
 
 void
+AudioRegion::init_loaded ()
+{
+  ArrangerObject::init_loaded_base ();
+  NameableObject::init_loaded_base ();
+  read_from_pool_ = true;
+  z_return_if_fail (get_clip ());
+}
+
+void
 AudioRegion::init_after_cloning (const AudioRegion &other)
 {
   init_default_constructed (

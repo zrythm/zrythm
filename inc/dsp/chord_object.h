@@ -88,13 +88,9 @@ public:
 
   bool validate (bool is_project, double frames_per_tick) const override;
 
-  void init_after_cloning (const ChordObject &other) override
-  {
-    MuteableObject::copy_members_from (other);
-    RegionOwnedObjectImpl::copy_members_from (other);
-    ArrangerObject::copy_members_from (other);
-    chord_index_ = other.chord_index_;
-  }
+  void init_after_cloning (const ChordObject &other) override;
+
+  void init_loaded () override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

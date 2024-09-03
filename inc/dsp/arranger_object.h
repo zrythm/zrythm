@@ -221,7 +221,7 @@ public:
   /**
    * Initializes the object after loading a Project.
    */
-  virtual void init_loaded () { z_return_if_fail (type_ > Type::None); };
+  virtual void init_loaded () = 0;
 
   /**
    * Returns the ArrangerSelections corresponding to the given object type.
@@ -508,14 +508,9 @@ public:
   bool is_chord_object () const { return type_ == Type::ChordObject; };
 
 protected:
-  void copy_members_from (const ArrangerObject &other)
-  {
-    pos_ = other.pos_;
-    type_ = other.type_;
-    track_name_hash_ = other.track_name_hash_;
-    deleted_temporarily_ = other.deleted_temporarily_;
-    flags_ = other.flags_;
-  }
+  void copy_members_from (const ArrangerObject &other);
+
+  void init_loaded_base ();
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

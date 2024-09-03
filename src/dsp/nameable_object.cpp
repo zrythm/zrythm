@@ -21,6 +21,12 @@ NameableObject::gen_escaped_name ()
 }
 
 void
+NameableObject::init_loaded_base ()
+{
+  gen_escaped_name ();
+}
+
+void
 NameableObject::set_name (const std::string &name, bool fire_events)
 {
   name_ = name;

@@ -46,6 +46,13 @@
 #include <glib/gi18n.h>
 
 void
+Region::copy_members_from (const Region &other)
+{
+  id_ = other.id_;
+  bounce_ = other.bounce_;
+}
+
+void
 Region::init (
   const Position &start_pos,
   const Position &end_pos,

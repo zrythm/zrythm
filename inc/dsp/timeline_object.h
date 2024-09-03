@@ -22,7 +22,9 @@ public:
   ArrangerWidget * get_arranger () const final;
 
 protected:
-  void copy_members_from (const TimelineObject &other) { }
+  void copy_members_from (const TimelineObject &other);
+
+  void init_loaded_base ();
 
 public:
 };

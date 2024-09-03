@@ -66,14 +66,9 @@ public:
     return marker_type_ != Type::Start && marker_type_ != Type::End;
   }
 
-  void init_after_cloning (const Marker &other) override
-  {
-    marker_type_ = other.marker_type_;
-    marker_track_index_ = other.marker_track_index_;
-    NameableObject::copy_members_from (other);
-    TimelineObject::copy_members_from (other);
-    ArrangerObject::copy_members_from (other);
-  }
+  void init_loaded () override;
+
+  void init_after_cloning (const Marker &other) override;
 
   std::string print_to_str () const override;
 

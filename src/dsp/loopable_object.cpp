@@ -5,6 +5,19 @@
 #include "utils/debug.h"
 #include "zrythm.h"
 
+void
+LoopableObject::copy_members_from (const LoopableObject &other)
+{
+  clip_start_pos_ = other.clip_start_pos_;
+  loop_start_pos_ = other.loop_start_pos_;
+  loop_end_pos_ = other.loop_end_pos_;
+}
+
+void
+LoopableObject::init_loaded_base ()
+{
+}
+
 int
 LoopableObject::get_num_loops (bool count_incomplete) const
 {

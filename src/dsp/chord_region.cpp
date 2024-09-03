@@ -25,6 +25,17 @@ ChordRegion::
   init (start_pos, end_pos, P_CHORD_TRACK->get_name_hash (), 0, idx);
 }
 
+void
+ChordRegion::init_loaded ()
+{
+  ArrangerObject::init_loaded_base ();
+  NameableObject::init_loaded_base ();
+  for (auto &chord : chord_objects_)
+    {
+      chord->init_loaded ();
+    }
+}
+
 bool
 ChordRegion::validate (bool is_project, double frames_per_tick) const
 {

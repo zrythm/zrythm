@@ -2,7 +2,17 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/fadeable_object.h"
-#include "zrythm.h"
+
+#include "doctest_wrapper.h"
+
+void
+FadeableObject::copy_members_from (const FadeableObject &other)
+{
+  fade_in_pos_ = other.fade_in_pos_;
+  fade_out_pos_ = other.fade_out_pos_;
+  fade_in_opts_ = other.fade_in_opts_;
+  fade_out_opts_ = other.fade_out_opts_;
+}
 
 bool
 FadeableObject::are_members_valid (bool is_project) const

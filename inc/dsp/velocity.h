@@ -74,13 +74,9 @@ public:
 
   bool validate (bool is_project, double frames_per_tick) const override;
 
-  void init_after_cloning (const Velocity &other) override
-  {
-    vel_ = other.vel_;
-    vel_at_start_ = other.vel_at_start_;
-    RegionOwnedObject::copy_members_from (other);
-    ArrangerObject::copy_members_from (other);
-  }
+  void init_after_cloning (const Velocity &other) override;
+
+  void init_loaded () override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

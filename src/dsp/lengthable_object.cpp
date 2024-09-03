@@ -13,6 +13,19 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
+#include "doctest_wrapper.h"
+
+void
+LengthableObject::copy_members_from (const LengthableObject &other)
+{
+  end_pos_ = other.end_pos_;
+}
+
+void
+LengthableObject::init_loaded_base ()
+{
+}
+
 bool
 LengthableObject::are_members_valid (bool is_project) const
 {

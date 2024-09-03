@@ -86,13 +86,7 @@ public:
     int              lane_pos,
     int              idx_inside_lane);
 
-  void init_loaded () override
-  {
-    for (auto &note : midi_notes_)
-      {
-        note->init_loaded ();
-      }
-  }
+  void init_loaded () override;
 
   /**
    * Starts an unended note with the given pitch and velocity and adds it to

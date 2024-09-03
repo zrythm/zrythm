@@ -14,11 +14,10 @@ class ColoredObject
 public:
   virtual ~ColoredObject () = default;
 
-  void copy_members_from (const ColoredObject &other)
-  {
-    color_ = other.color_;
-    use_color_ = other.use_color_;
-  }
+protected:
+  void copy_members_from (const ColoredObject &other);
+
+  void init_loaded_base ();
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

@@ -96,12 +96,9 @@ public:
   }
 
 protected:
-  void copy_members_from (const LoopableObject &other)
-  {
-    clip_start_pos_ = other.clip_start_pos_;
-    loop_start_pos_ = other.loop_start_pos_;
-    loop_end_pos_ = other.loop_end_pos_;
-  }
+  void copy_members_from (const LoopableObject &other);
+
+  void init_loaded_base ();
 
   bool are_members_valid (bool is_project) const;
 
@@ -114,17 +111,17 @@ public:
    * The first time the object plays it will start playing from the
    * this position and then loop to @ref loop_start_pos_.
    */
-  Position clip_start_pos_ = {};
+  Position clip_start_pos_;
 
   /** Loop start Position relative to the object's start. */
-  Position loop_start_pos_ = {};
+  Position loop_start_pos_;
 
   /**
    * End position of the clip loop, relative to the object's start.
    *
    * Once this is reached, the clip will go back to @ref loop_start_pos_.
    */
-  Position loop_end_pos_ = {};
+  Position loop_end_pos_;
 };
 
 #endif // __DSP_LOOPABLE_OBJECT_H__

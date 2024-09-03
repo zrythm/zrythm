@@ -10,6 +10,17 @@
 #include "zrythm_app.h"
 
 void
+MuteableObject::copy_members_from (const MuteableObject &other)
+{
+  muted_ = other.muted_;
+}
+
+void
+MuteableObject::init_loaded_base ()
+{
+}
+
+void
 MuteableObject::set_muted (bool muted, bool fire_events)
 {
   muted_ = muted;

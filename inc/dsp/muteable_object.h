@@ -31,10 +31,9 @@ public:
   friend bool operator== (const MuteableObject &lhs, const MuteableObject &rhs);
 
 protected:
-  void copy_members_from (const MuteableObject &other)
-  {
-    muted_ = other.muted_;
-  }
+  void copy_members_from (const MuteableObject &other);
+
+  void init_loaded_base ();
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

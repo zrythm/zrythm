@@ -219,10 +219,9 @@ public:
   operator== (const LengthableObject &lhs, const LengthableObject &rhs);
 
 protected:
-  void copy_members_from (const LengthableObject &other)
-  {
-    end_pos_ = other.end_pos_;
-  }
+  void copy_members_from (const LengthableObject &other);
+
+  void init_loaded_base ();
 
   bool are_members_valid (bool is_project) const;
 

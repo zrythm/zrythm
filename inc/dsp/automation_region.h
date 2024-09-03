@@ -42,13 +42,7 @@ public:
     int             at_idx,
     int             idx_inside_at);
 
-  void init_loaded () override
-  {
-    for (auto &ap : aps_)
-      {
-        ap->init_loaded ();
-      }
-  }
+  void init_loaded () override;
 
   /**
    * Prints the automation in this Region.
