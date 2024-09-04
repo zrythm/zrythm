@@ -27,6 +27,8 @@ public:
 
   void init_loaded () override;
 
+  bool validate () const override;
+
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:

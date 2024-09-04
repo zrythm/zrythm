@@ -20,6 +20,8 @@ class FolderTrack final
   friend class InitializableObjectFactory<FolderTrack>;
 
 public:
+  bool validate () const override;
+
   bool get_listened () const override
   {
     return is_status (MixerStatus::Listened);

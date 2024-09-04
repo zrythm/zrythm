@@ -38,8 +38,6 @@ public:
    */
   void generate_automation_tracks ();
 
-  bool validate () const override;
-
   void clear_objects () override { automation_tracklist_->clear_objects (); }
 
   void get_regions_in_range (
@@ -63,6 +61,8 @@ protected:
     automation_tracklist_ = other.automation_tracklist_->clone_unique ();
     automation_visible_ = other.automation_visible_;
   }
+
+  bool validate_base () const;
 
   void set_playback_caches () override
   {

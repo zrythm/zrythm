@@ -747,7 +747,7 @@ Track::disconnect (bool remove_pl, bool recalc_graph)
     {
       if (port->is_in_active_project () != is_in_active_project ())
         {
-          z_critical ("invalid port");
+          z_error ("invalid port");
           return;
         }
 
@@ -846,6 +846,25 @@ Track::append_objects (std::vector<ArrangerObject *> &objs) const
             }
         }
     }
+}
+
+bool
+Track::validate_base () const
+{
+  std::vector<Port *> ports;
+  append_ports (ports, true);
+  return std::ranges::all_of (ports, [this] (const Port * port) {
+    const auto port_in_active_prj = port->is_in_active_project ();
+    const auto track_in_active_prj = is_in_active_project ();
+    if (port_in_active_prj != track_in_active_prj)
+      {
+        z_warning (
+          "port '{}' in active project ({}) != track '{}' in active project ({})",
+          port->get_label (), port_in_active_prj, get_name (),
+          track_in_active_prj);
+      }
+    return port_in_active_prj == track_in_active_prj;
+  });
 }
 
 void

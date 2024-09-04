@@ -42,10 +42,7 @@ public:
    */
   void toggle_plugin_visible ();
 
-  bool validate () const override
-  {
-    return GroupTargetTrack::validate () && PianoRollTrack::validate ();
-  }
+  bool validate () const override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

@@ -11,11 +11,11 @@
  */
 
 #define z_return_val_if_fail_cmp(a, comparator, b, val) \
-  if (!(G_LIKELY ((a) comparator (b)))) \
+  if (!((a) comparator (b))) [[unlikely]] \
     { \
       z_error ( \
-        "Assertion failed: {} ({}) {} {} ({})", #a, (gint64) (a), #comparator, \
-        #b, (gint64) (b)); \
+        "Assertion failed: `{}` ({}) {} `{}` ({})", #a, (a), #comparator, #b, \
+        (b)); \
       return val; \
     }
 
@@ -23,11 +23,11 @@
   z_return_val_if_fail_cmp (a, comparator, b, )
 
 #define z_warn_if_fail_cmp(a, comparator, b) \
-  if (!(G_LIKELY (a comparator b))) \
+  if (!((a) comparator (b))) [[unlikely]] \
     { \
       z_warning ( \
-        "Assertion failed: {} ({}) {} {} ({})", #a, (gint64) (a), #comparator, \
-        #b, (gint64) (b)); \
+        "Assertion failed: `{}` ({}) {} `{}` ({})", #a, (a), #comparator, #b, \
+        (b)); \
     }
 
 #ifdef _MSC_VER

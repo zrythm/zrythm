@@ -66,11 +66,7 @@ protected:
     MidiEventVector *            midi_events,
     StereoPorts *                stereo_ports) const;
 
-  void copy_members_from (const ProcessableTrack &other)
-  {
-    processor_ = other.processor_->clone_unique ();
-    processor_->track_ = this;
-  }
+  void copy_members_from (const ProcessableTrack &other);
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

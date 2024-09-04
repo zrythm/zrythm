@@ -885,45 +885,46 @@ TracklistSelectionsAction::
             {
               auto &own_track = tls_before_->tracks_[i];
 
-              /* create a new clone to use in the project */
-              auto track =
-                clone_unique_with_variant<TrackVariant> (own_track.get ());
-              z_return_if_fail (track);
+              std::visit (
+                [&] (const auto &&own_track_ptr) {
+                  using TrackT = base_type<decltype (own_track_ptr)>;
 
-              if (track->has_channel ())
-                {
-                  auto channel_track =
-                    dynamic_cast<ChannelTrack *> (track.get ());
-                  /* remove output */
-                  channel_track->get_channel ()->has_output_ = false;
-                  channel_track->get_channel ()->output_name_hash_ = 0;
+                  /* create a new clone to use in the project */
+                  auto track = own_track_ptr->clone_unique ();
+                  z_return_if_fail (track);
 
-                  /* remove sends */
-                  for (auto &send : channel_track->get_channel ()->sends_)
+                  if constexpr (std::derived_from<TrackT, ChannelTrack>)
                     {
-                      send->enabled_->control_ = 0.f;
+                      /* remove output */
+                      track->get_channel ()->has_output_ = false;
+                      track->get_channel ()->output_name_hash_ = 0;
+
+                      /* remove sends */
+                      for (auto &send : track->get_channel ()->sends_)
+                        {
+                          send->enabled_->control_ = 0.f;
+                        }
                     }
-                }
 
-              /* remove children */
-              if (track->can_be_group_target ())
-                {
-                  auto group_target_track =
-                    dynamic_cast<GroupTargetTrack *> (track.get ());
-                  group_target_track->children_.clear ();
-                }
+                  /* remove children */
+                  if constexpr (std::derived_from<TrackT, GroupTargetTrack>)
+                    {
+                      track->children_.clear ();
+                    }
 
-              int target_pos = track_pos_ + i;
-              if (inside)
-                target_pos++;
+                  int target_pos = track_pos_ + i;
+                  if (inside)
+                    target_pos++;
 
-              /* add to tracklist at given pos */
-              auto added_track = TRACKLIST->insert_track (
-                std::move (track), target_pos, false, false);
+                  /* add to tracklist at given pos */
+                  auto added_track = TRACKLIST->insert_track (
+                    std::move (track), target_pos, false, false);
 
-              /* select it */
-              added_track->select (true, false, false);
-              new_tracks.push_back (added_track);
+                  /* select it */
+                  added_track->select (true, false, false);
+                  new_tracks.push_back (added_track);
+                },
+                convert_to_variant<TrackPtrVariant> (own_track.get ()));
             }
 
           /* reroute new tracks to correct outputs & sends */

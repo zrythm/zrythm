@@ -38,3 +38,10 @@ MasterTrack::init_after_cloning (const MasterTrack &other)
   ChannelTrack::copy_members_from (other);
   GroupTargetTrack::copy_members_from (other);
 }
+
+bool
+MasterTrack::validate () const
+{
+  return Track::validate_base () && GroupTargetTrack::validate_base ()
+         && ChannelTrack::validate_base () && AutomatableTrack::validate_base ();
+}

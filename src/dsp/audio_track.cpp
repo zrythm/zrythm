@@ -52,6 +52,30 @@ AudioTrack::initialize ()
 }
 
 void
+AudioTrack::clear_objects ()
+{
+  LanedTrackImpl::clear_objects ();
+  AutomatableTrack::clear_objects ();
+}
+
+void
+AudioTrack::get_regions_in_range (
+  std::vector<Region *> &regions,
+  const Position *       p1,
+  const Position *       p2)
+{
+  LanedTrackImpl::get_regions_in_range (regions, p1, p2);
+  AutomatableTrack::get_regions_in_range (regions, p1, p2);
+}
+
+bool
+AudioTrack::validate () const
+{
+  return Track::validate_base () && LanedTrackImpl::validate_base ()
+         && AutomatableTrack::validate_base () && ChannelTrack::validate_base ();
+}
+
+void
 AudioTrack::set_playback_caches ()
 {
   LanedTrackImpl::set_playback_caches ();

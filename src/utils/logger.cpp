@@ -19,7 +19,7 @@ protected:
     if (msg.level >= spdlog::level::err)
       {
         auto bt = Backtrace ().get_backtrace ("", 32, false);
-        z_warning ("Backtrace:\n{}", bt);
+        fmt::println (stderr, "Backtrace:\n{}", bt);
 
         if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING || ZRYTHM_BREAK_ON_ERROR)
           {
@@ -32,9 +32,11 @@ protected:
                 abort ();
               }
           }
-        else
+
+        if (msg.level >= spdlog::level::critical)
           {
-            // TODO: show backtrace etc.
+            fmt::println (stderr, "Critical error, exiting...");
+            exit (EXIT_FAILURE);
           }
       }
   }

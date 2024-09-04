@@ -53,8 +53,6 @@ public:
 
   bool get_soloed () const override { return channel_->fader_->get_soloed (); }
 
-  bool validate () const override;
-
   /**
    * Generates a menu to be used for channel-related items, eg, fader buttons,
    * direct out, etc.
@@ -105,6 +103,8 @@ protected:
   ChannelTrack ();
 
   void copy_members_from (const ChannelTrack &other);
+
+  bool validate_base () const;
 
   /**
    * @brief Initializes the channel.

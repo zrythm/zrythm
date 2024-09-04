@@ -1,12 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Automation track.
- */
-
 #ifndef __AUDIO_AUTOMATION_TRACK_H__
 #define __AUDIO_AUTOMATION_TRACK_H__
 
@@ -127,8 +121,7 @@ public:
    *   inside a region regardless of whether we should create/edit automation
    *   points or not.
    */
-  HOT bool
-  should_be_recording (const RtTimePoint cur_time, const bool record_aps) const;
+  HOT bool should_be_recording (RtTimePoint cur_time, bool record_aps) const;
 
   /**
    * Sets the index of the AutomationTrack in the AutomationTracklist.

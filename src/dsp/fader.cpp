@@ -1082,4 +1082,17 @@ Fader::init_after_cloning (const Fader &other)
     stereo_out_ = other.stereo_out_->clone_unique ();
   midi_mode_ = other.midi_mode_;
   passthrough_ = other.passthrough_;
+
+  /* set owner */
+  std::vector<Port *> ports;
+  append_ports (ports);
+  for (auto &port : ports)
+    {
+      if (port->id_.owner_type_ == PortIdentifier::OwnerType::Fader)
+        {
+          /* note: don't call set_owner() because get_track () won't work here.
+           * also, all other port fields are already copied*/
+          port->fader_ = this;
+        }
+    }
 }

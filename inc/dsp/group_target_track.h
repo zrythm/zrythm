@@ -62,8 +62,6 @@ public:
     bool         recalc_graph,
     bool         pub_events);
 
-  bool validate () const override;
-
   void add_children (
     const std::vector<unsigned int> &children,
     bool                             connect,
@@ -77,6 +75,8 @@ public:
 
 protected:
   void copy_members_from (const GroupTargetTrack &other);
+
+  bool validate_base () const;
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

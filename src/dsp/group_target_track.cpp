@@ -133,12 +133,8 @@ GroupTargetTrack::
 }
 
 bool
-GroupTargetTrack::validate () const
+GroupTargetTrack::validate_base () const
 {
-  /* do standard validation first */
-  if (!ChannelTrack::validate ())
-    return false;
-
   for (auto &child_hash : children_)
     {
       auto track =

@@ -18,6 +18,46 @@
 #include "midilib/src/midiinfo.h"
 #include <fmt/printf.h>
 
+TrackLane::TrackLane (int pos, std::string name)
+    : pos_ (pos), name_ (std::move (name))
+{
+}
+
+template <typename RegionT>
+TrackLaneImpl<RegionT>::TrackLaneImpl (LanedTrackT * track, int pos)
+    : TrackLane (pos, format_str (_ ("Lane {}"), pos + 1)), track_ (track)
+{
+}
+
+template <typename RegionT>
+void
+TrackLaneImpl<RegionT>::init_loaded (LanedTrackT * track)
+{
+  track_ = track;
+  for (auto &region : this->regions_)
+    {
+      region->set_lane (*this);
+      region->init_loaded ();
+    }
+}
+
+template <typename RegionT>
+void
+TrackLaneImpl<RegionT>::rename_with_action (const std::string &new_name)
+{
+  rename (new_name, true);
+}
+
+template <typename RegionT>
+void
+TrackLaneImpl<RegionT>::unselect_all ()
+{
+  for (auto &region : this->regions_)
+    {
+      region->select (false, false, false);
+    }
+}
+
 template <typename RegionT>
 void
 TrackLaneImpl<RegionT>::rename (const std::string &new_name, bool with_action)
@@ -107,9 +147,13 @@ template <typename RegionT>
 void
 TrackLaneImpl<RegionT>::after_remove_region ()
 {
-  if (!RegionOwnerImpl<RegionT>::clearing_)
+  auto track = get_track ();
+  z_return_if_fail (track);
+  if (
+    !RegionOwnerImpl<RegionT>::clearing_
+    && !track->block_auto_creation_and_deletion_)
     {
-      get_track ()->remove_empty_last_lanes ();
+      track->remove_empty_last_lanes ();
     }
 }
 

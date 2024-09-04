@@ -28,6 +28,9 @@ Backtrace::get_backtrace (std::string prefix, int depth, bool write_to_file)
   backward::StackTrace st;
   st.load_here (depth);
 
+  // skip this function and the one that called it
+  st.skip_n_firsts (2);
+
   // Create a backward::Printer object
   backward::Printer p;
 

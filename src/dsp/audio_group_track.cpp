@@ -20,6 +20,13 @@ AudioGroupTrack::initialize ()
   return true;
 }
 
+bool
+AudioGroupTrack::validate () const
+{
+  return Track::validate_base () && GroupTargetTrack::validate_base ()
+         && ChannelTrack::validate_base () && AutomatableTrack::validate_base ();
+}
+
 void
 AudioGroupTrack::init_loaded ()
 {

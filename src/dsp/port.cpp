@@ -753,6 +753,7 @@ Port::set_owner (T * owner)
     {
       id_.owner_type_ = PortIdentifier::OwnerType::Fader;
       fader_ = owner;
+      z_return_if_fail (fader_);
 
       if (
         owner->type_ == Fader::Type::AudioChannel
@@ -807,6 +808,7 @@ Port::set_owner (T * owner)
       // z_return_if_fail (!track.name_.empty ());
       id_.track_name_hash_ = owner->name_.empty () ? 0 : owner->get_name_hash ();
       id_.owner_type_ = PortIdentifier::OwnerType::Track;
+      track_ = owner;
     }
   else if constexpr (std::derived_from<T, ModulatorMacroProcessor>)
     {

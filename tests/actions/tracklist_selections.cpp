@@ -78,6 +78,144 @@ static auto perform_set_direct_out = [] (const auto &from, const auto &to) {
     *to));
 };
 
+#if defined(HAVE_HELM) || defined(HAVE_LSP_COMPRESSOR)
+static void
+_test_port_and_plugin_track_pos_after_duplication (
+  const char * pl_bundle,
+  const char * pl_uri,
+  bool         is_instrument,
+  bool         with_carla)
+{
+  test_plugin_manager_create_tracks_from_plugin (
+    pl_bundle, pl_uri, is_instrument, with_carla, 1);
+
+  REQUIRE_GT (TRACKLIST->get_num_tracks (), 0);
+  int src_track_pos = TRACKLIST->get_num_tracks () - 1;
+  int dest_track_pos = TRACKLIST->get_num_tracks ();
+
+  /* select it */
+  auto * src_track = TRACKLIST->get_track<ChannelTrack> (src_track_pos);
+  REQUIRE_NONNULL (src_track);
+  src_track->select (true, true, false);
+
+  /* get an automation track */
+  const auto &at = src_track->automation_tracklist_->ats_.back ();
+  at->created_ = true;
+  src_track->automation_tracklist_->set_at_visible (*at, true);
+
+  /* create an automation region */
+  Position start_pos, end_pos;
+  start_pos.set_to_bar (2);
+  end_pos.set_to_bar (4);
+  const auto track_name_hash = src_track->get_name_hash ();
+  auto       region = std::make_shared<AutomationRegion> (
+    start_pos, end_pos, track_name_hash, at->index_, at->regions_.size ());
+  src_track->add_region (region, at.get (), -1, true, false);
+  region->select (true, false, false);
+  perform_create_arranger_sel (TL_SELECTIONS);
+
+  /* create some automation points */
+  auto * port = Port::find_from_identifier<ControlPort> (at->port_id_);
+  start_pos.set_to_bar (1);
+  const auto normalized_val = port->real_val_to_normalized (port->deff_);
+  math_assert_nonnann (port->deff_);
+  math_assert_nonnann (normalized_val);
+  {
+    auto ap = std::make_shared<AutomationPoint> (
+      port->deff_, normalized_val, start_pos);
+    region->append_object (ap);
+    ap->select (true, false, false);
+    perform_create_arranger_sel (AUTOMATION_SELECTIONS);
+    math_assert_nonnann (ap->fvalue_);
+    math_assert_nonnann (ap->normalized_val_);
+  }
+
+  REQUIRE (src_track->validate ());
+
+  /* duplicate it */
+  perform_copy_to_end ();
+
+  const auto * dest_track =
+    TRACKLIST->get_track<AutomatableTrack> (dest_track_pos);
+
+  if (is_instrument)
+    {
+      const auto * ins_track =
+        dynamic_cast<const InstrumentTrack *> (dest_track);
+      /* check that track processor is connected to the instrument */
+      auto conn = PORT_CONNECTIONS_MGR->get_source_or_dest (
+        ins_track->processor_->midi_out_->id_, false);
+      REQUIRE_HAS_VALUE (conn);
+
+      /* check that instrument is connected to channel prefader */
+      conn = PORT_CONNECTIONS_MGR->get_source_or_dest (
+        ins_track->channel_->prefader_->stereo_in_->get_l ().id_, true);
+      REQUIRE_HAS_VALUE (conn);
+    }
+
+  REQUIRE (src_track->validate ());
+  REQUIRE (dest_track->validate ());
+
+  /* move automation in 2nd track and undo/redo */
+  const auto &atl = dest_track->get_automation_tracklist ();
+  {
+    const auto &at_to_check = atl.ats_.back ();
+    REQUIRE_NONEMPTY (at_to_check->regions_);
+    const auto &ap = at_to_check->regions_.front ()->aps_.front ();
+    ap->select (true, false, false);
+    float prev_norm_val = ap->normalized_val_;
+    math_assert_nonnann (ap->normalized_val_);
+    math_assert_nonnann (prev_norm_val);
+    ap->set_fvalue (prev_norm_val - 0.1f, F_NORMALIZED, false);
+  }
+  UNDO_MANAGER->perform (
+    std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateAutomationAction> (
+      *AUTOMATION_SELECTIONS, true, 0, 0.1, true));
+  UNDO_MANAGER->undo ();
+  UNDO_MANAGER->redo ();
+
+  /* let the engine run */
+  std::this_thread::sleep_for (std::chrono::seconds (1));
+
+  /* go back to the start */
+  UNDO_MANAGER->undo ();
+  UNDO_MANAGER->undo ();
+  UNDO_MANAGER->undo ();
+  UNDO_MANAGER->undo ();
+  UNDO_MANAGER->undo ();
+}
+#endif
+
+TEST_CASE_FIXTURE (
+  ZrythmFixture,
+  "test port and plugin track pos after duplication")
+{
+#ifdef HAVE_HELM
+  _test_port_and_plugin_track_pos_after_duplication (
+    HELM_BUNDLE, HELM_URI, true, false);
+#endif
+#ifdef HAVE_LSP_COMPRESSOR
+  _test_port_and_plugin_track_pos_after_duplication (
+    LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, false, false);
+#endif
+}
+
+#ifdef HAVE_CARLA
+TEST_CASE_FIXTURE (
+  ZrythmFixture,
+  "test port and plugin track pos after duplication with Carla")
+{
+#  ifdef HAVE_HELM
+  _test_port_and_plugin_track_pos_after_duplication (
+    HELM_BUNDLE, HELM_URI, true, true);
+#  endif
+#  ifdef HAVE_LSP_COMPRESSOR
+  _test_port_and_plugin_track_pos_after_duplication (
+    LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, false, true);
+#  endif
+}
+#endif
+
 static void
 test_num_tracks_with_file (const fs::path &filepath, const int num_tracks)
 {
@@ -136,136 +274,6 @@ TEST_CASE_FIXTURE (
 
   UNDO_MANAGER->redo ();
 }
-
-#if defined(HAVE_HELM) || defined(HAVE_LSP_COMPRESSOR)
-static void
-_test_port_and_plugin_track_pos_after_duplication (
-  const char * pl_bundle,
-  const char * pl_uri,
-  bool         is_instrument,
-  bool         with_carla)
-{
-  test_plugin_manager_create_tracks_from_plugin (
-    pl_bundle, pl_uri, is_instrument, with_carla, 1);
-
-  REQUIRE_GT (TRACKLIST->get_num_tracks (), 0);
-  int src_track_pos = TRACKLIST->get_num_tracks () - 1;
-  int dest_track_pos = TRACKLIST->get_num_tracks ();
-
-  /* select it */
-  auto src_track = TRACKLIST->get_track<ChannelTrack> (src_track_pos);
-  REQUIRE_NONNULL (src_track);
-  src_track->select (true, true, false);
-
-  /* get an automation track */
-  auto &at = src_track->automation_tracklist_->ats_.back ();
-  at->created_ = true;
-  src_track->automation_tracklist_->set_at_visible (*at, true);
-
-  /* create an automation region */
-  Position start_pos, end_pos;
-  start_pos.set_to_bar (2);
-  end_pos.set_to_bar (4);
-  const auto track_name_hash = src_track->get_name_hash ();
-  auto       region = std::make_shared<AutomationRegion> (
-    start_pos, end_pos, track_name_hash, at->index_, at->regions_.size ());
-  src_track->add_region (region, at.get (), -1, true, false);
-  region->select (true, false, false);
-  perform_create_arranger_sel (TL_SELECTIONS);
-
-  /* create some automation points */
-  auto port = Port::find_from_identifier<ControlPort> (at->port_id_);
-  start_pos.set_to_bar (1);
-  const auto normalized_val = port->real_val_to_normalized (port->deff_);
-  math_assert_nonnann (port->deff_);
-  math_assert_nonnann (normalized_val);
-  auto ap =
-    std::make_shared<AutomationPoint> (port->deff_, normalized_val, start_pos);
-  region->append_object (ap);
-  ap->select (true, false, false);
-  perform_create_arranger_sel (AUTOMATION_SELECTIONS);
-  math_assert_nonnann (ap->fvalue_);
-  math_assert_nonnann (ap->normalized_val_);
-
-  REQUIRE (src_track->validate ());
-
-  /* duplicate it */
-  perform_copy_to_end ();
-
-  auto dest_track = TRACKLIST->get_track<AutomatableTrack> (dest_track_pos);
-
-  if (is_instrument)
-    {
-      auto ins_track = dynamic_cast<InstrumentTrack *> (dest_track);
-      /* check that track processor is connected to the instrument */
-      auto conn = PORT_CONNECTIONS_MGR->get_source_or_dest (
-        ins_track->processor_->midi_out_->id_, false);
-      REQUIRE_HAS_VALUE (conn);
-
-      /* check that instrument is connected to channel prefader */
-      conn = PORT_CONNECTIONS_MGR->get_source_or_dest (
-        ins_track->channel_->prefader_->stereo_in_->get_l ().id_, true);
-      REQUIRE_HAS_VALUE (conn);
-    }
-
-  REQUIRE (src_track->validate ());
-  REQUIRE (dest_track->validate ());
-
-  /* move automation in 2nd track and undo/redo */
-  const auto &atl = dest_track->get_automation_tracklist ();
-  ap = atl.ats_.front ()->regions_.at (0)->aps_.at (0);
-  ap->select (true, false, false);
-  float prev_norm_val = ap->normalized_val_;
-  math_assert_nonnann (ap->normalized_val_);
-  math_assert_nonnann (prev_norm_val);
-  ap->set_fvalue (prev_norm_val - 0.1f, F_NORMALIZED, false);
-  UNDO_MANAGER->perform (
-    std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateAutomationAction> (
-      *AUTOMATION_SELECTIONS, true, 0, 0.1, true));
-  UNDO_MANAGER->undo ();
-  UNDO_MANAGER->redo ();
-
-  /* let the engine run */
-  std::this_thread::sleep_for (std::chrono::seconds (1));
-
-  /* go back to the start */
-  UNDO_MANAGER->undo ();
-  UNDO_MANAGER->undo ();
-  UNDO_MANAGER->undo ();
-  UNDO_MANAGER->undo ();
-  UNDO_MANAGER->undo ();
-}
-#endif
-
-TEST_CASE_FIXTURE (
-  ZrythmFixture,
-  "test port and plugin track pos after duplication")
-{
-#ifdef HAVE_HELM
-  _test_port_and_plugin_track_pos_after_duplication (
-    HELM_BUNDLE, HELM_URI, true, false);
-#endif
-#ifdef HAVE_LSP_COMPRESSOR
-  _test_port_and_plugin_track_pos_after_duplication (
-    LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, false, false);
-#endif
-}
-
-#ifdef HAVE_CARLA
-TEST_CASE_FIXTURE (
-  ZrythmFixture,
-  "test port and plugin track pos after duplication with Carla")
-{
-#  ifdef HAVE_HELM
-  _test_port_and_plugin_track_pos_after_duplication (
-    HELM_BUNDLE, HELM_URI, true, true);
-#  endif
-#  ifdef HAVE_LSP_COMPRESSOR
-  _test_port_and_plugin_track_pos_after_duplication (
-    LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, false, true);
-#  endif
-}
-#endif
 
 #ifdef HAVE_HELM
 static void

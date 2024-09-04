@@ -354,45 +354,48 @@ check_vs_orig_state:
 
     {
       /* check automation region */
-      auto at = P_MASTER_TRACK->channel_->get_automation_track (
+      const auto * at = P_MASTER_TRACK->channel_->get_automation_track (
         PortIdentifier::Flags::StereoBalance);
       REQUIRE_NONNULL (at);
       REQUIRE_SIZE_EQ (at->regions_, 1);
-      auto r = at->regions_.at (0);
+      const auto &r = at->regions_.at (0);
       REQUIRE_POSITION_EQ (r->pos_, p1_);
       REQUIRE_POSITION_EQ (r->end_pos_, p2_);
       REQUIRE_SIZE_EQ (r->aps_, 2);
-      auto ap = r->aps_.at (0);
-      REQUIRE_POSITION_EQ (ap->pos_, p1_);
-      REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL1, 0.000001f);
-      ap = r->aps_[1];
-      REQUIRE_POSITION_EQ (ap->pos_, p2_);
-      REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL2, 0.000001f);
+      const auto &ap1 = r->aps_.at (0);
+      REQUIRE_POSITION_EQ (ap1->pos_, p1_);
+      REQUIRE_FLOAT_NEAR (ap1->fvalue_, AP_VAL1, 0.000001f);
+      const auto &ap2 = r->aps_[1];
+      REQUIRE_POSITION_EQ (ap2->pos_, p2_);
+      REQUIRE_FLOAT_NEAR (ap2->fvalue_, AP_VAL2, 0.000001f);
     }
 
     {
       /* check marker */
       REQUIRE_SIZE_EQ (P_MARKER_TRACK->markers_, 3);
-      auto m = P_MARKER_TRACK->markers_[0];
-      REQUIRE_NONNULL (m);
-      REQUIRE_EQ (m->name_, "[start]");
-      m = P_MARKER_TRACK->markers_[2];
-      REQUIRE_POSITION_EQ (m->pos_, p1_);
-      REQUIRE_EQ (m->name_, MARKER_NAME);
+      {
+        const auto &m = P_MARKER_TRACK->markers_.at (0);
+        REQUIRE_NONNULL (m);
+        REQUIRE_EQ (m->name_, "[start]");
+      }
+      {
+        const auto &m = P_MARKER_TRACK->markers_.at (2);
+        REQUIRE_POSITION_EQ (m->pos_, p1_);
+        REQUIRE_EQ (m->name_, MARKER_NAME);
+      }
     }
 
     {
       /* check scale object */
       REQUIRE_SIZE_EQ (P_CHORD_TRACK->scales_, 1);
-      auto s = P_CHORD_TRACK->scales_[0];
+      auto s = P_CHORD_TRACK->scales_.at (0);
       REQUIRE_POSITION_EQ (s->pos_, p1_);
       REQUIRE_EQ (s->scale_.type_, MUSICAL_SCALE_TYPE);
       REQUIRE_EQ (s->scale_.root_key_, MUSICAL_SCALE_ROOT);
     }
 
-    /* save the project and reopen it. some callers
-     * undo after this step so this checks if the undo
-     * history works after reopening the project */
+    /* save the project and reopen it. some callers undo after this step so this
+     * checks if the undo history works after reopening the project */
     if (!after_reload)
       {
         test_project_save_and_reload ();

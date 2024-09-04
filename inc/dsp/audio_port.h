@@ -22,17 +22,9 @@ class AudioPort final
       public ISerializable<AudioPort>
 {
 public:
-  AudioPort ()
-  {
-    minf_ = -1.f;
-    maxf_ = 1.f;
-    zerof_ = 0.f;
-  }
+  AudioPort ();
 
-  AudioPort (std::string label, PortFlow flow)
-      : Port (label, PortType::Audio, flow, -1.f, 1.f, 0.f)
-  {
-  }
+  AudioPort (std::string label, PortFlow flow);
 
   bool has_sound () const override;
 
@@ -120,10 +112,7 @@ public:
   send_audio_data_to_jack (const nframes_t start_frames, const nframes_t nframes);
 #endif
 
-  void init_after_cloning (const AudioPort &other) override
-  {
-    Port::copy_members_from (other);
-  }
+  void init_after_cloning (const AudioPort &other) override;
 
 private:
   /**

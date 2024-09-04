@@ -81,7 +81,8 @@ ArrangerObject::ArrangerObjectPtr
 AutomationPoint::find_in_project () const
 {
   auto region = AutomationRegion::find (region_id_);
-  z_return_val_if_fail (region && (int) region->aps_.size () > index_, nullptr);
+  z_return_val_if_fail (
+    region && ((int) region->aps_.size () > index_), nullptr);
 
   auto &ap = region->aps_[index_];
   z_return_val_if_fail (*this == *ap, nullptr);

@@ -53,12 +53,6 @@ PianoRollTrack::get_velocities_in_range (
     }
 }
 
-bool
-PianoRollTrack::validate () const
-{
-  return AutomatableTrack::validate ();
-}
-
 void
 PianoRollTrack::clear_objects ()
 {

@@ -37,3 +37,10 @@ AudioBusTrack::init_after_cloning (const AudioBusTrack &other)
   AutomatableTrack::copy_members_from (other);
   Track::copy_members_from (other);
 }
+
+bool
+AudioBusTrack::validate () const
+{
+  return Track::validate_base () && ChannelTrack::validate_base ()
+         && AutomatableTrack::validate_base ();
+}

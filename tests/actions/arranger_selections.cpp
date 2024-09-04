@@ -296,15 +296,16 @@ public:
     REQUIRE_EQ (
       TL_SELECTIONS->get_num_objects (), new_tracks ? 2 : TOTAL_TL_SELECTIONS);
 
-    auto midi_track = TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
+    const auto * midi_track =
+      TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
     REQUIRE_NONNULL (midi_track);
-    auto audio_track =
+    const auto * audio_track =
       TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
     REQUIRE_NONNULL (audio_track);
-    auto new_midi_track =
+    const auto * new_midi_track =
       TRACKLIST->find_track_by_name<MidiTrack> (TARGET_MIDI_TRACK_NAME);
     REQUIRE_NONNULL (midi_track);
-    auto new_audio_track =
+    const auto * new_audio_track =
       TRACKLIST->find_track_by_name<AudioTrack> (TARGET_AUDIO_TRACK_NAME);
     REQUIRE_NONNULL (audio_track);
 
@@ -318,21 +319,24 @@ public:
       {
         REQUIRE_SIZE_EQ (midi_track->lanes_[MIDI_REGION_LANE]->regions_, 2);
       }
-    auto      &mr = midi_track->lanes_[MIDI_REGION_LANE]->regions_[0];
+
+    auto       mr = midi_track->lanes_[MIDI_REGION_LANE]->regions_[0];
     const auto p1_before_move = p1_;
-    const auto p2_before_move = p1_;
+    const auto p2_before_move = p2_;
     REQUIRE_POSITION_EQ (mr->pos_, p1_before_move);
     REQUIRE_POSITION_EQ (mr->end_pos_, p2_before_move);
     REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (mr, *midi_track);
     REQUIRE_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
     REQUIRE_EQ (mr->id_.idx_, 0);
     REQUIRE_SIZE_EQ (mr->midi_notes_, 1);
-    auto &mn = mr->midi_notes_[0];
-    REQUIRE_EQ (mn->region_id_, mr->id_);
-    REQUIRE_EQ (mn->val_, MN_VAL);
-    REQUIRE_EQ (mn->vel_->vel_, MN_VEL);
-    REQUIRE_POSITION_EQ (mn->pos_, p1_);
-    REQUIRE_POSITION_EQ (mn->end_pos_, p2_);
+    {
+      const auto &mn = mr->midi_notes_.at (0);
+      REQUIRE_EQ (mn->region_id_, mr->id_);
+      REQUIRE_EQ (mn->val_, MN_VAL);
+      REQUIRE_EQ (mn->vel_->vel_, MN_VEL);
+      REQUIRE_POSITION_EQ (mn->pos_, p1_);
+      REQUIRE_POSITION_EQ (mn->end_pos_, p2_);
+    }
     int link_group = mr->id_.link_group_;
     if (link)
       {
@@ -369,12 +373,14 @@ public:
     REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (
       mr, new_tracks ? *new_midi_track : *midi_track);
     REQUIRE_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
-    mn = mr->midi_notes_[0];
-    REQUIRE_EQ (mn->region_id_, mr->id_);
-    REQUIRE_EQ (mn->val_, MN_VAL);
-    REQUIRE_EQ (mn->vel_->vel_, MN_VEL);
-    REQUIRE_POSITION_EQ (mn->pos_, p1_);
-    REQUIRE_POSITION_EQ (mn->end_pos_, p2_);
+    {
+      const auto &mn = mr->midi_notes_[0];
+      REQUIRE_EQ (mn->region_id_, mr->id_);
+      REQUIRE_EQ (mn->val_, MN_VAL);
+      REQUIRE_EQ (mn->vel_->vel_, MN_VEL);
+      REQUIRE_POSITION_EQ (mn->pos_, p1_);
+      REQUIRE_POSITION_EQ (mn->end_pos_, p2_);
+    }
     if (link)
       {
         REQUIRE_EQ (mr->id_.link_group_, link_group);
@@ -423,34 +429,38 @@ public:
     if (!new_tracks)
       {
         /* check automation region */
-        auto at = P_MASTER_TRACK->channel_->get_automation_track (
+        auto * const at = P_MASTER_TRACK->channel_->get_automation_track (
           PortIdentifier::Flags::StereoBalance);
         REQUIRE_NONNULL (at);
         REQUIRE_SIZE_EQ (at->regions_, 2);
-        auto r = at->regions_[0];
-        REQUIRE_POSITION_EQ (r->pos_, p1_before_move);
-        REQUIRE_POSITION_EQ (r->end_pos_, p2_before_move);
-        REQUIRE_SIZE_EQ (r->aps_, 2);
-        auto &ap = r->aps_[0];
-        REQUIRE_POSITION_EQ (ap->pos_, p1_);
-        REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL1, 0.000001f);
-        ap = r->aps_[1];
-        REQUIRE_POSITION_EQ (ap->pos_, p2_);
-        REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL2, 0.000001f);
-        r = at->regions_[1];
-        REQUIRE_POSITION_EQ (r->pos_, p1_after_move);
-        REQUIRE_POSITION_EQ (r->end_pos_, p2_after_move);
-        REQUIRE_SIZE_EQ (r->aps_, 2);
-        ap = r->aps_[0];
-        REQUIRE_POSITION_EQ (ap->pos_, p1_);
-        REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL1, 0.000001f);
-        ap = r->aps_[1];
-        REQUIRE_POSITION_EQ (ap->pos_, p2_);
-        REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL2, 0.000001f);
+
+        auto check_automation_region_contents =
+          [&] (const auto &automation_region) {
+            REQUIRE_SIZE_EQ (automation_region->aps_, 2);
+            const auto &ap1 = automation_region->aps_[0];
+            REQUIRE_POSITION_EQ (ap1->pos_, p1_);
+            REQUIRE_FLOAT_NEAR (ap1->fvalue_, AP_VAL1, 0.000001f);
+            const auto &ap2 = automation_region->aps_[1];
+            REQUIRE_POSITION_EQ (ap2->pos_, p2_);
+            REQUIRE_FLOAT_NEAR (ap2->fvalue_, AP_VAL2, 0.000001f);
+          };
+
+        {
+          const auto &r = at->regions_.at (0);
+          REQUIRE_POSITION_EQ (r->pos_, p1_before_move);
+          REQUIRE_POSITION_EQ (r->end_pos_, p2_before_move);
+          check_automation_region_contents (r);
+        }
+        {
+          const auto &r = at->regions_.at (1);
+          REQUIRE_POSITION_EQ (r->pos_, p1_after_move);
+          REQUIRE_POSITION_EQ (r->end_pos_, p2_after_move);
+          check_automation_region_contents (r);
+        }
 
         /* check marker */
         REQUIRE_SIZE_EQ (P_MARKER_TRACK->markers_, 4);
-        auto &m = P_MARKER_TRACK->markers_[2];
+        auto m = P_MARKER_TRACK->markers_.at (2);
         REQUIRE_POSITION_EQ (m->pos_, p1_before_move);
         REQUIRE_EQ (m->name_, MARKER_NAME);
         m = P_MARKER_TRACK->markers_[3];
@@ -459,11 +469,11 @@ public:
 
         /* check scale object */
         REQUIRE_SIZE_EQ (P_CHORD_TRACK->scales_, 2);
-        auto &s = P_CHORD_TRACK->scales_[0];
+        auto s = P_CHORD_TRACK->scales_[0];
         REQUIRE_POSITION_EQ (s->pos_, p1_before_move);
         REQUIRE_EQ (s->scale_.type_, MUSICAL_SCALE_TYPE);
         REQUIRE_EQ (s->scale_.root_key_, MUSICAL_SCALE_ROOT);
-        s = P_CHORD_TRACK->scales_[1];
+        s = P_CHORD_TRACK->scales_.at (1);
         REQUIRE_POSITION_EQ (s->pos_, p1_after_move);
         REQUIRE_EQ (s->scale_.type_, MUSICAL_SCALE_TYPE);
         REQUIRE_EQ (s->scale_.root_key_, MUSICAL_SCALE_ROOT);
@@ -512,8 +522,8 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "duplicate timeline")
   /* when i == 1 we are moving to new tracks */
   for (int i = 0; i < 2; i++)
     {
-      int track_diff = i ? 2 : 0;
-      if (track_diff)
+      const int track_diff = i == 0 ? 0 : 2;
+      if (track_diff != 0)
         {
           select_audio_and_midi_regions_only ();
           auto midi_track =
@@ -535,14 +545,13 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "duplicate timeline")
       /* do duplicate */
       UNDO_MANAGER->perform (
         std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
-          *TL_SELECTIONS, false, MOVE_TICKS, i > 0 ? 2 : 0, 0, nullptr,
+          *TL_SELECTIONS, false, MOVE_TICKS, track_diff, 0, nullptr,
           F_ALREADY_MOVED));
 
       /* check */
-      check_after_duplicate_timeline (i, false);
+      check_after_duplicate_timeline (i != 0, false);
 
-      /* undo and check that the objects are at
-       * their original state*/
+      /* undo and check that the objects are at their original state*/
       UNDO_MANAGER->undo ();
       check_vs_original_state (false);
       check_has_single_redo ();
@@ -550,7 +559,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "duplicate timeline")
       /* redo and check that the objects are moved
        * again */
       UNDO_MANAGER->redo ();
-      check_after_duplicate_timeline (i, false);
+      check_after_duplicate_timeline (i != 0, false);
 
       /* undo again to prepare for next test */
       UNDO_MANAGER->undo ();

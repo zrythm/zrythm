@@ -127,11 +127,8 @@ ChannelTrack::remove_ats_from_automation_tracklist (bool fire_events)
 }
 
 bool
-ChannelTrack::validate () const
+ChannelTrack::validate_base () const
 {
-  if (!AutomatableTrack::validate ())
-    return false;
-
   z_return_val_if_fail (channel_ != nullptr, false);
   for (int i = 0; i < STRIP_SIZE; i++)
     {

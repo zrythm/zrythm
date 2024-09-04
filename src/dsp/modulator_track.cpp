@@ -266,6 +266,12 @@ ModulatorTrack::init_after_cloning (const ModulatorTrack &other)
     modulator_macro_processors_, other.modulator_macro_processors_);
 }
 
+bool
+ModulatorTrack::validate () const
+{
+  return Track::validate_base () && AutomatableTrack::validate_base ();
+}
+
 template std::shared_ptr<Plugin>
 ModulatorTrack::insert_modulator (
   int                     slot,

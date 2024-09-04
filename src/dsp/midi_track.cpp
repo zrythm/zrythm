@@ -15,7 +15,8 @@ MidiTrack::MidiTrack (const std::string &label, int pos)
 bool
 MidiTrack::validate () const
 {
-  return ChannelTrack::validate () && PianoRollTrack::validate ();
+  return Track::validate_base () && ChannelTrack::validate_base ()
+         && AutomatableTrack::validate_base () && LanedTrackImpl::validate_base ();
 }
 
 void
@@ -26,7 +27,7 @@ MidiTrack::init_loaded ()
   AutomatableTrack::init_loaded ();
   ProcessableTrack::init_loaded ();
   RecordableTrack::init_loaded ();
-  LanedTrackImpl<MidiRegion>::init_loaded ();
+  LanedTrackImpl::init_loaded ();
   PianoRollTrack::init_loaded ();
 }
 

@@ -804,8 +804,6 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
         } /* if do and first run */
     }
 
-  z_debug ("moved original objects back");
-
   for (size_t i = 0; i < sel_after_->objects_.size (); i++)
     {
       auto &own_obj = sel_after_->objects_[i];
@@ -1007,7 +1005,6 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
 
           /* remove it */
           obj->remove_from_project ();
-          obj.reset ();
 
           /* set the copies back to original state */
           if (!math_doubles_equal (ticks, 0.0))

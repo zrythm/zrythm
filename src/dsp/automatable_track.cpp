@@ -13,6 +13,8 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
+#include "doctest_wrapper.h"
+
 AutomatableTrack::AutomatableTrack ()
     : automation_tracklist_ (std::make_unique<AutomationTracklist> ())
 {
@@ -176,7 +178,7 @@ AutomatableTrack::set_automation_visible (const bool visible)
 }
 
 bool
-AutomatableTrack::validate () const
+AutomatableTrack::validate_base () const
 {
   if (ZRYTHM_TESTING)
     {

@@ -53,9 +53,11 @@ public:
   /**
    * Returns the BPM at the given pos.
    */
-  bpm_t get_bpm_at_pos (const Position pos);
+  bpm_t get_bpm_at_pos (Position pos);
 
   void init_after_cloning (const TempoTrack &other) override;
+
+  bool validate () const override;
 
   /**
    * Returns the current BPM.

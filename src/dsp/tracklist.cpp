@@ -291,7 +291,7 @@ Tracklist::insert_track (
   if (!is_auditioner ())
     {
       /* verify */
-      added_track->validate ();
+      z_return_val_if_fail (added_track->validate (), nullptr);
     }
 
   if (ZRYTHM_TESTING)

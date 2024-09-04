@@ -513,7 +513,7 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
   for (auto &tr : TRACKLIST->tracks_)
     {
       /* connect the track */
-      auto node = find_node_from_track (tr.get (), true);
+      auto * const track_node = find_node_from_track (tr.get (), true);
       if (tr->in_signal_type_ == PortType::Audio)
         {
           if (tr->is_audio ())
@@ -521,11 +521,11 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
               auto audio_track = dynamic_cast<AudioTrack *> (tr.get ());
               auto node2 =
                 find_node_from_port (audio_track->processor_->mono_.get ());
-              node2->connect_to (*node);
+              node2->connect_to (*track_node);
               initial_processor_node->connect_to (*node2);
               node2 = find_node_from_port (
                 audio_track->processor_->input_gain_.get ());
-              node2->connect_to (*node);
+              node2->connect_to (*track_node);
               initial_processor_node->connect_to (*node2);
             }
 
@@ -534,15 +534,15 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
           auto track_processor = processable_track->processor_.get ();
           auto node2 =
             find_node_from_port (&track_processor->stereo_in_->get_l ());
-          node2->connect_to (*node);
+          node2->connect_to (*track_node);
           initial_processor_node->connect_to (*node2);
           node2 = find_node_from_port (&track_processor->stereo_in_->get_r ());
-          node2->connect_to (*node);
+          node2->connect_to (*track_node);
           initial_processor_node->connect_to (*node2);
           node2 = find_node_from_port (&track_processor->stereo_out_->get_l ());
-          node->connect_to (*node2);
+          track_node->connect_to (*node2);
           node2 = find_node_from_port (&track_processor->stereo_out_->get_r ());
-          node->connect_to (*node2);
+          track_node->connect_to (*node2);
         }
       else if (tr->in_signal_type_ == PortType::Event)
         {
@@ -555,14 +555,14 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
               /* connect piano roll */
               auto node2 =
                 find_node_from_port (track_processor->piano_roll_.get ());
-              node2->connect_to (*node);
+              node2->connect_to (*track_node);
             }
 
           auto node2 = find_node_from_port (track_processor->midi_in_.get ());
-          node2->connect_to (*node);
+          node2->connect_to (*track_node);
           initial_processor_node->connect_to (*node2);
           node2 = find_node_from_port (track_processor->midi_out_.get ());
-          node->connect_to (*node2);
+          track_node->connect_to (*node2);
         }
 
       if (tr->has_piano_roll ())
@@ -579,7 +579,7 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
                     track_processor->midi_cc_[j * 128 + k].get ());
                   if (node2)
                     {
-                      node2->connect_to (*node);
+                      node2->connect_to (*track_node);
                     }
                 }
 
@@ -587,21 +587,21 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
                 find_node_from_port (track_processor->pitch_bend_[j].get ());
               if (node2 || !drop_unnecessary_ports)
                 {
-                  node2->connect_to (*node);
+                  node2->connect_to (*track_node);
                 }
 
               node2 = find_node_from_port (
                 track_processor->poly_key_pressure_[j].get ());
               if (node2 || !drop_unnecessary_ports)
                 {
-                  node2->connect_to (*node);
+                  node2->connect_to (*track_node);
                 }
 
               node2 = find_node_from_port (
                 track_processor->channel_pressure_[j].get ());
               if (node2 || !drop_unnecessary_ports)
                 {
-                  node2->connect_to (*node);
+                  node2->connect_to (*track_node);
                 }
             }
         }
@@ -618,26 +618,26 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
           if (node2 || !drop_unnecessary_ports)
             {
               bpm_node_ = node2;
-              node2->connect_to (*node);
+              node2->connect_to (*track_node);
             }
           node2 = find_node_from_port (tempo_track->beats_per_bar_port_.get ());
           if (node2 || !drop_unnecessary_ports)
             {
               beats_per_bar_node_ = node2;
-              node2->connect_to (*node);
+              node2->connect_to (*track_node);
             }
           node2 = find_node_from_port (tempo_track->beat_unit_port_.get ());
           if (node2 || !drop_unnecessary_ports)
             {
               beat_unit_node_ = node2;
-              node2->connect_to (*node);
+              node2->connect_to (*track_node);
             }
-          node->connect_to (*initial_processor_node);
+          track_node->connect_to (*initial_processor_node);
         }
 
       if (tr->is_modulator ())
         {
-          initial_processor_node->connect_to (*node);
+          initial_processor_node->connect_to (*track_node);
 
           auto mod_track = dynamic_cast<ModulatorTrack *> (tr.get ());
           for (auto &pl : mod_track->modulators_)
@@ -662,7 +662,7 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
                             pl_port->get_label ());
                           return;
                         }
-                      node->connect_to (*port_node);
+                      track_node->connect_to (*port_node);
                     }
                 }
             }
@@ -674,14 +674,19 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
                 find_node_from_modulator_macro_processor (mmp.get ());
               z_return_if_fail (mmp_node);
 
-              auto node2 = find_node_from_port (mmp->cv_in_.get ());
-              node2->connect_to (*mmp_node);
-              node2 = find_node_from_port (mmp->macro_.get ());
-              if (node2 || !drop_unnecessary_ports)
-                {
-                  node2->connect_to (*mmp_node);
-                }
-              node2 = find_node_from_port (mmp->cv_out_.get ());
+              {
+                auto * const node2 = find_node_from_port (mmp->cv_in_.get ());
+                node2->connect_to (*mmp_node);
+              }
+              {
+                auto * const node2 = find_node_from_port (mmp->macro_.get ());
+                if (node2 || !drop_unnecessary_ports)
+                  {
+                    node2->connect_to (*mmp_node);
+                  }
+              }
+
+              auto * const node2 = find_node_from_port (mmp->cv_out_.get ());
               mmp_node->connect_to (*node2);
             }
         }
@@ -695,70 +700,76 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
       auto &fader = ch->fader_;
 
       /* connect the fader */
-      node = find_node_from_fader (fader.get ());
-      z_warn_if_fail (node);
+      auto * const fader_node = find_node_from_fader (fader.get ());
+      z_warn_if_fail (fader_node);
       if (fader->type_ == Fader::Type::AudioChannel)
         {
           /* connect ins */
           auto node2 = find_node_from_port (&fader->stereo_in_->get_l ());
-          node2->connect_to (*node);
+          node2->connect_to (*fader_node);
           node2 = find_node_from_port (&fader->stereo_in_->get_r ());
-          node2->connect_to (*node);
+          node2->connect_to (*fader_node);
 
           /* connect outs */
           node2 = find_node_from_port (&fader->stereo_out_->get_l ());
-          node->connect_to (*node2);
+          fader_node->connect_to (*node2);
           node2 = find_node_from_port (&fader->stereo_out_->get_r ());
-          node->connect_to (*node2);
+          fader_node->connect_to (*node2);
         }
       else if (fader->type_ == Fader::Type::MidiChannel)
         {
           auto node2 = find_node_from_port (fader->midi_in_.get ());
-          node2->connect_to (*node);
+          node2->connect_to (*fader_node);
           node2 = find_node_from_port (fader->midi_out_.get ());
-          node->connect_to (*node2);
+          fader_node->connect_to (*node2);
         }
-      auto node2 = find_node_from_port (fader->amp_.get ());
-      if (node2 || !drop_unnecessary_ports)
-        {
-          node2->connect_to (*node);
-        }
-      node2 = find_node_from_port (fader->balance_.get ());
-      if (node2 || !drop_unnecessary_ports)
-        {
-          node2->connect_to (*node);
-        }
-      node2 = find_node_from_port (fader->mute_.get ());
-      if (node2 || !drop_unnecessary_ports)
-        {
-          node2->connect_to (*node);
-        }
+      {
+        auto * const node2 = find_node_from_port (fader->amp_.get ());
+        if (node2 || !drop_unnecessary_ports)
+          {
+            node2->connect_to (*fader_node);
+          }
+      }
+      {
+        auto * const node2 = find_node_from_port (fader->balance_.get ());
+        if (node2 || !drop_unnecessary_ports)
+          {
+            node2->connect_to (*fader_node);
+          }
+      }
+      {
+        auto * const node2 = find_node_from_port (fader->mute_.get ());
+        if (node2 || !drop_unnecessary_ports)
+          {
+            node2->connect_to (*fader_node);
+          }
+      }
 
       /* connect the prefader */
-      node = find_node_from_prefader (prefader.get ());
-      z_warn_if_fail (node);
+      auto * const prefader_node = find_node_from_prefader (prefader.get ());
+      z_warn_if_fail (prefader_node);
       if (prefader->type_ == Fader::Type::AudioChannel)
         {
-          node2 = find_node_from_port (&prefader->stereo_in_->get_l ());
-          node2->connect_to (*node);
+          auto * node2 = find_node_from_port (&prefader->stereo_in_->get_l ());
+          node2->connect_to (*prefader_node);
           node2 = find_node_from_port (&prefader->stereo_in_->get_r ());
-          node2->connect_to (*node);
+          node2->connect_to (*prefader_node);
           node2 = find_node_from_port (&prefader->stereo_out_->get_l ());
-          node->connect_to (*node2);
+          prefader_node->connect_to (*node2);
           node2 = find_node_from_port (&prefader->stereo_out_->get_r ());
-          node->connect_to (*node2);
+          prefader_node->connect_to (*node2);
         }
       else if (prefader->type_ == Fader::Type::MidiChannel)
         {
-          node2 = find_node_from_port (prefader->midi_in_.get ());
-          node2->connect_to (*node);
+          auto * node2 = find_node_from_port (prefader->midi_in_.get ());
+          node2->connect_to (*prefader_node);
           node2 = find_node_from_port (prefader->midi_out_.get ());
-          node->connect_to (*node2);
+          prefader_node->connect_to (*node2);
         }
 
       std::vector<Plugin *> plugins;
       ch->get_plugins (plugins);
-      for (auto pl : plugins)
+      for (auto * const pl : plugins)
         {
           if (pl && !pl->deleting_)
             {
@@ -770,32 +781,32 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
         {
           /* note that we do not skip empty sends because then port connection
            * validation will not detect invalid connections properly */
-          node = find_node_from_channel_send (send.get ());
+          auto * const send_node = find_node_from_channel_send (send.get ());
 
-          node2 = find_node_from_port (send->amount_.get ());
+          auto * node2 = find_node_from_port (send->amount_.get ());
           if (node2)
-            node2->connect_to (*node);
+            node2->connect_to (*send_node);
           node2 = find_node_from_port (send->enabled_.get ());
           if (node2)
-            node2->connect_to (*node);
+            node2->connect_to (*send_node);
 
           if (tr->out_signal_type_ == PortType::Event)
             {
               node2 = find_node_from_port (send->midi_in_.get ());
-              node2->connect_to (*node);
+              node2->connect_to (*send_node);
               node2 = find_node_from_port (send->midi_out_.get ());
-              node->connect_to (*node2);
+              send_node->connect_to (*node2);
             }
           else if (tr->out_signal_type_ == PortType::Audio)
             {
               node2 = find_node_from_port (&send->stereo_in_->get_l ());
-              node2->connect_to (*node);
+              node2->connect_to (*send_node);
               node2 = find_node_from_port (&send->stereo_in_->get_r ());
-              node2->connect_to (*node);
+              node2->connect_to (*send_node);
               node2 = find_node_from_port (&send->stereo_out_->get_l ());
-              node->connect_to (*node2);
+              send_node->connect_to (*node2);
               node2 = find_node_from_port (&send->stereo_out_->get_r ());
-              node->connect_to (*node2);
+              send_node->connect_to (*node2);
             }
         }
     }

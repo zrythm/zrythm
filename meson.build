@@ -752,6 +752,7 @@ test_strict_cflags = [
   '-Werror=overloaded-virtual',
   '-Werror=return-stack-address',
   '-Werror=return-local-addr',
+  '-Werror=abstract-final-class',
   ]
 
 if is_gcc

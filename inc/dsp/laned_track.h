@@ -118,8 +118,6 @@ public:
    */
   void generate_lanes () { add_lane (true); }
 
-  bool validate () const override;
-
   void clear_objects () override;
 
   void get_regions_in_range (
@@ -147,26 +145,13 @@ protected:
     lanes_visible_ = other.lanes_visible_;
   }
 
+  bool validate_base () const;
+
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
-  void set_playback_caches () override
-  {
-    lane_snapshots_.clear ();
-    lane_snapshots_.reserve (lanes_.size ());
-    for (const auto &lane : lanes_)
-      {
-        lane_snapshots_.push_back (lane->gen_snapshot ());
-      }
-  }
+  void set_playback_caches () override;
 
-  void update_name_hash (unsigned int new_name_hash) override
-  {
-    for (auto &lane : lanes_)
-      {
-
-        lane->update_track_name_hash ();
-      }
-  }
+  void update_name_hash (unsigned int new_name_hash) override;
 
 private:
   void add_lane (bool fire_events);

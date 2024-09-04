@@ -36,3 +36,10 @@ MidiBusTrack::init_after_cloning (const MidiBusTrack &other)
   AutomatableTrack::copy_members_from (other);
   Track::copy_members_from (other);
 }
+
+bool
+MidiBusTrack::validate () const
+{
+  return Track::validate_base () && ChannelTrack::validate_base ()
+         && AutomatableTrack::validate_base ();
+}

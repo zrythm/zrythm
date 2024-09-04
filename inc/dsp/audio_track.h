@@ -49,26 +49,14 @@ public:
   void
   fill_events (const EngineProcessTimeInfo &time_nfo, StereoPorts &stereo_ports);
 
-  void clear_objects () override
-  {
-    LanedTrackImpl::clear_objects ();
-    AutomatableTrack::clear_objects ();
-  }
+  void clear_objects () override;
 
-  bool validate () const override
-  {
-    return LanedTrackImpl::validate () && RecordableTrack::validate ()
-           && ChannelTrack::validate ();
-  }
+  bool validate () const override;
 
   void get_regions_in_range (
     std::vector<Region *> &regions,
     const Position *       p1,
-    const Position *       p2) override
-  {
-    LanedTrackImpl::get_regions_in_range (regions, p1, p2);
-    AutomatableTrack::get_regions_in_range (regions, p1, p2);
-  }
+    const Position *       p2) override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

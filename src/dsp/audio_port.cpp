@@ -15,6 +15,24 @@
 #include "doctest_wrapper.h"
 #include <fmt/format.h>
 
+AudioPort::AudioPort ()
+{
+  minf_ = -1.f;
+  maxf_ = 1.f;
+  zerof_ = 0.f;
+}
+
+AudioPort::AudioPort (std::string label, PortFlow flow)
+    : Port (label, PortType::Audio, flow, -1.f, 1.f, 0.f)
+{
+}
+
+void
+AudioPort::init_after_cloning (const AudioPort &other)
+{
+  Port::copy_members_from (other);
+}
+
 void
 AudioPort::allocate_bufs ()
 {

@@ -48,9 +48,7 @@ public:
 
 protected:
   TrackLane () = default;
-  TrackLane (int pos, std::string name) : pos_ (pos), name_ (std::move (name))
-  {
-  }
+  TrackLane (int pos, std::string name);
 
 public:
   /** Position in the Track. */
@@ -110,24 +108,13 @@ public:
    * @param pos The position (index) in the Track that this lane will be placed
    * in.
    */
-  TrackLaneImpl (LanedTrackT * track, int pos)
-      : TrackLane (pos, format_str (_ ("Lane {}"), pos + 1)), track_ (track)
-  {
-  }
+  TrackLaneImpl (LanedTrackT * track, int pos);
 
   bool is_in_active_project () const override;
 
   bool is_auditioner () const override;
 
-  void init_loaded (LanedTrackT * track)
-  {
-    track_ = track;
-    for (auto &region : this->regions_)
-      {
-        region->set_lane (*this);
-        region->init_loaded ();
-      }
-  }
+  void init_loaded (LanedTrackT * track);
 
   /**
    * Sets track lane soloed, updates UI and optionally
@@ -166,21 +153,12 @@ public:
   /**
    * Wrapper over track_lane_rename().
    */
-  void rename_with_action (const std::string &new_name)
-  {
-    rename (new_name, true);
-  }
+  void rename_with_action (const std::string &new_name);
 
   /**
    * Unselects all arranger objects.
    */
-  void unselect_all ()
-  {
-    for (auto &region : this->regions_)
-      {
-        region->select (false, false, false);
-      }
-  }
+  void unselect_all ();
 
   /**
    * Sets the new track name hash to all the lane's objects recursively.

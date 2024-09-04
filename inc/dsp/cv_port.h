@@ -22,17 +22,8 @@ class CVPort final
       public ISerializable<CVPort>
 {
 public:
-  CVPort ()
-  {
-    minf_ = -1.f;
-    maxf_ = 1.f;
-    zerof_ = 0.f;
-  };
-
-  CVPort (std::string label, PortFlow flow)
-      : Port (label, PortType::CV, flow, -1.f, 1.f, 0.f)
-  {
-  }
+  CVPort ();
+  CVPort (std::string label, PortFlow flow);
 
   bool has_sound () const override;
 

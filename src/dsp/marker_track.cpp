@@ -97,7 +97,7 @@ MarkerTrack::insert_marker (std::shared_ptr<Marker> marker, int pos)
       m->set_marker_track_index (i);
     }
 
-  validate ();
+  z_return_val_if_fail (validate (), nullptr);
 
   EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, marker.get ());
 
@@ -136,6 +136,11 @@ MarkerTrack::init_after_cloning (const MarkerTrack &other)
 bool
 MarkerTrack::validate () const
 {
+  if (!Track::validate_base ())
+    {
+      return false;
+    }
+
   for (size_t i = 0; i < markers_.size (); ++i)
     {
       auto m = markers_[i];

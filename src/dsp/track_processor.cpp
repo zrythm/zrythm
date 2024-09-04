@@ -719,43 +719,47 @@ void
 TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
 {
   z_return_if_fail (track_);
-  auto tr = track_;
-  auto track_type = tr->type_;
 
-  /* if frozen or disabled, skip */
-  if (tr->frozen_ || !tr->is_enabled ())
-    {
-      return;
-    }
+  std::visit (
+    [&] (auto &&tr) {
+      using TrackT = base_type<decltype (tr)>;
 
-  /* set the audio clip contents to stereo out */
-  if (track_type == Track::Type::Audio)
-    {
-      auto audio_track = dynamic_cast<AudioTrack *> (tr);
-      audio_track->fill_events (time_nfo, *stereo_out_);
-    }
-
-  /* set the piano roll contents to midi out */
-  if (tr->has_piano_roll () || tr->is_chord ())
-    {
-      auto &pr = piano_roll_;
-
-      /* panic MIDI if necessary */
-      if (AUDIO_ENGINE->panic_.load ())
+      /* if frozen or disabled, skip */
+      if (tr->frozen_ || !tr->is_enabled ())
         {
-          pr->midi_events_.queued_events_.panic ();
+          return;
         }
-      /* get events from track if playing */
-      else if (TRANSPORT->is_rolling () || tr->is_auditioner ())
+
+      /* set the audio clip contents to stereo out */
+      if constexpr (std::is_same_v<TrackT, AudioTrack>)
         {
-          /* fill midi events from piano roll data */
+          tr->fill_events (time_nfo, *stereo_out_);
+        }
+
+      /* set the piano roll contents to midi out */
+      if constexpr (
+        std::derived_from<TrackT, PianoRollTrack>
+        || std::is_same_v<TrackT, ChordTrack>)
+        {
+          auto &pr = piano_roll_;
+
+          /* panic MIDI if necessary */
+          if (AUDIO_ENGINE->panic_.load ())
+            {
+              pr->midi_events_.queued_events_.panic ();
+            }
+          /* get events from track if playing */
+          else if (TRANSPORT->is_rolling () || tr->is_auditioner ())
+            {
+            /* fill midi events from piano roll data */
 #if 0
           z_info (
             "filling midi events for %s from %ld", tr->name, time_nfo->g_start_frame_w_offset);
 #endif
-          track_->fill_midi_events (time_nfo, pr->midi_events_.queued_events_);
-        }
-      pr->midi_events_.dequeue (time_nfo.local_offset_, time_nfo.nframes_);
+              track_->fill_midi_events (
+                time_nfo, pr->midi_events_.queued_events_);
+            }
+          pr->midi_events_.dequeue (time_nfo.local_offset_, time_nfo.nframes_);
 #if 0
       if (pr->midi_events->num_events > 0)
         {
@@ -766,25 +770,25 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
         }
 #endif
 
-      /* append midi events from modwheel and pitchbend control ports to MIDI
-       * out */
-      if (!tr->is_chord ())
-        {
-          add_events_from_midi_cc_control_ports (time_nfo.local_offset_);
-        }
-      if (midi_out_->midi_events_.active_events_.has_any ())
-        {
+          /* append midi events from modwheel and pitchbend control ports to
+           * MIDI out */
+          if (!tr->is_chord ())
+            {
+              add_events_from_midi_cc_control_ports (time_nfo.local_offset_);
+            }
+          if (midi_out_->midi_events_.active_events_.has_any ())
+            {
 #if 0
           z_debug (
             "%s midi processor out has %d events",
             tr->name, self->midi_out->midi_events_->num_events);
 #endif
-        }
+            }
 
-      /* append the midi events from piano roll to MIDI out */
-      midi_out_->midi_events_.active_events_.append (
-        pr->midi_events_.active_events_, time_nfo.local_offset_,
-        time_nfo.nframes_);
+          /* append the midi events from piano roll to MIDI out */
+          midi_out_->midi_events_.active_events_.append (
+            pr->midi_events_.active_events_, time_nfo.local_offset_,
+            time_nfo.nframes_);
 
 #if 0
       if (pr->midi_events->num_events > 0)
@@ -799,131 +803,137 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
           midi_events_print (self->midi_out->midi_events_, F_NOT_QUEUED);
         }
 #endif
-    } /* if has piano roll or is chord track */
+        } /* if has piano roll or is chord track */
 
-  /* if currently active track on the piano roll, fetch events */
-  auto in_signal_type = tr->in_signal_type_;
-  if (in_signal_type == PortType::Event && CLIP_EDITOR->has_region_)
-    {
-      Track * clip_editor_track = CLIP_EDITOR->get_track ();
-      if (clip_editor_track == tr)
+      /* if currently active track on the piano roll, fetch events */
+      if (tr->in_signal_type_ == PortType::Event && CLIP_EDITOR->has_region_)
         {
-          auto channel_track = dynamic_cast<ChannelTrack *> (tr);
-          /* if not set to "all channels", filter-append */
-          if (!channel_track->channel_->all_midi_channels_)
+          if constexpr (std::derived_from<TrackT, ChannelTrack>)
             {
-              midi_in_->midi_events_.active_events_.append_w_filter (
-                AUDIO_ENGINE->midi_editor_manual_press_->midi_events_
-                  .active_events_,
-                channel_track->channel_->midi_channels_, time_nfo.local_offset_,
-                time_nfo.nframes_);
-            }
-          /* otherwise append normally */
-          else
-            {
-              midi_in_->midi_events_.active_events_.append (
-                AUDIO_ENGINE->midi_editor_manual_press_->midi_events_
-                  .active_events_,
-                time_nfo.local_offset_, time_nfo.nframes_);
+              Track * clip_editor_track = CLIP_EDITOR->get_track ();
+              if (clip_editor_track == tr)
+                {
+                  /* if not set to "all channels", filter-append */
+                  if (!tr->channel_->all_midi_channels_)
+                    {
+                      midi_in_->midi_events_.active_events_.append_w_filter (
+                        AUDIO_ENGINE->midi_editor_manual_press_->midi_events_
+                          .active_events_,
+                        tr->channel_->midi_channels_, time_nfo.local_offset_,
+                        time_nfo.nframes_);
+                    }
+                  /* otherwise append normally */
+                  else
+                    {
+                      midi_in_->midi_events_.active_events_.append (
+                        AUDIO_ENGINE->midi_editor_manual_press_->midi_events_
+                          .active_events_,
+                        time_nfo.local_offset_, time_nfo.nframes_);
+                    }
+                }
             }
         }
-    }
 
-  /* add inputs to outputs */
-  if (in_signal_type == PortType::Audio)
-    {
-      if (
-        track_type != Track::Type::Audio
-        || (track_type == Track::Type::Audio && monitor_audio_->is_toggled ()))
+      /* add inputs to outputs */
+      if (tr->in_signal_type_ == PortType::Audio)
         {
-          dsp_mix2 (
-            &stereo_out_->get_l ().buf_[time_nfo.local_offset_],
-            &stereo_in_->get_l ().buf_[time_nfo.local_offset_], 1.f,
-            input_gain_ ? input_gain_->control_ : 1.f, time_nfo.nframes_);
-
-          if (mono_ && mono_->is_toggled ())
+          if (
+            tr->type_ != Track::Type::Audio
+            || (tr->type_ == Track::Type::Audio && monitor_audio_->is_toggled ()))
             {
               dsp_mix2 (
-                &stereo_out_->get_r ().buf_[time_nfo.local_offset_],
+                &stereo_out_->get_l ().buf_[time_nfo.local_offset_],
                 &stereo_in_->get_l ().buf_[time_nfo.local_offset_], 1.f,
                 input_gain_ ? input_gain_->control_ : 1.f, time_nfo.nframes_);
+
+              if (mono_ && mono_->is_toggled ())
+                {
+                  dsp_mix2 (
+                    &stereo_out_->get_r ().buf_[time_nfo.local_offset_],
+                    &stereo_in_->get_l ().buf_[time_nfo.local_offset_], 1.f,
+                    input_gain_ ? input_gain_->control_ : 1.f,
+                    time_nfo.nframes_);
+                }
+              else
+                {
+                  dsp_mix2 (
+                    &stereo_out_->get_r ().buf_[time_nfo.local_offset_],
+                    &stereo_in_->get_r ().buf_[time_nfo.local_offset_], 1.f,
+                    input_gain_ ? input_gain_->control_ : 1.f,
+                    time_nfo.nframes_);
+                }
             }
+        }
+      else if (tr->in_signal_type_ == PortType::Event)
+        {
+          /* change the MIDI channel on the midi input to the channel set on the
+           * track
+           */
+          if constexpr (
+            std::derived_from<TrackT, PianoRollTrack>
+            && !std::is_same_v<TrackT, ChordTrack>)
+            {
+              if (!tr->passthrough_midi_input_)
+                {
+                  midi_in_->midi_events_.active_events_.set_channel (
+                    tr->midi_ch_);
+                }
+            }
+
+          /* process midi bindings */
+          if (cc_mappings_ && TRANSPORT->recording_)
+            {
+              cc_mappings_->apply_from_cc_events (
+                midi_in_->midi_events_.active_events_);
+            }
+
+          /* if chord track, transform MIDI input to appropriate MIDI notes */
+          if (tr->is_chord ())
+            {
+              midi_out_->midi_events_.active_events_.transform_chord_and_append (
+                midi_in_->midi_events_.active_events_, time_nfo.local_offset_,
+                time_nfo.nframes_);
+            }
+          /* else if not chord track, simply pass the input MIDI data to the
+           * output port */
           else
             {
-              dsp_mix2 (
-                &stereo_out_->get_r ().buf_[time_nfo.local_offset_],
-                &stereo_in_->get_r ().buf_[time_nfo.local_offset_], 1.f,
-                input_gain_ ? input_gain_->control_ : 1.f, time_nfo.nframes_);
+              midi_out_->midi_events_.active_events_.append (
+                midi_in_->midi_events_.active_events_, time_nfo.local_offset_,
+                time_nfo.nframes_);
             }
-        }
-    }
-  else if (in_signal_type == PortType::Event)
-    {
-      /* change the MIDI channel on the midi input to the channel set on the
-       * track
-       */
-      if (!tr->is_chord ())
-        {
-          auto * piano_roll_track = dynamic_cast<PianoRollTrack *> (tr);
-          if (!piano_roll_track->passthrough_midi_input_)
+
+          /* if pending a panic message, append it */
+          if (pending_midi_panic_)
             {
-              midi_in_->midi_events_.active_events_.set_channel (
-                piano_roll_track->midi_ch_);
+              midi_out_->midi_events_.active_events_.panic_without_lock ();
+              pending_midi_panic_ = false;
             }
         }
 
-      /* process midi bindings */
-      if (cc_mappings_ && TRANSPORT->recording_)
+      if (
+        !tr->is_auditioner () && TRANSPORT->preroll_frames_remaining_ == 0
+        && (tr->can_record () || !tr->automation_tracklist_->ats_.empty ()))
         {
-          cc_mappings_->apply_from_cc_events (
-            midi_in_->midi_events_.active_events_);
+          /* handle recording. this will only create events in regions. it will
+           * not copy the input content to the output ports. this will also
+           * create automation for MIDI CC, if any (see
+           * midi_mappings_apply_cc_events above) */
+          handle_recording (time_nfo);
         }
 
-      /* if chord track, transform MIDI input to appropriate MIDI notes */
-      if (tr->is_chord ())
+      /* apply output gain */
+      if constexpr (std::is_same_v<TrackT, AudioTrack>)
         {
-          midi_out_->midi_events_.active_events_.transform_chord_and_append (
-            midi_in_->midi_events_.active_events_, time_nfo.local_offset_,
-            time_nfo.nframes_);
+          dsp_mul_k2 (
+            &stereo_out_->get_l ().buf_[time_nfo.local_offset_],
+            output_gain_->control_, time_nfo.nframes_);
+          dsp_mul_k2 (
+            &stereo_out_->get_r ().buf_[time_nfo.local_offset_],
+            output_gain_->control_, time_nfo.nframes_);
         }
-      /* else if not chord track, simply pass the input MIDI data to the output
-       * port */
-      else
-        {
-          midi_out_->midi_events_.active_events_.append (
-            midi_in_->midi_events_.active_events_, time_nfo.local_offset_,
-            time_nfo.nframes_);
-        }
-
-      /* if pending a panic message, append it */
-      if (pending_midi_panic_)
-        {
-          midi_out_->midi_events_.active_events_.panic_without_lock ();
-          pending_midi_panic_ = false;
-        }
-    }
-
-  if (
-    !tr->is_auditioner () && TRANSPORT->preroll_frames_remaining_ == 0
-    && (tr->can_record () || !tr->automation_tracklist_->ats_.empty ()))
-    {
-      /* handle recording. this will only create events in regions. it will not
-       * copy the input content to the output ports. this will also create
-       * automation for MIDI CC, if any (see midi_mappings_apply_cc_events
-       * above) */
-      handle_recording (time_nfo);
-    }
-
-  /* apply output gain */
-  if (track_type == Track::Type::Audio)
-    {
-      dsp_mul_k2 (
-        &stereo_out_->get_l ().buf_[time_nfo.local_offset_],
-        output_gain_->control_, time_nfo.nframes_);
-      dsp_mul_k2 (
-        &stereo_out_->get_r ().buf_[time_nfo.local_offset_],
-        output_gain_->control_, time_nfo.nframes_);
-    }
+    },
+    convert_to_variant<ProcessableTrackPtrVariant> (track_));
 }
 
 #if 0

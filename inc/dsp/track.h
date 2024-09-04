@@ -167,7 +167,7 @@ public:
       }
   }
 
-  static inline bool type_has_processor (const Type type)
+  static inline constexpr bool type_has_processor (const Type type)
   {
     return type != Type::Tempo && type != Type::Marker;
   }
@@ -525,7 +525,7 @@ public:
    *
    * @return True if pass.
    */
-  virtual bool validate () const { return true; };
+  virtual bool validate () const = 0;
 
   /**
    * Adds the track's folder parents to the given vector.
@@ -844,6 +844,8 @@ public:
 
 protected:
   void copy_members_from (const Track &other);
+
+  bool validate_base () const;
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

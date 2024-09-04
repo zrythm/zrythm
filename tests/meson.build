@@ -368,7 +368,7 @@ if get_option ('tests')
     else
       source = name + '.cpp'
     endif
-    timeout = 180
+    timeout = 240
     foreach suite : suites
       if suite.contains ('benchmark') or suite.contains ('integration') or suite.contains ('actions')
         is_parallel = false
@@ -378,53 +378,55 @@ if get_option ('tests')
 
     if fs.is_file (source)
       # create CPP executable for CPP runner
-      exe = executable (
-        test_name + (is_benchmark ? '_benchmark' : '_test') + '_exe',
-        sources: [
-          source,
-          test_config_h,
-          bundled_plugins_for_tests_tgts,
-          ],
-        cpp_args : [
-          common_cflags, strict_cflags,
-          test_c_args,
-          ],
-        dependencies: [
-          zrythm_deps,
-          is_benchmark and google_benchmark_dep.found() ? google_benchmark_dep : [],
-          ],
-        export_dynamic: false,
-        link_with: test_link_libs,
-        include_directories: all_inc,
-        #override_options: [ 'b_lto=false', ],
-      )
-      if is_benchmark
-        if get_option('benchmarks') and google_benchmark_dep.found()
-          benchmark_env = test_env
-          benchmark_env.set ('ZRYTHM_BENCHMARKING', '1')
-          benchmark (
-            test_name + '_benchmark', exe,
-            env: benchmark_env, suite: suites,
+      if (not is_benchmark) or google_benchmark_dep.found()
+        exe = executable (
+          test_name + (is_benchmark ? '_benchmark' : '_test') + '_exe',
+          override_options: [ 'b_sanitize=address,undefined', ],
+          sources: [
+            source,
+            test_config_h,
+            bundled_plugins_for_tests_tgts,
+            ],
+          cpp_args : [
+            common_cflags, strict_cflags,
+            test_c_args,
+            ],
+          dependencies: [
+            zrythm_deps,
+            is_benchmark and google_benchmark_dep.found() ? google_benchmark_dep : [],
+            ],
+          export_dynamic: false,
+          link_with: test_link_libs,
+          include_directories: all_inc,
+        )
+        if is_benchmark
+          if get_option('benchmarks') and google_benchmark_dep.found()
+            benchmark_env = test_env
+            benchmark_env.set ('ZRYTHM_BENCHMARKING', '1')
+            benchmark (
+              test_name + '_benchmark', exe,
+              env: benchmark_env, suite: suites,
+              args: 'args' in info ? info['args'] : [],
+              depends: [
+                test_lv2apply_wavs,
+                test_lv2_plugin_libs,
+                ],
+              timeout: timeout)
+          endif
+        # else if not benchmark
+        else
+          test (
+            test_name + '_test', exe,
+            env: test_env, suite: suites,
+            is_parallel: is_parallel,
             args: 'args' in info ? info['args'] : [],
             depends: [
               test_lv2apply_wavs,
               test_lv2_plugin_libs,
               ],
             timeout: timeout)
-        endif
-      # else if not benchmark
-      else
-        test (
-          test_name + '_test', exe,
-          env: test_env, suite: suites,
-          is_parallel: is_parallel,
-          args: 'args' in info ? info['args'] : [],
-          depends: [
-            test_lv2apply_wavs,
-            test_lv2_plugin_libs,
-            ],
-          timeout: timeout)
-      endif # endif is_benchmark
+        endif # endif is_benchmark
+      endif
     endif
   endforeach
 

@@ -33,6 +33,8 @@ public:
 
   void init_after_cloning (const MasterTrack &other) override;
 
+  bool validate () const override;
+
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:

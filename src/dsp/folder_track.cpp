@@ -20,3 +20,10 @@ FolderTrack::initialize ()
 
   return true;
 }
+
+bool
+FolderTrack::validate () const
+{
+  return Track::validate_base () && ChannelTrack::validate_base ()
+         && AutomatableTrack::validate_base ();
+}

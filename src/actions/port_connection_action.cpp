@@ -68,8 +68,9 @@ PortConnectionAction::do_or_undo (bool _do)
         {
           if (!src->can_be_connected_to (*dest))
             {
-              z_warning ("ports cannot be connected");
-              return;
+              throw ZrythmException (fmt::format (
+                "'{}' cannot be connected to '{}'", src->get_label (),
+                dest->get_label ()));
             }
           PORT_CONNECTIONS_MGR->ensure_connect (
             src->id_, dest->id_, 1.f, false, true);

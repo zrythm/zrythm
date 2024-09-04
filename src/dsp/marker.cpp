@@ -50,7 +50,7 @@ Marker::find_in_project () const
   z_return_val_if_fail (
     (int) P_MARKER_TRACK->markers_.size () > marker_track_index_, nullptr);
 
-  auto &marker = P_MARKER_TRACK->markers_[marker_track_index_];
+  auto &marker = P_MARKER_TRACK->markers_.at (marker_track_index_);
   z_return_val_if_fail (*marker == *this, nullptr);
   return marker;
 }

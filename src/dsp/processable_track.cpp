@@ -24,6 +24,13 @@ ProcessableTrack::init_loaded ()
   processor_->init_loaded (this);
 }
 
+void
+ProcessableTrack::copy_members_from (const ProcessableTrack &other)
+{
+  processor_ = other.processor_->clone_unique ();
+  processor_->track_ = this;
+}
+
 bool
 ProcessableTrack::get_monitor_audio () const
 {

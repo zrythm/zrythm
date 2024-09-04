@@ -23,7 +23,8 @@ Checks: >
   -modernize-use-trailing-return-type
 WarningsAsErrors: >
   bugprone-undelegated-constructor,
-  bugprone-string-constructor
+  bugprone-string-constructor,
+  modernize-use-override
 FormatStyle: file
 CheckOptions:
   - key: cert-dcl16-c.NewSuffixes

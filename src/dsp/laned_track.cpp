@@ -98,7 +98,7 @@ LanedTrackImpl<RegionT>::add_lane (bool fire_events)
 
 template <typename RegionT>
 bool
-LanedTrackImpl<RegionT>::validate () const
+LanedTrackImpl<RegionT>::validate_base () const
 {
   /* verify regions */
   for (const auto &lane : lanes_)
@@ -110,6 +110,29 @@ LanedTrackImpl<RegionT>::validate () const
     }
 
   return true;
+}
+
+template <typename RegionT>
+void
+LanedTrackImpl<RegionT>::set_playback_caches ()
+{
+  lane_snapshots_.clear ();
+  lane_snapshots_.reserve (lanes_.size ());
+  for (const auto &lane : lanes_)
+    {
+      lane_snapshots_.push_back (lane->gen_snapshot ());
+    }
+}
+
+template <typename RegionT>
+void
+LanedTrackImpl<RegionT>::update_name_hash (unsigned int new_name_hash)
+{
+  for (auto &lane : lanes_)
+    {
+
+      lane->update_track_name_hash ();
+    }
 }
 
 template class LanedTrackImpl<MidiRegion>;

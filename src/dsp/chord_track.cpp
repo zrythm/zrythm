@@ -166,7 +166,9 @@ ChordTrack::remove_scale (ScaleObject &scale)
 bool
 ChordTrack::validate () const
 {
-  if (!ChannelTrack::validate ())
+  if (
+    !Track::validate_base () || !ChannelTrack::validate_base ()
+    || !AutomatableTrack::validate_base ())
     return false;
 
   for (const auto &region : regions_)

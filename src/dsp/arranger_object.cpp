@@ -36,6 +36,8 @@
 
 #include <glib/gi18n.h>
 
+#include "doctest_wrapper.h"
+
 template <typename T>
 T *
 ArrangerObject::get_selections_for_type (Type type)
@@ -428,6 +430,20 @@ ArrangerObject::copy_identifier (const ArrangerObject &src)
         auto       &dest = dynamic_cast<ChordObject &> (*this);
         const auto &src_co = dynamic_cast<const ChordObject &> (src);
         dest.chord_index_ = src_co.chord_index_;
+      }
+      break;
+    case Type::Marker:
+      {
+        auto       &dest = dynamic_cast<Marker &> (*this);
+        const auto &src_m = dynamic_cast<const Marker &> (src);
+        dest.marker_track_index_ = src_m.marker_track_index_;
+      }
+      break;
+    case Type::ScaleObject:
+      {
+        auto       &dest = dynamic_cast<ScaleObject &> (*this);
+        const auto &src_so = dynamic_cast<const ScaleObject &> (src);
+        dest.index_in_chord_track_ = src_so.index_in_chord_track_;
       }
       break;
     default:
