@@ -51,7 +51,9 @@ if get_option ('tests')
   test_config.set_quoted (
     'PIPEWIRE_SERVER_NAME', 'zrythm-pipewire-0')
   test_config.set ('HAVE_PIPEWIRE', pipewire_bin.found ())
-  test_config.set_quoted ('PIPEWIRE_BIN', pipewire_bin.full_path ())
+  if pipewire_bin.found ()
+    test_config.set_quoted ('PIPEWIRE_BIN', pipewire_bin.full_path ())
+  endif
   test_config.set_quoted (
     'PIPEWIRE_CONF_PATH',
     meson.current_source_dir () / 'pipewire-server.conf')

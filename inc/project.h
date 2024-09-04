@@ -4,8 +4,8 @@
 #ifndef __PROJECT_H__
 #define __PROJECT_H__
 
+#include <stop_token>
 #include <string>
-#include <string_view>
 
 #include "actions/undo_manager.h"
 #include "dsp/engine.h"

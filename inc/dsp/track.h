@@ -343,7 +343,7 @@ public:
       return Type::MidiGroup;
     else
       {
-        static_assert (false, "Unknown track type");
+        static_assert (dependent_false_v<T>, "Unknown track type");
       }
   }
 

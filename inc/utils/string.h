@@ -36,11 +36,13 @@
 #ifndef __UTILS_STRING_H__
 #define __UTILS_STRING_H__
 
-#include <format>
-
-#include "ext/juce/juce.h"
 #include <fmt/format.h>
 #include <glibmm.h>
+
+namespace juce
+{
+class String;
+}
 
 /**
  * @addtogroup utils

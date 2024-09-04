@@ -10,6 +10,18 @@
 #include <variant>
 #include <vector>
 
+// Dependent false (for preventing static_assertions from being executed before
+// template instantiations)
+template <typename...> struct dependent_false : std::false_type
+{
+};
+
+template <typename... Ts>
+using dependent_false_t = typename dependent_false<Ts...>::type;
+
+template <typename... Ts>
+constexpr auto dependent_false_v = dependent_false<Ts...>::value;
+
 // Concept that checks if a type is a final class
 template <typename T>
 concept FinalClass = std::is_final_v<T> && std::is_class_v<T>;

@@ -901,7 +901,7 @@ public:
       }
     else
       {
-        static_assert (false, "Unsupported type");
+        static_assert (dependent_false_v<T, VariantT>, "Unsupported type");
       }
   }
 
@@ -946,7 +946,8 @@ public:
             else if constexpr (is_shared_ptr_v<T>)
               value = std::make_shared<ObjType> ();
             else
-              static_assert (false, "Unsupported pointer type");
+              static_assert (
+                dependent_false_v<T, VariantT>, "Unsupported pointer type");
             ctx.obj_ = val;
             value->ISerializable<ObjType>::deserialize (ctx);
             return;
@@ -1244,7 +1245,9 @@ public:
                       ptr = std::make_shared<ObjType> ();
                     else
                       {
-                        static_assert (false, "Unsupported pointer type");
+                        static_assert (
+                          dependent_false_v<T, VariantT>,
+                          "Unsupported pointer type");
                       }
                     ctx.obj_ = elem;
                     ptr->ISerializable<ObjType>::deserialize (ctx);

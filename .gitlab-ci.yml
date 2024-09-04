@@ -14,6 +14,14 @@ workflow:
     # run tag pipelines
     - if: $CI_COMMIT_TAG
 
+variables:
+  COMMON_MESON_OPTIONS: >-
+    -Dstrict_flags=true
+    -Dyaml_project_compatibility=enabled
+    -Dforce_fallback_for=gtk4,libadwaita,libpanel,yyjson,libcyaml
+    -Dtests=true
+    -Dbenchmarks=true
+
 stages:
   - setup
   - check
@@ -21,6 +29,11 @@ stages:
   - test
   - deploy
   - cleanup
+
+.load_brew_env: &load_brew_env
+  - if [[ "$(uname)" == "Darwin" && "$(uname -m)" == "arm64" ]]; then
+      eval "$(/opt/homebrew/bin/brew shellenv)";
+    fi
 
 default:
   cache:
@@ -38,20 +51,15 @@ default:
         - build
   before_script:
     - source ./venv/bin/activate
+    - *load_brew_env
 
 .setup_template: &setup_template
   stage: setup
   before_script:
-  - python3 -m venv venv
-  - source ./venv/bin/activate
-  - python3 -m pip install -r requirements.txt
-  script:
-    - meson setup build
-      -Dstrict_flags=true
-      -Dyaml_project_compatibility=enabled
-      -Dforce_fallback_for=gtk4,libadwaita,libpanel,yyjson,libcyaml
-      -Dtests=true
-      -Dbenchmarks=true
+    - python3 -m venv venv
+    - source ./venv/bin/activate
+    - python3 -m pip install -r requirements.txt
+    - *load_brew_env
 
 configure:gnu/linux:
   <<: *setup_template
@@ -60,11 +68,17 @@ configure:gnu/linux:
   variables:
     CC: "gcc"
     CXX: "g++"
+  script:
+    - meson setup build $COMMON_MESON_OPTIONS
 
 configure:mac-arm:
   <<: *setup_template
   tags:
     - mac-arm
+  variables:
+    PKG_CONFIG_PATH: "/opt/zrythm-installed-deps/lib/pkgconfig:$PKG_CONFIG_PATH"
+  script:
+    - meson setup build $COMMON_MESON_OPTIONS -Dgtk4:x11-backend=false -Dx11=disabled
 
 clang-format-check:
   stage: check
@@ -87,10 +101,20 @@ exif-check:
   script:
     - scripts/exif_check.sh
 
-build:
+.build_template: &build_template
   stage: build
   script:
     - ninja -C build
+
+build:gnu/linux:
+  <<: *build_template
+  tags:
+    - archlinux
+
+build:mac-arm:
+  <<: *build_template
+  tags:
+    - mac-arm
 
 .test_template: &test_template
   stage: test

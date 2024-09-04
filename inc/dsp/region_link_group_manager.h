@@ -5,6 +5,7 @@
 #define __AUDIO_REGION_LINK_GROUP_MANAGER_H__
 
 #include "dsp/region_link_group.h"
+#include "utils/format.h"
 
 /**
  * @addtogroup dsp
@@ -41,18 +42,11 @@ public:
   std::vector<RegionLinkGroup> groups_;
 };
 
-template <> struct fmt::formatter<RegionLinkGroupManager>
-{
-  constexpr auto parse (format_parse_context &ctx) { return ctx.begin (); }
-
-  template <typename FormatContext>
-  auto format (const RegionLinkGroupManager &rlgm, FormatContext &ctx)
-  {
-    return format_to (
-      ctx.out (), "RegionLinkGroupManager {{ groups: [{}] }}",
-      fmt::join (rlgm.groups_, ", "));
-  }
-};
+DEFINE_OBJECT_FORMATTER (
+  RegionLinkGroupManager,
+  fmt::format (
+    "RegionLinkGroupManager {{ groups: [{}] }}",
+    fmt::join (val.groups_, ", ")));
 
 /**
  * @}

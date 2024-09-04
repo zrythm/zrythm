@@ -10,6 +10,8 @@
 #ifndef __AUDIO_RECORDING_MANAGER_H__
 #define __AUDIO_RECORDING_MANAGER_H__
 
+#include <semaphore>
+
 #include "dsp/automation_point.h"
 #include "dsp/recording_event.h"
 #include "dsp/region_identifier.h"
