@@ -253,9 +253,7 @@ concept FinalLengthedObjectSubclass =
 inline bool
 operator== (const LengthableObject &lhs, const LengthableObject &rhs)
 {
-  return lhs.end_pos_ == rhs.end_pos_
-         && static_cast<const ArrangerObject &> (lhs)
-              == static_cast<const ArrangerObject &> (rhs);
+  return lhs.end_pos_ == rhs.end_pos_;
 }
 
 using LengthableObjectVariant =

@@ -447,44 +447,8 @@ public:
 ENUM_ENABLE_BITSET (PortIdentifier::Flags);
 ENUM_ENABLE_BITSET (PortIdentifier::Flags2);
 
-inline bool
-operator== (const PortIdentifier &lhs, const PortIdentifier &rhs)
-{
-  bool eq =
-    lhs.owner_type_ == rhs.owner_type_ && lhs.unit_ == rhs.unit_
-    && lhs.type_ == rhs.type_ && lhs.flow_ == rhs.flow_
-    && lhs.flags_ == rhs.flags_ && lhs.flags2_ == rhs.flags2_
-    && lhs.track_name_hash_ == rhs.track_name_hash_;
-  if (!eq)
-    return false;
-
-  if (lhs.owner_type_ == PortIdentifier::OwnerType::Plugin)
-    {
-      eq = eq && lhs.plugin_id_ == rhs.plugin_id_;
-    }
-  if (!eq)
-    return false;
-
-  /* if LV2 (has symbol) check symbol match, otherwise check index match and
-   * label match */
-  if (lhs.sym_.empty ())
-    {
-      eq = eq && lhs.port_index_ == rhs.port_index_ && lhs.label_ == rhs.label_;
-    }
-  else
-    {
-      eq = eq && lhs.sym_ == rhs.sym_;
-    }
-  if (!eq)
-    return false;
-
-  /* do string comparisons at the end */
-  eq =
-    eq && lhs.uri_ == rhs.uri_ && lhs.port_group_ == rhs.port_group_
-    && lhs.ext_port_id_ == rhs.ext_port_id_;
-
-  return eq;
-}
+bool
+operator== (const PortIdentifier &lhs, const PortIdentifier &rhs);
 
 namespace std
 {

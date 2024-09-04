@@ -15,6 +15,21 @@ Color::Color (const std::string &str)
   *this = rgba;
 }
 
+Color::Color (float r, float g, float b, float a)
+    : red_ (r), green_ (g), blue_ (b), alpha_ (a)
+{
+}
+
+Color &
+Color::operator= (const GdkRGBA &color)
+{
+  red_ = color.red;
+  green_ = color.green;
+  blue_ = color.blue;
+  alpha_ = color.alpha;
+  return *this;
+}
+
 Color &
 Color::brighten (float val)
 {
@@ -27,7 +42,7 @@ Color::brighten (float val)
 Color &
 Color::brighten_default ()
 {
-  brighten (COLOR_DEFAULT_BRIGHTEN_VAL);
+  brighten (DEFAULT_BRIGHTEN_VAL);
   return *this;
 }
 
@@ -43,7 +58,7 @@ Color::darken (float val)
 Color &
 Color::darken_default ()
 {
-  darken (COLOR_DEFAULT_BRIGHTEN_VAL);
+  darken (DEFAULT_BRIGHTEN_VAL);
   return *this;
 }
 
@@ -217,4 +232,13 @@ std::string
 Color::to_hex () const
 {
   return rgb_to_hex (red_, green_, blue_);
+}
+
+bool
+operator== (const Color &lhs, const Color &rhs)
+{
+  return math_floats_equal (lhs.red_, rhs.red_)
+         && math_floats_equal (lhs.green_, rhs.green_)
+         && math_floats_equal (lhs.blue_, rhs.blue_)
+         && math_floats_equal (lhs.alpha_, rhs.alpha_);
 }

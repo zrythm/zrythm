@@ -25,7 +25,7 @@ public:
   /**
    * Color independent of owner (Track/Region etc.).
    */
-  Color color_ = {};
+  Color color_;
 
   /**
    * Whether to use the custom color.
@@ -34,5 +34,11 @@ public:
    */
   bool use_color_ = false;
 };
+
+inline bool
+operator== (const ColoredObject &lhs, const ColoredObject &rhs)
+{
+  return lhs.color_ == rhs.color_ && lhs.use_color_ == rhs.use_color_;
+}
 
 #endif // __DSP_COLORED_OBJECT_H__

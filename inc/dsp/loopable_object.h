@@ -124,4 +124,12 @@ public:
   Position loop_end_pos_;
 };
 
+inline bool
+operator== (const LoopableObject &lhs, const LoopableObject &rhs)
+{
+  return lhs.clip_start_pos_ == rhs.clip_start_pos_
+         && lhs.loop_start_pos_ == rhs.loop_start_pos_
+         && lhs.loop_end_pos_ == rhs.loop_end_pos_;
+}
+
 #endif // __DSP_LOOPABLE_OBJECT_H__

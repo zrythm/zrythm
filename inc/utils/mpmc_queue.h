@@ -103,7 +103,7 @@ public:
     _dequeue_pos.store (0, std::memory_order_relaxed);
   }
 
-  inline bool push_back (T const &data)
+  bool push_back (T const &data)
   {
     cell_t * cell;
     size_t   pos = _enqueue_pos.load (std::memory_order_relaxed);
@@ -137,7 +137,7 @@ public:
     return true;
   }
 
-  inline bool pop_front (T &data)
+  bool pop_front (T &data)
   {
     cell_t * cell;
     size_t   pos = _dequeue_pos.load (std::memory_order_relaxed);

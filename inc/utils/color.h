@@ -6,7 +6,7 @@
 
 #include "io/serialization/iserializable.h"
 
-#include "gtk_wrapper.h"
+TYPEDEF_STRUCT_UNDERSCORED (GdkRGBA);
 
 /**
  * @addtogroup utils
@@ -14,17 +14,14 @@
  * @{
  */
 
-constexpr auto COLOR_DEFAULT_BRIGHTEN_VAL = 0.1f;
-
 class Color final : public ISerializable<Color>
 {
 public:
+  static constexpr auto DEFAULT_BRIGHTEN_VAL = 0.1f;
+
   Color () = default;
   Color (const GdkRGBA &color) { *this = color; }
-  Color (float r, float g, float b, float a = 1.0f)
-      : red_ (r), green_ (g), blue_ (b), alpha_ (a)
-  {
-  }
+  Color (float r, float g, float b, float a = 1.0f);
 
   /**
    * @brief Construct a new Color object by parsing the color string.
@@ -33,14 +30,7 @@ public:
    */
   Color (const std::string &str);
 
-  Color &operator= (const GdkRGBA &color)
-  {
-    red_ = color.red;
-    green_ = color.green;
-    blue_ = color.blue;
-    alpha_ = color.alpha;
-    return *this;
-  }
+  Color &operator= (const GdkRGBA &color);
 
   /**
    * Brightens the color by the given amount.
@@ -163,6 +153,9 @@ public:
   float blue_ = 0.f;   ///< Blue.
   float alpha_ = 1.0f; ///< Alpha.
 };
+
+bool
+operator== (const Color &lhs, const Color &rhs);
 
 /**
  * @}
