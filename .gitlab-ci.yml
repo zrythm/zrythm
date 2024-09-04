@@ -38,30 +38,55 @@ default:
         - build
   tags:
     - archlinux
+    - mac-arm
   before_script:
     - source ./venv/bin/activate
 
-configure:
+.setup_template: &setup_template
   stage: setup
   before_script:
-    - python3 -m venv venv
-    - source ./venv/bin/activate
-    - python3 -m pip install -r requirements.txt
+  - python3 -m venv venv
+  - source ./venv/bin/activate
+  - python3 -m pip install -r requirements.txt
   script:
-    - CC=gcc meson setup build -Dstrict_flags=true -Dyaml_project_compatibility=enabled -Dforce_fallback_for=gtk4,libadwaita,libpanel,yyjson,libcyaml -Dtests=true -Dbenchmarks=true
+    - meson setup build
+      -Dstrict_flags=true
+      -Dyaml_project_compatibility=enabled
+      -Dforce_fallback_for=gtk4,libadwaita,libpanel,yyjson,libcyaml
+      -Dtests=true
+      -Dbenchmarks=true
+
+configure:gnu/linux:
+  <<: *setup_template
+  tags:
+    - archlinux
+  variables:
+    CC: "gcc"
+    CXX: "g++"
+
+configure:mac-arm:
+  <<: *setup_template
+  tags:
+    - mac-arm
 
 clang-format-check:
   stage: check
+  tags:
+    - archlinux
   script:
     - ninja -C build clang-format-check
 
 reuse-check:
   stage: check
+  tags:
+    - archlinux
   script:
     - reuse lint
 
 exif-check:
   stage: check
+  tags:
+    - archlinux
   script:
     - scripts/exif_check.sh
 
@@ -77,6 +102,8 @@ test:
 
 test_valgrind:
   stage: test
+  tags:
+    - archlinux
   script:
     - meson test -C build --wrap='valgrind --undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1' --timeout-multiplier 3 || (cat build/meson-logs/testlog-valgrind.txt && exit 1)
 
@@ -85,6 +112,8 @@ update_manual:
   only:
     - master
     - tags
+  tags:
+    - archlinux
   script:
     - ninja -C build manual_bundle &> manual_bundle_results.txt || (cat manual_bundle_results.txt && exit 1)
     - rsync -av --no-group --omit-dir-times --exclude '*.zip' build/doc/user/_rendered/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_USER_MANUAL_UPLOAD_PATH
@@ -101,6 +130,8 @@ update_dev_docs:
   only:
     - master
     - tags
+  tags:
+    - archlinux
   script:
     - ninja -C build gen-dev-docs &> gen_dev_docs_results.txt || (cat gen_dev_docs_results.txt && exit 1)
     - rsync -av --no-group --omit-dir-times build/doc/dev/html/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_DEV_DOCS_UPLOAD_PATH
