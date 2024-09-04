@@ -4,6 +4,7 @@ beautifulsoup4==4.12.2
 certifi==2024.8.30
 charset-normalizer==3.2.0
 click==8.1.6
+cmake==3.30.2
 compdb==0.2.0
 docutils==0.20.1
 furo==2024.8.6

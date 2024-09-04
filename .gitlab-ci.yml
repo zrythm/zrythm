@@ -36,9 +36,6 @@ default:
     - key: "$CI_PIPELINE_ID"
       paths:
         - build
-  tags:
-    - archlinux
-    - mac-arm
   before_script:
     - source ./venv/bin/activate
 
@@ -95,10 +92,20 @@ build:
   script:
     - ninja -C build
 
-test:
+.test_template: &test_template
   stage: test
   script:
     - ninja -C build test || (cat build/meson-logs/testlog.txt && exit 1)
+
+test:gnu/linux:
+  <<: *test_template
+  tags:
+    - archlinux
+
+test:mac-arm:
+  <<: *test_template
+  tags:
+    - mac-arm
 
 test_valgrind:
   stage: test
@@ -145,8 +152,18 @@ update_dev_docs:
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
 
-cleanup-cache:
+.cleanup_cache_template: &cleanup_cache_template
   stage: cleanup
   script:
     - rm -rf "$CI_CACHE_PATH/$CI_PROJECT_PATH/$CI_PIPELINE_ID"-*
   when: always
+
+cleanup-cache:gnu/linux:
+  <<: *cleanup_cache_template
+  tags:
+    - archlinux
+
+cleanup-cache:mac-arm:
+  <<: *cleanup_cache_template
+  tags:
+    - mac-arm
