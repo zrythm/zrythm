@@ -161,6 +161,18 @@ public:
     int num_files_ = 1;
   };
 
+  class ExportThread final : public juce::Thread
+  {
+  public:
+    ExportThread (Exporter &exporter);
+    ~ExportThread ();
+
+    void run () override;
+
+  private:
+    Exporter &exporter_;
+  };
+
 public:
   Exporter (
     Settings                      settings,
@@ -189,18 +201,9 @@ public:
    *
    * See bounce_dialog for an example.
    */
-  void begin_generic_thread ()
-  {
-    thread_ = std::make_unique<std::jthread> ([&] (std::stop_token stoken) {
-      export_to_file ();
-    });
-  }
+  void begin_generic_thread ();
 
-  void join_generic_thread ()
-  {
-    if (thread_)
-      thread_->join ();
-  }
+  void join_generic_thread ();
 
   /**
    * @brief Returns the exported file path.
@@ -252,7 +255,7 @@ private:
    */
   std::unique_ptr<AudioEngine::State> state_;
 
-  std::unique_ptr<std::jthread> thread_;
+  std::unique_ptr<ExportThread> thread_;
 };
 
 DEFINE_ENUM_FORMATTER (

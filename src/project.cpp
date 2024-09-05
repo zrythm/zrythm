@@ -713,8 +713,19 @@ Project::get_path (ProjectPath path, bool backup)
   z_return_val_if_reached ("");
 }
 
+Project::SerializeProjectThread::SerializeProjectThread (SaveContext &ctx)
+    : juce::Thread ("SerializeProject"), ctx_ (ctx)
+{
+  startThread ();
+}
+
+Project::SerializeProjectThread::~SerializeProjectThread ()
+{
+  stopThread (-1);
+}
+
 void
-Project::serialize_project_thread (std::stop_token stop_token, SaveContext &ctx)
+Project::SerializeProjectThread::run ()
 {
   char * compressed_json;
   size_t compressed_size;
@@ -726,12 +737,12 @@ Project::serialize_project_thread (std::stop_token stop_token, SaveContext &ctx)
   std::optional<CStringRAII> json;
   try
     {
-      json = ctx.project_->serialize_to_json_string ();
+      json = ctx_.project_->serialize_to_json_string ();
     }
   catch (const ZrythmException &e)
     {
       e.handle ("Failed to serialize project");
-      ctx.has_error_ = true;
+      ctx_.has_error_ = true;
       goto serialize_end;
     }
   time_after = g_get_monotonic_time ();
@@ -749,22 +760,22 @@ Project::serialize_project_thread (std::stop_token stop_token, SaveContext &ctx)
   catch (const ZrythmException &ex)
     {
       ex.handle (_ ("Failed to compress project file"));
-      ctx.has_error_ = true;
+      ctx_.has_error_ = true;
       goto serialize_end;
     }
 
   /* set file contents */
-  z_debug ("saving project file at {}...", ctx.project_file_path_);
+  z_debug ("saving project file at {}...", ctx_.project_file_path_);
   try
     {
       Glib::file_set_contents (
-        ctx.project_file_path_, compressed_json,
+        ctx_.project_file_path_, compressed_json,
         static_cast<gssize> (compressed_size));
       g_free (compressed_json);
     }
   catch (const Glib::Error &e)
     {
-      ctx.has_error_ = true;
+      ctx_.has_error_ = true;
       z_error ("Unable to write project file: {}", e.what ());
     }
 
@@ -772,7 +783,7 @@ Project::serialize_project_thread (std::stop_token stop_token, SaveContext &ctx)
 
 serialize_end:
   UNDO_MANAGER->action_sem_.release ();
-  ctx.finished_ = true;
+  ctx_.finished_.store (true);
 }
 
 int
@@ -982,7 +993,7 @@ Project::save (
 
   if (async)
     {
-      std::jthread save_thread (serialize_project_thread, std::ref (*ctx));
+      SerializeProjectThread save_thread (*ctx);
 
       /* TODO: show progress dialog */
       if (ZRYTHM_HAVE_UI && false)
@@ -993,7 +1004,7 @@ Project::save (
         }
       else
         {
-          while (!ctx->finished_)
+          while (!ctx->finished_.load ())
             {
               std::this_thread::sleep_for (std::chrono::milliseconds (1));
             }
@@ -1003,7 +1014,11 @@ Project::save (
   else /* else if no async */
     {
       /* call synchronously */
-      serialize_project_thread (std::stop_token{}, *ctx);
+      SerializeProjectThread save_thread (*ctx);
+      while (save_thread.isThreadRunning ())
+        {
+          std::this_thread::sleep_for (std::chrono::milliseconds (1));
+        }
       idle_saved_callback (ctx.get ());
     }
 

@@ -43,6 +43,22 @@
 
 #define AMPLITUDE (1.0 * 0x7F000000)
 
+Exporter::ExportThread::ExportThread (Exporter &exporter)
+    : juce::Thread ("ExportThread"), exporter_ (exporter)
+{
+}
+
+Exporter::ExportThread::~ExportThread ()
+{
+  stopThread (-1);
+}
+
+void
+Exporter::ExportThread::run ()
+{
+  exporter_.export_to_file ();
+}
+
 Exporter::Exporter (
   Settings                      settings,
   GtkWidget *                   parent_owner,
@@ -52,6 +68,22 @@ Exporter::Exporter (
         progress_info ? progress_info : std::make_shared<ProgressInfo> ()),
       parent_owner_ (parent_owner)
 {
+}
+
+void
+Exporter::begin_generic_thread ()
+{
+  thread_ = std::make_unique<ExportThread> (*this);
+  thread_->startThread ();
+}
+
+void
+Exporter::join_generic_thread ()
+{
+  if (thread_)
+    {
+      thread_->stopThread (-1);
+    }
 }
 
 const char *

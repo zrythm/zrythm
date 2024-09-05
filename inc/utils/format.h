@@ -65,7 +65,7 @@
     { \
       static constexpr std::array<const char *, VA_ARGS_SIZE (__VA_ARGS__)> \
                    enum_strings = { __VA_ARGS__ }; \
-      const char * str = enum_strings[static_cast<int> (val)]; \
+      const char * str = enum_strings.at (static_cast<int> (val)); \
       return format_to ( \
         ctx.out (), FMT_STRING ("{}"), translate_ ? _ (str) : str); \
     } \
@@ -83,9 +83,10 @@
     enum_type val, bool translate = false) \
   { \
     if (translate) \
-      return fmt::format ("{:t}", val); \
-    else \
-      return fmt::format ("{}", val); \
+      { \
+        return fmt::format ("{:t}", val); \
+      } \
+    return fmt::format ("{}", val); \
   } \
 \
   inline enum_type enum_name##_from_string ( \
@@ -94,15 +95,12 @@
     for (size_t i = 0; i < VA_ARGS_SIZE (__VA_ARGS__); ++i) \
       { \
         if ( \
-          translate \
-          && str == enum_name##_to_string (static_cast<enum_type> (i), true)) \
-          return static_cast<enum_type> (i); \
-        else if ( \
-          !translate \
-          && str == enum_name##_to_string (static_cast<enum_type> (i), false)) \
-          return static_cast<enum_type> (i); \
+          str == enum_name##_to_string (static_cast<enum_type> (i), translate)) \
+          { \
+            return static_cast<enum_type> (i); \
+          } \
       } \
-    z_error ("invalid enum value"); \
+    z_error ("Enum value from '{}' not found", str); \
     return static_cast<enum_type> (0); \
   }
 
@@ -151,10 +149,8 @@ struct fmt::formatter<Ptr> : fmt::formatter<std::string_view>
         return fmt::formatter<std::string_view>::format (
           fmt::format ("{}", *ptr), ctx);
       }
-    else
-      {
-        return fmt::formatter<std::string_view>::format ("(null)", ctx);
-      }
+
+    return fmt::formatter<std::string_view>::format ("(null)", ctx);
   }
 };
 

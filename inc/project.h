@@ -4,7 +4,6 @@
 #ifndef __PROJECT_H__
 #define __PROJECT_H__
 
-#include <stop_token>
 #include <string>
 
 #include "actions/undo_manager.h"
@@ -350,7 +349,7 @@ private:
     bool is_backup_ = false;
 
     /** To be set to true when the thread finishes. */
-    bool finished_ = false;
+    std::atomic_bool finished_ = false;
 
     bool show_notification_ = false;
 
@@ -363,8 +362,16 @@ private:
   /**
    * Thread that does the serialization and saving.
    */
-  static void
-  serialize_project_thread (std::stop_token stop_token, SaveContext &ctx);
+  class SerializeProjectThread final : public juce::Thread
+  {
+  public:
+    SerializeProjectThread (SaveContext &ctx);
+    ~SerializeProjectThread ();
+    void run () override;
+
+  private:
+    SaveContext &ctx_;
+  };
 
   /**
    * Idle func to check if the project has finished saving and show a
