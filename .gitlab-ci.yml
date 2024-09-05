@@ -80,6 +80,30 @@ configure:mac-arm:
   script:
     - meson setup build $COMMON_MESON_OPTIONS -Dgtk4:x11-backend=false -Dx11=disabled
 
+configure:windows:
+  <<: *setup_template
+  tags:
+    - windows11
+  before_script:
+  - Import-Module "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
+  - >-
+    Enter-VsDevShell
+    -VsInstallPath "C:\Program Files\Microsoft Visual Studio\2022\Community"
+    -SkipAutomaticLocation
+  - echo $env:PATH
+  - python -m venv venv
+  - ./venv/Scripts/Activate.ps1
+  - python -m pip install -r requirements.txt
+  script:
+    - >-
+      meson setup build 
+      -Dstrict_flags=true
+      -Dyaml_project_compatibility=enabled
+      "-Dforce_fallback_for=gtk4,libadwaita,libpanel,yyjson,libcyaml"
+      -Dtests=true
+      -Dbenchmarks=true 
+      "-Dgtk4:x11-backend=false" -Dx11=disabled
+
 clang-format-check:
   stage: check
   tags:

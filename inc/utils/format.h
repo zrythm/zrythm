@@ -12,6 +12,7 @@
 
 #include "ext/juce/juce.h"
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 #include <magic_enum.hpp>
 
 /**

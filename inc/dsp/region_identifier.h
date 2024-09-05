@@ -56,18 +56,10 @@ public:
   RegionIdentifier (RegionType type) : type_ (type) { }
   bool validate () const;
 
-  inline bool is_automation () const { return type_ == RegionType::Automation; }
-  inline bool is_midi () const { return type_ == RegionType::Midi; }
-  inline bool is_audio () const { return type_ == RegionType::Audio; }
-  inline bool is_chord () const { return type_ == RegionType::Chord; }
-
-  void print () const
-  {
-    z_debug (
-      "Region identifier: type: {}, track name hash {}, lane pos {}, at index {}, index {}, link_group: {}",
-      RegionType_to_string (type_), track_name_hash_, lane_pos_, at_idx_, idx_,
-      link_group_);
-  }
+  bool is_automation () const { return type_ == RegionType::Automation; }
+  bool is_midi () const { return type_ == RegionType::Midi; }
+  bool is_audio () const { return type_ == RegionType::Audio; }
+  bool is_chord () const { return type_ == RegionType::Chord; }
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -95,6 +87,17 @@ operator== (const RegionIdentifier &lhs, const RegionIdentifier &rhs)
          && lhs.lane_pos_ == rhs.lane_pos_ && lhs.at_idx_ == rhs.at_idx_
          && lhs.idx_ == rhs.idx_;
 }
+
+DEFINE_OBJECT_FORMATTER (
+  RegionIdentifier,
+  fmt::format (
+    "RegionIdentifier {{ type: {}, track name hash {}, lane pos {}, at index {}, index {}, link_group: {} }}",
+    RegionType_to_string (val.type_),
+    val.track_name_hash_,
+    val.lane_pos_,
+    val.at_idx_,
+    val.idx_,
+    val.link_group_));
 
 /**
  * @}

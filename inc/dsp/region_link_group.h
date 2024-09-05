@@ -5,6 +5,7 @@
 #define __AUDIO_REGION_LINK_GROUP_H__
 
 #include "dsp/region_identifier.h"
+#include "utils/format.h"
 
 class Region;
 
@@ -62,18 +63,12 @@ public:
   int group_idx_ = -1;
 };
 
-template <> struct fmt::formatter<RegionLinkGroup>
-{
-  constexpr auto parse (format_parse_context &ctx) { return ctx.begin (); }
-
-  template <typename FormatContext>
-  auto format (const RegionLinkGroup &rlg, FormatContext &ctx)
-  {
-    return format_to (
-      ctx.out (), "RegionLinkGroup {{ group_idx: {}, ids: [{}] }}",
-      rlg.group_idx_, fmt::join (rlg.ids_, ", "));
-  }
-};
+DEFINE_OBJECT_FORMATTER (
+  RegionLinkGroup,
+  fmt::format (
+    "RegionLinkGroup {{ group_idx: {}, ids: [{}] }}",
+    val.group_idx_,
+    fmt::join (val.ids_, ", ")));
 
 /**
  * @}
