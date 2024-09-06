@@ -1,4 +1,4 @@
-.. SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
+.. SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex at zrythm dot org>
 .. SPDX-License-Identifier: FSFAP
 
 Installation Instructions
@@ -15,9 +15,6 @@ and the following
 
 `meson (Apache-2.0) <https://mesonbuild.com/>`_
   Build system
-
-`guile (GPLv3+) <https://www.gnu.org/software/guile/>`_
-  Used in various build scripts
 
 `sassc (Expat) <https://github.com/sass/sassc>`_
   CSS compilation

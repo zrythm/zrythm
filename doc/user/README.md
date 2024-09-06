@@ -12,11 +12,6 @@ Zrythm User Manual
 - sphinx-intl
 - [sphinx-copybutton](https://pypi.org/project/sphinx-copybutton/)
 - [sphinxcontrib-svg2pdfconverter](https://pypi.org/project/sphinxcontrib-svg2pdfconverter/)
-- guile
-- `guix build utils` guile module (installed with guix package)
-- texlive (for PDF)
-- texi2html (for Guile API)
-- pandoc (for Guile API)
 
 # Building
 This is built using `ninja -C build manual_bundle`

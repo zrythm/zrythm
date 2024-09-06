@@ -74,20 +74,20 @@ foreach blp : blp_filenames
   ui_files += files (blp.replace ('.blp', '.ui'))
 endforeach
 
-zrythm_gresources_xml = custom_target (
+zrythm_gresources_xml = custom_target(
   'zrythm-gresources-xml',
   output: 'zrythm.gresources.xml',
-  input: gen_gtk_resources_xml_wrap,
-  depend_files: [ gen_gtk_resources_xml_wrap, ui_files ],
+  input: 'gen-gtk-resources-xml.py',
+  depend_files: [ ui_files ],
   depends: [ appdata_file, ],
   command: [
-    bash, '-c', '@INPUT@' + ' "$1" "$2" "$3" "$4"',
-    '_ignored',
+    python3, '@INPUT@',
     meson.current_source_dir(),
     meson.current_source_dir(),
     appdata_file.full_path(),
     meson.current_build_dir() / 'zrythm.gresources.xml'
-    ])
+  ],
+)
 
 zrythm_resources = gnome.compile_resources (
   'zrythm-resources',

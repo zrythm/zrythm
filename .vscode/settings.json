@@ -15,9 +15,9 @@
         "-Drtaudio=enabled",
         "-Drtmidi=enabled",
         "-Dforce_fallback_for=gtk4,libadwaita,libpanel,yyjson,libcyaml",
-        "-Dyaml_project_compatibility=enabled",
+        "-Dyaml_project_compatibility=enabled"
         // "-Db_sanitize=address,undefined",
-        "-Dbackend_max_links=1"
+        // "-Dbackend_max_links=1"
     ],
     "mesonbuild.mesonlsp.linting.disableUnusedVariableCheck": true,
     "mesonbuild.mesonlsp.others.ignoreDiagnosticsFromSubprojects": true,

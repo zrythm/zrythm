@@ -17,9 +17,36 @@ project (
     'b_lto=true',
     'b_lto_threads=2',
     'wrap_mode=nofallback',
-    'backend_max_links=1' # avoid OOM
+    'backend_max_links=4' # avoid OOM
     ],
   )
+
+#############################################################################
+# --- Get machine info ---
+#############################################################################
+
+# get host system and library suffix
+os_darwin = false
+os_gnu = false
+os_freebsd = false
+os_windows = false
+bin_suffix = ''
+lib_suffix = '.so'
+
+if host_machine.system() == 'darwin'
+  os_darwin = true
+  lib_suffix = '.dylib'
+elif host_machine.system() == 'linux'
+  os_gnu = true
+elif host_machine.system() == 'freebsd'
+  os_freebsd = true
+elif host_machine.system() == 'windows'
+  os_windows = true
+  bin_suffix = '.exe'
+  lib_suffix = '.dll'
+else
+  error ('unknown host system ' + host_machine.system ())
+endif
 
 #############################################################################
 # --- Import/configure required modules ---
@@ -38,12 +65,9 @@ cmake_opts.add_cmake_defines ({
 # --- Check for programs ---
 
 # find_program ('gettext')
-msgattrib = find_program ('msgattrib')
-msguniq = find_program ('msguniq')
-msggrep = find_program ('msggrep')
 msgfmt = find_program ('msgfmt', required: false)
-bash = find_program ('bash')
-grep = find_program ('grep')
+bash = find_program ('bash', required: os_gnu)
+grep = find_program ('grep', required: os_gnu)
 dot_bin = find_program ('dot', required: false)
 doxygen = find_program ('doxygen', required: false)
 rubberband = find_program ('rubberband', required: false)
@@ -62,12 +86,8 @@ find_program (
   'flex', required: get_option ('completions'))
 stoat = find_program (['stoat'], required: false)
 python3 = find_program (['python3', 'python'])
-guile = find_program (['guile2.2', 'guile'])
 ulimit = find_program ('tools/check_have_unlimited_memlock.sh')
-get_lv2_bundle_uri_bin = find_program ('tools/get_lv2_bundle_uri.sh')
 get_vst_path_bin = find_program ('tools/get_vst_path.sh')
-manpage_completions_run_sh = find_program (
-  'ext/sh-manpage-completions/run.sh')
 xmllint = find_program ('xmllint')
 iwyu_tool = find_program ('iwyu_tool', 'iwyu-tool', required: false)
 faust2lv2 = find_program ('faust2lv2', required: false)
@@ -163,29 +183,6 @@ language_mappings = {
 locales = language_mappings
 locales_str = ' '.join (locales.keys())
 
-# get host system and library suffix
-os_darwin = false
-os_gnu = false
-os_freebsd = false
-os_windows = false
-bin_suffix = ''
-lib_suffix = '.so'
-
-if host_machine.system() == 'darwin'
-  os_darwin = true
-  lib_suffix = '.dylib'
-elif host_machine.system() == 'linux'
-  os_gnu = true
-elif host_machine.system() == 'freebsd'
-  os_freebsd = true
-elif host_machine.system() == 'windows'
-  os_windows = true
-  bin_suffix = '.exe'
-  lib_suffix = '.dll'
-else
-  error ('unknown host system ' + host_machine.system ())
-endif
-
 if get_option ('fallback_version') == ''
   version_fallback = meson.project_version ()
 else
@@ -240,10 +237,12 @@ endif
 illegal_chars = [
   ' ', # U+202F
   ]
-illegal_char_test_args = [
-  '-c', '! "$1" -rn "$2" "$3"', '_ignored',
-  grep.full_path (),
-  ]
+if grep.found()
+  illegal_char_test_args = [
+    '-c', '! "$1" -rn "$2" "$3"', '_ignored',
+    grep.full_path (),
+    ]
+endif
 
 # GTK/GLIB versions
 gtk_req = '4.14.0'
@@ -1488,11 +1487,22 @@ if get_option ('tests') and lilv_dep.type_name () != 'internal'
         name: have_ext_lv2
         }
       if have_ext_lv2
+        lv2info_result = run_command(lv2info_bin, uri, check: true)
+        lv2info_output = lv2info_result.stdout().strip()
+        bundle_uri = ''
+        foreach line : lv2info_output.split('\n')
+          if line.strip().startswith('Bundle')
+            bundle_uri = line.split()[1].strip()
+            break
+          endif
+        endforeach
+        if bundle_uri == ''
+          error ('lv2info failed to find bundle uri')
+        endif
+
         ext_lv2_plugin_bundles += {
-          name: run_command (
-            get_lv2_bundle_uri_bin, lv2info_bin,
-            uri, check: true).stdout ().strip ()
-          }
+          name: bundle_uri
+        }
       endif
     endforeach
   endif
@@ -1533,7 +1543,6 @@ endif
 
 ext_srcs = []
 
-subdir ('scripts')
 subdir ('po')
 subdir ('data')
 subdir ('resources')

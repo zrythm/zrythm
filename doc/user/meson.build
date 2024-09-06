@@ -1,10 +1,18 @@
 # SPDX-FileCopyrightText: © 2019-2020 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+if not get_option('user_manual')
+  subdir_done ()
+endif
+
 if (not sphinx_build.found ()) or (not sphinx_intl.found ()) or (not sass.found ())
   warning ('sphinx-build/sphinx-intl/sass not found - user manual cannot be built')
   subdir_done ()
 endif
+
+msgattrib = find_program ('msgattrib')
+msguniq = find_program ('msguniq')
+msggrep = find_program ('msggrep')
 
 sphinx_builddir = meson.current_build_dir () / '_build'
 sphinx_build_opts = []

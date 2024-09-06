@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: © 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
 #!/usr/bin/env python3
 # This script generates the given LV2 plugin using Faust.
 

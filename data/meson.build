@@ -4,10 +4,11 @@
 app_id = 'org.zrythm.Zrythm'
 
 gschema = configure_file (
-  input: gen_gschema_wrap,
+  input: 'gen-gschema.py',
   output: app_id + '.gschema.xml',
   command: [
-    '@INPUT0@', '@OUTPUT@', app_id,
+    python3, '@INPUT0@', '@OUTPUT@', app_id,
+    locales_str,
     ],
   install: true,
   install_dir: schemasdir)
@@ -110,7 +111,20 @@ gen_appdata_xml_py_filename = 'gen-appdata-xml.py'
 gen_appdata_xml_py = configure_file (
   output: gen_appdata_xml_py_filename,
   input: gen_appdata_xml_py_filename,
-  configuration: scripts_conf
+  configuration: {
+    'MESON_SOURCE_ROOT': meson_src_root,
+    'HOMEPAGE_URL': 'https://www.zrythm.org/en/index.html',
+    'DONATION_URL': 'https://www.zrythm.org/en/community.html#donate',
+    'MAIN_REPO_URL': main_repo_url,
+    'BUG_REPORT_URL': issue_tracker_url,
+    'CHATROOM_URL': chatroom_url,
+    'FAQ_URL': faq_url,
+    'USER_MANUAL_URL': user_manual_url,
+    'TRANSLATE_URL': 'https://hosted.weblate.org/engage/zrythm/',
+    'CONTACT_URL': 'https://www.zrythm.org/en/community.html#contact',
+    'MAIN_SCREENSHOT_URL': 'https://www.zrythm.org/static/images/screenshots/screenshot-20240208.png',
+    'RELEASE_TAG_BASE_URL': 'https://gitlab.zrythm.org/zrythm/zrythm/-/tags/'
+    }
   )
 appdata_file_in_unformatted = custom_target (
   'appdata-xml-in-tmp',

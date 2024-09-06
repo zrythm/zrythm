@@ -32,13 +32,15 @@ endforeach
 configure_file (
   output: 'LINGUAS',
   command: [
-    bash, '-c',
-    'echo "' + ' '.join (languages_for_gettext) + '" > @OUTPUT@'])
+    find_program('echo'),
+    ' '.join (languages_for_gettext),
+    ],
+  capture: true)
 
 collect_translatables = run_target (
   'collect-translatables',
   command: [
-    meson_src_root / 'scripts/collect_translatables.sh',
+    python3, meson_src_root / 'scripts/collect_translatables.py',
     ],
   )
 

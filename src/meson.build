@@ -15,10 +15,10 @@ endif
 
 # add the translators C string header to the sources
 translators_c_h = configure_file (
-  input: translators_c_header_gen_wrap,
+  input: 'gen-translators-list.py',
   output: 'translators.h',
   command: [
-    '@INPUT0@', '@OUTPUT@', 'about',
+    python3, '@INPUT@', '@OUTPUT@', 'about',
     meson_src_root / 'TRANSLATORS',
     ],
   )

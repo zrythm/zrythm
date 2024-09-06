@@ -40,15 +40,19 @@ manpage = custom_target (
 
 # gen completions
 if os_gnu
+  manpage_completions_run_sh = find_program (
+    meson_src_root / 'ext/sh-manpage-completions/run.sh')
+
+  gen_completions_py = 'gen_completions.py'
 
   # fish
   fish_completion = custom_target (
     'fish-completion',
     output: 'zrythm.fish',
-    input: manpage,
+    input: [manpage, gen_completions_py],
     command: [
-      gen_completions_sh, manpage.full_path (), 'fish',
-      '@OUTPUT@',
+      python3, '@INPUT1@', manpage.full_path (), 'fish',
+      '@OUTPUT@', manpage_completions_run_sh.full_path(),
       ],
     install: get_option ('completions'),
     install_dir: datadir / 'fish/vendor_completions.d',
@@ -58,11 +62,11 @@ if os_gnu
   bash_completion = custom_target (
     'bash-completion',
     output: 'zrythm',
-    input: manpage,
+    input: [manpage, gen_completions_py],
     depends: fish_completion,
     command: [
-      gen_completions_sh, manpage.full_path (), 'bash',
-      '@OUTPUT@',
+      python3, '@INPUT1@', manpage.full_path (), 'bash',
+      '@OUTPUT@', manpage_completions_run_sh.full_path(),
       ],
     install: get_option ('completions'),
     install_dir: datadir / 'bash-completion/completions',
@@ -74,11 +78,11 @@ if os_gnu
     zsh_completion = custom_target (
       'zsh-completion',
       output: '_zrythm',
-      input: manpage,
+      input: [manpage, gen_completions_py],
       depends: fish_completion,
       command: [
-        gen_completions_sh, manpage.full_path (), 'zsh',
-        '@OUTPUT@',
+        python3, '@INPUT1@', manpage.full_path (), 'zsh',
+        '@OUTPUT@', manpage_completions_run_sh.full_path(),
         ],
       install: get_option ('completions'),
       install_dir: datadir / 'zsh/site-functions',

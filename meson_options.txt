@@ -44,12 +44,6 @@ option (
   description: 'Compile with RtAudio support')
 
 option (
-  'sdl',
-  type: 'feature',
-  value: 'disabled',
-  description: 'Compile with SDL2 backend support')
-
-option (
   'carla',
   type: 'feature',
   value: 'enabled',
