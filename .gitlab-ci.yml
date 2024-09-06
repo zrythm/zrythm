@@ -103,6 +103,7 @@ configure:windows:
       -Dtests=true
       -Dbenchmarks=true 
       "-Dgtk4:x11-backend=false" -Dx11=disabled
+      -Dmanpage=false -Dcompletions=false
 
 clang-format-check:
   stage: check
