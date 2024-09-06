@@ -32,10 +32,12 @@ endforeach
 configure_file (
   output: 'LINGUAS',
   command: [
-    find_program('echo'),
-    ' '.join (languages_for_gettext),
+    python3, '-c',
+    'print("' + 
+    ' '.join (languages_for_gettext) + '")',
     ],
-  capture: true)
+  capture: true,
+  )
 
 collect_translatables = run_target (
   'collect-translatables',

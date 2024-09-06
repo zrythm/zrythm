@@ -95,7 +95,7 @@ if os_gnu or os_freebsd
     )
   run_target (
     'gen-desktop-file',
-    command: [ 'echo', 'Generated desktop file' ],
+    command: [ python3, '-c', 'print("Generated desktop file")' ],
     depends: localized_desktop_file)
   desktop_utils = find_program (
     'desktop-file-validate', required: false)
@@ -166,7 +166,7 @@ endif
 
 run_target (
   'gen-appdata-xml',
-  command: [ 'echo', 'Generated appdata.xml' ],
+  command: [ python3, '-c', 'print("Generated appdata.xml")' ],
   depends: appdata_file)
 # Validate the appdata file
 appstream_util = find_program (

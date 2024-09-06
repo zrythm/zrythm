@@ -51,20 +51,12 @@ plugins = [
   ]
 
 uri_prefix = 'https://lv2.zrythm.org/faust-builtin'
-gen_lv2_sh = configure_file (
+gen_lv2_py = configure_file (
   output: 'gen-lv2.py',
   input: 'gen-lv2.py.in',
   configuration: {
     'URI_PREFIX': uri_prefix,
     'LIB_SUFFIX': '@LIB_SUFFIX@',
-    },
-  )
-
-gen_lv2_bundle_for_test = configure_file (
-  output: 'gen-lv2-bundle-for-test.sh',
-  input: 'gen-lv2-bundle-for-test.sh.in',
-  configuration: {
-    'BASH': bash.full_path (),
     },
   )
 
@@ -96,7 +88,7 @@ foreach pl : plugins
       input: [pl_dsp, 'zrythm-utils.lib'],
       output: pl_underscored_name + '.lv2.gen',
       command: [
-        python3, gen_lv2_sh, faust2lv2.full_path (),
+        python3, gen_lv2_py, faust2lv2.full_path (),
         '@INPUT0@', '@PRIVATE_DIR@', '@OUTPUT@',
         pl_type, '@INPUT1@',
         meson.current_source_dir () / 'generated'],
@@ -158,10 +150,7 @@ foreach pl : plugins
       output: pl_underscored_name + '.lv2',
       build_by_default: true,
       command: [
-        bash, '-c',
-        # TODO use gen_lv2_bundle_for_test.full_path() from meson 1.4.0
-        meson.current_build_dir() / 'gen-lv2-bundle-for-test.sh' + ' "$1" "$2" "$3" "$4"',
-        '_ignored',
+        python3, 'gen-lv2-bundle-for-test.py',
         '@OUTPUT@', '@INPUT0@', '@INPUT1@', '@INPUT2@',
         ],
       input: [
@@ -187,7 +176,6 @@ endforeach
 if faust2lv2.found ()
   run_target (
     'gen-faust-plugins',
-    command: [
-      'echo', 'Generated faust plugins', ],
+    command: [ python3, '-c', 'print("Generated faust plugins")' ],
     depends: pl_generate_targets)
 endif

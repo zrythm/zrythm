@@ -30,137 +30,167 @@ stages:
   - deploy
   - cleanup
 
-.load_brew_env: &load_brew_env
-  - if [[ "$(uname)" == "Darwin" && "$(uname -m)" == "arm64" ]]; then
-      eval "$(/opt/homebrew/bin/brew shellenv)";
-    fi
+.unix_activate_venv: &unix_activate_venv
+  - source ./venv/bin/activate
 
-default:
-  cache:
-    # this number must be bumped every time these subprojects are updated
-    - key: configured-cache-8
-      paths:
-        - venv
-        - subprojects/gtk4
-        - subprojects/libadwaita
-        - subprojects/libpanel
-        - subprojects/yyjson
-        - subprojects/libcyaml
-    - key: "$CI_PIPELINE_ID"
-      paths:
-        - build
-  before_script:
-    - source ./venv/bin/activate
-    - *load_brew_env
+.windows_activate_venv: &windows_activate_venv
+  - ./venv/Scripts/Activate.ps1
 
-.setup_template: &setup_template
-  stage: setup
-  before_script:
-    - python3 -m venv venv
-    - source ./venv/bin/activate
-    - python3 -m pip install -r requirements.txt
-    - *load_brew_env
+.mac_enable_brew_env: &mac_enable_brew_env
+  - eval "$(/opt/homebrew/bin/brew shellenv)";
 
-configure:gnu/linux:
-  <<: *setup_template
-  tags:
-    - archlinux
-  variables:
-    CC: "gcc"
-    CXX: "g++"
-  script:
-    - meson setup build $COMMON_MESON_OPTIONS
-
-configure:mac-arm:
-  <<: *setup_template
-  tags:
-    - mac-arm
-  variables:
-    PKG_CONFIG_PATH: "/opt/zrythm-installed-deps/lib/pkgconfig:$PKG_CONFIG_PATH"
-  script:
-    - meson setup build $COMMON_MESON_OPTIONS -Dgtk4:x11-backend=false -Dx11=disabled
-
-configure:windows:
-  <<: *setup_template
-  tags:
-    - windows11
-  before_script:
+.windows_enable_vs_env: &windows_enable_vs_env
   - Import-Module "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
   - >-
     Enter-VsDevShell
     -VsInstallPath "C:\Program Files\Microsoft Visual Studio\2022\Community"
     -SkipAutomaticLocation
-  - echo $env:PATH
+
+.gnu_linux_template:
+  tags:
+    - archlinux
+  variables:
+    CC: "gcc"
+    CXX: "g++"
+  before_script:
+    - *unix_activate_venv
+
+.mac_arm_template:
+  tags:
+    - mac-arm
+  variables:
+    PKG_CONFIG_PATH: "/opt/zrythm-installed-deps/lib/pkgconfig:$PKG_CONFIG_PATH"
+  before_script:
+  - *mac_enable_brew_env
+  - *unix_activate_venv
+
+.windows_template:
+  tags:
+    - windows11
+  variables:
+    BOOST_ROOT: "C:\\Boost\\boost_1_86_0"
+  before_script:
+  - *windows_enable_vs_env
+  - *windows_activate_venv
+
+default:
+  cache:
+  # this number must be bumped every time these subprojects are updated
+  - key: configured-cache-9
+    paths:
+      - venv
+      - subprojects/gtk4
+      - subprojects/libadwaita
+      - subprojects/libpanel
+      - subprojects/yyjson
+      - subprojects/libcyaml
+  - key: "$CI_PIPELINE_ID"
+    paths:
+      - build
+
+configure:gnu/linux:
+  extends: .gnu_linux_template
+  stage: setup
+  before_script:
+  - python3 -m venv venv
+  - *unix_activate_venv
+  - python3 -m pip install -r requirements.txt
+  script:
+  - meson setup build $COMMON_MESON_OPTIONS
+
+configure:mac-arm:
+  extends: .mac_arm_template
+  stage: setup
+  before_script:
+  - *mac_enable_brew_env
+  - python3 -m venv venv
+  - *unix_activate_venv
+  - python3 -m pip install -r requirements.txt
+  script:
+  - meson setup build $COMMON_MESON_OPTIONS -Dgtk4:x11-backend=false -Dx11=disabled
+
+configure:windows:
+  extends: .windows_template
+  stage: setup
+  before_script:
+  - *windows_enable_vs_env
   - python -m venv venv
-  - ./venv/Scripts/Activate.ps1
+  - *windows_activate_venv
   - python -m pip install -r requirements.txt
   script:
-    - >-
-      meson setup build 
-      -Dstrict_flags=true
-      -Dyaml_project_compatibility=enabled
-      "-Dforce_fallback_for=libadwaita,libpanel,libcyaml"
-      -Dtests=true
-      -Dbenchmarks=true 
-      "-Dgtk4:x11-backend=false" -Dx11=disabled
-      -Dmanpage=false -Dcompletions=false
-      --pkg-config-path=C:\vcpkg\installed\x64-windows\lib\pkgconfig
+  - >-
+    meson setup build 
+    -Dstrict_flags=true
+    -Dyaml_project_compatibility=enabled
+    "-Dforce_fallback_for=libadwaita,libpanel,libcyaml,lv2,serd,sord,sratom,lilv,magic_enum"
+    -Dtests=true
+    -Dbenchmarks=true 
+    "-Dgtk4:x11-backend=false" -Dx11=disabled
+    -Dmanpage=false -Dcompletions=false
+    -Dfftw3_threads_separate=false
+    '--pkg-config-path=C:\vcpkg\installed\x64-windows\lib\pkgconfig;C:\Users\alex\source\repos\carla\carla_installed\lib\pkgconfig'
+    -Dcarla_binaries_dir=C:\Users\alex\source\repos\carla\carla_installed\bin
 
 clang-format-check:
+  extends: .gnu_linux_template
   stage: check
-  tags:
-    - archlinux
   script:
-    - ninja -C build clang-format-check
+  - ninja -C build clang-format-check
 
 reuse-check:
+  extends: .gnu_linux_template
   stage: check
-  tags:
-    - archlinux
   script:
-    - reuse lint
+  - reuse lint
 
 exif-check:
+  extends: .gnu_linux_template
   stage: check
-  tags:
-    - archlinux
   script:
-    - scripts/exif_check.sh
-
-.build_template: &build_template
-  stage: build
-  script:
-    - ninja -C build
+  - scripts/exif_check.sh
 
 build:gnu/linux:
-  <<: *build_template
-  tags:
-    - archlinux
+  extends: .gnu_linux_template
+  stage: build
+  script:
+  - ninja -C build
 
 build:mac-arm:
-  <<: *build_template
-  tags:
-    - mac-arm
-
-.test_template: &test_template
-  stage: test
+  extends: .mac_arm_template
+  stage: build
   script:
-    - ninja -C build test || (cat build/meson-logs/testlog.txt && exit 1)
+  - ninja -C build
+
+build:windows:
+  extends: .windows_template
+  stage: build
+  script:
+  - ninja -C build
+
+.unix_test_cmd: &unix_test_cmd
+  - ninja -C build test || (cat build/meson-logs/testlog.txt && exit 1)
 
 test:gnu/linux:
-  <<: *test_template
-  tags:
-    - archlinux
+  extends: .gnu_linux_template
+  stage: test
+  script:
+  - *unix_test_cmd
 
 test:mac-arm:
-  <<: *test_template
-  tags:
-    - mac-arm
+  extends: .mac_arm_template
+  stage: test
+  script:
+  - *unix_test_cmd
+
+test:windows:
+  extends: .windows_template
+  stage: test
+  script:
+    - ninja -C build test; if (-not $?) { Get-Content build/meson-logs/testlog.txt; exit 1 }
 
 test_valgrind:
+  extends: .gnu_linux_template
   stage: test
-  tags:
-    - archlinux
   script:
     - meson test -C build --wrap='valgrind --undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1' --timeout-multiplier 3 || (cat build/meson-logs/testlog-valgrind.txt && exit 1)
 
@@ -180,7 +210,7 @@ update_manual:
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-    - source ./venv/bin/activate
+    - *unix_activate_venv
 
 update_dev_docs:
   stage: deploy
@@ -198,31 +228,33 @@ update_dev_docs:
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-    - source ./venv/bin/activate
+    - *unix_activate_venv
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
 
-.cleanup_cache_template: &cleanup_cache_template
-  stage: cleanup
-  script:
-    - rm -rf "$CI_CACHE_PATH/$CI_PROJECT_PATH/$CI_PIPELINE_ID"-*
-  when: always
+.unix_cleanup_cache_cmd: &unix_cleanup_cache_cmd
+  - rm -rf "$CI_CACHE_PATH/$CI_PROJECT_PATH/$CI_PIPELINE_ID"-*
 
 cleanup-cache:gnu/linux:
-  <<: *cleanup_cache_template
-  tags:
-    - archlinux
+  extends: .gnu_linux_template
+  stage: cleanup
+  when: always
+  before_script: ""
+  script:
+  - *unix_cleanup_cache_cmd
 
 cleanup-cache:mac-arm:
-  <<: *cleanup_cache_template
-  tags:
-    - mac-arm
+  extends: .mac_arm_template
+  stage: cleanup
+  when: always
+  before_script: ""
+  script:
+  - *unix_cleanup_cache_cmd
 
 cleanup-cache:windows:
-  <<: *cleanup_cache_template
-  tags:
-    - windows11
-  before_script:
-    - ./venv/Scripts/Activate.ps1
+  extends: .windows_template
+  stage: cleanup
+  when: always
+  before_script: ""
   script:
-    - Remove-Item -Force -Recurse -Path "$env:CI_CACHE_PATH\$env:CI_PROJECT_PATH\$env:CI_PIPELINE_ID-*"
+    - Remove-Item -Force -Recurse -Path "${env:CI_CACHE_PATH}\${env:CI_PROJECT_PATH}\${env:CI_PIPELINE_ID}-*"

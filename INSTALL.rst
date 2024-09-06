@@ -49,11 +49,10 @@ Required
 `gtk4 (LGPLv2.1+) <https://gtk.org/>`_
   GUI toolkit
 
-`gtksourceview (LGPLv2.1+) <https://wiki.gnome.org/Projects/GtkSourceView>`_
-  Source code editor widget
-
 `libadwaita (LGPLv2.1+) <https://gitlab.gnome.org/GNOME/libadwaita>`_
   Additional widgets
+
+Note: if you want to avoid the ``appstream`` dependency use `our fork <https://gitlab.zrythm.org/zrythm/libadwaita>`_ (``1.5.3-without-appstream`` branch).
 
 `libcurl (X11) <https://curl.se/libcurl/>`_
   Network connections (GNU/Linux only)

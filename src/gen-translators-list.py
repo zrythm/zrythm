@@ -14,6 +14,10 @@ def main(args):
         sys.exit(-1)
 
     output_file, output_type, input_file = args[1:]
+       
+    print(f"Debug: Output file: {output_file}")
+    print(f"Debug: Output type: {output_type}")
+    print(f"Debug: Input file: {input_file}")
 
     with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
         translators = []
@@ -22,10 +26,15 @@ def main(args):
             matched = re.match(r'\s*\* (.+)', line)
             if matched:
                 translator = matched.group(1)
+                print(f"Debug: Found translator: {translator}")
                 if not elem(translator, translators):
                     translators.append(translator)
+                    print(f"Debug: Added new translator: {translator}")
+
+        print(f"Debug: Total translators found: {len(translators)}")
 
         if output_type == "about":
+            print("Debug: Generating 'about' output")
             outfile.write("#define TRANSLATORS_STR \\\n")
             for i, translator in enumerate(translators):
                 outfile.write(f'"{translator}')
@@ -33,6 +42,9 @@ def main(args):
                     outfile.write('"\n')
                 else:
                     outfile.write('\\n" \\\n')
+                print(f"Debug: Wrote translator {i+1}/{len(translators)}: {translator}")
+
+    print("Debug: Script execution completed")
 
 if __name__ == "__main__":
     main(sys.argv)

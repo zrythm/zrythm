@@ -1,6 +1,6 @@
 [wrap-git]
 directory=libadwaita
-url=https://gitlab.gnome.org/GNOME/libadwaita
-# 1.5.0
-revision=6eed5e87efdcb6c599caaad64cbf1b68603ee6e7
+url=https://gitlab.zrythm.org/zrythm/libadwaita
+# 1.5.3-without-appstream
+revision=e3a869cab2677a45ec0233c3fc8c8f7f6ead4eac
 depth=1

@@ -1015,7 +1015,7 @@ lilv_dep = dependency (
     'default_library=static',
     ])
 
-# fftw - this is a mess because every distro handles fftw3
+# fftw - this is a mess because every distro packages fftw3
 # in various different ways
 fftw3_deps = [
   dependency (
@@ -1090,7 +1090,7 @@ fftw3_funcs = [
   ]
 foreach func : fftw3_funcs
   if not cc.has_function (func, dependencies: fftw3_deps)
-    error (
+    warning (
       func + ' missing. If linking fails, on some systems you may have to ' +
       'point Zrythm to the library that provides it directly, eg., ' +
       'LDFLAGS="$LDFLAGS /usr/lib/libfftw3_threads.so ' +
@@ -1148,20 +1148,27 @@ if have_carla
     cdata.set('CARLA_HAVE_CLAP_SUPPORT', 1)
   endif
 
-  # install discovery & bridge for 32-bit vst's on
-  # windows
+  # install discovery & bridge for 32-bit vst's on windows
   if os_windows
     carla_bins_dir_32bit = get_option ('carla_binaries_dir_32bit')
-    install_data (
-      find_program (
-        carla_bins_dir_32bit /
-          'carla-discovery-win32.exe').full_path(),
-      install_dir: zrythm_libdir / 'carla')
-    install_data (
-      find_program (
-        carla_bins_dir_32bit /
-          'carla-bridge-win32.exe').full_path(),
-      install_dir: zrythm_libdir / 'carla')
+    carla_discovery32 = find_program (
+      carla_bins_dir_32bit / 'carla-discovery-win32.exe',
+      required: false)
+    carla_bridge32 = find_program (
+      carla_bins_dir_32bit / 'carla-bridge-win32.exe',
+      required: false)
+    if carla_discovery32.found()
+      cdata.set('HAVE_CARLA_DISCOVERY_32BIT', 1)
+      install_data (
+        carla_discovery32.full_path(),
+        install_dir: zrythm_libdir / 'carla')
+    endif
+    if carla_bridge32.found()
+      cdata.set('HAVE_CARLA_BRIDGE_32BIT', 1)
+      install_data (
+        carla_bridge32.full_path(), 
+        install_dir: zrythm_libdir / 'carla')
+    endif
   endif
 
   # install gnu/linux bridges
@@ -1303,7 +1310,7 @@ zrythm_deps = [
   dependency ('threads'),
   dependency ('rubberband'),
   dependency ('epoxy'),
-  cc.find_library ('dl', static: all_static),
+  cc.find_library ('dl', static: all_static, required: not os_windows),
   chromaprint_dep,
   fftw3_deps,
   lsp_dsp_dep,
