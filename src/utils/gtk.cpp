@@ -740,6 +740,7 @@ z_gtk_activate_dir_link_func (GtkLabel * label, char * uri, void * data)
   return TRUE;
 }
 
+#if 0
 GtkSourceLanguageManager *
 z_gtk_source_language_manager_get (void)
 {
@@ -798,7 +799,7 @@ z_gtk_source_language_manager_get (void)
 
   already_set = true;
 
-#if 0
+#  if 0
   /* print found language specs */
   const char * const * lang_ids =
     gtk_source_language_manager_get_language_ids (
@@ -809,10 +810,11 @@ z_gtk_source_language_manager_get (void)
     {
       z_debug ("[{}] {}", i, lang_id);
     }
-#endif
+#  endif
 
   return manager;
 }
+#endif
 
 typedef struct DetachableNotebookData
 {

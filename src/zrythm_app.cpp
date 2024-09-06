@@ -76,7 +76,6 @@
 #include "gtk_wrapper.h"
 #include <fftw3.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
-#include <gtksourceview/gtksource.h>
 #ifdef HAVE_LSP_DSP
 #  include <lsp-plug.in/dsp/dsp.h>
 #endif
@@ -926,8 +925,8 @@ zrythm_app_startup (GApplication * app)
   adw_style_manager_set_color_scheme (style_mgr, ADW_COLOR_SCHEME_FORCE_DARK);
 
   /* init gtksourceview */
-  gtk_source_init ();
-  z_gtk_source_language_manager_get ();
+  // gtk_source_init ();
+  // z_gtk_source_language_manager_get ();
 
   G_APPLICATION_CLASS (zrythm_app_parent_class)->startup (G_APPLICATION (self));
 
@@ -1198,8 +1197,6 @@ zrythm_app_on_shutdown (GApplication * application, ZrythmApp * self)
 
   object_free_w_func_and_null (
     g_async_queue_unref, self->project_load_message_queue);
-
-  gtk_source_finalize ();
 
   std::destroy_at (&self->ui_caches);
   std::destroy_at (&self->project_init_flow_mgr);

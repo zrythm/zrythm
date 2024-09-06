@@ -306,16 +306,19 @@ on_preview_and_send_automatically_response (BugReportDialogWidget * self)
   gtk_label_set_markup (GTK_LABEL (json_heading), _ ("<b>Data</b>"));
   gtk_grid_attach (grid, json_heading, 0, 1, 1, 1);
   self->json_str = get_json_string (self);
-  GtkWidget * json_label = gtk_source_view_new ();
+  GtkWidget * json_label = gtk_text_view_new ();
   gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (json_label), GTK_WRAP_WORD_CHAR);
   gtk_text_view_set_editable (GTK_TEXT_VIEW (json_label), false);
   GtkTextBuffer * json_label_buf =
     gtk_text_view_get_buffer (GTK_TEXT_VIEW (json_label));
+#if 0
   GtkSourceLanguageManager * manager = z_gtk_source_language_manager_get ();
   GtkSourceLanguage *        lang =
     gtk_source_language_manager_get_language (manager, "json");
   gtk_source_buffer_set_language (GTK_SOURCE_BUFFER (json_label_buf), lang);
+#endif
   gtk_text_buffer_set_text (json_label_buf, self->json_str, -1);
+#if 0
   GtkSourceStyleSchemeManager * style_mgr =
     gtk_source_style_scheme_manager_get_default ();
   gtk_source_style_scheme_manager_prepend_search_path (
@@ -325,6 +328,7 @@ on_preview_and_send_automatically_response (BugReportDialogWidget * self)
     style_mgr, "monokai-extended-zrythm");
   gtk_source_buffer_set_style_scheme (
     GTK_SOURCE_BUFFER (json_label_buf), scheme);
+#endif
   GtkWidget * scrolled_window = gtk_scrolled_window_new ();
   gtk_scrolled_window_set_policy (
     GTK_SCROLLED_WINDOW (scrolled_window), GTK_POLICY_NEVER,

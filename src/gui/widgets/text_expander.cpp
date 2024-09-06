@@ -113,22 +113,14 @@ text_expander_widget_init (TextExpanderWidget * self)
   gtk_menu_button_set_popover (
     GTK_MENU_BUTTON (self->edit_btn), GTK_WIDGET (self->popover));
 
-  GtkSourceLanguageManager * manager = z_gtk_source_language_manager_get ();
-  z_return_if_fail (manager);
-  GtkSourceLanguage * lang =
-    gtk_source_language_manager_get_language (manager, "markdown");
-  z_return_if_fail (lang);
-  self->buffer = gtk_source_buffer_new_with_language (lang);
+  self->buffer = gtk_text_buffer_new (nullptr);
   z_return_if_fail (self->buffer);
-  self->editor =
-    GTK_SOURCE_VIEW (gtk_source_view_new_with_buffer (self->buffer));
+  self->editor = GTK_TEXT_VIEW (gtk_text_view_new_with_buffer (self->buffer));
   gtk_popover_set_child (self->popover, GTK_WIDGET (self->editor));
   gtk_widget_set_visible (GTK_WIDGET (self->editor), true);
-  gtk_source_view_set_tab_width (self->editor, 2);
-  gtk_source_view_set_indent_width (self->editor, 2);
-  gtk_source_view_set_insert_spaces_instead_of_tabs (self->editor, true);
-  gtk_source_view_set_smart_backspace (self->editor, true);
+  gtk_text_view_set_accepts_tab (self->editor, false);
 
+#if 0
   /* set style */
   GtkSourceStyleSchemeManager * style_mgr =
     gtk_source_style_scheme_manager_get_default ();
@@ -138,6 +130,7 @@ text_expander_widget_init (TextExpanderWidget * self)
   GtkSourceStyleScheme * scheme = gtk_source_style_scheme_manager_get_scheme (
     style_mgr, "monokai-extended-zrythm");
   gtk_source_buffer_set_style_scheme (self->buffer, scheme);
+#endif
 
   expander_box_widget_add_content (
     Z_EXPANDER_BOX_WIDGET (self), GTK_WIDGET (box));

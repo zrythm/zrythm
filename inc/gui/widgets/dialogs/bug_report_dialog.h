@@ -15,11 +15,6 @@
 
 #include "libadwaita_wrapper.h"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#include <gtksourceview/gtksource.h>
-#pragma GCC diagnostic pop
-
 /**
  * @addtogroup widgets
  *

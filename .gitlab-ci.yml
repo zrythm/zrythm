@@ -99,7 +99,7 @@ configure:windows:
       meson setup build 
       -Dstrict_flags=true
       -Dyaml_project_compatibility=enabled
-      "-Dforce_fallback_for=gtk4,libadwaita,libpanel,yyjson,libcyaml"
+      "-Dforce_fallback_for=libadwaita,libpanel,libcyaml"
       -Dtests=true
       -Dbenchmarks=true 
       "-Dgtk4:x11-backend=false" -Dx11=disabled

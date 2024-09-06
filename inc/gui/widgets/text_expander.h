@@ -15,11 +15,6 @@
 
 #include "gtk_wrapper.h"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#include <gtksourceview/gtksource.h>
-#pragma GCC diagnostic pop
-
 #define TEXT_EXPANDER_WIDGET_TYPE (text_expander_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   TextExpanderWidget,
@@ -38,7 +33,7 @@ G_DECLARE_FINAL_TYPE (
  * A TwoColExpanderBoxWidget for showing the ports
  * in the InspectorWidget.
  */
-typedef struct _TextExpanderWidget
+using TextExpanderWidget = struct _TextExpanderWidget
 {
   ExpanderBoxWidget parent_instance;
 
@@ -56,10 +51,10 @@ typedef struct _TextExpanderWidget
   GtkViewport *       viewport;
 
   /** Editor. */
-  GtkSourceView * editor;
+  GtkTextView * editor;
 
   /** Editor buffer. */
-  GtkSourceBuffer * buffer;
+  GtkTextBuffer * buffer;
 
   GtkLabel * label;
 
@@ -68,7 +63,7 @@ typedef struct _TextExpanderWidget
   GtkPopover * popover;
 
   bool has_focus;
-} TextExpanderWidget;
+};
 
 /**
  * Refreshes the text.

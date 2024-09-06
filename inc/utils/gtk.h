@@ -16,10 +16,6 @@
 
 #include "gtk_wrapper.h"
 
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-#include <gtksourceview/gtksource.h>
-G_GNUC_END_IGNORE_DEPRECATIONS
-
 class Color;
 
 /**
@@ -442,8 +438,10 @@ z_gtk_flow_box_get_selected_child (GtkFlowBox * self);
 bool
 z_gtk_activate_dir_link_func (GtkLabel * label, char * uri, void * data);
 
+#if 0
 GtkSourceLanguageManager *
 z_gtk_source_language_manager_get (void);
+#endif
 
 /**
  * Makes the given GtkNotebook detachable to

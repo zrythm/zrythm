@@ -1105,13 +1105,13 @@ if (chromaprint_dep.found ())
   cdata.set('HAVE_CHROMAPRINT', 1)
 endif
 
-gtksource_dep = dependency (
-  'gtksourceview-5',
-  fallback: ['gtksourceview5', 'gtksource_dep'],
-  default_options: [
-    'vapi=false', 'introspection=disabled',
-    'default_library=static',
-    ])
+# gtksource_dep = dependency (
+#   'gtksourceview-5',
+#   fallback: ['gtksourceview5', 'gtksource_dep'],
+#   default_options: [
+#     'vapi=false', 'introspection=disabled',
+#     'default_library=static',
+#     ])
 
 libcgraph_dep = dependency (
   'libcgraph',
@@ -1306,7 +1306,6 @@ zrythm_deps = [
   cc.find_library ('dl', static: all_static),
   chromaprint_dep,
   fftw3_deps,
-  gtksource_dep,
   lsp_dsp_dep,
   valgrind_dep,
   xxhash_dep,
