@@ -16,6 +16,7 @@
 #include "settings/chord_preset_pack_manager.h"
 #include "settings/settings.h"
 #include "utils/lsp_dsp_context.h"
+#include "utils/networking.h"
 #include "utils/string_array.h"
 #include "utils/symap.h"
 
@@ -260,17 +261,13 @@ public:
    */
   static bool is_release (bool official);
 
-  static char *
-  fetch_latest_release_ver_finish (GAsyncResult * result, GError ** error);
-
   /**
    * @param callback A GAsyncReadyCallback to call when the
    *   request is satisfied.
    * @param callback_data Data to pass to @p callback.
    */
   static void fetch_latest_release_ver_async (
-    GAsyncReadyCallback callback,
-    gpointer            callback_data);
+    networking::URL::GetContentsAsyncCallback callback);
 
   /**
    * Returns whether the given release string is the latest

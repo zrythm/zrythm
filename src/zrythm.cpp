@@ -17,11 +17,11 @@
 #include "settings/chord_preset_pack_manager.h"
 #include "settings/g_settings_manager.h"
 #include "settings/settings.h"
-#include "utils/curl.h"
 #include "utils/dsp.h"
 #include "utils/env.h"
 #include "utils/exceptions.h"
 #include "utils/io.h"
+#include "utils/networking.h"
 #include "utils/string.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -281,12 +281,6 @@ Zrythm::is_release (bool official)
   return !string_contains_substr (PACKAGE_VERSION, "g");
 }
 
-char *
-Zrythm::fetch_latest_release_ver_finish (GAsyncResult * result, GError ** error)
-{
-  return z_curl_get_page_contents_finish (result, error);
-}
-
 /**
  * @param callback A GAsyncReadyCallback to call when the
  *   request is satisfied.
@@ -294,11 +288,10 @@ Zrythm::fetch_latest_release_ver_finish (GAsyncResult * result, GError ** error)
  */
 void
 Zrythm::fetch_latest_release_ver_async (
-  GAsyncReadyCallback callback,
-  gpointer            callback_data)
+  networking::URL::GetContentsAsyncCallback callback)
 {
-  z_curl_get_page_contents_async (
-    "https://www.zrythm.org/zrythm-version.txt", 8, callback, callback_data);
+  networking::URL ("https://www.zrythm.org/zrythm-version.txt")
+    .get_page_contents_async (8000, callback);
 }
 
 /**

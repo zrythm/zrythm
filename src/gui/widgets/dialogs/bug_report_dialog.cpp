@@ -9,11 +9,11 @@
 #include "gui/widgets/dialogs/generic_progress_dialog.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
-#include "utils/curl.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/logger.h"
+#include "utils/networking.h"
 #include "utils/objects.h"
 #include "utils/progress_info.h"
 #include "utils/resources.h"
@@ -161,24 +161,29 @@ static void *
 send_data (AutomaticReportData * data)
 {
   BugReportDialogWidget * self = data->self;
-  GError *                err = NULL;
-  int                     ret = z_curl_post_json_no_auth (
-    BUG_REPORT_API_ENDPOINT, self->json_str, 7, &err,
-    /* screenshot */
-    "screenshot", self->screenshot_path, "image/jpeg",
-    /* log */
-    "log_file", self->log_file_path, "application/zstd", nullptr);
-  if (ret != 0)
+  try
+    {
+      networking::URL url (BUG_REPORT_API_ENDPOINT);
+      url.post_json_no_auth (
+        self->json_str, 7000,
+        /* screenshot */
+        { networking::URL::MultiPartMimeObject (
+            "screenshot", self->screenshot_path, "image/jpeg"),
+          /* log */
+          networking::URL::MultiPartMimeObject (
+            "log_file", self->log_file_path, "application/zstd") });
+    }
+  catch (const ZrythmException &e)
     {
       data->progress_nfo->mark_completed (
-        ProgressInfo::CompletionType::HAS_ERROR, err->message);
-      return NULL;
+        ProgressInfo::CompletionType::HAS_ERROR, e.what ());
+      return nullptr;
     }
 
   data->progress_nfo->mark_completed (
     ProgressInfo::CompletionType::SUCCESS, _ ("Sent successfully"));
 
-  return NULL;
+  return nullptr;
 }
 
 static void

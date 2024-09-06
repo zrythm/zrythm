@@ -59,7 +59,7 @@ Required
   Additional widgets
 
 `libcurl (X11) <https://curl.se/libcurl/>`_
-  Network connections
+  Network connections (GNU/Linux only)
 
 `libdw from elfutils (GPLv2+) <https://sourceware.org/elfutils/>`_
   Backtraces (GNU/Linux only)
@@ -89,9 +89,6 @@ Note: if you want detach support use `our fork <https://gitlab.zrythm.org/zrythm
 
 `yyjson (MIT) <https://github.com/ibireme/yyjson>`_
   JSON manipulation
-
-`zix (ISC) <https://github.com/drobilla/zix>`_
-  Portability wrappers and data structures
 
 `zstd (3-Clause BSD) <https://github.com/facebook/zstd>`_
   Compression

@@ -215,3 +215,10 @@ cleanup-cache:mac-arm:
   <<: *cleanup_cache_template
   tags:
     - mac-arm
+
+cleanup-cache:windows:
+  <<: *cleanup_cache_template
+  tags:
+    - windows11
+  script:
+    - Remove-Item -Force -Recurse -Path "$env:CI_CACHE_PATH\$env:CI_PROJECT_PATH\$env:CI_PIPELINE_ID-*"

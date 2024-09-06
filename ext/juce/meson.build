@@ -35,7 +35,7 @@ if os_darwin
       'cocoa',
       'appkit',
       'iokit',
-      'security',
+      'security', # handles HTTPS
       ])
 elif os_windows
   # build fails without this
@@ -51,10 +51,15 @@ elif os_windows
     cc.find_library('shlwapi'),
     cc.find_library('uuid'),
     cc.find_library('version'),
-    cc.find_library('wininet'),
+    cc.find_library('wininet'), # Handles HTTPS
     cc.find_library('winmm'),
-    cc.find_library('ws2_32'),
+    cc.find_library('ws2_32'), # Windows Sockets API, also used for network operations
     ]
+elif os_gnu
+  juce_lib_deps += [ 
+    # curl only needed on gnu/linux
+    dependency ('libcurl'),
+  ]
 endif
 
 juce_lib = static_library (

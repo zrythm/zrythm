@@ -87,7 +87,6 @@
 #include <libpanel.h>
 
 #include "libadwaita_wrapper.h"
-#include <curl/curl.h>
 #ifdef HAVE_VALGRIND
 #  include <valgrind/valgrind.h>
 #endif
@@ -179,20 +178,25 @@ zrythm_app_ui_message_free (ZrythmAppUiMessage * self)
 
 static void
 check_for_updates_latest_release_ver_ready (
-  GObject *      source_object,
-  GAsyncResult * res,
-  gpointer       data)
+  networking::URL::AsyncStringResult res)
 {
-  GError * err = NULL;
-  char *   latest_release = Zrythm::fetch_latest_release_ver_finish (res, &err);
-  if (!latest_release)
+  if (std::holds_alternative<std::exception_ptr> (res))
     {
-      HANDLE_ERROR_LITERAL (
-        err, _ ("Failed fetching the latest release version"));
-      return;
+      auto eptr = std::get<std::exception_ptr> (res);
+      try
+        {
+          std::rethrow_exception (eptr);
+        }
+      catch (const ZrythmException &e)
+        {
+          e.handle (_ ("Failed fetching the latest release version"));
+          return;
+        }
     }
 
-  bool is_latest_release = Zrythm::is_latest_release (latest_release);
+  auto latest_release = std::get<std::string> (res);
+
+  bool is_latest_release = Zrythm::is_latest_release (latest_release.c_str ());
 #ifdef HAVE_CHANGELOG
   /* if latest release and first run on this release show
    * CHANGELOG */
@@ -255,7 +259,7 @@ zrythm_app_check_for_updates (ZrythmApp * self)
     return;
 
   Zrythm::fetch_latest_release_ver_async (
-    check_for_updates_latest_release_ver_ready, nullptr);
+    check_for_updates_latest_release_ver_ready);
 }
 
 /**
@@ -913,9 +917,6 @@ zrythm_app_startup (GApplication * app)
   fftw_make_planner_thread_safe ();
   fftwf_make_planner_thread_safe ();
 
-  /* init curl */
-  curl_global_init (CURL_GLOBAL_ALL);
-
   /* init libpanel */
   panel_init ();
 
@@ -1207,9 +1208,6 @@ zrythm_app_on_shutdown (GApplication * application, ZrythmApp * self)
     {
       g_object_unref (self->default_settings);
     }
-
-  /* init curl */
-  curl_global_cleanup ();
 
   ZrythmDirectoryManager::deleteInstance ();
   PCGRand::deleteInstance ();

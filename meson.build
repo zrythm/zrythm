@@ -12,7 +12,7 @@ project (
     # 3: -Wall -Wextra -Wpedantic
     'warning_level=2',
     'buildtype=debugoptimized',
-    'c_std=gnu17',
+    'c_std=gnu17,c17',
     'cpp_std=c++20',
     'b_lto=true',
     'b_lto_threads=2',
@@ -1300,7 +1300,6 @@ zrythm_deps = [
   valgrind_dep,
   xxhash_dep,
   vamp_deps,
-  dependency ('libcurl'),
   dbus_dep,
   yyjson_dep,
   magic_enum_dep,
