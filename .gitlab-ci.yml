@@ -104,6 +104,7 @@ configure:windows:
       -Dbenchmarks=true 
       "-Dgtk4:x11-backend=false" -Dx11=disabled
       -Dmanpage=false -Dcompletions=false
+      --pkg-config-path=C:\vcpkg\installed\x64-windows\lib\pkgconfig
 
 clang-format-check:
   stage: check
@@ -221,5 +222,7 @@ cleanup-cache:windows:
   <<: *cleanup_cache_template
   tags:
     - windows11
+  before_script:
+    - ./venv/Scripts/Activate.ps1
   script:
     - Remove-Item -Force -Recurse -Path "$env:CI_CACHE_PATH\$env:CI_PROJECT_PATH\$env:CI_PIPELINE_ID-*"

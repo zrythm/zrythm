@@ -834,6 +834,19 @@ yyjson_dep = dependency (
     'default_library=static',
     ])
 
+windows_deps = []
+if os_windows
+  # Windows MME
+  windows_deps += cc.find_library ('winmm') # note for mingw: was static: true
+
+  # use MgwHelp if found, otherwise regular DbgHelp
+  dbg_help_lib = cc.find_library ('mgwhelp', required: false)
+  if not dbg_help_lib.found ()
+    cc.find_library ('dbghelp')
+  endif
+  windows_deps += dbg_help_lib
+endif
+
 subdir ('ext')
 
 # set config defines
@@ -1327,16 +1340,7 @@ if all_static
 endif
 
 if os_windows
-  # Windows MME
-  zrythm_deps += cc.find_library (
-    'winmm', static: true)
-
-  # use MgwHelp if found, otherwise regular DbgHelp
-  dbg_help_lib = cc.find_library ('mgwhelp', required: false)
-  if not dbg_help_lib.found ()
-    cc.find_library ('dbghelp')
-  endif
-  zrythm_deps += dbg_help_lib
+  zrythm_deps += windows_deps
 endif
 
 if use_weak_jack
