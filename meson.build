@@ -12,7 +12,7 @@ project (
     # 3: -Wall -Wextra -Wpedantic
     'warning_level=2',
     'buildtype=debugoptimized',
-    'c_std=gnu17,c17',
+    'c_std=c17',
     'cpp_std=c++20',
     'b_lto=true',
     'b_lto_threads=2',
@@ -37,8 +37,7 @@ cmake_opts.add_cmake_defines ({
 #############################################################################
 # --- Check for programs ---
 
-find_program ('sed')
-find_program ('gettext')
+# find_program ('gettext')
 msgattrib = find_program ('msgattrib')
 msguniq = find_program ('msguniq')
 msggrep = find_program ('msggrep')

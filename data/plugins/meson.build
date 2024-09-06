@@ -52,10 +52,9 @@ plugins = [
 
 uri_prefix = 'https://lv2.zrythm.org/faust-builtin'
 gen_lv2_sh = configure_file (
-  output: 'gen-lv2.sh',
-  input: 'gen-lv2.sh.in',
+  output: 'gen-lv2.py',
+  input: 'gen-lv2.py.in',
   configuration: {
-    'BASH': bash.full_path (),
     'URI_PREFIX': uri_prefix,
     'LIB_SUFFIX': '@LIB_SUFFIX@',
     },
@@ -97,7 +96,7 @@ foreach pl : plugins
       input: [pl_dsp, 'zrythm-utils.lib'],
       output: pl_underscored_name + '.lv2.gen',
       command: [
-        gen_lv2_sh, faust2lv2.full_path (),
+        python3, gen_lv2_sh, faust2lv2.full_path (),
         '@INPUT0@', '@PRIVATE_DIR@', '@OUTPUT@',
         pl_type, '@INPUT1@',
         meson.current_source_dir () / 'generated'],
