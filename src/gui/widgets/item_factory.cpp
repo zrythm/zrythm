@@ -196,8 +196,9 @@ editable_label_changed_source (gpointer user_data)
   };
 
   const auto parse_float = [&text] (float &val) {
-    return std::from_chars (text.data (), text.data () + text.size (), val).ec
-           == std::errc{};
+    // note: can't use from_chars on floats on macOS
+    std::istringstream iss (text);
+    return (iss >> val) && (iss.peek () == EOF);
   };
 
   using enum ArrangerObject::PositionType;

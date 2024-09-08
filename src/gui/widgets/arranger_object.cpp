@@ -82,9 +82,9 @@ arranger_object_is_resize_r (const ArrangerObject * self, const int x)
 
   auto lo = dynamic_cast<const LengthableObject *> (self);
 
-  long     size_frames = lo->end_pos_.frames_ - lo->pos_.frames_;
-  Position pos{ size_frames };
-  int      width_px = arranger_widget_pos_to_px (self->get_arranger (), pos, 0);
+  signed_frame_t size_frames = lo->end_pos_.frames_ - lo->pos_.frames_;
+  Position       pos{ size_frames };
+  int width_px = arranger_widget_pos_to_px (self->get_arranger (), pos, 0);
 
   if (x > width_px - UI_RESIZE_CURSOR_SPACE)
     {

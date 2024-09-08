@@ -1,14 +1,10 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Undo manager.
- */
-
 #ifndef __UNDO_UNDO_MANAGER_H__
 #define __UNDO_UNDO_MANAGER_H__
+
+#include <semaphore>
 
 #include "actions/undo_stack.h"
 

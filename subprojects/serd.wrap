@@ -1,3 +1,4 @@
 [wrap-git]
 url=https://github.com/drobilla/serd
-revision=655c7fcf6c7ce9f98106dfca9cff5dede749b1bd
+# v0.32.0
+revision=abfdac2085cba93bae76d3352f2ff7e40fdf1612

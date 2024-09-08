@@ -17,7 +17,6 @@ project (
     'b_lto=true',
     'b_lto_threads=2',
     'wrap_mode=nofallback',
-    'backend_max_links=4' # avoid OOM
     ],
   )
 
@@ -190,8 +189,8 @@ else
   version_fallback = get_option ('fallback_version')
 endif
 
-# add global arguments
-if os_windows
+# add global arguments for mingw
+if os_windows and (not is_msvc)
   # if not building an msys2 package, this might
   # also need -Wl,-allow-multiple-definition
   # see https://stackoverflow.com/questions/11267877/mingw-multiple-definition-of-unwind-resume
@@ -632,7 +631,7 @@ if os_freebsd
   common_cflags += [
     '-I' + includedir,
     ]
-elif os_windows
+elif os_windows and (not is_msvc) # mingw
   common_cflags += [
     '-mms-bitfields',
     '-mwindows',
@@ -984,12 +983,21 @@ lv2_dep = dependency (
 if lv2_dep.version().version_compare('>=1.18.0')
   cdata.set('HAVE_LV2_1_18', 1)
 endif
+
+# these are only used in tests
+# TODO get rid of them - find another way to apply a plugin effect to a WAV
+zix_dep = dependency (
+  'zix-0', version: '>=0.4.0',
+  fallback: ['zix', 'zix_dep'],
+  default_options: [
+    'tests=disabled',
+    ],
+)
 serd_dep = dependency (
   'serd-0', version: '>=0.30.0',
   fallback: ['serd', 'serd_dep'],
   default_options: [
     'tests=disabled',
-    'default_library=static',
     ],
   static: all_static)
 sord_dep = dependency (
@@ -997,7 +1005,6 @@ sord_dep = dependency (
   fallback: ['sord', 'sord_dep'],
   default_options: [
     'tests=disabled',
-    'default_library=static',
     ],
   static: all_static)
 sratom_dep = dependency (
@@ -1005,7 +1012,6 @@ sratom_dep = dependency (
   fallback: ['sratom', 'sratom_dep'],
   default_options: [
     'tests=disabled', 'docs=disabled',
-    'default_library=static',
     ],
   static: all_static)
 lilv_dep = dependency (
@@ -1013,7 +1019,6 @@ lilv_dep = dependency (
   fallback: ['lilv', 'lilv_dep'],
   default_options: [
     'tests=disabled', 'docs=disabled', 'tools=disabled',
-    'default_library=static',
     ])
 
 # fftw - this is a mess because every distro packages fftw3

@@ -72,12 +72,13 @@ segv_handler (int sig)
 #  pragma GCC diagnostic pop
 #endif
 
+#ifdef HAVE_PIPEWIRE
 static gboolean
 make_pipe (gint pipe_fds[2], GError ** error)
 {
-#if defined(G_OS_UNIX)
+#  if defined(G_OS_UNIX)
   return g_unix_open_pipe (pipe_fds, FD_CLOEXEC, error);
-#elif defined(_WIN32)
+#  elif defined(_WIN32)
   if (_pipe (pipe_fds, 4096, _O_BINARY) < 0)
     {
       int errsv = errno;
@@ -89,13 +90,14 @@ make_pipe (gint pipe_fds[2], GError ** error)
       return FALSE;
     }
   return TRUE;
-#else
+#  else
   g_set_error (
     error, G_SPAWN_ERROR, G_SPAWN_ERROR_FAILED,
     _ ("Pipes are not supported in this platform"));
   return FALSE;
-#endif
+#  endif
 }
+#endif
 
 #ifdef _WIN32
 
@@ -178,7 +180,7 @@ watch_parent (gint fd)
             {
               pid = g_array_index (pids_to_kill, guint, n);
               g_printerr ("cleaning up pid %d\n", pid);
-              kill ((__pid_t) pid, SIGTERM);
+              kill ((pid_t) pid, SIGTERM);
             }
 
           g_array_unref (pids_to_kill);
@@ -390,6 +392,7 @@ test_helper_zrythm_gui_init (int argc, char * argv[])
   UI_CACHES = std::make_unique<UiCaches> ();
 }
 
+#ifdef HAVE_PIPEWIRE
 static void
 start_daemon (Zrythm * self)
 {
@@ -419,6 +422,7 @@ start_daemon (Zrythm * self)
 
   _g_test_watcher_add_pid (self->pipewire_pid_);
 }
+#endif
 
 ZrythmFixture::ZrythmFixture (
   bool optimized,
@@ -457,11 +461,12 @@ ZrythmFixture::ZrythmFixture (
 
   if (use_pipewire)
     {
-#ifndef HAVE_PIPEWIRE
-      g_error ("pipewire program not found but requested pipewire engine");
-#endif
+#ifdef HAVE_PIPEWIRE
       gZrythm->use_pipewire_in_tests_ = use_pipewire;
       start_daemon (gZrythm);
+#else
+      z_critical ("pipewire program not found but requested pipewire engine");
+#endif
     }
 
   /* init logic - note: will use a random dir in tmp as the user dir */

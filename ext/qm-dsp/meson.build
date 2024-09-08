@@ -7,11 +7,15 @@ qm_dsp_lib_c_args = [
   '-DNDEBUG',
   '-Dqm_kiss_fft_scalar=double',
   '-Wall',
-  '-Wextra',
   '-O3',
   '-ftree-vectorize',
   '-DUSE_PTHREADS',
   ]
+if not is_msvc
+  qm_dsp_lib_c_args += [
+    '-Wextra',
+  ]
+endif
 if host_machine.cpu() == 'x86_64'
   qm_dsp_lib_c_args += [
     '-msse',

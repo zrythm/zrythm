@@ -131,7 +131,7 @@ appdata_file_in_unformatted = custom_target (
   input: gen_appdata_xml_py,
   output: '@0@.appdata.xml.in.in'.format (app_id),
   command: [
-    python3, '@INPUT@', meson_build_root / '@OUTPUT@', app_id
+    python3, '@INPUT@', '@OUTPUT@', app_id
     ])
 appdata_file_in = custom_target (
   'appdata-xml-in',

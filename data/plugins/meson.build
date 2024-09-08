@@ -102,7 +102,6 @@ foreach pl : plugins
 
   pl_cpp = pl_generated_dir / pl_underscored_name + '.cpp'
   if fs.is_file (pl_cpp)
-    pl_cpp_args = [ '-std=c++11', '-O3', ]
     pl_link_args = []
     if is_gcc and os_gnu and get_option ('build_plugins_with_static_libs')
       # x42: plugins should be statically linked against
@@ -114,7 +113,6 @@ foreach pl : plugins
     endif
     pl_module = shared_module (
       pl_underscored_name,
-      cpp_args: pl_cpp_args,
       link_args: pl_link_args,
       sources: pl_cpp,
       name_prefix: '',
@@ -125,6 +123,8 @@ foreach pl : plugins
         ],
       override_options: [
         'b_sanitize=none',
+        'cpp_std=c++11',
+        'optimization=3',
         ],
       install_dir: pl_install_dir,
       install: true)
@@ -150,10 +150,11 @@ foreach pl : plugins
       output: pl_underscored_name + '.lv2',
       build_by_default: true,
       command: [
-        python3, 'gen-lv2-bundle-for-test.py',
-        '@OUTPUT@', '@INPUT0@', '@INPUT1@', '@INPUT2@',
+        python3, '@INPUT0@',
+        '@OUTPUT@', '@INPUT1@', '@INPUT2@', '@INPUT3@',
         ],
       input: [
+        'gen-lv2-bundle-for-test.py',
         pl_ttl,
         pl_manifest_ttl,
         pl_module,

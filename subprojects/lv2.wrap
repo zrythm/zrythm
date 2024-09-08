@@ -1,3 +1,4 @@
 [wrap-git]
 url=https://github.com/lv2/lv2
-revision=778c112790ae84e7deabdac84de4147baf7937a4
+# v1.18.10
+revision=0bcde338db1c63bbc503b4d1f6d7b55ed43154af

@@ -1,3 +1,4 @@
 [wrap-git]
 url=https://github.com/drobilla/sord
-revision=96a865694af80227af1c5c8d96554f9d943687b2
+# v0.16.16
+revision=c7f822f14aae0367e184c847379496bc28adf63d

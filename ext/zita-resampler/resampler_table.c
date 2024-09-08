@@ -38,6 +38,10 @@
 
 #include "resampler_table.h"
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 static ZitaResamplerTable * list = NULL;
 static bool mutex_inited = false;
 static pthread_mutex_t mutex;

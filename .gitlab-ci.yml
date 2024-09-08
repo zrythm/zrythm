@@ -50,8 +50,10 @@ stages:
   tags:
     - archlinux
   variables:
-    CC: "gcc"
-    CXX: "g++"
+    CC: "ccache gcc"
+    CXX: "ccache g++"
+    CC_LD: mold
+    CXX_LD: mold
     BUILDDIR: "build_gnu_linux"
   before_script:
     - *unix-activate-venv
@@ -64,6 +66,8 @@ stages:
   tags:
     - mac-arm
   variables:
+    CC: "ccache clang"
+    CXX: "ccache clang++"
     BUILDDIR: "build_mac_arm"
     PKG_CONFIG_PATH: "/opt/zrythm-installed-deps/lib/pkgconfig:$PKG_CONFIG_PATH"
   before_script:
@@ -78,8 +82,11 @@ stages:
   tags:
     - windows11
   variables:
+    CC: "ccache cl"
+    CXX: "ccache cl"
     BUILDDIR: "build_windows"
     BOOST_ROOT: "C:\\Boost\\boost_1_86_0"
+    VSLANG: "1033"
   before_script:
     - *windows-enable-vs-env
     - *windows-activate-venv
@@ -91,20 +98,10 @@ stages:
 default:
   cache:
   # this number must be bumped every time these subprojects are updated
-  - key: configured-cache-1-$CI_RUNNER_DESCRIPTION
+  - key: cache-2-$CI_RUNNER_DESCRIPTION
     paths:
       - venv
-      - subprojects/gtk4
-      - subprojects/libadwaita
-      - subprojects/libpanel
-      - subprojects/yyjson
-      - subprojects/libcyaml
-      - subprojects/lv2
-      - subprojects/sord
-      - subprojects/serd
-      - subprojects/sratom
-      - subprojects/lilv
-      - subprojects/magic_enum
+      - subprojects
 
 configure:gnu/linux:
   extends: .gnu-linux-template
@@ -114,7 +111,7 @@ configure:gnu/linux:
     - *unix-activate-venv
     - python3 -m pip install -r requirements.txt
   script:
-    - meson setup $BUILDDIR $COMMON_MESON_OPTIONS
+    - meson setup $BUILDDIR $COMMON_MESON_OPTIONS -Dbackend_max_links=4
 
 configure:mac-arm:
   extends: .mac-arm-template
@@ -140,7 +137,7 @@ configure:windows:
       meson setup ${env:BUILDDIR} 
       -Dstrict_flags=true
       -Dyaml_project_compatibility=enabled
-      "-Dforce_fallback_for=libadwaita,libpanel,libcyaml,lv2,serd,sord,sratom,lilv,magic_enum"
+      "-Dforce_fallback_for=libadwaita,libpanel,libcyaml,lv2,zix,serd,sord,sratom,lilv,magic_enum"
       -Dtests=true
       -Dbenchmarks=true 
       "-Dgtk4:x11-backend=false" -Dx11=disabled
@@ -148,6 +145,7 @@ configure:windows:
       -Dfftw3_threads_separate=false
       '--pkg-config-path=C:\vcpkg\installed\x64-windows\lib\pkgconfig;C:\Users\alex\source\repos\carla\carla_installed\lib\pkgconfig'
       -Dcarla_binaries_dir=C:\Users\alex\source\repos\carla\carla_installed\bin
+      --backend=vs2022
 
 clang-format-check:
   extends: .gnu-linux-template
@@ -183,7 +181,7 @@ build:windows:
   extends: .windows-template
   stage: build
   script:
-   - ninja -C ${env:BUILDDIR}
+   - meson compile -C ${env:BUILDDIR}
 
 .unix_test_cmd: &unix_test_cmd
   - ninja -C $BUILDDIR test || (cat "$BUILDDIR/meson-logs/testlog.txt" && exit 1)

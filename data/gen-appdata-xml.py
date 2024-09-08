@@ -20,7 +20,7 @@ def get_list_for_changelog_group(changelog_nfo, title):
     return result
 
 def get_releases():
-    changelog = file_to_string(os.path.join("@MESON_SOURCE_ROOT@", "CHANGELOG.md"))
+    changelog = file_to_string(os.path.join(r"@MESON_SOURCE_ROOT@", "CHANGELOG.md"))
     changelog_list = changelog.split("## [")[1:]
     releases_list = []
     for release_info in changelog_list:

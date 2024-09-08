@@ -606,8 +606,8 @@ ruler_widget_get_playhead_px (RulerWidget * self, bool after_loops)
     {
       if (after_loops)
         {
-          long     frames = 0;
-          Region * clip_editor_region = CLIP_EDITOR->get_region ();
+          signed_frame_t frames = 0;
+          Region *       clip_editor_region = CLIP_EDITOR->get_region ();
           if (!clip_editor_region)
             {
               z_warning ("no clip editor region");

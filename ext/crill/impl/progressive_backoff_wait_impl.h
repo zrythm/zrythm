@@ -10,9 +10,9 @@
 
 #include <crill/platform.h>
 
-#if CRILL_INTEL
+#if defined(CRILL_INTEL) && CRILL_INTEL
 #  include <emmintrin.h>
-#elif CRILL_ARM_64BIT
+#elif defined(CRILL_ARM_64BIT) && CRILL_ARM_64BIT
 #  include <arm_acle.h>
 #endif
 

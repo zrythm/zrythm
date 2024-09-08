@@ -63,24 +63,26 @@ optimized_utils_lib = static_library (
 
 zrythm_srcs += files (util_srcs)
 
-# use custom lv2apply because upstream doesn't have URID support
-lv2apply = executable (
-  'zrythm_lv2apply',
-  sources: [
-    'lv2apply.cpp',
-    'objects.cpp',
-    'symap.cpp',
-    ],
-  dependencies : [
-    sndfile_dep,
-    lilv_dep,
-    gtk_dep,
-    glibmm_dep,
-    giomm_dep,
-    libm,
-    ],
-  include_directories: all_inc,
-  c_args: [ common_cflags ],
-  link_args: common_ldflags,
-  install: false,
-  )
+if get_option('tests')
+  # use custom lv2apply because upstream doesn't have URID support
+  lv2apply = executable (
+    'zrythm_lv2apply',
+    sources: [
+      'lv2apply.cpp',
+      'objects.cpp',
+      'symap.cpp',
+      ],
+    dependencies : [
+      sndfile_dep,
+      lilv_dep,
+      gtk_dep,
+      glibmm_dep,
+      giomm_dep,
+      libm,
+      ],
+    include_directories: all_inc,
+    c_args: [ common_cflags ],
+    link_args: common_ldflags,
+    install: false,
+    )
+endif # get_option('tests')
