@@ -37,13 +37,12 @@
 
 #include "project/project_init_flow_manager.h"
 #include "settings/g_settings_manager.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 #include "utils/pcg_rand.h"
 #include "utils/rt_thread_id.h"
 
 #include "tests/helpers/zrythm_helper.h"
-
-#include "doctest_wrapper.h"
 // #include "gtk_wrapper.h"
 
 static void
@@ -99,7 +98,8 @@ make_pipe (gint pipe_fds[2], GError ** error)
 }
 #endif
 
-#ifdef _WIN32
+#ifdef HAVE_PIPEWIRE
+#  ifdef _WIN32
 
 /* This could be interesting to expose in public API */
 static void
@@ -141,10 +141,10 @@ _g_test_watcher_remove_pid (GPid pid)
      will be killed anyway */
 }
 
-#else
+#  else // else if !_WIN32
 
-#  define ADD_PID_FORMAT "add pid %d\n"
-#  define REMOVE_PID_FORMAT "remove pid %d\n"
+#    define ADD_PID_FORMAT "add pid %d\n"
+#    define REMOVE_PID_FORMAT "remove pid %d\n"
 
 static void
 watch_parent (gint fd)
@@ -226,8 +226,8 @@ watch_parent (gint fd)
   while (TRUE);
 }
 
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored "-Wanalyzer-fd-leak"
+#    pragma GCC diagnostic push
+#    pragma GCC diagnostic ignored "-Wanalyzer-fd-leak"
 static GIOChannel *
 watcher_init (void)
 {
@@ -282,7 +282,7 @@ watcher_init (void)
 
   return channel;
 }
-#  pragma GCC diagnostic pop
+#    pragma GCC diagnostic pop
 
 static void
 watcher_send_command (const gchar * command)
@@ -323,7 +323,8 @@ z_g_test_watcher_remove_pid (GPid pid)
   g_free (command);
 }
 
-#endif
+#  endif
+#endif // HAVE_PIPEWIRE
 
 /* -------------------------------------------------------------------------- */
 /* Utilities to cleanup the mess in the case unit test process crash */
@@ -406,7 +407,7 @@ start_daemon (Zrythm * self)
   z_info ("print address: {}", pipe_fds[1]);
 
   auto pipewire_runtime_dir = Glib::getenv ("PIPEWIRE_RUNTIME_DIR");
-  REQUIRE_NOTHROW (io_mkdir (pipewire_runtime_dir));
+  ASSERT_NO_THROW (io_mkdir (pipewire_runtime_dir));
 
   /* Spawn pipewire */
   g_spawn_async_with_pipes_and_fds (
@@ -418,7 +419,7 @@ start_daemon (Zrythm * self)
       G_SPAWN_LEAVE_DESCRIPTORS_OPEN,
     nullptr, nullptr, -1, -1, -1, &pipe_fds[1], &pipe_fds[1], 1,
     &self->pipewire_pid_, nullptr, nullptr, nullptr, &error);
-  REQUIRE_NULL (error);
+  ASSERT_NULL (error);
 
   _g_test_watcher_add_pid (self->pipewire_pid_);
 }
@@ -430,13 +431,23 @@ ZrythmFixture::ZrythmFixture (
   int  buf_size,
   bool use_pipewire,
   bool logging_enabled)
+    : optimized_ (optimized), samplerate_ (samplerate), buf_size_ (buf_size),
+      use_pipewire_ (use_pipewire), logging_enabled_ (logging_enabled)
+{
+  set_running_in_test (true);
+}
+
+ZrythmFixture::~ZrythmFixture () { }
+
+void
+ZrythmFixture::SetUp ()
 {
   static std::once_flag glib_inited;
   std::call_once (glib_inited, [] () { Glib::init (); });
 
   /* initialize logger */
   auto * logger = Logger::getInstance ();
-  if (!logging_enabled)
+  if (!logging_enabled_)
     {
       logger->get_logger ()->set_level (spdlog::level::off);
     }
@@ -444,25 +455,25 @@ ZrythmFixture::ZrythmFixture (
   /* dummy ZrythmApp object for testing */
   zrythm_app = zrythm_app_new (0, nullptr);
   // zrythm_app->gtk_thread_id = current_thread_id.get ();
-  zrythm_app->samplerate = samplerate;
-  zrythm_app->buf_size = buf_size;
+  zrythm_app->samplerate = samplerate_;
+  zrythm_app->buf_size = buf_size_;
 
-  gZrythm->getInstance ()->pre_init (nullptr, false, optimized);
-  REQUIRE_NONNULL (gZrythm);
+  gZrythm->getInstance ()->pre_init (nullptr, false, optimized_);
+  ASSERT_NONNULL (gZrythm);
   gZrythm->undo_stack_len_ = 64;
   char * version = Zrythm::get_version (false);
   z_info ("{}", version);
   g_free (version);
   auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
   auto   zrythm_dir = dir_mgr->get_dir (ZrythmDirType::USER_TOP);
-  REQUIRE_NONEMPTY (zrythm_dir);
+  ASSERT_NONEMPTY (zrythm_dir);
   gZrythm->init ();
   z_info ("{}", zrythm_dir);
 
-  if (use_pipewire)
+  if (use_pipewire_)
     {
 #ifdef HAVE_PIPEWIRE
-      gZrythm->use_pipewire_in_tests_ = use_pipewire;
+      gZrythm->use_pipewire_in_tests_ = use_pipewire_;
       start_daemon (gZrythm);
 #else
       z_critical ("pipewire program not found but requested pipewire engine");
@@ -470,7 +481,7 @@ ZrythmFixture::ZrythmFixture (
     }
 
   /* init logic - note: will use a random dir in tmp as the user dir */
-  REQUIRE_NOTHROW (gZrythm->init_user_dirs_and_files ());
+  ASSERT_NO_THROW (gZrythm->init_user_dirs_and_files ());
   gZrythm->init_templates ();
 
   {
@@ -490,7 +501,8 @@ ZrythmFixture::ZrythmFixture (
   z_info ("ZrythmFixture constructed");
 }
 
-ZrythmFixture::~ZrythmFixture ()
+void
+ZrythmFixture::TearDown ()
 {
   z_info ("destroying ZrythmFixture");
   auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
@@ -520,5 +532,5 @@ test_helper_project_init_done_cb (
     {
       z_warning ("project init failed: {}", error);
     }
-  REQUIRE (success);
+  ASSERT_TRUE (success);
 }

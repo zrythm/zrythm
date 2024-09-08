@@ -5,13 +5,12 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
+#include "utils/gtest_wrapper.h"
 #include "utils/logger.h"
 #include "utils/string.h"
 #include "utils/yaml.h"
 
 #include <glib.h>
-
-#include "doctest_wrapper.h"
 
 TEST_SUITE_BEGIN ("utils/yaml");
 
@@ -39,21 +38,21 @@ TEST_CASE ("load precise float")
   float_struct my_struct;
   my_struct.fval = 12;
   char * ret = yaml_serialize (&my_struct, &float_struct_schema, nullptr);
-  REQUIRE_NONNULL (ret);
-  REQUIRE (string_is_equal (ret, "---\nfval: 12\n...\n"));
+  ASSERT_NONNULL (ret);
+  ASSERT_TRUE (string_is_equal (ret, "---\nfval: 12\n...\n"));
   g_free (ret);
 
   my_struct.fval = 1.55331e-40f;
   z_info ("my_struct.fval %e %g", my_struct.fval, my_struct.fval);
   ret = yaml_serialize (&my_struct, &float_struct_schema, nullptr);
-  REQUIRE_NONNULL (ret);
+  ASSERT_NONNULL (ret);
   z_info ("\n{}", ret);
   bool eq = string_is_equal (ret, "---\nfval: 1.55331e-40\n...\n");
   if (!eq)
     {
       eq = string_is_equal (ret, "---\nfval: 0\n...\n");
     }
-  REQUIRE (eq);
+  ASSERT_TRUE (eq);
 
   const char *   str1 = "---\nfval: 1.55331e-40\n...\n";
   float_struct * ret2 =

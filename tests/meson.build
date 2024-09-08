@@ -7,6 +7,8 @@ if get_option ('tests')
   test_lv2_plugin_libs = []
   subdir('lv2plugins')
 
+  gtest_main_dep = dependency ('gtest_main')
+
   pipewire_bin = find_program ('pipewire', required: false)
 
   test_env = environment ()
@@ -336,7 +338,8 @@ if get_option ('tests')
 
   helper_sources = files([
     'helpers/exporter.cpp',
-    'helpers/zrythm.cpp',
+    'helpers/project_helper.cpp',
+    'helpers/zrythm_helper.cpp',
     ])
   helper_lib = static_library (
     'test-helpers',
@@ -400,6 +403,7 @@ if get_option ('tests')
           dependencies: [
             zrythm_deps,
             is_benchmark and google_benchmark_dep.found() ? google_benchmark_dep : [],
+            is_benchmark ? [] : gtest_main_dep,
             ],
           export_dynamic: false,
           link_with: test_link_libs,

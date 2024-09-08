@@ -57,17 +57,17 @@ test_new_midi_note ()
   ArrangerObject * mn_obj =
     (ArrangerObject *) mn;
 
-  REQUIRE_NONNULL (mn);
-  REQUIRE (
+  ASSERT_NONNULL (mn);
+  ASSERT_TRUE (
     position_is_equal (
       &start_pos, &mn_obj->pos));
-  REQUIRE (
+  ASSERT_TRUE (
     position_is_equal (
       &end_pos, &mn_obj->end_pos_));
 
-  REQUIRE_EQ (mn->vel->vel, vel);
-  REQUIRE_EQ (mn->val, val);
-  REQUIRE_FALSE (mn->muted);
+  ASSERT_EQ (mn->vel->vel, vel);
+  ASSERT_EQ (mn->val, val);
+  ASSERT_FALSE (mn->muted);
 
   Region * region =
     arranger_object_get_region (
@@ -98,14 +98,14 @@ TEST_CASE_FIXTURE (
   "midi note has correct track name hash after addding to region")
 {
   auto midi_track = TRACKLIST->get_track_by_type<MidiTrack> (Track::Type::Midi);
-  REQUIRE_NE (midi_track->name_hash_, 0);
+  ASSERT_NE (midi_track->name_hash_, 0);
   auto mr = std::make_shared<MidiRegion> (
     p1_, p2_, midi_track->name_hash_, MIDI_REGION_LANE, 0);
   midi_track->add_region (mr, nullptr, MIDI_REGION_LANE, true, false);
   auto mn = std::make_shared<MidiNote> (mr->id_, p1_, p2_, MN_VAL, MN_VEL);
   mr->append_object (mn);
-  REQUIRE_EQ (mn->track_name_hash_, midi_track->name_hash_);
-  REQUIRE_EQ (mn->vel_->track_name_hash_, midi_track->name_hash_);
+  ASSERT_EQ (mn->track_name_hash_, midi_track->name_hash_);
+  ASSERT_EQ (mn->vel_->track_name_hash_, midi_track->name_hash_);
 }
 
 TEST_SUITE_END;

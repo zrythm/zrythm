@@ -29,17 +29,17 @@ TEST_CASE_FIXTURE (ZrythmFixture, "midi mapping")
   std::array<midi_byte_t, 3> buf = { 0xB0, 0x07, 121 };
   MIDI_MAPPINGS->bind_device (
     buf, &ext_port, *P_MASTER_TRACK->channel_->fader_->amp_, false);
-  REQUIRE_SIZE_EQ (MIDI_MAPPINGS->mappings_, 1);
+  ASSERT_SIZE_EQ (MIDI_MAPPINGS->mappings_, 1);
 
   int size = MIDI_MAPPINGS->get_for_port (
     *P_MASTER_TRACK->channel_->fader_->amp_, nullptr);
-  REQUIRE_EQ (size, 1);
+  ASSERT_EQ (size, 1);
 
   MIDI_MAPPINGS->apply (buf.data ());
 
   test_project_save_and_reload ();
 
-  REQUIRE_EQ (
+  ASSERT_EQ (
     P_MASTER_TRACK->channel_->fader_->amp_.get (),
     MIDI_MAPPINGS->mappings_[0]->dest_);
 }

@@ -11,8 +11,8 @@
 #include "dsp/tracklist.h"
 #include "project.h"
 #include "utils/dsp.h"
+#include "utils/gtest_wrapper.h"
 
-#include "doctest_wrapper.h"
 #include <fmt/format.h>
 
 AudioPort::AudioPort ()

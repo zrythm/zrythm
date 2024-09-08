@@ -12,12 +12,11 @@
 #include "gui/backend/event_manager.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
+#include "utils/gtest_wrapper.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "doctest_wrapper.h"
 
 TransportAction::
   TransportAction (bpm_t bpm_before, bpm_t bpm_after, bool already_done)

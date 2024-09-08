@@ -10,6 +10,7 @@
 #include "plugins/plugin_descriptor.h"
 #include "settings/plugin_settings.h"
 #include "settings/settings.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/gtk.h"
 #include "utils/string.h"
 #include "zrythm.h"
@@ -17,7 +18,6 @@
 
 #include <glib/gi18n.h>
 
-#include "doctest_wrapper.h"
 #include <glibmm.h>
 
 constexpr const char * PLUGIN_SETTINGS_JSON_FILENAME = "plugin-settings.json";

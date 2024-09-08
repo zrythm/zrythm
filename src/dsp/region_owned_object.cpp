@@ -4,9 +4,8 @@
 #include "dsp/region.h"
 #include "dsp/region_owned_object.h"
 #include "gui/widgets/arranger_object.h"
+#include "utils/gtest_wrapper.h"
 #include "zrythm.h"
-
-#include "doctest_wrapper.h"
 
 void
 RegionOwnedObject::copy_members_from (const RegionOwnedObject &other)

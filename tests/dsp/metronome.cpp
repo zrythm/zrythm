@@ -27,7 +27,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "find and queue metronome")
     AUDIO_ENGINE->metronome_->queue_events (
       AUDIO_ENGINE.get (), 0, AUDIO_ENGINE->block_length_);
 
-    REQUIRE_EMPTY (SAMPLE_PROCESSOR->current_samples_);
+    ASSERT_EMPTY (SAMPLE_PROCESSOR->current_samples_);
   }
 
   /*
@@ -67,14 +67,14 @@ TEST_CASE_FIXTURE (ZrythmFixture, "find and queue metronome")
       AUDIO_ENGINE.get (), 0, AUDIO_ENGINE->block_length_);
 
     /* assert no sound is played for 5.1.1.0 */
-    REQUIRE_EMPTY (SAMPLE_PROCESSOR->current_samples_);
+    ASSERT_EMPTY (SAMPLE_PROCESSOR->current_samples_);
 
     /* go to the next round and verify that metronome was added */
     TRANSPORT->add_to_playhead (AUDIO_ENGINE->block_length_);
     AUDIO_ENGINE->metronome_->queue_events (AUDIO_ENGINE.get (), 0, 1);
 
     /* assert metronome is queued for 1.1.1.0 */
-    REQUIRE_SIZE_EQ (SAMPLE_PROCESSOR->current_samples_, 1);
+    ASSERT_SIZE_EQ (SAMPLE_PROCESSOR->current_samples_, 1);
   }
 
   {
@@ -87,7 +87,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "find and queue metronome")
       {
         SAMPLE_PROCESSOR->current_samples_.clear ();
         AUDIO_ENGINE->metronome_->queue_events (AUDIO_ENGINE.get (), 0, 1);
-        REQUIRE_SIZE_EQ (SAMPLE_PROCESSOR->current_samples_, i == 4);
+        ASSERT_SIZE_EQ (SAMPLE_PROCESSOR->current_samples_, i == 4);
         TRANSPORT->add_to_playhead (1);
       }
 
@@ -98,7 +98,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "find and queue metronome")
       {
         SAMPLE_PROCESSOR->current_samples_.clear ();
         METRONOME->queue_events (AUDIO_ENGINE.get (), 0, 2);
-        REQUIRE_SIZE_EQ (SAMPLE_PROCESSOR->current_samples_, (i >= 3 && i <= 4));
+        ASSERT_SIZE_EQ (SAMPLE_PROCESSOR->current_samples_, (i >= 3 && i <= 4));
         TRANSPORT->add_to_playhead (1);
       }
   }
@@ -121,16 +121,16 @@ TEST_CASE_FIXTURE (ZrythmFixture, "find and queue metronome")
       SAMPLE_PROCESSOR->current_samples_.clear ();
       METRONOME->queue_events (
         AUDIO_ENGINE.get (), 0, AUDIO_ENGINE->block_length_);
-      REQUIRE_EMPTY (SAMPLE_PROCESSOR->current_samples_);
+      ASSERT_EMPTY (SAMPLE_PROCESSOR->current_samples_);
 
       /* add remaining frames and assert playback at the first sample */
       TRANSPORT->add_to_playhead (AUDIO_ENGINE->block_length_);
       SAMPLE_PROCESSOR->current_samples_.clear ();
       METRONOME->queue_events (
         AUDIO_ENGINE.get (), 0, AUDIO_ENGINE->block_length_);
-      REQUIRE_SIZE_EQ (SAMPLE_PROCESSOR->current_samples_, 1);
+      ASSERT_SIZE_EQ (SAMPLE_PROCESSOR->current_samples_, 1);
       const auto &sp = SAMPLE_PROCESSOR->current_samples_[0];
-      REQUIRE_EQ (sp.start_offset_, 0);
+      ASSERT_EQ (sp.start_offset_, 0);
     }
 }
 

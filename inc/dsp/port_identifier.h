@@ -375,14 +375,6 @@ public:
     return -1;
   }
 
-  /**
-   * Returns if the 2 PortIdentifier's are equal.
-   *
-   * @note Does not check insignificant data like
-   *   comment.
-   */
-  // WARN_UNUSED_RESULT bool is_equal (const PortIdentifier &other) const;
-
   std::string print_to_str () const;
   void        print () const;
   bool        validate () const;

@@ -97,7 +97,6 @@ PortIdentifier::validate () const
   return true;
 }
 
-OPTIMIZE_O3
 uint32_t
 PortIdentifier::get_hash () const
 {

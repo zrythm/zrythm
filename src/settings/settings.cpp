@@ -5,11 +5,11 @@
 
 #include "settings/plugin_settings.h"
 #include "settings/settings.h"
+#include "utils/gtest_wrapper.h"
 #include "zrythm.h"
 
 #include <glib/gi18n.h>
 
-#include "doctest_wrapper.h"
 #include "gtk_wrapper.h"
 
 #define G_SETTINGS_ENABLE_BACKEND

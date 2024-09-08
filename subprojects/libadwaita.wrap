@@ -2,5 +2,5 @@
 directory=libadwaita
 url=https://gitlab.zrythm.org/zrythm/libadwaita
 # 1.5.3-without-appstream
-revision=e3a869cab2677a45ec0233c3fc8c8f7f6ead4eac
+revision=644da40057e4d37e121cae5decc4b0967d4dd3ce
 depth=1

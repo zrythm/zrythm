@@ -64,6 +64,7 @@
 #include "plugins/plugin.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/mpmc_queue.h"
 #include "utils/object_pool.h"
 #include "utils/rt_thread_id.h"
@@ -73,7 +74,6 @@
 
 #include <glib/gi18n.h>
 
-#include "doctest_wrapper.h"
 #include "gtk_wrapper.h"
 
 #ifdef HAVE_JACK

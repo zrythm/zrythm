@@ -42,7 +42,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "region is hit by range")
   Position other_start_pos;
   other_start_pos.set_to_bar (3);
   MidiRegion region (pos, end_pos, 0, -1, -1);
-  REQUIRE (region.is_hit_by_range (
+  ASSERT_TRUE (region.is_hit_by_range (
     other_start_pos.frames_, pos.frames_, true, true, false));
 }
 
@@ -57,8 +57,8 @@ TEST_CASE_FIXTURE (RegionFixture, "region is hit")
   {
     auto pos = midi_region_->pos_;
     pos.update_frames_from_ticks (0.0);
-    REQUIRE (midi_region_->is_hit (pos.frames_));
-    REQUIRE (midi_region_->is_hit (pos.frames_, true));
+    ASSERT_TRUE (midi_region_->is_hit (pos.frames_));
+    ASSERT_TRUE (midi_region_->is_hit (pos.frames_, true));
   }
 
   /*
@@ -71,8 +71,8 @@ TEST_CASE_FIXTURE (RegionFixture, "region is hit")
     auto pos = midi_region_->pos_;
     pos.update_frames_from_ticks (0.0);
     pos.add_frames (-1);
-    REQUIRE_FALSE (midi_region_->is_hit (pos.frames_, false));
-    REQUIRE_FALSE (midi_region_->is_hit (pos.frames_, true));
+    ASSERT_FALSE (midi_region_->is_hit (pos.frames_, false));
+    ASSERT_FALSE (midi_region_->is_hit (pos.frames_, true));
   }
 
   /*
@@ -84,8 +84,8 @@ TEST_CASE_FIXTURE (RegionFixture, "region is hit")
   {
     auto pos = midi_region_->end_pos_;
     pos.update_frames_from_ticks (0.0);
-    REQUIRE_FALSE (midi_region_->is_hit (pos.frames_, false));
-    REQUIRE (midi_region_->is_hit (pos.frames_, true));
+    ASSERT_FALSE (midi_region_->is_hit (pos.frames_, false));
+    ASSERT_TRUE (midi_region_->is_hit (pos.frames_, true));
   }
 
   /*
@@ -98,8 +98,8 @@ TEST_CASE_FIXTURE (RegionFixture, "region is hit")
     auto pos = midi_region_->end_pos_;
     pos.update_frames_from_ticks (0.0);
     pos.add_frames (-1);
-    REQUIRE (midi_region_->is_hit (pos.frames_, false));
-    REQUIRE (midi_region_->is_hit (pos.frames_, true));
+    ASSERT_TRUE (midi_region_->is_hit (pos.frames_, false));
+    ASSERT_TRUE (midi_region_->is_hit (pos.frames_, true));
   }
 
   /*
@@ -112,8 +112,8 @@ TEST_CASE_FIXTURE (RegionFixture, "region is hit")
     auto pos = midi_region_->end_pos_;
     pos.update_frames_from_ticks (0.0);
     pos.add_frames (1);
-    REQUIRE_FALSE (midi_region_->is_hit (pos.frames_, false));
-    REQUIRE_FALSE (midi_region_->is_hit (pos.frames_, true));
+    ASSERT_FALSE (midi_region_->is_hit (pos.frames_, false));
+    ASSERT_FALSE (midi_region_->is_hit (pos.frames_, true));
   }
 }
 
@@ -124,14 +124,14 @@ TEST_CASE_FIXTURE (ZrythmFixture, "new region")
   end_pos.set_to_bar (4);
   MidiRegion region (start_pos, end_pos, 0, 0, 0);
 
-  REQUIRE_EQ (region.id_.type_, RegionType::Midi);
-  REQUIRE_EQ (start_pos, region.pos_);
-  REQUIRE_EQ (end_pos, region.end_pos_);
+  ASSERT_EQ (region.id_.type_, RegionType::Midi);
+  ASSERT_EQ (start_pos, region.pos_);
+  ASSERT_EQ (end_pos, region.end_pos_);
   tmp.zero ();
-  REQUIRE_EQ (tmp, region.clip_start_pos_);
+  ASSERT_EQ (tmp, region.clip_start_pos_);
 
-  REQUIRE_FALSE (region.muted_);
-  REQUIRE_EMPTY (region.midi_notes_);
+  ASSERT_FALSE (region.muted_);
+  ASSERT_EMPTY (region.midi_notes_);
 
   tmp = region.pos_;
   tmp.add_ticks (12);
@@ -150,9 +150,9 @@ TEST_CASE_FIXTURE (ZrythmFixture, "timeline frames to local")
   end_pos.set_to_bar (4);
   MidiRegion region (pos, end_pos, track->get_name_hash (), 0, 0);
   auto localp = region.timeline_frames_to_local( 13'000, true);
-  REQUIRE_EQ (localp, 13000);
+  ASSERT_EQ (localp, 13000);
   localp = region.timeline_frames_to_local(13'000, false);
-  REQUIRE_EQ (localp, 13000);
+  ASSERT_EQ (localp, 13000);
 }
 
 TEST_SUITE_END;

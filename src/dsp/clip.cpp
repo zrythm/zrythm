@@ -16,6 +16,7 @@
 #include "utils/exceptions.h"
 #include "utils/file.h"
 #include "utils/flags.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/gtk.h"
 #include "utils/hash.h"
 #include "utils/io.h"
@@ -25,7 +26,6 @@
 
 #include <glib/gi18n.h>
 
-#include "doctest_wrapper.h"
 #include "gtk_wrapper.h"
 #include <fmt/printf.h>
 #include <giomm.h>

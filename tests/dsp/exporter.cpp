@@ -74,7 +74,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "bounce with note at start")
   exporter.join_generic_thread ();
   exporter.post_export ();
 
-  REQUIRE_FALSE (audio_file_is_silent (exporter.get_exported_path ().c_str ()));
+  ASSERT_FALSE (audio_file_is_silent (exporter.get_exported_path ().c_str ()));
 }
 
 TEST_CASE_FIXTURE (ZrythmFixture, "mixdown midi")
@@ -140,26 +140,26 @@ TEST_CASE_FIXTURE (ZrythmFixture, "mixdown midi")
   auto exported_track = TRACKLIST->get_last_track<MidiTrack> ();
 
   /* verify correct data */
-  REQUIRE_SIZE_EQ (exported_track->lanes_, 2);
-  REQUIRE_SIZE_EQ (exported_track->lanes_[0]->regions_, 1);
-  REQUIRE_EMPTY (exported_track->lanes_[1]->regions_);
+  ASSERT_SIZE_EQ (exported_track->lanes_, 2);
+  ASSERT_SIZE_EQ (exported_track->lanes_[0]->regions_, 1);
+  ASSERT_EMPTY (exported_track->lanes_[1]->regions_);
   r = exported_track->lanes_[0]->regions_[0];
-  REQUIRE_SIZE_EQ (r->midi_notes_, 3);
+  ASSERT_SIZE_EQ (r->midi_notes_, 3);
   mn = r->midi_notes_[0];
   start.set_to_bar (1);
   end.set_to_bar (2);
-  REQUIRE_POSITION_EQ (mn->pos_, start);
-  REQUIRE_POSITION_EQ (mn->end_pos_, end);
+  ASSERT_POSITION_EQ (mn->pos_, start);
+  ASSERT_POSITION_EQ (mn->end_pos_, end);
   mn = r->midi_notes_[1];
   start.set_to_bar (2);
   end.set_to_bar (3);
-  REQUIRE_POSITION_EQ (mn->pos_, start);
-  REQUIRE_POSITION_EQ (mn->end_pos_, end);
+  ASSERT_POSITION_EQ (mn->pos_, start);
+  ASSERT_POSITION_EQ (mn->end_pos_, end);
   mn = r->midi_notes_[2];
   start.set_to_bar (3);
   end.set_to_bar (4);
-  REQUIRE_POSITION_EQ (mn->pos_, start);
-  REQUIRE_POSITION_EQ (mn->end_pos_, end);
+  ASSERT_POSITION_EQ (mn->pos_, start);
+  ASSERT_POSITION_EQ (mn->end_pos_, end);
 }
 
 TEST_CASE_FIXTURE (ZrythmFixture, "export wav")
@@ -177,8 +177,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "export wav")
     {
       for (int j = 0; j < 2; j++)
         {
-          REQUIRE_FALSE (TRANSPORT->is_rolling ());
-          REQUIRE_EQ (TRANSPORT->playhead_pos_.frames_, 0);
+          ASSERT_FALSE (TRANSPORT->is_rolling ());
+          ASSERT_EQ (TRANSPORT->playhead_pos_.frames_, 0);
 
           auto filename = fmt::format ("test_wav{}.wav", i);
 
@@ -213,18 +213,18 @@ TEST_CASE_FIXTURE (ZrythmFixture, "export wav")
 
           exporter.post_export ();
 
-          REQUIRE_FALSE (AUDIO_ENGINE->exporting_.load ());
+          ASSERT_FALSE (AUDIO_ENGINE->exporting_.load ());
 
           z_chromaprint_check_fingerprint_similarity (
             file.abs_path_.c_str (), settings.file_uri_.c_str (), 83, 6);
-          REQUIRE (audio_files_equal (
+          ASSERT_TRUE (audio_files_equal (
             file.abs_path_.c_str (), settings.file_uri_.c_str (), 151199,
             0.0001f));
 
           io_remove (settings.file_uri_);
 
-          REQUIRE_FALSE (TRANSPORT->is_rolling ());
-          REQUIRE_EQ (TRANSPORT->playhead_pos_.frames_, 0);
+          ASSERT_FALSE (TRANSPORT->is_rolling ());
+          ASSERT_EQ (TRANSPORT->playhead_pos_.frames_, 0);
         }
     }
 }
@@ -247,7 +247,7 @@ bounce_region (bool with_bpm_automation)
       Region * r = automation_region_new (
         &pos, &end_pos, P_TEMPO_TRACK->get_name_hash (), at->index, 0);
       bool success = track_add_region (P_TEMPO_TRACK, r, at, 0, 1, 0, nullptr);
-      REQUIRE (success);
+      ASSERT_TRUE (success);
       pos.set_to_bar (1);
       AutomationPoint * ap =
         automation_point_new_float (168.434006f, 0.361445993f, &pos);
@@ -272,7 +272,7 @@ bounce_region (bool with_bpm_automation)
     &pos, midi_file, track->get_name_hash (), lane_pos, idx_in_lane, 0);
   bool success =
     track_add_region (track, region, nullptr, lane_pos, true, false, nullptr);
-  REQUIRE (success);
+  ASSERT_TRUE (success);
   (ArrangerObject *) region->select (true, false, false);
   arranger_selections_action_perform_create (TL_SELECTIONS, nullptr);
 
@@ -428,7 +428,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "bounce region with first note")
     {
       region->remove_object (*region->midi_notes_.back ());
     }
-  REQUIRE_EQ (
+  ASSERT_EQ (
     region->midi_notes_[0]->pos_.frames_, region->loop_start_pos_.frames_);
 
   for (int k = 0; k < 2; k++)
@@ -465,7 +465,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "bounce region with first note")
                 }
             }
         }
-      REQUIRE (has_audio);
+      ASSERT_TRUE (has_audio);
     }
 #endif
 }
@@ -533,13 +533,14 @@ test_bounce_midi_track_routed_to_instrument_track (
         nullptr);
       z_chromaprint_check_fingerprint_similarity (
         filepath, settings->file_uri, 97, 34);
-      REQUIRE (audio_files_equal (filepath, settings->file_uri, 120000, 0.01f));
+      ASSERT_TRUE (
+        audio_files_equal (filepath, settings->file_uri, 120000, 0.01f));
       g_free (filepath);
     }
   else
     {
       /* assume silence */
-      REQUIRE (audio_file_is_silent (settings->file_uri));
+      ASSERT_TRUE (audio_file_is_silent (settings->file_uri));
     }
   io_remove (settings->file_uri);
 
@@ -583,7 +584,7 @@ test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
   g_free (midi_file);
   bool success =
     track_add_region (ins_track, r, nullptr, 0, true, false, nullptr);
-  REQUIRE (success);
+  ASSERT_TRUE (success);
   (ArrangerObject *) r->select (true, false, false);
   arranger_selections_action_perform_create (TL_SELECTIONS, nullptr);
 
@@ -598,7 +599,7 @@ test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
   Port *  port = fader->amp;
   port_action_perform (
     PORT_ACTION_SET_CONTROL_VAL, &port->id_, 0.5f, false, nullptr);
-  REQUIRE_FLOAT_NEAR (port->control, 0.5f, 0.00001f);
+  ASSERT_NEAR (port->control, 0.5f, 0.00001f);
 
   /* bounce it */
   ExportSettings * settings = export_settings_new ();
@@ -632,7 +633,7 @@ test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
     char * filepath = g_build_filename (dirname, x, nullptr); \
     if (match_rate == 100) \
       { \
-        REQUIRE ( \
+        ASSERT_TRUE ( \
           audio_files_equal (filepath, settings->file_uri, 151199, 0.01f)); \
       } \
     else \
@@ -676,7 +677,7 @@ test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
   success = arranger_selections_action_perform_move_timeline (
     TL_SELECTIONS, TRANSPORT->ticks_per_bar, 0, 0, F_NOT_ALREADY_MOVED, nullptr,
     nullptr);
-  REQUIRE (success);
+  ASSERT_TRUE (success);
 
   /* move end marker to bar 6 */
   Marker *         end_marker = marker_track_get_end_marker (P_MARKER_TRACK);
@@ -685,7 +686,7 @@ test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
   success = arranger_selections_action_perform_move_timeline (
     TL_SELECTIONS, TRANSPORT->ticks_per_bar * 6 - end_marker_obj->pos.ticks, 0,
     0, F_NOT_ALREADY_MOVED, nullptr, nullptr);
-  REQUIRE (success);
+  ASSERT_TRUE (success);
 
   /* export again */
   export_settings_free (settings);
@@ -725,8 +726,8 @@ test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
   Track *  audio_track = TRACKLIST->tracks[TRACKLIST->tracks.size () - 1];
   Region * bounced_r = audio_track->lanes[0]->regions[0];
   ArrangerObject * bounce_r_obj = (ArrangerObject *) bounced_r;
-  REQUIRE_POSITION_EQ (start_marker_obj->pos, bounce_r_obj->pos);
-  REQUIRE_POSITION_EQ (end_marker_obj->pos, bounce_r_obj->end_pos_);
+  ASSERT_POSITION_EQ (start_marker_obj->pos, bounce_r_obj->pos);
+  ASSERT_POSITION_EQ (end_marker_obj->pos, bounce_r_obj->end_pos_);
 #endif
   z_info ("=== Bounce instrument track end ===");
 }
@@ -760,7 +761,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "chord track routed to instrument track")
     chord_region_new (&start_pos, &end_pos, P_CHORD_TRACK->num_chord_regions);
   bool success =
     track_add_region (P_CHORD_TRACK, r, nullptr, -1, true, true, nullptr);
-  REQUIRE (success);
+  ASSERT_TRUE (success);
   ChordObject *    chord = chord_object_new (&r->id, 0, r->num_chord_objects);
   ArrangerObject * chord_obj = (ArrangerObject *) chord;
   chord_region_add_chord_object (r, chord, true);
@@ -815,7 +816,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "chord track routed to instrument track")
 
       exporter_post_export (settings, conns, &state);
 
-      REQUIRE_FALSE (audio_file_is_silent (settings->file_uri));
+      ASSERT_FALSE (audio_file_is_silent (settings->file_uri));
 
       export_settings_free (settings);
     }
@@ -853,7 +854,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "export send track only")
           if (i == 1)
             {
               /* create a send to the audio fx track */
-              REQUIRE_NOTHROW (UNDO_MANAGER->perform (
+              ASSERT_NO_THROW (UNDO_MANAGER->perform (
                 std::make_unique<ChannelSendConnectStereoAction> (
                   *audio_track->channel_->sends_.at (
                     j == 0 ? 0 : CHANNEL_SEND_POST_FADER_START_SLOT),
@@ -883,7 +884,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "export send track only")
           exporter.join_generic_thread ();
           exporter.post_export ();
 
-          REQUIRE_EQ (
+          ASSERT_EQ (
             audio_file_is_silent (exporter.get_exported_path ().c_str ()),
             i == 0);
 
@@ -937,16 +938,16 @@ TEST_CASE_FIXTURE (ZrythmFixture, "export midi range")
   auto exported_track = TRACKLIST->get_last_track<MidiTrack> ();
 
   /* verify correct data */
-  REQUIRE_SIZE_EQ (exported_track->lanes_, 2);
-  REQUIRE_SIZE_EQ (exported_track->lanes_[0]->regions_, 1);
-  REQUIRE_EMPTY (exported_track->lanes_[1]->regions_);
+  ASSERT_SIZE_EQ (exported_track->lanes_, 2);
+  ASSERT_SIZE_EQ (exported_track->lanes_[0]->regions_, 1);
+  ASSERT_EMPTY (exported_track->lanes_[1]->regions_);
   r = exported_track->lanes_[0]->regions_[0];
-  REQUIRE_SIZE_EQ (r->midi_notes_, 1);
+  ASSERT_SIZE_EQ (r->midi_notes_, 1);
   mn = r->midi_notes_[0];
   start.set_to_bar (1);
   end.set_to_bar (2);
-  REQUIRE_POSITION_EQ (mn->pos_, start);
-  REQUIRE_POSITION_EQ (mn->end_pos_, end);
+  ASSERT_POSITION_EQ (mn->pos_, start);
+  ASSERT_POSITION_EQ (mn->end_pos_, end);
 }
 
 TEST_SUITE_END;

@@ -18,8 +18,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "new track")
   auto track = Track::create_track (
     Track::Type::Instrument, "Test Instrument Track 1",
     TRACKLIST->get_last_pos ());
-  REQUIRE_NONNULL (track);
-  REQUIRE_NONEMPTY (track->name_);
+  ASSERT_NONNULL (track);
+  ASSERT_NONEMPTY (track->name_);
 }
 
 TEST_CASE_FIXTURE (ZrythmFixture, "add region")
@@ -29,10 +29,10 @@ TEST_CASE_FIXTURE (ZrythmFixture, "add region")
   end.set_to_bar (4);
 
   auto check_track_name_hash = [] (const auto &region, const auto &track) {
-    REQUIRE_NONEMPTY (track->name_);
-    REQUIRE_NE (region->track_name_hash_, 0);
-    REQUIRE_EQ (region->track_name_hash_, track->get_name_hash ());
-    REQUIRE_EQ (region->id_.track_name_hash_, region->track_name_hash_);
+    ASSERT_NONEMPTY (track->name_);
+    ASSERT_NE (region->track_name_hash_, 0);
+    ASSERT_EQ (region->track_name_hash_, track->get_name_hash ());
+    ASSERT_EQ (region->id_.track_name_hash_, region->track_name_hash_);
   };
 
   SUBCASE ("laned region")
@@ -68,31 +68,31 @@ TEST_CASE_FIXTURE (ZrythmFixture, "add region")
 TEST_CASE_FIXTURE (ZrythmFixture, "get direct folder parent")
 {
   auto audio_group = Track::create_empty_with_action<AudioGroupTrack> ();
-  REQUIRE_NONNULL (audio_group);
+  ASSERT_NONNULL (audio_group);
 
   auto audio_group2 = Track::create_empty_with_action<AudioGroupTrack> ();
-  REQUIRE_NONNULL (audio_group2);
+  ASSERT_NONNULL (audio_group2);
   audio_group2->select (true, false, false);
   TRACKLIST->handle_move_or_copy (
     *audio_group, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
 
   auto audio_group3 = Track::create_empty_with_action<AudioGroupTrack> ();
-  REQUIRE_NONNULL (audio_group3);
+  ASSERT_NONNULL (audio_group3);
   audio_group3->select (true, false, false);
   TRACKLIST->handle_move_or_copy (
     *audio_group2, TrackWidgetHighlight::TRACK_WIDGET_HIGHLIGHT_INSIDE,
     GDK_ACTION_MOVE);
 
-  REQUIRE_EQ (audio_group->pos_, 5);
-  REQUIRE_EQ (audio_group->size_, 3);
-  REQUIRE_EQ (audio_group2->pos_, 6);
-  REQUIRE_EQ (audio_group2->size_, 2);
-  REQUIRE_EQ (audio_group3->pos_, 7);
-  REQUIRE_EQ (audio_group3->size_, 1);
+  ASSERT_EQ (audio_group->pos_, 5);
+  ASSERT_EQ (audio_group->size_, 3);
+  ASSERT_EQ (audio_group2->pos_, 6);
+  ASSERT_EQ (audio_group2->size_, 2);
+  ASSERT_EQ (audio_group3->pos_, 7);
+  ASSERT_EQ (audio_group3->size_, 1);
 
   auto direct_folder_parent = audio_group3->get_direct_folder_parent ();
-  REQUIRE (direct_folder_parent == audio_group2);
+  ASSERT_TRUE (direct_folder_parent == audio_group2);
 }
 
 TEST_SUITE_END;

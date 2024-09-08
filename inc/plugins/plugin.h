@@ -367,7 +367,7 @@ public:
   /**
    * Prepare plugin for processing.
    */
-  HOT OPTIMIZE_O3 void prepare_process ();
+  HOT void prepare_process ();
 
   /**
    * Instantiates the plugin (e.g. when adding to a channel).

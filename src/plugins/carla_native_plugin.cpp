@@ -6,9 +6,8 @@
 #include <algorithm>
 
 #include "dsp/cv_port.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/rt_thread_id.h"
-
-#include "doctest_wrapper.h"
 
 #ifdef HAVE_CARLA
 

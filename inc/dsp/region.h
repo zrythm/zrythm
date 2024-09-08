@@ -433,7 +433,7 @@ public:
     bool                         note_off_at_end,
     bool                         is_note_off_for_loop_or_region_end,
     MidiEventVector             &midi_events) const requires
-    RegionTypeWithMidiEvents<RegionT> OPTIMIZE_O3 REALTIME;
+    RegionTypeWithMidiEvents<RegionT> REALTIME;
 
   /**
    * @brief Get the objects (midi notes/chord objects/etc) of this

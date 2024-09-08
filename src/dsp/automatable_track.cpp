@@ -9,11 +9,10 @@
 #include "dsp/tempo_track.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/rt_thread_id.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
-
-#include "doctest_wrapper.h"
 
 AutomatableTrack::AutomatableTrack ()
     : automation_tracklist_ (std::make_unique<AutomationTracklist> ())

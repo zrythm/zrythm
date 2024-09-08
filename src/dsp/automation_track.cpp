@@ -15,14 +15,13 @@
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/custom_button.h"
 #include "project.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/math.h"
 #include "utils/rt_thread_id.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "doctest_wrapper.h"
 
 void
 AutomationTrack::init_loaded (AutomationTracklist * atl)

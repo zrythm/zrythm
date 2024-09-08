@@ -5,9 +5,8 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
+#include "utils/gtest_wrapper.h"
 #include "utils/string.h"
-
-#include "doctest_wrapper.h"
 
 TEST_SUITE_BEGIN ("utils/string");
 
@@ -22,13 +21,13 @@ TEST_CASE ("get int after last space")
   };
 
   auto ret = string_get_int_after_last_space (strs[0]);
-  REQUIRE_EQ (ret.first, 1);
+  ASSERT_EQ (ret.first, 1);
   ret = string_get_int_after_last_space (strs[1]);
-  REQUIRE_EQ (ret.first, 22);
+  ASSERT_EQ (ret.first, 22);
   ret = string_get_int_after_last_space (strs[2]);
-  REQUIRE_EQ (ret.first, -1);
+  ASSERT_EQ (ret.first, -1);
   ret = string_get_int_after_last_space (strs[4]);
-  REQUIRE_EQ (ret.first, 56);
+  ASSERT_EQ (ret.first, 56);
 }
 
 TEST_CASE ("contains substr")
@@ -41,20 +40,20 @@ TEST_CASE ("contains substr")
     "testハロー 34 56",
   };
 
-  REQUIRE (string_contains_substr (strs[0], "Читать"));
-  REQUIRE (string_contains_substr_case_insensitive (strs[1], "abc"));
-  REQUIRE_FALSE (string_contains_substr (strs[0], "Чатитать"));
-  REQUIRE_FALSE (string_contains_substr_case_insensitive (strs[1], "abd"));
+  ASSERT_TRUE (string_contains_substr (strs[0], "Читать"));
+  ASSERT_TRUE (string_contains_substr_case_insensitive (strs[1], "abc"));
+  ASSERT_FALSE (string_contains_substr (strs[0], "Чатитать"));
+  ASSERT_FALSE (string_contains_substr_case_insensitive (strs[1], "abd"));
 }
 
 TEST_CASE ("is equal")
 {
-  REQUIRE (string_is_equal ("", ""));
-  REQUIRE (string_is_equal (nullptr, nullptr));
-  REQUIRE (string_is_equal ("abc", "abc"));
-  REQUIRE_FALSE (string_is_equal ("abc", "aabc"));
-  REQUIRE_FALSE (string_is_equal ("", "aabc"));
-  REQUIRE_FALSE (string_is_equal (nullptr, ""));
+  ASSERT_TRUE (string_is_equal ("", ""));
+  ASSERT_TRUE (string_is_equal (nullptr, nullptr));
+  ASSERT_TRUE (string_is_equal ("abc", "abc"));
+  ASSERT_FALSE (string_is_equal ("abc", "aabc"));
+  ASSERT_FALSE (string_is_equal ("", "aabc"));
+  ASSERT_FALSE (string_is_equal (nullptr, ""));
 
 #if 0
   /* pwgen -c -n -s 48 50 */
@@ -148,7 +147,7 @@ TEST_CASE ("is equal")
   gint64 fast_time = end - start;
   z_info ("fast: {} us", fast_time);
 
-  REQUIRE_LT (fast_time, orig_time);
+  ASSERT_LT (fast_time, orig_time);
 
   test_helper_zrythm_cleanup ();
 #endif
@@ -159,16 +158,16 @@ TEST_CASE ("string_get_regex_group")
   const char * test_str = "Hello, World! 123";
 
   auto result = string_get_regex_group (test_str, R"((\w+),\s(\w+)!)", 1);
-  REQUIRE_EQ (result, "Hello");
+  ASSERT_EQ (result, "Hello");
 
   result = string_get_regex_group (test_str, R"((\w+),\s(\w+)!)", 2);
-  REQUIRE_EQ (result, "World");
+  ASSERT_EQ (result, "World");
 
   result = string_get_regex_group (test_str, R"((\d+))", 1);
-  REQUIRE_EQ (result, "123");
+  ASSERT_EQ (result, "123");
 
   result = string_get_regex_group (test_str, R"(nonexistent)", 1);
-  REQUIRE_EMPTY (result);
+  ASSERT_EMPTY (result);
 }
 
 TEST_CASE ("string_get_regex_group_as_int")
@@ -176,11 +175,11 @@ TEST_CASE ("string_get_regex_group_as_int")
   const char * test_str = "Age: 30 Years";
 
   int result = string_get_regex_group_as_int (test_str, R"(Age:\s(\d+))", 1, -1);
-  REQUIRE_EQ (result, 30);
+  ASSERT_EQ (result, 30);
 
   result =
     string_get_regex_group_as_int (test_str, R"(NonExistent:\s(\d+))", 1, -1);
-  REQUIRE_EQ (result, -1);
+  ASSERT_EQ (result, -1);
 }
 
 TEST_CASE ("string_expand_env_vars")
@@ -190,15 +189,15 @@ TEST_CASE ("string_expand_env_vars")
 
   std::string input = "This is a ${TEST_VAR} ${ANOTHER_VAR} test";
   std::string result = string_expand_env_vars (input);
-  REQUIRE_EQ (result, "This is a Hello World test");
+  ASSERT_EQ (result, "This is a Hello World test");
 
   input = "No variables here";
   result = string_expand_env_vars (input);
-  REQUIRE_EQ (result, input);
+  ASSERT_EQ (result, input);
 
   input = "${NONEXISTENT_VAR}";
   result = string_expand_env_vars (input);
-  REQUIRE_EMPTY (result);
+  ASSERT_EMPTY (result);
 
   unsetenv ("TEST_VAR");
   unsetenv ("ANOTHER_VAR");
@@ -209,14 +208,14 @@ TEST_CASE ("string_join")
   std::vector<std::string> strings = { "Hello", "World", "Test" };
 
   std::string result = string_join (strings, ", ");
-  REQUIRE (result == "Hello, World, Test");
+  ASSERT_TRUE (result == "Hello, World, Test");
 
   result = string_join (strings, " - ");
-  REQUIRE (result == "Hello - World - Test");
+  ASSERT_TRUE (result == "Hello - World - Test");
 
   std::vector<std::string> empty_vec;
   result = string_join (empty_vec, ", ");
-  REQUIRE (result.empty ());
+  ASSERT_TRUE (result.empty ());
 }
 
 TEST_SUITE_END;

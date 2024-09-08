@@ -58,8 +58,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "fill when region starts on loop end")
   track->fill_events (time_nfo, ports);
   for (int j = 0; j < nframes; j++)
     {
-      REQUIRE_FLOAT_EQ (ports.get_l ().buf_[j], 0.f);
-      REQUIRE_FLOAT_EQ (ports.get_r ().buf_[j], 0.f);
+      ASSERT_FLOAT_EQ (ports.get_l ().buf_[j], 0.f);
+      ASSERT_FLOAT_EQ (ports.get_r ().buf_[j], 0.f);
     }
 
   /* run after loop end and make sure sample is played */
@@ -74,13 +74,13 @@ TEST_CASE_FIXTURE (ZrythmFixture, "fill when region starts on loop end")
       /* take into account builtin fades */
       if (j == 0)
         {
-          REQUIRE_FLOAT_EQ (ports.get_l ().buf_[j], 0.f);
-          REQUIRE_FLOAT_EQ (ports.get_r ().buf_[j], 0.f);
+          ASSERT_FLOAT_EQ (ports.get_l ().buf_[j], 0.f);
+          ASSERT_FLOAT_EQ (ports.get_r ().buf_[j], 0.f);
         }
       else
         {
-          REQUIRE_GT (std::abs (ports.get_l ().buf_[j]), 1e-10f);
-          REQUIRE_GT (std::abs (ports.get_r ().buf_[j]), 1e-10f);
+          ASSERT_GT (std::abs (ports.get_l ().buf_[j]), 1e-10f);
+          ASSERT_GT (std::abs (ports.get_r ().buf_[j]), 1e-10f);
         }
     }
   for (int i = 0; i < 2; ++i)
@@ -90,9 +90,9 @@ TEST_CASE_FIXTURE (ZrythmFixture, "fill when region starts on loop end")
       const auto port_frames = ports.get_l ().buf_.data ();
       const auto last_sample_index = nframes - 1;
       // check greater than 0
-      REQUIRE_GT (std::abs (clip_frames[last_sample_index]), 1e-7f);
-      REQUIRE_GT (std::abs (port_frames[last_sample_index]), 1e-7f);
-      REQUIRE_FLOAT_EQ (
+      ASSERT_GT (std::abs (clip_frames[last_sample_index]), 1e-7f);
+      ASSERT_GT (std::abs (port_frames[last_sample_index]), 1e-7f);
+      ASSERT_FLOAT_EQ (
         clip_frames[last_sample_index], port_frames[last_sample_index]);
     }
 }

@@ -85,7 +85,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "region in 2nd automation track get muted")
   AUDIO_ENGINE->wait_n_cycles (3);
 
   /* assert not muted */
-  REQUIRE_FALSE (region->get_muted (true));
+  ASSERT_FALSE (region->get_muted (true));
 }
 
 TEST_CASE_FIXTURE (ZrythmFixture, "curve value")
@@ -99,7 +99,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "curve value")
   /*track_get_automation_tracklist (master);*/
   auto fader_at = master->channel_->get_automation_track (
     PortIdentifier::Flags::ChannelFader);
-  REQUIRE_NONNULL (fader_at);
+  ASSERT_NONNULL (fader_at);
   if (!fader_at->created_)
     fader_at->created_ = true;
   auto atl = fader_at->get_automation_tracklist ();
@@ -138,12 +138,12 @@ TEST_CASE_FIXTURE (ZrythmFixture, "curve value")
   ap->select (true, false, false);
   UNDO_MANAGER->perform (
     std::make_unique<CreateArrangerSelectionsAction> (*AUTOMATION_SELECTIONS));
-  REQUIRE_SIZE_EQ (region->aps_, 3);
+  ASSERT_SIZE_EQ (region->aps_, 3);
 
   TRANSPORT->request_roll (true);
   AUDIO_ENGINE->process (40);
 
-  REQUIRE_FLOAT_NEAR (port->control_, 2.32830644e-10, 0.0001f);
+  ASSERT_NEAR (port->control_, 2.32830644e-10, 0.0001f);
 
   pos.set_to_bar (3);
   pos.add_frames (-80);
@@ -151,7 +151,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "curve value")
 
   AUDIO_ENGINE->process (40);
 
-  REQUIRE_FLOAT_NEAR (port->control_, 2.32830644e-10, 0.0001f);
+  ASSERT_NEAR (port->control_, 2.32830644e-10, 0.0001f);
 }
 
 TEST_SUITE_END;

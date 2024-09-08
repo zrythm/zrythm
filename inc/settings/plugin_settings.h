@@ -1,12 +1,6 @@
 // SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Plugin settings.
- */
-
 #ifndef __SETTINGS_PLUGIN_SETTINGS_H__
 #define __SETTINGS_PLUGIN_SETTINGS_H__
 
@@ -61,6 +55,10 @@ public:
 
 public:
   void validate () { validate (false); }
+
+  std::string get_document_type () const override { return "PluginSetting"; }
+  int         get_format_major_version () const override { return 1; }
+  int         get_format_minor_version () const override { return 0; }
 
   /**
    * Makes sure the setting is valid in the current run and changes any fields

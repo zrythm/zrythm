@@ -22,7 +22,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "route master send to fx")
   auto audio_fx = Track::create_empty_with_action<AudioBusTrack> ();
 
   /* route master to it */
-  REQUIRE_THROWS_AS (
+  ASSERT_THROW (
     UNDO_MANAGER->perform (std::make_unique<ChannelSendConnectStereoAction> (
       *P_MASTER_TRACK->channel_->sends_[0], *audio_fx->processor_->stereo_in_,
       *PORT_CONNECTIONS_MGR));

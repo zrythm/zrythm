@@ -9,16 +9,14 @@
 #include "project.h"
 #include "settings/g_settings_manager.h"
 #include "settings/settings.h"
-#include "utils/arrays.h"
 #include "utils/dsp.h"
 #include "utils/flags.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/objects.h"
 #include "utils/rt_thread_id.h"
 #include "utils/string.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
-
-#include "doctest_wrapper.h"
 
 void
 HardwareProcessor::init_loaded (AudioEngine * engine)

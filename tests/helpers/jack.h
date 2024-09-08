@@ -39,6 +39,7 @@ test_jack_port_exists (const std::string &port_name)
   return ret;
 }
 
-#  define assert_jack_port_exists(name) REQUIRE (test_jack_port_exists (name))
+#  define assert_jack_port_exists(name) \
+    ASSERT_TRUE (test_jack_port_exists (name))
 
 #endif // HAVE_JACK

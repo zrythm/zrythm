@@ -29,7 +29,7 @@ _test_loading_non_existing_plugin (
 
   /* save the project */
   auto prj_file = test_project_save ();
-  REQUIRE_NONEMPTY (prj_file);
+  ASSERT_NONEMPTY (prj_file);
 
   /* unload bundle so plugin can't be found */
   /*LilvNode * path = lilv_new_uri (LILV_WORLD, pl_bundle);*/
@@ -77,7 +77,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "loading fully bridged plugin")
     auto  it = std::find_if (
       pl->in_ports_.begin (), pl->in_ports_.end (),
       [] (const auto &p) { return p->id_.label_ == "OscA Skew/Duty"; });
-    REQUIRE (it != pl->in_ports_.end ());
+    ASSERT_TRUE (it != pl->in_ports_.end ());
     return dynamic_cast<ControlPort *> ((*it).get ());
   };
 
@@ -85,9 +85,9 @@ TEST_CASE_FIXTURE (ZrythmFixture, "loading fully bridged plugin")
   z_return_if_fail (port);
   float val_before = port->control_;
   float val_after = 1.f;
-  REQUIRE_FLOAT_NEAR (val_before, 0.5f, 0.0001f);
+  ASSERT_NEAR (val_before, 0.5f, 0.0001f);
   port->set_control_value (val_after, F_NORMALIZED, true);
-  REQUIRE_FLOAT_NEAR (port->control, val_after, 0.0001f);
+  ASSERT_NEAR (port->control, val_after, 0.0001f);
 
   /* save project and reload and check the
    * value is correct */
@@ -95,7 +95,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "loading fully bridged plugin")
 
   port = get_skew_duty_port ();
   z_return_if_fail (port);
-  REQUIRE_FLOAT_NEAR (port->control, val_after, 0.0001f);
+  ASSERT_NEAR (port->control, val_after, 0.0001f);
 #  endif
 #endif
 }
@@ -106,8 +106,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "loading plugins needing bridging")
 #  ifdef HAVE_CALF_MONOSYNTH
   auto setting = test_plugin_manager_get_plugin_setting (
     CALF_MONOSYNTH_BUNDLE, CALF_MONOSYNTH_URI, false);
-  REQUIRE (setting.open_with_carla_);
-  REQUIRE_EQ (setting.bridge_mode_, CarlaBridgeMode::Full);
+  ASSERT_TRUE (setting.open_with_carla_);
+  ASSERT_EQ (setting.bridge_mode_, CarlaBridgeMode::Full);
 
   test_project_save_and_reload ();
 #  endif
@@ -133,11 +133,11 @@ TEST_CASE_FIXTURE (ZrythmFixture, "bypass state after project load")
       {
         auto  track = TRACKLIST->get_last_track<ChannelTrack> ();
         auto &pl = track->channel_->inserts_[0];
-        REQUIRE_NONNULL (pl);
+        ASSERT_NONNULL (pl);
 
         /* set bypass */
         pl->set_enabled (false, false);
-        REQUIRE_FALSE (pl->is_enabled (false));
+        ASSERT_FALSE (pl->is_enabled (false));
       }
 
       /* reload project */
@@ -146,10 +146,10 @@ TEST_CASE_FIXTURE (ZrythmFixture, "bypass state after project load")
       {
         auto        track = TRACKLIST->get_last_track<ChannelTrack> ();
         const auto &pl = track->channel_->inserts_[0];
-        REQUIRE_NONNULL (pl);
+        ASSERT_NONNULL (pl);
 
         /* check bypass */
-        REQUIRE_FALSE (pl->is_enabled (false));
+        ASSERT_FALSE (pl->is_enabled (false));
       }
     }
 #endif
@@ -162,7 +162,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "plugin without outputs")
     KXSTUDIO_LFO_BUNDLE, KXSTUDIO_LFO_URI, false, true, 1);
   auto        track = TRACKLIST->get_last_track<ChannelTrack> ();
   const auto &pl = track->channel_->inserts_[0];
-  REQUIRE_NONNULL (pl);
+  ASSERT_NONNULL (pl);
 
   /* reload project */
   test_project_save_and_reload ();

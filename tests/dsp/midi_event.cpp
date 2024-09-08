@@ -25,9 +25,9 @@ TEST_CASE_FIXTURE (ZrythmFixture, "add note ons from chord descriptor")
     {
       const auto &ev = events.active_events_.at (i);
 
-      REQUIRE_EQ (ev.time_, _time);
-      REQUIRE (midi_is_note_on (ev.raw_buffer_.data ()));
-      REQUIRE_EQ (midi_get_velocity (ev.raw_buffer_.data ()), 121);
+      ASSERT_EQ (ev.time_, _time);
+      ASSERT_TRUE (midi_is_note_on (ev.raw_buffer_.data ()));
+      ASSERT_EQ (midi_get_velocity (ev.raw_buffer_.data ()), 121);
     }
 }
 
@@ -40,15 +40,15 @@ TEST_CASE ("add pitch bend")
 
   events.active_events_.add_event_from_buf (_time, buf.data (), 3);
   const auto &ev = events.active_events_.front ();
-  REQUIRE_EQ (ev.time_, _time);
-  REQUIRE (midi_is_pitch_wheel (ev.raw_buffer_.data ()));
-  REQUIRE_EQ (
+  ASSERT_EQ (ev.time_, _time);
+  ASSERT_TRUE (midi_is_pitch_wheel (ev.raw_buffer_.data ()));
+  ASSERT_EQ (
     midi_get_pitchwheel_value (ev.raw_buffer_.data ()),
     midi_get_pitchwheel_value (buf.data ()));
-  REQUIRE_EQ (midi_get_pitchwheel_value (ev.raw_buffer_.data ()), 0x1CD4);
-  REQUIRE_EQ (midi_get_pitchwheel_value (ev.raw_buffer_.data ()), 7380);
-  REQUIRE_GE (midi_get_pitchwheel_value (ev.raw_buffer_.data ()), 0);
-  REQUIRE_LT (midi_get_pitchwheel_value (ev.raw_buffer_.data ()), 0x4000);
+  ASSERT_EQ (midi_get_pitchwheel_value (ev.raw_buffer_.data ()), 0x1CD4);
+  ASSERT_EQ (midi_get_pitchwheel_value (ev.raw_buffer_.data ()), 7380);
+  ASSERT_GE (midi_get_pitchwheel_value (ev.raw_buffer_.data ()), 0);
+  ASSERT_LT (midi_get_pitchwheel_value (ev.raw_buffer_.data ()), 0x4000);
 }
 
 TEST_SUITE_END ();

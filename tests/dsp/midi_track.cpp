@@ -49,7 +49,7 @@ public:
     auto mn1 =
       std::make_shared<MidiNote> (r->id_, start_pos, end_pos, pitch, velocity);
     r->append_object (mn1);
-    REQUIRE_NONEMPTY (r->midi_notes_);
+    ASSERT_NONEMPTY (r->midi_notes_);
 
     return r;
   }
@@ -92,25 +92,25 @@ TEST_CASE_FIXTURE (ZrythmFixture, "fill midi events from engine")
   auto &pl = ins_track->channel_->instrument_;
   auto  event_in = dynamic_cast<MidiPort *> (pl->in_ports_[2].get ());
   auto &midi_events = event_in->midi_events_;
-  REQUIRE_SIZE_EQ (midi_events.active_events_, 3);
+  ASSERT_SIZE_EQ (midi_events.active_events_, 3);
   auto ev = midi_events.active_events_.at (0);
-  REQUIRE (midi_is_note_off (ev.raw_buffer_.data ()));
-  REQUIRE_EQ (ev.time_, 19);
-  REQUIRE_EQ (midi_get_note_number (ev.raw_buffer_.data ()), 35);
+  ASSERT_TRUE (midi_is_note_off (ev.raw_buffer_.data ()));
+  ASSERT_EQ (ev.time_, 19);
+  ASSERT_EQ (midi_get_note_number (ev.raw_buffer_.data ()), 35);
   ev = midi_events.active_events_.at (1);
-  REQUIRE (midi_is_all_notes_off (ev.raw_buffer_.data ()));
-  REQUIRE_EQ (ev.time_, 19);
+  ASSERT_TRUE (midi_is_all_notes_off (ev.raw_buffer_.data ()));
+  ASSERT_EQ (ev.time_, 19);
   ev = midi_events.active_events_.at (2);
-  REQUIRE (midi_is_note_on (ev.raw_buffer_.data ()));
-  REQUIRE_EQ (ev.time_, 20);
-  REQUIRE_EQ (midi_get_note_number (ev.raw_buffer_.data ()), 35);
-  REQUIRE_EQ (midi_get_velocity (ev.raw_buffer_.data ()), 60);
+  ASSERT_TRUE (midi_is_note_on (ev.raw_buffer_.data ()));
+  ASSERT_EQ (ev.time_, 20);
+  ASSERT_EQ (midi_get_note_number (ev.raw_buffer_.data ()), 35);
+  ASSERT_EQ (midi_get_velocity (ev.raw_buffer_.data ()), 60);
 
   /* process again and check events are 0 */
   z_info ("--- processing engine...");
   AUDIO_ENGINE->process (40);
   z_info ("--- processing recording events...");
-  REQUIRE_EMPTY (midi_events.active_events_);
+  ASSERT_EMPTY (midi_events.active_events_);
 }
 
 TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
@@ -147,13 +147,13 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
 
   {
     set_caches_and_fill ();
-    REQUIRE_SIZE_EQ (events, 1);
+    ASSERT_SIZE_EQ (events, 1);
     auto ev = events.at (0);
-    REQUIRE_EQ (
+    ASSERT_EQ (
       midi_get_channel_1_to_16 (ev.raw_buffer_.data ()), r->get_midi_ch ());
-    REQUIRE_EQ (midi_get_note_number (ev.raw_buffer_.data ()), pitch1);
-    REQUIRE_EQ (midi_get_velocity (ev.raw_buffer_.data ()), vel1);
-    REQUIRE_EQ ((long) ev.time_, pos.frames_);
+    ASSERT_EQ (midi_get_note_number (ev.raw_buffer_.data ()), pitch1);
+    ASSERT_EQ (midi_get_velocity (ev.raw_buffer_.data ()), vel1);
+    ASSERT_EQ ((long) ev.time_, pos.frames_);
     events.clear ();
   }
 
@@ -171,7 +171,7 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 1;
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
-    REQUIRE_EMPTY (events);
+    ASSERT_EMPTY (events);
   }
 
   /*
@@ -188,7 +188,7 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = 1;
     set_caches_and_fill ();
-    REQUIRE_SIZE_EQ (events, 1);
+    ASSERT_SIZE_EQ (events, 1);
     events.clear ();
   }
 
@@ -206,7 +206,7 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
-    REQUIRE_EMPTY (events);
+    ASSERT_EMPTY (events);
   }
 
   /*
@@ -225,7 +225,7 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
-    REQUIRE_EMPTY (events);
+    ASSERT_EMPTY (events);
   }
 
   /*
@@ -243,10 +243,10 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
-    REQUIRE_SIZE_EQ (events, 1);
+    ASSERT_SIZE_EQ (events, 1);
     auto ev = events.front ();
-    REQUIRE (midi_is_note_off (ev.raw_buffer_.data ()));
-    REQUIRE_EQ (ev.time_, BUFFER_SIZE - 1);
+    ASSERT_TRUE (midi_is_note_off (ev.raw_buffer_.data ()));
+    ASSERT_EQ (ev.time_, BUFFER_SIZE - 1);
     events.clear ();
   }
 
@@ -270,9 +270,9 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
-    REQUIRE_SIZE_EQ (events, 1);
+    ASSERT_SIZE_EQ (events, 1);
     auto ev = events.at (0);
-    REQUIRE_EQ (ev.time_, BUFFER_SIZE - 1);
+    ASSERT_EQ (ev.time_, BUFFER_SIZE - 1);
     mn->end_pos_ = r->end_pos_;
     events.clear ();
   }
@@ -296,9 +296,9 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
-    REQUIRE_SIZE_EQ (events, 1);
+    ASSERT_SIZE_EQ (events, 1);
     auto ev = events.front ();
-    REQUIRE_EQ (ev.time_, BUFFER_SIZE - 2);
+    ASSERT_EQ (ev.time_, BUFFER_SIZE - 2);
     mn->end_pos_ = r->end_pos_;
     events.clear ();
   }
@@ -319,10 +319,10 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
-    REQUIRE_SIZE_EQ (events, 1);
+    ASSERT_SIZE_EQ (events, 1);
     auto ev = events.front ();
-    REQUIRE (midi_is_note_off (ev.raw_buffer_.data ()));
-    REQUIRE_EQ (ev.time_, BUFFER_SIZE - 2);
+    ASSERT_TRUE (midi_is_note_off (ev.raw_buffer_.data ()));
+    ASSERT_EQ (ev.time_, BUFFER_SIZE - 2);
     events.clear ();
   }
 
@@ -362,7 +362,7 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = 512;
     set_caches_and_fill ();
-    REQUIRE_EMPTY (events);
+    ASSERT_EMPTY (events);
   }
 
   /*
@@ -405,13 +405,13 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = 2000;
     set_caches_and_fill ();
-    REQUIRE_SIZE_EQ (events, 2);
+    ASSERT_SIZE_EQ (events, 2);
     auto ev = events.front ();
-    REQUIRE (midi_is_note_off (ev.raw_buffer_.data ()));
-    REQUIRE_EQ (ev.time_, 364);
+    ASSERT_TRUE (midi_is_note_off (ev.raw_buffer_.data ()));
+    ASSERT_EQ (ev.time_, 364);
     ev = events.at (1);
-    REQUIRE (midi_is_note_on (ev.raw_buffer_.data ()));
-    REQUIRE_EQ (ev.time_, 365);
+    ASSERT_TRUE (midi_is_note_on (ev.raw_buffer_.data ()));
+    ASSERT_EQ (ev.time_, 365);
     events.clear ();
   }
 
@@ -453,7 +453,7 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
-    REQUIRE_EMPTY (events);
+    ASSERT_EMPTY (events);
     mn->pos_.add_ticks (1);
     mn->pos_.update_frames_from_ticks (0.0);
   }
@@ -473,7 +473,7 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
-    REQUIRE_EMPTY (events);
+    ASSERT_EMPTY (events);
   }
 
   /**
@@ -492,7 +492,7 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
-    REQUIRE_EMPTY (events);
+    ASSERT_EMPTY (events);
   }
 
   /**
@@ -510,9 +510,9 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
-    REQUIRE_SIZE_EQ (events, 1);
+    ASSERT_SIZE_EQ (events, 1);
     auto ev = events.front ();
-    REQUIRE_EQ (ev.time_, 10);
+    ASSERT_EQ (ev.time_, 10);
     events.clear ();
   }
 
@@ -531,9 +531,9 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
-    REQUIRE_SIZE_EQ (events, 1);
+    ASSERT_SIZE_EQ (events, 1);
     auto ev = events.front ();
-    REQUIRE_EQ (ev.time_, 10);
+    ASSERT_EQ (ev.time_, 10);
     events.clear ();
   }
 
@@ -574,13 +574,13 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
-    REQUIRE_SIZE_EQ (events, 2);
+    ASSERT_SIZE_EQ (events, 2);
     auto ev = events.front ();
-    REQUIRE (midi_is_note_off (ev.raw_buffer_.data ()));
-    REQUIRE_EQ (ev.time_, 9);
+    ASSERT_TRUE (midi_is_note_off (ev.raw_buffer_.data ()));
+    ASSERT_EQ (ev.time_, 9);
     ev = events.at (1);
-    REQUIRE (midi_is_note_on (ev.raw_buffer_.data ()));
-    REQUIRE_EQ (ev.time_, 10);
+    ASSERT_TRUE (midi_is_note_on (ev.raw_buffer_.data ()));
+    ASSERT_EQ (ev.time_, 10);
     events.clear ();
   }
 
@@ -605,10 +605,10 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
-    REQUIRE_SIZE_EQ (events, 1);
+    ASSERT_SIZE_EQ (events, 1);
     auto ev = events.front ();
-    REQUIRE (midi_is_note_off (ev.raw_buffer_.data ()));
-    REQUIRE_EQ (ev.time_, 9);
+    ASSERT_TRUE (midi_is_note_off (ev.raw_buffer_.data ()));
+    ASSERT_EQ (ev.time_, 9);
     events.clear ();
   }
 
@@ -639,10 +639,10 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
-    REQUIRE_SIZE_EQ (events, 1);
+    ASSERT_SIZE_EQ (events, 1);
     auto ev = events.front ();
-    REQUIRE (midi_is_note_on (ev.raw_buffer_.data ()));
-    REQUIRE_EQ (ev.time_, 0);
+    ASSERT_TRUE (midi_is_note_on (ev.raw_buffer_.data ()));
+    ASSERT_EQ (ev.time_, 0);
     events.clear ();
   }
 
@@ -669,13 +669,13 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = 30;
     set_caches_and_fill ();
-    REQUIRE_SIZE_EQ (events, 2);
+    ASSERT_SIZE_EQ (events, 2);
     auto ev = events.front ();
-    REQUIRE (midi_is_note_off (ev.raw_buffer_.data ()));
-    REQUIRE_EQ (ev.time_, 9);
+    ASSERT_TRUE (midi_is_note_off (ev.raw_buffer_.data ()));
+    ASSERT_EQ (ev.time_, 9);
     ev = events.at (1);
-    REQUIRE (midi_is_all_notes_off (ev.raw_buffer_.data ()));
-    REQUIRE_EQ (ev.time_, 29);
+    ASSERT_TRUE (midi_is_all_notes_off (ev.raw_buffer_.data ()));
+    ASSERT_EQ (ev.time_, 29);
     events.clear ();
   }
 
@@ -687,8 +687,8 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.nframes_ = 10;
     set_caches_and_fill ();
     auto ev = events.front ();
-    REQUIRE (midi_is_note_on (ev.raw_buffer_.data ()));
-    REQUIRE_EQ (ev.time_, 0);
+    ASSERT_TRUE (midi_is_note_on (ev.raw_buffer_.data ()));
+    ASSERT_EQ (ev.time_, 0);
     events.clear ();
   }
 
@@ -719,10 +719,10 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = 30;
     set_caches_and_fill ();
-    REQUIRE_SIZE_EQ (events, 1);
+    ASSERT_SIZE_EQ (events, 1);
     auto ev = events.front ();
-    REQUIRE (midi_is_note_on (ev.raw_buffer_.data ()));
-    REQUIRE_EQ (ev.time_, 4);
+    ASSERT_TRUE (midi_is_note_on (ev.raw_buffer_.data ()));
+    ASSERT_EQ (ev.time_, 4);
     events.clear ();
 
     /* check note off at region loop */
@@ -735,10 +735,10 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = 30;
     set_caches_and_fill ();
-    REQUIRE_SIZE_EQ (events, 1);
+    ASSERT_SIZE_EQ (events, 1);
     ev = events.front ();
-    REQUIRE (midi_is_note_off (ev.raw_buffer_.data ()));
-    REQUIRE_EQ (ev.time_, 3);
+    ASSERT_TRUE (midi_is_note_off (ev.raw_buffer_.data ()));
+    ASSERT_EQ (ev.time_, 3);
     events.clear ();
   }
 
@@ -764,13 +764,13 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = 50;
     set_caches_and_fill ();
-    REQUIRE_SIZE_EQ (events, 2);
+    ASSERT_SIZE_EQ (events, 2);
     auto ev = events.front ();
-    REQUIRE (midi_is_note_on (ev.raw_buffer_.data ()));
-    REQUIRE_EQ (ev.time_, 10);
+    ASSERT_TRUE (midi_is_note_on (ev.raw_buffer_.data ()));
+    ASSERT_EQ (ev.time_, 10);
     ev = events.at (1);
-    REQUIRE (midi_is_note_off (ev.raw_buffer_.data ()));
-    REQUIRE_EQ (ev.time_, 39);
+    ASSERT_TRUE (midi_is_note_off (ev.raw_buffer_.data ()));
+    ASSERT_EQ (ev.time_, 39);
     events.clear ();
   }
 
@@ -796,13 +796,13 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     time_nfo.local_offset_ = 0;
     time_nfo.nframes_ = 50;
     set_caches_and_fill ();
-    REQUIRE_SIZE_EQ (events, 2);
+    ASSERT_SIZE_EQ (events, 2);
     auto ev = events.front ();
-    REQUIRE (midi_is_note_on (ev.raw_buffer_.data ()));
-    REQUIRE_EQ (ev.time_, 5);
+    ASSERT_TRUE (midi_is_note_on (ev.raw_buffer_.data ()));
+    ASSERT_EQ (ev.time_, 5);
     ev = events.at (1);
-    REQUIRE (midi_is_all_notes_off (ev.raw_buffer_.data ()));
-    REQUIRE_EQ (ev.time_, 14);
+    ASSERT_TRUE (midi_is_all_notes_off (ev.raw_buffer_.data ()));
+    ASSERT_EQ (ev.time_, 14);
     events.clear ();
   }
 }

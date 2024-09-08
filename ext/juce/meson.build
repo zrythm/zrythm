@@ -20,9 +20,13 @@ juce_cpp_public_args = [
   '-DDEBUG=' + (get_option('optimization') == '0' ? '1' : '0'),
   ]
 
-juce_cpp_private_args = [
-  '-fno-single-precision-constant',
+juce_cpp_private_args = []
+if is_clang or is_gcc
+  juce_cpp_private_args += [
+    '-fno-single-precision-constant',
   ]
+endif
+
 juce_lib_deps = []
 if os_darwin
   juce_cpp_private_args += [
@@ -39,9 +43,15 @@ if os_darwin
       ])
 elif os_windows
   # build fails without this
-  juce_cpp_private_args += [
-    '-fpermissive',
+  if is_msvc
+    juce_cpp_private_args += [
+      '/permissive',
+      ]
+  else
+    juce_cpp_private_args += [
+      '-fpermissive',
     ]
+  endif
   juce_lib_deps += [
     cc.find_library('comdlg32'),
     cc.find_library('gdi32'),

@@ -9,9 +9,8 @@
 #include "gui/widgets/right_dock_edge.h"
 #include "settings/g_settings_manager.h"
 #include "settings/settings.h"
+#include "utils/gtest_wrapper.h"
 #include "zrythm.h"
-
-#include "doctest_wrapper.h"
 
 void
 ControlRoom::init_common ()

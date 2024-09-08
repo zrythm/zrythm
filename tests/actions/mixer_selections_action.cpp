@@ -36,7 +36,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "MIDI FX slot deletion")
     MIDI_CC_MAP_BUNDLE, MIDI_CC_MAP_URI, false);
   auto track_pos = TRACKLIST->get_last_pos ();
   auto track = TRACKLIST->get_track<ChannelTrack> (track_pos);
-  REQUIRE_NOTHROW (
+  ASSERT_NO_THROW (
     UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
       PluginSlotType::MidiFx, *track, slot, setting)));
 
@@ -56,7 +56,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "MIDI FX slot deletion")
   UNDO_MANAGER->undo ();
   pl = track->channel_->midi_fx_[slot].get ();
   port = pl->get_port_by_symbol<ControlPort> ("ccin");
-  REQUIRE_FLOAT_NEAR (port->control_, 120.f, 0.0001f);
+  ASSERT_NEAR (port->control_, 120.f, 0.0001f);
 
   UNDO_MANAGER->redo ();
 #endif
@@ -76,22 +76,22 @@ _test_copy_plugins (
     pl_bundle, pl_uri, is_instrument, with_carla, 1);
 
   num_master_children++;
-  REQUIRE_SIZE_EQ (P_MASTER_TRACK->children_, num_master_children);
+  ASSERT_SIZE_EQ (P_MASTER_TRACK->children_, num_master_children);
   auto track = TRACKLIST->get_last_track ();
-  REQUIRE_EQ (
+  ASSERT_EQ (
     P_MASTER_TRACK->children_[num_master_children - 1], track->get_name_hash ());
   track = TRACKLIST->get_track (5);
-  REQUIRE_EQ (P_MASTER_TRACK->children_[0], track->get_name_hash ());
+  ASSERT_EQ (P_MASTER_TRACK->children_[0], track->get_name_hash ());
 
   /* save and reload the project */
   test_project_save_and_reload ();
 
-  REQUIRE_SIZE_EQ (P_MASTER_TRACK->children_, num_master_children);
+  ASSERT_SIZE_EQ (P_MASTER_TRACK->children_, num_master_children);
   track = TRACKLIST->get_last_track ();
-  REQUIRE_EQ (
+  ASSERT_EQ (
     P_MASTER_TRACK->children_[num_master_children - 1], track->get_name_hash ());
   track = TRACKLIST->get_track (5);
-  REQUIRE_EQ (P_MASTER_TRACK->children_[0], track->get_name_hash ());
+  ASSERT_EQ (P_MASTER_TRACK->children_[0], track->get_name_hash ());
 
   /* select track */
   auto selected_track = TRACKLIST->get_last_track ();
@@ -101,14 +101,14 @@ _test_copy_plugins (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
     TRACKLIST->get_num_tracks ()));
   num_master_children++;
-  REQUIRE_SIZE_EQ (P_MASTER_TRACK->children_, num_master_children);
+  ASSERT_SIZE_EQ (P_MASTER_TRACK->children_, num_master_children);
   track = TRACKLIST->get_last_track ();
-  REQUIRE_EQ (
+  ASSERT_EQ (
     P_MASTER_TRACK->children_[num_master_children - 1], track->get_name_hash ());
   track = TRACKLIST->get_track (5);
-  REQUIRE_EQ (P_MASTER_TRACK->children_[0], track->get_name_hash ());
+  ASSERT_EQ (P_MASTER_TRACK->children_[0], track->get_name_hash ());
   track = TRACKLIST->get_track (6);
-  REQUIRE_EQ (P_MASTER_TRACK->children_[1], track->get_name_hash ());
+  ASSERT_EQ (P_MASTER_TRACK->children_[1], track->get_name_hash ());
   auto new_track = TRACKLIST->get_last_track ();
 
   /* if instrument, copy tracks, otherwise copy
@@ -118,7 +118,7 @@ _test_copy_plugins (
 #if 0
       if (!with_carla)
         {
-          REQUIRE (
+          ASSERT_TRUE (
             new_track->channel->instrument->lv2->ui);
         }
       ua =
@@ -202,7 +202,7 @@ _test_create_plugins (
     default:
       break;
     }
-  REQUIRE (setting);
+  ASSERT_TRUE (setting);
 
   if (is_instrument)
     {
@@ -231,16 +231,16 @@ _test_create_plugins (
 
   if (is_instrument)
     {
-      REQUIRE_NONNULL (src_track->channel_->instrument_);
+      ASSERT_NONNULL (src_track->channel_->instrument_);
     }
   else
     {
-      REQUIRE_NONNULL (src_track->channel_->inserts_[0]);
+      ASSERT_NONNULL (src_track->channel_->inserts_[0]);
     }
 
   /* duplicate the track */
   src_track->select (true, true, false);
-  REQUIRE (src_track->validate ());
+  ASSERT_TRUE (src_track->validate ());
   UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
     TRACKLIST->get_num_tracks ()));
@@ -248,8 +248,8 @@ _test_create_plugins (
   auto dest_track_pos = TRACKLIST->get_last_pos ();
   auto dest_track = TRACKLIST->get_track<ChannelTrack> (dest_track_pos);
 
-  REQUIRE (src_track->validate ());
-  REQUIRE (dest_track->validate ());
+  ASSERT_TRUE (src_track->validate ());
+  ASSERT_TRUE (dest_track->validate ());
 
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->undo ();
@@ -372,15 +372,15 @@ _test_port_and_plugin_track_pos_after_move (
     std::make_unique<CreateArrangerSelectionsAction> (*AUTOMATION_SELECTIONS));
 
   /* duplicate it */
-  REQUIRE (src_track->validate ());
+  ASSERT_TRUE (src_track->validate ());
   UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
     TRACKLIST->get_num_tracks ()));
 
   auto dest_track = TRACKLIST->get_track (dest_track_pos);
 
-  REQUIRE (src_track->validate ());
-  REQUIRE (dest_track->validate ());
+  ASSERT_TRUE (src_track->validate ());
+  ASSERT_TRUE (dest_track->validate ());
 
   /* move plugin from 1st track to 2nd track and undo/redo */
   MIXER_SELECTIONS->clear ();
@@ -392,18 +392,18 @@ _test_port_and_plugin_track_pos_after_move (
   /* let the engine run */
   std::this_thread::sleep_for (std::chrono::seconds (1));
 
-  REQUIRE (src_track->validate ());
-  REQUIRE (dest_track->validate ());
+  ASSERT_TRUE (src_track->validate ());
+  ASSERT_TRUE (dest_track->validate ());
 
   UNDO_MANAGER->undo ();
 
-  REQUIRE (src_track->validate ());
-  REQUIRE (dest_track->validate ());
+  ASSERT_TRUE (src_track->validate ());
+  ASSERT_TRUE (dest_track->validate ());
 
   UNDO_MANAGER->redo ();
 
-  REQUIRE (src_track->validate ());
-  REQUIRE (dest_track->validate ());
+  ASSERT_TRUE (src_track->validate ());
+  ASSERT_TRUE (dest_track->validate ());
 
   UNDO_MANAGER->undo ();
 
@@ -481,10 +481,10 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move two plugins one slot up")
 
   auto get_track_and_validate = [&] (bool validate = true) {
     auto t = TRACKLIST->get_track<ChannelTrack> (track_pos);
-    REQUIRE_NONNULL (t);
+    ASSERT_NONNULL (t);
     if (validate)
       {
-        REQUIRE (t->validate ());
+        ASSERT_TRUE (t->validate ());
       }
     return t;
   };
@@ -530,7 +530,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move two plugins one slot up")
   auto     port = Port::find_from_identifier<ControlPort> (at->port_id_);
   Position start_pos;
   start_pos.set_to_bar (1);
-  REQUIRE_NONEMPTY (at->regions_);
+  ASSERT_NONEMPTY (at->regions_);
   const auto &region = at->regions_.front ();
   auto        ap = std::make_shared<AutomationPoint> (
     port->deff_, port->real_val_to_normalized (port->deff_), start_pos);
@@ -578,11 +578,11 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move two plugins one slot up")
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
     *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
     PluginSlotType::Insert, track, 1));
-  REQUIRE (track->validate ());
+  ASSERT_TRUE (track->validate ());
   UNDO_MANAGER->undo ();
-  REQUIRE (track->validate ());
+  ASSERT_TRUE (track->validate ());
   UNDO_MANAGER->redo ();
-  REQUIRE (track->validate ());
+  ASSERT_TRUE (track->validate ());
 
   /* save and reload the project */
   test_project_save_and_reload ();
@@ -596,11 +596,11 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move two plugins one slot up")
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
     *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
     PluginSlotType::Insert, track, 2));
-  REQUIRE (track->validate ());
+  ASSERT_TRUE (track->validate ());
   UNDO_MANAGER->undo ();
-  REQUIRE (track->validate ());
+  ASSERT_TRUE (track->validate ());
   UNDO_MANAGER->redo ();
-  REQUIRE (track->validate ());
+  ASSERT_TRUE (track->validate ());
 
   /* save and reload the project */
   test_project_save_and_reload ();
@@ -614,11 +614,11 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move two plugins one slot up")
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
     *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
     PluginSlotType::Insert, track, 1));
-  REQUIRE (track->validate ());
+  ASSERT_TRUE (track->validate ());
   UNDO_MANAGER->undo ();
-  REQUIRE (track->validate ());
+  ASSERT_TRUE (track->validate ());
   UNDO_MANAGER->redo ();
-  REQUIRE (track->validate ());
+  ASSERT_TRUE (track->validate ());
 
   /* save and reload the project */
   test_project_save_and_reload ();
@@ -635,9 +635,9 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move two plugins one slot up")
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->redo ();
 
-  REQUIRE (track->validate ());
-  REQUIRE_NONNULL (track->channel_->inserts_[0]);
-  REQUIRE_NONNULL (track->channel_->inserts_[1]);
+  ASSERT_TRUE (track->validate ());
+  ASSERT_NONNULL (track->channel_->inserts_[0]);
+  ASSERT_NONNULL (track->channel_->inserts_[1]);
 
   /* move 2nd plugin to 1st plugin (replacing it) */
   MIXER_SELECTIONS->clear ();
@@ -648,19 +648,19 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move two plugins one slot up")
 
   /* verify that first plugin was replaced by 2nd
    * plugin */
-  REQUIRE_NONNULL (track->channel_->inserts_[0]);
-  REQUIRE_NONNULL (track->channel_->inserts_[1]);
+  ASSERT_NONNULL (track->channel_->inserts_[0]);
+  ASSERT_NONNULL (track->channel_->inserts_[1]);
 
   /* undo and verify that both plugins are back */
   UNDO_MANAGER->undo ();
-  REQUIRE_NONNULL (track->channel_->inserts_[0]);
-  REQUIRE_NONNULL (track->channel_->inserts_[1]);
+  ASSERT_NONNULL (track->channel_->inserts_[0]);
+  ASSERT_NONNULL (track->channel_->inserts_[1]);
   UNDO_MANAGER->redo ();
   UNDO_MANAGER->undo ();
-  REQUIRE_NONNULL (track->channel_->inserts_[0]);
-  REQUIRE_EQ (
+  ASSERT_NONNULL (track->channel_->inserts_[0]);
+  ASSERT_EQ (
     track->channel_->inserts_[0]->setting_.descr_.uri_, LSP_COMPRESSOR_URI);
-  REQUIRE_NONNULL (track->channel_->inserts_[1]);
+  ASSERT_NONNULL (track->channel_->inserts_[1]);
 
   test_project_save_and_reload ();
   track = get_track_and_validate ();
@@ -677,17 +677,17 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move two plugins one slot up")
   /* undo and verify that the original plugin is
    * back */
   UNDO_MANAGER->undo ();
-  REQUIRE_NONNULL (track->channel_->inserts_.at (0));
-  REQUIRE_EQ (
+  ASSERT_NONNULL (track->channel_->inserts_.at (0));
+  ASSERT_EQ (
     track->channel_->inserts_[0]->setting_.descr_.uri_, LSP_COMPRESSOR_URI);
-  REQUIRE_NONNULL (track->channel_->inserts_.at (1));
+  ASSERT_NONNULL (track->channel_->inserts_.at (1));
 
   /* redo */
   UNDO_MANAGER->redo ();
-  REQUIRE_NONNULL (track->channel_->inserts_.at (0));
-  REQUIRE_EQ (
+  ASSERT_NONNULL (track->channel_->inserts_.at (0));
+  ASSERT_EQ (
     track->channel_->inserts_[0]->setting_.descr_.uri_, setting.descr_.uri_);
-  REQUIRE_NONNULL (track->channel_->inserts_.at (1));
+  ASSERT_NONNULL (track->channel_->inserts_.at (1));
 
   auto pl = track->channel_->inserts_[0].get ();
 
@@ -695,7 +695,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move two plugins one slot up")
   port = pl->get_port_by_symbol<ControlPort> ("ccin");
   port->set_control_value (120.f, F_NOT_NORMALIZED, true);
 
-  REQUIRE_FLOAT_NEAR (port->control_, 120.f, 0.0001f);
+  ASSERT_NEAR (port->control_, 120.f, 0.0001f);
 
   /* move 2nd plugin to 1st plugin (replacing it) */
   MIXER_SELECTIONS->clear ();
@@ -707,18 +707,18 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move two plugins one slot up")
   test_project_save_and_reload ();
   track = get_track_and_validate ();
 
-  REQUIRE_NONNULL (track->channel_->inserts_.at (0));
-  REQUIRE_NULL (track->channel_->inserts_[1]);
+  ASSERT_NONNULL (track->channel_->inserts_.at (0));
+  ASSERT_NULL (track->channel_->inserts_[1]);
 
   /* undo and check plugin and port value are restored */
   UNDO_MANAGER->undo ();
   pl = track->channel_->inserts_[0].get ();
-  REQUIRE_EQ (pl->setting_.descr_.uri_, setting.descr_.uri_);
+  ASSERT_EQ (pl->setting_.descr_.uri_, setting.descr_.uri_);
   port = pl->get_port_by_symbol<ControlPort> ("ccin");
-  REQUIRE_FLOAT_NEAR (port->control_, 120.f, 0.0001f);
+  ASSERT_NEAR (port->control_, 120.f, 0.0001f);
 
-  REQUIRE_NONNULL (track->channel_->inserts_[0]);
-  REQUIRE_NONNULL (track->channel_->inserts_[1]);
+  ASSERT_NONNULL (track->channel_->inserts_[0]);
+  ASSERT_NONNULL (track->channel_->inserts_[1]);
 
   test_project_save_and_reload ();
   track = get_track_and_validate ();
@@ -726,7 +726,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move two plugins one slot up")
   UNDO_MANAGER->redo ();
 #  endif // HAVE_MIDI_CC_MAP
 
-  REQUIRE (track->validate ());
+  ASSERT_TRUE (track->validate ());
 
   /* let the engine run */
   std::this_thread::sleep_for (std::chrono::seconds (1));
@@ -774,8 +774,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "create modulator")
       cv_out = p;
     }
   auto ctrl_in = p2->get_port_by_symbol<ControlPort> ("freq");
-  REQUIRE_NONNULL (cv_out);
-  REQUIRE_NONNULL (ctrl_in);
+  ASSERT_NONNULL (cv_out);
+  ASSERT_NONNULL (ctrl_in);
   PortIdentifier cv_out_id = cv_out->id_;
   PortIdentifier ctrl_in_id = ctrl_in->id_;
 
@@ -796,7 +796,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "create modulator")
   /* verify port connection is back */
   cv_out = Port::find_from_identifier<CVPort> (cv_out_id);
   ctrl_in = Port::find_from_identifier<ControlPort> (ctrl_in_id);
-  REQUIRE (cv_out->is_connected_to (*ctrl_in));
+  ASSERT_TRUE (cv_out->is_connected_to (*ctrl_in));
 
   UNDO_MANAGER->redo ();
 
@@ -818,8 +818,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move plugin after duplicating track")
     TRACKLIST->get_track<InstrumentTrack> (TRACKLIST->get_last_pos ());
   auto lsp_track =
     TRACKLIST->get_track<AudioBusTrack> (TRACKLIST->get_last_pos () - 1);
-  REQUIRE_NONNULL (ins_track);
-  REQUIRE_NONNULL (lsp_track);
+  ASSERT_NONNULL (ins_track);
+  ASSERT_NONNULL (lsp_track);
   auto lsp = lsp_track->channel_->inserts_[0].get ();
 
   AudioPort * sidechain_port = nullptr;
@@ -834,7 +834,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move plugin after duplicating track")
           break;
         }
     }
-  REQUIRE_NONNULL (sidechain_port);
+  ASSERT_NONNULL (sidechain_port);
 
   /* create sidechain connection from instrument track to lsp plugin in lsp
    * track */
@@ -880,18 +880,18 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move plugin from inserts to midi fx")
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
     *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
     PluginSlotType::MidiFx, track, 0));
-  REQUIRE_NONNULL (track->channel_->midi_fx_[0]);
-  REQUIRE (track->validate ());
+  ASSERT_NONNULL (track->channel_->midi_fx_[0]);
+  ASSERT_TRUE (track->validate ());
   UNDO_MANAGER->undo ();
-  REQUIRE (track->validate ());
+  ASSERT_TRUE (track->validate ());
   UNDO_MANAGER->redo ();
-  REQUIRE (track->validate ());
-  REQUIRE_NONNULL (track->channel_->midi_fx_[0]);
+  ASSERT_TRUE (track->validate ());
+  ASSERT_NONNULL (track->channel_->midi_fx_[0]);
 
   /* save and reload the project */
   test_project_save_and_reload ();
   track = TRACKLIST->get_track<MidiTrack> (track_pos);
-  REQUIRE (track->validate ());
+  ASSERT_TRUE (track->validate ());
 #endif
 }
 
@@ -917,8 +917,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "undo deletion of multiple inserts")
 
   auto compressor = ins_track->channel_->inserts_[0].get ();
   auto no_delay_line = ins_track->channel_->inserts_[1].get ();
-  REQUIRE_NONNULL (compressor);
-  REQUIRE_NONNULL (no_delay_line);
+  ASSERT_NONNULL (compressor);
+  ASSERT_NONNULL (no_delay_line);
   compressor->select (true, true);
   no_delay_line->select (true, false);
 
@@ -965,7 +965,7 @@ _test_replace_instrument (
     Track::Type::Instrument, &setting, TRACKLIST->get_num_tracks ());
   int  src_track_pos = TRACKLIST->get_last_pos ();
   auto src_track = TRACKLIST->get_track<SrcTrackType> (src_track_pos);
-  REQUIRE (src_track->validate ());
+  ASSERT_TRUE (src_track->validate ());
 
   /* let the engine run */
   std::this_thread::sleep_for (std::chrono::seconds (1));
@@ -973,7 +973,7 @@ _test_replace_instrument (
   test_project_save_and_reload ();
 
   src_track = TRACKLIST->get_track<SrcTrackType> (src_track_pos);
-  REQUIRE_NONNULL (src_track->channel_->instrument_);
+  ASSERT_NONNULL (src_track->channel_->instrument_);
 
   /* create a port connection */
 #  if 0
@@ -1006,16 +1006,16 @@ _test_replace_instrument (
           break;
         }
     }
-  REQUIRE_NONNULL (sidechain_port);
+  ASSERT_NONNULL (sidechain_port);
 
   PortIdentifier helm_l_out_port_id = PortIdentifier ();
   helm_l_out_port_id = src_track->channel_->instrument_->l_out_->id_;
   UNDO_MANAGER->perform (std::make_unique<PortConnectionConnectAction> (
     src_track->channel_->instrument_->l_out_->id_, sidechain_port->id_));
-  REQUIRE_SIZE_EQ (sidechain_port->srcs_, 1);
+  ASSERT_SIZE_EQ (sidechain_port->srcs_, 1);
   auto connection_action = dynamic_cast<PortConnectionAction *> (
     UNDO_MANAGER->undo_stack_->actions_.back ().get ());
-  REQUIRE_EQ (
+  ASSERT_EQ (
     helm_l_out_port_id.sym_, connection_action->connection_->src_id_.sym_);
 
   /*test_project_save_and_reload ();*/
@@ -1024,7 +1024,7 @@ _test_replace_instrument (
   /* get an automation track */
   auto atl = &src_track->get_automation_tracklist ();
   auto at = atl->ats_.back ().get ();
-  REQUIRE_EQ (at->port_id_.owner_type_, PortIdentifier::OwnerType::Plugin);
+  ASSERT_EQ (at->port_id_.owner_type_, PortIdentifier::OwnerType::Plugin);
   at->created_ = true;
   atl->set_at_visible (*at, true);
 
@@ -1039,7 +1039,7 @@ _test_replace_instrument (
   region->select (true, false, false);
   UNDO_MANAGER->perform (
     std::make_unique<CreateArrangerSelectionsAction> (*TL_SELECTIONS));
-  REQUIRE_EQ (atl->get_num_regions (), 1);
+  ASSERT_EQ (atl->get_num_regions (), 1);
 
   /* create some automation points */
   auto port = Port::find_from_identifier<ControlPort> (at->port_id_);
@@ -1050,51 +1050,51 @@ _test_replace_instrument (
   ap->select (true, false, false);
   UNDO_MANAGER->perform (
     std::make_unique<CreateArrangerSelectionsAction> (*AUTOMATION_SELECTIONS));
-  REQUIRE_EQ (atl->get_num_regions (), 1);
+  ASSERT_EQ (atl->get_num_regions (), 1);
 
   const int num_ats = atl->ats_.size ();
 
   /* replace the instrument with a new instance */
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
     PluginSlotType::Instrument, *src_track, -1, setting, 1));
-  REQUIRE (src_track->validate ());
+  ASSERT_TRUE (src_track->validate ());
 
   src_track = TRACKLIST->get_track<SrcTrackType> (src_track_pos);
   atl = &src_track->get_automation_tracklist ();
 
   /* verify automation is gone */
-  REQUIRE_EQ (atl->get_num_regions (), 0);
+  ASSERT_EQ (atl->get_num_regions (), 0);
 
   UNDO_MANAGER->undo ();
 
   /* verify automation is back */
   atl = &src_track->get_automation_tracklist ();
   z_return_if_fail (atl);
-  REQUIRE_EQ (atl->get_num_regions (), 1);
+  ASSERT_EQ (atl->get_num_regions (), 1);
 
   UNDO_MANAGER->redo ();
 
   /* verify automation is gone */
-  REQUIRE_EQ (atl->get_num_regions (), 0);
+  ASSERT_EQ (atl->get_num_regions (), 0);
 
-  REQUIRE_EQ (num_ats, atl->ats_.size ());
-  REQUIRE_EMPTY (sidechain_port->srcs_);
-  REQUIRE_EQ (
+  ASSERT_EQ (num_ats, atl->ats_.size ());
+  ASSERT_EMPTY (sidechain_port->srcs_);
+  ASSERT_EQ (
     helm_l_out_port_id.sym_, connection_action->connection_->src_id_.sym_);
 
   /* test undo and redo */
-  REQUIRE_NONNULL (src_track->channel_->instrument_);
+  ASSERT_NONNULL (src_track->channel_->instrument_);
   UNDO_MANAGER->undo ();
-  REQUIRE_NONNULL (src_track->channel_->instrument_);
+  ASSERT_NONNULL (src_track->channel_->instrument_);
 
   /* verify automation is back */
   src_track = TRACKLIST->get_track<SrcTrackType> (src_track_pos);
   atl = &src_track->get_automation_tracklist ();
   z_return_if_fail (atl);
-  REQUIRE_EQ (atl->get_num_regions (), 1);
+  ASSERT_EQ (atl->get_num_regions (), 1);
 
   UNDO_MANAGER->redo ();
-  REQUIRE_NONNULL (src_track->channel_->instrument_);
+  ASSERT_NONNULL (src_track->channel_->instrument_);
 
   /* let the engine run */
   std::this_thread::sleep_for (std::chrono::seconds (1));
@@ -1106,14 +1106,14 @@ _test_replace_instrument (
   src_track = TRACKLIST->get_track<SrcTrackType> (src_track_pos);
   atl = &src_track->get_automation_tracklist ();
   z_return_if_fail (atl);
-  REQUIRE_EQ (atl->get_num_regions (), 0);
+  ASSERT_EQ (atl->get_num_regions (), 0);
 
   UNDO_MANAGER->undo ();
 
   /* verify automation is back */
   atl = &src_track->get_automation_tracklist ();
   z_return_if_fail (atl);
-  REQUIRE_EQ (atl->get_num_regions (), 1);
+  ASSERT_EQ (atl->get_num_regions (), 1);
 
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->redo ();
@@ -1122,15 +1122,15 @@ _test_replace_instrument (
   /* duplicate the track */
   src_track = TRACKLIST->get_track<SrcTrackType> (src_track_pos);
   src_track->select (true, true, false);
-  REQUIRE (src_track->validate ());
+  ASSERT_TRUE (src_track->validate ());
   UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
     TRACKLIST->get_num_tracks ()));
 
   Track * dest_track = TRACKLIST->get_last_track ();
 
-  REQUIRE (src_track->validate ());
-  REQUIRE (dest_track->validate ());
+  ASSERT_TRUE (src_track->validate ());
+  ASSERT_TRUE (dest_track->validate ());
 
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->undo ();
@@ -1191,7 +1191,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "save modulators")
   bool ret = mixer_selections_action_perform_create (
     PluginSlotType::Modulator, P_MODULATOR_TRACK->get_name_hash (),
     P_MODULATOR_TRACK->num_modulators, setting, 1, nullptr);
-  REQUIRE (ret);
+  ASSERT_TRUE (ret);
   plugin_setting_free (setting);
 
   test_project_save_and_reload ();

@@ -7,11 +7,10 @@
 #include "gui/backend/piano_roll.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/rt_thread_id.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
-
-#include "doctest_wrapper.h"
 
 static const char * drum_labels[47] = {
   "Acoustic Bass Drum",

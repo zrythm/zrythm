@@ -13,12 +13,12 @@
 #include <cstdlib>
 
 #include "settings/g_settings_manager.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/terminal.h"
 #include "zrythm.h"
 
 #include <glib/gi18n.h>
 
-#include "doctest_wrapper.h"
 #include "gtk_wrapper.h"
 
 #define G_SETTINGS_ENABLE_BACKEND

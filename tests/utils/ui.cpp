@@ -5,16 +5,15 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
+#include "utils/gtest_wrapper.h"
 #include "utils/ui.h"
-
-#include "doctest_wrapper.h"
 
 TEST_SUITE_BEGIN ("utils/ui");
 
 TEST_CASE ("overlay action strings")
 {
   /* verify that actions were not added/removed without matching strings */
-  REQUIRE_EQ (
+  ASSERT_EQ (
     UiOverlayAction_to_string (UiOverlayAction::NUM_UI_OVERLAY_ACTIONS),
     "--INVALID--");
 }

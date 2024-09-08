@@ -30,13 +30,12 @@
 #include "project.h"
 #include "settings/g_settings_manager.h"
 #include "utils/debug.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/logger.h"
 #include "utils/rt_thread_id.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "doctest_wrapper.h"
 
 template <typename T>
 T *

@@ -11,7 +11,6 @@
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
-#include "utils/arrays.h"
 #include "utils/dialogs.h"
 #include "utils/flags.h"
 #include "utils/logger.h"

@@ -15,12 +15,12 @@
 
 #include <glib/gi18n.h>
 
-const ChordType *
+std::array<ChordType, 12>
 MusicalScale::get_triad_types_for_type (Type type, bool ascending)
 {
 #define SET_TRIADS(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12) \
   { \
-    static const ChordType chord_types[] = { \
+    const std::array<ChordType, 12> chord_types = { \
       n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12 \
     }; \
     return chord_types; \

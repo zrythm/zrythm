@@ -19,12 +19,11 @@
 #include "gui/widgets/arranger.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/math.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "doctest_wrapper.h"
 
 ArrangerSelectionsAction::ArrangerSelectionsAction ()
     : UndoableAction (UndoableAction::Type::ArrangerSelections)

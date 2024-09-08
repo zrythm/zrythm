@@ -24,7 +24,7 @@ perform_create_region_action ()
   p2.set_to_bar (2);
   int  track_pos = TRACKLIST->get_num_tracks () - 1;
   auto track = TRACKLIST->get_track<AutomatableTrack> (track_pos);
-  REQUIRE_NONNULL (track);
+  ASSERT_NONNULL (track);
   auto r =
     std::make_shared<AutomationRegion> (p1, p2, track->get_name_hash (), 0, 0);
   const auto &atl = track->get_automation_tracklist ();
@@ -100,27 +100,27 @@ TEST_CASE_FIXTURE (ZrythmFixture, "multi actions")
         }
     }
 
-  REQUIRE_SIZE_EQ (TRACKLIST->tracks_, num_tracks_at_start + max_actions);
-  REQUIRE_SIZE_EQ (*UNDO_MANAGER->undo_stack_, max_actions);
-  REQUIRE_EMPTY (*UNDO_MANAGER->redo_stack_);
+  ASSERT_SIZE_EQ (TRACKLIST->tracks_, num_tracks_at_start + max_actions);
+  ASSERT_SIZE_EQ (*UNDO_MANAGER->undo_stack_, max_actions);
+  ASSERT_EMPTY (*UNDO_MANAGER->redo_stack_);
 
   UNDO_MANAGER->undo ();
 
-  REQUIRE_SIZE_EQ (TRACKLIST->tracks_, num_tracks_at_start);
-  REQUIRE_EMPTY (*UNDO_MANAGER->undo_stack_);
-  REQUIRE_SIZE_EQ (*UNDO_MANAGER->redo_stack_, max_actions);
+  ASSERT_SIZE_EQ (TRACKLIST->tracks_, num_tracks_at_start);
+  ASSERT_EMPTY (*UNDO_MANAGER->undo_stack_);
+  ASSERT_SIZE_EQ (*UNDO_MANAGER->redo_stack_, max_actions);
 
   UNDO_MANAGER->redo ();
 
-  REQUIRE_SIZE_EQ (TRACKLIST->tracks_, num_tracks_at_start + max_actions);
-  REQUIRE_SIZE_EQ (*UNDO_MANAGER->undo_stack_, max_actions);
-  REQUIRE_EMPTY (*UNDO_MANAGER->redo_stack_);
+  ASSERT_SIZE_EQ (TRACKLIST->tracks_, num_tracks_at_start + max_actions);
+  ASSERT_SIZE_EQ (*UNDO_MANAGER->undo_stack_, max_actions);
+  ASSERT_EMPTY (*UNDO_MANAGER->redo_stack_);
 
   UNDO_MANAGER->undo ();
 
-  REQUIRE_SIZE_EQ (TRACKLIST->tracks_, num_tracks_at_start);
-  REQUIRE_EMPTY (*UNDO_MANAGER->undo_stack_);
-  REQUIRE_SIZE_EQ (*UNDO_MANAGER->redo_stack_, max_actions);
+  ASSERT_SIZE_EQ (TRACKLIST->tracks_, num_tracks_at_start);
+  ASSERT_EMPTY (*UNDO_MANAGER->undo_stack_);
+  ASSERT_SIZE_EQ (*UNDO_MANAGER->redo_stack_, max_actions);
 }
 
 TEST_CASE_FIXTURE (ZrythmFixture, "fill stack")

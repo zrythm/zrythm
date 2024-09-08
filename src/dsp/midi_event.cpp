@@ -33,12 +33,12 @@
 #include "dsp/processable_track.h"
 #include "dsp/tracklist.h"
 #include "project.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/midi.h"
 #include "utils/rt_thread_id.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
-#include "doctest_wrapper.h"
 #include <fmt/format.h>
 
 /**

@@ -6,17 +6,16 @@
 #define DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
 
 #include "project.h"
+#include "utils/gtest_wrapper.h"
 #include "zrythm.h"
 
 #include "tests/helpers/exporter.h"
 
-#include "doctest_wrapper.h"
-
 std::string
 test_exporter_export_audio (Exporter::TimeRange time_range, Exporter::Mode mode)
 {
-  REQUIRE_FALSE (TRANSPORT->is_rolling ());
-  REQUIRE_EQ (TRANSPORT->playhead_pos_.frames_, 0);
+  EXPECT_FALSE (TRANSPORT->is_rolling ());
+  EXPECT_EQ (TRANSPORT->playhead_pos_.frames_, 0);
 
   constexpr auto filename = "test_export.wav";
 
@@ -49,7 +48,7 @@ test_exporter_export_audio (Exporter::TimeRange time_range, Exporter::Mode mode)
   exporter.join_generic_thread ();
   exporter.post_export ();
 
-  REQUIRE_FALSE (AUDIO_ENGINE->exporting_);
+  EXPECT_FALSE (AUDIO_ENGINE->exporting_);
 
   return settings.file_uri_;
 }

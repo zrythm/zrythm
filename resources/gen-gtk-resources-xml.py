@@ -21,7 +21,7 @@ def main(args: List[str]):
 
     _, resources_dir, resources_build_dir, appdata_file, output_file = args
 
-    with open(output_file, 'w') as f:
+    with open(output_file, 'w', encoding='utf-8') as f:
         f.write('''<!--
   SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
   SPDX-License-Identifier: LicenseRef-ZrythmLicense

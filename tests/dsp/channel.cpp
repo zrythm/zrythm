@@ -23,25 +23,25 @@ TEST_CASE_FIXTURE (ZrythmFixture, "midi fx routing")
     TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true);
   auto track = Track::create_for_plugin_at_idx_w_action<InstrumentTrack> (
     &setting, TRACKLIST->get_num_tracks ());
-  REQUIRE_NONNULL (track);
+  ASSERT_NONNULL (track);
 
   int num_dests = PORT_CONNECTIONS_MGR->get_sources_or_dests (
     nullptr, track->processor_->midi_out_->id_, false);
-  REQUIRE_EQ (num_dests, 1);
+  ASSERT_EQ (num_dests, 1);
 
   /* add MIDI file */
   auto midi_files = io_get_files_in_dir_ending_in (
     MIDILIB_TEST_MIDI_FILES_PATH, F_RECURSIVE, ".MID");
-  REQUIRE_GT (midi_files.size (), 0);
+  ASSERT_GT (midi_files.size (), 0);
   FileDescriptor file (midi_files[0]);
-  REQUIRE_NOTHROW (TRACKLIST->import_files (
+  ASSERT_NO_THROW (TRACKLIST->import_files (
     nullptr, &file, track, track->lanes_[0].get (), -1, &PLAYHEAD, nullptr));
 
   auto export_loop_and_check_for_silence = [&] (bool expect_silence) {
     auto audio_file = test_exporter_export_audio (
       Exporter::TimeRange::Loop, Exporter::Mode::Full);
-    REQUIRE_NONEMPTY (audio_file);
-    REQUIRE_EQ (expect_silence, audio_file_is_silent (audio_file.c_str ()));
+    ASSERT_NONEMPTY (audio_file);
+    ASSERT_EQ (expect_silence, audio_file_is_silent (audio_file.c_str ()));
     io_remove (audio_file);
   };
 
@@ -56,7 +56,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "midi fx routing")
 
   num_dests = PORT_CONNECTIONS_MGR->get_sources_or_dests (
     nullptr, track->processor_->midi_out_->id_, false);
-  REQUIRE_EQ (num_dests, 1);
+  ASSERT_EQ (num_dests, 1);
 
   /* export loop and check that there is no audio */
   export_loop_and_check_for_silence (true);
@@ -64,7 +64,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "midi fx routing")
   /* bypass MIDI FX and check that there is audio */
   auto &midieat = track->channel_->midi_fx_.at (0);
   midieat->set_enabled (false, false);
-  REQUIRE_FALSE (midieat->is_enabled (false));
+  ASSERT_FALSE (midieat->is_enabled (false));
 
   /* export loop and check that there is audio again */
   export_loop_and_check_for_silence (false);

@@ -25,17 +25,17 @@ TEST_CASE ("double size if full")
   size_t orig_sz = size;
   array_double_size_if_full (arr, num_objs, size, int);
 
-  REQUIRE_EQ (size, orig_sz * 2);
+  ASSERT_EQ (size, orig_sz * 2);
 
   array_append (arr, num_objs, 18);
 
-  REQUIRE_EQ (num_objs, 4);
-  REQUIRE_EQ (arr[0], 15);
-  REQUIRE_EQ (arr[1], 16);
-  REQUIRE_EQ (arr[2], 17);
-  REQUIRE_EQ (arr[3], 18);
-  REQUIRE_EQ (arr[4], 0);
-  REQUIRE_EQ (arr[5], 0);
+  ASSERT_EQ (num_objs, 4);
+  ASSERT_EQ (arr[0], 15);
+  ASSERT_EQ (arr[1], 16);
+  ASSERT_EQ (arr[2], 17);
+  ASSERT_EQ (arr[3], 18);
+  ASSERT_EQ (arr[4], 0);
+  ASSERT_EQ (arr[5], 0);
 }
 
 TEST_SUITE_END;

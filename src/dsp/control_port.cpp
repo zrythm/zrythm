@@ -16,12 +16,11 @@
 #include "plugins/plugin.h"
 #include "project.h"
 #include "utils/flags.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/math.h"
 #include "utils/rt_thread_id.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
-
-#include "doctest_wrapper.h"
 
 ControlPort::ControlPort (std::string label)
     : Port (label, PortType::Control, PortFlow::Input, 0.f, 1.f, 0.f)

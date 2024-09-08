@@ -43,7 +43,7 @@ TEST_CASE_FIXTURE (
 
   for (nframes_t i = 0; i < AUDIO_ENGINE->block_length_; i++)
     {
-      REQUIRE_FLOAT_NEAR (
+      ASSERT_NEAR (
         P_MASTER_TRACK->processor_->stereo_out_->get_l ().buf_[i],
         (float) (i + 1), 0.000001f);
     }

@@ -32,10 +32,10 @@ TEST_CASE_FIXTURE (ZrythmFixture, "change BPM and time signature")
 
   /* loop the region */
   const auto &r = audio_track->lanes_[0]->regions_[0];
-  REQUIRE_NOTHROW (
+  ASSERT_NO_THROW (
     r->resize (false, ArrangerObject::ResizeType::Loop, 40000, false));
 
-  REQUIRE_EQ (P_TEMPO_TRACK->get_beat_unit (), 4);
+  ASSERT_EQ (P_TEMPO_TRACK->get_beat_unit (), 4);
 
   /* change time sig to 4/16 */
   {
@@ -47,33 +47,33 @@ TEST_CASE_FIXTURE (ZrythmFixture, "change BPM and time signature")
 
   AUDIO_ENGINE->wait_n_cycles (3);
 
-  REQUIRE_EQ (P_TEMPO_TRACK->get_beat_unit (), 16);
+  ASSERT_EQ (P_TEMPO_TRACK->get_beat_unit (), 16);
 
   /* perform the change */
   UNDO_MANAGER->perform (std::make_unique<TransportAction> (
     TransportAction::Type::BeatUnitChange, 4, 16, true));
-  REQUIRE_EQ (P_TEMPO_TRACK->get_beat_unit (), 16);
+  ASSERT_EQ (P_TEMPO_TRACK->get_beat_unit (), 16);
   AUDIO_ENGINE->wait_n_cycles (3);
-  REQUIRE_EQ (P_TEMPO_TRACK->get_beat_unit (), 16);
+  ASSERT_EQ (P_TEMPO_TRACK->get_beat_unit (), 16);
 
   test_project_save_and_reload ();
 
   /* undo */
   UNDO_MANAGER->undo ();
-  REQUIRE_EQ (P_TEMPO_TRACK->get_beat_unit (), 4);
+  ASSERT_EQ (P_TEMPO_TRACK->get_beat_unit (), 4);
   AUDIO_ENGINE->wait_n_cycles (3);
-  REQUIRE_EQ (P_TEMPO_TRACK->get_beat_unit (), 4);
+  ASSERT_EQ (P_TEMPO_TRACK->get_beat_unit (), 4);
 
   /* redo */
   UNDO_MANAGER->redo ();
-  REQUIRE_EQ (P_TEMPO_TRACK->get_beat_unit (), 16);
+  ASSERT_EQ (P_TEMPO_TRACK->get_beat_unit (), 16);
   AUDIO_ENGINE->wait_n_cycles (3);
-  REQUIRE_EQ (P_TEMPO_TRACK->get_beat_unit (), 16);
+  ASSERT_EQ (P_TEMPO_TRACK->get_beat_unit (), 16);
 
   /* print region */
   audio_track = TRACKLIST->get_track<AudioTrack> (audio_track_pos);
-  REQUIRE_NONNULL (audio_track);
-  REQUIRE_NONNULL (audio_track->lanes_[0]->regions_[0]);
+  ASSERT_NONNULL (audio_track);
+  ASSERT_NONNULL (audio_track->lanes_[0]->regions_[0]);
 
   /* change BPM to 145 */
   bpm_t bpm_before = P_TEMPO_TRACK->get_current_bpm ();
@@ -85,23 +85,23 @@ TEST_CASE_FIXTURE (ZrythmFixture, "change BPM and time signature")
   }
 
   AUDIO_ENGINE->wait_n_cycles (3);
-  REQUIRE_FLOAT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 145.f, 0.001f);
+  ASSERT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 145.f, 0.001f);
 
   /* print region */
   audio_track = TRACKLIST->get_track<AudioTrack> (audio_track_pos);
-  REQUIRE_NONNULL (audio_track);
-  REQUIRE_NONNULL (audio_track->lanes_[0]->regions_[0]);
+  ASSERT_NONNULL (audio_track);
+  ASSERT_NONNULL (audio_track->lanes_[0]->regions_[0]);
 
   /* perform the change to 150 */
   UNDO_MANAGER->perform (
     std::make_unique<TransportAction> (bpm_before, 150.f, false));
-  REQUIRE_FLOAT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 150.f, 0.001f);
+  ASSERT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 150.f, 0.001f);
   AUDIO_ENGINE->wait_n_cycles (3);
-  REQUIRE_FLOAT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 150.f, 0.001f);
+  ASSERT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 150.f, 0.001f);
 
   audio_track = TRACKLIST->get_track<AudioTrack> (audio_track_pos);
-  REQUIRE_NONNULL (audio_track);
-  REQUIRE_NONNULL (audio_track->lanes_[0]->regions_[0]);
+  ASSERT_NONNULL (audio_track);
+  ASSERT_NONNULL (audio_track->lanes_[0]->regions_[0]);
 
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->redo ();
@@ -116,24 +116,24 @@ TEST_CASE_FIXTURE (ZrythmFixture, "change BPM and time signature")
   }
 
   AUDIO_ENGINE->wait_n_cycles (3);
-  REQUIRE_FLOAT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 130.f, 0.001f);
+  ASSERT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 130.f, 0.001f);
 
   /* validate */
-  REQUIRE (audio_track->lanes_[0]->regions_[0]->validate (true, 0));
+  ASSERT_TRUE (audio_track->lanes_[0]->regions_[0]->validate (true, 0));
 
   /* perform the change to 130 */
   UNDO_MANAGER->perform (
     std::make_unique<TransportAction> (bpm_before, 130.f, false));
-  REQUIRE_FLOAT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 130.f, 0.001f);
+  ASSERT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 130.f, 0.001f);
   AUDIO_ENGINE->wait_n_cycles (3);
-  REQUIRE_FLOAT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 130.f, 0.001f);
+  ASSERT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 130.f, 0.001f);
 
   audio_track = TRACKLIST->get_track<AudioTrack> (audio_track_pos);
-  REQUIRE_NONNULL (audio_track);
-  REQUIRE_NONNULL (audio_track->lanes_[0]->regions_[0]);
+  ASSERT_NONNULL (audio_track);
+  ASSERT_NONNULL (audio_track->lanes_[0]->regions_[0]);
 
   /* validate */
-  REQUIRE (audio_track->lanes_[0]->regions_[0]->validate (true, 0));
+  ASSERT_TRUE (audio_track->lanes_[0]->regions_[0]->validate (true, 0));
 }
 
 TEST_CASE_FIXTURE (ZrythmFixture, "change BPM twice during playback")
@@ -155,9 +155,9 @@ TEST_CASE_FIXTURE (ZrythmFixture, "change BPM twice during playback")
 
   /* loop the region */
   const auto &r = audio_track->lanes_.front ()->regions_.front ();
-  REQUIRE_NOTHROW (
+  ASSERT_NO_THROW (
     r->resize (false, ArrangerObject::ResizeType::Loop, 40000, false));
-  REQUIRE (r->validate (true, 0));
+  ASSERT_TRUE (r->validate (true, 0));
 
   /* start playback */
   TRANSPORT->request_roll (true);
@@ -168,9 +168,9 @@ TEST_CASE_FIXTURE (ZrythmFixture, "change BPM twice during playback")
   /* change BPM to 40 */
   UNDO_MANAGER->perform (
     std::make_unique<TransportAction> (bpm_before, 40.f, false));
-  REQUIRE_FLOAT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 40.f, 0.001f);
+  ASSERT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 40.f, 0.001f);
   AUDIO_ENGINE->wait_n_cycles (3);
-  REQUIRE_FLOAT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 40.f, 0.001f);
+  ASSERT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 40.f, 0.001f);
 
   TRANSPORT->request_roll (true);
   AUDIO_ENGINE->wait_n_cycles (3);
@@ -179,15 +179,16 @@ TEST_CASE_FIXTURE (ZrythmFixture, "change BPM twice during playback")
   UNDO_MANAGER->perform (
     std::make_unique<TransportAction> (bpm_before, 140.f, false));
 
-  REQUIRE_FLOAT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 140.f, 0.001f);
+  ASSERT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 140.f, 0.001f);
   AUDIO_ENGINE->wait_n_cycles (3);
-  REQUIRE_FLOAT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 140.f, 0.001f);
+  ASSERT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 140.f, 0.001f);
 
   TRANSPORT->request_roll (true);
   AUDIO_ENGINE->wait_n_cycles (3);
 
   /* validate */
-  REQUIRE (audio_track->lanes_.front ()->regions_.front ()->validate (true, 0));
+  ASSERT_TRUE (
+    audio_track->lanes_.front ()->regions_.front ()->validate (true, 0));
 }
 
 TEST_SUITE_END;

@@ -25,6 +25,7 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 #  define DestroyNotify DestroyNotifyForX11
 #  define Color ColorForX11
 #  define Time TimeForX11
+#  define Bool BoolForX11
 #  include <gdk/x11/gdkx.h>
 #  undef Region
 #  undef None
@@ -32,6 +33,7 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 #  undef DestroyNotify
 #  undef Color
 #  undef Time
+#  undef Bool
 #endif
 
 #ifdef _WIN32

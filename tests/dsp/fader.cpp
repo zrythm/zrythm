@@ -57,7 +57,7 @@ test_fader_process_with_instrument (
           break;
         }
     }
-  REQUIRE (has_signal);
+  ASSERT_TRUE (has_signal);
 }
 
 TEST_CASE_FIXTURE (ZrythmFixture, "fader process")
@@ -93,7 +93,7 @@ test_track_has_sound (ChannelTrack * track, bool expect_sound)
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
 
-  REQUIRE (track_has_sound (track) == expect_sound);
+  ASSERT_TRUE (track_has_sound (track) == expect_sound);
 
   TRANSPORT->request_pause (true);
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
@@ -161,20 +161,20 @@ TEST_CASE_FIXTURE (ZrythmFixture, "solo")
   audio_track->select (true, true, false);
   UNDO_MANAGER->perform (std::make_unique<SoloTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), true));
-  REQUIRE (audio_track->get_soloed ());
-  REQUIRE_FALSE (audio_track2->get_soloed ());
+  ASSERT_TRUE (audio_track->get_soloed ());
+  ASSERT_FALSE (audio_track2->get_soloed ());
   audio_track->select (true, true, false);
   audio_track2->select (true, false, false);
   UNDO_MANAGER->perform (std::make_unique<SoloTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), true));
-  REQUIRE (audio_track->get_soloed ());
-  REQUIRE (audio_track2->get_soloed ());
+  ASSERT_TRUE (audio_track->get_soloed ());
+  ASSERT_TRUE (audio_track2->get_soloed ());
   UNDO_MANAGER->undo ();
-  REQUIRE (audio_track->get_soloed ());
-  REQUIRE_FALSE (audio_track2->get_soloed ());
+  ASSERT_TRUE (audio_track->get_soloed ());
+  ASSERT_FALSE (audio_track2->get_soloed ());
   UNDO_MANAGER->redo ();
-  REQUIRE (audio_track->get_soloed ());
-  REQUIRE (audio_track2->get_soloed ());
+  ASSERT_TRUE (audio_track->get_soloed ());
+  ASSERT_TRUE (audio_track2->get_soloed ());
 }
 
 TEST_SUITE_END;

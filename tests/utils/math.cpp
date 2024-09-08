@@ -4,9 +4,8 @@
 #include "zrythm-test-config.h"
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
+#include "utils/gtest_wrapper.h"
 #include "utils/math.h"
-
-#include "doctest_wrapper.h"
 
 TEST_SUITE_BEGIN ("utils/math");
 

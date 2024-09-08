@@ -502,38 +502,36 @@ test_cflags = []
 
 definitions = [
   '-DREALTIME=' + (is_clang ? '__attribute__((annotate("realtime")))' : ''),
-  '-DOPTIMIZE(x)=' + (is_gcc ? '__attribute__((optimize(#x)))' : ''),
-  '-DOPTIMIZE_O0=OPTIMIZE(O0)',
-  '-DOPTIMIZE_O1=OPTIMIZE(O1)',
-  '-DOPTIMIZE_O2=OPTIMIZE(O2)',
-  '-DOPTIMIZE_O3=OPTIMIZE(O3)',
-  '-DNOINLINE=__attribute__((noinline))',
   '-DNONNULL_ARGS(...)=' + (is_gcc ? '__attribute__((nonnull(__VA_ARGS__)))' : ''),
-  '-DACCESS(...)=' + (is_gcc ? '__attribute__((access(__VA_ARGS__)))' : ''),
-  '-DACCESS_READ_ONLY(...)=' + (is_gcc ? 'ACCESS(read_only,__VA_ARGS__)' : ''),
   '-DGETTEXT_PACKAGE="' + meson.project_name () + '"',
   ]
 if use_weak_jack
   definitions += ['-DUSE_WEAK_JACK=1',]
 endif
+
+if is_msvc
+  definitions += [
+    '-D_USE_MATH_DEFINES=1',
+    '-D_UNICODE',
+    '-DUNICODE',
+  ]
+endif
 test_cflags += definitions
 
 attribute_macros = [
-  'always_inline', 'cold', 'hot', 'pure', 'nonnull',
-  'returns_nonnull', 'stack_protect',
-  'no_stack_protector', 'warn_unused_result',
-  'const', 'malloc',
+  'cold', 'hot', 'nonnull',
+  'returns_nonnull', 'const',
   ]
 foreach a : attribute_macros
   # some of these don't work on windows
   test_cflags += '-D' + a.to_upper() + '=' + (os_windows ? ''  : ('__attribute__((' + a + '))'))
 endforeach
 
+# disable some warnings added by -Wextra
 extra_warnings = [
   '-Wformat=2',
   '-Wno-missing-field-initializers',
   '-Wno-unused-parameter',
-  '-Wno-sequence-point',
   '-Wno-cast-function-type',
   ]
 test_cflags += extra_warnings
@@ -631,14 +629,20 @@ if os_freebsd
   common_cflags += [
     '-I' + includedir,
     ]
-elif os_windows and (not is_msvc) # mingw
-  common_cflags += [
-    '-mms-bitfields',
-    '-mwindows',
-    #'-mstackrealign',
-    '-Wl,-Bdynamic',
-    '-Wl,-as-needed',
-    ]
+elif os_windows 
+  if is_msvc
+    common_cflags += [
+      '/utf-8',
+      ]
+  else # mingw
+    common_cflags += [
+      '-mms-bitfields',
+      '-mwindows',
+      #'-mstackrealign',
+      '-Wl,-Bdynamic',
+      '-Wl,-as-needed',
+      ]
+  endif
 endif
 
 # Stricter flags to be used where needed
@@ -893,22 +897,32 @@ sndfile_dep = dependency (
     ])
 soxr_dep = dependency('soxr', required: false)
 if not soxr_dep.found ()
-  # only enable openmp on GNU/Linux to avoid build issues
-  if os_gnu
-    cmake_opts.add_cmake_defines ({
-      'WITH_OPENMP': 'ON'
-      })
-    cmake_opts.append_compile_args(['c', 'cpp'], '-fopenmp')
-    cmake_opts.append_link_args('-fopenmp', language: ['c', 'cpp'])
+  if get_option('soxr_lib_dir') != ''
+    soxr_lib_dir = get_option('soxr_lib_dir')
+    soxr_include_dir = get_option('soxr_include_dir')
+      soxr_lib = cc.find_library(
+    'soxr', dirs: [soxr_lib_dir])
+    soxr_dep = declare_dependency(
+      include_directories: include_directories(soxr_include_dir),
+      dependencies: soxr_lib)
   else
-    cmake_opts.add_cmake_defines ({
-      'WITH_OPENMP': 'OFF'
-      })
+    # only enable openmp on GNU/Linux to avoid build issues
+    if os_gnu
+      cmake_opts.add_cmake_defines ({
+        'WITH_OPENMP': 'ON'
+        })
+      cmake_opts.append_compile_args(['c', 'cpp'], '-fopenmp')
+      cmake_opts.append_link_args('-fopenmp', language: ['c', 'cpp'])
+    else
+      cmake_opts.add_cmake_defines ({
+        'WITH_OPENMP': 'OFF'
+        })
+    endif
+    soxr_subproject = cmake.subproject (
+      'soxr', options: cmake_opts)
+    soxr_dep = soxr_subproject.dependency (
+      'soxr')
   endif
-  soxr_subproject = cmake.subproject (
-    'soxr', options: cmake_opts)
-  soxr_dep = soxr_subproject.dependency (
-    'soxr')
 endif
 
 # link to fontconfig/pangoft2 directly because
@@ -974,52 +988,70 @@ dbus_dep = dependency (
 if (dbus_dep.found ())
   cdata.set('HAVE_DBUS', 1)
 endif
-lv2_dep = dependency (
-  'lv2', version: '>=1.16.0',
-  fallback: ['lv2', 'lv2_dep'],
-  default_options: [
-    'tests=disabled',],
-  static: all_static)
-if lv2_dep.version().version_compare('>=1.18.0')
-  cdata.set('HAVE_LV2_1_18', 1)
+
+if get_option('lv2_include_dir') != ''
+  lv2_include_dir = get_option('lv2_include_dir')
+  lv2_dep = declare_dependency(
+    include_directories: include_directories(lv2_include_dir))
+else
+  lv2_dep = dependency (
+    'lv2', version: '>=1.16.0',
+    fallback: ['lv2', 'lv2_dep'],
+    default_options: [
+      'tests=disabled',],
+    static: all_static)
+  if lv2_dep.version().version_compare('>=1.18.0')
+    cdata.set('HAVE_LV2_1_18', 1)
+  endif
 endif
 
 # these are only used in tests
 # TODO get rid of them - find another way to apply a plugin effect to a WAV
-zix_dep = dependency (
-  'zix-0', version: '>=0.4.0',
-  fallback: ['zix', 'zix_dep'],
-  default_options: [
-    'tests=disabled',
-    ],
-)
-serd_dep = dependency (
-  'serd-0', version: '>=0.30.0',
-  fallback: ['serd', 'serd_dep'],
-  default_options: [
-    'tests=disabled',
-    ],
-  static: all_static)
-sord_dep = dependency (
-  'sord-0', version: '>=0.14.0',
-  fallback: ['sord', 'sord_dep'],
-  default_options: [
-    'tests=disabled',
-    ],
-  static: all_static)
-sratom_dep = dependency (
-  'sratom-0', version: '>=0.4.0',
-  fallback: ['sratom', 'sratom_dep'],
-  default_options: [
-    'tests=disabled', 'docs=disabled',
-    ],
-  static: all_static)
-lilv_dep = dependency (
-  'lilv-0', version: '>=0.24.6',
-  fallback: ['lilv', 'lilv_dep'],
-  default_options: [
-    'tests=disabled', 'docs=disabled', 'tools=disabled',
-    ])
+if get_option('lilv_lib_dir') != ''
+  lilv_lib_dir = get_option('lilv_lib_dir')
+  lilv_include_dir = get_option('lilv_include_dir')
+  lilv_lib = cc.find_library(
+    'lilv', dirs: [lilv_lib_dir])
+  lilv_dep = declare_dependency(
+    include_directories: include_directories(lilv_include_dir),
+    dependencies: lilv_lib
+  )
+else
+  zix_dep = dependency (
+    'zix-0', version: '>=0.4.0',
+    fallback: ['zix', 'zix_dep'],
+    default_options: [
+      'tests=disabled',
+      ],
+  )
+  serd_dep = dependency (
+    'serd-0', version: '>=0.30.0',
+    fallback: ['serd', 'serd_dep'],
+    default_options: [
+      'tests=disabled',
+      ],
+    static: all_static)
+  sord_dep = dependency (
+    'sord-0', version: '>=0.14.0',
+    fallback: ['sord', 'sord_dep'],
+    default_options: [
+      'tests=disabled',
+      ],
+    static: all_static)
+  sratom_dep = dependency (
+    'sratom-0', version: '>=0.4.0',
+    fallback: ['sratom', 'sratom_dep'],
+    default_options: [
+      'tests=disabled', 'docs=disabled',
+      ],
+    static: all_static)
+  lilv_dep = dependency (
+    'lilv-0', version: '>=0.24.6',
+    fallback: ['lilv', 'lilv_dep'],
+    default_options: [
+      'tests=disabled', 'docs=disabled', 'tools=disabled',
+      ])
+endif
 
 # fftw - this is a mess because every distro packages fftw3
 # in various different ways
@@ -1295,6 +1327,8 @@ giomm_dep = dependency('giomm-2.68')
 
 # TODO add Cantarell font as dependency
 
+gtest_dep = dependency ('gtest')
+
 zrythm_deps = [
   libadwaita_dep,
   libpanel_dep,
@@ -1330,9 +1364,9 @@ zrythm_deps = [
   backward_cpp_dep,
   fmt_dep,
   spdlog_dep,
-  doctest_dep,
   glibmm_dep,
   giomm_dep,
+  gtest_dep,
   # gtkmm_dep,
   # reflect_cpp_dep,
   # cpp_yyjson_dep,
@@ -1487,8 +1521,7 @@ ext_vst3_plugins = {
   }
 have_ext_vst3_plugins = {}
 ext_vst3_plugin_paths = {}
-# when using the lilv subproject, we can't use lv2ls and
-# lv2info
+# when using the lilv subproject, we can't use lv2ls and lv2info
 lv2info_bin = find_program ('lv2info', required: false)
 if get_option ('tests') and lilv_dep.type_name () != 'internal'
   lv2ls_bin = find_program ('lv2ls', required: false)

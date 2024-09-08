@@ -27,7 +27,7 @@ test_region_length_in_ticks (Track * track, int bar_start, int bar_end)
   r->select (true, false, false);
 
   double length = TL_SELECTIONS->get_length_in_ticks ();
-  REQUIRE_FLOAT_NEAR (
+  ASSERT_NEAR (
     length, TRANSPORT->ticks_per_bar_ * (bar_end - bar_start), 0.00001);
 }
 
@@ -59,8 +59,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "get last object")
 
   auto [last_obj, last_pos] =
     MIDI_SELECTIONS->get_last_object_and_pos (false, true);
-  REQUIRE_NONNULL (last_obj);
-  REQUIRE (last_obj == mn.get ());
+  ASSERT_NONNULL (last_obj);
+  ASSERT_TRUE (last_obj == mn.get ());
 }
 
 TEST_CASE_FIXTURE (ZrythmFixture, "contains object with property")
@@ -80,9 +80,9 @@ TEST_CASE_FIXTURE (ZrythmFixture, "contains object with property")
 
   mn->select (true, false, false);
 
-  REQUIRE (MIDI_SELECTIONS->contains_object_with_property (
+  ASSERT_TRUE (MIDI_SELECTIONS->contains_object_with_property (
     ArrangerSelections::Property::HasLength, true));
-  REQUIRE_FALSE (MIDI_SELECTIONS->contains_object_with_property (
+  ASSERT_FALSE (MIDI_SELECTIONS->contains_object_with_property (
     ArrangerSelections::Property::HasLength, false));
 }
 

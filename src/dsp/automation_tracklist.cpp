@@ -14,7 +14,6 @@
 #include "gui/backend/event_manager.h"
 #include "plugins/plugin.h"
 #include "project.h"
-#include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/mem.h"
 #include "utils/objects.h"

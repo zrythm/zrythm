@@ -10,10 +10,10 @@
 #include "io/audio_file.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
+#include "utils/gtest_wrapper.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
-#include "doctest_wrapper.h"
 #include "gtk_wrapper.h"
 
 Metronome::Metronome (AudioEngine &engine)

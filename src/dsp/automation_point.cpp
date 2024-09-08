@@ -25,6 +25,7 @@
 #include "plugins/plugin.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/rt_thread_id.h"
@@ -32,7 +33,6 @@
 
 #include <glib/gi18n.h>
 
-#include "doctest_wrapper.h"
 #include <fmt/printf.h>
 
 AutomationPoint::AutomationPoint (const Position &pos)

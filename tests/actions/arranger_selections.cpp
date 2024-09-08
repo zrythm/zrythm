@@ -20,14 +20,13 @@
 #include "project.h"
 #include "utils/dsp.h"
 #include "utils/flags.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/string.h"
 #include "zrythm.h"
 
 #include <glib.h>
 
 #include "tests/helpers/project_helper.h"
-
-#include "doctest_wrapper.h"
 
 TEST_SUITE_BEGIN ("actions/arranger_selections");
 
@@ -36,11 +35,11 @@ auto REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK =
     using T = base_type<decltype (obj)>;
     if constexpr (std::derived_from<T, RegionImpl<T>>)
       {
-        REQUIRE (obj->id_.track_name_hash_ == track.get_name_hash ());
+        ASSERT_TRUE (obj->id_.track_name_hash_ == track.get_name_hash ());
       }
     else if constexpr (std::derived_from<T, RegionOwnedObjectImpl<T>>)
       {
-        REQUIRE (obj->region_id_.track_name_hash_ == track.get_name_hash ());
+        ASSERT_TRUE (obj->region_id_.track_name_hash_ == track.get_name_hash ());
       }
     else
       {
@@ -82,21 +81,21 @@ public:
   void select_audio_and_midi_regions_only ()
   {
     TL_SELECTIONS->clear ();
-    REQUIRE_EMPTY (TL_SELECTIONS->objects_);
+    ASSERT_EMPTY (TL_SELECTIONS->objects_);
 
     auto midi_track = TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
-    REQUIRE_NONNULL (midi_track);
+    ASSERT_NONNULL (midi_track);
     TL_SELECTIONS->add_object_ref (
       midi_track->lanes_[MIDI_REGION_LANE]->regions_[0]);
-    REQUIRE_SIZE_EQ (TL_SELECTIONS->objects_, 1);
-    REQUIRE (TL_SELECTIONS->contains_only_regions ());
-    REQUIRE (TL_SELECTIONS->contains_only_region_types (RegionType::Midi));
+    ASSERT_SIZE_EQ (TL_SELECTIONS->objects_, 1);
+    ASSERT_TRUE (TL_SELECTIONS->contains_only_regions ());
+    ASSERT_TRUE (TL_SELECTIONS->contains_only_region_types (RegionType::Midi));
     auto audio_track =
       TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
-    REQUIRE_NONNULL (audio_track);
+    ASSERT_NONNULL (audio_track);
     TL_SELECTIONS->add_object_ref (
       audio_track->lanes_[AUDIO_REGION_LANE]->regions_[0]);
-    REQUIRE_SIZE_EQ (TL_SELECTIONS->objects_, 2);
+    ASSERT_SIZE_EQ (TL_SELECTIONS->objects_, 2);
   }
 
   /**
@@ -104,8 +103,8 @@ public:
    */
   void check_has_single_undo ()
   {
-    REQUIRE_SIZE_EQ (*UNDO_MANAGER->undo_stack_, 1);
-    REQUIRE_EMPTY (*UNDO_MANAGER->redo_stack_);
+    ASSERT_SIZE_EQ (*UNDO_MANAGER->undo_stack_, 1);
+    ASSERT_EMPTY (*UNDO_MANAGER->redo_stack_);
   }
 
   /**
@@ -113,8 +112,8 @@ public:
    */
   void check_has_single_redo ()
   {
-    REQUIRE_SIZE_EQ (*UNDO_MANAGER->redo_stack_, 1);
-    REQUIRE_EMPTY (*UNDO_MANAGER->undo_stack_);
+    ASSERT_SIZE_EQ (*UNDO_MANAGER->redo_stack_, 1);
+    ASSERT_EMPTY (*UNDO_MANAGER->undo_stack_);
   }
 
   /**
@@ -124,33 +123,33 @@ public:
    */
   void check_timeline_objects_deleted (bool creating)
   {
-    REQUIRE_EMPTY (TL_SELECTIONS->objects_);
+    ASSERT_EMPTY (TL_SELECTIONS->objects_);
 
     auto midi_track = TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
-    REQUIRE_NONNULL (midi_track);
+    ASSERT_NONNULL (midi_track);
     auto audio_track =
       TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
-    REQUIRE_NONNULL (audio_track);
+    ASSERT_NONNULL (audio_track);
 
     /* check midi region */
-    REQUIRE_SIZE_EQ (midi_track->lanes_, 1);
-    REQUIRE_EMPTY (midi_track->lanes_[0]->regions_);
+    ASSERT_SIZE_EQ (midi_track->lanes_, 1);
+    ASSERT_EMPTY (midi_track->lanes_[0]->regions_);
 
     /* check audio region */
-    REQUIRE_SIZE_EQ (audio_track->lanes_, 1);
-    REQUIRE_EMPTY (audio_track->lanes_[0]->regions_);
+    ASSERT_SIZE_EQ (audio_track->lanes_, 1);
+    ASSERT_EMPTY (audio_track->lanes_[0]->regions_);
 
     /* check automation region */
     auto at = P_MASTER_TRACK->channel_->get_automation_track (
       PortIdentifier::Flags::StereoBalance);
-    REQUIRE_NONNULL (at);
-    REQUIRE_EMPTY (at->regions_);
+    ASSERT_NONNULL (at);
+    ASSERT_EMPTY (at->regions_);
 
     /* check marker */
-    REQUIRE_SIZE_EQ (P_MARKER_TRACK->markers_, 2);
+    ASSERT_SIZE_EQ (P_MARKER_TRACK->markers_, 2);
 
     /* check scale object */
-    REQUIRE_EMPTY (P_CHORD_TRACK->scales_);
+    ASSERT_EMPTY (P_CHORD_TRACK->scales_);
 
     if (creating)
       {
@@ -171,12 +170,12 @@ public:
   void check_after_move_timeline (bool new_tracks)
   {
     /* check */
-    REQUIRE_EQ (
+    ASSERT_EQ (
       TL_SELECTIONS->get_num_objects (), new_tracks ? 2 : TOTAL_TL_SELECTIONS);
 
     /* check that undo/redo stacks have the correct counts (1 and 0) */
     check_has_single_undo ();
-    REQUIRE_EQ (
+    ASSERT_EQ (
       dynamic_cast<ArrangerSelectionsAction *> (
         UNDO_MANAGER->undo_stack_->peek ())
         ->delta_tracks_,
@@ -185,25 +184,25 @@ public:
     /* get tracks */
     auto midi_track_before =
       TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
-    REQUIRE_NONNULL (midi_track_before);
-    REQUIRE_GT (midi_track_before->pos_, 0);
+    ASSERT_NONNULL (midi_track_before);
+    ASSERT_GT (midi_track_before->pos_, 0);
     auto audio_track_before =
       TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
-    REQUIRE_NONNULL (audio_track_before);
-    REQUIRE_GT (audio_track_before->pos_, 0);
+    ASSERT_NONNULL (audio_track_before);
+    ASSERT_GT (audio_track_before->pos_, 0);
     auto midi_track_after =
       TRACKLIST->find_track_by_name<MidiTrack> (TARGET_MIDI_TRACK_NAME);
-    REQUIRE_NONNULL (midi_track_after);
-    REQUIRE_GT (midi_track_after->pos_, midi_track_before->pos_);
+    ASSERT_NONNULL (midi_track_after);
+    ASSERT_GT (midi_track_after->pos_, midi_track_before->pos_);
     auto audio_track_after =
       TRACKLIST->find_track_by_name<AudioTrack> (TARGET_AUDIO_TRACK_NAME);
-    REQUIRE_NONNULL (audio_track_after);
-    REQUIRE_GT (audio_track_after->pos_, audio_track_before->pos_);
+    ASSERT_NONNULL (audio_track_after);
+    ASSERT_GT (audio_track_after->pos_, audio_track_before->pos_);
 
     auto require_correct_track = [&] (auto &region, auto &expected) {
       const auto actual = region->get_track ();
-      REQUIRE_EQ (actual, expected);
-      REQUIRE_EQ (region->id_.track_name_hash_, expected->get_name_hash ());
+      ASSERT_EQ (actual, expected);
+      ASSERT_EQ (region->id_.track_name_hash_, expected->get_name_hash ());
     };
 
     auto p1_after_move = p1_;
@@ -218,20 +217,20 @@ public:
         return track->lanes_[MIDI_REGION_LANE]->regions_[0];
       }();
 
-      REQUIRE (mr->is_region ());
-      REQUIRE (mr->is_midi ());
+      ASSERT_TRUE (mr->is_region ());
+      ASSERT_TRUE (mr->is_midi ());
 
-      REQUIRE_POSITION_EQ (mr->pos_, p1_after_move);
-      REQUIRE_POSITION_EQ (mr->end_pos_, p2_after_move);
+      ASSERT_POSITION_EQ (mr->pos_, p1_after_move);
+      ASSERT_POSITION_EQ (mr->end_pos_, p2_after_move);
       require_correct_track (
         mr, new_tracks ? midi_track_after : midi_track_before);
-      REQUIRE_SIZE_EQ (mr->midi_notes_, 1);
+      ASSERT_SIZE_EQ (mr->midi_notes_, 1);
       const auto mn = mr->midi_notes_[0];
-      REQUIRE_EQ (mn->val_, MN_VAL);
-      REQUIRE_EQ (mn->vel_->vel_, MN_VEL);
-      REQUIRE_POSITION_EQ (mn->pos_, p1_);
-      REQUIRE_POSITION_EQ (mn->end_pos_, p2_);
-      REQUIRE_EQ (mn->region_id_, mr->id_);
+      ASSERT_EQ (mn->val_, MN_VAL);
+      ASSERT_EQ (mn->vel_->vel_, MN_VEL);
+      ASSERT_POSITION_EQ (mn->pos_, p1_);
+      ASSERT_POSITION_EQ (mn->end_pos_, p2_);
+      ASSERT_EQ (mn->region_id_, mr->id_);
     }
 
     {
@@ -239,10 +238,10 @@ public:
       const auto regions = TL_SELECTIONS->get_objects_of_type<Region> ();
       const auto r =
         dynamic_pointer_cast<AudioRegion> (regions.at (new_tracks ? 1 : 3));
-      REQUIRE_NONNULL (r);
-      REQUIRE (r->is_region ());
-      REQUIRE (r->is_audio ());
-      REQUIRE_POSITION_EQ (r->pos_, p1_after_move);
+      ASSERT_NONNULL (r);
+      ASSERT_TRUE (r->is_region ());
+      ASSERT_TRUE (r->is_audio ());
+      ASSERT_POSITION_EQ (r->pos_, p1_after_move);
       require_correct_track (
         r, new_tracks ? audio_track_after : audio_track_before);
     }
@@ -253,35 +252,35 @@ public:
           /* check automation region */
           const auto regions = TL_SELECTIONS->get_objects_of_type<Region> ();
           const auto r = dynamic_pointer_cast<AutomationRegion> (regions.at (1));
-          REQUIRE_POSITION_EQ (r->pos_, p1_after_move);
-          REQUIRE_POSITION_EQ (r->end_pos_, p2_after_move);
-          REQUIRE_SIZE_EQ (r->aps_, 2);
+          ASSERT_POSITION_EQ (r->pos_, p1_after_move);
+          ASSERT_POSITION_EQ (r->end_pos_, p2_after_move);
+          ASSERT_SIZE_EQ (r->aps_, 2);
           {
             const auto &ap = r->aps_[0];
-            REQUIRE_POSITION_EQ (ap->pos_, p1_);
-            REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL1, 0.000001f);
+            ASSERT_POSITION_EQ (ap->pos_, p1_);
+            ASSERT_NEAR (ap->fvalue_, AP_VAL1, 0.000001f);
           }
           {
             const auto &ap = r->aps_[1];
-            REQUIRE_POSITION_EQ (ap->pos_, p2_);
-            REQUIRE_FLOAT_NEAR (ap->fvalue_, AP_VAL2, 0.000001f);
+            ASSERT_POSITION_EQ (ap->pos_, p2_);
+            ASSERT_NEAR (ap->fvalue_, AP_VAL2, 0.000001f);
           }
         }
 
         /* check marker */
         auto markers = TL_SELECTIONS->get_objects_of_type<Marker> ();
-        REQUIRE_SIZE_EQ (markers, 1);
+        ASSERT_SIZE_EQ (markers, 1);
         auto m = markers[0];
-        REQUIRE_POSITION_EQ (m->pos_, p1_after_move);
-        REQUIRE_EQ (m->name_, MARKER_NAME);
+        ASSERT_POSITION_EQ (m->pos_, p1_after_move);
+        ASSERT_EQ (m->name_, MARKER_NAME);
 
         /* check scale object */
         auto scales = TL_SELECTIONS->get_objects_of_type<ScaleObject> ();
-        REQUIRE_SIZE_EQ (scales, 1);
+        ASSERT_SIZE_EQ (scales, 1);
         auto s = scales[0];
-        REQUIRE_POSITION_EQ (s->pos_, p1_after_move);
-        REQUIRE_EQ (s->scale_.type_, MUSICAL_SCALE_TYPE);
-        REQUIRE_EQ (s->scale_.root_key_, MUSICAL_SCALE_ROOT);
+        ASSERT_POSITION_EQ (s->pos_, p1_after_move);
+        ASSERT_EQ (s->scale_.type_, MUSICAL_SCALE_TYPE);
+        ASSERT_EQ (s->scale_.root_key_, MUSICAL_SCALE_ROOT);
       }
   }
 
@@ -293,54 +292,54 @@ public:
   void check_after_duplicate_timeline (bool new_tracks, bool link)
   {
     /* check */
-    REQUIRE_EQ (
+    ASSERT_EQ (
       TL_SELECTIONS->get_num_objects (), new_tracks ? 2 : TOTAL_TL_SELECTIONS);
 
     const auto * midi_track =
       TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
-    REQUIRE_NONNULL (midi_track);
+    ASSERT_NONNULL (midi_track);
     const auto * audio_track =
       TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
-    REQUIRE_NONNULL (audio_track);
+    ASSERT_NONNULL (audio_track);
     const auto * new_midi_track =
       TRACKLIST->find_track_by_name<MidiTrack> (TARGET_MIDI_TRACK_NAME);
-    REQUIRE_NONNULL (midi_track);
+    ASSERT_NONNULL (midi_track);
     const auto * new_audio_track =
       TRACKLIST->find_track_by_name<AudioTrack> (TARGET_AUDIO_TRACK_NAME);
-    REQUIRE_NONNULL (audio_track);
+    ASSERT_NONNULL (audio_track);
 
     /* check prev midi region */
     if (new_tracks)
       {
-        REQUIRE_SIZE_EQ (midi_track->lanes_[MIDI_REGION_LANE]->regions_, 1);
-        REQUIRE_SIZE_EQ (new_midi_track->lanes_[MIDI_REGION_LANE]->regions_, 1);
+        ASSERT_SIZE_EQ (midi_track->lanes_[MIDI_REGION_LANE]->regions_, 1);
+        ASSERT_SIZE_EQ (new_midi_track->lanes_[MIDI_REGION_LANE]->regions_, 1);
       }
     else
       {
-        REQUIRE_SIZE_EQ (midi_track->lanes_[MIDI_REGION_LANE]->regions_, 2);
+        ASSERT_SIZE_EQ (midi_track->lanes_[MIDI_REGION_LANE]->regions_, 2);
       }
 
     auto       mr = midi_track->lanes_[MIDI_REGION_LANE]->regions_[0];
     const auto p1_before_move = p1_;
     const auto p2_before_move = p2_;
-    REQUIRE_POSITION_EQ (mr->pos_, p1_before_move);
-    REQUIRE_POSITION_EQ (mr->end_pos_, p2_before_move);
+    ASSERT_POSITION_EQ (mr->pos_, p1_before_move);
+    ASSERT_POSITION_EQ (mr->end_pos_, p2_before_move);
     REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (mr, *midi_track);
-    REQUIRE_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
-    REQUIRE_EQ (mr->id_.idx_, 0);
-    REQUIRE_SIZE_EQ (mr->midi_notes_, 1);
+    ASSERT_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
+    ASSERT_EQ (mr->id_.idx_, 0);
+    ASSERT_SIZE_EQ (mr->midi_notes_, 1);
     {
       const auto &mn = mr->midi_notes_.at (0);
-      REQUIRE_EQ (mn->region_id_, mr->id_);
-      REQUIRE_EQ (mn->val_, MN_VAL);
-      REQUIRE_EQ (mn->vel_->vel_, MN_VEL);
-      REQUIRE_POSITION_EQ (mn->pos_, p1_);
-      REQUIRE_POSITION_EQ (mn->end_pos_, p2_);
+      ASSERT_EQ (mn->region_id_, mr->id_);
+      ASSERT_EQ (mn->val_, MN_VAL);
+      ASSERT_EQ (mn->vel_->vel_, MN_VEL);
+      ASSERT_POSITION_EQ (mn->pos_, p1_);
+      ASSERT_POSITION_EQ (mn->end_pos_, p2_);
     }
     int link_group = mr->id_.link_group_;
     if (link)
       {
-        REQUIRE_GT (mr->id_.link_group_, -1);
+        ASSERT_GT (mr->id_.link_group_, -1);
       }
 
     /* check new midi region */
@@ -356,56 +355,55 @@ public:
     auto p2_after_move = p2_;
     p1_after_move.add_ticks (MOVE_TICKS);
     p2_after_move.add_ticks (MOVE_TICKS);
-    REQUIRE_POSITION_EQ (mr->pos_, p1_after_move);
-    REQUIRE_POSITION_EQ (mr->end_pos_, p2_after_move);
+    ASSERT_POSITION_EQ (mr->pos_, p1_after_move);
+    ASSERT_POSITION_EQ (mr->end_pos_, p2_after_move);
     if (new_tracks)
       {
         REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (mr, *new_midi_track);
-        REQUIRE_EQ (mr->id_.idx_, 0);
+        ASSERT_EQ (mr->id_.idx_, 0);
       }
     else
       {
         REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (mr, *midi_track);
-        REQUIRE_EQ (mr->id_.idx_, 1);
+        ASSERT_EQ (mr->id_.idx_, 1);
       }
-    REQUIRE_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
-    REQUIRE_SIZE_EQ (mr->midi_notes_, 1);
+    ASSERT_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
+    ASSERT_SIZE_EQ (mr->midi_notes_, 1);
     REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (
       mr, new_tracks ? *new_midi_track : *midi_track);
-    REQUIRE_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
+    ASSERT_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
     {
       const auto &mn = mr->midi_notes_[0];
-      REQUIRE_EQ (mn->region_id_, mr->id_);
-      REQUIRE_EQ (mn->val_, MN_VAL);
-      REQUIRE_EQ (mn->vel_->vel_, MN_VEL);
-      REQUIRE_POSITION_EQ (mn->pos_, p1_);
-      REQUIRE_POSITION_EQ (mn->end_pos_, p2_);
+      ASSERT_EQ (mn->region_id_, mr->id_);
+      ASSERT_EQ (mn->val_, MN_VAL);
+      ASSERT_EQ (mn->vel_->vel_, MN_VEL);
+      ASSERT_POSITION_EQ (mn->pos_, p1_);
+      ASSERT_POSITION_EQ (mn->end_pos_, p2_);
     }
     if (link)
       {
-        REQUIRE_EQ (mr->id_.link_group_, link_group);
+        ASSERT_EQ (mr->id_.link_group_, link_group);
       }
 
     /* check prev audio region */
     if (new_tracks)
       {
-        REQUIRE_SIZE_EQ (audio_track->lanes_[AUDIO_REGION_LANE]->regions_, 1);
-        REQUIRE_SIZE_EQ (
-          new_audio_track->lanes_[AUDIO_REGION_LANE]->regions_, 1);
+        ASSERT_SIZE_EQ (audio_track->lanes_[AUDIO_REGION_LANE]->regions_, 1);
+        ASSERT_SIZE_EQ (new_audio_track->lanes_[AUDIO_REGION_LANE]->regions_, 1);
       }
     else
       {
-        REQUIRE_SIZE_EQ (audio_track->lanes_[AUDIO_REGION_LANE]->regions_, 2);
+        ASSERT_SIZE_EQ (audio_track->lanes_[AUDIO_REGION_LANE]->regions_, 2);
       }
     auto ar = audio_track->lanes_[AUDIO_REGION_LANE]->regions_[0];
-    REQUIRE_POSITION_EQ (ar->pos_, p1_before_move);
+    ASSERT_POSITION_EQ (ar->pos_, p1_before_move);
     REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (ar, *audio_track);
-    REQUIRE_EQ (ar->id_.idx_, 0);
-    REQUIRE_EQ (ar->id_.lane_pos_, AUDIO_REGION_LANE);
+    ASSERT_EQ (ar->id_.idx_, 0);
+    ASSERT_EQ (ar->id_.lane_pos_, AUDIO_REGION_LANE);
     link_group = ar->id_.link_group_;
     if (link)
       {
-        REQUIRE_GT (ar->id_.link_group_, -1);
+        ASSERT_GT (ar->id_.link_group_, -1);
       }
 
     /* check new audio region */
@@ -417,13 +415,13 @@ public:
       {
         ar = audio_track->lanes_[AUDIO_REGION_LANE]->regions_[1];
       }
-    REQUIRE_POSITION_EQ (ar->pos_, p1_after_move);
-    REQUIRE_EQ (ar->id_.lane_pos_, AUDIO_REGION_LANE);
+    ASSERT_POSITION_EQ (ar->pos_, p1_after_move);
+    ASSERT_EQ (ar->id_.lane_pos_, AUDIO_REGION_LANE);
     REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (
       ar, new_tracks ? *new_audio_track : *audio_track);
     if (link)
       {
-        REQUIRE_EQ (ar->id_.link_group_, link_group);
+        ASSERT_EQ (ar->id_.link_group_, link_group);
       }
 
     if (!new_tracks)
@@ -431,52 +429,52 @@ public:
         /* check automation region */
         auto * const at = P_MASTER_TRACK->channel_->get_automation_track (
           PortIdentifier::Flags::StereoBalance);
-        REQUIRE_NONNULL (at);
-        REQUIRE_SIZE_EQ (at->regions_, 2);
+        ASSERT_NONNULL (at);
+        ASSERT_SIZE_EQ (at->regions_, 2);
 
         auto check_automation_region_contents =
           [&] (const auto &automation_region) {
-            REQUIRE_SIZE_EQ (automation_region->aps_, 2);
+            ASSERT_SIZE_EQ (automation_region->aps_, 2);
             const auto &ap1 = automation_region->aps_[0];
-            REQUIRE_POSITION_EQ (ap1->pos_, p1_);
-            REQUIRE_FLOAT_NEAR (ap1->fvalue_, AP_VAL1, 0.000001f);
+            ASSERT_POSITION_EQ (ap1->pos_, p1_);
+            ASSERT_NEAR (ap1->fvalue_, AP_VAL1, 0.000001f);
             const auto &ap2 = automation_region->aps_[1];
-            REQUIRE_POSITION_EQ (ap2->pos_, p2_);
-            REQUIRE_FLOAT_NEAR (ap2->fvalue_, AP_VAL2, 0.000001f);
+            ASSERT_POSITION_EQ (ap2->pos_, p2_);
+            ASSERT_NEAR (ap2->fvalue_, AP_VAL2, 0.000001f);
           };
 
         {
           const auto &r = at->regions_.at (0);
-          REQUIRE_POSITION_EQ (r->pos_, p1_before_move);
-          REQUIRE_POSITION_EQ (r->end_pos_, p2_before_move);
+          ASSERT_POSITION_EQ (r->pos_, p1_before_move);
+          ASSERT_POSITION_EQ (r->end_pos_, p2_before_move);
           check_automation_region_contents (r);
         }
         {
           const auto &r = at->regions_.at (1);
-          REQUIRE_POSITION_EQ (r->pos_, p1_after_move);
-          REQUIRE_POSITION_EQ (r->end_pos_, p2_after_move);
+          ASSERT_POSITION_EQ (r->pos_, p1_after_move);
+          ASSERT_POSITION_EQ (r->end_pos_, p2_after_move);
           check_automation_region_contents (r);
         }
 
         /* check marker */
-        REQUIRE_SIZE_EQ (P_MARKER_TRACK->markers_, 4);
+        ASSERT_SIZE_EQ (P_MARKER_TRACK->markers_, 4);
         auto m = P_MARKER_TRACK->markers_.at (2);
-        REQUIRE_POSITION_EQ (m->pos_, p1_before_move);
-        REQUIRE_EQ (m->name_, MARKER_NAME);
+        ASSERT_POSITION_EQ (m->pos_, p1_before_move);
+        ASSERT_EQ (m->name_, MARKER_NAME);
         m = P_MARKER_TRACK->markers_[3];
-        REQUIRE_POSITION_EQ (m->pos_, p1_after_move);
-        REQUIRE_EQ (m->name_, MARKER_NAME);
+        ASSERT_POSITION_EQ (m->pos_, p1_after_move);
+        ASSERT_EQ (m->name_, MARKER_NAME);
 
         /* check scale object */
-        REQUIRE_SIZE_EQ (P_CHORD_TRACK->scales_, 2);
+        ASSERT_SIZE_EQ (P_CHORD_TRACK->scales_, 2);
         auto s = P_CHORD_TRACK->scales_[0];
-        REQUIRE_POSITION_EQ (s->pos_, p1_before_move);
-        REQUIRE_EQ (s->scale_.type_, MUSICAL_SCALE_TYPE);
-        REQUIRE_EQ (s->scale_.root_key_, MUSICAL_SCALE_ROOT);
+        ASSERT_POSITION_EQ (s->pos_, p1_before_move);
+        ASSERT_EQ (s->scale_.type_, MUSICAL_SCALE_TYPE);
+        ASSERT_EQ (s->scale_.root_key_, MUSICAL_SCALE_ROOT);
         s = P_CHORD_TRACK->scales_.at (1);
-        REQUIRE_POSITION_EQ (s->pos_, p1_after_move);
-        REQUIRE_EQ (s->scale_.type_, MUSICAL_SCALE_TYPE);
-        REQUIRE_EQ (s->scale_.root_key_, MUSICAL_SCALE_ROOT);
+        ASSERT_POSITION_EQ (s->pos_, p1_after_move);
+        ASSERT_EQ (s->scale_.type_, MUSICAL_SCALE_TYPE);
+        ASSERT_EQ (s->scale_.root_key_, MUSICAL_SCALE_ROOT);
       }
   }
 };
@@ -486,13 +484,13 @@ TEST_CASE_FIXTURE (
   "copy an audio region then paste it after changing the BPM")
 {
   TL_SELECTIONS->clear ();
-  REQUIRE_EMPTY (TL_SELECTIONS->objects_);
+  ASSERT_EMPTY (TL_SELECTIONS->objects_);
   auto audio_track =
     TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
-  REQUIRE_NONNULL (audio_track);
+  ASSERT_NONNULL (audio_track);
   TL_SELECTIONS->add_object_ref (
     audio_track->lanes_[AUDIO_REGION_LANE]->regions_[0]);
-  REQUIRE_SIZE_EQ (TL_SELECTIONS->objects_, 1);
+  ASSERT_SIZE_EQ (TL_SELECTIONS->objects_, 1);
   audio_track->select (true, true, false);
 
   Clipboard clipboard (*TL_SELECTIONS);
@@ -511,9 +509,9 @@ TEST_CASE_FIXTURE (
   clipboard.deserialize_from_json_string (serialized.c_str ());
 
   auto sel = clipboard.get_selections ();
-  REQUIRE_NONNULL (sel);
+  ASSERT_NONNULL (sel);
   sel->post_deserialize ();
-  REQUIRE (sel->can_be_pasted ());
+  ASSERT_TRUE (sel->can_be_pasted ());
   sel->paste_to_pos (PLAYHEAD, true);
 }
 
@@ -572,8 +570,8 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "duplicate automation region")
 {
   auto at = P_MASTER_TRACK->channel_->get_automation_track (
     PortIdentifier::Flags::StereoBalance);
-  REQUIRE_NONNULL (at);
-  REQUIRE_SIZE_EQ (at->regions_, 1);
+  ASSERT_NONNULL (at);
+  ASSERT_SIZE_EQ (at->regions_, 1);
 
   Position start_pos, end_pos;
   end_pos.set_to_bar (4);
@@ -599,15 +597,15 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "duplicate automation region")
     ArrangerSelectionsAction::EditType::Primitive, true));
 
   ap = r1->aps_[0];
-  REQUIRE_FLOAT_NEAR (ap->curve_opts_.curviness_, curviness_after, 0.00001f);
+  ASSERT_NEAR (ap->curve_opts_.curviness_, curviness_after, 0.00001f);
 
   UNDO_MANAGER->undo ();
   ap = r1->aps_[0];
-  REQUIRE_FLOAT_NEAR (ap->curve_opts_.curviness_, 0.f, 0.00001f);
+  ASSERT_NEAR (ap->curve_opts_.curviness_, 0.f, 0.00001f);
 
   UNDO_MANAGER->redo ();
   ap = r1->aps_[0];
-  REQUIRE_FLOAT_NEAR (ap->curve_opts_.curviness_, curviness_after, 0.00001f);
+  ASSERT_NEAR (ap->curve_opts_.curviness_, curviness_after, 0.00001f);
 
   r1->select (true, false, false);
 
@@ -617,14 +615,14 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "duplicate automation region")
 
   r1 = at->regions_[1];
   ap = r1->aps_[0];
-  REQUIRE_FLOAT_NEAR (ap->curve_opts_.curviness_, curviness_after, 0.00001f);
+  ASSERT_NEAR (ap->curve_opts_.curviness_, curviness_after, 0.00001f);
 
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->redo ();
 
   r1 = at->regions_[1];
   ap = r1->aps_[0];
-  REQUIRE_FLOAT_NEAR (ap->curve_opts_.curviness_, curviness_after, 0.00001f);
+  ASSERT_NEAR (ap->curve_opts_.curviness_, curviness_after, 0.00001f);
 }
 
 TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link timeline")
@@ -685,13 +683,13 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link timeline")
       check_vs_original_state (false);
       check_has_single_redo ();
 
-      REQUIRE_EMPTY (REGION_LINK_GROUP_MANAGER.groups_);
+      ASSERT_EMPTY (REGION_LINK_GROUP_MANAGER.groups_);
     }
 }
 
 TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link and delete")
 {
-  REQUIRE_EMPTY (REGION_LINK_GROUP_MANAGER.groups_);
+  ASSERT_EMPTY (REGION_LINK_GROUP_MANAGER.groups_);
 
   auto midi_track = TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
   constexpr auto lane_idx = 2;
@@ -710,9 +708,9 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link and delete")
   move_and_perform_link ();
   r = midi_track->lanes_[lane_idx]->regions_[0];
   auto &r2 = midi_track->lanes_[lane_idx]->regions_[1];
-  REQUIRE_EQ (r->id_.link_group_, 0);
-  REQUIRE_EQ (r2->id_.link_group_, 0);
-  REQUIRE_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 1);
+  ASSERT_EQ (r->id_.link_group_, 0);
+  ASSERT_EQ (r2->id_.link_group_, 0);
+  ASSERT_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 1);
 
   /* create another linked object */
   r2->select (true, false, false);
@@ -720,10 +718,10 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link and delete")
   r = midi_track->lanes_[lane_idx]->regions_.at (0);
   r2 = midi_track->lanes_[lane_idx]->regions_.at (1);
   auto &r3 = midi_track->lanes_[lane_idx]->regions_.at (2);
-  REQUIRE_EQ (r->id_.link_group_, 0);
-  REQUIRE_EQ (r2->id_.link_group_, 0);
-  REQUIRE_EQ (r3->id_.link_group_, 0);
-  REQUIRE_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 1);
+  ASSERT_EQ (r->id_.link_group_, 0);
+  ASSERT_EQ (r2->id_.link_group_, 0);
+  ASSERT_EQ (r3->id_.link_group_, 0);
+  ASSERT_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 1);
 
   /* create a separate object (no link group) */
   auto pos = r3->pos_;
@@ -744,21 +742,21 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link and delete")
   r3 = midi_track->lanes_[lane_idx]->regions_[2];
   r4 = midi_track->lanes_[lane_idx]->regions_[3];
   auto &r5 = midi_track->lanes_[lane_idx]->regions_.at (4);
-  REQUIRE_EQ (r->id_.link_group_, 0);
-  REQUIRE_EQ (r2->id_.link_group_, 0);
-  REQUIRE_EQ (r3->id_.link_group_, 0);
-  REQUIRE_EQ (r4->id_.link_group_, 1);
-  REQUIRE_EQ (r5->id_.link_group_, 1);
-  REQUIRE_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 2);
+  ASSERT_EQ (r->id_.link_group_, 0);
+  ASSERT_EQ (r2->id_.link_group_, 0);
+  ASSERT_EQ (r3->id_.link_group_, 0);
+  ASSERT_EQ (r4->id_.link_group_, 1);
+  ASSERT_EQ (r5->id_.link_group_, 1);
+  ASSERT_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 2);
 
   /* delete the middle linked object */
   r2->select (true, false, false);
   perform_delete (TL_SELECTIONS);
   r = midi_track->lanes_[lane_idx]->regions_[0];
   r2 = midi_track->lanes_[lane_idx]->regions_[1];
-  REQUIRE_EQ (r->id_.link_group_, 0);
-  REQUIRE_EQ (r2->id_.link_group_, 0);
-  REQUIRE_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 2);
+  ASSERT_EQ (r->id_.link_group_, 0);
+  ASSERT_EQ (r2->id_.link_group_, 0);
+  ASSERT_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 2);
 
   /* undo deleting middle linked object (in link group 0) */
   UNDO_MANAGER->undo ();
@@ -767,12 +765,12 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link and delete")
   r3 = midi_track->lanes_[lane_idx]->regions_[2];
   r4 = midi_track->lanes_[lane_idx]->regions_[3];
   r5 = midi_track->lanes_[lane_idx]->regions_[4];
-  REQUIRE_EQ (r->id_.link_group_, 0);
-  REQUIRE_EQ (r2->id_.link_group_, 0);
-  REQUIRE_EQ (r3->id_.link_group_, 0);
-  REQUIRE_EQ (r4->id_.link_group_, 1);
-  REQUIRE_EQ (r5->id_.link_group_, 1);
-  REQUIRE_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 2);
+  ASSERT_EQ (r->id_.link_group_, 0);
+  ASSERT_EQ (r2->id_.link_group_, 0);
+  ASSERT_EQ (r3->id_.link_group_, 0);
+  ASSERT_EQ (r4->id_.link_group_, 1);
+  ASSERT_EQ (r5->id_.link_group_, 1);
+  ASSERT_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 2);
 
   /* delete the first object in 2nd link group */
   r4->select (true, false, false);
@@ -781,11 +779,11 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link and delete")
   r2 = midi_track->lanes_[lane_idx]->regions_[1];
   r3 = midi_track->lanes_[lane_idx]->regions_[2];
   r5 = midi_track->lanes_[lane_idx]->regions_[3];
-  REQUIRE_EQ (r->id_.link_group_, 0);
-  REQUIRE_EQ (r2->id_.link_group_, 0);
-  REQUIRE_EQ (r3->id_.link_group_, 0);
-  REQUIRE_EQ (r5->id_.link_group_, -1);
-  REQUIRE_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 1);
+  ASSERT_EQ (r->id_.link_group_, 0);
+  ASSERT_EQ (r2->id_.link_group_, 0);
+  ASSERT_EQ (r3->id_.link_group_, 0);
+  ASSERT_EQ (r5->id_.link_group_, -1);
+  ASSERT_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 1);
 
   /* undo deleting first object in 2nd link group */
   UNDO_MANAGER->undo ();
@@ -794,24 +792,24 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link and delete")
   r3 = midi_track->lanes_[lane_idx]->regions_[2];
   r4 = midi_track->lanes_[lane_idx]->regions_[3];
   r5 = midi_track->lanes_[lane_idx]->regions_[4];
-  REQUIRE_EQ (r->id_.link_group_, 0);
-  REQUIRE_EQ (r2->id_.link_group_, 0);
-  REQUIRE_EQ (r3->id_.link_group_, 0);
-  REQUIRE_EQ (r4->id_.link_group_, 1);
+  ASSERT_EQ (r->id_.link_group_, 0);
+  ASSERT_EQ (r2->id_.link_group_, 0);
+  ASSERT_EQ (r3->id_.link_group_, 0);
+  ASSERT_EQ (r4->id_.link_group_, 1);
   /* FIXME the link group of the adjacent object is not restored */
-  /*REQUIRE_EQ (r5->id_.link_group_,  1);*/
-  REQUIRE_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 2);
+  /*ASSERT_EQ (r5->id_.link_group_,  1);*/
+  ASSERT_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 2);
 
   /* redo and verify again */
   r = midi_track->lanes_[lane_idx]->regions_[0];
   r2 = midi_track->lanes_[lane_idx]->regions_[1];
   r3 = midi_track->lanes_[lane_idx]->regions_[2];
   r5 = midi_track->lanes_[lane_idx]->regions_[3];
-  REQUIRE_EQ (r->id_.link_group_, 0);
-  REQUIRE_EQ (r2->id_.link_group_, 0);
-  REQUIRE_EQ (r3->id_.link_group_, 0);
-  REQUIRE_EQ (r5->id_.link_group_, 1);
-  REQUIRE_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 2);
+  ASSERT_EQ (r->id_.link_group_, 0);
+  ASSERT_EQ (r2->id_.link_group_, 0);
+  ASSERT_EQ (r3->id_.link_group_, 0);
+  ASSERT_EQ (r5->id_.link_group_, 1);
+  ASSERT_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 2);
 }
 
 TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link then duplicate")
@@ -859,12 +857,12 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link then duplicate")
 
       if (track_diff)
         {
-          REQUIRE_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 2);
+          ASSERT_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 2);
         }
       else
         {
-          REQUIRE_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 4);
-          REQUIRE_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_[2].ids_, 2);
+          ASSERT_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 4);
+          ASSERT_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_[2].ids_, 2);
         }
 
       REGION_LINK_GROUP_MANAGER.validate ();
@@ -897,12 +895,12 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link then duplicate")
 
       if (track_diff)
         {
-          REQUIRE_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 2);
+          ASSERT_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 2);
         }
       else
         {
-          REQUIRE_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 4);
-          REQUIRE_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_[2].ids_, 2);
+          ASSERT_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 4);
+          ASSERT_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_[2].ids_, 2);
         }
 
       REGION_LINK_GROUP_MANAGER.validate ();
@@ -916,19 +914,19 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link then duplicate")
       /* check that new objects have no links */
       for (auto &r : TL_SELECTIONS->get_objects_of_type<Region> ())
         {
-          REQUIRE_NONNULL (r);
-          REQUIRE_EQ (r->id_.link_group_, -1);
-          REQUIRE_FALSE (r->has_link_group ());
+          ASSERT_NONNULL (r);
+          ASSERT_EQ (r->id_.link_group_, -1);
+          ASSERT_FALSE (r->has_link_group ());
         }
 
       if (track_diff)
         {
-          REQUIRE_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 2);
+          ASSERT_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 2);
         }
       else
         {
-          REQUIRE_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 4);
-          REQUIRE_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_[2].ids_, 2);
+          ASSERT_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 4);
+          ASSERT_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_[2].ids_, 2);
         }
 
       test_project_save_and_reload ();
@@ -937,11 +935,11 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link then duplicate")
       auto r = [&] () {
         auto track = TRACKLIST->find_track_by_name<MidiTrack> (
           track_diff ? TARGET_MIDI_TRACK_NAME : MIDI_TRACK_NAME);
-        REQUIRE_NONNULL (track);
+        ASSERT_NONNULL (track);
         auto ret =
           track->lanes_[MIDI_REGION_LANE]->regions_.at (track_diff ? 0 : 1);
-        REQUIRE (ret->is_midi ());
-        REQUIRE (ret->has_link_group ());
+        ASSERT_TRUE (ret->is_midi ());
+        ASSERT_TRUE (ret->has_link_group ());
         return ret;
       }();
       Position start, end;
@@ -978,7 +976,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link then duplicate")
       UNDO_MANAGER->undo ();
       check_vs_original_state (false);
 
-      REQUIRE_EMPTY (REGION_LINK_GROUP_MANAGER.groups_);
+      ASSERT_EMPTY (REGION_LINK_GROUP_MANAGER.groups_);
     }
 }
 
@@ -987,7 +985,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "edit marker")
   /* create marker with name "aa" */
   auto m = std::make_shared<Marker> ("aa");
   m->select (true, false, false);
-  REQUIRE_NOTHROW (
+  ASSERT_NO_THROW (
     m = std::dynamic_pointer_cast<Marker> (m->add_clone_to_project (false)));
   perform_create (TL_SELECTIONS);
 
@@ -1002,10 +1000,10 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "edit marker")
   }
 
   /* assert name changed */
-  REQUIRE_EQ (m->name_, "bb");
+  ASSERT_EQ (m->name_, "bb");
 
   UNDO_MANAGER->undo ();
-  REQUIRE_EQ (m->name_, "aa");
+  ASSERT_EQ (m->name_, "aa");
 
   /* undo again and check that all objects are at
    * original state */
@@ -1023,7 +1021,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "edit marker")
 TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "mute objects")
 {
   auto midi_track = TRACKLIST->get_track<MidiTrack> (5);
-  REQUIRE_NONNULL (midi_track);
+  ASSERT_NONNULL (midi_track);
 
   auto &r = midi_track->lanes_[MIDI_REGION_LANE]->regions_[0];
 
@@ -1031,9 +1029,9 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "mute objects")
     *TL_SELECTIONS, nullptr, ArrangerSelectionsAction::EditType::Mute, false));
 
   auto assert_muted = [&] (bool muted) {
-    REQUIRE (r->is_region ());
-    REQUIRE_EQ (r->muted_, muted);
-    REQUIRE_EQ (r->get_muted (false), muted);
+    ASSERT_TRUE (r->is_region ());
+    ASSERT_EQ (r->muted_, muted);
+    ASSERT_EQ (r->get_muted (false), muted);
   };
 
   /* assert muted */
@@ -1053,7 +1051,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "mute objects")
 
 TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "split region")
 {
-  REQUIRE_SIZE_EQ (P_CHORD_TRACK->regions_, 1);
+  ASSERT_SIZE_EQ (P_CHORD_TRACK->regions_, 1);
 
   Position pos, end_pos;
   pos.set_to_bar (2);
@@ -1064,16 +1062,16 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "split region")
 
   perform_create (TL_SELECTIONS);
 
-  REQUIRE_SIZE_EQ (P_CHORD_TRACK->regions_, 2);
+  ASSERT_SIZE_EQ (P_CHORD_TRACK->regions_, 2);
 
   pos.set_to_bar (3);
   perform_split (TL_SELECTIONS, pos);
 
-  REQUIRE_SIZE_EQ (P_CHORD_TRACK->regions_, 3);
+  ASSERT_SIZE_EQ (P_CHORD_TRACK->regions_, 3);
 
   auto  track2 = TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
   auto &lane2 = track2->lanes_[3];
-  REQUIRE_SIZE_EQ (lane2->regions_, 1);
+  ASSERT_SIZE_EQ (lane2->regions_, 1);
 
   auto &region2 = lane2->regions_[0];
   region2->validate (false, 0);
@@ -1087,19 +1085,19 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "split region")
 
   auto track = TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
   auto lane = track->lanes_.at (3).get ();
-  REQUIRE_SIZE_EQ (lane->regions_, 1);
+  ASSERT_SIZE_EQ (lane->regions_, 1);
 
   auto &region = lane->regions_[0];
   region->validate (false, 0);
   region->select (true, false, false);
   auto clip = region->get_clip ();
-  REQUIRE_NONNULL (clip);
+  ASSERT_NONNULL (clip);
   float first_frame = clip->frames_.getSample (0, 0);
 
   pos.set_to_bar (2);
   pos.add_beats (1);
 
-  REQUIRE_NOTHROW (perform_split (TL_SELECTIONS, pos));
+  ASSERT_NO_THROW (perform_split (TL_SELECTIONS, pos));
 
   test_project_save_and_reload ();
 
@@ -1108,7 +1106,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "split region")
   lane = track->lanes_.at (3).get ();
   region = lane->regions_[0];
   clip = region->get_clip ();
-  REQUIRE_FLOAT_NEAR (first_frame, clip->frames_.getSample (0, 0), 0.000001f);
+  ASSERT_NEAR (first_frame, clip->frames_.getSample (0, 0), 0.000001f);
 
   UNDO_MANAGER->undo ();
 }
@@ -1128,8 +1126,8 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "split large audio file")
     -1, TEST_SINE_OGG_30MIN, true, nullptr, 0, std::nullopt, 0, (BitDepth) 0,
     pos, track_name_hash, AUDIO_REGION_LANE, 0);
   auto clip = r->get_clip ();
-  REQUIRE_EQ (clip->num_frames_, 79380000);
-  REQUIRE_NOTHROW (track->add_region (r, nullptr, 0, true, false));
+  ASSERT_EQ (clip->num_frames_, 79380000);
+  ASSERT_NO_THROW (track->add_region (r, nullptr, 0, true, false));
   TL_SELECTIONS->add_object_ref (r);
 
   /* attempt split */
@@ -1142,7 +1140,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "quantize")
 {
   auto audio_track =
     TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
-  REQUIRE_NONNULL (audio_track);
+  ASSERT_NONNULL (audio_track);
 
   UNDO_MANAGER->perform (
     std::make_unique<ArrangerSelectionsAction::QuantizeAction> (
@@ -1150,7 +1148,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "quantize")
 
   /* TODO test audio/MIDI quantization */
   auto region = audio_track->lanes_.at (3)->regions_.at (0);
-  REQUIRE (region->is_audio ());
+  ASSERT_TRUE (region->is_audio ());
 
   /* return to original state */
   UNDO_MANAGER->undo ();
@@ -1160,17 +1158,17 @@ static void
 verify_audio_function (std::vector<float> &frames, size_t max_frames)
 {
   auto track = TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
-  REQUIRE_NONNULL (track);
+  ASSERT_NONNULL (track);
   auto &lane = track->lanes_.at (3);
   auto &region = lane->regions_.at (0);
   auto  clip = region->get_clip ();
-  REQUIRE_NONNULL (clip);
+  ASSERT_NONNULL (clip);
   size_t num_frames = std::min (max_frames, (size_t) clip->num_frames_);
   for (size_t i = 0; i < num_frames; i++)
     {
       for (size_t j = 0; j < clip->channels_; j++)
         {
-          REQUIRE_FLOAT_NEAR (
+          ASSERT_NEAR (
             frames[clip->channels_ * i + j],
             clip->frames_.getSample (0, clip->channels_ * i + j), 0.0001f);
         }
@@ -1181,9 +1179,9 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "audio functions")
 {
   auto audio_track =
     TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
-  REQUIRE_NONNULL (audio_track);
+  ASSERT_NONNULL (audio_track);
   auto &lane = audio_track->lanes_.at (3);
-  REQUIRE_SIZE_EQ (lane->regions_, 1);
+  ASSERT_SIZE_EQ (lane->regions_, 1);
   auto &region = lane->regions_.at (0);
   region->select (true, false, false);
   AUDIO_SELECTIONS->region_id_ = region->id_;
@@ -1234,8 +1232,8 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "automation fill")
   /* check automation region */
   auto at = P_MASTER_TRACK->channel_->get_automation_track (
     PortIdentifier::Flags::StereoBalance);
-  REQUIRE_NONNULL (at);
-  REQUIRE_SIZE_EQ (at->regions_, 1);
+  ASSERT_NONNULL (at);
+  ASSERT_SIZE_EQ (at->regions_, 1);
 
   Position start_pos, end_pos;
   end_pos.set_to_bar (4);
@@ -1263,9 +1261,9 @@ TEST_CASE_FIXTURE (
   "duplicate MIDI regions to track below")
 {
   auto midi_track = TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
-  REQUIRE_NONNULL (midi_track);
+  ASSERT_NONNULL (midi_track);
   auto &lane = midi_track->lanes_.at (0);
-  REQUIRE_EMPTY (lane->regions_);
+  ASSERT_EMPTY (lane->regions_);
 
   Position pos, end_pos;
   pos.set_to_bar (2);
@@ -1275,7 +1273,7 @@ TEST_CASE_FIXTURE (
   midi_track->add_region (r1, nullptr, lane->pos_, true, false);
   r1->select (true, false, true);
   perform_create (TL_SELECTIONS);
-  REQUIRE_SIZE_EQ (lane->regions_, 1);
+  ASSERT_SIZE_EQ (lane->regions_, 1);
 
   pos.set_to_bar (5);
   end_pos.set_to_bar (7);
@@ -1284,7 +1282,7 @@ TEST_CASE_FIXTURE (
   midi_track->add_region (r2, nullptr, lane->pos_, true, false);
   r2->select (true, false, true);
   perform_create (TL_SELECTIONS);
-  REQUIRE_SIZE_EQ (lane->regions_, 2);
+  ASSERT_SIZE_EQ (lane->regions_, 2);
 
   /* select the regions */
   r2->select (true, false, true);
@@ -1292,9 +1290,9 @@ TEST_CASE_FIXTURE (
 
   auto new_midi_track =
     TRACKLIST->find_track_by_name<MidiTrack> (TARGET_MIDI_TRACK_NAME);
-  REQUIRE_NONNULL (new_midi_track);
+  ASSERT_NONNULL (new_midi_track);
   auto &target_lane = new_midi_track->lanes_.at (0);
-  REQUIRE_SIZE_EQ (target_lane->regions_, 0);
+  ASSERT_SIZE_EQ (target_lane->regions_, 0);
 
   constexpr auto ticks = 100.0;
 
@@ -1303,8 +1301,8 @@ TEST_CASE_FIXTURE (
   TL_SELECTIONS->move_regions_to_new_tracks (
     new_midi_track->pos_ - midi_track->pos_);
   TL_SELECTIONS->add_ticks (ticks);
-  REQUIRE_SIZE_EQ (target_lane->regions_, 2);
-  REQUIRE_SIZE_EQ (TL_SELECTIONS->get_objects_of_type<Region> (), 2);
+  ASSERT_SIZE_EQ (target_lane->regions_, 2);
+  ASSERT_SIZE_EQ (TL_SELECTIONS->get_objects_of_type<Region> (), 2);
 
   UNDO_MANAGER->perform (
     std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
@@ -1312,25 +1310,25 @@ TEST_CASE_FIXTURE (
       nullptr, true));
 
   /* check that new regions are created */
-  REQUIRE_SIZE_EQ (target_lane->regions_, 2);
+  ASSERT_SIZE_EQ (target_lane->regions_, 2);
 
   UNDO_MANAGER->undo ();
 
   /* check that new regions are deleted */
-  REQUIRE_SIZE_EQ (target_lane->regions_, 0);
+  ASSERT_SIZE_EQ (target_lane->regions_, 0);
 
   UNDO_MANAGER->redo ();
 
   /* check that new regions are created */
-  REQUIRE_SIZE_EQ (target_lane->regions_, 2);
+  ASSERT_SIZE_EQ (target_lane->regions_, 2);
 }
 
 TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "midi region split")
 {
   auto midi_track = TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
-  REQUIRE_NONNULL (midi_track);
+  ASSERT_NONNULL (midi_track);
   auto &lane = midi_track->lanes_.at (0);
-  REQUIRE_EMPTY (lane->regions_);
+  ASSERT_EMPTY (lane->regions_);
 
   Position pos, end_pos;
   pos.set_to_bar (1);
@@ -1340,7 +1338,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "midi region split")
   midi_track->add_region (r, nullptr, lane->pos_, true, false);
   r->select (true, false, true);
   perform_create (TL_SELECTIONS);
-  REQUIRE_SIZE_EQ (lane->regions_, 1);
+  ASSERT_SIZE_EQ (lane->regions_, 1);
 
   /* create some MIDI notes */
   for (int i = 0; i < 4; i++)
@@ -1351,7 +1349,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "midi region split")
       r->append_object (mn);
       mn->select (true, false, false);
       perform_create (MIDI_SELECTIONS);
-      REQUIRE_SIZE_EQ (r->midi_notes_, i + 1);
+      ASSERT_SIZE_EQ (r->midi_notes_, i + 1);
     }
 
   /* select the region */
@@ -1360,35 +1358,35 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "midi region split")
   /* split at bar 2 */
   pos.set_to_bar (2);
   perform_split (TL_SELECTIONS, pos);
-  REQUIRE_SIZE_EQ (lane->regions_, 2);
+  ASSERT_SIZE_EQ (lane->regions_, 2);
   r = lane->regions_[1];
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (5);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   /* split at bar 4 */
   pos.set_to_bar (4);
   r->select (true, false, false);
   perform_split (TL_SELECTIONS, pos);
-  REQUIRE_SIZE_EQ (lane->regions_, 3);
+  ASSERT_SIZE_EQ (lane->regions_, 3);
 
   r = lane->regions_.at (0);
   pos.set_to_bar (1);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (2);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   r = lane->regions_[1];
   pos.set_to_bar (2);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (4);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   r = lane->regions_[2];
   pos.set_to_bar (4);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (5);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   /* split at bar 3 */
   r = lane->regions_[1];
@@ -1396,157 +1394,157 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "midi region split")
   pos.set_to_bar (3);
   r->select (true, false, false);
   perform_split (TL_SELECTIONS, pos);
-  REQUIRE_SIZE_EQ (lane->regions_, 4);
+  ASSERT_SIZE_EQ (lane->regions_, 4);
 
   r = lane->regions_[0];
   pos.set_to_bar (1);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (2);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   r = lane->regions_[1];
   pos.set_to_bar (4);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (5);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   r = lane->regions_[2];
   pos.set_to_bar (2);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (3);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   r = lane->regions_[3];
   pos.set_to_bar (3);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (4);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   /* undo and verify */
   UNDO_MANAGER->undo ();
-  REQUIRE_SIZE_EQ (lane->regions_, 3);
+  ASSERT_SIZE_EQ (lane->regions_, 3);
 
   r = lane->regions_[0];
   pos.set_to_bar (1);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (2);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   r = lane->regions_[1];
   pos.set_to_bar (2);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (4);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   r = lane->regions_[2];
   pos.set_to_bar (4);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (5);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   /* undo and verify */
   UNDO_MANAGER->undo ();
-  REQUIRE_SIZE_EQ (lane->regions_, 2);
+  ASSERT_SIZE_EQ (lane->regions_, 2);
 
   r = lane->regions_[0];
   pos.set_to_bar (1);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (2);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   r = lane->regions_[1];
   pos.set_to_bar (2);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (5);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   /* undo and verify */
   UNDO_MANAGER->undo ();
-  REQUIRE_SIZE_EQ (lane->regions_, 1);
+  ASSERT_SIZE_EQ (lane->regions_, 1);
 
   r = lane->regions_[0];
   pos.set_to_bar (1);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (5);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   /* redo to bring 3 regions back */
   UNDO_MANAGER->redo ();
-  REQUIRE_SIZE_EQ (lane->regions_, 2);
+  ASSERT_SIZE_EQ (lane->regions_, 2);
 
   r = lane->regions_[0];
   pos.set_to_bar (1);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (2);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   r = lane->regions_[1];
   pos.set_to_bar (2);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (5);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   UNDO_MANAGER->redo ();
-  REQUIRE_SIZE_EQ (lane->regions_, 3);
+  ASSERT_SIZE_EQ (lane->regions_, 3);
 
   r = lane->regions_[0];
   pos.set_to_bar (1);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (2);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   r = lane->regions_[1];
   pos.set_to_bar (2);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (4);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   r = lane->regions_[2];
   pos.set_to_bar (4);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (5);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   /* delete middle cut */
   r = lane->regions_[1];
   r->select (true, false, false);
   perform_delete (TL_SELECTIONS);
 
-  REQUIRE_SIZE_EQ (lane->regions_, 2);
+  ASSERT_SIZE_EQ (lane->regions_, 2);
 
   r = lane->regions_[0];
   pos.set_to_bar (1);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (2);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   r = lane->regions_[1];
   pos.set_to_bar (4);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (5);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   /* undo to bring it back */
   UNDO_MANAGER->undo ();
-  REQUIRE_SIZE_EQ (lane->regions_, 3);
+  ASSERT_SIZE_EQ (lane->regions_, 3);
 
   r = lane->regions_[0];
   pos.set_to_bar (1);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (2);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   r = lane->regions_[1];
   pos.set_to_bar (2);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (4);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 
   r = lane->regions_[2];
   pos.set_to_bar (4);
-  REQUIRE_EQ (pos.frames_, r->pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->pos_.frames_);
   pos.set_to_bar (5);
-  REQUIRE_EQ (pos.frames_, r->end_pos_.frames_);
+  ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 }
 
 TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "Pin/Unpin")
@@ -1685,7 +1683,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete automation points")
   pos2.set_to_bar (4);
   auto at = P_MASTER_TRACK->channel_->get_automation_track (
     PortIdentifier::Flags::ChannelFader);
-  REQUIRE_NONNULL (at);
+  ASSERT_NONNULL (at);
   auto r = std::make_shared<AutomationRegion> (
     pos1, pos2, P_MASTER_TRACK->get_name_hash (), at->index_, 0);
   P_MASTER_TRACK->add_region (r, at, 0, true, false);
@@ -1751,8 +1749,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "undo moving midi region to other lane")
   Track::create_empty_with_action (Track::Type::Midi);
   auto midi_track = dynamic_cast<MidiTrack *> (
     TRACKLIST->get_last_track (Tracklist::PinOption::Both, false));
-  REQUIRE_NONNULL (midi_track);
-  REQUIRE_EQ (midi_track->type_, Track::Type::Midi);
+  ASSERT_NONNULL (midi_track);
+  ASSERT_EQ (midi_track->type_, Track::Type::Midi);
 
   std::shared_ptr<MidiRegion> r;
   for (int i = 0; i < 4; i++)
@@ -1783,7 +1781,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "delete multiple regions")
 {
   auto midi_track = dynamic_cast<MidiTrack *> (
     Track::create_empty_with_action (Track::Type::Midi));
-  REQUIRE_NONNULL (midi_track);
+  ASSERT_NONNULL (midi_track);
 
   auto &lane = midi_track->lanes_[0];
   for (int i = 0; i < 6; i++)
@@ -1796,7 +1794,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "delete multiple regions")
       midi_track->add_region (r1, nullptr, lane->pos_, true, false);
       r1->select (true, false, false);
       perform_create (TL_SELECTIONS);
-      REQUIRE_SIZE_EQ (lane->regions_, i + 1);
+      ASSERT_SIZE_EQ (lane->regions_, i + 1);
     }
 
   /* select multiple and delete */
@@ -1808,16 +1806,16 @@ TEST_CASE_FIXTURE (ZrythmFixture, "delete multiple regions")
       lane->regions_[idx2]->select (true, true, false);
 
       /* do delete */
-      REQUIRE_NOTHROW (perform_delete (TL_SELECTIONS));
+      ASSERT_NO_THROW (perform_delete (TL_SELECTIONS));
 
       CLIP_EDITOR->get_region ();
 
-      REQUIRE_NOTHROW (UNDO_MANAGER->undo ());
+      ASSERT_NO_THROW (UNDO_MANAGER->undo ());
 
-      REQUIRE_NONNULL (CLIP_EDITOR->get_region ());
+      ASSERT_NONNULL (CLIP_EDITOR->get_region ());
     }
 
-  REQUIRE_NONNULL (CLIP_EDITOR->get_region ());
+  ASSERT_NONNULL (CLIP_EDITOR->get_region ());
 }
 
 TEST_CASE_FIXTURE (ZrythmFixture, "split and merge midi unlooped")
@@ -1826,7 +1824,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "split and merge midi unlooped")
 
   auto midi_track = dynamic_cast<MidiTrack *> (
     Track::create_empty_with_action (Track::Type::Midi));
-  REQUIRE_NONNULL (midi_track);
+  ASSERT_NONNULL (midi_track);
 
   auto &lane = midi_track->lanes_[0];
   pos.set_to_bar (2);
@@ -1836,7 +1834,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "split and merge midi unlooped")
   midi_track->add_region (r1, nullptr, lane->pos_, true, false);
   r1->select (true, false, false);
   perform_create (TL_SELECTIONS);
-  REQUIRE_SIZE_EQ (lane->regions_, 1);
+  ASSERT_SIZE_EQ (lane->regions_, 1);
 
   for (int i = 0; i < 2; i++)
     {
@@ -1859,152 +1857,152 @@ TEST_CASE_FIXTURE (ZrythmFixture, "split and merge midi unlooped")
   /* split */
   auto r = lane->regions_[0];
   tmp.set_to_bar (2);
-  REQUIRE_POSITION_EQ (r->pos_, tmp);
+  ASSERT_POSITION_EQ (r->pos_, tmp);
   r->select (true, false, false);
   Position split_pos;
   split_pos.set_to_bar (4);
-  REQUIRE_NOTHROW (perform_split (TL_SELECTIONS, split_pos));
+  ASSERT_NO_THROW (perform_split (TL_SELECTIONS, split_pos));
 
   /* check r1 positions */
   r1 = lane->regions_[0];
   tmp.set_to_bar (2);
-  REQUIRE_POSITION_EQ (r1->pos_, tmp);
+  ASSERT_POSITION_EQ (r1->pos_, tmp);
   tmp.set_to_bar (1);
-  REQUIRE_POSITION_EQ (r1->clip_start_pos_, tmp);
+  ASSERT_POSITION_EQ (r1->clip_start_pos_, tmp);
   tmp.set_to_bar (1);
-  REQUIRE_POSITION_EQ (r1->loop_start_pos_, tmp);
+  ASSERT_POSITION_EQ (r1->loop_start_pos_, tmp);
   tmp.set_to_bar (4);
-  REQUIRE_POSITION_EQ (r1->end_pos_, tmp);
+  ASSERT_POSITION_EQ (r1->end_pos_, tmp);
   tmp.set_to_bar (3);
-  REQUIRE_POSITION_EQ (r1->loop_end_pos_, tmp);
+  ASSERT_POSITION_EQ (r1->loop_end_pos_, tmp);
 
   /* check r1 midi note positions */
-  REQUIRE_SIZE_EQ (r1->midi_notes_, 1);
+  ASSERT_SIZE_EQ (r1->midi_notes_, 1);
   auto mn = r1->midi_notes_.at (0);
   tmp.set_to_bar (1);
-  REQUIRE_POSITION_EQ (mn->pos_, tmp);
+  ASSERT_POSITION_EQ (mn->pos_, tmp);
   tmp.set_to_bar (2);
-  REQUIRE_POSITION_EQ (mn->end_pos_, tmp);
+  ASSERT_POSITION_EQ (mn->end_pos_, tmp);
 
   /* check r2 positions */
   auto r2 = lane->regions_[1];
   tmp.set_to_bar (4);
-  REQUIRE_POSITION_EQ (r2->pos_, tmp);
+  ASSERT_POSITION_EQ (r2->pos_, tmp);
   tmp.set_to_bar (1);
-  REQUIRE_POSITION_EQ (r2->clip_start_pos_, tmp);
+  ASSERT_POSITION_EQ (r2->clip_start_pos_, tmp);
   tmp.set_to_bar (1);
-  REQUIRE_POSITION_EQ (r2->loop_start_pos_, tmp);
+  ASSERT_POSITION_EQ (r2->loop_start_pos_, tmp);
   tmp.set_to_bar (10);
-  REQUIRE_POSITION_EQ (r2->end_pos_, tmp);
+  ASSERT_POSITION_EQ (r2->end_pos_, tmp);
   tmp.set_to_bar (7);
-  REQUIRE_POSITION_EQ (r2->loop_end_pos_, tmp);
+  ASSERT_POSITION_EQ (r2->loop_end_pos_, tmp);
 
   /* check r2 midi note positions */
-  REQUIRE_SIZE_EQ (r2->midi_notes_, 1);
+  ASSERT_SIZE_EQ (r2->midi_notes_, 1);
   mn = r2->midi_notes_[0];
   tmp.set_to_bar (3);
-  REQUIRE_POSITION_EQ (mn->pos_, tmp);
+  ASSERT_POSITION_EQ (mn->pos_, tmp);
   tmp.set_to_bar (4);
-  REQUIRE_POSITION_EQ (mn->end_pos_, tmp);
+  ASSERT_POSITION_EQ (mn->end_pos_, tmp);
 
   /* merge */
   lane->regions_[0]->select (true, false, false);
   lane->regions_[1]->select (true, true, false);
-  REQUIRE_NOTHROW (UNDO_MANAGER->perform (
+  ASSERT_NO_THROW (UNDO_MANAGER->perform (
     std::make_unique<ArrangerSelectionsAction::MergeAction> (*TL_SELECTIONS)));
 
   /* verify positions */
-  REQUIRE_SIZE_EQ (lane->regions_, 1);
+  ASSERT_SIZE_EQ (lane->regions_, 1);
   r = lane->regions_[0];
   tmp.set_to_bar (2);
-  REQUIRE_POSITION_EQ (r->pos_, tmp);
+  ASSERT_POSITION_EQ (r->pos_, tmp);
   tmp.set_to_bar (10);
-  REQUIRE_POSITION_EQ (r->end_pos_, tmp);
+  ASSERT_POSITION_EQ (r->end_pos_, tmp);
   tmp.set_to_bar (1);
-  REQUIRE_POSITION_EQ (r->loop_start_pos_, tmp);
+  ASSERT_POSITION_EQ (r->loop_start_pos_, tmp);
   tmp.set_to_bar (1);
-  REQUIRE_POSITION_EQ (r->clip_start_pos_, tmp);
+  ASSERT_POSITION_EQ (r->clip_start_pos_, tmp);
   tmp.set_to_bar (9);
-  REQUIRE_POSITION_EQ (r->loop_end_pos_, tmp);
+  ASSERT_POSITION_EQ (r->loop_end_pos_, tmp);
 
   CLIP_EDITOR->get_region ();
 
-  REQUIRE_NOTHROW (UNDO_MANAGER->undo ());
+  ASSERT_NO_THROW (UNDO_MANAGER->undo ());
 
   /* check r1 positions */
   r1 = lane->regions_[0];
   tmp.set_to_bar (2);
-  REQUIRE_POSITION_EQ (r1->pos_, tmp);
+  ASSERT_POSITION_EQ (r1->pos_, tmp);
   tmp.set_to_bar (1);
-  REQUIRE_POSITION_EQ (r1->clip_start_pos_, tmp);
+  ASSERT_POSITION_EQ (r1->clip_start_pos_, tmp);
   tmp.set_to_bar (1);
-  REQUIRE_POSITION_EQ (r1->loop_start_pos_, tmp);
+  ASSERT_POSITION_EQ (r1->loop_start_pos_, tmp);
   tmp.set_to_bar (4);
-  REQUIRE_POSITION_EQ (r1->end_pos_, tmp);
+  ASSERT_POSITION_EQ (r1->end_pos_, tmp);
   tmp.set_to_bar (3);
-  REQUIRE_POSITION_EQ (r1->loop_end_pos_, tmp);
+  ASSERT_POSITION_EQ (r1->loop_end_pos_, tmp);
 
   /* check r1 midi note positions */
-  REQUIRE_SIZE_EQ (r1->midi_notes_, 1);
+  ASSERT_SIZE_EQ (r1->midi_notes_, 1);
   mn = r1->midi_notes_[0];
   tmp.set_to_bar (1);
-  REQUIRE_POSITION_EQ (mn->pos_, tmp);
+  ASSERT_POSITION_EQ (mn->pos_, tmp);
   tmp.set_to_bar (2);
-  REQUIRE_POSITION_EQ (mn->end_pos_, tmp);
+  ASSERT_POSITION_EQ (mn->end_pos_, tmp);
 
   /* check r2 positions */
   r2 = lane->regions_[1];
   tmp.set_to_bar (4);
-  REQUIRE_POSITION_EQ (r2->pos_, tmp);
+  ASSERT_POSITION_EQ (r2->pos_, tmp);
   tmp.set_to_bar (1);
-  REQUIRE_POSITION_EQ (r2->clip_start_pos_, tmp);
+  ASSERT_POSITION_EQ (r2->clip_start_pos_, tmp);
   tmp.set_to_bar (1);
-  REQUIRE_POSITION_EQ (r2->loop_start_pos_, tmp);
+  ASSERT_POSITION_EQ (r2->loop_start_pos_, tmp);
   tmp.set_to_bar (10);
-  REQUIRE_POSITION_EQ (r2->end_pos_, tmp);
+  ASSERT_POSITION_EQ (r2->end_pos_, tmp);
   tmp.set_to_bar (7);
-  REQUIRE_POSITION_EQ (r2->loop_end_pos_, tmp);
+  ASSERT_POSITION_EQ (r2->loop_end_pos_, tmp);
 
   /* check r2 midi note positions */
-  REQUIRE_SIZE_EQ (r2->midi_notes_, 1);
+  ASSERT_SIZE_EQ (r2->midi_notes_, 1);
   mn = r2->midi_notes_[0];
   tmp.set_to_bar (3);
-  REQUIRE_POSITION_EQ (mn->pos_, tmp);
+  ASSERT_POSITION_EQ (mn->pos_, tmp);
   tmp.set_to_bar (4);
-  REQUIRE_POSITION_EQ (mn->end_pos_, tmp);
+  ASSERT_POSITION_EQ (mn->end_pos_, tmp);
 
   /* undo split */
-  REQUIRE_NOTHROW (UNDO_MANAGER->undo ());
+  ASSERT_NO_THROW (UNDO_MANAGER->undo ());
 
   /* verify region */
   r = lane->regions_[0];
   tmp.set_to_bar (2);
-  REQUIRE_POSITION_EQ (r->pos_, tmp);
+  ASSERT_POSITION_EQ (r->pos_, tmp);
   tmp.set_to_bar (10);
-  REQUIRE_POSITION_EQ (r->end_pos_, tmp);
+  ASSERT_POSITION_EQ (r->end_pos_, tmp);
   tmp.set_to_bar (9);
-  REQUIRE_POSITION_EQ (r->loop_end_pos_, tmp);
+  ASSERT_POSITION_EQ (r->loop_end_pos_, tmp);
   tmp.set_to_bar (1);
-  REQUIRE_POSITION_EQ (r->clip_start_pos_, tmp);
+  ASSERT_POSITION_EQ (r->clip_start_pos_, tmp);
   tmp.set_to_bar (1);
-  REQUIRE_POSITION_EQ (r->loop_start_pos_, tmp);
+  ASSERT_POSITION_EQ (r->loop_start_pos_, tmp);
 
   /* verify midi notes are back to start */
-  REQUIRE_SIZE_EQ (r->midi_notes_, 2);
+  ASSERT_SIZE_EQ (r->midi_notes_, 2);
   mn = r->midi_notes_[0];
   tmp.set_to_bar (1);
-  REQUIRE_POSITION_EQ (mn->pos_, tmp);
+  ASSERT_POSITION_EQ (mn->pos_, tmp);
   tmp.set_to_bar (2);
-  REQUIRE_POSITION_EQ (mn->end_pos_, tmp);
+  ASSERT_POSITION_EQ (mn->end_pos_, tmp);
   mn = r->midi_notes_[1];
   tmp.set_to_bar (5);
-  REQUIRE_POSITION_EQ (mn->pos_, tmp);
+  ASSERT_POSITION_EQ (mn->pos_, tmp);
   tmp.set_to_bar (6);
-  REQUIRE_POSITION_EQ (mn->end_pos_, tmp);
+  ASSERT_POSITION_EQ (mn->end_pos_, tmp);
 
-  REQUIRE_NONNULL (CLIP_EDITOR->get_region ());
+  ASSERT_NONNULL (CLIP_EDITOR->get_region ());
 
-  REQUIRE_NOTHROW (
+  ASSERT_NO_THROW (
     UNDO_MANAGER->redo (); UNDO_MANAGER->redo (); UNDO_MANAGER->undo ();
     UNDO_MANAGER->undo ());
 }
@@ -2021,11 +2019,11 @@ TEST_CASE_FIXTURE (ZrythmFixture, "split and merge audio unlooped")
     1, -1, nullptr);
   auto audio_track = dynamic_cast<AudioTrack *> (
     TRACKLIST->get_last_track (Tracklist::PinOption::Both, false));
-  REQUIRE_NONNULL (audio_track);
+  ASSERT_NONNULL (audio_track);
   int audio_track_pos = audio_track->pos_;
-  REQUIRE_SIZE_EQ (audio_track->lanes_, 2);
-  REQUIRE_SIZE_EQ (audio_track->lanes_[0]->regions_, 1);
-  REQUIRE_SIZE_EQ (audio_track->lanes_[1]->regions_, 0);
+  ASSERT_SIZE_EQ (audio_track->lanes_, 2);
+  ASSERT_SIZE_EQ (audio_track->lanes_[0]->regions_, 1);
+  ASSERT_SIZE_EQ (audio_track->lanes_[1]->regions_, 0);
 
   const auto frames_per_bar =
     (unsigned_frame_t) (AUDIO_ENGINE->frames_per_tick_
@@ -2037,11 +2035,11 @@ TEST_CASE_FIXTURE (ZrythmFixture, "split and merge audio unlooped")
     /* <2.1.1.0> to around <4.1.1.0> (around 2 bars long) */
     auto &lane = audio_track->lanes_[0];
     auto &r = lane->regions_[0];
-    REQUIRE_POSITION_EQ (r->pos_, pos);
+    ASSERT_POSITION_EQ (r->pos_, pos);
 
     /* remember frames */
     auto clip = r->get_clip ();
-    REQUIRE_GT (clip->num_frames_, 0);
+    ASSERT_GT (clip->num_frames_, 0);
     l_frames.resize (clip->num_frames_, 0);
     dsp_copy (
       l_frames.data (), clip->ch_frames_.getReadPointer (0),
@@ -2050,7 +2048,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "split and merge audio unlooped")
     /* split */
     r = lane->regions_[0];
     tmp.set_to_bar (2);
-    REQUIRE_POSITION_EQ (r->pos_, tmp);
+    ASSERT_POSITION_EQ (r->pos_, tmp);
     r->select (true, false, false);
     Position split_pos;
     split_pos.set_to_bar (3);
@@ -2059,45 +2057,45 @@ TEST_CASE_FIXTURE (ZrythmFixture, "split and merge audio unlooped")
     /* check r1 positions */
     auto &r1 = lane->regions_[0];
     tmp.set_to_bar (2);
-    REQUIRE_POSITION_EQ (r1->pos_, tmp);
+    ASSERT_POSITION_EQ (r1->pos_, tmp);
     tmp.set_to_bar (1);
-    REQUIRE_POSITION_EQ (r1->clip_start_pos_, tmp);
+    ASSERT_POSITION_EQ (r1->clip_start_pos_, tmp);
     tmp.set_to_bar (1);
-    REQUIRE_POSITION_EQ (r1->loop_start_pos_, tmp);
+    ASSERT_POSITION_EQ (r1->loop_start_pos_, tmp);
     tmp.set_to_bar (3);
-    REQUIRE_POSITION_EQ (r1->end_pos_, tmp);
+    ASSERT_POSITION_EQ (r1->end_pos_, tmp);
     tmp.set_to_bar (2);
-    REQUIRE_POSITION_EQ (r1->loop_end_pos_, tmp);
+    ASSERT_POSITION_EQ (r1->loop_end_pos_, tmp);
 
     /* check r1 audio positions */
     auto r1_clip = r1->get_clip ();
-    REQUIRE_EQ (r1_clip->num_frames_, frames_per_bar);
-    REQUIRE (audio_frames_equal (
+    ASSERT_EQ (r1_clip->num_frames_, frames_per_bar);
+    ASSERT_TRUE (audio_frames_equal (
       r1_clip->ch_frames_.getReadPointer (0), &l_frames[0],
       (size_t) r1_clip->num_frames_, 0.0001f));
 
     /* check r2 positions */
     auto &r2 = lane->regions_[1];
     tmp.set_to_bar (3);
-    REQUIRE_POSITION_EQ (r2->pos_, tmp);
+    ASSERT_POSITION_EQ (r2->pos_, tmp);
     tmp.set_to_bar (1);
-    REQUIRE_POSITION_EQ (r2->clip_start_pos_, tmp);
+    ASSERT_POSITION_EQ (r2->clip_start_pos_, tmp);
     tmp.set_to_bar (1);
-    REQUIRE_POSITION_EQ (r2->loop_start_pos_, tmp);
-    REQUIRE_EQ (
+    ASSERT_POSITION_EQ (r2->loop_start_pos_, tmp);
+    ASSERT_EQ (
       (unsigned_frame_t) r2->end_pos_.frames_,
       /* total previous frames + started at bar 2 (1 bar) */
       l_frames.size () + frames_per_bar);
-    REQUIRE_EQ (
+    ASSERT_EQ (
       (unsigned_frame_t) r2->loop_end_pos_.frames_,
       /* total previous frames - r1 frames */
       l_frames.size () - r1_clip->num_frames_);
 
     /* check r2 audio positions */
     auto r2_clip = r2->get_clip ();
-    REQUIRE_EQ (
+    ASSERT_EQ (
       r2_clip->num_frames_, (unsigned_frame_t) r2->loop_end_pos_.frames_);
-    REQUIRE (audio_frames_equal (
+    ASSERT_TRUE (audio_frames_equal (
       r2_clip->ch_frames_.getReadPointer (0), &l_frames[frames_per_bar],
       (size_t) r2_clip->num_frames_, 0.0001f));
 
@@ -2108,19 +2106,19 @@ TEST_CASE_FIXTURE (ZrythmFixture, "split and merge audio unlooped")
       std::make_unique<ArrangerSelectionsAction::MergeAction> (*TL_SELECTIONS));
 
     /* verify positions */
-    REQUIRE_SIZE_EQ (lane->regions_, 1);
+    ASSERT_SIZE_EQ (lane->regions_, 1);
     r = lane->regions_[0];
     tmp.set_to_bar (2);
-    REQUIRE_POSITION_EQ (r->pos_, tmp);
+    ASSERT_POSITION_EQ (r->pos_, tmp);
     tmp.set_to_bar (2);
     tmp.add_frames ((signed_frame_t) l_frames.size ());
-    REQUIRE_POSITION_EQ (r->end_pos_, tmp);
+    ASSERT_POSITION_EQ (r->end_pos_, tmp);
     tmp.set_to_bar (1);
-    REQUIRE_POSITION_EQ (r->loop_start_pos_, tmp);
+    ASSERT_POSITION_EQ (r->loop_start_pos_, tmp);
     tmp.set_to_bar (1);
-    REQUIRE_POSITION_EQ (r->clip_start_pos_, tmp);
+    ASSERT_POSITION_EQ (r->clip_start_pos_, tmp);
     tmp.from_frames ((signed_frame_t) l_frames.size ());
-    REQUIRE_POSITION_EQ (r->loop_end_pos_, tmp);
+    ASSERT_POSITION_EQ (r->loop_end_pos_, tmp);
 
     CLIP_EDITOR->get_region ();
   }
@@ -2128,9 +2126,9 @@ TEST_CASE_FIXTURE (ZrythmFixture, "split and merge audio unlooped")
   {
     test_project_save_and_reload ();
     audio_track = TRACKLIST->get_track<AudioTrack> (audio_track_pos);
-    REQUIRE_NONNULL (audio_track);
+    ASSERT_NONNULL (audio_track);
     auto &lane = audio_track->lanes_[0];
-    REQUIRE_NONNULL (lane);
+    ASSERT_NONNULL (lane);
   }
 
   {
@@ -2138,51 +2136,50 @@ TEST_CASE_FIXTURE (ZrythmFixture, "split and merge audio unlooped")
     UNDO_MANAGER->undo ();
     test_project_save_and_reload ();
     audio_track = TRACKLIST->get_track<AudioTrack> (audio_track_pos);
-    REQUIRE_NONNULL (audio_track);
+    ASSERT_NONNULL (audio_track);
     auto &lane = audio_track->lanes_[0];
 
     /* check r1 positions */
     auto &r1 = lane->regions_[0];
     tmp.set_to_bar (2);
-    REQUIRE_POSITION_EQ (r1->pos_, tmp);
+    ASSERT_POSITION_EQ (r1->pos_, tmp);
     tmp.set_to_bar (1);
-    REQUIRE_POSITION_EQ (r1->clip_start_pos_, tmp);
+    ASSERT_POSITION_EQ (r1->clip_start_pos_, tmp);
     tmp.set_to_bar (1);
-    REQUIRE_POSITION_EQ (r1->loop_start_pos_, tmp);
+    ASSERT_POSITION_EQ (r1->loop_start_pos_, tmp);
     tmp.set_to_bar (3);
-    REQUIRE_POSITION_EQ (r1->end_pos_, tmp);
+    ASSERT_POSITION_EQ (r1->end_pos_, tmp);
     tmp.set_to_bar (2);
-    REQUIRE_POSITION_EQ (r1->loop_end_pos_, tmp);
+    ASSERT_POSITION_EQ (r1->loop_end_pos_, tmp);
 
     /* check r1 audio positions */
     auto r1_clip = r1->get_clip ();
-    REQUIRE_EQ (r1_clip->num_frames_, frames_per_bar);
-    REQUIRE (audio_frames_equal (
+    ASSERT_EQ (r1_clip->num_frames_, frames_per_bar);
+    ASSERT_TRUE (audio_frames_equal (
       r1_clip->ch_frames_.getReadPointer (0), &l_frames[0],
       (size_t) r1_clip->num_frames_, 0.0001f));
 
     /* check r2 positions */
     auto &r2 = lane->regions_[1];
     tmp.set_to_bar (3);
-    REQUIRE_POSITION_EQ (r2->pos_, tmp);
+    ASSERT_POSITION_EQ (r2->pos_, tmp);
     tmp.set_to_bar (1);
-    REQUIRE_POSITION_EQ (r2->clip_start_pos_, tmp);
+    ASSERT_POSITION_EQ (r2->clip_start_pos_, tmp);
     tmp.set_to_bar (1);
-    REQUIRE_POSITION_EQ (r2->loop_start_pos_, tmp);
-    REQUIRE_EQ (
+    ASSERT_POSITION_EQ (r2->loop_start_pos_, tmp);
+    ASSERT_EQ (
       (unsigned_frame_t) r2->end_pos_.frames_,
       /* total previous frames + started at bar 2 (1 bar) */
       l_frames.size () + frames_per_bar);
-    REQUIRE_EQ (
+    ASSERT_EQ (
       (unsigned_frame_t) r2->loop_end_pos_.frames_,
       /* total previous frames - r1 frames */
       l_frames.size () - r1_clip->num_frames_);
 
     /* check r2 audio positions */
     auto r2_clip = r2->get_clip ();
-    REQUIRE_EQ (
-      (signed_frame_t) r2_clip->num_frames_, r2->loop_end_pos_.frames_);
-    REQUIRE (audio_frames_equal (
+    ASSERT_EQ ((signed_frame_t) r2_clip->num_frames_, r2->loop_end_pos_.frames_);
+    ASSERT_TRUE (audio_frames_equal (
       r2_clip->ch_frames_.getReadPointer (0), &l_frames[frames_per_bar],
       (size_t) r2_clip->num_frames_, 0.0001f));
   }
@@ -2197,29 +2194,29 @@ TEST_CASE_FIXTURE (ZrythmFixture, "split and merge audio unlooped")
     /* verify region */
     auto &r = lane->regions_[0];
     tmp.set_to_bar (2);
-    REQUIRE_POSITION_EQ (r->pos_, tmp);
+    ASSERT_POSITION_EQ (r->pos_, tmp);
     tmp.set_to_bar (1);
-    REQUIRE_POSITION_EQ (r->clip_start_pos_, tmp);
+    ASSERT_POSITION_EQ (r->clip_start_pos_, tmp);
     tmp.set_to_bar (1);
-    REQUIRE_POSITION_EQ (r->loop_start_pos_, tmp);
-    REQUIRE_EQ (
+    ASSERT_POSITION_EQ (r->loop_start_pos_, tmp);
+    ASSERT_EQ (
       (unsigned_frame_t) r->end_pos_.frames_,
       /* total previous frames + started at bar 2 (1 bar) */
       l_frames.size () + frames_per_bar);
-    REQUIRE_EQ (
+    ASSERT_EQ (
       r->loop_end_pos_.frames_,
       /* total previous frames */
       (signed_frame_t) l_frames.size ());
 
     /* check frames */
     auto clip = r->get_clip ();
-    REQUIRE_EQ (clip->num_frames_, l_frames.size ());
-    REQUIRE (audio_frames_equal (
+    ASSERT_EQ (clip->num_frames_, l_frames.size ());
+    ASSERT_TRUE (audio_frames_equal (
       clip->ch_frames_.getReadPointer (0), l_frames.data (), l_frames.size (),
       0.0001f));
   }
 
-  REQUIRE_NONNULL (CLIP_EDITOR->get_region ());
+  ASSERT_NONNULL (CLIP_EDITOR->get_region ());
 
   test_project_save_and_reload ();
 
@@ -2252,16 +2249,16 @@ TEST_CASE_FIXTURE (ZrythmFixture, "resize-loop from left side")
     1, -1, nullptr);
   auto audio_track = dynamic_cast<AudioTrack *> (
     TRACKLIST->get_last_track (Tracklist::PinOption::Both, false));
-  REQUIRE_NONNULL (audio_track);
+  ASSERT_NONNULL (audio_track);
   const auto audio_track_pos = audio_track->pos_;
-  REQUIRE_SIZE_EQ (audio_track->lanes_, 2);
-  REQUIRE_SIZE_EQ (audio_track->lanes_[0]->regions_, 1);
-  REQUIRE_SIZE_EQ (audio_track->lanes_[1]->regions_, 0);
+  ASSERT_SIZE_EQ (audio_track->lanes_, 2);
+  ASSERT_SIZE_EQ (audio_track->lanes_[0]->regions_, 1);
+  ASSERT_SIZE_EQ (audio_track->lanes_[1]->regions_, 0);
 
   /* <3.1.1.0> to around <5.1.1.0> (around 2 bars long) */
   auto &lane = audio_track->lanes_[0];
   auto &r = lane->regions_[0];
-  REQUIRE_POSITION_EQ (r->pos_, pos);
+  ASSERT_POSITION_EQ (r->pos_, pos);
 
   /* remember end pos */
   Position end_pos = r->end_pos_;
@@ -2281,16 +2278,16 @@ TEST_CASE_FIXTURE (ZrythmFixture, "resize-loop from left side")
   /* test start pos */
   Position new_pos = pos;
   new_pos.add_ticks (-move_ticks);
-  REQUIRE_POSITION_EQ (r->pos_, new_pos);
+  ASSERT_POSITION_EQ (r->pos_, new_pos);
 
   /* test loop start pos */
   new_pos.zero ();
-  REQUIRE_POSITION_EQ (r->loop_start_pos_, new_pos);
+  ASSERT_POSITION_EQ (r->loop_start_pos_, new_pos);
 
   /* test end pos */
-  REQUIRE_POSITION_EQ (r->end_pos_, end_pos);
+  ASSERT_POSITION_EQ (r->end_pos_, end_pos);
 
-  REQUIRE_FLOAT_NEAR (loop_len_ticks, r->get_loop_length_in_ticks (), 0.0001);
+  ASSERT_NEAR (loop_len_ticks, r->get_loop_length_in_ticks (), 0.0001);
 
   (void) audio_track_pos;
   (void) tmp;
@@ -2325,7 +2322,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "delete MIDI notes")
     for (size_t i = 0; i < r->midi_notes_.size (); ++i)
       {
         auto &mn = r->midi_notes_[i];
-        REQUIRE_EQ (mn->index_, i);
+        ASSERT_EQ (mn->index_, i);
       }
   };
 
@@ -2370,7 +2367,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "cut automation region")
   pos2.set_to_bar (8);
   auto at = P_MASTER_TRACK->channel_->get_automation_track (
     PortIdentifier::Flags::ChannelFader);
-  REQUIRE_NONNULL (at);
+  ASSERT_NONNULL (at);
   auto r = std::make_shared<AutomationRegion> (
     pos1, pos2, P_MASTER_TRACK->get_name_hash (), at->index_, 0);
   P_MASTER_TRACK->add_region (r, at, 0, true, false);
@@ -2419,7 +2416,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "copy and move automation regions")
   pos2.set_to_bar (4);
   auto fader_at = P_MASTER_TRACK->channel_->get_automation_track (
     PortIdentifier::Flags::ChannelFader);
-  REQUIRE_NONNULL (fader_at);
+  ASSERT_NONNULL (fader_at);
   auto r = std::make_shared<AutomationRegion> (
     pos1, pos2, P_MASTER_TRACK->get_name_hash (), fader_at->index_, 0);
   P_MASTER_TRACK->add_region (r, fader_at, 0, true, false);
@@ -2437,7 +2434,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "copy and move automation regions")
 
   auto mute_at = audio_track->channel_->get_automation_track (
     PortIdentifier::Flags::FaderMute);
-  REQUIRE_NONNULL (mute_at);
+  ASSERT_NONNULL (mute_at);
 
   /* 1st test */
 
@@ -2446,8 +2443,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "copy and move automation regions")
     {
       bool copy = i == 1;
 
-      REQUIRE_SIZE_EQ (fader_at->regions_, 1);
-      REQUIRE_SIZE_EQ (mute_at->regions_, 0);
+      ASSERT_SIZE_EQ (fader_at->regions_, 1);
+      ASSERT_SIZE_EQ (mute_at->regions_, 0);
 
       if (copy)
         {
@@ -2455,14 +2452,14 @@ TEST_CASE_FIXTURE (ZrythmFixture, "copy and move automation regions")
             std::make_unique<
               ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
               *TL_SELECTIONS, false, 0, 0, 0, &mute_at->port_id_, false));
-          REQUIRE_SIZE_EQ (fader_at->regions_, 1);
-          REQUIRE_SIZE_EQ (mute_at->regions_, 1);
+          ASSERT_SIZE_EQ (fader_at->regions_, 1);
+          ASSERT_SIZE_EQ (mute_at->regions_, 1);
           UNDO_MANAGER->undo ();
-          REQUIRE_SIZE_EQ (fader_at->regions_, 1);
-          REQUIRE_SIZE_EQ (mute_at->regions_, 0);
+          ASSERT_SIZE_EQ (fader_at->regions_, 1);
+          ASSERT_SIZE_EQ (mute_at->regions_, 0);
           UNDO_MANAGER->redo ();
-          REQUIRE_SIZE_EQ (fader_at->regions_, 1);
-          REQUIRE_SIZE_EQ (mute_at->regions_, 1);
+          ASSERT_SIZE_EQ (fader_at->regions_, 1);
+          ASSERT_SIZE_EQ (mute_at->regions_, 1);
           UNDO_MANAGER->undo ();
         }
       else
@@ -2471,19 +2468,19 @@ TEST_CASE_FIXTURE (ZrythmFixture, "copy and move automation regions")
             std::make_unique<
               ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
               *TL_SELECTIONS, true, 0, 0, 0, &mute_at->port_id_, false));
-          REQUIRE_SIZE_EQ (fader_at->regions_, 0);
-          REQUIRE_SIZE_EQ (mute_at->regions_, 1);
+          ASSERT_SIZE_EQ (fader_at->regions_, 0);
+          ASSERT_SIZE_EQ (mute_at->regions_, 1);
           UNDO_MANAGER->undo ();
-          REQUIRE_SIZE_EQ (fader_at->regions_, 1);
-          REQUIRE_SIZE_EQ (mute_at->regions_, 0);
+          ASSERT_SIZE_EQ (fader_at->regions_, 1);
+          ASSERT_SIZE_EQ (mute_at->regions_, 0);
           UNDO_MANAGER->redo ();
-          REQUIRE_SIZE_EQ (fader_at->regions_, 0);
-          REQUIRE_SIZE_EQ (mute_at->regions_, 1);
+          ASSERT_SIZE_EQ (fader_at->regions_, 0);
+          ASSERT_SIZE_EQ (mute_at->regions_, 1);
           UNDO_MANAGER->undo ();
         }
 
-      REQUIRE_SIZE_EQ (fader_at->regions_, 1);
-      REQUIRE_SIZE_EQ (mute_at->regions_, 0);
+      ASSERT_SIZE_EQ (fader_at->regions_, 1);
+      ASSERT_SIZE_EQ (mute_at->regions_, 0);
     }
 
   /* 2nd test */
@@ -2493,33 +2490,33 @@ TEST_CASE_FIXTURE (ZrythmFixture, "copy and move automation regions")
   UNDO_MANAGER->perform (
     std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
       *TL_SELECTIONS, false, -200, 0, 0, &mute_at->port_id_, false));
-  REQUIRE_SIZE_EQ (fader_at->regions_, 1);
-  REQUIRE_SIZE_EQ (mute_at->regions_, 1);
+  ASSERT_SIZE_EQ (fader_at->regions_, 1);
+  ASSERT_SIZE_EQ (mute_at->regions_, 1);
   fader_at->regions_[0]->select (true, false, false);
   UNDO_MANAGER->perform (
     std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
       *TL_SELECTIONS, false, -400, 0, 0, &mute_at->port_id_, false));
-  REQUIRE_SIZE_EQ (fader_at->regions_, 1);
-  REQUIRE_SIZE_EQ (mute_at->regions_, 2);
+  ASSERT_SIZE_EQ (fader_at->regions_, 1);
+  ASSERT_SIZE_EQ (mute_at->regions_, 2);
 
   /* move the copy to the first lane */
   mute_at->regions_[0]->select (true, false, false);
   UNDO_MANAGER->perform (
     std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
       *TL_SELECTIONS, true, 0, 0, 0, &mute_at->port_id_, false));
-  REQUIRE_SIZE_EQ (fader_at->regions_, 2);
-  REQUIRE_SIZE_EQ (mute_at->regions_, 1);
+  ASSERT_SIZE_EQ (fader_at->regions_, 2);
+  ASSERT_SIZE_EQ (mute_at->regions_, 1);
 
   /* undo and verify all ok */
   UNDO_MANAGER->undo ();
-  REQUIRE_SIZE_EQ (fader_at->regions_, 1);
-  REQUIRE_SIZE_EQ (mute_at->regions_, 2);
+  ASSERT_SIZE_EQ (fader_at->regions_, 1);
+  ASSERT_SIZE_EQ (mute_at->regions_, 2);
   UNDO_MANAGER->redo ();
-  REQUIRE_SIZE_EQ (fader_at->regions_, 2);
-  REQUIRE_SIZE_EQ (mute_at->regions_, 1);
+  ASSERT_SIZE_EQ (fader_at->regions_, 2);
+  ASSERT_SIZE_EQ (mute_at->regions_, 1);
   UNDO_MANAGER->undo ();
-  REQUIRE_SIZE_EQ (fader_at->regions_, 1);
-  REQUIRE_SIZE_EQ (mute_at->regions_, 2);
+  ASSERT_SIZE_EQ (fader_at->regions_, 1);
+  ASSERT_SIZE_EQ (mute_at->regions_, 2);
 }
 
 TEST_CASE_FIXTURE (ZrythmFixture, "moving a region from lane 3 to lane 1")
@@ -2532,7 +2529,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "moving a region from lane 3 to lane 1")
     TRACKLIST->get_last_track (Tracklist::PinOption::Both, false));
 
   auto &orig_lane = track->lanes_[0];
-  REQUIRE_EMPTY (orig_lane->regions_);
+  ASSERT_EMPTY (orig_lane->regions_);
 
   /* create region */
   pos.set_to_bar (2);
@@ -2542,16 +2539,16 @@ TEST_CASE_FIXTURE (ZrythmFixture, "moving a region from lane 3 to lane 1")
   track->add_region (r1, nullptr, orig_lane->pos_, true, false);
   r1->select (true, false, true);
   perform_create (TL_SELECTIONS);
-  REQUIRE_SIZE_EQ (orig_lane->regions_, 1);
+  ASSERT_SIZE_EQ (orig_lane->regions_, 1);
 
   {
     /* move to lane 3 */
     UNDO_MANAGER->perform (
       std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
         *TL_SELECTIONS, true, 0, 0, 2, nullptr, false));
-    REQUIRE_SIZE_EQ (orig_lane->regions_, 0);
+    ASSERT_SIZE_EQ (orig_lane->regions_, 0);
     auto &lane = track->lanes_[2];
-    REQUIRE_SIZE_EQ (lane->regions_, 1);
+    ASSERT_SIZE_EQ (lane->regions_, 1);
 
     /* duplicate track */
     UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
@@ -2573,7 +2570,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "moving a region from lane 3 to lane 1")
       std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
         *TL_SELECTIONS, true, 0, 0, -2, nullptr, false));
     auto &lane = track->lanes_[0];
-    REQUIRE_SIZE_EQ (lane->regions_, 1);
+    ASSERT_SIZE_EQ (lane->regions_, 1);
   }
 }
 
@@ -2584,7 +2581,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "stretch")
   {
     auto  track = TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
     auto &lane = track->lanes_[3];
-    REQUIRE_SIZE_EQ (lane->regions_, 1);
+    ASSERT_SIZE_EQ (lane->regions_, 1);
 
     auto &region = lane->regions_[0];
     region->select (true, false, false);
@@ -2612,8 +2609,8 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "stretch")
     auto  after_clip = region->get_clip ();
     const size_t total_after_frames =
       (size_t) after_clip->num_frames_ * after_clip->channels_;
-    REQUIRE_EQ (total_after_frames, total_orig_frames);
-    REQUIRE (audio_frames_equal (
+    ASSERT_EQ (total_after_frames, total_orig_frames);
+    ASSERT_TRUE (audio_frames_equal (
       after_clip->frames_.getReadPointer (0), &orig_frames[0],
       total_orig_frames, 0.0001f));
   }
@@ -2629,8 +2626,8 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "stretch")
     auto  after_clip = region->get_clip ();
     const size_t total_after_frames =
       (size_t) after_clip->num_frames_ * after_clip->channels_;
-    REQUIRE_EQ (total_after_frames, total_orig_frames);
-    REQUIRE (audio_frames_equal (
+    ASSERT_EQ (total_after_frames, total_orig_frames);
+    ASSERT_TRUE (audio_frames_equal (
       after_clip->frames_.getReadPointer (0), &orig_frames[0],
       total_orig_frames, 0.0001f));
   }
@@ -2645,11 +2642,11 @@ TEST_CASE_FIXTURE (ZrythmFixture, "test move audio region and lower bpm")
   const auto frames_per_tick_at_start = AUDIO_ENGINE->frames_per_tick_;
 
   auto check_actions = [&] (size_t num_actions_till_now) {
-    REQUIRE_SIZE_EQ (UNDO_MANAGER->undo_stack_->actions_, num_actions_till_now);
+    ASSERT_SIZE_EQ (UNDO_MANAGER->undo_stack_->actions_, num_actions_till_now);
     const auto &undo_stack_actions = UNDO_MANAGER->undo_stack_->actions_;
 
     auto require_frames_per_tick_eq_to_start = [&] (size_t idx) {
-      REQUIRE_FLOAT_EQ (
+      ASSERT_FLOAT_EQ (
         undo_stack_actions[idx]->frames_per_tick_, frames_per_tick_at_start);
     };
 
@@ -2657,17 +2654,17 @@ TEST_CASE_FIXTURE (ZrythmFixture, "test move audio region and lower bpm")
       {
         require_frames_per_tick_eq_to_start (0);
         require_frames_per_tick_eq_to_start (1);
-        REQUIRE_EQ (undo_stack_actions[1]->num_actions_, 2);
+        ASSERT_EQ (undo_stack_actions[1]->num_actions_, 2);
       }
     if (num_actions_till_now > 2)
       {
         require_frames_per_tick_eq_to_start (2);
-        REQUIRE_EQ (undo_stack_actions[2]->num_actions_, 1);
+        ASSERT_EQ (undo_stack_actions[2]->num_actions_, 1);
       }
     if (num_actions_till_now > 3)
       {
         require_frames_per_tick_eq_to_start (3);
-        REQUIRE_EQ (undo_stack_actions[3]->num_actions_, 1);
+        ASSERT_EQ (undo_stack_actions[3]->num_actions_, 1);
       }
   };
 
@@ -2675,10 +2672,10 @@ TEST_CASE_FIXTURE (ZrythmFixture, "test move audio region and lower bpm")
   Position       pos;
   int            track_pos = TRACKLIST->tracks_.size ();
   FileDescriptor file (fs::path (TESTS_SRCDIR) / "test.wav");
-  REQUIRE_NOTHROW (Track::create_with_action (
+  ASSERT_NO_THROW (Track::create_with_action (
     Track::Type::Audio, nullptr, &file, &pos, track_pos, 1, -1, nullptr));
   auto track = TRACKLIST->get_track<AudioTrack> (track_pos);
-  REQUIRE_NONNULL (track);
+  ASSERT_NONNULL (track);
   check_actions (2);
 
   /* move the region */
@@ -2722,9 +2719,9 @@ TEST_CASE_FIXTURE (ZrythmFixture, "test move audio region and lower bpm")
 
 TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete chords")
 {
-  REQUIRE (P_CHORD_TRACK->validate ());
+  ASSERT_TRUE (P_CHORD_TRACK->validate ());
   auto &r = P_CHORD_TRACK->regions_[0];
-  REQUIRE (r->validate (true, 0));
+  ASSERT_TRUE (r->validate (true, 0));
 
   /* add another chord */
   auto c = std::make_shared<ChordObject> (r->id_, 2, 2);
@@ -2736,9 +2733,9 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete chords")
   CHORD_SELECTIONS->clear ();
   CHORD_SELECTIONS->add_object_ref (r->chord_objects_[0]);
   perform_delete (CHORD_SELECTIONS);
-  REQUIRE (r->validate (true, 0));
+  ASSERT_TRUE (r->validate (true, 0));
 
-  REQUIRE_NOTHROW (
+  ASSERT_NO_THROW (
     UNDO_MANAGER->undo (); UNDO_MANAGER->redo (); UNDO_MANAGER->undo ();
     UNDO_MANAGER->undo (); UNDO_MANAGER->redo (); UNDO_MANAGER->undo (););
 }
@@ -2749,19 +2746,19 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "create timeline")
   perform_create (TL_SELECTIONS);
 
   /* check */
-  REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), TOTAL_TL_SELECTIONS);
-  REQUIRE_EQ (MIDI_SELECTIONS->get_num_objects (), 1);
+  ASSERT_EQ (TL_SELECTIONS->get_num_objects (), TOTAL_TL_SELECTIONS);
+  ASSERT_EQ (MIDI_SELECTIONS->get_num_objects (), 1);
   check_vs_original_state (true);
   check_has_single_undo ();
 
   /* undo and check that the objects are deleted */
   UNDO_MANAGER->undo ();
-  REQUIRE_EQ (MIDI_SELECTIONS->get_num_objects (), 0);
+  ASSERT_EQ (MIDI_SELECTIONS->get_num_objects (), 0);
   check_timeline_objects_deleted (true);
 
   /* redo and check that the objects are there */
   UNDO_MANAGER->redo ();
-  REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), TOTAL_TL_SELECTIONS);
+  ASSERT_EQ (TL_SELECTIONS->get_num_objects (), TOTAL_TL_SELECTIONS);
   check_vs_original_state (true);
   check_has_single_undo ();
 }
@@ -2769,35 +2766,35 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "create timeline")
 TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete timeline")
 {
   /* do delete */
-  REQUIRE_NOTHROW (perform_delete (TL_SELECTIONS));
+  ASSERT_NO_THROW (perform_delete (TL_SELECTIONS));
 
-  REQUIRE_NULL (CLIP_EDITOR->get_region ());
+  ASSERT_NULL (CLIP_EDITOR->get_region ());
 
   /* check */
   check_timeline_objects_deleted (false);
-  REQUIRE_EQ (MIDI_SELECTIONS->get_num_objects (), 0);
-  REQUIRE_EQ (CHORD_SELECTIONS->get_num_objects (), 0);
-  REQUIRE_EQ (AUTOMATION_SELECTIONS->get_num_objects (), 0);
+  ASSERT_EQ (MIDI_SELECTIONS->get_num_objects (), 0);
+  ASSERT_EQ (CHORD_SELECTIONS->get_num_objects (), 0);
+  ASSERT_EQ (AUTOMATION_SELECTIONS->get_num_objects (), 0);
 
   /* undo and check that the objects are created */
-  REQUIRE_NOTHROW (UNDO_MANAGER->undo ());
-  REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), TOTAL_TL_SELECTIONS);
+  ASSERT_NO_THROW (UNDO_MANAGER->undo ());
+  ASSERT_EQ (TL_SELECTIONS->get_num_objects (), TOTAL_TL_SELECTIONS);
   check_vs_original_state (true);
   check_has_single_redo ();
 
   /* redo and check that the objects are gone */
   UNDO_MANAGER->redo ();
-  REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), 0);
-  REQUIRE_EQ (MIDI_SELECTIONS->get_num_objects (), 0);
-  REQUIRE_EQ (CHORD_SELECTIONS->get_num_objects (), 0);
-  REQUIRE_EQ (AUTOMATION_SELECTIONS->get_num_objects (), 0);
+  ASSERT_EQ (TL_SELECTIONS->get_num_objects (), 0);
+  ASSERT_EQ (MIDI_SELECTIONS->get_num_objects (), 0);
+  ASSERT_EQ (CHORD_SELECTIONS->get_num_objects (), 0);
+  ASSERT_EQ (AUTOMATION_SELECTIONS->get_num_objects (), 0);
   check_timeline_objects_deleted (false);
 
-  REQUIRE_NULL (CLIP_EDITOR->get_region ());
+  ASSERT_NULL (CLIP_EDITOR->get_region ());
 
   /* undo again to prepare for next test */
   UNDO_MANAGER->undo ();
-  REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), TOTAL_TL_SELECTIONS);
+  ASSERT_EQ (TL_SELECTIONS->get_num_objects (), TOTAL_TL_SELECTIONS);
   check_vs_original_state (true);
   check_has_single_redo ();
 }
@@ -2815,7 +2812,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move audio region and lower samplerate")
   Track::create_with_action (
     Track::Type::Audio, nullptr, &file, &pos, track_pos, 1, -1, nullptr);
   auto track = TRACKLIST->get_track<AudioTrack> (track_pos);
-  REQUIRE_NONNULL (track);
+  ASSERT_NONNULL (track);
 
   /* move the region */
   track->lanes_[0]->regions_[0]->select (true, false, false);
@@ -2826,7 +2823,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move audio region and lower samplerate")
   for (int i = 0; i < 4; i++)
     {
       /* save the project */
-      REQUIRE_NOTHROW (PROJECT->save (PROJECT->dir_, 0, 0, false));
+      ASSERT_NO_THROW (PROJECT->save (PROJECT->dir_, 0, 0, false));
       auto prj_file = fs::path (PROJECT->dir_) / PROJECT_FILE;
 
       /* adjust the samplerate to be given at startup */
@@ -2852,8 +2849,8 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "move timeline")
         }
 
       /* check undo/redo stacks */
-      REQUIRE_EMPTY (*UNDO_MANAGER->undo_stack_);
-      REQUIRE_SIZE_EQ (*UNDO_MANAGER->redo_stack_, i ? 1 : 0);
+      ASSERT_EMPTY (*UNDO_MANAGER->undo_stack_);
+      ASSERT_SIZE_EQ (*UNDO_MANAGER->redo_stack_, i ? 1 : 0);
 
       /* do move ticks */
       UNDO_MANAGER->perform (
@@ -2865,8 +2862,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "move timeline")
 
       /* undo and check that the objects are at their original state*/
       UNDO_MANAGER->undo ();
-      REQUIRE_EQ (
-        TL_SELECTIONS->get_num_objects (), i ? 2 : TOTAL_TL_SELECTIONS);
+      ASSERT_EQ (TL_SELECTIONS->get_num_objects (), i ? 2 : TOTAL_TL_SELECTIONS);
 
       check_vs_original_state (i ? false : true);
       check_has_single_redo ();
@@ -2880,7 +2876,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "move timeline")
       UNDO_MANAGER->undo ();
       if (track_diff)
         {
-          REQUIRE_EQ (TL_SELECTIONS->get_num_objects (), 2);
+          ASSERT_EQ (TL_SELECTIONS->get_num_objects (), 2);
         }
     }
 }

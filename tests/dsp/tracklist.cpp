@@ -22,7 +22,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "handle drop empty midi file")
 {
   FileDescriptor file (fs::path (TESTS_SRCDIR) / "empty_midi_file_type1.mid");
 
-  REQUIRE_THROWS (TRACKLIST->import_files (
+  ASSERT_ANY_THROW (TRACKLIST->import_files (
     nullptr, &file, nullptr, nullptr, -1, &PLAYHEAD, nullptr));
 }
 
@@ -64,24 +64,24 @@ TEST_CASE_FIXTURE (ZrythmFixture, "swap with automation regions")
   auto * track1 = TRACKLIST->get_track (TRACKLIST->get_num_tracks () - 2);
   auto * track2 = TRACKLIST->get_track (TRACKLIST->get_num_tracks () - 1);
   track2->select (true, true, false);
-  REQUIRE (TRACKLIST->validate ());
+  ASSERT_TRUE (TRACKLIST->validate ());
   UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), track1->pos_));
-  REQUIRE (TRACKLIST->validate ());
+  ASSERT_TRUE (TRACKLIST->validate ());
 
   for (int i = 0; i < 7; ++i)
     {
       UNDO_MANAGER->undo ();
-      REQUIRE (TRACKLIST->validate ());
+      ASSERT_TRUE (TRACKLIST->validate ());
     }
 
   test_project_save_and_reload ();
-  REQUIRE (TRACKLIST->validate ());
+  ASSERT_TRUE (TRACKLIST->validate ());
 
   for (int i = 0; i < 7; ++i)
     {
       UNDO_MANAGER->redo ();
-      REQUIRE (TRACKLIST->validate ());
+      ASSERT_TRUE (TRACKLIST->validate ());
     }
 }
 

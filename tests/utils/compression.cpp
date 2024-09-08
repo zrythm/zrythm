@@ -18,7 +18,8 @@ TEST_CASE ("decompression")
 
   GError * err = NULL;
   char *   res_str = compression_decompress_from_base64_str (base64str, &err);
-  REQUIRE (g_str_has_suffix (res_str, ",\"markerTrackVisibilityIndex\":0}}"));
+  ASSERT_TRUE (
+    g_str_has_suffix (res_str, ",\"markerTrackVisibilityIndex\":0}}"));
   g_free (res_str);
 }
 

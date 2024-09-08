@@ -88,23 +88,23 @@ do_takes_no_loop_no_punch (
     }
 
   /* enable recording for master track automation */
-  REQUIRE_GE (master_track->automation_tracklist_->ats_.size (), 3);
+  ASSERT_GE (master_track->automation_tracklist_->ats_.size (), 3);
   latch_at = master_track->automation_tracklist_->ats_[0].get ();
   latch_at->record_mode_ = AutomationRecordMode::Latch;
   latch_at->set_automation_mode (AutomationMode::Record, false);
   latch_port = Port::find_from_identifier<ControlPort> (latch_at->port_id_);
-  REQUIRE_NONNULL (latch_port);
+  ASSERT_NONNULL (latch_port);
   float latch_val_at_start = latch_port->control_;
   touch_at = master_track->automation_tracklist_->ats_[1].get ();
   touch_at->record_mode_ = AutomationRecordMode::Touch;
   touch_at->set_automation_mode (AutomationMode::Record, false);
   touch_port = Port::find_from_identifier<ControlPort> (touch_at->port_id_);
-  REQUIRE_NONNULL (touch_port);
+  ASSERT_NONNULL (touch_port);
   float touch_val_at_start = touch_port->control_;
   // note: was index 1 before (same as above)
   on_at = master_track->automation_tracklist_->ats_.at (2).get ();
   on_port = Port::find_from_identifier<ControlPort> (on_at->port_id_);
-  REQUIRE_NONNULL (on_port);
+  ASSERT_NONNULL (on_port);
   float on_val_at_start = on_port->control_;
 
   set_caches_and_process ();
@@ -113,56 +113,56 @@ do_takes_no_loop_no_punch (
   z_info ("process 1 ended");
 
   /* assert that MIDI events are created */
-  REQUIRE_SIZE_EQ (ins_track->lanes_[0]->regions_, 1);
+  ASSERT_SIZE_EQ (ins_track->lanes_[0]->regions_, 1);
   auto     mr = ins_track->lanes_[0]->regions_[0];
   Position pos;
   pos = TRANSPORT->playhead_pos_;
-  REQUIRE_POSITION_EQ (pos, mr->end_pos_);
+  ASSERT_POSITION_EQ (pos, mr->end_pos_);
   pos.add_frames (-CYCLE_SIZE);
-  REQUIRE_POSITION_EQ (pos, mr->pos_);
+  ASSERT_POSITION_EQ (pos, mr->pos_);
   pos.from_frames (CYCLE_SIZE);
-  REQUIRE_POSITION_EQ (pos, mr->loop_end_pos_);
+  ASSERT_POSITION_EQ (pos, mr->loop_end_pos_);
 
   /* assert that audio events are created */
-  REQUIRE_SIZE_EQ (audio_track->lanes_[0]->regions_, 1);
+  ASSERT_SIZE_EQ (audio_track->lanes_[0]->regions_, 1);
   auto audio_r = audio_track->lanes_[0]->regions_[0];
   pos = TRANSPORT->playhead_pos_;
-  REQUIRE_POSITION_EQ (pos, audio_r->end_pos_);
+  ASSERT_POSITION_EQ (pos, audio_r->end_pos_);
   pos.add_frames (-CYCLE_SIZE);
-  REQUIRE_POSITION_EQ (pos, audio_r->pos_);
+  ASSERT_POSITION_EQ (pos, audio_r->pos_);
   pos.from_frames (CYCLE_SIZE);
-  REQUIRE_POSITION_EQ (pos, audio_r->loop_end_pos_);
+  ASSERT_POSITION_EQ (pos, audio_r->loop_end_pos_);
 
   /* assert that audio is silent */
   AudioClip * clip = audio_r->get_clip ();
-  REQUIRE_EQ (clip->num_frames_, CYCLE_SIZE);
+  ASSERT_EQ (clip->num_frames_, CYCLE_SIZE);
   for (int i = 0; i < 2; i++)
     {
-      REQUIRE (
+      ASSERT_TRUE (
         audio_frames_empty (clip->ch_frames_.getReadPointer (i), CYCLE_SIZE));
     }
 
   /* assert that automation events are created */
-  REQUIRE_SIZE_EQ (latch_at->regions_, 1);
+  ASSERT_SIZE_EQ (latch_at->regions_, 1);
   auto latch_r = latch_at->regions_[0];
   pos = TRANSPORT->playhead_pos_;
-  REQUIRE_POSITION_EQ (pos, latch_r->end_pos_);
+  ASSERT_POSITION_EQ (pos, latch_r->end_pos_);
   pos.add_frames (-CYCLE_SIZE);
-  REQUIRE_POSITION_EQ (pos, latch_r->pos_);
+  ASSERT_POSITION_EQ (pos, latch_r->pos_);
   pos.from_frames (CYCLE_SIZE);
-  REQUIRE_POSITION_EQ (pos, latch_r->loop_end_pos_);
-  REQUIRE_EMPTY (touch_at->regions_);
-  REQUIRE_EMPTY (on_at->regions_);
-  REQUIRE_FLOAT_NEAR (latch_val_at_start, latch_port->control_, 0.0001f);
-  REQUIRE_FLOAT_NEAR (touch_val_at_start, touch_port->control_, 0.0001f);
-  REQUIRE_FLOAT_NEAR (on_val_at_start, on_port->control_, 0.0001f);
+  ASSERT_POSITION_EQ (pos, latch_r->loop_end_pos_);
+  ASSERT_EMPTY (touch_at->regions_);
+  ASSERT_EMPTY (on_at->regions_);
+  ASSERT_NEAR (latch_val_at_start, latch_port->control_, 0.0001f);
+  ASSERT_NEAR (touch_val_at_start, touch_port->control_, 0.0001f);
+  ASSERT_NEAR (on_val_at_start, on_port->control_, 0.0001f);
 
   /* assert that automation points are created */
-  REQUIRE_SIZE_EQ (latch_r->aps_, 1);
+  ASSERT_SIZE_EQ (latch_r->aps_, 1);
   auto ap = latch_r->aps_[0].get ();
   pos.zero ();
-  REQUIRE_POSITION_EQ (pos, ap->pos_);
-  REQUIRE_FLOAT_NEAR (ap->fvalue_, latch_val_at_start, 0.0001f);
+  ASSERT_POSITION_EQ (pos, ap->pos_);
+  ASSERT_NEAR (ap->fvalue_, latch_val_at_start, 0.0001f);
 
   /* send a MIDI event */
   auto port = ins_track->processor_->midi_in_.get ();
@@ -188,66 +188,64 @@ do_takes_no_loop_no_punch (
   /* verify MIDI region positions */
   long r_length_frames = mr->get_length_in_frames ();
   pos.set_to_bar (PLAYHEAD_START_BAR);
-  REQUIRE_POSITION_EQ (pos, mr->pos_);
+  ASSERT_POSITION_EQ (pos, mr->pos_);
   pos.zero ();
   pos.add_frames (r_length_frames);
-  REQUIRE_POSITION_EQ (pos, mr->loop_end_pos_);
+  ASSERT_POSITION_EQ (pos, mr->loop_end_pos_);
   pos = TRANSPORT->playhead_pos_;
-  REQUIRE_POSITION_EQ (pos, mr->end_pos_);
+  ASSERT_POSITION_EQ (pos, mr->end_pos_);
 
   /* verify that MIDI region contains the note at the
    * correct position */
-  REQUIRE_SIZE_EQ (mr->midi_notes_, 1);
+  ASSERT_SIZE_EQ (mr->midi_notes_, 1);
   auto mn = mr->midi_notes_[0];
-  REQUIRE_EQ (mn->val_, NOTE_PITCH);
+  ASSERT_EQ (mn->val_, NOTE_PITCH);
   long mn_length_frames = mn->get_length_in_frames ();
-  REQUIRE_EQ (mn_length_frames, CYCLE_SIZE);
+  ASSERT_EQ (mn_length_frames, CYCLE_SIZE);
   pos.from_frames (CYCLE_SIZE);
-  REQUIRE_POSITION_EQ (mn->pos_, pos);
+  ASSERT_POSITION_EQ (mn->pos_, pos);
 
   /* verify audio region positions */
   r_length_frames = audio_r->get_length_in_frames ();
   pos.set_to_bar (PLAYHEAD_START_BAR);
-  REQUIRE_POSITION_EQ (pos, audio_r->pos_);
+  ASSERT_POSITION_EQ (pos, audio_r->pos_);
   pos.zero ();
   pos.add_frames (r_length_frames);
-  REQUIRE_POSITION_EQ (pos, audio_r->loop_end_pos_);
+  ASSERT_POSITION_EQ (pos, audio_r->loop_end_pos_);
   pos = TRANSPORT->playhead_pos_;
-  REQUIRE_POSITION_EQ (pos, audio_r->end_pos_);
+  ASSERT_POSITION_EQ (pos, audio_r->end_pos_);
 
   /* verify audio region contains the correct
    * audio data */
   clip = audio_r->get_clip ();
-  REQUIRE_EQ (clip->num_frames_, CYCLE_SIZE * 2);
+  ASSERT_EQ (clip->num_frames_, CYCLE_SIZE * 2);
   for (nframes_t i = CYCLE_SIZE; i < 2 * CYCLE_SIZE; i++)
     {
-      REQUIRE_FLOAT_NEAR (
-        clip->ch_frames_.getSample (0, i), AUDIO_VAL, 0.000001f);
-      REQUIRE_FLOAT_NEAR (
-        clip->ch_frames_.getSample (1, i), -AUDIO_VAL, 0.000001f);
+      ASSERT_NEAR (clip->ch_frames_.getSample (0, i), AUDIO_VAL, 0.000001f);
+      ASSERT_NEAR (clip->ch_frames_.getSample (1, i), -AUDIO_VAL, 0.000001f);
     }
 
   /* verify automation region positions */
   r_length_frames = latch_r->get_length_in_frames ();
   pos.set_to_bar (PLAYHEAD_START_BAR);
-  REQUIRE_POSITION_EQ (pos, latch_r->pos_);
+  ASSERT_POSITION_EQ (pos, latch_r->pos_);
   pos.zero ();
   pos.add_frames (r_length_frames);
-  REQUIRE_POSITION_EQ (pos, latch_r->loop_end_pos_);
+  ASSERT_POSITION_EQ (pos, latch_r->loop_end_pos_);
   pos = TRANSPORT->playhead_pos_;
-  REQUIRE_POSITION_EQ (pos, latch_r->end_pos_);
+  ASSERT_POSITION_EQ (pos, latch_r->end_pos_);
 
   /* verify automation data is added */
-  REQUIRE_SIZE_EQ (latch_r->aps_, 2);
+  ASSERT_SIZE_EQ (latch_r->aps_, 2);
   ap = latch_r->aps_[0].get ();
   pos.zero ();
-  REQUIRE_POSITION_EQ (pos, ap->pos_);
-  REQUIRE_FLOAT_NEAR (ap->fvalue_, latch_val_at_start, 0.0001f);
+  ASSERT_POSITION_EQ (pos, ap->pos_);
+  ASSERT_NEAR (ap->fvalue_, latch_val_at_start, 0.0001f);
   ap = latch_r->aps_[1].get ();
   pos.zero ();
   pos.add_frames (CYCLE_SIZE);
-  REQUIRE_POSITION_EQ (pos, ap->pos_);
-  REQUIRE_FLOAT_NEAR (ap->fvalue_, AUTOMATION_VAL, 0.0001f);
+  ASSERT_POSITION_EQ (pos, ap->pos_);
+  ASSERT_NEAR (ap->fvalue_, AUTOMATION_VAL, 0.0001f);
 
   /* stop recording */
   ins_track->set_recording (false, false);
@@ -259,7 +257,7 @@ do_takes_no_loop_no_punch (
   TRANSPORT->request_pause (true);
   RECORDING_MANAGER->process_events ();
 
-  REQUIRE_EQ (RECORDING_MANAGER->num_active_recordings_, 0);
+  ASSERT_EQ (RECORDING_MANAGER->num_active_recordings_, 0);
 
   z_info ("process 3 ended");
 
@@ -306,24 +304,24 @@ do_takes_loop_no_punch (
     }
 
   /* enable recording for master track automation */
-  REQUIRE_GE (master_track->automation_tracklist_->ats_.size (), 3);
+  ASSERT_GE (master_track->automation_tracklist_->ats_.size (), 3);
   latch_at = master_track->automation_tracklist_->ats_[0].get ();
   latch_at->record_mode_ = AutomationRecordMode::Latch;
   latch_at->set_automation_mode (AutomationMode::Record, false);
   latch_port = Port::find_from_identifier<ControlPort> (latch_at->port_id_);
-  REQUIRE_NONNULL (latch_port);
+  ASSERT_NONNULL (latch_port);
   float latch_val_at_start = latch_port->control_;
   touch_at = master_track->automation_tracklist_->ats_[1].get ();
   touch_at->record_mode_ = AutomationRecordMode::Touch;
   touch_at->set_automation_mode (AutomationMode::Record, false);
   touch_port = Port::find_from_identifier<ControlPort> (touch_at->port_id_);
-  REQUIRE_NONNULL (touch_port);
+  ASSERT_NONNULL (touch_port);
   float touch_val_at_start = touch_port->control_;
   // FIXME ???
   z_return_if_reached ();
   on_at = master_track->automation_tracklist_->ats_[1].get ();
   on_port = Port::find_from_identifier<ControlPort> (on_at->port_id_);
-  REQUIRE_NONNULL (on_port);
+  ASSERT_NONNULL (on_port);
   float on_val_at_start = on_port->control_;
 
   /* run the engine for 1 cycle */
@@ -334,93 +332,93 @@ do_takes_loop_no_punch (
 
   /* assert that MIDI events are created */
   /* FIXME this assumes it runs after the first test */
-  REQUIRE_SIZE_EQ (ins_track->lanes_[1]->regions_, 1);
-  REQUIRE_SIZE_EQ (ins_track->lanes_[2]->regions_, 1);
+  ASSERT_SIZE_EQ (ins_track->lanes_[1]->regions_, 1);
+  ASSERT_SIZE_EQ (ins_track->lanes_[2]->regions_, 1);
   auto mr = ins_track->lanes_[1]->regions_[0].get ();
   pos = TRANSPORT->loop_end_pos_;
-  REQUIRE_POSITION_EQ (pos, mr->end_pos_);
+  ASSERT_POSITION_EQ (pos, mr->end_pos_);
   pos.add_frames (-FRAMES_BEFORE_LOOP);
-  REQUIRE_POSITION_EQ (pos, mr->pos_);
+  ASSERT_POSITION_EQ (pos, mr->pos_);
   pos.from_frames (FRAMES_BEFORE_LOOP);
-  REQUIRE_POSITION_EQ (pos, mr->loop_end_pos_);
+  ASSERT_POSITION_EQ (pos, mr->loop_end_pos_);
   mr = ins_track->lanes_[2]->regions_[0].get ();
   pos = TRANSPORT->loop_start_pos_;
-  REQUIRE_POSITION_EQ (pos, mr->pos_);
+  ASSERT_POSITION_EQ (pos, mr->pos_);
   pos.add_frames (CYCLE_SIZE - FRAMES_BEFORE_LOOP);
-  REQUIRE_POSITION_EQ (pos, mr->end_pos_);
+  ASSERT_POSITION_EQ (pos, mr->end_pos_);
   pos.from_frames (CYCLE_SIZE - FRAMES_BEFORE_LOOP);
-  REQUIRE_POSITION_EQ (pos, mr->loop_end_pos_);
+  ASSERT_POSITION_EQ (pos, mr->loop_end_pos_);
 
   /* assert that audio events are created */
-  REQUIRE_SIZE_EQ (audio_track->lanes_[1]->regions_, 1);
-  REQUIRE_SIZE_EQ (audio_track->lanes_[2]->regions_, 1);
+  ASSERT_SIZE_EQ (audio_track->lanes_[1]->regions_, 1);
+  ASSERT_SIZE_EQ (audio_track->lanes_[2]->regions_, 1);
   auto audio_r = audio_track->lanes_[1]->regions_[0].get ();
   pos = TRANSPORT->loop_end_pos_;
-  REQUIRE_POSITION_EQ (pos, audio_r->end_pos_);
+  ASSERT_POSITION_EQ (pos, audio_r->end_pos_);
   pos.add_frames (-FRAMES_BEFORE_LOOP);
-  REQUIRE_POSITION_EQ (pos, audio_r->pos_);
+  ASSERT_POSITION_EQ (pos, audio_r->pos_);
   pos.from_frames (FRAMES_BEFORE_LOOP);
-  REQUIRE_POSITION_EQ (pos, audio_r->loop_end_pos_);
+  ASSERT_POSITION_EQ (pos, audio_r->loop_end_pos_);
   /* assert that audio is silent */
   AudioClip * clip = audio_r->get_clip ();
-  REQUIRE_EQ (clip->num_frames_, FRAMES_BEFORE_LOOP);
+  ASSERT_EQ (clip->num_frames_, FRAMES_BEFORE_LOOP);
   for (nframes_t i = 0; i < (nframes_t) FRAMES_BEFORE_LOOP; i++)
     {
-      REQUIRE_FLOAT_NEAR (clip->ch_frames_.getSample (0, i), 0.f, 0.000001f);
-      REQUIRE_FLOAT_NEAR (clip->ch_frames_.getSample (1, i), 0.f, 0.000001f);
+      ASSERT_NEAR (clip->ch_frames_.getSample (0, i), 0.f, 0.000001f);
+      ASSERT_NEAR (clip->ch_frames_.getSample (1, i), 0.f, 0.000001f);
     }
   audio_r = audio_track->lanes_[2]->regions_[0].get ();
   pos = TRANSPORT->loop_start_pos_;
-  REQUIRE_POSITION_EQ (pos, audio_r->pos_);
+  ASSERT_POSITION_EQ (pos, audio_r->pos_);
   pos.add_frames (CYCLE_SIZE - FRAMES_BEFORE_LOOP);
-  REQUIRE_POSITION_EQ (pos, audio_r->end_pos_);
+  ASSERT_POSITION_EQ (pos, audio_r->end_pos_);
   pos.from_frames (CYCLE_SIZE - FRAMES_BEFORE_LOOP);
-  REQUIRE_POSITION_EQ (pos, audio_r->loop_end_pos_);
+  ASSERT_POSITION_EQ (pos, audio_r->loop_end_pos_);
   /* assert that audio is silent */
   clip = audio_r->get_clip ();
-  REQUIRE_EQ (clip->num_frames_, CYCLE_SIZE - FRAMES_BEFORE_LOOP);
+  ASSERT_EQ (clip->num_frames_, CYCLE_SIZE - FRAMES_BEFORE_LOOP);
   for (nframes_t i = 0; i < CYCLE_SIZE - (nframes_t) FRAMES_BEFORE_LOOP; i++)
     {
-      REQUIRE_FLOAT_NEAR (clip->ch_frames_.getSample (0, i), 0.f, 0.000001f);
-      REQUIRE_FLOAT_NEAR (clip->ch_frames_.getSample (1, i), 0.f, 0.000001f);
+      ASSERT_NEAR (clip->ch_frames_.getSample (0, i), 0.f, 0.000001f);
+      ASSERT_NEAR (clip->ch_frames_.getSample (1, i), 0.f, 0.000001f);
     }
 
   /* assert that automation events are created */
-  REQUIRE_SIZE_EQ (latch_at->regions_, 2);
+  ASSERT_SIZE_EQ (latch_at->regions_, 2);
   auto latch_r = latch_at->regions_[0].get ();
   pos = TRANSPORT->loop_end_pos_;
-  REQUIRE_POSITION_EQ (pos, latch_r->end_pos_);
+  ASSERT_POSITION_EQ (pos, latch_r->end_pos_);
   pos.add_frames (-FRAMES_BEFORE_LOOP);
-  REQUIRE_POSITION_EQ (pos, latch_r->pos_);
+  ASSERT_POSITION_EQ (pos, latch_r->pos_);
   pos.from_frames (FRAMES_BEFORE_LOOP);
-  REQUIRE_POSITION_EQ (pos, latch_r->loop_end_pos_);
+  ASSERT_POSITION_EQ (pos, latch_r->loop_end_pos_);
   latch_r = latch_at->regions_[1].get ();
   pos = TRANSPORT->loop_start_pos_;
-  REQUIRE_POSITION_EQ (pos, latch_r->pos_);
+  ASSERT_POSITION_EQ (pos, latch_r->pos_);
   pos.add_frames (CYCLE_SIZE - FRAMES_BEFORE_LOOP);
-  REQUIRE_POSITION_EQ (pos, latch_r->end_pos_);
+  ASSERT_POSITION_EQ (pos, latch_r->end_pos_);
   pos.from_frames (CYCLE_SIZE - FRAMES_BEFORE_LOOP);
-  REQUIRE_POSITION_EQ (pos, latch_r->loop_end_pos_);
+  ASSERT_POSITION_EQ (pos, latch_r->loop_end_pos_);
 
-  REQUIRE_EMPTY (touch_at->regions_);
-  REQUIRE_EMPTY (on_at->regions_);
-  REQUIRE_FLOAT_NEAR (latch_val_at_start, latch_port->control_, 0.0001f);
-  REQUIRE_FLOAT_NEAR (touch_val_at_start, touch_port->control_, 0.0001f);
-  REQUIRE_FLOAT_NEAR (on_val_at_start, on_port->control_, 0.0001f);
+  ASSERT_EMPTY (touch_at->regions_);
+  ASSERT_EMPTY (on_at->regions_);
+  ASSERT_NEAR (latch_val_at_start, latch_port->control_, 0.0001f);
+  ASSERT_NEAR (touch_val_at_start, touch_port->control_, 0.0001f);
+  ASSERT_NEAR (on_val_at_start, on_port->control_, 0.0001f);
 
   /* assert that automation points are created */
   latch_r = latch_at->regions_[0].get ();
-  REQUIRE_SIZE_EQ (latch_r->aps_, 1);
+  ASSERT_SIZE_EQ (latch_r->aps_, 1);
   auto ap = latch_r->aps_[0].get ();
   pos.zero ();
-  REQUIRE_POSITION_EQ (pos, ap->pos_);
-  REQUIRE_FLOAT_NEAR (ap->fvalue_, latch_val_at_start, 0.0001f);
+  ASSERT_POSITION_EQ (pos, ap->pos_);
+  ASSERT_NEAR (ap->fvalue_, latch_val_at_start, 0.0001f);
 #if 0
   ap = latch_r->aps_[1];
   ap_obj = (ArrangerObject *) ap;
   position_from_frames (&pos, FRAMES_BEFORE_LOOP);
-  REQUIRE_POSITION_EQ (pos, ap_obj->pos);
-  REQUIRE_FLOAT_NEAR (
+  ASSERT_POSITION_EQ (pos, ap_obj->pos);
+  ASSERT_NEAR (
     ap->fvalue, latch_val_at_start, 0.0001f);
 #endif
 
@@ -458,39 +456,39 @@ do_takes_loop_no_punch (
   long r_length_frames =
     arranger_object_get_length_in_frames (mr_obj);
   pos.set_to_bar (PLAYHEAD_START_BAR);
-  REQUIRE_POSITION_EQ (pos, mr_obj->pos);
+  ASSERT_POSITION_EQ (pos, mr_obj->pos);
   pos.zero();
   pos.add_frames (r_length_frames);
-  REQUIRE_POSITION_EQ (pos, mr_obj->loop_end_pos_);
+  ASSERT_POSITION_EQ (pos, mr_obj->loop_end_pos_);
   position_set_to_pos (
     &pos, &TRANSPORT->playhead_pos);
-  REQUIRE_POSITION_EQ (pos, mr_obj->end_pos_);
+  ASSERT_POSITION_EQ (pos, mr_obj->end_pos_);
 
   /* verify that MIDI region contains the note at the
    * correct position */
-  REQUIRE_EQ (mr->num_midi_notes, 1);
+  ASSERT_EQ (mr->num_midi_notes, 1);
   MidiNote * mn = mr->midi_notes[0];
   ArrangerObject * mn_obj = (ArrangerObject *) mn;
-  REQUIRE_EQ (mn->val, NOTE_PITCH);
+  ASSERT_EQ (mn->val, NOTE_PITCH);
   long mn_length_frames =
     arranger_object_get_length_in_frames (mn_obj);
   g_assert_cmpint (
     mn_length_frames, ==, CYCLE_SIZE);
   position_from_frames (&pos, CYCLE_SIZE);
-  REQUIRE_POSITION_EQ (mn_obj->pos, pos);
+  ASSERT_POSITION_EQ (mn_obj->pos, pos);
 
   /* verify audio region positions */
   r_length_frames =
     arranger_object_get_length_in_frames (
       audio_r_obj);
   pos.set_to_bar (PLAYHEAD_START_BAR);
-  REQUIRE_POSITION_EQ (pos, audio_r_obj->pos);
+  ASSERT_POSITION_EQ (pos, audio_r_obj->pos);
   pos.zero();
   pos.add_frames (r_length_frames);
-  REQUIRE_POSITION_EQ (pos, audio_r_obj->loop_end_pos_);
+  ASSERT_POSITION_EQ (pos, audio_r_obj->loop_end_pos_);
   position_set_to_pos (
     &pos, &TRANSPORT->playhead_pos);
-  REQUIRE_POSITION_EQ (pos, audio_r_obj->end_pos_);
+  ASSERT_POSITION_EQ (pos, audio_r_obj->end_pos_);
 
   /* verify audio region contains the correct
    * audio data */
@@ -499,10 +497,10 @@ do_takes_loop_no_punch (
   for (nframes_t i = CYCLE_SIZE;
        i < 2 * CYCLE_SIZE; i++)
     {
-      REQUIRE_FLOAT_NEAR (
+      ASSERT_NEAR (
         audio_r->ch_frames[0][i], AUDIO_VAL,
         0.000001f);
-      REQUIRE_FLOAT_NEAR (
+      ASSERT_NEAR (
         audio_r->ch_frames[1][i], - AUDIO_VAL,
         0.000001f);
     }
@@ -512,29 +510,29 @@ do_takes_loop_no_punch (
     arranger_object_get_length_in_frames (
       latch_r_obj);
   pos.set_to_bar (PLAYHEAD_START_BAR);
-  REQUIRE_POSITION_EQ (pos, latch_r_obj->pos);
+  ASSERT_POSITION_EQ (pos, latch_r_obj->pos);
   pos.zero();
   pos.add_frames (r_length_frames);
   g_assert_cmppos (
     &pos, &latch_r_obj->loop_end_pos_);
   position_set_to_pos (
     &pos, &TRANSPORT->playhead_pos);
-  REQUIRE_POSITION_EQ (pos, latch_r_obj->end_pos_);
+  ASSERT_POSITION_EQ (pos, latch_r_obj->end_pos_);
 
   /* verify automation data is added */
-  REQUIRE_EQ (latch_r->num_aps, 2);
+  ASSERT_EQ (latch_r->num_aps, 2);
   ap = latch_r->aps_[0];
   ap_obj = (ArrangerObject *) ap;
   pos.zero();
-  REQUIRE_POSITION_EQ (pos, ap_obj->pos);
-  REQUIRE_FLOAT_NEAR (
+  ASSERT_POSITION_EQ (pos, ap_obj->pos);
+  ASSERT_NEAR (
     ap->fvalue, latch_val_at_start, 0.0001f);
   ap = latch_r->aps_[1];
   ap_obj = (ArrangerObject *) ap;
   pos.zero();
   pos.add_frames (CYCLE_SIZE);
-  REQUIRE_POSITION_EQ (pos, ap_obj->pos);
-  REQUIRE_FLOAT_NEAR (
+  ASSERT_POSITION_EQ (pos, ap_obj->pos);
+  ASSERT_NEAR (
     ap->fvalue, AUTOMATION_VAL, 0.0001f);
 
   /* stop recording */
@@ -566,12 +564,12 @@ test_recording_takes (
   const int ins_track_pos = ins_track->pos_;
   const int audio_track_pos = audio_track->pos_;
   const int master_track_pos = master_track->pos_;
-  REQUIRE_LT (audio_track_pos, TRACKLIST->get_num_tracks ());
+  ASSERT_LT (audio_track_pos, TRACKLIST->get_num_tracks ());
 
   prepare ();
   do_takes_no_loop_no_punch (ins_track, audio_track, master_track);
 
-  REQUIRE_LT (audio_track_pos, TRACKLIST->get_num_tracks ());
+  ASSERT_LT (audio_track_pos, TRACKLIST->get_num_tracks ());
   ins_track = TRACKLIST->get_track<InstrumentTrack> (ins_track_pos);
   audio_track = TRACKLIST->get_track<AudioTrack> (audio_track_pos);
   master_track = TRACKLIST->get_track<MasterTrack> (master_track_pos);
@@ -593,7 +591,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "recording")
 
   /* create an audio track */
   auto audio_track = Track::create_empty_with_action<AudioTrack> ();
-  REQUIRE (IS_TRACK_AND_NONNULL (audio_track));
+  ASSERT_TRUE (IS_TRACK_AND_NONNULL (audio_track));
 
   /* get master track */
   auto master_track = P_MASTER_TRACK;
@@ -639,12 +637,12 @@ TEST_CASE_FIXTURE (ZrythmFixture, "automation touch recording")
   AutomationTrack * touch_at;
 
   /* enable recording for automation */
-  REQUIRE_GE (ins_track->automation_tracklist_->ats_.size (), 3);
+  ASSERT_GE (ins_track->automation_tracklist_->ats_.size (), 3);
   touch_at = ins_track->automation_tracklist_->ats_[1].get ();
   touch_at->record_mode_ = AutomationRecordMode::Touch;
   touch_at->set_automation_mode (AutomationMode::Record, false);
   touch_port = Port::find_from_identifier<ControlPort> (touch_at->port_id_);
-  REQUIRE_NONNULL (touch_port);
+  ASSERT_NONNULL (touch_port);
   float touch_val_at_start = 0.1f;
   touch_port->set_control_value (touch_val_at_start, F_NOT_NORMALIZED, false);
 
@@ -657,7 +655,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "automation touch recording")
   AutomationRegion * touch_r;
 
   /* assert that automation events are created */
-  REQUIRE_SIZE_EQ (touch_at->regions_, 1);
+  ASSERT_SIZE_EQ (touch_at->regions_, 1);
 
   /* alter automation */
   float touch_val_at_end = 0.2f;
@@ -669,36 +667,36 @@ TEST_CASE_FIXTURE (ZrythmFixture, "automation touch recording")
   z_info ("--- processing recording events...");
   RECORDING_MANAGER->process_events ();
 
-  REQUIRE_SIZE_EQ (touch_at->regions_, 2);
+  ASSERT_SIZE_EQ (touch_at->regions_, 2);
   touch_r = touch_at->regions_[0].get ();
   pos = TRANSPORT->loop_end_pos_;
-  REQUIRE_POSITION_EQ (pos, touch_r->end_pos_);
+  ASSERT_POSITION_EQ (pos, touch_r->end_pos_);
   pos.add_frames (-(CYCLE_SIZE + FRAMES_BEFORE_LOOP));
-  REQUIRE_POSITION_EQ (pos, touch_r->pos_);
+  ASSERT_POSITION_EQ (pos, touch_r->pos_);
   pos.from_frames ((CYCLE_SIZE + FRAMES_BEFORE_LOOP));
-  REQUIRE_POSITION_EQ (pos, touch_r->loop_end_pos_);
+  ASSERT_POSITION_EQ (pos, touch_r->loop_end_pos_);
   touch_r = touch_at->regions_[1].get ();
   pos = TRANSPORT->loop_start_pos_;
-  REQUIRE_POSITION_EQ (pos, touch_r->pos_);
+  ASSERT_POSITION_EQ (pos, touch_r->pos_);
   pos.add_frames (CYCLE_SIZE - FRAMES_BEFORE_LOOP);
-  REQUIRE_POSITION_EQ (pos, touch_r->end_pos_);
+  ASSERT_POSITION_EQ (pos, touch_r->end_pos_);
   pos.from_frames (CYCLE_SIZE - FRAMES_BEFORE_LOOP);
-  REQUIRE_POSITION_EQ (pos, touch_r->loop_end_pos_);
+  ASSERT_POSITION_EQ (pos, touch_r->loop_end_pos_);
 
 #undef FRAMES_BEFORE_LOOP
 
   /* assert that automation points are created */
   touch_r = touch_at->regions_[0].get ();
-  REQUIRE_SIZE_EQ (touch_r->aps_, 2);
+  ASSERT_SIZE_EQ (touch_r->aps_, 2);
   auto ap = touch_r->aps_[0].get ();
   pos.zero ();
-  REQUIRE_POSITION_EQ (pos, ap->pos_);
-  REQUIRE_FLOAT_NEAR (ap->fvalue_, touch_val_at_start, 0.0001f);
+  ASSERT_POSITION_EQ (pos, ap->pos_);
+  ASSERT_NEAR (ap->fvalue_, touch_val_at_start, 0.0001f);
   ap = touch_r->aps_[1].get ();
   pos.zero ();
   pos.add_frames (CYCLE_SIZE);
-  REQUIRE_POSITION_EQ (pos, ap->pos_);
-  REQUIRE_FLOAT_NEAR (ap->fvalue_, touch_val_at_end, 0.0001f);
+  ASSERT_POSITION_EQ (pos, ap->pos_);
+  ASSERT_NEAR (ap->fvalue_, touch_val_at_end, 0.0001f);
 }
 
 TEST_CASE_FIXTURE (ZrythmFixture, "mono recording")
@@ -743,24 +741,22 @@ TEST_CASE_FIXTURE (ZrythmFixture, "mono recording")
   AudioRegion * audio_r;
 
   /* assert that audio events are created */
-  REQUIRE_SIZE_EQ (audio_track->lanes_[0]->regions_, 1);
+  ASSERT_SIZE_EQ (audio_track->lanes_[0]->regions_, 1);
   audio_r = audio_track->lanes_[0]->regions_[0].get ();
   pos = TRANSPORT->playhead_pos_;
-  REQUIRE_POSITION_EQ (pos, audio_r->end_pos_);
+  ASSERT_POSITION_EQ (pos, audio_r->end_pos_);
   pos.add_frames (-CYCLE_SIZE);
-  REQUIRE_POSITION_EQ (pos, audio_r->pos_);
+  ASSERT_POSITION_EQ (pos, audio_r->pos_);
   pos.from_frames (CYCLE_SIZE);
-  REQUIRE_POSITION_EQ (pos, audio_r->loop_end_pos_);
+  ASSERT_POSITION_EQ (pos, audio_r->loop_end_pos_);
 
   /* assert that audio is correct */
   auto clip = audio_r->get_clip ();
-  REQUIRE_EQ (clip->num_frames_, CYCLE_SIZE);
+  ASSERT_EQ (clip->num_frames_, CYCLE_SIZE);
   for (nframes_t i = 0; i < CYCLE_SIZE; i++)
     {
-      REQUIRE_FLOAT_NEAR (
-        clip->ch_frames_.getSample (0, i), AUDIO_VAL, 0.000001f);
-      REQUIRE_FLOAT_NEAR (
-        clip->ch_frames_.getSample (1, i), AUDIO_VAL, 0.000001f);
+      ASSERT_NEAR (clip->ch_frames_.getSample (0, i), AUDIO_VAL, 0.000001f);
+      ASSERT_NEAR (clip->ch_frames_.getSample (1, i), AUDIO_VAL, 0.000001f);
     }
 
   /* stop recording */
@@ -835,22 +831,22 @@ TEST_CASE_FIXTURE (ZrythmFixture, "long audio recording")
       RECORDING_MANAGER->process_events ();
 
       /* assert that audio events are created */
-      REQUIRE_SIZE_EQ (audio_track->lanes_[0]->regions_, 1);
+      ASSERT_SIZE_EQ (audio_track->lanes_[0]->regions_, 1);
       audio_r = audio_track->lanes_[0]->regions_[0].get ();
       pos = TRANSPORT->playhead_pos_;
-      REQUIRE_POSITION_EQ (pos, audio_r->end_pos_);
+      ASSERT_POSITION_EQ (pos, audio_r->end_pos_);
       pos.add_frames (-CYCLE_SIZE);
-      REQUIRE_POSITION_EQ (init_pos, audio_r->pos_);
+      ASSERT_POSITION_EQ (init_pos, audio_r->pos_);
 
       /* assert that audio is correct */
       AudioClip * r_clip = audio_r->get_clip ();
-      REQUIRE_EQ (r_clip->num_frames_, processed_ch_frames);
+      ASSERT_EQ (r_clip->num_frames_, processed_ch_frames);
       for (nframes_t i = 0; i < processed_ch_frames; i++)
         {
-          REQUIRE_FLOAT_NEAR (
+          ASSERT_NEAR (
             r_clip->ch_frames_.getSample (0, i),
             clip.ch_frames_.getSample (0, i), 0.000001f);
-          REQUIRE_FLOAT_NEAR (
+          ASSERT_NEAR (
             r_clip->ch_frames_.getSample (1, i),
             clip.ch_frames_.getSample (1, i), 0.000001f);
         }
@@ -885,7 +881,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "long audio recording")
   /* load the region file and check that
    * frames are correct */
   audio_track = TRACKLIST->get_last_track<AudioTrack> ();
-  REQUIRE_SIZE_EQ (audio_track->lanes_[0]->regions_, 1);
+  ASSERT_SIZE_EQ (audio_track->lanes_[0]->regions_, 1);
   audio_r = audio_track->lanes_[0]->regions_[0].get ();
   AudioClip * r_clip = audio_r->get_clip ();
   AudioClip   new_clip (r_clip->get_path_in_pool (false));
@@ -962,22 +958,20 @@ TEST_CASE_FIXTURE (
       RECORDING_MANAGER->process_events ();
 
       /* assert that audio events are created */
-      REQUIRE_SIZE_EQ (audio_track->lanes_[1]->regions_, 1);
+      ASSERT_SIZE_EQ (audio_track->lanes_[1]->regions_, 1);
       auto audio_r = audio_track->lanes_[1]->regions_[0].get ();
       pos = TRANSPORT->playhead_pos_;
-      REQUIRE_POSITION_EQ (pos, audio_r->end_pos_);
+      ASSERT_POSITION_EQ (pos, audio_r->end_pos_);
       pos.add_frames (-CYCLE_SIZE);
-      REQUIRE_POSITION_EQ (init_pos, audio_r->pos_);
+      ASSERT_POSITION_EQ (init_pos, audio_r->pos_);
 
       /* assert that audio is silent */
       AudioClip * r_clip = audio_r->get_clip ();
-      REQUIRE_EQ (r_clip->num_frames_, processed_ch_frames);
+      ASSERT_EQ (r_clip->num_frames_, processed_ch_frames);
       for (nframes_t i = 0; i < processed_ch_frames; i++)
         {
-          REQUIRE_FLOAT_NEAR (
-            r_clip->ch_frames_.getSample (0, i), 0.f, 0.000001f);
-          REQUIRE_FLOAT_NEAR (
-            r_clip->ch_frames_.getSample (1, i), 0.f, 0.000001f);
+          ASSERT_NEAR (r_clip->ch_frames_.getSample (0, i), 0.f, 0.000001f);
+          ASSERT_NEAR (r_clip->ch_frames_.getSample (1, i), 0.f, 0.000001f);
         }
     }
 
@@ -1030,7 +1024,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "chord track recording")
     }
 
   /* assert that no events are created for now */
-  REQUIRE_SIZE_EQ (P_CHORD_TRACK->regions_, 1);
+  ASSERT_SIZE_EQ (P_CHORD_TRACK->regions_, 1);
 
   /* stop recording */
   if (P_CHORD_TRACK->can_record ())

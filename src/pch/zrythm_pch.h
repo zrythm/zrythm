@@ -34,7 +34,8 @@
 #include <magic_enum_all.hpp>
 #pragma GCC diagnostic pop
 
-#include "doctest_wrapper.h"
+#include "utils/gtest_wrapper.h"
+
 #include <fmt/format.h>
 #include <fmt/printf.h>
 

@@ -26,10 +26,10 @@
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
-#include "utils/arrays.h"
 #include "utils/datetime.h"
 #include "utils/exceptions.h"
 #include "utils/file.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/logger.h"
@@ -41,7 +41,6 @@
 
 #include <glib/gi18n.h>
 
-#include "doctest_wrapper.h"
 #include "ext/juce/juce.h"
 #include "gtk_wrapper.h"
 #include <fmt/printf.h>

@@ -5,7 +5,7 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "doctest_wrapper.h"
+#include "utils/gtest_wrapper.h"
 #define DEBUG_OBJECT_POOL 1
 #include "utils/object_pool.h"
 
@@ -20,8 +20,8 @@ test_with_size (size_t initial_cap, int num_elems, size_t expected_end_cap)
     int b;
   };
   ObjectPool<TestStruct> pool{ initial_cap };
-  REQUIRE_EQ (pool.get_capacity (), initial_cap);
-  REQUIRE_EQ (pool.get_size (), initial_cap);
+  ASSERT_EQ (pool.get_capacity (), initial_cap);
+  ASSERT_EQ (pool.get_size (), initial_cap);
   std::vector<TestStruct *> objs;
   for (int i = 0; i < num_elems; ++i)
     {
@@ -29,20 +29,20 @@ test_with_size (size_t initial_cap, int num_elems, size_t expected_end_cap)
       obj->a = i;
       obj->b = i * 2;
       objs.push_back (obj);
-      REQUIRE_EQ (pool.get_num_in_use (), i + 1);
+      ASSERT_EQ (pool.get_num_in_use (), i + 1);
     }
-  REQUIRE_EQ (pool.get_num_in_use (), num_elems);
-  REQUIRE_EQ (pool.get_capacity (), expected_end_cap);
-  REQUIRE_EQ (pool.get_size (), expected_end_cap);
+  ASSERT_EQ (pool.get_num_in_use (), num_elems);
+  ASSERT_EQ (pool.get_capacity (), expected_end_cap);
+  ASSERT_EQ (pool.get_size (), expected_end_cap);
   size_t count = objs.size ();
   for (auto obj : objs)
     {
       pool.release (obj);
       --count;
-      REQUIRE_EQ (pool.get_num_in_use (), count);
+      ASSERT_EQ (pool.get_num_in_use (), count);
     }
-  REQUIRE_EQ (pool.get_capacity (), expected_end_cap);
-  REQUIRE_EQ (pool.get_size (), expected_end_cap);
+  ASSERT_EQ (pool.get_capacity (), expected_end_cap);
+  ASSERT_EQ (pool.get_size (), expected_end_cap);
 }
 
 TEST_CASE ("object pool")

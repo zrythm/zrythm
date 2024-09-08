@@ -2,8 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/fadeable_object.h"
-
-#include "doctest_wrapper.h"
+#include "utils/gtest_wrapper.h"
 
 void
 FadeableObject::copy_members_from (const FadeableObject &other)

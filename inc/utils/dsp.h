@@ -121,7 +121,7 @@ dsp_mul_k2 (float * dest, float k, size_t size)
 /**
  * Gets the maximum absolute value of the buffer (as amplitude).
  */
-NONNULL WARN_UNUSED_RESULT static inline float
+[[nodiscard]] NONNULL static inline float
 dsp_abs_max (const float * buf, size_t size)
 {
 #ifdef HAVE_LSP_DSP

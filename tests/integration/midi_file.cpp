@@ -37,7 +37,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "midi file playback")
     io_get_files_in_dir_ending_in (
       MIDILIB_TEST_MIDI_FILES_PATH, F_RECURSIVE, ".MID")
       .toStdStringVector ();
-  REQUIRE_NONEMPTY (midi_files);
+  ASSERT_NONEMPTY (midi_files);
 
   /* shuffle array */
   auto rd = std::random_device{};

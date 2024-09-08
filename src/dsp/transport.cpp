@@ -22,10 +22,10 @@
 #include "settings/g_settings_manager.h"
 #include "utils/debug.h"
 #include "utils/flags.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/rt_thread_id.h"
 #include "zrythm_app.h"
 
-#include "doctest_wrapper.h"
 #include "gtk_wrapper.h"
 
 /**

@@ -3,8 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/fader.h"
 #include "dsp/midi_event.h"
 #include "dsp/router.h"
@@ -15,9 +13,7 @@
 
 #include "ext/whereami/whereami.h"
 
-TEST_SUITE_BEGIN ("zrythm app");
-
-TEST_CASE ("version")
+TEST (ZrythmApp, "version")
 {
   char * exe_path = NULL;
   int    dirname_length, length;
@@ -28,7 +24,7 @@ TEST_CASE ("version")
       wai_getExecutablePath (exe_path, length, &dirname_length);
       exe_path[length] = '\0';
     }
-  REQUIRE_NONNULL (exe_path);
+  ASSERT_NONNULL (exe_path);
 
   const char * arg1 = "--version";
   int          argc = 2;
@@ -36,7 +32,5 @@ TEST_CASE ("version")
 
   auto app = zrythm_app_new (argc, (const char **) argv);
   int  ret = g_application_run (G_APPLICATION (app.get ()), argc, argv);
-  REQUIRE_EQ (ret, 0);
+  ASSERT_EQ (ret, 0);
 }
-
-TEST_SUITE_END;

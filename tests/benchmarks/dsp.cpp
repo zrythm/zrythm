@@ -24,11 +24,6 @@ constexpr int LARGE_BUFFER_SIZE = 2000;
 static void
 BM_DspFunctions (benchmark::State &state)
 {
-  doctest::Context tempContext;
-  tempContext.setOption ("no_run", true); // Prevent it from running tests
-  tempContext.applyCommandLine (0, nullptr);
-  tempContext.setAsDefaultForAssertsOutOfTestCases ();
-
   bool optimized = state.range (0);
   bool large_buff = state.range (1);
   int  algo_to_run = state.range (2);
@@ -96,11 +91,6 @@ BENCHMARK (BM_DspFunctions)->ArgsProduct (argument_ranges);
 static void
 BM_RunEngine (benchmark::State &state)
 {
-  doctest::Context tempContext;
-  tempContext.setOption ("no_run", true); // Prevent it from running tests
-  tempContext.applyCommandLine (0, nullptr);
-  tempContext.setAsDefaultForAssertsOutOfTestCases ();
-
   bool optimized = state.range (0);
 
   ZrythmFixture fixture(optimized, 0, 0, false, false);

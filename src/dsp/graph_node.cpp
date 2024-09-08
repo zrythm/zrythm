@@ -21,7 +21,6 @@
 #include "dsp/transport.h"
 #include "plugins/plugin.h"
 #include "project.h"
-#include "utils/arrays.h"
 #include "utils/debug.h"
 #include "utils/mpmc_queue.h"
 #include "zrythm.h"
@@ -226,7 +225,6 @@ GraphNode::process_internal (const EngineProcessTimeInfo time_nfo)
     }
 }
 
-OPTIMIZE_O3
 void
 GraphNode::process (EngineProcessTimeInfo time_nfo, GraphThread &thread)
 {

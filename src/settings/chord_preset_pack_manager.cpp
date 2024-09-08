@@ -5,6 +5,7 @@
 #include "gui/backend/event_manager.h"
 #include "project.h"
 #include "settings/chord_preset_pack_manager.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 #include "utils/rt_thread_id.h"
 #include "zrythm.h"
@@ -12,7 +13,6 @@
 
 #include <glib/gi18n.h>
 
-#include "doctest_wrapper.h"
 #include <glibmm.h>
 
 std::string

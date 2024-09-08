@@ -42,8 +42,8 @@ TEST_CASE ("export")
 
       auto track = TRACKLIST->get_last_track<MidiTrack> ();
 
-      REQUIRE_NONEMPTY (track->lanes_);
-      REQUIRE_NONEMPTY (track->lanes_[0]->regions_);
+      ASSERT_NONEMPTY (track->lanes_);
+      ASSERT_NONEMPTY (track->lanes_[0]->regions_);
       const auto &region = track->lanes_[0]->regions_[0];
 
       auto basename = Glib::path_get_basename (midi_file.toStdString ());
@@ -53,12 +53,12 @@ TEST_CASE ("export")
       region->export_to_midi_file (export_filepath, 0, false);
       region->export_to_midi_file (export_filepath, 0, true);
 
-      REQUIRE (Glib::file_test (
+      ASSERT_TRUE (Glib::file_test (
         export_filepath, Glib::FileTest::EXISTS | Glib::FileTest::IS_REGULAR));
 
       io_remove (export_filepath);
 
-      REQUIRE_FALSE (Glib::file_test (export_filepath, Glib::FileTest::EXISTS));
+      ASSERT_FALSE (Glib::file_test (export_filepath, Glib::FileTest::EXISTS));
 
       if (iter++ == max_files)
         break;
@@ -87,7 +87,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "full export")
 
   auto base_midi_file = Glib::build_filename (TESTS_SRCDIR, "loopbase.mid");
 
-  REQUIRE (Glib::file_test (
+  ASSERT_TRUE (Glib::file_test (
     base_midi_file, Glib::FileTest::EXISTS | Glib::FileTest::IS_REGULAR));
 
   char * export_dir = g_dir_make_tmp ("test_midi_full_export_XXXXXX", nullptr);
@@ -99,8 +99,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "full export")
 
   auto track = TRACKLIST->get_last_track<MidiTrack> ();
 
-  REQUIRE_NONEMPTY (track->lanes_);
-  REQUIRE_NONEMPTY (track->lanes_[0]->regions_);
+  ASSERT_NONEMPTY (track->lanes_);
+  ASSERT_NONEMPTY (track->lanes_[0]->regions_);
   auto region = track->lanes_[0]->regions_[0];
 
   auto setup_region_for_full_export = [] (auto &r) {
@@ -116,14 +116,14 @@ TEST_CASE_FIXTURE (ZrythmFixture, "full export")
   auto compare_files_hash = [] (const auto &filepath1, const auto &filepath2) {
     z_info ("Comparing: {} - {}", filepath1, filepath2);
 
-    REQUIRE (Glib::file_test (
+    ASSERT_TRUE (Glib::file_test (
       filepath1, Glib::FileTest::EXISTS | Glib::FileTest::IS_REGULAR));
-    REQUIRE (Glib::file_test (
+    ASSERT_TRUE (Glib::file_test (
       filepath2, Glib::FileTest::EXISTS | Glib::FileTest::IS_REGULAR));
     uint32_t file1_hash = hash_get_from_file_simple (filepath1.c_str ());
     uint32_t file2_hash = hash_get_from_file_simple (filepath2.c_str ());
 
-    REQUIRE_EQ (file1_hash, file2_hash);
+    ASSERT_EQ (file1_hash, file2_hash);
   };
 
   for (int iter = 0; iter < number_of_loop_tests; ++iter)

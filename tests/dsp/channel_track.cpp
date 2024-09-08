@@ -24,10 +24,10 @@ TEST_CASE_FIXTURE (ZrythmFixture, "clone channel track")
       constexpr size_t    expected_num_ports = 2191;
       std::vector<Port *> ports;
       cur_track->append_ports (ports, false);
-      REQUIRE_SIZE_EQ (ports, expected_num_ports);
+      ASSERT_SIZE_EQ (ports, expected_num_ports);
       for (auto &port : ports)
         {
-          REQUIRE_EQ (port->id_.track_name_hash_, ch_track->get_name_hash ());
+          ASSERT_EQ (port->id_.track_name_hash_, ch_track->get_name_hash ());
         }
     };
 

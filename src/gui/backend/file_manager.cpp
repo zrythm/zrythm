@@ -25,6 +25,7 @@
 #include "gui/backend/file_manager.h"
 #include "io/file_descriptor.h"
 #include "settings/g_settings_manager.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/objects.h"
@@ -33,7 +34,6 @@
 
 #include <glib/gi18n.h>
 
-#include "doctest_wrapper.h"
 #include "gtk_wrapper.h"
 
 void

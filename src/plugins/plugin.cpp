@@ -29,13 +29,13 @@
 #include "project.h"
 #include "settings/g_settings_manager.h"
 #include "settings/settings.h"
-#include "utils/arrays.h"
 #include "utils/dialogs.h"
 #include "utils/dsp.h"
 #include "utils/error.h"
 #include "utils/exceptions.h"
 #include "utils/file.h"
 #include "utils/flags.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/math.h"
@@ -46,7 +46,6 @@
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
-#include "doctest_wrapper.h"
 #include <fmt/printf.h>
 #define _GNU_SOURCE 1 /* To pick up REG_RIP */
 

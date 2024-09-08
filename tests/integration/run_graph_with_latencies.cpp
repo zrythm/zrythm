@@ -35,7 +35,7 @@ get_delay_port (Plugin * pl)
           return dynamic_cast<ControlPort *> (port.get ());
         }
     }
-  REQUIRE_UNREACHABLE ();
+  ASSERT_UNREACHABLE ();
   z_return_val_if_reached (nullptr);
 }
 
@@ -68,17 +68,17 @@ _test (
   /* let the engine run */
   g_usleep (1000000);
   nframes_t latency = pl->latency_;
-  REQUIRE_GT (latency, 0);
+  ASSERT_GT (latency, 0);
 
   /* recalculate graph to update latencies */
   ROUTER->recalc_graph (true);
   auto node = ROUTER->graph_->find_node_from_track (track, false);
-  REQUIRE_NONNULL (node);
-  REQUIRE_EQ (latency, node->route_playback_latency_);
+  ASSERT_NONNULL (node);
+  ASSERT_EQ (latency, node->route_playback_latency_);
 
   /* let the engine run */
   g_usleep (1000000);
-  REQUIRE_EQ (latency, node->route_playback_latency_);
+  ASSERT_EQ (latency, node->route_playback_latency_);
 
   /* 3. start playback */
   TRANSPORT->request_roll (true);
@@ -106,21 +106,21 @@ _test (
   /* let the engine run */
   g_usleep (1000000);
   nframes_t latency2 = pl->latency_;
-  REQUIRE_GT (latency2, 0);
-  REQUIRE_GT (latency2, latency);
+  ASSERT_GT (latency2, 0);
+  ASSERT_GT (latency2, latency);
 
   /* recalculate graph to update latencies */
   ROUTER->recalc_graph (true);
   node = ROUTER->graph_->find_node_from_track (P_TEMPO_TRACK, false);
-  REQUIRE (node);
-  REQUIRE_EQ (latency2, node->route_playback_latency_);
+  ASSERT_TRUE (node);
+  ASSERT_EQ (latency2, node->route_playback_latency_);
   node = ROUTER->graph_->find_node_from_track (new_track, false);
-  REQUIRE (node);
-  REQUIRE_EQ (latency2, node->route_playback_latency_);
+  ASSERT_TRUE (node);
+  ASSERT_EQ (latency2, node->route_playback_latency_);
 
   /* let the engine run */
   g_usleep (1000000);
-  REQUIRE_EQ (latency2, node->route_playback_latency_);
+  ASSERT_EQ (latency2, node->route_playback_latency_);
 
   /* 3. start playback */
   TRANSPORT->request_roll (true);
@@ -139,13 +139,13 @@ _test (
   port->set_val_from_normalized (0.f, false);
 
   g_usleep (1000000);
-  REQUIRE_EQ (pl->latency_, 0);
+  ASSERT_EQ (pl->latency_, 0);
 
   /* recalculate graph to update latencies */
   ROUTER->recalc_graph (true);
   node = ROUTER->graph_->find_node_from_track (P_TEMPO_TRACK, false);
-  REQUIRE (node);
-  REQUIRE_EQ (node->route_playback_latency_, 0);
+  ASSERT_TRUE (node);
+  ASSERT_EQ (node->route_playback_latency_, 0);
 }
 #endif
 

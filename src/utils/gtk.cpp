@@ -61,6 +61,7 @@
 #include "gui/widgets/right_dock_edge.h"
 #include "settings/g_settings_manager.h"
 #include "settings/settings.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/objects.h"
@@ -69,8 +70,6 @@
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
-
-#include "doctest_wrapper.h"
 
 #ifdef GDK_WINDOWING_WAYLAND
 #  include <gdk/wayland/gdkwayland.h>

@@ -38,14 +38,14 @@ TEST_CASE_FIXTURE (ZrythmFixtureWithPipewire, "exposed ports after load")
     const auto &port = track->channel_->stereo_out_->get_l ();
     buf = port.get_full_designation ();
 
-    REQUIRE (port.is_exposed_to_backend ());
+    ASSERT_TRUE (port.is_exposed_to_backend ());
     assert_jack_port_exists (buf);
   }
   test_project_save_and_reload ();
 
   track = TRACKLIST->get_last_track<AudioTrack> ();
   const auto &port = track->channel_->stereo_out_->get_l ();
-  REQUIRE (port.is_exposed_to_backend ());
+  ASSERT_TRUE (port.is_exposed_to_backend ());
   assert_jack_port_exists (buf);
 #endif // HAVE_PIPEWIRE
 }
@@ -66,8 +66,8 @@ TEST_CASE_FIXTURE (
   auto dir = PROJECT->dir_;
 
   /* save a project backup */
-  REQUIRE_NOTHROW (PROJECT->save (PROJECT->dir_, true, false, false));
-  REQUIRE_NONEMPTY (PROJECT->backup_dir_);
+  ASSERT_NO_THROW (PROJECT->save (PROJECT->dir_, true, false, false));
+  ASSERT_NONEMPTY (PROJECT->backup_dir_);
   auto backup_dir = PROJECT->backup_dir_;
 
   /* free the project */
@@ -99,11 +99,11 @@ TEST_CASE_FIXTURE (BootstrapTimelineFixture, "project save as and load with pool
 {
   /* save the project elsewhere */
   auto orig_dir = PROJECT->dir_;
-  REQUIRE_NONEMPTY (orig_dir);
+  ASSERT_NONEMPTY (orig_dir);
   char * new_dir = g_dir_make_tmp ("zrythm_test_project_XXXXXX", nullptr);
-  REQUIRE_NOTHROW (PROJECT->save (new_dir, false, false, false));
+  ASSERT_NO_THROW (PROJECT->save (new_dir, false, false, false));
   auto filepath = Glib::build_filename (new_dir, "project.zpj");
-  REQUIRE (fs::exists (filepath));
+  ASSERT_TRUE (fs::exists (filepath));
 
   /* free the project */
   AUDIO_ENGINE->activate (false);
@@ -117,21 +117,21 @@ TEST_CASE_FIXTURE (BootstrapTimelineFixture, "project save as and load with pool
 
 TEST_CASE_FIXTURE (ZrythmFixture, "empty project save and load")
 {
-  REQUIRE_NONNULL (PROJECT);
+  ASSERT_NONNULL (PROJECT);
 
   /* save and reload the project */
   test_project_save_and_reload ();
 
   /* resave it */
-  REQUIRE_NOTHROW (PROJECT->save (PROJECT->dir_, F_NOT_BACKUP, 0, F_NO_ASYNC));
+  ASSERT_NO_THROW (PROJECT->save (PROJECT->dir_, F_NOT_BACKUP, 0, F_NO_ASYNC));
 }
 
 TEST_CASE_FIXTURE (BootstrapTimelineFixture, "project save and load with data")
 {
-  REQUIRE_NONNULL (PROJECT);
+  ASSERT_NONNULL (PROJECT);
 
   /* save the project */
-  REQUIRE_NOTHROW (PROJECT->save (PROJECT->dir_, 0, 0, false));
+  ASSERT_NO_THROW (PROJECT->save (PROJECT->dir_, 0, 0, false));
   auto prj_file = Glib::build_filename (PROJECT->dir_, PROJECT_FILE);
 
   /* stop the engine */
@@ -198,7 +198,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "project new from template")
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
 
-  REQUIRE_GT (
+  ASSERT_GT (
     dsp_abs_max (
       MONITOR_FADER->stereo_out_->get_l ().buf_.data (),
       AUDIO_ENGINE->block_length_),
@@ -216,7 +216,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "project new from template")
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
 
-  REQUIRE_GT (
+  ASSERT_GT (
     dsp_abs_max (
       MONITOR_FADER->stereo_out_->get_l ().buf_.data (),
       AUDIO_ENGINE->block_length_),
@@ -224,7 +224,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "project new from template")
 
   /* create a new project using old one as template */
   auto orig_dir = PROJECT->dir_;
-  REQUIRE_NONEMPTY (orig_dir);
+  ASSERT_NONEMPTY (orig_dir);
   auto filepath = Glib::build_filename (orig_dir, "project.zpj");
   gZrythm->create_project_path_.clear ();
   char * tmp = g_dir_make_tmp ("zrythm_test_project_XXXXXX", nullptr);
@@ -244,7 +244,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "project new from template")
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
 
-  REQUIRE_GT (
+  ASSERT_GT (
     dsp_abs_max (
       &MONITOR_FADER->stereo_out_->get_l ().buf_[0], AUDIO_ENGINE->block_length_),
     0.0001f);
@@ -275,11 +275,11 @@ TEST_CASE_FIXTURE (ZrythmFixture, "project load with plugin after backup")
   auto dir = PROJECT->dir_;
 
   /* save the project normally */
-  REQUIRE_NOTHROW (PROJECT->save (PROJECT->dir_, false, false, false));
+  ASSERT_NO_THROW (PROJECT->save (PROJECT->dir_, false, false, false));
 
   /* save a project backup */
-  REQUIRE_NOTHROW (PROJECT->save (PROJECT->dir_, true, false, false));
-  REQUIRE_NONEMPTY (PROJECT->backup_dir_);
+  ASSERT_NO_THROW (PROJECT->save (PROJECT->dir_, true, false, false));
+  ASSERT_NONEMPTY (PROJECT->backup_dir_);
   auto backup_dir = PROJECT->backup_dir_;
 
   /* free the project */

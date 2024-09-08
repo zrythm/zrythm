@@ -75,9 +75,10 @@ test_modulator_connection (
     pl_cv_port->id_, macro->cv_in_->id_));
 
   /* connect the macro button to the plugin's control input */
-  REQUIRE_THROWS (
+  ASSERT_ANY_THROW ({
     UNDO_MANAGER->perform (std::make_unique<PortConnectionConnectAction> (
-      macro->cv_out_->id_, pl_control_port->id_)));
+      macro->cv_out_->id_, pl_control_port->id_));
+  });
 }
 
 static void
@@ -142,9 +143,9 @@ _test_port_connection (
             }
         }
     }
-  REQUIRE_NONNULL (src_port1);
-  REQUIRE_NONNULL (src_port2);
-  REQUIRE_NE (src_port1->get_hash (), src_port2->get_hash ());
+  ASSERT_NONNULL (src_port1);
+  ASSERT_NONNULL (src_port2);
+  ASSERT_NE (src_port1->get_hash (), src_port2->get_hash ());
   ports.clear ();
 
   auto get_fader_stereo_balance_port = [&target_track] () -> ControlPort * {
@@ -165,22 +166,22 @@ _test_port_connection (
   };
 
   auto * dest_port = get_fader_stereo_balance_port ();
-  REQUIRE_NONNULL (dest_port);
+  ASSERT_NONNULL (dest_port);
 
   auto check_num_sources = [&] (const auto &port, const auto num_sources) {
-    REQUIRE_SIZE_EQ (port->srcs_, num_sources);
-    REQUIRE_EQ (
+    ASSERT_SIZE_EQ (port->srcs_, num_sources);
+    ASSERT_EQ (
       PORT_CONNECTIONS_MGR->get_sources (nullptr, port->id_), num_sources);
   };
   auto check_num_dests = [&] (const auto &port, const auto num_dests) {
-    REQUIRE_SIZE_EQ (port->dests_, num_dests);
-    REQUIRE_EQ (PORT_CONNECTIONS_MGR->get_dests (nullptr, port->id_), num_dests);
+    ASSERT_SIZE_EQ (port->dests_, num_dests);
+    ASSERT_EQ (PORT_CONNECTIONS_MGR->get_dests (nullptr, port->id_), num_dests);
   };
 
-  REQUIRE_NONNULL (dest_port);
-  REQUIRE (src_port1->is_in_active_project ());
-  REQUIRE (src_port2->is_in_active_project ());
-  REQUIRE (dest_port->is_in_active_project ());
+  ASSERT_NONNULL (dest_port);
+  ASSERT_TRUE (src_port1->is_in_active_project ());
+  ASSERT_TRUE (src_port2->is_in_active_project ());
+  ASSERT_TRUE (dest_port->is_in_active_project ());
   check_num_sources (dest_port, 0);
   check_num_dests (src_port1, 0);
 
@@ -206,14 +207,14 @@ _test_port_connection (
   check_num_sources (dest_port, 2);
   check_num_dests (src_port1, 1);
   check_num_dests (src_port2, 1);
-  REQUIRE_HAS_VALUE (
+  ASSERT_HAS_VALUE (
     PORT_CONNECTIONS_MGR->find_connection (src_port1->id_, dest_port->id_));
-  REQUIRE_HAS_VALUE (
+  ASSERT_HAS_VALUE (
     PORT_CONNECTIONS_MGR->find_connection (src_port2->id_, dest_port->id_));
-  REQUIRE_EQ (dest_port->srcs_[0], src_port1);
-  REQUIRE_EQ (dest_port, src_port1->dests_[0]);
-  REQUIRE_EQ (dest_port->srcs_[1], src_port2);
-  REQUIRE_EQ (dest_port, src_port2->dests_[0]);
+  ASSERT_EQ (dest_port->srcs_[0], src_port1);
+  ASSERT_EQ (dest_port, src_port1->dests_[0]);
+  ASSERT_EQ (dest_port->srcs_[1], src_port2);
+  ASSERT_EQ (dest_port, src_port2->dests_[0]);
 
   UNDO_MANAGER->undo ();
   UNDO_MANAGER->redo ();
@@ -251,7 +252,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "CV to control connection")
   const auto &cv_out_port = ams_lfo->out_ports_[3];
   const auto &freq_port = lp_filter->in_ports_[4];
 
-  REQUIRE_NOTHROW (
+  ASSERT_NO_THROW (
     UNDO_MANAGER->perform (std::make_unique<PortConnectionConnectAction> (
       cv_out_port->id_, freq_port->id_)));
 #endif // HAVE_AMS_LFO

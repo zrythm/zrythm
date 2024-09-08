@@ -19,22 +19,22 @@ TEST_CASE ("get parent directory")
 
 #  ifdef _WIN32
   parent = io_path_get_parent_dir ("C:\\ab\\cd\\ef\\gh");
-  REQUIRE_EQ (parent, "C:\\ab\\cd\\ef");
+  ASSERT_EQ (parent, "C:\\ab\\cd\\ef");
   parent = io_path_get_parent_dir ("C:\\ab\\cd\\ef\\gh\\");
-  REQUIRE_EQ (parent, "C:\\ab\\cd\\ef");
+  ASSERT_EQ (parent, "C:\\ab\\cd\\ef");
   parent = io_path_get_parent_dir ("C:\\ab");
-  REQUIRE_EQ (parent, "C:\\");
+  ASSERT_EQ (parent, "C:\\");
   parent = io_path_get_parent_dir ("C:\\");
-  REQUIRE_EQ (parent, "C:\\");
+  ASSERT_EQ (parent, "C:\\");
 #  else
   parent = io_path_get_parent_dir ("/ab/cd/ef/gh");
-  REQUIRE_EQ (parent, "/ab/cd/ef");
+  ASSERT_EQ (parent, "/ab/cd/ef");
   parent = io_path_get_parent_dir ("/ab/cd/ef/gh/");
-  REQUIRE_EQ (parent, "/ab/cd/ef");
+  ASSERT_EQ (parent, "/ab/cd/ef");
   parent = io_path_get_parent_dir ("/ab");
-  REQUIRE_EQ (parent, "/");
+  ASSERT_EQ (parent, "/");
   parent = io_path_get_parent_dir ("/");
-  REQUIRE_EQ (parent, "/");
+  ASSERT_EQ (parent, "/");
 #  endif
 }
 #endif
@@ -44,7 +44,7 @@ TEST_CASE ("get extension")
   auto test_get_ext =
     [] (const std::string &file, const std::string &expected_ext) {
       std::string res = io_file_get_ext (file.c_str ());
-      REQUIRE_EQ (res, expected_ext);
+      ASSERT_EQ (res, expected_ext);
     };
 
   test_get_ext ("abc.wav", "wav");
@@ -59,7 +59,7 @@ TEST_CASE ("strip extension")
   auto test_strip_ext =
     [] (const std::string &file, const std::string &expected) {
       std::string res = io_file_strip_ext (file);
-      REQUIRE_EQ (res, expected);
+      ASSERT_EQ (res, expected);
     };
 
   test_strip_ext ("abc.wav", "abc");
@@ -76,10 +76,10 @@ TEST_CASE_FIXTURE (ZrythmFixture, "get files in dir")
   {
     auto files =
       io_get_files_in_dir_ending_in (TESTS_SRCDIR, F_NO_RECURSIVE, ".wav");
-    REQUIRE_SIZE_EQ (files, 1);
+    ASSERT_SIZE_EQ (files, 1);
   }
 
-  REQUIRE_THROWS (
+  ASSERT_ANY_THROW (
     io_get_files_in_dir_ending_in ("/non-existent", F_RECURSIVE, ".wav"));
 #endif
 }

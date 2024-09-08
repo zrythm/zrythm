@@ -180,8 +180,7 @@ private:
   /**
    * Processes the plugin for this cycle.
    */
-  HOT OPTIMIZE_O3 void
-  process_impl (const EngineProcessTimeInfo time_nfo) override;
+  HOT void process_impl (const EngineProcessTimeInfo time_nfo) override;
 
   void cleanup_impl () override;
 

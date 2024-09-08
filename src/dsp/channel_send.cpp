@@ -19,12 +19,12 @@
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "utils/dsp.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/math.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "doctest_wrapper.h"
 #include <fmt/format.h>
 
 PortType

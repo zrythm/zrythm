@@ -93,6 +93,10 @@ zrythm_resources = gnome.compile_resources (
   'zrythm-resources',
   zrythm_gresources_xml,
   dependencies: [ appdata_file, ui_files, ],
-  source_dir: [ meson.current_source_dir (), meson.current_build_dir (), ],
+  source_dir: [ 
+    meson.current_source_dir (), 
+    meson.current_build_dir (),
+    meson_build_root / 'data', # for appdata file
+    ],
   c_name: 'zrythm',
 )

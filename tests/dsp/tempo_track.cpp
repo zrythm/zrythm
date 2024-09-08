@@ -23,7 +23,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "load project bpm")
   test_project_save_and_reload ();
 
   bpm_t bpm_after = P_TEMPO_TRACK->get_bpm_at_pos (pos);
-  REQUIRE_FLOAT_NEAR (bpm_after, bpm_before + 20.f, 0.0001f);
+  ASSERT_NEAR (bpm_after, bpm_before + 20.f, 0.0001f);
 }
 
 TEST_SUITE_END;

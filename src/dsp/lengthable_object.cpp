@@ -9,11 +9,10 @@
 #include "utils/debug.h"
 #include "utils/dsp.h"
 #include "utils/flags.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/rt_thread_id.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
-
-#include "doctest_wrapper.h"
 
 void
 LengthableObject::copy_members_from (const LengthableObject &other)

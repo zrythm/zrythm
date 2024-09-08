@@ -55,16 +55,16 @@ TEST_CASE_FIXTURE (ZrythmFixture, "crescendo")
   opts.end_vel_ = 90;
   UNDO_MANAGER->perform (EditArrangerSelectionsAction::create (
     *MIDI_SELECTIONS, MidiFunctionType::Crescendo, opts));
-  REQUIRE_EQ (mn1->vel_->vel_, 30);
-  REQUIRE_EQ (mn2->vel_->vel_, 90);
+  ASSERT_EQ (mn1->vel_->vel_, 30);
+  ASSERT_EQ (mn2->vel_->vel_, 90);
 
   /* test diminuendo */
   opts.start_vel_ = 90;
   opts.end_vel_ = 30;
   UNDO_MANAGER->perform (EditArrangerSelectionsAction::create (
     *MIDI_SELECTIONS, MidiFunctionType::Crescendo, opts));
-  REQUIRE_EQ (mn1->vel_->vel_, 90);
-  REQUIRE_EQ (mn2->vel_->vel_, 30);
+  ASSERT_EQ (mn1->vel_->vel_, 90);
+  ASSERT_EQ (mn2->vel_->vel_, 30);
 }
 
 TEST_SUITE_END;

@@ -219,7 +219,7 @@ public:
    * @param local_offset The local offset from 0 in this cycle.
    * @param nframes Number of frames to process.
    */
-  OPTIMIZE_O3 HOT void append_w_filter (
+  HOT void append_w_filter (
     const MidiEventVector              &src,
     std::optional<std::array<bool, 16>> channels,
     const nframes_t                     local_offset,

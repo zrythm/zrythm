@@ -10,10 +10,9 @@
 #include "dsp/engine.h"
 #include "dsp/piano_roll_track.h"
 #include "dsp/tracklist.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/logger.h"
 #include "zrythm.h"
-
-#include "doctest_wrapper.h"
 #ifdef HAVE_JACK
 #  include "dsp/engine_jack.h"
 #endif

@@ -121,7 +121,6 @@ string_convert_to_filename (const char * str);
  * from @ref full_str and returns a newly allocated
  * string.
  */
-MALLOC
 NONNULL char *
 string_get_substr_before_suffix (const char * str, const char * suffix);
 

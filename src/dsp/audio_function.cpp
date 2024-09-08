@@ -13,13 +13,13 @@
 #include "utils/debug.h"
 #include "utils/dsp.h"
 #include "utils/exceptions.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/rt_thread_id.h"
 #include "utils/string.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "doctest_wrapper.h"
 #include <rubberband/rubberband-c.h>
 
 std::string

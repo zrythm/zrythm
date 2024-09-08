@@ -42,7 +42,6 @@
 #include "dsp/tracklist.h"
 #include "plugins/plugin.h"
 #include "project.h"
-#include "utils/arrays.h"
 #include "utils/audio.h"
 #include "utils/env.h"
 #include "utils/flags.h"

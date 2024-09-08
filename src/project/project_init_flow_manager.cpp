@@ -22,6 +22,7 @@
 #include "utils/datetime.h"
 #include "utils/error.h"
 #include "utils/flags.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/string.h"
@@ -29,7 +30,6 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
-#include "doctest_wrapper.h"
 #include "libadwaita_wrapper.h"
 #include <glibmm.h>
 #include <time.h>

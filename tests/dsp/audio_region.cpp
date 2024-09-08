@@ -71,8 +71,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "fill stereo ports")
 
   auto  track = TRACKLIST->get_track<AudioTrack> (num_tracks_before);
   auto &r = track->lanes_[0]->regions_[0];
-  REQUIRE_EQ (r->track_name_hash_, track->get_name_hash ());
-  REQUIRE_EQ (r->get_track (), track);
+  ASSERT_EQ (r->track_name_hash_, track->get_name_hash ());
+  ASSERT_EQ (r->get_track (), track);
   auto r_clip = r->get_clip ();
 
   StereoPorts ports (false, "ports", "ports");
@@ -92,8 +92,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "fill stereo ports")
   };
   r->fill_stereo_ports (time_nfo, ports);
 
-  REQUIRE (audio_frames_empty (&ports.get_l ().buf_[0], 20));
-  REQUIRE (audio_frames_empty (&ports.get_r ().buf_[0], 20));
+  ASSERT_TRUE (audio_frames_empty (&ports.get_l ().buf_[0], 20));
+  ASSERT_TRUE (audio_frames_empty (&ports.get_r ().buf_[0], 20));
   for (int i = 0; i < 80; i++)
     {
       float adj_multiplier =
@@ -102,10 +102,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "fill stereo ports")
         r_clip->ch_frames_.getSample (0, i) * adj_multiplier;
       float adj_clip_frame_r =
         r_clip->ch_frames_.getSample (1, i) * adj_multiplier;
-      REQUIRE_FLOAT_NEAR (
-        adj_clip_frame_l, ports.get_l ().buf_[20 + i], 0.00001f);
-      REQUIRE_FLOAT_NEAR (
-        adj_clip_frame_r, ports.get_l ().buf_[20 + i], 0.00001f);
+      ASSERT_NEAR (adj_clip_frame_l, ports.get_l ().buf_[20 + i], 0.00001f);
+      ASSERT_NEAR (adj_clip_frame_r, ports.get_l ().buf_[20 + i], 0.00001f);
     }
 }
 
@@ -185,7 +183,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "detect BPM")
 
   std::vector<float> candidates;
   float              bpm = r->detect_bpm (candidates);
-  REQUIRE_FLOAT_NEAR (bpm, 186.233093f, 0.001f);
+  ASSERT_NEAR (bpm, 186.233093f, 0.001f);
 }
 
 TEST_SUITE_END;

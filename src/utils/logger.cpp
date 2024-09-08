@@ -3,11 +3,10 @@
 
 #include "utils/datetime.h"
 #include "utils/debug.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 #include "utils/logger.h"
 #include "zrythm.h"
-
-#include "doctest_wrapper.h"
 
 JUCE_IMPLEMENT_SINGLETON (Logger);
 
@@ -169,7 +168,7 @@ Logger::get_log_file_path () const
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       auto tmp_log_dir = fs::path (g_get_tmp_dir ()) / "zrythm_test_logs";
-      REQUIRE_NOTHROW (io_mkdir (tmp_log_dir));
+      EXPECT_NO_THROW ({ io_mkdir (tmp_log_dir); });
       auto str_datetime = datetime_get_for_filename ();
       return tmp_log_dir / str_datetime;
     }

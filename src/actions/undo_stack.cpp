@@ -13,10 +13,9 @@
 #include "actions/transport_action.h"
 #include "actions/undo_stack.h"
 #include "settings/g_settings_manager.h"
+#include "utils/gtest_wrapper.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
-
-#include "doctest_wrapper.h"
 
 void
 UndoStack::init_loaded ()

@@ -7,13 +7,12 @@
 #include "zrythm-test-config.h"
 
 /* include commonly used stuff */
+#include "utils/gtest_wrapper.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib.h>
 #include <glib/gi18n.h>
-
-#include "doctest_wrapper.h"
 
 #ifdef G_OS_UNIX
 #  include <glib-unix.h>
@@ -29,7 +28,7 @@
  * environment, such as whether to use an optimized configuration or
  * PipeWire.
  */
-class ZrythmFixture
+class ZrythmFixture : public ::testing::Test
 {
 public:
   // To be used in most tests as a fixture.
@@ -43,6 +42,16 @@ public:
     bool use_pipewire,
     bool logging_enabled);
   virtual ~ZrythmFixture ();
+
+  void SetUp () override;
+  void TearDown () override;
+
+private:
+  bool optimized_;
+  int  samplerate_;
+  int  buf_size_;
+  bool use_pipewire_;
+  bool logging_enabled_;
 };
 
 class ZrythmFixtureWithPipewire : public ZrythmFixture

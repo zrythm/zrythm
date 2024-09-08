@@ -123,7 +123,7 @@ public:
    * Returns the Track matching the given name, if any.
    */
   template <typename T = Track>
-  OPTIMIZE_O3 T * find_track_by_name_hash (unsigned int hash) const;
+  T * find_track_by_name_hash (unsigned int hash) const;
 
   template <typename T> bool contains_track_type () const
   {

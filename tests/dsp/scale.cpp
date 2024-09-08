@@ -15,18 +15,18 @@ TEST_CASE ("scale contains note")
 {
   MusicalScale scale (MusicalScale::Type::Minor, MusicalNote::D);
 
-  REQUIRE (scale.contains_note (MusicalNote::C));
-  REQUIRE_FALSE (scale.contains_note (MusicalNote::CSharp));
-  REQUIRE (scale.contains_note (MusicalNote::D));
-  REQUIRE_FALSE (scale.contains_note (MusicalNote::DSharp));
-  REQUIRE (scale.contains_note (MusicalNote::E));
-  REQUIRE (scale.contains_note (MusicalNote::F));
-  REQUIRE_FALSE (scale.contains_note (MusicalNote::FSharp));
-  REQUIRE (scale.contains_note (MusicalNote::G));
-  REQUIRE_FALSE (scale.contains_note (MusicalNote::GSharp));
-  REQUIRE (scale.contains_note (MusicalNote::A));
-  REQUIRE (scale.contains_note (MusicalNote::ASharp));
-  REQUIRE_FALSE (scale.contains_note (MusicalNote::B));
+  ASSERT_TRUE (scale.contains_note (MusicalNote::C));
+  ASSERT_FALSE (scale.contains_note (MusicalNote::CSharp));
+  ASSERT_TRUE (scale.contains_note (MusicalNote::D));
+  ASSERT_FALSE (scale.contains_note (MusicalNote::DSharp));
+  ASSERT_TRUE (scale.contains_note (MusicalNote::E));
+  ASSERT_TRUE (scale.contains_note (MusicalNote::F));
+  ASSERT_FALSE (scale.contains_note (MusicalNote::FSharp));
+  ASSERT_TRUE (scale.contains_note (MusicalNote::G));
+  ASSERT_FALSE (scale.contains_note (MusicalNote::GSharp));
+  ASSERT_TRUE (scale.contains_note (MusicalNote::A));
+  ASSERT_TRUE (scale.contains_note (MusicalNote::ASharp));
+  ASSERT_FALSE (scale.contains_note (MusicalNote::B));
 }
 
 TEST_SUITE_END;

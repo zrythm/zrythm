@@ -85,7 +85,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "vst instrument makes sound")
         exporter.join_generic_thread ();
         exporter.post_export ();
 
-        REQUIRE_FALSE (
+        ASSERT_FALSE (
           audio_file_is_silent (exporter.get_exported_path ().c_str ()));
       }
     }
@@ -118,7 +118,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "mono plugin")
     PluginSlotType::Insert, *audio_track, 0, setting, 1));
 
   const auto &pl = audio_track->channel_->inserts_[0];
-  REQUIRE_NONNULL (pl);
+  ASSERT_NONNULL (pl);
 
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
@@ -139,7 +139,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "mono plugin")
   exporter.join_generic_thread ();
   exporter.post_export ();
 
-  REQUIRE_FALSE (audio_file_is_silent (exporter.get_exported_path ().c_str ()));
+  ASSERT_FALSE (audio_file_is_silent (exporter.get_exported_path ().c_str ()));
 #endif
 }
 
@@ -154,8 +154,8 @@ test_has_custom_ui (void)
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       HELM_BUNDLE, HELM_URI, false);
-  REQUIRE_NONNULL (setting);
-  REQUIRE (
+  ASSERT_NONNULL (setting);
+  ASSERT_TRUE (
     carla_native_plugin_has_custom_ui (
       setting->descr));
 #    endif
@@ -181,7 +181,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "crash handling")
     &setting, TRACKLIST->get_num_tracks ());
 
   const auto &pl = track->channel_->inserts_[0];
-  REQUIRE_NONNULL (pl);
+  ASSERT_NONNULL (pl);
 
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
@@ -197,7 +197,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "process")
 
   auto        track = TRACKLIST->get_last_track<ChannelTrack> ();
   const auto &pl = track->channel_->inserts_[0];
-  REQUIRE_NONNULL (pl);
+  ASSERT_NONNULL (pl);
 
   /* stop dummy audio engine processing so we can process manually */
   test_project_stop_dummy_engine ();
@@ -214,7 +214,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "process")
   pl->process (time_nfo);
   for (nframes_t i = 1; i < local_offset; i++)
     {
-      REQUIRE (fabsf (out->buf_[i]) > 1e-10f);
+      ASSERT_TRUE (fabsf (out->buf_[i]) > 1e-10f);
     }
   time_nfo.g_start_frame_ = 0;
   time_nfo.g_start_frame_w_offset_ = local_offset;
@@ -223,7 +223,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "process")
   pl->process (time_nfo);
   for (nframes_t i = local_offset; i < AUDIO_ENGINE->block_length_; i++)
     {
-      REQUIRE (fabsf (out->buf_[i]) > 1e-10f);
+      ASSERT_TRUE (fabsf (out->buf_[i]) > 1e-10f);
     }
 #endif
 }

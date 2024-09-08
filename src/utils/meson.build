@@ -17,6 +17,7 @@ util_srcs = [
   'error.cpp',
   'exceptions.cpp',
   'file.cpp',
+  'gtest_wrapper.cpp',
   'gtk.cpp',
   'hash.cpp',
   'io.cpp',

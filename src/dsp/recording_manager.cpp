@@ -24,11 +24,11 @@
 #include "dsp/tracklist.h"
 #include "dsp/transport.h"
 #include "project.h"
-#include "utils/arrays.h"
 #include "utils/debug.h"
 #include "utils/dsp.h"
 #include "utils/error.h"
 #include "utils/flags.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/math.h"
 #include "utils/midi.h"
 #include "utils/mpmc_queue.h"
@@ -38,7 +38,6 @@
 
 #include <glib/gi18n.h>
 
-#include "doctest_wrapper.h"
 #include "gtk_wrapper.h"
 
 void

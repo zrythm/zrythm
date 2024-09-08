@@ -25,33 +25,33 @@ TEST_CASE_FIXTURE (ZrythmFixture, "queue file")
   FileDescriptor file (fs::path (TESTS_SRCDIR) / "test.wav");
   SAMPLE_PROCESSOR->queue_file (file);
 
-  REQUIRE_EQ (SAMPLE_PROCESSOR->playhead_.frames_, 0);
+  ASSERT_EQ (SAMPLE_PROCESSOR->playhead_.frames_, 0);
 
   /* queue for a few frames */
   AUDIO_ENGINE->process (256);
   AudioClip c (file.abs_path_);
-  REQUIRE (audio_frames_equal (
+  ASSERT_TRUE (audio_frames_equal (
     &SAMPLE_PROCESSOR->fader_->stereo_out_->get_l ()
        .buf_[AUDIO_REGION_BUILTIN_FADE_FRAMES],
     &c.ch_frames_.getReadPointer (0)[AUDIO_REGION_BUILTIN_FADE_FRAMES],
     256 - AUDIO_REGION_BUILTIN_FADE_FRAMES, 0.0000001f));
-  REQUIRE (audio_frames_equal (
+  ASSERT_TRUE (audio_frames_equal (
     &SAMPLE_PROCESSOR->fader_->stereo_out_->get_l ()
        .buf_[AUDIO_REGION_BUILTIN_FADE_FRAMES],
     &MONITOR_FADER->stereo_out_->get_l ().buf_[AUDIO_REGION_BUILTIN_FADE_FRAMES],
     256 - AUDIO_REGION_BUILTIN_FADE_FRAMES, 0.0000001f));
   AUDIO_ENGINE->process (256);
-  REQUIRE (audio_frames_equal (
+  ASSERT_TRUE (audio_frames_equal (
     &SAMPLE_PROCESSOR->fader_->stereo_out_->get_l ().buf_[0],
     &c.ch_frames_.getReadPointer (0)[256], 256, 0.0000001f));
-  REQUIRE (audio_frames_equal (
+  ASSERT_TRUE (audio_frames_equal (
     &SAMPLE_PROCESSOR->fader_->stereo_out_->get_l ().buf_[0],
     &MONITOR_FADER->stereo_out_->get_l ().buf_[0], 256, 0.0000001f));
   AUDIO_ENGINE->process (256);
-  REQUIRE (audio_frames_equal (
+  ASSERT_TRUE (audio_frames_equal (
     &SAMPLE_PROCESSOR->fader_->stereo_out_->get_l ().buf_[0],
     &c.ch_frames_.getReadPointer (0)[256 * 2], 256, 0.0000001f));
-  REQUIRE (audio_frames_equal (
+  ASSERT_TRUE (audio_frames_equal (
     &SAMPLE_PROCESSOR->fader_->stereo_out_->get_l ().buf_[0],
     &MONITOR_FADER->stereo_out_->get_l ().buf_[0], 256, 0.0000001f));
 }
@@ -73,7 +73,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "queue midi and roll transport")
   z_info ("=============== queueing file =============");
 
   SAMPLE_PROCESSOR->queue_file (file);
-  REQUIRE_SIZE_EQ (SAMPLE_PROCESSOR->tracklist_->tracks_, 3);
+  ASSERT_SIZE_EQ (SAMPLE_PROCESSOR->tracklist_->tracks_, 3);
 
   z_info ("============= starting process ===========");
 

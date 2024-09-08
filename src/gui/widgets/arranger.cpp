@@ -838,7 +838,6 @@ add_object_if_overlap (ArrangerWidget * self, ObjectOverlapInfo &nfo)
  * @param x X, or -1 to not check x.
  * @param y Y, or -1 to not check y.
  */
-OPTIMIZE_O3
 static void
 get_hit_objects (
   ArrangerWidget *               self,

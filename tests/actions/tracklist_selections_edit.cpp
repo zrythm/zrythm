@@ -49,15 +49,15 @@ _test_edit_tracks (
   auto ins_track = get_ins_track ();
   if (is_instrument)
     {
-      REQUIRE_EQ (ins_track->type_, Track::Type::Instrument);
+      ASSERT_EQ (ins_track->type_, Track::Type::Instrument);
 
-      REQUIRE (ins_track->channel_->instrument_->instantiated_);
-      REQUIRE (ins_track->channel_->instrument_->activated_);
+      ASSERT_TRUE (ins_track->channel_->instrument_->instantiated_);
+      ASSERT_TRUE (ins_track->channel_->instrument_->activated_);
     }
   else
     {
-      REQUIRE (ins_track->channel_->inserts_[0]->instantiated_);
-      REQUIRE (ins_track->channel_->inserts_[0]->activated_);
+      ASSERT_TRUE (ins_track->channel_->inserts_[0]->instantiated_);
+      ASSERT_TRUE (ins_track->channel_->inserts_[0]->activated_);
     }
 
   ins_track->select (true, true, false);
@@ -70,13 +70,13 @@ _test_edit_tracks (
           *TRACKLIST_SELECTIONS->gen_tracklist_selections (), true));
         if (is_instrument)
           {
-            REQUIRE (ins_track->channel_->instrument_->instantiated_);
-            REQUIRE (ins_track->channel_->instrument_->activated_);
+            ASSERT_TRUE (ins_track->channel_->instrument_->instantiated_);
+            ASSERT_TRUE (ins_track->channel_->instrument_->activated_);
           }
         else
           {
-            REQUIRE (ins_track->channel_->inserts_[0]->instantiated_);
-            REQUIRE (ins_track->channel_->inserts_[0]->activated_);
+            ASSERT_TRUE (ins_track->channel_->inserts_[0]->instantiated_);
+            ASSERT_TRUE (ins_track->channel_->inserts_[0]->activated_);
           }
       }
       break;
@@ -90,7 +90,7 @@ _test_edit_tracks (
         auto midi_track = TRACKLIST->get_track<MidiTrack> (2);
         midi_track->select (true, true, false);
 
-        REQUIRE (!midi_track->channel_->has_output_);
+        ASSERT_TRUE (!midi_track->channel_->has_output_);
 
         /* change the direct out to the instrument */
         UNDO_MANAGER->perform (std::make_unique<ChangeTracksDirectOutAction> (
@@ -98,19 +98,19 @@ _test_edit_tracks (
           *PORT_CONNECTIONS_MGR, *ins_track));
 
         /* verify direct out established */
-        REQUIRE (midi_track->channel_->has_output_);
-        REQUIRE_EQ (
+        ASSERT_TRUE (midi_track->channel_->has_output_);
+        ASSERT_EQ (
           midi_track->channel_->output_name_hash_, ins_track->get_name_hash ());
 
         /* undo and re-verify */
         UNDO_MANAGER->undo ();
 
-        REQUIRE_FALSE (midi_track->channel_->has_output_);
+        ASSERT_FALSE (midi_track->channel_->has_output_);
 
         /* redo and test moving track afterwards */
         UNDO_MANAGER->redo ();
         ins_track = TRACKLIST->get_track<InstrumentTrack> (4);
-        REQUIRE_EQ (ins_track->type_, Track::Type::Instrument);
+        ASSERT_EQ (ins_track->type_, Track::Type::Instrument);
         ins_track->select (true, true, false);
         UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
           *TRACKLIST_SELECTIONS->gen_tracklist_selections (), 1));
@@ -141,7 +141,7 @@ _test_edit_tracks (
         Track::create_empty_at_idx_with_action (Track::Type::AudioGroup, 2);
         auto group_track = TRACKLIST->get_track<AudioGroupTrack> (2);
 
-        REQUIRE_NE (
+        ASSERT_NE (
           ins_track->get_name_hash (), ins_track->channel_->output_name_hash_);
 
         /* route the instrument to the group track */
@@ -194,7 +194,7 @@ _test_edit_tracks (
                 break;
               }
           }
-        REQUIRE (has_signal);
+        ASSERT_TRUE (has_signal);
 
         /* undo and re-verify */
         UNDO_MANAGER->undo ();
@@ -205,13 +205,13 @@ _test_edit_tracks (
         constexpr auto new_name = "new name";
         auto           name_before = ins_track->name_;
         ins_track->set_name_with_action (new_name);
-        REQUIRE_EQ (ins_track->name_, new_name);
+        ASSERT_EQ (ins_track->name_, new_name);
 
         /* undo/redo and re-verify */
         UNDO_MANAGER->undo ();
-        REQUIRE_EQ (ins_track->name_, name_before);
+        ASSERT_EQ (ins_track->name_, name_before);
         UNDO_MANAGER->redo ();
-        REQUIRE_EQ (ins_track->name_, new_name);
+        ASSERT_EQ (ins_track->name_, new_name);
 
         /* undo to go back to original state */
         UNDO_MANAGER->undo ();
@@ -223,13 +223,13 @@ _test_edit_tracks (
         auto          &lane = ins_track->lanes_[0];
         auto           name_before = lane->name_;
         lane->rename (new_name, true);
-        REQUIRE_EQ (lane->name_, new_name);
+        ASSERT_EQ (lane->name_, new_name);
 
         /* undo/redo and re-verify */
         UNDO_MANAGER->undo ();
-        REQUIRE_EQ (lane->name_, name_before);
+        ASSERT_EQ (lane->name_, name_before);
         UNDO_MANAGER->redo ();
-        REQUIRE_EQ (lane->name_, new_name);
+        ASSERT_EQ (lane->name_, new_name);
 
         /* undo to go back to original state */
         UNDO_MANAGER->undo ();
@@ -250,12 +250,12 @@ _test_edit_tracks (
         /* verify */
         if (type == TracklistSelectionsAction::EditType::Pan)
           {
-            REQUIRE_FLOAT_NEAR (
+            ASSERT_NEAR (
               new_val, ins_track->channel_->get_balance_control (), 0.0001f);
           }
         else if (type == TracklistSelectionsAction::EditType::Volume)
           {
-            REQUIRE_FLOAT_NEAR (
+            ASSERT_NEAR (
               new_val, ins_track->channel_->fader_->get_amp (), 0.0001f);
           }
 
@@ -263,23 +263,23 @@ _test_edit_tracks (
         UNDO_MANAGER->undo ();
         if (type == TracklistSelectionsAction::EditType::Pan)
           {
-            REQUIRE_FLOAT_NEAR (
+            ASSERT_NEAR (
               val_before, ins_track->channel_->get_balance_control (), 0.0001f);
           }
         else if (type == TracklistSelectionsAction::EditType::Volume)
           {
-            REQUIRE_FLOAT_NEAR (
+            ASSERT_NEAR (
               val_before, ins_track->channel_->fader_->get_amp (), 0.0001f);
           }
         UNDO_MANAGER->redo ();
         if (type == TracklistSelectionsAction::EditType::Pan)
           {
-            REQUIRE_FLOAT_NEAR (
+            ASSERT_NEAR (
               new_val, ins_track->channel_->get_balance_control (), 0.0001f);
           }
         else if (type == TracklistSelectionsAction::EditType::Volume)
           {
-            REQUIRE_FLOAT_NEAR (
+            ASSERT_NEAR (
               new_val, ins_track->channel_->fader_->get_amp (), 0.0001f);
           }
 
@@ -292,18 +292,18 @@ _test_edit_tracks (
         const Color new_color{ 0.8f, 0.7f, 0.2f, 1.f };
         const auto  color_before = ins_track->color_;
         ins_track->set_color (new_color, F_UNDOABLE, false);
-        REQUIRE (ins_track->color_.is_same (new_color));
+        ASSERT_TRUE (ins_track->color_.is_same (new_color));
 
         test_project_save_and_reload ();
 
         ins_track = get_ins_track ();
-        REQUIRE (ins_track->color_.is_same (new_color));
+        ASSERT_TRUE (ins_track->color_.is_same (new_color));
 
         /* undo/redo and re-verify */
         UNDO_MANAGER->undo ();
-        REQUIRE (ins_track->color_.is_same (color_before));
+        ASSERT_TRUE (ins_track->color_.is_same (color_before));
         UNDO_MANAGER->redo ();
-        REQUIRE (ins_track->color_.is_same (new_color));
+        ASSERT_TRUE (ins_track->color_.is_same (new_color));
 
         /* undo to go back to original state */
         UNDO_MANAGER->undo ();
@@ -314,7 +314,7 @@ _test_edit_tracks (
         constexpr auto new_icon = "icon2";
         const auto     icon_before = ins_track->icon_name_;
         ins_track->set_icon (new_icon, F_UNDOABLE, false);
-        REQUIRE_EQ (ins_track->icon_name_, new_icon);
+        ASSERT_EQ (ins_track->icon_name_, new_icon);
 
         test_project_save_and_reload ();
 
@@ -322,9 +322,9 @@ _test_edit_tracks (
 
         /* undo/redo and re-verify */
         UNDO_MANAGER->undo ();
-        REQUIRE_EQ (ins_track->icon_name_, icon_before);
+        ASSERT_EQ (ins_track->icon_name_, icon_before);
         UNDO_MANAGER->redo ();
-        REQUIRE_EQ (ins_track->icon_name_, new_icon);
+        ASSERT_EQ (ins_track->icon_name_, new_icon);
 
         /* undo to go back to original state */
         UNDO_MANAGER->undo ();
@@ -335,7 +335,7 @@ _test_edit_tracks (
         constexpr auto new_icon = "icon2";
         const auto     icon_before = ins_track->comment_;
         ins_track->set_comment (new_icon, F_UNDOABLE);
-        REQUIRE_EQ (ins_track->comment_, new_icon);
+        ASSERT_EQ (ins_track->comment_, new_icon);
 
         test_project_save_and_reload ();
 
@@ -343,9 +343,9 @@ _test_edit_tracks (
 
         /* undo/redo and re-verify */
         UNDO_MANAGER->undo ();
-        REQUIRE_EQ (ins_track->comment_, icon_before);
+        ASSERT_EQ (ins_track->comment_, icon_before);
         UNDO_MANAGER->redo ();
-        REQUIRE_EQ (ins_track->comment_, new_icon);
+        ASSERT_EQ (ins_track->comment_, new_icon);
 
         /* undo to go back to original state */
         UNDO_MANAGER->undo ();
@@ -405,7 +405,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "Edit MIDI direct out to instrument track")
 
   auto midi_files = io_get_files_in_dir_ending_in (
     MIDILIB_TEST_MIDI_FILES_PATH, F_RECURSIVE, ".MID");
-  REQUIRE_FALSE (midi_files.isEmpty ());
+  ASSERT_FALSE (midi_files.isEmpty ());
 
   /* create the MIDI track from a MIDI file */
   FileDescriptor file = FileDescriptor (midi_files[0]);
@@ -422,9 +422,9 @@ TEST_CASE_FIXTURE (ZrythmFixture, "Edit MIDI direct out to instrument track")
 
   const auto &ch = midi_track->channel_;
   auto        direct_out = ch->get_output_track ();
-  REQUIRE (IS_TRACK (direct_out));
-  REQUIRE (direct_out == ins_track);
-  REQUIRE_SIZE_EQ (ins_track->children_, 1);
+  ASSERT_TRUE (IS_TRACK (direct_out));
+  ASSERT_TRUE (direct_out == ins_track);
+  ASSERT_SIZE_EQ (ins_track->children_, 1);
 
   /* delete the instrument, undo and verify that
    * the MIDI track's output is the instrument */
@@ -441,8 +441,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "Edit MIDI direct out to instrument track")
   ins_track =
     TRACKLIST->get_track<InstrumentTrack> (TRACKLIST->get_num_tracks () - 2);
   direct_out = ch->get_output_track ();
-  REQUIRE (IS_TRACK (direct_out));
-  REQUIRE (direct_out == ins_track);
+  ASSERT_TRUE (IS_TRACK (direct_out));
+  ASSERT_TRUE (direct_out == ins_track);
 #endif
 }
 
@@ -475,11 +475,11 @@ TEST_CASE_FIXTURE (ZrythmFixture, "edit multi track direct out")
   const auto &ch2 = ins_track2->channel_;
   auto        direct_out = ch->get_output_track ();
   auto        direct_out2 = ch2->get_output_track ();
-  REQUIRE_NONNULL (direct_out);
-  REQUIRE_NONNULL (direct_out2);
-  REQUIRE_EQ (direct_out, audio_group);
-  REQUIRE_EQ (direct_out2, audio_group);
-  REQUIRE_SIZE_EQ (audio_group->children_, 2);
+  ASSERT_NONNULL (direct_out);
+  ASSERT_NONNULL (direct_out2);
+  ASSERT_EQ (direct_out, audio_group);
+  ASSERT_EQ (direct_out2, audio_group);
+  ASSERT_SIZE_EQ (audio_group->children_, 2);
 
   /* delete the audio group, undo and verify that
    * the ins track output is the audio group */
@@ -489,8 +489,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "edit multi track direct out")
 
   direct_out = ch->get_output_track ();
   direct_out2 = ch2->get_output_track ();
-  REQUIRE_NULL (direct_out);
-  REQUIRE_NULL (direct_out2);
+  ASSERT_NULL (direct_out);
+  ASSERT_NULL (direct_out2);
 
   /* as a second action, route the tracks to
    * master */
@@ -504,18 +504,18 @@ TEST_CASE_FIXTURE (ZrythmFixture, "edit multi track direct out")
 
   direct_out = ch->get_output_track ();
   direct_out2 = ch2->get_output_track ();
-  REQUIRE (direct_out == P_MASTER_TRACK);
-  REQUIRE (direct_out2 == P_MASTER_TRACK);
+  ASSERT_TRUE (direct_out == P_MASTER_TRACK);
+  ASSERT_TRUE (direct_out2 == P_MASTER_TRACK);
 
   UNDO_MANAGER->undo ();
 
   audio_group = TRACKLIST->get_last_track<AudioGroupTrack> ();
   direct_out = ch->get_output_track ();
   direct_out2 = ch2->get_output_track ();
-  REQUIRE (IS_TRACK (direct_out));
-  REQUIRE (IS_TRACK (direct_out2));
-  REQUIRE (direct_out == audio_group);
-  REQUIRE (direct_out2 == audio_group);
+  ASSERT_TRUE (IS_TRACK (direct_out));
+  ASSERT_TRUE (IS_TRACK (direct_out2));
+  ASSERT_TRUE (direct_out == audio_group);
+  ASSERT_TRUE (direct_out2 == audio_group);
 #endif
 }
 
@@ -524,7 +524,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "rename MIDI track with events")
   /* create a MIDI track from a file */
   auto midi_files = io_get_files_in_dir_ending_in (
     MIDILIB_TEST_MIDI_FILES_PATH, F_RECURSIVE, ".MID");
-  REQUIRE_NONNULL (midi_files);
+  ASSERT_NONNULL (midi_files);
   FileDescriptor file (midi_files[0]);
   Track::create_with_action (
     Track::Type::Midi, nullptr, &file, &PLAYHEAD, TRACKLIST->get_num_tracks (),

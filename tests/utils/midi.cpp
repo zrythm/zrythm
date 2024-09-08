@@ -18,11 +18,11 @@ TEST_CASE ("msb lsb conversions")
   /* second byte */
   midi_byte_t msb;
   midi_get_bytes_from_combined (12280, &lsb, &msb);
-  REQUIRE_EQ (lsb, 120);
-  REQUIRE_EQ (msb, 95);
+  ASSERT_EQ (lsb, 120);
+  ASSERT_EQ (msb, 95);
 
   midi_byte_t buf[] = { MIDI_CH1_PITCH_WHEEL_RANGE, 120, 95 };
-  REQUIRE_EQ (midi_get_14_bit_value (buf), 12280);
+  ASSERT_EQ (midi_get_14_bit_value (buf), 12280);
 }
 
 TEST_SUITE_END;

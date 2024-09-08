@@ -3,7 +3,7 @@
 
 #include "zrythm-config.h"
 
-#include "doctest_wrapper.h"
+#include "utils/gtest_wrapper.h"
 
 #ifndef _WIN32
 #  include <sys/mman.h>

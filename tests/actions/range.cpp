@@ -94,9 +94,9 @@ public:
       auto midi_region = std::make_shared<MidiRegion> (
         start, end, midi_track->get_name_hash (), 0,
         midi_track->lanes_[0]->regions_.size ());
-      REQUIRE_NOTHROW (
+      ASSERT_NO_THROW (
         midi_track->add_region (midi_region, nullptr, 0, true, false));
-      REQUIRE_GE (midi_region->id_.idx_, 0);
+      ASSERT_GE (midi_region->id_.idx_, 0);
       midi_region->select (true, false, false);
       perform_create_arranger_sel (TL_SELECTIONS);
     };
@@ -128,13 +128,13 @@ public:
     auto   sel_before = TL_SELECTIONS->clone_unique ();
     double audio_region_size_ticks = audio_region->get_length_in_ticks ();
     double missing_ticks = (end.ticks_ - start.ticks_) - audio_region_size_ticks;
-    REQUIRE_NOTHROW (audio_region->resize (
+    ASSERT_NO_THROW (audio_region->resize (
       false, ArrangerObject::ResizeType::Loop, missing_ticks, false));
     UNDO_MANAGER->perform (
       std::make_unique<ArrangerSelectionsAction::ResizeAction> (
         *sel_before, TL_SELECTIONS.get (),
         ArrangerSelectionsAction::ResizeType::RLoop, missing_ticks));
-    REQUIRE_POSITION_EQ (end, audio_region->end_pos_);
+    ASSERT_POSITION_EQ (end, audio_region->end_pos_);
 
     /* set transport positions */
     TRANSPORT->cue_pos_.set_to_bar (CUE_BEFORE);
@@ -151,23 +151,23 @@ check_start_end_markers ()
 {
   /* check that start/end markers exist */
   const auto &start_m = P_MARKER_TRACK->get_start_marker ();
-  REQUIRE (start_m->is_start ());
-  REQUIRE_NONNULL (start_m);
+  ASSERT_TRUE (start_m->is_start ());
+  ASSERT_NONNULL (start_m);
   auto end_m = P_MARKER_TRACK->get_end_marker ();
-  REQUIRE (end_m->is_end ());
-  REQUIRE_NONNULL (end_m);
+  ASSERT_TRUE (end_m->is_end ());
+  ASSERT_NONNULL (end_m);
 
   /* check positions are valid */
   Position init_pos;
-  REQUIRE_GE (start_m->pos_, init_pos);
-  REQUIRE_GE (end_m->pos_, init_pos);
+  ASSERT_GE (start_m->pos_, init_pos);
+  ASSERT_GE (end_m->pos_, init_pos);
 }
 
 static void
 check_before_insert ()
 {
   auto midi_track = TRACKLIST->get_track<MidiTrack> (midi_track_pos);
-  REQUIRE_SIZE_EQ (midi_track->lanes_[0]->regions_, 7);
+  ASSERT_SIZE_EQ (midi_track->lanes_[0]->regions_, 7);
 
 #define GET_MIDI_REGION(name, idx) \
   const auto &name = midi_track->lanes_[0]->regions_[idx]
@@ -184,14 +184,14 @@ check_before_insert ()
 
   auto        audio_track = TRACKLIST->get_track<AudioTrack> (audio_track_pos);
   const auto &audio_region = audio_track->lanes_[0]->regions_[0];
-  REQUIRE_SIZE_EQ (audio_track->lanes_[0]->regions_, 1);
+  ASSERT_SIZE_EQ (audio_track->lanes_[0]->regions_, 1);
 
   auto check_pos = [&] (auto &obj, const auto &start_bar, const auto &end_bar) {
     Position start, end;
     start.set_to_bar (start_bar);
     end.set_to_bar (end_bar);
-    REQUIRE_POSITION_EQ (obj->pos_, start);
-    REQUIRE_POSITION_EQ (obj->end_pos_, end);
+    ASSERT_POSITION_EQ (obj->pos_, start);
+    ASSERT_POSITION_EQ (obj->end_pos_, end);
   };
 
   check_pos (midi_region, MIDI_REGION_START_BAR, MIDI_REGION_END_BAR);
@@ -215,7 +215,7 @@ check_after_insert ()
 
   /* get objects */
   auto midi_track = TRACKLIST->get_track<MidiTrack> (midi_track_pos);
-  REQUIRE_SIZE_EQ (midi_track->lanes_[0]->regions_, 10);
+  ASSERT_SIZE_EQ (midi_track->lanes_[0]->regions_, 10);
   GET_MIDI_REGION (midi_region1, 0);
   GET_MIDI_REGION (midi_region2, 1);
   GET_MIDI_REGION (midi_region3, 2);
@@ -230,7 +230,7 @@ check_after_insert ()
 
   /* get new audio regions */
   auto audio_track = TRACKLIST->get_track<AudioTrack> (audio_track_pos);
-  REQUIRE_SIZE_EQ (audio_track->lanes_[0]->regions_, 2);
+  ASSERT_SIZE_EQ (audio_track->lanes_[0]->regions_, 2);
   const auto &audio_region1 = audio_track->lanes_[0]->regions_[0];
   const auto &audio_region2 = audio_track->lanes_[0]->regions_[1];
 
@@ -239,8 +239,8 @@ check_after_insert ()
       Position start_expected, end_expected;
       start_expected.set_to_bar (start_bar);
       end_expected.set_to_bar (end_bar);
-      REQUIRE_POSITION_EQ (obj->pos_, start_expected);
-      REQUIRE_POSITION_EQ (obj->end_pos_, end_expected);
+      ASSERT_POSITION_EQ (obj->pos_, start_expected);
+      ASSERT_POSITION_EQ (obj->end_pos_, end_expected);
     };
 
   /* check midi region positions */
@@ -282,15 +282,13 @@ check_after_insert ()
   audio_region2_start_after_expected.set_to_bar (RANGE_END_BAR);
   audio_region2_end_after_expected.set_to_bar (
     AUDIO_REGION_END_BAR + RANGE_SIZE_IN_BARS);
-  REQUIRE_POSITION_EQ (
-    audio_region1->end_pos_, audio_region1_end_after_expected);
-  REQUIRE_POSITION_EQ (audio_region2->pos_, audio_region2_start_after_expected);
-  REQUIRE_POSITION_EQ (
-    audio_region2->end_pos_, audio_region2_end_after_expected);
+  ASSERT_POSITION_EQ (audio_region1->end_pos_, audio_region1_end_after_expected);
+  ASSERT_POSITION_EQ (audio_region2->pos_, audio_region2_start_after_expected);
+  ASSERT_POSITION_EQ (audio_region2->end_pos_, audio_region2_end_after_expected);
 
 #define CHECK_TPOS(name, expected_bar) \
   start_expected.set_to_bar (expected_bar); \
-  REQUIRE_POSITION_EQ (TRANSPORT->name, start_expected);
+  ASSERT_POSITION_EQ (TRANSPORT->name, start_expected);
 
   /* check transport positions */
   CHECK_TPOS (playhead_pos_, PLAYHEAD_BEFORE + RANGE_SIZE_IN_BARS);
@@ -311,7 +309,7 @@ TEST_CASE_FIXTURE (RangeActionTestFixture, "insert silence")
   auto ra = std::make_unique<RangeInsertSilenceAction> (start, end);
 
   /* verify that number of objects is as expected */
-  REQUIRE_EQ (ra->sel_before_->get_num_objects (), 7);
+  ASSERT_EQ (ra->sel_before_->get_num_objects (), 7);
 
   check_before_insert ();
 
@@ -340,7 +338,7 @@ check_after_remove ()
 
   /* get objects */
   auto midi_track = TRACKLIST->get_track<MidiTrack> (midi_track_pos);
-  REQUIRE_SIZE_EQ (midi_track->lanes_[0]->regions_, 8);
+  ASSERT_SIZE_EQ (midi_track->lanes_[0]->regions_, 8);
   GET_MIDI_REGION (midi_region1, 0);
   GET_MIDI_REGION (midi_region2, 1);
   GET_MIDI_REGION (midi_region3, 2);
@@ -352,7 +350,7 @@ check_after_remove ()
 
   /* get new audio regions */
   auto audio_track = TRACKLIST->get_track<AudioTrack> (audio_track_pos);
-  REQUIRE_SIZE_EQ (audio_track->lanes_[0]->regions_, 1);
+  ASSERT_SIZE_EQ (audio_track->lanes_[0]->regions_, 1);
   const auto &audio_region = audio_track->lanes_[0]->regions_[0];
 
   auto CHECK_POS =
@@ -360,8 +358,8 @@ check_after_remove ()
       Position start_expected, end_expected;
       start_expected.set_to_bar (start_bar);
       end_expected.set_to_bar (end_bar);
-      REQUIRE_POSITION_EQ (obj->pos_, start_expected);
-      REQUIRE_POSITION_EQ (obj->end_pos_, end_expected);
+      ASSERT_POSITION_EQ (obj->pos_, start_expected);
+      ASSERT_POSITION_EQ (obj->end_pos_, end_expected);
     };
 
   /* check midi region positions */
@@ -399,12 +397,12 @@ check_after_remove ()
   Position audio_region_start_after_expected, audio_region_end_after_expected;
   audio_region_start_after_expected.set_to_bar (AUDIO_REGION_START_BAR);
   audio_region_end_after_expected.set_to_bar (RANGE_START_BAR);
-  REQUIRE_POSITION_EQ (audio_region->pos_, audio_region_start_after_expected);
-  REQUIRE_POSITION_EQ (audio_region->end_pos_, audio_region_end_after_expected);
+  ASSERT_POSITION_EQ (audio_region->pos_, audio_region_start_after_expected);
+  ASSERT_POSITION_EQ (audio_region->end_pos_, audio_region_end_after_expected);
 
 #define CHECK_TPOS(name, expected_bar) \
   start_expected.set_to_bar (expected_bar); \
-  REQUIRE_POSITION_EQ (TRANSPORT->name, start_expected);
+  ASSERT_POSITION_EQ (TRANSPORT->name, start_expected);
 
   /* check transport positions */
   CHECK_TPOS (playhead_pos_, PLAYHEAD_BEFORE - RANGE_SIZE_IN_BARS);
@@ -470,7 +468,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "remove range with objects inside")
   Track::create_with_action (
     Track::Type::Midi, nullptr, &file, nullptr, midi_track_pos, 1, -1, nullptr);
   auto midi_track = TRACKLIST->get_track<MidiTrack> (midi_track_pos);
-  REQUIRE_NONNULL (midi_track);
+  ASSERT_NONNULL (midi_track);
 
   /* create scale object */
   MusicalScale ms ((MusicalScale::Type) 0, (MusicalNote) 0);
@@ -488,8 +486,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "remove range with objects inside")
   check_start_end_markers ();
 
   /* check scale and midi region removed */
-  REQUIRE_EMPTY (midi_track->lanes_[0]->regions_);
-  REQUIRE_EMPTY (P_CHORD_TRACK->scales_);
+  ASSERT_EMPTY (midi_track->lanes_[0]->regions_);
+  ASSERT_EMPTY (P_CHORD_TRACK->scales_);
 
   /* undo */
   UNDO_MANAGER->undo ();
@@ -497,8 +495,8 @@ TEST_CASE_FIXTURE (ZrythmFixture, "remove range with objects inside")
   check_start_end_markers ();
 
   /* check scale and midi region added */
-  REQUIRE_SIZE_EQ (midi_track->lanes_[0]->regions_, 1);
-  REQUIRE_SIZE_EQ (P_CHORD_TRACK->scales_, 2);
+  ASSERT_SIZE_EQ (midi_track->lanes_[0]->regions_, 1);
+  ASSERT_SIZE_EQ (P_CHORD_TRACK->scales_, 2);
 }
 
 TEST_SUITE_END ();

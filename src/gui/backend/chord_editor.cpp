@@ -97,8 +97,7 @@ ChordEditor::apply_preset_from_scale (
     "applying preset from scale %s, root note %s",
     MusicalScale::type_to_string (scale),
     ChordDescriptor::note_to_string (root_note));
-  const ChordType * triads =
-    MusicalScale::get_triad_types_for_type (scale, true);
+  const auto   triads = MusicalScale::get_triad_types_for_type (scale, true);
   const bool * notes = MusicalScale::get_notes_for_type (scale, true);
   int          cur_chord = 0;
   std::vector<ChordDescriptor> new_chords;
@@ -111,7 +110,7 @@ ChordEditor::apply_preset_from_scale (
 
       new_chords.emplace_back (
         (MusicalNote) ((int) root_note + i), false,
-        (MusicalNote) ((int) root_note + i), triads[cur_chord],
+        (MusicalNote) ((int) root_note + i), triads.at (cur_chord),
         ChordAccent::None, 0);
     }
 

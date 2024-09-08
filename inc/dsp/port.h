@@ -256,7 +256,7 @@ public:
   /**
    * Clears the backend's port buffer.
    */
-  HOT OPTIMIZE_O3 void clear_external_buffer ();
+  HOT void clear_external_buffer ();
 
   /**
    * Disconnects all srcs and dests from port.

@@ -130,7 +130,6 @@ GraphThread::on_reached_terminal_node ()
     }
 }
 
-OPTIMIZE (O3)
 void
 GraphThread::run_worker ()
 {

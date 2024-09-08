@@ -150,8 +150,8 @@ public:
    * @param ascending Whether to get the triads when ascending or descending
    * (some scales have different triads when rising/falling).
    */
-  RETURNS_NONNULL
-  static const ChordType * get_triad_types_for_type (Type type, bool ascending);
+  static std::array<ChordType, 12>
+  get_triad_types_for_type (Type type, bool ascending);
 
   static const char * type_to_string (Type type);
 
