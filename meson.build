@@ -100,6 +100,7 @@ tidy_bin = find_program ('tidy', required: false)
 cc = meson.get_compiler ('cpp')
 is_gcc = cc.get_id() == 'gcc'
 is_clang = cc.get_id() == 'clang'
+is_msvc = cc.get_id() == 'msvc'
 
 meson_src_root = meson.current_source_dir ()
 meson_build_root = meson.current_build_dir ()

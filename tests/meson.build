@@ -381,9 +381,13 @@ if get_option ('tests')
     if fs.is_file (source)
       # create CPP executable for CPP runner
       if (not is_benchmark) or google_benchmark_dep.found()
+        sanitize_opts = 'b_sanitize=address'
+        if not is_msvc
+          sanitize_opts += ',undefined'
+        endif
         exe = executable (
           test_name + (is_benchmark ? '_benchmark' : '_test') + '_exe',
-          override_options: [ 'b_sanitize=address,undefined', ],
+          override_options: [ sanitize_opts, ],
           sources: [
             source,
             test_config_h,
