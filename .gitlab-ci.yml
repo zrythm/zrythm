@@ -52,31 +52,46 @@ stages:
   variables:
     CC: "gcc"
     CXX: "g++"
+    BUILDDIR: "build_gnu_linux"
   before_script:
     - *unix-activate-venv
+  artifacts:
+    paths:
+      - $BUILDDIR
+    expire_in: 3 days
 
 .mac-arm-template:
   tags:
     - mac-arm
   variables:
+    BUILDDIR: "build_mac_arm"
     PKG_CONFIG_PATH: "/opt/zrythm-installed-deps/lib/pkgconfig:$PKG_CONFIG_PATH"
   before_script:
     - *mac-enable-brew-env
     - *unix-activate-venv
+  artifacts:
+    paths:
+      - $BUILDDIR
+    expire_in: 3 days
 
 .windows-template:
   tags:
     - windows11
   variables:
+    BUILDDIR: "build_windows"
     BOOST_ROOT: "C:\\Boost\\boost_1_86_0"
   before_script:
     - *windows-enable-vs-env
     - *windows-activate-venv
+  artifacts:
+    paths:
+      - $BUILDDIR
+    expire_in: 3 days
 
 default:
   cache:
   # this number must be bumped every time these subprojects are updated
-  - key: configured-cache-9
+  - key: configured-cache-1-$CI_RUNNER_DESCRIPTION
     paths:
       - venv
       - subprojects/gtk4
@@ -84,10 +99,12 @@ default:
       - subprojects/libpanel
       - subprojects/yyjson
       - subprojects/libcyaml
-  artifacts:
-    paths:
-      - build
-    expire_in: 3 days
+      - subprojects/lv2
+      - subprojects/sord
+      - subprojects/serd
+      - subprojects/sratom
+      - subprojects/lilv
+      - subprojects/magic_enum
 
 configure:gnu/linux:
   extends: .gnu-linux-template
@@ -97,7 +114,7 @@ configure:gnu/linux:
     - *unix-activate-venv
     - python3 -m pip install -r requirements.txt
   script:
-    - meson setup build $COMMON_MESON_OPTIONS
+    - meson setup $BUILDDIR $COMMON_MESON_OPTIONS
 
 configure:mac-arm:
   extends: .mac-arm-template
@@ -108,7 +125,7 @@ configure:mac-arm:
     - *unix-activate-venv
     - python3 -m pip install -r requirements.txt
   script:
-    - meson setup build $COMMON_MESON_OPTIONS -Dgtk4:x11-backend=false -Dx11=disabled
+    - meson setup $BUILDDIR $COMMON_MESON_OPTIONS -Dgtk4:x11-backend=false -Dx11=disabled
 
 configure:windows:
   extends: .windows-template
@@ -120,7 +137,7 @@ configure:windows:
     - python -m pip install -r requirements.txt
   script:
     - >-
-      meson setup build 
+      meson setup ${env:BUILDDIR} 
       -Dstrict_flags=true
       -Dyaml_project_compatibility=enabled
       "-Dforce_fallback_for=libadwaita,libpanel,libcyaml,lv2,serd,sord,sratom,lilv,magic_enum"
@@ -136,7 +153,7 @@ clang-format-check:
   extends: .gnu-linux-template
   stage: check
   script:
-    - ninja -C build clang-format-check
+    - ninja -C $BUILDDIR clang-format-check
 
 reuse-check:
   extends: .gnu-linux-template
@@ -154,22 +171,22 @@ build:gnu/linux:
   extends: .gnu-linux-template
   stage: build
   script:
-   - ninja -C build
+   - ninja -C $BUILDDIR
 
 build:mac-arm:
   extends: .mac-arm-template
   stage: build
   script:
-    - ninja -C build
+    - ninja -C $BUILDDIR
 
 build:windows:
   extends: .windows-template
   stage: build
   script:
-   - ninja -C build
+   - ninja -C ${env:BUILDDIR}
 
 .unix_test_cmd: &unix_test_cmd
-  - ninja -C build test || (cat build/meson-logs/testlog.txt && exit 1)
+  - ninja -C $BUILDDIR test || (cat "$BUILDDIR/meson-logs/testlog.txt" && exit 1)
 
 test:gnu/linux:
   extends: .gnu-linux-template
@@ -187,13 +204,13 @@ test:windows:
   extends: .windows-template
   stage: test
   script:
-    - ninja -C build test; if (-not $?) { Get-Content build/meson-logs/testlog.txt; exit 1 }
+    - ninja -C ${env:BUILDDIR} test; if (-not $?) { Get-Content ${env:BUILDDIR}/meson-logs/testlog.txt; exit 1 }
 
 test-valgrind:
   extends: .gnu-linux-template
   stage: test
   script:
-    - meson test -C build --wrap='valgrind --undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1' --timeout-multiplier 3 || (cat build/meson-logs/testlog-valgrind.txt && exit 1)
+    - meson test -C $BUILDDIR --wrap='valgrind --undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1' --timeout-multiplier 3 || (cat "$BUILDDIR"/meson-logs/testlog-valgrind.txt && exit 1)
 
 update-manual:
   stage: deploy
@@ -203,8 +220,8 @@ update-manual:
   tags:
     - archlinux
   script:
-    - ninja -C build manual_bundle &> manual_bundle_results.txt || (cat manual_bundle_results.txt && exit 1)
-    - rsync -av --no-group --omit-dir-times --exclude '*.zip' build/doc/user/_rendered/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_USER_MANUAL_UPLOAD_PATH
+    - ninja -C $BUILDDIR manual_bundle &> manual_bundle_results.txt || (cat manual_bundle_results.txt && exit 1)
+    - rsync -av --no-group --omit-dir-times --exclude '*.zip' "$BUILDDIR"/doc/user/_rendered/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_USER_MANUAL_UPLOAD_PATH
   before_script:
     - eval $(ssh-agent -s)
     #- ssh-add <(echo "$SSH_PRIVATE_KEY")
@@ -221,8 +238,8 @@ update-dev-docs:
   tags:
     - archlinux
   script:
-    - ninja -C build gen-dev-docs &> gen_dev_docs_results.txt || (cat gen_dev_docs_results.txt && exit 1)
-    - rsync -av --no-group --omit-dir-times build/doc/dev/html/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_DEV_DOCS_UPLOAD_PATH
+    - ninja -C $BUILDDIR gen-dev-docs &> gen_dev_docs_results.txt || (cat gen_dev_docs_results.txt && exit 1)
+    - rsync -av --no-group --omit-dir-times "$BUILDDIR"/doc/dev/html/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_DEV_DOCS_UPLOAD_PATH
   before_script:
     - eval $(ssh-agent -s)
     #- ssh-add <(echo "$SSH_PRIVATE_KEY")
