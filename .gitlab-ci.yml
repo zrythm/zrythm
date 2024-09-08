@@ -29,48 +29,49 @@ stages:
   - test
   - deploy
 
-.unix_activate_venv: &unix_activate_venv
+.unix-activate-venv: &unix-activate-venv
   - source ./venv/bin/activate
 
-.windows_activate_venv: &windows_activate_venv
+.windows-activate-venv: &windows-activate-venv
   - ./venv/Scripts/Activate.ps1
 
-.mac_enable_brew_env: &mac_enable_brew_env
+.mac-enable-brew-env: &mac-enable-brew-env
   - eval "$(/opt/homebrew/bin/brew shellenv)";
 
-.windows_enable_vs_env: &windows_enable_vs_env
+.windows-enable-vs-env: &windows-enable-vs-env
   - Import-Module "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
   - >-
     Enter-VsDevShell
     -VsInstallPath "C:\Program Files\Microsoft Visual Studio\2022\Community"
     -SkipAutomaticLocation
+  #- chcp 65001 # UTF-8
 
-.gnu_linux_template:
+.gnu-linux-template:
   tags:
     - archlinux
   variables:
     CC: "gcc"
     CXX: "g++"
   before_script:
-    - *unix_activate_venv
+    - *unix-activate-venv
 
-.mac_arm_template:
+.mac-arm-template:
   tags:
     - mac-arm
   variables:
     PKG_CONFIG_PATH: "/opt/zrythm-installed-deps/lib/pkgconfig:$PKG_CONFIG_PATH"
   before_script:
-    - *mac_enable_brew_env
-    - *unix_activate_venv
+    - *mac-enable-brew-env
+    - *unix-activate-venv
 
-.windows_template:
+.windows-template:
   tags:
     - windows11
   variables:
     BOOST_ROOT: "C:\\Boost\\boost_1_86_0"
   before_script:
-    - *windows_enable_vs_env
-    - *windows_activate_venv
+    - *windows-enable-vs-env
+    - *windows-activate-venv
 
 default:
   cache:
@@ -89,33 +90,33 @@ default:
     expire_in: 3 days
 
 configure:gnu/linux:
-  extends: .gnu_linux_template
+  extends: .gnu-linux-template
   stage: setup
   before_script:
     - python3 -m venv venv
-    - *unix_activate_venv
+    - *unix-activate-venv
     - python3 -m pip install -r requirements.txt
   script:
     - meson setup build $COMMON_MESON_OPTIONS
 
 configure:mac-arm:
-  extends: .mac_arm_template
+  extends: .mac-arm-template
   stage: setup
   before_script:
-    - *mac_enable_brew_env
+    - *mac-enable-brew-env
     - python3 -m venv venv
-    - *unix_activate_venv
+    - *unix-activate-venv
     - python3 -m pip install -r requirements.txt
   script:
     - meson setup build $COMMON_MESON_OPTIONS -Dgtk4:x11-backend=false -Dx11=disabled
 
 configure:windows:
-  extends: .windows_template
+  extends: .windows-template
   stage: setup
   before_script:
-    - *windows_enable_vs_env
+    - *windows-enable-vs-env
     - python -m venv venv
-    - *windows_activate_venv
+    - *windows-activate-venv
     - python -m pip install -r requirements.txt
   script:
     - >-
@@ -132,37 +133,37 @@ configure:windows:
       -Dcarla_binaries_dir=C:\Users\alex\source\repos\carla\carla_installed\bin
 
 clang-format-check:
-  extends: .gnu_linux_template
+  extends: .gnu-linux-template
   stage: check
   script:
     - ninja -C build clang-format-check
 
 reuse-check:
-  extends: .gnu_linux_template
+  extends: .gnu-linux-template
   stage: check
   script:
    - reuse lint
 
 exif-check:
-  extends: .gnu_linux_template
+  extends: .gnu-linux-template
   stage: check
   script:
    - scripts/exif_check.sh
 
 build:gnu/linux:
-  extends: .gnu_linux_template
+  extends: .gnu-linux-template
   stage: build
   script:
    - ninja -C build
 
 build:mac-arm:
-  extends: .mac_arm_template
+  extends: .mac-arm-template
   stage: build
   script:
     - ninja -C build
 
 build:windows:
-  extends: .windows_template
+  extends: .windows-template
   stage: build
   script:
    - ninja -C build
@@ -171,30 +172,30 @@ build:windows:
   - ninja -C build test || (cat build/meson-logs/testlog.txt && exit 1)
 
 test:gnu/linux:
-  extends: .gnu_linux_template
+  extends: .gnu-linux-template
   stage: test
   script:
     - *unix_test_cmd
 
 test:mac-arm:
-  extends: .mac_arm_template
+  extends: .mac-arm-template
   stage: test
   script:
     - *unix_test_cmd
 
 test:windows:
-  extends: .windows_template
+  extends: .windows-template
   stage: test
   script:
     - ninja -C build test; if (-not $?) { Get-Content build/meson-logs/testlog.txt; exit 1 }
 
-test_valgrind:
-  extends: .gnu_linux_template
+test-valgrind:
+  extends: .gnu-linux-template
   stage: test
   script:
     - meson test -C build --wrap='valgrind --undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1' --timeout-multiplier 3 || (cat build/meson-logs/testlog-valgrind.txt && exit 1)
 
-update_manual:
+update-manual:
   stage: deploy
   only:
     - master
@@ -210,9 +211,9 @@ update_manual:
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-    - *unix_activate_venv
+    - *unix-activate-venv
 
-update_dev_docs:
+update-dev-docs:
   stage: deploy
   only:
     - master
@@ -228,6 +229,6 @@ update_dev_docs:
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-    - *unix_activate_venv
+    - *unix-activate-venv
   variables:
     GIT_SUBMODULE_STRATEGY: recursive

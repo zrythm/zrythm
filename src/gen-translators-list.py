@@ -2,8 +2,11 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 #!/usr/bin/env python3
 
+import io
 import sys
 import re
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 def elem(a, l):
     return a in l
@@ -19,7 +22,7 @@ def main(args):
     print(f"Debug: Output type: {output_type}")
     print(f"Debug: Input file: {input_file}")
 
-    with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
+    with open(input_file, 'r', encoding='utf-8') as infile, open(output_file, 'w', encoding='utf-8') as outfile:
         translators = []
 
         for line in infile:
