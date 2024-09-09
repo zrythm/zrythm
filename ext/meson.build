@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 subdir ('backward-cpp')
+subdir ('dirent')
 subdir ('juce')
 subdir ('kissfft')
 subdir ('midilib')

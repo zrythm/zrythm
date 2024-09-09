@@ -186,7 +186,7 @@ build:windows:
   extends: .windows-template
   stage: build
   script:
-    - meson compile -C ${env:BUILDDIR} --verbose --vs-args="-maxCpuCount:1,-nologo,-isolateProjects:True"
+    - meson compile -C ${env:BUILDDIR} --verbose --vs-args="-maxCpuCount:1,-nologo"
 
 .unix_test_cmd: &unix_test_cmd
   - ninja -C $BUILDDIR test || (cat "$BUILDDIR/meson-logs/testlog.txt" && exit 1)

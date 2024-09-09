@@ -104,6 +104,10 @@ foreach pl : plugins
   if fs.is_file (pl_cpp)
     pl_link_args = []
     pl_cpp_args = []
+    pl_deps = [
+      dependency ('boost', static: true),
+      lv2_dep,
+      ]
     if is_gcc and os_gnu and get_option ('build_plugins_with_static_libs')
       # x42: plugins should be statically linked against
       # libstdc++, but not the host. The host should uses
@@ -114,6 +118,7 @@ foreach pl : plugins
     endif
     if is_msvc
       pl_cpp_args += [ '/permissive' ]
+      pl_deps += dirent_dep
     endif
     pl_module = shared_module (
       pl_underscored_name,
@@ -122,10 +127,7 @@ foreach pl : plugins
       sources: pl_cpp,
       name_prefix: '',
       gnu_symbol_visibility: 'hidden',
-      dependencies: [
-        dependency ('boost', static: true),
-        lv2_dep,
-        ],
+      dependencies: pl_deps,
       override_options: [
         'b_sanitize=none',
         'cpp_std=c++11',

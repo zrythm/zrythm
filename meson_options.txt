@@ -297,7 +297,5 @@ option (
   description: 'Compatibility with old CYAML-based projects (requires libcyaml).')
 
 # for finding dependencies installed with vcpkg
-option('lilv_lib_dir', type: 'string', description: 'Path to Lilv library directory')
-option('lilv_include_dir', type: 'string', description: 'Path to Lilv include directory')
 option('soxr_lib_dir', type: 'string', description: 'Path to SoX Resampler library directory')
 option('soxr_include_dir', type: 'string', description: 'Path to SoX Resampler include directory')
