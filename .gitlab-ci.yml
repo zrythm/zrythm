@@ -88,7 +88,7 @@ stages:
     BOOST_ROOT: "C:\\Boost\\boost_1_86_0"
     VSLANG: "1033"
     VCPKG_INSTALLED_DIR: "C:\\vcpkg\\installed\\x64-windows"
-    CL: "/showIncludes /MP1" # prepended to the cl command
+    CL: "/MP1" # prepended to the cl command
     _CL_: "" # appended to the cl command
   before_script:
     - *windows-enable-vs-env
@@ -141,18 +141,14 @@ configure:windows:
       meson setup "${env:BUILDDIR}"
       -Dstrict_flags=false
       -Dyaml_project_compatibility=enabled
-      "-Dforce_fallback_for=libadwaita,libpanel,libcyaml,magic_enum"
+      "-Dforce_fallback_for=libcyaml,magic_enum"
       -Dtests=false
       -Dbenchmarks=false 
-      "-Dgtk4:x11-backend=false" -Dx11=disabled
       -Dmanpage=false -Dcompletions=false
       -Dfftw3_threads_separate=false
-      "-Dlilv_lib_dir=${env:VCPKG_INSTALLED_DIR}\lib"
-      "-Dlilv_include_dir=${env:VCPKG_INSTALLED_DIR}\include"
-      "-Dlv2_include_dir=${env:VCPKG_INSTALLED_DIR}\include"
       "-Dsoxr_lib_dir=${env:VCPKG_INSTALLED_DIR}\lib"
       "-Dsoxr_include_dir=${env:VCPKG_INSTALLED_DIR}\include"
-      "--pkg-config-path=${env:VCPKG_INSTALLED_DIR}\lib\pkgconfig;C:\Users\alex\source\repos\carla\carla_installed\lib\pkgconfig"
+      "--pkg-config-path=${env:VCPKG_INSTALLED_DIR}\lib\pkgconfig;C:\lv2\lib\pkgconfig;C:\gtk-for-zrythm\lib\pkgconfig;C:\Users\alex\source\repos\carla\carla_installed\lib\pkgconfig"
       -Dcarla_binaries_dir=C:\Users\alex\source\repos\carla\carla_installed\bin
       --backend=vs2022
 
@@ -190,10 +186,7 @@ build:windows:
   extends: .windows-template
   stage: build
   script:
-    # FIXME: this was added only to find lv2 headers
-    # this adds all the available headers in this path which is bad
-    # remove when a better solution is found
-    - meson compile -C ${env:BUILDDIR} --verbose --vs-args="/p:AdditionalIncludeDirectories=C:\vcpkg\installed\x64-windows\include"
+    - meson compile -C ${env:BUILDDIR} --verbose --vs-args="-maxCpuCount:1,-nologo,-isolateProjects:True"
 
 .unix_test_cmd: &unix_test_cmd
   - ninja -C $BUILDDIR test || (cat "$BUILDDIR/meson-logs/testlog.txt" && exit 1)

@@ -301,4 +301,3 @@ option('lilv_lib_dir', type: 'string', description: 'Path to Lilv library direct
 option('lilv_include_dir', type: 'string', description: 'Path to Lilv include directory')
 option('soxr_lib_dir', type: 'string', description: 'Path to SoX Resampler library directory')
 option('soxr_include_dir', type: 'string', description: 'Path to SoX Resampler include directory')
-option('lv2_include_dir', type: 'string', description: 'Path to LV2 include directory')

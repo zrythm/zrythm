@@ -989,69 +989,52 @@ if (dbus_dep.found ())
   cdata.set('HAVE_DBUS', 1)
 endif
 
-if get_option('lv2_include_dir') != ''
-  lv2_include_dir = get_option('lv2_include_dir')
-  lv2_dep = declare_dependency(
-    include_directories: include_directories(lv2_include_dir))
-else
-  lv2_dep = dependency (
-    'lv2', version: '>=1.16.0',
-    fallback: ['lv2', 'lv2_dep'],
-    default_options: [
-      'tests=disabled',],
-    static: all_static)
-  if lv2_dep.version().version_compare('>=1.18.0')
-    cdata.set('HAVE_LV2_1_18', 1)
-  endif
+lv2_dep = dependency (
+  'lv2', version: '>=1.16.0',
+  fallback: ['lv2', 'lv2_dep'],
+  default_options: [
+    'tests=disabled',],
+  static: all_static)
+if lv2_dep.version().version_compare('>=1.18.0')
+  cdata.set('HAVE_LV2_1_18', 1)
 endif
 
 # these are only used in tests
 # TODO get rid of them - find another way to apply a plugin effect to a WAV
-if get_option('lilv_lib_dir') != ''
-  lilv_lib_dir = get_option('lilv_lib_dir')
-  lilv_include_dir = get_option('lilv_include_dir')
-  lilv_lib = cc.find_library(
-    'lilv', dirs: [lilv_lib_dir])
-  lilv_dep = declare_dependency(
-    include_directories: include_directories(lilv_include_dir),
-    dependencies: lilv_lib
-  )
-else
-  zix_dep = dependency (
-    'zix-0', version: '>=0.4.0',
-    fallback: ['zix', 'zix_dep'],
-    default_options: [
-      'tests=disabled',
-      ],
-  )
-  serd_dep = dependency (
-    'serd-0', version: '>=0.30.0',
-    fallback: ['serd', 'serd_dep'],
-    default_options: [
-      'tests=disabled',
-      ],
-    static: all_static)
-  sord_dep = dependency (
-    'sord-0', version: '>=0.14.0',
-    fallback: ['sord', 'sord_dep'],
-    default_options: [
-      'tests=disabled',
-      ],
-    static: all_static)
-  sratom_dep = dependency (
-    'sratom-0', version: '>=0.4.0',
-    fallback: ['sratom', 'sratom_dep'],
-    default_options: [
-      'tests=disabled', 'docs=disabled',
-      ],
-    static: all_static)
-  lilv_dep = dependency (
-    'lilv-0', version: '>=0.24.6',
-    fallback: ['lilv', 'lilv_dep'],
-    default_options: [
-      'tests=disabled', 'docs=disabled', 'tools=disabled',
-      ])
-endif
+zix_dep = dependency (
+  'zix-0', version: '>=0.4.0',
+  fallback: ['zix', 'zix_dep'],
+  default_options: [
+    'tests=disabled',
+    ],
+)
+serd_dep = dependency (
+  'serd-0', version: '>=0.30.0',
+  fallback: ['serd', 'serd_dep'],
+  default_options: [
+    'tests=disabled',
+    ],
+  static: all_static)
+sord_dep = dependency (
+  'sord-0', version: '>=0.14.0',
+  fallback: ['sord', 'sord_dep'],
+  default_options: [
+    'tests=disabled',
+    ],
+  static: all_static)
+sratom_dep = dependency (
+  'sratom-0', version: '>=0.4.0',
+  fallback: ['sratom', 'sratom_dep'],
+  default_options: [
+    'tests=disabled', 'docs=disabled',
+    ],
+  static: all_static)
+lilv_dep = dependency (
+  'lilv-0', version: '>=0.24.6',
+  fallback: ['lilv', 'lilv_dep'],
+  default_options: [
+    'tests=disabled', 'docs=disabled', 'tools=disabled',
+    ])
 
 # fftw - this is a mess because every distro packages fftw3
 # in various different ways
