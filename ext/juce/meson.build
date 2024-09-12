@@ -45,7 +45,7 @@ elif os_windows
   # build fails without this
   if is_msvc
     juce_cpp_private_args += [
-      '/permissive',
+      # '/permissive',
       ]
   else
     juce_cpp_private_args += [

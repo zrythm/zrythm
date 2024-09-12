@@ -456,7 +456,7 @@ _wopendir (const wchar_t * dirname)
 #if !defined(WINAPI_FAMILY_PARTITION) \
   || WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
   /* Desktop */
-  DWORD n = GetFullPathNameW (static_cast<LPCWSTR> (dirname), 0, NULL, NULL);
+  DWORD n = GetFullPathNameW (dirname, 0, NULL, NULL);
 #else
   /* WinRT */
   size_t n = wcslen (dirname);
@@ -478,7 +478,7 @@ _wopendir (const wchar_t * dirname)
 #if !defined(WINAPI_FAMILY_PARTITION) \
   || WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
   /* Desktop */
-  n = GetFullPathNameW (static_cast<LPCWSTR> (dirname), n, dirp->patt, NULL);
+  n = GetFullPathNameW (dirname, n, dirp->patt, NULL);
   if (n <= 0)
     goto exit_closedir;
 #else

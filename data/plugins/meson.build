@@ -117,7 +117,6 @@ foreach pl : plugins
       pl_link_args += [ '-static-libgcc', '-static-libstdc++' ]
     endif
     if is_msvc
-      pl_cpp_args += [ '/permissive' ]
       pl_deps += dirent_dep
     endif
     pl_module = shared_module (

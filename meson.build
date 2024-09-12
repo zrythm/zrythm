@@ -518,14 +518,17 @@ if is_msvc
 endif
 test_cflags += definitions
 
-attribute_macros = [
-  'cold', 'hot', 'nonnull',
-  'returns_nonnull', 'const',
-  ]
-foreach a : attribute_macros
-  # some of these don't work on windows
-  test_cflags += '-D' + a.to_upper() + '=' + (os_windows ? ''  : ('__attribute__((' + a + '))'))
-endforeach
+# some of these don't work on msvc and some (like `CONST`) even break
+# compilation
+if is_clang or is_gcc
+  attribute_macros = [
+    'cold', 'hot', 'nonnull',
+    'returns_nonnull', 'const',
+    ]
+  foreach a : attribute_macros
+    test_cflags += '-D' + a.to_upper() + '=' + (os_windows ? ''  : ('__attribute__((' + a + '))'))
+  endforeach
+endif
 
 # disable some warnings added by -Wextra
 extra_warnings = [
