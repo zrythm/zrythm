@@ -28,6 +28,11 @@
 #define ZITA_RESAMPLER_MAJOR_VERSION 1
 #define ZITA_RESAMPLER_MINOR_VERSION 11
 
+namespace zita
+{
+class Resampler;
+};
+
 extern int
 zita_resampler_major_version (void);
 extern int
@@ -53,7 +58,7 @@ private:
   Resampler_table (double fr, unsigned int hl, unsigned int np);
   ~Resampler_table (void);
 
-  friend class Resampler;
+  friend class zita::Resampler;
   friend class VResampler;
 
   Resampler_table * _next;

@@ -4,8 +4,6 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "actions/tracklist_selections.h"
 #include "dsp/midi_region.h"
 #include "dsp/region.h"
@@ -19,53 +17,68 @@
 
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/midi region");
-
-TEST_CASE ("export")
+class MidiRegionExportTest
+    : public ZrythmFixture,
+      public ::testing::WithParamInterface<std::string>
 {
-  constexpr auto max_files = 20;
+protected:
+  void SetUp () override
+  {
+    ZrythmFixture::SetUp ();
+    midi_file_ = GetParam ();
+  }
 
-  auto midi_files = io_get_files_in_dir_ending_in (
-    MIDILIB_TEST_MIDI_FILES_PATH, F_RECURSIVE, ".MID");
+  std::string midi_file_;
+};
+
+TEST_P (MidiRegionExportTest, Export)
+{
+  z_info ("testing {}", midi_file_);
+
+  FileDescriptor file (midi_file_);
+  Track::create_with_action (
+    Track::Type::Midi, nullptr, &file, &PLAYHEAD, TRACKLIST->get_num_tracks (),
+    1, -1, nullptr);
+
+  auto track = TRACKLIST->get_last_track<MidiTrack> ();
+
+  ASSERT_NONEMPTY (track->lanes_);
+  ASSERT_NONEMPTY (track->lanes_[0]->regions_);
+  const auto &region = track->lanes_[0]->regions_[0];
+
   char * export_dir = g_dir_make_tmp ("test_midi_export_XXXXXX", nullptr);
-  int    iter = 0;
-  for (auto &midi_file : midi_files)
-    {
-      z_info ("testing {}", midi_file);
+  auto   basename = Glib::path_get_basename (midi_file_);
+  auto   export_filepath = Glib::build_filename (export_dir, basename);
 
-      ZrythmFixture fixture;
+  /* export the region again */
+  region->export_to_midi_file (export_filepath, 0, false);
+  region->export_to_midi_file (export_filepath, 0, true);
 
-      FileDescriptor file (midi_file.toStdString ());
-      Track::create_with_action (
-        Track::Type::Midi, nullptr, &file, &PLAYHEAD,
-        TRACKLIST->get_num_tracks (), 1, -1, nullptr);
+  ASSERT_TRUE (Glib::file_test (
+    export_filepath, Glib::FileTest::EXISTS | Glib::FileTest::IS_REGULAR));
 
-      auto track = TRACKLIST->get_last_track<MidiTrack> ();
+  io_remove (export_filepath);
 
-      ASSERT_NONEMPTY (track->lanes_);
-      ASSERT_NONEMPTY (track->lanes_[0]->regions_);
-      const auto &region = track->lanes_[0]->regions_[0];
-
-      auto basename = Glib::path_get_basename (midi_file.toStdString ());
-      auto export_filepath = Glib::build_filename (export_dir, basename);
-
-      /* export the region again */
-      region->export_to_midi_file (export_filepath, 0, false);
-      region->export_to_midi_file (export_filepath, 0, true);
-
-      ASSERT_TRUE (Glib::file_test (
-        export_filepath, Glib::FileTest::EXISTS | Glib::FileTest::IS_REGULAR));
-
-      io_remove (export_filepath);
-
-      ASSERT_FALSE (Glib::file_test (export_filepath, Glib::FileTest::EXISTS));
-
-      if (iter++ == max_files)
-        break;
-    }
+  ASSERT_FALSE (Glib::file_test (export_filepath, Glib::FileTest::EXISTS));
 
   io_rmdir (export_dir, true);
 }
+
+static std::vector<std::string>
+LimitedMidiFiles ()
+{
+  constexpr auto max_files = 20;
+  auto           midi_files = io_get_files_in_dir_ending_in (
+    MIDILIB_TEST_MIDI_FILES_PATH, F_RECURSIVE, ".MID");
+  auto ret = midi_files.toStdStringVector ();
+  ret.resize (max_files);
+  return ret;
+}
+
+INSTANTIATE_TEST_SUITE_P (
+  MidiRegionExport,
+  MidiRegionExportTest,
+  ::testing::ValuesIn (LimitedMidiFiles ()));
 
 static const double full_export_test_loop_positions[] = {
   /* loop before clip start pos */
@@ -80,7 +93,7 @@ static const double full_export_test_loop_positions[] = {
   3840.0, 7680.0
 };
 
-TEST_CASE_FIXTURE (ZrythmFixture, "full export")
+TEST_F (ZrythmFixture, FullExport)
 {
   const int number_of_loop_tests =
     sizeof (full_export_test_loop_positions) / sizeof (double) / 2;
@@ -159,5 +172,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "full export")
     }
   io_rmdir (export_dir, true);
 }
-
-TEST_SUITE_END;

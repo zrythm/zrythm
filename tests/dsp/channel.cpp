@@ -4,9 +4,6 @@
 #include "zrythm-test-config.h"
 
 #include "actions/mixer_selections_action.h"
-
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/track.h"
 #include "utils/flags.h"
 #include "zrythm.h"
@@ -14,9 +11,7 @@
 #include "tests/helpers/exporter.h"
 #include "tests/helpers/plugin_manager.h"
 
-TEST_SUITE_BEGIN ("dsp/channel");
-
-TEST_CASE_FIXTURE (ZrythmFixture, "midi fx routing")
+TEST_F (ZrythmFixture, MidiFxRouting)
 {
   /* create an instrument */
   auto setting = test_plugin_manager_get_plugin_setting (
@@ -69,5 +64,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "midi fx routing")
   /* export loop and check that there is audio again */
   export_loop_and_check_for_silence (false);
 }
-
-TEST_SUITE_END;

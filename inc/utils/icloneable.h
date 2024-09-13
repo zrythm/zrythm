@@ -142,8 +142,8 @@ template <typename T, typename Base>
 concept InheritsFromBase = std::is_base_of_v<Base, std::remove_pointer_t<T>>;
 
 /** Concept to ensure all types in a variant inherit from a base class */
-template <typename Variant, typename Base> concept AllInheritFromBase = requires
-{
+template <typename Variant, typename Base>
+concept AllInheritFromBase = requires {
   []<typename... Ts> (std::variant<Ts...> *) {
     static_assert (
       (InheritsFromBase<Ts, Base> && ...),
@@ -159,7 +159,8 @@ template <typename Variant, typename Base> concept AllInheritFromBase = requires
  * @return A unique pointer to the cloned object
  */
 template <typename Variant, typename Base>
-requires AllInheritFromBase<Variant, Base> auto
+  requires AllInheritFromBase<Variant, Base>
+auto
 clone_unique_with_variant (const Base * base_ptr) -> std::unique_ptr<Base>
 {
   using VariantPtr = to_pointer_variant<Variant>;
@@ -184,7 +185,8 @@ clone_unique_with_variant (const Base * base_ptr) -> std::unique_ptr<Base>
 }
 
 template <typename Variant, typename Base>
-requires AllInheritFromBase<Variant, Base> auto
+  requires AllInheritFromBase<Variant, Base>
+auto
 clone_shared_with_variant (const Base * base_ptr) -> std::shared_ptr<Base>
 {
   using VariantPtr = to_pointer_variant<Variant>;
@@ -313,8 +315,9 @@ clone_unique_ptr_container (Container &dest, const Container &src)
 }
 
 template <typename Container, typename Variant, typename Base>
-requires AllInheritFromBase<Variant, Base> void
-         clone_variant_container (Container &dest, const Container &src)
+  requires AllInheritFromBase<Variant, Base>
+void
+clone_variant_container (Container &dest, const Container &src)
 {
   if constexpr (StdArray<Container>)
     {
@@ -356,9 +359,9 @@ requires AllInheritFromBase<Variant, Base> void
  * @tparam Container The container type (deduced automatically).
  */
 template <typename Variant, typename Container>
-requires
-  AllInheritFromBase<Variant, typename Container::value_type::element_type> void
-  clone_variant_container (Container &dest, const Container &src)
+  requires AllInheritFromBase<Variant, typename Container::value_type::element_type>
+void
+clone_variant_container (Container &dest, const Container &src)
 {
   using Base = typename Container::value_type::element_type;
 

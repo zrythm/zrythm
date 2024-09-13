@@ -4,6 +4,7 @@
 #ifndef __UTILS_TRAITS_H__
 #define __UTILS_TRAITS_H__
 
+#include <array>
 #include <memory>
 #include <ranges>
 #include <type_traits>
@@ -26,17 +27,16 @@ constexpr auto dependent_false_v = dependent_false<Ts...>::value;
 template <typename T>
 concept FinalClass = std::is_final_v<T> && std::is_class_v<T>;
 
-template <typename T> concept CompleteType = requires
-{
-  sizeof (T);
-};
+template <typename T>
+concept CompleteType = requires { sizeof (T); };
 
 // Concept to check if a type is a raw pointer
-template <typename T> concept IsPointer = std::is_pointer_v<T>;
+template <typename T>
+concept IsPointer = std::is_pointer_v<T>;
 
 // Concept to check if a type is a variant of pointers (allows std::nullptr_t)
-template <typename T> concept VariantOfPointers = requires
-{
+template <typename T>
+concept VariantOfPointers = requires {
   []<typename... Ts> (std::variant<Ts...> *) {
     static_assert (
       ((IsPointer<Ts> || std::is_null_pointer_v<Ts>) && ...),
@@ -83,8 +83,8 @@ template <typename Derived, typename Base>
 concept DerivedFromPointee =
   std::derived_from<base_type<Derived>, base_type<Base>>;
 
-template <typename T> concept StdArray = requires
-{
+template <typename T>
+concept StdArray = requires {
   typename std::array<typename T::value_type, std::tuple_size<T>::value>;
   requires std::same_as<
     T, std::array<typename T::value_type, std::tuple_size<T>::value>>;
@@ -256,8 +256,9 @@ using to_pointer_variant = typename to_pointer_variant_impl<Variant>::type;
  * @return The converted variant type.
  */
 template <typename Variant, typename Base>
-requires std::is_pointer_v<std::variant_alternative_t<0, Variant>> auto
-         convert_to_variant (const Base * base_ptr) -> Variant
+  requires std::is_pointer_v<std::variant_alternative_t<0, Variant>>
+auto
+convert_to_variant (const Base * base_ptr) -> Variant
 {
   if (!base_ptr)
     {
@@ -298,9 +299,10 @@ requires std::is_pointer_v<std::variant_alternative_t<0, Variant>> auto
  * @throw std::runtime_error if no conversion is possible.
  */
 template <typename BaseT, typename PtrVariantT>
-  static BaseT *
-  get_ptr_variant_as_base_ptr (PtrVariantT &&variant) requires (!IsPointer<BaseT>)
-  && VariantOfPointers<std::remove_reference_t<PtrVariantT>>
+static BaseT *
+get_ptr_variant_as_base_ptr (PtrVariantT &&variant)
+  requires (!IsPointer<BaseT>)
+           && VariantOfPointers<std::remove_reference_t<PtrVariantT>>
 {
   return std::visit (
     [] (auto &&obj) -> BaseT * {

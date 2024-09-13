@@ -32,20 +32,14 @@
  */
 
 // Helper concept to check if a type is a container
-template <typename T> concept ContainerType = requires (T t)
-{
+template <typename T>
+concept ContainerType = requires (T t) {
   typename T::value_type;
   typename T::iterator;
   typename T::const_iterator;
-  {
-    t.begin ()
-  } -> std::same_as<typename T::iterator>;
-  {
-    t.end ()
-  } -> std::same_as<typename T::iterator>;
-  {
-    t.size ()
-  } -> std::convertible_to<std::size_t>;
+  { t.begin () } -> std::same_as<typename T::iterator>;
+  { t.end () } -> std::same_as<typename T::iterator>;
+  { t.size () } -> std::convertible_to<std::size_t>;
 };
 
 // Concept for a container with signed integral value types
@@ -733,12 +727,18 @@ public:
       {
         yyjson_mut_obj_add_bool (doc, obj, key, value);
       }
-    else if constexpr (
-      std::is_same_v<T, std::string> || std::is_same_v<T, fs::path>)
+    else if constexpr (std::is_same_v<T, std::string>)
       {
         if (!value.empty ())
           {
             yyjson_mut_obj_add_str (doc, obj, key, value.c_str ());
+          }
+      }
+    else if constexpr (std::is_same_v<T, fs::path>)
+      {
+        if (!value.empty ())
+          {
+            yyjson_mut_obj_add_str (doc, obj, key, value.string ().c_str ());
           }
       }
     else if constexpr (std::is_same_v<T, std::vector<float>>)
@@ -1337,10 +1337,14 @@ protected:
       const char * name;
       T           &value;
       bool         optional;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
+#ifdef __GNUC__
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wunused-local-typedefs"
+#endif
       using variant_type = VariantType;
-#pragma GCC diagnostic pop
+#ifdef __GNUC__
+#  pragma GCC diagnostic pop
+#endif
     };
     return Field{ name, value, optional };
   }

@@ -513,8 +513,10 @@ if is_msvc
     '-D_USE_MATH_DEFINES=1',
     '-D_UNICODE',
     '-DUNICODE',
+    '-DNOMINMAX',
   ]
 endif
+
 test_cflags += definitions
 
 # some of these don't work on msvc and some (like `CONST`) even break
@@ -680,9 +682,8 @@ test_strict_cflags = [
   '-Werror=address',
   '-Werror=undef',
   '-Werror=unused',
-  # TODO enable following 2 lines to catch VLAs
-  #'-Wvla',
-  #'-Werror=vla',
+  '-Werror=vla',
+  '-Werror=vla-cxx-extension',
   '-fstrict-aliasing',
   '-Wstrict-aliasing=2',
   '-Werror=strict-aliasing',
@@ -807,11 +808,15 @@ endif
 
 if os_windows
   common_ldflags += [
-    '-fno-stack-protector',
     '-lws2_32',
-    '-static-libgcc',
-    '-static-libstdc++',
     ]
+  if not is_msvc # mingw
+    common_ldflags += [
+      '-fno-stack-protector',
+      '-static-libgcc',
+      '-static-libstdc++',
+      ]
+  endif
 endif
 
 test_cflags_c_only = [
@@ -1160,6 +1165,7 @@ carla_host_plugin_dep = dependency (
 have_carla = carla_host_plugin_dep.found ()
 if have_carla
   carla_bins_dir = get_option ('carla_binaries_dir')
+  carla_bins_dir = carla_bins_dir.replace ('\\', '/')
   if carla_bins_dir == ''
     carla_bins_dir = carla_host_plugin_dep.get_variable (pkgconfig: 'carla_libdir')
   endif

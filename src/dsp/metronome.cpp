@@ -38,9 +38,9 @@ Metronome::Metronome (AudioEngine &engine)
   emphasis_ = std::make_shared<juce::AudioSampleBuffer> ();
   normal_ = std::make_unique<juce::AudioSampleBuffer> ();
 
-  AudioFile file (emphasis_path_);
+  AudioFile file (emphasis_path_.string ());
   file.read_full (*emphasis_, engine.sample_rate_);
-  file = AudioFile (normal_path_);
+  file = AudioFile (normal_path_.string ());
   file.read_full (*normal_, engine.sample_rate_);
 
   /* set volume */

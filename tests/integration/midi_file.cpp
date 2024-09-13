@@ -5,14 +5,11 @@
 
 #include <random>
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/engine_dummy.h"
 #include "dsp/midi_event.h"
 #include "dsp/midi_track.h"
 #include "dsp/track.h"
 #include "project.h"
-#include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/io.h"
 #include "zrythm.h"
@@ -20,13 +17,11 @@
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("integration/midi file");
-
 constexpr auto BUFFER_SIZE = 20;
 /* around 100 causes OOM in various CIs */
 constexpr auto MAX_FILES = 10;
 
-TEST_CASE_FIXTURE (ZrythmFixture, "midi file playback")
+TEST_F (ZrythmFixture, MidiFilePlayback)
 {
   /* create a track for testing */
   Track::create_empty_with_action<MidiTrack> ();
@@ -108,5 +103,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "midi file playback")
 
   test_project_save_and_reload ();
 }
-
-TEST_SUITE_END;

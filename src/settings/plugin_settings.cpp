@@ -95,9 +95,8 @@ PluginSetting::validate (bool print_result)
     }
 
 #if defined(_WIN32) && defined(HAVE_CARLA)
-  /* open all LV2 plugins with custom UIs using
-   * carla */
-  if (descr->has_custom_ui && !this->force_generic_ui)
+  /* open all LV2 plugins with custom UIs using carla */
+  if (descr_.has_custom_ui_ && !force_generic_ui_)
     {
       open_with_carla_ = true;
     }
@@ -420,7 +419,7 @@ PluginSettings::serialize_to_file ()
   z_debug ("Writing plugin settings to {}...", path);
   try
     {
-      Glib::file_set_contents (path, json_str.c_str ());
+      Glib::file_set_contents (path.string (), json_str.c_str ());
     }
   catch (const Glib::FileError &e)
     {
@@ -443,7 +442,7 @@ PluginSettings::read_or_new ()
   std::string json;
   try
     {
-      json = Glib::file_get_contents (path);
+      json = Glib::file_get_contents (path.string ());
     }
   catch (const Glib::Error &e)
     {

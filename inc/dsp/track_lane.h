@@ -182,7 +182,8 @@ public:
     const Position *  start,
     const Position *  end,
     bool              lanes_as_tracks,
-    bool use_track_or_lane_pos) requires std::derived_from<MidiRegion, RegionT>;
+    bool              use_track_or_lane_pos)
+    requires std::derived_from<MidiRegion, RegionT>;
 
   Tracklist * get_tracklist () const;
 

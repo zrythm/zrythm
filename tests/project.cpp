@@ -3,8 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "actions/arranger_selections.h"
 #include "actions/tracklist_selections.h"
 #include "dsp/chord_track.h"
@@ -27,9 +25,7 @@
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("project");
-
-TEST_CASE_FIXTURE (ZrythmFixtureWithPipewire, "exposed ports after load")
+TEST_F (ZrythmFixtureWithPipewire, ExposedPortsAfterLoad)
 {
 #ifdef HAVE_PIPEWIRE
   auto        track = Track::create_empty_with_action<AudioTrack> ();
@@ -50,9 +46,7 @@ TEST_CASE_FIXTURE (ZrythmFixtureWithPipewire, "exposed ports after load")
 #endif // HAVE_PIPEWIRE
 }
 
-TEST_CASE_FIXTURE (
-  BootstrapTimelineFixture,
-  "project save backup with pool and plugins")
+TEST_F (BootstrapTimelineFixture, SaveBackupWithPoolAndPlugins)
 {
   /* add a plugin and create a duplicate track */
   int track_pos = test_plugin_manager_create_tracks_from_plugin (
@@ -95,7 +89,7 @@ TEST_CASE_FIXTURE (
   test_project_reload (filepath);
 }
 
-TEST_CASE_FIXTURE (BootstrapTimelineFixture, "project save as and load with pool")
+TEST_F (BootstrapTimelineFixture, SaveAsAndLoadWithPool)
 {
   /* save the project elsewhere */
   auto orig_dir = PROJECT->dir_;
@@ -115,7 +109,7 @@ TEST_CASE_FIXTURE (BootstrapTimelineFixture, "project save as and load with pool
   io_rmdir (orig_dir, true);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "empty project save and load")
+TEST_F (ZrythmFixture, EmptyProjectSaveAndLoad)
 {
   ASSERT_NONNULL (PROJECT);
 
@@ -126,7 +120,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "empty project save and load")
   ASSERT_NO_THROW (PROJECT->save (PROJECT->dir_, F_NOT_BACKUP, 0, F_NO_ASYNC));
 }
 
-TEST_CASE_FIXTURE (BootstrapTimelineFixture, "project save and load with data")
+TEST_F (BootstrapTimelineFixture, SaveAndLoadWithData)
 {
   ASSERT_NONNULL (PROJECT);
 
@@ -162,7 +156,7 @@ TEST_CASE_FIXTURE (BootstrapTimelineFixture, "project save and load with data")
   check_vs_original_state (false);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "project new from template")
+TEST_F (ZrythmFixture, NewFromTemplate)
 {
   /* add plugins */
   test_plugin_manager_create_tracks_from_plugin (
@@ -255,7 +249,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "project new from template")
  * was a bug causing plugin states to be deleted when saving
  * backups).
  */
-TEST_CASE_FIXTURE (ZrythmFixture, "project load with plugin after backup")
+TEST_F (ZrythmFixture, LoadWithPluginAfterBackup)
 {
   /* add a plugin */
   int track_pos = test_plugin_manager_create_tracks_from_plugin (
@@ -305,7 +299,7 @@ init_cb (bool success, GError * error, void * user_data)
 {
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "project load v1.0.0-beta.2.1.1")
+TEST_F (ZrythmFixture, Loadv1_0_0_beta_2_1_1)
 {
   /* TODO test opening a project from 1.0.0 beta 2.1.1 that
    * has undo history */
@@ -319,5 +313,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "project load v1.0.0-beta.2.1.1")
    * ("/home/alex/.var/app/org.zrythm.Zrythm/data/zrythm/projects/プロジェクト名未設定
    * (3)/project.zpj", false);*/
 }
-
-TEST_SUITE_END;

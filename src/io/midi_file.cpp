@@ -19,7 +19,7 @@ MidiFile::MidiFile (const fs::path &path) : for_reading_ (true)
   if (!midi_file_.readFrom (in_stream, true, &format))
     {
       throw ZrythmException (
-        fmt::format ("Could not read MIDI file at '{}'", path));
+        fmt::format ("Could not read MIDI file at '{}'", path.string ()));
     }
 
   format_ = ENUM_INT_TO_VALUE (Format, format);

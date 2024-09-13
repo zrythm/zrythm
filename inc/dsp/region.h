@@ -432,8 +432,9 @@ public:
     const EngineProcessTimeInfo &time_nfo,
     bool                         note_off_at_end,
     bool                         is_note_off_for_loop_or_region_end,
-    MidiEventVector             &midi_events) const requires
-    RegionTypeWithMidiEvents<RegionT> ATTR_REALTIME;
+    MidiEventVector             &midi_events) const
+    requires RegionTypeWithMidiEvents<RegionT>
+  ATTR_REALTIME;
 
   /**
    * @brief Get the objects (midi notes/chord objects/etc) of this
@@ -442,18 +443,19 @@ public:
    * @tparam T Object type.
    * @return A vector of object pointers.
    */
-  std::span<std::shared_ptr<ChildT>>
-  get_objects () requires RegionWithChildren<RegionT>;
+  std::span<std::shared_ptr<ChildT>> get_objects ()
+    requires RegionWithChildren<RegionT>;
 
-  std::vector<std::shared_ptr<ChildT>> &
-  get_objects_vector () requires RegionWithChildren<RegionT>;
+  std::vector<std::shared_ptr<ChildT>> &get_objects_vector ()
+    requires RegionWithChildren<RegionT>;
 
   RegionOwnerImpl<RegionT> * get_region_owner () const;
 
   /**
    * Removes all children objects from the region.
    */
-  void remove_all_children () requires RegionWithChildren<RegionT>;
+  void remove_all_children ()
+    requires RegionWithChildren<RegionT>;
 
   /**
    * Clones and copies all children from @p src to @p dest.
@@ -477,8 +479,8 @@ public:
    * @see insert_object().
    */
   std::shared_ptr<ChildT>
-  append_object (std::shared_ptr<ChildT> obj, bool fire_events = false) requires
-    RegionWithChildren<RegionT>;
+  append_object (std::shared_ptr<ChildT> obj, bool fire_events = false)
+    requires RegionWithChildren<RegionT>;
 
   /**
    * @brief Removes the given object from this region.
@@ -487,9 +489,8 @@ public:
    * @param obj
    * @return std::shared_ptr<T>
    */
-  std::shared_ptr<ChildT>
-  remove_object (ChildT &obj, bool fire_events = false) requires
-    RegionWithChildren<RegionT>;
+  std::shared_ptr<ChildT> remove_object (ChildT &obj, bool fire_events = false)
+    requires RegionWithChildren<RegionT>;
 
   bool get_muted (bool check_parent) const override;
 
@@ -594,8 +595,8 @@ private:
   ATTR_HOT void send_note_offs (
     MidiEventVector            &events,
     const EngineProcessTimeInfo time_nfo,
-    bool is_note_off_for_loop_or_region_end) const requires
-    RegionTypeWithMidiEvents<RegionT>;
+    bool                        is_note_off_for_loop_or_region_end) const
+    requires RegionTypeWithMidiEvents<RegionT>;
 
 public:
   RegionT &derived_ = static_cast<RegionT &> (*this);

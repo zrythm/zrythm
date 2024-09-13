@@ -8,8 +8,6 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "actions/mixer_selections_action.h"
 #include "actions/undo_manager.h"
 #include "dsp/control_port.h"
@@ -22,8 +20,6 @@
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
 
-TEST_SUITE_BEGIN ("integration/run graph with latencies");
-
 #ifdef HAVE_NO_DELAY_LINE
 static ControlPort *
 get_delay_port (Plugin * pl)
@@ -35,7 +31,7 @@ get_delay_port (Plugin * pl)
           return dynamic_cast<ControlPort *> (port.get ());
         }
     }
-  ASSERT_UNREACHABLE ();
+  EXPECT_UNREACHABLE ();
   z_return_val_if_reached (nullptr);
 }
 
@@ -149,7 +145,7 @@ _test (
 }
 #endif
 
-TEST_CASE_FIXTURE (ZrythmFixture, "run graph with latencies")
+TEST_F (ZrythmFixture, RunGraphWithLatencies)
 {
 #ifdef HAVE_NO_DELAY_LINE
 #  ifdef HAVE_HELM
@@ -164,5 +160,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "run graph with latencies")
 #  endif
 #endif
 }
-
-TEST_SUITE_END;

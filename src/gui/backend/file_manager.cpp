@@ -187,7 +187,7 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
   {
     auto parent_dir = fs::path (location.path_).parent_path ();
     auto fd = FileDescriptor ();
-    fd.abs_path_ = parent_dir;
+    fd.abs_path_ = parent_dir.string ();
     fd.type_ = FileType::ParentDirectory;
     fd.hidden_ = false;
     fd.label_ = "..";
@@ -204,11 +204,11 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
 
       /* set absolute path & label */
       auto absolute_path = fs::path (location.path_) / file;
-      fd.abs_path_ = absolute_path;
+      fd.abs_path_ = absolute_path.string ();
       fd.label_ = file;
 
-      GError *    err = NULL;
-      GFile *     gfile = g_file_new_for_path (absolute_path.c_str ());
+      GError * err = NULL;
+      GFile *  gfile = g_file_new_for_path (absolute_path.string ().c_str ());
       GFileInfo * info = g_file_query_info (
         gfile, G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN, G_FILE_QUERY_INFO_NONE,
         nullptr, &err);

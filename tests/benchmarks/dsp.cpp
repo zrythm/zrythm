@@ -21,6 +21,21 @@
 constexpr int BUFFER_SIZE = 20;
 constexpr int LARGE_BUFFER_SIZE = 2000;
 
+/**
+ * @brief Concrete class to use in benchmarks.
+ */
+class BenchmarkZrythmFixture : public ZrythmFixture
+{
+public:
+  BenchmarkZrythmFixture (bool optimized)
+      : ZrythmFixture (optimized, 0, 0, false, false)
+  {
+    SetUp ();
+  }
+  ~BenchmarkZrythmFixture () override { TearDown (); }
+  void TestBody () override { }
+};
+
 static void
 BM_DspFunctions (benchmark::State &state)
 {
@@ -28,7 +43,7 @@ BM_DspFunctions (benchmark::State &state)
   bool large_buff = state.range (1);
   int  algo_to_run = state.range (2);
 
-  ZrythmFixture fixture (optimized, 0, 0, false, false);
+  BenchmarkZrythmFixture fixture (optimized);
 
   std::vector<float> buf (LARGE_BUFFER_SIZE, 0.5f);
   std::vector<float> src (LARGE_BUFFER_SIZE, 0.5f);

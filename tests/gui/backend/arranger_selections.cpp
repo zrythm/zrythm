@@ -3,8 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/midi_region.h"
 #include "dsp/tracklist.h"
 #include "gui/backend/arranger_selections.h"
@@ -12,8 +10,6 @@
 #include "zrythm.h"
 
 #include "tests/helpers/zrythm_helper.h"
-
-TEST_SUITE_BEGIN ("gui/backend/arranger selections");
 
 static void
 test_region_length_in_ticks (Track * track, int bar_start, int bar_end)
@@ -31,7 +27,7 @@ test_region_length_in_ticks (Track * track, int bar_start, int bar_end)
     length, TRANSPORT->ticks_per_bar_ * (bar_end - bar_start), 0.00001);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "get length in ticks")
+TEST_F (ZrythmFixture, GetLengthInTicks)
 {
   auto track = Track::create_empty_with_action<MidiTrack> ();
 
@@ -40,7 +36,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "get length in ticks")
   test_region_length_in_ticks (track, 1000, 1010);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "get last object")
+TEST_F (ZrythmFixture, GetLastObject)
 {
   auto track = Track::create_empty_with_action<MidiTrack> ();
 
@@ -63,7 +59,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "get last object")
   ASSERT_TRUE (last_obj == mn.get ());
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "contains object with property")
+TEST_F (ZrythmFixture, ContainsObjectWithProperty)
 {
   auto track = Track::create_empty_with_action<MidiTrack> ();
 
@@ -85,5 +81,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "contains object with property")
   ASSERT_FALSE (MIDI_SELECTIONS->contains_object_with_property (
     ArrangerSelections::Property::HasLength, false));
 }
-
-TEST_SUITE_END;

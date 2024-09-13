@@ -3,8 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "actions/arranger_selections.h"
 #include "actions/undo_manager.h"
 #include "project.h"
@@ -13,8 +11,6 @@
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
-
-TEST_SUITE_BEGIN ("actions/undo manager");
 
 static void
 perform_create_region_action ()
@@ -35,7 +31,7 @@ perform_create_region_action ()
     std::make_unique<CreateArrangerSelectionsAction> (*TL_SELECTIONS));
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "perform many actions")
+TEST_F (ZrythmFixture, PerformManyActions)
 {
   for (int i = 0; !UNDO_MANAGER->undo_stack_->is_full (); ++i)
     {
@@ -86,7 +82,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "perform many actions")
     }
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "multi actions")
+TEST_F (ZrythmFixture, MultiActions)
 {
   int       max_actions = 3;
   const int num_tracks_at_start = TRACKLIST->get_num_tracks ();
@@ -123,7 +119,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "multi actions")
   ASSERT_SIZE_EQ (*UNDO_MANAGER->redo_stack_, max_actions);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "fill stack")
+TEST_F (ZrythmFixture, FillStack)
 {
   const auto max_len = UNDO_MANAGER->undo_stack_->max_size_;
   for (size_t i = 0; i < max_len + 8; ++i)
@@ -133,5 +129,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "fill stack")
 
   test_project_save_and_reload ();
 }
-
-TEST_SUITE_END;

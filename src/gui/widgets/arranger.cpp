@@ -3715,8 +3715,9 @@ arranger_widget_pos_to_px (
 }
 
 template <typename T>
-requires std::derived_from<T, ArrangerSelections> T *
-         arranger_widget_get_selections (ArrangerWidget * self)
+  requires std::derived_from<T, ArrangerSelections>
+T *
+arranger_widget_get_selections (ArrangerWidget * self)
 {
   ArrangerSelections * sel = nullptr;
   switch (self->type)

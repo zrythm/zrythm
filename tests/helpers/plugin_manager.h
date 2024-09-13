@@ -70,11 +70,11 @@ test_plugin_manager_get_plugin_setting (
     auto   dest_path = Glib::build_filename (tmpdir, basename);
     if (g_str_has_suffix (pl_bundle, "vst3"))
       {
-        ASSERT_NO_THROW (io_copy_dir (dest_path, pl_bundle, true, true));
+        EXPECT_NO_THROW (io_copy_dir (dest_path, pl_bundle, true, true));
       }
     else if (pl_uri)
       {
-        ASSERT_NO_THROW (io_copy_dir (dest_path, &pl_bundle[7], true, true));
+        EXPECT_NO_THROW (io_copy_dir (dest_path, &pl_bundle[7], true, true));
       }
     else
       {
@@ -82,7 +82,7 @@ test_plugin_manager_get_plugin_setting (
         pl_bundle_file = g_file_new_for_path (pl_bundle);
         GFile * pl_bundle_file_in_tmp = g_file_new_for_path (dest_path.c_str ());
         GError * err = NULL;
-        ASSERT_TRUE (g_file_copy (
+        EXPECT_TRUE (g_file_copy (
           pl_bundle_file, pl_bundle_file_in_tmp, G_FILE_COPY_NONE, nullptr,
           nullptr, nullptr, &err));
         // g_object_unref (pl_bundle_file);
@@ -103,7 +103,7 @@ test_plugin_manager_get_plugin_setting (
     {
       g_main_context_iteration (nullptr, true);
     }
-  ASSERT_NONEMPTY (PLUGIN_MANAGER->plugin_descriptors_);
+  EXPECT_NONEMPTY (PLUGIN_MANAGER->plugin_descriptors_);
 
   std::optional<PluginDescriptor> descr;
   for (const auto &cur_descr : PLUGIN_MANAGER->plugin_descriptors_)
@@ -126,7 +126,7 @@ test_plugin_manager_get_plugin_setting (
             }
         }
     }
-  ASSERT_HAS_VALUE (descr);
+  EXPECT_HAS_VALUE (descr);
 
   PluginSetting setting (*descr);
 
@@ -177,7 +177,7 @@ test_plugin_manager_create_tracks_from_plugin (
     }
 
   /* create a track from the plugin */
-  ASSERT_NO_THROW (Track::create_with_action (
+  EXPECT_NO_THROW (Track::create_with_action (
     track_type, &setting, nullptr, nullptr, TRACKLIST->get_num_tracks (),
     num_tracks, -1, nullptr));
 

@@ -305,7 +305,8 @@ public:
   template <typename T = Track>
   T * get_last_track (
     const PinOption pin_opt = PinOption::Both,
-    const bool visible_only = false) const requires std::derived_from<T, Track>
+    const bool      visible_only = false) const
+    requires std::derived_from<T, Track>
   {
     int idx = get_last_pos (pin_opt, visible_only);
     z_return_val_if_fail (idx >= 0 && idx < (int) tracks_.size (), nullptr);

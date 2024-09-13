@@ -512,9 +512,9 @@ midi_print_to_str (const midi_byte_t * msg, const size_t msg_sz, char * buf)
     }
   else if (midi_is_sysex (msg, msg_sz))
     {
-      char hex[msg_sz * 4];
-      midi_get_hex_str (msg, msg_sz, hex);
-      sprintf (buf, "Sysex: %s", hex);
+      std::vector<char> hex (msg_sz * 4);
+      midi_get_hex_str (msg, msg_sz, hex.data ());
+      sprintf (buf, "Sysex: %s", hex.data ());
     }
   else if (midi_is_meta_event (msg, msg_sz))
     {
@@ -529,21 +529,21 @@ midi_print_to_str (const midi_byte_t * msg, const size_t msg_sz, char * buf)
           midi_byte_t meta_event_type = midi_get_meta_event_type (msg, msg_sz);
           char        meta_event_name[600];
           midi_get_meta_event_type_name (meta_event_name, meta_event_type);
-          char hex[data_sz * 4];
-          midi_get_hex_str (data, data_sz, hex);
+          std::vector<char> hex (data_sz * 4);
+          midi_get_hex_str (data, data_sz, hex.data ());
           sprintf (
             buf,
             "Meta-event: %s\n"
             "  length: %zu\n"
             "  data: %s",
-            meta_event_name, data_sz, hex);
+            meta_event_name, data_sz, hex.data ());
         }
     }
   else
     {
-      char hex[msg_sz * 4];
-      midi_get_hex_str (msg, msg_sz, hex);
-      sprintf (buf, "Unknown MIDI event of size %zu: %s", msg_sz, hex);
+      std::vector<char> hex (msg_sz * 4);
+      midi_get_hex_str (msg, msg_sz, hex.data ());
+      sprintf (buf, "Unknown MIDI event of size %zu: %s", msg_sz, hex.data ());
     }
 }
 

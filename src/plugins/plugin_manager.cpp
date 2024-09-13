@@ -110,8 +110,8 @@ PluginManager::get_lv2_paths ()
 
       auto test_lv2_plugins = fs::path (tests_builddir) / "lv2plugins";
       auto test_root_plugins = fs::path (root_builddir) / "data" / "plugins";
-      ret.add (test_lv2_plugins);
-      ret.add (test_root_plugins);
+      ret.add (test_lv2_plugins.string ());
+      ret.add (test_root_plugins.string ());
 
       std::vector<Glib::ustring> paths_from_settings = {
         "${LV2_PATH}", "/usr/lib/lv2"
@@ -332,7 +332,7 @@ PluginManager::get_dssi_paths ()
 #  else /* non-flatpak UNIX */
       {
         auto home_dssi = fs::path (Glib::get_home_dir ()) / ".dssi";
-        ret.add (home_dssi);
+        ret.add (home_dssi.string ());
       }
       ret.add ("/usr/lib/dssi");
       ret.add ("/usr/local/lib/dssi");
@@ -502,7 +502,7 @@ PluginManager::get_au_paths ()
   auto user_components =
     fs::path (Glib::get_home_dir ()) / "Library" / "Audio" / "Plug-ins"
     / "Components";
-  ret.add (user_components);
+  ret.add (user_components.string ());
 
   ret.print ("AU paths");
 

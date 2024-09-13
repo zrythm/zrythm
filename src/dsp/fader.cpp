@@ -404,6 +404,12 @@ Fader::set_soloed (bool solo, bool fire_events)
     }
 }
 
+std::string
+Fader::db_string_getter () const
+{
+  return fmt::format ("{:.1f}", math_amp_to_dbfs (amp_->control_));
+}
+
 bool
 Fader::is_in_active_project () const
 {

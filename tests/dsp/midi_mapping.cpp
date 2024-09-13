@@ -3,8 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/master_track.h"
 #include "dsp/midi_mapping.h"
 #include "project.h"
@@ -15,9 +13,7 @@
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/midi mapping");
-
-TEST_CASE_FIXTURE (ZrythmFixture, "midi mapping")
+TEST_F (ZrythmFixture, MidiMapping)
 {
   MidiMappings mappings;
 
@@ -43,5 +39,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "midi mapping")
     P_MASTER_TRACK->channel_->fader_->amp_.get (),
     MIDI_MAPPINGS->mappings_[0]->dest_);
 }
-
-TEST_SUITE_END;

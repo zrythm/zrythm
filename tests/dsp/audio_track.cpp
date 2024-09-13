@@ -12,11 +12,9 @@
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/audio track");
-
 constexpr int LOOP_BAR = 4;
 
-TEST_CASE_FIXTURE (ZrythmFixture, "fill when region starts on loop end")
+TEST_F (ZrythmFixture, FillWhenRegionStartsOnLoopEnd)
 {
   test_project_stop_dummy_engine ();
 
@@ -96,5 +94,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "fill when region starts on loop end")
         clip_frames[last_sample_index], port_frames[last_sample_index]);
     }
 }
-
-TEST_SUITE_END;

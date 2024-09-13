@@ -3,8 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/graph.h"
 #include "dsp/graph_export.h"
 #include "project.h"
@@ -12,9 +10,7 @@
 
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/graph export");
-
-TEST_CASE_FIXTURE (ZrythmFixture, "export graph to SVG")
+TEST_F (ZrythmFixture, ExportGraphToSVG)
 {
 #ifdef HAVE_CGRAPH
   char * tmp_dir = g_dir_make_tmp ("zrythm_graph_export_XXXXXX", nullptr);
@@ -28,5 +24,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "export graph to SVG")
   g_free (tmp_dir);
 #endif
 }
-
-TEST_SUITE_END;

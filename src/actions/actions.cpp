@@ -352,7 +352,7 @@ activate_ramp_mode (GSimpleAction * action, GVariant * variant, gpointer user_da
 
 DEFINE_SIMPLE (activate_zoom_in)
 {
-  size_t       size;
+  gsize        size;
   const char * str = g_variant_get_string (variant, &size);
 
   /* if ends with v, this is a vertical zoom */
@@ -408,7 +408,7 @@ DEFINE_SIMPLE (activate_zoom_in)
 
 DEFINE_SIMPLE (activate_zoom_out)
 {
-  size_t       size;
+  gsize        size;
   const char * str = g_variant_get_string (variant, &size);
 
   /* if ends with v, this is a vertical zoom */
@@ -464,7 +464,7 @@ DEFINE_SIMPLE (activate_zoom_out)
 
 DEFINE_SIMPLE (activate_best_fit)
 {
-  size_t       size;
+  gsize        size;
   const char * str = g_variant_get_string (variant, &size);
 
   RulerWidget * ruler = NULL;
@@ -551,7 +551,7 @@ DEFINE_SIMPLE (activate_best_fit)
 
 DEFINE_SIMPLE (activate_original_size)
 {
-  size_t       size;
+  gsize        size;
   const char * str = g_variant_get_string (variant, &size);
 
   RulerWidget * ruler = NULL;
@@ -771,7 +771,7 @@ activate_save_as (GSimpleAction * action, GVariant * variant, gpointer user_data
   fs::path        project_file_path =
     PROJECT->get_path (ProjectPath::ProjectFile, false);
   auto    str = project_file_path.parent_path ();
-  GFile * file = g_file_new_for_path (str.c_str ());
+  GFile * file = g_file_new_for_path (str.string ().c_str ());
   gtk_file_dialog_set_initial_file (dialog, file);
   g_object_unref (file);
   gtk_file_dialog_set_initial_name (dialog, PROJECT->title_.c_str ());
@@ -2424,7 +2424,7 @@ do_audio_func (
 
 DEFINE_SIMPLE (activate_editor_function)
 {
-  size_t       size;
+  gsize        size;
   const char * str = g_variant_get_string (variant, &size);
 
   Region * region = CLIP_EDITOR->get_region ();
@@ -2589,7 +2589,7 @@ DEFINE_SIMPLE (activate_editor_function)
 
 DEFINE_SIMPLE (activate_editor_function_lv2)
 {
-  size_t       size;
+  gsize        size;
   const char * str = g_variant_get_string (variant, &size);
 
   Region * region = CLIP_EDITOR->get_region ();
@@ -2797,7 +2797,7 @@ DEFINE_SIMPLE (activate_reset_region_color)
 
 DEFINE_SIMPLE (activate_move_automation_regions)
 {
-  size_t       size;
+  gsize        size;
   const char * _str = g_variant_get_string (variant, &size);
   Port *       port = NULL;
   sscanf (_str, "%p", &port);
@@ -2863,7 +2863,7 @@ change_state_show_automation_values (
 
 DEFINE_SIMPLE (activate_nudge_selection)
 {
-  size_t       size;
+  gsize        size;
   const char * str = g_variant_get_string (variant, &size);
 
   double ticks = ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS;
@@ -2906,7 +2906,7 @@ DEFINE_SIMPLE (activate_nudge_selection)
 
 DEFINE_SIMPLE (activate_detect_bpm)
 {
-  size_t        size;
+  gsize         size;
   const char *  _str = g_variant_get_string (variant, &size);
   AudioRegion * r = NULL;
   sscanf (_str, "%p", &r);
@@ -3110,7 +3110,7 @@ handle_region_fade_algo_preset (const std::string &pset_id, bool fade_in)
 
 DEFINE_SIMPLE (activate_set_region_fade_in_algorithm_preset)
 {
-  size_t       size;
+  gsize        size;
   const char * str = g_variant_get_string (variant, &size);
 
   handle_region_fade_algo_preset (str, true);
@@ -3118,7 +3118,7 @@ DEFINE_SIMPLE (activate_set_region_fade_in_algorithm_preset)
 
 DEFINE_SIMPLE (activate_set_region_fade_out_algorithm_preset)
 {
-  size_t       size;
+  gsize        size;
   const char * str = g_variant_get_string (variant, &size);
 
   handle_region_fade_algo_preset (str, false);
@@ -3126,7 +3126,7 @@ DEFINE_SIMPLE (activate_set_region_fade_out_algorithm_preset)
 
 DEFINE_SIMPLE (activate_arranger_object_view_info)
 {
-  size_t           size;
+  gsize            size;
   const char *     str = g_variant_get_string (variant, &size);
   ArrangerObject * obj = NULL;
   sscanf (str, "%p", &obj);

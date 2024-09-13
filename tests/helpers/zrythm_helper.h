@@ -28,7 +28,7 @@
  * environment, such as whether to use an optimized configuration or
  * PipeWire.
  */
-class ZrythmFixture : public ::testing::Test
+class ZrythmFixture : virtual public ::testing::Test
 {
 public:
   // To be used in most tests as a fixture.
@@ -44,6 +44,7 @@ public:
   virtual ~ZrythmFixture ();
 
   void SetUp () override;
+  void TestBody () override;
   void TearDown () override;
 
 private:

@@ -168,9 +168,9 @@ Logger::get_log_file_path () const
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       auto tmp_log_dir = fs::path (g_get_tmp_dir ()) / "zrythm_test_logs";
-      EXPECT_NO_THROW ({ io_mkdir (tmp_log_dir); });
+      EXPECT_NO_THROW ({ io_mkdir (tmp_log_dir.string ()); });
       auto str_datetime = datetime_get_for_filename ();
-      return tmp_log_dir / str_datetime;
+      return (tmp_log_dir / str_datetime).string ();
     }
 
   auto   str_datetime = datetime_get_for_filename ();
@@ -179,7 +179,7 @@ Logger::get_log_file_path () const
   auto   log_filepath =
     fs::path (user_log_dir) / (std::string ("zrythm_") + str_datetime);
   io_mkdir (user_log_dir); // note: throws
-  return log_filepath;
+  return log_filepath.string ();
 }
 
 bool

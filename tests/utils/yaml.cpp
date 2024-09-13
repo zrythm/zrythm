@@ -3,16 +3,10 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "utils/gtest_wrapper.h"
 #include "utils/logger.h"
 #include "utils/string.h"
 #include "utils/yaml.h"
-
-#include <glib.h>
-
-TEST_SUITE_BEGIN ("utils/yaml");
 
 #ifdef HAVE_CYAML
 
@@ -31,7 +25,7 @@ static const cyaml_schema_value_t float_struct_schema = {
   CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER, float_struct, float_struct_fields_schema),
 };
 
-TEST_CASE ("load precise float")
+TEST (Yaml, LoadPreciseFloat)
 {
   yaml_set_log_level (CYAML_LOG_DEBUG);
 
@@ -114,5 +108,3 @@ TEST_CASE ("load precise float")
 #  endif
 }
 #endif
-
-TEST_SUITE_END;

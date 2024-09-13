@@ -41,7 +41,9 @@ public:
     delete df;
     df = new DetectionFunction (dfConfig);
     dfOutput.clear ();
-    origin = Vamp::RealTime::zeroTime;
+    // zeroTime not found on msvc
+    // origin = Vamp::RealTime::zeroTime;
+    origin = Vamp::RealTime (0, 0);
   }
 
   DFConfig            dfConfig;

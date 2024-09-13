@@ -1,7 +1,10 @@
 // SPDX-FileCopyrightText: © 2018-2019, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/audio_region.h"
+#include "dsp/automation_region.h"
 #include "dsp/chord_region.h"
+#include "dsp/midi_region.h"
 #include "gui/widgets/chord_region.h"
 
 void

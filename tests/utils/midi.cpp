@@ -3,15 +3,11 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "utils/midi.h"
 
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("utils/midi");
-
-TEST_CASE ("msb lsb conversions")
+TEST (Midi, MsbLsbConversions)
 {
   /* first byte */
   midi_byte_t lsb;
@@ -24,5 +20,3 @@ TEST_CASE ("msb lsb conversions")
   midi_byte_t buf[] = { MIDI_CH1_PITCH_WHEEL_RANGE, 120, 95 };
   ASSERT_EQ (midi_get_14_bit_value (buf), 12280);
 }
-
-TEST_SUITE_END;

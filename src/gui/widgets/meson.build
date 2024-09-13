@@ -150,5 +150,7 @@ widgets_lib = static_library (
   sources: widget_srcs,
   dependencies: zrythm_deps,
   include_directories: all_inc,
-  c_args: [ common_cflags, strict_cflags ],
+  c_args: [
+    common_cflags, strict_cflags,
+   ],
   )

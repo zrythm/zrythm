@@ -14,9 +14,7 @@
 
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("actions/channel send");
-
-TEST_CASE_FIXTURE (ZrythmFixture, "route master send to fx")
+TEST_F (ZrythmFixture, RouteMasterSendToFx)
 {
   /* create audio fx track */
   auto audio_fx = Track::create_empty_with_action<AudioBusTrack> ();
@@ -28,5 +26,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "route master send to fx")
       *PORT_CONNECTIONS_MGR));
     , ZrythmException);
 }
-
-TEST_SUITE_END;

@@ -3,17 +3,13 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/channel_track.h"
 #include "project.h"
 #include "zrythm.h"
 
 #include "tests/helpers/project_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/channel_track");
-
-TEST_CASE_FIXTURE (ZrythmFixture, "clone channel track")
+TEST_F (ZrythmFixture, CloneChannelTrack)
 {
   auto track = Track::create_track (
     Track::Type::Midi, "Test MIDI Track", TRACKLIST->get_last_pos ());
@@ -39,5 +35,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "clone channel track")
   // check for cloned track
   expect_ports_have_orig_track_name_hash (cloned_track);
 }
-
-TEST_SUITE_END;

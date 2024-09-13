@@ -384,23 +384,23 @@ bot_bar_widget_update_status (BotBarWidget * self)
 #endif
     }
 
-  auto str = fmt::sprintf (
+  auto str = fmt::format (
     "<span size=\"small\">"
-    "%s: %s%s%s%s | "
-    "%s: %s%s%s%s | "
-    "%s: %s%s%s\n"
-    "%s: %s%d frames%s "
+    "{}: {}{}{}{} | "
+    "{}: {}{}{}{} | "
+    "{}: {}{}{}\n"
+    "{}: {}{} frames{} "
 #ifndef _WIN32
-    "(<a href=\"change\">%s</a>) "
+    "(<a href=\"change\">{}</a>) "
 #endif
     "| "
-    "%s: %s%d Hz%s | "
-    "<a href=\"%s\">%s</a>"
+    "{}: {}{} Hz{} | "
+    "<a href=\"{}\">{}</a>"
     "</span>",
     _ ("Audio"), color_prefix,
-    AudioBackend_to_string (AUDIO_ENGINE->audio_backend_, true).c_str (),
+    AudioBackend_to_string (AUDIO_ENGINE->audio_backend_, true),
     audio_pipewire_str, color_suffix, "MIDI", color_prefix,
-    MidiBackend_to_string (AUDIO_ENGINE->midi_backend_, true).c_str (),
+    MidiBackend_to_string (AUDIO_ENGINE->midi_backend_, true),
     midi_pipewire_str, color_suffix, _ ("Status"),
     AUDIO_ENGINE->activated_ ? green_prefix : red_prefix,
     AUDIO_ENGINE->activated_ ? _ ("On") : _ ("Off"), color_suffix,

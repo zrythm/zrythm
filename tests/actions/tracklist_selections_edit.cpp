@@ -22,8 +22,6 @@
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
 
-TEST_SUITE_BEGIN ("actions/tracklist selections edit");
-
 #if defined(HAVE_CHIPWAVE) || defined(HAVE_HELM) || defined(HAVE_LSP_COMPRESSOR)
 static InstrumentTrack *
 get_ins_track (void)
@@ -357,44 +355,51 @@ _test_edit_tracks (
 }
 #endif
 
-static void
-__test_edit_tracks (bool with_carla)
+class EditTracksTestFixture
+    : public ::testing::TestWithParam<::testing::tuple<bool, int>>
 {
-  for (
-    size_t i = ENUM_VALUE_TO_INT (TracklistSelectionsAction::EditType::Solo);
-    i <= ENUM_VALUE_TO_INT (TracklistSelectionsAction::EditType::Icon); i++)
-    {
-      TracklistSelectionsAction::EditType cur =
-        ENUM_INT_TO_VALUE (TracklistSelectionsAction::EditType, i);
-      (void) cur;
+protected:
+  ZrythmFixture zrythm_fixture_;
 
-      ZrythmFixture fixture;
+  void SetUp () override { zrythm_fixture_.SetUp (); }
+  void TearDown () override { zrythm_fixture_.TearDown (); }
+};
 
-      /* stop dummy audio engine processing so we can process manually */
-      test_project_stop_dummy_engine ();
+TEST_P (EditTracksTestFixture, EditTracks)
+{
+  [[maybe_unused]] const auto &[with_carla, edit_type_int] = GetParam ();
+  [[maybe_unused]] const auto edit_type =
+    ENUM_INT_TO_VALUE (TracklistSelectionsAction::EditType, edit_type_int);
+
+  /* stop dummy audio engine processing so we can process manually */
+  test_project_stop_dummy_engine ();
 
 #ifdef HAVE_CHIPWAVE
-      _test_edit_tracks (cur, CHIPWAVE_BUNDLE, CHIPWAVE_URI, true, with_carla);
+  _test_edit_tracks (edit_type, CHIPWAVE_BUNDLE, CHIPWAVE_URI, true, with_carla);
 #endif
 #ifdef HAVE_HELM
-      _test_edit_tracks (cur, HELM_BUNDLE, HELM_URI, true, with_carla);
+  _test_edit_tracks (edit_type, HELM_BUNDLE, HELM_URI, true, with_carla);
 #endif
 #ifdef HAVE_LSP_COMPRESSOR
-      _test_edit_tracks (
-        cur, LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, false, with_carla);
+  _test_edit_tracks (
+    edit_type, LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, false, with_carla);
 #endif
-    }
 }
 
-TEST_CASE ("Edit tracks")
-{
-  __test_edit_tracks (false);
+INSTANTIATE_TEST_CASE_P (
+  EditTracksSuite,
+  EditTracksTestFixture,
+  ::testing::Combine (
 #ifdef HAVE_CARLA
-  __test_edit_tracks (true);
+    ::testing::Values (false, true),
+#else
+    ::testing::Values (false),
 #endif
-}
+    ::testing::Range (
+      ENUM_VALUE_TO_INT (TracklistSelectionsAction::EditType::Solo),
+      ENUM_VALUE_TO_INT (TracklistSelectionsAction::EditType::Icon) + 1)));
 
-TEST_CASE_FIXTURE (ZrythmFixture, "Edit MIDI direct out to instrument track")
+TEST_F (ZrythmFixture, EditMidiDirectOutToInstrumentTrack)
 {
 #ifdef HAVE_HELM
   /* create the instrument track */
@@ -446,7 +451,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "Edit MIDI direct out to instrument track")
 #endif
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "edit multi track direct out")
+TEST_F (ZrythmFixture, EditMultiTTrackDirectOut)
 {
 #ifdef HAVE_HELM
   /* create 2 instrument tracks */
@@ -519,7 +524,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "edit multi track direct out")
 #endif
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "rename MIDI track with events")
+TEST_F (ZrythmFixture, RenameMidiTrackWithEvents)
 {
   /* create a MIDI track from a file */
   auto midi_files = io_get_files_in_dir_ending_in (
@@ -555,7 +560,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "rename MIDI track with events")
   AUDIO_ENGINE->wait_n_cycles (3);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "rename track with send")
+TEST_F (ZrythmFixture, RenameTrackWithSend)
 {
   /* create an audio group */
   auto audio_group = Track::create_empty_with_action<AudioGroupTrack> ();
@@ -593,5 +598,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "rename track with send")
   UNDO_MANAGER->redo ();
   UNDO_MANAGER->redo ();
 }
-
-TEST_SUITE_END;

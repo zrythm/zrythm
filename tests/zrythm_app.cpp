@@ -13,7 +13,7 @@
 
 #include "ext/whereami/whereami.h"
 
-TEST (ZrythmApp, "version")
+TEST (ZrythmApp, version)
 {
   char * exe_path = NULL;
   int    dirname_length, length;

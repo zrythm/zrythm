@@ -17,8 +17,6 @@
 
 #include "tests/helpers/plugin_manager.h"
 
-TEST_SUITE_BEGIN ("actions/port connection");
-
 #ifdef HAVE_CARLA
 #  ifdef HAVE_AMS_LFO
 static void
@@ -225,7 +223,7 @@ _test_port_connection (
 #  endif /* HAVE_AMS_LFO */
 #endif   /* HAVE_CARLA */
 
-TEST_CASE_FIXTURE (ZrythmFixture, "port connection")
+TEST_F (ZrythmFixture, ConnectPorts)
 {
 #ifdef HAVE_AMS_LFO
 #  ifdef HAVE_CARLA
@@ -235,7 +233,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "port connection")
 #endif   /* HAVE_AMS_LFO */
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "CV to control connection")
+TEST_F (ZrythmFixture, ConnectCvToControl)
 {
 #if defined(HAVE_AMS_LFO)
   test_plugin_manager_create_tracks_from_plugin (
@@ -257,5 +255,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "CV to control connection")
       cv_out_port->id_, freq_port->id_)));
 #endif // HAVE_AMS_LFO
 }
-
-TEST_SUITE_END;

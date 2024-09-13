@@ -3,7 +3,10 @@
 
 #include "dsp/audio_bus_track.h"
 #include "dsp/audio_group_track.h"
+#include "dsp/audio_region.h"
 #include "dsp/audio_track.h"
+#include "dsp/automation_region.h"
+#include "dsp/chord_region.h"
 #include "dsp/chord_track.h"
 #include "dsp/folder_track.h"
 #include "dsp/instrument_track.h"
@@ -11,10 +14,13 @@
 #include "dsp/master_track.h"
 #include "dsp/midi_bus_track.h"
 #include "dsp/midi_group_track.h"
+#include "dsp/midi_region.h"
 #include "dsp/midi_track.h"
 #include "dsp/modulator_track.h"
+#include "dsp/region_owner.h"
 #include "dsp/tempo_track.h"
 #include "dsp/track.h"
+#include "dsp/track_lane.h"
 
 void
 ModulatorMacroProcessor::define_fields (const Context &ctx)
@@ -62,13 +68,17 @@ RegionOwnerImpl<RegionT>::define_base_fields (
 }
 
 template void
-RegionOwnerImpl<MidiRegion>::define_base_fields (const Context &);
+RegionOwnerImpl<MidiRegion>::define_base_fields (
+  const ISerializableBase::Context &);
 template void
-RegionOwnerImpl<AudioRegion>::define_base_fields (const Context &);
+RegionOwnerImpl<AudioRegion>::define_base_fields (
+  const ISerializableBase::Context &);
 template void
-RegionOwnerImpl<AutomationRegion>::define_base_fields (const Context &);
+RegionOwnerImpl<AutomationRegion>::define_base_fields (
+  const ISerializableBase::Context &);
 template void
-RegionOwnerImpl<ChordRegion>::define_base_fields (const Context &);
+RegionOwnerImpl<ChordRegion>::define_base_fields (
+  const ISerializableBase::Context &);
 
 template <typename RegionT>
 void
@@ -83,9 +93,9 @@ TrackLaneImpl<RegionT>::define_fields (const ISerializableBase::Context &ctx)
 }
 
 template void
-TrackLaneImpl<MidiRegion>::define_fields (const Context &);
+TrackLaneImpl<MidiRegion>::define_fields (const ISerializableBase::Context &);
 template void
-TrackLaneImpl<AudioRegion>::define_fields (const Context &);
+TrackLaneImpl<AudioRegion>::define_fields (const ISerializableBase::Context &);
 
 void
 TrackProcessor::define_fields (const Context &ctx)

@@ -64,15 +64,11 @@ const char **
 localization_get_language_strings_w_codes (void);
 
 /**
- * Returns the first locale found matching the given
- * language, or NULL if a locale for the given
- * language does not exist.
- *
- * Must be free'd with g_free().
+ * Returns the first locale found matching the given language, or empty if a
+ * locale for the given language does not exist.
  */
-char *
-localization_locale_exists (
-  LocalizationLanguage lang);
+std::string
+localization_locale_exists (LocalizationLanguage lang);
 
 /**
  * Sets the locale to the currently selected one and

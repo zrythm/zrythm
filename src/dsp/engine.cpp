@@ -442,11 +442,6 @@ AudioEngine::pre_setup ()
         }
       break;
 #endif
-#ifdef _WIN32
-    case MidiBackend::MIDI_BACKEND_WINDOWS_MME:
-      mret = engine_windows_mme_setup (this);
-      break;
-#endif
 #ifdef HAVE_RTMIDI
     case MidiBackend::MIDI_BACKEND_ALSA_RTMIDI:
     case MidiBackend::MIDI_BACKEND_JACK_RTMIDI:

@@ -4,17 +4,12 @@
 #include "zrythm-test-config.h"
 
 #include "actions/arranger_selections.h"
-
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/midi_function.h"
 #include "dsp/tracklist.h"
 
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/midi function");
-
-TEST_CASE_FIXTURE (ZrythmFixture, "crescendo")
+TEST_F (ZrythmFixture, Crescendo)
 {
   auto     midi_track = Track::create_empty_with_action<MidiTrack> ();
   Position pos, end_pos;
@@ -66,5 +61,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "crescendo")
   ASSERT_EQ (mn1->vel_->vel_, 90);
   ASSERT_EQ (mn2->vel_->vel_, 30);
 }
-
-TEST_SUITE_END;

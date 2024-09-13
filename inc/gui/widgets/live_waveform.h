@@ -4,12 +4,7 @@
 #ifndef __GUI_WIDGETS_LIVE_WAVEFORM_H__
 #define __GUI_WIDGETS_LIVE_WAVEFORM_H__
 
-/**
- * @file
- *
- * Live waveform display like LMMS.
- */
-
+#include "ext/juce/juce.h"
 #include "gtk_wrapper.h"
 
 #define LIVE_WAVEFORM_WIDGET_TYPE (live_waveform_widget_get_type ())
@@ -34,6 +29,9 @@ enum class LiveWaveformType
   LIVE_WAVEFORM_PORT,
 };
 
+/**
+ * Live waveform display like LMMS.
+ */
 using LiveWaveformWidget = struct _LiveWaveformWidget
 {
   GtkDrawingArea parent_instance;
@@ -43,10 +41,7 @@ using LiveWaveformWidget = struct _LiveWaveformWidget
   /** Draw border or not. */
   int draw_border;
 
-  float * bufs[2];
-
-  /** Current buffer sizes. */
-  size_t buf_sz[2];
+  std::unique_ptr<juce::AudioSampleBuffer> buffer;
 
   /** Port, if port. */
   AudioPort * port;

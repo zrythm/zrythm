@@ -3,19 +3,13 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("settings/settings");
-
-TEST_CASE_FIXTURE (ZrythmFixture, "append to strv")
+TEST_F (ZrythmFixture, AppendToStrv)
 {
   GSettings settings;
   GSettingsManager::append_to_strv (&settings, "test-key", "test-val", false);
 }
-
-TEST_SUITE_END;

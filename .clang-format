@@ -140,7 +140,7 @@ SpacesInLineCommentPrefix:
   Maximum: -1
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
-Standard: c++11
+Standard: c++20
 StatementMacros: []
 TabWidth: 2
 TypenameMacros: []

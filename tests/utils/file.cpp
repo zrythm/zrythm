@@ -3,16 +3,12 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "utils/file.h"
 #include "utils/io.h"
 
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("utils/file");
-
-TEST_CASE ("symlink")
+TEST (File, SymLink)
 {
   auto filepath =
     Glib::build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3");
@@ -22,9 +18,7 @@ TEST_CASE ("symlink")
   auto target = Glib::build_filename (tmp_dir, "target.mp3");
   z_info ("target {}", target);
 
-  ASSERT_EQ (file_symlink (filepath.c_str (), target.c_str ()), 0);
+  ASSERT_TRUE (file_symlink (filepath.c_str (), target.c_str ()));
   io_remove (target);
   io_rmdir (tmp_dir, false);
 }
-
-TEST_SUITE_END;

@@ -1269,8 +1269,8 @@ draw_name (
   graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
     0.f, 0.f, (float) (pangorect.width + REGION_NAME_PADDING_R),
     (float) black_box_height);
-  graphene_size_t tmp_sz = GRAPHENE_SIZE_INIT (0, 0);
-  graphene_size_t tmp_sz2 = GRAPHENE_SIZE_INIT (radius, radius);
+  graphene_size_t tmp_sz = Z_GRAPHENE_SIZE_INIT (0, 0);
+  graphene_size_t tmp_sz2 = Z_GRAPHENE_SIZE_INIT (radius, radius);
   gsk_rounded_rect_init (
     &rounded_rect, &tmp_r, &tmp_sz, &tmp_sz, &tmp_sz2, &tmp_sz2);
   gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);

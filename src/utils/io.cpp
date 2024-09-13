@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -21,6 +21,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this library; if not, see <http://www.gnu.org/licenses/>.
  *
+ * SPDX-FileCopyrightText: 2000 Red Hat, Inc.
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
  * ---
  */
 
@@ -31,26 +34,16 @@
 #include "utils/exceptions.h"
 #include "utils/logger.h"
 
-#define _XOPEN_SOURCE 500
-#include <cstdio>
-
-#include <ftw.h>
-#include <limits.h>
-
 #ifdef _WIN32
 #  include <windows.h>
 #endif
-
-#include <cstdlib>
 
 #include <sys/stat.h>
 #include <sys/types.h>
 
 #include "utils/datetime.h"
-#include "utils/error.h"
 #include "utils/file.h"
 #include "utils/io.h"
-#include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm.h"
 
@@ -62,23 +55,11 @@
 #include <fmt/format.h>
 #include <giomm.h>
 #include <glibmm.h>
-#include <time.h>
-#include <unistd.h>
 
 #if defined(__APPLE__) && defined(INSTALLER_VER)
 #  include "CoreFoundation/CoreFoundation.h"
 #  include <libgen.h>
 #endif
-
-typedef enum
-{
-  Z_UTILS_IO_ERROR_FAILED,
-} ZUtilsIOError;
-
-#define Z_UTILS_IO_ERROR z_utils_io_error_quark ()
-GQuark
-z_utils_io_error_quark (void);
-G_DEFINE_QUARK (z - utils - io - error - quark, z_utils_io_error)
 
 std::string
 io_get_dir (const std::string &filename)
@@ -112,7 +93,7 @@ io_create_tmp_dir (const std::string template_name)
   std::string temp_dir_template = Glib::build_filename (
     std::filesystem::temp_directory_path ().string (), template_name);
   std::string temp_dir =
-    std::filesystem::path (mkdtemp (temp_dir_template.data ())).string ();
+    std::filesystem::path (g_mkdtemp (temp_dir_template.data ())).string ();
   if (temp_dir.empty ())
     throw ZrythmException (std::format (
       "Failed to create temporary directory: {}", temp_dir_template));
@@ -270,33 +251,27 @@ io_remove (const std::string &path)
     };
 }
 
-static int
-unlink_cb (
-  const char *        fpath,
-  const struct stat * sb,
-  int                 typeflag,
-  struct FTW *        ftwbuf)
-{
-  int rv = remove (fpath);
-
-  if (rv)
-    perror (fpath);
-
-  return rv;
-}
-
-int
+bool
 io_rmdir (const std::string &path, bool force)
 {
+  juce::File dir (path);
+
+  if (!dir.exists () || !dir.isDirectory ())
+    {
+      return false;
+    }
+  z_info ("Removing {}{}", path, force ? " recursively" : "");
+
   if (force)
     {
       z_return_val_if_fail (
-        Glib::path_is_absolute (path) && strlen (path.c_str ()) > 20, -1);
-      nftw (path.c_str (), unlink_cb, 64, FTW_DEPTH | FTW_PHYS);
+        Glib::path_is_absolute (path) && strlen (path.c_str ()) > 20, false);
+      return dir.deleteRecursively ();
     }
 
-  z_info ("Removing {}", path);
-  return g_rmdir (path.c_str ());
+  std::error_code ec;
+  std::filesystem::remove (path, ec);
+  return !ec;
 }
 
 /**
@@ -506,18 +481,22 @@ io_get_legal_path_name (const std::string &path)
 }
 
 #ifdef _WIN32
-char *
-io_get_registry_string_val (const char * path)
+std::string
+io_get_registry_string_val (const std::string &key)
 {
-  char  value[8192];
-  DWORD BufferSize = 8192;
-  char  prefix[500];
-  sprintf (prefix, "Software\\%s\\%s\\Settings", PROGRAM_NAME, PROGRAM_NAME);
-  RegGetValue (
-    HKEY_LOCAL_MACHINE, prefix, (LPCSTR) path, RRF_RT_ANY, nullptr,
-    (PVOID) &value, &BufferSize);
-  z_info ("reg value: {}", value);
-  return g_strdup (value);
+  auto full_path = fmt::format (
+    "HKEY_LOCAL_MACHINE\\Software\\{}\\{}\\Settings\\{}", PROGRAM_NAME,
+    PROGRAM_NAME, key);
+  auto value = juce::WindowsRegistry::getValue (juce::String (full_path));
+
+  if (!value.isEmpty ())
+    {
+      z_info ("reg value: {}", value.toStdString ());
+      return value.toStdString ();
+    }
+
+  z_warning ("reg value not found: {}", full_path);
+  return "";
 }
 #endif
 

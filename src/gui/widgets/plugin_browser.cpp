@@ -67,11 +67,11 @@ update_plugin_info_label (PluginBrowserWidget * self)
     PluginDescriptor::plugin_protocol_to_str (descr->protocol_),
     descr->arch_ == PluginArchitecture::ARCH_32_BIT ? " (32-bit)" : "");
   auto audio_label =
-    fmt::sprintf ("%d, %d", descr->num_audio_ins_, descr->num_audio_outs_);
+    fmt::format ("{}, {}", descr->num_audio_ins_, descr->num_audio_outs_);
   auto midi_label =
-    fmt::sprintf ("%d, %d", descr->num_midi_ins_, descr->num_midi_outs_);
+    fmt::format ("{}, {}", descr->num_midi_ins_, descr->num_midi_outs_);
   auto ctrl_label =
-    fmt::sprintf ("%d, %d", descr->num_ctrl_ins_, descr->num_ctrl_outs_);
+    fmt::format ("{}, {}", descr->num_ctrl_ins_, descr->num_ctrl_outs_);
   auto cv_label =
     fmt::format ("{}, {}", descr->num_cv_ins_, descr->num_cv_outs_);
 

@@ -591,7 +591,8 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                     }
                   else
                     {
-                      static_assert (false, "unsupported region type");
+                      [[maybe_unused]] typedef
+                        typename RegionT::something_made_up X;
                     }
                   try
                     {

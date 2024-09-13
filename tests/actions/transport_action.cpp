@@ -3,8 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "actions/transport_action.h"
 #include "dsp/control_port.h"
 #include "dsp/transport.h"
@@ -14,9 +12,7 @@
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
 
-TEST_SUITE_BEGIN ("actions/transport action");
-
-TEST_CASE_FIXTURE (ZrythmFixture, "change BPM and time signature")
+TEST_F (ZrythmFixture, ChangeBPMAndTimeSignature)
 {
   /* import audio */
   FileDescriptor file_descr (fs::path (TESTS_SRCDIR) / "test.wav");
@@ -136,7 +132,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "change BPM and time signature")
   ASSERT_TRUE (audio_track->lanes_[0]->regions_[0]->validate (true, 0));
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "change BPM twice during playback")
+TEST_F (ZrythmFixture, ChangeBPMTwiceDuringPlayback)
 {
   /* import audio */
   char audio_file_path[2000];
@@ -190,5 +186,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "change BPM twice during playback")
   ASSERT_TRUE (
     audio_track->lanes_.front ()->regions_.front ()->validate (true, 0));
 }
-
-TEST_SUITE_END;

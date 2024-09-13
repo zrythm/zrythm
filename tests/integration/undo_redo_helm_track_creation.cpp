@@ -3,8 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "actions/tracklist_selections.h"
 #include "actions/undo_manager.h"
 #include "plugins/plugin_manager.h"
@@ -14,8 +12,6 @@
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
-
-TEST_SUITE_BEGIN ("integration/undo redo helm track creation");
 
 #ifdef HAVE_HELM
 static void
@@ -57,11 +53,9 @@ _test (
 }
 #endif
 
-TEST_CASE_FIXTURE (ZrythmFixture, "undo redo helm track creation")
+TEST_F (ZrythmFixture, UndoRedoHelmTrackCreation)
 {
 #ifdef HAVE_HELM
   _test (HELM_BUNDLE, HELM_URI, true, false);
 #endif
 }
-
-TEST_SUITE_END;

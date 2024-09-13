@@ -18,12 +18,7 @@
 #include "gui/widgets/modulator_inner.h"
 #include "gui/widgets/popovers/port_connections_popover.h"
 #include "project.h"
-#include "utils/arrays.h"
-#include "utils/error.h"
-#include "utils/flags.h"
 #include "utils/gtk.h"
-#include "utils/mem.h"
-#include "utils/objects.h"
 #include "utils/rt_thread_id.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -178,9 +173,7 @@ modulator_inner_widget_new (ModulatorWidget * parent)
         &port->id_, bind_member_function (port->id_, &PortIdentifier::get_label),
         nullptr, knob, GTK_ORIENTATION_HORIZONTAL, false, 3);
 
-      array_double_size_if_full (
-        self->knobs, self->num_knobs, self->knobs_size, KnobWithNameWidget *);
-      array_append (self->knobs, self->num_knobs, knob_with_name);
+      self->knobs.push_back (knob_with_name);
 
       gtk_box_append (GTK_BOX (self->controls_box), GTK_WIDGET (knob_with_name));
 
@@ -248,20 +241,21 @@ modulator_inner_widget_new (ModulatorWidget * parent)
 }
 
 static void
-finalize (ModulatorInnerWidget * self)
+finalize (GObject * gobj)
 {
-  if (self->knobs)
-    {
-      free (self->knobs);
-    }
+  ModulatorInnerWidget * self = Z_MODULATOR_INNER_WIDGET (gobj);
+
+  std::destroy_at (&self->knobs);
 
   G_OBJECT_CLASS (modulator_inner_widget_parent_class)
     ->finalize (G_OBJECT (self));
 }
 
 static void
-dispose (ModulatorInnerWidget * self)
+dispose (GObject * gobj)
 {
+  ModulatorInnerWidget * self = Z_MODULATOR_INNER_WIDGET (gobj);
+
   gtk_widget_unparent (GTK_WIDGET (self->connections_popover));
 
   G_OBJECT_CLASS (modulator_inner_widget_parent_class)->dispose (G_OBJECT (self));
@@ -270,11 +264,9 @@ dispose (ModulatorInnerWidget * self)
 static void
 modulator_inner_widget_init (ModulatorInnerWidget * self)
 {
-  gtk_widget_init_template (GTK_WIDGET (self));
+  std::construct_at (&self->knobs);
 
-  self->knobs = static_cast<KnobWithNameWidget **> (
-    calloc (1, sizeof (KnobWithNameWidget *)));
-  self->knobs_size = 1;
+  gtk_widget_init_template (GTK_WIDGET (self));
 
   self->connections_popover =
     port_connections_popover_widget_new (GTK_WIDGET (self));
@@ -290,8 +282,8 @@ modulator_inner_widget_class_init (ModulatorInnerWidgetClass * _klass)
   gtk_widget_class_set_css_name (klass, "modulator_inner");
 
   GObjectClass * oklass = G_OBJECT_CLASS (_klass);
-  oklass->finalize = (GObjectFinalizeFunc) finalize;
-  oklass->dispose = (GObjectFinalizeFunc) dispose;
+  oklass->finalize = finalize;
+  oklass->dispose = dispose;
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child (klass, ModulatorInnerWidget, x)

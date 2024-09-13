@@ -42,7 +42,7 @@ compression_compress_to_base64_str (const char * src, GError ** error)
 char *
 compression_decompress_from_base64_str (const char * b64, GError ** error)
 {
-  size_t src_size;
+  gsize  src_size = 0;
   char * src = (char *) g_base64_decode (b64, &src_size);
 #if (ZSTD_VERSION_MAJOR == 1 && ZSTD_VERSION_MINOR < 3)
   unsigned long long const frame_content_size =

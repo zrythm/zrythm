@@ -38,6 +38,7 @@
 
 #  include <shlobj.h>
 
+#  include "utils/logger.h"
 #  include "utils/windows.h"
 
 #  include <glib.h>

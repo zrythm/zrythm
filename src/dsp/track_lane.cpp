@@ -246,7 +246,8 @@ TrackLaneImpl<RegionT>::write_to_midi_file (
   const Position *  start,
   const Position *  end,
   bool              lanes_as_tracks,
-  bool use_track_or_lane_pos) requires std::derived_from<MidiRegion, RegionT>
+  bool              use_track_or_lane_pos)
+  requires std::derived_from<MidiRegion, RegionT>
 {
   auto track = get_track ();
   z_return_if_fail (track);

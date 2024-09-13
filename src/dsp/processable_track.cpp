@@ -196,7 +196,7 @@ ProcessableTrack::fill_events_common (
               }
             else
               {
-                static_assert (false, "Unknown region type");
+                [[maybe_unused]] typedef typename RegionT::something_made_up X;
               }
 
             frames_processed += cur_num_frames_till_next_r_loop_or_end;

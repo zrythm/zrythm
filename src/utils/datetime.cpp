@@ -7,26 +7,15 @@
 #include "utils/logger.h"
 
 #include "gtk_wrapper.h"
+#include <fmt/chrono.h>
 
 std::string
 datetime_get_current_as_string ()
 {
+  auto now =
+    std::chrono::current_zone ()->to_local (std::chrono::system_clock::now ());
 
-  time_t t = time (nullptr);
-#ifdef HAVE_LOCALTIME_R
-  struct tm   tm;
-  struct tm * ret = localtime_r (&t, &tm);
-  z_return_val_if_fail (ret, "");
-#else
-  struct tm tm = *localtime (&t);
-#endif
-
-  auto str = g_strdup_printf (
-    "%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
-    tm.tm_hour, tm.tm_min, tm.tm_sec);
-  auto ret = std::string (str);
-  g_free (str);
-  return ret;
+  return fmt::format ("{:%Y-%m-%d %H:%M:%S}", now);
 }
 
 std::string

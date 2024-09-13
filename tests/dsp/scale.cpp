@@ -3,15 +3,11 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/scale.h"
 
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/scale");
-
-TEST_CASE ("scale contains note")
+TEST (Scale, ScaleContainsNote)
 {
   MusicalScale scale (MusicalScale::Type::Minor, MusicalNote::D);
 
@@ -28,5 +24,3 @@ TEST_CASE ("scale contains note")
   ASSERT_TRUE (scale.contains_note (MusicalNote::ASharp));
   ASSERT_FALSE (scale.contains_note (MusicalNote::B));
 }
-
-TEST_SUITE_END;

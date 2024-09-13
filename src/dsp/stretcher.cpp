@@ -169,7 +169,7 @@ stretcher_new_rubberband (
  * @param in_samples_size The number of input samples
  *   per channel.
  */
-ssize_t
+signed_frame_t
 stretcher_stretch (
   Stretcher *   self,
   const float * in_samples_l,
@@ -187,11 +187,11 @@ stretcher_stretch (
   /* create the de-interleaved array */
   unsigned int channels = in_samples_r ? 2 : 1;
   z_return_val_if_fail (self->channels == channels, -1);
-  const float * in_samples[channels];
+  std::array<const float *, 2> in_samples{ nullptr, nullptr };
   in_samples[0] = in_samples_l;
   if (channels == 2)
     in_samples[1] = in_samples_r;
-  float * out_samples[2] = { out_samples_l, out_samples_r };
+  std::array<float *, 2> out_samples = { out_samples_l, out_samples_r };
 
   if (self->is_realtime)
     {
@@ -204,7 +204,8 @@ stretcher_stretch (
       rubberband_set_expected_input_duration (
         self->rubberband_state, in_samples_size);
 
-      rubberband_study (self->rubberband_state, in_samples, in_samples_size, 1);
+      rubberband_study (
+        self->rubberband_state, in_samples.data (), in_samples_size, 1);
     }
   unsigned int samples_required =
     rubberband_get_samples_required (self->rubberband_state);
@@ -212,7 +213,7 @@ stretcher_stretch (
     "%s: samples required: {}, latency: {}", __func__, samples_required,
     rubberband_get_latency (self->rubberband_state));
   rubberband_process (
-    self->rubberband_state, in_samples, in_samples_size, false);
+    self->rubberband_state, in_samples.data (), in_samples_size, false);
 
   /* get the output data */
   int avail = rubberband_available (self->rubberband_state);
@@ -222,18 +223,18 @@ stretcher_stretch (
   if (avail < (int) out_samples_wanted)
     {
       z_info ("{}: not enough samples available", __func__);
-      return (ssize_t) out_samples_wanted;
+      return static_cast<signed_frame_t> (out_samples_wanted);
     }
 
   z_info (
     "%s: samples wanted %zu (avail {})", __func__, out_samples_wanted, avail);
   size_t retrieved_out_samples = rubberband_retrieve (
-    self->rubberband_state, out_samples, out_samples_wanted);
+    self->rubberband_state, out_samples.data (), out_samples_wanted);
   z_warn_if_fail (retrieved_out_samples == out_samples_wanted);
 
   z_info ("{}: out samples size: {}", __func__, retrieved_out_samples);
 
-  return (ssize_t) retrieved_out_samples;
+  return static_cast<signed_frame_t> (retrieved_out_samples);
 }
 
 void
@@ -262,7 +263,7 @@ stretcher_get_latency (Stretcher * self)
  * @return The number of output samples generated per
  *   channel.
  */
-ssize_t
+signed_frame_t
 stretcher_stretch_interleaved (
   Stretcher *   self,
   const float * in_samples,
@@ -384,7 +385,7 @@ stretcher_stretch_interleaved (
         }
     }
 
-  return (ssize_t) total_out_frames;
+  return static_cast<signed_frame_t> (total_out_frames);
 }
 
 /**

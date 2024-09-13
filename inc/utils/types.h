@@ -14,10 +14,21 @@
 #include <cinttypes>
 #include <cstdint>
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wshadow"
+#if defined(__GNUC__) || defined(__clang__)
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wshadow"
+#elif defined(_MSC_VER)
+#  pragma warning(push)
+#  pragma warning(disable : 4458) // declaration hides class member
+#endif
+
 #include <magic_enum_all.hpp>
-#pragma GCC diagnostic pop
+
+#if defined(__GNUC__) || defined(__clang__)
+#  pragma GCC diagnostic pop
+#elif defined(_MSC_VER)
+#  pragma warning(pop)
+#endif
 
 using namespace magic_enum::bitwise_operators;
 
@@ -48,7 +59,7 @@ using sample_rate_t = uint32_t;
 using midi_time_t = uint32_t;
 
 /** Number of channels. */
-using channels_t = unsigned int;
+using channels_t = uint_fast8_t;
 
 /** The sample type. */
 using sample_t = float;
@@ -105,15 +116,6 @@ using GenericCallback = std::function<void ()>;
 typedef int (*GenericCmpFunc) (const void * a, const void * b);
 
 /**
- * Predicate function prototype.
- *
- * To be used to return whether the given pointer
- * matches some condition.
- */
-typedef bool (
-  *GenericPredicateFunc) (const void * object, const void * user_data);
-
-/**
  * Function to call to free objects.
  */
 typedef void (*ObjectFreeFunc) (void *);
@@ -122,9 +124,7 @@ typedef void (*ObjectFreeFunc) (void *);
 template <typename Class, typename Ret, typename... Args, typename ActualClass>
 auto
 bind_member_function (ActualClass &obj, Ret (Class::*func) (Args...))
-  -> std::enable_if_t<
-    std::is_base_of_v<Class, ActualClass>,
-    std::function<Ret (Args...)>>
+  requires std::is_base_of_v<Class, ActualClass>
 {
   return [&obj, func] (Args... args) {
     return (obj.*func) (std::forward<Args> (args)...);
@@ -135,9 +135,7 @@ bind_member_function (ActualClass &obj, Ret (Class::*func) (Args...))
 template <typename Class, typename Ret, typename... Args, typename ActualClass>
 auto
 bind_member_function (ActualClass &obj, Ret (Class::*func) (Args...) const)
-  -> std::enable_if_t<
-    std::is_base_of_v<Class, ActualClass>,
-    std::function<Ret (Args...)>>
+  requires std::is_base_of_v<Class, ActualClass>
 {
   return [&obj, func] (Args... args) {
     return (obj.*func) (std::forward<Args> (args)...);

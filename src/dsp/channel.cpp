@@ -40,7 +40,6 @@
 #include <glib/gi18n.h>
 
 #include "gtk_wrapper.h"
-#include <unistd.h>
 
 Channel::Channel (ChannelTrack &track)
     : track_pos_ (track.pos_), track_ (&track)

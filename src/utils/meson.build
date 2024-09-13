@@ -3,7 +3,6 @@
 
 util_srcs = [
   'algorithms.cpp',
-  'arrays.cpp',
   'audio.cpp',
   'backtrace.cpp',
   'cairo.cpp',
@@ -34,7 +33,6 @@ util_srcs = [
   'resampler.cpp',
   'resources.cpp',
   'rt_thread_id.cpp',
-  'sort.cpp',
   'string.cpp',
   'string_array.cpp',
   'symap.cpp',

@@ -45,7 +45,7 @@ CachedPluginDescriptors::serialize_to_file ()
   z_debug ("Writing cached plugin descriptors to {}...", path);
   try
     {
-      Glib::file_set_contents (path, json_str.c_str ());
+      Glib::file_set_contents (path.string (), json_str.c_str ());
     }
   catch (const Glib::FileError &e)
     {
@@ -68,7 +68,7 @@ CachedPluginDescriptors::read_or_new ()
   std::string json;
   try
     {
-      json = Glib::file_get_contents (path);
+      json = Glib::file_get_contents (path.string ());
     }
   catch (const Glib::Error &e)
     {
@@ -199,7 +199,7 @@ CachedPluginDescriptors::add (const PluginDescriptor &descr, bool serialize)
   PluginDescriptor new_descr = descr;
   if (!descr.path_.empty ())
     {
-      auto file = Gio::File::create_for_path (descr.path_);
+      auto file = Gio::File::create_for_path (descr.path_.string ());
       new_descr.ghash_ = file->hash ();
     }
   descriptors_.push_back (new_descr);

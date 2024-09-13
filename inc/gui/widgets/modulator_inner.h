@@ -1,8 +1,10 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_MODULATOR_INNER_H__
 #define __GUI_WIDGETS_MODULATOR_INNER_H__
+
+#include "utils/types.h"
 
 #include "gtk_wrapper.h"
 
@@ -14,12 +16,13 @@ G_DECLARE_FINAL_TYPE (
   MODULATOR_INNER_WIDGET,
   GtkBox)
 
-typedef struct _KnobWithNameWidget           KnobWithNameWidget;
-typedef struct _LiveWaveformWidget           LiveWaveformWidget;
-typedef struct _ModulatorWidget              ModulatorWidget;
-typedef struct _PortConnectionsPopoverWidget PortConnectionsPopoverWidget;
+TYPEDEF_STRUCT_UNDERSCORED (KnobWithNameWidget);
+TYPEDEF_STRUCT_UNDERSCORED (LiveWaveformWidget);
+TYPEDEF_STRUCT_UNDERSCORED (ModulatorWidget);
+TYPEDEF_STRUCT_UNDERSCORED (PortConnectionsPopoverWidget);
+class Port;
 
-typedef struct _ModulatorInnerWidget
+using ModulatorInnerWidget = struct _ModulatorInnerWidget
 {
   GtkBox parent_instance;
 
@@ -30,9 +33,7 @@ typedef struct _ModulatorInnerWidget
   GtkBox * controls_box;
   GtkBox * waveforms_box;
 
-  KnobWithNameWidget ** knobs;
-  int                   num_knobs;
-  size_t                knobs_size;
+  std::vector<KnobWithNameWidget *> knobs;
 
   /** The graphs on the right. */
   GtkOverlay *         waveform_overlays[16];
@@ -46,7 +47,7 @@ typedef struct _ModulatorInnerWidget
   ModulatorWidget * parent;
 
   PortConnectionsPopoverWidget * connections_popover;
-} ModulatorInnerWidget;
+};
 
 void
 modulator_inner_widget_refresh (ModulatorInnerWidget * self);

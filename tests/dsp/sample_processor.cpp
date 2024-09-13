@@ -3,14 +3,10 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/sample processor");
-
-TEST_CASE_FIXTURE (ZrythmFixture, "queue file")
+TEST_F (ZrythmFixture, QueueFile)
 {
   /* stop engine to process manually */
   test_project_stop_dummy_engine ();
@@ -56,7 +52,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "queue file")
     &MONITOR_FADER->stereo_out_->get_l ().buf_[0], 256, 0.0000001f));
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "queue midi and roll transport")
+TEST_F (ZrythmFixture, QueueMidiAndRollTransport)
 {
 #ifdef HAVE_HELM
   /* stop dummy audio engine processing so we can
@@ -85,5 +81,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "queue midi and roll transport")
   z_info ("============= done process ===========");
 #endif
 }
-
-TEST_SUITE_END;

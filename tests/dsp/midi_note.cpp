@@ -3,8 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/midi_note.h"
 #include "dsp/region.h"
 #include "project.h"
@@ -13,8 +11,6 @@
 
 #include "helpers/project_helper.h"
 #include "helpers/zrythm_helper.h"
-
-TEST_SUITE_BEGIN ("dsp/midi note");
 
 #if 0
 typedef struct
@@ -93,9 +89,9 @@ test_new_midi_note ()
 }
 #endif
 
-TEST_CASE_FIXTURE (
+TEST_F (
   BootstrapTimelineFixture,
-  "midi note has correct track name hash after addding to region")
+  MidiNoteHasCorrectTrackNameHashAfterAddingToRegion)
 {
   auto midi_track = TRACKLIST->get_track_by_type<MidiTrack> (Track::Type::Midi);
   ASSERT_NE (midi_track->name_hash_, 0);
@@ -107,5 +103,3 @@ TEST_CASE_FIXTURE (
   ASSERT_EQ (mn->track_name_hash_, midi_track->name_hash_);
   ASSERT_EQ (mn->vel_->track_name_hash_, midi_track->name_hash_);
 }
-
-TEST_SUITE_END;

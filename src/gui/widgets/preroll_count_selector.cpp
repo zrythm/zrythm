@@ -1,15 +1,9 @@
 // SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/exporter.h"
 #include "gui/widgets/preroll_count_selector.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
-#include "settings/settings.h"
-#include "utils/arrays.h"
-#include "utils/cairo.h"
-#include "utils/gtk.h"
-#include "utils/objects.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>

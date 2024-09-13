@@ -86,7 +86,6 @@ ExtPort::activate (Port * port, bool activate)
   z_info (
     "attempting to {}activate ext port {}", activate ? "" : "de", full_name_);
 
-  int ret = 0;
   if (activate)
     {
       if (is_midi_)
@@ -95,47 +94,49 @@ ExtPort::activate (Port * port, bool activate)
             {
 #ifdef HAVE_JACK
             case MidiBackend::MIDI_BACKEND_JACK:
-              if (type_ != Type::JACK)
-                {
-                  z_info ("skipping {} (not JACK)", full_name_);
-                  return false;
-                }
+              {
+                if (type_ != Type::JACK)
+                  {
+                    z_info ("skipping {} (not JACK)", full_name_);
+                    return false;
+                  }
 
-              port_ = port;
+                port_ = port;
 
-              /* expose the port and connect to JACK port */
-              if (!jport_)
-                {
-                  jport_ = jack_port_by_name (
-                    AUDIO_ENGINE->client_, full_name_.c_str ());
-                }
-              if (!jport_)
-                {
-                  z_warning (
-                    "Could not find external JACK port '{}', skipping...",
-                    full_name_);
-                  return false;
-                }
-              port_->set_expose_to_backend (true);
+                /* expose the port and connect to JACK port */
+                if (!jport_)
+                  {
+                    jport_ = jack_port_by_name (
+                      AUDIO_ENGINE->client_, full_name_.c_str ());
+                  }
+                if (!jport_)
+                  {
+                    z_warning (
+                      "Could not find external JACK port '{}', skipping...",
+                      full_name_);
+                    return false;
+                  }
+                port_->set_expose_to_backend (true);
 
-              z_info (
-                "attempting to connect jack port {} to jack port {}",
-                jack_port_name (jport_),
-                jack_port_name (static_cast<jack_port_t *> (port_->data_)));
+                z_info (
+                  "attempting to connect jack port {} to jack port {}",
+                  jack_port_name (jport_),
+                  jack_port_name (static_cast<jack_port_t *> (port_->data_)));
 
-              ret = jack_connect (
-                AUDIO_ENGINE->client_, jack_port_name (jport_),
-                jack_port_name (static_cast<jack_port_t *> (port_->data_)));
-              if (ret != 0 && ret != EEXIST)
-                {
-                  std::string msg = engine_jack_get_error_message (
-                    static_cast<jack_status_t> (ret));
-                  z_warning (
-                    "Failed connecting {} to {}:\n{}", jack_port_name (jport_),
-                    jack_port_name (static_cast<jack_port_t *> (port_->data_)),
-                    msg);
-                  return false;
-                }
+                int ret = jack_connect (
+                  AUDIO_ENGINE->client_, jack_port_name (jport_),
+                  jack_port_name (static_cast<jack_port_t *> (port_->data_)));
+                if (ret != 0 && ret != EEXIST)
+                  {
+                    std::string msg = engine_jack_get_error_message (
+                      static_cast<jack_status_t> (ret));
+                    z_warning (
+                      "Failed connecting {} to {}:\n{}", jack_port_name (jport_),
+                      jack_port_name (static_cast<jack_port_t *> (port_->data_)),
+                      msg);
+                    return false;
+                  }
+              }
               break;
 #endif
 #ifdef HAVE_RTMIDI
@@ -181,38 +182,40 @@ ExtPort::activate (Port * port, bool activate)
             {
 #ifdef HAVE_JACK
             case AudioBackend::AUDIO_BACKEND_JACK:
-              if (type_ != Type::JACK)
-                {
-                  z_info ("skipping {} (not JACK)", full_name_);
+              {
+                if (type_ != Type::JACK)
+                  {
+                    z_info ("skipping {} (not JACK)", full_name_);
+                    return false;
+                  }
+                port_ = port;
+
+                /* expose the port and connect to JACK port */
+                if (!jport_)
+                  {
+                    jport_ = jack_port_by_name (
+                      AUDIO_ENGINE->client_, full_name_.c_str ());
+                  }
+                if (!jport_)
+                  {
+                    z_warning (
+                      "Could not find external JACK port '{}', skipping...",
+                      full_name_);
+                    return false;
+                  }
+                port_->set_expose_to_backend (true);
+
+                z_info (
+                  "attempting to connect jack port {} to jack port {}",
+                  jack_port_name (jport_),
+                  jack_port_name (static_cast<jack_port_t *> (port_->data_)));
+
+                int ret = jack_connect (
+                  AUDIO_ENGINE->client_, jack_port_name (jport_),
+                  jack_port_name (static_cast<jack_port_t *> (port_->data_)));
+                if (ret != 0 && ret != EEXIST)
                   return false;
-                }
-              port_ = port;
-
-              /* expose the port and connect to JACK port */
-              if (!jport_)
-                {
-                  jport_ = jack_port_by_name (
-                    AUDIO_ENGINE->client_, full_name_.c_str ());
-                }
-              if (!jport_)
-                {
-                  z_warning (
-                    "Could not find external JACK port '{}', skipping...",
-                    full_name_);
-                  return false;
-                }
-              port_->set_expose_to_backend (true);
-
-              z_info (
-                "attempting to connect jack port {} to jack port {}",
-                jack_port_name (jport_),
-                jack_port_name (static_cast<jack_port_t *> (port_->data_)));
-
-              ret = jack_connect (
-                AUDIO_ENGINE->client_, jack_port_name (jport_),
-                jack_port_name (static_cast<jack_port_t *> (port_->data_)));
-              if (ret != 0 && ret != EEXIST)
-                return false;
+              }
               break;
 #endif
 #ifdef HAVE_RTAUDIO
@@ -299,11 +302,6 @@ ExtPort::matches_backend () const
 #endif
 #ifdef HAVE_ALSA
         case MidiBackend::MIDI_BACKEND_ALSA:
-          break;
-#endif
-#ifdef _WIN32
-        case MidiBackend::MIDI_BACKEND_WINDOWS_MME:
-          z_warning ("TODO");
           break;
 #endif
 #ifdef HAVE_RTMIDI
@@ -572,11 +570,6 @@ ExtPort::ext_ports_get (
 #endif
 #ifdef HAVE_ALSA
         case MidiBackend::MIDI_BACKEND_ALSA:
-          break;
-#endif
-#ifdef _WIN32
-        case MidiBackend::MIDI_BACKEND_WINDOWS_MME:
-          get_ext_ports_from_windows_mme (flow, ports);
           break;
 #endif
 #ifdef HAVE_RTMIDI

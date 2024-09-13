@@ -106,54 +106,28 @@ string_contains_substr (const char * str, const char * substr)
 bool
 string_contains_substr_case_insensitive (const char * str, const char * substr)
 {
-  char new_str[strlen (str) + 1];
-  new_str[strlen (str)] = '\0';
-  string_to_upper (str, new_str);
-  char new_substr[strlen (substr) + 1];
-  new_substr[strlen (substr)] = '\0';
-  string_to_upper (substr, new_substr);
+  std::string new_str (str);
+  string_to_upper_ascii (new_str);
+  std::string new_substr (substr);
+  string_to_upper_ascii (new_substr);
 
-  return string_contains_substr (new_str, new_substr);
+  return string_contains_substr (new_str.c_str (), new_substr.c_str ());
 }
 
-/**
- * Converts the given string to uppercase in \ref
- * out.
- *
- * Assumes @ref out is already allocated to as many
- * chars as @ref in.
- */
 void
-string_to_upper (const char * in, char * out)
+string_to_upper_ascii (std::string &str)
 {
-  const char * src = in;
-  char *       dest = out;
-  while (*src)
-    {
-      *dest = g_ascii_toupper (*src);
-      src++;
-      dest++;
-    }
+  std::transform (str.begin (), str.end (), str.begin (), [] (unsigned char c) {
+    return std::toupper (c);
+  });
 }
 
-/**
- * Converts the given string to lowercase in \ref
- * out.
- *
- * Assumes @ref out is already allocated to as many
- * chars as @ref in.
- */
 void
-string_to_lower (const char * in, char * out)
+string_to_lower_ascii (std::string &str)
 {
-  const char * src = in;
-  char *       dest = out;
-  while (*src)
-    {
-      *dest = g_ascii_tolower (*src);
-      src++;
-      dest++;
-    }
+  std::transform (str.begin (), str.end (), str.begin (), [] (unsigned char c) {
+    return std::tolower (c);
+  });
 }
 
 /**

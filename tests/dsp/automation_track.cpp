@@ -3,8 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "actions/arranger_selections.h"
 #include "dsp/automation_region.h"
 #include "dsp/automation_track.h"
@@ -16,9 +14,7 @@
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/automation track");
-
-TEST_CASE_FIXTURE (ZrythmFixture, "set automation track index")
+TEST_F (ZrythmFixture, SetAutomationTrackIndex)
 {
   auto master = P_MASTER_TRACK;
   master->set_automation_visible (true);
@@ -52,7 +48,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "set automation track index")
  *
  * This replicates the issue and tests that this does not happen.
  */
-TEST_CASE_FIXTURE (ZrythmFixture, "region in 2nd automation track get muted")
+TEST_F (ZrythmFixture, GetMutedOnRegionIn2ndAutomationTrack)
 {
   auto master = P_MASTER_TRACK;
   master->set_automation_visible (true);
@@ -88,7 +84,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "region in 2nd automation track get muted")
   ASSERT_FALSE (region->get_muted (true));
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "curve value")
+TEST_F (ZrythmFixture, CurveValue)
 {
   /* stop engine to run manually */
   test_project_stop_dummy_engine ();
@@ -153,5 +149,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "curve value")
 
   ASSERT_NEAR (port->control_, 2.32830644e-10, 0.0001f);
 }
-
-TEST_SUITE_END;

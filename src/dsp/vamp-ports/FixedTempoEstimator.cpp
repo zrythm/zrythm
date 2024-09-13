@@ -307,8 +307,10 @@ FixedTempoEstimator::D::reset ()
 
   m_n = 0;
 
-  m_start = RealTime::zeroTime;
-  m_lasttime = RealTime::zeroTime;
+  // m_start = RealTime::zeroTime;
+  // m_lasttime = RealTime::zeroTime;
+  m_start = RealTime (0, 0);
+  m_lasttime = RealTime (0, 0);
 }
 
 FixedTempoEstimator::FeatureSet

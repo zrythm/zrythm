@@ -59,12 +59,13 @@ error_propagate_prefixed_prv (
   va_start (args, format);
 
   /* separate errors by new line */
-  char * tmp = g_strdup_vprintf (format, args);
-  char   full_str[strlen (tmp) + 10];
-  sprintf (full_str, "%s\n", tmp);
+  char *            tmp = g_strdup_vprintf (format, args);
+  std::vector<char> full_str;
+  full_str.resize (strlen (tmp) + 10);
+  sprintf (full_str.data (), "%s\n", tmp);
   g_free (tmp);
 
-  g_propagate_prefixed_error (main_err, err, "%s", full_str);
+  g_propagate_prefixed_error (main_err, err, "%s", full_str.data ());
 
   va_end (args);
 }

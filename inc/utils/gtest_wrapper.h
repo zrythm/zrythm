@@ -20,6 +20,10 @@ set_running_in_test (bool value);
 #  define REQUIRE(condition) ASSERT_TRUE (condition)
 #endif
 
+#ifndef EXPECT_NONNULL
+#  define EXPECT_NONNULL(ptr) EXPECT_NE (ptr, nullptr)
+#endif
+
 #ifndef ASSERT_NONNULL
 #  define ASSERT_NONNULL(ptr) ASSERT_NE (ptr, nullptr)
 #endif
@@ -34,6 +38,10 @@ set_running_in_test (bool value);
 
 #ifndef ASSERT_NONEMPTY
 #  define ASSERT_NONEMPTY(ptr) ASSERT_TRUE (!(ptr).empty ())
+#endif
+
+#ifndef EXPECT_NONEMPTY
+#  define EXPECT_NONEMPTY(ptr) EXPECT_TRUE (!(ptr).empty ())
 #endif
 
 #ifndef ASSERT_SIZE_EQ
@@ -56,8 +64,16 @@ constexpr double POSITION_EQ_EPSILON = 0.0001;
 #  define ASSERT_HAS_VALUE(opt) ASSERT_TRUE ((opt).has_value ())
 #endif
 
+#ifndef EXPECT_HAS_VALUE
+#  define EXPECT_HAS_VALUE(opt) EXPECT_TRUE ((opt).has_value ())
+#endif
+
 #ifndef ASSERT_UNREACHABLE
 #  define ASSERT_UNREACHABLE() ASSERT_TRUE (false)
+#endif
+
+#ifndef EXPECT_UNREACHABLE
+#  define EXPECT_UNREACHABLE() EXPECT_TRUE (false)
 #endif
 
 #endif // __ZRYTHM_UTILS_GTEST_WRAPPER_H__

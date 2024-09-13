@@ -101,7 +101,7 @@ create_model (void)
       auto dest_path = dest_port->get_full_designation ();
 
       /* get multiplier */
-      auto mult_str = fmt::sprintf ("%.4f", (double) conn.multiplier_);
+      auto mult_str = fmt::format ("{:.4f}", conn.multiplier_);
 
       gtk_list_store_append (store, &iter);
       gtk_list_store_set (

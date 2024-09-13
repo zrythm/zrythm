@@ -44,6 +44,7 @@ stages:
     Enter-VsDevShell
     -VsInstallPath "C:\Program Files\Microsoft Visual Studio\2022\Community"
     -SkipAutomaticLocation
+    -DevCmdArguments -arch=x64
   #- chcp 65001 # UTF-8
 
 .gnu-linux-template:
@@ -85,11 +86,14 @@ stages:
     CC: "ccache cl"
     CXX: "ccache cl"
     BUILDDIR: "build_windows"
+    INSTALLDIR: "install_windows"
     BOOST_ROOT: "C:\\Boost\\boost_1_86_0"
     VSLANG: "1033"
     VCPKG_INSTALLED_DIR: "C:\\vcpkg\\installed\\x64-windows"
-    CL: "/MP1" # prepended to the cl command
-    _CL_: "" # appended to the cl command
+    # use /MP1 to disable parallel builds if the compiler messages are hard to read
+    CL: "/MP" # prepended to the cl command
+    _CL_: "/Zc:__cplusplus" # appended to the cl command
+    _LINK_: /verbose
   before_script:
     - *windows-enable-vs-env
     - *windows-activate-venv
@@ -151,6 +155,9 @@ configure:windows:
       "--pkg-config-path=${env:VCPKG_INSTALLED_DIR}\lib\pkgconfig;C:\lv2\lib\pkgconfig;C:\gtk-for-zrythm\lib\pkgconfig;C:\Users\alex\source\repos\carla\carla_installed\lib\pkgconfig"
       -Dcarla_binaries_dir=C:\Users\alex\source\repos\carla\carla_installed\bin
       --backend=vs2022
+      -Db_vscrt=mdd
+      -Doptimization=0
+      "--prefix=${PWD}\${env:INSTALLDIR}"
 
 clang-format-check:
   extends: .gnu-linux-template
@@ -186,7 +193,7 @@ build:windows:
   extends: .windows-template
   stage: build
   script:
-    - meson compile -C ${env:BUILDDIR} --verbose --vs-args="-maxCpuCount:1,-nologo"
+    - meson compile -C ${env:BUILDDIR} --verbose --vs-args="-nologo"
 
 .unix_test_cmd: &unix_test_cmd
   - ninja -C $BUILDDIR test || (cat "$BUILDDIR/meson-logs/testlog.txt" && exit 1)

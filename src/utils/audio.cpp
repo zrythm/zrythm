@@ -6,6 +6,7 @@
 #include "dsp/clip.h"
 #include "utils/audio.h"
 #include "utils/exceptions.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/logger.h"
 #include "utils/math.h"
 #include "utils/vamp.h"
@@ -14,7 +15,6 @@
 
 #include <giomm.h>
 #include <sndfile.h>
-#include <unistd.h>
 
 #if defined(__FreeBSD__)
 #  include <sys/sysctl.h>

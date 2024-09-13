@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <sys/time.h>
-
 #include "actions/tracklist_selections.h"
 #include "dsp/port_connections_manager.h"
 #include "dsp/track.h"

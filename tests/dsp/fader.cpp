@@ -18,8 +18,6 @@
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/fader");
-
 static void
 test_fader_process_with_instrument (
   const char * pl_bundle,
@@ -60,7 +58,7 @@ test_fader_process_with_instrument (
   ASSERT_TRUE (has_signal);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "fader process")
+TEST_F (ZrythmFixture, FaderProcess)
 {
   test_fader_process_with_instrument (
     TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true);
@@ -99,7 +97,7 @@ test_track_has_sound (ChannelTrack * track, bool expect_sound)
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "solo")
+TEST_F (ZrythmFixture, FaderSolo)
 {
   /* create audio track */
   FileDescriptor file (fs::path (TESTS_SRCDIR) / "test.wav");
@@ -176,5 +174,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "solo")
   ASSERT_TRUE (audio_track->get_soloed ());
   ASSERT_TRUE (audio_track2->get_soloed ());
 }
-
-TEST_SUITE_END;

@@ -12,9 +12,7 @@
 #include <glibmm.h>
 #include <xxhash.h>
 
-TEST_SUITE_BEGIN ("utils/hash");
-
-TEST_CASE ("get from file")
+TEST (Hash, GetFromFile)
 {
   auto filepath =
     Glib::build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3");
@@ -33,5 +31,3 @@ TEST_CASE ("get from file")
   ASSERT_EQ (hash, "e9cd4b9c1e12785e");
 #endif
 }
-
-TEST_SUITE_END;

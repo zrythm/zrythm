@@ -54,13 +54,13 @@ public:
   void init (float samplerate);
 
 private:
-  float     m_ = 0.0f;
-  float     p_ = 0.0f;
-  float     z1_ = 0.0f;
-  float     z2_ = 0.0f;
-  bool      res_ = false;
-  float *   buf_ = nullptr;
-  Resampler src_;
+  float           m_ = 0.0f;
+  float           p_ = 0.0f;
+  float           z1_ = 0.0f;
+  float           z2_ = 0.0f;
+  bool            res_ = false;
+  float *         buf_ = nullptr;
+  zita::Resampler src_;
 
   float w1_ = 0.0f; // attack filter coefficient
   float w2_ = 0.0f; // attack filter coefficient

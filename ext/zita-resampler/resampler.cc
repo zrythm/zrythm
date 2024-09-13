@@ -35,6 +35,8 @@
 
 #include "zita-resampler/resampler.h"
 
+using namespace zita;
+
 static unsigned int
 gcd (unsigned int a, unsigned int b)
 {

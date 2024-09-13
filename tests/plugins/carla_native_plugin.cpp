@@ -3,11 +3,8 @@
 
 #include "zrythm-test-config.h"
 
-#include "actions/tracklist_selections.h"
-
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "actions/mixer_selections_action.h"
+#include "actions/tracklist_selections.h"
 #include "dsp/exporter.h"
 #include "dsp/fader.h"
 #include "dsp/router.h"
@@ -17,84 +14,79 @@
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("plugins/carla native plugin");
-
-TEST_CASE_FIXTURE (ZrythmFixture, "vst instrument makes sound")
-{
 #ifdef HAVE_CARLA
-  for (int i = 0; i < 2; i++)
-    {
-      const char * pl_path = NULL;
-#  ifdef HAVE_NOIZEMAKER
-      if (i == 0)
-        {
-          /* vst2 */
-          pl_path = NOIZEMAKER_PATH;
-        }
-#  endif
-#  ifdef HAVE_SURGE_XT
-      if (i == 1)
-        {
-          /* vst3 */
-          pl_path = SURGE_XT_PATH;
-          /* TODO: remove this line after Surge XT issue is fixed in Carla 2.6.0
-           */
-          pl_path = NULL;
-        }
-#  endif
-      if (!pl_path)
-        continue;
 
-      SUBCASE ("iteration")
-      {
-        /* stop dummy audio engine processing so we can
-         * process manually */
-        test_project_stop_dummy_engine ();
+class CarlaNativePluginTest : public ::testing::TestWithParam<std::string>
+{
+protected:
+  ZrythmFixture zrythm_fixture_;
 
-        /* create instrument track */
-        test_plugin_manager_create_tracks_from_plugin (
-          pl_path, nullptr, true, true, 1);
-        auto track = TRACKLIST->get_last_track<InstrumentTrack> ();
+  void SetUp () override { zrythm_fixture_.SetUp (); }
+  void TearDown () override { zrythm_fixture_.TearDown (); }
+};
 
-        /* create midi note */
-        Position pos, end_pos;
-        pos.zero ();
-        end_pos.set_to_bar (3);
-        auto r = std::make_shared<MidiRegion> (
-          pos, end_pos, track->get_name_hash (), 0, 0);
-        track->add_region (r, nullptr, 0, true, false);
-        auto mn = std::make_shared<MidiNote> (r->id_, pos, end_pos, 57, 120);
-        r->append_object (mn);
+TEST_P (CarlaNativePluginTest, VstInstrumentMakesSound)
+{
+  auto pl_path = GetParam ();
+  /* stop dummy audio engine processing so we can
+   * process manually */
+  test_project_stop_dummy_engine ();
 
-        AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
-        AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
-        AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
+  /* create instrument track */
+  test_plugin_manager_create_tracks_from_plugin (
+    pl_path.c_str (), nullptr, true, true, 1);
+  auto track = TRACKLIST->get_last_track<InstrumentTrack> ();
 
-        /* bounce */
-        Exporter::Settings settings;
-        settings.set_bounce_defaults (Exporter::Format::WAV, "", __func__);
-        settings.time_range_ = Exporter::TimeRange::Loop;
-        settings.bounce_with_parents_ = true;
-        settings.mode_ = Exporter::Mode::Full;
+  /* create midi note */
+  Position pos, end_pos;
+  pos.zero ();
+  end_pos.set_to_bar (3);
+  auto r =
+    std::make_shared<MidiRegion> (pos, end_pos, track->get_name_hash (), 0, 0);
+  track->add_region (r, nullptr, 0, true, false);
+  auto mn = std::make_shared<MidiNote> (r->id_, pos, end_pos, 57, 120);
+  r->append_object (mn);
 
-        Exporter exporter (settings);
-        exporter.prepare_tracks_for_export (*AUDIO_ENGINE, *TRANSPORT);
+  AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
+  AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
+  AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
 
-        /* start exporting in a new thread */
-        exporter.begin_generic_thread ();
-        exporter.join_generic_thread ();
-        exporter.post_export ();
+  /* bounce */
+  Exporter::Settings settings;
+  settings.set_bounce_defaults (Exporter::Format::WAV, "", __func__);
+  settings.time_range_ = Exporter::TimeRange::Loop;
+  settings.bounce_with_parents_ = true;
+  settings.mode_ = Exporter::Mode::Full;
 
-        ASSERT_FALSE (
-          audio_file_is_silent (exporter.get_exported_path ().c_str ()));
-      }
-    }
-#endif
+  Exporter exporter (settings);
+  exporter.prepare_tracks_for_export (*AUDIO_ENGINE, *TRANSPORT);
+
+  /* start exporting in a new thread */
+  exporter.begin_generic_thread ();
+  exporter.join_generic_thread ();
+  exporter.post_export ();
+
+  ASSERT_FALSE (audio_file_is_silent (exporter.get_exported_path ().c_str ()));
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "mono plugin")
+INSTANTIATE_TEST_SUITE_P (
+  CarlaNativePlugin,
+  CarlaNativePluginTest,
+  ::testing::Values (
+#  ifdef HAVE_NOIZEMAKER
+    // vst2
+    NOIZEMAKER_PATH
+#  endif
+#  ifdef HAVE_SURGE_XT
+// vst3
+// TODO: enable this after Surge XT issue is fixed in Carla 2.6.0
+// ,SURGE_XT_PATH
+#  endif
+    ));
+
+TEST_F (ZrythmFixture, MonoPlugin)
 {
-#if defined(HAVE_CARLA) && defined(HAVE_LSP_COMPRESSOR_MONO)
+#  if defined(HAVE_CARLA) && defined(HAVE_LSP_COMPRESSOR_MONO)
   /* stop dummy audio engine processing so we can
    * process manually */
   test_project_stop_dummy_engine ();
@@ -140,17 +132,17 @@ TEST_CASE_FIXTURE (ZrythmFixture, "mono plugin")
   exporter.post_export ();
 
   ASSERT_FALSE (audio_file_is_silent (exporter.get_exported_path ().c_str ()));
-#endif
+#  endif
 }
 
-#if 0
+#  if 0
 static void
 test_has_custom_ui (void)
 {
   test_helper_zrythm_init ();
 
-#  ifdef HAVE_CARLA
-#    ifdef HAVE_HELM
+#    ifdef HAVE_CARLA
+#      ifdef HAVE_HELM
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
       HELM_BUNDLE, HELM_URI, false);
@@ -158,16 +150,15 @@ test_has_custom_ui (void)
   ASSERT_TRUE (
     carla_native_plugin_has_custom_ui (
       setting->descr));
+#      endif
 #    endif
-#  endif
 
   test_helper_zrythm_cleanup ();
 }
-#endif
+#  endif
 
-TEST_CASE_FIXTURE (ZrythmFixture, "crash handling")
+TEST_F (ZrythmFixture, CrashHandling)
 {
-#ifdef HAVE_CARLA
   /* stop dummy audio engine processing so we can
    * process manually */
   test_project_stop_dummy_engine ();
@@ -186,12 +177,11 @@ TEST_CASE_FIXTURE (ZrythmFixture, "crash handling")
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
-#endif
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "process")
+TEST_F (ZrythmFixture, Process)
 {
-#if defined(HAVE_TEST_SIGNAL) && defined(HAVE_CARLA)
+#  if defined(HAVE_TEST_SIGNAL)
   test_plugin_manager_create_tracks_from_plugin (
     TEST_SIGNAL_BUNDLE, TEST_SIGNAL_URI, false, true, 1);
 
@@ -225,7 +215,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "process")
     {
       ASSERT_TRUE (fabsf (out->buf_[i]) > 1e-10f);
     }
-#endif
+#  endif
 }
 
-TEST_SUITE_END;
+#endif // HAVE_CARLA

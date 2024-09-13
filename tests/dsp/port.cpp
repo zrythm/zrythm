@@ -3,11 +3,7 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "tests/helpers/zrythm_helper.h"
-
-TEST_SUITE_BEGIN ("dsp/port");
 
 #if 0
 static void
@@ -145,7 +141,7 @@ test_serialization (void)
 }
 #endif
 
-TEST_CASE_FIXTURE (ZrythmFixture, "get hash")
+TEST_F (ZrythmFixture, GetPortHash)
 {
   AudioPort port1 ("test-port", PortFlow::Output);
   AudioPort port2 ("test-port", PortFlow::Output);
@@ -165,5 +161,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "get hash")
   ASSERT_EQ (hash2, hash22);
   ASSERT_EQ (hash3, hash33);
 }
-
-TEST_SUITE_END;

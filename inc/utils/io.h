@@ -100,8 +100,10 @@ io_remove (const std::string &path);
  *
  * For safety reasons, this only accepts an absolute path with length greater
  * than 20 if forced.
+ *
+ * @return Whether successful.
  */
-int
+bool
 io_rmdir (const std::string &path, bool force);
 
 /**
@@ -204,8 +206,14 @@ void
 io_write_file_atomic (const std::string &file_path, const std::string &data);
 
 #ifdef _WIN32
-char *
-io_get_registry_string_val (const char * path);
+/**
+ * @brief Returns the registry value for the given key in Zrythm's registry path.
+ *
+ * @param key
+ * @return std::string
+ */
+std::string
+io_get_registry_string_val (const std::string &key);
 #endif
 
 #if defined(__APPLE__) && defined(INSTALLER_VER)

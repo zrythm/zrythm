@@ -91,7 +91,7 @@ stretcher_new_rubberband (
  * @return The number of output samples generated per
  *   channel.
  */
-ssize_t
+signed_frame_t
 stretcher_stretch (
   Stretcher *   self,
   const float * in_samples_l,
@@ -121,7 +121,7 @@ stretcher_set_time_ratio (Stretcher * self, double ratio);
  * @return The number of output samples generated per
  *   channel.
  */
-ssize_t
+signed_frame_t
 stretcher_stretch_interleaved (
   Stretcher *   self,
   const float * in_samples,

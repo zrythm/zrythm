@@ -3,13 +3,10 @@
 
 #include "zrythm-test-config.h"
 
+#include "actions/arranger_selections.h"
 #include "actions/channel_send_action.h"
 #include "actions/mixer_selections_action.h"
 #include "actions/port_connection_action.h"
-
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
-#include "actions/arranger_selections.h"
 #include "actions/tracklist_selections.h"
 #include "actions/undoable_action.h"
 #include "dsp/audio_region.h"
@@ -28,12 +25,8 @@
 #include "utils/math.h"
 #include "zrythm.h"
 
-#include <glib.h>
-
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
-
-TEST_SUITE_BEGIN ("actions/tracklist_selections");
 
 static auto perform_create_arranger_sel = [] (const auto &selections) {
   UNDO_MANAGER->perform (
@@ -186,9 +179,7 @@ _test_port_and_plugin_track_pos_after_duplication (
 }
 #endif
 
-TEST_CASE_FIXTURE (
-  ZrythmFixture,
-  "test port and plugin track pos after duplication")
+TEST_F (ZrythmFixture, CheckPortAndPluginTrackPositionAfterDuplication)
 {
 #ifdef HAVE_HELM
   _test_port_and_plugin_track_pos_after_duplication (
@@ -201,9 +192,7 @@ TEST_CASE_FIXTURE (
 }
 
 #ifdef HAVE_CARLA
-TEST_CASE_FIXTURE (
-  ZrythmFixture,
-  "test port and plugin track pos after duplication with Carla")
+TEST_F (ZrythmFixture, CheckPortAndPluginTrackPositionAfterDuplicationWithCarla)
 {
 #  ifdef HAVE_HELM
   _test_port_and_plugin_track_pos_after_duplication (
@@ -236,7 +225,7 @@ test_num_tracks_with_file (const fs::path &filepath, const int num_tracks)
   ASSERT_SIZE_EQ (TRACKLIST->tracks_, num_tracks_before + num_tracks);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "create tracks from MIDI file")
+TEST_F (ZrythmFixture, CreateTracksFromMIDIFile)
 {
   auto midi_file =
     fs::path (TESTS_SRCDIR) / "1_empty_track_1_track_with_data.mid";
@@ -254,9 +243,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "create tracks from MIDI file")
   test_num_tracks_with_file (midi_file, 1);
 }
 
-TEST_CASE_FIXTURE (
-  ZrythmFixture,
-  "create instrument track when redo stack is nonempty")
+TEST_F (ZrythmFixture, CreateInstrumentTrackWhenUndoStackIsEmpty)
 {
   ASSERT_NO_THROW (Track::create_empty_with_action (Track::Type::Midi));
 
@@ -344,14 +331,14 @@ _test_undo_track_deletion (
 }
 #endif
 
-TEST_CASE_FIXTURE (ZrythmFixture, "undo track deletion")
+TEST_F (ZrythmFixture, UndoTrackDeletion)
 {
 #ifdef HAVE_HELM
   _test_undo_track_deletion (HELM_BUNDLE, HELM_URI, true, false);
 #endif
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "group track deletion")
+TEST_F (ZrythmFixture, DeleteGroupTrack)
 {
   ASSERT_EMPTY (P_MASTER_TRACK->children_);
 
@@ -631,21 +618,21 @@ test_track_deletion_with_sends (
 }
 #endif
 
-TEST_CASE_FIXTURE (ZrythmFixture, "delete target track with sends")
+TEST_F (ZrythmFixture, DeleteTargetTrackWithSends)
 {
 #ifdef HAVE_AMS_LFO
   test_track_deletion_with_sends (true, AMS_LFO_BUNDLE, AMS_LFO_URI);
 #endif
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "delete source track with sends")
+TEST_F (ZrythmFixture, DeleteSourceTrackWithSends)
 {
 #ifdef HAVE_AMS_LFO
   test_track_deletion_with_sends (false, AMS_LFO_BUNDLE, AMS_LFO_URI);
 #endif
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "delete audio track")
+TEST_F (ZrythmFixture, DeleteAudioTrack)
 {
   auto track = Track::create_empty_with_action<AudioTrack> ();
 
@@ -667,7 +654,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "delete audio track")
   UNDO_MANAGER->redo ();
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "delete track with LV2 worker")
+TEST_F (ZrythmFixture, DeleteTrackWithLV2Worker)
 {
 #ifdef HAVE_LSP_MULTISAMPLER_24_DO
   test_plugin_manager_create_tracks_from_plugin (
@@ -686,7 +673,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "delete track with LV2 worker")
 #endif
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "delete track with plugin")
+TEST_F (ZrythmFixture, DeleteTrackWithPlugin)
 {
   test_plugin_manager_create_tracks_from_plugin (
     COMPRESSOR_BUNDLE, COMPRESSOR_URI, false, true, 1);
@@ -711,7 +698,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "delete track with plugin")
   ASSERT_NO_THROW (PROJECT->save (PROJECT->dir_, 0, 0, F_NO_ASYNC));
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "delete instrument track with automation")
+TEST_F (ZrythmFixture, DeleteInstrumentTrackWithAutomation)
 {
 #if defined(HAVE_TAL_FILTER) && defined(HAVE_NOIZE_MAKER)
   AUDIO_ENGINE->activate (false);
@@ -811,7 +798,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "delete instrument track with automation")
 #endif
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "check no visible tracks after deleting track")
+TEST_F (ZrythmFixture, CheckNoVisibleTracksAfterDeletingTrack)
 {
   /* hide all tracks */
   for (auto &track : TRACKLIST->tracks_)
@@ -1012,10 +999,18 @@ _test_move_tracks (
 }
 #endif
 
-static void
-__test_move_tracks (bool with_carla)
+class TracklistSelectionsMoveFixture
+    : public ZrythmFixture,
+      public ::testing::WithParamInterface<std::tuple<bool>>
 {
-  ZrythmFixture fixture;
+protected:
+  void SetUp () override { ZrythmFixture::SetUp (); }
+  void TearDown () override { ZrythmFixture::TearDown (); }
+};
+
+TEST_P (TracklistSelectionsMoveFixture, MoveTracks)
+{
+  bool with_carla = std::get<0> (GetParam ());
 
 #ifdef HAVE_HELM
   _test_move_tracks (HELM_BUNDLE, HELM_URI, true, with_carla);
@@ -1026,15 +1021,18 @@ __test_move_tracks (bool with_carla)
 #endif
 }
 
-TEST_CASE ("move tracks")
-{
-  __test_move_tracks (false);
+INSTANTIATE_TEST_SUITE_P (
+  TracklistSelectionsMove,
+  TracklistSelectionsMoveFixture,
+  ::testing::Combine (
 #ifdef HAVE_CARLA
-  __test_move_tracks (true);
+    ::testing::Values (false, true)
+#else
+    ::testing::Values (false)
 #endif
-}
+      ));
 
-TEST_CASE_FIXTURE (ZrythmFixture, "multi-track duplicate")
+TEST_F (ZrythmFixture, DuplicateMultipleTracks)
 {
   int start_pos = TRACKLIST->get_num_tracks ();
 
@@ -1091,7 +1089,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "multi-track duplicate")
   ASSERT_TRUE (TRACKLIST->tracks_[start_pos + 5]->is_audio ());
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "delete track with midi file")
+TEST_F (ZrythmFixture, DeleteTrackWithMidiFile)
 {
   const auto midi_file =
     fs::path (TESTS_SRCDIR) / "format_1_two_tracks_with_data.mid";
@@ -1111,7 +1109,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "delete track with midi file")
     6);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "marker track unpin")
+TEST_F (ZrythmFixture, UnpinMarkerTrack)
 {
   auto require_pin_status = [&] (bool pinned) {
     for (auto &m : P_MARKER_TRACK->markers_)
@@ -1140,7 +1138,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "marker track unpin")
  * Test duplicate when the last track in the
  * tracklist is the output of the duplicated track.
  */
-TEST_CASE_FIXTURE (ZrythmFixture, "duplicate with output and send")
+TEST_F (ZrythmFixture, DuplicateWithOutputAndSend)
 {
   int start_pos = TRACKLIST->get_num_tracks ();
 
@@ -1231,7 +1229,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "duplicate with output and send")
     }
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "test track deletion with mixer selections")
+TEST_F (ZrythmFixture, CheckTrackDeletionWithMixerSelections)
 {
   auto first_track = Track::create_empty_with_action<AudioBusTrack> ();
 
@@ -1248,7 +1246,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "test track deletion with mixer selections")
   perform_delete ();
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "test instrument track duplicate with send")
+TEST_F (ZrythmFixture, DuplicateInstrumentTrackWithSend)
 {
 #if defined HAVE_HELM
   /* create the instrument track */
@@ -1291,7 +1289,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "test instrument track duplicate with send")
 #endif
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "test create midi fx track")
+TEST_F (ZrythmFixture, CreateMidiFxTrack)
 {
   /* create an audio fx track */
   Track::create_empty_with_action<MidiBusTrack> ();
@@ -1299,7 +1297,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "test create midi fx track")
   std::this_thread::sleep_for (std::chrono::milliseconds (10));
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "move multiple tracks")
+TEST_F (ZrythmFixture, MoveMultipleTracks)
 {
   /* create 5 tracks */
   for (int i = 0; i < 5; i++)
@@ -1454,8 +1452,6 @@ _test_move_inside (
   bool         is_instrument,
   bool         with_carla)
 {
-  ZrythmFixture fixture;
-
   /* create folder track */
   auto folder = Track::create_empty_with_action<FolderTrack> ();
 
@@ -1881,7 +1877,7 @@ _test_move_inside (
   ASSERT_EQ (audio_fx2->pos_, 10);
 }
 
-TEST_CASE ("move inside")
+TEST_F (ZrythmFixture, MoveInside)
 {
   (void) _test_move_inside;
 #ifdef HAVE_LSP_COMPRESSOR
@@ -1889,7 +1885,7 @@ TEST_CASE ("move inside")
 #endif
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "move multiple inside")
+TEST_F (ZrythmFixture, MoveMultipleInside)
 {
   /* create folder track */
   auto folder = Track::create_empty_with_action<FolderTrack> ();
@@ -2006,7 +2002,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move multiple inside")
   ASSERT_EQ (midi2->pos_, 10);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "copy multiple inside")
+TEST_F (ZrythmFixture, CopyMultipleInside)
 {
   /* create folder track */
   auto folder = Track::create_empty_with_action<FolderTrack> ();
@@ -2381,7 +2377,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "copy multiple inside")
 
 /* uninstalling does not work with carla */
 #if 0
-TEST_CASE ("copy track after uninstalling plugin")
+TEST (CopyTrackAfterUninstallingPlugin)
 {
 #  ifdef HAVE_HELM
   test_helper_zrythm_init ();
@@ -2425,7 +2421,7 @@ TEST_CASE ("copy track after uninstalling plugin")
 }
 #endif
 
-TEST_CASE_FIXTURE (ZrythmFixture, "move track with clip editor region")
+TEST_F (ZrythmFixture, MoveTrackWithClipEditorRegion)
 {
   auto midi_file =
     fs::path (TESTS_SRCDIR) / "1_empty_track_1_track_with_data.mid";
@@ -2448,5 +2444,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move track with clip editor region")
   clip_editor_region = CLIP_EDITOR->get_region ();
   ASSERT_NONNULL (clip_editor_region);
 }
-
-TEST_SUITE_END ();

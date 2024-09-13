@@ -25,11 +25,10 @@
 std::string
 audio_function_get_action_target_for_type (AudioFunctionType type)
 {
-  auto   type_str = AudioFunctionType_to_string (type);
-  char * type_str_lower = g_strdup (type_str.c_str ());
-  string_to_lower (type_str.c_str (), type_str_lower);
+  auto        type_str = AudioFunctionType_to_string (type);
+  std::string type_str_lower (type_str);
+  string_to_lower_ascii (type_str_lower);
   auto substituted = string_replace (type_str_lower, " ", "-");
-  g_free (type_str_lower);
 
   return substituted;
 }
@@ -525,12 +524,15 @@ audio_function_apply (
           "tmp-clip");
         auto tmp_clip = tmp_clip_before.edit_in_ext_program ();
         dsp_copy (
-          &dest_frames[0], &tmp_clip->frames_.getReadPointer (0)[0],
-          std::min (num_frames, (size_t) tmp_clip->num_frames_) * channels);
+          dest_frames.data (), tmp_clip->frames_.getReadPointer (0),
+          std::min (
+            static_cast<size_t> (num_frames),
+            static_cast<size_t> (tmp_clip->num_frames_))
+            * channels);
         if ((size_t) tmp_clip->num_frames_ < num_frames)
           {
             dsp_fill (
-              &dest_frames[0], 0.f,
+              dest_frames.data (), 0.f,
               (num_frames - (size_t) tmp_clip->num_frames_) * channels);
           }
       }

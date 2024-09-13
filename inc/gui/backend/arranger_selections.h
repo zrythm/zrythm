@@ -170,8 +170,8 @@ public:
    * position (local + region start).
    */
   template <typename T = ArrangerObject>
-  requires std::derived_from<T, ArrangerObject> std::pair<T *, Position>
-  get_first_object_and_pos (bool global) const;
+    requires std::derived_from<T, ArrangerObject>
+  std::pair<T *, Position> get_first_object_and_pos (bool global) const;
 
   /**
    * Gets last object of the given type (if any, otherwise matches all types)
@@ -183,7 +183,8 @@ public:
    * position (local + region start).
    */
   template <typename T = ArrangerObject>
-  requires std::derived_from<T, ArrangerObject> std::pair<T *, Position>
+    requires std::derived_from<T, ArrangerObject>
+  std::pair<T *, Position>
   get_last_object_and_pos (bool global, bool ends_last) const;
 
   /**
@@ -237,8 +238,8 @@ public:
    * This uses the equality operator defined by each object.
    */
   template <typename T = ArrangerObject>
-  T * find_object (const T &obj) const requires
-    FinalClass<T> &&DerivedButNotBase<T, ArrangerObject>
+  T * find_object (const T &obj) const
+    requires FinalClass<T> && DerivedButNotBase<T, ArrangerObject>
   {
     auto it =
       std::find_if (objects_.begin (), objects_.end (), [&obj] (auto &element) {

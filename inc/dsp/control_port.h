@@ -67,7 +67,15 @@ public:
     ScalePoint (float val, std::string label) : val_ (val), label_ (label) { }
     ~ScalePoint () = default;
 
-    bool operator< (const ScalePoint &other) { return val_ - other.val_ > 0.f; }
+    auto operator<=> (const ScalePoint &other) const
+    {
+      return val_ <=> other.val_;
+    }
+
+    bool operator== (const ScalePoint &other) const
+    {
+      return math_floats_equal (val_, other.val_);
+    }
   };
 
 public:

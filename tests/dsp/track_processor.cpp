@@ -3,21 +3,15 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/master_track.h"
 #include "dsp/track_processor.h"
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/track processor");
-
-TEST_CASE_FIXTURE (
-  ZrythmFixture,
-  "process master"
-    * doctest::description (
-      "Run TrackProcessor::process() on master and check that the output buffer matches the input buffer"))
+/* Run TrackProcessor::process() on master and check that the output buffer
+ * matches the input buffer */
+TEST_F (ZrythmFixture, ProcessMaster)
 {
   /* stop dummy audio engine processing so we can process manually */
   test_project_stop_dummy_engine ();
@@ -48,5 +42,3 @@ TEST_CASE_FIXTURE (
         (float) (i + 1), 0.000001f);
     }
 }
-
-TEST_SUITE_END;

@@ -28,8 +28,6 @@
 
 #include "tests/helpers/project_helper.h"
 
-TEST_SUITE_BEGIN ("actions/arranger_selections");
-
 auto REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK =
   [] (const auto &obj, const Track &track) {
     using T = base_type<decltype (obj)>;
@@ -43,7 +41,7 @@ auto REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK =
       }
     else
       {
-        static_assert (false, "???");
+        [[maybe_unused]] typedef typename T::something_made_up X;
       }
   };
 
@@ -479,9 +477,7 @@ public:
   }
 };
 
-TEST_CASE_FIXTURE (
-  ArrangerSelectionsFixture,
-  "copy an audio region then paste it after changing the BPM")
+TEST_F (ArrangerSelectionsFixture, CopyAudioRegionAndPasteAfterChangingBPM)
 {
   TL_SELECTIONS->clear ();
   ASSERT_EMPTY (TL_SELECTIONS->objects_);
@@ -515,7 +511,7 @@ TEST_CASE_FIXTURE (
   sel->paste_to_pos (PLAYHEAD, true);
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "duplicate timeline")
+TEST_F (ArrangerSelectionsFixture, DuplicateTimeline)
 {
   /* when i == 1 we are moving to new tracks */
   for (int i = 0; i < 2; i++)
@@ -566,7 +562,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "duplicate timeline")
     }
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "duplicate automation region")
+TEST_F (ArrangerSelectionsFixture, DuplicateAutomationRegion)
 {
   auto at = P_MASTER_TRACK->channel_->get_automation_track (
     PortIdentifier::Flags::StereoBalance);
@@ -625,7 +621,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "duplicate automation region")
   ASSERT_NEAR (ap->curve_opts_.curviness_, curviness_after, 0.00001f);
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link timeline")
+TEST_F (ArrangerSelectionsFixture, LinkTimeline)
 {
   /* when i == 1 we are moving to new tracks */
   for (int i = 0; i < 2; i++)
@@ -687,7 +683,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link timeline")
     }
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link and delete")
+TEST_F (ArrangerSelectionsFixture, LinkAndDelete)
 {
   ASSERT_EMPTY (REGION_LINK_GROUP_MANAGER.groups_);
 
@@ -812,7 +808,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link and delete")
   ASSERT_SIZE_EQ (REGION_LINK_GROUP_MANAGER.groups_, 2);
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link then duplicate")
+TEST_F (ArrangerSelectionsFixture, LinkThenDuplicate)
 {
   /* when i == 1 we are moving to new tracks */
   for (int i = 0; i < 2; i++)
@@ -932,14 +928,14 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link then duplicate")
       test_project_save_and_reload ();
 
       /* add a midi note to a linked midi region */
-      auto r = [&] () {
+      auto r = [&] () -> std::shared_ptr<MidiRegion> {
         auto track = TRACKLIST->find_track_by_name<MidiTrack> (
           track_diff ? TARGET_MIDI_TRACK_NAME : MIDI_TRACK_NAME);
-        ASSERT_NONNULL (track);
+        EXPECT_NONNULL (track);
         auto ret =
           track->lanes_[MIDI_REGION_LANE]->regions_.at (track_diff ? 0 : 1);
-        ASSERT_TRUE (ret->is_midi ());
-        ASSERT_TRUE (ret->has_link_group ());
+        EXPECT_TRUE (ret->is_midi ());
+        EXPECT_TRUE (ret->has_link_group ());
         return ret;
       }();
       Position start, end;
@@ -980,7 +976,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "link then duplicate")
     }
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "edit marker")
+TEST_F (ArrangerSelectionsFixture, EditMarker)
 {
   /* create marker with name "aa" */
   auto m = std::make_shared<Marker> ("aa");
@@ -1018,7 +1014,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "edit marker")
   UNDO_MANAGER->undo ();
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "mute objects")
+TEST_F (ArrangerSelectionsFixture, MuteObjects)
 {
   auto midi_track = TRACKLIST->get_track<MidiTrack> (5);
   ASSERT_NONNULL (midi_track);
@@ -1049,7 +1045,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "mute objects")
   assert_muted (false);
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "split region")
+TEST_F (ArrangerSelectionsFixture, SplitRegion)
 {
   ASSERT_SIZE_EQ (P_CHORD_TRACK->regions_, 1);
 
@@ -1111,7 +1107,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "split region")
   UNDO_MANAGER->undo ();
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "split large audio file")
+TEST_F (ArrangerSelectionsFixture, SplitLargeAudioFile)
 {
 #ifdef TEST_SINE_OGG_30MIN
   test_project_stop_dummy_engine ();
@@ -1136,7 +1132,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "split large audio file")
 #endif
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "quantize")
+TEST_F (ArrangerSelectionsFixture, Quantize)
 {
   auto audio_track =
     TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
@@ -1175,7 +1171,7 @@ verify_audio_function (std::vector<float> &frames, size_t max_frames)
     }
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "audio functions")
+TEST_F (ArrangerSelectionsFixture, AudioFunctions)
 {
   auto audio_track =
     TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
@@ -1227,7 +1223,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "audio functions")
   UNDO_MANAGER->undo ();
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "automation fill")
+TEST_F (ArrangerSelectionsFixture, AutomationFill)
 {
   /* check automation region */
   auto at = P_MASTER_TRACK->channel_->get_automation_track (
@@ -1256,9 +1252,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "automation fill")
   UNDO_MANAGER->redo ();
 }
 
-TEST_CASE_FIXTURE (
-  ArrangerSelectionsFixture,
-  "duplicate MIDI regions to track below")
+TEST_F (ArrangerSelectionsFixture, DuplicateMidiRegionsToTrackBelow)
 {
   auto midi_track = TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
   ASSERT_NONNULL (midi_track);
@@ -1323,7 +1317,7 @@ TEST_CASE_FIXTURE (
   ASSERT_SIZE_EQ (target_lane->regions_, 2);
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "midi region split")
+TEST_F (ArrangerSelectionsFixture, MidiRegionSplit)
 {
   auto midi_track = TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
   ASSERT_NONNULL (midi_track);
@@ -1547,7 +1541,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "midi region split")
   ASSERT_EQ (pos.frames_, r->end_pos_.frames_);
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "Pin/Unpin")
+TEST_F (ArrangerSelectionsFixture, PinUnpin)
 {
   auto &r = P_CHORD_TRACK->regions_.at (0);
   P_CHORD_TRACK->select (true, true, false);
@@ -1559,7 +1553,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "Pin/Unpin")
   /* TODO more tests */
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete markers")
+TEST_F (ArrangerSelectionsFixture, DeleteMarkers)
 {
   /* create markers A B C D */
   const char *            names[4] = { "A", "B", "C", "D" };
@@ -1595,7 +1589,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete markers")
     }
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete scale objects")
+TEST_F (ArrangerSelectionsFixture, DeleteScaleObjects)
 {
   /* create markers A B C D */
   std::shared_ptr<ScaleObject> m_c, m_d;
@@ -1633,7 +1627,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete scale objects")
     }
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete chord objects")
+TEST_F (ArrangerSelectionsFixture, DeleteChordObjects)
 {
   Position pos1, pos2;
   pos1.set_to_bar (1);
@@ -1676,7 +1670,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete chord objects")
     }
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete automation points")
+TEST_F (ArrangerSelectionsFixture, DeleteAutomationPoints)
 {
   Position pos1, pos2;
   pos1.set_to_bar (1);
@@ -1723,7 +1717,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete automation points")
     }
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "duplicate audio regions")
+TEST_F (ZrythmFixture, DuplicateAudioRegions)
 {
   auto audio_file_path = fs::path (TESTS_SRCDIR) / "test.wav";
 
@@ -1743,7 +1737,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "duplicate audio regions")
   test_project_save_and_reload ();
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "undo moving midi region to other lane")
+TEST_F (ZrythmFixture, UndoMovingMidiRegionToOtherLane)
 {
   /* create midi track with region */
   Track::create_empty_with_action (Track::Type::Midi);
@@ -1777,7 +1771,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "undo moving midi region to other lane")
   UNDO_MANAGER->undo ();
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "delete multiple regions")
+TEST_F (ZrythmFixture, DeleteMultipleRegions)
 {
   auto midi_track = dynamic_cast<MidiTrack *> (
     Track::create_empty_with_action (Track::Type::Midi));
@@ -1818,7 +1812,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "delete multiple regions")
   ASSERT_NONNULL (CLIP_EDITOR->get_region ());
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "split and merge midi unlooped")
+TEST_F (ZrythmFixture, SplitAndMergeMidiUnlooped)
 {
   Position pos, end_pos, tmp;
 
@@ -2007,7 +2001,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "split and merge midi unlooped")
     UNDO_MANAGER->undo ());
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "split and merge audio unlooped")
+TEST_F (ZrythmFixture, SplitAndMergeAudioUnlooped)
 {
   Position pos, tmp;
 
@@ -2237,7 +2231,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "split and merge audio unlooped")
   test_project_save_and_reload ();
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "resize-loop from left side")
+TEST_F (ZrythmFixture, ResizeLoopFromLeftSide)
 {
   Position pos, tmp;
 
@@ -2293,7 +2287,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "resize-loop from left side")
   (void) tmp;
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "delete MIDI notes")
+TEST_F (ZrythmFixture, DeleteMidiNotes)
 {
   auto midi_track = Track::create_empty_with_action<MidiTrack> ();
 
@@ -2359,7 +2353,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "delete MIDI notes")
 #undef CHECK_INDICES
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "cut automation region")
+TEST_F (ZrythmFixture, CutAutomationRegion)
 {
   /* create master fader automation region */
   Position pos1, pos2;
@@ -2406,7 +2400,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "cut automation region")
   UNDO_MANAGER->undo ();
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "copy and move automation regions")
+TEST_F (ZrythmFixture, CopyAndMoveAutomationRegions)
 {
   /* create a new track */
   auto audio_track = Track::create_empty_with_action<AudioTrack> ();
@@ -2519,7 +2513,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "copy and move automation regions")
   ASSERT_SIZE_EQ (mute_at->regions_, 2);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "moving a region from lane 3 to lane 1")
+TEST_F (ZrythmFixture, MoveRegionFromLane3ToLane1)
 {
   Position pos, end_pos;
   Track::create_with_action (
@@ -2574,7 +2568,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "moving a region from lane 3 to lane 1")
   }
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "stretch")
+TEST_F (ArrangerSelectionsFixture, Stretch)
 {
   std::vector<float> orig_frames;
   size_t             total_orig_frames;
@@ -2637,7 +2631,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "stretch")
 
 // below pass
 
-TEST_CASE_FIXTURE (ZrythmFixture, "test move audio region and lower bpm")
+TEST_F (ZrythmFixture, MoveAudioRegionAndLowerBPM)
 {
   const auto frames_per_tick_at_start = AUDIO_ENGINE->frames_per_tick_;
 
@@ -2646,7 +2640,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "test move audio region and lower bpm")
     const auto &undo_stack_actions = UNDO_MANAGER->undo_stack_->actions_;
 
     auto require_frames_per_tick_eq_to_start = [&] (size_t idx) {
-      ASSERT_FLOAT_EQ (
+      ASSERT_DOUBLE_EQ (
         undo_stack_actions[idx]->frames_per_tick_, frames_per_tick_at_start);
     };
 
@@ -2717,7 +2711,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "test move audio region and lower bpm")
     }
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete chords")
+TEST_F (ArrangerSelectionsFixture, DeleteChords)
 {
   ASSERT_TRUE (P_CHORD_TRACK->validate ());
   auto &r = P_CHORD_TRACK->regions_[0];
@@ -2740,7 +2734,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete chords")
     UNDO_MANAGER->undo (); UNDO_MANAGER->redo (); UNDO_MANAGER->undo (););
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "create timeline")
+TEST_F (ArrangerSelectionsFixture, CreateTimeline)
 {
   /* do create */
   perform_create (TL_SELECTIONS);
@@ -2763,7 +2757,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "create timeline")
   check_has_single_undo ();
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete timeline")
+TEST_F (ArrangerSelectionsFixture, DeleteTimelineSelections)
 {
   /* do delete */
   ASSERT_NO_THROW (perform_delete (TL_SELECTIONS));
@@ -2799,7 +2793,7 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "delete timeline")
   check_has_single_redo ();
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "move audio region and lower samplerate")
+TEST_F (ZrythmFixture, MoveAudioRegionAndLowerSampleRate)
 {
   char audio_file_path[2000];
   sprintf (
@@ -2837,7 +2831,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move audio region and lower samplerate")
     }
 }
 
-TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "move timeline")
+TEST_F (ArrangerSelectionsFixture, MoveTimlineSelections)
 {
   /* when i == 1 we are moving to new tracks */
   for (int i = 0; i < 2; i++)
@@ -2880,5 +2874,3 @@ TEST_CASE_FIXTURE (ArrangerSelectionsFixture, "move timeline")
         }
     }
 }
-
-TEST_SUITE_END ();

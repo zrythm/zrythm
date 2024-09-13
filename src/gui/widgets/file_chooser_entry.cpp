@@ -189,29 +189,29 @@ ide_file_chooser_entry_button_clicked (
 static GFile *
 file_expand (const gchar * path)
 {
-  g_autofree gchar * relative = NULL;
-  g_autofree gchar * scheme = NULL;
+  std::string relative;
+  std::string scheme;
 
   if (path == nullptr)
     return g_file_new_for_path (g_get_home_dir ());
 
-  scheme = g_uri_parse_scheme (path);
-  if (scheme != nullptr)
+  scheme = Glib::uri_parse_scheme (path);
+  if (!scheme.empty ())
     return g_file_new_for_uri (path);
 
   if (g_path_is_absolute (path))
     return g_file_new_for_path (path);
 
-  relative = g_build_filename (
-    g_get_home_dir (), path[0] == '~' ? &path[1] : path, nullptr);
+  relative =
+    Glib::build_filename (g_get_home_dir (), path[0] == '~' ? &path[1] : path);
 
-  return g_file_new_for_path (relative);
+  return g_file_new_for_path (relative.c_str ());
 }
 
 static void
 ide_file_chooser_entry_changed (IdeFileChooserEntry * self, GtkEntry * entry)
 {
-  g_autoptr (GFile) file = NULL;
+  GFile * file = NULL;
 
   g_assert (IDE_IS_FILE_CHOOSER_ENTRY (self));
   g_assert (GTK_IS_ENTRY (entry));
@@ -220,6 +220,11 @@ ide_file_chooser_entry_changed (IdeFileChooserEntry * self, GtkEntry * entry)
 
   if (g_set_object (&self->file, file))
     g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_FILE]);
+
+  if (file)
+    {
+      g_object_unref (file);
+    }
 }
 
 static void
@@ -439,37 +444,39 @@ ide_file_chooser_entry_init (IdeFileChooserEntry * self)
   gtk_box_append (GTK_BOX (self->hbox), GTK_WIDGET (self->button));
 }
 
-static gchar *
+static std::string
 file_collapse (GFile * file)
 {
-  gchar * path = NULL;
+  std::string path;
 
   g_assert (!file || G_IS_FILE (file));
 
   if (file == nullptr)
-    return g_strdup ("");
+    return "";
 
   if (!g_file_is_native (file))
     return g_file_get_uri (file);
 
-  path = g_file_get_path (file);
+  char * path_gstr = g_file_get_path (file);
+  path = path_gstr;
+  g_free (path_gstr);
 
-  if (path == nullptr)
-    return g_strdup ("");
+  if (path.empty ())
+    return "";
 
-  if (!g_path_is_absolute (path))
+  if (!Glib::path_is_absolute (path))
     {
-      g_autofree gchar * freeme = path;
+      auto freeme = path;
 
-      path = g_build_filename (g_get_home_dir (), freeme, nullptr);
+      path = Glib::build_filename (g_get_home_dir (), freeme);
     }
 
-  if (g_str_has_prefix (path, g_get_home_dir ()))
+  if (g_str_has_prefix (path.c_str (), g_get_home_dir ()))
     {
-      g_autofree gchar * freeme = path;
+      auto freeme = path;
 
-      path =
-        g_build_filename ("~", freeme + strlen (g_get_home_dir ()), nullptr);
+      path = Glib::build_filename (
+        "~", freeme.c_str () + strlen (g_get_home_dir ()));
     }
 
   return path;
@@ -493,7 +500,7 @@ ide_file_chooser_entry_get_file (IdeFileChooserEntry * self)
 void
 ide_file_chooser_entry_set_file (IdeFileChooserEntry * self, GFile * file)
 {
-  g_autofree gchar * collapsed = NULL;
+  std::string collapsed;
 
   z_return_if_fail (IDE_IS_FILE_CHOOSER_ENTRY (self));
 
@@ -509,7 +516,7 @@ ide_file_chooser_entry_set_file (IdeFileChooserEntry * self, GFile * file)
   self->file = file;
 
   collapsed = file_collapse (file);
-  gtk_editable_set_text (GTK_EDITABLE (self->entry), collapsed);
+  gtk_editable_set_text (GTK_EDITABLE (self->entry), collapsed.c_str ());
 
   g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_FILE]);
 }

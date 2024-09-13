@@ -3,8 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/midi_region.h"
 #include "dsp/region.h"
 #include "project.h"
@@ -13,16 +11,14 @@
 
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/region");
-
 class RegionFixture : public ZrythmFixture
 {
 protected:
   std::unique_ptr<MidiRegion> midi_region_;
 
-public:
-  RegionFixture ()
+  void SetUp () override
   {
+    ZrythmFixture::SetUp ();
     /* needed to set TRANSPORT */
     AUDIO_ENGINE->update_frames_per_tick (4, 140, 44000, true, true, false);
 
@@ -31,10 +27,15 @@ public:
     end_pos.set_to_bar (4);
     midi_region_ = std::make_unique<MidiRegion> (start_pos, end_pos, 0, 0, 0);
   }
-  ~RegionFixture () { midi_region_.reset (); }
+
+  void TearDown () override
+  {
+    midi_region_.reset ();
+    ZrythmFixture::TearDown ();
+  }
 };
 
-TEST_CASE_FIXTURE (ZrythmFixture, "region is hit by range")
+TEST_F (ZrythmFixture, RegionIsHitByRange)
 {
   Position pos, end_pos;
   pos.set_to_bar (4);
@@ -46,7 +47,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "region is hit by range")
     other_start_pos.frames_, pos.frames_, true, true, false));
 }
 
-TEST_CASE_FIXTURE (RegionFixture, "region is hit")
+TEST_F (RegionFixture, RegionIsHit)
 {
   /*
    * Position: Region start
@@ -117,7 +118,10 @@ TEST_CASE_FIXTURE (RegionFixture, "region is hit")
   }
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "new region")
+TEST_F (
+  ZrythmFixture,
+
+  NewRegion)
 {
   Position start_pos, end_pos, tmp;
   start_pos.set_to_bar (2);
@@ -142,17 +146,15 @@ TEST_CASE_FIXTURE (ZrythmFixture, "new region")
     }
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "timeline frames to local")
+TEST_F (ZrythmFixture, TimelineFramesToLocal)
 {
   auto track = Track::create_empty_with_action<MidiTrack> ();
 
   Position pos, end_pos;
   end_pos.set_to_bar (4);
   MidiRegion region (pos, end_pos, track->get_name_hash (), 0, 0);
-  auto localp = region.timeline_frames_to_local( 13'000, true);
+  auto       localp = region.timeline_frames_to_local (13'000, true);
   ASSERT_EQ (localp, 13000);
-  localp = region.timeline_frames_to_local(13'000, false);
+  localp = region.timeline_frames_to_local (13'000, false);
   ASSERT_EQ (localp, 13000);
 }
-
-TEST_SUITE_END;

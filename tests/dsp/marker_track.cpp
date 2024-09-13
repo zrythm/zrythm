@@ -3,8 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/midi_region.h"
 #include "dsp/transport.h"
 #include "project.h"
@@ -13,9 +11,7 @@
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/marker track");
-
-TEST_CASE_FIXTURE (ZrythmFixture, "add marker")
+TEST_F (ZrythmFixture, AddMarker)
 {
   auto track = P_MARKER_TRACK;
   ASSERT_SIZE_EQ (track->markers_, 2);
@@ -41,5 +37,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "add marker")
         }
     }
 }
-
-TEST_SUITE_END;

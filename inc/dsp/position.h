@@ -228,12 +228,11 @@ public:
 
   inline void add_ms (double ms) { add_frames (ms_to_frames (ms)); }
 
-  void add_minutes (int mins)
-  {add_frames (ms_to_frames (mins * 60 * 1'000)); }
+  void add_minutes (int mins) { add_frames (ms_to_frames (mins * 60 * 1'000)); }
 
-void add_seconds (signed_sec_t seconds)
-{
-    add_frames(ms_to_frames(seconds * 1'000));
+  void add_seconds (signed_sec_t seconds)
+  {
+    add_frames (ms_to_frames (seconds * 1'000));
   }
 
   /**
@@ -243,8 +242,8 @@ void add_seconds (signed_sec_t seconds)
    * at. This is only used when the "keep offset" setting is on.
    * @param track Track, used when moving things in the timeline. If keep offset
    * is on and this is passed, the objects in the track will be taken into
-   * account. If keep offset is on and this is nullptr, all applicable objects will
-   * be taken into account. Not used if keep offset is off.
+   * account. If keep offset is on and this is nullptr, all applicable objects
+   * will be taken into account. Not used if keep offset is off.
    * @param region Region, used when moving things in the editor. Same behavior
    * as @p track.
    * @param sg SnapGrid options.
@@ -257,7 +256,7 @@ void add_seconds (signed_sec_t seconds)
 
   void snap_simple (const SnapGrid &sg)
   {
-      snap (nullptr, nullptr, nullptr, sg);
+    snap (nullptr, nullptr, nullptr, sg);
   }
 
   /**
@@ -310,10 +309,10 @@ void add_seconds (signed_sec_t seconds)
    */
   inline void update (bool from_ticks, double ratio)
   {
-      if (from_ticks)
-        update_frames_from_ticks (ratio);
-      else
-        update_ticks_from_frames (ratio);
+    if (from_ticks)
+      update_frames_from_ticks (ratio);
+    else
+      update_ticks_from_frames (ratio);
   }
 
   /**
@@ -325,8 +324,8 @@ void add_seconds (signed_sec_t seconds)
   inline void
   set_to_midway_pos (const Position &start_pos, const Position &end_pos)
   {
-      ticks_ = start_pos.ticks_ + (end_pos.ticks_ - start_pos.ticks_) / 2.0;
-      update_frames_from_ticks (0.0);
+    ticks_ = start_pos.ticks_ + (end_pos.ticks_ - start_pos.ticks_) / 2.0;
+    update_frames_from_ticks (0.0);
   }
 
   /**
@@ -384,8 +383,8 @@ void add_seconds (signed_sec_t seconds)
    */
   inline void change_sign ()
   {
-      ticks_ = -ticks_;
-      frames_ = -frames_;
+    ticks_ = -ticks_;
+    frames_ = -frames_;
   }
 
   /**
@@ -433,14 +432,14 @@ private:
    */
   inline Position &get_closest_position (Position &p1, Position &p2) const
   {
-      if (ticks_ - p1.ticks_ <= p2.ticks_ - ticks_)
-        {
-          return p1;
-        }
-      else
-        {
-          return p2;
-        }
+    if (ticks_ - p1.ticks_ <= p2.ticks_ - ticks_)
+      {
+        return p1;
+      }
+    else
+      {
+        return p2;
+      }
   }
 
   /**
@@ -448,8 +447,8 @@ private:
    *
    * @param track Track, used when moving things in the timeline. If keep offset
    * is on and this is passed, the objects in the track will be taken into
-   * account. If keep offset is on and this is nullptr, all applicable objects will
-   * be taken into account. Not used if keep offset is off.
+   * account. If keep offset is on and this is nullptr, all applicable objects
+   * will be taken into account. Not used if keep offset is off.
    * @param region Region, used when moving things in the editor. Same behavior
    * as @ref track.
    * @param sg SnapGrid options.
@@ -470,8 +469,8 @@ private:
    *
    * @param track Track, used when moving things in the timeline. If keep offset
    * is on and this is passed, the objects in the track will be taken into
-   * account. If keep offset is on and this is nullptr, all applicable objects will
-   * be taken into account. Not used if keep offset is off.
+   * account. If keep offset is on and this is nullptr, all applicable objects
+   * will be taken into account. Not used if keep offset is off.
    * @param region Region, used when moving things in the editor. Same behavior
    * as @ref track.
    * @param sg SnapGrid options.
@@ -481,7 +480,7 @@ private:
    */
   ATTR_HOT bool get_next_snap_point (
     Track *         track,
-    Region*        region,
+    Region *        region,
     const SnapGrid &sg,
     Position       &next_sp) const;
 
@@ -494,8 +493,8 @@ private:
    *
    * @param track Track, used when moving things in the timeline. If keep offset
    * is on and this is passed, the objects in the track will be taken into
-   * account. If keep offset is on and this is nullptr, all applicable objects will
-   * be taken into account. Not used if keep offset is off.
+   * account. If keep offset is on and this is nullptr, all applicable objects
+   * will be taken into account. Not used if keep offset is off.
    * @param region Region, used when moving things in the editor. Same behavior
    * as @p track.
    * @param sg SnapGrid options.
@@ -520,53 +519,37 @@ public:
    */
   signed_frame_t frames_ = 0;
 
-    /**
-     * Precise position in frames (samples).
-     *
-     * To be used where more precision than Position.frames is needed.
-     *
-     * @note Does not seem needed, keep comment around for reference in the
-     * future.
-     */
-    // double precise_frames;
-  };
-
-  /** Note: only checks frames.*/
-  inline bool operator== (const Position &lhs, const Position &rhs)
-  {
-    return lhs.frames_ == rhs.frames_;
-  }
-
-  inline bool operator!= (const Position &lhs, const Position &rhs)
-  {
-    return !(lhs == rhs);
-  }
-
-  /** Note: only checks frames.*/
-  inline bool operator< (const Position &lhs, const Position &rhs)
-  {
-    return lhs.frames_ < rhs.frames_;
-  }
-
-  inline bool operator> (const Position &lhs, const Position &rhs)
-  {
-    return rhs < lhs;
-  }
-
-  inline bool operator<= (const Position &lhs, const Position &rhs)
-  {
-    return !(lhs > rhs);
-  }
-
-  inline bool operator>= (const Position &lhs, const Position &rhs)
-  {
-    return !(lhs < rhs);
-  }
-
-  DEFINE_OBJECT_FORMATTER (Position, val.to_string ());
-
   /**
-   * @}
+   * Precise position in frames (samples).
+   *
+   * To be used where more precision than Position.frames is needed.
+   *
+   * @note Does not seem needed, keep comment around for reference in the
+   * future.
    */
+  // double precise_frames;
+};
+
+/** Note: only checks frames.*/
+inline auto
+operator<=> (const Position &lhs, const Position &rhs)
+{
+  return lhs.frames_ <=> rhs.frames_;
+}
+
+inline bool
+operator== (const Position &lhs, const Position &rhs)
+{
+  return (lhs <=> rhs) == 0;
+}
+
+// Other comparison operators are automatically generated by the spaceship
+// operator
+
+DEFINE_OBJECT_FORMATTER (Position, val.to_string ());
+
+/**
+ * @}
+ */
 
 #endif

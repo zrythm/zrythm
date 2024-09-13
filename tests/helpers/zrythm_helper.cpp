@@ -440,6 +440,11 @@ ZrythmFixture::ZrythmFixture (
 ZrythmFixture::~ZrythmFixture () { }
 
 void
+ZrythmFixture::TestBody ()
+{
+}
+
+void
 ZrythmFixture::SetUp ()
 {
   static std::once_flag glib_inited;

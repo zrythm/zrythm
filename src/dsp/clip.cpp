@@ -400,7 +400,7 @@ AudioClip::write_to_file (const std::string &filepath, bool parts)
 bool
 AudioClip::verify_recorded_file (const fs::path &filepath) const
 {
-  AudioClip new_clip (filepath);
+  AudioClip new_clip (filepath.string ());
   if (num_frames_ != new_clip.num_frames_)
     {
       z_error ("{} != {}", num_frames_, new_clip.num_frames_);

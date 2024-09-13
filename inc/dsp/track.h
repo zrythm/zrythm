@@ -1024,7 +1024,8 @@ DEFINE_ENUM_FORMATTER (
   N_ ("MIDI Group"),
   N_ ("Folder"));
 
-template <typename T> concept TrackSubclass = std::derived_from<T, Track>;
+template <typename T>
+concept TrackSubclass = std::derived_from<T, Track>;
 
 template <typename TrackT>
 concept FinalTrackSubclass = TrackSubclass<TrackT> && FinalClass<TrackT>;

@@ -8,10 +8,16 @@
 
 #include <glibmm.h>
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wredundant-decls"
+#ifdef __GNUC__
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wredundant-decls"
+#endif
+
 #include <giomm.h>
-#pragma GCC diagnostic pop
+
+#ifdef __GNUC__
+#  pragma GCC diagnostic pop
+#endif
 
 G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 #include <gtk/gtk.h>

@@ -3,28 +3,24 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/position.h"
 #include "utils/math.h"
 #include "utils/string.h"
 
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/position");
-
-TEST_CASE_FIXTURE (ZrythmFixture, "conversions")
+TEST_F (ZrythmFixture, PositionConversions)
 {
   Position pos;
   pos.from_ticks (10'000);
   ASSERT_GT (pos.frames_, 0);
 
-  pos.zero();
+  pos.zero ();
   pos.from_frames (10'000);
   ASSERT_GT (pos.ticks_, 0);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "get totals")
+TEST_F (ZrythmFixture, GetTotals)
 {
   Position pos;
   ASSERT_EQ (pos.get_total_beats (false), 0);
@@ -77,7 +73,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "get totals")
     pos.get_total_beats (true) * (int) TRANSPORT->sixteenths_per_beat_);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "set to x")
+TEST_F (ZrythmFixture, SetToX)
 {
   auto check_after_set_to_bar = [] (const int bar, const char * expect) {
     Position pos;
@@ -90,7 +86,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "set to x")
   check_after_set_to_bar (1, "1.1.1.0");
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "print position")
+TEST_F (ZrythmFixture, PrintPosition)
 {
   z_debug ("---");
 
@@ -112,21 +108,20 @@ TEST_CASE_FIXTURE (ZrythmFixture, "print position")
   z_debug ("---");
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "position from ticks")
+TEST_F (ZrythmFixture, PositionFromTicks)
 {
   Position pos;
-  double   ticks =
-    50'000.0;
+  double   ticks = 50'000.0;
 
-    /* assert values are correct */
-    pos.from_ticks (ticks);
+  /* assert values are correct */
+  pos.from_ticks (ticks);
   ASSERT_EQ (
     pos.get_bars (true),
     math_round_double_to_signed_32 (ticks / TRANSPORT->ticks_per_bar_ + 1));
   ASSERT_GT (pos.get_bars (true), 0);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "position to frames")
+TEST_F (ZrythmFixture, PositionToFrames)
 {
   Position pos;
   double   ticks = 50000.0;
@@ -139,7 +134,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "position to frames")
     math_round_double_to_signed_64 (AUDIO_ENGINE->frames_per_tick_ * ticks));
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "get total beats")
+TEST_F (ZrythmFixture, GetTotalBeats)
 {
   Position start_pos{ 4782.3818594104323 };
   Position end_pos{ 4800.0290249433119 };
@@ -158,7 +153,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "get total beats")
   ASSERT_EQ (beats, 5);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "position benchmarks")
+TEST_F (ZrythmFixture, PositionBenchmarks)
 {
   double   ticks = 50000.0;
   gint64   loop_times = 5;
@@ -180,7 +175,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "position benchmarks")
   z_info ("time: {}", total_time / loop_times);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "snap")
+TEST_F (ZrythmFixture, PositionSnap)
 {
   ASSERT_EQ (SNAP_GRID_TIMELINE->snap_note_length_, NoteLength::NOTE_LENGTH_BAR);
 
@@ -223,5 +218,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "snap")
   z_info ("cur pos {} test pos {}", cur_pos, test_pos);
   ASSERT_POSITION_EQ (cur_pos, test_pos);
 }
-
-TEST_SUITE_END;

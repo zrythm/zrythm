@@ -3,16 +3,12 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "plugins/plugin_manager.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("plugins/plugin manager");
-
-TEST_CASE_FIXTURE (ZrythmFixture, "find plugins")
+TEST_F (ZrythmFixture, FindPlugins)
 {
 #ifdef HAVE_MDA_AMBIENCE
   {
@@ -33,5 +29,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "find plugins")
   }
 #endif
 }
-
-TEST_SUITE_END;

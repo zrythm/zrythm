@@ -8,6 +8,8 @@
 #  include <windows.h>
 #endif
 
+#undef ERROR // windows.h defines ERROR unless NOGDI is defined
+
 #include <algorithm>
 #include <atomic>
 #include <cinttypes>
@@ -29,10 +31,14 @@
 #include "libadwaita_wrapper.h"
 #include <glibmm.h>
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wshadow"
+#ifdef __GNUC__
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wshadow"
+#endif
 #include <magic_enum_all.hpp>
-#pragma GCC diagnostic pop
+#ifdef __GNUC__
+#  pragma GCC diagnostic pop
+#endif
 
 #include "utils/gtest_wrapper.h"
 

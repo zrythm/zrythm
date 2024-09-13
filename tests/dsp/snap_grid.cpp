@@ -3,16 +3,12 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "project.h"
 #include "zrythm.h"
 
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/snap grid");
-
-TEST_CASE_FIXTURE (ZrythmFixture, "test update snap points")
+TEST_F (ZrythmFixture, UpdateSnapPoints)
 {
   SnapGrid sg (SnapGrid::Type::Timeline, NoteLength::NOTE_LENGTH_1_128, false);
 
@@ -30,5 +26,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "test update snap points")
   TEST_WITH_MAX_BARS (100000);
 #endif
 }
-
-TEST_SUITE_END;

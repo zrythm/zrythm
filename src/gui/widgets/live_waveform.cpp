@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/engine.h"
@@ -6,20 +6,13 @@
 #include "dsp/track.h"
 #include "dsp/tracklist.h"
 #include "gui/widgets/live_waveform.h"
-#include "gui/widgets/track.h"
 #include "project.h"
-#include "utils/arrays.h"
-#include "utils/cairo.h"
-#include "utils/midi.h"
-#include "utils/objects.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
-
-#define BUF_SIZE 65000
+constexpr size_t BUF_SIZE = 65000;
 
 G_DEFINE_TYPE (LiveWaveformWidget, live_waveform_widget, GTK_TYPE_DRAWING_AREA)
 
@@ -27,8 +20,8 @@ static void
 draw_lines (
   LiveWaveformWidget * self,
   cairo_t *            cr,
-  float *              lbuf,
-  float *              rbuf,
+  const float *        lbuf,
+  const float *        rbuf,
   size_t               lstart_index,
   size_t               rstart_index)
 {
@@ -85,8 +78,7 @@ live_waveform_draw_cb (
       return;
     }
 
-  uint32_t block_size_in_bytes =
-    sizeof (float) * (uint32_t) AUDIO_ENGINE->block_length_;
+  const auto block_size = (uint32_t) AUDIO_ENGINE->block_length_;
 
   AudioPort * port = nullptr;
   switch (self->type)
@@ -118,20 +110,19 @@ live_waveform_draw_cb (
 
   /* get the L buffer */
   uint32_t read_space_avail = port->audio_ring_->read_space ();
-  uint32_t blocks_to_read =
-    block_size_in_bytes == 0 ? 0 : read_space_avail / block_size_in_bytes;
+  uint32_t blocks_to_read = block_size == 0 ? 0 : read_space_avail / block_size;
   /* if buffer is not filled do not draw */
   if (blocks_to_read <= 0)
     return;
 
-  while (read_space_avail > self->buf_sz[0])
+  while (read_space_avail > self->buffer->getNumSamples ())
     {
-      array_double_size_if_full (
-        self->bufs[0], self->buf_sz[0], self->buf_sz[0], float);
+      self->buffer->setSize (
+        2, self->buffer->getNumSamples () * 2, true, true, false);
     }
-  uint32_t lblocks_read =
-    port->audio_ring_->peek_multiple (&(self->bufs[0][0]), read_space_avail);
-  lblocks_read /= block_size_in_bytes;
+  uint32_t lblocks_read = port->audio_ring_->peek_multiple (
+    self->buffer->getWritePointer (0), read_space_avail);
+  lblocks_read /= block_size;
   uint32_t lstart_index = (lblocks_read - 1) * AUDIO_ENGINE->block_length_;
   if (lblocks_read == 0)
     {
@@ -144,20 +135,20 @@ live_waveform_draw_cb (
       /* get the R buffer */
       port = &P_MASTER_TRACK->channel_->stereo_out_->get_r ();
       read_space_avail = port->audio_ring_->read_space ();
-      blocks_to_read = read_space_avail / block_size_in_bytes;
+      blocks_to_read = read_space_avail / block_size;
 
       /* if buffer is not filled do not draw */
       if (blocks_to_read <= 0)
         return;
 
-      while (read_space_avail > self->buf_sz[1])
+      while (read_space_avail > self->buffer->getNumSamples ())
         {
-          array_double_size_if_full (
-            self->bufs[1], self->buf_sz[1], self->buf_sz[1], float);
+          self->buffer->setSize (
+            2, self->buffer->getNumSamples () * 2, true, true, false);
         }
       size_t rblocks_read = port->audio_ring_->peek_multiple (
-        &(self->bufs[1][0]), read_space_avail);
-      rblocks_read /= block_size_in_bytes;
+        self->buffer->getWritePointer (1), read_space_avail);
+      rblocks_read /= block_size;
       size_t rstart_index = (rblocks_read - 1) * AUDIO_ENGINE->block_length_;
       if (rblocks_read == 0)
         {
@@ -166,11 +157,13 @@ live_waveform_draw_cb (
         }
 
       draw_lines (
-        self, cr, self->bufs[0], self->bufs[1], lstart_index, rstart_index);
+        self, cr, self->buffer->getReadPointer (0),
+        self->buffer->getReadPointer (1), lstart_index, rstart_index);
     }
   else
     {
-      draw_lines (self, cr, self->bufs[0], nullptr, lstart_index, 0);
+      draw_lines (
+        self, cr, self->buffer->getReadPointer (0), nullptr, lstart_index, 0);
     }
 }
 
@@ -190,10 +183,7 @@ init_common (LiveWaveformWidget * self)
 {
   self->draw_border = 1;
 
-  self->bufs[0] = object_new_n (BUF_SIZE, float);
-  self->bufs[1] = object_new_n (BUF_SIZE, float);
-  self->buf_sz[0] = BUF_SIZE;
-  self->buf_sz[1] = BUF_SIZE;
+  self->buffer = std::make_unique<juce::AudioSampleBuffer> (2, BUF_SIZE);
 
   gtk_drawing_area_set_draw_func (
     GTK_DRAWING_AREA (self), live_waveform_draw_cb, self, nullptr);
@@ -231,10 +221,11 @@ live_waveform_widget_new_port (AudioPort * port)
 }
 
 static void
-finalize (LiveWaveformWidget * self)
+finalize (GObject * gobj)
 {
-  object_zero_and_free_if_nonnull (self->bufs[0]);
-  object_zero_and_free_if_nonnull (self->bufs[1]);
+  LiveWaveformWidget * self = Z_LIVE_WAVEFORM_WIDGET (gobj);
+
+  std::destroy_at (&self->buffer);
 
   G_OBJECT_CLASS (live_waveform_widget_parent_class)->finalize (G_OBJECT (self));
 }
@@ -242,6 +233,8 @@ finalize (LiveWaveformWidget * self)
 static void
 live_waveform_widget_init (LiveWaveformWidget * self)
 {
+  std::construct_at (&self->buffer);
+
   gtk_widget_set_overflow (GTK_WIDGET (self), GTK_OVERFLOW_HIDDEN);
 }
 
@@ -253,5 +246,5 @@ live_waveform_widget_class_init (LiveWaveformWidgetClass * _klass)
   gtk_widget_class_set_accessible_role (klass, GTK_ACCESSIBLE_ROLE_PRESENTATION);
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
-  oklass->finalize = (GObjectFinalizeFunc) finalize;
+  oklass->finalize = finalize;
 }

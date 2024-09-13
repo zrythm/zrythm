@@ -3,8 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/fader.h"
 #include "dsp/midi_event.h"
 #include "dsp/router.h"
@@ -13,8 +11,6 @@
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
-
-TEST_SUITE_BEGIN ("plugins/plugin");
 
 #ifdef HAVE_HELM
 static void
@@ -57,14 +53,14 @@ _test_loading_non_existing_plugin (
 }
 #endif
 
-TEST_CASE_FIXTURE (ZrythmFixture, "loading non-existing plugin")
+TEST_F (ZrythmFixture, LoadNonExistingPlugin)
 {
 #ifdef HAVE_HELM
   _test_loading_non_existing_plugin (HELM_BUNDLE, HELM_URI, false);
 #endif
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "loading fully bridged plugin")
+TEST_F (ZrythmFixture, LoadFullyBridgedPlugin)
 {
 #ifdef HAVE_CARLA
 #  ifdef HAVE_CHIPWAVE
@@ -100,7 +96,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "loading fully bridged plugin")
 #endif
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "loading plugins needing bridging")
+TEST_F (ZrythmFixture, LoadPluginsNeedingBridging)
 {
 #ifdef HAVE_CARLA
 #  ifdef HAVE_CALF_MONOSYNTH
@@ -114,7 +110,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "loading plugins needing bridging")
 #endif
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "bypass state after project load")
+TEST_F (ZrythmFixture, BypassStateAfterProjectLoad)
 {
 #ifdef HAVE_LSP_COMPRESSOR
   for (
@@ -155,7 +151,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "bypass state after project load")
 #endif
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "plugin without outputs")
+TEST_F (ZrythmFixture, PluginWithoutOutputs)
 {
 #ifdef HAVE_KXSTUDIO_LFO
   test_plugin_manager_create_tracks_from_plugin (
@@ -168,5 +164,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "plugin without outputs")
   test_project_save_and_reload ();
 #endif
 }
-
-TEST_SUITE_END;

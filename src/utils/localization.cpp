@@ -126,20 +126,13 @@ get_match (
   return ret;
 }
 
-/**
- * Returns the first locale found matching the given
- * language, or NULL if a locale for the given
- * language does not exist.
- *
- * Must be free'd with g_free().
- */
-char *
+std::string
 localization_locale_exists (LocalizationLanguage lang)
 {
 #ifdef _WIN32
   const char * _code = localization_get_string_code (lang);
   return g_strdup (_code);
-#endif
+#else
 
   /* get available locales on the system */
   FILE * fp;
@@ -165,7 +158,7 @@ localization_locale_exists (LocalizationLanguage lang)
   /* close */
   pclose (fp);
 
-#define IS_MATCH(caps, code) \
+#  define IS_MATCH(caps, code) \
   case LL_##caps: \
     match = \
       get_match (installed_locales, num_installed_locales, code, CODESET); \
@@ -219,10 +212,10 @@ localization_locale_exists (LocalizationLanguage lang)
       IS_MATCH (ZH_CN, "zh_CN");
       IS_MATCH (ZH_TW, "zh_TW");
     case NUM_LL_LANGUAGES:
-      z_return_val_if_reached (nullptr);
+      z_return_val_if_reached ("");
     }
 
-#undef IS_MATCH
+#  undef IS_MATCH
 
   match = g_strdup (match);
   for (int i = 0; i < num_installed_locales; i++)
@@ -231,6 +224,7 @@ localization_locale_exists (LocalizationLanguage lang)
     }
 
   return match;
+#endif
 }
 
 /**
@@ -284,7 +278,7 @@ localization_init (
           return 1;
         }
 
-      code = localization_locale_exists (lang);
+      code = g_strdup (localization_locale_exists (lang).c_str ());
       z_debug ("code is {}", code);
     }
 

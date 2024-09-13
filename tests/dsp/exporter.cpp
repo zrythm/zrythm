@@ -5,9 +5,6 @@
 
 #include "actions/arranger_selections.h"
 #include "actions/channel_send_action.h"
-
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/exporter.h"
 #include "io/file_descriptor.h"
 #include "project.h"
@@ -20,8 +17,6 @@
 
 #include <sndfile.h>
 
-TEST_SUITE_BEGIN ("dsp/exporter");
-
 constexpr midi_byte_t DUMMY_NOTE_PITCH = 70;
 constexpr midi_byte_t DUMMY_NOTE_VELOCITY = 70;
 
@@ -32,11 +27,12 @@ print_progress_and_sleep (ProgressInfo &info)
     {
       auto [progress, progress_str] = info.get_progress ();
       z_info ("progress: {:.1f}", progress * 100.0);
-      constexpr auto sleep_time = 10'000; g_usleep (sleep_time);
+      constexpr auto sleep_time = 10'000;
+      g_usleep (sleep_time);
     }
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "bounce with note at start")
+TEST_F (ZrythmFixture, BounceWithNoteAtStart)
 {
   /* create the instrument track */
   test_plugin_manager_create_tracks_from_plugin (
@@ -77,7 +73,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "bounce with note at start")
   ASSERT_FALSE (audio_file_is_silent (exporter.get_exported_path ().c_str ()));
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "mixdown midi")
+TEST_F (ZrythmFixture, MixdownMidi)
 {
   /* create a MIDI track with 2 adjacent regions
    * with 1 MIDI note each */
@@ -162,7 +158,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "mixdown midi")
   ASSERT_POSITION_EQ (mn->end_pos_, end);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "export wav")
+TEST_F (ZrythmFixture, ExportWav)
 {
   FileDescriptor file (fs::path (TESTS_SRCDIR) / "test.wav");
   Track::create_with_action (
@@ -314,7 +310,7 @@ bounce_region (bool with_bpm_automation)
 #endif
 }
 
-TEST_CASE ("bounce_region")
+TEST (Exporter, BounceRegion)
 {
   bounce_region (false);
 }
@@ -331,7 +327,7 @@ test_bounce_with_bpm_automation (void)
  * Export the audio mixdown when a MIDI track with
  * data is routed to an instrument track.
  */
-TEST_CASE_FIXTURE (ZrythmFixture, "mixdown MIDI routed to instrument track")
+TEST_F (ZrythmFixture, MixdownMidiRoutedToInstrumentTrack)
 {
 #ifdef HAVE_GEONKICK
   /* create the instrument track */
@@ -394,7 +390,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "mixdown MIDI routed to instrument track")
 #endif
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "bounce region with first note")
+TEST_F (ZrythmFixture, BounceRegionWithFirstNote)
 {
 #ifdef HAVE_HELM
   Position pos, end_pos;
@@ -550,7 +546,7 @@ test_bounce_midi_track_routed_to_instrument_track (
 #endif
 }
 
-TEST_CASE ("bounce MIDI track routed to instrument track")
+TEST (Exporter, BounceMidiTrackRoutedToInstrumentTrack)
 {
   test_bounce_midi_track_routed_to_instrument_track (
     BounceStep::PostFader, true);
@@ -732,7 +728,7 @@ test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
   z_info ("=== Bounce instrument track end ===");
 }
 
-TEST_CASE ("bounce instrument track")
+TEST (Exporter, BounceInstrumentTrack)
 {
   test_bounce_instrument_track (BounceStep::PostFader, true);
   test_bounce_instrument_track (BounceStep::BeforeInserts, false);
@@ -744,7 +740,7 @@ TEST_CASE ("bounce instrument track")
  * Export the audio mixdown when the chord track with
  * data is routed to an instrument track.
  */
-TEST_CASE_FIXTURE (ZrythmFixture, "chord track routed to instrument track")
+TEST_F (ZrythmFixture, ExportChordTrackRoutedToInstrumentTrack)
 {
 #ifdef HAVE_GEONKICK
   /* create the instrument track */
@@ -826,7 +822,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "chord track routed to instrument track")
 /**
  * Export send track only (stem export).
  */
-TEST_CASE_FIXTURE (ZrythmFixture, "export send track only")
+TEST_F (ZrythmFixture, ExportSendTrackOnly)
 {
   /* create an audio track */
   FileDescriptor file (fs::path (TESTS_SRCDIR) / "test.wav");
@@ -895,7 +891,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "export send track only")
     }
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "export midi range")
+TEST_F (ZrythmFixture, ExportMidiRange)
 {
   /* create a MIDI track with 1 region with 1 MIDI note */
   auto track = Track::create_empty_with_action<MidiTrack> ();
@@ -949,5 +945,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "export midi range")
   ASSERT_POSITION_EQ (mn->pos_, start);
   ASSERT_POSITION_EQ (mn->end_pos_, end);
 }
-
-TEST_SUITE_END;

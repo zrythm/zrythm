@@ -3,17 +3,13 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/track.h"
 #include "project.h"
 #include "zrythm.h"
 
 #include "tests/helpers/project_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/track");
-
-TEST_CASE_FIXTURE (ZrythmFixture, "new track")
+TEST_F (ZrythmFixture, NewTrack)
 {
   auto track = Track::create_track (
     Track::Type::Instrument, "Test Instrument Track 1",
@@ -22,50 +18,59 @@ TEST_CASE_FIXTURE (ZrythmFixture, "new track")
   ASSERT_NONEMPTY (track->name_);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "add region")
+class AddRegionFixture : public ZrythmFixture
 {
+protected:
   Position start, end;
-  start.set_to_bar (2);
-  end.set_to_bar (4);
 
-  auto check_track_name_hash = [] (const auto &region, const auto &track) {
-    ASSERT_NONEMPTY (track->name_);
+  void SetUp () override
+  {
+    ZrythmFixture::SetUp ();
+    start.set_to_bar (2);
+    end.set_to_bar (4);
+  }
+
+  void check_track_name_hash (const auto &region, const auto &track)
+  {
+    ASSERT_FALSE (track->name_.empty ());
     ASSERT_NE (region->track_name_hash_, 0);
     ASSERT_EQ (region->track_name_hash_, track->get_name_hash ());
     ASSERT_EQ (region->id_.track_name_hash_, region->track_name_hash_);
-  };
+  }
+};
 
-  SUBCASE ("laned region")
-  {
-    auto           midi_track = Track::create_empty_with_action<MidiTrack> ();
-    constexpr auto lane_pos = 0;
-    auto           region = std::make_shared<MidiRegion> (
-      start, end, midi_track->get_name_hash (), lane_pos, 0);
-    midi_track->add_region (region, nullptr, lane_pos, true, false);
-    check_track_name_hash (region, midi_track);
-  }
-  SUBCASE ("chord region")
-  {
-    auto chord_track = P_CHORD_TRACK;
-    auto region = std::make_shared<ChordRegion> (start, end, 0);
-    chord_track->Track::add_region (region, nullptr, -1, true, false);
-    check_track_name_hash (region, chord_track);
-  }
-  SUBCASE ("automation region")
-  {
-    auto master = P_MASTER_TRACK;
-    master->set_automation_visible (true);
-    auto &atl = master->get_automation_tracklist ();
-    auto  first_vis_at = atl.visible_ats_.front ();
-
-    auto region = std::make_shared<AutomationRegion> (
-      start, end, master->get_name_hash (), first_vis_at->index_, 0);
-    master->add_region (region, first_vis_at, -1, true, false);
-    check_track_name_hash (region, master);
-  }
+TEST_F (AddRegionFixture, LanedRegion)
+{
+  auto           midi_track = Track::create_empty_with_action<MidiTrack> ();
+  constexpr auto lane_pos = 0;
+  auto           region = std::make_shared<MidiRegion> (
+    start, end, midi_track->get_name_hash (), lane_pos, 0);
+  midi_track->add_region (region, nullptr, lane_pos, true, false);
+  check_track_name_hash (region, midi_track);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "get direct folder parent")
+TEST_F (AddRegionFixture, ChordRegion)
+{
+  auto chord_track = P_CHORD_TRACK;
+  auto region = std::make_shared<ChordRegion> (start, end, 0);
+  chord_track->Track::add_region (region, nullptr, -1, true, false);
+  check_track_name_hash (region, chord_track);
+}
+
+TEST_F (AddRegionFixture, AutomationRegion)
+{
+  auto master = P_MASTER_TRACK;
+  master->set_automation_visible (true);
+  auto &atl = master->get_automation_tracklist ();
+  auto  first_vis_at = atl.visible_ats_.front ();
+
+  auto region = std::make_shared<AutomationRegion> (
+    start, end, master->get_name_hash (), first_vis_at->index_, 0);
+  master->add_region (region, first_vis_at, -1, true, false);
+  check_track_name_hash (region, master);
+}
+
+TEST_F (ZrythmFixture, GetDirectFolderParent)
 {
   auto audio_group = Track::create_empty_with_action<AudioGroupTrack> ();
   ASSERT_NONNULL (audio_group);
@@ -94,5 +99,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "get direct folder parent")
   auto direct_folder_parent = audio_group3->get_direct_folder_parent ();
   ASSERT_TRUE (direct_folder_parent == audio_group2);
 }
-
-TEST_SUITE_END;

@@ -3,17 +3,13 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/metronome.h"
 #include "dsp/position.h"
 #include "dsp/sample_processor.h"
 
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/metronome");
-
-TEST_CASE_FIXTURE (ZrythmFixture, "find and queue metronome")
+TEST_F (ZrythmFixture, FindAndQueueMetronome)
 {
   /* this catches a bug where if the ticks were 0
    * but sub_tick was not, invalid offsets would
@@ -133,5 +129,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "find and queue metronome")
       ASSERT_EQ (sp.start_offset_, 0);
     }
 }
-
-TEST_SUITE_END;

@@ -3,13 +3,9 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "utils/gtest_wrapper.h"
 #define DEBUG_OBJECT_POOL 1
 #include "utils/object_pool.h"
-
-TEST_SUITE_BEGIN ("utils/object pool");
 
 static void
 test_with_size (size_t initial_cap, int num_elems, size_t expected_end_cap)
@@ -45,7 +41,7 @@ test_with_size (size_t initial_cap, int num_elems, size_t expected_end_cap)
   ASSERT_EQ (pool.get_size (), expected_end_cap);
 }
 
-TEST_CASE ("object pool")
+TEST (ObjectPool, TestVariousSizes)
 {
   // fixed size
   test_with_size (16, 16, 16);
@@ -55,5 +51,3 @@ TEST_CASE ("object pool")
   test_with_size (16, 31, 32);
   test_with_size (16, 32, 32);
 }
-
-TEST_SUITE_END;

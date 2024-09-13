@@ -3,8 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "actions/tracklist_selections.h"
 #include "dsp/midi_region.h"
 #include "dsp/region.h"
@@ -17,9 +15,7 @@
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/chord track");
-
-TEST_CASE_FIXTURE (BootstrapTimelineFixture, "get chord at pos")
+TEST_F (BootstrapTimelineFixture, GetChordAtPos)
 {
   Position p1, p2, loop;
 
@@ -86,5 +82,3 @@ TEST_CASE_FIXTURE (BootstrapTimelineFixture, "get chord at pos")
   pos.set_to_bar (100);
   assert_chord_at_pos_null (pos);
 }
-
-TEST_SUITE_END;

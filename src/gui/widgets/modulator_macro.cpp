@@ -9,17 +9,12 @@
 #include "gui/widgets/dialogs/port_info.h"
 #include "gui/widgets/knob.h"
 #include "gui/widgets/knob_with_name.h"
-#include "gui/widgets/live_waveform.h"
 #include "gui/widgets/modulator_macro.h"
 #include "gui/widgets/popovers/port_connections_popover.h"
 #include "plugins/plugin.h"
 #include "project.h"
-#include "utils/arrays.h"
 #include "utils/cairo.h"
-#include "utils/error.h"
-#include "utils/flags.h"
 #include "utils/gtk.h"
-#include "utils/string.h"
 #include "zrythm.h"
 
 #include <glib/gi18n.h>

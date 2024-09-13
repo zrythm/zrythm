@@ -3,15 +3,11 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/curve.h"
 
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/curve");
-
-TEST_CASE ("curve algorithms")
+TEST (Curve, CurveAlgorithms)
 {
   CurveOptions opts;
 
@@ -384,5 +380,3 @@ TEST_CASE ("curve algorithms")
   val = opts.get_normalized_y (1.0, 1);
   ASSERT_NEAR (val, 0.0, epsilon);
 }
-
-TEST_SUITE_END;

@@ -78,20 +78,22 @@ bool
 string_contains_substr_case_insensitive (const char * str, const char * substr);
 
 /**
- * Converts the given string to uppercase in @ref out.
+ * @brief Converts only ASCII characters to uppercase.
  *
- * Assumes @ref out is already allocated to as many chars as @ref in.
+ * @param in
+ * @return std::string
  */
 void
-string_to_upper (const char * in, char * out);
+string_to_upper_ascii (std::string &str);
 
 /**
- * Converts the given string to lowercase in @ref out.
+ * @brief Converts only ASCII characters to lowercase.
  *
- * Assumes @ref out is already allocated to as many chars as @ref in.
+ * @param in
+ * @return std::string
  */
 void
-string_to_lower (const char * in, char * out);
+string_to_lower_ascii (std::string &str);
 
 /**
  * Returns if the two strings are exactly equal.

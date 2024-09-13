@@ -110,8 +110,9 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   int width = gtk_widget_get_width (widget);
   int height = gtk_widget_get_height (widget);
 
-  graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (0, 0, width, height);
-  cairo_t *       cr = gtk_snapshot_append_cairo (snapshot, &tmp_r);
+  graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
+    0, 0, static_cast<float> (width), static_cast<float> (height));
+  cairo_t * cr = gtk_snapshot_append_cairo (snapshot, &tmp_r);
 
   cairo_pattern_t * shade_pattern;
 

@@ -62,6 +62,12 @@ static constexpr uint8_t MIDI_CLOCK_BEAT = 0xF8;
 static constexpr uint8_t MIDI_CLOCK_STOP = 0xFC;
 static constexpr uint8_t MIDI_META_EVENT = 0xFF;
 
+constexpr size_t
+midi_max_sysex_size ()
+{
+  return std::numeric_limits<std::uint16_t>::max ();
+}
+
 /**
  * Return the name of the given cc (0-127).
  */

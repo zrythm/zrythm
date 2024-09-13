@@ -3,8 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/engine_dummy.h"
 #include "dsp/master_track.h"
 #include "dsp/midi_event.h"
@@ -17,8 +15,6 @@
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
-
-TEST_SUITE_BEGIN ("integration/recording");
 
 constexpr auto CYCLE_SIZE = 100;
 constexpr auto NOTE_PITCH = 56;
@@ -578,7 +574,7 @@ test_recording_takes (
   do_takes_loop_no_punch (ins_track, audio_track, master_track);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "recording")
+TEST_F (ZrythmFixture, Recording)
 {
   /* stop dummy audio engine processing so we can
    * process manually */
@@ -599,7 +595,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "recording")
   test_recording_takes (ins_track, audio_track, master_track);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "automation touch recording")
+TEST_F (ZrythmFixture, AutomationTouchRecording)
 {
   /* stop dummy audio engine processing so we can
    * process manually */
@@ -699,7 +695,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "automation touch recording")
   ASSERT_NEAR (ap->fvalue_, touch_val_at_end, 0.0001f);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "mono recording")
+TEST_F (ZrythmFixture, MonoRecording)
 {
   /* stop dummy audio engine processing so we can
    * process manually */
@@ -773,7 +769,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "mono recording")
   UNDO_MANAGER->redo ();
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "long audio recording")
+TEST_F (ZrythmFixture, LongAudioRecording)
 {
 #ifdef TEST_WAV2
 
@@ -895,11 +891,9 @@ TEST_CASE_FIXTURE (ZrythmFixture, "long audio recording")
 #endif
 }
 
-TEST_CASE_FIXTURE (
-  ZrythmFixture,
-  "2nd audio recording"
-    * doctest::description (
-      "Test recording silent 2nd audio region does not contain audio from other regions."))
+/* Test recording silent 2nd audio region does not contain audio from other
+regions. */
+TEST_F (ZrythmFixture, SecondAudioRecording)
 {
 #ifdef TEST_WAV2
 
@@ -992,7 +986,7 @@ TEST_CASE_FIXTURE (
 #endif
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "chord track recording")
+TEST_F (ZrythmFixture, ChordTrackRecording)
 {
   /* stop dummy audio engine processing so we can
    * process manually */
@@ -1045,5 +1039,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "chord track recording")
       UNDO_MANAGER->redo ();
     }
 }
-
-TEST_SUITE_END;

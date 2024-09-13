@@ -214,10 +214,7 @@ public:
     return math_get_fader_val_from_amp (amp_->deff_);
   }
 
-  std::string db_string_getter () const
-  {
-    return fmt::sprintf ("%.1f", math_amp_to_dbfs (amp_->control_));
-  }
+  std::string db_string_getter () const;
 
   Channel * get_channel () const;
 

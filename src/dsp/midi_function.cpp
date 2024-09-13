@@ -19,11 +19,10 @@
 std::string
 midi_function_type_to_string_id (MidiFunctionType type)
 {
-  const auto type_str = MidiFunctionType_to_string (type);
-  char *     type_str_lower = g_strdup (type_str.c_str ());
-  string_to_lower (type_str.c_str (), type_str_lower);
+  const auto  type_str = MidiFunctionType_to_string (type);
+  std::string type_str_lower (type_str);
+  string_to_lower_ascii (type_str_lower);
   auto substituted = string_replace (type_str_lower, " ", "-");
-  g_free (type_str_lower);
 
   return substituted;
 }

@@ -273,7 +273,6 @@ if get_option ('tests')
     'plugins/plugin_manager': { 'parallel': true },
     'project': { 'parallel': false },
     'settings/settings': { 'parallel': true },
-    'utils/arrays': { 'parallel': true },
     'utils/compression': { 'parallel': true },
     'utils/file': { 'parallel': true },
     'utils/hash': { 'parallel': true },

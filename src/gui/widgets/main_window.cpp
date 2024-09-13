@@ -394,7 +394,7 @@ void
 main_window_widget_set_project_title (MainWindowWidget * self, Project * prj)
 {
   std::string prj_title =
-    prj->has_unsaved_changes () ? fmt::sprintf ("%s*", prj->title_) : prj->title_;
+    prj->has_unsaved_changes () ? fmt::format ("{}*", prj->title_) : prj->title_;
   adw_window_title_set_title (self->window_title, prj_title.c_str ());
   adw_window_title_set_subtitle (self->window_title, prj->dir_.c_str ());
 }

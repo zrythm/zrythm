@@ -39,6 +39,7 @@
 #include "gui/widgets/timeline_panel.h"
 #include "project.h"
 #include "utils/debug.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/logger.h"
 #include "utils/rt_thread_id.h"
 #include "zrythm_app.h"
@@ -130,8 +131,8 @@ void
 RegionImpl<RegionT>::send_note_offs (
   MidiEventVector            &midi_events,
   const EngineProcessTimeInfo time_nfo,
-  bool                        is_note_off_for_loop_or_region_end) const requires
-  RegionTypeWithMidiEvents<RegionT>
+  bool                        is_note_off_for_loop_or_region_end) const
+  requires RegionTypeWithMidiEvents<RegionT>
 {
   auto        region = dynamic_cast<const RegionT *> (this);
   midi_byte_t channel = 1;
@@ -176,7 +177,8 @@ RegionImpl<RegionT>::fill_midi_events (
   const EngineProcessTimeInfo &time_nfo,
   bool                         note_off_at_end,
   bool                         is_note_off_for_loop_or_region_end,
-  MidiEventVector &midi_events) const requires RegionTypeWithMidiEvents<RegionT>
+  MidiEventVector             &midi_events) const
+  requires RegionTypeWithMidiEvents<RegionT>
 {
   auto track = get_track ();
   z_return_if_fail (track);
@@ -306,7 +308,8 @@ RegionImpl<RegionT>::get_muted (bool check_parent) const
 
 template <typename RegionT>
 std::span<std::shared_ptr<typename RegionImpl<RegionT>::ChildT>>
-RegionImpl<RegionT>::get_objects () requires RegionWithChildren<RegionT>
+RegionImpl<RegionT>::get_objects ()
+  requires RegionWithChildren<RegionT>
 {
   using SharedPtrType = std::shared_ptr<ChildT>;
   using SpanType = std::span<SharedPtrType>;
@@ -335,7 +338,8 @@ RegionImpl<RegionT>::get_objects () requires RegionWithChildren<RegionT>
 
 template <typename RegionT>
 std::vector<std::shared_ptr<typename RegionImpl<RegionT>::ChildT>> &
-RegionImpl<RegionT>::get_objects_vector () requires RegionWithChildren<RegionT>
+RegionImpl<RegionT>::get_objects_vector ()
+  requires RegionWithChildren<RegionT>
 {
   if constexpr (is_automation ())
     {
@@ -351,16 +355,15 @@ RegionImpl<RegionT>::get_objects_vector () requires RegionWithChildren<RegionT>
     }
   else
     {
-      static_assert (false, "Invalid region type");
+      [[maybe_unused]] typedef typename RegionT::something_made_up X;
     }
 }
 
 template <typename RegionT>
 std::shared_ptr<typename RegionImpl<RegionT>::ChildT>
-RegionImpl<RegionT>::insert_object (
-  std::shared_ptr<ChildT> obj,
-  int                     index,
-  bool                    fire_events) requires RegionWithChildren<RegionT>
+RegionImpl<RegionT>::
+  insert_object (std::shared_ptr<ChildT> obj, int index, bool fire_events)
+  requires RegionWithChildren<RegionT>
 {
   z_debug ("inserting {} at index {}", obj, index);
   auto &objects = get_objects_vector ();
@@ -614,7 +617,7 @@ RegionImpl<RegionT>::stretch (double ratio)
         AUDIO_ENGINE->sample_rate_, new_clip->channels_, ratio, 1.0, false);
 
       float * new_frames = nullptr;
-      ssize_t returned_frames = stretcher_stretch_interleaved (
+      auto    returned_frames = stretcher_stretch_interleaved (
         stretcher, new_clip->frames_.getReadPointer (0),
         static_cast<size_t> (new_clip->num_frames_), &new_frames);
       z_return_if_fail (returned_frames > 0);
@@ -636,7 +639,7 @@ RegionImpl<RegionT>::stretch (double ratio)
     }
   else
     {
-      static_assert (false, "unknown region type");
+      [[maybe_unused]] typedef typename RegionT::something_made_up X;
     }
 
   stretching_ = false;
@@ -835,7 +838,7 @@ RegionImpl<RegionT>::find (const RegionIdentifier &id)
     }
   else
     {
-      static_assert (false, "unknown region type");
+      [[maybe_unused]] typedef typename RegionT::something_made_up X;
     }
 }
 
@@ -871,8 +874,8 @@ Region::update_link_group ()
 
 template <typename RegionT>
 std::shared_ptr<typename RegionImpl<RegionT>::ChildT>
-RegionImpl<RegionT>::remove_object (ChildT &obj, bool fire_events) requires
-  RegionWithChildren<RegionT>
+RegionImpl<RegionT>::remove_object (ChildT &obj, bool fire_events)
+  requires RegionWithChildren<RegionT>
 {
   /* deselect the object */
   obj.select (false, true, false);
@@ -930,13 +933,14 @@ RegionImpl<RegionT>::remove_object (ChildT &obj, bool fire_events) requires
     }
   else
     {
-      static_assert (false, "Unsupported type");
+      [[maybe_unused]] typedef typename RegionT::something_made_up X;
     }
 }
 
 template <typename RegionT>
 void
-RegionImpl<RegionT>::remove_all_children () requires RegionWithChildren<RegionT>
+RegionImpl<RegionT>::remove_all_children ()
+  requires RegionWithChildren<RegionT>
 {
   z_debug ("removing all children from {} {}", id_.idx_, name_);
 
@@ -1252,9 +1256,8 @@ RegionImpl<RegionT>::get_region_owner () const
 
 template <typename RegionT>
 std::shared_ptr<typename RegionImpl<RegionT>::ChildT>
-RegionImpl<RegionT>::append_object (
-  std::shared_ptr<ChildT> obj,
-  bool                    fire_events) requires RegionWithChildren<RegionT>
+RegionImpl<RegionT>::append_object (std::shared_ptr<ChildT> obj, bool fire_events)
+  requires RegionWithChildren<RegionT>
 {
   auto &objects = get_objects_vector ();
   return insert_object (obj, objects.size (), fire_events);

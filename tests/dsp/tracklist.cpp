@@ -3,8 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "actions/arranger_selections.h"
 #include "actions/tracklist_selections.h"
 #include "dsp/automation_region.h"
@@ -16,9 +14,7 @@
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/tracklist");
-
-TEST_CASE_FIXTURE (ZrythmFixture, "handle drop empty midi file")
+TEST_F (ZrythmFixture, HandleDropEmptyMidiFile)
 {
   FileDescriptor file (fs::path (TESTS_SRCDIR) / "empty_midi_file_type1.mid");
 
@@ -26,7 +22,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "handle drop empty midi file")
     nullptr, &file, nullptr, nullptr, -1, &PLAYHEAD, nullptr));
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "swap with automation regions")
+TEST_F (ZrythmFixture, SwapWithAutomationRegions)
 {
   Track::create_with_action (
     Track::Type::Audio, nullptr, nullptr, &PLAYHEAD,
@@ -84,5 +80,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "swap with automation regions")
       ASSERT_TRUE (TRACKLIST->validate ());
     }
 }
-
-TEST_SUITE_END;

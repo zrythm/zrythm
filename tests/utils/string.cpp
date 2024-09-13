@@ -3,14 +3,10 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "utils/gtest_wrapper.h"
 #include "utils/string.h"
 
-TEST_SUITE_BEGIN ("utils/string");
-
-TEST_CASE ("get int after last space")
+TEST (String, GetIntAfterLastSpace)
 {
   const char * strs[] = {
     "helloЧитатьハロー・ワールド 1",
@@ -30,7 +26,7 @@ TEST_CASE ("get int after last space")
   ASSERT_EQ (ret.first, 56);
 }
 
-TEST_CASE ("contains substr")
+TEST (String, ContainsSubstring)
 {
   const char * strs[] = {
     "helloЧитатьハロー・ワールド 1",
@@ -46,7 +42,7 @@ TEST_CASE ("contains substr")
   ASSERT_FALSE (string_contains_substr_case_insensitive (strs[1], "abd"));
 }
 
-TEST_CASE ("is equal")
+TEST (String, IsEqual)
 {
   ASSERT_TRUE (string_is_equal ("", ""));
   ASSERT_TRUE (string_is_equal (nullptr, nullptr));
@@ -153,7 +149,7 @@ TEST_CASE ("is equal")
 #endif
 }
 
-TEST_CASE ("string_get_regex_group")
+TEST (String, GetRegexGroup)
 {
   const char * test_str = "Hello, World! 123";
 
@@ -170,7 +166,7 @@ TEST_CASE ("string_get_regex_group")
   ASSERT_EMPTY (result);
 }
 
-TEST_CASE ("string_get_regex_group_as_int")
+TEST (String, GetRegexGroupAsInt)
 {
   const char * test_str = "Age: 30 Years";
 
@@ -182,7 +178,7 @@ TEST_CASE ("string_get_regex_group_as_int")
   ASSERT_EQ (result, -1);
 }
 
-TEST_CASE ("string_expand_env_vars")
+TEST (String, ExpandEnvVars)
 {
   setenv ("TEST_VAR", "Hello", 1);
   setenv ("ANOTHER_VAR", "World", 1);
@@ -203,7 +199,7 @@ TEST_CASE ("string_expand_env_vars")
   unsetenv ("ANOTHER_VAR");
 }
 
-TEST_CASE ("string_join")
+TEST (String, Join)
 {
   std::vector<std::string> strings = { "Hello", "World", "Test" };
 
@@ -217,5 +213,3 @@ TEST_CASE ("string_join")
   result = string_join (empty_vec, ", ");
   ASSERT_TRUE (result.empty ());
 }
-
-TEST_SUITE_END;

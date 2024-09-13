@@ -116,17 +116,6 @@ public:
   replace_connection (const PortConnection &before, const PortConnection &after);
 
   /**
-   * Adds the connections matching the given predicate to the given array (if
-   * given).
-   *
-   * @param arr Optional array to fill.
-   *
-   * @return The number of connections found.
-   */
-  int find (std::vector<PortConnection *> * arr, GenericPredicateFunc predicate)
-    const;
-
-  /**
    * Stores the connection for the given ports if it doesn't exist, otherwise
    * updates the existing connection.
    *

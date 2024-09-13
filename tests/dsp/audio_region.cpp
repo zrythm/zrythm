@@ -3,8 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/midi_region.h"
 #include "dsp/region.h"
 #include "dsp/transport.h"
@@ -15,9 +13,7 @@
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/audio region");
-
-TEST_CASE_FIXTURE (ZrythmFixture, "change samplerate")
+TEST_F (ZrythmFixture, ChangeSampleRate)
 {
   Position pos;
   pos.set_to_bar (2);
@@ -55,7 +51,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "change samplerate")
   AUDIO_ENGINE->process (256);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "fill stereo ports")
+TEST_F (ZrythmFixture, FillStereoPorts)
 {
   test_project_stop_dummy_engine ();
 
@@ -107,7 +103,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "fill stereo ports")
     }
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "load project with selected audio region")
+TEST_F (ZrythmFixture, LoadProjectWithSelectedAudioRegion)
 {
   Position pos;
   pos.set_to_bar (2);
@@ -126,46 +122,53 @@ TEST_CASE_FIXTURE (ZrythmFixture, "load project with selected audio region")
   test_project_save_and_reload ();
 }
 
-TEST_CASE ("load project with different sample rate")
+class AudioRegionSampleRateTest
+    : public ZrythmFixture,
+      public ::testing::WithParamInterface<std::tuple<int, int>>
 {
-  int samplerates[] = { 48000, 44100 };
+protected:
+  AudioRegionSampleRateTest ()
+      : ZrythmFixture (false, std::get<0> (GetParam ()), 0, false, true)
+  {
+  }
+};
 
-  for (int i = 0; i < 2; i++)
+TEST_P (AudioRegionSampleRateTest, LoadProjectWithDifferentSampleRate)
+{
+  const int new_samplerate = std::get<1> (GetParam ());
+
+  Position pos;
+  pos.set_to_bar (2);
+
+  /* create audio track with region */
+  FileDescriptor file (fs::path (TESTS_SRCDIR) / "test_start_with_signal.mp3");
+  int            num_tracks_before = TRACKLIST->get_num_tracks ();
+  Track::create_with_action (
+    Track::Type::Audio, nullptr, &file, &pos, num_tracks_before, 1, -1, nullptr);
+
+  /* reload project @ 44100 Hz */
+  zrythm_app->samplerate = new_samplerate;
+  test_project_save_and_reload ();
+
+  /* play the region */
+  Position end;
+  end.set_to_bar (4);
+  TRANSPORT->request_roll (true);
+  while (PLAYHEAD < end)
     {
-      int samplerate_before = samplerates[i];
-
-      /* create project @ 48000 Hz */
-      ZrythmFixture fixture (false, samplerate_before, 0, false, true);
-
-      Position pos;
-      pos.set_to_bar (2);
-
-      /* create audio track with region */
-      FileDescriptor file (
-        fs::path (TESTS_SRCDIR) / "test_start_with_signal.mp3");
-      int num_tracks_before = TRACKLIST->get_num_tracks ();
-      Track::create_with_action (
-        Track::Type::Audio, nullptr, &file, &pos, num_tracks_before, 1, -1,
-        nullptr);
-
-      /* reload project @ 44100 Hz */
-      zrythm_app->samplerate = samplerates[i == 0 ? 1 : 0];
-      test_project_save_and_reload ();
-
-      /* play the region */
-      Position end;
-      end.set_to_bar (4);
-      TRANSPORT->request_roll (true);
-      while (PLAYHEAD < end)
-        {
-          AUDIO_ENGINE->wait_n_cycles (3);
-        }
-      TRANSPORT->request_pause (true);
-      AUDIO_ENGINE->wait_n_cycles (1);
+      AUDIO_ENGINE->wait_n_cycles (3);
     }
+  TRANSPORT->request_pause (true);
+  AUDIO_ENGINE->wait_n_cycles (1);
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "detect BPM")
+INSTANTIATE_TEST_SUITE_P (
+  AudioRegion,
+  AudioRegionSampleRateTest,
+  ::testing::
+    Values (std::make_tuple (48000, 44100), std::make_tuple (44100, 48000)));
+
+TEST_F (ZrythmFixture, DetectBPM)
 {
   Position pos;
   pos.set_to_bar (2);
@@ -185,5 +188,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "detect BPM")
   float              bpm = r->detect_bpm (candidates);
   ASSERT_NEAR (bpm, 186.233093f, 0.001f);
 }
-
-TEST_SUITE_END;

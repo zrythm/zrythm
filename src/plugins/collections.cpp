@@ -32,7 +32,7 @@ PluginCollection::add_descriptor (const PluginDescriptor &descr)
   PluginDescriptor new_descr = descr;
   if (!descr.path_.empty ())
     {
-      auto file = Gio::File::create_for_path (descr.path_);
+      auto file = Gio::File::create_for_path (descr.path_.string ());
       new_descr.ghash_ = file->hash ();
     }
   descriptors_.push_back (new_descr);
@@ -83,7 +83,7 @@ PluginCollections::serialize_to_file () const
   z_debug ("Writing plugin collections to {}...", path);
   try
     {
-      Glib::file_set_contents (path, json.c_str ());
+      Glib::file_set_contents (path.string (), json.c_str ());
     }
   catch (const Glib::FileError &e)
     {
@@ -126,7 +126,7 @@ PluginCollections::read_or_new ()
   std::string json;
   try
     {
-      json = Glib::file_get_contents (path);
+      json = Glib::file_get_contents (path.string ());
     }
   catch (const Glib::Error &e)
     {

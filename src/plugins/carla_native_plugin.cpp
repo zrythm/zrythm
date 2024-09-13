@@ -1173,7 +1173,7 @@ CarlaNativePlugin::add_internal_plugin_from_descr (const PluginDescriptor &descr
             descr.arch_ == PluginArchitecture::ARCH_64_BIT
               ? CarlaBackend::BINARY_NATIVE
               : CarlaBackend::BINARY_WIN32,
-            type, descr.path_.c_str (), descr.name_.c_str (),
+            type, descr.path_.string ().c_str (), descr.name_.c_str (),
             descr.name_.c_str (), descr.unique_id_, nullptr,
             CarlaBackend::PLUGIN_OPTIONS_NULL);
           break;
@@ -1181,15 +1181,15 @@ CarlaNativePlugin::add_internal_plugin_from_descr (const PluginDescriptor &descr
         case PluginProtocol::LADSPA:
           added = carla_add_plugin (
             host_handle_, CarlaBackend::BINARY_NATIVE, type,
-            descr.path_.c_str (), descr.name_.c_str (), descr.uri_.c_str (), 0,
-            nullptr, CarlaBackend::PLUGIN_OPTIONS_NULL);
+            descr.path_.string ().c_str (), descr.name_.c_str (),
+            descr.uri_.c_str (), 0, nullptr, CarlaBackend::PLUGIN_OPTIONS_NULL);
           break;
         case PluginProtocol::SFZ:
         case PluginProtocol::SF2:
           added = carla_add_plugin (
             host_handle_, CarlaBackend::BINARY_NATIVE, type,
-            descr.path_.c_str (), descr.name_.c_str (), descr.name_.c_str (), 0,
-            nullptr, CarlaBackend::PLUGIN_OPTIONS_NULL);
+            descr.path_.string ().c_str (), descr.name_.c_str (),
+            descr.name_.c_str (), 0, nullptr, CarlaBackend::PLUGIN_OPTIONS_NULL);
           break;
         case PluginProtocol::JSFX:
           {
@@ -1201,8 +1201,9 @@ CarlaNativePlugin::add_internal_plugin_from_descr (const PluginDescriptor &descr
               descr.arch_ == PluginArchitecture::ARCH_64_BIT
                 ? CarlaBackend::BINARY_NATIVE
                 : CarlaBackend::BINARY_WIN32,
-              type, pl_path.c_str (), descr.name_.c_str (), descr.name_.c_str (),
-              descr.unique_id_, nullptr, CarlaBackend::PLUGIN_OPTIONS_NULL);
+              type, pl_path.string ().c_str (), descr.name_.c_str (),
+              descr.name_.c_str (), descr.unique_id_, nullptr,
+              CarlaBackend::PLUGIN_OPTIONS_NULL);
           }
           break;
         case PluginProtocol::CLAP:
@@ -1211,7 +1212,7 @@ CarlaNativePlugin::add_internal_plugin_from_descr (const PluginDescriptor &descr
             descr.arch_ == PluginArchitecture::ARCH_64_BIT
               ? CarlaBackend::BINARY_NATIVE
               : CarlaBackend::BINARY_WIN32,
-            type, descr.path_.c_str (), descr.name_.c_str (),
+            type, descr.path_.string ().c_str (), descr.name_.c_str (),
             descr.uri_.c_str (), 0, nullptr, CarlaBackend::PLUGIN_OPTIONS_NULL);
           break;
         default:
@@ -1243,7 +1244,8 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
   auto         dir =
     fs::path (carla_filename).parent_path ().parent_path ().parent_path ();
   auto res_dir = dir / "share" / "carla" / "resources";
-  native_host_descriptor_.resourceDir = res_dir.c_str ();
+  // FIXME leak
+  native_host_descriptor_.resourceDir = g_strdup (res_dir.string ().c_str ());
 
   native_host_descriptor_.get_buffer_size = host_get_buffer_size;
   native_host_descriptor_.get_sample_rate = host_get_sample_rate;
@@ -1257,7 +1259,7 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
   native_host_descriptor_.ui_save_file = nullptr;
   native_host_descriptor_.dispatcher = host_dispatcher;
 
-  time_info_.bbt.valid = 1;
+  time_info_.bbt.valid = true;
 
   /* choose most appropriate patchbay variant */
   max_variant_midi_ins_ = 1;
@@ -1386,12 +1388,12 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
     carla_binaries_dir);
   carla_set_engine_option (
     host_handle_, CarlaBackend::ENGINE_OPTION_PATH_BINARIES, 0,
-    carla_binaries_dir.c_str ());
+    carla_binaries_dir.string ().c_str ());
 
   /* set carla resource paths */
   carla_set_engine_option (
     host_handle_, CarlaBackend::ENGINE_OPTION_PATH_RESOURCES, 0,
-    res_dir.c_str ());
+    res_dir.string ().c_str ());
 
   /* set plugin paths */
   {
@@ -1727,7 +1729,9 @@ CarlaNativePlugin::open_custom_ui (bool show)
 
 #  if defined(_WIN32)
         HWND hwnd = z_gtk_window_get_windows_hwnd (GTK_WINDOW (MAIN_WINDOW));
-        z_debug ("FRONTEND_WIN_ID: setting Windows parent to %" PRIxPTR, hwnd);
+        z_debug (
+          "FRONTEND_WIN_ID: setting Windows parent to HWND(0x{:p})",
+          static_cast<const void *> (hwnd));
         char hwnd_str[400];
         sprintf (hwnd_str, "%" PRIxPTR, hwnd);
         carla_set_engine_option (
@@ -1871,7 +1875,8 @@ CarlaNativePlugin::save_state (bool is_backup, const std::string * abs_state_dir
   auto state_file_abs_path = fs::path (dir_to_use) / CARLA_STATE_FILENAME;
   z_debug ("saving carla plugin state to {}", state_file_abs_path);
 
-  if (!carla_save_plugin_state (host_handle_, 0, state_file_abs_path.c_str ()))
+  if (!carla_save_plugin_state (
+        host_handle_, 0, state_file_abs_path.string ().c_str ()))
     {
       throw ZrythmException (format_str (
         "Failed to save plugin state: {}", carla_get_last_error (host_handle_)));
@@ -1905,22 +1910,23 @@ CarlaNativePlugin::load_state (const std::string * abs_path)
   if (!fs::exists (state_file))
     {
       throw ZrythmException (
-        format_str ("State file {} doesn't exist", state_file));
+        format_str ("State file {} doesn't exist", state_file.string ()));
     }
 
   loading_state_ = true;
-  carla_load_plugin_state (host_handle_, 0, state_file.c_str ());
+  carla_load_plugin_state (host_handle_, 0, state_file.string ().c_str ());
   auto plugin_count = carla_get_current_plugin_count (host_handle_);
   if (plugin_count == 2)
     {
-      carla_load_plugin_state (host_handle_, 1, state_file.c_str ());
+      carla_load_plugin_state (host_handle_, 1, state_file.string ().c_str ());
     }
   loading_state_ = false;
   if (visible_ && is_in_active_project ())
     {
       EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, this);
     }
-  z_debug ("successfully loaded carla plugin state from {}", state_file);
+  z_debug (
+    "successfully loaded carla plugin state from {}", state_file.string ());
 }
 
 void

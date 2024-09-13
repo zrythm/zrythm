@@ -3,17 +3,13 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "utils/flags.h"
 #include "utils/io.h"
 
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("utils/io");
-
 #if 0
-TEST_CASE ("get parent directory")
+TEST (GetParentDirectory)
 {
   auto parent;
 
@@ -39,7 +35,7 @@ TEST_CASE ("get parent directory")
 }
 #endif
 
-TEST_CASE ("get extension")
+TEST (IO, GetExtension)
 {
   auto test_get_ext =
     [] (const std::string &file, const std::string &expected_ext) {
@@ -54,7 +50,7 @@ TEST_CASE ("get extension")
   test_get_ext ("...", "");
 }
 
-TEST_CASE ("strip extension")
+TEST (IO, StripExtension)
 {
   auto test_strip_ext =
     [] (const std::string &file, const std::string &expected) {
@@ -69,7 +65,7 @@ TEST_CASE ("strip extension")
   test_strip_ext ("...", "..");
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "get files in dir")
+TEST_F (ZrythmFixture, GetFilesInDirectory)
 {
 #ifdef __linux__
 
@@ -83,5 +79,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "get files in dir")
     io_get_files_in_dir_ending_in ("/non-existent", F_RECURSIVE, ".wav"));
 #endif
 }
-
-TEST_SUITE_END;

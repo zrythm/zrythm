@@ -127,19 +127,13 @@ file_path_relative_to (const char * path, const char * base)
   return rel;
 }
 
-int
+bool
 file_symlink (const char * old_path, const char * new_path)
 {
-  int ret = 0;
-#ifdef _WIN32
-  ret = !CreateHardLink ((LPCSTR) new_path, (LPCSTR) old_path, 0);
-#else
-  char * target = file_path_relative_to (old_path, new_path);
-  ret = symlink (target, new_path);
-  g_free (target);
-#endif
+  juce::File sourceFile (old_path);
+  juce::File destFile (new_path);
 
-  return ret;
+  return sourceFile.createSymbolicLink (destFile, true);
 }
 
 bool

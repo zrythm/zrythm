@@ -3,13 +3,10 @@
 
 #include "zrythm-test-config.h"
 
-#include "utils/midi.h"
-
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/midi_event.h"
 #include "dsp/midi_track.h"
 #include "project.h"
+#include "utils/midi.h"
 #include "zrythm.h"
 
 #include "tests/helpers/plugin_manager.h"
@@ -18,13 +15,12 @@
 
 constexpr auto BUFFER_SIZE = 20;
 
-TEST_SUITE_BEGIN ("dsp/midi track");
-
 class TrackFixture : public ZrythmFixture
 {
 public:
-  TrackFixture ()
+  void SetUp () override
   {
+    ZrythmFixture::SetUp ();
     midi_track_ = Track::create_empty_with_action<MidiTrack> ();
   };
 
@@ -49,7 +45,7 @@ public:
     auto mn1 =
       std::make_shared<MidiNote> (r->id_, start_pos, end_pos, pitch, velocity);
     r->append_object (mn1);
-    ASSERT_NONEMPTY (r->midi_notes_);
+    EXPECT_NONEMPTY (r->midi_notes_);
 
     return r;
   }
@@ -59,7 +55,7 @@ protected:
   MidiEventVector events_;
 };
 
-TEST_CASE_FIXTURE (ZrythmFixture, "fill midi events from engine")
+TEST_F (ZrythmFixture, FillMidiEventsFromEngine)
 {
   /* deactivate audio engine processing so we can process
    * manually */
@@ -113,7 +109,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "fill midi events from engine")
   ASSERT_EMPTY (midi_events.active_events_);
 }
 
-TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
+TEST_F (TrackFixture, FillMidiEvents)
 {
   auto     track = midi_track_;
   auto    &events = events_;
@@ -806,5 +802,3 @@ TEST_CASE_FIXTURE (TrackFixture, "fill midi events")
     events.clear ();
   }
 }
-
-TEST_SUITE_END;

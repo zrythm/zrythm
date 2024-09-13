@@ -13,6 +13,7 @@
 #include "dsp/cv_port.h"
 #include "dsp/engine.h"
 #include "dsp/midi_event.h"
+#include "dsp/midi_port.h"
 #include "dsp/modulator_track.h"
 #include "dsp/port_identifier.h"
 #include "dsp/track.h"
@@ -1336,7 +1337,7 @@ Plugin::copy_members_from (Plugin &other)
       std::visit (
         [&] (auto &&p) {
           auto new_port = p->clone_unique ();
-          new_port->template set_owner (this);
+          new_port->set_owner (this);
           in_ports_.push_back (std::move (new_port));
         },
         convert_to_variant<PortPtrVariant> (port.get ()));
@@ -1346,7 +1347,7 @@ Plugin::copy_members_from (Plugin &other)
       std::visit (
         [&] (auto &&p) {
           auto new_port = p->clone_unique ();
-          new_port->template set_owner (this);
+          new_port->set_owner (this);
           out_ports_.push_back (std::move (new_port));
         },
         convert_to_variant<PortPtrVariant> (port.get ()));

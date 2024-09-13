@@ -12,8 +12,6 @@
 #include "project.h"
 #include "zrythm.h"
 
-#include <glib.h>
-
 #include "tests/helpers/project_helper.h"
 
 constexpr auto RANGE_START_BAR = 4;
@@ -76,13 +74,13 @@ static auto perform_create_arranger_sel = [] (const auto &selections) {
     std::make_unique<CreateArrangerSelectionsAction> (*selections));
 };
 
-TEST_SUITE_BEGIN ("actions/range");
-
 class RangeActionTestFixture : public ZrythmFixture
 {
 public:
-  RangeActionTestFixture ()
+  void SetUp () override
   {
+    ZrythmFixture::SetUp ();
+
     /* create MIDI track with region */
     auto midi_track = Track::create_empty_with_action<MidiTrack> ();
     midi_track_pos = midi_track->pos_;
@@ -143,7 +141,7 @@ public:
     TRANSPORT->loop_end_pos_.set_to_bar (LOOP_END_BEFORE);
   }
 
-  ~RangeActionTestFixture () = default;
+  void TearDown () override { ZrythmFixture::TearDown (); }
 };
 
 static void
@@ -300,7 +298,7 @@ check_after_insert ()
   check_start_end_markers ();
 }
 
-TEST_CASE_FIXTURE (RangeActionTestFixture, "insert silence")
+TEST_F (RangeActionTestFixture, InsertSilence)
 {
   /* create insert silence action */
   Position start, end;
@@ -414,7 +412,7 @@ check_after_remove ()
   check_start_end_markers ();
 }
 
-TEST_CASE_FIXTURE (RangeActionTestFixture, "remove range")
+TEST_F (RangeActionTestFixture, RemoveRange)
 {
   /* create remove range action */
   Position start, end;
@@ -437,7 +435,7 @@ TEST_CASE_FIXTURE (RangeActionTestFixture, "remove range")
   check_after_remove ();
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "remove range with start marker")
+TEST_F (ZrythmFixture, RemoveRangeWithStartMarker)
 {
   /* create audio track */
   audio_track_pos = TRACKLIST->get_num_tracks ();
@@ -460,7 +458,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "remove range with start marker")
   check_start_end_markers ();
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "remove range with objects inside")
+TEST_F (ZrythmFixture, RemoveRangeWithObjectsInside)
 {
   /* create midi track with region */
   midi_track_pos = TRACKLIST->get_num_tracks ();
@@ -498,5 +496,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "remove range with objects inside")
   ASSERT_SIZE_EQ (midi_track->lanes_[0]->regions_, 1);
   ASSERT_SIZE_EQ (P_CHORD_TRACK->scales_, 2);
 }
-
-TEST_SUITE_END ();

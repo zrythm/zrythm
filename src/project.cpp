@@ -183,7 +183,9 @@ Project::compress_or_decompress (
     case ProjectCompressionFlag::PROJECT_COMPRESS_FILE:
       {
         GError * err = NULL;
-        bool     success = g_file_get_contents (_src, &src, &src_size, &err);
+        gsize    file_contents_sz = 0;
+        bool success = g_file_get_contents (_src, &src, &file_contents_sz, &err);
+        src_size = static_cast<size_t> (file_contents_sz);
         if (!success)
           {
             std::string msg = err->message;

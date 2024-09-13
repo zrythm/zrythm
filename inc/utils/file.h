@@ -31,7 +31,7 @@ file_dir_exists (const std::string &dir_path);
 char *
 file_path_relative_to (const char * path, const char * base);
 
-int
+bool
 file_symlink (const char * old_path, const char * new_path);
 
 /**

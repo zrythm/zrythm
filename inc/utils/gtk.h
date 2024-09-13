@@ -78,12 +78,18 @@ class Color;
   { .x = _x, .y = _y, .width = 1, .height = 1 }
 
 #define Z_GRAPHENE_RECT_INIT(_x, _y, _w, _h) \
-  GRAPHENE_RECT_INIT ( \
-    static_cast<float> (_x), static_cast<float> (_y), static_cast<float> (_w), \
-    static_cast<float> (_h))
+  { \
+    .origin = { .x = (_x), .y = (_y) }, .size = { \
+      .width = (_w), \
+      .height = (_h) \
+    } \
+  }
 
 #define Z_GRAPHENE_POINT_INIT(_x, _y) \
-  GRAPHENE_POINT_INIT (static_cast<float> (_x), static_cast<float> (_y))
+  { .x = static_cast<float> (_x), .y = static_cast<float> (_y) }
+
+#define Z_GRAPHENE_SIZE_INIT(_w, _h) \
+  { .width = static_cast<float> (_w), .height = static_cast<float> (_h) }
 
 /**
  * GObject struct (from GObject source code), used

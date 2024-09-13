@@ -185,7 +185,8 @@ ArrangerSelections::add_region_ticks (Position &pos) const
 }
 
 template <typename T>
-requires std::derived_from<T, ArrangerObject> std::pair<T *, Position>
+  requires std::derived_from<T, ArrangerObject>
+std::pair<T *, Position>
 ArrangerSelections::get_first_object_and_pos (bool global) const
 {
   Position pos;
@@ -234,7 +235,8 @@ ArrangerSelections::get_first_object_and_pos (bool global) const
 }
 
 template <typename RetObjT>
-requires std::derived_from<RetObjT, ArrangerObject> std::pair<RetObjT *, Position>
+  requires std::derived_from<RetObjT, ArrangerObject>
+std::pair<RetObjT *, Position>
 ArrangerSelections::get_last_object_and_pos (bool global, bool ends_last) const
 {
   Position pos;

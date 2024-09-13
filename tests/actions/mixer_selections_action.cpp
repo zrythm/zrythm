@@ -20,11 +20,9 @@
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
 
-TEST_SUITE_BEGIN ("actions/mixer selections");
-
 static int num_master_children = 0;
 
-TEST_CASE_FIXTURE (ZrythmFixture, "MIDI FX slot deletion")
+TEST_F (ZrythmFixture, DeleteMidiFxSlot)
 {
   /* create MIDI track */
   Track::create_empty_with_action<MidiTrack> ();
@@ -155,7 +153,7 @@ _test_copy_plugins (
   std::this_thread::sleep_for (std::chrono::microseconds (100));
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "copy plugins")
+TEST_F (ZrythmFixture, CopyPlugins)
 {
   _test_copy_plugins (TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false);
 #ifdef HAVE_CARLA
@@ -277,7 +275,7 @@ _test_create_plugins (
   z_info ("done");
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "Plugin creation")
+TEST_F (ZrythmFixture, CreatePlugins)
 {
   /* only run with carla */
   for (int i = 1; i < 2; i++)
@@ -441,7 +439,7 @@ _test_port_and_plugin_track_pos_after_move (
 }
 #endif
 
-TEST_CASE_FIXTURE (ZrythmFixture, "port and plugin track position after move")
+TEST_F (ZrythmFixture, CheckPortAndPluginTrackPositionAfterMove)
 {
   return;
 
@@ -452,9 +450,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "port and plugin track position after move")
 }
 
 #ifdef HAVE_CARLA
-TEST_CASE_FIXTURE (
-  ZrythmFixture,
-  "port and plugin track position after move with Carla")
+TEST_F (ZrythmFixture, CheckPortAndPluginTrackPositionAfterMoveWithCarla)
 {
   return;
 
@@ -465,7 +461,7 @@ TEST_CASE_FIXTURE (
 }
 #endif
 
-TEST_CASE_FIXTURE (ZrythmFixture, "move two plugins one slot up")
+TEST_F (ZrythmFixture, MoveTwoPluginsOneSlotUp)
 {
 #ifdef HAVE_LSP_COMPRESSOR
 
@@ -481,10 +477,10 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move two plugins one slot up")
 
   auto get_track_and_validate = [&] (bool validate = true) {
     auto t = TRACKLIST->get_track<ChannelTrack> (track_pos);
-    ASSERT_NONNULL (t);
+    EXPECT_NONNULL (t);
     if (validate)
       {
-        ASSERT_TRUE (t->validate ());
+        EXPECT_TRUE (t->validate ());
       }
     return t;
   };
@@ -743,7 +739,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move two plugins one slot up")
 #endif // HAVE_LSP_COMPRESSOR
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "create modulator")
+TEST_F (ZrythmFixture, CreateModulator)
 {
 #ifdef HAVE_AMS_LFO
 #  ifdef HAVE_CARLA
@@ -804,7 +800,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "create modulator")
 #endif   /* HAVE_AMS_LFO */
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "move plugin after duplicating track")
+TEST_F (ZrythmFixture, MovePluginAfterDuplicatingTrack)
 {
 #if defined(HAVE_LSP_SIDECHAIN_COMPRESSOR)
 
@@ -860,7 +856,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move plugin after duplicating track")
 #endif
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "move plugin from inserts to midi fx")
+TEST_F (ZrythmFixture, MovePluginFromInsertsToMidiFx)
 {
 #ifdef HAVE_MIDI_CC_MAP
   /* create a track with an insert */
@@ -895,7 +891,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "move plugin from inserts to midi fx")
 #endif
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "undo deletion of multiple inserts")
+TEST_F (ZrythmFixture, UndoDeletionOfMultipleInserts)
 {
   test_plugin_manager_create_tracks_from_plugin (
     TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false, 1);
@@ -1157,7 +1153,7 @@ _test_replace_instrument (
 #endif /* HAVE LSP_COMPRESSOR */
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "replace instrument")
+TEST_F (ZrythmFixture, ReplaceInstrument)
 {
   for (int i = 0; i < 2; i++)
     {
@@ -1182,7 +1178,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "replace instrument")
     }
 }
 
-TEST_CASE_FIXTURE (ZrythmFixture, "save modulators")
+TEST_F (ZrythmFixture, SaveModulators)
 {
 #if defined(HAVE_CARLA) && defined(HAVE_GEONKICK)
   PluginSetting * setting = test_plugin_manager_get_plugin_setting (
@@ -1197,5 +1193,3 @@ TEST_CASE_FIXTURE (ZrythmFixture, "save modulators")
   test_project_save_and_reload ();
 #endif
 }
-
-TEST_SUITE_END;

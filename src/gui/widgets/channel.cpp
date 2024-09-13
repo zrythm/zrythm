@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <sys/time.h>
-
 #include "dsp/master_track.h"
 #include "dsp/meter.h"
 #include "dsp/track.h"

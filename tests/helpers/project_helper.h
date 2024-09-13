@@ -101,15 +101,6 @@ test_project_check_vs_original_state (
   Position * p2,
   int        check_selections);
 
-fs::path
-test_project_save ();
-
-void
-test_project_reload (const fs::path &prj_file);
-
-void
-test_project_save_and_reload ();
-
 /**
  * Bootstraps the test with test data.
  */
@@ -133,12 +124,6 @@ public:
   Position p1_;
   Position p2_;
 };
-
-/**
- * Stop dummy audio engine processing so we can process manually.
- */
-void
-test_project_stop_dummy_engine ();
 
 /**
  * @}

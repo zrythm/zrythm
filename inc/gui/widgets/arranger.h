@@ -564,7 +564,8 @@ void
 arranger_widget_select_all (ArrangerWidget * self, bool select, bool fire_events);
 
 template <typename T = ArrangerObject>
-requires std::derived_from<T, ArrangerObject> void
+  requires std::derived_from<T, ArrangerObject>
+void
 arranger_widget_set_start_object (ArrangerWidget * self, std::shared_ptr<T> obj)
 {
   self->start_object = obj->clone_unique ();
@@ -584,7 +585,8 @@ arranger_widget_is_in_moving_operation (ArrangerWidget * self);
  * Returns the ArrangerSelections for this ArrangerWidget.
  */
 template <typename T = ArrangerSelections>
-requires std::derived_from<T, ArrangerSelections> T *
+  requires std::derived_from<T, ArrangerSelections>
+T *
 arranger_widget_get_selections (ArrangerWidget * self) ATTR_RETURNS_NONNULL;
 
 /**

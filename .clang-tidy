@@ -20,11 +20,14 @@ Checks: >
   -readability-identifier-length,
   -readability-braces-around-statements,
   -readability-uppercase-literal-suffix,
+  -readability-redundant-access-specifiers,
   -modernize-use-trailing-return-type
 WarningsAsErrors: >
   bugprone-undelegated-constructor,
   bugprone-string-constructor,
-  modernize-use-override
+  modernize-use-override,
+  readability-redundant-declaration,
+  modernize-use-constraints
 FormatStyle: file
 CheckOptions:
   - key: cert-dcl16-c.NewSuffixes

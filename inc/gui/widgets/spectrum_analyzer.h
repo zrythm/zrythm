@@ -1,17 +1,12 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * @file
- *
- * SpectrumAnalyzer widget.
- */
 
 #ifndef __GUI_WIDGETS_SPECTRUM_ANALYZER_H__
 #define __GUI_WIDGETS_SPECTRUM_ANALYZER_H__
 
 #include "utils/types.h"
 
+#include "ext/juce/juce.h"
 #include "gtk_wrapper.h"
 #include <kiss_fft.h>
 
@@ -35,6 +30,9 @@ G_DECLARE_FINAL_TYPE (
 #define SPECTRUM_ANALYZER_MAX_BLOCK_SIZE 32768
 #define SPECTRUM_ANALYZER_MIN_FREQ 20.f
 
+/**
+ * @brief Spectrum analyzer.
+ */
 using SpectrumAnalyzerWidget = struct _SpectrumAnalyzerWidget
 {
   GtkWidget parent_instance;
@@ -42,10 +40,7 @@ using SpectrumAnalyzerWidget = struct _SpectrumAnalyzerWidget
   /** Port to read buffers from. */
   Port * port;
 
-  float * bufs[2];
-
-  /** Current buffer sizes. */
-  size_t buf_sz[2];
+  std::unique_ptr<juce::AudioSampleBuffer> buffer;
 
   kiss_fft_cpx * fft_in;
   kiss_fft_cpx * fft_out;

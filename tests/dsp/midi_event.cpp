@@ -3,16 +3,12 @@
 
 #include "zrythm-test-config.h"
 
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-
 #include "dsp/midi_event.h"
 #include "utils/midi.h"
 
 #include "tests/helpers/zrythm_helper.h"
 
-TEST_SUITE_BEGIN ("dsp/midi_event");
-
-TEST_CASE_FIXTURE (ZrythmFixture, "add note ons from chord descriptor")
+TEST_F (ZrythmFixture, AddNoteOnsFromChordDescriptor)
 {
   midi_time_t _time = 402;
 
@@ -31,7 +27,7 @@ TEST_CASE_FIXTURE (ZrythmFixture, "add note ons from chord descriptor")
     }
 }
 
-TEST_CASE ("add pitch bend")
+TEST (MidiEvent, AddPitchBend)
 {
   midi_time_t _time = 402;
 
@@ -50,5 +46,3 @@ TEST_CASE ("add pitch bend")
   ASSERT_GE (midi_get_pitchwheel_value (ev.raw_buffer_.data ()), 0);
   ASSERT_LT (midi_get_pitchwheel_value (ev.raw_buffer_.data ()), 0x4000);
 }
-
-TEST_SUITE_END ();

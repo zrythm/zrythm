@@ -214,7 +214,7 @@ timestretch_buf (
     frames_to_process);
   z_return_if_fail (
     (in_frame_offset + in_frames_to_process) <= clip->num_frames_);
-  ssize_t retrieved = stretcher_stretch (
+  auto retrieved = stretcher_stretch (
     self->rt_stretcher_, &clip->ch_frames_.getReadPointer (0)[in_frame_offset],
     clip->channels_ == 1
       ? &clip->ch_frames_.getWritePointer (0)[in_frame_offset]
@@ -322,7 +322,7 @@ AudioRegion::fill_stereo_ports (
           return;
         }
 
-      ssize_t buff_index = r_local_pos;
+      auto buff_index = r_local_pos;
 
       auto stretch = [&] () {
         timestretch_buf (
@@ -335,8 +335,8 @@ AudioRegion::fill_stereo_ports (
        * point in the audio clip */
       if (needs_rt_timestretch)
         {
-          buff_index = (ssize_t) (buff_index * timestretch_ratio);
-          if (buff_index < (ssize_t) buff_index_start)
+          buff_index = (decltype (buff_index)) (buff_index * timestretch_ratio);
+          if (buff_index < (decltype (buff_index)) buff_index_start)
             {
               z_info (
                 "buff index ({}) < "
@@ -372,7 +372,8 @@ AudioRegion::fill_stereo_ports (
       else
         {
           z_return_if_fail_cmp (buff_index, >=, 0);
-          if (buff_index >= (ssize_t) clip->num_frames_) [[unlikely]]
+          if (buff_index >= (decltype (buff_index)) clip->num_frames_)
+            [[unlikely]]
             {
               z_error (
                 "Buffer index {} exceeds {} "
