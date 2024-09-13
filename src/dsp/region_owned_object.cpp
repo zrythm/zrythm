@@ -52,7 +52,7 @@ RegionOwnedObject::set_region_and_index (const Region &region, int index)
   /* set the info to the transient too */
   if (
     (ZRYTHM_HAVE_UI || ZRYTHM_TESTING) && PROJECT->loaded_ && transient_
-    && arranger_object_should_orig_be_visible (this, nullptr))
+    && arranger_object_should_orig_be_visible (*this, nullptr))
     {
       auto trans_obj = get_transient<RegionOwnedObject> ();
       trans_obj->region_id_ = region.id_;

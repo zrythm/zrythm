@@ -68,11 +68,13 @@ math_assert_nonnann (float x)
  * @param ret If non-nullptr, the result will be placed here.
  */
 bool
-math_is_string_valid_float (const char * str, float * ret)
+math_is_string_valid_float (const std::string &str, float * ret)
 {
   int   len;
   float dummy = 0.0;
-  if (sscanf (str, "%f %n", &dummy, &len) == 1 && len == (int) strlen (str))
+  if (
+    sscanf (str.c_str (), "%f %n", &dummy, &len) == 1
+    && len == (int) strlen (str.c_str ()))
     {
       if (ret)
         {

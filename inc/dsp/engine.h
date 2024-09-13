@@ -50,7 +50,6 @@ class Plugin;
 class Tracklist;
 class ExtPort;
 class MidiMappings;
-class WindowsMmeDevice;
 class Router;
 class Metronome;
 class Project;

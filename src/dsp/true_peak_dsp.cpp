@@ -1,8 +1,6 @@
+// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- *
  * This file incorporates work covered by the following copyright and
  * permission notice:
  *
@@ -37,11 +35,11 @@ TruePeakDsp::process (float * data, int n)
 {
   assert (n > 0);
   assert (n <= 8192);
-  src_->inp_count = static_cast<unsigned int> (n);
-  src_->inp_data = data;
-  src_->out_count = static_cast<unsigned int> (n * 4);
-  src_->out_data = buf_;
-  zita_resampler_process (src_);
+  src_.inp_count = static_cast<unsigned int> (n);
+  src_.inp_data = data;
+  src_.out_count = static_cast<unsigned int> (n * 4);
+  src_.out_data = buf_;
+  src_.process ();
 
   float   v;
   float   m = res_ ? 0 : m_;
@@ -120,11 +118,11 @@ void
 TruePeakDsp::process_max (float * p, int n)
 {
   assert (n <= 8192);
-  src_->inp_count = static_cast<unsigned int> (n);
-  src_->inp_data = p;
-  src_->out_count = static_cast<unsigned int> (n * 4);
-  src_->out_data = buf_;
-  zita_resampler_process (src_);
+  src_.inp_count = static_cast<unsigned int> (n);
+  src_.inp_data = p;
+  src_.out_count = static_cast<unsigned int> (n * 4);
+  src_.out_data = buf_;
+  src_.process ();
 
   float   m = res_ ? 0 : m_;
   float   v;
@@ -173,8 +171,8 @@ TruePeakDsp::reset ()
 void
 TruePeakDsp::init (float samplerate)
 {
-  zita_resampler_setup_with_frel (
-    src_, static_cast<unsigned int> (samplerate),
+  src_.setup (
+    static_cast<unsigned int> (samplerate),
     static_cast<unsigned int> (samplerate * 4.f), 1, 24, 1.0);
   buf_ = static_cast<float *> (g_malloc (32768 * sizeof (float)));
 
@@ -189,22 +187,17 @@ TruePeakDsp::init (float samplerate)
     {
       zero[i] = 0.0;
     }
-  src_->inp_count = 8192;
-  src_->inp_data = zero;
-  src_->out_count = 32768;
-  src_->out_data = buf_;
-  zita_resampler_process (src_);
+  src_.inp_count = 8192;
+  src_.inp_data = zero;
+  src_.out_count = 32768;
+  src_.out_data = buf_;
+  src_.process ();
 }
 
-TruePeakDsp::TruePeakDsp ()
-{
-  res_ = true;
-  src_ = zita_resampler_new ();
-}
+TruePeakDsp::TruePeakDsp () : res_ (true) { }
 
 TruePeakDsp::~TruePeakDsp ()
 {
-  zita_resampler_free (src_);
   if (buf_)
     free (buf_);
 }

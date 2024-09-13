@@ -258,8 +258,8 @@ math_assert_nonnann (float x);
  *
  * @param ret If non-nullptr, the result will be placed here.
  */
-ATTR_NONNULL_ARGS (1) bool
-math_is_string_valid_float (const char * str, float * ret);
+bool
+math_is_string_valid_float (const std::string &str, float * ret);
 
 /**
  * @}

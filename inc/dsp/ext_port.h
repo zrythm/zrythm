@@ -189,18 +189,6 @@ public:
 
   int num_aliases_ = 0;
 
-#ifdef _WIN32
-  /**
-   * Pointer to a WindowsMmeDevice.
-   *
-   * This must be one of the devices in AudioEngine.
-   * It must NOT be allocated or free'd.
-   */
-  WindowsMmeDevice * mme_dev_ = nullptr;
-#else
-  void * mme_dev_ = nullptr;
-#endif
-
   /** RtAudio channel index. */
   unsigned int rtaudio_channel_idx_ = 0;
 

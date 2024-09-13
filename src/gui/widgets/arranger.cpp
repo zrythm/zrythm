@@ -675,7 +675,7 @@ add_object_if_overlap (ArrangerWidget * self, ObjectOverlapInfo &nfo)
   /* --- optimization to skip expensive calculations for most objects --- */
 
   bool orig_visible =
-    arranger_object_should_orig_be_visible (obj, self) && obj->transient_;
+    arranger_object_should_orig_be_visible (*obj, self) && obj->transient_;
 
   /* skip objects that end before the rect */
   if (obj->has_length ())

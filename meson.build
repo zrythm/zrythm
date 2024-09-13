@@ -502,7 +502,6 @@ test_cflags = []
 
 definitions = [
   '-DATTR_REALTIME=' + (is_clang ? '__attribute__((annotate("realtime")))' : ''),
-  '-DATTR_NONNULL_ARGS(...)=' + (is_gcc ? '__attribute__((nonnull(__VA_ARGS__)))' : ''),
   '-DGETTEXT_PACKAGE="' + meson.project_name () + '"',
   ]
 if use_weak_jack
@@ -1320,6 +1319,7 @@ giomm_dep = dependency('giomm-2.68')
 gtest_dep = dependency ('gtest')
 
 zrythm_deps = [
+  zita_resampler_dep,
   libadwaita_dep,
   libpanel_dep,
   fontconfig_dep,

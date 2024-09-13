@@ -277,7 +277,7 @@ draw_regions (RulerWidget * self, GtkSnapshot * snapshot, GdkRectangle * rect)
   }
 
   /* draw its transient if copy-moving TODO */
-  if (arranger_object_should_orig_be_visible (region, nullptr))
+  if (arranger_object_should_orig_be_visible (*region, nullptr))
     {
       px_start = ui_pos_to_px_editor (region->pos_, 1);
       px_end = ui_pos_to_px_editor (region->end_pos_, 1);

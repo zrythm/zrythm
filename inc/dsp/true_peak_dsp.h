@@ -24,7 +24,7 @@
 #ifndef __AUDIO_TRUE_PEAK_DSP__
 #define __AUDIO_TRUE_PEAK_DSP__
 
-#include "ext/zita-resampler/resampler.h"
+#include "zita-resampler/resampler.h"
 
 class TruePeakDsp
 {
@@ -54,13 +54,13 @@ public:
   void init (float samplerate);
 
 private:
-  float           m_ = 0.0f;
-  float           p_ = 0.0f;
-  float           z1_ = 0.0f;
-  float           z2_ = 0.0f;
-  bool            res_ = false;
-  float *         buf_ = nullptr;
-  ZitaResampler * src_ = nullptr;
+  float     m_ = 0.0f;
+  float     p_ = 0.0f;
+  float     z1_ = 0.0f;
+  float     z2_ = 0.0f;
+  bool      res_ = false;
+  float *   buf_ = nullptr;
+  Resampler src_;
 
   float w1_ = 0.0f; // attack filter coefficient
   float w2_ = 0.0f; // attack filter coefficient

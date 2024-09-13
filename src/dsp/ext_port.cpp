@@ -402,48 +402,6 @@ get_ext_ports_from_jack (
 }
 #endif
 
-#ifdef _WIN32
-/**
- * Creates an ExtPort from a Windows MME device.
- */
-static ExtPort *
-ext_port_from_windows_mme_device (WindowsMmeDevice * dev)
-{
-  ExtPort * self = object_new (ExtPort);
-
-  self->mme_dev = dev;
-  self->full_name = g_strdup (dev->name);
-  self->type = ExtPortType::EXT_PORT_TYPE_WINDOWS_MME;
-
-  return self;
-}
-
-static void
-get_ext_ports_from_windows_mme (PortFlow flow, GPtrArray * ports)
-{
-  if (flow == PortFlow::Output)
-    {
-      for (int i = 0; i < AUDIO_ENGINE->num_mme_in_devs; i++)
-        {
-          WindowsMmeDevice * dev = AUDIO_ENGINE->mme_in_devs[i];
-          z_return_if_fail (dev);
-          ExtPort * ext_port = ext_port_from_windows_mme_device (dev);
-          g_ptr_array_add (ports, ext_port);
-        }
-    }
-  else if (flow == PortFlow::Input)
-    {
-      for (int i = 0; i < AUDIO_ENGINE->num_mme_out_devs; i++)
-        {
-          WindowsMmeDevice * dev = AUDIO_ENGINE->mme_out_devs[i];
-          z_return_if_fail (dev);
-          ExtPort * ext_port = ext_port_from_windows_mme_device (dev);
-          g_ptr_array_add (ports, ext_port);
-        }
-    }
-}
-#endif
-
 #ifdef HAVE_RTMIDI
 /**
  * Creates an ExtPort from a RtMidi port.

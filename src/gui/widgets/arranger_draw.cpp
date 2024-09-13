@@ -135,7 +135,7 @@ draw_arranger_object (
   for (
     int i = 0;
     i
-    < 1 + (arranger_object_should_orig_be_visible (obj, self) && obj->is_selected ());
+    < 1 + (arranger_object_should_orig_be_visible (*obj, self) && obj->is_selected ());
     i++)
     {
       /* if looping 2nd time (transient) */

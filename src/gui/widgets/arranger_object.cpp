@@ -787,7 +787,7 @@ arranger_object_draw (
 
 bool
 arranger_object_should_orig_be_visible (
-  const ArrangerObject * self,
+  const ArrangerObject  &self,
   const ArrangerWidget * arranger)
 {
   if (!ZRYTHM_HAVE_UI)
@@ -797,7 +797,7 @@ arranger_object_should_orig_be_visible (
 
   if (!arranger)
     {
-      arranger = self->get_arranger ();
+      arranger = self.get_arranger ();
       z_return_val_if_fail (arranger, false);
     }
 
