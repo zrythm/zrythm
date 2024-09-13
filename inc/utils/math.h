@@ -114,7 +114,7 @@
  *
  * Taken from ardour from code in the public domain.
  */
-CONST
+ATTR_CONST
 static inline float
 math_fast_log2 (float val)
 {
@@ -138,14 +138,14 @@ math_fast_log2 (float val)
   return (val + log_2);
 }
 
-CONST
+ATTR_CONST
 static inline float
 math_fast_log (const float val)
 {
   return (math_fast_log2 (val) * 0.69314718f);
 }
 
-CONST
+ATTR_CONST
 static inline float
 math_fast_log10 (const float val)
 {
@@ -156,7 +156,7 @@ math_fast_log10 (const float val)
  * Returns fader value 0.0 to 1.0 from amp value
  * 0.0 to 2.0 (+6 dbFS).
  */
-CONST
+ATTR_CONST
 static inline sample_t
 math_get_fader_val_from_amp (sample_t amp)
 {
@@ -193,7 +193,7 @@ math_get_fader_val_from_amp (sample_t amp)
  * Returns amp value 0.0 to 2.0 (+6 dbFS) from
  * fader value 0.0 to 1.0.
  */
-CONST
+ATTR_CONST
 static inline sample_t
 math_get_amp_val_from_fader (sample_t fader)
 {
@@ -204,7 +204,7 @@ math_get_amp_val_from_fader (sample_t fader)
 /**
  * Convert from amplitude 0.0 to 2.0 to dbFS.
  */
-CONST
+ATTR_CONST
 static inline sample_t
 math_amp_to_dbfs (sample_t amp)
 {
@@ -226,7 +226,7 @@ math_calculate_rms_db (sample_t * buf, const nframes_t nframes);
 /**
  * Convert form dbFS to amplitude 0.0 to 2.0.
  */
-CONST
+ATTR_CONST
 static inline sample_t
 math_dbfs_to_amp (sample_t dbfs)
 {
@@ -236,7 +236,7 @@ math_dbfs_to_amp (sample_t dbfs)
 /**
  * Convert form dbFS to fader val 0.0 to 1.0.
  */
-CONST
+ATTR_CONST
 static inline sample_t
 math_dbfs_to_fader_val (sample_t dbfs)
 {
@@ -258,7 +258,7 @@ math_assert_nonnann (float x);
  *
  * @param ret If non-nullptr, the result will be placed here.
  */
-NONNULL_ARGS (1) bool
+ATTR_NONNULL_ARGS (1) bool
 math_is_string_valid_float (const char * str, float * ret);
 
 /**

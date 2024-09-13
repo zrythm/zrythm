@@ -92,7 +92,7 @@ public:
    * Returns whether this is the thread that kicks off processing (thread that
    * calls router_start_cycle()).
    */
-  [[nodiscard]] HOT inline bool is_processing_kickoff_thread () const
+  [[nodiscard]] ATTR_HOT inline bool is_processing_kickoff_thread () const
   {
     return current_thread_id.get () == process_kickoff_thread_;
   }
@@ -100,7 +100,7 @@ public:
   /**
    * Returns if the current thread is a processing thread.
    */
-  [[nodiscard]] HOT inline bool is_processing_thread () const
+  [[nodiscard]] ATTR_HOT inline bool is_processing_thread () const
   {
 #ifdef HAVE_C11_THREADS
     /* this is called too often so use this optimization */

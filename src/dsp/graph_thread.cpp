@@ -245,7 +245,7 @@ GraphThread::run_worker ()
     }
 }
 
-REALTIME
+ATTR_REALTIME
 void
 GraphThread::run ()
 {

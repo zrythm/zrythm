@@ -198,12 +198,12 @@ public:
   /**
    * Returns the number of unlocked (user-editable) sources.
    */
-  NONNULL int get_num_unlocked_srcs () const;
+  ATTR_NONNULL int get_num_unlocked_srcs () const;
 
   /**
    * Returns the number of unlocked (user-editable) destinations.
    */
-  NONNULL int get_num_unlocked_dests () const;
+  ATTR_NONNULL int get_num_unlocked_dests () const;
 
   /**
    * Updates the track name hash on a track port and all its
@@ -219,7 +219,7 @@ public:
    *
    * @param noroll Whether to clear the port buffer in this range.
    */
-  HOT virtual void
+  ATTR_HOT virtual void
   process (const EngineProcessTimeInfo time_nfo, const bool noroll) = 0;
 
   bool is_connected_to (const Port &dest) const;
@@ -233,7 +233,7 @@ public:
   /**
    * Disconnects all the given ports.
    */
-  NONNULL static void
+  ATTR_NONNULL static void
   disconnect_ports (std::vector<Port *> &ports, bool deleting);
 
   /**
@@ -256,7 +256,7 @@ public:
   /**
    * Clears the backend's port buffer.
    */
-  HOT void clear_external_buffer ();
+  ATTR_HOT void clear_external_buffer ();
 
   /**
    * Disconnects all srcs and dests from port.

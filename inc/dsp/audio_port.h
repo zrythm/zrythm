@@ -212,7 +212,7 @@ public:
    * @param dest Destination port.
    * @param locked Lock the connection.
    */
-  NONNULL void connect_to (StereoPorts &dest, bool locked);
+  ATTR_NONNULL void connect_to (StereoPorts &dest, bool locked);
 
   void disconnect ();
 

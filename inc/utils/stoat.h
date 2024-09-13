@@ -5,17 +5,17 @@
 #define __UTILS_STOAT_H__
 
 #if defined(__clang__)
-#  ifdef REALTIME
-#    undef REALTIME
+#  ifdef ATTR_REALTIME
+#    undef ATTR_REALTIME
 #  endif
-#  ifdef NONREALTIME
-#    undef NONREALTIME
+#  ifdef ATTR_NONREALTIME
+#    undef ATTR_NONREALTIME
 #  endif
-#  define REALTIME __attribute__ ((annotate ("realtime")))
-#  define NONREALTIME __attribute__ ((annotate ("nonrealtime")))
+#  define ATTR_REALTIME __attribute__ ((annotate ("realtime")))
+#  define ATTR_NONREALTIME __attribute__ ((annotate ("nonrealtime")))
 #else
-#  define REALTIME
-#  define NONREALTIME
+#  define ATTR_REALTIME
+#  define ATTR_NONREALTIME
 #endif
 
 #endif

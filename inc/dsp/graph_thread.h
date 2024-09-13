@@ -70,7 +70,7 @@ public:
    * inform the main-thread, wait, and kick off the next
    * process cycle.
    */
-  HOT void on_reached_terminal_node ();
+  ATTR_HOT void on_reached_terminal_node ();
 
 private:
   void run () override;

@@ -22,7 +22,10 @@ public:
 
   void init_loaded () override;
 
-  HOT inline bool get_recording () const { return recording_->is_toggled (); }
+  ATTR_HOT inline bool get_recording () const
+  {
+    return recording_->is_toggled ();
+  }
 
   /**
    * Sets recording and connects/disconnects the JACK ports.

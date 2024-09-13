@@ -29,7 +29,7 @@ AlwaysBreakAfterDefinitionReturnType: All
 AlwaysBreakAfterReturnType: TopLevel
 AlwaysBreakBeforeMultilineStrings: true
 AlwaysBreakTemplateDeclarations: MultiLine
-AttributeMacros: ['COLD', 'NONNULL_ARGS', 'NONNULL', 'HOT', 'WARN_UNUSED_RESULT', 'PURE']
+AttributeMacros: ['ATTR_COLD', 'ATTR_NONNULL_ARGS', 'ATTR_NONNULL', 'ATTR_HOT']
 BinPackArguments: true
 BinPackParameters: false
 BreakBeforeBraces: Custom

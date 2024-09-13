@@ -382,7 +382,7 @@ frames_add_frames (
    * point as a positive number (>= 1) if the loop point was met between
    * g_start_frames and (g_start_frames + nframes), otherwise returns 0;
    */
-  [[nodiscard]] HOT inline nframes_t
+  [[nodiscard]] ATTR_HOT inline nframes_t
   is_loop_point_met (const signed_frame_t g_start_frames, const nframes_t nframes)
   {
     bool loop_end_between_start_and_end =

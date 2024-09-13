@@ -32,7 +32,7 @@ algorithm_sort_int_cmpfunc (const void * a, const void * b)
  * @param include_equal Include equal elements (if an
  *   exact match is found, return it).
  */
-HOT NONNULL void *
+ATTR_HOT ATTR_NONNULL void *
 algorithms_binary_search_nearby (
   const void *   key,
   const void *   base,

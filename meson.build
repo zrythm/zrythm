@@ -501,8 +501,8 @@ endforeach
 test_cflags = []
 
 definitions = [
-  '-DREALTIME=' + (is_clang ? '__attribute__((annotate("realtime")))' : ''),
-  '-DNONNULL_ARGS(...)=' + (is_gcc ? '__attribute__((nonnull(__VA_ARGS__)))' : ''),
+  '-DATTR_REALTIME=' + (is_clang ? '__attribute__((annotate("realtime")))' : ''),
+  '-DATTR_NONNULL_ARGS(...)=' + (is_gcc ? '__attribute__((nonnull(__VA_ARGS__)))' : ''),
   '-DGETTEXT_PACKAGE="' + meson.project_name () + '"',
   ]
 if use_weak_jack
@@ -520,15 +520,19 @@ test_cflags += definitions
 
 # some of these don't work on msvc and some (like `CONST`) even break
 # compilation
-if is_clang or is_gcc
-  attribute_macros = [
-    'cold', 'hot', 'nonnull',
-    'returns_nonnull', 'const',
-    ]
-  foreach a : attribute_macros
-    test_cflags += '-D' + a.to_upper() + '=' + (os_windows ? ''  : ('__attribute__((' + a + '))'))
-  endforeach
-endif
+attribute_macros = [
+  'cold', 'hot', 'nonnull',
+  'returns_nonnull', 'const',
+  ]
+foreach a : attribute_macros
+  attribute_def = '-DATTR_' + a.to_upper() + '='
+  if is_msvc
+    # only support specific attributes on msvc (if any)
+  elif is_gcc or is_clang
+    attribute_def += '__attribute__((' + a + '))'
+  endif
+  test_cflags += [attribute_def]
+endforeach
 
 # disable some warnings added by -Wextra
 extra_warnings = [

@@ -347,7 +347,7 @@ public:
    * @param project
    * @throw ZrythmError if failed to initialize.
    */
-  COLD void init_loaded (Project * project);
+  ATTR_COLD void init_loaded (Project * project);
 
   void resume (State &state);
 
@@ -375,7 +375,7 @@ public:
    *
    * @param activate Activate or deactivate.
    */
-  COLD void activate (bool activate);
+  ATTR_COLD void activate (bool activate);
 
   /**
    * Updates frames per tick based on the time sig, the BPM, and the sample rate
@@ -409,7 +409,7 @@ public:
    * calling this function, it will only clear output buffers and return true.
    * @return Whether the cycle should be skipped.
    */
-  HOT bool process_prepare (
+  ATTR_HOT bool process_prepare (
     nframes_t                                  nframes,
     SemaphoreRAII<std::counting_semaphore<>> * sem = nullptr);
 
@@ -418,7 +418,7 @@ public:
    *
    * To be called by each implementation in its callback.
    */
-  HOT int process (const nframes_t total_frames_to_process);
+  ATTR_HOT int process (const nframes_t total_frames_to_process);
 
   /**
    * To be called after processing for common logic.
@@ -427,7 +427,8 @@ public:
    * rolling).
    * @param nframes Total frames for this processing cycle.
    */
-  HOT void post_process (const nframes_t roll_nframes, const nframes_t nframes);
+  ATTR_HOT void
+  post_process (const nframes_t roll_nframes, const nframes_t nframes);
 
   /**
    * Called to fill in the external buffers at the end of the processing cycle.
@@ -481,7 +482,7 @@ private:
    */
   int clean_duplicate_events_and_copy (std::array<Event *, 100> &ret);
 
-  COLD void init_common ();
+  ATTR_COLD void init_common ();
 
   void
   update_position_info (PositionInfo &pos_nfo, const nframes_t frames_to_add);

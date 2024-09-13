@@ -52,7 +52,7 @@ public:
    * be added. See @ref RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING and
    * @ref RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING.
    */
-  REALTIME
+  ATTR_REALTIME
   void handle_recording (
     const TrackProcessor *        track_processor,
     const EngineProcessTimeInfo * time_nfo);

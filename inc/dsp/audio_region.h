@@ -161,8 +161,8 @@ public:
    *
    * @param stereo_ports StereoPorts to fill.
    */
-  REALTIME
-  HOT void fill_stereo_ports (
+  ATTR_REALTIME
+  ATTR_HOT void fill_stereo_ports (
     const EngineProcessTimeInfo &time_nfo,
     StereoPorts                 &stereo_ports) const;
 

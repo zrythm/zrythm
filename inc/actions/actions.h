@@ -58,20 +58,20 @@ DECLARE_SIMPLE (activate_cycle_focus);
 DECLARE_SIMPLE (activate_cycle_focus_backwards);
 DECLARE_SIMPLE (activate_focus_first_widget);
 
-COLD DECLARE_SIMPLE (activate_new);
+ATTR_COLD DECLARE_SIMPLE (activate_new);
 
-COLD DECLARE_SIMPLE (activate_minimize);
+ATTR_COLD DECLARE_SIMPLE (activate_minimize);
 
-COLD DECLARE_SIMPLE (activate_open);
+ATTR_COLD DECLARE_SIMPLE (activate_open);
 
-COLD void
+ATTR_COLD void
 activate_save (GSimpleAction * action, GVariant * variant, gpointer user_data);
 
-COLD DECLARE_SIMPLE (activate_save_as);
+ATTR_COLD DECLARE_SIMPLE (activate_save_as);
 
-COLD DECLARE_SIMPLE (activate_export_as);
+ATTR_COLD DECLARE_SIMPLE (activate_export_as);
 
-COLD DECLARE_SIMPLE (activate_export_graph);
+ATTR_COLD DECLARE_SIMPLE (activate_export_graph);
 
 void
 activate_properties (
@@ -138,11 +138,11 @@ activate_fullscreen (
   GVariant *      variant,
   gpointer        user_data);
 
-COLD DECLARE_SIMPLE (activate_news);
-COLD DECLARE_SIMPLE (activate_manual);
-COLD DECLARE_SIMPLE (activate_chat);
-COLD DECLARE_SIMPLE (activate_bugreport);
-COLD DECLARE_SIMPLE (activate_donate);
+ATTR_COLD DECLARE_SIMPLE (activate_news);
+ATTR_COLD DECLARE_SIMPLE (activate_manual);
+ATTR_COLD DECLARE_SIMPLE (activate_chat);
+ATTR_COLD DECLARE_SIMPLE (activate_bugreport);
+ATTR_COLD DECLARE_SIMPLE (activate_donate);
 
 void
 activate_loop_selection (
@@ -314,7 +314,7 @@ DECLARE_SIMPLE (change_state_editor_playhead_follow);
 DECLARE_SIMPLE (activate_editor_function);
 DECLARE_SIMPLE (activate_editor_function_lv2);
 
-COLD DECLARE_SIMPLE (activate_midi_editor_highlighting);
+ATTR_COLD DECLARE_SIMPLE (activate_midi_editor_highlighting);
 
 DECLARE_SIMPLE (activate_rename_track);
 DECLARE_SIMPLE (activate_rename_arranger_object);

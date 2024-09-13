@@ -73,7 +73,7 @@ public:
   /**
    * Returns the length of the loop in frames.
    */
-  HOT inline signed_frame_t get_loop_length_in_frames () const
+  ATTR_HOT inline signed_frame_t get_loop_length_in_frames () const
   {
     return loop_end_pos_.frames_ - loop_start_pos_.frames_;
   }

@@ -280,7 +280,7 @@ void add_seconds (signed_sec_t seconds)
    * @param ticks_per_frame If zero, AudioEngine.ticks_per_frame
    *   will be used instead.
    */
-  HOT void update_ticks_from_frames (double ticks_per_frame);
+  ATTR_HOT void update_ticks_from_frames (double ticks_per_frame);
 
   /**
    * Converts ticks to frames.
@@ -297,7 +297,7 @@ void add_seconds (signed_sec_t seconds)
    * @param frames_per_tick If zero, AudioEngine.frames_per_tick
    *   will be used instead.
    */
-  HOT NONNULL void update_frames_from_ticks (double frames_per_tick);
+  ATTR_HOT ATTR_NONNULL void update_frames_from_ticks (double frames_per_tick);
 
   /**
    * Updates the position from ticks or frames.
@@ -347,7 +347,7 @@ void add_seconds (signed_sec_t seconds)
    */
   std::string to_string (int decimal_places = 4) const;
 
-  NONNULL void to_string (char * buf, int decimal_places = 4) const;
+  ATTR_NONNULL void to_string (char * buf, int decimal_places = 4) const;
 
   /**
    * Prints the Position in the "0.0.0.0" form.
@@ -479,7 +479,7 @@ private:
    *
    * @return Whether a snap point was found or not.
    */
-  HOT bool get_next_snap_point (
+  ATTR_HOT bool get_next_snap_point (
     Track *         track,
     Region*        region,
     const SnapGrid &sg,
@@ -503,7 +503,7 @@ private:
    *
    * @return Whether a snap point was found or not.
    */
-  HOT bool get_prev_snap_point (
+  ATTR_HOT bool get_prev_snap_point (
     Track *         track,
     Region *        region,
     const SnapGrid &sg,

@@ -204,7 +204,7 @@ public:
    * arranger selections to zero (sometimes we want to keep them, eg, when this
    * is called after deserialization of a project to load).
    */
-  COLD void init_selections (bool including_arranger_selections = true);
+  ATTR_COLD void init_selections (bool including_arranger_selections = true);
 
   /**
    * Compresses/decompress a project from a file/data to a file/data.

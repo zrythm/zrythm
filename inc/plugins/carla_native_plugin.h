@@ -180,7 +180,7 @@ private:
   /**
    * Processes the plugin for this cycle.
    */
-  HOT void process_impl (const EngineProcessTimeInfo time_nfo) override;
+  ATTR_HOT void process_impl (const EngineProcessTimeInfo time_nfo) override;
 
   void cleanup_impl () override;
 

@@ -162,7 +162,8 @@ private:
   /**
    * Adds events to midi out based on any changes in MIDI CC control ports.
    */
-  HOT void add_events_from_midi_cc_control_ports (const nframes_t local_offset);
+  ATTR_HOT void
+  add_events_from_midi_cc_control_ports (const nframes_t local_offset);
 
 public:
   /**

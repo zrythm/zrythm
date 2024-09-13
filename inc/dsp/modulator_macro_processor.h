@@ -35,7 +35,7 @@ public:
 
   std::string get_name () const { return name_; }
 
-  COLD void init_loaded (ModulatorTrack &track);
+  ATTR_COLD void init_loaded (ModulatorTrack &track);
 
   void set_name (std::string_view name) { name_ = name; }
 

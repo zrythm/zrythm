@@ -72,7 +72,7 @@ public:
   /**
    * Inits the ExtPort after loading a project.
    */
-  COLD void init_loaded (HardwareProcessor * hw_processor)
+  ATTR_COLD void init_loaded (HardwareProcessor * hw_processor)
   {
     hw_processor_ = hw_processor;
   }

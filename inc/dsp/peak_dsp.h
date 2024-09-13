@@ -37,7 +37,7 @@ public:
    * @param p Frame array.
    * @param n Number of samples.
    */
-  HOT void process (float * p, int n);
+  ATTR_HOT void process (float * p, int n);
 
   float read_f ();
 

@@ -229,7 +229,7 @@ public:
    *
    * Not to be used in real-time code.
    */
-  template <TrackSubclass T = Track> HOT T * get_track (int idx)
+  template <TrackSubclass T = Track> ATTR_HOT T * get_track (int idx)
   {
     if (idx < 0 || static_cast<size_t> (idx) >= tracks_.size ())
       {

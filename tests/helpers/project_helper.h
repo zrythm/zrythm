@@ -82,7 +82,7 @@ constexpr int TARGET_AUDIO_REGION_LANE = 5;
 fs::path
 test_project_save ();
 
-COLD void
+ATTR_COLD void
 test_project_reload (const fs::path &prj_file);
 
 void

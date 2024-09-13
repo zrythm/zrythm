@@ -87,7 +87,7 @@ public:
    * @param check_transients Also check the transient of each object. This
    * only matters if @p check_positions is true.
    */
-  HOT AutomationPoint * get_next_ap (
+  ATTR_HOT AutomationPoint * get_next_ap (
     const AutomationPoint &ap,
     bool                   check_positions,
     bool                   check_transients) const;

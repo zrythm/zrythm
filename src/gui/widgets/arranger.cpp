@@ -652,7 +652,7 @@ public:
  *
  * @return Whether the object was added or not.
  */
-HOT static bool
+ATTR_HOT static bool
 add_object_if_overlap (ArrangerWidget * self, ObjectOverlapInfo &nfo)
 {
   auto   rect = nfo.rect_;
@@ -2283,7 +2283,7 @@ arranger_widget_create_item (
  * In other cases, this will create an object with the default length at the
  * given position, unless an object already exists there.
  */
-NONNULL static void
+ATTR_NONNULL static void
 autofill (ArrangerWidget * self, double x, double y)
 {
   /* make sure values are valid */
@@ -2360,7 +2360,7 @@ drag_cancel (
  * Sets the start pos of the earliest object and the flag whether the earliest
  * object exists.
  */
-NONNULL static void
+ATTR_NONNULL static void
 set_earliest_obj (ArrangerWidget * self)
 {
   z_debug ("setting earliest object...");
@@ -2971,7 +2971,7 @@ drag_begin (
  *   objects in the range or exactly at the current
  *   point.
  */
-NONNULL static void
+ATTR_NONNULL static void
 select_in_range (
   ArrangerWidget * self,
   double           offset_x,
@@ -3128,7 +3128,7 @@ pan (ArrangerWidget * self, double offset_x, double offset_y)
     settings);
 }
 
-NONNULL static void
+ATTR_NONNULL static void
 drag_update (
   GtkGestureDrag * gesture,
   gdouble          offset_x,

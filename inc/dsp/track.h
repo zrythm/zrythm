@@ -284,7 +284,7 @@ public:
   /**
    * Returns if the Track should have a piano roll.
    */
-  CONST
+  ATTR_CONST
   static inline bool type_has_piano_roll (const Type type)
   {
     return type == Type::Midi || type == Type::Instrument;

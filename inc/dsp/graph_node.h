@@ -119,7 +119,7 @@ public:
   /**
    * Processes the GraphNode.
    */
-  HOT void process (EngineProcessTimeInfo time_nfo, GraphThread &thread);
+  ATTR_HOT void process (EngineProcessTimeInfo time_nfo, GraphThread &thread);
 
   /**
    * Returns the latency of only the given port, without adding the
@@ -127,7 +127,7 @@ public:
    *
    * It returns the plugin's latency if plugin, otherwise 0.
    */
-  HOT nframes_t get_single_playback_latency () const;
+  ATTR_HOT nframes_t get_single_playback_latency () const;
 
   /**
    * Sets the playback latency of the given node recursively.
@@ -141,14 +141,14 @@ public:
   /**
    * Called by an upstream node when it has completed processing.
    */
-  HOT void trigger ();
+  ATTR_HOT void trigger ();
 
   void connect_to (GraphNode &target);
 
 private:
-  HOT void on_finish (GraphThread &thread);
+  ATTR_HOT void on_finish (GraphThread &thread);
 
-  HOT void process_internal (const EngineProcessTimeInfo time_nfo);
+  ATTR_HOT void process_internal (const EngineProcessTimeInfo time_nfo);
 
   void add_feeds (GraphNode &dest);
   void add_depends (GraphNode &src);

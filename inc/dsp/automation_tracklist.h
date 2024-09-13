@@ -39,7 +39,7 @@ public:
   /**
    * Inits a loaded AutomationTracklist.
    */
-  COLD void init_loaded (AutomatableTrack * track);
+  ATTR_COLD void init_loaded (AutomatableTrack * track);
 
   AutomatableTrack * get_track () const;
 

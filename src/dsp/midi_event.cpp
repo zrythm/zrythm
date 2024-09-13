@@ -584,7 +584,7 @@ MidiEventVector::add_note_offs_from_chord_descr (
     }
 }
 
-REALTIME
+ATTR_REALTIME
 void
 MidiEventVector::
   add_event_from_buf (midi_time_t time, midi_byte_t * buf, int buf_size)

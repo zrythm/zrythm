@@ -38,7 +38,7 @@
  *   be written to it.
  * @param el_sz The size of one element in the array.
  */
-NONNULL void
+ATTR_NONNULL void
 _array_double_size_if_full (
   void **  arr_ptr,
   size_t   count,

@@ -105,7 +105,7 @@ public:
    * @param x X-coordinate, normalized.
    * @param start_higher Start at higher point.
    */
-  HOT double get_normalized_y (double x, bool start_higher) const;
+  ATTR_HOT double get_normalized_y (double x, bool start_higher) const;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

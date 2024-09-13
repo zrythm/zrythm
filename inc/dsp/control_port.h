@@ -197,7 +197,7 @@ public:
    * Lv2Port's automating field to true, which will cause the plugin to receive
    * a UI event for this change.
    */
-  HOT void set_val_from_normalized (float val, bool automating);
+  ATTR_HOT void set_val_from_normalized (float val, bool automating);
 
   /**
    * Function to get a port's value from its string symbol.
@@ -236,7 +236,7 @@ public:
    *
    * @param normalize Whether to get the value normalized or not.
    */
-  HOT float get_control_value (const bool normalize) const;
+  ATTR_HOT float get_control_value (const bool normalize) const;
 
   void allocate_bufs () override { }
 

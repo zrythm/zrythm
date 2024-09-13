@@ -45,7 +45,7 @@ bool
 io_touch_file (const std::string &file_path);
 
 #if 0
-NONNULL char *
+ATTR_NONNULL char *
 io_path_get_parent_dir (const char * path);
 #endif
 
@@ -58,7 +58,7 @@ io_file_strip_ext (const std::string &filename);
 /**
  * Returns file extension or NULL.
  */
-NONNULL const char *
+ATTR_NONNULL const char *
 io_file_get_ext (const char * file);
 
 #define io_path_get_basename(filename) g_path_get_basename (filename)
@@ -69,18 +69,18 @@ io_file_get_ext (const char * file);
 std::string
 io_path_get_basename_without_ext (const std::string &filename);
 
-NONNULL char *
+ATTR_NONNULL char *
 io_file_get_creation_datetime (const char * filename);
 
 /**
  * Returns the number of seconds since the epoch, or
  * -1 if failed.
  */
-NONNULL gint64
+ATTR_NONNULL gint64
 io_file_get_last_modified_datetime (const char * filename);
 
-NONNULL std::string
-        io_file_get_last_modified_datetime_as_str (const char * filename);
+ATTR_NONNULL std::string
+             io_file_get_last_modified_datetime_as_str (const char * filename);
 
 /**
  * Removes the given file.
@@ -174,7 +174,7 @@ io_get_next_available_filepath (const std::string &filepath);
  * Opens the given directory using the default
  * program.
  */
-NONNULL void
+ATTR_NONNULL void
 io_open_directory (const char * path);
 
 /**
@@ -214,7 +214,7 @@ io_get_registry_string_val (const char * path);
  *
  * @return Non-zero on fail.
  */
-NONNULL int
+ATTR_NONNULL int
 io_get_bundle_path (char * bundle_path);
 #endif
 
@@ -222,7 +222,7 @@ io_get_bundle_path (char * bundle_path);
  * Returns the new path after traversing any symlinks (using
  * readlink()).
  */
-NONNULL char *
+ATTR_NONNULL char *
 io_traverse_path (const char * abs_path);
 
 /**

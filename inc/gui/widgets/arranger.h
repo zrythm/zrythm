@@ -577,7 +577,7 @@ arranger_widget_set_start_object (ArrangerWidget * self, std::shared_ptr<T> obj)
  *
  * Useful to know if we need transient widgets or not.
  */
-NONNULL bool
+ATTR_NONNULL bool
 arranger_widget_is_in_moving_operation (ArrangerWidget * self);
 
 /**
@@ -585,7 +585,7 @@ arranger_widget_is_in_moving_operation (ArrangerWidget * self);
  */
 template <typename T = ArrangerSelections>
 requires std::derived_from<T, ArrangerSelections> T *
-         arranger_widget_get_selections (ArrangerWidget * self) RETURNS_NONNULL;
+arranger_widget_get_selections (ArrangerWidget * self) ATTR_RETURNS_NONNULL;
 
 /**
  * Only redraws the playhead part.
@@ -628,7 +628,7 @@ arranger_widget_handle_erase_action (ArrangerWidget * self);
  * @param up Whether scrolling up or down.
  * @param padding Padding pixels.
  */
-NONNULL void
+ATTR_NONNULL void
 arranger_widget_scroll_until_obj (
   ArrangerWidget * self,
   ArrangerObject * obj,
@@ -680,7 +680,7 @@ arranger_widget_get_editor_setting_values (ArrangerWidget * self);
 bool
 arranger_widget_is_playhead_visible (ArrangerWidget * self);
 
-NONNULL void
+ATTR_NONNULL void
 arranger_widget_handle_playhead_auto_scroll (ArrangerWidget * self, bool force);
 
 typedef void (*ArrangerWidgetForeachFunc) (ArrangerWidget * arranger);
@@ -688,10 +688,10 @@ typedef void (*ArrangerWidgetForeachFunc) (ArrangerWidget * arranger);
 /**
  * Runs the given function for each arranger.
  */
-NONNULL void
+ATTR_NONNULL void
 arranger_widget_foreach (ArrangerWidgetForeachFunc func);
 
-NONNULL RulerWidget *
+ATTR_NONNULL RulerWidget *
 arranger_widget_get_ruler (ArrangerWidget * self);
 
 /**
@@ -719,7 +719,7 @@ arranger_widget_get_drum_mode_enabled (ArrangerWidget * self);
  *
  * @param autofilling Whether this is part of an autofill action.
  */
-NONNULL void
+ATTR_NONNULL void
 arranger_widget_create_item (
   ArrangerWidget * self,
   double           start_x,
@@ -732,7 +732,7 @@ arranger_widget_create_item (
  *
  * @return Whether an action was performed.
  */
-NONNULL bool
+ATTR_NONNULL bool
 arranger_widget_finish_creating_item_from_action (
   ArrangerWidget * self,
   double           x,

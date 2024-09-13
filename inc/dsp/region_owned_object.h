@@ -65,7 +65,7 @@ public:
   /**
    * If the object is part of a Region, returns it, otherwise returns NULL.
    */
-  HOT RegionT * get_region () const;
+  ATTR_HOT RegionT * get_region () const;
 };
 
 inline bool

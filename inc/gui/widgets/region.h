@@ -44,7 +44,7 @@ region_get_lane_full_rect (const Region * self, GdkRectangle * rect);
  *
  * @param rect Arranger rectangle.
  */
-HOT void
+ATTR_HOT void
 region_draw (Region * self, GtkSnapshot * snapshot, GdkRectangle * rect);
 
 #endif

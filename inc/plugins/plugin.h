@@ -367,7 +367,7 @@ public:
   /**
    * Prepare plugin for processing.
    */
-  HOT void prepare_process ();
+  ATTR_HOT void prepare_process ();
 
   /**
    * Instantiates the plugin (e.g. when adding to a channel).
@@ -384,7 +384,7 @@ public:
   /**
    * Process plugin.
    */
-  HOT void process (const EngineProcessTimeInfo time_nfo);
+  ATTR_HOT void process (const EngineProcessTimeInfo time_nfo);
 
   std::string generate_window_title () const;
 
@@ -422,7 +422,7 @@ public:
    *
    * This is called when the plugin is bypassed.
    */
-  HOT void process_passthrough (const EngineProcessTimeInfo time_nfo);
+  ATTR_HOT void process_passthrough (const EngineProcessTimeInfo time_nfo);
 
   /**
    * Returns the event ports in the plugin.

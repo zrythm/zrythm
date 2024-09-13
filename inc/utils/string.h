@@ -113,7 +113,7 @@ string_is_equal_ignore_case (const std::string &str1, const std::string &str2);
  *
  * Example: "MIDI Region #1" -> "MIDI_Region_1".
  */
-NONNULL char *
+ATTR_NONNULL char *
 string_convert_to_filename (const char * str);
 
 /**
@@ -121,7 +121,7 @@ string_convert_to_filename (const char * str);
  * from @ref full_str and returns a newly allocated
  * string.
  */
-NONNULL char *
+ATTR_NONNULL char *
 string_get_substr_before_suffix (const char * str, const char * suffix);
 
 /**

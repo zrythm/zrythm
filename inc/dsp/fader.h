@@ -103,7 +103,7 @@ public:
   /**
    * Inits fader after a project is loaded.
    */
-  COLD void init_loaded (
+  ATTR_COLD void init_loaded (
     Track *           track,
     ControlRoom *     control_room,
     SampleProcessor * sample_processor);
@@ -152,7 +152,7 @@ public:
   /**
    * Returns if the track is soloed.
    */
-  HOT bool get_soloed () const { return solo_->is_toggled (); }
+  ATTR_HOT bool get_soloed () const { return solo_->is_toggled (); }
 
   /**
    * Returns whether the fader is not soloed on its
@@ -228,7 +228,7 @@ public:
   /**
    * Clears all buffers.
    */
-  HOT void clear_buffers ();
+  ATTR_HOT void clear_buffers ();
 
   /**
    * Sets the fader levels from a normalized value
@@ -253,7 +253,7 @@ public:
   /**
    * Process the Fader.
    */
-  HOT void process (const EngineProcessTimeInfo time_nfo);
+  ATTR_HOT void process (const EngineProcessTimeInfo time_nfo);
 
   bool is_in_active_project () const;
 

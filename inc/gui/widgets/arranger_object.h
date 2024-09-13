@@ -85,7 +85,7 @@ arranger_object_is_fade_out (
  *
  * @param x X in local coordinates.
  */
-NONNULL bool
+ATTR_NONNULL bool
 arranger_object_is_resize_l (const ArrangerObject * self, const int x);
 
 /**
@@ -94,7 +94,7 @@ arranger_object_is_resize_l (const ArrangerObject * self, const int x);
  *
  * @param x X in local coordinates.
  */
-NONNULL bool
+ATTR_NONNULL bool
 arranger_object_is_resize_r (const ArrangerObject * self, const int x);
 
 /**
@@ -128,7 +128,7 @@ arranger_object_is_resize_loop (
  * @param x X in local coordinates.
  * @param y Y in local coordinates.
  */
-NONNULL bool
+ATTR_NONNULL bool
 arranger_object_is_rename (const ArrangerObject * self, const int x, const int y);
 
 /**
@@ -199,7 +199,7 @@ arranger_object_draw (
  *
  * @param arranger Owner arranger. Should be passed to speed up calculation.
  */
-NONNULL_ARGS (1) bool
+ATTR_NONNULL_ARGS (1) bool
 arranger_object_should_orig_be_visible (
   const ArrangerObject * self,
   const ArrangerWidget * arranger);

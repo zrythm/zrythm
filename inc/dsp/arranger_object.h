@@ -349,7 +349,7 @@ public:
    * @param pos The position to set to.
    * @param pos_type The type of Position to set in the ArrangerObject.
    */
-  [[nodiscard]] HOT NONNULL bool
+  [[nodiscard]] ATTR_HOT ATTR_NONNULL bool
   is_position_valid (const Position &pos, PositionType pos_type) const;
 
   /**
@@ -407,7 +407,7 @@ public:
   /**
    * Returns the Track this ArrangerObject is in.
    */
-  HOT virtual Track * get_track () const;
+  ATTR_HOT virtual Track * get_track () const;
 
   template <typename T> inline T * get_track_as () const
   {

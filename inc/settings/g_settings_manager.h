@@ -118,13 +118,13 @@ public:
    * Returns whether the "as" key contains the given
    * string.
    */
-  NONNULL static bool
+  ATTR_NONNULL static bool
   strv_contains_str (GSettings * settings, const char * key, const char * val);
 
   /**
    * Appends the given string to a key of type "as".
    */
-  NONNULL static void append_to_strv (
+  ATTR_NONNULL static void append_to_strv (
     GSettings *  settings,
     const char * key,
     const char * val,
