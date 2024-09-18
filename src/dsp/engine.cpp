@@ -374,7 +374,7 @@ AudioEngine::pre_setup ()
       ret = engine_jack_setup (this);
       break;
 #endif
-#ifdef HAVE_PULSEAUDIO
+#if HAVE_PULSEAUDIO
     case AudioBackend::AUDIO_BACKEND_PULSEAUDIO:
       ret = engine_pulse_setup (this);
       break;
@@ -553,7 +553,7 @@ AudioEngine::init_common ()
       audio_backend_ = AudioBackend::AUDIO_BACKEND_JACK;
       break;
 #endif
-#ifdef HAVE_PULSEAUDIO
+#if HAVE_PULSEAUDIO
     case AudioBackend::AUDIO_BACKEND_PULSEAUDIO:
       audio_backend_ = AudioBackend::AUDIO_BACKEND_PULSEAUDIO;
       break;
@@ -944,7 +944,7 @@ AudioEngine::activate (bool activate)
       engine_jack_activate (this, activate);
     }
 #endif
-#ifdef HAVE_PULSEAUDIO
+#if HAVE_PULSEAUDIO
   if (audio_backend_ == AudioBackend::AUDIO_BACKEND_PULSEAUDIO)
     {
       engine_pulse_activate (this, activate);
@@ -1583,7 +1583,7 @@ AudioEngine::set_default_backends (bool reset_to_dummy)
     }
 #endif
 
-#ifdef HAVE_PULSEAUDIO
+#if HAVE_PULSEAUDIO
   if (!audio_set && engine_pulse_test (nullptr))
     {
       g_settings_set_enum (
@@ -1676,7 +1676,7 @@ AudioEngine::~AudioEngine ()
       engine_rtaudio_tear_down (this);
       break;
 #endif
-#ifdef HAVE_PULSEAUDIO
+#if HAVE_PULSEAUDIO
     case AudioBackend::AUDIO_BACKEND_PULSEAUDIO:
       engine_pulse_tear_down (this);
       break;

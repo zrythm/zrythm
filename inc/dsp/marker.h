@@ -106,6 +106,11 @@ operator== (const Marker &lhs, const Marker &rhs)
          && lhs.marker_track_index_ == rhs.marker_track_index_;
 }
 
+DEFINE_OBJECT_FORMATTER (Marker, [] (const Marker &val) {
+  return fmt::format (
+    "Marker[marker_track_index_: {}]", val.marker_track_index_);
+})
+
 /**
  * @}
  */

@@ -48,12 +48,22 @@ set_running_in_test (bool value);
 #  define ASSERT_SIZE_EQ(ptr, _size) ASSERT_EQ ((ptr).size (), _size)
 #endif
 
+#ifndef EXPECT_SIZE_EQ
+#  define EXPECT_SIZE_EQ(ptr, _size) EXPECT_EQ ((ptr).size (), _size)
+#endif
+
 constexpr double POSITION_EQ_EPSILON = 0.0001;
 
 #ifndef ASSERT_POSITION_EQ
 #  define ASSERT_POSITION_EQ(a, b) \
-    ASSERT_NEAR ((a).ticks_, (b).ticks_, 0.0001); \
+    ASSERT_NEAR ((a).ticks_, (b).ticks_, POSITION_EQ_EPSILON); \
     ASSERT_TRUE ((a).frames_ == (b).frames_)
+#endif
+
+#ifndef EXPECT_POSITION_EQ
+#  define EXPECT_POSITION_EQ(a, b) \
+    EXPECT_NEAR ((a).ticks_, (b).ticks_, POSITION_EQ_EPSILON); \
+    EXPECT_TRUE ((a).frames_ == (b).frames_)
 #endif
 
 #ifndef ASSERT_FLOAT_EQ

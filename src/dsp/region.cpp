@@ -64,8 +64,14 @@ Region::init (
   type_ = Type::Region;
 
   id_.track_name_hash_ = track_name_hash;
-  id_.lane_pos_ = lane_pos_or_at_idx;
-  id_.at_idx_ = lane_pos_or_at_idx;
+  if (is_automation ())
+    {
+      id_.at_idx_ = lane_pos_or_at_idx;
+    }
+  else if (region_type_has_lane (id_.type_))
+    {
+      id_.lane_pos_ = lane_pos_or_at_idx;
+    }
   id_.idx_ = idx_inside_lane_or_at;
 
   pos_ = start_pos;

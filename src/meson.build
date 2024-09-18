@@ -58,7 +58,6 @@ zrythm_lib = both_libraries (
   'zrythm-lib',
   sources: [
     zrythm_lib_srcs,
-    ext_srcs,
     ],
   dependencies: zrythm_deps,
   include_directories: all_inc,

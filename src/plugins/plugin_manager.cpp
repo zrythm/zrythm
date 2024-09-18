@@ -142,7 +142,7 @@ PluginManager::get_lv2_paths ()
       }
       ret.add ("/usr/lib/lv2");
       ret.add ("/usr/local/lib/lv2");
-#  if defined(INSTALLER_VER)
+#  if ZRYTHM_IS_INSTALLER_VER
       ret.add ("/usr/lib64/lv2");
       ret.add ("/usr/local/lib64/lv2");
 #  else  /* else if unix and not installer ver */
@@ -211,7 +211,7 @@ PluginManager::get_vst2_paths ()
       }
       ret.add ("/usr/lib/vst");
       ret.add ("/usr/local/lib/vst");
-#    if defined(INSTALLER_VER)
+#    if ZRYTHM_IS_INSTALLER_VER
       ret.add ("/usr/lib64/vst");
       ret.add ("/usr/local/lib64/vst");
 #    else  /* else if unix and not installer ver */
@@ -266,7 +266,7 @@ PluginManager::get_vst3_paths ()
       }
       ret.add ("/usr/lib/vst3");
       ret.add ("/usr/local/lib/vst3");
-#    if defined(INSTALLER_VER)
+#    if ZRYTHM_IS_INSTALLER_VER
       ret.add ("/usr/lib64/vst3");
       ret.add ("/usr/local/lib64/vst3");
 #    else  /* else if unix and not installer ver */
@@ -336,7 +336,7 @@ PluginManager::get_dssi_paths ()
       }
       ret.add ("/usr/lib/dssi");
       ret.add ("/usr/local/lib/dssi");
-#    if defined(INSTALLER_VER)
+#    if ZRYTHM_IS_INSTALLER_VER
       ret.add ("/usr/lib64/dssi");
       ret.add ("/usr/local/lib64/dssi");
 #    else  /* else if unix and not installer ver */
@@ -383,7 +383,7 @@ PluginManager::get_ladspa_paths ()
 #  else /* non-flatpak UNIX */
       ret.add ("/usr/lib/ladspa");
       ret.add ("/usr/local/lib/ladspa");
-#    if defined(INSTALLER_VER)
+#    if ZRYTHM_IS_INSTALLER_VER
       ret.add ("/usr/lib64/ladspa");
       ret.add ("/usr/local/lib64/ladspa");
 #    else  /* else if unix and not installer ver */
@@ -443,7 +443,7 @@ PluginManager::get_clap_paths ()
       }
       ret.add ("/usr/lib/clap");
       ret.add ("/usr/local/lib/clap");
-#    if defined(INSTALLER_VER)
+#    if ZRYTHM_IS_INSTALLER_VER
       ret.add ("/usr/lib64/clap");
       ret.add ("/usr/local/lib64/clap");
 #    else  /* else if unix and not installer ver */

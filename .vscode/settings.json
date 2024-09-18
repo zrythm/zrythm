@@ -1,4 +1,13 @@
 {
+    "cmake.buildDirectory": "${workspaceFolder}/builddir_cmake",
+    "cmake.installPrefix": "${workspaceFolder}/_installed_cmake",
+    "cmake.configureArgs": [
+        "-DZRYTHM_TESTS=ON",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DZRYTHM_USER_MANUAL=OFF",
+        // "-DZRYTHM_STRICT=ON"
+    ],
+    "cmake.clearOutputBeforeBuild": false,
     // note: run the following right after configure:
     // compdb -p builddir list > /tmp/compile_commands.json && cp /tmp/compile_commands.json builddir/compile_commands.json
     "mesonbuild.configureOptions": [
@@ -25,9 +34,9 @@
         "CC": "ccache clang",
         "CXX": "ccache clang++",
     },
-    "clang-tidy.buildPath": "builddir",
+    "clang-tidy.buildPath": "builddir_cmake",
     "clangd.arguments": [
-        "--compile-commands-dir=${workspaceFolder}/builddir",
+        "--compile-commands-dir=${workspaceFolder}/builddir_cmake",
         "--clang-tidy",
         "--enable-config",
         "--header-insertion=never",

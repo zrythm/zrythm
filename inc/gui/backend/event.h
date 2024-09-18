@@ -474,15 +474,11 @@ public:
   std::string backtrace_;
 };
 
-DEFINE_OBJECT_FORMATTER (
-  ZEvent,
-  fmt::format (
-    "UI Event from {}:{}:{}:\ntype: {}\narg: {}",
-    val.file_,
-    val.func_,
-    val.lineno_,
-    ENUM_NAME (val.type_),
-    fmt::ptr (val.arg_)));
+DEFINE_OBJECT_FORMATTER (ZEvent, [] (const ZEvent &val) {
+  return fmt::format (
+    "UI Event from {}:{}:{}:\ntype: {}\narg: {}", val.file_, val.func_,
+    val.lineno_, ENUM_NAME (val.type_), fmt::ptr (val.arg_));
+});
 
 /**
  * @}

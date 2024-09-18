@@ -4,6 +4,8 @@
 #ifndef __GUI_WIDGETS_GREETER_H__
 #define __GUI_WIDGETS_GREETER_H__
 
+#include <semaphore>
+
 #include "gui/backend/project_info.h"
 #include "gui/widgets/cc-list-row-info-button.h"
 #include "gui/widgets/item_factory.h"

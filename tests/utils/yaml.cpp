@@ -8,7 +8,7 @@
 #include "utils/string.h"
 #include "utils/yaml.h"
 
-#ifdef HAVE_CYAML
+#if HAVE_CYAML
 
 using float_struct = struct float_struct
 {

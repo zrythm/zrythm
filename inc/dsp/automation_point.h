@@ -204,13 +204,11 @@ DEFINE_ENUM_FORMATTER (
   N_ ("Rec"),
   N_ ("Off"));
 
-DEFINE_OBJECT_FORMATTER (
-  AutomationPoint,
-  fmt::format (
-    "AutomationPoint [{}]: val {}, normalized val {}",
-    val.pos_,
-    val.fvalue_,
-    val.normalized_val_));
+DEFINE_OBJECT_FORMATTER (AutomationPoint, [] (const AutomationPoint &val) {
+  return fmt::format (
+    "AutomationPoint [{}]: val {}, normalized val {}", val.pos_, val.fvalue_,
+    val.normalized_val_);
+});
 
 /**
  * @}

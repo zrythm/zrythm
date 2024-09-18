@@ -46,12 +46,12 @@ PeakDsp::process (float * p, int n)
 
   if (this->fpp != n)
     {
-      /*const float fall = 15.f;*/
-      constexpr float fall = 5.f;
+      /*const float FALL = 15.f;*/
+      constexpr float FALL = 5.f;
       const float     tme = (float) n / this->fsamp; // period time in seconds
       this->fall = powf (
         10.f,
-        -0.05f * fall * tme); // per period fallback multiplier
+        -0.05f * FALL * tme); // per period fallback multiplier
       this->fpp = n;
     }
 
@@ -113,10 +113,10 @@ PeakDsp::read_f ()
 }
 
 void
-PeakDsp::read (float * rms, float * peak)
+PeakDsp::read (float * irms, float * ipeak)
 {
-  *rms = this->rms;
-  *peak = this->peak;
+  *irms = this->rms;
+  *ipeak = this->peak;
   this->flag = true; // Resets _rms in next process().
 }
 
@@ -132,9 +132,9 @@ void
 PeakDsp::init (float samplerate)
 {
   /*const float hold = 0.5f;*/
-  const float hold = 1.5f;
+  const float HOLD = 1.5f;
   this->fsamp = samplerate;
 
   this->hold =
-    (int) (hold * samplerate + 0.5f); // number of samples to hold peak
+    (int) (HOLD * samplerate + 0.5f); // number of samples to hold peak
 }

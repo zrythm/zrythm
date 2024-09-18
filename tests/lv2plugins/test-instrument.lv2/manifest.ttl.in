@@ -5,5 +5,5 @@
 <https://lv2.zrythm.org/test-instrument>
   a lv2:Plugin,
     lv2:InstrumentPlugin ;
-  lv2:binary <test-instrument@LIB_EXT@> ;
+  lv2:binary <test-instrument@CMAKE_SHARED_LIBRARY_SUFFIX@> ;
   rdfs:seeAlso <test-instrument.ttl> .

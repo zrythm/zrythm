@@ -193,12 +193,13 @@ check_vs_orig_state:
   p2_before_move.add_ticks (-MOVE_TICKS);
 
   { /* check midi region */
-    ASSERT_SIZE_EQ (midi_track->lanes_[MIDI_REGION_LANE]->regions_, 1);
-    auto r = midi_track->lanes_[MIDI_REGION_LANE]->regions_[0];
+    ASSERT_SIZE_EQ (midi_track->lanes_, MIDI_REGION_LANE + 2);
+    ASSERT_SIZE_EQ (midi_track->lanes_.at (MIDI_REGION_LANE)->regions_, 1);
+    const auto &r = midi_track->lanes_.at (MIDI_REGION_LANE)->regions_.front ();
     ASSERT_POSITION_EQ (r->pos_, p1_);
     ASSERT_POSITION_EQ (r->end_pos_, p2_);
     ASSERT_SIZE_EQ (r->midi_notes_, 1);
-    auto mn = r->midi_notes_[0];
+    const auto &mn = r->midi_notes_.front ();
     ASSERT_EQ (mn->val_, MN_VAL);
     ASSERT_EQ (mn->vel_->vel_, MN_VEL);
     ASSERT_POSITION_EQ (mn->pos_, p1_);

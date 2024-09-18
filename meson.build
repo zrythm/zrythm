@@ -421,8 +421,9 @@ endif
 # --- Check for headers ---
 
 check_headers = [
-  'unistd.h',
-  'sys/time.h',
+  # not used anymore
+  # 'unistd.h',
+  # 'sys/time.h',
   ]
 
 foreach h : check_headers
@@ -489,7 +490,7 @@ endforeach
 
 # check standard C functions
 check_c_functions = [
-  'localtime_r',
+  # 'localtime_r',
   ]
 foreach func : check_c_functions
   if not cc.has_function (func)

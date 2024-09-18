@@ -128,7 +128,7 @@ test_plugin_manager_get_plugin_setting (
     }
   EXPECT_HAS_VALUE (descr);
 
-  PluginSetting setting (*descr);
+  PluginSetting setting (descr.value ());
 
   /* always open with carla */
   setting.open_with_carla_ = true;

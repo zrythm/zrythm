@@ -15,6 +15,7 @@
 #include "gui/backend/event_manager.h"
 #include "plugins/plugin.h"
 #include "project.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/midi.h"
 #include "utils/rt_thread_id.h"
 #include "zrythm.h"

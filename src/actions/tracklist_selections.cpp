@@ -862,7 +862,7 @@ TracklistSelectionsAction::
                   outputs_in_prj.push_back (
                     own_channel_track->get_channel ()->get_output_track ());
 
-                  for (int j = 0; j < STRIP_SIZE; j++)
+                  for (size_t j = 0; j < STRIP_SIZE; ++j)
                     {
                       auto &send = own_channel_track->get_channel ()->sends_[j];
                       sends[i][j] = send->clone_unique ();

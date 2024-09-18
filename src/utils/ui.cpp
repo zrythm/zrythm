@@ -557,7 +557,7 @@ ui_gen_audio_backends_combo_row (bool with_signal)
   /*AudioBackend_to_string(AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO),*/
 #  endif
 #endif /* HAVE_JACK */
-#ifdef HAVE_PULSEAUDIO
+#if HAVE_PULSEAUDIO
   /* use rtaudio version - this has known issues */
   /*AudioBackend_to_string(AudioBackend::AUDIO_BACKEND_PULSEAUDIO),*/
 #  ifdef HAVE_LIBSOUNDIO

@@ -1,0 +1,170 @@
+@prefix doap:  <http://usefulinc.com/ns/doap#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix lv2:   <http://lv2plug.in/ns/lv2core#> .
+@prefix ui:    <http://lv2plug.in/ns/extensions/ui#> .
+@prefix epp:   <http://lv2plug.in/ns/ext/port-props#> .
+@prefix atom:  <http://lv2plug.in/ns/ext/atom#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix units: <http://lv2plug.in/ns/extensions/units#> .
+@prefix urid:  <http://lv2plug.in/ns/ext/urid#> .
+<https://lv2.zrythm.org/faust-builtin/parametric_eq>
+       a lv2:ParaEQPlugin, lv2:Plugin ;
+       doap:name "Parametric EQ" ;
+       lv2:binary <parametric_eq@CMAKE_SHARED_LIBRARY_SUFFIX@> ;
+       lv2:requiredFeature urid:map ;
+       lv2:optionalFeature epp:supportsStrictBounds ;
+       lv2:optionalFeature lv2:hardRTCapable ;
+       doap:maintainer [ foaf:name "Zrythm DAW" ] ;
+       rdfs:comment "Parametric equalizer with high/low shelves" ;
+       doap:revision "1.0" ;
+       doap:license "AGPL-3.0-or-later" ;
+    lv2:port [
+	a lv2:InputPort ;
+	a lv2:ControlPort ;
+	lv2:index 0 ;
+	lv2:symbol "Low_Shelf_Gain_0" ;
+	lv2:name "Low Shelf Gain" ;
+        lv2:portProperty epp:hasStrictBounds ;
+        epp:rangeSteps 800 ;
+	lv2:default 0 ;
+	lv2:minimum -40 ;
+	lv2:maximum 40 ;
+	rdfs:comment "Amount of low-frequency boost or cut in decibels" ;
+	units:unit [
+            a            units:Unit ;
+            units:name   "dB" ;
+            units:symbol "dB" ;
+            units:render "%f dB"
+	] ;
+    ] , [
+	a lv2:InputPort ;
+	a lv2:ControlPort ;
+	lv2:index 1 ;
+	lv2:symbol "Low_Shelf_Frequency_1" ;
+	lv2:name "Low Shelf Frequency" ;
+        lv2:portProperty epp:hasStrictBounds ;
+        epp:rangeSteps 4990 ;
+	lv2:default 200 ;
+	lv2:minimum 10 ;
+	lv2:maximum 5000 ;
+	lv2:portProperty epp:logarithmic ;
+	rdfs:comment "Transition-frequency from boost (cut) to unity gain" ;
+	units:unit [
+            a            units:Unit ;
+            units:name   "Hz" ;
+            units:symbol "Hz" ;
+            units:render "%f Hz"
+	] ;
+    ] , [
+	a lv2:InputPort ;
+	a lv2:ControlPort ;
+	lv2:index 2 ;
+	lv2:symbol "Peak_Gain_2" ;
+	lv2:name "Peak Gain" ;
+        lv2:portProperty epp:hasStrictBounds ;
+        epp:rangeSteps 800 ;
+	lv2:default 0 ;
+	lv2:minimum -40 ;
+	lv2:maximum 40 ;
+	rdfs:comment "Amount of         local boost or cut in decibels" ;
+	units:unit [
+            a            units:Unit ;
+            units:name   "dB" ;
+            units:symbol "dB" ;
+            units:render "%f dB"
+	] ;
+    ] , [
+	a lv2:InputPort ;
+	a lv2:ControlPort ;
+	lv2:index 3 ;
+	lv2:symbol "Peak_Frequency_3" ;
+	lv2:name "Peak Frequency" ;
+        lv2:portProperty epp:hasStrictBounds ;
+        epp:rangeSteps 15980 ;
+	lv2:default 720 ;
+	lv2:minimum 20 ;
+	lv2:maximum 16000 ;
+	rdfs:comment "Peak         Frequency" ;
+	units:unit [
+            a            units:Unit ;
+            units:name   "Hz" ;
+            units:symbol "Hz" ;
+            units:render "%f Hz"
+	] ;
+    ] , [
+	a lv2:InputPort ;
+	a lv2:ControlPort ;
+	lv2:index 4 ;
+	lv2:symbol "Peak_Q_4" ;
+	lv2:name "Peak Q" ;
+        lv2:portProperty epp:hasStrictBounds ;
+        epp:rangeSteps 1900 ;
+	lv2:default 1 ;
+	lv2:minimum 1 ;
+	lv2:maximum 20 ;
+	lv2:portProperty epp:logarithmic ;
+	rdfs:comment "Quality factor (Q) of the peak = center-frequency/bandwidth" ;
+    ] , [
+	a lv2:InputPort ;
+	a lv2:ControlPort ;
+	lv2:index 5 ;
+	lv2:symbol "High_Shelf_Gain_5" ;
+	lv2:name "High Shelf Gain" ;
+        lv2:portProperty epp:hasStrictBounds ;
+        epp:rangeSteps 800 ;
+	lv2:default 0 ;
+	lv2:minimum -40 ;
+	lv2:maximum 40 ;
+	rdfs:comment "Amount of         high-frequency boost or cut in decibels" ;
+	units:unit [
+            a            units:Unit ;
+            units:name   "dB" ;
+            units:symbol "dB" ;
+            units:render "%f dB"
+	] ;
+    ] , [
+	a lv2:InputPort ;
+	a lv2:ControlPort ;
+	lv2:index 6 ;
+	lv2:symbol "High_Shelf_Frequency_6" ;
+	lv2:name "High Shelf Frequency" ;
+        lv2:portProperty epp:hasStrictBounds ;
+        epp:rangeSteps 17980 ;
+	lv2:default 8000 ;
+	lv2:minimum 20 ;
+	lv2:maximum 18000 ;
+	lv2:portProperty epp:logarithmic ;
+	rdfs:comment "Transition-frequency from boost (cut) to unity gain" ;
+	units:unit [
+            a            units:Unit ;
+            units:name   "Hz" ;
+            units:symbol "Hz" ;
+            units:render "%f Hz"
+	] ;
+    ] , [
+	a lv2:InputPort ;
+	a lv2:AudioPort ;
+	lv2:index 7 ;
+	lv2:symbol "in0" ;
+	lv2:name "in0" ;
+    ] , [
+	a lv2:InputPort ;
+	a lv2:AudioPort ;
+	lv2:index 8 ;
+	lv2:symbol "in1" ;
+	lv2:name "in1" ;
+    ] , [
+	a lv2:OutputPort ;
+	a lv2:AudioPort ;
+	lv2:index 9 ;
+	lv2:symbol "out0" ;
+	lv2:name "out0" ;
+    ] , [
+	a lv2:OutputPort ;
+	a lv2:AudioPort ;
+	lv2:index 10 ;
+	lv2:symbol "out1" ;
+	lv2:name "out1" ;
+    ]
+.

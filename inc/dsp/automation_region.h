@@ -191,6 +191,10 @@ operator== (const AutomationRegion &lhs, const AutomationRegion &rhs)
               == static_cast<const ArrangerObject &> (rhs);
 }
 
+DEFINE_OBJECT_FORMATTER (AutomationRegion, [] (const AutomationRegion &val) {
+  return fmt::format ("AutomationRegion[id: {}]", val.id_);
+})
+
 /**
  * @}
  */

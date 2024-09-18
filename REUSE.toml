@@ -412,7 +412,7 @@ SPDX-FileCopyrightText = "2015 Robin Gareus <robin@gareus.org>"
 SPDX-License-Identifier = "GPL-2.0-or-later"
 
 [[annotations]]
-path = "data/plugins/generated/**/**.ttl"
+path = "data/plugins/generated/**/**.ttl.in"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2022 Alexandros Theodotou <alex@zrythm.org>"
 SPDX-License-Identifier = "LicenseRef-ZrythmLicense"

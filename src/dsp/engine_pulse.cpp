@@ -4,7 +4,7 @@
 
 #include "zrythm-config.h"
 
-#ifdef HAVE_PULSEAUDIO
+#if HAVE_PULSEAUDIO
 
 #  include "dsp/channel.h"
 #  include "dsp/engine.h"

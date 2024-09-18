@@ -1,0 +1,118 @@
+@prefix doap:  <http://usefulinc.com/ns/doap#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix lv2:   <http://lv2plug.in/ns/lv2core#> .
+@prefix ui:    <http://lv2plug.in/ns/extensions/ui#> .
+@prefix epp:   <http://lv2plug.in/ns/ext/port-props#> .
+@prefix atom:  <http://lv2plug.in/ns/ext/atom#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix units: <http://lv2plug.in/ns/extensions/units#> .
+@prefix urid:  <http://lv2plug.in/ns/ext/urid#> .
+<https://lv2.zrythm.org/faust-builtin/gate_stereo>
+       a lv2:GatePlugin, lv2:Plugin ;
+       doap:name "Gate Stereo" ;
+       lv2:binary <gate_stereo@CMAKE_SHARED_LIBRARY_SUFFIX@> ;
+       lv2:requiredFeature urid:map ;
+       lv2:optionalFeature epp:supportsStrictBounds ;
+       lv2:optionalFeature lv2:hardRTCapable ;
+       doap:maintainer [ foaf:name "Zrythm DAW" ] ;
+       rdfs:comment "Stereo gate" ;
+       doap:revision "1.0" ;
+       doap:license "AGPL-3.0-or-later" ;
+    lv2:port [
+	a lv2:InputPort ;
+	a lv2:ControlPort ;
+	lv2:index 0 ;
+	lv2:symbol "Threshold_0" ;
+	lv2:name "Threshold" ;
+        lv2:portProperty epp:hasStrictBounds ;
+        epp:rangeSteps 1200 ;
+	lv2:default -30 ;
+	lv2:minimum -120 ;
+	lv2:maximum 0 ;
+	units:unit [
+            a            units:Unit ;
+            units:name   "dB" ;
+            units:symbol "dB" ;
+            units:render "%f dB"
+	] ;
+    ] , [
+	a lv2:InputPort ;
+	a lv2:ControlPort ;
+	lv2:index 1 ;
+	lv2:symbol "Attack_1" ;
+	lv2:name "Attack" ;
+        lv2:portProperty epp:hasStrictBounds ;
+        epp:rangeSteps 9990 ;
+	lv2:default 10 ;
+	lv2:minimum 10 ;
+	lv2:maximum 10000 ;
+	lv2:portProperty epp:logarithmic ;
+	units:unit [
+            a            units:Unit ;
+            units:name   "ms" ;
+            units:symbol "ms" ;
+            units:render "%f ms"
+	] ;
+    ] , [
+	a lv2:InputPort ;
+	a lv2:ControlPort ;
+	lv2:index 2 ;
+	lv2:symbol "Hold_2" ;
+	lv2:name "Hold" ;
+        lv2:portProperty epp:hasStrictBounds ;
+        epp:rangeSteps 999 ;
+	lv2:default 200 ;
+	lv2:minimum 1 ;
+	lv2:maximum 1000 ;
+	lv2:portProperty epp:logarithmic ;
+	units:unit [
+            a            units:Unit ;
+            units:name   "ms" ;
+            units:symbol "ms" ;
+            units:render "%f ms"
+	] ;
+    ] , [
+	a lv2:InputPort ;
+	a lv2:ControlPort ;
+	lv2:index 3 ;
+	lv2:symbol "Release_3" ;
+	lv2:name "Release" ;
+        lv2:portProperty epp:hasStrictBounds ;
+        epp:rangeSteps 999 ;
+	lv2:default 100 ;
+	lv2:minimum 1 ;
+	lv2:maximum 1000 ;
+	lv2:portProperty epp:logarithmic ;
+	units:unit [
+            a            units:Unit ;
+            units:name   "ms" ;
+            units:symbol "ms" ;
+            units:render "%f ms"
+	] ;
+    ] , [
+	a lv2:InputPort ;
+	a lv2:AudioPort ;
+	lv2:index 4 ;
+	lv2:symbol "in0" ;
+	lv2:name "in0" ;
+    ] , [
+	a lv2:InputPort ;
+	a lv2:AudioPort ;
+	lv2:index 5 ;
+	lv2:symbol "in1" ;
+	lv2:name "in1" ;
+    ] , [
+	a lv2:OutputPort ;
+	a lv2:AudioPort ;
+	lv2:index 6 ;
+	lv2:symbol "out0" ;
+	lv2:name "out0" ;
+    ] , [
+	a lv2:OutputPort ;
+	a lv2:AudioPort ;
+	lv2:index 7 ;
+	lv2:symbol "out1" ;
+	lv2:name "out1" ;
+    ]
+.

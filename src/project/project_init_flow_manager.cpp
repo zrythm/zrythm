@@ -121,7 +121,7 @@ ProjectInitFlowManager::setup_main_window (Project &project)
     }
 }
 
-#ifdef HAVE_CYAML
+#if HAVE_CYAML
 /**
  * Upgrades the given project YAML's schema if needed.
  *
@@ -481,7 +481,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
               try
                 {
                   /* upgrade project */
-#ifdef HAVE_CYAML
+#if HAVE_CYAML
                   upgrade_schema (&text, schema_ver);
                   upgraded = true;
 #else
@@ -500,7 +500,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
           try
             {
               /* upgrade latest yaml to json */
-#ifdef HAVE_CYAML
+#if HAVE_CYAML
               upgrade_to_json (&text);
               upgraded = true;
 #else

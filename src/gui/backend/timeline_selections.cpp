@@ -113,7 +113,7 @@ TimelineSelections::sort_by_indices (bool desc)
     objects_.begin (), objects_.end (),
     [desc, sort_regions] (const auto &a, const auto &b) {
       bool ret = false;
-      z_trace ("sorting {} {}", typeid (*a).name (), typeid (*b).name ());
+      // z_trace ("sorting {} {}", typeid (*a).name (), typeid (*b).name ());
       if (typeid (*a) == typeid (*b))
         {
           if (a->is_region ())

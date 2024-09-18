@@ -56,7 +56,7 @@
 #include <giomm.h>
 #include <glibmm.h>
 
-#if defined(__APPLE__) && defined(INSTALLER_VER)
+#if defined(__APPLE__) && ZRYTHM_IS_INSTALLER_VER
 #  include "CoreFoundation/CoreFoundation.h"
 #  include <libgen.h>
 #endif
@@ -500,7 +500,7 @@ io_get_registry_string_val (const std::string &key)
 }
 #endif
 
-#if defined(__APPLE__) && defined(INSTALLER_VER)
+#if defined(__APPLE__) && ZRYTHM_IS_INSTALLER_VER
 /**
  * Gets the bundle path on MacOS.
  *

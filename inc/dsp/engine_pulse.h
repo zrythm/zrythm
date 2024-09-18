@@ -3,7 +3,7 @@
 
 #include "zrythm-config.h"
 
-#ifdef HAVE_PULSEAUDIO
+#if HAVE_PULSEAUDIO
 
 #  ifndef __AUDIO_ENGINE_PULSE_H__
 #    define __AUDIO_ENGINE_PULSE_H__

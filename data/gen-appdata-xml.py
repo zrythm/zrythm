@@ -20,7 +20,7 @@ def get_list_for_changelog_group(changelog_nfo, title):
     return result
 
 def get_releases():
-    changelog = file_to_string(os.path.join(r"@MESON_SOURCE_ROOT@", "CHANGELOG.md"))
+    changelog = file_to_string(os.path.join(r"@CMAKE_SOURCE_DIR@", "CHANGELOG.md"))
     changelog_list = changelog.split("## [")[1:]
     releases_list = []
     for release_info in changelog_list:
@@ -38,7 +38,7 @@ def get_releases():
                 description.append("</ul>")
         releases_list.append(
             f"""<release date="{date_str}" version="{ver}" type="development">
-                <url>@RELEASE_TAG_BASE_URL@/v{ver}</url>
+                <url>@release_tag_base_url@/v{ver}</url>
                 <description>
                     {"".join(description)}
                 </description>
@@ -73,18 +73,18 @@ def main(output_file, app_id):
         <category>AudioVideo</category>
         <category>Audio</category>
     </categories>
-    <url type="homepage">@HOMEPAGE_URL@</url>
-    <url type="bugtracker">@BUG_REPORT_URL@</url>
-    <url type="faq">@FAQ_URL@</url>
-    <url type="help">@CHATROOM_URL@</url>
-    <url type="donation">@DONATION_URL@</url>
-    <url type="translate">@TRANSLATE_URL@</url>
-    <url type="contact">@CONTACT_URL@</url>
-    <url type="vcs-browser">@MAIN_REPO_URL@</url>
+    <url type="homepage">@homepage_url@</url>
+    <url type="bugtracker">@issue_tracker_url@</url>
+    <url type="faq">@faq_url@</url>
+    <url type="help">@chatroom_url@</url>
+    <url type="donation">@donation_url@</url>
+    <url type="translate">@translate_url@</url>
+    <url type="contact">@contact_url@</url>
+    <url type="vcs-browser">@main_repo_url@</url>
     <launchable type="desktop-id">{app_id}.desktop</launchable>
     <screenshots>
         <screenshot type="default">
-            <image type="source">@MAIN_SCREENSHOT_URL@</image>
+            <image type="source">@main_screenshot_url@</image>
             <caption>Main window with plugins</caption>
         </screenshot>
     </screenshots>

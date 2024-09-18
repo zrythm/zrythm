@@ -23,6 +23,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <vector>
 
 #include "utils/symap.h"
 
@@ -507,9 +508,17 @@ main (int argc, char ** argv)
     }
 
   /* Instantiate plugin and connect ports */
-  const uint32_t n_ports = lilv_plugin_get_num_ports (plugin);
-  float          in_buf[self.n_audio_in > 0 ? self.n_audio_in : 1];
-  float          out_buf[self.n_audio_out > 0 ? self.n_audio_out : 1];
+  const uint32_t     n_ports = lilv_plugin_get_num_ports (plugin);
+  std::vector<float> in_buf (1);
+  if (self.n_audio_in > 0)
+    {
+      in_buf.resize (self.n_audio_in);
+    }
+  std::vector<float> out_buf (1);
+  if (self.n_audio_out > 0)
+    {
+      out_buf.resize (self.n_audio_out);
+    }
   self.instance =
     lilv_plugin_instantiate (self.plugin, in_fmt.samplerate, self.feature_list);
   if (!self.instance)
@@ -526,11 +535,13 @@ main (int argc, char ** argv)
         {
           if (self.ports[p].is_input)
             {
-              lilv_instance_connect_port (self.instance, p, in_buf + i++);
+              lilv_instance_connect_port (
+                self.instance, p, in_buf.data () + i++);
             }
           else
             {
-              lilv_instance_connect_port (self.instance, p, out_buf + o++);
+              lilv_instance_connect_port (
+                self.instance, p, out_buf.data () + o++);
             }
         }
       else
@@ -544,10 +555,10 @@ main (int argc, char ** argv)
      read/write from/to sndfile. */
 
   lilv_instance_activate (self.instance);
-  while (sread (self.in_file, in_fmt.channels, in_buf, self.n_audio_in))
+  while (sread (self.in_file, in_fmt.channels, in_buf.data (), self.n_audio_in))
     {
       lilv_instance_run (self.instance, 1);
-      if (sf_writef_float (self.out_file, out_buf, 1) != 1)
+      if (sf_writef_float (self.out_file, out_buf.data (), 1) != 1)
         {
           return fatal (&self, 9, "Failed to write to output file\n");
         }

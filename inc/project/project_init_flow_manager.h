@@ -101,7 +101,7 @@ private:
    */
   void save_and_activate_after_successful_load_or_create ();
 
-#ifdef HAVE_CYAML
+#if HAVE_CYAML
   /**
    * Upgrades the given project YAML's schema if needed.
    *

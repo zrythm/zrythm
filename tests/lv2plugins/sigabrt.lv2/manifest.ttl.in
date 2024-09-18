@@ -3,5 +3,5 @@
 
 <https://www.zrythm.org/plugins/sigabrt>
 	a lv2:Plugin ;
-	lv2:binary <sigabrt@LIB_EXT@>  ;
+	lv2:binary <sigabrt@CMAKE_SHARED_LIBRARY_SUFFIX@>  ;
 	rdfs:seeAlso <sigabrt.ttl> .

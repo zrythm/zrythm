@@ -1,13 +1,13 @@
 #!/usr/bin/env sh
-# SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 set -xe
 
 jack_path=$(dirname $(ldconfig -p | grep 'libjack.so ' | head -n 1 | cut -d ' ' -f 4))
-export LD_LIBRARY_PATH="@ZRYTHM_CARLA_LIBDIR@:@ZRYTHM_LIBDIR@:$jack_path:@LIBDIR@:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="@zrythm_carla_libdir@:@zrythm_libdir@:$jack_path:@CMAKE_INSTALL_FULL_LIBDIR@:$LD_LIBRARY_PATH"
 
-export GSETTINGS_SCHEMA_DIR=@SCHEMAS_DIR@
+export GSETTINGS_SCHEMA_DIR=@gschemas_dir@
 export G_MESSAGES_DEBUG=zrythm
 
 user_dir="`gsettings get org.zrythm.Zrythm.preferences.general.paths zrythm-dir | sed s/\'//g`"

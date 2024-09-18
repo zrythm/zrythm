@@ -92,8 +92,10 @@
 
 G_DEFINE_TYPE (ZrythmApp, zrythm_app, GTK_TYPE_APPLICATION);
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wanalyzer-unsafe-call-within-signal-handler"
+#if defined(__GNUC__) && !defined(__clang__)
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wanalyzer-unsafe-call-within-signal-handler"
+#endif
 /** SIGSEGV/SIGABRT handler. */
 static void
 segv_handler (int sig)
@@ -154,7 +156,9 @@ sigterm_handler (int sig)
     }
 }
 
-#pragma GCC diagnostic pop
+#if defined(__GNUC__) && !defined(__clang__)
+#  pragma GCC diagnostic pop
+#endif
 
 ZrythmAppUiMessage *
 zrythm_app_ui_message_new (GtkMessageType type, const char * msg)
@@ -1393,7 +1397,7 @@ add_option_entries (ZrythmApp * self)
 bool
 zrythm_app_check_and_show_trial_limit_error (ZrythmApp * self)
 {
-#ifdef TRIAL_VER
+#if ZRYTHM_IS_TRIAL_VER
   if (PROJECT && TRACKLIST && TRACKLIST->tracks.size () >= TRIAL_MAX_TRACKS)
     {
       ui_show_error_message_printf (

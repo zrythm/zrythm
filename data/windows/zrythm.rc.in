@@ -34,7 +34,7 @@ BEGIN
     VALUE "FileDescription",  "Zrythm"
     VALUE "FileVersion",      "V1.0.0.0"
     VALUE "InternalName",     "zrythm"
-    VALUE "LegalCopyright",   "(C) @COPYRIGHT_YEARS@ @COPYRIGHT_NAME@"
+    VALUE "LegalCopyright",   "(C) @copyright_years@ @copyright_name@"
     VALUE "LegalTrademarks",  "Zrythm and the Zrythm logo are registered trademarks of Alexandros Theodotou in the United Kingdom"
     VALUE "OriginalFilename", "zrythm.exe"
     VALUE "ProductName",      "Zrythm"

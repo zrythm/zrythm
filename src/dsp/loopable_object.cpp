@@ -3,6 +3,7 @@
 
 #include "dsp/loopable_object.h"
 #include "utils/debug.h"
+#include "utils/gtest_wrapper.h"
 #include "zrythm.h"
 
 void

@@ -19,10 +19,10 @@ RegionOwnerImpl<RegionT>::remove_region (RegionT &region, bool fire_events)
     [&region] (const auto &r) { return r.get () == &region; });
   if (it_to_remove == regions_.end ())
     {
-      z_warning ("region to remove not found: {}", fmt::ptr (&region));
+      z_warning ("region to remove not found: {}", region);
       return false;
     }
-  z_trace ("removing region: {}", fmt::ptr (&region));
+  z_trace ("removing region: {}", region);
 
   if (is_in_active_project () && !is_auditioner ())
     {

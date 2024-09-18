@@ -823,7 +823,7 @@ ArrangerObject::copy_members_from (const ArrangerObject &other)
   type_ = other.type_;
   track_name_hash_ = other.track_name_hash_;
   deleted_temporarily_ = other.deleted_temporarily_;
-  flags_ = other.flags_;
+  // flags_ = other.flags_;
 }
 
 void

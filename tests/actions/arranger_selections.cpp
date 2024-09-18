@@ -290,54 +290,55 @@ public:
   void check_after_duplicate_timeline (bool new_tracks, bool link)
   {
     /* check */
-    ASSERT_EQ (
+    EXPECT_EQ (
       TL_SELECTIONS->get_num_objects (), new_tracks ? 2 : TOTAL_TL_SELECTIONS);
 
     const auto * midi_track =
       TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
-    ASSERT_NONNULL (midi_track);
+    EXPECT_NONNULL (midi_track);
     const auto * audio_track =
       TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
-    ASSERT_NONNULL (audio_track);
+    EXPECT_NONNULL (audio_track);
     const auto * new_midi_track =
       TRACKLIST->find_track_by_name<MidiTrack> (TARGET_MIDI_TRACK_NAME);
-    ASSERT_NONNULL (midi_track);
+    EXPECT_NONNULL (midi_track);
     const auto * new_audio_track =
       TRACKLIST->find_track_by_name<AudioTrack> (TARGET_AUDIO_TRACK_NAME);
-    ASSERT_NONNULL (audio_track);
+    EXPECT_NONNULL (audio_track);
 
     /* check prev midi region */
     if (new_tracks)
       {
-        ASSERT_SIZE_EQ (midi_track->lanes_[MIDI_REGION_LANE]->regions_, 1);
-        ASSERT_SIZE_EQ (new_midi_track->lanes_[MIDI_REGION_LANE]->regions_, 1);
+        EXPECT_SIZE_EQ (midi_track->lanes_.at (MIDI_REGION_LANE)->regions_, 1);
+        EXPECT_SIZE_EQ (
+          new_midi_track->lanes_.at (MIDI_REGION_LANE)->regions_, 1);
       }
     else
       {
-        ASSERT_SIZE_EQ (midi_track->lanes_[MIDI_REGION_LANE]->regions_, 2);
+        EXPECT_SIZE_EQ (midi_track->lanes_.at (MIDI_REGION_LANE)->regions_, 2);
       }
 
     auto       mr = midi_track->lanes_[MIDI_REGION_LANE]->regions_[0];
     const auto p1_before_move = p1_;
     const auto p2_before_move = p2_;
-    ASSERT_POSITION_EQ (mr->pos_, p1_before_move);
-    ASSERT_POSITION_EQ (mr->end_pos_, p2_before_move);
+    EXPECT_POSITION_EQ (mr->pos_, p1_before_move);
+    EXPECT_POSITION_EQ (mr->end_pos_, p2_before_move);
     REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (mr, *midi_track);
-    ASSERT_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
-    ASSERT_EQ (mr->id_.idx_, 0);
-    ASSERT_SIZE_EQ (mr->midi_notes_, 1);
+    EXPECT_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
+    EXPECT_EQ (mr->id_.idx_, 0);
+    EXPECT_SIZE_EQ (mr->midi_notes_, 1);
     {
       const auto &mn = mr->midi_notes_.at (0);
-      ASSERT_EQ (mn->region_id_, mr->id_);
-      ASSERT_EQ (mn->val_, MN_VAL);
-      ASSERT_EQ (mn->vel_->vel_, MN_VEL);
-      ASSERT_POSITION_EQ (mn->pos_, p1_);
-      ASSERT_POSITION_EQ (mn->end_pos_, p2_);
+      EXPECT_EQ (mn->region_id_, mr->id_);
+      EXPECT_EQ (mn->val_, MN_VAL);
+      EXPECT_EQ (mn->vel_->vel_, MN_VEL);
+      EXPECT_POSITION_EQ (mn->pos_, p1_);
+      EXPECT_POSITION_EQ (mn->end_pos_, p2_);
     }
     int link_group = mr->id_.link_group_;
     if (link)
       {
-        ASSERT_GT (mr->id_.link_group_, -1);
+        EXPECT_GT (mr->id_.link_group_, -1);
       }
 
     /* check new midi region */
@@ -353,55 +354,55 @@ public:
     auto p2_after_move = p2_;
     p1_after_move.add_ticks (MOVE_TICKS);
     p2_after_move.add_ticks (MOVE_TICKS);
-    ASSERT_POSITION_EQ (mr->pos_, p1_after_move);
-    ASSERT_POSITION_EQ (mr->end_pos_, p2_after_move);
+    EXPECT_POSITION_EQ (mr->pos_, p1_after_move);
+    EXPECT_POSITION_EQ (mr->end_pos_, p2_after_move);
     if (new_tracks)
       {
         REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (mr, *new_midi_track);
-        ASSERT_EQ (mr->id_.idx_, 0);
+        EXPECT_EQ (mr->id_.idx_, 0);
       }
     else
       {
         REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (mr, *midi_track);
-        ASSERT_EQ (mr->id_.idx_, 1);
+        EXPECT_EQ (mr->id_.idx_, 1);
       }
-    ASSERT_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
-    ASSERT_SIZE_EQ (mr->midi_notes_, 1);
+    EXPECT_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
+    EXPECT_SIZE_EQ (mr->midi_notes_, 1);
     REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (
       mr, new_tracks ? *new_midi_track : *midi_track);
-    ASSERT_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
+    EXPECT_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
     {
       const auto &mn = mr->midi_notes_[0];
-      ASSERT_EQ (mn->region_id_, mr->id_);
-      ASSERT_EQ (mn->val_, MN_VAL);
-      ASSERT_EQ (mn->vel_->vel_, MN_VEL);
-      ASSERT_POSITION_EQ (mn->pos_, p1_);
-      ASSERT_POSITION_EQ (mn->end_pos_, p2_);
+      EXPECT_EQ (mn->region_id_, mr->id_);
+      EXPECT_EQ (mn->val_, MN_VAL);
+      EXPECT_EQ (mn->vel_->vel_, MN_VEL);
+      EXPECT_POSITION_EQ (mn->pos_, p1_);
+      EXPECT_POSITION_EQ (mn->end_pos_, p2_);
     }
     if (link)
       {
-        ASSERT_EQ (mr->id_.link_group_, link_group);
+        EXPECT_EQ (mr->id_.link_group_, link_group);
       }
 
     /* check prev audio region */
     if (new_tracks)
       {
-        ASSERT_SIZE_EQ (audio_track->lanes_[AUDIO_REGION_LANE]->regions_, 1);
-        ASSERT_SIZE_EQ (new_audio_track->lanes_[AUDIO_REGION_LANE]->regions_, 1);
+        EXPECT_SIZE_EQ (audio_track->lanes_[AUDIO_REGION_LANE]->regions_, 1);
+        EXPECT_SIZE_EQ (new_audio_track->lanes_[AUDIO_REGION_LANE]->regions_, 1);
       }
     else
       {
-        ASSERT_SIZE_EQ (audio_track->lanes_[AUDIO_REGION_LANE]->regions_, 2);
+        EXPECT_SIZE_EQ (audio_track->lanes_[AUDIO_REGION_LANE]->regions_, 2);
       }
     auto ar = audio_track->lanes_[AUDIO_REGION_LANE]->regions_[0];
-    ASSERT_POSITION_EQ (ar->pos_, p1_before_move);
+    EXPECT_POSITION_EQ (ar->pos_, p1_before_move);
     REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (ar, *audio_track);
-    ASSERT_EQ (ar->id_.idx_, 0);
-    ASSERT_EQ (ar->id_.lane_pos_, AUDIO_REGION_LANE);
+    EXPECT_EQ (ar->id_.idx_, 0);
+    EXPECT_EQ (ar->id_.lane_pos_, AUDIO_REGION_LANE);
     link_group = ar->id_.link_group_;
     if (link)
       {
-        ASSERT_GT (ar->id_.link_group_, -1);
+        EXPECT_GT (ar->id_.link_group_, -1);
       }
 
     /* check new audio region */
@@ -413,13 +414,13 @@ public:
       {
         ar = audio_track->lanes_[AUDIO_REGION_LANE]->regions_[1];
       }
-    ASSERT_POSITION_EQ (ar->pos_, p1_after_move);
-    ASSERT_EQ (ar->id_.lane_pos_, AUDIO_REGION_LANE);
+    EXPECT_POSITION_EQ (ar->pos_, p1_after_move);
+    EXPECT_EQ (ar->id_.lane_pos_, AUDIO_REGION_LANE);
     REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK (
       ar, new_tracks ? *new_audio_track : *audio_track);
     if (link)
       {
-        ASSERT_EQ (ar->id_.link_group_, link_group);
+        EXPECT_EQ (ar->id_.link_group_, link_group);
       }
 
     if (!new_tracks)
@@ -427,55 +428,108 @@ public:
         /* check automation region */
         auto * const at = P_MASTER_TRACK->channel_->get_automation_track (
           PortIdentifier::Flags::StereoBalance);
-        ASSERT_NONNULL (at);
-        ASSERT_SIZE_EQ (at->regions_, 2);
+        EXPECT_NONNULL (at);
+        EXPECT_SIZE_EQ (at->regions_, 2);
 
         auto check_automation_region_contents =
           [&] (const auto &automation_region) {
-            ASSERT_SIZE_EQ (automation_region->aps_, 2);
+            EXPECT_SIZE_EQ (automation_region->aps_, 2);
             const auto &ap1 = automation_region->aps_[0];
-            ASSERT_POSITION_EQ (ap1->pos_, p1_);
-            ASSERT_NEAR (ap1->fvalue_, AP_VAL1, 0.000001f);
+            EXPECT_POSITION_EQ (ap1->pos_, p1_);
+            EXPECT_NEAR (ap1->fvalue_, AP_VAL1, 0.000001f);
             const auto &ap2 = automation_region->aps_[1];
-            ASSERT_POSITION_EQ (ap2->pos_, p2_);
-            ASSERT_NEAR (ap2->fvalue_, AP_VAL2, 0.000001f);
+            EXPECT_POSITION_EQ (ap2->pos_, p2_);
+            EXPECT_NEAR (ap2->fvalue_, AP_VAL2, 0.000001f);
           };
 
         {
           const auto &r = at->regions_.at (0);
-          ASSERT_POSITION_EQ (r->pos_, p1_before_move);
-          ASSERT_POSITION_EQ (r->end_pos_, p2_before_move);
+          EXPECT_POSITION_EQ (r->pos_, p1_before_move);
+          EXPECT_POSITION_EQ (r->end_pos_, p2_before_move);
           check_automation_region_contents (r);
         }
         {
           const auto &r = at->regions_.at (1);
-          ASSERT_POSITION_EQ (r->pos_, p1_after_move);
-          ASSERT_POSITION_EQ (r->end_pos_, p2_after_move);
+          EXPECT_POSITION_EQ (r->pos_, p1_after_move);
+          EXPECT_POSITION_EQ (r->end_pos_, p2_after_move);
           check_automation_region_contents (r);
         }
 
         /* check marker */
-        ASSERT_SIZE_EQ (P_MARKER_TRACK->markers_, 4);
+        EXPECT_SIZE_EQ (P_MARKER_TRACK->markers_, 4);
         auto m = P_MARKER_TRACK->markers_.at (2);
-        ASSERT_POSITION_EQ (m->pos_, p1_before_move);
-        ASSERT_EQ (m->name_, MARKER_NAME);
+        EXPECT_POSITION_EQ (m->pos_, p1_before_move);
+        EXPECT_EQ (m->name_, MARKER_NAME);
         m = P_MARKER_TRACK->markers_[3];
-        ASSERT_POSITION_EQ (m->pos_, p1_after_move);
-        ASSERT_EQ (m->name_, MARKER_NAME);
+        EXPECT_POSITION_EQ (m->pos_, p1_after_move);
+        EXPECT_EQ (m->name_, MARKER_NAME);
 
         /* check scale object */
-        ASSERT_SIZE_EQ (P_CHORD_TRACK->scales_, 2);
+        EXPECT_SIZE_EQ (P_CHORD_TRACK->scales_, 2);
         auto s = P_CHORD_TRACK->scales_[0];
-        ASSERT_POSITION_EQ (s->pos_, p1_before_move);
-        ASSERT_EQ (s->scale_.type_, MUSICAL_SCALE_TYPE);
-        ASSERT_EQ (s->scale_.root_key_, MUSICAL_SCALE_ROOT);
+        EXPECT_POSITION_EQ (s->pos_, p1_before_move);
+        EXPECT_EQ (s->scale_.type_, MUSICAL_SCALE_TYPE);
+        EXPECT_EQ (s->scale_.root_key_, MUSICAL_SCALE_ROOT);
         s = P_CHORD_TRACK->scales_.at (1);
-        ASSERT_POSITION_EQ (s->pos_, p1_after_move);
-        ASSERT_EQ (s->scale_.type_, MUSICAL_SCALE_TYPE);
-        ASSERT_EQ (s->scale_.root_key_, MUSICAL_SCALE_ROOT);
+        EXPECT_POSITION_EQ (s->pos_, p1_after_move);
+        EXPECT_EQ (s->scale_.type_, MUSICAL_SCALE_TYPE);
+        EXPECT_EQ (s->scale_.root_key_, MUSICAL_SCALE_ROOT);
       }
   }
 };
+
+TEST_F (ArrangerSelectionsFixture, DuplicateTimeline)
+{
+  /* when i == 1 we are moving to new tracks */
+  for (int i = 0; i < 2; i++)
+    {
+      const int track_diff = i == 0 ? 0 : 2;
+      if (track_diff != 0)
+        {
+          select_audio_and_midi_regions_only ();
+          auto * midi_track =
+            TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
+          auto * audio_track =
+            TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
+          auto * new_midi_track =
+            TRACKLIST->find_track_by_name<MidiTrack> (TARGET_MIDI_TRACK_NAME);
+          auto * new_audio_track =
+            TRACKLIST->find_track_by_name<AudioTrack> (TARGET_AUDIO_TRACK_NAME);
+          midi_track->lanes_.at (MIDI_REGION_LANE)
+            ->regions_.front ()
+            ->move_to_track (new_midi_track, -1, -1);
+          audio_track->lanes_.at (AUDIO_REGION_LANE)
+            ->regions_.front ()
+            ->move_to_track (new_audio_track, -1, -1);
+        }
+      /* do move ticks */
+      TL_SELECTIONS->add_ticks (MOVE_TICKS);
+
+      /* do duplicate */
+      UNDO_MANAGER->perform (
+        std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
+          *TL_SELECTIONS, false, MOVE_TICKS, track_diff, 0, nullptr,
+          F_ALREADY_MOVED));
+
+      /* check */
+      check_after_duplicate_timeline (i != 0, false);
+
+      /* undo and check that the objects are at their original state*/
+      UNDO_MANAGER->undo ();
+      check_vs_original_state (false);
+      check_has_single_redo ();
+
+      /* redo and check that the objects are moved
+       * again */
+      UNDO_MANAGER->redo ();
+      check_after_duplicate_timeline (i != 0, false);
+
+      /* undo again to prepare for next test */
+      UNDO_MANAGER->undo ();
+      check_vs_original_state (false);
+      check_has_single_redo ();
+    }
+}
 
 TEST_F (ArrangerSelectionsFixture, CopyAudioRegionAndPasteAfterChangingBPM)
 {
@@ -509,57 +563,6 @@ TEST_F (ArrangerSelectionsFixture, CopyAudioRegionAndPasteAfterChangingBPM)
   sel->post_deserialize ();
   ASSERT_TRUE (sel->can_be_pasted ());
   sel->paste_to_pos (PLAYHEAD, true);
-}
-
-TEST_F (ArrangerSelectionsFixture, DuplicateTimeline)
-{
-  /* when i == 1 we are moving to new tracks */
-  for (int i = 0; i < 2; i++)
-    {
-      const int track_diff = i == 0 ? 0 : 2;
-      if (track_diff != 0)
-        {
-          select_audio_and_midi_regions_only ();
-          auto midi_track =
-            TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
-          auto audio_track =
-            TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
-          auto new_midi_track =
-            TRACKLIST->find_track_by_name<MidiTrack> (TARGET_MIDI_TRACK_NAME);
-          auto new_audio_track =
-            TRACKLIST->find_track_by_name<AudioTrack> (TARGET_AUDIO_TRACK_NAME);
-          midi_track->lanes_[MIDI_REGION_LANE]->regions_[0]->move_to_track (
-            new_midi_track, -1, -1);
-          audio_track->lanes_[AUDIO_REGION_LANE]->regions_[0]->move_to_track (
-            new_audio_track, -1, -1);
-        }
-      /* do move ticks */
-      TL_SELECTIONS->add_ticks (MOVE_TICKS);
-
-      /* do duplicate */
-      UNDO_MANAGER->perform (
-        std::make_unique<ArrangerSelectionsAction::MoveOrDuplicateTimelineAction> (
-          *TL_SELECTIONS, false, MOVE_TICKS, track_diff, 0, nullptr,
-          F_ALREADY_MOVED));
-
-      /* check */
-      check_after_duplicate_timeline (i != 0, false);
-
-      /* undo and check that the objects are at their original state*/
-      UNDO_MANAGER->undo ();
-      check_vs_original_state (false);
-      check_has_single_redo ();
-
-      /* redo and check that the objects are moved
-       * again */
-      UNDO_MANAGER->redo ();
-      check_after_duplicate_timeline (i != 0, false);
-
-      /* undo again to prepare for next test */
-      UNDO_MANAGER->undo ();
-      check_vs_original_state (false);
-      check_has_single_redo ();
-    }
 }
 
 TEST_F (ArrangerSelectionsFixture, DuplicateAutomationRegion)
@@ -629,19 +632,19 @@ TEST_F (ArrangerSelectionsFixture, LinkTimeline)
       std::unique_ptr<TimelineSelections> sel_before;
       check_vs_original_state (false);
 
-      int track_diff = i ? 2 : 0;
-      if (track_diff)
+      int track_diff = i != 0 ? 2 : 0;
+      if (track_diff != 0)
         {
           select_audio_and_midi_regions_only ();
           sel_before = TL_SELECTIONS->clone_unique ();
 
-          auto midi_track =
+          auto * midi_track =
             TRACKLIST->find_track_by_name<MidiTrack> (MIDI_TRACK_NAME);
-          auto audio_track =
+          auto * audio_track =
             TRACKLIST->find_track_by_name<AudioTrack> (AUDIO_TRACK_NAME);
-          auto new_midi_track =
+          auto * new_midi_track =
             TRACKLIST->find_track_by_name<MidiTrack> (TARGET_MIDI_TRACK_NAME);
-          auto new_audio_track =
+          auto * new_audio_track =
             TRACKLIST->find_track_by_name<AudioTrack> (TARGET_AUDIO_TRACK_NAME);
           midi_track->lanes_[MIDI_REGION_LANE]->regions_[0]->move_to_track (
             new_midi_track, -1, -1);
@@ -659,10 +662,10 @@ TEST_F (ArrangerSelectionsFixture, LinkTimeline)
       /* do link */
       UNDO_MANAGER->perform (
         std::make_unique<ArrangerSelectionsAction::LinkAction> (
-          *sel_before, *TL_SELECTIONS, MOVE_TICKS, i > 0 ? 2 : 0, 0, false));
+          *sel_before, *TL_SELECTIONS, MOVE_TICKS, track_diff, 0, false));
 
       /* check */
-      check_after_duplicate_timeline (i, true);
+      check_after_duplicate_timeline (track_diff > 0, true);
 
       /* undo and check that the objects are at their original state*/
       UNDO_MANAGER->undo ();

@@ -1,0 +1,32 @@
+
+########## https://lv2.zrythm.org/faust-builtin/highpass_filter ##########
+
+@prefix doap: <http://usefulinc.com/ns/doap#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix lv2:  <http://lv2plug.in/ns/lv2core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<https://lv2.zrythm.org/faust-builtin/highpass_filter>
+    a lv2:Plugin ;
+    lv2:binary <highpass_filter@CMAKE_SHARED_LIBRARY_SUFFIX@> ;
+    rdfs:seeAlso <highpass_filter.ttl> .
+
+# Here's how you can declare the category of the plugin. (For instruments,
+# the lv2:InstrumentPlugin type will be added automatically.) See
+# http://lv2plug.in/ns/lv2core/ for a list of known plugin classes.
+
+# <https://lv2.zrythm.org/faust-builtin/highpass_filter> a lv2:FilterPlugin .
+
+# You might also want to set the license and author information below.
+# NOTE: This isn't normally necessary if you declared the corresponding
+# information as metadata in the Faust source of the plugin. The standard
+# author, license and description fields in the Faust source are automagically
+# included in the generated LV2 manifest.
+
+# <https://lv2.zrythm.org/faust-builtin/highpass_filter>
+#     doap:license <http://opensource.org/licenses/isc> ;
+#     doap:maintainer [
+#         foaf:name "Your Name Here" ;
+#         foaf:homepage <http://somewhere.org/> ;
+#         foaf:mbox <mailto:your@mail.here> ;
+#     ] .

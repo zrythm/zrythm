@@ -236,6 +236,10 @@ operator== (const AudioRegion &lhs, const AudioRegion &rhs)
               == static_cast<const ArrangerObject &> (rhs);
 }
 
+DEFINE_OBJECT_FORMATTER (AudioRegion, [] (const AudioRegion &val) {
+  return fmt::format ("AudioRegion[id: {}]", val.id_);
+})
+
 /**
  * @}
  */

@@ -3,5 +3,5 @@
 
 <http://lv2plug.in/plugins/eg-fifths>
 	a lv2:Plugin ;
-	lv2:binary <fifths@LIB_EXT@> ;
+	lv2:binary <fifths@CMAKE_SHARED_LIBRARY_SUFFIX@> ;
 	rdfs:seeAlso <fifths.ttl> .

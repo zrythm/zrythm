@@ -29,7 +29,7 @@ welcome_message_dialog_new (GtkWindow * parent)
     "<a href=\"" USER_MANUAL_URL "\">", "</a>");
   g_string_append_printf (gstr, "%s\n\n", getting_started_guide);
 
-#if !defined(INSTALLER_VER) || defined(TRIAL_VER)
+#if !ZRYTHM_IS_INSTALLER_VER || ZRYTHM_IS_TRIAL_VER
   char * donations = g_strdup_printf (
     _ ("%sZrythm relies on donations and purchases "
        "to sustain development%s. If you enjoy the "

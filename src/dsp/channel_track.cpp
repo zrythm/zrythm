@@ -130,7 +130,7 @@ bool
 ChannelTrack::validate_base () const
 {
   z_return_val_if_fail (channel_ != nullptr, false);
-  for (int i = 0; i < STRIP_SIZE; i++)
+  for (size_t i = 0; i < STRIP_SIZE; ++i)
     {
       z_return_val_if_fail (
         channel_->sends_[i]->track_name_hash_
@@ -153,7 +153,7 @@ ChannelTrack::validate_base () const
     }
 
   /* verify sends */
-  for (int i = 0; i < STRIP_SIZE; i++)
+  for (size_t i = 0; i < STRIP_SIZE; ++i)
     for (auto &send : channel_->sends_)
       {
         z_return_val_if_fail (send->validate (), false);

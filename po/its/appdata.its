@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!--
+  SPDX-FileCopyrightText: (C) 2015-2024 Matthias Klumpp <matthias@tenstral.net>
+  SPDX-FileCopyrightText: (C) 2019 Takao Fujiwara <takao.fujiwara1@gmail.com>
+  SPDX-License-Identifier: FSFAP
+
+  https://github.com/ximion/appstream
+-->
+<its:rules xmlns:its="http://www.w3.org/2005/11/its"
+           version="2.0">
+
+  <its:withinTextRule withinText="yes" selector="/component//description//em   |
+                                                 /component//description//code"/>
+
+  <!-- by default, don't translate -->
+  <its:translateRule selector="/component" translate="no"/>
+  
+  <!-- translate only these elements -->
+  <its:translateRule selector="/component/summary |
+                               /component/description |
+                               /component/name_variant_suffix |
+                               /component/agreement/agreement_section/name |
+                               /component/agreement/agreement_section/description"
+                     translate="yes"/>
+</its:rules>

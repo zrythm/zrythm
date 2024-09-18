@@ -3,5 +3,5 @@
 
 <http://lv2plug.in/plugins/eg-amp>
 	a lv2:Plugin ;
-	lv2:binary <amp@LIB_EXT@>  ;
+	lv2:binary <amp@CMAKE_SHARED_LIBRARY_SUFFIX@>  ;
 	rdfs:seeAlso <amp.ttl> .

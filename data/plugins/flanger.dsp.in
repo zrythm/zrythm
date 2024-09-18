@@ -14,9 +14,9 @@
  * ---
  */
 
-declare name "@NAME@";
-declare description "@DESCRIPTION@";
-declare author "@AUTHOR@";
+declare name "@pl_name@";
+declare description "@pl_descr@";
+declare author "@pl_author@";
 declare copyright "© 2022 Alexandros Theodotou";
 declare version "1.0";
 declare license "AGPL-3.0-or-later";

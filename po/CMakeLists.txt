@@ -1,0 +1,180 @@
+# SPDX-FileCopyrightText: © 2019-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+set(languages_for_gettext)
+foreach(lang_pair ${language_mappings})
+  string(REPLACE "/" ";" lang_list ${lang_pair})
+  list(GET lang_list 0 lang_code)
+  if(NOT ${lang_code} STREQUAL "en")
+    list(APPEND languages_for_gettext ${lang_code})
+  endif()
+endforeach()
+message(STATUS "Languages for gettext: ${languages_for_gettext}")
+
+# ================================================================
+# Generate POTFILES
+# ================================================================
+
+set(potfiles_path "${CMAKE_CURRENT_SOURCE_DIR}/POTFILES.in")
+add_custom_target(collect-translatables
+  BYPRODUCTS ${potfiles_path}
+  COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/collect_translatables.py
+    ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${potfiles_path}
+  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/collect_translatables.py
+    ${CMAKE_BINARY_DIR}/data/org.zrythm.Zrythm.gschema.xml
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMMENT "Collecting translatables (generating POTFILES.in)..."
+)
+
+# ================================================================
+# Generate/update .pot file
+# ================================================================
+
+# Custom target to generate/update the .pot file
+set(pot_path "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.pot")
+add_custom_target(gen-pot
+  BYPRODUCTS ${pot_path}
+  COMMAND xgettext --keyword=N_ --keyword=_ --keyword=C_:1c,2
+    --add-comments --from-code=UTF-8
+    --package-name=${prog_name} --package-version=${ZRYTHM_VERSION}
+    --msgid-bugs-address=${issue_tracker_url}
+    -o ${pot_path} -f ${potfiles_path}
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  DEPENDS ${potfiles_path}
+  COMMENT "Extracting translatable messages to ${pot_path}"
+)
+
+# join appdata translations in pot file
+if(ITSTOOL_EXECUTABLE)
+  set(appstream_its_rules "${CMAKE_CURRENT_SOURCE_DIR}/its/appdata.its")
+  set(appstream_its_rules "${appstream_its_rules}" PARENT_SCOPE)
+  set(pot_path2_tmp "${pot_path}.2.in")
+  add_custom_command(
+    TARGET gen-pot
+    POST_BUILD
+    # generate a temp .pot file for appdata
+    COMMAND ${ITSTOOL_EXECUTABLE} -o ${pot_path2_tmp}
+      "--its=${appstream_its_rules}"
+      "${CMAKE_BINARY_DIR}/data/org.zrythm.Zrythm.appdata.xml.in"
+    # strip comments and location
+    COMMAND msgattrib --no-location -o ${pot_path2_tmp} ${pot_path2_tmp}
+    # merge into main .pot file
+    COMMAND msgcat --use-first ${pot_path} ${pot_path2_tmp} -o ${pot_path}
+    # cleanup
+    COMMAND ${CMAKE_COMMAND} -E remove "${pot_path2_tmp}"
+    COMMENT "Appending XML translations from ${xml_file} into .pot file..."
+    DEPENDS "${CMAKE_BINARY_DIR}/data/org.zrythm.Zrythm.appdata.xml.in"
+  )
+endif()
+
+# ================================================================
+# Update .po files from .pot file
+# ================================================================
+
+# This will update .po files when explicitly called
+# (doesn't run by default)
+add_custom_target(update-po)
+foreach(lang ${languages_for_gettext})
+  add_custom_command(
+    TARGET update-po
+    BYPRODUCTS ${lang}.po
+    COMMAND "${GETTEXT_MSGMERGE_EXECUTABLE}" --update "${CMAKE_CURRENT_SOURCE_DIR}/${lang}.po" ${pot_path}
+    DEPENDS ${pot_path}
+    COMMENT "Updating ${lang}.po"
+  )
+endforeach()
+
+# ================================================================
+# Generate .mo files
+# ================================================================
+
+# This will compile .po to .gmo files and install them by default
+# Creates a target `pofiles`.
+foreach(lang ${languages_for_gettext})
+  gettext_process_po_files(${lang}
+    ALL
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LOCALEDIR}
+    PO_FILES ${lang}.po
+    )
+endforeach()
+
+# ================================================================
+# Set some global variables
+# ================================================================
+
+set(po_files ${languages_for_gettext})
+set(mo_files ${languages_for_gettext})
+list(TRANSFORM po_files APPEND ".po")
+list(TRANSFORM mo_files APPEND ".gmo")
+set(source_po_files "${po_files}")
+set(build_po_files "${po_files}")
+set(build_mo_files "${mo_files}")
+list(TRANSFORM source_po_files PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
+list(TRANSFORM build_po_files PREPEND "${CMAKE_CURRENT_BINARY_DIR}/")
+list(TRANSFORM build_mo_files PREPEND "${CMAKE_CURRENT_BINARY_DIR}/")
+set(source_po_files "${source_po_files}" PARENT_SCOPE)
+set(build_po_files "${build_po_files}" PARENT_SCOPE)
+set(build_mo_files "${build_mo_files}" PARENT_SCOPE)
+
+# ================================================================
+# Generate locales.h
+# ================================================================
+
+set(ll_langs)
+set(lang_codes)
+set(lang_strings)
+set(lang_strings_w_codes)
+foreach(lang_pair ${language_mappings})
+  string(REPLACE "/" ";" lang_list ${lang_pair})
+  list(GET lang_list 0 lang_code)
+  list(GET lang_list 1 lang_name)
+  string(TOUPPER ${lang_code} lang_upper)
+  set(ll_langs "${ll_langs}  LL_${lang_upper},\n")
+  set(lang_codes "${lang_codes}  \"${lang_code}\",\n")
+  set(lang_strings "${lang_strings}  \"${lang_name}\",\n")
+  set(lang_strings_w_codes "${lang_strings_w_codes}  \"${lang_name} [${lang_code}]\",\n")
+endforeach()
+set(LL_LANGS "${ll_langs}" PARENT_SCOPE)
+
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/locales.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/zrythm-locales.h
+  @ONLY
+)
+
+# ================================================================
+# Generate LINGUAS
+# ================================================================
+
+# Generate LINGUAS file
+set(linguas_file "${CMAKE_CURRENT_SOURCE_DIR}/LINGUAS")
+string(REPLACE ";" "\n" languages_newline "${languages_for_gettext}")
+file(WRITE ${linguas_file} "${languages_newline}")
+
+# ================================================================
+# Test PO files for errors
+# ================================================================
+
+if(GETTEXT_MSGFMT_EXECUTABLE)
+  foreach(lang_pair ${language_mappings})
+    string(REPLACE "/" ";" lang_list ${lang_pair})
+    list(GET lang_list 0 lang_code)
+    if(NOT ${lang_code} STREQUAL "en" AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${lang_code}.po)
+      add_test(
+        NAME ${lang_code}-po
+        COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -v -c ${CMAKE_CURRENT_SOURCE_DIR}/${lang_code}.po
+      )
+      set_tests_properties(${lang_code}-po PROPERTIES LABELS "i18n")
+
+      if(OS_GNU)
+        foreach(illegal_char ${illegal_chars})
+          add_test(
+            NAME ${lang_code}-po-illegal-char-${illegal_char}
+            COMMAND ${CMAKE_COMMAND} -E env LANG=C grep -n "[${illegal_char}]" ${CMAKE_CURRENT_SOURCE_DIR}/${lang_code}.po
+          )
+          set_tests_properties(${lang_code}-po-illegal-char-${illegal_char} PROPERTIES LABELS "i18n")
+        endforeach()
+      endif()
+    endif()
+  endforeach()
+endif()

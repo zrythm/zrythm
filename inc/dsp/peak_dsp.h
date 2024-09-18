@@ -41,7 +41,7 @@ public:
 
   float read_f ();
 
-  void read (float * rms, float * peak);
+  void read (float * irms, float * ipeak);
 
   void reset ();
 

@@ -29,16 +29,11 @@
 
 #include "zrythm-config.h"
 
-#include "utils/rt_thread_id.h"
-
-#ifdef HAVE_C11_THREADS
-#  include <threads.h>
-#endif
-
 #include "dsp/control_port.h"
 #include "dsp/engine.h"
 #include "dsp/graph.h"
 #include "dsp/graph_thread.h"
+#include "utils/rt_thread_id.h"
 #include "utils/types.h"
 
 #include "gtk_wrapper.h"
@@ -102,14 +97,9 @@ public:
    */
   [[nodiscard]] ATTR_HOT inline bool is_processing_thread () const
   {
-#ifdef HAVE_C11_THREADS
     /* this is called too often so use this optimization */
     static thread_local bool have_result = false;
     static thread_local bool is_processing_thread = false;
-#else
-    bool have_result = false;
-    bool is_processing_thread = false;
-#endif
 
     if (have_result) [[likely]]
       {

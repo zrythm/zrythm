@@ -4,26 +4,20 @@
 /**
  * @file
  *
- * This file must only be included in
- * utils/localization.c.
+ * This file must only be included in utils/localization.c.
  *
- * Each array can be accessed via localization_*()
- * wrappers.
+ * Each array can be accessed via localization_*() wrappers.
  */
 
 #ifndef __PO_LOCALES_H__
 #define __PO_LOCALES_H__
 
-const char * language_codes[] = {
-@LANG_CODES@
-};
+// clang-format off
+const char * language_codes[] = { @lang_codes@ };
 
-const char * language_strings[] = {
-@LANG_STRINGS@
-};
+const char * language_strings[] = { @lang_strings@ };
 
-const char * language_strings_w_codes[] = {
-@LANG_STRINGS_W_CODES@
-};
+const char * language_strings_w_codes[] = { @lang_strings_w_codes@ };
+// clang-format on
 
 #endif

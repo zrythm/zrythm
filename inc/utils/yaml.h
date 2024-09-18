@@ -12,7 +12,7 @@
 
 #include "zrythm-config.h"
 
-#ifdef HAVE_CYAML
+#if HAVE_CYAML
 
 #  include "gtk_wrapper.h"
 #  include <cyaml/cyaml.h>

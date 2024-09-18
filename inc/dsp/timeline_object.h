@@ -35,4 +35,8 @@ operator== (const TimelineObject &rhs, const TimelineObject &lhs)
   return true;
 }
 
+using TimelineObjectVariant = std::
+  variant<ScaleObject, MidiRegion, AudioRegion, ChordRegion, AutomationRegion, Marker>;
+using TimelineObjectPtrVariant = to_pointer_variant<TimelineObjectVariant>;
+
 #endif // __AUDIO_TIMELINE_OBJECT_H__

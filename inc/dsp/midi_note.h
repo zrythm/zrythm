@@ -4,6 +4,8 @@
 #ifndef __AUDIO_MIDI_NOTE_H__
 #define __AUDIO_MIDI_NOTE_H__
 
+#include "zrythm-config.h"
+
 #include <cstdint>
 #include <memory>
 
@@ -142,14 +144,11 @@ operator== (const MidiNote &lhs, const MidiNote &rhs)
               == static_cast<const ArrangerObject &> (rhs);
 }
 
-DEFINE_OBJECT_FORMATTER (
-  MidiNote,
-  fmt::format (
-    "MidiNote [{} ~ {}]: note {}, vel {}",
-    val.pos_,
-    val.end_pos_,
-    val.val_,
-    val.vel_->vel_));
+DEFINE_OBJECT_FORMATTER (MidiNote, [] (const MidiNote &val) {
+  return fmt::format (
+    "MidiNote [{} ~ {}]: note {}, vel {}", val.pos_, val.end_pos_, val.val_,
+    val.vel_->vel_);
+});
 
 /**
  * @}

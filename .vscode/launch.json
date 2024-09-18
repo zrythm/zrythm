@@ -2,14 +2,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug",
+            "name": "Debug (GDB)",
             "type": "gdb",
             "request": "launch",
-            "target": "${workspaceFolder}/${config:mesonbuild.buildFolder}/src/zrythm",
+            "target": "${command:cmake.launchTargetPath}",
             "cwd": "${workspaceFolder}",
             "valuesFormatting": "parseText",
             "env": {
-                "GSETTINGS_SCHEMA_DIR": "${workspaceFolder}/_installed/share/glib-2.0/schemas",
+                "GSETTINGS_SCHEMA_DIR": "${config:cmake.installPrefix}/share/glib-2.0/schemas",
                 "G_DEBUG": "fatal_criticals",
                 "ZRYTHM_BREAK_ON_ERROR": "1",
             },

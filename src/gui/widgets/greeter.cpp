@@ -654,7 +654,7 @@ greeter_widget_init (GreeterWidget * self)
   adw_status_page_set_description (
     self->read_manual_status_page, read_manual_txt.c_str ());
 
-#if !defined(INSTALLER_VER) || defined(TRIAL_VER)
+#if !ZRYTHM_IS_INSTALLER_VER || ZRYTHM_IS_TRIAL_VER
   auto donations = format_str (
     _ ("Zrythm relies on donations and purchases "
        "to sustain development. If you enjoy the "

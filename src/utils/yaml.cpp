@@ -5,7 +5,7 @@
 
 #include "utils/logger.h"
 
-#ifdef HAVE_CYAML
+#if HAVE_CYAML
 
 #  include "utils/objects.h"
 #  include "utils/yaml.h"

@@ -322,7 +322,7 @@ localization_init (
     }
 
     /* bind text domain */
-#if defined(_WIN32) && defined(INSTALLER_VER)
+#if defined(_WIN32) && ZRYTHM_IS_INSTALLER_VER
   const char * windows_localedir = "share/locale";
   bindtextdomain (GETTEXT_PACKAGE, windows_localedir);
   bindtextdomain ("libadwaita", windows_localedir);

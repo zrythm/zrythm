@@ -7,7 +7,6 @@
 #include "dsp/lane_owned_object.h"
 #include "dsp/midi_note.h"
 #include "dsp/region.h"
-#include "utils/types.h"
 
 class Track;
 class Position;
@@ -278,7 +277,7 @@ public:
    * @param offset_in_ticks Offset value if note is
    * repeated inside a loop
    */
-  bool is_note_export_start_pos_in_full_region (const Position start_pos) const;
+  bool is_note_export_start_pos_in_full_region (Position start_pos) const;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -319,6 +318,10 @@ operator== (const MidiRegion &lhs, const MidiRegion &rhs)
          && static_cast<const ArrangerObject &> (lhs)
               == static_cast<const ArrangerObject &> (rhs);
 }
+
+DEFINE_OBJECT_FORMATTER (MidiRegion, [] (const MidiRegion &val) {
+  return fmt::format ("MidiRegion[id: {}]", val.id_);
+})
 
 /**
  * @}

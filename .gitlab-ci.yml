@@ -15,12 +15,12 @@ workflow:
     - if: $CI_COMMIT_TAG
 
 variables:
-  COMMON_MESON_OPTIONS: >-
-    -Dstrict_flags=true
-    -Dyaml_project_compatibility=enabled
+  COMMON_CMAKE_OPTIONS: >-
+    -DZRYTHM_STRICT=ON
+    -DZRYTHM_YAML_PROJECT_COMPATIBILITY=ON
     -Dforce_fallback_for=gtk4,libadwaita,libpanel,yyjson,libcyaml
-    -Dtests=true
-    -Dbenchmarks=true
+    -DZRYTHM_TESTS=ON
+    -DZRYTHM_BENCHMARKS=ON
 
 stages:
   - setup
@@ -51,10 +51,6 @@ stages:
   tags:
     - archlinux
   variables:
-    CC: "ccache gcc"
-    CXX: "ccache g++"
-    CC_LD: mold
-    CXX_LD: mold
     BUILDDIR: "build_gnu_linux"
   before_script:
     - *unix-activate-venv
@@ -67,10 +63,7 @@ stages:
   tags:
     - mac-arm
   variables:
-    CC: "ccache clang"
-    CXX: "ccache clang++"
     BUILDDIR: "build_mac_arm"
-    PKG_CONFIG_PATH: "/opt/zrythm-installed-deps/lib/pkgconfig:$PKG_CONFIG_PATH"
   before_script:
     - *mac-enable-brew-env
     - *unix-activate-venv
@@ -83,8 +76,6 @@ stages:
   tags:
     - windows11
   variables:
-    CC: "ccache cl"
-    CXX: "ccache cl"
     BUILDDIR: "build_windows"
     INSTALLDIR: "install_windows"
     BOOST_ROOT: "C:\\Boost\\boost_1_86_0"
@@ -92,7 +83,7 @@ stages:
     VCPKG_INSTALLED_DIR: "C:\\vcpkg\\installed\\x64-windows"
     # use /MP1 to disable parallel builds if the compiler messages are hard to read
     CL: "/MP" # prepended to the cl command
-    _CL_: "/Zc:__cplusplus" # appended to the cl command
+    _CL_: "" # appended to the cl command
     _LINK_: /verbose
   before_script:
     - *windows-enable-vs-env
@@ -118,7 +109,12 @@ configure:gnu/linux:
     - *unix-activate-venv
     - python3 -m pip install -r requirements.txt
   script:
-    - meson setup $BUILDDIR $COMMON_MESON_OPTIONS -Dbackend_max_links=4
+    - >-
+      cmake -B $BUILDDIR $COMMON_CMAKE_OPTIONS
+      -DCMAKE_C_COMPILER_LAUNCHER=ccache
+      -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+      -DCMAKE_C_COMPILER=gcc
+      -DCMAKE_CXX_COMPILER=g++
 
 configure:mac-arm:
   extends: .mac-arm-template
@@ -129,7 +125,15 @@ configure:mac-arm:
     - *unix-activate-venv
     - python3 -m pip install -r requirements.txt
   script:
-    - meson setup $BUILDDIR $COMMON_MESON_OPTIONS -Dgtk4:x11-backend=false -Dx11=disabled
+    - >-
+      cmake -B $BUILDDIR $COMMON_CMAKE_OPTIONS
+      -G "Xcode"
+      -Dgtk4:x11-backend=false
+      -DCMAKE_C_COMPILER_LAUNCHER=ccache
+      -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+      -DCMAKE_C_COMPILER=clang
+      -DCMAKE_CXX_COMPILER=clang++
+      -DCMAKE_PREFIX_PATH=/opt/zrythm-installed-deps
 
 configure:windows:
   extends: .windows-template
@@ -142,38 +146,43 @@ configure:windows:
   script:
     # TODO: enable strict flags & tests
     - >-
-      meson setup "${env:BUILDDIR}"
-      -Dstrict_flags=false
-      -Dyaml_project_compatibility=enabled
+      cmake -B "${env:BUILDDIR}"
+      -DZRYTHM_STRICT=ON
+      -DZRYTHM_YAML_PROJECT_COMPATIBILITY=ON
       "-Dforce_fallback_for=libcyaml,magic_enum"
-      -Dtests=false
-      -Dbenchmarks=false 
-      -Dmanpage=false -Dcompletions=false
-      -Dfftw3_threads_separate=false
+      -DZRYTHM_TESTS=OFF
+      -DZRYTHM_BENCHMARKS=OFF 
+      -DZRYTHM_FFTW3_THREADS_SEPARATE=FALSE
       "-Dsoxr_lib_dir=${env:VCPKG_INSTALLED_DIR}\lib"
       "-Dsoxr_include_dir=${env:VCPKG_INSTALLED_DIR}\include"
-      "--pkg-config-path=${env:VCPKG_INSTALLED_DIR}\lib\pkgconfig;C:\lv2\lib\pkgconfig;C:\gtk-for-zrythm\lib\pkgconfig;C:\Users\alex\source\repos\carla\carla_installed\lib\pkgconfig"
+      "-DCMAKE_PREFIX_PATH=${env:VCPKG_INSTALLED_DIR};C:\lv2;C:\gtk-for-zrythm;C:\Users\alex\source\repos\carla\carla_installed"
       -Dcarla_binaries_dir=C:\Users\alex\source\repos\carla\carla_installed\bin
-      --backend=vs2022
-      -Db_vscrt=mdd
-      -Doptimization=0
-      "--prefix=${PWD}\${env:INSTALLDIR}"
+      -G "Visual Studio 17 2022"
+      -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreadedDebugDLL"
+      -DCMAKE_BUILD_TYPE=Debug
+      "-DCMAKE_INSTALL_PREFIX=${PWD}\${env:INSTALLDIR}"
+      -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl
+      -DCMAKE_C_COMPILER_LAUNCHER=ccache
+      -DCMAKE_CXX_COMPILER_LAUNCHER=ccache   
 
 clang-format-check:
   extends: .gnu-linux-template
   stage: check
+  needs: []
   script:
-    - ninja -C $BUILDDIR clang-format-check
+    - python3 scripts/run_clang_format.py --dry-run
 
 reuse-check:
   extends: .gnu-linux-template
   stage: check
+  needs: []
   script:
    - reuse lint
 
 exif-check:
   extends: .gnu-linux-template
   stage: check
+  needs: []
   script:
    - scripts/exif_check.sh
 
@@ -181,22 +190,23 @@ build:gnu/linux:
   extends: .gnu-linux-template
   stage: build
   script:
-   - ninja -C $BUILDDIR
+   - cmake --build $BUILDDIR
 
 build:mac-arm:
   extends: .mac-arm-template
   stage: build
   script:
-    - ninja -C $BUILDDIR
+    - cmake --build $BUILDDIR --config Debug
 
 build:windows:
   extends: .windows-template
   stage: build
   script:
-    - meson compile -C ${env:BUILDDIR} --verbose --vs-args="-nologo"
+    # - meson compile -C ${env:BUILDDIR} --verbose --vs-args="-nologo"
+    - cmake --build ${env:BUILDDIR} --verbose -- /nologo
 
 .unix_test_cmd: &unix_test_cmd
-  - ninja -C $BUILDDIR test || (cat "$BUILDDIR/meson-logs/testlog.txt" && exit 1)
+  - ctest --test-dir $BUILDDIR -V || (cat "$BUILDDIR/Testing/Temporary/LastTest.log" && exit 1)
 
 test:gnu/linux:
   extends: .gnu-linux-template
@@ -214,13 +224,14 @@ test:windows:
   extends: .windows-template
   stage: test
   script:
-    - ninja -C ${env:BUILDDIR} test; if (-not $?) { Get-Content ${env:BUILDDIR}/meson-logs/testlog.txt; exit 1 }
+    - ctest --test-dir ${env:BUILDDIR} -V; if (-not $?) { Get-Content ${env:BUILDDIR}/Testing/Temporary/LastTest.log; exit 1 }
+
 
 test-valgrind:
   extends: .gnu-linux-template
   stage: test
   script:
-    - meson test -C $BUILDDIR --wrap='valgrind --undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1' --timeout-multiplier 3 || (cat "$BUILDDIR"/meson-logs/testlog-valgrind.txt && exit 1)
+    - ctest --test-dir $BUILDDIR -V --overwrite MemoryCheckCommand=valgrind --overwrite MemoryCheckCommandOptions="--undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1" -T memcheck || (cat "$BUILDDIR/Testing/Temporary/MemoryChecker.*.log" && exit 1)
 
 update-manual:
   stage: deploy
@@ -248,7 +259,7 @@ update-dev-docs:
   tags:
     - archlinux
   script:
-    - ninja -C $BUILDDIR gen-dev-docs &> gen_dev_docs_results.txt || (cat gen_dev_docs_results.txt && exit 1)
+    - cmake --build $BUILDDIR --target doxygen-docs &> gen_dev_docs_results.txt || (cat gen_dev_docs_results.txt && exit 1)
     - rsync -av --no-group --omit-dir-times "$BUILDDIR"/doc/dev/html/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_DEV_DOCS_UPLOAD_PATH
   before_script:
     - eval $(ssh-agent -s)

@@ -65,6 +65,7 @@ AudioRegion::init_default_constructed (
         }
       else if (frames)
         {
+          z_return_if_fail (clip_name.has_value ());
           tmp_clip = std::make_unique<AudioClip> (
             frames, nframes, channels, bit_depth, *clip_name);
         }

@@ -28,10 +28,6 @@
 
 #include "zrythm-config.h"
 
-#ifdef HAVE_C11_THREADS
-#  include <threads.h>
-#endif
-
 #include "dsp/audio_track.h"
 #include "dsp/control_port.h"
 #include "dsp/engine.h"

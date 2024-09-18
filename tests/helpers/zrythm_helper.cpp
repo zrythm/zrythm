@@ -226,8 +226,10 @@ watch_parent (gint fd)
   while (TRUE);
 }
 
-#    pragma GCC diagnostic push
-#    pragma GCC diagnostic ignored "-Wanalyzer-fd-leak"
+#    if defined(__GNUC__) && !defined(__clang__)
+#      pragma GCC diagnostic push
+#      pragma GCC diagnostic ignored "-Wanalyzer-fd-leak"
+#    endif
 static GIOChannel *
 watcher_init (void)
 {
@@ -282,7 +284,9 @@ watcher_init (void)
 
   return channel;
 }
-#    pragma GCC diagnostic pop
+#    if defined(__GNUC__) && !defined(__clang__)
+#      pragma GCC diagnostic pop
+#    endif
 
 static void
 watcher_send_command (const gchar * command)

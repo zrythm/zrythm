@@ -5,6 +5,7 @@
 #include "dsp/engine.h"
 #include "project.h"
 #include "utils/dsp.h"
+#include "utils/gtest_wrapper.h"
 
 CVPort::CVPort ()
 {

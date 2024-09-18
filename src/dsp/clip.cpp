@@ -135,6 +135,7 @@ AudioClip::AudioClip (
   BitDepth               bit_depth,
   const std::string     &name)
 {
+  z_return_if_fail (channels > 0);
   frames_.setSize (1, nframes * channels, true, false, false);
   num_frames_ = nframes;
   channels_ = channels;

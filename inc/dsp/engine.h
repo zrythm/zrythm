@@ -31,7 +31,7 @@
 #  include "weak_libjack.h"
 #endif
 
-#ifdef HAVE_PULSEAUDIO
+#if HAVE_PULSEAUDIO
 #  include <pulse/pulseaudio.h>
 #endif
 
@@ -672,7 +672,7 @@ public:
   void * rtaudio_ = nullptr;
 #endif
 
-#ifdef HAVE_PULSEAUDIO
+#if HAVE_PULSEAUDIO
   pa_threaded_mainloop * pulse_mainloop_ = nullptr;
   pa_context *           pulse_context_ = nullptr;
   pa_stream *            pulse_stream_ = nullptr;

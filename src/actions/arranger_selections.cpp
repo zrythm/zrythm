@@ -609,13 +609,22 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
   bool            use_index_in_prev_lane,
   int             index_in_prev_lane)
 {
+  z_debug (
+    "Moving object {}: tracks_diff={}, lanes_diff={}", fmt::ptr (&obj),
+    tracks_diff, lanes_diff);
+
   if (tracks_diff)
     {
       auto r = dynamic_cast<Region *> (&obj);
       z_return_if_fail (r);
 
-      auto track_to_move_to = TRACKLIST->get_visible_track_after_delta (
+      const auto * track_before = r->get_track ();
+      auto         track_to_move_to = TRACKLIST->get_visible_track_after_delta (
         *r->get_track (), tracks_diff);
+      z_trace (
+        "Moving from track {} ({}) to track: {} ({})",
+        track_before->get_name (), track_before->get_name_hash (),
+        track_to_move_to->get_name (), track_to_move_to->get_name_hash ());
 
       /* shift the actual object by tracks */
       if (ENUM_BITSET_TEST (
@@ -623,6 +632,7 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
         {
           r->id_.track_name_hash_ = track_to_move_to->get_name_hash ();
           r->track_name_hash_ = track_to_move_to->get_name_hash ();
+          z_trace ("Updated track name hash for non-project object");
         }
       else
         {
@@ -631,6 +641,7 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
               casted_r->move_to_track (
                 track_to_move_to, -1,
                 use_index_in_prev_lane ? index_in_prev_lane : -1);
+              z_trace ("Moved project object to track");
             },
             convert_to_variant<RegionPtrVariant> (r));
         }
@@ -640,9 +651,9 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
       auto r = dynamic_cast<Region *> (&obj);
       z_return_if_fail (r);
 
-      // auto region_track = r->get_track_as<LanedTrack> ();
       int new_lane_pos = r->id_.lane_pos_ + lanes_diff;
       z_return_if_fail (new_lane_pos >= 0);
+      z_trace ("New lane position: {}", new_lane_pos);
 
       /* shift the actual object by lanes */
       if (
@@ -650,6 +661,7 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
           ArrangerObject::Flags, r->flags_, ArrangerObject::Flags::NonProject))
         {
           r->id_.lane_pos_ = new_lane_pos;
+          z_trace ("Updated lane position for non-project object");
         }
       else
         {
@@ -661,35 +673,44 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
                   auto r_track =
                     casted_r->template get_track_as<LanedTrackImpl<RegionT>> ();
                   r_track->create_missing_lanes (new_lane_pos);
+                  z_trace ("Created missing lanes up to {}", new_lane_pos);
                   casted_r->move_to_track (
                     r_track, new_lane_pos,
                     use_index_in_prev_lane ? index_in_prev_lane : -1);
+                  z_trace ("Moved project object to new lane");
                 }
             },
             convert_to_variant<RegionPtrVariant> (r));
         }
     }
+  z_debug ("Object move completed");
 }
 
 void
-ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
+ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
 {
-  sel_->sort_by_indices (!_do);
-  sel_after_->sort_by_indices (!_do);
+  sel_->sort_by_indices (!do_it);
+  sel_after_->sort_by_indices (!do_it);
   if (ZRYTHM_TESTING)
     {
       sel_after_->validate ();
     }
+  if (sel_after_->type_ == ArrangerSelections::Type::Timeline)
+    {
+      const auto * tl_sel_after =
+        dynamic_cast<TimelineSelections *> (sel_after_.get ());
+      z_debug ("{}", *tl_sel_after);
+    }
   ArrangerSelections * sel = get_actual_arranger_selections ();
   z_return_if_fail (sel);
 
-  double ticks = _do ? ticks_ : -ticks_;
-  int    delta_tracks = _do ? delta_tracks_ : -delta_tracks_;
-  int    delta_lanes = _do ? delta_lanes_ : -delta_lanes_;
-  int    delta_chords = _do ? delta_chords_ : -delta_chords_;
-  int    delta_pitch = _do ? delta_pitch_ : -delta_pitch_;
-  double delta_normalized_amount =
-    _do ? delta_normalized_amount_ : -delta_normalized_amount_;
+  const double ticks = do_it ? ticks_ : -ticks_;
+  const int    delta_tracks = do_it ? delta_tracks_ : -delta_tracks_;
+  const int    delta_lanes = do_it ? delta_lanes_ : -delta_lanes_;
+  const int    delta_chords = do_it ? delta_chords_ : -delta_chords_;
+  const int    delta_pitch = do_it ? delta_pitch_ : -delta_pitch_;
+  const double delta_normalized_amount =
+    do_it ? delta_normalized_amount_ : -delta_normalized_amount_;
 
   /* clear current selections in the project */
   sel->clear (false);
@@ -699,252 +720,271 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
    * key: project automation point, value: cached automation point */
   std::map<AutomationPoint *, AutomationPoint *> ap_map;
 
+  // this essentially sets the NonProject flag if not performing on first run
   for (
     auto it = sel_after_->objects_.rbegin ();
     it != sel_after_->objects_.rend (); ++it)
     {
       size_t i = std::distance (sel_after_->objects_.begin (), it.base ()) - 1;
-      auto  &own_obj = (*it);
-      auto  &own_orig_obj = sel_->objects_[i];
-      own_obj->flags_ |= ArrangerObject::Flags::NonProject;
-      own_orig_obj->flags_ |= ArrangerObject::Flags::NonProject;
+      std::visit (
+        [&] (auto &&unused) {
+          using ObjT = base_type<decltype (unused)>;
+          auto own_obj = std::dynamic_pointer_cast<ObjT> (*it);
+          auto own_orig_obj =
+            std::dynamic_pointer_cast<ObjT> (sel_->objects_.at (i));
+          own_obj->flags_ |= ArrangerObject::Flags::NonProject;
+          own_orig_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
-      /* on first run, we need to first move the original object backwards (the
-       * project object too) */
-      if (_do && first_run_)
-        {
-          auto obj = own_obj->find_in_project ();
-          z_return_if_fail (obj);
-
-          z_debug ("{} moving original object backwards", i);
-
-          /* ticks */
-          if (!math_doubles_equal (ticks_, 0.0))
+          /* on first run, we need to first move the original object backwards
+           * (the project object too) */
+          if (do_it && first_run_)
             {
-              obj->move (-ticks_);
-              own_obj->move (-ticks_);
-            }
+              auto obj =
+                std::dynamic_pointer_cast<ObjT> (own_obj->find_in_project ());
+              z_return_if_fail (obj);
 
-          /* tracks & lanes */
-          if (delta_tracks_ || delta_lanes_)
-            {
-              auto &own_obj_lo = dynamic_cast<LaneOwnedObject &> (*own_obj);
-              // auto& obj_lo = dynamic_cast<LaneOwnedObject &> (*obj);
-              auto &own_obj_r = dynamic_cast<Region &> (*own_obj);
-              // auto & obj_r = dynamic_cast<Region &> (*obj);
+              z_debug ("{} moving original object backwards", i);
 
-              z_info ("moving prj obj");
-              move_obj_by_tracks_and_lanes (
-                *obj, -delta_tracks_, -delta_lanes_, true,
-                own_obj_lo.index_in_prev_lane_);
-
-              z_info ("moving own obj");
-              RegionIdentifier own_id_before_move = own_obj_r.id_;
-              move_obj_by_tracks_and_lanes (
-                *own_obj, -delta_tracks_, -delta_lanes_, true,
-                own_obj_lo.index_in_prev_lane_);
-
-              /* since the object moved outside of its lane, decrement the index
-               * inside the lane for all of our cached objects in the same lane */
-              for (size_t j = i + 1; j < sel_after_->objects_.size (); j++)
+              /* ticks */
+              if (!math_doubles_equal (ticks_, 0.0))
                 {
-                  auto &own_r = dynamic_cast<Region &> (*own_obj);
-                  if (
-                    own_id_before_move.track_name_hash_
-                      == own_r.id_.track_name_hash_
-                    && own_id_before_move.lane_pos_ == own_r.id_.lane_pos_
-                    && own_id_before_move.at_idx_ == own_r.id_.at_idx_)
+                  obj->move (-ticks_);
+                  own_obj->move (-ticks_);
+                }
+
+              /* tracks & lanes */
+              if (delta_tracks_ || delta_lanes_)
+                {
+                  if constexpr (std::derived_from<ObjT, LaneOwnedObject>)
                     {
-                      own_r.id_.idx_--;
+                      z_trace ("moving prj obj");
+                      move_obj_by_tracks_and_lanes (
+                        *obj, -delta_tracks_, -delta_lanes_, true,
+                        own_obj->index_in_prev_lane_);
+
+                      z_trace ("moving own obj");
+                      RegionIdentifier own_id_before_move = own_obj->id_;
+                      move_obj_by_tracks_and_lanes (
+                        *own_obj, -delta_tracks_, -delta_lanes_, true,
+                        own_obj->index_in_prev_lane_);
+
+                      /* since the object moved outside of its lane, decrement
+                       * the index inside the lane for all of our cached objects
+                       * in the same lane */
+                      for (
+                        size_t j = i + 1; j < sel_after_->objects_.size (); j++)
+                        {
+                          if (
+                            own_id_before_move.track_name_hash_
+                              == own_obj->id_.track_name_hash_
+                            && own_id_before_move.lane_pos_ == own_obj->id_.lane_pos_
+                            && own_id_before_move.at_idx_ == own_obj->id_.at_idx_)
+                            {
+                              own_obj->id_.idx_--;
+                            }
+                        }
                     }
                 }
-            }
 
-          /* pitch */
-          if (delta_pitch_)
-            {
-              dynamic_cast<MidiNote &> (*obj).shift_pitch (-delta_pitch_);
-              dynamic_cast<MidiNote &> (*own_obj).shift_pitch (-delta_pitch_);
-            }
+              /* pitch */
+              if (delta_pitch_)
+                {
+                  if constexpr (std::is_same_v<ObjT, MidiNote>)
+                    {
+                      obj->shift_pitch (-delta_pitch_);
+                      own_obj->shift_pitch (-delta_pitch_);
+                    }
+                }
 
-          /* chords */
-          if (delta_chords_ != 0)
-            {
-              z_return_if_fail (obj->type_ == ArrangerObject::Type::ChordObject);
-              auto co = dynamic_pointer_cast<ChordObject> (obj);
+              /* chords */
+              if (delta_chords_ != 0)
+                {
+                  if constexpr (std::is_same_v<ObjT, ChordObject>)
+                    {
+                      /* shift the actual object */
+                      obj->chord_index_ -= delta_chords_;
 
-              /* shift the actual object */
-              co->chord_index_ -= delta_chords_;
+                      /* also shift the copy so they can match */
+                      own_obj->chord_index_ -= delta_chords_;
+                    }
+                }
 
-              /* also shift the copy so they can match */
-              dynamic_cast<ChordObject &> (*own_obj).chord_index_ -=
-                delta_chords_;
-            }
+              /* if moving automation */
+              if (target_port_)
+                {
+                  z_error (
+                    "not supported - automation must not be moved before performing the action");
+                }
 
-          /* if moving automation */
-          if (target_port_)
-            {
-              z_error (
-                "not supported - automation must not be moved before performing the action");
-            }
+              /* automation value */
+              if (!math_doubles_equal (delta_normalized_amount_, 0.0))
+                {
+                  if constexpr (std::is_same_v<ObjT, AutomationPoint>)
+                    {
+                      obj->set_fvalue (
+                        obj->normalized_val_ - (float) delta_normalized_amount_,
+                        true, false);
+                      own_obj->set_fvalue (
+                        own_obj->normalized_val_
+                          - (float) delta_normalized_amount_,
+                        true, false);
+                    }
+                }
+            } /* if do and first run */
+        },
+        convert_to_variant<ArrangerObjectPtrVariant> ((*it).get ()));
+    }
 
-          /* automation value */
-          if (!math_doubles_equal (delta_normalized_amount_, 0.0))
-            {
-              auto &ap = dynamic_cast<AutomationPoint &> (*obj);
-              auto &cached_ap = dynamic_cast<AutomationPoint &> (*own_obj);
-              ap.set_fvalue (
-                ap.normalized_val_ - (float) delta_normalized_amount_, true,
-                false);
-              cached_ap.set_fvalue (
-                cached_ap.normalized_val_ - (float) delta_normalized_amount_,
-                true, false);
-            }
-        } /* if do and first run */
+  // debug
+  if (sel_after_->type_ == ArrangerSelections::Type::Timeline)
+    {
+      const auto * tl_sel_after =
+        dynamic_cast<TimelineSelections *> (sel_after_.get ());
+      z_debug ("{}", *tl_sel_after);
     }
 
   for (size_t i = 0; i < sel_after_->objects_.size (); i++)
     {
-      auto &own_obj = sel_after_->objects_[i];
-      auto &own_orig_obj = sel_->objects_[i];
+      std::visit (
+        [&] (auto &&unused) {
+          using ObjT = base_type<decltype (unused)>;
+          auto own_obj =
+            std::dynamic_pointer_cast<ObjT> (sel_after_->objects_.at (i));
+          auto own_orig_obj =
+            std::dynamic_pointer_cast<ObjT> (sel_->objects_.at (i));
 
-      if (_do)
-        {
-          /* create a temporary clone */
-          auto obj =
-            clone_unique_with_variant<ArrangerObjectVariant> (own_obj.get ());
+          if (do_it)
+            {
+              auto add_adjusted_clone_to_project = [] (const auto &obj_to_clone) {
+                /* create a temporary clone */
+                auto obj = obj_to_clone->clone_unique ();
 
-          /* if region, clear the remembered index so that the region gets
-           * appended instead of inserted */
-          if (obj->type_ == ArrangerObject::Type::Region)
-            {
-              auto r = dynamic_cast<Region *> (obj.get ());
-              r->id_.idx_ = -1;
-            }
+                /* if region, clear the remembered index so that the region
+                 * gets appended instead of inserted */
+                if constexpr (RegionSubclass<ObjT>)
+                  {
+                    obj->id_.idx_ = -1;
+                  }
 
-          /* add to track. */
-          auto added_obj_ref = obj->add_clone_to_project (false);
+                /* add to track. */
+                return std::dynamic_pointer_cast<ObjT> (
+                  obj->add_clone_to_project (false));
+              };
 
-          /* edit both project object and the copy */
-          if (!math_doubles_equal (ticks, 0.0))
-            {
-              added_obj_ref->move (ticks);
-              own_obj->move (ticks);
-            }
-          if (delta_tracks != 0)
-            {
-              move_obj_by_tracks_and_lanes (
-                *added_obj_ref, delta_tracks, 0, false, -1);
-              move_obj_by_tracks_and_lanes (
-                *own_obj, delta_tracks, 0, false, -1);
-            }
-          if (delta_lanes != 0)
-            {
-              move_obj_by_tracks_and_lanes (
-                *added_obj_ref, 0, delta_lanes, false, -1);
-              move_obj_by_tracks_and_lanes (*own_obj, 0, delta_lanes, false, -1);
-            }
-          if (delta_pitch != 0)
-            {
-              dynamic_pointer_cast<MidiNote> (added_obj_ref)
-                ->shift_pitch (delta_pitch);
-              dynamic_cast<MidiNote &> (*own_obj).shift_pitch (delta_pitch);
-            }
-          if (delta_chords != 0)
-            {
-              dynamic_pointer_cast<ChordObject> (added_obj_ref)->chord_index_ +=
-                delta_chords;
-              dynamic_cast<ChordObject &> (*own_obj).chord_index_ +=
-                delta_chords;
-            }
-          if (target_port_)
-            {
-              z_return_if_fail (
-                added_obj_ref->type_ == ArrangerObject::Type::Region);
-              auto r = dynamic_pointer_cast<AutomationRegion> (added_obj_ref);
-              z_return_if_fail (r->id_.type_ == RegionType::Automation);
-              auto cur_at = r->get_automation_track ();
-              z_return_if_fail (cur_at);
-              auto port =
-                Port::find_from_identifier<ControlPort> (*target_port_);
-              z_return_if_fail (port);
-              auto track =
-                dynamic_cast<AutomatableTrack *> (port->get_track (true));
-              z_return_if_fail (track);
-              auto at = AutomationTrack::find_from_port (*port, track, true);
-              z_return_if_fail (at);
+              auto added_obj_ref = add_adjusted_clone_to_project (own_obj);
 
-              /* move the actual object */
-              r->move_to_track (track, at->index_, -1);
-            }
-          if (!math_floats_equal (delta_normalized_amount, 0.f))
-            {
-              auto ap = dynamic_pointer_cast<AutomationPoint> (added_obj_ref);
-              ap->set_fvalue (
-                ap->normalized_val_
-                  + static_cast<float> (delta_normalized_amount),
-                true, false);
-              auto &own_ap = dynamic_cast<AutomationPoint &> (*own_obj);
-              own_ap.set_fvalue (
-                own_ap.normalized_val_
-                  + static_cast<float> (delta_normalized_amount),
-                true, false);
-            }
-
-          if (obj->type_ == ArrangerObject::Type::Region)
-            {
-              /* if we are linking, create the necessary links */
-              if (link)
+              /* edit both project object and the copy */
+              if (!math_doubles_equal (ticks, 0.0))
                 {
-                  /* add link group to original object if necessary */
-                  auto orig_obj = own_orig_obj->find_in_project ();
-                  auto orig_r = dynamic_pointer_cast<Region> (orig_obj);
-                  z_return_if_fail (orig_r->id_.idx_ >= 0);
+                  added_obj_ref->move (ticks);
+                  own_obj->move (ticks);
+                }
+              if (delta_tracks != 0)
+                {
+                  move_obj_by_tracks_and_lanes (
+                    *added_obj_ref, delta_tracks, 0, false, -1);
+                  move_obj_by_tracks_and_lanes (
+                    *own_obj, delta_tracks, 0, false, -1);
+                }
+              if (delta_lanes != 0)
+                {
+                  move_obj_by_tracks_and_lanes (
+                    *added_obj_ref, 0, delta_lanes, false, -1);
+                  move_obj_by_tracks_and_lanes (
+                    *own_obj, 0, delta_lanes, false, -1);
+                }
+              if (delta_pitch != 0)
+                {
+                  if constexpr (std::is_same_v<ObjT, MidiNote>)
+                    {
+                      added_obj_ref->shift_pitch (delta_pitch);
+                      own_obj->shift_pitch (delta_pitch);
+                    }
+                }
+              if (delta_chords != 0)
+                {
+                  if constexpr (std::is_same_v<ObjT, ChordObject>)
+                    {
+                      added_obj_ref->chord_index_ += delta_chords;
+                      own_obj->chord_index_ += delta_chords;
+                    }
+                }
+              if (target_port_)
+                {
+                  if constexpr (std::is_same_v<ObjT, AutomationRegion>)
+                    {
+                      auto cur_at = added_obj_ref->get_automation_track ();
+                      z_return_if_fail (cur_at);
+                      const auto * port =
+                        Port::find_from_identifier<ControlPort> (*target_port_);
+                      z_return_if_fail (port);
+                      auto * track = dynamic_cast<AutomatableTrack *> (
+                        port->get_track (true));
+                      z_return_if_fail (track);
+                      const auto * at =
+                        AutomationTrack::find_from_port (*port, track, true);
+                      z_return_if_fail (at);
 
-                  std::visit (
-                    [&] (auto &&casted_orig_r) {
-                      using T = base_type<decltype (casted_orig_r)>;
-                      casted_orig_r->create_link_group_if_none ();
-                      int link_group = casted_orig_r->id_.link_group_;
+                      /* move the actual object */
+                      added_obj_ref->move_to_track (track, at->index_, -1);
+                    }
+                }
+              if (!math_floats_equal (delta_normalized_amount, 0.f))
+                {
+                  if constexpr (std::is_same_v<ObjT, AutomationPoint>)
+                    {
+                      added_obj_ref->set_fvalue (
+                        added_obj_ref->normalized_val_
+                          + static_cast<float> (delta_normalized_amount),
+                        true, false);
+                      own_obj->set_fvalue (
+                        own_obj->normalized_val_
+                          + static_cast<float> (delta_normalized_amount),
+                        true, false);
+                    }
+                }
+
+              if constexpr (RegionSubclass<ObjT>)
+                {
+                  /* if we are linking, create the necessary links */
+                  if (link)
+                    {
+                      /* add link group to original object if necessary */
+                      auto orig_r = dynamic_pointer_cast<ObjT> (
+                        own_orig_obj->find_in_project ());
+                      z_return_if_fail (orig_r->id_.idx_ >= 0);
+
+                      orig_r->create_link_group_if_none ();
+                      const auto link_group = orig_r->id_.link_group_;
 
                       /* add link group to clone */
-                      auto r_obj = dynamic_pointer_cast<T> (added_obj_ref);
                       z_return_if_fail (
-                        r_obj->id_.type_ == casted_orig_r->id_.type_);
-                      z_return_if_fail (r_obj->id_.idx_ >= 0);
-                      r_obj->set_link_group (link_group, true);
+                        added_obj_ref->id_.type_ == orig_r->id_.type_);
+                      z_return_if_fail (added_obj_ref->id_.idx_ >= 0);
+                      added_obj_ref->set_link_group (link_group, true);
 
                       /* remember link groups */
-                      auto r = dynamic_pointer_cast<T> (own_orig_obj);
-                      r->set_link_group (link_group, true);
-                      r = dynamic_pointer_cast<T> (own_obj);
-                      r->set_link_group (link_group, true);
-                    },
-                    convert_to_variant<RegionPtrVariant> (orig_r.get ()));
+                      own_orig_obj->set_link_group (link_group, true);
+                      own_obj->set_link_group (link_group, true);
 
-                  REGION_LINK_GROUP_MANAGER.validate ();
-                }
-              else /* else if we are not linking */
-                {
-                  std::visit (
-                    [&] (auto &&casted_r) {
-                      using T = base_type<decltype (casted_r)>;
-
+                      REGION_LINK_GROUP_MANAGER.validate ();
+                    }
+                  else /* else if we are not linking */
+                    {
                       /* remove link group if first run */
                       if (first_run_)
                         {
-                          if (casted_r->has_link_group ())
+                          if (added_obj_ref->has_link_group ())
                             {
-                              casted_r->unlink ();
+                              added_obj_ref->unlink ();
                             }
                         }
 
                       /* if this is an audio region, duplicate the clip */
-                      if constexpr (std::is_same_v<T, AudioRegion>)
+                      if constexpr (std::is_same_v<ObjT, AudioRegion>)
                         {
-                          auto ar = static_cast<AudioRegion *> (casted_r);
-                          auto clip = ar->get_clip ();
-                          int  id =
+                          auto *     clip = added_obj_ref->get_clip ();
+                          const auto id =
                             AUDIO_POOL->duplicate_clip (clip->pool_id_, true);
                           if (id < 0)
                             {
@@ -953,97 +993,102 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
                             }
                           clip = AUDIO_POOL->get_clip (id);
                           z_return_if_fail (clip);
-                          ar->pool_id_ = clip->pool_id_;
+                          added_obj_ref->pool_id_ = clip->pool_id_;
                         }
-                    },
-                    convert_to_variant<RegionPtrVariant> (added_obj_ref.get ()));
+                    }
+                } /* endif region */
+
+              /* add the mapping to the hashtable */
+              if constexpr (std::is_same_v<ObjT, AutomationPoint>)
+                {
+                  ap_map[added_obj_ref.get ()] = own_obj.get ();
                 }
-            } /* endif region */
 
-          /* add the mapping to the hashtable */
-          if (added_obj_ref->type_ == ArrangerObject::Type::AutomationPoint)
+              /* select it */
+              added_obj_ref->select (true, true, false);
+
+              /* remember the identifier */
+              own_obj->copy_identifier (*added_obj_ref);
+
+            } /* endif do */
+          else /* if undo */
             {
-              ap_map[dynamic_pointer_cast<AutomationPoint> (added_obj_ref).get ()] =
-                dynamic_cast<AutomationPoint *> (own_obj.get ());
-            }
+              /* find the actual object */
+              auto obj =
+                std::dynamic_pointer_cast<ObjT> (own_obj->find_in_project ());
+              z_return_if_fail (obj);
 
-          /* select it */
-          added_obj_ref->select (true, true, false);
+              /* if the object was created with linking, delete the links */
+              if constexpr (RegionSubclass<ObjT>)
+                {
+                  if (link)
+                    {
+                      /* remove link from created object (this will also
+                       * automatically remove the link from the parent region if
+                       * it is the only region in the link group) */
+                      z_return_if_fail (obj->has_link_group ());
+                      obj->unlink ();
+                      z_return_if_fail (obj->id_.link_group_ == -1);
 
-          /* remember the identifier */
-          own_obj->copy_identifier (*added_obj_ref);
+                      /* unlink remembered link groups */
+                      own_orig_obj->unlink ();
+                      own_obj->unlink ();
+                    }
+                }
 
-        } /* endif do */
-      else /* if undo */
-        {
-          /* find the actual object */
-          auto obj = own_obj->find_in_project ();
-          z_return_if_fail (obj);
+              /* remove it */
+              obj->remove_from_project ();
 
-          /* if the object was created with linking, delete the links */
-          if (link && obj->type_ == ArrangerObject::Type::Region)
-            {
-              /* remove link from created object (this will also automatically
-               * remove the link from the parent region if it is the only region
-               * in the link group) */
-              std::visit (
-                [&] (auto &&casted_r) {
-                  using T = base_type<decltype (casted_r)>;
-                  z_warn_if_fail (casted_r && casted_r->has_link_group ());
-                  casted_r->unlink ();
-                  z_warn_if_fail (casted_r->id_.link_group_ == -1);
+              /* set the copies back to original state */
+              if (!math_doubles_equal (ticks, 0.0))
+                {
+                  own_obj->move (ticks);
+                }
+              if (delta_tracks != 0)
+                {
+                  move_obj_by_tracks_and_lanes (
+                    *own_obj, delta_tracks, 0, false, -1);
+                }
+              if (delta_lanes != 0)
+                {
+                  move_obj_by_tracks_and_lanes (
+                    *own_obj, 0, delta_lanes, false, -1);
+                }
+              if (delta_pitch != 0)
+                {
+                  if constexpr (std::is_same_v<ObjT, MidiNote>)
+                    {
+                      own_obj->shift_pitch (delta_pitch);
+                    }
+                }
+              if (delta_chords != 0)
+                {
+                  if constexpr (std::is_same_v<ObjT, ChordObject>)
+                    {
+                      own_obj->chord_index_ += delta_chords;
+                    }
+                }
+              if (target_port_)
+                {
+                  /* nothing needed */
+                }
+              if (!math_floats_equal (delta_normalized_amount, 0.f))
+                {
+                  if constexpr (std::is_same_v<ObjT, AutomationPoint>)
+                    {
+                      own_obj->set_fvalue (
+                        own_obj->normalized_val_
+                          + static_cast<float> (delta_normalized_amount),
+                        true, false);
+                    }
+                }
 
-                  /* unlink remembered link groups */
-                  auto &own_orig_r = dynamic_cast<T &> (*own_orig_obj);
-                  own_orig_r.unlink ();
-                  auto &own_r = dynamic_cast<T &> (*own_obj);
-                  own_r.unlink ();
-                },
-                convert_to_variant<RegionPtrVariant> (obj.get ()));
-            }
+            } /* endif undo */
 
-          /* remove it */
-          obj->remove_from_project ();
-
-          /* set the copies back to original state */
-          if (!math_doubles_equal (ticks, 0.0))
-            {
-              own_obj->move (ticks);
-            }
-          if (delta_tracks != 0)
-            {
-              move_obj_by_tracks_and_lanes (
-                *own_obj, delta_tracks, 0, false, -1);
-            }
-          if (delta_lanes != 0)
-            {
-              move_obj_by_tracks_and_lanes (*own_obj, 0, delta_lanes, false, -1);
-            }
-          if (delta_pitch != 0)
-            {
-              dynamic_cast<MidiNote &> (*own_obj).shift_pitch (delta_pitch);
-            }
-          if (delta_chords != 0)
-            {
-              dynamic_cast<ChordObject &> (*own_obj).chord_index_ +=
-                delta_chords;
-            }
-          if (target_port_)
-            {
-              /* nothing needed */
-            }
-          if (!math_floats_equal (delta_normalized_amount, 0.f))
-            {
-              auto &own_ap = dynamic_cast<AutomationPoint &> (*own_obj);
-              own_ap.set_fvalue (
-                own_ap.normalized_val_
-                  + static_cast<float> (delta_normalized_amount),
-                true, false);
-            }
-
-        } /* endif undo */
-
-      REGION_LINK_GROUP_MANAGER.validate ();
+          REGION_LINK_GROUP_MANAGER.validate ();
+        },
+        convert_to_variant<ArrangerObjectPtrVariant> (
+          sel_after_->objects_.at (i).get ()));
     }
 
   /* if copy-moving automation points, re-sort the region and remember the new
@@ -1053,17 +1098,17 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
     == ArrangerObject::Type::AutomationPoint)
     {
       /* get the actual object from the project */
-      auto obj = ap_map.begin ()->first;
-      if (obj)
+      const auto * obj = ap_map.begin ()->first;
+      if (obj != nullptr)
         {
-          auto region = dynamic_cast<AutomationRegion *> (obj->get_region ());
+          auto * region = dynamic_cast<AutomationRegion *> (obj->get_region ());
           z_return_if_fail (region);
           region->force_sort ();
 
           for (auto &pair : ap_map)
             {
-              auto prj_ap = pair.first;
-              auto cached_ap = pair.second;
+              const auto * prj_ap = pair.first;
+              auto *       cached_ap = pair.second;
               cached_ap->set_region_and_index (*region, prj_ap->index_);
             }
         }
@@ -1076,7 +1121,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool _do)
   CLIP_EDITOR->get_region ();
 
   sel = get_actual_arranger_selections ();
-  if (_do)
+  if (do_it)
     {
       TRANSPORT->recalculate_total_bars (sel_after_.get ());
 

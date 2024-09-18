@@ -29,6 +29,7 @@
 #include <glib/gi18n.h>
 
 #include "libadwaita_wrapper.h"
+#include "libpanel_wrapper.h"
 #include <glibmm.h>
 
 #ifdef __GNUC__
@@ -43,10 +44,15 @@
 #include "utils/gtest_wrapper.h"
 
 #include <fmt/format.h>
-#include <fmt/printf.h>
 
 /* This also includes all native platform headers. */
 /* FIXME compilation fails with internal compiler errors if this is included */
-// #include "ext/juce/juce.h"
+#include "ext/juce/juce.h"
+
+/* ====================================== */
+/*             zrythm headers             */
+/* ====================================== */
+
+#include "zrythm.h"
 
 #endif /* __PCH_ZRYTHM_PCH_H__ */

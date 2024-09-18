@@ -155,7 +155,7 @@ Zrythm::get_version_with_capabilities (char * buf, bool include_system_info)
 #ifdef MANUAL_PATH
     "    +manual\n"
 #endif
-#ifdef HAVE_PULSEAUDIO
+#if HAVE_PULSEAUDIO
     "    +pulse\n"
 #endif
 #ifdef HAVE_RTMIDI
@@ -175,7 +175,7 @@ Zrythm::get_version_with_capabilities (char * buf, bool include_system_info)
     "",
     PROGRAM_NAME,
 
-#ifdef TRIAL_VER
+#if ZRYTHM_IS_TRIAL_VER
     "(trial) ",
 #else
     "",
@@ -195,7 +195,7 @@ Zrythm::get_version_with_capabilities (char * buf, bool include_system_info)
 
 #ifdef APPIMAGE_BUILD
     " (appimage)"
-#elif defined(INSTALLER_VER)
+#elif ZRYTHM_IS_INSTALLER_VER
     " (installer)"
 #else
     ""
@@ -271,7 +271,7 @@ Zrythm::get_system_info (void)
 bool
 Zrythm::is_release (bool official)
 {
-#ifndef INSTALLER_VER
+#if !ZRYTHM_IS_INSTALLER_VER
   if (official)
     {
       return false;
@@ -309,9 +309,9 @@ JUCE_IMPLEMENT_SINGLETON (ZrythmDirectoryManager)
 std::string
 ZrythmDirectoryManager::get_prefix (void)
 {
-#if defined(_WIN32) && defined(INSTALLER_VER)
+#if defined(_WIN32) && ZRYTHM_IS_INSTALLER_VER
   return io_get_registry_string_val ("InstallPath");
-#elif defined(__APPLE__) && defined(INSTALLER_VER)
+#elif defined(__APPLE__) && ZRYTHM_IS_INSTALLER_VER
   char bundle_path[PATH_MAX];
   int  ret = io_get_bundle_path (bundle_path);
   z_return_val_if_fail (ret == 0, nullptr);
