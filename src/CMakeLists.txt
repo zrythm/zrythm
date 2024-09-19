@@ -78,7 +78,7 @@ target_link_libraries(zrythm_lib PUBLIC ${zrythm_link_libs})
 
 # precompile header
 set(zrythm_pch ${CMAKE_CURRENT_SOURCE_DIR}/pch/zrythm_pch.h)
-target_precompile_headers(zrythm_lib 
+target_precompile_headers(zrythm_lib
   PRIVATE 
     $<$<COMPILE_LANGUAGE:CXX>:${zrythm_pch}>)
 
@@ -88,14 +88,20 @@ target_sources(zrythm
 target_link_libraries(zrythm PRIVATE zrythm_lib)
 target_link_options(zrythm PRIVATE ${zrythm_link_args})
 add_dependencies(zrythm
-  zrythm-gresources desktop-file appdata-xml-merged)
+  zrythm-gresources appdata-xml-merged)
+
+if(OS_GNU)
+  add_dependencies(zrythm desktop-file)
+endif()
 
 if(WIN32)
   if(MSVC)
     # note: illegal to distribute MSVC runtime DLLs or build with static runtime libs
-    set_target_properties(zrythm PROPERTIES MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+    set_target_properties(zrythm PROPERTIES MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
   endif()
   set_target_properties(zrythm PROPERTIES WIN32_EXECUTABLE TRUE LINK_FLAGS "/SUBSYSTEM:WINDOWS")
+
+  target_sources(zrythm PRIVATE ${windows_rc_file} ${windows_icon_file})
 endif()
 
 install(TARGETS zrythm RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

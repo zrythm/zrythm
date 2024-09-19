@@ -86,7 +86,9 @@ add_custom_command(
   COMMENT "Generating zrythm.gresources.xml"
 )
 
-find_program(GLIB_COMPILE_RESOURCES glib-compile-resources REQUIRED)
+find_program(GLIB_COMPILE_RESOURCES glib-compile-resources
+  PATHS ${GLIB_COMPILE_RESOURCES_PATH}
+  REQUIRED)
 
 set(GRESOURCE_COMPILED_FILE "${CMAKE_CURRENT_BINARY_DIR}/zrythm-resources.c")
 

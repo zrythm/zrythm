@@ -56,6 +56,8 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64|AMD64")
   )
 endif()
 
+set_target_properties(qm_dsp_lib PROPERTIES UNITY_BUILD OFF)
+
 # set_target_properties(qm_dsp_lib PROPERTIES
 #   POSITION_INDEPENDENT_CODE ON
 # )

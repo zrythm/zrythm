@@ -49,7 +49,7 @@ if(ZRYTHM_SHELL_COMPLETIONS)
       ${target_manpage_path} fish
       ${CMAKE_CURRENT_BINARY_DIR}/zrythm.fish
       ${MANPAGE_COMPLETIONS_RUN_SH}
-    DEPENDS ${target_manpage_path} ${GEN_COMPLETIONS_PY}
+    DEPENDS manpage ${GEN_COMPLETIONS_PY}
     COMMENT "Generating fish completion"
     VERBATIM)
 
@@ -66,7 +66,7 @@ if(ZRYTHM_SHELL_COMPLETIONS)
       ${target_manpage_path} bash
       ${CMAKE_CURRENT_BINARY_DIR}/zrythm
       ${MANPAGE_COMPLETIONS_RUN_SH}
-    DEPENDS ${target_manpage_path} ${GEN_COMPLETIONS_PY}
+    DEPENDS manpage ${GEN_COMPLETIONS_PY}
     COMMENT "Generating bash completion"
     VERBATIM)
 

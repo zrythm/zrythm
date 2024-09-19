@@ -7,4 +7,5 @@ if(MSVC)
   set_target_properties(dirent PROPERTIES
     VERSION 0.1.0
   )
+  add_library(dirent::dirent ALIAS dirent)
 endif()

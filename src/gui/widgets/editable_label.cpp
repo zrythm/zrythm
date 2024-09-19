@@ -171,7 +171,7 @@ editable_label_widget_new (
 }
 
 static void
-dispose (EditableLabelWidget * self)
+dispose_editable_label (EditableLabelWidget * self)
 {
   if (self->select_region_source_id != 0)
     {
@@ -194,7 +194,7 @@ editable_label_widget_class_init (EditableLabelWidgetClass * _klass)
   gtk_widget_class_set_layout_manager_type (klass, GTK_TYPE_BOX_LAYOUT);
 
   GObjectClass * oklass = G_OBJECT_CLASS (_klass);
-  oklass->dispose = (GObjectFinalizeFunc) dispose;
+  oklass->dispose = (GObjectFinalizeFunc) dispose_editable_label;
 }
 
 static void

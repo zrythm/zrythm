@@ -1533,7 +1533,7 @@ z_gdk_clipboard_get_text (GdkClipboard * clipboard)
   return str;
 }
 
-#ifdef HAVE_X11
+#if HAVE_X11
 Window
 z_gtk_window_get_x11_xid (GtkWindow * window)
 {

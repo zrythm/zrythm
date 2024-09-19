@@ -4,6 +4,7 @@
 # Build files
 build
 builddir*
+build_*
 _build
 tmp_builddir
 /Makefile

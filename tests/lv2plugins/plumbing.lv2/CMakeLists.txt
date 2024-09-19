@@ -18,7 +18,9 @@ add_library(plumbing_lv2 MODULE
 
 set_target_properties(plumbing_lv2 PROPERTIES
   PREFIX ""
-  OUTPUT_NAME "plumbing")
+  OUTPUT_NAME "plumbing"
+  UNITY_BUILD OFF
+)
 
 target_link_libraries(plumbing_lv2 PRIVATE
   PkgConfig::LV2)

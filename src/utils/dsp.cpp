@@ -11,7 +11,7 @@
 
 #include "gtk_wrapper.h"
 
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
 #  include <lsp-plug.in/dsp/dsp.h>
 #endif
 
@@ -22,7 +22,7 @@ float
 dsp_min (const float * buf, size_t size)
 {
   float min = 1000.f;
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
       min = lsp::dsp::min (buf, size);
@@ -37,7 +37,7 @@ dsp_min (const float * buf, size_t size)
               min = buf[i];
             }
         }
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
     }
 #endif
 
@@ -51,7 +51,7 @@ float
 dsp_max (const float * buf, size_t size)
 {
   float max = -1000.f;
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
       max = lsp::dsp::max (buf, size);
@@ -66,7 +66,7 @@ dsp_max (const float * buf, size_t size)
               max = buf[i];
             }
         }
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
     }
 #endif
 
@@ -86,7 +86,7 @@ dsp_mix_add2 (
   float         k2,
   size_t        size)
 {
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
       lsp::dsp::mix_add2 (dest, src1, src2, k1, k2, size);
@@ -98,7 +98,7 @@ dsp_mix_add2 (
         {
           dest[i] = dest[i] + src1[i] * k1 + src2[i] * k2;
         }
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
     }
 #endif
 }
@@ -125,7 +125,7 @@ dsp_linear_fade_in_from (
   size_t  size,
   float   fade_from_multiplier)
 {
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
       lsp::dsp::lin_inter_mul2 (
@@ -142,7 +142,7 @@ dsp_linear_fade_in_from (
           k = fade_from_multiplier + (1.f - fade_from_multiplier) * k;
           dest[i] *= k;
         }
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
     }
 #endif
 }
@@ -166,7 +166,7 @@ dsp_linear_fade_out_to (
   size_t  size,
   float   fade_to_multiplier)
 {
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
       lsp::dsp::lin_inter_mul2 (
@@ -184,7 +184,7 @@ dsp_linear_fade_out_to (
           k = fade_to_multiplier + (1.f - fade_to_multiplier) * k;
           dest[i] *= k;
         }
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
     }
 #endif
 }

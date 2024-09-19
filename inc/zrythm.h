@@ -40,7 +40,7 @@
 #define ZRYTHM_HAVE_UI (gZrythm && gZrythm->have_ui_)
 #define ZRYTHM_BREAK_ON_ERROR (gZrythm && gZrythm->break_on_error_)
 
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
 #  define ZRYTHM_USE_OPTIMIZED_DSP (G_LIKELY (gZrythm->use_optimized_dsp_))
 #else
 #  define ZRYTHM_USE_OPTIMIZED_DSP false

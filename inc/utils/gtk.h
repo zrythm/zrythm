@@ -568,7 +568,7 @@ z_gtk_icon_theme_get_default (void);
 char *
 z_gdk_clipboard_get_text (GdkClipboard * clipboard);
 
-#ifdef HAVE_X11
+#if HAVE_X11
 Window
 z_gtk_window_get_x11_xid (GtkWindow * window);
 #endif

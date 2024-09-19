@@ -1229,7 +1229,7 @@ _digital_meter_widget_new_for_position (
 }
 
 static void
-dispose (DigitalMeterWidget * self)
+dispose_digital_meter (DigitalMeterWidget * self)
 {
   gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
 
@@ -1237,7 +1237,7 @@ dispose (DigitalMeterWidget * self)
 }
 
 static void
-finalize (DigitalMeterWidget * self)
+finalize_digital_meter (DigitalMeterWidget * self)
 {
   if (self->caption)
     g_free (self->caption);
@@ -1262,8 +1262,8 @@ digital_meter_widget_class_init (DigitalMeterWidgetClass * klass)
   gtk_widget_class_set_layout_manager_type (wklass, GTK_TYPE_BIN_LAYOUT);
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
-  oklass->finalize = (GObjectFinalizeFunc) finalize;
-  oklass->dispose = (GObjectFinalizeFunc) dispose;
+  oklass->finalize = (GObjectFinalizeFunc) finalize_digital_meter;
+  oklass->dispose = (GObjectFinalizeFunc) dispose_digital_meter;
 }
 
 static void

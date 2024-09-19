@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
 #  include <lsp-plug.in/dsp/dsp.h>
 #endif
 
@@ -25,7 +25,7 @@
  */
 class LspDspContextRAII
 {
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
 public:
   LspDspContextRAII ();
   ~LspDspContextRAII ();

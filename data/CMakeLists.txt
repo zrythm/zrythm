@@ -87,7 +87,7 @@ set(main_screenshot_url "https://www.zrythm.org/static/images/screenshots/screen
 configure_file(gen-appdata-xml.py gen-appdata-xml.py @ONLY)
 set(appdata_xml_filename "${app_id}.appdata.xml")
 add_custom_command(
-  OUTPUT "${appdata_xml_filename}.in"
+  OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}.in"
   COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/gen-appdata-xml.py
     "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}.in.in" ${app_id}
   COMMAND "${XMLLINT_EXECUTABLE}" --format --output 
@@ -96,7 +96,7 @@ add_custom_command(
   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/gen-appdata-xml.py
   COMMENT "Generating appdata XML"
 )
-add_custom_target(appdata-xml ALL DEPENDS "${appdata_xml_filename}.in")
+add_custom_target(appdata-xml ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}.in")
 
 if(ITSTOOL_EXECUTABLE)
   add_custom_command(
@@ -107,11 +107,18 @@ if(ITSTOOL_EXECUTABLE)
       "--its=${appstream_its_rules}"
       ${build_mo_files}
       --out "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}"
-    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}.in" ${build_mo_files}
+    DEPENDS appdata-xml ${build_mo_files}
     COMMENT "Merging translations for appdata XML"
     )
 else()
-  message(WARNING "itstool not found, not merging translations for appdata XML")
+  message("itstool not found, not merging translations for appdata XML")
+  add_custom_command(
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}"
+    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}.in"
+      "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}"
+    DEPENDS appdata-xml
+    COMMENT "Copying untranslated appdata XML"
+  )
 endif()
 add_custom_target(appdata-xml-merged DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}")
 set(APPDATA_FILE "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}" PARENT_SCOPE)

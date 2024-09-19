@@ -80,7 +80,7 @@ foreach(plugin_info ${plugins})
       list(APPEND pl_link_args -static-libgcc -static-libstdc++)
     endif()
     if(MSVC)
-      list(APPEND pl_deps PkgConfig::DIRENT)
+      list(APPEND pl_deps dirent::dirent)
     endif()
 
     add_library(${pl_underscored_name} MODULE ${pl_cpp})

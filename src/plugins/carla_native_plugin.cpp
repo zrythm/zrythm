@@ -1711,7 +1711,7 @@ CarlaNativePlugin::open_custom_ui (bool show)
               ZRYTHM_HAVE_UI
               && g_settings_get_boolean (S_P_PLUGINS_UIS, "stay-on-top"))
               {
-#  if defined(HAVE_X11) && !defined(GDK_WINDOWING_WAYLAND)
+#  if HAVE_X11 && !defined(GDK_WINDOWING_WAYLAND)
                 Window xid = z_gtk_window_get_x11_xid (GTK_WINDOW (MAIN_WINDOW));
                 z_debug ("FRONTEND_WIN_ID: setting X11 parent to %lx", xid);
                 char xid_str[400];

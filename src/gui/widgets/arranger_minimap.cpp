@@ -173,7 +173,7 @@ show_context_menu (ArrangerMinimapWidget * self)
 }
 
 static void
-on_right_click (
+on_minimap_right_click (
   GtkGestureClick * gesture,
   gint              n_press,
   gdouble           x,
@@ -337,7 +337,7 @@ drag_update (
 }
 
 static void
-drag_end (
+minimap_drag_end (
   GtkGestureDrag * gesture,
   gdouble          offset_x,
   gdouble          offset_y,
@@ -414,7 +414,8 @@ arranger_minimap_widget_init (ArrangerMinimapWidget * self)
     G_OBJECT (drag), "drag-begin", G_CALLBACK (drag_begin), self);
   g_signal_connect (
     G_OBJECT (drag), "drag-update", G_CALLBACK (drag_update), self);
-  g_signal_connect (G_OBJECT (drag), "drag-end", G_CALLBACK (drag_end), self);
+  g_signal_connect (
+    G_OBJECT (drag), "drag-end", G_CALLBACK (minimap_drag_end), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self->overlay), GTK_EVENT_CONTROLLER (drag));
 
@@ -429,7 +430,8 @@ arranger_minimap_widget_init (ArrangerMinimapWidget * self)
   gtk_widget_add_controller (
     GTK_WIDGET (self->overlay), GTK_EVENT_CONTROLLER (right_click));
   g_signal_connect (
-    G_OBJECT (right_click), "pressed", G_CALLBACK (on_right_click), self);
+    G_OBJECT (right_click), "pressed", G_CALLBACK (on_minimap_right_click),
+    self);
 
   g_signal_connect (
     G_OBJECT (self->overlay), "get-child-position",

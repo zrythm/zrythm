@@ -11,7 +11,7 @@
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
 #  include <lsp-plug.in/dsp/dsp.h>
 #endif
 

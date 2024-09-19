@@ -28,15 +28,12 @@ if(WIN32)
     ${CMAKE_CURRENT_BINARY_DIR}/zrythm.ico
     COPYONLY)
 
-  set(RC_FILE ${CMAKE_CURRENT_BINARY_DIR}/zrythm.rc)
-  set(ICON_FILE ${CMAKE_CURRENT_BINARY_DIR}/zrythm.ico)
-
-  # Add the resource file to the target
-  target_sources(${prog_name_lowercase} PRIVATE ${RC_FILE} ${ICON_FILE})
+  set(windows_rc_file ${CMAKE_CURRENT_BINARY_DIR}/zrythm.rc)
+  set(windows_icon_file ${CMAKE_CURRENT_BINARY_DIR}/zrythm.ico)
 
   # Set up resource compilation
   set_source_files_properties(
-    ${RC_FILE}
+    ${windows_rc_file}
     PROPERTIES
     VS_TOOL_OVERRIDE "Resource Compiler"
   )

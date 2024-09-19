@@ -23,7 +23,7 @@ G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 #include <gtk/gtk.h>
 G_GNUC_END_IGNORE_DEPRECATIONS
 
-#ifdef HAVE_X11
+#if HAVE_X11
 /* hack to drop dumb typedefs and macros defined by X11 in the public namespace */
 #  define Region RegionForX11
 #  define None NoneForX11

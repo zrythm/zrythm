@@ -18,7 +18,6 @@ variables:
   COMMON_CMAKE_OPTIONS: >-
     -DZRYTHM_STRICT=ON
     -DZRYTHM_YAML_PROJECT_COMPATIBILITY=ON
-    -Dforce_fallback_for=gtk4,libadwaita,libpanel,yyjson,libcyaml
     -DZRYTHM_TESTS=ON
     -DZRYTHM_BENCHMARKS=ON
 
@@ -96,10 +95,10 @@ stages:
 default:
   cache:
   # this number must be bumped every time these subprojects are updated
-  - key: cache-3-$CI_RUNNER_DESCRIPTION
+  - key: cache-4-$CI_RUNNER_DESCRIPTION
     paths:
       - venv
-      - subprojects
+      - "$BUILDDIR/_deps/*-src"
 
 configure:gnu/linux:
   extends: .gnu-linux-template
@@ -115,6 +114,7 @@ configure:gnu/linux:
       -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       -DCMAKE_C_COMPILER=gcc
       -DCMAKE_CXX_COMPILER=g++
+      -DCMAKE_PREFIX_PATH=/opt/gtk-for-zrythm
 
 configure:mac-arm:
   extends: .mac-arm-template
@@ -149,21 +149,21 @@ configure:windows:
       cmake -B "${env:BUILDDIR}"
       -DZRYTHM_STRICT=ON
       -DZRYTHM_YAML_PROJECT_COMPATIBILITY=ON
-      "-Dforce_fallback_for=libcyaml,magic_enum"
       -DZRYTHM_TESTS=OFF
       -DZRYTHM_BENCHMARKS=OFF 
       -DZRYTHM_FFTW3_THREADS_SEPARATE=FALSE
-      "-Dsoxr_lib_dir=${env:VCPKG_INSTALLED_DIR}\lib"
-      "-Dsoxr_include_dir=${env:VCPKG_INSTALLED_DIR}\include"
+      "-DSOXR_LIB_SEARCH_DIR=${env:VCPKG_INSTALLED_DIR}\lib"
+      "-DSOXR_INCLUDE_DIR_SEARCH_DIR=${env:VCPKG_INSTALLED_DIR}\include"
       "-DCMAKE_PREFIX_PATH=${env:VCPKG_INSTALLED_DIR};C:\lv2;C:\gtk-for-zrythm;C:\Users\alex\source\repos\carla\carla_installed"
       -Dcarla_binaries_dir=C:\Users\alex\source\repos\carla\carla_installed\bin
       -G "Visual Studio 17 2022"
-      -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreadedDebugDLL"
+      -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreadedDLL"
       -DCMAKE_BUILD_TYPE=Debug
       "-DCMAKE_INSTALL_PREFIX=${PWD}\${env:INSTALLDIR}"
       -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl
       -DCMAKE_C_COMPILER_LAUNCHER=ccache
-      -DCMAKE_CXX_COMPILER_LAUNCHER=ccache   
+      -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+      "-DGLIB_COMPILE_RESOURCES_PATH=${env:VCPKG_INSTALLED_DIR}\tools\glib"
 
 clang-format-check:
   extends: .gnu-linux-template

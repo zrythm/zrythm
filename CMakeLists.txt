@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.24)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
@@ -45,6 +45,8 @@ include(GNUInstallDirs)
 include(CMakeDependentOption)
 include(CheckSymbolExists)
 include(TestBigEndian)
+include(FetchContent)
+set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH TRUE)
 find_package(PkgConfig REQUIRED)
 find_package(Threads REQUIRED)
 
@@ -571,7 +573,6 @@ if(ZRYTHM_STRICT)
     endif()
   if(compiler_is_gcc)
     list(APPEND zrythm_compile_args
-      -Weverything
       #-Wsuggest-attribute=pure
       #-Wsuggest-attribute=const
       #-Wsuggest-attribute=noreturn
@@ -618,10 +619,15 @@ if(ZRYTHM_STRICT)
       -Werror=analyzer-infinite-recursion
       -Werror=analyzer-jump-through-null
       -Werror=analyzer-fd-leak
+    )
 
-      # C-only flags
-      list(APPEND zrythm_compile_args
-        -Wno-old-style-declaration)
+    # C-only flags
+    list(APPEND zrythm_compile_args
+      -Wno-old-style-declaration
+    )
+  elseif(compiler_is_clang)
+    list(APPEND zrythm_compile_args
+      -Weverything
     )
   endif()
 endif()
@@ -645,24 +651,65 @@ endif()
 # More dependencies
 ##############################################################
 
-pkg_check_modules(YYJSON yyjson REQUIRED IMPORTED_TARGET)
+FetchContent_Declare(
+  yyjson
+  GIT_REPOSITORY https://github.com/ibireme/yyjson.git
+  # 0.10.0
+  GIT_TAG 9ddba001a4ea88e93b46932e5c5b87b222e19a5f
+  FIND_PACKAGE_ARGS NAMES yyjson
+)
+FetchContent_MakeAvailable(yyjson)
+if(NOT TARGET yyjson::yyjson)
+  add_library(yyjson::yyjson ALIAS yyjson)
+endif()
 
 add_subdirectory(ext)
 
-if(ZRYTHM_WITH_X11)
+if(ZRYTHM_WITH_X11 AND NOT APPLE)
   find_package(X11 REQUIRED)
   set(HAVE_X11 TRUE)
 endif()
 
 if(ZRYTHM_YAML_PROJECT_COMPATIBILITY)
-  pkg_check_modules(LIBCYAML libcyaml>=1.2.0 REQUIRED IMPORTED_TARGET)
+  pkg_check_modules(LIBCYAML libcyaml>=1.2.0 IMPORTED_TARGET)
+  if(LIBCYAML_FOUND)
+    add_library(cyaml::cyaml ALIAS PkgConfig::LIBCYAML)
+  else()
+    message(WARNING "libcyaml not found, falling back to bundled libcyaml")
+    FetchContent_Declare(
+      libcyaml
+      GIT_REPOSITORY https://gitlab.zrythm.org/zrythm/zrythm-libcyaml.git
+      GIT_TAG 771d74ce159403c15dc4136df55b1ecb15eb3881
+    )
+    FetchContent_MakeAvailable(libcyaml)
+  endif()
   set(HAVE_CYAML TRUE)
 endif()
 
 find_package(SndFile 1.0.29 REQUIRED)
 set(HAVE_OPUS TRUE)
 
-pkg_check_modules(SOXR soxr REQUIRED IMPORTED_TARGET)
+find_package(soxr QUIET)
+if(NOT soxr_FOUND)
+  pkg_check_modules(SOXR soxr IMPORTED_TARGET)
+  if(SOXR_FOUND)
+    add_library(soxr::soxr ALIAS PkgConfig::SOXR)
+  else()
+    find_library(SOXR_LIB soxr 
+      PATHS ${SOXR_LIB_SEARCH_DIR}
+      REQUIRED
+    )
+    find_path(SOXR_INCLUDE_DIR soxr.h
+      PATHS ${SOXR_INCLUDE_DIR_SEARCH_DIR}
+      REQUIRED
+    )
+    add_library(soxr::soxr UNKNOWN IMPORTED)
+    set_target_properties(soxr::soxr PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES "${SOXR_INCLUDE_DIR}"
+      IMPORTED_LOCATION "${SOXR_LIB}"
+    )
+  endif()
+endif()
 
 # link to fontconfig/pangoft2 directly because
 # they are used in utils/pango.c
@@ -746,7 +793,10 @@ endif()
 
 find_package(zstd REQUIRED)
 
-pkg_check_modules(LSP_DSP_LIB lsp-dsp-lib>=0.5.5 REQUIRED IMPORTED_TARGET)
+pkg_check_modules(LSP_DSP_LIB lsp-dsp-lib>=0.5.5 IMPORTED_TARGET)
+if(LSP_DSP_LIB_FOUND)
+  set(HAVE_LSP_DSP TRUE)
+endif()
 
 pkg_check_modules(XXHASH libxxhash REQUIRED IMPORTED_TARGET)
 
@@ -789,8 +839,8 @@ list(APPEND zrythm_link_libs
   PkgConfig::GRAPHENE
   PkgConfig::GTK4
   SndFile::sndfile
-  PkgConfig::LIBCYAML
-  PkgConfig::SOXR
+  cyaml::cyaml
+  soxr::soxr
   PkgConfig::CARLA
   PkgConfig::RTAUDIO
   PkgConfig::RTMIDI
@@ -799,13 +849,11 @@ list(APPEND zrythm_link_libs
   PkgConfig::RUBBERBAND
   PkgConfig::EPOXY
   ${CMAKE_DL_LIBS}
-  PkgConfig::CHROMAPRINT
   FFTW3::FFTW3
-  PkgConfig::LSP_DSP_LIB
   PkgConfig::XXHASH
   PkgConfig::VAMP
   PkgConfig::VAMP_HOST_SDK
-  PkgConfig::YYJSON
+  yyjson::yyjson
   magic_enum::magic_enum
   juce::juce
   backward_cpp::backward_cpp
@@ -815,6 +863,13 @@ list(APPEND zrythm_link_libs
   PkgConfig::GIOMM
   GTest::GTest
 )
+
+if(CHROMAPRINT_FOUND)
+  list(APPEND zrythm_link_libs PkgConfig::CHROMAPRINT)
+endif()
+if(LSP_DSP_LIB_FOUND)
+  list(APPEND zrythm_link_libs PkgConfig::LSP_DSP_LIB)
+endif()
 
 if(OS_GNU)
   find_library(LIBRT rt REQUIRED)

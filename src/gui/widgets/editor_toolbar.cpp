@@ -254,7 +254,7 @@ editor_toolbar_widget_setup (EditorToolbarWidget * self)
 }
 
 static void
-dispose (EditorToolbarWidget * self)
+dispose_editor_toolbar_widget (EditorToolbarWidget * self)
 {
   gtk_widget_unparent (GTK_WIDGET (self->scroll));
 
@@ -346,5 +346,5 @@ editor_toolbar_widget_class_init (EditorToolbarWidgetClass * _klass)
   gtk_widget_class_set_layout_manager_type (klass, GTK_TYPE_BIN_LAYOUT);
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
-  oklass->dispose = (GObjectFinalizeFunc) dispose;
+  oklass->dispose = (GObjectFinalizeFunc) dispose_editor_toolbar_widget;
 }

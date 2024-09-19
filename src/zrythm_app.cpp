@@ -76,11 +76,11 @@
 #include "gtk_wrapper.h"
 #include <fftw3.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
 #  include <lsp-plug.in/dsp/dsp.h>
 #endif
 /*#include <suil/suil.h>*/
-#ifdef HAVE_X11
+#if HAVE_X11
 #  include <X11/Xlib.h>
 #endif
 #include <libpanel.h>
@@ -905,7 +905,7 @@ zrythm_app_startup (GApplication * app)
     }
 #endif
 
-#ifdef HAVE_X11
+#if HAVE_X11
   /* init xlib threads */
   z_info ("Initing X threads...");
   XInitThreads ();

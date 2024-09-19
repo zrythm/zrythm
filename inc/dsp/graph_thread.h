@@ -31,7 +31,7 @@
 
 #include "utils/types.h"
 
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
 #  include <lsp-plug.in/dsp/dsp.h>
 #endif
 
@@ -100,7 +100,7 @@ public:
   /** Pointer back to the graph. */
   Graph &graph_;
 
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
   /** LSP DSP context. */
   lsp::dsp::context_t lsp_ctx_ = {};
 #endif

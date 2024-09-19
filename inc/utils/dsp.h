@@ -22,7 +22,7 @@
 
 #include <glib.h>
 
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
 #  include <lsp-plug.in/dsp/dsp.h>
 #endif
 
@@ -32,7 +32,7 @@
 ATTR_NONNULL ATTR_HOT static inline void
 dsp_fill (float * buf, float val, size_t size)
 {
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
       lsp::dsp::fill (buf, val, size);
@@ -44,7 +44,7 @@ dsp_fill (float * buf, float val, size_t size)
         {
           buf[i] = val;
         }
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
     }
 #endif
 }
@@ -55,7 +55,7 @@ dsp_fill (float * buf, float val, size_t size)
 ATTR_NONNULL ATTR_HOT static inline void
 dsp_limit1 (float * buf, float minf, float maxf, size_t size)
 {
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
       lsp::dsp::limit1 (buf, minf, maxf, size);
@@ -67,7 +67,7 @@ dsp_limit1 (float * buf, float minf, float maxf, size_t size)
         {
           buf[i] = CLAMP (buf[i], minf, maxf);
         }
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
     }
 #endif
 }
@@ -78,7 +78,7 @@ dsp_limit1 (float * buf, float minf, float maxf, size_t size)
 ATTR_NONNULL ATTR_HOT static inline void
 dsp_copy (float * dest, const float * src, size_t size)
 {
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
       lsp::dsp::copy (dest, src, size);
@@ -90,7 +90,7 @@ dsp_copy (float * dest, const float * src, size_t size)
         {
           dest[i] = src[i];
         }
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
     }
 #endif
 }
@@ -101,7 +101,7 @@ dsp_copy (float * dest, const float * src, size_t size)
 ATTR_NONNULL ATTR_HOT static inline void
 dsp_mul_k2 (float * dest, float k, size_t size)
 {
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
       lsp::dsp::mul_k2 (dest, k, size);
@@ -113,7 +113,7 @@ dsp_mul_k2 (float * dest, float k, size_t size)
         {
           dest[i] *= k;
         }
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
     }
 #endif
 }
@@ -124,7 +124,7 @@ dsp_mul_k2 (float * dest, float k, size_t size)
 [[nodiscard]] ATTR_NONNULL static inline float
 dsp_abs_max (const float * buf, size_t size)
 {
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
       return lsp::dsp::abs_max (buf, size);
@@ -141,7 +141,7 @@ dsp_abs_max (const float * buf, size_t size)
             }
         }
       return ret;
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
     }
 #endif
 }
@@ -156,7 +156,7 @@ dsp_abs_max_with_existing_peak (float * buf, float * cur_peak, size_t size)
 {
   float new_peak = *cur_peak;
 
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
       new_peak = lsp::dsp::abs_max (buf, size);
@@ -172,7 +172,7 @@ dsp_abs_max_with_existing_peak (float * buf, float * cur_peak, size_t size)
               new_peak = val;
             }
         }
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
     }
 #endif
 
@@ -200,7 +200,7 @@ dsp_max (const float * buf, size_t size);
 ATTR_NONNULL ATTR_HOT static inline void
 dsp_add2 (float * dest, const float * src, size_t count)
 {
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
       lsp::dsp::add2 (dest, src, count);
@@ -212,7 +212,7 @@ dsp_add2 (float * dest, const float * src, size_t count)
         {
           dest[i] = dest[i] + src[i];
         }
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
     }
 #endif
 }
@@ -223,7 +223,7 @@ dsp_add2 (float * dest, const float * src, size_t count)
 ATTR_NONNULL ATTR_HOT static inline void
 dsp_mix2 (float * dest, const float * src, float k1, float k2, size_t size)
 {
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
       lsp::dsp::mix2 (dest, src, k1, k2, size);
@@ -235,7 +235,7 @@ dsp_mix2 (float * dest, const float * src, float k1, float k2, size_t size)
         {
           dest[i] = dest[i] * k1 + src[i] * k2;
         }
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
     }
 #endif
 }
@@ -246,7 +246,7 @@ dsp_mix2 (float * dest, const float * src, float k1, float k2, size_t size)
 ATTR_NONNULL ATTR_HOT static inline void
 dsp_reverse1 (float * dest, size_t size)
 {
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
       lsp::dsp::reverse1 (dest, size);
@@ -258,7 +258,7 @@ dsp_reverse1 (float * dest, size_t size)
         {
           dest[i] = dest[(size - i) - 1];
         }
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
     }
 #endif
 }
@@ -269,7 +269,7 @@ dsp_reverse1 (float * dest, size_t size)
 ATTR_NONNULL ATTR_HOT static inline void
 dsp_reverse2 (float * dest, const float * src, size_t size)
 {
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
       lsp::dsp::reverse2 (dest, src, size);
@@ -281,7 +281,7 @@ dsp_reverse2 (float * dest, const float * src, size_t size)
         {
           dest[i] = src[(size - i) - 1];
         }
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
     }
 #endif
 }
@@ -293,7 +293,7 @@ dsp_reverse2 (float * dest, const float * src, size_t size)
 ATTR_NONNULL ATTR_HOT static inline void
 dsp_normalize (float * dest, const float * src, size_t size)
 {
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
       lsp::dsp::normalize (dest, src, size);
@@ -304,7 +304,7 @@ dsp_normalize (float * dest, const float * src, size_t size)
       dsp_copy (dest, src, size);
       float abs_peak = dsp_abs_max (dest, size);
       dsp_mul_k2 (dest, 1.f / abs_peak, size);
-#ifdef HAVE_LSP_DSP
+#if HAVE_LSP_DSP
     }
 #endif
 }
