@@ -515,7 +515,6 @@ if(ZRYTHM_STRICT)
       -Werror=undef
       -Werror=unused
       -Werror=vla
-      -Werror=vla-cxx-extension
       -fstrict-aliasing
       -Wstrict-aliasing=2
       -Werror=strict-aliasing
@@ -532,7 +531,6 @@ if(ZRYTHM_STRICT)
       -Werror=return-type
       -Werror=switch
       -Werror=overflow
-      -Werror=sentinel
       # breaks pango subproject build
       #-Werror=array-bounds
       -Werror=enum-compare
@@ -561,15 +559,8 @@ if(ZRYTHM_STRICT)
       -Werror=mismatched-tags
       -Werror=narrowing
       -Werror=overloaded-virtual
-      -Werror=return-stack-address
       -Werror=return-local-addr
-      -Werror=abstract-final-class)
-
-      # C-only flags
-      list(APPEND zrythm_compile_args
-        -Wno-bad-function-cast
-        -Werror=absolute-value
-        -Werror=parentheses-equality)
+    )
     endif()
   if(compiler_is_gcc)
     list(APPEND zrythm_compile_args
@@ -594,7 +585,6 @@ if(ZRYTHM_STRICT)
       -Werror=multistatement-macros
       -Werror=use-after-free
       -Werror=nonnull-compare
-      -Werror=pointer-size
       -Werror=bool-compare
       -Werror=lto-type-mismatch
 
@@ -620,14 +610,14 @@ if(ZRYTHM_STRICT)
       -Werror=analyzer-jump-through-null
       -Werror=analyzer-fd-leak
     )
-
-    # C-only flags
-    list(APPEND zrythm_compile_args
-      -Wno-old-style-declaration
-    )
   elseif(compiler_is_clang)
     list(APPEND zrythm_compile_args
       -Weverything
+      -Werror=vla-cxx-extension
+      -Werror=sentinel
+      -Werror=return-stack-address
+      -Werror=abstract-final-class
+      -Werror=pointer-size
     )
   endif()
 endif()
