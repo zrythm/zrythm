@@ -22,16 +22,16 @@ import os
 
 # --- Project information ---
 
-project = '@PROGRAM_NAME@'
-copyright = '@COPYRIGHT_YEARS@ @COPYRIGHT_NAME@'
-author = '@COPYRIGHT_NAME@'
+project = '@prog_name@'
+copyright = '@copyright_years@ @copyright_name@'
+author = '@copyright_name@'
 
 from subprocess import check_output
 
 # The full version, including alpha/beta/rc tags
-release = '@VERSION@'
+release = '@ZRYTHM_VERSION_STRING_FULL@'
 # The short X.Y version
-version = release[:-4]
+version = '@ZRYTHM_VERSION_MAJOR@.@ZRYTHM_VERSION_MINOR@'
 
 # --- General configuration ---
 
@@ -130,14 +130,14 @@ enabled_icons = [
     'modulator',
     'signal-midi',
     ]
-for icon in os.listdir ('@MESON_DOC_USER_BUILD_DIR@/_static/img'):
+for icon in os.listdir ('@CMAKE_CURRENT_BINARY_DIR@/_static/img'):
     for enabled_icon in enabled_icons:
         if icon.endswith (enabled_icon + '.svg'):
             icn_name = icon.removesuffix ('.svg')
             rst_prolog += '.. |icon_' + icn_name + '| image:: /_static/img/' + icon + '\n   :height: 10px\n   :alt: ' + icn_name + '\n'
 
 rst_epilog = """
-.. _issue_tracker: @ISSUE_TRACKER_URL@
+.. _issue_tracker: @issue_tracker_url@
 .. _LV2: https://lv2plug.in/
 """
 

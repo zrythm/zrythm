@@ -63,10 +63,10 @@ public:
   int group_idx_ = -1;
 };
 
-DEFINE_OBJECT_FORMATTER (RegionLinkGroup, [] (const RegionLinkGroup &val) {
+DEFINE_OBJECT_FORMATTER (RegionLinkGroup, [] (const RegionLinkGroup &group) {
   return fmt::format (
-    "RegionLinkGroup {{ group_idx: {}, ids: [{}] }}", val.group_idx_,
-    fmt::join (val.ids_, ", "));
+    "RegionLinkGroup {{ group_idx: {}, ids: [{}] }}", group.group_idx_,
+    fmt::join (group.ids_, ", "));
 });
 
 /**

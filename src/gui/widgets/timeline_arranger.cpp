@@ -272,8 +272,8 @@ timeline_arranger_widget_get_track_lane_at_y (ArrangerWidget * self, double y)
   int y_local = track_widget_get_local_y (track->widget_, self, (int) y);
 
   return std::visit (
-    [y_local] (auto &&track) -> TrackLane * {
-      for (auto &lane : track->lanes_)
+    [y_local] (auto &&t) -> TrackLane * {
+      for (auto &lane : t->lanes_)
         {
           if (y_local >= lane->y_ && y_local < lane->y_ + lane->height_)
             return lane.get ();

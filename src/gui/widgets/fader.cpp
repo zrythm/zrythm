@@ -65,9 +65,9 @@ fader_snapshot_old (GtkWidget * widget, GtkSnapshot * snapshot)
   GdkRGBA tmp_color =
     Z_GDK_RGBA_INIT (0.1f, 0.1f, 0.1f, self->hover ? 0.8f : 0.6f);
   {
-    graphene_rect_t tmp_r =
+    graphene_rect_t tmp_r2 =
       Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
-    gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r);
+    gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r2);
   }
   gtk_snapshot_pop (snapshot);
 
@@ -95,10 +95,10 @@ fader_snapshot_old (GtkWidget * widget, GtkSnapshot * snapshot)
   gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
   tmp_color = Z_GDK_RGBA_INIT ((float) r, (float) g, (float) b, (float) a);
   {
-    graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
+    graphene_rect_t tmp_r3 = Z_GRAPHENE_RECT_INIT (
       0.f, ((float) height - value_px) + (float) inner_line_width * 2.f,
       (float) width, value_px);
-    gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r);
+    gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r3);
   }
   gtk_snapshot_pop (snapshot);
 
@@ -113,10 +113,10 @@ fader_snapshot_old (GtkWidget * widget, GtkSnapshot * snapshot)
       color = Z_GDK_RGBA_INIT (0.6f, 0.6f, 0.6f, 1);
     }
   {
-    graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
+    graphene_rect_t tmp_r4 = Z_GRAPHENE_RECT_INIT (
       border_width, ((float) height - value_px) - (float) inner_line_width / 2.f,
       (float) width - border_width * 2.f, inner_line_width);
-    gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+    gtk_snapshot_append_color (snapshot, &color, &tmp_r4);
   }
 
   /* draw value */

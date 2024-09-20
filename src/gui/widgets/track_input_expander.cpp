@@ -155,7 +155,9 @@ track_input_expander_widget_refresh (
  * Sets up the TrackInputExpanderWidget.
  */
 void
-track_input_expander_widget_setup (TrackInputExpanderWidget * self, Track * track)
+track_input_expander_widget_setup (
+  TrackInputExpanderWidget * self,
+  ChannelTrack *             track)
 {
 }
 

@@ -1453,7 +1453,7 @@ region_draw (Region * self, GtkSnapshot * snapshot, GdkRectangle * rect)
       /* draw any remaining parts */
       std::visit (
         [&] (auto &&region) {
-          using T = std::decay_t<decltype (region)>;
+          using T = base_type<decltype (region)>;
           if constexpr (std::is_same_v<T, MidiRegion>)
             draw_midi_region (region, snapshot, &full_rect, &draw_rect);
           else if constexpr (std::is_same_v<T, AutomationRegion>)
@@ -1573,8 +1573,8 @@ region_get_lane_full_rect (const Region * self, GdkRectangle * rect)
   z_return_if_fail (track && track->lanes_visible_);
 
   std::visit (
-    [&] (auto &&track) {
-      auto &lane = track->lanes_[self->id_.lane_pos_];
+    [&] (auto &&t) {
+      auto &lane = t->lanes_[self->id_.lane_pos_];
 
       *rect = self->full_rect_;
       rect->y += lane->y_;

@@ -942,10 +942,6 @@ get_hit_objects (
 
               if (track->has_lanes ())
                 {
-                  const auto laned_track =
-                    dynamic_cast<LanedTrack *> (track.get ());
-                  auto variant =
-                    convert_to_variant<LanedTrackPtrVariant> (laned_track);
                   std::visit (
                     [&] (const auto laned_track) {
                       for (const auto &lane : laned_track->lanes_)
@@ -975,7 +971,7 @@ get_hit_objects (
                             }
                         }
                     },
-                    variant);
+                    convert_to_variant<LanedTrackPtrVariant> (track.get ()));
                 }
 
               /* chord regions */
@@ -2261,14 +2257,13 @@ arranger_widget_create_item (
   if (!autofilling)
     {
       /* set the start selections */
-      ArrangerSelections * sel = arranger_widget_get_selections (self);
-      auto sel_variant = convert_to_variant<ArrangerSelectionsPtrVariant> (sel);
       std::visit (
         [&] (auto &&sel) {
           z_return_if_fail (sel);
           self->sel_at_start = sel->clone_unique ();
         },
-        sel_variant);
+        convert_to_variant<ArrangerSelectionsPtrVariant> (
+          arranger_widget_get_selections (self)));
     }
 }
 
@@ -2304,7 +2299,7 @@ autofill (ArrangerWidget * self, double x, double y)
        * objects */
       auto sel_variant = convert_to_variant<ArrangerSelectionsPtrVariant> (sel);
       std::visit (
-        [&] (auto &&sel) { self->sel_at_start = sel->clone_unique (); },
+        [&] (auto &&s) { self->sel_at_start = s->clone_unique (); },
         sel_variant);
 
       auto clip_editor_region = CLIP_EDITOR->get_region ();
@@ -2396,40 +2391,40 @@ on_drag_begin_handle_hit_object (
   auto obj_variant = convert_to_variant<ArrangerObjectPtrVariant> (obj);
 
   return std::visit (
-    [&] (auto &&obj) {
-      using ObjT = base_type<decltype (obj)>;
-      if (!obj || obj->is_frozen ())
+    [&] (auto &&o) {
+      using ObjT = base_type<decltype (o)>;
+      if (!o || o->is_frozen ())
         {
           return false;
         }
 
       /* get x,y as local to the object */
-      int wx = static_cast<int> (x) - obj->full_rect_.x;
-      int wy = static_cast<int> (y) - obj->full_rect_.y;
+      int wx = static_cast<int> (x) - o->full_rect_.x;
+      int wy = static_cast<int> (y) - o->full_rect_.y;
 
       /* remember object and pos */
       arranger_widget_set_start_object (
-        self, obj->template shared_from_this_as<ObjT> ());
+        self, o->template shared_from_this_as<ObjT> ());
       self->start_pos_px = x;
 
       /* get flags */
       bool is_fade_in_point =
-        arranger_object_is_fade_in (obj, wx, wy, true, false);
+        arranger_object_is_fade_in (o, wx, wy, true, false);
       bool is_fade_out_point =
-        arranger_object_is_fade_out (obj, wx, wy, true, false);
+        arranger_object_is_fade_out (o, wx, wy, true, false);
       bool is_fade_in_outer =
-        arranger_object_is_fade_in (obj, wx, wy, false, true);
+        arranger_object_is_fade_in (o, wx, wy, false, true);
       bool is_fade_out_outer =
-        arranger_object_is_fade_out (obj, wx, wy, false, true);
-      bool is_resize_l = arranger_object_is_resize_l (obj, wx);
-      bool is_resize_r = arranger_object_is_resize_r (obj, wx);
-      bool is_resize_up = arranger_object_is_resize_up (obj, wx, wy);
+        arranger_object_is_fade_out (o, wx, wy, false, true);
+      bool is_resize_l = arranger_object_is_resize_l (o, wx);
+      bool is_resize_r = arranger_object_is_resize_r (o, wx);
+      bool is_resize_up = arranger_object_is_resize_up (o, wx, wy);
       bool is_resize_loop =
-        arranger_object_is_resize_loop (obj, wy, self->ctrl_held);
+        arranger_object_is_resize_loop (o, wy, self->ctrl_held);
       bool show_cut_lines =
-        arranger_object_should_show_cut_lines (obj, self->alt_held);
-      bool is_rename = arranger_object_is_rename (obj, wx, wy);
-      bool is_selected = obj->is_selected ();
+        arranger_object_should_show_cut_lines (o, self->alt_held);
+      bool is_rename = arranger_object_is_rename (o, wx, wy);
+      bool is_selected = o->is_selected ();
       self->start_object_was_selected = is_selected;
 
       /* select object if unselected */
@@ -2442,19 +2437,19 @@ on_drag_begin_handle_hit_object (
               if (self->ctrl_held)
                 {
                   /* append to selections */
-                  obj->select (true, true, true);
+                  o->select (true, true, true);
                 }
               else
                 {
                   /* make it the only selection */
-                  obj->select (true, false, true);
+                  o->select (true, false, true);
                   z_info ("making only selection");
                 }
             }
           break;
         case Tool::Cut:
           /* only select this object */
-          obj->select (true, false, true);
+          o->select (true, false, true);
           break;
         default:
           break;
@@ -2465,7 +2460,7 @@ on_drag_begin_handle_hit_object (
         {
           if (self->drag_start_btn == GDK_BUTTON_PRIMARY)
             {
-              CLIP_EDITOR->set_region (obj, true);
+              CLIP_EDITOR->set_region (o, true);
 
               /* if double click bring up piano roll */
               if (self->n_press == 2 && !self->ctrl_held)
@@ -2479,7 +2474,7 @@ on_drag_begin_handle_hit_object (
       else if constexpr (std::is_same_v<ObjT, MidiNote>)
         {
           auto cur_r = CLIP_EDITOR->get_region ();
-          auto r = obj->get_region ();
+          auto r = o->get_region ();
           if (r != cur_r)
             {
               CLIP_EDITOR->set_region (r, true);
@@ -2492,9 +2487,8 @@ on_drag_begin_handle_hit_object (
             {
               auto dialog = string_entry_dialog_widget_new (
                 _ ("Marker name"),
-                bind_member_function (*obj, &NameableObject::get_name),
-                bind_member_function (
-                  *obj, &NameableObject::set_name_with_action));
+                bind_member_function (*o, &NameableObject::get_name),
+                bind_member_function (*o, &NameableObject::set_name_with_action));
               gtk_window_present (GTK_WINDOW (dialog));
               self->action = UiOverlayAction::None;
               return true;
@@ -2506,7 +2500,7 @@ on_drag_begin_handle_hit_object (
           if (self->n_press == 2 && !self->ctrl_held)
             {
               auto scale_selector = scale_selector_window_widget_new (
-                dynamic_cast<ScaleObject *> (obj));
+                dynamic_cast<ScaleObject *> (o));
               gtk_window_present (GTK_WINDOW (scale_selector));
               self->action = UiOverlayAction::None;
               return true;
@@ -2519,10 +2513,9 @@ on_drag_begin_handle_hit_object (
             {
               auto dialog = string_entry_dialog_widget_new (
                 _ ("Automation value"),
+                bind_member_function (*o, &AutomationPoint::get_fvalue_as_string),
                 bind_member_function (
-                  *obj, &AutomationPoint::get_fvalue_as_string),
-                bind_member_function (
-                  *obj, &AutomationPoint::set_fvalue_with_action));
+                  *o, &AutomationPoint::set_fvalue_with_action));
               gtk_window_present (GTK_WINDOW (dialog));
               self->action = UiOverlayAction::None;
               return true;
@@ -2595,7 +2588,7 @@ on_drag_begin_handle_hit_object (
       bool drum_mode = arranger_widget_get_drum_mode_enabled (self);
 
       /* update arranger action */
-      switch (obj->type_)
+      switch (o->type_)
         {
         case ArrangerObject::Type::Region:
           switch (P_TOOL)
@@ -2737,9 +2730,9 @@ on_drag_begin_handle_hit_object (
       auto orig_selections_variant =
         convert_to_variant<ArrangerSelectionsPtrVariant> (orig_selections);
       std::visit (
-        [&] (auto &&orig_selections) {
-          constexpr bool is_timeline = std::is_same_v<
-            base_type<decltype (orig_selections)>, TimelineSelections *>;
+        [&] (auto &&orig_sel) {
+          constexpr bool is_timeline =
+            std::is_same_v<base_type<decltype (orig_sel)>, TimelineSelections *>;
 
           /* set index in prev lane for selected objects if timeline */
           if constexpr (is_timeline)
@@ -2748,7 +2741,7 @@ on_drag_begin_handle_hit_object (
             }
 
           /* clone the arranger selections at this point */
-          self->sel_at_start = orig_selections->clone_unique ();
+          self->sel_at_start = orig_sel->clone_unique ();
 
           /* if the action is stretching, set the "before_length" on each region
            */
@@ -2756,7 +2749,7 @@ on_drag_begin_handle_hit_object (
             {
               if (self->action == UiOverlayAction::StretchingR)
                 {
-                  TRANSPORT->prepare_audio_regions_for_stretch (orig_selections);
+                  TRANSPORT->prepare_audio_regions_for_stretch (orig_sel);
                 }
             }
         },
@@ -3114,8 +3107,8 @@ pan (ArrangerWidget * self, double offset_x, double offset_y)
   /* pan */
   auto settings = arranger_widget_get_editor_settings (self);
   std::visit (
-    [&] (auto &&settings) {
-      settings->append_scroll ((int) -offset_x, (int) -offset_y, true);
+    [&] (auto &&s) {
+      s->append_scroll ((int) -offset_x, (int) -offset_y, true);
 
       /* these are also affected */
       self->last_offset_x = MAX (0, self->last_offset_x - offset_x);
@@ -3932,16 +3925,16 @@ on_scroll (
         }
       auto settings = arranger_widget_get_editor_settings (self);
       std::visit (
-        [&] (auto &&settings) {
+        [&] (auto &&s) {
           scroll_x = scroll_x * scroll_amt;
           scroll_y = scroll_y * scroll_amt;
-          int scroll_x_before = settings->scroll_start_x_;
-          int scroll_y_before = settings->scroll_start_y_;
-          settings->append_scroll (scroll_x, scroll_y, true);
+          int scroll_x_before = s->scroll_start_x_;
+          int scroll_y_before = s->scroll_start_y_;
+          s->append_scroll (scroll_x, scroll_y, true);
 
           /* also adjust the drag offsets (in case we are currently dragging */
-          scroll_x = settings->scroll_start_x_ - scroll_x_before;
-          scroll_y = settings->scroll_start_y_ - scroll_y_before;
+          scroll_x = s->scroll_start_x_ - scroll_x_before;
+          scroll_y = s->scroll_start_y_ - scroll_y_before;
           self->offset_x_from_scroll += scroll_x;
           self->offset_y_from_scroll += scroll_y;
 
@@ -3951,17 +3944,17 @@ on_scroll (
               if (self->type == ArrangerWidgetType::Timeline && !self->is_pinned)
                 {
                   tracklist_widget_set_unpinned_scroll_start_y (
-                    MW_TRACKLIST, settings->scroll_start_y_);
+                    MW_TRACKLIST, s->scroll_start_y_);
                 }
               else if (self->type == ArrangerWidgetType::Midi)
                 {
                   midi_editor_space_widget_set_piano_keys_scroll_start_y (
-                    MW_MIDI_EDITOR_SPACE, settings->scroll_start_y_);
+                    MW_MIDI_EDITOR_SPACE, s->scroll_start_y_);
                 }
               else if (self->type == ArrangerWidgetType::Chord)
                 {
                   chord_editor_space_widget_set_chord_keys_scroll_start_y (
-                    MW_CHORD_EDITOR_SPACE, settings->scroll_start_y_);
+                    MW_CHORD_EDITOR_SPACE, s->scroll_start_y_);
                 }
             }
         },
@@ -4150,8 +4143,8 @@ arranger_widget_scroll_until_obj (
 {
   auto settings = arranger_widget_get_editor_settings (self);
   std::visit (
-    [&] (auto &&settings) {
-      z_return_if_fail (settings);
+    [&] (auto &&s) {
+      z_return_if_fail (s);
 
       int  width = gtk_widget_get_width (GTK_WIDGET (self));
       int  height = gtk_widget_get_height (GTK_WIDGET (self));
@@ -4175,17 +4168,17 @@ arranger_widget_scroll_until_obj (
             }
 
           if (
-            start_px <= settings->scroll_start_x_
-            || end_px >= settings->scroll_start_x_ + width)
+            start_px <= s->scroll_start_x_
+            || end_px >= s->scroll_start_x_ + width)
             {
               if (left)
                 {
-                  settings->set_scroll_start_x (start_px - padding, false);
+                  s->set_scroll_start_x (start_px - padding, false);
                 }
               else
                 {
                   int tmp = (end_px + padding) - width;
-                  settings->set_scroll_start_x (tmp, false);
+                  s->set_scroll_start_x (tmp, false);
                 }
             }
         }
@@ -4195,17 +4188,17 @@ arranger_widget_scroll_until_obj (
           int start_px = obj->full_rect_.y;
           int end_px = obj->full_rect_.y + obj->full_rect_.height;
           if (
-            start_px <= settings->scroll_start_y_
-            || end_px >= settings->scroll_start_y_ + height)
+            start_px <= s->scroll_start_y_
+            || end_px >= s->scroll_start_y_ + height)
             {
               if (up)
                 {
-                  settings->set_scroll_start_y (start_px - padding, false);
+                  s->set_scroll_start_y (start_px - padding, false);
                 }
               else
                 {
                   int tmp = (end_px + padding) - height;
-                  settings->set_scroll_start_y (tmp, false);
+                  s->set_scroll_start_y (tmp, false);
                 }
             }
         }
@@ -4289,11 +4282,11 @@ arranger_widget_handle_playhead_auto_scroll (ArrangerWidget * self, bool force)
 
   auto settings = arranger_widget_get_editor_settings (self);
   std::visit (
-    [&] (auto &&settings) {
+    [&] (auto &&s) {
       if (follow)
         {
           /* scroll */
-          settings->set_scroll_start_x (playhead_x - rect.width / 2, true);
+          s->set_scroll_start_x (playhead_x - rect.width / 2, true);
           z_debug ("autoscrolling to follow playhead");
         }
       else if (scroll_edges)
@@ -4305,7 +4298,7 @@ arranger_widget_handle_playhead_auto_scroll (ArrangerWidget * self, bool force)
             playhead_x > ((rect.x + rect.width) - buffer)
             || playhead_x < rect.x + buffer)
             {
-              settings->set_scroll_start_x (playhead_x - buffer, true);
+              s->set_scroll_start_x (playhead_x - buffer, true);
               /*z_debug ("autoscrolling at playhead edges");*/
             }
         }

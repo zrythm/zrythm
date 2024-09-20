@@ -326,8 +326,8 @@ draw_lanes (TrackCanvasWidget * self, GtkSnapshot * snapshot, int width)
   int  total_height = (int) track->main_height_;
   auto variant = convert_to_variant<LanedTrackPtrVariant> (track);
   std::visit (
-    [&] (auto &&track) {
-      for (auto &lane : track->lanes_)
+    [&] (auto &&t) {
+      for (auto &lane : t->lanes_)
         {
           /* remember y */
           lane->y_ = total_height;
@@ -423,14 +423,14 @@ draw_automation (TrackCanvasWidget * self, GtkSnapshot * snapshot, int width)
   if (!track || !track->automation_visible_)
     return;
 
-  auto &atl = track->get_automation_tracklist ();
-  int   total_height = (int) track->main_height_;
+  auto  &atl = track->get_automation_tracklist ();
+  double total_height = track->main_height_;
 
-  if (auto laned_track = dynamic_cast<LanedTrack *> (track))
+  if (const auto * laned_track = dynamic_cast<LanedTrack *> (track))
     {
       total_height += std::visit (
-        [] (const auto &laned_track) {
-          return laned_track->get_visible_lane_heights ();
+        [] (const auto &laned_t) {
+          return laned_t->get_visible_lane_heights ();
         },
         convert_to_variant<LanedTrackPtrVariant> (laned_track));
     }
@@ -443,7 +443,7 @@ draw_automation (TrackCanvasWidget * self, GtkSnapshot * snapshot, int width)
         continue;
 
       /* remember y */
-      at->y_ = total_height;
+      at->y_ = static_cast<int> (total_height);
 
       /* draw separator above at */
       GdkRGBA sep_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.3);
@@ -688,7 +688,7 @@ track_canvas_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     }
 
   /* tint background */
-  GdkRGBA tint_color = track->color_.to_gdk_rgba_with_alpha (0.15);
+  GdkRGBA tint_color = track->color_.to_gdk_rgba_with_alpha (0.15f);
   {
     graphene_rect_t tmp_r =
       Z_GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);

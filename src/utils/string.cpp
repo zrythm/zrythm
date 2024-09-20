@@ -231,7 +231,9 @@ string_get_regex_group (
 {
   std::regex  re (regex);
   std::cmatch match;
-  if (std::regex_search (str.c_str (), match, re) && group < match.size ())
+  if (
+    std::regex_search (str.c_str (), match, re)
+    && group < static_cast<decltype (group)> (match.size ()))
     {
       return match[group].str ();
     }

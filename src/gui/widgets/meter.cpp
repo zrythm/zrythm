@@ -77,9 +77,9 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   /* draw meter line */
   GdkRGBA tmp_color = Z_GDK_RGBA_INIT (0.4f, 0.1f, 0.05f, 1);
   {
-    graphene_rect_t tmp_r =
+    graphene_rect_t tmp_r2 =
       Z_GRAPHENE_RECT_INIT (0.f, height - value_px, width, 1);
-    gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r);
+    gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r2);
   }
 
   /* draw peak */
@@ -103,9 +103,9 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     }
   float peak_px = peak * height;
   {
-    graphene_rect_t tmp_r =
+    graphene_rect_t tmp_r3 =
       Z_GRAPHENE_RECT_INIT (0.f, height - peak_px, width, 2);
-    gtk_snapshot_append_color (snapshot, &color, &tmp_r);
+    gtk_snapshot_append_color (snapshot, &color, &tmp_r3);
   }
 
   self->last_meter_val = self->meter_val;

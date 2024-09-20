@@ -103,8 +103,8 @@ operator== (const ChordRegion &lhs, const ChordRegion &rhs)
               == static_cast<const ArrangerObject &> (rhs);
 }
 
-DEFINE_OBJECT_FORMATTER (ChordRegion, [] (const ChordRegion &val) {
-  return fmt::format ("ChordRegion[id: {}]", val.id_);
+DEFINE_OBJECT_FORMATTER (ChordRegion, [] (const ChordRegion &cr) {
+  return fmt::format ("ChordRegion[id: {}]", cr.id_);
 })
 
 /**

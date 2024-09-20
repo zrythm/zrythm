@@ -79,9 +79,9 @@ operator== (const ScaleObject &a, const ScaleObject &b)
          && a.index_in_chord_track_ == b.index_in_chord_track_;
 }
 
-DEFINE_OBJECT_FORMATTER (ScaleObject, [] (const ScaleObject &val) {
+DEFINE_OBJECT_FORMATTER (ScaleObject, [] (const ScaleObject &so) {
   return fmt::format (
-    "ScaleObject[index_in_chord_track_: {}]", val.index_in_chord_track_);
+    "ScaleObject[index_in_chord_track_: {}]", so.index_in_chord_track_);
 })
 
 /**

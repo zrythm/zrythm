@@ -111,8 +111,8 @@ clip_editor_widget_navigate_to_region_start (
   ArrangerWidget * arranger = r->get_arranger_for_children ();
   auto             settings = arranger_widget_get_editor_settings (arranger);
   std::visit (
-    [&] (auto &&settings) {
-      if (px == settings->scroll_start_x_)
+    [&] (auto &&s) {
+      if (px == s->scroll_start_x_)
         {
           /* execute the best fit action to center contents */
           GAction * action = g_action_map_lookup_action (
@@ -122,7 +122,7 @@ clip_editor_widget_navigate_to_region_start (
         }
       else
         {
-          settings->set_scroll_start_x (px, false);
+          s->set_scroll_start_x (px, false);
         }
     },
     settings);

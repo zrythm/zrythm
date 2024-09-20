@@ -1133,23 +1133,23 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       /* fill */
       GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.27f);
       {
-        graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
+        graphene_rect_t tmp_r2 = Z_GRAPHENE_RECT_INIT (
           (float) dr.x, (float) dr.y, (float) dr.width, (float) dr.height);
-        gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r);
+        gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r2);
       }
 
       /* draw edges */
       tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.7f);
       {
-        graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
+        graphene_rect_t tmp_r3 = Z_GRAPHENE_RECT_INIT (
           (float) dr.x, (float) dr.y, 2.f, (float) dr.height);
-        gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r);
+        gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r3);
       }
       {
-        graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
+        graphene_rect_t tmp_r4 = Z_GRAPHENE_RECT_INIT (
           (float) dr.x + (float) dr.width, (float) dr.y, 2.f,
           (float) dr.height - (float) dr.y);
-        gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r);
+        gtk_snapshot_append_color (snapshot, &tmp_color, &tmp_r4);
       }
     }
 
@@ -1816,8 +1816,7 @@ ruler_widget_get_editor_settings (RulerWidget * self)
         clip_editor_inner_widget_get_visible_arranger (MW_CLIP_EDITOR_INNER);
       auto settings = arranger_widget_get_editor_settings (arr);
       return std::visit (
-        [&] (auto &&settings) -> EditorSettings * { return settings; },
-        settings);
+        [&] (auto &&s) -> EditorSettings * { return s; }, settings);
     }
   z_return_val_if_reached (nullptr);
 }

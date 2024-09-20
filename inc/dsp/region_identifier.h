@@ -88,11 +88,11 @@ operator== (const RegionIdentifier &lhs, const RegionIdentifier &rhs)
          && lhs.idx_ == rhs.idx_;
 }
 
-DEFINE_OBJECT_FORMATTER (RegionIdentifier, [] (const RegionIdentifier &val) {
+DEFINE_OBJECT_FORMATTER (RegionIdentifier, [] (const RegionIdentifier &id) {
   return fmt::format (
     "RegionIdentifier {{ type: {}, track name hash {}, lane pos {}, at index {}, index {}, link_group: {} }}",
-    RegionType_to_string (val.type_), val.track_name_hash_, val.lane_pos_,
-    val.at_idx_, val.idx_, val.link_group_);
+    RegionType_to_string (id.type_), id.track_name_hash_, id.lane_pos_,
+    id.at_idx_, id.idx_, id.link_group_);
 });
 
 /**

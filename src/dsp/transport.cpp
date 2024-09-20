@@ -223,8 +223,7 @@ Transport::stretch_regions (
           auto r_variant = convert_to_variant<RegionPtrVariant> (region);
           std::visit (
             [&] (auto &&r) {
-              if constexpr (
-                std::is_same_v<std::decay_t<decltype (r)>, AudioRegion>)
+              if constexpr (std::is_same_v<base_type<decltype (r)>, AudioRegion>)
                 {
                   /* don't stretch audio regions with musical mode off */
                   if (!r->get_musical_mode () && !force)
@@ -462,14 +461,14 @@ Transport::move_playhead (
 
                   if constexpr (
                     std::is_same_v<
-                      std::decay_t<decltype (region.get ())>, MidiRegion>)
+                      base_type<decltype (region.get ())>, MidiRegion>)
                     {
                       for (auto &midi_note : region->midi_notes_)
                         {
                           if (midi_note->is_hit (playhead_pos_.frames_))
                             {
-                              t->processor_->piano_roll->midi_events_
-                                ->queued_events_
+                              t->processor_->piano_roll_->midi_events_
+                                .queued_events_
                                 .add_note_off (1, midi_note->val_, 0);
                             }
                         }

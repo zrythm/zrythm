@@ -105,6 +105,11 @@ add_custom_command(
   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/zrythm.gresources.xml ${ui_files} appdata-xml-merged
   COMMENT "Compiling GResource file: zrythm-resources.c"
 )
-add_custom_target(zrythm-gresources DEPENDS "${GRESOURCE_COMPILED_FILE}")
 
-set(GRESOURCE_COMPILED_FILE "${GRESOURCE_COMPILED_FILE}" PARENT_SCOPE)
+add_library(zrythm-gresources STATIC ${GRESOURCE_COMPILED_FILE})
+if(compiler_gnulike)
+  target_compile_options(zrythm-gresources
+    PRIVATE -Wno-overlength-strings)  
+  target_link_libraries(zrythm-gresources
+    PRIVATE PkgConfig::GIOMM)
+endif()

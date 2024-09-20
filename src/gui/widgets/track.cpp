@@ -106,7 +106,7 @@ track_widget_get_hovered_button (TrackWidget * self, int x, int y)
       && y >= cb->y && y <= cb->y + TRACK_BUTTON_SIZE);
   };
 
-  CustomButtonWidget * cb = nullptr;
+  // CustomButtonWidget * cb = nullptr;
   for (auto &cb_ref : self->top_buttons)
     {
       if (is_button_hovered (cb_ref))
@@ -231,8 +231,8 @@ get_at_to_resize (TrackWidget * self, int y)
           auto laned_track_variant =
             convert_to_variant<LanedTrackPtrVariant> (track);
           std::visit (
-            [&] (auto &laned_track) {
-              for (auto &lane : laned_track->lanes_)
+            [&] (auto &laned_t) {
+              for (auto &lane : laned_t->lanes_)
                 {
                   total_height += (int) lane->height_;
                 }
@@ -622,9 +622,9 @@ get_lane_at_y (TrackWidget * self, double y)
 
   auto laned_track_variant = convert_to_variant<LanedTrackPtrVariant> (track);
   return std::visit (
-    [&] (auto &&track) {
-      double height_before = track->main_height_;
-      for (auto &lane : track->lanes_)
+    [&] (auto &&laned_t) {
+      double height_before = laned_t->main_height_;
+      for (auto &lane : laned_t->lanes_)
         {
           double next_height = height_before + lane->height_;
           if (y > height_before && y <= next_height)
@@ -906,12 +906,12 @@ show_edit_name_popover (TrackWidget * self, TrackLane * lane)
   if (lane)
     {
       std::visit (
-        [&] (const auto &lane) {
+        [&] (const auto &l) {
           editable_label_widget_show_popover_for_widget (
-            GTK_WIDGET (self), self->track_name_popover, lane,
-            bind_member_function (*lane, &TrackLane::get_name),
+            GTK_WIDGET (self), self->track_name_popover, l,
+            bind_member_function (*l, &TrackLane::get_name),
             bind_member_function (
-              *lane, &base_type<decltype (lane)>::rename_with_action));
+              *l, &base_type<decltype (l)>::rename_with_action));
         },
         convert_to_variant<TrackLanePtrVariant> (lane));
     }
@@ -1066,16 +1066,16 @@ click_released (
           if (TRACK_CB_ICON_IS (SOLO))
             {
               std::visit (
-                [&] (auto &&lane) {
-                  lane->set_soloed (!lane->get_soloed (), F_TRIGGER_UNDO, true);
+                [&] (auto &&l) {
+                  l->set_soloed (!l->get_soloed (), F_TRIGGER_UNDO, true);
                 },
                 convert_to_variant<TrackLanePtrVariant> (lane));
             }
           else if (TRACK_CB_ICON_IS (MUTE))
             {
               std::visit (
-                [&] (auto &&lane) {
-                  lane->set_muted (!lane->get_muted (), F_TRIGGER_UNDO, true);
+                [&] (auto &&l) {
+                  l->set_muted (!l->get_muted (), F_TRIGGER_UNDO, true);
                 },
                 convert_to_variant<TrackLanePtrVariant> (lane));
             }

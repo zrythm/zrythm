@@ -206,16 +206,16 @@ public:
   int marker_track_vis_index_ = 0;
 };
 
-DEFINE_OBJECT_FORMATTER (TimelineSelections, [] (const TimelineSelections &val) {
+DEFINE_OBJECT_FORMATTER (TimelineSelections, [] (const TimelineSelections &sel) {
   std::string objs;
-  for (const auto &obj : val.objects_)
+  for (const auto &obj : sel.objects_)
     {
       std::visit (
         [&] (auto &&o) { objs += fmt::format ("{}\n", *o); },
         convert_to_variant<TimelineObjectPtrVariant> (obj.get ()));
     }
   return fmt::format (
-    "TimelineSelections [{} objects: [\n{}]]", val.get_num_objects (), objs);
+    "TimelineSelections [{} objects: [\n{}]]", sel.get_num_objects (), objs);
 })
 
 /**

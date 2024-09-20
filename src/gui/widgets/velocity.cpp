@@ -102,8 +102,8 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
       }
       auto &layout = arranger->vel_layout;
       pango_layout_set_text (layout.get (), text, -1);
-      GdkRGBA tmp_color = Z_GDK_RGBA_INIT (1, 1, 1, 1);
-      gtk_snapshot_append_layout (snapshot, layout.get (), &tmp_color);
+      GdkRGBA tmp_color2 = Z_GDK_RGBA_INIT (1, 1, 1, 1);
+      gtk_snapshot_append_layout (snapshot, layout.get (), &tmp_color2);
       gtk_snapshot_restore (snapshot);
     }
 

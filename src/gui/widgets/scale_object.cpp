@@ -38,7 +38,7 @@ scale_object_recreate_pango_layouts (ScaleObject * self)
 void
 scale_object_draw (ScaleObject * self, GtkSnapshot * snapshot)
 {
-  ArrangerWidget * arranger = self->get_arranger ();
+  // ArrangerWidget * arranger = self->get_arranger ();
 
   /* set color */
   auto color = Color::get_arranger_object_color (

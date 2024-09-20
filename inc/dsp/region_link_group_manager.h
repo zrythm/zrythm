@@ -44,10 +44,10 @@ public:
 
 DEFINE_OBJECT_FORMATTER (
   RegionLinkGroupManager,
-  [] (const RegionLinkGroupManager &val) {
+  [] (const RegionLinkGroupManager &mgr) {
     return fmt::format (
       "RegionLinkGroupManager {{ groups: [{}] }}",
-      fmt::join (val.groups_, ", "));
+      fmt::join (mgr.groups_, ", "));
   });
 
 /**

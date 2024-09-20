@@ -38,7 +38,6 @@ add_custom_command(
 )
 target_sources(zrythm_lib
   PRIVATE
-    "${GRESOURCE_COMPILED_FILE}"
     ${CMAKE_CURRENT_BINARY_DIR}/translators.h)
 
 add_subdirectory(actions)
@@ -85,7 +84,7 @@ target_precompile_headers(zrythm_lib
 add_executable(zrythm)
 target_sources(zrythm
   PRIVATE main.cpp ${zrythm_resources})
-target_link_libraries(zrythm PRIVATE zrythm_lib)
+target_link_libraries(zrythm PRIVATE zrythm_lib zrythm-gresources)
 target_link_options(zrythm PRIVATE ${zrythm_link_args})
 add_dependencies(zrythm
   zrythm-gresources appdata-xml-merged)

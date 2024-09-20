@@ -2,11 +2,18 @@
     "cmake.buildDirectory": "${workspaceFolder}/builddir_cmake",
     "cmake.installPrefix": "${workspaceFolder}/_installed_cmake",
     "cmake.configureArgs": [
+        "-DCMAKE_C_COMPILER=clang",
+        "-DCMAKE_CXX_COMPILER=clang++",
         "-DZRYTHM_TESTS=ON",
         "-DCMAKE_BUILD_TYPE=Debug",
-        "-DZRYTHM_USER_MANUAL=OFF",
-        // "-DZRYTHM_STRICT=ON"
+        "-DZRYTHM_USER_MANUAL=ON",
+        "-DZRYTHM_STRICT=ON",
+        "-DZRYTHM_STRICT_SPHINX_OPTS=ON",
     ],
+    "cmake.environment": {
+        "VIRTUAL_ENV": "${workspaceFolder}/venv",
+        "PATH": "${workspaceFolder}/venv/bin:${env:PATH}"
+    },
     "cmake.clearOutputBeforeBuild": false,
     // note: run the following right after configure:
     // compdb -p builddir list > /tmp/compile_commands.json && cp /tmp/compile_commands.json builddir/compile_commands.json

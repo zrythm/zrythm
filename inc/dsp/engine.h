@@ -762,7 +762,7 @@ public:
    * for details.
    */
   bool  denormal_prevention_val_positive_ = true;
-  float denormal_prevention_val_ = 1e-12;
+  float denormal_prevention_val_ = 1e-12f;
 
   /**
    * If this is on, only tracks/regions marked as "for bounce" will be

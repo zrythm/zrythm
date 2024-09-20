@@ -14,7 +14,7 @@ Welcome to the Zrythm manual.
    this here in latex.
 .. only:: latex
 
-   Copyright © @COPYRIGHT_YEARS@ @COPYRIGHT_NAME@
+   Copyright © @copyright_years@ @copyright_name@
 
    *Permission is granted to copy, distribute and/or modify this
    document under the terms of the GNU Free Documentation License,
@@ -57,7 +57,7 @@ Welcome to the Zrythm manual.
    after the ToC
 .. only:: html or epub
 
-   Copyright © @COPYRIGHT_YEARS@ @COPYRIGHT_NAME@
+   Copyright © @copyright_years@ @copyright_name@
 
    *Permission is granted to copy, distribute and/or modify this
    document under the terms of the GNU Free Documentation License,

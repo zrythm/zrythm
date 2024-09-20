@@ -35,7 +35,17 @@ public:
   std::pair<std::string, std::string>
   generate_compresed_file (std::string &dir, std::string &path) const;
 
-  auto get_logger () const { return logger_; }
+#ifdef __GNUC__
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wnull-dereference"
+#endif
+  [[nodiscard]] const std::shared_ptr<spdlog::logger> &get_logger () const
+  {
+    return logger_;
+  }
+#ifdef __GNUC__
+#  pragma GCC diagnostic pop
+#endif
 
   ~Logger ();
 

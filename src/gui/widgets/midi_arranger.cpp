@@ -335,8 +335,8 @@ do_vertical_zoom (ArrangerWidget * self, double hover_y, double delta_y)
   /* get current adjustment so we can get the difference from the cursor */
   auto settings = arranger_widget_get_editor_settings (self);
   std::visit (
-    [&] (auto &&settings) {
-      double adj_val = settings->scroll_start_y_;
+    [&] (auto &&s) {
+      double adj_val = s->scroll_start_y_;
       double size_before =
         gtk_widget_get_height (GTK_WIDGET (MW_PIANO_ROLL_KEYS));
       if (hover_y < 0)
@@ -367,7 +367,7 @@ do_vertical_zoom (ArrangerWidget * self, double hover_y, double delta_y)
       midi_editor_space_widget_refresh (MW_MIDI_EDITOR_SPACE);
 
       /* set value at the same offset as before */
-      settings->set_scroll_start_y ((int) (adj_perc * size_after - diff), false);
+      s->set_scroll_start_y ((int) (adj_perc * size_after - diff), false);
     },
     settings);
 }

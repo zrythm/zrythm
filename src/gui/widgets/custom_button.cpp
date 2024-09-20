@@ -23,17 +23,17 @@ CustomButtonWidget::init ()
   corner_radius = 2.0;
 }
 
-CustomButtonWidget::CustomButtonWidget (const std::string &icon_name, int size)
-    : icon_name (icon_name), size (size)
+CustomButtonWidget::CustomButtonWidget (const std::string &iicon_name, int isize)
+    : icon_name (iicon_name), size (isize)
 {
   init ();
 
-  const int texture_size = size - 2;
+  const int texture_size = isize - 2;
   icon_texture = z_gdk_texture_new_from_icon_name (
-    icon_name.c_str (), texture_size, texture_size, 1);
+    iicon_name.c_str (), texture_size, texture_size, 1);
   if (!icon_texture)
     {
-      z_error ("Failed to get icon surface for {}", icon_name);
+      z_error ("Failed to get icon surface for {}", iicon_name);
       return;
     }
 }
@@ -61,15 +61,15 @@ CustomButtonWidget::get_color_for_state (State state) const
 void
 CustomButtonWidget::draw_bg (
   GtkSnapshot * snapshot,
-  double        x,
-  double        y,
-  double        width,
+  double        ix,
+  double        iy,
+  double        iwidth,
   int           draw_frame,
   State         state)
 {
   GskRoundedRect  rounded_rect;
   graphene_rect_t graphene_rect =
-    Z_GRAPHENE_RECT_INIT ((float) x, (float) y, (float) width, (float) size);
+    Z_GRAPHENE_RECT_INIT ((float) ix, (float) iy, (float) iwidth, (float) size);
   gsk_rounded_rect_init_from_rect (
     &rounded_rect, &graphene_rect, (float) corner_radius);
   gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
@@ -126,8 +126,11 @@ CustomButtonWidget::draw_bg (
 }
 
 void
-CustomButtonWidget::
-  draw_icon_with_shadow (GtkSnapshot * snapshot, double x, double y, State state)
+CustomButtonWidget::draw_icon_with_shadow (
+  GtkSnapshot * snapshot,
+  double        ix,
+  double        iy,
+  State         state)
 {
   /* TODO */
 #if 0
@@ -142,17 +145,18 @@ CustomButtonWidget::
   /* add main icon */
   {
     graphene_rect_t tmp_r = Z_GRAPHENE_RECT_INIT (
-      (float) (x + 1), (float) (y + 1), (float) size - 2, (float) size - 2);
+      (float) (ix + 1), (float) (iy + 1), (float) size - 2, (float) size - 2);
     gtk_snapshot_append_texture (snapshot, icon_texture, &tmp_r);
   }
 }
 
 void
-CustomButtonWidget::draw (GtkSnapshot * snapshot, double x, double y, State state)
+CustomButtonWidget::
+  draw (GtkSnapshot * snapshot, double ix, double iy, State state)
 {
-  draw_bg (snapshot, x, y, size, false, state);
+  draw_bg (snapshot, ix, iy, size, false, state);
 
-  draw_icon_with_shadow (snapshot, x, y, state);
+  draw_icon_with_shadow (snapshot, ix, iy, state);
 
   last_state = state;
 }
@@ -160,44 +164,45 @@ CustomButtonWidget::draw (GtkSnapshot * snapshot, double x, double y, State stat
 void
 CustomButtonWidget::draw_with_text (
   GtkSnapshot * snapshot,
-  double        x,
-  double        y,
-  double        width,
+  double        ix,
+  double        iy,
+  double        iwidth,
   State         state)
 {
-  draw_bg (snapshot, x, y, width, 0, state);
+  draw_bg (snapshot, ix, iy, iwidth, 0, state);
 
-  draw_icon_with_shadow (snapshot, x, y, state);
+  draw_icon_with_shadow (snapshot, ix, iy, state);
 
   /* draw text */
   gtk_snapshot_save (snapshot);
-  float text_x = (float) (x + size + 2);
+  float text_x = (float) (ix + size + 2);
   {
     graphene_point_t tmp_pt = Z_GRAPHENE_POINT_INIT (
-      text_x, (float) ((y + size / 2) - text_height / 2));
+      text_x, (float) ((iy + size / 2) - text_height / 2));
     gtk_snapshot_translate (snapshot, &tmp_pt);
   }
-  PangoLayout * layout = this->layout;
-  pango_layout_set_text (layout, text.c_str (), -1);
-  pango_layout_set_width (layout, pango_units_from_double (x + width - text_x));
+  PangoLayout * ilayout = this->layout;
+  pango_layout_set_text (ilayout, text.c_str (), -1);
+  pango_layout_set_width (
+    ilayout, pango_units_from_double (ix + iwidth - text_x));
   GdkRGBA white = Z_GDK_RGBA_INIT (1, 1, 1, 1);
-  gtk_snapshot_append_layout (snapshot, layout, &white);
+  gtk_snapshot_append_layout (snapshot, ilayout, &white);
   gtk_snapshot_restore (snapshot);
 
-  this->width = (int) width;
+  this->width = (int) iwidth;
   last_state = state;
 }
 
 void
 CustomButtonWidget::set_text (
-  PangoLayout *      layout,
-  const std::string &text,
+  PangoLayout *      ilayout,
+  const std::string &itext,
   const std::string &font_descr)
 {
-  z_return_if_fail (!text.empty () && layout);
+  z_return_if_fail (!itext.empty () && ilayout);
 
-  this->text = text;
-  this->layout = pango_layout_copy (layout);
+  this->text = itext;
+  this->layout = pango_layout_copy (ilayout);
   PangoFontDescription * desc =
     pango_font_description_from_string (font_descr.c_str ());
   pango_layout_set_font_description (this->layout, desc);

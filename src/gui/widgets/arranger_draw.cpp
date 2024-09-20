@@ -248,11 +248,11 @@ draw_debug_text (
   gtk_snapshot_append_color (snapshot, &color, &tmp);
   auto settings = arranger_widget_get_editor_settings (self);
   std::visit (
-    [&] (auto &&settings) {
+    [&] (auto &&st) {
       auto debug_txt = fmt::format (
         "Hover: (%.0f, %.0f)\nNormalized hover: (%.0f, %.0f)\nAction: {}",
-        self->hover_x, self->hover_y, self->hover_x - settings->scroll_start_x_,
-        self->hover_y - settings->scroll_start_y_,
+        self->hover_x, self->hover_y, self->hover_x - st->scroll_start_x_,
+        self->hover_y - st->scroll_start_y_,
         UiOverlayAction_to_string (self->action));
       pango_layout_set_markup (
         self->debug_layout.get (), debug_txt.c_str (), -1);

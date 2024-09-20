@@ -363,6 +363,8 @@ endif()
 set(zrythm_definitions)
 if(${compiler_is_clang})
   list(APPEND zrythm_definitions "ATTR_REALTIME=__attribute__((annotate(\"realtime\")))")
+else()
+  list(APPEND zrythm_definitions "ATTR_REALTIME=")
 endif()
 list(APPEND zrythm_definitions GETTEXT_PACKAGE="zrythm")
 
@@ -391,8 +393,11 @@ endforeach()
 
 # compile args
 set(zrythm_compile_args)
-if(${compiler_gnulike})
+if(compiler_gnulike)
   list(APPEND zrythm_compile_args -Wall -Wextra)
+  if(compiler_is_clang)
+    # list(APPEND zrythm_compile_args -Weverything)
+  endif()
 elseif(MSVC)
   list(APPEND zrythm_compile_args /W3)
 endif()
@@ -456,12 +461,13 @@ if(ZRYTHM_EXTRA_EXTRA_OPTIMIZATIONS)
       -fno-signed-zeros
       -fno-trapping-math
       -ffp-contract=fast
-      -fmodulo-sched)
+      -fmodulo-sched
+    )
   endif()
 endif()
 
 if(ZRYTHM_EXTRA_DEBUG_INFO)
-  if(${compiler_gnulike})
+  if(compiler_gnulike)
     list(APPEND zrythm_compile_args
       -g3
       -rdynamic
@@ -489,7 +495,7 @@ if(WIN32)
 endif()
 
 if(ZRYTHM_STRICT)
-  if(${compiler_gnulike})
+  if(compiler_gnulike)
     list(APPEND zrythm_compile_args
       -Werror=alloca
       -Werror=format-overflow
@@ -521,7 +527,6 @@ if(ZRYTHM_STRICT)
       #-Werror=strict-overflow
       -Wstrict-overflow=2
       -fstrict-overflow
-      -Werror=null-dereference
       -Werror=init-self
       -Werror=write-strings
       # TODO fix and enable
@@ -612,12 +617,12 @@ if(ZRYTHM_STRICT)
     )
   elseif(compiler_is_clang)
     list(APPEND zrythm_compile_args
-      -Weverything
       -Werror=vla-cxx-extension
       -Werror=sentinel
       -Werror=return-stack-address
       -Werror=abstract-final-class
-      -Werror=pointer-size
+      -Werror=null-dereference
+      -fsafe-buffer-usage-suggestions
     )
   endif()
 endif()

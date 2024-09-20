@@ -35,7 +35,7 @@ languages:
    See `this ticket <https://github.com/msys2/MINGW-packages/issues/3298>`_
    for details.
 
-The :ref:`API section <scripting/api/intro:API>`
+The ``API section``
 is a comprehensive list of all
 available procedures in the API. Each section
 in the API corresponds to a specific Guile module.

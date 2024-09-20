@@ -319,8 +319,8 @@ operator== (const MidiRegion &lhs, const MidiRegion &rhs)
               == static_cast<const ArrangerObject &> (rhs);
 }
 
-DEFINE_OBJECT_FORMATTER (MidiRegion, [] (const MidiRegion &val) {
-  return fmt::format ("MidiRegion[id: {}]", val.id_);
+DEFINE_OBJECT_FORMATTER (MidiRegion, [] (const MidiRegion &mr) {
+  return fmt::format ("MidiRegion[id: {}]", mr.id_);
 })
 
 /**

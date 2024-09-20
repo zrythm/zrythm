@@ -161,7 +161,7 @@ TimelineSelections::all_on_same_lane () const
     convert_to_variant<ArrangerObjectPtrVariant> (objects_.front ().get ());
   return std::visit (
     [&] (auto &&first) {
-      if constexpr (std::derived_from<std::decay_t<decltype (first)>, Region>)
+      if constexpr (std::derived_from<base_type<decltype (first)>, Region>)
         {
           const auto &id = first->id_;
           return std::all_of (
@@ -169,19 +169,19 @@ TimelineSelections::all_on_same_lane () const
               return std::visit (
                 [&] (auto &&curr) {
                   if constexpr (
-                    std::derived_from<std::decay_t<decltype (curr)>, Region>)
+                    std::derived_from<base_type<decltype (curr)>, Region>)
                     {
                       if (id.type_ != curr->id_.type_)
                         return false;
 
                       if constexpr (
                         std::derived_from<
-                          std::decay_t<decltype (curr)>, LaneOwnedObject>)
+                          base_type<decltype (curr)>, LaneOwnedObject>)
                         return id.track_name_hash_ == curr->id_.track_name_hash_
                                && id.lane_pos_ == curr->id_.lane_pos_;
                       else if constexpr (
                         std::is_same_v<
-                          std::decay_t<decltype (curr)>, AutomationRegion>)
+                          base_type<decltype (curr)>, AutomationRegion>)
                         return id.track_name_hash_ == curr->id_.track_name_hash_
                                && id.at_idx_ == curr->id_.at_idx_;
                       else
@@ -550,15 +550,15 @@ TimelineSelections::move_regions_to_new_lanes_or_tracks_or_ats (
           auto r_variant = convert_to_variant<RegionPtrVariant> (region);
           compatible = std::visit (
             [&] (auto &&r) {
-              if constexpr (
-                std::derived_from<std::decay_t<decltype (r)>, LaneOwnedObject>)
+              using RegionT = base_type<decltype (r)>;
+              if constexpr (std::derived_from<RegionT, LaneOwnedObject>)
                 {
-                  auto laned_track_impl = dynamic_cast<
-                    LanedTrackImpl<std::decay_t<decltype (r)> *>> (track);
+                  auto laned_track_impl =
+                    dynamic_cast<LanedTrackImpl<base_type<RegionT>> *> (track);
                   auto lane = r->get_lane ();
-                  z_return_val_if_fail (region && lane, -1);
-                  int new_lane_pos = lane->pos + lane_diff;
-                  z_return_val_if_fail (new_lane_pos >= 0, -1);
+                  z_return_val_if_fail (region && lane, false);
+                  int new_lane_pos = lane->pos_ + lane_diff;
+                  z_return_val_if_fail (new_lane_pos >= 0, false);
                   if (new_lane_pos >= laned_track_impl->lanes_.size ())
                     {
                       z_debug (
@@ -575,6 +575,8 @@ TimelineSelections::move_regions_to_new_lanes_or_tracks_or_ats (
                         laned_track_impl->last_lane_created_, new_lane_pos);
                       return false;
                     }
+
+                  return true;
                 }
               else
                 {
@@ -612,6 +614,7 @@ TimelineSelections::move_regions_to_new_lanes_or_tracks_or_ats (
       auto r_variant = convert_to_variant<RegionPtrVariant> (region);
       auto success = std::visit (
         [&] (auto &&r) {
+          using RegionT = base_type<decltype (r)>;
           if (vis_track_diff != 0)
             {
               auto region_track = region->get_track ();
@@ -623,8 +626,7 @@ TimelineSelections::move_regions_to_new_lanes_or_tracks_or_ats (
             }
           else if (lane_diff != 0)
             {
-              if constexpr (
-                std::derived_from<std::decay_t<decltype (r)>, LaneOwnedObject>)
+              if constexpr (std::derived_from<RegionT, LaneOwnedObject>)
                 {
                   auto lane = r->get_lane ();
                   z_return_val_if_fail (r && lane, false);
@@ -643,14 +645,13 @@ TimelineSelections::move_regions_to_new_lanes_or_tracks_or_ats (
             }
           else if (vis_at_diff != 0)
             {
-              if constexpr (
-                std::is_same_v<std::decay_t<decltype (r)>, AutomationRegion>)
+              if constexpr (std::is_same_v<RegionT, AutomationRegion>)
                 {
                   auto at = r->get_automation_track ();
                   z_return_val_if_fail (region && at, false);
                   auto              atl = at->get_automation_tracklist ();
                   AutomationTrack * new_at =
-                    atl->get_visible_at_after_delta (at, vis_at_diff);
+                    atl->get_visible_at_after_delta (*at, vis_at_diff);
 
                   if (at != new_at)
                     {
@@ -706,7 +707,7 @@ TimelineSelections::set_index_in_prev_lane ()
           std::visit (
             [&] (auto &&r) {
               if constexpr (
-                std::derived_from<std::decay_t<decltype (r)>, LaneOwnedObject>)
+                std::derived_from<base_type<decltype (r)>, LaneOwnedObject>)
                 {
                   r->index_in_prev_lane_ = region->id_.idx_;
                 }

@@ -413,7 +413,8 @@ main (int argc, char ** argv)
           self.params =
             (Param *) realloc (self.params, ++self.n_params * sizeof (Param));
           self.params[self.n_params - 1].sym = argv[++i];
-          self.params[self.n_params - 1].value = atof (argv[++i]);
+          self.params[self.n_params - 1].value =
+            static_cast<float> (atof (argv[++i]));
         }
       else if (argv[i][0] == '-')
         {

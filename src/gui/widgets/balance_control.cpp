@@ -21,7 +21,6 @@ G_DEFINE_TYPE (BalanceControlWidget, balance_control_widget, GTK_TYPE_WIDGET)
 
 constexpr const char * TEXT_FONT = "Bold 8";
 constexpr double       TEXT_PADDING = 3.0;
-constexpr double       LINE_WIDTH = 3.0;
 
 static void
 perform_action (

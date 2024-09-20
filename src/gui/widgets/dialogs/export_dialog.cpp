@@ -157,9 +157,9 @@ get_mixdown_export_filename (ExportDialogWidget * self, bool audio)
       }
       break;
     default:
-      z_return_val_if_reached (nullptr);
+      z_return_val_if_reached ("");
     }
-  z_return_val_if_fail (!base.empty (), nullptr);
+  z_return_val_if_fail (!base.empty (), "");
 
   auto exports_dir = PROJECT->get_path (ProjectPath::EXPORTS, false);
   auto tmp = Glib::build_filename (exports_dir, base);
@@ -237,9 +237,9 @@ get_stem_export_filenames (
             "%s_%s.%s", datetime_str.c_str (), track->name_, format_ext);
           break;
         default:
-          z_return_val_if_reached (nullptr);
+          z_return_val_if_reached ("");
         }
-      z_return_val_if_fail (!base.empty (), nullptr);
+      z_return_val_if_fail (!base.empty (), "");
 
       auto exports_dir = PROJECT->get_path (ProjectPath::EXPORTS, false);
       auto tmp = Glib::build_filename (exports_dir, base);
@@ -550,7 +550,7 @@ progress_close_cb (std::shared_ptr<Exporter> exporter)
       track->bounce_ = false;
 
       /* stop if last stem not successful */
-      const auto &prev_info = exporter->settings_;
+      // const auto &prev_info = exporter->settings_;
       const auto &progress_nfo = exporter->progress_info_;
       if (progress_nfo->get_status () == ProgressInfo::Status::COMPLETED && (progress_nfo->get_completion_type () == ProgressInfo::CompletionType::SUCCESS || progress_nfo->get_completion_type () == ProgressInfo::CompletionType::HAS_WARNING))
         {

@@ -50,23 +50,23 @@ public:
 
 public:
   CustomButtonWidget ();
-  CustomButtonWidget (const std::string &icon_name, int size);
+  CustomButtonWidget (const std::string &iicon_name, int isize);
   CustomButtonWidget (const CustomButtonWidget &) = delete;
   CustomButtonWidget &operator= (const CustomButtonWidget &) = delete;
   CustomButtonWidget (CustomButtonWidget &&) = default;
   CustomButtonWidget &operator= (CustomButtonWidget &&) = default;
   ~CustomButtonWidget ();
 
-  void draw (GtkSnapshot * snapshot, double x, double y, State state);
+  void draw (GtkSnapshot * snapshot, double ix, double iy, State state);
 
   /**
    * @param width Max width for the button to use.
    */
   void draw_with_text (
     GtkSnapshot * snapshot,
-    double        x,
-    double        y,
-    double        width,
+    double        ix,
+    double        iy,
+    double        iwidth,
     State         state);
 
   /**
@@ -76,8 +76,8 @@ public:
    *   pango layout font to.
    */
   void set_text (
-    PangoLayout *      layout,
-    const std::string &text,
+    PangoLayout *      ilayout,
+    const std::string &itext,
     const std::string &font_descr);
 
 private:
@@ -87,14 +87,17 @@ private:
 
   void draw_bg (
     GtkSnapshot * snapshot,
-    double        x,
-    double        y,
-    double        width,
+    double        ix,
+    double        iy,
+    double        iwidth,
     int           draw_frame,
     State         state);
 
-  void
-  draw_icon_with_shadow (GtkSnapshot * snapshot, double x, double y, State state);
+  void draw_icon_with_shadow (
+    GtkSnapshot * snapshot,
+    double        ix,
+    double        iy,
+    State         state);
 
 public:
   /** Default color. */

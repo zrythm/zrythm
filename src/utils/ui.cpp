@@ -597,7 +597,7 @@ ui_gen_audio_backends_combo_row (bool with_signal)
   adw_combo_row_set_model (combo_row, G_LIST_MODEL (string_list));
 
   int selected = g_settings_get_enum (S_P_GENERAL_ENGINE, "audio-backend");
-  for (int i = 0; i < labels.size (); ++i)
+  for (size_t i = 0; i < labels.size (); ++i)
     {
       if (
 
@@ -684,7 +684,7 @@ ui_gen_midi_backends_combo_row (bool with_signal)
   adw_combo_row_set_model (combo_row, G_LIST_MODEL (string_list));
 
   int selected = g_settings_get_enum (S_P_GENERAL_ENGINE, "midi-backend");
-  for (int i = 0; i < labels.size (); i++)
+  for (size_t i = 0; i < labels.size (); ++i)
     {
       if (
 
