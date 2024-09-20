@@ -91,7 +91,7 @@ foreach(plugin_info ${plugins})
     target_link_libraries(${pl_underscored_name} PRIVATE ${pl_deps})
     target_link_options(${pl_underscored_name} PRIVATE ${pl_link_args})
     target_compile_options(${pl_underscored_name} PRIVATE
-      ${full_optimization_arg}
+      ${full_optimization_args}
     )
     set_property(TARGET ${pl_underscored_name} PROPERTY CXX_STANDARD 11)
     install(TARGETS ${pl_underscored_name} DESTINATION ${pl_install_dir})

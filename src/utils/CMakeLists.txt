@@ -52,7 +52,7 @@ add_library(optimized_utils_lib STATIC
 )
 target_include_directories(optimized_utils_lib PRIVATE ${zrythm_include_dirs})
 target_compile_options(optimized_utils_lib PRIVATE 
-  ${zrythm_compile_args} ${full_optimization_arg})
+  ${zrythm_compile_args} ${full_optimization_args})
 target_compile_definitions(optimized_utils_lib PRIVATE ${zrythm_definitions})
 target_link_libraries(optimized_utils_lib PRIVATE ${zrythm_link_libs})
 

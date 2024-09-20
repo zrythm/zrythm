@@ -281,9 +281,9 @@ string(JOIN " " locales_str ${locales_list})
 message(STATUS "Locales: ${locales_str}")
 
 if(${compiler_gnulike})
-  set(full_optimization_arg "-O3")
+  set(full_optimization_args "-O3")
 elseif(MSVC)
-  set(full_optimization_arg "/O2")
+  set(full_optimization_args "/O2" "/RTC-")
 endif()
 
 #==============================================================================
