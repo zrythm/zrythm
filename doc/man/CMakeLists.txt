@@ -42,6 +42,7 @@ if(ZRYTHM_SHELL_COMPLETIONS)
 
   set(GEN_COMPLETIONS_PY ${CMAKE_CURRENT_SOURCE_DIR}/gen_completions.py)
 
+  if(0) # broken in CI
   # Fish completion
   add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/zrythm.fish
@@ -58,6 +59,7 @@ if(ZRYTHM_SHELL_COMPLETIONS)
 
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/zrythm.fish
     DESTINATION ${CMAKE_INSTALL_DATADIR}/fish/vendor_completions.d)
+  endif()
 
   # Bash completion
   add_custom_command(

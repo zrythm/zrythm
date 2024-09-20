@@ -26,7 +26,7 @@ public:
   MidiPort (std::string label, PortFlow flow);
   ~MidiPort ();
 
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
   /**
    * Dequeue the MIDI events from the ring buffers into @ref
    * RtMidiDevice.events.
@@ -42,7 +42,7 @@ public:
   void expose_to_rtmidi (bool expose);
 #endif
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
   /**
    * Receives MIDI events from the port's exposed JACK port (if any) into the
    * port.
@@ -116,7 +116,7 @@ public:
    */
   gint64 last_midi_dequeue_ = 0;
 
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
   /**
    * RtMidi pointers for input ports.
    *

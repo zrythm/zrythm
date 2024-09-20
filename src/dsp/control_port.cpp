@@ -70,7 +70,7 @@ ControlPort::forward_control_change_event ()
       auto pl = get_plugin (true);
       if (pl)
         {
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
           if (pl->setting_.open_with_carla_ && carla_param_id_ >= 0)
             {
               auto carla = dynamic_cast<CarlaNativePlugin *> (pl);

@@ -65,12 +65,12 @@ if(OS_GNU)
   set(desktop_file_out "${app_id}.desktop")
   add_custom_command(
     OUTPUT ${desktop_file_out}
-      COMMAND "${GETTEXT_MSGFMT_EXECUTABLE}" --desktop
+      COMMAND
+        "${GETTEXT_MSGFMT_EXECUTABLE}" --desktop
         --template="${desktop_file_in}"
         -d "${CMAKE_SOURCE_DIR}/po"
         -o "${desktop_file_out}"
-      DEPENDS "${desktop_file_in}" ${source_po_files}
-        ${CMAKE_SOURCE_DIR}/po/LINGUAS
+      DEPENDS "${desktop_file_in}"
       COMMENT "Generating desktop file"
     )
   add_custom_target(desktop-file DEPENDS ${desktop_file_out})

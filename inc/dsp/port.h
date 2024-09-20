@@ -15,11 +15,11 @@
 #include "utils/ring_buffer.h"
 #include "utils/types.h"
 
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
 #  include <rtmidi_c.h>
 #endif
 
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
 #  include <rtaudio_c.h>
 #endif
 
@@ -303,7 +303,7 @@ protected:
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
 private:
-#ifdef HAVE_JACK
+#if HAVE_JACK
   /**
    * Sums the inputs coming in from JACK, before the port is processed.
    */

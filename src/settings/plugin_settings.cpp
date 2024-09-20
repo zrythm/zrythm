@@ -67,7 +67,7 @@ PluginSetting::validate (bool print_result)
   /* force carla */
   this->open_with_carla_ = true;
 
-#ifndef HAVE_CARLA
+#if !HAVE_CARLA
   if (this->open_with_carla_)
     {
       z_error (
@@ -87,7 +87,7 @@ PluginSetting::validate (bool print_result)
     || prot == PluginProtocol::CLAP)
     {
       this->open_with_carla_ = true;
-#ifndef HAVE_CARLA
+#if !HAVE_CARLA
       z_error (
         "Invalid setting requested: open non-LV2 "
         "plugin, carla not installed");
@@ -102,7 +102,7 @@ PluginSetting::validate (bool print_result)
     }
 #endif
 
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
   /* in wayland open all LV2 plugins with custom UIs using carla */
   if (z_gtk_is_wayland () && descr_.has_custom_ui_)
     {
@@ -110,7 +110,7 @@ PluginSetting::validate (bool print_result)
     }
 #endif
 
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
   /* if no bridge mode specified, calculate the bridge mode here */
   /*z_debug ("{}: recalculating bridge mode...", __func__);*/
   if (this->bridge_mode_ == CarlaBridgeMode::None)

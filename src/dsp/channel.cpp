@@ -345,7 +345,7 @@ Channel::prepare_process (nframes_t nframes)
 
   if (track_->in_signal_type_ == PortType::Event)
     {
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
       /* extract the midi events from the ring buffer */
       if (midi_backend_is_rtmidi (AUDIO_ENGINE->midi_backend_))
         {

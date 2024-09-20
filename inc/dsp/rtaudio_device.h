@@ -14,7 +14,7 @@
 
 #include "utils/ring_buffer.h"
 
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
 
 constexpr int RTAUDIO_DEVICE_BUFFER_SIZE = 32000;
 

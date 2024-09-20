@@ -21,7 +21,7 @@ z_pango_create_layout_from_description (
   char * str = pango_font_description_to_string (descr);
   z_debug ("font description: {}", str);
 
-#ifdef HAVE_BUNDLED_DSEG
+#if HAVE_BUNDLED_DSEG
   if (string_contains_substr (str, "DSEG"))
     {
       FcConfig * fc_config = FcConfigCreate ();
@@ -67,7 +67,7 @@ z_pango_create_layout_from_description (
     {
 #endif
       layout = gtk_widget_create_pango_layout (widget, nullptr);
-#ifdef HAVE_BUNDLED_DSEG
+#if HAVE_BUNDLED_DSEG
     }
 #endif
   g_free (str);

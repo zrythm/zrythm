@@ -19,7 +19,7 @@
 #ifndef __PLUGINS_CARLA_NATIVE_PLUGIN_H__
 #  define __PLUGINS_CARLA_NATIVE_PLUGIN_H__
 
-#  ifdef HAVE_CARLA
+#  if HAVE_CARLA
 #    include "carla_wrapper.h"
 #  endif
 
@@ -192,7 +192,7 @@ private:
   void create_ports (bool loading);
 
 public:
-#  ifdef HAVE_CARLA
+#  if HAVE_CARLA
   NativePluginHandle             native_plugin_handle_ = nullptr;
   NativeHostDescriptor           native_host_descriptor_ = {};
   const NativePluginDescriptor * native_plugin_descriptor_ = nullptr;

@@ -6,7 +6,7 @@
 
 #include "zrythm-config.h"
 
-#ifdef HAVE_CHROMAPRINT
+#if HAVE_CHROMAPRINT
 
 #  include "utils/audio.h"
 #  include "utils/chromaprint.h"

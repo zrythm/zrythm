@@ -156,12 +156,12 @@ _test_copy_plugins (
 TEST_F (ZrythmFixture, CopyPlugins)
 {
   _test_copy_plugins (TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false);
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
   _test_copy_plugins (TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, true);
 #endif /* HAVE_CARLA */
 #ifdef HAVE_NO_DELAY_LINE
   _test_copy_plugins (NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI, false, false);
-#  ifdef HAVE_CARLA
+#  if HAVE_CARLA
   _test_copy_plugins (NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI, false, true);
 #  endif /* HAVE_CARLA */
 #endif   /* HAVE_NO_DELAY_LINE */
@@ -282,7 +282,7 @@ TEST_F (ZrythmFixture, CreatePlugins)
     {
       if (i == 1)
         {
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
 #  ifdef HAVE_NOIZEMAKER
           _test_create_plugins (
             PluginProtocol::VST, NOIZEMAKER_PATH, nullptr, true, i);
@@ -307,7 +307,7 @@ TEST_F (ZrythmFixture, CreatePlugins)
         PluginProtocol::LV2, LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, false,
         i);
 #endif
-#ifdef HAVE_CARLA_RACK
+#if HAVE_CARLA_RACK
       _test_create_plugins (
         PluginProtocol::LV2, CARLA_RACK_BUNDLE, CARLA_RACK_URI, true, i);
 #endif
@@ -449,7 +449,7 @@ TEST_F (ZrythmFixture, CheckPortAndPluginTrackPositionAfterMove)
 #endif
 }
 
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
 TEST_F (ZrythmFixture, CheckPortAndPluginTrackPositionAfterMoveWithCarla)
 {
   return;
@@ -742,7 +742,7 @@ TEST_F (ZrythmFixture, MoveTwoPluginsOneSlotUp)
 TEST_F (ZrythmFixture, CreateModulator)
 {
 #ifdef HAVE_AMS_LFO
-#  ifdef HAVE_CARLA
+#  if HAVE_CARLA
   /* create a track with an insert */
   auto setting =
     test_plugin_manager_get_plugin_setting (AMS_LFO_BUNDLE, AMS_LFO_URI, false);
@@ -1159,7 +1159,7 @@ TEST_F (ZrythmFixture, ReplaceInstrument)
     {
       if (i == 1)
         {
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
 #  ifdef HAVE_NOIZEMAKER
           _test_replace_instrument (
             PluginProtocol::VST, NOIZEMAKER_PATH, nullptr, i);
@@ -1171,7 +1171,7 @@ TEST_F (ZrythmFixture, ReplaceInstrument)
 
       _test_replace_instrument (
         PluginProtocol::LV2, TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, i);
-#ifdef HAVE_CARLA_RACK
+#if HAVE_CARLA_RACK
       _test_replace_instrument (
         PluginProtocol::LV2, CARLA_RACK_BUNDLE, CARLA_RACK_URI, i);
 #endif

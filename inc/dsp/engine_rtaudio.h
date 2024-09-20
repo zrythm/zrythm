@@ -6,7 +6,7 @@
 
 #include "zrythm-config.h"
 
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
 
 #  include <rtaudio_c.h>
 

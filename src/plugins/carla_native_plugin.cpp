@@ -9,7 +9,7 @@
 #include "utils/gtest_wrapper.h"
 #include "utils/rt_thread_id.h"
 
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
 
 #  include "dsp/engine.h"
 #  include "dsp/midi_event.h"
@@ -299,7 +299,7 @@ carla_engine_callback (
       break;
     case CarlaBackend::ENGINE_CALLBACK_PATCHBAY_CLIENT_ADDED:
       z_debug (
-        "Patchbay client added: {} plugin %d name %s", plugin_id, val2, val_str);
+        "Patchbay client added: {} plugin {} name {}", plugin_id, val2, val_str);
       break;
     case CarlaBackend::ENGINE_CALLBACK_PATCHBAY_CLIENT_REMOVED:
       z_debug ("Patchbay client removed: {}", plugin_id);
@@ -309,12 +309,12 @@ carla_engine_callback (
       break;
     case CarlaBackend::ENGINE_CALLBACK_PATCHBAY_CLIENT_DATA_CHANGED:
       z_debug (
-        "Patchbay client data changed: {} - %d %d", plugin_id, val1, val2);
+        "Patchbay client data changed: {} - {} {}", plugin_id, val1, val2);
       break;
     case CarlaBackend::ENGINE_CALLBACK_PATCHBAY_PORT_ADDED:
       {
-        z_debug (
-          "PORT ADDED: client {} port %d group %d name %s", plugin_id, val1,
+        z_trace (
+          "PORT ADDED: client {} port {} group {} name {}", plugin_id, val1,
           val3, val_str);
         bool is_cv_variant =
           self->max_variant_cv_ins_ > 0 || self->max_variant_cv_outs_ > 0;
@@ -396,7 +396,7 @@ carla_engine_callback (
       break;
     case CarlaBackend::ENGINE_CALLBACK_CANCELABLE_ACTION:
       z_debug (
-        "Cancelable action: plugin {} - %d - %s", plugin_id, val1, val_str);
+        "Cancelable action: plugin {} - {} - {}", plugin_id, val1, val_str);
       break;
     case CarlaBackend::ENGINE_CALLBACK_PROJECT_LOAD_FINISHED:
       z_info ("Project load finished");
@@ -450,12 +450,12 @@ carla_engine_callback (
       break;
     case CarlaBackend::ENGINE_CALLBACK_PATCHBAY_PORT_GROUP_CHANGED:
       z_debug (
-        "Patchbay port group changed: client {} - group %d - hints %d - name %s",
+        "Patchbay port group changed: client {} - group {} - hints {} - name {}",
         plugin_id, val1, val2, val_str);
       break;
     case CarlaBackend::ENGINE_CALLBACK_PARAMETER_MAPPED_RANGE_CHANGED:
       z_debug (
-        "Parameter mapped range changed: {}:%d - %s", plugin_id, val1, val_str);
+        "Parameter mapped range changed: {}:{} - {}", plugin_id, val1, val_str);
       break;
     case CarlaBackend::ENGINE_CALLBACK_PATCHBAY_CLIENT_POSITION_CHANGED:
       break;
@@ -843,9 +843,6 @@ CarlaNativePlugin::create_ports (bool loading)
 {
   z_debug ("{}: loading: {}", __func__, loading);
 
-  char tmp[500];
-  char name[4000];
-
   const auto &descr = setting_.descr_;
   if (!loading)
     {
@@ -863,9 +860,8 @@ CarlaNativePlugin::create_ports (bool loading)
         descr.num_audio_ins_ == 1 ? 2 : descr.num_audio_ins_;
       for (int i = 0; i < audio_ins_to_create; i++)
         {
-          strcpy (tmp, _ ("Audio in"));
-          sprintf (name, "%s %d", tmp, i);
-          auto port = std::make_unique<AudioPort> (name, PortFlow::Input);
+          std::string port_name = fmt::format ("{} {}", _ ("Audio in"), i);
+          auto port = std::make_unique<AudioPort> (port_name, PortFlow::Input);
           port->id_.sym_ = fmt::format ("audio_in_{}", i);
 #  ifdef CARLA_HAVE_AUDIO_PORT_HINTS
           unsigned int audio_port_hints = carla_get_audio_port_hints (

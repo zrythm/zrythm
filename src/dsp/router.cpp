@@ -32,7 +32,7 @@
 #include "dsp/control_port.h"
 #include "dsp/engine.h"
 #include "utils/debug.h"
-#ifdef HAVE_JACK
+#if HAVE_JACK
 #  include "dsp/engine_jack.h"
 #endif
 #ifdef HAVE_PORT_AUDIO
@@ -50,7 +50,7 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
 #  include "weak_libjack.h"
 #endif
 

@@ -125,5 +125,4 @@ target_compile_definitions(zrythm_optimized_audio_lib PRIVATE ${zrythm_definitio
 target_compile_options(zrythm_optimized_audio_lib PRIVATE
   ${zrythm_compile_args}
   $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:-O3>
-  $<$<CXX_COMPILER_ID:MSVC>:/O2>
 )

@@ -6,7 +6,7 @@
 
 #include "zrythm-config.h"
 
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
 
 #  include <CarlaBackend.h>
 #  include <CarlaHost.h>

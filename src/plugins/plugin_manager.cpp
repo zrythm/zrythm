@@ -174,7 +174,7 @@ PluginManager::get_lv2_paths ()
   return ret;
 }
 
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
 StringArray
 PluginManager::get_vst2_paths ()
 {
@@ -525,14 +525,14 @@ PluginManager::supports_protocol (PluginProtocol protocol)
     std::ranges::find (always_supported, protocol)
     != std::ranges::end (always_supported))
     {
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
       return true;
 #else
       return false;
 #endif
     }
 
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
   // Get the list of features supported by Carla
   const StringArray carla_supported_features (carla_get_supported_features ());
 

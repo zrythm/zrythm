@@ -290,12 +290,12 @@ HardwareProcessor::process (nframes_t nframes)
 
       switch (AUDIO_ENGINE->audio_backend_)
         {
-#ifdef HAVE_JACK
+#if HAVE_JACK
         case AudioBackend::AUDIO_BACKEND_JACK:
           port->receive_audio_data_from_jack (0, nframes);
           break;
 #endif
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
         case AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO:
         case AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO:
         case AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
@@ -327,17 +327,17 @@ HardwareProcessor::process (nframes_t nframes)
 
       switch (AUDIO_ENGINE->midi_backend_)
         {
-#ifdef HAVE_JACK
+#if HAVE_JACK
         case MidiBackend::MIDI_BACKEND_JACK:
           port->receive_midi_events_from_jack (0, nframes);
           break;
 #endif
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
         case MidiBackend::MIDI_BACKEND_ALSA_RTMIDI:
         case MidiBackend::MIDI_BACKEND_JACK_RTMIDI:
         case MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI:
         case MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI:
-#  ifdef HAVE_RTMIDI_6
+#  if HAVE_RTMIDI_6
         case MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
 #  endif
           /* extract MIDI events from the RtMidi device ring buffer into RtMidi

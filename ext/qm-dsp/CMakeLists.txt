@@ -38,9 +38,6 @@ target_compile_options(qm_dsp_lib PRIVATE
     -O3
     -ftree-vectorize
   >
-  $<$<CXX_COMPILER_ID:MSVC>:
-    /O2
-  >
 )
 
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64|AMD64")

@@ -86,13 +86,16 @@ foreach(plugin_info ${plugins})
     add_library(${pl_underscored_name} MODULE ${pl_cpp})
     set_target_properties(${pl_underscored_name} PROPERTIES
       PREFIX ""
+      C_VISIBILITY_PRESET hidden
       CXX_VISIBILITY_PRESET hidden
+      VISIBILITY_INLINES_HIDDEN ON
     )
     target_link_libraries(${pl_underscored_name} PRIVATE ${pl_deps})
     target_link_options(${pl_underscored_name} PRIVATE ${pl_link_args})
-    target_compile_options(${pl_underscored_name} PRIVATE
-      ${full_optimization_args}
-    )
+    # target_compile_options(${pl_underscored_name} PRIVATE
+    # doesn't work on msvc  
+    # ${full_optimization_args}
+    # )
     set_property(TARGET ${pl_underscored_name} PROPERTY CXX_STANDARD 11)
     install(TARGETS ${pl_underscored_name} DESTINATION ${pl_install_dir})
 

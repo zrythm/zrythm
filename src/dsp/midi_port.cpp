@@ -28,7 +28,7 @@ MidiPort::MidiPort (std::string label, PortFlow flow)
 
 MidiPort::~MidiPort ()
 {
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
   for (auto &dev : rtmidi_ins_)
     {
       dev->close ();
@@ -55,7 +55,7 @@ MidiPort::clear_buffer (AudioEngine &engine)
   // midi_events_.queued_events_.clear ();
 }
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
 void
 MidiPort::receive_midi_events_from_jack (
   const nframes_t start_frame,
@@ -137,7 +137,7 @@ MidiPort::send_midi_events_to_jack (
 }
 #endif // HAVE_JACK
 
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
 void
 MidiPort::sum_data_from_rtmidi (
   const nframes_t start_frame,
@@ -361,18 +361,18 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
     {
       switch (AUDIO_ENGINE->midi_backend_)
         {
-#ifdef HAVE_JACK
+#if HAVE_JACK
         case MidiBackend::MIDI_BACKEND_JACK:
           receive_midi_events_from_jack (
             time_nfo.local_offset_, time_nfo.nframes_);
           break;
 #endif
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
         case MidiBackend::MIDI_BACKEND_ALSA_RTMIDI:
         case MidiBackend::MIDI_BACKEND_JACK_RTMIDI:
         case MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI:
         case MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI:
-#  ifdef HAVE_RTMIDI_6
+#  if HAVE_RTMIDI_6
         case MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
 #  endif
           sum_data_from_rtmidi (time_nfo.local_offset_, time_nfo.nframes_);
@@ -526,7 +526,7 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
     {
       switch (AUDIO_ENGINE->midi_backend_)
         {
-#ifdef HAVE_JACK
+#if HAVE_JACK
         case MidiBackend::MIDI_BACKEND_JACK:
           send_midi_events_to_jack (time_nfo.local_offset_, time_nfo.nframes_);
           break;

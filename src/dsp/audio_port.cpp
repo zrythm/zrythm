@@ -84,7 +84,7 @@ AudioPort::sum_data_from_dummy (
     }
 }
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
 void
 AudioPort::receive_audio_data_from_jack (
   const nframes_t start_frames,
@@ -123,7 +123,7 @@ AudioPort::send_audio_data_to_jack (
 }
 #endif // HAVE_JACK
 
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
 void
 AudioPort::expose_to_rtaudio (bool expose)
 {
@@ -285,7 +285,7 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
     {
       switch (AUDIO_ENGINE->audio_backend_)
         {
-#ifdef HAVE_JACK
+#if HAVE_JACK
         case AudioBackend::AUDIO_BACKEND_JACK:
           receive_audio_data_from_jack (
             time_nfo.local_offset_, time_nfo.nframes_);
@@ -343,7 +343,7 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
     {
       switch (AUDIO_ENGINE->audio_backend_)
         {
-#ifdef HAVE_JACK
+#if HAVE_JACK
         case AudioBackend::AUDIO_BACKEND_JACK:
           send_audio_data_to_jack (time_nfo.local_offset_, time_nfo.nframes_);
           break;

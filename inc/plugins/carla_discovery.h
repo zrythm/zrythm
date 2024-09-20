@@ -8,7 +8,7 @@
 
 #include <filesystem>
 
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
 
 #  include "plugins/plugin_descriptor.h"
 #  include "utils/types.h"

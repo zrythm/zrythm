@@ -35,10 +35,6 @@
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "cc-list-row-info-button"
 
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
-
 #include "gui/widgets/cc-list-row-info-button.h"
 #include "utils/logger.h"
 #include "utils/resources.h"

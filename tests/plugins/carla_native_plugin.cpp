@@ -14,7 +14,7 @@
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
 
 class CarlaNativePluginTest : public ::testing::TestWithParam<std::string>
 {
@@ -141,7 +141,7 @@ test_has_custom_ui (void)
 {
   test_helper_zrythm_init ();
 
-#    ifdef HAVE_CARLA
+#    if HAVE_CARLA
 #      ifdef HAVE_HELM
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (

@@ -27,7 +27,7 @@
 
 TEST_F (ZrythmFixtureWithPipewire, ExposedPortsAfterLoad)
 {
-#ifdef HAVE_PIPEWIRE
+#if HAVE_PIPEWIRE
   auto        track = Track::create_empty_with_action<AudioTrack> ();
   std::string buf;
   {
@@ -161,7 +161,7 @@ TEST_F (ZrythmFixture, NewFromTemplate)
   /* add plugins */
   test_plugin_manager_create_tracks_from_plugin (
     TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false, 1);
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
   test_plugin_manager_create_tracks_from_plugin (
     TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, true, 1);
 #endif

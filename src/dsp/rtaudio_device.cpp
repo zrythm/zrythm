@@ -3,7 +3,7 @@
 
 #include "zrythm-config.h"
 
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
 
 #  include "dsp/engine.h"
 #  include "dsp/engine_rtaudio.h"

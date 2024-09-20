@@ -142,11 +142,11 @@ Zrythm::get_version_with_capabilities (char * buf, bool include_system_info)
     gstr,
     "%s %s%s (%s)\n"
     "  built with %s %s for %s%s\n"
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
     "    +carla\n"
 #endif
 
-#ifdef HAVE_JACK2
+#if HAVE_JACK2
     "    +jack2\n"
 #elif defined(HAVE_JACK)
     "    +jack1\n"
@@ -158,14 +158,11 @@ Zrythm::get_version_with_capabilities (char * buf, bool include_system_info)
 #if HAVE_PULSEAUDIO
     "    +pulse\n"
 #endif
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
     "    +rtmidi\n"
 #endif
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
     "    +rtaudio\n"
-#endif
-#ifdef HAVE_SDL
-    "    +sdl2\n"
 #endif
 
 #if HAVE_LSP_DSP
@@ -244,7 +241,7 @@ Zrythm::get_system_info (void)
 
   g_string_append (gstr, "\n");
 
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
   g_string_append_printf (gstr, "Carla version: %s\n", Z_CARLA_VERSION_STRING);
 #endif
   g_string_append_printf (

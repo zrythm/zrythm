@@ -86,7 +86,7 @@
 #include <libpanel.h>
 
 #include "libadwaita_wrapper.h"
-#ifdef HAVE_VALGRIND
+#if HAVE_VALGRIND
 #  include <valgrind/valgrind.h>
 #endif
 
@@ -894,14 +894,14 @@ zrythm_app_startup (GApplication * app)
 
   /* install segfault handler */
   z_info ("Installing signal handlers...");
-#ifdef HAVE_VALGRIND
+#if HAVE_VALGRIND
   if (!RUNNING_ON_VALGRIND)
     {
 #endif
       signal (SIGSEGV, segv_handler);
       signal (SIGABRT, segv_handler);
       signal (SIGTERM, sigterm_handler);
-#ifdef HAVE_VALGRIND
+#if HAVE_VALGRIND
     }
 #endif
 

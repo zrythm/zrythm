@@ -5,7 +5,7 @@
 
 #include "zrythm.h"
 
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
 
 #  include "dsp/engine.h"
 #  include "dsp/midi_event.h"
@@ -51,7 +51,7 @@ get_api_from_midi_backend (MidiBackend backend)
         {
           return apis[i];
         }
-#  ifdef HAVE_RTMIDI_6
+#  if HAVE_RTMIDI_6
       if (
         backend == MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI
         && apis[i] == RTMIDI_API_WINDOWS_UWP)

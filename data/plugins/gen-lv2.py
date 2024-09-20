@@ -4,9 +4,32 @@
 # This script generates the given LV2 plugin using Faust.
 
 import os
+import re
 import sys
 import shutil
 import subprocess
+
+def remove_dynamic_manifest_code(cpp_file):
+    with open(cpp_file, 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    # Remove the dynamic manifest functions
+    patterns_to_remove = [
+        r'extern "C"\s*LV2_SYMBOL_EXPORT\s*int\s*lv2_dyn_manifest_open.*?^}$',
+        r'extern "C"\s*LV2_SYMBOL_EXPORT\s*int\s*lv2_dyn_manifest_get_subjects.*?^}$',
+        r'extern "C"\s*LV2_SYMBOL_EXPORT\s*int\s*lv2_dyn_manifest_get_data.*?^}$',
+        r'extern "C"\s*LV2_SYMBOL_EXPORT\s*void\s*lv2_dyn_manifest_close.*?^}$',
+        r'int\s+main\s*\(\s*\).*?^}$',
+        r'static string mangle\(const string &s\).*?^}$',
+        r'static unsigned steps\(float min, float max, float step\).*?^}$',
+        r'static bool is_xmlstring\(const char \*s\).*?^}$'
+    ]
+
+    for pattern in patterns_to_remove:
+        content = re.sub(pattern, '', content, flags=re.DOTALL | re.MULTILINE)
+
+    with open(cpp_file, 'w', encoding='utf-8') as f:
+        f.write(content)
 
 def main():
     faust2lv2 = sys.argv[1]
@@ -23,7 +46,7 @@ def main():
     generated_src_output = sys.argv[8]
 
     os.makedirs(prv_dir, exist_ok=True)
-    
+
     shutil.copy(dsp_file, os.path.join(prv_dir, dsp_filename))
     shutil.copy(utils_lib, os.path.join(prv_dir, utils_lib_filename))
 
@@ -58,12 +81,14 @@ def main():
         file_path = os.path.join(dest_lv2_dir, file)
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
-        content = content.replace(f"<{pl_underscored_name}.so>", f"<{pl_underscored_name}@CMAKE_SHARED_LIBRARY_SUFFIX@>")
+        content = content.replace(f"<{pl_underscored_name}.so>",
+                                  f"<{pl_underscored_name}@CMAKE_SHARED_LIBRARY_SUFFIX@>")
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(content)
 
     shutil.copy(f"{prv_dir}/{pl_underscored_name}/{pl_underscored_name}.cpp", dest_lv2_dir)
     cpp_file = os.path.join(dest_lv2_dir, f"{pl_underscored_name}.cpp")
+    remove_dynamic_manifest_code(cpp_file)
     with open(cpp_file, 'r', encoding='utf-8') as f:
         content = f.read()
     content = content.replace('"https://faustlv2.bitbucket.io"', f'"{uri_prefix}"')

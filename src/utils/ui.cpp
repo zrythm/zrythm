@@ -543,16 +543,16 @@ ui_gen_audio_backends_combo_row (bool with_signal)
 #  ifdef HAVE_LIBSOUNDIO
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_ALSA_LIBSOUNDIO),
 #  endif
-#  ifdef HAVE_RTAUDIO
+#  if HAVE_RTAUDIO
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO),
 #  endif
 #endif /* HAVE_ALSA */
-#ifdef HAVE_JACK
+#if HAVE_JACK
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_JACK),
 #  ifdef HAVE_LIBSOUNDIO
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_JACK_LIBSOUNDIO),
 #  endif
-#  ifdef HAVE_RTAUDIO
+#  if HAVE_RTAUDIO
   /* unnecessary */
   /*AudioBackend_to_string(AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO),*/
 #  endif
@@ -563,7 +563,7 @@ ui_gen_audio_backends_combo_row (bool with_signal)
 #  ifdef HAVE_LIBSOUNDIO
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_PULSEAUDIO_LIBSOUNDIO),
 #  endif
-#  ifdef HAVE_RTAUDIO
+#  if HAVE_RTAUDIO
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO),
 #  endif
 #endif /* HAVE_PULSEAUDIO */
@@ -571,19 +571,15 @@ ui_gen_audio_backends_combo_row (bool with_signal)
 #  ifdef HAVE_LIBSOUNDIO
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_COREAUDIO_LIBSOUNDIO),
 #  endif
-#  ifdef HAVE_RTAUDIO
+#  if HAVE_RTAUDIO
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO),
 #  endif
 #endif /* __APPLE__ */
-#ifdef HAVE_SDL
-  /* has issues */
-  /*AudioBackend_to_string(AudioBackend::AUDIO_BACKEND_SDL),*/
-#endif
 #ifdef _WIN32
 #  ifdef HAVE_LIBSOUNDIO
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_WASAPI_LIBSOUNDIO),
 #  endif
-#  ifdef HAVE_RTAUDIO
+#  if HAVE_RTAUDIO
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO),
   /* doesn't work & licensing issues */
   /*AudioBackend_to_string(AudioBackend::AUDIO_BACKEND_ASIO_RTAUDIO),*/
@@ -648,13 +644,13 @@ ui_gen_midi_backends_combo_row (bool with_signal)
 #ifdef HAVE_ALSA
   /* broken */
   /*MidiBackend_to_string(MidiBackend::MIDI_BACKEND_ALSA),*/
-#  ifdef HAVE_RTMIDI
+#  if HAVE_RTMIDI
     MidiBackend_to_string (MidiBackend::MIDI_BACKEND_ALSA_RTMIDI),
 #  endif
 #endif
-#ifdef HAVE_JACK
+#if HAVE_JACK
     MidiBackend_to_string (MidiBackend::MIDI_BACKEND_JACK),
-#  ifdef HAVE_RTMIDI
+#  if HAVE_RTMIDI
   /* unnecessary */
   /*MidiBackend_to_string(MidiBackend::MIDI_BACKEND_JACK_RTMIDI),*/
 #  endif
@@ -662,17 +658,17 @@ ui_gen_midi_backends_combo_row (bool with_signal)
 #ifdef _WIN32
   /* has known issues - use rtmidi */
   /*MidiBackend_to_string(MidiBackend::MIDI_BACKEND_WINDOWS_MME),*/
-#  ifdef HAVE_RTMIDI
+#  if HAVE_RTMIDI
     MidiBackend_to_string (MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI),
 #  endif
 #endif /* _WIN32 */
 #ifdef __APPLE__
-#  ifdef HAVE_RTMIDI
+#  if HAVE_RTMIDI
     MidiBackend_to_string (MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI),
 #  endif
 #endif /* __APPLE__ */
 #ifdef _WIN32
-#  ifdef HAVE_RTMIDI_6
+#  if HAVE_RTMIDI_6
 #  endif
     MidiBackend_to_string (MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI),
 #endif
@@ -797,15 +793,9 @@ ui_setup_audio_device_name_combo_row (
   int             num_names = 0;
   if (populate)
     {
-      if (backend == AudioBackend::AUDIO_BACKEND_SDL)
+      if (audio_backend_is_rtaudio (backend))
         {
-#ifdef HAVE_SDL
-          engine_sdl_get_device_names (AUDIO_ENGINE, 0, names, &num_names);
-#endif
-        }
-      else if (audio_backend_is_rtaudio (backend))
-        {
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
           engine_rtaudio_get_device_names (
             AUDIO_ENGINE.get (), backend, 0, names, &num_names);
 #endif

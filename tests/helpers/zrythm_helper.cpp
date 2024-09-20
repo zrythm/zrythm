@@ -71,7 +71,7 @@ segv_handler (int sig)
 #  pragma GCC diagnostic pop
 #endif
 
-#ifdef HAVE_PIPEWIRE
+#if HAVE_PIPEWIRE
 static gboolean
 make_pipe (gint pipe_fds[2], GError ** error)
 {
@@ -98,7 +98,7 @@ make_pipe (gint pipe_fds[2], GError ** error)
 }
 #endif
 
-#ifdef HAVE_PIPEWIRE
+#if HAVE_PIPEWIRE
 #  ifdef _WIN32
 
 /* This could be interesting to expose in public API */
@@ -397,7 +397,7 @@ test_helper_zrythm_gui_init (int argc, char * argv[])
   UI_CACHES = std::make_unique<UiCaches> ();
 }
 
-#ifdef HAVE_PIPEWIRE
+#if HAVE_PIPEWIRE
 static void
 start_daemon (Zrythm * self)
 {
@@ -481,7 +481,7 @@ ZrythmFixture::SetUp ()
 
   if (use_pipewire_)
     {
-#ifdef HAVE_PIPEWIRE
+#if HAVE_PIPEWIRE
       gZrythm->use_pipewire_in_tests_ = use_pipewire_;
       start_daemon (gZrythm);
 #else

@@ -46,6 +46,7 @@ include(CMakeDependentOption)
 include(CheckSymbolExists)
 include(TestBigEndian)
 include(FetchContent)
+include(CheckLibraryExists)
 set(PKG_CONFIG_USE_CMAKE_PREFIX_PATH TRUE)
 find_package(PkgConfig REQUIRED)
 find_package(Threads REQUIRED)
@@ -283,7 +284,7 @@ message(STATUS "Locales: ${locales_str}")
 if(${compiler_gnulike})
   set(full_optimization_args "-O3")
 elseif(MSVC)
-  set(full_optimization_args "/O2" "/RTC-")
+  set(full_optimization_args "/O2" "/RTC1-")
 endif()
 
 #==============================================================================
@@ -329,7 +330,8 @@ if(${ZRYTHM_WITH_JACK})
 
   set(CMAKE_REQUIRED_INCLUDES ${JACK_INCLUDE_DIRS})
   set(CMAKE_REQUIRED_LIBRARIES ${JACK_LIBRARIES})
-  check_symbol_exists(jack_set_property "jack/jack.h" "jack/metadata.h" HAVE_JACK_SET_PROPERTY)
+  check_library_exists("${JACK_LIBRARIES}" jack_set_property "" HAVE_JACK_SET_PROPERTY)
+  check_library_exists("${JACK_LIBRARIES}" jack_port_type_get_buffer_size "" HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE)
 endif()
 
 # Glib/GTK-related compile definitions
@@ -368,7 +370,7 @@ else()
 endif()
 list(APPEND zrythm_definitions GETTEXT_PACKAGE="zrythm")
 
-if(${COMPILER_MSVC})
+if(MSVC)
   add_compile_definitions(
     _USE_MATH_DEFINES=1
     _UNICODE
@@ -496,10 +498,16 @@ endif()
 
 if(ZRYTHM_STRICT)
   if(compiler_gnulike)
+    if(NOT APPLE) # apple clang doesn't understand these
+      list(APPEND zrythm_compile_args
+        -Werror=format-overflow
+        -Werror=format-truncation
+        -Werror=return-local-addr
+      )
+    endif()
+
     list(APPEND zrythm_compile_args
       -Werror=alloca
-      -Werror=format-overflow
-      -Werror=format-truncation
       #-Werror=cast-qual
       # FIXME enable and fix all reported errors
       #-Werror=conversion
@@ -564,7 +572,6 @@ if(ZRYTHM_STRICT)
       -Werror=mismatched-tags
       -Werror=narrowing
       -Werror=overloaded-virtual
-      -Werror=return-local-addr
     )
     endif()
   if(compiler_is_gcc)

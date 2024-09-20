@@ -18,11 +18,11 @@
 
 #include <gdk/gdk.h>
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
 #  include "weak_libjack.h"
 #endif
 
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
 #  include <rtmidi_c.h>
 #endif
 
@@ -63,7 +63,7 @@ public:
 
 public:
   ExtPort () = default;
-#ifdef HAVE_JACK
+#if HAVE_JACK
   ExtPort (jack_port_t * jport);
 #endif /* HAVE_JACK */
 
@@ -169,7 +169,7 @@ connect (
 
 public:
 /** JACK port. */
-#ifdef HAVE_JACK
+#if HAVE_JACK
   jack_port_t * jport_;
 #else
   void * jport_;
@@ -203,7 +203,7 @@ public:
   bool rtaudio_is_duplex_ = false;
 
   std::shared_ptr<
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
     RtAudioDevice
 #else
     int
@@ -215,7 +215,7 @@ public:
   unsigned int rtmidi_id_ = 0;
 
   std::shared_ptr<
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
     RtMidiDevice
 #else
     int

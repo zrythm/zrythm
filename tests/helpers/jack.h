@@ -10,7 +10,7 @@
 #include "project.h"
 #include "zrythm.h"
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
 
 #  include <jack/jack.h>
 

@@ -421,7 +421,7 @@ PluginDescriptor::has_custom_ui () const
     case PluginProtocol::AU:
     case PluginProtocol::CLAP:
     case PluginProtocol::JSFX:
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
       return CarlaNativePlugin::has_custom_ui (*this);
 #else
       return false;
@@ -584,7 +584,7 @@ PluginDescriptor::generate_context_menu () const
     }
 #endif
 
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
   sprintf (tmp, "app.plugin-browser-add-to-project-carla::%p", this);
   menuitem = z_gtk_create_menu_item (_ ("Add to project"), nullptr, tmp);
   g_menu_append_item (menu, menuitem);

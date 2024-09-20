@@ -12,7 +12,6 @@ target_include_directories(zita-resampler PUBLIC
 
 target_compile_options(zita-resampler PRIVATE
   $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-O3>
-  $<$<CXX_COMPILER_ID:MSVC>:/O2>
 )
 
 # set_target_properties(zita-resampler PROPERTIES

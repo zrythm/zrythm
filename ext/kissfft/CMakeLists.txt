@@ -14,7 +14,6 @@ target_compile_options(kissfft PRIVATE
     -fomit-frame-pointer
   >
   $<$<CXX_COMPILER_ID:MSVC>:
-    /O2
     # MSVC equivalent of -fomit-frame-pointer
     /Oy
   >

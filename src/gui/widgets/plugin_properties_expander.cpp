@@ -93,7 +93,7 @@ on_load_preset_clicked (GtkButton * btn, PluginPropertiesExpanderWidget * self)
     {
       if (setting.open_with_carla_)
         {
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
           auto carla = static_cast<CarlaNativePlugin *> (self->plugin);
           carla->load_state (&path);
 #else

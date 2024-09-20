@@ -24,8 +24,7 @@ variables:
 stages:
   - setup
   - check
-  - build
-  - test
+  - build # also test/install
   - deploy
 
 .unix-activate-venv: &unix-activate-venv
@@ -110,6 +109,7 @@ configure:gnu/linux:
   script:
     - >-
       cmake -B $BUILDDIR $COMMON_CMAKE_OPTIONS
+      -G "Ninja"
       -DCMAKE_C_COMPILER_LAUNCHER=ccache
       -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       -DCMAKE_C_COMPILER=gcc
@@ -186,17 +186,24 @@ exif-check:
   script:
    - scripts/exif_check.sh
 
+.unix_test_cmd: &unix_test_cmd
+  - ctest --test-dir $BUILDDIR -V || (cat "$BUILDDIR/Testing/Temporary/LastTest.log" && exit 1)
+
 build:gnu/linux:
   extends: .gnu-linux-template
   stage: build
   script:
-   - cmake --build $BUILDDIR
+    - cmake --build $BUILDDIR
+    - *unix_test_cmd
+    - ctest --test-dir $BUILDDIR -V --overwrite MemoryCheckCommand=valgrind --overwrite MemoryCheckCommandOptions="--undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1" -T memcheck || (cat "$BUILDDIR/Testing/Temporary/MemoryChecker.*.log" && exit 1)
+
 
 build:mac-arm:
   extends: .mac-arm-template
   stage: build
   script:
     - cmake --build $BUILDDIR --config Debug
+    - *unix_test_cmd
 
 build:windows:
   extends: .windows-template
@@ -204,34 +211,7 @@ build:windows:
   script:
     # - meson compile -C ${env:BUILDDIR} --verbose --vs-args="-nologo"
     - cmake --build ${env:BUILDDIR} --verbose -- /nologo
-
-.unix_test_cmd: &unix_test_cmd
-  - ctest --test-dir $BUILDDIR -V || (cat "$BUILDDIR/Testing/Temporary/LastTest.log" && exit 1)
-
-test:gnu/linux:
-  extends: .gnu-linux-template
-  stage: test
-  script:
-    - *unix_test_cmd
-
-test:mac-arm:
-  extends: .mac-arm-template
-  stage: test
-  script:
-    - *unix_test_cmd
-
-test:windows:
-  extends: .windows-template
-  stage: test
-  script:
     - ctest --test-dir ${env:BUILDDIR} -V; if (-not $?) { Get-Content ${env:BUILDDIR}/Testing/Temporary/LastTest.log; exit 1 }
-
-
-test-valgrind:
-  extends: .gnu-linux-template
-  stage: test
-  script:
-    - ctest --test-dir $BUILDDIR -V --overwrite MemoryCheckCommand=valgrind --overwrite MemoryCheckCommandOptions="--undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1" -T memcheck || (cat "$BUILDDIR/Testing/Temporary/MemoryChecker.*.log" && exit 1)
 
 update-manual:
   stage: deploy

@@ -390,7 +390,7 @@ INSTANTIATE_TEST_CASE_P (
   EditTracksSuite,
   EditTracksTestFixture,
   ::testing::Combine (
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
     ::testing::Values (false, true),
 #else
     ::testing::Values (false),

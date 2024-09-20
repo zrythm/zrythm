@@ -548,7 +548,7 @@ Port::find_from_identifier (const PortIdentifier &id)
     };
 }
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
 void
 Port::sum_data_from_jack (const nframes_t start_frame, const nframes_t nframes)
 {
@@ -887,14 +887,14 @@ Port::disconnect_all ()
       PORT_CONNECTIONS_MGR->ensure_disconnect (conn.src_id_, conn.dest_id_);
     }
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
   if (this->internal_type_ == Port::InternalType::JackPort)
     {
       expose_to_jack (false);
     }
 #endif
 
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
   if (is_midi ())
     {
       auto midi_port = static_cast<MidiPort *> (this);
@@ -1018,12 +1018,12 @@ Port::set_expose_to_backend (bool expose)
         case AudioBackend::AUDIO_BACKEND_DUMMY:
           z_debug ("called with dummy audio backend");
           return;
-#ifdef HAVE_JACK
+#if HAVE_JACK
         case AudioBackend::AUDIO_BACKEND_JACK:
           expose_to_jack (expose);
           break;
 #endif
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
         case AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO:
         case AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO:
         case AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
@@ -1046,17 +1046,17 @@ Port::set_expose_to_backend (bool expose)
         case MidiBackend::MIDI_BACKEND_DUMMY:
           z_debug ("called with MIDI dummy backend");
           return;
-#ifdef HAVE_JACK
+#if HAVE_JACK
         case MidiBackend::MIDI_BACKEND_JACK:
           expose_to_jack (expose);
           break;
 #endif
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
         case MidiBackend::MIDI_BACKEND_ALSA_RTMIDI:
         case MidiBackend::MIDI_BACKEND_JACK_RTMIDI:
         case MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI:
         case MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI:
-#  ifdef HAVE_RTMIDI_6
+#  if HAVE_RTMIDI_6
         case MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
 #  endif
           midi_port->expose_to_rtmidi (expose);
@@ -1080,7 +1080,7 @@ Port::rename_backend ()
 
   switch (this->internal_type_)
     {
-#ifdef HAVE_JACK
+#if HAVE_JACK
     case Port::InternalType::JackPort:
       {
         std::string str = this->get_full_designation ();
@@ -1175,7 +1175,7 @@ Port::clear_external_buffer ()
       return;
     }
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
   if (this->internal_type_ != Port::InternalType::JackPort)
     {
       return;

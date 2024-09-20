@@ -29,7 +29,7 @@
 
 G_DEFINE_TYPE (InspectorPortWidget, inspector_port_widget, GTK_TYPE_WIDGET)
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
 static void
 on_jack_toggled (GtkWidget * widget, InspectorPortWidget * self)
 {
@@ -416,7 +416,7 @@ inspector_port_widget_new (Port * port)
     }
 
     /* jack button */
-#ifdef HAVE_JACK
+#if HAVE_JACK
   if (AUDIO_ENGINE->audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
     {
       if (

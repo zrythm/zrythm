@@ -5,7 +5,7 @@
 
 #include "utils/gtest_wrapper.h"
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
 
 #  include "dsp/channel.h"
 #  include "dsp/engine.h"
@@ -146,9 +146,9 @@ void
 engine_jack_handle_buf_size_change (AudioEngine * self, uint32_t frames)
 {
   AUDIO_ENGINE->realloc_port_buffers (frames);
-#  ifdef HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE
-  AUDIO_ENGINE->midi_buf_size = jack_port_type_get_buffer_size (
-    AUDIO_ENGINE->client, JACK_DEFAULT_MIDI_TYPE);
+#  if HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE
+  AUDIO_ENGINE->midi_buf_size_ = jack_port_type_get_buffer_size (
+    AUDIO_ENGINE->client_, JACK_DEFAULT_MIDI_TYPE);
 #  endif
   z_info (
     "JACK: Block length changed to {}, "
@@ -409,9 +409,9 @@ engine_jack_midi_setup (AudioEngine * self)
   /* case 2 - jack client exists, just attach to
    * it */
   self->midi_buf_size_ = 4096;
-#  ifdef HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE
-  self->midi_buf_size =
-    jack_port_type_get_buffer_size (self->client, JACK_DEFAULT_MIDI_TYPE);
+#  if HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE
+  self->midi_buf_size_ =
+    jack_port_type_get_buffer_size (self->client_, JACK_DEFAULT_MIDI_TYPE);
 #  endif
 
   return 0;

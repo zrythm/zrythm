@@ -245,7 +245,7 @@ should_be_hidden (const char * group, const char * subgroup, const char * key)
     KEY_IS ("Plugins", "Paths", "dssi-search-paths")
     || KEY_IS ("Plugins", "Paths", "ladspa-search-paths") ||
 #endif
-#ifndef HAVE_CARLA
+#if !HAVE_CARLA
     KEY_IS ("Plugins", "Paths", "sfz-search-paths")
     || KEY_IS ("Plugins", "Paths", "sf2-search-paths") ||
     || KEY_IS ("Plugins", "Paths", "jsfx-search-paths") ||

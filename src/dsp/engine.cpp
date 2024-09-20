@@ -76,7 +76,7 @@
 
 #include "gtk_wrapper.h"
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
 #  include "weak_libjack.h"
 #endif
 
@@ -107,7 +107,7 @@ AudioEngine::set_buffer_size (uint32_t buf_size)
 
   z_debug ("request to set engine buffer size to {}", buf_size);
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
   if (audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
     {
       jack_set_buffer_size (client_, buf_size);
@@ -246,7 +246,7 @@ AudioEngine::process_events ()
       switch (ev->type_)
         {
         case AudioEngineEventType::AUDIO_ENGINE_EVENT_BUFFER_SIZE_CHANGE:
-#ifdef HAVE_JACK
+#if HAVE_JACK
           if (audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
             {
               engine_jack_handle_buf_size_change (this, ev->uint_arg_);
@@ -255,7 +255,7 @@ AudioEngine::process_events ()
           EVENTS_PUSH (EventType::ET_ENGINE_BUFFER_SIZE_CHANGED, nullptr);
           break;
         case AudioEngineEventType::AUDIO_ENGINE_EVENT_SAMPLE_RATE_CHANGE:
-#ifdef HAVE_JACK
+#if HAVE_JACK
           if (audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
             {
               engine_jack_handle_sample_rate_change (this, ev->uint_arg_);
@@ -369,7 +369,7 @@ AudioEngine::pre_setup ()
     case AudioBackend::AUDIO_BACKEND_DUMMY:
       ret = engine_dummy_setup (this);
       break;
-#ifdef HAVE_JACK
+#if HAVE_JACK
     case AudioBackend::AUDIO_BACKEND_JACK:
       ret = engine_jack_setup (this);
       break;
@@ -384,12 +384,7 @@ AudioEngine::pre_setup ()
       ret = engine_pa_setup (this);
       break;
 #endif
-#ifdef HAVE_SDL
-    case AudioBackend::AUDIO_BACKEND_SDL:
-      ret = engine_sdl_setup (this);
-      break;
-#endif
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
     case AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO:
     case AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO:
     case AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
@@ -425,7 +420,7 @@ AudioEngine::pre_setup ()
     case MidiBackend::MIDI_BACKEND_DUMMY:
       mret = engine_dummy_midi_setup (this);
       break;
-#ifdef HAVE_JACK
+#if HAVE_JACK
     case MidiBackend::MIDI_BACKEND_JACK:
       if (client_)
         {
@@ -442,12 +437,12 @@ AudioEngine::pre_setup ()
         }
       break;
 #endif
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
     case MidiBackend::MIDI_BACKEND_ALSA_RTMIDI:
     case MidiBackend::MIDI_BACKEND_JACK_RTMIDI:
     case MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI:
     case MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI:
-#  ifdef HAVE_RTMIDI_6
+#  if HAVE_RTMIDI_6
     case MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
 #  endif
       mret = engine_rtmidi_setup (this);
@@ -548,7 +543,7 @@ AudioEngine::init_common ()
     case AudioBackend::AUDIO_BACKEND_DUMMY:
       audio_backend_ = AudioBackend::AUDIO_BACKEND_DUMMY;
       break;
-#ifdef HAVE_JACK
+#if HAVE_JACK
     case AudioBackend::AUDIO_BACKEND_JACK:
       audio_backend_ = AudioBackend::AUDIO_BACKEND_JACK;
       break;
@@ -563,7 +558,7 @@ AudioEngine::init_common ()
       audio_backend_ = AudioBackend::AUDIO_BACKEND_PORT_AUDIO;
       break;
 #endif
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
     case AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO:
     case AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
     case AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO:
@@ -605,12 +600,12 @@ AudioEngine::init_common ()
     case MidiBackend::MIDI_BACKEND_DUMMY:
       midi_backend_ = MidiBackend::MIDI_BACKEND_DUMMY;
       break;
-#ifdef HAVE_JACK
+#if HAVE_JACK
     case MidiBackend::MIDI_BACKEND_JACK:
       midi_backend_ = MidiBackend::MIDI_BACKEND_JACK;
       break;
 #endif
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
     case MidiBackend::MIDI_BACKEND_JACK_RTMIDI:
     case MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI:
     case MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI:
@@ -938,7 +933,7 @@ AudioEngine::activate (bool activate)
       hw_in_processor_->activate (false);
     }
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
   if (audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
     {
       engine_jack_activate (this, activate);
@@ -954,13 +949,13 @@ AudioEngine::activate (bool activate)
     {
       engine_dummy_activate (this, activate);
     }
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
   if (midi_backend_is_rtmidi (midi_backend_))
     {
       engine_rtmidi_activate (this, activate);
     }
 #endif
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
   if (audio_backend_is_rtaudio (audio_backend_))
     {
       engine_rtaudio_activate (this, activate);
@@ -1086,7 +1081,7 @@ AudioEngine::process_prepare (
           z_debug ("pause requested handled");
         }
       transport_->play_state_ = Transport::PlayState::Paused;
-#ifdef HAVE_JACK
+#if HAVE_JACK
       if (audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
         {
           engine_jack_handle_stop (this);
@@ -1099,7 +1094,7 @@ AudioEngine::process_prepare (
     {
       transport_->play_state_ = Transport::PlayState::Rolling;
       remaining_latency_preroll_ = router_->get_max_route_playback_latency ();
-#ifdef HAVE_JACK
+#if HAVE_JACK
       if (audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
         {
           engine_jack_handle_start (this);
@@ -1109,7 +1104,7 @@ AudioEngine::process_prepare (
 
   switch (audio_backend_)
     {
-#ifdef HAVE_JACK
+#if HAVE_JACK
     case AudioBackend::AUDIO_BACKEND_JACK:
       engine_jack_prepare_process (this);
       break;
@@ -1165,7 +1160,7 @@ AudioEngine::receive_midi_events (uint32_t nframes)
 {
   switch (midi_backend_)
     {
-#ifdef HAVE_JACK
+#if HAVE_JACK
     case MidiBackend::MIDI_BACKEND_JACK:
       midi_in_->receive_midi_events_from_jack (0, nframes);
       break;
@@ -1214,7 +1209,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
 
     /* Work around a bug in Pipewire that doesn't inform the host about buffer
      * size (block length) changes */
-#ifdef HAVE_JACK
+#if HAVE_JACK
   if (
     audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK && run_.load ()
     && block_length_ != jack_get_buffer_size (client_))
@@ -1431,7 +1426,7 @@ AudioEngine::post_process (const nframes_t roll_nframes, const nframes_t nframes
   if (transport_->is_rolling () && remaining_latency_preroll_ == 0)
     {
       transport_->add_to_playhead (roll_nframes);
-#ifdef HAVE_JACK
+#if HAVE_JACK
       if (audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
         {
           engine_jack_handle_position_change (this);
@@ -1461,7 +1456,7 @@ AudioEngine::fill_out_bufs (const nframes_t nframes)
 #  endif
       break;
 #endif
-#ifdef HAVE_JACK
+#if HAVE_JACK
     case AudioBackend::AUDIO_BACKEND_JACK:
       /*engine_jack_fill_out_bufs (self, nframes);*/
       break;
@@ -1471,7 +1466,7 @@ AudioEngine::fill_out_bufs (const nframes_t nframes)
       engine_pa_fill_out_bufs (self, nframes);
       break;
 #endif
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
       /*case AudioBackend::AUDIO_BACKEND_RTAUDIO:*/
       /*break;*/
 #endif
@@ -1661,12 +1656,12 @@ AudioEngine::~AudioEngine ()
 
   switch (audio_backend_)
     {
-#ifdef HAVE_JACK
+#if HAVE_JACK
     case AudioBackend::AUDIO_BACKEND_JACK:
       engine_jack_tear_down (this);
       break;
 #endif
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
     case AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO:
     case AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO:
     case AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:

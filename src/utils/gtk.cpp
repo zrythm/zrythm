@@ -1567,15 +1567,18 @@ z_gtk_window_get_windows_hwnd (GtkWindow * window)
 void *
 z_gtk_window_get_nsview (GtkWindow * window)
 {
+#  if 0
   GtkNative *  native = GTK_NATIVE (window);
   GdkSurface * surface = gtk_native_get_surface (native);
   void *       nsview = NULL;
   /* FIXME enable when patch is merged */
-#  if 0
+#    if 0
     gdk_macos_surface_get_view (surface);
-#  endif
+#    endif
   z_return_val_if_fail (nsview, nullptr);
   return nsview;
+#  endif
+  return nullptr;
 }
 #endif
 

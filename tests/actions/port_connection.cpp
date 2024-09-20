@@ -17,7 +17,7 @@
 
 #include "tests/helpers/plugin_manager.h"
 
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
 #  ifdef HAVE_AMS_LFO
 static void
 test_modulator_connection (
@@ -226,7 +226,7 @@ _test_port_connection (
 TEST_F (ZrythmFixture, ConnectPorts)
 {
 #ifdef HAVE_AMS_LFO
-#  ifdef HAVE_CARLA
+#  if HAVE_CARLA
   _test_port_connection (AMS_LFO_BUNDLE, AMS_LFO_URI, true, false);
   test_modulator_connection (AMS_LFO_BUNDLE, AMS_LFO_URI, true, false);
 #  endif /* HAVE_CARLA */

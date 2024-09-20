@@ -5,7 +5,7 @@
 
 #include "zrythm-config.h"
 
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
 
 #  include "dsp/channel.h"
 #  include "dsp/engine.h"

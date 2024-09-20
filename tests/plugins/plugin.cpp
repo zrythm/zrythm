@@ -62,7 +62,7 @@ TEST_F (ZrythmFixture, LoadNonExistingPlugin)
 
 TEST_F (ZrythmFixture, LoadFullyBridgedPlugin)
 {
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
 #  ifdef HAVE_CHIPWAVE
   test_plugin_manager_create_tracks_from_plugin (
     CHIPWAVE_BUNDLE, CHIPWAVE_URI, true, true, 1);
@@ -98,7 +98,7 @@ TEST_F (ZrythmFixture, LoadFullyBridgedPlugin)
 
 TEST_F (ZrythmFixture, LoadPluginsNeedingBridging)
 {
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
 #  ifdef HAVE_CALF_MONOSYNTH
   auto setting = test_plugin_manager_get_plugin_setting (
     CALF_MONOSYNTH_BUNDLE, CALF_MONOSYNTH_URI, false);
@@ -115,7 +115,7 @@ TEST_F (ZrythmFixture, BypassStateAfterProjectLoad)
 #ifdef HAVE_LSP_COMPRESSOR
   for (
     int i = 0;
-#  ifdef HAVE_CARLA
+#  if HAVE_CARLA
     i < 2;
 #  else
     i < 1;

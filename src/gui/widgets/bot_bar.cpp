@@ -68,7 +68,7 @@ on_playhead_display_type_changed (
 }
 #endif
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
 static void
 activate_jack_mode (
   GSimpleAction * action,
@@ -160,7 +160,7 @@ on_transport_playhead_right_click (
   /* TODO fire event on change */
 
   /* jack transport related */
-#ifdef HAVE_JACK
+#if HAVE_JACK
   if (AUDIO_ENGINE->audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
     {
       GMenu * jack_section = g_menu_new ();
@@ -223,7 +223,7 @@ bot_bar_widget_refresh (BotBarWidget * self)
   GAction *            display_action =
     g_settings_create_action (S_UI, "transport-display");
   g_action_map_add_action (G_ACTION_MAP (action_group), display_action);
-#ifdef HAVE_JACK
+#if HAVE_JACK
   const char * jack_modes[] = {
     "'become-master'",
     "'sync'",
@@ -240,7 +240,7 @@ bot_bar_widget_refresh (BotBarWidget * self)
     GTK_WIDGET (self->digital_transport), "bot-bar-transport",
     G_ACTION_GROUP (action_group));
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
   if (AUDIO_ENGINE->audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
     {
       GtkWidget * img = gtk_image_new_from_icon_name ("jack-transport-client");
@@ -371,14 +371,14 @@ bot_bar_widget_update_status (BotBarWidget * self)
   const char * midi_pipewire_str = "";
   if (AUDIO_ENGINE->audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
     {
-#ifdef HAVE_JACK
+#if HAVE_JACK
       audio_pipewire_str =
         engine_jack_is_pipewire (AUDIO_ENGINE.get ()) ? " (pw)" : "";
 #endif
     }
   if (AUDIO_ENGINE->midi_backend_ == MidiBackend::MIDI_BACKEND_JACK)
     {
-#ifdef HAVE_JACK
+#if HAVE_JACK
       midi_pipewire_str =
         engine_jack_is_pipewire (AUDIO_ENGINE.get ()) ? " (pw)" : "";
 #endif

@@ -191,7 +191,7 @@ TEST_F (ZrythmFixture, CheckPortAndPluginTrackPositionAfterDuplication)
 #endif
 }
 
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
 TEST_F (ZrythmFixture, CheckPortAndPluginTrackPositionAfterDuplicationWithCarla)
 {
 #  ifdef HAVE_HELM
@@ -1010,7 +1010,7 @@ protected:
 
 TEST_P (TracklistSelectionsMoveFixture, MoveTracks)
 {
-  bool with_carla = std::get<0> (GetParam ());
+  [[maybe_unused]] bool with_carla = std::get<0> (GetParam ());
 
 #ifdef HAVE_HELM
   _test_move_tracks (HELM_BUNDLE, HELM_URI, true, with_carla);
@@ -1025,7 +1025,7 @@ INSTANTIATE_TEST_SUITE_P (
   TracklistSelectionsMove,
   TracklistSelectionsMoveFixture,
   ::testing::Combine (
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
     ::testing::Values (false, true)
 #else
     ::testing::Values (false)

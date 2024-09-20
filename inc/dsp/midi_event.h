@@ -410,7 +410,7 @@ public:
 
   void delete_event (const MidiEvent * ev);
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
   /**
    * Writes the events to the given JACK buffer.
    */

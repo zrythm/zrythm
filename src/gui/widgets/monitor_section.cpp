@@ -160,7 +160,7 @@ on_mute_toggled (GtkToggleButton * btn, MonitorSectionWidget * self)
 static void
 on_devices_updated (MonitorSectionWidget * self)
 {
-#ifdef HAVE_JACK
+#if HAVE_JACK
   /* reconnect to devices */
   GError * err = NULL;
   bool ret = engine_jack_reconnect_monitor (AUDIO_ENGINE.get (), true, &err);

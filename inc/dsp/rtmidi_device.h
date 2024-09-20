@@ -9,7 +9,7 @@
 #include "dsp/midi_event.h"
 #include "utils/ring_buffer.h"
 
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
 
 #  include <rtmidi_c.h>
 

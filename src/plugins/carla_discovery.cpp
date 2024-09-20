@@ -5,7 +5,7 @@
 
 #include "utils/gtest_wrapper.h"
 
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
 
 #  include "plugins/cached_plugin_descriptors.h"
 #  include "plugins/carla_discovery.h"

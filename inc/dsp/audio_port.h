@@ -30,7 +30,7 @@ public:
 
   static constexpr size_t AUDIO_RING_SIZE = 65536;
 
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
   /**
    * Dequeue the audio data from the ring buffers into @ref RtAudioDevice.buf.
    */
@@ -93,7 +93,7 @@ public:
 
   bool is_stereo_port () const;
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
 
   /**
    * Receives audio data from the port's exposed JACK port (if any) into the
@@ -123,7 +123,7 @@ private:
   sum_data_from_dummy (const nframes_t start_frame, const nframes_t nframes);
 
 public:
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
   /**
    * RtAudio pointers for input ports.
    *

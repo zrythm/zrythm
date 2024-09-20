@@ -169,7 +169,7 @@ GraphThread::run_worker ()
 
       if (graph->trigger_queue_.pop_front (to_run))
         {
-          if (!to_run) [[unlikely]]
+          if (to_run == nullptr) [[unlikely]]
             {
               z_error ("[{}]: null node in queue, terminating thread...", id_);
               return;
@@ -197,7 +197,7 @@ GraphThread::run_worker ()
             }
         }
 
-      while (!to_run)
+      while (to_run == nullptr)
         {
           /* wait for work, fall asleep */
           int idle_thread_cnt = graph->idle_thread_cnt_.fetch_add (1) + 1;
@@ -270,9 +270,9 @@ GraphThread::run ()
       /* first time setup */
 
       /* Can't run without a graph */
-      z_warn_if_fail (graph->graph_nodes_map_.size () > 0);
-      z_warn_if_fail (graph->init_trigger_list_.size () > 0);
-      z_warn_if_fail (graph->terminal_nodes_.size () > 0);
+      z_warn_if_fail (!graph->graph_nodes_map_.empty ());
+      z_warn_if_fail (!graph->init_trigger_list_.empty ());
+      z_warn_if_fail (!graph->terminal_nodes_.empty ());
 
       /* bootstrap trigger-list.
        * (later this is done by Graph.reached_terminal_node())*/

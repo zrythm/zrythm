@@ -15,7 +15,7 @@
 #include "utils/string.h"
 #include "zrythm_app.h"
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
 #  include "weak_libjack.h"
 #endif
 
@@ -30,14 +30,14 @@ ExtPort::get_buffer (nframes_t nframes) const
 {
   switch (type_)
     {
-#ifdef HAVE_JACK
+#if HAVE_JACK
     case Type::JACK:
       return static_cast<float *> (jack_port_get_buffer (jport_, nframes));
 #endif
 #ifdef HAVE_ALSA
     case Type::ALSA:
 #endif
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
     case Type::RtMidi:
 #endif
     default:
@@ -92,7 +92,7 @@ ExtPort::activate (Port * port, bool activate)
         {
           switch (AUDIO_ENGINE->midi_backend_)
             {
-#ifdef HAVE_JACK
+#if HAVE_JACK
             case MidiBackend::MIDI_BACKEND_JACK:
               {
                 if (type_ != Type::JACK)
@@ -139,12 +139,12 @@ ExtPort::activate (Port * port, bool activate)
               }
               break;
 #endif
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
             case MidiBackend::MIDI_BACKEND_ALSA_RTMIDI:
             case MidiBackend::MIDI_BACKEND_JACK_RTMIDI:
             case MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI:
             case MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI:
-#  ifdef HAVE_RTMIDI_6
+#  if HAVE_RTMIDI_6
             case MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
 #  endif
               {
@@ -180,7 +180,7 @@ ExtPort::activate (Port * port, bool activate)
         {
           switch (AUDIO_ENGINE->audio_backend_)
             {
-#ifdef HAVE_JACK
+#if HAVE_JACK
             case AudioBackend::AUDIO_BACKEND_JACK:
               {
                 if (type_ != Type::JACK)
@@ -218,7 +218,7 @@ ExtPort::activate (Port * port, bool activate)
               }
               break;
 #endif
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
             case AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO:
             case AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO:
             case AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
@@ -271,11 +271,11 @@ ExtPort::matches_backend () const
     {
       switch (AUDIO_ENGINE->audio_backend_)
         {
-#ifdef HAVE_JACK
+#if HAVE_JACK
         case AudioBackend::AUDIO_BACKEND_JACK:
           return type_ == Type::JACK;
 #endif
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
         case AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO:
         case AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO:
         case AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
@@ -296,7 +296,7 @@ ExtPort::matches_backend () const
     {
       switch (AUDIO_ENGINE->midi_backend_)
         {
-#ifdef HAVE_JACK
+#if HAVE_JACK
         case MidiBackend::MIDI_BACKEND_JACK:
           return type_ == Type::JACK;
 #endif
@@ -304,12 +304,12 @@ ExtPort::matches_backend () const
         case MidiBackend::MIDI_BACKEND_ALSA:
           break;
 #endif
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
         case MidiBackend::MIDI_BACKEND_ALSA_RTMIDI:
         case MidiBackend::MIDI_BACKEND_JACK_RTMIDI:
         case MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI:
         case MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI:
-#  ifdef HAVE_RTMIDI_6
+#  if HAVE_RTMIDI_6
         case MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
 #  endif
           return type_ == Type::RtMidi;
@@ -321,7 +321,7 @@ ExtPort::matches_backend () const
   return false;
 }
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
 ExtPort::ExtPort (jack_port_t * jport)
     : jport_ (jport), full_name_ (jack_port_name (jport)),
       short_name_ (jack_port_short_name (jport)), type_ (Type::JACK)
@@ -400,7 +400,7 @@ get_ext_ports_from_jack (
 }
 #endif
 
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
 /**
  * Creates an ExtPort from a RtMidi port.
  */
@@ -442,7 +442,7 @@ get_ext_ports_from_rtmidi (
 }
 #endif
 
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
 /**
  * Creates an ExtPort from a RtAudio port.
  *
@@ -536,12 +536,12 @@ ExtPort::ext_ports_get (
     {
       switch (engine.audio_backend_)
         {
-#ifdef HAVE_JACK
+#if HAVE_JACK
         case AudioBackend::AUDIO_BACKEND_JACK:
           get_ext_ports_from_jack (type, flow, hw, ports, engine);
           break;
 #endif
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
         case AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO:
         case AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO:
         case AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
@@ -563,7 +563,7 @@ ExtPort::ext_ports_get (
     {
       switch (engine.midi_backend_)
         {
-#ifdef HAVE_JACK
+#if HAVE_JACK
         case MidiBackend::MIDI_BACKEND_JACK:
           get_ext_ports_from_jack (type, flow, hw, ports, engine);
           break;
@@ -572,12 +572,12 @@ ExtPort::ext_ports_get (
         case MidiBackend::MIDI_BACKEND_ALSA:
           break;
 #endif
-#ifdef HAVE_RTMIDI
+#if HAVE_RTMIDI
         case MidiBackend::MIDI_BACKEND_ALSA_RTMIDI:
         case MidiBackend::MIDI_BACKEND_JACK_RTMIDI:
         case MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI:
         case MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI:
-#  ifdef HAVE_RTMIDI_6
+#  if HAVE_RTMIDI_6
         case MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
 #  endif
           get_ext_ports_from_rtmidi (flow, ports, engine);

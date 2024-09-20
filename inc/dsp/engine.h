@@ -27,7 +27,7 @@
 #include "utils/object_pool.h"
 #include "utils/types.h"
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
 #  include "weak_libjack.h"
 #endif
 
@@ -39,7 +39,7 @@
 #  include <portaudio.h>
 #endif
 
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
 #  include <rtaudio_c.h>
 #endif
 
@@ -509,7 +509,7 @@ public:
    */
   std::atomic_uint64_t cycle_ = 0;
 
-#ifdef HAVE_JACK
+#if HAVE_JACK
   /** JACK client. */
   jack_client_t * client_ = nullptr;
 #else
@@ -666,7 +666,7 @@ public:
    */
   float * port_audio_out_buf_ = nullptr;
 
-#ifdef HAVE_RTAUDIO
+#if HAVE_RTAUDIO
   rtaudio_t rtaudio_ = nullptr;
 #else
   void * rtaudio_ = nullptr;

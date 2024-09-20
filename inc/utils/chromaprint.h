@@ -15,7 +15,7 @@
 
 #include "zrythm-config.h"
 
-#ifdef HAVE_CHROMAPRINT
+#if HAVE_CHROMAPRINT
 
 #  include "utils/types.h"
 #  include "utils/yaml.h"

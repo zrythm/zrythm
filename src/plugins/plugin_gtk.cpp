@@ -78,7 +78,7 @@ plugin_gtk_on_save_preset_activate (GtkWidget * widget, Plugin * plugin)
 
       if (open_with_carla)
         {
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
           char *  homedir = g_build_filename (g_get_home_dir (), nullptr);
           GFile * homedir_file = g_file_new_for_path (homedir);
           gtk_file_chooser_set_current_folder (
@@ -109,7 +109,7 @@ plugin_gtk_on_save_preset_activate (GtkWidget * widget, Plugin * plugin)
             gtk_check_button_get_active (GTK_CHECK_BUTTON (add_prefix));
           if constexpr (std::is_same_v<T, CarlaNativePlugin>)
             {
-#ifdef HAVE_CARLA
+#if HAVE_CARLA
               std::string  prefix;
               const char * sep = "";
               auto         dirname = Glib::path_get_dirname (path);

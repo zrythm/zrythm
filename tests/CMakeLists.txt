@@ -255,6 +255,7 @@ plugins/plugin_manager
 project
 settings/settings
 utils/compression
+utils/datetime
 utils/file
 utils/hash
 utils/math
