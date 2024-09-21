@@ -48,12 +48,14 @@ if(APPLE)
   find_library(APPKIT_LIBRARY AppKit)
   find_library(IOKIT_LIBRARY IOKit)
   find_library(SECURITY_LIBRARY Security)
+  find_library(AUDIO_TOOLBOX_LIBRARY AudioToolbox)
   list(APPEND juce_dependencies
     ${FOUNDATION_LIBRARY}
     ${COCOA_LIBRARY}
     ${APPKIT_LIBRARY}
     ${IOKIT_LIBRARY}
     ${SECURITY_LIBRARY}
+    ${AUDIO_TOOLBOX_LIBRARY}
   )
 
   set_source_files_properties(

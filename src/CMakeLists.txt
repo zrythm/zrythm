@@ -83,8 +83,8 @@ target_precompile_headers(zrythm_lib
 
 add_executable(zrythm)
 target_sources(zrythm
-  PRIVATE main.cpp ${zrythm_resources})
-target_link_libraries(zrythm PRIVATE zrythm_lib zrythm-gresources)
+  PRIVATE main.cpp ${GRESOURCE_COMPILED_FILE})
+target_link_libraries(zrythm PRIVATE zrythm_lib)
 target_link_options(zrythm PRIVATE ${zrythm_link_args})
 add_dependencies(zrythm
   zrythm-gresources appdata-xml-merged)
@@ -94,10 +94,6 @@ if(OS_GNU)
 endif()
 
 if(WIN32)
-  if(MSVC)
-    # note: illegal to distribute MSVC runtime DLLs or build with static runtime libs
-    set_target_properties(zrythm PROPERTIES MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
-  endif()
   set_target_properties(zrythm PROPERTIES WIN32_EXECUTABLE TRUE LINK_FLAGS "/SUBSYSTEM:WINDOWS")
 
   target_sources(zrythm PRIVATE ${windows_rc_file} ${windows_icon_file})

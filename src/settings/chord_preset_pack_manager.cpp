@@ -402,8 +402,16 @@ ChordPresetPackManager::add_user_packs ()
       std::string main_path = get_user_packs_path ();
       z_debug ("Reading user chord packs from {}...", main_path);
 
-      StringArray pack_paths =
-        io_get_files_in_dir_ending_in (main_path, true, ".json");
+      StringArray pack_paths;
+      try
+        {
+          pack_paths = io_get_files_in_dir_ending_in (main_path, true, ".json");
+        }
+      catch (const ZrythmException &e)
+        {
+          z_warning (
+            "Could not read user chord packs from {}: {}", main_path, e.what ());
+        }
       if (!pack_paths.isEmpty ())
         {
           for (const auto &pack_path : pack_paths)

@@ -35,6 +35,13 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Enable precompiled headers
 set(CMAKE_PCH_INSTANTIATE_TEMPLATES ON)
 
+# Set the release runtime library for all targets to make our life easier
+# (all dependencies must use the same runtime library, so build all
+# dependencies against the release runtime library first)
+# Note: only DLL is allowed, and it must not be redistributed
+# See https://opensource.stackexchange.com/a/7187
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+
 message(STATUS "Project version: ${PROJECT_VERSION} (${ZRYTHM_VERSION_STRING_FULL})")
 
 #==============================================================================
@@ -119,7 +126,7 @@ option(ZRYTHM_MAINTAINER_MODE "Whether to enable maintainer options (only for us
 cmake_dependent_option(ZRYTHM_IS_INSTALLER_VER "Build installer version" OFF "ZRYTHM_MAINTAINER_MODE" OFF)
 cmake_dependent_option(ZRYTHM_IS_TRIAL_VER "Build trial version" OFF "ZRYTHM_MAINTAINER_MODE" OFF)
 option(ZRYTHM_PROFILING "Build with profiling (for gprof)" OFF)
-option(ZRYTHM_MANPAGE "Build and install manpage" ${UNIX})
+option(ZRYTHM_MANPAGE "Build and install manpage" ${OS_GNU})
 option(ZRYTHM_SHELL_COMPLETIONS "Build and install shell completions" ${UNIX})
 option(ZRYTHM_USER_MANUAL "Build and install user manual" OFF)
 cmake_dependent_option(ZRYTHM_STRICT_SPHINX_OPTS "Use strict sphinx options (for docs, fail on warnings)" OFF "ZRYTHM_USER_MANUAL" OFF)
@@ -219,7 +226,7 @@ if(chlog MATCHES "^\\[${ZRYTHM_VERSION}\\] -")
   set(chlog_date "${CMAKE_MATCH_1}")
   string(REPLACE "${chlog_date}\n" ";" chlog_list "${chlog}")
   list(GET chlog_list 1 chlog)
-  
+
   set(HAVE_CHANGELOG 1)
   set(CHANGELOG_DATE "${chlog_date}")
   string(REPLACE "\"" "\\\"" chlog "${chlog}")
@@ -283,8 +290,6 @@ message(STATUS "Locales: ${locales_str}")
 
 if(${compiler_gnulike})
   set(full_optimization_args "-O3")
-elseif(MSVC)
-  set(full_optimization_args "/O2" "/RTC1-")
 endif()
 
 #==============================================================================
@@ -297,7 +302,7 @@ set(glib_req "2.74.0")
 check_symbol_exists(mlock "sys/mman.h" HAVE_MLOCK)
 message(STATUS "HAVE_MLOCK: ${HAVE_MLOCK}")
 
-set(zrythm_include_dirs 
+set(zrythm_include_dirs
   "${CMAKE_CURRENT_SOURCE_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}/inc"
   "${CMAKE_CURRENT_SOURCE_DIR}/src"
@@ -434,7 +439,7 @@ endif()
 
 if(ZRYTHM_EXTRA_OPTIMIZATIONS)
   if(${compiler_gnulike})
-    list(APPEND zrythm_compile_args 
+    list(APPEND zrythm_compile_args
       -ffast-math -DPIC -freciprocal-math
       -fsingle-precision-constant
       # the following 2 taken from DISTRHO-Ports, need testing
@@ -442,9 +447,9 @@ if(ZRYTHM_EXTRA_OPTIMIZATIONS)
     if(NOT APPLE)
       list(APPEND zrythm_compile_args -fprefetch-loop-arrays)
     endif()
-    
+
     if(IS_DEBUG_BUILD)
-      # -O1 turns this on, but it may break backtraces so explicitly turn it 
+      # -O1 turns this on, but it may break backtraces so explicitly turn it
       # off on builds supposed to be debuggable
       list(APPEND zrythm_compile_args -fno-omit-frame-pointer)
     endif()
@@ -456,7 +461,7 @@ if(ZRYTHM_EXTRA_EXTRA_OPTIMIZATIONS)
     # TODO check
     # -Ofast -fgraphite-identity -floop-nest-optimize -fdevirtualize-at-ltrans -fipa-pta -fno-semantic-interposition -flto=4 -fuse-linker-plugin -pipe -falign-functions=32 -floop-nest-optimize -floop-parallelize-all -ftree-parallelize-loops=4
 
-    list(APPEND zrythm_compile_args 
+    list(APPEND zrythm_compile_args
       # not allowed on clang + C
       #'-fallow-store-data-races',
       -ffinite-math-only
@@ -487,7 +492,7 @@ if(WIN32)
     list(APPEND zrythm_compile_args "/Zc:__cplusplus")
   else() # mingw
     add_compile_options(-fno-ms-extensions)
-    list(APPEND zrythm_compile_args 
+    list(APPEND zrythm_compile_args
       -mms-bitfields
       -mwindows
       #-mstackrealign
@@ -516,7 +521,9 @@ if(ZRYTHM_STRICT)
       -Werror=float-equal
       -Werror=pointer-arith
       -Werror=enum-conversion
-      -Werror=overlength-strings
+      # this interferes with gresources generated C file
+      # and I don't know how to turn this off just for that file
+      # -Werror=overlength-strings
       -Werror=missing-declarations
       # -Werror=int-to-pointer-cast
 
@@ -681,7 +688,7 @@ if(ZRYTHM_YAML_PROJECT_COMPATIBILITY)
     FetchContent_Declare(
       libcyaml
       GIT_REPOSITORY https://gitlab.zrythm.org/zrythm/zrythm-libcyaml.git
-      GIT_TAG 771d74ce159403c15dc4136df55b1ecb15eb3881
+      GIT_TAG e1042c2fdcd99aa8718b811094df264f96a7642a
     )
     FetchContent_MakeAvailable(libcyaml)
   endif()
@@ -697,7 +704,7 @@ if(NOT soxr_FOUND)
   if(SOXR_FOUND)
     add_library(soxr::soxr ALIAS PkgConfig::SOXR)
   else()
-    find_library(SOXR_LIB soxr 
+    find_library(SOXR_LIB soxr
       PATHS ${SOXR_LIB_SEARCH_DIR}
       REQUIRED
     )
@@ -783,12 +790,12 @@ set(CMAKE_REQUIRED_LIBRARIES ${CARLA_LIBRARIES})
 check_symbol_exists(carla_get_native_patchbay_cv8_plugin "carla/CarlaHost.h" CARLA_HAVE_CV8_PATCHBAY_VARIANT)
 check_symbol_exists(carla_get_audio_port_hints "carla/CarlaHost.h" CARLA_HAVE_AUDIO_PORT_HINTS)
 
-pkg_check_modules(RTAUDIO rtaudio>=5.1.0 REQUIRED IMPORTED_TARGET)
+pkg_search_module(RTAUDIO librtaudio>=5.1.0 rtaudio>=5.1.0 REQUIRED IMPORTED_TARGET)
 set(HAVE_RTAUDIO TRUE)
 string(REGEX MATCH "^([0-9]+)\\.([0-9]+)" _ ${RTAUDIO_VERSION})
 set(RTAUDIO_MAJOR_VER ${CMAKE_MATCH_1})
 set(RTAUDIO_MINOR_VER ${CMAKE_MATCH_2})
-pkg_check_modules(RTMIDI rtmidi>=5.0.0 REQUIRED IMPORTED_TARGET)
+pkg_search_module(RTMIDI librtmidi>=5.0.0 rtmidi>=5.0.0 REQUIRED IMPORTED_TARGET)
 if(RTMIDI_VERSION VERSION_GREATER_EQUAL 6.0.0)
   set(HAVE_RTMIDI_6 TRUE)
 endif()
@@ -809,16 +816,16 @@ find_package(magic_enum 0.9.5 REQUIRED)
 find_package(fmt REQUIRED)
 
 find_package(spdlog REQUIRED)
-target_compile_definitions(spdlog::spdlog INTERFACE 
+target_compile_definitions(spdlog::spdlog INTERFACE
   SPDLOG_FMT_EXTERNAL
   SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE
 )
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
-  target_compile_definitions(spdlog::spdlog INTERFACE 
+  target_compile_definitions(spdlog::spdlog INTERFACE
     SPDLOG_FUNCTION=__PRETTY_FUNCTION__
   )
 else()
-  target_compile_definitions(spdlog::spdlog INTERFACE 
+  target_compile_definitions(spdlog::spdlog INTERFACE
     SPDLOG_FUNCTION=__FUNCTION__
   )
 endif()
@@ -938,7 +945,7 @@ find_program(LV2INFO_EXECUTABLE lv2info)
 
 if(ZRYTHM_TESTS)
   find_program(LV2LS_EXECUTABLE lv2ls)
-  
+
   # Get LV2 bundle paths
   if(LV2LS_EXECUTABLE AND LV2INFO_EXECUTABLE)
     execute_process(
@@ -947,23 +954,23 @@ if(ZRYTHM_TESTS)
       RESULT_VARIABLE lv2ls_result
       OUTPUT_STRIP_TRAILING_WHITESPACE
     )
-    
+
     if(lv2ls_result EQUAL 0)
       foreach(plugin_info ${ext_lv2_plugins})
         string(REPLACE "|" ";" plugin_info "${plugin_info}")
         list(GET plugin_info 0 name)
         list(GET plugin_info 2 uri)
-        
+
         if(lv2ls_res MATCHES "${uri}")
           set(have_ext_lv2_plugins_${name} TRUE)
-          
+
           execute_process(
             COMMAND ${LV2INFO_EXECUTABLE} ${uri}
             OUTPUT_VARIABLE lv2info_output
             RESULT_VARIABLE lv2info_result
             OUTPUT_STRIP_TRAILING_WHITESPACE
           )
-          
+
           if(lv2info_result EQUAL 0)
             string(REGEX MATCH "Bundle:[^\n]*" bundle_line "${lv2info_output}")
             if(bundle_line)
@@ -977,7 +984,7 @@ if(ZRYTHM_TESTS)
       endforeach()
     endif()
   endif()
-  
+
   # Get VST plugin paths
   find_program(GET_VST_PATH_EXECUTABLE get_vst_path.sh PATH tools)
   if(GET_VST_PATH_EXECUTABLE)
@@ -985,32 +992,32 @@ if(ZRYTHM_TESTS)
       string(REPLACE "|" ";" plugin_info "${plugin_info}")
       list(GET plugin_info 0 name)
       list(GET plugin_info 1 filename)
-      
+
       execute_process(
         COMMAND ${GET_VST_PATH_EXECUTABLE} ${filename}
         RESULT_VARIABLE vst_result
         OUTPUT_VARIABLE vst_path
         OUTPUT_STRIP_TRAILING_WHITESPACE
       )
-      
+
       if(vst_result EQUAL 0)
         set(have_ext_vst_plugins_${name} TRUE)
         set(ext_vst_plugin_paths_${name} "${vst_path}")
       endif()
     endforeach()
-    
+
     foreach(plugin_info ${ext_vst3_plugins})
       string(REPLACE "|" ";" plugin_info "${plugin_info}")
       list(GET plugin_info 0 name)
       list(GET plugin_info 1 filename)
-      
+
       execute_process(
         COMMAND ${GET_VST_PATH_EXECUTABLE} "${filename}" 3
         RESULT_VARIABLE vst3_result
         OUTPUT_VARIABLE vst3_path
         OUTPUT_STRIP_TRAILING_WHITESPACE
       )
-      
+
       if(vst3_result EQUAL 0)
         set(have_ext_vst3_plugins_${name} TRUE)
         set(ext_vst3_plugin_paths_${name} "${vst3_path}")
@@ -1018,7 +1025,7 @@ if(ZRYTHM_TESTS)
     endforeach()
   endif()
 endif()
-  
+
 # Add subdirectories
 add_subdirectory(po)
 add_subdirectory(data)

@@ -33,8 +33,8 @@ stages:
 .windows-activate-venv: &windows-activate-venv
   - ./venv/Scripts/Activate.ps1
 
-.mac-enable-brew-env: &mac-enable-brew-env
-  - eval "$(/opt/homebrew/bin/brew shellenv)";
+# .mac-enable-brew-env: &mac-enable-brew-env
+  # - eval "$(/opt/homebrew/bin/brew shellenv)";
 
 .windows-enable-vs-env: &windows-enable-vs-env
   - Import-Module "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
@@ -63,7 +63,6 @@ stages:
   variables:
     BUILDDIR: "build_mac_arm"
   before_script:
-    - *mac-enable-brew-env
     - *unix-activate-venv
   artifacts:
     paths:
@@ -94,7 +93,7 @@ stages:
 default:
   cache:
   # this number must be bumped every time these subprojects are updated
-  - key: cache-4-$CI_RUNNER_DESCRIPTION
+  - key: cache-5-$CI_RUNNER_DESCRIPTION
     paths:
       - venv
       - "$BUILDDIR/_deps/*-src"
@@ -120,7 +119,6 @@ configure:mac-arm:
   extends: .mac-arm-template
   stage: setup
   before_script:
-    - *mac-enable-brew-env
     - python3 -m venv venv
     - *unix-activate-venv
     - python3 -m pip install -r requirements.txt
@@ -128,12 +126,11 @@ configure:mac-arm:
     - >-
       cmake -B $BUILDDIR $COMMON_CMAKE_OPTIONS
       -G "Xcode"
-      -Dgtk4:x11-backend=false
       -DCMAKE_C_COMPILER_LAUNCHER=ccache
       -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       -DCMAKE_C_COMPILER=clang
       -DCMAKE_CXX_COMPILER=clang++
-      -DCMAKE_PREFIX_PATH=/opt/zrythm-installed-deps
+      "-DCMAKE_PREFIX_PATH=/opt/zrythm-deps-installed;/Users/alex/gtk/inst"
 
 configure:windows:
   extends: .windows-template
