@@ -77,7 +77,6 @@ stages:
     INSTALLDIR: "install_windows"
     BOOST_ROOT: "C:\\Boost\\boost_1_86_0"
     VSLANG: "1033"
-    VCPKG_INSTALLED_DIR: "C:\\vcpkg\\installed\\x64-windows"
     # use /MP1 to disable parallel builds if the compiler messages are hard to read
     CL: "/MP" # prepended to the cl command
     _CL_: "" # appended to the cl command
@@ -149,10 +148,7 @@ configure:windows:
       -DZRYTHM_TESTS=OFF
       -DZRYTHM_BENCHMARKS=OFF 
       -DZRYTHM_FFTW3_THREADS_SEPARATE=FALSE
-      "-DSOXR_LIB_SEARCH_DIR=${env:VCPKG_INSTALLED_DIR}\lib"
-      "-DSOXR_INCLUDE_DIR_SEARCH_DIR=${env:VCPKG_INSTALLED_DIR}\include"
-      "-DCMAKE_PREFIX_PATH=${env:VCPKG_INSTALLED_DIR};C:\lv2;C:\gtk-for-zrythm;C:\Users\alex\source\repos\carla\carla_installed"
-      -Dcarla_binaries_dir=C:\Users\alex\source\repos\carla\carla_installed\bin
+      "-DCMAKE_PREFIX_PATH=C:\zrythm-deps-installed;C:\gtk-plus;C:\lv2;C:\gtk-build\gtk\x64\release"
       -G "Visual Studio 17 2022"
       -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreadedDLL"
       -DCMAKE_BUILD_TYPE=Debug
@@ -160,7 +156,6 @@ configure:windows:
       -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl
       -DCMAKE_C_COMPILER_LAUNCHER=ccache
       -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
-      "-DGLIB_COMPILE_RESOURCES_PATH=${env:VCPKG_INSTALLED_DIR}\tools\glib"
 
 clang-format-check:
   extends: .gnu-linux-template
@@ -206,8 +201,7 @@ build:windows:
   extends: .windows-template
   stage: build
   script:
-    # - meson compile -C ${env:BUILDDIR} --verbose --vs-args="-nologo"
-    - cmake --build ${env:BUILDDIR} --verbose -- /nologo
+    - cmake --build ${env:BUILDDIR} --config Debug --verbose
     - ctest --test-dir ${env:BUILDDIR} -V; if (-not $?) { Get-Content ${env:BUILDDIR}/Testing/Temporary/LastTest.log; exit 1 }
 
 update-manual:

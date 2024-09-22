@@ -688,7 +688,7 @@ if(ZRYTHM_YAML_PROJECT_COMPATIBILITY)
     FetchContent_Declare(
       libcyaml
       GIT_REPOSITORY https://gitlab.zrythm.org/zrythm/zrythm-libcyaml.git
-      GIT_TAG e1042c2fdcd99aa8718b811094df264f96a7642a
+      GIT_TAG 6cae0db42e28900a9c5bbba11816fb1c5caf0f7b
     )
     FetchContent_MakeAvailable(libcyaml)
   endif()

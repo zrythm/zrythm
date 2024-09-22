@@ -37,7 +37,6 @@
 #include "utils/types.h"
 
 #include "gtk_wrapper.h"
-#include <pthread.h>
 
 class GraphNode;
 class Graph;

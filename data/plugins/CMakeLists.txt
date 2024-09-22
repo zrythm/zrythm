@@ -68,7 +68,11 @@ foreach(plugin_info ${plugins})
 
   set(pl_cpp "${pl_generated_dir}/${pl_underscored_name}.cpp")
   if(EXISTS ${pl_cpp})
-    find_package(Boost REQUIRED CONFIG)
+    if(MSVC)
+      find_package(Boost REQUIRED)
+    else()
+      find_package(Boost REQUIRED CONFIG)
+    endif()
 
     set(pl_link_args)
     set(pl_cpp_args)

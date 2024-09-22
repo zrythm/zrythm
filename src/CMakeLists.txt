@@ -94,7 +94,10 @@ if(OS_GNU)
 endif()
 
 if(WIN32)
-  set_target_properties(zrythm PROPERTIES WIN32_EXECUTABLE TRUE LINK_FLAGS "/SUBSYSTEM:WINDOWS")
+  set_target_properties(zrythm PROPERTIES
+    WIN32_EXECUTABLE TRUE
+    LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup"
+  )
 
   target_sources(zrythm PRIVATE ${windows_rc_file} ${windows_icon_file})
 endif()
