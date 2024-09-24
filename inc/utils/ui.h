@@ -33,7 +33,7 @@ class Port;
  * @{
  */
 
-#define UI_CACHES (zrythm_app->ui_caches)
+#define UI_CACHES (zrythm_app->ui_caches_)
 #define UI_COLORS (&UI_CACHES->colors_)
 
 /* copied from css */
@@ -457,9 +457,8 @@ ui_show_message_full (
   std::string_view msg);
 
 #define UI_ACTIVE_WINDOW_OR_NULL \
-  (gtk_application_get_active_window (GTK_APPLICATION (zrythm_app.get ())) \
-     ? GTK_WIDGET (gtk_application_get_active_window ( \
-         GTK_APPLICATION (zrythm_app.get ()))) \
+  (zrythm_app->get_active_window () \
+     ? GTK_WIDGET (zrythm_app->get_active_window ()->gobj ()) \
      : nullptr)
 
 /**

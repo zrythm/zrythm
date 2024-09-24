@@ -1712,10 +1712,9 @@ on_motion (
               self->hover_x = MAX (0, self->hover_x - offset_x);
               self->start_x = MAX (0, self->start_x - offset_x);
             }
-          int drag_threshold;
-          g_object_get (
-            zrythm_app->default_settings, "gtk-dnd-drag-threshold",
-            &drag_threshold, nullptr);
+          int drag_threshold =
+            zrythm_app->default_settings_->property_gtk_dnd_drag_threshold ()
+              .get_value ();
           if (
             !math_doubles_equal_epsilon (offset_y, 0.0, 0.1)
             && (fabs (total_offset_y) >= drag_threshold || self->vertical_panning_started))

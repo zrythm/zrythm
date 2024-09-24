@@ -29,7 +29,7 @@ constexpr double CURVE_VITAL_CURVINESS_BOUND = 1.00;
  *
  * Can find more at tracktion_AudioFadeCurve.h.
  */
-class CurveOptions : public ISerializable<CurveOptions>
+class CurveOptions final : public ISerializable<CurveOptions>
 {
 public:
   /**
@@ -96,8 +96,8 @@ public:
 public:
   // Rule of 0
   CurveOptions () = default;
-  CurveOptions (double curviness, Algorithm algo)
-      : curviness_ (curviness), algo_ (algo) {};
+  CurveOptions (double curviness, Algorithm algo);
+  ~CurveOptions () noexcept override;
 
   /**
    * Returns the Y value on a curve.
@@ -121,7 +121,7 @@ public:
 bool
 operator== (const CurveOptions &a, const CurveOptions &b);
 
-struct CurveFadePreset
+struct CurveFadePreset final
 {
   // Rule of 0
   CurveFadePreset () = default;
@@ -129,10 +129,8 @@ struct CurveFadePreset
     std::string             id,
     std::string             label,
     CurveOptions::Algorithm algo,
-    double                  curviness)
-      : opts_ (curviness, algo), id_ (std::move (id)), label_ (std::move (label))
-  {
-  }
+    double                  curviness);
+  ~CurveFadePreset () noexcept;
 
   /**
    * Returns an array of CurveFadePreset.

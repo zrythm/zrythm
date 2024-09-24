@@ -462,10 +462,10 @@ ZrythmFixture::SetUp ()
     }
 
   /* dummy ZrythmApp object for testing */
-  zrythm_app = zrythm_app_new (0, nullptr);
+  zrythm_app = std::make_shared<ZrythmApp> (0, nullptr);
   // zrythm_app->gtk_thread_id = current_thread_id.get ();
-  zrythm_app->samplerate = samplerate_;
-  zrythm_app->buf_size = buf_size_;
+  zrythm_app->samplerate_ = samplerate_;
+  zrythm_app->buf_size_ = buf_size_;
 
   gZrythm->getInstance ()->pre_init (nullptr, false, optimized_);
   ASSERT_NONNULL (gZrythm);
@@ -498,7 +498,7 @@ ZrythmFixture::SetUp ()
     gZrythm->create_project_path_ = dir;
     g_free (dir);
   }
-  zrythm_app->project_init_flow_mgr = std::make_unique<ProjectInitFlowManager> (
+  zrythm_app->project_init_flow_mgr_ = std::make_unique<ProjectInitFlowManager> (
     "", false, test_helper_project_init_done_cb, nullptr);
 
   /* adaptive snap only supported with UI */

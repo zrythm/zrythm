@@ -135,7 +135,7 @@ static void
 font_scale_adjustment_changed (GtkAdjustment * adjustment, void * data)
 {
   double factor = gtk_adjustment_get_value (adjustment);
-  zrythm_app_set_font_scale (zrythm_app.get (), factor);
+  zrythm_app->set_font_scale (factor);
 }
 
 static void

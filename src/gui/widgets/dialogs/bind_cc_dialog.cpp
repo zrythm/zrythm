@@ -109,10 +109,9 @@ bind_cc_dialog_widget_new (Port * port, bool perform_action)
   self->port = port;
   self->perform_action = perform_action;
 
-  GtkWindow * window =
-    gtk_application_get_active_window (GTK_APPLICATION (zrythm_app.get ()));
+  auto window = zrythm_app->get_active_window ();
   gtk_window_set_modal (GTK_WINDOW (self), true);
-  gtk_window_set_transient_for (GTK_WINDOW (self), GTK_WINDOW (window));
+  gtk_window_set_transient_for (GTK_WINDOW (self), GTK_WINDOW (window->gobj ()));
 
   return self;
 }

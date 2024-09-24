@@ -8,6 +8,11 @@
 #include "utils/logger.h"
 #include "zrythm.h"
 
+#include <spdlog/sinks/msvc_sink.h>
+#include <spdlog/sinks/ringbuffer_sink.h>
+#include <spdlog/sinks/rotating_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+
 JUCE_IMPLEMENT_SINGLETON (Logger);
 
 class ErrorHandlingSink : public spdlog::sinks::base_sink<std::mutex>
@@ -100,6 +105,12 @@ Logger::Logger ()
   console_sink->set_color_mode (spdlog::color_mode::always);
   set_pattern (console_sink, false);
 
+// MSVC debug sink
+#ifdef _MSC_VER
+  auto msvc_sink = std::make_shared<spdlog::sinks::msvc_sink_mt> ();
+  set_pattern (msvc_sink, false);
+#endif
+
   // Create a ring buffer sink with a maximum capacity
   auto ringbuffer_sink =
     std::make_shared<spdlog::sinks::ringbuffer_sink_mt> (1000);
@@ -112,7 +123,11 @@ Logger::Logger ()
   logger_ = std::make_shared<spdlog::logger> (
     "zrythm",
     spdlog::sinks_init_list{
-      file_sink, console_sink, ringbuffer_sink, error_handling_sink });
+      file_sink, console_sink,
+#ifdef _MSC_VER
+      msvc_sink,
+#endif
+      ringbuffer_sink, error_handling_sink });
 
   // Set the log level
   logger_->set_level (spdlog::level::debug);

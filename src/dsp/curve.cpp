@@ -260,25 +260,43 @@ CurveOptions::get_normalized_y (double x, bool start_higher) const
   return CLAMP (val, 0.0, 1.0);
 }
 
+CurveFadePreset::CurveFadePreset (
+  std::string             id,
+  std::string             label,
+  CurveOptions::Algorithm algo,
+  double                  curviness)
+    : opts_ (curviness, algo), id_ (std::move (id)), label_ (std::move (label))
+{
+}
+
 std::vector<CurveFadePreset>
 CurveFadePreset::get_fade_presets ()
 {
   std::vector<CurveFadePreset> presets;
 
-  presets.push_back (CurveFadePreset (
-    "linear", _ ("Linear"), CurveOptions::Algorithm::SuperEllipse, 0));
-  presets.push_back (CurveFadePreset (
-    "exponential", _ ("Exponential"), CurveOptions::Algorithm::Exponent, -0.6));
-  presets.push_back (CurveFadePreset (
-    "elliptic", _ ("Elliptic"), CurveOptions::Algorithm::SuperEllipse, -0.5));
-  presets.push_back (CurveFadePreset (
+  presets.emplace_back (
+    "linear", _ ("Linear"), CurveOptions::Algorithm::SuperEllipse, 0);
+  presets.emplace_back (
+    "exponential", _ ("Exponential"), CurveOptions::Algorithm::Exponent, -0.6);
+  presets.emplace_back (
+    "elliptic", _ ("Elliptic"), CurveOptions::Algorithm::SuperEllipse, -0.5);
+  presets.emplace_back (
     "logarithmic", _ ("Logarithmic"), CurveOptions::Algorithm::Logarithmic,
-    -0.5));
-  presets.push_back (CurveFadePreset (
-    "vital", _ ("Vital"), CurveOptions::Algorithm::Vital, -0.5));
+    -0.5);
+  presets.emplace_back (
+    "vital", _ ("Vital"), CurveOptions::Algorithm::Vital, -0.5);
 
   return presets;
 }
+
+CurveFadePreset::~CurveFadePreset () noexcept { }
+
+CurveOptions::CurveOptions (double curviness, Algorithm algo)
+    : curviness_ (curviness), algo_ (algo)
+{
+}
+
+CurveOptions::~CurveOptions () noexcept { }
 
 bool
 operator== (const CurveOptions &a, const CurveOptions &b)

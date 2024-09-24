@@ -448,7 +448,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
       return;
     }
 
-  struct yyjson_read_err json_read_err;
+  struct yyjson_read_err json_read_err = {};
   yyjson_doc *           doc = yyjson_read_opts (
     text, strlen (text), YYJSON_READ_NOFLAG, nullptr, &json_read_err);
   bool json_read_success = doc != NULL;
@@ -642,7 +642,8 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
     AdwDialog * err_win = error_handle_prv (
       err, "%s", _ ("Failed to initialize the audio file pool"));
     g_signal_connect (
-      err_win, "closed", G_CALLBACK (zrythm_exit_response_callback), nullptr);
+      err_win, "closed", G_CALLBACK (ZrythmApp::exit_response_callback),
+      nullptr);
   };
 
   try

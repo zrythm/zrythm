@@ -6,6 +6,8 @@
 
 #include "zrythm-config.h"
 
+// NOLINTBEGIN
+
 #include <glibmm.h>
 
 #ifdef __GNUC__
@@ -42,8 +44,12 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 #  undef Bool
 #endif
 
+#include <gtkmm.h>
+
 #ifdef _WIN32
 #  include <gdk/win32/gdkwin32.h>
 #endif
+
+// NOLINTEND
 
 #endif // __GTK_WRAPPER_H__

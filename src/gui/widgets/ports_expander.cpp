@@ -339,8 +339,7 @@ ports_expander_widget_setup_track (
 
   /*PortType in_type =*/
   /*self->track->in_signal_type;*/
-  PortType out_type =
-    tr ? out_type = self->track->out_signal_type_ : out_type = PortType::Audio;
+  PortType out_type = tr ? self->track->out_signal_type_ : PortType::Audio;
 
   switch (type)
     {

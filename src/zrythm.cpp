@@ -180,12 +180,6 @@ Zrythm::get_version_with_capabilities (char * buf, bool include_system_info)
 
     ver,
 
-#if 0
-    "optimization " OPTIMIZATION
-#  ifdef IS_DEBUG_BUILD
-    " - debug"
-#  endif
-#endif
     BUILD_TYPE,
 
     COMPILER, COMPILER_VERSION, HOST_MACHINE_SYSTEM,

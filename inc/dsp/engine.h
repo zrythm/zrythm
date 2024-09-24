@@ -321,7 +321,7 @@ public:
   /**
    * Closes any connections and free's data.
    */
-  ~AudioEngine ();
+  ~AudioEngine () override;
 
   bool has_handled_buffer_size_change () const
   {
@@ -502,6 +502,9 @@ private:
   void stop_events ();
 
 public:
+  /** Pointer to owner project, if any. */
+  Project * project_ = nullptr;
+
   /**
    * Cycle count to know which cycle we are in.
    *
@@ -717,7 +720,7 @@ public:
    * @note Could use a lock since it is written to by 2 different threads,
    * but there are no consequences if it has bad data.
    */
-  RtDuration max_time_taken_;
+  RtDuration max_time_taken_{};
 
   /** Timestamp at the start of the current cycle. */
   RtTimePoint timestamp_start_{};
@@ -742,7 +745,7 @@ public:
   std::atomic_bool capture_cc_{ false };
 
   /** Last MIDI CC captured. */
-  std::array<midi_byte_t, 3> last_cc_captured_;
+  std::array<midi_byte_t, 3> last_cc_captured_{};
 
   /**
    * Last time an XRUN notification was shown.
@@ -827,9 +830,6 @@ public:
 
   /** Whether the engine is currently undergoing destruction. */
   bool destroying_ = false;
-
-  /** Pointer to owner project, if any. */
-  Project * project_ = nullptr;
 
   /**
    * True while updating frames per tick.

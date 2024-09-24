@@ -14,6 +14,70 @@
                 "ZRYTHM_BREAK_ON_ERROR": "1",
             },
             "arguments": "--dummy"
+        },
+        {
+            "name": "Launch Debugger with valgrind",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "$PATH:${command:cmake.launchTargetDirectory}"
+                }
+            ],
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Connect to valgrind",
+                    "text": "${command:valgrind-task-integration.valgrindGdbArg}",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "Debug CMake Target",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}",
+            "cwd": "${workspaceFolder}",
+            "environment": [
+                {
+                    "name": "GSETTINGS_SCHEMA_DIR",
+                    "value": "${config:cmake.installPrefix}/share/glib-2.0/schemas",
+                },
+                {
+                    "name": "G_DEBUG",
+                    "value": "fatal_criticals",
+                },
+                {
+                    "name": "ZRYTHM_BREAK_ON_ERROR",
+                    "value": "1",
+                },
+                {
+                    "name": "ASAN_OPTIONS",
+                    "value": "check_initialization_order=1",
+                }
+            ],
+            "args": [
+                "--dummy"
+            ],
         }
+        // {
+        //     "name": "CTest Target",
+        //     "type": "cppdbg",
+        //     "request": "launch",
+        //     "program": "${command:cmake.launchTargetPath}",
+        //     "cwd": "${workspaceFolder}",
+        // }
     ]
 }

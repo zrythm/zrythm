@@ -22,10 +22,9 @@
  */
 // clang-format on
 
+#include <cinttypes>
 #include <cmath>
 #include <cstdlib>
-
-#include <inttypes.h>
 
 #include "utils/midi.h"
 

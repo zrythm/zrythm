@@ -79,7 +79,7 @@ endif()
 add_library(juce STATIC)
 target_sources(juce PRIVATE ${juce_sources})
 target_include_directories(juce 
-  PUBLIC 
+  SYSTEM PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/modules
 )

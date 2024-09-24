@@ -6,4 +6,4 @@
 #include "zrythm_app.h"
 
 /** This is declared extern in zrythm_app.h. */
-std::unique_ptr<ZrythmApp, ZrythmAppDeleter> zrythm_app;
+Glib::RefPtr<ZrythmApp> zrythm_app;

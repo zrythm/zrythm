@@ -314,7 +314,7 @@ Project::activate ()
   audio_engine_->activate (true);
 
   /* pause engine */
-  AudioEngine::State state;
+  AudioEngine::State state{};
   audio_engine_->wait_for_pause (state, true, false);
 
   /* connect channel inputs to hardware and re-expose ports to
@@ -888,7 +888,7 @@ Project::save (
     _dir, is_backup, show_notification, async);
 
   /* pause engine */
-  AudioEngine::State state;
+  AudioEngine::State state{};
   bool               engine_paused = false;
   z_return_if_fail (audio_engine_);
   if (audio_engine_->activated_)

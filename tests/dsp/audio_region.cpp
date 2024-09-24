@@ -32,7 +32,7 @@ TEST_F (ZrythmFixture, ChangeSampleRate)
   auto prj_file = fs::path (PROJECT->dir_) / PROJECT_FILE;
 
   /* adjust the samplerate to be given at startup */
-  zrythm_app->samplerate = (int) AUDIO_ENGINE->sample_rate_ * 2;
+  zrythm_app->samplerate_ = (int) AUDIO_ENGINE->sample_rate_ * 2;
 
   AUDIO_ENGINE->activate (false);
   PROJECT.reset ();
@@ -147,7 +147,7 @@ TEST_P (AudioRegionSampleRateTest, LoadProjectWithDifferentSampleRate)
     Track::Type::Audio, nullptr, &file, &pos, num_tracks_before, 1, -1, nullptr);
 
   /* reload project @ 44100 Hz */
-  zrythm_app->samplerate = new_samplerate;
+  zrythm_app->samplerate_ = new_samplerate;
   test_project_save_and_reload ();
 
   /* play the region */

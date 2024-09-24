@@ -842,7 +842,7 @@ Tracklist::import_regions (
 {
   z_debug ("Adding regions into the project...");
 
-  AudioEngine::State state;
+  AudioEngine::State state{};
   AUDIO_ENGINE->wait_for_pause (state, false, true);
   int executed_actions = 0;
   try

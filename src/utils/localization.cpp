@@ -301,13 +301,14 @@ localization_init (
     {
       if (!use_locale)
         {
-          char * msg = g_strdup_printf (
-            "No locale for \"%s\" is "
-            "installed, using default",
+          std::string msg = fmt::format (
+            "No locale for \"{}\" is installed, using default",
             language_strings[lang]);
           if (queue_error_if_not_installed)
             {
-              zrythm_app->startup_errors[zrythm_app->num_startup_errors++] = msg;
+              std::lock_guard<std::mutex> lock (
+                zrythm_app->startup_error_queue_mutex_);
+              zrythm_app->startup_error_queue_.push (msg);
             }
           z_warning ("{}", msg);
         }

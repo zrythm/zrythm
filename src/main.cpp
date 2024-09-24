@@ -16,9 +16,8 @@ main (int argc, char ** argv)
   Glib::init ();
 
   /* send activate signal */
-  zrythm_app = zrythm_app_new (argc, (const char **) argv);
-
-  int ret = g_application_run (G_APPLICATION (zrythm_app.get ()), argc, argv);
+  zrythm_app = std::make_shared<ZrythmApp> (argc, (const char **) argv);
+  int ret = zrythm_app->run (argc, argv);
 
   return ret;
 }

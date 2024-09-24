@@ -73,7 +73,7 @@ on_main_window_destroy (MainWindowWidget * self, gpointer user_data)
   /* if this is the current main window and a project is loaded, quit the
    * application (check needed because this is also called right after loading a
    * project) */
-  if (PROJECT->loaded_ && zrythm_app->main_window == self)
+  if (PROJECT->loaded_ && zrythm_app->main_window_ == self)
     {
       EVENT_MANAGER->stop_events ();
 
@@ -176,8 +176,8 @@ MainWindowWidget *
 main_window_widget_new (ZrythmApp * _app)
 {
   MainWindowWidget * self = static_cast<MainWindowWidget *> (g_object_new (
-    MAIN_WINDOW_WIDGET_TYPE, "application", G_APPLICATION (_app), "title",
-    PROGRAM_NAME, nullptr));
+    MAIN_WINDOW_WIDGET_TYPE, "application", G_APPLICATION (_app->gobj ()),
+    "title", PROGRAM_NAME, nullptr));
 
   return self;
 }
@@ -208,8 +208,7 @@ on_key_pressed (
       /*z_gtk_widget_print_hierarchy (focus_child);*/
       if (!GTK_IS_EDITABLE (focus_child))
         {
-          g_action_group_activate_action (
-            G_ACTION_GROUP (zrythm_app.get ()), "play-pause", nullptr);
+          zrythm_app->activate_action ("play-pause");
           return true;
         }
     }
@@ -243,13 +242,13 @@ static bool
 show_startup_errors (MainWindowWidget * self)
 {
   /* show any startup errors */
-  for (int k = 0; k < zrythm_app->num_startup_errors; k++)
+  std::lock_guard<std::mutex> lock (zrythm_app->startup_error_queue_mutex_);
+  while (!zrythm_app->startup_error_queue_.empty ())
     {
-      char * msg = zrythm_app->startup_errors[k];
+      auto msg = zrythm_app->startup_error_queue_.front ();
       ui_show_error_message (_ ("Startup Error"), msg);
-      g_free (msg);
+      zrythm_app->startup_error_queue_.pop ();
     }
-  zrythm_app->num_startup_errors = 0;
 
   return G_SOURCE_REMOVE;
 }
@@ -775,8 +774,8 @@ main_window_widget_init (MainWindowWidget * self)
     G_N_ELEMENTS (actions), self);
 #endif
   g_action_map_add_action_entries (
-    G_ACTION_MAP (zrythm_app.get ()), actions, G_N_ELEMENTS (actions),
-    zrythm_app.get ());
+    G_ACTION_MAP (zrythm_app->gobj ()), actions, G_N_ELEMENTS (actions),
+    nullptr);
 
   g_type_ensure (CENTER_DOCK_WIDGET_TYPE);
   g_type_ensure (BOT_BAR_WIDGET_TYPE);

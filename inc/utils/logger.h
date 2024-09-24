@@ -15,9 +15,6 @@
 #include "utils/format.h"
 
 #include "ext/juce/juce.h"
-#include <spdlog/sinks/ringbuffer_sink.h>
-#include <spdlog/sinks/rotating_file_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
 class Logger
@@ -65,7 +62,7 @@ private:
    * This is used to avoid calculating too many backtraces and showing too
    * many error popups at once.
    */
-  double last_bt_time_;
+  double last_bt_time_ = 0;
 
 public:
   JUCE_DECLARE_SINGLETON_SINGLETHREADED (Logger, false)

@@ -92,7 +92,7 @@ plugin_gtk_on_save_preset_activate (GtkWidget * widget, Plugin * plugin)
 
       /* add additional inputs */
       GtkWidget * content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-      GtkWidget * add_prefix = add_prefix =
+      GtkWidget * add_prefix =
         gtk_check_button_new_with_mnemonic (_ ("_Prefix plugin name"));
       gtk_check_button_set_active (GTK_CHECK_BUTTON (add_prefix), TRUE);
       gtk_box_append (GTK_BOX (content), add_prefix);

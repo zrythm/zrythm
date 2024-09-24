@@ -2824,7 +2824,7 @@ TEST_F (ZrythmFixture, MoveAudioRegionAndLowerSampleRate)
       auto prj_file = fs::path (PROJECT->dir_) / PROJECT_FILE;
 
       /* adjust the samplerate to be given at startup */
-      zrythm_app->samplerate = (int) AUDIO_ENGINE->sample_rate_ / 2;
+      zrythm_app->samplerate_ = (int) AUDIO_ENGINE->sample_rate_ / 2;
 
       AUDIO_ENGINE->activate (false);
       PROJECT.reset ();

@@ -26,12 +26,8 @@
 #include <glib/gi18n.h>
 
 void
-SampleProcessor::init_common ()
+SampleProcessor::load_instrument_if_empty ()
 {
-  tracklist_ = std::make_unique<Tracklist> (*this);
-  midi_events_ = std::make_unique<MidiEvents> ();
-  current_samples_.reserve (256);
-
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       char * _setting_json =
@@ -74,6 +70,14 @@ SampleProcessor::init_common ()
       instrument_setting_ = std::move (setting);
       instrument_setting_->validate ();
     }
+}
+
+void
+SampleProcessor::init_common ()
+{
+  tracklist_ = std::make_unique<Tracklist> (*this);
+  midi_events_ = std::make_unique<MidiEvents> ();
+  current_samples_.reserve (256);
 }
 
 void

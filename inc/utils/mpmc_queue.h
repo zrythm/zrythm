@@ -177,14 +177,14 @@ private:
     T               _data;
   };
 
-  char            _pad0[64];
-  cell_t *        _buffer;
-  size_t          _buffer_mask;
-  char            _pad1[64 - sizeof (cell_t *) - sizeof (size_t)];
-  MPMC_QUEUE_TYPE _enqueue_pos;
-  char            _pad2[64 - sizeof (size_t)];
-  MPMC_QUEUE_TYPE _dequeue_pos;
-  char            _pad3[64 - sizeof (size_t)];
+  char            _pad0[64] = {};
+  cell_t *        _buffer = nullptr;
+  size_t          _buffer_mask = 0;
+  char            _pad1[64 - sizeof (cell_t *) - sizeof (size_t)] = {};
+  MPMC_QUEUE_TYPE _enqueue_pos = 0;
+  char            _pad2[64 - sizeof (size_t)] = {};
+  MPMC_QUEUE_TYPE _dequeue_pos = 0;
+  char            _pad3[64 - sizeof (size_t)] = {};
 };
 
 /**

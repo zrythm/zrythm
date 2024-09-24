@@ -16,7 +16,7 @@
 #define GREETER_WIDGET_TYPE (greeter_widget_get_type ())
 G_DECLARE_FINAL_TYPE (GreeterWidget, greeter_widget, Z, GREETER_WIDGET, AdwWindow)
 
-TYPEDEF_STRUCT_UNDERSCORED (ZrythmApp);
+class ZrythmApp;
 TYPEDEF_STRUCT_UNDERSCORED (IdeFileChooserEntry);
 TYPEDEF_STRUCT_UNDERSCORED (CcListRowInfoButton);
 
@@ -106,7 +106,7 @@ using GreeterWidget = struct _GreeterWidget
   guint tick_cb_id;
 
   /** Initialization thread. */
-  GThread * init_thread;
+  std::unique_ptr<juce::Thread> init_thread;
 };
 
 /**

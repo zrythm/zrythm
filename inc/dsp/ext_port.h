@@ -170,9 +170,9 @@ connect (
 public:
 /** JACK port. */
 #if HAVE_JACK
-  jack_port_t * jport_;
+  jack_port_t * jport_ = nullptr;
 #else
-  void * jport_;
+  void * jport_ = nullptr;
 #endif
 
   /** Full port name, used also as ID. */

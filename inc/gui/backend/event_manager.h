@@ -133,8 +133,9 @@ private:
       _ev->type_ = (et); \
       _ev->arg_ = (void *) (_arg); \
       if ( \
-        zrythm_app->gtk_thread_id == current_thread_id.get () /* skip backtrace \
-                                                               for now */ \
+        zrythm_app->gtk_thread_id_ == current_thread_id.get () /* skip \
+                                                               backtrace for \
+                                                               now */ \
         && false) \
         { \
           _ev->backtrace_ = Backtrace ().get_backtrace ("", 40, false); \
@@ -143,7 +144,7 @@ private:
        * continuously */ \
       if ( \
         (et) != EventType::ET_PLAYHEAD_POS_CHANGED \
-        && zrythm_app->gtk_thread_id == current_thread_id.get ()) \
+        && zrythm_app->gtk_thread_id_ == current_thread_id.get ()) \
         { \
           z_debug ("pushing UI event " #et " ({}:{})", __func__, __LINE__); \
         } \
@@ -154,7 +155,7 @@ private:
 #define EVENTS_PUSH_NOW(et, _arg) \
   if ( \
     ZRYTHM_HAVE_UI && EVENT_MANAGER \
-    && zrythm_app->gtk_thread_id == current_thread_id.get () \
+    && zrythm_app->gtk_thread_id_ == current_thread_id.get () \
     && (!PROJECT || !AUDIO_ENGINE || !AUDIO_ENGINE->exporting_) \
     && EVENT_MANAGER->process_source_id_.connected ()) \
     { \

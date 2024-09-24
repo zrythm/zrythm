@@ -188,7 +188,11 @@ build:gnu/linux:
     - cmake --build $BUILDDIR
     - *unix_test_cmd
     - ctest --test-dir $BUILDDIR -V --overwrite MemoryCheckCommand=valgrind --overwrite MemoryCheckCommandOptions="--undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1" -T memcheck || (cat "$BUILDDIR/Testing/Temporary/MemoryChecker.*.log" && exit 1)
-
+    - >-
+      git diff -U0 HEAD^ 
+      | python3 /usr/share/clang/clang-tidy-diff.py -p1 
+      -path ./builddir_cmake -config-file .clang-tidy
+      -use-color || true # ignore errors for now
 
 build:mac-arm:
   extends: .mac-arm-template

@@ -69,7 +69,9 @@ if(WIN32)
   target_sources(zrythm_lib PRIVATE ${win_res})
 endif()
 
-set_target_properties(zrythm_lib PROPERTIES OUTPUT_NAME zrythm_lib)
+set_target_properties(zrythm_lib PROPERTIES
+  OUTPUT_NAME zrythm_lib
+)
 target_include_directories(zrythm_lib PUBLIC ${zrythm_include_dirs})
 target_compile_definitions(zrythm_lib PUBLIC ${zrythm_definitions} ${gnome_compile_definitions})
 target_compile_options(zrythm_lib PUBLIC ${zrythm_compile_args})
@@ -97,9 +99,14 @@ if(WIN32)
   set_target_properties(zrythm PROPERTIES
     WIN32_EXECUTABLE TRUE
     LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup"
+    VS_DEBUGGER_ENVIRONMENT "GSETTINGS_SCHEMA_DIR=${CMAKE_INSTALL_FULL_DATADIR}/glib-2.0/schemas;G_DEBUG=fatal_criticals"
   )
 
   target_sources(zrythm PRIVATE ${windows_rc_file} ${windows_icon_file})
+elseif(APPLE)
+  set_target_properties(zrythm PROPERTIES
+    XCODE_SCHEME_ENVIRONMENT "GSETTINGS_SCHEMA_DIR=${CMAKE_INSTALL_FULL_DATADIR}/glib-2.0/schemas;G_DEBUG=fatal_criticals"
+  )
 endif()
 
 install(TARGETS zrythm RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

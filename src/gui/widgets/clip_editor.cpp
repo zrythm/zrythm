@@ -115,10 +115,9 @@ clip_editor_widget_navigate_to_region_start (
       if (px == s->scroll_start_x_)
         {
           /* execute the best fit action to center contents */
-          GAction * action = g_action_map_lookup_action (
-            G_ACTION_MAP (zrythm_app.get ()), "best-fit");
-          GVariant * var = g_variant_new_string ("editor");
-          g_action_activate (action, var);
+          auto action = zrythm_app->lookup_action ("best-fit");
+          auto var = Glib::Variant<Glib::ustring>::create ("editor");
+          action->activate_variant (var);
         }
       else
         {

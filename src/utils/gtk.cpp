@@ -587,24 +587,20 @@ z_gtk_create_menu_item_full (
 char *
 z_gtk_get_tooltip_for_action (const char * detailed_action, const char * tooltip)
 {
-  char * tmp = zrythm_app_get_primary_accel_for_action (
-    zrythm_app.get (), detailed_action);
-  if (tmp)
-    {
-      char * accel = g_markup_escape_text (tmp, -1);
-      g_free (tmp);
-      auto accel_color_hex = UI_COLORS->bright_orange.to_hex ();
-      auto edited_tooltip = fmt::format (
-        "{} <span size=\"x-small\" "
-        "foreground=\"{}\">{}</span>",
-        tooltip, accel_color_hex, accel);
-      g_free (accel);
-      return g_strdup (edited_tooltip.c_str ());
-    }
-  else
+  auto tmp = zrythm_app->get_primary_accel_for_action (detailed_action);
+  if (tmp.empty ())
     {
       return g_strdup (tooltip);
     }
+
+  char * accel = g_markup_escape_text (tmp.c_str (), -1);
+  auto   accel_color_hex = UI_COLORS->bright_orange.to_hex ();
+  auto   edited_tooltip = fmt::format (
+    "{} <span size=\"x-small\" "
+      "foreground=\"{}\">{}</span>",
+    tooltip, accel_color_hex, accel);
+  g_free (accel);
+  return g_strdup (edited_tooltip.c_str ());
 }
 
 /**
@@ -1016,7 +1012,7 @@ on_create_window (
   /* set application so that actions are connected
    * properly */
   gtk_window_set_application (
-    GTK_WINDOW (new_window), GTK_APPLICATION (zrythm_app.get ()));
+    GTK_WINDOW (new_window), GTK_APPLICATION (zrythm_app->gobj ()));
 
   gtk_window_present (GTK_WINDOW (new_window));
   gtk_widget_set_visible (page, true);
@@ -1771,8 +1767,7 @@ z_gtk_simple_action_shortcut_func (
   GVariant *   variant = NULL;
   if (param)
     variant = g_variant_new_string (param);
-  g_action_group_activate_action (
-    G_ACTION_GROUP (zrythm_app.get ()), strs[0], variant);
+  zrythm_app->activate_action (strs[0], Glib::wrap (variant));
   z_info ("activating {}::{}", action_name, param);
   g_strfreev (strs);
 

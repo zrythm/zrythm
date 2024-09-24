@@ -74,6 +74,7 @@ if(ZRYTHM_TESTS)
     PkgConfig::GTK4
     PkgConfig::GLIBMM
     PkgConfig::GIOMM
+    PkgConfig::GTKMM
   )
   target_link_options(zrythm_lv2apply PRIVATE ${zrythm_link_args})
 endif()

@@ -13,10 +13,10 @@
 #  endif // __clang__
 #endif   // __GNUC__
 
-#include "ext/juce/modules/juce_core/juce_core.h"
-#include "ext/juce/modules/juce_audio_basics/juce_audio_basics.h"
-//#include "ext/juce/modules/juce_dsp/juce_dsp.h"
-#include "ext/juce/modules/juce_audio_formats/juce_audio_formats.h"
+#include <modules/juce_audio_basics/juce_audio_basics.h>
+#include <modules/juce_core/juce_core.h>
+// #include "ext/juce/modules/juce_dsp/juce_dsp.h"
+#include <modules/juce_audio_formats/juce_audio_formats.h>
 
 #ifdef __GNUC__
 #  pragma GCC diagnostic pop

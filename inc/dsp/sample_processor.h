@@ -49,6 +49,13 @@ public:
   void init_loaded (AudioEngine * engine);
 
   /**
+   * @brief Loads the instrument from the settings.
+   *
+   * To be called when the engine is activated, once.
+   */
+  void load_instrument_if_empty ();
+
+  /**
    * Clears the buffers.
    */
   void prepare_process (const nframes_t nframes);

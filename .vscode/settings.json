@@ -9,6 +9,9 @@
         "-DZRYTHM_USER_MANUAL=ON",
         "-DZRYTHM_STRICT=ON",
         "-DZRYTHM_STRICT_SPHINX_OPTS=ON",
+        "-DZRYTHM_ENABLE_SANITIZER_ADDRESS=ON",
+        "-DZRYTHM_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR=ON",
+        "-DZRYTHM_ENABLE_SANITIZER_MEMORY=OFF",
     ],
     "cmake.environment": {
         "VIRTUAL_ENV": "${workspaceFolder}/venv",

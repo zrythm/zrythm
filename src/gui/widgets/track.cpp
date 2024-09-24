@@ -1274,10 +1274,9 @@ on_drag_update (
     }
   else
     {
-      int drag_threshold;
-      g_object_get (
-        zrythm_app->default_settings, "gtk-dnd-drag-threshold", &drag_threshold,
-        nullptr);
+      int drag_threshold =
+        zrythm_app->default_settings_->property_gtk_dnd_drag_threshold ()
+          .get_value ();
       if (fabs (offset_x) > drag_threshold || fabs (offset_y) > drag_threshold)
         {
           std::visit (

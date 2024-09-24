@@ -30,7 +30,7 @@ TEST (ZrythmApp, version)
   int          argc = 2;
   char *       argv[] = { exe_path, (char *) arg1 };
 
-  auto app = zrythm_app_new (argc, (const char **) argv);
-  int  ret = g_application_run (G_APPLICATION (app.get ()), argc, argv);
+  ZrythmApp app (argc, (const char **) argv);
+  int       ret = app.run (argc, argv);
   ASSERT_EQ (ret, 0);
 }

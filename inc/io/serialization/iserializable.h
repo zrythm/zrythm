@@ -541,7 +541,8 @@ public:
     z_debug (
       "serializing '{}' v{}.{} to JSON...", document_type, format_major_version,
       format_minor_version);
-    yyjson_mut_obj_add_str (doc, root, "documentType", document_type.c_str ());
+    yyjson_mut_obj_add_strncpy (
+      doc, root, "documentType", document_type.data (), document_type.size ());
     yyjson_mut_obj_add_int (doc, root, "formatMajor", format_major_version);
     yyjson_mut_obj_add_int (doc, root, "formatMinor", format_minor_version);
 
@@ -551,7 +552,12 @@ public:
     yyjson_write_err write_err;
     char *           json = yyjson_mut_write_opts (
       doc, YYJSON_WRITE_PRETTY_TWO_SPACES, nullptr, nullptr, &write_err);
-    yyjson_mut_write_file ("/tmp/zrythm.json", doc, 0, nullptr, nullptr);
+#if ZRYTHM_DEV_BUILD
+    yyjson_mut_write_file (
+      "/tmp/zrythm.json", doc,
+      YYJSON_WRITE_PRETTY_TWO_SPACES | YYJSON_WRITE_ALLOW_INVALID_UNICODE,
+      nullptr, nullptr);
+#endif
     z_debug ("done serializing to json");
     yyjson_mut_doc_free (doc);
 
@@ -731,14 +737,17 @@ public:
       {
         if (!value.empty ())
           {
-            yyjson_mut_obj_add_str (doc, obj, key, value.c_str ());
+            yyjson_mut_obj_add_strncpy (
+              doc, obj, key, value.data (), value.size ());
           }
       }
     else if constexpr (std::is_same_v<T, fs::path>)
       {
         if (!value.empty ())
           {
-            yyjson_mut_obj_add_str (doc, obj, key, value.string ().c_str ());
+            const auto value_str = value.string ();
+            yyjson_mut_obj_add_strncpy (
+              doc, obj, key, value_str.data (), value_str.size ());
           }
       }
     else if constexpr (std::is_same_v<T, std::vector<float>>)
@@ -797,7 +806,7 @@ public:
               }
             else
               {
-                yyjson_mut_arr_add_str (doc, arr, v.c_str ());
+                yyjson_mut_arr_add_strncpy (doc, arr, v.data (), v.size ());
               }
           }
         yyjson_mut_obj_add_val (doc, obj, key, arr);

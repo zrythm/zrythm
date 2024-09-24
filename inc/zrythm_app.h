@@ -6,23 +6,22 @@
 
 #include "zrythm-config.h"
 
+#include <utility>
+
+#include "project/project_init_flow_manager.h"
 #include "utils/types.h"
 #include "utils/ui.h"
 
 #include "gtk_wrapper.h"
 #include "libadwaita_wrapper.h"
 
-#define ZRYTHM_APP_TYPE (zrythm_app_get_type ())
-G_DECLARE_FINAL_TYPE (ZrythmApp, zrythm_app, ZRYTHM, APP, GtkApplication)
-
 #define ZRYTHM_APP_IS_GTK_THREAD \
-  (zrythm_app && zrythm_app->gtk_thread_id == current_thread_id.get ())
+  (zrythm_app && zrythm_app->gtk_thread_id_ == current_thread_id.get ())
 
 TYPEDEF_STRUCT_UNDERSCORED (MainWindowWidget);
 TYPEDEF_STRUCT_UNDERSCORED (BugReportDialogWidget);
 TYPEDEF_STRUCT_UNDERSCORED (GreeterWidget);
 class ZrythmDirectoryManager;
-class ProjectInitFlowManager;
 
 /**
  * @addtogroup general
@@ -35,33 +34,161 @@ class ProjectInitFlowManager;
  */
 struct ZrythmAppUiMessage
 {
-  GtkMessageType type;
-  char *         msg;
+  ZrythmAppUiMessage (GtkMessageType type, std::string msg)
+      : type_ (type), msg_ (std::move (msg))
+  {
+  }
+  GtkMessageType type_;
+  std::string    msg_;
 };
-
-ZrythmAppUiMessage *
-zrythm_app_ui_message_new (GtkMessageType type, const char * msg);
-
-void
-zrythm_app_ui_message_free (ZrythmAppUiMessage * self);
 
 /**
  * The Zrythm GTK application.
  *
  * Contains data that is only relevant to the GUI or command line.
  */
-struct _ZrythmApp
+class ZrythmApp final : public Gtk::Application
 {
-  GtkApplication parent;
+public:
+  /**
+   * @brief Creates the application.
+   *
+   * This also initializes the Zrythm class.
+   *
+   * @param argc
+   * @param argv
+   */
+  ZrythmApp (int argc, const char ** argv);
+
+  void set_font_scale (double font_scale);
 
   /**
-   * Default settings (got from
-   * gtk_settings_get_default()).
+   * Handles the logic for checking for updates on startup.
    */
-  GtkSettings * default_settings;
+  void check_for_updates ();
+
+  /**
+   * Unlike the init thread, this will run in the main GTK thread. Do not put
+   * expensive logic here.
+   *
+   * This should be ran after the expensive initialization has finished.
+   */
+  int prompt_for_project_func ();
+
+  /**
+   * Shows the trial limitation error message.
+   *
+   * @return Whether the limit was reached.
+   */
+  bool check_and_show_trial_limit_error ();
+
+  /**
+   * Initializes the array of recent projects in
+   * Zrythm app.
+   */
+  void init_recent_projects ();
+
+  /**
+   * Install accelerator for an action.
+   */
+  void install_action_accel (
+    const std::string &primary,
+    const std::string &secondary,
+    const std::string &action_name);
+
+  /**
+   * Get the primary accelerator for an action.
+   */
+  std::string get_primary_accel_for_action (const std::string &action_name);
+
+  /**
+   * To be used to exit Zrythm using the "response" signal on a message dialog.
+   */
+  static void exit_response_callback (AdwDialog * dialog, gpointer user_data);
+
+  void on_plugin_scan_finished ();
+
+protected:
+  /**
+   * First function that gets called afted CLI args are parsed and processed.
+   *
+   * This gets called before open or activate.
+   */
+  void on_startup () override;
+
+  /*
+   * Called after startup if no filename is passed on command line.
+   */
+  void on_activate () override;
+
+  /**
+   * Called when a filename is passed to the command line instead of activate.
+   *
+   * Always gets called after startup and before the tasks.
+   */
+  void on_open (
+    const Gio::Application::type_vec_files &files,
+    const Glib::ustring                    &hint) override;
+
+  /**
+   * Called immediately after the main GTK loop
+   * terminates.
+   *
+   * This is also called manually on SIGINT.
+   */
+  void on_shutdown () override;
+
+private:
+  /**
+   * Add the option entries.
+   *
+   * Things that can be processed immediately should be set as callbacks here
+   * (like --version).
+   *
+   * Things that require to know other options before running should be set as
+   * NULL and processed in the handle-local-options handler.
+   */
+  void add_option_entries ();
+
+  int
+  on_handle_local_options (const Glib::RefPtr<Glib::VariantDict> &opts) override;
+
+  void lock_memory ();
+
+  void print_settings ();
+  void reset_to_factory ();
+
+  /**
+   * Called after the main window and the project have been
+   * initialized. Sets up the window using the backend.
+   *
+   * This is the final step of initialization.
+   */
+  void on_setup_main_window ();
+
+  /**
+   * Called before on_load_project.
+   *
+   * Checks if a project was given in the command line. If not, it prompts the
+   * user for a project.
+   */
+  void on_prompt_for_project ();
+
+  /**
+   * Called after the main window has been initialized.
+   *
+   * Loads the project backend or creates the default one.
+   */
+  void on_load_project ();
+
+public:
+  /**
+   * Default settings (got from gtk_settings_get_default()).
+   */
+  Glib::RefPtr<Gtk::Settings> default_settings_;
 
   /** Main window. */
-  MainWindowWidget * main_window;
+  MainWindowWidget * main_window_ = nullptr;
 
   /**
    * The GTK thread where the main GUI loop runs.
@@ -69,152 +196,77 @@ struct _ZrythmApp
    * This is stored for identification purposes in other threads.
    */
   // GThread * gtk_thread;
-  unsigned int gtk_thread_id = std::numeric_limits<unsigned int>::max ();
+  unsigned int gtk_thread_id_ = std::numeric_limits<unsigned int>::max ();
 
-  std::unique_ptr<UiCaches> ui_caches;
+  std::unique_ptr<UiCaches> ui_caches_;
 
-  /** Flag to set when initialization has
-   * finished. */
-  bool init_finished;
+  /** Flag to set when initialization has finished. */
+  bool init_finished_ = false;
 
   /** Greeter screen. */
-  GreeterWidget * greeter;
+  GreeterWidget * greeter_ = nullptr;
 
   /**
    * True if this is the first time Zrythm is runh
    *
    * This remains true even after setting the corresponding GSettings value.
    */
-  bool is_first_run;
+  bool is_first_run_ = false;
 
-  bool have_svg_loader;
+  bool have_svg_loader_ = false;
 
   /** Audio backend passed with --audio-backend=,
    * if any. */
-  char * audio_backend;
+  std::string audio_backend_;
 
   /** MIDI backend passed with --audio-backend=,
    * if any. */
-  char * midi_backend;
+  std::string midi_backend_;
 
   /** Buffer size passed with --buf-size=, if any. */
-  int buf_size;
+  int buf_size_ = 0;
 
-  /** Samplerate passed with --samplerate=, if
-   * any. */
-  int samplerate;
+  /** Samplerate passed with --samplerate=, if any. */
+  int samplerate_ = 0;
 
-  /** Messages to show when the main window is
-   * shown. */
-  /* FIXME delete this. it does the same thing as
-   * the queue below */
-  char * startup_errors[24];
-  int    num_startup_errors;
+  /** Messages to show when the main window is shown. */
+  std::queue<std::string> startup_error_queue_;
+  std::mutex              startup_error_queue_mutex_;
 
   /** Output file passed with --output. */
-  char * output_file;
+  std::string output_file_;
 
   /** Whether to pretty-print. */
-  bool pretty_print;
+  bool pretty_print_ = false;
 
   /** CLI args. */
-  int     argc;
-  char ** argv;
+  int     argc_ = 0;
+  char ** argv_ = nullptr;
 
   /** AppImage runtime path, if AppImage build. */
-  char * appimage_runtime_path;
+  std::string appimage_runtime_path_;
 
-  /** Flag used to only show the RT priority
-   * message once. */
-  bool rt_priority_message_shown;
+  /** Flag used to only show the RT priority message once. */
+  bool rt_priority_message_shown_ = false;
 
   /**
-   * Queue for messages to be shown when the project
-   * loads.
+   * Queue for messages to be shown when the project loads.
    */
-  GAsyncQueue * project_load_message_queue;
+  std::queue<ZrythmAppUiMessage> project_load_message_queue_;
+  std::mutex                     queue_mutex_;
 
   /** Currently opened bug report dialog. */
-  BugReportDialogWidget * bug_report_dialog;
+  BugReportDialogWidget * bug_report_dialog_ = nullptr;
 
-  std::unique_ptr<ProjectInitFlowManager> project_init_flow_mgr;
+  std::unique_ptr<ProjectInitFlowManager> project_init_flow_mgr_;
 
-  guint project_autosave_source_id;
-};
-
-struct ZrythmAppDeleter
-{
-  void operator() (ZrythmApp * self) { g_object_unref (self); }
+  guint project_autosave_source_id_ = 0;
 };
 
 /**
  * Global variable, should be available to all files.
  */
-extern std::unique_ptr<ZrythmApp, ZrythmAppDeleter> zrythm_app;
-
-/**
- * Creates the Zrythm GApplication.
- *
- * This also initializes the Zrythm struct.
- */
-std::unique_ptr<ZrythmApp, ZrythmAppDeleter>
-zrythm_app_new (int argc, const char ** argv);
-
-void
-zrythm_app_set_font_scale (ZrythmApp * self, double font_scale);
-
-/**
- * Handles the logic for checking for updates on
- * startup.
- */
-void
-zrythm_app_check_for_updates (ZrythmApp * self);
-
-/**
- * Unlike the init thread, this will run in the main GTK thread. Do not put
- * expensive logic here.
- *
- * This should be ran after the expensive initialization has finished.
- */
-int
-zrythm_app_prompt_for_project_func (ZrythmApp * self);
-
-/**
- * Shows the trial limitation error message.
- *
- * @return Whether the limit was reached.
- */
-bool
-zrythm_app_check_and_show_trial_limit_error (ZrythmApp * self);
-
-void *
-zrythm_app_init_thread (ZrythmApp * self);
-
-/**
- * Install accelerator for an action.
- *
- * @memberof ZrythmApp
- */
-void
-zrythm_app_install_action_accel (
-  ZrythmApp *  self,
-  const char * primary,
-  const char * secondary,
-  const char * action_name);
-
-/**
- * @memberof ZrythmApp
- */
-char *
-zrythm_app_get_primary_accel_for_action (
-  ZrythmApp *  self,
-  const char * action_name);
-
-/**
- * To be used to exit Zrythm using the "response" signal on a message dialog.
- */
-void
-zrythm_exit_response_callback (AdwDialog * dialog, gpointer user_data);
+extern Glib::RefPtr<ZrythmApp> zrythm_app;
 
 /**
  * @}

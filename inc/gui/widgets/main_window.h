@@ -23,7 +23,7 @@ TYPEDEF_STRUCT_UNDERSCORED (ToolboxWidget);
 TYPEDEF_STRUCT_UNDERSCORED (CenterDockWidget);
 TYPEDEF_STRUCT_UNDERSCORED (BotBarWidget);
 TYPEDEF_STRUCT_UNDERSCORED (TopBarWidget);
-TYPEDEF_STRUCT_UNDERSCORED (ZrythmApp);
+class ZrythmApp;
 class ArrangerSelections;
 
 /**
@@ -32,7 +32,7 @@ class ArrangerSelections;
  * @{
  */
 
-#define MAIN_WINDOW zrythm_app->main_window
+#define MAIN_WINDOW zrythm_app->main_window_
 #define MW MAIN_WINDOW
 
 /**

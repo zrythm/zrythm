@@ -163,4 +163,7 @@
 
 #define Z_CARLA_VERSION_STRING "@CARLA_VERSION@"
 
+// Developer build (with extra checks enabled)
+#cmakedefine01 ZRYTHM_DEV_BUILD
+
 // clang-format on

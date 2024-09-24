@@ -34,6 +34,91 @@
 
 G_DEFINE_TYPE (GreeterWidget, greeter_widget, ADW_TYPE_WINDOW)
 
+class GreeterInitThread : public juce::Thread
+{
+public:
+  GreeterInitThread (ZrythmApp &app, GreeterWidget &greeter)
+      : juce::Thread ("GreeterInit"), app_ (app), greeter_ (greeter)
+  {
+    // autostart
+    startThread ();
+  }
+
+  // autostop
+  ~GreeterInitThread () override { stopThread (-1); }
+
+  void run () override
+  {
+    z_info ("init thread starting...");
+
+    // sleep for a while otherwise there is a weird issue with the greeter (no
+    // idea what the cause is but it thinks it's NULL inside the function call
+    // below)
+    std::this_thread::sleep_for (std::chrono::milliseconds (00));
+
+    greeter_widget_set_progress_and_status (
+      greeter_, _ ("Initializing"), _ ("Initializing settings"), 0.0);
+
+    /* init zrythm folders ~/Zrythm */
+    auto msg = format_str (_ ("Initializing {} directories"), PROGRAM_NAME);
+    greeter_widget_set_progress_and_status (greeter_, "", msg, 0.01);
+    try
+      {
+        gZrythm->init_user_dirs_and_files ();
+      }
+    catch (const ZrythmException &e)
+      {
+        z_critical ("Failed to create user dirs and files: {}", e.what ());
+        return;
+      }
+    app_.init_recent_projects ();
+    gZrythm->init_templates ();
+
+    /* init log */
+    greeter_widget_set_progress_and_status (
+      greeter_, "", _ ("Initializing logging system"), 0.02);
+// TODO:
+#if 0
+  success = log_init_with_file (LOG, nullptr, &err);
+  if (!success)
+    {
+      g_error ("Failed to init log with file: %s", err->message);
+      return NULL;
+    }
+#endif
+
+    {
+      char ver[2000];
+      Zrythm::get_version_with_capabilities (ver, false);
+      z_info ("\n{}", ver);
+    }
+
+#if defined(_WIN32) || defined(__APPLE__)
+    z_warning (
+      "Warning, you are running a non-free operating "
+      "system.");
+#endif
+
+    greeter_widget_set_progress_and_status (
+      greeter_, "", _ ("Initializing caches"), 0.05);
+    app_.ui_caches_ = std::make_unique<UiCaches> ();
+
+    greeter_widget_set_progress_and_status (
+      greeter_, "", _ ("Initializing file manager"), 0.06);
+    gZrythm->get_file_manager ().load_files ();
+
+    greeter_widget_set_progress_and_status (
+      greeter_, _ ("Scanning Plugins"), _ ("Scanning Plugins"), 0.10);
+    gZrythm->plugin_manager_->begin_scan (
+      0.90, &greeter_.progress,
+      bind_member_function (app_, &ZrythmApp::on_plugin_scan_finished));
+  }
+
+private:
+  ZrythmApp     &app_;
+  GreeterWidget &greeter_;
+};
+
 static void
 project_ready_while_zrythm_running_cb (
   bool        success,
@@ -58,7 +143,7 @@ post_finish (GreeterWidget * self, bool zrythm_already_running, bool quit)
     {
       if (!zrythm_already_running)
         {
-          g_application_quit (G_APPLICATION (zrythm_app.get ()));
+          zrythm_app->quit ();
         }
     }
   else
@@ -72,8 +157,8 @@ post_finish (GreeterWidget * self, bool zrythm_already_running, bool quit)
           AUDIO_ENGINE->wait_for_pause (state, true, false);
 
           zrythm_app
-            ->project_init_flow_mgr = std::make_unique<ProjectInitFlowManager> (
-            gZrythm->open_filename_.empty () ? nullptr : gZrythm->open_filename_,
+            ->project_init_flow_mgr_ = std::make_unique<ProjectInitFlowManager> (
+            gZrythm->open_filename_.empty () ? "" : gZrythm->open_filename_,
             gZrythm->opening_template_, project_ready_while_zrythm_running_cb,
             nullptr);
         }
@@ -82,8 +167,7 @@ post_finish (GreeterWidget * self, bool zrythm_already_running, bool quit)
           /*gtk_window_close (*/
           /*GTK_WINDOW (data->assistant));*/
           z_debug ("activating zrythm_app.load_project");
-          g_action_group_activate_action (
-            G_ACTION_GROUP (zrythm_app.get ()), "load_project", nullptr);
+          zrythm_app->activate_action ("load_project");
         }
     }
 }
@@ -205,10 +289,10 @@ on_file_set (GObject * gobject, GParamSpec * pspec, gpointer user_data)
   GFile * file = ide_file_chooser_entry_get_file (fc_entry);
   char *  str = g_file_get_path (file);
   g_settings_set_string (S_P_GENERAL_PATHS, "zrythm-dir", str);
-  char * str2 = g_build_filename (str, ZRYTHM_PROJECTS_DIR, nullptr);
+  // ??? this was unused
+  // auto str2 = Glib::build_filename (str, ZRYTHM_PROJECTS_DIR);
   g_settings_set_string (S_GENERAL, "last-project-dir", str);
   g_free (str);
-  g_free (str2);
   g_object_unref (file);
 }
 
@@ -221,15 +305,14 @@ on_continue_to_config_clicked (GtkButton * btn, GreeterWidget * self)
 static void
 begin_init (GreeterWidget * self)
 {
-  zrythm_app->init_finished = false;
+  zrythm_app->init_finished_ = false;
 
   /* start initialization in another thread */
-  self->init_thread = g_thread_new (
-    "init_thread", (GThreadFunc) zrythm_app_init_thread, zrythm_app.get ());
+  self->init_thread = std::make_unique<GreeterInitThread> (*zrythm_app, *self);
 
   /* set a source func in the main GTK thread to check when scanning finished */
-  g_idle_add (
-    (GSourceFunc) zrythm_app_prompt_for_project_func, zrythm_app.get ());
+  Glib::signal_idle ().connect (
+    sigc::mem_fun (*zrythm_app, &ZrythmApp::prompt_for_project_func));
 }
 
 static void
@@ -587,7 +670,7 @@ greeter_widget_new (
   bool        is_for_new_project)
 {
   GreeterWidget * self = static_cast<GreeterWidget *> (g_object_new (
-    GREETER_WIDGET_TYPE, "application", G_APPLICATION (app), "title",
+    GREETER_WIDGET_TYPE, "application", G_APPLICATION (app->gobj ()), "title",
     PROGRAM_NAME, "transient-for", parent, nullptr));
   z_return_val_if_fail (Z_IS_GREETER_WIDGET (self), nullptr);
 
@@ -597,7 +680,7 @@ greeter_widget_new (
       greeter_widget_select_project (self, true, is_for_new_project, nullptr);
     }
   /* else if not first run, skip to the "progress" part (don't show welcome UI) */
-  else if (is_startup && !app->is_first_run)
+  else if (is_startup && !app->is_first_run_)
     {
       gtk_window_set_title (GTK_WINDOW (self), _ ("Zrythm"));
       gtk_stack_set_visible_child_name (self->stack, "progress");
@@ -612,14 +695,9 @@ finalize (GreeterWidget * self)
 {
   /* "first run" is now irrelevant - set it to false to prevent issues with
    * new/open */
-  zrythm_app->is_first_run = false;
+  zrythm_app->is_first_run_ = false;
 
-  if (self->init_thread)
-    {
-      g_thread_join (self->init_thread);
-      self->init_thread = NULL;
-    }
-
+  std::destroy_at (&self->init_thread);
   std::destroy_at (&self->recent_projects_item_factories);
   std::destroy_at (&self->templates_item_factories);
   std::destroy_at (&self->progress_status_lock);
@@ -641,6 +719,7 @@ greeter_widget_init (GreeterWidget * self)
   std::construct_at (&self->description);
   std::construct_at (&self->project_infos_arr);
   std::construct_at (&self->templates_arr);
+  std::construct_at (&self->init_thread);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 

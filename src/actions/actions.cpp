@@ -107,13 +107,20 @@
 void
 actions_set_app_action_enabled (const char * action_name, const bool enabled)
 {
-  GAction * action =
-    g_action_map_lookup_action (G_ACTION_MAP (zrythm_app.get ()), action_name);
-  g_simple_action_set_enabled (G_SIMPLE_ACTION (action), enabled);
+  auto action = zrythm_app->lookup_action (action_name);
+  auto simple_action = std::dynamic_pointer_cast<Gio::SimpleAction> (action);
+  if (simple_action)
+    {
+      simple_action->set_enabled (enabled);
+    }
+  else
+    {
+      z_warning ("action is not a simple action");
+    }
 }
 
 void
-activate_news (GSimpleAction * action, GVariant * variant, gpointer user_data)
+activate_news ()
 {
   /* this is not used anymore */
 #if 0
@@ -124,7 +131,7 @@ activate_news (GSimpleAction * action, GVariant * variant, gpointer user_data)
 }
 
 void
-activate_manual (GSimpleAction * action, GVariant * variant, gpointer user_data)
+activate_manual ()
 {
   LocalizationLanguage lang =
     (LocalizationLanguage) g_settings_get_enum (S_P_UI_GENERAL, "language");
@@ -200,7 +207,8 @@ DEFINE_SIMPLE (activate_focus_first_widget)
     GTK_WIDGET (MAIN_WINDOW->start_dock_switcher)));
 }
 
-DEFINE_SIMPLE (activate_chat)
+void
+activate_chat ()
 {
   GtkUriLauncher * launcher =
     gtk_uri_launcher_new ("https://matrix.to/#/#zrythmdaw:matrix.org");
@@ -209,7 +217,8 @@ DEFINE_SIMPLE (activate_chat)
   g_object_unref (launcher);
 }
 
-DEFINE_SIMPLE (activate_donate)
+void
+activate_donate ()
 {
   GtkUriLauncher * launcher =
     gtk_uri_launcher_new ("https://liberapay.com/Zrythm");
@@ -218,7 +227,8 @@ DEFINE_SIMPLE (activate_donate)
   g_object_unref (launcher);
 }
 
-DEFINE_SIMPLE (activate_bugreport)
+void
+activate_bugreport ()
 {
   GtkUriLauncher * launcher = gtk_uri_launcher_new (NEW_ISSUE_URL);
   gtk_uri_launcher_launch (
@@ -226,7 +236,8 @@ DEFINE_SIMPLE (activate_bugreport)
   g_object_unref (launcher);
 }
 
-DEFINE_SIMPLE (activate_about)
+void
+activate_about ()
 {
   GtkWindow * window =
     GTK_WINDOW (about_dialog_widget_new (GTK_WINDOW (MAIN_WINDOW)));
@@ -238,19 +249,16 @@ DEFINE_SIMPLE (activate_about)
  * for shortcut window.
  */
 void
-activate_quit (GSimpleAction * action, GVariant * variant, gpointer user_data)
+activate_quit ()
 {
-  g_application_quit (G_APPLICATION (user_data));
+  zrythm_app->quit ();
 }
 
 /**
  * Show preferences window.
  */
 void
-activate_preferences (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data)
+activate_preferences ()
 {
   if (MAIN_WINDOW && MAIN_WINDOW->preferences_opened)
     {
@@ -780,7 +788,8 @@ activate_save_as (GSimpleAction * action, GVariant * variant, gpointer user_data
     dialog, GTK_WINDOW (MAIN_WINDOW), nullptr, save_project_ready_cb, nullptr);
 }
 
-DEFINE_SIMPLE (activate_minimize)
+void
+activate_minimize ()
 {
   gtk_window_minimize (GTK_WINDOW (MAIN_WINDOW));
 }
@@ -1404,7 +1413,8 @@ DEFINE_SIMPLE (activate_toggle_drum_mode)
   EVENTS_PUSH (EventType::ET_DRUM_MODE_CHANGED, tr);
 }
 
-DEFINE_SIMPLE (activate_fullscreen)
+void
+activate_fullscreen ()
 {
   if (gtk_window_is_fullscreen (GTK_WINDOW (MAIN_WINDOW)))
     {
@@ -1583,7 +1593,7 @@ activate_snap_events (
 static void
 create_empty_track (Track::Type type)
 {
-  if (zrythm_app_check_and_show_trial_limit_error (zrythm_app.get ()))
+  if (zrythm_app->check_and_show_trial_limit_error ())
     return;
 
   try
@@ -1624,7 +1634,7 @@ open_files_ready_cb (GtkFileDialog * dialog, GAsyncResult * res, void * user_dat
     }
 
   char ** uris = g_strv_builder_end (uris_builder);
-  if (!zrythm_app_check_and_show_trial_limit_error (zrythm_app.get ()))
+  if (!zrythm_app->check_and_show_trial_limit_error ())
     {
       try
         {
@@ -1694,7 +1704,7 @@ DEFINE_SIMPLE (activate_create_folder_track)
 
 DEFINE_SIMPLE (activate_duplicate_selected_tracks)
 {
-  if (zrythm_app_check_and_show_trial_limit_error (zrythm_app.get ()))
+  if (zrythm_app->check_and_show_trial_limit_error ())
     return;
 
   TRACKLIST_SELECTIONS->select_foldable_children ();
@@ -3622,7 +3632,7 @@ DEFINE_SIMPLE (activate_panel_file_browser_delete_bookmark)
 static void
 activate_plugin_setting (const PluginSetting &setting)
 {
-  if (zrythm_app_check_and_show_trial_limit_error (zrythm_app.get ()))
+  if (zrythm_app->check_and_show_trial_limit_error ())
     return;
 
   setting.activate ();
@@ -4176,6 +4186,5 @@ DEFINE_SIMPLE (activate_append_lane_automation_regions_to_selection)
 DEFINE_SIMPLE (activate_app_action_wrapper)
 {
   const char * action_name = g_action_get_name (G_ACTION (action));
-  g_action_group_activate_action (
-    G_ACTION_GROUP (zrythm_app.get ()), action_name, variant);
+  zrythm_app->activate_action (action_name, Glib::wrap (variant));
 }

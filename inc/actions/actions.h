@@ -25,16 +25,16 @@ void
 actions_set_app_action_enabled (const char * action_name, const bool enabled);
 
 void
-activate_about (GSimpleAction * action, GVariant * variant, gpointer user_data);
+activate_about ();
 
 /**
  * Show preferences window.
  */
 void
-activate_preferences (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data);
+activate_preferences ();
+
+void
+activate_quit ();
 
 /**
  * Show preferences window.
@@ -49,8 +49,6 @@ DECLARE_SIMPLE (activate_cut_mode);
 DECLARE_SIMPLE (activate_eraser_mode);
 DECLARE_SIMPLE (activate_ramp_mode);
 
-DECLARE_SIMPLE (activate_quit);
-
 DECLARE_SIMPLE (activate_zoom_in);
 DECLARE_SIMPLE (activate_zoom_out);
 
@@ -60,7 +58,8 @@ DECLARE_SIMPLE (activate_focus_first_widget);
 
 ATTR_COLD DECLARE_SIMPLE (activate_new);
 
-ATTR_COLD DECLARE_SIMPLE (activate_minimize);
+ATTR_COLD void
+activate_minimize ();
 
 ATTR_COLD DECLARE_SIMPLE (activate_open);
 
@@ -133,16 +132,18 @@ activate_toggle_status_bar (
   gpointer        user_data);
 
 void
-activate_fullscreen (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data);
+activate_fullscreen ();
 
-ATTR_COLD DECLARE_SIMPLE (activate_news);
-ATTR_COLD DECLARE_SIMPLE (activate_manual);
-ATTR_COLD DECLARE_SIMPLE (activate_chat);
-ATTR_COLD DECLARE_SIMPLE (activate_bugreport);
-ATTR_COLD DECLARE_SIMPLE (activate_donate);
+ATTR_COLD void
+activate_news ();
+ATTR_COLD void
+activate_manual ();
+ATTR_COLD void
+activate_chat ();
+ATTR_COLD void
+activate_bugreport ();
+ATTR_COLD void
+activate_donate ();
 
 void
 activate_loop_selection (

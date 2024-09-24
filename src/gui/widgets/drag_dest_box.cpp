@@ -248,7 +248,7 @@ on_dnd_drop (
           uris = g_strv_builder_end (uris_builder);
         }
 
-      if (!zrythm_app_check_and_show_trial_limit_error (zrythm_app.get ()))
+      if (!zrythm_app->check_and_show_trial_limit_error ())
         {
           StringArray uris_array (uris);
           try
@@ -271,7 +271,7 @@ on_dnd_drop (
         {
           PluginSetting setting (*pd);
 
-          if (!zrythm_app_check_and_show_trial_limit_error (zrythm_app.get ()))
+          if (!zrythm_app->check_and_show_trial_limit_error ())
             {
               setting.activate ();
             }
@@ -337,8 +337,7 @@ on_dnd_drop (
                     "cannot copy - track selection contains uncopyable track");
                   return false;
                 }
-              if (
-                !zrythm_app_check_and_show_trial_limit_error (zrythm_app.get ()))
+              if (!zrythm_app->check_and_show_trial_limit_error ())
                 {
                   UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
                     *TRACKLIST_SELECTIONS->gen_tracklist_selections (),

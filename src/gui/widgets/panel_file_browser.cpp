@@ -330,7 +330,7 @@ on_file_row_activated (GtkListView * list_view, guint position, gpointer user_da
     }
   else if (FileDescriptor::is_type_supported (descr->type_))
     {
-      if (zrythm_app_check_and_show_trial_limit_error (zrythm_app.get ()))
+      if (zrythm_app->check_and_show_trial_limit_error ())
         return;
 
       try

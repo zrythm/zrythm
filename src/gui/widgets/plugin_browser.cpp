@@ -223,10 +223,8 @@ on_plugin_row_activated (
 
   char tmp[600];
   sprintf (tmp, "%p", descr);
-  GVariant * variant = g_variant_new_string (tmp);
-  g_action_group_activate_action (
-    G_ACTION_GROUP (zrythm_app.get ()), "plugin-browser-add-to-project",
-    variant);
+  auto var = Glib::Variant<Glib::ustring>::create (tmp);
+  zrythm_app->activate_action ("plugin-browser-add-to-project", var);
 }
 
 /**

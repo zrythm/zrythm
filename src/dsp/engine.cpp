@@ -103,7 +103,7 @@ AudioEngine::init_after_cloning (const AudioEngine &other)
 void
 AudioEngine::set_buffer_size (uint32_t buf_size)
 {
-  z_return_if_fail (current_thread_id.get () == zrythm_app->gtk_thread_id);
+  z_return_if_fail (current_thread_id.get () == zrythm_app->gtk_thread_id_);
 
   z_debug ("request to set engine buffer size to {}", buf_size);
 
@@ -125,7 +125,7 @@ AudioEngine::update_frames_per_tick (
   bool                update_from_ticks,
   bool                bpm_change)
 {
-  if (current_thread_id.get () == zrythm_app->gtk_thread_id)
+  if (current_thread_id.get () == zrythm_app->gtk_thread_id_)
     {
       z_debug (
         "updating frames per tick: beats per bar {}, bpm {:f}, sample rate {}",
@@ -178,7 +178,7 @@ AudioEngine::clean_duplicate_events_and_copy (std::array<Event *, 100> &ret)
   auto &q = ev_queue_;
 
   int     num_events = 0;
-  Event * event;
+  Event * event = nullptr;
   while (q.pop_front (event))
     {
       bool already_exists = false;
@@ -186,8 +186,8 @@ AudioEngine::clean_duplicate_events_and_copy (std::array<Event *, 100> &ret)
       for (int i = 0; i < num_events; ++i)
         {
           if (
-            event->type_ == ret[i]->type_ && event->arg_ == ret[i]->arg_
-            && event->uint_arg_ == ret[i]->uint_arg_)
+            event->type_ == ret.at (i)->type_ && event->arg_ == ret.at (i)->arg_
+            && event->uint_arg_ == ret.at (i)->uint_arg_)
             {
               already_exists = true;
               break;
@@ -213,7 +213,7 @@ bool
 AudioEngine::process_events ()
 {
   z_return_val_if_fail (
-    current_thread_id.get () == zrythm_app->gtk_thread_id, SourceFuncRemove);
+    current_thread_id.get () == zrythm_app->gtk_thread_id_, SourceFuncRemove);
 
   if (exporting_)
     {
@@ -222,10 +222,10 @@ AudioEngine::process_events ()
 
   last_events_process_started_ = SteadyClock::now ();
 
-  std::array<Event *, 100> events;
+  std::array<Event *, 100> events{};
   int num_events = clean_duplicate_events_and_copy (events);
 
-  State state;
+  State state{};
   bool  need_resume = false;
   if (activated_ && num_events > 0)
     {
@@ -526,9 +526,9 @@ AudioEngine::init_common ()
           ? AudioBackend::AUDIO_BACKEND_JACK
           : AudioBackend::AUDIO_BACKEND_DUMMY;
     }
-  else if (zrythm_app->audio_backend)
+  else if (!zrythm_app->audio_backend_.empty ())
     {
-      ab_code = AudioBackend_from_string (zrythm_app->audio_backend);
+      ab_code = AudioBackend_from_string (zrythm_app->audio_backend_);
     }
   else
     {
@@ -585,9 +585,9 @@ AudioEngine::init_common ()
           ? MidiBackend::MIDI_BACKEND_JACK
           : MidiBackend::MIDI_BACKEND_DUMMY;
     }
-  else if (zrythm_app->midi_backend)
+  else if (!zrythm_app->midi_backend_.empty ())
     {
-      mb_code = MidiBackend_from_string (zrythm_app->midi_backend);
+      mb_code = MidiBackend_from_string (zrythm_app->midi_backend_);
     }
   else
     {
@@ -723,11 +723,11 @@ AudioEngine::init_loaded (Project * project)
 }
 
 AudioEngine::AudioEngine (Project * project)
-    : sample_rate_ (44000), control_room_ (std::make_unique<ControlRoom> (this)),
+    : project_ (project), sample_rate_ (44000),
+      control_room_ (std::make_unique<ControlRoom> (this)),
       pool_ (std::make_unique<AudioPool> ()),
       transport_ (std::make_unique<Transport> (this)),
-      sample_processor_ (std::make_unique<SampleProcessor> (this)),
-      project_ (project)
+      sample_processor_ (std::make_unique<SampleProcessor> (this))
 {
   z_debug ("Creating audio engine...");
 
@@ -914,6 +914,8 @@ AudioEngine::activate (bool activate)
       process_events ();
 
       realloc_port_buffers (block_length_);
+
+      sample_processor_->load_instrument_if_empty ();
     }
   else
     {
@@ -923,7 +925,7 @@ AudioEngine::activate (bool activate)
           return;
         }
 
-      State state;
+      State state{};
       wait_for_pause (state, true, true);
       activated_ = false;
     }

@@ -328,7 +328,7 @@ MidiEventVector::panic ()
 {
   if (zrythm_app)
     {
-      z_return_if_fail (current_thread_id.get () == zrythm_app->gtk_thread_id);
+      z_return_if_fail (current_thread_id.get () == zrythm_app->gtk_thread_id_);
     }
 
   while (lock_.try_lock ())

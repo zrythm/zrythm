@@ -111,8 +111,8 @@ ZCarlaDiscovery::descriptor_from_discovery_info (
   descr->protocol_ =
     PluginDescriptor::get_protocol_from_carla_plugin_type (info->ptype);
   z_return_val_if_fail (descr->protocol_ > PluginProtocol::DUMMY, nullptr);
-  const char * path = NULL;
-  const char * uri = NULL;
+  std::string path;
+  std::string uri;
   if (descr->protocol_ == PluginProtocol::SFZ)
     {
       path = info->label;
@@ -124,16 +124,13 @@ ZCarlaDiscovery::descriptor_from_discovery_info (
       uri = info->label;
     }
 
-  if (path && !string_is_equal (path, ""))
+  if (!path.empty ())
     {
-      descr->path_ = g_strdup (path);
-      if (!descr->path_.empty ())
-        {
-          /* ghash only used for compatibility with older projects */
-          GFile * file = g_file_new_for_path (descr->path_.string ().c_str ());
-          descr->ghash_ = g_file_hash (file);
-          g_object_unref (file);
-        }
+      descr->path_ = path;
+      /* ghash only used for compatibility with older projects */
+      GFile * file = g_file_new_for_path (descr->path_.string ().c_str ());
+      descr->ghash_ = g_file_hash (file);
+      g_object_unref (file);
     }
   descr->uri_ = uri;
   descr->unique_id_ = (int64_t) info->uniqueId;

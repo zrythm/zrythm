@@ -910,9 +910,8 @@ channel_v2_serialize_to_json (
   GError **          error)
 {
   yyjson_mut_val * midi_fx_arr = yyjson_mut_obj_add_arr (doc, ch_obj, "midiFx");
-  for (int i = 0; i < STRIP_SIZE; i++)
+  for (auto pl : ch->midi_fx)
     {
-      Plugin_v1 * pl = ch->midi_fx[i];
       if (pl)
         {
           yyjson_mut_val * pl_obj = yyjson_mut_arr_add_obj (doc, midi_fx_arr);
@@ -924,9 +923,8 @@ channel_v2_serialize_to_json (
         }
     }
   yyjson_mut_val * inserts_arr = yyjson_mut_obj_add_arr (doc, ch_obj, "inserts");
-  for (int i = 0; i < STRIP_SIZE; i++)
+  for (auto pl : ch->inserts)
     {
-      Plugin_v1 * pl = ch->inserts[i];
       if (pl)
         {
           yyjson_mut_val * pl_obj = yyjson_mut_arr_add_obj (doc, inserts_arr);
@@ -938,9 +936,8 @@ channel_v2_serialize_to_json (
         }
     }
   yyjson_mut_val * sends_arr = yyjson_mut_obj_add_arr (doc, ch_obj, "sends");
-  for (int i = 0; i < STRIP_SIZE; i++)
+  for (auto cs : ch->sends)
     {
-      ChannelSend_v1 * cs = ch->sends[i];
       g_return_val_if_fail (cs, false);
       yyjson_mut_val * cs_obj = yyjson_mut_arr_add_obj (doc, sends_arr);
       channel_send_v1_serialize_to_json (doc, cs_obj, cs, error);

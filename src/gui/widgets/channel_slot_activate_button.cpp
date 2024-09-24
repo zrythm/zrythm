@@ -24,12 +24,11 @@ on_toggled (GtkToggleButton * btn, gpointer user_data)
   if (!pl)
     return;
 
-  GAction * action = g_action_map_lookup_action (
-    G_ACTION_MAP (zrythm_app.get ()), "plugin-toggle-enabled");
+  auto action = zrythm_app->lookup_action ("plugin-toggle-enabled");
   char tmp[500];
   sprintf (tmp, "%p", pl);
-  GVariant * var = g_variant_new_string (tmp);
-  g_action_activate (action, var);
+  auto var = Glib::Variant<Glib::ustring>::create (tmp);
+  action->activate_variant (var);
 }
 
 /**

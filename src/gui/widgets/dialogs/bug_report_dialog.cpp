@@ -591,7 +591,7 @@ dispose (BugReportDialogWidget * self)
   G_OBJECT_CLASS (bug_report_dialog_widget_parent_class)
     ->dispose (G_OBJECT (self));
 
-  zrythm_app->bug_report_dialog = NULL;
+  zrythm_app->bug_report_dialog_ = NULL;
 }
 
 static void

@@ -101,7 +101,7 @@ class Project final : public ISerializable<Project>, public ICloneable<Project>
 public:
   Project ();
   Project (std::string &title);
-  ~Project ();
+  ~Project () override;
 
   /**
    * Selection type, used for controlling which part of the interface is
@@ -366,7 +366,7 @@ private:
   {
   public:
     SerializeProjectThread (SaveContext &ctx);
-    ~SerializeProjectThread ();
+    ~SerializeProjectThread () override;
     void run () override;
 
   private:
@@ -533,8 +533,8 @@ public:
   std::unique_ptr<UndoManager> undo_manager_;
 
   /** Used when deserializing projects. */
-  int format_major_;
-  int format_minor_;
+  int format_major_ = 0;
+  int format_minor_ = 0;
 };
 
 /**

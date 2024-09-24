@@ -20,7 +20,7 @@ response_cb (AdwAlertDialog * self, gchar * response, gpointer user_data)
 
   if (is_yes)
     {
-      zrythm_app_check_for_updates (zrythm_app.get ());
+      zrythm_app->check_for_updates ();
     }
 }
 

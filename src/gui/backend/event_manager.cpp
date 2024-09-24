@@ -978,19 +978,17 @@ EventManager::process_event (ZEvent &ev)
       main_notebook_widget_refresh (MW_MAIN_NOTEBOOK);
 
 #ifdef CHECK_UPDATES
-      zrythm_app_check_for_updates (zrythm_app.get ());
+      zrythm_app->check_for_updates ();
 #endif /* CHECK_UPDATES */
 
       /* show any pending messages */
       {
-        ZrythmAppUiMessage * ui_msg;
-        while (
-          (ui_msg = (ZrythmAppUiMessage *) g_async_queue_try_pop (
-             zrythm_app->project_load_message_queue))
-          != nullptr)
+        std::lock_guard<std::mutex> lock (zrythm_app->queue_mutex_);
+        while (!zrythm_app->project_load_message_queue_.empty ())
           {
-            ui_show_message_literal (_ ("Error"), ui_msg->msg);
-            zrythm_app_ui_message_free (ui_msg);
+            auto msg = zrythm_app->project_load_message_queue_.front ();
+            ui_show_message_literal (_ ("Error"), msg.msg_);
+            zrythm_app->project_load_message_queue_.pop ();
           }
       }
 

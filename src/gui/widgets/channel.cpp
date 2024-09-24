@@ -808,8 +808,10 @@ channel_widget_new (const std::shared_ptr<Channel> &channel)
   setup_balance_control (self);
   setup_instrument_ui_toggle (self);
   editable_label_widget_setup (
-    self->name, track, bind_member_function (*track, &Track::get_name),
-    bind_member_function (*track, &Track::set_name_with_action));
+    self->name, track,
+    bind_member_function (*(dynamic_cast<Track *> (track)), &Track::get_name),
+    bind_member_function (
+      *(dynamic_cast<Track *> (track)), &Track::set_name_with_action));
   route_target_selector_widget_refresh (self->output, track);
   color_area_widget_setup_track (self->color, track);
 

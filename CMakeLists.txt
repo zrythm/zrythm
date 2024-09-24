@@ -31,6 +31,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++20")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Enable precompiled headers
 set(CMAKE_PCH_INSTANTIATE_TEMPLATES ON)
@@ -95,6 +96,9 @@ if(CMAKE_BUILD_TYPE MATCHES "Debug|RelWithDebInfo")
 else()
   set(ZRYTHM_DEBUG_BUILD OFF)
 endif()
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(ZRYTHM_DEV_BUILD ON)
+endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   set(compiler_is_clang TRUE)
@@ -150,6 +154,10 @@ option(ZRYTHM_FFTW3_THREADS_SEPARATE "Look for fftw3_threads separately" ON)
 set(ZRYTHM_FFTW3_THREADS_SEPARATE_TYPE "auto" CACHE STRING "Method to look for separate fftw3_threads")
 set_property(CACHE ZRYTHM_FFTW3_THREADS_SEPARATE_TYPE PROPERTY STRINGS auto dependency library)
 option(ZRYTHM_FFTW3F_SEPARATE "Look for fftw3f separately of fftw3" ON)
+option(ZRYTHM_ENABLE_SANITIZER_ADDRESS "Compile with address sanitizer" OFF)
+option(ZRYTHM_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR "Compile with undefined behavior sanitizer" OFF)
+option(ZRYTHM_ENABLE_SANITIZER_THREAD "Compile with thread sanitizer" OFF)
+option(ZRYTHM_ENABLE_SANITIZER_MEMORY "Compile with memory sanitizer" OFF)
 
 # Dependency feature options
 option(ZRYTHM_WITH_X11 "Build with X11 support" ${OS_GNU})
@@ -401,7 +409,9 @@ endforeach()
 # compile args
 set(zrythm_compile_args)
 if(compiler_gnulike)
-  list(APPEND zrythm_compile_args -Wall -Wextra)
+  list(APPEND zrythm_compile_args -Wall -Wextra
+  #  -Weffc++
+  )
   if(compiler_is_clang)
     # list(APPEND zrythm_compile_args -Weverything)
   endif()
@@ -579,6 +589,9 @@ if(ZRYTHM_STRICT)
       -Werror=mismatched-tags
       -Werror=narrowing
       -Werror=overloaded-virtual
+      # -Werror=effc++
+      -Werror=reorder
+      -Werror=sequence-point
     )
     endif()
   if(compiler_is_gcc)
@@ -653,6 +666,47 @@ if(WIN32)
       -fno-stack-protector
       -static-libgcc
       -static-libstdc++)
+  endif()
+endif()
+
+# Sanitizers
+if(compiler_gnulike)
+  set(sanitizers)
+  if(ZRYTHM_ENABLE_SANITIZER_ADDRESS)
+    list(APPEND sanitizers "address")
+    add_compile_options(
+      -fsanitize-address-use-after-scope
+    )
+  endif()
+  if(ZRYTHM_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR)
+    list(APPEND sanitizers "undefined")
+  endif()
+  if(ZRYTHM_ENABLE_SANITIZER_THREAD)
+    if("address" IN_LIST sanitizers OR "undefined" IN_LIST sanitizers)
+      message(FATAL_ERROR "Address/undefined sanitizers cannot be enabled together with thread sanitizer")
+    endif()
+    list(APPEND sanitizers "thread")
+  endif()
+  if(ZRYTHM_ENABLE_SANITIZER_MEMORY)
+    list(APPEND sanitizers "memory")
+    add_compile_options(
+      # "-fsanitize-blacklist=${CMAKE_SOURCE_DIR}/tools/san-blacklist.txt"
+      -fsanitize-memory-track-origins
+    )
+  endif()
+
+  list(JOIN sanitizers "," sanitizers_list)
+  if(sanitizers_list)
+    if(NOT "${sanitizers_list}" STREQUAL "")
+      add_compile_options(
+        -fsanitize=${sanitizers_list}
+        -fno-omit-frame-pointer
+        -fno-optimize-sibling-calls
+      )
+      add_link_options(
+        -fsanitize=${sanitizers_list}
+      )
+    endif()
   endif()
 endif()
 
@@ -832,6 +886,7 @@ endif()
 
 pkg_check_modules(GLIBMM glibmm-2.68 REQUIRED IMPORTED_TARGET)
 pkg_check_modules(GIOMM giomm-2.68 REQUIRED IMPORTED_TARGET)
+pkg_check_modules(GTKMM gtkmm-4.0 REQUIRED IMPORTED_TARGET)
 
 pkg_check_modules(RUBBERBAND rubberband REQUIRED IMPORTED_TARGET)
 
@@ -870,6 +925,7 @@ list(APPEND zrythm_link_libs
   spdlog::spdlog
   PkgConfig::GLIBMM
   PkgConfig::GIOMM
+  PkgConfig::GTKMM
   GTest::GTest
 )
 

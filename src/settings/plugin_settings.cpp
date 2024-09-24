@@ -182,7 +182,7 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
 
   /* stop the engine so it doesn't restart all the time until all the actions
    * are performed */
-  AudioEngine::State state;
+  AudioEngine::State state{};
   AUDIO_ENGINE->wait_for_pause (state, false, true);
 
   try
@@ -195,7 +195,7 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
           int num_actions = 0;
 
           /* create group */
-          Track * group = group =
+          Track * group =
             Track::create_empty_with_action (Track::Type::AudioGroup);
           num_actions++;
 

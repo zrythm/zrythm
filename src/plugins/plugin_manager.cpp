@@ -725,9 +725,9 @@ PluginManager::
             + ((double) ((i - ENUM_VALUE_TO_INT (PluginProtocol::LV2)) + 1)
                / num_plugin_types)
                 * (max_progress - start_progress);
-          z_return_if_fail (zrythm_app->greeter);
+          z_return_if_fail (zrythm_app->greeter_);
           greeter_widget_set_progress_and_status (
-            *zrythm_app->greeter, _ ("Scanning Plugins"), "", *progress);
+            *zrythm_app->greeter_, _ ("Scanning Plugins"), "", *progress);
         }
     }
 
@@ -798,7 +798,7 @@ PluginManager::set_currently_scanning_plugin (
   if (ZRYTHM_HAVE_UI)
     {
       greeter_widget_set_currently_scanned_plugin (
-        zrythm_app->greeter, filename);
+        zrythm_app->greeter_, filename);
     }
 }
 
