@@ -87,7 +87,7 @@ public:
   /**
    * Returns the file type of the given file path.
    */
-  static FileType get_type_from_path (const char * file);
+  static FileType get_type_from_path (const fs::path &file);
 
   bool is_audio () const { return is_type_audio (type_); }
 

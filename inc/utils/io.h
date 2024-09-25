@@ -56,10 +56,10 @@ std::string
 io_file_strip_ext (const std::string &filename);
 
 /**
- * Returns file extension or NULL.
+ * Returns file extension or empty string if none.
  */
-ATTR_NONNULL const char *
-io_file_get_ext (const char * file);
+std::string
+io_file_get_ext (const std::string &file);
 
 #define io_path_get_basename(filename) g_path_get_basename (filename)
 
