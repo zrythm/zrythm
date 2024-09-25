@@ -843,6 +843,7 @@ endforeach()
 set(CMAKE_REQUIRED_LIBRARIES ${CARLA_LIBRARIES})
 check_symbol_exists(carla_get_native_patchbay_cv8_plugin "carla/CarlaHost.h" CARLA_HAVE_CV8_PATCHBAY_VARIANT)
 check_symbol_exists(carla_get_audio_port_hints "carla/CarlaHost.h" CARLA_HAVE_AUDIO_PORT_HINTS)
+set(CMAKE_REQUIRED_LIBRARIES)
 
 pkg_search_module(RTAUDIO librtaudio>=5.1.0 rtaudio>=5.1.0 REQUIRED IMPORTED_TARGET)
 set(HAVE_RTAUDIO TRUE)

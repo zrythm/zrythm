@@ -89,19 +89,19 @@ FileDescriptor::get_type_description (FileType type)
     case FileType::Other:
       return "Other";
     default:
-      z_return_val_if_reached (nullptr);
+      z_return_val_if_reached ("");
     }
 }
 
 FileType
-FileDescriptor::get_type_from_path (const char * file)
+FileDescriptor::get_type_from_path (const fs::path &file)
 {
-  const char * ext = io_file_get_ext (file);
+  const auto   ext = io_file_get_ext (file.string ());
   FileType     type = FileType::Other;
 
-  if (g_file_test (file, G_FILE_TEST_IS_DIR))
+  if (fs::is_directory (file))
     type = FileType::Directory;
-  else if (string_is_equal (ext, ""))
+  else if (ext.empty ())
     type = FileType::Other;
   else if (
     string_is_equal_ignore_case (ext, "MID")

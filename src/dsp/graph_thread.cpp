@@ -184,7 +184,7 @@ GraphThread::run_worker ()
            * as not yet decreased _trigger_queue_size. */
           int idle_cnt = graph->idle_thread_cnt_.load ();
           int work_avail = graph->trigger_queue_size_.load ();
-          int wakeup = MIN (idle_cnt + 1, work_avail);
+          int wakeup = std::min (idle_cnt + 1, work_avail);
 #ifdef DEBUG_THREADS
           z_debug (
             "[{}]: Waking up {} idle threads (idle count {}), work available -> {}",

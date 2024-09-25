@@ -241,14 +241,17 @@ check_for_updates_latest_release_ver_ready (
     && !GSettingsManager::strv_contains_str (
       S_GENERAL, "run-versions", PACKAGE_VERSION))
     {
-      AdwMessageDialog * dialog = dialogs_get_basic_ok_message_dialog (nullptr);
-      adw_message_dialog_format_heading (dialog, "%s", _ ("Changelog"));
-      adw_message_dialog_format_body_markup (
-        dialog, _ ("Running %s version <b>%s</b>%s%s"), PROGRAM_NAME,
-        PACKAGE_VERSION, "\n\n", CHANGELOG_TXT);
-      gtk_window_present (GTK_WINDOW (dialog));
-      GSettingsManager::append_to_strv (
-        S_GENERAL, "run-versions", PACKAGE_VERSION, true);
+      Glib::signal_idle ().connect_once ([] () {
+        AdwMessageDialog * dialog =
+          dialogs_get_basic_ok_message_dialog (nullptr);
+        adw_message_dialog_format_heading (dialog, "%s", _ ("Changelog"));
+        adw_message_dialog_format_body_markup (
+          dialog, _ ("Running %s version <b>%s</b>%s%s"), PROGRAM_NAME,
+          PACKAGE_VERSION, "\n\n", CHANGELOG_TXT);
+        gtk_window_present (GTK_WINDOW (dialog));
+        GSettingsManager::append_to_strv (
+          S_GENERAL, "run-versions", PACKAGE_VERSION, true);
+      });
     }
 #endif /* HAVE_CHANGELOG */
 

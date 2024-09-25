@@ -3650,9 +3650,12 @@ public:
                              FORMAT_MESSAGE_IGNORE_INSERTS,
                          NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                          (char*)&lpMsgBuf, 0, NULL)) {
-        std::fprintf(stderr, "%s\n", lpMsgBuf);
-        LocalFree(lpMsgBuf);
-      }
+#  ifndef fprintf // could be defined as libintl_fprintf
+          std::
+#  endif
+            fprintf (stderr, "%s\n", lpMsgBuf);
+          LocalFree (lpMsgBuf);
+        }
 
       // abort();
     }

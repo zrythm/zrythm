@@ -176,72 +176,70 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
 {
   files.clear ();
 
-  GDir * dir = g_dir_open (location.path_.c_str (), 0, nullptr);
-  if (!dir)
+  try
     {
-      z_warning ("Could not open dir {}", location.path_.c_str ());
+      Glib::Dir dir (location.path_);
+
+      /* create special parent dir entry */
+      {
+        auto parent_dir = fs::path (location.path_).parent_path ();
+        auto fd = FileDescriptor ();
+        fd.abs_path_ = parent_dir.string ();
+        fd.type_ = FileType::ParentDirectory;
+        fd.hidden_ = false;
+        fd.label_ = "..";
+        if (fd.abs_path_.length () > 1)
+          {
+            files.push_back (fd);
+          }
+      }
+
+      for (const auto &file : dir)
+        {
+          FileDescriptor fd;
+
+          /* set absolute path & label */
+          auto absolute_path = fs::path (location.path_) / file;
+          fd.abs_path_ = absolute_path.string ();
+          fd.label_ = file;
+
+          try
+            {
+              auto gfile = Gio::File::create_for_path (absolute_path);
+              auto info =
+                gfile->query_info (G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN);
+              fd.hidden_ = info->is_hidden ();
+            }
+          catch (const Glib::Error &ex)
+            {
+              z_warning (
+                "Failed to query file info for {}: {}", absolute_path,
+                ex.what ());
+            }
+
+          /* set type */
+          if (fs::is_directory (absolute_path))
+            {
+              fd.type_ = FileType::Directory;
+            }
+          else
+            {
+              fd.type_ = FileDescriptor::get_type_from_path (file);
+            }
+
+          /* force hidden if starts with . */
+          if (file[0] == '.')
+            fd.hidden_ = true;
+
+          /* add to list */
+          files.push_back (fd);
+        }
+    }
+  catch (const Glib::Error &e)
+    {
+      z_warning ("Could not open dir {}", location.path_);
       return;
     }
-
-  /* create special parent dir entry */
-  {
-    auto parent_dir = fs::path (location.path_).parent_path ();
-    auto fd = FileDescriptor ();
-    fd.abs_path_ = parent_dir.string ();
-    fd.type_ = FileType::ParentDirectory;
-    fd.hidden_ = false;
-    fd.label_ = "..";
-    if (fd.abs_path_.length () > 1)
-      {
-        files.push_back (fd);
-      }
-  }
-
-  const gchar * file;
-  while ((file = g_dir_read_name (dir)) != nullptr)
-    {
-      FileDescriptor fd = FileDescriptor ();
-
-      /* set absolute path & label */
-      auto absolute_path = fs::path (location.path_) / file;
-      fd.abs_path_ = absolute_path.string ();
-      fd.label_ = file;
-
-      GError * err = NULL;
-      GFile *  gfile = g_file_new_for_path (absolute_path.string ().c_str ());
-      GFileInfo * info = g_file_query_info (
-        gfile, G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN, G_FILE_QUERY_INFO_NONE,
-        nullptr, &err);
-      if (err)
-        {
-          z_warning (
-            "failed to query file info for %s", absolute_path.string ());
-        }
-      else
-        {
-          fd.hidden_ = g_file_info_get_is_hidden (info);
-          g_object_unref (info);
-        }
-      g_object_unref (gfile);
-
-      /* set type */
-      if (fs::is_directory (absolute_path))
-        {
-          fd.type_ = FileType::Directory;
-        }
-      else
-        {
-          fd.type_ = FileDescriptor::get_type_from_path (file);
-        }
-
-      /* force hidden if starts with . */
-      if (file[0] == '.')
-        fd.hidden_ = true;
-
-      /* add to list */
-      files.push_back (fd);
-    }
-  g_dir_close (dir);
 
   /* sort alphabetically */
   std::sort (files.begin (), files.end (), [] (const auto &a, const auto &b) {

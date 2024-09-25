@@ -311,8 +311,9 @@ begin_init (GreeterWidget * self)
   self->init_thread = std::make_unique<GreeterInitThread> (*zrythm_app, *self);
 
   /* set a source func in the main GTK thread to check when scanning finished */
-  Glib::signal_idle ().connect (
-    sigc::mem_fun (*zrythm_app, &ZrythmApp::prompt_for_project_func));
+  Glib::signal_idle ().connect (sigc::track_obj (
+    sigc::mem_fun (*zrythm_app, &ZrythmApp::prompt_for_project_func),
+    *zrythm_app));
 }
 
 static void

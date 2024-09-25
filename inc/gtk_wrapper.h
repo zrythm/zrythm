@@ -44,7 +44,61 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 #  undef Bool
 #endif
 
+/* another hack for dumb macros by Windows */
+#ifdef IN
+#  define WINDOWS_MACRO_IN_DEFINED
+#  undef IN
+#endif
+#ifdef OUT
+#  define WINDOWS_MACRO_OUT_DEFINED
+#  undef OUT
+#endif
+#ifdef UNICODE
+#  define WINDOWS_MACRO_UNICODE_DEFINED
+#  undef UNICODE
+#endif
+#ifdef WINDING
+#  define WINDOWS_WINDING WINDING
+#  undef WINDING
+#endif
+#ifdef IGNORE
+#  define WINDOWS_IGNORE IGNORE
+#  undef IGNORE
+#endif
+#ifdef near
+#  undef near
+#endif
+#ifdef NEAR
+#  define WINDOWS_NEAR_DEFINED
+#  undef NEAR
+/* we need NEAR to be defined. by default it's defined as `near`, but we don't
+ * want `near` to be defined (because it's used by graphene), so we define NEAR
+ * to be empty (`near` was empty too anyway) */
+#  define NEAR
+#endif
+
 #include <gtkmm.h>
+
+#ifdef WINDOWS_MACRO_IN_DEFINED
+#  define IN
+#  undef WINDOWS_MACRO_IN_DEFINED
+#endif
+#ifdef WINDOWS_MACRO_OUT_DEFINED
+#  define OUT
+#  undef WINDOWS_MACRO_OUT_DEFINED
+#endif
+#ifdef WINDOWS_MACRO_UNICODE_DEFINED
+#  define UNICODE
+#  undef WINDOWS_MACRO_UNICODE_DEFINED
+#endif
+#ifdef WINDOWS_WINDING
+#  define WINDING WINDOWS_WINDING
+#  undef WINDOWS_WINDING
+#endif
+#ifdef WINDOWS_IGNORE
+#  define IGNORE WINDOWS_IGNORE
+#  undef WINDOWS_IGNORE
+#endif
 
 #ifdef _WIN32
 #  include <gdk/win32/gdkwin32.h>

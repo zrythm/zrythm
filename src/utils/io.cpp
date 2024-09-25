@@ -101,13 +101,10 @@ io_create_tmp_dir (const std::string template_name)
   return temp_dir;
 }
 
-/**
- * Returns file extension or NULL.
- */
-const char *
-io_file_get_ext (const char * filename)
+std::string
+io_file_get_ext (const std::string &filename)
 {
-  const char * dot = strrchr (filename, '.');
+  const char * dot = strrchr (filename.c_str (), '.');
   if (!dot || dot == filename)
     return "";
 
@@ -140,15 +137,15 @@ io_file_strip_ext (const std::string &filename)
       return filename.substr (0, len - 1);
     }
 
-  const char * dot = io_file_get_ext (filename.c_str ());
+  const auto dot = io_file_get_ext (filename);
 
   /* if no dot, return filename */
-  if (string_is_equal (dot, ""))
+  if (dot.empty ())
     {
       return filename;
     }
 
-  long size = (dot - filename.c_str ()) - 1;
+  long size = (dot.c_str () - filename.c_str ()) - 1;
   return filename.substr (0, size);
 }
 
@@ -208,7 +205,9 @@ io_file_get_creation_datetime (const char * filename)
 gint64
 io_file_get_last_modified_datetime (const char * filename)
 {
-  struct stat result;
+  struct stat result
+  {
+  };
   if (stat (filename, &result) == 0)
     {
       return result.st_mtime;
@@ -417,7 +416,7 @@ io_get_next_available_filepath (const std::string &filepath)
 {
   int  i = 1;
   auto file_without_ext = io_file_strip_ext (filepath);
-  auto file_ext = io_file_get_ext (filepath.c_str ());
+  auto file_ext = io_file_get_ext (filepath);
   auto new_path = filepath;
   while (file_path_exists (new_path))
     {
