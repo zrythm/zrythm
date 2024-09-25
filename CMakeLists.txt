@@ -895,6 +895,20 @@ pkg_check_modules(EPOXY epoxy REQUIRED IMPORTED_TARGET)
 
 find_package(GTest REQUIRED)
 
+find_package(Qt6
+  COMPONENTS Core Gui Widgets Quick QuickControls2 REQUIRED
+)
+qt_standard_project_setup()
+
+qt_add_executable(zrythm)
+
+qt_add_qml_module(zrythm
+  URI Zrythm
+  VERSION 1.0
+  RESOURCE_PREFIX /org.zrythm.Zrythm/imports
+  QML_FILES resources/ui/main_window.qml
+)
+
 list(APPEND zrythm_link_libs
   zita-resampler::zita-resampler
   PkgConfig::LIBADWAITA
@@ -927,6 +941,12 @@ list(APPEND zrythm_link_libs
   PkgConfig::GLIBMM
   PkgConfig::GIOMM
   PkgConfig::GTKMM
+  # Qt6::Core
+  Qt6::Gui
+  Qt6::Widgets
+  Qt6::Quick
+  Qt6::QuickControls2
+  # KDAB::kddockwidgets
   GTest::GTest
 )
 
