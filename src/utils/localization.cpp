@@ -13,6 +13,7 @@
 #include "gui/widgets/main_window.h"
 #include "settings/g_settings_manager.h"
 #include "settings/settings.h"
+#include "utils/directory_manager.h"
 #include "utils/io.h"
 #include "utils/localization.h"
 #include "utils/string.h"
@@ -328,8 +329,9 @@ localization_init (
   bindtextdomain (GETTEXT_PACKAGE, windows_localedir);
   bindtextdomain ("libadwaita", windows_localedir);
 #else
-  auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
-  auto   localedir = dir_mgr->get_dir (ZrythmDirType::SYSTEM_LOCALEDIR);
+  auto * dir_mgr = DirectoryManager::getInstance ();
+  auto   localedir =
+    dir_mgr->get_dir (DirectoryManager::DirectoryType::SYSTEM_LOCALEDIR);
   bindtextdomain (GETTEXT_PACKAGE, localedir.c_str ());
   bindtextdomain ("libadwaita", localedir.c_str ());
   z_debug ("setting textdomain: {}, {}", GETTEXT_PACKAGE, localedir);

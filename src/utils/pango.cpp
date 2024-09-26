@@ -3,6 +3,7 @@
 
 #include "zrythm-config.h"
 
+#include "utils/directory_manager.h"
 #include "utils/pango.h"
 #include "utils/string.h"
 #include "zrythm.h"
@@ -27,8 +28,9 @@ z_pango_create_layout_from_description (
       FcConfig * fc_config = FcConfigCreate ();
 
       /* add fonts/zrythm dir to find DSEG font */
-      auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
-      auto   fontdir = dir_mgr->get_dir (ZrythmDirType::SYSTEM_FONTSDIR);
+      auto * dir_mgr = DirectoryManager::getInstance ();
+      auto   fontdir =
+        dir_mgr->get_dir (DirectoryManager::DirectoryType::SYSTEM_FONTSDIR);
       FcConfigAppFontAddDir (
         fc_config, (const unsigned char *) fontdir.c_str ());
       FcConfigBuildFonts (fc_config);

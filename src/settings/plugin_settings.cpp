@@ -10,6 +10,7 @@
 #include "plugins/plugin_descriptor.h"
 #include "settings/plugin_settings.h"
 #include "settings/settings.h"
+#include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/gtk.h"
 #include "utils/string.h"
@@ -398,8 +399,8 @@ PluginSetting::increment_num_instantiations ()
 fs::path
 PluginSettings::get_file_path ()
 {
-  auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
-  auto   zrythm_dir = dir_mgr->get_dir (ZrythmDirType::USER_TOP);
+  auto * dir_mgr = DirectoryManager::getInstance ();
+  auto zrythm_dir = dir_mgr->get_dir (DirectoryManager::DirectoryType::USER_TOP);
   z_return_val_if_fail (!zrythm_dir.empty (), "");
 
   return fs::path (zrythm_dir) / PLUGIN_SETTINGS_JSON_FILENAME;

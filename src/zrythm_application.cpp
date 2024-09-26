@@ -7,6 +7,8 @@
 #include <QQuickStyle>
 #include <QTimer>
 
+#include "settings/settings_manager.h"
+
 #include "engine/ipc_message.h"
 #include "zrythm_application.h"
 // #include <kddockwidgets/Config.h>
@@ -21,7 +23,7 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   /* app info */
   setApplicationName ("Zrythm");
   setApplicationVersion (PACKAGE_VERSION);
-  setOrganizationName ("Zrythm");
+  setOrganizationName ("Zrythm DAW");
   setOrganizationDomain ("zrythm.org");
   setApplicationDisplayName ("Zrythm");
   // setWindowIcon (QIcon (":/org.zrythm.Zrythm/resources/icons/zrythm.svg"));
@@ -31,13 +33,11 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
 
   setup_ui ();
   launch_engine_process ();
-  setup_ipc ();
 }
 
 void
 ZrythmApplication::post_exec_initialization ()
 {
-  return;
   Zrythm::getInstance ()->pre_init (
     applicationFilePath ().toStdString ().c_str (), true, true);
 
@@ -45,19 +45,28 @@ ZrythmApplication::post_exec_initialization ()
 
   gZrythm->init ();
 
-  const char * copyright_line =
+  constexpr const char * copyright_line =
     "Copyright (C) " COPYRIGHT_YEARS " " COPYRIGHT_NAME;
-  char * ver = Zrythm::get_version (false);
-  std::cout << format_str (
-    tr (
-      "{}-{}\n{}\n\n"
-      "{} comes with ABSOLUTELY NO WARRANTY!\n\n"
-      "This is free software, and you are welcome to redistribute it\n"
-      "under certain conditions. See the file 'COPYING' for details.\n\n"
-      "Write comments and bugs to %s\n"
-      "Support this project at https://liberapay.com/Zrythm\n\n")
-      .toStdString (),
-    PROGRAM_NAME, ver, copyright_line, PROGRAM_NAME, ISSUE_TRACKER_URL);
+  std::string ver = Zrythm::get_version (false);
+  std::cout
+    << "\n==============================================================\n\n"
+    << format_str (
+         tr ("{}-{}\n{}\n\n"
+             "{} comes with ABSOLUTELY NO WARRANTY!\n\n"
+             "This is free software, and you are welcome to redistribute it\n"
+             "under certain conditions. See the file 'COPYING' for details.\n\n"
+             "Write comments and bugs to {}\n"
+             "Support this project at {}\n\n")
+           .toStdString (),
+         PROGRAM_NAME, ver, copyright_line, PROGRAM_NAME, ISSUE_TRACKER_URL,
+         "https://liberapay.com/Zrythm")
+    << "==============================================================\n\n";
+
+  z_info ("Running Zrythm in '{}'", QDir::currentPath ());
+
+  // TODO: install signal handlers
+
+  setup_ipc ();
 }
 
 void
@@ -89,6 +98,9 @@ ZrythmApplication::setup_ui ()
   // KDDockWidgets::QtQuick::Platform::instance ()->setQmlEngine (&engine);
 
   qml_engine_->addImportPath (":/org.zrythm.Zrythm/imports");
+
+  qml_engine_->rootContext ()->setContextProperty (
+    "settingsManager", SettingsManager::getInstance ());
 
   const QUrl url (QStringLiteral (
     "qrc:/org.zrythm.Zrythm/imports/Zrythm/resources/ui/greeter.qml"));
@@ -133,12 +145,11 @@ ZrythmApplication::setup_ipc ()
   socket_->connectToServer (IPC_SOCKET_NAME);
   if (socket_->waitForConnected (1000))
     {
-      qDebug () << "Connected to IPC server";
+      z_info ("Connected to IPC server");
     }
   else
     {
-      qDebug ()
-        << "Failed to connect to IPC server: " << socket_->errorString ();
+      z_error ("Failed to connect to IPC server: {}", socket_->errorString ());
     }
 }
 

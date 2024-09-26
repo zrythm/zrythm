@@ -3,6 +3,7 @@
 
 #include "zrythm-config.h"
 
+#include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
 
 #ifndef _WIN32
@@ -96,31 +97,24 @@ Zrythm::remove_recent_project (const std::string &filepath)
   g_strfreev (tmp);
 }
 
-/**
- * Returns the version string.
- *
- * Must be g_free()'d.
- *
- * @param with_v Include a starting "v".
- */
-char *
+std::string
 Zrythm::get_version (bool with_v)
 {
-  const char * ver = PACKAGE_VERSION;
+  constexpr const char * ver = PACKAGE_VERSION;
 
   if (with_v)
     {
       if (ver[0] == 'v')
-        return g_strdup (ver);
-      else
-        return g_strdup_printf ("v%s", ver);
+        return ver;
+
+      return fmt::format ("v{}", ver);
     }
   else
     {
       if (ver[0] == 'v')
-        return g_strdup (&ver[1]);
-      else
-        return g_strdup (ver);
+        return &ver[1];
+
+      return ver;
     }
 }
 
@@ -134,14 +128,11 @@ Zrythm::get_version (bool with_v)
 void
 Zrythm::get_version_with_capabilities (char * buf, bool include_system_info)
 {
-  char * ver = get_version (0);
+  std::string ver = get_version (false);
 
-  GString * gstr = g_string_new (nullptr);
-
-  g_string_append_printf (
-    gstr,
-    "%s %s%s (%s)\n"
-    "  built with %s %s for %s%s\n"
+  std::string gstr = fmt::format (
+    "{} {}{} ({})\n"
+    "  built with {} {} for {}{}\n"
 #if HAVE_CARLA
     "    +carla\n"
 #endif
@@ -196,61 +187,52 @@ Zrythm::get_version_with_capabilities (char * buf, bool include_system_info)
 
   if (include_system_info)
     {
-      g_string_append (gstr, "\n");
-      char * system_nfo = get_system_info ();
-      g_string_append (gstr, system_nfo);
-      g_free (system_nfo);
+      gstr += "\n";
+      const auto system_nfo = get_system_info ();
+      gstr += system_nfo;
     }
 
-  char * str = g_string_free (gstr, false);
-  strcpy (buf, str);
-
-  g_free (str);
-  g_free (ver);
+  strcpy (buf, gstr.c_str ());
 }
 
-/**
- * Returns system info (mainly used for bug
- * reports).
- */
-char *
-Zrythm::get_system_info (void)
+std::string
+Zrythm::get_system_info ()
 {
-  GString * gstr = g_string_new (nullptr);
+  std::string gstr;
 
-  char * content = NULL;
-  bool ret = g_file_get_contents ("/etc/os-release", &content, nullptr, nullptr);
-  if (ret)
+  QFile file ("/etc/os-release");
+  if (file.open (QIODevice::ReadOnly | QIODevice::Text))
     {
-      g_string_append_printf (gstr, "%s\n", content);
-      g_free (content);
+      QTextStream in (&file);
+      gstr += in.readAll ().toStdString () + "\n";
     }
 
-  g_string_append_printf (
-    gstr, "XDG_SESSION_TYPE=%s\n", g_getenv ("XDG_SESSION_TYPE"));
-  g_string_append_printf (
-    gstr, "XDG_CURRENT_DESKTOP=%s\n", g_getenv ("XDG_CURRENT_DESKTOP"));
-  g_string_append_printf (
-    gstr, "DESKTOP_SESSION=%s\n", g_getenv ("DESKTOP_SESSION"));
+  QProcessEnvironment env = QProcessEnvironment::systemEnvironment ();
+  gstr += fmt::format ("XDG_SESSION_TYPE={}\n", env.value ("XDG_SESSION_ID"));
+  gstr += fmt::format (
+    "XDG_CURRENT_DESKTOP={}\n", Glib::getenv ("XDG_CURRENT_DESKTOP"));
+  gstr += fmt::format ("DESKTOP_SESSION={}\n", Glib::getenv ("DESKTOP_SESSION"));
 
-  g_string_append (gstr, "\n");
+  gstr += "\n";
 
 #if HAVE_CARLA
-  g_string_append_printf (gstr, "Carla version: %s\n", Z_CARLA_VERSION_STRING);
+  gstr += fmt::format ("Carla version: {}\n", Z_CARLA_VERSION_STRING);
 #endif
-  g_string_append_printf (
-    gstr, "GTK version: %u.%u.%u\n", gtk_get_major_version (),
+  gstr += fmt::format (
+    "GTK version: {}.{}.{}\n", gtk_get_major_version (),
     gtk_get_minor_version (), gtk_get_micro_version ());
-  g_string_append_printf (
-    gstr, "libadwaita version: %u.%u.%u\n", adw_get_major_version (),
+  gstr += fmt::format (
+    "libadwaita version: {}.{}.{}\n", adw_get_major_version (),
     adw_get_minor_version (), adw_get_micro_version ());
-  g_string_append_printf (
-    gstr, "libpanel version: %u.%u.%u\n", panel_get_major_version (),
+  gstr += fmt::format (
+    "libpanel version: {}.{}.{}\n", panel_get_major_version (),
     panel_get_minor_version (), panel_get_micro_version ());
 
-  char * str = g_string_free (gstr, false);
+  gstr += fmt::format (
+    "QT version: {}.{}.{}\n", QT_VERSION_MAJOR, QT_VERSION_MINOR,
+    QT_VERSION_PATCH);
 
-  return str;
+  return gstr;
 }
 
 /**
@@ -295,191 +277,24 @@ Zrythm::is_latest_release (const char * remote_latest_release)
   return string_is_equal (remote_latest_release, PACKAGE_VERSION);
 }
 
-JUCE_IMPLEMENT_SINGLETON (ZrythmDirectoryManager)
-
-std::string
-ZrythmDirectoryManager::get_prefix (void)
-{
-#if defined(_WIN32) && ZRYTHM_IS_INSTALLER_VER
-  return io_get_registry_string_val ("InstallPath");
-#elif defined(__APPLE__) && ZRYTHM_IS_INSTALLER_VER
-  char bundle_path[PATH_MAX];
-  int  ret = io_get_bundle_path (bundle_path);
-  z_return_val_if_fail (ret == 0, nullptr);
-  return io_path_get_parent_dir (bundle_path);
-#elif defined(APPIMAGE_BUILD)
-  z_return_val_if_fail (zrythm_app->appimage_runtime_path, nullptr);
-  return g_build_filename (zrythm_app->appimage_runtime_path, "usr", nullptr);
-#else
-  return ZRYTHM_PREFIX;
-#endif
-}
-
-void
-ZrythmDirectoryManager::remove_testing_dir ()
-{
-  if (testing_dir_.empty ())
-    return;
-
-  io_rmdir (testing_dir_.c_str (), true);
-  testing_dir_.clear ();
-}
-
-const std::string &
-ZrythmDirectoryManager::get_testing_dir ()
-{
-  if (testing_dir_.empty ())
-    {
-      char * new_testing_dir =
-        g_dir_make_tmp ("zrythm_test_dir_XXXXXX", nullptr);
-      testing_dir_ = new_testing_dir;
-      g_free (new_testing_dir);
-    }
-  return testing_dir_;
-}
-
-std::string
-ZrythmDirectoryManager::get_user_dir (bool force_default)
-{
-  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
-    {
-      return get_testing_dir ();
-    }
-
-  std::string dir =
-    Gio::Settings::create (GSETTINGS_ZRYTHM_PREFIX ".preferences.general.paths")
-      ->get_string ("zrythm-dir");
-
-  if (force_default || dir.length () == 0)
-    {
-      dir = Glib::build_filename (g_get_user_data_dir (), "zrythm");
-    }
-
-  return dir;
-}
-
-std::string
-ZrythmDirectoryManager::get_default_user_dir (void)
-{
-  return get_user_dir (true);
-}
-
-std::string
-ZrythmDirectoryManager::get_dir (ZrythmDirType type)
-{
-  /* handle system dirs */
-  if (type < ZrythmDirType::USER_TOP)
-    {
-      std::string prefix = get_prefix ();
-
-      switch (type)
-        {
-        case ZrythmDirType::SYSTEM_PREFIX:
-          return prefix;
-        case ZrythmDirType::SYSTEM_BINDIR:
-          return Glib::build_filename (prefix, "bin");
-        case ZrythmDirType::SYSTEM_PARENT_DATADIR:
-          return Glib::build_filename (prefix, "share");
-        case ZrythmDirType::SYSTEM_PARENT_LIBDIR:
-          return Glib::build_filename (prefix, LIBDIR_NAME);
-        case ZrythmDirType::SYSTEM_ZRYTHM_LIBDIR:
-          {
-            std::string parent_path =
-              get_dir (ZrythmDirType::SYSTEM_PARENT_LIBDIR);
-            return Glib::build_filename (parent_path, "zrythm");
-          }
-        case ZrythmDirType::SYSTEM_BUNDLED_PLUGINSDIR:
-          {
-            std::string parent_path =
-              get_dir (ZrythmDirType::SYSTEM_ZRYTHM_LIBDIR);
-            return Glib::build_filename (parent_path, "lv2");
-          }
-        case ZrythmDirType::SYSTEM_LOCALEDIR:
-          return Glib::build_filename (prefix, "share", "locale");
-        case ZrythmDirType::SYSTEM_SOURCEVIEW_LANGUAGE_SPECS_DIR:
-          return Glib::build_filename (
-            prefix, "share", "gtksourceview-5", "language-specs");
-        case ZrythmDirType::SYSTEM_BUNDLED_SOURCEVIEW_LANGUAGE_SPECS_DIR:
-          return Glib::build_filename (
-            prefix, "share", "zrythm", "gtksourceview-5", "language-specs");
-        case ZrythmDirType::SYSTEM_ZRYTHM_DATADIR:
-          return Glib::build_filename (prefix, "share", "zrythm");
-        case ZrythmDirType::SYSTEM_SAMPLESDIR:
-          return Glib::build_filename (prefix, "share", "zrythm", "samples");
-        case ZrythmDirType::SYSTEM_SCRIPTSDIR:
-          return Glib::build_filename (prefix, "share", "zrythm", "scripts");
-        case ZrythmDirType::SYSTEM_THEMESDIR:
-          return Glib::build_filename (prefix, "share", "zrythm", "themes");
-        case ZrythmDirType::SYSTEM_THEMES_CSS_DIR:
-          {
-            std::string parent_path = get_dir (ZrythmDirType::SYSTEM_THEMESDIR);
-            return Glib::build_filename (parent_path, "css");
-          }
-        case ZrythmDirType::SYSTEM_THEMES_ICONS_DIR:
-          {
-            std::string parent_path = get_dir (ZrythmDirType::SYSTEM_THEMESDIR);
-            return Glib::build_filename (parent_path, "icons");
-          }
-        case ZrythmDirType::SYSTEM_SPECIAL_LV2_PLUGINS_DIR:
-          return Glib::build_filename (prefix, "share", "zrythm", "lv2");
-        case ZrythmDirType::SYSTEM_FONTSDIR:
-          return Glib::build_filename (prefix, "share", "fonts", "zrythm");
-        case ZrythmDirType::SYSTEM_TEMPLATES:
-          return Glib::build_filename (prefix, "share", "zrythm", "templates");
-        default:
-          break;
-        }
-    }
-  /* handle user dirs */
-  else
-    {
-      std::string user_dir = get_user_dir (false);
-
-      switch (type)
-        {
-        case ZrythmDirType::USER_TOP:
-          return user_dir;
-        case ZrythmDirType::USER_PROJECTS:
-          return Glib::build_filename (user_dir, ZRYTHM_PROJECTS_DIR);
-        case ZrythmDirType::USER_TEMPLATES:
-          return Glib::build_filename (user_dir, "templates");
-        case ZrythmDirType::USER_LOG:
-          return Glib::build_filename (user_dir, "log");
-        case ZrythmDirType::USER_SCRIPTS:
-          return Glib::build_filename (user_dir, "scripts");
-        case ZrythmDirType::USER_THEMES:
-          return Glib::build_filename (user_dir, "themes");
-        case ZrythmDirType::USER_THEMES_CSS:
-          return Glib::build_filename (user_dir, "themes", "css");
-        case ZrythmDirType::USER_THEMES_ICONS:
-          return Glib::build_filename (user_dir, "themes", "icons");
-        case ZrythmDirType::USER_PROFILING:
-          return Glib::build_filename (user_dir, "profiling");
-        case ZrythmDirType::USER_GDB:
-          return Glib::build_filename (user_dir, "gdb");
-        case ZrythmDirType::USER_BACKTRACE:
-          return Glib::build_filename (user_dir, "backtraces");
-        default:
-          break;
-        }
-    }
-
-  z_return_val_if_reached ("");
-}
-
 void
 Zrythm::init_user_dirs_and_files ()
 {
   z_info ("initing dirs and files");
 
-  auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
+  auto * dir_mgr = DirectoryManager::getInstance ();
   for (
     auto dir_type :
-    { ZrythmDirType::USER_TOP, ZrythmDirType::USER_PROJECTS,
-      ZrythmDirType::USER_TEMPLATES, ZrythmDirType::USER_LOG,
-      ZrythmDirType::USER_SCRIPTS, ZrythmDirType::USER_THEMES,
-      ZrythmDirType::USER_THEMES_CSS, ZrythmDirType::USER_PROFILING,
-      ZrythmDirType::USER_GDB, ZrythmDirType::USER_BACKTRACE })
+    { DirectoryManager::DirectoryType::USER_TOP,
+      DirectoryManager::DirectoryType::USER_PROJECTS,
+      DirectoryManager::DirectoryType::USER_TEMPLATES,
+      DirectoryManager::DirectoryType::USER_LOG,
+      DirectoryManager::DirectoryType::USER_SCRIPTS,
+      DirectoryManager::DirectoryType::USER_THEMES,
+      DirectoryManager::DirectoryType::USER_THEMES_CSS,
+      DirectoryManager::DirectoryType::USER_PROFILING,
+      DirectoryManager::DirectoryType::USER_GDB,
+      DirectoryManager::DirectoryType::USER_BACKTRACE })
     {
       std::string dir = dir_mgr->get_dir (dir_type);
       z_return_if_fail (!dir.empty ());
@@ -499,9 +314,9 @@ Zrythm::init_templates ()
 {
   z_info ("Initializing templates...");
 
-  auto *      dir_mgr = ZrythmDirectoryManager::getInstance ();
+  auto *      dir_mgr = DirectoryManager::getInstance ();
   std::string user_templates_dir =
-    dir_mgr->get_dir (ZrythmDirType::USER_TEMPLATES);
+    dir_mgr->get_dir (DirectoryManager::DirectoryType::USER_TEMPLATES);
   try
     {
       templates_ = io_get_files_in_dir (user_templates_dir);
@@ -513,7 +328,7 @@ Zrythm::init_templates ()
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       std::string system_templates_dir =
-        dir_mgr->get_dir (ZrythmDirType::SYSTEM_TEMPLATES);
+        dir_mgr->get_dir (DirectoryManager::DirectoryType::SYSTEM_TEMPLATES);
       try
         {
           templates_.addArray (io_get_files_in_dir (system_templates_dir));
@@ -535,13 +350,6 @@ Zrythm::init_templates ()
     }
 
   z_info ("done");
-}
-
-ZrythmDirectoryManager::~ZrythmDirectoryManager ()
-{
-  z_info ("Destroying ZrythmDirectoryManager");
-  remove_testing_dir ();
-  clearSingletonInstance ();
 }
 
 Zrythm::~Zrythm ()

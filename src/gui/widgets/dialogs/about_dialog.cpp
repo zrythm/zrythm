@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -32,8 +32,8 @@ about_dialog_widget_new (GtkWindow * parent)
   };
   const char * translators = TRANSLATORS_STR;
 
-  char * version = Zrythm::get_version (true);
-  char * sys_nfo = Zrythm::get_system_info ();
+  const auto version = Zrythm::get_version (true);
+  const auto sys_nfo = Zrythm::get_system_info ();
 
   AdwAboutWindow * dialog = ADW_ABOUT_WINDOW (adw_about_window_new ());
 
@@ -50,8 +50,8 @@ about_dialog_widget_new (GtkWindow * parent)
   );
   adw_about_window_set_comments (
     dialog, _ ("a highly automated and intuitive digital audio workstation"));
-  adw_about_window_set_debug_info (dialog, sys_nfo);
-  adw_about_window_set_version (dialog, version);
+  adw_about_window_set_debug_info (dialog, sys_nfo.c_str ());
+  adw_about_window_set_version (dialog, version.c_str ());
   adw_about_window_set_application_icon (dialog, "zrythm");
   adw_about_window_set_application_name (dialog, "Zrythm");
   adw_about_window_set_issue_url (dialog, ISSUE_TRACKER_URL);
@@ -59,9 +59,6 @@ about_dialog_widget_new (GtkWindow * parent)
 
   gtk_window_set_transient_for (GTK_WINDOW (dialog), parent);
   gtk_window_set_modal (GTK_WINDOW (dialog), true);
-
-  g_free (version);
-  g_free (sys_nfo);
 
   return GTK_WINDOW (dialog);
 }

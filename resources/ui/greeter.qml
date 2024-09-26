@@ -14,7 +14,7 @@ ApplicationWindow {
         id: stack
 
         anchors.fill: parent
-        initialItem: firstRunPage
+        initialItem: settingsManager.first_run ? firstRunPage : progressPage
 
         Component {
             id: firstRunPage
@@ -94,8 +94,7 @@ ApplicationWindow {
 
                     Item {
                         Button {
-                            //   onClicked: stack.push(configPage)
-
+                            onClicked: stack.push(configPage)
                             anchors.centerIn: parent
                             text: qsTr("Proceed to Configuration")
                         }

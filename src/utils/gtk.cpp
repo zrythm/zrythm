@@ -766,9 +766,9 @@ z_gtk_source_language_manager_get (void)
     }
 
   /* add the new path if not already in the list */
-  auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
+  auto * dir_mgr = DirectoryManager::getInstance ();
   auto   language_specs_dir =
-    dir_mgr->get_dir (ZrythmDirType::SYSTEM_SOURCEVIEW_LANGUAGE_SPECS_DIR);
+    dir_mgr->get_dir (DirectoryManager::DirectoryType::SYSTEM_SOURCEVIEW_LANGUAGE_SPECS_DIR);
   z_return_val_if_fail (!language_specs_dir.empty (), nullptr);
   if (!after_paths_builder_tmp.contains (language_specs_dir))
     {
@@ -777,7 +777,7 @@ z_gtk_source_language_manager_get (void)
 
   /* add bundled dir for GNU/Linux packages */
   language_specs_dir = dir_mgr->get_dir (
-    ZrythmDirType::SYSTEM_BUNDLED_SOURCEVIEW_LANGUAGE_SPECS_DIR);
+    DirectoryManager::DirectoryType::SYSTEM_BUNDLED_SOURCEVIEW_LANGUAGE_SPECS_DIR);
   after_paths_builder.add (language_specs_dir);
 
   for (auto &dir : after_paths_builder)

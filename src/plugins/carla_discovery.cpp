@@ -11,6 +11,7 @@
 #  include "plugins/carla_discovery.h"
 #  include "plugins/plugin_descriptor.h"
 #  include "plugins/plugin_manager.h"
+#  include "utils/directory_manager.h"
 #  include "utils/string.h"
 #  include "zrythm.h"
 #  include "zrythm_app.h"
@@ -42,9 +43,9 @@ ZCarlaDiscovery::get_discovery_path (PluginArchitecture arch)
     }
   else
     {
-      auto *      dir_mgr = ZrythmDirectoryManager::getInstance ();
-      std::string zrythm_libdir =
-        dir_mgr->get_dir (ZrythmDirType::SYSTEM_ZRYTHM_LIBDIR);
+      auto *      dir_mgr = DirectoryManager::getInstance ();
+      std::string zrythm_libdir = dir_mgr->get_dir (
+        DirectoryManager::DirectoryType::SYSTEM_ZRYTHM_LIBDIR);
       z_debug ("using zrythm_libdir: {}", zrythm_libdir);
       carla_discovery_parent_dir = fs::path (zrythm_libdir) / "carla";
     }

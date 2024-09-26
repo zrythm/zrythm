@@ -56,6 +56,7 @@ private:
       }
     qDebug () << "Received signal" << signal << ": " << signal_name;
     qApp->quit ();
+    exit (EXIT_FAILURE);
   }
 
   void setup_ipc ()

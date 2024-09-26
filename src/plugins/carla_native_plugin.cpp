@@ -26,6 +26,7 @@
 #  include "project.h"
 #  include "settings/g_settings_manager.h"
 #  include "utils/debug.h"
+#  include "utils/directory_manager.h"
 #  include "utils/dsp.h"
 #  include "utils/gtk.h"
 #  include "utils/io.h"
@@ -1376,8 +1377,9 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
   carla_plugin_id_ = 0;
 
   /* set binary paths */
-  auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
-  auto   zrythm_libdir = dir_mgr->get_dir (ZrythmDirType::SYSTEM_ZRYTHM_LIBDIR);
+  auto * dir_mgr = DirectoryManager::getInstance ();
+  auto   zrythm_libdir =
+    dir_mgr->get_dir (DirectoryManager::DirectoryType::SYSTEM_ZRYTHM_LIBDIR);
   auto   carla_binaries_dir = fs::path (zrythm_libdir) / "carla";
   z_debug (
     "setting carla engine option [ENGINE_OPTION_PATH_BINARIES] to '{}'",

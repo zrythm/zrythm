@@ -35,6 +35,7 @@
 #include "plugins/carla_discovery.h"
 #include "plugins/plugin_manager.h"
 #include "settings/g_settings_manager.h"
+#include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/windows.h"
 #include "zrythm.h"
@@ -161,11 +162,11 @@ PluginManager::get_lv2_paths ()
     }
 
   /* add special paths */
-  auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
-  auto   builtin_plugins_path =
-    dir_mgr->get_dir (ZrythmDirType::SYSTEM_BUNDLED_PLUGINSDIR);
-  auto special_plugins_path =
-    dir_mgr->get_dir (ZrythmDirType::SYSTEM_SPECIAL_LV2_PLUGINS_DIR);
+  auto * dir_mgr = DirectoryManager::getInstance ();
+  auto   builtin_plugins_path = dir_mgr->get_dir (
+    DirectoryManager::DirectoryType::SYSTEM_BUNDLED_PLUGINSDIR);
+  auto special_plugins_path = dir_mgr->get_dir (
+    DirectoryManager::DirectoryType::SYSTEM_SPECIAL_LV2_PLUGINS_DIR);
   ret.add (builtin_plugins_path);
   ret.add (special_plugins_path);
 

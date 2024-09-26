@@ -3,6 +3,7 @@
 
 #include "utils/datetime.h"
 #include "utils/debug.h"
+#include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 #include "utils/logger.h"
@@ -180,7 +181,7 @@ Logger::Logger ()
 std::string
 Logger::get_log_file_path () const
 {
-  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING || true) // TODO: fix
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       auto tmp_log_dir = fs::path (g_get_tmp_dir ()) / "zrythm_test_logs";
       EXPECT_NO_THROW ({ io_mkdir (tmp_log_dir.string ()); });
@@ -189,8 +190,9 @@ Logger::get_log_file_path () const
     }
 
   auto   str_datetime = datetime_get_for_filename ();
-  auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
-  auto   user_log_dir = dir_mgr->get_dir (ZrythmDirType::USER_LOG);
+  auto * dir_mgr = DirectoryManager::getInstance ();
+  auto   user_log_dir =
+    dir_mgr->get_dir (DirectoryManager::DirectoryType::USER_LOG);
   auto   log_filepath =
     fs::path (user_log_dir) / (std::string ("zrythm_") + str_datetime);
   io_mkdir (user_log_dir); // note: throws

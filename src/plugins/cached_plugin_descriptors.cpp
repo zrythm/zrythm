@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/cached_plugin_descriptors.h"
+#include "utils/directory_manager.h"
 #include "utils/string.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -16,8 +17,8 @@ constexpr const char * CACHED_PLUGIN_DESCRIPTORS_JSON_FILENAME =
 fs::path
 CachedPluginDescriptors::get_file_path ()
 {
-  auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
-  auto   zrythm_dir = dir_mgr->get_dir (ZrythmDirType::USER_TOP);
+  auto * dir_mgr = DirectoryManager::getInstance ();
+  auto zrythm_dir = dir_mgr->get_dir (DirectoryManager::DirectoryType::USER_TOP);
   z_return_val_if_fail (!zrythm_dir.empty (), "");
 
   return fs::path (zrythm_dir) / CACHED_PLUGIN_DESCRIPTORS_JSON_FILENAME;

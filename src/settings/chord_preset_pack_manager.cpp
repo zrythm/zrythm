@@ -5,6 +5,7 @@
 #include "gui/backend/event_manager.h"
 #include "project.h"
 #include "settings/chord_preset_pack_manager.h"
+#include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 #include "utils/rt_thread_id.h"
@@ -18,8 +19,9 @@
 std::string
 ChordPresetPackManager::get_user_packs_path ()
 {
-  auto *      dir_mgr = ZrythmDirectoryManager::getInstance ();
-  std::string zrythm_dir = dir_mgr->get_dir (ZrythmDirType::USER_TOP);
+  auto *      dir_mgr = DirectoryManager::getInstance ();
+  std::string zrythm_dir =
+    dir_mgr->get_dir (DirectoryManager::DirectoryType::USER_TOP);
   z_return_val_if_fail (!zrythm_dir.empty (), "");
 
   return Glib::build_filename (zrythm_dir, UserPacksDirName);
