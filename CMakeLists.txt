@@ -906,7 +906,9 @@ qt_add_qml_module(zrythm
   URI Zrythm
   VERSION 1.0
   RESOURCE_PREFIX /org.zrythm.Zrythm/imports
-  QML_FILES resources/ui/main_window.qml
+  QML_FILES 
+    resources/ui/main_window.qml
+    resources/ui/greeter.qml
 )
 
 list(APPEND zrythm_link_libs
@@ -941,7 +943,7 @@ list(APPEND zrythm_link_libs
   PkgConfig::GLIBMM
   PkgConfig::GIOMM
   PkgConfig::GTKMM
-  # Qt6::Core
+  Qt6::Core
   Qt6::Gui
   Qt6::Widgets
   Qt6::Quick

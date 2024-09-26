@@ -6,6 +6,7 @@
 
 #include "zrythm-config.h"
 
+#include <QString>
 #include <filesystem>
 
 #include "utils/traits.h"
@@ -172,6 +173,16 @@ struct fmt::formatter<juce::String> : fmt::formatter<std::string_view>
 {
   template <typename FormatContext>
   auto format (const juce::String &s, FormatContext &ctx) const
+  {
+    return fmt::formatter<std::string_view>::format (s.toStdString (), ctx);
+  }
+};
+
+// Formatter for QString
+template <> struct fmt::formatter<QString> : fmt::formatter<std::string_view>
+{
+  template <typename FormatContext>
+  auto format (const QString &s, FormatContext &ctx) const
   {
     return fmt::formatter<std::string_view>::format (s.toStdString (), ctx);
   }

@@ -180,7 +180,7 @@ Logger::Logger ()
 std::string
 Logger::get_log_file_path () const
 {
-  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
+  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING || true) // TODO: fix
     {
       auto tmp_log_dir = fs::path (g_get_tmp_dir ()) / "zrythm_test_logs";
       EXPECT_NO_THROW ({ io_mkdir (tmp_log_dir.string ()); });

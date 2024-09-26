@@ -75,6 +75,9 @@ if(ZRYTHM_TESTS)
     PkgConfig::GLIBMM
     PkgConfig::GIOMM
     PkgConfig::GTKMM
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Widgets
   )
   target_link_options(zrythm_lv2apply PRIVATE ${zrythm_link_args})
 endif()

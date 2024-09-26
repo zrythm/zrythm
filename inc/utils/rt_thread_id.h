@@ -22,7 +22,10 @@ private:
 
 public:
   RTThreadId ();
-  unsigned int get () const;
+
+  using IdType = unsigned int;
+
+  [[nodiscard]] IdType get () const;
   bool         operator== (const RTThreadId &other) const;
   bool         operator!= (const RTThreadId &other) const;
 };
