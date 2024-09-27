@@ -8,9 +8,12 @@
 #include <QTimer>
 
 #include "settings/settings_manager.h"
+#include "utils/directory_manager.h"
+#include "utils/pcg_rand.h"
 
 #include "engine/ipc_message.h"
 #include "zrythm_application.h"
+#include <fftw3.h>
 // #include <kddockwidgets/Config.h>
 // #include <kddockwidgets/qtquick/Platform.h>
 // #include <kddockwidgets/qtquick/ViewFactory.h>
@@ -30,18 +33,16 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
 
   /* setup command line parser */
   setup_command_line_options ();
+  cmd_line_parser_.process (*this);
 
-  setup_ui ();
   launch_engine_process ();
-}
 
-void
-ZrythmApplication::post_exec_initialization ()
-{
   Zrythm::getInstance ()->pre_init (
     applicationFilePath ().toStdString ().c_str (), true, true);
 
   // TODO: init localization
+
+  setup_ui ();
 
   gZrythm->init ();
 
@@ -66,6 +67,28 @@ ZrythmApplication::post_exec_initialization ()
 
   // TODO: install signal handlers
 
+#if HAVE_X11
+  /* init xlib threads */
+  z_info ("Initing X threads...");
+  XInitThreads ();
+#endif
+
+  /* init suil */
+  /*z_info ("Initing suil...");*/
+  /*suil_init (&self->argc, &self->argv, SUIL_ARG_NONE);*/
+
+  /* init fftw */
+  z_info ("Making fftw planner thread safe...");
+  fftw_make_planner_thread_safe ();
+  fftwf_make_planner_thread_safe ();
+
+  // Schedule the post-exec initialization
+  QTimer::singleShot (0, this, &ZrythmApplication::post_exec_initialization);
+}
+
+void
+ZrythmApplication::post_exec_initialization ()
+{
   setup_ipc ();
 }
 
@@ -78,10 +101,13 @@ ZrythmApplication::setup_command_line_options ()
   cmd_line_parser_.addVersionOption ();
 
   cmd_line_parser_.addOptions ({
-    { "project",                   "Open project",                     "project",     "project"                   },
-    { "new-project",               "Create new project",               "new-project", "new-project"               },
+    { "project", "Open project", "project", "project" },
+    { "new-project", "Create new project", "new-project", "new-project" },
     { "new-project-with-template", "Create new project with template",
-     "new-project-with-template",                                                     "new-project-with-template" }
+     "new-project-with-template", "new-project-with-template" },
+    {
+     "dummy", "Use dummy audio/midi engine",
+     },
   });
 }
 
@@ -90,6 +116,43 @@ ZrythmApplication::setup_ui ()
 {
   QQuickStyle::setStyle ("Imagine");
   QIcon::setThemeName ("dark");
+
+  // Set font scaling TODO (if needed)
+  // QSettings settings;
+  // double fontScale = settings.value ("UI/General/font-scale", 1.0).toDouble ();
+
+  /* prepend freedesktop system icons to search path, just in case */
+  auto * dir_mgr = DirectoryManager::getInstance ();
+  auto   parent_datadir =
+    dir_mgr->get_dir (DirectoryManager::DirectoryType::SYSTEM_PARENT_DATADIR);
+  auto freedesktop_icon_theme_dir = parent_datadir / "icons";
+
+  auto prepend_icon_theme_search_path = [] (const fs::path &path) {
+    QIcon::themeSearchPaths ().prepend (QString::fromStdString (path.string ()));
+    z_debug ("added icon theme search path: {}", path);
+  };
+
+  prepend_icon_theme_search_path (freedesktop_icon_theme_dir);
+
+  /* prepend zrythm system icons to search path */
+  {
+    const auto system_icon_theme_dir = dir_mgr->get_dir (
+      DirectoryManager::DirectoryType::SYSTEM_THEMES_ICONS_DIR);
+    prepend_icon_theme_search_path (system_icon_theme_dir);
+  }
+
+  /* prepend user custom icons to search path */
+  {
+    auto user_icon_theme_dir =
+      dir_mgr->get_dir (DirectoryManager::DirectoryType::USER_THEMES_ICONS);
+    prepend_icon_theme_search_path (user_icon_theme_dir);
+  }
+
+  // icon theme
+  const auto icon_theme_name =
+    SettingsManager::getInstance ()->get_icon_theme ();
+  z_info ("Setting icon theme to '{}'", icon_theme_name);
+  QIcon::setThemeName (icon_theme_name);
 
   // KDDockWidgets::initFrontend (KDDockWidgets::FrontendType::QtQuick);
 
@@ -109,27 +172,16 @@ ZrythmApplication::setup_ui ()
 
   if (!qml_engine_->rootObjects ().isEmpty ())
     {
-      qDebug () << "QML file loaded successfully";
+      z_debug ("QML file loaded successfully");
     }
   else
     {
-      qDebug () << "Failed to load QML file";
+      z_error ("Failed to load QML file");
     }
-
-  // Load custom font
-  int fontId = QFontDatabase::addApplicationFont (
-    "/usr/share/fonts/cantarell/Cantarell-VF.otf");
-  if (fontId == -1)
-    {
-      qWarning () << "Failed to load custom font";
-    }
-
-  // Schedule the post-exec initialization
-  QTimer::singleShot (0, this, &ZrythmApplication::post_exec_initialization);
 }
 
 void
-ZrythmApplication::handle_engine_output ()
+ZrythmApplication::onEngineOutput ()
 {
   QByteArray output = engine_process_->readAllStandardOutput ();
   QString    outputString (output);
@@ -166,7 +218,7 @@ ZrythmApplication::launch_engine_process ()
   // Connect the readyReadStandardOutput signal to the new slot
   connect (
     engine_process_, &QProcess::readyReadStandardOutput, this,
-    &ZrythmApplication::handle_engine_output);
+    &ZrythmApplication::onEngineOutput);
 
   engine_process_->start (QString (path.string ().c_str ()));
   if (engine_process_->waitForStarted ())
@@ -178,6 +230,26 @@ ZrythmApplication::launch_engine_process ()
       z_warning (
         "Failed to start engine process: {}", engine_process_->errorString ());
     }
+}
+
+void
+ZrythmApplication::onAboutToQuit ()
+{
+  z_info ("Shutting down...");
+
+  if (gZrythm)
+    {
+      if (gZrythm->project_ && gZrythm->project_->audio_engine_)
+        {
+          gZrythm->project_->audio_engine_->activate (false);
+        }
+      gZrythm->project_.reset ();
+      gZrythm->deleteInstance ();
+    }
+
+  DirectoryManager::deleteInstance ();
+  PCGRand::deleteInstance ();
+  SettingsManager::deleteInstance ();
 }
 
 ZrythmApplication::~ZrythmApplication ()
@@ -199,4 +271,7 @@ ZrythmApplication::~ZrythmApplication ()
           engine_process_->kill ();
         }
     }
+
+  z_info ("ZrythmApplication destroyed - deleting logger...");
+  Logger::deleteInstance ();
 }

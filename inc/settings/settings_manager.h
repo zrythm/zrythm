@@ -68,6 +68,7 @@ class SettingsManager final : public QObject
 
   // note: in amplitude (0 to 2)
   DEFINE_SETTING_PROPERTY_DOUBLE (double, metronome_volume, 1.0)
+  DEFINE_SETTING_PROPERTY (QString, icon_theme, "zrythm-dark")
 
 public:
   ~SettingsManager () override;

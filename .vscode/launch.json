@@ -66,6 +66,10 @@
                 {
                     "name": "ASAN_OPTIONS",
                     "value": "check_initialization_order=1",
+                },
+                {
+                    "name": "QT_QPA_PLATFORM",
+                    "value": "wayland",
                 }
             ],
             "args": [

@@ -75,40 +75,75 @@ foreach(blp ${blp_filenames})
   list(APPEND ui_files ${ui_file})
 endforeach()
 
+if(0)
+set(out_file "${CMAKE_CURRENT_BINARY_DIR}/resources.qrc")
 add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/zrythm.gresources.xml
-  COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/gen-gtk-resources-xml.py
+  OUTPUT ${out_file}
+  COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/gen-qt-resources-xml.py
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${APPDATA_FILE}
-    ${CMAKE_CURRENT_BINARY_DIR}/zrythm.gresources.xml
+    ${out_file}
   DEPENDS ${ui_files} appdata-xml-merged
-  COMMENT "Generating zrythm.gresources.xml"
+  COMMENT "Generating resources.qrc"
+)
+endif()
+
+# GL shaders
+# file(GLOB gl_shaders "${CMAKE_CURRENT_SOURCE_DIR}/gl/shaders/*.glsl")
+
+# Icons
+set(icon_dirs
+  arena gnome-builder gnome-icon-library fork-awesome font-awesome
+  fluentui jam-icons box-icons iconpark iconoir material-design
+  untitled-ui css.gg codicons
 )
 
-find_program(GLIB_COMPILE_RESOURCES glib-compile-resources
-  PATHS ${GLIB_COMPILE_RESOURCES_PATH}
-  REQUIRED)
+set(icon_files)
+foreach(dir ${icon_dirs})
+  file(GLOB icons "${CMAKE_CURRENT_SOURCE_DIR}/icons/${dir}/*.svg" "${CMAKE_CURRENT_SOURCE_DIR}/icons/${dir}/*.png")
+  foreach(icon ${icons})
+    get_filename_component(icon_name ${icon} NAME)
+    set(icon_alias "icons/${dir}/${icon_name}")
+    set_source_files_properties(${icon} PROPERTIES QT_RESOURCE_ALIAS ${icon_alias})
+    list(APPEND icon_files ${icon})
+  endforeach()
+endforeach()
 
-set(GRESOURCE_COMPILED_FILE "${CMAKE_CURRENT_BINARY_DIR}/zrythm-resources.c")
+# add zrythm icon to resources
+set(zrythm_logo "${CMAKE_SOURCE_DIR}/data/icon-themes/zrythm-dark/scalable/apps/zrythm.svg")
+set_source_files_properties(${zrythm_logo} PROPERTIES QT_RESOURCE_ALIAS "icons/zrythm.svg")
+list(APPEND icon_files ${zrythm_logo})
 
-add_custom_command(
-  OUTPUT "${GRESOURCE_COMPILED_FILE}"
-  COMMAND ${GLIB_COMPILE_RESOURCES}
-    "--target=${GRESOURCE_COMPILED_FILE}"
-    --sourcedir=${CMAKE_CURRENT_SOURCE_DIR}
-    --sourcedir=${CMAKE_CURRENT_BINARY_DIR}
-    --sourcedir=${CMAKE_BINARY_DIR}/data
-    --generate-source
-    --c-name=zrythm
-    "${CMAKE_CURRENT_BINARY_DIR}/zrythm.gresources.xml"
-  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/zrythm.gresources.xml ${ui_files} appdata-xml-merged
-  COMMENT "Compiling GResource file: zrythm-resources.c"
+# font files
+set(font_filepaths
+  ${CMAKE_CURRENT_SOURCE_DIR}/fonts/Inter-4.0/InterVariable.ttf
+  ${CMAKE_CURRENT_SOURCE_DIR}/fonts/Inter-4.0/InterVariable-Italic.ttf
+  ${CMAKE_CURRENT_SOURCE_DIR}/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-Regular.ttf
+  ${CMAKE_CURRENT_SOURCE_DIR}/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-Bold.ttf
+  ${CMAKE_CURRENT_SOURCE_DIR}/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-Light.ttf
+  ${CMAKE_CURRENT_SOURCE_DIR}/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-Italic.ttf
+  ${CMAKE_CURRENT_SOURCE_DIR}/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-BoldItalic.ttf
+  ${CMAKE_CURRENT_SOURCE_DIR}/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-LightItalic.ttf
 )
+set(font_files)
+foreach(font_filepath ${font_filepaths})
+  get_filename_component(font_name ${font_filepath} NAME)
+  set_source_files_properties(${font_filepath} PROPERTIES QT_RESOURCE_ALIAS "fonts/${font_name}")
+  list(APPEND font_files ${font_filepath})
+endforeach()
 
-add_custom_target(zrythm-gresources DEPENDS ${GRESOURCE_COMPILED_FILE})
-set(GRESOURCE_COMPILED_FILE "${GRESOURCE_COMPILED_FILE}" PARENT_SCOPE)
-set_source_files_properties(
-  ${GRESOURCE_COMPILED_FILE} PROPERTIES 
-    GENERATED TRUE
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/config.js.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/config.js"
+)
+set_source_files_properties("${CMAKE_CURRENT_BINARY_DIR}/config.js" PROPERTIES QT_RESOURCE_ALIAS "config.js")
+
+qt_add_resources(zrythm "resources"
+  PREFIX "/"
+  FILES
+    ${ui_files}
+    ${icon_files}
+    ${font_files}
+    ${CMAKE_CURRENT_BINARY_DIR}/config.js
 )

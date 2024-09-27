@@ -85,12 +85,10 @@ target_precompile_headers(zrythm_lib
   PRIVATE 
     $<$<COMPILE_LANGUAGE:CXX>:${zrythm_pch}>)
 
-target_sources(zrythm
-  PRIVATE main.cpp ${GRESOURCE_COMPILED_FILE})
+target_sources(zrythm PRIVATE main.cpp)
 target_link_libraries(zrythm PRIVATE zrythm_lib)
 target_link_options(zrythm PRIVATE ${zrythm_link_args})
-add_dependencies(zrythm
-  zrythm-gresources appdata-xml-merged)
+add_dependencies(zrythm appdata-xml-merged)
 
 if(OS_GNU)
   add_dependencies(zrythm desktop-file)

@@ -1,14 +1,46 @@
 import QtQuick 6.7
 import QtQuick.Controls 6.7
 import QtQuick.Layouts 6.7
+import org.kde.kirigami as Kirigami
+import "qrc:/config.js" as Config
 
 ApplicationWindow {
     id: greeterWidget
 
-    title: qsTr("Greeter")
+    title: "Zrythm"
     modality: Qt.ApplicationModal
     minimumWidth: 256
+    width: 640
+    height: 480
     visible: true
+    Component.onCompleted: {
+        Qt.application.font.family = interFontItalic.name;
+        Qt.application.font.pixelSize = 16;
+    }
+
+    FontLoader {
+        id: dsegRegular
+
+        source: "qrc:/fonts/DSEG14ClassicMini-Regular.ttf"
+    }
+
+    FontLoader {
+        id: dsegBold
+
+        source: "qrc:/fonts/DSEG14ClassicMini-Bold.ttf"
+    }
+
+    FontLoader {
+        id: interFont
+
+        source: "qrc:/fonts/InterVariable.ttf"
+    }
+
+    FontLoader {
+        id: interFontItalic
+
+        source: "qrc:/fonts/InterVariable-Italic.ttf"
+    }
 
     StackView {
         id: stack
@@ -29,78 +61,97 @@ ApplicationWindow {
                     clip: true
 
                     Item {
-                        Image {
-                            //   source: "qrc:/icons/zrythm.svg"
-
+                        Kirigami.PlaceholderMessage {
                             anchors.centerIn: parent
-                        }
-
-                        Label {
-                            anchors.centerIn: parent
-                            text: qsTr("Welcome to the Zrythm digital audio workstation. Move to the next page to proceed.")
-                            wrapMode: Text.WordWrap
-                            horizontalAlignment: Text.AlignHCenter
+                            width: parent.width - (Kirigami.Units.largeSpacing * 4)
+                            // visible: root.loading
+                            icon.source: "qrc:/icons/zrythm.svg"
+                            text: qsTr("Welcome")
+                            explanation: qsTr("Welcome to the Zrythm digital audio workstation. Move to the next page to get started.")
                         }
 
                     }
 
                     Item {
-                        Image {
-                            //   source: "qrc:/icons/open-book-symbolic.svg"
-
+                        Kirigami.PlaceholderMessage {
                             anchors.centerIn: parent
-                        }
-
-                        Label {
-                            anchors.centerIn: parent
+                            width: parent.width - (Kirigami.Units.largeSpacing * 4)
+                            icon.source: "qrc:/icons/gnome-icon-library/open-book-symbolic.svg"
                             text: qsTr("Read the Manual")
-                            wrapMode: Text.WordWrap
-                            horizontalAlignment: Text.AlignHCenter
+                            explanation: qsTr("If this is your first time using Zrythm, we suggest going through the 'Getting Started' section in the %1user manual%2.").arg("<a href=\"" + Config.USER_MANUAL_URL + "\">").arg("</a>")
+                            onLinkActivated: (link) => {
+                                console.log("Opening link: " + link);
+                                return Qt.openUrlExternally(link);
+                            }
+                        }
+
+                    }
+
+                    Loader {
+                        active: !Config.IS_INSTALLER_VER || Config.IS_TRIAL_VER
+
+                        sourceComponent: Item {
+                            Kirigami.PlaceholderMessage {
+                                anchors.centerIn: parent
+                                width: parent.width - (Kirigami.Units.largeSpacing * 4)
+                                icon.source: "qrc:/icons/gnome-icon-library/credit-card-symbolic.svg"
+                                text: qsTr("Donate")
+                                explanation: qsTr("Zrythm relies on donations and purchases to sustain development. If you enjoy the software, please consider %1donating%2 or %3buying an installer%2.").arg("<a href=\"" + Config.DONATION_URL + "\">").arg("</a>").arg("<a href=\"" + Config.PURCHASE_URL + "\">")
+                                onLinkActivated: (link) => {
+                                    console.log("Opening link: " + link);
+                                    return Qt.openUrlExternally(link);
+                                }
+                            }
+
                         }
 
                     }
 
                     Item {
-                        Image {
-                            //   source: "qrc:/icons/credit-card-symbolic.svg"
-
+                        Kirigami.PlaceholderMessage {
                             anchors.centerIn: parent
-                        }
-
-                        Label {
-                            anchors.centerIn: parent
-                            text: qsTr("Donate")
-                            wrapMode: Text.WordWrap
-                            horizontalAlignment: Text.AlignHCenter
-                        }
-
-                    }
-
-                    Item {
-                        Image {
-                            //   source: "qrc:/icons/flatpak-symbolic.svg"
-
-                            anchors.centerIn: parent
-                        }
-
-                        Label {
-                            anchors.centerIn: parent
+                            width: parent.width - (Kirigami.Units.largeSpacing * 4)
+                            icon.source: "qrc:/icons/gnome-icon-library/flatpak-symbolic.svg"
                             text: qsTr("About Flatpak")
-                            wrapMode: Text.WordWrap
-                            horizontalAlignment: Text.AlignHCenter
                         }
 
                     }
 
                     Item {
-                        Button {
-                            onClicked: stack.push(configPage)
+                        Kirigami.PlaceholderMessage {
                             anchors.centerIn: parent
+                            width: parent.width - (Kirigami.Units.largeSpacing * 4)
                             text: qsTr("Proceed to Configuration")
+
+                            helpfulAction: Kirigami.Action {
+                                text: qsTr("Proceed")
+                                onTriggered: stack.push(configPage)
+                            }
+
                         }
 
                     }
 
+                }
+
+                // Add left navigation button
+                RoundButton {
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "<"
+                    onClicked: welcomeCarousel.decrementCurrentIndex()
+                    visible: welcomeCarousel.currentIndex > 0
+                    font.pixelSize: 18
+                }
+
+                // Add right navigation button
+                RoundButton {
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: ">"
+                    onClicked: welcomeCarousel.incrementCurrentIndex()
+                    visible: welcomeCarousel.currentIndex < welcomeCarousel.count - 1
+                    font.pixelSize: 18
                 }
 
                 PageIndicator {
@@ -110,22 +161,8 @@ ApplicationWindow {
                     currentIndex: welcomeCarousel.currentIndex
                     anchors.bottom: welcomeCarousel.bottom
                     anchors.horizontalCenter: parent.horizontalCenter
-                }
-
-                header: ToolBar {
-                    RowLayout {
-                        anchors.fill: parent
-
-                        Label {
-                            text: qsTr("Welcome")
-                            elide: Text.ElideRight
-                            horizontalAlignment: Qt.AlignHCenter
-                            verticalAlignment: Qt.AlignVCenter
-                            Layout.fillWidth: true
-                        }
-
-                    }
-
+                    interactive: true
+                    onCurrentIndexChanged: welcomeCarousel.currentIndex = currentIndex
                 }
 
             }

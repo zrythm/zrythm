@@ -33,7 +33,8 @@ private:
   void post_exec_initialization ();
 
 private Q_SLOTS:
-  void handle_engine_output ();
+  void onEngineOutput ();
+  void onAboutToQuit ();
 
 public:
   RTThreadId::IdType qt_thread_id_;

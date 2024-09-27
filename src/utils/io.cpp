@@ -286,33 +286,21 @@ append_files_from_dir_ending_in (
   const std::string                &_dir,
   const std::optional<std::string> &opt_end_string)
 {
-  try
+  juce::File directory (_dir);
+
+  if (!directory.isDirectory ())
     {
-      Glib::Dir dir (_dir);
-
-      for (const auto &filename : dir)
-        {
-          auto full_path = Glib::build_filename (_dir, filename);
-
-          /* recurse if necessary */
-          if (recursive && juce::File (full_path).isDirectory ())
-            {
-              append_files_from_dir_ending_in (
-                files, recursive, full_path, opt_end_string);
-            }
-
-          /* append file if we should */
-          if (
-            !opt_end_string || Glib::str_has_suffix (full_path, *opt_end_string))
-            {
-              files.add (full_path);
-            }
-        }
+      throw ZrythmException (
+        fmt::format ("'{}' is not a directory (or doesn't exist)", _dir));
     }
-  catch (const Glib::Error &ex)
-    {
 
-      throw ZrythmException (fmt::format ("Failed to open directory {}", _dir));
+  for (
+    const auto &file : juce::RangedDirectoryIterator (
+      directory, recursive,
+      opt_end_string ? std::string ("*") + *opt_end_string : "*",
+      juce::File::findFiles))
+    {
+      files.add (file.getFile ().getFullPathName ().toStdString ());
     }
 }
 

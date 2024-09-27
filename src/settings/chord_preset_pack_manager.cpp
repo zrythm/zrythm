@@ -401,18 +401,23 @@ ChordPresetPackManager::add_user_packs ()
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       /* add user preset packs */
-      std::string main_path = get_user_packs_path ();
+      fs::path main_path = get_user_packs_path ();
       z_debug ("Reading user chord packs from {}...", main_path);
 
       StringArray pack_paths;
-      try
+      if (fs::is_directory (main_path))
         {
-          pack_paths = io_get_files_in_dir_ending_in (main_path, true, ".json");
-        }
-      catch (const ZrythmException &e)
-        {
-          z_warning (
-            "Could not read user chord packs from {}: {}", main_path, e.what ());
+          try
+            {
+              pack_paths =
+                io_get_files_in_dir_ending_in (main_path, true, ".json");
+            }
+          catch (const ZrythmException &e)
+            {
+              z_warning (
+                "Could not read user chord packs from {}: {}", main_path,
+                e.what ());
+            }
         }
       if (!pack_paths.isEmpty ())
         {

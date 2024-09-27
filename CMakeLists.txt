@@ -911,6 +911,11 @@ qt_add_qml_module(zrythm
     resources/ui/greeter.qml
 )
 
+set(KDDockWidgets_QT6 TRUE)
+find_package(KDDockWidgets-qt6 REQUIRED)
+
+find_package(KF6Kirigami REQUIRED)
+
 list(APPEND zrythm_link_libs
   zita-resampler::zita-resampler
   PkgConfig::LIBADWAITA
@@ -948,7 +953,8 @@ list(APPEND zrythm_link_libs
   Qt6::Widgets
   Qt6::Quick
   Qt6::QuickControls2
-  # KDAB::kddockwidgets
+  KDAB::kddockwidgets
+  KF6::Kirigami
   GTest::GTest
 )
 
