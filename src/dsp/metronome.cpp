@@ -49,7 +49,7 @@ Metronome::Metronome (AudioEngine &engine)
   volume_ =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? 1.f
-      : (float) SettingsManager::getInstance ()->get_metronome_volume ();
+      : (float) SettingsManager::get_instance ()->get_metronome_volume ();
 }
 
 void
@@ -92,5 +92,5 @@ Metronome::set_volume (float volume)
   // TODO: validate
   volume_ = volume;
 
-  SettingsManager::getInstance ()->set_metronome_volume (volume);
+  SettingsManager::get_instance ()->set_metronome_volume (volume);
 }

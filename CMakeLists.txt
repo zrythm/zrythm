@@ -900,7 +900,7 @@ find_package(Qt6
 )
 qt_standard_project_setup()
 
-qt_add_executable(zrythm)
+qt_add_executable(zrythm WIN32 MACOSX_BUNDLE)
 
 qt_add_qml_module(zrythm
   URI Zrythm
@@ -909,6 +909,8 @@ qt_add_qml_module(zrythm
   QML_FILES 
     resources/ui/main_window.qml
     resources/ui/greeter.qml
+    resources/ui/PlaceholderPage.qml
+    resources/ui/PlainButton.qml
 )
 
 set(KDDockWidgets_QT6 TRUE)

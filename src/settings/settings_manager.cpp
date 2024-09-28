@@ -3,9 +3,19 @@
 
 #include "settings/settings_manager.h"
 
-JUCE_IMPLEMENT_SINGLETON (SettingsManager)
+#include "zrythm_application.h"
 
-SettingsManager::~SettingsManager ()
+SettingsManager::SettingsManager (QObject * parent) : QObject (parent) { }
+
+void
+SettingsManager::reset_and_sync ()
 {
-  clearSingletonInstance ();
+  settings_.clear ();
+  settings_.sync ();
+}
+
+SettingsManager *
+SettingsManager::get_instance ()
+{
+  return dynamic_cast<ZrythmApplication *> (qApp)->get_settings_manager ();
 }

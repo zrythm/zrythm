@@ -1,21 +1,34 @@
 import QtQuick 6.7
 import QtQuick.Controls 6.7
+import QtQuick.Controls.Basic 6.7
 import QtQuick.Layouts 6.7
-import org.kde.kirigami as Kirigami
+// import QtQuick.Controls.Imagine 6.7
 import "qrc:/config.js" as Config
 
 ApplicationWindow {
-    id: greeterWidget
+    id: greeter
 
     title: "Zrythm"
     modality: Qt.ApplicationModal
     minimumWidth: 256
     width: 640
-    height: 480
+    height: 420
     visible: true
-    Component.onCompleted: {
-        Qt.application.font.family = interFontItalic.name;
-        Qt.application.font.pixelSize = 16;
+    font.family: interFont.name
+    font.pointSize: 10
+
+    palette {
+        base: themeManager.base
+        brightText: themeManager.base
+        button: themeManager.base.lighter().lighter()
+        buttonText: "white"
+        dark: "white" // used by paginator
+        light: themeManager.base.lighter(150)
+        highlight: themeManager.accent
+        link: themeManager.accent
+        text: "green"
+        window: themeManager.base
+        windowText: "white"
     }
 
     FontLoader {
@@ -42,6 +55,43 @@ ApplicationWindow {
         source: "qrc:/fonts/InterVariable-Italic.ttf"
     }
 
+    Item {
+        id: flatpakPage
+
+        PlaceholderPage {
+            icon.source: "qrc:/icons/gnome-icon-library/flatpak-symbolic.svg"
+            title: qsTr("About Flatpak")
+            description: qsTr("Only audio plugins installed via Flatpak are supported.")
+        }
+
+    }
+
+    Item {
+        id: donationPage
+
+        PlaceholderPage {
+            icon.source: "qrc:/icons/gnome-icon-library/credit-card-symbolic.svg"
+            title: qsTr("Donate")
+            description: qsTr("Zrythm relies on donations and purchases to sustain development. If you enjoy the software, please consider %1donating%2 or %3buying an installer%2.").arg("<a href=\"" + Config.DONATION_URL + "\">").arg("</a>").arg("<a href=\"" + Config.PURCHASE_URL + "\">")
+        }
+
+    }
+
+    Item {
+        id: proceedToConfigPage
+
+        PlaceholderPage {
+            title: qsTr("All Ready!")
+
+            action: Action {
+                text: qsTr("Proceed to Configuration")
+                onTriggered: stack.push(configPage)
+            }
+
+        }
+
+    }
+
     StackView {
         id: stack
 
@@ -59,75 +109,30 @@ ApplicationWindow {
 
                     anchors.fill: parent
                     clip: true
+                    Component.onCompleted: {
+                        if (!Config.IS_INSTALLER_VER || Config.IS_TRIAL_VER)
+                            addItem(donationPage);
+
+                        if (Config.FLATPAK_BUILD)
+                            addItem(flatpakPage);
+
+                        addItem(proceedToConfigPage);
+                    }
 
                     Item {
-                        Kirigami.PlaceholderMessage {
-                            anchors.centerIn: parent
-                            width: parent.width - (Kirigami.Units.largeSpacing * 4)
-                            // visible: root.loading
+                        PlaceholderPage {
                             icon.source: "qrc:/icons/zrythm.svg"
-                            text: qsTr("Welcome")
-                            explanation: qsTr("Welcome to the Zrythm digital audio workstation. Move to the next page to get started.")
+                            title: qsTr("Welcome")
+                            description: qsTr("Welcome to the Zrythm digital audio workstation. Move to the next page to get started.")
                         }
 
                     }
 
                     Item {
-                        Kirigami.PlaceholderMessage {
-                            anchors.centerIn: parent
-                            width: parent.width - (Kirigami.Units.largeSpacing * 4)
+                        PlaceholderPage {
                             icon.source: "qrc:/icons/gnome-icon-library/open-book-symbolic.svg"
-                            text: qsTr("Read the Manual")
-                            explanation: qsTr("If this is your first time using Zrythm, we suggest going through the 'Getting Started' section in the %1user manual%2.").arg("<a href=\"" + Config.USER_MANUAL_URL + "\">").arg("</a>")
-                            onLinkActivated: (link) => {
-                                console.log("Opening link: " + link);
-                                return Qt.openUrlExternally(link);
-                            }
-                        }
-
-                    }
-
-                    Loader {
-                        active: !Config.IS_INSTALLER_VER || Config.IS_TRIAL_VER
-
-                        sourceComponent: Item {
-                            Kirigami.PlaceholderMessage {
-                                anchors.centerIn: parent
-                                width: parent.width - (Kirigami.Units.largeSpacing * 4)
-                                icon.source: "qrc:/icons/gnome-icon-library/credit-card-symbolic.svg"
-                                text: qsTr("Donate")
-                                explanation: qsTr("Zrythm relies on donations and purchases to sustain development. If you enjoy the software, please consider %1donating%2 or %3buying an installer%2.").arg("<a href=\"" + Config.DONATION_URL + "\">").arg("</a>").arg("<a href=\"" + Config.PURCHASE_URL + "\">")
-                                onLinkActivated: (link) => {
-                                    console.log("Opening link: " + link);
-                                    return Qt.openUrlExternally(link);
-                                }
-                            }
-
-                        }
-
-                    }
-
-                    Item {
-                        Kirigami.PlaceholderMessage {
-                            anchors.centerIn: parent
-                            width: parent.width - (Kirigami.Units.largeSpacing * 4)
-                            icon.source: "qrc:/icons/gnome-icon-library/flatpak-symbolic.svg"
-                            text: qsTr("About Flatpak")
-                        }
-
-                    }
-
-                    Item {
-                        Kirigami.PlaceholderMessage {
-                            anchors.centerIn: parent
-                            width: parent.width - (Kirigami.Units.largeSpacing * 4)
-                            text: qsTr("Proceed to Configuration")
-
-                            helpfulAction: Kirigami.Action {
-                                text: qsTr("Proceed")
-                                onTriggered: stack.push(configPage)
-                            }
-
+                            title: qsTr("Read the Manual")
+                            description: qsTr("If this is your first time using Zrythm, we suggest going through the 'Getting Started' section in the %1user manual%2.").arg("<a href=\"" + Config.USER_MANUAL_URL + "\">").arg("</a>")
                         }
 
                     }
@@ -142,6 +147,7 @@ ApplicationWindow {
                     onClicked: welcomeCarousel.decrementCurrentIndex()
                     visible: welcomeCarousel.currentIndex > 0
                     font.pixelSize: 18
+                    font.bold: true
                 }
 
                 // Add right navigation button
@@ -152,6 +158,7 @@ ApplicationWindow {
                     onClicked: welcomeCarousel.incrementCurrentIndex()
                     visible: welcomeCarousel.currentIndex < welcomeCarousel.count - 1
                     font.pixelSize: 18
+                    font.bold: true
                 }
 
                 PageIndicator {
@@ -233,7 +240,7 @@ ApplicationWindow {
                     anchors.top: parent.top
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: "Zrythm"
-                    font.pixelSize: 24
+                    font.pointSize: 24
                 }
 
                 ProgressBar {

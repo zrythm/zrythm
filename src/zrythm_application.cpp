@@ -35,6 +35,9 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   setup_command_line_options ();
   cmd_line_parser_.process (*this);
 
+  settings_manager_ = new SettingsManager (this);
+  theme_manager_ = new ThemeManager (this);
+
   launch_engine_process ();
 
   Zrythm::getInstance ()->pre_init (
@@ -111,15 +114,32 @@ ZrythmApplication::setup_command_line_options ()
   });
 }
 
+SettingsManager *
+ZrythmApplication::get_settings_manager () const
+{
+  return settings_manager_;
+}
+
+ThemeManager *
+ZrythmApplication::get_theme_manager () const
+{
+  return theme_manager_;
+}
+
 void
 ZrythmApplication::setup_ui ()
 {
-  QQuickStyle::setStyle ("Imagine");
+  // QQuickStyle::setStyle ("Imagine");
   QIcon::setThemeName ("dark");
+
+  // note: this is the system palette - different from qtquick palette
+  // it's just used to set the window frame color
+  setPalette (theme_manager_->palette_);
 
   // Set font scaling TODO (if needed)
   // QSettings settings;
-  // double fontScale = settings.value ("UI/General/font-scale", 1.0).toDouble ();
+  // double fontScale = settings.value ("UI/General/font-scale", 1.0).toDouble
+  // ();
 
   /* prepend freedesktop system icons to search path, just in case */
   auto * dir_mgr = DirectoryManager::getInstance ();
@@ -149,8 +169,7 @@ ZrythmApplication::setup_ui ()
   }
 
   // icon theme
-  const auto icon_theme_name =
-    SettingsManager::getInstance ()->get_icon_theme ();
+  const auto icon_theme_name = settings_manager_->get_icon_theme ();
   z_info ("Setting icon theme to '{}'", icon_theme_name);
   QIcon::setThemeName (icon_theme_name);
 
@@ -162,8 +181,14 @@ ZrythmApplication::setup_ui ()
 
   qml_engine_->addImportPath (":/org.zrythm.Zrythm/imports");
 
+  // this is only needed if we want to be able to instantiate such types
+  // qmlRegisterType<SettingsManager> ("Zrythm.Managers", 1, 0,
+  // "SettingsManager");
+
   qml_engine_->rootContext ()->setContextProperty (
-    "settingsManager", SettingsManager::getInstance ());
+    "settingsManager", settings_manager_);
+  qml_engine_->rootContext ()->setContextProperty (
+    "themeManager", theme_manager_);
 
   const QUrl url (QStringLiteral (
     "qrc:/org.zrythm.Zrythm/imports/Zrythm/resources/ui/greeter.qml"));
@@ -176,7 +201,7 @@ ZrythmApplication::setup_ui ()
     }
   else
     {
-      z_error ("Failed to load QML file");
+      z_critical ("Failed to load QML file");
     }
 }
 
@@ -249,7 +274,6 @@ ZrythmApplication::onAboutToQuit ()
 
   DirectoryManager::deleteInstance ();
   PCGRand::deleteInstance ();
-  SettingsManager::deleteInstance ();
 }
 
 ZrythmApplication::~ZrythmApplication ()

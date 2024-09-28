@@ -63,11 +63,11 @@ DirectoryManager::get_user_dir (bool force_default)
     }
 
   fs::path dir =
-    SettingsManager::getInstance ()->get_zrythm_user_path ().toStdString ();
+    SettingsManager::get_instance ()->get_zrythm_user_path ().toStdString ();
   if (force_default || dir.empty ())
     {
       dir =
-        SettingsManager::getInstance ()
+        SettingsManager::get_instance ()
           ->get_default_zrythm_user_path ()
           .toStdString ();
     }

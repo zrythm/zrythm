@@ -75,20 +75,6 @@ foreach(blp ${blp_filenames})
   list(APPEND ui_files ${ui_file})
 endforeach()
 
-if(0)
-set(out_file "${CMAKE_CURRENT_BINARY_DIR}/resources.qrc")
-add_custom_command(
-  OUTPUT ${out_file}
-  COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/gen-qt-resources-xml.py
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${APPDATA_FILE}
-    ${out_file}
-  DEPENDS ${ui_files} appdata-xml-merged
-  COMMENT "Generating resources.qrc"
-)
-endif()
-
 # GL shaders
 # file(GLOB gl_shaders "${CMAKE_CURRENT_SOURCE_DIR}/gl/shaders/*.glsl")
 
@@ -139,11 +125,31 @@ configure_file(
 )
 set_source_files_properties("${CMAKE_CURRENT_BINARY_DIR}/config.js" PROPERTIES QT_RESOURCE_ALIAS "config.js")
 
+set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/qtquickcontrols2.conf" PROPERTIES QT_RESOURCE_ALIAS "qtquickcontrols2.conf")
+
+set(imagine_assets)
+file(GLOB icons "${CMAKE_CURRENT_SOURCE_DIR}/imagine-assets/*.png")
+# foreach(icon ${icons})
+#   get_filename_component(icon_name ${icon} NAME)
+#   set(icon_alias "imagine-assets/${icon_name}")
+#   set_source_files_properties(${icon} PROPERTIES QT_RESOURCE_ALIAS ${icon_alias})
+#   list(APPEND imagine_assets ${icon})
+# endforeach()
+
+# set(imagine_assets_dark)
+# file(GLOB icons "${CMAKE_CURRENT_SOURCE_DIR}/imagine-dark/*.png")
+# foreach(icon ${icons})
+#   get_filename_component(icon_name ${icon} NAME)
+#   set(icon_alias "imagine-dark/${icon_name}")
+#   set_source_files_properties(${icon} PROPERTIES QT_RESOURCE_ALIAS ${icon_alias})
+#   list(APPEND imagine_assets_dark ${icon})
+# endforeach()
+
 qt_add_resources(zrythm "resources"
   PREFIX "/"
   FILES
-    ${ui_files}
     ${icon_files}
     ${font_files}
     ${CMAKE_CURRENT_BINARY_DIR}/config.js
+    ${CMAKE_CURRENT_SOURCE_DIR}/qtquickcontrols2.conf
 )

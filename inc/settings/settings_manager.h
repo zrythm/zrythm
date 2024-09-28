@@ -7,6 +7,9 @@
 #include "zrythm-config.h"
 
 #include <QSettings>
+#include <QStandardPaths>
+
+#include "utils/math.h"
 
 #define DEFINE_SETTING_PROPERTY_WITHOUT_SETTER(ptype, name, default_value) \
 \
@@ -71,16 +74,17 @@ class SettingsManager final : public QObject
   DEFINE_SETTING_PROPERTY (QString, icon_theme, "zrythm-dark")
 
 public:
-  ~SettingsManager () override;
+  SettingsManager (QObject * parent = nullptr);
 
-private:
-  SettingsManager () = default;
+  static SettingsManager * get_instance ();
+
+  /**
+   * @brief Resets all settings to their default values.
+   */
+  Q_INVOKABLE void reset_and_sync ();
 
 private:
   QSettings settings_;
-
-public:
-  JUCE_DECLARE_SINGLETON_SINGLETHREADED (SettingsManager, true)
 };
 
 #undef DEFINE_SETTING_PROPERTY

@@ -12,9 +12,11 @@
 #include <QProcess>
 #include <QQmlApplicationEngine>
 
+#include "settings/settings_manager.h"
+#include "settings/theme_manager.h"
 #include "utils/rt_thread_id.h"
 
-class ZrythmApplication : public QApplication
+class ZrythmApplication final : public QApplication
 {
   Q_OBJECT
 
@@ -26,6 +28,9 @@ public:
   void setup_ui ();
   void setup_ipc ();
   void launch_engine_process ();
+
+  SettingsManager * get_settings_manager () const;
+  ThemeManager *    get_theme_manager () const;
 
 private:
   void setup_command_line_options ();
@@ -45,6 +50,9 @@ private:
    * @brief Socket for communicating with the engine process.
    */
   QLocalSocket * socket_ = nullptr;
+
+  SettingsManager * settings_manager_ = nullptr;
+  ThemeManager *    theme_manager_ = nullptr;
 
   /**
    * @brief Engine process handle.

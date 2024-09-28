@@ -15,5 +15,6 @@ var DONATION_URL = "@donation_url@";
 var PURCHASE_URL = "@purchase_url@";
 var IS_INSTALLER_VER = is_true("@ZRYTHM_IS_INSTALLER_VER@");
 var IS_TRIAL_VER = is_true("@ZRYTHM_IS_TRIAL_VER@");
+var FLATPAK_BUILD = is_true("@FLATPAK_BUILD@");
 
 // clang-format on
