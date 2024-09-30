@@ -870,7 +870,17 @@ pkg_check_modules(XXHASH libxxhash REQUIRED IMPORTED_TARGET)
 pkg_check_modules(VAMP vamp REQUIRED IMPORTED_TARGET)
 pkg_check_modules(VAMP_HOST_SDK vamp-hostsdk REQUIRED IMPORTED_TARGET)
 
-find_package(magic_enum 0.9.5 REQUIRED)
+FetchContent_Declare(
+  magic_enum
+  GIT_REPOSITORY https://github.com/Neargye/magic_enum.git
+  # 0.9.6
+  GIT_TAG dd6a39d0ba1852cf06907e0f0573a2a10d23c2ad
+)
+find_package(magic_enum 0.9.5)
+if(NOT magic_enum_FOUND)
+  FetchContent_MakeAvailable(magic_enum)
+endif()
+
 find_package(fmt REQUIRED)
 
 find_package(spdlog REQUIRED)
