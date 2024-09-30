@@ -129,6 +129,7 @@ option(ZRYTHM_DSEG_FONT "Install the DSEG14 font (packagers should turn this off
 option(ZRYTHM_MAINTAINER_MODE "Whether to enable maintainer options (only for use by Zrythm maintainers/developers)" OFF)
 cmake_dependent_option(ZRYTHM_IS_INSTALLER_VER "Build installer version" OFF "ZRYTHM_MAINTAINER_MODE" OFF)
 cmake_dependent_option(ZRYTHM_IS_TRIAL_VER "Build trial version" OFF "ZRYTHM_MAINTAINER_MODE" OFF)
+set(ZRYTHM_PACKAGE_VERSION "Version to use/force (when making an installer package)" "${ZRYTHM_VERSION_STRING_FULL}")
 option(ZRYTHM_PROFILING "Build with profiling (for gprof)" OFF)
 option(ZRYTHM_MANPAGE "Build and install manpage" ${OS_GNU})
 option(ZRYTHM_SHELL_COMPLETIONS "Build and install shell completions" ${UNIX})
@@ -158,6 +159,7 @@ option(ZRYTHM_ENABLE_SANITIZER_ADDRESS "Compile with address sanitizer" OFF)
 option(ZRYTHM_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR "Compile with undefined behavior sanitizer" OFF)
 option(ZRYTHM_ENABLE_SANITIZER_THREAD "Compile with thread sanitizer" OFF)
 option(ZRYTHM_ENABLE_SANITIZER_MEMORY "Compile with memory sanitizer" OFF)
+option(ZRYTHM_CARLA_WITH_CV32_PATCHBAY_VARIANT "Enable support for CV32 patchbay variant in carla" ON)
 
 # Dependency feature options
 option(ZRYTHM_WITH_X11 "Build with X11 support" ${OS_GNU})
@@ -823,6 +825,7 @@ set(zrythm_carla_libdir "${zrythm_libdir}/carla")
 install(PROGRAMS ${CARLA_DISCOVERY_NATIVE_EXECUTABLE}
   DESTINATION "${zrythm_carla_libdir}")
 set(CARLA_HAVE_CLAP_SUPPORT TRUE)
+set(CARLA_HAVE_CV32_PATCHBAY_VARIANT ${ZRYTHM_CARLA_WITH_CV32_PATCHBAY_VARIANT})
 
 # install gnu/linux bridges
 set(bridge_types
