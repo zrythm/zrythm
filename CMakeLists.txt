@@ -385,7 +385,7 @@ else()
 endif()
 list(APPEND zrythm_definitions GETTEXT_PACKAGE="zrythm")
 
-if(MSVC)
+if(WIN32)
   add_compile_definitions(
     _USE_MATH_DEFINES=1
     _UNICODE
