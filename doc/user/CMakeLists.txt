@@ -148,28 +148,26 @@ foreach(LANG ${locales_list})
     set(NAME ${FORMAT}-manual-${LANG})
     set(OUTPUT_DIR ${SPHINX_BUILDDIR}/${LANG}/${FORMAT})
     
-    if(FORMAT STREQUAL "html" OR FORMAT STREQUAL "singlehtml")
-      add_custom_target(${NAME}
-        BYPRODUCTS ${OUTPUT_DIR}
-        # COMMAND ${CMAKE_COMMAND} -E make_directory ${OUTPUT_DIR}
-        COMMAND ${SPHINX_BUILD_EXECUTABLE}
-          ${SPHINX_BUILD_OPTS}
-          -D "language=${LANG}"
-          -b "${FORMAT}" "${CMAKE_CURRENT_BINARY_DIR}"
-          "${OUTPUT_DIR}"
-        DEPENDS custom_css_target copy_locales_targets
-        SOURCES ${built_rst_files} ${HTML_TEMPLATES} ${CMAKE_CURRENT_BINARY_DIR}/conf.py
-      )
-      
-      if(FORMAT STREQUAL "html")
-        list(APPEND HTML_MANUALS ${NAME})
-      elseif(FORMAT STREQUAL "singlehtml")
-        list(APPEND SINGLEHTML_MANUALS ${NAME})
-      endif()
+    add_custom_target(${NAME}
+      BYPRODUCTS ${OUTPUT_DIR}
+      # COMMAND ${CMAKE_COMMAND} -E make_directory ${OUTPUT_DIR}
+      COMMAND ${SPHINX_BUILD_EXECUTABLE}
+        ${SPHINX_BUILD_OPTS}
+        -D "language=${LANG}"
+        -b "${FORMAT}" "${CMAKE_CURRENT_BINARY_DIR}"
+        "${OUTPUT_DIR}"
+      DEPENDS custom_css_target copy_locales_targets
+      SOURCES ${built_rst_files} ${HTML_TEMPLATES} ${CMAKE_CURRENT_BINARY_DIR}/conf.py
+    )
 
-      if(ZRYTHM_USER_MANUAL)
-        install(DIRECTORY ${OUTPUT_DIR} DESTINATION ${CMAKE_INSTALL_DOCDIR})
-      endif()
+    if(FORMAT STREQUAL "html")
+      list(APPEND HTML_MANUALS ${NAME})
+    elseif(FORMAT STREQUAL "singlehtml")
+      list(APPEND SINGLEHTML_MANUALS ${NAME})
+    endif()
+
+    if(ZRYTHM_USER_MANUAL)
+      install(DIRECTORY ${OUTPUT_DIR} DESTINATION ${CMAKE_INSTALL_DOCDIR})
     endif()
   endforeach()
 endforeach()
