@@ -3,7 +3,7 @@ import QtQuick.Controls 6.7
 import QtQuick.Controls.Basic 6.7
 import QtQuick.Layouts 6.7
 // import QtQuick.Controls.Imagine 6.7
-import "qrc:/config.js" as Config
+import "config.js" as Config
 
 ApplicationWindow {
     id: greeter
@@ -20,13 +20,13 @@ ApplicationWindow {
     palette {
         base: themeManager.base
         brightText: themeManager.base
-        button: themeManager.base.lighter().lighter()
+        button: themeManager.base.lighter().lighter(1.2)
         buttonText: "white"
         dark: "white" // used by paginator
-        light: themeManager.base.lighter(150)
+        light: "#999999" // combo box hover background
         highlight: themeManager.accent
         link: themeManager.accent
-        text: "green"
+        text: "white"
         window: themeManager.base
         windowText: "white"
     }
@@ -34,32 +34,32 @@ ApplicationWindow {
     FontLoader {
         id: dsegRegular
 
-        source: "qrc:/fonts/DSEG14ClassicMini-Regular.ttf"
+        source: Qt.resolvedUrl("fonts/DSEG14ClassicMini-Regular.ttf")
     }
 
     FontLoader {
         id: dsegBold
 
-        source: "qrc:/fonts/DSEG14ClassicMini-Bold.ttf"
+        source: Qt.resolvedUrl("fonts/DSEG14ClassicMini-Bold.ttf")
     }
 
     FontLoader {
         id: interFont
 
-        source: "qrc:/fonts/InterVariable.ttf"
+        source: Qt.resolvedUrl("fonts/InterVariable.ttf")
     }
 
     FontLoader {
         id: interFontItalic
 
-        source: "qrc:/fonts/InterVariable-Italic.ttf"
+        source: Qt.resolvedUrl("fonts/InterVariable-Italic.ttf")
     }
 
     Item {
         id: flatpakPage
 
         PlaceholderPage {
-            icon.source: "qrc:/icons/gnome-icon-library/flatpak-symbolic.svg"
+            icon.source: Qt.resolvedUrl("icons/gnome-icon-library/flatpak-symbolic.svg")
             title: qsTr("About Flatpak")
             description: qsTr("Only audio plugins installed via Flatpak are supported.")
         }
@@ -70,7 +70,7 @@ ApplicationWindow {
         id: donationPage
 
         PlaceholderPage {
-            icon.source: "qrc:/icons/gnome-icon-library/credit-card-symbolic.svg"
+            icon.source: Qt.resolvedUrl("icons/gnome-icon-library/credit-card-symbolic.svg")
             title: qsTr("Donate")
             description: qsTr("Zrythm relies on donations and purchases to sustain development. If you enjoy the software, please consider %1donating%2 or %3buying an installer%2.").arg("<a href=\"" + Config.DONATION_URL + "\">").arg("</a>").arg("<a href=\"" + Config.PURCHASE_URL + "\">")
         }
@@ -121,7 +121,7 @@ ApplicationWindow {
 
                     Item {
                         PlaceholderPage {
-                            icon.source: "qrc:/icons/zrythm.svg"
+                            icon.source: Qt.resolvedUrl("icons/zrythm.svg")
                             title: qsTr("Welcome")
                             description: qsTr("Welcome to the Zrythm digital audio workstation. Move to the next page to get started.")
                         }
@@ -130,7 +130,7 @@ ApplicationWindow {
 
                     Item {
                         PlaceholderPage {
-                            icon.source: "qrc:/icons/gnome-icon-library/open-book-symbolic.svg"
+                            icon.source: Qt.resolvedUrl("icons/gnome-icon-library/open-book-symbolic.svg")
                             title: qsTr("Read the Manual")
                             description: qsTr("If this is your first time using Zrythm, we suggest going through the 'Getting Started' section in the %1user manual%2.").arg("<a href=\"" + Config.USER_MANUAL_URL + "\">").arg("</a>")
                         }
@@ -184,12 +184,48 @@ ApplicationWindow {
 
                 title: qsTr("Configuration")
 
+                ColumnLayout {
+                    anchors.fill: parent
+                    spacing: 10
+
+                    ActionRow {
+                        title: "Language"
+                        subtitle: "Preferred language"
+
+                        ComboBox {
+                            model: ["English", "Spanish", "French"]
+                        }
+
+                    }
+
+                    ActionRow {
+                        title: "User Path"
+                        subtitle: "Location to save user files"
+
+                        TextField {
+                            Layout.fillWidth: true
+                        }
+
+                        Button {
+                            text: "Browse"
+                        }
+
+                    }
+
+                }
+
                 header: ToolBar {
                     RowLayout {
                         anchors.fill: parent
 
+                        ToolButton {
+                            text: qsTr("‹")
+                            onClicked: stack.pop()
+                        }
+
                         Label {
                             text: qsTr("Configuration")
+                            font.bold: true
                             elide: Text.ElideRight
                             horizontalAlignment: Qt.AlignHCenter
                             verticalAlignment: Qt.AlignVCenter
@@ -200,23 +236,24 @@ ApplicationWindow {
 
                 }
 
-                footer: ToolBar {
-                    RowLayout {
-                        anchors.fill: parent
+                footer: DialogButtonBox {
+                    standardButtons: DialogButtonBox.Reset
+                    onReset: {
+                        console.log("Resetting settings...");
+                    }
+                    horizontalPadding: 10
 
-                        Item {
-                            Layout.fillWidth: true
+                    PlainButton {
+                        text: qsTr("Continue")
+                        highlighted: true
+                        onClicked: {
+                            console.log("Proceeding to next page...");
                         }
+                        DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
+                    }
 
-                        Button {
-                            text: qsTr("Reset")
-                        }
-
-                        Button {
-                            text: qsTr("Continue")
-                            highlighted: true
-                        }
-
+                    delegate: PlainButton {
+                        id: control
                     }
 
                 }

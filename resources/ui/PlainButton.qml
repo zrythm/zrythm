@@ -4,7 +4,6 @@ RoundButton {
     id: root
 
     font.pointSize: 10
-    font.weight: Font.Medium
-    font.bold: true
+    font.weight: 700
     radius: 8
 }

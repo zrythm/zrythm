@@ -65,6 +65,7 @@ ColumnLayout {
     PlainButton {
         id: actionButton
 
+        highlighted: true
         Layout.topMargin: 10
         Layout.alignment: Qt.AlignHCenter
         visible: action || text

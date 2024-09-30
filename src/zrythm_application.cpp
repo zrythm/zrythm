@@ -45,6 +45,8 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
 
   // TODO: init localization
 
+  AudioEngine::set_default_backends (false);
+
   setup_ui ();
 
   gZrythm->init ();
@@ -179,7 +181,10 @@ ZrythmApplication::setup_ui ()
   qml_engine_ = new QQmlApplicationEngine (this);
   // KDDockWidgets::QtQuick::Platform::instance ()->setQmlEngine (&engine);
 
-  qml_engine_->addImportPath (":/org.zrythm.Zrythm/imports");
+  // RESOURCE_PREFIX from CMakeLists.txt
+  // allows loading QML modules from qrc
+  // skips plugin loading for modules found in qrc
+  qml_engine_->addImportPath (":/org.zrythm/imports/");
 
   // this is only needed if we want to be able to instantiate such types
   // qmlRegisterType<SettingsManager> ("Zrythm.Managers", 1, 0,
@@ -190,9 +195,11 @@ ZrythmApplication::setup_ui ()
   qml_engine_->rootContext ()->setContextProperty (
     "themeManager", theme_manager_);
 
-  const QUrl url (QStringLiteral (
-    "qrc:/org.zrythm.Zrythm/imports/Zrythm/resources/ui/greeter.qml"));
-  // u"qrc:/org.zrythm.Zrythm/imports/Zrythm/resources/ui/greeter.qml"_qs);
+  // hints:
+  // always load from qrc
+  // files in qrc are pre-compiled
+  // files in host file system are compiled at runtime
+  const QUrl url ("qrc:/org.zrythm/imports/Zrythm/greeter.qml");
   qml_engine_->load (url);
 
   if (!qml_engine_->rootObjects ().isEmpty ())

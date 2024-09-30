@@ -78,78 +78,8 @@ endforeach()
 # GL shaders
 # file(GLOB gl_shaders "${CMAKE_CURRENT_SOURCE_DIR}/gl/shaders/*.glsl")
 
-# Icons
-set(icon_dirs
-  arena gnome-builder gnome-icon-library fork-awesome font-awesome
-  fluentui jam-icons box-icons iconpark iconoir material-design
-  untitled-ui css.gg codicons
-)
-
-set(icon_files)
-foreach(dir ${icon_dirs})
-  file(GLOB icons "${CMAKE_CURRENT_SOURCE_DIR}/icons/${dir}/*.svg" "${CMAKE_CURRENT_SOURCE_DIR}/icons/${dir}/*.png")
-  foreach(icon ${icons})
-    get_filename_component(icon_name ${icon} NAME)
-    set(icon_alias "icons/${dir}/${icon_name}")
-    set_source_files_properties(${icon} PROPERTIES QT_RESOURCE_ALIAS ${icon_alias})
-    list(APPEND icon_files ${icon})
-  endforeach()
-endforeach()
-
-# add zrythm icon to resources
-set(zrythm_logo "${CMAKE_SOURCE_DIR}/data/icon-themes/zrythm-dark/scalable/apps/zrythm.svg")
-set_source_files_properties(${zrythm_logo} PROPERTIES QT_RESOURCE_ALIAS "icons/zrythm.svg")
-list(APPEND icon_files ${zrythm_logo})
-
-# font files
-set(font_filepaths
-  ${CMAKE_CURRENT_SOURCE_DIR}/fonts/Inter-4.0/InterVariable.ttf
-  ${CMAKE_CURRENT_SOURCE_DIR}/fonts/Inter-4.0/InterVariable-Italic.ttf
-  ${CMAKE_CURRENT_SOURCE_DIR}/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-Regular.ttf
-  ${CMAKE_CURRENT_SOURCE_DIR}/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-Bold.ttf
-  ${CMAKE_CURRENT_SOURCE_DIR}/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-Light.ttf
-  ${CMAKE_CURRENT_SOURCE_DIR}/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-Italic.ttf
-  ${CMAKE_CURRENT_SOURCE_DIR}/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-BoldItalic.ttf
-  ${CMAKE_CURRENT_SOURCE_DIR}/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-LightItalic.ttf
-)
-set(font_files)
-foreach(font_filepath ${font_filepaths})
-  get_filename_component(font_name ${font_filepath} NAME)
-  set_source_files_properties(${font_filepath} PROPERTIES QT_RESOURCE_ALIAS "fonts/${font_name}")
-  list(APPEND font_files ${font_filepath})
-endforeach()
 
 configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/config.js.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/config.js"
-)
-set_source_files_properties("${CMAKE_CURRENT_BINARY_DIR}/config.js" PROPERTIES QT_RESOURCE_ALIAS "config.js")
-
-set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/qtquickcontrols2.conf" PROPERTIES QT_RESOURCE_ALIAS "qtquickcontrols2.conf")
-
-set(imagine_assets)
-file(GLOB icons "${CMAKE_CURRENT_SOURCE_DIR}/imagine-assets/*.png")
-# foreach(icon ${icons})
-#   get_filename_component(icon_name ${icon} NAME)
-#   set(icon_alias "imagine-assets/${icon_name}")
-#   set_source_files_properties(${icon} PROPERTIES QT_RESOURCE_ALIAS ${icon_alias})
-#   list(APPEND imagine_assets ${icon})
-# endforeach()
-
-# set(imagine_assets_dark)
-# file(GLOB icons "${CMAKE_CURRENT_SOURCE_DIR}/imagine-dark/*.png")
-# foreach(icon ${icons})
-#   get_filename_component(icon_name ${icon} NAME)
-#   set(icon_alias "imagine-dark/${icon_name}")
-#   set_source_files_properties(${icon} PROPERTIES QT_RESOURCE_ALIAS ${icon_alias})
-#   list(APPEND imagine_assets_dark ${icon})
-# endforeach()
-
-qt_add_resources(zrythm "resources"
-  PREFIX "/"
-  FILES
-    ${icon_files}
-    ${font_files}
-    ${CMAKE_CURRENT_BINARY_DIR}/config.js
-    ${CMAKE_CURRENT_SOURCE_DIR}/qtquickcontrols2.conf
+  "${CMAKE_CURRENT_SOURCE_DIR}/ui/config.js.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/ui/config.js"
 )
