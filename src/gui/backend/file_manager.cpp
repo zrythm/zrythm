@@ -205,7 +205,7 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
 
           try
             {
-              auto gfile = Gio::File::create_for_path (absolute_path);
+              auto gfile = Gio::File::create_for_path (absolute_path.string ());
               auto info =
                 gfile->query_info (G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN);
               fd.hidden_ = info->is_hidden ();
