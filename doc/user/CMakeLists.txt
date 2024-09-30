@@ -174,8 +174,6 @@ foreach(LANG ${locales_list})
   endforeach()
 endforeach()
 
-return() # rest TODO
-
 # Link check
 add_custom_target(sphinx_linkcheck
   COMMAND ${SPHINX_BUILD_EXECUTABLE} -b linkcheck
@@ -185,12 +183,13 @@ add_custom_target(sphinx_linkcheck
   DEPENDS ${HTML_MANUALS}
 )
 
-# Generate POT files
+# Generate POT files (in the build directory)
+#
+# Note that the .pot files are not saved in git.
+# They are only created temporarily and used to update the .po files.
 add_custom_target(manual_gettext_gen_pot
   COMMAND ${SPHINX_BUILD_EXECUTABLE}
-    -M gettext
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${SPHINX_BUILDDIR}
+    -M gettext "${CMAKE_CURRENT_BINARY_DIR}" "${SPHINX_BUILDDIR}"
   DEPENDS ${built_rst_files}
 )
 
@@ -214,32 +213,21 @@ foreach(LANG ${locales_list})
   endif()
 endforeach()
 
-# Post-process localization
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/post_process_po.py.in
-  ${CMAKE_CURRENT_BINARY_DIR}/post_process_po.py
-  @ONLY
-)
-
 add_custom_target(manual_gettext_post
-  COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/post_process_po.py
+  COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/post_process_po.py
+    "${CMAKE_CURRENT_SOURCE_DIR}" "${MSGGREP_EXECUTABLE}"
   DEPENDS ${SPHINX_INTL_UPDATE_TARGETS}
 )
 
 # Bundle manual
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/bundle_manual.sh.in
-  ${CMAKE_CURRENT_BINARY_DIR}/bundle_manual.sh
-  @ONLY
-)
-
 add_custom_target(manual_bundle
-  COMMAND ${CMAKE_CURRENT_BINARY_DIR}/bundle_manual.sh
+  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/bundle_manual.sh
     "${locales_str}"
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}/_rendered
-    ${SPHINX_BUILDDIR}
-    ${CMAKE_CURRENT_BINARY_DIR}/bundled_manual.zip
+    "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${CMAKE_CURRENT_BINARY_DIR}/_rendered"
+    "${SPHINX_BUILDDIR}"
+    "${CMAKE_CURRENT_BINARY_DIR}/bundled_manual.zip"
+    "${CMAKE_CURRENT_BINARY_DIR}/bundled_manual.temp"
   DEPENDS manual_gettext_post ${HTML_MANUALS} ${SINGLEHTML_MANUALS}
 )
 
@@ -249,6 +237,6 @@ add_custom_target(manual_gettext
 
 add_custom_target(manual_help
   COMMAND ${SPHINX_BUILD_EXECUTABLE} -M help
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}
+    "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${CMAKE_CURRENT_BINARY_DIR}"
 )

@@ -6,7 +6,7 @@ set(copy_locales_targets)
 
 # Note: if this fails (such as when adding a new language),
 # run the manual_gettext target to generate missing .po files
-foreach(lang ${LOCALES})
+foreach(lang ${locales_list})
   if(NOT ${lang} STREQUAL "en")
     set(po_file "zrythm-manual.po")
     set(po_file_parent "${lang}/LC_MESSAGES")
