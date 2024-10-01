@@ -80,7 +80,7 @@ foreach(lang ${languages_for_gettext})
     BYPRODUCTS ${lang}.po
     COMMAND "${GETTEXT_MSGMERGE_EXECUTABLE}" --quiet
       --update "${CMAKE_CURRENT_SOURCE_DIR}/${lang}.po" ${pot_path}
-    DEPENDS ${pot_path}
+    DEPENDS gen-pot
     COMMENT "Updating ${lang}.po"
   )
 endforeach()
