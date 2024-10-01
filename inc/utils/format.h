@@ -31,12 +31,6 @@
     return it + translate_; \
   }
 
-#define RETURN_FORMATTED_STRING(str) \
-  return std::format_to (ctx.out (), "{}", str);
-
-#define RETURN_MAGIC_ENUM_VALUE_NAME(val) \
-  return std::format_to (ctx.out (), "{}", magic_enum::enum_name (val));
-
 #define VA_ARGS_SIZE(...) \
   std::tuple_size<decltype (std::make_tuple (__VA_ARGS__))>::value
 

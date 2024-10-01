@@ -121,7 +121,7 @@ Velocity::find_in_project () const
 std::string
 Velocity::print_to_str () const
 {
-  return std::format ("Velocity: {}", vel_);
+  return fmt::format ("Velocity: {}", vel_);
 }
 
 bool

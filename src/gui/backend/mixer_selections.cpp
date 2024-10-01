@@ -300,8 +300,8 @@ MixerSelections::gen_full_from_this () const
         }
       catch (const ZrythmException &e)
         {
-          throw ZrythmException (std::format (
-            "Failed to clone plugin %s: %s", pl->get_name (), e.what ()));
+          throw ZrythmException (fmt::format (
+            "Failed to clone plugin {}: {}", pl->get_name (), e.what ()));
           return nullptr;
         }
     }

@@ -38,6 +38,6 @@ int
 env_get_int (const char * key, int def)
 {
   auto str =
-    juce::SystemStats::getEnvironmentVariable (key, std::format ("{}", def));
+    juce::SystemStats::getEnvironmentVariable (key, fmt::format ("{}", def));
   return str.getIntValue ();
 }

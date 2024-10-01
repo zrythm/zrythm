@@ -280,7 +280,7 @@ DEFINE_OBJECT_FORMATTER (TracklistSelections, [] (const TracklistSelections &c) 
   ret += "TracklistSelections { \n";
   for (auto &track : c.tracks_)
     {
-      ret += std::format ("[{}] {}\n", track->pos_, track->name_);
+      ret += fmt::format ("[{}] {}\n", track->pos_, track->name_);
     }
   ret += "}";
   return ret;

@@ -95,7 +95,7 @@ io_create_tmp_dir (const std::string template_name)
   std::string temp_dir =
     std::filesystem::path (g_mkdtemp (temp_dir_template.data ())).string ();
   if (temp_dir.empty ())
-    throw ZrythmException (std::format (
+    throw ZrythmException (fmt::format (
       "Failed to create temporary directory: {}", temp_dir_template));
 
   return temp_dir;
@@ -451,7 +451,7 @@ io_write_file_atomic (const std::string &file_path, const std::string &data)
     }
   catch (const std::exception &e)
     {
-      throw ZrythmException (std::format ("Error writing file: %s", e.what ()));
+      throw ZrythmException (fmt::format ("Error writing file: {}", e.what ()));
     }
 }
 
