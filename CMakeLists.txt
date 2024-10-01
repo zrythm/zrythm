@@ -43,8 +43,9 @@ set(CMAKE_PCH_INSTANTIATE_TEMPLATES ON)
 # See https://opensource.stackexchange.com/a/7187
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
 
-# need std::filesystem::path support
-set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15")
+# 10.15 -> std::filesystem::path
+# 11.0 -> semaphore.try_acquire
+set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0")
 
 message(STATUS "Project version: ${PROJECT_VERSION} (${ZRYTHM_VERSION_STRING_FULL})")
 
