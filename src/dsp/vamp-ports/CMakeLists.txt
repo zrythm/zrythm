@@ -1,8 +1,6 @@
 # SPDX-FileCopyrightText: © 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-pkg_check_modules(VAMP_SDK REQUIRED IMPORTED_TARGET vamp-sdk)
-
 add_library(vamp_plugins_lib STATIC
   FixedTempoEstimator.cpp
   BeatTrack.cpp
@@ -10,7 +8,7 @@ add_library(vamp_plugins_lib STATIC
 target_link_libraries(vamp_plugins_lib
   PRIVATE
     qm_dsp_lib
-    PkgConfig::VAMP_SDK
+    vamp-plugin-sdk::vamp-sdk
 )
 target_include_directories(vamp_plugins_lib
   PRIVATE

@@ -867,8 +867,20 @@ endif()
 
 pkg_check_modules(XXHASH libxxhash REQUIRED IMPORTED_TARGET)
 
-pkg_check_modules(VAMP vamp REQUIRED IMPORTED_TARGET)
-pkg_check_modules(VAMP_HOST_SDK vamp-hostsdk REQUIRED IMPORTED_TARGET)
+pkg_check_modules(VAMP_SDK vamp-sdk IMPORTED_TARGET)
+pkg_check_modules(VAMP_HOST_SDK vamp-hostsdk IMPORTED_TARGET)
+if((WIN32 AND NOT MSVC) OR (NOT VAMP_FOUND) OR (NOT VAMP_HOST_SDK_FOUND))
+  FetchContent_Declare(
+    vamp-sdk
+    GIT_REPOSITORY https://github.com/vamp-plugins/vamp-plugin-sdk.git
+    # master on 2024-10-01
+    GIT_TAG 703438d8e55dbfd1c2021d0bc12e36edd1e227e2
+  )
+  FetchContent_MakeAvailable(vamp-sdk)
+else()
+  add_library(vamp-plugin-sdk::vamp-hostsdk ALIAS PkgConfig::VAMP_HOST_SDK)
+  add_library(vamp-plugin-sdk::vamp-sdk ALIAS PkgConfig::VAMP_SDK)
+endif()
 
 FetchContent_Declare(
   magic_enum
@@ -941,8 +953,8 @@ list(APPEND zrythm_link_libs
   ${CMAKE_DL_LIBS}
   FFTW3::FFTW3
   PkgConfig::XXHASH
-  PkgConfig::VAMP
-  PkgConfig::VAMP_HOST_SDK
+  vamp-plugin-sdk::vamp-sdk
+  vamp-plugin-sdk::vamp-hostsdk
   yyjson::yyjson
   magic_enum::magic_enum
   juce::juce
