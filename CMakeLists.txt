@@ -869,23 +869,6 @@ pkg_check_modules(XXHASH libxxhash REQUIRED IMPORTED_TARGET)
 
 pkg_check_modules(VAMP vamp REQUIRED IMPORTED_TARGET)
 pkg_check_modules(VAMP_HOST_SDK vamp-hostsdk REQUIRED IMPORTED_TARGET)
-if(WIN32 AND MINGW)
-  # force static in msys2 otherwise linking fails (badly packaged most likely)
-  # TODO drop dependency on vamp, use essentia or aubio instead which are more popular and have sane build systems
-  add_library(vamp-hostsdk::vamp-hostsdk STATIC)
-  target_include_directories(vamp-hostsdk::vamp-hostsdk PUBLIC ${VAMP_HOST_SDK_STATIC_INCLUDE_DIRS})
-  target_link_libraries(vamp-hostsdk::vamp-hostsdk PUBLIC ${VAMP_HOST_SDK_STATIC_LIBRARIES})
-  target_compile_options(vamp-hostsdk::vamp-hostsdk PUBLIC ${VAMP_HOST_SDK_STATIC_CFLAGS_OTHER})
-  target_link_options(vamp-hostsdk::vamp-hostsdk PUBLIC ${VAMP_HOST_SDK_STATIC_LDFLAGS})
-  add_library(vamp::vamp STATIC)
-  target_include_directories(vamp::vamp PUBLIC ${VAMP_STATIC_INCLUDE_DIRS})
-  target_link_libraries(vamp::vamp PUBLIC ${VAMP_STATIC_LIBRARIES})
-  target_compile_options(vamp::vamp PUBLIC ${VAMP_STATIC_CFLAGS_OTHER})
-  target_link_options(vamp::vamp PUBLIC ${VAMP_STATIC_LDFLAGS})
-else()
-  add_library(vamp-hostsdk::vamp-hostsdk ALIAS PkgConfig::VAMP_HOST_SDK)
-  add_library(vamp::vamp ALIAS PkgConfig::VAMP)
-endif()
 
 FetchContent_Declare(
   magic_enum
@@ -946,8 +929,8 @@ list(APPEND zrythm_link_libs
   ${CMAKE_DL_LIBS}
   FFTW3::FFTW3
   PkgConfig::XXHASH
-  vamp::vamp
-  vamp-hostsdk::vamp-hostsdk
+  PkgConfig::VAMP
+  PkgConfig::VAMP_HOST_SDK
   yyjson::yyjson
   magic_enum::magic_enum
   juce::juce
