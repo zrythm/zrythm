@@ -98,10 +98,13 @@ endif()
 if(WIN32)
   set_target_properties(zrythm PROPERTIES
     WIN32_EXECUTABLE TRUE
-    LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup"
     VS_DEBUGGER_ENVIRONMENT "GSETTINGS_SCHEMA_DIR=${CMAKE_INSTALL_FULL_DATADIR}/glib-2.0/schemas;G_DEBUG=fatal_criticals"
   )
-
+  if(MSVC)
+    set_target_properties(zrythm PROPERTIES
+      LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup"
+    )
+  endif()
   target_sources(zrythm PRIVATE ${windows_rc_file} ${windows_icon_file})
 elseif(APPLE)
   set_target_properties(zrythm PROPERTIES
