@@ -12,6 +12,7 @@ target_sources(zrythm_lib
     project/project_init_flow_manager.cpp
 )
 
+set_source_files_properties(Wrapper.m PROPERTIES LANGUAGE OBJC)
 if(APPLE)
   list(APPEND zrythm_srcs Wrapper.m)
   target_sources(zrythm_lib
