@@ -81,7 +81,7 @@ PianoRoll::init_descriptors ()
         std::string (ChordDescriptor::note_to_string (
           ENUM_INT_TO_VALUE (MusicalNote, i % 12)))
         + std::to_string (i / 12 - 1);
-      descr.note_name_pango_ = std::format (
+      descr.note_name_pango_ = fmt::format (
         "{}<sup>{}</sup>",
         ChordDescriptor::note_to_string (ENUM_INT_TO_VALUE (MusicalNote, i % 12)),
         i / 12 - 1);
@@ -104,7 +104,7 @@ PianoRoll::init_descriptors ()
         std::string (ChordDescriptor::note_to_string (
           ENUM_INT_TO_VALUE (MusicalNote, i % 12)))
         + std::to_string (i / 12 - 1);
-      descr.note_name_pango_ = std::format (
+      descr.note_name_pango_ = fmt::format (
         "{}<sup>{}</sup>",
         ChordDescriptor::note_to_string (ENUM_INT_TO_VALUE (MusicalNote, i % 12)),
         i / 12 - 1);
@@ -121,7 +121,7 @@ PianoRoll::init_descriptors ()
       descr.value_ = i;
       descr.marked_ = false;
       descr.visible_ = true;
-      descr.custom_name_ = std::format (
+      descr.custom_name_ = fmt::format (
         "#{}: {}{}", i,
         ChordDescriptor::note_to_string (ENUM_INT_TO_VALUE (MusicalNote, i % 12)),
         i / 12 - 1);
@@ -130,7 +130,7 @@ PianoRoll::init_descriptors ()
         std::string (ChordDescriptor::note_to_string (
           ENUM_INT_TO_VALUE (MusicalNote, i % 12)))
         + std::to_string (i / 12 - 1);
-      descr.note_name_pango_ = std::format (
+      descr.note_name_pango_ = fmt::format (
         "{}<sup>{}</sup>",
         ChordDescriptor::note_to_string (ENUM_INT_TO_VALUE (MusicalNote, i % 12)),
         i / 12 - 1);

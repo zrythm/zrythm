@@ -625,7 +625,7 @@ ChordPresetPackManager::serialize ()
       catch (const ZrythmException &e)
         {
           throw ZrythmException (
-            std::format ("Unable to write chord preset pack {}", pack_path));
+            fmt::format ("Unable to write chord preset pack {}", pack_path));
         }
     }
 }

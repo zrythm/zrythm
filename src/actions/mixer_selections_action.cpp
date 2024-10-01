@@ -635,7 +635,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
           auto own_pl = own_ms->plugins_[0].get ();
 
           /* add a new track to the tracklist */
-          std::string str = std::format ("{} (Copy)", own_pl->get_name ());
+          std::string str = fmt::format ("{} (Copy)", own_pl->get_name ());
           to_tr = dynamic_cast<AutomatableTrack *> (TRACKLIST->append_track (
             Track::create_track (
               Track::Type::AudioBus, str, TRACKLIST->tracks_.size ()),
