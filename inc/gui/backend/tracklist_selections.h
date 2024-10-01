@@ -1,11 +1,5 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * @file
- *
- * Tracklist selections.
- */
 
 #ifndef __ACTIONS_TRACKLIST_SELECTIONS_H__
 #define __ACTIONS_TRACKLIST_SELECTIONS_H__
@@ -278,24 +272,19 @@ public:
   std::vector<std::string> track_names_;
 
   /** Pointer to owner tracklist. */
-  Tracklist * tracklist_;
+  Tracklist * tracklist_ = nullptr;
 };
 
-template <> struct std::formatter<TracklistSelections>
-{
-  DEFINE_FORMATTER_PRELUDE
-  auto format (TracklistSelections c, format_context &ctx)
-  {
-    std::string ret;
-    ret += "TracklistSelections { \n";
-    for (auto &track : c.tracks_)
-      {
-        ret += std::format ("[{}] {}\n", track->pos_, track->name_);
-      }
-    ret += "}";
-    return ret;
-  }
-};
+DEFINE_OBJECT_FORMATTER (TracklistSelections, [] (const TracklistSelections &c) {
+  std::string ret;
+  ret += "TracklistSelections { \n";
+  for (auto &track : c.tracks_)
+    {
+      ret += std::format ("[{}] {}\n", track->pos_, track->name_);
+    }
+  ret += "}";
+  return ret;
+})
 
 /**
  * @}

@@ -117,32 +117,18 @@ public:
   int          lineno_ = 0;
 };
 
-template <> struct std::formatter<RecordingEvent>
-{
-  constexpr auto parse (format_parse_context &ctx)
-  {
-    auto it = ctx.begin (), end = ctx.end ();
-    if (it != end && *it != '}')
-      throw format_error ("invalid format");
-    return it;
-  }
-
-  template <typename FormatContext>
-  auto format (const RecordingEvent &ev, FormatContext &ctx)
-  {
-    return format_to (
-      ctx.out (),
-      "RecordingEvent {{ type: {}, track_name_hash: {}, "
-      "g_start_frame_w_offset: {}, local_offset: {}, "
-      "nframes: {}, automation_track_idx: {}, "
-      "has_midi_event: {}, midi_event: {}, "
-      "file: {}, func: {}, line: {} }}",
-      static_cast<int> (ev.type_), ev.track_name_hash_,
-      ev.g_start_frame_w_offset_, ev.local_offset_, ev.nframes_,
-      ev.automation_track_idx_, ev.has_midi_event_, ev.midi_event_, ev.file_,
-      ev.func_, ev.lineno_);
-  }
-};
+DEFINE_OBJECT_FORMATTER (RecordingEvent, [] (const RecordingEvent &ev) {
+  return fmt::format (
+    "RecordingEvent {{ type: {}, track_name_hash: {}, "
+    "g_start_frame_w_offset: {}, local_offset: {}, "
+    "nframes: {}, automation_track_idx: {}, "
+    "has_midi_event: {}, midi_event: TODO, "
+    "file: {}, func: {}, line: {} }}",
+    static_cast<int> (ev.type_), ev.track_name_hash_,
+    ev.g_start_frame_w_offset_, ev.local_offset_, ev.nframes_,
+    ev.automation_track_idx_, ev.has_midi_event_, // ev.midi_event_,
+    ev.file_, ev.func_, ev.lineno_);
+})
 
 /**
  * @}
