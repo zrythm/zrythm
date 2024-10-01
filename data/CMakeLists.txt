@@ -107,7 +107,7 @@ if(ITSTOOL_EXECUTABLE)
       "--its=${appstream_its_rules}"
       ${build_mo_files}
       --out "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}"
-    DEPENDS appdata-xml ${build_mo_files}
+    DEPENDS appdata-xml pofiles
     COMMENT "Merging translations for appdata XML"
     )
 else()
