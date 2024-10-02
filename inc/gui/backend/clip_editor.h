@@ -88,6 +88,15 @@ public:
   Track * track_ = nullptr;
 };
 
+extern template MidiRegion *
+ClipEditor::get_region<MidiRegion> () const;
+extern template AudioRegion *
+ClipEditor::get_region<AudioRegion> () const;
+extern template AutomationRegion *
+ClipEditor::get_region<AutomationRegion> () const;
+extern template ChordRegion *
+ClipEditor::get_region<ChordRegion> () const;
+
 /**
  * @}
  */
