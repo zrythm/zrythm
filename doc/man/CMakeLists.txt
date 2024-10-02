@@ -16,6 +16,8 @@ set(target_manpage_path "${CMAKE_CURRENT_BINARY_DIR}/zrythm.1")
 
 add_custom_command(
   OUTPUT ${target_manpage_path}
+  COMMAND $<TARGET_FILE:zrythm> --version
+  COMMAND $<TARGET_FILE:zrythm> --help
   COMMAND ${HELP2MAN_EXECUTABLE}
     -s 1 -N
     -i ${CMAKE_CURRENT_BINARY_DIR}/zrythm.h2m
