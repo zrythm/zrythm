@@ -3,9 +3,7 @@
 
 #include "zrythm-config.h"
 
-#include "zrythm_app.h"
-
-#include "gtk_wrapper.h"
+#include "zrythm_application.h"
 
 /**
  * Application entry point.
@@ -13,11 +11,6 @@
 int
 main (int argc, char ** argv)
 {
-  Glib::init ();
-
-  /* send activate signal */
-  zrythm_app = std::make_shared<ZrythmApp> (argc, (const char **) argv);
-  int ret = zrythm_app->run (argc, argv);
-
-  return ret;
+  ZrythmApplication app (argc, argv);
+  return app.exec ();
 }

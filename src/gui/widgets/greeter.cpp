@@ -21,6 +21,7 @@
 #include "project/project_init_flow_manager.h"
 #include "settings/g_settings_manager.h"
 #include "settings/settings.h"
+#include "utils/directory_manager.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/localization.h"
@@ -339,7 +340,7 @@ on_config_ok_btn_clicked (GtkButton * btn, GreeterWidget * self)
 static void
 on_config_reset_clicked (GtkButton * btn, GreeterWidget * self)
 {
-  auto *  dir_mgr = ZrythmDirectoryManager::getInstance ();
+  auto *  dir_mgr = DirectoryManager::getInstance ();
   auto    dir = dir_mgr->get_default_user_dir ();
   GFile * gf_dir = g_file_new_for_path (dir.c_str ());
   z_debug ("reset to {}", dir);
@@ -797,8 +798,8 @@ greeter_widget_init (GreeterWidget * self)
   }
 
   /* set zrythm dir */
-  auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
-  auto   dir = dir_mgr->get_dir (ZrythmDirType::USER_TOP);
+  auto * dir_mgr = DirectoryManager::getInstance ();
+  auto   dir = dir_mgr->get_dir (DirectoryManager::DirectoryType::USER_TOP);
   {
     AdwActionRow * row = ADW_ACTION_ROW (adw_action_row_new ());
     adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), _ ("User path"));

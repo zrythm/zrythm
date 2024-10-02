@@ -188,7 +188,7 @@ ProjectInitFlowManager::upgrade_schema (char ** yaml, int src_ver)
         new_prj->title = old_prj->title;
         new_prj->datetime_str =
           g_strdup (datetime_get_current_as_string ().c_str ());
-        new_prj->version = Zrythm::get_version (false);
+        new_prj->version = g_strdup (Zrythm::get_version (false).c_str ());
 
         /* upgrade */
         new_prj->tracklist = tracklist_upgrade_from_v1 (old_prj->tracklist);
@@ -255,7 +255,7 @@ ProjectInitFlowManager::upgrade_schema (char ** yaml, int src_ver)
         new_prj->title = old_prj->title;
         new_prj->datetime_str =
           g_strdup (datetime_get_current_as_string ().c_str ());
-        new_prj->version = Zrythm::get_version (false);
+        new_prj->version = g_strdup (Zrythm::get_version (false).c_str ());
 
         /* re-serialize */
         g_free (*yaml);

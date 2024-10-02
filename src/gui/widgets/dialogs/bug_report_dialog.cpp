@@ -558,7 +558,7 @@ bug_report_dialog_new (
       ? UNDO_MANAGER->undo_stack_->get_as_string (32)
       : uninitialized_str;
   self->backtrace = g_strdup (backtrace);
-  self->system_nfo = Zrythm::get_system_info ();
+  self->system_nfo = g_strdup (Zrythm::get_system_info ().c_str ());
   self->fatal = fatal;
 
   gtk_label_set_text (self->backtrace_lbl, self->backtrace);

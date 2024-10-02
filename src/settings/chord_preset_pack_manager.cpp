@@ -5,6 +5,7 @@
 #include "gui/backend/event_manager.h"
 #include "project.h"
 #include "settings/chord_preset_pack_manager.h"
+#include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 #include "utils/rt_thread_id.h"
@@ -18,8 +19,9 @@
 std::string
 ChordPresetPackManager::get_user_packs_path ()
 {
-  auto *      dir_mgr = ZrythmDirectoryManager::getInstance ();
-  std::string zrythm_dir = dir_mgr->get_dir (ZrythmDirType::USER_TOP);
+  auto *      dir_mgr = DirectoryManager::getInstance ();
+  std::string zrythm_dir =
+    dir_mgr->get_dir (DirectoryManager::DirectoryType::USER_TOP);
   z_return_val_if_fail (!zrythm_dir.empty (), "");
 
   return Glib::build_filename (zrythm_dir, UserPacksDirName);
@@ -399,18 +401,23 @@ ChordPresetPackManager::add_user_packs ()
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       /* add user preset packs */
-      std::string main_path = get_user_packs_path ();
+      fs::path main_path = get_user_packs_path ();
       z_debug ("Reading user chord packs from {}...", main_path);
 
       StringArray pack_paths;
-      try
+      if (fs::is_directory (main_path))
         {
-          pack_paths = io_get_files_in_dir_ending_in (main_path, true, ".json");
-        }
-      catch (const ZrythmException &e)
-        {
-          z_warning (
-            "Could not read user chord packs from {}: {}", main_path, e.what ());
+          try
+            {
+              pack_paths =
+                io_get_files_in_dir_ending_in (main_path, true, ".json");
+            }
+          catch (const ZrythmException &e)
+            {
+              z_warning (
+                "Could not read user chord packs from {}: {}", main_path,
+                e.what ());
+            }
         }
       if (!pack_paths.isEmpty ())
         {

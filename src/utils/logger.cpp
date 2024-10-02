@@ -3,6 +3,7 @@
 
 #include "utils/datetime.h"
 #include "utils/debug.h"
+#include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 #include "utils/logger.h"
@@ -189,8 +190,9 @@ Logger::get_log_file_path () const
     }
 
   auto   str_datetime = datetime_get_for_filename ();
-  auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
-  auto   user_log_dir = dir_mgr->get_dir (ZrythmDirType::USER_LOG);
+  auto * dir_mgr = DirectoryManager::getInstance ();
+  auto   user_log_dir =
+    dir_mgr->get_dir (DirectoryManager::DirectoryType::USER_LOG);
   auto   log_filepath =
     fs::path (user_log_dir) / (std::string ("zrythm_") + str_datetime);
   io_mkdir (user_log_dir); // note: throws

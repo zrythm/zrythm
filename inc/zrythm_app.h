@@ -21,7 +21,7 @@
 TYPEDEF_STRUCT_UNDERSCORED (MainWindowWidget);
 TYPEDEF_STRUCT_UNDERSCORED (BugReportDialogWidget);
 TYPEDEF_STRUCT_UNDERSCORED (GreeterWidget);
-class ZrythmDirectoryManager;
+class DirectoryManager;
 
 /**
  * @addtogroup general

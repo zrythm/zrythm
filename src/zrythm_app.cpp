@@ -57,6 +57,7 @@
 #include "settings/user_shortcuts.h"
 #include "utils/backtrace.h"
 #include "utils/dialogs.h"
+#include "utils/directory_manager.h"
 #include "utils/error.h"
 #include "utils/gtk.h"
 #include "utils/localization.h"
@@ -723,7 +724,7 @@ ZrythmApp::on_startup ()
 
   const char * copyright_line =
     "Copyright (C) " COPYRIGHT_YEARS " " COPYRIGHT_NAME;
-  char * ver = Zrythm::get_version (0);
+  std::string ver = Zrythm::get_version (0);
   fprintf (
     stdout,
     _ ("%s-%s\n%s\n\n"
@@ -732,8 +733,7 @@ ZrythmApp::on_startup ()
        "under certain conditions. See the file 'COPYING' for details.\n\n"
        "Write comments and bugs to %s\n"
        "Support this project at https://liberapay.com/Zrythm\n\n"),
-    PROGRAM_NAME, ver, copyright_line, PROGRAM_NAME, ISSUE_TRACKER_URL);
-  g_free (ver);
+    PROGRAM_NAME, ver.c_str (), copyright_line, PROGRAM_NAME, ISSUE_TRACKER_URL);
 
   char * cur_dir = g_get_current_dir ();
   z_info ("Running Zrythm in {}", cur_dir);
@@ -832,8 +832,9 @@ ZrythmApp::on_startup ()
   /* --- add icon search paths --- */
 
   /* prepend freedesktop system icons to search path, just in case */
-  auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
-  auto parent_datadir = dir_mgr->get_dir (ZrythmDirType::SYSTEM_PARENT_DATADIR);
+  auto * dir_mgr = DirectoryManager::getInstance ();
+  auto   parent_datadir =
+    dir_mgr->get_dir (DirectoryManager::DirectoryType::SYSTEM_PARENT_DATADIR);
   auto freedesktop_icon_theme_dir =
     Glib::build_filename (parent_datadir, "icons");
   gtk_icon_theme_add_search_path (
@@ -842,8 +843,8 @@ ZrythmApp::on_startup ()
 
   /* prepend zrythm system icons to search path */
   {
-    auto system_icon_theme_dir =
-      dir_mgr->get_dir (ZrythmDirType::SYSTEM_THEMES_ICONS_DIR);
+    auto system_icon_theme_dir = dir_mgr->get_dir (
+      DirectoryManager::DirectoryType::SYSTEM_THEMES_ICONS_DIR);
     gtk_icon_theme_add_search_path (icon_theme, system_icon_theme_dir.c_str ());
     z_debug ("added icon theme search path: {}", system_icon_theme_dir);
   }
@@ -851,7 +852,7 @@ ZrythmApp::on_startup ()
   /* prepend user custom icons to search path */
   {
     auto user_icon_theme_dir =
-      dir_mgr->get_dir (ZrythmDirType::USER_THEMES_ICONS);
+      dir_mgr->get_dir (DirectoryManager::DirectoryType::USER_THEMES_ICONS);
     gtk_icon_theme_add_search_path (icon_theme, user_icon_theme_dir.c_str ());
     z_debug ("added icon theme search path: {}", user_icon_theme_dir);
   }
@@ -944,21 +945,22 @@ ZrythmApp::on_startup ()
 
   /* get css theme file path */
   GtkCssProvider * css_provider = gtk_css_provider_new ();
-  auto   user_themes_dir = dir_mgr->get_dir (ZrythmDirType::USER_THEMES_CSS);
+  auto             user_themes_dir =
+    dir_mgr->get_dir (DirectoryManager::DirectoryType::USER_THEMES_CSS);
   char * css_theme_file = g_settings_get_string (S_P_UI_GENERAL, "css-theme");
   auto css_theme_path = Glib::build_filename (user_themes_dir, css_theme_file);
   if (!Glib::file_test (css_theme_path, Glib::FileTest::EXISTS))
     {
       /* fallback to theme in system path */
-      auto system_themes_dir =
-        dir_mgr->get_dir (ZrythmDirType::SYSTEM_THEMES_CSS_DIR);
+      auto system_themes_dir = dir_mgr->get_dir (
+        DirectoryManager::DirectoryType::SYSTEM_THEMES_CSS_DIR);
       css_theme_path = Glib::build_filename (system_themes_dir, css_theme_file);
     }
   if (!Glib::file_test (css_theme_path, Glib::FileTest::EXISTS))
     {
       /* fallback to zrythm-theme.css */
-      auto system_themes_dir =
-        dir_mgr->get_dir (ZrythmDirType::SYSTEM_THEMES_CSS_DIR);
+      auto system_themes_dir = dir_mgr->get_dir (
+        DirectoryManager::DirectoryType::SYSTEM_THEMES_CSS_DIR);
       css_theme_path =
         Glib::build_filename (system_themes_dir, "zrythm-theme.css");
     }
@@ -997,7 +999,7 @@ ZrythmApp::on_startup ()
     [&] (const auto &keybind, const auto &secondary_keybind, const auto &action) {
       primary = S_USER_SHORTCUTS.get (true, action, keybind);
       secondary = S_USER_SHORTCUTS.get (false, action, secondary_keybind);
-      install_action_accel (primary.c_str (), secondary.c_str (), action);
+      install_action_accel (primary, secondary, action);
     };
 
   // Lambda to install accelerator with optional secondary keybinding
@@ -1076,7 +1078,7 @@ ZrythmApp::on_shutdown ()
       gZrythm->deleteInstance ();
     }
 
-  ZrythmDirectoryManager::deleteInstance ();
+  DirectoryManager::deleteInstance ();
   PCGRand::deleteInstance ();
   GSettingsManager::deleteInstance ();
 

@@ -933,6 +933,18 @@ pkg_check_modules(EPOXY epoxy REQUIRED IMPORTED_TARGET)
 
 find_package(GTest REQUIRED)
 
+find_package(Qt6
+  COMPONENTS Core Gui Widgets Quick QuickControls2 REQUIRED
+)
+qt_standard_project_setup()
+
+qt_add_executable(zrythm WIN32 MACOSX_BUNDLE)
+
+# set(KDDockWidgets_QT6 TRUE)
+# find_package(KDDockWidgets-qt6 REQUIRED)
+
+# find_package(KF6Kirigami REQUIRED)
+
 list(APPEND zrythm_link_libs
   zita-resampler::zita-resampler
   PkgConfig::LIBADWAITA
@@ -965,6 +977,13 @@ list(APPEND zrythm_link_libs
   PkgConfig::GLIBMM
   PkgConfig::GIOMM
   PkgConfig::GTKMM
+  Qt6::Core
+  Qt6::Gui
+  Qt6::Widgets
+  Qt6::Quick
+  Qt6::QuickControls2
+  # KDAB::kddockwidgets
+  # KF6::Kirigami
   GTest::GTest
 )
 
@@ -1126,6 +1145,83 @@ add_subdirectory(po)
 add_subdirectory(data)
 add_subdirectory(resources)
 add_subdirectory(src)
+
+# ==============================================================================================
+# Resources & QML
+# ==============================================================================================
+
+set_source_files_properties("${CMAKE_BINARY_DIR}/resources/ui/config.js" PROPERTIES QT_RESOURCE_ALIAS "config.js")
+set_source_files_properties("${CMAKE_SOURCE_DIR}/resources/qtquickcontrols2.conf" PROPERTIES QT_RESOURCE_ALIAS "qtquickcontrols2.conf")
+
+# Icons
+set(icon_dirs
+  arena gnome-builder gnome-icon-library fork-awesome font-awesome
+  fluentui jam-icons box-icons iconpark iconoir material-design
+  untitled-ui css.gg codicons
+)
+
+set(icon_files)
+foreach(dir ${icon_dirs})
+  file(GLOB icons "${CMAKE_SOURCE_DIR}/resources/icons/${dir}/*.svg" "${CMAKE_SOURCE_DIR}/resources/icons/${dir}/*.png")
+  foreach(icon ${icons})
+    get_filename_component(icon_name ${icon} NAME)
+    set(icon_alias "icons/${dir}/${icon_name}")
+    set_source_files_properties(${icon} PROPERTIES QT_RESOURCE_ALIAS ${icon_alias})
+    list(APPEND icon_files ${icon})
+  endforeach()
+endforeach()
+
+# add zrythm icon to resources
+set(zrythm_logo "${CMAKE_SOURCE_DIR}/data/icon-themes/zrythm-dark/scalable/apps/zrythm.svg")
+set_source_files_properties(${zrythm_logo} PROPERTIES QT_RESOURCE_ALIAS "icons/zrythm.svg")
+list(APPEND icon_files ${zrythm_logo})
+
+# font files
+set(font_filepaths
+  ${CMAKE_SOURCE_DIR}/resources/fonts/Inter-4.0/InterVariable.ttf
+  ${CMAKE_SOURCE_DIR}/resources/fonts/Inter-4.0/InterVariable-Italic.ttf
+  ${CMAKE_SOURCE_DIR}/resources/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-Regular.ttf
+  ${CMAKE_SOURCE_DIR}/resources/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-Bold.ttf
+  ${CMAKE_SOURCE_DIR}/resources/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-Light.ttf
+  ${CMAKE_SOURCE_DIR}/resources/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-Italic.ttf
+  ${CMAKE_SOURCE_DIR}/resources/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-BoldItalic.ttf
+  ${CMAKE_SOURCE_DIR}/resources/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-LightItalic.ttf
+)
+set(font_files)
+foreach(font_filepath ${font_filepaths})
+  get_filename_component(font_name ${font_filepath} NAME)
+  set_source_files_properties(${font_filepath} PROPERTIES QT_RESOURCE_ALIAS "fonts/${font_name}")
+  list(APPEND font_files ${font_filepath})
+endforeach()
+
+set(qml_file_paths
+  resources/ui/main_window.qml
+  resources/ui/greeter.qml
+  resources/ui/PlaceholderPage.qml
+  resources/ui/PlainButton.qml
+  resources/ui/ActionRow.qml
+)
+foreach(qml_file_path ${qml_file_paths})
+  get_filename_component(qml_filename ${qml_file_path} NAME)
+  set_source_files_properties(${qml_file_path} PROPERTIES QT_RESOURCE_ALIAS "${qml_filename}")
+endforeach()
+
+# module ends up in "/<RESOURCE_PREFIX>/<URI>/"
+qt_add_qml_module(zrythm
+  URI Zrythm
+  VERSION 1.0
+  RESOURCE_PREFIX /org.zrythm/imports
+  QML_FILES 
+    ${qml_file_paths}
+    ${CMAKE_BINARY_DIR}/resources/ui/config.js
+  RESOURCES
+    ${CMAKE_SOURCE_DIR}/resources/qtquickcontrols2.conf
+    ${icon_files}
+    ${font_files}
+  # NO_RESOURCE_TARGET_PATH
+)
+
+# ==============================================================================================
 
 message(STATUS "Zrythm compile definitions: ${zrythm_definitions}")
 message(STATUS "Zrythm compile args: ${zrythm_compile_args}")

@@ -473,8 +473,8 @@ ZrythmFixture::SetUp ()
   char * version = Zrythm::get_version (false);
   z_info ("{}", version);
   g_free (version);
-  auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
-  auto   zrythm_dir = dir_mgr->get_dir (ZrythmDirType::USER_TOP);
+  auto * dir_mgr = DirectoryManager::getInstance ();
+  auto zrythm_dir = dir_mgr->get_dir (DirectoryManager::DirectoryType::USER_TOP);
   ASSERT_NONEMPTY (zrythm_dir);
   gZrythm->init ();
   z_info ("{}", zrythm_dir);
@@ -514,7 +514,7 @@ void
 ZrythmFixture::TearDown ()
 {
   z_info ("destroying ZrythmFixture");
-  auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
+  auto * dir_mgr = DirectoryManager::getInstance ();
   dir_mgr->remove_testing_dir ();
   gZrythm->project_->audio_engine_->activate (false);
   gZrythm->project_.reset ();
@@ -525,7 +525,7 @@ ZrythmFixture::TearDown ()
   Zrythm::deleteInstance ();
   zrythm_app.reset ();
 
-  ZrythmDirectoryManager::deleteInstance ();
+  DirectoryManager::deleteInstance ();
   PCGRand::deleteInstance ();
   GSettingsManager::deleteInstance ();
   Logger::deleteInstance ();

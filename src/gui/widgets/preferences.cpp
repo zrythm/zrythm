@@ -10,6 +10,7 @@
 #include "gui/widgets/preferences.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
+#include "utils/directory_manager.h"
 #include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/localization.h"
@@ -422,11 +423,11 @@ make_control (
     KEY_IS ("UI", "General", "css-theme")
     || KEY_IS ("UI", "General", "icon-theme"))
     {
-      auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
+      auto * dir_mgr = DirectoryManager::getInstance ();
       auto   user_css_theme_path = dir_mgr->get_dir (
         (KEY_IS ("UI", "General", "css-theme"))
-          ? ZrythmDirType::USER_THEMES_CSS
-          : ZrythmDirType::USER_THEMES_ICONS);
+          ? DirectoryManager::DirectoryType::USER_THEMES_CSS
+          : DirectoryManager::DirectoryType::USER_THEMES_ICONS);
       StringArray css_themes;
       try
         {

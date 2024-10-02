@@ -9,7 +9,8 @@
 #include "dsp/transport.h"
 #include "io/audio_file.h"
 #include "project.h"
-#include "settings/g_settings_manager.h"
+#include "settings/settings_manager.h"
+#include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -29,10 +30,11 @@ Metronome::Metronome (AudioEngine &engine)
     }
   else
     {
-      auto * dir_mgr = ZrythmDirectoryManager::getInstance ();
-      auto   samplesdir = dir_mgr->get_dir (ZrythmDirType::SYSTEM_SAMPLESDIR);
-      emphasis_path_ = Glib::build_filename (samplesdir, "square_emphasis.wav");
-      normal_path_ = Glib::build_filename (samplesdir, "square_normal.wav");
+      auto * dir_mgr = DirectoryManager::getInstance ();
+      auto   samplesdir =
+        dir_mgr->get_dir (DirectoryManager::DirectoryType::SYSTEM_SAMPLESDIR);
+      emphasis_path_ = samplesdir / "square_emphasis.wav";
+      normal_path_ = samplesdir / "square_normal.wav";
     }
 
   emphasis_ = std::make_shared<juce::AudioSampleBuffer> ();
@@ -47,7 +49,7 @@ Metronome::Metronome (AudioEngine &engine)
   volume_ =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? 1.f
-      : (float) g_settings_get_double (S_TRANSPORT, "metronome-volume");
+      : (float) SettingsManager::get_instance ()->get_metronome_volume ();
 }
 
 void
@@ -87,7 +89,8 @@ Metronome::queue_events (
 void
 Metronome::set_volume (float volume)
 {
+  // TODO: validate
   volume_ = volume;
 
-  g_settings_set_double (S_TRANSPORT, "metronome-volume", (double) volume);
+  SettingsManager::get_instance ()->set_metronome_volume (volume);
 }

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/collections.h"
+#include "utils/directory_manager.h"
 #include "utils/string.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -65,8 +66,8 @@ PluginCollection::generate_context_menu () const
 fs::path
 PluginCollections::get_file_path ()
 {
-  auto dir_mgr = ZrythmDirectoryManager::getInstance ();
-  auto zrythm_dir = dir_mgr->get_dir (ZrythmDirType::USER_TOP);
+  auto dir_mgr = DirectoryManager::getInstance ();
+  auto zrythm_dir = dir_mgr->get_dir (DirectoryManager::DirectoryType::USER_TOP);
   z_return_val_if_fail (!zrythm_dir.empty (), "");
 
   return fs::path (zrythm_dir) / PLUGIN_COLLECTIONS_JSON_FILENAME;

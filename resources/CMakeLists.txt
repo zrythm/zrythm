@@ -75,40 +75,11 @@ foreach(blp ${blp_filenames})
   list(APPEND ui_files ${ui_file})
 endforeach()
 
-add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/zrythm.gresources.xml
-  COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/gen-gtk-resources-xml.py
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${APPDATA_FILE}
-    ${CMAKE_CURRENT_BINARY_DIR}/zrythm.gresources.xml
-  DEPENDS ${ui_files} appdata-xml-merged
-  COMMENT "Generating zrythm.gresources.xml"
-)
+# GL shaders
+# file(GLOB gl_shaders "${CMAKE_CURRENT_SOURCE_DIR}/gl/shaders/*.glsl")
 
-find_program(GLIB_COMPILE_RESOURCES glib-compile-resources
-  PATHS ${GLIB_COMPILE_RESOURCES_PATH}
-  REQUIRED)
 
-set(GRESOURCE_COMPILED_FILE "${CMAKE_CURRENT_BINARY_DIR}/zrythm-resources.c")
-
-add_custom_command(
-  OUTPUT "${GRESOURCE_COMPILED_FILE}"
-  COMMAND ${GLIB_COMPILE_RESOURCES}
-    "--target=${GRESOURCE_COMPILED_FILE}"
-    --sourcedir=${CMAKE_CURRENT_SOURCE_DIR}
-    --sourcedir=${CMAKE_CURRENT_BINARY_DIR}
-    --sourcedir=${CMAKE_BINARY_DIR}/data
-    --generate-source
-    --c-name=zrythm
-    "${CMAKE_CURRENT_BINARY_DIR}/zrythm.gresources.xml"
-  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/zrythm.gresources.xml ${ui_files} appdata-xml-merged
-  COMMENT "Compiling GResource file: zrythm-resources.c"
-)
-
-add_custom_target(zrythm-gresources DEPENDS ${GRESOURCE_COMPILED_FILE})
-set(GRESOURCE_COMPILED_FILE "${GRESOURCE_COMPILED_FILE}" PARENT_SCOPE)
-set_source_files_properties(
-  ${GRESOURCE_COMPILED_FILE} PROPERTIES 
-    GENERATED TRUE
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/ui/config.js.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/ui/config.js"
 )

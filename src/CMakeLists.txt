@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-add_library(zrythm_lib STATIC)
+qt_add_library(zrythm_lib STATIC)
 
 target_sources(zrythm_lib
   PRIVATE
@@ -9,6 +9,8 @@ target_sources(zrythm_lib
     project.cpp
     zrythm.cpp
     zrythm_app.cpp
+    ${CMAKE_SOURCE_DIR}/inc/zrythm_application.h
+    zrythm_application.cpp
     project/project_init_flow_manager.cpp
 )
 
@@ -84,13 +86,10 @@ target_precompile_headers(zrythm_lib
   PRIVATE 
     $<$<COMPILE_LANGUAGE:CXX>:${zrythm_pch}>)
 
-add_executable(zrythm)
-target_sources(zrythm
-  PRIVATE main.cpp ${GRESOURCE_COMPILED_FILE})
+target_sources(zrythm PRIVATE main.cpp)
 target_link_libraries(zrythm PRIVATE zrythm_lib)
 target_link_options(zrythm PRIVATE ${zrythm_link_args})
-add_dependencies(zrythm
-  zrythm-gresources appdata-xml-merged)
+add_dependencies(zrythm appdata-xml-merged)
 
 if(OS_GNU)
   add_dependencies(zrythm desktop-file)
@@ -102,18 +101,25 @@ if(WIN32)
     VS_DEBUGGER_ENVIRONMENT "GSETTINGS_SCHEMA_DIR=${CMAKE_INSTALL_FULL_DATADIR}/glib-2.0/schemas;G_DEBUG=fatal_criticals"
   )
   if(MSVC)
-    set_target_properties(zrythm PROPERTIES
-      LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup"
-    )
+    target_link_options(zrythm PRIVATE "/SUBSYSTEM:WINDOWS" "/ENTRY:mainCRTStartup")
   endif()
   target_sources(zrythm PRIVATE ${windows_rc_file} ${windows_icon_file})
-elseif(APPLE)
-  set_target_properties(zrythm PROPERTIES
-    XCODE_SCHEME_ENVIRONMENT "GSETTINGS_SCHEMA_DIR=${CMAKE_INSTALL_FULL_DATADIR}/glib-2.0/schemas;G_DEBUG=fatal_criticals"
-  )
 endif()
 
+set_target_properties(zrythm PROPERTIES
+  VS_DEBUGGER_ENVIRONMENT "GSETTINGS_SCHEMA_DIR=${CMAKE_INSTALL_FULL_DATADIR}/glib-2.0/schemas;G_DEBUG=fatal_criticals"
+  XCODE_SCHEME_ENVIRONMENT "GSETTINGS_SCHEMA_DIR=${CMAKE_INSTALL_FULL_DATADIR}/glib-2.0/schemas;G_DEBUG=fatal_criticals"
+  MACOSX_BUNDLE_GUI_IDENTIFIER "org.zrythm.Zrythm"
+  MACOSX_BUNDLE_BUNDLE_VERSION ${ZRYTHM_VERSION_STRING_FULL}
+  MACOSX_BUNDLE_SHORT_VERSION_STRING ${ZRYTHM_VERSION}
+  MACOSX_BUNDLE TRUE
+  WIN32_EXECUTABLE TRUE
+)
+
 install(TARGETS zrythm RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+add_subdirectory(engine)
+add_dependencies(zrythm zrythm-engine)
 
 # Run stoat
 if(STOAT_FOUND AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")

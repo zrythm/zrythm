@@ -13,6 +13,7 @@ target_sources(zrythm_lib
     cpu_windows.cpp
     datetime.cpp
     dialogs.cpp
+    directory_manager.cpp
     env.cpp
     error.cpp
     exceptions.cpp
@@ -56,7 +57,7 @@ target_compile_options(optimized_utils_lib PRIVATE
   # ${full_optimization_args}
 )
 target_compile_definitions(optimized_utils_lib PRIVATE ${zrythm_definitions})
-target_link_libraries(optimized_utils_lib PRIVATE ${zrythm_link_libs})
+target_link_libraries(optimized_utils_lib PRIVATE ${zrythm_link_libs} Qt6::Core)
 
 if(ZRYTHM_TESTS)
   # use custom lv2apply because upstream doesn't have URID support
@@ -75,6 +76,9 @@ if(ZRYTHM_TESTS)
     PkgConfig::GLIBMM
     PkgConfig::GIOMM
     PkgConfig::GTKMM
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Widgets
   )
   target_link_options(zrythm_lv2apply PRIVATE ${zrythm_link_args})
 endif()
