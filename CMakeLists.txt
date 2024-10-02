@@ -3,10 +3,18 @@
 
 cmake_minimum_required(VERSION 3.24)
 
-# 10.15 -> std::filesystem::path
-# 11.0 -> semaphore.try_acquire
-# must be specified before project()
-set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum OS X deployment version")
+if(APPLE)
+  # 10.15 -> std::filesystem::path
+  # 11.0 -> semaphore.try_acquire
+  # must be specified before project()
+  set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum OS X deployment version")
+  
+  # this might be needed for homebrew
+  if(NOT DEFINED CMAKE_OSX_SYSROOT)
+    execute_process(COMMAND xcrun --show-sdk-path OUTPUT_VARIABLE CMAKE_OSX_SYSROOT OUTPUT_STRIP_TRAILING_WHITESPACE)
+  endif()
+  message(STATUS "Using SDK: ${CMAKE_OSX_SYSROOT}")
+endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
