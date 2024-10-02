@@ -940,10 +940,10 @@ qt_standard_project_setup()
 
 qt_add_executable(zrythm WIN32 MACOSX_BUNDLE)
 
-set(KDDockWidgets_QT6 TRUE)
-find_package(KDDockWidgets-qt6 REQUIRED)
+# set(KDDockWidgets_QT6 TRUE)
+# find_package(KDDockWidgets-qt6 REQUIRED)
 
-find_package(KF6Kirigami REQUIRED)
+# find_package(KF6Kirigami REQUIRED)
 
 list(APPEND zrythm_link_libs
   zita-resampler::zita-resampler
@@ -982,8 +982,8 @@ list(APPEND zrythm_link_libs
   Qt6::Widgets
   Qt6::Quick
   Qt6::QuickControls2
-  KDAB::kddockwidgets
-  KF6::Kirigami
+  # KDAB::kddockwidgets
+  # KF6::Kirigami
   GTest::GTest
 )
 
