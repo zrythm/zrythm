@@ -315,7 +315,7 @@ ControlPort::normalized_val_to_real (float normalized_val) const
             math_floats_equal (normalized_val, 0.f) ? 1e-20f : normalized_val;
 
           /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
-          return minf * std::powf (maxf / minf, normalized_val);
+          return minf * std::pow (maxf / minf, normalized_val);
         }
       else if (
         ENUM_BITSET_TEST (
