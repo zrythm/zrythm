@@ -12,15 +12,15 @@
 std::string
 datetime_get_current_as_string ()
 {
-  // apple does not support std::chrono::current_zone() yet
-#ifdef __APPLE__
   auto now = std::chrono::system_clock::now ();
   auto in_time_t = std::chrono::system_clock::to_time_t (now);
 
   std::stringstream ss;
   ss << std::put_time (std::localtime (&in_time_t), "%Y-%m-%d %H:%M:%S");
   return ss.str ();
-#else
+
+  // some systems do not support std::chrono::current_zone() yet
+#if 0
   auto now = round<std::chrono::seconds> (
     std::chrono::current_zone ()->to_local (std::chrono::system_clock::now ()));
 
