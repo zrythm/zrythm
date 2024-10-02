@@ -183,3 +183,12 @@ ClipEditor::init ()
   chord_editor_.init ();
   // the rest of the editors are initialized in their respective classes
 }
+
+template MidiRegion *
+ClipEditor::get_region<MidiRegion> () const;
+template AudioRegion *
+ClipEditor::get_region<AudioRegion> () const;
+template AutomationRegion *
+ClipEditor::get_region<AutomationRegion> () const;
+template ChordRegion *
+ClipEditor::get_region<ChordRegion> () const;
