@@ -10,6 +10,6 @@ if(${HAVE_JACK})
   endif()
 
   add_library(weakjack STATIC ${WEAKJACK_SOURCES})
-  target_compile_definitions(weakjack INTERFACE ${WEAKJACK_COMPILE_DEFS})
+  target_compile_definitions(weakjack PUBLIC ${WEAKJACK_COMPILE_DEFS})
   add_library(weakjack::weakjack ALIAS weakjack)
 endif()
