@@ -45,7 +45,7 @@ KMeterDsp::process (float * p, int n)
       /*const float fall = 15.f;*/
       constexpr float fall = 5.f;
       const float     tme = (float) n / fsamp_; // period time in seconds
-      fall_ = std::powf (
+      fall_ = std::pow (
         10.0f,
         -0.05f * fall * tme); // per period fallback multiplier
       fpp_ = n;
