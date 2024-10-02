@@ -358,12 +358,12 @@ ControlPort::real_val_to_normalized (float real_val) const
         ENUM_BITSET_TEST (
           PortIdentifier::Flags, id_.flags_, PortIdentifier::Flags::Logarithmic))
         {
-          auto minf = math_floats_equal (minf_, 0.f) ? 1e-20f : minf_;
-          auto maxf = math_floats_equal (maxf_, 0.f) ? 1e-20f : maxf_;
+          const auto minf = math_floats_equal (minf_, 0.f) ? 1e-20f : minf_;
+          const auto maxf = math_floats_equal (maxf_, 0.f) ? 1e-20f : maxf_;
           real_val = math_floats_equal (real_val, 0.f) ? 1e-20f : real_val;
 
           /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
-          return std::logf (real_val / minf) / std::logf (maxf / minf);
+          return std::log (real_val / minf) / std::log (maxf / minf);
         }
       else if (
         ENUM_BITSET_TEST (
