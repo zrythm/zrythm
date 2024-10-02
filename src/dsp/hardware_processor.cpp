@@ -369,3 +369,5 @@ template std::unique_ptr<MidiPort>
 HardwareProcessor::create_port_for_ext_port (const ExtPort &, PortFlow);
 template std::unique_ptr<AudioPort>
 HardwareProcessor::create_port_for_ext_port (const ExtPort &, PortFlow);
+template Port *
+HardwareProcessor::find_port (const std::string &);
