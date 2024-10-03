@@ -1914,6 +1914,7 @@ ruler_widget_handle_horizontal_zoom (RulerWidget * self, double * x_pos, double 
 {
   /* get current adjustment so we can get the difference from the cursor */
   EditorSettings * settings = ruler_widget_get_editor_settings (self);
+  g_return_if_fail(settings);
 
   /* get position of cursor */
   Position cursor_pos;
