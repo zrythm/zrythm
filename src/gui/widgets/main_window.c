@@ -194,7 +194,9 @@ on_key_pressed (
 
   /* if pressed space and currently not inside a GtkEditable,
    * activate the play-pause action */
-  if (keyval == GDK_KEY_space || keyval == GDK_KEY_KP_Space)
+  AdwDialog * active_dialog =
+    adw_application_window_get_visible_dialog (ADW_APPLICATION_WINDOW (self));
+  if (!active_dialog && (keyval == GDK_KEY_space || keyval == GDK_KEY_KP_Space))
     {
       g_debug ("space pressed");
       GtkWidget * focus_child = gtk_widget_get_focus_child (GTK_WIDGET (self));
