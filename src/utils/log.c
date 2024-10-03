@@ -1318,9 +1318,9 @@ log_new (void)
   Log * self = object_new (Log);
 
   const GDebugKey keys[] = {
-    {"gc-friendly",      1                                         },
-    { "fatal-warnings",  G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL},
-    { "fatal-criticals", G_LOG_LEVEL_CRITICAL                      }
+    { "gc-friendly",     1                                          },
+    { "fatal-warnings",  G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL },
+    { "fatal-criticals", G_LOG_LEVEL_CRITICAL                       }
   };
   GLogLevelFlags flags =
     g_parse_debug_envvar ("G_DEBUG", keys, G_N_ELEMENTS (keys), 0);

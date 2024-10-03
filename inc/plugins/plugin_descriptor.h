@@ -79,46 +79,46 @@ typedef enum ZPluginCategory
 } ZPluginCategory;
 
 static const cyaml_strval_t plugin_descriptor_category_strings[] = {
-  {"None",              ZPLUGIN_CATEGORY_NONE},
-  { "Delay",            PC_DELAY             },
-  { "Reverb",           PC_REVERB            },
-  { "Distortion",       PC_DISTORTION        },
-  { "Waveshaper",       PC_WAVESHAPER        },
-  { "Dynamics",         PC_DYNAMICS          },
-  { "Amplifier",        PC_AMPLIFIER         },
-  { "Compressor",       PC_COMPRESSOR        },
-  { "Envelope",         PC_ENVELOPE          },
-  { "Expander",         PC_EXPANDER          },
-  { "Gate",             PC_GATE              },
-  { "Limiter",          PC_LIMITER           },
-  { "Filter",           PC_FILTER            },
-  { "Allpass Filter",   PC_ALLPASS_FILTER    },
-  { "Bandpass Filter",  PC_BANDPASS_FILTER   },
-  { "Comb Filter",      PC_COMB_FILTER       },
-  { "EQ",               PC_EQ                },
-  { "Multi-EQ",         PC_MULTI_EQ          },
-  { "Parametric EQ",    PC_PARA_EQ           },
-  { "Highpass Filter",  PC_HIGHPASS_FILTER   },
-  { "Lowpass Filter",   PC_LOWPASS_FILTER    },
-  { "Generator",        PC_GENERATOR         },
-  { "Constant",         PC_CONSTANT          },
-  { "Instrument",       PC_INSTRUMENT        },
-  { "Oscillator",       PC_OSCILLATOR        },
-  { "MIDI",             PC_MIDI              },
-  { "Modulator",        PC_MODULATOR         },
-  { "Chorus",           PC_CHORUS            },
-  { "Flanger",          PC_FLANGER           },
-  { "Phaser",           PC_PHASER            },
-  { "Simulator",        PC_SIMULATOR         },
-  { "Simulator Reverb", PC_SIMULATOR_REVERB  },
-  { "Spatial",          PC_SPATIAL           },
-  { "Spectral",         PC_SPECTRAL          },
-  { "Pitch",            PC_PITCH             },
-  { "Utility",          PC_UTILITY           },
-  { "Analyzer",         PC_ANALYZER          },
-  { "Converter",        PC_CONVERTER         },
-  { "Function",         PC_FUNCTION          },
-  { "Mixer",            PC_MIXER             },
+  { "None",             ZPLUGIN_CATEGORY_NONE },
+  { "Delay",            PC_DELAY              },
+  { "Reverb",           PC_REVERB             },
+  { "Distortion",       PC_DISTORTION         },
+  { "Waveshaper",       PC_WAVESHAPER         },
+  { "Dynamics",         PC_DYNAMICS           },
+  { "Amplifier",        PC_AMPLIFIER          },
+  { "Compressor",       PC_COMPRESSOR         },
+  { "Envelope",         PC_ENVELOPE           },
+  { "Expander",         PC_EXPANDER           },
+  { "Gate",             PC_GATE               },
+  { "Limiter",          PC_LIMITER            },
+  { "Filter",           PC_FILTER             },
+  { "Allpass Filter",   PC_ALLPASS_FILTER     },
+  { "Bandpass Filter",  PC_BANDPASS_FILTER    },
+  { "Comb Filter",      PC_COMB_FILTER        },
+  { "EQ",               PC_EQ                 },
+  { "Multi-EQ",         PC_MULTI_EQ           },
+  { "Parametric EQ",    PC_PARA_EQ            },
+  { "Highpass Filter",  PC_HIGHPASS_FILTER    },
+  { "Lowpass Filter",   PC_LOWPASS_FILTER     },
+  { "Generator",        PC_GENERATOR          },
+  { "Constant",         PC_CONSTANT           },
+  { "Instrument",       PC_INSTRUMENT         },
+  { "Oscillator",       PC_OSCILLATOR         },
+  { "MIDI",             PC_MIDI               },
+  { "Modulator",        PC_MODULATOR          },
+  { "Chorus",           PC_CHORUS             },
+  { "Flanger",          PC_FLANGER            },
+  { "Phaser",           PC_PHASER             },
+  { "Simulator",        PC_SIMULATOR          },
+  { "Simulator Reverb", PC_SIMULATOR_REVERB   },
+  { "Spatial",          PC_SPATIAL            },
+  { "Spectral",         PC_SPECTRAL           },
+  { "Pitch",            PC_PITCH              },
+  { "Utility",          PC_UTILITY            },
+  { "Analyzer",         PC_ANALYZER           },
+  { "Converter",        PC_CONVERTER          },
+  { "Function",         PC_FUNCTION           },
+  { "Mixer",            PC_MIXER              },
 };
 
 /**
@@ -141,17 +141,17 @@ typedef enum ZPluginProtocol
 } ZPluginProtocol;
 
 static const cyaml_strval_t plugin_protocol_strings[] = {
-  {N_ ("Dummy"), Z_PLUGIN_PROTOCOL_DUMMY },
-  { "LV2",       Z_PLUGIN_PROTOCOL_LV2   },
-  { "DSSI",      Z_PLUGIN_PROTOCOL_DSSI  },
-  { "LADSPA",    Z_PLUGIN_PROTOCOL_LADSPA},
-  { "VST",       Z_PLUGIN_PROTOCOL_VST   },
-  { "VST3",      Z_PLUGIN_PROTOCOL_VST3  },
-  { "AU",        Z_PLUGIN_PROTOCOL_AU    },
-  { "SFZ",       Z_PLUGIN_PROTOCOL_SFZ   },
-  { "SF2",       Z_PLUGIN_PROTOCOL_SF2   },
-  { "CLAP",      Z_PLUGIN_PROTOCOL_CLAP  },
-  { "JSFX",      Z_PLUGIN_PROTOCOL_JSFX  },
+  { N_ ("Dummy"), Z_PLUGIN_PROTOCOL_DUMMY  },
+  { "LV2",        Z_PLUGIN_PROTOCOL_LV2    },
+  { "DSSI",       Z_PLUGIN_PROTOCOL_DSSI   },
+  { "LADSPA",     Z_PLUGIN_PROTOCOL_LADSPA },
+  { "VST",        Z_PLUGIN_PROTOCOL_VST    },
+  { "VST3",       Z_PLUGIN_PROTOCOL_VST3   },
+  { "AU",         Z_PLUGIN_PROTOCOL_AU     },
+  { "SFZ",        Z_PLUGIN_PROTOCOL_SFZ    },
+  { "SF2",        Z_PLUGIN_PROTOCOL_SF2    },
+  { "CLAP",       Z_PLUGIN_PROTOCOL_CLAP   },
+  { "JSFX",       Z_PLUGIN_PROTOCOL_JSFX   },
 };
 
 /**
@@ -164,8 +164,8 @@ typedef enum PluginArchitecture
 } PluginArchitecture;
 
 static const cyaml_strval_t plugin_architecture_strings[] = {
-  {"32-bit",  ARCH_32},
-  { "64-bit", ARCH_64},
+  { "32-bit", ARCH_32 },
+  { "64-bit", ARCH_64 },
 };
 
 /**
@@ -179,9 +179,9 @@ typedef enum CarlaBridgeMode
 } CarlaBridgeMode;
 
 static const cyaml_strval_t carla_bridge_mode_strings[] = {
-  {"None",  CARLA_BRIDGE_NONE},
-  { "UI",   CARLA_BRIDGE_UI  },
-  { "Full", CARLA_BRIDGE_FULL},
+  { "None", CARLA_BRIDGE_NONE },
+  { "UI",   CARLA_BRIDGE_UI   },
+  { "Full", CARLA_BRIDGE_FULL },
 };
 
 /***

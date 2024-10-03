@@ -62,10 +62,8 @@ tracklist_selections_new (bool is_project);
 /**
  * Clone the struct for copying, undoing, etc.
  */
-NONNULL_ARGS (1)
-TracklistSelections * tracklist_selections_clone (
-  TracklistSelections * src,
-  GError **             error);
+NONNULL_ARGS (1) TracklistSelections *
+tracklist_selections_clone (TracklistSelections * src, GError ** error);
 
 /**
  * Gets highest track in the selections.

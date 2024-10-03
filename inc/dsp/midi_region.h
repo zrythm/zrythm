@@ -221,8 +221,8 @@ midi_region_remove_all_midi_notes (ZRegion * region);
  *   track/lane position in the MIDI data. The
  *   MIDI track will be set to 1 if false.
  */
-NONNULL_ARGS (1, 2)
-void midi_region_write_to_midi_file (
+NONNULL_ARGS (1, 2) void
+midi_region_write_to_midi_file (
   const ZRegion * self,
   MIDI_FILE *     mf,
   const bool      add_region_start,

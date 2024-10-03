@@ -135,8 +135,8 @@ audio_clip_init_loaded (AudioClip * self, GError ** error);
  *
  * The name used is the basename of the file.
  */
-NONNULL_ARGS (1)
-AudioClip * audio_clip_new_from_file (const char * full_path, GError ** error);
+NONNULL_ARGS (1) AudioClip *
+audio_clip_new_from_file (const char * full_path, GError ** error);
 
 /**
  * Creates an audio clip by copying the given float

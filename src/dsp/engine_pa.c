@@ -191,7 +191,7 @@ engine_pa_test (GtkWindow * win)
   if (err != paNoError)
     {
       msg = g_strdup_printf (_ ("PortAudio Error: %s"), Pa_GetErrorText (err));
-      ui_show_error_message (win, msg);
+      ui_show_error_message ("Error", msg);
       g_free (msg);
       return 1;
     }
@@ -201,14 +201,14 @@ engine_pa_test (GtkWindow * win)
   if (err != paNoError)
     {
       msg = g_strdup_printf (_ ("PortAudio Error: %s"), Pa_GetErrorText (err));
-      ui_show_error_message (win, msg);
+      ui_show_error_message ("Error", msg);
       g_free (msg);
       return 1;
     }
   else if ((err = Pa_Terminate ()) != paNoError)
     {
       msg = g_strdup_printf (_ ("PortAudio Error: %s"), Pa_GetErrorText (err));
-      ui_show_error_message (win, msg);
+      ui_show_error_message ("error", msg);
       g_free (msg);
       return 1;
     }

@@ -81,7 +81,7 @@ engine_pulse_notify_underflow (void * userdata)
   if (MAIN_WINDOW)
     {
       ui_show_error_message (
-        false,
+        "Error",
         _ ("A buffer underflow has occurred."
            " Try increasing the buffer size in"
            " the settings to avoid audio"

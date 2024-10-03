@@ -136,8 +136,8 @@ router_get_max_route_playback_latency (Router * router);
  * calls router_start_cycle()).
  */
 WARN_UNUSED_RESULT HOT NONNULL
-  ACCESS_READ_ONLY (1) static inline bool router_is_processing_kickoff_thread (
-    const Router * const self)
+ACCESS_READ_ONLY (1) static inline bool router_is_processing_kickoff_thread (
+  const Router * const self)
 {
   return g_thread_self () == self->process_kickoff_thread;
 }

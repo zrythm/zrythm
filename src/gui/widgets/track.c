@@ -1680,7 +1680,7 @@ on_dnd_drop (
           if (plugin_descriptor_is_instrument (pd))
             {
               ui_show_error_message (
-                MAIN_WINDOW, false,
+                "Error",
                 _("Operation not implemented"));
             }
 

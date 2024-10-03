@@ -92,9 +92,8 @@ typedef struct HardwareProcessor
 
 } HardwareProcessor;
 
-COLD NONNULL_ARGS (1) void hardware_processor_init_loaded (
-  HardwareProcessor * self,
-  AudioEngine *       engine);
+COLD NONNULL_ARGS (1) void
+hardware_processor_init_loaded (HardwareProcessor * self, AudioEngine * engine);
 
 /**
  * Returns a new empty instance.

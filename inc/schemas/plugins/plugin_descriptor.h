@@ -59,46 +59,46 @@ typedef enum ZPluginCategory_v1
 } ZPluginCategory_v1;
 
 static const cyaml_strval_t plugin_descriptor_category_strings_v1[] = {
-  {"None",              ZPLUGIN_CATEGORY_NONE_v1},
-  { "Delay",            PC_DELAY_v1             },
-  { "Reverb",           PC_REVERB_v1            },
-  { "Distortion",       PC_DISTORTION_v1        },
-  { "Waveshaper",       PC_WAVESHAPER_v1        },
-  { "Dynamics",         PC_DYNAMICS_v1          },
-  { "Amplifier",        PC_AMPLIFIER_v1         },
-  { "Compressor",       PC_COMPRESSOR_v1        },
-  { "Envelope",         PC_ENVELOPE_v1          },
-  { "Expander",         PC_EXPANDER_v1          },
-  { "Gate",             PC_GATE_v1              },
-  { "Limiter",          PC_LIMITER_v1           },
-  { "Filter",           PC_FILTER_v1            },
-  { "Allpass Filter",   PC_ALLPASS_FILTER_v1    },
-  { "Bandpass Filter",  PC_BANDPASS_FILTER_v1   },
-  { "Comb Filter",      PC_COMB_FILTER_v1       },
-  { "EQ",               PC_EQ_v1                },
-  { "Multi-EQ",         PC_MULTI_EQ_v1          },
-  { "Parametric EQ",    PC_PARA_EQ_v1           },
-  { "Highpass Filter",  PC_HIGHPASS_FILTER_v1   },
-  { "Lowpass Filter",   PC_LOWPASS_FILTER_v1    },
-  { "Generator",        PC_GENERATOR_v1         },
-  { "Constant",         PC_CONSTANT_v1          },
-  { "Instrument",       PC_INSTRUMENT_v1        },
-  { "Oscillator",       PC_OSCILLATOR_v1        },
-  { "MIDI",             PC_MIDI_v1              },
-  { "Modulator",        PC_MODULATOR_v1         },
-  { "Chorus",           PC_CHORUS_v1            },
-  { "Flanger",          PC_FLANGER_v1           },
-  { "Phaser",           PC_PHASER_v1            },
-  { "Simulator",        PC_SIMULATOR_v1         },
-  { "Simulator Reverb", PC_SIMULATOR_REVERB_v1  },
-  { "Spatial",          PC_SPATIAL_v1           },
-  { "Spectral",         PC_SPECTRAL_v1          },
-  { "Pitch",            PC_PITCH_v1             },
-  { "Utility",          PC_UTILITY_v1           },
-  { "Analyzer",         PC_ANALYZER_v1          },
-  { "Converter",        PC_CONVERTER_v1         },
-  { "Function",         PC_FUNCTION_v1          },
-  { "Mixer",            PC_MIXER_v1             },
+  { "None",             ZPLUGIN_CATEGORY_NONE_v1 },
+  { "Delay",            PC_DELAY_v1              },
+  { "Reverb",           PC_REVERB_v1             },
+  { "Distortion",       PC_DISTORTION_v1         },
+  { "Waveshaper",       PC_WAVESHAPER_v1         },
+  { "Dynamics",         PC_DYNAMICS_v1           },
+  { "Amplifier",        PC_AMPLIFIER_v1          },
+  { "Compressor",       PC_COMPRESSOR_v1         },
+  { "Envelope",         PC_ENVELOPE_v1           },
+  { "Expander",         PC_EXPANDER_v1           },
+  { "Gate",             PC_GATE_v1               },
+  { "Limiter",          PC_LIMITER_v1            },
+  { "Filter",           PC_FILTER_v1             },
+  { "Allpass Filter",   PC_ALLPASS_FILTER_v1     },
+  { "Bandpass Filter",  PC_BANDPASS_FILTER_v1    },
+  { "Comb Filter",      PC_COMB_FILTER_v1        },
+  { "EQ",               PC_EQ_v1                 },
+  { "Multi-EQ",         PC_MULTI_EQ_v1           },
+  { "Parametric EQ",    PC_PARA_EQ_v1            },
+  { "Highpass Filter",  PC_HIGHPASS_FILTER_v1    },
+  { "Lowpass Filter",   PC_LOWPASS_FILTER_v1     },
+  { "Generator",        PC_GENERATOR_v1          },
+  { "Constant",         PC_CONSTANT_v1           },
+  { "Instrument",       PC_INSTRUMENT_v1         },
+  { "Oscillator",       PC_OSCILLATOR_v1         },
+  { "MIDI",             PC_MIDI_v1               },
+  { "Modulator",        PC_MODULATOR_v1          },
+  { "Chorus",           PC_CHORUS_v1             },
+  { "Flanger",          PC_FLANGER_v1            },
+  { "Phaser",           PC_PHASER_v1             },
+  { "Simulator",        PC_SIMULATOR_v1          },
+  { "Simulator Reverb", PC_SIMULATOR_REVERB_v1   },
+  { "Spatial",          PC_SPATIAL_v1            },
+  { "Spectral",         PC_SPECTRAL_v1           },
+  { "Pitch",            PC_PITCH_v1              },
+  { "Utility",          PC_UTILITY_v1            },
+  { "Analyzer",         PC_ANALYZER_v1           },
+  { "Converter",        PC_CONVERTER_v1          },
+  { "Function",         PC_FUNCTION_v1           },
+  { "Mixer",            PC_MIXER_v1              },
 };
 
 typedef enum PluginProtocol_v1
@@ -117,17 +117,17 @@ typedef enum PluginProtocol_v1
 } PluginProtocol_v1;
 
 static const cyaml_strval_t plugin_protocol_strings_v1[] = {
-  {"Dummy",   PROT_DUMMY_v1 },
-  { "LV2",    PROT_LV2_v1   },
-  { "DSSI",   PROT_DSSI_v1  },
-  { "LADSPA", PROT_LADSPA_v1},
-  { "VST",    PROT_VST_v1   },
-  { "VST3",   PROT_VST3_v1  },
-  { "AU",     PROT_AU_v1    },
-  { "SFZ",    PROT_SFZ_v1   },
-  { "SF2",    PROT_SF2_v1   },
-  { "CLAP",   PROT_CLAP_v1  },
-  { "JSFX",   PROT_JSFX_v1  },
+  { "Dummy",  PROT_DUMMY_v1  },
+  { "LV2",    PROT_LV2_v1    },
+  { "DSSI",   PROT_DSSI_v1   },
+  { "LADSPA", PROT_LADSPA_v1 },
+  { "VST",    PROT_VST_v1    },
+  { "VST3",   PROT_VST3_v1   },
+  { "AU",     PROT_AU_v1     },
+  { "SFZ",    PROT_SFZ_v1    },
+  { "SF2",    PROT_SF2_v1    },
+  { "CLAP",   PROT_CLAP_v1   },
+  { "JSFX",   PROT_JSFX_v1   },
 };
 
 typedef enum PluginArchitecture_v1
@@ -137,8 +137,8 @@ typedef enum PluginArchitecture_v1
 } PluginArchitecture_v1;
 
 static const cyaml_strval_t plugin_architecture_strings_v1[] = {
-  {"32-bit",  ARCH_32_v1},
-  { "64-bit", ARCH_64_v1},
+  { "32-bit", ARCH_32_v1 },
+  { "64-bit", ARCH_64_v1 },
 };
 
 typedef enum CarlaBridgeMode_v1
@@ -149,9 +149,9 @@ typedef enum CarlaBridgeMode_v1
 } CarlaBridgeMode_v1;
 
 static const cyaml_strval_t carla_bridge_mode_strings_v1[] = {
-  {"None",  CARLA_BRIDGE_NONE_v1},
-  { "UI",   CARLA_BRIDGE_UI_v1  },
-  { "Full", CARLA_BRIDGE_FULL_v1},
+  { "None", CARLA_BRIDGE_NONE_v1 },
+  { "UI",   CARLA_BRIDGE_UI_v1   },
+  { "Full", CARLA_BRIDGE_FULL_v1 },
 };
 
 /***

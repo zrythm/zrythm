@@ -35,7 +35,7 @@ init_common (ControlRoom * self)
     ZRYTHM_TESTING
       ? 0.f
       : (float) settings_get_default_value_double (
-        GSETTINGS_ZRYTHM_PREFIX ".monitor", "mute-vol");
+          GSETTINGS_ZRYTHM_PREFIX ".monitor", "mute-vol");
   if (!ZRYTHM_TESTING)
     {
       settings_get_range_double (
@@ -52,7 +52,7 @@ init_common (ControlRoom * self)
     ZRYTHM_TESTING
       ? 1.f
       : (float) settings_get_default_value_double (
-        GSETTINGS_ZRYTHM_PREFIX ".monitor", "listen-vol");
+          GSETTINGS_ZRYTHM_PREFIX ".monitor", "listen-vol");
   fader_set_amp (self->listen_fader, amp);
   if (!ZRYTHM_TESTING)
     {
@@ -69,7 +69,7 @@ init_common (ControlRoom * self)
     ZRYTHM_TESTING
       ? 0.1f
       : (float) settings_get_default_value_double (
-        GSETTINGS_ZRYTHM_PREFIX ".monitor", "dim-vol");
+          GSETTINGS_ZRYTHM_PREFIX ".monitor", "dim-vol");
   if (!ZRYTHM_TESTING)
     {
       settings_get_range_double (

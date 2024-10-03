@@ -313,9 +313,9 @@ typedef enum AudioEngineJackTransportType
 } AudioEngineJackTransportType;
 
 static const cyaml_strval_t jack_transport_type_strings[] = {
-  {"Timebase master",    AUDIO_ENGINE_JACK_TIMEBASE_MASTER },
-  { "Transport client",  AUDIO_ENGINE_JACK_TRANSPORT_CLIENT},
-  { "No JACK transport", AUDIO_ENGINE_NO_JACK_TRANSPORT    },
+  { "Timebase master",   AUDIO_ENGINE_JACK_TIMEBASE_MASTER  },
+  { "Transport client",  AUDIO_ENGINE_JACK_TRANSPORT_CLIENT },
+  { "No JACK transport", AUDIO_ENGINE_NO_JACK_TRANSPORT     },
 };
 
 typedef struct AudioEnginePositionInfo
@@ -805,10 +805,8 @@ typedef struct AudioEngine
 void
 engine_realloc_port_buffers (AudioEngine * self, nframes_t buf_size);
 
-COLD NONNULL_ARGS (1) bool engine_init_loaded (
-  AudioEngine * self,
-  Project *     project,
-  GError **     error);
+COLD NONNULL_ARGS (1) bool
+engine_init_loaded (AudioEngine * self, Project * project, GError ** error);
 
 /**
  * Create a new audio engine.

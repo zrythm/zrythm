@@ -1128,8 +1128,8 @@ midi_region_fill_midi_events (
       signed_frame_t mn_obj_end_frames =
         (track->type == TRACK_TYPE_CHORD
            ? math_round_double_to_signed_frame_t (
-             mn_obj->pos.frames
-             + TRANSPORT->ticks_per_beat * AUDIO_ENGINE->frames_per_tick)
+               mn_obj->pos.frames
+               + TRANSPORT->ticks_per_beat * AUDIO_ENGINE->frames_per_tick)
            : mn_obj->end_pos.frames);
 
       /* if note ends within the cycle */

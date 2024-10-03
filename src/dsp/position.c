@@ -241,8 +241,8 @@ closest_snap_point (
  *
  * @return Whether a snap point was found or not.
  */
-NONNULL_ARGS (1, 4, 5)
-HOT static bool get_prev_snap_point (
+NONNULL_ARGS (1, 4, 5) HOT static bool
+get_prev_snap_point (
   const Position * pos,
   Track *          track,
   ZRegion *        region,
@@ -329,8 +329,8 @@ HOT static bool get_prev_snap_point (
  *
  * @return Whether a snap point was found or not.
  */
-NONNULL_ARGS (1, 4, 5)
-HOT static bool get_next_snap_point (
+NONNULL_ARGS (1, 4, 5) HOT static bool
+get_next_snap_point (
   const Position * pos,
   Track *          track,
   ZRegion *        region,

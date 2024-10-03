@@ -24,10 +24,10 @@ typedef enum MidiModifier_v1
 } MidiModifier_v1;
 
 static const cyaml_strval_t midi_modifier_strings_v1[] = {
-  {"Velocity",     MIDI_MODIFIER_VELOCITY_v1   },
-  { "Pitch Wheel", MIDI_MODIFIER_PITCH_WHEEL_v1},
-  { "Mod Wheel",   MIDI_MODIFIER_MOD_WHEEL_v1  },
-  { "Aftertouch",  MIDI_MODIFIER_AFTERTOUCH_v1 },
+  { "Velocity",    MIDI_MODIFIER_VELOCITY_v1    },
+  { "Pitch Wheel", MIDI_MODIFIER_PITCH_WHEEL_v1 },
+  { "Mod Wheel",   MIDI_MODIFIER_MOD_WHEEL_v1   },
+  { "Aftertouch",  MIDI_MODIFIER_AFTERTOUCH_v1  },
 };
 
 typedef struct MidiNoteDescriptor_v1

@@ -35,8 +35,8 @@ io_get_dir (const char * filename);
  * @return True if the directory exists or was successfully
  *   created, false if error was occurred and errno is set.
  */
-WARN_UNUSED_RESULT NONNULL_ARGS (
-  1) bool io_mkdir (const char * dir, GError ** error);
+WARN_UNUSED_RESULT NONNULL_ARGS (1) bool
+io_mkdir (const char * dir, GError ** error);
 
 /**
  * Creates the file if doesn't exist

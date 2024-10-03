@@ -660,7 +660,7 @@ on_export (ExportDialogWidget * self, bool audio)
 
   if (tracks->len == 0)
     {
-      ui_show_error_message (false, _ ("No tracks to export"));
+      ui_show_error_message ("Error", _ ("No tracks to export"));
       return;
     }
 
@@ -670,7 +670,7 @@ on_export (ExportDialogWidget * self, bool audio)
   bool     success = io_mkdir (exports_dir, &err);
   if (!success)
     {
-      ui_show_error_message (false, "Failed to create exports directory");
+      ui_show_error_message ("Error", "Failed to create exports directory");
       return;
     }
   g_free (exports_dir);

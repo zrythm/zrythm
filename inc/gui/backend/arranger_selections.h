@@ -88,8 +88,8 @@ arranger_selections_cast (void * sel)
  * @param action To be passed when this is called from an
  *   undoable action.
  */
-NONNULL_ARGS (1)
-void arranger_selections_init_loaded (
+NONNULL_ARGS (1) void
+arranger_selections_init_loaded (
   ArrangerSelections * self,
   bool                 project,
   UndoableAction *     action);

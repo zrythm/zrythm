@@ -42,7 +42,7 @@ on_response (GtkDialog * dialog, gint response_id, gpointer user_data)
 
       if (!entered_name || strlen (entered_name) < 1)
         {
-          ui_show_error_message (false, _ ("Please enter a valid name."));
+          ui_show_error_message ("Error", _ ("Please enter a valid name."));
           return;
         }
       else if (chord_preset_pack_contains_name (pack, entered_name))

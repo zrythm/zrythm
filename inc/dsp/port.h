@@ -560,11 +560,8 @@ stereo_ports_init_loaded (StereoPorts * sp, void * owner)
   port_init_loaded (sp->r, owner);
 }
 
-NONNULL_ARGS (1)
-static inline void stereo_ports_set_owner (
-  StereoPorts * sp,
-  PortOwnerType owner_type,
-  void *        owner)
+NONNULL_ARGS (1) static inline void
+stereo_ports_set_owner (StereoPorts * sp, PortOwnerType owner_type, void * owner)
 {
   port_set_owner (sp->l, owner_type, owner);
   port_set_owner (sp->r, owner_type, owner);

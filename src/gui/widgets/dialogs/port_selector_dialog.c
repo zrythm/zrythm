@@ -38,7 +38,7 @@ on_response (GtkDialog * dialog, gint response_id, PortSelectorDialogWidget * se
     {
       if (!self->selected_port)
         {
-          ui_show_error_message (false, _ ("No port selected"));
+          ui_show_error_message ("Error", _ ("No port selected"));
           return;
         }
 
@@ -72,7 +72,7 @@ on_response (GtkDialog * dialog, gint response_id, PortSelectorDialogWidget * se
         }
       else
         {
-          ui_show_error_message (false, _ ("These ports cannot be connected"));
+          ui_show_error_message ("Error", _ ("These ports cannot be connected"));
         }
     }
 
@@ -186,7 +186,7 @@ create_model_for_ports (
                 }
             }
         } /* endif output */
-    }     /* endif filtering to track ports */
+    } /* endif filtering to track ports */
   /* else if filtering to plugin ports */
   else if (pl)
     {

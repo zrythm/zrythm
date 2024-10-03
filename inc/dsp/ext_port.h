@@ -63,11 +63,11 @@ typedef enum ExtPortType
 } ExtPortType;
 
 static const cyaml_strval_t ext_port_type_strings[] = {
-  {"JACK",         EXT_PORT_TYPE_JACK       },
-  { "ALSA",        EXT_PORT_TYPE_ALSA       },
-  { "Windows MME", EXT_PORT_TYPE_WINDOWS_MME},
-  { "RtMidi",      EXT_PORT_TYPE_RTMIDI     },
-  { "RtAudio",     EXT_PORT_TYPE_RTAUDIO    },
+  { "JACK",        EXT_PORT_TYPE_JACK        },
+  { "ALSA",        EXT_PORT_TYPE_ALSA        },
+  { "Windows MME", EXT_PORT_TYPE_WINDOWS_MME },
+  { "RtMidi",      EXT_PORT_TYPE_RTMIDI      },
+  { "RtAudio",     EXT_PORT_TYPE_RTAUDIO     },
 };
 
 /**
@@ -172,9 +172,8 @@ typedef struct ExtPort
 /**
  * Inits the ExtPort after loading a project.
  */
-COLD NONNULL_ARGS (1) void ext_port_init_loaded (
-  ExtPort *           self,
-  HardwareProcessor * hw_processor);
+COLD NONNULL_ARGS (1) void
+ext_port_init_loaded (ExtPort * self, HardwareProcessor * hw_processor);
 
 /**
  * Prints the port info.

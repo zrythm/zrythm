@@ -91,8 +91,8 @@ cached_plugin_descriptors_is_blacklisted (
  *
  * @return Number of descriptors found.
  */
-NONNULL_ARGS (1)
-unsigned int cached_plugin_descriptors_find (
+NONNULL_ARGS (1) unsigned int
+cached_plugin_descriptors_find (
   CachedPluginDescriptors * self,
   GPtrArray *               arr,
   const PluginDescriptor *  descr,

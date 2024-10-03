@@ -146,9 +146,8 @@ typedef struct AutomationTrack
   Port * port;
 } AutomationTrack;
 
-COLD NONNULL_ARGS (1) void automation_track_init_loaded (
-  AutomationTrack *     self,
-  AutomationTracklist * atl);
+COLD NONNULL_ARGS (1) void
+automation_track_init_loaded (AutomationTrack * self, AutomationTracklist * atl);
 
 /**
  * Creates an automation track for the given

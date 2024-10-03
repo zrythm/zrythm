@@ -1576,21 +1576,21 @@ zrythm_app_init (ZrythmApp * self)
     "quartz,win32,*");
 
   const GActionEntry entries[] = {
-    {"prompt_for_project", on_prompt_for_project},
- /*{ "init_main_window", on_init_main_window },*/
-    { "setup_main_window", on_setup_main_window },
-    { "load_project",      on_load_project      },
-    { "about",             activate_about       },
-    { "fullscreen",        activate_fullscreen  },
-    { "chat",              activate_chat        },
-    { "manual",            activate_manual      },
-    { "news",              activate_news        },
-    { "bugreport",         activate_bugreport   },
-    { "donate",            activate_donate      },
-    { "minimize",          activate_minimize    },
-    { "log",               activate_log         },
-    { "preferences",       activate_preferences },
-    { "quit",              activate_quit        },
+    { "prompt_for_project", on_prompt_for_project },
+    /*{ "init_main_window", on_init_main_window },*/
+    { "setup_main_window",  on_setup_main_window  },
+    { "load_project",       on_load_project       },
+    { "about",              activate_about        },
+    { "fullscreen",         activate_fullscreen   },
+    { "chat",               activate_chat         },
+    { "manual",             activate_manual       },
+    { "news",               activate_news         },
+    { "bugreport",          activate_bugreport    },
+    { "donate",             activate_donate       },
+    { "minimize",           activate_minimize     },
+    { "log",                activate_log          },
+    { "preferences",        activate_preferences  },
+    { "quit",               activate_quit         },
   };
 
   g_action_map_add_action_entries (

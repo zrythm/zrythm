@@ -650,10 +650,8 @@ tracklist_selections_toggle_pinned (
 /**
  * Clone the struct for copying, undoing, etc.
  */
-NONNULL_ARGS (1)
-TracklistSelections * tracklist_selections_clone (
-  TracklistSelections * src,
-  GError **             error)
+NONNULL_ARGS (1) TracklistSelections *
+tracklist_selections_clone (TracklistSelections * src, GError ** error)
 {
   g_return_val_if_fail (!error || !*error, NULL);
 

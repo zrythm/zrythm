@@ -393,7 +393,7 @@ set_fader_val_with_action_from_db (void * object, const char * str)
     }
   else
     {
-      ui_show_error_message (false, _ ("Invalid value"));
+      ui_show_error_message ("Error", _ ("Invalid value"));
     }
 }
 

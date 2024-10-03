@@ -95,11 +95,11 @@ typedef enum CurveAlgorithm
 } CurveAlgorithm;
 
 static const cyaml_strval_t curve_algorithm_strings[] = {
-  {N_ ("Exponent"),      CURVE_ALGORITHM_EXPONENT    },
-  { N_ ("Superellipse"), CURVE_ALGORITHM_SUPERELLIPSE},
-  { N_ ("Vital"),        CURVE_ALGORITHM_VITAL       },
-  { N_ ("Pulse"),        CURVE_ALGORITHM_PULSE       },
-  { N_ ("Logarithmic"),  CURVE_ALGORITHM_LOGARITHMIC },
+  { N_ ("Exponent"),     CURVE_ALGORITHM_EXPONENT     },
+  { N_ ("Superellipse"), CURVE_ALGORITHM_SUPERELLIPSE },
+  { N_ ("Vital"),        CURVE_ALGORITHM_VITAL        },
+  { N_ ("Pulse"),        CURVE_ALGORITHM_PULSE        },
+  { N_ ("Logarithmic"),  CURVE_ALGORITHM_LOGARITHMIC  },
 };
 
 /**

@@ -29,9 +29,9 @@ typedef enum AudioEngineJackTransportType_v1
 } AudioEngineJackTransportType_v1;
 
 static const cyaml_strval_t jack_transport_type_strings_v1[] = {
-  {"Timebase master",    AUDIO_ENGINE_JACK_TIMEBASE_MASTER_v1 },
-  { "Transport client",  AUDIO_ENGINE_JACK_TRANSPORT_CLIENT_v1},
-  { "No JACK transport", AUDIO_ENGINE_NO_JACK_TRANSPORT_v1    },
+  { "Timebase master",   AUDIO_ENGINE_JACK_TIMEBASE_MASTER_v1  },
+  { "Transport client",  AUDIO_ENGINE_JACK_TRANSPORT_CLIENT_v1 },
+  { "No JACK transport", AUDIO_ENGINE_NO_JACK_TRANSPORT_v1     },
 };
 
 typedef struct AudioEngine_v1

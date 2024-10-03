@@ -206,10 +206,10 @@ typedef struct PianoRoll
 } PianoRoll;
 
 static const cyaml_strval_t midi_modifier_strings[] = {
-  {"Velocity",     MIDI_MODIFIER_VELOCITY   },
-  { "Pitch Wheel", MIDI_MODIFIER_PITCH_WHEEL},
-  { "Mod Wheel",   MIDI_MODIFIER_MOD_WHEEL  },
-  { "Aftertouch",  MIDI_MODIFIER_AFTERTOUCH },
+  { "Velocity",    MIDI_MODIFIER_VELOCITY    },
+  { "Pitch Wheel", MIDI_MODIFIER_PITCH_WHEEL },
+  { "Mod Wheel",   MIDI_MODIFIER_MOD_WHEEL   },
+  { "Aftertouch",  MIDI_MODIFIER_AFTERTOUCH  },
 };
 
 static const cyaml_schema_field_t piano_roll_fields_schema[] = {

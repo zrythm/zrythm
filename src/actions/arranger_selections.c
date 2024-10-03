@@ -1694,7 +1694,7 @@ do_or_undo_duplicate_or_link (
           /* remember the identifier */
           arranger_object_copy_identifier (own_obj, obj);
 
-        }  /* endif do */
+        } /* endif do */
       else /* if undo */
         {
           /* find the actual object */
@@ -2332,7 +2332,7 @@ do_or_undo_edit (ArrangerSelectionsAction * self, const int _do, GError ** error
                 }
             }
         } /* endif audio function */
-    }     /* endif not first run */
+    } /* endif not first run */
 
   update_region_link_groups (dest_objs_arr);
 

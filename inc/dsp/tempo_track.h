@@ -45,10 +45,10 @@ typedef enum BeatUnit
 } BeatUnit;
 
 static const cyaml_strval_t beat_unit_strings[] = {
-  {"2",   BEAT_UNIT_2 },
-  { "4",  BEAT_UNIT_4 },
-  { "8",  BEAT_UNIT_8 },
-  { "16", BEAT_UNIT_16},
+  { "2",  BEAT_UNIT_2  },
+  { "4",  BEAT_UNIT_4  },
+  { "8",  BEAT_UNIT_8  },
+  { "16", BEAT_UNIT_16 },
 };
 
 /**

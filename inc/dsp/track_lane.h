@@ -224,8 +224,8 @@ track_lane_clone (const TrackLane * src, Track * track);
  * @param start Events before this position will be skipped.
  * @param end Events after this position will be skipped.
  */
-NONNULL_ARGS (1, 2)
-void track_lane_write_to_midi_file (
+NONNULL_ARGS (1, 2) void
+track_lane_write_to_midi_file (
   TrackLane *      self,
   MIDI_FILE *      mf,
   MidiEvents *     events,

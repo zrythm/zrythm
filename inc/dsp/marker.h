@@ -43,9 +43,9 @@ typedef enum MarkerType
 } MarkerType;
 
 static const cyaml_strval_t marker_type_strings[] = {
-  {"start",   MARKER_TYPE_START },
-  { "end",    MARKER_TYPE_END   },
-  { "custom", MARKER_TYPE_CUSTOM},
+  { "start",  MARKER_TYPE_START  },
+  { "end",    MARKER_TYPE_END    },
+  { "custom", MARKER_TYPE_CUSTOM },
 };
 
 /**

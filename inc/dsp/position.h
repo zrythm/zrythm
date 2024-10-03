@@ -280,8 +280,8 @@ position_add_seconds (Position * pos, const signed_sec_t seconds);
  *   track.
  * @param sg SnapGrid options.
  */
-NONNULL_ARGS (2)
-void position_snap (
+NONNULL_ARGS (2) void
+position_snap (
   const Position * start_pos,
   Position *       pos,
   Track *          track,

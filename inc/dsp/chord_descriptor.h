@@ -42,18 +42,18 @@ typedef enum MusicalNote
 } MusicalNote;
 
 static const cyaml_strval_t musical_note_strings[] = {
-  {"C",   NOTE_C },
-  { "C#", NOTE_CS},
-  { "D",  NOTE_D },
-  { "D#", NOTE_DS},
-  { "E",  NOTE_E },
-  { "F",  NOTE_F },
-  { "F#", NOTE_FS},
-  { "G",  NOTE_G },
-  { "G#", NOTE_GS},
-  { "A",  NOTE_A },
-  { "A#", NOTE_AS},
-  { "B",  NOTE_B },
+  { "C",  NOTE_C  },
+  { "C#", NOTE_CS },
+  { "D",  NOTE_D  },
+  { "D#", NOTE_DS },
+  { "E",  NOTE_E  },
+  { "F",  NOTE_F  },
+  { "F#", NOTE_FS },
+  { "G",  NOTE_G  },
+  { "G#", NOTE_GS },
+  { "A",  NOTE_A  },
+  { "A#", NOTE_AS },
+  { "B",  NOTE_B  },
 };
 
 /**
@@ -73,14 +73,14 @@ typedef enum ChordType
 } ChordType;
 
 static const cyaml_strval_t chord_type_strings[] = {
-  {"Invalid", CHORD_TYPE_NONE  },
-  { "Maj",    CHORD_TYPE_MAJ   },
-  { "min",    CHORD_TYPE_MIN   },
-  { "dim",    CHORD_TYPE_DIM   },
-  { "sus4",   CHORD_TYPE_SUS4  },
-  { "sus2",   CHORD_TYPE_SUS2  },
-  { "aug",    CHORD_TYPE_AUG   },
-  { "custom", CHORD_TYPE_CUSTOM},
+  { "Invalid", CHORD_TYPE_NONE   },
+  { "Maj",     CHORD_TYPE_MAJ    },
+  { "min",     CHORD_TYPE_MIN    },
+  { "dim",     CHORD_TYPE_DIM    },
+  { "sus4",    CHORD_TYPE_SUS4   },
+  { "sus2",    CHORD_TYPE_SUS2   },
+  { "aug",     CHORD_TYPE_AUG    },
+  { "custom",  CHORD_TYPE_CUSTOM },
 };
 
 /**
@@ -113,16 +113,16 @@ typedef enum ChordAccent
 } ChordAccent;
 
 static const cyaml_strval_t chord_accent_strings[] = {
-  {"None",              CHORD_ACC_NONE  },
-  { "7",                CHORD_ACC_7     },
-  { "j7",               CHORD_ACC_j7    },
-  { "\u266D9",          CHORD_ACC_b9    },
-  { "9",                CHORD_ACC_9     },
-  { "\u266F9",          CHORD_ACC_S9    },
-  { "11",               CHORD_ACC_11    },
-  { "\u266D5/\u266F11", CHORD_ACC_b5_S11},
-  { "\u266F5/\u266D13", CHORD_ACC_S5_b13},
-  { "6/13",             CHORD_ACC_6_13  },
+  { "None",             CHORD_ACC_NONE   },
+  { "7",                CHORD_ACC_7      },
+  { "j7",               CHORD_ACC_j7     },
+  { "\u266D9",          CHORD_ACC_b9     },
+  { "9",                CHORD_ACC_9      },
+  { "\u266F9",          CHORD_ACC_S9     },
+  { "11",               CHORD_ACC_11     },
+  { "\u266D5/\u266F11", CHORD_ACC_b5_S11 },
+  { "\u266F5/\u266D13", CHORD_ACC_S5_b13 },
+  { "6/13",             CHORD_ACC_6_13   },
 };
 
 /**

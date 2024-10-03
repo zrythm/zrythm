@@ -596,7 +596,7 @@ track_deserialize_from_json (
               scale_object_deserialize_from_json (doc, scale_obj, so, error);
             }
         } /* endif scalse_size > 0 */
-    }     /* end if track type chord */
+    } /* end if track type chord */
   if (track->type == TRACK_TYPE_MARKER)
     {
       yyjson_val * markers_arr = yyjson_obj_iter_get (&it, "markers");

@@ -278,7 +278,7 @@ editor_toolbar_widget_init (EditorToolbarWidget * self)
   /* add action group wrapper */
   GSimpleActionGroup * action_group = g_simple_action_group_new ();
   const GActionEntry   entries[] = {
-    {"editor-function", activate_app_action_wrapper, "s"},
+    { "editor-function", activate_app_action_wrapper, "s" },
   };
   g_action_map_add_action_entries (
     G_ACTION_MAP (action_group), entries, G_N_ELEMENTS (entries), NULL);

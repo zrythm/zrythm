@@ -276,8 +276,8 @@ transport_prepare_audio_regions_for_stretch (
                   region->before_length = arranger_object_get_length_in_ticks (
                     (ArrangerObject *) region);
                 } // foreach region
-            }     // foreach lane
-        }         // foreach track
+            } // foreach lane
+        } // foreach track
     }
 }
 

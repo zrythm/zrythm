@@ -54,18 +54,18 @@ typedef enum ArrangerSelectionsActionType
 } ArrangerSelectionsActionType;
 
 static const cyaml_strval_t arranger_selections_action_type_strings[] = {
-  {"Automation fill", AS_ACTION_AUTOMATION_FILL},
-  { "Create",         AS_ACTION_CREATE         },
-  { "Delete",         AS_ACTION_DELETE         },
-  { "Duplicate",      AS_ACTION_DUPLICATE      },
-  { "Edit",           AS_ACTION_EDIT           },
-  { "Link",           AS_ACTION_LINK           },
-  { "Merge",          AS_ACTION_MERGE          },
-  { "Move",           AS_ACTION_MOVE           },
-  { "Quantize",       AS_ACTION_QUANTIZE       },
-  { "Record",         AS_ACTION_RECORD         },
-  { "Resize",         AS_ACTION_RESIZE         },
-  { "Split",          AS_ACTION_SPLIT          },
+  { "Automation fill", AS_ACTION_AUTOMATION_FILL },
+  { "Create",          AS_ACTION_CREATE          },
+  { "Delete",          AS_ACTION_DELETE          },
+  { "Duplicate",       AS_ACTION_DUPLICATE       },
+  { "Edit",            AS_ACTION_EDIT            },
+  { "Link",            AS_ACTION_LINK            },
+  { "Merge",           AS_ACTION_MERGE           },
+  { "Move",            AS_ACTION_MOVE            },
+  { "Quantize",        AS_ACTION_QUANTIZE        },
+  { "Record",          AS_ACTION_RECORD          },
+  { "Resize",          AS_ACTION_RESIZE          },
+  { "Split",           AS_ACTION_SPLIT           },
 };
 
 /**
@@ -84,14 +84,14 @@ typedef enum ArrangerSelectionsActionResizeType
 } ArrangerSelectionsActionResizeType;
 
 static const cyaml_strval_t arranger_selections_action_resize_type_strings[] = {
-  {"Resize L",         ARRANGER_SELECTIONS_ACTION_RESIZE_L     },
-  { "Resize R",        ARRANGER_SELECTIONS_ACTION_RESIZE_R     },
-  { "Resize L (loop)", ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP},
-  { "Resize R (loop)", ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP},
-  { "Resize L (fade)", ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE},
-  { "Resize R (fade)", ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE},
-  { "Stretch L",       ARRANGER_SELECTIONS_ACTION_STRETCH_L    },
-  { "Stretch R",       ARRANGER_SELECTIONS_ACTION_STRETCH_R    },
+  { "Resize L",        ARRANGER_SELECTIONS_ACTION_RESIZE_L      },
+  { "Resize R",        ARRANGER_SELECTIONS_ACTION_RESIZE_R      },
+  { "Resize L (loop)", ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP },
+  { "Resize R (loop)", ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP },
+  { "Resize L (fade)", ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE },
+  { "Resize R (fade)", ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE },
+  { "Stretch L",       ARRANGER_SELECTIONS_ACTION_STRETCH_L     },
+  { "Stretch R",       ARRANGER_SELECTIONS_ACTION_STRETCH_R     },
 };
 
 /**
@@ -141,13 +141,13 @@ typedef enum ArrangerSelectionsActionEditType
 } ArrangerSelectionsActionEditType;
 
 static const cyaml_strval_t arranger_selections_action_edit_type_strings[] = {
-  {"Name",             ARRANGER_SELECTIONS_ACTION_EDIT_NAME           },
-  { "Pos",             ARRANGER_SELECTIONS_ACTION_EDIT_POS            },
-  { "Primitive",       ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE      },
-  { "Scale",           ARRANGER_SELECTIONS_ACTION_EDIT_SCALE          },
-  { "Fades",           ARRANGER_SELECTIONS_ACTION_EDIT_FADES          },
-  { "Mute",            ARRANGER_SELECTIONS_ACTION_EDIT_MUTE           },
-  { "Editor function", ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION},
+  { "Name",            ARRANGER_SELECTIONS_ACTION_EDIT_NAME            },
+  { "Pos",             ARRANGER_SELECTIONS_ACTION_EDIT_POS             },
+  { "Primitive",       ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE       },
+  { "Scale",           ARRANGER_SELECTIONS_ACTION_EDIT_SCALE           },
+  { "Fades",           ARRANGER_SELECTIONS_ACTION_EDIT_FADES           },
+  { "Mute",            ARRANGER_SELECTIONS_ACTION_EDIT_MUTE            },
+  { "Editor function", ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION },
 };
 
 /**

@@ -328,7 +328,7 @@ engine_alsa_test (
           _("ALSA Error: %s"),
           snd_strerror (err));
       ui_show_error_message (
-        win, msg);
+        "Error", msg);
       g_free (msg);
       return 1;
     }

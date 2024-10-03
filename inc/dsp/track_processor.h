@@ -208,8 +208,8 @@ static const cyaml_schema_value_t track_processor_schema = {
 /**
  * Inits a TrackProcessor after a project is loaded.
  */
-COLD NONNULL_ARGS (
-  1) void track_processor_init_loaded (TrackProcessor * self, Track * track);
+COLD NONNULL_ARGS (1) void
+track_processor_init_loaded (TrackProcessor * self, Track * track);
 
 #if 0
 void

@@ -293,7 +293,7 @@ on_config_ok_btn_clicked (GtkButton * btn, GreeterWidget * self)
   if (g_settings_get_boolean (S_GENERAL, "first-run") != false)
     {
       ui_show_error_message (
-        false,
+        "Error",
         "Could not set 'first-run' to 'false'. "
         "There is likely a problem with your GSettings "
         "backend.");

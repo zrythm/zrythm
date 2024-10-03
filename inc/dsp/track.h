@@ -160,19 +160,19 @@ typedef enum TrackType
 } TrackType;
 
 static const cyaml_strval_t track_type_strings[] = {
-  {N_ ("Instrument"),   TRACK_TYPE_INSTRUMENT },
-  { N_ ("Audio"),       TRACK_TYPE_AUDIO      },
-  { N_ ("Master"),      TRACK_TYPE_MASTER     },
-  { N_ ("Chord"),       TRACK_TYPE_CHORD      },
-  { N_ ("Marker"),      TRACK_TYPE_MARKER     },
-  { N_ ("Tempo"),       TRACK_TYPE_TEMPO      },
-  { N_ ("Modulator"),   TRACK_TYPE_MODULATOR  },
-  { N_ ("Audio FX"),    TRACK_TYPE_AUDIO_BUS  },
-  { N_ ("Audio Group"), TRACK_TYPE_AUDIO_GROUP},
-  { N_ ("MIDI"),        TRACK_TYPE_MIDI       },
-  { N_ ("MIDI FX"),     TRACK_TYPE_MIDI_BUS   },
-  { N_ ("MIDI Group"),  TRACK_TYPE_MIDI_GROUP },
-  { N_ ("Folder"),      TRACK_TYPE_FOLDER     },
+  { N_ ("Instrument"),  TRACK_TYPE_INSTRUMENT  },
+  { N_ ("Audio"),       TRACK_TYPE_AUDIO       },
+  { N_ ("Master"),      TRACK_TYPE_MASTER      },
+  { N_ ("Chord"),       TRACK_TYPE_CHORD       },
+  { N_ ("Marker"),      TRACK_TYPE_MARKER      },
+  { N_ ("Tempo"),       TRACK_TYPE_TEMPO       },
+  { N_ ("Modulator"),   TRACK_TYPE_MODULATOR   },
+  { N_ ("Audio FX"),    TRACK_TYPE_AUDIO_BUS   },
+  { N_ ("Audio Group"), TRACK_TYPE_AUDIO_GROUP },
+  { N_ ("MIDI"),        TRACK_TYPE_MIDI        },
+  { N_ ("MIDI FX"),     TRACK_TYPE_MIDI_BUS    },
+  { N_ ("MIDI Group"),  TRACK_TYPE_MIDI_GROUP  },
+  { N_ ("Folder"),      TRACK_TYPE_FOLDER      },
 };
 
 /**
@@ -528,10 +528,8 @@ typedef struct Track
   WrappedObjectWithChangeSignal * gobj;
 } Track;
 
-COLD NONNULL_ARGS (1) void track_init_loaded (
-  Track *               self,
-  Tracklist *           tracklist,
-  TracklistSelections * ts);
+COLD NONNULL_ARGS (1) void
+track_init_loaded (Track * self, Tracklist * tracklist, TracklistSelections * ts);
 
 /**
  * Inits the Track, optionally adding a single
@@ -562,7 +560,8 @@ track_new (TrackType type, int pos, const char * label, const int with_lane);
  *
  * @param error To be filled if an error occurred.
  */
-NONNULL_ARGS (1) Track * track_clone (Track * track, GError ** error);
+NONNULL_ARGS (1) Track *
+track_clone (Track * track, GError ** error);
 
 /**
  * Returns if the given TrackType is a type of
@@ -849,8 +848,8 @@ track_insert_region (
  * @param start Events before this position will be skipped.
  * @param end Events after this position will be skipped.
  */
-NONNULL_ARGS (1, 2)
-void track_write_to_midi_file (
+NONNULL_ARGS (1, 2) void
+track_write_to_midi_file (
   const Track *    self,
   MIDI_FILE *      mf,
   MidiEvents *     events,

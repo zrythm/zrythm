@@ -449,8 +449,8 @@ channel_set_caches (Channel * self);
  * @bool src_is_project Whether \ref ch is a project
  *   channel.
  */
-NONNULL_ARGS (1, 2)
-Channel * channel_clone (Channel * ch, Track * track, GError ** error);
+NONNULL_ARGS (1, 2) Channel *
+channel_clone (Channel * ch, Track * track, GError ** error);
 
 /**
  * Disconnects the channel from the processing

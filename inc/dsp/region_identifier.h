@@ -41,10 +41,10 @@ typedef enum RegionType
 } RegionType;
 
 static const cyaml_bitdef_t region_type_bitvals[] = {
-  {.name = "midi",        .offset = 0, .bits = 1},
-  { .name = "audio",      .offset = 1, .bits = 1},
-  { .name = "automation", .offset = 2, .bits = 1},
-  { .name = "chord",      .offset = 3, .bits = 1},
+  { .name = "midi",       .offset = 0, .bits = 1 },
+  { .name = "audio",      .offset = 1, .bits = 1 },
+  { .name = "automation", .offset = 2, .bits = 1 },
+  { .name = "chord",      .offset = 3, .bits = 1 },
 };
 
 /**

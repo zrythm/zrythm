@@ -59,9 +59,9 @@ typedef enum RegionMusicalMode
 } RegionMusicalMode;
 
 static const cyaml_strval_t region_musical_mode_strings[] = {
-  {N_ ("Inherit"), REGION_MUSICAL_MODE_INHERIT},
-  { N_ ("Off"),    REGION_MUSICAL_MODE_OFF    },
-  { N_ ("On"),     REGION_MUSICAL_MODE_ON     },
+  { N_ ("Inherit"), REGION_MUSICAL_MODE_INHERIT },
+  { N_ ("Off"),     REGION_MUSICAL_MODE_OFF     },
+  { N_ ("On"),      REGION_MUSICAL_MODE_ON      },
 };
 
 /**
@@ -561,8 +561,8 @@ region_is_hit_by_range (
  *   NULL.
  * @param pos The position.
  */
-NONNULL_ARGS (3)
-PURE ZRegion * region_at_position (
+NONNULL_ARGS (3) PURE ZRegion *
+region_at_position (
   const Track *           track,
   const AutomationTrack * at,
   const Position *        pos);

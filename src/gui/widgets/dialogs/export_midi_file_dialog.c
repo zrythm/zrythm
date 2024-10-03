@@ -81,7 +81,7 @@ on_response (GtkNativeDialog * native, int response)
           else
             {
               ui_show_error_message (
-                false, _ ("Failed to export MIDI regions."));
+                "Error", _ ("Failed to export MIDI regions."));
             }
         }
 

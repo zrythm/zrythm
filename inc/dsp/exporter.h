@@ -250,8 +250,8 @@ exporter_prepare_tracks_for_export (
  * @param engine_state Engine state when export was started so
  *   that it can be re-set after exporting.
  */
-NONNULL_ARGS (1)
-void exporter_post_export (
+NONNULL_ARGS (1) void
+exporter_post_export (
   const ExportSettings * const settings,
   GPtrArray *                  connections,
   EngineState *                engine_state);

@@ -47,7 +47,7 @@ _create_new (const Position * pos)
     ZRYTHM_TESTING
       ? CURVE_ALGORITHM_SUPERELLIPSE
       : (CurveAlgorithm) g_settings_get_enum (
-        S_P_EDITING_AUTOMATION, "curve-algorithm");
+          S_P_EDITING_AUTOMATION, "curve-algorithm");
 
   self->index = -1;
 

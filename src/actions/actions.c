@@ -2181,18 +2181,18 @@ DEFINE_SIMPLE (activate_merge_selection)
 
   if (TL_SELECTIONS->num_regions == 0)
     {
-      ui_show_error_message (false, _ ("No regions selected"));
+      ui_show_error_message ("Error", _ ("No regions selected"));
       return;
     }
   if (
     !arranger_selections_all_on_same_lane ((ArrangerSelections *) TL_SELECTIONS))
     {
-      ui_show_error_message (false, _ ("Selections must be on the same lane"));
+      ui_show_error_message ("Error", _ ("Selections must be on the same lane"));
       return;
     }
   if (arranger_selections_contains_looped ((ArrangerSelections *) TL_SELECTIONS))
     {
-      ui_show_error_message (false, _ ("Cannot merge looped regions"));
+      ui_show_error_message ("Error", _ ("Cannot merge looped regions"));
       return;
     }
   if (TL_SELECTIONS->num_regions == 1)
@@ -2465,7 +2465,7 @@ set_pitch_ratio (void * object, const char * ratio_str)
   if (ratio < 0.0001 || ratio > 100.0)
     {
       ui_show_error_message (
-        false, _ ("Please enter a ratio between 0.0001 and 100."));
+        "Error", _ ("Please enter a ratio between 0.0001 and 100."));
       return;
     }
 
@@ -3219,7 +3219,7 @@ DEFINE_SIMPLE (activate_save_chord_preset)
   else
     {
       ui_show_error_message (
-        false,
+        "Error",
         _ ("No custom preset packs found. Please "
            "create a preset pack first from the "
            "chord preset browser."));
@@ -3291,7 +3291,7 @@ on_chord_preset_pack_add_response (
         }
       else
         {
-          ui_show_error_message (false, _ ("Failed to create pack"));
+          ui_show_error_message ("Error", _ ("Failed to create pack"));
         }
     }
 
@@ -3649,7 +3649,7 @@ DEFINE_SIMPLE (activate_panel_file_browser_delete_bookmark)
 
   if (loc->special_location > FILE_MANAGER_NONE)
     {
-      ui_show_error_message (false, _ ("Cannot delete standard bookmark"));
+      ui_show_error_message ("Error", _ ("Cannot delete standard bookmark"));
       return;
     }
 

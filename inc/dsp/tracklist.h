@@ -126,7 +126,8 @@ typedef struct Tracklist
 /**
  * Initializes the tracklist when loading a project.
  */
-COLD NONNULL_ARGS (1) void tracklist_init_loaded (
+COLD NONNULL_ARGS (1) void
+tracklist_init_loaded (
   Tracklist *       self,
   Project *         project,
   SampleProcessor * sample_processor);

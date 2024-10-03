@@ -20,7 +20,7 @@ typedef enum PortActionType
 } PortActionType;
 
 static const cyaml_strval_t port_action_type_strings[] = {
-  {"Set control val", PORT_ACTION_SET_CONTROL_VAL},
+  { "Set control val", PORT_ACTION_SET_CONTROL_VAL },
 };
 
 typedef struct PortAction

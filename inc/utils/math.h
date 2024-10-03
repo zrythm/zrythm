@@ -262,8 +262,8 @@ math_assert_nonnann (float x);
  *
  * @param ret If non-NULL, the result will be placed here.
  */
-NONNULL_ARGS (1)
-bool math_is_string_valid_float (const char * str, float * ret);
+NONNULL_ARGS (1) bool
+math_is_string_valid_float (const char * str, float * ret);
 
 /**
  * @}

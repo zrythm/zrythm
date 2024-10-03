@@ -23,11 +23,11 @@ typedef enum ExtPortType_v1
 } ExtPortType_v1;
 
 static const cyaml_strval_t ext_port_type_strings_v1[] = {
-  {"JACK",         EXT_PORT_TYPE_JACK_v1       },
-  { "ALSA",        EXT_PORT_TYPE_ALSA_v1       },
-  { "Windows MME", EXT_PORT_TYPE_WINDOWS_MME_v1},
-  { "RtMidi",      EXT_PORT_TYPE_RTMIDI_v1     },
-  { "RtAudio",     EXT_PORT_TYPE_RTAUDIO_v1    },
+  { "JACK",        EXT_PORT_TYPE_JACK_v1        },
+  { "ALSA",        EXT_PORT_TYPE_ALSA_v1        },
+  { "Windows MME", EXT_PORT_TYPE_WINDOWS_MME_v1 },
+  { "RtMidi",      EXT_PORT_TYPE_RTMIDI_v1      },
+  { "RtAudio",     EXT_PORT_TYPE_RTAUDIO_v1     },
 };
 
 typedef struct ExtPort_v1

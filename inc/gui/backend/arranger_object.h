@@ -77,15 +77,15 @@ typedef enum ArrangerObjectType
 } ArrangerObjectType;
 
 static const cyaml_strval_t arranger_object_type_strings[] = {
-  {N_ ("None"),              ARRANGER_OBJECT_TYPE_NONE            },
-  { N_ ("All"),              ARRANGER_OBJECT_TYPE_ALL             },
-  { N_ ("Region"),           ARRANGER_OBJECT_TYPE_REGION          },
-  { N_ ("Midi Note"),        ARRANGER_OBJECT_TYPE_MIDI_NOTE       },
-  { N_ ("Chord Object"),     ARRANGER_OBJECT_TYPE_CHORD_OBJECT    },
-  { N_ ("Scale Object"),     ARRANGER_OBJECT_TYPE_SCALE_OBJECT    },
-  { N_ ("Marker"),           ARRANGER_OBJECT_TYPE_MARKER          },
-  { N_ ("Automation Point"), ARRANGER_OBJECT_TYPE_AUTOMATION_POINT},
-  { N_ ("Velocity"),         ARRANGER_OBJECT_TYPE_VELOCITY        },
+  { N_ ("None"),             ARRANGER_OBJECT_TYPE_NONE             },
+  { N_ ("All"),              ARRANGER_OBJECT_TYPE_ALL              },
+  { N_ ("Region"),           ARRANGER_OBJECT_TYPE_REGION           },
+  { N_ ("Midi Note"),        ARRANGER_OBJECT_TYPE_MIDI_NOTE        },
+  { N_ ("Chord Object"),     ARRANGER_OBJECT_TYPE_CHORD_OBJECT     },
+  { N_ ("Scale Object"),     ARRANGER_OBJECT_TYPE_SCALE_OBJECT     },
+  { N_ ("Marker"),           ARRANGER_OBJECT_TYPE_MARKER           },
+  { N_ ("Automation Point"), ARRANGER_OBJECT_TYPE_AUTOMATION_POINT },
+  { N_ ("Velocity"),         ARRANGER_OBJECT_TYPE_VELOCITY         },
 };
 
 /**
@@ -101,7 +101,7 @@ typedef enum ArrangerObjectFlags
 } ArrangerObjectFlags;
 
 static const cyaml_bitdef_t arranger_object_flags_bitvals[] = {
-  {.name = "non_project", .offset = 0, .bits = 1},
+  { .name = "non_project", .offset = 0, .bits = 1 },
 };
 
 typedef enum ArrangerObjectPositionType
@@ -439,8 +439,8 @@ arranger_object_select (
  * @param end End position, or NULL to only check
  *   for intersection with \ref start.
  */
-NONNULL_ARGS (1)
-PURE WARN_UNUSED_RESULT bool arranger_object_is_hit (
+NONNULL_ARGS (1) PURE WARN_UNUSED_RESULT bool
+arranger_object_is_hit (
   const ArrangerObject * self,
   const Position *       start,
   const Position *       end);
@@ -856,7 +856,8 @@ arranger_object_split (
  *
  * @return Whether successful.
  */
-WARN_UNUSED_RESULT NONNULL_ARGS (1, 2) bool arranger_object_unsplit (
+WARN_UNUSED_RESULT NONNULL_ARGS (1, 2) bool
+arranger_object_unsplit (
   ArrangerObject *  r1,
   ArrangerObject *  r2,
   ArrangerObject ** obj,
@@ -904,7 +905,8 @@ arranger_object_set_end_pos_full_size (ArrangerObject * obj, Position * pos);
  *
  * @return Whether successful.
  */
-WARN_UNUSED_RESULT NONNULL_ARGS (1) bool arranger_object_add_to_project (
+WARN_UNUSED_RESULT NONNULL_ARGS (1) bool
+arranger_object_add_to_project (
   ArrangerObject * obj,
   bool             fire_events,
   GError **        error);

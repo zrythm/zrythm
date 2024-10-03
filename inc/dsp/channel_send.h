@@ -173,8 +173,8 @@ static const cyaml_schema_value_t channel_send_schema = {
   YAML_VALUE_PTR_NULLABLE (ChannelSend, channel_send_fields_schema),
 };
 
-NONNULL_ARGS (1)
-void channel_send_init_loaded (ChannelSend * self, Track * track);
+NONNULL_ARGS (1) void
+channel_send_init_loaded (ChannelSend * self, Track * track);
 
 /**
  * Creates a channel send instance.

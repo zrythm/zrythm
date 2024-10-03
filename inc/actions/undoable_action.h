@@ -60,16 +60,16 @@ typedef enum UndoableActionType
 } UndoableActionType;
 
 static const cyaml_strval_t undoable_action_type_strings[] = {
-  {"Tracklist selections", UA_TRACKLIST_SELECTIONS},
-  { "Channel send",        UA_CHANNEL_SEND        },
-  { "Mixer selections",    UA_MIXER_SELECTIONS    },
-  { "Arranger selections", UA_ARRANGER_SELECTIONS },
-  { "MIDI mapping",        UA_MIDI_MAPPING        },
-  { "Port connection",     UA_PORT_CONNECTION     },
-  { "Port",                UA_PORT                },
-  { "Range",               UA_RANGE               },
-  { "Transport",           UA_TRANSPORT           },
-  { "Chord",               UA_CHORD               },
+  { "Tracklist selections", UA_TRACKLIST_SELECTIONS },
+  { "Channel send",         UA_CHANNEL_SEND         },
+  { "Mixer selections",     UA_MIXER_SELECTIONS     },
+  { "Arranger selections",  UA_ARRANGER_SELECTIONS  },
+  { "MIDI mapping",         UA_MIDI_MAPPING         },
+  { "Port connection",      UA_PORT_CONNECTION      },
+  { "Port",                 UA_PORT                 },
+  { "Range",                UA_RANGE                },
+  { "Transport",            UA_TRANSPORT            },
+  { "Chord",                UA_CHORD                },
 };
 
 /**
@@ -167,8 +167,8 @@ undoable_action_set_num_actions (UndoableAction * self, int num_actions);
  * @param before Pointer to the connections before.
  * @param after Pointer to the connections after.
  */
-NONNULL_ARGS (1)
-void undoable_action_save_or_load_port_connections (
+NONNULL_ARGS (1) void
+undoable_action_save_or_load_port_connections (
   UndoableAction *          self,
   bool                      _do,
   PortConnectionsManager ** before,
@@ -181,16 +181,16 @@ void undoable_action_save_or_load_port_connections (
  *
  * @return Non-zero if errors occurred.
  */
-NONNULL_ARGS (1)
-int undoable_action_do (UndoableAction * self, GError ** error);
+NONNULL_ARGS (1) int
+undoable_action_do (UndoableAction * self, GError ** error);
 
 /**
  * Undoes the action.
  *
  * @return Non-zero if errors occurred.
  */
-NONNULL_ARGS (1)
-int undoable_action_undo (UndoableAction * self, GError ** error);
+NONNULL_ARGS (1) int
+undoable_action_undo (UndoableAction * self, GError ** error);
 
 void
 undoable_action_free (UndoableAction * self);

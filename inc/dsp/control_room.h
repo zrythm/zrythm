@@ -93,8 +93,8 @@ static const cyaml_schema_value_t control_room_schema = {
 /**
  * Inits the control room from a project.
  */
-COLD NONNULL_ARGS (
-  1) void control_room_init_loaded (ControlRoom * self, AudioEngine * engine);
+COLD NONNULL_ARGS (1) void
+control_room_init_loaded (ControlRoom * self, AudioEngine * engine);
 
 /**
  * Creates a new control room.

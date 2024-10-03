@@ -44,14 +44,14 @@ typedef enum ZFileType
 } ZFileType;
 
 static const cyaml_strval_t file_type_strings[] = {
-  {"MIDI",        FILE_TYPE_MIDI      },
-  { "mp3",        FILE_TYPE_MP3       },
-  { "FLAC",       FILE_TYPE_FLAC      },
-  { "ogg",        FILE_TYPE_OGG       },
-  { "wav",        FILE_TYPE_WAV       },
-  { "directory",  FILE_TYPE_DIR       },
-  { "parent dir", FILE_TYPE_PARENT_DIR},
-  { "other",      FILE_TYPE_OTHER     },
+  { "MIDI",       FILE_TYPE_MIDI       },
+  { "mp3",        FILE_TYPE_MP3        },
+  { "FLAC",       FILE_TYPE_FLAC       },
+  { "ogg",        FILE_TYPE_OGG        },
+  { "wav",        FILE_TYPE_WAV        },
+  { "directory",  FILE_TYPE_DIR        },
+  { "parent dir", FILE_TYPE_PARENT_DIR },
+  { "other",      FILE_TYPE_OTHER      },
 };
 
 /**

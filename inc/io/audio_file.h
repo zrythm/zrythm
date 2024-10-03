@@ -73,8 +73,8 @@ audio_file_new (const char * filepath);
 /**
  * Reads the metadata for the given file.
  */
-NONNULL_ARGS (1)
-bool audio_file_read_metadata (AudioFile * self, GError ** error);
+NONNULL_ARGS (1) bool
+audio_file_read_metadata (AudioFile * self, GError ** error);
 
 /**
  * Reads the file into an internal float array (interleaved).
@@ -86,8 +86,8 @@ bool audio_file_read_metadata (AudioFile * self, GError ** error);
  *   ensure there is enough space (ie, number of frames *
  *   number of channels).
  */
-NONNULL_ARGS (1)
-bool audio_file_read_samples (
+NONNULL_ARGS (1) bool
+audio_file_read_samples (
   AudioFile * self,
   bool        in_parts,
   float *     samples,
@@ -101,7 +101,8 @@ bool audio_file_read_samples (
  *
  * This is not needed when only reading metadata.
  */
-NONNULL_ARGS (1) bool audio_file_finish (AudioFile * self, GError ** error);
+NONNULL_ARGS (1) bool
+audio_file_finish (AudioFile * self, GError ** error);
 
 /**
  * Simple blocking API for reading and optionally resampling

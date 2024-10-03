@@ -29,13 +29,13 @@ typedef enum MixerSelectionsActionType
 } MixerSelectionsActionType;
 
 static const cyaml_strval_t mixer_selections_action_type_strings[] = {
-  {"Copy",                  MIXER_SELECTIONS_ACTION_COPY                },
-  { "Paste",                MIXER_SELECTIONS_ACTION_PASTE               },
-  { "Create",               MIXER_SELECTIONS_ACTION_CREATE              },
-  { "Delete",               MIXER_SELECTIONS_ACTION_DELETE              },
-  { "Move",                 MIXER_SELECTIONS_ACTION_MOVE                },
-  { "Change Status",        MIXER_SELECTIONS_ACTION_CHANGE_STATUS       },
-  { "Change Load Behavior", MIXER_SELECTIONS_ACTION_CHANGE_LOAD_BEHAVIOR},
+  { "Copy",                 MIXER_SELECTIONS_ACTION_COPY                 },
+  { "Paste",                MIXER_SELECTIONS_ACTION_PASTE                },
+  { "Create",               MIXER_SELECTIONS_ACTION_CREATE               },
+  { "Delete",               MIXER_SELECTIONS_ACTION_DELETE               },
+  { "Move",                 MIXER_SELECTIONS_ACTION_MOVE                 },
+  { "Change Status",        MIXER_SELECTIONS_ACTION_CHANGE_STATUS        },
+  { "Change Load Behavior", MIXER_SELECTIONS_ACTION_CHANGE_LOAD_BEHAVIOR },
 };
 
 /**

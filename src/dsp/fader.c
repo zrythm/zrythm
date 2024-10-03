@@ -1161,7 +1161,7 @@ fader_process (Fader * self, const EngineProcessTimeInfo * const time_nfo)
                 time_nfo->nframes);
             }
         } /* fi not prefader */
-    }     /* fi monitor/audio fader */
+    } /* fi monitor/audio fader */
   else if (self->type == FADER_TYPE_MIDI_CHANNEL)
     {
       if (!effectively_muted)

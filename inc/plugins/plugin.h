@@ -285,8 +285,8 @@ static const cyaml_schema_value_t plugin_schema = {
   YAML_VALUE_PTR_NULLABLE (Plugin, plugin_fields_schema),
 };
 
-NONNULL_ARGS (1)
-void plugin_init_loaded (Plugin * self, Track * track, MixerSelections * ms);
+NONNULL_ARGS (1) void
+plugin_init_loaded (Plugin * self, Track * track, MixerSelections * ms);
 
 /**
  * Adds an AutomationTrack to the Plugin.
@@ -316,8 +316,8 @@ plugin_add_out_port (Plugin * pl, Port * port);
  * @param slot The expected slot the plugin will
  *   be in.
  */
-NONNULL_ARGS (1)
-Plugin * plugin_new_from_setting (
+NONNULL_ARGS (1) Plugin *
+plugin_new_from_setting (
   PluginSetting * setting,
   unsigned int    track_name_hash,
   PluginSlotType  slot_type,
@@ -378,7 +378,8 @@ plugin_remove_ats_from_automation_tracklist (
  * @return The cloned plugin, or NULL if an error
  *   occurred.
  */
-NONNULL_ARGS (1) Plugin * plugin_clone (Plugin * src, GError ** error);
+NONNULL_ARGS (1) Plugin *
+plugin_clone (Plugin * src, GError ** error);
 
 void
 plugin_get_full_port_group_designation (
@@ -565,7 +566,8 @@ plugin_prepare_process (Plugin * self);
 /**
  * Instantiates the plugin (e.g. when adding to a channel)
  */
-NONNULL_ARGS (1) int plugin_instantiate (Plugin * self, GError ** error);
+NONNULL_ARGS (1) int
+plugin_instantiate (Plugin * self, GError ** error);
 
 /**
  * Sets the track name hash on the plugin.

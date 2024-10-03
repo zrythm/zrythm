@@ -82,8 +82,8 @@ export_format_from_pretty_str (const char * pretty_str)
   g_return_val_if_reached (EXPORT_FORMAT_FLAC);
 }
 
-NONNULL_ARGS (1)
-static void get_export_time_range (
+NONNULL_ARGS (1) static void
+get_export_time_range (
   const ExportSettings * info,
   Position *             start_pos,
   Position *             end_pos)

@@ -177,7 +177,8 @@ file_import_progress_dialog_new (
   update_content (self);
 
   gtk_window_set_transient_for (
-    GTK_WINDOW (self), parent ? GTK_WINDOW(parent) : GTK_WINDOW (UI_ACTIVE_WINDOW_OR_NULL));
+    GTK_WINDOW (self),
+    parent ? GTK_WINDOW (parent) : GTK_WINDOW (UI_ACTIVE_WINDOW_OR_NULL));
 
   return self;
 }

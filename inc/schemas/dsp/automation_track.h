@@ -23,10 +23,10 @@ typedef enum AutomationMode_v1
 } AutomationMode_v1;
 
 static const cyaml_strval_t automation_mode_strings_v1[] = {
-  {"Read",       AUTOMATION_MODE_READ_v1  },
-  { "Rec",       AUTOMATION_MODE_RECORD_v1},
-  { "Off",       AUTOMATION_MODE_OFF_v1   },
-  { "<invalid>", NUM_AUTOMATION_MODES_v1  },
+  { "Read",      AUTOMATION_MODE_READ_v1   },
+  { "Rec",       AUTOMATION_MODE_RECORD_v1 },
+  { "Off",       AUTOMATION_MODE_OFF_v1    },
+  { "<invalid>", NUM_AUTOMATION_MODES_v1   },
 };
 
 typedef enum AutomationRecordMode_v1
@@ -37,9 +37,9 @@ typedef enum AutomationRecordMode_v1
 } AutomationRecordMode_v1;
 
 static const cyaml_strval_t automation_record_mode_strings_v1[] = {
-  {"Touch",      AUTOMATION_RECORD_MODE_TOUCH_v1},
-  { "Latch",     AUTOMATION_RECORD_MODE_LATCH_v1},
-  { "<invalid>", NUM_AUTOMATION_RECORD_MODES_v1 },
+  { "Touch",     AUTOMATION_RECORD_MODE_TOUCH_v1 },
+  { "Latch",     AUTOMATION_RECORD_MODE_LATCH_v1 },
+  { "<invalid>", NUM_AUTOMATION_RECORD_MODES_v1  },
 };
 
 typedef struct AutomationTrack_v1

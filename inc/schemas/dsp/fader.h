@@ -25,12 +25,12 @@ typedef enum FaderType_v1
 } FaderType_v1;
 
 static const cyaml_strval_t fader_type_strings_v1[] = {
-  {"none",              FADER_TYPE_NONE_v1            },
-  { "monitor",          FADER_TYPE_MONITOR_v1         },
-  { "sample processor", FADER_TYPE_SAMPLE_PROCESSOR_v1},
-  { "audio channel",    FADER_TYPE_AUDIO_CHANNEL_v1   },
-  { "midi channel",     FADER_TYPE_MIDI_CHANNEL_v1    },
-  { "generic",          FADER_TYPE_GENERIC_v1         },
+  { "none",             FADER_TYPE_NONE_v1             },
+  { "monitor",          FADER_TYPE_MONITOR_v1          },
+  { "sample processor", FADER_TYPE_SAMPLE_PROCESSOR_v1 },
+  { "audio channel",    FADER_TYPE_AUDIO_CHANNEL_v1    },
+  { "midi channel",     FADER_TYPE_MIDI_CHANNEL_v1     },
+  { "generic",          FADER_TYPE_GENERIC_v1          },
 };
 
 typedef enum MidiFaderMode_v1
@@ -40,8 +40,8 @@ typedef enum MidiFaderMode_v1
 } MidiFaderMode_v1;
 
 static const cyaml_strval_t midi_fader_mode_strings_v1[] = {
-  {"vel_multiplier", MIDI_FADER_MODE_VEL_MULTIPLIER_v1},
-  { "cc_volume",     MIDI_FADER_MODE_CC_VOLUME_v1     },
+  { "vel_multiplier", MIDI_FADER_MODE_VEL_MULTIPLIER_v1 },
+  { "cc_volume",      MIDI_FADER_MODE_CC_VOLUME_v1      },
 };
 
 typedef struct Fader_v1

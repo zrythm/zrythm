@@ -32,18 +32,18 @@ typedef enum MusicalNote_v1
 } MusicalNote_v1;
 
 static const cyaml_strval_t musical_note_strings_v1[] = {
-  {"C",   NOTE_C_v1 },
-  { "C#", NOTE_CS_v1},
-  { "D",  NOTE_D_v1 },
-  { "D#", NOTE_DS_v1},
-  { "E",  NOTE_E_v1 },
-  { "F",  NOTE_F_v1 },
-  { "F#", NOTE_FS_v1},
-  { "G",  NOTE_G_v1 },
-  { "G#", NOTE_GS_v1},
-  { "A",  NOTE_A_v1 },
-  { "A#", NOTE_AS_v1},
-  { "B",  NOTE_B_v1 },
+  { "C",  NOTE_C_v1  },
+  { "C#", NOTE_CS_v1 },
+  { "D",  NOTE_D_v1  },
+  { "D#", NOTE_DS_v1 },
+  { "E",  NOTE_E_v1  },
+  { "F",  NOTE_F_v1  },
+  { "F#", NOTE_FS_v1 },
+  { "G",  NOTE_G_v1  },
+  { "G#", NOTE_GS_v1 },
+  { "A",  NOTE_A_v1  },
+  { "A#", NOTE_AS_v1 },
+  { "B",  NOTE_B_v1  },
 };
 
 typedef enum ChordType_v1
@@ -60,14 +60,14 @@ typedef enum ChordType_v1
 } ChordType_v1;
 
 static const cyaml_strval_t chord_type_strings_v1[] = {
-  {"Invalid", CHORD_TYPE_NONE_v1  },
-  { "Maj",    CHORD_TYPE_MAJ_v1   },
-  { "min",    CHORD_TYPE_MIN_v1   },
-  { "dim",    CHORD_TYPE_DIM_v1   },
-  { "sus4",   CHORD_TYPE_SUS4_v1  },
-  { "sus2",   CHORD_TYPE_SUS2_v1  },
-  { "aug",    CHORD_TYPE_AUG_v1   },
-  { "custom", CHORD_TYPE_CUSTOM_v1},
+  { "Invalid", CHORD_TYPE_NONE_v1   },
+  { "Maj",     CHORD_TYPE_MAJ_v1    },
+  { "min",     CHORD_TYPE_MIN_v1    },
+  { "dim",     CHORD_TYPE_DIM_v1    },
+  { "sus4",    CHORD_TYPE_SUS4_v1   },
+  { "sus2",    CHORD_TYPE_SUS2_v1   },
+  { "aug",     CHORD_TYPE_AUG_v1    },
+  { "custom",  CHORD_TYPE_CUSTOM_v1 },
 };
 
 typedef enum ChordAccent_v1
@@ -86,16 +86,16 @@ typedef enum ChordAccent_v1
 } ChordAccent_v1;
 
 static const cyaml_strval_t chord_accent_strings_v1[] = {
-  {"None",              CHORD_ACC_NONE_v1  },
-  { "7",                CHORD_ACC_7_v1     },
-  { "j7",               CHORD_ACC_j7_v1    },
-  { "\u266D9",          CHORD_ACC_b9_v1    },
-  { "9",                CHORD_ACC_9_v1     },
-  { "\u266F9",          CHORD_ACC_S9_v1    },
-  { "11",               CHORD_ACC_11_v1    },
-  { "\u266D5/\u266F11", CHORD_ACC_b5_S11_v1},
-  { "\u266F5/\u266D13", CHORD_ACC_S5_b13_v1},
-  { "6/13",             CHORD_ACC_6_13_v1  },
+  { "None",             CHORD_ACC_NONE_v1   },
+  { "7",                CHORD_ACC_7_v1      },
+  { "j7",               CHORD_ACC_j7_v1     },
+  { "\u266D9",          CHORD_ACC_b9_v1     },
+  { "9",                CHORD_ACC_9_v1      },
+  { "\u266F9",          CHORD_ACC_S9_v1     },
+  { "11",               CHORD_ACC_11_v1     },
+  { "\u266D5/\u266F11", CHORD_ACC_b5_S11_v1 },
+  { "\u266F5/\u266D13", CHORD_ACC_S5_b13_v1 },
+  { "6/13",             CHORD_ACC_6_13_v1   },
 };
 
 typedef struct ChordDescriptor_v2

@@ -136,8 +136,8 @@ carla_native_plugin_init_loaded (CarlaNativePlugin * self);
  *
  * @return Non-zero if fail.
  */
-NONNULL_ARGS (1)
-int carla_native_plugin_new_from_setting (Plugin * plugin, GError ** error);
+NONNULL_ARGS (1) int
+carla_native_plugin_new_from_setting (Plugin * plugin, GError ** error);
 
 /**
  * Returns a filled in descriptor from the
@@ -195,8 +195,8 @@ carla_native_plugin_update_buffer_size_and_sample_rate (
  *
  * @return 0 if no errors, non-zero if errors.
  */
-NONNULL_ARGS (1)
-int carla_native_plugin_instantiate (
+NONNULL_ARGS (1) int
+carla_native_plugin_instantiate (
   CarlaNativePlugin * self,
   bool                loading,
   bool                use_state_file,

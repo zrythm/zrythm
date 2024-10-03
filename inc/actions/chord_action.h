@@ -29,8 +29,8 @@ typedef enum ChordActionType
 } ChordActionType;
 
 static const cyaml_strval_t chord_action_type_strings[] = {
-  {"Single", CHORD_ACTION_SINGLE},
-  { "All",   CHORD_ACTION_ALL   },
+  { "Single", CHORD_ACTION_SINGLE },
+  { "All",    CHORD_ACTION_ALL    },
 };
 
 /**

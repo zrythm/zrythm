@@ -125,13 +125,13 @@ typedef enum SelectionType
 } SelectionType;
 
 static const cyaml_strval_t selection_type_strings[] = {
-  {"Tracklist",   SELECTION_TYPE_TRACKLIST },
-  { "Timeline",   SELECTION_TYPE_TIMELINE  },
-  { "Insert",     SELECTION_TYPE_INSERT    },
-  { "MIDI FX",    SELECTION_TYPE_MIDI_FX   },
-  { "Instrument", SELECTION_TYPE_INSTRUMENT},
-  { "Modulator",  SELECTION_TYPE_MODULATOR },
-  { "Editor",     SELECTION_TYPE_EDITOR    },
+  { "Tracklist",  SELECTION_TYPE_TRACKLIST  },
+  { "Timeline",   SELECTION_TYPE_TIMELINE   },
+  { "Insert",     SELECTION_TYPE_INSERT     },
+  { "MIDI FX",    SELECTION_TYPE_MIDI_FX    },
+  { "Instrument", SELECTION_TYPE_INSTRUMENT },
+  { "Modulator",  SELECTION_TYPE_MODULATOR  },
+  { "Editor",     SELECTION_TYPE_EDITOR     },
 };
 
 /**

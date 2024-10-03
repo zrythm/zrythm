@@ -22,8 +22,8 @@ typedef enum RangeActionType
 } RangeActionType;
 
 static const cyaml_strval_t range_action_type_strings[] = {
-  {"Insert silence", RANGE_ACTION_INSERT_SILENCE},
-  { "Remove",        RANGE_ACTION_REMOVE        },
+  { "Insert silence", RANGE_ACTION_INSERT_SILENCE },
+  { "Remove",         RANGE_ACTION_REMOVE         },
 };
 
 typedef struct RangeAction

@@ -61,12 +61,14 @@ undo_manager_new (void);
 /**
  * Undo last action.
  */
-NONNULL_ARGS (1) int undo_manager_undo (UndoManager * self, GError ** error);
+NONNULL_ARGS (1) int
+undo_manager_undo (UndoManager * self, GError ** error);
 
 /**
  * Redo last undone action.
  */
-NONNULL_ARGS (1) int undo_manager_redo (UndoManager * self, GError ** error);
+NONNULL_ARGS (1) int
+undo_manager_redo (UndoManager * self, GError ** error);
 
 /**
  * Performs the action and pushes it to the undo
@@ -74,8 +76,8 @@ NONNULL_ARGS (1) int undo_manager_redo (UndoManager * self, GError ** error);
  *
  * @return Non-zero if error.
  */
-NONNULL_ARGS (1, 2)
-int undo_manager_perform (
+NONNULL_ARGS (1, 2) int
+undo_manager_perform (
   UndoManager *    self,
   UndoableAction * action,
   GError **        error);

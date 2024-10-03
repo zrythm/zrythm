@@ -99,8 +99,7 @@ engine_windows_mme_print_error (MMRESULT error_code, int input)
   int  ret = engine_windows_mme_get_error (error_code, input, msg, 600);
   if (!ret)
     {
-      ui_show_error_message_printf (
-        MAIN_WINDOW, false, "Windows MME error: %s", msg);
+      ui_show_error_message ("Windows MME error", msg);
     }
 }
 

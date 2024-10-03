@@ -33,9 +33,9 @@ typedef enum BitDepth
 } BitDepth;
 
 static const cyaml_strval_t bit_depth_strings[] = {
-  {"16",  BIT_DEPTH_16},
-  { "24", BIT_DEPTH_24},
-  { "32", BIT_DEPTH_32},
+  { "16", BIT_DEPTH_16 },
+  { "24", BIT_DEPTH_24 },
+  { "32", BIT_DEPTH_32 },
 };
 
 static inline int

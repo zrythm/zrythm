@@ -114,8 +114,8 @@ log_get_last_n_lines (Log * self, int n);
  *
  * @return Whether successful.
  */
-NONNULL_ARGS (1, 2, 3)
-bool log_generate_compressed_file (
+NONNULL_ARGS (1, 2, 3) bool
+log_generate_compressed_file (
   Log *     self,
   char **   ret_dir,
   char **   ret_path,

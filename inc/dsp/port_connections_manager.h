@@ -92,8 +92,8 @@ port_connections_manager_regenerate_hashtables (PortConnectionsManager * self);
  *
  * @return The number of ports found.
  */
-NONNULL_ARGS (1, 3)
-int port_connections_manager_get_sources_or_dests (
+NONNULL_ARGS (1, 3) int
+port_connections_manager_get_sources_or_dests (
   const PortConnectionsManager * self,
   GPtrArray *                    arr,
   const PortIdentifier *         id,
@@ -113,8 +113,8 @@ int port_connections_manager_get_sources_or_dests (
  *
  * @return The number of ports found.
  */
-NONNULL_ARGS (1, 3)
-int port_connections_manager_get_unlocked_sources_or_dests (
+NONNULL_ARGS (1, 3) int
+port_connections_manager_get_unlocked_sources_or_dests (
   const PortConnectionsManager * self,
   GPtrArray *                    arr,
   const PortIdentifier *         id,
