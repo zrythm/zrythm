@@ -710,7 +710,7 @@ plugin_manager_get_paths_for_protocol (
     case Z_PLUGIN_PROTOCOL_LV2:
       paths = plugin_manager_get_lv2_paths (self);
       break;
-    case ZPluginProtocol::Z_PLUGIN_PROTOCOL_AU:
+    case Z_PLUGIN_PROTOCOL_AU:
       paths = plugin_manager_get_au_paths (self);
       break;
     default:

@@ -18,11 +18,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-static const char * plugin_protocol_strings[] = {
-  "Dummy", "LV2", "DSSI", "LADSPA", "VST",  "VST3",
-  "AU",    "SFZ", "SF2",  "CLAP",   "JSFX",
-};
-
 PluginDescriptor *
 plugin_descriptor_new (void)
 {
