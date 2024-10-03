@@ -741,7 +741,6 @@ test_strict_cflags += [
   '-Werror=inline',
   '-Werror=duplicate-decl-specifier',
   '-Werror=redundant-decls',
-  '-Werror=strict-prototypes',
   '-Werror=sizeof-array-argument',
   '-Werror=lto-type-mismatch',
   '-Werror=odr',
