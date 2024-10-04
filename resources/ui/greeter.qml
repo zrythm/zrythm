@@ -18,6 +18,7 @@ ApplicationWindow {
     font.pointSize: 10
 
     palette {
+        accent: themeManager.accent
         base: themeManager.base
         brightText: themeManager.base
         button: themeManager.base.lighter().lighter(1.2)
@@ -192,7 +193,7 @@ ApplicationWindow {
                         title: "Language"
                         subtitle: "Preferred language"
 
-                        ComboBox {
+                        ComboBoxText {
                             model: ["English", "Spanish", "French"]
                         }
 

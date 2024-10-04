@@ -122,6 +122,14 @@ SPDX-License-Identifier = "MIT"
 SPDX-FileComment = "\n  The files have been slightly modified.\n  From https://github.com/microsoft/fluentui-system-icons."
 
 [[annotations]]
+path = ["resources/icons/lucide/**.svg"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Cole Bemis 2013-2022"
+SPDX-FileCopyrightText = "Lucide Contributors 2022"
+SPDX-License-Identifier = "ISC"
+SPDX-FileComment = "Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2022 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2022.\n  The files have been slightly modified.\n  From https://github.com/microsoft/fluentui-system-icons."
+
+[[annotations]]
 path = "resources/icons/box-icons/**.svg"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2015-2021 Aniket Suvarna"

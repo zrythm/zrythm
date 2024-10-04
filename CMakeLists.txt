@@ -1157,7 +1157,7 @@ set_source_files_properties("${CMAKE_SOURCE_DIR}/resources/qtquickcontrols2.conf
 set(icon_dirs
   arena gnome-builder gnome-icon-library fork-awesome font-awesome
   fluentui jam-icons box-icons iconpark iconoir material-design
-  untitled-ui css.gg codicons
+  untitled-ui css.gg codicons lucide
 )
 
 set(icon_files)
@@ -1200,6 +1200,7 @@ set(qml_file_paths
   resources/ui/PlaceholderPage.qml
   resources/ui/PlainButton.qml
   resources/ui/ActionRow.qml
+  resources/ui/ComboBoxText.qml
 )
 foreach(qml_file_path ${qml_file_paths})
   get_filename_component(qml_filename ${qml_file_path} NAME)
