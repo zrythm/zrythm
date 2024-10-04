@@ -1171,10 +1171,13 @@ foreach(dir ${icon_dirs})
   endforeach()
 endforeach()
 
-# add zrythm icon to resources
-set(zrythm_logo "${CMAKE_SOURCE_DIR}/data/icon-themes/zrythm-dark/scalable/apps/zrythm.svg")
-set_source_files_properties(${zrythm_logo} PROPERTIES QT_RESOURCE_ALIAS "icons/zrythm.svg")
-list(APPEND icon_files ${zrythm_logo})
+# add zrythm icons to resources
+set(zrythm_logos zrythm.svg zrythm-monochrome.svg)
+foreach(zlogo ${zrythm_logos})
+  set(zlogo_path "${CMAKE_SOURCE_DIR}/data/icon-themes/zrythm-dark/scalable/apps/${zlogo}")
+  set_source_files_properties("${zlogo_path}" PROPERTIES QT_RESOURCE_ALIAS "icons/${zlogo}")
+  list(APPEND icon_files ${zlogo_path})
+endforeach()
 
 # font files
 set(font_filepaths
@@ -1203,6 +1206,7 @@ set(qml_file_paths
   resources/ui/ComboBoxText.qml
   resources/ui/PreferencesPage.qml
   resources/ui/FilePicker.qml
+  resources/ui/CustomProgressBar.qml
 )
 foreach(qml_file_path ${qml_file_paths})
   get_filename_component(qml_filename ${qml_file_path} NAME)

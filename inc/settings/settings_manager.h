@@ -9,6 +9,7 @@
 #include <QSettings>
 #include <QStandardPaths>
 
+#include "utils/logger.h"
 #include "utils/math.h"
 
 #define DEFINE_SETTING_PROPERTY_WITHOUT_SETTER(ptype, name, default_value) \
@@ -37,6 +38,7 @@ public: \
       settings_.value (QStringLiteral (#name), default_value).value<ptype> () \
       != value) \
       { \
+        z_debug ("setting '{}' to '{}'", #name, value); \
         settings_.setValue (QStringLiteral (#name), value); \
         Q_EMIT name##_changed (); \
         settings_.sync (); \
@@ -53,6 +55,7 @@ public: \
         settings_.value (QStringLiteral (#name), default_value).value<ptype> (), \
         value)) \
       { \
+        z_debug ("setting '{}' to '{}'", #name, value); \
         settings_.setValue (QStringLiteral (#name), value); \
         Q_EMIT name##_changed (); \
         settings_.sync (); \

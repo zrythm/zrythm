@@ -245,6 +245,8 @@ ApplicationWindow {
                         highlighted: true
                         onClicked: {
                             console.log("Proceeding to next page...");
+                            settingsManager.first_run = false;
+                            stack.push(progressPage);
                         }
                         DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
                     }
@@ -265,24 +267,33 @@ ApplicationWindow {
             Page {
                 title: qsTr("Progress")
 
-                BusyIndicator {
-                    anchors.centerIn: parent
-                    running: true
+                PlaceholderPage {
+                    icon.source: Qt.resolvedUrl("icons/zrythm-monochrome.svg")
+                    title: qsTr("Scanning Plugins")
                 }
 
-                Label {
-                    anchors.top: parent.top
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: "Zrythm"
-                    font.pointSize: 24
-                }
-
-                ProgressBar {
+                ColumnLayout {
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    anchors.margins: 20
-                    indeterminate: true
+                    anchors.margins: 26
+                    spacing: 12
+
+                    Text {
+                        text: "Loading Plugin X..."
+                        horizontalAlignment: Qt.AlignHCenter
+                        verticalAlignment: Qt.AlignVCenter
+                        Layout.fillWidth: true
+                        color: palette.text
+                        font.pointSize: 8
+                        opacity: 0.6
+                    }
+
+                    CustomProgressBar {
+                        indeterminate: true
+                        Layout.fillWidth: true
+                    }
+
                 }
 
             }
