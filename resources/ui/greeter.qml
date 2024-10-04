@@ -1,8 +1,6 @@
-import QtQuick 6.7
-import QtQuick.Controls 6.7
-import QtQuick.Controls.Basic 6.7
-import QtQuick.Layouts 6.7
-// import QtQuick.Controls.Imagine 6.7
+import QtQuick
+import QtQuick.Controls.Basic
+import QtQuick.Layouts
 import "config.js" as Config
 
 ApplicationWindow {
