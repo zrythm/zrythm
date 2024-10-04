@@ -1,31 +1,33 @@
+// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
 import QtQuick
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
 
 Item {
-    id: root
+    id: control
 
-    property string title: ""
-    property string subtitle: ""
+    property string title: "aaaa"
+    property string subtitle: "bbbb"
     default property alias content: suffixLayout.data
 
-    implicitWidth: Math.min(parent.width - 40, parent.width * 0.8)
     implicitHeight: layout.implicitHeight
+    Layout.fillWidth: true
 
     RowLayout {
         id: layout
 
-        anchors.horizontalCenter: parent.horizontalCenter
         spacing: 12
+        anchors.fill: parent
 
         ColumnLayout {
-            Layout.fillWidth: true
             spacing: 2
 
             Label {
                 id: titleLabel
 
-                text: root.title
+                text: control.title
                 font.bold: true
                 elide: Text.ElideRight
                 Layout.fillWidth: true
@@ -34,7 +36,7 @@ Item {
             Label {
                 id: subtitleLabel
 
-                text: root.subtitle
+                text: control.subtitle
                 visible: text !== ""
                 opacity: 0.7
                 font.pixelSize: titleLabel.font.pixelSize * 0.9
@@ -48,19 +50,10 @@ Item {
             id: suffixLayout
 
             Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+            Layout.fillWidth: true
             spacing: 8
         }
 
     }
-
-/*
-    Rectangle {
-        anchors.left: anchors.left
-        anchors.right: anchors.right
-        anchors.bottom: parent.bottom
-        height: 1
-        color: "#20000000" // Semi-transparent black
-    }
-    */
 
 }

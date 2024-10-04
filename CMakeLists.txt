@@ -1201,6 +1201,8 @@ set(qml_file_paths
   resources/ui/PlainButton.qml
   resources/ui/ActionRow.qml
   resources/ui/ComboBoxText.qml
+  resources/ui/PreferencesPage.qml
+  resources/ui/FilePicker.qml
 )
 foreach(qml_file_path ${qml_file_paths})
   get_filename_component(qml_filename ${qml_file_path} NAME)

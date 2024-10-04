@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
 import QtQuick
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
@@ -183,9 +186,9 @@ ApplicationWindow {
 
                 title: qsTr("Configuration")
 
-                ColumnLayout {
+                PreferencesPage {
+                    title: qsTr("Initial Configuration")
                     anchors.fill: parent
-                    spacing: 10
 
                     ActionRow {
                         title: "Language"
@@ -201,12 +204,7 @@ ApplicationWindow {
                         title: "User Path"
                         subtitle: "Location to save user files"
 
-                        TextField {
-                            Layout.fillWidth: true
-                        }
-
-                        Button {
-                            text: "Browse"
+                        FilePicker {
                         }
 
                     }
