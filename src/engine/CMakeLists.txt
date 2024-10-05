@@ -3,7 +3,7 @@
 
 qt_add_executable(zrythm-engine
   main.cpp
-  ${CMAKE_SOURCE_DIR}/inc/engine/audio_engine.h
+  audio_engine.h
 )
 
 target_link_libraries(zrythm-engine PRIVATE zrythm_lib)

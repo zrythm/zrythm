@@ -326,13 +326,14 @@ check_symbol_exists(mlock "sys/mman.h" HAVE_MLOCK)
 message(STATUS "HAVE_MLOCK: ${HAVE_MLOCK}")
 
 set(zrythm_include_dirs
-  "${CMAKE_CURRENT_SOURCE_DIR}"
-  "${CMAKE_CURRENT_SOURCE_DIR}/inc"
-  "${CMAKE_CURRENT_SOURCE_DIR}/src"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ext"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ext/weakjack"
-  "${CMAKE_CURRENT_BINARY_DIR}"
-  "${CMAKE_CURRENT_BINARY_DIR}/inc"
+  "${CMAKE_SOURCE_DIR}"
+  "${CMAKE_SOURCE_DIR}/inc"
+  "${CMAKE_SOURCE_DIR}/src"
+  "${CMAKE_SOURCE_DIR}/ext"
+  "${CMAKE_SOURCE_DIR}/ext/weakjack"
+  "${CMAKE_BINARY_DIR}"
+  "${CMAKE_BINARY_DIR}/inc"
+  "${CMAKE_BINARY_DIR}/src"
   )
 
 if(${ZRYTHM_WITH_JACK})
@@ -1143,75 +1144,11 @@ endif()
 # Add subdirectories
 add_subdirectory(po)
 add_subdirectory(data)
-add_subdirectory(resources)
 add_subdirectory(src)
 
 # ==============================================================================================
-# Resources & QML
+# QML setup (must be toplevel for some reason)
 # ==============================================================================================
-
-set_source_files_properties("${CMAKE_BINARY_DIR}/resources/ui/config.js" PROPERTIES QT_RESOURCE_ALIAS "config.js")
-set_source_files_properties("${CMAKE_SOURCE_DIR}/resources/qtquickcontrols2.conf" PROPERTIES QT_RESOURCE_ALIAS "qtquickcontrols2.conf")
-
-# Icons
-set(icon_dirs
-  arena gnome-builder gnome-icon-library fork-awesome font-awesome
-  fluentui jam-icons box-icons iconpark iconoir material-design
-  untitled-ui css.gg codicons lucide
-)
-
-set(icon_files)
-foreach(dir ${icon_dirs})
-  file(GLOB icons "${CMAKE_SOURCE_DIR}/resources/icons/${dir}/*.svg" "${CMAKE_SOURCE_DIR}/resources/icons/${dir}/*.png")
-  foreach(icon ${icons})
-    get_filename_component(icon_name ${icon} NAME)
-    set(icon_alias "icons/${dir}/${icon_name}")
-    set_source_files_properties(${icon} PROPERTIES QT_RESOURCE_ALIAS ${icon_alias})
-    list(APPEND icon_files ${icon})
-  endforeach()
-endforeach()
-
-# add zrythm icons to resources
-set(zrythm_logos zrythm.svg zrythm-monochrome.svg)
-foreach(zlogo ${zrythm_logos})
-  set(zlogo_path "${CMAKE_SOURCE_DIR}/data/icon-themes/zrythm-dark/scalable/apps/${zlogo}")
-  set_source_files_properties("${zlogo_path}" PROPERTIES QT_RESOURCE_ALIAS "icons/${zlogo}")
-  list(APPEND icon_files ${zlogo_path})
-endforeach()
-
-# font files
-set(font_filepaths
-  ${CMAKE_SOURCE_DIR}/resources/fonts/Inter-4.0/InterVariable.ttf
-  ${CMAKE_SOURCE_DIR}/resources/fonts/Inter-4.0/InterVariable-Italic.ttf
-  ${CMAKE_SOURCE_DIR}/resources/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-Regular.ttf
-  ${CMAKE_SOURCE_DIR}/resources/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-Bold.ttf
-  ${CMAKE_SOURCE_DIR}/resources/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-Light.ttf
-  ${CMAKE_SOURCE_DIR}/resources/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-Italic.ttf
-  ${CMAKE_SOURCE_DIR}/resources/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-BoldItalic.ttf
-  ${CMAKE_SOURCE_DIR}/resources/fonts/DSEG14-Classic-MINI/DSEG14ClassicMini-LightItalic.ttf
-)
-set(font_files)
-foreach(font_filepath ${font_filepaths})
-  get_filename_component(font_name ${font_filepath} NAME)
-  set_source_files_properties(${font_filepath} PROPERTIES QT_RESOURCE_ALIAS "fonts/${font_name}")
-  list(APPEND font_files ${font_filepath})
-endforeach()
-
-set(qml_file_paths
-  resources/ui/main_window.qml
-  resources/ui/greeter.qml
-  resources/ui/PlaceholderPage.qml
-  resources/ui/PlainButton.qml
-  resources/ui/ActionRow.qml
-  resources/ui/ComboBoxText.qml
-  resources/ui/PreferencesPage.qml
-  resources/ui/FilePicker.qml
-  resources/ui/CustomProgressBar.qml
-)
-foreach(qml_file_path ${qml_file_paths})
-  get_filename_component(qml_filename ${qml_file_path} NAME)
-  set_source_files_properties(${qml_file_path} PROPERTIES QT_RESOURCE_ALIAS "${qml_filename}")
-endforeach()
 
 # module ends up in "/<RESOURCE_PREFIX>/<URI>/"
 qt_add_qml_module(zrythm
@@ -1220,9 +1157,9 @@ qt_add_qml_module(zrythm
   RESOURCE_PREFIX /org.zrythm/imports
   QML_FILES 
     ${qml_file_paths}
-    ${CMAKE_BINARY_DIR}/resources/ui/config.js
+    ${CMAKE_CURRENT_BINARY_DIR}/src/gui/js/config.js
   RESOURCES
-    ${CMAKE_SOURCE_DIR}/resources/qtquickcontrols2.conf
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/gui/resources/qtquickcontrols2.conf
     ${icon_files}
     ${font_files}
   # NO_RESOURCE_TARGET_PATH

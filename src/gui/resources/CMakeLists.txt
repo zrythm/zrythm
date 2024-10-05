@@ -77,9 +77,3 @@ endforeach()
 
 # GL shaders
 # file(GLOB gl_shaders "${CMAKE_CURRENT_SOURCE_DIR}/gl/shaders/*.glsl")
-
-
-configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/ui/config.js.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/ui/config.js"
-)

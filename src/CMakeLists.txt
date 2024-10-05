@@ -3,13 +3,20 @@
 
 qt_add_library(zrythm_lib STATIC)
 
+add_subdirectory(gui)
+
+# propagate upwards
+set(qml_file_paths ${qml_file_paths} PARENT_SCOPE)
+set(icon_files ${icon_files} PARENT_SCOPE)
+set(font_files ${font_files} PARENT_SCOPE)
+
 target_sources(zrythm_lib
   PRIVATE
     globals.cpp
     project.cpp
     zrythm.cpp
     zrythm_app.cpp
-    ${CMAKE_SOURCE_DIR}/inc/zrythm_application.h
+    zrythm_application.h
     zrythm_application.cpp
     project/project_init_flow_manager.cpp
 )
@@ -24,11 +31,11 @@ if(APPLE)
 endif()
 
 configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/../inc/utils/localization.h.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/../inc/utils/localization.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/utils/localization.h.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/utils/localization.h"
   @ONLY)
 target_sources(zrythm_lib
-  PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/../inc/utils/localization.h")
+  PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/utils/localization.h")
 
 # Add the translators C string header to the sources
 add_custom_command(
@@ -45,7 +52,6 @@ target_sources(zrythm_lib
 
 add_subdirectory(actions)
 add_subdirectory(dsp)
-add_subdirectory(gui)
 add_subdirectory(io)
 add_subdirectory(plugins)
 if(ZRYTHM_YAML_PROJECT_COMPATIBILITY)
