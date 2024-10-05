@@ -3,8 +3,8 @@
 
 #include "dsp/audio_region.h"
 #include "dsp/region_owner.h"
-#include "gui/backend/event.h"
-#include "gui/backend/event_manager.h"
+#include "gui/cpp/backend/event.h"
+#include "gui/cpp/backend/event_manager.h"
 #include "project.h"
 #include "utils/rt_thread_id.h"
 #include "zrythm.h"

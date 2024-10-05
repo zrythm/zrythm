@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/midi_function.h"
-#include "gui/backend/arranger_selections.h"
-#include "gui/backend/event.h"
-#include "gui/backend/event_manager.h"
+#include "gui/cpp/backend/arranger_selections.h"
+#include "gui/cpp/backend/event.h"
+#include "gui/cpp/backend/event_manager.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
 #include "utils/flags.h"

@@ -16,7 +16,7 @@
 #  include "dsp/tempo_track.h"
 #  include "dsp/tracklist.h"
 #  include "dsp/transport.h"
-#  include "gui/widgets/main_window.h"
+#  include "gui/cpp/gtk_widgets/main_window.h"
 #  include "plugins/plugin.h"
 #  include "project.h"
 #  include "settings/g_settings_manager.h"

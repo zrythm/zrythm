@@ -10,8 +10,8 @@
 #include "dsp/port.h"
 #include "dsp/position.h"
 #include "dsp/region_owner.h"
-#include "gui/widgets/automation_mode.h"
-#include "gui/widgets/custom_button.h"
+#include "gui/cpp/gtk_widgets/automation_mode.h"
+#include "gui/cpp/gtk_widgets/custom_button.h"
 
 #include "automation_region.h"
 

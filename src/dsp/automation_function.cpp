@@ -3,9 +3,9 @@
 
 #include "dsp/automation_function.h"
 #include "dsp/engine.h"
-#include "gui/backend/arranger_selections.h"
-#include "gui/backend/event.h"
-#include "gui/backend/event_manager.h"
+#include "gui/cpp/backend/arranger_selections.h"
+#include "gui/cpp/backend/event.h"
+#include "gui/cpp/backend/event_manager.h"
 #include "project.h"
 #include "settings/g_settings_manager.h"
 #include "settings/settings.h"

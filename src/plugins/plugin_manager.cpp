@@ -29,8 +29,8 @@
 
 #include "zrythm-config.h"
 
-#include "gui/widgets/greeter.h"
-#include "gui/widgets/main_window.h"
+#include "gui/cpp/gtk_widgets/greeter.h"
+#include "gui/cpp/gtk_widgets/main_window.h"
 #include "plugins/cached_plugin_descriptors.h"
 #include "plugins/carla_discovery.h"
 #include "plugins/plugin_manager.h"

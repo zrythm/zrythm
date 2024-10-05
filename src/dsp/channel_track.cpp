@@ -4,7 +4,7 @@
 #include "actions/tracklist_selections.h"
 #include "dsp/channel_track.h"
 #include "dsp/tracklist.h"
-#include "gui/backend/tracklist_selections.h"
+#include "gui/cpp/backend/tracklist_selections.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "zrythm.h"

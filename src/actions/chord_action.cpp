@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/chord_action.h"
-#include "gui/backend/clip_editor.h"
+#include "gui/cpp/backend/clip_editor.h"
 #include "project.h"
 #include "zrythm.h"
 

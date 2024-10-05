@@ -11,7 +11,7 @@
 #define __AUDIO_TRACKLIST_H__
 
 #include "dsp/track.h"
-#include "gui/widgets/track.h"
+#include "gui/cpp/gtk_widgets/track.h"
 
 TYPEDEF_STRUCT_UNDERSCORED (TracklistWidget);
 TYPEDEF_STRUCT_UNDERSCORED (PinnedTracklistWidget);

@@ -6,7 +6,7 @@
 #include <random>
 
 #include "dsp/track.h"
-#include "gui/backend/timeline_selections.h"
+#include "gui/cpp/backend/timeline_selections.h"
 #include "utils/gtest_wrapper.h"
 
 #include "helpers/project_helper.h"

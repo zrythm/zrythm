@@ -8,7 +8,7 @@
 #include "dsp/automation_track.h"
 #include "dsp/port_connections_manager.h"
 #include "dsp/track.h"
-#include "gui/backend/mixer_selections.h"
+#include "gui/cpp/backend/mixer_selections.h"
 
 class Plugin;
 class Track;

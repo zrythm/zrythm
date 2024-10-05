@@ -7,7 +7,7 @@
 #include "dsp/midi_event.h"
 #include "dsp/region.h"
 #include "dsp/region_owner.h"
-#include "gui/widgets/custom_button.h"
+#include "gui/cpp/gtk_widgets/custom_button.h"
 
 using MIDI_FILE = void;
 class Tracklist;

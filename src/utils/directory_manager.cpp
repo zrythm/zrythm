@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "settings/settings_manager.h"
+#include "gui/cpp/glue/settings_manager.h"
 #include "utils/directory_manager.h"
 #include "utils/io.h"
 

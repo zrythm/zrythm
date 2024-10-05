@@ -3,11 +3,11 @@
 
 #include "dsp/timeline_object.h"
 #include "dsp/track.h"
-#include "gui/widgets/arranger.h"
-#include "gui/widgets/center_dock.h"
-#include "gui/widgets/main_notebook.h"
-#include "gui/widgets/timeline_arranger.h"
-#include "gui/widgets/timeline_panel.h"
+#include "gui/cpp/gtk_widgets/arranger.h"
+#include "gui/cpp/gtk_widgets/center_dock.h"
+#include "gui/cpp/gtk_widgets/main_notebook.h"
+#include "gui/cpp/gtk_widgets/timeline_arranger.h"
+#include "gui/cpp/gtk_widgets/timeline_panel.h"
 #include "zrythm_app.h"
 
 void

@@ -11,8 +11,8 @@
 #endif
 
 #include "dsp/recording_manager.h"
-#include "gui/backend/event_manager.h"
-#include "gui/widgets/main_window.h"
+#include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/gtk_widgets/main_window.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/chord_preset_pack_manager.h"

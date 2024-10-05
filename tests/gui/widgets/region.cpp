@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/region.h"
-#include "gui/widgets/region.h"
+#include "gui/cpp/gtk_widgets/region.h"
 #include "project.h"
 #include "zrythm.h"
 

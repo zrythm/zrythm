@@ -8,7 +8,7 @@
 #include "dsp/channel_send.h"
 #include "dsp/port_connections_manager.h"
 #include "dsp/track.h"
-#include "gui/backend/tracklist_selections.h"
+#include "gui/cpp/backend/tracklist_selections.h"
 #include "io/file_descriptor.h"
 #include "settings/plugin_settings.h"
 #include "utils/color.h"

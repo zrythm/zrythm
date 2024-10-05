@@ -7,7 +7,7 @@
 #include "actions/undoable_action.h"
 #include "dsp/position.h"
 #include "dsp/transport.h"
-#include "gui/backend/timeline_selections.h"
+#include "gui/cpp/backend/timeline_selections.h"
 
 /**
  * @addtogroup actions

@@ -7,7 +7,7 @@
 #include "zrythm-config.h"
 
 #include "dsp/chord_descriptor.h"
-#include "gui/backend/chord_editor.h"
+#include "gui/cpp/backend/chord_editor.h"
 #include "utils/types.h"
 
 class ChordPresetPack;

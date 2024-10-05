@@ -52,13 +52,13 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
 
-#include "gui/widgets/bot_dock_edge.h"
-#include "gui/widgets/center_dock.h"
-#include "gui/widgets/left_dock_edge.h"
-#include "gui/widgets/main_notebook.h"
-#include "gui/widgets/main_window.h"
-#include "gui/widgets/mixer.h"
-#include "gui/widgets/right_dock_edge.h"
+#include "gui/cpp/gtk_widgets/bot_dock_edge.h"
+#include "gui/cpp/gtk_widgets/center_dock.h"
+#include "gui/cpp/gtk_widgets/left_dock_edge.h"
+#include "gui/cpp/gtk_widgets/main_notebook.h"
+#include "gui/cpp/gtk_widgets/main_window.h"
+#include "gui/cpp/gtk_widgets/mixer.h"
+#include "gui/cpp/gtk_widgets/right_dock_edge.h"
 #include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/gtest_wrapper.h"

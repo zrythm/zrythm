@@ -16,8 +16,6 @@ target_sources(zrythm_lib
     project.cpp
     zrythm.cpp
     zrythm_app.cpp
-    zrythm_application.h
-    zrythm_application.cpp
     project/project_init_flow_manager.cpp
 )
 

@@ -6,7 +6,7 @@
 #include "dsp/audio_bus_track.h"
 #include "dsp/channel_track.h"
 #include "dsp/tracklist.h"
-#include "gui/widgets/main_window.h"
+#include "gui/cpp/gtk_widgets/main_window.h"
 #include "plugins/plugin_descriptor.h"
 #include "settings/plugin_settings.h"
 #include "settings/settings.h"

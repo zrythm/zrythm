@@ -11,7 +11,7 @@
 #define __SCHEMAS_GUI_BACKEND_AUTOMATION_SELECTIONS_H__
 
 #include "dsp/automation_point.h"
-#include "gui/backend/arranger_selections.h"
+// #include "gui/backend/arranger_selections.h"
 #include "utils/yaml.h"
 
 typedef struct AutomationSelections_v1

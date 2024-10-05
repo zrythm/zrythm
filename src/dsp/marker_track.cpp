@@ -3,9 +3,9 @@
 
 #include "dsp/marker_track.h"
 #include "dsp/track.h"
-#include "gui/backend/event.h"
-#include "gui/backend/event_manager.h"
-#include "gui/backend/timeline_selections.h"
+#include "gui/cpp/backend/event.h"
+#include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/timeline_selections.h"
 #include "project.h"
 #include "utils/rt_thread_id.h"
 #include "zrythm.h"

@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/audio_selections.h"
-#include "gui/backend/automation_selections.h"
-#include "gui/backend/chord_selections.h"
-#include "gui/backend/clipboard.h"
-#include "gui/backend/midi_selections.h"
-#include "gui/backend/timeline_selections.h"
+#include "gui/cpp/backend/audio_selections.h"
+#include "gui/cpp/backend/automation_selections.h"
+#include "gui/cpp/backend/chord_selections.h"
+#include "gui/cpp/backend/clipboard.h"
+#include "gui/cpp/backend/midi_selections.h"
+#include "gui/cpp/backend/timeline_selections.h"
 
 void
 Clipboard::define_fields (const Context &ctx)

@@ -10,7 +10,7 @@
 
 #include "zrythm-config.h"
 
-#include "gui/widgets/main_window.h"
+#include "gui/cpp/gtk_widgets/main_window.h"
 #include "settings/g_settings_manager.h"
 #include "settings/settings.h"
 #include "utils/directory_manager.h"

@@ -44,11 +44,11 @@
 #include <cstdlib>
 
 #include "actions/actions.h"
-#include "gui/backend/file_manager.h"
-#include "gui/widgets/dialogs/ask_to_check_for_updates_dialog.h"
-#include "gui/widgets/dialogs/bug_report_dialog.h"
-#include "gui/widgets/greeter.h"
-#include "gui/widgets/main_window.h"
+#include "gui/cpp/backend/file_manager.h"
+#include "gui/cpp/gtk_widgets/dialogs/ask_to_check_for_updates_dialog.h"
+#include "gui/cpp/gtk_widgets/dialogs/bug_report_dialog.h"
+#include "gui/cpp/gtk_widgets/greeter.h"
+#include "gui/cpp/gtk_widgets/main_window.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "project/project_init_flow_manager.h"

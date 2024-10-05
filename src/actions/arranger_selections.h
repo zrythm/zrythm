@@ -17,11 +17,11 @@
 #include "dsp/position.h"
 #include "dsp/quantize_options.h"
 #include "dsp/region.h"
-#include "gui/backend/audio_selections.h"
-#include "gui/backend/automation_selections.h"
-#include "gui/backend/chord_selections.h"
-#include "gui/backend/midi_selections.h"
-#include "gui/backend/timeline_selections.h"
+#include "gui/cpp/backend/audio_selections.h"
+#include "gui/cpp/backend/automation_selections.h"
+#include "gui/cpp/backend/chord_selections.h"
+#include "gui/cpp/backend/midi_selections.h"
+#include "gui/cpp/backend/timeline_selections.h"
 
 /**
  * @addtogroup actions

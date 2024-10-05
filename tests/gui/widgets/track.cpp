@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/track.h"
-#include "gui/widgets/track.h"
+#include "gui/cpp/gtk_widgets/track.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "zrythm.h"

@@ -1,7 +1,7 @@
 // SPDX-CopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/widgets/main_window.h"
+#include "gui/cpp/gtk_widgets/main_window.h"
 #include "utils/exceptions.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"

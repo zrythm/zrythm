@@ -29,9 +29,9 @@
 
 #include "dsp/engine.h"
 #include "dsp/port_identifier.h"
-#include "gui/backend/event.h"
-#include "gui/backend/event_manager.h"
-#include "gui/widgets/main_window.h"
+#include "gui/cpp/backend/event.h"
+#include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/gtk_widgets/main_window.h"
 #include "plugins/carla_native_plugin.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_gtk.h"

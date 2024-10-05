@@ -13,7 +13,7 @@
 #include "dsp/muteable_object.h"
 #include "dsp/position.h"
 #include "dsp/velocity.h"
-#include "gui/backend/piano_roll.h"
+#include "gui/cpp/backend/piano_roll.h"
 #include "utils/pango.h"
 
 /**

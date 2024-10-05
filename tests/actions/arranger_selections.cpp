@@ -16,7 +16,7 @@
 #include "dsp/midi_track.h"
 #include "dsp/region.h"
 #include "dsp/tempo_track.h"
-#include "gui/backend/clipboard.h"
+#include "gui/cpp/backend/clipboard.h"
 #include "project.h"
 #include "utils/dsp.h"
 #include "utils/flags.h"

@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "dsp/recording_manager.h"
-#include "gui/backend/event_manager.h"
-#include "gui/backend/file_manager.h"
+#include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/file_manager.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/chord_preset_pack_manager.h"

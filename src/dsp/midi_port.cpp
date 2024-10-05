@@ -12,7 +12,7 @@
 #include "dsp/recordable_track.h"
 #include "dsp/rtmidi_device.h"
 #include "dsp/track_processor.h"
-#include "gui/backend/event_manager.h"
+#include "gui/cpp/backend/event_manager.h"
 #include "plugins/plugin.h"
 #include "project.h"
 #include "utils/gtest_wrapper.h"
