@@ -1,11 +1,6 @@
 // SPDX-FileCopyrightText : © 2024 Alexandros Theodotou<alex @zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/event.h"
-#include "gui/cpp/backend/event_manager.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
 #include "common/dsp/automatable_track.h"
 #include "common/dsp/automation_track.h"
 #include "common/dsp/automation_tracklist.h"
@@ -14,6 +9,10 @@
 #include "common/dsp/tempo_track.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/rt_thread_id.h"
+#include "gui/cpp/backend/event.h"
+#include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 AutomatableTrack::AutomatableTrack ()
     : automation_tracklist_ (std::make_unique<AutomationTracklist> ())

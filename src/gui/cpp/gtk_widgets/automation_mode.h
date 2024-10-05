@@ -4,11 +4,10 @@
 #ifndef __GUI_WIDGETS_AUTOMATION_MODE_H__
 #define __GUI_WIDGETS_AUTOMATION_MODE_H__
 
-#include "gui/cpp/gtk_widgets/custom_button.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/dsp/automation_point.h"
 #include "common/utils/color.h"
+#include "gui/cpp/gtk_widgets/custom_button.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 /**
  * @addtogroup widgets

@@ -7,11 +7,11 @@
 #include <memory>
 #include <utility>
 
-#include <glib/gi18n.h>
-
 #include "common/dsp/engine.h"
 #include "common/dsp/position.h"
 #include "common/utils/audio.h"
+
+#include <glib/gi18n.h>
 
 class ProgressInfo;
 

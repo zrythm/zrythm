@@ -1,6 +1,16 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/automation_region.h"
+#include "common/dsp/channel.h"
+#include "common/dsp/channel_track.h"
+#include "common/dsp/modulator_track.h"
+#include "common/dsp/router.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/plugins/carla_native_plugin.h"
+#include "common/utils/logger.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/actions/mixer_selections_action.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
@@ -12,17 +22,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/automation_region.h"
-#include "common/dsp/channel.h"
-#include "common/dsp/channel_track.h"
-#include "common/dsp/modulator_track.h"
-#include "common/dsp/router.h"
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/plugins/carla_native_plugin.h"
-#include "common/utils/logger.h"
-#include "common/utils/ui.h"
 
 void
 MixerSelectionsAction::init_loaded_impl ()

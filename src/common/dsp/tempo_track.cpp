@@ -1,15 +1,6 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/actions/transport_action.h"
-#include "gui/cpp/backend/event.h"
-#include "gui/cpp/backend/event_manager.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include <glib/gi18n.h>
-
 #include "common/dsp/automation_track.h"
 #include "common/dsp/port.h"
 #include "common/dsp/router.h"
@@ -18,6 +9,14 @@
 #include "common/utils/flags.h"
 #include "common/utils/math.h"
 #include "common/utils/ui.h"
+#include "gui/cpp/backend/actions/transport_action.h"
+#include "gui/cpp/backend/event.h"
+#include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include <glib/gi18n.h>
 
 TempoTrack::TempoTrack (int track_pos)
     : Track (

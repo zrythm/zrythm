@@ -3,6 +3,17 @@
 
 #include "zrythm-config.h"
 
+#include "common/dsp/control_port.h"
+#include "common/dsp/engine.h"
+#include "common/dsp/meter.h"
+#include "common/dsp/midi_mapping.h"
+#include "common/dsp/port.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/math.h"
+#include "common/utils/objects.h"
+#include "common/utils/string.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/actions/midi_mapping_action.h"
 #include "gui/cpp/backend/actions/port_action.h"
 #include "gui/cpp/backend/project.h"
@@ -15,18 +26,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/control_port.h"
-#include "common/dsp/engine.h"
-#include "common/dsp/meter.h"
-#include "common/dsp/midi_mapping.h"
-#include "common/dsp/port.h"
-#include "common/utils/flags.h"
-#include "common/utils/gtk.h"
-#include "common/utils/math.h"
-#include "common/utils/objects.h"
-#include "common/utils/string.h"
-#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (InspectorPortWidget, inspector_port_widget, GTK_TYPE_WIDGET)
 

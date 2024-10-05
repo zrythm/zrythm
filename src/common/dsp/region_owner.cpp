@@ -1,15 +1,14 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/audio_region.h"
+#include "common/dsp/region_owner.h"
+#include "common/utils/rt_thread_id.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/dsp/audio_region.h"
-#include "common/dsp/region_owner.h"
-#include "common/utils/rt_thread_id.h"
 
 template <typename RegionT>
 bool

@@ -1,9 +1,6 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-
 #include "common/dsp/audio_region.h"
 #include "common/dsp/chord_region.h"
 #include "common/dsp/chord_track.h"
@@ -12,6 +9,8 @@
 #include "common/dsp/processable_track.h"
 #include "common/dsp/track_processor.h"
 #include "common/dsp/transport.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 
 ProcessableTrack::ProcessableTrack ()
 {

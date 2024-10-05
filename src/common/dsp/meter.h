@@ -10,12 +10,11 @@
 #ifndef __AUDIO_METER_H__
 #define __AUDIO_METER_H__
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/dsp/kmeter_dsp.h"
 #include "common/dsp/peak_dsp.h"
 #include "common/dsp/true_peak_dsp.h"
 #include "common/utils/types.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 class TruePeakDsp;
 class KMeterDsp;

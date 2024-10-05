@@ -29,14 +29,13 @@
 
 #include "zrythm-config.h"
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/dsp/control_port.h"
 #include "common/dsp/engine.h"
 #include "common/dsp/graph.h"
 #include "common/dsp/graph_thread.h"
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/types.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 class GraphNode;
 class Graph;

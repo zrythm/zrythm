@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-
 #include "common/dsp/port_connection.h"
 #include "common/dsp/port_identifier.h"
 #include "common/dsp/tracklist.h"
 #include "common/utils/logger.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+
 #include <fmt/format.h>
 
 bool

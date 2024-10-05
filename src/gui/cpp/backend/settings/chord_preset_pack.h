@@ -8,10 +8,9 @@
 
 #include <utility>
 
-#include "gui/cpp/backend/settings/chord_preset.h"
-
 #include "common/utils/format.h"
 #include "common/utils/icloneable.h"
+#include "gui/cpp/backend/settings/chord_preset.h"
 
 /**
  * @addtogroup settings

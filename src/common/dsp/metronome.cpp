@@ -3,12 +3,6 @@
 
 #include "zrythm-config.h"
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/glue/settings_manager.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
 #include "common/dsp/engine.h"
 #include "common/dsp/metronome.h"
 #include "common/dsp/position.h"
@@ -16,6 +10,11 @@
 #include "common/io/audio_file.h"
 #include "common/utils/directory_manager.h"
 #include "common/utils/gtest_wrapper.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/glue/settings_manager.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 Metronome::Metronome (AudioEngine &engine)
 {

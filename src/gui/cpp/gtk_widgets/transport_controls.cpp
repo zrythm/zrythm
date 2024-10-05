@@ -1,6 +1,13 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/midi_event.h"
+#include "common/dsp/transport.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/string.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
 #include "gui/cpp/backend/project.h"
@@ -12,14 +19,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/midi_event.h"
-#include "common/dsp/transport.h"
-#include "common/utils/flags.h"
-#include "common/utils/gtk.h"
-#include "common/utils/resources.h"
-#include "common/utils/rt_thread_id.h"
-#include "common/utils/string.h"
 
 G_DEFINE_TYPE (TransportControlsWidget, transport_controls_widget, GTK_TYPE_BOX)
 

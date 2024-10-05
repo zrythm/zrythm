@@ -10,9 +10,8 @@
 #ifndef __UTILS_CAIRO_H__
 #define __UTILS_CAIRO_H__
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/utils/pango.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 class Color;
 

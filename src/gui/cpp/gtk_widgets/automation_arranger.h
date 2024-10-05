@@ -4,10 +4,9 @@
 #ifndef __GUI_WIDGETS_AUTOMATION_ARRANGER_H__
 #define __GUI_WIDGETS_AUTOMATION_ARRANGER_H__
 
+#include "common/dsp/position.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
-#include "common/dsp/position.h"
 
 class AutomationPoint;
 class AutomationCurve;

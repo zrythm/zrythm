@@ -10,11 +10,10 @@
 #ifndef __GUI_WIDGETS_EXPORT_DIALOG_H__
 #define __GUI_WIDGETS_EXPORT_DIALOG_H__
 
+#include "common/dsp/position.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/item_factory.h"
 #include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
-
-#include "common/dsp/position.h"
 
 #define EXPORT_DIALOG_WIDGET_TYPE (export_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

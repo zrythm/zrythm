@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
 #include "common/utils/color.h"
 #include "common/utils/debug.h"
 #include "common/utils/math.h"
 #include "common/utils/ui.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 Color::Color (const std::string &str)
 {

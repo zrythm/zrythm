@@ -10,10 +10,9 @@
 #ifndef __GUI_WIDGETS_DIALOGS_FILE_IMPORT_PROGRESS_PROGRESS_DIALOG_H__
 #define __GUI_WIDGETS_DIALOGS_FILE_IMPORT_PROGRESS_PROGRESS_DIALOG_H__
 
-#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
-
 #include "common/dsp/track.h"
 #include "common/utils/types.h"
+#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
 
 #define FILE_IMPORT_PROGRESS_PROGRESS_DIALOG_TYPE \
   (file_import_progress_dialog_get_type ())

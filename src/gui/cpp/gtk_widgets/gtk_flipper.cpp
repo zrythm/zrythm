@@ -19,10 +19,9 @@
  * Authors: Benjamin Otte <otte@gnome.org>
  */
 
-#include "gui/cpp/gtk_widgets/gtk_flipper.h"
-
 #include "common/utils/gtk.h"
 #include "common/utils/logger.h"
+#include "gui/cpp/gtk_widgets/gtk_flipper.h"
 
 /**
  * GtkFlipper:

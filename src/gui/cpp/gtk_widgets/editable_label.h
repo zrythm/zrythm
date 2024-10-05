@@ -8,9 +8,8 @@
 #ifndef __GUI_WIDGETS_EDITABLE_LABEL_H__
 #define __GUI_WIDGETS_EDITABLE_LABEL_H__
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/utils/types.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define EDITABLE_LABEL_WIDGET_TYPE (editable_label_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

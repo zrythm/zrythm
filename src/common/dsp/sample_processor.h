@@ -4,8 +4,6 @@
 #ifndef __AUDIO_SAMPLE_PROCESSOR_H__
 #define __AUDIO_SAMPLE_PROCESSOR_H__
 
-#include "gui/cpp/backend/settings/plugin_settings.h"
-
 #include "common/dsp/fader.h"
 #include "common/dsp/graph.h"
 #include "common/dsp/metronome.h"
@@ -15,6 +13,7 @@
 #include "common/dsp/sample_playback.h"
 #include "common/dsp/tracklist.h"
 #include "common/utils/types.h"
+#include "gui/cpp/backend/settings/plugin_settings.h"
 
 class FileDescriptor;
 class ChordPreset;

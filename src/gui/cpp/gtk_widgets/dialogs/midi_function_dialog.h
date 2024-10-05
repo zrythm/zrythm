@@ -10,9 +10,8 @@
 #ifndef __GUI_WIDGETS_DIALOGS_MIDI_FUNCTION_H__
 #define __GUI_WIDGETS_DIALOGS_MIDI_FUNCTION_H__
 
-#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
-
 #include "common/dsp/midi_function.h"
+#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
 
 #define MIDI_FUNCTION_DIALOG_WIDGET_TYPE \
   (midi_function_dialog_widget_get_type ())

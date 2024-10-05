@@ -4,10 +4,9 @@
 #ifndef __UNDO_CHORD_ACTION_H__
 #define __UNDO_CHORD_ACTION_H__
 
+#include "common/dsp/chord_descriptor.h"
 #include "gui/cpp/backend/actions/undoable_action.h"
 #include "gui/cpp/backend/chord_editor.h"
-
-#include "common/dsp/chord_descriptor.h"
 
 /**
  * @addtogroup actions

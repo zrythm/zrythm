@@ -43,6 +43,7 @@
 #endif
 
 #include "common/utils/gtest_wrapper.h"
+
 #include <fmt/format.h>
 
 /* This also includes all native platform headers. */

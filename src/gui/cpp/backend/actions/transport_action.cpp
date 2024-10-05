@@ -1,6 +1,13 @@
 // SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/control_port.h"
+#include "common/dsp/engine.h"
+#include "common/dsp/router.h"
+#include "common/dsp/tempo_track.h"
+#include "common/dsp/tracklist.h"
+#include "common/dsp/transport.h"
+#include "common/utils/gtest_wrapper.h"
 #include "gui/cpp/backend/actions/transport_action.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
@@ -10,14 +17,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/control_port.h"
-#include "common/dsp/engine.h"
-#include "common/dsp/router.h"
-#include "common/dsp/tempo_track.h"
-#include "common/dsp/tracklist.h"
-#include "common/dsp/transport.h"
-#include "common/utils/gtest_wrapper.h"
 
 TransportAction::
   TransportAction (bpm_t bpm_before, bpm_t bpm_after, bool already_done)

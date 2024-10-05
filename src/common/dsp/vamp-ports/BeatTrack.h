@@ -56,7 +56,8 @@ protected:
   int               m_method;
   int               m_dfType;
 
-  // MEPD new protected parameters to allow the user to control these advanced parameters of the beat tracker
+  // MEPD new protected parameters to allow the user to control these advanced
+  // parameters of the beat tracker
   double m_alpha;
   double m_tightness;
   double m_inputtempo;

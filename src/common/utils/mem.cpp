@@ -4,9 +4,8 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/utils/mem.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 /**
  * Reallocate and zero out newly added memory.

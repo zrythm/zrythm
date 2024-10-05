@@ -1,6 +1,11 @@
 // SPDX-FileCopyrightText: © 2021-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/engine.h"
+#include "common/dsp/sample_processor.h"
+#include "common/plugins/plugin_manager.h"
+#include "common/utils/resources.h"
+#include "common/utils/rt_thread_id.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
 #include "gui/cpp/backend/project.h"
@@ -13,12 +18,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/engine.h"
-#include "common/dsp/sample_processor.h"
-#include "common/plugins/plugin_manager.h"
-#include "common/utils/resources.h"
-#include "common/utils/rt_thread_id.h"
 
 G_DEFINE_TYPE (
   FileAuditionerControlsWidget,

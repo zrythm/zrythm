@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include <glib/gi18n.h>
-
 #include "common/dsp/position.h"
+
+#include <glib/gi18n.h>
 
 class ArrangerObject;
 class ArrangerSelections;

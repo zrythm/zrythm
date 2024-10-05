@@ -8,10 +8,10 @@
 #include <utility>
 #include <vector>
 
-#include <glib/gi18n.h>
-
 #include "common/io/serialization/iserializable.h"
 #include "common/utils/format.h"
+
+#include <glib/gi18n.h>
 
 /**
  * @addtogroup dsp

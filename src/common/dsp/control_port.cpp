@@ -3,12 +3,6 @@
 
 #include <cmath>
 
-#include "gui/cpp/backend/event.h"
-#include "gui/cpp/backend/event_manager.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
 #include "common/dsp/channel_track.h"
 #include "common/dsp/control_port.h"
 #include "common/dsp/engine.h"
@@ -22,6 +16,11 @@
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/math.h"
 #include "common/utils/rt_thread_id.h"
+#include "gui/cpp/backend/event.h"
+#include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 ControlPort::ControlPort (std::string label)
     : Port (label, PortType::Control, PortFlow::Input, 0.f, 1.f, 0.f)

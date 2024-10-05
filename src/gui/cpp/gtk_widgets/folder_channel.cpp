@@ -1,6 +1,12 @@
 // SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/port_connections_manager.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
 #include "gui/cpp/backend/actions/tracklist_selections.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/tracklist_selections.h"
@@ -20,12 +26,6 @@
 
 #include <glib/gi18n.h>
 
-#include "common/dsp/port_connections_manager.h"
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/flags.h"
-#include "common/utils/gtk.h"
-#include "common/utils/resources.h"
 #include <time.h>
 
 G_DEFINE_TYPE (FolderChannelWidget, folder_channel_widget, GTK_TYPE_WIDGET)

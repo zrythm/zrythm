@@ -5,6 +5,16 @@
 
 #include "zrythm-config.h"
 
+#include "common/dsp/engine.h"
+#include "common/dsp/engine_rtaudio.h"
+#include "common/dsp/pan.h"
+#include "common/dsp/port.h"
+#include "common/utils/color.h"
+#include "common/utils/gtk.h"
+#include "common/utils/localization.h"
+#include "common/utils/objects.h"
+#include "common/utils/string.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/backend/settings/settings.h"
@@ -23,17 +33,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/engine.h"
-#include "common/dsp/engine_rtaudio.h"
-#include "common/dsp/pan.h"
-#include "common/dsp/port.h"
-#include "common/utils/color.h"
-#include "common/utils/gtk.h"
-#include "common/utils/localization.h"
-#include "common/utils/objects.h"
-#include "common/utils/string.h"
-#include "common/utils/ui.h"
 
 UiCursor::
   UiCursor (std::string name, GdkCursor * cursor, int offset_x, int offset_y)

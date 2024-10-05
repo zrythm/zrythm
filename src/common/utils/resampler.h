@@ -7,6 +7,7 @@
 #include "zrythm-config.h"
 
 #include "common/utils/types.h"
+
 #include "juce/juce.h"
 
 /**

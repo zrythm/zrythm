@@ -3,11 +3,6 @@
 
 #include <cstdlib>
 
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
-#include <glib/gi18n.h>
-
 #include "common/dsp/track.h"
 #include "common/plugins/carla_native_plugin.h"
 #include "common/plugins/collections.h"
@@ -15,6 +10,10 @@
 #include "common/plugins/plugin_manager.h"
 #include "common/utils/gtk.h"
 #include "common/utils/objects.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+
+#include <glib/gi18n.h>
 
 constexpr const char * plugin_protocol_strings[] = {
   "Dummy", "LV2", "DSSI", "LADSPA", "VST",  "VST3",

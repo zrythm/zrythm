@@ -5,11 +5,10 @@
 
 #include <cmath>
 
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/utils/dsp.h"
 #include "common/utils/math.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #if HAVE_LSP_DSP
 #  include <lsp-plug.in/dsp/dsp.h>

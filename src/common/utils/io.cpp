@@ -41,16 +41,16 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include "common/utils/datetime.h"
+#include "common/utils/file.h"
+#include "common/utils/io.h"
+#include "common/utils/string.h"
 #include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #include <glib/gi18n.h>
 #include <glib/gstdio.h>
 
-#include "common/utils/datetime.h"
-#include "common/utils/file.h"
-#include "common/utils/io.h"
-#include "common/utils/string.h"
 #include "juce/juce.h"
 #include <fmt/format.h>
 #include <giomm.h>

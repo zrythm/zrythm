@@ -1,6 +1,12 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/automation_region.h"
+#include "common/dsp/track.h"
+#include "common/utils/gtk.h"
+#include "common/utils/math.h"
+#include "common/utils/objects.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
@@ -9,13 +15,6 @@
 #include "gui/cpp/gtk_widgets/bot_bar.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/dsp/automation_region.h"
-#include "common/dsp/track.h"
-#include "common/utils/gtk.h"
-#include "common/utils/math.h"
-#include "common/utils/objects.h"
-#include "common/utils/ui.h"
 
 bool
 automation_point_settings_changed (

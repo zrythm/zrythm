@@ -6,10 +6,9 @@
 
 #include <string>
 
+#include "common/dsp/engine.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/zrythm.h"
-
-#include "common/dsp/engine.h"
 
 #if HAVE_JACK
 

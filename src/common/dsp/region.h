@@ -7,8 +7,6 @@
 #include <format>
 #include <memory>
 
-#include <glib/gi18n.h>
-
 #include "common/dsp/arranger_object.h"
 #include "common/dsp/automation_point.h"
 #include "common/dsp/colored_object.h"
@@ -20,6 +18,8 @@
 #include "common/dsp/timeline_object.h"
 #include "common/utils/format.h"
 #include "common/utils/pango.h"
+
+#include <glib/gi18n.h>
 
 class Track;
 

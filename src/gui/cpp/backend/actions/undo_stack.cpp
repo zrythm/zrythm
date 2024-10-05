@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/utils/gtest_wrapper.h"
 #include "gui/cpp/backend/actions/arranger_selections.h"
 #include "gui/cpp/backend/actions/channel_send_action.h"
 #include "gui/cpp/backend/actions/chord_action.h"
@@ -15,8 +16,6 @@
 #include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/utils/gtest_wrapper.h"
 
 void
 UndoStack::init_loaded ()

@@ -1,10 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/dsp/engine.h"
 #include "common/dsp/position.h"
 #include "common/dsp/snap_grid.h"
@@ -13,6 +9,10 @@
 #include "common/utils/exceptions.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/math.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+
 #include <fmt/format.h>
 
 void

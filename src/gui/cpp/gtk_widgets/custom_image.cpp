@@ -1,9 +1,8 @@
 // SPDX-FileCopyrightText: © 2021-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/gtk_widgets/custom_image.h"
-
 #include "common/utils/gtk.h"
+#include "gui/cpp/gtk_widgets/custom_image.h"
 
 G_DEFINE_TYPE (CustomImageWidget, custom_image_widget, GTK_TYPE_WIDGET)
 

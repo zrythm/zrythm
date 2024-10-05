@@ -1,6 +1,11 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/flags.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/string.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
 #include "gui/cpp/backend/project.h"
@@ -15,12 +20,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/flags.h"
-#include "common/utils/rt_thread_id.h"
-#include "common/utils/string.h"
 
 G_DEFINE_TYPE (
   TrackFilterPopoverWidget,

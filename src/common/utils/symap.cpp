@@ -24,10 +24,9 @@
 
 #include <assert.h>
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/utils/objects.h"
 #include "common/utils/symap.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 /**
   @file symap.c Implementation of Symap, a basic symbol map (string interner).

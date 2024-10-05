@@ -1,10 +1,9 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/utils/directory_manager.h"
 #include "gui/cpp/glue/theme_manager.h"
 #include "gui/cpp/zrythm_application.h"
-
-#include "common/utils/directory_manager.h"
 
 using namespace zrythm::gui::glue;
 

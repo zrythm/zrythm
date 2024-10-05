@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: © 2018-2019, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/gtk_widgets/chord_region.h"
-
 #include "common/dsp/audio_region.h"
 #include "common/dsp/automation_region.h"
 #include "common/dsp/chord_region.h"
 #include "common/dsp/midi_region.h"
+#include "gui/cpp/gtk_widgets/chord_region.h"
 
 void
 chord_region_recreate_pango_layouts (ChordRegion * self)

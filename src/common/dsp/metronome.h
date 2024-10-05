@@ -14,6 +14,7 @@
 
 #include "common/dsp/position.h"
 #include "common/utils/types.h"
+
 #include "juce/juce.h"
 
 class AudioEngine;

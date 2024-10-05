@@ -10,9 +10,9 @@
 #include <optional>
 #include <string>
 
-#include <glib.h>
-
 #include "common/utils/string_array.h"
+
+#include <glib.h>
 
 /**
  * @addtogroup utils

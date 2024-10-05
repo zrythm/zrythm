@@ -14,10 +14,10 @@
 
 #include <cstdint>
 
-#include <glib/gi18n.h>
-
 #include "common/dsp/chord_descriptor.h"
 #include "common/io/serialization/iserializable.h"
+
+#include <glib/gi18n.h>
 
 /**
  * @addtogroup dsp

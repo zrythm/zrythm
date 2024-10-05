@@ -3,13 +3,12 @@
 
 #include "zrythm-test-config.h"
 
+#include "common/dsp/graph.h"
+#include "common/dsp/graph_export.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/zrythm.h"
 
 #include "tests/helpers/zrythm_helper.h"
-
-#include "common/dsp/graph.h"
-#include "common/dsp/graph_export.h"
 
 TEST_F (ZrythmFixture, ExportGraphToSVG)
 {

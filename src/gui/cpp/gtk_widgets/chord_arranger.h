@@ -4,11 +4,10 @@
 #ifndef __GUI_WIDGETS_CHORD_ARRANGER_H__
 #define __GUI_WIDGETS_CHORD_ARRANGER_H__
 
-#include "gui/cpp/gtk_widgets/arranger.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/dsp/chord_region.h"
 #include "common/dsp/position.h"
+#include "gui/cpp/gtk_widgets/arranger.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 class ChordObject;
 TYPEDEF_STRUCT_UNDERSCORED (ArrangerWidget);

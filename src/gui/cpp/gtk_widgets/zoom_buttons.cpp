@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: © 2022-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
 #include "gui/cpp/gtk_widgets/zoom_buttons.h"
 
 #include <glib/gi18n.h>
-
-#include "common/utils/gtk.h"
-#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (ZoomButtonsWidget, zoom_buttons_widget, GTK_TYPE_BOX)
 

@@ -19,6 +19,7 @@
 
 #  include "common/utils/types.h"
 #  include "common/utils/yaml.h"
+
 #  include <chromaprint.h>
 #  include <stdarg.h>
 #  include <stdbool.h>

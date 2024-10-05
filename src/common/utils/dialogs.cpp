@@ -1,15 +1,14 @@
 // SPDX-FileCopyrightText: © 2018-2019, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/utils/dialogs.h"
+#include "common/utils/gtk.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/utils/dialogs.h"
-#include "common/utils/gtk.h"
 
 /**
  * Creates and returns the overwrite plugin dialog.

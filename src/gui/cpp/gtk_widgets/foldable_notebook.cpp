@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/utils/gtk.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/gtk_widgets/foldable_notebook.h"
 #include "gui/cpp/gtk_widgets/gtk_flipper.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/utils/gtk.h"
-#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (FoldableNotebookWidget, foldable_notebook_widget, GTK_TYPE_BOX)
 

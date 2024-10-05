@@ -10,10 +10,9 @@
 #ifndef __GUI_WIDGETS_MODULATOR_MACRO_H__
 #define __GUI_WIDGETS_MODULATOR_MACRO_H__
 
+#include "common/dsp/track.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/two_col_expander_box.h"
-
-#include "common/dsp/track.h"
 
 typedef struct _KnobWithNameWidget           KnobWithNameWidget;
 typedef struct _PortConnectionsPopoverWidget PortConnectionsPopoverWidget;

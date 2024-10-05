@@ -10,9 +10,8 @@
 #ifndef __GUI_BACKEND_MIDI_SELECTIONS_H__
 #define __GUI_BACKEND_MIDI_SELECTIONS_H__
 
-#include "gui/cpp/backend/arranger_selections.h"
-
 #include "common/dsp/midi_note.h"
+#include "gui/cpp/backend/arranger_selections.h"
 
 /**
  * @addtogroup gui_backend

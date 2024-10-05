@@ -1,15 +1,6 @@
 // SPDX-FileCopyrightText: © 2021-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/file_manager.h"
-#include "gui/cpp/backend/settings/chord_preset_pack.h"
-#include "gui/cpp/backend/wrapped_object_with_change_signal.h"
-#include "gui/cpp/gtk_widgets/greeter.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include <glib/gi18n.h>
-
 #include "common/dsp/arranger_object_all.h"
 #include "common/dsp/channel_send.h"
 #include "common/dsp/ext_port.h"
@@ -18,6 +9,14 @@
 #include "common/plugins/collections.h"
 #include "common/plugins/plugin_descriptor.h"
 #include "common/utils/objects.h"
+#include "gui/cpp/backend/file_manager.h"
+#include "gui/cpp/backend/settings/chord_preset_pack.h"
+#include "gui/cpp/backend/wrapped_object_with_change_signal.h"
+#include "gui/cpp/gtk_widgets/greeter.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
   WrappedObjectWithChangeSignal,

@@ -7,14 +7,6 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "gui/cpp/backend/actions/tracklist_selections.h"
-#include "gui/cpp/backend/actions/undoable_action.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-
-#include "tests/helpers/plugin_manager.h"
-#include "tests/helpers/project_helper.h"
-
 #include "common/dsp/audio_region.h"
 #include "common/dsp/master_track.h"
 #include "common/dsp/midi_event.h"
@@ -22,6 +14,13 @@
 #include "common/dsp/router.h"
 #include "common/utils/color.h"
 #include "common/utils/flags.h"
+#include "gui/cpp/backend/actions/tracklist_selections.h"
+#include "gui/cpp/backend/actions/undoable_action.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+
+#include "tests/helpers/plugin_manager.h"
+#include "tests/helpers/project_helper.h"
 
 #if defined(HAVE_CHIPWAVE) || defined(HAVE_HELM) || defined(HAVE_LSP_COMPRESSOR)
 static InstrumentTrack *

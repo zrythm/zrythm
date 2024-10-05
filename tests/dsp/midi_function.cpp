@@ -3,12 +3,11 @@
 
 #include "zrythm-test-config.h"
 
+#include "common/dsp/midi_function.h"
+#include "common/dsp/tracklist.h"
 #include "gui/cpp/backend/actions/arranger_selections.h"
 
 #include "tests/helpers/zrythm_helper.h"
-
-#include "common/dsp/midi_function.h"
-#include "common/dsp/tracklist.h"
 
 TEST_F (ZrythmFixture, Crescendo)
 {

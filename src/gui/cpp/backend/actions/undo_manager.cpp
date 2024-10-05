@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/router.h"
+#include "common/utils/gtest_wrapper.h"
 #include "gui/cpp/backend/actions/undo_manager.h"
 #include "gui/cpp/backend/actions/undo_stack.h"
 #include "gui/cpp/backend/actions/undoable_action.h"
@@ -11,9 +13,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/router.h"
-#include "common/utils/gtest_wrapper.h"
 
 void
 UndoManager::init_loaded ()

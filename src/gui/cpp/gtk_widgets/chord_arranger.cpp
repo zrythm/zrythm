@@ -3,6 +3,11 @@
 
 #include <cmath>
 
+#include "common/dsp/audio_track.h"
+#include "common/dsp/chord_object.h"
+#include "common/dsp/chord_region.h"
+#include "common/dsp/midi_region.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/actions/arranger_selections.h"
 #include "gui/cpp/backend/actions/undo_manager.h"
 #include "gui/cpp/backend/event.h"
@@ -21,12 +26,6 @@
 #include "gui/cpp/gtk_widgets/ruler.h"
 #include "gui/cpp/gtk_widgets/track.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/dsp/audio_track.h"
-#include "common/dsp/chord_object.h"
-#include "common/dsp/chord_region.h"
-#include "common/dsp/midi_region.h"
-#include "common/utils/ui.h"
 
 ArrangerCursor
 chord_arranger_widget_get_cursor (ArrangerWidget * self, Tool tool)

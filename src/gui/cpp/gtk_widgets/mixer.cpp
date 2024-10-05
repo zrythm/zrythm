@@ -1,6 +1,10 @@
 // SPDX-FileCopyrightText: © 2018-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/tracklist.h"
+#include "common/plugins/plugin.h"
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/add_track_menu_button.h"
 #include "gui/cpp/gtk_widgets/bot_dock_edge.h"
@@ -9,11 +13,6 @@
 #include "gui/cpp/gtk_widgets/folder_channel.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/mixer.h"
-
-#include "common/dsp/tracklist.h"
-#include "common/plugins/plugin.h"
-#include "common/utils/gtk.h"
-#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (MixerWidget, mixer_widget, GTK_TYPE_BOX)
 

@@ -4,10 +4,9 @@
 #ifndef __UNDO_CHANNEL_SEND_ACTION_H__
 #define __UNDO_CHANNEL_SEND_ACTION_H__
 
-#include "gui/cpp/backend/actions/undoable_action.h"
-
 #include "common/dsp/channel_send.h"
 #include "common/dsp/port_connections_manager.h"
+#include "gui/cpp/backend/actions/undoable_action.h"
 
 /**
  * @addtogroup actions

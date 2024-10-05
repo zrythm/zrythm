@@ -1,15 +1,14 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/exporter.h"
+#include "common/utils/io.h"
+#include "common/utils/objects.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/dialogs/export_progress_dialog.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/exporter.h"
-#include "common/utils/io.h"
-#include "common/utils/objects.h"
 
 G_DEFINE_TYPE (
   ExportProgressDialogWidget,

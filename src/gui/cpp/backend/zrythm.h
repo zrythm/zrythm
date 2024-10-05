@@ -8,6 +8,12 @@
 
 #include <memory>
 
+#include "common/dsp/recording_manager.h"
+#include "common/plugins/plugin_manager.h"
+#include "common/utils/lsp_dsp_context.h"
+#include "common/utils/networking.h"
+#include "common/utils/string_array.h"
+#include "common/utils/symap.h"
 #include "gui/cpp/backend/event_manager.h"
 #include "gui/cpp/backend/file_manager.h"
 #include "gui/cpp/backend/project.h"
@@ -17,12 +23,6 @@
 #include <gio/gio.h>
 #include <glib.h>
 
-#include "common/dsp/recording_manager.h"
-#include "common/plugins/plugin_manager.h"
-#include "common/utils/lsp_dsp_context.h"
-#include "common/utils/networking.h"
-#include "common/utils/string_array.h"
-#include "common/utils/symap.h"
 #include "juce/juce.h"
 
 /**

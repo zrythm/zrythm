@@ -8,6 +8,7 @@
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/hash.h"
 #include "common/utils/logger.h"
+
 #include <glibmm.h>
 #include <xxhash.h>
 

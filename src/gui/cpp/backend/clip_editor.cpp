@@ -1,6 +1,9 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/router.h"
+#include "common/dsp/track.h"
+#include "common/utils/rt_thread_id.h"
 #include "gui/cpp/backend/clip_editor.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
@@ -12,10 +15,6 @@
 #include "gui/cpp/gtk_widgets/clip_editor.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/dsp/router.h"
-#include "common/dsp/track.h"
-#include "common/utils/rt_thread_id.h"
 
 void
 ClipEditor::init_loaded ()

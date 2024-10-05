@@ -3,6 +3,21 @@
 
 #include <ranges>
 
+#include "common/dsp/channel.h"
+#include "common/dsp/chord_track.h"
+#include "common/dsp/foldable_track.h"
+#include "common/dsp/marker_track.h"
+#include "common/dsp/master_track.h"
+#include "common/dsp/modulator_track.h"
+#include "common/dsp/router.h"
+#include "common/dsp/tempo_track.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/io/file_import.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtest_wrapper.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/string.h"
 #include "gui/cpp/backend/actions/arranger_selections.h"
 #include "gui/cpp/backend/actions/tracklist_selections.h"
 #include "gui/cpp/backend/event.h"
@@ -19,22 +34,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/channel.h"
-#include "common/dsp/chord_track.h"
-#include "common/dsp/foldable_track.h"
-#include "common/dsp/marker_track.h"
-#include "common/dsp/master_track.h"
-#include "common/dsp/modulator_track.h"
-#include "common/dsp/router.h"
-#include "common/dsp/tempo_track.h"
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/io/file_import.h"
-#include "common/utils/flags.h"
-#include "common/utils/gtest_wrapper.h"
-#include "common/utils/rt_thread_id.h"
-#include "common/utils/string.h"
 
 void
 Tracklist::init_loaded (Project * project, SampleProcessor * sample_processor)

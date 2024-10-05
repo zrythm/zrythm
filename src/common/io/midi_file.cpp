@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/zrythm.h"
-
 #include "common/dsp/midi_region.h"
 #include "common/dsp/transport.h"
 #include "common/io/midi_file.h"
 #include "common/utils/exceptions.h"
 #include "common/utils/logger.h"
+#include "gui/cpp/backend/zrythm.h"
 
 MidiFile::MidiFile (Format format) : format_ (format), for_reading_ (false) { }
 

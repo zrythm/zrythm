@@ -11,6 +11,7 @@
 #include "common/dsp/midi_port.h"
 #include "common/utils/icloneable.h"
 #include "common/utils/types.h"
+
 #include <fmt/printf.h>
 
 class StereoPorts;

@@ -1,17 +1,6 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/gtk_widgets/center_dock.h"
-#include "gui/cpp/gtk_widgets/channel_send.h"
-#include "gui/cpp/gtk_widgets/channel_sends_expander.h"
-#include "gui/cpp/gtk_widgets/inspector_track.h"
-#include "gui/cpp/gtk_widgets/left_dock_edge.h"
-#include "gui/cpp/gtk_widgets/main_window.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include <glib/gi18n.h>
-
 #include "common/dsp/channel_send.h"
 #include "common/dsp/channel_track.h"
 #include "common/dsp/control_port.h"
@@ -25,6 +14,17 @@
 #include "common/utils/dsp.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/math.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/gtk_widgets/center_dock.h"
+#include "gui/cpp/gtk_widgets/channel_send.h"
+#include "gui/cpp/gtk_widgets/channel_sends_expander.h"
+#include "gui/cpp/gtk_widgets/inspector_track.h"
+#include "gui/cpp/gtk_widgets/left_dock_edge.h"
+#include "gui/cpp/gtk_widgets/main_window.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include <glib/gi18n.h>
+
 #include <fmt/format.h>
 
 PortType

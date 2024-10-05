@@ -1,12 +1,6 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/settings/g_settings_manager.h"
-#include "gui/cpp/backend/settings/settings.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
 #include "common/dsp/engine.h"
 #include "common/dsp/ext_port.h"
 #include "common/dsp/hardware_processor.h"
@@ -18,6 +12,11 @@
 #include "common/utils/objects.h"
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/string.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
+#include "gui/cpp/backend/settings/settings.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 void
 HardwareProcessor::init_loaded (AudioEngine * engine)

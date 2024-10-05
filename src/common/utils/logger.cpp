@@ -1,14 +1,14 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/zrythm.h"
-
 #include "common/utils/datetime.h"
 #include "common/utils/debug.h"
 #include "common/utils/directory_manager.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/io.h"
 #include "common/utils/logger.h"
+#include "gui/cpp/backend/zrythm.h"
+
 #include <spdlog/sinks/msvc_sink.h>
 #include <spdlog/sinks/ringbuffer_sink.h>
 #include <spdlog/sinks/rotating_file_sink.h>

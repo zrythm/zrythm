@@ -1,6 +1,15 @@
 // SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/audio_function.h"
+#include "common/dsp/audio_region.h"
+#include "common/dsp/engine.h"
+#include "common/utils/debug.h"
+#include "common/utils/dsp.h"
+#include "common/utils/exceptions.h"
+#include "common/utils/gtest_wrapper.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/string.h"
 #include "gui/cpp/backend/arranger_selections.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
@@ -11,15 +20,6 @@
 
 #include <glib/gi18n.h>
 
-#include "common/dsp/audio_function.h"
-#include "common/dsp/audio_region.h"
-#include "common/dsp/engine.h"
-#include "common/utils/debug.h"
-#include "common/utils/dsp.h"
-#include "common/utils/exceptions.h"
-#include "common/utils/gtest_wrapper.h"
-#include "common/utils/rt_thread_id.h"
-#include "common/utils/string.h"
 #include <rubberband/rubberband-c.h>
 
 std::string

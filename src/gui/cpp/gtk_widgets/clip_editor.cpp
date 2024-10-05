@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/utils/flags.h"
+#include "common/utils/resources.h"
 #include "gui/cpp/backend/clip_editor.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
@@ -20,9 +22,6 @@
 #include "gui/cpp/gtk_widgets/midi_modifier_arranger.h"
 #include "gui/cpp/gtk_widgets/ruler.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/utils/flags.h"
-#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (ClipEditorWidget, clip_editor_widget, GTK_TYPE_BOX)
 

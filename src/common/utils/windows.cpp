@@ -38,10 +38,10 @@
 
 #  include <shlobj.h>
 
-#  include <glib.h>
-
 #  include "common/utils/logger.h"
 #  include "common/utils/windows.h"
+
+#  include <glib.h>
 
 char *
 windows_get_special_path (WindowsSpecialPath path_type)

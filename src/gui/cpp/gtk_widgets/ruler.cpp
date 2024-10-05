@@ -4,6 +4,19 @@
 
 #include <cmath>
 
+#include "common/dsp/marker_track.h"
+#include "common/dsp/position.h"
+#include "common/dsp/tempo_track.h"
+#include "common/dsp/tracklist.h"
+#include "common/dsp/transport.h"
+#include "common/utils/cairo.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/math.h"
+#include "common/utils/objects.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/string.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/actions/actions.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
@@ -34,20 +47,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/marker_track.h"
-#include "common/dsp/position.h"
-#include "common/dsp/tempo_track.h"
-#include "common/dsp/tracklist.h"
-#include "common/dsp/transport.h"
-#include "common/utils/cairo.h"
-#include "common/utils/flags.h"
-#include "common/utils/gtk.h"
-#include "common/utils/math.h"
-#include "common/utils/objects.h"
-#include "common/utils/rt_thread_id.h"
-#include "common/utils/string.h"
-#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (RulerWidget, ruler_widget, GTK_TYPE_WIDGET)
 

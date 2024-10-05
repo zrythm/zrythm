@@ -9,6 +9,7 @@
 #    define __AUDIO_ENGINE_PULSE_H__
 
 #    include "common/utils/types.h"
+
 #    include "gtk_wrapper.h"
 #    include <pulse/pulseaudio.h>
 

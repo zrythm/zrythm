@@ -3,11 +3,11 @@
 
 #include "zrythm-test-config.h"
 
-#include "tests/helpers/project_helper.h"
-#include "tests/helpers/zrythm_helper.h"
-
 #include "common/dsp/master_track.h"
 #include "common/dsp/track_processor.h"
+
+#include "tests/helpers/project_helper.h"
+#include "tests/helpers/zrythm_helper.h"
 
 /* Run TrackProcessor::process() on master and check that the output buffer
  * matches the input buffer */

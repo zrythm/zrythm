@@ -1,6 +1,17 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/control_port.h"
+#include "common/dsp/control_room.h"
+#include "common/dsp/engine.h"
+#include "common/dsp/engine_jack.h"
+#include "common/dsp/fader.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/error.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/math.h"
+#include "common/utils/resources.h"
 #include "gui/cpp/backend/actions/tracklist_selections.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/settings/g_settings_manager.h"
@@ -13,18 +24,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/control_port.h"
-#include "common/dsp/control_room.h"
-#include "common/dsp/engine.h"
-#include "common/dsp/engine_jack.h"
-#include "common/dsp/fader.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/error.h"
-#include "common/utils/flags.h"
-#include "common/utils/gtk.h"
-#include "common/utils/math.h"
-#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (MonitorSectionWidget, monitor_section_widget, GTK_TYPE_BOX)
 

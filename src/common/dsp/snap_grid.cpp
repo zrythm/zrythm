@@ -1,6 +1,10 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/engine.h"
+#include "common/dsp/snap_grid.h"
+#include "common/dsp/transport.h"
+#include "common/utils/gtest_wrapper.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/gtk_widgets/bot_dock_edge.h"
@@ -18,10 +22,6 @@
 
 #include <glib/gi18n.h>
 
-#include "common/dsp/engine.h"
-#include "common/dsp/snap_grid.h"
-#include "common/dsp/transport.h"
-#include "common/utils/gtest_wrapper.h"
 #include <fmt/printf.h>
 
 const char **

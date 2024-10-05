@@ -3,14 +3,13 @@
 
 #include "zrythm-test-config.h"
 
+#include "common/dsp/midi_region.h"
+#include "common/dsp/tracklist.h"
 #include "gui/cpp/backend/arranger_selections.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/zrythm.h"
 
 #include "tests/helpers/zrythm_helper.h"
-
-#include "common/dsp/midi_region.h"
-#include "common/dsp/tracklist.h"
 
 static void
 test_region_length_in_ticks (Track * track, int bar_start, int bar_end)

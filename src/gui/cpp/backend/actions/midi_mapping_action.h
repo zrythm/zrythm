@@ -4,12 +4,11 @@
 #ifndef __UNDO_MIDI_MAPPING_ACTION_H__
 #define __UNDO_MIDI_MAPPING_ACTION_H__
 
-#include "gui/cpp/backend/actions/undoable_action.h"
-
 #include "common/dsp/ext_port.h"
 #include "common/dsp/port_identifier.h"
 #include "common/utils/icloneable.h"
 #include "common/utils/types.h"
+#include "gui/cpp/backend/actions/undoable_action.h"
 
 /**
  * @addtogroup actions

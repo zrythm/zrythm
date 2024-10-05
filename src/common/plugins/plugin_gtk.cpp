@@ -27,16 +27,6 @@
 
 #include "zrythm-config.h"
 
-#include "gui/cpp/backend/event.h"
-#include "gui/cpp/backend/event_manager.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/settings/g_settings_manager.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/main_window.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include <glib/gi18n.h>
-
 #include "common/dsp/engine.h"
 #include "common/dsp/port_identifier.h"
 #include "common/plugins/carla_native_plugin.h"
@@ -48,6 +38,15 @@
 #include "common/utils/objects.h"
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/string.h"
+#include "gui/cpp/backend/event.h"
+#include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/main_window.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include <glib/gi18n.h>
 
 #define MIN_SCALE_WIDTH 120
 

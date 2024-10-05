@@ -10,10 +10,9 @@
 #ifndef __GUI_WIDGETS_ARRANGER_OBJECT_H__
 #define __GUI_WIDGETS_ARRANGER_OBJECT_H__
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/dsp/arranger_object.h"
 #include "common/utils/ui.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 /**
  * @addtogroup widgets

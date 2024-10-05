@@ -3,6 +3,19 @@
 
 #include "zrythm-config.h"
 
+#include "common/dsp/audio_region.h"
+#include "common/dsp/automation_region.h"
+#include "common/dsp/tempo_track.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/cairo.h"
+#include "common/utils/color.h"
+#include "common/utils/debug.h"
+#include "common/utils/dsp.h"
+#include "common/utils/gtk.h"
+#include "common/utils/math.h"
+#include "common/utils/objects.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
@@ -19,20 +32,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n-lib.h>
-
-#include "common/dsp/audio_region.h"
-#include "common/dsp/automation_region.h"
-#include "common/dsp/tempo_track.h"
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/cairo.h"
-#include "common/utils/color.h"
-#include "common/utils/debug.h"
-#include "common/utils/dsp.h"
-#include "common/utils/gtk.h"
-#include "common/utils/math.h"
-#include "common/utils/objects.h"
-#include "common/utils/ui.h"
 
 static const GdkRGBA object_fill_color = { 1, 1, 1, 1 };
 

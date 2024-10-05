@@ -17,11 +17,10 @@
 
 #include <cstddef>
 
+#include "common/utils/math.h"
 #include "gui/cpp/backend/zrythm.h"
 
 #include <glib.h>
-
-#include "common/utils/math.h"
 
 #if HAVE_LSP_DSP
 #  include <lsp-plug.in/dsp/dsp.h>

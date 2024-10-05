@@ -27,6 +27,16 @@
  *  ---
  */
 
+#include "common/dsp/midi_event.h"
+#include "common/dsp/midi_note.h"
+#include "common/dsp/midi_region.h"
+#include "common/dsp/piano_roll_track.h"
+#include "common/dsp/region.h"
+#include "common/dsp/tempo_track.h"
+#include "common/dsp/tracklist.h"
+#include "common/io/midi_file.h"
+#include "common/utils/logger.h"
+#include "common/utils/math.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/arranger_wrapper.h"
@@ -38,16 +48,6 @@
 #include "gui/cpp/gtk_widgets/midi_editor_space.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
-#include "common/dsp/midi_event.h"
-#include "common/dsp/midi_note.h"
-#include "common/dsp/midi_region.h"
-#include "common/dsp/piano_roll_track.h"
-#include "common/dsp/region.h"
-#include "common/dsp/tempo_track.h"
-#include "common/dsp/tracklist.h"
-#include "common/io/midi_file.h"
-#include "common/utils/logger.h"
-#include "common/utils/math.h"
 #include "midilib/src/midifile.h"
 #include "midilib/src/midiutil.h"
 

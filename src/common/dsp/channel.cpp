@@ -5,19 +5,6 @@
 
 #include <ranges>
 
-#include "gui/cpp/backend/actions/mixer_selections_action.h"
-#include "gui/cpp/backend/event.h"
-#include "gui/cpp/backend/event_manager.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/gtk_widgets/channel.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-#include "gui/cpp/gtk_widgets/main_window.h"
-#include "gui/cpp/gtk_widgets/track.h"
-#include "gui/cpp/gtk_widgets/tracklist.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include <glib/gi18n.h>
-
 #include "common/dsp/automation_track.h"
 #include "common/dsp/automation_tracklist.h"
 #include "common/dsp/channel.h"
@@ -40,6 +27,18 @@
 #include "common/utils/objects.h"
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/string.h"
+#include "gui/cpp/backend/actions/mixer_selections_action.h"
+#include "gui/cpp/backend/event.h"
+#include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/gtk_widgets/channel.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/main_window.h"
+#include "gui/cpp/gtk_widgets/track.h"
+#include "gui/cpp/gtk_widgets/tracklist.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include <glib/gi18n.h>
 
 Channel::Channel (ChannelTrack &track)
     : track_pos_ (track.pos_), track_ (&track)

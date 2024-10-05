@@ -4,15 +4,14 @@
 #ifndef __ACTIONS_TRACKLIST_SELECTIONS_ACTION_H__
 #define __ACTIONS_TRACKLIST_SELECTIONS_ACTION_H__
 
-#include "gui/cpp/backend/actions/undoable_action.h"
-#include "gui/cpp/backend/settings/plugin_settings.h"
-#include "gui/cpp/backend/tracklist_selections.h"
-
 #include "common/dsp/channel_send.h"
 #include "common/dsp/port_connections_manager.h"
 #include "common/dsp/track.h"
 #include "common/io/file_descriptor.h"
 #include "common/utils/color.h"
+#include "gui/cpp/backend/actions/undoable_action.h"
+#include "gui/cpp/backend/settings/plugin_settings.h"
+#include "gui/cpp/backend/tracklist_selections.h"
 
 /**
  * @addtogroup actions

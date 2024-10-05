@@ -1,6 +1,11 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/engine.h"
+#include "common/dsp/port.h"
+#include "common/dsp/port_identifier.h"
+#include "common/dsp/track.h"
+#include "common/plugins/plugin.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/wrapped_object_with_change_signal.h"
 #include "gui/cpp/gtk_widgets/inspector_port.h"
@@ -8,12 +13,6 @@
 #include "gui/cpp/gtk_widgets/ports_expander.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/engine.h"
-#include "common/dsp/port.h"
-#include "common/dsp/port_identifier.h"
-#include "common/dsp/track.h"
-#include "common/plugins/plugin.h"
 
 G_DEFINE_TYPE (
   PortsExpanderWidget,

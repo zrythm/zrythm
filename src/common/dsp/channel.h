@@ -12,6 +12,7 @@
 #include "common/plugins/plugin.h"
 #include "common/utils/audio.h"
 #include "common/utils/icloneable.h"
+
 #include <gdk/gdk.h>
 
 class AutomationTrack;

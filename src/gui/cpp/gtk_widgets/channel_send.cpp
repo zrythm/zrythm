@@ -1,15 +1,6 @@
 // SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/actions/channel_send_action.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/gtk_widgets/channel_send.h"
-#include "gui/cpp/gtk_widgets/channel_send_selector.h"
-#include "gui/cpp/gtk_widgets/main_window.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include <glib/gi18n.h>
-
 #include "common/dsp/channel_send.h"
 #include "common/utils/cairo.h"
 #include "common/utils/error.h"
@@ -18,6 +9,14 @@
 #include "common/utils/objects.h"
 #include "common/utils/resources.h"
 #include "common/utils/ui.h"
+#include "gui/cpp/backend/actions/channel_send_action.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/gtk_widgets/channel_send.h"
+#include "gui/cpp/gtk_widgets/channel_send_selector.h"
+#include "gui/cpp/gtk_widgets/main_window.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (ChannelSendWidget, channel_send_widget, GTK_TYPE_WIDGET);
 

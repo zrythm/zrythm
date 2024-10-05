@@ -3,17 +3,16 @@
 
 #include "zrythm-test-config.h"
 
+#include "common/dsp/exporter.h"
+#include "common/dsp/fader.h"
+#include "common/dsp/router.h"
+#include "common/plugins/carla_native_plugin.h"
 #include "gui/cpp/backend/actions/mixer_selections_action.h"
 #include "gui/cpp/backend/actions/tracklist_selections.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
-
-#include "common/dsp/exporter.h"
-#include "common/dsp/fader.h"
-#include "common/dsp/router.h"
-#include "common/plugins/carla_native_plugin.h"
 
 #if HAVE_CARLA
 

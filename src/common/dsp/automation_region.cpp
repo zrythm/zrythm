@@ -3,6 +3,11 @@
 
 #include <cstdlib>
 
+#include "common/dsp/automatable_track.h"
+#include "common/dsp/automation_point.h"
+#include "common/dsp/automation_region.h"
+#include "common/dsp/position.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
@@ -14,12 +19,6 @@
 #include "gui/cpp/gtk_widgets/clip_editor_inner.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/dsp/automatable_track.h"
-#include "common/dsp/automation_point.h"
-#include "common/dsp/automation_region.h"
-#include "common/dsp/position.h"
-#include "common/utils/ui.h"
 
 AutomationRegion::AutomationRegion (
   const Position &start_pos,

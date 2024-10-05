@@ -1,10 +1,6 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
-#include <glib/gi18n.h>
-
 #include "common/io/audio_file.h"
 #include "common/io/file_descriptor.h"
 #include "common/utils/exceptions.h"
@@ -12,6 +8,9 @@
 #include "common/utils/io.h"
 #include "common/utils/logger.h"
 #include "common/utils/string.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+
+#include <glib/gi18n.h>
 
 FileDescriptor::FileDescriptor (const std::string &_abs_path)
 {

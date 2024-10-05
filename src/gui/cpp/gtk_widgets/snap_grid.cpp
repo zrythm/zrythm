@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/snap_grid.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/popovers/snap_grid_popover.h"
 #include "gui/cpp/gtk_widgets/snap_grid.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/snap_grid.h"
 
 G_DEFINE_TYPE (SnapGridWidget, snap_grid_widget, GTK_TYPE_WIDGET)
 

@@ -4,9 +4,8 @@
 #ifndef __GUI_WIDGETS_FADER_CONTROLS_GRID_H__
 #define __GUI_WIDGETS_FADER_CONTROLS_GRID_H__
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/dsp/channel_track.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define FADER_CONTROLS_GRID_WIDGET_TYPE (fader_controls_grid_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

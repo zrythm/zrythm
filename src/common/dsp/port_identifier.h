@@ -8,6 +8,7 @@
 
 #include "common/plugins/plugin_identifier.h"
 #include "common/utils/types.h"
+
 #include "juce/juce.h"
 
 /**

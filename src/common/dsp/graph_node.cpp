@@ -5,10 +5,6 @@
 
 #include <inttypes.h>
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/dsp/engine.h"
 #include "common/dsp/fader.h"
 #include "common/dsp/graph.h"
@@ -26,6 +22,10 @@
 #include "common/plugins/plugin.h"
 #include "common/utils/debug.h"
 #include "common/utils/mpmc_queue.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+
 #include <fmt/printf.h>
 
 std::string

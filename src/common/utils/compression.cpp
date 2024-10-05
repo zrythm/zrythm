@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "common/utils/compression.h"
+
 #include <zstd.h>
 
 typedef enum

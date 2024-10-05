@@ -1,6 +1,16 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/arranger_object.h"
+#include "common/dsp/automation_region.h"
+#include "common/dsp/chord_track.h"
+#include "common/dsp/marker_track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/cairo.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/math.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
 #include "gui/cpp/gtk_widgets/arranger_object.h"
@@ -30,17 +40,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n-lib.h>
-
-#include "common/dsp/arranger_object.h"
-#include "common/dsp/automation_region.h"
-#include "common/dsp/chord_track.h"
-#include "common/dsp/marker_track.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/cairo.h"
-#include "common/utils/flags.h"
-#include "common/utils/gtk.h"
-#include "common/utils/math.h"
-#include "common/utils/ui.h"
 
 #define TYPE(x) ArrangerObject::Type::TYPE_##x
 

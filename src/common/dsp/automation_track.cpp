@@ -3,15 +3,6 @@
 
 #include <cmath>
 
-#include "gui/cpp/backend/event.h"
-#include "gui/cpp/backend/event_manager.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/custom_button.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include <glib/gi18n.h>
-
 #include "common/dsp/automatable_track.h"
 #include "common/dsp/automation_point.h"
 #include "common/dsp/automation_region.h"
@@ -23,6 +14,14 @@
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/math.h"
 #include "common/utils/rt_thread_id.h"
+#include "gui/cpp/backend/event.h"
+#include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/custom_button.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include <glib/gi18n.h>
 
 void
 AutomationTrack::init_loaded (AutomationTracklist * atl)

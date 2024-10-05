@@ -1,16 +1,15 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/dsp/position.h"
 #include "common/dsp/quantize_options.h"
 #include "common/dsp/snap_grid.h"
 #include "common/dsp/transport.h"
 #include "common/utils/algorithms.h"
 #include "common/utils/pcg_rand.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 void
 QuantizeOptions::update_quantize_points ()

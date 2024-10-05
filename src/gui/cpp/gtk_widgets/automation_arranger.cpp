@@ -1,6 +1,15 @@
 // SPDX-FileCopyrightText: © 2018-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/automation_region.h"
+#include "common/dsp/automation_track.h"
+#include "common/dsp/automation_tracklist.h"
+#include "common/dsp/channel.h"
+#include "common/dsp/control_port.h"
+#include "common/dsp/curve.h"
+#include "common/dsp/midi_region.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/actions/arranger_selections.h"
 #include "gui/cpp/backend/automation_selections.h"
 #include "gui/cpp/backend/event.h"
@@ -16,16 +25,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/automation_region.h"
-#include "common/dsp/automation_track.h"
-#include "common/dsp/automation_tracklist.h"
-#include "common/dsp/channel.h"
-#include "common/dsp/control_port.h"
-#include "common/dsp/curve.h"
-#include "common/dsp/midi_region.h"
-#include "common/utils/rt_thread_id.h"
-#include "common/utils/ui.h"
 
 ArrangerCursor
 automation_arranger_widget_get_cursor (ArrangerWidget * self, Tool tool)

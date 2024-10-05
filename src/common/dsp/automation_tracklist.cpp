@@ -3,12 +3,6 @@
 
 #include <cstdlib>
 
-#include "gui/cpp/backend/event.h"
-#include "gui/cpp/backend/event_manager.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
 #include "common/dsp/automatable_track.h"
 #include "common/dsp/automation_region.h"
 #include "common/dsp/automation_track.h"
@@ -22,6 +16,11 @@
 #include "common/utils/objects.h"
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/string.h"
+#include "gui/cpp/backend/event.h"
+#include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 void
 AutomationTracklist::init_loaded (AutomatableTrack * track)

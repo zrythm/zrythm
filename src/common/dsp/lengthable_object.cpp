@@ -1,9 +1,6 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
 #include "common/dsp/fadeable_object.h"
 #include "common/dsp/lengthable_object.h"
 #include "common/dsp/loopable_object.h"
@@ -14,6 +11,8 @@
 #include "common/utils/flags.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/rt_thread_id.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 void
 LengthableObject::copy_members_from (const LengthableObject &other)

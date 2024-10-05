@@ -4,9 +4,8 @@
 #ifndef __GUI_WIDGETS_CHORD_PACK_BROWSER_H__
 #define __GUI_WIDGETS_CHORD_PACK_BROWSER_H__
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/utils/types.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 class ChordPreset;
 class ChordPresetPack;

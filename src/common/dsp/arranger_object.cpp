@@ -1,6 +1,22 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/arranger_object.h"
+#include "common/dsp/audio_region.h"
+#include "common/dsp/automation_point.h"
+#include "common/dsp/automation_region.h"
+#include "common/dsp/chord_object.h"
+#include "common/dsp/chord_region.h"
+#include "common/dsp/chord_track.h"
+#include "common/dsp/marker.h"
+#include "common/dsp/marker_track.h"
+#include "common/dsp/midi_region.h"
+#include "common/dsp/router.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/debug.h"
+#include "common/utils/gtest_wrapper.h"
+#include "common/utils/logger.h"
+#include "common/utils/rt_thread_id.h"
 #include "gui/cpp/backend/actions/arranger_selections.h"
 #include "gui/cpp/backend/automation_selections.h"
 #include "gui/cpp/backend/chord_selections.h"
@@ -20,23 +36,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/arranger_object.h"
-#include "common/dsp/audio_region.h"
-#include "common/dsp/automation_point.h"
-#include "common/dsp/automation_region.h"
-#include "common/dsp/chord_object.h"
-#include "common/dsp/chord_region.h"
-#include "common/dsp/chord_track.h"
-#include "common/dsp/marker.h"
-#include "common/dsp/marker_track.h"
-#include "common/dsp/midi_region.h"
-#include "common/dsp/router.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/debug.h"
-#include "common/utils/gtest_wrapper.h"
-#include "common/utils/logger.h"
-#include "common/utils/rt_thread_id.h"
 
 template <typename T>
 T *

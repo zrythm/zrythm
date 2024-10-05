@@ -1,16 +1,6 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/actions/tracklist_selections.h"
-#include "gui/cpp/backend/event.h"
-#include "gui/cpp/backend/event_manager.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/settings/g_settings_manager.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include <glib/gi18n.h>
-
 #include "common/dsp/audio_bus_track.h"
 #include "common/dsp/audio_group_track.h"
 #include "common/dsp/audio_region.h"
@@ -33,6 +23,16 @@
 #include "common/utils/io.h"
 #include "common/utils/types.h"
 #include "common/utils/ui.h"
+#include "gui/cpp/backend/actions/tracklist_selections.h"
+#include "gui/cpp/backend/event.h"
+#include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include <glib/gi18n.h>
+
 #include <glibmm.h>
 
 void

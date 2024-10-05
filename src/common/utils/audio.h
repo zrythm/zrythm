@@ -12,11 +12,11 @@
 
 #include <cstdarg>
 
-#include <glib/gi18n.h>
-
 #include "common/utils/format.h"
 #include "common/utils/logger.h"
 #include "common/utils/types.h"
+
+#include <glib/gi18n.h>
 
 /**
  * @addtogroup utils

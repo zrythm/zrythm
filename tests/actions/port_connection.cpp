@@ -5,6 +5,9 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
+#include "common/dsp/control_port.h"
+#include "common/dsp/region.h"
+#include "common/utils/flags.h"
 #include "gui/cpp/backend/actions/mixer_selections_action.h"
 #include "gui/cpp/backend/actions/port_connection_action.h"
 #include "gui/cpp/backend/actions/undo_manager.h"
@@ -13,10 +16,6 @@
 #include "gui/cpp/backend/zrythm.h"
 
 #include "tests/helpers/plugin_manager.h"
-
-#include "common/dsp/control_port.h"
-#include "common/dsp/region.h"
-#include "common/utils/flags.h"
 
 #if HAVE_CARLA
 #  ifdef HAVE_AMS_LFO

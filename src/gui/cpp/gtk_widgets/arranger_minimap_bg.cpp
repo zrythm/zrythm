@@ -1,6 +1,11 @@
 // SPDX-FileCopyrightText: © 2019, 2021-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/marker_track.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/gtk.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/arranger_minimap.h"
@@ -12,12 +17,6 @@
 #include "gui/cpp/gtk_widgets/timeline_panel.h"
 #include "gui/cpp/gtk_widgets/tracklist.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/dsp/marker_track.h"
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/gtk.h"
-#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (
   ArrangerMinimapBgWidget,

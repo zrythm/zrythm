@@ -10,10 +10,9 @@
 #ifndef __GUI_WIDGETS_INSPECTOR_TRACK_H__
 #define __GUI_WIDGETS_INSPECTOR_TRACK_H__
 
+#include "common/utils/types.h"
 #include "gui/cpp/backend/tracklist_selections.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
-#include "common/utils/types.h"
 
 #define INSPECTOR_TRACK_WIDGET_TYPE (inspector_track_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

@@ -13,11 +13,10 @@
 #ifndef __GUI_WIDGETS_VELOCITY_H__
 #define __GUI_WIDGETS_VELOCITY_H__
 
-#include "gui/cpp/gtk_widgets/arranger_object.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/dsp/velocity.h"
 #include "common/utils/ui.h"
+#include "gui/cpp/gtk_widgets/arranger_object.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 /**
  * @addtogroup widgets

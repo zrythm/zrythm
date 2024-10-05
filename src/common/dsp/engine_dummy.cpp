@@ -1,11 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 // SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
 #include "common/dsp/engine.h"
 #include "common/dsp/engine_dummy.h"
 #include "common/dsp/port.h"
@@ -13,6 +8,10 @@
 #include "common/dsp/tracklist.h"
 #include "common/utils/dsp.h"
 #include "common/utils/lsp_dsp_context.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 class DummyEngineThread : public juce::Thread
 {

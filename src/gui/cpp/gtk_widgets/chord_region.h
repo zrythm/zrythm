@@ -4,11 +4,10 @@
 #ifndef __GUI_WIDGETS_CHORD_REGION_H__
 #define __GUI_WIDGETS_CHORD_REGION_H__
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-#include "gui/cpp/gtk_widgets/region.h"
-
 #include "common/dsp/region.h"
 #include "common/utils/ui.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/region.h"
 
 /**
  * @addtogroup widgets

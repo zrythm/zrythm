@@ -1,6 +1,13 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/control_port.h"
+#include "common/dsp/instrument_track.h"
+#include "common/dsp/track.h"
+#include "common/utils/color.h"
+#include "common/utils/gtk.h"
+#include "common/utils/objects.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/automation_mode.h"
 #include "gui/cpp/gtk_widgets/custom_button.h"
@@ -9,14 +16,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/control_port.h"
-#include "common/dsp/instrument_track.h"
-#include "common/dsp/track.h"
-#include "common/utils/color.h"
-#include "common/utils/gtk.h"
-#include "common/utils/objects.h"
-#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (TrackCanvasWidget, track_canvas_widget, GTK_TYPE_WIDGET)
 

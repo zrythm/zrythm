@@ -3,15 +3,14 @@
 
 #include "zrythm-test-config.h"
 
+#include "common/dsp/track.h"
+#include "common/utils/flags.h"
 #include "gui/cpp/backend/actions/tracklist_selections.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/zrythm.h"
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
-
-#include "common/dsp/track.h"
-#include "common/utils/flags.h"
 
 class AudioPoolRemoveUnusedTest
     : public ZrythmFixture,

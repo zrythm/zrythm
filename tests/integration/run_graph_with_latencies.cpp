@@ -8,6 +8,10 @@
 
 #include "zrythm-test-config.h"
 
+#include "common/dsp/control_port.h"
+#include "common/dsp/graph.h"
+#include "common/dsp/router.h"
+#include "common/dsp/tempo_track.h"
 #include "gui/cpp/backend/actions/mixer_selections_action.h"
 #include "gui/cpp/backend/actions/undo_manager.h"
 #include "gui/cpp/backend/project.h"
@@ -15,11 +19,6 @@
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
-
-#include "common/dsp/control_port.h"
-#include "common/dsp/graph.h"
-#include "common/dsp/router.h"
-#include "common/dsp/tempo_track.h"
 
 #ifdef HAVE_NO_DELAY_LINE
 static ControlPort *

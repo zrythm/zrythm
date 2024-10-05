@@ -1,14 +1,13 @@
 // SPDX-FileCopyrightText: © 2020-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/control_port.h"
+#include "common/dsp/port.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/gtk_widgets/dialogs/port_info.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/control_port.h"
-#include "common/dsp/port.h"
-#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (PortInfoDialogWidget, port_info_dialog_widget, GTK_TYPE_WINDOW)
 

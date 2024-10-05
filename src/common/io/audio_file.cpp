@@ -1,14 +1,15 @@
 // SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <glib/gi18n.h>
-
 #include "common/io/audio_file.h"
 #include "common/utils/dsp.h"
 #include "common/utils/exceptions.h"
 #include "common/utils/logger.h"
 #include "common/utils/objects.h"
 #include "common/utils/resampler.h"
+
+#include <glib/gi18n.h>
+
 #include <fmt/printf.h>
 
 void

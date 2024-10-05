@@ -1,6 +1,11 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/audio_region.h"
+#include "common/dsp/position.h"
+#include "common/dsp/snap_grid.h"
+#include "common/utils/math.h"
+#include "common/utils/rt_thread_id.h"
 #include "gui/cpp/backend/actions/arranger_selections.h"
 #include "gui/cpp/backend/audio_selections.h"
 #include "gui/cpp/backend/event.h"
@@ -10,12 +15,6 @@
 #include "gui/cpp/gtk_widgets/clip_editor.h"
 #include "gui/cpp/gtk_widgets/clip_editor_inner.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/dsp/audio_region.h"
-#include "common/dsp/position.h"
-#include "common/dsp/snap_grid.h"
-#include "common/utils/math.h"
-#include "common/utils/rt_thread_id.h"
 
 ArrangerCursor
 audio_arranger_widget_get_cursor (ArrangerWidget * self, Tool tool)

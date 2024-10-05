@@ -3,15 +3,6 @@
 
 #include "zrythm-config.h"
 
-#include "gui/cpp/backend/actions/undo_manager.h"
-#include "gui/cpp/backend/event.h"
-#include "gui/cpp/backend/event_manager.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/settings/g_settings_manager.h"
-#include "gui/cpp/backend/settings/settings.h"
-#include "gui/cpp/gtk_widgets/main_window.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
 #include "common/dsp/audio_port.h"
 #include "common/dsp/automatable_track.h"
 #include "common/dsp/automation_tracklist.h"
@@ -47,6 +38,15 @@
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/string.h"
 #include "common/utils/ui.h"
+#include "gui/cpp/backend/actions/undo_manager.h"
+#include "gui/cpp/backend/event.h"
+#include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
+#include "gui/cpp/backend/settings/settings.h"
+#include "gui/cpp/gtk_widgets/main_window.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
 #include <fmt/printf.h>
 #define _GNU_SOURCE 1 /* To pick up REG_RIP */
 

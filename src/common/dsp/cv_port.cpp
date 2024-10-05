@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/project.h"
-
 #include "common/dsp/cv_port.h"
 #include "common/dsp/engine.h"
 #include "common/utils/dsp.h"
 #include "common/utils/gtest_wrapper.h"
+#include "gui/cpp/backend/project.h"
 
 CVPort::CVPort ()
 {

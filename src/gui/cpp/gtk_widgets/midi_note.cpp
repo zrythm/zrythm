@@ -1,6 +1,13 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/chord_track.h"
+#include "common/dsp/region.h"
+#include "common/dsp/track.h"
+#include "common/utils/cairo.h"
+#include "common/utils/color.h"
+#include "common/utils/gtk.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
@@ -17,14 +24,6 @@
 #include "gui/cpp/gtk_widgets/region.h"
 #include "gui/cpp/gtk_widgets/ruler.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/dsp/chord_track.h"
-#include "common/dsp/region.h"
-#include "common/dsp/track.h"
-#include "common/utils/cairo.h"
-#include "common/utils/color.h"
-#include "common/utils/gtk.h"
-#include "common/utils/ui.h"
 
 static void
 recreate_pango_layouts (MidiNote * self, int width)

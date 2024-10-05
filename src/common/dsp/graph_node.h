@@ -29,9 +29,8 @@
 #ifndef __AUDIO_GRAPH_NODE_H__
 #define __AUDIO_GRAPH_NODE_H__
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/utils/types.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 class GraphNode;
 class Graph;

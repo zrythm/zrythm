@@ -12,10 +12,10 @@
 
 #include <utility>
 
-#include <glib.h>
-
 #include "common/dsp/position.h"
 #include "common/utils/types.h"
+
+#include <glib.h>
 
 G_BEGIN_DECLS
 

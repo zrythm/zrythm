@@ -9,6 +9,7 @@
 #include <filesystem>
 
 #include "common/utils/types.h"
+
 #include "juce/juce.h"
 
 class MidiRegion;

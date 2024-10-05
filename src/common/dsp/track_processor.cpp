@@ -5,13 +5,6 @@
 
 #include <utility>
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/settings/g_settings_manager.h"
-#include "gui/cpp/backend/settings/settings.h"
-#include "gui/cpp/backend/zrythm.h"
-
-#include <glib/gi18n.h>
-
 #include "common/dsp/audio_region.h"
 #include "common/dsp/audio_track.h"
 #include "common/dsp/channel.h"
@@ -33,6 +26,13 @@
 #include "common/utils/mem.h"
 #include "common/utils/midi.h"
 #include "common/utils/mpmc_queue.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
+#include "gui/cpp/backend/settings/settings.h"
+#include "gui/cpp/backend/zrythm.h"
+
+#include <glib/gi18n.h>
+
 #include <fmt/format.h>
 
 void

@@ -3,6 +3,7 @@
 
 #include "zrythm-test-config.h"
 
+#include "common/plugins/plugin_manager.h"
 #include "gui/cpp/backend/actions/tracklist_selections.h"
 #include "gui/cpp/backend/actions/undo_manager.h"
 #include "gui/cpp/backend/project.h"
@@ -11,8 +12,6 @@
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
-
-#include "common/plugins/plugin_manager.h"
 
 #ifdef HAVE_HELM
 static void

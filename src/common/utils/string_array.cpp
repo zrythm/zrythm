@@ -3,6 +3,7 @@
 
 #include "common/utils/logger.h"
 #include "common/utils/string_array.h"
+
 #include <glibmm.h>
 
 StringArray::StringArray (const char * const * strs)

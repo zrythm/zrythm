@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <glib/gi18n.h>
-
 #include "common/dsp/control_port.h"
 #include "common/dsp/cv_port.h"
 #include "common/dsp/modulator_macro_processor.h"
@@ -10,6 +8,9 @@
 #include "common/dsp/port.h"
 #include "common/utils/debug.h"
 #include "common/utils/dsp.h"
+
+#include <glib/gi18n.h>
+
 #include <fmt/format.h>
 #include <fmt/printf.h>
 

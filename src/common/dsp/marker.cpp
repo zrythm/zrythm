@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: © 2019-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-
 #include "common/dsp/marker.h"
 #include "common/dsp/marker_track.h"
 #include "common/dsp/tracklist.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 
 void
 Marker::init_loaded ()

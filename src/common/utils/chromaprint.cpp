@@ -8,12 +8,13 @@
 
 #if HAVE_CHROMAPRINT
 
-#  include <glib.h>
-
 #  include "common/utils/audio.h"
 #  include "common/utils/chromaprint.h"
 #  include "common/utils/math.h"
 #  include "common/utils/objects.h"
+
+#  include <glib.h>
+
 #  include <sndfile.h>
 
 void

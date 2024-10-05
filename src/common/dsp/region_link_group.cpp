@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: © 2020-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-
 #include "common/dsp/region.h"
 #include "common/dsp/region_link_group.h"
 #include "common/dsp/region_link_group_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 
 bool
 RegionLinkGroup::contains_region (const Region &region) const

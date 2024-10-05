@@ -1,6 +1,10 @@
 // SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/channel.h"
+#include "common/dsp/track.h"
+#include "common/utils/gtk.h"
+#include "common/utils/rt_thread_id.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
 #include "gui/cpp/backend/project.h"
@@ -13,11 +17,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/channel.h"
-#include "common/dsp/track.h"
-#include "common/utils/gtk.h"
-#include "common/utils/rt_thread_id.h"
 
 #define PLUGIN_STRIP_EXPANDER_WIDGET_TYPE \
   (plugin_strip_expander_widget_get_type ())

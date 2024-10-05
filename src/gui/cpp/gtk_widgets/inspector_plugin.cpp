@@ -1,6 +1,9 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/plugins/plugin.h"
+#include "common/utils/logger.h"
+#include "common/utils/resources.h"
 #include "gui/cpp/backend/mixer_selections.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/tracklist_selections.h"
@@ -14,10 +17,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/plugins/plugin.h"
-#include "common/utils/logger.h"
-#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (InspectorPluginWidget, inspector_plugin_widget, GTK_TYPE_BOX)
 

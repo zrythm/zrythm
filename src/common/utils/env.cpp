@@ -7,9 +7,10 @@
 #include <cstdlib>
 #include <format>
 
+#include "common/utils/env.h"
+
 #include <glib.h>
 
-#include "common/utils/env.h"
 #include "juce/juce.h"
 
 /**

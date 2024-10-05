@@ -4,11 +4,10 @@
 #ifndef __AUDIO_TRACK_LANE_H__
 #define __AUDIO_TRACK_LANE_H__
 
-#include "gui/cpp/gtk_widgets/custom_button.h"
-
 #include "common/dsp/midi_event.h"
 #include "common/dsp/region.h"
 #include "common/dsp/region_owner.h"
+#include "gui/cpp/gtk_widgets/custom_button.h"
 
 using MIDI_FILE = void;
 class Tracklist;

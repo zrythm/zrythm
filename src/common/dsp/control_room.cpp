@@ -1,17 +1,16 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/control_room.h"
+#include "common/dsp/engine.h"
+#include "common/dsp/fader.h"
+#include "common/utils/gtest_wrapper.h"
 #include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/backend/settings/settings.h"
 #include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/right_dock_edge.h"
-
-#include "common/dsp/control_room.h"
-#include "common/dsp/engine.h"
-#include "common/dsp/fader.h"
-#include "common/utils/gtest_wrapper.h"
 
 void
 ControlRoom::init_common ()

@@ -6,10 +6,9 @@
 
 #include "zrythm-config.h"
 
-#include "gui/cpp/backend/chord_editor.h"
-
 #include "common/dsp/chord_descriptor.h"
 #include "common/utils/types.h"
+#include "gui/cpp/backend/chord_editor.h"
 
 class ChordPresetPack;
 TYPEDEF_STRUCT_UNDERSCORED (GMenuModel);

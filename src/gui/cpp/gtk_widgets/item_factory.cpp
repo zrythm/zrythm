@@ -1,6 +1,15 @@
 // SPDX-FileCopyrightText: © 2021-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/channel_send.h"
+#include "common/dsp/midi_mapping.h"
+#include "common/plugins/collections.h"
+#include "common/utils/gtk.h"
+#include "common/utils/math.h"
+#include "common/utils/midi.h"
+#include "common/utils/objects.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/actions/arranger_selections.h"
 #include "gui/cpp/backend/actions/midi_mapping_action.h"
 #include "gui/cpp/backend/event.h"
@@ -17,16 +26,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/channel_send.h"
-#include "common/dsp/midi_mapping.h"
-#include "common/plugins/collections.h"
-#include "common/utils/gtk.h"
-#include "common/utils/math.h"
-#include "common/utils/midi.h"
-#include "common/utils/objects.h"
-#include "common/utils/rt_thread_id.h"
-#include "common/utils/ui.h"
 
 /**
  * Data for individual widget callbacks.

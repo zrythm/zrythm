@@ -6,6 +6,7 @@
 #include "common/utils/exceptions.h"
 #include "common/utils/math.h"
 #include "common/utils/resampler.h"
+
 #include <soxr.h>
 
 class Resampler::Impl

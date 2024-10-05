@@ -1,19 +1,18 @@
 // SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/gtk_widgets/channel.h"
-#include "gui/cpp/gtk_widgets/file_chooser_button.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include <glib/gi18n.h>
-
 #include "common/dsp/channel.h"
 #include "common/dsp/track.h"
 #include "common/utils/flags.h"
 #include "common/utils/gtk.h"
 #include "common/utils/objects.h"
 #include "common/utils/resources.h"
+#include "gui/cpp/gtk_widgets/channel.h"
+#include "gui/cpp/gtk_widgets/file_chooser_button.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (FileChooserButtonWidget, file_chooser_button_widget, GTK_TYPE_BOX)
 

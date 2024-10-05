@@ -1,14 +1,13 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/utils/flags.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/channel_slot.h"
 #include "gui/cpp/gtk_widgets/channel_slot_activate_button.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/utils/flags.h"
 
 G_DEFINE_TYPE (
   ChannelSlotActivateButtonWidget,

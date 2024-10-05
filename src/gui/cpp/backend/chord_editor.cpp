@@ -1,6 +1,9 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/chord_descriptor.h"
+#include "common/utils/logger.h"
+#include "common/utils/rt_thread_id.h"
 #include "gui/cpp/backend/actions/chord_action.h"
 #include "gui/cpp/backend/chord_editor.h"
 #include "gui/cpp/backend/event.h"
@@ -9,10 +12,6 @@
 #include "gui/cpp/backend/settings/chord_preset.h"
 #include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/dsp/chord_descriptor.h"
-#include "common/utils/logger.h"
-#include "common/utils/rt_thread_id.h"
 
 void
 ChordEditor::init ()

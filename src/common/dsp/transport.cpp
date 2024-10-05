@@ -3,17 +3,6 @@
 
 #include "zrythm-config.h"
 
-#include "gui/cpp/backend/event.h"
-#include "gui/cpp/backend/event_manager.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/settings/g_settings_manager.h"
-#include "gui/cpp/gtk_widgets/arranger.h"
-#include "gui/cpp/gtk_widgets/digital_meter.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-#include "gui/cpp/gtk_widgets/main_window.h"
-#include "gui/cpp/gtk_widgets/midi_modifier_arranger.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
 #include "common/dsp/audio_region.h"
 #include "common/dsp/audio_track.h"
 #include "common/dsp/engine.h"
@@ -27,6 +16,16 @@
 #include "common/utils/flags.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/rt_thread_id.h"
+#include "gui/cpp/backend/event.h"
+#include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
+#include "gui/cpp/gtk_widgets/arranger.h"
+#include "gui/cpp/gtk_widgets/digital_meter.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/main_window.h"
+#include "gui/cpp/gtk_widgets/midi_modifier_arranger.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 /**
  * A buffer of n bars after the end of the last object.

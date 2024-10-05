@@ -54,14 +54,16 @@ public:
 
 BeatTracker::BeatTracker (float inputSampleRate)
     : Vamp::Plugin (inputSampleRate), m_d (0), m_method (METHOD_NEW),
-      m_dfType (DF_COMPLEXSD),
-      m_alpha (0.9), // MEPD new exposed parameter for beat tracker, default value = 0.9 (as old version)
-      m_tightness (4.),
-      m_inputtempo (
-        120.), // MEPD new exposed parameter for beat tracker, default value = 120. (as old version)
-      m_constraintempo (
-        false), // MEPD new exposed parameter for beat tracker, default value = false (as old version)
-      // calling the beat tracker with these default parameters will give the same output as the previous existing version
+      m_dfType (DF_COMPLEXSD), m_alpha (0.9), // MEPD new exposed parameter for
+                                              // beat tracker, default value =
+                                              // 0.9 (as old version)
+      m_tightness (4.), m_inputtempo (120.),  // MEPD new exposed parameter for
+                                              // beat tracker, default value =
+                                              // 120. (as old version)
+      m_constraintempo (false), // MEPD new exposed parameter for beat tracker,
+                                // default value = false (as old version)
+      // calling the beat tracker with these default parameters will give the
+      // same output as the previous existing version
       m_whiten (false)
 
 {
@@ -154,8 +156,9 @@ BeatTracker::getParameterDescriptors () const
   desc.valueNames.clear ();
   list.push_back (desc);
 
-  // MEPD new exposed parameter - used in the dynamic programming part of the beat tracker
-  //Alpha Parameter of Beat Tracker
+  // MEPD new exposed parameter - used in the dynamic programming part of the
+  // beat tracker
+  // Alpha Parameter of Beat Tracker
   desc.identifier = "alpha";
   desc.name = "Alpha";
   desc.description = "Inertia - Flexibility Trade Off";
@@ -169,7 +172,7 @@ BeatTracker::getParameterDescriptors () const
   // We aren't exposing tightness as a parameter, it's fixed at 4
 
   // MEPD new exposed parameter - used in the periodicity estimation
-  //User input tempo
+  // User input tempo
   desc.identifier = "inputtempo";
   desc.name = "Tempo Hint";
   desc.description =
@@ -347,7 +350,8 @@ size_t
 BeatTracker::getPreferredStepSize () const
 {
   size_t step = size_t (m_inputSampleRate * m_stepSecs + 0.0001);
-  //    std::cerr << "BeatTracker::getPreferredStepSize: input sample rate is " << m_inputSampleRate << ", step size is " << step << std::endl;
+  //    std::cerr << "BeatTracker::getPreferredStepSize: input sample rate is "
+  //    << m_inputSampleRate << ", step size is " << step << std::endl;
   return step;
 }
 
@@ -535,7 +539,9 @@ BeatTracker::beatTrackOld ()
 
       size_t frame = i * m_d->dfConfig.stepSize * ttParams.lagLength;
 
-      //        std::cerr << "unit " << i << ", step size " << m_d->dfConfig.stepSize << ", hop " << ttParams.lagLength << ", frame = " << frame << std::endl;
+      //        std::cerr << "unit " << i << ", step size " <<
+      //        m_d->dfConfig.stepSize << ", hop " << ttParams.lagLength << ",
+      //        frame = " << frame << std::endl;
 
       if (tempi[i] > 1 && int (tempi[i] * 100) != int (prevTempo * 100))
         {
@@ -572,7 +578,8 @@ BeatTracker::beatTrackNew ()
       --nonZeroCount;
     }
 
-  //    std::cerr << "Note: nonZeroCount was " << m_d->dfOutput.size() << ", is now " << nonZeroCount << std::endl;
+  //    std::cerr << "Note: nonZeroCount was " << m_d->dfOutput.size() << ", is
+  //    now " << nonZeroCount << std::endl;
 
   for (size_t i = 2; i < nonZeroCount; ++i)
     { // discard first two elts
@@ -584,12 +591,14 @@ BeatTracker::beatTrackNew ()
 
   TempoTrackV2 tt (m_inputSampleRate, m_d->dfConfig.stepSize);
 
-  // MEPD - note this function is now passed 2 new parameters, m_inputtempo and m_constraintempo
+  // MEPD - note this function is now passed 2 new parameters, m_inputtempo and
+  // m_constraintempo
   tt.calculateBeatPeriod (df, beatPeriod, tempi, m_inputtempo, m_constraintempo);
 
   vector<double> beats;
 
-  // MEPD - note this function is now passed 2 new parameters, m_alpha and m_tightness
+  // MEPD - note this function is now passed 2 new parameters, m_alpha and
+  // m_tightness
   tt.calculateBeats (df, beatPeriod, beats, m_alpha, m_tightness);
 
   FeatureSet returnFeatures;

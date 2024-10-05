@@ -29,6 +29,12 @@
 
 #include "zrythm-config.h"
 
+#include "common/plugins/cached_plugin_descriptors.h"
+#include "common/plugins/carla_discovery.h"
+#include "common/plugins/plugin_manager.h"
+#include "common/utils/directory_manager.h"
+#include "common/utils/gtest_wrapper.h"
+#include "common/utils/windows.h"
 #include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/greeter.h"
@@ -37,13 +43,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/plugins/cached_plugin_descriptors.h"
-#include "common/plugins/carla_discovery.h"
-#include "common/plugins/plugin_manager.h"
-#include "common/utils/directory_manager.h"
-#include "common/utils/gtest_wrapper.h"
-#include "common/utils/windows.h"
 
 /*#include <ctype.h>*/
 

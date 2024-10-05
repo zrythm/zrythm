@@ -10,10 +10,9 @@
 #ifndef __UNDO_UNDO_STACK_H__
 #define __UNDO_UNDO_STACK_H__
 
-#include "gui/cpp/backend/actions/undoable_action.h"
-
 #include "common/io/serialization/iserializable.h"
 #include "common/utils/icloneable.h"
+#include "gui/cpp/backend/actions/undoable_action.h"
 
 class AudioClip;
 

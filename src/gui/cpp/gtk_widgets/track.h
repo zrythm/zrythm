@@ -4,9 +4,8 @@
 #ifndef __GUI_WIDGETS_TRACK_H__
 #define __GUI_WIDGETS_TRACK_H__
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/utils/types.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define TRACK_WIDGET_TYPE (track_widget_get_type ())
 G_DECLARE_FINAL_TYPE (TrackWidget, track_widget, Z, TRACK_WIDGET, GtkWidget)

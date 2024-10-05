@@ -4,9 +4,8 @@
 #ifndef __GUI_WIDGETS_GENERIC_PROGRESS_DIALOG_H__
 #define __GUI_WIDGETS_GENERIC_PROGRESS_DIALOG_H__
 
-#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
-
 #include "common/utils/types.h"
+#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
 
 #define GENERIC_PROGRESS_DIALOG_WIDGET_TYPE \
   (generic_progress_dialog_widget_get_type ())

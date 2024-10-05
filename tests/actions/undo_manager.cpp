@@ -3,6 +3,7 @@
 
 #include "zrythm-test-config.h"
 
+#include "common/utils/flags.h"
 #include "gui/cpp/backend/actions/arranger_selections.h"
 #include "gui/cpp/backend/actions/undo_manager.h"
 #include "gui/cpp/backend/project.h"
@@ -10,8 +11,6 @@
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
-
-#include "common/utils/flags.h"
 
 static void
 perform_create_region_action ()

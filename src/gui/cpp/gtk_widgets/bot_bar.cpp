@@ -4,6 +4,16 @@
 
 #include "zrythm-config.h"
 
+#include "common/dsp/engine.h"
+#include "common/dsp/engine_jack.h"
+#include "common/dsp/master_track.h"
+#include "common/dsp/metronome.h"
+#include "common/dsp/tracklist.h"
+#include "common/dsp/transport.h"
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
+#include "common/utils/string.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/gtk_widgets/bot_bar.h"
@@ -23,17 +33,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/engine.h"
-#include "common/dsp/engine_jack.h"
-#include "common/dsp/master_track.h"
-#include "common/dsp/metronome.h"
-#include "common/dsp/tracklist.h"
-#include "common/dsp/transport.h"
-#include "common/utils/gtk.h"
-#include "common/utils/resources.h"
-#include "common/utils/string.h"
-#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (BotBarWidget, bot_bar_widget, GTK_TYPE_WIDGET)
 

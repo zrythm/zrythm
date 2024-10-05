@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: © 2021-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/utils/error.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/utils/error.h"
-#include "common/utils/ui.h"
 
 AdwDialog *
 error_handle_prv (GError * err, const char * format, ...)

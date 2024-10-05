@@ -3,13 +3,6 @@
 
 #include <inttypes.h>
 
-#include "gui/cpp/backend/actions/arranger_selections.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
-#include <glib/gi18n.h>
-
 #include "common/dsp/arranger_object.h"
 #include "common/dsp/audio_region.h"
 #include "common/dsp/audio_track.h"
@@ -39,6 +32,12 @@
 #include "common/utils/mpmc_queue.h"
 #include "common/utils/object_pool.h"
 #include "common/utils/objects.h"
+#include "gui/cpp/backend/actions/arranger_selections.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+
+#include <glib/gi18n.h>
 
 void
 RecordingManager::handle_stop_recording (bool is_automation)

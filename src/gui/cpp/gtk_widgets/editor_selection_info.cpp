@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/midi_note.h"
 #include "gui/cpp/backend/midi_selections.h"
 #include "gui/cpp/gtk_widgets/digital_meter.h"
 #include "gui/cpp/gtk_widgets/editor_selection_info.h"
@@ -8,8 +9,6 @@
 #include "gui/cpp/gtk_widgets/selection_info.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/midi_note.h"
 
 G_DEFINE_TYPE (
   EditorSelectionInfoWidget,

@@ -4,6 +4,14 @@
 
 #include "zrythm-config.h"
 
+#include "common/dsp/master_track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/exceptions.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/string.h"
 #include "gui/cpp/backend/actions/actions.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
@@ -47,14 +55,6 @@
 
 #include <glib/gi18n.h>
 
-#include "common/dsp/master_track.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/exceptions.h"
-#include "common/utils/flags.h"
-#include "common/utils/gtk.h"
-#include "common/utils/resources.h"
-#include "common/utils/rt_thread_id.h"
-#include "common/utils/string.h"
 #include <fmt/printf.h>
 
 G_DEFINE_TYPE (MainWindowWidget, main_window_widget, ADW_TYPE_APPLICATION_WINDOW)

@@ -1,16 +1,15 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/gtk_widgets/arranger.h"
-#include "gui/cpp/gtk_widgets/scale_object.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
 #include "common/dsp/chord_track.h"
 #include "common/dsp/scale_object.h"
 #include "common/dsp/tracklist.h"
 #include "common/utils/gtk.h"
 #include "common/utils/ui.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/gtk_widgets/arranger.h"
+#include "gui/cpp/gtk_widgets/scale_object.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 /**
  * Recreates the pango layouts for drawing.

@@ -1,10 +1,9 @@
 // SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/utils/logger.h"
 #include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
 #include "gui/cpp/gtk_widgets/string_list_item_factory.h"
-
-#include "common/utils/logger.h"
 
 static void
 setup_cb (

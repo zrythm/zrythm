@@ -3,10 +3,10 @@
 
 #include "zrythm-test-config.h"
 
-#include "tests/helpers/zrythm_helper.h"
-
 #include "common/utils/flags.h"
 #include "common/utils/io.h"
+
+#include "tests/helpers/zrythm_helper.h"
 
 #if 0
 TEST (GetParentDirectory)

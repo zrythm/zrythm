@@ -1,10 +1,9 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/chord_descriptor.h"
 #include "gui/cpp/backend/settings/chord_preset.h"
 #include "gui/cpp/backend/settings/chord_preset_pack.h"
-
-#include "common/dsp/chord_descriptor.h"
 
 void
 ChordDescriptor::define_fields (const Context &ctx)

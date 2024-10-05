@@ -1,6 +1,11 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/plugins/plugin.h"
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/color_area.h"
 #include "gui/cpp/gtk_widgets/drag_dest_box.h"
@@ -8,12 +13,6 @@
 #include "gui/cpp/gtk_widgets/modulator.h"
 #include "gui/cpp/gtk_widgets/modulator_macro.h"
 #include "gui/cpp/gtk_widgets/modulator_view.h"
-
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/plugins/plugin.h"
-#include "common/utils/gtk.h"
-#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (ModulatorViewWidget, modulator_view_widget, GTK_TYPE_WIDGET)
 

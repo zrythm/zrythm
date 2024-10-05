@@ -10,11 +10,10 @@
 #ifndef __GUI_WIDGETS_EVENT_VIEWER_H__
 #define __GUI_WIDGETS_EVENT_VIEWER_H__
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-#include "gui/cpp/gtk_widgets/item_factory.h"
-
 #include "common/dsp/region_identifier.h"
 #include "common/utils/types.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/item_factory.h"
 
 #define EVENT_VIEWER_WIDGET_TYPE (event_viewer_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

@@ -54,6 +54,7 @@
 
 #include "common/utils/dsp.h"
 #include "common/utils/logger.h"
+
 #include <fmt/format.h>
 
 #ifndef _WIN32
@@ -67,16 +68,15 @@
 #  include <pthread.h>
 #endif
 
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include <glib/gi18n.h>
-
 #include "common/dsp/engine.h"
 #include "common/dsp/graph.h"
 #include "common/dsp/graph_node.h"
 #include "common/dsp/graph_thread.h"
 #include "common/dsp/router.h"
 #include "common/utils/rt_thread_id.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include <glib/gi18n.h>
 
 /* uncomment to show debug messages */
 // #define DEBUG_THREADS 1

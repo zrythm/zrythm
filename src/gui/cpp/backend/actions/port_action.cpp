@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: © 2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/actions/port_action.h"
-
-#include <glib/gi18n.h>
-
 #include "common/dsp/control_port.h"
 #include "common/dsp/port.h"
 #include "common/utils/format.h"
+#include "gui/cpp/backend/actions/port_action.h"
+
+#include <glib/gi18n.h>
 
 void
 PortAction::init_after_cloning (const PortAction &other)

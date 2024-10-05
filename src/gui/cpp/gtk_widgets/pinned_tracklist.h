@@ -15,11 +15,10 @@
 #ifndef __GUI_WIDGETS_PINNED_TRACKLIST_H__
 #define __GUI_WIDGETS_PINNED_TRACKLIST_H__
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-#include "gui/cpp/gtk_widgets/region.h"
-
 #include "common/dsp/region.h"
 #include "common/utils/ui.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/region.h"
 
 #define PINNED_TRACKLIST_WIDGET_TYPE (pinned_tracklist_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

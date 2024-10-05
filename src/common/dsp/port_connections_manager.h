@@ -6,11 +6,11 @@
 
 #include "zrythm-config.h"
 
-#include <glib.h>
-
 #include "common/dsp/port_connection.h"
 #include "common/utils/icloneable.h"
 #include "common/utils/types.h"
+
+#include <glib.h>
 
 class Port;
 class PortIdentifier;

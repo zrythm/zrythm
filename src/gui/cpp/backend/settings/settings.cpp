@@ -3,14 +3,13 @@
 
 #include "zrythm-config.h"
 
+#include "common/utils/gtest_wrapper.h"
 #include "gui/cpp/backend/settings/plugin_settings.h"
 #include "gui/cpp/backend/settings/settings.h"
 #include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #include <glib/gi18n.h>
-
-#include "common/utils/gtest_wrapper.h"
 
 #define G_SETTINGS_ENABLE_BACKEND
 #include <gio/gsettingsbackend.h>

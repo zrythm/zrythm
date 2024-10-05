@@ -1,6 +1,11 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/midi_event.h"
+#include "common/dsp/midi_note.h"
+#include "common/dsp/piano_roll_track.h"
+#include "common/dsp/position.h"
+#include "common/dsp/velocity.h"
 #include "gui/cpp/backend/midi_selections.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
@@ -14,11 +19,6 @@
 #include "gui/cpp/gtk_widgets/midi_editor_space.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
-#include "common/dsp/midi_event.h"
-#include "common/dsp/midi_note.h"
-#include "common/dsp/piano_roll_track.h"
-#include "common/dsp/position.h"
-#include "common/dsp/velocity.h"
 #include <fmt/format.h>
 
 MidiNote::MidiNote () : ArrangerObject (Type::MidiNote) {};

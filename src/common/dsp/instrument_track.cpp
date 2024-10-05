@@ -3,18 +3,17 @@
 
 #include "zrythm-config.h"
 
+#include "common/dsp/instrument_track.h"
+#include "common/dsp/position.h"
+#include "common/dsp/region.h"
+#include "common/dsp/track.h"
+#include "common/utils/rt_thread_id.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/dsp/instrument_track.h"
-#include "common/dsp/position.h"
-#include "common/dsp/region.h"
-#include "common/dsp/track.h"
-#include "common/utils/rt_thread_id.h"
 
 InstrumentTrack::InstrumentTrack (const std::string &name, int pos)
     : Track (Track::Type::Instrument, name, pos, PortType::Event, PortType::Audio)

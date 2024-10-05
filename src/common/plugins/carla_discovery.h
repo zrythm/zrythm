@@ -10,9 +10,10 @@
 
 #if HAVE_CARLA
 
-#  include "carla_wrapper.h"
 #  include "common/plugins/plugin_descriptor.h"
 #  include "common/utils/types.h"
+
+#  include "carla_wrapper.h"
 
 class PluginDescriptor;
 class PluginManager;

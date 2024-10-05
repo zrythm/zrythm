@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: © 2019, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/position.h"
+#include "common/dsp/region.h"
 #include "gui/cpp/backend/automation_selections.h"
 #include "gui/cpp/backend/clip_editor.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/zrythm.h"
-
-#include "common/dsp/position.h"
-#include "common/dsp/region.h"
 
 AutomationSelections::AutomationSelections ()
     : ArrangerSelections (Type::Automation)

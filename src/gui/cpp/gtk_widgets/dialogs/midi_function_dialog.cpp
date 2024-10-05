@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/utils/gtk.h"
+#include "common/utils/objects.h"
 #include "gui/cpp/backend/actions/arranger_selections.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/settings/g_settings_manager.h"
@@ -9,9 +11,6 @@
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #include <glib/gi18n.h>
-
-#include "common/utils/gtk.h"
-#include "common/utils/objects.h"
 
 G_DEFINE_TYPE (
   MidiFunctionDialogWidget,

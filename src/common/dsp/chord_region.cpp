@@ -1,6 +1,9 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/chord_region.h"
+#include "common/dsp/chord_track.h"
+#include "common/dsp/tracklist.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/bot_dock_edge.h"
@@ -13,10 +16,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/chord_region.h"
-#include "common/dsp/chord_track.h"
-#include "common/dsp/tracklist.h"
 
 ChordRegion::
   ChordRegion (const Position &start_pos, const Position &end_pos, int idx)

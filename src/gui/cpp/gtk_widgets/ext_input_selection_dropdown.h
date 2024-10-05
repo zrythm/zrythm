@@ -8,9 +8,8 @@
 #ifndef __GUI_WIDGETS_EXT_INPUT_SELECTION_DROPDOWN_H__
 #define __GUI_WIDGETS_EXT_INPUT_SELECTION_DROPDOWN_H__
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/utils/types.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 class ChannelTrack;
 

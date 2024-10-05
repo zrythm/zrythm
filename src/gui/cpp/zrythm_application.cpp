@@ -7,10 +7,10 @@
 #include <QQuickStyle>
 #include <QTimer>
 
-#include "gui/cpp/glue/settings_manager.h"
-
 #include "common/utils/directory_manager.h"
 #include "common/utils/pcg_rand.h"
+#include "gui/cpp/glue/settings_manager.h"
+
 #include "engine/ipc_message.h"
 #include "zrythm_application.h"
 #include <fftw3.h>

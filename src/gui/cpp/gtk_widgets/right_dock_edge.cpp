@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/control_room.h"
+#include "common/utils/resources.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
 #include "gui/cpp/gtk_widgets/chord_pack_browser.h"
@@ -12,9 +14,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/control_room.h"
-#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (RightDockEdgeWidget, right_dock_edge_widget, GTK_TYPE_WIDGET)
 

@@ -1,9 +1,8 @@
 // SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/project.h"
-
 #include "common/dsp/tracklist.h"
+#include "gui/cpp/backend/project.h"
 
 void
 RegionLinkGroup::define_fields (const Context &ctx)

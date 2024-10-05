@@ -9,13 +9,12 @@
 #include <cstdint>
 #include <memory>
 
-#include "gui/cpp/backend/piano_roll.h"
-
 #include "common/dsp/lengthable_object.h"
 #include "common/dsp/muteable_object.h"
 #include "common/dsp/position.h"
 #include "common/dsp/velocity.h"
 #include "common/utils/pango.h"
+#include "gui/cpp/backend/piano_roll.h"
 
 /**
  * @addtogroup dsp

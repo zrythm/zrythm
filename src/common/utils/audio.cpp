@@ -3,8 +3,6 @@
 
 #include <cmath>
 
-#include <glib/gi18n.h>
-
 #include "common/dsp/clip.h"
 #include "common/utils/audio.h"
 #include "common/utils/exceptions.h"
@@ -12,6 +10,9 @@
 #include "common/utils/logger.h"
 #include "common/utils/math.h"
 #include "common/utils/vamp.h"
+
+#include <glib/gi18n.h>
+
 #include <giomm.h>
 #include <sndfile.h>
 

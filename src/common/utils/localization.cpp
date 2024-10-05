@@ -10,6 +10,11 @@
 
 #include "zrythm-config.h"
 
+#include "common/utils/directory_manager.h"
+#include "common/utils/io.h"
+#include "common/utils/localization.h"
+#include "common/utils/string.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/backend/settings/settings.h"
 #include "gui/cpp/backend/zrythm.h"
@@ -18,11 +23,6 @@
 
 #include <glib/gi18n.h>
 
-#include "common/utils/directory_manager.h"
-#include "common/utils/io.h"
-#include "common/utils/localization.h"
-#include "common/utils/string.h"
-#include "common/utils/ui.h"
 #include "zrythm-locales.h" // note: auto-generated
 #include <locale.h>
 

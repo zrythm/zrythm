@@ -8,12 +8,11 @@
 
 #include <utility>
 
+#include "common/utils/types.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/project/project_init_flow_manager.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
-
-#include "common/utils/types.h"
-#include "common/utils/ui.h"
 
 #define ZRYTHM_APP_IS_GTK_THREAD \
   (zrythm_app && zrythm_app->gtk_thread_id_ == current_thread_id.get ())

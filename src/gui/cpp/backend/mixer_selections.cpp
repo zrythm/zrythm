@@ -1,6 +1,10 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/channel_track.h"
+#include "common/dsp/modulator_track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/rt_thread_id.h"
 #include "gui/cpp/backend/actions/mixer_selections_action.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
@@ -11,11 +15,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/channel_track.h"
-#include "common/dsp/modulator_track.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/rt_thread_id.h"
 
 Track *
 MixerSelections::get_track () const

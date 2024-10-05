@@ -10,6 +10,7 @@
 #include "common/plugins/plugin.h"
 #include "common/plugins/plugin_descriptor.h"
 #include "common/plugins/plugin_identifier.h"
+
 #include <yyjson.h>
 
 void

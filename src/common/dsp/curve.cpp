@@ -29,12 +29,12 @@
 
 #include <cmath>
 
-#include <glib/gi18n.h>
-
 #include "common/dsp/curve.h"
 #include "common/utils/debug.h"
 #include "common/utils/math.h"
 #include "common/utils/string.h"
+
+#include <glib/gi18n.h>
 
 static const char *
 curve_algorithm_get_string_id (CurveOptions::Algorithm algo)

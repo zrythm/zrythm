@@ -1,6 +1,11 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/channel.h"
+#include "common/dsp/region.h"
+#include "common/dsp/track.h"
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
 #include "gui/cpp/backend/piano_roll.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
@@ -28,12 +33,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/channel.h"
-#include "common/dsp/region.h"
-#include "common/dsp/track.h"
-#include "common/utils/gtk.h"
-#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (ClipEditorInnerWidget, clip_editor_inner_widget, GTK_TYPE_WIDGET)
 

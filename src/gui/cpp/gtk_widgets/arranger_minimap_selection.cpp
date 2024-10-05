@@ -1,14 +1,13 @@
 // SPDX-FileCopyrightText: © 2019, 2021-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/utils/gtk.h"
 #include "gui/cpp/gtk_widgets/arranger_minimap.h"
 #include "gui/cpp/gtk_widgets/arranger_minimap_selection.h"
 #include "gui/cpp/gtk_widgets/bot_bar.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
-
-#include "common/utils/gtk.h"
 
 G_DEFINE_TYPE (
   ArrangerMinimapSelectionWidget,

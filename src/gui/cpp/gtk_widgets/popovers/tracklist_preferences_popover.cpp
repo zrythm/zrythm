@@ -3,6 +3,11 @@
 
 #include <cstring>
 
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
+#include "common/utils/string.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/backend/settings/settings.h"
@@ -12,12 +17,6 @@
 #include "gui/cpp/gtk_widgets/popovers/tracklist_preferences_popover.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/gtk.h"
-#include "common/utils/resources.h"
-#include "common/utils/string.h"
 
 G_DEFINE_TYPE (
   TracklistPreferencesPopoverWidget,

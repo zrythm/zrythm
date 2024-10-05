@@ -1,6 +1,14 @@
 // SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/chord_descriptor.h"
+#include "common/dsp/chord_track.h"
+#include "common/dsp/midi_event.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
+#include "common/utils/symap.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/chord_editor.h"
 #include "gui/cpp/backend/clip_editor.h"
 #include "gui/cpp/backend/event.h"
@@ -11,15 +19,6 @@
 #include "gui/cpp/gtk_widgets/chord_selector_window.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/dsp/chord_descriptor.h"
-#include "common/dsp/chord_track.h"
-#include "common/dsp/midi_event.h"
-#include "common/utils/flags.h"
-#include "common/utils/gtk.h"
-#include "common/utils/resources.h"
-#include "common/utils/symap.h"
-#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (ChordPadWidget, chord_pad_widget, GTK_TYPE_WIDGET)
 

@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-ZrythmLicense
  */
 
-#include "gui/cpp/gtk_widgets/selection_info.h"
-
 #include "common/utils/gtk.h"
+#include "gui/cpp/gtk_widgets/selection_info.h"
 
 G_DEFINE_TYPE_WITH_PRIVATE (
   SelectionInfoWidget,

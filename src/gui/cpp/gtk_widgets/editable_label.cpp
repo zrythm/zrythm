@@ -1,9 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/gtk_widgets/editable_label.h"
-
 #include "common/utils/logger.h"
+#include "gui/cpp/gtk_widgets/editable_label.h"
 
 G_DEFINE_TYPE (EditableLabelWidget, editable_label_widget, GTK_TYPE_WIDGET)
 

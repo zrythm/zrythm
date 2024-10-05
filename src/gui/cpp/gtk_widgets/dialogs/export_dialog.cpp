@@ -1,19 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/settings/g_settings_manager.h"
-#include "gui/cpp/backend/wrapped_object_with_change_signal.h"
-#include "gui/cpp/gtk_widgets/dialogs/export_dialog.h"
-#include "gui/cpp/gtk_widgets/dialogs/export_progress_dialog.h"
-#include "gui/cpp/gtk_widgets/digital_meter.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-#include "gui/cpp/gtk_widgets/item_factory.h"
-#include "gui/cpp/gtk_widgets/main_window.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include <glib/gi18n.h>
-
 #include "common/dsp/engine.h"
 #include "common/dsp/exporter.h"
 #include "common/dsp/master_track.h"
@@ -29,6 +16,18 @@
 #include "common/utils/resources.h"
 #include "common/utils/string.h"
 #include "common/utils/ui.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
+#include "gui/cpp/backend/wrapped_object_with_change_signal.h"
+#include "gui/cpp/gtk_widgets/dialogs/export_dialog.h"
+#include "gui/cpp/gtk_widgets/dialogs/export_progress_dialog.h"
+#include "gui/cpp/gtk_widgets/digital_meter.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/item_factory.h"
+#include "gui/cpp/gtk_widgets/main_window.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (ExportDialogWidget, export_dialog_widget, GTK_TYPE_DIALOG)
 

@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "common/utils/symap.h"
+
 #include "lv2/atom/atom.h"
 #include "lv2/buf-size/buf-size.h"
 #include "lv2/core/lv2.h"

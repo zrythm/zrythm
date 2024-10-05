@@ -10,6 +10,15 @@
  * Timeline background inheriting from arranger_bg.
  */
 
+#include "common/dsp/automation_track.h"
+#include "common/dsp/automation_tracklist.h"
+#include "common/dsp/channel.h"
+#include "common/dsp/instrument_track.h"
+#include "common/dsp/router.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/dsp/transport.h"
+#include "common/utils/cairo.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/backend/settings/settings.h"
@@ -26,16 +35,6 @@
 #include "gui/cpp/gtk_widgets/timeline_ruler.h"
 #include "gui/cpp/gtk_widgets/track.h"
 #include "gui/cpp/gtk_widgets/tracklist.h"
-
-#include "common/dsp/automation_track.h"
-#include "common/dsp/automation_tracklist.h"
-#include "common/dsp/channel.h"
-#include "common/dsp/instrument_track.h"
-#include "common/dsp/router.h"
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/dsp/transport.h"
-#include "common/utils/cairo.h"
 
 G_DEFINE_TYPE (TimelineBgWidget, timeline_bg_widget, ARRANGER_BG_WIDGET_TYPE)
 

@@ -1,28 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/event.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/gtk_widgets/arranger_wrapper.h"
-#include "gui/cpp/gtk_widgets/audio_arranger.h"
-#include "gui/cpp/gtk_widgets/audio_editor_space.h"
-#include "gui/cpp/gtk_widgets/automation_arranger.h"
-#include "gui/cpp/gtk_widgets/automation_editor_space.h"
-#include "gui/cpp/gtk_widgets/bot_dock_edge.h"
-#include "gui/cpp/gtk_widgets/center_dock.h"
-#include "gui/cpp/gtk_widgets/chord_arranger.h"
-#include "gui/cpp/gtk_widgets/chord_editor_space.h"
-#include "gui/cpp/gtk_widgets/clip_editor.h"
-#include "gui/cpp/gtk_widgets/clip_editor_inner.h"
-#include "gui/cpp/gtk_widgets/main_window.h"
-#include "gui/cpp/gtk_widgets/midi_arranger.h"
-#include "gui/cpp/gtk_widgets/midi_editor_space.h"
-#include "gui/cpp/gtk_widgets/timeline_arranger.h"
-#include "gui/cpp/gtk_widgets/timeline_panel.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include <glib/gi18n.h>
-
 #include "common/dsp/audio_region.h"
 #include "common/dsp/automation_region.h"
 #include "common/dsp/channel.h"
@@ -46,6 +24,27 @@
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/logger.h"
 #include "common/utils/rt_thread_id.h"
+#include "gui/cpp/backend/event.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/gtk_widgets/arranger_wrapper.h"
+#include "gui/cpp/gtk_widgets/audio_arranger.h"
+#include "gui/cpp/gtk_widgets/audio_editor_space.h"
+#include "gui/cpp/gtk_widgets/automation_arranger.h"
+#include "gui/cpp/gtk_widgets/automation_editor_space.h"
+#include "gui/cpp/gtk_widgets/bot_dock_edge.h"
+#include "gui/cpp/gtk_widgets/center_dock.h"
+#include "gui/cpp/gtk_widgets/chord_arranger.h"
+#include "gui/cpp/gtk_widgets/chord_editor_space.h"
+#include "gui/cpp/gtk_widgets/clip_editor.h"
+#include "gui/cpp/gtk_widgets/clip_editor_inner.h"
+#include "gui/cpp/gtk_widgets/main_window.h"
+#include "gui/cpp/gtk_widgets/midi_arranger.h"
+#include "gui/cpp/gtk_widgets/midi_editor_space.h"
+#include "gui/cpp/gtk_widgets/timeline_arranger.h"
+#include "gui/cpp/gtk_widgets/timeline_panel.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include <glib/gi18n.h>
 
 void
 Region::copy_members_from (const Region &other)

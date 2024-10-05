@@ -3,14 +3,13 @@
 
 #include "zrythm-config.h"
 
+#include "common/utils/string.h"
 #include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/gtk_widgets/dialogs/ask_to_check_for_updates_dialog.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/utils/string.h"
 
 static void
 response_cb (AdwAlertDialog * self, gchar * response, gpointer user_data)

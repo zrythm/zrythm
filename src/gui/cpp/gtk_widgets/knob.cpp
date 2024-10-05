@@ -30,9 +30,6 @@
 #include <cstdint>
 #include <cstdlib>
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-#include "gui/cpp/gtk_widgets/knob.h"
-
 #include "common/dsp/port.h"
 #include "common/dsp/port_connection.h"
 #include "common/utils/cairo.h"
@@ -40,6 +37,8 @@
 #include "common/utils/math.h"
 #include "common/utils/string.h"
 #include "common/utils/ui.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/knob.h"
 
 G_DEFINE_TYPE (KnobWidget, knob_widget, GTK_TYPE_WIDGET)
 

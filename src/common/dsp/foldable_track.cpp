@@ -5,18 +5,17 @@
 
 #include <cstdlib>
 
+#include "common/dsp/foldable_track.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/flags.h"
+#include "common/utils/rt_thread_id.h"
 #include "gui/cpp/backend/actions/tracklist_selections.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/dsp/foldable_track.h"
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/flags.h"
-#include "common/utils/rt_thread_id.h"
 
 bool
 FoldableTrack::is_status (MixerStatus status) const

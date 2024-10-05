@@ -15,6 +15,7 @@
 #include <sys/types.h>
 
 #include "common/utils/types.h"
+
 #include <rubberband/rubberband-c.h>
 
 /**

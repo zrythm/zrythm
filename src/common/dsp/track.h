@@ -4,14 +4,14 @@
 #ifndef __AUDIO_TRACK_H__
 #define __AUDIO_TRACK_H__
 
-#include <glib/gi18n.h>
-
 #include "common/dsp/automation_tracklist.h"
 #include "common/dsp/fader.h"
 #include "common/dsp/region.h"
 #include "common/dsp/track_lane.h"
 #include "common/plugins/plugin.h"
 #include "common/utils/format.h"
+
+#include <glib/gi18n.h>
 
 class FileDescriptor;
 class TracklistSelections;

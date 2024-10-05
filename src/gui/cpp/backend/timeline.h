@@ -10,9 +10,8 @@
 #ifndef __GUI_BACKEND_TIMELINE_H__
 #define __GUI_BACKEND_TIMELINE_H__
 
-#include "gui/cpp/backend/editor_settings.h"
-
 #include "common/utils/icloneable.h"
+#include "gui/cpp/backend/editor_settings.h"
 
 /**
  * @addtogroup gui_backend

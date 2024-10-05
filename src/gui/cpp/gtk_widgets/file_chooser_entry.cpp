@@ -26,11 +26,10 @@
 
 #include "zrythm-config.h"
 
+#include "common/utils/logger.h"
 #include "gui/cpp/gtk_widgets/file_chooser_entry.h"
 
 #include <glib/gi18n.h>
-
-#include "common/utils/logger.h"
 
 struct _IdeFileChooserEntry
 {

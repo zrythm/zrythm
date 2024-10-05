@@ -12,15 +12,6 @@
 
 #include "zrythm-test-config.h"
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/project/project_init_flow_manager.h"
-#include "gui/cpp/backend/zrythm.h"
-
-#include <glib.h>
-#include <glib/gi18n.h>
-
-#include "tests/helpers/zrythm_helper.h"
-
 #include "common/dsp/audio_region.h"
 #include "common/dsp/automation_region.h"
 #include "common/dsp/chord_region.h"
@@ -36,6 +27,14 @@
 #include "common/dsp/tracklist.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/ui.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/project/project_init_flow_manager.h"
+#include "gui/cpp/backend/zrythm.h"
+
+#include <glib.h>
+#include <glib/gi18n.h>
+
+#include "tests/helpers/zrythm_helper.h"
 
 /**
  * @addtogroup tests

@@ -4,6 +4,13 @@
 
 #include "zrythm-config.h"
 
+#include "common/plugins/carla_discovery.h"
+#include "common/plugins/collections.h"
+#include "common/plugins/plugin.h"
+#include "common/plugins/plugin_manager.h"
+#include "common/utils/objects.h"
+#include "common/utils/resources.h"
+#include "common/utils/string.h"
 #include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/backend/wrapped_object_with_change_signal.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
@@ -16,13 +23,6 @@
 
 #include <glib/gi18n.h>
 
-#include "common/plugins/carla_discovery.h"
-#include "common/plugins/collections.h"
-#include "common/plugins/plugin.h"
-#include "common/plugins/plugin_manager.h"
-#include "common/utils/objects.h"
-#include "common/utils/resources.h"
-#include "common/utils/string.h"
 #include <fmt/printf.h>
 
 G_DEFINE_TYPE (PluginBrowserWidget, plugin_browser_widget, GTK_TYPE_WIDGET)

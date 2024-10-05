@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/port.h"
+#include "common/dsp/router.h"
 #include "gui/cpp/backend/actions/port_connection_action.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
@@ -9,9 +11,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/port.h"
-#include "common/dsp/router.h"
 
 void
 PortConnectionAction::init_after_cloning (const PortConnectionAction &other)

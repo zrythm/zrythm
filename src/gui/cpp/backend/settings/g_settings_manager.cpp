@@ -12,14 +12,13 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "common/utils/gtest_wrapper.h"
+#include "common/utils/terminal.h"
 #include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #include <glib/gi18n.h>
-
-#include "common/utils/gtest_wrapper.h"
-#include "common/utils/terminal.h"
 
 #define G_SETTINGS_ENABLE_BACKEND
 #include <gio/gsettingsbackend.h>

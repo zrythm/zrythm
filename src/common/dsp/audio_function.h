@@ -12,10 +12,10 @@
 #ifndef __AUDIO_AUDIO_FUNCTION_H__
 #define __AUDIO_AUDIO_FUNCTION_H__
 
-#include <glib/gi18n.h>
-
 #include "common/utils/format.h"
 #include "common/utils/logger.h"
+
+#include <glib/gi18n.h>
 
 class ArrangerSelections;
 class Plugin;

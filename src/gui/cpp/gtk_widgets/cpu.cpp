@@ -8,16 +8,15 @@
 
 #include <cstdio>
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/bot_bar.h"
-#include "gui/cpp/gtk_widgets/cpu.h"
-
 #include "common/dsp/engine.h"
 #include "common/utils/cpu_windows.h"
 #include "common/utils/gtk.h"
 #include "common/utils/objects.h"
 #include "common/utils/ui.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/bot_bar.h"
+#include "gui/cpp/gtk_widgets/cpu.h"
 
 #ifdef __APPLE__
 #  include <mach/mach_error.h>

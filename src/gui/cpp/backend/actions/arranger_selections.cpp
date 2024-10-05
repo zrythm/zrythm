@@ -1,17 +1,6 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/actions/arranger_selections.h"
-#include "gui/cpp/backend/arranger_selections.h"
-#include "gui/cpp/backend/event.h"
-#include "gui/cpp/backend/event_manager.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/settings/g_settings_manager.h"
-#include "gui/cpp/gtk_widgets/arranger.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include <glib/gi18n.h>
-
 #include "common/dsp/audio_region.h"
 #include "common/dsp/automation_region.h"
 #include "common/dsp/automation_track.h"
@@ -25,6 +14,16 @@
 #include "common/dsp/tracklist.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/math.h"
+#include "gui/cpp/backend/actions/arranger_selections.h"
+#include "gui/cpp/backend/arranger_selections.h"
+#include "gui/cpp/backend/event.h"
+#include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
+#include "gui/cpp/gtk_widgets/arranger.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include <glib/gi18n.h>
 
 ArrangerSelectionsAction::ArrangerSelectionsAction ()
     : UndoableAction (UndoableAction::Type::ArrangerSelections)

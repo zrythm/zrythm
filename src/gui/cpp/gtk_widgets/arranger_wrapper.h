@@ -10,10 +10,9 @@
 #ifndef __GUI_WIDGETS_ARRANGER_WRAPPER_H__
 #define __GUI_WIDGETS_ARRANGER_WRAPPER_H__
 
+#include "common/utils/types.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
-#include "common/utils/types.h"
 
 #define ARRANGER_WRAPPER_WIDGET_TYPE (arranger_wrapper_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

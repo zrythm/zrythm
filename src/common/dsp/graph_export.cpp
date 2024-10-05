@@ -1,9 +1,6 @@
 // SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-
 #include "common/dsp/fader.h"
 #include "common/dsp/graph.h"
 #include "common/dsp/graph_export.h"
@@ -14,6 +11,8 @@
 #include "common/plugins/plugin.h"
 #include "common/utils/flags.h"
 #include "common/utils/objects.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 
 #ifdef HAVE_CGRAPH
 #  include <graphviz/cgraph.h>

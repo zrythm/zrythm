@@ -1,6 +1,10 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/channel.h"
+#include "common/dsp/midi_mapping.h"
+#include "common/dsp/port_identifier.h"
+#include "common/dsp/router.h"
 #include "gui/cpp/backend/actions/midi_mapping_action.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
@@ -9,11 +13,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/channel.h"
-#include "common/dsp/midi_mapping.h"
-#include "common/dsp/port_identifier.h"
-#include "common/dsp/router.h"
 
 void
 MidiMappingAction::init_after_cloning (const MidiMappingAction &other)

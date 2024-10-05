@@ -1,6 +1,10 @@
 // SPDX-FileCopyrightText: © 2019-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/engine.h"
+#include "common/utils/midi.h"
+#include "common/utils/resources.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/actions/midi_mapping_action.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/zrythm.h"
@@ -9,11 +13,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/engine.h"
-#include "common/utils/midi.h"
-#include "common/utils/resources.h"
-#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (BindCcDialogWidget, bind_cc_dialog_widget, GTK_TYPE_DIALOG)
 

@@ -1,6 +1,10 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/midi_note.h"
+#include "common/dsp/velocity.h"
+#include "common/utils/flags.h"
+#include "common/utils/rt_thread_id.h"
 #include "gui/cpp/backend/actions/arranger_selections.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
@@ -12,11 +16,6 @@
 #include "gui/cpp/gtk_widgets/midi_modifier_arranger.h"
 #include "gui/cpp/gtk_widgets/ruler.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/dsp/midi_note.h"
-#include "common/dsp/velocity.h"
-#include "common/utils/flags.h"
-#include "common/utils/rt_thread_id.h"
 
 ArrangerCursor
 midi_modifier_arranger_widget_get_cursor (ArrangerWidget * self, Tool tool)

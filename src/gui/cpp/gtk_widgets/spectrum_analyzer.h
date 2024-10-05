@@ -4,9 +4,9 @@
 #ifndef __GUI_WIDGETS_SPECTRUM_ANALYZER_H__
 #define __GUI_WIDGETS_SPECTRUM_ANALYZER_H__
 
+#include "common/utils/types.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "common/utils/types.h"
 #include "juce/juce.h"
 #include <kiss_fft.h>
 

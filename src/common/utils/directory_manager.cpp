@@ -1,10 +1,9 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/glue/settings_manager.h"
-
 #include "common/utils/directory_manager.h"
 #include "common/utils/io.h"
+#include "gui/cpp/glue/settings_manager.h"
 
 JUCE_IMPLEMENT_SINGLETON (DirectoryManager)
 

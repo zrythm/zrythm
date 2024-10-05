@@ -3,6 +3,12 @@
 
 #include <cmath>
 
+#include "common/dsp/engine.h"
+#include "common/dsp/position.h"
+#include "common/dsp/transport.h"
+#include "common/utils/flags.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
 #include "gui/cpp/backend/project.h"
@@ -20,12 +26,6 @@
 #include "gui/cpp/gtk_widgets/timeline_ruler.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
-#include "common/dsp/engine.h"
-#include "common/dsp/position.h"
-#include "common/dsp/transport.h"
-#include "common/utils/flags.h"
-#include "common/utils/rt_thread_id.h"
-#include "common/utils/ui.h"
 #include <limits.h>
 
 #define ACTION_IS(x) (self->action == UiOverlayAction::x)

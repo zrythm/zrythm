@@ -5,17 +5,6 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "gui/cpp/backend/actions/arranger_selections.h"
-#include "gui/cpp/backend/actions/tracklist_selections.h"
-#include "gui/cpp/backend/actions/transport_action.h"
-#include "gui/cpp/backend/clipboard.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-
-#include <glib.h>
-
-#include "tests/helpers/project_helper.h"
-
 #include "common/dsp/audio_track.h"
 #include "common/dsp/automation_region.h"
 #include "common/dsp/chord_track.h"
@@ -28,6 +17,16 @@
 #include "common/utils/flags.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/string.h"
+#include "gui/cpp/backend/actions/arranger_selections.h"
+#include "gui/cpp/backend/actions/tracklist_selections.h"
+#include "gui/cpp/backend/actions/transport_action.h"
+#include "gui/cpp/backend/clipboard.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+
+#include <glib.h>
+
+#include "tests/helpers/project_helper.h"
 
 auto REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK =
   [] (const auto &obj, const Track &track) {

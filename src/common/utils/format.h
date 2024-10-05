@@ -10,6 +10,7 @@
 #include <filesystem>
 
 #include "common/utils/traits.h"
+
 #include "juce/juce.h"
 #include <fmt/format.h>
 #include <fmt/ranges.h>

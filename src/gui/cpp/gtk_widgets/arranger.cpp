@@ -28,6 +28,26 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
 
+#include "common/dsp/automation_region.h"
+#include "common/dsp/automation_track.h"
+#include "common/dsp/channel.h"
+#include "common/dsp/chord_region.h"
+#include "common/dsp/chord_track.h"
+#include "common/dsp/control_port.h"
+#include "common/dsp/marker.h"
+#include "common/dsp/marker_track.h"
+#include "common/dsp/midi_region.h"
+#include "common/dsp/piano_roll_track.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/dsp/transport.h"
+#include "common/utils/cairo.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/math.h"
+#include "common/utils/objects.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/actions/arranger_selections.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
@@ -70,27 +90,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/automation_region.h"
-#include "common/dsp/automation_track.h"
-#include "common/dsp/channel.h"
-#include "common/dsp/chord_region.h"
-#include "common/dsp/chord_track.h"
-#include "common/dsp/control_port.h"
-#include "common/dsp/marker.h"
-#include "common/dsp/marker_track.h"
-#include "common/dsp/midi_region.h"
-#include "common/dsp/piano_roll_track.h"
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/dsp/transport.h"
-#include "common/utils/cairo.h"
-#include "common/utils/flags.h"
-#include "common/utils/gtk.h"
-#include "common/utils/math.h"
-#include "common/utils/objects.h"
-#include "common/utils/rt_thread_id.h"
-#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (ArrangerWidget, arranger_widget, GTK_TYPE_WIDGET)
 

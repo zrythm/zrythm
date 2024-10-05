@@ -3,10 +3,11 @@
 
 #include <cstdio>
 
-#include <glib.h>
-
 #include "common/utils/hash.h"
 #include "common/utils/logger.h"
+
+#include <glib.h>
+
 #include <xxhash.h>
 
 #define BUF_SIZE 16384

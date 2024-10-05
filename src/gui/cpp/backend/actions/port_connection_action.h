@@ -4,10 +4,9 @@
 #ifndef __ACTION_PORT_CONNECTION_ACTION_H__
 #define __ACTION_PORT_CONNECTION_ACTION_H__
 
-#include "gui/cpp/backend/actions/undoable_action.h"
-
 #include "common/dsp/port_connection.h"
 #include "common/utils/icloneable.h"
+#include "gui/cpp/backend/actions/undoable_action.h"
 
 /**
  * @addtogroup actions

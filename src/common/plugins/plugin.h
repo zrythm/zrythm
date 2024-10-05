@@ -10,12 +10,11 @@
 #include <string>
 #include <vector>
 
-#include "gui/cpp/backend/settings/plugin_settings.h"
-
 #include "common/dsp/port.h"
 #include "common/plugins/plugin_descriptor.h"
 #include "common/plugins/plugin_identifier.h"
 #include "common/utils/types.h"
+#include "gui/cpp/backend/settings/plugin_settings.h"
 
 class Project;
 class Channel;

@@ -1,15 +1,14 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/utils/objects.h"
+#include "common/utils/resources.h"
+#include "common/utils/string.h"
 #include "gui/cpp/gtk_widgets/dialogs/string_entry_dialog.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/utils/objects.h"
-#include "common/utils/resources.h"
-#include "common/utils/string.h"
 
 G_DEFINE_TYPE (
   StringEntryDialogWidget,

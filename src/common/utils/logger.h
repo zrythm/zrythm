@@ -13,6 +13,7 @@
  */
 
 #include "common/utils/format.h"
+
 #include "juce/juce.h"
 #include <spdlog/spdlog.h>
 

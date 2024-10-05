@@ -1,6 +1,16 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/automation_track.h"
+#include "common/dsp/instrument_track.h"
+#include "common/dsp/region.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
 #include "gui/cpp/backend/project.h"
@@ -34,17 +44,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/automation_track.h"
-#include "common/dsp/instrument_track.h"
-#include "common/dsp/region.h"
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/flags.h"
-#include "common/utils/gtk.h"
-#include "common/utils/resources.h"
-#include "common/utils/rt_thread_id.h"
-#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (TrackWidget, track_widget, GTK_TYPE_WIDGET)
 

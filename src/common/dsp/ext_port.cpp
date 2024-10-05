@@ -3,9 +3,6 @@
 
 #include "zrythm-config.h"
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
 #include "common/dsp/engine.h"
 #include "common/dsp/engine_jack.h"
 #include "common/dsp/engine_rtaudio.h"
@@ -15,6 +12,8 @@
 #include "common/dsp/rtmidi_device.h"
 #include "common/utils/dsp.h"
 #include "common/utils/string.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #if HAVE_JACK
 #  include "weakjack/weak_libjack.h"

@@ -13,11 +13,10 @@
 #ifndef __GUI_WIDGETS_TIMELINE_SELECTION_INFO_H__
 #define __GUI_WIDGETS_TIMELINE_SELECTION_INFO_H__
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-#include "gui/cpp/gtk_widgets/region.h"
-
 #include "common/dsp/region.h"
 #include "common/utils/ui.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/region.h"
 
 #define TIMELINE_SELECTION_INFO_WIDGET_TYPE \
   (timeline_selection_info_widget_get_type ())

@@ -1,14 +1,6 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/settings/chord_preset.h"
-#include "gui/cpp/backend/settings/g_settings_manager.h"
-#include "gui/cpp/backend/settings/plugin_settings.h"
-#include "gui/cpp/backend/settings/settings.h"
-
-#include <glib/gi18n.h>
-
 #include "common/dsp/audio_region.h"
 #include "common/dsp/engine.h"
 #include "common/dsp/metronome.h"
@@ -25,6 +17,13 @@
 #include "common/utils/dsp.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/io.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/chord_preset.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
+#include "gui/cpp/backend/settings/plugin_settings.h"
+#include "gui/cpp/backend/settings/settings.h"
+
+#include <glib/gi18n.h>
 
 void
 SampleProcessor::load_instrument_if_empty ()

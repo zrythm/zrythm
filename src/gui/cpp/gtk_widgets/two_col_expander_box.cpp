@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: © 2019, 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/gtk_widgets/expander_box.h"
-#include "gui/cpp/gtk_widgets/two_col_expander_box.h"
-
 #include "common/utils/flags.h"
 #include "common/utils/gtk.h"
 #include "common/utils/logger.h"
+#include "gui/cpp/gtk_widgets/expander_box.h"
+#include "gui/cpp/gtk_widgets/two_col_expander_box.h"
 
 G_DEFINE_TYPE_WITH_PRIVATE (
   TwoColExpanderBoxWidget,

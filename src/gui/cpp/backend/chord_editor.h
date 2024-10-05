@@ -10,11 +10,10 @@
 #ifndef __GUI_BACKEND_CHORD_EDITOR_H__
 #define __GUI_BACKEND_CHORD_EDITOR_H__
 
-#include "gui/cpp/backend/editor_settings.h"
-
 #include "common/dsp/chord_descriptor.h"
 #include "common/dsp/scale.h"
 #include "common/utils/icloneable.h"
+#include "gui/cpp/backend/editor_settings.h"
 
 class ChordDescriptor;
 class ChordPreset;

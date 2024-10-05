@@ -3,6 +3,16 @@
 
 #include "zrythm-test-config.h"
 
+#include "common/dsp/chord_track.h"
+#include "common/dsp/engine_dummy.h"
+#include "common/dsp/marker_track.h"
+#include "common/dsp/tempo_track.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/dsp.h"
+#include "common/utils/flags.h"
+#include "common/utils/io.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/actions/arranger_selections.h"
 #include "gui/cpp/backend/actions/tracklist_selections.h"
 #include "gui/cpp/backend/project.h"
@@ -14,17 +24,6 @@
 #include "helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
-
-#include "common/dsp/chord_track.h"
-#include "common/dsp/engine_dummy.h"
-#include "common/dsp/marker_track.h"
-#include "common/dsp/tempo_track.h"
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/dsp.h"
-#include "common/utils/flags.h"
-#include "common/utils/io.h"
-#include "common/utils/ui.h"
 
 TEST_F (ZrythmFixtureWithPipewire, ExposedPortsAfterLoad)
 {

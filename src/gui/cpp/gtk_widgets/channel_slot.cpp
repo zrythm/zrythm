@@ -1,6 +1,15 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/channel.h"
+#include "common/dsp/channel_track.h"
+#include "common/dsp/engine.h"
+#include "common/utils/cairo.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/logger.h"
+#include "common/utils/objects.h"
+#include "common/utils/rt_thread_id.h"
 #include "gui/cpp/backend/actions/mixer_selections_action.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
@@ -15,16 +24,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/channel.h"
-#include "common/dsp/channel_track.h"
-#include "common/dsp/engine.h"
-#include "common/utils/cairo.h"
-#include "common/utils/flags.h"
-#include "common/utils/gtk.h"
-#include "common/utils/logger.h"
-#include "common/utils/objects.h"
-#include "common/utils/rt_thread_id.h"
 
 G_DEFINE_TYPE (ChannelSlotWidget, channel_slot_widget, GTK_TYPE_WIDGET)
 

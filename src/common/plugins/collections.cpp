@@ -1,14 +1,13 @@
 // SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/plugins/collections.h"
+#include "common/utils/directory_manager.h"
+#include "common/utils/string.h"
 #include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/plugins/collections.h"
-#include "common/utils/directory_manager.h"
-#include "common/utils/string.h"
 
 constexpr const char * PLUGIN_COLLECTIONS_JSON_FILENAME =
   "plugin-collections.json";

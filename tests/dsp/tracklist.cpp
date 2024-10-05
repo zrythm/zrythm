@@ -3,6 +3,9 @@
 
 #include "zrythm-test-config.h"
 
+#include "common/dsp/automation_region.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/flags.h"
 #include "gui/cpp/backend/actions/arranger_selections.h"
 #include "gui/cpp/backend/actions/tracklist_selections.h"
 #include "gui/cpp/backend/project.h"
@@ -10,10 +13,6 @@
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
-
-#include "common/dsp/automation_region.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/flags.h"
 
 TEST_F (ZrythmFixture, HandleDropEmptyMidiFile)
 {

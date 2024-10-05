@@ -1,6 +1,13 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/engine.h"
+#include "common/dsp/exporter.h"
+#include "common/dsp/marker_track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/progress_info.h"
+#include "common/utils/resources.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/backend/timeline_selections.h"
@@ -11,14 +18,6 @@
 #include "gui/cpp/gtk_widgets/dialogs/export_progress_dialog.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/dsp/engine.h"
-#include "common/dsp/exporter.h"
-#include "common/dsp/marker_track.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/progress_info.h"
-#include "common/utils/resources.h"
-#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (BounceDialogWidget, bounce_dialog_widget, GTK_TYPE_DIALOG)
 

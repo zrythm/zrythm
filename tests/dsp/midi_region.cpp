@@ -4,12 +4,6 @@
 
 #include "zrythm-test-config.h"
 
-#include "gui/cpp/backend/actions/tracklist_selections.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-
-#include "tests/helpers/zrythm_helper.h"
-
 #include "common/dsp/midi_region.h"
 #include "common/dsp/region.h"
 #include "common/dsp/tracklist.h"
@@ -17,6 +11,11 @@
 #include "common/utils/flags.h"
 #include "common/utils/hash.h"
 #include "common/utils/io.h"
+#include "gui/cpp/backend/actions/tracklist_selections.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+
+#include "tests/helpers/zrythm_helper.h"
 
 class MidiRegionExportTest
     : public ZrythmFixture,

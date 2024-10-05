@@ -14,11 +14,6 @@
 
 #include "zrythm-config.h"
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/gtk_widgets/bot_bar.h"
-#include "gui/cpp/gtk_widgets/spectrum_analyzer.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
 #include "common/dsp/engine.h"
 #include "common/dsp/master_track.h"
 #include "common/dsp/peak_fall_smooth.h"
@@ -27,6 +22,10 @@
 #include "common/utils/gtk.h"
 #include "common/utils/objects.h"
 #include "common/utils/ui.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/gtk_widgets/bot_bar.h"
+#include "gui/cpp/gtk_widgets/spectrum_analyzer.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 // Buffer size for spectrum analyzer
 constexpr size_t BUF_SIZE = 65000;

@@ -1,11 +1,6 @@
 // SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-
-#include <glib/gi18n.h>
-
 #include "common/dsp/audio_region.h"
 #include "common/dsp/midi_region.h"
 #include "common/dsp/track.h"
@@ -13,6 +8,10 @@
 #include "common/io/file_descriptor.h"
 #include "common/io/file_import.h"
 #include "common/io/midi_file.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+
+#include <glib/gi18n.h>
 
 G_DEFINE_TYPE (FileImport, file_import, G_TYPE_OBJECT);
 

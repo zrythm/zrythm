@@ -1,13 +1,6 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-#include "gui/cpp/gtk_widgets/main_window.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include <glib/gi18n.h>
-
 #include "common/dsp/audio_region.h"
 #include "common/dsp/audio_track.h"
 #include "common/dsp/clip.h"
@@ -27,6 +20,13 @@
 #include "common/utils/io.h"
 #include "common/utils/logger.h"
 #include "common/utils/objects.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/main_window.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include <glib/gi18n.h>
+
 #include <fmt/printf.h>
 #include <giomm.h>
 #include <glibmm.h>

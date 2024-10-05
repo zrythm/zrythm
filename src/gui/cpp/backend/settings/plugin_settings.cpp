@@ -1,6 +1,14 @@
 // SPDX-FileCopyrightText: © 2021-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/audio_bus_track.h"
+#include "common/dsp/channel_track.h"
+#include "common/dsp/tracklist.h"
+#include "common/plugins/plugin_descriptor.h"
+#include "common/utils/directory_manager.h"
+#include "common/utils/gtest_wrapper.h"
+#include "common/utils/gtk.h"
+#include "common/utils/string.h"
 #include "gui/cpp/backend/actions/port_connection_action.h"
 #include "gui/cpp/backend/actions/tracklist_selections.h"
 #include "gui/cpp/backend/settings/plugin_settings.h"
@@ -11,14 +19,6 @@
 
 #include <glib/gi18n.h>
 
-#include "common/dsp/audio_bus_track.h"
-#include "common/dsp/channel_track.h"
-#include "common/dsp/tracklist.h"
-#include "common/plugins/plugin_descriptor.h"
-#include "common/utils/directory_manager.h"
-#include "common/utils/gtest_wrapper.h"
-#include "common/utils/gtk.h"
-#include "common/utils/string.h"
 #include <glibmm.h>
 
 constexpr const char * PLUGIN_SETTINGS_JSON_FILENAME = "plugin-settings.json";

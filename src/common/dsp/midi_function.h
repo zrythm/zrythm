@@ -12,11 +12,11 @@
 #ifndef __AUDIO_MIDI_FUNCTION_H__
 #define __AUDIO_MIDI_FUNCTION_H__
 
-#include <glib/gi18n.h>
-
 #include "common/dsp/curve.h"
 #include "common/utils/format.h"
 #include "common/utils/types.h"
+
+#include <glib/gi18n.h>
 
 class MidiSelections;
 

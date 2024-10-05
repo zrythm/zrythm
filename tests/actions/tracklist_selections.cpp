@@ -3,18 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#include "gui/cpp/backend/actions/arranger_selections.h"
-#include "gui/cpp/backend/actions/channel_send_action.h"
-#include "gui/cpp/backend/actions/mixer_selections_action.h"
-#include "gui/cpp/backend/actions/port_connection_action.h"
-#include "gui/cpp/backend/actions/tracklist_selections.h"
-#include "gui/cpp/backend/actions/undoable_action.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-
-#include "tests/helpers/plugin_manager.h"
-#include "tests/helpers/project_helper.h"
-
 #include "common/dsp/audio_region.h"
 #include "common/dsp/automation_region.h"
 #include "common/dsp/chord_region.h"
@@ -28,6 +16,17 @@
 #include "common/utils/color.h"
 #include "common/utils/flags.h"
 #include "common/utils/math.h"
+#include "gui/cpp/backend/actions/arranger_selections.h"
+#include "gui/cpp/backend/actions/channel_send_action.h"
+#include "gui/cpp/backend/actions/mixer_selections_action.h"
+#include "gui/cpp/backend/actions/port_connection_action.h"
+#include "gui/cpp/backend/actions/tracklist_selections.h"
+#include "gui/cpp/backend/actions/undoable_action.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+
+#include "tests/helpers/plugin_manager.h"
+#include "tests/helpers/project_helper.h"
 
 static auto perform_create_arranger_sel = [] (const auto &selections) {
   UNDO_MANAGER->perform (

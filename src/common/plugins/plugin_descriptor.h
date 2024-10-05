@@ -8,12 +8,13 @@
 
 #include <filesystem>
 
+#include "common/io/serialization/iserializable.h"
+#include "common/utils/types.h"
+
 #include <gio/gio.h>
 #include <glib/gi18n.h>
 
 #include "carla_wrapper.h"
-#include "common/io/serialization/iserializable.h"
-#include "common/utils/types.h"
 
 TYPEDEF_STRUCT_UNDERSCORED (WrappedObjectWithChangeSignal);
 enum class PluginSlotType;

@@ -13,9 +13,8 @@
 #ifndef __GUI_WIDGETS_CUSTOM_IMAGE_H__
 #define __GUI_WIDGETS_CUSTOM_IMAGE_H__
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/utils/ui.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define RW_CUSTOM_IMAGE_MARKER_SIZE 8
 #define RW_CUE_MARKER_HEIGHT 12

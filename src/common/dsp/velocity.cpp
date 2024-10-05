@@ -1,6 +1,10 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/midi_note.h"
+#include "common/dsp/region.h"
+#include "common/dsp/velocity.h"
+#include "common/utils/string.h"
 #include "gui/cpp/gtk_widgets/bot_dock_edge.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
 #include "gui/cpp/gtk_widgets/clip_editor.h"
@@ -9,11 +13,6 @@
 #include "gui/cpp/gtk_widgets/midi_editor_space.h"
 #include "gui/cpp/gtk_widgets/midi_modifier_arranger.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/dsp/midi_note.h"
-#include "common/dsp/region.h"
-#include "common/dsp/velocity.h"
-#include "common/utils/string.h"
 
 Velocity::Velocity () : ArrangerObject (Type::Velocity) {};
 

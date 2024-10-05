@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: © 2019, 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/quantize_box.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/utils/gtk.h"
-#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (QuantizeBoxWidget, quantize_box_widget, GTK_TYPE_BOX)
 

@@ -1,6 +1,14 @@
 // SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/modulator_track.h"
+#include "common/dsp/port_connections_manager.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/error.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/rt_thread_id.h"
 #include "gui/cpp/backend/actions/mixer_selections_action.h"
 #include "gui/cpp/backend/actions/tracklist_selections.h"
 #include "gui/cpp/backend/event.h"
@@ -21,15 +29,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/modulator_track.h"
-#include "common/dsp/port_connections_manager.h"
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/error.h"
-#include "common/utils/flags.h"
-#include "common/utils/gtk.h"
-#include "common/utils/rt_thread_id.h"
 
 G_DEFINE_TYPE (DragDestBoxWidget, drag_dest_box_widget, GTK_TYPE_BOX)
 

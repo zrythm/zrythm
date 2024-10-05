@@ -6,14 +6,14 @@
 
 #include "zrythm-config.h"
 
-#include "gui/cpp/gtk_widgets/automation_mode.h"
-#include "gui/cpp/gtk_widgets/custom_button.h"
-
-#include "automation_region.h"
 #include "common/dsp/automation_point.h"
 #include "common/dsp/port.h"
 #include "common/dsp/position.h"
 #include "common/dsp/region_owner.h"
+#include "gui/cpp/gtk_widgets/automation_mode.h"
+#include "gui/cpp/gtk_widgets/custom_button.h"
+
+#include "automation_region.h"
 
 class Port;
 class AutomatableTrack;

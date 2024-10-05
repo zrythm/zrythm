@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/engine.h"
+#include "common/utils/logger.h"
 #include "gui/cpp/backend/actions/arranger_selections.h"
 #include "gui/cpp/backend/actions/channel_send_action.h"
 #include "gui/cpp/backend/actions/chord_action.h"
@@ -18,8 +20,6 @@
 #include <glib.h>
 #include <glib/gi18n.h>
 
-#include "common/dsp/engine.h"
-#include "common/utils/logger.h"
 #include <fmt/format.h>
 
 UndoableAction::

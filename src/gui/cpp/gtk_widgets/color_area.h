@@ -12,9 +12,8 @@
 
 #include <string>
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/utils/color.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define COLOR_AREA_WIDGET_TYPE (color_area_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

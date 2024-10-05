@@ -3,6 +3,15 @@
 
 #include "zrythm-config.h"
 
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/io.h"
+#include "common/utils/logger.h"
+#include "common/utils/networking.h"
+#include "common/utils/objects.h"
+#include "common/utils/progress_info.h"
+#include "common/utils/resources.h"
+#include "common/utils/string.h"
 #include "gui/cpp/backend/actions/undo_manager.h"
 #include "gui/cpp/backend/actions/undo_stack.h"
 #include "gui/cpp/backend/project.h"
@@ -14,15 +23,6 @@
 
 #include <glib/gi18n.h>
 
-#include "common/utils/flags.h"
-#include "common/utils/gtk.h"
-#include "common/utils/io.h"
-#include "common/utils/logger.h"
-#include "common/utils/networking.h"
-#include "common/utils/objects.h"
-#include "common/utils/progress_info.h"
-#include "common/utils/resources.h"
-#include "common/utils/string.h"
 #include <yyjson.h>
 
 G_DEFINE_TYPE (

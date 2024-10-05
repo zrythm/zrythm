@@ -16,9 +16,9 @@
 #include <string>
 #include <string_view>
 
-#include <glib.h>
-
 #include "common/utils/types.h"
+
+#include <glib.h>
 
 TYPEDEF_STRUCT_UNDERSCORED (MainWindowWidget);
 class Project;

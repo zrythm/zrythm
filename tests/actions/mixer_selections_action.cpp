@@ -5,6 +5,10 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
+#include "common/dsp/control_port.h"
+#include "common/dsp/port_identifier.h"
+#include "common/plugins/carla_discovery.h"
+#include "common/utils/flags.h"
 #include "gui/cpp/backend/actions/arranger_selections.h"
 #include "gui/cpp/backend/actions/mixer_selections_action.h"
 #include "gui/cpp/backend/actions/port_connection_action.h"
@@ -15,11 +19,6 @@
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
-
-#include "common/dsp/control_port.h"
-#include "common/dsp/port_identifier.h"
-#include "common/plugins/carla_discovery.h"
-#include "common/utils/flags.h"
 
 static int num_master_children = 0;
 

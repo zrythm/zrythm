@@ -1,10 +1,6 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
 #include "common/dsp/engine.h"
 #include "common/dsp/kmeter_dsp.h"
 #include "common/dsp/meter.h"
@@ -15,6 +11,9 @@
 #include "common/dsp/true_peak_dsp.h"
 #include "common/utils/math.h"
 #include "common/utils/ring_buffer.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 void
 Meter::get_value (AudioValueFormat format, float * val, float * max)

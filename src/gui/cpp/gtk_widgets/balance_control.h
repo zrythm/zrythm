@@ -7,10 +7,9 @@
 #ifndef __GUI_WIDGETS_BALANCE_CONTROL_H__
 #define __GUI_WIDGETS_BALANCE_CONTROL_H__
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/utils/color.h"
 #include "common/utils/types.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 class ControlPort;
 

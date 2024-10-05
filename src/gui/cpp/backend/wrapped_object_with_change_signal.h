@@ -4,10 +4,10 @@
 #ifndef __GUI_BACKEND_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_H__
 #define __GUI_BACKEND_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_H__
 
-#include "gui/cpp/backend/project_info.h"
-
 #include "common/dsp/track.h"
 #include "common/utils/types.h"
+#include "gui/cpp/backend/project_info.h"
+
 #include <giomm/listmodel.h>
 #include <glib-object.h>
 

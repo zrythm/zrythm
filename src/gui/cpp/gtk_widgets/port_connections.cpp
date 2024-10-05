@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
@@ -10,9 +12,6 @@
 #include "gui/cpp/gtk_widgets/port_connections_tree.h"
 
 #include <glib/gi18n.h>
-
-#include "common/utils/gtk.h"
-#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (PortConnectionsWidget, port_connections_widget, GTK_TYPE_BOX)
 

@@ -1,6 +1,19 @@
 // SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/chord_object.h"
+#include "common/dsp/chord_track.h"
+#include "common/dsp/midi_event.h"
+#include "common/dsp/scale_object.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/color.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/math.h"
+#include "common/utils/objects.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/string.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/clip_editor.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
@@ -18,20 +31,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/chord_object.h"
-#include "common/dsp/chord_track.h"
-#include "common/dsp/midi_event.h"
-#include "common/dsp/scale_object.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/color.h"
-#include "common/utils/flags.h"
-#include "common/utils/gtk.h"
-#include "common/utils/math.h"
-#include "common/utils/objects.h"
-#include "common/utils/rt_thread_id.h"
-#include "common/utils/string.h"
-#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (PianoRollKeysWidget, piano_roll_keys_widget, GTK_TYPE_WIDGET)
 

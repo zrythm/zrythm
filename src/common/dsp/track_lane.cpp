@@ -1,6 +1,10 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/midi_event.h"
+#include "common/dsp/track_lane.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/rt_thread_id.h"
 #include "gui/cpp/backend/actions/tracklist_selections.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
@@ -10,10 +14,6 @@
 
 #include <glib/gi18n.h>
 
-#include "common/dsp/midi_event.h"
-#include "common/dsp/track_lane.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/rt_thread_id.h"
 #include "midilib/src/midifile.h"
 #include "midilib/src/midiinfo.h"
 #include <fmt/printf.h>

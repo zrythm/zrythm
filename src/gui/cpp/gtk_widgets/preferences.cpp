@@ -3,6 +3,14 @@
 
 #include "zrythm-config.h"
 
+#include "common/dsp/engine.h"
+#include "common/utils/directory_manager.h"
+#include "common/utils/flags.h"
+#include "common/utils/io.h"
+#include "common/utils/localization.h"
+#include "common/utils/objects.h"
+#include "common/utils/string.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/backend/zrythm.h"
@@ -15,14 +23,6 @@
 
 #include <glib/gi18n.h>
 
-#include "common/dsp/engine.h"
-#include "common/utils/directory_manager.h"
-#include "common/utils/flags.h"
-#include "common/utils/io.h"
-#include "common/utils/localization.h"
-#include "common/utils/objects.h"
-#include "common/utils/string.h"
-#include "common/utils/ui.h"
 #include <locale.h>
 
 G_DEFINE_TYPE (PreferencesWidget, preferences_widget, ADW_TYPE_PREFERENCES_DIALOG)

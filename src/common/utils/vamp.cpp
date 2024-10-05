@@ -6,14 +6,13 @@
 
 #include <cstddef>
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/dsp/vamp-ports/BeatTrack.h"
 #include "common/dsp/vamp-ports/FixedTempoEstimator.h"
 #include "common/utils/logger.h"
 #include "common/utils/objects.h"
 #include "common/utils/string.h"
 #include "common/utils/vamp.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 extern "C" {
 

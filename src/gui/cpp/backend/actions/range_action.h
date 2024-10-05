@@ -4,11 +4,10 @@
 #ifndef __UNDO_RANGE_ACTION_H__
 #define __UNDO_RANGE_ACTION_H__
 
-#include "gui/cpp/backend/actions/undoable_action.h"
-#include "gui/cpp/backend/timeline_selections.h"
-
 #include "common/dsp/position.h"
 #include "common/dsp/transport.h"
+#include "gui/cpp/backend/actions/undoable_action.h"
+#include "gui/cpp/backend/timeline_selections.h"
 
 /**
  * @addtogroup actions

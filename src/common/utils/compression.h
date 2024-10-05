@@ -10,9 +10,9 @@
 #ifndef __UTILS_COMPRESSION_H__
 #define __UTILS_COMPRESSION_H__
 
-#include <glib.h>
-
 #include "common/utils/types.h"
+
+#include <glib.h>
 
 /**
  * Compresses a NULL-terminated string.

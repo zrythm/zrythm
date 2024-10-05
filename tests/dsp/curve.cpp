@@ -3,9 +3,9 @@
 
 #include "zrythm-test-config.h"
 
-#include "tests/helpers/zrythm_helper.h"
-
 #include "common/dsp/curve.h"
+
+#include "tests/helpers/zrythm_helper.h"
 
 TEST (Curve, CurveAlgorithms)
 {

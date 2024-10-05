@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/wrapped_object_with_change_signal.h"
 #include "gui/cpp/backend/zrythm.h"
@@ -10,9 +12,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/utils/flags.h"
-#include "common/utils/gtk.h"
 
 G_DEFINE_TYPE (CcBindingsTreeWidget, cc_bindings_tree_widget, GTK_TYPE_BOX)
 

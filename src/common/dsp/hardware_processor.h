@@ -4,12 +4,11 @@
 #ifndef __AUDIO_HARDWARE_PROCESSOR_H__
 #define __AUDIO_HARDWARE_PROCESSOR_H__
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/dsp/audio_port.h"
 #include "common/dsp/ext_port.h"
 #include "common/dsp/midi_port.h"
 #include "common/utils/icloneable.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 class AudioEngine;
 

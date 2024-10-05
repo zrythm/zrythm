@@ -47,10 +47,11 @@
 #  include <windows.h>
 #endif
 
+#include "common/utils/file.h"
+
 #include <glib.h>
 #include <glib/gstdio.h>
 
-#include "common/utils/file.h"
 #include <glibmm.h>
 
 bool

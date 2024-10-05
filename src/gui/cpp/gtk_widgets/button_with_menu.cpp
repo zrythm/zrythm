@@ -5,10 +5,9 @@
 #include <cstdint>
 #include <cstdlib>
 
+#include "common/utils/gtk.h"
 #include "gui/cpp/gtk_widgets/button_with_menu.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
-#include "common/utils/gtk.h"
 
 G_DEFINE_TYPE (ButtonWithMenuWidget, button_with_menu_widget, GTK_TYPE_BOX)
 

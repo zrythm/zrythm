@@ -1,6 +1,19 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/arranger_object.h"
+#include "common/dsp/audio_region.h"
+#include "common/dsp/automatable_track.h"
+#include "common/dsp/laned_track.h"
+#include "common/dsp/track_lane.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/color.h"
+#include "common/utils/debug.h"
+#include "common/utils/dsp.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/math.h"
+#include "common/utils/objects.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/arranger_draw.h"
 #include "gui/cpp/gtk_widgets/arranger_object.h"
@@ -22,20 +35,6 @@
 #include "gui/cpp/gtk_widgets/track.h"
 #include "gui/cpp/gtk_widgets/tracklist.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/dsp/arranger_object.h"
-#include "common/dsp/audio_region.h"
-#include "common/dsp/automatable_track.h"
-#include "common/dsp/laned_track.h"
-#include "common/dsp/track_lane.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/color.h"
-#include "common/utils/debug.h"
-#include "common/utils/dsp.h"
-#include "common/utils/flags.h"
-#include "common/utils/gtk.h"
-#include "common/utils/math.h"
-#include "common/utils/objects.h"
 
 /*#include <valgrind/callgrind.h>*/
 

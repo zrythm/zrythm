@@ -1,16 +1,15 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/engine.h"
+#include "common/dsp/track.h"
+#include "common/utils/gtk.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/midi_activity_bar.h"
 #include "gui/cpp/gtk_widgets/track.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/dsp/engine.h"
-#include "common/dsp/track.h"
-#include "common/utils/gtk.h"
 
 G_DEFINE_TYPE (MidiActivityBarWidget, midi_activity_bar_widget, GTK_TYPE_WIDGET)
 

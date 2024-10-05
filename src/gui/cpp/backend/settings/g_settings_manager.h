@@ -4,9 +4,9 @@
 #ifndef __SETTINGS_G_SETTINGS_MANAGER_H__
 #define __SETTINGS_G_SETTINGS_MANAGER_H__
 
+#include "common/utils/logger.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "common/utils/logger.h"
 #include "juce/juce.h"
 
 /**

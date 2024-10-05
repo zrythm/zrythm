@@ -9,11 +9,11 @@
  * See https://pianoscales.org/
  */
 
-#include <glib/gi18n.h>
-
 #include "common/dsp/chord_descriptor.h"
 #include "common/dsp/scale.h"
 #include "common/utils/types.h"
+
+#include <glib/gi18n.h>
 
 std::array<ChordType, 12>
 MusicalScale::get_triad_types_for_type (Type type, bool ascending)

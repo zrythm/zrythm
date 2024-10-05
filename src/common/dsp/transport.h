@@ -10,12 +10,12 @@
 #ifndef __AUDIO_TRANSPORT_H__
 #define __AUDIO_TRANSPORT_H__
 
-#include <glib/gi18n.h>
-
 #include "common/dsp/midi_port.h"
 #include "common/dsp/port.h"
 #include "common/dsp/position.h"
 #include "common/utils/types.h"
+
+#include <glib/gi18n.h>
 
 class TimelineSelections;
 class Marker;

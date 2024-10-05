@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 // SPDX-FileCopyrightText: © 2018-2019, 2024 Alexandros Theodotou <alex@zrythm.org>
 
+#include "common/dsp/channel_track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/gtk.h"
 #include "gui/cpp/backend/actions/tracklist_selections.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/tracklist_selections.h"
 #include "gui/cpp/backend/zrythm.h"
-
-#include "common/dsp/channel_track.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/gtk.h"
 
 ChannelTrack::ChannelTrack () : channel_ (std::make_shared<Channel> (*this)) { }
 

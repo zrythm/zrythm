@@ -1,10 +1,9 @@
 // SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/gtk_widgets/popovers/popover_menu_bin.h"
-
 #include "common/utils/gtk.h"
 #include "common/utils/logger.h"
+#include "gui/cpp/gtk_widgets/popovers/popover_menu_bin.h"
 
 G_DEFINE_TYPE (PopoverMenuBinWidget, popover_menu_bin_widget, GTK_TYPE_WIDGET)
 

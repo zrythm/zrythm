@@ -27,10 +27,6 @@
  * ---
  */
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
 #include "common/dsp/chord_descriptor.h"
 #include "common/dsp/engine.h"
 #include "common/dsp/midi_event.h"
@@ -39,6 +35,10 @@
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/midi.h"
 #include "common/utils/rt_thread_id.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
 #include <fmt/format.h>
 
 /**

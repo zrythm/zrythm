@@ -1,18 +1,17 @@
 // SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/audio_clip_editor.h"
-#include "gui/cpp/backend/automation_editor.h"
-#include "gui/cpp/backend/chord_editor.h"
-#include "gui/cpp/backend/clip_editor.h"
-#include "gui/cpp/backend/timeline.h"
-
 #include "common/dsp/audio_region.h"
 #include "common/dsp/automation_region.h"
 #include "common/dsp/chord_region.h"
 #include "common/dsp/midi_region.h"
 #include "common/dsp/quantize_options.h"
 #include "common/dsp/snap_grid.h"
+#include "gui/cpp/backend/audio_clip_editor.h"
+#include "gui/cpp/backend/automation_editor.h"
+#include "gui/cpp/backend/chord_editor.h"
+#include "gui/cpp/backend/clip_editor.h"
+#include "gui/cpp/backend/timeline.h"
 
 void
 EditorSettings::define_base_fields (const Context &ctx)

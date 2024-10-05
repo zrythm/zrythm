@@ -1,6 +1,18 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/arranger_object.h"
+#include "common/dsp/audio_function.h"
+#include "common/dsp/automation_region.h"
+#include "common/dsp/chord_region.h"
+#include "common/dsp/chord_track.h"
+#include "common/dsp/fadeable_object.h"
+#include "common/dsp/marker_track.h"
+#include "common/dsp/piano_roll_track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/gtk.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/actions/arranger_selections.h"
 #include "gui/cpp/backend/actions/undo_manager.h"
 #include "gui/cpp/backend/event.h"
@@ -23,19 +35,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/arranger_object.h"
-#include "common/dsp/audio_function.h"
-#include "common/dsp/automation_region.h"
-#include "common/dsp/chord_region.h"
-#include "common/dsp/chord_track.h"
-#include "common/dsp/fadeable_object.h"
-#include "common/dsp/marker_track.h"
-#include "common/dsp/piano_roll_track.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/gtk.h"
-#include "common/utils/rt_thread_id.h"
-#include "common/utils/ui.h"
 
 #define ACTION_IS(x) (self->action == ##x)
 

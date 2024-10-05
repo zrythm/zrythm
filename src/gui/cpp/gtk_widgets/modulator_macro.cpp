@@ -1,6 +1,13 @@
 // SPDX-FileCopyrightText: © 2021-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/control_port.h"
+#include "common/dsp/modulator_track.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/plugins/plugin.h"
+#include "common/utils/cairo.h"
+#include "common/utils/gtk.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/dialogs/bind_cc_dialog.h"
@@ -12,14 +19,6 @@
 #include "gui/cpp/gtk_widgets/popovers/port_connections_popover.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/control_port.h"
-#include "common/dsp/modulator_track.h"
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/plugins/plugin.h"
-#include "common/utils/cairo.h"
-#include "common/utils/gtk.h"
 
 G_DEFINE_TYPE (ModulatorMacroWidget, modulator_macro_widget, GTK_TYPE_WIDGET)
 

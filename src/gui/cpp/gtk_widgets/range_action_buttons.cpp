@@ -9,11 +9,10 @@
  *
  */
 
+#include "common/utils/resources.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/range_action_buttons.h"
-
-#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (RangeActionButtonsWidget, range_action_buttons_widget, GTK_TYPE_BOX)
 

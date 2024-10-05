@@ -10,9 +10,8 @@
 #ifndef __AUDIO_TRACKLIST_H__
 #define __AUDIO_TRACKLIST_H__
 
-#include "gui/cpp/gtk_widgets/track.h"
-
 #include "common/dsp/track.h"
+#include "gui/cpp/gtk_widgets/track.h"
 
 TYPEDEF_STRUCT_UNDERSCORED (TracklistWidget);
 TYPEDEF_STRUCT_UNDERSCORED (PinnedTracklistWidget);

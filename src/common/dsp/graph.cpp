@@ -23,9 +23,6 @@
  * ---
  */
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-
 #include "common/dsp/audio_track.h"
 #include "common/dsp/channel_track.h"
 #include "common/dsp/control_room.h"
@@ -49,6 +46,8 @@
 #include "common/utils/flags.h"
 #include "common/utils/mpmc_queue.h"
 #include "common/utils/objects.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 
 Graph::Graph (Router * router, SampleProcessor * sample_processor)
     : sample_processor_ (sample_processor), router_ (router)

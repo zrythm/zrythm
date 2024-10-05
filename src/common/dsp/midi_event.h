@@ -16,9 +16,9 @@
 #include <cstdint>
 #include <cstring>
 
+#include "common/utils/types.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "common/utils/types.h"
 #include "crill/spin_mutex.h"
 #include "midilib/src/midifile.h"
 

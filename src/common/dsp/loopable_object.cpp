@@ -1,11 +1,10 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/zrythm.h"
-
 #include "common/dsp/loopable_object.h"
 #include "common/utils/debug.h"
 #include "common/utils/gtest_wrapper.h"
+#include "gui/cpp/backend/zrythm.h"
 
 void
 LoopableObject::copy_members_from (const LoopableObject &other)

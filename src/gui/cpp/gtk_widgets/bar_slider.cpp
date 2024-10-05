@@ -6,15 +6,14 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "gui/cpp/gtk_widgets/bar_slider.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/dsp/port.h"
 #include "common/dsp/port_connection.h"
 #include "common/utils/cairo.h"
 #include "common/utils/gtk.h"
 #include "common/utils/math.h"
 #include "common/utils/objects.h"
+#include "gui/cpp/gtk_widgets/bar_slider.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 static void
 accessible_range_init (GtkAccessibleRangeInterface * iface);

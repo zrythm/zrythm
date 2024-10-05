@@ -11,10 +11,9 @@
 #ifndef __GUI_WIDGETS_BOT_BAR_H__
 #define __GUI_WIDGETS_BOT_BAR_H__
 
+#include "common/utils/types.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/libpanel_wrapper.h"
-
-#include "common/utils/types.h"
 
 TYPEDEF_STRUCT_UNDERSCORED (MidiActivityBarWidget);
 TYPEDEF_STRUCT_UNDERSCORED (LiveWaveformWidget);

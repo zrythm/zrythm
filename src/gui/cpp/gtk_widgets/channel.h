@@ -4,10 +4,9 @@
 #ifndef __GUI_WIDGETS_CHANNEL_H__
 #define __GUI_WIDGETS_CHANNEL_H__
 
+#include "common/dsp/channel.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/meter.h"
-
-#include "common/dsp/channel.h"
 
 #define CHANNEL_WIDGET_TYPE (channel_widget_get_type ())
 G_DECLARE_FINAL_TYPE (ChannelWidget, channel_widget, Z, CHANNEL_WIDGET, GtkWidget)

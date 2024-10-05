@@ -3,10 +3,10 @@
 
 #include <cstdio>
 
-#include <glib.h>
-
 #include "common/plugins/plugin_identifier.h"
 #include "common/utils/types.h"
+
+#include <glib.h>
 
 bool
 PluginIdentifier::validate () const

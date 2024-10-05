@@ -4,6 +4,19 @@
 #include <cmath>
 #include <cstdlib>
 
+#include "common/dsp/control_port.h"
+#include "common/dsp/position.h"
+#include "common/dsp/quantize_options.h"
+#include "common/dsp/router.h"
+#include "common/dsp/snap_grid.h"
+#include "common/dsp/tempo_track.h"
+#include "common/dsp/tracklist.h"
+#include "common/dsp/transport.h"
+#include "common/utils/cairo.h"
+#include "common/utils/color.h"
+#include "common/utils/error.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
 #include "gui/cpp/backend/actions/transport_action.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
@@ -25,20 +38,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/control_port.h"
-#include "common/dsp/position.h"
-#include "common/dsp/quantize_options.h"
-#include "common/dsp/router.h"
-#include "common/dsp/snap_grid.h"
-#include "common/dsp/tempo_track.h"
-#include "common/dsp/tracklist.h"
-#include "common/dsp/transport.h"
-#include "common/utils/cairo.h"
-#include "common/utils/color.h"
-#include "common/utils/error.h"
-#include "common/utils/flags.h"
-#include "common/utils/gtk.h"
 
 G_DEFINE_TYPE (DigitalMeterWidget, digital_meter_widget, GTK_TYPE_WIDGET)
 

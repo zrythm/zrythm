@@ -1,6 +1,9 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/scale.h"
+#include "common/dsp/scale_object.h"
+#include "common/utils/resources.h"
 #include "gui/cpp/backend/actions/arranger_selections.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/zrythm.h"
@@ -10,10 +13,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/scale.h"
-#include "common/dsp/scale_object.h"
-#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (
   ScaleSelectorWindowWidget,

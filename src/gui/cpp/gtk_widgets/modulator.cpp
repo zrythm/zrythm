@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: © 2019-2020, 2024 Alexandros Theodotou
 // <alex@zrythm.org> SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/plugins/plugin.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/modulator.h"
 #include "gui/cpp/gtk_widgets/modulator_inner.h"
 
 #include <glib/gi18n.h>
-
-#include "common/plugins/plugin.h"
 
 G_DEFINE_TYPE (ModulatorWidget, modulator_widget, TWO_COL_EXPANDER_BOX_WIDGET_TYPE)
 

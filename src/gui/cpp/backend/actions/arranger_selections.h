@@ -7,13 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "gui/cpp/backend/actions/undoable_action.h"
-#include "gui/cpp/backend/audio_selections.h"
-#include "gui/cpp/backend/automation_selections.h"
-#include "gui/cpp/backend/chord_selections.h"
-#include "gui/cpp/backend/midi_selections.h"
-#include "gui/cpp/backend/timeline_selections.h"
-
 #include "common/dsp/audio_function.h"
 #include "common/dsp/automation_function.h"
 #include "common/dsp/lengthable_object.h"
@@ -23,6 +16,12 @@
 #include "common/dsp/position.h"
 #include "common/dsp/quantize_options.h"
 #include "common/dsp/region.h"
+#include "gui/cpp/backend/actions/undoable_action.h"
+#include "gui/cpp/backend/audio_selections.h"
+#include "gui/cpp/backend/automation_selections.h"
+#include "gui/cpp/backend/chord_selections.h"
+#include "gui/cpp/backend/midi_selections.h"
+#include "gui/cpp/backend/timeline_selections.h"
 
 /**
  * @addtogroup actions

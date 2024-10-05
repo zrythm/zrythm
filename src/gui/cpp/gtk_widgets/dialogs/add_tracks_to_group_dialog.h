@@ -4,9 +4,8 @@
 #ifndef __GUI_WIDGETS_ADD_TRACKS_TO_GROUP_DIALOG_H__
 #define __GUI_WIDGETS_ADD_TRACKS_TO_GROUP_DIALOG_H__
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/utils/types.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define ADD_TRACKS_TO_GROUP_DIALOG_WIDGET_TYPE \
   (add_tracks_to_group_dialog_widget_get_type ())

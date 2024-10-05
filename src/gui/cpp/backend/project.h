@@ -6,6 +6,14 @@
 
 #include <string>
 
+#include "common/dsp/engine.h"
+#include "common/dsp/midi_mapping.h"
+#include "common/dsp/port.h"
+#include "common/dsp/port_connections_manager.h"
+#include "common/dsp/quantize_options.h"
+#include "common/dsp/region_link_group_manager.h"
+#include "common/plugins/plugin.h"
+#include "common/utils/progress_info.h"
 #include "gui/cpp/backend/actions/undo_manager.h"
 #include "gui/cpp/backend/audio_selections.h"
 #include "gui/cpp/backend/automation_selections.h"
@@ -18,15 +26,6 @@
 #include "gui/cpp/backend/tool.h"
 #include "gui/cpp/backend/tracklist_selections.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
-#include "common/dsp/engine.h"
-#include "common/dsp/midi_mapping.h"
-#include "common/dsp/port.h"
-#include "common/dsp/port_connections_manager.h"
-#include "common/dsp/quantize_options.h"
-#include "common/dsp/region_link_group_manager.h"
-#include "common/plugins/plugin.h"
-#include "common/utils/progress_info.h"
 
 /**
  * @addtogroup project Project

@@ -3,6 +3,19 @@
 
 #include <memory>
 
+#include "common/dsp/audio_region.h"
+#include "common/dsp/audio_track.h"
+#include "common/dsp/clip.h"
+#include "common/dsp/pool.h"
+#include "common/dsp/stretcher.h"
+#include "common/dsp/tempo_track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/audio.h"
+#include "common/utils/debug.h"
+#include "common/utils/dsp.h"
+#include "common/utils/flags.h"
+#include "common/utils/logger.h"
+#include "common/utils/math.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/gtk_widgets/audio_arranger.h"
@@ -19,19 +32,6 @@
 
 #include <glib/gi18n.h>
 
-#include "common/dsp/audio_region.h"
-#include "common/dsp/audio_track.h"
-#include "common/dsp/clip.h"
-#include "common/dsp/pool.h"
-#include "common/dsp/stretcher.h"
-#include "common/dsp/tempo_track.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/audio.h"
-#include "common/utils/debug.h"
-#include "common/utils/dsp.h"
-#include "common/utils/flags.h"
-#include "common/utils/logger.h"
-#include "common/utils/math.h"
 #include <fmt/format.h>
 
 void

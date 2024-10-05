@@ -10,9 +10,8 @@
 #ifndef __GUI_WIDGETS_ARRANGER_MINIMAP_H__
 #define __GUI_WIDGETS_ARRANGER_MINIMAP_H__
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/dsp/position.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define ARRANGER_MINIMAP_WIDGET_TYPE (arranger_minimap_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

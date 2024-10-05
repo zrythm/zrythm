@@ -4,12 +4,11 @@
 #ifndef __UNDO_MIXER_SELECTIONS_ACTION_H__
 #define __UNDO_MIXER_SELECTIONS_ACTION_H__
 
-#include "gui/cpp/backend/actions/undoable_action.h"
-#include "gui/cpp/backend/mixer_selections.h"
-
 #include "common/dsp/automation_track.h"
 #include "common/dsp/port_connections_manager.h"
 #include "common/dsp/track.h"
+#include "gui/cpp/backend/actions/undoable_action.h"
+#include "gui/cpp/backend/mixer_selections.h"
 
 class Plugin;
 class Track;

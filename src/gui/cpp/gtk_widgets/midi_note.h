@@ -10,11 +10,10 @@
 #ifndef __GUI_WIDGETS_MIDI_NOTE_H__
 #define __GUI_WIDGETS_MIDI_NOTE_H__
 
-#include "gui/cpp/gtk_widgets/arranger_object.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
 #include "common/dsp/midi_note.h"
 #include "common/utils/ui.h"
+#include "gui/cpp/gtk_widgets/arranger_object.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 /**
  * @addtogroup widgets

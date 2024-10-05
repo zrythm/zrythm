@@ -3,12 +3,6 @@
 
 #include <cstdlib>
 
-#include "gui/cpp/backend/event.h"
-#include "gui/cpp/backend/event_manager.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
 #include "common/dsp/channel.h"
 #include "common/dsp/group_target_track.h"
 #include "common/dsp/router.h"
@@ -16,6 +10,11 @@
 #include "common/dsp/track_processor.h"
 #include "common/dsp/tracklist.h"
 #include "common/utils/rt_thread_id.h"
+#include "gui/cpp/backend/event.h"
+#include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 void
 GroupTargetTrack::update_child_output (

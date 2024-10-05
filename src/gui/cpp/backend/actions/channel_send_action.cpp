@@ -1,6 +1,11 @@
 // SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/channel.h"
+#include "common/dsp/port_identifier.h"
+#include "common/dsp/router.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/rt_thread_id.h"
 #include "gui/cpp/backend/actions/channel_send_action.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
@@ -9,12 +14,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/channel.h"
-#include "common/dsp/port_identifier.h"
-#include "common/dsp/router.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/rt_thread_id.h"
 
 ChannelSendAction::ChannelSendAction (
   Type                           type,

@@ -1,6 +1,11 @@
 // SPDX-FileCopyrightText: © 2019, 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/channel.h"
+#include "common/dsp/region.h"
+#include "common/dsp/track.h"
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
 #include "gui/cpp/gtk_widgets/audio_arranger.h"
@@ -16,12 +21,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/channel.h"
-#include "common/dsp/region.h"
-#include "common/dsp/track.h"
-#include "common/utils/gtk.h"
-#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (AudioEditorSpaceWidget, audio_editor_space_widget, GTK_TYPE_BOX)
 

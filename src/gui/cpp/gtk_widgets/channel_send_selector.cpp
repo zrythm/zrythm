@@ -1,6 +1,11 @@
 // SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/channel_send.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/plugins/plugin_identifier.h"
+#include "common/utils/logger.h"
 #include "gui/cpp/backend/actions/channel_send_action.h"
 #include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/wrapped_object_with_change_signal.h"
@@ -11,12 +16,6 @@
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/channel_send.h"
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/plugins/plugin_identifier.h"
-#include "common/utils/logger.h"
 
 G_DEFINE_TYPE (
   ChannelSendSelectorWidget,

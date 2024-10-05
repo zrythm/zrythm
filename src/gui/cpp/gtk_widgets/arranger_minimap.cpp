@@ -1,6 +1,11 @@
 // SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/engine.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/ui.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
 #include "gui/cpp/backend/project.h"
@@ -23,12 +28,6 @@
 #include "gui/cpp/gtk_widgets/timeline_panel.h"
 #include "gui/cpp/gtk_widgets/timeline_ruler.h"
 #include "gui/cpp/gtk_widgets/zrythm_app.h"
-
-#include "common/dsp/engine.h"
-#include "common/utils/flags.h"
-#include "common/utils/gtk.h"
-#include "common/utils/rt_thread_id.h"
-#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (ArrangerMinimapWidget, arranger_minimap_widget, GTK_TYPE_WIDGET)
 

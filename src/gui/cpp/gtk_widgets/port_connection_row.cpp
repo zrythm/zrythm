@@ -1,6 +1,11 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/port.h"
+#include "common/dsp/port_connection.h"
+#include "common/dsp/port_connections_manager.h"
+#include "common/utils/gtk.h"
+#include "common/utils/objects.h"
 #include "gui/cpp/backend/actions/port_connection_action.h"
 #include "gui/cpp/backend/actions/undo_manager.h"
 #include "gui/cpp/backend/project.h"
@@ -12,12 +17,6 @@
 #include "gui/cpp/gtk_widgets/port_connection_row.h"
 
 #include <glib/gi18n.h>
-
-#include "common/dsp/port.h"
-#include "common/dsp/port_connection.h"
-#include "common/dsp/port_connections_manager.h"
-#include "common/utils/gtk.h"
-#include "common/utils/objects.h"
 
 G_DEFINE_TYPE (PortConnectionRowWidget, port_connection_row_widget, GTK_TYPE_BOX)
 

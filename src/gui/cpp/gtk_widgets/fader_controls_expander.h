@@ -4,10 +4,9 @@
 #ifndef __GUI_WIDGETS_FADER_CONTROLS_EXPANDER_H__
 #define __GUI_WIDGETS_FADER_CONTROLS_EXPANDER_H__
 
+#include "common/utils/types.h"
 #include "gui/cpp/gtk_widgets/expander_box.h"
 #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-
-#include "common/utils/types.h"
 
 #define FADER_CONTROLS_EXPANDER_WIDGET_TYPE \
   (fader_controls_expander_widget_get_type ())

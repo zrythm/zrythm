@@ -4,10 +4,9 @@
 #ifndef __ACTIONS_TRANSPORT_ACTION_H__
 #define __ACTIONS_TRANSPORT_ACTION_H__
 
-#include "gui/cpp/backend/actions/undoable_action.h"
-
 #include "common/utils/icloneable.h"
 #include "common/utils/types.h"
+#include "gui/cpp/backend/actions/undoable_action.h"
 
 /**
  * @addtogroup actions

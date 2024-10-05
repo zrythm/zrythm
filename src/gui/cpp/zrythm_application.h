@@ -12,10 +12,9 @@
 #include <QProcess>
 #include <QQmlApplicationEngine>
 
+#include "common/utils/rt_thread_id.h"
 #include "gui/cpp/glue/settings_manager.h"
 #include "gui/cpp/glue/theme_manager.h"
-
-#include "common/utils/rt_thread_id.h"
 
 namespace zrythm::gui
 {

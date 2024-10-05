@@ -3,12 +3,6 @@
 
 #include <cstdlib>
 
-#include "gui/cpp/backend/actions/undo_manager.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-
-#include <glib/gi18n.h>
-
 #include "common/dsp/clip.h"
 #include "common/dsp/pool.h"
 #include "common/dsp/track.h"
@@ -16,6 +10,11 @@
 #include "common/utils/file.h"
 #include "common/utils/io.h"
 #include "common/utils/string.h"
+#include "gui/cpp/backend/actions/undo_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+
+#include <glib/gi18n.h>
 
 void
 AudioPool::init_loaded ()

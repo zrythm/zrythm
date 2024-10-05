@@ -4,10 +4,6 @@
 #include <cmath>
 #include <cstdlib>
 
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
-
 #include "common/dsp/audio_track.h"
 #include "common/dsp/automation_tracklist.h"
 #include "common/dsp/engine.h"
@@ -16,6 +12,9 @@
 #include "common/dsp/stretcher.h"
 #include "common/dsp/tracklist.h"
 #include "common/utils/objects.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 AudioTrack::AudioTrack (const std::string &name, int pos, unsigned int samplerate)
     : Track (Track::Type::Audio, name, pos, PortType::Audio, PortType::Audio),

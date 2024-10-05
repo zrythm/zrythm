@@ -3,6 +3,10 @@
 
 #include "zrythm-test-config.h"
 
+#include "common/dsp/exporter.h"
+#include "common/io/file_descriptor.h"
+#include "common/utils/chromaprint.h"
+#include "common/utils/progress_info.h"
 #include "gui/cpp/backend/actions/arranger_selections.h"
 #include "gui/cpp/backend/actions/channel_send_action.h"
 #include "gui/cpp/backend/project.h"
@@ -11,10 +15,6 @@
 #include "helpers/plugin_manager.h"
 #include "tests/helpers/zrythm_helper.h"
 
-#include "common/dsp/exporter.h"
-#include "common/io/file_descriptor.h"
-#include "common/utils/chromaprint.h"
-#include "common/utils/progress_info.h"
 #include <sndfile.h>
 
 constexpr midi_byte_t DUMMY_NOTE_PITCH = 70;
