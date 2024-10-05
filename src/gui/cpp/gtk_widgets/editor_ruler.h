@@ -10,9 +10,8 @@
 #ifndef __GUI_WIDGETS_EDITOR_RULER_H__
 #define __GUI_WIDGETS_EDITOR_RULER_H__
 
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/ruler.h"
-
-#include "gtk_wrapper.h"
 
 /**
  * @addtogroup widgets

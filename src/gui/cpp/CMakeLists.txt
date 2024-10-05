@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
 target_sources(zrythm_lib
   PRIVATE
     zrythm_application.h

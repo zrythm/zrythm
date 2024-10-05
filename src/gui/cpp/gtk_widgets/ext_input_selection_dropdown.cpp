@@ -1,14 +1,15 @@
 // SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/engine.h"
-#include "dsp/hardware_processor.h"
-#include "dsp/track.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/wrapped_object_with_change_signal.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/ext_input_selection_dropdown.h"
-#include "project.h"
-#include "utils/gtk.h"
-#include "zrythm.h"
+
+#include "common/dsp/engine.h"
+#include "common/dsp/hardware_processor.h"
+#include "common/dsp/track.h"
+#include "common/utils/gtk.h"
 
 static char *
 get_str (void * data)

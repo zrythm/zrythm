@@ -3,13 +3,13 @@
 
 #include "zrythm-config.h"
 
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/text_expander.h"
-#include "utils/gtk.h"
-#include "utils/logger.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/utils/gtk.h"
+#include "common/utils/logger.h"
 
 #define TEXT_EXPANDER_WIDGET_TYPE (text_expander_widget_get_type ())
 G_DEFINE_TYPE (TextExpanderWidget, text_expander_widget, EXPANDER_BOX_WIDGET_TYPE)

@@ -23,18 +23,18 @@
 #include <memory>
 
 #include "gui/cpp/backend/file_manager.h"
-#include "io/file_descriptor.h"
-#include "settings/g_settings_manager.h"
-#include "utils/gtest_wrapper.h"
-#include "utils/gtk.h"
-#include "utils/io.h"
-#include "utils/objects.h"
-#include "utils/types.h"
-#include "zrythm.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/io/file_descriptor.h"
+#include "common/utils/gtest_wrapper.h"
+#include "common/utils/gtk.h"
+#include "common/utils/io.h"
+#include "common/utils/objects.h"
+#include "common/utils/types.h"
 
 void
 FileManager::add_volume (GVolume * vol)

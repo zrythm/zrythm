@@ -3,10 +3,10 @@
 
 #include "zrythm-test-config.h"
 
-#include "utils/file.h"
-#include "utils/io.h"
-
 #include "tests/helpers/zrythm_helper.h"
+
+#include "common/utils/file.h"
+#include "common/utils/io.h"
 
 TEST (File, SymLink)
 {

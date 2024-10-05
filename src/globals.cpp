@@ -3,7 +3,7 @@
 
 #include "zrythm-config.h"
 
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 /** This is declared extern in zrythm_app.h. */
 Glib::RefPtr<ZrythmApp> zrythm_app;

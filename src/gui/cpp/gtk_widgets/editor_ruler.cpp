@@ -1,27 +1,27 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/arranger_selections.h"
-#include "dsp/audio_region.h"
-#include "dsp/track.h"
+#include "gui/cpp/backend/actions/arranger_selections.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/bot_dock_edge.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
 #include "gui/cpp/gtk_widgets/clip_editor.h"
 #include "gui/cpp/gtk_widgets/clip_editor_inner.h"
 #include "gui/cpp/gtk_widgets/editor_ruler.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/midi_modifier_arranger.h"
 #include "gui/cpp/gtk_widgets/ruler.h"
-#include "project.h"
-#include "utils/rt_thread_id.h"
-#include "utils/ui.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/audio_region.h"
+#include "common/dsp/track.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/ui.h"
 #define ACTION_IS(x) (self->action == x)
 #define TARGET_IS(x) (self->target == RWTarget::x)
 

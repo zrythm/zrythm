@@ -1,18 +1,19 @@
 // SPDX-FileCopyrightText: © 2018-2019, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/engine.h"
-#include "dsp/track.h"
-#include "dsp/tracklist.h"
 #include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/pinned_tracklist.h"
 #include "gui/cpp/gtk_widgets/timeline_panel.h"
 #include "gui/cpp/gtk_widgets/track.h"
-#include "project.h"
-#include "utils/gtk.h"
-#include "zrythm.h"
+
+#include "common/dsp/engine.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/gtk.h"
 
 G_DEFINE_TYPE (PinnedTracklistWidget, pinned_tracklist_widget, GTK_TYPE_BOX)
 

@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
-#include "io/file_descriptor.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/io/file_descriptor.h"
 
 /**
  * @addtogroup gui_backend

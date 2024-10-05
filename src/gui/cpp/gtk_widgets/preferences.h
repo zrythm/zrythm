@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_PREFERENCES_H__
 #define __GUI_WIDGETS_PREFERENCES_H__
 
-#include "libadwaita_wrapper.h"
+#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
 
 #define PREFERENCES_WIDGET_TYPE (preferences_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

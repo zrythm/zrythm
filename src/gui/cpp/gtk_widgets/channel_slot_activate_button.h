@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_CHANNEL_SLOT_ACTIVATE_BUTTON_H__
 #define __GUI_WIDGETS_CHANNEL_SLOT_ACTIVATE_BUTTON_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define CHANNEL_SLOT_ACTIVATE_BUTTON_WIDGET_TYPE \
   (channel_slot_activate_button_widget_get_type ())

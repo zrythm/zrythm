@@ -10,9 +10,10 @@
 #ifndef __GUI_BACKEND_AUDIO_SELECTIONS_H__
 #define __GUI_BACKEND_AUDIO_SELECTIONS_H__
 
-#include "dsp/position.h"
-#include "dsp/region_identifier.h"
 #include "gui/cpp/backend/arranger_selections.h"
+
+#include "common/dsp/position.h"
+#include "common/dsp/region_identifier.h"
 
 class Region;
 

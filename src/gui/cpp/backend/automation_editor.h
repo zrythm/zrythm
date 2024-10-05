@@ -5,7 +5,8 @@
 #define __GUI_BACKEND_AUTOMATION_EDITOR_H__
 
 #include "gui/cpp/backend/editor_settings.h"
-#include "utils/icloneable.h"
+
+#include "common/utils/icloneable.h"
 
 /**
  * @addtogroup gui_backend

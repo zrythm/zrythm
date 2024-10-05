@@ -10,17 +10,14 @@
  * Timeline background inheriting from arranger_bg.
  */
 
-#include "dsp/automation_track.h"
-#include "dsp/automation_tracklist.h"
-#include "dsp/channel.h"
-#include "dsp/instrument_track.h"
-#include "dsp/router.h"
-#include "dsp/track.h"
-#include "dsp/tracklist.h"
-#include "dsp/transport.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
+#include "gui/cpp/backend/settings/settings.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
 #include "gui/cpp/gtk_widgets/automation_point.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/ruler.h"
 #include "gui/cpp/gtk_widgets/timeline_arranger.h"
@@ -29,13 +26,16 @@
 #include "gui/cpp/gtk_widgets/timeline_ruler.h"
 #include "gui/cpp/gtk_widgets/track.h"
 #include "gui/cpp/gtk_widgets/tracklist.h"
-#include "project.h"
-#include "settings/g_settings_manager.h"
-#include "settings/settings.h"
-#include "utils/cairo.h"
-#include "zrythm.h"
 
-#include "gtk_wrapper.h"
+#include "common/dsp/automation_track.h"
+#include "common/dsp/automation_tracklist.h"
+#include "common/dsp/channel.h"
+#include "common/dsp/instrument_track.h"
+#include "common/dsp/router.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/dsp/transport.h"
+#include "common/utils/cairo.h"
 
 G_DEFINE_TYPE (TimelineBgWidget, timeline_bg_widget, ARRANGER_BG_WIDGET_TYPE)
 

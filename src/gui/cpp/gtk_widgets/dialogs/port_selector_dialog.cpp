@@ -1,24 +1,24 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/port_connection_action.h"
-#include "dsp/port.h"
-#include "dsp/router.h"
-#include "dsp/track.h"
-#include "dsp/tracklist.h"
+#include "gui/cpp/backend/actions/port_connection_action.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/dialogs/port_selector_dialog.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/popovers/port_connections_popover.h"
-#include "plugins/plugin.h"
-#include "project.h"
-#include "utils/error.h"
-#include "utils/resources.h"
-#include "utils/ui.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/port.h"
+#include "common/dsp/router.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/plugins/plugin.h"
+#include "common/utils/error.h"
+#include "common/utils/resources.h"
+#include "common/utils/ui.h"
 
 /* FIXME this should re-use the same logic from automatable selector popover */
 

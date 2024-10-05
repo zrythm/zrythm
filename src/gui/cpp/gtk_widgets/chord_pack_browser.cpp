@@ -1,22 +1,22 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/chord_preset_pack_manager.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/backend/wrapped_object_with_change_signal.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/chord_pack_browser.h"
 #include "gui/cpp/gtk_widgets/file_auditioner_controls.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/item_factory.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/right_dock_edge.h"
-#include "project.h"
-#include "settings/chord_preset_pack_manager.h"
-#include "settings/g_settings_manager.h"
-#include "utils/resources.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (ChordPackBrowserWidget, chord_pack_browser_widget, GTK_TYPE_BOX)
 

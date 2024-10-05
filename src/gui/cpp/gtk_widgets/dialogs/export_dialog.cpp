@@ -1,34 +1,34 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/engine.h"
-#include "dsp/exporter.h"
-#include "dsp/master_track.h"
-#include "dsp/router.h"
-#include "dsp/tracklist.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/backend/wrapped_object_with_change_signal.h"
 #include "gui/cpp/gtk_widgets/dialogs/export_dialog.h"
 #include "gui/cpp/gtk_widgets/dialogs/export_progress_dialog.h"
 #include "gui/cpp/gtk_widgets/digital_meter.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/item_factory.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
-#include "project.h"
-#include "settings/g_settings_manager.h"
-#include "utils/color.h"
-#include "utils/datetime.h"
-#include "utils/flags.h"
-#include "utils/format.h"
-#include "utils/gtk.h"
-#include "utils/io.h"
-#include "utils/progress_info.h"
-#include "utils/resources.h"
-#include "utils/string.h"
-#include "utils/ui.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/engine.h"
+#include "common/dsp/exporter.h"
+#include "common/dsp/master_track.h"
+#include "common/dsp/router.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/color.h"
+#include "common/utils/datetime.h"
+#include "common/utils/flags.h"
+#include "common/utils/format.h"
+#include "common/utils/gtk.h"
+#include "common/utils/io.h"
+#include "common/utils/progress_info.h"
+#include "common/utils/resources.h"
+#include "common/utils/string.h"
+#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (ExportDialogWidget, export_dialog_widget, GTK_TYPE_DIALOG)
 

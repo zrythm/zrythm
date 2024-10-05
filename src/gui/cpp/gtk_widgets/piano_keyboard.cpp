@@ -3,15 +3,16 @@
 
 #include <cmath>
 
-#include "dsp/chord_descriptor.h"
 #include "gui/cpp/backend/chord_editor.h"
 #include "gui/cpp/backend/clip_editor.h"
 #include "gui/cpp/backend/piano_roll.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/piano_keyboard.h"
-#include "project.h"
-#include "utils/ui.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include "common/dsp/chord_descriptor.h"
+#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (PianoKeyboardWidget, piano_keyboard_widget, GTK_TYPE_DRAWING_AREA)
 

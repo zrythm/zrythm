@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_ABOUT_DIALOG_H__
 #define __GUI_WIDGETS_ABOUT_DIALOG_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 /**
  * @addtogroup widgets

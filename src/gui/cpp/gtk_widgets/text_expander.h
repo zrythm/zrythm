@@ -11,9 +11,9 @@
 #define __GUI_WIDGETS_TEXT_EXPANDER_H__
 
 #include "gui/cpp/gtk_widgets/expander_box.h"
-#include "utils/types.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/utils/types.h"
 
 #define TEXT_EXPANDER_WIDGET_TYPE (text_expander_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

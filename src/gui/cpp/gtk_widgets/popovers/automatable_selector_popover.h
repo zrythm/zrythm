@@ -4,10 +4,10 @@
 #ifndef __GUI_WIDGETS_AUTOMATABLE_SELECTOR_POPOVER_H__
 #define __GUI_WIDGETS_AUTOMATABLE_SELECTOR_POPOVER_H__
 
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/item_factory.h"
-#include "utils/types.h"
 
-#include "gtk_wrapper.h"
+#include "common/utils/types.h"
 
 #define AUTOMATABLE_SELECTOR_POPOVER_WIDGET_TYPE \
   (automatable_selector_popover_widget_get_type ())

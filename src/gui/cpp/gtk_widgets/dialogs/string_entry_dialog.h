@@ -4,9 +4,9 @@
 #ifndef __GUI_WIDGETS_STRING_ENTRY_DIALOG_H__
 #define __GUI_WIDGETS_STRING_ENTRY_DIALOG_H__
 
-#include "utils/types.h"
+#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
 
-#include "libadwaita_wrapper.h"
+#include "common/utils/types.h"
 
 #define STRING_ENTRY_DIALOG_WIDGET_TYPE (string_entry_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

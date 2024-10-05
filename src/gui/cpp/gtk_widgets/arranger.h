@@ -4,13 +4,13 @@
 #ifndef __GUI_WIDGETS_ARRANGER_H__
 #define __GUI_WIDGETS_ARRANGER_H__
 
-#include "dsp/position.h"
-#include "dsp/transport.h"
 #include "gui/cpp/backend/editor_settings.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
-#include "utils/ui.h"
 
-#include "gtk_wrapper.h"
+#include "common/dsp/position.h"
+#include "common/dsp/transport.h"
+#include "common/utils/ui.h"
 
 #define ARRANGER_WIDGET_TYPE (arranger_widget_get_type ())
 G_DECLARE_FINAL_TYPE (ArrangerWidget, arranger_widget, Z, ARRANGER_WIDGET, GtkWidget)

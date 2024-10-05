@@ -4,10 +4,11 @@
 #include <cstdlib>
 
 #include "gui/cpp/gtk_widgets/custom_button.h"
-#include "utils/gtk.h"
-#include "utils/logger.h"
-#include "utils/ui.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include "common/utils/gtk.h"
+#include "common/utils/logger.h"
+#include "common/utils/ui.h"
 
 CustomButtonWidget::CustomButtonWidget () { }
 

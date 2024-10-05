@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-#include "libadwaita_wrapper.h"
+#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
 
 /**
  * @addtogroup widgets

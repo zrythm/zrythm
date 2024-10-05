@@ -4,7 +4,7 @@
 #ifndef __GUI_BACKEND_EDITOR_SETTINGS_H__
 #define __GUI_BACKEND_EDITOR_SETTINGS_H__
 
-#include "io/serialization/iserializable.h"
+#include "common/io/serialization/iserializable.h"
 
 /**
  * @addtogroup gui_backend

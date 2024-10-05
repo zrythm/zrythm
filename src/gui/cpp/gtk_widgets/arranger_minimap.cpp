@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/engine.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/timeline.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
 #include "gui/cpp/gtk_widgets/arranger_minimap.h"
@@ -14,6 +14,7 @@
 #include "gui/cpp/gtk_widgets/clip_editor.h"
 #include "gui/cpp/gtk_widgets/clip_editor_inner.h"
 #include "gui/cpp/gtk_widgets/editor_ruler.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/main_notebook.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/midi_arranger.h"
@@ -21,14 +22,13 @@
 #include "gui/cpp/gtk_widgets/ruler.h"
 #include "gui/cpp/gtk_widgets/timeline_panel.h"
 #include "gui/cpp/gtk_widgets/timeline_ruler.h"
-#include "project.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/rt_thread_id.h"
-#include "utils/ui.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
-#include "gtk_wrapper.h"
+#include "common/dsp/engine.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (ArrangerMinimapWidget, arranger_minimap_widget, GTK_TYPE_WIDGET)
 

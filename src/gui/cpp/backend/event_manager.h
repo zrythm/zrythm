@@ -14,11 +14,11 @@
 #define __GUI_BACKEND_EVENT_MANAGER_H__
 
 #include "gui/cpp/backend/event.h"
-#include "utils/backtrace.h"
-#include "utils/mpmc_queue.h"
-#include "utils/object_pool.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/utils/backtrace.h"
+#include "common/utils/mpmc_queue.h"
+#include "common/utils/object_pool.h"
 
 /**
  * @addtogroup events

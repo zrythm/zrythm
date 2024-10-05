@@ -1,29 +1,30 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/tracklist_selections.h"
-#include "dsp/control_port.h"
-#include "dsp/control_room.h"
-#include "dsp/engine.h"
-#include "dsp/engine_jack.h"
-#include "dsp/fader.h"
-#include "dsp/tracklist.h"
+#include "gui/cpp/backend/actions/tracklist_selections.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
+#include "gui/cpp/backend/settings/settings.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/active_hardware_mb.h"
 #include "gui/cpp/gtk_widgets/knob.h"
 #include "gui/cpp/gtk_widgets/knob_with_name.h"
 #include "gui/cpp/gtk_widgets/monitor_section.h"
-#include "project.h"
-#include "settings/g_settings_manager.h"
-#include "settings/settings.h"
-#include "utils/error.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/math.h"
-#include "utils/resources.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include "common/dsp/control_port.h"
+#include "common/dsp/control_room.h"
+#include "common/dsp/engine.h"
+#include "common/dsp/engine_jack.h"
+#include "common/dsp/fader.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/error.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/math.h"
+#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (MonitorSectionWidget, monitor_section_widget, GTK_TYPE_BOX)
 

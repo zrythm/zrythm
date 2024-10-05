@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/cpp/gtk_widgets/editable_label.h"
-#include "utils/logger.h"
+
+#include "common/utils/logger.h"
 
 G_DEFINE_TYPE (EditableLabelWidget, editable_label_widget, GTK_TYPE_WIDGET)
 

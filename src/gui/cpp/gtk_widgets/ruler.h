@@ -10,10 +10,10 @@
 #ifndef __GUI_WIDGETS_RULER_H__
 #define __GUI_WIDGETS_RULER_H__
 
-#include "dsp/position.h"
-#include "utils/ui.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/dsp/position.h"
+#include "common/utils/ui.h"
 
 constexpr int RW_RULER_MARKER_SIZE = 8;
 constexpr int RW_CUE_MARKER_HEIGHT = 12;

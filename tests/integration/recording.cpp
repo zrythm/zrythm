@@ -3,18 +3,19 @@
 
 #include "zrythm-test-config.h"
 
-#include "dsp/engine_dummy.h"
-#include "dsp/master_track.h"
-#include "dsp/midi_event.h"
-#include "dsp/midi_track.h"
-#include "dsp/recording_manager.h"
-#include "project.h"
-#include "utils/flags.h"
-#include "zrythm.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
+
+#include "common/dsp/engine_dummy.h"
+#include "common/dsp/master_track.h"
+#include "common/dsp/midi_event.h"
+#include "common/dsp/midi_track.h"
+#include "common/dsp/recording_manager.h"
+#include "common/utils/flags.h"
 
 constexpr auto CYCLE_SIZE = 100;
 constexpr auto NOTE_PITCH = 56;

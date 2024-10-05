@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/cpp/backend/editor_settings.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
 #include "gui/cpp/gtk_widgets/bot_dock_edge.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
@@ -12,8 +13,7 @@
 #include "gui/cpp/gtk_widgets/midi_editor_space.h"
 #include "gui/cpp/gtk_widgets/timeline_panel.h"
 #include "gui/cpp/gtk_widgets/tracklist.h"
-#include "project.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 void
 EditorSettings::set_scroll_start_x (int x, bool validate)

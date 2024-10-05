@@ -3,17 +3,17 @@
 
 #include <cstdio>
 
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/dialogs/generic_progress_dialog.h"
-#include "project.h"
-#include "utils/progress_info.h"
-#include "utils/resources.h"
-#include "utils/string.h"
-#include "utils/ui.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/utils/progress_info.h"
+#include "common/utils/resources.h"
+#include "common/utils/string.h"
+#include "common/utils/ui.h"
 
 G_DEFINE_TYPE_WITH_PRIVATE (
   GenericProgressDialogWidget,

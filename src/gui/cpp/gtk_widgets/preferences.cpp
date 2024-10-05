@@ -3,26 +3,26 @@
 
 #include "zrythm-config.h"
 
-#include "dsp/engine.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/active_hardware_mb.h"
 #include "gui/cpp/gtk_widgets/file_chooser_entry.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/preferences.h"
-#include "project.h"
-#include "settings/g_settings_manager.h"
-#include "utils/directory_manager.h"
-#include "utils/flags.h"
-#include "utils/io.h"
-#include "utils/localization.h"
-#include "utils/objects.h"
-#include "utils/string.h"
-#include "utils/ui.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/engine.h"
+#include "common/utils/directory_manager.h"
+#include "common/utils/flags.h"
+#include "common/utils/io.h"
+#include "common/utils/localization.h"
+#include "common/utils/objects.h"
+#include "common/utils/string.h"
+#include "common/utils/ui.h"
 #include <locale.h>
 
 G_DEFINE_TYPE (PreferencesWidget, preferences_widget, ADW_TYPE_PREFERENCES_DIALOG)

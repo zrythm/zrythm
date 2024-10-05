@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/position.h"
 #include "gui/cpp/backend/midi_selections.h"
-#include "project.h"
-#include "zrythm.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/dsp/position.h"
 
 MidiSelections::MidiSelections () : ArrangerSelections (Type::Midi) { }
 

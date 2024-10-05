@@ -5,18 +5,19 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "actions/tracklist_selections.h"
-#include "dsp/engine.h"
-#include "dsp/fader.h"
-#include "dsp/master_track.h"
-#include "dsp/midi_event.h"
-#include "dsp/router.h"
-#include "dsp/tracklist.h"
-#include "project.h"
+#include "gui/cpp/backend/actions/tracklist_selections.h"
+#include "gui/cpp/backend/project.h"
 
 #include "helpers/project_helper.h"
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/zrythm_helper.h"
+
+#include "common/dsp/engine.h"
+#include "common/dsp/fader.h"
+#include "common/dsp/master_track.h"
+#include "common/dsp/midi_event.h"
+#include "common/dsp/router.h"
+#include "common/dsp/tracklist.h"
 
 static void
 test_fader_process_with_instrument (

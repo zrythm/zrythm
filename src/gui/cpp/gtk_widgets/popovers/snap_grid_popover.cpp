@@ -1,16 +1,16 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/snap_grid.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/digital_meter.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/popovers/snap_grid_popover.h"
 #include "gui/cpp/gtk_widgets/snap_grid.h"
-#include "project.h"
-#include "utils/gtk.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/snap_grid.h"
+#include "common/utils/gtk.h"
 
 G_DEFINE_TYPE (SnapGridPopoverWidget, snap_grid_popover_widget, GTK_TYPE_POPOVER)
 

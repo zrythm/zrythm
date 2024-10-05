@@ -13,9 +13,8 @@
 #ifndef __GUI_WIDGETS_TRACK_PROPERTIES_EXPANDER_H__
 #define __GUI_WIDGETS_TRACK_PROPERTIES_EXPANDER_H__
 
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/two_col_expander_box.h"
-
-#include "gtk_wrapper.h"
 
 #define TRACK_PROPERTIES_EXPANDER_WIDGET_TYPE \
   (track_properties_expander_widget_get_type ())

@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_DIALOGS_WELCOME_MESSAGE_DIALOG_H__
 #define __GUI_WIDGETS_DIALOGS_WELCOME_MESSAGE_DIALOG_H__
 
-#include "libadwaita_wrapper.h"
+#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
 
 /**
  * @addtogroup widgets

@@ -1,11 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/arranger_object.h"
-#include "dsp/automation_region.h"
-#include "dsp/chord_track.h"
-#include "dsp/marker_track.h"
-#include "dsp/tracklist.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
 #include "gui/cpp/gtk_widgets/arranger_object.h"
 #include "gui/cpp/gtk_widgets/automation_arranger.h"
@@ -31,15 +27,20 @@
 #include "gui/cpp/gtk_widgets/track.h"
 #include "gui/cpp/gtk_widgets/tracklist.h"
 #include "gui/cpp/gtk_widgets/velocity.h"
-#include "project.h"
-#include "utils/cairo.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/math.h"
-#include "utils/ui.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n-lib.h>
+
+#include "common/dsp/arranger_object.h"
+#include "common/dsp/automation_region.h"
+#include "common/dsp/chord_track.h"
+#include "common/dsp/marker_track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/cairo.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/math.h"
+#include "common/utils/ui.h"
 
 #define TYPE(x) ArrangerObject::Type::TYPE_##x
 

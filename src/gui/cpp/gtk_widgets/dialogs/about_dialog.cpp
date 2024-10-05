@@ -4,13 +4,13 @@
 #include "zrythm-config.h"
 
 /* auto-generated */
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/dialogs/about_dialog.h"
-#include "utils/resources.h"
-#include "zrythm.h"
+#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
 
 #include <glib/gi18n.h>
 
-#include "libadwaita_wrapper.h"
+#include "common/utils/resources.h"
 #include "translators.h"
 
 /**

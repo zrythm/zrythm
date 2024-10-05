@@ -13,7 +13,7 @@
 #ifndef __GUI_WIDGETS_POPOVER_MENU_BIN_H__
 #define __GUI_WIDGETS_POPOVER_MENU_BIN_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define POPOVER_MENU_BIN_WIDGET_TYPE (popover_menu_bin_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

@@ -1,25 +1,25 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/midi_event.h"
-#include "dsp/transport.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/button_with_menu.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/transport_controls.h"
-#include "project.h"
-#include "settings/g_settings_manager.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/resources.h"
-#include "utils/rt_thread_id.h"
-#include "utils/string.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/midi_event.h"
+#include "common/dsp/transport.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/string.h"
 
 G_DEFINE_TYPE (TransportControlsWidget, transport_controls_widget, GTK_TYPE_BOX)
 

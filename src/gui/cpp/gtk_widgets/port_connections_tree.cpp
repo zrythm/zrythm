@@ -1,18 +1,18 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/port_connection_action.h"
-#include "dsp/port_connections_manager.h"
+#include "gui/cpp/backend/actions/port_connection_action.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/port_connections_tree.h"
-#include "project.h"
-#include "utils/gtk.h"
-#include "utils/ui.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/port_connections_manager.h"
+#include "common/utils/gtk.h"
+#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (
   PortConnectionsTreeWidget,

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/track.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/balance_control.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
 #include "gui/cpp/gtk_widgets/fader.h"
@@ -11,15 +11,16 @@
 #include "gui/cpp/gtk_widgets/left_dock_edge.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/meter.h"
-#include "project.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/math.h"
-#include "utils/resources.h"
-#include "utils/ui.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include "common/dsp/track.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/math.h"
+#include "common/utils/resources.h"
+#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (FaderButtonsWidget, fader_buttons_widget, GTK_TYPE_BOX)
 

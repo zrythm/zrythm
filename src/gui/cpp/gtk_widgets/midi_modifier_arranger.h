@@ -6,8 +6,7 @@
 
 #include "gui/cpp/backend/tool.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
-
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define MW_MIDI_MODIFIER_ARRANGER (MW_MIDI_EDITOR_SPACE->modifier_arranger)
 

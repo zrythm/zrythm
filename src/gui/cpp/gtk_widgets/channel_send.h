@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_CHANNEL_SEND_H__
 #define __GUI_WIDGETS_CHANNEL_SEND_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define CHANNEL_SEND_WIDGET_TYPE (channel_send_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

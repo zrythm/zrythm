@@ -1,14 +1,15 @@
 // SPDX-FileCopyrightText: © 2018-2019, 2022-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/tracklist.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/popovers/track_filter_popover.h"
 #include "gui/cpp/gtk_widgets/popovers/tracklist_preferences_popover.h"
 #include "gui/cpp/gtk_widgets/tracklist_header.h"
-#include "project.h"
-#include "utils/resources.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include "common/dsp/tracklist.h"
+#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (TracklistHeaderWidget, tracklist_header_widget, GTK_TYPE_WIDGET)
 

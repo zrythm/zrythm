@@ -3,11 +3,12 @@
 
 #include "zrythm-test-config.h"
 
-#include "dsp/channel_track.h"
-#include "project.h"
-#include "zrythm.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 
 #include "tests/helpers/project_helper.h"
+
+#include "common/dsp/channel_track.h"
 
 TEST_F (ZrythmFixture, CloneChannelTrack)
 {

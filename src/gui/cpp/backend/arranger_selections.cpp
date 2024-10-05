@@ -1,30 +1,31 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/arranger_selections.h"
-#include "dsp/audio_region.h"
-#include "dsp/automation_region.h"
-#include "dsp/chord_object.h"
-#include "dsp/chord_region.h"
-#include "dsp/chord_track.h"
-#include "dsp/marker.h"
-#include "dsp/marker_track.h"
-#include "dsp/scale_object.h"
-#include "dsp/tracklist.h"
-#include "dsp/transport.h"
+#include "gui/cpp/backend/actions/arranger_selections.h"
 #include "gui/cpp/backend/arranger_selections.h"
 #include "gui/cpp/backend/automation_selections.h"
 #include "gui/cpp/backend/chord_selections.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
 #include "gui/cpp/backend/midi_selections.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/timeline_selections.h"
-#include "project.h"
-#include "utils/rt_thread_id.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include "common/dsp/audio_region.h"
+#include "common/dsp/automation_region.h"
+#include "common/dsp/chord_object.h"
+#include "common/dsp/chord_region.h"
+#include "common/dsp/chord_track.h"
+#include "common/dsp/marker.h"
+#include "common/dsp/marker_track.h"
+#include "common/dsp/scale_object.h"
+#include "common/dsp/tracklist.h"
+#include "common/dsp/transport.h"
+#include "common/utils/rt_thread_id.h"
 
 void
 ArrangerSelections::init_loaded (bool project, UndoableAction * action)

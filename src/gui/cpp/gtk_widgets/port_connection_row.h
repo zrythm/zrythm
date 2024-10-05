@@ -4,9 +4,9 @@
 #ifndef __GUI_WIDGETS_PORT_CONNECTION_ROW_H__
 #define __GUI_WIDGETS_PORT_CONNECTION_ROW_H__
 
-#include "utils/types.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/utils/types.h"
 
 #define PORT_CONNECTION_ROW_WIDGET_TYPE (port_connection_row_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

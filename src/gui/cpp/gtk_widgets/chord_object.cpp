@@ -1,17 +1,18 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/chord_object.h"
-#include "dsp/chord_track.h"
-#include "dsp/tracklist.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/chord_object.h"
 #include "gui/cpp/gtk_widgets/chord_selector_window.h"
-#include "project.h"
-#include "utils/gtk.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include "common/dsp/chord_object.h"
+#include "common/dsp/chord_track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/gtk.h"
 
 /**
  * Recreates the pango layouts for drawing.

@@ -1,19 +1,20 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/playhead_scroll_buttons.h"
 #include "gui/cpp/gtk_widgets/quantize_box.h"
 #include "gui/cpp/gtk_widgets/range_action_buttons.h"
 #include "gui/cpp/gtk_widgets/snap_grid.h"
 #include "gui/cpp/gtk_widgets/timeline_toolbar.h"
 #include "gui/cpp/gtk_widgets/zoom_buttons.h"
-#include "project.h"
-#include "utils/gtk.h"
-#include "utils/resources.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (TimelineToolbarWidget, timeline_toolbar_widget, GTK_TYPE_BOX)
 

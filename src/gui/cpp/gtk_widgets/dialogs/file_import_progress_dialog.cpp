@@ -1,19 +1,20 @@
 // SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/track.h"
-#include "dsp/tracklist.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/dialogs/file_import_progress_dialog.h"
-#include "io/file_import.h"
-#include "project.h"
-#include "utils/error.h"
-#include "utils/objects.h"
-#include "utils/string.h"
-#include "utils/ui.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/io/file_import.h"
+#include "common/utils/error.h"
+#include "common/utils/objects.h"
+#include "common/utils/string.h"
+#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (
   FileImportProgressDialog,

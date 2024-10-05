@@ -3,12 +3,13 @@
 
 #include "zrythm-config.h"
 
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/dialogs/welcome_message_dialog.h"
-#include "utils/gtk.h"
-#include "utils/resources.h"
-#include "zrythm.h"
 
 #include <glib/gi18n.h>
+
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"

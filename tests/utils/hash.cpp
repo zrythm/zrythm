@@ -5,10 +5,9 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "utils/gtest_wrapper.h"
-#include "utils/hash.h"
-#include "utils/logger.h"
-
+#include "common/utils/gtest_wrapper.h"
+#include "common/utils/hash.h"
+#include "common/utils/logger.h"
 #include <glibmm.h>
 #include <xxhash.h>
 

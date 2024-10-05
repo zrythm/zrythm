@@ -5,28 +5,29 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "actions/arranger_selections.h"
-#include "actions/tracklist_selections.h"
-#include "actions/transport_action.h"
-#include "dsp/audio_track.h"
-#include "dsp/automation_region.h"
-#include "dsp/chord_track.h"
-#include "dsp/marker_track.h"
-#include "dsp/master_track.h"
-#include "dsp/midi_track.h"
-#include "dsp/region.h"
-#include "dsp/tempo_track.h"
+#include "gui/cpp/backend/actions/arranger_selections.h"
+#include "gui/cpp/backend/actions/tracklist_selections.h"
+#include "gui/cpp/backend/actions/transport_action.h"
 #include "gui/cpp/backend/clipboard.h"
-#include "project.h"
-#include "utils/dsp.h"
-#include "utils/flags.h"
-#include "utils/gtest_wrapper.h"
-#include "utils/string.h"
-#include "zrythm.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 
 #include <glib.h>
 
 #include "tests/helpers/project_helper.h"
+
+#include "common/dsp/audio_track.h"
+#include "common/dsp/automation_region.h"
+#include "common/dsp/chord_track.h"
+#include "common/dsp/marker_track.h"
+#include "common/dsp/master_track.h"
+#include "common/dsp/midi_track.h"
+#include "common/dsp/region.h"
+#include "common/dsp/tempo_track.h"
+#include "common/utils/dsp.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtest_wrapper.h"
+#include "common/utils/string.h"
 
 auto REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK =
   [] (const auto &obj, const Track &track) {

@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: © 2021-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/arranger_selections.h"
-#include "actions/midi_mapping_action.h"
-#include "dsp/channel_send.h"
-#include "dsp/midi_mapping.h"
+#include "gui/cpp/backend/actions/arranger_selections.h"
+#include "gui/cpp/backend/actions/midi_mapping_action.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
 #include "gui/cpp/backend/file_manager.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/wrapped_object_with_change_signal.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
 #include "gui/cpp/gtk_widgets/color_area.h"
@@ -15,17 +14,19 @@
 #include "gui/cpp/gtk_widgets/greeter.h"
 #include "gui/cpp/gtk_widgets/item_factory.h"
 #include "gui/cpp/gtk_widgets/popovers/popover_menu_bin.h"
-#include "plugins/collections.h"
-#include "project.h"
-#include "utils/gtk.h"
-#include "utils/math.h"
-#include "utils/midi.h"
-#include "utils/objects.h"
-#include "utils/rt_thread_id.h"
-#include "utils/ui.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include "common/dsp/channel_send.h"
+#include "common/dsp/midi_mapping.h"
+#include "common/plugins/collections.h"
+#include "common/utils/gtk.h"
+#include "common/utils/math.h"
+#include "common/utils/midi.h"
+#include "common/utils/objects.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/ui.h"
 
 /**
  * Data for individual widget callbacks.

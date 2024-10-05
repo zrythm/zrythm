@@ -4,20 +4,20 @@
 #ifndef __ACTIONS_TRACKLIST_SELECTIONS_H__
 #define __ACTIONS_TRACKLIST_SELECTIONS_H__
 
-#include "dsp/audio_bus_track.h"
-#include "dsp/audio_group_track.h"
-#include "dsp/audio_track.h"
-#include "dsp/chord_track.h"
-#include "dsp/folder_track.h"
-#include "dsp/instrument_track.h"
-#include "dsp/marker_track.h"
-#include "dsp/master_track.h"
-#include "dsp/midi_bus_track.h"
-#include "dsp/midi_group_track.h"
-#include "dsp/midi_track.h"
-#include "dsp/modulator_track.h"
-#include "dsp/tempo_track.h"
-#include "dsp/track.h"
+#include "common/dsp/audio_bus_track.h"
+#include "common/dsp/audio_group_track.h"
+#include "common/dsp/audio_track.h"
+#include "common/dsp/chord_track.h"
+#include "common/dsp/folder_track.h"
+#include "common/dsp/instrument_track.h"
+#include "common/dsp/marker_track.h"
+#include "common/dsp/master_track.h"
+#include "common/dsp/midi_bus_track.h"
+#include "common/dsp/midi_group_track.h"
+#include "common/dsp/midi_track.h"
+#include "common/dsp/modulator_track.h"
+#include "common/dsp/tempo_track.h"
+#include "common/dsp/track.h"
 
 /**
  * @addtogroup gui_backend

@@ -1,21 +1,22 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/fader.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/bot_bar.h"
 #include "gui/cpp/gtk_widgets/dialogs/string_entry_dialog.h"
 #include "gui/cpp/gtk_widgets/fader.h"
-#include "project.h"
-#include "utils/gtk.h"
-#include "utils/math.h"
-#include "utils/rt_thread_id.h"
-#include "utils/ui.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include "common/dsp/fader.h"
+#include "common/utils/gtk.h"
+#include "common/utils/math.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/ui.h"
 
 static void
 accessible_range_init (GtkAccessibleRangeInterface * iface);

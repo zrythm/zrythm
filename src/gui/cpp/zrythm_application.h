@@ -14,7 +14,8 @@
 
 #include "gui/cpp/glue/settings_manager.h"
 #include "gui/cpp/glue/theme_manager.h"
-#include "utils/rt_thread_id.h"
+
+#include "common/utils/rt_thread_id.h"
 
 class ZrythmApplication final : public QApplication
 {

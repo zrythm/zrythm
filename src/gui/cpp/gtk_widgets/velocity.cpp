@@ -1,18 +1,18 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/midi_note.h"
-#include "dsp/region.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/midi_modifier_arranger.h"
 #include "gui/cpp/gtk_widgets/midi_note.h"
 #include "gui/cpp/gtk_widgets/velocity.h"
-#include "project.h"
-#include "utils/gtk.h"
-#include "utils/ui.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
-#include "gtk_wrapper.h"
+#include "common/dsp/midi_note.h"
+#include "common/dsp/region.h"
+#include "common/utils/gtk.h"
+#include "common/utils/ui.h"
 
 /**
  * Draws the Velocity in the given cairo context in

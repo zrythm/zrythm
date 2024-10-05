@@ -1,18 +1,18 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/channel.h"
-#include "dsp/ext_port.h"
-#include "dsp/hardware_processor.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/active_hardware_mb.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/popovers/active_hardware_popover.h"
-#include "project.h"
-#include "utils/gtk.h"
-#include "utils/resources.h"
-#include "utils/string.h"
-#include "zrythm.h"
 
-#include "gtk_wrapper.h"
+#include "common/dsp/channel.h"
+#include "common/dsp/ext_port.h"
+#include "common/dsp/hardware_processor.h"
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
+#include "common/utils/string.h"
 
 G_DEFINE_TYPE (
   ActiveHardwarePopoverWidget,

@@ -1,14 +1,15 @@
 // SPDX-FileCopyrightText: © 2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/position.h"
 #include "gui/cpp/backend/audio_selections.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
-#include "project.h"
-#include "utils/rt_thread_id.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include "common/dsp/position.h"
+#include "common/utils/rt_thread_id.h"
 
 AudioSelections::AudioSelections () : ArrangerSelections (Type::Audio) { }
 

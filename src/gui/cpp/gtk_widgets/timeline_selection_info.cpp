@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: LicenseRef-ZrythmLicense
  */
 
-#include "actions/arranger_selections.h"
-#include "dsp/position.h"
+#include "gui/cpp/backend/actions/arranger_selections.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/timeline_selections.h"
 #include "gui/cpp/gtk_widgets/automation_point.h"
 #include "gui/cpp/gtk_widgets/chord_object.h"
@@ -15,10 +15,11 @@
 #include "gui/cpp/gtk_widgets/scale_object.h"
 #include "gui/cpp/gtk_widgets/selection_info.h"
 #include "gui/cpp/gtk_widgets/timeline_selection_info.h"
-#include "project.h"
-#include "utils/flags.h"
 
 #include <glib/gi18n.h>
+
+#include "common/dsp/position.h"
+#include "common/utils/flags.h"
 
 G_DEFINE_TYPE (
   TimelineSelectionInfoWidget,

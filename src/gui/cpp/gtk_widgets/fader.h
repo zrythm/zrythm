@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_FADER_H__
 #define __GUI_WIDGETS_FADER_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define FADER_WIDGET_TYPE (fader_widget_get_type ())
 G_DECLARE_FINAL_TYPE (FaderWidget, fader_widget, Z, FADER_WIDGET, GtkWidget)

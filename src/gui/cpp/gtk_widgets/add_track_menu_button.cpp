@@ -3,11 +3,10 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/cpp/gtk_widgets/add_track_menu_button.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/tracklist.h"
 
 #include <glib/gi18n.h>
-
-#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (
   AddTrackMenuButtonWidget,

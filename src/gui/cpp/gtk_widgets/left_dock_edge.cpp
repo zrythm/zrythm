@@ -1,7 +1,11 @@
 // SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
+#include "gui/cpp/backend/settings/settings.h"
 #include "gui/cpp/backend/tracklist_selections.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/cc_bindings.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
 #include "gui/cpp/gtk_widgets/foldable_notebook.h"
@@ -10,16 +14,13 @@
 #include "gui/cpp/gtk_widgets/left_dock_edge.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/port_connections.h"
-#include "project.h"
-#include "settings/g_settings_manager.h"
-#include "settings/settings.h"
-#include "utils/gtk.h"
-#include "utils/resources.h"
-#include "utils/ui.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
+#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (LeftDockEdgeWidget, left_dock_edge_widget, GTK_TYPE_WIDGET)
 

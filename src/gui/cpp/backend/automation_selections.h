@@ -10,8 +10,9 @@
 #ifndef __GUI_BACKEND_AUTOMATION_SELECTIONS_H__
 #define __GUI_BACKEND_AUTOMATION_SELECTIONS_H__
 
-#include "dsp/automation_point.h"
 #include "gui/cpp/backend/arranger_selections.h"
+
+#include "common/dsp/automation_point.h"
 
 /**
  * @addtogroup gui_backend

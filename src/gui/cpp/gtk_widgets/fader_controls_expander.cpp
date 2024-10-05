@@ -1,17 +1,17 @@
 // SPDX-FileCopyrightText: © 2020, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/channel.h"
-#include "dsp/track.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/channel_slot.h"
 #include "gui/cpp/gtk_widgets/fader_controls_expander.h"
 #include "gui/cpp/gtk_widgets/fader_controls_grid.h"
-#include "project.h"
-#include "utils/gtk.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/channel.h"
+#include "common/dsp/track.h"
+#include "common/utils/gtk.h"
 
 #define FADER_CONTROLS_EXPANDER_WIDGET_TYPE \
   (fader_controls_expander_widget_get_type ())

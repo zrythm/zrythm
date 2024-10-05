@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/cpp/backend/piano_roll.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
 #include "gui/cpp/gtk_widgets/arranger_wrapper.h"
 #include "gui/cpp/gtk_widgets/bot_dock_edge.h"
@@ -15,13 +16,13 @@
 #include "gui/cpp/gtk_widgets/midi_modifier_arranger.h"
 #include "gui/cpp/gtk_widgets/piano_roll_keys.h"
 #include "gui/cpp/gtk_widgets/velocity_settings.h"
-#include "project.h"
-#include "utils/flags.h"
-#include "utils/math.h"
-#include "utils/resources.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include "common/utils/flags.h"
+#include "common/utils/math.h"
+#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (MidiEditorSpaceWidget, midi_editor_space_widget, GTK_TYPE_WIDGET)
 

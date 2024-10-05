@@ -13,9 +13,8 @@
 #ifndef __GUI_WIDGETS_MIXER_H__
 #define __GUI_WIDGETS_MIXER_H__
 
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
-
-#include "gtk_wrapper.h"
 
 typedef struct _DragDestBoxWidget DragDestBoxWidget;
 class Channel;

@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_PORT_SELECTOR_DIALOG_H__
 #define __GUI_WIDGETS_PORT_SELECTOR_DIALOG_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define PORT_SELECTOR_DIALOG_WIDGET_TYPE \
   (port_selector_dialog_widget_get_type ())

@@ -5,14 +5,15 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "actions/arranger_selections.h"
-#include "actions/range_action.h"
-#include "actions/undo_manager.h"
-#include "dsp/region.h"
-#include "project.h"
-#include "zrythm.h"
+#include "gui/cpp/backend/actions/arranger_selections.h"
+#include "gui/cpp/backend/actions/range_action.h"
+#include "gui/cpp/backend/actions/undo_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 
 #include "tests/helpers/project_helper.h"
+
+#include "common/dsp/region.h"
 
 constexpr auto RANGE_START_BAR = 4;
 constexpr auto RANGE_END_BAR = 10;

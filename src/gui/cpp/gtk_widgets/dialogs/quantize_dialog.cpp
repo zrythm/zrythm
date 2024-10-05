@@ -1,19 +1,19 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/arranger_selections.h"
-#include "dsp/quantize_options.h"
+#include "gui/cpp/backend/actions/arranger_selections.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/bar_slider.h"
 #include "gui/cpp/gtk_widgets/dialogs/quantize_dialog.h"
 #include "gui/cpp/gtk_widgets/digital_meter.h"
-#include "project.h"
-#include "utils/resources.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/quantize_options.h"
+#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (QuantizeDialogWidget, quantize_dialog_widget, GTK_TYPE_DIALOG)
 

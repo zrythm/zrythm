@@ -13,11 +13,11 @@
 #ifndef __GUI_WIDGETS_PIANO_ROLL_SELECTION_INFO_H__
 #define __GUI_WIDGETS_PIANO_ROLL_SELECTION_INFO_H__
 
-#include "dsp/region.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/region.h"
-#include "utils/ui.h"
 
-#include "gtk_wrapper.h"
+#include "common/dsp/region.h"
+#include "common/utils/ui.h"
 
 #define EDITOR_SELECTION_INFO_WIDGET_TYPE \
   (editor_selection_info_widget_get_type ())

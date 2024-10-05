@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/cpp/gtk_widgets/editable_label.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/knob.h"
 #include "gui/cpp/gtk_widgets/knob_with_name.h"
-
-#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (KnobWithNameWidget, knob_with_name_widget, GTK_TYPE_BOX)
 

@@ -4,7 +4,7 @@
 #ifndef __GUI_WIDGETS_VOLUME_H__
 #define __GUI_WIDGETS_VOLUME_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 class ControlPort;
 

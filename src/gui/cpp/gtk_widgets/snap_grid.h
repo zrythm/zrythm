@@ -4,8 +4,8 @@
 #ifndef __GUI_WIDGETS_SNAP_GRID_H__
 #define __GUI_WIDGETS_SNAP_GRID_H__
 
-#include "gtk_wrapper.h"
-#include "libadwaita_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
 
 #define SNAP_GRID_WIDGET_TYPE (snap_grid_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

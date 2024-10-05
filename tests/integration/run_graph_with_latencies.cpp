@@ -8,17 +8,18 @@
 
 #include "zrythm-test-config.h"
 
-#include "actions/mixer_selections_action.h"
-#include "actions/undo_manager.h"
-#include "dsp/control_port.h"
-#include "dsp/graph.h"
-#include "dsp/router.h"
-#include "dsp/tempo_track.h"
-#include "project.h"
-#include "zrythm.h"
+#include "gui/cpp/backend/actions/mixer_selections_action.h"
+#include "gui/cpp/backend/actions/undo_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
+
+#include "common/dsp/control_port.h"
+#include "common/dsp/graph.h"
+#include "common/dsp/router.h"
+#include "common/dsp/tempo_track.h"
 
 #ifdef HAVE_NO_DELAY_LINE
 static ControlPort *

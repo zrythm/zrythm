@@ -4,12 +4,13 @@
 #ifndef __GUI_BACKEND_CLIP_EDITOR_H__
 #define __GUI_BACKEND_CLIP_EDITOR_H__
 
-#include "dsp/region.h"
-#include "dsp/region_identifier.h"
 #include "gui/cpp/backend/audio_clip_editor.h"
 #include "gui/cpp/backend/automation_editor.h"
 #include "gui/cpp/backend/chord_editor.h"
 #include "gui/cpp/backend/piano_roll.h"
+
+#include "common/dsp/region.h"
+#include "common/dsp/region_identifier.h"
 
 class ArrangerSelections;
 

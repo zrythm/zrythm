@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/tracklist_selections.h"
-#include "dsp/port_connections_manager.h"
-#include "dsp/track.h"
-#include "dsp/tracklist.h"
+#include "gui/cpp/backend/actions/tracklist_selections.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/tracklist_selections.h"
 #include "gui/cpp/backend/wrapped_object_with_change_signal.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/bot_dock_edge.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
 #include "gui/cpp/gtk_widgets/channel.h"
@@ -14,18 +13,19 @@
 #include "gui/cpp/gtk_widgets/fader_buttons.h"
 #include "gui/cpp/gtk_widgets/folder_channel.h"
 #include "gui/cpp/gtk_widgets/gtk_flipper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/mixer.h"
 #include "gui/cpp/gtk_widgets/plugin_strip_expander.h"
-#include "project.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/resources.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/port_connections_manager.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
 #include <time.h>
 
 G_DEFINE_TYPE (FolderChannelWidget, folder_channel_widget, GTK_TYPE_WIDGET)

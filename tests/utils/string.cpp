@@ -3,8 +3,8 @@
 
 #include "zrythm-test-config.h"
 
-#include "utils/gtest_wrapper.h"
-#include "utils/string.h"
+#include "common/utils/gtest_wrapper.h"
+#include "common/utils/string.h"
 
 TEST (String, GetIntAfterLastSpace)
 {

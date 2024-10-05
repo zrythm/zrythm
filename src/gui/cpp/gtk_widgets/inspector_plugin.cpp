@@ -2,22 +2,22 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/cpp/backend/mixer_selections.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/tracklist_selections.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/color_area.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/inspector_plugin.h"
 #include "gui/cpp/gtk_widgets/left_dock_edge.h"
 #include "gui/cpp/gtk_widgets/plugin_properties_expander.h"
 #include "gui/cpp/gtk_widgets/ports_expander.h"
-#include "plugins/plugin.h"
-#include "project.h"
-#include "utils/logger.h"
-#include "utils/resources.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/plugins/plugin.h"
+#include "common/utils/logger.h"
+#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (InspectorPluginWidget, inspector_plugin_widget, GTK_TYPE_BOX)
 

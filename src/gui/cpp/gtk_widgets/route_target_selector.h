@@ -4,9 +4,9 @@
 #ifndef __GUI_WIDGETS_ROUTE_TARGET_SELECTOR_H__
 #define __GUI_WIDGETS_ROUTE_TARGET_SELECTOR_H__
 
-#include "utils/types.h"
+#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
 
-#include "libadwaita_wrapper.h"
+#include "common/utils/types.h"
 
 #define ROUTE_TARGET_SELECTOR_WIDGET_TYPE \
   (route_target_selector_widget_get_type ())

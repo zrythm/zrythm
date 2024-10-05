@@ -10,8 +10,8 @@
 #ifndef __GUI_WIDGETS_LEFT_DOCK_EDGE_H__
 #define __GUI_WIDGETS_LEFT_DOCK_EDGE_H__
 
-#include "gtk_wrapper.h"
-#include "libpanel_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/libpanel_wrapper.h"
 
 typedef struct _InspectorWidget        InspectorWidget;
 typedef struct _FoldableNotebookWidget FoldableNotebookWidget;

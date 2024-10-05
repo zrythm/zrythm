@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_TRACKLIST_HEADER_H__
 #define __GUI_WIDGETS_TRACKLIST_HEADER_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define TRACKLIST_HEADER_WIDGET_TYPE (tracklist_header_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

@@ -11,10 +11,10 @@
 #ifndef __GUI_WIDGETS_DIGITAL_METER_H__
 #define __GUI_WIDGETS_DIGITAL_METER_H__
 
-#include "dsp/transport.h"
-#include "utils/types.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/dsp/transport.h"
+#include "common/utils/types.h"
 
 #define DIGITAL_METER_WIDGET_TYPE (digital_meter_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

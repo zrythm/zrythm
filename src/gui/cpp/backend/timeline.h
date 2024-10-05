@@ -11,7 +11,8 @@
 #define __GUI_BACKEND_TIMELINE_H__
 
 #include "gui/cpp/backend/editor_settings.h"
-#include "utils/icloneable.h"
+
+#include "common/utils/icloneable.h"
 
 /**
  * @addtogroup gui_backend

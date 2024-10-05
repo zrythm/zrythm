@@ -8,13 +8,12 @@
 #include "gui/cpp/gtk_widgets/center_dock.h"
 #include "gui/cpp/gtk_widgets/clip_editor.h"
 #include "gui/cpp/gtk_widgets/clip_editor_inner.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/main_notebook.h"
 #include "gui/cpp/gtk_widgets/midi_editor_space.h"
 #include "gui/cpp/gtk_widgets/timeline_panel.h"
 #include "gui/cpp/gtk_widgets/tracklist.h"
-#include "zrythm_app.h"
-
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 G_DEFINE_TYPE (ArrangerWrapperWidget, arranger_wrapper_widget, GTK_TYPE_WIDGET);
 

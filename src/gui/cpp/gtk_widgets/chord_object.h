@@ -11,8 +11,7 @@
 #define __GUI_WIDGETS_CHORD_OBJECT_H__
 
 #include "gui/cpp/gtk_widgets/arranger_object.h"
-
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 /**
  * @addtogroup widgets

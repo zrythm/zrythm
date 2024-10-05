@@ -1,15 +1,16 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/channel_track.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/ext_input_selection_dropdown.h"
 #include "gui/cpp/gtk_widgets/knob.h"
 #include "gui/cpp/gtk_widgets/midi_channel_selection_dropdown.h"
 #include "gui/cpp/gtk_widgets/track_input_expander.h"
-#include "project.h"
-#include "utils/gtk.h"
 
 #include <glib/gi18n.h>
+
+#include "common/dsp/channel_track.h"
+#include "common/utils/gtk.h"
 
 G_DEFINE_TYPE (
   TrackInputExpanderWidget,

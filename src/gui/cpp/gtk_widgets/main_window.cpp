@@ -4,11 +4,11 @@
 
 #include "zrythm-config.h"
 
-#include "actions/actions.h"
-#include "dsp/master_track.h"
-#include "dsp/tracklist.h"
+#include "gui/cpp/backend/actions/actions.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
 #include "gui/cpp/gtk_widgets/audio_arranger.h"
 #include "gui/cpp/gtk_widgets/audio_editor_space.h"
@@ -24,6 +24,7 @@
 #include "gui/cpp/gtk_widgets/clip_editor_inner.h"
 #include "gui/cpp/gtk_widgets/editor_toolbar.h"
 #include "gui/cpp/gtk_widgets/event_viewer.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/inspector_track.h"
 #include "gui/cpp/gtk_widgets/left_dock_edge.h"
 #include "gui/cpp/gtk_widgets/main_notebook.h"
@@ -42,19 +43,18 @@
 #include "gui/cpp/gtk_widgets/timeline_toolbar.h"
 #include "gui/cpp/gtk_widgets/toolbox.h"
 #include "gui/cpp/gtk_widgets/tracklist.h"
-#include "project.h"
-#include "settings/g_settings_manager.h"
-#include "utils/exceptions.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/resources.h"
-#include "utils/rt_thread_id.h"
-#include "utils/string.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/master_track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/exceptions.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/string.h"
 #include <fmt/printf.h>
 
 G_DEFINE_TYPE (MainWindowWidget, main_window_widget, ADW_TYPE_APPLICATION_WINDOW)

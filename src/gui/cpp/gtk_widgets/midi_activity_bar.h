@@ -13,7 +13,7 @@
  * MIDI activity bar for tracks.
  */
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define MIDI_ACTIVITY_BAR_WIDGET_TYPE (midi_activity_bar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

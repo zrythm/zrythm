@@ -1,21 +1,21 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/chord_descriptor.h"
-#include "dsp/chord_object.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/chord_editor_space.h"
 #include "gui/cpp/gtk_widgets/chord_key.h"
 #include "gui/cpp/gtk_widgets/chord_selector_window.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/piano_keyboard.h"
-#include "project.h"
-#include "utils/flags.h"
-#include "utils/resources.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
-#include "gtk_wrapper.h"
+#include "common/dsp/chord_descriptor.h"
+#include "common/dsp/chord_object.h"
+#include "common/utils/flags.h"
+#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (ChordKeyWidget, chord_key_widget, GTK_TYPE_GRID)
 

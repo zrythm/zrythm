@@ -1,19 +1,19 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/automation_track.h"
-#include "dsp/port_connections_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/dialogs/port_selector_dialog.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/inspector_port.h"
 #include "gui/cpp/gtk_widgets/popovers/port_connections_popover.h"
 #include "gui/cpp/gtk_widgets/port_connection_row.h"
-#include "project.h"
-#include "utils/gtk.h"
-#include "zrythm.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/automation_track.h"
+#include "common/dsp/port_connections_manager.h"
+#include "common/utils/gtk.h"
 
 G_DEFINE_TYPE (
   PortConnectionsPopoverWidget,

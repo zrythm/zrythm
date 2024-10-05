@@ -10,10 +10,10 @@
 #ifndef __GUI_WIDGETS_BAR_SLIDER_H__
 #define __GUI_WIDGETS_BAR_SLIDER_H__
 
-#include "utils/types.h"
-#include "utils/ui.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/utils/types.h"
+#include "common/utils/ui.h"
 
 #define BAR_SLIDER_WIDGET_TYPE (bar_slider_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

@@ -13,7 +13,7 @@
 #ifndef __GUI_WIDGETS_BUTTON_WITH_MENU_H__
 #define __GUI_WIDGETS_BUTTON_WITH_MENU_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define BUTTON_WITH_MENU_WIDGET_TYPE (button_with_menu_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

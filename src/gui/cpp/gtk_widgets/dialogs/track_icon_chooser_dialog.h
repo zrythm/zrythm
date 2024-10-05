@@ -13,7 +13,7 @@
 #ifndef __GUI_WIDGETS_TRACK_ICON_CHOOSER_DIALOG_H__
 #define __GUI_WIDGETS_TRACK_ICON_CHOOSER_DIALOG_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 typedef Track Track;
 

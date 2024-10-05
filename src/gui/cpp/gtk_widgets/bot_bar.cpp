@@ -4,18 +4,15 @@
 
 #include "zrythm-config.h"
 
-#include "dsp/engine.h"
-#include "dsp/engine_jack.h"
-#include "dsp/master_track.h"
-#include "dsp/metronome.h"
-#include "dsp/tracklist.h"
-#include "dsp/transport.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/gtk_widgets/bot_bar.h"
 #include "gui/cpp/gtk_widgets/button_with_menu.h"
 #include "gui/cpp/gtk_widgets/cpu.h"
 #include "gui/cpp/gtk_widgets/dialogs/string_entry_dialog.h"
 #include "gui/cpp/gtk_widgets/digital_meter.h"
 #include "gui/cpp/gtk_widgets/gtk_flipper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/live_waveform.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/meter.h"
@@ -23,17 +20,20 @@
 #include "gui/cpp/gtk_widgets/preroll_count_selector.h"
 #include "gui/cpp/gtk_widgets/spectrum_analyzer.h"
 #include "gui/cpp/gtk_widgets/transport_controls.h"
-#include "project.h"
-#include "settings/g_settings_manager.h"
-#include "utils/gtk.h"
-#include "utils/resources.h"
-#include "utils/string.h"
-#include "utils/ui.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/engine.h"
+#include "common/dsp/engine_jack.h"
+#include "common/dsp/master_track.h"
+#include "common/dsp/metronome.h"
+#include "common/dsp/tracklist.h"
+#include "common/dsp/transport.h"
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
+#include "common/utils/string.h"
+#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (BotBarWidget, bot_bar_widget, GTK_TYPE_WIDGET)
 

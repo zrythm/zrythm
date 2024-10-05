@@ -5,11 +5,10 @@
 #ifndef __GUI_WIDGETS_MAIN_WINDOW_H__
 #define __GUI_WIDGETS_MAIN_WINDOW_H__
 
-#include "zrythm.h"
-
-#include "gtk_wrapper.h"
-#include "libadwaita_wrapper.h"
-#include "libpanel_wrapper.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
+#include "gui/cpp/gtk_widgets/libpanel_wrapper.h"
 
 #define MAIN_WINDOW_WIDGET_TYPE (main_window_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

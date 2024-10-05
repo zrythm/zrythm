@@ -1,28 +1,28 @@
 // SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/tracklist_selections.h"
-#include "dsp/engine.h"
-#include "dsp/foldable_track.h"
-#include "dsp/master_track.h"
-#include "dsp/position.h"
-#include "dsp/recordable_track.h"
-#include "dsp/track.h"
-#include "dsp/tracklist.h"
-#include "dsp/transport.h"
+#include "gui/cpp/backend/actions/tracklist_selections.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/backend/tracklist_selections.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/track.h"
-#include "project.h"
-#include "settings/g_settings_manager.h"
-#include "utils/rt_thread_id.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/engine.h"
+#include "common/dsp/foldable_track.h"
+#include "common/dsp/master_track.h"
+#include "common/dsp/position.h"
+#include "common/dsp/recordable_track.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/dsp/transport.h"
+#include "common/utils/rt_thread_id.h"
 
 Track *
 SimpleTracklistSelections::get_highest_track () const

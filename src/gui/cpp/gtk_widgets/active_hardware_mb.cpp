@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/cpp/gtk_widgets/active_hardware_mb.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/popovers/active_hardware_popover.h"
-#include "utils/logger.h"
-#include "utils/string_array.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/utils/logger.h"
+#include "common/utils/string_array.h"
 
 G_DEFINE_TYPE (ActiveHardwareMbWidget, active_hardware_mb_widget, GTK_TYPE_WIDGET)
 

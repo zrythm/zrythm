@@ -10,9 +10,9 @@
 #ifndef __GUI_WIDGETS_TIMELINE_PANEL_H__
 #define __GUI_WIDGETS_TIMELINE_PANEL_H__
 
-#include "utils/types.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/utils/types.h"
 
 #define TIMELINE_PANEL_WIDGET_TYPE (timeline_panel_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

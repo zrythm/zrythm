@@ -10,9 +10,9 @@
 #ifndef __GUI_BACKEND_MIXER_SELECTIONS_H__
 #define __GUI_BACKEND_MIXER_SELECTIONS_H__
 
-#include "dsp/channel.h"
-#include "dsp/region.h"
-#include "plugins/carla_native_plugin.h"
+#include "common/dsp/channel.h"
+#include "common/dsp/region.h"
+#include "common/plugins/carla_native_plugin.h"
 
 class FullMixerSelections;
 

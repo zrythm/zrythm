@@ -1,31 +1,31 @@
 // SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/mixer_selections_action.h"
-#include "actions/undo_manager.h"
-#include "dsp/control_port.h"
-#include "dsp/modulator_track.h"
-#include "dsp/port_identifier.h"
-#include "dsp/tracklist.h"
+#include "gui/cpp/backend/actions/mixer_selections_action.h"
+#include "gui/cpp/backend/actions/undo_manager.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/dialogs/bind_cc_dialog.h"
 #include "gui/cpp/gtk_widgets/dialogs/port_info.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/knob.h"
 #include "gui/cpp/gtk_widgets/knob_with_name.h"
 #include "gui/cpp/gtk_widgets/live_waveform.h"
 #include "gui/cpp/gtk_widgets/modulator.h"
 #include "gui/cpp/gtk_widgets/modulator_inner.h"
 #include "gui/cpp/gtk_widgets/popovers/port_connections_popover.h"
-#include "project.h"
-#include "utils/gtk.h"
-#include "utils/rt_thread_id.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/control_port.h"
+#include "common/dsp/modulator_track.h"
+#include "common/dsp/port_identifier.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/gtk.h"
+#include "common/utils/rt_thread_id.h"
 
 G_DEFINE_TYPE (ModulatorInnerWidget, modulator_inner_widget, GTK_TYPE_BOX)
 

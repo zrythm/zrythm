@@ -3,15 +3,14 @@
 
 #include <cmath>
 
-#include "dsp/engine.h"
-#include "dsp/position.h"
-#include "dsp/transport.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
 #include "gui/cpp/gtk_widgets/bot_dock_edge.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
 #include "gui/cpp/gtk_widgets/clip_editor.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/midi_arranger.h"
 #include "gui/cpp/gtk_widgets/midi_modifier_arranger.h"
@@ -19,13 +18,14 @@
 #include "gui/cpp/gtk_widgets/timeline_arranger.h"
 #include "gui/cpp/gtk_widgets/timeline_panel.h"
 #include "gui/cpp/gtk_widgets/timeline_ruler.h"
-#include "project.h"
-#include "utils/flags.h"
-#include "utils/rt_thread_id.h"
-#include "utils/ui.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
-#include "gtk_wrapper.h"
+#include "common/dsp/engine.h"
+#include "common/dsp/position.h"
+#include "common/dsp/transport.h"
+#include "common/utils/flags.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/ui.h"
 #include <limits.h>
 
 #define ACTION_IS(x) (self->action == UiOverlayAction::x)

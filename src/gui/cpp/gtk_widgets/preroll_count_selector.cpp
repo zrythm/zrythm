@@ -1,14 +1,13 @@
 // SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/preroll_count_selector.h"
-#include "project.h"
-#include "settings/g_settings_manager.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include "gtk_wrapper.h"
 
 G_DEFINE_TYPE (
   PrerollCountSelectorWidget,

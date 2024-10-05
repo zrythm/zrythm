@@ -3,21 +3,21 @@
 
 #include <cstring>
 
-#include "dsp/track.h"
-#include "dsp/tracklist.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
+#include "gui/cpp/backend/settings/settings.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
 #include "gui/cpp/gtk_widgets/popovers/tracklist_preferences_popover.h"
-#include "project.h"
-#include "settings/g_settings_manager.h"
-#include "settings/settings.h"
-#include "utils/gtk.h"
-#include "utils/resources.h"
-#include "utils/string.h"
-#include "zrythm.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
-#include "libadwaita_wrapper.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
+#include "common/utils/string.h"
 
 G_DEFINE_TYPE (
   TracklistPreferencesPopoverWidget,

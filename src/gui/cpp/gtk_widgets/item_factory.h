@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 /**
  * Item factory for column views.

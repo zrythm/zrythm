@@ -8,7 +8,7 @@
 #ifndef __GUI_WIDGETS_DIALOGS_ASK_CHECK_FOR_UPDATES_DIALOG_H__
 #define __GUI_WIDGETS_DIALOGS_ASK_CHECK_FOR_UPDATES_DIALOG_H__
 
-#include "libadwaita_wrapper.h"
+#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
 
 /**
  * @addtogroup dialogs

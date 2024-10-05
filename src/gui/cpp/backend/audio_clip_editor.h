@@ -5,7 +5,8 @@
 #define __AUDIO_AUDIO_CLIP_EDITOR_H__
 
 #include "gui/cpp/backend/editor_settings.h"
-#include "utils/icloneable.h"
+
+#include "common/utils/icloneable.h"
 
 /**
  * @addtogroup gui_backend

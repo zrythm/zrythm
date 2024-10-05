@@ -11,11 +11,11 @@
 #ifndef __GUI_WIDGETS_PLUGIN_BROWSER_H__
 #define __GUI_WIDGETS_PLUGIN_BROWSER_H__
 
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/item_factory.h"
-#include "plugins/plugin.h"
-#include "utils/symap.h"
 
-#include "gtk_wrapper.h"
+#include "common/plugins/plugin.h"
+#include "common/utils/symap.h"
 
 #define PLUGIN_BROWSER_WIDGET_TYPE (plugin_browser_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

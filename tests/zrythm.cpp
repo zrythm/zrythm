@@ -3,13 +3,14 @@
 
 #include "zrythm-test-config.h"
 
-#include "dsp/tempo_track.h"
-#include "dsp/track.h"
-#include "project.h"
-#include "utils/flags.h"
-#include "zrythm.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 
 #include "tests/helpers/zrythm_helper.h"
+
+#include "common/dsp/tempo_track.h"
+#include "common/dsp/track.h"
+#include "common/utils/flags.h"
 
 TEST_F (ZrythmFixture, Dummy) { }
 

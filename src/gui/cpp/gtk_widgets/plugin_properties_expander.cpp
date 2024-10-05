@@ -1,21 +1,22 @@
 // SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/engine.h"
-#include "dsp/port.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/plugin_properties_expander.h"
-#include "plugins/carla_native_plugin.h"
-#include "plugins/plugin.h"
-#include "plugins/plugin_gtk.h"
-#include "project.h"
-#include "utils/gtk.h"
-#include "utils/rt_thread_id.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include "common/dsp/engine.h"
+#include "common/dsp/port.h"
+#include "common/plugins/carla_native_plugin.h"
+#include "common/plugins/plugin.h"
+#include "common/plugins/plugin_gtk.h"
+#include "common/utils/gtk.h"
+#include "common/utils/rt_thread_id.h"
 
 G_DEFINE_TYPE (
   PluginPropertiesExpanderWidget,

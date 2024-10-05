@@ -1,15 +1,12 @@
 // SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/chord_object.h"
-#include "dsp/chord_track.h"
-#include "dsp/midi_event.h"
-#include "dsp/scale_object.h"
-#include "dsp/tracklist.h"
 #include "gui/cpp/backend/clip_editor.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
 #include "gui/cpp/backend/piano_roll.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/gtk_widgets/bot_dock_edge.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
 #include "gui/cpp/gtk_widgets/clip_editor.h"
@@ -18,19 +15,23 @@
 #include "gui/cpp/gtk_widgets/midi_arranger.h"
 #include "gui/cpp/gtk_widgets/midi_editor_space.h"
 #include "gui/cpp/gtk_widgets/piano_roll_keys.h"
-#include "project.h"
-#include "settings/g_settings_manager.h"
-#include "utils/color.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/math.h"
-#include "utils/objects.h"
-#include "utils/rt_thread_id.h"
-#include "utils/string.h"
-#include "utils/ui.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include "common/dsp/chord_object.h"
+#include "common/dsp/chord_track.h"
+#include "common/dsp/midi_event.h"
+#include "common/dsp/scale_object.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/color.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/math.h"
+#include "common/utils/objects.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/string.h"
+#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (PianoRollKeysWidget, piano_roll_keys_widget, GTK_TYPE_WIDGET)
 

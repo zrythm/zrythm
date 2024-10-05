@@ -1,26 +1,26 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/chord_descriptor.h"
-#include "dsp/chord_object.h"
-#include "dsp/chord_track.h"
-#include "dsp/scale_object.h"
-#include "dsp/tracklist.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
 #include "gui/cpp/gtk_widgets/chord_object.h"
 #include "gui/cpp/gtk_widgets/chord_selector_window.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/timeline_arranger.h"
-#include "project.h"
-#include "utils/flags.h"
-#include "utils/resources.h"
-#include "utils/rt_thread_id.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/chord_descriptor.h"
+#include "common/dsp/chord_object.h"
+#include "common/dsp/chord_track.h"
+#include "common/dsp/scale_object.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/flags.h"
+#include "common/utils/resources.h"
+#include "common/utils/rt_thread_id.h"
 
 G_DEFINE_TYPE (
   ChordSelectorWindowWidget,

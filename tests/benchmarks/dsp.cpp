@@ -3,13 +3,14 @@
 
 #include "zrythm-test-config.h"
 
-#include "utils/dsp.h"
-#include "utils/objects.h"
-#include "zrythm.h"
+#include "gui/cpp/backend/zrythm.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
+
+#include "common/utils/dsp.h"
+#include "common/utils/objects.h"
 
 #if HAVE_LSP_DSP
 #  include <lsp-plug.in/dsp/dsp.h>

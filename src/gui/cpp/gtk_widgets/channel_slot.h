@@ -10,10 +10,10 @@
 #ifndef __GUI_WIDGETS_CHANNEL_SLOT_H__
 #define __GUI_WIDGETS_CHANNEL_SLOT_H__
 
-#include "plugins/plugin.h"
-#include "utils/types.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/plugins/plugin.h"
+#include "common/utils/types.h"
 
 #define CHANNEL_SLOT_WIDGET_TYPE (channel_slot_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

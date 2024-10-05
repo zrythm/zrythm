@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_AUDIO_EDITOR_SPACE_H__
 #define __GUI_WIDGETS_AUDIO_EDITOR_SPACE_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define AUDIO_EDITOR_SPACE_WIDGET_TYPE (audio_editor_space_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

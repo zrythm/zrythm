@@ -4,8 +4,9 @@
 #ifndef __GUI_BACKEND_EVENT_H__
 #define __GUI_BACKEND_EVENT_H__
 
-#include "utils/format.h"
-#include "utils/types.h"
+#include "common/utils/format.h"
+#include "common/utils/logger.h"
+#include "common/utils/types.h"
 
 /**
  * @addtogroup events

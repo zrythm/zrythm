@@ -12,7 +12,7 @@
 
 #include "zrythm-test-config.h"
 
-#include "dsp/exporter.h"
+#include "common/dsp/exporter.h"
 
 /**
  * Convenient quick export.

@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_PIANO_ROLL_KEYS_H__
 #define __GUI_WIDGETS_PIANO_ROLL_KEYS_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define PIANO_ROLL_KEYS_WIDGET_TYPE (piano_roll_keys_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

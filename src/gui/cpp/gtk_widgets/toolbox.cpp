@@ -6,15 +6,16 @@
  *
  */
 
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/tool.h"
 #include "gui/cpp/gtk_widgets/bot_bar.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/toolbox.h"
-#include "project.h"
-#include "utils/gtk.h"
-#include "utils/resources.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (ToolboxWidget, toolbox_widget, GTK_TYPE_BOX)
 

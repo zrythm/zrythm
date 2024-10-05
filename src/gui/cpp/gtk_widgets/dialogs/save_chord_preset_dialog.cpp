@@ -3,19 +3,19 @@
 
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/chord_preset_pack_manager.h"
 #include "gui/cpp/backend/wrapped_object_with_change_signal.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/dialogs/save_chord_preset_dialog.h"
-#include "project.h"
-#include "settings/chord_preset_pack_manager.h"
-#include "utils/gtk.h"
-#include "utils/rt_thread_id.h"
-#include "utils/ui.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/utils/gtk.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (
   SaveChordPresetDialogWidget,

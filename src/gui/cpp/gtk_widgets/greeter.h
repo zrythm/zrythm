@@ -9,9 +9,9 @@
 #include "gui/cpp/backend/project_info.h"
 #include "gui/cpp/gtk_widgets/cc-list-row-info-button.h"
 #include "gui/cpp/gtk_widgets/item_factory.h"
-#include "utils/types.h"
+#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
 
-#include "libadwaita_wrapper.h"
+#include "common/utils/types.h"
 
 #define GREETER_WIDGET_TYPE (greeter_widget_get_type ())
 G_DECLARE_FINAL_TYPE (GreeterWidget, greeter_widget, Z, GREETER_WIDGET, AdwWindow)

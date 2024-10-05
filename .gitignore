@@ -160,11 +160,6 @@ callgrind*
 results*
 perf.data*
 
-# subprojects
-subprojects/**/*
-!subprojects/*.wrap
-subprojects/*sass*.wrap
-
 # VS Code config
 #.vscode
 .cache
@@ -185,3 +180,6 @@ venv
 
 # Logging
 /*.log
+
+# CMake
+CMakeLists.txt.user

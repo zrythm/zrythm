@@ -4,12 +4,12 @@
 #ifndef __GUI_WIDGETS_AUDIO_ARRANGER_H__
 #define __GUI_WIDGETS_AUDIO_ARRANGER_H__
 
-#include "dsp/position.h"
 #include "gui/cpp/backend/tool.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 
-#include "gtk_wrapper.h"
+#include "common/dsp/position.h"
 
 /**
  * @addtogroup widgets

@@ -5,9 +5,9 @@
 #define __GUI_WIDGETS_INSPECTOR_PLUGIN_H__
 
 #include "gui/cpp/backend/mixer_selections.h"
-#include "utils/types.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/utils/types.h"
 
 #define INSPECTOR_PLUGIN_WIDGET_TYPE (inspector_plugin_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

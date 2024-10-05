@@ -10,10 +10,10 @@
 #ifndef __GUI_WIDGETS_EXPORT_PROGRESS_DIALOG_H__
 #define __GUI_WIDGETS_EXPORT_PROGRESS_DIALOG_H__
 
-#include "dsp/exporter.h"
 #include "gui/cpp/gtk_widgets/dialogs/generic_progress_dialog.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/dsp/exporter.h"
 
 #define EXPORT_PROGRESS_DIALOG_WIDGET_TYPE \
   (export_progress_dialog_widget_get_type ())

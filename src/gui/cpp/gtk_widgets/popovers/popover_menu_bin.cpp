@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/cpp/gtk_widgets/popovers/popover_menu_bin.h"
-#include "utils/gtk.h"
-#include "utils/logger.h"
+
+#include "common/utils/gtk.h"
+#include "common/utils/logger.h"
 
 G_DEFINE_TYPE (PopoverMenuBinWidget, popover_menu_bin_widget, GTK_TYPE_WIDGET)
 

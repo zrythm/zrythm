@@ -8,9 +8,9 @@
 #include <QTimer>
 
 #include "gui/cpp/glue/settings_manager.h"
-#include "utils/directory_manager.h"
-#include "utils/pcg_rand.h"
 
+#include "common/utils/directory_manager.h"
+#include "common/utils/pcg_rand.h"
 #include "engine/ipc_message.h"
 #include "zrythm_application.h"
 #include <fftw3.h>

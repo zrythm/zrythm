@@ -15,9 +15,9 @@
 
 #include "zrythm-config.h"
 
-#include "io/file_descriptor.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/io/file_descriptor.h"
 
 #define FILE_AUDITIONER_CONTROLS_WIDGET_TYPE \
   (file_auditioner_controls_widget_get_type ())

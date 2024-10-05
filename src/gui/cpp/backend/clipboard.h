@@ -7,8 +7,7 @@
 #include "gui/cpp/backend/arranger_selections.h"
 #include "gui/cpp/backend/mixer_selections.h"
 #include "gui/cpp/backend/tracklist_selections.h"
-
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 /**
  * @addtogroup gui_backend

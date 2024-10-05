@@ -10,10 +10,10 @@
 #ifndef __GUI_WIDGETS_PLUGIN_PROPERTIES_EXPANDER_H__
 #define __GUI_WIDGETS_PLUGIN_PROPERTIES_EXPANDER_H__
 
-#include "dsp/port.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/two_col_expander_box.h"
 
-#include "gtk_wrapper.h"
+#include "common/dsp/port.h"
 
 typedef struct _EditableLabelWidget        EditableLabelWidget;
 typedef struct _PluginPresetSelectorWidget PluginPresetSelectorWidget;

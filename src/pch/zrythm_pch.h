@@ -26,10 +26,11 @@
 #include <variant>
 #include <vector>
 
+#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
+#include "gui/cpp/gtk_widgets/libpanel_wrapper.h"
+
 #include <glib/gi18n.h>
 
-#include "libadwaita_wrapper.h"
-#include "libpanel_wrapper.h"
 #include <glibmm.h>
 
 #ifdef __GNUC__
@@ -41,8 +42,7 @@
 #  pragma GCC diagnostic pop
 #endif
 
-#include "utils/gtest_wrapper.h"
-
+#include "common/utils/gtest_wrapper.h"
 #include <fmt/format.h>
 
 /* This also includes all native platform headers. */
@@ -53,6 +53,6 @@
 /*             zrythm headers             */
 /* ====================================== */
 
-#include "zrythm.h"
+#include "gui/cpp/backend/zrythm.h"
 
 #endif /* __PCH_ZRYTHM_PCH_H__ */

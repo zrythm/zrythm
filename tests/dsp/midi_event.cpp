@@ -3,10 +3,10 @@
 
 #include "zrythm-test-config.h"
 
-#include "dsp/midi_event.h"
-#include "utils/midi.h"
-
 #include "tests/helpers/zrythm_helper.h"
+
+#include "common/dsp/midi_event.h"
+#include "common/utils/midi.h"
 
 TEST_F (ZrythmFixture, AddNoteOnsFromChordDescriptor)
 {

@@ -8,7 +8,7 @@
 #ifndef __GUI_WIDGETS_TOOLBOX_H__
 #define __GUI_WIDGETS_TOOLBOX_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 /**
  * @addtogroup widgets

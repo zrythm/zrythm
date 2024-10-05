@@ -10,8 +10,8 @@
 #ifndef __GUI_WIDGETS_SNAP_GRID_POPOVER_H__
 #define __GUI_WIDGETS_SNAP_GRID_POPOVER_H__
 
-#include "gtk_wrapper.h"
-#include "libadwaita_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
 
 typedef struct _DigitalMeterWidget DigitalMeterWidget;
 typedef struct _SnapGridWidget     SnapGridWidget;

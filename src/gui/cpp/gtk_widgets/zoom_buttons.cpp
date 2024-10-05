@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/cpp/gtk_widgets/zoom_buttons.h"
-#include "utils/gtk.h"
-#include "utils/resources.h"
 
 #include <glib/gi18n.h>
+
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (ZoomButtonsWidget, zoom_buttons_widget, GTK_TYPE_BOX)
 

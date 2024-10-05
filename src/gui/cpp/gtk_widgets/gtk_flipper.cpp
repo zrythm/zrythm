@@ -20,8 +20,9 @@
  */
 
 #include "gui/cpp/gtk_widgets/gtk_flipper.h"
-#include "utils/gtk.h"
-#include "utils/logger.h"
+
+#include "common/utils/gtk.h"
+#include "common/utils/logger.h"
 
 /**
  * GtkFlipper:

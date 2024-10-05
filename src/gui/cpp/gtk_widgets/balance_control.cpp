@@ -1,18 +1,19 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/tracklist_selections.h"
-#include "dsp/port.h"
+#include "gui/cpp/backend/actions/tracklist_selections.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/balance_control.h"
 #include "gui/cpp/gtk_widgets/dialogs/string_entry_dialog.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
-#include "utils/gtk.h"
-#include "utils/math.h"
-#include "utils/ui.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include "common/dsp/port.h"
+#include "common/utils/gtk.h"
+#include "common/utils/math.h"
+#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (BalanceControlWidget, balance_control_widget, GTK_TYPE_WIDGET)
 

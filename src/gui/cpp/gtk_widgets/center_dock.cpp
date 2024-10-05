@@ -1,21 +1,21 @@
 // SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
+#include "gui/cpp/backend/settings/settings.h"
 #include "gui/cpp/gtk_widgets/bot_dock_edge.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
 #include "gui/cpp/gtk_widgets/event_viewer.h"
 #include "gui/cpp/gtk_widgets/left_dock_edge.h"
+#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
 #include "gui/cpp/gtk_widgets/main_notebook.h"
 #include "gui/cpp/gtk_widgets/pinned_tracklist.h"
 #include "gui/cpp/gtk_widgets/right_dock_edge.h"
 #include "gui/cpp/gtk_widgets/timeline_panel.h"
-#include "project.h"
-#include "settings/g_settings_manager.h"
-#include "settings/settings.h"
-#include "utils/resources.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
-#include "libadwaita_wrapper.h"
+#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (CenterDockWidget, center_dock_widget, GTK_TYPE_WIDGET)
 

@@ -8,8 +8,8 @@
 #ifndef __GUI_WIDGETS_CLIP_EDITOR_H__
 #define __GUI_WIDGETS_CLIP_EDITOR_H__
 
-#include "gtk_wrapper.h"
-#include "libadwaita_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
 
 #define CLIP_EDITOR_WIDGET_TYPE (clip_editor_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

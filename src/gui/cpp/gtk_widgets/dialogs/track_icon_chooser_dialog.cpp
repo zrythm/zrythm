@@ -1,20 +1,20 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/region.h"
-#include "dsp/track.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/dialogs/track_icon_chooser_dialog.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
-#include "project.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/objects.h"
-#include "utils/string.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/region.h"
+#include "common/dsp/track.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/objects.h"
+#include "common/utils/string.h"
 
 enum
 {

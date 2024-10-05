@@ -1,14 +1,13 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/utils/datetime.h"
+#include "common/utils/io.h"
+#include "common/utils/logger.h"
 #include "gui/cpp/backend/project_info.h"
-#include "utils/datetime.h"
-#include "utils/io.h"
-#include "utils/logger.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #include <glib/gi18n.h>
-
-#include <gtk_wrapper.h>
 
 ProjectInfo::ProjectInfo (const std::string &name, const std::string &filename)
     : name_ (name)

@@ -1,12 +1,10 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/mixer_selections_action.h"
-#include "dsp/channel.h"
-#include "dsp/channel_track.h"
-#include "dsp/engine.h"
+#include "gui/cpp/backend/actions/mixer_selections_action.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/wrapped_object_with_change_signal.h"
 #include "gui/cpp/gtk_widgets/bot_dock_edge.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
@@ -14,16 +12,19 @@
 #include "gui/cpp/gtk_widgets/channel_slot.h"
 #include "gui/cpp/gtk_widgets/channel_slot_activate_button.h"
 #include "gui/cpp/gtk_widgets/mixer.h"
-#include "project.h"
-#include "utils/cairo.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/logger.h"
-#include "utils/objects.h"
-#include "utils/rt_thread_id.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include "common/dsp/channel.h"
+#include "common/dsp/channel_track.h"
+#include "common/dsp/engine.h"
+#include "common/utils/cairo.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/logger.h"
+#include "common/utils/objects.h"
+#include "common/utils/rt_thread_id.h"
 
 G_DEFINE_TYPE (ChannelSlotWidget, channel_slot_widget, GTK_TYPE_WIDGET)
 

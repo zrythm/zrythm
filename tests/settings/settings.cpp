@@ -3,8 +3,8 @@
 
 #include "zrythm-test-config.h"
 
-#include "settings/g_settings_manager.h"
-#include "settings/settings.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
+#include "gui/cpp/backend/settings/settings.h"
 
 #include "tests/helpers/zrythm_helper.h"
 

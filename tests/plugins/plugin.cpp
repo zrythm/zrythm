@@ -3,14 +3,14 @@
 
 #include "zrythm-test-config.h"
 
-#include "dsp/fader.h"
-#include "dsp/midi_event.h"
-#include "dsp/router.h"
-#include "utils/math.h"
-
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
+
+#include "common/dsp/fader.h"
+#include "common/dsp/midi_event.h"
+#include "common/dsp/router.h"
+#include "common/utils/math.h"
 
 #ifdef HAVE_HELM
 static void

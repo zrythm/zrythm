@@ -3,14 +3,12 @@
 
 #include <cmath>
 
-#include "actions/arranger_selections.h"
-#include "actions/undo_manager.h"
-#include "dsp/audio_track.h"
-#include "dsp/chord_object.h"
-#include "dsp/chord_region.h"
-#include "dsp/midi_region.h"
+#include "gui/cpp/backend/actions/arranger_selections.h"
+#include "gui/cpp/backend/actions/undo_manager.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
 #include "gui/cpp/gtk_widgets/bot_dock_edge.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
@@ -18,15 +16,17 @@
 #include "gui/cpp/gtk_widgets/chord_editor_space.h"
 #include "gui/cpp/gtk_widgets/clip_editor.h"
 #include "gui/cpp/gtk_widgets/clip_editor_inner.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/ruler.h"
 #include "gui/cpp/gtk_widgets/track.h"
-#include "project.h"
-#include "utils/ui.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
-#include "gtk_wrapper.h"
+#include "common/dsp/audio_track.h"
+#include "common/dsp/chord_object.h"
+#include "common/dsp/chord_region.h"
+#include "common/dsp/midi_region.h"
+#include "common/utils/ui.h"
 
 ArrangerCursor
 chord_arranger_widget_get_cursor (ArrangerWidget * self, Tool tool)

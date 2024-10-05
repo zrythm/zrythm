@@ -3,9 +3,9 @@
 
 #include "zrythm-test-config.h"
 
-#include "utils/gtest_wrapper.h"
+#include "common/utils/gtest_wrapper.h"
 #define DEBUG_OBJECT_POOL 1
-#include "utils/object_pool.h"
+#include "common/utils/object_pool.h"
 
 static void
 test_with_size (size_t initial_cap, int num_elems, size_t expected_end_cap)

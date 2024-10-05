@@ -10,8 +10,8 @@
 #ifndef __GUI_WIDGETS_BOT_DOCK_EDGE_H__
 #define __GUI_WIDGETS_BOT_DOCK_EDGE_H__
 
-#include "gtk_wrapper.h"
-#include "libpanel_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/libpanel_wrapper.h"
 
 #define BOT_DOCK_EDGE_WIDGET_TYPE (bot_dock_edge_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

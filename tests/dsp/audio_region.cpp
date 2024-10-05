@@ -3,15 +3,16 @@
 
 #include "zrythm-test-config.h"
 
-#include "dsp/midi_region.h"
-#include "dsp/region.h"
-#include "dsp/transport.h"
-#include "project.h"
-#include "utils/flags.h"
-#include "zrythm.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
+
+#include "common/dsp/midi_region.h"
+#include "common/dsp/region.h"
+#include "common/dsp/transport.h"
+#include "common/utils/flags.h"
 
 TEST_F (ZrythmFixture, ChangeSampleRate)
 {

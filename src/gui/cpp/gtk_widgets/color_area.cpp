@@ -1,20 +1,20 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/track.h"
 #include "gui/cpp/gtk_widgets/color_area.h"
 #include "gui/cpp/gtk_widgets/dialogs/object_color_chooser_dialog.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/track.h"
-#include "utils/color.h"
-#include "utils/gtk.h"
-#include "utils/objects.h"
-#include "utils/ui.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/track.h"
+#include "common/utils/color.h"
+#include "common/utils/gtk.h"
+#include "common/utils/objects.h"
+#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (ColorAreaWidget, color_area_widget, GTK_TYPE_WIDGET)
 

@@ -10,10 +10,10 @@
 #ifndef __GUI_WIDGETS_MULTI_SELECTION_H__
 #define __GUI_WIDGETS_MULTI_SELECTION_H__
 
-#include "utils/types.h"
-#include "utils/yaml.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/utils/types.h"
+#include "common/utils/yaml.h"
 
 #define MULTI_SELECTION_WIDGET_TYPE (multi_selection_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

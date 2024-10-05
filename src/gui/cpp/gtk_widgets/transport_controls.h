@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_TRANSPORT_CONTROLS_H__
 #define __GUI_WIDGETS_TRANSPORT_CONTROLS_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define TRANSPORT_CONTROLS_WIDGET_TYPE (transport_controls_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

@@ -10,9 +10,9 @@
 #ifndef __GUI_WIDGETS_CHANNEL_SEND_SELECTOR_H__
 #define __GUI_WIDGETS_CHANNEL_SEND_SELECTOR_H__
 
-#include "utils/types.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/utils/types.h"
 
 #define CHANNEL_SEND_SELECTOR_WIDGET_TYPE \
   (channel_send_selector_widget_get_type ())

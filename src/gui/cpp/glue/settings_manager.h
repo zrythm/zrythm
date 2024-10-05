@@ -9,8 +9,8 @@
 #include <QSettings>
 #include <QStandardPaths>
 
-#include "utils/logger.h"
-#include "utils/math.h"
+#include "common/utils/logger.h"
+#include "common/utils/math.h"
 
 #define DEFINE_SETTING_PROPERTY_WITHOUT_SETTER(ptype, name, default_value) \
 \

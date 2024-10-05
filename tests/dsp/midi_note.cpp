@@ -3,14 +3,15 @@
 
 #include "zrythm-test-config.h"
 
-#include "dsp/midi_note.h"
-#include "dsp/region.h"
-#include "project.h"
-#include "utils/flags.h"
-#include "zrythm.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 
 #include "helpers/project_helper.h"
 #include "helpers/zrythm_helper.h"
+
+#include "common/dsp/midi_note.h"
+#include "common/dsp/region.h"
+#include "common/utils/flags.h"
 
 #if 0
 typedef struct

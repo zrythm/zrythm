@@ -4,10 +4,10 @@
 #include <chrono>
 #include <regex>
 
-#include "utils/datetime.h"
-#include "utils/gtest_wrapper.h"
-
 #include "tests/helpers/zrythm_helper.h"
+
+#include "common/utils/datetime.h"
+#include "common/utils/gtest_wrapper.h"
 
 TEST (DatetimeTest, GetCurrentAsString)
 {

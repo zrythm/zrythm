@@ -13,7 +13,7 @@
 #ifndef __GUI_WIDGETS_CONTROL_ROOM_H__
 #define __GUI_WIDGETS_CONTROL_ROOM_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define MONITOR_SECTION_WIDGET_TYPE (monitor_section_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

@@ -4,7 +4,7 @@
 #ifndef __GUI_WIDGETS_EXPORT_MIDI_FILE_DIALOG_H__
 #define __GUI_WIDGETS_EXPORT_MIDI_FILE_DIALOG_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 class Region;
 

@@ -1,16 +1,16 @@
 // SPDX-FileCopyrightText: © 2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/tracklist_selections.h"
-#include "dsp/tracklist.h"
+#include "gui/cpp/backend/actions/tracklist_selections.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/dialogs/add_tracks_to_group_dialog.h"
-#include "project.h"
-#include "utils/gtk.h"
-#include "zrythm.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/gtk.h"
 
 G_DEFINE_TYPE (
   AddTracksToGroupDialogWidget,

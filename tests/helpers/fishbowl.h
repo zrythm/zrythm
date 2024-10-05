@@ -21,7 +21,7 @@
 #ifndef __GTK_FISHBOWL_H__
 #define __GTK_FISHBOWL_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 G_BEGIN_DECLS
 

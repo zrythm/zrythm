@@ -1,18 +1,19 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/channel.h"
-#include "dsp/engine.h"
-#include "dsp/meter.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/fader.h"
 #include "gui/cpp/gtk_widgets/meter.h"
-#include "project.h"
-#include "utils/gtk.h"
-#include "utils/math.h"
-#include "utils/objects.h"
-#include "utils/ui.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include "common/dsp/channel.h"
+#include "common/dsp/engine.h"
+#include "common/dsp/meter.h"
+#include "common/utils/gtk.h"
+#include "common/utils/math.h"
+#include "common/utils/objects.h"
+#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (MeterWidget, meter_widget, GTK_TYPE_WIDGET)
 

@@ -12,10 +12,10 @@
 
 #include "zrythm-config.h"
 
-#include "io/file_descriptor.h"
-#include "utils/types.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/io/file_descriptor.h"
+#include "common/utils/types.h"
 
 #define FILE_BROWSER_FILTERS_WIDGET_TYPE \
   (file_browser_filters_widget_get_type ())

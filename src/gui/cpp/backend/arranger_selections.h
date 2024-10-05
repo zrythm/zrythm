@@ -7,9 +7,9 @@
 #include <memory>
 #include <vector>
 
-#include "dsp/arranger_object_all.h"
-#include "utils/icloneable.h"
-#include "utils/traits.h"
+#include "common/dsp/arranger_object_all.h"
+#include "common/utils/icloneable.h"
+#include "common/utils/traits.h"
 
 class AudioClip;
 

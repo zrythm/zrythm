@@ -13,11 +13,11 @@
 #ifndef __GUI_WIDGETS_BOUNCE_DIALOG_H__
 #define __GUI_WIDGETS_BOUNCE_DIALOG_H__
 
-#include "dsp/exporter.h"
-#include "dsp/position.h"
-#include "utils/types.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/dsp/exporter.h"
+#include "common/dsp/position.h"
+#include "common/utils/types.h"
 
 #define BOUNCE_DIALOG_WIDGET_TYPE (bounce_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

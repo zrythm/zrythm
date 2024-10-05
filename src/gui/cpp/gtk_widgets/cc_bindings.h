@@ -13,7 +13,7 @@
 #ifndef __GUI_WIDGETS_CC_BINDINGS_H__
 #define __GUI_WIDGETS_CC_BINDINGS_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 typedef struct _CcBindingsTreeWidget CcBindingsTreeWidget;
 

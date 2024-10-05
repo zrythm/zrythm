@@ -139,7 +139,9 @@ target_sources(zrythm_lib
   velocity.cpp
   velocity_settings.cpp
   volume.cpp
-  zoom_buttons.cpp)
+  zoom_buttons.cpp
+  zrythm_app.cpp
+  )
 
 add_subdirectory(dialogs)
 add_subdirectory(popovers)

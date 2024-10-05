@@ -3,11 +3,8 @@
 
 #include "zrythm-config.h"
 
-#include "dsp/audio_region.h"
-#include "dsp/automation_region.h"
-#include "dsp/tempo_track.h"
-#include "dsp/track.h"
-#include "dsp/tracklist.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
 #include "gui/cpp/gtk_widgets/arranger_object.h"
 #include "gui/cpp/gtk_widgets/bot_bar.h"
@@ -19,19 +16,23 @@
 #include "gui/cpp/gtk_widgets/timeline_arranger.h"
 #include "gui/cpp/gtk_widgets/timeline_panel.h"
 #include "gui/cpp/gtk_widgets/timeline_ruler.h"
-#include "project.h"
-#include "utils/cairo.h"
-#include "utils/color.h"
-#include "utils/debug.h"
-#include "utils/dsp.h"
-#include "utils/gtk.h"
-#include "utils/math.h"
-#include "utils/objects.h"
-#include "utils/ui.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n-lib.h>
+
+#include "common/dsp/audio_region.h"
+#include "common/dsp/automation_region.h"
+#include "common/dsp/tempo_track.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/cairo.h"
+#include "common/utils/color.h"
+#include "common/utils/debug.h"
+#include "common/utils/dsp.h"
+#include "common/utils/gtk.h"
+#include "common/utils/math.h"
+#include "common/utils/objects.h"
+#include "common/utils/ui.h"
 
 static const GdkRGBA object_fill_color = { 1, 1, 1, 1 };
 

@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/channel_track.h"
 #include "gui/cpp/gtk_widgets/midi_channel_selection_dropdown.h"
-#include "utils/gtk.h"
-#include "utils/string.h"
+
+#include "common/dsp/channel_track.h"
+#include "common/utils/gtk.h"
+#include "common/utils/string.h"
 
 static char *
 get_str (void * data)

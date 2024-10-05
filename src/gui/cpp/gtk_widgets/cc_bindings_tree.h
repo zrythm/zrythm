@@ -13,9 +13,8 @@
 #include <memory>
 #include <vector>
 
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/item_factory.h"
-
-#include "gtk_wrapper.h"
 
 #define CC_BINDINGS_TREE_WIDGET_TYPE (cc_bindings_tree_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

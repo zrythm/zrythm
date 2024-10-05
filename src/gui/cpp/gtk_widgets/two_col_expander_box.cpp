@@ -3,9 +3,10 @@
 
 #include "gui/cpp/gtk_widgets/expander_box.h"
 #include "gui/cpp/gtk_widgets/two_col_expander_box.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/logger.h"
+
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/logger.h"
 
 G_DEFINE_TYPE_WITH_PRIVATE (
   TwoColExpanderBoxWidget,

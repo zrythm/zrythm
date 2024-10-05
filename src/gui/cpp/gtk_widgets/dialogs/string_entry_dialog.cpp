@@ -3,12 +3,13 @@
 
 #include "gui/cpp/gtk_widgets/dialogs/string_entry_dialog.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
-#include "utils/objects.h"
-#include "utils/resources.h"
-#include "utils/string.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include "common/utils/objects.h"
+#include "common/utils/resources.h"
+#include "common/utils/string.h"
 
 G_DEFINE_TYPE (
   StringEntryDialogWidget,

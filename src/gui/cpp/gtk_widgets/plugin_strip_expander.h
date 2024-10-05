@@ -11,11 +11,11 @@
 #define __GUI_WIDGETS_PLUGIN_STRIP_EXPANDER_H__
 
 #include "gui/cpp/gtk_widgets/expander_box.h"
-#include "plugins/plugin_identifier.h"
-#include "utils/audio.h"
-#include "utils/types.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/plugins/plugin_identifier.h"
+#include "common/utils/audio.h"
+#include "common/utils/types.h"
 
 #define PLUGIN_STRIP_EXPANDER_WIDGET_TYPE \
   (plugin_strip_expander_widget_get_type ())

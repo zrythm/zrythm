@@ -3,26 +3,26 @@
 
 #include <typeinfo>
 
-#include "dsp/chord_track.h"
-#include "dsp/engine.h"
-#include "dsp/marker_track.h"
-#include "dsp/midi_event.h"
-#include "dsp/position.h"
-#include "dsp/tempo_track.h"
-#include "dsp/track.h"
-#include "dsp/tracklist.h"
-#include "dsp/transport.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/timeline_selections.h"
-#include "project.h"
-#include "utils/dsp.h"
-#include "utils/math.h"
-#include "utils/rt_thread_id.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
-#include "gtk_wrapper.h"
+#include "common/dsp/chord_track.h"
+#include "common/dsp/engine.h"
+#include "common/dsp/marker_track.h"
+#include "common/dsp/midi_event.h"
+#include "common/dsp/position.h"
+#include "common/dsp/tempo_track.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/dsp/transport.h"
+#include "common/utils/dsp.h"
+#include "common/utils/math.h"
+#include "common/utils/rt_thread_id.h"
 
 TimelineSelections::TimelineSelections () : ArrangerSelections (Type::Timeline)
 {

@@ -1,23 +1,24 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/actions.h"
-#include "dsp/audio_function.h"
-#include "dsp/automation_function.h"
-#include "dsp/midi_function.h"
-#include "dsp/quantize_options.h"
+#include "gui/cpp/backend/actions/actions.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/gtk_widgets/editor_toolbar.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/playhead_scroll_buttons.h"
 #include "gui/cpp/gtk_widgets/quantize_box.h"
 #include "gui/cpp/gtk_widgets/snap_grid.h"
 #include "gui/cpp/gtk_widgets/zoom_buttons.h"
-#include "project.h"
-#include "settings/g_settings_manager.h"
-#include "utils/resources.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include "common/dsp/audio_function.h"
+#include "common/dsp/automation_function.h"
+#include "common/dsp/midi_function.h"
+#include "common/dsp/quantize_options.h"
+#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (EditorToolbarWidget, editor_toolbar_widget, GTK_TYPE_WIDGET)
 

@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_DIALOGS_PORT_INFO_H__
 #define __GUI_WIDGETS_DIALOGS_PORT_INFO_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define PORT_INFO_DIALOG_WIDGET_TYPE (port_info_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

@@ -3,11 +3,12 @@
 
 #include <cstdlib>
 
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/automation_mode.h"
-#include "utils/gtk.h"
-#include "utils/ui.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include "common/utils/gtk.h"
+#include "common/utils/ui.h"
 
 void
 AutomationModeWidget::init ()

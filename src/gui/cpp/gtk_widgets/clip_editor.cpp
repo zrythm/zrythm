@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/cpp/backend/clip_editor.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
 #include "gui/cpp/gtk_widgets/automation_arranger.h"
 #include "gui/cpp/gtk_widgets/automation_editor_space.h"
@@ -18,10 +19,10 @@
 #include "gui/cpp/gtk_widgets/midi_editor_space.h"
 #include "gui/cpp/gtk_widgets/midi_modifier_arranger.h"
 #include "gui/cpp/gtk_widgets/ruler.h"
-#include "project.h"
-#include "utils/flags.h"
-#include "utils/resources.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
+
+#include "common/utils/flags.h"
+#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (ClipEditorWidget, clip_editor_widget, GTK_TYPE_BOX)
 

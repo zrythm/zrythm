@@ -8,15 +8,16 @@
 
 #include <cstdio>
 
-#include "dsp/engine.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/bot_bar.h"
 #include "gui/cpp/gtk_widgets/cpu.h"
-#include "project.h"
-#include "utils/cpu_windows.h"
-#include "utils/gtk.h"
-#include "utils/objects.h"
-#include "utils/ui.h"
-#include "zrythm.h"
+
+#include "common/dsp/engine.h"
+#include "common/utils/cpu_windows.h"
+#include "common/utils/gtk.h"
+#include "common/utils/objects.h"
+#include "common/utils/ui.h"
 
 #ifdef __APPLE__
 #  include <mach/mach_error.h>
@@ -25,7 +26,7 @@
 #  include <mach/vm_map.h>
 #endif
 
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 G_DEFINE_TYPE (CpuWidget, cpu_widget, GTK_TYPE_WIDGET)
 

@@ -1,18 +1,18 @@
 // SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/cc_bindings.h"
 #include "gui/cpp/gtk_widgets/cc_bindings_tree.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/left_dock_edge.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
-#include "project.h"
-#include "utils/gtk.h"
-#include "utils/resources.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (CcBindingsWidget, cc_bindings_widget, GTK_TYPE_BOX)
 

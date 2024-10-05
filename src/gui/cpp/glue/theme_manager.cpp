@@ -3,7 +3,8 @@
 
 #include "gui/cpp/glue/theme_manager.h"
 #include "gui/cpp/zrythm_application.h"
-#include "utils/directory_manager.h"
+
+#include "common/utils/directory_manager.h"
 
 ThemeManager::ThemeManager (QObject * parent) : QObject (parent)
 {

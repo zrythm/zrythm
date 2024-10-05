@@ -3,26 +3,26 @@
 
 #include "zrythm-config.h"
 
-#include "actions/undo_manager.h"
-#include "actions/undo_stack.h"
+#include "gui/cpp/backend/actions/undo_manager.h"
+#include "gui/cpp/backend/actions/undo_stack.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/dialogs/bug_report_dialog.h"
 #include "gui/cpp/gtk_widgets/dialogs/generic_progress_dialog.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
-#include "project.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/io.h"
-#include "utils/logger.h"
-#include "utils/networking.h"
-#include "utils/objects.h"
-#include "utils/progress_info.h"
-#include "utils/resources.h"
-#include "utils/string.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/io.h"
+#include "common/utils/logger.h"
+#include "common/utils/networking.h"
+#include "common/utils/objects.h"
+#include "common/utils/progress_info.h"
+#include "common/utils/resources.h"
+#include "common/utils/string.h"
 #include <yyjson.h>
 
 G_DEFINE_TYPE (

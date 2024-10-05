@@ -1,17 +1,18 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/engine_pa.h"
-#include "dsp/midi_region.h"
 #include "gui/cpp/backend/timeline_selections.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/dialogs/export_midi_file_dialog.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
-#include "utils/string.h"
-#include "utils/ui.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include "common/dsp/engine_pa.h"
+#include "common/dsp/midi_region.h"
+#include "common/utils/string.h"
+#include "common/utils/ui.h"
 
 static void
 on_response (GtkNativeDialog * native, int response)

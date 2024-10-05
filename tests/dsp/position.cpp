@@ -3,11 +3,11 @@
 
 #include "zrythm-test-config.h"
 
-#include "dsp/position.h"
-#include "utils/math.h"
-#include "utils/string.h"
-
 #include "tests/helpers/zrythm_helper.h"
+
+#include "common/dsp/position.h"
+#include "common/utils/math.h"
+#include "common/utils/string.h"
 
 TEST_F (ZrythmFixture, PositionConversions)
 {

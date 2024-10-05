@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/cpp/gtk_widgets/custom_image.h"
-#include "utils/gtk.h"
+
+#include "common/utils/gtk.h"
 
 G_DEFINE_TYPE (CustomImageWidget, custom_image_widget, GTK_TYPE_WIDGET)
 

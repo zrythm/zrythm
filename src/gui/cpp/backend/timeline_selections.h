@@ -4,9 +4,10 @@
 #ifndef __GUI_BACKEND_TL_SELECTIONS_H__
 #define __GUI_BACKEND_TL_SELECTIONS_H__
 
-#include "dsp/midi_region.h"
-#include "dsp/region.h"
 #include "gui/cpp/backend/arranger_selections.h"
+
+#include "common/dsp/midi_region.h"
+#include "common/dsp/region.h"
 
 /**
  * @addtogroup gui_backend

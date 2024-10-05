@@ -12,29 +12,30 @@
 
 #include "zrythm-test-config.h"
 
-#include "dsp/audio_region.h"
-#include "dsp/automation_region.h"
-#include "dsp/chord_region.h"
-#include "dsp/chord_track.h"
-#include "dsp/engine_dummy.h"
-#include "dsp/marker_track.h"
-#include "dsp/master_track.h"
-#include "dsp/midi_note.h"
-#include "dsp/recording_manager.h"
-#include "dsp/region.h"
-#include "dsp/router.h"
-#include "dsp/tempo_track.h"
-#include "dsp/tracklist.h"
-#include "project.h"
-#include "project/project_init_flow_manager.h"
-#include "utils/gtest_wrapper.h"
-#include "utils/ui.h"
-#include "zrythm.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/project/project_init_flow_manager.h"
+#include "gui/cpp/backend/zrythm.h"
 
 #include <glib.h>
 #include <glib/gi18n.h>
 
 #include "tests/helpers/zrythm_helper.h"
+
+#include "common/dsp/audio_region.h"
+#include "common/dsp/automation_region.h"
+#include "common/dsp/chord_region.h"
+#include "common/dsp/chord_track.h"
+#include "common/dsp/engine_dummy.h"
+#include "common/dsp/marker_track.h"
+#include "common/dsp/master_track.h"
+#include "common/dsp/midi_note.h"
+#include "common/dsp/recording_manager.h"
+#include "common/dsp/region.h"
+#include "common/dsp/router.h"
+#include "common/dsp/tempo_track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/gtest_wrapper.h"
+#include "common/utils/ui.h"
 
 /**
  * @addtogroup tests

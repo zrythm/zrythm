@@ -36,10 +36,10 @@
 #define G_LOG_DOMAIN "cc-list-row-info-button"
 
 #include "gui/cpp/gtk_widgets/cc-list-row-info-button.h"
-#include "utils/logger.h"
-#include "utils/resources.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/utils/logger.h"
+#include "common/utils/resources.h"
 
 struct _CcListRowInfoButton
 {

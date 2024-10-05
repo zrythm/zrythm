@@ -3,9 +3,9 @@
 
 #include "zrythm-test-config.h"
 
-#include "utils/compression.h"
-
 #include "tests/helpers/zrythm_helper.h"
+
+#include "common/utils/compression.h"
 
 TEST (Compression, Decompression)
 {

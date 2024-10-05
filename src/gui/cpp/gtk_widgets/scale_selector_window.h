@@ -10,10 +10,10 @@
 #ifndef __GUI_WIDGETS_SCALE_SELECTOR_WINDOW_H__
 #define __GUI_WIDGETS_SCALE_SELECTOR_WINDOW_H__
 
-#include "dsp/scale.h"
-#include "utils/types.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/dsp/scale.h"
+#include "common/utils/types.h"
 
 #define SCALE_SELECTOR_WINDOW_WIDGET_TYPE \
   (scale_selector_window_widget_get_type ())

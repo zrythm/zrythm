@@ -1,14 +1,15 @@
 // SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/region.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/region.h"
-#include "project.h"
-#include "zrythm.h"
 
 #include "tests/helpers/fishbowl.h"
 #include "tests/helpers/fishbowl_window.h"
 #include "tests/helpers/zrythm_helper.h"
+
+#include "common/dsp/region.h"
 
 typedef struct
 {

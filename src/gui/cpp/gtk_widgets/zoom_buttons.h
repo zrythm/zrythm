@@ -8,7 +8,7 @@
 #ifndef __GUI_WIDGETS_ZOOM_BUTTONS_H__
 #define __GUI_WIDGETS_ZOOM_BUTTONS_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define ZOOM_BUTTONS_WIDGET_TYPE (zoom_buttons_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

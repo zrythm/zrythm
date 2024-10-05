@@ -10,9 +10,9 @@
 #ifndef __GUI_WIDGETS_ARRANGER_MINIMAP_SELECTION_H__
 #define __GUI_WIDGETS_ARRANGER_MINIMAP_SELECTION_H__
 
-#include "utils/ui.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/utils/ui.h"
 
 TYPEDEF_STRUCT_UNDERSCORED (ArrangerMinimapWidget);
 

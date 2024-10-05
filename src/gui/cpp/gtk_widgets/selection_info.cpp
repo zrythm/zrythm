@@ -5,7 +5,8 @@
  */
 
 #include "gui/cpp/gtk_widgets/selection_info.h"
-#include "utils/gtk.h"
+
+#include "common/utils/gtk.h"
 
 G_DEFINE_TYPE_WITH_PRIVATE (
   SelectionInfoWidget,

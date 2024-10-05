@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: © 2020-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/arranger_object.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/gtk_widgets/dialogs/arranger_object_info.h"
-#include "project.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/arranger_object.h"
 
 G_DEFINE_TYPE (
   ArrangerObjectInfoDialogWidget,

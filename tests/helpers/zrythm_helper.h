@@ -7,12 +7,13 @@
 #include "zrythm-test-config.h"
 
 /* include commonly used stuff */
-#include "utils/gtest_wrapper.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/backend/zrythm.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib.h>
 #include <glib/gi18n.h>
+
+#include "common/utils/gtest_wrapper.h"
 
 #ifdef G_OS_UNIX
 #  include <glib-unix.h>

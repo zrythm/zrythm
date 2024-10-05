@@ -1,13 +1,9 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/automation_track.h"
-#include "dsp/instrument_track.h"
-#include "dsp/region.h"
-#include "dsp/track.h"
-#include "dsp/tracklist.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
 #include "gui/cpp/backend/tracklist_selections.h"
 #include "gui/cpp/backend/wrapped_object_with_change_signal.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
@@ -21,6 +17,7 @@
 #include "gui/cpp/gtk_widgets/dialogs/track_icon_chooser_dialog.h"
 #include "gui/cpp/gtk_widgets/editable_label.h"
 #include "gui/cpp/gtk_widgets/fader_buttons.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/left_dock_edge.h"
 #include "gui/cpp/gtk_widgets/main_notebook.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
@@ -34,17 +31,20 @@
 #include "gui/cpp/gtk_widgets/track.h"
 #include "gui/cpp/gtk_widgets/track_canvas.h"
 #include "gui/cpp/gtk_widgets/tracklist.h"
-#include "project.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/resources.h"
-#include "utils/rt_thread_id.h"
-#include "utils/ui.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/automation_track.h"
+#include "common/dsp/instrument_track.h"
+#include "common/dsp/region.h"
+#include "common/dsp/track.h"
+#include "common/dsp/tracklist.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (TrackWidget, track_widget, GTK_TYPE_WIDGET)
 

@@ -4,9 +4,9 @@
 #ifndef __GUI_WIDGETS_METER_H__
 #define __GUI_WIDGETS_METER_H__
 
-#include "utils/color.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
-#include "gtk_wrapper.h"
+#include "common/utils/color.h"
 
 #define METER_WIDGET_TYPE (meter_widget_get_type ())
 G_DECLARE_FINAL_TYPE (MeterWidget, meter_widget, Z, METER_WIDGET, GtkWidget)

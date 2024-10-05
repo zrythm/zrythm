@@ -5,12 +5,13 @@
 
 #include <random>
 
-#include "dsp/track.h"
 #include "gui/cpp/backend/timeline_selections.h"
-#include "utils/gtest_wrapper.h"
 
 #include "helpers/project_helper.h"
 #include "helpers/zrythm_helper.h"
+
+#include "common/dsp/track.h"
+#include "common/utils/gtest_wrapper.h"
 
 TEST_F (BootstrapTimelineFixture, TimelineSelectionsSortByIndices)
 {

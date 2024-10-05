@@ -11,7 +11,7 @@
 #ifndef __GUI_WIDGETS_QUANTIZE_BOX_H__
 #define __GUI_WIDGETS_QUANTIZE_BOX_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 /**
  * @addtogroup widgets

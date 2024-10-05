@@ -4,7 +4,7 @@
 #ifndef __GUI_WIDGETS_TRACKLIST_PREFERENCES_POPOVER_H__
 #define __GUI_WIDGETS_TRACKLIST_PREFERENCES_POPOVER_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define TRACKLIST_PREFERENCES_POPOVER_WIDGET_TYPE \
   (tracklist_preferences_popover_widget_get_type ())

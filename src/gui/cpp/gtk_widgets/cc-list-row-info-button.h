@@ -35,7 +35,7 @@
 
 #pragma once
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 G_BEGIN_DECLS
 

@@ -3,24 +3,25 @@
 
 #include "zrythm-test-config.h"
 
-#include "actions/channel_send_action.h"
+#include "gui/cpp/backend/actions/channel_send_action.h"
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "actions/tracklist_selections.h"
-#include "actions/undoable_action.h"
-#include "dsp/audio_region.h"
-#include "dsp/master_track.h"
-#include "dsp/midi_event.h"
-#include "dsp/region.h"
-#include "dsp/router.h"
-#include "project.h"
-#include "utils/color.h"
-#include "utils/flags.h"
-#include "zrythm.h"
+#include "gui/cpp/backend/actions/tracklist_selections.h"
+#include "gui/cpp/backend/actions/undoable_action.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
+
+#include "common/dsp/audio_region.h"
+#include "common/dsp/master_track.h"
+#include "common/dsp/midi_event.h"
+#include "common/dsp/region.h"
+#include "common/dsp/router.h"
+#include "common/utils/color.h"
+#include "common/utils/flags.h"
 
 #if defined(HAVE_CHIPWAVE) || defined(HAVE_HELM) || defined(HAVE_LSP_COMPRESSOR)
 static InstrumentTrack *

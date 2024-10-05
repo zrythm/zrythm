@@ -90,7 +90,7 @@ IncludeCategories:
   - Regex:           '^<(assert|errno|inttypes|signal|cstring|cstd.+|sys/.+|cmath|cfloat)\.h>$'
     Priority:        -2
     CaseSensitive:   true
-  - Regex:           '^"((audio|actions|dsp|io|plugins|settings|utils|gui|schemas)/.*|zrythm\.h|zrythm_app\.h|project.*\.h)'
+  - Regex:           '^"((common|gui)/.*|zrythm\.h|zrythm_app\.h|project.*\.h)'
     Priority:        3
     CaseSensitive:   true
   - Regex:           '^<(((glib|gtk|gio)/.*)|adwaita|glib|libpanel)\.h>$'

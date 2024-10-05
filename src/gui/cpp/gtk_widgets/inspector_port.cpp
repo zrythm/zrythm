@@ -3,29 +3,30 @@
 
 #include "zrythm-config.h"
 
-#include "actions/midi_mapping_action.h"
-#include "actions/port_action.h"
-#include "dsp/control_port.h"
-#include "dsp/engine.h"
-#include "dsp/meter.h"
-#include "dsp/midi_mapping.h"
-#include "dsp/port.h"
+#include "gui/cpp/backend/actions/midi_mapping_action.h"
+#include "gui/cpp/backend/actions/port_action.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/bar_slider.h"
 #include "gui/cpp/gtk_widgets/dialogs/bind_cc_dialog.h"
 #include "gui/cpp/gtk_widgets/dialogs/port_info.h"
 #include "gui/cpp/gtk_widgets/inspector_port.h"
 #include "gui/cpp/gtk_widgets/popovers/port_connections_popover.h"
-#include "project.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/math.h"
-#include "utils/objects.h"
-#include "utils/string.h"
-#include "utils/ui.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include "common/dsp/control_port.h"
+#include "common/dsp/engine.h"
+#include "common/dsp/meter.h"
+#include "common/dsp/midi_mapping.h"
+#include "common/dsp/port.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/math.h"
+#include "common/utils/objects.h"
+#include "common/utils/string.h"
+#include "common/utils/ui.h"
 
 G_DEFINE_TYPE (InspectorPortWidget, inspector_port_widget, GTK_TYPE_WIDGET)
 

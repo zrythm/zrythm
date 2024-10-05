@@ -1,12 +1,13 @@
 // SPDX-FileCopyrightText: © 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/gtk_widgets/velocity_settings.h"
-#include "project.h"
-#include "settings/g_settings_manager.h"
-#include "utils/gtk.h"
 
 #include <glib/gi18n.h>
+
+#include "common/utils/gtk.h"
 
 G_DEFINE_TYPE (VelocitySettingsWidget, velocity_settings_widget, GTK_TYPE_WIDGET)
 

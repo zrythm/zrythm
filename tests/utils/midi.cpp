@@ -3,9 +3,9 @@
 
 #include "zrythm-test-config.h"
 
-#include "utils/midi.h"
-
 #include "tests/helpers/zrythm_helper.h"
+
+#include "common/utils/midi.h"
 
 TEST (Midi, MsbLsbConversions)
 {

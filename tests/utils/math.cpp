@@ -3,8 +3,8 @@
 
 #include "zrythm-test-config.h"
 
-#include "utils/gtest_wrapper.h"
-#include "utils/math.h"
+#include "common/utils/gtest_wrapper.h"
+#include "common/utils/math.h"
 
 TEST (Math, NaNsInConversions)
 {

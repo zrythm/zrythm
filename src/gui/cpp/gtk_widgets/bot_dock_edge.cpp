@@ -3,6 +3,8 @@
 
 #include "gui/cpp/backend/clip_editor.h"
 #include "gui/cpp/backend/editor_settings.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/gtk_widgets/bot_dock_edge.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
 #include "gui/cpp/gtk_widgets/chord_pad_panel.h"
@@ -14,9 +16,7 @@
 #include "gui/cpp/gtk_widgets/midi_editor_space.h"
 #include "gui/cpp/gtk_widgets/mixer.h"
 #include "gui/cpp/gtk_widgets/modulator_view.h"
-#include "project.h"
-#include "settings/g_settings_manager.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 #ifdef __cplusplus

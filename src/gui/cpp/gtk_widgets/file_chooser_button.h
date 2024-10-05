@@ -4,7 +4,7 @@
 #ifndef __GUI_WIDGETS_FILE_CHOOSER_BUTTON_H__
 #define __GUI_WIDGETS_FILE_CHOOSER_BUTTON_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define FILE_CHOOSER_BUTTON_WIDGET_TYPE (file_chooser_button_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

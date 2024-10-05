@@ -3,10 +3,10 @@
 
 #include "zrythm-test-config.h"
 
-#include "utils/gtest_wrapper.h"
-#include "utils/logger.h"
-#include "utils/string.h"
-#include "utils/yaml.h"
+#include "common/utils/gtest_wrapper.h"
+#include "common/utils/logger.h"
+#include "common/utils/string.h"
+#include "common/utils/yaml.h"
 
 #if HAVE_CYAML
 

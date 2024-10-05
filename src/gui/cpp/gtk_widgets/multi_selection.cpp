@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/multi_selection.h"
-#include "utils/logger.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/utils/logger.h"
 
 G_DEFINE_TYPE (MultiSelectionWidget, multi_selection_widget, GTK_TYPE_WIDGET)
 

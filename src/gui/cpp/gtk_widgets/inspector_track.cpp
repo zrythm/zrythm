@@ -2,11 +2,14 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
 #include "gui/cpp/backend/tracklist_selections.h"
 #include "gui/cpp/gtk_widgets/center_dock.h"
 #include "gui/cpp/gtk_widgets/channel_sends_expander.h"
 #include "gui/cpp/gtk_widgets/color_area.h"
 #include "gui/cpp/gtk_widgets/fader_controls_expander.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/inspector_track.h"
 #include "gui/cpp/gtk_widgets/left_dock_edge.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
@@ -15,14 +18,11 @@
 #include "gui/cpp/gtk_widgets/text_expander.h"
 #include "gui/cpp/gtk_widgets/track_input_expander.h"
 #include "gui/cpp/gtk_widgets/track_properties_expander.h"
-#include "project.h"
-#include "settings/g_settings_manager.h"
-#include "utils/resources.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (InspectorTrackWidget, inspector_track_widget, GTK_TYPE_WIDGET)
 

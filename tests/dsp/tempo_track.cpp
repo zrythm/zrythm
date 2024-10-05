@@ -3,11 +3,12 @@
 
 #include "zrythm-test-config.h"
 
-#include "dsp/transport.h"
-#include "project.h"
-#include "zrythm.h"
+#include "gui/cpp/backend/project.h"
+#include "gui/cpp/backend/zrythm.h"
 
 #include "tests/helpers/project_helper.h"
+
+#include "common/dsp/transport.h"
 
 TEST_F (ZrythmFixture, LoadProjectBpm)
 {

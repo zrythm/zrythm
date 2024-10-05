@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "dsp/chord_descriptor.h"
+#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
 
-#include "libadwaita_wrapper.h"
+#include "common/dsp/chord_descriptor.h"
 
 #define CHORD_SELECTOR_WINDOW_WIDGET_TYPE \
   (chord_selector_window_widget_get_type ())

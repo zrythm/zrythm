@@ -4,7 +4,7 @@
 #ifndef __GUI_WIDGETS_ACTIVE_HARDWARE_POPOVER_H__
 #define __GUI_WIDGETS_ACTIVE_HARDWARE_POPOVER_H__
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define ACTIVE_HARDWARE_POPOVER_WIDGET_TYPE \
   (active_hardware_popover_widget_get_type ())

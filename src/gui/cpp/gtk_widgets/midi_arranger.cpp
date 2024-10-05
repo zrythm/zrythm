@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/arranger_selections.h"
-#include "dsp/midi_region.h"
-#include "dsp/transport.h"
-#include "dsp/velocity.h"
+#include "gui/cpp/backend/actions/arranger_selections.h"
 #include "gui/cpp/backend/event.h"
 #include "gui/cpp/backend/event_manager.h"
+#include "gui/cpp/backend/settings/g_settings_manager.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/arranger.h"
 #include "gui/cpp/gtk_widgets/arranger_object.h"
 #include "gui/cpp/gtk_widgets/bot_dock_edge.h"
@@ -14,6 +13,7 @@
 #include "gui/cpp/gtk_widgets/clip_editor.h"
 #include "gui/cpp/gtk_widgets/clip_editor_inner.h"
 #include "gui/cpp/gtk_widgets/dialogs/arranger_object_info.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 #include "gui/cpp/gtk_widgets/main_window.h"
 #include "gui/cpp/gtk_widgets/midi_arranger.h"
 #include "gui/cpp/gtk_widgets/midi_editor_space.h"
@@ -22,18 +22,18 @@
 #include "gui/cpp/gtk_widgets/ruler.h"
 #include "gui/cpp/gtk_widgets/timeline_bg.h"
 #include "gui/cpp/gtk_widgets/track.h"
-#include "settings/g_settings_manager.h"
-#include "utils/flags.h"
-#include "utils/gtk.h"
-#include "utils/math.h"
-#include "utils/rt_thread_id.h"
-#include "utils/ui.h"
-#include "zrythm.h"
-#include "zrythm_app.h"
+#include "gui/cpp/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
-#include "gtk_wrapper.h"
+#include "common/dsp/midi_region.h"
+#include "common/dsp/transport.h"
+#include "common/dsp/velocity.h"
+#include "common/utils/flags.h"
+#include "common/utils/gtk.h"
+#include "common/utils/math.h"
+#include "common/utils/rt_thread_id.h"
+#include "common/utils/ui.h"
 
 ArrangerCursor
 midi_arranger_widget_get_cursor (ArrangerWidget * self, Tool tool)

@@ -1,16 +1,17 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/chord_descriptor.h"
-#include "dsp/scale.h"
+#include "gui/cpp/backend/settings/chord_preset_pack_manager.h"
+#include "gui/cpp/backend/zrythm.h"
 #include "gui/cpp/gtk_widgets/chord_pad.h"
 #include "gui/cpp/gtk_widgets/chord_pad_panel.h"
-#include "settings/chord_preset_pack_manager.h"
-#include "utils/gtk.h"
-#include "utils/resources.h"
-#include "zrythm.h"
 
 #include <glib/gi18n.h>
+
+#include "common/dsp/chord_descriptor.h"
+#include "common/dsp/scale.h"
+#include "common/utils/gtk.h"
+#include "common/utils/resources.h"
 
 G_DEFINE_TYPE (ChordPadPanelWidget, chord_pad_panel_widget, GTK_TYPE_GRID)
 

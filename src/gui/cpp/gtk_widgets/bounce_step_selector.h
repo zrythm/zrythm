@@ -13,7 +13,7 @@
  * Bounce step selector.
  */
 
-#include "gtk_wrapper.h"
+#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
 
 #define BOUNCE_STEP_SELECTOR_WIDGET_TYPE \
   (bounce_step_selector_widget_get_type ())
