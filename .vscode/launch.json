@@ -70,6 +70,10 @@
                 {
                     "name": "QT_QPA_PLATFORM",
                     "value": "wayland",
+                },
+                {
+                    "name": "ZRYTHM_ENGINE_PATH",
+                    "value": "${config:cmake.buildDirectory}/src/engine/zrythm-engine",
                 }
             ],
             "args": [

@@ -242,7 +242,17 @@ ZrythmApplication::launch_engine_process ()
 {
   engine_process_ = new QProcess (this);
   engine_process_->setProcessChannelMode (QProcess::MergedChannels);
-  auto path = fs::path (applicationDirPath ().toStdString ()) / "zrythm-engine";
+  fs::path   path;
+  const auto path_from_env =
+    QProcessEnvironment::systemEnvironment ().value ("ZRYTHM_ENGINE_PATH");
+  if (!path_from_env.isEmpty ())
+    {
+      path = fs::path (path_from_env.toStdString ());
+    }
+  else
+    {
+      path = fs::path (applicationDirPath ().toStdString ()) / "zrythm-engine";
+    }
   z_info (
     "Starting engine process at {} (application file path: {})", path,
     applicationFilePath ());

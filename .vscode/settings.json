@@ -2,11 +2,13 @@
     "cmake.buildDirectory": "${workspaceFolder}/builddir_cmake",
     "cmake.installPrefix": "${workspaceFolder}/_installed_cmake",
     "cmake.configureArgs": [
+        "-DCMAKE_PREFIX_PATH=/home/alex/opt/Qt6.7.2",
         "-DCMAKE_C_COMPILER=clang",
         "-DCMAKE_CXX_COMPILER=clang++",
         "-DZRYTHM_TESTS=ON",
         "-DCMAKE_BUILD_TYPE=Debug",
-        "-DZRYTHM_USER_MANUAL=ON",
+        "-DZRYTHM_DEBUG_QML=ON",
+        "-DZRYTHM_USER_MANUAL=OFF",
         "-DZRYTHM_STRICT=ON",
         "-DZRYTHM_STRICT_SPHINX_OPTS=ON",
         "-DZRYTHM_ENABLE_SANITIZER_ADDRESS=ON",
@@ -56,4 +58,6 @@
     "cody.edit.preInstruction": "Assume C++20 and prefer C++20 features. Prefer concise and readable code with helpful comments. Prefer `auto` and references instead of pointers where possible. Prefer the `z_*` logging/debug functions instead of `g_*` and avoid `.c_str()` if not needed. prefer glibmm instead of C GLib where possible. Prefer SteadyClock instead of g_monotonic. Don't remove comments.",
     "cody.chat.preInstruction": "Assume C++20 and prefer C++20 features. Prefer concise and readable code with helpful comments. Prefer `auto` where possible.",
     "cody.codebase": "https://github.com/zrythm/zrythm",
+    "C_Cpp.default.compileCommands": "/home/alex/Documents/git/zrythm/builddir/compile_commands.json",
+    "C_Cpp.default.configurationProvider": "mesonbuild.mesonbuild",
 }
