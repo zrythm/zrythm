@@ -1,6 +1,0 @@
-[wrap-git]
-directory=harfbuzz
-url=https://github.com/harfbuzz/harfbuzz.git
-push-url=git@github.com:harfbuzz/harfbuzz.git
-revision=main
-depth=1

@@ -77,7 +77,7 @@
 #include "gtk_wrapper.h"
 
 #if HAVE_JACK
-#  include "weak_libjack.h"
+#  include "weakjack/weak_libjack.h"
 #endif
 
 #include <glibmm.h>

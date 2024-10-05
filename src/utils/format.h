@@ -11,7 +11,7 @@
 
 #include "utils/traits.h"
 
-#include "ext/juce/juce.h"
+#include "juce/juce.h"
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 #include <magic_enum.hpp>

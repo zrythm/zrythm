@@ -18,9 +18,9 @@
 
 #include "utils/types.h"
 
-#include "ext/crill/spin_mutex.h"
-#include "ext/midilib/src/midifile.h"
+#include "crill/spin_mutex.h"
 #include "gtk_wrapper.h"
+#include "midilib/src/midifile.h"
 
 class ChordDescriptor;
 

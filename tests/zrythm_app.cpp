@@ -11,7 +11,7 @@
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/zrythm_helper.h"
 
-#include "ext/whereami/whereami.h"
+#include "whereami/whereami.h"
 
 TEST (ZrythmApp, version)
 {

@@ -1,5 +1,0 @@
-[wrap-git]
-url=https://gitlab.gnome.org/GNOME/gtk
-depth=1
-# 4.14.3
-revision=686a629f98f743eb4fafd94c8216972f1387b8f3

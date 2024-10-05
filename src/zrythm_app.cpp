@@ -73,8 +73,8 @@
 #include <glib/gi18n.h>
 
 #include "Wrapper.h"
-#include "ext/whereami/whereami.h"
 #include "gtk_wrapper.h"
+#include "whereami/whereami.h"
 #include <fftw3.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #if HAVE_LSP_DSP

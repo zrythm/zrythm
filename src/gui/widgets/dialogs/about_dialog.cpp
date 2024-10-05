@@ -11,7 +11,7 @@
 #include <glib/gi18n.h>
 
 #include "libadwaita_wrapper.h"
-#include "src/translators.h"
+#include "translators.h"
 
 /**
  * Creates and displays the about dialog.

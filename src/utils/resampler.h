@@ -8,7 +8,7 @@
 
 #include "utils/types.h"
 
-#include "ext/juce/juce.h"
+#include "juce/juce.h"
 
 /**
  * @addtogroup utils

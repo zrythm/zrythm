@@ -4,8 +4,8 @@
 #ifndef __GUI_WIDGETS_LIVE_WAVEFORM_H__
 #define __GUI_WIDGETS_LIVE_WAVEFORM_H__
 
-#include "ext/juce/juce.h"
 #include "gtk_wrapper.h"
+#include "juce/juce.h"
 
 #define LIVE_WAVEFORM_WIDGET_TYPE (live_waveform_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

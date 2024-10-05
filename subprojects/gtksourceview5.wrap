@@ -1,6 +1,0 @@
-[wrap-file]
-directory = gtksourceview-5.2.0
-
-source_url = https://download.gnome.org/sources/gtksourceview/5.2/gtksourceview-5.2.0.tar.xz
-source_filename = gtksourceview-5.2.0.tar.xz
-source_hash = c9b34fa02654f56ce22fa08827d89db4ba81631b2e6d7d31ea65d13c729430e9

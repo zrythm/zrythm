@@ -9,7 +9,7 @@
 #include "plugins/plugin_identifier.h"
 #include "utils/types.h"
 
-#include "ext/juce/juce.h"
+#include "juce/juce.h"
 
 /**
  * @addtogroup dsp

@@ -23,7 +23,7 @@
 
 #include <glib/gi18n.h>
 
-#include "po/zrythm-locales.h"
+#include "zrythm-locales.h" // note: auto-generated
 #include <locale.h>
 
 #ifdef _WIN32

@@ -6,8 +6,8 @@
 
 #include "utils/logger.h"
 
-#include "ext/juce/juce.h"
 #include "gtk_wrapper.h"
+#include "juce/juce.h"
 
 /**
  * @addtogroup project Settings

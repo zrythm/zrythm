@@ -32,8 +32,8 @@
 #include "utils/logger.h"
 #include "utils/math.h"
 
-#include "ext/juce/juce.h"
 #include "gtk_wrapper.h"
+#include "juce/juce.h"
 
 /**
  * Create a new Stretcher using the rubberband backend.

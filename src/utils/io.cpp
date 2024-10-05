@@ -50,8 +50,8 @@
 #include <glib/gi18n.h>
 #include <glib/gstdio.h>
 
-#include "ext/juce/juce.h"
 #include "gtk_wrapper.h"
+#include "juce/juce.h"
 #include <fmt/format.h>
 #include <giomm.h>
 #include <glibmm.h>

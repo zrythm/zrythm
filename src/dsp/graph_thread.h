@@ -35,7 +35,7 @@
 #  include <lsp-plug.in/dsp/dsp.h>
 #endif
 
-#include "ext/juce/juce.h"
+#include "juce/juce.h"
 
 class Graph;
 

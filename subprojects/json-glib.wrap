@@ -1,5 +1,0 @@
-[wrap-git]
-directory=json-glib
-url=https://gitlab.gnome.org/GNOME/json-glib
-revision=master
-depth=1

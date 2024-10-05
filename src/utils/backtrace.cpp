@@ -9,7 +9,7 @@
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wundef"
-#include "ext/backward-cpp/backward.hpp"
+#include "backward-cpp/backward.hpp"
 #pragma GCC diagnostic pop
 
 Backtrace::Backtrace () = default;

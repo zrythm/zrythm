@@ -139,7 +139,7 @@ set(LL_LANGS "${ll_langs}" PARENT_SCOPE)
 
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/locales.h.in
-  ${CMAKE_CURRENT_BINARY_DIR}/zrythm-locales.h
+  ${CMAKE_BINARY_DIR}/src/zrythm-locales.h
   @ONLY
 )
 

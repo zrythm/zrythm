@@ -326,13 +326,8 @@ check_symbol_exists(mlock "sys/mman.h" HAVE_MLOCK)
 message(STATUS "HAVE_MLOCK: ${HAVE_MLOCK}")
 
 set(zrythm_include_dirs
-  "${CMAKE_SOURCE_DIR}"
-  "${CMAKE_SOURCE_DIR}/inc"
   "${CMAKE_SOURCE_DIR}/src"
   "${CMAKE_SOURCE_DIR}/ext"
-  "${CMAKE_SOURCE_DIR}/ext/weakjack"
-  "${CMAKE_BINARY_DIR}"
-  "${CMAKE_BINARY_DIR}/inc"
   "${CMAKE_BINARY_DIR}/src"
   )
 
@@ -1017,7 +1012,7 @@ file(COPY
   DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 configure_file(
-  zrythm-config.h.in ${CMAKE_CURRENT_BINARY_DIR}/zrythm-config.h)
+  src/zrythm-config.h.in ${CMAKE_CURRENT_BINARY_DIR}/src/zrythm-config.h)
 
 # Plugins for testing
 # Plugins for testing

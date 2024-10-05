@@ -41,8 +41,8 @@
 
 #include <glib/gi18n.h>
 
-#include "ext/juce/juce.h"
 #include "gtk_wrapper.h"
+#include "juce/juce.h"
 #include <fmt/printf.h>
 #include <glibmm.h>
 #include <zstd.h>

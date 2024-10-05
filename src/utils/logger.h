@@ -14,7 +14,7 @@
 
 #include "utils/format.h"
 
-#include "ext/juce/juce.h"
+#include "juce/juce.h"
 #include <spdlog/spdlog.h>
 
 class Logger

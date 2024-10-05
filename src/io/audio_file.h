@@ -16,7 +16,7 @@
 
 #include <glib.h>
 
-#include "ext/juce/juce.h"
+#include "juce/juce.h"
 
 /**
  * @addtogroup io

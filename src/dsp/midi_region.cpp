@@ -48,8 +48,8 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
-#include <ext/midilib/src/midifile.h>
-#include <ext/midilib/src/midiutil.h>
+#include "midilib/src/midifile.h"
+#include "midilib/src/midiutil.h"
 
 MidiRegion::MidiRegion ()
 {

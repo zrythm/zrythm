@@ -19,7 +19,7 @@
 #include <gdk/gdk.h>
 
 #if HAVE_JACK
-#  include "weak_libjack.h"
+#  include "weakjack/weak_libjack.h"
 #endif
 
 #if HAVE_RTMIDI

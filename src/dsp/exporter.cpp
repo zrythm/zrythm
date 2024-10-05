@@ -35,7 +35,7 @@
 
 #include <glib/gi18n.h>
 
-#include "ext/juce/juce.h"
+#include "juce/juce.h"
 #include "midilib/src/midifile.h"
 #include <glibmm.h>
 #include <sndfile.h>

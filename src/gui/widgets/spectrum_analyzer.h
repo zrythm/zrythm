@@ -6,8 +6,8 @@
 
 #include "utils/types.h"
 
-#include "ext/juce/juce.h"
 #include "gtk_wrapper.h"
+#include "juce/juce.h"
 #include <kiss_fft.h>
 
 class Port;

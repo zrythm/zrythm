@@ -55,8 +55,8 @@
         "--query-driver=gcc,g++"
     ],
     "clangd.checkUpdates": true,
-    "cody.edit.preInstruction": "Assume C++20 and prefer C++20 features. Prefer concise and readable code with helpful comments. Prefer `auto` and references instead of pointers where possible. Prefer the `z_*` logging/debug functions instead of `g_*` and avoid `.c_str()` if not needed. prefer glibmm instead of C GLib where possible. Prefer SteadyClock instead of g_monotonic. Don't remove comments.",
-    "cody.chat.preInstruction": "Assume C++20 and prefer C++20 features. Prefer concise and readable code with helpful comments. Prefer `auto` where possible.",
+    "cody.edit.preInstruction": "Assume C++20 and prefer C++20 features. Prefer concise and readable code with helpful comments. Prefer `auto` and references instead of pointers where possible. Assume Qt 6.7.2 with QtQuickControls 2. Prefer the `z_*` logging/debug functions. Prefer SteadyClock instead of g_monotonic. Don't remove comments.",
+    "cody.chat.preInstruction": "Assume C++20 and prefer C++20 features. Prefer concise and readable code with helpful comments. Prefer `auto` where possible. Assume Qt 6.7.2 with QtQuickControls 2.",
     "cody.codebase": "https://github.com/zrythm/zrythm",
     "C_Cpp.default.compileCommands": "/home/alex/Documents/git/zrythm/builddir/compile_commands.json",
     "C_Cpp.default.configurationProvider": "mesonbuild.mesonbuild",
