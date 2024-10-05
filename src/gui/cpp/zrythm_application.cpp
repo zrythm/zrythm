@@ -14,9 +14,8 @@
 #include "engine/ipc_message.h"
 #include "zrythm_application.h"
 #include <fftw3.h>
-// #include <kddockwidgets/Config.h>
-// #include <kddockwidgets/qtquick/Platform.h>
-// #include <kddockwidgets/qtquick/ViewFactory.h>
+
+using namespace zrythm::gui;
 
 ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
     : QApplication (argc, argv), qt_thread_id_ (current_thread_id.get ())
@@ -35,8 +34,8 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   setup_command_line_options ();
   cmd_line_parser_.process (*this);
 
-  settings_manager_ = new SettingsManager (this);
-  theme_manager_ = new ThemeManager (this);
+  settings_manager_ = new glue::SettingsManager (this);
+  theme_manager_ = new glue::ThemeManager (this);
 
   launch_engine_process ();
 
@@ -116,13 +115,13 @@ ZrythmApplication::setup_command_line_options ()
   });
 }
 
-SettingsManager *
+glue::SettingsManager *
 ZrythmApplication::get_settings_manager () const
 {
   return settings_manager_;
 }
 
-ThemeManager *
+glue::ThemeManager *
 ZrythmApplication::get_theme_manager () const
 {
   return theme_manager_;

@@ -6,6 +6,8 @@
 
 #include "common/utils/directory_manager.h"
 
+using namespace zrythm::gui::glue;
+
 ThemeManager::ThemeManager (QObject * parent) : QObject (parent)
 {
   // default palette

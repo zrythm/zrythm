@@ -4,6 +4,8 @@
 #include "gui/cpp/glue/settings_manager.h"
 #include "gui/cpp/zrythm_application.h"
 
+using namespace zrythm::gui::glue;
+
 SettingsManager::SettingsManager (QObject * parent) : QObject (parent) { }
 
 void

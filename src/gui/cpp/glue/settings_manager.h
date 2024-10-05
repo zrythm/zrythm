@@ -62,6 +62,9 @@ public: \
       } \
   }
 
+namespace zrythm::gui::glue
+{
+
 class SettingsManager final : public QObject
 {
   Q_OBJECT
@@ -89,6 +92,8 @@ public:
 private:
   QSettings settings_;
 };
+
+} // namespace zrythm::gui::glue
 
 #undef DEFINE_SETTING_PROPERTY
 

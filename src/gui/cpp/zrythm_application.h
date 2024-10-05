@@ -17,6 +17,9 @@
 
 #include "common/utils/rt_thread_id.h"
 
+namespace zrythm::gui
+{
+
 class ZrythmApplication final : public QApplication
 {
   Q_OBJECT
@@ -30,8 +33,8 @@ public:
   void setup_ipc ();
   void launch_engine_process ();
 
-  SettingsManager * get_settings_manager () const;
-  ThemeManager *    get_theme_manager () const;
+  glue::SettingsManager * get_settings_manager () const;
+  glue::ThemeManager *    get_theme_manager () const;
 
 private:
   void setup_command_line_options ();
@@ -52,8 +55,8 @@ private:
    */
   QLocalSocket * socket_ = nullptr;
 
-  SettingsManager * settings_manager_ = nullptr;
-  ThemeManager *    theme_manager_ = nullptr;
+  glue::SettingsManager * settings_manager_ = nullptr;
+  glue::ThemeManager *    theme_manager_ = nullptr;
 
   /**
    * @brief Engine process handle.
@@ -62,6 +65,8 @@ private:
 
   QQmlApplicationEngine * qml_engine_ = nullptr;
 };
+
+} // namespace zrythm::gui
 
 /**
  * @}

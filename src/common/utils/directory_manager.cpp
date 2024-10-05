@@ -64,11 +64,13 @@ DirectoryManager::get_user_dir (bool force_default)
     }
 
   fs::path dir =
-    SettingsManager::get_instance ()->get_zrythm_user_path ().toStdString ();
+    zrythm::gui::glue::SettingsManager::get_instance ()
+      ->get_zrythm_user_path ()
+      .toStdString ();
   if (force_default || dir.empty ())
     {
       dir =
-        SettingsManager::get_instance ()
+        zrythm::gui::glue::SettingsManager::get_instance ()
           ->get_default_zrythm_user_path ()
           .toStdString ();
     }

@@ -11,6 +11,9 @@
 
 #include <qqmlintegration.h>
 
+namespace zrythm::gui::glue
+{
+
 /**
  * @brief This doesn't work - see
  * https://forum.qt.io/topic/124965/how-to-define-a-property-of-type-palette/8
@@ -49,5 +52,7 @@ public:
   QColor   base_ = QColor ("#202020");
   QPalette palette_;
 };
+
+} // namespace zrythm::gui::glue
 
 #endif // __SETTINGS_THEME_MANAGER_H__

@@ -11,6 +11,6 @@
 int
 main (int argc, char ** argv)
 {
-  ZrythmApplication app (argc, argv);
+  zrythm::gui::ZrythmApplication app (argc, argv);
   return app.exec ();
 }
