@@ -16,8 +16,8 @@
 #include "common/plugins/plugin_manager.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/io.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
 
 #include "tests/helpers/zrythm_helper.h"
 

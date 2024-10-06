@@ -4,7 +4,7 @@
 #include "common/dsp/loopable_object.h"
 #include "common/utils/debug.h"
 #include "common/utils/gtest_wrapper.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/zrythm.h"
 
 void
 LoopableObject::copy_members_from (const LoopableObject &other)

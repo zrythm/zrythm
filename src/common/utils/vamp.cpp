@@ -12,7 +12,7 @@
 #include "common/utils/objects.h"
 #include "common/utils/string.h"
 #include "common/utils/vamp.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 extern "C" {
 

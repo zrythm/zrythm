@@ -3,7 +3,7 @@
 
 #include "zrythm-config.h"
 
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/zrythm.h"
 
 #if HAVE_RTMIDI
 
@@ -11,7 +11,7 @@
 #  include "common/dsp/midi_event.h"
 #  include "common/dsp/port.h"
 #  include "common/dsp/rtmidi_device.h"
-#  include "gui/cpp/backend/project.h"
+#  include "gui/backend/backend/project.h"
 
 #  include <gtk/gtk.h>
 

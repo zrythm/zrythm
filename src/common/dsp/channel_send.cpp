@@ -14,14 +14,14 @@
 #include "common/utils/dsp.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/math.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/gtk_widgets/center_dock.h"
-#include "gui/cpp/gtk_widgets/channel_send.h"
-#include "gui/cpp/gtk_widgets/channel_sends_expander.h"
-#include "gui/cpp/gtk_widgets/inspector_track.h"
-#include "gui/cpp/gtk_widgets/left_dock_edge.h"
-#include "gui/cpp/gtk_widgets/main_window.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/gtk_widgets/center_dock.h"
+#include "gui/backend/gtk_widgets/channel_send.h"
+#include "gui/backend/gtk_widgets/channel_sends_expander.h"
+#include "gui/backend/gtk_widgets/inspector_track.h"
+#include "gui/backend/gtk_widgets/left_dock_edge.h"
+#include "gui/backend/gtk_widgets/main_window.h"
+#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 

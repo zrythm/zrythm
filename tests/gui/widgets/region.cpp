@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "common/dsp/region.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/region.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
+#include "gui/backend/gtk_widgets/region.h"
 
 #include "tests/helpers/fishbowl.h"
 #include "tests/helpers/fishbowl_window.h"

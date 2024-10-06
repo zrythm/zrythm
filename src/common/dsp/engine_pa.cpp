@@ -14,7 +14,7 @@
 #  include "common/dsp/port.h"
 #  include "common/dsp/router.h"
 #  include "common/utils/ui.h"
-#  include "gui/cpp/backend/project.h"
+#  include "gui/backend/backend/project.h"
 
 #  include <glib/gi18n.h>
 #  include <gtk/gtk.h>

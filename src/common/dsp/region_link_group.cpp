@@ -4,8 +4,8 @@
 #include "common/dsp/region.h"
 #include "common/dsp/region_link_group.h"
 #include "common/dsp/region_link_group_manager.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
 
 bool
 RegionLinkGroup::contains_region (const Region &region) const

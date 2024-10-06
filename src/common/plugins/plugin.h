@@ -14,7 +14,7 @@
 #include "common/plugins/plugin_descriptor.h"
 #include "common/plugins/plugin_identifier.h"
 #include "common/utils/types.h"
-#include "gui/cpp/backend/settings/plugin_settings.h"
+#include "gui/backend/backend/settings/plugin_settings.h"
 
 class Project;
 class Channel;

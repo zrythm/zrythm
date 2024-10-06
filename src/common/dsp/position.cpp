@@ -9,9 +9,9 @@
 #include "common/utils/exceptions.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/math.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
+#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 #include <fmt/format.h>
 

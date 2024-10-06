@@ -35,12 +35,12 @@
 #include "common/utils/directory_manager.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/windows.h"
-#include "gui/cpp/backend/settings/g_settings_manager.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/greeter.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-#include "gui/cpp/gtk_widgets/main_window.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
+#include "gui/backend/backend/settings/g_settings_manager.h"
+#include "gui/backend/backend/zrythm.h"
+#include "gui/backend/gtk_widgets/greeter.h"
+#include "gui/backend/gtk_widgets/gtk_wrapper.h"
+#include "gui/backend/gtk_widgets/main_window.h"
+#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 

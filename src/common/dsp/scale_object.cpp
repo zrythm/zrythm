@@ -6,8 +6,8 @@
 #include "common/dsp/position.h"
 #include "common/dsp/scale_object.h"
 #include "common/dsp/tracklist.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
 
 #include <fmt/format.h>
 

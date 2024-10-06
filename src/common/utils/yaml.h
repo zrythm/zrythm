@@ -14,7 +14,7 @@
 
 #if HAVE_CYAML
 
-#  include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#  include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 #  include <cyaml/cyaml.h>
 

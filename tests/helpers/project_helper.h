@@ -27,9 +27,9 @@
 #include "common/dsp/tracklist.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/ui.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/project/project_init_flow_manager.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/project/project_init_flow_manager.h"
+#include "gui/backend/backend/zrythm.h"
 
 #include <glib.h>
 #include <glib/gi18n.h>

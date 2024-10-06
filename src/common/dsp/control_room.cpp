@@ -5,12 +5,12 @@
 #include "common/dsp/engine.h"
 #include "common/dsp/fader.h"
 #include "common/utils/gtest_wrapper.h"
-#include "gui/cpp/backend/settings/g_settings_manager.h"
-#include "gui/cpp/backend/settings/settings.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/center_dock.h"
-#include "gui/cpp/gtk_widgets/main_window.h"
-#include "gui/cpp/gtk_widgets/right_dock_edge.h"
+#include "gui/backend/backend/settings/g_settings_manager.h"
+#include "gui/backend/backend/settings/settings.h"
+#include "gui/backend/backend/zrythm.h"
+#include "gui/backend/gtk_widgets/center_dock.h"
+#include "gui/backend/gtk_widgets/main_window.h"
+#include "gui/backend/gtk_widgets/right_dock_edge.h"
 
 void
 ControlRoom::init_common ()

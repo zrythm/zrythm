@@ -7,8 +7,8 @@
 #include "common/dsp/region.h"
 #include "common/dsp/transport.h"
 #include "common/utils/flags.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"

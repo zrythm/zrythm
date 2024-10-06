@@ -18,7 +18,7 @@
 #include <cstddef>
 
 #include "common/utils/math.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/zrythm.h"
 
 #include <glib.h>
 

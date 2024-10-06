@@ -18,8 +18,8 @@
 #  include "common/plugins/plugin.h"
 #  include "common/utils/midi.h"
 #  include "common/utils/ui.h"
-#  include "gui/cpp/backend/project.h"
-#  include "gui/cpp/backend/settings/settings.h"
+#  include "gui/backend/backend/project.h"
+#  include "gui/backend/backend/settings/settings.h"
 #  include "gui/widgets/main_window.h"
 
 #  include <glib/gi18n.h>

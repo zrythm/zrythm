@@ -6,11 +6,11 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "common/dsp/region.h"
-#include "gui/cpp/backend/actions/arranger_selections.h"
-#include "gui/cpp/backend/actions/range_action.h"
-#include "gui/cpp/backend/actions/undo_manager.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/actions/arranger_selections.h"
+#include "gui/backend/backend/actions/range_action.h"
+#include "gui/backend/backend/actions/undo_manager.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
 
 #include "tests/helpers/project_helper.h"
 

@@ -11,9 +11,9 @@
 #include "common/dsp/true_peak_dsp.h"
 #include "common/utils/math.h"
 #include "common/utils/ring_buffer.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
+#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 void
 Meter::get_value (AudioValueFormat format, float * val, float * max)

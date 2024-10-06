@@ -10,11 +10,11 @@
 #include "common/io/audio_file.h"
 #include "common/utils/directory_manager.h"
 #include "common/utils/gtest_wrapper.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/glue/settings_manager.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/settings_manager.h"
+#include "gui/backend/backend/zrythm.h"
+#include "gui/backend/gtk_widgets/gtk_wrapper.h"
+#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 Metronome::Metronome (AudioEngine &engine)
 {
@@ -48,7 +48,7 @@ Metronome::Metronome (AudioEngine &engine)
   volume_ =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? 1.f
-      : (float) zrythm::gui::glue::SettingsManager::get_instance ()
+      : (float) zrythm::gui::SettingsManager::get_instance ()
           ->get_metronome_volume ();
 }
 
@@ -93,6 +93,5 @@ Metronome::set_volume (float volume)
   volume_ = volume;
 
   // FIXME!!!! separate UI logic
-  zrythm::gui::glue::SettingsManager::get_instance ()->set_metronome_volume (
-    volume);
+  zrythm::gui::SettingsManager::get_instance ()->set_metronome_volume (volume);
 }

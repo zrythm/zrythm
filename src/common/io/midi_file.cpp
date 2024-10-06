@@ -6,7 +6,7 @@
 #include "common/io/midi_file.h"
 #include "common/utils/exceptions.h"
 #include "common/utils/logger.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/zrythm.h"
 
 MidiFile::MidiFile (Format format) : format_ (format), for_reading_ (false) { }
 

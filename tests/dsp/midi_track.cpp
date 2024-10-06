@@ -6,8 +6,8 @@
 #include "common/dsp/midi_event.h"
 #include "common/dsp/midi_track.h"
 #include "common/utils/midi.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"

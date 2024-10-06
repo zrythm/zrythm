@@ -46,8 +46,8 @@
 #include "common/utils/flags.h"
 #include "common/utils/mpmc_queue.h"
 #include "common/utils/objects.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
 
 Graph::Graph (Router * router, SampleProcessor * sample_processor)
     : sample_processor_ (sample_processor), router_ (router)

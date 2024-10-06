@@ -5,8 +5,8 @@
 
 #include "common/dsp/track.h"
 #include "common/utils/flags.h"
-#include "gui/cpp/backend/actions/mixer_selections_action.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/actions/mixer_selections_action.h"
+#include "gui/backend/backend/zrythm.h"
 
 #include "tests/helpers/exporter.h"
 #include "tests/helpers/plugin_manager.h"

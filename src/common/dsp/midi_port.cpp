@@ -16,10 +16,10 @@
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/midi.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/cpp/backend/event_manager.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
+#include "gui/backend/backend/event_manager.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
+#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 MidiPort::MidiPort (std::string label, PortFlow flow)
     : Port (label, PortType::Event, flow, 0.f, 1.f, 0.f)

@@ -33,7 +33,7 @@
 #include "common/utils/logger.h"
 #include "common/utils/objects.h"
 #include "common/utils/string.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 Glib::ustring
 string_view_to_ustring (std::string_view sv)

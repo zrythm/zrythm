@@ -32,10 +32,10 @@
 #include "common/utils/mpmc_queue.h"
 #include "common/utils/object_pool.h"
 #include "common/utils/objects.h"
-#include "gui/cpp/backend/actions/arranger_selections.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/backend/backend/actions/arranger_selections.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
+#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 #include <glib/gi18n.h>
 

@@ -5,8 +5,8 @@
 #include "common/utils/debug.h"
 #include "common/utils/math.h"
 #include "common/utils/ui.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
+#include "gui/backend/backend/zrythm.h"
+#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 Color::Color (const std::string &str)
 {

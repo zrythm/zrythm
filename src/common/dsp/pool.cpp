@@ -10,9 +10,9 @@
 #include "common/utils/file.h"
 #include "common/utils/io.h"
 #include "common/utils/string.h"
-#include "gui/cpp/backend/actions/undo_manager.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/actions/undo_manager.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
 
 #include <glib/gi18n.h>
 

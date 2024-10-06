@@ -46,9 +46,9 @@
 #include "common/dsp/track_processor.h"
 #include "common/dsp/tracklist.h"
 #include "common/utils/flags.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
+#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #if HAVE_JACK
 #  include "weakjack/weak_libjack.h"

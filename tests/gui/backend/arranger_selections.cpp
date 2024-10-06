@@ -5,9 +5,9 @@
 
 #include "common/dsp/midi_region.h"
 #include "common/dsp/tracklist.h"
-#include "gui/cpp/backend/arranger_selections.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/arranger_selections.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
 
 #include "tests/helpers/zrythm_helper.h"
 

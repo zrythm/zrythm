@@ -11,8 +11,8 @@
 #include "common/dsp/track.h"
 #include "common/utils/flags.h"
 #include "common/utils/io.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"

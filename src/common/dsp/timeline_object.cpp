@@ -3,12 +3,12 @@
 
 #include "common/dsp/timeline_object.h"
 #include "common/dsp/track.h"
-#include "gui/cpp/gtk_widgets/arranger.h"
-#include "gui/cpp/gtk_widgets/center_dock.h"
-#include "gui/cpp/gtk_widgets/main_notebook.h"
-#include "gui/cpp/gtk_widgets/timeline_arranger.h"
-#include "gui/cpp/gtk_widgets/timeline_panel.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
+#include "gui/backend/gtk_widgets/arranger.h"
+#include "gui/backend/gtk_widgets/center_dock.h"
+#include "gui/backend/gtk_widgets/main_notebook.h"
+#include "gui/backend/gtk_widgets/timeline_arranger.h"
+#include "gui/backend/gtk_widgets/timeline_panel.h"
+#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 void
 TimelineObject::copy_members_from (const TimelineObject &other)

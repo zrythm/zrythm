@@ -5,13 +5,13 @@
 #include "common/utils/flags.h"
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/string.h"
-#include "gui/cpp/backend/arranger_selections.h"
-#include "gui/cpp/backend/event.h"
-#include "gui/cpp/backend/event_manager.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/settings/g_settings_manager.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
+#include "gui/backend/backend/arranger_selections.h"
+#include "gui/backend/backend/event.h"
+#include "gui/backend/backend/event_manager.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/settings/g_settings_manager.h"
+#include "gui/backend/backend/zrythm.h"
+#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 /**
  * Returns a string identifier for the type.

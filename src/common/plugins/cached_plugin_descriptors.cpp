@@ -4,8 +4,8 @@
 #include "common/plugins/cached_plugin_descriptors.h"
 #include "common/utils/directory_manager.h"
 #include "common/utils/string.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
+#include "gui/backend/backend/zrythm.h"
+#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 

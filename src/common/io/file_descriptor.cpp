@@ -8,7 +8,7 @@
 #include "common/utils/io.h"
 #include "common/utils/logger.h"
 #include "common/utils/string.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 #include <glib/gi18n.h>
 

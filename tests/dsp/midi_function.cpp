@@ -5,7 +5,7 @@
 
 #include "common/dsp/midi_function.h"
 #include "common/dsp/tracklist.h"
-#include "gui/cpp/backend/actions/arranger_selections.h"
+#include "gui/backend/backend/actions/arranger_selections.h"
 
 #include "tests/helpers/zrythm_helper.h"
 

@@ -100,4 +100,4 @@ set(qml_file_paths ${qml_file_paths} PARENT_SCOPE)
 set(icon_files ${icon_files} PARENT_SCOPE)
 set(font_files ${font_files} PARENT_SCOPE)
 
-add_subdirectory(cpp)
+add_subdirectory(backend)

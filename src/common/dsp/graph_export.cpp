@@ -11,8 +11,8 @@
 #include "common/plugins/plugin.h"
 #include "common/utils/flags.h"
 #include "common/utils/objects.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
 
 #ifdef HAVE_CGRAPH
 #  include <graphviz/cgraph.h>

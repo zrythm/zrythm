@@ -7,8 +7,8 @@
 #include <string>
 
 #include "common/dsp/engine.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
 
 #if HAVE_JACK
 

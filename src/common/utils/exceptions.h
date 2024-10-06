@@ -14,7 +14,7 @@
 #include <sstream>
 #include <string>
 
-#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
+#include "gui/backend/gtk_widgets/libadwaita_wrapper.h"
 
 /**
  * @addtogroup utils

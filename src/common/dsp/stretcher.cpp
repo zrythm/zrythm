@@ -31,7 +31,7 @@
 #include "common/dsp/stretcher.h"
 #include "common/utils/logger.h"
 #include "common/utils/math.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 #include "juce/juce.h"
 

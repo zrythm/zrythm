@@ -11,7 +11,7 @@
 #include "common/dsp/tracklist.h"
 #include "common/utils/dsp.h"
 #include "common/utils/gtest_wrapper.h"
-#include "gui/cpp/backend/project.h"
+#include "gui/backend/backend/project.h"
 
 #include <fmt/format.h>
 

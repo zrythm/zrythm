@@ -12,7 +12,7 @@
 #include "common/dsp/tracklist.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/logger.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/zrythm.h"
 #if HAVE_JACK
 #  include "common/dsp/engine_jack.h"
 #endif
@@ -29,9 +29,9 @@
 #include "common/utils/math.h"
 #include "common/utils/progress_info.h"
 #include "common/utils/ui.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/settings/g_settings_manager.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/settings/g_settings_manager.h"
+#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 

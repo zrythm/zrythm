@@ -10,7 +10,7 @@
 #ifndef __PLUGINS_PLUGIN_GTK_H__
 #define __PLUGINS_PLUGIN_GTK_H__
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 class Plugin;
 class ControlPort;

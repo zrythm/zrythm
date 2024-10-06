@@ -17,12 +17,12 @@
 #include "common/utils/flags.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/string.h"
-#include "gui/cpp/backend/actions/arranger_selections.h"
-#include "gui/cpp/backend/actions/tracklist_selections.h"
-#include "gui/cpp/backend/actions/transport_action.h"
-#include "gui/cpp/backend/clipboard.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/actions/arranger_selections.h"
+#include "gui/backend/backend/actions/tracklist_selections.h"
+#include "gui/backend/backend/actions/transport_action.h"
+#include "gui/backend/backend/clipboard.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
 
 #include <glib.h>
 

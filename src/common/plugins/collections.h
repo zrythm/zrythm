@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "common/plugins/plugin_descriptor.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 #include <giomm.h>
 #include <glibmm.h>

@@ -39,11 +39,11 @@
 #include "common/utils/io.h"
 #include "common/utils/pcg_rand.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/cpp/backend/project/project_init_flow_manager.h"
-#include "gui/cpp/backend/settings/g_settings_manager.h"
+#include "gui/backend/backend/project/project_init_flow_manager.h"
+#include "gui/backend/backend/settings/g_settings_manager.h"
 
 #include "tests/helpers/zrythm_helper.h"
-// #include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+// #include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 static void
 z_g_test_watcher_remove_pid (GPid pid);

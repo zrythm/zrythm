@@ -26,8 +26,8 @@
 #include <variant>
 #include <vector>
 
-#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
-#include "gui/cpp/gtk_widgets/libpanel_wrapper.h"
+#include "gui/backend/gtk_widgets/libadwaita_wrapper.h"
+#include "gui/backend/gtk_widgets/libpanel_wrapper.h"
 
 #include <glib/gi18n.h>
 
@@ -54,6 +54,6 @@
 /*             zrythm headers             */
 /* ====================================== */
 
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/zrythm.h"
 
 #endif /* __PCH_ZRYTHM_PCH_H__ */

@@ -3,7 +3,7 @@
 
 #include "zrythm-config.h"
 
-#include "gui/cpp/zrythm_application.h"
+#include "gui/backend/zrythm_application.h"
 
 /**
  * Application entry point.

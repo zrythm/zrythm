@@ -8,8 +8,8 @@
 #include "common/io/file_descriptor.h"
 #include "common/io/file_import.h"
 #include "common/io/midi_file.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
 
 #include <glib/gi18n.h>
 

@@ -38,19 +38,19 @@
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/string.h"
 #include "common/utils/ui.h"
-#include "gui/cpp/backend/actions/undo_manager.h"
-#include "gui/cpp/backend/event.h"
-#include "gui/cpp/backend/event_manager.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/settings/g_settings_manager.h"
-#include "gui/cpp/backend/settings/settings.h"
-#include "gui/cpp/gtk_widgets/main_window.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
+#include "gui/backend/backend/actions/undo_manager.h"
+#include "gui/backend/backend/event.h"
+#include "gui/backend/backend/event_manager.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/settings/g_settings_manager.h"
+#include "gui/backend/backend/settings/settings.h"
+#include "gui/backend/gtk_widgets/main_window.h"
+#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <fmt/printf.h>
 #define _GNU_SOURCE 1 /* To pick up REG_RIP */
 
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 #include <glib/gi18n.h>
 

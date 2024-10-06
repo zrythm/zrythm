@@ -17,8 +17,8 @@
 #include "common/utils/localization.h"
 #include "common/utils/logger.h"
 #include "common/utils/types.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
-#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
+#include "gui/backend/gtk_widgets/gtk_wrapper.h"
+#include "gui/backend/gtk_widgets/libadwaita_wrapper.h"
 
 #include <glib/gi18n.h>
 

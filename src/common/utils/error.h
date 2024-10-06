@@ -10,7 +10,7 @@
 #ifndef __UTILS_ERROR_H__
 #define __UTILS_ERROR_H__
 
-#include "gui/cpp/gtk_widgets/libadwaita_wrapper.h"
+#include "gui/backend/gtk_widgets/libadwaita_wrapper.h"
 
 /**
  * Only to be called by HANDLE_ERROR macro.

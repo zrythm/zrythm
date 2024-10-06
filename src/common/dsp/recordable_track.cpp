@@ -4,11 +4,11 @@
 #include "common/dsp/control_port.h"
 #include "common/dsp/recordable_track.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/cpp/backend/event.h"
-#include "gui/cpp/backend/event_manager.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
+#include "gui/backend/backend/event.h"
+#include "gui/backend/backend/event_manager.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
+#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 RecordableTrack::RecordableTrack ()
 {

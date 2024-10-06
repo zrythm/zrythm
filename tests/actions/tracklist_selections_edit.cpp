@@ -3,7 +3,7 @@
 
 #include "zrythm-test-config.h"
 
-#include "gui/cpp/backend/actions/channel_send_action.h"
+#include "gui/backend/backend/actions/channel_send_action.h"
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
@@ -14,10 +14,10 @@
 #include "common/dsp/router.h"
 #include "common/utils/color.h"
 #include "common/utils/flags.h"
-#include "gui/cpp/backend/actions/tracklist_selections.h"
-#include "gui/cpp/backend/actions/undoable_action.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/actions/tracklist_selections.h"
+#include "gui/backend/backend/actions/undoable_action.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"

@@ -5,8 +5,8 @@
 #include "common/dsp/port_identifier.h"
 #include "common/dsp/tracklist.h"
 #include "common/utils/logger.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
 
 #include <fmt/format.h>
 

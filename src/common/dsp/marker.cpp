@@ -4,8 +4,8 @@
 #include "common/dsp/marker.h"
 #include "common/dsp/marker_track.h"
 #include "common/dsp/tracklist.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
 
 void
 Marker::init_loaded ()

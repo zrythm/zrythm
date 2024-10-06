@@ -8,12 +8,12 @@
 #include "common/dsp/control_port.h"
 #include "common/dsp/region.h"
 #include "common/utils/flags.h"
-#include "gui/cpp/backend/actions/mixer_selections_action.h"
-#include "gui/cpp/backend/actions/port_connection_action.h"
-#include "gui/cpp/backend/actions/undo_manager.h"
-#include "gui/cpp/backend/actions/undoable_action.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/actions/mixer_selections_action.h"
+#include "gui/backend/backend/actions/port_connection_action.h"
+#include "gui/backend/backend/actions/undo_manager.h"
+#include "gui/backend/backend/actions/undoable_action.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
 
 #include "tests/helpers/plugin_manager.h"
 

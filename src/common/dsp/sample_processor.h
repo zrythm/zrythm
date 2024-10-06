@@ -13,7 +13,7 @@
 #include "common/dsp/sample_playback.h"
 #include "common/dsp/tracklist.h"
 #include "common/utils/types.h"
-#include "gui/cpp/backend/settings/plugin_settings.h"
+#include "gui/backend/backend/settings/plugin_settings.h"
 
 class FileDescriptor;
 class ChordPreset;

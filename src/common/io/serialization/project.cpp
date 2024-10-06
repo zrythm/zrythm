@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "common/dsp/tracklist.h"
-#include "gui/cpp/backend/project.h"
+#include "gui/backend/backend/project.h"
 
 void
 RegionLinkGroup::define_fields (const Context &ctx)

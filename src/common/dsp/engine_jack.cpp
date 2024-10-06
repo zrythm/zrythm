@@ -23,11 +23,11 @@
 #  include "common/utils/object_pool.h"
 #  include "common/utils/string.h"
 #  include "common/utils/ui.h"
-#  include "gui/cpp/backend/project.h"
-#  include "gui/cpp/backend/settings/g_settings_manager.h"
-#  include "gui/cpp/backend/settings/settings.h"
-#  include "gui/cpp/gtk_widgets/main_window.h"
-#  include "gui/cpp/gtk_widgets/zrythm_app.h"
+#  include "gui/backend/backend/project.h"
+#  include "gui/backend/backend/settings/g_settings_manager.h"
+#  include "gui/backend/backend/settings/settings.h"
+#  include "gui/backend/gtk_widgets/main_window.h"
+#  include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #  include <glib/gi18n.h>
 #  include <gtk/gtk.h>

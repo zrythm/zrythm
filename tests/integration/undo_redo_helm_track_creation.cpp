@@ -4,10 +4,10 @@
 #include "zrythm-test-config.h"
 
 #include "common/plugins/plugin_manager.h"
-#include "gui/cpp/backend/actions/tracklist_selections.h"
-#include "gui/cpp/backend/actions/undo_manager.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/actions/tracklist_selections.h"
+#include "gui/backend/backend/actions/undo_manager.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"

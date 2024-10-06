@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "common/dsp/chord_descriptor.h"
-#include "gui/cpp/backend/settings/chord_preset.h"
-#include "gui/cpp/backend/settings/chord_preset_pack.h"
+#include "gui/backend/backend/settings/chord_preset.h"
+#include "gui/backend/backend/settings/chord_preset_pack.h"
 
 void
 ChordDescriptor::define_fields (const Context &ctx)

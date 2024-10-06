@@ -16,10 +16,10 @@
 #  include "common/dsp/tracklist.h"
 #  include "common/dsp/transport.h"
 #  include "common/utils/ui.h"
-#  include "gui/cpp/backend/project.h"
-#  include "gui/cpp/backend/settings/g_settings_manager.h"
-#  include "gui/cpp/backend/settings/settings.h"
-#  include "gui/cpp/gtk_widgets/zrythm_app.h"
+#  include "gui/backend/backend/project.h"
+#  include "gui/backend/backend/settings/g_settings_manager.h"
+#  include "gui/backend/backend/settings/settings.h"
+#  include "gui/backend/gtk_widgets/zrythm_app.h"
 #  include "gui/widgets/main_window.h"
 
 #  include <glib/gi18n.h>

@@ -4,8 +4,8 @@
 #include "zrythm-test-config.h"
 
 #include "common/dsp/transport.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
 
 #include "tests/helpers/project_helper.h"
 

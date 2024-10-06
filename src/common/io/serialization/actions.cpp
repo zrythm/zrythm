@@ -1,17 +1,17 @@
 // SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/cpp/backend/actions/arranger_selections.h"
-#include "gui/cpp/backend/actions/channel_send_action.h"
-#include "gui/cpp/backend/actions/chord_action.h"
-#include "gui/cpp/backend/actions/midi_mapping_action.h"
-#include "gui/cpp/backend/actions/mixer_selections_action.h"
-#include "gui/cpp/backend/actions/port_action.h"
-#include "gui/cpp/backend/actions/port_connection_action.h"
-#include "gui/cpp/backend/actions/range_action.h"
-#include "gui/cpp/backend/actions/tracklist_selections.h"
-#include "gui/cpp/backend/actions/transport_action.h"
-#include "gui/cpp/backend/actions/undo_stack.h"
+#include "gui/backend/backend/actions/arranger_selections.h"
+#include "gui/backend/backend/actions/channel_send_action.h"
+#include "gui/backend/backend/actions/chord_action.h"
+#include "gui/backend/backend/actions/midi_mapping_action.h"
+#include "gui/backend/backend/actions/mixer_selections_action.h"
+#include "gui/backend/backend/actions/port_action.h"
+#include "gui/backend/backend/actions/port_connection_action.h"
+#include "gui/backend/backend/actions/range_action.h"
+#include "gui/backend/backend/actions/tracklist_selections.h"
+#include "gui/backend/backend/actions/transport_action.h"
+#include "gui/backend/backend/actions/undo_stack.h"
 
 void
 UndoStack::define_fields (const Context &ctx)

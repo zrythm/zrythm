@@ -27,13 +27,13 @@
 #  include "common/utils/io.h"
 #  include "common/utils/math.h"
 #  include "common/utils/string.h"
-#  include "gui/cpp/backend/event.h"
-#  include "gui/cpp/backend/event_manager.h"
-#  include "gui/cpp/backend/project.h"
-#  include "gui/cpp/backend/settings/g_settings_manager.h"
-#  include "gui/cpp/backend/zrythm.h"
-#  include "gui/cpp/gtk_widgets/main_window.h"
-#  include "gui/cpp/gtk_widgets/zrythm_app.h"
+#  include "gui/backend/backend/event.h"
+#  include "gui/backend/backend/event_manager.h"
+#  include "gui/backend/backend/project.h"
+#  include "gui/backend/backend/settings/g_settings_manager.h"
+#  include "gui/backend/backend/zrythm.h"
+#  include "gui/backend/gtk_widgets/main_window.h"
+#  include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #  include <glib/gi18n.h>
 #  include <gtk/gtk.h>

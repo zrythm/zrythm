@@ -3,7 +3,7 @@
 
 #include "common/utils/directory_manager.h"
 #include "common/utils/io.h"
-#include "gui/cpp/glue/settings_manager.h"
+#include "gui/backend/backend/settings_manager.h"
 
 JUCE_IMPLEMENT_SINGLETON (DirectoryManager)
 
@@ -63,13 +63,13 @@ DirectoryManager::get_user_dir (bool force_default)
     }
 
   fs::path dir =
-    zrythm::gui::glue::SettingsManager::get_instance ()
+    zrythm::gui::SettingsManager::get_instance ()
       ->get_zrythm_user_path ()
       .toStdString ();
   if (force_default || dir.empty ())
     {
       dir =
-        zrythm::gui::glue::SettingsManager::get_instance ()
+        zrythm::gui::SettingsManager::get_instance ()
           ->get_default_zrythm_user_path ()
           .toStdString ();
     }

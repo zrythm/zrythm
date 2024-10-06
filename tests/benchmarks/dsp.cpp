@@ -5,7 +5,7 @@
 
 #include "common/utils/dsp.h"
 #include "common/utils/objects.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/zrythm.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"

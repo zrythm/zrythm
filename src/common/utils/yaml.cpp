@@ -9,7 +9,7 @@
 
 #  include "common/utils/objects.h"
 #  include "common/utils/yaml.h"
-#  include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#  include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 #  include <locale.h>
 #  include <string.h>

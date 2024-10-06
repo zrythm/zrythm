@@ -8,8 +8,8 @@
 
 /* include commonly used stuff */
 #include "common/utils/gtest_wrapper.h"
-#include "gui/cpp/backend/zrythm.h"
-#include "gui/cpp/gtk_widgets/zrythm_app.h"
+#include "gui/backend/backend/zrythm.h"
+#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib.h>
 #include <glib/gi18n.h>

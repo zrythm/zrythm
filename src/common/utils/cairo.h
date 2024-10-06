@@ -11,7 +11,7 @@
 #define __UTILS_CAIRO_H__
 
 #include "common/utils/pango.h"
-#include "gui/cpp/gtk_widgets/gtk_wrapper.h"
+#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 class Color;
 

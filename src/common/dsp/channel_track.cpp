@@ -4,10 +4,10 @@
 #include "common/dsp/channel_track.h"
 #include "common/dsp/tracklist.h"
 #include "common/utils/gtk.h"
-#include "gui/cpp/backend/actions/tracklist_selections.h"
-#include "gui/cpp/backend/project.h"
-#include "gui/cpp/backend/tracklist_selections.h"
-#include "gui/cpp/backend/zrythm.h"
+#include "gui/backend/backend/actions/tracklist_selections.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/tracklist_selections.h"
+#include "gui/backend/backend/zrythm.h"
 
 ChannelTrack::ChannelTrack () : channel_ (std::make_shared<Channel> (*this)) { }
 

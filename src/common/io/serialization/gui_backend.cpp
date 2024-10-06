@@ -7,11 +7,11 @@
 #include "common/dsp/midi_region.h"
 #include "common/dsp/quantize_options.h"
 #include "common/dsp/snap_grid.h"
-#include "gui/cpp/backend/audio_clip_editor.h"
-#include "gui/cpp/backend/automation_editor.h"
-#include "gui/cpp/backend/chord_editor.h"
-#include "gui/cpp/backend/clip_editor.h"
-#include "gui/cpp/backend/timeline.h"
+#include "gui/backend/backend/audio_clip_editor.h"
+#include "gui/backend/backend/automation_editor.h"
+#include "gui/backend/backend/chord_editor.h"
+#include "gui/backend/backend/clip_editor.h"
+#include "gui/backend/backend/timeline.h"
 
 void
 EditorSettings::define_base_fields (const Context &ctx)
