@@ -1,6 +1,9 @@
+// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Controls.Basic 6.7
+import QtQuick.Controls.Basic
 import QtQuick.Layouts
 
 ColumnLayout {

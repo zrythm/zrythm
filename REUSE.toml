@@ -13,9 +13,15 @@ SPDX-FileCopyrightText = "2023 Alexandros Theodotou <alex@zrythm.org>"
 SPDX-License-Identifier = "FSFAP"
 
 [[annotations]]
-path = "data/fonts/DSEG14-Classic-MINI/**"
+path = "src/gui/resources/fonts/DSEG14-Classic-MINI/**"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2017, keshikan (http://www.keshikan.net), with Reserved Font Name \"DSEG\"."
+SPDX-License-Identifier = "OFL-1.1"
+
+[[annotations]]
+path = "src/gui/resources/fonts/Inter-4.0/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "(c) 2016 The Inter Project Authors (https://github.com/rsms/inter)"
 SPDX-License-Identifier = "OFL-1.1"
 
 [[annotations]]
@@ -38,7 +44,7 @@ SPDX-FileCopyrightText = "2020 Carlos Han (C.K. Design)"
 SPDX-License-Identifier = "CC-BY-SA-4.0"
 
 [[annotations]]
-path = ["**/zrythm-dark/**/insert-silence.svg", "**/zrythm-dark/**/remove-range.svg", "resources/icons/gnome-builder/**.svg"]
+path = ["**/zrythm-dark/**/insert-silence.svg", "**/zrythm-dark/**/remove-range.svg", "**/resources/icons/gnome-builder/**.svg"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "gnome-builder authors"
 SPDX-License-Identifier = "CC-BY-SA-3.0"
@@ -115,78 +121,77 @@ SPDX-License-Identifier = "Apache-2.0"
 SPDX-FileComment = "From carbon icon theme"
 
 [[annotations]]
-path = ["**/zrythm-dark/**/connector.svg", "resources/icons/fluentui/**.svg"]
+path = ["**/zrythm-dark/**/connector.svg", "**/resources/icons/fluentui/**.svg"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2020 Microsoft Corporation"
 SPDX-License-Identifier = "MIT"
 SPDX-FileComment = "\n  The files have been slightly modified.\n  From https://github.com/microsoft/fluentui-system-icons."
 
 [[annotations]]
-path = ["resources/icons/lucide/**.svg"]
+path = ["**/resources/icons/lucide/**.svg"]
 precedence = "aggregate"
-SPDX-FileCopyrightText = "Cole Bemis 2013-2022"
-SPDX-FileCopyrightText = "Lucide Contributors 2022"
+SPDX-FileCopyrightText = "Cole Bemis 2013-2022, Lucide Contributors 2022"
 SPDX-License-Identifier = "ISC"
 SPDX-FileComment = "Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2022 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2022.\n  The files have been slightly modified.\n  From https://github.com/microsoft/fluentui-system-icons."
 
 [[annotations]]
-path = "resources/icons/box-icons/**.svg"
+path = "**/resources/icons/box-icons/**.svg"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2015-2021 Aniket Suvarna"
 SPDX-License-Identifier = "MIT"
 SPDX-FileComment = "\n  The files have been slightly modified.\n  From https://github.com/atisawd/boxicons."
 
 [[annotations]]
-path = "resources/icons/codicons/**.svg"
+path = "**/resources/icons/codicons/**.svg"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Microsoft and other contributors"
 SPDX-License-Identifier = "CC-BY-4.0"
 SPDX-FileComment = "\n  The files have been slightly modified.\n  From https://github.com/microsoft/vscode-codicons."
 
 [[annotations]]
-path = "resources/icons/iconpark/**.svg"
+path = "**/resources/icons/iconpark/**.svg"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "IconPark contributors <https://github.com/bytedance/IconPark>"
 SPDX-License-Identifier = "Apache-2.0"
 SPDX-FileComment = "\n  The files have been slightly modified.\n  From https://iconpark.oceanengine.com/official."
 
 [[annotations]]
-path = "resources/icons/iconoir/**.svg"
+path = "**/resources/icons/iconoir/**.svg"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2021 Luca Burgio"
 SPDX-License-Identifier = "MIT"
 SPDX-FileComment = "\n  The files have been slightly modified.\n  From https://github.com/iconoir-icons/iconoir."
 
 [[annotations]]
-path = "resources/icons/material-design/**.svg"
+path = "**/resources/icons/material-design/**.svg"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Pictogrammers"
 SPDX-License-Identifier = "Apache-2.0"
 SPDX-FileComment = "\n  The files have been slightly modified.\n  From https://github.com/Templarian/MaterialDesign."
 
 [[annotations]]
-path = "resources/icons/untitled-ui/**.svg"
+path = "**/resources/icons/untitled-ui/**.svg"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Jordan Hughes"
 SPDX-License-Identifier = "CC-BY-4.0"
 SPDX-FileComment = "\n  The files have been slightly modified.\n  From https://www.figma.com/community/file/1114001199549197320/untitled-ui-icons-1-100-essential-figma-icons."
 
 [[annotations]]
-path = "resources/icons/css.gg/**.svg"
+path = "**/resources/icons/css.gg/**.svg"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2019 css.gg"
 SPDX-License-Identifier = "MIT"
 SPDX-FileComment = "\n  The files have been slightly modified.\n  From https://github.com/astrit/css.gg."
 
 [[annotations]]
-path = "resources/icons/font-awesome/**.svg"
+path = "**/resources/icons/font-awesome/**.svg"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Font Awesome project"
 SPDX-License-Identifier = "CC-BY-4.0"
 SPDX-FileComment = "\n  Some icons have been modified (color changes, minor\n  additions)"
 
 [[annotations]]
-path = "resources/icons/fork-awesome/**.svg"
+path = "**/resources/icons/fork-awesome/**.svg"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2018 Dave Gandy & Fork Awesome"
 SPDX-License-Identifier = "CC-BY-3.0"
@@ -273,7 +278,7 @@ SPDX-License-Identifier = "CC0-1.0"
 SPDX-FileComment = "\n  Screenshots and other images used in the user manual"
 
 [[annotations]]
-path = ["resources/ui/**.blp", "resources/gtk/**.blp", "resources/ui/**.ui", "resources/gtk/**.ui"]
+path = ["src/gui/resources/ui/**.blp", "src/gui/resources/gtk/**.blp", "src/gui/resources/ui/**.ui", "src/gui/resources/gtk/**.ui"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2019-2024 The Zrythm contributors"
 SPDX-License-Identifier = "LicenseRef-ZrythmLicense"
@@ -316,7 +321,7 @@ SPDX-FileCopyrightText = "2006-2019 Queen Mary, University of London"
 SPDX-License-Identifier = "GPL-2.0-or-later"
 
 [[annotations]]
-path = ["src/dsp/vamp-ports/BeatTrack.h", "src/dsp/vamp-ports/BeatTrack.cpp", "src/dsp/vamp-ports/FixedTempoEstimator.h", "src/dsp/vamp-ports/FixedTempoEstimator.cpp"]
+path = ["**/dsp/vamp-ports/BeatTrack.h", "**/dsp/vamp-ports/BeatTrack.cpp", "**/dsp/vamp-ports/FixedTempoEstimator.h", "**/dsp/vamp-ports/FixedTempoEstimator.cpp"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Centre for Digital Music, Queen Mary, University of London"
 SPDX-License-Identifier = "GPL-2.0-or-later"
@@ -377,14 +382,14 @@ SPDX-FileCopyrightText = "Gregory Pakosz <https://github.com/gpakosz>"
 SPDX-License-Identifier = "MIT"
 
 [[annotations]]
-path = "resources/icons/arena/**.svg"
+path = "**/resources/icons/arena/**.svg"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Arena"
 SPDX-License-Identifier = "CC-BY-3.0"
 SPDX-FileComment = "https://thenounproject.com/arena/\n  The files have been modified (color changes)."
 
 [[annotations]]
-path = "resources/icons/jam-icons/**.svg"
+path = "**/resources/icons/jam-icons/**.svg"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2017 Michael Aprimo"
 SPDX-License-Identifier = "MIT"
@@ -432,7 +437,7 @@ SPDX-FileCopyrightText = ["", "2009-2016 Albert Graef <aggraef@gmail.com>", "200
 SPDX-License-Identifier = "LGPL-3.0-or-later"
 
 [[annotations]]
-path = ["CONTRIBUTOR_CERTIFICATE_OF_ORIGIN", "data/samples/klick/README", "doc/user/scripting/api/**.rst", "ext/README", "git-packaging-hooks/README", "po/POTFILES", "resources/icons/font-awesome/README", "resources/icons/fork-awesome/README", "resources/icons/gnome-builder/README", "resources/icons/jam-icons/README", "subprojects/**.wrap", "tests/lv2plugins/eg-amp.lv2/README.txt", "tests/lv2plugins/eg-fifths.lv2/README.txt", "tests/lv2plugins/plumbing.lv2/README", "tests/lv2plugins/test-instrument.lv2/README.txt", "tests/presets/LSP_Multi_Sampler_x24_DirectOut_test.preset.lv2/**.ttl", "po/zrythm.pot", "tools/stoat_**.txt", "tools/vg.sup", "VERSION.txt"]
+path = ["CONTRIBUTOR_CERTIFICATE_OF_ORIGIN", "data/samples/klick/README", "doc/user/scripting/api/**.rst", "ext/README", "git-packaging-hooks/README", "po/POTFILES", "**/resources/icons/font-awesome/README", "**/resources/icons/fork-awesome/README", "**/resources/icons/gnome-builder/README", "**/resources/icons/jam-icons/README", "subprojects/**.wrap", "tests/lv2plugins/eg-amp.lv2/README.txt", "tests/lv2plugins/eg-fifths.lv2/README.txt", "tests/lv2plugins/plumbing.lv2/README", "tests/lv2plugins/test-instrument.lv2/README.txt", "tests/presets/LSP_Multi_Sampler_x24_DirectOut_test.preset.lv2/**.ttl", "po/zrythm.pot", "tools/stoat_**.txt", "tools/vg.sup", "VERSION.txt"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Alexandros Theodotou <alex@zrythm.org>"
 SPDX-License-Identifier = "LicenseRef-ZrythmLicense"
@@ -452,7 +457,7 @@ SPDX-FileCopyrightText = "2022 Robert Panovics"
 SPDX-License-Identifier = "LicenseRef-ZrythmLicense"
 
 [[annotations]]
-path = ["**/zrythm-dark/**/document-edit-symbolic.svg", "resources/icons/gnome-icon-library/**.svg"]
+path = ["**/zrythm-dark/**/document-edit-symbolic.svg", "**/resources/icons/gnome-icon-library/**.svg"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "GNOME Design Team"
 SPDX-License-Identifier = "CC0-1.0"
