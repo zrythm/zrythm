@@ -210,7 +210,8 @@ ModulatorTrack::define_fields (const Context &ctx)
 
   if (ctx.is_serializing ())
     {
-      T::serialize_field<decltype (modulators_), PluginPtrVariant> (
+      T::serialize_field<
+        decltype (modulators_), zrythm::plugins::PluginPtrVariant> (
         "modulators", modulators_, ctx);
     }
   else
@@ -228,14 +229,14 @@ ModulatorTrack::define_fields (const Context &ctx)
             auto          setting_obj = yyjson_obj_iter_get (&pl_it, "setting");
             PluginSetting setting;
             setting.deserialize (Context (setting_obj, ctx));
-            auto pl =
-              Plugin::create_unique_from_hosting_type (setting.hosting_type_);
+            auto pl = zrythm::plugins::Plugin::create_unique_from_hosting_type (
+              setting.hosting_type_);
             std::visit (
               [&] (auto &&p) {
                 using PluginT = base_type<decltype (p)>;
                 p->ISerializable<PluginT>::deserialize (Context (pl_obj, ctx));
               },
-              convert_to_variant<PluginPtrVariant> (pl.get ()));
+              convert_to_variant<zrythm::plugins::PluginPtrVariant> (pl.get ()));
             plugin = std::move (pl);
           }
       };

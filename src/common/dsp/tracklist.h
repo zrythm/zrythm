@@ -422,7 +422,7 @@ public:
   /**
    * Fills in the given array with all plugins in the tracklist.
    */
-  void get_plugins (std::vector<Plugin *> &arr) const;
+  void get_plugins (std::vector<zrythm::plugins::Plugin *> &arr) const;
 
   /**
    * Activate or deactivate all plugins.

@@ -103,6 +103,8 @@
 #define DEFINE_SIMPLE(x) \
   void x (GSimpleAction * action, GVariant * variant, gpointer user_data)
 
+using namespace zrythm;
+
 void
 actions_set_app_action_enabled (const char * action_name, const bool enabled)
 {
@@ -1285,10 +1287,11 @@ activate_clear_selection (
           {
             auto           ch_track = dynamic_cast<ChannelTrack *> (track);
             auto           ch = ch_track->get_channel ();
-            PluginSlotType slot_type = PluginSlotType::Insert;
+            zrythm::plugins::PluginSlotType slot_type =
+              plugins::PluginSlotType::Insert;
             if (PROJECT->last_selection_ == Project::SelectionType::MidiFX)
               {
-                slot_type = PluginSlotType::MidiFx;
+                slot_type = plugins::PluginSlotType::MidiFx;
               }
             ch->select_all (slot_type, false);
           }
@@ -1329,10 +1332,11 @@ activate_select_all (
           {
             auto           ch_track = dynamic_cast<ChannelTrack *> (track);
             auto           ch = ch_track->get_channel ();
-            PluginSlotType slot_type = PluginSlotType::Insert;
+            zrythm::plugins::PluginSlotType slot_type =
+              plugins::PluginSlotType::Insert;
             if (PROJECT->last_selection_ == Project::SelectionType::MidiFX)
               {
-                slot_type = PluginSlotType::MidiFx;
+                slot_type = plugins::PluginSlotType::MidiFx;
               }
             ch->select_all (slot_type, F_SELECT);
           }
@@ -3381,7 +3385,7 @@ DEFINE_SIMPLE (activate_plugin_toggle_enabled)
 {
   gsize        size;
   const char * str = g_variant_get_string (variant, &size);
-  Plugin *     pl = NULL;
+  zrythm::plugins::Plugin * pl = NULL;
   sscanf (str, "%p", &pl);
   z_return_if_fail (pl);
 
@@ -3406,25 +3410,25 @@ DEFINE_SIMPLE (activate_plugin_change_load_behavior)
 {
   gsize        size;
   const char * str = g_variant_get_string (variant, &size);
-  Plugin *     pl = NULL;
+  zrythm::plugins::Plugin * pl = NULL;
   char         new_behavior[600];
   sscanf (str, "%p,%s", &pl, new_behavior);
-  z_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
+  z_return_if_fail (pl);
 
   pl->select (true, true);
 
-  CarlaBridgeMode new_bridge_mode = CarlaBridgeMode::None;
+  plugins::CarlaBridgeMode new_bridge_mode = plugins::CarlaBridgeMode::None;
   if (string_is_equal (new_behavior, "normal"))
     {
-      new_bridge_mode = CarlaBridgeMode::None;
+      new_bridge_mode = plugins::CarlaBridgeMode::None;
     }
   else if (string_is_equal (new_behavior, "ui"))
     {
-      new_bridge_mode = CarlaBridgeMode::UI;
+      new_bridge_mode = plugins::CarlaBridgeMode::UI;
     }
   else if (string_is_equal (new_behavior, "full"))
     {
-      new_bridge_mode = CarlaBridgeMode::Full;
+      new_bridge_mode = plugins::CarlaBridgeMode::Full;
     }
 
   try
@@ -3641,7 +3645,7 @@ DEFINE_SIMPLE (activate_plugin_browser_add_to_project)
 {
   gsize              size;
   const char *       str = g_variant_get_string (variant, &size);
-  PluginDescriptor * descr = NULL;
+  plugins::PluginDescriptor * descr = NULL;
   sscanf (str, "%p", &descr);
   z_return_if_fail (descr != nullptr);
 
@@ -3652,13 +3656,13 @@ DEFINE_SIMPLE (activate_plugin_browser_add_to_project_carla)
 {
   gsize              size;
   const char *       str = g_variant_get_string (variant, &size);
-  PluginDescriptor * descr = NULL;
+  zrythm::plugins::PluginDescriptor * descr = NULL;
   sscanf (str, "%p", &descr);
   z_return_if_fail (descr != nullptr);
 
   PluginSetting setting (*descr);
   setting.open_with_carla_ = true;
-  setting.bridge_mode_ = CarlaBridgeMode::None;
+  setting.bridge_mode_ = plugins::CarlaBridgeMode::None;
   activate_plugin_setting (setting);
 }
 
@@ -3666,13 +3670,13 @@ DEFINE_SIMPLE (activate_plugin_browser_add_to_project_bridged_ui)
 {
   gsize              size;
   const char *       str = g_variant_get_string (variant, &size);
-  PluginDescriptor * descr = NULL;
+  zrythm::plugins::PluginDescriptor * descr = NULL;
   sscanf (str, "%p", &descr);
   z_return_if_fail (descr != nullptr);
 
   PluginSetting setting (*descr);
   setting.open_with_carla_ = true;
-  setting.bridge_mode_ = CarlaBridgeMode::UI;
+  setting.bridge_mode_ = zrythm::plugins::CarlaBridgeMode::UI;
   activate_plugin_setting (setting);
 }
 
@@ -3680,13 +3684,13 @@ DEFINE_SIMPLE (activate_plugin_browser_add_to_project_bridged_full)
 {
   gsize              size;
   const char *       str = g_variant_get_string (variant, &size);
-  PluginDescriptor * descr = NULL;
+  zrythm::plugins::PluginDescriptor * descr = NULL;
   sscanf (str, "%p", &descr);
   z_return_if_fail (descr != nullptr);
 
   PluginSetting setting (*descr);
   setting.open_with_carla_ = true;
-  setting.bridge_mode_ = CarlaBridgeMode::Full;
+  setting.bridge_mode_ = zrythm::plugins::CarlaBridgeMode::Full;
   activate_plugin_setting (setting);
 }
 
@@ -3696,8 +3700,8 @@ DEFINE_SIMPLE (activate_plugin_browser_add_to_collection)
 {
   gsize                    size;
   const char *             str = g_variant_get_string (variant, &size);
-  PluginCollection *       collection = NULL;
-  const PluginDescriptor * descr = NULL;
+  zrythm::plugins::PluginCollection * collection = NULL;
+  const zrythm::plugins::PluginDescriptor * descr = NULL;
   sscanf (str, "%p,%p", &collection, &descr);
   z_return_if_fail (collection != nullptr);
   z_return_if_fail (descr != nullptr);
@@ -3712,8 +3716,8 @@ DEFINE_SIMPLE (activate_plugin_browser_remove_from_collection)
 {
   gsize                    size;
   const char *             str = g_variant_get_string (variant, &size);
-  PluginCollection *       collection = NULL;
-  const PluginDescriptor * descr = NULL;
+  zrythm::plugins::PluginCollection * collection = NULL;
+  const zrythm::plugins::PluginDescriptor * descr = NULL;
   sscanf (str, "%p,%p", &collection, &descr);
   z_return_if_fail (collection != nullptr);
   z_return_if_fail (descr != nullptr);
@@ -3756,9 +3760,9 @@ DEFINE_SIMPLE (activate_plugin_browser_reset)
 
 static void
 on_plugin_collection_add_response (
-  AdwMessageDialog * dialog,
-  char *             response,
-  PluginCollection * collection)
+  AdwMessageDialog *                  dialog,
+  char *                              response,
+  zrythm::plugins::PluginCollection * collection)
 {
   if (string_is_equal (response, "ok"))
     {
@@ -3779,12 +3783,14 @@ on_plugin_collection_add_response (
 
 DEFINE_SIMPLE (activate_plugin_collection_add)
 {
-  auto * collection = new PluginCollection ();
+  auto * collection = new zrythm::plugins::PluginCollection ();
 
   StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
     _ ("Collection name"),
-    bind_member_function (*collection, &PluginCollection::get_name),
-    bind_member_function (*collection, &PluginCollection::set_name));
+    bind_member_function (
+      *collection, &zrythm::plugins::PluginCollection::get_name),
+    bind_member_function (
+      *collection, &zrythm::plugins::PluginCollection::set_name));
   g_signal_connect_after (
     G_OBJECT (dialog), "response",
     G_CALLBACK (on_plugin_collection_add_response), collection);
@@ -3813,8 +3819,10 @@ DEFINE_SIMPLE (activate_plugin_collection_rename)
 
   StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
     _ ("Collection name"),
-    bind_member_function (*collection, &PluginCollection::get_name),
-    bind_member_function (*collection, &PluginCollection::set_name));
+    bind_member_function (
+      *collection, &zrythm::plugins::PluginCollection::get_name),
+    bind_member_function (
+      *collection, &zrythm::plugins::PluginCollection::set_name));
   g_signal_connect_after (
     G_OBJECT (dialog), "response",
     G_CALLBACK (on_plugin_collection_rename_response), collection);
@@ -3823,9 +3831,9 @@ DEFINE_SIMPLE (activate_plugin_collection_rename)
 
 static void
 on_delete_plugin_collection_response (
-  AdwMessageDialog * dialog,
-  char *             response,
-  PluginCollection * collection)
+  AdwMessageDialog *                  dialog,
+  char *                              response,
+  zrythm::plugins::PluginCollection * collection)
 {
   if (string_is_equal (response, "delete"))
     {

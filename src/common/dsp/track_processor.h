@@ -116,12 +116,12 @@ public:
   /**
    * Disconnect the TrackProcessor's out ports from the Plugin's input ports.
    */
-  void disconnect_from_plugin (Plugin &pl);
+  void disconnect_from_plugin (zrythm::plugins::Plugin &pl);
 
   /**
    * Connect the TrackProcessor's out ports to the Plugin's input ports.
    */
-  void connect_to_plugin (Plugin &pl);
+  void connect_to_plugin (zrythm::plugins::Plugin &pl);
 
   void append_ports (std::vector<Port *> &ports);
 

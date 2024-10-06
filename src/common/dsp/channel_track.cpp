@@ -145,7 +145,7 @@ ChannelTrack::validate_base () const
     false);
 
   /* verify plugins */
-  std::vector<Plugin *> plugins;
+  std::vector<zrythm::plugins::Plugin *> plugins;
   channel_->get_plugins (plugins);
   for (auto pl : plugins)
     {

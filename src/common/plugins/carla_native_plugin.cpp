@@ -42,6 +42,8 @@
 #  include <fmt/format.h>
 #  include <fmt/printf.h>
 
+using namespace zrythm::plugins;
+
 static GdkGLContext *
 clear_gl_context (void)
 {
@@ -538,7 +540,7 @@ CarlaNativePlugin::populate_banks ()
 }
 
 bool
-CarlaNativePlugin::has_custom_ui (const PluginDescriptor &descr)
+CarlaNativePlugin::has_custom_ui (const zrythm::plugins::PluginDescriptor &descr)
 {
 #  if 0
   auto native_pl = _create (nullptr);
@@ -830,10 +832,10 @@ CarlaNativePlugin::get_descriptor_from_cached (
 }
 
 CarlaNativePlugin::CarlaNativePlugin (
-  const PluginSetting &setting,
-  unsigned int         track_name_hash,
-  PluginSlotType       slot_type,
-  int                  slot)
+  const PluginSetting            &setting,
+  unsigned int                    track_name_hash,
+  zrythm::plugins::PluginSlotType slot_type,
+  int                             slot)
     : Plugin (setting, track_name_hash, slot_type, slot)
 {
   z_return_if_fail (setting.open_with_carla_);
@@ -1139,13 +1141,14 @@ CarlaNativePlugin::update_buffer_size_and_sample_rate ()
 }
 
 bool
-CarlaNativePlugin::add_internal_plugin_from_descr (const PluginDescriptor &descr)
+CarlaNativePlugin::add_internal_plugin_from_descr (
+  const zrythm::plugins::PluginDescriptor &descr)
 {
   /** Number of instances to instantiate (1 normally or 2 for mono plugins). */
   auto num_instances = descr.num_audio_ins_ == 1 ? 2 : 1;
 
-  const auto type =
-    PluginDescriptor::get_carla_plugin_type_from_protocol (descr.protocol_);
+  const auto type = zrythm::plugins::PluginDescriptor::
+    get_carla_plugin_type_from_protocol (descr.protocol_);
   bool added = false;
 
   for (int i = 0; i < num_instances; i++)
@@ -1397,8 +1400,8 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
   {
     auto paths =
       PLUGIN_MANAGER->get_paths_for_protocol_separated (descr.protocol_);
-    auto ptype =
-      PluginDescriptor::get_carla_plugin_type_from_protocol (descr.protocol_);
+    auto ptype = zrythm::plugins::PluginDescriptor::
+      get_carla_plugin_type_from_protocol (descr.protocol_);
     carla_set_engine_option (
       host_handle_, CarlaBackend::ENGINE_OPTION_PLUGIN_PATH, ptype,
       paths.c_str ());
@@ -1430,13 +1433,13 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
   /* set bridging on if needed */
   switch (setting_.bridge_mode_)
     {
-    case CarlaBridgeMode::Full:
+    case zrythm::plugins::CarlaBridgeMode::Full:
       z_debug ("plugin must be bridged whole, using plugin bridge");
       carla_set_engine_option (
         host_handle_, CarlaBackend::ENGINE_OPTION_PREFER_PLUGIN_BRIDGES, true,
         nullptr);
       break;
-    case CarlaBridgeMode::UI:
+    case zrythm::plugins::CarlaBridgeMode::UI:
       z_debug ("using UI bridge only");
       carla_set_engine_option (
         host_handle_, CarlaBackend::ENGINE_OPTION_PREFER_UI_BRIDGES, true,
@@ -1448,8 +1451,8 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
 
   /* raise bridge timeout to 8 sec */
   if (
-    setting_.bridge_mode_ == CarlaBridgeMode::Full
-    || setting_.bridge_mode_ == CarlaBridgeMode::UI)
+    setting_.bridge_mode_ == zrythm::plugins::CarlaBridgeMode::Full
+    || setting_.bridge_mode_ == zrythm::plugins::CarlaBridgeMode::UI)
     {
       carla_set_engine_option (
         host_handle_, CarlaBackend::ENGINE_OPTION_UI_BRIDGES_TIMEOUT, 8000,
@@ -1928,7 +1931,8 @@ CarlaNativePlugin::load_state (const std::string * abs_path)
 }
 
 void
-CarlaNativePlugin::init_after_cloning (const CarlaNativePlugin &other)
+CarlaNativePlugin::init_after_cloning (
+  const zrythm::plugins::CarlaNativePlugin &other)
 {
   Plugin::copy_members_from (
     const_cast<Plugin &> (*dynamic_cast<const Plugin *> (&other)));

@@ -588,7 +588,8 @@ test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (MVERB_BUNDLE, MVERB_URI, false);
   mixer_selections_action_perform_create (
-    PluginSlotType::Insert, ins_track->get_name_hash (), 0, setting, 1, nullptr);
+    zrythm::plugins::PluginSlotType::Insert, ins_track->get_name_hash (), 0,
+    setting, 1, nullptr);
 
   /* adjust fader */
   Fader * fader = track_get_fader (ins_track, true);

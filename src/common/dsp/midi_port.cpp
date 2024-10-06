@@ -304,7 +304,7 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
     /* if track/channel fader */
     (owner_type == PortIdentifier::OwnerType::Fader
      && (ENUM_BITSET_TEST (PortIdentifier::Flags2, id_.flags2_, PortIdentifier::Flags2::Prefader) || ENUM_BITSET_TEST (PortIdentifier::Flags2, id_.flags2_, PortIdentifier::Flags2::Postfader)))
-    || (owner_type == PortIdentifier::OwnerType::Plugin && id_.plugin_id_.slot_type_ == PluginSlotType::Instrument))
+    || (owner_type == PortIdentifier::OwnerType::Plugin && id_.plugin_id_.slot_type_ == zrythm::plugins::PluginSlotType::Instrument))
     {
       if (ZRYTHM_TESTING)
         track = get_track (true);

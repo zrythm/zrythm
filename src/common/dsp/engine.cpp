@@ -989,13 +989,13 @@ AudioEngine::realloc_port_buffers (nframes_t nframes)
   z_info ("Block length changed to {}. reallocating buffers...", block_length_);
 
   /* TODO make function that fetches all plugins in the project */
-  std::vector<Plugin *> plugins;
+  std::vector<zrythm::plugins::Plugin *> plugins;
   TRACKLIST->get_plugins (plugins);
   for (auto &pl : plugins)
     {
       if (pl && !pl->instantiation_failed_ && pl->setting_.open_with_carla_)
         {
-          auto carla = dynamic_cast<CarlaNativePlugin *> (pl);
+          auto carla = dynamic_cast<zrythm::plugins::CarlaNativePlugin *> (pl);
           carla->update_buffer_size_and_sample_rate ();
         }
     }

@@ -61,10 +61,10 @@ AutomationTracklist::add_at (std::unique_ptr<AutomationTrack> &&at)
 
 AutomationTrack *
 AutomationTracklist::get_plugin_at (
-  PluginSlotType     slot_type,
-  const int          plugin_slot,
-  const int          port_index,
-  const std::string &symbol)
+  zrythm::plugins::PluginSlotType slot_type,
+  const int                       plugin_slot,
+  const int                       port_index,
+  const std::string              &symbol)
 {
   auto it = std::find_if (ats_.begin (), ats_.end (), [&] (const auto &at) {
     return at->port_id_.owner_type_ == PortIdentifier::OwnerType::Plugin

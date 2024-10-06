@@ -18,7 +18,7 @@ port_unit_to_str (const PortUnit unit)
 void
 PortIdentifier::init ()
 {
-  plugin_id_ = PluginIdentifier{};
+  plugin_id_ = zrythm::plugins::PluginIdentifier{};
 }
 
 int
@@ -124,7 +124,7 @@ PortIdentifier::get_hash () const
   hash = hash ^ g_int_hash (&flags_);
   hash = hash ^ g_int_hash (&flags2_);
   hash = hash ^ g_int_hash (&unit_);
-  hash = hash ^ PluginIdentifier::get_hash (&plugin_id_);
+  hash = hash ^ zrythm::plugins::PluginIdentifier::get_hash (&plugin_id_);
   if (!port_group_.empty ())
     hash = hash ^ g_str_hash (port_group_.c_str ());
   if (!ext_port_id_.empty ())

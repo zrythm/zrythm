@@ -116,7 +116,7 @@ Port::find_from_identifier (const PortIdentifier &id)
           tr = SAMPLE_PROCESSOR->tracklist_->find_track_by_name_hash<
             ProcessableTrack> (track_name_hash);
         z_return_val_if_fail (tr, nullptr);
-        Plugin * pl = nullptr;
+        zrythm::plugins::Plugin * pl = nullptr;
         if (tr->has_channel ())
           {
             auto channel_track = dynamic_cast<ChannelTrack *> (tr);
@@ -689,7 +689,7 @@ Port::set_owner (T * owner)
     return track->name_.empty () ? 0 : track->get_name_hash ();
   };
 
-  if constexpr (std::derived_from<T, Plugin>)
+  if constexpr (std::derived_from<T, zrythm::plugins::Plugin>)
     {
       id_.plugin_id_ = owner->id_;
       id_.track_name_hash_ = owner->id_.track_name_hash_;
@@ -1238,7 +1238,7 @@ Port::get_track (bool warn_if_fail) const
   return track;
 }
 
-Plugin *
+zrythm::plugins::Plugin *
 Port::get_plugin (bool warn_if_fail) const
 {
   z_return_val_if_fail (IS_PORT (this), nullptr);
@@ -1269,26 +1269,26 @@ Port::get_plugin (bool warn_if_fail) const
       return nullptr;
     }
 
-  Plugin *    pl = nullptr;
+  zrythm::plugins::Plugin * pl = nullptr;
   const auto &pl_id = id_.plugin_id_;
   switch (pl_id.slot_type_)
     {
-    case PluginSlotType::MidiFx:
+    case zrythm::plugins::PluginSlotType::MidiFx:
       pl =
         dynamic_cast<ChannelTrack *> (track)
           ->channel_->midi_fx_[pl_id.slot_]
           .get ();
       break;
-    case PluginSlotType::Instrument:
+    case zrythm::plugins::PluginSlotType::Instrument:
       pl = dynamic_cast<ChannelTrack *> (track)->channel_->instrument_.get ();
       break;
-    case PluginSlotType::Insert:
+    case zrythm::plugins::PluginSlotType::Insert:
       pl =
         dynamic_cast<ChannelTrack *> (track)
           ->channel_->inserts_[pl_id.slot_]
           .get ();
       break;
-    case PluginSlotType::Modulator:
+    case zrythm::plugins::PluginSlotType::Modulator:
       pl =
         dynamic_cast<ModulatorTrack *> (track)->modulators_[pl_id.slot_].get ();
       break;
@@ -1377,7 +1377,7 @@ Port::find_from_identifier (const PortIdentifier &);
 template ControlPort *
 Port::find_from_identifier (const PortIdentifier &);
 template void
-Port::set_owner<Plugin> (Plugin *);
+Port::set_owner<zrythm::plugins::Plugin> (zrythm::plugins::Plugin *);
 template void
 Port::set_owner<Transport> (Transport *);
 template void

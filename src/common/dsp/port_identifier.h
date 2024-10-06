@@ -77,7 +77,7 @@ public:
     /* NONE, */
     AudioEngine,
 
-    /** Plugin owner. */
+    /** zrythm::plugins::Plugin owner. */
     Plugin,
 
     /** Track owner. */
@@ -233,7 +233,7 @@ public:
     Logarithmic = 1 << 29,
 
     /**
-     * Plugin control is a property (changes are set
+     * zrythm::plugins::Plugin control is a property (changes are set
      * via atom message on the plugin's control port),
      * as opposed to conventional float control ports.
      *
@@ -415,7 +415,7 @@ public:
   PortIdentifier::Flags2 flags2_ = (Flags2) 0;
 
   /** Identifier of plugin. */
-  PluginIdentifier plugin_id_ = {};
+  zrythm::plugins::PluginIdentifier plugin_id_ = {};
 
   /** Human readable label. */
   std::string label_;

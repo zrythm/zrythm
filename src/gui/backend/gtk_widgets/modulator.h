@@ -43,14 +43,14 @@ typedef struct _ModulatorWidget
   ModulatorInnerWidget * inner;
 
   /** Pointer back to the Modulator. */
-  Plugin * modulator;
+  zrythm::plugins::Plugin * modulator;
 } ModulatorWidget;
 
 void
 modulator_widget_refresh (ModulatorWidget * self);
 
 ModulatorWidget *
-modulator_widget_new (Plugin * modulator);
+modulator_widget_new (zrythm::plugins::Plugin * modulator);
 
 /**
  * @}

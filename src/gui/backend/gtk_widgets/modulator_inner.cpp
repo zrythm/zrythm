@@ -28,7 +28,7 @@
 
 G_DEFINE_TYPE (ModulatorInnerWidget, modulator_inner_widget, GTK_TYPE_BOX)
 
-static Plugin *
+static zrythm::plugins::Plugin *
 get_modulator (ModulatorInnerWidget * self)
 {
   return self->parent->modulator;
@@ -44,7 +44,7 @@ get_snapped_control_value (ControlPort * port)
 static void
 on_show_hide_ui_toggled (GtkToggleButton * btn, ModulatorInnerWidget * self)
 {
-  Plugin * modulator = get_modulator (self);
+  zrythm::plugins::Plugin * modulator = get_modulator (self);
 
   // FIXME use a method on the modulator to set the visibility
   modulator->visible_ = !modulator->visible_;
@@ -56,9 +56,10 @@ static void
 on_delete_clicked (GtkButton * btn, ModulatorInnerWidget * self)
 {
   auto     sel = std::make_unique<FullMixerSelections> ();
-  Plugin * modulator = get_modulator (self);
+  zrythm::plugins::Plugin * modulator = get_modulator (self);
   sel->add_slot (
-    *P_MODULATOR_TRACK, PluginSlotType::Modulator, modulator->id_.slot_, true);
+    *P_MODULATOR_TRACK, zrythm::plugins::PluginSlotType::Modulator,
+    modulator->id_.slot_, true);
 
   try
     {
@@ -100,7 +101,7 @@ on_automate_clicked (GtkButton * btn, ModulatorInnerWidget * self)
 void
 modulator_inner_widget_refresh (ModulatorInnerWidget * self)
 {
-  Plugin * modulator = get_modulator (self);
+  zrythm::plugins::Plugin * modulator = get_modulator (self);
   g_signal_handlers_block_by_func (
     self->show_hide_ui_btn, (gpointer) on_show_hide_ui_toggled, self);
   gtk_toggle_button_set_active (self->show_hide_ui_btn, modulator->visible_);
@@ -151,7 +152,7 @@ modulator_inner_widget_new (ModulatorWidget * parent)
 
   self->parent = parent;
 
-  Plugin * modulator = get_modulator (self);
+  zrythm::plugins::Plugin * modulator = get_modulator (self);
   for (auto port : modulator->in_ports_ | type_is<ControlPort> ())
     {
       if (

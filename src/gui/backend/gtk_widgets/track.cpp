@@ -1609,8 +1609,8 @@ on_dnd_drop (
     z_gtk_drop_target_get_selected_action (drop_target);
 
   FileDescriptor *    file = NULL;
-  PluginDescriptor * pd = NULL;
-  Plugin *           pl = NULL;
+  zrythm::plugins::PluginDescriptor * pd = NULL;
+  zrythm::plugins::Plugin *           pl = NULL;
   if (G_VALUE_HOLDS (
         value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
@@ -1622,12 +1622,12 @@ on_dnd_drop (
         }
       else if (wrapped_obj->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN)
         {
-          pl = (Plugin *) wrapped_obj->obj;
+          pl = (zrythm::plugins::Plugin *) wrapped_obj->obj;
         }
       else if (
         wrapped_obj->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_DESCR)
         {
-          pd = (PluginDescriptor *) wrapped_obj->obj;
+          pd = (zrythm::plugins::PluginDescriptor *) wrapped_obj->obj;
         }
     }
 

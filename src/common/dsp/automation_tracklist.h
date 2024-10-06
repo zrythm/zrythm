@@ -139,10 +139,10 @@ public:
    * Currently only used in mixer selections action.
    */
   AutomationTrack * get_plugin_at (
-    PluginSlotType     slot_type,
-    const int          plugin_slot,
-    const int          port_index,
-    const std::string &symbol);
+    zrythm::plugins::PluginSlotType slot_type,
+    const int                       plugin_slot,
+    const int                       port_index,
+    const std::string              &symbol);
 
   /**
    * Used when the add button is added and a new automation track is requested

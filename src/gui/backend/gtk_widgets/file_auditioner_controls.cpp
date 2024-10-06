@@ -71,8 +71,8 @@ on_instrument_changed (GObject * gobject, GParamSpec * pspec, void * data)
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
       gtk_drop_down_get_selected_item (dropdown));
-  const PluginDescriptor * descr =
-    std::get<PluginDescriptor *> (wrapped_obj->obj);
+  const zrythm::plugins::PluginDescriptor * descr =
+    std::get<zrythm::plugins::PluginDescriptor *> (wrapped_obj->obj);
 
   if (
     SAMPLE_PROCESSOR->instrument_setting_
@@ -127,9 +127,11 @@ setup_instrument_dropdown (FileAuditionerControlsWidget * self)
         {
           WrappedObjectWithChangeSignal * wrapped_descr =
             wrapped_object_with_change_signal_new_with_free_func (
-              new PluginDescriptor (descr),
+              new zrythm::plugins::PluginDescriptor (descr),
               WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_DESCR,
-              [] (void * ptr) { delete static_cast<PluginDescriptor *> (ptr); });
+              [] (void * ptr) {
+                delete static_cast<zrythm::plugins::PluginDescriptor *> (ptr);
+              });
           g_list_store_append (store, wrapped_descr);
 
           /* set selected instrument */

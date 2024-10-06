@@ -59,7 +59,7 @@ typedef struct _PortSelectorDialogWidget
    *
    * If this is nullptr, see track_ports_selected.
    */
-  Plugin * selected_plugin;
+  zrythm::plugins::Plugin * selected_plugin;
 
   /**
    * Used if selected_plugin is NULL.

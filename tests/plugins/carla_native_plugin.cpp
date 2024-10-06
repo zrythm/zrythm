@@ -16,7 +16,8 @@
 
 #if HAVE_CARLA
 
-class CarlaNativePluginTest : public ::testing::TestWithParam<std::string>
+class zrythm::plugins::CarlaNativePluginTest
+    : public ::testing::TestWithParam<std::string>
 {
 protected:
   ZrythmFixture zrythm_fixture_;
@@ -70,8 +71,8 @@ TEST_P (CarlaNativePluginTest, VstInstrumentMakesSound)
 }
 
 INSTANTIATE_TEST_SUITE_P (
-  CarlaNativePlugin,
-  CarlaNativePluginTest,
+  zrythm::plugins::CarlaNativePlugin,
+  zrythm::plugins::CarlaNativePluginTest,
   ::testing::Values (
 #  ifdef HAVE_NOIZEMAKER
     // vst2
@@ -107,7 +108,7 @@ TEST_F (ZrythmFixture, MonoPlugin)
     LSP_COMPRESSOR_MONO_BUNDLE, LSP_COMPRESSOR_MONO_URI, true);
 
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-    PluginSlotType::Insert, *audio_track, 0, setting, 1));
+    zrythm::plugins::PluginSlotType::Insert, *audio_track, 0, setting, 1));
 
   const auto &pl = audio_track->channel_->inserts_[0];
   ASSERT_NONNULL (pl);
@@ -165,7 +166,7 @@ TEST_F (ZrythmFixture, CrashHandling)
 
   auto setting = test_plugin_manager_get_plugin_setting (
     SIGABRT_BUNDLE_URI, SIGABRT_URI, true);
-  setting.bridge_mode_ = CarlaBridgeMode::Full;
+  setting.bridge_mode_ = zrythm::plugins::CarlaBridgeMode::Full;
 
   /* create a track from the plugin */
   auto track = Track::create_for_plugin_at_idx_w_action<AudioBusTrack> (

@@ -118,7 +118,7 @@ Graph::rechain ()
 }
 
 void
-Graph::add_plugin (Plugin &pl)
+Graph::add_plugin (zrythm::plugins::Plugin &pl)
 {
   z_return_if_fail (!pl.deleting_);
   if (!pl.in_ports_.empty () || !pl.out_ports_.empty ())
@@ -128,7 +128,7 @@ Graph::add_plugin (Plugin &pl)
 }
 
 void
-Graph::connect_plugin (Plugin &pl, bool drop_unnecessary_ports)
+Graph::connect_plugin (zrythm::plugins::Plugin &pl, bool drop_unnecessary_ports)
 {
   z_return_if_fail (!pl.deleting_);
   auto pl_node = find_node_from_plugin (&pl);
@@ -391,7 +391,7 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
           create_node (GraphNode::Type::Prefader, channel->prefader_.get ());
 
           /* add plugins */
-          std::vector<Plugin *> plugins;
+          std::vector<zrythm::plugins::Plugin *> plugins;
           channel->get_plugins (plugins);
           for (auto pl : plugins)
             {
@@ -766,7 +766,7 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
           prefader_node->connect_to (*node2);
         }
 
-      std::vector<Plugin *> plugins;
+      std::vector<zrythm::plugins::Plugin *> plugins;
       ch->get_plugins (plugins);
       for (auto * const pl : plugins)
         {
@@ -1029,9 +1029,10 @@ Graph::find_node_from_port (const Port * port) const
 }
 
 GraphNode *
-Graph::find_node_from_plugin (const Plugin * pl) const
+Graph::find_node_from_plugin (const zrythm::plugins::Plugin * pl) const
 {
-  auto it = setup_graph_nodes_map_.find (const_cast<Plugin *> (pl));
+  auto it =
+    setup_graph_nodes_map_.find (const_cast<zrythm::plugins::Plugin *> (pl));
   if (
     it != setup_graph_nodes_map_.end ()
     && it->second->type_ == GraphNode::Type::Plugin)

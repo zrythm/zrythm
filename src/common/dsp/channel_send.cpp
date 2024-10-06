@@ -54,7 +54,7 @@ ChannelSendTarget::describe () const
       }
     case ChannelSendTargetType::PluginSidechain:
       {
-        auto pl = Plugin::find (pl_id);
+        auto pl = zrythm::plugins::Plugin::find (pl_id);
         return pl->get_full_port_group_designation (port_group);
       }
     default:
@@ -585,12 +585,12 @@ ChannelSend::is_enabled () const
       if (search_port.dests_.size () == 1)
         {
           auto * dest = search_port.dests_[0];
-          z_return_val_if_fail (IS_PORT_AND_NONNULL (dest), false);
+          z_return_val_if_fail (dest, false);
 
           if (dest->id_.owner_type_ == PortIdentifier::OwnerType::Plugin)
             {
-              auto * pl = Plugin::find (dest->id_.plugin_id_);
-              z_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), false);
+              auto * pl = zrythm::plugins::Plugin::find (dest->id_.plugin_id_);
+              z_return_val_if_fail (pl, false);
               if (pl->instantiation_failed_)
                 return false;
             }
@@ -612,7 +612,7 @@ ChannelSend::is_enabled () const
    * the send is disabled */
   if (dest->id_.owner_type_ == PortIdentifier::OwnerType::Plugin)
     {
-      auto * pl = Plugin::find (dest->id_.plugin_id_);
+      auto * pl = zrythm::plugins::Plugin::find (dest->id_.plugin_id_);
       if (pl->instantiation_failed_)
         enabled = false;
     }

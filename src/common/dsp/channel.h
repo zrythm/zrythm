@@ -81,13 +81,13 @@ public:
    * overwrites existing plugins.
    */
   void handle_plugin_import (
-    const Plugin *           pl,
-    const MixerSelections *  sel,
-    const PluginDescriptor * descr,
-    int                      slot,
-    PluginSlotType           slot_type,
-    bool                     copy,
-    bool                     ask_if_overwrite);
+    const zrythm::plugins::Plugin *           pl,
+    const MixerSelections *                   sel,
+    const zrythm::plugins::PluginDescriptor * descr,
+    int                                       slot,
+    zrythm::plugins::PluginSlotType           slot_type,
+    bool                                      copy,
+    bool                                      ask_if_overwrite);
 
   /**
    * @brief Prepares the channel for processing.
@@ -121,15 +121,15 @@ public:
    *
    * @throw ZrythmException on error.
    */
-  Plugin * add_plugin (
-    std::unique_ptr<Plugin> &&plugin,
-    PluginSlotType            slot_type,
-    int                       slot,
-    bool                      confirm,
-    bool                      moving_plugin,
-    bool                      gen_automatables,
-    bool                      recalc_graph,
-    bool                      pub_events);
+  zrythm::plugins::Plugin * add_plugin (
+    std::unique_ptr<zrythm::plugins::Plugin> &&plugin,
+    zrythm::plugins::PluginSlotType            slot_type,
+    int                                        slot,
+    bool                                       confirm,
+    bool                                       moving_plugin,
+    bool                                       gen_automatables,
+    bool                                       recalc_graph,
+    bool                                       pub_events);
 
   ChannelTrack * get_track () const { return track_; }
 
@@ -160,13 +160,13 @@ public:
    *
    * @return The plugin that was removed (in case we want to move it).
    */
-  std::unique_ptr<Plugin> remove_plugin (
-    PluginSlotType slot_type,
-    int            slot,
-    bool           moving_plugin,
-    bool           deleting_plugin,
-    bool           deleting_channel,
-    bool           recalc_graph);
+  std::unique_ptr<zrythm::plugins::Plugin> remove_plugin (
+    zrythm::plugins::PluginSlotType slot_type,
+    int                             slot,
+    bool                            moving_plugin,
+    bool                            deleting_plugin,
+    bool                            deleting_channel,
+    bool                            recalc_graph);
 
   /**
    * Updates the track name hash in the channel and all related ports and
@@ -175,7 +175,7 @@ public:
   void
   update_track_name_hash (unsigned int old_name_hash, unsigned int new_name_hash);
 
-  void get_plugins (std::vector<Plugin *> &pls);
+  void get_plugins (std::vector<zrythm::plugins::Plugin *> &pls);
 
   /**
    * Gets whether mono compatibility is enabled.
@@ -197,12 +197,13 @@ public:
    */
   void set_swap_phase (bool enabled, bool fire_events);
 
-  Plugin * get_plugin_at_slot (int slot, PluginSlotType slot_type) const;
+  zrythm::plugins::Plugin *
+  get_plugin_at_slot (int slot, zrythm::plugins::PluginSlotType slot_type) const;
 
   /**
    * Selects/deselects all plugins in the given slot type.
    */
-  void select_all (PluginSlotType type, bool select);
+  void select_all (zrythm::plugins::PluginSlotType type, bool select);
 
   /**
    * Sets caches for processing.
@@ -218,8 +219,8 @@ public:
    * channel_free should be designed to be called later after an arbitrary
    * delay.
    *
-   * @param remove_pl Remove the Plugin from the Channel. Useful when deleting
-   * the channel.
+   * @param remove_pl Remove the zrythm::plugins::Plugin from the Channel.
+   * Useful when deleting the channel.
    * @param recalc_graph Recalculate mixer graph.
    */
   void disconnect (bool remove_pl);
@@ -283,42 +284,56 @@ private:
   /**
    * Connect ports in the case of !prev && !next.
    */
-  void connect_no_prev_no_next (Plugin &pl);
+  void connect_no_prev_no_next (zrythm::plugins::Plugin &pl);
 
   /**
    * Connect ports in the case of !prev && next.
    */
-  void connect_no_prev_next (Plugin &pl, Plugin &next_pl);
+  void connect_no_prev_next (
+    zrythm::plugins::Plugin &pl,
+    zrythm::plugins::Plugin &next_pl);
 
   /**
    * Connect ports in the case of prev && !next.
    */
-  void connect_prev_no_next (Plugin &prev_pl, Plugin &pl);
+  void connect_prev_no_next (
+    zrythm::plugins::Plugin &prev_pl,
+    zrythm::plugins::Plugin &pl);
 
   /**
    * Connect ports in the case of prev && next.
    */
-  void connect_prev_next (Plugin &prev_pl, Plugin &pl, Plugin &next_pl);
+  void connect_prev_next (
+    zrythm::plugins::Plugin &prev_pl,
+    zrythm::plugins::Plugin &pl,
+    zrythm::plugins::Plugin &next_pl);
 
   /**
    * Disconnect ports in the case of !prev && !next.
    */
-  void disconnect_no_prev_no_next (Plugin &pl);
+  void disconnect_no_prev_no_next (zrythm::plugins::Plugin &pl);
 
   /**
    * Disconnect ports in the case of !prev && next.
    */
-  void disconnect_no_prev_next (Plugin &pl, Plugin &next_pl);
+  void disconnect_no_prev_next (
+    zrythm::plugins::Plugin &pl,
+    zrythm::plugins::Plugin &next_pl);
 
   /**
    * Connect ports in the case of prev && !next.
    */
-  void disconnect_prev_no_next (Plugin &prev_pl, Plugin &pl);
+  void disconnect_prev_no_next (
+    zrythm::plugins::Plugin &prev_pl,
+    zrythm::plugins::Plugin &pl);
 
   /**
    * Connect ports in the case of prev && next.
    */
-  void disconnect_prev_next (Plugin &prev_pl, Plugin &pl, Plugin &next_pl);
+  void disconnect_prev_next (
+    zrythm::plugins::Plugin &prev_pl,
+    zrythm::plugins::Plugin &pl,
+    zrythm::plugins::Plugin &next_pl);
 
   void connect_plugins ();
 
@@ -332,7 +347,7 @@ private:
    */
   void init_stereo_out_ports (bool loading);
 
-  void disconnect_plugin_from_strip (int pos, Plugin &pl);
+  void disconnect_plugin_from_strip (int pos, zrythm::plugins::Plugin &pl);
 
 public:
   /**
@@ -340,13 +355,13 @@ public:
    *
    * This is processed before the instrument/inserts.
    */
-  std::array<std::unique_ptr<Plugin>, STRIP_SIZE> midi_fx_;
+  std::array<std::unique_ptr<zrythm::plugins::Plugin>, STRIP_SIZE> midi_fx_;
 
   /** The channel insert strip. */
-  std::array<std::unique_ptr<Plugin>, STRIP_SIZE> inserts_;
+  std::array<std::unique_ptr<zrythm::plugins::Plugin>, STRIP_SIZE> inserts_;
 
   /** The instrument plugin, if instrument track. */
-  std::unique_ptr<Plugin> instrument_;
+  std::unique_ptr<zrythm::plugins::Plugin> instrument_;
 
   /**
    * The sends strip.

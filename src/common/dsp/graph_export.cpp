@@ -71,7 +71,7 @@ get_parent_graph (GHashTable * anodes, GraphNode * node)
           {
           case PortIdentifier::OwnerType::Plugin:
             {
-              Plugin * pl = node->port->get_plugin (true);
+              zrythm::plugins::Plugin * pl = node->port->get_plugin (true);
               parent_node = graph_find_node_from_plugin (node->graph, pl);
             }
             break;
@@ -275,7 +275,7 @@ fill_anodes (Graph * graph, Agraph_t * aroot_graph, GHashTable * anodes)
         {
         case GraphNodeType::ROUTE_NODE_TYPE_PLUGIN:
           {
-            Plugin * pl = node->pl;
+            zrythm::plugins::Plugin * pl = node->pl;
             Track *  tr = plugin_get_track (pl);
             parent_node = graph_find_node_from_track (node->graph, tr, true);
           }

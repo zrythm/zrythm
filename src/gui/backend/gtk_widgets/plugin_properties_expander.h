@@ -55,7 +55,7 @@ typedef struct _PluginPropertiesExpanderWidget
   GtkButton * load_preset_btn;
 
   /** Currently selected plugin. */
-  Plugin * plugin;
+  zrythm::plugins::Plugin * plugin;
 
   gulong bank_changed_handler;
   gulong pset_changed_handler;
@@ -67,7 +67,7 @@ typedef struct _PluginPropertiesExpanderWidget
 void
 plugin_properties_expander_widget_refresh (
   PluginPropertiesExpanderWidget * self,
-  Plugin *                         pl);
+  zrythm::plugins::Plugin *        pl);
 
 /**
  * Sets up the PluginPropertiesExpanderWidget for a Plugin.
@@ -75,7 +75,7 @@ plugin_properties_expander_widget_refresh (
 void
 plugin_properties_expander_widget_setup (
   PluginPropertiesExpanderWidget * self,
-  Plugin *                         pl);
+  zrythm::plugins::Plugin *        pl);
 
 /**
  * @}

@@ -15,6 +15,9 @@
 
 #  include "carla_wrapper.h"
 
+namespace zrythm::plugins
+{
+
 class PluginDescriptor;
 class PluginManager;
 
@@ -66,6 +69,8 @@ public:
    */
   PluginManager * owner_ = nullptr;
 };
+
+} // namespace zrythm::plugins
 
 /**
  * @}

@@ -59,7 +59,7 @@ wrapped_object_with_change_signal_get_display_name (void * data)
       using ObjT = base_type<decltype (obj)>;
       if constexpr (
         std::is_same_v<ChordPresetPack, ObjT>
-        || std::is_same_v<PluginDescriptor, ObjT>)
+        || std::is_same_v<zrythm::plugins::PluginDescriptor, ObjT>)
         {
           return g_strdup (obj->name_.c_str ());
         }
@@ -110,13 +110,13 @@ wrapped_object_with_change_signal_get_port (WrappedObjectWithChangeSignal * self
   return get_ptr_variant_as_base_ptr<Port> (self->obj);
 }
 
-Plugin *
+zrythm::plugins::Plugin *
 wrapped_object_with_change_signal_get_plugin (
   WrappedObjectWithChangeSignal * self)
 {
   z_return_val_if_fail (
     self->type == WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN, nullptr);
-  return get_ptr_variant_as_base_ptr<Plugin> (self->obj);
+  return get_ptr_variant_as_base_ptr<zrythm::plugins::Plugin> (self->obj);
 }
 
 /**

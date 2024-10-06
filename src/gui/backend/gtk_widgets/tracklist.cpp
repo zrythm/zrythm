@@ -243,7 +243,8 @@ on_drop_instrument_onto_midi_track (
   char *             response,
   gpointer           user_data)
 {
-  const PluginDescriptor * descr = (PluginDescriptor *) user_data;
+  const zrythm::plugins::PluginDescriptor * descr =
+    (zrythm::plugins::PluginDescriptor *) user_data;
 
   if (string_is_equal (response, "create"))
     {
@@ -305,8 +306,8 @@ on_dnd_drop (
           break;
         case WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_DESCR:
           {
-            PluginDescriptor * descr =
-              std::get<PluginDescriptor *> (wrapped_obj->obj);
+            zrythm::plugins::PluginDescriptor * descr =
+              std::get<zrythm::plugins::PluginDescriptor *> (wrapped_obj->obj);
             if (descr->is_instrument () && this_track->is_midi ())
               {
                 /* TODO convert track to instrument */
@@ -326,11 +327,13 @@ on_dnd_drop (
                 adw_message_dialog_set_close_response (
                   ADW_MESSAGE_DIALOG (dialog), "cancel");
 
-                PluginDescriptor * descr_clone = new PluginDescriptor (*descr);
+                zrythm::plugins::PluginDescriptor * descr_clone =
+                  new zrythm::plugins::PluginDescriptor (*descr);
                 g_signal_connect_data (
                   dialog, "response",
                   G_CALLBACK (on_drop_instrument_onto_midi_track), descr_clone,
-                  PluginDescriptor::free_closure, (GConnectFlags) 0);
+                  zrythm::plugins::PluginDescriptor::free_closure,
+                  (GConnectFlags) 0);
 
                 gtk_window_present (GTK_WINDOW (dialog));
                 return true;

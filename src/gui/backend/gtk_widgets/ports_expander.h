@@ -60,7 +60,7 @@ typedef struct _PortsExpanderWidget
   PortIdentifier::OwnerType owner_type;
 
   /** Plugin, in case of owner type Plugin. */
-  Plugin * plugin;
+  zrythm::plugins::Plugin * plugin;
 
   /** Track, in case of owner type Track. */
   Track * track;
@@ -77,10 +77,10 @@ ports_expander_widget_refresh (PortsExpanderWidget * self);
  */
 void
 ports_expander_widget_setup_plugin (
-  PortsExpanderWidget * self,
-  PortFlow              flow,
-  PortType              type,
-  Plugin *              pl);
+  PortsExpanderWidget *     self,
+  PortFlow                  flow,
+  PortType                  type,
+  zrythm::plugins::Plugin * pl);
 
 /**
  * Sets up the PortsExpanderWidget for Track ports.

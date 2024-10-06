@@ -60,7 +60,7 @@ Zrythm::init ()
 {
   settings_->init ();
   recording_manager_ = std::make_unique<RecordingManager> ();
-  plugin_manager_ = std::make_unique<PluginManager> ();
+  plugin_manager_ = std::make_unique<zrythm::plugins::PluginManager> ();
   chord_preset_pack_manager_ = std::make_unique<ChordPresetPackManager> (
     have_ui_ && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING);
 

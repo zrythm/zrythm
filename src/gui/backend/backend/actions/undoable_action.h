@@ -8,7 +8,11 @@
 #include "common/utils/types.h"
 
 class AudioClip;
+
+namespace zrythm::plugins
+{
 class Plugin;
+}
 
 /**
  * @addtogroup actions
@@ -122,7 +126,7 @@ public:
    *
    * @param plugins
    */
-  virtual void get_plugins (std::vector<Plugin *> &plugins) {};
+  virtual void get_plugins (std::vector<zrythm::plugins::Plugin *> &plugins) {};
 
   /**
    * Sets the number of actions for this action.

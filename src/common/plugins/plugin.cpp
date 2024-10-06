@@ -54,6 +54,8 @@
 
 #include <glib/gi18n.h>
 
+using namespace zrythm::plugins;
+
 Plugin::~Plugin ()
 {
   if (activated_)
@@ -62,12 +64,12 @@ Plugin::~Plugin ()
     }
 }
 
-std::unique_ptr<Plugin>
+std::unique_ptr<zrythm::plugins::Plugin>
 Plugin::create_with_setting (
-  const PluginSetting &setting,
-  unsigned int         track_name_hash,
-  PluginSlotType       slot_type,
-  int                  slot)
+  const PluginSetting            &setting,
+  unsigned int                    track_name_hash,
+  zrythm::plugins::PluginSlotType slot_type,
+  int                             slot)
 {
   return std::make_unique<CarlaNativePlugin> (
     setting, track_name_hash, slot_type, slot);
@@ -212,7 +214,10 @@ Plugin::init_loaded (AutomatableTrack * track, MixerSelections * ms)
 }
 
 void
-Plugin::init (unsigned int track_name_hash, PluginSlotType slot_type, int slot)
+Plugin::init (
+  unsigned int                    track_name_hash,
+  zrythm::plugins::PluginSlotType slot_type,
+  int                             slot)
 {
   z_debug (
     "{} ({}) track name hash {} slot {}", get_name (),
@@ -364,10 +369,10 @@ Plugin::set_selected_preset_by_name (std::string_view name)
 }
 
 Plugin::Plugin (
-  const PluginSetting &setting,
-  unsigned int         track_name_hash,
-  PluginSlotType       slot_type,
-  int                  slot)
+  const PluginSetting            &setting,
+  unsigned int                    track_name_hash,
+  zrythm::plugins::PluginSlotType slot_type,
+  int                             slot)
     : setting_ (setting)
 {
   const auto &descr = setting_.descr_;
@@ -381,7 +386,7 @@ Plugin::Plugin (
 
 Plugin::Plugin (ZPluginCategory cat, unsigned int track_name_hash, int slot)
 {
-  PluginDescriptor descr;
+  zrythm::plugins::PluginDescriptor descr;
   descr.author_ = "Hoge";
   descr.name_ = "Dummy Plugin";
   descr.category_ = cat;
@@ -389,7 +394,7 @@ Plugin::Plugin (ZPluginCategory cat, unsigned int track_name_hash, int slot)
 
   setting_ = PluginSetting (descr);
 
-  init (track_name_hash, PluginSlotType::Insert, slot);
+  init (track_name_hash, zrythm::plugins::PluginSlotType::Insert, slot);
 }
 
 void
@@ -449,7 +454,7 @@ struct PluginMoveData
 {
   Plugin *           pl = nullptr;
   AutomatableTrack * track = nullptr;
-  PluginSlotType     slot_type{};
+  zrythm::plugins::PluginSlotType slot_type{};
   int                slot = 0;
   bool               fire_events = false;
 };
@@ -522,11 +527,11 @@ overwrite_plugin_response_cb (
 
 void
 Plugin::move (
-  AutomatableTrack * track,
-  PluginSlotType     slot_type,
-  int                slot,
-  bool               confirm_overwrite,
-  bool               fire_events)
+  AutomatableTrack *              track,
+  zrythm::plugins::PluginSlotType slot_type,
+  int                             slot,
+  bool                            confirm_overwrite,
+  bool                            fire_events)
 {
   auto data = std::make_unique<PluginMoveData> ();
   data->pl = this;
@@ -552,9 +557,9 @@ Plugin::move (
 
 void
 Plugin::set_track_and_slot (
-  unsigned int   track_name_hash,
-  PluginSlotType slot_type,
-  int            slot)
+  unsigned int                    track_name_hash,
+  zrythm::plugins::PluginSlotType slot_type,
+  int                             slot)
 {
   z_return_if_fail (
     PluginIdentifier::validate_slot_type_slot_combo (slot_type, slot));
@@ -567,7 +572,7 @@ Plugin::set_track_and_slot (
   for (auto &port : in_ports_)
     {
       auto copy_id = port->id_;
-      port->set_owner<Plugin> (this);
+      port->set_owner<zrythm::plugins::Plugin> (this);
       if (is_in_active_project ())
         {
           port->update_identifier (copy_id, track, false);
@@ -576,7 +581,7 @@ Plugin::set_track_and_slot (
   for (auto &port : out_ports_)
     {
       auto copy_id = port->id_;
-      port->set_owner<Plugin> (this);
+      port->set_owner<zrythm::plugins::Plugin> (this);
       if (is_in_active_project ())
         {
           port->update_identifier (copy_id, track, false);
@@ -610,9 +615,10 @@ Plugin::find (const PluginIdentifier &id)
 
   Channel * ch = nullptr;
   if (
-    !track->is_modulator () || id.slot_type_ == PluginSlotType::MidiFx
-    || id.slot_type_ == PluginSlotType::Instrument
-    || id.slot_type_ == PluginSlotType::Insert)
+    !track->is_modulator ()
+    || id.slot_type_ == zrythm::plugins::PluginSlotType::MidiFx
+    || id.slot_type_ == zrythm::plugins::PluginSlotType::Instrument
+    || id.slot_type_ == zrythm::plugins::PluginSlotType::Insert)
     {
       auto channel_track = dynamic_cast<ChannelTrack *> (track);
       ch = channel_track->channel_.get ();
@@ -621,19 +627,19 @@ Plugin::find (const PluginIdentifier &id)
   Plugin * ret = nullptr;
   switch (id.slot_type_)
     {
-    case PluginSlotType::MidiFx:
+    case zrythm::plugins::PluginSlotType::MidiFx:
       z_return_val_if_fail (ch, nullptr);
       ret = ch->midi_fx_[id.slot_].get ();
       break;
-    case PluginSlotType::Instrument:
+    case zrythm::plugins::PluginSlotType::Instrument:
       z_return_val_if_fail (ch, nullptr);
       ret = ch->instrument_.get ();
       break;
-    case PluginSlotType::Insert:
+    case zrythm::plugins::PluginSlotType::Insert:
       z_return_val_if_fail (ch, nullptr);
       ret = ch->inserts_[id.slot_].get ();
       break;
-    case PluginSlotType::Modulator:
+    case zrythm::plugins::PluginSlotType::Modulator:
       {
         auto modulator_track = dynamic_cast<ModulatorTrack *> (track);
         z_return_val_if_fail (modulator_track, nullptr);
@@ -723,14 +729,14 @@ Plugin::generate_window_title () const
   z_return_val_if_fail (!track_name.empty () && !plugin_name.empty (), {});
 
   std::string bridge_mode;
-  if (setting_.bridge_mode_ != CarlaBridgeMode::None)
+  if (setting_.bridge_mode_ != zrythm::plugins::CarlaBridgeMode::None)
     {
       bridge_mode =
         fmt::format (" - bridge: {}", ENUM_NAME (setting_.bridge_mode_));
     }
 
   std::string slot;
-  if (id_.slot_type_ == PluginSlotType::Instrument)
+  if (id_.slot_type_ == zrythm::plugins::PluginSlotType::Instrument)
     {
       slot = "instrument";
     }
@@ -800,7 +806,7 @@ Port *
 Plugin::add_in_port (std::unique_ptr<Port> &&port)
 {
   port->id_.port_index_ = in_ports_.size ();
-  port->set_owner<Plugin> (this);
+  port->set_owner<zrythm::plugins::Plugin> (this);
   in_ports_.emplace_back (std::move (port));
   return in_ports_.back ().get ();
 }
@@ -809,17 +815,17 @@ Port *
 Plugin::add_out_port (std::unique_ptr<Port> &&port)
 {
   port->id_.port_index_ = out_ports_.size ();
-  port->set_owner<Plugin> (this);
+  port->set_owner<zrythm::plugins::Plugin> (this);
   out_ports_.push_back (std::move (port));
   return out_ports_.back ().get ();
 }
 
 void
 Plugin::move_automation (
-  AutomatableTrack &prev_track,
-  AutomatableTrack &track,
-  PluginSlotType    new_slot_type,
-  int               new_slot)
+  AutomatableTrack               &prev_track,
+  AutomatableTrack               &track,
+  zrythm::plugins::PluginSlotType new_slot_type,
+  int                             new_slot)
 {
   z_debug (
     "moving plugin '%s' automation from "
@@ -1293,7 +1299,10 @@ Plugin::ensure_state_dir (bool is_backup)
 }
 
 void
-Plugin::get_all (Project &prj, std::vector<Plugin *> &arr, bool check_undo_manager)
+Plugin::get_all (
+  Project                                &prj,
+  std::vector<zrythm::plugins::Plugin *> &arr,
+  bool                                    check_undo_manager)
 {
   for (auto &track : prj.tracklist_->tracks_)
     {
@@ -1902,7 +1911,7 @@ Plugin::get_port_by_symbol (const std::string &sym)
   return nullptr;
 }
 
-std::unique_ptr<Plugin>
+std::unique_ptr<zrythm::plugins::Plugin>
 Plugin::create_unique_from_hosting_type (PluginSetting::HostingType hosting_type)
 {
   switch (hosting_type)

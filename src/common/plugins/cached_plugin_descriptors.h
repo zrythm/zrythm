@@ -19,6 +19,9 @@
  * @{
  */
 
+namespace zrythm::plugins
+{
+
 /**
  * Descriptors to be cached.
  */
@@ -133,6 +136,8 @@ public:
   /** Blacklisted hashes, to skip when scanning. */
   std::vector<std::string> blacklisted_sha1s_;
 };
+
+} // namespace zrythm::plugins
 
 /**
  * @}

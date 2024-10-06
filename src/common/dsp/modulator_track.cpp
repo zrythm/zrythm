@@ -94,7 +94,7 @@ do_insert (ModulatorImportData * data)
   auto self = data->track;
   if (data->replace_mode)
     {
-      Plugin * existing_pl =
+      zrythm::plugins::Plugin * existing_pl =
         data->slot < (int) self->modulators_.size ()
           ? self->modulators_[data->slot].get ()
           : nullptr;
@@ -123,7 +123,7 @@ do_insert (ModulatorImportData * data)
     {
       auto &mod = self->modulators_[i];
       mod->set_track_and_slot (
-        self->get_name_hash (), PluginSlotType::Modulator, i);
+        self->get_name_hash (), zrythm::plugins::PluginSlotType::Modulator, i);
     }
 
   if (data->gen_automatables)
@@ -226,7 +226,7 @@ ModulatorTrack::remove_modulator (
       if (plugin->is_selected ())
         {
           MIXER_SELECTIONS->remove_slot (
-            plugin->id_.slot_, PluginSlotType::Modulator, true);
+            plugin->id_.slot_, zrythm::plugins::PluginSlotType::Modulator, true);
         }
 
       plugin->disconnect ();
@@ -237,7 +237,7 @@ ModulatorTrack::remove_modulator (
     {
       auto &mod = *it;
       mod->set_track_and_slot (
-        get_name_hash (), PluginSlotType::Modulator,
+        get_name_hash (), zrythm::plugins::PluginSlotType::Modulator,
         std::distance (modulators_.begin (), it));
     }
 
@@ -258,7 +258,7 @@ ModulatorTrack::init_after_cloning (const ModulatorTrack &other)
   for (auto &mod : other.modulators_)
     {
       modulators_.emplace_back (
-        clone_shared_with_variant<PluginVariant> (mod.get ()));
+        clone_shared_with_variant<zrythm::plugins::PluginVariant> (mod.get ()));
     }
   clone_unique_ptr_container (
     modulator_macro_processors_, other.modulator_macro_processors_);
@@ -270,21 +270,21 @@ ModulatorTrack::validate () const
   return Track::validate_base () && AutomatableTrack::validate_base ();
 }
 
-template std::shared_ptr<Plugin>
+template std::shared_ptr<zrythm::plugins::Plugin>
 ModulatorTrack::insert_modulator (
-  int                     slot,
-  std::shared_ptr<Plugin> modulator,
-  bool                    replace_mode,
-  bool                    confirm,
-  bool                    gen_automatables,
-  bool                    recalc_graph,
-  bool                    pub_events);
-template std::shared_ptr<CarlaNativePlugin>
+  int                                      slot,
+  std::shared_ptr<zrythm::plugins::Plugin> modulator,
+  bool                                     replace_mode,
+  bool                                     confirm,
+  bool                                     gen_automatables,
+  bool                                     recalc_graph,
+  bool                                     pub_events);
+template std::shared_ptr<zrythm::plugins::CarlaNativePlugin>
 ModulatorTrack::insert_modulator (
-  int                                slot,
-  std::shared_ptr<CarlaNativePlugin> modulator,
-  bool                               replace_mode,
-  bool                               confirm,
-  bool                               gen_automatables,
-  bool                               recalc_graph,
-  bool                               pub_events);
+  int                                                 slot,
+  std::shared_ptr<zrythm::plugins::CarlaNativePlugin> modulator,
+  bool                                                replace_mode,
+  bool                                                confirm,
+  bool                                                gen_automatables,
+  bool                                                recalc_graph,
+  bool                                                pub_events);

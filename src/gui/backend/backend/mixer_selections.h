@@ -1,12 +1,6 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Mixer selections.
- */
-
 #ifndef __GUI_BACKEND_MIXER_SELECTIONS_H__
 #define __GUI_BACKEND_MIXER_SELECTIONS_H__
 
@@ -33,7 +27,7 @@ constexpr size_t MIXER_SELECTIONS_MAX_SLOTS = 60;
 class MixerSelections : public ISerializable<MixerSelections>
 {
 public:
-  virtual ~MixerSelections () = default;
+  ~MixerSelections () override = default;
 
   virtual void sort () { std::sort (slots_.begin (), slots_.end ()); }
 
@@ -48,10 +42,10 @@ public:
    * @param slot The slot to add to the selections.
    */
   void add_slot (
-    const Track   &track,
-    PluginSlotType type,
-    int            slot,
-    const bool     fire_events);
+    const Track                    &track,
+    zrythm::plugins::PluginSlotType type,
+    int                             slot,
+    const bool                      fire_events);
 
   /**
    * @brief Generates a FullMixerSelections based on this MixerSelections.
@@ -64,7 +58,10 @@ public:
   /**
    * Returns whether the selections can be pasted to the given slot.
    */
-  bool can_be_pasted (const Channel &ch, PluginSlotType type, int slot) const;
+  bool can_be_pasted (
+    const Channel                  &ch,
+    zrythm::plugins::PluginSlotType type,
+    int                             slot) const;
 
   /**
    * Paste the selections starting at the slot in the given channel.
@@ -72,34 +69,39 @@ public:
    * This calls gen_full_from_this() internally to generate FullMixerSelections
    * with cloned plugins (calling init_loaded() on each), which are then pasted.
    */
-  void paste_to_slot (Channel &ch, PluginSlotType type, int slot);
+  void
+  paste_to_slot (Channel &ch, zrythm::plugins::PluginSlotType type, int slot);
 
   /**
    * Returns the first selected plugin if any is selected, otherwise NULL.
    */
-  Plugin * get_first_plugin () const;
+  zrythm::plugins::Plugin * get_first_plugin () const;
 
   /**
    * Returns if the slot is selected or not.
    */
-  bool contains_slot (PluginSlotType type, int slot) const
+  bool contains_slot (zrythm::plugins::PluginSlotType type, int slot) const
   {
     return type == type_
-           && (type == PluginSlotType::Instrument ? has_any_ : std::ranges::any_of (slots_, [slot] (auto i) {
+           && (type == zrythm::plugins::PluginSlotType::Instrument ? has_any_ : std::ranges::any_of (slots_, [slot] (auto i) {
                 return i == slot;
               }));
   }
 
   bool contains_uninstantiated_plugin () const;
 
-  virtual void get_plugins (std::vector<Plugin *> &plugins) const;
+  virtual void
+  get_plugins (std::vector<zrythm::plugins::Plugin *> &plugins) const;
 
   /**
    * Removes a slot from the selections.
    *
    * Assumes that the channel is the one already selected.
    */
-  void remove_slot (int slot, PluginSlotType type, bool publish_events);
+  void remove_slot (
+    int                             slot,
+    zrythm::plugins::PluginSlotType type,
+    bool                            publish_events);
 
   void clear (bool fire_events = false);
 
@@ -113,7 +115,7 @@ public:
   /**
    * Returns if the plugin is selected or not.
    */
-  bool contains_plugin (const Plugin &pl) const;
+  bool contains_plugin (const zrythm::plugins::Plugin &pl) const;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -144,7 +146,8 @@ private:
   }
 
 public:
-  PluginSlotType type_ = PluginSlotType::Invalid;
+  zrythm::plugins::PluginSlotType type_ =
+    zrythm::plugins::PluginSlotType::Invalid;
 
   /** Slots selected. */
   std::vector<int> slots_;
@@ -189,7 +192,8 @@ public:
    * @note calls MixerSelections.add_slot() internally.
    * @throw ZrythmException on error.
    */
-  void add_plugin (const Track &track, PluginSlotType type, int slot);
+  void
+  add_plugin (const Track &track, zrythm::plugins::PluginSlotType type, int slot);
 
   void init_after_cloning (const FullMixerSelections &other) override
   {
@@ -200,13 +204,14 @@ public:
     for (auto &pl : other.plugins_)
       {
         plugins_.push_back (
-          clone_unique_with_variant<PluginVariant> (pl.get ()));
+          clone_unique_with_variant<zrythm::plugins::PluginVariant> (pl.get ()));
       }
   }
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
-  void get_plugins (std::vector<Plugin *> &plugins) const override;
+  void
+  get_plugins (std::vector<zrythm::plugins::Plugin *> &plugins) const override;
 
   void clear ()
   {
@@ -216,7 +221,7 @@ public:
 
 public:
   /** Plugin clones. */
-  std::vector<std::unique_ptr<Plugin>> plugins_;
+  std::vector<std::unique_ptr<zrythm::plugins::Plugin>> plugins_;
 };
 
 /**

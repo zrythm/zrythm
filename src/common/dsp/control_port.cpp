@@ -73,7 +73,8 @@ ControlPort::forward_control_change_event ()
 #if HAVE_CARLA
           if (pl->setting_.open_with_carla_ && carla_param_id_ >= 0)
             {
-              auto carla = dynamic_cast<CarlaNativePlugin *> (pl);
+              auto carla =
+                dynamic_cast<zrythm::plugins::CarlaNativePlugin *> (pl);
               z_return_if_fail (carla);
               carla->set_param_value (
                 static_cast<uint32_t> (carla_param_id_), control_);
@@ -265,7 +266,7 @@ ControlPort::get_control_value (const bool normalize) const
       PortIdentifier::Flags, this->id_.flags_,
       PortIdentifier::Flags::PluginControl))
     {
-      Plugin * pl = get_plugin (true);
+      zrythm::plugins::Plugin * pl = get_plugin (true);
       z_return_val_if_fail (pl, 0.f);
     }
 

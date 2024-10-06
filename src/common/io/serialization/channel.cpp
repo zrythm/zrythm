@@ -41,12 +41,13 @@ Channel::define_fields (const Context &ctx)
 
   if (ctx.is_serializing ())
     {
-      T::serialize_field<decltype (midi_fx_), PluginPtrVariant> (
+      T::serialize_field<decltype (midi_fx_), zrythm::plugins::PluginPtrVariant> (
         "midiFx", midi_fx_, ctx);
-      T::serialize_field<decltype (inserts_), PluginPtrVariant> (
+      T::serialize_field<decltype (inserts_), zrythm::plugins::PluginPtrVariant> (
         "inserts", inserts_, ctx);
       T::serialize_field ("sends", sends_, ctx);
-      T::serialize_field<decltype (instrument_), PluginPtrVariant> (
+      T::serialize_field<
+        decltype (instrument_), zrythm::plugins::PluginPtrVariant> (
         "instrument", instrument_, ctx, true);
     }
   else
@@ -64,14 +65,14 @@ Channel::define_fields (const Context &ctx)
             auto          setting_obj = yyjson_obj_iter_get (&pl_it, "setting");
             PluginSetting setting;
             setting.deserialize (Context (setting_obj, ctx));
-            auto pl =
-              Plugin::create_unique_from_hosting_type (setting.hosting_type_);
+            auto pl = zrythm::plugins::Plugin::create_unique_from_hosting_type (
+              setting.hosting_type_);
             std::visit (
               [&] (auto &&p) {
                 using PluginT = base_type<decltype (p)>;
                 p->ISerializable<PluginT>::deserialize (Context (pl_obj, ctx));
               },
-              convert_to_variant<PluginPtrVariant> (pl.get ()));
+              convert_to_variant<zrythm::plugins::PluginPtrVariant> (pl.get ()));
             plugin = std::move (pl);
           }
       };

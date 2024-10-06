@@ -16,6 +16,9 @@
  * @{
  */
 
+namespace zrythm::plugins
+{
+
 enum class PluginSlotType
 {
   Invalid,
@@ -86,6 +89,8 @@ operator< (const PluginIdentifier &lhs, const PluginIdentifier &rhs)
 {
   return lhs.slot_ < rhs.slot_;
 }
+
+} // namespace zrythm::plugins
 
 /**
  * @}

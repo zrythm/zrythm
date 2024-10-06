@@ -23,8 +23,11 @@
 #    include "carla_wrapper.h"
 #  endif
 
-class PluginDescriptor;
 class Port;
+namespace zrythm::plugins
+{
+
+class PluginDescriptor;
 using CarlaPluginHandle = void *;
 
 /**
@@ -60,9 +63,9 @@ struct CarlaPatchbayPortInfo
         port_name (std::move (_port_name))
   {
   }
-  unsigned int plugin_id;
-  unsigned int port_hints;
-  unsigned int port_id;
+  unsigned int plugin_id = 0;
+  unsigned int port_hints = 0;
+  unsigned int port_id = 0;
   std::string  port_name;
 };
 
@@ -91,7 +94,7 @@ public:
   /**
    * Deactivates, cleanups and frees the instance.
    */
-  ~CarlaNativePlugin ();
+  ~CarlaNativePlugin () override;
 
   /**
    * Returns a filled in descriptor from @p info.
@@ -260,6 +263,8 @@ public:
   unsigned int max_variant_midi_ins_ = 0;
   unsigned int max_variant_midi_outs_ = 0;
 };
+
+} // namespace zrythm::plugins
 
 /**
  * @}

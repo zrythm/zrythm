@@ -20,6 +20,8 @@ constexpr const char * plugin_protocol_strings[] = {
   "AU",    "SFZ", "SF2",  "CLAP",   "JSFX",
 };
 
+using namespace zrythm::plugins;
+
 std::string
 PluginDescriptor::get_icon_name_for_protocol (PluginProtocol prot)
 {
@@ -383,12 +385,12 @@ PluginDescriptor::category_to_string (ZPluginCategory category)
 
 bool
 PluginDescriptor::is_valid_for_slot_type (
-  PluginSlotType slot_type,
-  Track::Type    track_type) const
+  zrythm::plugins::PluginSlotType slot_type,
+  Track::Type                     track_type) const
 {
   switch (slot_type)
     {
-    case PluginSlotType::Insert:
+    case zrythm::plugins::PluginSlotType::Insert:
       if (track_type == Track::Type::Midi)
         {
           return num_midi_outs_ > 0;
@@ -397,10 +399,10 @@ PluginDescriptor::is_valid_for_slot_type (
         {
           return num_audio_outs_ > 0;
         }
-    case PluginSlotType::MidiFx:
+    case zrythm::plugins::PluginSlotType::MidiFx:
       return num_midi_outs_ > 0;
       break;
-    case PluginSlotType::Instrument:
+    case zrythm::plugins::PluginSlotType::Instrument:
       return track_type == Track::Type::Instrument && is_instrument ();
     default:
       break;
@@ -421,7 +423,7 @@ PluginDescriptor::has_custom_ui () const
     case PluginProtocol::CLAP:
     case PluginProtocol::JSFX:
 #if HAVE_CARLA
-      return CarlaNativePlugin::has_custom_ui (*this);
+      return zrythm::plugins::CarlaNativePlugin::has_custom_ui (*this);
 #else
       return false;
 #endif
@@ -437,11 +439,11 @@ PluginDescriptor::has_custom_ui () const
 CarlaBridgeMode
 PluginDescriptor::get_min_bridge_mode () const
 {
-  CarlaBridgeMode mode = CarlaBridgeMode::None;
+  zrythm::plugins::CarlaBridgeMode mode = zrythm::plugins::CarlaBridgeMode::None;
 
   if (arch_ == PluginArchitecture::ARCH_32_BIT)
     {
-      mode = CarlaBridgeMode::Full;
+      mode = zrythm::plugins::CarlaBridgeMode::Full;
     }
 
   return mode;
@@ -572,7 +574,7 @@ PluginDescriptor::generate_context_menu () const
   /* add option for native generic LV2 UI */
   if (this->protocol == PluginProtocol::LV2
       &&
-      this->min_bridge_mode_ == CarlaBridgeMode::None)
+      this->min_bridge_mode_ == zrythm::plugins::CarlaBridgeMode::None)
     {
       menuitem =
         z_gtk_create_menu_item (
@@ -590,7 +592,8 @@ PluginDescriptor::generate_context_menu () const
 
   PluginSetting new_setting (*this);
   if (
-    has_custom_ui_ && this->min_bridge_mode_ == CarlaBridgeMode::None
+    has_custom_ui_
+    && this->min_bridge_mode_ == zrythm::plugins::CarlaBridgeMode::None
     && !new_setting.force_generic_ui_)
     {
       sprintf (
@@ -683,7 +686,8 @@ PluginDescriptor::generate_context_menu () const
 }
 
 bool
-PluginDescriptor::is_same_plugin (const PluginDescriptor &other) const
+PluginDescriptor::is_same_plugin (
+  const zrythm::plugins::PluginDescriptor &other) const
 {
   return *this == other;
 }
@@ -691,6 +695,6 @@ PluginDescriptor::is_same_plugin (const PluginDescriptor &other) const
 void
 PluginDescriptor::free_closure (void * data, GClosure * closure)
 {
-  PluginDescriptor * self = (PluginDescriptor *) data;
+  zrythm::plugins::PluginDescriptor * self = (PluginDescriptor *) data;
   delete self;
 }

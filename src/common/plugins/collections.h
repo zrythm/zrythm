@@ -18,6 +18,9 @@
  * @{
  */
 
+namespace zrythm::plugins
+{
+
 /**
  * Plugin collection used in the plugin browser.
  */
@@ -144,6 +147,8 @@ public:
   /** Plugin collections. */
   std::vector<PluginCollection> collections_;
 };
+
+} // namespace zrythm::plugins
 
 /**
  * @}

@@ -18,6 +18,8 @@
 
 #  include "carla_wrapper.h"
 
+using namespace zrythm::plugins;
+
 ZCarlaDiscovery::ZCarlaDiscovery (PluginManager &owner)
 {
   owner_ = &owner;
@@ -86,10 +88,11 @@ ZCarlaDiscovery::create_au_descriptor_from_info (
     }
   else
     {
-      ret->category_ =
-        PluginDescriptor::get_category_from_carla_category (info->category);
+      ret->category_ = zrythm::plugins::PluginDescriptor::
+        get_category_from_carla_category (info->category);
     }
-  ret->category_str_ = PluginDescriptor::category_to_string (ret->category_);
+  ret->category_str_ =
+    zrythm::plugins::PluginDescriptor::category_to_string (ret->category_);
 
   ret->protocol_ = PluginProtocol::AU;
   ret->arch_ = PluginArchitecture::ARCH_64_BIT;
@@ -109,8 +112,8 @@ ZCarlaDiscovery::descriptor_from_discovery_info (
   const CarlaPluginDiscoveryMetadata * meta = &info->metadata;
 
   auto descr = std::make_unique<PluginDescriptor> ();
-  descr->protocol_ =
-    PluginDescriptor::get_protocol_from_carla_plugin_type (info->ptype);
+  descr->protocol_ = zrythm::plugins::PluginDescriptor::
+    get_protocol_from_carla_plugin_type (info->ptype);
   z_return_val_if_fail (descr->protocol_ > PluginProtocol::DUMMY, nullptr);
   std::string path;
   std::string uri;
@@ -137,15 +140,16 @@ ZCarlaDiscovery::descriptor_from_discovery_info (
   descr->unique_id_ = (int64_t) info->uniqueId;
   descr->name_ = meta->name;
   descr->author_ = meta->maker;
-  descr->category_ =
-    PluginDescriptor::get_category_from_carla_category (meta->category);
+  descr->category_ = zrythm::plugins::PluginDescriptor::
+    get_category_from_carla_category (meta->category);
   if (
     meta->hints & CarlaBackend::PLUGIN_IS_SYNTH
     && descr->category_ == ZPluginCategory::NONE)
     {
       descr->category_ = ZPluginCategory::INSTRUMENT;
     }
-  descr->category_str_ = PluginDescriptor::category_to_string (descr->category_);
+  descr->category_str_ =
+    zrythm::plugins::PluginDescriptor::category_to_string (descr->category_);
   descr->sha1_ = sha1;
   const CarlaPluginDiscoveryIO * io = &info->io;
   descr->num_audio_ins_ = (int) io->audioIns;
@@ -161,7 +165,7 @@ ZCarlaDiscovery::descriptor_from_discovery_info (
       ? PluginArchitecture::ARCH_64_BIT
       : PluginArchitecture::ARCH_32_BIT;
   descr->has_custom_ui_ = meta->hints & CarlaBackend::PLUGIN_HAS_CUSTOM_UI;
-  descr->min_bridge_mode_ = CarlaBridgeMode::Full;
+  descr->min_bridge_mode_ = zrythm::plugins::CarlaBridgeMode::Full;
 
   return descr;
 }
@@ -267,8 +271,8 @@ ZCarlaDiscovery::start (BinaryType btype, PluginProtocol protocol)
       ? PluginArchitecture::ARCH_64_BIT
       : PluginArchitecture::ARCH_32_BIT);
   auto paths_separated = owner_->get_paths_for_protocol_separated (protocol);
-  PluginType ptype =
-    PluginDescriptor::get_carla_plugin_type_from_protocol (protocol);
+  PluginType ptype = zrythm::plugins::PluginDescriptor::
+    get_carla_plugin_type_from_protocol (protocol);
   void * handle = carla_plugin_discovery_start (
     discovery_tool.string ().c_str (), btype, ptype, paths_separated.c_str (),
     z_carla_discovery_plugin_scanned_cb,

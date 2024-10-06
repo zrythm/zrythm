@@ -716,7 +716,7 @@ TEST_F (ZrythmFixture, DeleteInstrumentTrackWithAutomation)
   auto setting = test_plugin_manager_get_plugin_setting (
     TAL_FILTER_BUNDLE, TAL_FILTER_URI, false);
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-    PluginSlotType::Insert, *track, 0, setting));
+    zrythm::plugins::PluginSlotType::Insert, *track, 0, setting));
 
   AUDIO_ENGINE->activate (true);
 
@@ -849,8 +849,9 @@ _test_move_tracks (
     {
       setting.descr_.category_ = ZPluginCategory::INSTRUMENT;
     }
-  setting.descr_.category_str_ =
-    PluginDescriptor::category_to_string (setting.descr_.category_);
+  setting.descr_
+    .category_str_ = zrythm::plugins::PluginDescriptor::category_to_string (
+    setting.descr_.category_);
 
   /* create a track with an instrument */
   Track::create_for_plugin_at_idx_w_action (
@@ -1238,7 +1239,8 @@ TEST_F (ZrythmFixture, CheckTrackDeletionWithMixerSelections)
   auto pl_track = TRACKLIST->get_track<AudioBusTrack> (pl_track_pos);
   ASSERT_NONNULL (pl_track);
 
-  MIXER_SELECTIONS->add_slot (*pl_track, PluginSlotType::Insert, 0, false);
+  MIXER_SELECTIONS->add_slot (
+    *pl_track, zrythm::plugins::PluginSlotType::Insert, 0, false);
   ASSERT_TRUE (MIXER_SELECTIONS->has_any_);
   ASSERT_EQ (MIXER_SELECTIONS->track_name_hash_, pl_track->get_name_hash ());
 

@@ -231,7 +231,7 @@ public:
   /**
    * Manages plugins (loading, instantiating, etc.)
    */
-  std::unique_ptr<PluginManager> plugin_manager_;
+  std::unique_ptr<zrythm::plugins::PluginManager> plugin_manager_;
 
   /** Recording manager. */
   std::unique_ptr<RecordingManager> recording_manager_;

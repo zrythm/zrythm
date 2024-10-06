@@ -20,8 +20,6 @@ class Project;
 class Channel;
 class AutomationTrack;
 using ModulatorWidget = struct _ModulatorWidget;
-class Lv2Plugin;
-class CarlaNativePlugin;
 class MidiPort;
 class AudioPort;
 class CVPort;
@@ -30,6 +28,12 @@ class MixerSelections;
 class AutomatableTrack;
 using WrappedObjectWithChangeSignal = struct _WrappedObjectWithChangeSignal;
 
+namespace zrythm::plugins
+{
+
+class Lv2Plugin;
+class CarlaNativePlugin;
+
 /**
  * @addtogroup plugins
  *
@@ -37,8 +41,6 @@ using WrappedObjectWithChangeSignal = struct _WrappedObjectWithChangeSignal;
  */
 
 constexpr auto PLUGIN_MAGIC = 43198683;
-#define IS_PLUGIN(x) (((Plugin *) x)->magic_ == PLUGIN_MAGIC)
-#define IS_PLUGIN_AND_NONNULL(x) (x && IS_PLUGIN (x))
 
 /**
  * This class provides the core functionality for managing a plugin, including
@@ -131,7 +133,7 @@ public:
   constexpr static float MAX_SCALE_FACTOR = 4.f;
 
 public:
-  virtual ~Plugin ();
+  virtual ~Plugin () override;
 
   static std::unique_ptr<Plugin>
   create_unique_from_hosting_type (PluginSetting::HostingType hosting_type);
@@ -764,13 +766,13 @@ public:
   bool is_function_ = false;
 
   /** Pointer to owner track, if any. */
-  AutomatableTrack * track_;
+  AutomatableTrack * track_ = nullptr;
 
   /** Pointer to owner selections, if any. */
-  MixerSelections * ms_;
+  MixerSelections * ms_ = nullptr;
 
   /** Used in Gtk. */
-  WrappedObjectWithChangeSignal * gobj_;
+  WrappedObjectWithChangeSignal * gobj_ = nullptr;
 };
 
 inline bool
@@ -793,6 +795,8 @@ extern template CVPort *
 Plugin::get_port_by_symbol (const std::string &);
 extern template MidiPort *
 Plugin::get_port_by_symbol (const std::string &);
+
+}
 
 /**
  * @}

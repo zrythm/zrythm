@@ -140,7 +140,7 @@ inspector_track_widget_show_tracks (
             {
               gtk_widget_set_visible (GTK_WIDGET (self->midi_fx), true);
               plugin_strip_expander_widget_setup (
-                self->midi_fx, PluginSlotType::MidiFx,
+                self->midi_fx, zrythm::plugins::PluginSlotType::MidiFx,
                 PluginStripExpanderPosition::PSE_POSITION_INSPECTOR, ch_track);
             }
           track_input_expander_widget_refresh (self->inputs, ch_track);
@@ -152,7 +152,7 @@ inspector_track_widget_show_tracks (
             PortsExpanderTrackPortType::PE_TRACK_PORT_TYPE_CONTROLS);
 
           plugin_strip_expander_widget_setup (
-            self->inserts, PluginSlotType::Insert,
+            self->inserts, zrythm::plugins::PluginSlotType::Insert,
             PluginStripExpanderPosition::PSE_POSITION_INSPECTOR, ch_track);
 
           fader_controls_expander_widget_setup (self->fader, ch_track);

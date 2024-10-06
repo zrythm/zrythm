@@ -29,7 +29,7 @@ class ModulatorTrack final
   friend class InitializableObjectFactory<ModulatorTrack>;
 
 public:
-  using ModulatorPtr = std::shared_ptr<Plugin>;
+  using ModulatorPtr = std::shared_ptr<zrythm::plugins::Plugin>;
 
   /**
    * Inserts and connects a Modulator to the Track.
@@ -38,7 +38,7 @@ public:
    * (replace current modulator if true, not touching other modulators, or push
    * other modulators forward if false).
    */
-  template <typename T = Plugin>
+  template <typename T = zrythm::plugins::Plugin>
   std::shared_ptr<T> insert_modulator (
     int                slot,
     std::shared_ptr<T> modulator,
@@ -84,24 +84,24 @@ public:
     modulator_macro_processors_;
 };
 
-extern template std::shared_ptr<Plugin>
+extern template std::shared_ptr<zrythm::plugins::Plugin>
 ModulatorTrack::insert_modulator (
-  int                     slot,
-  std::shared_ptr<Plugin> modulator,
-  bool                    replace_mode,
-  bool                    confirm,
-  bool                    gen_automatables,
-  bool                    recalc_graph,
-  bool                    pub_events);
-extern template std::shared_ptr<CarlaNativePlugin>
+  int                                      slot,
+  std::shared_ptr<zrythm::plugins::Plugin> modulator,
+  bool                                     replace_mode,
+  bool                                     confirm,
+  bool                                     gen_automatables,
+  bool                                     recalc_graph,
+  bool                                     pub_events);
+extern template std::shared_ptr<zrythm::plugins::CarlaNativePlugin>
 ModulatorTrack::insert_modulator (
-  int                                slot,
-  std::shared_ptr<CarlaNativePlugin> modulator,
-  bool                               replace_mode,
-  bool                               confirm,
-  bool                               gen_automatables,
-  bool                               recalc_graph,
-  bool                               pub_events);
+  int                                                 slot,
+  std::shared_ptr<zrythm::plugins::CarlaNativePlugin> modulator,
+  bool                                                replace_mode,
+  bool                                                confirm,
+  bool                                                gen_automatables,
+  bool                                                recalc_graph,
+  bool                                                pub_events);
 
 /**
  * @}

@@ -17,9 +17,9 @@ modulator_widget_refresh (ModulatorWidget * self)
 }
 
 ModulatorWidget *
-modulator_widget_new (Plugin * modulator)
+modulator_widget_new (zrythm::plugins::Plugin * modulator)
 {
-  z_return_val_if_fail (IS_PLUGIN (modulator), nullptr);
+  z_return_val_if_fail (modulator, nullptr);
 
   ModulatorWidget * self = static_cast<ModulatorWidget *> (
     g_object_new (MODULATOR_WIDGET_TYPE, nullptr));

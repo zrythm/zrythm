@@ -28,9 +28,9 @@ public:
 
   void init_after_cloning (const InstrumentTrack &other) override;
 
-  Plugin * get_instrument ();
+  zrythm::plugins::Plugin * get_instrument ();
 
-  const Plugin * get_instrument () const;
+  const zrythm::plugins::Plugin * get_instrument () const;
 
   /**
    * Returns if the first plugin's UI in the instrument track is visible.

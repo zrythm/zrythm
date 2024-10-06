@@ -31,7 +31,8 @@ on_bank_changed (GtkComboBox * cb, PluginPropertiesExpanderWidget * self)
   self->plugin->set_selected_bank_from_index (gtk_combo_box_get_active (cb));
 
   g_signal_handler_block (self->presets, self->pset_changed_handler);
-  plugin_gtk_setup_plugin_presets_list_box (self->presets, self->plugin);
+  zrythm::plugins::plugin_gtk_setup_plugin_presets_list_box (
+    self->presets, self->plugin);
   g_signal_handler_unblock (self->presets, self->pset_changed_handler);
 }
 
@@ -56,7 +57,8 @@ on_save_preset_clicked (GtkButton * btn, PluginPropertiesExpanderWidget * self)
   if (!self->plugin || !self->plugin->instantiated_)
     return;
 
-  plugin_gtk_on_save_preset_activate (GTK_WIDGET (self), self->plugin);
+  zrythm::plugins::plugin_gtk_on_save_preset_activate (
+    GTK_WIDGET (self), self->plugin);
 }
 
 static void
@@ -94,7 +96,8 @@ on_load_preset_clicked (GtkButton * btn, PluginPropertiesExpanderWidget * self)
       if (setting.open_with_carla_)
         {
 #if HAVE_CARLA
-          auto carla = static_cast<CarlaNativePlugin *> (self->plugin);
+          auto carla =
+            static_cast<zrythm::plugins::CarlaNativePlugin *> (self->plugin);
           carla->load_state (&path);
 #else
           z_return_if_reached ();
@@ -116,7 +119,7 @@ on_load_preset_clicked (GtkButton * btn, PluginPropertiesExpanderWidget * self)
 void
 plugin_properties_expander_widget_refresh (
   PluginPropertiesExpanderWidget * self,
-  Plugin *                         pl)
+  zrythm::plugins::Plugin *        pl)
 {
   if (self->plugin == pl)
     return;
@@ -136,10 +139,10 @@ plugin_properties_expander_widget_refresh (
     }
 
   g_signal_handler_block (self->banks, self->bank_changed_handler);
-  plugin_gtk_setup_plugin_banks_combo_box (self->banks, pl);
+  zrythm::plugins::plugin_gtk_setup_plugin_banks_combo_box (self->banks, pl);
   g_signal_handler_unblock (self->banks, self->bank_changed_handler);
   g_signal_handler_block (self->presets, self->pset_changed_handler);
-  plugin_gtk_setup_plugin_presets_list_box (self->presets, pl);
+  zrythm::plugins::plugin_gtk_setup_plugin_presets_list_box (self->presets, pl);
   g_signal_handler_unblock (self->presets, self->pset_changed_handler);
 }
 
@@ -149,7 +152,7 @@ plugin_properties_expander_widget_refresh (
 void
 plugin_properties_expander_widget_setup (
   PluginPropertiesExpanderWidget * self,
-  Plugin *                         pl)
+  zrythm::plugins::Plugin *        pl)
 {
   self->plugin = pl;
 
@@ -163,7 +166,7 @@ plugin_properties_expander_widget_setup (
   GtkWidget * lbl;
 
 #define CREATE_LABEL(x) \
-  lbl = plugin_gtk_new_label (x, true, false, 0.f, 0.5f); \
+  lbl = zrythm::plugins::plugin_gtk_new_label (x, true, false, 0.f, 0.5f); \
   gtk_widget_add_css_class (lbl, "inspector_label"); \
   gtk_widget_set_margin_start (lbl, 2); \
   gtk_widget_set_visible (lbl, 1)

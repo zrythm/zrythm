@@ -42,7 +42,7 @@ get_sidechain_from_target (ChannelSendTarget * target)
       return nullptr;
     }
 
-  Plugin * pl = Plugin::find (target->pl_id);
+  zrythm::plugins::Plugin * pl = zrythm::plugins::Plugin::find (target->pl_id);
   z_return_val_if_fail (pl, nullptr);
   auto l =
     static_cast<AudioPort *> (pl->get_port_in_group (target->port_group, true))
@@ -262,7 +262,7 @@ setup_view (ChannelSendSelectorWidget * self)
 
       auto ch = target_track->channel_.get ();
 
-      std::vector<Plugin *> pls;
+      std::vector<zrythm::plugins::Plugin *> pls;
       ch->get_plugins (pls);
 
       for (auto pl : pls)

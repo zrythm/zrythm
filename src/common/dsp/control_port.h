@@ -353,7 +353,7 @@ public:
    *
    * Only used for generic UIs.
    */
-  PluginGtkController * widget_ = 0;
+  zrythm::plugins::PluginGtkController * widget_ = 0;
 };
 
 /**

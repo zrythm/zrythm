@@ -16,10 +16,13 @@
 #include "common/plugins/carla_discovery.h"
 #include "common/plugins/collections.h"
 #include "common/plugins/plugin_descriptor.h"
+#include "common/utils/string_array.h"
 #include "common/utils/types.h"
 
+namespace zrythm::plugins
+{
+
 class ZCarlaDiscovery;
-class StringArray;
 
 /**
  * @addtogroup plugins
@@ -145,6 +148,8 @@ public:
   /** Number of newly scanned (newly cached) plugins. */
   int num_new_plugins_ = 0;
 };
+
+} // namespace zrythm::plugins
 
 /**
  * @}

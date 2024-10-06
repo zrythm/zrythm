@@ -12,25 +12,28 @@
 constexpr const char * PLUGIN_COLLECTIONS_JSON_FILENAME =
   "plugin-collections.json";
 
+using namespace zrythm::plugins;
+
 bool
-PluginCollection::contains_descriptor (const PluginDescriptor &descr) const
+PluginCollection::contains_descriptor (
+  const zrythm::plugins::PluginDescriptor &descr) const
 {
   return std::any_of (
     descriptors_.begin (), descriptors_.end (),
-    [&descr] (const PluginDescriptor &cur_descr) {
+    [&descr] (const zrythm::plugins::PluginDescriptor &cur_descr) {
       return descr.is_same_plugin (cur_descr);
     });
 }
 
 void
-PluginCollection::add_descriptor (const PluginDescriptor &descr)
+PluginCollection::add_descriptor (const zrythm::plugins::PluginDescriptor &descr)
 {
   if (contains_descriptor (descr))
     {
       return;
     }
 
-  PluginDescriptor new_descr = descr;
+  zrythm::plugins::PluginDescriptor new_descr = descr;
   if (!descr.path_.empty ())
     {
       auto file = Gio::File::create_for_path (descr.path_.string ());
@@ -40,7 +43,8 @@ PluginCollection::add_descriptor (const PluginDescriptor &descr)
 }
 
 void
-PluginCollection::remove_descriptor (const PluginDescriptor &descr)
+PluginCollection::remove_descriptor (
+  const zrythm::plugins::PluginDescriptor &descr)
 {
   std::erase_if (descriptors_, [&descr] (const auto &cur_descr) {
     return cur_descr.is_same_plugin (descr);
@@ -162,7 +166,9 @@ PluginCollections::read_or_new ()
 }
 
 void
-PluginCollections::add (const PluginCollection &collection, bool serialize)
+PluginCollections::add (
+  const zrythm::plugins::PluginCollection &collection,
+  bool                                     serialize)
 {
   collections_.push_back (collection);
 
@@ -172,14 +178,12 @@ PluginCollections::add (const PluginCollection &collection, bool serialize)
     }
 }
 
-const PluginCollection *
+const zrythm::plugins::PluginCollection *
 PluginCollections::find_from_name (std::string_view name) const
 {
   auto it = std::find_if (
     collections_.begin (), collections_.end (),
-    [&name] (const PluginCollection &collection) {
-      return collection.name_ == name;
-    });
+    [&name] (const auto &collection) { return collection.name_ == name; });
 
   return it == collections_.end () ? nullptr : &*it;
 }

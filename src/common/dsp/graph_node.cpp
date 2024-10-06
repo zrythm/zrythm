@@ -451,7 +451,7 @@ GraphNode::GraphNode (Graph * graph, Type type, void * data)
   switch (type)
     {
     case Type::Plugin:
-      pl_ = static_cast<Plugin *> (data);
+      pl_ = static_cast<zrythm::plugins::Plugin *> (data);
       break;
     case Type::Port:
       port_ = static_cast<Port *> (data);

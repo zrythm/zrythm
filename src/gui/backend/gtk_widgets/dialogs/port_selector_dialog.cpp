@@ -28,7 +28,8 @@ G_DEFINE_TYPE (
 
 /** Used as the first row in the Plugin treeview to
  * indicate if "Track ports is selected or not. */
-static const Plugin * dummy_plugin = (const Plugin *) 123;
+static const zrythm::plugins::Plugin * dummy_plugin =
+  (const zrythm::plugins::Plugin *) 123;
 
 static void
 on_response (GtkDialog * dialog, gint response_id, PortSelectorDialogWidget * self)
@@ -91,7 +92,7 @@ static GtkTreeModel *
 create_model_for_ports (
   PortSelectorDialogWidget * self,
   Track *                    track,
-  Plugin *                   pl)
+  zrythm::plugins::Plugin *  pl)
 {
   /* icon, name, pointer to port */
   GtkListStore * list_store =
@@ -240,7 +241,7 @@ create_model_for_tracks (PortSelectorDialogWidget * self)
 static void
 add_plugin (
   PortSelectorDialogWidget * self,
-  Plugin *                   pl,
+  zrythm::plugins::Plugin *  pl,
   GtkListStore *             list_store,
   GtkTreeIter *              iter)
 {
@@ -349,8 +350,8 @@ on_selection_changed (GtkTreeSelection * ts, PortSelectorDialogWidget * self)
       else if (model == self->plugin_model)
         {
           gtk_tree_model_get_value (model, &iter, 2, &value);
-          Plugin * selected_pl =
-            static_cast<Plugin *> (g_value_get_pointer (&value));
+          zrythm::plugins::Plugin * selected_pl = static_cast<
+            zrythm::plugins::Plugin *> (g_value_get_pointer (&value));
           if (selected_pl == dummy_plugin)
             {
               self->selected_plugin = NULL;

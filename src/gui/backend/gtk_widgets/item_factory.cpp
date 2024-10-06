@@ -446,8 +446,8 @@ item_factory_setup_cb (
 
 static void
 add_plugin_descr_context_menu (
-  PopoverMenuBinWidget * bin,
-  PluginDescriptor *     descr)
+  PopoverMenuBinWidget *              bin,
+  zrythm::plugins::PluginDescriptor * descr)
 {
   GMenuModel * model = descr->generate_context_menu ();
 
@@ -503,8 +503,8 @@ add_chord_pset_context_menu (PopoverMenuBinWidget * bin, ChordPreset * pset)
 
 static void
 add_plugin_collection_context_menu (
-  PopoverMenuBinWidget *   bin,
-  const PluginCollection * coll)
+  PopoverMenuBinWidget *                    bin,
+  const zrythm::plugins::PluginCollection * coll)
 {
   GMenuModel * model = coll->generate_context_menu ()->gobj ();
 
@@ -797,7 +797,8 @@ item_factory_bind_cb (
             break;
           case WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_COLLECTION:
             {
-              auto coll = std::get<PluginCollection *> (obj->obj);
+              auto coll =
+                std::get<zrythm::plugins::PluginCollection *> (obj->obj);
               str = coll->get_name ();
               add_plugin_collection_context_menu (bin, coll);
             }
@@ -834,7 +835,8 @@ item_factory_bind_cb (
           {
           case WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_DESCR:
             {
-              auto descr = std::get<PluginDescriptor *> (obj->obj);
+              auto descr =
+                std::get<zrythm::plugins::PluginDescriptor *> (obj->obj);
               gtk_image_set_from_icon_name (
                 img, descr->get_icon_name ().c_str ());
               gtk_label_set_text (lbl, descr->name_.c_str ());

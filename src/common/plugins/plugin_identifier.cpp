@@ -8,6 +8,8 @@
 
 #include <glib.h>
 
+using namespace zrythm::plugins;
+
 bool
 PluginIdentifier::validate () const
 {

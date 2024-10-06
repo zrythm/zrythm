@@ -1020,7 +1020,7 @@ TrackProcessor::connect_to_prefader ()
 }
 
 void
-TrackProcessor::disconnect_from_plugin (Plugin &pl)
+TrackProcessor::disconnect_from_plugin (zrythm::plugins::Plugin &pl)
 {
   auto tr = get_track ();
   z_return_if_fail (tr);
@@ -1049,7 +1049,7 @@ TrackProcessor::disconnect_from_plugin (Plugin &pl)
 }
 
 void
-TrackProcessor::connect_to_plugin (Plugin &pl)
+TrackProcessor::connect_to_plugin (zrythm::plugins::Plugin &pl)
 {
   auto tr = get_track ();
   z_return_if_fail (tr);

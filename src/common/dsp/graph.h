@@ -24,18 +24,13 @@
  * ---
  */
 
-/**
- * @file
- *
- * Routing graph.
- */
-
 #ifndef __AUDIO_GRAPH_H__
 #define __AUDIO_GRAPH_H__
 
 #include <semaphore>
 
 #include "common/dsp/graph_node.h"
+#include "common/plugins/plugin.h"
 #include "common/utils/mpmc_queue.h"
 #include "common/utils/types.h"
 
@@ -44,7 +39,6 @@ class Port;
 class Fader;
 class Track;
 class SampleProcessor;
-class Plugin;
 class Position;
 class GraphThread;
 class Router;
@@ -73,7 +67,7 @@ public:
 
   GraphNode * find_node_from_port (const Port * port) const;
 
-  GraphNode * find_node_from_plugin (const Plugin * pl) const;
+  GraphNode * find_node_from_plugin (const zrythm::plugins::Plugin * pl) const;
 
   GraphNode *
   find_node_from_track (const Track * track, bool use_setup_nodes) const;
@@ -153,8 +147,9 @@ private:
 
   void rechain ();
 
-  void        add_plugin (Plugin &pl);
-  void        connect_plugin (Plugin &pl, bool drop_unnecessary_ports);
+  void add_plugin (zrythm::plugins::Plugin &pl);
+  void
+  connect_plugin (zrythm::plugins::Plugin &pl, bool drop_unnecessary_ports);
   GraphNode * add_port (Port &port, bool drop_if_unnecessary);
 
   /**

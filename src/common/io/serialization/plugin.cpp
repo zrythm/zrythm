@@ -13,6 +13,8 @@
 
 #include <yyjson.h>
 
+using namespace zrythm::plugins;
+
 void
 PluginIdentifier::define_fields (const Context &ctx)
 {
@@ -87,7 +89,7 @@ Plugin::Bank::define_fields (const Context &ctx)
 void
 Plugin::define_base_fields (const Context &ctx)
 {
-  using T = ISerializable<Plugin>;
+  using T = ISerializable<zrythm::plugins::Plugin>;
 
   T::serialize_fields (
     ctx, T::make_field ("id", id_), T::make_field ("setting", setting_));
@@ -164,5 +166,6 @@ PluginCollections::define_fields (const Context &ctx)
 void
 CarlaNativePlugin::define_fields (const Context &ctx)
 {
-  ISerializable<CarlaNativePlugin>::call_all_base_define_fields<Plugin> (ctx);
+  ISerializable<CarlaNativePlugin>::call_all_base_define_fields<
+    zrythm::plugins::Plugin> (ctx);
 }

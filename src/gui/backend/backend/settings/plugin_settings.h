@@ -11,7 +11,10 @@
 #include "common/plugins/plugin_descriptor.h"
 #include "common/plugins/plugin_identifier.h"
 
+namespace zrythm::plugins
+{
 class Plugin;
+}
 
 /**
  * @addtogroup settings
@@ -31,7 +34,7 @@ public:
    * Creates a plugin setting with the recommended settings for the given plugin
    * descriptor based on the current setup.
    */
-  PluginSetting (const PluginDescriptor &descr);
+  PluginSetting (const zrythm::plugins::PluginDescriptor &descr);
 
   enum class HostingType
   {
@@ -100,12 +103,13 @@ public:
    * @param track_name_hash
    * @param slot_type
    * @param slot
-   * @return std::unique_ptr<Plugin>
+   * @return std::unique_ptr<zrythm::plugins::Plugin>
    */
-  std::unique_ptr<Plugin> create_plugin (
-    unsigned int   track_name_hash = 0,
-    PluginSlotType slot_type = PluginSlotType::Insert,
-    int            slot = 0);
+  std::unique_ptr<zrythm::plugins::Plugin> create_plugin (
+    unsigned int                    track_name_hash = 0,
+    zrythm::plugins::PluginSlotType slot_type =
+      zrythm::plugins::PluginSlotType::Insert,
+    int slot = 0);
 
   /**
    * Finishes activating a plugin setting.
@@ -114,7 +118,7 @@ public:
 
 public:
   /** The descriptor of the plugin this setting is for. */
-  PluginDescriptor descr_ = {};
+  zrythm::plugins::PluginDescriptor descr_ = {};
 
   HostingType hosting_type_ = HostingType::Carla;
 
@@ -125,7 +129,8 @@ public:
   bool force_generic_ui_ = false;
 
   /** Requested carla bridge mode. */
-  CarlaBridgeMode bridge_mode_ = (CarlaBridgeMode) 0;
+  zrythm::plugins::CarlaBridgeMode bridge_mode_ =
+    (zrythm::plugins::CarlaBridgeMode) 0;
 
   /** Last datetime instantiated (number of microseconds since January 1, 1970
    * UTC). */
@@ -178,7 +183,7 @@ public:
    *
    * @return The found setting or NULL.
    */
-  PluginSetting * find (const PluginDescriptor &descr);
+  PluginSetting * find (const zrythm::plugins::PluginDescriptor &descr);
 
   /**
    * Replaces a setting or appends a setting to the cache.

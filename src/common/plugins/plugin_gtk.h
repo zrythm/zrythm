@@ -12,8 +12,11 @@
 
 #include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
-class Plugin;
 class ControlPort;
+
+namespace zrythm::plugins
+{
+class Plugin;
 
 /**
  * @addtogroup plugins
@@ -150,6 +153,8 @@ plugin_gtk_build_menu (
   GtkWidget * window,
   GtkWidget * vbox);
 #endif
+
+} // namespace zrythm::plugins
 
 /**
  * @}

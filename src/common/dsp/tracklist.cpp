@@ -799,7 +799,7 @@ Tracklist::get_num_listened_tracks () const
 }
 
 void
-Tracklist::get_plugins (std::vector<Plugin *> &arr) const
+Tracklist::get_plugins (std::vector<zrythm::plugins::Plugin *> &arr) const
 {
   for (auto &track : tracks_)
     {

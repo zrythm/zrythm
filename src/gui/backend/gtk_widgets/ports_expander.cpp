@@ -134,10 +134,10 @@ item_factory_teardown_cb (
  */
 void
 ports_expander_widget_setup_plugin (
-  PortsExpanderWidget * self,
-  PortFlow              flow,
-  PortType              type,
-  Plugin *              pl)
+  PortsExpanderWidget *     self,
+  PortFlow                  flow,
+  PortType                  type,
+  zrythm::plugins::Plugin * pl)
 {
   self->flow = flow;
   self->type = type;

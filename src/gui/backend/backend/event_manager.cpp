@@ -245,14 +245,14 @@ on_automation_value_changed (Port * port)
 }
 
 static void
-on_plugin_added (Plugin * plugin)
+on_plugin_added (zrythm::plugins::Plugin * plugin)
 {
   /*Track * track =*/
   /*plugin_get_track (plugin);*/
 }
 
 static void
-on_plugin_crashed (Plugin * plugin)
+on_plugin_crashed (zrythm::plugins::Plugin * plugin)
 {
   ui_show_message_printf (
     _ ("Plugin Crashed"), _ ("Plugin '%s' has crashed and has been disabled."),
@@ -260,7 +260,7 @@ on_plugin_crashed (Plugin * plugin)
 }
 
 static void
-on_plugin_state_changed (Plugin * pl)
+on_plugin_state_changed (zrythm::plugins::Plugin * pl)
 {
   auto track = pl->get_track ();
   if (track && track->has_channel ())
@@ -273,11 +273,11 @@ on_plugin_state_changed (Plugin * pl)
           /* redraw slot */
           switch (pl->id_.slot_type_)
             {
-            case PluginSlotType::MidiFx:
+            case zrythm::plugins::PluginSlotType::MidiFx:
               plugin_strip_expander_widget_redraw_slot (
                 MW_TRACK_INSPECTOR->midi_fx, plugin_slot);
               break;
-            case PluginSlotType::Insert:
+            case zrythm::plugins::PluginSlotType::Insert:
               plugin_strip_expander_widget_redraw_slot (
                 MW_TRACK_INSPECTOR->inserts, plugin_slot);
               plugin_strip_expander_widget_redraw_slot (
@@ -291,7 +291,7 @@ on_plugin_state_changed (Plugin * pl)
 }
 
 static void
-on_modulator_added (Plugin * modulator)
+on_modulator_added (zrythm::plugins::Plugin * modulator)
 {
   on_plugin_added (modulator);
 
@@ -464,9 +464,9 @@ on_track_changed (Track * track)
 }
 
 static void
-on_plugin_window_visibility_changed (Plugin * pl)
+on_plugin_window_visibility_changed (zrythm::plugins::Plugin * pl)
 {
-  if (!IS_PLUGIN (pl) || pl->deleting_)
+  if (!pl || pl->deleting_)
     {
       return;
     }
@@ -484,17 +484,17 @@ on_plugin_window_visibility_changed (Plugin * pl)
           /* redraw slot */
           switch (pl->id_.slot_type_)
             {
-            case PluginSlotType::MidiFx:
+            case zrythm::plugins::PluginSlotType::MidiFx:
               plugin_strip_expander_widget_redraw_slot (
                 MW_TRACK_INSPECTOR->midi_fx, slot);
               break;
-            case PluginSlotType::Insert:
+            case zrythm::plugins::PluginSlotType::Insert:
               plugin_strip_expander_widget_redraw_slot (
                 MW_TRACK_INSPECTOR->inserts, slot);
               plugin_strip_expander_widget_redraw_slot (
                 ch_widget->inserts, slot);
               break;
-            case PluginSlotType::Instrument:
+            case zrythm::plugins::PluginSlotType::Instrument:
               track_properties_expander_widget_refresh (
                 MW_TRACK_INSPECTOR->track_info, track);
               break;
@@ -513,7 +513,7 @@ on_plugin_window_visibility_changed (Plugin * pl)
 }
 
 static void
-on_plugin_visibility_changed (Plugin * pl)
+on_plugin_visibility_changed (zrythm::plugins::Plugin * pl)
 {
   z_debug ("start - visible: {}", pl->visible_);
   if (pl->visible_)
@@ -665,14 +665,14 @@ EventManager::process_event (ZEvent &ev)
     case EventType::ET_TIMELINE_SONG_MARKER_POS_CHANGED:
       break;
     case EventType::ET_PLUGIN_VISIBILITY_CHANGED:
-      on_plugin_visibility_changed ((Plugin *) ev.arg_);
+      on_plugin_visibility_changed ((zrythm::plugins::Plugin *) ev.arg_);
       break;
     case EventType::ET_PLUGIN_WINDOW_VISIBILITY_CHANGED:
-      on_plugin_window_visibility_changed ((Plugin *) ev.arg_);
+      on_plugin_window_visibility_changed ((zrythm::plugins::Plugin *) ev.arg_);
       break;
     case EventType::ET_PLUGIN_STATE_CHANGED:
       {
-        auto pl = (Plugin *) ev.arg_;
+        auto pl = (zrythm::plugins::Plugin *) ev.arg_;
         if (pl)
           {
             on_plugin_state_changed (pl);
@@ -802,10 +802,10 @@ EventManager::process_event (ZEvent &ev)
       on_plugins_removed ((Track *) ev.arg_);
       break;
     case EventType::ET_PLUGIN_ADDED:
-      on_plugin_added ((Plugin *) ev.arg_);
+      on_plugin_added ((zrythm::plugins::Plugin *) ev.arg_);
       break;
     case EventType::ET_PLUGIN_CRASHED:
-      on_plugin_crashed ((Plugin *) ev.arg_);
+      on_plugin_crashed ((zrythm::plugins::Plugin *) ev.arg_);
       break;
     case EventType::ET_PLUGINS_REMOVED:
       on_plugins_removed ((Track *) ev.arg_);
@@ -851,7 +851,7 @@ EventManager::process_event (ZEvent &ev)
       midi_editor_space_widget_refresh (MW_MIDI_EDITOR_SPACE);
       break;
     case EventType::ET_MODULATOR_ADDED:
-      on_modulator_added ((Plugin *) ev.arg_);
+      on_modulator_added ((zrythm::plugins::Plugin *) ev.arg_);
       break;
     case EventType::ET_PINNED_TRACKLIST_SIZE_CHANGED:
       /*gtk_widget_set_size_request (*/
@@ -952,7 +952,7 @@ EventManager::process_event (ZEvent &ev)
       for (auto track : TRACKLIST->tracks_ | type_is<ChannelTrack> ())
         {
           auto                 &ch = track->channel_;
-          std::vector<Plugin *> plugins;
+          std::vector<zrythm::plugins::Plugin *> plugins;
           ch->get_plugins (plugins);
           for (auto plugin : plugins)
             {
@@ -1100,10 +1100,10 @@ EventManager::process_event (ZEvent &ev)
     case EventType::ET_PLUGIN_PRESET_SAVED:
     case EventType::ET_PLUGIN_PRESET_LOADED:
       {
-        Plugin * pl = (Plugin *) ev.arg_;
+        zrythm::plugins::Plugin * pl = (zrythm::plugins::Plugin *) ev.arg_;
         if (pl->window_)
           {
-            plugin_gtk_set_window_title (pl, pl->window_);
+            zrythm::plugins::plugin_gtk_set_window_title (pl, pl->window_);
           }
 
         switch (ev.type_)

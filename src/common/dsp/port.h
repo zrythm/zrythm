@@ -23,7 +23,12 @@
 #  include <rtaudio_c.h>
 #endif
 
+namespace zrythm::plugins
+{
 class Plugin;
+struct PluginGtkController;
+}
+
 class MidiEvents;
 class Fader;
 class Channel;
@@ -39,7 +44,6 @@ class ExtPort;
 class AudioClip;
 class ChannelSend;
 class Transport;
-struct PluginGtkController;
 struct EngineProcessTimeInfo;
 enum class PanAlgorithm;
 enum class PanLaw;
@@ -79,7 +83,7 @@ public:
     PulseAudioPort,
   };
 
-  virtual ~Port () { disconnect_all (); }
+  ~Port () override { disconnect_all (); }
 
   static std::unique_ptr<Port> create_unique_from_type (PortType type);
 
@@ -149,7 +153,7 @@ public:
 
   Track * get_track (bool warn_if_fail) const;
 
-  Plugin * get_plugin (bool warn_if_fail) const;
+  zrythm::plugins::Plugin * get_plugin (bool warn_if_fail) const;
 
   /**
    * To be called when the port's identifier changes to update corresponding
@@ -374,7 +378,7 @@ public:
   void * data_ = nullptr;
 
   /** Pointer to owner plugin, if any. */
-  Plugin * plugin_ = nullptr;
+  zrythm::plugins::Plugin * plugin_ = nullptr;
 
   /** Pointer to owner transport, if any. */
   Transport * transport_ = nullptr;
@@ -480,7 +484,7 @@ Port::find_from_identifier (const PortIdentifier &);
 extern template ControlPort *
 Port::find_from_identifier (const PortIdentifier &);
 extern template void
-Port::set_owner<Plugin> (Plugin *);
+Port::set_owner<zrythm::plugins::Plugin> (zrythm::plugins::Plugin *);
 extern template void
 Port::set_owner<Transport> (Transport *);
 extern template void

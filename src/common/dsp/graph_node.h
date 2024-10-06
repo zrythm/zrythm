@@ -39,12 +39,16 @@ class Port;
 class Fader;
 class Track;
 class SampleProcessor;
-class Plugin;
 class HardwareProcessor;
 class ModulatorMacroProcessor;
 struct EngineProcessTimeInfo;
 class ChannelSend;
 class GraphThread;
+
+namespace zrythm::plugins
+{
+class Plugin;
+}
 
 /**
  * @addtogroup dsp
@@ -69,7 +73,7 @@ public:
   {
     /** Port. */
     Port,
-    /** Plugin processor. */
+    /** zrythm::plugins::Plugin processor. */
     Plugin,
     /** Track processor. */
     Track,
@@ -187,7 +191,7 @@ public:
   Port * port_ = nullptr;
 
   /** Plugin, if plugin. */
-  Plugin * pl_ = nullptr;
+  zrythm::plugins::Plugin * pl_ = nullptr;
 
   /** Fader, if fader. */
   Fader * fader_ = nullptr;

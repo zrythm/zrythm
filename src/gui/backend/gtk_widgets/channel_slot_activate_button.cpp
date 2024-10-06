@@ -20,7 +20,7 @@ on_toggled (GtkToggleButton * btn, gpointer user_data)
   ChannelSlotActivateButtonWidget * self =
     Z_CHANNEL_SLOT_ACTIVATE_BUTTON_WIDGET (user_data);
 
-  Plugin * pl = channel_slot_widget_get_plugin (self->owner);
+  zrythm::plugins::Plugin * pl = channel_slot_widget_get_plugin (self->owner);
   if (!pl)
     return;
 

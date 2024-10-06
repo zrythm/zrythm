@@ -788,12 +788,12 @@ channel_widget_new (const std::shared_ptr<Channel> &channel)
     g_object_ref (fader_buttons_widget_new (track));
 
   plugin_strip_expander_widget_setup (
-    self->inserts, PluginSlotType::Insert,
+    self->inserts, zrythm::plugins::PluginSlotType::Insert,
     PluginStripExpanderPosition::PSE_POSITION_CHANNEL, track);
   if (track->in_signal_type_ == PortType::Event)
     {
       plugin_strip_expander_widget_setup (
-        self->midi_fx, PluginSlotType::MidiFx,
+        self->midi_fx, zrythm::plugins::PluginSlotType::MidiFx,
         PluginStripExpanderPosition::PSE_POSITION_CHANNEL, track);
     }
   else
@@ -821,7 +821,7 @@ channel_widget_new (const std::shared_ptr<Channel> &channel)
     /*{*/
       self->instrument_slot =
         channel_slot_widget_new (
-          -1, self->channel, PluginSlotType::Instrument,
+          -1, self->channel, zrythm::plugins::PluginSlotType::Instrument,
           true);
       gtk_widget_set_visible (
         GTK_WIDGET (self->instrument_slot), true);

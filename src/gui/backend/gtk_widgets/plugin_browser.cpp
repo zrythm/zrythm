@@ -60,12 +60,15 @@ update_plugin_info_label (PluginBrowserWidget * self)
   /* get wrapped object */
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  PluginDescriptor * descr = std::get<PluginDescriptor *> (wrapped_obj->obj);
+  zrythm::plugins::PluginDescriptor * descr =
+    std::get<zrythm::plugins::PluginDescriptor *> (wrapped_obj->obj);
 
   auto type_label = fmt::format (
     "{} • {}{}", descr->category_str_,
-    PluginDescriptor::plugin_protocol_to_str (descr->protocol_),
-    descr->arch_ == PluginArchitecture::ARCH_32_BIT ? " (32-bit)" : "");
+    zrythm::plugins::PluginDescriptor::plugin_protocol_to_str (descr->protocol_),
+    descr->arch_ == zrythm::plugins::PluginArchitecture::ARCH_32_BIT
+      ? " (32-bit)"
+      : "");
   auto audio_label =
     fmt::format ("{}, {}", descr->num_audio_ins_, descr->num_audio_outs_);
   auto midi_label =
@@ -219,7 +222,8 @@ on_plugin_row_activated (
   /* get wrapped object */
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  PluginDescriptor * descr = std::get<PluginDescriptor *> (wrapped_obj->obj);
+  zrythm::plugins::PluginDescriptor * descr =
+    std::get<zrythm::plugins::PluginDescriptor *> (wrapped_obj->obj);
 
   char tmp[600];
   sprintf (tmp, "%p", descr);
@@ -241,7 +245,8 @@ plugin_filter_func (GObject * item, gpointer user_data)
   PluginBrowserWidget *           self = Z_PLUGIN_BROWSER_WIDGET (user_data);
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (item);
-  PluginDescriptor * descr = std::get<PluginDescriptor *> (wrapped_obj->obj);
+  zrythm::plugins::PluginDescriptor * descr =
+    std::get<zrythm::plugins::PluginDescriptor *> (wrapped_obj->obj);
 
   int instruments_active, effects_active, modulators_active,
     midi_modifiers_active;
@@ -382,7 +387,7 @@ delete_plugin_setting (
 static void
 on_use_generic_ui_toggled (
   GtkCheckMenuItem * menuitem,
-  PluginDescriptor * descr)
+  zrythm::plugins::PluginDescriptor * descr)
 {
   bool is_active =
     gtk_check_menu_item_get_active (menuitem);
@@ -401,10 +406,12 @@ plugin_sort_func (const void * _a, const void * _b, gpointer user_data)
 {
   WrappedObjectWithChangeSignal * wrapped_obj_a =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL ((void *) _a);
-  PluginDescriptor * descr_a = std::get<PluginDescriptor *> (wrapped_obj_a->obj);
+  zrythm::plugins::PluginDescriptor * descr_a =
+    std::get<zrythm::plugins::PluginDescriptor *> (wrapped_obj_a->obj);
   WrappedObjectWithChangeSignal * wrapped_obj_b =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL ((void *) _b);
-  PluginDescriptor * descr_b = std::get<PluginDescriptor *> (wrapped_obj_b->obj);
+  zrythm::plugins::PluginDescriptor * descr_b =
+    std::get<zrythm::plugins::PluginDescriptor *> (wrapped_obj_b->obj);
 
   PluginBrowserSortStyle sort_style = get_sort_style ();
   if (sort_style == PluginBrowserSortStyle::PLUGIN_BROWSER_SORT_ALPHA)
@@ -463,7 +470,7 @@ update_internal_selections (
       for (guint64 i = 0; i < num_selected; i++)
         {
           guint           idx = gtk_bitset_get_nth (bitset, i);
-          ZPluginCategory cat = ENUM_INT_TO_VALUE (ZPluginCategory, idx);
+          auto cat = ENUM_INT_TO_VALUE (zrythm::plugins::ZPluginCategory, idx);
           self->selected_categories.push_back (cat);
         }
 
@@ -498,7 +505,8 @@ update_internal_selections (
       for (guint64 i = 0; i < num_selected; i++)
         {
           guint          idx = gtk_bitset_get_nth (bitset, i);
-          PluginProtocol prot = ENUM_INT_TO_VALUE (PluginProtocol, idx);
+          zrythm::plugins::PluginProtocol prot =
+            ENUM_INT_TO_VALUE (zrythm::plugins::PluginProtocol, idx);
           self->selected_protocols.push_back (prot);
         }
 
@@ -518,7 +526,8 @@ update_internal_selections (
           WrappedObjectWithChangeSignal * wobj =
             Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
               g_list_model_get_item (G_LIST_MODEL (selection_model), idx));
-          auto * coll = std::get<PluginCollection *> (wobj->obj);
+          auto * coll =
+            std::get<zrythm::plugins::PluginCollection *> (wobj->obj);
           if (coll)
             {
               self->selected_collections.push_back (coll);
@@ -595,10 +604,10 @@ static GtkSelectionModel *
 create_model_for_categories (void)
 {
   GtkStringList * string_list = gtk_string_list_new (nullptr);
-  for (size_t i = 0; i < ENUM_COUNT (ZPluginCategory); i++)
+  for (size_t i = 0; i < ENUM_COUNT (zrythm::plugins::ZPluginCategory); i++)
     {
-      std::string name = PluginDescriptor::category_to_string (
-        ENUM_INT_TO_VALUE (ZPluginCategory, i));
+      std::string name = zrythm::plugins::PluginDescriptor::category_to_string (
+        ENUM_INT_TO_VALUE (zrythm::plugins::ZPluginCategory, i));
       gtk_string_list_append (string_list, name.c_str ());
     }
 
@@ -625,10 +634,11 @@ static GtkSelectionModel *
 create_model_for_protocols (void)
 {
   GtkStringList * string_list = gtk_string_list_new (nullptr);
-  for (size_t i = 0; i < ENUM_COUNT (PluginProtocol); i++)
+  for (size_t i = 0; i < ENUM_COUNT (zrythm::plugins::PluginProtocol); i++)
     {
-      std::string name = PluginDescriptor::plugin_protocol_to_str (
-        ENUM_INT_TO_VALUE (PluginProtocol, i));
+      std::string name =
+        zrythm::plugins::PluginDescriptor::plugin_protocol_to_str (
+          ENUM_INT_TO_VALUE (zrythm::plugins::PluginProtocol, i));
       gtk_string_list_append (string_list, name.c_str ());
     }
 
@@ -645,9 +655,10 @@ create_model_for_plugins (PluginBrowserWidget * self)
     {
       WrappedObjectWithChangeSignal * wrapped_descr =
         wrapped_object_with_change_signal_new_with_free_func (
-          new PluginDescriptor (descr),
-          WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_DESCR,
-          [] (void * ptr) { delete static_cast<PluginDescriptor *> (ptr); });
+          new zrythm::plugins::PluginDescriptor (descr),
+          WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_DESCR, [] (void * ptr) {
+            delete static_cast<zrythm::plugins::PluginDescriptor *> (ptr);
+          });
 
       g_list_store_append (store, wrapped_descr);
     }
@@ -702,16 +713,16 @@ list_view_setup (
         {
           gtk_list_view_set_factory (
             list_view, string_list_item_factory_new ([] (int value) {
-              return PluginDescriptor::category_to_string (
-                static_cast<ZPluginCategory> (value));
+              return zrythm::plugins::PluginDescriptor::category_to_string (
+                static_cast<zrythm::plugins::ZPluginCategory> (value));
             }));
         }
       else if (list_view == self->protocol_list_view)
         {
           gtk_list_view_set_factory (
             list_view, string_list_item_factory_new ([] (int value) {
-              return PluginDescriptor::plugin_protocol_to_str (
-                static_cast<PluginProtocol> (value));
+              return zrythm::plugins::PluginDescriptor::plugin_protocol_to_str (
+                static_cast<zrythm::plugins::PluginProtocol> (value));
             }));
         }
     }

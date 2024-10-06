@@ -51,7 +51,7 @@ struct ChannelSendTarget
 
   int track_pos = 0;
 
-  PluginIdentifier pl_id{};
+  zrythm::plugins::PluginIdentifier pl_id{};
 
   std::string port_group;
 

@@ -117,7 +117,7 @@ ports_filter_func (GObject * item, AutomatableSelectorPopoverWidget * self)
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (item);
   Port * port = wrapped_object_with_change_signal_get_port (wrapped_obj);
-  const Plugin * port_pl = port->get_plugin (false);
+  const zrythm::plugins::Plugin * port_pl = port->get_plugin (false);
   const Track *  port_tr = port->get_track (false);
 
   GtkMultiSelection * multi_sel =
@@ -137,7 +137,8 @@ ports_filter_func (GObject * item, AutomatableSelectorPopoverWidget * self)
         {
           WrappedObjectWithChangeSignal * wobj =
             Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (ptr);
-          Plugin * pl = wrapped_object_with_change_signal_get_plugin (wobj);
+          zrythm::plugins::Plugin * pl =
+            wrapped_object_with_change_signal_get_plugin (wobj);
           if (pl == port_pl)
             {
               match = true;
@@ -278,7 +279,8 @@ bind_type_cb (
     {
       WrappedObjectWithChangeSignal * wobj =
         Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (obj);
-      Plugin * pl = wrapped_object_with_change_signal_get_plugin (wobj);
+      zrythm::plugins::Plugin * pl =
+        wrapped_object_with_change_signal_get_plugin (wobj);
       gtk_label_set_text (lbl, pl->get_name ().c_str ());
     }
   else if (GTK_IS_STRING_OBJECT (obj))
@@ -310,19 +312,20 @@ bind_type_header_cb (
     {
       WrappedObjectWithChangeSignal * wobj =
         Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (obj);
-      Plugin * pl = wrapped_object_with_change_signal_get_plugin (wobj);
+      zrythm::plugins::Plugin * pl =
+        wrapped_object_with_change_signal_get_plugin (wobj);
       switch (pl->id_.slot_type_)
         {
-        case PluginSlotType::Insert:
+        case zrythm::plugins::PluginSlotType::Insert:
           gtk_label_set_text (lbl, _ ("Inserts"));
           break;
-        case PluginSlotType::MidiFx:
+        case zrythm::plugins::PluginSlotType::MidiFx:
           gtk_label_set_text (lbl, _ ("MIDI FX"));
           break;
-        case PluginSlotType::Instrument:
+        case zrythm::plugins::PluginSlotType::Instrument:
           gtk_label_set_text (lbl, _ ("Instrument"));
           break;
-        case PluginSlotType::Modulator:
+        case zrythm::plugins::PluginSlotType::Modulator:
           gtk_label_set_text (lbl, _ ("Modulators"));
           break;
         default:
@@ -394,7 +397,8 @@ setup_types_listview (
                   derived_pl, WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
               g_list_store_append (ls, wobj);
             },
-            convert_to_variant<PluginPtrVariant> (ch->instrument_.get ()));
+            convert_to_variant<zrythm::plugins::PluginPtrVariant> (
+              ch->instrument_.get ()));
           g_list_store_append (composite_ls, ls);
         }
 
@@ -413,7 +417,8 @@ setup_types_listview (
                       derived_pl, WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
                   g_list_store_append (midi_fx_ls, wobj);
                 },
-                convert_to_variant<PluginPtrVariant> (plugin.get ()));
+                convert_to_variant<zrythm::plugins::PluginPtrVariant> (
+                  plugin.get ()));
             }
         }
       for (auto &plugin : ch->inserts_)
@@ -427,7 +432,8 @@ setup_types_listview (
                       derived_pl, WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
                   g_list_store_append (inserts_ls, wobj);
                 },
-                convert_to_variant<PluginPtrVariant> (plugin.get ()));
+                convert_to_variant<zrythm::plugins::PluginPtrVariant> (
+                  plugin.get ()));
             }
         }
       g_list_store_append (composite_ls, midi_fx_ls);
@@ -448,7 +454,8 @@ setup_types_listview (
                       derived_pl, WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
                   g_list_store_append (modulators_ls, wobj);
                 },
-                convert_to_variant<PluginPtrVariant> (plugin.get ()));
+                convert_to_variant<zrythm::plugins::PluginPtrVariant> (
+                  plugin.get ()));
             }
         }
     }

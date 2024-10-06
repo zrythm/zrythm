@@ -832,9 +832,9 @@ Project::cleanup_plugin_state_dirs (Project &main_project, bool is_backup)
 {
   z_debug ("cleaning plugin state dirs{}...", is_backup ? " for backup" : "");
 
-  std::vector<Plugin *> plugins;
-  Plugin::get_all (main_project, plugins, true);
-  Plugin::get_all (*this, plugins, true);
+  std::vector<zrythm::plugins::Plugin *> plugins;
+  zrythm::plugins::Plugin::get_all (main_project, plugins, true);
+  zrythm::plugins::Plugin::get_all (*this, plugins, true);
 
   for (size_t i = 0; i < plugins.size (); i++)
     {

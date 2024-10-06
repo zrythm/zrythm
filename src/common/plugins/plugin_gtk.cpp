@@ -52,6 +52,9 @@
 
 #undef Bool
 
+namespace zrythm::plugins
+{
+
 void
 plugin_gtk_set_window_title (Plugin * plugin, GtkWindow * window)
 {
@@ -68,7 +71,7 @@ plugin_gtk_on_save_preset_activate (GtkWidget * widget, Plugin * plugin)
     [&] (auto &&p) {
       using T = base_type<decltype (p)>;
       const PluginSetting *    setting = &p->setting_;
-      const PluginDescriptor * descr = &setting->descr_;
+      const zrythm::plugins::PluginDescriptor * descr = &setting->descr_;
       bool                     open_with_carla = setting->open_with_carla_;
 
       GtkWidget * dialog = gtk_file_chooser_dialog_new (
@@ -107,7 +110,7 @@ plugin_gtk_on_save_preset_activate (GtkWidget * widget, Plugin * plugin)
           g_object_unref (file);
           bool add_prefix_active =
             gtk_check_button_get_active (GTK_CHECK_BUTTON (add_prefix));
-          if constexpr (std::is_same_v<T, CarlaNativePlugin>)
+          if constexpr (std::is_same_v<T, zrythm::plugins::CarlaNativePlugin>)
             {
 #if HAVE_CARLA
               std::string  prefix;
@@ -226,7 +229,7 @@ plugin_gtk_add_control_row (
 static void
 on_window_destroy (GtkWidget * widget, Plugin * pl)
 {
-  z_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
+  z_return_if_fail (pl);
   pl->window_ = nullptr;
   z_info ("destroying window for {}", pl->get_name ());
 
@@ -317,10 +320,10 @@ static gboolean
 scale_changed (GtkRange * range, ControlPort * port)
 {
   /*z_info ("scale changed");*/
-  z_return_val_if_fail (IS_PORT_AND_NONNULL (port), false);
+  z_return_val_if_fail (port, false);
   PluginGtkController * controller = port->widget_;
   Plugin *              pl = controller->plugin;
-  z_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), false);
+  z_return_val_if_fail (pl, false);
 
   set_float_control (pl, port, (float) gtk_range_get_value (range));
 
@@ -348,7 +351,7 @@ log_scale_changed (GtkRange * range, ControlPort * port)
   z_return_val_if_fail (IS_PORT_AND_NONNULL (port), false);
   PluginGtkController * controller = port->widget_;
   Plugin *              pl = controller->plugin;
-  z_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), false);
+  z_return_val_if_fail (pl, false);
 
   set_float_control (pl, port, expf ((float) gtk_range_get_value (range)));
 
@@ -385,7 +388,7 @@ combo_changed (GtkComboBox * box, ControlPort * port)
 
       z_return_if_fail (IS_PORT_AND_NONNULL (port));
       Plugin * pl = port->get_plugin (true);
-      z_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
+      z_return_if_fail (pl);
 
       set_float_control (pl, port, (float) v);
     }
@@ -398,7 +401,7 @@ switch_state_set (GtkSwitch * button, gboolean state, ControlPort * port)
   z_return_val_if_fail (IS_PORT_AND_NONNULL (port), false);
   PluginGtkController * controller = port->widget_;
   Plugin *              pl = controller->plugin;
-  z_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), false);
+  z_return_val_if_fail (pl, false);
 
   set_float_control (pl, port, state ? 1.0f : 0.0f);
 
@@ -988,3 +991,5 @@ plugin_gtk_setup_plugin_presets_list_box (GtkListBox * box, Plugin * plugin)
 
   return ret;
 }
+
+} // namespace zrythm::plugins

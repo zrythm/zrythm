@@ -80,7 +80,7 @@ update_audio_funcs_menu (EditorToolbarWidget * self)
        i < PLUGIN_MANAGER->plugin_descriptors->len;
        i++)
     {
-      PluginDescriptor * descr =
+      zrythm::plugins::PluginDescriptor * descr =
         g_ptr_array_index (
           PLUGIN_MANAGER->plugin_descriptors, i);
       if (descr->protocol != PROT_LV2

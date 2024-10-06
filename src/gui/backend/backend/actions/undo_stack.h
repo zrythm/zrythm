@@ -1,12 +1,6 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Undo stack.
- */
-
 #ifndef __UNDO_UNDO_STACK_H__
 #define __UNDO_UNDO_STACK_H__
 
@@ -111,7 +105,7 @@ public:
   /**
    * Returns the plugins referred to in the undo stack.
    */
-  void get_plugins (std::vector<Plugin *> &arr) const
+  void get_plugins (std::vector<zrythm::plugins::Plugin *> &arr) const
   {
     for (auto &action : actions_)
       {

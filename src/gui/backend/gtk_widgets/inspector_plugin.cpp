@@ -55,7 +55,7 @@ inspector_plugin_widget_show (
 
   /* show info for first selected plugin, or first plugin in
    * the selected track */
-  Plugin * pl = NULL;
+  zrythm::plugins::Plugin * pl = NULL;
   if (ms->has_any_)
     {
       pl = ms->get_first_plugin ();
@@ -67,7 +67,7 @@ inspector_plugin_widget_show (
       if (tr)
         {
           auto                  ch = tr->get_channel ();
-          std::vector<Plugin *> pls;
+          std::vector<zrythm::plugins::Plugin *> pls;
           ch->get_plugins (pls);
           if (!pls.empty ())
             {

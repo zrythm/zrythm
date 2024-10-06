@@ -95,15 +95,15 @@ apply_plugin (
   channels_t   channels,
   GError **    error)
 {
-  PluginDescriptor * descr =
+  zrythm::plugins::PluginDescriptor * descr =
     plugin_manager_find_plugin_from_uri (PLUGIN_MANAGER, uri);
   z_return_val_if_fail (descr, -1);
   PluginSetting * setting = plugin_setting_new_default (descr);
   z_return_val_if_fail (setting, -1);
   setting->force_generic_ui = true;
   GError * err = NULL;
-  Plugin * pl =
-    plugin_new_from_setting (setting, 0, PluginSlotType::Insert, 0, &err);
+  zrythm::plugins::Plugin * pl =
+    plugin_new_from_setting (setting, 0, zrythm::plugins::PluginSlotType::Insert, 0, &err);
   if (!IS_PLUGIN_AND_NONNULL (pl))
     {
       PROPAGATE_PREFIXED_ERROR (error, err, "%s", _ ("Failed to create plugin"));
@@ -138,7 +138,7 @@ apply_plugin (
 
 #  if 0
   /* add menu bar */
-  plugin_gtk_build_menu (
+  zrythm::plugins::plugin_gtk_build_menu (
     pl, GTK_WIDGET (pl->window),
     GTK_WIDGET (pl->vbox));
 #  endif
@@ -150,7 +150,7 @@ apply_plugin (
   gtk_widget_set_vexpand (GTK_WIDGET (pl->ev_box), true);
 
   /* open */
-  plugin_gtk_open_generic_ui (pl, false);
+  zrythm::plugins::plugin_gtk_open_generic_ui (pl, false);
 
   ret = z_gtk_dialog_run (GTK_DIALOG (pl->window), false);
 
@@ -276,7 +276,7 @@ apply_plugin (
   plugin_update_latency (pl);
   z_info ("end latency {}", pl->latency);
 
-  plugin_gtk_close_ui (pl);
+  zrythm::plugins::plugin_gtk_close_ui (pl);
   plugin_free (pl);
 
   return 0;

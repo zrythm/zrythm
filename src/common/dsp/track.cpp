@@ -208,7 +208,8 @@ Track::is_auditioner () const
 }
 
 Track::Type
-Track::type_get_from_plugin_descriptor (const PluginDescriptor &descr)
+Track::type_get_from_plugin_descriptor (
+  const zrythm::plugins::PluginDescriptor &descr)
 {
   if (descr.is_instrument ())
     return Track::Type::Instrument;
@@ -520,7 +521,7 @@ Track::is_selected () const
 bool
 Track::contains_uninstantiated_plugin () const
 {
-  std::vector<Plugin *> plugins;
+  std::vector<zrythm::plugins::Plugin *> plugins;
   get_plugins (plugins);
   return std::ranges::any_of (plugins, [] (auto pl) {
     return pl->instantiation_failed_;
@@ -629,25 +630,26 @@ track_freeze (Track * self, bool freeze, GError ** error)
 template <typename T>
 T *
 Track::insert_plugin (
-  std::unique_ptr<T> &&pl,
-  PluginSlotType       slot_type,
-  int                  slot,
-  bool                 instantiate_plugin,
-  bool                 replacing_plugin,
-  bool                 moving_plugin,
-  bool                 confirm,
-  bool                 gen_automatables,
-  bool                 recalc_graph,
-  bool                 fire_events)
+  std::unique_ptr<T>            &&pl,
+  zrythm::plugins::PluginSlotType slot_type,
+  int                             slot,
+  bool                            instantiate_plugin,
+  bool                            replacing_plugin,
+  bool                            moving_plugin,
+  bool                            confirm,
+  bool                            gen_automatables,
+  bool                            recalc_graph,
+  bool                            fire_events)
 {
-  if (!PluginIdentifier::validate_slot_type_slot_combo (slot_type, slot))
+  if (!zrythm::plugins::PluginIdentifier::validate_slot_type_slot_combo (
+        slot_type, slot))
     {
       z_return_val_if_reached (nullptr);
     }
 
   T * inserted_plugin = nullptr;
 
-  if (slot_type == PluginSlotType::Modulator)
+  if (slot_type == zrythm::plugins::PluginSlotType::Modulator)
     {
       auto * modulator_track = dynamic_cast<ModulatorTrack *> (this);
       if (modulator_track)
@@ -692,16 +694,16 @@ Track::insert_plugin (
 
 void
 Track::remove_plugin (
-  PluginSlotType slot_type,
-  int            slot,
-  bool           replacing_plugin,
-  bool           moving_plugin,
-  bool           deleting_plugin,
-  bool           deleting_track,
-  bool           recalc_graph)
+  zrythm::plugins::PluginSlotType slot_type,
+  int                             slot,
+  bool                            replacing_plugin,
+  bool                            moving_plugin,
+  bool                            deleting_plugin,
+  bool                            deleting_track,
+  bool                            recalc_graph)
 {
   z_debug ("removing plugin from track {}", name_);
-  if (slot_type == PluginSlotType::Modulator)
+  if (slot_type == zrythm::plugins::PluginSlotType::Modulator)
     {
       auto * modulator_track = dynamic_cast<ModulatorTrack *> (this);
       if (modulator_track)
@@ -1024,7 +1026,7 @@ Track::set_name (const std::string &name, bool pub_events)
 }
 
 void
-Track::get_plugins (std::vector<Plugin *> &arr) const
+Track::get_plugins (std::vector<zrythm::plugins::Plugin *> &arr) const
 {
   if (type_has_channel (type_))
     {
@@ -1049,7 +1051,7 @@ void
 
 Track::activate_all_plugins (bool activate)
 {
-  std::vector<Plugin *> pls;
+  std::vector<zrythm::plugins::Plugin *> pls;
   get_plugins (pls);
 
   for (auto pl : pls)
@@ -1156,19 +1158,20 @@ Track::set_icon (const std::string &icon_name, bool undoable, bool fire_events)
     }
 }
 
-Plugin *
-Track::get_plugin_at_slot (PluginSlotType slot_type, int slot) const
+zrythm::plugins::Plugin *
+Track::get_plugin_at_slot (zrythm::plugins::PluginSlotType slot_type, int slot)
+  const
 {
   if (auto channel_track = dynamic_cast<const ChannelTrack *> (this))
     {
       auto &channel = channel_track->get_channel ();
       switch (slot_type)
         {
-        case PluginSlotType::MidiFx:
+        case zrythm::plugins::PluginSlotType::MidiFx:
           return channel->midi_fx_[slot].get ();
-        case PluginSlotType::Instrument:
+        case zrythm::plugins::PluginSlotType::Instrument:
           return channel->instrument_.get ();
-        case PluginSlotType::Insert:
+        case zrythm::plugins::PluginSlotType::Insert:
           return channel->inserts_[slot].get ();
         default:
           break;
@@ -1177,7 +1180,7 @@ Track::get_plugin_at_slot (PluginSlotType slot_type, int slot) const
   else if (auto modulator_track = dynamic_cast<const ModulatorTrack *> (this))
     {
       if (
-        slot_type == PluginSlotType::Modulator
+        slot_type == zrythm::plugins::PluginSlotType::Modulator
         && slot < (int) modulator_track->modulators_.size ())
         {
           return modulator_track->modulators_[slot].get ();
@@ -1556,27 +1559,27 @@ template Track *
 Track::find_by_name (const std::string &);
 template ChordTrack *
 Track::find_by_name (const std::string &);
-template Plugin *
+template zrythm::plugins::Plugin *
 Track::insert_plugin (
-  std::unique_ptr<Plugin> &&pl,
-  PluginSlotType            slot_type,
-  int                       slot,
-  bool                      instantiate_plugin,
-  bool                      replacing_plugin,
-  bool                      moving_plugin,
-  bool                      confirm,
-  bool                      gen_automatables,
-  bool                      recalc_graph,
-  bool                      fire_events);
-template CarlaNativePlugin *
+  std::unique_ptr<zrythm::plugins::Plugin> &&pl,
+  zrythm::plugins::PluginSlotType            slot_type,
+  int                                        slot,
+  bool                                       instantiate_plugin,
+  bool                                       replacing_plugin,
+  bool                                       moving_plugin,
+  bool                                       confirm,
+  bool                                       gen_automatables,
+  bool                                       recalc_graph,
+  bool                                       fire_events);
+template zrythm::plugins::CarlaNativePlugin *
 Track::insert_plugin (
-  std::unique_ptr<CarlaNativePlugin> &&pl,
-  PluginSlotType                       slot_type,
-  int                                  slot,
-  bool                                 instantiate_plugin,
-  bool                                 replacing_plugin,
-  bool                                 moving_plugin,
-  bool                                 confirm,
-  bool                                 gen_automatables,
-  bool                                 recalc_graph,
-  bool                                 fire_events);
+  std::unique_ptr<zrythm::plugins::CarlaNativePlugin> &&pl,
+  zrythm::plugins::PluginSlotType                       slot_type,
+  int                                                   slot,
+  bool                                                  instantiate_plugin,
+  bool                                                  replacing_plugin,
+  bool                                                  moving_plugin,
+  bool                                                  confirm,
+  bool                                                  gen_automatables,
+  bool                                                  recalc_graph,
+  bool                                                  fire_events);

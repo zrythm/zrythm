@@ -1,7 +1,7 @@
 /* -*- c-basic-offset: 4 indent-tabs-mode: nil -*-  vi:set ts=8 sts=4 sw=4: */
 
 /*
-    QM Vamp Plugin Set
+    QM Vamp zrythm::plugins::Plugin Set
 
     Centre for Digital Music, Queen Mary, University of London.
 
@@ -107,7 +107,7 @@ BeatTracker::getPluginVersion () const
 string
 BeatTracker::getCopyright () const
 {
-  return "Plugin by Christian Landone and Matthew Davies.  Copyright (c) 2006-2013 QMUL - All Rights Reserved";
+  return "zrythm::plugins::Plugin by Christian Landone and Matthew Davies.  Copyright (c) 2006-2013 QMUL - All Rights Reserved";
 }
 
 BeatTracker::ParameterList

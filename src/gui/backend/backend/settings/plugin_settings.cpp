@@ -23,7 +23,7 @@
 
 constexpr const char * PLUGIN_SETTINGS_JSON_FILENAME = "plugin-settings.json";
 
-PluginSetting::PluginSetting (const PluginDescriptor &descr)
+PluginSetting::PluginSetting (const zrythm::plugins::PluginDescriptor &descr)
 {
   PluginSetting * existing = nullptr;
   if (S_PLUGIN_SETTINGS && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
@@ -40,7 +40,7 @@ PluginSetting::PluginSetting (const PluginDescriptor &descr)
     {
       this->descr_ = descr;
       /* bridge all plugins by default */
-      this->bridge_mode_ = CarlaBridgeMode::Full;
+      this->bridge_mode_ = zrythm::plugins::CarlaBridgeMode::Full;
       validate (false);
     }
 }
@@ -79,13 +79,17 @@ PluginSetting::validate (bool print_result)
     }
 #endif
 
-  PluginProtocol prot = descr_.protocol_;
+  zrythm::plugins::PluginProtocol prot = descr_.protocol_;
   if (
-    prot == PluginProtocol::VST || prot == PluginProtocol::VST3
-    || prot == PluginProtocol::AU || prot == PluginProtocol::SFZ
-    || prot == PluginProtocol::SF2 || prot == PluginProtocol::DSSI
-    || prot == PluginProtocol::LADSPA || prot == PluginProtocol::JSFX
-    || prot == PluginProtocol::CLAP)
+    prot == zrythm::plugins::PluginProtocol::VST
+    || prot == zrythm::plugins::PluginProtocol::VST3
+    || prot == zrythm::plugins::PluginProtocol::AU
+    || prot == zrythm::plugins::PluginProtocol::SFZ
+    || prot == zrythm::plugins::PluginProtocol::SF2
+    || prot == zrythm::plugins::PluginProtocol::DSSI
+    || prot == zrythm::plugins::PluginProtocol::LADSPA
+    || prot == zrythm::plugins::PluginProtocol::JSFX
+    || prot == zrythm::plugins::PluginProtocol::CLAP)
     {
       this->open_with_carla_ = true;
 #if !HAVE_CARLA
@@ -114,17 +118,17 @@ PluginSetting::validate (bool print_result)
 #if HAVE_CARLA
   /* if no bridge mode specified, calculate the bridge mode here */
   /*z_debug ("{}: recalculating bridge mode...", __func__);*/
-  if (this->bridge_mode_ == CarlaBridgeMode::None)
+  if (this->bridge_mode_ == zrythm::plugins::CarlaBridgeMode::None)
     {
       this->bridge_mode_ = descr_.min_bridge_mode_;
-      if (this->bridge_mode_ == CarlaBridgeMode::None)
+      if (this->bridge_mode_ == zrythm::plugins::CarlaBridgeMode::None)
         {
 #  if 0
           /* bridge if plugin is not whitelisted */
           if (!plugin_descriptor_is_whitelisted (descr))
             {
               this->open_with_carla_ = true;
-              this->bridge_mode_ = CarlaBridgeMode::Full;
+              this->bridge_mode_ = zrythm::plugins::CarlaBridgeMode::Full;
               /*z_debug (*/
               /*"plugin descriptor not whitelisted - will bridge full");*/
             }
@@ -138,9 +142,9 @@ PluginSetting::validate (bool print_result)
   else
     {
       this->open_with_carla_ = true;
-      CarlaBridgeMode mode = descr_.min_bridge_mode_;
+      zrythm::plugins::CarlaBridgeMode mode = descr_.min_bridge_mode_;
 
-      if (mode == CarlaBridgeMode::Full)
+      if (mode == zrythm::plugins::CarlaBridgeMode::Full)
         {
           this->bridge_mode_ = mode;
         }
@@ -148,9 +152,9 @@ PluginSetting::validate (bool print_result)
 
 #  if 0
   /* force bridge mode */
-  if (this->bridge_mode_ == CarlaBridgeMode::None)
+  if (this->bridge_mode_ == zrythm::plugins::CarlaBridgeMode::None)
     {
-      this->bridge_mode_ = CarlaBridgeMode::Full;
+      this->bridge_mode_ = zrythm::plugins::CarlaBridgeMode::Full;
     }
 #  endif
 
@@ -474,12 +478,12 @@ PluginSettings::read_or_new ()
       return {};
     }
 
-// FIXME: do this in the deserialize override of PluginDescriptor
+// FIXME: do this in the deserialize override of zrythm::plugins::PluginDescriptor
 #if 0
 for (size_t i = 0; i < self->descriptors->len; i++)
   {
-    PluginDescriptor * descr =
-      (PluginDescriptor *) g_ptr_array_index (self->descriptors, i);
+    zrythm::plugins::PluginDescriptor * descr =
+      (zrythm::plugins::PluginDescriptor *) g_ptr_array_index (self->descriptors, i);
     descr->category = plugin_descriptor_string_to_category (descr->category_str);
   }
 #endif
@@ -505,7 +509,7 @@ PluginSettings::delete_file ()
 }
 
 PluginSetting *
-PluginSettings::find (const PluginDescriptor &descr)
+PluginSettings::find (const zrythm::plugins::PluginDescriptor &descr)
 {
   auto it = std::find_if (
     settings_.begin (), settings_.end (),
@@ -548,13 +552,13 @@ PluginSettings::set (const PluginSetting &setting, bool _serialize)
     }
 }
 
-std::unique_ptr<Plugin>
+std::unique_ptr<zrythm::plugins::Plugin>
 PluginSetting::create_plugin (
-  unsigned int   track_name_hash,
-  PluginSlotType slot_type,
-  int            slot)
+  unsigned int                    track_name_hash,
+  zrythm::plugins::PluginSlotType slot_type,
+  int                             slot)
 {
-  auto plugin = std::make_unique<CarlaNativePlugin> (
+  auto plugin = std::make_unique<zrythm::plugins::CarlaNativePlugin> (
     this->descr_, track_name_hash, slot_type, slot);
   return plugin;
 }

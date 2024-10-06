@@ -44,7 +44,7 @@
 
 #include <glib/gi18n.h>
 
-/*#include <ctype.h>*/
+using namespace zrythm::plugins;
 
 void
 PluginManager::add_category_and_author (
@@ -654,7 +654,7 @@ PluginManager::find_plugin_from_rel_path (
 }
 
 void
-PluginManager::add_descriptor (const PluginDescriptor &descr)
+PluginManager::add_descriptor (const zrythm::plugins::PluginDescriptor &descr)
 {
   z_return_if_fail (descr.protocol_ > PluginProtocol::DUMMY);
   plugin_descriptors_.push_back (descr);
@@ -742,7 +742,9 @@ PluginManager::find_plugin_from_uri (std::string_view uri) const
 {
   auto it = std::find_if (
     plugin_descriptors_.begin (), plugin_descriptors_.end (),
-    [&uri] (const PluginDescriptor &descr) { return uri == descr.uri_; });
+    [&uri] (const zrythm::plugins::PluginDescriptor &descr) {
+      return uri == descr.uri_;
+    });
   if (it != plugin_descriptors_.end ())
     {
       return std::make_unique<PluginDescriptor> (*it);
@@ -755,11 +757,12 @@ PluginManager::find_plugin_from_uri (std::string_view uri) const
 }
 
 std::unique_ptr<PluginDescriptor>
-PluginManager::find_from_descriptor (const PluginDescriptor &src_descr) const
+PluginManager::find_from_descriptor (
+  const zrythm::plugins::PluginDescriptor &src_descr) const
 {
   auto it = std::find_if (
     plugin_descriptors_.begin (), plugin_descriptors_.end (),
-    [&src_descr] (const PluginDescriptor &descr) {
+    [&src_descr] (const zrythm::plugins::PluginDescriptor &descr) {
       return src_descr.is_same_plugin (descr);
     });
   if (it != plugin_descriptors_.end ())

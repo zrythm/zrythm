@@ -11,6 +11,7 @@
 #ifndef __GUI_WIDGETS_PLUGIN_BROWSER_H__
 #define __GUI_WIDGETS_PLUGIN_BROWSER_H__
 
+#include "common/plugins/collections.h"
 #include "common/plugins/plugin.h"
 #include "common/utils/symap.h"
 #include "gui/backend/gtk_widgets/gtk_wrapper.h"
@@ -25,7 +26,6 @@ G_DECLARE_FINAL_TYPE (
   GtkWidget);
 
 TYPEDEF_STRUCT_UNDERSCORED (ExpanderBoxWidget);
-class PluginCollection;
 class ItemFactory;
 
 /**
@@ -125,15 +125,15 @@ using PluginBrowserWidget = struct _PluginBrowserWidget
   /** Symbol IDs (for quick comparison) of selected authors. */
   std::vector<uint32_t> selected_authors;
 
-  /** Selected categories (ZPluginCategory). */
-  std::vector<ZPluginCategory> selected_categories;
+  /** Selected categories (zrythm::plugins::ZPluginCategory). */
+  std::vector<zrythm::plugins::ZPluginCategory> selected_categories;
 
-  /** Selected protocols (PluginProtocol). */
-  std::vector<PluginProtocol> selected_protocols;
+  /** Selected protocols (zrythm::plugins::PluginProtocol). */
+  std::vector<zrythm::plugins::PluginProtocol> selected_protocols;
 
-  /** Pointers to the collections (PluginCollection instances)
+  /** Pointers to the collections (zrythm::plugins::PluginCollection instances)
    * from PluginManager.collections that must not be free'd. */
-  std::vector<PluginCollection *> selected_collections;
+  std::vector<zrythm::plugins::PluginCollection *> selected_collections;
 
   /** List view -> selection model -> filter model */
   GtkCustomFilter *    plugin_filter;

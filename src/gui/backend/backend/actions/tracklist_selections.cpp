@@ -398,9 +398,9 @@ TracklistSelectionsAction::create_track (int idx)
     }
   else /* else if track is not empty */
     {
-      std::unique_ptr<Plugin> pl;
+      std::unique_ptr<zrythm::plugins::Plugin> pl;
       std::unique_ptr<Track>  track;
-      Plugin *                added_pl = nullptr;
+      zrythm::plugins::Plugin *                added_pl = nullptr;
 
       /* if creating audio track from file */
       if (track_type_ == Track::Type::Audio && pool_id_ >= 0)
@@ -434,7 +434,9 @@ TracklistSelectionsAction::create_track (int idx)
           auto channel_track = dynamic_cast<ChannelTrack *> (added_track);
           added_pl = channel_track->channel_->add_plugin (
             std::move (pl),
-            is_instrument ? PluginSlotType::Instrument : PluginSlotType::Insert,
+            is_instrument
+              ? zrythm::plugins::PluginSlotType::Instrument
+              : zrythm::plugins::PluginSlotType::Insert,
             is_instrument ? -1 : pl->id_.slot_, true, false, true, false, false);
         }
 

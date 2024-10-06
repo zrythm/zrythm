@@ -65,7 +65,7 @@ track_properties_expander_widget_setup (
   GtkWidget * lbl;
 
 #define CREATE_LABEL(x) \
-  lbl = plugin_gtk_new_label (x, true, false, 0.f, 0.5f); \
+  lbl = zrythm::plugins::plugin_gtk_new_label (x, true, false, 0.f, 0.5f); \
   gtk_widget_add_css_class (lbl, "inspector_label"); \
   gtk_widget_set_margin_start (lbl, 2); \
   gtk_widget_set_visible (lbl, 1)

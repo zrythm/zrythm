@@ -71,7 +71,7 @@ public:
 
   bool contains_track_index (int track_idx) const;
 
-  void get_plugins (std::vector<Plugin *> &arr);
+  void get_plugins (std::vector<zrythm::plugins::Plugin *> &arr);
 
   /**
    * Gets lowest track in the selections.

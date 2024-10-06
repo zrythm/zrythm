@@ -4,12 +4,21 @@
 target_sources(zrythm_lib
   PRIVATE
     cached_plugin_descriptors.cpp
+    cached_plugin_descriptors.h
     carla_discovery.cpp
+    carla_discovery.h
     carla_native_plugin.cpp
+    carla_native_plugin.h
     collections.cpp
+    collections.h
     plugin.cpp
+    plugin.h
     plugin_descriptor.cpp
+    plugin_descriptor.h
     plugin_gtk.cpp
+    plugin_gtk.h
     plugin_identifier.cpp
+    plugin_identifier.h
     plugin_manager.cpp
+    plugin_manager.h
     )

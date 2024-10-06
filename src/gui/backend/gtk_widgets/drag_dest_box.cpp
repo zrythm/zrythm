@@ -88,11 +88,11 @@ get_available_ptrs_from_wrapped_obj (
         {
           file_descr = obj;
         }
-      else if constexpr (std::derived_from<ObjT, Plugin>)
+      else if constexpr (std::derived_from<ObjT, zrythm::plugins::Plugin>)
         {
           pl = obj;
         }
-      else if constexpr (std::is_same_v<ObjT, PluginDescriptor>)
+      else if constexpr (std::is_same_v<ObjT, zrythm::plugins::PluginDescriptor>)
         {
           pl_descr = obj;
         }
@@ -121,8 +121,8 @@ on_dnd_motion_value_ready (
 
   FileDescriptor *   supported_file = NULL;
   Track *            dropped_track = NULL;
-  Plugin *           pl = NULL;
-  PluginDescriptor * pl_descr = NULL;
+  zrythm::plugins::Plugin *           pl = NULL;
+  zrythm::plugins::PluginDescriptor * pl_descr = NULL;
   if (G_VALUE_HOLDS (value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
       WrappedObjectWithChangeSignal * wrapped_obj =
@@ -210,8 +210,8 @@ on_dnd_drop (
   GdkDragAction action = z_gtk_drop_target_get_selected_action (drop_target);
 
   FileDescriptor *   file = NULL;
-  PluginDescriptor * pd = NULL;
-  Plugin *           pl = NULL;
+  zrythm::plugins::PluginDescriptor * pd = NULL;
+  zrythm::plugins::Plugin *           pl = NULL;
   Track *            track = NULL;
   if (G_VALUE_HOLDS (value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
@@ -283,7 +283,7 @@ on_dnd_drop (
             {
               UNDO_MANAGER->perform (
                 std::make_unique<MixerSelectionsCreateAction> (
-                  PluginSlotType::Modulator, *P_MODULATOR_TRACK,
+                  zrythm::plugins::PluginSlotType::Modulator, *P_MODULATOR_TRACK,
                   P_MODULATOR_TRACK->modulators_.size (), setting));
             }
           catch (const ZrythmException &e)
@@ -302,13 +302,13 @@ on_dnd_drop (
             {
               UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCopyAction> (
                 *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
-                PluginSlotType::Insert, nullptr, 0));
+                zrythm::plugins::PluginSlotType::Insert, nullptr, 0));
             }
           else if (action == GDK_ACTION_MOVE)
             {
               UNDO_MANAGER->perform (std::make_unique<MixerSelectionsMoveAction> (
                 *MIXER_SELECTIONS->gen_full_from_this (), *PORT_CONNECTIONS_MGR,
-                PluginSlotType::Insert, nullptr, 0));
+                zrythm::plugins::PluginSlotType::Insert, nullptr, 0));
             }
           else
             z_return_val_if_reached (true);

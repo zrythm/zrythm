@@ -14,6 +14,8 @@
 constexpr const char * CACHED_PLUGIN_DESCRIPTORS_JSON_FILENAME =
   "cached-plugins.json";
 
+using namespace zrythm::plugins;
+
 fs::path
 CachedPluginDescriptors::get_file_path ()
 {
@@ -100,11 +102,11 @@ CachedPluginDescriptors::read_or_new ()
       return {};
     }
 
-// FIXME: do this in the deserialize override of PluginDescriptor
+// FIXME: do this in the deserialize override of zrythm::plugins::PluginDescriptor
 #if 0
 for (size_t i = 0; i < self->descriptors->len; i++)
   {
-    PluginDescriptor * descr =
+    zrythm::plugins::PluginDescriptor * descr =
       (PluginDescriptor *) g_ptr_array_index (self->descriptors, i);
     descr->category = plugin_descriptor_string_to_category (descr->category_str);
   }
@@ -195,9 +197,11 @@ CachedPluginDescriptors::blacklist (std::string_view sha1, bool serialize)
 }
 
 void
-CachedPluginDescriptors::add (const PluginDescriptor &descr, bool serialize)
+CachedPluginDescriptors::add (
+  const zrythm::plugins::PluginDescriptor &descr,
+  bool                                     serialize)
 {
-  PluginDescriptor new_descr = descr;
+  zrythm::plugins::PluginDescriptor new_descr = descr;
   if (!descr.path_.empty ())
     {
       auto file = Gio::File::create_for_path (descr.path_.string ());

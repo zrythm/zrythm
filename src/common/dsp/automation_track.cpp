@@ -228,7 +228,8 @@ AutomationTrack::find_from_port (
                   auto pl = port.get_plugin (true);
                   z_return_val_if_fail (pl, nullptr);
 
-                  if (pl->get_protocol () == PluginProtocol::LV2)
+                  if (
+                    pl->get_protocol () == zrythm::plugins::PluginProtocol::LV2)
                     {
                       /* if lv2 plugin port (not standard zrythm-provided port),
                        * make sure the symbol matches (some plugins have multiple

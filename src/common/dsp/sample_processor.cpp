@@ -410,16 +410,16 @@ SampleProcessor::queue_file_or_chord_preset (
         std::move (instrument_track), tracklist_->tracks_.size (), false, false);
       try
         {
-          auto pl = Plugin::create_with_setting (
+          auto pl = zrythm::plugins::Plugin::create_with_setting (
             *instrument_setting_, instr_track_ptr->get_name_hash (),
-            PluginSlotType::Instrument, -1);
+            zrythm::plugins::PluginSlotType::Instrument, -1);
           pl->instantiate ();
           pl->activate (true);
           z_return_if_fail (pl->midi_in_port_ && pl->l_out_ && pl->r_out_);
 
           instr_track_ptr->channel_->add_plugin (
-            std::move (pl), PluginSlotType::Instrument, pl->id_.slot_, false,
-            false, true, false, false);
+            std::move (pl), zrythm::plugins::PluginSlotType::Instrument,
+            pl->id_.slot_, false, false, true, false, false);
 
           int num_tracks =
             (file != nullptr)

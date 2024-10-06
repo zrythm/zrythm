@@ -239,7 +239,8 @@ public:
     return type_is_copyable (type);
   }
 
-  static Type type_get_from_plugin_descriptor (const PluginDescriptor &descr);
+  static Type type_get_from_plugin_descriptor (
+    const zrythm::plugins::PluginDescriptor &descr);
 
   /**
    * Returns if the given Type can host the given RegionType.
@@ -348,7 +349,7 @@ public:
   }
 
 public:
-  virtual ~Track () = default;
+  ~Track () override = default;
 
   static std::unique_ptr<Track> create_unique_from_type (Type type);
 
@@ -614,7 +615,7 @@ public:
   /**
    * Fills in the given array with all plugins in the track.
    */
-  void get_plugins (std::vector<Plugin *> &arr) const;
+  void get_plugins (std::vector<zrythm::plugins::Plugin *> &arr) const;
 
   /**
    * Activate or deactivate all plugins.
@@ -651,7 +652,8 @@ public:
    *
    * @param slot The slot (ignored if instrument is selected.
    */
-  Plugin * get_plugin_at_slot (PluginSlotType slot_type, int slot) const;
+  zrythm::plugins::Plugin *
+  get_plugin_at_slot (zrythm::plugins::PluginSlotType slot_type, int slot) const;
 
   /**
    * Marks the track for bouncing.
@@ -692,31 +694,31 @@ public:
    *
    * @param instantiate_plugin Whether to attempt to instantiate the plugin.
    */
-  template <typename T = Plugin>
+  template <typename T = zrythm::plugins::Plugin>
   T * insert_plugin (
-    std::unique_ptr<T> &&pl,
-    PluginSlotType       slot_type,
-    int                  slot,
-    bool                 instantiate_plugin,
-    bool                 replacing_plugin,
-    bool                 moving_plugin,
-    bool                 confirm,
-    bool                 gen_automatables,
-    bool                 recalc_graph,
-    bool                 fire_events);
+    std::unique_ptr<T>            &&pl,
+    zrythm::plugins::PluginSlotType slot_type,
+    int                             slot,
+    bool                            instantiate_plugin,
+    bool                            replacing_plugin,
+    bool                            moving_plugin,
+    bool                            confirm,
+    bool                            gen_automatables,
+    bool                            recalc_graph,
+    bool                            fire_events);
 
   /**
    * Wrapper over channel_remove_plugin() and
    * modulator_track_remove_modulator().
    */
   void remove_plugin (
-    PluginSlotType slot_type,
-    int            slot,
-    bool           replacing_plugin,
-    bool           moving_plugin,
-    bool           deleting_plugin,
-    bool           deleting_track,
-    bool           recalc_graph);
+    zrythm::plugins::PluginSlotType slot_type,
+    int                             slot,
+    bool                            replacing_plugin,
+    bool                            moving_plugin,
+    bool                            deleting_plugin,
+    bool                            deleting_track,
+    bool                            recalc_graph);
 
   /**
    * Disconnects the track from the processing chain.
@@ -724,8 +726,8 @@ public:
    * This should be called immediately when the track is getting deleted, and
    * track_free should be designed to be called later after an arbitrary delay.
    *
-   * @param remove_pl Remove the Plugin from the Channel. Useful when deleting
-   * the channel.
+   * @param remove_pl Remove the zrythm::plugins::Plugin from the Channel.
+   * Useful when deleting the channel.
    * @param recalc_graph Recalculate mixer graph.
    */
   void disconnect (bool remove_pl, bool recalc_graph);
@@ -1057,30 +1059,30 @@ extern template Track *
 Track::find_by_name (const std::string &);
 extern template ChordTrack *
 Track::find_by_name (const std::string &);
-extern template Plugin *
+extern template zrythm::plugins::Plugin *
 Track::insert_plugin (
-  std::unique_ptr<Plugin> &&pl,
-  PluginSlotType            slot_type,
-  int                       slot,
-  bool                      instantiate_plugin,
-  bool                      replacing_plugin,
-  bool                      moving_plugin,
-  bool                      confirm,
-  bool                      gen_automatables,
-  bool                      recalc_graph,
-  bool                      fire_events);
-extern template CarlaNativePlugin *
+  std::unique_ptr<zrythm::plugins::Plugin> &&pl,
+  zrythm::plugins::PluginSlotType            slot_type,
+  int                                        slot,
+  bool                                       instantiate_plugin,
+  bool                                       replacing_plugin,
+  bool                                       moving_plugin,
+  bool                                       confirm,
+  bool                                       gen_automatables,
+  bool                                       recalc_graph,
+  bool                                       fire_events);
+extern template zrythm::plugins::CarlaNativePlugin *
 Track::insert_plugin (
-  std::unique_ptr<CarlaNativePlugin> &&pl,
-  PluginSlotType                       slot_type,
-  int                                  slot,
-  bool                                 instantiate_plugin,
-  bool                                 replacing_plugin,
-  bool                                 moving_plugin,
-  bool                                 confirm,
-  bool                                 gen_automatables,
-  bool                                 recalc_graph,
-  bool                                 fire_events);
+  std::unique_ptr<zrythm::plugins::CarlaNativePlugin> &&pl,
+  zrythm::plugins::PluginSlotType                       slot_type,
+  int                                                   slot,
+  bool                                                  instantiate_plugin,
+  bool                                                  replacing_plugin,
+  bool                                                  moving_plugin,
+  bool                                                  confirm,
+  bool                                                  gen_automatables,
+  bool                                                  recalc_graph,
+  bool                                                  fire_events);
 
 /**
  * @}

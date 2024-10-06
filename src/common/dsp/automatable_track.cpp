@@ -192,10 +192,10 @@ AutomatableTrack::validate_base () const
             {
               const auto &pid = port->id_.plugin_id_;
               z_return_val_if_fail (pid.track_name_hash_ == name_hash, false);
-              Plugin * pl = Plugin::find (pid);
+              zrythm::plugins::Plugin * pl = zrythm::plugins::Plugin::find (pid);
               z_return_val_if_fail (pl->id_.validate (), false);
               z_return_val_if_fail (pl->id_ == pid, false);
-              if (pid.slot_type_ == PluginSlotType::Instrument)
+              if (pid.slot_type_ == zrythm::plugins::PluginSlotType::Instrument)
                 {
                   auto channel_track = dynamic_cast<const ChannelTrack *> (this);
                   z_return_val_if_fail (

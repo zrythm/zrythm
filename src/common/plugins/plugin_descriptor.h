@@ -20,6 +20,9 @@ TYPEDEF_STRUCT_UNDERSCORED (WrappedObjectWithChangeSignal);
 enum class PluginSlotType;
 enum class TrackType;
 
+namespace zrythm::plugins
+{
+
 /**
  * @addtogroup plugins
  *
@@ -261,6 +264,8 @@ operator== (const PluginDescriptor &a, const PluginDescriptor &b)
          && a.unique_id_ == b.unique_id_ && a.ghash_ == b.ghash_
          && a.sha1_ == b.sha1_ && a.uri_ == b.uri_;
 }
+
+} // namespace zrythm::plugins
 
 /**
  * @}

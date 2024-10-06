@@ -11,7 +11,6 @@
 #include <giomm/listmodel.h>
 #include <glib-object.h>
 
-class PluginDescriptor;
 class ChordDescriptor;
 class ChordPresetPack;
 class ChordPreset;
@@ -19,12 +18,16 @@ class FileDescriptor;
 class MidiMapping;
 class Port;
 struct ChannelSendTarget;
-class PluginCollection;
 class ExtPort;
 struct FileBrowserLocation;
 class ArrangerObject;
 class Track;
+namespace zrythm::plugins
+{
 class Plugin;
+class PluginCollection;
+class PluginDescriptor;
+}
 
 #define WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE \
   (wrapped_object_with_change_signal_get_type ())
@@ -73,11 +76,11 @@ using WrappedObjectWithChangeSignal = struct _WrappedObjectWithChangeSignal
 
   using ObjVariant = merge_variants_t<
     TrackVariant,
-    PluginVariant,
+    zrythm::plugins::PluginVariant,
     ArrangerObjectVariant,
     PortVariant,
     std::variant<
-      PluginDescriptor,
+      zrythm::plugins::PluginDescriptor,
       ChordDescriptor,
       ChordPreset,
       ChordPresetPack,
@@ -85,7 +88,7 @@ using WrappedObjectWithChangeSignal = struct _WrappedObjectWithChangeSignal
       MidiMapping,
       ProjectInfo,
       ChannelSendTarget,
-      PluginCollection,
+      zrythm::plugins::PluginCollection,
       ExtPort,
       FileBrowserLocation>>;
   using ObjPtrVariant =
@@ -150,7 +153,7 @@ Port *
 wrapped_object_with_change_signal_get_port (
   WrappedObjectWithChangeSignal * self);
 
-Plugin *
+zrythm::plugins::Plugin *
 wrapped_object_with_change_signal_get_plugin (
   WrappedObjectWithChangeSignal * self);
 

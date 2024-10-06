@@ -29,13 +29,15 @@ G_DEFINE_TYPE (ChannelSlotWidget, channel_slot_widget, GTK_TYPE_WIDGET)
 
 #define ELLIPSIZE_PADDING 2
 
-Plugin *
+zrythm::plugins::Plugin *
 channel_slot_widget_get_plugin (ChannelSlotWidget * self)
 {
   z_return_val_if_fail (
-    self->type == PluginSlotType::Instrument || IS_TRACK (self->track), nullptr);
+    self->type == zrythm::plugins::PluginSlotType::Instrument
+      || IS_TRACK (self->track),
+    nullptr);
 
-  Plugin * plugin =
+  zrythm::plugins::Plugin * plugin =
     self->track->channel_->get_plugin_at_slot (self->slot_index, self->type);
   return plugin;
 }
@@ -73,14 +75,14 @@ channel_slot_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   int btn_width = gtk_widget_get_width (GTK_WIDGET (self->activate_btn));
   int height = gtk_widget_get_height (widget);
 
-  Plugin * plugin = channel_slot_widget_get_plugin (self);
+  zrythm::plugins::Plugin * plugin = channel_slot_widget_get_plugin (self);
 
 #define MAX_LEN 400
   char txt[MAX_LEN];
 
   if (plugin)
     {
-      const PluginDescriptor &descr = plugin->get_descriptor ();
+      const zrythm::plugins::PluginDescriptor &descr = plugin->get_descriptor ();
 
       /* fill text */
       if (plugin->instantiation_failed_)
@@ -120,7 +122,7 @@ channel_slot_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     {
       /* fill text */
       int w, h;
-      if (self->type == PluginSlotType::Instrument)
+      if (self->type == zrythm::plugins::PluginSlotType::Instrument)
         {
           snprintf (txt, MAX_LEN, "%s", _ ("No instrument"));
         }
@@ -183,16 +185,16 @@ on_dnd_drop (
 
   WrappedObjectWithChangeSignal * wrapped_obj =
     static_cast<WrappedObjectWithChangeSignal *> (g_value_get_object (value));
-  Plugin *           pl = nullptr;
-  PluginDescriptor * descr = nullptr;
+  zrythm::plugins::Plugin *           pl = nullptr;
+  zrythm::plugins::PluginDescriptor * descr = nullptr;
   std::visit (
     [&] (auto &&obj) {
       using ObjT = base_type<decltype (obj)>;
-      if constexpr (std::is_same_v<ObjT, PluginDescriptor>)
+      if constexpr (std::is_same_v<ObjT, zrythm::plugins::PluginDescriptor>)
         {
           descr = obj;
         }
-      else if constexpr (std::derived_from<ObjT, Plugin>)
+      else if constexpr (std::derived_from<ObjT, zrythm::plugins::Plugin>)
         {
           pl = obj;
         }
@@ -320,7 +322,7 @@ select_plugin (ChannelSlotWidget * self, bool ctrl, bool fire_events)
   bool pl = false, ch = false;
 
   /* if plugin exists */
-  Plugin * plugin = channel_slot_widget_get_plugin (self);
+  zrythm::plugins::Plugin * plugin = channel_slot_widget_get_plugin (self);
   if (plugin)
     pl = true;
 
@@ -365,7 +367,7 @@ drag_end (
   GdkModifierType state = gtk_event_controller_get_current_event_state (
     GTK_EVENT_CONTROLLER (gesture));
 
-  Plugin * pl = channel_slot_widget_get_plugin (self);
+  zrythm::plugins::Plugin * pl = channel_slot_widget_get_plugin (self);
   if (pl && self->n_press == 2)
     {
       bool new_visible = !pl->visible_;
@@ -410,13 +412,13 @@ on_press (
 
   if (
     self->open_plugin_inspector_on_click
-    && self->type != PluginSlotType::Instrument)
+    && self->type != zrythm::plugins::PluginSlotType::Instrument)
     {
-      if (self->type == PluginSlotType::Insert)
+      if (self->type == zrythm::plugins::PluginSlotType::Insert)
         {
           PROJECT->last_selection_ = Project::SelectionType::Insert;
         }
-      else if (self->type == PluginSlotType::MidiFx)
+      else if (self->type == zrythm::plugins::PluginSlotType::MidiFx)
         {
           PROJECT->last_selection_ = Project::SelectionType::MidiFX;
         }
@@ -432,7 +434,7 @@ tick_cb (GtkWidget * widget, GdkFrameClock * frame_clock, ChannelSlotWidget * se
       return G_SOURCE_CONTINUE;
     }
 
-  Plugin * pl = channel_slot_widget_get_plugin (self);
+  zrythm::plugins::Plugin * pl = channel_slot_widget_get_plugin (self);
   if (pl)
     {
       gtk_widget_set_sensitive (GTK_WIDGET (self->activate_btn), true);
@@ -460,7 +462,7 @@ tick_cb (GtkWidget * widget, GdkFrameClock * frame_clock, ChannelSlotWidget * se
       gtk_widget_set_sensitive (GTK_WIDGET (self->activate_btn), false);
     }
 
-  Plugin * plugin = channel_slot_widget_get_plugin (self);
+  zrythm::plugins::Plugin * plugin = channel_slot_widget_get_plugin (self);
   bool     empty = plugin == NULL;
   self->was_empty = empty;
   gtk_widget_remove_css_class (GTK_WIDGET (self), "empty");
@@ -495,23 +497,24 @@ tick_cb (GtkWidget * widget, GdkFrameClock * frame_clock, ChannelSlotWidget * se
 
   gtk_widget_set_visible (
     GTK_WIDGET (self->bridge_icon),
-    plugin && plugin->setting_.bridge_mode_ != CarlaBridgeMode::None);
+    plugin
+      && plugin->setting_.bridge_mode_ != zrythm::plugins::CarlaBridgeMode::None);
   if (plugin)
     {
       switch (plugin->setting_.bridge_mode_)
         {
-        case CarlaBridgeMode::Full:
+        case zrythm::plugins::CarlaBridgeMode::Full:
           gtk_image_set_from_icon_name (self->bridge_icon, "css.gg-remote");
           gtk_widget_set_tooltip_text (
             GTK_WIDGET (self->bridge_icon), _ ("Bridged (Full)"));
           break;
-        case CarlaBridgeMode::UI:
+        case zrythm::plugins::CarlaBridgeMode::UI:
           gtk_image_set_from_icon_name (
             self->bridge_icon, "material-design-remote-desktop");
           gtk_widget_set_tooltip_text (
             GTK_WIDGET (self->bridge_icon), _ ("Bridged (UI)"));
           break;
-        case CarlaBridgeMode::None:
+        case zrythm::plugins::CarlaBridgeMode::None:
           break;
         }
     }
@@ -526,16 +529,16 @@ show_context_menu (ChannelSlotWidget * self, double x, double y)
 
   switch (self->type)
     {
-    case PluginSlotType::Insert:
+    case zrythm::plugins::PluginSlotType::Insert:
       PROJECT->last_selection_ = Project::SelectionType::Insert;
       break;
-    case PluginSlotType::Instrument:
+    case zrythm::plugins::PluginSlotType::Instrument:
       PROJECT->last_selection_ = Project::SelectionType::Instrument;
       break;
-    case PluginSlotType::MidiFx:
+    case zrythm::plugins::PluginSlotType::MidiFx:
       PROJECT->last_selection_ = Project::SelectionType::MidiFX;
       break;
-    case PluginSlotType::Modulator:
+    case zrythm::plugins::PluginSlotType::Modulator:
       PROJECT->last_selection_ = Project::SelectionType::Modulator;
       break;
     default:
@@ -547,7 +550,7 @@ show_context_menu (ChannelSlotWidget * self, double x, double y)
   GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
-  Plugin * pl = channel_slot_widget_get_plugin (self);
+  zrythm::plugins::Plugin * pl = channel_slot_widget_get_plugin (self);
 
   if (pl)
     {
@@ -577,7 +580,7 @@ show_context_menu (ChannelSlotWidget * self, double x, double y)
     }
 
   GMenu * edit_submenu = g_menu_new ();
-  if (self->type != PluginSlotType::Instrument)
+  if (self->type != zrythm::plugins::PluginSlotType::Instrument)
     {
       menuitem = CREATE_CUT_MENU_ITEM ("app.cut");
       g_menu_append_item (edit_submenu, menuitem);
@@ -588,7 +591,7 @@ show_context_menu (ChannelSlotWidget * self, double x, double y)
     }
 
   /* if plugin exists */
-  if (pl && self->type != PluginSlotType::Instrument)
+  if (pl && self->type != zrythm::plugins::PluginSlotType::Instrument)
     {
       /* add delete item */
       menuitem = CREATE_DELETE_MENU_ITEM ("app.mixer-selections-delete");
@@ -597,7 +600,7 @@ show_context_menu (ChannelSlotWidget * self, double x, double y)
 
   g_menu_append_section (menu, nullptr, G_MENU_MODEL (edit_submenu));
 
-  if (self->type != PluginSlotType::Instrument)
+  if (self->type != zrythm::plugins::PluginSlotType::Instrument)
     {
       GMenu * select_submenu = g_menu_new ();
 
@@ -690,14 +693,14 @@ on_dnd_drag_prepare (
   double              y,
   ChannelSlotWidget * self)
 {
-  Plugin *                        pl = channel_slot_widget_get_plugin (self);
+  zrythm::plugins::Plugin *       pl = channel_slot_widget_get_plugin (self);
   WrappedObjectWithChangeSignal * wrapped_obj = nullptr;
   std::visit (
     [&] (auto &&derived_pl) {
       wrapped_obj = wrapped_object_with_change_signal_new (
         derived_pl, WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN);
     },
-    convert_to_variant<PluginPtrVariant> (pl));
+    convert_to_variant<zrythm::plugins::PluginPtrVariant> (pl));
   GdkContentProvider * content_providers[] = {
     gdk_content_provider_new_typed (
       WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, wrapped_obj),
@@ -710,7 +713,7 @@ on_dnd_drag_prepare (
 static void
 setup_dnd (ChannelSlotWidget * self)
 {
-  if (self->type != PluginSlotType::Instrument)
+  if (self->type != zrythm::plugins::PluginSlotType::Instrument)
     {
       /* set as drag source for plugin */
       GtkDragSource * drag_source = gtk_drag_source_new ();
@@ -746,10 +749,10 @@ setup_dnd (ChannelSlotWidget * self)
  */
 ChannelSlotWidget *
 channel_slot_widget_new (
-  int            slot_index,
-  ChannelTrack * track,
-  PluginSlotType type,
-  bool           open_plugin_inspector_on_click)
+  int                             slot_index,
+  ChannelTrack *                  track,
+  zrythm::plugins::PluginSlotType type,
+  bool                            open_plugin_inspector_on_click)
 {
   ChannelSlotWidget * self = static_cast<ChannelSlotWidget *> (
     g_object_new (CHANNEL_SLOT_WIDGET_TYPE, nullptr));
@@ -770,8 +773,8 @@ channel_slot_widget_new (
 ChannelSlotWidget *
 channel_slot_widget_new_instrument (void)
 {
-  ChannelSlotWidget * self =
-    channel_slot_widget_new (-1, nullptr, PluginSlotType::Instrument, false);
+  ChannelSlotWidget * self = channel_slot_widget_new (
+    -1, nullptr, zrythm::plugins::PluginSlotType::Instrument, false);
 
   return self;
 }

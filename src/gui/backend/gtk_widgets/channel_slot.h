@@ -22,7 +22,10 @@ G_DECLARE_FINAL_TYPE (
   CHANNEL_SLOT_WIDGET,
   GtkWidget)
 
+namespace zrythm::plugins
+{
 class Plugin;
+}
 class Channel;
 class ChannelTrack;
 TYPEDEF_STRUCT_UNDERSCORED (ChannelSlotActivateButtonWidget);
@@ -37,7 +40,7 @@ using ChannelSlotWidget = struct _ChannelSlotWidget
 {
   GtkWidget parent_instance;
 
-  PluginSlotType type;
+  zrythm::plugins::PluginSlotType type;
 
   /** The Track this belongs to. */
   ChannelTrack * track;
@@ -94,17 +97,17 @@ channel_slot_widget_new_instrument ();
  */
 ChannelSlotWidget *
 channel_slot_widget_new (
-  int            slot_index,
-  ChannelTrack * track,
-  PluginSlotType type,
-  bool           open_plugin_inspector_on_click);
+  int                             slot_index,
+  ChannelTrack *                  track,
+  zrythm::plugins::PluginSlotType type,
+  bool                            open_plugin_inspector_on_click);
 
 void
 channel_slot_widget_set_instrument (
   ChannelSlotWidget * self,
   ChannelTrack *      track);
 
-Plugin *
+zrythm::plugins::Plugin *
 channel_slot_widget_get_plugin (ChannelSlotWidget * self);
 
 /**

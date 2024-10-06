@@ -103,7 +103,7 @@ TEST_F (ZrythmFixture, LoadPluginsNeedingBridging)
   auto setting = test_plugin_manager_get_plugin_setting (
     CALF_MONOSYNTH_BUNDLE, CALF_MONOSYNTH_URI, false);
   ASSERT_TRUE (setting.open_with_carla_);
-  ASSERT_EQ (setting.bridge_mode_, CarlaBridgeMode::Full);
+  ASSERT_EQ (setting.bridge_mode_, zrythm::plugins::CarlaBridgeMode::Full);
 
   test_project_save_and_reload ();
 #  endif

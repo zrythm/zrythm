@@ -46,7 +46,10 @@
 #include <glibmm.h>
 
 class Channel;
+namespace zrythm::plugins
+{
 class Plugin;
+}
 class Tracklist;
 class ExtPort;
 class MidiMappings;
