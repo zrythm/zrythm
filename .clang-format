@@ -87,18 +87,21 @@ IncludeCategories:
   # C++ standard headers
   - Regex:           '<([a-z_])+>'
     Priority:        -4
+    CaseSensitive:   true
   - Regex:           '^<(assert|errno|inttypes|signal|cstring|cstd.+|sys/.+|cmath|cfloat)\.h>$'
     Priority:        -2
     CaseSensitive:   true
   - Regex:           '^"((common|gui)/.*|zrythm\.h|zrythm_app\.h|project.*\.h)'
     Priority:        3
     CaseSensitive:   true
+  - Regex:           '^<(Q|qqml).*>$'
+    Priority:        10
   - Regex:           '^<(((glib|gtk|gio)/.*)|adwaita|glib|libpanel)\.h>$'
-    Priority:        4
+    Priority:        20
   - Regex:           '^"(tests|helpers)/.*"$'
-    Priority:        5
+    Priority:        30
   - Regex:           '.*'
-    Priority:        6
+    Priority:        40
 # don't use main includes
 IncludeIsMainRegex: '^$'
 IndentAccessModifiers: false
