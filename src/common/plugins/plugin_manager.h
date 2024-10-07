@@ -18,6 +18,7 @@
 #include "common/plugins/plugin_descriptor.h"
 #include "common/utils/string_array.h"
 #include "common/utils/types.h"
+#include "gui/backend/plugin_descriptor_list.h"
 
 namespace zrythm::plugins
 {
@@ -36,8 +37,14 @@ class ZCarlaDiscovery;
  * The PluginManager is responsible for scanning and keeping track of available
  * Plugin's.
  */
-class PluginManager
+class PluginManager final : public QObject
 {
+  Q_OBJECT
+  QML_ELEMENT
+  Q_PROPERTY (
+    gui::PluginDescriptorList * pluginDescriptors READ getPluginDescriptors
+      CONSTANT FINAL)
+  Q_PROPERTY (QString test READ getTest CONSTANT FINAL)
 public:
   PluginManager ()
       : cached_plugin_descriptors_ (CachedPluginDescriptors::read_or_new ()),
@@ -45,6 +52,13 @@ public:
         carla_discovery_ (std::make_unique<ZCarlaDiscovery> (*this))
   {
   }
+
+  gui::PluginDescriptorList * getPluginDescriptors () const
+  {
+    return plugin_descriptors_.get ();
+  }
+
+  QString getTest () const { return QString::fromStdString ("test: 1"); }
 
   static std::vector<fs::path>
   get_paths_for_protocol (const PluginProtocol protocol);
@@ -124,7 +138,8 @@ public:
   /**
    * Scanned plugin descriptors.
    */
-  std::vector<PluginDescriptor> plugin_descriptors_;
+  std::unique_ptr<zrythm::gui::PluginDescriptorList> plugin_descriptors_;
+  // std::vector<PluginDescriptor> plugin_descriptors_;
 
   /** Plugin categories. */
   std::vector<std::string> plugin_categories_;

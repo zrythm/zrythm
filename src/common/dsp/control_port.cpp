@@ -71,7 +71,7 @@ ControlPort::forward_control_change_event ()
       if (pl)
         {
 #if HAVE_CARLA
-          if (pl->setting_.open_with_carla_ && carla_param_id_ >= 0)
+          if (pl->setting_->open_with_carla_ && carla_param_id_ >= 0)
             {
               auto carla =
                 dynamic_cast<zrythm::plugins::CarlaNativePlugin *> (pl);

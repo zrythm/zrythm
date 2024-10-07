@@ -846,7 +846,7 @@ CarlaNativePlugin::create_ports (bool loading)
 {
   z_debug ("{}: loading: {}", __func__, loading);
 
-  const auto &descr = setting_.descr_;
+  const auto &descr = setting_->descr_;
   if (!loading)
     {
       const CarlaPortCountInfo * audio_port_count_nfo =
@@ -858,9 +858,9 @@ CarlaNativePlugin::create_ports (bool loading)
        * happens with WAVES Abbey Road Saturator Mono when
        * bridged with yabridge (VST2) */
       z_return_if_fail_cmp (
-        (int) audio_port_count_nfo->ins, ==, descr.num_audio_ins_);
+        (int) audio_port_count_nfo->ins, ==, descr->num_audio_ins_);
       int audio_ins_to_create =
-        descr.num_audio_ins_ == 1 ? 2 : descr.num_audio_ins_;
+        descr->num_audio_ins_ == 1 ? 2 : descr->num_audio_ins_;
       for (int i = 0; i < audio_ins_to_create; i++)
         {
           std::string port_name = fmt::format ("{} {}", _ ("Audio in"), i);
@@ -869,7 +869,7 @@ CarlaNativePlugin::create_ports (bool loading)
 #  ifdef CARLA_HAVE_AUDIO_PORT_HINTS
           unsigned int audio_port_hints = carla_get_audio_port_hints (
             host_handle_, 0, false,
-            (uint32_t) (descr.num_audio_ins_ == 1 ? 0 : i));
+            (uint32_t) (descr->num_audio_ins_ == 1 ? 0 : i));
           z_debug ("audio port hints {}: {}", i, audio_port_hints);
           if (audio_port_hints & CarlaBackend::AUDIO_PORT_IS_SIDECHAIN)
             {
@@ -912,7 +912,7 @@ CarlaNativePlugin::create_ports (bool loading)
         }
 
       size_t audio_outs_to_create =
-        descr.num_audio_outs_ == 1 ? 2 : descr.num_audio_outs_;
+        descr->num_audio_outs_ == 1 ? 2 : descr->num_audio_outs_;
       for (size_t i = 0; i < audio_outs_to_create; i++)
         {
           auto port = std::make_unique<AudioPort> (
@@ -920,7 +920,7 @@ CarlaNativePlugin::create_ports (bool loading)
           port->id_.sym_ = fmt::format ("audio_out_{}", i);
           add_out_port (std::move (port));
         }
-      for (int i = 0; i < descr.num_midi_ins_; i++)
+      for (int i = 0; i < descr->num_midi_ins_; i++)
         {
           auto port = std::make_unique<MidiPort> (
             fmt::format ("{} {}", _ ("MIDI in"), i), PortFlow::Input);
@@ -928,7 +928,7 @@ CarlaNativePlugin::create_ports (bool loading)
           port->id_.flags2_ |= PortIdentifier::Flags2::SupportsMidi;
           add_in_port (std::move (port));
         }
-      for (int i = 0; i < descr.num_midi_outs_; i++)
+      for (int i = 0; i < descr->num_midi_outs_; i++)
         {
           auto port = std::make_unique<MidiPort> (
             fmt::format ("{} {}", _ ("MIDI out"), i), PortFlow::Output);
@@ -936,14 +936,14 @@ CarlaNativePlugin::create_ports (bool loading)
           port->id_.flags2_ |= PortIdentifier::Flags2::SupportsMidi;
           add_out_port (std::move (port));
         }
-      for (int i = 0; i < descr.num_cv_ins_; i++)
+      for (int i = 0; i < descr->num_cv_ins_; i++)
         {
           auto port = std::make_unique<CVPort> (
             fmt::format ("{} {}", _ ("CV in"), i), PortFlow::Input);
           port->id_.sym_ = fmt::format ("cv_in_{}", i);
           add_in_port (std::move (port));
         }
-      for (int i = 0; i < descr.num_cv_outs_; i++)
+      for (int i = 0; i < descr->num_cv_outs_; i++)
         {
           auto port = std::make_unique<CVPort> (
             fmt::format ("{} {}", _ ("CV out"), i), PortFlow::Output);
@@ -1264,10 +1264,10 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
   /* choose most appropriate patchbay variant */
   max_variant_midi_ins_ = 1;
   max_variant_midi_outs_ = 1;
-  const auto &descr = setting_.descr_;
+  const auto &descr = setting_->descr_;
   if (
-    descr.num_audio_ins_ <= 2 && descr.num_audio_outs_ <= 2
-    && descr.num_cv_ins_ == 0 && descr.num_cv_outs_ == 0)
+    descr->num_audio_ins_ <= 2 && descr->num_audio_outs_ <= 2
+    && descr->num_cv_ins_ == 0 && descr->num_cv_outs_ == 0)
     {
       native_plugin_descriptor_ = carla_get_native_patchbay_plugin ();
       max_variant_audio_ins_ = 2;
@@ -1275,8 +1275,8 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
       z_debug ("using standard patchbay variant");
     }
   else if (
-    descr.num_audio_ins_ <= 16 && descr.num_audio_outs_ <= 16
-    && descr.num_cv_ins_ == 0 && descr.num_cv_outs_ == 0)
+    descr->num_audio_ins_ <= 16 && descr->num_audio_outs_ <= 16
+    && descr->num_cv_ins_ == 0 && descr->num_cv_outs_ == 0)
     {
       native_plugin_descriptor_ = carla_get_native_patchbay16_plugin ();
       max_variant_audio_ins_ = 16;
@@ -1284,8 +1284,8 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
       z_debug ("using patchbay 16 variant");
     }
   else if (
-    descr.num_audio_ins_ <= 32 && descr.num_audio_outs_ <= 32
-    && descr.num_cv_ins_ == 0 && descr.num_cv_outs_ == 0)
+    descr->num_audio_ins_ <= 32 && descr->num_audio_outs_ <= 32
+    && descr->num_cv_ins_ == 0 && descr->num_cv_outs_ == 0)
     {
       native_plugin_descriptor_ = carla_get_native_patchbay32_plugin ();
       max_variant_audio_ins_ = 32;
@@ -1293,8 +1293,8 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
       z_debug ("using patchbay 32 variant");
     }
   else if (
-    descr.num_audio_ins_ <= 64 && descr.num_audio_outs_ <= 64
-    && descr.num_cv_ins_ == 0 && descr.num_cv_outs_ == 0)
+    descr->num_audio_ins_ <= 64 && descr->num_audio_outs_ <= 64
+    && descr->num_cv_ins_ == 0 && descr->num_cv_outs_ == 0)
     {
       native_plugin_descriptor_ = carla_get_native_patchbay64_plugin ();
       max_variant_audio_ins_ = 64;
@@ -1302,8 +1302,8 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
       z_debug ("using patchbay 64 variant");
     }
   else if (
-    descr.num_audio_ins_ <= 2 && descr.num_audio_outs_ <= 2
-    && descr.num_cv_ins_ <= 5 && descr.num_cv_outs_ <= 5)
+    descr->num_audio_ins_ <= 2 && descr->num_audio_outs_ <= 2
+    && descr->num_cv_ins_ <= 5 && descr->num_cv_outs_ <= 5)
     {
       native_plugin_descriptor_ = carla_get_native_patchbay_cv_plugin ();
       max_variant_audio_ins_ = 2;
@@ -1314,8 +1314,8 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
     }
 #  ifdef CARLA_HAVE_CV8_PATCHBAY_VARIANT
   else if (
-    descr.num_audio_ins_ <= 2 && descr.num_audio_outs_ <= 2
-    && descr.num_cv_ins_ <= 8 && descr.num_cv_outs_ <= 8)
+    descr->num_audio_ins_ <= 2 && descr->num_audio_outs_ <= 2
+    && descr->num_cv_ins_ <= 8 && descr->num_cv_outs_ <= 8)
     {
       native_plugin_descriptor_ = carla_get_native_patchbay_cv8_plugin ();
       max_variant_audio_ins_ = 2;
@@ -1327,8 +1327,8 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
 #  endif
 #  ifdef CARLA_HAVE_CV32_PATCHBAY_VARIANT
   else if (
-    descr.num_audio_ins_ <= 64 && descr.num_audio_outs_ <= 64
-    && descr.num_cv_ins_ <= 32 && descr.num_cv_outs_ <= 32)
+    descr->num_audio_ins_ <= 64 && descr->num_audio_outs_ <= 64
+    && descr->num_cv_ins_ <= 32 && descr->num_cv_outs_ <= 32)
     {
       native_plugin_descriptor_ = carla_get_native_patchbay_cv32_plugin ();
       max_variant_audio_ins_ = 64;
@@ -1342,8 +1342,8 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
     {
       z_warning (
         "Plugin with {} audio ins, {} audio outs, {} CV ins, {} CV outs not fully supported. Using standard Carla Patchbay variant",
-        descr.num_audio_ins_, descr.num_audio_outs_, descr.num_cv_ins_,
-        descr.num_cv_outs_);
+        descr->num_audio_ins_, descr->num_audio_outs_, descr->num_cv_ins_,
+        descr->num_cv_outs_);
       native_plugin_descriptor_ = carla_get_native_patchbay_plugin ();
       max_variant_audio_ins_ = 2;
       max_variant_audio_outs_ = 2;
@@ -1399,9 +1399,9 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
   /* set plugin paths */
   {
     auto paths =
-      PLUGIN_MANAGER->get_paths_for_protocol_separated (descr.protocol_);
+      PLUGIN_MANAGER->get_paths_for_protocol_separated (get_protocol ());
     auto ptype = zrythm::plugins::PluginDescriptor::
-      get_carla_plugin_type_from_protocol (descr.protocol_);
+      get_carla_plugin_type_from_protocol (get_protocol ());
     carla_set_engine_option (
       host_handle_, CarlaBackend::ENGINE_OPTION_PLUGIN_PATH, ptype,
       paths.c_str ());
@@ -1428,10 +1428,10 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
 
   update_buffer_size_and_sample_rate ();
 
-  z_debug ("using bridge mode {}", ENUM_NAME (setting_.bridge_mode_));
+  z_debug ("using bridge mode {}", ENUM_NAME (setting_->bridge_mode_));
 
   /* set bridging on if needed */
-  switch (setting_.bridge_mode_)
+  switch (setting_->bridge_mode_)
     {
     case zrythm::plugins::CarlaBridgeMode::Full:
       z_debug ("plugin must be bridged whole, using plugin bridge");
@@ -1451,8 +1451,8 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
 
   /* raise bridge timeout to 8 sec */
   if (
-    setting_.bridge_mode_ == zrythm::plugins::CarlaBridgeMode::Full
-    || setting_.bridge_mode_ == zrythm::plugins::CarlaBridgeMode::UI)
+    setting_->bridge_mode_ == zrythm::plugins::CarlaBridgeMode::Full
+    || setting_->bridge_mode_ == zrythm::plugins::CarlaBridgeMode::UI)
     {
       carla_set_engine_option (
         host_handle_, CarlaBackend::ENGINE_OPTION_UI_BRIDGES_TIMEOUT, 8000,
@@ -1467,7 +1467,7 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
       throw ZrythmException ("Failed to set USES_EMBED");
     }
 
-  bool added = add_internal_plugin_from_descr (descr);
+  bool added = add_internal_plugin_from_descr (*descr);
 
   update_buffer_size_and_sample_rate ();
 
@@ -1691,7 +1691,7 @@ CarlaNativePlugin::open_custom_ui (bool show)
       return;
     }
 
-  switch (setting_.descr_.protocol_)
+  switch (get_protocol ())
     {
     case PluginProtocol::VST:
     case PluginProtocol::VST3:

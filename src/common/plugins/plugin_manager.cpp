@@ -657,7 +657,7 @@ void
 PluginManager::add_descriptor (const zrythm::plugins::PluginDescriptor &descr)
 {
   z_return_if_fail (descr.protocol_ > PluginProtocol::DUMMY);
-  plugin_descriptors_.push_back (descr);
+  plugin_descriptors_->addDescriptor (descr);
   add_category_and_author (descr.category_str_, descr.author_);
 }
 
@@ -668,9 +668,10 @@ PluginManager::call_carla_discovery_idle ()
   if (done)
     {
       /* sort alphabetically */
-      std::sort (
-        plugin_descriptors_.begin (), plugin_descriptors_.end (),
-        [] (const auto &a, const auto &b) { return a.name_ < b.name_; });
+      plugin_descriptors_->sort (0, Qt::SortOrder::AscendingOrder);
+      // std::sort (
+      // plugin_descriptors_.begin (), plugin_descriptors_.end (),
+      // [] (const auto &a, const auto &b) { return a.name_ < b.name_; });
       std::sort (plugin_categories_.begin (), plugin_categories_.end ());
       std::sort (plugin_authors_.begin (), plugin_authors_.end ());
 
@@ -740,6 +741,8 @@ PluginManager::
 std::unique_ptr<PluginDescriptor>
 PluginManager::find_plugin_from_uri (std::string_view uri) const
 {
+// TODO
+#if 0
   auto it = std::find_if (
     plugin_descriptors_.begin (), plugin_descriptors_.end (),
     [&uri] (const zrythm::plugins::PluginDescriptor &descr) {
@@ -754,12 +757,16 @@ PluginManager::find_plugin_from_uri (std::string_view uri) const
       z_debug ("descriptor for URI {} not found", uri);
       return nullptr;
     }
+#endif
+  return nullptr;
 }
 
 std::unique_ptr<PluginDescriptor>
 PluginManager::find_from_descriptor (
   const zrythm::plugins::PluginDescriptor &src_descr) const
 {
+// TODO
+#if 0
   auto it = std::find_if (
     plugin_descriptors_.begin (), plugin_descriptors_.end (),
     [&src_descr] (const zrythm::plugins::PluginDescriptor &descr) {
@@ -774,11 +781,15 @@ PluginManager::find_from_descriptor (
       z_debug ("descriptor for {} not found", src_descr.name_);
       return nullptr;
     }
+#endif
+  return nullptr;
 }
 
 std::unique_ptr<PluginDescriptor>
 PluginManager::pick_instrument () const
 {
+// TODO
+#if 0
   auto it = std::find_if (
     plugin_descriptors_.begin (), plugin_descriptors_.end (),
     [] (const auto &descr) { return descr.is_instrument (); });
@@ -791,6 +802,8 @@ PluginManager::pick_instrument () const
       z_debug ("no instrument found");
       return nullptr;
     }
+#endif
+  return nullptr;
 }
 
 void
@@ -808,7 +821,7 @@ PluginManager::set_currently_scanning_plugin (
 void
 PluginManager::clear_plugins ()
 {
-  plugin_descriptors_.clear ();
+  plugin_descriptors_->clear ();
   plugin_categories_.clear ();
   plugin_authors_.clear ();
 }

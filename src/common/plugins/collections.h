@@ -24,7 +24,9 @@ namespace zrythm::plugins
 /**
  * Plugin collection used in the plugin browser.
  */
-class PluginCollection final : public ISerializable<PluginCollection>
+class PluginCollection final
+    : public ICloneable<PluginCollection>,
+      public ISerializable<PluginCollection>
 {
 public:
   std::string get_name () const { return name_; }
@@ -55,6 +57,8 @@ public:
    */
   Glib::RefPtr<Gio::MenuModel> generate_context_menu () const;
 
+  void init_after_cloning (const PluginCollection &other) override;
+
 public:
   /** Name of the collection. */
   std::string name_;
@@ -63,7 +67,7 @@ public:
   std::string description_;
 
   /** Plugin descriptors. */
-  std::vector<PluginDescriptor> descriptors_;
+  std::vector<std::unique_ptr<PluginDescriptor>> descriptors_;
 };
 
 /**
@@ -145,7 +149,7 @@ private:
 
 public:
   /** Plugin collections. */
-  std::vector<PluginCollection> collections_;
+  std::vector<std::unique_ptr<PluginCollection>> collections_;
 };
 
 } // namespace zrythm::plugins

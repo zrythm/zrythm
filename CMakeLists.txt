@@ -1157,6 +1157,9 @@ qt_add_qml_module(zrythm
     ${CMAKE_CURRENT_SOURCE_DIR}/src/gui/resources/qtquickcontrols2.conf
     ${icon_files}
     ${font_files}
+  SOURCES # for some reason singletons must be added here
+    src/global_state.h
+    src/global_state.cpp
   # NO_RESOURCE_TARGET_PATH
 )
 

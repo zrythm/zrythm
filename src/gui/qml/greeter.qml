@@ -4,10 +4,15 @@
 import QtQuick
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
+import Zrythm 1.0
 import "config.js" as Config
 
 ApplicationWindow {
     id: greeter
+
+    function pluginManager() {
+        return GlobalState.zrythm.pluginManager;
+    }
 
     title: "Zrythm"
     modality: Qt.ApplicationModal
@@ -17,6 +22,9 @@ ApplicationWindow {
     visible: true
     font.family: interFont.name
     font.pointSize: 10
+    Component.onCompleted: {
+        console.log(typeof pluginManager());
+    }
 
     palette {
         accent: themeManager.accent
@@ -280,7 +288,8 @@ ApplicationWindow {
                     spacing: 12
 
                     Text {
-                        text: "Loading Plugin X..."
+                        // text: "Loading Plugin X..."
+                        text: pluginManager().test
                         horizontalAlignment: Qt.AlignHCenter
                         verticalAlignment: Qt.AlignVCenter
                         Layout.fillWidth: true

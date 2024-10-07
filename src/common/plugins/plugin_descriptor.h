@@ -17,17 +17,18 @@
 #include "carla_wrapper.h"
 
 TYPEDEF_STRUCT_UNDERSCORED (WrappedObjectWithChangeSignal);
-enum class PluginSlotType;
 enum class TrackType;
-
-namespace zrythm::plugins
-{
 
 /**
  * @addtogroup plugins
  *
  * @{
  */
+
+namespace zrythm::plugins
+{
+
+enum class PluginSlotType;
 
 /**
  * Plugin category.
@@ -134,8 +135,15 @@ enum class CarlaBridgeMode
  * metadata, such as its author, name, website, category, port counts,
  * architecture, protocol, and unique ID (for VST plugins).
  */
-class PluginDescriptor final : public ISerializable<PluginDescriptor>
+class PluginDescriptor final
+    : public QObject,
+      public ISerializable<PluginDescriptor>,
+      public ICloneable<PluginDescriptor>
 {
+  Q_OBJECT
+
+  Q_PROPERTY (QString name READ getName CONSTANT FINAL)
+
 public:
   static std::string plugin_protocol_to_str (PluginProtocol prot);
 
@@ -201,6 +209,13 @@ public:
   std::string get_icon_name () const;
 
   GMenuModel * generate_context_menu () const;
+
+  [[nodiscard]] QString getName () const
+  {
+    return QString::fromStdString (name_);
+  }
+
+  void init_after_cloning (const PluginDescriptor &other) override;
 
 public:
   std::string     author_;

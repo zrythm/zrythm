@@ -23,6 +23,24 @@
 
 constexpr const char * PLUGIN_SETTINGS_JSON_FILENAME = "plugin-settings.json";
 
+void
+PluginSetting::copy_fields_from (const PluginSetting &other)
+{
+  descr_ = other.descr_->clone_unique ();
+  hosting_type_ = other.hosting_type_;
+  open_with_carla_ = other.open_with_carla_;
+  force_generic_ui_ = other.force_generic_ui_;
+  bridge_mode_ = other.bridge_mode_;
+  last_instantiated_time_ = other.last_instantiated_time_;
+  num_instantiations_ = other.num_instantiations_;
+}
+
+void
+PluginSetting::init_after_cloning (const PluginSetting &other)
+{
+  copy_fields_from (other);
+}
+
 PluginSetting::PluginSetting (const zrythm::plugins::PluginDescriptor &descr)
 {
   PluginSetting * existing = nullptr;
@@ -33,12 +51,12 @@ PluginSetting::PluginSetting (const zrythm::plugins::PluginDescriptor &descr)
 
   if (existing)
     {
-      *this = *existing;
+      copy_fields_from (*existing);
       validate (false);
     }
   else
     {
-      this->descr_ = descr;
+      descr_ = descr.clone_unique ();
       /* bridge all plugins by default */
       this->bridge_mode_ = zrythm::plugins::CarlaBridgeMode::Full;
       validate (false);
@@ -57,7 +75,7 @@ PluginSetting::print () const
     "last_instantiated_time=%" G_GINT64_FORMAT
     ", "
     "num_instantiations=%d",
-    this->descr_.uri_, this->open_with_carla_, this->force_generic_ui_,
+    this->descr_->uri_, this->open_with_carla_, this->force_generic_ui_,
     ENUM_NAME (this->bridge_mode_), this->last_instantiated_time_,
     this->num_instantiations_);
 }
@@ -79,7 +97,7 @@ PluginSetting::validate (bool print_result)
     }
 #endif
 
-  zrythm::plugins::PluginProtocol prot = descr_.protocol_;
+  zrythm::plugins::PluginProtocol prot = get_descriptor ()->protocol_;
   if (
     prot == zrythm::plugins::PluginProtocol::VST
     || prot == zrythm::plugins::PluginProtocol::VST3
@@ -109,7 +127,7 @@ PluginSetting::validate (bool print_result)
 
 #if HAVE_CARLA
   /* in wayland open all LV2 plugins with custom UIs using carla */
-  if (z_gtk_is_wayland () && descr_.has_custom_ui_)
+  if (z_gtk_is_wayland () && get_descriptor ()->has_custom_ui_)
     {
       open_with_carla_ = true;
     }
@@ -120,7 +138,7 @@ PluginSetting::validate (bool print_result)
   /*z_debug ("{}: recalculating bridge mode...", __func__);*/
   if (this->bridge_mode_ == zrythm::plugins::CarlaBridgeMode::None)
     {
-      this->bridge_mode_ = descr_.min_bridge_mode_;
+      this->bridge_mode_ = get_descriptor ()->min_bridge_mode_;
       if (this->bridge_mode_ == zrythm::plugins::CarlaBridgeMode::None)
         {
 #  if 0
@@ -142,7 +160,7 @@ PluginSetting::validate (bool print_result)
   else
     {
       this->open_with_carla_ = true;
-      zrythm::plugins::CarlaBridgeMode mode = descr_.min_bridge_mode_;
+      zrythm::plugins::CarlaBridgeMode mode = descr_->min_bridge_mode_;
 
       if (mode == zrythm::plugins::CarlaBridgeMode::Full)
         {
@@ -163,7 +181,7 @@ PluginSetting::validate (bool print_result)
 
   /* if no custom UI, force generic */
   /*z_debug ("checking if plugin has custom UI...");*/
-  if (!descr_.has_custom_ui_)
+  if (!descr_->has_custom_ui_)
     {
       /*z_debug ("plugin {} has no custom UI", descr->name);*/
       this->force_generic_ui_ = true;
@@ -183,7 +201,7 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
 {
   bool has_errors = false;
 
-  auto type = Track::type_get_from_plugin_descriptor (descr_);
+  auto type = Track::type_get_from_plugin_descriptor (*descr_);
 
   /* stop the engine so it doesn't restart all the time until all the actions
    * are performed */
@@ -194,7 +212,7 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
     {
       if (autoroute_multiout)
         {
-          int num_pairs = descr_.num_audio_outs_;
+          int num_pairs = descr_->num_audio_outs_;
           if (has_stereo_outputs)
             num_pairs = num_pairs / 2;
           int num_actions = 0;
@@ -205,7 +223,7 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
           num_actions++;
 
           /* create the plugin track */
-          auto pl_track = dynamic_cast<ChannelTrack *> (
+          auto * pl_track = dynamic_cast<ChannelTrack *> (
             Track::create_for_plugin_at_idx_w_action (
               type, this, TRACKLIST->tracks_.size ()));
           num_actions++;
@@ -227,13 +245,13 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
           num_actions++;
 
           /* rename group */
-          auto name = format_str (_ ("{} Output"), descr_.name_);
+          auto name = format_str (_ ("{} Output"), descr_->name_);
           UNDO_MANAGER->perform (std::make_unique<RenameTrackAction> (
             *group, *PORT_CONNECTIONS_MGR, name));
           num_actions++;
 
           std::vector<AudioPort *> pl_audio_outs;
-          for (auto cur_port : pl->out_ports_ | type_is<AudioPort> ())
+          for (auto * cur_port : pl->out_ports_ | type_is<AudioPort> ())
             {
               pl_audio_outs.push_back (cur_port);
             }
@@ -241,12 +259,12 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
           for (int i = 0; i < num_pairs; i++)
             {
               /* create the audio fx track */
-              auto fx_track = dynamic_cast<AudioBusTrack *> (
+              auto * fx_track = dynamic_cast<AudioBusTrack *> (
                 Track::create_empty_with_action (Track::Type::AudioBus));
               num_actions++;
 
               /* rename fx track */
-              name = format_str ("{} {}", descr_.name_, i + 1);
+              name = format_str ("{} {}", descr_->name_, i + 1);
               UNDO_MANAGER->perform (std::make_unique<RenameTrackAction> (
                 *fx_track, *PORT_CONNECTIONS_MGR, name));
               num_actions++;
@@ -312,8 +330,8 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
 
   if (!has_errors)
     {
-      PluginSetting setting_clone (*this);
-      setting_clone.increment_num_instantiations ();
+      auto setting_clone = clone_unique ();
+      setting_clone->increment_num_instantiations ();
     }
 }
 
@@ -346,7 +364,7 @@ on_contains_multiple_outputs_response (
         nullptr);
       adw_message_dialog_set_default_response (
         ADW_MESSAGE_DIALOG (stereo_dialog), "yes");
-      auto * setting_clone = new PluginSetting (*self);
+      auto * setting_clone = self->clone_raw_ptr ();
       g_signal_connect_data (
         stereo_dialog, "response", G_CALLBACK (on_outputs_stereo_response),
         setting_clone, PluginSetting::free_closure, (GConnectFlags) 0);
@@ -365,9 +383,9 @@ on_contains_multiple_outputs_response (
 void
 PluginSetting::activate () const
 {
-  Track::Type type = Track::type_get_from_plugin_descriptor (descr_);
+  Track::Type type = Track::type_get_from_plugin_descriptor (*descr_);
 
-  if (descr_.num_audio_outs_ > 2 && type == Track::Type::Instrument)
+  if (descr_->num_audio_outs_ > 2 && type == Track::Type::Instrument)
     {
       AdwMessageDialog * dialog = ADW_MESSAGE_DIALOG (adw_message_dialog_new (
         GTK_WINDOW (MAIN_WINDOW), _ ("Auto-route?"),
@@ -379,7 +397,7 @@ PluginSetting::activate () const
       adw_message_dialog_set_close_response (dialog, "cancel");
       adw_message_dialog_set_response_appearance (
         dialog, "yes", ADW_RESPONSE_SUGGESTED);
-      auto * setting_clone = new PluginSetting (*this);
+      auto * setting_clone = clone_raw_ptr ();
       g_signal_connect_data (
         dialog, "response", G_CALLBACK (on_contains_multiple_outputs_response),
         setting_clone, PluginSetting::free_closure, (GConnectFlags) 0);
@@ -513,23 +531,20 @@ PluginSettings::find (const zrythm::plugins::PluginDescriptor &descr)
 {
   auto it = std::find_if (
     settings_.begin (), settings_.end (),
-    [&descr] (const auto &s) { return s.descr_.is_same_plugin (descr); });
+    [&descr] (const auto &s) { return s->descr_->is_same_plugin (descr); });
   if (it == settings_.end ())
     {
       return nullptr;
     }
-  else
-    {
-      return &(*it);
-    }
+  return (*it).get ();
 }
 
 void
 PluginSettings::set (const PluginSetting &setting, bool _serialize)
 {
-  z_debug ("Saving plugin setting for {}", setting.descr_.name_);
+  z_debug ("Saving plugin setting for {}", setting.descr_->name_);
 
-  PluginSetting * own_setting = find (setting.descr_);
+  PluginSetting * own_setting = find (*setting.descr_);
 
   if (own_setting)
     {
@@ -541,9 +556,9 @@ PluginSettings::set (const PluginSetting &setting, bool _serialize)
     }
   else
     {
-      auto new_setting = PluginSetting (setting);
-      new_setting.validate ();
-      settings_.push_back (new_setting);
+      auto new_setting = setting.clone_unique ();
+      new_setting->validate ();
+      settings_.emplace_back (std::move (new_setting));
     }
 
   if (_serialize)
@@ -559,6 +574,6 @@ PluginSetting::create_plugin (
   int                             slot)
 {
   auto plugin = std::make_unique<zrythm::plugins::CarlaNativePlugin> (
-    this->descr_, track_name_hash, slot_type, slot);
+    *this->descr_, track_name_hash, slot_type, slot);
   return plugin;
 }

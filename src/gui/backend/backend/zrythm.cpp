@@ -36,6 +36,11 @@
 
 JUCE_IMPLEMENT_SINGLETON (Zrythm);
 
+Zrythm::Zrythm ()
+    : plugin_manager_ (std::make_unique<zrythm::plugins::PluginManager> ())
+{
+}
+
 void
 Zrythm::pre_init (const char * exe_path, bool have_ui, bool optimized_dsp)
 {
@@ -60,7 +65,6 @@ Zrythm::init ()
 {
   settings_->init ();
   recording_manager_ = std::make_unique<RecordingManager> ();
-  plugin_manager_ = std::make_unique<zrythm::plugins::PluginManager> ();
   chord_preset_pack_manager_ = std::make_unique<ChordPresetPackManager> (
     have_ui_ && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING);
 

@@ -43,7 +43,7 @@ TracklistSelectionsAction::init_after_cloning (
   tracklist_selections_action_type_ = other.tracklist_selections_action_type_;
   track_type_ = other.track_type_;
   if (other.pl_setting_)
-    pl_setting_ = std::make_unique<PluginSetting> (*other.pl_setting_);
+    pl_setting_ = other.pl_setting_->clone_unique ();
   is_empty_ = other.is_empty_;
   track_pos_ = other.track_pos_;
   lane_pos_ = other.lane_pos_;
@@ -153,8 +153,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
         AUDIO_ENGINE->sample_rate_),
       tracklist_selections_action_type_ (type), track_pos_ (track_pos),
       lane_pos_ (lane_pos), track_type_ (track_type),
-      pl_setting_ (
-        pl_setting ? std::make_unique<PluginSetting> (*pl_setting) : nullptr),
+      pl_setting_ (pl_setting ? pl_setting->clone_unique () : nullptr),
       edit_type_ (edit_type), ival_after_ (ival_after),
       already_edited_ (already_edited), val_before_ (val_before),
       val_after_ (val_after)
@@ -415,10 +414,10 @@ TracklistSelectionsAction::create_track (int idx)
       /* at this point we can assume it has a plugin */
       else
         {
-          auto &setting = pl_setting_;
-          auto &descr = setting->descr_;
+          const auto &setting = pl_setting_;
+          const auto &descr = setting->descr_;
 
-          track = Track::create_track (track_type_, descr.name_, pos);
+          track = Track::create_track (track_type_, descr->name_, pos);
 
           pl = setting->create_plugin (track->get_name_hash ());
           pl->instantiate ();

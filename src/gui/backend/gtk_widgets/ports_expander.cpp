@@ -32,21 +32,25 @@ ports_expander_widget_refresh (PortsExpanderWidget * self)
           return;
         }
 
-      const auto &descr = self->plugin->setting_.descr_;
+      const auto &descr = self->plugin->setting_->descr_;
 
       auto get_port_count = [&descr] (PortType type, PortFlow flow) {
         switch (type)
           {
           case PortType::Control:
-            return flow == PortFlow::Input ? descr.num_ctrl_ins_ : descr.num_ctrl_outs_;
+            return flow == PortFlow::Input
+                     ? descr->num_ctrl_ins_
+                     : descr->num_ctrl_outs_;
           case PortType::Audio:
             return flow == PortFlow::Input
-                     ? descr.num_audio_ins_
-                     : descr.num_audio_outs_;
+                     ? descr->num_audio_ins_
+                     : descr->num_audio_outs_;
           case PortType::Event:
-            return flow == PortFlow::Input ? descr.num_midi_ins_ : descr.num_midi_outs_;
+            return flow == PortFlow::Input
+                     ? descr->num_midi_ins_
+                     : descr->num_midi_outs_;
           case PortType::CV:
-            return flow == PortFlow::Input ? descr.num_cv_ins_ : descr.num_cv_outs_;
+            return flow == PortFlow::Input ? descr->num_cv_ins_ : descr->num_cv_outs_;
           default:
             return 0;
           }

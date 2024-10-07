@@ -7,6 +7,7 @@
 
 #include "common/plugins/plugin_descriptor.h"
 
+#if 0
 namespace zrythm::gui::wrappers
 {
 
@@ -31,3 +32,4 @@ private:
   plugins::PluginDescriptor wrapped_;
 };
 }
+#endif

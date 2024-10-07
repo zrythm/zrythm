@@ -58,7 +58,7 @@ MixerSelectionsAction::init_after_cloning (const MixerSelectionsAction &other)
   new_val_ = other.new_val_;
   new_bridge_mode_ = other.new_bridge_mode_;
   if (other.setting_)
-    setting_ = std::make_unique<PluginSetting> (*other.setting_);
+    setting_ = other.setting_->clone_unique ();
   if (other.ms_before_)
     ms_before_ = other.ms_before_->clone_unique ();
   if (other.deleted_ms_)
@@ -86,7 +86,7 @@ MixerSelectionsAction::MixerSelectionsAction (
 {
   if (setting)
     {
-      setting_ = std::make_unique<PluginSetting> (*setting);
+      setting_ = setting->clone_unique ();
       setting_->validate ();
     }
 
@@ -527,8 +527,8 @@ MixerSelectionsAction::do_or_undo_change_load_behavior (bool do_it)
     {
       auto own_pl = ms->plugins_[i].get ();
       auto pl = zrythm::plugins::Plugin::find (own_pl->id_);
-      pl->setting_.bridge_mode_ =
-        do_it ? new_bridge_mode_ : own_pl->setting_.bridge_mode_;
+      pl->setting_->bridge_mode_ =
+        do_it ? new_bridge_mode_ : own_pl->setting_->bridge_mode_;
 
       /* TODO - below is tricky */
 #if 0

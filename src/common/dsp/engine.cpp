@@ -993,7 +993,7 @@ AudioEngine::realloc_port_buffers (nframes_t nframes)
   TRACKLIST->get_plugins (plugins);
   for (auto &pl : plugins)
     {
-      if (pl && !pl->instantiation_failed_ && pl->setting_.open_with_carla_)
+      if (pl && !pl->instantiation_failed_ && pl->setting_->open_with_carla_)
         {
           auto carla = dynamic_cast<zrythm::plugins::CarlaNativePlugin *> (pl);
           carla->update_buffer_size_and_sample_rate ();

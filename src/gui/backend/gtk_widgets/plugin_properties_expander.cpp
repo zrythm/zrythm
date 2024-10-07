@@ -93,7 +93,7 @@ on_load_preset_clicked (GtkButton * btn, PluginPropertiesExpanderWidget * self)
 
   try
     {
-      if (setting.open_with_carla_)
+      if (setting->open_with_carla_)
         {
 #if HAVE_CARLA
           auto carla =

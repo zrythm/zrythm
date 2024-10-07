@@ -70,8 +70,8 @@ plugin_gtk_on_save_preset_activate (GtkWidget * widget, Plugin * plugin)
   std::visit (
     [&] (auto &&p) {
       using T = base_type<decltype (p)>;
-      const PluginSetting *    setting = &p->setting_;
-      const zrythm::plugins::PluginDescriptor * descr = &setting->descr_;
+      const PluginSetting *                     setting = p->setting_.get ();
+      const zrythm::plugins::PluginDescriptor * descr = setting->descr_.get ();
       bool                     open_with_carla = setting->open_with_carla_;
 
       GtkWidget * dialog = gtk_file_chooser_dialog_new (
@@ -813,7 +813,7 @@ plugin_gtk_generic_set_widget_value (
 int
 plugin_gtk_update_plugin_ui (Plugin * pl)
 {
-  if (pl->setting_.open_with_carla_)
+  if (pl->setting_->open_with_carla_)
     {
       /* fetch port values */
       for (auto port : pl->in_ports_ | type_is<ControlPort> ())

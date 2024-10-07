@@ -51,10 +51,16 @@
  *
  * Everything here should be global and function regardless of the project.
  */
-class Zrythm
+class Zrythm final : public QObject
 {
+  Q_OBJECT
+  QML_ELEMENT
+  Q_PROPERTY (
+    zrythm::plugins::PluginManager * pluginManager READ getPluginManager
+      CONSTANT FINAL)
+  Q_PROPERTY (QString version READ getVersion CONSTANT FINAL)
 public:
-  ~Zrythm ();
+  ~Zrythm () override;
 
   /**
    * @brief Called before @ref init().
@@ -71,6 +77,16 @@ public:
   void add_to_recent_projects (const std::string &filepath);
 
   void remove_recent_project (const std::string &filepath);
+
+  zrythm::plugins::PluginManager * getPluginManager () const
+  {
+    return plugin_manager_.get ();
+  }
+
+  QString getVersion () const
+  {
+    return QString::fromStdString (get_version (false));
+  }
 
   /**
    * Returns the version string.
@@ -132,7 +148,7 @@ public:
   FileManager &get_file_manager () { return file_manager_; }
 
 private:
-  Zrythm () = default;
+  Zrythm ();
 
 public:
   /** argv[0]. */

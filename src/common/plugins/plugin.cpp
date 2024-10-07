@@ -284,7 +284,7 @@ Plugin::init (
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       /* save the new setting (may have changed during instantiation) */
-      S_PLUGIN_SETTINGS->set (setting_, true);
+      S_PLUGIN_SETTINGS->set (*setting_, true);
     }
 }
 
@@ -373,13 +373,13 @@ Plugin::Plugin (
   unsigned int                    track_name_hash,
   zrythm::plugins::PluginSlotType slot_type,
   int                             slot)
-    : setting_ (setting)
+    : setting_ (setting.clone_unique ())
 {
-  const auto &descr = setting_.descr_;
+  const auto &descr = setting_->descr_;
 
   z_debug (
-    "creating plugin: {} ({}) slot {}", descr.name_,
-    ENUM_NAME (descr.protocol_), slot);
+    "creating plugin: {} ({}) slot {}", descr->name_,
+    ENUM_NAME (descr->protocol_), slot);
 
   init (track_name_hash, slot_type, slot);
 }
@@ -392,7 +392,7 @@ Plugin::Plugin (ZPluginCategory cat, unsigned int track_name_hash, int slot)
   descr.category_ = cat;
   descr.category_str_ = "Dummy Plugin Category";
 
-  setting_ = PluginSetting (descr);
+  setting_ = std::make_unique<PluginSetting> (descr);
 
   init (track_name_hash, zrythm::plugins::PluginSlotType::Insert, slot);
 }
@@ -729,10 +729,10 @@ Plugin::generate_window_title () const
   z_return_val_if_fail (!track_name.empty () && !plugin_name.empty (), {});
 
   std::string bridge_mode;
-  if (setting_.bridge_mode_ != zrythm::plugins::CarlaBridgeMode::None)
+  if (setting_->bridge_mode_ != zrythm::plugins::CarlaBridgeMode::None)
     {
       bridge_mode =
-        fmt::format (" - bridge: {}", ENUM_NAME (setting_.bridge_mode_));
+        fmt::format (" - bridge: {}", ENUM_NAME (setting_->bridge_mode_));
     }
 
   std::string slot;
@@ -1075,7 +1075,7 @@ Plugin::process (const EngineProcessTimeInfo time_nfo)
     }
 
   /* if has MIDI input port */
-  if (setting_.descr_.num_midi_ins_ > 0)
+  if (get_descriptor ().num_midi_ins_ > 0)
     {
       /* if recording, write MIDI events to the region TODO */
 
@@ -1119,7 +1119,7 @@ Plugin::print () const
   return fmt::format (
     "{} ({}):{}:{} - {}", track ? track->get_name () : "<no track>",
     track ? track->pos_ : -1, ENUM_NAME (id_.slot_type_), id_.slot_,
-    setting_.descr_.name_);
+    get_name ());
 }
 
 void
@@ -1175,7 +1175,7 @@ Plugin::open_ui ()
     }
   else
     {
-      bool generic_ui = setting_.force_generic_ui_;
+      bool generic_ui = setting_->force_generic_ui_;
 
       /* handle generic UIs, then carla custom, then LV2 custom */
       if (generic_ui)
@@ -1330,7 +1330,7 @@ Plugin::copy_members_from (Plugin &other)
 
   /* create a new plugin with same descriptor */
   z_debug ("[2/5] creating new plugin with same setting");
-  setting_ = other.setting_;
+  setting_ = other.setting_->clone_unique ();
   init (other.id_.track_name_hash_, other.id_.slot_type_, other.id_.slot_);
 
   /* copy ports */
@@ -1480,7 +1480,7 @@ Plugin::close_ui ()
 
   plugin_gtk_close_ui (this);
 
-  bool generic_ui = setting_.force_generic_ui_;
+  bool generic_ui = setting_->force_generic_ui_;
   if (!generic_ui)
     {
       open_custom_ui (false);
@@ -1848,9 +1848,7 @@ Plugin::disconnect ()
 void
 Plugin::delete_state_files ()
 {
-  z_debug (
-    "deleting state files for plugin {} ({})", setting_.descr_.name_,
-    state_dir_);
+  z_debug ("deleting state files for plugin {} ({})", get_name (), state_dir_);
 
   z_return_if_fail (
     !state_dir_.empty () && std::filesystem::path (state_dir_).is_absolute ());
@@ -1890,8 +1888,7 @@ template <typename T>
 T *
 Plugin::get_port_by_symbol (const std::string &sym)
 {
-  z_return_val_if_fail (
-    setting_.descr_.protocol_ == PluginProtocol::LV2, nullptr);
+  z_return_val_if_fail (get_protocol () == PluginProtocol::LV2, nullptr);
 
   auto find_port = [&sym] (const auto &ports) {
     return std::find_if (ports.begin (), ports.end (), [&sym] (const auto &port) {

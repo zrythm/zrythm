@@ -87,6 +87,22 @@ public:
     return cloned;
   }
 
+  Derived * clone_raw_ptr () const
+    requires (Type == CloneType::Unique || Type == CloneType::Both)
+  {
+    Derived * cloned = nullptr;
+    if constexpr (FactoryCreatable<Derived>)
+      {
+        cloned = (*cloned->create_unique ()).release ();
+      }
+    else
+      {
+        cloned = new Derived ();
+      }
+    cloned->init_after_cloning (*get_derived ());
+    return cloned;
+  }
+
 #if 0
   template <typename T>
   std::unique_ptr<T> clone_unique_as () const

@@ -133,7 +133,7 @@ public:
   constexpr static float MAX_SCALE_FACTOR = 4.f;
 
 public:
-  virtual ~Plugin () override;
+  ~Plugin () override;
 
   static std::unique_ptr<Plugin>
   create_unique_from_hosting_type (PluginSetting::HostingType hosting_type);
@@ -147,9 +147,9 @@ public:
     PluginSlotType       slot_type,
     int                  slot);
 
-  PluginDescriptor &get_descriptor () { return setting_.descr_; }
-  std::string       get_name () const { return setting_.descr_.name_; }
-  PluginProtocol    get_protocol () const { return setting_.descr_.protocol_; }
+  PluginDescriptor &get_descriptor () { return *setting_->descr_; }
+  std::string       get_name () const { return setting_->descr_->name_; }
+  PluginProtocol get_protocol () const { return setting_->descr_->protocol_; }
 
   /**
    * @brief Initializes a plugin after deserialization.
@@ -620,7 +620,7 @@ public:
   PluginIdentifier id_;
 
   /** Setting this plugin was instantiated with. */
-  PluginSetting setting_;
+  std::unique_ptr<PluginSetting> setting_;
 
   /** Ports coming in as input. */
   std::vector<std::unique_ptr<Port>> in_ports_;

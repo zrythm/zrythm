@@ -25,7 +25,9 @@ class Plugin;
 /**
  * A setting for a specific plugin descriptor.
  */
-class PluginSetting final : public ISerializable<PluginSetting>
+class PluginSetting final
+    : public ISerializable<PluginSetting>,
+      public ICloneable<PluginSetting>
 {
 public:
   PluginSetting () = default;
@@ -90,12 +92,19 @@ public:
    */
   void increment_num_instantiations ();
 
+  void init_after_cloning (const PluginSetting &other) override;
+
   static void free_closure (void * self, GClosure * closure)
   {
     delete static_cast<PluginSetting *> (self);
   }
 
-  std::string get_name () const { return descr_.name_; }
+  zrythm::plugins::PluginDescriptor * get_descriptor () const
+  {
+    return descr_.get ();
+  }
+
+  std::string get_name () const { return get_descriptor ()->name_; }
 
   /**
    * @brief Creates a plugin instance from this setting.
@@ -116,9 +125,12 @@ public:
    */
   void activate_finish (bool autoroute_multiout, bool has_stereo_outputs) const;
 
+private:
+  void copy_fields_from (const PluginSetting &other);
+
 public:
   /** The descriptor of the plugin this setting is for. */
-  zrythm::plugins::PluginDescriptor descr_ = {};
+  std::unique_ptr<zrythm::plugins::PluginDescriptor> descr_;
 
   HostingType hosting_type_ = HostingType::Carla;
 
@@ -206,7 +218,7 @@ private:
 
 public:
   /** Settings. */
-  std::vector<PluginSetting> settings_;
+  std::vector<std::unique_ptr<PluginSetting>> settings_;
 };
 
 /**

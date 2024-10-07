@@ -591,7 +591,8 @@ create_model_for_collections (void)
       /* add row to model */
       WrappedObjectWithChangeSignal * wobj =
         wrapped_object_with_change_signal_new (
-          &collection, WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_COLLECTION);
+          collection.get (),
+          WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_COLLECTION);
       g_list_store_append (list_store, wobj);
     }
 
@@ -651,17 +652,19 @@ static GtkSelectionModel *
 create_model_for_plugins (PluginBrowserWidget * self)
 {
   GListStore * store = g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
+#if 0
   for (auto &descr : PLUGIN_MANAGER->plugin_descriptors_)
     {
       WrappedObjectWithChangeSignal * wrapped_descr =
         wrapped_object_with_change_signal_new_with_free_func (
-          new zrythm::plugins::PluginDescriptor (descr),
+          descr.clone_raw_ptr (),
           WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_DESCR, [] (void * ptr) {
             delete static_cast<zrythm::plugins::PluginDescriptor *> (ptr);
           });
 
       g_list_store_append (store, wrapped_descr);
     }
+#endif
 
   /* create sorter */
   self->plugin_sorter = gtk_custom_sorter_new (plugin_sort_func, self, nullptr);

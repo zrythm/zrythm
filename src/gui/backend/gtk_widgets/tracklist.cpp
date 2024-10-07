@@ -327,8 +327,7 @@ on_dnd_drop (
                 adw_message_dialog_set_close_response (
                   ADW_MESSAGE_DIALOG (dialog), "cancel");
 
-                zrythm::plugins::PluginDescriptor * descr_clone =
-                  new zrythm::plugins::PluginDescriptor (*descr);
+                auto * descr_clone = descr->clone_raw_ptr ();
                 g_signal_connect_data (
                   dialog, "response",
                   G_CALLBACK (on_drop_instrument_onto_midi_track), descr_clone,

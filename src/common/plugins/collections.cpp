@@ -19,9 +19,8 @@ PluginCollection::contains_descriptor (
   const zrythm::plugins::PluginDescriptor &descr) const
 {
   return std::any_of (
-    descriptors_.begin (), descriptors_.end (),
-    [&descr] (const zrythm::plugins::PluginDescriptor &cur_descr) {
-      return descr.is_same_plugin (cur_descr);
+    descriptors_.begin (), descriptors_.end (), [&descr] (const auto &cur_descr) {
+      return descr.is_same_plugin (*cur_descr);
     });
 }
 
@@ -33,13 +32,13 @@ PluginCollection::add_descriptor (const zrythm::plugins::PluginDescriptor &descr
       return;
     }
 
-  zrythm::plugins::PluginDescriptor new_descr = descr;
+  auto new_descr = descr.clone_unique ();
   if (!descr.path_.empty ())
     {
       auto file = Gio::File::create_for_path (descr.path_.string ());
-      new_descr.ghash_ = file->hash ();
+      new_descr->ghash_ = file->hash ();
     }
-  descriptors_.push_back (new_descr);
+  descriptors_.emplace_back (std::move (new_descr));
 }
 
 void
@@ -47,7 +46,7 @@ PluginCollection::remove_descriptor (
   const zrythm::plugins::PluginDescriptor &descr)
 {
   std::erase_if (descriptors_, [&descr] (const auto &cur_descr) {
-    return cur_descr.is_same_plugin (descr);
+    return cur_descr->is_same_plugin (descr);
   });
 }
 
@@ -63,6 +62,14 @@ PluginCollection::generate_context_menu () const
   menu->append (_ ("Delete"), "app.plugin-collection-remove");
 
   return menu;
+}
+
+void
+PluginCollection::init_after_cloning (const PluginCollection &other)
+{
+  name_ = other.name_;
+  description_ = other.description_;
+  clone_unique_ptr_container (descriptors_, other.descriptors_);
 }
 
 /* ============================================================================ */
@@ -170,7 +177,7 @@ PluginCollections::add (
   const zrythm::plugins::PluginCollection &collection,
   bool                                     serialize)
 {
-  collections_.push_back (collection);
+  collections_.emplace_back (collection.clone_unique ());
 
   if (serialize)
     {
@@ -183,16 +190,16 @@ PluginCollections::find_from_name (std::string_view name) const
 {
   auto it = std::find_if (
     collections_.begin (), collections_.end (),
-    [&name] (const auto &collection) { return collection.name_ == name; });
+    [&name] (const auto &collection) { return collection->name_ == name; });
 
-  return it == collections_.end () ? nullptr : &*it;
+  return it == collections_.end () ? nullptr : (*it).get ();
 }
 
 void
 PluginCollections::remove (PluginCollection &collection, bool serialize)
 {
   std::erase_if (collections_, [&collection] (const auto &cur_collection) {
-    return cur_collection.name_ == collection.name_;
+    return cur_collection->name_ == collection.name_;
   });
 
   if (serialize)

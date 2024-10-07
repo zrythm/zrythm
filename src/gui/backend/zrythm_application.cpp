@@ -200,6 +200,7 @@ ZrythmApplication::setup_ui ()
   // files in host file system are compiled at runtime
   const QUrl url ("qrc:/org.zrythm/imports/Zrythm/greeter.qml");
   qml_engine_->load (url);
+  // qml_engine_->loadFromModule ("Zrythm", "greeter");
 
   if (!qml_engine_->rootObjects ().isEmpty ())
     {

@@ -64,6 +64,7 @@ on_settings_menu_items_changed (
   self->refilter_files ();
 }
 
+#if 0
 static void
 on_instrument_changed (GObject * gobject, GParamSpec * pspec, void * data)
 {
@@ -76,7 +77,7 @@ on_instrument_changed (GObject * gobject, GParamSpec * pspec, void * data)
 
   if (
     SAMPLE_PROCESSOR->instrument_setting_
-    && SAMPLE_PROCESSOR->instrument_setting_->descr_.is_same_plugin (*descr))
+    && SAMPLE_PROCESSOR->instrument_setting_->descr_->is_same_plugin (*descr))
     return;
 
   AudioEngine::State state;
@@ -86,8 +87,7 @@ on_instrument_changed (GObject * gobject, GParamSpec * pspec, void * data)
   PluginSetting * existing_setting = S_PLUGIN_SETTINGS->find (*descr);
   if (existing_setting)
     {
-      SAMPLE_PROCESSOR->instrument_setting_ =
-        std::make_unique<PluginSetting> (*existing_setting);
+      SAMPLE_PROCESSOR->instrument_setting_ = existing_setting->clone_unique ();
       SAMPLE_PROCESSOR->instrument_setting_->validate ();
     }
   else
@@ -121,13 +121,14 @@ setup_instrument_dropdown (FileAuditionerControlsWidget * self)
   /* populate instruments */
   int selected = -1;
   int num_added = 0;
+
   for (auto &descr : PLUGIN_MANAGER->plugin_descriptors_)
     {
       if (descr.is_instrument ())
         {
           WrappedObjectWithChangeSignal * wrapped_descr =
             wrapped_object_with_change_signal_new_with_free_func (
-              new zrythm::plugins::PluginDescriptor (descr),
+              descr.clone_raw_ptr (),
               WrappedObjectType::WRAPPED_OBJECT_TYPE_PLUGIN_DESCR,
               [] (void * ptr) {
                 delete static_cast<zrythm::plugins::PluginDescriptor *> (ptr);
@@ -137,7 +138,7 @@ setup_instrument_dropdown (FileAuditionerControlsWidget * self)
           /* set selected instrument */
           if (
             SAMPLE_PROCESSOR->instrument_setting_
-            && SAMPLE_PROCESSOR->instrument_setting_->descr_.is_same_plugin (
+            && SAMPLE_PROCESSOR->instrument_setting_->descr_->is_same_plugin (
               descr))
             {
               selected = num_added;
@@ -166,6 +167,7 @@ setup_instrument_dropdown (FileAuditionerControlsWidget * self)
     G_OBJECT (self->instrument_dropdown), "notify::selected-item",
     G_CALLBACK (on_instrument_changed), self);
 }
+#endif
 
 /**
  * Sets up a FileAuditionerControlsWidget.
@@ -199,7 +201,7 @@ file_auditioner_controls_widget_setup (
   g_signal_connect (
     menu, "items-changed", G_CALLBACK (on_settings_menu_items_changed), self);
 
-  setup_instrument_dropdown (self);
+  // setup_instrument_dropdown (self);
 }
 
 static void

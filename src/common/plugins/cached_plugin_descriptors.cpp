@@ -141,15 +141,23 @@ CachedPluginDescriptors::is_blacklisted (std::string_view sha1)
     [sha1] (const auto &blacklisted_sha1) { return blacklisted_sha1 == sha1; });
 }
 
-std::vector<PluginDescriptor>
+std::vector<std::unique_ptr<PluginDescriptor>>
 CachedPluginDescriptors::get_valid_descriptors_for_sha1 (std::string_view sha1)
 {
   z_return_val_if_fail (!sha1.empty (), {});
 
-  auto sha1_exists = [sha1] (const auto &descr) { return descr.sha1_ == sha1; };
+  // auto sha1_exists = [sha1] (const auto &descr) {
+  // return descr->sha1_ == sha1;
+  // };
 
-  std::vector<PluginDescriptor> res;
-  std::ranges::copy_if (descriptors_, std::back_inserter (res), sha1_exists);
+  std::vector<std::unique_ptr<PluginDescriptor>> res;
+  for (auto &descr : descriptors_)
+    {
+      if (descr->sha1_ == sha1)
+        {
+          res.emplace_back (descr->clone_unique ());
+        }
+    }
   return res;
 }
 
@@ -165,7 +173,7 @@ CachedPluginDescriptors::contains_sha1 (
       if (
         std::any_of (
           descriptors_.begin (), descriptors_.end (),
-          [sha1] (const auto &cur_descr) { return cur_descr.sha1_ == sha1; }))
+          [sha1] (const auto &cur_descr) { return cur_descr->sha1_ == sha1; }))
         {
           return true;
         }
@@ -201,13 +209,13 @@ CachedPluginDescriptors::add (
   const zrythm::plugins::PluginDescriptor &descr,
   bool                                     serialize)
 {
-  zrythm::plugins::PluginDescriptor new_descr = descr;
+  auto new_descr = descr.clone_unique ();
   if (!descr.path_.empty ())
     {
       auto file = Gio::File::create_for_path (descr.path_.string ());
-      new_descr.ghash_ = file->hash ();
+      new_descr->ghash_ = file->hash ();
     }
-  descriptors_.push_back (new_descr);
+  descriptors_.emplace_back (std::move (new_descr));
 
   if (serialize)
     {

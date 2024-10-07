@@ -498,10 +498,10 @@ tick_cb (GtkWidget * widget, GdkFrameClock * frame_clock, ChannelSlotWidget * se
   gtk_widget_set_visible (
     GTK_WIDGET (self->bridge_icon),
     plugin
-      && plugin->setting_.bridge_mode_ != zrythm::plugins::CarlaBridgeMode::None);
+      && plugin->setting_->bridge_mode_ != zrythm::plugins::CarlaBridgeMode::None);
   if (plugin)
     {
-      switch (plugin->setting_.bridge_mode_)
+      switch (plugin->setting_->bridge_mode_)
         {
         case zrythm::plugins::CarlaBridgeMode::Full:
           gtk_image_set_from_icon_name (self->bridge_icon, "css.gg-remote");

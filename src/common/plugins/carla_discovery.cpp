@@ -229,7 +229,7 @@ z_carla_discovery_plugin_check_cache_cb (
       auto descrs = caches->get_valid_descriptors_for_sha1 (sha1);
       for (auto &descr : descrs)
         {
-          pl_mgr->add_descriptor (descr);
+          pl_mgr->add_descriptor (*descr);
         }
       return true;
     }

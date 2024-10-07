@@ -1425,7 +1425,7 @@ do_import (PluginImportData * data)
         && data->slot_type == data->pl->id_.slot_type_)
         return;
 
-      if (data->pl->setting_.descr_.is_valid_for_slot_type (
+      if (data->pl->setting_->get_descriptor ()->is_valid_for_slot_type (
             data->slot_type, data->ch->track_->type_))
         {
           try
@@ -1493,7 +1493,7 @@ do_import (PluginImportData * data)
   if (!plugin_valid)
     {
       const auto &pl_descr =
-        data->descr ? *data->descr : data->pl->setting_.descr_;
+        data->descr ? *data->descr : *data->pl->setting_->descr_;
       ZrythmException e (format_str (
         _ ("zrythm::plugins::Plugin {} cannot be added to this slot"),
         pl_descr.name_));

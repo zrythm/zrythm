@@ -78,7 +78,7 @@ public:
   /**
    * Returns found non-blacklisted descriptors.
    */
-  std::vector<PluginDescriptor>
+  std::vector<std::unique_ptr<PluginDescriptor>>
   get_valid_descriptors_for_sha1 (std::string_view sha1);
 
   /**
@@ -131,7 +131,7 @@ private:
 
 public:
   /** Valid descriptors. */
-  std::vector<PluginDescriptor> descriptors_;
+  std::vector<std::unique_ptr<PluginDescriptor>> descriptors_;
 
   /** Blacklisted hashes, to skip when scanning. */
   std::vector<std::string> blacklisted_sha1s_;

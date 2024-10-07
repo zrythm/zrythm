@@ -22,6 +22,35 @@ constexpr const char * plugin_protocol_strings[] = {
 
 using namespace zrythm::plugins;
 
+void
+PluginDescriptor::init_after_cloning (
+  const zrythm::plugins::PluginDescriptor &other)
+{
+  author_ = other.author_;
+  name_ = other.name_;
+  website_ = other.website_;
+  category_ = other.category_;
+  category_str_ = other.category_str_;
+  protocol_ = other.protocol_;
+  num_audio_ins_ = other.num_audio_ins_;
+  num_audio_outs_ = other.num_audio_outs_;
+  num_midi_ins_ = other.num_midi_ins_;
+  num_midi_outs_ = other.num_midi_outs_;
+  num_ctrl_ins_ = other.num_ctrl_ins_;
+  num_ctrl_outs_ = other.num_ctrl_outs_;
+  num_cv_ins_ = other.num_cv_ins_;
+  num_cv_outs_ = other.num_cv_outs_;
+  arch_ = other.arch_;
+  protocol_ = other.protocol_;
+  path_ = other.path_;
+  uri_ = other.uri_;
+  unique_id_ = other.unique_id_;
+  min_bridge_mode_ = other.min_bridge_mode_;
+  has_custom_ui_ = other.has_custom_ui_;
+  ghash_ = other.ghash_;
+  sha1_ = other.sha1_;
+}
+
 std::string
 PluginDescriptor::get_icon_name_for_protocol (PluginProtocol prot)
 {
@@ -635,13 +664,13 @@ PluginDescriptor::generate_context_menu () const
   int     num_added = 0;
   for (auto &coll : PLUGIN_MANAGER->collections_->collections_)
     {
-      if (coll.contains_descriptor (*this))
+      if (coll->contains_descriptor (*this))
         {
           continue;
         }
 
       sprintf (tmp, "app.plugin-browser-add-to-collection::%p,%p", &coll, this);
-      menuitem = z_gtk_create_menu_item (coll.name_.c_str (), nullptr, tmp);
+      menuitem = z_gtk_create_menu_item (coll->name_.c_str (), nullptr, tmp);
       g_menu_append_item (add_collections_submenu, menuitem);
       num_added++;
     }
@@ -660,14 +689,14 @@ PluginDescriptor::generate_context_menu () const
   num_added = 0;
   for (auto &coll : PLUGIN_MANAGER->collections_->collections_)
     {
-      if (!coll.contains_descriptor (*this))
+      if (!coll->contains_descriptor (*this))
         {
           continue;
         }
 
       sprintf (
         tmp, "app.plugin-browser-remove-from-collection::%p,%p", &coll, this);
-      menuitem = z_gtk_create_menu_item (coll.name_.c_str (), nullptr, tmp);
+      menuitem = z_gtk_create_menu_item (coll->name_.c_str (), nullptr, tmp);
       g_menu_append_item (remove_collections_submenu, menuitem);
       num_added++;
     }
