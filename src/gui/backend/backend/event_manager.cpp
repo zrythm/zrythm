@@ -992,10 +992,11 @@ EventManager::process_event (ZEvent &ev)
           }
       }
 
-      if (PLUGIN_MANAGER->num_new_plugins_ > 0)
+      if (PLUGIN_MANAGER->get_num_new_plugins () > 0)
         {
           ui_show_notification_idle_printf (
-            _ ("%d new plugins detected"), PLUGIN_MANAGER->num_new_plugins_);
+            _ ("%d new plugins detected"),
+            PLUGIN_MANAGER->get_num_new_plugins ());
         }
       break;
     case EventType::ET_SPLASH_CLOSED:

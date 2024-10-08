@@ -35,16 +35,28 @@
 #include "common/utils/directory_manager.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/windows.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
+#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/gtk_widgets/greeter.h"
 #include "gui/backend/gtk_widgets/gtk_wrapper.h"
 #include "gui/backend/gtk_widgets/main_window.h"
 #include "gui/backend/gtk_widgets/zrythm_app.h"
 
+#include <QtConcurrent>
+
 #include <glib/gi18n.h>
 
 using namespace zrythm::plugins;
+
+PluginManager::PluginManager (QObject * parent)
+    : QObject (parent),
+      plugin_descriptors_ (std::make_unique<gui::PluginDescriptorList> ()),
+      cached_plugin_descriptors_ (CachedPluginDescriptors::read_or_new ()),
+      collections_ (PluginCollections::read_or_new ()),
+      scanner_ (std::make_unique<PluginScanner> ()),
+      carla_discovery_ (std::make_unique<ZCarlaDiscovery> (*this))
+{
+}
 
 void
 PluginManager::add_category_and_author (
@@ -72,19 +84,17 @@ PluginManager::add_category_and_author (
           [&] (const auto &cur_author) { return cur_author == author; }))
         {
           z_debug ("New author: {}", author);
-          plugin_authors_.push_back (std::string (author));
+          plugin_authors_.emplace_back (author);
         }
     }
 }
 
 static void
-add_expanded_paths (
-  StringArray                      &arr,
-  const std::vector<Glib::ustring> &paths_from_settings)
+add_expanded_paths (StringArray &arr, const QStringList &paths_from_settings)
 {
   for (const auto &path : paths_from_settings)
     {
-      auto expanded_cur_path = string_expand_env_vars (path);
+      auto expanded_cur_path = string_expand_env_vars (path.toStdString ());
       /* split because the env might contain multiple paths */
       auto expanded_paths = Glib::Regex::split_simple (
         G_SEARCHPATH_SEPARATOR_S, expanded_cur_path.c_str ());
@@ -113,9 +123,7 @@ PluginManager::get_lv2_paths ()
       ret.add (test_lv2_plugins.string ());
       ret.add (test_root_plugins.string ());
 
-      std::vector<Glib::ustring> paths_from_settings = {
-        "${LV2_PATH}", "/usr/lib/lv2"
-      };
+      QStringList paths_from_settings = { "${LV2_PATH}", "/usr/lib/lv2" };
       add_expanded_paths (ret, paths_from_settings);
 
       ret.print ("LV2 paths");
@@ -123,8 +131,8 @@ PluginManager::get_lv2_paths ()
       return ret;
     }
 
-  auto settings = Gio::Settings::create (S_P_PLUGINS_PATHS_SCHEMA);
-  auto paths_from_settings = settings->get_string_array ("lv2-search-paths");
+  auto paths_from_settings =
+    zrythm::gui::SettingsManager::get_instance ()->get_lv2_search_paths ();
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
@@ -178,19 +186,19 @@ PluginManager::get_lv2_paths ()
 StringArray
 PluginManager::get_vst2_paths ()
 {
-  auto ret = StringArray ();
+  StringArray ret;
 
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
-      std::vector<Glib::ustring> paths_from_settings = { "${VST_PATH}" };
+      QStringList paths_from_settings = { "${VST_PATH}" };
       add_expanded_paths (ret, paths_from_settings);
 
       ret.print ("VST2 paths");
       return ret;
     }
 
-  auto settings = Gio::Settings::create (S_P_PLUGINS_PATHS_SCHEMA);
-  auto paths_from_settings = settings->get_string_array ("vst2-search-paths");
+  auto paths_from_settings =
+    gui::SettingsManager::get_instance ()->get_vst2_search_paths ();
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
@@ -241,15 +249,15 @@ PluginManager::get_vst3_paths ()
 
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
-      std::vector<Glib::ustring> paths_from_settings = { "${VST3_PATH}" };
+      QStringList paths_from_settings = { "${VST3_PATH}" };
       add_expanded_paths (ret, paths_from_settings);
 
       ret.print ("VST3 paths");
       return ret;
     }
 
-  auto settings = Gio::Settings::create (S_P_PLUGINS_PATHS_SCHEMA);
-  auto paths_from_settings = settings->get_string_array ("vst3-search-paths");
+  auto paths_from_settings =
+    gui::SettingsManager::get_instance ()->get_vst3_search_paths ();
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
@@ -300,9 +308,9 @@ PluginManager::get_sf_paths (bool sf2)
       return ret;
     }
 
-  auto settings = Gio::Settings::create (S_P_PLUGINS_PATHS_SCHEMA);
   auto paths_from_settings =
-    settings->get_string_array (sf2 ? "sf2-search-paths" : "sfz-search-paths");
+    sf2 ? gui::SettingsManager::get_instance ()->get_sf2_search_paths ()
+        : gui::SettingsManager::get_instance ()->get_sfz_search_paths ();
   add_expanded_paths (ret, paths_from_settings);
 
   return ret;
@@ -315,15 +323,15 @@ PluginManager::get_dssi_paths ()
 
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
-      std::vector<Glib::ustring> paths_from_settings = { "${DSSI_PATH}" };
+      QStringList paths_from_settings = { "${DSSI_PATH}" };
       add_expanded_paths (ret, paths_from_settings);
 
       ret.print ("DSSI paths");
       return ret;
     }
 
-  auto settings = Gio::Settings::create (S_P_PLUGINS_PATHS_SCHEMA);
-  auto paths_from_settings = settings->get_string_array ("dssi-search-paths");
+  auto paths_from_settings =
+    gui::SettingsManager::get_instance ()->get_dssi_search_paths ();
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
@@ -366,15 +374,15 @@ PluginManager::get_ladspa_paths ()
 
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
-      std::vector<Glib::ustring> paths_from_settings = { "${LADSPA_PATH}" };
+      QStringList paths_from_settings = { "${LADSPA_PATH}" };
       add_expanded_paths (ret, paths_from_settings);
 
       ret.print ("LADSPA paths");
       return ret;
     }
 
-  auto settings = Gio::Settings::create (S_P_PLUGINS_PATHS_SCHEMA);
-  auto paths_from_settings = settings->get_string_array ("ladspa-search-paths");
+  auto paths_from_settings =
+    gui::SettingsManager::get_instance ()->get_ladspa_search_paths ();
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
@@ -417,15 +425,15 @@ PluginManager::get_clap_paths ()
 
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
-      std::vector<Glib::ustring> paths_from_settings = { "${CLAP_PATH}" };
+      QStringList paths_from_settings = { "${CLAP_PATH}" };
       add_expanded_paths (ret, paths_from_settings);
 
       ret.print ("CLAP paths");
       return ret;
     }
 
-  auto settings = Gio::Settings::create (S_P_PLUGINS_PATHS_SCHEMA);
-  auto paths_from_settings = settings->get_string_array ("clap-search-paths");
+  auto paths_from_settings =
+    gui::SettingsManager::get_instance ()->get_clap_search_paths ();
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
@@ -473,15 +481,15 @@ PluginManager::get_jsfx_paths ()
 
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
-      std::vector<Glib::ustring> paths_from_settings = { "${JSFX_PATH}" };
+      QStringList paths_from_settings = { "${JSFX_PATH}" };
       add_expanded_paths (ret, paths_from_settings);
 
       ret.print ("JSFX paths");
       return ret;
     }
 
-  auto settings = Gio::Settings::create (S_P_PLUGINS_PATHS_SCHEMA);
-  auto paths_from_settings = settings->get_string_array ("jsfx-search-paths");
+  auto paths_from_settings =
+    gui::SettingsManager::get_instance ()->get_jsfx_search_paths ();
   if (!paths_from_settings.empty ())
     {
       /* use paths given */
@@ -661,7 +669,7 @@ PluginManager::add_descriptor (const zrythm::plugins::PluginDescriptor &descr)
   add_category_and_author (descr.category_str_, descr.author_);
 }
 
-bool
+void
 PluginManager::call_carla_discovery_idle ()
 {
   bool done = carla_discovery_->idle ();
@@ -676,36 +684,31 @@ PluginManager::call_carla_discovery_idle ()
       std::sort (plugin_authors_.begin (), plugin_authors_.end ());
 
       cached_plugin_descriptors_->serialize_to_file_no_throw ();
-      if (scan_done_cb_)
-        {
-          scan_done_cb_ ();
-        }
 
-      return SourceFuncRemove;
+      // Stop the timer
+      auto * timer = qobject_cast<QTimer *> (sender ());
+      if (timer != nullptr)
+        timer->stop ();
+
+      Q_EMIT scanFinished ();
     }
-
-  return SourceFuncContinue;
 }
 
 void
-PluginManager::
-  begin_scan (const double max_progress, double * progress, GenericCallback cb)
+PluginManager::beginScan ()
 {
-  if (getenv ("ZRYTHM_SKIP_PLUGIN_SCAN"))
+  if (qEnvironmentVariableIsSet ("ZRYTHM_SKIP_PLUGIN_SCAN"))
     {
-      if (cb)
-        {
-          cb ();
-        }
+      Q_EMIT scanFinished ();
       return;
     }
 
-  const double       start_progress = progress ? *progress : 0;
-  const unsigned int num_plugin_types =
-    (ENUM_VALUE_TO_INT (PluginProtocol::JSFX)
-     - ENUM_VALUE_TO_INT (PluginProtocol::LV2))
-    + 1;
+  QObject::connect (
+    scanner_.get (), &PluginScanner::currentlyScanningPluginChanged, this,
+    &PluginManager::currentlyScanningPluginChanged);
+  scanner_->beginScan ();
 
+#if 0
   for (
     size_t i = ENUM_VALUE_TO_INT (PluginProtocol::LV2);
     i <= ENUM_VALUE_TO_INT (PluginProtocol::JSFX); i++)
@@ -716,26 +719,18 @@ PluginManager::
 
       carla_discovery_->start (CarlaBackend::BINARY_NATIVE, cur);
       /* also scan 32-bit on windows */
-#ifdef _WIN32
+#  ifdef _WIN32
       carla_discovery_->start (CarlaBackend::BINARY_WIN32, cur);
-#endif
-      if (progress)
-        {
-          *progress =
-            start_progress
-            + ((double) ((i - ENUM_VALUE_TO_INT (PluginProtocol::LV2)) + 1)
-               / num_plugin_types)
-                * (max_progress - start_progress);
-          z_return_if_fail (zrythm_app->greeter_);
-          greeter_widget_set_progress_and_status (
-            *zrythm_app->greeter_, _ ("Scanning Plugins"), "", *progress);
-        }
+#  endif
     }
 
-  scan_done_cb_ = cb;
-
-  Glib::signal_idle ().connect (sigc::track_obj (
-    sigc::mem_fun (*this, &PluginManager::call_carla_discovery_idle), *this));
+  // Connect to the event loop using QTimer
+  auto * timer = new QTimer (this);
+  connect (
+    timer, &QTimer::timeout, this, &PluginManager::call_carla_discovery_idle);
+  timer->start (
+    0); // 0 ms interval means it will be called on every event loop iteration
+#endif
 }
 
 std::unique_ptr<PluginDescriptor>
@@ -804,18 +799,6 @@ PluginManager::pick_instrument () const
     }
 #endif
   return nullptr;
-}
-
-void
-PluginManager::set_currently_scanning_plugin (
-  const char * filename,
-  const char * sha1)
-{
-  if (ZRYTHM_HAVE_UI)
-    {
-      greeter_widget_set_currently_scanned_plugin (
-        zrythm_app->greeter_, filename);
-    }
 }
 
 void

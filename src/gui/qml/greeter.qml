@@ -14,6 +14,18 @@ ApplicationWindow {
         return GlobalState.zrythm.pluginManager;
     }
 
+    function pluginScanner() {
+        return pluginManager().scanner;
+    }
+
+    function themeManager() {
+        return GlobalState.themeManager;
+    }
+
+    function settingsManager() {
+        return GlobalState.settingsManager;
+    }
+
     title: "Zrythm"
     modality: Qt.ApplicationModal
     minimumWidth: 256
@@ -27,17 +39,17 @@ ApplicationWindow {
     }
 
     palette {
-        accent: themeManager.accent
-        base: themeManager.base
-        brightText: themeManager.base
-        button: themeManager.base.lighter().lighter(1.2)
+        accent: themeManager().accent
+        base: themeManager().base
+        brightText: themeManager().base
+        button: themeManager().base.lighter().lighter(1.2)
         buttonText: "white"
         dark: "white" // used by paginator
         light: "#999999" // combo box hover background
-        highlight: themeManager.accent
-        link: themeManager.accent
+        highlight: themeManager().accent
+        link: themeManager().accent
         text: "white"
-        window: themeManager.base
+        window: themeManager().base
         windowText: "white"
     }
 
@@ -106,7 +118,7 @@ ApplicationWindow {
         id: stack
 
         anchors.fill: parent
-        initialItem: settingsManager.first_run ? firstRunPage : progressPage
+        initialItem: settingsManager().first_run ? firstRunPage : progressPage
 
         Component {
             id: firstRunPage
@@ -253,7 +265,7 @@ ApplicationWindow {
                         highlighted: true
                         onClicked: {
                             console.log("Proceeding to next page...");
-                            settingsManager.first_run = false;
+                            settingsManager().first_run = false;
                             stack.push(progressPage);
                         }
                         DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
@@ -273,7 +285,21 @@ ApplicationWindow {
             id: progressPage
 
             Page {
+                id: progressPagePage
+
                 title: qsTr("Progress")
+                StackView.onActivated: {
+                    // start the scan
+                    pluginManager().beginScan();
+                }
+
+                Connections {
+                    function onScanningFinished() {
+                        stack.push(projectSelectorPage);
+                    }
+
+                    target: pluginScanner()
+                }
 
                 PlaceholderPage {
                     icon.source: Qt.resolvedUrl("icons/zrythm-monochrome.svg")
@@ -288,8 +314,9 @@ ApplicationWindow {
                     spacing: 12
 
                     Text {
-                        // text: "Loading Plugin X..."
-                        text: pluginManager().test
+                        id: scanProgressLabel
+
+                        text: qsTr("Scanning:") + " " + pluginManager().currentlyScanningPlugin
                         horizontalAlignment: Qt.AlignHCenter
                         verticalAlignment: Qt.AlignVCenter
                         Layout.fillWidth: true
@@ -299,6 +326,8 @@ ApplicationWindow {
                     }
 
                     CustomProgressBar {
+                        id: scanProgressBar
+
                         indeterminate: true
                         Layout.fillWidth: true
                     }
@@ -432,6 +461,26 @@ ApplicationWindow {
 
                 }
 
+            }
+
+        }
+
+        pushEnter: Transition {
+            PropertyAnimation {
+                property: "opacity"
+                from: 0
+                to: 1
+                duration: 200
+            }
+
+        }
+
+        popExit: Transition {
+            PropertyAnimation {
+                property: "opacity"
+                from: 1
+                to: 0
+                duration: 200
             }
 
         }

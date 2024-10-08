@@ -19,6 +19,25 @@
 namespace zrythm::gui
 {
 
+class ZrythmJuceApplicationWrapper : public juce::JUCEApplicationBase
+{
+  void               initialise (const juce::String &command_line) override { }
+  void               shutdown () override { }
+  const juce::String getApplicationName () override { return "Zrythm"; }
+  const juce::String getApplicationVersion () override { return "2.0"; }
+  bool               moreThanOneInstanceAllowed () override { return true; }
+  void anotherInstanceStarted (const juce::String &commandLine) override { }
+  void systemRequestedQuit () override { }
+  void suspended () override { }
+  void resumed () override { }
+  void unhandledException (
+    const std::exception *,
+    const juce::String &sourceFilename,
+    int                 lineNumber) override
+  {
+  }
+};
+
 class ZrythmApplication final : public QApplication
 {
   Q_OBJECT
@@ -34,6 +53,8 @@ public:
 
   SettingsManager * get_settings_manager () const;
   ThemeManager *    get_theme_manager () const;
+
+  bool notify (QObject * receiver, QEvent * event) override;
 
 private:
   void setup_command_line_options ();
@@ -63,6 +84,8 @@ private:
   QProcess * engine_process_ = nullptr;
 
   QQmlApplicationEngine * qml_engine_ = nullptr;
+
+  std::unique_ptr<ZrythmJuceApplicationWrapper> juce_app_wrapper_;
 };
 
 } // namespace zrythm::gui

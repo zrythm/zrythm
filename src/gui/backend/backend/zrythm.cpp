@@ -320,26 +320,33 @@ Zrythm::init_templates ()
   auto *      dir_mgr = DirectoryManager::getInstance ();
   std::string user_templates_dir =
     dir_mgr->get_dir (DirectoryManager::DirectoryType::USER_TEMPLATES);
-  try
+  if (fs::is_directory (user_templates_dir))
     {
-      templates_ = io_get_files_in_dir (user_templates_dir);
-    }
-  catch (const ZrythmException &e)
-    {
-      z_warning ("Failed to init user templates from {}", user_templates_dir);
+      try
+        {
+          templates_ = io_get_files_in_dir (user_templates_dir);
+        }
+      catch (const ZrythmException &e)
+        {
+          z_warning (
+            "Failed to init user templates from {}", user_templates_dir);
+        }
     }
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       std::string system_templates_dir =
         dir_mgr->get_dir (DirectoryManager::DirectoryType::SYSTEM_TEMPLATES);
-      try
+      if (fs::is_directory (system_templates_dir))
         {
-          templates_.addArray (io_get_files_in_dir (system_templates_dir));
-        }
-      catch (const ZrythmException &e)
-        {
-          z_warning (
-            "Failed to init system templates from {}", system_templates_dir);
+          try
+            {
+              templates_.addArray (io_get_files_in_dir (system_templates_dir));
+            }
+          catch (const ZrythmException &e)
+            {
+              z_warning (
+                "Failed to init system templates from {}", system_templates_dir);
+            }
         }
     }
 

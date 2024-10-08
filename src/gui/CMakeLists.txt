@@ -75,7 +75,7 @@ foreach(font_filepath ${font_filepaths})
 endforeach()
 
 set(rel_qml_file_paths
-  main_window.qml
+  # main_window.qml
   greeter.qml
   components/PlaceholderPage.qml
   components/PlainButton.qml

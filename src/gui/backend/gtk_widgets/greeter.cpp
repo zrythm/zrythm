@@ -110,9 +110,7 @@ public:
 
     greeter_widget_set_progress_and_status (
       greeter_, _ ("Scanning Plugins"), _ ("Scanning Plugins"), 0.10);
-    gZrythm->plugin_manager_->begin_scan (
-      0.90, &greeter_.progress,
-      bind_member_function (app_, &ZrythmApp::on_plugin_scan_finished));
+    gZrythm->plugin_manager_->beginScan ();
   }
 
 private:
@@ -154,7 +152,7 @@ post_finish (GreeterWidget * self, bool zrythm_already_running, bool quit)
           /* pause engine early otherwise there is a crash */
           /* TODO: this should be done inside the project init flow manager at
            * the appropriate timing */
-          AudioEngine::State state;
+          AudioEngine::State state{};
           AUDIO_ENGINE->wait_for_pause (state, true, false);
 
           zrythm_app

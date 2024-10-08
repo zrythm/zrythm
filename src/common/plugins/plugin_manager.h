@@ -16,8 +16,8 @@
 #include "common/plugins/carla_discovery.h"
 #include "common/plugins/collections.h"
 #include "common/plugins/plugin_descriptor.h"
+#include "common/plugins/plugin_scanner.h"
 #include "common/utils/string_array.h"
-#include "common/utils/types.h"
 #include "gui/backend/plugin_descriptor_list.h"
 
 namespace zrythm::plugins
@@ -44,38 +44,38 @@ class PluginManager final : public QObject
   Q_PROPERTY (
     gui::PluginDescriptorList * pluginDescriptors READ getPluginDescriptors
       CONSTANT FINAL)
-  Q_PROPERTY (QString test READ getTest CONSTANT FINAL)
+  Q_PROPERTY (plugins::PluginScanner * scanner READ getScanner CONSTANT FINAL)
+  Q_PROPERTY (
+    QString currentlyScanningPlugin READ getCurrentlyScanningPlugin NOTIFY
+      currentlyScanningPluginChanged FINAL)
 public:
-  PluginManager ()
-      : cached_plugin_descriptors_ (CachedPluginDescriptors::read_or_new ()),
-        collections_ (PluginCollections::read_or_new ()),
-        carla_discovery_ (std::make_unique<ZCarlaDiscovery> (*this))
+  PluginManager (QObject * parent = nullptr);
+
+  QString getCurrentlyScanningPlugin () const
   {
+    return scanner_->getCurrentlyScanningPlugin ();
   }
+
+  plugins::PluginScanner * getScanner () const { return scanner_.get (); }
 
   gui::PluginDescriptorList * getPluginDescriptors () const
   {
     return plugin_descriptors_.get ();
   }
 
-  QString getTest () const { return QString::fromStdString ("test: 1"); }
+  static std::vector<fs::path> get_paths_for_protocol (PluginProtocol protocol);
 
-  static std::vector<fs::path>
-  get_paths_for_protocol (const PluginProtocol protocol);
-
-  static std::string
-  get_paths_for_protocol_separated (const PluginProtocol protocol);
+  static std::string get_paths_for_protocol_separated (PluginProtocol protocol);
 
   /**
    * Searches in the known paths for this plugin protocol for the given relative
    * path of the plugin and returns the absolute path.
    */
-  fs::path find_plugin_from_rel_path (
-    const PluginProtocol   protocol,
-    const std::string_view rel_path) const;
+  fs::path
+  find_plugin_from_rel_path (PluginProtocol protocol, std::string_view rel_path)
+    const;
 
-  void
-  begin_scan (const double max_progress, double * progress, GenericCallback cb);
+  Q_INVOKABLE void beginScan ();
 
   /**
    * Adds a new descriptor.
@@ -85,7 +85,8 @@ public:
   /**
    * Updates the text in the greeter.
    */
-  void set_currently_scanning_plugin (const char * filename, const char * sha1);
+  // void set_currently_scanning_plugin (const char * filename, const char *
+  // sha1);
 
   /**
    * Returns a PluginDescriptor for the given URI.
@@ -111,6 +112,15 @@ public:
 
   void clear_plugins ();
 
+  /**
+   * @brief Returns the number of new plugins scanned this time (as opposed to
+   * known ones).
+   */
+  int get_num_new_plugins () const { return num_new_plugins_; }
+
+  Q_SIGNAL void scanFinished ();
+  Q_SIGNAL void currentlyScanningPluginChanged (const QString &plugin);
+
 private:
   /**
    * @brief Adds the given category and author to the lists of plugin categories
@@ -122,7 +132,7 @@ private:
   /**
    * @brief Source func.
    */
-  bool call_carla_discovery_idle ();
+  Q_SLOT void call_carla_discovery_idle ();
 
   static StringArray get_lv2_paths ();
   static StringArray get_vst2_paths ();
@@ -153,9 +163,11 @@ public:
   /** Plugin collections. */
   std::unique_ptr<PluginCollections> collections_;
 
+  std::unique_ptr<PluginScanner> scanner_;
+
   std::unique_ptr<ZCarlaDiscovery> carla_discovery_;
 
-  GenericCallback scan_done_cb_;
+  // GenericCallback scan_done_cb_;
 
   /** Whether the plugin manager has been set up already. */
   bool setup_ = false;

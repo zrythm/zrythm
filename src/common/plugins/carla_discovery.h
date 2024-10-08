@@ -20,6 +20,7 @@ namespace zrythm::plugins
 
 class PluginDescriptor;
 class PluginManager;
+class CarlaDiscoveryStartThread;
 
 /**
  * @addtogroup plugins
@@ -31,6 +32,8 @@ class ZCarlaDiscovery
 {
 public:
   ZCarlaDiscovery (PluginManager &owner);
+
+  friend class CarlaDiscoveryStartThread;
 
   void start (BinaryType btype, PluginProtocol protocol);
 
@@ -58,16 +61,38 @@ private:
    */
   static fs::path get_discovery_path (PluginArchitecture arch);
 
-public:
   /**
    * Array of CarlaPluginDiscoveryHandle's and a boolean whether done.
    */
   std::vector<std::pair<CarlaPluginDiscoveryHandle, bool>> handles_;
 
+  std::mutex handles_mutex_;
+
+public:
   /**
    * @brief Pointer to owner.
    */
   PluginManager * owner_ = nullptr;
+};
+
+class CarlaDiscoveryStartThread : public QThread
+{
+  Q_OBJECT
+
+public:
+  CarlaDiscoveryStartThread (
+    BinaryType       btype,
+    PluginProtocol   protocol,
+    ZCarlaDiscovery &self);
+
+  friend class ZCarlaDiscovery;
+
+  void run () override;
+
+public:
+  BinaryType       btype_;
+  PluginProtocol   protocol_;
+  ZCarlaDiscovery &discovery_;
 };
 
 } // namespace zrythm::plugins

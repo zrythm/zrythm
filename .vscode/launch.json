@@ -79,6 +79,7 @@
             "args": [
                 "--dummy"
             ],
+            "miDebuggerArgs": "-ex \"handle SIGPIPE noprint nostop pass\"",
         }
         // {
         //     "name": "CTest Target",

@@ -17,6 +17,9 @@
 
 using namespace zrythm::gui;
 
+JUCE_CREATE_APPLICATION_DEFINE (ZrythmJuceApplicationWrapper)
+// START_JUCE_APPLICATION (ZrythmJuceApplicationWrapper)
+
 ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
     : QApplication (argc, argv), qt_thread_id_ (current_thread_id.get ())
 {
@@ -25,7 +28,7 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   /* app info */
   setApplicationName ("Zrythm");
   setApplicationVersion (PACKAGE_VERSION);
-  setOrganizationName ("Zrythm DAW");
+  setOrganizationName ("Zrythm.org");
   setOrganizationDomain ("zrythm.org");
   setApplicationDisplayName ("Zrythm");
   // setWindowIcon (QIcon (":/org.zrythm.Zrythm/resources/icons/zrythm.svg"));
@@ -33,6 +36,10 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   /* setup command line parser */
   setup_command_line_options ();
   cmd_line_parser_.process (*this);
+
+  // Initialize JUCE
+  juce ::JUCEApplicationBase ::createInstance = &juce_CreateApplication;
+  juce::MessageManager::getInstance ()->setCurrentThreadAsMessageThread ();
 
   settings_manager_ = new SettingsManager (this);
   theme_manager_ = new ThemeManager (this);
@@ -94,6 +101,18 @@ void
 ZrythmApplication::post_exec_initialization ()
 {
   setup_ipc ();
+
+  /* init directories in user path */
+  try
+    {
+      gZrythm->init_user_dirs_and_files ();
+    }
+  catch (const ZrythmException &e)
+    {
+      z_critical ("Failed to create user dirs and files: {}", e.what ());
+      return;
+    }
+  gZrythm->init_templates ();
 }
 
 void
@@ -185,15 +204,6 @@ ZrythmApplication::setup_ui ()
   // skips plugin loading for modules found in qrc
   qml_engine_->addImportPath (":/org.zrythm/imports/");
 
-  // this is only needed if we want to be able to instantiate such types
-  // qmlRegisterType<SettingsManager> ("Zrythm.Managers", 1, 0,
-  // "SettingsManager");
-
-  qml_engine_->rootContext ()->setContextProperty (
-    "settingsManager", settings_manager_);
-  qml_engine_->rootContext ()->setContextProperty (
-    "themeManager", theme_manager_);
-
   // hints:
   // always load from qrc
   // files in qrc are pre-compiled
@@ -274,6 +284,19 @@ ZrythmApplication::launch_engine_process ()
     }
 }
 
+bool
+ZrythmApplication::notify (QObject * receiver, QEvent * event)
+{
+  // Run JUCE's dispatch loop before processing Qt events
+  if (juce_app_wrapper_)
+    {
+      juce::MessageManager::getInstance ()->runDispatchLoop ();
+    }
+
+  // Process Qt event
+  return QApplication::notify (receiver, event);
+}
+
 void
 ZrythmApplication::onAboutToQuit ()
 {
@@ -315,4 +338,6 @@ ZrythmApplication::~ZrythmApplication ()
 
   z_info ("ZrythmApplication destroyed - deleting logger...");
   Logger::deleteInstance ();
+
+  juce::MessageManager::deleteInstance ();
 }

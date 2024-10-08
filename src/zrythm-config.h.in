@@ -172,4 +172,6 @@
 // Developer build (with extra checks enabled)
 #cmakedefine01 ZRYTHM_DEV_BUILD
 
+#define ZRYTHM_PLUGIN_SCANNER_UUID "@PLUGIN_SCANNER_UUID@"
+
 // clang-format on

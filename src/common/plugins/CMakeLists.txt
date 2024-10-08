@@ -21,4 +21,14 @@ target_sources(zrythm_lib
     plugin_identifier.h
     plugin_manager.cpp
     plugin_manager.h
+    plugin_scanner.cpp
+    plugin_scanner.h
     )
+
+add_executable(plugin-scanner
+  plugin_scanner_subprocess.h
+  plugin_scanner_subprocess.cpp
+)
+target_link_libraries(plugin-scanner juce::juce)
+target_include_directories(plugin-scanner PRIVATE  ${CMAKE_BINARY_DIR}/src)
+install(TARGETS plugin-scanner RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

@@ -78,6 +78,17 @@ class SettingsManager final : public QObject
   // note: in amplitude (0 to 2)
   DEFINE_SETTING_PROPERTY_DOUBLE (double, metronome_volume, 1.0)
   DEFINE_SETTING_PROPERTY (QString, icon_theme, "zrythm-dark")
+  DEFINE_SETTING_PROPERTY (QStringList, recent_projects, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, lv2_search_paths, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, vst2_search_paths, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, vst3_search_paths, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, sf2_search_paths, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, sfz_search_paths, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, dssi_search_paths, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, ladspa_search_paths, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, clap_search_paths, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, jsfx_search_paths, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, au_search_paths, QStringList ())
 
 public:
   SettingsManager (QObject * parent = nullptr);

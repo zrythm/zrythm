@@ -92,7 +92,7 @@ set_target_properties(zrythm PROPERTIES
 install(TARGETS zrythm RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 add_subdirectory(engine)
-add_dependencies(zrythm zrythm-engine)
+add_dependencies(zrythm zrythm-engine plugin-scanner)
 
 # Run stoat
 if(STOAT_FOUND AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")

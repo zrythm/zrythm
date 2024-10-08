@@ -236,6 +236,7 @@ set(purchase_url "https://www.zrythm.org/en/download.html")
 set(license_url "${main_repo_url}/-/raw/master/LICENSES/LicenseRef-ZrythmLicense.txt")
 set(trademark_policy_url "${main_repo_url}/-/raw/master/TRADEMARKS.md")
 set(bug_report_api_endpoint "https://accounts.zrythm.org/api/v1/error-reports/new")
+set(PLUGIN_SCANNER_UUID "f47ac10b")
 
 # if latest version in changelog is the project's
 # version, add the changelog to the config
@@ -930,7 +931,7 @@ pkg_check_modules(EPOXY epoxy REQUIRED IMPORTED_TARGET)
 find_package(GTest REQUIRED)
 
 find_package(Qt6
-  COMPONENTS Core Gui Widgets Quick QuickControls2 REQUIRED
+  COMPONENTS Core Gui Widgets Quick QuickControls2 Concurrent REQUIRED
 )
 qt_standard_project_setup()
 
@@ -978,8 +979,10 @@ list(APPEND zrythm_link_libs
   Qt6::Widgets
   Qt6::Quick
   Qt6::QuickControls2
-  # KDAB::kddockwidgets
-  # KF6::Kirigami
+  # for qmltc
+  Qt6::QmlPrivate
+  Qt6::QuickPrivate
+  Qt6::Concurrent
   GTest::GTest
 )
 
@@ -1160,7 +1163,12 @@ qt_add_qml_module(zrythm
   SOURCES # for some reason singletons must be added here
     src/global_state.h
     src/global_state.cpp
+  
   # NO_RESOURCE_TARGET_PATH
+
+  # compile qml files listed in QML_FILES to C++ using qmltc
+  # (currently cannot extend QtQuick Controls directly)
+  # ENABLE_TYPE_COMPILER
 )
 
 # ==============================================================================================

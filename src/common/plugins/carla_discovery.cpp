@@ -234,7 +234,7 @@ z_carla_discovery_plugin_check_cache_cb (
       return true;
     }
 
-  pl_mgr->set_currently_scanning_plugin (filename, sha1);
+  // pl_mgr->setCurrentlyScannedPlugin (filename);
 
   return false;
 }
@@ -242,49 +242,74 @@ z_carla_discovery_plugin_check_cache_cb (
 bool
 ZCarlaDiscovery::idle ()
 {
-  bool all_done = true;
-  for (auto &[handle, done] : handles_)
+  if (handles_mutex_.try_lock ())
     {
-      z_return_val_if_fail (handle, true);
-      if (done)
-        continue;
+      std::lock_guard<std::mutex> lock (handles_mutex_, std::adopt_lock);
+      bool                        all_done = true;
+      for (auto &[handle, done] : handles_)
+        {
+          z_return_val_if_fail (handle, true);
+          if (done)
+            continue;
 
-      done = carla_plugin_discovery_idle (handle) == false;
-      if (done)
-        {
-          carla_plugin_discovery_stop (handle);
+          done = carla_plugin_discovery_idle (handle) == false;
+          if (done)
+            {
+              carla_plugin_discovery_stop (handle);
+            }
+          else
+            {
+              all_done = false;
+            }
         }
-      else
-        {
-          all_done = false;
-        }
+
+      return all_done;
     }
+  return false;
+}
 
-  return all_done;
+CarlaDiscoveryStartThread::CarlaDiscoveryStartThread (
+  BinaryType       btype,
+  PluginProtocol   protocol,
+  ZCarlaDiscovery &self)
+    : btype_ (btype), protocol_ (protocol), discovery_ (self)
+{
+}
+
+void
+CarlaDiscoveryStartThread::run ()
+{
+  auto discovery_tool = zrythm::plugins::ZCarlaDiscovery::get_discovery_path (
+    btype_ == CarlaBackend::BINARY_NATIVE
+      ? PluginArchitecture::ARCH_64_BIT
+      : PluginArchitecture::ARCH_32_BIT);
+  auto paths_separated =
+    zrythm::plugins::PluginManager::get_paths_for_protocol_separated (protocol_);
+  PluginType ptype = zrythm::plugins::PluginDescriptor::
+    get_carla_plugin_type_from_protocol (protocol_);
+
+  void * handle = carla_plugin_discovery_start (
+    discovery_tool.string ().c_str (), btype_, ptype, paths_separated.c_str (),
+    z_carla_discovery_plugin_scanned_cb,
+    z_carla_discovery_plugin_check_cache_cb, this);
+  if (handle == nullptr)
+    {
+      z_debug (
+        "no plugins to scan for {} (given paths: {})", ENUM_NAME (protocol_),
+        paths_separated);
+      return;
+    }
+  std::lock_guard<std::mutex> lock (discovery_.handles_mutex_);
+  discovery_.handles_.emplace_back (handle, false);
 }
 
 void
 ZCarlaDiscovery::start (BinaryType btype, PluginProtocol protocol)
 {
-  auto discovery_tool = get_discovery_path (
-    btype == CarlaBackend::BINARY_NATIVE
-      ? PluginArchitecture::ARCH_64_BIT
-      : PluginArchitecture::ARCH_32_BIT);
-  auto paths_separated = owner_->get_paths_for_protocol_separated (protocol);
-  PluginType ptype = zrythm::plugins::PluginDescriptor::
-    get_carla_plugin_type_from_protocol (protocol);
-  void * handle = carla_plugin_discovery_start (
-    discovery_tool.string ().c_str (), btype, ptype, paths_separated.c_str (),
-    z_carla_discovery_plugin_scanned_cb,
-    z_carla_discovery_plugin_check_cache_cb, this);
-  if (!handle)
-    {
-      z_debug (
-        "no plugins to scan for {} (given paths: {})", ENUM_NAME (protocol),
-        paths_separated);
-      return;
-    }
-  handles_.emplace_back (handle, false);
+  auto * thread = new CarlaDiscoveryStartThread (btype, protocol, *this);
+  QObject::connect (
+    thread, &CarlaDiscoveryStartThread::finished, thread, &QObject::deleteLater);
+  thread->start ();
 }
 
 #endif

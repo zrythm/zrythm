@@ -77,15 +77,9 @@ public:
     return arr_.contains (s, ignore_case);
   }
 
-  std::vector<std::string> toStdStringVector () const
-  {
-    std::vector<std::string> ret;
-    for (auto &s : arr_)
-      {
-        ret.push_back (s.toStdString ());
-      }
-    return ret;
-  }
+  std::vector<std::string> toStdStringVector () const;
+
+  QStringList toQStringList () const;
 
   void print (std::string title) const;
 
