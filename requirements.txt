@@ -5,6 +5,8 @@ certifi==2024.8.30
 charset-normalizer==3.2.0
 click==8.1.6
 cmake==3.30.2
+cmake-format==0.6.13
+cmakelang==0.6.13
 compdb==0.2.0
 docutils==0.20.1
 furo==2024.8.6
@@ -19,6 +21,7 @@ packaging==23.1
 Pygments==2.16.1
 requests==2.32.3
 setuptools==70.0.0
+six==1.16.0
 snowballstemmer==2.2.0
 soupsieve==2.4.1
 Sphinx==7.2.6
