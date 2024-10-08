@@ -51,7 +51,7 @@
 #include <glib/gi18n.h>
 #include <glib/gstdio.h>
 
-#include "juce/juce.h"
+#include "juce_wrapper.h"
 #include <fmt/format.h>
 #include <giomm.h>
 #include <glibmm.h>

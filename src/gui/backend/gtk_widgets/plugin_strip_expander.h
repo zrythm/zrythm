@@ -49,7 +49,7 @@ using PluginStripExpanderWidget = struct _PluginStripExpanderWidget
   ExpanderBoxWidget parent_instance;
 
   zrythm::plugins::PluginSlotType slot_type;
-  PluginStripExpanderPosition position;
+  PluginStripExpanderPosition     position;
 
   /** Scrolled window for the vbox inside. */
   GtkScrolledWindow * scroll;

@@ -452,11 +452,11 @@ Plugin::validate () const
 
 struct PluginMoveData
 {
-  Plugin *           pl = nullptr;
-  AutomatableTrack * track = nullptr;
+  Plugin *                        pl = nullptr;
+  AutomatableTrack *              track = nullptr;
   zrythm::plugins::PluginSlotType slot_type{};
-  int                slot = 0;
-  bool               fire_events = false;
+  int                             slot = 0;
+  bool                            fire_events = false;
 };
 
 static void

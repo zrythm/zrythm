@@ -41,7 +41,7 @@
 
 using namespace zrythm::plugins;
 
-constexpr auto PLUGIN_SCAN_TIMEOUT = std::chrono::seconds (4);
+constexpr auto PLUGIN_SCAN_TIMEOUT = std::chrono::seconds (8);
 
 //==============================================================================
 
@@ -213,6 +213,7 @@ PluginScanWorker::process ()
   // Initialize the format manager
   juce::AudioPluginFormatManager formatManager;
   formatManager.addDefaultFormats ();
+  formatManager.addFormat (new juce::CLAPPluginFormat ());
 
   // Iterate through available formats
   for (auto * format : formatManager.getFormats ())

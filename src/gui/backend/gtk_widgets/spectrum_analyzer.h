@@ -7,7 +7,7 @@
 #include "common/utils/types.h"
 #include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
-#include "juce/juce.h"
+#include "juce_wrapper.h"
 #include <kiss_fft.h>
 
 class Port;

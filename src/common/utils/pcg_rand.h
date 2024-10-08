@@ -12,7 +12,7 @@
 
 #include <cstdint>
 
-#include "juce/juce.h"
+#include "juce_wrapper.h"
 
 /**
  * @brief Random number generator.

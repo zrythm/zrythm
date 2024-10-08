@@ -33,7 +33,7 @@
 #include "common/utils/math.h"
 #include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
-#include "juce/juce.h"
+#include "juce_wrapper.h"
 
 /**
  * Create a new Stretcher using the rubberband backend.

@@ -48,7 +48,7 @@
 
 /* This also includes all native platform headers. */
 /* FIXME compilation fails with internal compiler errors if this is included */
-#include "juce/juce.h"
+#include "juce_wrapper.h"
 
 /* ====================================== */
 /*             zrythm headers             */

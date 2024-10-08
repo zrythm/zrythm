@@ -1,11 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Code related to Carla plugins.
- */
+#ifndef __PLUGINS_CARLA_NATIVE_PLUGIN_H__
+#define __PLUGINS_CARLA_NATIVE_PLUGIN_H__
 
 #include "zrythm-config.h"
 
@@ -16,12 +13,9 @@
 #include "common/utils/icloneable.h"
 #include "common/utils/types.h"
 
-#ifndef __PLUGINS_CARLA_NATIVE_PLUGIN_H__
-#  define __PLUGINS_CARLA_NATIVE_PLUGIN_H__
-
-#  if HAVE_CARLA
-#    include "carla_wrapper.h"
-#  endif
+#if HAVE_CARLA
+#  include "carla_wrapper.h"
+#endif
 
 class Port;
 namespace zrythm::plugins
@@ -96,11 +90,13 @@ public:
    */
   ~CarlaNativePlugin () override;
 
+#if HAVE_CARLA
   /**
    * Returns a filled in descriptor from @p info.
    */
   static std::unique_ptr<PluginDescriptor>
   get_descriptor_from_cached (const CarlaCachedPluginInfo &info, PluginType type);
+#endif
 
   void save_state (bool is_backup, const std::string * abs_state_dir) override;
 
@@ -195,7 +191,7 @@ private:
   void create_ports (bool loading);
 
 public:
-#  if HAVE_CARLA
+#if HAVE_CARLA
   NativePluginHandle             native_plugin_handle_ = nullptr;
   NativeHostDescriptor           native_host_descriptor_ = {};
   const NativePluginDescriptor * native_plugin_descriptor_ = nullptr;
@@ -203,7 +199,7 @@ public:
   CarlaHostHandle host_handle_ = nullptr;
 
   NativeTimeInfo time_info_ = {};
-#  endif
+#endif
 
   /** Plugin ID inside carla engine. */
   unsigned int carla_plugin_id_ = 0;

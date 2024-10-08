@@ -805,10 +805,10 @@ pkg_check_modules(LV2 lv2>=1.16.0 REQUIRED IMPORTED_TARGET)
 if(${LV2_VERSION} VERSION_GREATER_EQUAL 1.18.0)
   set(HAVE_LV2_1_18 TRUE)
 endif()
-pkg_check_modules(ZIX zix-0>=0.4.0 REQUIRED IMPORTED_TARGET)
-pkg_check_modules(SERD serd-0>=0.30.0 REQUIRED IMPORTED_TARGET)
-pkg_check_modules(SORD sord-0>=0.14.0 REQUIRED IMPORTED_TARGET)
-pkg_check_modules(SRATOM sratom-0>=0.4.0 REQUIRED IMPORTED_TARGET)
+# pkg_check_modules(ZIX zix-0>=0.4.0 REQUIRED IMPORTED_TARGET)
+# pkg_check_modules(SERD serd-0>=0.30.0 REQUIRED IMPORTED_TARGET)
+# pkg_check_modules(SORD sord-0>=0.14.0 REQUIRED IMPORTED_TARGET)
+# pkg_check_modules(SRATOM sratom-0>=0.4.0 REQUIRED IMPORTED_TARGET)
 pkg_check_modules(LILV lilv-0>=0.24.6 REQUIRED IMPORTED_TARGET)
 
 include(FindFFTW3)
@@ -819,6 +819,7 @@ if(CHROMAPRINT_FOUND)
 endif()
 
 # Carla
+if(false)
 pkg_check_modules(CARLA carla-host-plugin>=2.6.0 REQUIRED IMPORTED_TARGET)
 set(HAVE_CARLA TRUE)
 if(ZRYTHM_CARLA_BINARIES_DIR)
@@ -857,6 +858,8 @@ set(CMAKE_REQUIRED_LIBRARIES ${CARLA_LIBRARIES})
 check_symbol_exists(carla_get_native_patchbay_cv8_plugin "carla/CarlaHost.h" CARLA_HAVE_CV8_PATCHBAY_VARIANT)
 check_symbol_exists(carla_get_audio_port_hints "carla/CarlaHost.h" CARLA_HAVE_AUDIO_PORT_HINTS)
 set(CMAKE_REQUIRED_LIBRARIES)
+endif()
+set(HAVE_CARLA FALSE)
 
 pkg_search_module(RTAUDIO librtaudio>=5.1.0 rtaudio>=5.1.0 REQUIRED IMPORTED_TARGET)
 set(HAVE_RTAUDIO TRUE)
@@ -953,7 +956,7 @@ list(APPEND zrythm_link_libs
   SndFile::sndfile
   cyaml::cyaml
   soxr::soxr
-  PkgConfig::CARLA
+  # PkgConfig::CARLA
   PkgConfig::RTAUDIO
   PkgConfig::RTMIDI
   zstd::libzstd_shared
@@ -967,7 +970,8 @@ list(APPEND zrythm_link_libs
   vamp-plugin-sdk::vamp-hostsdk
   yyjson::yyjson
   magic_enum::magic_enum
-  juce::juce
+  juce_lib
+  juce_clap_hosting_lib
   backward_cpp::backward_cpp
   fmt::fmt
   spdlog::spdlog

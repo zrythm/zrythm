@@ -42,7 +42,7 @@
 
 #include <glib/gi18n.h>
 
-#include "juce/juce.h"
+#include "juce_wrapper.h"
 #include <fmt/printf.h>
 #include <glibmm.h>
 #include <zstd.h>

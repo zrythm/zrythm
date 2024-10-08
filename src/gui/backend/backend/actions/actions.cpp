@@ -1285,8 +1285,8 @@ activate_clear_selection (
         z_return_if_fail (track);
         if (track->has_channel ())
           {
-            auto           ch_track = dynamic_cast<ChannelTrack *> (track);
-            auto           ch = ch_track->get_channel ();
+            auto ch_track = dynamic_cast<ChannelTrack *> (track);
+            auto ch = ch_track->get_channel ();
             zrythm::plugins::PluginSlotType slot_type =
               plugins::PluginSlotType::Insert;
             if (PROJECT->last_selection_ == Project::SelectionType::MidiFX)
@@ -1330,8 +1330,8 @@ activate_select_all (
         z_return_if_fail (track);
         if (track->has_channel ())
           {
-            auto           ch_track = dynamic_cast<ChannelTrack *> (track);
-            auto           ch = ch_track->get_channel ();
+            auto ch_track = dynamic_cast<ChannelTrack *> (track);
+            auto ch = ch_track->get_channel ();
             zrythm::plugins::PluginSlotType slot_type =
               plugins::PluginSlotType::Insert;
             if (PROJECT->last_selection_ == Project::SelectionType::MidiFX)
@@ -3383,8 +3383,8 @@ DEFINE_SIMPLE (activate_reset_stereo_balance)
 
 DEFINE_SIMPLE (activate_plugin_toggle_enabled)
 {
-  gsize        size;
-  const char * str = g_variant_get_string (variant, &size);
+  gsize                     size;
+  const char *              str = g_variant_get_string (variant, &size);
   zrythm::plugins::Plugin * pl = NULL;
   sscanf (str, "%p", &pl);
   z_return_if_fail (pl);
@@ -3408,10 +3408,10 @@ DEFINE_SIMPLE (activate_plugin_toggle_enabled)
 
 DEFINE_SIMPLE (activate_plugin_change_load_behavior)
 {
-  gsize        size;
-  const char * str = g_variant_get_string (variant, &size);
+  gsize                     size;
+  const char *              str = g_variant_get_string (variant, &size);
   zrythm::plugins::Plugin * pl = NULL;
-  char         new_behavior[600];
+  char                      new_behavior[600];
   sscanf (str, "%p,%s", &pl, new_behavior);
   z_return_if_fail (pl);
 
@@ -3643,8 +3643,8 @@ activate_plugin_setting (const PluginSetting &setting)
 
 DEFINE_SIMPLE (activate_plugin_browser_add_to_project)
 {
-  gsize              size;
-  const char *       str = g_variant_get_string (variant, &size);
+  gsize                       size;
+  const char *                str = g_variant_get_string (variant, &size);
   plugins::PluginDescriptor * descr = NULL;
   sscanf (str, "%p", &descr);
   z_return_if_fail (descr != nullptr);
@@ -3654,8 +3654,8 @@ DEFINE_SIMPLE (activate_plugin_browser_add_to_project)
 
 DEFINE_SIMPLE (activate_plugin_browser_add_to_project_carla)
 {
-  gsize              size;
-  const char *       str = g_variant_get_string (variant, &size);
+  gsize        size;
+  const char * str = g_variant_get_string (variant, &size);
   zrythm::plugins::PluginDescriptor * descr = NULL;
   sscanf (str, "%p", &descr);
   z_return_if_fail (descr != nullptr);
@@ -3668,8 +3668,8 @@ DEFINE_SIMPLE (activate_plugin_browser_add_to_project_carla)
 
 DEFINE_SIMPLE (activate_plugin_browser_add_to_project_bridged_ui)
 {
-  gsize              size;
-  const char *       str = g_variant_get_string (variant, &size);
+  gsize        size;
+  const char * str = g_variant_get_string (variant, &size);
   zrythm::plugins::PluginDescriptor * descr = NULL;
   sscanf (str, "%p", &descr);
   z_return_if_fail (descr != nullptr);
@@ -3682,8 +3682,8 @@ DEFINE_SIMPLE (activate_plugin_browser_add_to_project_bridged_ui)
 
 DEFINE_SIMPLE (activate_plugin_browser_add_to_project_bridged_full)
 {
-  gsize              size;
-  const char *       str = g_variant_get_string (variant, &size);
+  gsize        size;
+  const char * str = g_variant_get_string (variant, &size);
   zrythm::plugins::PluginDescriptor * descr = NULL;
   sscanf (str, "%p", &descr);
   z_return_if_fail (descr != nullptr);
@@ -3698,9 +3698,9 @@ DEFINE_SIMPLE (change_state_plugin_browser_toggle_generic_ui) { }
 
 DEFINE_SIMPLE (activate_plugin_browser_add_to_collection)
 {
-  gsize                    size;
-  const char *             str = g_variant_get_string (variant, &size);
-  zrythm::plugins::PluginCollection * collection = NULL;
+  gsize        size;
+  const char * str = g_variant_get_string (variant, &size);
+  zrythm::plugins::PluginCollection *       collection = NULL;
   const zrythm::plugins::PluginDescriptor * descr = NULL;
   sscanf (str, "%p,%p", &collection, &descr);
   z_return_if_fail (collection != nullptr);
@@ -3714,9 +3714,9 @@ DEFINE_SIMPLE (activate_plugin_browser_add_to_collection)
 
 DEFINE_SIMPLE (activate_plugin_browser_remove_from_collection)
 {
-  gsize                    size;
-  const char *             str = g_variant_get_string (variant, &size);
-  zrythm::plugins::PluginCollection * collection = NULL;
+  gsize        size;
+  const char * str = g_variant_get_string (variant, &size);
+  zrythm::plugins::PluginCollection *       collection = NULL;
   const zrythm::plugins::PluginDescriptor * descr = NULL;
   sscanf (str, "%p,%p", &collection, &descr);
   z_return_if_fail (collection != nullptr);

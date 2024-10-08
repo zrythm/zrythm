@@ -398,7 +398,7 @@ TracklistSelectionsAction::create_track (int idx)
   else /* else if track is not empty */
     {
       std::unique_ptr<zrythm::plugins::Plugin> pl;
-      std::unique_ptr<Track>  track;
+      std::unique_ptr<Track>                   track;
       zrythm::plugins::Plugin *                added_pl = nullptr;
 
       /* if creating audio track from file */

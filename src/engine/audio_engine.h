@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <csignal>
+
 #include <QCoreApplication>
 #include <QLocalServer>
 #include <QLocalSocket>
-#include <csignal>
 
 #include "engine/ipc_message.h"
 

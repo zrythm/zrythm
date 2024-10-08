@@ -951,7 +951,7 @@ EventManager::process_event (ZEvent &ev)
       /* show all visible plugins */
       for (auto track : TRACKLIST->tracks_ | type_is<ChannelTrack> ())
         {
-          auto                 &ch = track->channel_;
+          auto                                  &ch = track->channel_;
           std::vector<zrythm::plugins::Plugin *> plugins;
           ch->get_plugins (plugins);
           for (auto plugin : plugins)

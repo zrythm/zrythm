@@ -11,7 +11,7 @@
 
 #include <glib.h>
 
-#include "juce/juce.h"
+#include "juce_wrapper.h"
 
 /**
  * Returns a newly allocated string.

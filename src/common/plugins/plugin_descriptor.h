@@ -148,6 +148,7 @@ public:
   static std::string plugin_protocol_to_str (PluginProtocol prot);
 
   static PluginProtocol plugin_protocol_from_str (const std::string &str);
+#if HAVE_CARLA
   static PluginProtocol
   get_protocol_from_carla_plugin_type (CarlaBackend::PluginType ptype);
   static CarlaBackend::PluginType
@@ -156,6 +157,7 @@ public:
   get_category_from_carla_category_str (const std::string &category);
   static ZPluginCategory
   get_category_from_carla_category (CarlaBackend::PluginCategory carla_cat);
+#endif
   static bool            protocol_is_supported (PluginProtocol protocol);
   static std::string     get_icon_name_for_protocol (PluginProtocol prot);
   static ZPluginCategory string_to_category (const std::string &str);

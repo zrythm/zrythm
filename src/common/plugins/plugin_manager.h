@@ -165,7 +165,9 @@ public:
 
   std::unique_ptr<PluginScanner> scanner_;
 
+#if HAVE_CARLA
   std::unique_ptr<ZCarlaDiscovery> carla_discovery_;
+#endif
 
   // GenericCallback scan_done_cb_;
 

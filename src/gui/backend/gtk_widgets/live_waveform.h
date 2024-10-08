@@ -6,7 +6,7 @@
 
 #include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
-#include "juce/juce.h"
+#include "juce_wrapper.h"
 
 #define LIVE_WAVEFORM_WIDGET_TYPE (live_waveform_widget_get_type ())
 G_DECLARE_FINAL_TYPE (

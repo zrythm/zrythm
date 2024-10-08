@@ -248,7 +248,7 @@ should_be_hidden (const char * group, const char * subgroup, const char * key)
 #endif
 #if !HAVE_CARLA
     KEY_IS ("Plugins", "Paths", "sfz-search-paths")
-    || KEY_IS ("Plugins", "Paths", "sf2-search-paths") ||
+    || KEY_IS ("Plugins", "Paths", "sf2-search-paths")
     || KEY_IS ("Plugins", "Paths", "jsfx-search-paths") ||
 #endif
     (audio_backend != AudioBackend::AUDIO_BACKEND_SDL

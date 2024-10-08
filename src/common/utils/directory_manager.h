@@ -6,7 +6,7 @@
 
 #include "zrythm-config.h"
 
-#include "juce/juce.h"
+#include "juce_wrapper.h"
 
 class DirectoryManager
 {

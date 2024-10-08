@@ -118,7 +118,7 @@ ports_filter_func (GObject * item, AutomatableSelectorPopoverWidget * self)
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (item);
   Port * port = wrapped_object_with_change_signal_get_port (wrapped_obj);
   const zrythm::plugins::Plugin * port_pl = port->get_plugin (false);
-  const Track *  port_tr = port->get_track (false);
+  const Track *                   port_tr = port->get_track (false);
 
   GtkMultiSelection * multi_sel =
     GTK_MULTI_SELECTION (gtk_list_view_get_model (self->type_listview));

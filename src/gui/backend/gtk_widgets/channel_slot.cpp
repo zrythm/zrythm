@@ -463,7 +463,7 @@ tick_cb (GtkWidget * widget, GdkFrameClock * frame_clock, ChannelSlotWidget * se
     }
 
   zrythm::plugins::Plugin * plugin = channel_slot_widget_get_plugin (self);
-  bool     empty = plugin == NULL;
+  bool                      empty = plugin == NULL;
   self->was_empty = empty;
   gtk_widget_remove_css_class (GTK_WIDGET (self), "empty");
   gtk_widget_remove_css_class (GTK_WIDGET (self), "disabled");

@@ -53,8 +53,11 @@ PluginManager::PluginManager (QObject * parent)
       plugin_descriptors_ (std::make_unique<gui::PluginDescriptorList> ()),
       cached_plugin_descriptors_ (CachedPluginDescriptors::read_or_new ()),
       collections_ (PluginCollections::read_or_new ()),
-      scanner_ (std::make_unique<PluginScanner> ()),
+      scanner_ (std::make_unique<PluginScanner> ())
+#if HAVE_CARLA
+      ,
       carla_discovery_ (std::make_unique<ZCarlaDiscovery> (*this))
+#endif
 {
 }
 
@@ -182,7 +185,6 @@ PluginManager::get_lv2_paths ()
   return ret;
 }
 
-#if HAVE_CARLA
 StringArray
 PluginManager::get_vst2_paths ()
 {
@@ -202,34 +204,34 @@ PluginManager::get_vst2_paths ()
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
-#  ifdef _WIN32
+#ifdef _WIN32
       ret.add ("C:\\Program Files\\Common Files\\VST2");
       ret.add ("C:\\Program Files\\VSTPlugins");
       ret.add ("C:\\Program Files\\Steinberg\\VSTPlugins");
       ret.add ("C:\\Program Files\\Common Files\\VST2");
       ret.add ("C:\\Program Files\\Common Files\\Steinberg\\VST2");
-#  elif defined(__APPLE__)
+#elif defined(__APPLE__)
       ret.add ("/Library/Audio/Plug-ins/VST");
-#  elif defined(FLATPAK_BUILD)
+#elif defined(FLATPAK_BUILD)
       ret.add ("/app/extensions/Plugins/vst");
-#  else /* non-flatpak UNIX */
+#else /* non-flatpak UNIX */
       {
         auto home_vst = fs::path (Glib::get_home_dir ()) / ".vst";
         ret.add (home_vst);
       }
       ret.add ("/usr/lib/vst");
       ret.add ("/usr/local/lib/vst");
-#    if ZRYTHM_IS_INSTALLER_VER
+#  if ZRYTHM_IS_INSTALLER_VER
       ret.add ("/usr/lib64/vst");
       ret.add ("/usr/local/lib64/vst");
-#    else  /* else if unix and not installer ver */
+#  else  /* else if unix and not installer ver */
       if (std::string (LIBDIR_NAME) != "lib")
         {
           ret.add ("/usr/" LIBDIR_NAME "/vst");
           ret.add ("/usr/local/" LIBDIR_NAME "/vst");
         }
-#    endif /* endif non-flatpak UNIX */
-#  endif   /* endif per-platform code */
+#  endif /* endif non-flatpak UNIX */
+#endif   /* endif per-platform code */
     }
   else
     {
@@ -261,30 +263,30 @@ PluginManager::get_vst3_paths ()
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
-#  ifdef _WIN32
+#ifdef _WIN32
       ret.add ("C:\\Program Files\\Common Files\\VST3");
-#  elif defined(__APPLE__)
+#elif defined(__APPLE__)
       ret.add ("/Library/Audio/Plug-ins/VST3");
-#  elif defined(FLATPAK_BUILD)
+#elif defined(FLATPAK_BUILD)
       ret.add ("/app/extensions/Plugins/vst3");
-#  else /* non-flatpak UNIX */
+#else /* non-flatpak UNIX */
       {
         auto home_vst3 = fs::path (Glib::get_home_dir ()) / ".vst3";
         ret.add (home_vst3);
       }
       ret.add ("/usr/lib/vst3");
       ret.add ("/usr/local/lib/vst3");
-#    if ZRYTHM_IS_INSTALLER_VER
+#  if ZRYTHM_IS_INSTALLER_VER
       ret.add ("/usr/lib64/vst3");
       ret.add ("/usr/local/lib64/vst3");
-#    else  /* else if unix and not installer ver */
+#  else  /* else if unix and not installer ver */
       if (std::string (LIBDIR_NAME) != "lib")
         {
           ret.add ("/usr/" LIBDIR_NAME "/vst3");
           ret.add ("/usr/local/" LIBDIR_NAME "/vst3");
         }
-#    endif /* endif non-flatpak UNIX */
-#  endif   /* endif per-platform code */
+#  endif /* endif non-flatpak UNIX */
+#endif   /* endif per-platform code */
     }
   else
     {
@@ -335,26 +337,26 @@ PluginManager::get_dssi_paths ()
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
-#  if defined(FLATPAK_BUILD)
+#if defined(FLATPAK_BUILD)
       ret.add ("/app/extensions/Plugins/dssi");
-#  else /* non-flatpak UNIX */
+#else /* non-flatpak UNIX */
       {
         auto home_dssi = fs::path (Glib::get_home_dir ()) / ".dssi";
         ret.add (home_dssi.string ());
       }
       ret.add ("/usr/lib/dssi");
       ret.add ("/usr/local/lib/dssi");
-#    if ZRYTHM_IS_INSTALLER_VER
+#  if ZRYTHM_IS_INSTALLER_VER
       ret.add ("/usr/lib64/dssi");
       ret.add ("/usr/local/lib64/dssi");
-#    else  /* else if unix and not installer ver */
+#  else  /* else if unix and not installer ver */
       if (std::string (LIBDIR_NAME) != "lib")
         {
           ret.add ("/usr/" LIBDIR_NAME "/dssi");
           ret.add ("/usr/local/" LIBDIR_NAME "/dssi");
         }
-#    endif /* endif non-flatpak UNIX */
-#  endif   /* endif per-platform code */
+#  endif /* endif non-flatpak UNIX */
+#endif   /* endif per-platform code */
     }
   else
     {
@@ -386,22 +388,22 @@ PluginManager::get_ladspa_paths ()
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
-#  if defined(FLATPAK_BUILD)
+#if defined(FLATPAK_BUILD)
       ret.add ("/app/extensions/Plugins/ladspa");
-#  else /* non-flatpak UNIX */
+#else /* non-flatpak UNIX */
       ret.add ("/usr/lib/ladspa");
       ret.add ("/usr/local/lib/ladspa");
-#    if ZRYTHM_IS_INSTALLER_VER
+#  if ZRYTHM_IS_INSTALLER_VER
       ret.add ("/usr/lib64/ladspa");
       ret.add ("/usr/local/lib64/ladspa");
-#    else  /* else if unix and not installer ver */
+#  else  /* else if unix and not installer ver */
       if (std::string (LIBDIR_NAME) != "lib")
         {
           ret.add ("/usr/" LIBDIR_NAME "/ladspa");
           ret.add ("/usr/local/" LIBDIR_NAME "/ladspa");
         }
-#    endif /* endif non-flatpak UNIX */
-#  endif   /* endif per-platform code */
+#  endif /* endif non-flatpak UNIX */
+#endif   /* endif per-platform code */
     }
   else
     {
@@ -419,9 +421,9 @@ PluginManager::get_clap_paths ()
 {
   auto ret = StringArray ();
 
-#  ifndef CARLA_HAVE_CLAP_SUPPORT
+#ifndef CARLA_HAVE_CLAP_SUPPORT
   return ret;
-#  endif
+#endif
 
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
@@ -437,31 +439,31 @@ PluginManager::get_clap_paths ()
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
-#  ifdef _WIN32
+#ifdef _WIN32
       ret.add ("C:\\Program Files\\Common Files\\CLAP");
       ret.add ("C:\\Program Files (x86)\\Common Files\\CLAP");
-#  elif defined(__APPLE__)
+#elif defined(__APPLE__)
       ret.add ("/Library/Audio/Plug-ins/CLAP");
-#  elif defined(FLATPAK_BUILD)
+#elif defined(FLATPAK_BUILD)
       ret.add ("/app/extensions/Plugins/clap");
-#  else /* non-flatpak UNIX */
+#else /* non-flatpak UNIX */
       {
         auto home_clap = fs::path (Glib::get_home_dir ()) / ".clap";
         ret.add (home_clap);
       }
       ret.add ("/usr/lib/clap");
       ret.add ("/usr/local/lib/clap");
-#    if ZRYTHM_IS_INSTALLER_VER
+#  if ZRYTHM_IS_INSTALLER_VER
       ret.add ("/usr/lib64/clap");
       ret.add ("/usr/local/lib64/clap");
-#    else  /* else if unix and not installer ver */
+#  else  /* else if unix and not installer ver */
       if (std::string (LIBDIR_NAME) != "lib")
         {
           ret.add ("/usr/" LIBDIR_NAME "/clap");
           ret.add ("/usr/local/" LIBDIR_NAME "/clap");
         }
-#    endif /* endif non-flatpak UNIX */
-#  endif   /* endif per-platform code */
+#  endif /* endif non-flatpak UNIX */
+#endif   /* endif per-platform code */
     }
   else
     {
@@ -516,7 +518,6 @@ PluginManager::get_au_paths ()
 
   return ret;
 }
-#endif /* HAVE_CARLA */
 
 bool
 PluginManager::supports_protocol (PluginProtocol protocol)
@@ -672,6 +673,7 @@ PluginManager::add_descriptor (const zrythm::plugins::PluginDescriptor &descr)
 void
 PluginManager::call_carla_discovery_idle ()
 {
+#if HAVE_CARLA
   bool done = carla_discovery_->idle ();
   if (done)
     {
@@ -692,6 +694,7 @@ PluginManager::call_carla_discovery_idle ()
 
       Q_EMIT scanFinished ();
     }
+#endif // HAVE_CARLA
 }
 
 void

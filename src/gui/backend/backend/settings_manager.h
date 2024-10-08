@@ -6,11 +6,11 @@
 
 #include "zrythm-config.h"
 
-#include <QSettings>
-#include <QStandardPaths>
-
 #include "common/utils/logger.h"
 #include "common/utils/math.h"
+
+#include <QSettings>
+#include <QStandardPaths>
 
 namespace zrythm::gui
 {

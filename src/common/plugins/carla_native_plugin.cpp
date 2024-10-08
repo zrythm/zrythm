@@ -6,44 +6,42 @@
 #include <algorithm>
 
 #include "common/dsp/cv_port.h"
+#include "common/dsp/engine.h"
+#include "common/dsp/midi_event.h"
+#include "common/dsp/tempo_track.h"
+#include "common/dsp/tracklist.h"
+#include "common/dsp/transport.h"
+#include "common/plugins/carla_discovery.h"
+#include "common/plugins/carla_native_plugin.h"
+#include "common/plugins/plugin.h"
+#include "common/plugins/plugin_manager.h"
+#include "common/utils/debug.h"
+#include "common/utils/directory_manager.h"
+#include "common/utils/dsp.h"
 #include "common/utils/gtest_wrapper.h"
+#include "common/utils/gtk.h"
+#include "common/utils/io.h"
+#include "common/utils/math.h"
 #include "common/utils/rt_thread_id.h"
+#include "common/utils/string.h"
+#include "gui/backend/backend/event.h"
+#include "gui/backend/backend/event_manager.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/settings/g_settings_manager.h"
+#include "gui/backend/backend/zrythm.h"
+#include "gui/backend/gtk_widgets/main_window.h"
+#include "gui/backend/gtk_widgets/zrythm_app.h"
 
-#if HAVE_CARLA
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
-#  include "common/dsp/engine.h"
-#  include "common/dsp/midi_event.h"
-#  include "common/dsp/tempo_track.h"
-#  include "common/dsp/tracklist.h"
-#  include "common/dsp/transport.h"
-#  include "common/plugins/carla_discovery.h"
-#  include "common/plugins/carla_native_plugin.h"
-#  include "common/plugins/plugin.h"
-#  include "common/plugins/plugin_manager.h"
-#  include "common/utils/debug.h"
-#  include "common/utils/directory_manager.h"
-#  include "common/utils/dsp.h"
-#  include "common/utils/gtk.h"
-#  include "common/utils/io.h"
-#  include "common/utils/math.h"
-#  include "common/utils/string.h"
-#  include "gui/backend/backend/event.h"
-#  include "gui/backend/backend/event_manager.h"
-#  include "gui/backend/backend/project.h"
-#  include "gui/backend/backend/settings/g_settings_manager.h"
-#  include "gui/backend/backend/zrythm.h"
-#  include "gui/backend/gtk_widgets/main_window.h"
-#  include "gui/backend/gtk_widgets/zrythm_app.h"
-
-#  include <glib/gi18n.h>
-#  include <gtk/gtk.h>
-
-#  include "carla_wrapper.h"
-#  include <fmt/format.h>
-#  include <fmt/printf.h>
+#include "carla_wrapper.h"
+#include <fmt/format.h>
+#include <fmt/printf.h>
 
 using namespace zrythm::plugins;
 
+#if HAVE_CARLA
 static GdkGLContext *
 clear_gl_context (void)
 {
@@ -72,24 +70,27 @@ return_gl_context (GdkGLContext * context)
       g_object_unref (context);
     }
 }
+#endif // HAVE_CARLA
 
 bool
 CarlaNativePlugin::idle_cb ()
 {
   if (visible_ && MAIN_WINDOW)
     {
+#if HAVE_CARLA
       GdkGLContext * context = clear_gl_context ();
       /*z_debug ("calling ui_idle()...");*/
       native_plugin_descriptor_->ui_idle (native_plugin_handle_);
       /*z_debug ("done calling ui_idle()");*/
       return_gl_context (context);
-
+#endif
       return SourceFuncContinue;
     }
   else
     return SourceFuncRemove;
 }
 
+#if HAVE_CARLA
 static uint32_t
 host_get_buffer_size (NativeHostHandle handle)
 {
@@ -470,10 +471,12 @@ carla_engine_callback (
       break;
     }
 }
+#endif // HAVE_CARLA
 
 void
 CarlaNativePlugin::set_selected_preset_from_index_impl (int idx)
 {
+#if HAVE_CARLA
   z_return_if_fail (host_handle_);
 
   /* if init preset */
@@ -489,19 +492,21 @@ CarlaNativePlugin::set_selected_preset_from_index_impl (int idx)
         host_handle_, 0, static_cast<uint32_t> (pset.carla_program_));
       z_info ("applied preset '{}'", pset.name_);
     }
+#endif
 }
 
 void
 CarlaNativePlugin::cleanup_impl ()
 {
-#  if 0
+#if 0
           close();
-#  endif
+#endif
 }
 
 void
 CarlaNativePlugin::populate_banks ()
 {
+#if HAVE_CARLA
   /* add default bank and preset */
   auto default_bank_uri = std::string (DEFAULT_BANK_URI);
   auto pl_def_bank =
@@ -514,8 +519,7 @@ CarlaNativePlugin::populate_banks ()
   }
 
   std::string presets_gstr;
-
-  uint32_t count = carla_get_program_count (host_handle_, 0);
+  uint32_t    count = carla_get_program_count (host_handle_, 0);
   for (uint32_t i = 0; i < count; i++)
     {
       auto pl_preset = Preset ();
@@ -537,12 +541,13 @@ CarlaNativePlugin::populate_banks ()
 
   z_info ("found {} presets", count);
   z_info ("{}", presets_gstr);
+#endif // HAVE_CARLA
 }
 
 bool
 CarlaNativePlugin::has_custom_ui (const zrythm::plugins::PluginDescriptor &descr)
 {
-#  if 0
+#if 0
   auto native_pl = _create (nullptr);
 
   /* instantiate the plugin to get its info */
@@ -573,13 +578,14 @@ CarlaNativePlugin::has_custom_ui (const zrythm::plugins::PluginDescriptor &descr
   carla_native_plugin_free (native_pl);
 
   return has_custom_ui;
-#  endif
+#endif
   z_return_val_if_reached (false);
 }
 
 void
 CarlaNativePlugin::process_impl (const EngineProcessTimeInfo time_nfo)
 {
+#if HAVE_CARLA
   time_info_.playing = TRANSPORT->is_rolling ();
   time_info_.frame = static_cast<uint64_t> (time_nfo.g_start_frame_w_offset_);
   time_info_.bbt.bar = AUDIO_ENGINE->pos_nfo_current_.bar_;
@@ -713,8 +719,10 @@ CarlaNativePlugin::process_impl (const EngineProcessTimeInfo time_nfo)
 
   /* update latency */
   latency_ = get_latency ();
+#endif // HAVE_CARLA
 }
 
+#if 0
 static ZPluginCategory
 carla_category_to_zrythm_category (CarlaBackend::PluginCategory category)
 {
@@ -830,6 +838,7 @@ CarlaNativePlugin::get_descriptor_from_cached (
 
   return descr;
 }
+#endif // HAVE_CARLA
 
 CarlaNativePlugin::CarlaNativePlugin (
   const PluginSetting            &setting,
@@ -844,6 +853,7 @@ CarlaNativePlugin::CarlaNativePlugin (
 void
 CarlaNativePlugin::create_ports (bool loading)
 {
+#if 0
   z_debug ("{}: loading: {}", __func__, loading);
 
   const auto &descr = setting_->descr_;
@@ -1089,11 +1099,13 @@ CarlaNativePlugin::create_ports (bool loading)
     }
 
   ports_created_ = true;
+#endif // HAVE_CARLA
 }
 
 void
 CarlaNativePlugin::update_buffer_size_and_sample_rate ()
 {
+#if 0
   const auto &engine = *AUDIO_ENGINE;
   z_debug (
     "setting carla buffer size and sample rate: "
@@ -1138,12 +1150,14 @@ CarlaNativePlugin::update_buffer_size_and_sample_rate ()
     {
       z_warning ("native plugin descriptor has no dispatcher");
     }
+#endif // HAVE_CARLA
 }
 
 bool
 CarlaNativePlugin::add_internal_plugin_from_descr (
   const zrythm::plugins::PluginDescriptor &descr)
 {
+#if HAVE_CARLA
   /** Number of instances to instantiate (1 normally or 2 for mono plugins). */
   auto num_instances = descr.num_audio_ins_ == 1 ? 2 : 1;
 
@@ -1225,11 +1239,14 @@ CarlaNativePlugin::add_internal_plugin_from_descr (
     }
 
   return added;
+#endif // HAVE_CARLA
+  return false;
 }
 
 void
 CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
 {
+#if HAVE_CARLA
   z_debug (
     "loading: {}, use state file: {}, ports_created: {}", loading,
     use_state_file, ports_created_);
@@ -1671,11 +1688,13 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
     {
       create_ports (true);
     }
+#endif // HAVE_CARLA
 }
 
 void
 CarlaNativePlugin::open_custom_ui (bool show)
 {
+#if HAVE_CARLA
   z_return_if_fail (is_in_active_project ());
 
   z_debug ("show/hide '{} ({})' UI: {}", get_name (), fmt::ptr (this), show);
@@ -1776,24 +1795,31 @@ CarlaNativePlugin::open_custom_ui (bool show)
     default:
       break;
     }
+#endif // HAVE_CARLA
 }
 
 void
 CarlaNativePlugin::activate_impl (bool activate)
 {
+#if HAVE_CARLA
   z_debug ("setting plugin {} active {}", get_name (), activate);
   carla_set_active (host_handle_, 0, activate);
+#endif
 }
 
 float
 CarlaNativePlugin::get_param_value (const uint32_t id)
 {
+#if HAVE_CARLA
   return carla_get_current_parameter_value (host_handle_, 0, id);
+#endif
+  return 0.f;
 }
 
 void
 CarlaNativePlugin::set_param_value (const uint32_t id, float val)
 {
+#if HAVE_CARLA
   if (instantiation_failed_)
     {
       return;
@@ -1809,6 +1835,7 @@ CarlaNativePlugin::set_param_value (const uint32_t id, float val)
     {
       carla_set_parameter_value (host_handle_, 1, id, val);
     }
+#endif
 }
 
 MidiPort *
@@ -1856,12 +1883,17 @@ CarlaNativePlugin::get_port_from_param_id (const uint32_t id)
 nframes_t
 CarlaNativePlugin::get_latency () const
 {
+#if HAVE_CARLA
   return carla_get_plugin_latency (host_handle_, 0);
+#else
+  return 0;
+#endif
 }
 
 void
 CarlaNativePlugin::save_state (bool is_backup, const std::string * abs_state_dir)
 {
+#if HAVE_CARLA
   if (!instantiated_)
     {
       z_debug ("plugin {} not instantiated, skipping saving state", get_name ());
@@ -1884,11 +1916,13 @@ CarlaNativePlugin::save_state (bool is_backup, const std::string * abs_state_dir
     }
 
   z_warn_if_fail (!state_dir_.empty ());
+#endif
 }
 
 void
 CarlaNativePlugin::load_state (const std::string * abs_path)
 {
+#if HAVE_CARLA
   fs::path state_file;
   if (abs_path)
     {
@@ -1928,6 +1962,7 @@ CarlaNativePlugin::load_state (const std::string * abs_path)
     }
   z_debug (
     "successfully loaded carla plugin state from {}", state_file.string ());
+#endif
 }
 
 void
@@ -1941,6 +1976,7 @@ CarlaNativePlugin::init_after_cloning (
 void
 CarlaNativePlugin::close ()
 {
+#if HAVE_CARLA
   if (host_handle_)
     {
       z_debug ("setting carla engine about to close...");
@@ -1969,10 +2005,10 @@ CarlaNativePlugin::close ()
       z_debug ("free'd host handle for {}", descr.name_);
     }
   z_debug ("closed plugin {}", descr.name_);
+#endif
 }
 
 CarlaNativePlugin::~CarlaNativePlugin ()
 {
   close ();
 }
-#endif

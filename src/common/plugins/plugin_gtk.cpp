@@ -69,10 +69,11 @@ plugin_gtk_on_save_preset_activate (GtkWidget * widget, Plugin * plugin)
 {
   std::visit (
     [&] (auto &&p) {
+#if HAVE_CARLA
       using T = base_type<decltype (p)>;
       const PluginSetting *                     setting = p->setting_.get ();
       const zrythm::plugins::PluginDescriptor * descr = setting->descr_.get ();
-      bool                     open_with_carla = setting->open_with_carla_;
+      bool open_with_carla = setting->open_with_carla_;
 
       GtkWidget * dialog = gtk_file_chooser_dialog_new (
         _ ("Save Preset"), p->window_ ? p->window_ : GTK_WINDOW (MAIN_WINDOW),
@@ -81,16 +82,12 @@ plugin_gtk_on_save_preset_activate (GtkWidget * widget, Plugin * plugin)
 
       if (open_with_carla)
         {
-#if HAVE_CARLA
           char *  homedir = g_build_filename (g_get_home_dir (), nullptr);
           GFile * homedir_file = g_file_new_for_path (homedir);
           gtk_file_chooser_set_current_folder (
             GTK_FILE_CHOOSER (dialog), homedir_file, nullptr);
           g_object_unref (homedir_file);
           g_free (homedir);
-#else
-          z_return_if_reached ();
-#endif
         }
 
       /* add additional inputs */
@@ -112,7 +109,6 @@ plugin_gtk_on_save_preset_activate (GtkWidget * widget, Plugin * plugin)
             gtk_check_button_get_active (GTK_CHECK_BUTTON (add_prefix));
           if constexpr (std::is_same_v<T, zrythm::plugins::CarlaNativePlugin>)
             {
-#if HAVE_CARLA
               std::string  prefix;
               const char * sep = "";
               auto         dirname = Glib::path_get_dirname (path);
@@ -138,7 +134,6 @@ plugin_gtk_on_save_preset_activate (GtkWidget * widget, Plugin * plugin)
               g_free (sym);
               g_free (sprefix);
               g_free (bundle);
-#endif
             }
           g_free (path);
         }
@@ -146,6 +141,7 @@ plugin_gtk_on_save_preset_activate (GtkWidget * widget, Plugin * plugin)
       gtk_window_destroy (GTK_WINDOW (dialog));
 
       EVENTS_PUSH (EventType::ET_PLUGIN_PRESET_SAVED, p);
+#endif // HAVE_CARLA
     },
     convert_to_variant<PluginPtrVariant> (plugin));
 }

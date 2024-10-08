@@ -16,7 +16,7 @@
 
 #include "common/utils/types.h"
 
-#include "juce/juce.h"
+#include "juce_wrapper.h"
 
 /**
  * @addtogroup dsp

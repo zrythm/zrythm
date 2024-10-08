@@ -648,7 +648,7 @@ Channel::connect_plugins ()
       for (int j = 0; j < STRIP_SIZE; j++)
         {
           zrythm::plugins::Plugin * plugin = nullptr;
-          int      slot = j;
+          int                       slot = j;
           if (i == 0)
             {
               slot_type = zrythm::plugins::PluginSlotType::MidiFx;
@@ -1393,14 +1393,14 @@ Channel::get_plugin_at_slot (int slot, zrythm::plugins::PluginSlotType slot_type
 
 struct PluginImportData
 {
-  Channel *                ch;
+  Channel *                                 ch;
   const zrythm::plugins::Plugin *           pl;
-  const MixerSelections *  sel;
+  const MixerSelections *                   sel;
   const zrythm::plugins::PluginDescriptor * descr;
-  int                      slot;
+  int                                       slot;
   zrythm::plugins::PluginSlotType           slot_type;
-  bool                     copy;
-  bool                     ask_if_overwrite;
+  bool                                      copy;
+  bool                                      ask_if_overwrite;
 };
 
 static void

@@ -18,7 +18,7 @@ public:
       CONSTANT FINAL)
 public:
   GlobalState (QObject * parent = nullptr) : QObject (parent) { }
-  Zrythm * getZrythm ();
+  Zrythm *                       getZrythm ();
   zrythm::gui::ThemeManager *    getThemeManager ();
   zrythm::gui::SettingsManager * getSettingsManager ();
 };

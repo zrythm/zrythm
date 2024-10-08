@@ -469,8 +469,8 @@ update_internal_selections (
       self->selected_categories.clear ();
       for (guint64 i = 0; i < num_selected; i++)
         {
-          guint           idx = gtk_bitset_get_nth (bitset, i);
-          auto cat = ENUM_INT_TO_VALUE (zrythm::plugins::ZPluginCategory, idx);
+          guint idx = gtk_bitset_get_nth (bitset, i);
+          auto  cat = ENUM_INT_TO_VALUE (zrythm::plugins::ZPluginCategory, idx);
           self->selected_categories.push_back (cat);
         }
 
@@ -504,7 +504,7 @@ update_internal_selections (
       self->selected_protocols.clear ();
       for (guint64 i = 0; i < num_selected; i++)
         {
-          guint          idx = gtk_bitset_get_nth (bitset, i);
+          guint                           idx = gtk_bitset_get_nth (bitset, i);
           zrythm::plugins::PluginProtocol prot =
             ENUM_INT_TO_VALUE (zrythm::plugins::PluginProtocol, idx);
           self->selected_protocols.push_back (prot);

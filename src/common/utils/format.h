@@ -6,12 +6,13 @@
 
 #include "zrythm-config.h"
 
-#include <QString>
 #include <filesystem>
 
 #include "common/utils/traits.h"
 
-#include "juce/juce.h"
+#include <QString>
+
+#include "juce_wrapper.h"
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 #include <magic_enum.hpp>

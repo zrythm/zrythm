@@ -620,7 +620,7 @@ MixerSelectionsAction::copy_automation_from_track1_to_track2 (
 void
 MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
 {
-  auto           own_ms = ms_before_.get ();
+  auto                            own_ms = ms_before_.get ();
   zrythm::plugins::PluginSlotType from_slot_type = own_ms->type_;
   zrythm::plugins::PluginSlotType to_slot_type = slot_type_;
   auto from_tr = TRACKLIST->find_track_by_name_hash<AutomatableTrack> (
@@ -679,7 +679,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
         move_downwards_same_track ? --i : ++i)
         {
           /* get/create the actual plugin */
-          int                     from_slot = own_ms->plugins_[i]->id_.slot_;
+          int from_slot = own_ms->plugins_[i]->id_.slot_;
           std::unique_ptr<zrythm::plugins::Plugin> new_pl;
           zrythm::plugins::Plugin *                pl = nullptr;
           if (move)
@@ -794,7 +794,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
         move_downwards_same_track ? i-- : i++)
         {
           /* get the actual plugin */
-          int      to_slot = to_slot_ + i;
+          int                       to_slot = to_slot_ + i;
           zrythm::plugins::Plugin * pl =
             to_tr->get_plugin_at_slot (to_slot_type, to_slot);
           z_return_if_fail (pl);

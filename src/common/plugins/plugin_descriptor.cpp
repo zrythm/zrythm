@@ -100,6 +100,7 @@ PluginDescriptor::plugin_protocol_from_str (const std::string &str)
   z_return_val_if_reached (PluginProtocol::LV2);
 }
 
+#if HAVE_CARLA
 PluginProtocol
 PluginDescriptor::get_protocol_from_carla_plugin_type (PluginType ptype)
 {
@@ -121,11 +122,11 @@ PluginDescriptor::get_protocol_from_carla_plugin_type (PluginType ptype)
       return PluginProtocol::DSSI;
     case CarlaBackend::PLUGIN_LADSPA:
       return PluginProtocol::LADSPA;
-#ifdef CARLA_HAVE_CLAP_SUPPORT
+#  ifdef CARLA_HAVE_CLAP_SUPPORT
     case CarlaBackend::PLUGIN_CLAP:
-#else
+#  else
     case (PluginType) 14:
-#endif
+#  endif
       return PluginProtocol::CLAP;
     case CarlaBackend::PLUGIN_JSFX:
       return PluginProtocol::JSFX;
@@ -158,11 +159,11 @@ PluginDescriptor::get_carla_plugin_type_from_protocol (PluginProtocol protocol)
     case PluginProtocol::LADSPA:
       return CarlaBackend::PLUGIN_LADSPA;
     case PluginProtocol::CLAP:
-#ifdef CARLA_HAVE_CLAP_SUPPORT
+#  ifdef CARLA_HAVE_CLAP_SUPPORT
       return CarlaBackend::PLUGIN_CLAP;
-#else
+#  else
       return (PluginType) 14;
-#endif
+#  endif
     case PluginProtocol::JSFX:
       return CarlaBackend::PLUGIN_JSFX;
     default:
@@ -176,7 +177,7 @@ ZPluginCategory
 PluginDescriptor::get_category_from_carla_category_str (
   const std::string &category)
 {
-#define EQUALS(x) (category == x)
+#  define EQUALS(x) (category == x)
 
   if (EQUALS ("synth"))
     return ZPluginCategory::INSTRUMENT;
@@ -197,7 +198,7 @@ PluginDescriptor::get_category_from_carla_category_str (
   else
     return ZPluginCategory::NONE;
 
-#undef EQUALS
+#  undef EQUALS
 }
 
 ZPluginCategory
@@ -229,6 +230,7 @@ PluginDescriptor::get_category_from_carla_category (
     }
   return ZPluginCategory::NONE;
 }
+#endif
 
 bool
 PluginDescriptor::protocol_is_supported (PluginProtocol protocol)

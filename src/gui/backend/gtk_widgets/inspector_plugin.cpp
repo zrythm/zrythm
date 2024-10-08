@@ -66,7 +66,7 @@ inspector_plugin_widget_show (
         TRACKLIST_SELECTIONS->get_highest_track ());
       if (tr)
         {
-          auto                  ch = tr->get_channel ();
+          auto                                   ch = tr->get_channel ();
           std::vector<zrythm::plugins::Plugin *> pls;
           ch->get_plugins (pls);
           if (!pls.empty ())

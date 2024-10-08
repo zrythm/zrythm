@@ -8,7 +8,6 @@
 
 #include <QObject>
 #include <QPalette>
-
 #include <qqmlintegration.h>
 
 namespace zrythm::gui

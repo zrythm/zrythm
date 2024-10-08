@@ -119,8 +119,8 @@ on_dnd_motion_value_ready (
       return;
     }
 
-  FileDescriptor *   supported_file = NULL;
-  Track *            dropped_track = NULL;
+  FileDescriptor *                    supported_file = NULL;
+  Track *                             dropped_track = NULL;
   zrythm::plugins::Plugin *           pl = NULL;
   zrythm::plugins::PluginDescriptor * pl_descr = NULL;
   if (G_VALUE_HOLDS (value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
@@ -209,10 +209,10 @@ on_dnd_drop (
 
   GdkDragAction action = z_gtk_drop_target_get_selected_action (drop_target);
 
-  FileDescriptor *   file = NULL;
+  FileDescriptor *                    file = NULL;
   zrythm::plugins::PluginDescriptor * pd = NULL;
   zrythm::plugins::Plugin *           pl = NULL;
-  Track *            track = NULL;
+  Track *                             track = NULL;
   if (G_VALUE_HOLDS (value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
       WrappedObjectWithChangeSignal * wrapped_obj =

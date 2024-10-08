@@ -4,7 +4,7 @@
 #ifndef __UTILS_STRING_ARRAY_H__
 #define __UTILS_STRING_ARRAY_H__
 
-#include "juce/juce.h"
+#include "juce_wrapper.h"
 
 /**
  * @addtogroup utils

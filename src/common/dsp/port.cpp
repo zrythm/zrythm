@@ -1270,7 +1270,7 @@ Port::get_plugin (bool warn_if_fail) const
     }
 
   zrythm::plugins::Plugin * pl = nullptr;
-  const auto &pl_id = id_.plugin_id_;
+  const auto               &pl_id = id_.plugin_id_;
   switch (pl_id.slot_type_)
     {
     case zrythm::plugins::PluginSlotType::MidiFx:

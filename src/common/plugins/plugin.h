@@ -32,7 +32,6 @@ namespace zrythm::plugins
 {
 
 class Lv2Plugin;
-class CarlaNativePlugin;
 
 /**
  * @addtogroup plugins
@@ -782,6 +781,7 @@ operator< (const Plugin &lhs, const Plugin &rhs)
 }
 
 class CarlaNativePlugin;
+
 using PluginVariant = std::variant<CarlaNativePlugin>;
 using PluginPtrVariant = to_pointer_variant<PluginVariant>;
 

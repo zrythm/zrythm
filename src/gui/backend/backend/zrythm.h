@@ -23,7 +23,7 @@
 #include <gio/gio.h>
 #include <glib.h>
 
-#include "juce/juce.h"
+#include "juce_wrapper.h"
 
 /**
  * @addtogroup general
