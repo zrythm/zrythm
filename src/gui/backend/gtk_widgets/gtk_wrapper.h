@@ -37,7 +37,7 @@
 #endif
 
 G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-#include <gtk/gtk.h>
+// #include <gtk/gtk.h>
 G_GNUC_END_IGNORE_DEPRECATIONS
 
 #if HAVE_X11
@@ -49,7 +49,7 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 #  define Color ColorForX11
 #  define Time TimeForX11
 #  define Bool BoolForX11
-#  include <gdk/x11/gdkx.h>
+// #  include <gdk/x11/gdkx.h>
 #  undef Region
 #  undef None
 #  undef Status
@@ -92,7 +92,7 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 #  define NEAR
 #endif
 
-#include <gtkmm.h>
+// #include <gtkmm.h>
 
 #ifdef WINDOWS_MACRO_IN_DEFINED
 #  define IN
@@ -116,7 +116,7 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifdef _WIN32
-#  include <gdk/win32/gdkwin32.h>
+// #  include <gdk/win32/gdkwin32.h>
 #endif
 
 // Redefine Qt's macros

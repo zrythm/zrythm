@@ -9,7 +9,6 @@
 #include "common/dsp/timeline_object.h"
 #include "common/io/serialization/iserializable.h"
 #include "common/utils/icloneable.h"
-#include "common/utils/pango.h"
 
 /**
  * @addtogroup dsp
@@ -61,9 +60,6 @@ public:
   int index_in_chord_track_ = -1;
 
   int magic_ = SCALE_OBJECT_MAGIC;
-
-  /** Cache layout for drawing the name. */
-  PangoLayoutUniquePtr layout_;
 };
 
 inline bool

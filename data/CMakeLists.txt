@@ -98,7 +98,7 @@ add_custom_command(
 )
 add_custom_target(appdata-xml ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}.in")
 
-if(ITSTOOL_EXECUTABLE)
+if(ITSTOOL_EXECUTABLE AND FALSE)
   add_custom_command(
     OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${appdata_xml_filename}"
     COMMAND 

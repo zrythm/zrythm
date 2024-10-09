@@ -36,6 +36,7 @@
 
 #include <glib/gi18n.h>
 
+#if 0
 static const char *
 curve_algorithm_get_string_id (CurveOptions::Algorithm algo)
 {
@@ -74,7 +75,9 @@ curve_algorithm_get_from_string_id (const char * str)
 
   z_return_val_if_reached (Algorithm::SuperEllipse);
 }
+#endif
 
+#if 0
 gboolean
 curve_algorithm_get_g_settings_mapping (
   GValue *   value,
@@ -102,6 +105,7 @@ curve_algorithm_set_g_settings_mapping (
 
   return g_variant_new_string (str);
 }
+#endif
 
 double
 CurveOptions::get_normalized_y (double x, bool start_higher) const

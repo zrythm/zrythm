@@ -5,7 +5,6 @@
 
 #include "common/utils/env.h"
 #include "common/utils/networking.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 using namespace networking;
 

@@ -18,7 +18,6 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/project/project_init_flow_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include "helpers/jack.h"
 #include "helpers/plugin_manager.h"

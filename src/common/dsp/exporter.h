@@ -175,8 +175,8 @@ public:
 
 public:
   Exporter (
-    Settings                      settings,
-    GtkWidget *                   parent_owner = nullptr,
+    Settings settings,
+    // GtkWidget *                   parent_owner = nullptr,
     std::shared_ptr<ProgressInfo> progress_info = nullptr);
 
   /**
@@ -244,7 +244,7 @@ public:
 
   std::shared_ptr<ProgressInfo> progress_info_;
 
-  GtkWidget * parent_owner_ = nullptr;
+  // GtkWidget * parent_owner_ = nullptr;
 
 private:
   std::unique_ptr<std::vector<PortConnection>> connections_;

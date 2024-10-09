@@ -11,10 +11,7 @@
  *
  */
 
-#ifndef __UTILS_LOCALIZATION_H__
-#define __UTILS_LOCALIZATION_H__
-
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
+#pragma once
 
 /**
  * @addtogroup utils
@@ -87,5 +84,3 @@ localization_init (
 /**
  * @}
  */
-
-#endif

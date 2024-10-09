@@ -4,13 +4,9 @@
 #include "common/dsp/marker_track.h"
 #include "common/dsp/track.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/timeline_selections.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -98,7 +94,7 @@ MarkerTrack::insert_marker (std::shared_ptr<Marker> marker, int pos)
 
   z_return_val_if_fail (validate (), nullptr);
 
-  EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, marker.get ());
+  // EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, marker.get ());
 
   return marker;
 }
@@ -169,8 +165,8 @@ MarkerTrack::remove_marker (Marker &marker, bool fire_events)
       m->set_marker_track_index (i);
     }
 
-  EVENTS_PUSH (
-    EventType::ET_ARRANGER_OBJECT_REMOVED, ArrangerObject::Type::Marker);
+  /* EVENTS_PUSH (
+    EventType::ET_ARRANGER_OBJECT_REMOVED, ArrangerObject::Type::Marker); */
 
   return ret;
 }

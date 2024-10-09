@@ -3,11 +3,8 @@
 
 #include "common/dsp/laned_track.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 template <typename RegionT>
 void
@@ -41,7 +38,7 @@ LanedTrackImpl<RegionT>::remove_empty_last_lanes ()
 
   if (removed)
     {
-      EVENTS_PUSH (EventType::ET_TRACK_LANE_REMOVED, nullptr);
+      // EVENTS_PUSH (EventType::ET_TRACK_LANE_REMOVED, nullptr);
     }
 }
 
@@ -64,7 +61,7 @@ void
 LanedTrack::set_lanes_visible (bool visible)
 {
   lanes_visible_ = visible;
-  EVENTS_PUSH (EventType::ET_TRACK_LANES_VISIBILITY_CHANGED, this);
+  // EVENTS_PUSH (EventType::ET_TRACK_LANES_VISIBILITY_CHANGED, this);
 }
 
 template <typename RegionT>
@@ -92,7 +89,7 @@ LanedTrackImpl<RegionT>::add_lane (bool fire_events)
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_TRACK_LANE_ADDED, lanes_.back ().get ());
+      // EVENTS_PUSH (EventType::ET_TRACK_LANE_ADDED, lanes_.back ().get ());
     }
 }
 

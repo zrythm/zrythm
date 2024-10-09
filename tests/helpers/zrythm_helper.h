@@ -9,7 +9,6 @@
 /* include commonly used stuff */
 #include "common/utils/gtest_wrapper.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib.h>
 #include <glib/gi18n.h>

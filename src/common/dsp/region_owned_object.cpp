@@ -5,7 +5,6 @@
 #include "common/dsp/region_owned_object.h"
 #include "common/utils/gtest_wrapper.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/arranger_object.h"
 
 void
 RegionOwnedObject::copy_members_from (const RegionOwnedObject &other)
@@ -50,9 +49,8 @@ RegionOwnedObject::set_region_and_index (const Region &region, int index)
 
   /* note: this was only done for automation points, not sure why */
   /* set the info to the transient too */
-  if (
-    (ZRYTHM_HAVE_UI || ZRYTHM_TESTING) && PROJECT->loaded_ && transient_
-    && arranger_object_should_orig_be_visible (*this, nullptr))
+  if ((ZRYTHM_HAVE_UI || ZRYTHM_TESTING) && PROJECT->loaded_ && transient_)
+    // && arranger_object_should_orig_be_visible (*this, nullptr))
     {
       auto trans_obj = get_transient<RegionOwnedObject> ();
       trans_obj->region_id_ = region.id_;

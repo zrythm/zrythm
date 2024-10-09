@@ -8,7 +8,6 @@
 #include "common/utils/dsp.h"
 #include "common/utils/math.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 #if HAVE_LSP_DSP
 #  include <lsp-plug.in/dsp/dsp.h>

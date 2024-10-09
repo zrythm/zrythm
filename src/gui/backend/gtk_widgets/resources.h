@@ -4,8 +4,6 @@
 #ifndef __UTILS_RESOURCES_H__
 #define __UTILS_RESOURCES_H__
 
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
-
 /**
  * @addtogroup utils
  *

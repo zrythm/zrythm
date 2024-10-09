@@ -7,15 +7,12 @@
 #include "common/plugins/plugin_descriptor.h"
 #include "common/utils/directory_manager.h"
 #include "common/utils/gtest_wrapper.h"
-#include "common/utils/gtk.h"
 #include "common/utils/string.h"
 #include "gui/backend/backend/actions/port_connection_action.h"
 #include "gui/backend/backend/actions/tracklist_selections.h"
 #include "gui/backend/backend/settings/plugin_settings.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -335,6 +332,7 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
     }
 }
 
+#if 0
 static void
 on_outputs_stereo_response (
   AdwMessageDialog * dialog,
@@ -379,6 +377,7 @@ on_contains_multiple_outputs_response (
       /* do nothing */
     }
 }
+#endif
 
 void
 PluginSetting::activate () const
@@ -387,6 +386,7 @@ PluginSetting::activate () const
 
   if (descr_->num_audio_outs_ > 2 && type == Track::Type::Instrument)
     {
+#if 0
       AdwMessageDialog * dialog = ADW_MESSAGE_DIALOG (adw_message_dialog_new (
         GTK_WINDOW (MAIN_WINDOW), _ ("Auto-route?"),
         _ (
@@ -402,6 +402,7 @@ PluginSetting::activate () const
         dialog, "response", G_CALLBACK (on_contains_multiple_outputs_response),
         setting_clone, PluginSetting::free_closure, (GConnectFlags) 0);
       gtk_window_present (GTK_WINDOW (dialog));
+#endif
     }
   else
     {

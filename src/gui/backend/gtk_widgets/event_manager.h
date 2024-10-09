@@ -17,7 +17,6 @@
 #include "common/utils/mpmc_queue.h"
 #include "common/utils/object_pool.h"
 #include "gui/backend/backend/event.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 /**
  * @addtogroup events
@@ -117,67 +116,74 @@ private:
 /** The event queue. */
 #define EVENT_QUEUE (EVENT_MANAGER->mqueue_)
 
+// temp
+#define EVENTS_PUSH(et, _arg)
+#define EVENTS_PUSH_NOW(et, _arg)
+
+#if 0
 /**
  * Push events.
  */
-#define EVENTS_PUSH(et, _arg) \
-  if ( \
-    ZRYTHM_HAVE_UI && (!PROJECT || !AUDIO_ENGINE || !AUDIO_ENGINE->exporting_) \
-    && EVENT_MANAGER->process_source_id_.connected ()) \
-    { \
-      ZEvent * _ev = EVENT_MANAGER->obj_pool_.acquire (); \
-      _ev->file_ = __FILE__; \
-      _ev->func_ = __func__; \
-      _ev->lineno_ = __LINE__; \
-      _ev->type_ = (et); \
-      _ev->arg_ = (void *) (_arg); \
-      if ( \
-        zrythm_app->gtk_thread_id_ == current_thread_id.get () /* skip \
-                                                               backtrace for \
-                                                               now */ \
-        && false) \
-        { \
-          _ev->backtrace_ = Backtrace ().get_backtrace ("", 40, false); \
-        } \
-      /* don't print events that are called \
-       * continuously */ \
-      if ( \
-        (et) != EventType::ET_PLAYHEAD_POS_CHANGED \
-        && zrythm_app->gtk_thread_id_ == current_thread_id.get ()) \
-        { \
-          z_debug ("pushing UI event " #et " ({}:{})", __func__, __LINE__); \
-        } \
-      EVENT_QUEUE.push_back (_ev); \
-    }
+#  define EVENTS_PUSH(et, _arg) \
+    if ( \
+      ZRYTHM_HAVE_UI \
+      && (!PROJECT || !AUDIO_ENGINE || !AUDIO_ENGINE->exporting_) \
+      && EVENT_MANAGER->process_source_id_.connected ()) \
+      { \
+        ZEvent * _ev = EVENT_MANAGER->obj_pool_.acquire (); \
+        _ev->file_ = __FILE__; \
+        _ev->func_ = __func__; \
+        _ev->lineno_ = __LINE__; \
+        _ev->type_ = (et); \
+        _ev->arg_ = (void *) (_arg); \
+        if ( \
+          zrythm_app->gtk_thread_id_ == current_thread_id.get () /* skip \
+                                                                 backtrace for \
+                                                                 now */ \
+          && false) \
+          { \
+            _ev->backtrace_ = Backtrace ().get_backtrace ("", 40, false); \
+          } \
+        /* don't print events that are called \
+         * continuously */ \
+        if ( \
+          (et) != EventType::ET_PLAYHEAD_POS_CHANGED \
+          && zrythm_app->gtk_thread_id_ == current_thread_id.get ()) \
+          { \
+            z_debug ("pushing UI event " #et " ({}:{})", __func__, __LINE__); \
+          } \
+        EVENT_QUEUE.push_back (_ev); \
+      }
 
 /* runs the event logic now */
-#define EVENTS_PUSH_NOW(et, _arg) \
-  if ( \
-    ZRYTHM_HAVE_UI && EVENT_MANAGER \
-    && zrythm_app->gtk_thread_id_ == current_thread_id.get () \
-    && (!PROJECT || !AUDIO_ENGINE || !AUDIO_ENGINE->exporting_) \
-    && EVENT_MANAGER->process_source_id_.connected ()) \
-    { \
-      ZEvent * _ev = EVENT_MANAGER->obj_pool_.acquire (); \
-      _ev->file_ = __FILE__; \
-      _ev->func_ = __func__; \
-      _ev->lineno_ = __LINE__; \
-      _ev->type_ = et; \
-      _ev->arg_ = (void *) _arg; \
-      if (/* skip backtrace for now */ \
-          false) \
-        { \
-          _ev->backtrace_ = Backtrace ().get_backtrace ("", 40, false); \
-        } \
-      /* don't print events that are called continuously */ \
-      if (et != EventType::ET_PLAYHEAD_POS_CHANGED) \
-        { \
-          z_debug ( \
-            "processing UI event now " #et " ({}:{})", __func__, __LINE__); \
-        } \
-      EVENT_MANAGER->process_event (*_ev); \
-      EVENT_MANAGER->obj_pool_.release (_ev); \
-    }
+#  define EVENTS_PUSH_NOW(et, _arg) \
+    if ( \
+      ZRYTHM_HAVE_UI && EVENT_MANAGER \
+      && zrythm_app->gtk_thread_id_ == current_thread_id.get () \
+      && (!PROJECT || !AUDIO_ENGINE || !AUDIO_ENGINE->exporting_) \
+      && EVENT_MANAGER->process_source_id_.connected ()) \
+      { \
+        ZEvent * _ev = EVENT_MANAGER->obj_pool_.acquire (); \
+        _ev->file_ = __FILE__; \
+        _ev->func_ = __func__; \
+        _ev->lineno_ = __LINE__; \
+        _ev->type_ = et; \
+        _ev->arg_ = (void *) _arg; \
+        if (/* skip backtrace for now */ \
+            false) \
+          { \
+            _ev->backtrace_ = Backtrace ().get_backtrace ("", 40, false); \
+          } \
+        /* don't print events that are called continuously */ \
+        if (et != EventType::ET_PLAYHEAD_POS_CHANGED) \
+          { \
+            z_debug ( \
+              "processing UI event now " #et " ({}:{})", __func__, __LINE__); \
+          } \
+        EVENT_MANAGER->process_event (*_ev); \
+        EVENT_MANAGER->obj_pool_.release (_ev); \
+      }
+#endif
 
 /**
  * @}

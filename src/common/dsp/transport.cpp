@@ -16,16 +16,8 @@
 #include "common/utils/flags.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
-#include "gui/backend/gtk_widgets/arranger.h"
-#include "gui/backend/gtk_widgets/digital_meter.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/midi_modifier_arranger.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 /**
  * A buffer of n bars after the end of the last object.
@@ -313,7 +305,7 @@ Transport::request_pause (bool with_wait)
 {
   /* can only be called from the gtk thread or when preparing to export */
   z_return_if_fail (
-    !audio_engine_->run_.load () || ZRYTHM_APP_IS_GTK_THREAD
+    !audio_engine_->run_.load () || ZRYTHM_IS_QT_THREAD
     || audio_engine_->preparing_to_export_);
 
   if (with_wait)
@@ -341,7 +333,7 @@ void
 Transport::request_roll (bool with_wait)
 {
   /* can only be called from the gtk thread */
-  z_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_APP_IS_GTK_THREAD);
+  z_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_IS_QT_THREAD);
 
   std::optional<SemaphoreRAII<std::counting_semaphore<>>> wait_sem;
   if (with_wait)
@@ -393,14 +385,14 @@ void
 Transport::add_to_playhead (const signed_frame_t nframes)
 {
   playhead_pos_.add_frames (nframes);
-  EVENTS_PUSH (EventType::ET_PLAYHEAD_POS_CHANGED, nullptr);
+  // EVENTS_PUSH (EventType::ET_PLAYHEAD_POS_CHANGED, nullptr);
 }
 
 void
 Transport::set_playhead_pos (const Position pos)
 {
   playhead_pos_ = pos;
-  EVENTS_PUSH (EventType::ET_PLAYHEAD_POS_CHANGED_MANUALLY, nullptr);
+  // EVENTS_PUSH (EventType::ET_PLAYHEAD_POS_CHANGED_MANUALLY, nullptr);
 }
 
 void
@@ -492,7 +484,7 @@ Transport::move_playhead (
       /* FIXME use another flag to decide when to do this */
       last_manual_playhead_change_ = g_get_monotonic_time ();
 
-      EVENTS_PUSH (EventType::ET_PLAYHEAD_POS_CHANGED_MANUALLY, nullptr);
+      // EVENTS_PUSH (EventType::ET_PLAYHEAD_POS_CHANGED_MANUALLY, nullptr);
     }
 }
 
@@ -522,12 +514,14 @@ Transport::update_positions (bool update_from_ticks)
   punch_out_pos_.update (update_from_ticks, 0.0);
 }
 
+#if 0
 void
 Transport::foreach_arranger_handle_playhead_auto_scroll (
   ArrangerWidget * arranger)
 {
   arranger_widget_handle_playhead_auto_scroll (arranger, true);
 }
+#endif
 
 void
 Transport::move_to_marker_or_pos_and_fire_events (
@@ -538,7 +532,7 @@ Transport::move_to_marker_or_pos_and_fire_events (
 
   if (ZRYTHM_HAVE_UI)
     {
-      arranger_widget_foreach (foreach_arranger_handle_playhead_auto_scroll);
+      // arranger_widget_foreach (foreach_arranger_handle_playhead_auto_scroll);
     }
 }
 
@@ -636,7 +630,7 @@ void
 Transport::set_loop (bool enabled, bool with_wait)
 {
   /* can only be called from the gtk thread */
-  z_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_APP_IS_GTK_THREAD);
+  z_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_IS_QT_THREAD);
 
   std::optional<SemaphoreRAII<std::counting_semaphore<>>> sem;
   if (with_wait)
@@ -651,7 +645,7 @@ Transport::set_loop (bool enabled, bool with_wait)
       g_settings_set_boolean (S_TRANSPORT, "loop", enabled);
     }
 
-  EVENTS_PUSH (EventType::ET_LOOP_TOGGLED, nullptr);
+  // EVENTS_PUSH (EventType::ET_LOOP_TOGGLED, nullptr);
 }
 
 void
@@ -678,7 +672,7 @@ Transport::set_has_range (bool has_range)
 {
   has_range_ = has_range;
 
-  EVENTS_PUSH (EventType::ET_RANGE_SELECTION_CHANGED, nullptr);
+  // EVENTS_PUSH (EventType::ET_RANGE_SELECTION_CHANGED, nullptr);
 }
 
 std::pair<Position, Position>
@@ -810,7 +804,7 @@ Transport::update_total_bars (int total_bars, bool fire_events)
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_TRANSPORT_TOTAL_BARS_CHANGED, nullptr);
+      // EVENTS_PUSH (EventType::ET_TRANSPORT_TOTAL_BARS_CHANGED, nullptr);
     }
 }
 
@@ -818,7 +812,7 @@ void
 Transport::move_backward (bool with_wait)
 {
   /* can only be called from the gtk thread */
-  z_return_if_fail (!AUDIO_ENGINE->run_.load () || ZRYTHM_APP_IS_GTK_THREAD);
+  z_return_if_fail (!AUDIO_ENGINE->run_.load () || ZRYTHM_IS_QT_THREAD);
 
   std::optional<SemaphoreRAII<std::counting_semaphore<>>> sem;
   if (with_wait)
@@ -848,7 +842,7 @@ void
 Transport::move_forward (bool with_wait)
 {
   /* can only be called from the gtk thread */
-  z_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_APP_IS_GTK_THREAD);
+  z_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_IS_QT_THREAD);
 
   std::optional<SemaphoreRAII<std::counting_semaphore<>>> sem;
   if (with_wait)
@@ -870,7 +864,7 @@ void
 Transport::set_recording (bool record, bool with_wait, bool fire_events)
 {
   /* can only be called from the gtk thread */
-  z_return_if_fail (!AUDIO_ENGINE->run_.load () || ZRYTHM_APP_IS_GTK_THREAD);
+  z_return_if_fail (!AUDIO_ENGINE->run_.load () || ZRYTHM_IS_QT_THREAD);
 
   std::optional<SemaphoreRAII<std::counting_semaphore<>>> sem;
   if (with_wait)
@@ -882,6 +876,6 @@ Transport::set_recording (bool record, bool with_wait, bool fire_events)
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_TRANSPORT_RECORDING_ON_OFF_CHANGED, nullptr);
+      // EVENTS_PUSH (EventType::ET_TRANSPORT_RECORDING_ON_OFF_CHANGED, nullptr);
     }
 }

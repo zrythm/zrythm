@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "common/io/file_descriptor.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 /**
  * @addtogroup gui_backend
@@ -70,7 +69,7 @@ struct FileBrowserLocation
 
   void print () const;
 
-  GMenuModel * generate_context_menu () const;
+  // GMenuModel * generate_context_menu () const;
 
   /** Human readable label. */
   std::string label_;
@@ -148,7 +147,7 @@ private:
    */
   void load_files_from_location (FileBrowserLocation &location);
 
-  void add_volume (GVolume * vol);
+  // void add_volume (GVolume * vol);
 
 public:
   /**

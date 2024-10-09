@@ -11,7 +11,6 @@
 #include "common/utils/math.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 #include <fmt/format.h>
 

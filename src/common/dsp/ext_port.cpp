@@ -13,7 +13,6 @@
 #include "common/utils/dsp.h"
 #include "common/utils/string.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #if HAVE_JACK
 #  include "weakjack/weak_libjack.h"

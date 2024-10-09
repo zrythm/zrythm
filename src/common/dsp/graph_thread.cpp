@@ -74,7 +74,6 @@
 #include "common/dsp/graph_thread.h"
 #include "common/dsp/router.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 

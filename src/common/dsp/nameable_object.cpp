@@ -5,11 +5,8 @@
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/ui.h"
 #include "gui/backend/backend/actions/arranger_selections.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <fmt/printf.h>
 #include <glibmm.h>
@@ -34,7 +31,7 @@ NameableObject::set_name (const std::string &name, bool fire_events)
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CHANGED, this);
+      // EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CHANGED, this);
     }
 }
 

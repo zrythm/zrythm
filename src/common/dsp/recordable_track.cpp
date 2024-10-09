@@ -4,11 +4,8 @@
 #include "common/dsp/control_port.h"
 #include "common/dsp/recordable_track.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 RecordableTrack::RecordableTrack ()
 {
@@ -48,6 +45,6 @@ RecordableTrack::set_recording (bool recording, bool fire_events)
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, this);
+      // EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, this);
     }
 }

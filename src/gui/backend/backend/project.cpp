@@ -21,24 +21,15 @@
 #include "common/utils/exceptions.h"
 #include "common/utils/file.h"
 #include "common/utils/gtest_wrapper.h"
-#include "common/utils/gtk.h"
 #include "common/utils/io.h"
 #include "common/utils/logger.h"
 #include "common/utils/objects.h"
 #include "common/utils/progress_info.h"
 #include "common/utils/ui.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/tracklist_selections.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/arranger.h"
-#include "gui/backend/gtk_widgets/automation_arranger.h"
-#include "gui/backend/gtk_widgets/clip_editor.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -572,6 +563,7 @@ Project::get_existing_uncompressed_text (bool backup)
 int
 Project::autosave_cb (void * data)
 {
+#if 0
   if (
     !PROJECT || !PROJECT->loaded_ || PROJECT->dir_.empty ()
     || PROJECT->datetime_str_.empty () || !MAIN_WINDOW || !MAIN_WINDOW->setup)
@@ -667,6 +659,7 @@ Project::autosave_cb (void * data)
         }
     }
 
+#endif
   return G_SOURCE_CONTINUE;
 }
 
@@ -816,10 +809,12 @@ Project::idle_saved_callback (SaveContext * ctx)
         ui_show_notification (_ ("Project saved."));
     }
 
+#if 0
   if (ZRYTHM_HAVE_UI && PROJECT->loaded_ && MAIN_WINDOW)
     {
-      EVENTS_PUSH (EventType::ET_PROJECT_SAVED, PROJECT.get ());
+      /* EVENTS_PUSH (EventType::ET_PROJECT_SAVED, PROJECT.get ()); */
     }
+#endif
 
   ctx->progress_info_.mark_completed (
     ProgressInfo::CompletionType::SUCCESS, nullptr);
@@ -1064,7 +1059,7 @@ Project::has_unsaved_changes () const
 void
 Project::init_after_cloning (const Project &other)
 {
-  z_return_if_fail (ZRYTHM_APP_IS_GTK_THREAD);
+  z_return_if_fail (ZRYTHM_IS_QT_THREAD);
   z_debug ("cloning project...");
 
   title_ = other.title_;

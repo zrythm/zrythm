@@ -6,20 +6,16 @@ target_sources(zrythm_lib
     algorithms.cpp
     audio.cpp
     backtrace.cpp
-    cairo.cpp
     chromaprint.cpp
     color.cpp
     compression.cpp
     cpu_windows.cpp
     datetime.cpp
-    dialogs.cpp
     directory_manager.cpp
     env.cpp
-    error.cpp
     exceptions.cpp
     file.cpp
     gtest_wrapper.cpp
-    gtk.cpp
     hash.cpp
     io.cpp
     json.cpp
@@ -30,10 +26,8 @@ target_sources(zrythm_lib
     mem.cpp
     networking.cpp
     objects.cpp
-    pango.cpp
     progress_info.cpp
     resampler.cpp
-    resources.cpp
     rt_thread_id.cpp
     string.cpp
     string_array.cpp
@@ -79,10 +73,10 @@ if(ZRYTHM_TESTS)
   target_link_libraries(zrythm_lv2apply PRIVATE 
     SndFile::sndfile
     PkgConfig::LILV
-    PkgConfig::GTK4
+    # PkgConfig::GTK4
     PkgConfig::GLIBMM
     PkgConfig::GIOMM
-    PkgConfig::GTKMM
+    # PkgConfig::GTKMM
     Qt6::Core
     Qt6::Gui
     Qt6::Widgets

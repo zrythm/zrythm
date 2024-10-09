@@ -15,15 +15,11 @@
 #include "common/utils/file.h"
 #include "common/utils/flags.h"
 #include "common/utils/gtest_wrapper.h"
-#include "common/utils/gtk.h"
 #include "common/utils/hash.h"
 #include "common/utils/io.h"
 #include "common/utils/logger.h"
 #include "common/utils/objects.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -448,6 +444,7 @@ AudioClip::is_in_use (bool check_undo_stack) const
   return false;
 }
 
+#if 0
 typedef struct AppLaunchData
 {
   GFile *         file;
@@ -474,10 +471,12 @@ on_launch_clicked (GtkButton * btn, AppLaunchData * data)
       z_info ("app launch unsuccessful");
     }
 }
+#endif
 
 std::unique_ptr<AudioClip>
 AudioClip::edit_in_ext_program ()
 {
+#if 0
   GError * err = NULL;
   char *   tmp_dir = g_dir_make_tmp ("zrythm-audio-clip-tmp-XXXXXX", &err);
   if (!tmp_dir)
@@ -551,6 +550,8 @@ AudioClip::edit_in_ext_program ()
 
   /* ok - reload from file */
   return std::make_unique<AudioClip> (abs_path);
+#endif
+  return nullptr;
 }
 
 void

@@ -15,13 +15,6 @@
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/math.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/gtk_widgets/center_dock.h"
-#include "gui/backend/gtk_widgets/channel_send.h"
-#include "gui/backend/gtk_widgets/channel_sends_expander.h"
-#include "gui/backend/gtk_widgets/inspector_track.h"
-#include "gui/backend/gtk_widgets/left_dock_edge.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -620,6 +613,7 @@ ChannelSend::is_enabled () const
   return enabled;
 }
 
+#if 0
 ChannelSendWidget *
 ChannelSend::find_widget ()
 {
@@ -629,6 +623,7 @@ ChannelSend::find_widget ()
     }
   return nullptr;
 }
+#endif
 
 ChannelSend *
 ChannelSend::find_in_project () const

@@ -3,8 +3,6 @@
 
 #include "common/utils/error.h"
 #include "common/utils/ui.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 

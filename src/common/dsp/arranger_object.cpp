@@ -20,20 +20,9 @@
 #include "gui/backend/backend/actions/arranger_selections.h"
 #include "gui/backend/backend/automation_selections.h"
 #include "gui/backend/backend/chord_selections.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/timeline_selections.h"
-#include "gui/backend/gtk_widgets/arranger_object.h"
-#include "gui/backend/gtk_widgets/automation_arranger.h"
-#include "gui/backend/gtk_widgets/automation_editor_space.h"
-#include "gui/backend/gtk_widgets/chord_arranger.h"
-#include "gui/backend/gtk_widgets/chord_editor_space.h"
-#include "gui/backend/gtk_widgets/clip_editor_inner.h"
-#include "gui/backend/gtk_widgets/midi_modifier_arranger.h"
-#include "gui/backend/gtk_widgets/track.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -123,7 +112,7 @@ ArrangerObject::select (
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CHANGED, obj.get ());
+      // EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CHANGED, obj.get ());
     }
 }
 
@@ -728,17 +717,20 @@ ArrangerObject::post_deserialize ()
 void
 ArrangerObject::edit_begin () const
 {
+#if 0
   auto arranger = get_arranger ();
   z_return_if_fail (arranger);
   auto variant = convert_to_variant<ArrangerObjectPtrVariant> (this);
   std::visit (
     [&arranger] (auto &&obj) { arranger->start_object = obj->clone_unique (); },
     variant);
+#endif
 }
 
 void
 ArrangerObject::edit_finish (int action_edit_type) const
 {
+#if 0
   auto arranger = get_arranger ();
   z_return_if_fail (arranger);
   z_return_if_fail (arranger->start_object);
@@ -754,6 +746,7 @@ ArrangerObject::edit_finish (int action_edit_type) const
       e.handle (_ ("Failed to edit object"));
     }
   arranger->start_object.reset ();
+#endif
 }
 
 void
@@ -813,7 +806,8 @@ ArrangerObject::is_frozen () const
 bool
 ArrangerObject::is_hovered () const
 {
-  return arranger_object_is_hovered (this, nullptr);
+  // return arranger_object_is_hovered (this, nullptr);
+  return false;
 }
 
 void

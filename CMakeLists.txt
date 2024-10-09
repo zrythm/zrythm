@@ -788,18 +788,18 @@ endif()
 
 # link to fontconfig/pangoft2 directly because
 # they are used in utils/pango.c
-pkg_check_modules(FONTCONFIG fontconfig>=2.13.0 REQUIRED IMPORTED_TARGET)
-pkg_check_modules(PANGOFT2 pangoft2>=1.50 REQUIRED IMPORTED_TARGET)
+# pkg_check_modules(FONTCONFIG fontconfig>=2.13.0 REQUIRED IMPORTED_TARGET)
+# pkg_check_modules(PANGOFT2 pangoft2>=1.50 REQUIRED IMPORTED_TARGET)
 
 # include separately with -isystem to bypass
 # https://github.com/ebassi/graphene/issues/249
 # NOTE this won't fix the issue when using graphene as a subproject
-pkg_check_modules(GRAPHENE graphene-1.0 REQUIRED IMPORTED_TARGET)
+# pkg_check_modules(GRAPHENE graphene-1.0 REQUIRED IMPORTED_TARGET)
 
-pkg_check_modules(GTK4 "gtk4>=${gtk_req}" REQUIRED IMPORTED_TARGET)
+# pkg_check_modules(GTK4 "gtk4>=${gtk_req}" REQUIRED IMPORTED_TARGET)
 
-pkg_check_modules(LIBADWAITA libadwaita-1>=1.5 REQUIRED IMPORTED_TARGET)
-pkg_check_modules(LIBPANEL libpanel-1>=1.0.1 REQUIRED IMPORTED_TARGET)
+# pkg_check_modules(LIBADWAITA libadwaita-1>=1.5 REQUIRED IMPORTED_TARGET)
+# pkg_check_modules(LIBPANEL libpanel-1>=1.0.1 REQUIRED IMPORTED_TARGET)
 
 pkg_check_modules(LV2 lv2>=1.16.0 REQUIRED IMPORTED_TARGET)
 if(${LV2_VERSION} VERSION_GREATER_EQUAL 1.18.0)
@@ -925,7 +925,7 @@ endif()
 
 pkg_check_modules(GLIBMM glibmm-2.68 REQUIRED IMPORTED_TARGET)
 pkg_check_modules(GIOMM giomm-2.68 REQUIRED IMPORTED_TARGET)
-pkg_check_modules(GTKMM gtkmm-4.0 REQUIRED IMPORTED_TARGET)
+# pkg_check_modules(GTKMM gtkmm-4.0 REQUIRED IMPORTED_TARGET)
 
 pkg_check_modules(RUBBERBAND rubberband REQUIRED IMPORTED_TARGET)
 
@@ -947,12 +947,12 @@ qt_add_executable(zrythm WIN32 MACOSX_BUNDLE)
 
 list(APPEND zrythm_link_libs
   zita-resampler::zita-resampler
-  PkgConfig::LIBADWAITA
-  PkgConfig::LIBPANEL
-  PkgConfig::FONTCONFIG
-  PkgConfig::PANGOFT2
-  PkgConfig::GRAPHENE
-  PkgConfig::GTK4
+  # PkgConfig::LIBADWAITA
+  # PkgConfig::LIBPANEL
+  # PkgConfig::FONTCONFIG
+  # PkgConfig::PANGOFT2
+  # PkgConfig::GRAPHENE
+  # PkgConfig::GTK4
   SndFile::sndfile
   cyaml::cyaml
   soxr::soxr
@@ -962,7 +962,7 @@ list(APPEND zrythm_link_libs
   zstd::libzstd_shared
   Threads::Threads
   PkgConfig::RUBBERBAND
-  PkgConfig::EPOXY
+  # PkgConfig::EPOXY
   ${CMAKE_DL_LIBS}
   FFTW3::FFTW3
   PkgConfig::XXHASH
@@ -977,7 +977,7 @@ list(APPEND zrythm_link_libs
   spdlog::spdlog
   PkgConfig::GLIBMM
   PkgConfig::GIOMM
-  PkgConfig::GTKMM
+  # PkgConfig::GTKMM
   Qt6::Core
   Qt6::Gui
   Qt6::Widgets

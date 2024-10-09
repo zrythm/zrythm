@@ -24,7 +24,6 @@
 
 #include "common/io/file_descriptor.h"
 #include "common/utils/gtest_wrapper.h"
-#include "common/utils/gtk.h"
 #include "common/utils/io.h"
 #include "common/utils/objects.h"
 #include "common/utils/types.h"
@@ -35,6 +34,7 @@
 
 #include <glib/gi18n.h>
 
+#if 0
 void
 FileManager::add_volume (GVolume * vol)
 {
@@ -66,6 +66,7 @@ FileManager::add_volume (GVolume * vol)
 
   object_free_w_func_and_null (g_object_unref, mount);
 }
+#endif
 
 FileManager::FileManager ()
 {
@@ -88,6 +89,7 @@ FileManager::FileManager ()
 #endif
 
   /* drives */
+#if 0
   z_info ("adding drives...");
   GVolumeMonitor * vol_monitor = g_volume_monitor_get ();
   GList *          drives = g_volume_monitor_get_connected_drives (vol_monitor);
@@ -137,6 +139,7 @@ FileManager::FileManager ()
     }
   g_list_free_full (volumes, g_object_unref);
   g_object_unref (vol_monitor);
+#endif
 
   if (ZRYTHM_HAVE_UI && !ZRYTHM_TESTING)
     {
@@ -347,6 +350,7 @@ FileBrowserLocation::print () const
     path_.c_str (), ENUM_NAME (special_location_));
 }
 
+#if 0
 GMenuModel *
 FileBrowserLocation::generate_context_menu () const
 {
@@ -359,3 +363,4 @@ FileBrowserLocation::generate_context_menu () const
 
   return G_MENU_MODEL (menu);
 }
+#endif

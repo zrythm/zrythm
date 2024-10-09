@@ -15,8 +15,6 @@ target_sources(zrythm_lib
     plugin.h
     plugin_descriptor.cpp
     plugin_descriptor.h
-    plugin_gtk.cpp
-    plugin_gtk.h
     plugin_identifier.cpp
     plugin_identifier.h
     plugin_manager.cpp

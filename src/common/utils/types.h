@@ -271,6 +271,17 @@ namespace fs = std::filesystem;
 #  define KEEP __attribute__ ((used, retain, noinline))
 #endif
 
+#define ZRYTHM_IS_QT_THREAD (QThread::currentThread () == qApp->thread ())
+
+struct _GdkRGBA
+{
+  double red = 0.0;
+  double green = 0.0;
+  double blue = 0.0;
+  double alpha = 1.0;
+};
+using GdkRGBA = _GdkRGBA;
+
 /**
  * @}
  */

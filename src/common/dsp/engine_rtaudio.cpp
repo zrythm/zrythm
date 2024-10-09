@@ -14,8 +14,6 @@
 #  include "gui/backend/backend/settings/settings.h"
 #  include "gui/backend/backend/zrythm.h"
 
-#  include <gtk/gtk.h>
-
 #  include <rtaudio_c.h>
 
 static rtaudio_api_t
@@ -289,20 +287,6 @@ engine_rtaudio_activate (AudioEngine * self, bool activate)
     }
 
   z_info ("{}: done", __func__);
-}
-
-/**
- * Tests if the backend is working properly.
- *
- * Returns 0 if ok, non-null if has errors.
- *
- * If win is not null, it displays error messages
- * to it.
- */
-int
-engine_rtaudio_test (GtkWindow * win)
-{
-  return 0;
 }
 
 /**

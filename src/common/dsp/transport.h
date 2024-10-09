@@ -432,8 +432,8 @@ private:
     const Marker *   marker,
     const Position * pos);
 
-  static void
-  foreach_arranger_handle_playhead_auto_scroll (ArrangerWidget * arranger);
+  // static void
+  // foreach_arranger_handle_playhead_auto_scroll (ArrangerWidget * arranger);
 
 public:
   /** Total bars in the song. */

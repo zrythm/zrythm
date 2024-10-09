@@ -9,10 +9,7 @@
 #include "common/dsp/tempo_track.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 AutomatableTrack::AutomatableTrack ()
     : automation_tracklist_ (std::make_unique<AutomationTracklist> ())
@@ -173,7 +170,7 @@ AutomatableTrack::set_automation_visible (const bool visible)
         }
     }
 
-  EVENTS_PUSH (EventType::ET_TRACK_AUTOMATION_VISIBILITY_CHANGED, this);
+  // EVENTS_PUSH (EventType::ET_TRACK_AUTOMATION_VISIBILITY_CHANGED, this);
 }
 
 bool

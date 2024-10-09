@@ -11,6 +11,35 @@ foreach(lang_pair ${language_mappings})
 endforeach()
 message(STATUS "Languages for gettext: ${languages_for_gettext}")
 
+
+# ================================================================
+# Generate locales.h
+# ================================================================
+
+set(ll_langs)
+set(lang_codes)
+set(lang_strings)
+set(lang_strings_w_codes)
+foreach(lang_pair ${language_mappings})
+  string(REPLACE "/" ";" lang_list ${lang_pair})
+  list(GET lang_list 0 lang_code)
+  list(GET lang_list 1 lang_name)
+  string(TOUPPER ${lang_code} lang_upper)
+  set(ll_langs "${ll_langs}  LL_${lang_upper},\n")
+  set(lang_codes "${lang_codes}  \"${lang_code}\",\n")
+  set(lang_strings "${lang_strings}  \"${lang_name}\",\n")
+  set(lang_strings_w_codes "${lang_strings_w_codes}  \"${lang_name} [${lang_code}]\",\n")
+endforeach()
+set(LL_LANGS "${ll_langs}" PARENT_SCOPE)
+
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/locales.h.in
+  ${CMAKE_BINARY_DIR}/src/zrythm-locales.h
+  @ONLY
+)
+
+return()
+
 # ================================================================
 # Generate POTFILES
 # ================================================================
@@ -40,7 +69,7 @@ add_custom_target(gen-pot
     --msgid-bugs-address=${issue_tracker_url}
     -o ${pot_path} -f ${potfiles_path}
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  DEPENDS ${potfiles_path}
+  DEPENDS collect-translatables
   COMMENT "Extracting translatable messages to ${pot_path}"
 )
 
@@ -117,31 +146,6 @@ set(source_po_files "${source_po_files}" PARENT_SCOPE)
 set(build_po_files "${build_po_files}" PARENT_SCOPE)
 set(build_mo_files "${build_mo_files}" PARENT_SCOPE)
 
-# ================================================================
-# Generate locales.h
-# ================================================================
-
-set(ll_langs)
-set(lang_codes)
-set(lang_strings)
-set(lang_strings_w_codes)
-foreach(lang_pair ${language_mappings})
-  string(REPLACE "/" ";" lang_list ${lang_pair})
-  list(GET lang_list 0 lang_code)
-  list(GET lang_list 1 lang_name)
-  string(TOUPPER ${lang_code} lang_upper)
-  set(ll_langs "${ll_langs}  LL_${lang_upper},\n")
-  set(lang_codes "${lang_codes}  \"${lang_code}\",\n")
-  set(lang_strings "${lang_strings}  \"${lang_name}\",\n")
-  set(lang_strings_w_codes "${lang_strings_w_codes}  \"${lang_name} [${lang_code}]\",\n")
-endforeach()
-set(LL_LANGS "${ll_langs}" PARENT_SCOPE)
-
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/locales.h.in
-  ${CMAKE_BINARY_DIR}/src/zrythm-locales.h
-  @ONLY
-)
 
 # ================================================================
 # Generate LINGUAS

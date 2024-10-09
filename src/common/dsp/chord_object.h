@@ -1,11 +1,5 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * @file
- *
- * Chord object in the TimelineArranger.
- */
 
 #ifndef __AUDIO_CHORD_OBJECT_H__
 #define __AUDIO_CHORD_OBJECT_H__
@@ -16,7 +10,6 @@
 #include "common/dsp/region_identifier.h"
 #include "common/dsp/region_owned_object.h"
 #include "common/utils/icloneable.h"
-#include "common/utils/pango.h"
 
 /**
  * @addtogroup dsp
@@ -72,8 +65,6 @@ public:
    */
   ChordDescriptor * get_chord_descriptor () const;
 
-  ArrangerWidget * get_arranger () const override;
-
   ArrangerObjectPtr find_in_project () const override;
 
   ArrangerObjectPtr add_clone_to_project (bool fire_events) const override;
@@ -99,9 +90,6 @@ public:
   int chord_index_ = 0;
 
   int magic_ = CHORD_OBJECT_MAGIC;
-
-  /** Cache layout for drawing the name. */
-  PangoLayoutUniquePtr layout_;
 };
 
 inline bool

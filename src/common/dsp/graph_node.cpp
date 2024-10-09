@@ -24,7 +24,6 @@
 #include "common/utils/mpmc_queue.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 #include <fmt/printf.h>
 

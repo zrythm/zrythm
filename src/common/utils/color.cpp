@@ -6,13 +6,13 @@
 #include "common/utils/math.h"
 #include "common/utils/ui.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 Color::Color (const std::string &str)
 {
-  GdkRGBA rgba;
-  gdk_rgba_parse (&rgba, str.c_str ());
-  *this = rgba;
+  // GdkRGBA rgba;
+  // gdk_rgba_parse (&rgba, str.c_str ());
+  // *this = rgba;
+  z_error ("TODO");
 }
 
 Color::Color (float r, float g, float b, float a)
@@ -169,10 +169,13 @@ Color::get_mid_color (const Color &c1, const Color &c2, const float transition)
 Color
 Color::get_contrast_color () const
 {
+#if 0
   if (is_bright ())
     return UI_COLORS->dark_text;
   else
     return UI_COLORS->bright_text;
+#endif
+  return {};
 }
 
 Color

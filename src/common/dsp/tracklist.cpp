@@ -20,18 +20,7 @@
 #include "common/utils/string.h"
 #include "gui/backend/backend/actions/arranger_selections.h"
 #include "gui/backend/backend/actions/tracklist_selections.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/gtk_widgets/arranger.h"
-#include "gui/backend/gtk_widgets/bot_dock_edge.h"
-#include "gui/backend/gtk_widgets/center_dock.h"
-#include "gui/backend/gtk_widgets/dialogs/file_import_progress_dialog.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/mixer.h"
-#include "gui/backend/gtk_widgets/track.h"
-#include "gui/backend/gtk_widgets/tracklist.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -309,7 +298,7 @@ Tracklist::insert_track (
   if (ZRYTHM_HAVE_UI && !is_auditioner ())
     {
       /* generate track widget */
-      added_track->widget_ = track_widget_new (added_track);
+      // added_track->widget_ = track_widget_new (added_track);
     }
 
   if (recalc_graph)
@@ -319,7 +308,7 @@ Tracklist::insert_track (
 
   if (publish_events)
     {
-      EVENTS_PUSH (EventType::ET_TRACK_ADDED, added_track);
+      // EVENTS_PUSH (EventType::ET_TRACK_ADDED, added_track);
     }
 
   z_debug (
@@ -423,7 +412,7 @@ Tracklist::multiply_track_heights (
       if (!check_only && fire_events)
         {
           /* FIXME should be event */
-          track_widget_update_size (tr->widget_);
+          // track_widget_update_size (tr->widget_);
         }
     }
 
@@ -642,7 +631,7 @@ Tracklist::remove_track (
 
   if (publish_events)
     {
-      EVENTS_PUSH (EventType::ET_TRACKS_REMOVED, nullptr);
+      // EVENTS_PUSH (EventType::ET_TRACKS_REMOVED, nullptr);
     }
 
   z_debug ("done removing track");
@@ -742,7 +731,7 @@ Tracklist::move_track (
 
   if (publish_events)
     {
-      EVENTS_PUSH (EventType::ET_TRACKS_MOVED, nullptr);
+      // EVENTS_PUSH (EventType::ET_TRACKS_MOVED, nullptr);
     }
 
   z_debug ("finished moving track");
@@ -1018,12 +1007,14 @@ Tracklist::import_files (
     }
   else
     {
+#if 0
       auto filepaths_null_terminated = filepaths.getNullTerminated ();
       FileImportProgressDialog * dialog = file_import_progress_dialog_new (
         (const char **) filepaths_null_terminated, &nfo, ready_cb,
         UI_ACTIVE_WINDOW_OR_NULL);
       file_import_progress_dialog_run (dialog);
       g_strfreev (filepaths_null_terminated);
+#endif
     }
 }
 
@@ -1054,6 +1045,7 @@ Tracklist::move_after_copying_or_moving_inside (
   ua->num_actions_ = 2;
 }
 
+#if 0
 void
 Tracklist::handle_move_or_copy (
   Track               &this_track,
@@ -1307,6 +1299,7 @@ Tracklist::handle_move_or_copy (
         }
     } /* endif action is MOVE */
 }
+#endif
 
 void
 Tracklist::mark_all_tracks_for_bounce (bool bounce)

@@ -9,12 +9,9 @@
 #include "common/dsp/transport.h"
 #include "common/utils/gtest_wrapper.h"
 #include "gui/backend/backend/actions/transport_action.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -131,8 +128,8 @@ TransportAction::perform_impl ()
       TRACKLIST->set_caches (CacheType::PlaybackSnapshots);
     }
 
-  EVENTS_PUSH (EventType::ET_BPM_CHANGED, nullptr);
-  EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_BPM_CHANGED, nullptr); */
+  /* EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, nullptr); */
 }
 
 void
@@ -140,8 +137,8 @@ TransportAction::undo_impl ()
 {
   do_or_undo (false);
 
-  EVENTS_PUSH (EventType::ET_BPM_CHANGED, nullptr);
-  EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_BPM_CHANGED, nullptr); */
+  /* EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, nullptr); */
 }
 
 std::string

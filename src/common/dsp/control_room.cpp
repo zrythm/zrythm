@@ -8,9 +8,6 @@
 #include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/center_dock.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/right_dock_edge.h"
 
 void
 ControlRoom::init_common ()

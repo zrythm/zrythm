@@ -21,7 +21,6 @@
 #include "common/utils/debug.h"
 #include "common/utils/error.h"
 #include "common/utils/flags.h"
-#include "common/utils/gtk.h"
 #include "common/utils/localization.h"
 #include "common/utils/progress_info.h"
 #include "common/utils/string.h"
@@ -36,8 +35,6 @@
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/chord_editor.h"
 #include "gui/backend/backend/clipboard.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/file_manager.h"
 #include "gui/backend/backend/midi_selections.h"
 #include "gui/backend/backend/project.h"
@@ -46,57 +43,6 @@
 #include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/timeline_selections.h"
 #include "gui/backend/backend/tracklist_selections.h"
-#include "gui/backend/backend/wrapped_object_with_change_signal.h"
-#include "gui/backend/gtk_widgets/arranger.h"
-#include "gui/backend/gtk_widgets/automation_arranger.h"
-#include "gui/backend/gtk_widgets/automation_editor_space.h"
-#include "gui/backend/gtk_widgets/bot_bar.h"
-#include "gui/backend/gtk_widgets/bot_dock_edge.h"
-#include "gui/backend/gtk_widgets/cc_bindings.h"
-#include "gui/backend/gtk_widgets/cc_bindings_tree.h"
-#include "gui/backend/gtk_widgets/center_dock.h"
-#include "gui/backend/gtk_widgets/channel_slot.h"
-#include "gui/backend/gtk_widgets/chord_arranger.h"
-#include "gui/backend/gtk_widgets/chord_editor_space.h"
-#include "gui/backend/gtk_widgets/clip_editor.h"
-#include "gui/backend/gtk_widgets/clip_editor_inner.h"
-#include "gui/backend/gtk_widgets/dialogs/about_dialog.h"
-#include "gui/backend/gtk_widgets/dialogs/add_tracks_to_group_dialog.h"
-#include "gui/backend/gtk_widgets/dialogs/arranger_object_info.h"
-#include "gui/backend/gtk_widgets/dialogs/bind_cc_dialog.h"
-#include "gui/backend/gtk_widgets/dialogs/bounce_dialog.h"
-#include "gui/backend/gtk_widgets/dialogs/export_dialog.h"
-#include "gui/backend/gtk_widgets/dialogs/export_midi_file_dialog.h"
-#include "gui/backend/gtk_widgets/dialogs/export_progress_dialog.h"
-#include "gui/backend/gtk_widgets/dialogs/midi_function_dialog.h"
-#include "gui/backend/gtk_widgets/dialogs/object_color_chooser_dialog.h"
-#include "gui/backend/gtk_widgets/dialogs/port_info.h"
-#include "gui/backend/gtk_widgets/dialogs/quantize_dialog.h"
-#include "gui/backend/gtk_widgets/dialogs/save_chord_preset_dialog.h"
-#include "gui/backend/gtk_widgets/dialogs/string_entry_dialog.h"
-#include "gui/backend/gtk_widgets/editor_ruler.h"
-#include "gui/backend/gtk_widgets/event_viewer.h"
-#include "gui/backend/gtk_widgets/greeter.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
-#include "gui/backend/gtk_widgets/left_dock_edge.h"
-#include "gui/backend/gtk_widgets/main_notebook.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/midi_arranger.h"
-#include "gui/backend/gtk_widgets/midi_editor_space.h"
-#include "gui/backend/gtk_widgets/midi_modifier_arranger.h"
-#include "gui/backend/gtk_widgets/mixer.h"
-#include "gui/backend/gtk_widgets/panel_file_browser.h"
-#include "gui/backend/gtk_widgets/plugin_browser.h"
-#include "gui/backend/gtk_widgets/port_connections.h"
-#include "gui/backend/gtk_widgets/port_connections_tree.h"
-#include "gui/backend/gtk_widgets/preferences.h"
-#include "gui/backend/gtk_widgets/right_dock_edge.h"
-#include "gui/backend/gtk_widgets/ruler.h"
-#include "gui/backend/gtk_widgets/timeline_arranger.h"
-#include "gui/backend/gtk_widgets/timeline_bg.h"
-#include "gui/backend/gtk_widgets/timeline_panel.h"
-#include "gui/backend/gtk_widgets/timeline_ruler.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -299,7 +245,7 @@ activate_log (GSimpleAction * action, GVariant * variant, gpointer user_data)
   if (ZRYTHM_HAVE_UI && MAIN_WINDOW)
     {
       MAIN_WINDOW->log_has_pending_warnings = false;
-      EVENTS_PUSH (EventType::ET_LOG_WARNING_STATE_CHANGED, nullptr);
+      /* EVENTS_PUSH (EventType::ET_LOG_WARNING_STATE_CHANGED, nullptr); */
     }
 }
 #endif
@@ -307,13 +253,13 @@ activate_log (GSimpleAction * action, GVariant * variant, gpointer user_data)
 DEFINE_SIMPLE (activate_audition_mode)
 {
   P_TOOL = Tool::Audition;
-  EVENTS_PUSH (EventType::ET_TOOL_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_TOOL_CHANGED, nullptr); */
 }
 
 DEFINE_SIMPLE (activate_select_mode)
 {
   P_TOOL = Tool::Select;
-  EVENTS_PUSH (EventType::ET_TOOL_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_TOOL_CHANGED, nullptr); */
 }
 
 /**
@@ -323,7 +269,7 @@ void
 activate_edit_mode (GSimpleAction * action, GVariant * variant, gpointer user_data)
 {
   P_TOOL = Tool::Edit;
-  EVENTS_PUSH (EventType::ET_TOOL_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_TOOL_CHANGED, nullptr); */
 }
 
 /**
@@ -333,7 +279,7 @@ void
 activate_cut_mode (GSimpleAction * action, GVariant * variant, gpointer user_data)
 {
   P_TOOL = Tool::Cut;
-  EVENTS_PUSH (EventType::ET_TOOL_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_TOOL_CHANGED, nullptr); */
 }
 
 /**
@@ -346,7 +292,7 @@ activate_eraser_mode (
   gpointer        user_data)
 {
   P_TOOL = Tool::Eraser;
-  EVENTS_PUSH (EventType::ET_TOOL_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_TOOL_CHANGED, nullptr); */
 }
 
 /**
@@ -356,7 +302,7 @@ void
 activate_ramp_mode (GSimpleAction * action, GVariant * variant, gpointer user_data)
 {
   P_TOOL = Tool::Ramp;
-  EVENTS_PUSH (EventType::ET_TOOL_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_TOOL_CHANGED, nullptr); */
 }
 
 DEFINE_SIMPLE (activate_zoom_in)
@@ -411,7 +357,7 @@ DEFINE_SIMPLE (activate_zoom_in)
         ruler,
         ruler_widget_get_zoom_level (ruler) * RULER_ZOOM_LEVEL_MULTIPLIER);
 
-      EVENTS_PUSH (EventType::ET_RULER_VIEWPORT_CHANGED, ruler);
+      /* EVENTS_PUSH (EventType::ET_RULER_VIEWPORT_CHANGED, ruler); */
     }
 }
 
@@ -467,7 +413,7 @@ DEFINE_SIMPLE (activate_zoom_out)
         ruler_widget_get_zoom_level (ruler) / RULER_ZOOM_LEVEL_MULTIPLIER;
       ruler_widget_set_zoom_level (ruler, zoom_level);
 
-      EVENTS_PUSH (EventType::ET_RULER_VIEWPORT_CHANGED, ruler);
+      /* EVENTS_PUSH (EventType::ET_RULER_VIEWPORT_CHANGED, ruler); */
     }
 }
 
@@ -555,7 +501,7 @@ DEFINE_SIMPLE (activate_best_fit)
   EditorSettings * settings = ruler_widget_get_editor_settings (ruler);
   settings->set_scroll_start_x (start_px, true);
 
-  EVENTS_PUSH (EventType::ET_RULER_VIEWPORT_CHANGED, ruler);
+  /* EVENTS_PUSH (EventType::ET_RULER_VIEWPORT_CHANGED, ruler); */
 }
 
 DEFINE_SIMPLE (activate_original_size)
@@ -586,7 +532,7 @@ DEFINE_SIMPLE (activate_original_size)
     }
 
   ruler_widget_set_zoom_level (ruler, 1.0);
-  EVENTS_PUSH (EventType::ET_RULER_VIEWPORT_CHANGED, ruler);
+  /* EVENTS_PUSH (EventType::ET_RULER_VIEWPORT_CHANGED, ruler); */
 }
 
 DEFINE_SIMPLE (activate_loop_selection)
@@ -605,7 +551,7 @@ DEFINE_SIMPLE (activate_loop_selection)
       /* FIXME is this needed? */
       TRANSPORT->update_positions (true);
 
-      EVENTS_PUSH (EventType::ET_TIMELINE_LOOP_MARKER_POS_CHANGED, nullptr);
+      /* EVENTS_PUSH (EventType::ET_TIMELINE_LOOP_MARKER_POS_CHANGED, nullptr); */
     }
 }
 
@@ -961,7 +907,7 @@ DEFINE_SIMPLE (activate_redo)
       e.handle (_ ("Failed to redo"));
     }
 
-  EVENTS_PUSH (EventType::ET_UNDO_REDO_ACTION_DONE, nullptr);
+  /* EVENTS_PUSH (EventType::ET_UNDO_REDO_ACTION_DONE, nullptr); */
 }
 
 DEFINE_SIMPLE (activate_redo_n)
@@ -1413,7 +1359,7 @@ DEFINE_SIMPLE (activate_toggle_drum_mode)
   z_return_if_fail (tr);
   tr->drum_mode_ = !tr->drum_mode_;
 
-  EVENTS_PUSH (EventType::ET_DRUM_MODE_CHANGED, tr);
+  /* EVENTS_PUSH (EventType::ET_DRUM_MODE_CHANGED, tr); */
 }
 
 void
@@ -1508,14 +1454,14 @@ activate_snap_to_grid (
   if (string_is_equal (variant, "timeline"))
     {
       SNAP_GRID_TIMELINE->snap_to_grid_ = !SNAP_GRID_TIMELINE->snap_to_grid_;
-      EVENTS_PUSH (
-        EventType::ET_SNAP_GRID_OPTIONS_CHANGED, SNAP_GRID_TIMELINE.get ());
+      /* EVENTS_PUSH (
+        EventType::ET_SNAP_GRID_OPTIONS_CHANGED, SNAP_GRID_TIMELINE.get ()); */
     }
   else if (string_is_equal (variant, "editor"))
     {
       SNAP_GRID_EDITOR->snap_to_grid_ = !SNAP_GRID_EDITOR->snap_to_grid_;
-      EVENTS_PUSH (
-        EventType::ET_SNAP_GRID_OPTIONS_CHANGED, SNAP_GRID_EDITOR.get ());
+      /* EVENTS_PUSH (
+        EventType::ET_SNAP_GRID_OPTIONS_CHANGED, SNAP_GRID_EDITOR.get ()); */
     }
   else if (string_is_equal (variant, "global"))
     {
@@ -1553,15 +1499,15 @@ activate_snap_keep_offset (
     {
       SNAP_GRID_TIMELINE->snap_to_grid_keep_offset_ =
         !SNAP_GRID_TIMELINE->snap_to_grid_keep_offset_;
-      EVENTS_PUSH (
-        EventType::ET_SNAP_GRID_OPTIONS_CHANGED, SNAP_GRID_TIMELINE.get ());
+      /* EVENTS_PUSH (
+        EventType::ET_SNAP_GRID_OPTIONS_CHANGED, SNAP_GRID_TIMELINE.get ()); */
     }
   else if (string_is_equal (variant, "editor"))
     {
       SNAP_GRID_EDITOR->snap_to_grid_keep_offset_ =
         !SNAP_GRID_EDITOR->snap_to_grid_keep_offset_;
-      EVENTS_PUSH (
-        EventType::ET_SNAP_GRID_OPTIONS_CHANGED, SNAP_GRID_EDITOR.get ());
+      /* EVENTS_PUSH (
+        EventType::ET_SNAP_GRID_OPTIONS_CHANGED, SNAP_GRID_EDITOR.get ()); */
     }
   else
     z_return_if_reached ();
@@ -1580,14 +1526,14 @@ activate_snap_events (
   if (string_is_equal (variant, "timeline"))
     {
       SNAP_GRID_TIMELINE->snap_to_events_ = !SNAP_GRID_TIMELINE->snap_to_events_;
-      EVENTS_PUSH (
-        EventType::ET_SNAP_GRID_OPTIONS_CHANGED, SNAP_GRID_TIMELINE.get ());
+      /* EVENTS_PUSH (
+        EventType::ET_SNAP_GRID_OPTIONS_CHANGED, SNAP_GRID_TIMELINE.get ()); */
     }
   else if (string_is_equal (variant, "editor"))
     {
       SNAP_GRID_EDITOR->snap_to_events_ = !SNAP_GRID_EDITOR->snap_to_events_;
-      EVENTS_PUSH (
-        EventType::ET_SNAP_GRID_OPTIONS_CHANGED, SNAP_GRID_EDITOR.get ());
+      /* EVENTS_PUSH (
+        EventType::ET_SNAP_GRID_OPTIONS_CHANGED, SNAP_GRID_EDITOR.get ()); */
     }
   else
     z_return_if_reached ();
@@ -1792,7 +1738,7 @@ on_delete_tracks_response (
             *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
             *PORT_CONNECTIONS_MGR));
           UNDO_MANAGER->clear_stacks ();
-          EVENTS_PUSH (EventType::ET_UNDO_REDO_ACTION_DONE, nullptr);
+          /* EVENTS_PUSH (EventType::ET_UNDO_REDO_ACTION_DONE, nullptr); */
         }
       catch (const ZrythmException &e)
         {
@@ -1838,7 +1784,7 @@ activate_delete_selected_tracks (
       UNDO_MANAGER->perform (std::make_unique<DeleteTracksAction> (
         *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
         *PORT_CONNECTIONS_MGR));
-      EVENTS_PUSH (EventType::ET_UNDO_REDO_ACTION_DONE, nullptr);
+      /* EVENTS_PUSH (EventType::ET_UNDO_REDO_ACTION_DONE, nullptr); */
     }
   catch (const ZrythmException &e)
     {
@@ -2293,7 +2239,7 @@ DEFINE_SIMPLE (change_state_timeline_playhead_scroll_edges)
 
   g_settings_set_boolean (S_UI, "timeline-playhead-scroll-edges", enabled);
 
-  EVENTS_PUSH (EventType::ET_PLAYHEAD_SCROLL_MODE_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_PLAYHEAD_SCROLL_MODE_CHANGED, nullptr); */
 }
 
 DEFINE_SIMPLE (change_state_timeline_playhead_follow)
@@ -2304,7 +2250,7 @@ DEFINE_SIMPLE (change_state_timeline_playhead_follow)
 
   g_settings_set_boolean (S_UI, "timeline-playhead-follow", enabled);
 
-  EVENTS_PUSH (EventType::ET_PLAYHEAD_SCROLL_MODE_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_PLAYHEAD_SCROLL_MODE_CHANGED, nullptr); */
 }
 
 DEFINE_SIMPLE (change_state_editor_playhead_scroll_edges)
@@ -2315,7 +2261,7 @@ DEFINE_SIMPLE (change_state_editor_playhead_scroll_edges)
 
   g_settings_set_boolean (S_UI, "editor-playhead-scroll-edges", enabled);
 
-  EVENTS_PUSH (EventType::ET_PLAYHEAD_SCROLL_MODE_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_PLAYHEAD_SCROLL_MODE_CHANGED, nullptr); */
 }
 
 DEFINE_SIMPLE (change_state_editor_playhead_follow)
@@ -2326,7 +2272,7 @@ DEFINE_SIMPLE (change_state_editor_playhead_follow)
 
   g_settings_set_boolean (S_UI, "editor-playhead-follow", enabled);
 
-  EVENTS_PUSH (EventType::ET_PLAYHEAD_SCROLL_MODE_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_PLAYHEAD_SCROLL_MODE_CHANGED, nullptr); */
 }
 
 /**
@@ -2871,7 +2817,7 @@ change_state_show_automation_values (
 
   g_settings_set_boolean (S_UI, "show-automation-values", enabled);
 
-  EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_VISIBILITY_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_VISIBILITY_CHANGED, nullptr); */
 }
 
 DEFINE_SIMPLE (activate_nudge_selection)
@@ -3459,7 +3405,7 @@ delete_plugins (bool clear_stacks)
       if (clear_stacks)
         {
           UNDO_MANAGER->clear_stacks ();
-          EVENTS_PUSH (EventType::ET_UNDO_REDO_ACTION_DONE, nullptr);
+          /* EVENTS_PUSH (EventType::ET_UNDO_REDO_ACTION_DONE, nullptr); */
         }
     }
   catch (const ZrythmException &e)
@@ -3585,7 +3531,7 @@ DEFINE_SIMPLE (activate_panel_file_browser_add_bookmark)
 
   gZrythm->get_file_manager ().add_location_and_save (sfile->abs_path_.c_str ());
 
-  EVENTS_PUSH (EventType::ET_FILE_BROWSER_BOOKMARK_ADDED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_FILE_BROWSER_BOOKMARK_ADDED, nullptr); */
 }
 
 static void
@@ -3598,7 +3544,7 @@ on_bookmark_delete_response (
     {
       gZrythm->get_file_manager ().remove_location_and_save (path, true);
 
-      EVENTS_PUSH (EventType::ET_FILE_BROWSER_BOOKMARK_DELETED, nullptr);
+      /* EVENTS_PUSH (EventType::ET_FILE_BROWSER_BOOKMARK_DELETED, nullptr); */
     }
 }
 
@@ -3709,7 +3655,7 @@ DEFINE_SIMPLE (activate_plugin_browser_add_to_collection)
   collection->add_descriptor (*descr);
   PLUGIN_MANAGER->collections_->serialize_to_file ();
 
-  EVENTS_PUSH (EventType::ET_PLUGIN_COLLECTIONS_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_PLUGIN_COLLECTIONS_CHANGED, nullptr); */
 }
 
 DEFINE_SIMPLE (activate_plugin_browser_remove_from_collection)
@@ -3725,7 +3671,7 @@ DEFINE_SIMPLE (activate_plugin_browser_remove_from_collection)
   collection->remove_descriptor (*descr);
   PLUGIN_MANAGER->collections_->serialize_to_file ();
 
-  EVENTS_PUSH (EventType::ET_PLUGIN_COLLECTIONS_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_PLUGIN_COLLECTIONS_CHANGED, nullptr); */
 }
 
 DEFINE_SIMPLE (activate_plugin_browser_reset)
@@ -3770,7 +3716,7 @@ on_plugin_collection_add_response (
         {
           z_debug ("accept collection");
           PLUGIN_MANAGER->collections_->add (*collection, F_SERIALIZE);
-          EVENTS_PUSH (EventType::ET_PLUGIN_COLLECTIONS_CHANGED, nullptr);
+          /* EVENTS_PUSH (EventType::ET_PLUGIN_COLLECTIONS_CHANGED, nullptr); */
         }
       else
         {
@@ -3805,7 +3751,7 @@ on_plugin_collection_rename_response (
 {
   PLUGIN_MANAGER->collections_->serialize_to_file ();
 
-  EVENTS_PUSH (EventType::ET_PLUGIN_COLLECTIONS_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_PLUGIN_COLLECTIONS_CHANGED, nullptr); */
 }
 
 DEFINE_SIMPLE (activate_plugin_collection_rename)
@@ -3839,7 +3785,7 @@ on_delete_plugin_collection_response (
     {
       PLUGIN_MANAGER->collections_->remove (*collection, true);
 
-      EVENTS_PUSH (EventType::ET_PLUGIN_COLLECTIONS_CHANGED, nullptr);
+      /* EVENTS_PUSH (EventType::ET_PLUGIN_COLLECTIONS_CHANGED, nullptr); */
     }
 }
 
@@ -3883,7 +3829,7 @@ DEFINE_SIMPLE (activate_plugin_collection_remove)
     {
       PLUGIN_MANAGER->collections_->remove (*collection, F_SERIALIZE);
 
-      EVENTS_PUSH (EventType::ET_PLUGIN_COLLECTIONS_CHANGED, nullptr);
+      /* EVENTS_PUSH (EventType::ET_PLUGIN_COLLECTIONS_CHANGED, nullptr); */
     }
 }
 
@@ -4099,7 +4045,8 @@ DEFINE_SIMPLE (activate_show_used_automation_lanes_on_selected_tracks)
 
       if (automation_vis_changed)
         {
-          EVENTS_PUSH (EventType::ET_TRACK_AUTOMATION_VISIBILITY_CHANGED, track);
+          /* EVENTS_PUSH (EventType::ET_TRACK_AUTOMATION_VISIBILITY_CHANGED,
+           * track); */
         }
     }
 }
@@ -4126,7 +4073,8 @@ DEFINE_SIMPLE (activate_hide_unused_automation_lanes_on_selected_tracks)
 
       if (automation_vis_changed)
         {
-          EVENTS_PUSH (EventType::ET_TRACK_AUTOMATION_VISIBILITY_CHANGED, track);
+          /* EVENTS_PUSH (EventType::ET_TRACK_AUTOMATION_VISIBILITY_CHANGED,
+           * track); */
         }
     }
 }

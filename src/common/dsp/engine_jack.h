@@ -14,6 +14,7 @@
 
 #  define JACK_PORT_T(exp) (static_cast<jack_port_t *> (exp))
 
+#  if 0
 /**
  * Tests if JACK is working properly.
  *
@@ -24,6 +25,7 @@
  */
 int
 engine_jack_test (GtkWindow * win);
+#  endif
 
 /**
  * Refreshes the list of external ports.

@@ -31,7 +31,6 @@
 #include "common/utils/ui.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -59,13 +58,13 @@ Exporter::ExportThread::run ()
 }
 
 Exporter::Exporter (
-  Settings                      settings,
-  GtkWidget *                   parent_owner,
+  Settings settings,
+  // GtkWidget *                   parent_owner,
   std::shared_ptr<ProgressInfo> progress_info)
     : settings_ (std::move (settings)),
       progress_info_ (
-        progress_info ? progress_info : std::make_shared<ProgressInfo> ()),
-      parent_owner_ (parent_owner)
+        progress_info ? progress_info : std::make_shared<ProgressInfo> ())
+// parent_owner_ (parent_owner)
 {
 }
 

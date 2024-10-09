@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <cstdlib>
-
 #include "common/dsp/automatable_track.h"
 #include "common/dsp/automation_point.h"
 #include "common/dsp/automation_region.h"
@@ -10,15 +8,6 @@
 #include "common/utils/ui.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/arranger.h"
-#include "gui/backend/gtk_widgets/automation_arranger.h"
-#include "gui/backend/gtk_widgets/automation_editor_space.h"
-#include "gui/backend/gtk_widgets/bot_dock_edge.h"
-#include "gui/backend/gtk_widgets/center_dock.h"
-#include "gui/backend/gtk_widgets/clip_editor.h"
-#include "gui/backend/gtk_widgets/clip_editor_inner.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 AutomationRegion::AutomationRegion (
   const Position &start_pos,
@@ -145,8 +134,9 @@ AutomationRegion::get_next_ap (
   if (check_positions)
     {
       check_transients =
-        ZRYTHM_HAVE_UI && MW_AUTOMATION_ARRANGER
-        && MW_AUTOMATION_ARRANGER->action == UiOverlayAction::MovingCopy;
+        ZRYTHM_HAVE_UI /* && MW_AUTOMATION_ARRANGER
+        && MW_AUTOMATION_ARRANGER->action == UiOverlayAction::MovingCopy */
+        ;
       AutomationPoint * next_ap = nullptr;
       const int         loop_times = check_transients ? 2 : 1;
       for (auto &cur_ap_outer : aps_)
@@ -261,10 +251,4 @@ ArrangerSelections *
 AutomationRegion::get_arranger_selections () const
 {
   return AUTOMATION_SELECTIONS.get ();
-}
-
-ArrangerWidget *
-AutomationRegion::get_arranger_for_children () const
-{
-  return MW_AUTOMATION_ARRANGER;
 }

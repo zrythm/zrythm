@@ -41,7 +41,7 @@
 
 using namespace zrythm::plugins;
 
-constexpr auto PLUGIN_SCAN_TIMEOUT = std::chrono::seconds (8);
+constexpr auto PLUGIN_SCAN_TIMEOUT = std::chrono::seconds (4);
 
 //==============================================================================
 

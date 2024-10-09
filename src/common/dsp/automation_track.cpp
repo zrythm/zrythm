@@ -14,14 +14,8 @@
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/math.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/custom_button.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
-
-#include <glib/gi18n.h>
 
 void
 AutomationTrack::init_loaded (AutomationTracklist * atl)
@@ -284,7 +278,7 @@ AutomationTrack::find_from_port_id (const PortIdentifier &id, bool basic_search)
 void
 AutomationTrack::set_automation_mode (AutomationMode mode, bool fire_events)
 {
-  z_return_if_fail (ZRYTHM_APP_IS_GTK_THREAD);
+  z_return_if_fail (ZRYTHM_IS_QT_THREAD);
 
   auto atl = get_automation_tracklist ();
   z_return_if_fail (atl);
@@ -306,7 +300,7 @@ AutomationTrack::set_automation_mode (AutomationMode mode, bool fire_events)
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_AUTOMATION_TRACK_CHANGED, this);
+      // EVENTS_PUSH (EventType::ET_AUTOMATION_TRACK_CHANGED, this);
     }
 }
 

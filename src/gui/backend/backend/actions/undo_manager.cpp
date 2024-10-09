@@ -6,11 +6,8 @@
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/actions/undo_stack.h"
 #include "gui/backend/backend/actions/undoable_action.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -27,8 +24,8 @@ UndoManager::do_or_undo_action (
   UndoStack                        &main_stack,
   UndoStack                        &opposite_stack)
 {
-  if (ZRYTHM_HAVE_UI)
-    EVENT_MANAGER->process_now ();
+  // if (ZRYTHM_HAVE_UI)
+  //   EVENT_MANAGER->process_now ();
 
   UndoableAction * action_ptr = action ? action.get () : main_stack.peek ();
 
@@ -89,10 +86,10 @@ UndoManager::undo ()
 
   if (ZRYTHM_HAVE_UI)
     {
-      EVENTS_PUSH (EventType::ET_UNDO_REDO_ACTION_DONE, nullptr);
+      /* EVENTS_PUSH (EventType::ET_UNDO_REDO_ACTION_DONE, nullptr); */
 
       /* process UI events now */
-      EVENT_MANAGER->process_now ();
+      // EVENT_MANAGER->process_now ();
     }
 }
 
@@ -122,10 +119,10 @@ UndoManager::redo ()
 
   if (ZRYTHM_HAVE_UI)
     {
-      EVENTS_PUSH (EventType::ET_UNDO_REDO_ACTION_DONE, nullptr);
+      /* EVENTS_PUSH (EventType::ET_UNDO_REDO_ACTION_DONE, nullptr); */
 
       /* process UI events now */
-      EVENT_MANAGER->process_now ();
+      // EVENT_MANAGER->process_now ();
     }
 }
 
@@ -150,10 +147,10 @@ UndoManager::perform (std::unique_ptr<UndoableAction> &&action)
 
   if (ZRYTHM_HAVE_UI)
     {
-      EVENTS_PUSH (EventType::ET_UNDO_REDO_ACTION_DONE, nullptr);
+      /* EVENTS_PUSH (EventType::ET_UNDO_REDO_ACTION_DONE, nullptr); */
 
       /* process UI events now */
-      EVENT_MANAGER->process_now ();
+      // EVENT_MANAGER->process_now ();
     }
 }
 

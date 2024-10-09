@@ -8,11 +8,8 @@
 #include "common/dsp/midi_mapping.h"
 #include "common/utils/midi.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 void
 MidiMappings::init_loaded ()
@@ -57,7 +54,7 @@ MidiMappings::bind_at (
 
   if (fire_events && ZRYTHM_HAVE_UI)
     {
-      EVENTS_PUSH (EventType::ET_MIDI_BINDINGS_CHANGED, nullptr);
+      // EVENTS_PUSH (EventType::ET_MIDI_BINDINGS_CHANGED, nullptr);
     }
 }
 
@@ -70,7 +67,7 @@ MidiMappings::unbind (int idx, bool fire_events)
 
   if (fire_events && ZRYTHM_HAVE_UI)
     {
-      EVENTS_PUSH (EventType::ET_MIDI_BINDINGS_CHANGED, nullptr);
+      // EVENTS_PUSH (EventType::ET_MIDI_BINDINGS_CHANGED, nullptr);
     }
 }
 
@@ -114,43 +111,44 @@ MidiMapping::apply (std::array<midi_byte_t, 3> buf)
           PortIdentifier::Flags2, dest_->id_.flags2_,
           PortIdentifier::Flags2::TransportRoll))
         {
-          EVENTS_PUSH (EventType::ET_TRANSPORT_ROLL_REQUIRED, nullptr);
+          // EVENTS_PUSH (EventType::ET_TRANSPORT_ROLL_REQUIRED, nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
           PortIdentifier::Flags2, dest_->id_.flags2_,
           PortIdentifier::Flags2::TransportStop))
         {
-          EVENTS_PUSH (EventType::ET_TRANSPORT_PAUSE_REQUIRED, nullptr);
+          // EVENTS_PUSH (EventType::ET_TRANSPORT_PAUSE_REQUIRED, nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
           PortIdentifier::Flags2, dest_->id_.flags2_,
           PortIdentifier::Flags2::TransportBackward))
         {
-          EVENTS_PUSH (EventType::ET_TRANSPORT_MOVE_BACKWARD_REQUIRED, nullptr);
+          // EVENTS_PUSH (EventType::ET_TRANSPORT_MOVE_BACKWARD_REQUIRED,
+          // nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
           PortIdentifier::Flags2, dest_->id_.flags2_,
           PortIdentifier::Flags2::TransportForward))
         {
-          EVENTS_PUSH (EventType::ET_TRANSPORT_MOVE_FORWARD_REQUIRED, nullptr);
+          // EVENTS_PUSH (EventType::ET_TRANSPORT_MOVE_FORWARD_REQUIRED, nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
           PortIdentifier::Flags2, dest_->id_.flags2_,
           PortIdentifier::Flags2::TransportLoopToggle))
         {
-          EVENTS_PUSH (EventType::ET_TRANSPORT_TOGGLE_LOOP_REQUIRED, nullptr);
+          // EVENTS_PUSH (EventType::ET_TRANSPORT_TOGGLE_LOOP_REQUIRED, nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
           PortIdentifier::Flags2, dest_->id_.flags2_,
           PortIdentifier::Flags2::TransportRecToggle))
         {
-          EVENTS_PUSH (
-            EventType::ET_TRANSPORT_TOGGLE_RECORDING_REQUIRED, nullptr);
+          /* EVENTS_PUSH (
+            EventType::ET_TRANSPORT_TOGGLE_RECORDING_REQUIRED, nullptr); */
         }
     }
 }

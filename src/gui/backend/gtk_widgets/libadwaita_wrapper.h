@@ -8,7 +8,7 @@
 
 // clang-format off
 #include "gui/backend/gtk_widgets/gtk_wrapper.h"
-#include <adwaita.h>
+// #include <adwaita.h>
 // clang-format on
 
 #endif // __LIBADWAITA_WRAPPER_H__

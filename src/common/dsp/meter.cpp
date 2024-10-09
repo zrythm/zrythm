@@ -13,7 +13,6 @@
 #include "common/utils/ring_buffer.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 void
 Meter::get_value (AudioValueFormat format, float * val, float * max)

@@ -8,12 +8,8 @@
 #include "common/dsp/region.h"
 #include "common/dsp/track.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 InstrumentTrack::InstrumentTrack (const std::string &name, int pos)
     : Track (Track::Type::Instrument, name, pos, PortType::Event, PortType::Audio)
@@ -70,7 +66,7 @@ InstrumentTrack::toggle_plugin_visible ()
   z_return_if_fail (plugin);
   plugin->visible_ = !plugin->visible_;
 
-  EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, plugin);
+  // EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, plugin);
 }
 
 void

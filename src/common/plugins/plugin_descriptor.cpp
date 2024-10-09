@@ -8,10 +8,8 @@
 #include "common/plugins/collections.h"
 #include "common/plugins/plugin_descriptor.h"
 #include "common/plugins/plugin_manager.h"
-#include "common/utils/gtk.h"
 #include "common/utils/objects.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 #include <glib/gi18n.h>
 
@@ -483,6 +481,8 @@ PluginDescriptor::get_min_bridge_mode () const
 bool
 PluginDescriptor::is_whitelisted () const
 {
+  return false;
+#if 0
   /* on wayland nothing is whitelisted */
   if (z_gtk_is_wayland ())
     {
@@ -556,15 +556,16 @@ PluginDescriptor::is_whitelisted () const
     {
       if (author_ == authors[i])
         {
-#if 0
+#  if 0
           z_debug (
             "author '%s' is whitelisted", this->author);
-#endif
+#  endif
           return true;
         }
     }
 
   return false;
+#endif
 }
 
 std::string
@@ -592,6 +593,7 @@ PluginDescriptor::get_icon_name () const
     }
 }
 
+#if 0
 GMenuModel *
 PluginDescriptor::generate_context_menu () const
 {
@@ -601,7 +603,7 @@ PluginDescriptor::generate_context_menu () const
   char        tmp[600];
 
   /* TODO */
-#if 0
+#  if 0
   /* add option for native generic LV2 UI */
   if (this->protocol == PluginProtocol::LV2
       &&
@@ -614,9 +616,9 @@ PluginDescriptor::generate_context_menu () const
           "app.plugin-browser-add-to-project");
       g_menu_append_item (menu, menuitem);
     }
-#endif
+#  endif
 
-#if HAVE_CARLA
+#  if HAVE_CARLA
   sprintf (tmp, "app.plugin-browser-add-to-project-carla::%p", this);
   menuitem = z_gtk_create_menu_item (_ ("Add to project"), nullptr, tmp);
   g_menu_append_item (menu, menuitem);
@@ -645,9 +647,9 @@ PluginDescriptor::generate_context_menu () const
   menuitem =
     z_gtk_create_menu_item (_ ("Add to project (bridged full)"), nullptr, tmp);
   g_menu_append_item (menu, menuitem);
-#endif
+#  endif
 
-#if 0
+#  if 0
   menuitem =
     GTK_MENU_ITEM (
       gtk_check_menu_item_new_with_mnemonic (
@@ -659,7 +661,7 @@ PluginDescriptor::generate_context_menu () const
   g_signal_connect (
     G_OBJECT (menuitem), "toggled",
     G_CALLBACK (on_use_generic_ui_toggled), this);
-#endif
+#  endif
 
   /* add to collection */
   GMenu * add_collections_submenu = g_menu_new ();
@@ -715,17 +717,11 @@ PluginDescriptor::generate_context_menu () const
 
   return G_MENU_MODEL (menu);
 }
+#endif
 
 bool
 PluginDescriptor::is_same_plugin (
   const zrythm::plugins::PluginDescriptor &other) const
 {
   return *this == other;
-}
-
-void
-PluginDescriptor::free_closure (void * data, GClosure * closure)
-{
-  zrythm::plugins::PluginDescriptor * self = (PluginDescriptor *) data;
-  delete self;
 }

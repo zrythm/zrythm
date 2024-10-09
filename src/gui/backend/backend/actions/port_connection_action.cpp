@@ -4,11 +4,8 @@
 #include "common/dsp/port.h"
 #include "common/dsp/router.h"
 #include "gui/backend/backend/actions/port_connection_action.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -105,7 +102,7 @@ PortConnectionAction::do_or_undo (bool _do)
       break;
     }
 
-  EVENTS_PUSH (EventType::ET_PORT_CONNECTION_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_PORT_CONNECTION_CHANGED, nullptr); */
 }
 
 std::string

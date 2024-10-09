@@ -17,7 +17,6 @@
 #include <cstring>
 
 #include "common/utils/types.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 #include "crill/spin_mutex.h"
 #include "midilib/src/midifile.h"

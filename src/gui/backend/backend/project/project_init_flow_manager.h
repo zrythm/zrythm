@@ -20,7 +20,6 @@
 
 #include <glib.h>
 
-TYPEDEF_STRUCT_UNDERSCORED (MainWindowWidget);
 class Project;
 
 /**
@@ -87,13 +86,13 @@ private:
 
   static void recreate_main_window ();
 
-  static void replace_main_window (MainWindowWidget * mww);
+  // static void replace_main_window (MainWindowWidget * mww);
 
-  static MainWindowWidget * hide_prev_main_window (void);
+  // static MainWindowWidget * hide_prev_main_window (void);
 
-  static void destroy_prev_main_window (MainWindowWidget * mww);
+  // static void destroy_prev_main_window (MainWindowWidget * mww);
 
-  static void setup_main_window (Project &project);
+  // static void setup_main_window (Project &project);
 
   /**
    * Called when a new project is created or one is loaded to save the project

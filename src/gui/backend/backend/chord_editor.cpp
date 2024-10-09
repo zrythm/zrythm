@@ -6,12 +6,9 @@
 #include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/actions/chord_action.h"
 #include "gui/backend/backend/chord_editor.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/chord_preset.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 void
 ChordEditor::init ()
@@ -78,7 +75,7 @@ ChordEditor::apply_chords (
         }
     }
 
-  EVENTS_PUSH (EventType::ET_CHORDS_UPDATED, nullptr);
+  // /* EVENTS_PUSH (EventType::ET_CHORDS_UPDATED, nullptr); */
 }
 
 void

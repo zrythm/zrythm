@@ -4,13 +4,10 @@
 #include "common/dsp/track.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/piano_roll.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 static const char * drum_labels[47] = {
   "Acoustic Bass Drum",
@@ -213,7 +210,7 @@ PianoRoll::set_highlighting (Highlighting highlighting)
   g_settings_set_enum (
     S_UI, "piano-roll-highlight", ENUM_VALUE_TO_INT (highlighting));
 
-  EVENTS_PUSH (EventType::ET_PIANO_ROLL_HIGHLIGHTING_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_PIANO_ROLL_HIGHLIGHTING_CHANGED, nullptr); */
 }
 
 Track *
@@ -233,7 +230,7 @@ PianoRoll::set_notes_zoom (float notes_zoom, bool fire_events)
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_PIANO_ROLL_KEY_ZOOM_CHANGED, nullptr);
+      /* EVENTS_PUSH (EventType::ET_PIANO_ROLL_KEY_ZOOM_CHANGED, nullptr); */
     }
 }
 
@@ -248,7 +245,7 @@ PianoRoll::set_midi_modifier (MidiModifier modifier)
     modifier);
 #endif
 
-  EVENTS_PUSH (EventType::ET_PIANO_ROLL_MIDI_MODIFIER_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_PIANO_ROLL_MIDI_MODIFIER_CHANGED, nullptr); */
 }
 
 void

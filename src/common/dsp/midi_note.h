@@ -13,7 +13,6 @@
 #include "common/dsp/muteable_object.h"
 #include "common/dsp/position.h"
 #include "common/dsp/velocity.h"
-#include "common/utils/pango.h"
 #include "gui/backend/backend/piano_roll.h"
 
 /**
@@ -87,8 +86,6 @@ public:
    */
   void set_val (const uint8_t val);
 
-  ArrangerWidget * get_arranger () const override;
-
   ArrangerObjectPtr find_in_project () const override;
 
   std::string print_to_str () const override;
@@ -125,9 +122,6 @@ public:
   uint8_t last_listened_val_ = 0;
 
   int magic_ = MIDI_NOTE_MAGIC;
-
-  /** Cache layout for drawing the name. */
-  PangoLayoutUniquePtr layout_;
 };
 
 inline bool

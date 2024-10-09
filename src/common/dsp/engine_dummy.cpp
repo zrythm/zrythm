@@ -10,8 +10,6 @@
 #include "common/utils/lsp_dsp_context.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 class DummyEngineThread : public juce::Thread
 {
@@ -54,6 +52,7 @@ engine_dummy_setup (AudioEngine * self)
   /* Set audio engine properties */
   self->midi_buf_size_ = 4096;
 
+#if 0
   if (ZRYTHM_HAVE_UI && zrythm_app->buf_size_ > 0)
     {
       self->block_length_ = (nframes_t) zrythm_app->buf_size_;
@@ -71,6 +70,7 @@ engine_dummy_setup (AudioEngine * self)
     {
       self->sample_rate_ = 44100;
     }
+#endif
 
   int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
   z_warn_if_fail (beats_per_bar >= 1);

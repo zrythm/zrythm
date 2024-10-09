@@ -5,14 +5,6 @@
 #include "common/dsp/region.h"
 #include "common/dsp/velocity.h"
 #include "common/utils/string.h"
-#include "gui/backend/gtk_widgets/bot_dock_edge.h"
-#include "gui/backend/gtk_widgets/center_dock.h"
-#include "gui/backend/gtk_widgets/clip_editor.h"
-#include "gui/backend/gtk_widgets/clip_editor_inner.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
-#include "gui/backend/gtk_widgets/midi_editor_space.h"
-#include "gui/backend/gtk_widgets/midi_modifier_arranger.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 Velocity::Velocity () : ArrangerObject (Type::Velocity) {};
 
@@ -37,12 +29,6 @@ Velocity::init_loaded ()
 {
   ArrangerObject::init_loaded_base ();
   RegionOwnedObject::init_loaded_base ();
-}
-
-ArrangerWidget *
-Velocity::get_arranger () const
-{
-  return (ArrangerWidget *) (MW_MIDI_MODIFIER_ARRANGER);
 }
 
 void

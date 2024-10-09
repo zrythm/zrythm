@@ -240,7 +240,7 @@ public:
    * dedicated idle timer, and handle the plugin UI stuff there,
    * outside of the main application draw function
    */
-  sigc::scoped_connection idle_connection_;
+  // sigc::scoped_connection idle_connection_;
 
   /**
    * Used during processing.

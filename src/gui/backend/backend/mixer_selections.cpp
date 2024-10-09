@@ -6,13 +6,9 @@
 #include "common/dsp/tracklist.h"
 #include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/mixer_selections.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -54,7 +50,7 @@ MixerSelections::add_slot (
 
   if (fire_events && track.is_in_active_project ())
     {
-      EVENTS_PUSH (EventType::ET_MIXER_SELECTIONS_CHANGED, nullptr);
+      /* EVENTS_PUSH (EventType::ET_MIXER_SELECTIONS_CHANGED, nullptr); */
     }
 }
 
@@ -116,7 +112,7 @@ MixerSelections::remove_slot (
 
   if (ZRYTHM_HAVE_UI && publish_events)
     {
-      EVENTS_PUSH (EventType::ET_MIXER_SELECTIONS_CHANGED, nullptr);
+      /* EVENTS_PUSH (EventType::ET_MIXER_SELECTIONS_CHANGED, nullptr); */
     }
 }
 
@@ -263,8 +259,8 @@ MixerSelections::clear (bool fire_events)
   has_any_ = false;
   track_name_hash_ = 0;
   type_ = zrythm::plugins::PluginSlotType::Invalid;
-  if (fire_events)
-    EVENTS_PUSH (EventType::ET_MIXER_SELECTIONS_CHANGED, nullptr);
+  // if (fire_events)
+  /* EVENTS_PUSH (EventType::ET_MIXER_SELECTIONS_CHANGED, nullptr); */
 }
 
 std::unique_ptr<FullMixerSelections>

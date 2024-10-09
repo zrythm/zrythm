@@ -35,7 +35,6 @@
 #include "common/dsp/graph_thread.h"
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/types.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 class GraphNode;
 class Graph;

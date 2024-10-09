@@ -27,11 +27,7 @@
 #include "common/utils/dsp.h"
 #include "common/utils/hash.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/gtk_widgets/channel.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <fmt/format.h>
 
@@ -844,7 +840,7 @@ Port::disconnect_ports (std::vector<Port *> &ports, bool deleting)
     return;
 
   /* can only be called from the gtk thread */
-  z_return_if_fail (ZRYTHM_APP_IS_GTK_THREAD);
+  z_return_if_fail (ZRYTHM_IS_QT_THREAD);
 
   /* go through each port */
   for (auto port : ports)

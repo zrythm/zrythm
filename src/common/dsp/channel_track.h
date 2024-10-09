@@ -57,7 +57,7 @@ public:
    * Generates a menu to be used for channel-related items, eg, fader buttons,
    * direct out, etc.
    */
-  GMenu * generate_channel_context_menu ();
+  // GMenu * generate_channel_context_menu ();
 
   /**
    * Sets track soloed, updates UI and optionally adds the action to the undo

@@ -19,8 +19,6 @@ class TimelineObject : virtual public ArrangerObject
 public:
   virtual ~TimelineObject () = default;
 
-  ArrangerWidget * get_arranger () const final;
-
 protected:
   void copy_members_from (const TimelineObject &other);
 

@@ -7,18 +7,6 @@
 #include "common/utils/gtest_wrapper.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
-#include "gui/backend/gtk_widgets/bot_dock_edge.h"
-#include "gui/backend/gtk_widgets/center_dock.h"
-#include "gui/backend/gtk_widgets/clip_editor.h"
-#include "gui/backend/gtk_widgets/clip_editor_inner.h"
-#include "gui/backend/gtk_widgets/editor_ruler.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
-#include "gui/backend/gtk_widgets/main_notebook.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/ruler.h"
-#include "gui/backend/gtk_widgets/timeline_panel.h"
-#include "gui/backend/gtk_widgets/timeline_ruler.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -132,6 +120,9 @@ SnapGrid::get_snap_ticks () const
           return -1;
         }
 
+      return -1;
+
+#if 0
       RulerWidget * ruler = NULL;
       if (type_ == Type::Timeline)
         {
@@ -167,6 +158,7 @@ SnapGrid::get_snap_ticks () const
                  * get_ticks_from_length_and_type (
                    NoteLength::NOTE_LENGTH_BAR, snap_note_type_);
         }
+#endif
     }
   else
     {

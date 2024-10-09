@@ -11,15 +11,10 @@
 #include "common/dsp/transport.h"
 #include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/actions/tracklist_selections.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/tracklist_selections.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
-#include "gui/backend/gtk_widgets/track.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -82,8 +77,8 @@ SimpleTracklistSelections::add_track (Track &track, bool fire_events)
 
       if (fire_events)
         {
-          EVENTS_PUSH (EventType::ET_TRACK_CHANGED, &track);
-          EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr);
+          /* EVENTS_PUSH (EventType::ET_TRACK_CHANGED, &track); */
+          /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr); */
         }
     }
 
@@ -136,18 +131,20 @@ SimpleTracklistSelections::clear (const bool fire_events)
 
       if (track->is_in_active_project ())
         {
+#if 0
           /* process now because the track might get deleted after this */
           if (track->widget_ && GTK_IS_WIDGET (track->widget_))
             {
               gtk_widget_set_visible (
                 GTK_WIDGET (track->widget_), track->visible_);
             }
+#endif
         }
     }
 
   if (fire_events && ZRYTHM_HAVE_UI && PROJECT->loaded_)
     {
-      EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr);
+      /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr); */
     }
 
   z_debug ("done clearing tracklist selections");
@@ -238,7 +235,7 @@ SimpleTracklistSelections::select_all (bool visible_only)
         }
     }
 
-  EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr); */
 }
 
 void
@@ -249,8 +246,8 @@ SimpleTracklistSelections::remove_track (Track &track, int fire_events)
     {
       if (fire_events)
         {
-          EVENTS_PUSH (EventType::ET_TRACK_CHANGED, &track);
-          EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr);
+          /* EVENTS_PUSH (EventType::ET_TRACK_CHANGED, &track); */
+          /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr); */
         }
       return;
     }
@@ -271,7 +268,7 @@ SimpleTracklistSelections::remove_track (Track &track, int fire_events)
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr);
+      /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr); */
     }
 }
 bool
@@ -423,7 +420,7 @@ SimpleTracklistSelections::select_single (Track &track, bool fire_events)
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr);
+      /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr); */
     }
 }
 
@@ -456,7 +453,7 @@ SimpleTracklistSelections::toggle_visibility ()
         }
     }
 
-  EVENTS_PUSH (EventType::ET_TRACK_VISIBILITY_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_TRACK_VISIBILITY_CHANGED, nullptr); */
 }
 
 void

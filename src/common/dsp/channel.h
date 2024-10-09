@@ -13,13 +13,9 @@
 #include "common/utils/audio.h"
 #include "common/utils/icloneable.h"
 
-#include <gdk/gdk.h>
-
 class AutomationTrack;
 class ChannelTrack;
 class GroupTargetTrack;
-TYPEDEF_STRUCT_UNDERSCORED (ChannelWidget);
-TYPEDEF_STRUCT_UNDERSCORED (TrackWidget);
 class ExtPort;
 
 /**
@@ -464,9 +460,6 @@ public:
   int width_ = 0;
 
   int magic_ = CHANNEL_MAGIC;
-
-  /** The channel widget. */
-  ChannelWidget * widget_ = nullptr;
 
   /** Owner track. */
   ChannelTrack * track_;

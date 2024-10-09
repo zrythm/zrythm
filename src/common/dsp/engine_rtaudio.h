@@ -45,17 +45,6 @@ engine_rtaudio_get_device_names (
   int *         num_names);
 
 /**
- * Tests if the backend is working properly.
- *
- * Returns 0 if ok, non-null if has errors.
- *
- * If win is not null, it displays error messages
- * to it.
- */
-int
-engine_rtaudio_test (GtkWindow * win);
-
-/**
  * Closes the engine.
  */
 void

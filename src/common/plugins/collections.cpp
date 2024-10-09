@@ -5,7 +5,6 @@
 #include "common/utils/directory_manager.h"
 #include "common/utils/string.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -50,6 +49,7 @@ PluginCollection::remove_descriptor (
   });
 }
 
+#if 0
 Glib::RefPtr<Gio::MenuModel>
 PluginCollection::generate_context_menu () const
 {
@@ -63,6 +63,7 @@ PluginCollection::generate_context_menu () const
 
   return menu;
 }
+#endif
 
 void
 PluginCollection::init_after_cloning (const PluginCollection &other)

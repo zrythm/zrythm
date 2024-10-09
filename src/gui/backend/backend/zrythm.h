@@ -14,7 +14,6 @@
 #include "common/utils/networking.h"
 #include "common/utils/string_array.h"
 #include "common/utils/symap.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/file_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/chord_preset_pack_manager.h"
@@ -34,14 +33,14 @@
 #define ZRYTHM_PROJECTS_DIR "projects"
 
 #define MAX_RECENT_PROJECTS 20
-#define DEBUGGING (G_UNLIKELY (gZrythm && gZrythm->debug_))
+#define DEBUGGING (Q_UNLIKELY (gZrythm && gZrythm->debug_))
 #define ZRYTHM_BENCHMARKING (gZrythm && gZrythm->benchmarking_)
 #define ZRYTHM_GENERATING_PROJECT (gZrythm->generating_project_)
 #define ZRYTHM_HAVE_UI (gZrythm && gZrythm->have_ui_)
 #define ZRYTHM_BREAK_ON_ERROR (gZrythm && gZrythm->break_on_error_)
 
 #if HAVE_LSP_DSP
-#  define ZRYTHM_USE_OPTIMIZED_DSP (G_LIKELY (gZrythm->use_optimized_dsp_))
+#  define ZRYTHM_USE_OPTIMIZED_DSP (Q_LIKELY (gZrythm->use_optimized_dsp_))
 #else
 #  define ZRYTHM_USE_OPTIMIZED_DSP false
 #endif
@@ -242,7 +241,7 @@ public:
   /** Chord preset pack manager. */
   std::unique_ptr<ChordPresetPackManager> chord_preset_pack_manager_;
 
-  std::unique_ptr<EventManager> event_manager_;
+  // std::unique_ptr<EventManager> event_manager_;
 
   /**
    * Manages plugins (loading, instantiating, etc.)

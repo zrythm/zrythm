@@ -39,14 +39,6 @@
 #include "common/utils/math.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/arranger_wrapper.h"
-#include "gui/backend/gtk_widgets/bot_dock_edge.h"
-#include "gui/backend/gtk_widgets/center_dock.h"
-#include "gui/backend/gtk_widgets/clip_editor.h"
-#include "gui/backend/gtk_widgets/clip_editor_inner.h"
-#include "gui/backend/gtk_widgets/midi_arranger.h"
-#include "gui/backend/gtk_widgets/midi_editor_space.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include "midilib/src/midifile.h"
 #include "midilib/src/midiutil.h"
@@ -490,10 +482,4 @@ ArrangerSelections *
 MidiRegion::get_arranger_selections () const
 {
   return MIDI_SELECTIONS.get ();
-}
-
-ArrangerWidget *
-MidiRegion::get_arranger_for_children () const
-{
-  return MW_MIDI_ARRANGER;
 }

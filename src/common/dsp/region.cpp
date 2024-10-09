@@ -24,25 +24,7 @@
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/logger.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/event.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/gtk_widgets/arranger_wrapper.h"
-#include "gui/backend/gtk_widgets/audio_arranger.h"
-#include "gui/backend/gtk_widgets/audio_editor_space.h"
-#include "gui/backend/gtk_widgets/automation_arranger.h"
-#include "gui/backend/gtk_widgets/automation_editor_space.h"
-#include "gui/backend/gtk_widgets/bot_dock_edge.h"
-#include "gui/backend/gtk_widgets/center_dock.h"
-#include "gui/backend/gtk_widgets/chord_arranger.h"
-#include "gui/backend/gtk_widgets/chord_editor_space.h"
-#include "gui/backend/gtk_widgets/clip_editor.h"
-#include "gui/backend/gtk_widgets/clip_editor_inner.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/midi_arranger.h"
-#include "gui/backend/gtk_widgets/midi_editor_space.h"
-#include "gui/backend/gtk_widgets/timeline_arranger.h"
-#include "gui/backend/gtk_widgets/timeline_panel.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -388,7 +370,7 @@ RegionImpl<RegionT>::
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, ret.get ());
+      // EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, ret.get ());
     }
 
   return ret;
@@ -919,7 +901,7 @@ RegionImpl<RegionT>::remove_object (ChildT &obj, bool fire_events)
 
     if (fire_events)
       {
-        EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_REMOVED, ret->type_);
+        // EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_REMOVED, ret->type_);
       }
 
     return ret;
@@ -1157,6 +1139,7 @@ RegionImpl<RegionT>::disconnect ()
         }
     }
 
+#if 0
   if (ZRYTHM_HAVE_UI && MAIN_WINDOW)
     {
       ArrangerWidget * arranger = get_arranger ();
@@ -1165,6 +1148,7 @@ RegionImpl<RegionT>::disconnect ()
           arranger->hovered_object.reset ();
         }
     }
+#endif
 }
 
 Region *

@@ -3,7 +3,6 @@
 
 target_sources(zrythm_lib
   PRIVATE
-    actions.cpp
     arranger_selections.cpp
     channel_send_action.cpp
     chord_action.cpp

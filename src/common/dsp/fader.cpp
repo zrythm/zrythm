@@ -21,12 +21,9 @@
 #include "common/utils/midi.h"
 #include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/actions/tracklist_selections.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -333,7 +330,7 @@ Fader::set_muted (bool mute, bool fire_events)
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, track);
+      // EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, track);
     }
 }
 
@@ -400,7 +397,7 @@ Fader::set_soloed (bool solo, bool fire_events)
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, track);
+      // EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, track);
     }
 }
 
@@ -428,7 +425,7 @@ Fader::set_listened (bool listen, bool fire_events)
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, track);
+      // EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, track);
     }
 }
 
@@ -516,7 +513,7 @@ Fader::set_mono_compat_enabled (bool enabled, bool fire_events)
       z_return_if_fail (track);
       if (fire_events)
         {
-          EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, track);
+          // EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, track);
         }
     }
 }
@@ -532,7 +529,7 @@ Fader::set_swap_phase (bool enabled, bool fire_events)
       z_return_if_fail (track);
       if (fire_events)
         {
-          EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, track);
+          // EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, track);
         }
     }
 }
@@ -591,7 +588,7 @@ Fader::set_fader_val_with_action_from_db (const std::string &str)
     }
   else
     {
-      ui_show_error_message (_ ("Invalid Value"), _ ("Invalid value"));
+      // ui_show_error_message (_ ("Invalid Value"), _ ("Invalid value"));
     }
 }
 

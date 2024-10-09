@@ -22,21 +22,12 @@
 #include "common/dsp/tracklist.h"
 #include "common/plugins/plugin.h"
 #include "common/plugins/plugin_identifier.h"
-#include "common/utils/dialogs.h"
 #include "common/utils/logger.h"
 #include "common/utils/objects.h"
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/string.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/gtk_widgets/channel.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/track.h"
-#include "gui/backend/gtk_widgets/tracklist.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -608,7 +599,7 @@ Channel::reset_fader (bool fire_events)
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_CHANNEL_FADER_VAL_CHANGED, this);
+      // EVENTS_PUSH (EventType::ET_CHANNEL_FADER_VAL_CHANGED, this);
     }
 }
 
@@ -645,7 +636,7 @@ Channel::connect_plugins ()
   for (int i = 0; i < 3; i++)
     {
       zrythm::plugins::PluginSlotType slot_type;
-      for (int j = 0; j < STRIP_SIZE; j++)
+      for (size_t j = 0; j < STRIP_SIZE; j++)
         {
           zrythm::plugins::Plugin * plugin = nullptr;
           int                       slot = j;
@@ -1029,7 +1020,7 @@ Channel::init ()
     std::make_unique<Fader> (prefader_type, true, track_, nullptr, nullptr);
 
   /* init sends */
-  for (int i = 0; i < STRIP_SIZE; ++i)
+  for (size_t i = 0; i < STRIP_SIZE; ++i)
     {
       sends_[i] =
         std::make_unique<ChannelSend> (track_->get_name_hash (), i, track_);
@@ -1092,7 +1083,7 @@ Channel::disconnect_plugin_from_strip (int pos, zrythm::plugins::Plugin &pl)
   auto &next_plugins = *next_plugins_ptr;
 
   zrythm::plugins::Plugin * next_plugin = nullptr;
-  for (int i = pos + 1; i < STRIP_SIZE; ++i)
+  for (size_t i = pos + 1; i < STRIP_SIZE; ++i)
     {
       if (next_plugins[i])
         {
@@ -1310,7 +1301,7 @@ Channel::add_plugin (
 
   if (pub_events)
     {
-      EVENTS_PUSH (EventType::ET_PLUGIN_ADDED, plugin_ptr);
+      // EVENTS_PUSH (EventType::ET_PLUGIN_ADDED, plugin_ptr);
     }
 
   if (recalc_graph)
@@ -1403,12 +1394,14 @@ struct PluginImportData
   bool                                      ask_if_overwrite;
 };
 
+#if 0
 static void
 plugin_import_data_free (void * _data)
 {
   auto * self = (PluginImportData *) _data;
   object_delete_and_null (self);
 }
+#endif
 
 static void
 do_import (PluginImportData * data)
@@ -1501,6 +1494,7 @@ do_import (PluginImportData * data)
     }
 }
 
+#if 0
 static void
 overwrite_plugin_response_cb (
   AdwMessageDialog * dialog,
@@ -1515,6 +1509,7 @@ overwrite_plugin_response_cb (
 
   do_import (data);
 }
+#endif
 
 void
 Channel::handle_plugin_import (
@@ -1561,12 +1556,14 @@ Channel::handle_plugin_import (
 
       if (show_dialog)
         {
+#if 0
           auto dialog =
             dialogs_get_overwrite_plugin_dialog (GTK_WINDOW (MAIN_WINDOW));
           gtk_window_present (GTK_WINDOW (dialog));
           g_signal_connect_data (
             dialog, "response", G_CALLBACK (overwrite_plugin_response_cb), data,
             (GClosureNotify) plugin_import_data_free, G_CONNECT_DEFAULT);
+#endif
           return;
         }
     }
@@ -1649,7 +1646,7 @@ Channel::disconnect (bool remove_pl)
   z_debug ("disconnecting channel {}", track_->get_name ());
   if (remove_pl)
     {
-      for (int i = 0; i < STRIP_SIZE; i++)
+      for (size_t i = 0; i < STRIP_SIZE; i++)
         {
           if (inserts_[i])
             {

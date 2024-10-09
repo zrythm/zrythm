@@ -5,7 +5,6 @@
 #include "common/utils/directory_manager.h"
 #include "common/utils/string.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 

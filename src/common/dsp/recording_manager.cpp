@@ -24,7 +24,6 @@
 #include "common/dsp/transport.h"
 #include "common/utils/debug.h"
 #include "common/utils/dsp.h"
-#include "common/utils/error.h"
 #include "common/utils/flags.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/math.h"
@@ -35,7 +34,6 @@
 #include "gui/backend/backend/actions/arranger_selections.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 #include <glib/gi18n.h>
 
@@ -202,7 +200,7 @@ RecordingManager::handle_recording (
     {
       /* if track had previously recorded */
       if (
-        G_UNLIKELY (recordable_track->recording_region_)
+        Q_UNLIKELY (recordable_track->recording_region_)
         && !recordable_track->recording_stop_sent_)
         {
           recordable_track->recording_stop_sent_ = true;
@@ -256,7 +254,7 @@ RecordingManager::handle_recording (
 
       /* if should stop automation recording */
       if (
-        G_UNLIKELY (at->recording_started_)
+        Q_UNLIKELY (at->recording_started_)
         && (!TRANSPORT->is_rolling () || !at_should_be_recording))
         {
           /* send stop automation recording event */
@@ -269,7 +267,7 @@ RecordingManager::handle_recording (
           skip_adding_automation_events = true;
         }
       /* if pausing (only at loop end) */
-      else if (G_UNLIKELY (at->recording_start_sent_ && time_nfo->nframes_ == 0) && (time_nfo->g_start_frame_w_offset_ == static_cast<unsigned_frame_t> (TRANSPORT->loop_end_pos_.frames_)))
+      else if (Q_UNLIKELY (at->recording_start_sent_ && time_nfo->nframes_ == 0) && (time_nfo->g_start_frame_w_offset_ == static_cast<unsigned_frame_t> (TRANSPORT->loop_end_pos_.frames_)))
         {
           /* send pause event */
           auto re = event_obj_pool_.acquire ();

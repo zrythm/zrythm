@@ -13,7 +13,6 @@
 #include "common/dsp/nameable_object.h"
 #include "common/dsp/timeline_object.h"
 #include "common/utils/icloneable.h"
-#include "common/utils/pango.h"
 
 constexpr int MARKER_WIDGET_TRIANGLE_W = 10;
 
@@ -88,9 +87,6 @@ public:
 
   /** Index in the marker track. */
   int marker_track_index_ = -1;
-
-  /** Cache layout for drawing the name. */
-  PangoLayoutUniquePtr layout_;
 };
 
 inline bool

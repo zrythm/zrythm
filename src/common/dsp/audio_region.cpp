@@ -18,17 +18,6 @@
 #include "common/utils/math.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
-#include "gui/backend/gtk_widgets/audio_arranger.h"
-#include "gui/backend/gtk_widgets/audio_editor_space.h"
-#include "gui/backend/gtk_widgets/bot_dock_edge.h"
-#include "gui/backend/gtk_widgets/center_dock.h"
-#include "gui/backend/gtk_widgets/clip_editor.h"
-#include "gui/backend/gtk_widgets/clip_editor_inner.h"
-#include "gui/backend/gtk_widgets/main_notebook.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/timeline_arranger.h"
-#include "gui/backend/gtk_widgets/timeline_panel.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -235,8 +224,9 @@ AudioRegion::fill_stereo_ports (
   auto * track = dynamic_cast<AudioTrack *> (get_track ());
 
   /* if timestretching in the timeline, skip processing */
+#if 0
   if (
-    G_UNLIKELY (
+    Q_UNLIKELY (
       ZRYTHM_HAVE_UI && MW_TIMELINE
       && MW_TIMELINE->action == UiOverlayAction::StretchingR))
     {
@@ -248,6 +238,7 @@ AudioRegion::fill_stereo_ports (
         DENORMAL_PREVENTION_VAL (AUDIO_ENGINE), time_nfo.nframes_);
       return;
     }
+#endif
 
   /* restretch if necessary */
   Position g_start_pos;
@@ -584,12 +575,6 @@ ArrangerSelections *
 AudioRegion::get_arranger_selections () const
 {
   return AUDIO_SELECTIONS.get ();
-}
-
-ArrangerWidget *
-AudioRegion::get_arranger_for_children () const
-{
-  return MW_AUDIO_ARRANGER;
 }
 
 bool

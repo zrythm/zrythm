@@ -3,7 +3,6 @@
 
 #include "common/dsp/channel_track.h"
 #include "common/dsp/tracklist.h"
-#include "common/utils/gtk.h"
 #include "gui/backend/backend/actions/tracklist_selections.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/tracklist_selections.h"
@@ -181,6 +180,7 @@ ChannelTrack::get_fader (bool post_fader)
   return nullptr;
 }
 
+#if 0
 GMenu *
 ChannelTrack::generate_channel_context_menu ()
 {
@@ -231,3 +231,4 @@ ChannelTrack::generate_channel_context_menu ()
 
   return channel_submenu;
 }
+#endif

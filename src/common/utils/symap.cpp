@@ -26,7 +26,6 @@
 
 #include "common/utils/objects.h"
 #include "common/utils/symap.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 /**
   @file symap.c Implementation of Symap, a basic symbol map (string interner).
@@ -58,7 +57,7 @@ uint32_t
 Symap::search (const char * sym, bool * exact) const
 {
   *exact = false;
-  if (G_UNLIKELY (this->size == 0))
+  if (this->size == 0) [[unlikely]]
     {
       return 0; // Empty map, insert at 0
     }

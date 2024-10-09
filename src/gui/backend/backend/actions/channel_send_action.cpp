@@ -7,11 +7,8 @@
 #include "common/dsp/tracklist.h"
 #include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/actions/channel_send_action.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -130,7 +127,7 @@ ChannelSendAction::perform_impl ()
       ROUTER->recalc_graph (false);
     }
 
-  EVENTS_PUSH (EventType::ET_CHANNEL_SEND_CHANGED, send);
+  /* EVENTS_PUSH (EventType::ET_CHANNEL_SEND_CHANGED, send); */
 }
 
 void
@@ -177,7 +174,7 @@ ChannelSendAction::undo_impl ()
       TRACKLIST->validate ();
     }
 
-  EVENTS_PUSH (EventType::ET_CHANNEL_SEND_CHANGED, send);
+  /* EVENTS_PUSH (EventType::ET_CHANNEL_SEND_CHANGED, send); */
 }
 
 std::string

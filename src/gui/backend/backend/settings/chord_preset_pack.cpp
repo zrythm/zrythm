@@ -1,15 +1,11 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/utils/gtk.h"
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/string.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/chord_preset_pack.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -54,7 +50,7 @@ ChordPresetPack::delete_preset (const ChordPreset &pset)
       [&pset] (const ChordPreset &p) { return p == pset; }),
     presets_.end ());
 
-  EVENTS_PUSH (EventType::ET_CHORD_PRESET_REMOVED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_CHORD_PRESET_REMOVED, nullptr); */
 }
 
 void
@@ -62,9 +58,10 @@ ChordPresetPack::set_name (const std::string &name)
 {
   name_ = name;
 
-  EVENTS_PUSH (EventType::ET_CHORD_PRESET_PACK_EDITED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_CHORD_PRESET_PACK_EDITED, nullptr); */
 }
 
+#if 0
 GMenuModel *
 ChordPresetPack::generate_context_menu () const
 {
@@ -87,3 +84,4 @@ ChordPresetPack::generate_context_menu () const
 
   return G_MENU_MODEL (menu);
 }
+#endif

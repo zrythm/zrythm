@@ -3,17 +3,6 @@
 
 #include "gui/backend/backend/editor_settings.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/gtk_widgets/arranger.h"
-#include "gui/backend/gtk_widgets/bot_dock_edge.h"
-#include "gui/backend/gtk_widgets/center_dock.h"
-#include "gui/backend/gtk_widgets/chord_editor_space.h"
-#include "gui/backend/gtk_widgets/clip_editor.h"
-#include "gui/backend/gtk_widgets/clip_editor_inner.h"
-#include "gui/backend/gtk_widgets/main_notebook.h"
-#include "gui/backend/gtk_widgets/midi_editor_space.h"
-#include "gui/backend/gtk_widgets/timeline_panel.h"
-#include "gui/backend/gtk_widgets/tracklist.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 void
 EditorSettings::set_scroll_start_x (int x, bool validate)
@@ -31,6 +20,7 @@ EditorSettings::set_scroll_start_x (int x, bool validate)
 void
 EditorSettings::set_scroll_start_y (int y, bool validate)
 {
+#if 0
   scroll_start_y_ = MAX (y, 0);
   if (validate)
     {
@@ -69,6 +59,7 @@ EditorSettings::set_scroll_start_y (int y, bool validate)
         }
     }
   /*z_debug ("scrolled vertically to {}", scroll_start_y_);*/
+#endif
 }
 
 /**

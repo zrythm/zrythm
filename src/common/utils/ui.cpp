@@ -10,7 +10,6 @@
 #include "common/dsp/pan.h"
 #include "common/dsp/port.h"
 #include "common/utils/color.h"
-#include "common/utils/gtk.h"
 #include "common/utils/localization.h"
 #include "common/utils/objects.h"
 #include "common/utils/string.h"
@@ -18,42 +17,22 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/settings/settings.h"
-#include "gui/backend/gtk_widgets/bot_bar.h"
-#include "gui/backend/gtk_widgets/bot_dock_edge.h"
-#include "gui/backend/gtk_widgets/center_dock.h"
-#include "gui/backend/gtk_widgets/clip_editor.h"
-#include "gui/backend/gtk_widgets/clip_editor_inner.h"
-#include "gui/backend/gtk_widgets/dialogs/bind_cc_dialog.h"
-#include "gui/backend/gtk_widgets/editor_ruler.h"
-#include "gui/backend/gtk_widgets/main_notebook.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/ruler.h"
-#include "gui/backend/gtk_widgets/timeline_panel.h"
-#include "gui/backend/gtk_widgets/timeline_ruler.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
-#include <glib/gi18n.h>
-
-UiCursor::
-  UiCursor (std::string name, GdkCursor * cursor, int offset_x, int offset_y)
-    : name_ (std::move (name)), cursor_ (cursor), offset_x_ (offset_x),
-      offset_y_ (offset_y)
+UiCursor::UiCursor (std::string name, int offset_x, int offset_y)
+    : name_ (std::move (name)), offset_x_ (offset_x), offset_y_ (offset_y)
 {
+#if 0
   if (!cursor || !GDK_IS_CURSOR (cursor))
     {
       throw ZrythmException ("cursor is invalid");
     }
   g_object_ref (cursor);
+#endif
 }
 
-UiCursor::~UiCursor ()
-{
-  if (cursor_)
-    {
-      object_free_w_func_and_null (g_object_unref, cursor_);
-    }
-}
+UiCursor::~UiCursor () = default;
 
+#if 0
 /**
  * Sets cursor from icon name.
  */
@@ -78,7 +57,7 @@ ui_set_cursor_from_icon_name (
         }
     }
 
-#if 0
+#  if 0
   GtkImage * image =
     GTK_IMAGE (
       gtk_image_new_from_icon_name (name));
@@ -106,7 +85,7 @@ ui_set_cursor_from_icon_name (
   gsk_render_node_draw (node, cr);
   cairo_surface_write_to_png (
     surface, "/tmp/test.png");
-#endif
+#  endif
   GdkTexture * texture =
     z_gdk_texture_new_from_icon_name (name.c_str (), 24, 24, 1);
   if (!texture || !GDK_IS_TEXTURE (texture))
@@ -143,12 +122,10 @@ ui_set_pointer_cursor (GtkWidget * widget)
 {
   ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "select-cursor", 3, 1);
 }
+#endif
 
-AdwDialog *
-ui_show_message_full (
-  GtkWidget *      parent,
-  std::string_view title,
-  std::string_view msg)
+void
+ui_show_message_full (std::string_view title, std::string_view msg)
 {
   /* log the message */
   z_info ("{}: {}", title, msg);
@@ -156,6 +133,7 @@ ui_show_message_full (
   /* if have UI, also show a message dialog */
   if (ZRYTHM_HAVE_UI)
     {
+#if 0
       AdwAlertDialog * dialog =
         ADW_ALERT_DIALOG (adw_alert_dialog_new (title.data (), msg.data ()));
       adw_alert_dialog_add_responses (dialog, "ok", _ ("_OK"), nullptr);
@@ -165,18 +143,11 @@ ui_show_message_full (
       adw_alert_dialog_set_close_response (dialog, "ok");
       adw_dialog_present (ADW_DIALOG (dialog), parent);
       return ADW_DIALOG (dialog);
+#endif
     }
-
-  return nullptr;
 }
 
-/**
- * Returns the matching hit child, or NULL.
- *
- * @param x X in parent space.
- * @param y Y in parent space.
- * @param type Type to look for.
- */
+#if 0
 GtkWidget *
 ui_get_hit_child (GtkWidget * parent, double x, double y, GType type)
 {
@@ -226,25 +197,33 @@ px_to_pos (double px, bool use_padding, RulerWidget * ruler)
   pos.update_frames_from_ticks (0.0);
   return pos;
 }
+#endif
 
 Position
 ui_px_to_pos_timeline (double px, bool has_padding)
 {
+#if 0
   if (!MAIN_WINDOW || !MW_RULER)
-    return Position ();
+    return {};
 
   return px_to_pos (px, has_padding, Z_RULER_WIDGET (MW_RULER));
+#endif
+  return {};
 }
 
 Position
 ui_px_to_pos_editor (double px, bool has_padding)
 {
+#if 0
   if (!MAIN_WINDOW || !EDITOR_RULER)
     return {};
 
   return px_to_pos (px, has_padding, Z_RULER_WIDGET (EDITOR_RULER));
+#endif
+  return {};
 }
 
+#if 0
 ATTR_NONNULL static inline int
 pos_to_px (const Position pos, int use_padding, RulerWidget * ruler)
 {
@@ -255,14 +234,18 @@ pos_to_px (const Position pos, int use_padding, RulerWidget * ruler)
 
   return px;
 }
+#endif
 
 int
 ui_pos_to_px_timeline (const Position pos, int use_padding)
 {
+#if 0
   if (!MAIN_WINDOW || !MW_RULER)
     return 0;
 
   return pos_to_px (pos, use_padding, (RulerWidget *) (MW_RULER));
+#endif
+  return 0;
 }
 
 /**
@@ -272,12 +255,16 @@ ui_pos_to_px_timeline (const Position pos, int use_padding)
 int
 ui_pos_to_px_editor (const Position pos, bool use_padding)
 {
+#if 0
   if (!MAIN_WINDOW || !EDITOR_RULER)
     return 0;
 
   return pos_to_px (pos, use_padding, Z_RULER_WIDGET (EDITOR_RULER));
+#endif
+  return 0;
 }
 
+#if 0
 /**
  * @param has_padding Whether the given px contains
  *   padding.
@@ -298,42 +285,33 @@ px_to_frames (double px, bool has_padding, RulerWidget * ruler)
     signed_frame_t) (((double) AUDIO_ENGINE->frames_per_tick_ * px)
                      / ruler->px_per_tick);
 }
+#endif
 
 signed_frame_t
 ui_px_to_frames_timeline (double px, bool has_padding)
 {
+#if 0
   if (!MAIN_WINDOW || !MW_RULER)
     return 0;
 
   return px_to_frames (px, has_padding, Z_RULER_WIDGET (MW_RULER));
+#endif
+  return 0;
 }
 
 signed_frame_t
 ui_px_to_frames_editor (double px, bool has_padding)
 {
+#if 0
   if (!MAIN_WINDOW || !EDITOR_RULER)
     return 0;
 
   return px_to_frames (px, has_padding, Z_RULER_WIDGET (EDITOR_RULER));
+#endif
+  return 0;
 }
 
-/**
- * Returns if @ref rect is hit or not by the
- * given coordinate.
- *
- * @param check_x Check x-axis for match.
- * @param check_y Check y-axis for match.
- * @param x x in parent space.
- * @param y y in parent space.
- * @param x_padding Padding to add to the x
- *   of the object when checking if hit.
- *   The bigger the padding the more space the
- *   child will have to get hit.
- * @param y_padding Padding to add to the y
- *   of the object when checking if hit.
- *   The bigger the padding the more space the
- *   child will have to get hit.
- */
+#if 0
 bool
 ui_is_point_in_rect_hit (
   GdkRectangle * rect,
@@ -405,6 +383,7 @@ ui_is_child_hit (
     }
   return 0;
 }
+#endif
 
 #if 0
 /**
@@ -430,13 +409,14 @@ hide_notification_async ()
 void
 ui_show_notification (const char * msg)
 {
+#if 0
   AdwToast * toast = adw_toast_new (msg);
   if (MAIN_WINDOW)
     {
       adw_toast_overlay_add_toast (MAIN_WINDOW->toast_overlay, toast);
     }
     /* TODO: add toast overlay in greeter too */
-#if 0
+#  if 0
   gtk_label_set_text (MAIN_WINDOW->notification_label,
                       msg);
   gtk_revealer_set_reveal_child (
@@ -444,6 +424,7 @@ ui_show_notification (const char * msg)
     1);
   g_timeout_add_seconds (
     3, (GSourceFunc) hide_notification_async, nullptr);
+#  endif
 #endif
 }
 
@@ -462,32 +443,7 @@ ui_show_notification_idle_func (char * msg)
   return G_SOURCE_REMOVE;
 }
 
-#define CREATE_SIMPLE_MODEL_BOILERPLATE \
-  enum \
-  { \
-    VALUE_COL, \
-    TEXT_COL, \
-    ID_COL, \
-  }; \
-  GtkTreeIter    iter; \
-  GtkListStore * store; \
-  gint           i; \
-\
-  store = gtk_list_store_new (3, G_TYPE_INT, G_TYPE_STRING, G_TYPE_STRING); \
-\
-  int num_elements = G_N_ELEMENTS (values); \
-  for (i = 0; i < num_elements; i++) \
-    { \
-      gtk_list_store_append (store, &iter); \
-      char id[40]; \
-      sprintf (id, "%d", values[i]); \
-      gtk_list_store_set ( \
-        store, &iter, VALUE_COL, values[i], TEXT_COL, labels[i], ID_COL, id, \
-        -1); \
-    } \
-\
-  return GTK_TREE_MODEL (store);
-
+#if 0
 /**
  * Sets up a combo box to have a selection of
  * languages.
@@ -534,57 +490,57 @@ ui_gen_audio_backends_combo_row (bool with_signal)
 {
   StringArray labels{
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_DUMMY),
-#ifdef HAVE_LIBSOUNDIO
+#  ifdef HAVE_LIBSOUNDIO
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_DUMMY_LIBSOUNDIO),
-#endif
-#ifdef HAVE_ALSA
+#  endif
+#  ifdef HAVE_ALSA
   /* broken */
   /*AudioBackend_to_string(AudioBackend::AUDIO_BACKEND_ALSA),*/
-#  ifdef HAVE_LIBSOUNDIO
+#    ifdef HAVE_LIBSOUNDIO
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_ALSA_LIBSOUNDIO),
-#  endif
-#  if HAVE_RTAUDIO
+#    endif
+#    if HAVE_RTAUDIO
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO),
-#  endif
-#endif /* HAVE_ALSA */
-#if HAVE_JACK
+#    endif
+#  endif /* HAVE_ALSA */
+#  if HAVE_JACK
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_JACK),
-#  ifdef HAVE_LIBSOUNDIO
+#    ifdef HAVE_LIBSOUNDIO
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_JACK_LIBSOUNDIO),
-#  endif
-#  if HAVE_RTAUDIO
+#    endif
+#    if HAVE_RTAUDIO
   /* unnecessary */
   /*AudioBackend_to_string(AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO),*/
-#  endif
-#endif /* HAVE_JACK */
-#if HAVE_PULSEAUDIO
+#    endif
+#  endif /* HAVE_JACK */
+#  if HAVE_PULSEAUDIO
   /* use rtaudio version - this has known issues */
   /*AudioBackend_to_string(AudioBackend::AUDIO_BACKEND_PULSEAUDIO),*/
-#  ifdef HAVE_LIBSOUNDIO
+#    ifdef HAVE_LIBSOUNDIO
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_PULSEAUDIO_LIBSOUNDIO),
-#  endif
-#  if HAVE_RTAUDIO
+#    endif
+#    if HAVE_RTAUDIO
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO),
-#  endif
-#endif /* HAVE_PULSEAUDIO */
-#ifdef __APPLE__
-#  ifdef HAVE_LIBSOUNDIO
+#    endif
+#  endif /* HAVE_PULSEAUDIO */
+#  ifdef __APPLE__
+#    ifdef HAVE_LIBSOUNDIO
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_COREAUDIO_LIBSOUNDIO),
-#  endif
-#  if HAVE_RTAUDIO
+#    endif
+#    if HAVE_RTAUDIO
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO),
-#  endif
-#endif /* __APPLE__ */
-#ifdef _WIN32
-#  ifdef HAVE_LIBSOUNDIO
+#    endif
+#  endif /* __APPLE__ */
+#  ifdef _WIN32
+#    ifdef HAVE_LIBSOUNDIO
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_WASAPI_LIBSOUNDIO),
-#  endif
-#  if HAVE_RTAUDIO
+#    endif
+#    if HAVE_RTAUDIO
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO),
   /* doesn't work & licensing issues */
   /*AudioBackend_to_string(AudioBackend::AUDIO_BACKEND_ASIO_RTAUDIO),*/
-#  endif
-#endif /* _WIN32 */
+#    endif
+#  endif /* _WIN32 */
   };
   auto            clabels = labels.getNullTerminated ();
   GtkStringList * string_list = gtk_string_list_new (clabels);
@@ -641,37 +597,37 @@ ui_gen_midi_backends_combo_row (bool with_signal)
 {
   StringArray labels = {
     MidiBackend_to_string (MidiBackend::MIDI_BACKEND_DUMMY),
-#ifdef HAVE_ALSA
+#  ifdef HAVE_ALSA
   /* broken */
   /*MidiBackend_to_string(MidiBackend::MIDI_BACKEND_ALSA),*/
-#  if HAVE_RTMIDI
+#    if HAVE_RTMIDI
     MidiBackend_to_string (MidiBackend::MIDI_BACKEND_ALSA_RTMIDI),
+#    endif
 #  endif
-#endif
-#if HAVE_JACK
+#  if HAVE_JACK
     MidiBackend_to_string (MidiBackend::MIDI_BACKEND_JACK),
-#  if HAVE_RTMIDI
+#    if HAVE_RTMIDI
   /* unnecessary */
   /*MidiBackend_to_string(MidiBackend::MIDI_BACKEND_JACK_RTMIDI),*/
+#    endif
 #  endif
-#endif
-#ifdef _WIN32
+#  ifdef _WIN32
   /* has known issues - use rtmidi */
   /*MidiBackend_to_string(MidiBackend::MIDI_BACKEND_WINDOWS_MME),*/
-#  if HAVE_RTMIDI
+#    if HAVE_RTMIDI
     MidiBackend_to_string (MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI),
-#  endif
-#endif /* _WIN32 */
-#ifdef __APPLE__
-#  if HAVE_RTMIDI
+#    endif
+#  endif /* _WIN32 */
+#  ifdef __APPLE__
+#    if HAVE_RTMIDI
     MidiBackend_to_string (MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI),
-#  endif
-#endif /* __APPLE__ */
-#ifdef _WIN32
-#  if HAVE_RTMIDI_6
-#  endif
+#    endif
+#  endif /* __APPLE__ */
+#  ifdef _WIN32
+#    if HAVE_RTMIDI_6
+#    endif
     MidiBackend_to_string (MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI),
-#endif
+#  endif
   };
   auto            clabels = labels.getNullTerminated ();
   GtkStringList * string_list = gtk_string_list_new (clabels);
@@ -701,6 +657,7 @@ ui_gen_midi_backends_combo_row (bool with_signal)
 
   return combo_row;
 }
+#endif
 
 /**
  * Returns the "a locale for the language you have
@@ -754,6 +711,7 @@ ui_show_warning_for_tempo_track_experimental_feature (void)
     }
 }
 
+#if 0
 static void
 on_audio_device_selection_changed (
   GObject *    gobject,
@@ -795,10 +753,10 @@ ui_setup_audio_device_name_combo_row (
     {
       if (audio_backend_is_rtaudio (backend))
         {
-#if HAVE_RTAUDIO
+#  if HAVE_RTAUDIO
           engine_rtaudio_get_device_names (
             AUDIO_ENGINE.get (), backend, 0, names, &num_names);
-#endif
+#  endif
         }
       else
         {
@@ -852,6 +810,7 @@ ui_setup_audio_device_name_combo_row (
         G_CALLBACK (on_audio_device_selection_changed), (gpointer) settings_key);
     }
 }
+#endif
 
 /**
  * Gets a draggable value as a normalized value
@@ -889,6 +848,7 @@ ui_get_normalized_draggable_value (
 UiDetail
 ui_get_detail_level (void)
 {
+#if 0
   if (!UI_CACHES->detail_level_set_)
     {
       UI_CACHES->detail_level_ =
@@ -897,6 +857,8 @@ ui_get_detail_level (void)
     }
 
   return UI_CACHES->detail_level_;
+#endif
+  return UiDetail::High;
 }
 
 /**

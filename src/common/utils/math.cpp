@@ -7,7 +7,6 @@
 #include "common/utils/logger.h"
 #include "common/utils/math.h"
 #include "common/utils/string.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 /**
  * Gets the RMS of the given signal as amplitude

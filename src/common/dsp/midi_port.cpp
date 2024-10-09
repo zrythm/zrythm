@@ -16,10 +16,8 @@
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/midi.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 MidiPort::MidiPort (std::string label, PortFlow flow)
     : Port (label, PortType::Event, flow, 0.f, 1.f, 0.f)
@@ -322,7 +320,7 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
   /* if piano roll keys, add the notes to the piano roll "current notes" (to
    * show pressed keys in the UI) */
   if (
-    G_UNLIKELY (
+    Q_UNLIKELY (
       owner_type == PortIdentifier::OwnerType::TrackProcessor
       && this == processable_track->processor_->midi_out_.get ()
       && events.has_any () && CLIP_EDITOR->has_region_
@@ -351,7 +349,7 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
         }
       if (events_processed)
         {
-          EVENTS_PUSH (EventType::ET_PIANO_ROLL_KEY_ON_OFF, nullptr);
+          // EVENTS_PUSH (EventType::ET_PIANO_ROLL_KEY_ON_OFF, nullptr);
         }
     }
 
@@ -395,7 +393,7 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
             TRANSPORT->is_recording () && TRANSPORT->is_paused ()
             && TRANSPORT->start_playback_on_midi_input_)
             {
-              EVENTS_PUSH (EventType::ET_TRANSPORT_ROLL_REQUIRED, nullptr);
+              // EVENTS_PUSH (EventType::ET_TRANSPORT_ROLL_REQUIRED, nullptr);
             }
 
           /* capture cc if capturing */

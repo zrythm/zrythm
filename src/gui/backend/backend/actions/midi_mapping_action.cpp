@@ -6,11 +6,8 @@
 #include "common/dsp/port_identifier.h"
 #include "common/dsp/router.h"
 #include "gui/backend/backend/actions/midi_mapping_action.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -95,7 +92,7 @@ MidiMappingAction::perform_impl ()
       break;
     }
 
-  EVENTS_PUSH (EventType::ET_MIDI_BINDINGS_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_MIDI_BINDINGS_CHANGED, nullptr); */
 }
 
 void
@@ -117,7 +114,7 @@ MidiMappingAction::undo_impl ()
       break;
     }
 
-  EVENTS_PUSH (EventType::ET_MIDI_BINDINGS_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_MIDI_BINDINGS_CHANGED, nullptr); */
 }
 
 std::string

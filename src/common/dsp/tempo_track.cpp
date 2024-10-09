@@ -10,11 +10,8 @@
 #include "common/utils/math.h"
 #include "common/utils/ui.h"
 #include "gui/backend/backend/actions/transport_action.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -149,7 +146,7 @@ TempoTrack::set_bpm (bpm_t bpm, bpm_t start_bpm, bool temporary, bool fire_event
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_BPM_CHANGED, nullptr);
+      // EVENTS_PUSH (EventType::ET_BPM_CHANGED, nullptr);
     }
 }
 
@@ -176,7 +173,7 @@ TempoTrack::set_beat_unit_from_enum (BeatUnit ebeat_unit)
 
   beat_unit_port_->set_control_value (
     static_cast<float> (ebeat_unit), F_NOT_NORMALIZED, true);
-  EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, nullptr);
+  // EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, nullptr);
 }
 
 BeatUnit
@@ -213,7 +210,7 @@ TempoTrack::set_beats_per_bar (int beats_per_bar)
     || (ROUTER && ROUTER->is_processing_kickoff_thread ()));
 
   beats_per_bar_port_->set_control_value (beats_per_bar, F_NOT_NORMALIZED, true);
-  EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, nullptr);
+  // EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, nullptr);
 }
 
 int

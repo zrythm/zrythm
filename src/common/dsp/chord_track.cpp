@@ -6,16 +6,16 @@
 #include "common/dsp/track.h"
 #include "common/utils/flags.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
-
-#include <glib/gi18n.h>
 
 ChordTrack::ChordTrack (int pos)
-    : Track (Track::Type::Chord, _ ("Chords"), pos, PortType::Event, PortType::Event)
+    : Track (
+        Track::Type::Chord,
+        QObject::tr ("Chords").toStdString (),
+        pos,
+        PortType::Event,
+        PortType::Event)
 {
   color_ = Color ("#1C71D8");
   icon_name_ = "minuet-chords";
@@ -100,7 +100,7 @@ ChordTrack::insert_scale (std::shared_ptr<ScaleObject> scale, int idx)
     }
   auto &ret = scales_[idx];
 
-  EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, ret.get ());
+  // EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, ret.get ());
 
   return ret;
 }
@@ -159,8 +159,8 @@ ChordTrack::remove_scale (ScaleObject &scale)
       scales_[i]->set_index_in_chord_track (static_cast<int> (i));
     }
 
-  EVENTS_PUSH (
-    EventType::ET_ARRANGER_OBJECT_REMOVED, ArrangerObject::Type::ScaleObject);
+  /* EVENTS_PUSH (
+    EventType::ET_ARRANGER_OBJECT_REMOVED, ArrangerObject::Type::ScaleObject); */
 }
 
 bool

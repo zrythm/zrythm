@@ -241,7 +241,6 @@ public:
   bool validate (bool is_project, double frames_per_tick) const override;
 
   ArrangerSelections * get_arranger_selections () const override;
-  ArrangerWidget *     get_arranger_for_children () const override;
 
   void init_after_cloning (const MidiRegion &other) override
   {

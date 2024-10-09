@@ -14,7 +14,6 @@
 #include "common/utils/objects.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 AudioTrack::AudioTrack (const std::string &name, int pos, unsigned int samplerate)
     : Track (Track::Type::Audio, name, pos, PortType::Audio, PortType::Audio),

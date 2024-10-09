@@ -21,16 +21,12 @@
 #include "common/plugins/cached_plugin_descriptors.h"
 #include "common/plugins/carla_native_plugin.h"
 #include "common/plugins/plugin.h"
-#include "common/plugins/plugin_gtk.h"
 #include "common/plugins/plugin_manager.h"
-#include "common/utils/dialogs.h"
 #include "common/utils/dsp.h"
-#include "common/utils/error.h"
 #include "common/utils/exceptions.h"
 #include "common/utils/file.h"
 #include "common/utils/flags.h"
 #include "common/utils/gtest_wrapper.h"
-#include "common/utils/gtk.h"
 #include "common/utils/io.h"
 #include "common/utils/math.h"
 #include "common/utils/mem.h"
@@ -39,18 +35,12 @@
 #include "common/utils/string.h"
 #include "common/utils/ui.h"
 #include "gui/backend/backend/actions/undo_manager.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/settings/settings.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <fmt/printf.h>
 #define _GNU_SOURCE 1 /* To pick up REG_RIP */
-
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 #include <glib/gi18n.h>
 
@@ -459,12 +449,14 @@ struct PluginMoveData
   bool                            fire_events = false;
 };
 
+#if 0
 static void
 plugin_move_data_free (void * _data, GClosure * closure)
 {
   PluginMoveData * self = (PluginMoveData *) _data;
   object_delete_and_null (self);
 }
+#endif
 
 static void
 do_move (PluginMoveData * data)
@@ -503,13 +495,16 @@ do_move (PluginMoveData * data)
 
   if (data->fire_events)
     {
-      EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, prev_ch);
+#if 0
+      // EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, prev_ch);
       EVENTS_PUSH (
         EventType::ET_CHANNEL_SLOTS_CHANGED,
         data_channel_track->channel_.get ());
+#endif
     }
 }
 
+#if 0
 static void
 overwrite_plugin_response_cb (
   AdwMessageDialog * dialog,
@@ -524,6 +519,7 @@ overwrite_plugin_response_cb (
 
   do_move (data);
 }
+#endif
 
 void
 Plugin::move (
@@ -543,12 +539,14 @@ Plugin::move (
   auto existing_pl = track->get_plugin_at_slot (slot_type, slot);
   if (existing_pl && confirm_overwrite && ZRYTHM_HAVE_UI)
     {
+#if 0
       auto dialog =
         dialogs_get_overwrite_plugin_dialog (GTK_WINDOW (MAIN_WINDOW));
       gtk_window_present (GTK_WINDOW (dialog));
       g_signal_connect_data (
         dialog, "response", G_CALLBACK (overwrite_plugin_response_cb),
         data.release (), plugin_move_data_free, G_CONNECT_DEFAULT);
+#endif
       return;
     }
 
@@ -892,7 +890,7 @@ Plugin::set_ui_refresh_rate ()
     }
   else
     {
-      ui_update_hz_ = (float) z_gtk_get_primary_monitor_refresh_rate ();
+      // ui_update_hz_ = (float) z_gtk_get_primary_monitor_refresh_rate ();
       z_debug ("refresh rate returned by GDK: %.01f", (double) ui_update_hz_);
     }
 
@@ -908,7 +906,7 @@ Plugin::set_ui_refresh_rate ()
     else
       {
         /* set the scale factor */
-        ui_scale_factor_ = (float) z_gtk_get_primary_monitor_scale_factor ();
+        // ui_scale_factor_ = (float) z_gtk_get_primary_monitor_scale_factor ();
         z_debug (
           "scale factor returned by GDK: %.01f", (double) ui_scale_factor_);
       }
@@ -1165,6 +1163,7 @@ Plugin::open_ui ()
       return;
     }
 
+#if 0
   /* if plugin already has a window (either generic or LV2 non-carla and
    * non-external UI) */
   if (GTK_IS_WINDOW (window_))
@@ -1189,6 +1188,7 @@ Plugin::open_ui ()
           open_custom_ui (true);
         }
     }
+#endif
 }
 
 bool
@@ -1400,7 +1400,7 @@ Plugin::set_enabled (bool enabled, bool fire_events)
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_PLUGIN_STATE_CHANGED, this);
+      // EVENTS_PUSH (EventType::ET_PLUGIN_STATE_CHANGED, this);
     }
 }
 
@@ -1478,7 +1478,7 @@ Plugin::close_ui ()
 
   z_return_if_fail (instantiated_);
 
-  plugin_gtk_close_ui (this);
+  // plugin_gtk_close_ui (this);
 
   bool generic_ui = setting_->force_generic_ui_;
   if (!generic_ui)
@@ -1488,7 +1488,7 @@ Plugin::close_ui ()
 
   /* run events immediately otherwise freed plugin might be accessed by event
    * manager */
-  EVENT_MANAGER->process_now ();
+  // EVENT_MANAGER->process_now ();
 
   visible_ = false;
 }

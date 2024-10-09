@@ -6,11 +6,8 @@
 #include "common/dsp/tracklist.h"
 #include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/actions/tracklist_selections.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -74,7 +71,7 @@ TrackLaneImpl<RegionT>::rename (const std::string &new_name, bool with_action)
           e.handle (_ ("Failed to rename lane"));
           return;
         }
-      EVENTS_PUSH (EventType::ET_TRACK_LANES_VISIBILITY_CHANGED, nullptr);
+      // EVENTS_PUSH (EventType::ET_TRACK_LANES_VISIBILITY_CHANGED, nullptr);
     }
   else
     {
@@ -109,7 +106,7 @@ TrackLaneImpl<
   if (fire_events)
     {
       /* TODO use more specific event */
-      EVENTS_PUSH (EventType::ET_TRACK_LANES_VISIBILITY_CHANGED, nullptr);
+      // EVENTS_PUSH (EventType::ET_TRACK_LANES_VISIBILITY_CHANGED, nullptr);
     }
 }
 
@@ -139,7 +136,7 @@ TrackLaneImpl<RegionT>::set_muted (bool mute, bool trigger_undo, bool fire_event
   if (fire_events)
     {
       /* TODO use more specific event */
-      EVENTS_PUSH (EventType::ET_TRACK_LANES_VISIBILITY_CHANGED, nullptr);
+      // EVENTS_PUSH (EventType::ET_TRACK_LANES_VISIBILITY_CHANGED, nullptr);
     }
 }
 

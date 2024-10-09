@@ -16,13 +16,10 @@
 #include "gui/backend/backend/arranger_selections.h"
 #include "gui/backend/backend/automation_selections.h"
 #include "gui/backend/backend/chord_selections.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/midi_selections.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/timeline_selections.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -438,7 +435,7 @@ ArrangerSelections::select_all (bool fire_events)
           for (auto &co : cr->chord_objects_)
             {
               z_return_if_fail (
-                co->chord_index_ < CHORD_EDITOR->chords_.size ());
+                co->chord_index_ < (int) CHORD_EDITOR->chords_.size ());
               add_object_ref (co);
             }
         }
@@ -471,7 +468,7 @@ ArrangerSelections::select_all (bool fire_events)
 
       if (fire_events)
         {
-          EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, self);
+          /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, self); */
         }
     },
     variant);

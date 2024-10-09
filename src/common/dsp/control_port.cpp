@@ -16,11 +16,8 @@
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/math.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 ControlPort::ControlPort (std::string label)
     : Port (label, PortType::Control, PortFlow::Input, 0.f, 1.f, 0.f)
@@ -82,7 +79,7 @@ ControlPort::forward_control_change_event ()
 #endif
           if (!pl->state_changed_event_sent_.load (std::memory_order_acquire))
             {
-              EVENTS_PUSH (EventType::ET_PLUGIN_STATE_CHANGED, pl);
+              // EVENTS_PUSH (EventType::ET_PLUGIN_STATE_CHANGED, pl);
               pl->state_changed_event_sent_.store (
                 true, std::memory_order_release);
             }
@@ -105,31 +102,33 @@ ControlPort::forward_control_change_event ()
           PortIdentifier::Flags2, id_.flags2_,
           PortIdentifier::Flags2::FaderMonoCompat))
         {
-          EVENTS_PUSH (EventType::ET_TRACK_FADER_BUTTON_CHANGED, track);
+          // EVENTS_PUSH (EventType::ET_TRACK_FADER_BUTTON_CHANGED, track);
         }
       else if (
         ENUM_BITSET_TEST (
           PortIdentifier::Flags, id_.flags_, PortIdentifier::Flags::Amplitude))
         {
-          if (ZRYTHM_HAVE_UI)
-            z_return_if_fail (track->channel_->widget_);
+          // if (ZRYTHM_HAVE_UI)
+          // z_return_if_fail (track->channel_->widget_);
           track->channel_->fader_->update_volume_and_fader_val ();
-          EVENTS_PUSH (
-            EventType::ET_CHANNEL_FADER_VAL_CHANGED, track->channel_.get ());
+          /* EVENTS_PUSH (
+            EventType::ET_CHANNEL_FADER_VAL_CHANGED, track->channel_.get ()); */
         }
     }
+#if 0
   else if (id_.owner_type_ == PortIdentifier::OwnerType::ChannelSend)
     {
       auto track = dynamic_cast<ChannelTrack *> (get_track (true));
       z_return_if_fail (track);
       auto &send = track->channel_->sends_[id_.port_index_];
-      EVENTS_PUSH (EventType::ET_CHANNEL_SEND_CHANGED, send.get ());
+      // EVENTS_PUSH (EventType::ET_CHANNEL_SEND_CHANGED, send.get ());
     }
   else if (id_.owner_type_ == PortIdentifier::OwnerType::Track)
     {
       auto track = get_track (true);
-      EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, track);
+      // EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, track);
     }
+#endif
 }
 
 void
@@ -173,7 +172,7 @@ ControlPort::set_control_value (
           AUDIO_ENGINE->update_frames_per_tick (
             beats_per_bar, control_, AUDIO_ENGINE->sample_rate_, false, true,
             true);
-          EVENTS_PUSH (EventType::ET_BPM_CHANGED, nullptr);
+          // EVENTS_PUSH (EventType::ET_BPM_CHANGED, nullptr);
         }
 
       /* if time sig value, update transport caches */
@@ -200,7 +199,7 @@ ControlPort::set_control_value (
           AUDIO_ENGINE->update_frames_per_tick (
             beats_per_bar, bpm, AUDIO_ENGINE->sample_rate_, false,
             update_from_ticks, false);
-          EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, nullptr);
+          // EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, nullptr);
         }
 
       /* if plugin enabled port, also set plugin's own enabled port value and
@@ -408,7 +407,7 @@ ControlPort::set_val_from_normalized (float val, bool automating)
       auto real_val = normalized_val_to_real (val);
       if (!math_floats_equal (control_, real_val))
         {
-          EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
+          // EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
           set_control_value (real_val, false, true);
         }
       automating_ = automating;
@@ -421,7 +420,7 @@ ControlPort::set_val_from_normalized (float val, bool automating)
       auto real_val = normalized_val_to_real (val);
       if (!math_floats_equal (control_, real_val))
         {
-          EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
+          // EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
           control_ = is_val_toggled (real_val) ? 1.f : 0.f;
         }
       if (
@@ -440,7 +439,7 @@ ControlPort::set_val_from_normalized (float val, bool automating)
       auto &ch = dynamic_cast<ChannelTrack *> (track)->get_channel ();
       if (!math_floats_equal (ch->fader_->get_fader_val (), val))
         {
-          EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
+          // EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
         }
       ch->fader_->set_amp (math_get_amp_val_from_fader (val));
     }
@@ -452,7 +451,7 @@ ControlPort::set_val_from_normalized (float val, bool automating)
       auto &ch = dynamic_cast<ChannelTrack *> (track)->get_channel ();
       if (!math_floats_equal (ch->get_balance_control (), val))
         {
-          EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
+          // EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
         }
       ch->set_balance_control (val);
     }
@@ -463,7 +462,7 @@ ControlPort::set_val_from_normalized (float val, bool automating)
       auto real_val = minf_ + val * (maxf_ - minf_);
       if (!math_floats_equal (val, control_))
         {
-          EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
+          // EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
         }
       set_control_value (real_val, false, false);
     }
@@ -474,7 +473,7 @@ ControlPort::set_val_from_normalized (float val, bool automating)
       auto real_val = normalized_val_to_real (val);
       if (!math_floats_equal (real_val, control_))
         {
-          EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
+          // EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
         }
       set_control_value (real_val, false, false);
     }

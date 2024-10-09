@@ -16,20 +16,8 @@
 #include "common/utils/objects.h"
 #include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/actions/arranger_selections.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
-#include "gui/backend/gtk_widgets/arranger_object.h"
-#include "gui/backend/gtk_widgets/automation_arranger.h"
-#include "gui/backend/gtk_widgets/automation_editor_space.h"
-#include "gui/backend/gtk_widgets/automation_point.h"
-#include "gui/backend/gtk_widgets/bot_dock_edge.h"
-#include "gui/backend/gtk_widgets/center_dock.h"
-#include "gui/backend/gtk_widgets/clip_editor.h"
-#include "gui/backend/gtk_widgets/clip_editor_inner.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -182,7 +170,7 @@ AutomationPoint::set_fvalue (float real_val, bool is_normalized, bool pub_events
 
   if (pub_events)
     {
-      EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CHANGED, this);
+      // EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CHANGED, this);
     }
 }
 
@@ -202,9 +190,11 @@ AutomationPoint::set_fvalue_with_action (const std::string &fval_str)
   int   res = sscanf (fval_str.c_str (), "%f", &val);
   if (res != 1 || res == EOF || val < port->minf_ || val > port->maxf_)
     {
+#if 0
       ui_show_error_message_printf (
         _ ("Invalid Value"), _ ("Please enter a number between {:f} and {:f}"),
         port->minf_, port->maxf_);
+#endif
       return;
     }
 
@@ -258,12 +248,6 @@ AutomationPoint::get_port () const
   return port;
 }
 
-ArrangerWidget *
-AutomationPoint::get_arranger () const
-{
-  return (ArrangerWidget *) (MW_AUTOMATION_ARRANGER);
-}
-
 AutomationTrack *
 AutomationPoint::get_automation_track () const
 {
@@ -279,8 +263,4 @@ AutomationPoint::validate (bool is_project, double frames_to_tick) const
   return true;
 }
 
-AutomationPoint::~AutomationPoint ()
-{
-  object_free_w_func_and_null (gsk_render_node_unref, cairo_node_);
-  object_free_w_func_and_null (gsk_render_node_unref, cairo_node_tl_);
-}
+AutomationPoint::~AutomationPoint () = default;

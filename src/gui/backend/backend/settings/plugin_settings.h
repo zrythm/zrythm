@@ -94,10 +94,12 @@ public:
 
   void init_after_cloning (const PluginSetting &other) override;
 
+#if 0
   static void free_closure (void * self, GClosure * closure)
   {
     delete static_cast<PluginSetting *> (self);
   }
+#endif
 
   zrythm::plugins::PluginDescriptor * get_descriptor () const
   {

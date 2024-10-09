@@ -75,7 +75,7 @@ public:
    */
   void set_name (const std::string &name);
 
-  GMenuModel * generate_context_menu () const;
+  // GMenuModel * generate_context_menu () const;
 
   /**
    * @brief Used in GTK callbacks.

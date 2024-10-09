@@ -14,7 +14,6 @@
 #include "common/dsp/peak_dsp.h"
 #include "common/dsp/true_peak_dsp.h"
 #include "common/utils/types.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 class TruePeakDsp;
 class KMeterDsp;

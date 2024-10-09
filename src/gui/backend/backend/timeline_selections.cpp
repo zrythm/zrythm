@@ -15,13 +15,10 @@
 #include "common/utils/dsp.h"
 #include "common/utils/math.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/timeline_selections.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/gtk_widgets/gtk_wrapper.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 TimelineSelections::TimelineSelections () : ArrangerSelections (Type::Timeline)
 {
@@ -558,7 +555,7 @@ TimelineSelections::move_regions_to_new_lanes_or_tracks_or_ats (
                   z_return_val_if_fail (region && lane, false);
                   int new_lane_pos = lane->pos_ + lane_diff;
                   z_return_val_if_fail (new_lane_pos >= 0, false);
-                  if (new_lane_pos >= laned_track_impl->lanes_.size ())
+                  if (new_lane_pos >= (int) laned_track_impl->lanes_.size ())
                     {
                       z_debug (
                         "new lane position %d is >= the number of lanes in the track (%d)",
@@ -672,7 +669,7 @@ TimelineSelections::move_regions_to_new_lanes_or_tracks_or_ats (
         }
     }
 
-  EVENTS_PUSH (EventType::ET_TRACK_LANES_VISIBILITY_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_TRACK_LANES_VISIBILITY_CHANGED, nullptr); */
 
   return true;
 }

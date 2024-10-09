@@ -8,7 +8,6 @@
 #include "common/dsp/ext_port.h"
 #include "common/dsp/midi_port.h"
 #include "common/utils/icloneable.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 class AudioEngine;
 

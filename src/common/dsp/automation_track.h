@@ -10,8 +10,6 @@
 #include "common/dsp/port.h"
 #include "common/dsp/position.h"
 #include "common/dsp/region_owner.h"
-#include "gui/backend/gtk_widgets/automation_mode.h"
-#include "gui/backend/gtk_widgets/custom_button.h"
 
 #include "automation_region.h"
 
@@ -263,16 +261,6 @@ public:
    * RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING.
    */
   bool recording_paused_ = false;
-
-  /** Buttons used by the track widget */
-  std::vector<std::unique_ptr<CustomButtonWidget>> top_right_buttons_;
-  std::vector<std::unique_ptr<CustomButtonWidget>> top_left_buttons_;
-  std::vector<std::unique_ptr<CustomButtonWidget>> bot_right_buttons_;
-
-  /** Automation mode button group. */
-  std::unique_ptr<AutomationModeWidget> am_widget_;
-
-  std::vector<std::unique_ptr<CustomButtonWidget>> bot_left_buttons_;
 
   /** Pointer to owner automation tracklist, if any. */
   AutomationTracklist * atl_ = nullptr;

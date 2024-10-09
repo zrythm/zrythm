@@ -64,16 +64,9 @@
 #include "common/utils/object_pool.h"
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/ui.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
-
-#include <glib/gi18n.h>
 
 #if HAVE_JACK
 #  include "weakjack/weak_libjack.h"
@@ -102,7 +95,7 @@ AudioEngine::init_after_cloning (const AudioEngine &other)
 void
 AudioEngine::set_buffer_size (uint32_t buf_size)
 {
-  z_return_if_fail (current_thread_id.get () == zrythm_app->gtk_thread_id_);
+  z_return_if_fail (ZRYTHM_IS_QT_THREAD);
 
   z_debug ("request to set engine buffer size to {}", buf_size);
 
@@ -124,7 +117,7 @@ AudioEngine::update_frames_per_tick (
   bool                update_from_ticks,
   bool                bpm_change)
 {
-  if (current_thread_id.get () == zrythm_app->gtk_thread_id_)
+  if (ZRYTHM_IS_QT_THREAD)
     {
       z_debug (
         "updating frames per tick: beats per bar {}, bpm {:f}, sample rate {}",
@@ -211,8 +204,7 @@ AudioEngine::clean_duplicate_events_and_copy (std::array<Event *, 100> &ret)
 bool
 AudioEngine::process_events ()
 {
-  z_return_val_if_fail (
-    current_thread_id.get () == zrythm_app->gtk_thread_id_, SourceFuncRemove);
+  z_return_val_if_fail (ZRYTHM_IS_QT_THREAD, SourceFuncRemove);
 
   if (exporting_)
     {
@@ -251,7 +243,7 @@ AudioEngine::process_events ()
               engine_jack_handle_buf_size_change (this, ev->uint_arg_);
             }
 #endif
-          EVENTS_PUSH (EventType::ET_ENGINE_BUFFER_SIZE_CHANGED, nullptr);
+          // EVENTS_PUSH (EventType::ET_ENGINE_BUFFER_SIZE_CHANGED, nullptr);
           break;
         case AudioEngineEventType::AUDIO_ENGINE_EVENT_SAMPLE_RATE_CHANGE:
 #if HAVE_JACK
@@ -260,7 +252,7 @@ AudioEngine::process_events ()
               engine_jack_handle_sample_rate_change (this, ev->uint_arg_);
             }
 #endif
-          EVENTS_PUSH (EventType::ET_ENGINE_SAMPLE_RATE_CHANGED, nullptr);
+          // EVENTS_PUSH (EventType::ET_ENGINE_SAMPLE_RATE_CHANGED, nullptr);
           break;
         default:
           z_warning ("event {} not implemented yet", ENUM_NAME (ev->type_));
@@ -349,7 +341,7 @@ AudioEngine::append_ports (std::vector<Port *> &ports)
 void
 AudioEngine::pre_setup ()
 {
-
+#if 0
   if (process_source_id_.connected ())
     {
       z_warning ("engine already processing events");
@@ -359,6 +351,7 @@ AudioEngine::pre_setup ()
   process_source_id_ =
     Glib::MainContext::get_default ()->signal_timeout ().connect (
       sigc::mem_fun (*this, &AudioEngine::process_events), 12);
+#endif
 
   z_return_if_fail (!setup_ && !pre_setup_);
 
@@ -525,10 +518,12 @@ AudioEngine::init_common ()
           ? AudioBackend::AUDIO_BACKEND_JACK
           : AudioBackend::AUDIO_BACKEND_DUMMY;
     }
+#if 0
   else if (!zrythm_app->audio_backend_.empty ())
     {
       ab_code = AudioBackend_from_string (zrythm_app->audio_backend_);
     }
+#endif
   else
     {
       ab_code = static_cast<AudioBackend> (
@@ -584,10 +579,12 @@ AudioEngine::init_common ()
           ? MidiBackend::MIDI_BACKEND_JACK
           : MidiBackend::MIDI_BACKEND_DUMMY;
     }
+#if 0
   else if (!zrythm_app->midi_backend_.empty ())
     {
       mb_code = MidiBackend_from_string (zrythm_app->midi_backend_);
     }
+#endif
   else
     {
       mb_code = static_cast<MidiBackend> (
@@ -975,7 +972,7 @@ AudioEngine::activate (bool activate)
 
   if (ZRYTHM_HAVE_UI && project_->loaded_)
     {
-      EVENTS_PUSH (EventType::ET_ENGINE_ACTIVATE_CHANGED, nullptr);
+      // EVENTS_PUSH (EventType::ET_ENGINE_ACTIVATE_CHANGED, nullptr);
     }
 
   z_debug ("done");
@@ -1565,7 +1562,8 @@ AudioEngine::set_default_backends (bool reset_to_dummy)
         ENUM_VALUE_TO_INT (MidiBackend::MIDI_BACKEND_DUMMY));
     }
 
-#if defined(HAVE_JACK) && !defined(_WIN32) && !defined(__APPLE__)
+#if 0
+#  if defined(HAVE_JACK) && !defined(_WIN32) && !defined(__APPLE__)
   if (engine_jack_test (nullptr))
     {
       g_settings_set_enum (
@@ -1577,9 +1575,9 @@ AudioEngine::set_default_backends (bool reset_to_dummy)
       audio_set = true;
       midi_set = true;
     }
-#endif
+#  endif
 
-#if HAVE_PULSEAUDIO
+#  if HAVE_PULSEAUDIO
   if (!audio_set && engine_pulse_test (nullptr))
     {
       g_settings_set_enum (
@@ -1587,6 +1585,7 @@ AudioEngine::set_default_backends (bool reset_to_dummy)
         ENUM_VALUE_TO_INT (AudioBackend::AUDIO_BACKEND_PULSEAUDIO));
       audio_set = true;
     }
+#  endif
 #endif
 
   /* default to RtAudio if above failed */
@@ -1625,7 +1624,7 @@ AudioEngine::set_default_backends (bool reset_to_dummy)
 void
 AudioEngine::stop_events ()
 {
-  process_source_id_.disconnect ();
+  // process_source_id_.disconnect ();
 
   /* process any remaining events - clear the queue. */
   process_events ();

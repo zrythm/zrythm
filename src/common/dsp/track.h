@@ -828,7 +828,7 @@ public:
   static std::unique_ptr<Track>
   create_track (Type type, const std::string &name, int pos);
 
-  GMenu * generate_edit_context_menu (int num_selected);
+  // GMenu * generate_edit_context_menu (int num_selected);
 
   bool is_in_active_project () const;
 

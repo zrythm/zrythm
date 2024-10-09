@@ -201,11 +201,6 @@ public:
   bool is_hovered () const;
 
   /**
-   * Gets the corresponding arranger for this arranger object.
-   */
-  virtual ArrangerWidget * get_arranger () const = 0;
-
-  /**
    * Generates a human readable name for the object.
    *
    * If the object has a name, this returns a copy of the name, otherwise
@@ -568,18 +563,6 @@ public:
 
   /** Flags. */
   Flags flags_ = {};
-
-  /** Cache text H extents and W extents for
-   * the text, if the object has any. */
-  int textw_ = 0;
-  int texth_ = 0;
-
-  /** The full rectangle this object covers including off-screen parts, in
-   * absolute coordinates. */
-  GdkRectangle full_rect_ = {};
-
-  /** Last drawn name rectangle, if object has a name. */
-  GdkRectangle last_name_rect_ = {};
 
   /**
    * Whether part of an auditioner track. */

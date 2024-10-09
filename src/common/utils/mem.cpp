@@ -5,7 +5,6 @@
 #include <cstring>
 
 #include "common/utils/mem.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 /**
  * Reallocate and zero out newly added memory.

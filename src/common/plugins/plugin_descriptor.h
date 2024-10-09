@@ -9,14 +9,9 @@
 #include <filesystem>
 
 #include "common/io/serialization/iserializable.h"
-#include "common/utils/types.h"
 
-#include <gio/gio.h>
-#include <glib/gi18n.h>
+#include <QObject>
 
-#include "carla_wrapper.h"
-
-TYPEDEF_STRUCT_UNDERSCORED (WrappedObjectWithChangeSignal);
 enum class TrackType;
 
 /**
@@ -163,7 +158,7 @@ public:
   static ZPluginCategory string_to_category (const std::string &str);
   static std::string     category_to_string (ZPluginCategory category);
 
-  static void free_closure (void * data, GClosure * closure);
+  // static void free_closure (void * data, GClosure * closure);
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -210,7 +205,7 @@ public:
    */
   std::string get_icon_name () const;
 
-  GMenuModel * generate_context_menu () const;
+  // GMenuModel * generate_context_menu () const;
 
   [[nodiscard]] QString getName () const
   {
@@ -269,9 +264,6 @@ public:
 
   /** SHA1 of the file (replaces ghash). */
   std::string sha1_;
-
-  /** Used in Gtk. */
-  WrappedObjectWithChangeSignal * gobj_ = nullptr;
 };
 
 inline bool

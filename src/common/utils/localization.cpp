@@ -18,8 +18,6 @@
 #include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -307,9 +305,11 @@ localization_init (
             language_strings[lang]);
           if (queue_error_if_not_installed)
             {
+#if 0
               std::lock_guard<std::mutex> lock (
                 zrythm_app->startup_error_queue_mutex_);
               zrythm_app->startup_error_queue_.push (msg);
+#endif
             }
           z_warning ("{}", msg);
         }

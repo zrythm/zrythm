@@ -19,21 +19,15 @@
 #include "common/utils/directory_manager.h"
 #include "common/utils/dsp.h"
 #include "common/utils/gtest_wrapper.h"
-#include "common/utils/gtk.h"
 #include "common/utils/io.h"
 #include "common/utils/math.h"
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/string.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
 
 #include "carla_wrapper.h"
 #include <fmt/format.h>
@@ -75,7 +69,7 @@ return_gl_context (GdkGLContext * context)
 bool
 CarlaNativePlugin::idle_cb ()
 {
-  if (visible_ && MAIN_WINDOW)
+  if (visible_) // && MAIN_WINDOW)
     {
 #if HAVE_CARLA
       GdkGLContext * context = clear_gl_context ();
@@ -254,7 +248,7 @@ carla_engine_callback (
         && self->activated_ && !self->deactivating_ && !self->loading_state_)
         {
           /* send crash signal */
-          EVENTS_PUSH (EventType::ET_PLUGIN_CRASHED, self);
+          // EVENTS_PUSH (EventType::ET_PLUGIN_CRASHED, self);
         }
       break;
     case CarlaBackend::ENGINE_CALLBACK_PARAMETER_DEFAULT_CHANGED:
@@ -281,7 +275,7 @@ carla_engine_callback (
           self->visible_ = true;
           break;
         }
-      EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, self);
+      // EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, self);
       break;
     case CarlaBackend::ENGINE_CALLBACK_NOTE_ON:
     case CarlaBackend::ENGINE_CALLBACK_NOTE_OFF:
@@ -1788,7 +1782,7 @@ CarlaNativePlugin::open_custom_ui (bool show)
 
         if (ZRYTHM_HAVE_UI)
           {
-            EVENTS_PUSH (EventType::ET_PLUGIN_WINDOW_VISIBILITY_CHANGED, this);
+            // EVENTS_PUSH (EventType::ET_PLUGIN_WINDOW_VISIBILITY_CHANGED, this);
           }
       }
       break;
@@ -1958,7 +1952,7 @@ CarlaNativePlugin::load_state (const std::string * abs_path)
   loading_state_ = false;
   if (visible_ && is_in_active_project ())
     {
-      EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, this);
+      // EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, this);
     }
   z_debug (
     "successfully loaded carla plugin state from {}", state_file.string ());

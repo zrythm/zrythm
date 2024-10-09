@@ -5,12 +5,9 @@
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/io.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/chord_preset_pack_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -495,7 +492,7 @@ ChordPresetPackManager::add_pack (const ChordPresetPack &pack, bool _serialize)
         }
     }
 
-  EVENTS_PUSH (EventType::ET_CHORD_PRESET_PACK_ADDED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_CHORD_PRESET_PACK_ADDED, nullptr); */
 }
 
 void
@@ -522,7 +519,7 @@ ChordPresetPackManager::delete_pack (const ChordPresetPack &pack, bool _serializ
         }
     }
 
-  EVENTS_PUSH (EventType::ET_CHORD_PRESET_PACK_REMOVED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_CHORD_PRESET_PACK_REMOVED, nullptr); */
 }
 
 ChordPresetPack *

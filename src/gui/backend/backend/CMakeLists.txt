@@ -13,8 +13,6 @@ target_sources(zrythm_lib
     clip_editor.cpp
     clipboard.cpp
     editor_settings.cpp
-    event.cpp
-    event_manager.cpp
     file_manager.cpp
     midi_selections.cpp
     mixer_selections.cpp
@@ -29,7 +27,6 @@ target_sources(zrythm_lib
     timeline.cpp
     timeline_selections.cpp
     tracklist_selections.cpp
-    wrapped_object_with_change_signal.cpp
     zrythm.h
     zrythm.cpp
     )

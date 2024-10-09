@@ -24,12 +24,9 @@
 #include "common/utils/types.h"
 #include "common/utils/ui.h"
 #include "gui/backend/backend/actions/tracklist_selections.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -476,7 +473,7 @@ TracklistSelectionsAction::create_track (int idx)
         && g_settings_get_boolean (S_P_PLUGINS_UIS, "open-on-instantiate"))
         {
           added_pl->visible_ = true;
-          EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, added_pl);
+          /* EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, added_pl); */
         }
     }
 }
@@ -557,17 +554,19 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
 
               if (added_track->type_ == Track::Type::Instrument)
                 {
+#if 0
                   auto &own_instrument_track =
                     dynamic_cast<InstrumentTrack &> (*own_track);
                   auto added_instrument_track =
                     dynamic_cast<InstrumentTrack *> (added_track);
                   if (own_instrument_track.get_channel ()->instrument_->visible_)
                     {
-                      EVENTS_PUSH (
-                        EventType::ET_PLUGIN_VISIBILITY_CHANGED,
-                        added_instrument_track->get_channel ()
-                          ->instrument_.get ());
+                      // EVENTS_PUSH (
+                      //   EventType::ET_PLUGIN_VISIBILITY_CHANGED,
+                      //   added_instrument_track->get_channel ()
+                      //     ->instrument_.get ());
                     }
+#endif
                 }
             }
 
@@ -629,8 +628,8 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
           reset_foldable_track_sizes ();
         } /* if delete undo */
 
-      EVENTS_PUSH (EventType::ET_TRACKS_ADDED, nullptr);
-      EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr);
+      /* EVENTS_PUSH (EventType::ET_TRACKS_ADDED, nullptr); */
+      /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr); */
     }
   /* else if deleting tracks (delete do or create
    * undo) */
@@ -711,8 +710,8 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
             }
         }
 
-      EVENTS_PUSH (EventType::ET_TRACKS_REMOVED, nullptr);
-      EVENTS_PUSH (EventType::ET_CLIP_EDITOR_REGION_CHANGED, nullptr);
+      /* EVENTS_PUSH (EventType::ET_TRACKS_REMOVED, nullptr); */
+      /* EVENTS_PUSH (EventType::ET_CLIP_EDITOR_REGION_CHANGED, nullptr); */
     }
 
   /* restore connections */
@@ -836,7 +835,7 @@ TracklistSelectionsAction::
               TRACKLIST->print_tracks ();
             }
 
-          EVENTS_PUSH (EventType::ET_TRACKS_MOVED, nullptr);
+          /* EVENTS_PUSH (EventType::ET_TRACKS_MOVED, nullptr); */
         }
       else if (copy)
         {
@@ -978,8 +977,8 @@ TracklistSelectionsAction::
 
             } /* endforeach track */
 
-          EVENTS_PUSH (EventType::ET_TRACK_ADDED, nullptr);
-          EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr);
+          /* EVENTS_PUSH (EventType::ET_TRACK_ADDED, nullptr); */
+          /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr); */
 
         } /* endif copy */
 
@@ -1015,7 +1014,7 @@ TracklistSelectionsAction::
                 }
             }
 
-          EVENTS_PUSH (EventType::ET_TRACKS_MOVED, nullptr);
+          /* EVENTS_PUSH (EventType::ET_TRACKS_MOVED, nullptr); */
         }
       else if (copy)
         {
@@ -1032,8 +1031,8 @@ TracklistSelectionsAction::
               /* remove it */
               TRACKLIST->remove_track (*prj_track, true, true, false, false);
             }
-          EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr);
-          EVENTS_PUSH (EventType::ET_TRACKS_REMOVED, nullptr);
+          /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr); */
+          /* EVENTS_PUSH (EventType::ET_TRACKS_REMOVED, nullptr); */
         }
 
       if (inside)
@@ -1290,7 +1289,7 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
           break;
         }
 
-      EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, track.get ());
+      /* EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, track.get ()); */
     }
 
   /* restore connections */

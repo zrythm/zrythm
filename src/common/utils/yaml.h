@@ -16,6 +16,7 @@
 
 #  include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
+#  include "types.h"
 #  include <cyaml/cyaml.h>
 
 /**

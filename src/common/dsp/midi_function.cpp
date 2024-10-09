@@ -6,12 +6,9 @@
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/string.h"
 #include "gui/backend/backend/arranger_selections.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 /**
  * Returns a string identifier for the type.
@@ -245,5 +242,5 @@ midi_function_apply (
       g_settings_set_int (S_UI, "midi-function", ENUM_VALUE_TO_INT (type));
     }
 
-  EVENTS_PUSH (EventType::ET_EDITOR_FUNCTION_APPLIED, nullptr);
+  // EVENTS_PUSH (EventType::ET_EDITOR_FUNCTION_APPLIED, nullptr);
 }

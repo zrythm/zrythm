@@ -11,12 +11,8 @@
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/string.h"
 #include "gui/backend/backend/arranger_selections.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -612,5 +608,5 @@ audio_function_apply (
         }
     }
 
-  EVENTS_PUSH (EventType::ET_EDITOR_FUNCTION_APPLIED, nullptr);
+  // EVENTS_PUSH (EventType::ET_EDITOR_FUNCTION_APPLIED, nullptr);
 }

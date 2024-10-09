@@ -7,7 +7,6 @@
 #include "common/dsp/midi_event.h"
 #include "common/dsp/region.h"
 #include "common/dsp/region_owner.h"
-#include "gui/backend/gtk_widgets/custom_button.h"
 
 using MIDI_FILE = void;
 class Tracklist;
@@ -75,8 +74,6 @@ public:
    * If this is set to 0, the value will be inherited from the Track.
    */
   uint8_t midi_ch_ = 0;
-
-  std::vector<std::unique_ptr<CustomButtonWidget>> buttons_;
 
   int magic_ = TRACK_LANE_MAGIC;
 };

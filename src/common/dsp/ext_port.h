@@ -16,8 +16,6 @@
 #include "common/io/serialization/iserializable.h"
 #include "common/utils/types.h"
 
-#include <gdk/gdk.h>
-
 #if HAVE_JACK
 #  include "weakjack/weak_libjack.h"
 #endif

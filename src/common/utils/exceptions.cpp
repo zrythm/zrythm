@@ -3,8 +3,6 @@
 
 #include "common/utils/exceptions.h"
 #include "common/utils/ui.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -17,7 +15,7 @@ ZrythmException::ZrythmException (const std::string &message)
 }
 
 template <typename... Args>
-AdwDialog *
+void
 ZrythmException::handle (const std::string &format, Args &&... args) const
 {
   std::string errorMessage =
@@ -28,6 +26,7 @@ ZrythmException::handle (const std::string &format, Args &&... args) const
     format_str (format, std::forward<Args> (args)...);
   errorMessage += "\n" + formattedMessage;
 
+#if 0
   AdwDialog * win = nullptr;
   if (ZRYTHM_HAVE_UI)
     {
@@ -35,22 +34,25 @@ ZrythmException::handle (const std::string &format, Args &&... args) const
     }
   else
     {
-      z_warning ("{}", errorMessage.c_str ());
+#endif
+  z_warning ("{}", errorMessage.c_str ());
+#if 0
     }
 
   return win;
+#endif
 }
 
-AdwDialog *
+void
 ZrythmException::handle (const char * str) const
 {
-  return handle ("{}", str);
+  handle ("{}", str);
 }
 
-AdwDialog *
+void
 ZrythmException::handle (const std::string &str) const
 {
-  return handle ("{}", str);
+  handle ("{}", str);
 }
 
 const char *

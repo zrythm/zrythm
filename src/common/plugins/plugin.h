@@ -705,28 +705,6 @@ public:
   /** Whether the plugin is currently being deleted. */
   bool deleting_ = false;
 
-  /** Active preset item, if wrapped or generic UI. */
-  GtkWidget * active_preset_item_ = nullptr;
-
-  /**
-   * The Plugin's window. This is used for both generic UIs and for
-   * X11/Windows when plugins are wrapped. LV2 plugin UIs are only not wrapped
-   * when they have external UIs. In that case, this must be NULL.
-   */
-  GtkWindow * window_ = nullptr;
-
-  /**
-   * The GdkWindow of this widget should be somewhere inside \ref
-   * Plugin.window and will be used for wrapping plugin UIs in.
-   */
-  GtkBox * ev_box_ = nullptr;
-
-  /**
-   * Vbox containing the above ev_box for wrapping, or used for packing
-   * generic UI controls.
-   */
-  GtkBox * vbox_ = nullptr;
-
   /**
    * ID of the destroy signal for @ref Plugin.window so that we can deactivate
    * before freeing the plugin.

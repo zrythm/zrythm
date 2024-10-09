@@ -7,6 +7,8 @@
 
 #if HAVE_JACK
 
+#  include <cmath>
+
 #  include "common/dsp/channel.h"
 #  include "common/dsp/engine.h"
 #  include "common/dsp/engine_jack.h"
@@ -17,7 +19,6 @@
 #  include "common/dsp/tracklist.h"
 #  include "common/dsp/transport.h"
 #  include "common/plugins/plugin.h"
-#  include "common/utils/error.h"
 #  include "common/utils/midi.h"
 #  include "common/utils/mpmc_queue.h"
 #  include "common/utils/object_pool.h"
@@ -26,13 +27,6 @@
 #  include "gui/backend/backend/project.h"
 #  include "gui/backend/backend/settings/g_settings_manager.h"
 #  include "gui/backend/backend/settings/settings.h"
-#  include "gui/backend/gtk_widgets/main_window.h"
-#  include "gui/backend/gtk_widgets/zrythm_app.h"
-
-#  include <glib/gi18n.h>
-#  include <gtk/gtk.h>
-
-#  include <math.h>
 
 #  if !defined _WIN32 && defined __GLIBC__
 #    include <dlfcn.h>
@@ -104,7 +98,7 @@ static void
 process_change_request (AudioEngine * self)
 {
   /* process immediately if gtk thread */
-  if (ZRYTHM_APP_IS_GTK_THREAD)
+  if (ZRYTHM_IS_QT_THREAD)
     {
       self->process_events ();
     }
@@ -168,7 +162,7 @@ engine_jack_buffer_size_cb (uint32_t nframes, AudioEngine * self)
     nullptr, nframes, 0.f);
 
   /* process immediately if gtk thread */
-  if (ZRYTHM_APP_IS_GTK_THREAD)
+  if (ZRYTHM_IS_QT_THREAD)
     {
       self->process_events ();
     }
@@ -336,7 +330,7 @@ shutdown_cb (void * arg)
 {
   z_warning ("Jack shutting down...");
 
-  if (ZRYTHM_HAVE_UI && MAIN_WINDOW)
+  if (ZRYTHM_HAVE_UI) //&& MAIN_WINDOW)
     {
       char * msg = _ ("JACK has shut down");
       ui_show_error_message (_ ("JACK Error"), msg);
@@ -452,6 +446,7 @@ engine_jack_set_transport_type (
   self->transport_type_ = type;
 }
 
+#  if 0
 /**
  * Tests if JACK is working properly.
  *
@@ -493,6 +488,7 @@ engine_jack_test (GtkWindow * win)
 
   return 0;
 }
+#  endif
 
 /**
  * Sets up the audio engine to use jack.
@@ -769,15 +765,19 @@ engine_jack_activate (AudioEngine * self, bool activate)
       bool     ret = engine_jack_reconnect_monitor (self, true, &err);
       if (!ret)
         {
+#  if 0
           HANDLE_ERROR (
             err, "%s", _ ("Failed to connect to left monitor output port"));
+#  endif
           return -1;
         }
       ret = engine_jack_reconnect_monitor (self, false, &err);
       if (!ret)
         {
+#  if 0
           HANDLE_ERROR (
             err, "%s", _ ("Failed to connect to right monitor output port"));
+#  endif
           return -1;
         }
     }

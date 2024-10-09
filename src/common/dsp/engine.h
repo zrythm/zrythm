@@ -43,8 +43,6 @@
 #  include <rtaudio_c.h>
 #endif
 
-#include <glibmm.h>
-
 class Channel;
 namespace zrythm::plugins
 {
@@ -103,13 +101,6 @@ constexpr int ENGINE_MAX_EVENTS = 128;
     _ev->arg_ = (void *) _arg; \
     _ev->uint_arg_ = _uint_arg; \
     _ev->float_arg_ = _float_arg; \
-    if (ZRYTHM_APP_IS_GTK_THREAD) \
-      { \
-        _ev->backtrace_ = Backtrace ().get_backtrace ("", 40, false); \
-        z_debug ( \
-          "pushing engine event " #et " ({}:{}) uint: {} | float: {:f}", \
-          __func__, __LINE__, _uint_arg, _float_arg); \
-      } \
     AUDIO_ENGINE->ev_queue_.push_back (_ev); \
   }
 
@@ -806,7 +797,7 @@ public:
   ObjectPool<Event> ev_pool_{ ENGINE_MAX_EVENTS };
 
   /** ID of the event processing source func. */
-  sigc::scoped_connection process_source_id_;
+  // sigc::scoped_connection process_source_id_;
 
   /** Whether currently processing events. */
   bool processing_events_ = false;

@@ -17,8 +17,6 @@
 #include "common/utils/localization.h"
 #include "common/utils/logger.h"
 #include "common/utils/types.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
-#include "gui/backend/gtk_widgets/libadwaita_wrapper.h"
 
 #include <glib/gi18n.h>
 
@@ -135,7 +133,7 @@ class UiCursor
 {
 public:
   UiCursor () = delete;
-  UiCursor (std::string name, GdkCursor * cursor, int offset_x, int offset_y);
+  UiCursor (std::string name, int offset_x, int offset_y);
   UiCursor (const UiCursor &other) = delete;
   UiCursor &operator= (const UiCursor &other) = delete;
   UiCursor (UiCursor &&other) = delete;
@@ -144,7 +142,7 @@ public:
 
 public:
   std::string name_;
-  GdkCursor * cursor_ = nullptr;
+  // GdkCursor * cursor_ = nullptr;
   int         offset_x_ = 0;
   int         offset_y_ = 0;
 };
@@ -366,59 +364,63 @@ enum class UiDragMode
   UI_DRAG_MODE_RELATIVE_WITH_MULTIPLIER,
 };
 
+#if 0
 void
 ui_set_pointer_cursor (GtkWidget * widget);
 
-#define ui_set_pencil_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "edit-cursor", 2, 3);
+#  define ui_set_pencil_cursor(widget) \
+    ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "edit-cursor", 2, 3);
 
-#define ui_set_brush_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "brush-cursor", 2, 3);
+#  define ui_set_brush_cursor(widget) \
+    ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "brush-cursor", 2, 3);
 
-#define ui_set_cut_clip_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "cut-cursor", 9, 7);
+#  define ui_set_cut_clip_cursor(widget) \
+    ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "cut-cursor", 9, 7);
 
-#define ui_set_eraser_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "eraser-cursor", 4, 2);
+#  define ui_set_eraser_cursor(widget) \
+    ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "eraser-cursor", 4, 2);
 
-#define ui_set_line_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "ramp-cursor", 2, 3);
+#  define ui_set_line_cursor(widget) \
+    ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "ramp-cursor", 2, 3);
 
-#define ui_set_speaker_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "audition-cursor", 10, 12);
+#  define ui_set_speaker_cursor(widget) \
+    ui_set_cursor_from_icon_name ( \
+      GTK_WIDGET (widget), "audition-cursor", 10, 12);
 
-#define ui_set_hand_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "move-cursor", 12, 11);
+#  define ui_set_hand_cursor(widget) \
+    ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "move-cursor", 12, 11);
 
-#define ui_set_left_resize_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "w-resize-cursor", 14, 11);
+#  define ui_set_left_resize_cursor(widget) \
+    ui_set_cursor_from_icon_name ( \
+      GTK_WIDGET (widget), "w-resize-cursor", 14, 11);
 
-#define ui_set_left_stretch_cursor(widget) \
-  ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "w-stretch-cursor", 14, 11);
+#  define ui_set_left_stretch_cursor(widget) \
+    ui_set_cursor_from_icon_name ( \
+      GTK_WIDGET (widget), "w-stretch-cursor", 14, 11);
 
-#define ui_set_left_resize_loop_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "w-loop-cursor", 14, 11);
+#  define ui_set_left_resize_loop_cursor(widget) \
+    ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "w-loop-cursor", 14, 11);
 
-#define ui_set_right_resize_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "e-resize-cursor", 10, 11);
+#  define ui_set_right_resize_cursor(widget) \
+    ui_set_cursor_from_icon_name ( \
+      GTK_WIDGET (widget), "e-resize-cursor", 10, 11);
 
-#define ui_set_right_stretch_cursor(widget) \
-  ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "e-stretch-cursor", 10, 11);
+#  define ui_set_right_stretch_cursor(widget) \
+    ui_set_cursor_from_icon_name ( \
+      GTK_WIDGET (widget), "e-stretch-cursor", 10, 11);
 
-#define ui_set_right_resize_loop_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "e-loop-cursor", 10, 11);
+#  define ui_set_right_resize_loop_cursor(widget) \
+    ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "e-loop-cursor", 10, 11);
 
-#define ui_set_time_select_cursor(widget) \
-  ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "time-select-cursor", 10, 12);
+#  define ui_set_time_select_cursor(widget) \
+    ui_set_cursor_from_icon_name ( \
+      GTK_WIDGET (widget), "time-select-cursor", 10, 12);
 
-#define ui_set_fade_in_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "fade-in-cursor", 3, 1);
+#  define ui_set_fade_in_cursor(widget) \
+    ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "fade-in-cursor", 3, 1);
 
-#define ui_set_fade_out_cursor(widget) \
-  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "fade-out-cursor", 3, 1);
+#  define ui_set_fade_out_cursor(widget) \
+    ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "fade-out-cursor", 3, 1);
 
 /**
  * Sets cursor from icon name.
@@ -441,6 +443,7 @@ ui_on_motion_set_status_bar_text_cb (
   GtkWidget * widget,
   GdkEvent *  event,
   char *      text);
+#endif
 
 /**
  * Shows a popup message of the given type with the given message.
@@ -450,30 +453,22 @@ ui_on_motion_set_status_bar_text_cb (
  *
  * @return The message window.
  */
-AdwDialog *
+void
 ui_show_message_full (
-  GtkWidget *      parent,
+  // GtkWidget *      parent,
   std::string_view title,
   std::string_view msg);
-
-#define UI_ACTIVE_WINDOW_OR_NULL \
-  (zrythm_app->get_active_window () \
-     ? GTK_WIDGET (zrythm_app->get_active_window ()->gobj ()) \
-     : nullptr)
 
 /**
  * Type can be GTK_MESSAGE_ERROR, etc.
  */
 #define ui_show_message_printf(title, fmt, ...) \
-  ui_show_message_full ( \
-    GTK_WIDGET (UI_ACTIVE_WINDOW_OR_NULL), title, \
-    format_str (fmt, __VA_ARGS__))
+  ui_show_message_full (title, format_str (fmt, __VA_ARGS__))
 
 /**
  * Type can be GTK_MESSAGE_ERROR, etc.
  */
-#define ui_show_message_literal(title, str) \
-  ui_show_message_full (GTK_WIDGET (UI_ACTIVE_WINDOW_OR_NULL), title, str)
+#define ui_show_message_literal(title, str) ui_show_message_full (title, str)
 
 /**
  * Wrapper to show error message so that no casting
@@ -484,6 +479,7 @@ ui_show_message_full (
 
 #define ui_show_error_message(title, msg) ui_show_message_literal (title, msg)
 
+#if 0
 /**
  * Returns if @ref rect is hit or not by the
  * given coordinate.
@@ -548,6 +544,7 @@ ui_is_child_hit (
  */
 GtkWidget *
 ui_get_hit_child (GtkWidget * parent, double x, double y, GType type);
+#endif
 
 UiDetail
 ui_get_detail_level (void);
@@ -626,6 +623,7 @@ ui_show_notification (const char * msg);
 int
 ui_show_notification_idle_func (char * msg);
 
+#if 0
 /**
  * Sets up a combo box to have a selection of
  * languages.
@@ -662,6 +660,7 @@ ui_setup_audio_device_name_combo_row (
   AdwComboRow * combo_row,
   bool          populate,
   bool          with_signal);
+#endif
 
 /**
  * Returns the "a locale for the language you have
@@ -675,6 +674,7 @@ ui_get_locale_not_available_string (LocalizationLanguage lang);
 void
 ui_show_warning_for_tempo_track_experimental_feature (void);
 
+#if 0
 /**
  * Returns if the 2 rectangles overlay.
  */
@@ -693,6 +693,7 @@ ui_rectangle_overlap (
 
   return true;
 }
+#endif
 
 /**
  * Gets a draggable value as a normalized value

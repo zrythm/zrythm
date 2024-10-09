@@ -6,8 +6,6 @@
 
 #include "common/io/serialization/iserializable.h"
 
-TYPEDEF_STRUCT_UNDERSCORED (GdkRGBA);
-
 /**
  * @addtogroup utils
  *

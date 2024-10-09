@@ -142,6 +142,7 @@ struct CurveFadePreset final
   std::string  label_;
 };
 
+#if 0
 gboolean
 curve_algorithm_get_g_settings_mapping (
   GValue *   value,
@@ -153,6 +154,7 @@ curve_algorithm_set_g_settings_mapping (
   const GValue *       value,
   const GVariantType * expected_type,
   gpointer             user_data);
+#endif
 
 /**
  * Gets the normalized Y for a normalized X.

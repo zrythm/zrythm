@@ -13,12 +13,10 @@
 
 #include "engine/ipc_message.h"
 #include "zrythm_application.h"
-#include <fftw3.h>
 
 using namespace zrythm::gui;
 
 JUCE_CREATE_APPLICATION_DEFINE (ZrythmJuceApplicationWrapper)
-// START_JUCE_APPLICATION (ZrythmJuceApplicationWrapper)
 
 ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
     : QApplication (argc, argv), qt_thread_id_ (current_thread_id.get ())
@@ -77,21 +75,6 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   z_info ("Running Zrythm in '{}'", QDir::currentPath ());
 
   // TODO: install signal handlers
-
-#if HAVE_X11
-  /* init xlib threads */
-  z_info ("Initing X threads...");
-  XInitThreads ();
-#endif
-
-  /* init suil */
-  /*z_info ("Initing suil...");*/
-  /*suil_init (&self->argc, &self->argv, SUIL_ARG_NONE);*/
-
-  /* init fftw */
-  z_info ("Making fftw planner thread safe...");
-  fftw_make_planner_thread_safe ();
-  fftwf_make_planner_thread_safe ();
 
   // Schedule the post-exec initialization
   QTimer::singleShot (0, this, &ZrythmApplication::post_exec_initialization);

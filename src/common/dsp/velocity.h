@@ -10,7 +10,6 @@
 
 class MidiNote;
 class MidiRegion;
-TYPEDEF_STRUCT_UNDERSCORED (VelocityWidget);
 
 /**
  * @addtogroup dsp
@@ -54,8 +53,6 @@ public:
   static const char * setting_enum_to_str (guint index);
 
   static guint setting_str_to_enum (const char * str);
-
-  ArrangerWidget * get_arranger () const override;
 
   ArrangerObjectPtr find_in_project () const override;
 

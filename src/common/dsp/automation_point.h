@@ -22,23 +22,12 @@
 class Port;
 class AutomationRegion;
 class AutomationTrack;
-TYPEDEF_STRUCT_UNDERSCORED (AutomationPointWidget);
 
 /**
  * @addtogroup dsp
  *
  * @{
  */
-
-/**
- * Used for caching.
- */
-struct AutomationPointDrawSettings
-{
-  GdkRectangle draw_rect = {};
-  CurveOptions curve_opts;
-  float        normalized_val = 0.f;
-};
 
 /**
  * An automation point inside an AutomationTrack.
@@ -117,8 +106,6 @@ public:
    */
   bool curves_up () const;
 
-  ArrangerWidget * get_arranger () const override;
-
   ArrangerObjectPtr find_in_project () const override;
 
   void init_after_cloning (const AutomationPoint &other) override;
@@ -141,24 +128,6 @@ public:
   float normalized_val_ = 0.f;
 
   CurveOptions curve_opts_ = {};
-
-  /** Last settings used for drawing in editor. */
-  AutomationPointDrawSettings last_settings_ = {};
-
-  /** Last settings used for drawing in timeline. */
-  AutomationPointDrawSettings last_settings_tl_ = {};
-
-  /* FIXME these 2 break the rule of 0, and we should use normal snapshot (not
-   * cairo) so we can remove them. */
-
-  /** Cached cairo node to reuse when drawing in the editor. */
-  GskRenderNode * cairo_node_ = nullptr;
-
-  /** Cached cairo node to reuse when drawing in the timeline. */
-  GskRenderNode * cairo_node_tl_ = nullptr;
-
-  /** Temporary string used with StringEntryDialogWidget. */
-  std::string tmp_str_;
 };
 
 inline bool

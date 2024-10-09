@@ -5,7 +5,6 @@
 
 #include "common/utils/datetime.h"
 #include "common/utils/logger.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 #include <fmt/chrono.h>
 

@@ -11,11 +11,8 @@
 #include "common/utils/flags.h"
 #include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/actions/tracklist_selections.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 bool
 FoldableTrack::is_status (MixerStatus status) const
@@ -145,7 +142,7 @@ FoldableTrack::
 
       if (fire_events)
         {
-          EVENTS_PUSH (EventType::ET_TRACK_FOLD_CHANGED, this);
+          // EVENTS_PUSH (EventType::ET_TRACK_FOLD_CHANGED, this);
         }
     }
 }

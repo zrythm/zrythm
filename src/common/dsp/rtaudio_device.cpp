@@ -12,8 +12,6 @@
 #  include "gui/backend/backend/project.h"
 #  include "gui/backend/backend/zrythm.h"
 
-#  include <gtk/gtk.h>
-
 static void
 error_cb (rtaudio_error_t err, const char * msg)
 {

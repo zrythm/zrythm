@@ -76,7 +76,6 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
   ArrangerSelections * get_arranger_selections () const override;
-  ArrangerWidget *     get_arranger_for_children () const override;
 
 public:
   /** ChordObject's in this Region. */

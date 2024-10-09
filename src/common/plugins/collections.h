@@ -7,10 +7,6 @@
 #include <vector>
 
 #include "common/plugins/plugin_descriptor.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
-
-#include <giomm.h>
-#include <glibmm.h>
 
 /**
  * @addtogroup plugins
@@ -55,7 +51,7 @@ public:
   /**
    * Generates a context menu for the collection.
    */
-  Glib::RefPtr<Gio::MenuModel> generate_context_menu () const;
+  // Glib::RefPtr<Gio::MenuModel> generate_context_menu () const;
 
   void init_after_cloning (const PluginCollection &other) override;
 

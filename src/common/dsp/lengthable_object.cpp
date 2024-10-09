@@ -12,7 +12,6 @@
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 void
 LengthableObject::copy_members_from (const LengthableObject &other)
@@ -557,8 +556,8 @@ LengthableObject::
         }
     }
 
-  EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, r1.get ());
-  EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, r2.get ());
+  // EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, r1.get ());
+  // EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, r2.get ());
 
   return std::make_pair (r1, r2);
 }
@@ -646,7 +645,7 @@ LengthableObject::unsplit (T &r1, T &r2, bool fire_events)
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, obj.get ());
+      // EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, obj.get ());
     }
 
   return obj;

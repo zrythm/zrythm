@@ -15,7 +15,6 @@
 #include "common/io/serialization/iserializable.h"
 #include "common/utils/format.h"
 #include "common/utils/logger.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 #include <glib/gi18n.h>
 

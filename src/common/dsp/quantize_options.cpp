@@ -9,7 +9,6 @@
 #include "common/utils/pcg_rand.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 void
 QuantizeOptions::update_quantize_points ()

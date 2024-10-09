@@ -16,12 +16,8 @@
 #include "common/utils/math.h"
 #include "gui/backend/backend/actions/arranger_selections.h"
 #include "gui/backend/backend/arranger_selections.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
-#include "gui/backend/gtk_widgets/arranger.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -594,9 +590,9 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
   /* validate */
   CLIP_EDITOR->get_region ();
 
-  ArrangerSelections * sel = get_actual_arranger_selections ();
-  EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, sel);
-  EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_MOVED, sel);
+  // ArrangerSelections * sel = get_actual_arranger_selections ();
+  /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, sel); */
+  /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_MOVED, sel); */
 
   first_run_ = false;
 }
@@ -1125,11 +1121,11 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
     {
       TRANSPORT->recalculate_total_bars (sel_after_.get ());
 
-      EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CREATED, sel);
+      /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CREATED, sel); */
     }
   else
     {
-      EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_REMOVED, sel);
+      /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_REMOVED, sel); */
     }
 
   first_run_ = false;
@@ -1208,6 +1204,7 @@ ArrangerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
       z_return_if_fail (obj);
       if (obj->has_length ())
         {
+#if 0
           auto   obj_lo = dynamic_pointer_cast<LengthableObject> (obj);
           double ticks = obj_lo->get_length_in_ticks ();
           auto   arranger = obj->get_arranger ();
@@ -1219,6 +1216,7 @@ ArrangerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
             {
               g_settings_set_double (S_UI, "editor-last-object-length", ticks);
             }
+#endif
         }
     }
 
@@ -1229,12 +1227,12 @@ ArrangerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
 
       TRANSPORT->recalculate_total_bars (sel_.get ());
 
-      EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CREATED, sel);
+      /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CREATED, sel); */
     }
   /* if deleting */
   else
     {
-      EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_REMOVED, sel);
+      /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_REMOVED, sel); */
     }
 
   P_MARKER_TRACK->validate ();
@@ -1345,8 +1343,8 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
         }
     }
 
-  EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CREATED, sel);
-  EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_REMOVED, sel);
+  /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CREATED, sel); */
+  /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_REMOVED, sel); */
 
   first_run_ = false;
 
@@ -1560,8 +1558,9 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
 
   update_region_link_groups (dest_sel->objects_);
 
-  auto sel = get_actual_arranger_selections ();
-  EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED_REDRAW_EVERYTHING, sel);
+  // auto sel = get_actual_arranger_selections ();
+  /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED_REDRAW_EVERYTHING,
+   * sel); */
 
   first_run_ = false;
 }
@@ -1672,8 +1671,8 @@ ArrangerSelectionsAction::do_or_undo_split (bool do_it)
   else
     num_split_objs_ = 0;
 
-  ArrangerSelections * sel = get_actual_arranger_selections ();
-  EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, sel);
+  // ArrangerSelections * sel = get_actual_arranger_selections ();
+  /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, sel); */
 
   first_run_ = false;
 }
@@ -1721,8 +1720,8 @@ ArrangerSelectionsAction::do_or_undo_merge (bool do_it)
       own_after_obj->copy_identifier (*prj_obj);
     }
 
-  ArrangerSelections * sel = get_actual_arranger_selections ();
-  EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, sel);
+  // ArrangerSelections * sel = get_actual_arranger_selections ();
+  /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, sel); */
 
   first_run_ = false;
 }
@@ -1821,9 +1820,9 @@ ArrangerSelectionsAction::do_or_undo_resize (bool do_it)
 
   update_region_link_groups (do_it ? objs_after : objs_before);
 
-  ArrangerSelections * sel = get_actual_arranger_selections ();
-  EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, sel);
-  EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_ACTION_FINISHED, sel);
+  // ArrangerSelections * sel = get_actual_arranger_selections ();
+  /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, sel); */
+  /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_ACTION_FINISHED, sel); */
 
   first_run_ = false;
 }
@@ -1881,8 +1880,8 @@ ArrangerSelectionsAction::do_or_undo_quantize (bool do_it)
         }
     }
 
-  ArrangerSelections * sel = get_actual_arranger_selections ();
-  EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_QUANTIZED, sel);
+  // ArrangerSelections * sel = get_actual_arranger_selections ();
+  /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_QUANTIZED, sel); */
 
   first_run_ = false;
 }
@@ -1951,7 +1950,7 @@ ArrangerSelectionsAction::do_or_undo (bool do_it)
 
   /* this is only needed in a few cases but it's cheap so send the event here
    * anyway */
-  EVENTS_PUSH (EventType::ET_TRACK_LANES_VISIBILITY_CHANGED, nullptr);
+  /* EVENTS_PUSH (EventType::ET_TRACK_LANES_VISIBILITY_CHANGED, nullptr); */
 }
 
 void

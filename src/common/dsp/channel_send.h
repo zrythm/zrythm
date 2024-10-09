@@ -12,7 +12,6 @@
 class StereoPorts;
 class ChannelTrack;
 class Port;
-TYPEDEF_STRUCT_UNDERSCORED (ChannelSendWidget);
 class PortConnectionsManager;
 class PortConnection;
 
@@ -166,8 +165,6 @@ public:
   void copy_values_from (const ChannelSend &other);
 
   void init_after_cloning (const ChannelSend &other) override;
-
-  ChannelSendWidget * find_widget ();
 
   /**
    * Connects the ports to the owner track if not connected.

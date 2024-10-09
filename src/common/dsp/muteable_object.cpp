@@ -3,11 +3,8 @@
 
 #include "common/dsp/muteable_object.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 void
 MuteableObject::copy_members_from (const MuteableObject &other)
@@ -27,6 +24,6 @@ MuteableObject::set_muted (bool muted, bool fire_events)
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CHANGED, this);
+      // EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CHANGED, this);
     }
 }

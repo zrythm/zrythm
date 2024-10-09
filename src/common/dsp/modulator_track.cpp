@@ -7,19 +7,11 @@
 #include "common/dsp/port.h"
 #include "common/dsp/router.h"
 #include "common/dsp/track.h"
-#include "common/utils/dialogs.h"
 #include "common/utils/flags.h"
 #include "common/utils/logger.h"
 #include "common/utils/objects.h"
 #include "common/utils/string.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
-
-#include <glib/gi18n.h>
 
 ModulatorTrack::ModulatorTrack (int track_pos)
     : Track (
@@ -133,7 +125,7 @@ do_insert (ModulatorImportData * data)
 
   if (data->pub_events)
     {
-      EVENTS_PUSH (EventType::ET_MODULATOR_ADDED, added_mod.get ());
+      // EVENTS_PUSH (EventType::ET_MODULATOR_ADDED, added_mod.get ());
     }
 
   if (data->recalc_graph)
@@ -141,7 +133,7 @@ do_insert (ModulatorImportData * data)
       ROUTER->recalc_graph (false);
     }
 }
-
+#if 0
 [[maybe_unused]] static void
 overwrite_plugin_response_cb (
   AdwMessageDialog * dialog,
@@ -156,6 +148,7 @@ overwrite_plugin_response_cb (
 
   do_insert (data);
 }
+#endif
 
 template <typename T>
 std::shared_ptr<T>
@@ -186,6 +179,7 @@ ModulatorTrack::insert_modulator (
         slot < modulators_.empty () ? nullptr : modulators_[slot].get ();
       if (existing_pl && confirm)
         {
+#if 0
           AdwMessageDialog * dialog =
             dialogs_get_overwrite_plugin_dialog (GTK_WINDOW (MAIN_WINDOW));
           gtk_window_present (GTK_WINDOW (dialog));
@@ -193,6 +187,7 @@ ModulatorTrack::insert_modulator (
             dialog, "response", G_CALLBACK (overwrite_plugin_response_cb),
             new ModulatorImportData (std::move (data)),
             ModulatorImportData::free, G_CONNECT_DEFAULT);
+#endif
           return modulator;
         }
     }

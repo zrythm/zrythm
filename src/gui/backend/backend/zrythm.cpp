@@ -18,21 +18,13 @@
 #include "common/utils/io.h"
 #include "common/utils/networking.h"
 #include "common/utils/string.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/chord_preset_pack_manager.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
-
-#include <gdk-pixbuf/gdk-pixbuf.h>
-#include <giomm.h>
-#include <glibmm.h>
 
 JUCE_IMPLEMENT_SINGLETON (Zrythm);
 
@@ -70,7 +62,7 @@ Zrythm::init ()
 
   if (have_ui_)
     {
-      event_manager_ = std::make_unique<EventManager> ();
+      // event_manager_ = std::make_unique<EventManager> ();
     }
 }
 
@@ -221,6 +213,7 @@ Zrythm::get_system_info ()
 #if HAVE_CARLA
   gstr += fmt::format ("Carla version: {}\n", Z_CARLA_VERSION_STRING);
 #endif
+#if 0
   gstr += fmt::format (
     "GTK version: {}.{}.{}\n", gtk_get_major_version (),
     gtk_get_minor_version (), gtk_get_micro_version ());
@@ -230,6 +223,7 @@ Zrythm::get_system_info ()
   gstr += fmt::format (
     "libpanel version: {}.{}.{}\n", panel_get_major_version (),
     panel_get_minor_version (), panel_get_micro_version ());
+#endif
 
   gstr += fmt::format (
     "QT version: {}.{}.{}\n", QT_VERSION_MAJOR, QT_VERSION_MINOR,

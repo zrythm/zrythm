@@ -17,7 +17,6 @@
 #include "common/dsp/region_identifier.h"
 #include "common/dsp/timeline_object.h"
 #include "common/utils/format.h"
-#include "common/utils/pango.h"
 
 #include <glib/gi18n.h>
 
@@ -249,11 +248,6 @@ public:
    */
   virtual ArrangerSelections * get_arranger_selections () const = 0;
 
-  /**
-   * Returns the arranger for editing the region's children.
-   */
-  virtual ArrangerWidget * get_arranger_for_children () const = 0;
-
   bool can_have_lanes () const override
   {
     return region_type_has_lane (id_.type_);
@@ -294,46 +288,6 @@ public:
    * Only relevant for audio and midi regions.
    */
   int bounce_ = 0;
-
-  /* --- drawing caches - FIXME separation of concerns - these shouldn't
-   * be here
-   * --- */
-
-  /* New region drawing needs to be cached in the following situations:
-   *
-   * 1. when hidden part of the region is revealed (on x axis).
-   *   TODO max 140% of the region should be cached (20% before and 20%
-   * after if before/ after is not fully visible)
-   * 2. when full rect (x/width) changes
-   * 3. when a region marker is moved
-   * 4. when the clip actually changes (use last-change timestamp on the
-   * clip or region)
-   * 5. when fades change
-   * 6. when region height changes (track/lane)
-   */
-
-  /** Cache layout for drawing the name. */
-  PangoLayoutUniquePtr layout_;
-
-  /** Cache layout for drawing the chord names inside the region. */
-  PangoLayoutUniquePtr chords_layout_;
-
-  /* these are used for caching */
-  GdkRectangle last_main_full_rect_ = {};
-
-  /** Last main draw rect. */
-  GdkRectangle last_main_draw_rect_ = {};
-
-  /* these are used for caching */
-  GdkRectangle last_lane_full_rect_ = {};
-
-  /** Last lane draw rect. */
-  GdkRectangle last_lane_draw_rect_ = {};
-
-  /** Last timestamp the region was cached. */
-  gint64 last_cache_time_ = 0;
-
-  /* --- drawing caches end --- */
 
   /* --- stretching related --- */
 

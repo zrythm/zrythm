@@ -12,14 +12,11 @@
 #include "common/utils/logger.h"
 #include "common/utils/ui.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/mixer_selections.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -282,7 +279,7 @@ MixerSelectionsAction::revert_deleted_plugin (Track &to_tr, int to_slot)
       if (ZRYTHM_HAVE_UI && deleted_pl->visible_)
         {
           added_pl->visible_ = true;
-          EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, added_pl);
+          /* EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, added_pl); */
         }
     }
 }
@@ -395,7 +392,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
               added_pl->visible_ =
                 ZRYTHM_HAVE_UI && own_ms->plugins_[i]->visible_;
             }
-          EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, added_pl);
+          /* EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, added_pl); */
 
           /* activate */
           added_pl->activate (true);
@@ -431,7 +428,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
 
       track->validate ();
 
-      EVENTS_PUSH (EventType::ET_PLUGINS_ADDED, track);
+      /* EVENTS_PUSH (EventType::ET_PLUGINS_ADDED, track); */
     }
   /* else if deleting plugins (create undo or delete do) */
   else
@@ -474,7 +471,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
           revert_deleted_plugin (*track, slot);
         }
 
-      EVENTS_PUSH (EventType::ET_PLUGINS_REMOVED, nullptr);
+      /* EVENTS_PUSH (EventType::ET_PLUGINS_REMOVED, nullptr); */
     }
 
   /* restore connections */
@@ -484,7 +481,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
 
   if (ch)
     {
-      EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, ch);
+      /* EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, ch); */
     }
 }
 
@@ -509,7 +506,7 @@ MixerSelectionsAction::do_or_undo_change_status (bool do_it)
 
   if (ch)
     {
-      EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, ch);
+      /* EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, ch); */
     }
 }
 
@@ -569,7 +566,7 @@ MixerSelectionsAction::do_or_undo_change_load_behavior (bool do_it)
 
   if (ch)
     {
-      EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, ch);
+      /* EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, ch); */
     }
 }
 
@@ -654,7 +651,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
             to_track_name_hash_);
         }
 
-      auto to_ch =
+      [[maybe_unused]] auto to_ch =
         to_tr->has_channel ()
           ? dynamic_cast<ChannelTrack *> (to_tr)->channel_.get ()
           : nullptr;
@@ -755,7 +752,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
               if (ZRYTHM_HAVE_UI && own_ms->plugins_[i]->visible_)
                 {
                   pl->visible_ = true;
-                  EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, pl);
+                  /* EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, pl); */
                 }
             }
         }
@@ -764,16 +761,16 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
 
       if (new_channel_)
         {
-          EVENTS_PUSH (EventType::ET_TRACKS_ADDED, nullptr);
+          /* EVENTS_PUSH (EventType::ET_TRACKS_ADDED, nullptr); */
         }
 
-      EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, to_ch);
+      /* EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, to_ch); */
     }
   /* else if undoing (deleting/moving plugins back) */
   else
     {
       Track * to_tr = TRACKLIST->find_track_by_name_hash (to_track_name_hash_);
-      Channel * to_ch =
+      [[maybe_unused]] Channel * to_ch =
         to_tr->has_channel ()
           ? dynamic_cast<ChannelTrack *> (to_tr)->channel_.get ()
           : nullptr;
@@ -854,7 +851,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
 
       from_tr->validate ();
 
-      EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, to_ch);
+      /* EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, to_ch); */
     }
 
   /* restore connections */

@@ -16,7 +16,6 @@
 #include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 void
 HardwareProcessor::init_loaded (AudioEngine * engine)
@@ -205,7 +204,7 @@ HardwareProcessor::setup ()
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING || ZRYTHM_GENERATING_PROJECT)
     return;
 
-  z_return_if_fail (ZRYTHM_APP_IS_GTK_THREAD && S_P_GENERAL_ENGINE);
+  z_return_if_fail (ZRYTHM_IS_QT_THREAD && S_P_GENERAL_ENGINE);
 
   if (is_input_)
     {

@@ -135,7 +135,6 @@ public:
   }
 
   ArrangerSelections * get_arranger_selections () const override;
-  ArrangerWidget *     get_arranger_for_children () const override;
 
   void init_after_cloning (const AutomationRegion &other) override
   {

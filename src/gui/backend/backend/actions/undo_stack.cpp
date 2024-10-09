@@ -15,7 +15,6 @@
 #include "gui/backend/backend/actions/undo_stack.h"
 #include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 void
 UndoStack::init_loaded ()

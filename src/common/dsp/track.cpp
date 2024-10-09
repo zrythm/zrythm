@@ -33,12 +33,8 @@
 #include "common/utils/string.h"
 #include "gui/backend/backend/actions/tracklist_selections.h"
 #include "gui/backend/backend/actions/undo_manager.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/track.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -155,7 +151,7 @@ Track::select (bool select, bool exclusive, bool fire_events)
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_TRACK_CHANGED, this);
+      // EVENTS_PUSH (EventType::ET_TRACK_CHANGED, this);
     }
 }
 
@@ -302,11 +298,11 @@ Track::insert_region (
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, added_region.get ());
+      // EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, added_region.get ());
 
       if constexpr (RegionImpl<T>::is_laned ())
         {
-          EVENTS_PUSH (EventType::ET_TRACK_LANE_ADDED, nullptr);
+          // EVENTS_PUSH (EventType::ET_TRACK_LANE_ADDED, nullptr);
         }
     }
 
@@ -575,7 +571,7 @@ freeze_progress_close_cb (ExportData * data)
     }
 
   self->frozen = true;
-  EVENTS_PUSH (EventType::ET_TRACK_FREEZE_CHANGED, self);
+  // EVENTS_PUSH (EventType::ET_TRACK_FREEZE_CHANGED, self);
 }
 
 bool
@@ -620,7 +616,7 @@ track_freeze (Track * self, bool freeze, GError ** error)
       /*AUDIO_POOL, self->pool_id_, true);*/
 
       self->frozen = false;
-      EVENTS_PUSH (EventType::ET_TRACK_FREEZE_CHANGED, self);
+      // EVENTS_PUSH (EventType::ET_TRACK_FREEZE_CHANGED, self);
     }
 
   return true;
@@ -1021,7 +1017,7 @@ Track::set_name (const std::string &name, bool pub_events)
 
   if (pub_events)
     {
-      EVENTS_PUSH (EventType::ET_TRACK_NAME_CHANGED, this);
+      // EVENTS_PUSH (EventType::ET_TRACK_NAME_CHANGED, this);
     }
 }
 
@@ -1124,7 +1120,7 @@ Track::set_color (const Color &color, bool undoable, bool fire_events)
 
       if (fire_events)
         {
-          EVENTS_PUSH (EventType::ET_TRACK_COLOR_CHANGED, this);
+          // EVENTS_PUSH (EventType::ET_TRACK_COLOR_CHANGED, this);
         }
     }
 }
@@ -1153,7 +1149,7 @@ Track::set_icon (const std::string &icon_name, bool undoable, bool fire_events)
 
       if (fire_events)
         {
-          EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, this);
+          // EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, this);
         }
     }
 }
@@ -1320,7 +1316,7 @@ Track::set_enabled (
 
       if (fire_events)
         {
-          EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, this);
+          // EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, this);
         }
     }
 }
@@ -1469,6 +1465,7 @@ Track::set_caches (CacheType types)
     }
 }
 
+#if 0
 GMenu *
 Track::generate_edit_context_menu (int num_selected)
 {
@@ -1503,7 +1500,7 @@ Track::generate_edit_context_menu (int num_selected)
     }
 
     /* add regions TODO */
-#if 0
+#  if 0
   if (track->type == Track::Type::INSTRUMENT)
     {
       menuitem = g_menu_item_new (
@@ -1511,7 +1508,7 @@ Track::generate_edit_context_menu (int num_selected)
       g_menu_item_set_attribute (menuitem, "verb-icon", "s", "add");
       g_menu_append_item (edit_submenu, menuitem);
     }
-#endif
+#  endif
 
   menuitem = g_menu_item_new (
     num_selected == 1 ? _ ("Hide Track") : _ ("Hide Tracks"),
@@ -1542,6 +1539,7 @@ Track::generate_edit_context_menu (int num_selected)
 
   return edit_submenu;
 }
+#endif
 
 bool
 Track::is_pinned () const

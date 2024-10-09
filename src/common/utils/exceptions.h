@@ -14,8 +14,6 @@
 #include <sstream>
 #include <string>
 
-#include "gui/backend/gtk_widgets/libadwaita_wrapper.h"
-
 /**
  * @addtogroup utils
  *
@@ -33,10 +31,10 @@ public:
   const char * what () const noexcept;
 
   template <typename... Args>
-  AdwDialog * handle (const std::string &format, Args &&... args) const;
+  void handle (const std::string &format, Args &&... args) const;
 
-  AdwDialog * handle (const char * str) const;
-  AdwDialog * handle (const std::string &str) const;
+  void handle (const char * str) const;
+  void handle (const std::string &str) const;
 
 private:
   std::string         message_;

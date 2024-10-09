@@ -46,7 +46,6 @@
 #include "common/utils/io.h"
 #include "common/utils/string.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 #include <glib/gi18n.h>
 #include <glib/gstdio.h>

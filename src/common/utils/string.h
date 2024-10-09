@@ -37,7 +37,6 @@
 #define __UTILS_STRING_H__
 
 #include <fmt/format.h>
-#include <glibmm.h>
 
 namespace juce
 {
@@ -49,9 +48,6 @@ class String;
  *
  * @{
  */
-
-Glib::ustring
-string_view_to_ustring (std::string_view sv);
 
 juce::String
 string_view_to_juce_string (std::string_view sv);

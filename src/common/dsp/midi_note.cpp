@@ -8,16 +8,6 @@
 #include "common/dsp/velocity.h"
 #include "gui/backend/backend/midi_selections.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/gtk_widgets/arranger.h"
-#include "gui/backend/gtk_widgets/arranger_wrapper.h"
-#include "gui/backend/gtk_widgets/bot_dock_edge.h"
-#include "gui/backend/gtk_widgets/center_dock.h"
-#include "gui/backend/gtk_widgets/clip_editor.h"
-#include "gui/backend/gtk_widgets/clip_editor_inner.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/midi_arranger.h"
-#include "gui/backend/gtk_widgets/midi_editor_space.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <fmt/format.h>
 
@@ -220,12 +210,6 @@ MidiNote::is_hit (const signed_frame_t gframes) const
     return true;
 
   return false;
-}
-
-ArrangerWidget *
-MidiNote::get_arranger () const
-{
-  return (ArrangerWidget *) (MW_MIDI_ARRANGER);
 }
 
 MidiNote::ArrangerObjectPtr

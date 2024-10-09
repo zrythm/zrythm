@@ -35,13 +35,6 @@
 #include "common/utils/string.h"
 #include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
-Glib::ustring
-string_view_to_ustring (std::string_view sv)
-{
-  Glib::ustring ustr (sv.data (), sv.data () + sv.size ());
-  return ustr;
-}
-
 juce::String
 string_view_to_juce_string (std::string_view sv)
 {
@@ -53,7 +46,8 @@ string_view_to_juce_string (std::string_view sv)
 bool
 string_is_ascii (std::string_view string)
 {
-  return string_view_to_ustring (string).is_ascii ();
+  Glib::ustring ustr (string.data (), string.data () + string.size ());
+  return ustr.is_ascii ();
 }
 
 /**

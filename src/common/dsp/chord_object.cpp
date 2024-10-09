@@ -7,14 +7,6 @@
 #include "common/utils/debug.h"
 #include "gui/backend/backend/clip_editor.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/gtk_widgets/bot_dock_edge.h"
-#include "gui/backend/gtk_widgets/center_dock.h"
-#include "gui/backend/gtk_widgets/chord_arranger.h"
-#include "gui/backend/gtk_widgets/chord_editor_space.h"
-#include "gui/backend/gtk_widgets/clip_editor.h"
-#include "gui/backend/gtk_widgets/clip_editor_inner.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <fmt/format.h>
 
@@ -61,12 +53,6 @@ ChordObject::find_in_project () const
   z_return_val_if_fail (co, nullptr);
   z_return_val_if_fail (*co == *this, nullptr);
   return co;
-}
-
-ArrangerWidget *
-ChordObject::get_arranger () const
-{
-  return (ArrangerWidget *) (MW_CHORD_ARRANGER);
 }
 
 ArrangerObject::ArrangerObjectPtr

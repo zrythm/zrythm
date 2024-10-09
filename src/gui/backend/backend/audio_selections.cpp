@@ -4,11 +4,8 @@
 #include "common/dsp/position.h"
 #include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/audio_selections.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 AudioSelections::AudioSelections () : ArrangerSelections (Type::Audio) { }
 
@@ -17,7 +14,7 @@ AudioSelections::set_has_range (bool has_range)
 {
   has_selection_ = true;
 
-  EVENTS_PUSH (EventType::ET_AUDIO_SELECTIONS_RANGE_CHANGED, nullptr);
+  // /* EVENTS_PUSH (EventType::ET_AUDIO_SELECTIONS_RANGE_CHANGED, nullptr); */
 }
 
 bool

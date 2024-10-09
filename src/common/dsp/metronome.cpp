@@ -13,8 +13,6 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 Metronome::Metronome (AudioEngine &engine)
 {

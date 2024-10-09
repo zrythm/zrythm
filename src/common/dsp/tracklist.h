@@ -11,10 +11,7 @@
 #define __AUDIO_TRACKLIST_H__
 
 #include "common/dsp/track.h"
-#include "gui/backend/gtk_widgets/track.h"
 
-TYPEDEF_STRUCT_UNDERSCORED (TracklistWidget);
-TYPEDEF_STRUCT_UNDERSCORED (PinnedTracklistWidget);
 struct FileImportInfo;
 
 /**
@@ -378,6 +375,7 @@ public:
     const Position *       pos,
     TracksReadyCallback    ready_cb);
 
+#if 0
   /**
    * Handles a move or copy action based on a drag.
    *
@@ -389,6 +387,7 @@ public:
     Track               &this_track,
     TrackWidgetHighlight location,
     GdkDragAction        action);
+#endif
 
   /**
    * Returns whether the track name is not taken.
@@ -501,12 +500,6 @@ public:
 
   /** The master track, for convenience. */
   MasterTrack * master_track_ = nullptr;
-
-  /** Non-pinned TracklistWidget. */
-  TracklistWidget * widget_ = nullptr;
-
-  /** PinnedTracklistWidget. */
-  PinnedTracklistWidget * pinned_widget_ = nullptr;
 
   /**
    * Index starting from which tracks are unpinned.

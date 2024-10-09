@@ -48,7 +48,6 @@
 #include "common/utils/flags.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #if HAVE_JACK
 #  include "weakjack/weak_libjack.h"
@@ -72,7 +71,7 @@ Router::start_cycle (EngineProcessTimeInfo time_nfo)
 
   /* only set the kickoff thread when not called from the gtk thread (sometimes
    * this is called from the gtk thread to force some processing) */
-  if (!ZRYTHM_APP_IS_GTK_THREAD)
+  if (!ZRYTHM_IS_QT_THREAD)
     process_kickoff_thread_ = current_thread_id.get ();
 
   SemaphoreRAII<> sem (graph_access_sem_);

@@ -1,12 +1,6 @@
 // SPDX-FileCopyrightText: © 2019-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Object to hold information for the Marker track.
- */
-
 #ifndef __AUDIO_MARKER_TRACK_H__
 #define __AUDIO_MARKER_TRACK_H__
 

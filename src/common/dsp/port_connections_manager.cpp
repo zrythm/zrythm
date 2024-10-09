@@ -7,7 +7,6 @@
 #include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <fmt/format.h>
 
@@ -174,7 +173,7 @@ PortConnectionsManager::ensure_connect (
   bool                  locked,
   bool                  enabled)
 {
-  z_return_val_if_fail (ZRYTHM_APP_IS_GTK_THREAD, nullptr);
+  z_return_val_if_fail (ZRYTHM_IS_QT_THREAD, nullptr);
 
   for (auto &conn : connections_)
     {
@@ -223,7 +222,7 @@ PortConnectionsManager::ensure_disconnect (
   const PortIdentifier &src,
   const PortIdentifier &dest)
 {
-  z_return_val_if_fail (ZRYTHM_APP_IS_GTK_THREAD, false);
+  z_return_val_if_fail (ZRYTHM_IS_QT_THREAD, false);
 
   for (size_t i = 0; i < connections_.size (); i++)
     {
@@ -241,7 +240,7 @@ PortConnectionsManager::ensure_disconnect (
 void
 PortConnectionsManager::ensure_disconnect_all (const PortIdentifier &pi)
 {
-  z_return_if_fail (ZRYTHM_APP_IS_GTK_THREAD);
+  z_return_if_fail (ZRYTHM_IS_QT_THREAD);
 
   for (size_t i = 0; i < connections_.size (); i++)
     {

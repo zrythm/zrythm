@@ -10,7 +10,6 @@
 #include "common/dsp/tempo_track.h"
 #include "common/dsp/tracklist.h"
 #include "common/utils/datetime.h"
-#include "common/utils/error.h"
 #include "common/utils/flags.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/io.h"
@@ -18,18 +17,9 @@
 #include "common/utils/string.h"
 #include "common/utils/ui.h"
 #include "gui/backend/backend/cyaml_schemas/project.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/project/project_init_flow_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/center_dock.h"
-#include "gui/backend/gtk_widgets/greeter.h"
-#include "gui/backend/gtk_widgets/libadwaita_wrapper.h"
-#include "gui/backend/gtk_widgets/main_notebook.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/timeline_panel.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 #include <glibmm.h>
 #include <time.h>
@@ -71,6 +61,7 @@ ProjectInitFlowManager::call_last_callback_success ()
   call_last_callback (true, "");
 }
 
+#if 0
 void
 ProjectInitFlowManager::recreate_main_window ()
 {
@@ -117,9 +108,10 @@ ProjectInitFlowManager::setup_main_window (Project &project)
       EVENT_MANAGER->start_events ();
       main_window_widget_setup (MAIN_WINDOW);
 
-      EVENTS_PUSH (EventType::ET_PROJECT_LOADED, &project);
+      /* EVENTS_PUSH (EventType::ET_PROJECT_LOADED, &project); */
     }
 }
+#endif
 
 #if HAVE_CYAML
 /**
@@ -316,12 +308,14 @@ ProjectInitFlowManager::create_default (
 
   bool have_ui = !headless && ZRYTHM_HAVE_UI;
 
+#if 0
   MainWindowWidget * mww = NULL;
   if (have_ui)
     {
       z_info ("hiding prev window...");
       mww = hide_prev_main_window ();
     }
+#endif
 
   auto prj_dir_basename = Glib::path_get_basename (prj_dir);
   prj = std::make_unique<Project> (prj_dir_basename);
@@ -358,11 +352,13 @@ ProjectInitFlowManager::create_default (
       z_info ("recreating main window...");
       recreate_main_window ();
 
+#if 0
       if (mww)
         {
           z_info ("destroying prev window...");
           destroy_prev_main_window (mww);
         }
+#endif
     }
 
   prj->loaded_ = true;
@@ -375,9 +371,9 @@ ProjectInitFlowManager::create_default (
   if (have_ui)
     {
       z_info ("setting up main window...");
-      z_warn_if_fail (
-        MAIN_WINDOW->center_dock->main_notebook->timeline_panel->tracklist);
-      setup_main_window (*prj);
+      // z_warn_if_fail (
+      // MAIN_WINDOW->center_dock->main_notebook->timeline_panel->tracklist);
+      // setup_main_window (*prj);
     }
 
   if (with_engine)
@@ -413,6 +409,7 @@ ProjectInitFlowManager::save_and_activate_after_successful_load_or_create ()
   call_last_callback_success ();
 }
 
+#if 0
 void
 ProjectInitFlowManager::replace_main_window (MainWindowWidget * mww)
 {
@@ -430,6 +427,7 @@ ProjectInitFlowManager::replace_main_window (MainWindowWidget * mww)
       z_return_if_fail (GTK_IS_WINDOW (MAIN_WINDOW));
     }
 }
+#endif
 
 void
 ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
@@ -609,12 +607,14 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
         }
     }
 
+#if 0
   MainWindowWidget * mww = NULL;
   if (ZRYTHM_HAVE_UI)
     {
       z_info ("hiding prev window...");
       mww = hide_prev_main_window ();
     }
+#endif
 
   PROJECT.reset (deserialized_project.release ());
   auto prj = PROJECT.get ();
@@ -638,12 +638,15 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
   auto engine = prj->audio_engine_.get ();
 
   auto handle_err = [] (const ZrythmException &e) {
+#if 0
     GError *    err = g_error_new (0, 0, "%s", e.what ());
     AdwDialog * err_win = error_handle_prv (
       err, "%s", _ ("Failed to initialize the audio file pool"));
     g_signal_connect (
       err_win, "closed", G_CALLBACK (ZrythmApp::exit_response_callback),
       nullptr);
+#endif
+    z_warning ("error: {}", e.what ());
   };
 
   try
@@ -718,7 +721,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
   prj->quantize_opts_timeline_->update_quantize_points ();
   prj->quantize_opts_editor_->update_quantize_points ();
 
-  replace_main_window (mww);
+  // replace_main_window (mww);
 
   /* sanity check */
   z_warn_if_fail (prj->validate ());
@@ -745,8 +748,10 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
   /* recalculate the routing graph */
   engine->router_->recalc_graph (false);
 
+#if 0
   z_debug ("setting up main window...");
   setup_main_window (*prj);
+#endif
 
   engine->run_.store (true);
 
@@ -766,6 +771,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
   call_last_callback_success ();
 }
 
+#if 0
 static void
 on_open_backup_response (
   AdwMessageDialog *       dialog,
@@ -783,6 +789,7 @@ on_open_backup_response (
   flow_mgr->continue_load_from_file_after_open_backup_response ();
   flow_mgr->open_backup_response_cb_id_ = 0;
 }
+#endif
 
 void
 ProjectInitFlowManager::load_from_file ()
@@ -816,6 +823,7 @@ ProjectInitFlowManager::load_from_file ()
             }
           else
             {
+#if 0
               AdwMessageDialog * dialog = ADW_MESSAGE_DIALOG (
                 adw_message_dialog_new (nullptr, _ ("Open Backup?"), nullptr));
               adw_message_dialog_format_body_markup (
@@ -831,6 +839,7 @@ ProjectInitFlowManager::load_from_file ()
                 }
               open_backup_response_cb_id_ = g_signal_connect (
                 dialog, "response", G_CALLBACK (on_open_backup_response), this);
+#endif
               return;
             }
         }
@@ -848,9 +857,11 @@ ProjectInitFlowManager::
     {
       if (ZRYTHM_HAVE_UI)
         {
+#if 0
           GreeterWidget * greeter =
             greeter_widget_new (zrythm_app.get (), nullptr, false, false);
           gtk_window_present (GTK_WINDOW (greeter));
+#endif
         }
 
       flow_mgr->call_last_callback_fail (error);

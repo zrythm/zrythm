@@ -16,11 +16,8 @@
 #include "common/utils/objects.h"
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/string.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 void
 AutomationTracklist::init_loaded (AutomatableTrack * track)
@@ -403,15 +400,15 @@ AutomationTracklist::
 
           if (fire_events)
             {
-              EVENTS_PUSH (
-                EventType::ET_AUTOMATION_TRACK_ADDED, first_invisible_at);
+              /* EVENTS_PUSH (
+                EventType::ET_AUTOMATION_TRACK_ADDED, first_invisible_at); */
             }
         }
     }
 
   if (fire_events)
     {
-      EVENTS_PUSH (EventType::ET_AUTOMATION_TRACKLIST_AT_REMOVED, this);
+      // EVENTS_PUSH (EventType::ET_AUTOMATION_TRACKLIST_AT_REMOVED, this);
     }
 
   return deleted_at;

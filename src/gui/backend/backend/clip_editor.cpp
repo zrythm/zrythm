@@ -5,16 +5,8 @@
 #include "common/dsp/track.h"
 #include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/clip_editor.h"
-#include "gui/backend/backend/event.h"
-#include "gui/backend/backend/event_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/arranger_object.h"
-#include "gui/backend/gtk_widgets/bot_dock_edge.h"
-#include "gui/backend/gtk_widgets/center_dock.h"
-#include "gui/backend/gtk_widgets/clip_editor.h"
-#include "gui/backend/gtk_widgets/main_window.h"
-#include "gui/backend/gtk_widgets/zrythm_app.h"
 
 void
 ClipEditor::init_loaded ()
@@ -42,8 +34,8 @@ ClipEditor::set_region (Region * region, bool fire_events)
    * event viewer as necessary */
   if (fire_events && !has_region_ && region)
     {
-      EVENTS_PUSH (
-        EventType::ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED, nullptr);
+      // /* EVENTS_PUSH (
+      //   EventType::ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED, nullptr); */
     }
 
   /*
@@ -82,14 +74,16 @@ ClipEditor::set_region (Region * region, bool fire_events)
       z_debug ("clip editor region successfully changed");
     }
 
+#if 0
   if (fire_events && ZRYTHM_HAVE_UI && MAIN_WINDOW && MW_CLIP_EDITOR)
     {
-      EVENTS_PUSH (EventType::ET_CLIP_EDITOR_REGION_CHANGED, nullptr);
+      /* EVENTS_PUSH (EventType::ET_CLIP_EDITOR_REGION_CHANGED, nullptr); */
 
       /* setting the region potentially changes the active arranger - process
        * now to change the active arranger */
       EVENT_MANAGER->process_now ();
     }
+#endif
 }
 
 template <FinalRegionSubclass T>
