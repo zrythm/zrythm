@@ -2,7 +2,6 @@
     "cmake.buildDirectory": "${workspaceFolder}/builddir_cmake",
     "cmake.installPrefix": "${workspaceFolder}/_installed_cmake",
     "cmake.configureArgs": [
-        "-DCMAKE_PREFIX_PATH=/home/alex/opt/Qt6.7.2",
         "-DCMAKE_C_COMPILER=clang",
         "-DCMAKE_CXX_COMPILER=clang++",
         "-DZRYTHM_TESTS=ON",

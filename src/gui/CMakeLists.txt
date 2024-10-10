@@ -76,7 +76,7 @@ endforeach()
 
 set(rel_qml_file_paths
   # main_window.qml
-  greeter.qml
+  Greeter.qml
   components/PlaceholderPage.qml
   components/PlainButton.qml
   components/ActionRow.qml

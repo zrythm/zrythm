@@ -8,14 +8,14 @@ import Zrythm 1.0
 import "config.js" as Config
 
 ApplicationWindow {
-    id: greeter
+    id: root
 
     function pluginManager() {
         return GlobalState.zrythm.pluginManager;
     }
 
     function pluginScanner() {
-        return pluginManager().scanner;
+        return root.pluginManager().scanner;
     }
 
     function themeManager() {
@@ -118,7 +118,7 @@ ApplicationWindow {
         id: stack
 
         anchors.fill: parent
-        initialItem: settingsManager().first_run ? firstRunPage : progressPage
+        initialItem: root.settingsManager().first_run ? firstRunPage : progressPage
 
         Component {
             id: firstRunPage
@@ -265,7 +265,7 @@ ApplicationWindow {
                         highlighted: true
                         onClicked: {
                             console.log("Proceeding to next page...");
-                            settingsManager().first_run = false;
+                            root.settingsManager().first_run = false;
                             stack.push(progressPage);
                         }
                         DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
@@ -290,7 +290,7 @@ ApplicationWindow {
                 title: qsTr("Progress")
                 StackView.onActivated: {
                     // start the scan
-                    pluginManager().beginScan();
+                    root.pluginManager().beginScan();
                 }
 
                 Connections {
@@ -298,7 +298,7 @@ ApplicationWindow {
                         stack.push(projectSelectorPage);
                     }
 
-                    target: pluginScanner()
+                    target: root.pluginScanner()
                 }
 
                 PlaceholderPage {
@@ -316,7 +316,7 @@ ApplicationWindow {
                     Text {
                         id: scanProgressLabel
 
-                        text: qsTr("Scanning:") + " " + pluginManager().currentlyScanningPlugin
+                        text: qsTr("Scanning:") + " " + root.pluginManager().currentlyScanningPlugin
                         horizontalAlignment: Qt.AlignHCenter
                         verticalAlignment: Qt.AlignVCenter
                         Layout.fillWidth: true
