@@ -55,7 +55,9 @@ SampleProcessor::load_instrument_if_empty ()
       if (!json_read)
         {
           /* pick first instrument found */
-          auto instrument = PLUGIN_MANAGER->pick_instrument ();
+          auto instrument =
+            zrythm::plugins::PluginManager::get_active_instance ()
+              ->pick_instrument ();
           if (!instrument)
             return;
 

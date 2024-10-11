@@ -94,17 +94,17 @@ PluginSetting::validate (bool print_result)
     }
 #endif
 
-  zrythm::plugins::PluginProtocol prot = get_descriptor ()->protocol_;
+  const auto prot = get_descriptor ()->protocol_;
   if (
-    prot == zrythm::plugins::PluginProtocol::VST
-    || prot == zrythm::plugins::PluginProtocol::VST3
-    || prot == zrythm::plugins::PluginProtocol::AU
-    || prot == zrythm::plugins::PluginProtocol::SFZ
-    || prot == zrythm::plugins::PluginProtocol::SF2
-    || prot == zrythm::plugins::PluginProtocol::DSSI
-    || prot == zrythm::plugins::PluginProtocol::LADSPA
-    || prot == zrythm::plugins::PluginProtocol::JSFX
-    || prot == zrythm::plugins::PluginProtocol::CLAP)
+    prot == zrythm::plugins::Protocol::ProtocolType::VST
+    || prot == zrythm::plugins::Protocol::ProtocolType::VST3
+    || prot == zrythm::plugins::Protocol::ProtocolType::AudioUnit
+    || prot == zrythm::plugins::Protocol::ProtocolType::SFZ
+    || prot == zrythm::plugins::Protocol::ProtocolType::SF2
+    || prot == zrythm::plugins::Protocol::ProtocolType::DSSI
+    || prot == zrythm::plugins::Protocol::ProtocolType::LADSPA
+    || prot == zrythm::plugins::Protocol::ProtocolType::JSFX
+    || prot == zrythm::plugins::Protocol::ProtocolType::CLAP)
     {
       this->open_with_carla_ = true;
 #if !HAVE_CARLA

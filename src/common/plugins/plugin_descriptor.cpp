@@ -13,11 +13,6 @@
 
 #include <glib/gi18n.h>
 
-constexpr const char * plugin_protocol_strings[] = {
-  "Dummy", "LV2", "DSSI", "LADSPA", "VST",  "VST3",
-  "AU",    "SFZ", "SF2",  "CLAP",   "JSFX",
-};
-
 using namespace zrythm::plugins;
 
 void
@@ -49,205 +44,6 @@ PluginDescriptor::init_after_cloning (
   sha1_ = other.sha1_;
 }
 
-std::string
-PluginDescriptor::get_icon_name_for_protocol (PluginProtocol prot)
-{
-  std::string icon;
-  switch (prot)
-    {
-    case PluginProtocol::LV2:
-      icon = "logo-lv2";
-      break;
-    case PluginProtocol::LADSPA:
-      icon = "logo-ladspa";
-      break;
-    case PluginProtocol::AU:
-      icon = "logo-au";
-      break;
-    case PluginProtocol::VST:
-    case PluginProtocol::VST3:
-      icon = "logo-vst";
-      break;
-    case PluginProtocol::SFZ:
-    case PluginProtocol::SF2:
-      icon = "file-music-line";
-      break;
-    default:
-      icon = "plug";
-      break;
-    }
-  return icon;
-}
-
-std::string
-PluginDescriptor::plugin_protocol_to_str (PluginProtocol prot)
-{
-  return plugin_protocol_strings[ENUM_VALUE_TO_INT (prot)];
-}
-
-PluginProtocol
-PluginDescriptor::plugin_protocol_from_str (const std::string &str)
-{
-  for (size_t i = 0; i < G_N_ELEMENTS (plugin_protocol_strings); i++)
-    {
-      if (plugin_protocol_strings[i] == str)
-        {
-          return (PluginProtocol) i;
-        }
-    }
-  z_return_val_if_reached (PluginProtocol::LV2);
-}
-
-#if HAVE_CARLA
-PluginProtocol
-PluginDescriptor::get_protocol_from_carla_plugin_type (PluginType ptype)
-{
-  switch (ptype)
-    {
-    case CarlaBackend::PLUGIN_LV2:
-      return PluginProtocol::LV2;
-    case CarlaBackend::PLUGIN_AU:
-      return PluginProtocol::AU;
-    case CarlaBackend::PLUGIN_VST2:
-      return PluginProtocol::VST;
-    case CarlaBackend::PLUGIN_VST3:
-      return PluginProtocol::VST3;
-    case CarlaBackend::PLUGIN_SFZ:
-      return PluginProtocol::SFZ;
-    case CarlaBackend::PLUGIN_SF2:
-      return PluginProtocol::SF2;
-    case CarlaBackend::PLUGIN_DSSI:
-      return PluginProtocol::DSSI;
-    case CarlaBackend::PLUGIN_LADSPA:
-      return PluginProtocol::LADSPA;
-#  ifdef CARLA_HAVE_CLAP_SUPPORT
-    case CarlaBackend::PLUGIN_CLAP:
-#  else
-    case (PluginType) 14:
-#  endif
-      return PluginProtocol::CLAP;
-    case CarlaBackend::PLUGIN_JSFX:
-      return PluginProtocol::JSFX;
-    default:
-      z_return_val_if_reached (ENUM_INT_TO_VALUE (PluginProtocol, 0));
-    }
-
-  z_return_val_if_reached (ENUM_INT_TO_VALUE (PluginProtocol, 0));
-}
-
-PluginType
-PluginDescriptor::get_carla_plugin_type_from_protocol (PluginProtocol protocol)
-{
-  switch (protocol)
-    {
-    case PluginProtocol::LV2:
-      return CarlaBackend::PLUGIN_LV2;
-    case PluginProtocol::AU:
-      return CarlaBackend::PLUGIN_AU;
-    case PluginProtocol::VST:
-      return CarlaBackend::PLUGIN_VST2;
-    case PluginProtocol::VST3:
-      return CarlaBackend::PLUGIN_VST3;
-    case PluginProtocol::SFZ:
-      return CarlaBackend::PLUGIN_SFZ;
-    case PluginProtocol::SF2:
-      return CarlaBackend::PLUGIN_SF2;
-    case PluginProtocol::DSSI:
-      return CarlaBackend::PLUGIN_DSSI;
-    case PluginProtocol::LADSPA:
-      return CarlaBackend::PLUGIN_LADSPA;
-    case PluginProtocol::CLAP:
-#  ifdef CARLA_HAVE_CLAP_SUPPORT
-      return CarlaBackend::PLUGIN_CLAP;
-#  else
-      return (PluginType) 14;
-#  endif
-    case PluginProtocol::JSFX:
-      return CarlaBackend::PLUGIN_JSFX;
-    default:
-      z_return_val_if_reached ((PluginType) 0);
-    }
-
-  z_return_val_if_reached ((PluginType) 0);
-}
-
-ZPluginCategory
-PluginDescriptor::get_category_from_carla_category_str (
-  const std::string &category)
-{
-#  define EQUALS(x) (category == x)
-
-  if (EQUALS ("synth"))
-    return ZPluginCategory::INSTRUMENT;
-  else if (EQUALS ("delay"))
-    return ZPluginCategory::DELAY;
-  else if (EQUALS ("eq"))
-    return ZPluginCategory::EQ;
-  else if (EQUALS ("filter"))
-    return ZPluginCategory::FILTER;
-  else if (EQUALS ("distortion"))
-    return ZPluginCategory::DISTORTION;
-  else if (EQUALS ("dynamics"))
-    return ZPluginCategory::DYNAMICS;
-  else if (EQUALS ("modulator"))
-    return ZPluginCategory::MODULATOR;
-  else if (EQUALS ("utility"))
-    return ZPluginCategory::UTILITY;
-  else
-    return ZPluginCategory::NONE;
-
-#  undef EQUALS
-}
-
-ZPluginCategory
-PluginDescriptor::get_category_from_carla_category (
-  CarlaBackend::PluginCategory carla_cat)
-{
-  switch (carla_cat)
-    {
-    case CarlaBackend::PLUGIN_CATEGORY_SYNTH:
-      return ZPluginCategory::INSTRUMENT;
-    case CarlaBackend::PLUGIN_CATEGORY_DELAY:
-      return ZPluginCategory::DELAY;
-    case CarlaBackend::PLUGIN_CATEGORY_EQ:
-      return ZPluginCategory::EQ;
-    case CarlaBackend::PLUGIN_CATEGORY_FILTER:
-      return ZPluginCategory::FILTER;
-    case CarlaBackend::PLUGIN_CATEGORY_DISTORTION:
-      return ZPluginCategory::DISTORTION;
-    case CarlaBackend::PLUGIN_CATEGORY_DYNAMICS:
-      return ZPluginCategory::DYNAMICS;
-    case CarlaBackend::PLUGIN_CATEGORY_MODULATOR:
-      return ZPluginCategory::MODULATOR;
-    case CarlaBackend::PLUGIN_CATEGORY_UTILITY:
-      break;
-    case CarlaBackend::PLUGIN_CATEGORY_OTHER:
-    case CarlaBackend::PLUGIN_CATEGORY_NONE:
-    default:
-      break;
-    }
-  return ZPluginCategory::NONE;
-}
-#endif
-
-bool
-PluginDescriptor::protocol_is_supported (PluginProtocol protocol)
-{
-#ifndef __APPLE__
-  if (protocol == PluginProtocol::AU)
-    return false;
-#endif
-#if defined(_WIN32) || defined(__APPLE__)
-  if (protocol == PluginProtocol::LADSPA || protocol == PluginProtocol::DSSI)
-    return false;
-#endif
-#ifndef CARLA_HAVE_CLAP_SUPPORT
-  if (protocol == PluginProtocol::CLAP)
-    return false;
-#endif
-  return true;
-}
-
 #define IS_CAT(x) (category_ == ZPluginCategory::x)
 
 bool
@@ -267,7 +63,7 @@ PluginDescriptor::is_instrument () const
       return
         /* if VSTs are instruments their category must be INSTRUMENT, otherwise
            they are not */
-        this->protocol_ != PluginProtocol::VST
+        this->protocol_ != Protocol::ProtocolType::VST
         && this->category_ == ZPluginCategory::NONE && this->num_midi_ins_ > 0
         && this->num_audio_outs_ > 0;
     }
@@ -294,7 +90,7 @@ PluginDescriptor::is_midi_modifier () const
 {
   return (this->category_ > ZPluginCategory::NONE
           && this->category_ == ZPluginCategory::MIDI)
-         || (this->category_ == ZPluginCategory::NONE && this->num_midi_ins_ > 0 && this->num_midi_outs_ > 0 && this->protocol_ != PluginProtocol::VST);
+         || (this->category_ == ZPluginCategory::NONE && this->num_midi_ins_ > 0 && this->num_midi_outs_ > 0 && this->protocol_ != Protocol::ProtocolType::VST);
 }
 
 #undef IS_CAT
@@ -445,12 +241,12 @@ PluginDescriptor::has_custom_ui () const
 {
   switch (protocol_)
     {
-    case PluginProtocol::LV2:
-    case PluginProtocol::VST:
-    case PluginProtocol::VST3:
-    case PluginProtocol::AU:
-    case PluginProtocol::CLAP:
-    case PluginProtocol::JSFX:
+    case Protocol::ProtocolType::LV2:
+    case Protocol::ProtocolType::VST:
+    case Protocol::ProtocolType::VST3:
+    case Protocol::ProtocolType::AudioUnit:
+    case Protocol::ProtocolType::CLAP:
+    case Protocol::ProtocolType::JSFX:
 #if HAVE_CARLA
       return zrythm::plugins::CarlaNativePlugin::has_custom_ui (*this);
 #else
@@ -666,7 +462,7 @@ PluginDescriptor::generate_context_menu () const
   /* add to collection */
   GMenu * add_collections_submenu = g_menu_new ();
   int     num_added = 0;
-  for (auto &coll : PLUGIN_MANAGER->collections_->collections_)
+  for (auto &coll : zrythm::plugins::PluginManager::get_active_instance ()->collections_->collections_)
     {
       if (coll->contains_descriptor (*this))
         {
@@ -691,7 +487,7 @@ PluginDescriptor::generate_context_menu () const
   /* remove from collection */
   GMenu * remove_collections_submenu = g_menu_new ();
   num_added = 0;
-  for (auto &coll : PLUGIN_MANAGER->collections_->collections_)
+  for (auto &coll : zrythm::plugins::PluginManager::get_active_instance ()->collections_->collections_)
     {
       if (!coll->contains_descriptor (*this))
         {

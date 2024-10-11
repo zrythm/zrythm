@@ -52,13 +52,38 @@
             "cwd": "${workspaceFolder}",
             "environment": [
                 {
-                    "name": "GSETTINGS_SCHEMA_DIR",
-                    "value": "${config:cmake.installPrefix}/share/glib-2.0/schemas",
+                    "name": "ZRYTHM_BREAK_ON_ERROR",
+                    "value": "1",
                 },
                 {
-                    "name": "G_DEBUG",
-                    "value": "fatal_criticals",
+                    "name": "ASAN_OPTIONS",
+                    "value": "check_initialization_order=1",
                 },
+                {
+                    "name": "QT_QPA_PLATFORM",
+                    "value": "wayland",
+                },
+                {
+                    "name": "ZRYTHM_ENGINE_PATH",
+                    "value": "${config:cmake.buildDirectory}/src/engine/zrythm-engine",
+                },
+                {
+                    "name": "ZRYTHM_PLUGIN_SCANNER_PATH",
+                    "value": "${config:cmake.buildDirectory}/src/common/plugins/plugin-scanner",
+                },
+            ],
+            "args": [
+                "--dummy"
+            ],
+            "miDebuggerArgs": "-ex \"handle SIGPIPE noprint nostop pass\"",
+        },
+        {
+            "name": "Debug Plugin Scanner",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${config:cmake.buildDirectory}/src/common/plugins/plugin-scanner",
+            "cwd": "${workspaceFolder}",
+            "environment": [
                 {
                     "name": "ZRYTHM_BREAK_ON_ERROR",
                     "value": "1",
@@ -74,13 +99,18 @@
                 {
                     "name": "ZRYTHM_ENGINE_PATH",
                     "value": "${config:cmake.buildDirectory}/src/engine/zrythm-engine",
-                }
+                },
+                {
+                    "name": "ZRYTHM_PLUGIN_SCANNER_PATH",
+                    "value": "${config:cmake.buildDirectory}/src/common/plugins/plugin-scanner",
+                },
             ],
             "args": [
-                "--dummy"
+                "VST3",
+                "/usr/lib/vst3/ToolBox.vst3",
             ],
             "miDebuggerArgs": "-ex \"handle SIGPIPE noprint nostop pass\"",
-        }
+        },
         // {
         //     "name": "CTest Target",
         //     "type": "cppdbg",

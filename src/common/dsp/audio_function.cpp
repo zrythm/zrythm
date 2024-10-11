@@ -92,7 +92,7 @@ apply_plugin (
   GError **    error)
 {
   zrythm::plugins::PluginDescriptor * descr =
-    plugin_manager_find_plugin_from_uri (PLUGIN_MANAGER, uri);
+    plugin_manager_find_plugin_from_uri (zrythm::plugins::PluginManager::get_active_instance (), uri);
   z_return_val_if_fail (descr, -1);
   PluginSetting * setting = plugin_setting_new_default (descr);
   z_return_val_if_fail (setting, -1);

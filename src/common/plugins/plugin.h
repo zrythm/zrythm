@@ -148,7 +148,10 @@ public:
 
   PluginDescriptor &get_descriptor () { return *setting_->descr_; }
   std::string       get_name () const { return setting_->descr_->name_; }
-  PluginProtocol get_protocol () const { return setting_->descr_->protocol_; }
+  Protocol::ProtocolType get_protocol () const
+  {
+    return setting_->descr_->protocol_;
+  }
 
   /**
    * @brief Initializes a plugin after deserialization.

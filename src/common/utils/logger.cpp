@@ -190,12 +190,12 @@ Logger::get_log_file_path () const
     }
 
   auto   str_datetime = datetime_get_for_filename ();
-  auto * dir_mgr = DirectoryManager::getInstance ();
   auto   user_log_dir =
-    dir_mgr->get_dir (DirectoryManager::DirectoryType::USER_LOG);
+    QStandardPaths::writableLocation (QStandardPaths::CacheLocation);
   auto log_filepath =
-    fs::path (user_log_dir) / (std::string ("zrythm_") + str_datetime);
-  io_mkdir (user_log_dir); // note: throws
+    fs::path (user_log_dir.toStdString ())
+    / (std::string ("log_") + str_datetime);
+  io_mkdir (user_log_dir.toStdString ()); // note: throws
   return log_filepath.string ();
 }
 

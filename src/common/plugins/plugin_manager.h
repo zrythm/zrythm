@@ -1,14 +1,8 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Plugin manager.
- */
-
-#ifndef __PLUGINS_PLUGIN_MANAGER_H__
-#define __PLUGINS_PLUGIN_MANAGER_H__
+#ifndef ZRYTHM_COMMON_PLUGINS_PLUGIN_MANAGER_H
+#define ZRYTHM_COMMON_PLUGINS_PLUGIN_MANAGER_H
 
 #include <filesystem>
 
@@ -22,16 +16,6 @@
 
 namespace zrythm::plugins
 {
-
-class ZCarlaDiscovery;
-
-/**
- * @addtogroup plugins
- *
- * @{
- */
-
-#define PLUGIN_MANAGER (gZrythm->plugin_manager_)
 
 /**
  * The PluginManager is responsible for scanning and keeping track of available
@@ -63,18 +47,6 @@ public:
     return plugin_descriptors_.get ();
   }
 
-  static std::vector<fs::path> get_paths_for_protocol (PluginProtocol protocol);
-
-  static std::string get_paths_for_protocol_separated (PluginProtocol protocol);
-
-  /**
-   * Searches in the known paths for this plugin protocol for the given relative
-   * path of the plugin and returns the absolute path.
-   */
-  fs::path
-  find_plugin_from_rel_path (PluginProtocol protocol, std::string_view rel_path)
-    const;
-
   Q_INVOKABLE void beginScan ();
 
   /**
@@ -82,11 +54,7 @@ public:
    */
   void add_descriptor (const PluginDescriptor &descr);
 
-  /**
-   * Updates the text in the greeter.
-   */
-  // void set_currently_scanning_plugin (const char * filename, const char *
-  // sha1);
+  static PluginManager * get_active_instance ();
 
   /**
    * Returns a PluginDescriptor for the given URI.
@@ -103,7 +71,7 @@ public:
   /**
    * Returns if the plugin manager supports the given plugin protocol.
    */
-  static bool supports_protocol (PluginProtocol protocol);
+  static bool supports_protocol (Protocol::ProtocolType protocol);
 
   /**
    * Returns an instrument plugin, if any.
@@ -121,6 +89,11 @@ public:
   Q_SIGNAL void scanFinished ();
   Q_SIGNAL void currentlyScanningPluginChanged (const QString &plugin);
 
+  /**
+   * @brief Called by the scanner when it has finished scanning.
+   */
+  Q_SLOT void onScanFinished ();
+
 private:
   /**
    * @brief Adds the given category and author to the lists of plugin categories
@@ -129,20 +102,9 @@ private:
   void
   add_category_and_author (std::string_view category, std::string_view author);
 
-  /**
-   * @brief Source func.
-   */
-  Q_SLOT void call_carla_discovery_idle ();
-
-  static StringArray get_lv2_paths ();
-  static StringArray get_vst2_paths ();
-  static StringArray get_vst3_paths ();
-  static StringArray get_sf_paths (bool sf2);
-  static StringArray get_dssi_paths ();
-  static StringArray get_ladspa_paths ();
-  static StringArray get_clap_paths ();
-  static StringArray get_jsfx_paths ();
-  static StringArray get_au_paths ();
+  static fs::path get_known_plugins_xml_path ();
+  void            serialize_known_plugins ();
+  void            deserialize_known_plugins ();
 
 public:
   /**
@@ -157,19 +119,14 @@ public:
   /** Plugin authors. */
   std::vector<std::string> plugin_authors_;
 
-  /** Cached descriptors */
-  std::unique_ptr<CachedPluginDescriptors> cached_plugin_descriptors_;
+  /** Current known plugin list. */
+  // std::unique_ptr<CachedPluginDescriptors> cached_plugin_descriptors_;
+  std::shared_ptr<juce::KnownPluginList> known_plugin_list_;
 
   /** Plugin collections. */
   std::unique_ptr<PluginCollections> collections_;
 
   std::unique_ptr<PluginScanner> scanner_;
-
-#if HAVE_CARLA
-  std::unique_ptr<ZCarlaDiscovery> carla_discovery_;
-#endif
-
-  // GenericCallback scan_done_cb_;
 
   /** Whether the plugin manager has been set up already. */
   bool setup_ = false;
@@ -180,8 +137,4 @@ public:
 
 } // namespace zrythm::plugins
 
-/**
- * @}
- */
-
-#endif
+#endif // ZRYTHM_COMMON_PLUGINS_PLUGIN_MANAGER_H

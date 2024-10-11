@@ -7,8 +7,8 @@
  * Plugin manager helper.
  */
 
-#ifndef __TEST_HELPERS_PLUGIN_MANAGER_H__
-#define __TEST_HELPERS_PLUGIN_MANAGER_H__
+#ifndef TEST_HELPERS_PLUGIN_MANAGER_H
+#define TEST_HELPERS_PLUGIN_MANAGER_H
 
 #include "zrythm-test-config.h"
 
@@ -95,18 +95,20 @@ test_plugin_manager_get_plugin_setting (
   }
 
   bool scan_finished = false;
-  PLUGIN_MANAGER->clear_plugins ();
-  PLUGIN_MANAGER->begin_scan (1.0, nullptr, [&scan_finished] () {
-    scan_finished = true;
-  });
+  zrythm::plugins::PluginManager::get_active_instance ()->clear_plugins ();
+  zrythm::plugins::PluginManager::get_active_instance ()->begin_scan (
+    1.0, nullptr, [&scan_finished] () { scan_finished = true; });
   while (!scan_finished)
     {
       g_main_context_iteration (nullptr, true);
     }
-  EXPECT_NONEMPTY (PLUGIN_MANAGER->plugin_descriptors_);
+  EXPECT_NONEMPTY (
+    zrythm::plugins::PluginManager::get_active_instance ()->plugin_descriptors_);
 
   std::optional<PluginDescriptor> descr;
-  for (const auto &cur_descr : PLUGIN_MANAGER->plugin_descriptors_)
+  for (
+    const auto &cur_descr :
+    zrythm::plugins::PluginManager::get_active_instance ()->plugin_descriptors_)
     {
       if (pl_uri)
         {

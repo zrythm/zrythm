@@ -1202,8 +1202,9 @@ CarlaNativePlugin::add_internal_plugin_from_descr (
         case PluginProtocol::JSFX:
           {
             /* the URI is a relative path - make it absolute */
-            auto pl_path = PLUGIN_MANAGER->find_plugin_from_rel_path (
-              descr.protocol_, descr.uri_);
+            auto pl_path =
+              zrythm::plugins::PluginManager::get_active_instance ()
+                ->find_plugin_from_rel_path (descr.protocol_, descr.uri_);
             added = carla_add_plugin (
               host_handle_,
               descr.arch_ == PluginArchitecture::ARCH_64_BIT
@@ -1410,7 +1411,8 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
   /* set plugin paths */
   {
     auto paths =
-      PLUGIN_MANAGER->get_paths_for_protocol_separated (get_protocol ());
+      zrythm::plugins::PluginManager::get_active_instance ()
+        ->get_paths_for_protocol_separated (get_protocol ());
     auto ptype = zrythm::plugins::PluginDescriptor::
       get_carla_plugin_type_from_protocol (get_protocol ());
     carla_set_engine_option (

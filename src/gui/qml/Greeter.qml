@@ -294,11 +294,11 @@ ApplicationWindow {
                 }
 
                 Connections {
-                    function onScanningFinished() {
+                    function onScanFinished() {
                         stack.push(projectSelectorPage);
                     }
 
-                    target: root.pluginScanner()
+                    target: root.pluginManager()
                 }
 
                 PlaceholderPage {

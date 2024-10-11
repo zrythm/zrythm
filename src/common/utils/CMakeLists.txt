@@ -15,6 +15,8 @@ target_sources(zrythm_lib
     env.cpp
     exceptions.cpp
     file.cpp
+    file_path_list.h
+    file_path_list.cpp
     gtest_wrapper.cpp
     hash.cpp
     io.cpp

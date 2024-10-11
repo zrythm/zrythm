@@ -37,9 +37,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+#include <utility>
+
+#include "common/plugins/plugin_protocol_paths.h"
 #include "common/plugins/plugin_scanner.h"
 
 using namespace zrythm::plugins;
+using namespace zrythm::plugins::scanner_private;
 
 constexpr auto PLUGIN_SCAN_TIMEOUT = std::chrono::seconds (4);
 
@@ -60,9 +64,7 @@ Superprocess::Superprocess ()
         (fs::path (qApp->applicationDirPath ().toStdString ()) / "plugin-scanner")
           .string ());
     }
-  path =
-    "/home/alex/Documents/git/zrythm/builddir_cmake/src/common/plugins/plugin-scanner";
-  z_debug ("Scanning plugins with {}", path.getFullPathName ());
+  z_trace ("Scanning plugins with {}", path.getFullPathName ());
   if (!launchWorkerProcess (path, ZRYTHM_PLUGIN_SCANNER_UUID, 0, 0))
     {
       z_warning ("Failed to launch plugin scanner worker process");
@@ -71,10 +73,11 @@ Superprocess::Superprocess ()
 
   // z_debug ("Plugin scanner worker process launched");
 }
-Superprocess::~Superprocess () = default;
+OutOfProcessPluginScanner::SubprocessCoordinator::~SubprocessCoordinator () =
+  default;
 
-Superprocess::Response
-Superprocess::getResponse ()
+OutOfProcessPluginScanner::SubprocessCoordinator::Response
+OutOfProcessPluginScanner::SubprocessCoordinator::getResponse ()
 {
   std::unique_lock<std::mutex> lock{ mutex };
 
@@ -83,9 +86,9 @@ Superprocess::getResponse ()
   if (!condvar.wait_for (lock, std::chrono::milliseconds{ 50 }, [&] {
         return gotResult || connectionLost;
       }))
-    return { State::timeout, nullptr };
+    return { State::Timeout, nullptr };
 
-  const auto state = connectionLost ? State::connectionLost : State::gotResult;
+  const auto state = connectionLost ? State::ConnectionLost : State::GotResult;
   connectionLost = false;
   gotResult = false;
 
@@ -93,7 +96,8 @@ Superprocess::getResponse ()
 }
 
 void
-Superprocess::handleMessageFromWorker (const juce::MemoryBlock &mb)
+OutOfProcessPluginScanner::SubprocessCoordinator::handleMessageFromWorker (
+  const juce::MemoryBlock &mb)
 {
   const std::lock_guard<std::mutex> lock{ mutex };
   z_trace ("Received message from plugin scanner worker:\n{}", mb.toString ());
@@ -103,7 +107,7 @@ Superprocess::handleMessageFromWorker (const juce::MemoryBlock &mb)
 }
 
 void
-Superprocess::handleConnectionLost ()
+OutOfProcessPluginScanner::SubprocessCoordinator::handleConnectionLost ()
 {
   const std::lock_guard<std::mutex> lock{ mutex };
   z_info ("Connection lost with worker");
@@ -113,20 +117,21 @@ Superprocess::handleConnectionLost ()
 
 //==============================================================================
 
-CustomPluginScanner::CustomPluginScanner (QObject * parent) : QObject (parent)
+OutOfProcessPluginScanner::OutOfProcessPluginScanner (QObject * parent)
+    : QObject (parent)
 {
 }
-CustomPluginScanner::~CustomPluginScanner () = default;
+OutOfProcessPluginScanner::~OutOfProcessPluginScanner () = default;
 
 bool
-CustomPluginScanner::findPluginTypesFor (
+OutOfProcessPluginScanner::findPluginTypesFor (
   juce::AudioPluginFormat                   &format,
   juce::OwnedArray<juce::PluginDescription> &result,
   const juce::String                        &fileOrIdentifier)
 {
   z_debug ("Scanning {}", fileOrIdentifier);
 
-  if (addPluginDescriptions (format.getName (), fileOrIdentifier, result))
+  if (add_plugin_descriptions (format, fileOrIdentifier, result))
     return true;
 
   superprocess = nullptr;
@@ -134,9 +139,9 @@ CustomPluginScanner::findPluginTypesFor (
 }
 
 bool
-CustomPluginScanner::addPluginDescriptions (
-  const juce::String                        &formatName,
-  const juce::String                        &fileOrIdentifier,
+OutOfProcessPluginScanner::add_plugin_descriptions (
+  juce::AudioPluginFormat                   &format,
+  const juce::String                        &file_or_identifier,
   juce::OwnedArray<juce::PluginDescription> &result)
 {
   if (superprocess == nullptr)
@@ -144,10 +149,11 @@ CustomPluginScanner::addPluginDescriptions (
 
   juce::MemoryBlock        block;
   juce::MemoryOutputStream stream{ block, true };
-  stream.writeString (formatName);
-  stream.writeString (fileOrIdentifier);
+  stream.writeString (format.getName ());
+  stream.writeString (file_or_identifier);
 
-  z_trace ("Sending scan request for {} {}", formatName, fileOrIdentifier);
+  z_trace (
+    "Sending scan request for {} {}", format.getName (), file_or_identifier);
 
   if (!superprocess->sendMessageToWorker (block))
     return false;
@@ -161,14 +167,14 @@ CustomPluginScanner::addPluginDescriptions (
 
       const auto response = superprocess->getResponse ();
 
-      if (response.state == Superprocess::State::timeout)
+      if (response.state == SubprocessCoordinator::State::Timeout)
         {
           // Check if the total time elapsed exceeds the timeout
           auto current_time = std::chrono::steady_clock::now ();
           if (current_time - start_time > PLUGIN_SCAN_TIMEOUT)
             {
               z_warning (
-                "Scan for '{}' timed out after {} seconds", fileOrIdentifier,
+                "Scan for '{}' timed out after {} seconds", file_or_identifier,
                 PLUGIN_SCAN_TIMEOUT.count ());
               return false;
             }
@@ -192,23 +198,21 @@ CustomPluginScanner::addPluginDescriptions (
             }
         }
 
-      return (response.state == Superprocess::State::gotResult);
+      return (response.state == SubprocessCoordinator::State::GotResult);
     }
 }
 
 //==============================================================================
 
-PluginScanWorker::PluginScanWorker (PluginScanner &scanner) : scanner_ (scanner)
-{
-}
+Worker::Worker (PluginScanner &scanner) : scanner_ (scanner) { }
 
 void
-PluginScanWorker::process ()
+Worker::process ()
 {
   z_info ("Scanning for plugins...");
 
-  scanner_.known_plugin_list_.setCustomScanner (
-    std::make_unique<CustomPluginScanner> ());
+  scanner_.known_plugin_list_->setCustomScanner (
+    std::make_unique<OutOfProcessPluginScanner> ());
 
   // Initialize the format manager
   juce::AudioPluginFormatManager formatManager;
@@ -219,24 +223,28 @@ PluginScanWorker::process ()
   for (auto * format : formatManager.getFormats ())
     {
       z_debug ("Scanning plugins for format {}", format->getName ());
-      auto defaultLocations = format->getDefaultLocationsToSearch ();
-      auto identifiers =
-        format->searchPathsForPlugins (defaultLocations, true, true);
+      const auto protocol = Protocol::from_juce_format_name (format->getName ());
+      const auto paths = PluginProtocolPaths::get_for_protocol (protocol);
+      // auto defaultLocations = format->getDefaultLocationsToSearch ();
+      auto identifiers = format->searchPathsForPlugins (
+        paths->get_as_juce_file_search_path (), true, true);
       for (const auto &identifier : identifiers)
         {
           scanner_.set_currently_scanning_plugin (
             QString::fromStdString (identifier.toStdString ()));
           juce::OwnedArray<juce::PluginDescription> types;
-          bool ret = scanner_.known_plugin_list_.scanAndAddFile (
+          bool has_new = scanner_.known_plugin_list_->scanAndAddFile (
             identifier, true, types, *format);
-          if (ret)
+          if (has_new)
             {
-              // TODO
+              z_info (
+                "Found new plugins for identifier '{}' (total types {})",
+                identifier, types.size ());
             }
-          else
+          if (types.isEmpty ())
             {
               z_warning ("Blacklisting plugin: {}", identifier);
-              scanner_.known_plugin_list_.addToBlacklist (identifier);
+              scanner_.known_plugin_list_->addToBlacklist (identifier);
             }
         }
     }
@@ -246,8 +254,11 @@ PluginScanWorker::process ()
 
 //==============================================================================
 
-PluginScanner::PluginScanner (QObject * parent)
-    : QObject (parent), currently_scanning_plugin_ ("Scanning...")
+PluginScanner::PluginScanner (
+  std::shared_ptr<juce::KnownPluginList> known_plugins,
+  QObject *                              parent)
+    : QObject (parent), known_plugin_list_ (known_plugins),
+      currently_scanning_plugin_ ("Scanning...")
 {
 }
 
@@ -255,25 +266,22 @@ void
 PluginScanner::beginScan ()
 {
   auto * scan_thread = new QThread ();
-  auto * worker = new PluginScanWorker (*this);
+  auto * worker = new Worker (*this);
   worker->moveToThread (scan_thread);
-  QObject::connect (
-    scan_thread, &QThread::started, worker, &PluginScanWorker::process);
-  QObject::connect (
-    worker, &PluginScanWorker::finished, scan_thread, &QThread::quit);
-  QObject::connect (
-    worker, &PluginScanWorker::finished, worker, &PluginScanWorker::deleteLater);
+  QObject::connect (scan_thread, &QThread::started, worker, &Worker::process);
+  QObject::connect (worker, &Worker::finished, scan_thread, &QThread::quit);
+  QObject::connect (worker, &Worker::finished, worker, &Worker::deleteLater);
   QObject::connect (
     scan_thread, &QThread::finished, scan_thread, &QThread::deleteLater);
   QObject::connect (
-    worker, &PluginScanWorker::finished, this, &PluginScanner::scan_finished);
+    worker, &Worker::finished, this, &PluginScanner::scan_finished);
   scan_thread->start ();
 }
 
 void
 PluginScanner::scan_finished ()
 {
-  auto xml = known_plugin_list_.createXml ();
+  auto xml = known_plugin_list_->createXml ();
   auto str = xml->toString ();
   z_debug ("Plugins:\n{}", str);
   Q_EMIT scanningFinished ();

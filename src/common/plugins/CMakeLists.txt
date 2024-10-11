@@ -19,8 +19,12 @@ target_sources(zrythm_lib
     plugin_identifier.h
     plugin_manager.cpp
     plugin_manager.h
+    plugin_protocol_paths.cpp
+    plugin_protocol_paths.h
     plugin_scanner.cpp
     plugin_scanner.h
+    protocol.cpp
+    protocol.h
     )
 
 add_executable(plugin-scanner

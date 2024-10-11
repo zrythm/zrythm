@@ -9,6 +9,7 @@
 #include <filesystem>
 
 #include "common/io/serialization/iserializable.h"
+#include "common/plugins/protocol.h"
 
 #include <QObject>
 
@@ -74,25 +75,6 @@ enum class ZPluginCategory
 };
 
 /**
- * Plugin protocol.
- */
-enum class PluginProtocol
-{
-  /** Dummy protocol for tests. */
-  DUMMY,
-  LV2,
-  DSSI,
-  LADSPA,
-  VST,
-  VST3,
-  AU,
-  SFZ,
-  SF2,
-  CLAP,
-  JSFX,
-};
-
-/**
  * 32 or 64 bit.
  */
 enum class PluginArchitecture
@@ -140,21 +122,6 @@ class PluginDescriptor final
   Q_PROPERTY (QString name READ getName CONSTANT FINAL)
 
 public:
-  static std::string plugin_protocol_to_str (PluginProtocol prot);
-
-  static PluginProtocol plugin_protocol_from_str (const std::string &str);
-#if HAVE_CARLA
-  static PluginProtocol
-  get_protocol_from_carla_plugin_type (CarlaBackend::PluginType ptype);
-  static CarlaBackend::PluginType
-  get_carla_plugin_type_from_protocol (PluginProtocol protocol);
-  static ZPluginCategory
-  get_category_from_carla_category_str (const std::string &category);
-  static ZPluginCategory
-  get_category_from_carla_category (CarlaBackend::PluginCategory carla_cat);
-#endif
-  static bool            protocol_is_supported (PluginProtocol protocol);
-  static std::string     get_icon_name_for_protocol (PluginProtocol prot);
   static ZPluginCategory string_to_category (const std::string &str);
   static std::string     category_to_string (ZPluginCategory category);
 
@@ -240,7 +207,7 @@ public:
   /** Architecture (32/64bit). */
   PluginArchitecture arch_ = PluginArchitecture::ARCH_32_BIT;
   /** Plugin protocol (Lv2/DSSI/LADSPA/VST/etc.). */
-  PluginProtocol protocol_ = PluginProtocol::DUMMY;
+  Protocol::ProtocolType protocol_ = Protocol::ProtocolType::Internal;
   /** Path, if not an Lv2Plugin which uses URIs. */
   fs::path path_;
   /** Lv2Plugin URI. */

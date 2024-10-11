@@ -1888,7 +1888,7 @@ template <typename T>
 T *
 Plugin::get_port_by_symbol (const std::string &sym)
 {
-  z_return_val_if_fail (get_protocol () == PluginProtocol::LV2, nullptr);
+  z_return_val_if_fail (get_protocol () == Protocol::ProtocolType::LV2, nullptr);
 
   auto find_port = [&sym] (const auto &ports) {
     return std::find_if (ports.begin (), ports.end (), [&sym] (const auto &port) {
