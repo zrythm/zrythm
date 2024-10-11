@@ -49,7 +49,7 @@ constexpr auto PLUGIN_SCAN_TIMEOUT = std::chrono::seconds (4);
 
 //==============================================================================
 
-Superprocess::Superprocess ()
+OutOfProcessPluginScanner::SubprocessCoordinator::SubprocessCoordinator ()
 {
   const auto path_from_env = QProcessEnvironment::systemEnvironment ().value (
     "ZRYTHM_PLUGIN_SCANNER_PATH");
@@ -134,7 +134,7 @@ OutOfProcessPluginScanner::findPluginTypesFor (
   if (add_plugin_descriptions (format, fileOrIdentifier, result))
     return true;
 
-  superprocess = nullptr;
+  coordinator_ = nullptr;
   return false;
 }
 
@@ -144,8 +144,8 @@ OutOfProcessPluginScanner::add_plugin_descriptions (
   const juce::String                        &file_or_identifier,
   juce::OwnedArray<juce::PluginDescription> &result)
 {
-  if (superprocess == nullptr)
-    superprocess = std::make_unique<Superprocess> ();
+  if (coordinator_ == nullptr)
+    coordinator_ = std::make_unique<SubprocessCoordinator> ();
 
   juce::MemoryBlock        block;
   juce::MemoryOutputStream stream{ block, true };
@@ -155,7 +155,7 @@ OutOfProcessPluginScanner::add_plugin_descriptions (
   z_trace (
     "Sending scan request for {} {}", format.getName (), file_or_identifier);
 
-  if (!superprocess->sendMessageToWorker (block))
+  if (!coordinator_->sendMessageToWorker (block))
     return false;
 
   const auto start_time = std::chrono::steady_clock::now ();
@@ -165,7 +165,7 @@ OutOfProcessPluginScanner::add_plugin_descriptions (
       if (shouldExit ())
         return true;
 
-      const auto response = superprocess->getResponse ();
+      const auto response = coordinator_->getResponse ();
 
       if (response.state == SubprocessCoordinator::State::Timeout)
         {

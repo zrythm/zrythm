@@ -96,7 +96,7 @@ private:
   class SubprocessCoordinator final : private juce::ChildProcessCoordinator
   {
   public:
-    SubprocessCoordinator (bool is_trivial = false);
+    SubprocessCoordinator ();
     ~SubprocessCoordinator () override;
 
     enum class State
@@ -127,7 +127,6 @@ private:
     std::unique_ptr<juce::XmlElement> pluginDescription;
     bool                              connectionLost = false;
     bool                              gotResult = false;
-    bool                              is_trivial_ = false;
 
     JUCE_DECLARE_NON_MOVEABLE (SubprocessCoordinator)
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SubprocessCoordinator)

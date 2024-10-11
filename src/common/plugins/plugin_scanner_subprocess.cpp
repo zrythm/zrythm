@@ -177,9 +177,26 @@ PluginScannerSubprocess::initialise (const juce::String &commandLineParameters)
     }
   else
     {
-      juce::Logger::writeToLog (
-        "Failed to initialize (cmd line: " + commandLineParameters + ")");
-      juce::JUCEApplicationBase::quit ();
+      const auto cmd_array = getCommandLineParameterArray ();
+      if (cmd_array.size () >= 2)
+        {
+          const auto format_name = cmd_array[0];
+          const auto identifier = cmd_array[1];
+          juce::Logger::writeToLog (
+            "Attempting to scan: " + format_name + " | " + identifier);
+          juce::MemoryBlock        block;
+          juce::MemoryOutputStream stream{ block, true };
+          stream.writeString (format_name);
+          stream.writeString (identifier);
+          handleMessageFromCoordinator (block);
+          juce::JUCEApplicationBase::quit ();
+        }
+      else
+        {
+          juce::Logger::writeToLog (
+            "Failed to initialize (cmd line: " + commandLineParameters + ")");
+          juce::JUCEApplicationBase::quit ();
+        }
     }
 }
 
