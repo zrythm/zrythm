@@ -74,6 +74,7 @@ target_compile_definitions(juce_lib
     JUCE_PLUGINHOST_VST3=1
     JUCE_PLUGINHOST_LADSPA=1
     JUCE_PLUGINHOST_LV2=1
+    JUCE_DISABLE_JUCE_VERSION_PRINTING=1
 )
 if(IS_DEBUG_BUILD)
   target_compile_definitions(juce_lib PUBLIC JUCE_DEBUG=1 DEBUG=1)
