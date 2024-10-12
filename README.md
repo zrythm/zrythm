@@ -6,6 +6,8 @@ SPDX-License-Identifier: FSFAP
 Zrythm
 ======
 
+**IMPORTANT: Zrythm is undergoing major refactoring in this branch - if you are looking for a usable version see the `v1` branch**
+
 [![translated](https://hosted.weblate.org/widgets/zrythm/-/svg-badge.svg "Translation Status")](https://hosted.weblate.org/engage/zrythm/?utm_source=widget)
 
 *a highly automated and intuitive digital audio workstation*
@@ -22,11 +24,8 @@ Key features include:
 * Chord assistance for musical composition
 * Support for various plugin and file formats
 
-Zrythm is
-[free software](https://www.gnu.org/philosophy/free-sw.html)
-written in C/C++ using the
-[GTK4](https://docs.gtk.org/gtk4/overview.html)
-toolkit.
+Zrythm is [free software](https://www.gnu.org/philosophy/free-sw.html) written
+in C/C++ using the Qt6/QML and JUCE8 frameworks.
 
 ## Features
 
