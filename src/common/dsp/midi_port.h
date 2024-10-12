@@ -97,7 +97,7 @@ public:
   std::atomic<bool> has_midi_events_ = false;
 
   /** Used by the UI to detect when unprocessed MIDI events exist. */
-  gint64 last_midi_event_time_;
+  qint64 last_midi_event_time_ = 0;
 
   /**
    * Last known MIDI status byte received.
@@ -114,7 +114,7 @@ public:
    *
    * Used for some backends only.
    */
-  gint64 last_midi_dequeue_ = 0;
+  qint64 last_midi_dequeue_ = 0;
 
 #if HAVE_RTMIDI
   /**

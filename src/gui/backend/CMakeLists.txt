@@ -3,6 +3,8 @@
 
 target_sources(zrythm_lib
   PRIVATE
+    alert_manager.h
+    alert_manager.cpp
     plugin_descriptor.h
     plugin_descriptor_list.h
     project_manager.h

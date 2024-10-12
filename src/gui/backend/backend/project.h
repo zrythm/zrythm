@@ -95,11 +95,21 @@ enum class ProjectCompressionFlag
  * A project (or song), contains all the project data as opposed to zrythm_app.h
  * which manages global things like plugin descriptors and global settings.
  **/
-class Project final : public ISerializable<Project>, public ICloneable<Project>
+class Project final
+    : public QObject,
+      virtual public ISerializable<Project>,
+      public ICloneable<Project>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  Q_PROPERTY (QString title READ getTitle WRITE setTitle NOTIFY titleChanged)
+  Q_PROPERTY (
+    QString directory READ getDirectory WRITE setDirectory NOTIFY
+      directoryChanged)
+
 public:
-  Project ();
-  Project (std::string &title);
+  Project (QObject * parent = nullptr);
+  Project (std::string &title, QObject * parent = nullptr);
   ~Project () override;
 
   /**
@@ -129,6 +139,20 @@ public:
     /** Editor arranger. */
     Editor,
   };
+
+  // =========================================================
+  // QML interface
+  // =========================================================
+
+  QString getTitle () const;
+  void    setTitle (const QString &title);
+  QString getDirectory () const;
+  void    setDirectory (const QString &directory);
+
+  Q_SIGNAL void titleChanged (const QString &title);
+  Q_SIGNAL void directoryChanged (const QString &directory);
+
+  // =========================================================
 
   /**
    * Returns the requested project path as a newly allocated string.

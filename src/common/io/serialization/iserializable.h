@@ -512,7 +512,7 @@ public:
   void deserialize (const Context &ctx)
   {
     deserialize_with_custom (ctx, [this] (const Context &c) {
-      static_cast<Derived *> (this)->define_fields (c);
+      dynamic_cast<Derived *> (this)->define_fields (c);
     });
   }
 
@@ -609,7 +609,7 @@ public:
     Context ctx (
       root, document_type, deserialized_format_major_version,
       deserialized_format_minor_version);
-    static_cast<Derived *> (this)->deserialize (ctx);
+    dynamic_cast<Derived *> (this)->deserialize (ctx);
     z_debug ("done deserializing from json");
 
     yyjson_doc_free (doc);

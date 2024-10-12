@@ -31,6 +31,10 @@ ApplicationWindow {
         return GlobalState.projectManager;
     }
 
+    function alertManager() {
+        return GlobalState.alertManager;
+    }
+
     title: "Zrythm"
     modality: Qt.ApplicationModal
     minimumWidth: 256
@@ -498,6 +502,8 @@ ApplicationWindow {
                     }
 
                     ZrythmComboBox {
+                        id: projectTemplateField
+
                         Layout.fillWidth: true
                         textRole: "name"
                         valueRole: "path"
@@ -511,7 +517,9 @@ ApplicationWindow {
                         text: qsTr("Create Project")
                         Layout.alignment: Qt.AlignHCenter
                         onClicked: {
-                            /* TODO root.projectManager().createProject( */
+                            // start the project creation process asynchronusly
+                            root.projectManager().createNewProject(projectDirectoryField.selectedUrl, projectNameField.text, projectTemplateField.currentValue);
+                            stack.push(projectCreationProgressPage);
                         }
                     }
 
@@ -519,6 +527,67 @@ ApplicationWindow {
 
             }
 
+        }
+
+        Component {
+            id: projectCreationProgressPage
+
+            Page {
+                title: qsTr("Creating Project")
+
+                ColumnLayout {
+                    anchors {
+                        centerIn: parent
+                    }
+                    spacing: 10
+
+                    Label {
+                        Layout.alignment: Qt.AlignHCenter
+                        text: qsTr("Creating Project...")
+                        font.pointSize: 16
+                        font.bold: true
+                    }
+
+                    BusyIndicator {
+                        Layout.alignment: Qt.AlignHCenter
+                        running: true
+                    }
+
+                }
+
+            }
+
+        }
+
+        Connections {
+            function onProjectLoaded(project) {
+                console.log("Project loaded: ", project.name);
+                root.projectManager().activeProject = project;
+                console.log("Opening project: ", root.projectManager().activeProject.name);
+            }
+
+            function onProjectLoadingFailed(errorMessage) {
+                console.log("Project loading failed: ", errorMessage);
+                stack.pop();
+                root.alertManager().showAlert(qsTr("Project Loading Failed"), errorMessage);
+            }
+
+            target: root.projectManager()
+        }
+
+        Connections {
+            function onAlertRequested(title, message) {
+                console.log("Alert requested: ", title, message);
+                alertDialog.alertTitle = title;
+                alertDialog.alertMessage = message;
+                alertDialog.open()
+            }
+            target: root.alertManager()
+        }
+
+        ZrythmAlertDialog {
+            id: alertDialog
+            anchors.centerIn: parent
         }
 
         pushEnter: Transition {

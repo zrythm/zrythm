@@ -522,3 +522,8 @@ StereoPorts::connect_to (StereoPorts &dest, bool locked)
   l_->connect_to (*dest.l_, locked);
   r_->connect_to (*dest.r_, locked);
 }
+
+StereoPorts::~StereoPorts ()
+{
+  disconnect ();
+}

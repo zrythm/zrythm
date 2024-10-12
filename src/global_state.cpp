@@ -28,3 +28,10 @@ GlobalState::getProjectManager ()
   return dynamic_cast<zrythm::gui::ZrythmApplication *> (qApp)
     ->get_project_manager ();
 }
+
+zrythm::gui::AlertManager *
+GlobalState::getAlertManager ()
+{
+  return dynamic_cast<zrythm::gui::ZrythmApplication *> (qApp)
+    ->get_alert_manager ();
+}

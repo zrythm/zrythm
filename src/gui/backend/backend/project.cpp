@@ -39,8 +39,8 @@
 #include <glibmm.h>
 #include <zstd.h>
 
-Project::Project ()
-    : version_ (Zrythm::get_version (false)),
+Project::Project (QObject * parent)
+    : QObject (parent), version_ (Zrythm::get_version (false)),
       port_connections_manager_ (std::make_unique<PortConnectionsManager> ()),
       quantize_opts_editor_ (
         std::make_unique<QuantizeOptions> (NoteLength::NOTE_LENGTH_1_8)),
@@ -64,7 +64,7 @@ Project::Project ()
   audio_engine_ = std::make_unique<AudioEngine> (this);
 }
 
-Project::Project (std::string &title) : Project ()
+Project::Project (std::string &title, QObject * parent) : Project (parent)
 {
   title_ = title;
 }
@@ -1093,4 +1093,36 @@ Project::init_after_cloning (const Project &other)
   undo_manager_ = other.undo_manager_->clone_unique ();
 
   z_debug ("finished cloning project");
+}
+
+QString
+Project::getTitle () const
+{
+  return QString::fromStdString (title_);
+}
+
+void
+Project::setTitle (const QString &title)
+{
+  if (title_ == title.toStdString ())
+    return;
+
+  title_ = title.toStdString ();
+  Q_EMIT titleChanged (title);
+}
+
+QString
+Project::getDirectory () const
+{
+  return QString::fromStdString (dir_);
+}
+
+void
+Project::setDirectory (const QString &directory)
+{
+  if (dir_ == directory.toStdString ())
+    return;
+
+  dir_ = directory.toStdString ();
+  Q_EMIT directoryChanged (directory);
 }

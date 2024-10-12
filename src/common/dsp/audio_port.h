@@ -139,7 +139,7 @@ private:
   float peak_ = 0.f;
 
   /** Last time @ref peak_ was set. */
-  gint64 peak_timestamp_ = 0;
+  qint64 peak_timestamp_ = 0;
 };
 
 /**
@@ -166,7 +166,7 @@ public:
    */
   StereoPorts (bool input, std::string name, std::string symbol);
 
-  ~StereoPorts () { disconnect (); }
+  ~StereoPorts () override;
 
   template <typename T> void init_loaded (T * owner)
   {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "gui/backend/backend/project.h"
+
 #include <QtQmlIntegration>
 
 #include "recent_projects_model.h"
@@ -13,12 +15,16 @@ class ProjectManager : public QObject
   QML_ELEMENT
   Q_PROPERTY (
     RecentProjectsModel * recentProjects READ getRecentProjects CONSTANT)
+  Q_PROPERTY (
+    Project * activeProject READ getActiveProject WRITE setActiveProject NOTIFY
+      activeProjectChanged)
 
 public:
   ProjectManager (QObject * parent = nullptr);
 
   using Template = fs::path;
   using TemplateList = std::vector<Template>;
+  using ProjectLoadResult = std::variant<Project *, QString>;
 
   static ProjectManager * get_instance ();
 
@@ -35,9 +41,23 @@ public:
   Q_INVOKABLE static QString
   getNextAvailableProjectName (const QUrl &directory, const QString &name);
 
+  Q_INVOKABLE void createNewProject (
+    const QUrl    &directory,
+    const QString &name,
+    const QUrl    &templateUrl = QUrl{});
+  Q_INVOKABLE void loadProject (const QString &filepath);
+
   void add_to_recent_projects (const QString &path);
 
   RecentProjectsModel * getRecentProjects () const;
+
+  Project * getActiveProject () const;
+  void      setActiveProject (Project * project);
+
+Q_SIGNALS:
+  void projectLoaded (Project * project);
+  void projectLoadingFailed (const QString &errorMessage);
+  void activeProjectChanged (Project * project);
 
 private:
   /**
@@ -56,7 +76,21 @@ private:
    */
   Template demo_template_;
 
-  RecentProjectsModel * recent_projects_model_;
+  RecentProjectsModel * recent_projects_model_ = nullptr;
+
+  /**
+   * @brief Currently active project.
+   *
+   * @note We manage lifetime via Qt, so remember to use `setParent()`.
+   */
+  Project * active_project_ = nullptr;
+
+  /**
+   * @brief Future watcher for when a project is loaded (or fails to load).
+   *
+   * This is used to notify the UI when the project is loaded.
+   */
+  QFutureWatcher<ProjectLoadResult> project_watcher_;
 };
 
 } /// namespace zrythm::gui

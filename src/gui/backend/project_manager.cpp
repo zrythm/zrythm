@@ -3,6 +3,8 @@
 #include "gui/backend/zrythm_application.h"
 #include "project_manager.h"
 
+#include <QtConcurrent>
+
 using namespace zrythm::gui;
 
 ProjectManager::ProjectManager (QObject * parent)
@@ -10,6 +12,22 @@ ProjectManager::ProjectManager (QObject * parent)
 {
   z_debug ("Initializing project manager...");
   init_templates ();
+
+  QObject::connect (
+    &project_watcher_, &QFutureWatcher<ProjectLoadResult>::finished, this,
+    [this] () {
+      auto project_res = project_watcher_.result ();
+      if (project_res.index () == 0)
+        {
+          auto * project = std::get<Project *> (project_res);
+          Q_EMIT projectLoaded (project);
+        }
+      else
+        {
+          auto error_msg = std::get<QString> (project_res);
+          Q_EMIT projectLoadingFailed (error_msg);
+        }
+    });
 }
 
 void
@@ -114,4 +132,78 @@ ProjectManager::getRecentProjects () const
 {
   z_trace ("Getting recent projects...");
   return recent_projects_model_;
+}
+
+void
+ProjectManager::createNewProject (
+  const QUrl    &directory,
+  const QString &name,
+  const QUrl    &templateUrl)
+{
+  auto directory_file = directory.toLocalFile ();
+  z_debug ("Creating new project in {}", directory_file);
+
+  QFuture<ProjectLoadResult> future =
+    QtConcurrent::run ([directory_file, name, templateUrl, this] () {
+      // auto * project = new Project (this);
+      Project * project = nullptr;
+      (void) this;
+      // Simulate long-running operation
+      QThread::sleep (3);
+      if (project)
+        {
+          return ProjectLoadResult (project);
+        }
+
+      return ProjectLoadResult (QString ("Failed to create project"));
+    });
+  project_watcher_.setFuture (future);
+}
+
+void
+ProjectManager::loadProject (const QString &filepath)
+{
+  z_debug ("Loading project from {}", filepath);
+
+  QFuture<ProjectLoadResult> future = QtConcurrent::run ([filepath, this] () {
+    // auto * project = new Project (this);
+    Project * project = nullptr;
+    (void) this;
+    // Simulate long-running operation
+    QThread::sleep (3);
+    if (project)
+      {
+        return ProjectLoadResult (project);
+      }
+
+    return ProjectLoadResult (QString ("Failed to load project"));
+  });
+  project_watcher_.setFuture (future);
+}
+
+Project *
+ProjectManager::getActiveProject () const
+{
+  return active_project_;
+}
+
+void
+ProjectManager::setActiveProject (Project * project)
+{
+  if (active_project_ == project)
+    return;
+
+  if (active_project_)
+    {
+      active_project_->setParent (nullptr);
+      active_project_->deleteLater ();
+    }
+
+  active_project_ = project;
+  if (active_project_)
+    {
+      active_project_->setParent (this);
+    }
+
+  Q_EMIT activeProjectChanged (active_project_);
 }

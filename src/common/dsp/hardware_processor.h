@@ -123,7 +123,7 @@ public:
   /** Whether currently active. */
   bool activated_ = false;
 
-  guint rescan_timeout_id_ = 0;
+  quint64 rescan_timeout_id_ = 0;
 
   /** Pointer to owner engine, if any. */
   AudioEngine * engine_ = nullptr;

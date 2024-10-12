@@ -39,6 +39,7 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   juce ::JUCEApplicationBase ::createInstance = &juce_CreateApplication;
   juce::MessageManager::getInstance ()->setCurrentThreadAsMessageThread ();
 
+  alert_manager_ = new AlertManager (this);
   settings_manager_ = new SettingsManager (this);
   theme_manager_ = new ThemeManager (this);
   project_manager_ = new ProjectManager (this);
@@ -136,6 +137,12 @@ ProjectManager *
 ZrythmApplication::get_project_manager () const
 {
   return project_manager_;
+}
+
+AlertManager *
+ZrythmApplication::get_alert_manager () const
+{
+  return alert_manager_;
 }
 
 void
