@@ -73,10 +73,6 @@ public:
 
   void init ();
 
-  void add_to_recent_projects (const std::string &filepath);
-
-  void remove_recent_project (const std::string &filepath);
-
   zrythm::plugins::PluginManager * getPluginManager () const
   {
     return plugin_manager_.get ();
@@ -139,11 +135,6 @@ public:
    */
   void init_user_dirs_and_files ();
 
-  /**
-   * Initializes the array of project templates.
-   */
-  void init_templates ();
-
   FileManager &get_file_manager () { return file_manager_; }
 
 private:
@@ -157,19 +148,6 @@ public:
    * Application settings
    */
   std::unique_ptr<Settings> settings_;
-
-  /** +1 to ensure last element is NULL in case full. */
-  StringArray recent_projects_;
-
-  /** NULL terminated array of project template absolute paths. */
-  StringArray templates_;
-
-  /**
-   * Demo project template used when running for the first time.
-   *
-   * This is a copy of one of the strings in Zrythm.templates.
-   */
-  std::string demo_template_;
 
   /** Whether the open file is a template to be used to create a new project
    * from. */

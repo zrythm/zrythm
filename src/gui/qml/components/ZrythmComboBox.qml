@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls.Basic
 import QtQuick.Effects
@@ -42,6 +43,10 @@ ComboBox {
             anchors.fill: delegate
             radius: 6
             color: delegate.hovered ? palette.highlight : "transparent"
+        }
+
+        Component.onCompleted: {
+            console.log("onCompleted", delegate.text, delegate.model, delegate.model[control.textRole])
         }
 
     }

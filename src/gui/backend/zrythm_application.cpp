@@ -41,6 +41,7 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
 
   settings_manager_ = new SettingsManager (this);
   theme_manager_ = new ThemeManager (this);
+  project_manager_ = new ProjectManager (this);
 
   launch_engine_process ();
 
@@ -85,6 +86,8 @@ ZrythmApplication::post_exec_initialization ()
 {
   setup_ipc ();
 
+  // do this on demand, not on startup
+#if 0
   /* init directories in user path */
   try
     {
@@ -95,7 +98,7 @@ ZrythmApplication::post_exec_initialization ()
       z_critical ("Failed to create user dirs and files: {}", e.what ());
       return;
     }
-  gZrythm->init_templates ();
+#endif
 }
 
 void
@@ -127,6 +130,12 @@ ThemeManager *
 ZrythmApplication::get_theme_manager () const
 {
   return theme_manager_;
+}
+
+ProjectManager *
+ZrythmApplication::get_project_manager () const
+{
+  return project_manager_;
 }
 
 void

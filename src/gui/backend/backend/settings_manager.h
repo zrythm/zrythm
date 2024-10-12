@@ -9,6 +9,7 @@
 #include "common/utils/logger.h"
 #include "common/utils/math.h"
 
+#include <QCoreApplication>
 #include <QSettings>
 #include <QStandardPaths>
 
@@ -69,6 +70,7 @@ class SettingsManager final : public QObject
 {
   Q_OBJECT
 
+  // FIXME: should be part of DirectoryManager, not an editable setting
   DEFINE_SETTING_PROPERTY (
     QString,
     zrythm_user_path,
@@ -89,6 +91,15 @@ class SettingsManager final : public QObject
   DEFINE_SETTING_PROPERTY (QStringList, clap_search_paths, QStringList ())
   DEFINE_SETTING_PROPERTY (QStringList, jsfx_search_paths, QStringList ())
   DEFINE_SETTING_PROPERTY (QStringList, au_search_paths, QStringList ())
+  DEFINE_SETTING_PROPERTY (
+    QString,
+    new_project_directory,
+    QString::fromStdString (
+      (fs::path (
+         QStandardPaths::writableLocation (QStandardPaths::DocumentsLocation)
+           .toStdString ())
+       / QCoreApplication::applicationName ().toStdString ())
+        .string ()))
 
 public:
   SettingsManager (QObject * parent = nullptr);

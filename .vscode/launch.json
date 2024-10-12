@@ -78,6 +78,16 @@
             "miDebuggerArgs": "-ex \"handle SIGPIPE noprint nostop pass\"",
         },
         {
+            "name": "Launch CMake target with GammaRay",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/usr/bin/gammaray",
+            "args": [
+                "${command:cmake.launchTargetPath}"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
             "name": "Debug Plugin Scanner",
             "type": "cppdbg",
             "request": "launch",

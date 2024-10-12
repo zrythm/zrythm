@@ -65,7 +65,7 @@ ColumnLayout {
 
     }
 
-    PlainButton {
+    ZrythmButton {
         id: actionButton
 
         highlighted: true

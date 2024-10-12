@@ -77,13 +77,15 @@ endforeach()
 set(rel_qml_file_paths
   # main_window.qml
   Greeter.qml
-  components/PlaceholderPage.qml
-  components/PlainButton.qml
-  components/ActionRow.qml
-  components/ComboBoxText.qml
-  components/PreferencesPage.qml
-  components/FilePicker.qml
-  components/CustomProgressBar.qml
+  components/ZrythmPlaceholderPage.qml
+  components/ZrythmButton.qml
+  components/ZrythmActionRow.qml
+  components/ZrythmComboBox.qml
+  components/ZrythmPreferencesPage.qml
+  components/ZrythmFilePicker.qml
+  components/ZrythmProgressBar.qml
+  components/ZrythmDialogButtonBox.qml
+  components/ZrythmTextField.qml
 )
 set(qml_file_paths)
 foreach(qml_file_path ${rel_qml_file_paths})

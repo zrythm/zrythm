@@ -21,3 +21,10 @@ GlobalState::getSettingsManager ()
   return dynamic_cast<zrythm::gui::ZrythmApplication *> (qApp)
     ->get_settings_manager ();
 }
+
+zrythm::gui::ProjectManager *
+GlobalState::getProjectManager ()
+{
+  return dynamic_cast<zrythm::gui::ZrythmApplication *> (qApp)
+    ->get_project_manager ();
+}

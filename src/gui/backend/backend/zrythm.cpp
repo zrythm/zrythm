@@ -66,32 +66,6 @@ Zrythm::init ()
     }
 }
 
-void
-Zrythm::add_to_recent_projects (const std::string &_filepath)
-{
-  recent_projects_.insert (0, _filepath.c_str ());
-
-  /* if we are at max projects, remove the last one */
-  if (recent_projects_.size () > MAX_RECENT_PROJECTS)
-    {
-      recent_projects_.remove (MAX_RECENT_PROJECTS);
-    }
-
-  char ** tmp = recent_projects_.getNullTerminated ();
-  g_settings_set_strv (S_GENERAL, "recent-projects", (const char * const *) tmp);
-  g_strfreev (tmp);
-}
-
-void
-Zrythm::remove_recent_project (const std::string &filepath)
-{
-  recent_projects_.removeString (filepath.c_str ());
-
-  char ** tmp = recent_projects_.getNullTerminated ();
-  g_settings_set_strv (S_GENERAL, "recent-projects", (const char * const *) tmp);
-  g_strfreev (tmp);
-}
-
 std::string
 Zrythm::get_version (bool with_v)
 {
@@ -304,56 +278,6 @@ Zrythm::init_user_dirs_and_files ()
           throw ZrythmException ("Failed to init user dires and files");
         }
     }
-}
-
-void
-Zrythm::init_templates ()
-{
-  z_info ("Initializing templates...");
-
-  auto *      dir_mgr = DirectoryManager::getInstance ();
-  std::string user_templates_dir =
-    dir_mgr->get_dir (DirectoryManager::DirectoryType::USER_TEMPLATES);
-  if (fs::is_directory (user_templates_dir))
-    {
-      try
-        {
-          templates_ = io_get_files_in_dir (user_templates_dir);
-        }
-      catch (const ZrythmException &e)
-        {
-          z_warning (
-            "Failed to init user templates from {}", user_templates_dir);
-        }
-    }
-  if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
-    {
-      std::string system_templates_dir =
-        dir_mgr->get_dir (DirectoryManager::DirectoryType::SYSTEM_TEMPLATES);
-      if (fs::is_directory (system_templates_dir))
-        {
-          try
-            {
-              templates_.addArray (io_get_files_in_dir (system_templates_dir));
-            }
-          catch (const ZrythmException &e)
-            {
-              z_warning (
-                "Failed to init system templates from {}", system_templates_dir);
-            }
-        }
-    }
-
-  for (auto &tmpl : this->templates_)
-    {
-      z_info ("Template found: {}", tmpl.toRawUTF8 ());
-      if (tmpl.contains ("demo_zsong01"))
-        {
-          demo_template_ = tmpl.toStdString ();
-        }
-    }
-
-  z_info ("done");
 }
 
 Zrythm::~Zrythm ()

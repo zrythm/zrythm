@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls.Basic
@@ -26,6 +27,10 @@ ApplicationWindow {
         return GlobalState.settingsManager;
     }
 
+    function projectManager() {
+        return GlobalState.projectManager;
+    }
+
     title: "Zrythm"
     modality: Qt.ApplicationModal
     minimumWidth: 256
@@ -35,7 +40,6 @@ ApplicationWindow {
     font.family: interFont.name
     font.pointSize: 10
     Component.onCompleted: {
-        console.log(typeof pluginManager());
     }
 
     palette {
@@ -48,6 +52,7 @@ ApplicationWindow {
         light: "#999999" // combo box hover background
         highlight: themeManager().accent
         link: themeManager().accent
+        placeholderText: themeManager().base.lighter().lighter(1.2)
         text: "white"
         window: themeManager().base
         windowText: "white"
@@ -80,7 +85,7 @@ ApplicationWindow {
     Item {
         id: flatpakPage
 
-        PlaceholderPage {
+        ZrythmPlaceholderPage {
             icon.source: Qt.resolvedUrl("icons/gnome-icon-library/flatpak-symbolic.svg")
             title: qsTr("About Flatpak")
             description: qsTr("Only audio plugins installed via Flatpak are supported.")
@@ -91,7 +96,7 @@ ApplicationWindow {
     Item {
         id: donationPage
 
-        PlaceholderPage {
+        ZrythmPlaceholderPage {
             icon.source: Qt.resolvedUrl("icons/gnome-icon-library/credit-card-symbolic.svg")
             title: qsTr("Donate")
             description: qsTr("Zrythm relies on donations and purchases to sustain development. If you enjoy the software, please consider %1donating%2 or %3buying an installer%2.").arg("<a href=\"" + Config.DONATION_URL + "\">").arg("</a>").arg("<a href=\"" + Config.PURCHASE_URL + "\">")
@@ -102,7 +107,7 @@ ApplicationWindow {
     Item {
         id: proceedToConfigPage
 
-        PlaceholderPage {
+        ZrythmPlaceholderPage {
             title: qsTr("All Ready!")
 
             action: Action {
@@ -142,7 +147,7 @@ ApplicationWindow {
                     }
 
                     Item {
-                        PlaceholderPage {
+                        ZrythmPlaceholderPage {
                             icon.source: Qt.resolvedUrl("icons/zrythm.svg")
                             title: qsTr("Welcome")
                             description: qsTr("Welcome to the Zrythm digital audio workstation. Move to the next page to get started.")
@@ -151,7 +156,7 @@ ApplicationWindow {
                     }
 
                     Item {
-                        PlaceholderPage {
+                        ZrythmPlaceholderPage {
                             icon.source: Qt.resolvedUrl("icons/gnome-icon-library/open-book-symbolic.svg")
                             title: qsTr("Read the Manual")
                             description: qsTr("If this is your first time using Zrythm, we suggest going through the 'Getting Started' section in the %1user manual%2.").arg("<a href=\"" + Config.USER_MANUAL_URL + "\">").arg("</a>")
@@ -206,25 +211,25 @@ ApplicationWindow {
 
                 title: qsTr("Configuration")
 
-                PreferencesPage {
+                ZrythmPreferencesPage {
                     title: qsTr("Initial Configuration")
                     anchors.fill: parent
 
-                    ActionRow {
+                    ZrythmActionRow {
                         title: "Language"
                         subtitle: "Preferred language"
 
-                        ComboBoxText {
+                        ZrythmComboBox {
                             model: ["English", "Spanish", "French"]
                         }
 
                     }
 
-                    ActionRow {
+                    ZrythmActionRow {
                         title: "User Path"
                         subtitle: "Location to save user files"
 
-                        FilePicker {
+                        ZrythmFilePicker {
                         }
 
                     }
@@ -260,7 +265,7 @@ ApplicationWindow {
                     }
                     horizontalPadding: 10
 
-                    PlainButton {
+                    ZrythmButton {
                         text: qsTr("Continue")
                         highlighted: true
                         onClicked: {
@@ -271,7 +276,7 @@ ApplicationWindow {
                         DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
                     }
 
-                    delegate: PlainButton {
+                    delegate: ZrythmButton {
                         id: control
                     }
 
@@ -301,7 +306,7 @@ ApplicationWindow {
                     target: root.pluginManager()
                 }
 
-                PlaceholderPage {
+                ZrythmPlaceholderPage {
                     icon.source: Qt.resolvedUrl("icons/zrythm-monochrome.svg")
                     title: qsTr("Scanning Plugins")
                 }
@@ -325,7 +330,7 @@ ApplicationWindow {
                         opacity: 0.6
                     }
 
-                    CustomProgressBar {
+                    ZrythmProgressBar {
                         id: scanProgressBar
 
                         indeterminate: true
@@ -344,19 +349,54 @@ ApplicationWindow {
             Page {
                 title: qsTr("Open a Project")
 
+                Component {
+                    id: projectDelegate
+
+                    Rectangle {
+                        id: projectItem
+
+                        readonly property ListView lv: ListView.view
+                        property bool isCurrent: ListView.isCurrentItem
+
+                        implicitHeight: projectTxt.implicitHeight + 2 * 2
+                        implicitWidth: lv.width
+                        color: palette.base
+                        radius: 8
+                        border.color: palette.text
+                        border.width: 1
+                        clip: true
+
+                        Text {
+                            id: projectTxt
+
+                            text: model.path
+                            horizontalAlignment: Qt.AlignHCenter
+                            color: palette.text
+
+                            anchors {
+                                left: parent.left
+                                right: parent.right
+                                verticalCenter: parent.verticalCenter
+                                leftMargin: 2
+                                rightMargin: 2
+                            }
+
+                        }
+
+                    }
+
+                }
+
                 ListView {
-                    // Add recent projects here
+                    id: recentProjectsListView
+
+                    function clearRecentProjects() {
+                        model.clearRecentProjects();
+                    }
 
                     anchors.fill: parent
-
-                    model: ListModel {
-                    }
-
-                    delegate: ItemDelegate {
-                        //   text: model.name
-                        width: parent.width
-                    }
-
+                    delegate: projectDelegate
+                    model: root.projectManager().recentProjects
                 }
 
                 header: ToolBar {
@@ -402,20 +442,20 @@ ApplicationWindow {
 
                 }
 
-                footer: ToolBar {
-                    RowLayout {
-                        anchors.fill: parent
+                footer: DialogButtonBox {
+                    horizontalPadding: 10
 
-                        Button {
-                            //   onClicked: stack.push(createProjectPage)
+                    ZrythmButton {
+                        onClicked: stack.push(createProjectPage)
+                        text: qsTr("Create New Project...")
+                    }
 
-                            text: qsTr("Create New Project...")
-                        }
+                    ZrythmButton {
+                        text: qsTr("Open From Path...")
+                    }
 
-                        Button {
-                            text: qsTr("Open From Path...")
-                        }
-
+                    delegate: ZrythmButton {
+                        id: control
                     }
 
                 }
@@ -434,29 +474,45 @@ ApplicationWindow {
                     anchors.fill: parent
                     spacing: 10
 
-                    TextField {
+                    ZrythmTextField {
+                        id: projectNameField
+
                         Layout.fillWidth: true
                         placeholderText: qsTr("Project Name")
+                        text: qsTr("Untitled Project")
                     }
 
-                    TextField {
-                        Layout.fillWidth: true
-                        placeholderText: qsTr("Parent Directory")
+                    Binding {
+                        target: projectNameField
+                        property: "text"
+                        value: root.projectManager().getNextAvailableProjectName(projectDirectoryField.selectedUrl, projectNameField.text)
+                        when: projectDirectoryField.selectedUrl.toString().length > 0
                     }
 
-                    ComboBox {
-                        // Add templates here
+                    ZrythmFilePicker {
+                        id: projectDirectoryField
 
                         Layout.fillWidth: true
+                        // placeholderText: qsTr("Parent Directory")
+                        initialPath: root.settingsManager().new_project_directory
+                    }
 
-                        model: ListModel {
+                    ZrythmComboBox {
+                        Layout.fillWidth: true
+                        textRole: "name"
+                        valueRole: "path"
+
+                        model: ProjectTemplatesModel {
                         }
 
                     }
 
-                    Button {
+                    ZrythmButton {
                         text: qsTr("Create Project")
                         Layout.alignment: Qt.AlignHCenter
+                        onClicked: {
+                            /* TODO root.projectManager().createProject( */
+                        }
                     }
 
                 }

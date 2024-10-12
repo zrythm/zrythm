@@ -30,6 +30,7 @@
 #include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/tracklist_selections.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/backend/project_manager.h"
 
 #include <glib/gi18n.h>
 
@@ -802,7 +803,8 @@ Project::idle_saved_callback (SaveContext * ctx)
     {
       if (ZRYTHM_HAVE_UI && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
         {
-          gZrythm->add_to_recent_projects (ctx->project_file_path_);
+          zrythm::gui::ProjectManager::get_instance ()->add_to_recent_projects (
+            QString::fromStdString (ctx->project_file_path_));
         }
       if (ctx->show_notification_)
 

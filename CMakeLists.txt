@@ -1167,6 +1167,12 @@ qt_add_qml_module(zrythm
   SOURCES # for some reason singletons must be added here
     src/global_state.h
     src/global_state.cpp
+    src/recent_projects_model.h
+    src/recent_projects_model.cpp
+    src/project_info.h
+    src/project_info.cpp
+    src/project_templates_model.h
+    src/project_templates_model.cpp
   
   # NO_RESOURCE_TARGET_PATH
 
