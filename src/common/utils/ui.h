@@ -143,8 +143,8 @@ public:
 public:
   std::string name_;
   // GdkCursor * cursor_ = nullptr;
-  int         offset_x_ = 0;
-  int         offset_y_ = 0;
+  int offset_x_ = 0;
+  int offset_y_ = 0;
 };
 
 /**

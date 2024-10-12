@@ -189,8 +189,8 @@ Logger::get_log_file_path () const
       return (tmp_log_dir / str_datetime).string ();
     }
 
-  auto   str_datetime = datetime_get_for_filename ();
-  auto   user_log_dir =
+  auto str_datetime = datetime_get_for_filename ();
+  auto user_log_dir =
     QStandardPaths::writableLocation (QStandardPaths::CacheLocation);
   auto log_filepath =
     fs::path (user_log_dir.toStdString ())

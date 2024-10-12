@@ -146,8 +146,8 @@ public:
     PluginSlotType       slot_type,
     int                  slot);
 
-  PluginDescriptor &get_descriptor () { return *setting_->descr_; }
-  std::string       get_name () const { return setting_->descr_->name_; }
+  PluginDescriptor      &get_descriptor () { return *setting_->descr_; }
+  std::string            get_name () const { return setting_->descr_->name_; }
   Protocol::ProtocolType get_protocol () const
   {
     return setting_->descr_->protocol_;
