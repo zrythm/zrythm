@@ -5,6 +5,8 @@
 # Resources & QML
 # ==============================================================================================
 
+qt_add_executable(zrythm WIN32 MACOSX_BUNDLE)
+
 # add_subdirectory(resources)
 
 configure_file(
@@ -13,11 +15,11 @@ configure_file(
 )
 
 set_source_files_properties("${CMAKE_CURRENT_BINARY_DIR}/js/config.js" 
-  TARGET_DIRECTORY zrythm  
+  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   PROPERTIES QT_RESOURCE_ALIAS "config.js"
   )
 set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/resources/qtquickcontrols2.conf"
-  TARGET_DIRECTORY zrythm
+  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   PROPERTIES QT_RESOURCE_ALIAS "qtquickcontrols2.conf"
   )
 
@@ -35,7 +37,7 @@ foreach(dir ${icon_dirs})
     get_filename_component(icon_name ${icon} NAME)
     set(icon_alias "icons/${dir}/${icon_name}")
     set_source_files_properties(${icon} 
-      TARGET_DIRECTORY zrythm
+      DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       PROPERTIES QT_RESOURCE_ALIAS ${icon_alias}
       )
     list(APPEND icon_files ${icon})
@@ -47,7 +49,7 @@ set(zrythm_logos zrythm.svg zrythm-monochrome.svg)
 foreach(zlogo ${zrythm_logos})
   set(zlogo_path "${CMAKE_SOURCE_DIR}/data/icon-themes/zrythm-dark/scalable/apps/${zlogo}")
   set_source_files_properties("${zlogo_path}"
-    TARGET_DIRECTORY zrythm
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     PROPERTIES QT_RESOURCE_ALIAS "icons/${zlogo}"
     )
   list(APPEND icon_files ${zlogo_path})
@@ -68,7 +70,7 @@ set(font_files)
 foreach(font_filepath ${font_filepaths})
   get_filename_component(font_name ${font_filepath} NAME)
   set_source_files_properties(${font_filepath}
-    TARGET_DIRECTORY zrythm  
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     PROPERTIES QT_RESOURCE_ALIAS "fonts/${font_name}"
     )
   list(APPEND font_files ${font_filepath})
@@ -92,17 +94,46 @@ set(rel_qml_file_paths
 )
 set(qml_file_paths)
 foreach(qml_file_path ${rel_qml_file_paths})
-  get_filename_component(qml_filename ${qml_file_path} NAME)
   set(qml_abs_file_path "${CMAKE_CURRENT_SOURCE_DIR}/qml/${qml_file_path}")
   set_source_files_properties(${qml_abs_file_path}
-    TARGET_DIRECTORY zrythm
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     PROPERTIES QT_RESOURCE_ALIAS "${qml_file_path}"
     )
   list(APPEND qml_file_paths ${qml_abs_file_path})
 endforeach()
 
-set(qml_file_paths ${qml_file_paths} PARENT_SCOPE)
-set(icon_files ${icon_files} PARENT_SCOPE)
-set(font_files ${font_files} PARENT_SCOPE)
-
 add_subdirectory(backend)
+
+target_include_directories(zrythm
+  PUBLIC
+    # C++ headers in SOURCES below must be available as toplevel includes
+    # https://bugreports.qt.io/browse/QTBUG-87221
+    ${CMAKE_CURRENT_SOURCE_DIR}/backend
+)
+
+qt_add_qml_module(zrythm
+  URI Zrythm
+  VERSION 1.0
+  RESOURCE_PREFIX /org.zrythm/imports
+  OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Zrythm
+  QML_FILES
+    ${qml_file_paths}
+    ${CMAKE_CURRENT_BINARY_DIR}/js/config.js
+  RESOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/resources/qtquickcontrols2.conf
+    ${icon_files}
+    ${font_files}
+  SOURCES # for some reason singletons must be added here
+    backend/global_state.h
+    backend/global_state.cpp
+    backend/recent_projects_model.h
+    backend/recent_projects_model.cpp
+    backend/project_info.h
+    backend/project_info.cpp
+    backend/project_templates_model.h
+    backend/project_templates_model.cpp
+
+  # compile qml files listed in QML_FILES to C++ using qmltc
+  # (currently cannot extend QtQuick Controls directly)
+  # ENABLE_TYPE_COMPILER
+)

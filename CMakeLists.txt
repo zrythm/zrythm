@@ -937,22 +937,13 @@ find_package(Qt6
   COMPONENTS Core Gui Widgets Quick QuickControls2 Concurrent REQUIRED
 )
 qt_standard_project_setup()
-
-qt_add_executable(zrythm WIN32 MACOSX_BUNDLE)
-
-# set(KDDockWidgets_QT6 TRUE)
-# find_package(KDDockWidgets-qt6 REQUIRED)
-
-# find_package(KF6Kirigami REQUIRED)
+qt_policy(SET QTP0001 NEW)
+# TODO enable in 6.8
+# qt_policy(SET QTP0004 NEW) 
+# qt_policy(SET QTP0005 NEW)
 
 list(APPEND zrythm_link_libs
   zita-resampler::zita-resampler
-  # PkgConfig::LIBADWAITA
-  # PkgConfig::LIBPANEL
-  # PkgConfig::FONTCONFIG
-  # PkgConfig::PANGOFT2
-  # PkgConfig::GRAPHENE
-  # PkgConfig::GTK4
   SndFile::sndfile
   cyaml::cyaml
   soxr::soxr
@@ -962,7 +953,6 @@ list(APPEND zrythm_link_libs
   zstd::libzstd_shared
   Threads::Threads
   PkgConfig::RUBBERBAND
-  # PkgConfig::EPOXY
   ${CMAKE_DL_LIBS}
   FFTW3::FFTW3
   PkgConfig::XXHASH
@@ -977,7 +967,6 @@ list(APPEND zrythm_link_libs
   spdlog::spdlog
   PkgConfig::GLIBMM
   PkgConfig::GIOMM
-  # PkgConfig::GTKMM
   Qt6::Core
   Qt6::Gui
   Qt6::Widgets
@@ -1147,41 +1136,6 @@ endif()
 add_subdirectory(po)
 add_subdirectory(data)
 add_subdirectory(src)
-
-# ==============================================================================================
-# QML setup (must be toplevel for some reason)
-# ==============================================================================================
-
-# module ends up in "/<RESOURCE_PREFIX>/<URI>/"
-qt_add_qml_module(zrythm
-  URI Zrythm
-  VERSION 1.0
-  RESOURCE_PREFIX /org.zrythm/imports
-  QML_FILES 
-    ${qml_file_paths}
-    ${CMAKE_CURRENT_BINARY_DIR}/src/gui/js/config.js
-  RESOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/gui/resources/qtquickcontrols2.conf
-    ${icon_files}
-    ${font_files}
-  SOURCES # for some reason singletons must be added here
-    src/global_state.h
-    src/global_state.cpp
-    src/recent_projects_model.h
-    src/recent_projects_model.cpp
-    src/project_info.h
-    src/project_info.cpp
-    src/project_templates_model.h
-    src/project_templates_model.cpp
-  
-  # NO_RESOURCE_TARGET_PATH
-
-  # compile qml files listed in QML_FILES to C++ using qmltc
-  # (currently cannot extend QtQuick Controls directly)
-  # ENABLE_TYPE_COMPILER
-)
-
-# ==============================================================================================
 
 message(STATUS "Zrythm compile definitions: ${zrythm_definitions}")
 message(STATUS "Zrythm compile args: ${zrythm_compile_args}")

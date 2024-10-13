@@ -198,7 +198,7 @@ ZrythmApplication::setup_ui ()
   qml_engine_ = new QQmlApplicationEngine (this);
   // KDDockWidgets::QtQuick::Platform::instance ()->setQmlEngine (&engine);
 
-  // RESOURCE_PREFIX from CMakeLists.txt
+  // ${RESOURCE_PREFIX} from CMakeLists.txt
   // allows loading QML modules from qrc
   // skips plugin loading for modules found in qrc
   qml_engine_->addImportPath (":/org.zrythm/imports/");
@@ -207,6 +207,7 @@ ZrythmApplication::setup_ui ()
   // always load from qrc
   // files in qrc are pre-compiled
   // files in host file system are compiled at runtime
+  // ${RESOURCE_PREFIX}/${URI}
   const QUrl url ("qrc:/org.zrythm/imports/Zrythm/Greeter.qml");
   qml_engine_->load (url);
   // qml_engine_->loadFromModule ("Zrythm", "greeter");

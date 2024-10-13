@@ -5,11 +5,6 @@ qt_add_library(zrythm_lib STATIC)
 
 add_subdirectory(gui)
 
-# propagate upwards
-set(qml_file_paths ${qml_file_paths} PARENT_SCOPE)
-set(icon_files ${icon_files} PARENT_SCOPE)
-set(font_files ${font_files} PARENT_SCOPE)
-
 target_sources(zrythm_lib PRIVATE globals.cpp)
 
 # Add the translators C string header to the sources
