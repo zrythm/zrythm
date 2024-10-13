@@ -87,6 +87,8 @@ set(rel_qml_file_paths
   components/ZrythmDialogButtonBox.qml
   components/ZrythmTextField.qml
   components/ZrythmAlertDialog.qml
+  components/ZrythmToolButton.qml
+  components/ZrythmMenuBar.qml
 )
 set(qml_file_paths)
 foreach(qml_file_path ${rel_qml_file_paths})

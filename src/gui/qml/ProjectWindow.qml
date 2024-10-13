@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+import Qt.labs.platform as Labs
 import QtQuick
 import QtQuick.Controls.Basic
 import QtQuick.Layouts
@@ -10,6 +11,7 @@ ApplicationWindow {
     id: root
 
     required property var project
+    readonly property bool useLabsMenuBar: Qt.platform.os === "osx"
 
     function closeAndDestroy() {
         console.log("Closing and destroying project window");
@@ -17,21 +19,149 @@ ApplicationWindow {
         destroy();
     }
 
-    title: qsTr("Zrythm")
+    menuBar: useLabsMenuBar ? null : menuLoader.item
+    title: project.title
+    width: 1280
+    height: 720
     visible: true
     onClosing: {
     }
     Component.onCompleted: {
-        console.log("ApplicationWindow created");
+        console.log("ApplicationWindow created on platform", Qt.platform.os);
         project.aboutToBeDeleted.connect(closeAndDestroy);
     }
 
-    ToolBar {
-        id: headerBar
+    Loader {
+        id: menuLoader
 
-        anchors.top: parent.top
+        sourceComponent: useLabsMenuBar ? null : regularMenuBar
+    }
+
+    Component {
+        id: regularMenuBar
+
+        ZrythmMenuBar {
+            Menu {
+                title: qsTr("&File")
+
+                MenuItem {
+                    // Implement new project action
+
+                    text: qsTr("New")
+                    onTriggered: {
+                    }
+                }
+
+                MenuItem {
+                    // Implement open action
+
+                    text: qsTr("Open")
+                    onTriggered: {
+                    }
+                }
+
+            }
+
+            Menu {
+                title: qsTr("&Edit")
+
+                MenuItem {
+                    // Implement undo action
+
+                    text: qsTr("Undo")
+                    onTriggered: {
+                    }
+                }
+
+            }
+
+        }
+
+    }
+
+    ColumnLayout {
+        anchors.top: headerBar.bottom
         anchors.left: parent.left
         anchors.right: parent.right
+        anchors.bottom: parent.bottom
+
+        Rectangle {
+            id: centerBox
+
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            // Implement CenterDockWidget
+            Rectangle {
+                // Add CenterDockWidget properties and functionality
+
+                id: centerDock
+
+                anchors.fill: parent
+            }
+
+            // Implement ToastOverlay
+            Rectangle {
+                // Add ToastOverlay properties and functionality
+
+                id: toastOverlay
+
+                anchors.fill: parent
+            }
+
+        }
+
+        // Implement BotBarWidget
+        Rectangle {
+            // Add BotBarWidget properties and functionality
+
+            id: botBar
+
+            Layout.fillWidth: true
+        }
+
+    }
+
+    Labs.MenuBar {
+        Labs.Menu {
+            title: qsTr("&File")
+
+            Labs.MenuItem {
+                // Implement new project action
+
+                text: qsTr("New")
+                onTriggered: {
+                }
+            }
+
+            Labs.MenuItem {
+                // Implement open action
+
+                text: qsTr("Open")
+                onTriggered: {
+                }
+            }
+
+        }
+
+        Labs.Menu {
+            title: qsTr("&Edit")
+
+            Labs.MenuItem {
+                // Implement undo action
+
+                // Implement undo action
+                text: qsTr("Undo")
+                onTriggered: {
+                }
+            }
+
+        }
+
+    }
+
+    header: ToolBar {
+        id: headerBar
 
         RowLayout {
             anchors.fill: parent
@@ -39,7 +169,7 @@ ApplicationWindow {
             RowLayout {
                 id: headerStartBox
 
-                ToolButton {
+                ZrythmToolButton {
                     // Toggle left panel
 
                     id: startDockSwitcher
@@ -56,7 +186,7 @@ ApplicationWindow {
                     color: "gray"
                 }
 
-                Button {
+                ZrythmToolButton {
                     // Perform undo action
 
                     id: undoBtn
@@ -68,7 +198,7 @@ ApplicationWindow {
                     }
                 }
 
-                Button {
+                ZrythmToolButton {
                     // Perform redo action
 
                     id: redoBtn
@@ -95,14 +225,6 @@ ApplicationWindow {
 
             }
 
-            Label {
-                id: windowTitle
-
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignHCenter
-                text: root.title
-            }
-
             RowLayout {
                 id: headerEndBox
 
@@ -123,7 +245,7 @@ ApplicationWindow {
                     color: "gray"
                 }
 
-                ToolButton {
+                ZrythmToolButton {
                     id: menuButton
 
                     text: qsTr("Menu")
@@ -230,49 +352,6 @@ ApplicationWindow {
 
             }
 
-        }
-
-    }
-
-    ColumnLayout {
-        anchors.top: headerBar.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-
-        Rectangle {
-            id: centerBox
-
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-
-            // Implement CenterDockWidget
-            Rectangle {
-                // Add CenterDockWidget properties and functionality
-
-                id: centerDock
-
-                anchors.fill: parent
-            }
-
-            // Implement ToastOverlay
-            Rectangle {
-                // Add ToastOverlay properties and functionality
-
-                id: toastOverlay
-
-                anchors.fill: parent
-            }
-
-        }
-
-        // Implement BotBarWidget
-        Rectangle {
-            // Add BotBarWidget properties and functionality
-
-            id: botBar
-
-            Layout.fillWidth: true
         }
 
     }
