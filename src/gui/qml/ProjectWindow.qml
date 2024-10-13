@@ -84,6 +84,7 @@ ApplicationWindow {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
+        spacing: 0
 
         Rectangle {
             id: centerBox
@@ -91,33 +92,116 @@ ApplicationWindow {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            // Implement CenterDockWidget
-            Rectangle {
-                // Add CenterDockWidget properties and functionality
-
-                id: centerDock
+            SplitView {
+                id: mainSplitView
 
                 anchors.fill: parent
-            }
+                orientation: Qt.Horizontal
 
-            // Implement ToastOverlay
-            Rectangle {
-                // Add ToastOverlay properties and functionality
+                ZrythmResizablePanel {
+                    SplitView.fillHeight: true
+                    SplitView.preferredWidth: 200
+                    SplitView.minimumWidth: 30
+                    title: "Browser"
+                    vertical: false
 
-                id: toastOverlay
+                    content: Rectangle {
+                        color: "#2C2C2C"
 
-                anchors.fill: parent
+                        Label {
+                            anchors.centerIn: parent
+                            text: "Browser content"
+                            color: "white"
+                        }
+
+                    }
+
+                }
+
+                SplitView {
+                    id: centerSplitView
+
+                    SplitView.fillWidth: true
+                    SplitView.fillHeight: true
+                    orientation: Qt.Vertical
+
+                    Pane {
+                        SplitView.fillWidth: true
+                        SplitView.preferredHeight: 200
+                        SplitView.minimumHeight: 30
+
+                        Rectangle {
+                            color: "#2C2C2C"
+
+                            Label {
+                                anchors.fill: parent
+                                anchors.centerIn: parent
+                                text: "Tracks content"
+                                color: "white"
+                            }
+
+                        }
+
+                    }
+
+                    ZrythmResizablePanel {
+                        SplitView.fillWidth: true
+                        SplitView.fillHeight: true
+                        SplitView.minimumHeight: 30
+                        title: "Piano Roll"
+                        vertical: true
+
+                        content: Rectangle {
+                            color: "#1C1C1C"
+
+                            Label {
+                                anchors.centerIn: parent
+                                text: "Piano Roll content"
+                                color: "white"
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                ZrythmResizablePanel {
+                    SplitView.fillHeight: true
+                    SplitView.preferredWidth: 200
+                    SplitView.minimumWidth: 30
+                    title: "Other"
+                    vertical: false
+
+                    content: Rectangle {
+                        color: "#2C2C2C"
+
+                        Label {
+                            anchors.centerIn: parent
+                            text: "Browser content"
+                            color: "white"
+                        }
+
+                    }
+
+                }
+
             }
 
         }
 
-        // Implement BotBarWidget
         Rectangle {
-            // Add BotBarWidget properties and functionality
-
             id: botBar
 
+            implicitHeight: 24
+            color: "#2C2C2C"
             Layout.fillWidth: true
+
+            Text {
+                anchors.right: parent.right
+                text: "Status Bar"
+            }
+
         }
 
     }
@@ -180,10 +264,7 @@ ApplicationWindow {
                     }
                 }
 
-                Rectangle {
-                    width: 1
-                    height: parent.height
-                    color: "gray"
+                ToolSeparator {
                 }
 
                 ZrythmToolButton {
@@ -210,10 +291,7 @@ ApplicationWindow {
                     }
                 }
 
-                Rectangle {
-                    width: 1
-                    height: parent.height
-                    color: "gray"
+                ToolSeparator {
                 }
 
                 // Implement ToolboxWidget
@@ -239,10 +317,7 @@ ApplicationWindow {
                     }
                 }
 
-                Rectangle {
-                    width: 1
-                    height: parent.height
-                    color: "gray"
+                ToolSeparator {
                 }
 
                 ZrythmToolButton {
