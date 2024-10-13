@@ -1239,7 +1239,7 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
         case EditType::Rename:
           {
             const auto &cur_name = track->get_name ();
-            track->set_name (new_txt_, false);
+            track->set_name (*TRACKLIST, new_txt_, false);
 
             /* remember the new name */
             new_txt_ = cur_name;

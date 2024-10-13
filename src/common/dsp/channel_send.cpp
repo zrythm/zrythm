@@ -721,7 +721,7 @@ bool
 ChannelSend::is_connected_to (const StereoPorts * stereo, const Port * midi) const
 {
   std::vector<PortConnection> conns;
-  int num_conns = append_connection (PORT_CONNECTIONS_MGR.get (), conns);
+  int num_conns = append_connection (PORT_CONNECTIONS_MGR, conns);
   for (int i = 0; i < num_conns; i++)
     {
       const auto &conn = conns[i];

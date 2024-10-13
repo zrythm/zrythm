@@ -71,6 +71,10 @@
                     "name": "ZRYTHM_PLUGIN_SCANNER_PATH",
                     "value": "${config:cmake.buildDirectory}/src/common/plugins/plugin-scanner",
                 },
+                {
+                    "name": "ZRYTHM_SAMPLES_PATH",
+                    "value": "${workspaceFolder}/data/samples",
+                },
             ],
             "args": [
                 "--dummy"

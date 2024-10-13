@@ -365,14 +365,14 @@ SampleProcessor::queue_file_or_chord_preset (
     }
 
   Position start_pos;
-  start_pos.set_to_bar (1);
-  file_end_pos_.set_to_bar (1);
+  start_pos.set_to_bar (*audio_engine_->transport_, 1);
+  file_end_pos_.set_to_bar (*audio_engine_->transport_, 1);
 
   /* create master track */
   {
     z_debug ("creating master track...");
     auto track = *MasterTrack::create_unique (tracklist_->tracks_.size ());
-    track->set_name ("Sample Processor Master", false);
+    track->set_name (*tracklist_, "Sample Processor Master", false);
     tracklist_->master_track_ = track.get ();
     tracklist_->insert_track (
       std::move (track), tracklist_->tracks_.size (), false, false);
@@ -516,7 +516,7 @@ SampleProcessor::queue_file_or_chord_preset (
     }
 
   roll_ = true;
-  playhead_.set_to_bar (1);
+  playhead_.set_to_bar (*audio_engine_->transport_, 1);
 
   /* add some room to end pos */
   z_info ("playing until {}", file_end_pos_.to_string ());
@@ -554,7 +554,7 @@ void
 SampleProcessor::stop_file_playback ()
 {
   roll_ = false;
-  playhead_.set_to_bar (1);
+  playhead_.set_to_bar (*audio_engine_->transport_, 1);
 }
 
 void
@@ -579,10 +579,13 @@ SampleProcessor::find_and_queue_metronome (
   if (start_pos.frames_ == end_pos.frames_)
     return;
 
-  /* find each bar / beat change from start
-   * to finish */
-  int num_bars_before = start_pos.get_total_bars (false);
-  int num_bars_after = end_pos.get_total_bars (false);
+  const auto &audio_engine = *audio_engine_;
+  const auto &transport = *audio_engine.transport_;
+  const auto &tempo_track = *tracklist_->tempo_track_;
+
+  /* find each bar / beat change from start to finish */
+  int num_bars_before = start_pos.get_total_bars (transport, false);
+  int num_bars_after = end_pos.get_total_bars (transport, false);
   int bars_diff = num_bars_after - num_bars_before;
 
 #if 0
@@ -621,13 +624,14 @@ SampleProcessor::find_and_queue_metronome (
       signed_frame_t metronome_offset_long =
         bar_offset_long + (signed_frame_t) loffset;
       z_return_if_fail_cmp (metronome_offset_long, >=, 0);
-      nframes_t metronome_offset = (nframes_t) metronome_offset_long;
-      z_return_if_fail_cmp (metronome_offset, <, AUDIO_ENGINE->block_length_);
+      auto metronome_offset = (nframes_t) metronome_offset_long;
+      z_return_if_fail_cmp (metronome_offset, <, audio_engine_->block_length_);
       queue_metronome (Metronome::Type::Emphasis, metronome_offset);
     }
 
-  int num_beats_before = start_pos.get_total_beats (false);
-  int num_beats_after = end_pos.get_total_beats (false);
+  int num_beats_before =
+    start_pos.get_total_beats (transport, tempo_track, false);
+  int num_beats_after = end_pos.get_total_beats (transport, tempo_track, false);
   int beats_diff = num_beats_after - num_beats_before;
 
   for (int i = 0; i < beats_diff; i++)
@@ -637,7 +641,7 @@ SampleProcessor::find_and_queue_metronome (
       beat_pos.add_beats (num_beats_before + i + 1);
 
       /* if not a bar (already handled above) */
-      if (beat_pos.get_beats (true) != 1)
+      if (beat_pos.get_beats (transport, tempo_track, true) != 1)
         {
           /* adjust position because even though the start and beat pos have the
            * same ticks, their frames differ (the beat position might be before

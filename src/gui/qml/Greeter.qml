@@ -35,6 +35,17 @@ ApplicationWindow {
         return GlobalState.alertManager;
     }
 
+    function openProjectWindow(project) {
+        var component = Qt.createComponent("ProjectWindow.qml");
+        if (component.status === Component.Ready) {
+            var newWindow = component.createObject(project, {project: project});
+            newWindow.show();
+            root.close();
+        } else {
+            console.error("Error loading component:", component.errorString());
+        }
+    }
+
     title: "Zrythm"
     modality: Qt.ApplicationModal
     minimumWidth: 256
@@ -536,10 +547,11 @@ ApplicationWindow {
                 title: qsTr("Creating Project")
 
                 ColumnLayout {
+                    spacing: 10
+
                     anchors {
                         centerIn: parent
                     }
-                    spacing: 10
 
                     Label {
                         Layout.alignment: Qt.AlignHCenter
@@ -561,9 +573,10 @@ ApplicationWindow {
 
         Connections {
             function onProjectLoaded(project) {
-                console.log("Project loaded: ", project.name);
+                console.log("Project loaded: ", project.title);
                 root.projectManager().activeProject = project;
-                console.log("Opening project: ", root.projectManager().activeProject.name);
+                console.log("Opening project: ", root.projectManager().activeProject.title);
+                openProjectWindow(project);
             }
 
             function onProjectLoadingFailed(errorMessage) {
@@ -580,13 +593,15 @@ ApplicationWindow {
                 console.log("Alert requested: ", title, message);
                 alertDialog.alertTitle = title;
                 alertDialog.alertMessage = message;
-                alertDialog.open()
+                alertDialog.open();
             }
+
             target: root.alertManager()
         }
 
         ZrythmAlertDialog {
             id: alertDialog
+
             anchors.centerIn: parent
         }
 

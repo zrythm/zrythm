@@ -33,7 +33,7 @@
  * @{
  */
 
-#define PROJECT (gZrythm->project_)
+#define PROJECT (Project::get_active_instance ())
 constexpr const char * PROJECT_FILE = "project.zpj";
 #define PROJECT_BACKUPS_DIR "backups"
 #define PROJECT_PLUGINS_DIR "plugins"
@@ -109,7 +109,7 @@ class Project final
 
 public:
   Project (QObject * parent = nullptr);
-  Project (std::string &title, QObject * parent = nullptr);
+  Project (const std::string &title, QObject * parent = nullptr);
   ~Project () override;
 
   /**
@@ -151,6 +151,7 @@ public:
 
   Q_SIGNAL void titleChanged (const QString &title);
   Q_SIGNAL void directoryChanged (const QString &directory);
+  Q_SIGNAL void aboutToBeDeleted ();
 
   // =========================================================
 
@@ -166,6 +167,8 @@ public:
    * Checks that everything is okay with the project.
    */
   bool validate () const;
+
+  static Project * get_active_instance ();
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -299,16 +302,7 @@ public:
    *
    * @throw ZrythmException If an error occurs.
    */
-  std::unique_ptr<Project> clone (bool for_backup) const
-  {
-    auto ret = clone_unique ();
-    if (for_backup)
-      {
-        /* no undo history in backups */
-        ret->undo_manager_.reset ();
-      }
-    return ret;
-  }
+  Q_INVOKABLE Project * clone (bool for_backup) const;
 
   /**
    * Returns the filepath of a backup (directory), if any, if it has a newer
@@ -366,6 +360,11 @@ private:
     /** Project clone (with memcpy). */
     std::unique_ptr<Project> project_;
 
+    /**
+     * @brief Original project.
+     */
+    Project * main_project_;
+
     /** Full path to save to. */
     std::string project_file_path_;
 
@@ -410,14 +409,14 @@ public:
   std::string datetime_str_;
 
   /** Path to save the project in. */
-  std::string dir_;
+  fs::path dir_;
 
   /**
    * Backup dir to save the project during the current save call.
    *
    * For example, @ref Project.dir /backups/myproject.bak3.
    */
-  std::string backup_dir_;
+  fs::path backup_dir_;
 
   /* !!! IMPORTANT: order matters (for destruction) !!! */
 

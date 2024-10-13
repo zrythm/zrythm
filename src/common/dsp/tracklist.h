@@ -449,7 +449,7 @@ public:
    * @param total_bars Current known total bars
    * @return New total bars if > than @p total_bars, or @p total_bars.
    */
-  int get_total_bars (int total_bars) const;
+  int get_total_bars (const Transport &transport, int total_bars) const;
 
   /**
    * Set various caches (snapshots, track name hashes, plugin

@@ -34,7 +34,7 @@ public:
   /**
    * Updates snap points.
    */
-  void update_quantize_points ();
+  void update_quantize_points (const Transport &transport);
 
   float get_swing () const;
 

@@ -23,15 +23,27 @@ Metronome::Metronome (AudioEngine &engine)
       emphasis_path_ = Glib::build_filename (
         src_root, "data", "samples", "klick", "square_emphasis.wav");
       normal_path_ = Glib::build_filename (
-        src_root, "data", "samples", "klick", "/square_normal.wav");
+        src_root, "data", "samples", "klick", "square_normal.wav");
     }
   else
     {
-      auto * dir_mgr = DirectoryManager::getInstance ();
-      auto   samplesdir =
-        dir_mgr->get_dir (DirectoryManager::DirectoryType::SYSTEM_SAMPLESDIR);
-      emphasis_path_ = samplesdir / "square_emphasis.wav";
-      normal_path_ = samplesdir / "square_normal.wav";
+      const auto path_from_env =
+        QProcessEnvironment::systemEnvironment ().value ("ZRYTHM_SAMPLES_PATH");
+      if (!path_from_env.isEmpty ())
+        {
+          const auto fs_path_from_env = fs::path (path_from_env.toStdString ());
+          emphasis_path_ = fs_path_from_env / "klick" / "square_emphasis.wav";
+          normal_path_ = fs_path_from_env / "klick" / "square_normal.wav";
+        }
+      else
+        {
+
+          auto * dir_mgr = DirectoryManager::getInstance ();
+          auto   samplesdir = dir_mgr->get_dir (
+            DirectoryManager::DirectoryType::SYSTEM_SAMPLESDIR);
+          emphasis_path_ = samplesdir / "square_emphasis.wav";
+          normal_path_ = samplesdir / "square_normal.wav";
+        }
     }
 
   emphasis_ = std::make_shared<juce::AudioSampleBuffer> ();

@@ -31,7 +31,7 @@ RangeAction::RangeAction (Type type, Position start_pos, Position end_pos)
 
   /* create selections for overlapping objects */
   Position inf;
-  inf.set_to_bar (POSITION_MAX_BAR);
+  inf.set_to_bar (*TRANSPORT, POSITION_MAX_BAR);
   sel_before_ = std::make_unique<TimelineSelections> (start_pos, inf);
   sel_after_ = std::make_unique<TimelineSelections> ();
 

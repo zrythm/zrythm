@@ -22,8 +22,11 @@ if(ZRYTHM_DSEG_FONT)
 endif()
 
 # Install samples
-install(FILES samples/klick/square_emphasis.wav samples/klick/square_normal.wav
-  DESTINATION ${samplesdir})
+set(samples
+  ${CMAKE_CURRENT_SOURCE_DIR}/samples/klick/square_emphasis.wav
+  ${CMAKE_CURRENT_SOURCE_DIR}/samples/klick/square_normal.wav
+)
+install(FILES ${samples} DESTINATION ${samplesdir})
 
 # Configure and install launcher scripts
 if(UNIX)

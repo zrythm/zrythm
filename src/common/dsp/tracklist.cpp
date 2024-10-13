@@ -194,7 +194,7 @@ Tracklist::insert_track (
     }
 
   /* this needs to be called before appending the track to the tracklist */
-  track->set_name (track->name_, false);
+  track->set_name (*this, track->name_, false);
 
   /* append the track at the end */
   auto added_track =
@@ -258,7 +258,8 @@ Tracklist::insert_track (
 
   if constexpr (std::derived_from<T, ChannelTrack>)
     {
-      added_track->channel_->connect ();
+      // TODO!!!!
+      // added_track->channel_->connect ();
     }
 
   /* if audio output route to master */
@@ -439,7 +440,8 @@ Tracklist::validate () const
   for (const auto &track : tracks_)
     {
       ret_vals.emplace_back (std::async ([this, &track] () {
-        z_return_val_if_fail (track && track->is_in_active_project (), false);
+        // z_return_val_if_fail (track && track->is_in_active_project (), false);
+        z_return_val_if_fail (track, false);
 
         if (!track->validate ())
           return false;
@@ -500,7 +502,7 @@ Tracklist::get_last_pos (const PinOption pin_opt, const bool visible_only) const
 bool
 Tracklist::is_in_active_project () const
 {
-  return project_ == PROJECT.get ()
+  return project_ == PROJECT
          || (sample_processor_ && sample_processor_->is_in_active_project ());
 }
 
@@ -991,7 +993,7 @@ Tracklist::import_files (
       for (const auto &filepath : filepaths)
         {
 
-          auto fi = file_import_new (filepath.toStdString ().c_str (), &nfo);
+          auto     fi = file_import_new (filepath.toStdString (), &nfo);
           GError * err = nullptr;
           auto     regions = file_import_sync (fi, &err);
           if (err != nullptr)
@@ -1311,11 +1313,11 @@ Tracklist::mark_all_tracks_for_bounce (bool bounce)
 }
 
 int
-Tracklist::get_total_bars (int total_bars) const
+Tracklist::get_total_bars (const Transport &transport, int total_bars) const
 {
   for (const auto &track : tracks_)
     {
-      total_bars = track->get_total_bars (total_bars);
+      total_bars = track->get_total_bars (transport, total_bars);
     }
   return total_bars;
 }

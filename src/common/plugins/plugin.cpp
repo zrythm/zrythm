@@ -1096,8 +1096,7 @@ Plugin::process (const EngineProcessTimeInfo time_nfo)
             {
               dsp_fill (
                 &port->buf_[time_nfo.local_offset_],
-                DENORMAL_PREVENTION_VAL (AUDIO_ENGINE.get ()),
-                time_nfo.nframes_);
+                DENORMAL_PREVENTION_VAL (AUDIO_ENGINE), time_nfo.nframes_);
             }
           /* otherwise just apply gain */
           else

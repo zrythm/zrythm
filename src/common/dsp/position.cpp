@@ -56,10 +56,10 @@ Position::update_frames_from_ticks (double frames_per_tick)
 }
 
 void
-Position::set_to_bar (int bar)
+Position::set_to_bar (const Transport &transport, int bar)
 {
   z_return_if_fail (
-    TRANSPORT->ticks_per_bar_ > 0
+    transport.ticks_per_bar_ > 0
     /* don't use INT_MAX, it results in a negative position */
     && bar <= POSITION_MAX_BAR);
 
@@ -68,12 +68,16 @@ Position::set_to_bar (int bar)
   if (bar > 0)
     {
       bar--;
-      from_ticks (TRANSPORT->ticks_per_bar_ * bar);
+      from_ticks (
+        transport.ticks_per_bar_ * bar,
+        transport.audio_engine_->frames_per_tick_);
     }
   else if (bar < 0)
     {
       bar++;
-      from_ticks (TRANSPORT->ticks_per_bar_ * bar);
+      from_ticks (
+        transport.ticks_per_bar_ * bar,
+        transport.audio_engine_->frames_per_tick_);
     }
   else
     {
@@ -374,19 +378,34 @@ Position::get_ticks_diff (
 }
 
 std::string
-Position::to_string (int decimal_places) const
+Position::to_string (
+  const Transport *  transport,
+  const TempoTrack * tempo_track,
+  int                decimal_places) const
 {
   char buf[80];
-  to_string (buf, decimal_places);
+  if (transport && tempo_track)
+    {
+      to_string (*transport, *tempo_track, buf, decimal_places);
+    }
+  else
+    {
+      sprintf (
+        buf, "%.*f (%" SIGNED_FRAME_FORMAT ")", decimal_places, ticks_, frames_);
+    }
   return buf;
 }
 
 void
-Position::to_string (char * buf, int decimal_places) const
+Position::to_string (
+  const Transport  &transport,
+  const TempoTrack &tempo_track,
+  char *            buf,
+  int               decimal_places) const
 {
-  int    bars = get_bars (true);
-  int    beats = get_beats (true);
-  int    sixteenths = get_sixteenths (true);
+  int    bars = get_bars (transport, true);
+  int    beats = get_beats (transport, tempo_track, true);
+  int    sixteenths = get_sixteenths (transport, tempo_track, true);
   double ticks = get_ticks ();
   z_return_if_fail (bars > -80000);
   if (ZRYTHM_TESTING)
@@ -446,26 +465,32 @@ Position::Position (const char * str)
 }
 
 void
-Position::print () const
+Position::print (const Transport * transport, const TempoTrack * tempo_track) const
 {
-  z_debug (
-    fmt::format ("{} ({} frames | {} ticks)", to_string (), frames_, ticks_));
+  z_debug (fmt::format (
+    "{} ({} frames | {} ticks)", to_string (transport, tempo_track), frames_,
+    ticks_));
 }
 
 void
-Position::print_range (const Position &p1, const Position &p2)
+Position::print_range (
+  const Transport  &transport,
+  const TempoTrack &tempo_track,
+  const Position   &p1,
+  const Position   &p2)
 {
   z_debug (fmt::format (
-    "{} ({}) - {} ({}) <delta {} frames {} ticks>", p1.to_string (), p1.frames_,
-    p2.to_string (), p2.frames_, p2.frames_ - p1.frames_,
-    p2.ticks_ - p1.ticks_));
+    "{} ({}) - {} ({}) <delta {} frames {} ticks>",
+    p1.to_string (&transport, &tempo_track), p1.frames_,
+    p2.to_string (&transport, &tempo_track), p2.frames_,
+    p2.frames_ - p1.frames_, p2.ticks_ - p1.ticks_));
 }
 
 int
-Position::get_total_bars (bool include_current) const
+Position::get_total_bars (const Transport &transport, bool include_current) const
 {
-  int bars = get_bars (false);
-  int cur_bars = get_bars (true);
+  int bars = get_bars (transport, false);
+  int cur_bars = get_bars (transport, true);
 
   if (include_current || bars == 0)
     {
@@ -474,7 +499,7 @@ Position::get_total_bars (bool include_current) const
 
   /* if we are at the start of the bar, don't count this bar */
   Position pos_at_bar;
-  pos_at_bar.set_to_bar (cur_bars);
+  pos_at_bar.set_to_bar (transport, cur_bars);
   if (pos_at_bar.frames_ == frames_)
     {
       bars--;
@@ -484,10 +509,13 @@ Position::get_total_bars (bool include_current) const
 }
 
 int
-Position::get_total_beats (bool include_current) const
+Position::get_total_beats (
+  const Transport  &transport,
+  const TempoTrack &tempo_track,
+  bool              include_current) const
 {
-  int beats = get_beats (false);
-  int bars = get_bars (false);
+  int beats = get_beats (transport, tempo_track, false);
+  int bars = get_bars (transport, false);
 
   int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
   int ret = beats + bars * beats_per_bar;
@@ -537,12 +565,11 @@ Position::get_total_sixteenths (bool include_current) const
 }
 
 int
-Position::get_bars (bool start_at_one) const
+Position::get_bars (const Transport &transport, bool start_at_one) const
 {
-  z_return_val_if_fail (
-    gZrythm && PROJECT && TRANSPORT && TRANSPORT->ticks_per_bar_ > 0, -1);
+  z_return_val_if_fail (transport.ticks_per_bar_ > 0, -1);
 
-  double total_bars = ticks_ / TRANSPORT->ticks_per_bar_;
+  double total_bars = ticks_ / transport.ticks_per_bar_;
   if (total_bars >= 0.0)
     {
       int ret = (int) floor (total_bars);
@@ -564,18 +591,19 @@ Position::get_bars (bool start_at_one) const
 }
 
 int
-Position::get_beats (bool start_at_one) const
+Position::get_beats (
+  const Transport  &transport,
+  const TempoTrack &tempo_track,
+  bool              start_at_one) const
 {
   z_return_val_if_fail (
-    gZrythm && PROJECT && TRANSPORT && TRANSPORT->ticks_per_bar_ > 0
-      && TRANSPORT->ticks_per_beat_ > 0 && P_TEMPO_TRACK,
-    -1);
+    transport.ticks_per_bar_ > 0 && transport.ticks_per_beat_ > 0, -1);
 
-  int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
+  int beats_per_bar = tempo_track.get_beats_per_bar ();
   z_return_val_if_fail (beats_per_bar > 0, -1);
 
-  auto   total_bars = (double) get_bars (false);
-  double total_beats = ticks_ / TRANSPORT->ticks_per_beat_;
+  auto   total_bars = (double) get_bars (transport, false);
+  double total_beats = ticks_ / transport.ticks_per_beat_;
   total_beats -= (double) (total_bars * beats_per_bar);
   if (total_beats >= 0.0)
     {
@@ -598,17 +626,19 @@ Position::get_beats (bool start_at_one) const
 }
 
 int
-Position::get_sixteenths (bool start_at_one) const
+Position::get_sixteenths (
+  const Transport  &transport,
+  const TempoTrack &tempo_track,
+  bool              start_at_one) const
 {
-  z_return_val_if_fail (
-    gZrythm && PROJECT && TRANSPORT && TRANSPORT->sixteenths_per_beat_ > 0, -1);
+  z_return_val_if_fail (transport.sixteenths_per_beat_ > 0, -1);
 
-  double total_beats = (double) get_total_beats (true);
+  double total_beats = (double) get_total_beats (transport, tempo_track, true);
   /*z_info ("total beats {:f}", total_beats);*/
   double total_sixteenths = ticks_ / TICKS_PER_SIXTEENTH_NOTE_DBL;
   /*z_info ("total sixteenths {:f}",*/
   /*total_sixteenths);*/
-  total_sixteenths -= (double) (total_beats * TRANSPORT->sixteenths_per_beat_);
+  total_sixteenths -= (double) (total_beats * transport.sixteenths_per_beat_);
   if (total_sixteenths >= 0.0)
     {
       int ret = (int) floor (total_sixteenths);

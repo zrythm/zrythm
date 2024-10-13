@@ -9,10 +9,11 @@
 
 Color::Color (const std::string &str)
 {
-  // GdkRGBA rgba;
-  // gdk_rgba_parse (&rgba, str.c_str ());
-  // *this = rgba;
-  z_error ("TODO");
+  QColor qc (str.c_str ());
+  red_ = qc.redF ();
+  green_ = qc.greenF ();
+  blue_ = qc.blueF ();
+  alpha_ = qc.alphaF ();
 }
 
 Color::Color (float r, float g, float b, float a)

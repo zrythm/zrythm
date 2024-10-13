@@ -31,7 +31,7 @@ public:
   /**
    * @brief Adds the start/end markers.
    */
-  void add_default_markers ();
+  void add_default_markers (const Transport &transport);
 
   /**
    * Inserts a marker to the track.

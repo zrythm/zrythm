@@ -28,14 +28,16 @@ struct AudioPool final
     : public ICloneable<AudioPool>,
       public ISerializable<AudioPool>
 {
-  /* Rule of 0 */
+public:
+  AudioPool (AudioEngine * engine = nullptr);
+
 public:
   /**
    * Initializes the audio pool after deserialization.
    *
    * @throw ZrythmException if an error occurred.
    */
-  void init_loaded ();
+  void init_loaded (AudioEngine * engine);
 
   /**
    * Adds an audio clip to the pool.
@@ -137,6 +139,11 @@ public:
    * @warning May contain NULLs.
    */
   std::vector<std::unique_ptr<AudioClip>> clips_;
+
+  /**
+   * @brief Owner engine.
+   */
+  AudioEngine * engine_ = nullptr;
 };
 
 /**

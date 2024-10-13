@@ -64,8 +64,8 @@ RtAudioDevice::RtAudioDevice (
     : is_input_ (is_input), channel_idx_ (channel_idx), id_ (device_id),
       port_ (port)
 {
-  handle_ = engine_rtaudio_create_rtaudio (
-    AUDIO_ENGINE.get (), AUDIO_ENGINE->audio_backend_);
+  handle_ =
+    engine_rtaudio_create_rtaudio (AUDIO_ENGINE, AUDIO_ENGINE->audio_backend_);
   if (!handle_)
     {
       throw ZrythmException ("Failed to create RtAudio handle");

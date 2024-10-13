@@ -24,20 +24,20 @@ MarkerTrack::MarkerTrack (int track_pos)
 }
 
 void
-MarkerTrack::add_default_markers ()
+MarkerTrack::add_default_markers (const Transport &transport)
 {
   /* add start and end markers */
   auto     marker_name = fmt::format ("[{}]", _ ("start"));
   auto     marker = std::make_shared<Marker> (marker_name);
   Position pos;
-  pos.set_to_bar (1);
+  pos.set_to_bar (transport, 1);
   marker->pos_setter (&pos);
   marker->marker_type_ = Marker::Type::Start;
   add_marker (marker);
 
   marker_name = fmt::format ("[{}]", _ ("end"));
   marker = std::make_shared<Marker> (marker_name);
-  pos.set_to_bar (129);
+  pos.set_to_bar (transport, 129);
   marker->pos_setter (&pos);
   marker->marker_type_ = Marker::Type::End;
   add_marker (marker);

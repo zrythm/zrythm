@@ -85,6 +85,7 @@ AudioEngine::init_after_cloning (const AudioEngine &other)
   midi_in_ = other.midi_in_->clone_unique ();
   transport_ = other.transport_->clone_unique ();
   pool_ = other.pool_->clone_unique ();
+  pool_->engine_ = this;
   control_room_ = other.control_room_->clone_unique ();
   sample_processor_ = other.sample_processor_->clone_unique ();
   hw_in_processor_ = other.hw_in_processor_->clone_unique ();
@@ -117,17 +118,21 @@ AudioEngine::update_frames_per_tick (
   bool                update_from_ticks,
   bool                bpm_change)
 {
+#if 0
   if (ZRYTHM_IS_QT_THREAD)
     {
-      z_debug (
-        "updating frames per tick: beats per bar {}, bpm {:f}, sample rate {}",
-        beats_per_bar, static_cast<double> (bpm), sample_rate);
+#endif
+  z_debug (
+    "updating frames per tick: beats per bar {}, bpm {:f}, sample rate {}",
+    beats_per_bar, static_cast<double> (bpm), sample_rate);
+#if 0
     }
   else if (thread_check)
     {
       z_error ("Called from non-GTK thread");
       return;
     }
+#endif
 
   updating_frames_per_tick_ = true;
 
@@ -156,7 +161,7 @@ AudioEngine::update_frames_per_tick (
   /* update positions */
   transport_->update_positions (update_from_ticks);
 
-  for (const auto &track : TRACKLIST->tracks_)
+  for (const auto &track : project_->tracklist_->tracks_)
     {
       track->update_positions (update_from_ticks, bpm_change);
     }
@@ -663,7 +668,7 @@ AudioEngine::init_loaded (Project * project)
 
   project_ = project;
 
-  pool_->init_loaded ();
+  pool_->init_loaded (this);
 
   auto * tempo_track = project->tracklist_->tempo_track_;
   if (!tempo_track)
@@ -721,7 +726,7 @@ AudioEngine::init_loaded (Project * project)
 AudioEngine::AudioEngine (Project * project)
     : project_ (project), sample_rate_ (44000),
       control_room_ (std::make_unique<ControlRoom> (this)),
-      pool_ (std::make_unique<AudioPool> ()),
+      pool_ (std::make_unique<AudioPool> (this)),
       transport_ (std::make_unique<Transport> (this)),
       sample_processor_ (std::make_unique<SampleProcessor> (this))
 {
@@ -1035,14 +1040,16 @@ AudioEngine::update_position_info (
   playhead.add_frames (frames_to_add, ticks_per_frame_);
   pos_nfo.is_rolling_ = transport_->is_rolling ();
   pos_nfo.bpm_ = P_TEMPO_TRACK->get_current_bpm ();
-  pos_nfo.bar_ = playhead.get_bars (true);
-  pos_nfo.beat_ = playhead.get_beats (true);
-  pos_nfo.sixteenth_ = playhead.get_sixteenths (true);
+  pos_nfo.bar_ = playhead.get_bars (*transport_, true);
+  pos_nfo.beat_ =
+    playhead.get_beats (*transport_, *project_->tracklist_->tempo_track_, true);
+  pos_nfo.sixteenth_ = playhead.get_sixteenths (
+    *transport_, *project_->tracklist_->tempo_track_, true);
   pos_nfo.sixteenth_within_bar_ =
     pos_nfo.sixteenth_ + (pos_nfo.beat_ - 1) * transport_->sixteenths_per_beat_;
   pos_nfo.sixteenth_within_song_ = playhead.get_total_sixteenths (false);
   Position bar_start;
-  bar_start.set_to_bar (playhead.get_bars (true));
+  bar_start.set_to_bar (*transport_, playhead.get_bars (*transport_, true));
   Position beat_start;
   beat_start = bar_start;
   beat_start.add_beats (pos_nfo.beat_ - 1);
@@ -1626,14 +1633,17 @@ AudioEngine::stop_events ()
 {
   // process_source_id_.disconnect ();
 
-  /* process any remaining events - clear the queue. */
-  process_events ();
+  if (activated_)
+    {
+      /* process any remaining events - clear the queue. */
+      process_events ();
+    }
 }
 
 bool
 AudioEngine::is_in_active_project () const
 {
-  return project_ == PROJECT.get ();
+  return project_ == PROJECT;
 }
 
 AudioEngine::~AudioEngine ()
@@ -1683,7 +1693,7 @@ AudioEngine::~AudioEngine ()
       break;
     }
 
-  if (PROJECT && AUDIO_ENGINE && this == AUDIO_ENGINE.get ())
+  if (PROJECT && AUDIO_ENGINE && this == AUDIO_ENGINE)
     {
       monitor_out_->disconnect ();
       midi_in_->disconnect_all ();
@@ -1699,4 +1709,15 @@ EngineProcessTimeInfo::print () const
   z_info (
     "Global start frame: {} (with offset {}) | local offset: {} | num frames: {}",
     g_start_frame_, g_start_frame_w_offset_, local_offset_, nframes_);
+}
+
+AudioEngine *
+AudioEngine::get_active_instance ()
+{
+  auto prj = Project::get_active_instance ();
+  if (prj)
+    {
+      return prj->audio_engine_.get ();
+    }
+  return nullptr;
 }

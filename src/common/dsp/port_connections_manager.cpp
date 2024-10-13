@@ -188,7 +188,7 @@ PortConnectionsManager::ensure_connect (
   connections_.emplace_back (src, dest, multiplier, locked, enabled);
   const auto &conn = connections_.back ();
 
-  if (this == PORT_CONNECTIONS_MGR.get ())
+  if (this == get_active_instance ())
     {
       z_debug (
         "New connection: <{}>; have {} connections", conn.print_to_str (),
@@ -207,7 +207,7 @@ PortConnectionsManager::remove_connection (const size_t idx)
 
   connections_.erase (connections_.begin () + idx);
 
-  if (this == PORT_CONNECTIONS_MGR.get ())
+  if (this == get_active_instance ())
     {
       z_debug (
         "Disconnected <{}>; have {} connections", conn.print_to_str (),
@@ -297,4 +297,16 @@ PortConnectionsManager::print () const
       str += fmt::format ("[{}] {}\n", i, connections_[i].print_to_str ());
     }
   z_info ("{}", str.c_str ());
+}
+
+PortConnectionsManager *
+PortConnectionsManager::get_active_instance ()
+{
+  auto prj = Project::get_active_instance ();
+  if (prj)
+    {
+
+      return prj->port_connections_manager_.get ();
+    }
+  return nullptr;
 }

@@ -68,7 +68,7 @@ constexpr int BLOCK_LENGTH = 4096;
 // should be set by backend
 constexpr int MIDI_BUF_SIZE = 1024;
 
-#define AUDIO_ENGINE (PROJECT->audio_engine_)
+#define AUDIO_ENGINE (AudioEngine::get_active_instance ())
 
 enum class BounceStep
 {
@@ -362,6 +362,8 @@ public:
    * Sets up the audio engine after the project is initialized/loaded.
    */
   void setup ();
+
+  static AudioEngine * get_active_instance ();
 
   /**
    * Activates the audio engine to start processing and receiving events.

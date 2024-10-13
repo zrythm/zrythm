@@ -22,9 +22,7 @@ class PortConnection;
  * @{
  */
 
-#define PORT_CONNECTIONS_MANAGER_SCHEMA_VERSION 1
-
-#define PORT_CONNECTIONS_MGR (PROJECT->port_connections_manager_)
+#define PORT_CONNECTIONS_MGR (PortConnectionsManager::get_active_instance ())
 
 /**
  * Port connections manager.
@@ -77,6 +75,8 @@ public:
   {
     return get_sources_or_dests (arr, id, false);
   }
+
+  static PortConnectionsManager * get_active_instance ();
 
   /**
    * Adds the sources/destinations of @ref id in the given array.

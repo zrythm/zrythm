@@ -932,10 +932,13 @@ Track::add_region_if_in_range (
 }
 
 std::string
-Track::get_unique_name (Track * track_to_skip, const std::string &name)
+Track::get_unique_name (
+  const Tracklist   &tracklist,
+  Track *            track_to_skip,
+  const std::string &name)
 {
   std::string new_name = name;
-  while (!TRACKLIST->track_name_is_unique (new_name, track_to_skip))
+  while (!tracklist.track_name_is_unique (new_name, track_to_skip))
     {
       auto [ending_num, name_without_num] =
         string_get_int_after_last_space (new_name);
@@ -952,9 +955,12 @@ Track::get_unique_name (Track * track_to_skip, const std::string &name)
 }
 
 void
-Track::set_name (const std::string &name, bool pub_events)
+Track::set_name (
+  const Tracklist   &tracklist,
+  const std::string &name,
+  bool               pub_events)
 {
-  auto         new_name = get_unique_name (this, name);
+  auto         new_name = get_unique_name (tracklist, this, name);
   unsigned int old_hash = name_.empty () ? 0 : get_name_hash ();
   name_ = new_name;
   unsigned int new_hash = get_name_hash ();
@@ -1014,6 +1020,9 @@ Track::set_name (const std::string &name, bool pub_events)
           CLIP_EDITOR->region_id_.track_name_hash_ = new_hash;
         }
     }
+
+  // added 2024/10/13
+  name_hash_ = new_hash;
 
   if (pub_events)
     {
@@ -1322,7 +1331,7 @@ Track::set_enabled (
 }
 
 int
-Track::get_total_bars (int total_bars) const
+Track::get_total_bars (const Transport &transport, int total_bars) const
 {
   Position pos;
   pos.from_bars (total_bars);
@@ -1348,7 +1357,7 @@ Track::get_total_bars (int total_bars) const
         }
     }
 
-  int new_total_bars = pos.get_total_bars (true);
+  int new_total_bars = pos.get_total_bars (transport, true);
   return std::max (new_total_bars, total_bars);
 }
 

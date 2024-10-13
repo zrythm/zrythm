@@ -64,7 +64,7 @@ Project::Project (QObject * parent)
   audio_engine_ = std::make_unique<AudioEngine> (this);
 }
 
-Project::Project (std::string &title, QObject * parent) : Project (parent)
+Project::Project (const std::string &title, QObject * parent) : Project (parent)
 {
   title_ = title;
 }
@@ -365,7 +365,8 @@ Project::add_default_tracks ()
   add_track.operator()<ModulatorTrack> ();
 
   /* marker */
-  add_track.operator()<MarkerTrack> ()->add_default_markers ();
+  add_track.operator()<MarkerTrack> ()->add_default_markers (
+    *audio_engine_->transport_);
 
   tracklist_->pinned_tracks_cutoff_ = tracklist_->tracks_.size ();
 
@@ -777,7 +778,7 @@ Project::SerializeProjectThread::run ()
   z_debug ("successfully saved project");
 
 serialize_end:
-  UNDO_MANAGER->action_sem_.release ();
+  ctx_.main_project_->undo_manager_->action_sem_.release ();
   ctx_.finished_.store (true);
 }
 
@@ -917,7 +918,7 @@ Project::save (
     }
 
   /* set the title */
-  title_ = Glib::path_get_basename (dir_);
+  title_ = dir_.filename ().string ();
 
   /* save current datetime */
   datetime_str_ = datetime_get_current_as_string ();
@@ -949,8 +950,12 @@ Project::save (
       throw ZrythmException (_ ("Failed to create project directories"));
     }
 
-  /* write the pool */
-  audio_engine_->pool_->remove_unused (is_backup);
+  if (this == get_active_instance ())
+    {
+      /* write the pool */
+      audio_engine_->pool_->remove_unused (is_backup);
+    }
+
   try
     {
       audio_engine_->pool_->write_to_disk (is_backup);
@@ -961,10 +966,28 @@ Project::save (
     }
 
   auto ctx = std::make_unique<SaveContext> ();
+  ctx->main_project_ = this;
   ctx->project_file_path_ = get_path (ProjectPath::ProjectFile, is_backup);
   ctx->show_notification_ = show_notification;
   ctx->is_backup_ = is_backup;
-  ctx->project_ = clone (is_backup);
+  if (ZRYTHM_IS_QT_THREAD)
+    {
+      ctx->project_ = std::unique_ptr<Project> (clone (is_backup));
+    }
+  else
+    {
+      Project *  cloned_prj = nullptr;
+      QEventLoop loop;
+      QMetaObject::invokeMethod (
+        QCoreApplication::instance (),
+        [this, is_backup, &cloned_prj, &loop] () {
+          cloned_prj = clone (is_backup);
+          loop.quit ();
+        },
+        Qt::QueuedConnection);
+      loop.exec ();
+      ctx->project_ = std::unique_ptr<Project> (cloned_prj);
+    }
 
   if (is_backup)
     {
@@ -1125,4 +1148,22 @@ Project::setDirectory (const QString &directory)
 
   dir_ = directory.toStdString ();
   Q_EMIT directoryChanged (directory);
+}
+
+Project *
+Project::get_active_instance ()
+{
+  return zrythm::gui::ProjectManager::get_instance ()->getActiveProject ();
+}
+
+Project *
+Project::clone (bool for_backup) const
+{
+  auto ret = clone_raw_ptr ();
+  if (for_backup)
+    {
+      /* no undo history in backups */
+      ret->undo_manager_.reset ();
+    }
+  return ret;
 }

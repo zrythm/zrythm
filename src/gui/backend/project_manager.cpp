@@ -20,6 +20,7 @@ ProjectManager::ProjectManager (QObject * parent)
       if (project_res.index () == 0)
         {
           auto * project = std::get<Project *> (project_res);
+          setActiveProject (project);
           Q_EMIT projectLoaded (project);
         }
       else
@@ -134,6 +135,41 @@ ProjectManager::getRecentProjects () const
   return recent_projects_model_;
 }
 
+Project *
+ProjectManager::create_default (const fs::path &prj_dir, const std::string &name)
+{
+  z_info ("Creating default project '{}' in {}", name, prj_dir);
+
+  auto * prj = new Project (name, this);
+  prj->add_default_tracks ();
+
+  /* pre-setup engine */
+  auto * engine = prj->audio_engine_.get ();
+  z_return_val_if_fail (engine, nullptr);
+
+  auto beats_per_bar = prj->tracklist_->tempo_track_->get_beats_per_bar ();
+  engine->update_frames_per_tick (
+    beats_per_bar, prj->tracklist_->tempo_track_->get_current_bpm (),
+    engine->sample_rate_, true, true, false);
+
+  /* set directory/title and create standard dirs */
+  prj->dir_ = prj_dir / name;
+  prj->make_project_dirs (false);
+
+  prj->loaded_ = true;
+
+  prj->clip_editor_.init ();
+
+  prj->quantize_opts_timeline_->update_quantize_points (
+    *prj->audio_engine_->transport_);
+  prj->quantize_opts_editor_->update_quantize_points (
+    *prj->audio_engine_->transport_);
+
+  z_debug ("done creating default project");
+
+  return prj;
+}
+
 void
 ProjectManager::createNewProject (
   const QUrl    &directory,
@@ -141,21 +177,45 @@ ProjectManager::createNewProject (
   const QUrl    &templateUrl)
 {
   auto directory_file = directory.toLocalFile ();
-  z_debug ("Creating new project in {}", directory_file);
+  auto template_file = templateUrl.toLocalFile ();
+  z_debug (
+    "Creating new project in {} (template {})", directory_file, template_file);
 
   QFuture<ProjectLoadResult> future =
-    QtConcurrent::run ([directory_file, name, templateUrl, this] () {
-      // auto * project = new Project (this);
-      Project * project = nullptr;
-      (void) this;
-      // Simulate long-running operation
-      QThread::sleep (3);
-      if (project)
+    QtConcurrent::run ([directory_file, name, template_file, this] () {
+      try
         {
+          // const auto prj_dir =
+          // fs::path (directory_file.toStdString ()) / name.toStdString ();
+          Project * project = nullptr;
+          if (template_file.isEmpty ())
+            {
+              project = create_default (
+                directory_file.toStdString (), name.toStdString ());
+            }
+          else
+            {
+              // TODO create from template
+            }
+
+          // if we don't move the project to the main thread it will be
+          // associated with this thread pool thread and we won't be able to
+          // reparent the project instance to the main thread later
+          project->moveToThread (this->thread ());
+
+          // save the newly created project
+          project->save (project->dir_, false, false, false);
+
+          // TODO call project->activate() when the project window is ready
+          // project->activate ();
+
           return ProjectLoadResult (project);
         }
-
-      return ProjectLoadResult (QString ("Failed to create project"));
+      catch (const ZrythmException &e)
+        {
+          z_warning ("Failed to create project: {}", e.what ());
+          return ProjectLoadResult (e.what ());
+        }
     });
   project_watcher_.setFuture (future);
 }
@@ -196,6 +256,7 @@ ProjectManager::setActiveProject (Project * project)
   if (active_project_)
     {
       active_project_->setParent (nullptr);
+      active_project_->aboutToBeDeleted ();
       active_project_->deleteLater ();
     }
 

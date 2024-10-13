@@ -16,9 +16,12 @@
 
 #include <glib/gi18n.h>
 
+AudioPool::AudioPool (AudioEngine * engine) : engine_ (engine) { }
+
 void
-AudioPool::init_loaded ()
+AudioPool::init_loaded (AudioEngine * engine)
 {
+  engine_ = engine;
   for (auto &clip : clips_)
     {
       if (clip)
@@ -288,8 +291,10 @@ struct WriteClipData
 void
 AudioPool::write_to_disk (bool is_backup)
 {
+  z_return_if_fail (engine_);
+
   /* ensure pool dir exists */
-  auto prj_pool_dir = PROJECT->get_path (ProjectPath::POOL, is_backup);
+  auto prj_pool_dir = engine_->project_->get_path (ProjectPath::POOL, is_backup);
   if (!file_path_exists (prj_pool_dir))
     {
       try

@@ -16,8 +16,7 @@ RecentProjectsModel::get_recent_projects ()
 {
   auto list =
     zrythm::gui::SettingsManager::get_instance ()->get_recent_projects ();
-  list.append ("test 1");
-  list.append ("test 2");
+  // list.append ("test 2");
 
   std::vector<std::unique_ptr<ProjectInfo>> ret;
   std::transform (

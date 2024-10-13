@@ -132,7 +132,7 @@ MidiFile::into_region (
           z_trace (
             "event at {}: {} ", msg.getTimeStamp (), msg.getDescription ());
 
-          int bars = pos.get_bars (true);
+          int bars = pos.get_bars (*TRANSPORT, true);
           if (ZRYTHM_HAVE_UI && bars > transport.total_bars_ - 8)
             {
               TRANSPORT->update_total_bars (bars + 8, true);

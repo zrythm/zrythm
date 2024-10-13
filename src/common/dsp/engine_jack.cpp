@@ -301,23 +301,28 @@ timebase_cb (
   if (!self->run_.load ())
     return;
 
+  const auto &transport = *self->transport_;
+  Position    playhead = transport.playhead_pos_;
+  const auto &tempo_track = *P_TEMPO_TRACK;
+
   /* Mandatory fields */
   pos->valid = JackPositionBBT;
-  pos->frame = (jack_nframes_t) PLAYHEAD.frames_;
+  pos->frame = (jack_nframes_t) playhead.frames_;
 
   /* BBT */
-  pos->bar = PLAYHEAD.get_bars (true);
-  pos->beat = PLAYHEAD.get_beats (true);
+  pos->bar = playhead.get_bars (transport, true);
+  pos->beat = playhead.get_beats (transport, tempo_track, true);
   pos->tick =
-    PLAYHEAD.get_sixteenths (true) * TICKS_PER_SIXTEENTH_NOTE
-    + (int) floor (PLAYHEAD.ticks_);
+    playhead.get_sixteenths (transport, tempo_track, true)
+      * TICKS_PER_SIXTEENTH_NOTE
+    + (int) floor (playhead.ticks_);
   Position bar_start;
-  bar_start.set_to_bar (PLAYHEAD.get_bars (true));
-  pos->bar_start_tick = (double) (PLAYHEAD.ticks_ - bar_start.ticks_);
-  pos->beats_per_bar = (float) P_TEMPO_TRACK->get_beats_per_bar ();
-  pos->beat_type = (float) P_TEMPO_TRACK->get_beat_unit ();
+  bar_start.set_to_bar (transport, playhead.get_bars (transport, true));
+  pos->bar_start_tick = (double) (playhead.ticks_ - bar_start.ticks_);
+  pos->beats_per_bar = (float) tempo_track.get_beats_per_bar ();
+  pos->beat_type = (float) tempo_track.get_beat_unit ();
   pos->ticks_per_beat = TRANSPORT->ticks_per_beat_;
-  pos->beats_per_minute = (double) P_TEMPO_TRACK->get_current_bpm ();
+  pos->beats_per_minute = (double) tempo_track.get_current_bpm ();
 }
 
 /**

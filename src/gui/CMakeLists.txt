@@ -75,7 +75,7 @@ foreach(font_filepath ${font_filepaths})
 endforeach()
 
 set(rel_qml_file_paths
-  # main_window.qml
+  ProjectWindow.qml
   Greeter.qml
   components/ZrythmPlaceholderPage.qml
   components/ZrythmButton.qml

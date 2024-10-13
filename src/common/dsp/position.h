@@ -29,6 +29,8 @@ constexpr int    POSITION_MAX_BAR = 160000;
 class SnapGrid;
 class Track;
 class Region;
+class Transport;
+class TempoTrack;
 
 /**
  * @brief Represents the position of an object.
@@ -155,7 +157,7 @@ public:
   /**
    * Sets position to given bar.
    */
-  void set_to_bar (int bar);
+  void set_to_bar (const Transport &transport, int bar);
 
   /**
    * Adds the frames to the position and updates the rest of the fields, and
@@ -209,10 +211,10 @@ public:
     add_ticks (sixteenths * TICKS_PER_SIXTEENTH_NOTE_DBL);
   }
 
-  inline void add_ticks (double ticks)
+  inline void add_ticks (double ticks, double frames_per_tick = 0.0)
   {
     ticks_ += ticks;
-    update_frames_from_ticks (0.0);
+    update_frames_from_ticks (frames_per_tick);
   }
 
   /**
@@ -350,24 +352,29 @@ public:
   /**
    * Creates a string in the form of "0.0.0.0" from the given position.
    */
-  std::string to_string (int decimal_places = 4) const;
+  std::string to_string (
+    const Transport *  transport = nullptr,
+    const TempoTrack * tempo_track = nullptr,
+    int                decimal_places = 4) const;
 
-  ATTR_NONNULL void to_string (char * buf, int decimal_places = 4) const;
+  ATTR_NONNULL void to_string (
+    const Transport  &transport,
+    const TempoTrack &tempo_track,
+    char *            buf,
+    int               decimal_places = 4) const;
 
   /**
    * Prints the Position in the "0.0.0.0" form.
    */
-  void print () const;
+  void print (
+    const Transport *  transport = nullptr,
+    const TempoTrack * tempo_track = nullptr) const;
 
-  static void print_range (const Position &p1, const Position &p2);
-
-  /**
-   * Returns the total number of beats.
-   *
-   * @param include_current Whether to count the current beat if it is at the
-   * beat start.
-   */
-  int get_total_bars (bool include_current) const;
+  static void print_range (
+    const Transport  &transport,
+    const TempoTrack &tempo_track,
+    const Position   &p1,
+    const Position   &p2);
 
   /**
    * Returns the total number of beats.
@@ -375,7 +382,18 @@ public:
    * @param include_current Whether to count the current beat if it is at the
    * beat start.
    */
-  int get_total_beats (bool include_current) const;
+  int get_total_bars (const Transport &transport, bool include_current) const;
+
+  /**
+   * Returns the total number of beats.
+   *
+   * @param include_current Whether to count the current beat if it is at the
+   * beat start.
+   */
+  int get_total_beats (
+    const Transport  &transport,
+    const TempoTrack &tempo_track,
+    bool              include_current) const;
 
   /**
    * Returns the total number of sixteenths not including the current one.
@@ -400,7 +418,7 @@ public:
    *
    * @param start_at_one Start at 1 or -1 instead of 0.
    */
-  int get_bars (bool start_at_one) const;
+  int get_bars (const Transport &transport, bool start_at_one) const;
 
   /**
    * Gets the beats of the position.
@@ -409,7 +427,10 @@ public:
    *
    * @param start_at_one Start at 1 or -1 instead of 0.
    */
-  int get_beats (bool start_at_one) const;
+  int get_beats (
+    const Transport  &transport,
+    const TempoTrack &tempo_track,
+    bool              start_at_one) const;
 
   /**
    * Gets the sixteenths of the position.
@@ -418,7 +439,10 @@ public:
    *
    * @param start_at_one Start at 1 or -1 instead of 0.
    */
-  int get_sixteenths (bool start_at_one) const;
+  int get_sixteenths (
+    const Transport  &transport,
+    const TempoTrack &tempo_track,
+    bool              start_at_one) const;
 
   /**
    * Gets the ticks of the position.

@@ -399,7 +399,7 @@ void
 Transport::set_playhead_to_bar (int bar)
 {
   Position pos;
-  pos.set_to_bar (bar);
+  pos.set_to_bar (*this, bar);
   set_playhead_pos (pos);
 }
 
@@ -506,12 +506,12 @@ Transport::get_ppqn () const
 void
 Transport::update_positions (bool update_from_ticks)
 {
-  playhead_pos_.update (update_from_ticks, 0.0);
-  cue_pos_.update (update_from_ticks, 0.0);
-  loop_start_pos_.update (update_from_ticks, 0.0);
-  loop_end_pos_.update (update_from_ticks, 0.0);
-  punch_in_pos_.update (update_from_ticks, 0.0);
-  punch_out_pos_.update (update_from_ticks, 0.0);
+  playhead_pos_.update (update_from_ticks, audio_engine_->frames_per_tick_);
+  cue_pos_.update (update_from_ticks, audio_engine_->frames_per_tick_);
+  loop_start_pos_.update (update_from_ticks, audio_engine_->frames_per_tick_);
+  loop_end_pos_.update (update_from_ticks, audio_engine_->frames_per_tick_);
+  punch_in_pos_.update (update_from_ticks, audio_engine_->frames_per_tick_);
+  punch_out_pos_.update (update_from_ticks, audio_engine_->frames_per_tick_);
 }
 
 #if 0
@@ -767,7 +767,7 @@ Transport::recalculate_total_bars (ArrangerSelections * sel)
             {
               obj->get_pos (&pos);
             }
-          int pos_bars = pos.get_total_bars (true);
+          int pos_bars = pos.get_total_bars (*this, true);
           if (pos_bars > total_bars - 3)
             {
               total_bars = pos_bars + BARS_END_BUFFER;
@@ -778,7 +778,8 @@ Transport::recalculate_total_bars (ArrangerSelections * sel)
    * every object */
   else
     {
-      total_bars = TRACKLIST->get_total_bars (TRANSPORT_DEFAULT_TOTAL_BARS);
+      total_bars =
+        TRACKLIST->get_total_bars (*this, TRANSPORT_DEFAULT_TOTAL_BARS);
 
       total_bars += BARS_END_BUFFER;
     }
@@ -789,7 +790,7 @@ Transport::recalculate_total_bars (ArrangerSelections * sel)
 bool
 Transport::is_in_active_project () const
 {
-  return audio_engine_ == AUDIO_ENGINE.get ();
+  return audio_engine_ == AUDIO_ENGINE;
 }
 
 void

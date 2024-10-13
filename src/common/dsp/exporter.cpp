@@ -194,7 +194,7 @@ Exporter::export_audio (Settings &info)
   if (AUDIO_ENGINE->audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
     {
       engine_jack_set_transport_type (
-        AUDIO_ENGINE.get (), AudioEngine::JackTransportType::NoJackTransport);
+        AUDIO_ENGINE, AudioEngine::JackTransportType::NoJackTransport);
 
       /* FIXME this is not how freewheeling should
        * work. see https://todo.sr.ht/~alextee/zrythm-feature/371 */
@@ -309,7 +309,7 @@ Exporter::export_audio (Settings &info)
       jack_set_freewheel (
         AUDIO_ENGINE->client, 0);
 #  endif
-      engine_jack_set_transport_type (AUDIO_ENGINE.get (), transport_type);
+      engine_jack_set_transport_type (AUDIO_ENGINE, transport_type);
     }
 #endif
 
@@ -669,7 +669,7 @@ Exporter::export_to_file ()
   if (settings_.time_range_ == Exporter::TimeRange::Custom)
     {
       Position init_pos;
-      init_pos.set_to_bar (1);
+      init_pos.set_to_bar (*TRANSPORT, 1);
       if (
         settings_.custom_start_ >= settings_.custom_end_
         || settings_.custom_start_ < init_pos)

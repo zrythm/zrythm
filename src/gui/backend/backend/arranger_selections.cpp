@@ -187,7 +187,7 @@ std::pair<T *, Position>
 ArrangerSelections::get_first_object_and_pos (bool global) const
 {
   Position pos;
-  pos.set_to_bar (POSITION_MAX_BAR);
+  pos.set_to_bar (*TRANSPORT, POSITION_MAX_BAR);
   T * ret_obj = nullptr;
 
   auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
@@ -237,7 +237,7 @@ std::pair<RetObjT *, Position>
 ArrangerSelections::get_last_object_and_pos (bool global, bool ends_last) const
 {
   Position pos;
-  pos.set_to_bar (-POSITION_MAX_BAR);
+  pos.set_to_bar (*TRANSPORT, -POSITION_MAX_BAR);
   RetObjT * ret_obj = nullptr;
 
   auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);

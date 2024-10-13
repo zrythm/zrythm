@@ -3,6 +3,8 @@
 
 #include "zrythm-config.h"
 
+#include <ctime>
+
 #include <inttypes.h>
 #include <sys/stat.h>
 
@@ -20,9 +22,9 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/project/project_init_flow_manager.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/backend/project_manager.h"
 
 #include <glibmm.h>
-#include <time.h>
 #include <yyjson.h>
 
 ProjectInitFlowManager::~ProjectInitFlowManager ()
@@ -365,8 +367,10 @@ ProjectInitFlowManager::create_default (
 
   prj->clip_editor_.init ();
 
-  prj->quantize_opts_timeline_->update_quantize_points ();
-  prj->quantize_opts_editor_->update_quantize_points ();
+  prj->quantize_opts_timeline_->update_quantize_points (
+    *prj->audio_engine_->transport_);
+  prj->quantize_opts_editor_->update_quantize_points (
+    *prj->audio_engine_->transport_);
 
   if (have_ui)
     {
@@ -616,8 +620,9 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
     }
 #endif
 
-  PROJECT.reset (deserialized_project.release ());
-  auto prj = PROJECT.get ();
+  zrythm::gui::ProjectManager::get_instance ()->setActiveProject (
+    deserialized_project.release ());
+  auto prj = zrythm::gui::ProjectManager::get_instance ()->getActiveProject ();
 
   /* re-update paths for the newly loaded project */
   prj->dir_ = dir_;
@@ -663,7 +668,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
   /* re-load clips because sample rate can change during engine pre setup */
   try
     {
-      engine->pool_->init_loaded ();
+      engine->pool_->init_loaded (engine);
     }
   catch (const ZrythmException &e)
     {
@@ -718,8 +723,10 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
 
   prj->tracklist_selections_->init_loaded (*tracklist);
 
-  prj->quantize_opts_timeline_->update_quantize_points ();
-  prj->quantize_opts_editor_->update_quantize_points ();
+  prj->quantize_opts_timeline_->update_quantize_points (
+    *prj->audio_engine_->transport_);
+  prj->quantize_opts_editor_->update_quantize_points (
+    *prj->audio_engine_->transport_);
 
   // replace_main_window (mww);
 
@@ -800,7 +807,8 @@ ProjectInitFlowManager::load_from_file ()
   if (!PROJECT)
     {
       /* create a temporary project struct */
-      PROJECT = std::make_unique<Project> ();
+      zrythm::gui::ProjectManager::get_instance ()->setActiveProject (
+        new Project ());
     }
 
   PROJECT->dir_ = dir_;
@@ -894,7 +902,9 @@ ProjectInitFlowManager::ProjectInitFlowManager (
   try
     {
       z_return_if_fail (gZrythm);
-      create_default (PROJECT, gZrythm->create_project_path_, false, true);
+      // FIXME/TODO - it expects a reference to the active project here
+      auto prj = std::make_unique<Project> ();
+      create_default (prj, gZrythm->create_project_path_, false, true);
     }
   catch (const ZrythmException &e)
     {

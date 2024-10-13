@@ -65,6 +65,27 @@ private:
    */
   void init_templates ();
 
+  // void create_or_load_project (const QString &filepath, bool is_template);
+
+  /**
+   * @brief Loads a project from a file (either actual project or template).
+   *
+   */
+  void load_from_file ();
+
+  /**
+   * Creates a default project.
+   *
+   * This is only used internally or for generating projects from scripts.
+   *
+   * @param prj_dir The parent directory of the project to create (without the
+   * project name).
+   * @param name The name/title of the project to create. This will be appended
+   * to @p prj_dir.
+   * @throw ZrythmException if an error occurred.
+   */
+  Project * create_default (const fs::path &prj_dir, const std::string &name);
+
 private:
   /** Array of project template paths. */
   TemplateList templates_;

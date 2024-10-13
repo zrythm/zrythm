@@ -582,13 +582,16 @@ public:
    *
    * Must only be called from the GTK thread.
    */
-  void set_name (const std::string &name, bool pub_events);
+  void
+  set_name (const Tracklist &tracklist, const std::string &name, bool pub_events);
 
   /**
    * Returns a unique name for a new track based on the given name.
    */
-  static std::string
-  get_unique_name (Track * track_to_skip, const std::string &name);
+  static std::string get_unique_name (
+    const Tracklist   &tracklist,
+    Track *            track_to_skip,
+    const std::string &name);
 
   /**
    * Updates the frames/ticks of each position in each child of the track
@@ -741,7 +744,7 @@ public:
     bool fire_events);
 
   /** TODO: document why it's a pointer. */
-  int get_total_bars (int total_bars) const;
+  int get_total_bars (const Transport &transport, int total_bars) const;
 
   /**
    * Set various caches (snapshots, track name hash, plugin input/output
