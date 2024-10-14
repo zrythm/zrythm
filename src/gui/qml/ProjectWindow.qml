@@ -238,187 +238,173 @@ ApplicationWindow {
 
     }
 
-    header: ToolBar {
+    header: ZrythmToolBar {
         id: headerBar
 
-        RowLayout {
-            anchors.fill: parent
+        leftItems: [
+            ZrythmToolButton {
+                // Toggle left panel
 
-            RowLayout {
-                id: headerStartBox
+                id: startDockSwitcher
 
-                ZrythmToolButton {
-                    // Toggle left panel
-
-                    id: startDockSwitcher
-
-                    // Implement PanelToggleButton functionality
-                    text: qsTr("Toggle Left Panel")
-                    onClicked: {
-                    }
+                // Implement PanelToggleButton functionality
+                text: qsTr("Toggle Left Panel")
+                onClicked: {
                 }
+            },
+            ZrythmToolSeparator {
+            },
+            ZrythmSplitButton {
+                // Perform undo action
 
-                ToolSeparator {
+                id: undoBtn
+
+                text: qsTr("Undo")
+                // icon.name: "edit-undo"
+                // onClicked: {
+                // }
+                directionUpward: true
+
+                menuItems: ZrythmMenu {
+                Action {
+                    text: qsTr("Undo Move")
                 }
-
-                ZrythmToolButton {
-                    // Perform undo action
-
-                    id: undoBtn
-
-                    text: qsTr("Undo")
-                    icon.name: "edit-undo"
-                    enabled: false
-                    onClicked: {
-                    }
                 }
+            },
+            ZrythmToolButton {
+                // Perform redo action
 
-                ZrythmToolButton {
-                    // Perform redo action
+                id: redoBtn
 
-                    id: redoBtn
-
-                    text: qsTr("Redo")
-                    icon.name: "edit-redo"
-                    enabled: false
-                    onClicked: {
-                    }
+                text: qsTr("Redo")
+                icon.name: "edit-redo"
+                enabled: false
+                onClicked: {
                 }
+            },
+            ZrythmToolSeparator {
+            },
+            // Implement ToolboxWidget
+            Rectangle {
+                // Add ToolboxWidget properties and functionality
 
-                ToolSeparator {
-                }
-
-                // Implement ToolboxWidget
-                Rectangle {
-                    // Add ToolboxWidget properties and functionality
-
-                    id: toolbox
-                }
-
+                id: toolbox
             }
+        ]
+        rightItems: [
+            ZrythmToolButton {
+                // Toggle right panel
 
-            RowLayout {
-                id: headerEndBox
+                id: endDockSwitcher
 
-                ToolButton {
-                    // Toggle right panel
+                // Implement PanelToggleButton functionality
+                text: qsTr("Toggle Right Panel")
+                onClicked: {
+                }
+            },
+            ZrythmToolSeparator {
+            },
+            ZrythmToolButton {
+                id: menuButton
 
-                    id: endDockSwitcher
+                text: qsTr("Menu")
+                icon.name: "open-menu-symbolic"
+                onClicked: primaryMenu.open()
 
-                    // Implement PanelToggleButton functionality
-                    text: qsTr("Toggle Right Panel")
-                    onClicked: {
+                ZrythmMenu {
+                    id: primaryMenu
+
+                    Action {
+                        text: qsTr("Open a Project…")
                     }
-                }
 
-                ToolSeparator {
-                }
+                    ZrythmMenuItem {
+                        // Implement new project action
 
-                ZrythmToolButton {
-                    id: menuButton
-
-                    text: qsTr("Menu")
-                    icon.name: "open-menu-symbolic"
-                    onClicked: primaryMenu.open()
-
-                    ZrythmMenu {
-                        id: primaryMenu
-
-                        Action {
-                            text: qsTr("Open a Project…")
+                        text: qsTr("Create New Project…")
+                        onTriggered: {
                         }
+                    }
 
-                        ZrythmMenuItem {
-                            // Implement new project action
+                    ZrythmMenuSeparator {
+                    }
 
-                            text: qsTr("Create New Project…")
-                            onTriggered: {
-                            }
+                    ZrythmMenuItem {
+                        // Implement save action
+
+                        text: qsTr("Save")
+                        onTriggered: {
                         }
+                    }
 
-                        ZrythmMenuSeparator {
+                    ZrythmMenuItem {
+                        // Implement save as action
+
+                        text: qsTr("Save As…")
+                        onTriggered: {
                         }
+                    }
 
-                        ZrythmMenuItem {
-                            // Implement save action
+                    ZrythmMenuSeparator {
+                    }
 
-                            text: qsTr("Save")
-                            onTriggered: {
-                            }
+                    ZrythmMenuItem {
+                        // Implement export as action
+
+                        text: qsTr("Export As…")
+                        onTriggered: {
                         }
+                    }
 
-                        ZrythmMenuItem {
-                            // Implement save as action
+                    ZrythmMenuItem {
+                        // Implement export graph action
 
-                            text: qsTr("Save As…")
-                            onTriggered: {
-                            }
+                        text: qsTr("Export Graph…")
+                        onTriggered: {
                         }
+                    }
 
-                        ZrythmMenuSeparator {
+                    ZrythmMenuSeparator {
+                    }
+
+                    ZrythmMenuItem {
+                        text: qsTr("Fullscreen")
+                        onTriggered: {
+                            root.visibility = root.visibility === Window.FullScreen ? Window.AutomaticVisibility : Window.FullScreen;
                         }
+                    }
 
-                        ZrythmMenuItem {
-                            // Implement export as action
+                    ZrythmMenuSeparator {
+                    }
 
-                            text: qsTr("Export As…")
-                            onTriggered: {
-                            }
+                    ZrythmMenuItem {
+                        // Open preferences dialog
+
+                        text: qsTr("Preferences")
+                        onTriggered: {
                         }
+                    }
 
-                        ZrythmMenuItem {
-                            // Implement export graph action
+                    ZrythmMenuItem {
+                        // Show keyboard shortcuts
 
-                            text: qsTr("Export Graph…")
-                            onTriggered: {
-                            }
+                        text: qsTr("Keyboard Shortcuts")
+                        onTriggered: {
                         }
+                    }
 
-                        ZrythmMenuSeparator {
+                    ZrythmMenuItem {
+                        // Show about dialog
+
+                        text: qsTr("About Zrythm")
+                        onTriggered: {
                         }
-
-                        ZrythmMenuItem {
-                            text: qsTr("Fullscreen")
-                            onTriggered: {
-                                root.visibility = root.visibility === Window.FullScreen ? Window.AutomaticVisibility : Window.FullScreen;
-                            }
-                        }
-
-                        ZrythmMenuSeparator {
-                        }
-
-                        ZrythmMenuItem {
-                            // Open preferences dialog
-
-                            text: qsTr("Preferences")
-                            onTriggered: {
-                            }
-                        }
-
-                        ZrythmMenuItem {
-                            // Show keyboard shortcuts
-
-                            text: qsTr("Keyboard Shortcuts")
-                            onTriggered: {
-                            }
-                        }
-
-                        ZrythmMenuItem {
-                            // Show about dialog
-
-                            text: qsTr("About Zrythm")
-                            onTriggered: {
-                            }
-                        }
-
                     }
 
                 }
 
             }
-
-        }
-
+        ]
     }
 
 }

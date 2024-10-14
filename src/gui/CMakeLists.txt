@@ -98,6 +98,9 @@ set(rel_qml_file_paths
   components/ZrythmMenuItem.qml
   components/ZrythmMenuSeparator.qml
   components/ZrythmMenuBackground.qml
+  components/ZrythmToolBar.qml
+  components/ZrythmToolSeparator.qml
+  components/ZrythmSplitButton.qml
 )
 set(qml_file_paths)
 foreach(qml_file_path ${rel_qml_file_paths})
