@@ -36,9 +36,9 @@ ApplicationWindow {
     }
 
     function openProjectWindow(project) {
-        var component = Qt.createComponent("ProjectWindow.qml");
+        let component = Qt.createComponent("ProjectWindow.qml");
         if (component.status === Component.Ready) {
-            var newWindow = component.createObject(project, {project: project});
+            let newWindow = component.createObject(project, {project: project});
             newWindow.show();
             root.close();
         } else {

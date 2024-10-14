@@ -41,36 +41,39 @@ ApplicationWindow {
         id: regularMenuBar
 
         ZrythmMenuBar {
-            Menu {
+            ZrythmMenu {
                 title: qsTr("&File")
 
-                MenuItem {
-                    // Implement new project action
-
-                    text: qsTr("New")
-                    onTriggered: {
-                    }
+                Action {
+                    text: qsTr("New Long Long Long Long Long Long Long Long Long Name")
                 }
 
-                MenuItem {
-                    // Implement open action
-
+                Action {
                     text: qsTr("Open")
-                    onTriggered: {
-                    }
                 }
 
             }
 
-            Menu {
+            ZrythmMenu {
                 title: qsTr("&Edit")
 
-                MenuItem {
-                    // Implement undo action
-
+                Action {
                     text: qsTr("Undo")
+                }
+
+            }
+
+            ZrythmMenu {
+                title: qsTr("&Test")
+
+                ZrythmMenuItem {
+                    text: qsTr("Something")
                     onTriggered: {
                     }
+                }
+
+                Action {
+                    text: "Copy"
                 }
 
             }
@@ -130,16 +133,7 @@ ApplicationWindow {
                         SplitView.preferredHeight: 200
                         SplitView.minimumHeight: 30
 
-                        Rectangle {
-                            color: "#2C2C2C"
-
-                            Label {
-                                anchors.fill: parent
-                                anchors.centerIn: parent
-                                text: "Tracks content"
-                                color: "white"
-                            }
-
+                        ZrythmArranger {
                         }
 
                     }
@@ -327,18 +321,14 @@ ApplicationWindow {
                     icon.name: "open-menu-symbolic"
                     onClicked: primaryMenu.open()
 
-                    Menu {
+                    ZrythmMenu {
                         id: primaryMenu
 
-                        MenuItem {
-                            // Implement open action
-
+                        Action {
                             text: qsTr("Open a Project…")
-                            onTriggered: {
-                            }
                         }
 
-                        MenuItem {
+                        ZrythmMenuItem {
                             // Implement new project action
 
                             text: qsTr("Create New Project…")
@@ -346,10 +336,10 @@ ApplicationWindow {
                             }
                         }
 
-                        MenuSeparator {
+                        ZrythmMenuSeparator {
                         }
 
-                        MenuItem {
+                        ZrythmMenuItem {
                             // Implement save action
 
                             text: qsTr("Save")
@@ -357,7 +347,7 @@ ApplicationWindow {
                             }
                         }
 
-                        MenuItem {
+                        ZrythmMenuItem {
                             // Implement save as action
 
                             text: qsTr("Save As…")
@@ -365,10 +355,10 @@ ApplicationWindow {
                             }
                         }
 
-                        MenuSeparator {
+                        ZrythmMenuSeparator {
                         }
 
-                        MenuItem {
+                        ZrythmMenuItem {
                             // Implement export as action
 
                             text: qsTr("Export As…")
@@ -376,7 +366,7 @@ ApplicationWindow {
                             }
                         }
 
-                        MenuItem {
+                        ZrythmMenuItem {
                             // Implement export graph action
 
                             text: qsTr("Export Graph…")
@@ -384,20 +374,20 @@ ApplicationWindow {
                             }
                         }
 
-                        MenuSeparator {
+                        ZrythmMenuSeparator {
                         }
 
-                        MenuItem {
+                        ZrythmMenuItem {
                             text: qsTr("Fullscreen")
                             onTriggered: {
                                 root.visibility = root.visibility === Window.FullScreen ? Window.AutomaticVisibility : Window.FullScreen;
                             }
                         }
 
-                        MenuSeparator {
+                        ZrythmMenuSeparator {
                         }
 
-                        MenuItem {
+                        ZrythmMenuItem {
                             // Open preferences dialog
 
                             text: qsTr("Preferences")
@@ -405,7 +395,7 @@ ApplicationWindow {
                             }
                         }
 
-                        MenuItem {
+                        ZrythmMenuItem {
                             // Show keyboard shortcuts
 
                             text: qsTr("Keyboard Shortcuts")
@@ -413,7 +403,7 @@ ApplicationWindow {
                             }
                         }
 
-                        MenuItem {
+                        ZrythmMenuItem {
                             // Show about dialog
 
                             text: qsTr("About Zrythm")

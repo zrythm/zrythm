@@ -92,6 +92,12 @@ set(rel_qml_file_paths
   components/ZrythmToolButton.qml
   components/ZrythmMenuBar.qml
   components/ZrythmResizablePanel.qml
+  components/ZrythmArranger.qml
+  components/ZrythmRegion.qml
+  components/ZrythmMenu.qml
+  components/ZrythmMenuItem.qml
+  components/ZrythmMenuSeparator.qml
+  components/ZrythmMenuBackground.qml
 )
 set(qml_file_paths)
 foreach(qml_file_path ${rel_qml_file_paths})
