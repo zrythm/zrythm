@@ -18,29 +18,31 @@ ToolBar {
         spacing: 4
 
         RowLayout {
+            /*
+            ZrythmToolButton {
+                text: "test"
+            }
+
+            ZrythmToolButton {
+                text: "test"
+                iconSource: Qt.resolvedUrl("../icons/zrythm.svg")
+            }
+
+            ZrythmToolButton {
+                iconSource: Qt.resolvedUrl("../icons/zrythm.svg")
+            }
+
+            ZrythmSplitButton {
+                text: "test"
+            }
+            */
+
             id: leftSection
 
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignLeft
             Layout.bottomMargin: root.verticalMargin
             Layout.topMargin: root.verticalMargin
-
-            ZrythmToolButton {
-                text: "test"
-            }
-
-            ZrythmToolButton {
-                text: "test"
-            }
-
-            ZrythmToolButton {
-                text: "test"
-            }
-
-            ZrythmSplitButton {
-                text: "test"
-            }
-
         }
 
         RowLayout {

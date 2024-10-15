@@ -89,6 +89,24 @@
             "args": [
                 "${command:cmake.launchTargetPath}"
             ],
+            "environment": [
+                {
+                    "name": "QT_QPA_PLATFORM",
+                    "value": "wayland",
+                },
+                {
+                    "name": "ZRYTHM_ENGINE_PATH",
+                    "value": "${config:cmake.buildDirectory}/src/engine/zrythm-engine",
+                },
+                {
+                    "name": "ZRYTHM_PLUGIN_SCANNER_PATH",
+                    "value": "${config:cmake.buildDirectory}/src/common/plugins/plugin-scanner",
+                },
+                {
+                    "name": "ZRYTHM_SAMPLES_PATH",
+                    "value": "${workspaceFolder}/data/samples",
+                },
+            ],
             "cwd": "${workspaceFolder}"
         },
         {

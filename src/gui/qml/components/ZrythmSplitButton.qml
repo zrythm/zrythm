@@ -6,13 +6,14 @@ Item {
     id: root
 
     property alias text: mainButton.text
+    property alias iconSource: mainButton.iconSource
     property alias menuItems: menuLoader.sourceComponent
     property color separatorColor: Qt.lighter(palette.button, 1.3)
     property bool directionUpward: false
 
     signal clicked()
 
-    implicitWidth: Math.max(rowLayout.implicitWidth, 64)
+    implicitWidth: rowLayout.implicitWidth
     implicitHeight: 24
 
     RowLayout {
@@ -22,12 +23,14 @@ Item {
         spacing: 0
 
         ZrythmToolButton {
+            // for testing
+            // iconSource: Qt.resolvedUrl("../icons/zrythm-dark/edit-undo.svg")
+
             id: mainButton
 
-            // Layout.fillWidth: true
+            Layout.fillWidth: true
             Layout.fillHeight: true
             Layout.preferredWidth: implicitWidth
-            text: "Undo Action"
             onClicked: root.clicked()
             clip: true
             anchors.rightMargin: -width
@@ -51,14 +54,13 @@ Item {
             id: arrowButton
 
             Layout.fillHeight: true
-            Layout.preferredWidth: root.height
+            // Layout.preferredWidth: root.height
             text: root.directionUpward ? "▲" : "▼"
+            font.pointSize: 6
             onClicked: menuLoader.item.open()
             clip: true
             anchors.leftMargin: -width
-            Component.onCompleted: {
-                contentItem.font.pixelSize = root.height * 0.38;
-            }
+            Layout.alignment: Qt.AlignHCenter
 
             background: Rectangle {
                 anchors.fill: arrowButton
@@ -74,11 +76,19 @@ Item {
     Loader {
         id: menuLoader
 
-        y: root.directionUpward ? -item.height : root.height
+        y: root.directionUpward ? -menuLoader.item.height : root.height
 
         sourceComponent: ZrythmMenu {
             Action {
-                text: "Fill Me"
+                text: "Fill Me Fill Me Fill Me Fill Me Fill Me Fill Me Fill Me Fill Me Fill Me"
+            }
+
+            Action {
+                text: "Fill Me2"
+            }
+
+            Action {
+                text: "Fill Me3"
             }
 
         }

@@ -10,7 +10,7 @@ Menu {
     }
 
     background: ZrythmMenuBackground {
-        // menu: root
+        id: menuBackground
         implicitWidth: root.contentItem.childrenRect.width
         implicitHeight: root.contentHeight
     }

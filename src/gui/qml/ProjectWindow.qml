@@ -31,6 +31,22 @@ ApplicationWindow {
         project.aboutToBeDeleted.connect(closeAndDestroy);
     }
 
+    palette {
+        accent: themeManager().accent
+        base: themeManager().base
+        brightText: themeManager().base
+        button: themeManager().base.lighter().lighter(1.2)
+        buttonText: "white"
+        dark: "white" // used by paginator
+        light: "#999999" // combo box hover background
+        highlight: themeManager().accent
+        link: themeManager().accent
+        placeholderText: themeManager().base.lighter().lighter(1.2)
+        text: "white"
+        window: themeManager().base
+        windowText: "white"
+    }
+
     Loader {
         id: menuLoader
 
@@ -243,44 +259,36 @@ ApplicationWindow {
 
         leftItems: [
             ZrythmToolButton {
-                // Toggle left panel
+                // TODO tooltip
+                // text: qsTr("Toggle Left Panel")
 
-                id: startDockSwitcher
+                id: toggleLeftDock
 
-                // Implement PanelToggleButton functionality
-                text: qsTr("Toggle Left Panel")
-                onClicked: {
-                }
+                checkable: true
+                iconSource: Qt.resolvedUrl("icons/gnome-icon-library/dock-left-symbolic.svg")
             },
             ZrythmToolSeparator {
             },
             ZrythmSplitButton {
-                // Perform undo action
-
                 id: undoBtn
 
-                text: qsTr("Undo")
-                // icon.name: "edit-undo"
-                // onClicked: {
-                // }
-                directionUpward: true
+                // text: qsTr("Undo")
+                iconSource: Qt.resolvedUrl("icons/zrythm-dark/edit-undo.svg")
 
                 menuItems: ZrythmMenu {
-                Action {
-                    text: qsTr("Undo Move")
-                }
-                }
-            },
-            ZrythmToolButton {
-                // Perform redo action
+                    Action {
+                        text: qsTr("Undo Move")
+                    }
 
+                }
+
+            },
+            ZrythmSplitButton {
                 id: redoBtn
 
-                text: qsTr("Redo")
-                icon.name: "edit-redo"
+                // text: qsTr("Redo")
+                iconSource: Qt.resolvedUrl("icons/zrythm-dark/edit-redo.svg")
                 enabled: false
-                onClicked: {
-                }
             },
             ZrythmToolSeparator {
             },
@@ -293,14 +301,13 @@ ApplicationWindow {
         ]
         rightItems: [
             ZrythmToolButton {
-                // Toggle right panel
+                // TODO tooltip
+                // text: qsTr("Toggle Left Panel")
 
-                id: endDockSwitcher
+                id: toggleRightDock
 
-                // Implement PanelToggleButton functionality
-                text: qsTr("Toggle Right Panel")
-                onClicked: {
-                }
+                checkable: true
+                iconSource: Qt.resolvedUrl("icons/gnome-icon-library/dock-right-symbolic.svg")
             },
             ZrythmToolSeparator {
             },

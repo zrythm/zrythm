@@ -27,12 +27,12 @@ set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/resources/qtquickcontro
 set(icon_dirs
   arena gnome-builder gnome-icon-library fork-awesome font-awesome
   fluentui jam-icons box-icons iconpark iconoir material-design
-  untitled-ui css.gg codicons lucide
+  untitled-ui css.gg codicons lucide zrythm-dark
 )
 
 set(icon_files)
 foreach(dir ${icon_dirs})
-  file(GLOB icons "${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/${dir}/*.svg" "${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/${dir}/*.png")
+  file(GLOB_RECURSE icons "${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/${dir}/*.svg" "${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/${dir}/*.png")
   foreach(icon ${icons})
     get_filename_component(icon_name ${icon} NAME)
     set(icon_alias "icons/${dir}/${icon_name}")
@@ -44,16 +44,11 @@ foreach(dir ${icon_dirs})
   endforeach()
 endforeach()
 
-# add zrythm icons to resources
-set(zrythm_logos zrythm.svg zrythm-monochrome.svg)
-foreach(zlogo ${zrythm_logos})
-  set(zlogo_path "${CMAKE_SOURCE_DIR}/data/icon-themes/zrythm-dark/scalable/apps/${zlogo}")
-  set_source_files_properties("${zlogo_path}"
-    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    PROPERTIES QT_RESOURCE_ALIAS "icons/${zlogo}"
-    )
-  list(APPEND icon_files ${zlogo_path})
-endforeach()
+# Install app icon
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/zrythm-dark/scalable/apps/zrythm.svg"
+  RENAME "org.zrythm.Zrythm.svg"
+  DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps")
+
 
 # font files
 set(font_filepaths
