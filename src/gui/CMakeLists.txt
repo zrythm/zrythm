@@ -72,32 +72,37 @@ foreach(font_filepath ${font_filepaths})
 endforeach()
 
 set(rel_qml_file_paths
-  ProjectWindow.qml
-  Greeter.qml
-  components/ZrythmPlaceholderPage.qml
-  components/ZrythmButton.qml
-  components/ZrythmActionRow.qml
-  components/ZrythmComboBox.qml
-  components/ZrythmPreferencesPage.qml
-  components/ZrythmFilePicker.qml
-  components/ZrythmProgressBar.qml
-  components/ZrythmDialogButtonBox.qml
-  components/ZrythmTextField.qml
-  components/ZrythmAlertDialog.qml
-  components/ZrythmToolButton.qml
-  components/ZrythmMenuBar.qml
-  components/ZrythmResizablePanel.qml
+  components/basic/ZrythmActionRow.qml
+  components/basic/ZrythmAlertDialog.qml
+  components/basic/ZrythmButton.qml
+  components/basic/ZrythmComboBox.qml
+  components/basic/ZrythmDialogButtonBox.qml
+  components/basic/ZrythmFilePicker.qml
+  components/basic/ZrythmMenu.qml
+  components/basic/ZrythmMenuBackground.qml
+  components/basic/ZrythmMenuBar.qml
+  components/basic/ZrythmMenuItem.qml
+  components/basic/ZrythmMenuSeparator.qml
+  components/basic/ZrythmPlaceholderPage.qml
+  components/basic/ZrythmPreferencesPage.qml
+  components/basic/ZrythmProgressBar.qml
+  components/basic/ZrythmResizablePanel.qml
+  components/basic/ZrythmSplitButton.qml
+  components/basic/ZrythmTabBar.qml
+  components/basic/ZrythmTabButton.qml
+  components/basic/ZrythmTextField.qml
+  components/basic/ZrythmToolBar.qml
+  components/basic/ZrythmToolButton.qml
+  components/basic/ZrythmToolSeparator.qml
+  components/MainToolbar.qml
+  components/BottomDock.qml
+  components/CenterDock.qml
+  components/LeftDock.qml
+  components/RightDock.qml
   components/ZrythmArranger.qml
   components/ZrythmRegion.qml
-  components/ZrythmMenu.qml
-  components/ZrythmMenuItem.qml
-  components/ZrythmMenuSeparator.qml
-  components/ZrythmMenuBackground.qml
-  components/ZrythmToolBar.qml
-  components/ZrythmToolSeparator.qml
-  components/ZrythmSplitButton.qml
-  components/ZrythmTabButton.qml
-  components/ZrythmTabBar.qml
+  Greeter.qml
+  views/ProjectWindow.qml
 )
 set(qml_file_paths)
 foreach(qml_file_path ${rel_qml_file_paths})

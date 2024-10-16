@@ -19,7 +19,7 @@ ToolButton {
     hoverEnabled: true
     ToolTip.delay: 1000
     ToolTip.timeout: 5000
-    ToolTip.visible: hovered && tooltipText !== ""
+    ToolTip.visible: (visualFocus || hovered) && tooltipText !== ""
     ToolTip.text: tooltipText
     padding: 4
     font.pointSize: 10

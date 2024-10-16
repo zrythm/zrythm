@@ -17,13 +17,8 @@ TextField {
             when: control.enabled === false
 
             PropertyChanges {
-                target: control
                 color: palette.placeholderText
-            }
-
-            PropertyChanges {
-                target: control.background
-                color: palette.button
+                background.color: palette.button
             }
 
         },
@@ -32,13 +27,8 @@ TextField {
             when: control.enabled === true
 
             PropertyChanges {
-                target: control
                 color: palette.text
-            }
-
-            PropertyChanges {
-                target: control.background
-                color: palette.base
+                background.color: palette.base
             }
 
         },
@@ -47,13 +37,8 @@ TextField {
             when: control.activeFocus
 
             PropertyChanges {
-                target: control
                 color: palette.text
-            }
-
-            PropertyChanges {
-                target: control.background
-                color: palette.highlight
+                background.color: palette.highlight
             }
 
         },
@@ -62,13 +47,8 @@ TextField {
             when: control.hovered
 
             PropertyChanges {
-                target: control
                 color: palette.text
-            }
-
-            PropertyChanges {
-                target: control.background
-                color: palette.alternateBase
+                background.color: palette.alternateBase
             }
 
         }
