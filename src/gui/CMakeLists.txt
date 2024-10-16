@@ -96,6 +96,8 @@ set(rel_qml_file_paths
   components/ZrythmToolBar.qml
   components/ZrythmToolSeparator.qml
   components/ZrythmSplitButton.qml
+  components/ZrythmTabButton.qml
+  components/ZrythmTabBar.qml
 )
 set(qml_file_paths)
 foreach(qml_file_path ${rel_qml_file_paths})

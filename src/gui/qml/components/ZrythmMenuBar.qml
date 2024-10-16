@@ -34,7 +34,7 @@ MenuBar {
         implicitHeight: 24
 
         contentItem: Text {
-            text: convertToMnemonicText(menuBarItem.text)
+            text: menuBarItem.convertToMnemonicText(menuBarItem.text)
             opacity: enabled ? 1 : 0.3
             color: menuBarItem.highlighted ? palette.highlightedText : palette.buttonText
             horizontalAlignment: Text.AlignLeft

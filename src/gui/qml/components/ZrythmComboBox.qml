@@ -130,8 +130,8 @@ ComboBox {
             id: indicatorImage
 
             source: Qt.resolvedUrl("icons/lucide/chevrons-up-down.svg")
-            sourceSize.width: indicator.width
-            sourceSize.height: indicator.height
+            sourceSize.width: control.indicator.width
+            sourceSize.height: control.indicator.height
         }
 
         // Apply a color to the SVG

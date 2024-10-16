@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -10,6 +13,8 @@ Item {
     property alias menuItems: menuLoader.sourceComponent
     property color separatorColor: Qt.lighter(palette.button, 1.3)
     property bool directionUpward: false
+    property alias tooltipText: mainButton.tooltipText
+    property alias menuTooltipText: arrowButton.tooltipText
 
     signal clicked()
 
@@ -61,6 +66,7 @@ Item {
             clip: true
             anchors.leftMargin: -width
             Layout.alignment: Qt.AlignHCenter
+            tooltipText: qsTr("More Options...")
 
             background: Rectangle {
                 anchors.fill: arrowButton

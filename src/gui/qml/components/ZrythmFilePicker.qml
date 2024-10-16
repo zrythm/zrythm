@@ -18,7 +18,7 @@ RowLayout {
     Binding {
         target: control
         property: "initialUrl"
-        value: Qt.resolvedUrl("file://" + initialPath)
+        value: Qt.resolvedUrl("file://" + control.initialPath)
         when: control.initialPath !== undefined
     }
 
@@ -26,20 +26,20 @@ RowLayout {
         target: fileDialog
         property: "currentFile"
         value: control.initialUrl
-        when: !pickFolder && control.initialUrl !== undefined
+        when: !control.pickFolder && control.initialUrl !== undefined
     }
 
     Binding {
         target: folderDialog
         property: "currentFolder"
         value: control.initialUrl
-        when: pickFolder && control.initialUrl !== undefined
+        when: control.pickFolder && control.initialUrl !== undefined
     }
 
     TextField {
         id: textField
 
-        readonly property url currentUrl: pickFolder ? folderDialog.currentFolder : fileDialog.currentFile
+        readonly property url currentUrl: control.pickFolder ? folderDialog.currentFolder : fileDialog.currentFile
 
         Layout.fillWidth: true
         text: currentUrl ? currentUrl.toString().replace("file://", "") : "(no path selected)"
@@ -50,7 +50,7 @@ RowLayout {
         id: btn
 
         text: control.buttonLabel
-        onClicked: pickFolder ? folderDialog.open() : fileDialog.open()
+        onClicked: control.pickFolder ? folderDialog.open() : fileDialog.open()
     }
 
     FolderDialog {

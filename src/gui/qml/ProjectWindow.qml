@@ -138,18 +138,69 @@ ApplicationWindow {
                 }
 
                 SplitView {
+                    // Pane {
+                    //     SplitView.fillWidth: true
+                    //     SplitView.preferredHeight: 200
+                    //     SplitView.minimumHeight: 30
+                    // }
+
                     id: centerSplitView
 
                     SplitView.fillWidth: true
                     SplitView.fillHeight: true
                     orientation: Qt.Vertical
 
-                    Pane {
-                        SplitView.fillWidth: true
-                        SplitView.preferredHeight: 200
-                        SplitView.minimumHeight: 30
+                    ColumnLayout {
+                        spacing: 0
 
-                        ZrythmArranger {
+                        StackLayout {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            currentIndex: centerTabBar.currentIndex
+
+                            ZrythmArranger {
+                                id: timelineArranger
+
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                            }
+
+                            Item {
+                                id: portConnectionsTab
+
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                            }
+
+                            Item {
+                                id: midiCcBindingsTab
+
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                            }
+
+                        }
+
+                        ZrythmTabBar {
+                            id: centerTabBar
+
+                            Layout.fillWidth: true
+
+                            ZrythmTabButton {
+                                iconSource: Qt.resolvedUrl("icons/zrythm-dark/roadmap.svg")
+                                text: qsTr("Timeline")
+                            }
+
+                            ZrythmTabButton {
+                                iconSource: Qt.resolvedUrl("icons/zrythm-dark/connector.svg")
+                                text: qsTr("Port Connections")
+                            }
+
+                            ZrythmTabButton {
+                                iconSource: Qt.resolvedUrl("icons/zrythm-dark/signal-midi.svg")
+                                text: qsTr("Midi CC Bindings")
+                            }
+
                         }
 
                     }
@@ -242,9 +293,6 @@ ApplicationWindow {
             title: qsTr("&Edit")
 
             Labs.MenuItem {
-                // Implement undo action
-
-                // Implement undo action
                 text: qsTr("Undo")
                 onTriggered: {
                 }
@@ -259,11 +307,9 @@ ApplicationWindow {
 
         leftItems: [
             ZrythmToolButton {
-                // TODO tooltip
-                // text: qsTr("Toggle Left Panel")
-
                 id: toggleLeftDock
 
+                tooltipText: qsTr("Toggle Left Panel")
                 checkable: true
                 iconSource: Qt.resolvedUrl("icons/gnome-icon-library/dock-left-symbolic.svg")
             },
@@ -272,7 +318,8 @@ ApplicationWindow {
             ZrythmSplitButton {
                 id: undoBtn
 
-                // text: qsTr("Undo")
+                tooltipText: qsTr("Undo")
+                menuTooltipText: qsTr("Undo Multiple")
                 iconSource: Qt.resolvedUrl("icons/zrythm-dark/edit-undo.svg")
 
                 menuItems: ZrythmMenu {
@@ -286,7 +333,8 @@ ApplicationWindow {
             ZrythmSplitButton {
                 id: redoBtn
 
-                // text: qsTr("Redo")
+                tooltipText: qsTr("Redo")
+                menuTooltipText: qsTr("Redo Multiple")
                 iconSource: Qt.resolvedUrl("icons/zrythm-dark/edit-redo.svg")
                 enabled: false
             },
@@ -301,11 +349,9 @@ ApplicationWindow {
         ]
         rightItems: [
             ZrythmToolButton {
-                // TODO tooltip
-                // text: qsTr("Toggle Left Panel")
-
                 id: toggleRightDock
 
+                tooltipText: qsTr("Toggle Right Panel")
                 checkable: true
                 iconSource: Qt.resolvedUrl("icons/gnome-icon-library/dock-right-symbolic.svg")
             },

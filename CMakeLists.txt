@@ -938,9 +938,8 @@ find_package(Qt6
 )
 qt_standard_project_setup()
 qt_policy(SET QTP0001 NEW)
-# TODO enable in 6.8
-# qt_policy(SET QTP0004 NEW) 
-# qt_policy(SET QTP0005 NEW)
+qt_policy(SET QTP0004 NEW)
+qt_policy(SET QTP0005 NEW)
 
 list(APPEND zrythm_link_libs
   zita-resampler::zita-resampler

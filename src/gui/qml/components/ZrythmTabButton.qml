@@ -1,29 +1,17 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
-// SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls.Basic
-import QtQuick.Effects
 import QtQuick.Layouts
 
-ToolButton {
+TabButton {
     id: root
 
     property real backgroundRadius: 6
     property string iconSource: "" // Qt.resolvedUrl("../icons/zrythm-dark/edit-undo.svg")
     property color buttonTextColor: palette.buttonText
     property color buttonCheckedColor: palette.accent
-    property string tooltipText: ""
 
-    hoverEnabled: true
-    ToolTip.delay: 1000
-    ToolTip.timeout: 5000
-    ToolTip.visible: hovered && tooltipText !== ""
-    ToolTip.text: tooltipText
     padding: 4
-    font.pointSize: 10
-    implicitHeight: 24
+    implicitHeight: 26
     text: ""
     states: [
         State {
@@ -32,19 +20,18 @@ ToolButton {
 
             PropertyChanges {
                 target: root
-                buttonTextColor: palette.accent
+                buttonTextColor: palette.highlightedText
             }
 
             PropertyChanges {
                 target: root.background
-                visible: true
-                color: root.checkable ? root.buttonCheckedColor : Qt.darker(palette.button, 1.3)
+                color: root.buttonCheckedColor
             }
 
         },
         State {
             name: "checked"
-            when: root.enabled && (root.checked || root.highlighted)
+            when: root.enabled && (root.checked)
 
             PropertyChanges {
                 target: root.background
@@ -67,6 +54,11 @@ ToolButton {
         }
     ]
 
+    font {
+        pointSize: 10
+        weight: Font.Medium
+    }
+
     Component {
         id: buttonTextComponent
 
@@ -76,12 +68,7 @@ ToolButton {
             color: root.buttonTextColor
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
-
-            font {
-                family: root.font.family
-                pointSize: root.font.pointSize
-            }
-
+            font: root.font
         }
 
     }
@@ -114,18 +101,30 @@ ToolButton {
                 anchors.centerIn: parent
                 anchors.fill: parent
 
+                Item {
+                    id: leftSpacer
+
+                    Layout.fillWidth: true
+                }
+
                 Loader {
                     sourceComponent: buttonIconComponent
                     Layout.alignment: Qt.AlignVCenter
-                    Layout.fillWidth: true
+                    // Layout.fillWidth: true
                     Layout.fillHeight: true
                 }
 
                 Loader {
                     sourceComponent: buttonTextComponent
                     Layout.alignment: Qt.AlignVCenter
-                    Layout.fillWidth: true
+                    // Layout.fillWidth: true
                     Layout.fillHeight: true
+                }
+
+                Item {
+                    id: rightSpacer
+
+                    Layout.fillWidth: true
                 }
 
             }
@@ -161,7 +160,7 @@ ToolButton {
 
         color: palette.button
         opacity: root.enabled ? 1 : 0.3
-        visible: false
+        visible: true
         radius: root.backgroundRadius
     }
 
