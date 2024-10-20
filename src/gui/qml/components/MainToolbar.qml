@@ -2,22 +2,24 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-import QtQuick.Controls.Basic
 import QtQuick.Layouts
+import ZrythmStyle 1.0
 import Zrythm 1.0
 
 ZrythmToolBar {
     id: headerBar
 
     leftItems: [
-        ZrythmToolButton {
+        ToolButton {
             id: toggleLeftDock
 
-            tooltipText: qsTr("Toggle Left Panel")
+            ToolTip {
+                text: qsTr("Toggle Left Panel")
+            }
             checkable: true
-            iconSource: Qt.resolvedUrl("../icons/gnome-icon-library/dock-left-symbolic.svg")
+            icon.source: Qt.resolvedUrl("../icons/gnome-icon-library/dock-left-symbolic.svg")
         },
-        ZrythmToolSeparator {
+        ToolSeparator {
         },
         ZrythmSplitButton {
             id: undoBtn
@@ -26,7 +28,7 @@ ZrythmToolBar {
             menuTooltipText: qsTr("Undo Multiple")
             iconSource: Qt.resolvedUrl("../icons/zrythm-dark/edit-undo.svg")
 
-            menuItems: ZrythmMenu {
+            menuItems: Menu {
                 Action {
                     text: qsTr("Undo Move")
                 }
@@ -42,7 +44,7 @@ ZrythmToolBar {
             iconSource: Qt.resolvedUrl("../icons/zrythm-dark/edit-redo.svg")
             enabled: false
         },
-        ZrythmToolSeparator {
+        ToolSeparator {
         },
         // Implement ToolboxWidget
         Rectangle {
@@ -52,30 +54,33 @@ ZrythmToolBar {
         }
     ]
     rightItems: [
-        ZrythmToolButton {
+        ToolButton {
             id: toggleRightDock
 
-            tooltipText: qsTr("Toggle Right Panel")
+            ToolTip {
+                text: qsTr("Toggle Right Panel")
+            }
+
             checkable: true
-            iconSource: Qt.resolvedUrl("../icons/gnome-icon-library/dock-right-symbolic.svg")
+            icon.source: Qt.resolvedUrl("../icons/gnome-icon-library/dock-right-symbolic.svg")
         },
-        ZrythmToolSeparator {
+        ToolSeparator {
         },
-        ZrythmToolButton {
+        ToolButton {
             id: menuButton
 
             text: qsTr("Menu")
-            icon.name: "open-menu-symbolic"
+            icon.source: Qt.resolvedUrl("qrc:/qt/qml/Zrythm/icons/gnome-icon-library/open-menu-symbolic.svg")
             onClicked: primaryMenu.open()
 
-            ZrythmMenu {
+            Menu {
                 id: primaryMenu
 
                 Action {
                     text: qsTr("Open a Project…")
                 }
 
-                ZrythmMenuItem {
+                MenuItem {
                     // Implement new project action
 
                     text: qsTr("Create New Project…")
@@ -83,10 +88,10 @@ ZrythmToolBar {
                     }
                 }
 
-                ZrythmMenuSeparator {
+                MenuSeparator {
                 }
 
-                ZrythmMenuItem {
+                MenuItem {
                     // Implement save action
 
                     text: qsTr("Save")
@@ -94,7 +99,7 @@ ZrythmToolBar {
                     }
                 }
 
-                ZrythmMenuItem {
+                MenuItem {
                     // Implement save as action
 
                     text: qsTr("Save As…")
@@ -102,10 +107,10 @@ ZrythmToolBar {
                     }
                 }
 
-                ZrythmMenuSeparator {
+                MenuSeparator {
                 }
 
-                ZrythmMenuItem {
+                MenuItem {
                     // Implement export as action
 
                     text: qsTr("Export As…")
@@ -113,7 +118,7 @@ ZrythmToolBar {
                     }
                 }
 
-                ZrythmMenuItem {
+                MenuItem {
                     // Implement export graph action
 
                     text: qsTr("Export Graph…")
@@ -121,20 +126,20 @@ ZrythmToolBar {
                     }
                 }
 
-                ZrythmMenuSeparator {
+                MenuSeparator {
                 }
 
-                ZrythmMenuItem {
+                MenuItem {
                     text: qsTr("Fullscreen")
                     onTriggered: {
                         root.visibility = root.visibility === Window.FullScreen ? Window.AutomaticVisibility : Window.FullScreen;
                     }
                 }
 
-                ZrythmMenuSeparator {
+                MenuSeparator {
                 }
 
-                ZrythmMenuItem {
+                MenuItem {
                     // Open preferences dialog
 
                     text: qsTr("Preferences")
@@ -142,7 +147,7 @@ ZrythmToolBar {
                     }
                 }
 
-                ZrythmMenuItem {
+                MenuItem {
                     // Show keyboard shortcuts
 
                     text: qsTr("Keyboard Shortcuts")
@@ -150,10 +155,10 @@ ZrythmToolBar {
                     }
                 }
 
-                ZrythmMenuItem {
+                MenuItem {
                     // Show about dialog
 
-                    text: qsTr("About Zrythm")
+                    text: qsTr("About Zrythm Long Long Long Long Long Long Long")
                     onTriggered: {
                     }
                 }

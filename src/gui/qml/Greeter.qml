@@ -3,9 +3,9 @@
 // pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Controls.Basic
 import QtQuick.Layouts
 import Zrythm 1.0
+import ZrythmStyle 1.0
 import "config.js" as Config
 
 ApplicationWindow {
@@ -17,10 +17,6 @@ ApplicationWindow {
 
     function pluginScanner() {
         return root.pluginManager().scanner;
-    }
-
-    function themeManager() {
-        return GlobalState.themeManager;
     }
 
     function settingsManager() {
@@ -38,7 +34,9 @@ ApplicationWindow {
     function openProjectWindow(project) {
         let component = Qt.createComponent("views/ProjectWindow.qml");
         if (component.status === Component.Ready) {
-            let newWindow = component.createObject(project, {project: project});
+            let newWindow = component.createObject(project, {
+                "project": project
+            });
             newWindow.show();
             root.close();
         } else {
@@ -52,56 +50,14 @@ ApplicationWindow {
     width: 640
     height: 420
     visible: true
-    font.family: interFont.name
-    font.pointSize: 10
-    Component.onCompleted: {
-    }
-
-    palette {
-        accent: themeManager().accent
-        base: themeManager().base
-        brightText: themeManager().base
-        button: themeManager().base.lighter().lighter(1.2)
-        buttonText: "white"
-        dark: "white" // used by paginator
-        light: "#999999" // combo box hover background
-        highlight: themeManager().accent
-        link: themeManager().accent
-        placeholderText: themeManager().base.lighter().lighter(1.2)
-        text: "white"
-        window: themeManager().base
-        windowText: "white"
-    }
-
-    FontLoader {
-        id: dsegRegular
-
-        source: Qt.resolvedUrl("fonts/DSEG14ClassicMini-Regular.ttf")
-    }
-
-    FontLoader {
-        id: dsegBold
-
-        source: Qt.resolvedUrl("fonts/DSEG14ClassicMini-Bold.ttf")
-    }
-
-    FontLoader {
-        id: interFont
-
-        source: Qt.resolvedUrl("fonts/InterVariable.ttf")
-    }
-
-    FontLoader {
-        id: interFontItalic
-
-        source: Qt.resolvedUrl("fonts/InterVariable-Italic.ttf")
-    }
+    font.family: Style.fontFamily
+    font.pointSize: Style.fontPointSize
 
     Item {
         id: flatpakPage
 
         ZrythmPlaceholderPage {
-            icon.source: Qt.resolvedUrl("icons/gnome-icon-library/flatpak-symbolic.svg")
+            icon.source: Style.getIcon("gnome-icon-library", "flatpak-symbolic.svg")
             title: qsTr("About Flatpak")
             description: qsTr("Only audio plugins installed via Flatpak are supported.")
         }
@@ -112,7 +68,7 @@ ApplicationWindow {
         id: donationPage
 
         ZrythmPlaceholderPage {
-            icon.source: Qt.resolvedUrl("icons/gnome-icon-library/credit-card-symbolic.svg")
+            icon.source: Style.getIcon("gnome-icon-library", "credit-card-symbolic.svg")
             title: qsTr("Donate")
             description: qsTr("Zrythm relies on donations and purchases to sustain development. If you enjoy the software, please consider %1donating%2 or %3buying an installer%2.").arg("<a href=\"" + Config.DONATION_URL + "\">").arg("</a>").arg("<a href=\"" + Config.PURCHASE_URL + "\">")
         }
@@ -163,7 +119,7 @@ ApplicationWindow {
 
                     Item {
                         ZrythmPlaceholderPage {
-                            icon.source: Qt.resolvedUrl("icons/zrythm.svg")
+                            icon.source: Style.getIcon("zrythm-dark", "zrythm.svg")
                             title: qsTr("Welcome")
                             description: qsTr("Welcome to the Zrythm digital audio workstation. Move to the next page to get started.")
                         }
@@ -172,7 +128,7 @@ ApplicationWindow {
 
                     Item {
                         ZrythmPlaceholderPage {
-                            icon.source: Qt.resolvedUrl("icons/gnome-icon-library/open-book-symbolic.svg")
+                            icon.source: Style.getIcon("gnome-icon-library", "open-book-symbolic.svg")
                             title: qsTr("Read the Manual")
                             description: qsTr("If this is your first time using Zrythm, we suggest going through the 'Getting Started' section in the %1user manual%2.").arg("<a href=\"" + Config.USER_MANUAL_URL + "\">").arg("</a>")
                         }
@@ -183,6 +139,8 @@ ApplicationWindow {
 
                 // Add left navigation button
                 RoundButton {
+                    id: leftNavButton
+                    readonly property real squareSize: 48
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     text: "<"
@@ -190,6 +148,8 @@ ApplicationWindow {
                     visible: welcomeCarousel.currentIndex > 0
                     font.pixelSize: 18
                     font.bold: true
+                    width: squareSize
+                    height: squareSize
                 }
 
                 // Add right navigation button
@@ -201,6 +161,8 @@ ApplicationWindow {
                     visible: welcomeCarousel.currentIndex < welcomeCarousel.count - 1
                     font.pixelSize: 18
                     font.bold: true
+                    width: leftNavButton.squareSize
+                    height: leftNavButton.squareSize
                 }
 
                 PageIndicator {
@@ -234,7 +196,7 @@ ApplicationWindow {
                         title: "Language"
                         subtitle: "Preferred language"
 
-                        ZrythmComboBox {
+                        ComboBox {
                             model: ["English", "Spanish", "French"]
                         }
 
@@ -280,7 +242,7 @@ ApplicationWindow {
                     }
                     horizontalPadding: 10
 
-                    ZrythmButton {
+                    Button {
                         text: qsTr("Continue")
                         highlighted: true
                         onClicked: {
@@ -289,10 +251,6 @@ ApplicationWindow {
                             stack.push(progressPage);
                         }
                         DialogButtonBox.buttonRole: DialogButtonBox.AcceptRole
-                    }
-
-                    delegate: ZrythmButton {
-                        id: control
                     }
 
                 }
@@ -322,7 +280,7 @@ ApplicationWindow {
                 }
 
                 ZrythmPlaceholderPage {
-                    icon.source: Qt.resolvedUrl("icons/zrythm-monochrome.svg")
+                    icon.source: Style.getIcon("zrythm-dark", "zrythm-monochrome.svg")
                     title: qsTr("Scanning Plugins")
                 }
 
@@ -460,17 +418,13 @@ ApplicationWindow {
                 footer: DialogButtonBox {
                     horizontalPadding: 10
 
-                    ZrythmButton {
+                    Button {
                         onClicked: stack.push(createProjectPage)
                         text: qsTr("Create New Project...")
                     }
 
-                    ZrythmButton {
+                    Button {
                         text: qsTr("Open From Path...")
-                    }
-
-                    delegate: ZrythmButton {
-                        id: control
                     }
 
                 }
@@ -489,7 +443,7 @@ ApplicationWindow {
                     anchors.fill: parent
                     spacing: 10
 
-                    ZrythmTextField {
+                    TextField {
                         id: projectNameField
 
                         Layout.fillWidth: true
@@ -512,7 +466,7 @@ ApplicationWindow {
                         initialPath: root.settingsManager().new_project_directory
                     }
 
-                    ZrythmComboBox {
+                    ComboBox {
                         id: projectTemplateField
 
                         Layout.fillWidth: true
@@ -524,7 +478,7 @@ ApplicationWindow {
 
                     }
 
-                    ZrythmButton {
+                    Button {
                         text: qsTr("Create Project")
                         Layout.alignment: Qt.AlignHCenter
                         onClicked: {

@@ -2,12 +2,13 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-import QtQuick.Controls.Basic
+//import QtQuick.Controls.Basic
+import ZrythmStyle 1.0
 import QtQuick.Layouts
 import Zrythm 1.0
 
 ColumnLayout {
-    ZrythmTabBar {
+    TabBar {
         id: tabBar
 
         Layout.fillWidth: true

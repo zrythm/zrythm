@@ -3,7 +3,8 @@
 
 pragma ComponentBehavior: Bound
 import QtQuick
-import QtQuick.Controls.Basic
+//import QtQuick.Controls.Basic
+import ZrythmStyle 1.0
 
 ProgressBar {
     id: control

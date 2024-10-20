@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-import QtQuick.Controls.Basic
+import ZrythmStyle 1.0
 import QtQuick.Layouts
 import Zrythm 1.0
 
@@ -53,28 +53,28 @@ ColumnLayout {
 
     }
 
-    ZrythmTabBar {
+    TabBar {
         id: centerTabBar
 
         Layout.fillWidth: true
 
-        ZrythmTabButton {
-            iconSource: Qt.resolvedUrl("../icons/zrythm-dark/piano-roll.svg")
+        TabButton {
+            icon.source: Qt.resolvedUrl("../icons/zrythm-dark/piano-roll.svg")
             text: qsTr("Editor")
         }
 
-        ZrythmTabButton {
-            iconSource: Qt.resolvedUrl("../icons/zrythm-dark/mixer.svg")
+        TabButton {
+            icon.source: Qt.resolvedUrl("../icons/zrythm-dark/mixer.svg")
             text: qsTr("Mixer")
         }
 
-        ZrythmTabButton {
-            iconSource: Qt.resolvedUrl("../icons/gnome-icon-library/encoder-knob-symbolic.svg")
+        TabButton {
+            icon.source: Qt.resolvedUrl("../icons/gnome-icon-library/encoder-knob-symbolic.svg")
             text: qsTr("Modulators")
         }
 
-        ZrythmTabButton {
-            iconSource: Qt.resolvedUrl("../icons/zrythm-dark/chord-pad.svg")
+        TabButton {
+            icon.source: Qt.resolvedUrl("../icons/zrythm-dark/chord-pad.svg")
             text: qsTr("Chord Pad")
         }
 

@@ -1,5 +1,6 @@
 import QtQuick
-import QtQuick.Controls
+//import QtQuick.Controls
+import ZrythmStyle 1.0
 import QtQuick.Layouts
 
 Pane {

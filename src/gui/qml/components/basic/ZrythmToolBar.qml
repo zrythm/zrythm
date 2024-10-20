@@ -1,5 +1,6 @@
 import QtQuick
-import QtQuick.Controls.Basic
+//import QtQuick.Controls.Basic
+import ZrythmStyle 1.0
 import QtQuick.Layouts
 
 ToolBar {
@@ -18,24 +19,6 @@ ToolBar {
         spacing: 4
 
         RowLayout {
-            /*
-            ZrythmToolButton {
-                text: "test"
-            }
-
-            ZrythmToolButton {
-                text: "test"
-                iconSource: Qt.resolvedUrl("../icons/zrythm.svg")
-            }
-
-            ZrythmToolButton {
-                iconSource: Qt.resolvedUrl("../icons/zrythm.svg")
-            }
-
-            ZrythmSplitButton {
-                text: "test"
-            }
-            */
 
             id: leftSection
 

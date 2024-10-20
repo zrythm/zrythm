@@ -2,9 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-import QtQuick.Controls
-import QtQuick.Controls.Basic
 import QtQuick.Layouts
+import ZrythmStyle 1.0
 
 ColumnLayout {
     id: root
@@ -65,7 +64,7 @@ ColumnLayout {
 
     }
 
-    ZrythmButton {
+    Button {
         id: actionButton
 
         highlighted: true

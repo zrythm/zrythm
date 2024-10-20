@@ -77,7 +77,7 @@
                 },
             ],
             "args": [
-                "--dummy"
+                "--dummy",
             ],
             "miDebuggerArgs": "-ex \"handle SIGPIPE noprint nostop pass\"",
         },

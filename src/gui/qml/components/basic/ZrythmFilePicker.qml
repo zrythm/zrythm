@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-import QtQuick.Controls.Basic
+//import QtQuick.Controls.Basic
+import ZrythmStyle 1.0
 import QtQuick.Dialogs
 import QtQuick.Layouts
 
@@ -46,7 +47,7 @@ RowLayout {
         readOnly: true
     }
 
-    ZrythmButton {
+    Button {
         id: btn
 
         text: control.buttonLabel

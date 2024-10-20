@@ -2,19 +2,19 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
+import ZrythmStyle 1.0
 
 Item {
     id: root
 
     property alias text: mainButton.text
-    property alias iconSource: mainButton.iconSource
+    property alias iconSource: mainButton.icon.source
     property alias menuItems: menuLoader.sourceComponent
     property color separatorColor: Qt.lighter(palette.button, 1.3)
     property bool directionUpward: false
-    property alias tooltipText: mainButton.tooltipText
-    property alias menuTooltipText: arrowButton.tooltipText
+    property alias tooltipText: mainButtonTooltip.text
+    property alias menuTooltipText: arrowButtonTooltip.text
 
     signal clicked()
 
@@ -27,7 +27,7 @@ Item {
         anchors.fill: parent
         spacing: 0
 
-        ZrythmToolButton {
+        ToolButton {
             // for testing
             // iconSource: Qt.resolvedUrl("../icons/zrythm-dark/edit-undo.svg")
 
@@ -40,11 +40,13 @@ Item {
             clip: true
             anchors.rightMargin: -width
 
-            background: Rectangle {
-                anchors.fill: mainButton
-                anchors.rightMargin: -mainButton.width
-                radius: mainButton.backgroundRadius
-                visible: false
+            ToolTip {
+                id: mainButtonTooltip
+            }
+
+            Component.onCompleted: {
+                background.anchors.fill = mainButton
+                background.anchors.rightMargin = -mainButton.width
             }
 
         }
@@ -55,7 +57,7 @@ Item {
             color: root.separatorColor
         }
 
-        ZrythmToolButton {
+        ToolButton {
             id: arrowButton
 
             Layout.fillHeight: true
@@ -66,13 +68,16 @@ Item {
             clip: true
             anchors.leftMargin: -width
             Layout.alignment: Qt.AlignHCenter
-            tooltipText: qsTr("More Options...")
+            width: 12
 
-            background: Rectangle {
-                anchors.fill: arrowButton
-                anchors.leftMargin: -arrowButton.width
-                radius: arrowButton.backgroundRadius
-                visible: false
+            ToolTip {
+                id: arrowButtonTooltip
+                text: qsTr("More Options...")
+            }
+
+              Component.onCompleted: {
+                background.anchors.fill = arrowButton
+                background.anchors.leftMargin = -arrowButton.width
             }
 
         }
@@ -84,7 +89,7 @@ Item {
 
         y: root.directionUpward ? -menuLoader.item.height : root.height
 
-        sourceComponent: ZrythmMenu {
+        sourceComponent: Menu {
             Action {
                 text: "Fill Me Fill Me Fill Me Fill Me Fill Me Fill Me Fill Me Fill Me Fill Me"
             }

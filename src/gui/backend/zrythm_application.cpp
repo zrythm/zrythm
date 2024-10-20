@@ -7,7 +7,9 @@
 
 #include <QFontDatabase>
 #include <QQmlApplicationEngine>
+#include <QQmlComponent>
 #include <QQmlContext>
+#include <QQmlProperty>
 #include <QQuickStyle>
 #include <QTimer>
 
@@ -201,20 +203,34 @@ ZrythmApplication::setup_ui ()
   // ${RESOURCE_PREFIX} from CMakeLists.txt
   // allows loading QML modules from qrc
   // skips plugin loading for modules found in qrc
-  qml_engine_->addImportPath (":/org.zrythm/imports/");
+  // qml_engine_->addImportPath (":/org.zrythm/imports/");
 
   // hints:
   // always load from qrc
   // files in qrc are pre-compiled
   // files in host file system are compiled at runtime
   // ${RESOURCE_PREFIX}/${URI}
-  const QUrl url ("qrc:/org.zrythm/imports/Zrythm/Greeter.qml");
+  // const QUrl url ("qrc:/qt/qml/Zrythm/DemoView.qml");
+  const QUrl url ("qrc:/qt/qml/Zrythm/Greeter.qml");
   qml_engine_->load (url);
   // qml_engine_->loadFromModule ("Zrythm", "greeter");
 
   if (!qml_engine_->rootObjects ().isEmpty ())
     {
       z_debug ("QML file loaded successfully");
+
+#if 0
+      qmlRegisterSingletonType (
+        QUrl (QStringLiteral ("qrc:/qt/qml/ZrythmStyle/Style.qml")),
+        "ZrythmStyle", 1, 0, "Style");
+      QQmlComponent component (
+        qml_engine_, QUrl ("qrc:/qt/qml/ZrythmStyle/Style.qml"),
+        QQmlComponent::PreferSynchronous);
+      auto * obj = component.create ();
+      auto palette = QQmlProperty::read (obj, "colorPalette").value<QPalette> ();
+      // doesn't work as expected, accent color becomes green
+      // setPalette (palette);
+#endif
     }
   else
     {

@@ -74,26 +74,14 @@ endforeach()
 set(rel_qml_file_paths
   components/basic/ZrythmActionRow.qml
   components/basic/ZrythmAlertDialog.qml
-  components/basic/ZrythmButton.qml
-  components/basic/ZrythmComboBox.qml
-  components/basic/ZrythmDialogButtonBox.qml
   components/basic/ZrythmFilePicker.qml
-  components/basic/ZrythmMenu.qml
-  components/basic/ZrythmMenuBackground.qml
-  components/basic/ZrythmMenuBar.qml
-  components/basic/ZrythmMenuItem.qml
-  components/basic/ZrythmMenuSeparator.qml
   components/basic/ZrythmPlaceholderPage.qml
   components/basic/ZrythmPreferencesPage.qml
   components/basic/ZrythmProgressBar.qml
   components/basic/ZrythmResizablePanel.qml
   components/basic/ZrythmSplitButton.qml
-  components/basic/ZrythmTabBar.qml
   components/basic/ZrythmTabButton.qml
-  components/basic/ZrythmTextField.qml
   components/basic/ZrythmToolBar.qml
-  components/basic/ZrythmToolButton.qml
-  components/basic/ZrythmToolSeparator.qml
   components/MainToolbar.qml
   components/BottomDock.qml
   components/CenterDock.qml
@@ -102,6 +90,7 @@ set(rel_qml_file_paths
   components/ZrythmArranger.qml
   components/ZrythmRegion.qml
   Greeter.qml
+  DemoView.qml
   views/ProjectWindow.qml
 )
 set(qml_file_paths)
@@ -113,6 +102,8 @@ foreach(qml_file_path ${rel_qml_file_paths})
     )
   list(APPEND qml_file_paths ${qml_abs_file_path})
 endforeach()
+
+add_subdirectory(qml)
 
 add_subdirectory(backend)
 
@@ -126,7 +117,8 @@ target_include_directories(zrythm
 qt_add_qml_module(zrythm
   URI Zrythm
   VERSION 1.0
-  RESOURCE_PREFIX /org.zrythm/imports
+  # RESOURCE_PREFIX /org.zrythm/imports
+  IMPORTS ZrythmStyle/1.0
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Zrythm
   QML_FILES
     ${qml_file_paths}
@@ -149,3 +141,5 @@ qt_add_qml_module(zrythm
   # (currently cannot extend QtQuick Controls directly)
   # ENABLE_TYPE_COMPILER
 )
+
+target_link_libraries(zrythm PRIVATE zrythm_styleplugin)

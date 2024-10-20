@@ -1,7 +1,7 @@
 import QtQuick
-import QtQuick.Controls.Basic
 import QtQuick.Layouts
 import Zrythm 1.0
+import ZrythmStyle 1.0
 
 ColumnLayout {
     spacing: 0
@@ -34,7 +34,7 @@ ColumnLayout {
 
     }
 
-    ZrythmTabBar {
+    TabBar {
         id: centerTabBar
 
         Layout.fillWidth: true

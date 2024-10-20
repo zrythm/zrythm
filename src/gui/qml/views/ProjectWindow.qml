@@ -3,15 +3,14 @@
 
 import Qt.labs.platform as Labs
 import QtQuick
-import QtQuick.Controls.Basic
 import QtQuick.Layouts
 import Zrythm 1.0
+import ZrythmStyle 1.0
 
 ApplicationWindow {
     id: root
 
     required property var project
-    readonly property bool useLabsMenuBar: Qt.platform.os === "osx"
 
     function closeAndDestroy() {
         console.log("Closing and destroying project window");
@@ -19,7 +18,6 @@ ApplicationWindow {
         destroy();
     }
 
-    menuBar: useLabsMenuBar ? null : menuLoader.item
     title: project.title
     width: 1280
     height: 720
@@ -29,73 +27,6 @@ ApplicationWindow {
     Component.onCompleted: {
         console.log("ApplicationWindow created on platform", Qt.platform.os);
         project.aboutToBeDeleted.connect(closeAndDestroy);
-    }
-
-    palette {
-        accent: themeManager().accent
-        base: themeManager().base
-        brightText: themeManager().base
-        button: themeManager().base.lighter().lighter(1.2)
-        buttonText: "white"
-        dark: "white" // used by paginator
-        light: "#999999" // combo box hover background
-        highlight: themeManager().accent
-        link: themeManager().accent
-        placeholderText: themeManager().base.lighter().lighter(1.2)
-        text: "white"
-        window: themeManager().base
-        windowText: "white"
-    }
-
-    Loader {
-        id: menuLoader
-
-        sourceComponent: useLabsMenuBar ? null : regularMenuBar
-    }
-
-    Component {
-        id: regularMenuBar
-
-        ZrythmMenuBar {
-            ZrythmMenu {
-                title: qsTr("&File")
-
-                Action {
-                    text: qsTr("New Long Long Long Long Long Long Long Long Long Name")
-                }
-
-                Action {
-                    text: qsTr("Open")
-                }
-
-            }
-
-            ZrythmMenu {
-                title: qsTr("&Edit")
-
-                Action {
-                    text: qsTr("Undo")
-                }
-
-            }
-
-            ZrythmMenu {
-                title: qsTr("&Test")
-
-                ZrythmMenuItem {
-                    text: qsTr("Something")
-                    onTriggered: {
-                    }
-                }
-
-                Action {
-                    text: "Copy"
-                }
-
-            }
-
-        }
-
     }
 
     ColumnLayout {
@@ -174,35 +105,40 @@ ApplicationWindow {
 
     }
 
-    Labs.MenuBar {
-        Labs.Menu {
+    menuBar: MenuBar {
+        Menu {
             title: qsTr("&File")
 
-            Labs.MenuItem {
-                // Implement new project action
-
-                text: qsTr("New")
-                onTriggered: {
-                }
+            Action {
+                text: qsTr("New Long Long Long Long Long Long Long Long Long Name")
             }
 
-            Labs.MenuItem {
-                // Implement open action
-
+            Action {
                 text: qsTr("Open")
-                onTriggered: {
-                }
             }
 
         }
 
-        Labs.Menu {
+        Menu {
             title: qsTr("&Edit")
 
-            Labs.MenuItem {
+            Action {
                 text: qsTr("Undo")
+            }
+
+        }
+
+        Menu {
+            title: qsTr("&Test")
+
+            MenuItem {
+                text: qsTr("Something")
                 onTriggered: {
                 }
+            }
+
+            Action {
+                text: "Copy"
             }
 
         }

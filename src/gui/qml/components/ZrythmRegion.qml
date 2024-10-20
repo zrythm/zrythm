@@ -1,5 +1,6 @@
 import QtQuick
-import QtQuick.Controls.Basic
+//import QtQuick.Controls.Basic
+import ZrythmStyle 1.0
 
 Rectangle {
     id: root
