@@ -52,6 +52,7 @@ ApplicationWindow {
                     SplitView.fillHeight: true
                     SplitView.preferredWidth: 200
                     SplitView.minimumWidth: 30
+                    visible: headerBar.leftDockVisible
                 }
 
                 SplitView {
@@ -80,6 +81,7 @@ ApplicationWindow {
 
                 RightDock {
                     id: rightDock
+
                     SplitView.fillHeight: true
                     SplitView.preferredWidth: 200
                     SplitView.minimumWidth: 30
@@ -131,16 +133,55 @@ ApplicationWindow {
         }
 
         Menu {
-            title: qsTr("&Test")
+            title: qsTr("&View")
 
-            MenuItem {
-                text: qsTr("Something")
-                onTriggered: {
+            Menu {
+                title: qsTr("Appearance")
+
+                Action {
+                    text: qsTr("Switch Light/Dark Theme")
+                    onTriggered: {
+                        Style.darkMode = !Style.darkMode;
+                    }
                 }
+
+                Menu {
+                    title: qsTr("Theme Color")
+
+                    Action {
+                        text: qsTr("Zrythm Orange")
+                        onTriggered: {
+                            Style.primaryColor = Style.zrythmColor;
+                        }
+                    }
+
+                    Action {
+                        text: qsTr("Celestial Blue")
+                        onTriggered: {
+                            Style.primaryColor = Style.celestialBlueColor;
+                        }
+                    }
+
+                    Action {
+                        text: qsTr("Jonquil Yellow")
+                        onTriggered: {
+                            Style.primaryColor = Style.jonquilYellowColor;
+                        }
+                    }
+
+                }
+
             }
 
+        }
+
+        Menu {
+            title: qsTr("&Help")
+
             Action {
-                text: "Copy"
+                text: qsTr("About Zrythm")
+                onTriggered: {
+                }
             }
 
         }

@@ -361,6 +361,46 @@ ApplicationWindow {
         }
 
         Menu {
+            title: qsTr("&View")
+
+            Menu {
+                title: qsTr("Appearance")
+
+                Action {
+                    text: qsTr("Switch Light/Dark Theme")
+                    onTriggered: {
+                        Style.darkMode = !Style.darkMode;
+                    }
+                }
+
+                Menu {
+                    title: qsTr("Theme Color")
+
+                    Action {
+                        text: qsTr("Zrythm Orange")
+                        onTriggered: {
+                            Style.primaryColor = Style.zrythmColor;
+                        }
+                    }
+                    Action {
+                        text: qsTr("Celestial Blue")
+                        onTriggered: {
+                            Style.primaryColor = Style.celestialBlueColor;
+                        }
+                    }
+                        Action {
+                        text: qsTr("Jonquil Yellow")
+                        onTriggered: {
+                            Style.primaryColor = Style.jonquilYellowColor;
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+        Menu {
             title: qsTr("&Help")
 
             MenuItem {

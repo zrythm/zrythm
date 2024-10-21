@@ -11,21 +11,25 @@ pragma Singleton
 QtObject {
     id: root
 
+    property bool darkMode: false
     readonly property string fontFamily: interFont.name
     readonly property real fontPointSize: 10
     readonly property real animationDuration: 200
     readonly property int animationEasingType: Easing.OutExpo
-    readonly property color primaryColor: "#FFAE00"
-    readonly property color buttonBackgroundColor: "#323232"
-    readonly property color backgroundAppendColor: Qt.rgba(1, 1, 1, 0.25) // color to be appended to things that stand out
-    readonly property color buttonHoverBackgroundAppendColor: Qt.rgba(1, 1, 1, 0.1)
-    readonly property color placeholderTextColor: Qt.rgba(1, 1, 1, 0.5)
-    readonly property color backgroundColor: "#000000"
-    readonly property color textColor: "#E3E3E3" // used in contrast with pageColor
-    readonly property color pageColor: "#161616" // used in contrast with textColor
+    readonly property color zrythmColor: "#FFAE00"
+    readonly property color celestialBlueColor: "#009DFF"
+    readonly property color jonquilYellowColor: "#FFD100"
+    property color primaryColor: celestialBlueColor
+    property color buttonBackgroundColor: darkMode ? "#323232" : "#CDCDCD"
+    property color backgroundAppendColor: darkMode ? Qt.rgba(1, 1, 1, 0.25) : Qt.rgba(0, 0, 0, 0.25) // color to be appended to things that stand out
+    property color buttonHoverBackgroundAppendColor: darkMode ? Qt.rgba(1, 1, 1, 0.1) : Qt.rgba(0, 0, 0, 0.1)
+    property color placeholderTextColor: darkMode ? Qt.rgba(1, 1, 1, 0.5) : Qt.rgba(0, 0, 0, 0.5)
+    property color backgroundColor: darkMode ? "#000000" : "#FFFFFF"
+    property color textColor: darkMode ? "#E3E3E3" : "#161616" // used in contrast with pageColor
+    property color pageColor: darkMode ? "#161616" : "#E3E3E3" // used in contrast with textColor
     readonly property color dangerColor: "#D90368"
     readonly property real lightenFactor: 1.3 // lighten things up 10%, mainly used for hovering but can be used for other things like making parts of the UI stand out from the background
-    readonly property real downEnhancementFactor: 1.3 // enhance things pressed down by 30%
+    readonly property real downEnhancementFactor: lightenFactor // enhance things pressed down by 30%
     readonly property real inactiveOpacityFactor: 0.85
     readonly property real disabledOpacityFactor: 0.7
     readonly property int toolTipDelay: 1000
@@ -60,11 +64,11 @@ QtObject {
         dark: root.textColor // used by paginator, docs mention a "foreground" color
         highlight: root.primaryColor
         highlightedText: root.pageColor
-        light: root.buttonBackgroundColor.lighter(root.lightenFactor) // "lighter than button background" / combo box hover background
+        light: root.getColorBlendedTowardsContrast(root.buttonBackgroundColor) // "lighter than button background" / combo box hover background
         link: root.primaryColor
-        linkVisited: root.primaryColor.darker(root.lightenFactor)
-        mid: root.buttonBackgroundColor.lighter(1.3) // docs say "between button background color and text color", no idea where it's used
-        midlight: root.buttonBackgroundColor.lighter(root.lightenFactor)
+        linkVisited: root.getStrongerColor(root.primaryColor)
+        mid: root.getColorBlendedTowardsContrast(root.buttonBackgroundColor) // docs say "between button background color and text color", no idea where it's used
+        midlight: root.getColorBlendedTowardsContrast(buttonBackgroundColor)
         placeholderText: root.placeholderTextColor
         shadow: root.pageColor
         text: root.textColor

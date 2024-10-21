@@ -70,11 +70,9 @@ T.ComboBox {
     }
 
     background: Rectangle {
-        readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(control.palette.button, control.hovered, control.visualFocus, control.down)
-
         implicitWidth: 140
         implicitHeight: Style.buttonHeight
-        color: colorAdjustedForHoverOrFocusOrDown
+        color: Style.adjustColorForHoverOrVisualFocusOrDown(control.palette.button, control.hovered, control.visualFocus, control.down)
         border.color: control.palette.highlight
         border.width: !control.editable && (control.visualFocus || control.down) ? 2 : 0
         visible: !control.flat || control.down
