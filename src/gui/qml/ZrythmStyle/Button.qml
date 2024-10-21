@@ -30,15 +30,12 @@ T.Button {
         width: Math.max(Style.buttonHeight - padding * 2, textMetrics.height)
         // height: 24
         color: control.checked || control.highlighted ? control.palette.brightText : control.flat && !control.down ? (control.visualFocus ? control.palette.highlight : control.palette.windowText) : control.palette.buttonText
-        Component.onCompleted: {
-            // console.log("text metrics height: " + textMetrics.height);
-        }
     }
 
     contentItem: IconLabel {
         readonly property color baseColor: control.highlighted ? control.palette.brightText : control.palette.buttonText
         readonly property color colorAdjustedForChecked: control.checked ? control.palette.brightText : baseColor
-        readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(colorAdjustedForChecked, control.hovered, control.visualFocus, control.down)
+        readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(colorAdjustedForChecked, false, false, control.down)
 
         spacing: control.spacing
         mirrored: control.mirrored

@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-//import QtQuick.Controls.Basic
-import ZrythmStyle 1.0
 import QtQuick.Layouts
 import Zrythm 1.0
+import ZrythmStyle 1.0
 
 ColumnLayout {
     TabBar {
@@ -13,14 +12,22 @@ ColumnLayout {
 
         Layout.fillWidth: true
 
-        ZrythmTabButton {
-            iconSource: Qt.resolvedUrl("../icons/zrythm-dark/track-inspector.svg")
-            text: qsTr("Track Inspector")
+        TabButton {
+            icon.source: Style.getIcon("zrythm-dark", "track-inspector.svg")
+
+            ToolTip {
+                text: qsTr("Track Inspector")
+            }
+
         }
 
-        ZrythmTabButton {
-            iconSource: Qt.resolvedUrl("../icons/zrythm-dark/plug.svg")
-            text: qsTr("Plugin Inspector")
+        TabButton {
+            icon.source: Style.getIcon("zrythm-dark", "plug.svg")
+
+            ToolTip {
+                text: qsTr("Plugin Inspector")
+            }
+
         }
 
     }

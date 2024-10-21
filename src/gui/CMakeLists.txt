@@ -77,10 +77,8 @@ set(rel_qml_file_paths
   components/basic/ZrythmFilePicker.qml
   components/basic/ZrythmPlaceholderPage.qml
   components/basic/ZrythmPreferencesPage.qml
-  components/basic/ZrythmProgressBar.qml
   components/basic/ZrythmResizablePanel.qml
   components/basic/ZrythmSplitButton.qml
-  components/basic/ZrythmTabButton.qml
   components/basic/ZrythmToolBar.qml
   components/MainToolbar.qml
   components/BottomDock.qml

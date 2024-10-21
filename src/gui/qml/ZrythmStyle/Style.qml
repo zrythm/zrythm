@@ -18,14 +18,17 @@ QtObject {
     readonly property color primaryColor: "#FFAE00"
     readonly property color buttonBackgroundColor: "#323232"
     readonly property color backgroundAppendColor: Qt.rgba(1, 1, 1, 0.25) // color to be appended to things that stand out
+    readonly property color buttonHoverBackgroundAppendColor: Qt.rgba(1, 1, 1, 0.1)
+    readonly property color placeholderTextColor: Qt.rgba(1, 1, 1, 0.5)
     readonly property color backgroundColor: "#000000"
     readonly property color textColor: "#E3E3E3" // used in contrast with pageColor
     readonly property color pageColor: "#161616" // used in contrast with textColor
     readonly property color dangerColor: "#D90368"
-    readonly property real lightenFactor: 1.1 // lighten things up 10%, mainly used for hovering but can be used for other things like making parts of the UI stand out from the background
+    readonly property real lightenFactor: 1.3 // lighten things up 10%, mainly used for hovering but can be used for other things like making parts of the UI stand out from the background
     readonly property real downEnhancementFactor: 1.3 // enhance things pressed down by 30%
     readonly property real inactiveOpacityFactor: 0.85
     readonly property real disabledOpacityFactor: 0.7
+    readonly property int toolTipDelay: 1000
     readonly property font buttonTextFont: ({
         "family": root.fontFamily,
         "pixelSize": 12,
@@ -42,6 +45,8 @@ QtObject {
         "weight": Font.Normal
     })
     readonly property real buttonRadius: 9
+    readonly property real toolButtonRadius: 6
+    readonly property real textFieldRadius: 4
     readonly property real buttonHeight: 24
     readonly property real buttonPadding: 4
     readonly property Palette
@@ -60,7 +65,7 @@ QtObject {
         linkVisited: root.primaryColor.darker(root.lightenFactor)
         mid: root.buttonBackgroundColor.lighter(1.3) // docs say "between button background color and text color", no idea where it's used
         midlight: root.buttonBackgroundColor.lighter(root.lightenFactor)
-        placeholderText: root.buttonBackgroundColor.lighter(1.4)
+        placeholderText: root.placeholderTextColor
         shadow: root.pageColor
         text: root.textColor
         toolTipBase: root.buttonBackgroundColor
@@ -74,32 +79,6 @@ QtObject {
         source: Qt.resolvedUrl("qrc:/qt/qml/Zrythm/fonts/InterVariable.ttf")
     }
 
-    readonly property Component
-    popupBackground: Component {
-        Rectangle {
-            implicitWidth: 200
-            implicitHeight: root.buttonHeight
-            color: root.colorPalette.button
-            radius: Style.buttonRadius
-            layer.enabled: true
-
-            border {
-                color: root.backgroundAppendColor
-                width: 1
-            }
-
-            layer.effect: MultiEffect {
-                shadowEnabled: true
-                shadowHorizontalOffset: 3
-                shadowVerticalOffset: 3
-                shadowColor: root.colorPalette.shadow
-                shadowBlur: 0.8
-            }
-
-        }
-
-    }
-
     readonly property PropertyAnimation
     propertyAnimation: PropertyAnimation {
         duration: root.animationDuration
@@ -110,13 +89,23 @@ QtObject {
         return arg.hslLightness < 0.5;
     }
 
+    // Makes dark colors darker and light colors lighter by the down enhancement factor.
+    function getStrongerColor(arg: color) : color {
+        return root.isColorDark(arg) ? arg.darker(root.downEnhancementFactor) : arg.lighter(root.downEnhancementFactor);
+    }
+
+    // Makes dark colors lighter and light colors darker by the lighten factor.
+    function getColorBlendedTowardsContrast(arg: color) : color {
+        return root.isColorDark(arg) ? arg.lighter(root.lightenFactor) : arg.darker(root.lightenFactor);
+    }
+
     function adjustColorForHoverOrVisualFocusOrDown(arg: color, hovered: bool, focused: bool, down: bool) : color {
         if (!hovered && !focused && !down)
             return arg;
         else if (down)
-            return root.isColorDark(arg) ? arg.darker(root.downEnhancementFactor) : arg.lighter(root.downEnhancementFactor);
+            return root.getStrongerColor(arg);
         else if (hovered || focused)
-            return root.isColorDark(arg) ? arg.lighter(root.lightenFactor) : arg.darker(root.lightenFactor);
+            return root.getColorBlendedTowardsContrast(arg);
     }
 
     function getOpacity(enabled: bool, windowActive: bool) : real {

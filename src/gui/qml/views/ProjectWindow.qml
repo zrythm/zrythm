@@ -79,9 +79,11 @@ ApplicationWindow {
                 }
 
                 RightDock {
+                    id: rightDock
                     SplitView.fillHeight: true
                     SplitView.preferredWidth: 200
                     SplitView.minimumWidth: 30
+                    visible: headerBar.rightDockVisible
                 }
 
             }

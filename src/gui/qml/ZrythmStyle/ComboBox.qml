@@ -97,9 +97,7 @@ T.ComboBox {
         topMargin: 4
         bottomMargin: 4
         palette: control.palette
-        background: Loader {
-            sourceComponent: Style.popupBackground
-        }
+        background: PopupBackgroundRect {}
 
         contentItem: ListView {
             clip: true

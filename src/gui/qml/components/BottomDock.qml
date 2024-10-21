@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-import ZrythmStyle 1.0
 import QtQuick.Layouts
 import Zrythm 1.0
+import ZrythmStyle 1.0
 
 ColumnLayout {
     spacing: 0
@@ -59,22 +59,22 @@ ColumnLayout {
         Layout.fillWidth: true
 
         TabButton {
-            icon.source: Qt.resolvedUrl("../icons/zrythm-dark/piano-roll.svg")
+            icon.source: Style.getIcon("zrythm-dark", "piano-roll.svg")
             text: qsTr("Editor")
         }
 
         TabButton {
-            icon.source: Qt.resolvedUrl("../icons/zrythm-dark/mixer.svg")
+            icon.source: Style.getIcon("zrythm-dark", "mixer.svg")
             text: qsTr("Mixer")
         }
 
         TabButton {
-            icon.source: Qt.resolvedUrl("../icons/gnome-icon-library/encoder-knob-symbolic.svg")
+            icon.source: Style.getIcon("gnome-icon-library", "encoder-knob-symbolic.svg")
             text: qsTr("Modulators")
         }
 
         TabButton {
-            icon.source: Qt.resolvedUrl("../icons/zrythm-dark/chord-pad.svg")
+            icon.source: Style.getIcon("zrythm-dark", "chord-pad.svg")
             text: qsTr("Chord Pad")
         }
 

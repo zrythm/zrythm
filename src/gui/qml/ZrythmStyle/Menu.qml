@@ -12,7 +12,6 @@ T.Menu {
     id: control
 
     palette: Style.colorPalette
-
     implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, contentWidth + leftPadding + rightPadding)
     implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, contentHeight + topPadding + bottomPadding)
     margins: 0
@@ -44,8 +43,8 @@ T.Menu {
 
     }
 
-    background: Loader {
-        sourceComponent: Style.popupBackground
+    background: PopupBackgroundRect {
+        implicitWidth: 200
     }
 
     T.Overlay.modal: Rectangle {

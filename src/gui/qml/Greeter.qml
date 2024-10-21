@@ -303,7 +303,7 @@ ApplicationWindow {
                         opacity: 0.6
                     }
 
-                    ZrythmProgressBar {
+                    ProgressBar {
                         id: scanProgressBar
 
                         indeterminate: true

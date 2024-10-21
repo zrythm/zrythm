@@ -32,8 +32,9 @@ qt_add_qml_module(zrythm_style
     # PageIndicator.qml
     # Pane.qml
     Popup.qml
+    PopupBackgroundRect.qml
     RoundButton.qml
-    # ProgressBar.qml
+    ProgressBar.qml
     # ScrollBar.qml
     # ScrollIndicator.qml
     # ScrollView.qml
@@ -42,7 +43,7 @@ qt_add_qml_module(zrythm_style
     # StackView.qml
     TabBar.qml
     TabButton.qml
-    # TextField.qml
+    TextField.qml
     ToolBar.qml
     ToolButton.qml
     ToolSeparator.qml

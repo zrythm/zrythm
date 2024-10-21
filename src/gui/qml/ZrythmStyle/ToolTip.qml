@@ -21,7 +21,7 @@ T.ToolTip {
     margins: Style.buttonPadding
     padding: Style.buttonPadding
     font.pointSize: Style.fontPointSize
-    delay: 1000
+    delay: Style.toolTipDelay
     visible: parent ? parent.hovered : false
 
     closePolicy: T.Popup.CloseOnEscape | T.Popup.CloseOnPressOutsideParent | T.Popup.CloseOnReleaseOutsideParent
@@ -33,10 +33,5 @@ T.ToolTip {
         color: control.palette.toolTipText
     }
 
-    background: Rectangle {
-        border.color: Style.backgroundAppendColor
-        border.width: 1
-        color: control.palette.toolTipBase
-        radius: Style.buttonRadius
-    }
+    background: PopupBackgroundRect {}
 }

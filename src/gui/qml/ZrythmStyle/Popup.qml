@@ -16,9 +16,7 @@ T.Popup {
 
     padding: 12
 
-    background: Loader {
-        sourceComponent: Style.popupBackground
-    }
+    background: PopupBackgroundRect {}
     popupType: Popup.Native
 
 

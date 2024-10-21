@@ -8,6 +8,7 @@ import QtQuick.Templates as T
 T.ToolBar {
     id: control
 
+    padding: 2
     implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
                             contentWidth + leftPadding + rightPadding)
     implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,

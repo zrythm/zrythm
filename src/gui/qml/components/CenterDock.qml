@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
 import QtQuick
 import QtQuick.Layouts
 import Zrythm 1.0
@@ -39,18 +42,18 @@ ColumnLayout {
 
         Layout.fillWidth: true
 
-        ZrythmTabButton {
-            iconSource: Qt.resolvedUrl("../icons/zrythm-dark/roadmap.svg")
+        TabButton {
+            icon.source: Style.getIcon("zrythm-dark", "roadmap.svg")
             text: qsTr("Timeline")
         }
 
-        ZrythmTabButton {
-            iconSource: Qt.resolvedUrl("../icons/zrythm-dark/connector.svg")
+        TabButton {
+            icon.source: Style.getIcon("zrythm-dark", "connector.svg")
             text: qsTr("Port Connections")
         }
 
-        ZrythmTabButton {
-            iconSource: Qt.resolvedUrl("../icons/zrythm-dark/signal-midi.svg")
+        TabButton {
+            icon.source: Style.getIcon("zrythm-dark", "signal-midi.svg")
             text: qsTr("Midi CC Bindings")
         }
 

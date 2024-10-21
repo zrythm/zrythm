@@ -1,16 +1,18 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
-// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// SPDX-FileCopyrightText: Copyright (C) 2017 The Qt Company Ltd.
+// SPDX-License-Identifier: GPL-3.0-only
 
-pragma ComponentBehavior: Bound
 import QtQuick
-//import QtQuick.Controls.Basic
+import QtQuick.Controls.Basic.impl
+import QtQuick.Templates as T
 import ZrythmStyle 1.0
 
-ProgressBar {
+T.ProgressBar {
     id: control
 
-    value: 0.5
-    padding: 2
+    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
+    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
+    opacity: Style.getOpacity(control.enabled, control.Window.active)
 
     contentItem: Item {
         implicitWidth: 200
@@ -67,8 +69,10 @@ ProgressBar {
     background: Rectangle {
         implicitWidth: 200
         implicitHeight: 6
-        color: palette.base
+        // y: (control.height - height) / 2
+        // height: 6
         radius: 3
+        color: control.palette.text
     }
 
 }

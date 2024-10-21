@@ -9,6 +9,9 @@ import Zrythm 1.0
 ZrythmToolBar {
     id: headerBar
 
+    property alias leftDockVisible: toggleLeftDock.checked
+    property alias rightDockVisible: toggleRightDock.checked
+
     leftItems: [
         ToolButton {
             id: toggleLeftDock
@@ -26,7 +29,7 @@ ZrythmToolBar {
 
             tooltipText: qsTr("Undo")
             menuTooltipText: qsTr("Undo Multiple")
-            iconSource: Qt.resolvedUrl("../icons/zrythm-dark/edit-undo.svg")
+            iconSource: Style.getIcon("zrythm-dark", "edit-undo.svg")
 
             menuItems: Menu {
                 Action {
@@ -41,7 +44,7 @@ ZrythmToolBar {
 
             tooltipText: qsTr("Redo")
             menuTooltipText: qsTr("Redo Multiple")
-            iconSource: Qt.resolvedUrl("../icons/zrythm-dark/edit-redo.svg")
+            iconSource: Style.getIcon("zrythm-dark", "edit-redo.svg")
             enabled: false
         },
         ToolSeparator {

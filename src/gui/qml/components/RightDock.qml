@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-//import QtQuick.Controls.Basic
-import ZrythmStyle 1.0
 import QtQuick.Layouts
 import Zrythm 1.0
+import ZrythmStyle 1.0
 
 ColumnLayout {
     TabBar {
@@ -13,24 +12,40 @@ ColumnLayout {
 
         Layout.fillWidth: true
 
-        ZrythmTabButton {
-            iconSource: Qt.resolvedUrl("../icons/gnome-icon-library/puzzle-piece-symbolic.svg")
-            text: qsTr("Plugin Browser")
+        TabButton {
+            icon.source: Style.getIcon("gnome-icon-library", "shapes-large-symbolic.svg")
+
+            ToolTip {
+                text: qsTr("Plugin Browser")
+            }
+
         }
 
-        ZrythmTabButton {
-            iconSource: Qt.resolvedUrl("../icons/gnome-icon-library/library-music-symbolic.svg")
-            text: qsTr("File Browser")
+        TabButton {
+            icon.source: Style.getIcon("gnome-icon-library", "file-cabinet-symbolic.svg")
+
+            ToolTip {
+                text: qsTr("File Browser")
+            }
+
         }
 
-        ZrythmTabButton {
-            iconSource: Qt.resolvedUrl("../icons/gnome-icon-library/speakers-symbolic.svg")
-            text: qsTr("Monitor Section")
+        TabButton {
+            icon.source: Style.getIcon("zrythm-dark", "speaker.svg")
+
+            ToolTip {
+                text: qsTr("Monitor Section")
+            }
+
         }
 
-        ZrythmTabButton {
-            iconSource: Qt.resolvedUrl("../icons/zrythm-dark/minuet-chords.svg")
-            text: qsTr("Chord Preset Browser")
+        TabButton {
+            icon.source: Style.getIcon("zrythm-dark", "minuet-chords.svg")
+
+            ToolTip {
+                text: qsTr("Chord Preset Browser")
+            }
+
         }
 
     }

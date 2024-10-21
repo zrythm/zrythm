@@ -25,6 +25,8 @@ ApplicationWindow {
             model: [true, false]
 
             Flow {
+                // put things in here
+
                 id: enabledRepeater
 
                 property bool enabledBoolData: modelData
@@ -112,6 +114,133 @@ ApplicationWindow {
                         enabled: enabledRepeater.enabledBoolData
                     }
 
+                    ProgressBar {
+                        indeterminate: true
+                        enabled: enabledRepeater.enabledBoolData
+                    }
+
+                    ProgressBar {
+                        from: 0
+                        to: 100
+                        value: 50
+                        enabled: enabledRepeater.enabledBoolData
+
+                        // Dummy animation to move the progress bar back and forth
+                        SequentialAnimation on value {
+                            loops: Animation.Infinite
+
+                            NumberAnimation {
+                                from: 0
+                                to: 100
+                                duration: 2000
+                                easing.type: Style.animationEasingType
+                            }
+
+                            NumberAnimation {
+                                from: 100
+                                to: 0
+                                duration: 2000
+                                easing.type: Style.animationEasingType
+                            }
+
+                        }
+
+                    }
+
+                    TabBar {
+                        TabButton {
+                            icon.source: Style.getIcon("zrythm-dark", "piano-roll.svg")
+                            text: qsTr("Editor")
+                            enabled: enabledRepeater.enabledBoolData
+                        }
+
+                        TabButton {
+                            icon.source: Style.getIcon("zrythm-dark", "mixer.svg")
+                            text: qsTr("Mixer")
+                            enabled: enabledRepeater.enabledBoolData
+                        }
+
+                        TabButton {
+                            icon.source: Style.getIcon("gnome-icon-library", "encoder-knob-symbolic.svg")
+                            text: qsTr("Modulators")
+                            enabled: enabledRepeater.enabledBoolData
+                        }
+
+                        TabButton {
+                            icon.source: Style.getIcon("zrythm-dark", "chord-pad.svg")
+                            text: "Chord Pad"
+                            enabled: enabledRepeater.enabledBoolData
+                        }
+
+                    }
+
+                    TabBar {
+                        enabled: enabledRepeater.enabledBoolData
+
+                        TabButton {
+                            icon.source: Style.getIcon("zrythm-dark", "track-inspector.svg")
+                            text: qsTr("Track Inspector")
+                        }
+
+                        TabButton {
+                            icon.source: Style.getIcon("zrythm-dark", "plug.svg")
+                            text: qsTr("Plugin Inspector")
+                        }
+
+                    }
+
+                    TabBar {
+                        enabled: enabledRepeater.enabledBoolData
+
+                        TabButton {
+                            icon.source: Style.getIcon("gnome-icon-library", "shapes-large-symbolic.svg")
+
+                            ToolTip {
+                                text: qsTr("Plugin Browser")
+                            }
+
+                        }
+
+                        TabButton {
+                            icon.source: Style.getIcon("gnome-icon-library", "file-cabinet-symbolic.svg")
+
+                            ToolTip {
+                                text: qsTr("File Browser")
+                            }
+
+                        }
+
+                        TabButton {
+                            icon.source: Style.getIcon("zrythm-dark", "speaker.svg")
+
+                            ToolTip {
+                                text: qsTr("Monitor Section")
+                            }
+
+                        }
+
+                        TabButton {
+                            icon.source: Style.getIcon("zrythm-dark", "minuet-chords.svg")
+
+                            ToolTip {
+                                text: qsTr("Chord Preset Browser")
+                            }
+
+                        }
+
+                    }
+
+                    TextField {
+                        placeholderText: "Placeholder text"
+                        enabled: enabledRepeater.enabledBoolData
+                    }
+
+                    TextField {
+                        placeholderText: "Placeholder text"
+                        text: "Text"
+                        enabled: enabledRepeater.enabledBoolData
+                    }
+
                 }
 
             }
@@ -124,24 +253,84 @@ ApplicationWindow {
         id: toolBar
 
         RowLayout {
-            ToolButton {
-                text: "Tool Button"
-            }
+            Repeater {
+                // put widgets here
 
-            ToolButton {
-                text: "Tool Button"
-                icon.source: Style.getIcon("zrythm-dark", "zrythm-monochrome.svg")
-            }
+                model: [true, false]
 
-            ToolButton {
-                icon.source: Style.getIcon("zrythm-dark", "zrythm-monochrome.svg")
-            }
+                RowLayout {
+                    id: enabledRepeater
 
-            ToolSeparator {}
+                    property bool enabledBoolData: modelData
 
-            ToolButton {
-                text: "Tool Button"
-                icon.source: Style.getIcon("zrythm-dark", "zrythm-monochrome.svg")
+                    Repeater {
+                        model: [true, false]
+
+                        Flow {
+                            id: checkedFlow
+
+                            property bool checkableBoolData: modelData
+
+                            ToolButton {
+                                text: "Tool Button"
+                                enabled: enabledRepeater.enabledBoolData
+                                checkable: checkedFlow.checkableBoolData
+                            }
+
+                            ToolButton {
+                                text: "Tool Button"
+                                icon.source: Style.getIcon("zrythm-dark", "zrythm-monochrome.svg")
+                                enabled: enabledRepeater.enabledBoolData
+                                checkable: checkedFlow.checkableBoolData
+                                checked: checkedFlow.checkableBoolData
+                            }
+
+                            ToolButton {
+                                icon.source: Style.getIcon("zrythm-dark", "zrythm-monochrome.svg")
+                                enabled: enabledRepeater.enabledBoolData
+                                checkable: checkedFlow.checkableBoolData
+                            }
+
+                        }
+
+                    }
+
+                    ToolSeparator {
+                        enabled: enabledRepeater.enabledBoolData
+                    }
+
+                    ZrythmSplitButton {
+                        id: undoBtn
+
+                        tooltipText: qsTr("Undo")
+                        menuTooltipText: qsTr("Undo Multiple")
+                        iconSource: Style.getIcon("zrythm-dark", "edit-undo.svg")
+                        enabled: enabledRepeater.enabledBoolData
+
+                        menuItems: Menu {
+                            Action {
+                                text: qsTr("Undo Move")
+                            }
+
+                            Action {
+                                text: qsTr("Undo Cut")
+                            }
+
+                        }
+
+                    }
+
+                    ZrythmSplitButton {
+                        id: redoBtn
+
+                        tooltipText: qsTr("Redo")
+                        menuTooltipText: qsTr("Redo Multiple")
+                        iconSource: Style.getIcon("zrythm-dark", "edit-redo.svg")
+                        enabled: enabledRepeater.enabledBoolData
+                    }
+
+                }
+
             }
 
         }
