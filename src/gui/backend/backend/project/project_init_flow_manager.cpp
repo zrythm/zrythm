@@ -678,7 +678,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
 
   prj->clip_editor_.init_loaded ();
 
-  auto tracklist = prj->tracklist_.get ();
+  auto * tracklist = prj->tracklist_;
   tracklist->init_loaded (*prj);
 
   int beats_per_bar = tracklist->tempo_track_->get_beats_per_bar ();

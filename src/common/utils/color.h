@@ -6,6 +6,8 @@
 
 #include "common/io/serialization/iserializable.h"
 
+#include <QColor>
+
 /**
  * @addtogroup utils
  *
@@ -19,6 +21,7 @@ public:
 
   Color () = default;
   Color (const GdkRGBA &color) { *this = color; }
+  Color (const QColor &color) { *this = color; }
   Color (float r, float g, float b, float a = 1.0f);
 
   /**
@@ -29,6 +32,7 @@ public:
   Color (const std::string &str);
 
   Color &operator= (const GdkRGBA &color);
+  Color &operator= (const QColor &color);
 
   /**
    * Brightens the color by the given amount.
@@ -120,6 +124,8 @@ public:
 
   GdkRGBA to_gdk_rgba () const;
   GdkRGBA to_gdk_rgba_with_alpha (float alpha) const;
+
+  QColor to_qcolor () const;
 
   /**
    * Gets the color the widget should be.

@@ -18,13 +18,18 @@ struct Stretcher;
  * functionality for managing audio channels, lanes, and automation.
  */
 class AudioTrack final
-    : public ChannelTrack,
+    : public QObject,
+      public ChannelTrack,
       public LanedTrackImpl<AudioRegion>,
       public RecordableTrack,
       public ICloneable<AudioTrack>,
       public ISerializable<AudioTrack>,
       public InitializableObjectFactory<AudioTrack>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_TRACK_QML_PROPERTIES
+
   friend class InitializableObjectFactory<AudioTrack>;
 
 public:

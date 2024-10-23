@@ -62,8 +62,14 @@ Track::get_tracklist () const
     }
   else
     {
-      return TRACKLIST.get ();
+      return TRACKLIST;
     }
+}
+
+Track *
+Track::from_variant (const TrackPtrVariant &variant)
+{
+  return std::visit ([&] (auto &&t) -> Track * { return t; }, variant);
 }
 
 std::unique_ptr<Track>
@@ -332,11 +338,13 @@ T *
 Track::find_by_name (const std::string &name)
 {
   static_assert (std::derived_from<T, Track>);
-  auto it =
-    std::ranges::find_if (TRACKLIST->tracks_, [&name] (const auto &track) {
-      return track->name_ == name;
-    });
-  return it != TRACKLIST->tracks_.end () ? dynamic_cast<T *> (it->get ()) : nullptr;
+  auto it = std::ranges::find_if (TRACKLIST->tracks_, [&name] (const auto &tr) {
+    auto track = Track::from_variant (tr);
+    return track->name_ == name;
+  });
+  return it != TRACKLIST->tracks_.end ()
+           ? dynamic_cast<T *> (Track::from_variant (*it))
+           : nullptr;
 }
 
 void
@@ -1391,10 +1399,14 @@ Track::create_with_action (
 
   if (ZRYTHM_TESTING)
     {
-      auto track = TRACKLIST->get_track (index);
-      z_return_if_fail (track);
-      z_return_if_fail (track->type_ == type);
-      z_return_if_fail (track->pos_ == index);
+      auto tr = TRACKLIST->get_track (index);
+      std::visit (
+        [&] (auto &&track) {
+          z_return_if_fail (track);
+          z_return_if_fail (track->type_ == type);
+          z_return_if_fail (track->pos_ == index);
+        },
+        tr);
     }
 }
 
@@ -1430,10 +1442,14 @@ Track::create_without_file_with_action (
   create_with_action (type, pl_setting, nullptr, nullptr, index, 1, -1, nullptr);
 
   auto track = TRACKLIST->get_track (index);
-  z_return_val_if_fail (track, nullptr);
-  z_return_val_if_fail_cmp (track->type_, ==, type, nullptr);
-  z_return_val_if_fail_cmp (track->pos_, ==, index, nullptr);
-  return track;
+  std::visit (
+    [&] (auto &&tr) {
+      z_return_if_fail (tr);
+      z_return_if_fail (tr->type_ == type);
+      z_return_if_fail (tr->pos_ == index);
+    },
+    track);
+  return Track::from_variant (track);
 }
 
 void

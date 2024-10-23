@@ -33,11 +33,16 @@ constexpr auto  TEMPO_TRACK_MAX_BEAT_UNIT = BeatUnit::Sixteen;
  * bar, and beat unit. The tempo can be automated using the provided ports.
  */
 class TempoTrack final
-    : public AutomatableTrack,
+    : public QObject,
+      public AutomatableTrack,
       public ICloneable<TempoTrack>,
       public ISerializable<TempoTrack>,
       public InitializableObjectFactory<TempoTrack>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_TRACK_QML_PROPERTIES
+
   friend class InitializableObjectFactory<TempoTrack>;
 
 public:

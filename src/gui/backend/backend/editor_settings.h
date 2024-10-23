@@ -12,6 +12,23 @@
  * @{
  */
 
+#define DEFINE_EDITOR_SETTINGS_QML_PROPERTIES \
+  Q_PROPERTY (double x READ getX WRITE setX NOTIFY xChanged) \
+  double getX () const \
+  { \
+    return scroll_start_x_; \
+  } \
+  void setX (double x) \
+  { \
+    if (scroll_start_x_ == static_cast<int> (std::round (x))) \
+      return; \
+\
+    scroll_start_x_ = static_cast<int> (std::round (x)); \
+    Q_EMIT xChanged (x); \
+  } \
+\
+  Q_SIGNAL void xChanged (double x);
+
 /**
  * Common editor settings.
  */

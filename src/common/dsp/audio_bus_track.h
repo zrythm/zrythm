@@ -10,11 +10,16 @@
  * @brief An audio bus track that can be processed and has channels.
  */
 class AudioBusTrack final
-    : public ChannelTrack,
+    : public QObject,
+      public ChannelTrack,
       public ICloneable<AudioBusTrack>,
       public ISerializable<AudioBusTrack>,
       public InitializableObjectFactory<AudioBusTrack>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_TRACK_QML_PROPERTIES
+
   friend class InitializableObjectFactory<AudioBusTrack>;
 
 public:

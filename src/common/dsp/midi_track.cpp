@@ -8,7 +8,7 @@
 MidiTrack::MidiTrack (const std::string &label, int pos)
     : Track (Track::Type::Midi, label, pos, PortType::Event, PortType::Event)
 {
-  color_ = Color ("#F79616");
+  color_ = Color (QColor ("#F79616"));
   icon_name_ = "signal-midi";
 }
 

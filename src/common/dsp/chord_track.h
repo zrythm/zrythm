@@ -36,13 +36,18 @@
  * used for testing.
  */
 class ChordTrack final
-    : public RecordableTrack,
+    : public QObject,
+      public RecordableTrack,
       public ChannelTrack,
       public RegionOwnerImpl<ChordRegion>,
       public ICloneable<ChordTrack>,
       public ISerializable<ChordTrack>,
       public InitializableObjectFactory<ChordTrack>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_TRACK_QML_PROPERTIES
+
   friend class InitializableObjectFactory<ChordTrack>;
 
 public:

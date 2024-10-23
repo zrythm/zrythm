@@ -85,6 +85,9 @@ set(rel_qml_file_paths
   components/CenterDock.qml
   components/LeftDock.qml
   components/RightDock.qml
+  components/Timeline.qml
+  components/Tracklist.qml
+  components/TrackView.qml
   components/ZrythmArranger.qml
   components/ZrythmRegion.qml
   Greeter.qml
@@ -134,6 +137,8 @@ qt_add_qml_module(zrythm
     backend/project_info.cpp
     backend/project_templates_model.h
     backend/project_templates_model.cpp
+    backend/track_filter_proxy_model.h
+    backend/track_filter_proxy_model.cpp
 
   # compile qml files listed in QML_FILES to C++ using qmltc
   # (currently cannot extend QtQuick Controls directly)

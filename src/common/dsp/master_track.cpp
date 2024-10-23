@@ -7,7 +7,7 @@ MasterTrack::MasterTrack (int pos)
     : Track (Track::Type::Master, _ ("Master"), pos, PortType::Audio, PortType::Audio)
 {
   /* GTK color picker color */
-  color_ = Color ("#C01C28");
+  color_ = Color (QColor ("#C01C28"));
   icon_name_ = "effect";
 }
 

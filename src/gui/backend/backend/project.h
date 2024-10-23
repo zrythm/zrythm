@@ -102,10 +102,13 @@ class Project final
 {
   Q_OBJECT
   QML_ELEMENT
-  Q_PROPERTY (QString title READ getTitle WRITE setTitle NOTIFY titleChanged)
+  Q_PROPERTY (
+    QString title READ getTitle WRITE setTitle NOTIFY titleChanged FINAL)
   Q_PROPERTY (
     QString directory READ getDirectory WRITE setDirectory NOTIFY
-      directoryChanged)
+      directoryChanged FINAL)
+  Q_PROPERTY (Tracklist * tracklist READ getTracklist CONSTANT FINAL)
+  Q_PROPERTY (Timeline * timeline READ getTimeline CONSTANT FINAL)
 
 public:
   Project (QObject * parent = nullptr);
@@ -148,10 +151,14 @@ public:
   void    setTitle (const QString &title);
   QString getDirectory () const;
   void    setDirectory (const QString &directory);
+  Tracklist * getTracklist () const;
+  Timeline *  getTimeline () const;
 
   Q_SIGNAL void titleChanged (const QString &title);
   Q_SIGNAL void directoryChanged (const QString &directory);
   Q_SIGNAL void aboutToBeDeleted ();
+  Q_SIGNAL void tracklistChanged (Tracklist * tracklist);
+  Q_SIGNAL void timelineChanged (Timeline * timeline);
 
   // =========================================================
 
@@ -534,7 +541,7 @@ public:
   std::shared_ptr<SnapGrid> snap_grid_timeline_;
 
   /** Timeline widget backend. */
-  std::unique_ptr<Timeline> timeline_;
+  Timeline * timeline_ = nullptr;
 
   /** Backend for the widget. */
   ClipEditor clip_editor_;
@@ -550,7 +557,7 @@ public:
    * must be free'd before tracklist selections, mixer selections, engine,
    * and port connection manager
    */
-  std::shared_ptr<Tracklist> tracklist_;
+  Tracklist * tracklist_ = nullptr;
 
   std::unique_ptr<UndoManager> undo_manager_;
 

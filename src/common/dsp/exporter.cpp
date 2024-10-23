@@ -378,7 +378,7 @@ Exporter::export_midi (Settings &info)
 
       for (size_t i = 0; i < TRACKLIST->tracks_.size (); ++i)
         {
-          auto &track = TRACKLIST->tracks_[i];
+          auto * track = Track::from_variant (TRACKLIST->tracks_[i]);
 
           if (track->has_piano_roll ())
             {
@@ -563,10 +563,10 @@ Exporter::post_export ()
     }
 
   /* reset "bounce to master" on each track */
-  for (auto &track : TRACKLIST->tracks_)
-    {
-      track->bounce_to_master_ = false;
-    }
+  std::ranges::for_each (TRACKLIST->tracks_, [] (auto &track) {
+    auto tr = Track::from_variant (track);
+    tr->bounce_to_master_ = false;
+  });
 
   /* restart engine */
   AUDIO_ENGINE->exporting_ = false;

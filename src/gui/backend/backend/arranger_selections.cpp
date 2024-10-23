@@ -368,44 +368,42 @@ ArrangerSelections::select_all (bool fire_events)
       if constexpr (std::is_same_v<TimelineSelections, SelT>)
         {
           /* midi/audio regions */
-          for (auto &track : TRACKLIST->tracks_)
+          for (auto &tr : TRACKLIST->tracks_)
             {
-              if (auto laned_track = dynamic_cast<LanedTrack *> (track.get ()))
-                {
-                  std::visit (
-                    [&] (auto &&lt) {
-                      for (auto &lane : lt->lanes_)
+              std::visit (
+                [&] (auto &&track) {
+                  using TrackT = base_type<decltype (track)>;
+                  if constexpr (std::derived_from<TrackT, LanedTrack>)
+                    {
+                      for (auto &lane : track->lanes_)
                         {
                           for (auto &region : lane->regions_)
                             {
                               add_object_ref (region);
                             }
                         }
-                    },
-                    convert_to_variant<LanedTrackPtrVariant> (laned_track));
-                }
+                    }
 
-              /* automation regions */
-              if (
-                auto automatable_track =
-                  dynamic_cast<AutomatableTrack *> (track.get ()))
-                {
-                  const auto &atl =
-                    automatable_track->get_automation_tracklist ();
-                  if (automatable_track->automation_visible_)
+                  /* automation regions */
+                  if constexpr (std::derived_from<TrackT, AutomatableTrack>)
                     {
-                      for (auto &at : atl.ats_)
+                      const auto &atl = track->get_automation_tracklist ();
+                      if (track->automation_visible_)
                         {
-                          if (!at->visible_)
-                            continue;
-
-                          for (auto &region : at->regions_)
+                          for (auto &at : atl.ats_)
                             {
-                              add_object_ref (region);
+                              if (!at->visible_)
+                                continue;
+
+                              for (auto &region : at->regions_)
+                                {
+                                  add_object_ref (region);
+                                }
                             }
                         }
                     }
-                }
+                },
+                tr);
             }
 
           /* chord regions */

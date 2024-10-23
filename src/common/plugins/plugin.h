@@ -712,13 +712,13 @@ public:
    * ID of the destroy signal for @ref Plugin.window so that we can deactivate
    * before freeing the plugin.
    */
-  gulong destroy_window_id_ = 0;
+  ulong destroy_window_id_ = 0;
 
   /**
    * ID of the close-request signal for @ref Plugin.window so that we can
    * deactivate before freeing the plugin.
    */
-  gulong close_request_id_ = 0;
+  ulong close_request_id_ = 0;
 
   int magic_ = PLUGIN_MAGIC;
 
@@ -730,7 +730,7 @@ public:
    *
    * @see update_plugin_ui().
    */
-  guint update_ui_source_id_ = 0;
+  uint update_ui_source_id_ = 0;
 
   /** Temporary variable to check if plugin is currently undergoing
    * deactivation. */

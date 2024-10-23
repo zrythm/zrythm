@@ -7,7 +7,7 @@ AudioBusTrack::AudioBusTrack (const std::string &name, int pos)
     : Track (Track::Type::AudioBus, name, pos, PortType::Audio, PortType::Audio)
 {
   /* GTK color picker color */
-  color_ = Color ("#33D17A");
+  color_ = Color (QColor ("#33D17A"));
   icon_name_ = "effect";
 }
 

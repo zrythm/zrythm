@@ -42,7 +42,7 @@ ChannelSendTarget::describe () const
       return _ ("None");
     case ChannelSendTargetType::Track:
       {
-        auto tr = TRACKLIST->get_track (track_pos);
+        auto tr = Track::from_variant (TRACKLIST->get_track (track_pos));
         return tr->name_;
       }
     case ChannelSendTargetType::PluginSidechain:
@@ -65,7 +65,7 @@ ChannelSendTarget::get_icon () const
       return "edit-none";
     case ChannelSendTargetType::Track:
       {
-        Track * tr = TRACKLIST->get_track (track_pos);
+        Track * tr = Track::from_variant (TRACKLIST->get_track (track_pos));
         return tr->icon_name_;
       }
     case ChannelSendTargetType::PluginSidechain:

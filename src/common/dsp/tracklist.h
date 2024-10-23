@@ -12,6 +12,8 @@
 
 #include "common/dsp/track.h"
 
+#include <QtQmlIntegration>
+
 struct FileImportInfo;
 
 /**
@@ -37,9 +39,13 @@ class StringArray;
  * should be concerned with Channels, routing and Port connections.
  */
 class Tracklist final
-    : public ICloneable<Tracklist>,
-      public ISerializable<Tracklist>
+    : public QAbstractListModel,
+      public ICloneable<Tracklist>,
+      virtual public ISerializable<Tracklist>
 {
+  Q_OBJECT
+  QML_ELEMENT
+
 public:
   /**
    * Used in track search functions.
@@ -51,11 +57,24 @@ public:
     Both,
   };
 
+  enum TrackRoles
+  {
+    TrackPtrRole = Qt::UserRole + 1,
+    TrackNameRole,
+  };
+
 public:
-  Tracklist () = default;
+  Tracklist (QObject * parent = nullptr);
   Tracklist (Project &project);
   Tracklist (SampleProcessor &sample_processor);
-  ~Tracklist ();
+  JUCE_DECLARE_NON_MOVEABLE (Tracklist)
+  JUCE_DECLARE_NON_COPYABLE (Tracklist)
+  ~Tracklist () override;
+
+  QHash<int, QByteArray> roleNames () const override;
+  int rowCount (const QModelIndex &parent = QModelIndex ()) const override;
+  QVariant
+  data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
   /**
    * @brief A list of track types that must be unique in the tracklist.
@@ -104,17 +123,8 @@ public:
   /**
    * Returns the Track matching the given name, if any.
    */
-  template <TrackSubclass T = Track>
-  T * find_track_by_name (const std::string &name) const
-  {
-    auto found = std::ranges::find_if (tracks_, [&] (auto &track) {
-      return track->name_ == name;
-    });
-    if (found != tracks_.end ())
-      return dynamic_cast<T *> (found->get ());
-
-    return nullptr;
-  }
+  std::optional<TrackPtrVariant>
+  find_track_by_name (const std::string &name) const;
 
   /**
    * Returns the Track matching the given name, if any.
@@ -127,7 +137,7 @@ public:
     return std::any_of (tracks_.begin (), tracks_.end (), [] (const auto &track) {
       return std::visit (
         [] (auto &&t) { return std::is_same_v<T, base_type<decltype (t)>>; },
-        convert_to_variant<TrackPtrVariant> (track.get ()));
+        track);
     });
   }
 
@@ -214,10 +224,10 @@ public:
    * Pins or unpins the Track.
    */
   void set_track_pinned (
-    Track    &track,
-    const int pinned,
-    int       publish_events,
-    int       recalc_graph);
+    Track &track,
+    bool   pinned,
+    int    publish_events,
+    int    recalc_graph);
 
   bool validate () const;
 
@@ -226,19 +236,7 @@ public:
    *
    * Not to be used in real-time code.
    */
-  template <TrackSubclass T = Track> ATTR_HOT T * get_track (int idx)
-  {
-    if (idx < 0 || static_cast<size_t> (idx) >= tracks_.size ())
-      {
-        z_warning ("invalid track idx {}", idx);
-        return nullptr;
-      }
-
-    auto tr = dynamic_cast<T *> (tracks_[idx].get ());
-    z_return_val_if_fail (tr, nullptr);
-
-    return tr;
-  }
+  ATTR_HOT TrackPtrVariant get_track (int idx) { return tracks_.at (idx); }
 
   /**
    * Returns the index of the given Track.
@@ -248,13 +246,12 @@ public:
   /**
    * Returns the first track found with the given type.
    */
-  template <TrackSubclass T = Track>
-  T * get_track_by_type (Track::Type type) const
+  template <TrackSubclass T> T * get_track_by_type () const
   {
-    for (auto &track : tracks_)
+    for (const auto &track : tracks_)
       {
-        if (track->type_ == type)
-          return dynamic_cast<T *> (track.get ());
+        if (std::holds_alternative<T *> (track))
+          return std::get<T *> (track);
       }
     return nullptr;
   }
@@ -267,19 +264,22 @@ public:
    * @param pinned 1 to check the pinned tracklist,
    *   0 to check the non-pinned tracklist.
    */
-  Track * get_first_visible_track (const bool pinned) const;
+  std::optional<TrackPtrVariant>
+  get_first_visible_track (const bool pinned) const;
 
   /**
    * Returns the previous visible Track in the same
    * Tracklist as the given one (ie, pinned or not).
    */
-  Track * get_prev_visible_track (const Track &track) const;
+  std::optional<TrackPtrVariant>
+  get_prev_visible_track (const Track &track) const;
 
   /**
    * Returns the next visible Track in the same
    * Tracklist as the given one (ie, pinned or not).
    */
-  Track * get_next_visible_track (const Track &track) const;
+  std::optional<TrackPtrVariant>
+  get_next_visible_track (const Track &track) const;
 
   /**
    * Returns the index of the last Track.
@@ -296,19 +296,11 @@ public:
    * Returns the last Track.
    *
    * @param pin_opt Pin option.
-   * @param visible_only Only consider visible
-   *   Track's.
+   * @param visible_only Only consider visible  Track's.
    */
-  template <typename T = Track>
-  T * get_last_track (
+  std::optional<TrackPtrVariant> get_last_track (
     const PinOption pin_opt = PinOption::Both,
-    const bool      visible_only = false) const
-    requires std::derived_from<T, Track>
-  {
-    int idx = get_last_pos (pin_opt, visible_only);
-    z_return_val_if_fail (idx >= 0 && idx < (int) tracks_.size (), nullptr);
-    return dynamic_cast<T *> (tracks_[idx].get ());
-  }
+    const bool      visible_only = false) const;
 
   /**
    * Returns the Track after delta visible Track's.
@@ -318,7 +310,8 @@ public:
    * This function searches tracks only in the same Tracklist as the given one
    * (ie, pinned or not).
    */
-  Track * get_visible_track_after_delta (Track &track, int delta) const;
+  std::optional<TrackPtrVariant>
+  get_visible_track_after_delta (Track &track, int delta) const;
 
   /**
    * Returns the number of visible Tracks between src and dest (negative if
@@ -484,7 +477,7 @@ public:
    *   ...
    * }
    */
-  std::vector<std::unique_ptr<Track>> tracks_;
+  std::vector<TrackPtrVariant> tracks_;
 
   /** The chord track, for convenience. */
   ChordTrack * chord_track_ = nullptr;

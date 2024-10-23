@@ -3,24 +3,37 @@
 
 import QtQuick
 import QtQuick.Layouts
-import ZrythmStyle 1.0
 import Zrythm 1.0
+import ZrythmStyle 1.0
 
 ZrythmToolBar {
     id: headerBar
 
-    property alias leftDockVisible: toggleLeftDock.checked
-    property alias rightDockVisible: toggleRightDock.checked
-
     leftItems: [
         ToolButton {
+            // see https://forum.qt.io/post/529470 for bi-directional binding
+
             id: toggleLeftDock
+
+            checkable: true
+            icon.source: Qt.resolvedUrl("../icons/gnome-icon-library/dock-left-symbolic.svg")
+            onCheckedChanged: {
+                GlobalState.settingsManager.leftPanelVisible = checked;
+            }
+            checked: GlobalState.settingsManager.leftPanelVisible
 
             ToolTip {
                 text: qsTr("Toggle Left Panel")
             }
-            checkable: true
-            icon.source: Qt.resolvedUrl("../icons/gnome-icon-library/dock-left-symbolic.svg")
+
+            Connections {
+                function onRightPanelVisibleChanged() {
+                    toggleLeftDock.checked = GlobalState.settingsManager.leftPanelVisible;
+                }
+
+                target: GlobalState.settingsManager
+            }
+
         },
         ToolSeparator {
         },
@@ -60,12 +73,25 @@ ZrythmToolBar {
         ToolButton {
             id: toggleRightDock
 
+            checkable: true
+            icon.source: Qt.resolvedUrl("../icons/gnome-icon-library/dock-right-symbolic.svg")
+            onCheckedChanged: {
+                GlobalState.settingsManager.rightPanelVisible = checked;
+            }
+            checked: GlobalState.settingsManager.rightPanelVisible
+
+            Connections {
+                function onRightPanelVisibleChanged() {
+                    toggleRightDock.checked = GlobalState.settingsManager.rightPanelVisible;
+                }
+
+                target: GlobalState.settingsManager
+            }
+
             ToolTip {
                 text: qsTr("Toggle Right Panel")
             }
 
-            checkable: true
-            icon.source: Qt.resolvedUrl("../icons/gnome-icon-library/dock-right-symbolic.svg")
         },
         ToolSeparator {
         },

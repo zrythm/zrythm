@@ -887,7 +887,8 @@ ui_get_db_value_as_string (float val, char * buf)
 
 UiCaches::UiCaches ()
 {
-#define SET_COLOR(cname, caps) colors_.cname = Color (UI_COLOR_##caps)
+#define SET_COLOR(cname, caps) \
+  colors_.cname = Color (std::string (UI_COLOR_##caps))
 
   SET_COLOR (bright_green, BRIGHT_GREEN);
   SET_COLOR (darkish_green, DARKISH_GREEN);

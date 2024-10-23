@@ -8,7 +8,7 @@
 FolderTrack::FolderTrack (const std::string &name, int pos)
     : Track (Track::Type::Folder, name, pos, PortType::Unknown, PortType::Unknown)
 {
-  color_ = Color ("#865E3C");
+  color_ = Color (QColor ("#865E3C"));
   icon_name_ = "fluentui-folder-regular";
 }
 

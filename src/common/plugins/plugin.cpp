@@ -1303,10 +1303,10 @@ Plugin::get_all (
   std::vector<zrythm::plugins::Plugin *> &arr,
   bool                                    check_undo_manager)
 {
-  for (auto &track : prj.tracklist_->tracks_)
-    {
-      track->get_plugins (arr);
-    }
+  const auto &tracks = prj.tracklist_->tracks_;
+  std::ranges::for_each (tracks.begin (), tracks.end (), [&] (auto &&track) {
+    std::visit ([&] (auto &&tr) { tr->get_plugins (arr); }, track);
+  });
 
   if (check_undo_manager)
     {

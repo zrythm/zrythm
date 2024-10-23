@@ -32,6 +32,16 @@ Color::operator= (const GdkRGBA &color)
 }
 
 Color &
+Color::operator= (const QColor &color)
+{
+  red_ = color.redF ();
+  green_ = color.greenF ();
+  blue_ = color.blueF ();
+  alpha_ = color.alphaF ();
+  return *this;
+}
+
+Color &
 Color::brighten (float val)
 {
   red_ = std::min (red_ + val, 1.f);
@@ -154,6 +164,12 @@ Color::to_gdk_rgba_with_alpha (float alpha) const
   color.blue = blue_;
   color.alpha = alpha;
   return color;
+}
+
+QColor
+Color::to_qcolor () const
+{
+  return QColor::fromRgbF (red_, green_, blue_, alpha_);
 }
 
 Color

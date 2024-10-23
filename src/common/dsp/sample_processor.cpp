@@ -206,63 +206,67 @@ SampleProcessor::process (const nframes_t cycle_offset, const nframes_t nframes)
         auto it = tracklist_->tracks_.rbegin ();
         it != (tracklist_->tracks_.rend () - 1); ++it)
         {
-          auto &_track = **it;
-          auto  track = dynamic_cast<ProcessableTrack *> (&_track);
-          if (!track)
-            continue;
-
-          track->processor_->clear_buffers ();
-
-          EngineProcessTimeInfo time_nfo = {
-            .g_start_frame_ = static_cast<unsigned_frame_t> (playhead_.frames_),
-            .g_start_frame_w_offset_ =
-              static_cast<unsigned_frame_t> (playhead_.frames_) + cycle_offset,
-            .local_offset_ = cycle_offset,
-            .nframes_ = nframes,
-          };
-
-          const float * audio_data_l = nullptr;
-          const float * audio_data_r = nullptr;
-          if (track->is_audio ())
+          std::visit([&] (auto && track) {
+            using TrackT = base_type<decltype(track)>;
+            if constexpr (std::derived_from<TrackT, ProcessableTrack>)
             {
-              track->processor_->process (time_nfo);
 
-              audio_data_l =
-                track->processor_->stereo_out_->get_l ().buf_.data ();
-              audio_data_r =
-                track->processor_->stereo_out_->get_r ().buf_.data ();
-            }
-          else if (track->is_midi ())
-            {
-              track->processor_->process (time_nfo);
-              midi_events_->active_events_.append (
-                track->processor_->midi_out_->midi_events_.active_events_,
-                cycle_offset, nframes);
-            }
-          else if (track->type_ == Track::Type::Instrument)
-            {
-              auto  ins_track = dynamic_cast<InstrumentTrack *> (&_track);
-              auto &ins = ins_track->channel_->instrument_;
-              if (!ins)
-                continue;
+              track->processor_->clear_buffers ();
 
-              ins->prepare_process ();
-              ins->midi_in_port_->midi_events_.active_events_.append (
-                midi_events_->active_events_, cycle_offset, nframes);
-              ins->process (time_nfo);
-              audio_data_l = ins->l_out_->buf_.data ();
-              audio_data_r = ins->r_out_->buf_.data ();
-            }
+              EngineProcessTimeInfo time_nfo = {
+                .g_start_frame_ =
+                  static_cast<unsigned_frame_t> (playhead_.frames_),
+                .g_start_frame_w_offset_ =
+                  static_cast<unsigned_frame_t> (playhead_.frames_)
+                  + cycle_offset,
+                .local_offset_ = cycle_offset,
+                .nframes_ = nframes,
+              };
 
-          if (audio_data_l && audio_data_r)
-            {
-              dsp_mix2 (
-                &l[cycle_offset], &audio_data_l[cycle_offset], 1.f,
-                fader_->amp_->control_, nframes);
-              dsp_mix2 (
-                &r[cycle_offset], &audio_data_r[cycle_offset], 1.f,
-                fader_->amp_->control_, nframes);
+              const float * audio_data_l = nullptr;
+              const float * audio_data_r = nullptr;
+              if constexpr (std::is_same_v<TrackT, AudioTrack>)
+                {
+                  track->processor_->process (time_nfo);
+
+                  audio_data_l =
+                    track->processor_->stereo_out_->get_l ().buf_.data ();
+                  audio_data_r =
+                    track->processor_->stereo_out_->get_r ().buf_.data ();
+                }
+              else if constexpr (std::is_same_v<TrackT, MidiTrack>)
+                {
+                  track->processor_->process (time_nfo);
+                  midi_events_->active_events_.append (
+                    track->processor_->midi_out_->midi_events_.active_events_,
+                    cycle_offset, nframes);
+                }
+              else if constexpr (std::is_same_v<TrackT, InstrumentTrack>)
+                {
+                  auto &ins = track->channel_->instrument_;
+                  if (!ins)
+                    return;
+
+                  ins->prepare_process ();
+                  ins->midi_in_port_->midi_events_.active_events_.append (
+                    midi_events_->active_events_, cycle_offset, nframes);
+                  ins->process (time_nfo);
+                  audio_data_l = ins->l_out_->buf_.data ();
+                  audio_data_r = ins->r_out_->buf_.data ();
+                }
+
+              if (audio_data_l && audio_data_r)
+                {
+                  dsp_mix2 (
+                    &l[cycle_offset], &audio_data_l[cycle_offset], 1.f,
+                    fader_->amp_->control_, nframes);
+                  dsp_mix2 (
+                    &r[cycle_offset], &audio_data_r[cycle_offset], 1.f,
+                    fader_->amp_->control_, nframes);
+                }
             }
+          }, *it);
+       
         }
     }
 
@@ -348,20 +352,23 @@ SampleProcessor::queue_file_or_chord_preset (
     ++it)
     {
       auto &track = *it;
-
-      /* remove state dir if instrument */
-      if (track->is_instrument ())
-        {
-          auto ins_track = dynamic_cast<InstrumentTrack *> (&*track);
-          auto state_dir =
-            ins_track->channel_->instrument_->get_abs_state_dir (false, true);
-          if (!state_dir.empty ())
+      std::visit (
+        [&] (auto &&tr) {
+          using TrackT = base_type<decltype (tr)>;
+          /* remove state dir if instrument */
+          if constexpr (std::is_same_v<TrackT, InstrumentTrack>)
             {
-              io_rmdir (state_dir, true);
+              auto state_dir =
+                tr->channel_->instrument_->get_abs_state_dir (false, true);
+              if (!state_dir.empty ())
+                {
+                  io_rmdir (state_dir, true);
+                }
             }
-        }
 
-      tracklist_->remove_track (*track, true, true, false, false);
+          tracklist_->remove_track (*tr, true, true, false, false);
+        },
+        track);
     }
 
   Position start_pos;

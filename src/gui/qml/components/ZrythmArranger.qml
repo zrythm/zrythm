@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-//import QtQuick.Controls.Basic
 import ZrythmStyle 1.0
 
 Item {
@@ -23,6 +22,7 @@ Item {
 
     id: root
 
+    required property var editorSettings
     property int pixelsPerBeat: 50
     property int beatsPerBar: 4
     property int numTracks: 8
@@ -59,7 +59,7 @@ Item {
     }
 
     width: 1000
-    height: 600
+    height: 100
     Component.onCompleted: {
         createInitialRegions();
     }
@@ -110,6 +110,20 @@ Item {
         clip: true
         contentWidth: arrangerContent.width
         contentHeight: arrangerContent.height
+
+        Binding {
+            target: scrollView.contentItem
+            property: "contentX"
+            value: root.editorSettings.x
+        }
+
+        Connections {
+            function onContentXChanged() {
+                root.editorSettings.x = scrollView.contentItem.contentX;
+            }
+
+            target: scrollView.contentItem
+        }
 
         Item {
             id: arrangerContent

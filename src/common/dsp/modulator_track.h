@@ -21,11 +21,16 @@
  * @brief A track that can host modulator plugins.
  */
 class ModulatorTrack final
-    : public ProcessableTrack,
+    : public QObject,
+      public ProcessableTrack,
       public ICloneable<ModulatorTrack>,
       public ISerializable<ModulatorTrack>,
       public InitializableObjectFactory<ModulatorTrack>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_TRACK_QML_PROPERTIES
+
   friend class InitializableObjectFactory<ModulatorTrack>;
 
 public:

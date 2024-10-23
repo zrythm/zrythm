@@ -13,12 +13,17 @@
  * It is also an automatable track, meaning it can have automation data.
  */
 class AudioGroupTrack final
-    : public FoldableTrack,
+    : public QObject,
+      public FoldableTrack,
       public GroupTargetTrack,
       public ICloneable<AudioGroupTrack>,
       public ISerializable<AudioGroupTrack>,
       public InitializableObjectFactory<AudioGroupTrack>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_TRACK_QML_PROPERTIES
+
   friend class InitializableObjectFactory<AudioGroupTrack>;
 
 public:

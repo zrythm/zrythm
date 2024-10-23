@@ -2,6 +2,7 @@
     "cmake.buildDirectory": "${workspaceFolder}/builddir_cmake",
     "cmake.installPrefix": "${workspaceFolder}/_installed_cmake",
     "cmake.configureArgs": [
+        "-DCMAKE_PREFIX_PATH=/home/alex/opt/Qt6.8",
         "-DCMAKE_C_COMPILER=clang",
         "-DCMAKE_CXX_COMPILER=clang++",
         "-DZRYTHM_TESTS=ON",
@@ -54,8 +55,8 @@
         "--query-driver=gcc,g++"
     ],
     "clangd.checkUpdates": true,
-    "cody.edit.preInstruction": "Assume C++20 and prefer C++20 features. Prefer concise and readable code with helpful comments. For classes meant to be used by QML, use QML_ELEMENT for automatic registration. For class member names, use a `_` suffix instead of a `m_` prefix. Prefer `auto` and references instead of pointers where possible. Assume Qt 6.7.2 with QtQuickControls 2. Prefer the `z_*` logging/debug functions. Prefer SteadyClock instead of g_monotonic. Don't remove comments.",
-    "cody.chat.preInstruction": "Assume C++20 and prefer C++20 features. Prefer concise and readable code with helpful comments. For classes meant to be used by QML, use QML_ELEMENT for automatic registration. For class member names, use a `_` suffix instead of a `m_` prefix. Prefer `auto` where possible. Assume Qt 6.7.2 with QtQuickControls 2.",
+    "cody.edit.preInstruction": "Assume C++20 and prefer C++20 features. Prefer concise and readable code with helpful comments. For classes meant to be used by QML, use QML_ELEMENT for automatic registration. For class member names, use a `_` suffix instead of a `m_` prefix. Prefer `auto` and references instead of pointers where possible. Assume we are using version Qt 6.8 with QtQuickControls 2. Prefer the `z_*` logging/debug functions. Prefer SteadyClock instead of g_monotonic. Don't remove comments.",
+    "cody.chat.preInstruction": "Assume C++20 and prefer C++20 features. Prefer concise and readable code with helpful comments. For classes meant to be used by QML, use QML_ELEMENT for automatic registration. For class member names, use a `_` suffix instead of a `m_` prefix. Prefer `auto` where possible. Assume we are using Qt version 6.8 with QtQuickControls 2.",
     "cody.codebase": "https://github.com/zrythm/zrythm",
     "C_Cpp.default.compileCommands": "/home/alex/Documents/git/zrythm/builddir/compile_commands.json",
     "C_Cpp.default.configurationProvider": "mesonbuild.mesonbuild",

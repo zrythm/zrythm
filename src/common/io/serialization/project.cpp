@@ -54,8 +54,7 @@ Tracklist::define_fields (const Context &ctx)
 
   if (ctx.is_serializing ())
     {
-      T::serialize_field<decltype (tracks_), TrackPtrVariant> (
-        "tracks", tracks_, ctx);
+      T::serialize_field<decltype (tracks_)> ("tracks", tracks_, ctx);
     }
   else
     {
@@ -80,11 +79,13 @@ Tracklist::define_fields (const Context &ctx)
                       auto track = Track::create_unique_from_type (type_id);
                       std::visit (
                         [&] (auto &&t) {
-                          t->ISerializable<base_type<decltype (t)>>::deserialize (
+                          using TrackT = base_type<decltype (t)>;
+                          t->ISerializable<TrackT>::deserialize (
                             Context (val, ctx));
+                          tracks_.push_back (
+                            dynamic_cast<TrackT *> (track.release ()));
                         },
                         convert_to_variant<TrackPtrVariant> (track.get ()));
-                      tracks_.push_back (std::move (track));
                     }
                   catch (std::runtime_error &e)
                     {

@@ -15,12 +15,17 @@
  */
 
 class InstrumentTrack final
-    : public GroupTargetTrack,
+    : public QObject,
+      public GroupTargetTrack,
       public PianoRollTrack,
       public ICloneable<InstrumentTrack>,
       public ISerializable<InstrumentTrack>,
       public InitializableObjectFactory<InstrumentTrack>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_TRACK_QML_PROPERTIES
+
   friend class InitializableObjectFactory<InstrumentTrack>;
 
 public:

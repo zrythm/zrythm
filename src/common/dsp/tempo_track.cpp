@@ -25,7 +25,7 @@ TempoTrack::TempoTrack (int track_pos)
 {
   main_height_ = TRACK_DEF_HEIGHT / 2;
 
-  color_ = Color ("#2f6c52");
+  color_ = Color (QColor ("#2f6c52"));
   icon_name_ = "filename-bpm-amarok";
 
   /* set invisible */

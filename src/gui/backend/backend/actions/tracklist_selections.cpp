@@ -9,6 +9,7 @@
 #include "common/dsp/folder_track.h"
 #include "common/dsp/group_target_track.h"
 #include "common/dsp/instrument_track.h"
+#include "common/dsp/marker_track.h"
 #include "common/dsp/midi_bus_track.h"
 #include "common/dsp/midi_group_track.h"
 #include "common/dsp/midi_track.h"
@@ -21,6 +22,7 @@
 #include "common/utils/debug.h"
 #include "common/utils/exceptions.h"
 #include "common/utils/io.h"
+#include "common/utils/traits.h"
 #include "common/utils/types.h"
 #include "common/utils/ui.h"
 #include "gui/backend/backend/actions/tracklist_selections.h"
@@ -185,8 +187,10 @@ TracklistSelectionsAction::TracklistSelectionsAction (
     tracklist_selections_action_type_ == Type::MoveInside
     || tracklist_selections_action_type_ == Type::CopyInside)
     {
-      auto &foldable_tr = TRACKLIST->tracks_[track_pos];
-      assert (foldable_tr->is_foldable ());
+      auto _foldable_tr = TRACKLIST->get_track (track_pos);
+      std::visit (
+        [&] (auto &&foldable_tr) { assert (foldable_tr->is_foldable ()); },
+        _foldable_tr);
     }
 
     /* --- end validation --- */
@@ -286,9 +290,16 @@ TracklistSelectionsAction::TracklistSelectionsAction (
           foldable_tls_before_ = std::make_unique<TracklistSelections> ();
           for (auto &tr : TRACKLIST->tracks_)
             {
-              if (tr->is_foldable ())
-                foldable_tls_before_->add_track (
-                  clone_unique_with_variant<TrackVariant> (tr.get ()));
+              std::visit (
+                [&] (auto &&track) {
+                  using TrackT = base_type<decltype (track)>;
+                  if constexpr (std::derived_from<TrackT, FoldableTrack>)
+                    {
+                      auto new_track = track->clone_unique ();
+                      foldable_tls_before_->add_track (std::move (new_track));
+                    }
+                },
+                tr);
             }
         }
       else
@@ -500,9 +511,13 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
             {
               z_return_if_fail (
                 ival_after_ < static_cast<int> (TRACKLIST->tracks_.size ()));
-              auto &tr_to_disable = TRACKLIST->tracks_[ival_after_];
-              z_return_if_fail (tr_to_disable);
-              tr_to_disable->set_enabled (false, false, false, true);
+              auto _tr_to_disable = TRACKLIST->get_track (ival_after_);
+              std::visit (
+                [&] (auto &&tr_to_disable) {
+                  z_return_if_fail (tr_to_disable);
+                  tr_to_disable->set_enabled (false, false, false, true);
+                },
+                _tr_to_disable);
             }
         }
       /* else if delete undo */
@@ -575,44 +590,51 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
               auto &own_track = tls_before_->tracks_[i];
 
               /* get the project track */
-              auto &prj_track = TRACKLIST->tracks_[own_track->pos_];
-              if (!prj_track->has_channel ())
-                continue;
+              auto &_prj_track = TRACKLIST->tracks_[own_track->pos_];
+              std::visit (
+                [&] (auto &&prj_track) {
+                  using TrackT = base_type<decltype (prj_track)>;
+                  if constexpr (std::derived_from<TrackT, ChannelTrack>)
+                    {
 
-              auto &own_channel_track =
-                dynamic_cast<ChannelTrack &> (*own_track);
-              auto &prj_channel_track =
-                dynamic_cast<ChannelTrack &> (*prj_track);
+                      auto &own_channel_track =
+                        dynamic_cast<TrackT &> (*own_track);
 
-              /* reconnect output */
-              if (out_track_hashes_[i] != 0)
-                {
-                  auto out_track =
-                    prj_channel_track.get_channel ()->get_output_track ();
-                  out_track->remove_child (
-                    prj_track->get_name_hash (), true, false, false);
-                  out_track = dynamic_cast<GroupTargetTrack *> (
-                    TRACKLIST->find_track_by_name_hash (out_track_hashes_[i]));
-                  out_track->add_child (
-                    prj_track->get_name_hash (), true, false, false);
-                }
+                      /* reconnect output */
+                      if (out_track_hashes_[i] != 0)
+                        {
+                          auto out_track =
+                            prj_track->get_channel ()->get_output_track ();
+                          out_track->remove_child (
+                            prj_track->get_name_hash (), true, false, false);
+                          out_track = dynamic_cast<GroupTargetTrack *> (
+                            TRACKLIST->find_track_by_name_hash (
+                              out_track_hashes_[i]));
+                          out_track->add_child (
+                            prj_track->get_name_hash (), true, false, false);
+                        }
 
-              /* reconnect any sends sent from the track */
-              for (size_t j = 0; j < STRIP_SIZE; j++)
-                {
-                  auto &clone_send = own_channel_track.get_channel ()->sends_[j];
-                  auto &send = prj_channel_track.get_channel ()->sends_[j];
-                  send->copy_values_from (*clone_send);
-                }
+                      /* reconnect any sends sent from the track */
+                      for (size_t j = 0; j < STRIP_SIZE; j++)
+                        {
+                          auto &clone_send =
+                            own_channel_track.get_channel ()->sends_[j];
+                          auto &send = prj_track->get_channel ()->sends_[j];
+                          send->copy_values_from (*clone_send);
+                        }
 
-              /* reconnect any custom connections */
-              std::vector<Port *> ports;
-              own_channel_track.append_ports (ports, true);
-              for (auto port : ports)
-                {
-                  Port * prj_port = Port::find_from_identifier (port->id_);
-                  prj_port->restore_from_non_project (*port);
-                }
+                      /* reconnect any custom connections */
+                      std::vector<Port *> ports;
+                      own_channel_track.append_ports (ports, true);
+                      for (auto port : ports)
+                        {
+                          Port * prj_port =
+                            Port::find_from_identifier (port->id_);
+                          prj_port->restore_from_non_project (*port);
+                        }
+                    }
+                },
+                _prj_track);
             }
 
           /* re-connect any source sends */
@@ -640,12 +662,16 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
         {
           for (int i = num_tracks_ - 1; i >= 0; i--)
             {
-              auto &track = TRACKLIST->tracks_.at (track_pos_ + i);
-              z_return_if_fail (track);
-              z_return_if_fail (
-                TRACKLIST->get_track_pos (*track) == track->pos_);
+              auto tr = TRACKLIST->get_track (track_pos_ + i);
+              std::visit (
+                [&] (auto &&track) {
+                  z_return_if_fail (track);
+                  z_return_if_fail (
+                    TRACKLIST->get_track_pos (*track) == track->pos_);
 
-              TRACKLIST->remove_track (*track, true, true, false, false);
+                  TRACKLIST->remove_track (*track, true, true, false, false);
+                },
+                tr);
             }
 
           /* reenable given track, if any (eg when bouncing) */
@@ -653,9 +679,10 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
             {
               z_return_if_fail (
                 ival_after_ < static_cast<int> (TRACKLIST->tracks_.size ()));
-              auto &tr_to_enable = TRACKLIST->tracks_[ival_after_];
-              z_return_if_fail (tr_to_enable);
-              tr_to_enable->set_enabled (true, false, false, true);
+              auto &tr_to_enable = TRACKLIST->tracks_.at (ival_after_);
+              std::visit (
+                [&] (auto &&tr) { tr->set_enabled (true, false, false, true); },
+                tr_to_enable);
             }
         }
       /* else if delete do */
@@ -674,39 +701,43 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
               auto &own_track = tls_before_->tracks_[i];
 
               /* get track from pos */
-              auto &prj_track = TRACKLIST->tracks_[own_track->pos_];
-              z_return_if_fail (prj_track);
+              auto &_prj_track = TRACKLIST->tracks_[own_track->pos_];
+              std::visit (
+                [&] (auto &&prj_track) {
+                  z_return_if_fail (prj_track);
 
-              /* remember any custom connections */
-              std::vector<Port *> prj_ports;
-              prj_track->append_ports (prj_ports, true);
-              std::vector<Port *> clone_ports;
-              own_track->append_ports (clone_ports, true);
-              for (auto prj_port : prj_ports)
-                {
-                  Port * clone_port = nullptr;
-                  for (auto cur_clone_port : clone_ports)
+                  /* remember any custom connections */
+                  std::vector<Port *> prj_ports;
+                  prj_track->append_ports (prj_ports, true);
+                  std::vector<Port *> clone_ports;
+                  own_track->append_ports (clone_ports, true);
+                  for (auto prj_port : prj_ports)
                     {
-                      if (cur_clone_port->id_ == prj_port->id_)
+                      Port * clone_port = nullptr;
+                      for (auto cur_clone_port : clone_ports)
                         {
-                          clone_port = cur_clone_port;
-                          break;
+                          if (cur_clone_port->id_ == prj_port->id_)
+                            {
+                              clone_port = cur_clone_port;
+                              break;
+                            }
                         }
+                      z_return_if_fail (clone_port);
+
+                      clone_port->copy_metadata_from_project (*prj_port);
                     }
-                  z_return_if_fail (clone_port);
 
-                  clone_port->copy_metadata_from_project (*prj_port);
-                }
+                  /* if group track, remove all children */
+                  if (prj_track->can_be_group_target ())
+                    {
+                      dynamic_cast<GroupTargetTrack &> (*prj_track)
+                        .remove_all_children (true, false, false);
+                    }
 
-              /* if group track, remove all children */
-              if (prj_track->can_be_group_target ())
-                {
-                  dynamic_cast<GroupTargetTrack &> (*prj_track)
-                    .remove_all_children (true, false, false);
-                }
-
-              /* remove it */
-              TRACKLIST->remove_track (*prj_track, true, true, false, false);
+                  /* remove it */
+                  TRACKLIST->remove_track (*prj_track, true, true, false, false);
+                },
+                _prj_track);
             }
         }
 
@@ -743,8 +774,16 @@ TracklistSelectionsAction::
       num_fold_change_tracks_ = 0;
       if (inside)
         {
-          foldable_tr = dynamic_cast<FoldableTrack *> (
-            TRACKLIST->tracks_[track_pos_].get ());
+          auto tr = TRACKLIST->get_track (track_pos_);
+          std::visit (
+            [&] (auto &&track) {
+              using TrackT = base_type<decltype (track)>;
+              if constexpr (std::derived_from<TrackT, FoldableTrack>)
+                {
+                  foldable_tr = track;
+                }
+            },
+            tr);
           z_return_if_fail (foldable_tr);
         }
 
@@ -752,87 +791,96 @@ TracklistSelectionsAction::
       if (move)
         {
           /* calculate how many tracks are not already in the folder */
-          for (size_t i = 0; i < tls_before_->tracks_.size (); i++)
+          for (const auto &track : tls_before_->tracks_)
             {
-              Track * prj_track =
-                TRACKLIST->find_track_by_name (tls_before_->tracks_[i]->name_);
+              auto prj_track = TRACKLIST->find_track_by_name (track->name_);
               z_return_if_fail (prj_track);
-              if (inside)
-                {
-                  std::vector<FoldableTrack *> parents;
-                  prj_track->add_folder_parents (parents, false);
-                  if (
-                    std::find (parents.begin (), parents.end (), foldable_tr)
-                    == parents.end ())
-                    num_fold_change_tracks_++;
-                }
+
+              std::visit (
+                [&] (auto &&prj_tr) {
+                  if (inside)
+                    {
+                      std::vector<FoldableTrack *> parents;
+                      prj_tr->add_folder_parents (parents, false);
+                      if (
+                        std::find (parents.begin (), parents.end (), foldable_tr)
+                        == parents.end ())
+                        num_fold_change_tracks_++;
+                    }
+                },
+                *prj_track);
             }
 
           for (size_t i = 0; i < tls_before_->tracks_.size (); i++)
             {
-              Track * prj_track =
+              auto _prj_track =
                 TRACKLIST->find_track_by_name (tls_before_->tracks_[i]->name_);
-              z_return_if_fail (prj_track);
+              z_return_if_fail (_prj_track);
 
-              int target_pos = -1;
-              /* if not first track to be moved */
-              if (prev_track)
-                {
-                  /* move to last track's index + 1 */
-                  target_pos = prev_track->pos_ + 1;
-                }
-              /* else if first track to be moved */
-              else
-                {
-                  /* move to given pos */
-                  target_pos = track_pos_;
-
-                  /* if moving inside, skip folder track */
-                  if (inside)
-                    target_pos++;
-                }
-
-              /* save index */
-              auto &own_track = tls_before_->tracks_[i];
-              own_track->pos_ = prj_track->pos_;
-
-              std::vector<FoldableTrack *> parents;
-              prj_track->add_folder_parents (parents, false);
-
-              TRACKLIST->move_track (*prj_track, target_pos, true, false, false);
-              prev_track = prj_track;
-
-              /* adjust parent sizes */
-              for (auto parent : parents)
-                {
-                  /* if new pos is outside parent */
-                  if (
-                    prj_track->pos_ < parent->pos_
-                    || prj_track->pos_ >= parent->pos_ + parent->size_)
+              std::visit (
+                [&] (auto &&prj_track) {
+                  int target_pos = -1;
+                  /* if not first track to be moved */
+                  if (prev_track)
                     {
-                      z_debug (
-                        "new pos of {} ({}) is outside parent {}: parent--",
-                        prj_track->name_, prj_track->pos_, parent->name_);
-                      --parent->size_;
+                      /* move to last track's index + 1 */
+                      target_pos = prev_track->pos_ + 1;
+                    }
+                  /* else if first track to be moved */
+                  else
+                    {
+                      /* move to given pos */
+                      target_pos = track_pos_;
+
+                      /* if moving inside, skip folder track */
+                      if (inside)
+                        target_pos++;
                     }
 
-                  /* if foldable track is child of parent (size will be readded
-                   * later) */
-                  if (inside && parent->is_child (*foldable_tr))
+                  /* save index */
+                  auto &own_track = tls_before_->tracks_[i];
+                  own_track->pos_ = prj_track->pos_;
+
+                  std::vector<FoldableTrack *> parents;
+                  prj_track->add_folder_parents (parents, false);
+
+                  TRACKLIST->move_track (
+                    *prj_track, target_pos, true, false, false);
+                  prev_track = prj_track;
+
+                  /* adjust parent sizes */
+                  for (auto parent : parents)
                     {
-                      z_debug (
-                        "foldable track {} is child of parent {}: parent--",
-                        foldable_tr->name_, parent->name_);
-                      parent->size_--;
+                      /* if new pos is outside parent */
+                      if (
+                        prj_track->pos_ < parent->pos_
+                        || prj_track->pos_ >= parent->pos_ + parent->size_)
+                        {
+                          z_debug (
+                            "new pos of {} ({}) is outside parent {}: parent--",
+                            prj_track->name_, prj_track->pos_, parent->name_);
+                          --parent->size_;
+                        }
+
+                      /* if foldable track is child of parent (size will be
+                       * readded later) */
+                      if (inside && parent->is_child (*foldable_tr))
+                        {
+                          z_debug (
+                            "foldable track {} is child of parent {}: parent--",
+                            foldable_tr->name_, parent->name_);
+                          parent->size_--;
+                        }
                     }
-                }
 
-              if (i == 0)
-                TRACKLIST_SELECTIONS->select_single (*prj_track, false);
-              else
-                TRACKLIST_SELECTIONS->add_track (*prj_track, false);
+                  if (i == 0)
+                    TRACKLIST_SELECTIONS->select_single (*prj_track, false);
+                  else
+                    TRACKLIST_SELECTIONS->add_track (*prj_track, false);
 
-              TRACKLIST->print_tracks ();
+                  TRACKLIST->print_tracks ();
+                },
+                *_prj_track);
             }
 
           /* EVENTS_PUSH (EventType::ET_TRACKS_MOVED, nullptr); */
@@ -997,21 +1045,24 @@ TracklistSelectionsAction::
             {
               auto &own_track = tls_before_->tracks_[i];
 
-              auto prj_track = TRACKLIST->find_track_by_name (own_track->name_);
-              z_return_if_fail (prj_track);
+              auto _prj_track = TRACKLIST->find_track_by_name (own_track->name_);
+              z_return_if_fail (_prj_track);
+              std::visit (
+                [&] (auto &&prj_track) {
+                  int target_pos = own_track->pos_;
+                  TRACKLIST->move_track (
+                    *prj_track, target_pos, false, false, false);
 
-              int target_pos = own_track->pos_;
-              TRACKLIST->move_track (
-                *prj_track, target_pos, false, false, false);
-
-              if (i == 0)
-                {
-                  TRACKLIST_SELECTIONS->select_single (*prj_track, false);
-                }
-              else
-                {
-                  TRACKLIST_SELECTIONS->add_track (*prj_track, false);
-                }
+                  if (i == 0)
+                    {
+                      TRACKLIST_SELECTIONS->select_single (*prj_track, false);
+                    }
+                  else
+                    {
+                      TRACKLIST_SELECTIONS->add_track (*prj_track, false);
+                    }
+                },
+                *_prj_track);
             }
 
           /* EVENTS_PUSH (EventType::ET_TRACKS_MOVED, nullptr); */
@@ -1025,11 +1076,15 @@ TracklistSelectionsAction::
               if (inside)
                 target_pos++;
 
-              auto &prj_track = TRACKLIST->tracks_[target_pos];
-              z_return_if_fail (prj_track);
+              auto &_prj_track = TRACKLIST->tracks_[target_pos];
+              std::visit (
+                [&] (auto &&prj_track) {
+                  z_return_if_fail (prj_track);
 
-              /* remove it */
-              TRACKLIST->remove_track (*prj_track, true, true, false, false);
+                  /* remove it */
+                  TRACKLIST->remove_track (*prj_track, true, true, false, false);
+                },
+                _prj_track);
             }
           /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr); */
           /* EVENTS_PUSH (EventType::ET_TRACKS_REMOVED, nullptr); */
@@ -1038,10 +1093,20 @@ TracklistSelectionsAction::
       if (inside)
         {
           /* update foldable track sizes (incl. parents) */
-          auto foldable_tr = TRACKLIST->get_track<FoldableTrack> (track_pos_);
-          z_return_if_fail (foldable_tr);
-
-          foldable_tr->add_to_size (-num_fold_change_tracks_);
+          auto _foldable_tr = TRACKLIST->get_track (track_pos_);
+          std::visit (
+            [&] (auto &&foldable_tr) {
+              using TrackT = base_type<decltype (foldable_tr)>;
+              if constexpr (std::derived_from<TrackT, FoldableTrack>)
+                {
+                  foldable_tr->add_to_size (-num_fold_change_tracks_);
+                }
+              else
+                {
+                  z_return_if_reached ();
+                }
+            },
+            _foldable_tr);
         }
 
       /* reset foldable track sizes */
@@ -1085,211 +1150,241 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
 
   for (int i = 0; i < num_tracks_; i++)
     {
-      auto &track = TRACKLIST->tracks_[track_positions_before_[i]];
-      z_return_if_fail (track);
-      auto channel_track = dynamic_cast<ChannelTrack *> (track.get ());
-      auto laned_track = dynamic_cast<LanedTrack *> (track.get ());
+      auto &_track = TRACKLIST->tracks_[track_positions_before_[i]];
+      std::visit (
+        [&] (auto &&track) {
+          using TrackT = base_type<decltype (track)>;
+          z_return_if_fail (track);
 
-      switch (edit_type_)
-        {
-        case EditType::Solo:
-          if (track->has_channel ())
+          switch (edit_type_)
             {
-              bool soloed = channel_track->get_soloed ();
-              channel_track->set_soloed (
-                _do ? ival_after_ : ival_before_[i], false, false, false);
+            case EditType::Solo:
+              if constexpr (std::derived_from<TrackT, ChannelTrack>)
+                {
+                  bool soloed = track->get_soloed ();
+                  track->set_soloed (
+                    _do ? ival_after_ : ival_before_[i], false, false, false);
 
-              ival_before_[i] = soloed;
-            }
-          break;
-        case EditType::SoloLane:
-          {
-            std::visit (
-              [&] (auto &&casted_track) {
-                auto &lane = casted_track->lanes_[lane_pos_];
-                bool  soloed = lane->get_soloed ();
-                lane->set_soloed (
-                  _do ? ival_after_ : ival_before_[i], false, false);
-
-                ival_before_[i] = soloed;
-              },
-              convert_to_variant<LanedTrackPtrVariant> (laned_track));
-          }
-          break;
-        case EditType::Mute:
-          if (track->has_channel ())
-            {
-              bool muted = channel_track->get_muted ();
-              channel_track->set_muted (
-                _do ? ival_after_ : ival_before_[i], false, false, false);
-
-              ival_before_[i] = muted;
-            }
-          break;
-        case EditType::MuteLane:
-          {
-            std::visit (
-              [&] (auto &&t) {
-                auto &lane = t->lanes_[lane_pos_];
-                bool  muted = lane->get_muted ();
-                lane->set_muted (
-                  _do ? ival_after_ : ival_before_[i], false, false);
-
-                ival_before_[i] = muted;
-              },
-              convert_to_variant<LanedTrackPtrVariant> (laned_track));
-          }
-          break;
-        case EditType::Listen:
-          if (track->has_channel ())
-            {
-              bool listened = channel_track->get_listened ();
-              channel_track->set_listened (
-                _do ? ival_after_ : ival_before_[i], false, false, false);
-
-              ival_before_[i] = listened;
-            }
-          break;
-        case EditType::Enable:
-          {
-            bool enabled = track->is_enabled ();
-            track->set_enabled (
-              _do ? ival_after_ : ival_before_[i], false, false, false);
-
-            ival_before_[i] = enabled;
-          }
-          break;
-        case EditType::Fold:
-          {
-            auto foldable_track = dynamic_cast<FoldableTrack *> (track.get ());
-            bool folded = foldable_track->folded_;
-            foldable_track->set_folded (
-              _do ? ival_after_ : ival_before_[i], false, false, true);
-
-            ival_before_[i] = folded;
-          }
-          break;
-        case EditType::Volume:
-          z_return_if_fail (channel_track);
-          channel_track->channel_->fader_->set_amp (
-            _do ? val_after_ : val_before_);
-          break;
-        case EditType::Pan:
-          z_return_if_fail (channel_track);
-          channel_track->get_channel ()->set_balance_control (
-            _do ? val_after_ : val_before_);
-          break;
-        case EditType::MidiFaderMode:
-          z_return_if_fail (channel_track);
-          if (_do)
-            {
-              ival_before_[i] =
-                static_cast<int> (channel_track->channel_->fader_->midi_mode_);
-              channel_track->channel_->fader_->set_midi_mode (
-                static_cast<Fader::MidiFaderMode> (ival_after_), false, true);
-            }
-          else
-            {
-              channel_track->channel_->fader_->set_midi_mode (
-                static_cast<Fader::MidiFaderMode> (ival_before_[i]), false,
-                true);
-            }
-          break;
-        case EditType::DirectOut:
-          {
-            z_return_if_fail (channel_track);
-
-            int cur_direct_out_pos = -1;
-            if (channel_track->get_channel ()->has_output_)
+                  ival_before_[i] = soloed;
+                }
+              break;
+            case EditType::SoloLane:
               {
-                auto cur_direct_out_track =
-                  channel_track->get_channel ()->get_output_track ();
-                cur_direct_out_pos = cur_direct_out_track->pos_;
-              }
+                if constexpr (std::derived_from<TrackT, LanedTrack>)
+                  {
+                    auto &lane = track->lanes_[lane_pos_];
+                    bool  soloed = lane->get_soloed ();
+                    lane->set_soloed (
+                      _do ? ival_after_ : ival_before_[i], false, false);
 
-            /* disconnect from the current track */
-            if (channel_track->get_channel ()->has_output_)
+                    ival_before_[i] = soloed;
+                  }
+              }
+              break;
+            case EditType::Mute:
+              if constexpr (std::derived_from<TrackT, ChannelTrack>)
+                {
+                  bool muted = track->get_muted ();
+                  track->set_muted (
+                    _do ? ival_after_ : ival_before_[i], false, false, false);
+
+                  ival_before_[i] = muted;
+                }
+              break;
+            case EditType::MuteLane:
               {
-                auto target_track = TRACKLIST->find_track_by_name_hash (
-                  channel_track->get_channel ()->output_name_hash_);
-                dynamic_cast<GroupTargetTrack *> (target_track)
-                  ->remove_child (track->get_name_hash (), true, false, true);
+                if constexpr (std::derived_from<TrackT, LanedTrack>)
+                  {
+                    auto &lane = track->lanes_[lane_pos_];
+                    bool  muted = lane->get_muted ();
+                    lane->set_muted (
+                      _do ? ival_after_ : ival_before_[i], false, false);
+
+                    ival_before_[i] = muted;
+                  }
               }
+              break;
+            case EditType::Listen:
+              if constexpr (std::derived_from<TrackT, ChannelTrack>)
+                {
+                  bool listened = track->get_listened ();
+                  track->set_listened (
+                    _do ? ival_after_ : ival_before_[i], false, false, false);
 
-            int target_pos = _do ? ival_after_ : ival_before_[i];
-
-            /* reconnect to the new track */
-            if (target_pos != -1)
+                  ival_before_[i] = listened;
+                }
+              break;
+            case EditType::Enable:
               {
-                z_return_if_fail_cmp (
-                  target_pos, !=, channel_track->channel_->track_->pos_);
-                auto group_target_track =
-                  TRACKLIST->get_track<GroupTargetTrack> (target_pos);
-                z_return_if_fail (group_target_track);
-                group_target_track->add_child (
-                  track->get_name_hash (), true, false, true);
+                bool enabled = track->is_enabled ();
+                track->set_enabled (
+                  _do ? ival_after_ : ival_before_[i], false, false, false);
+
+                ival_before_[i] = enabled;
               }
+              break;
+            case EditType::Fold:
+              {
+                if constexpr (std::derived_from<TrackT, FoldableTrack>)
+                  {
+                    bool folded = track->folded_;
+                    track->set_folded (
+                      _do ? ival_after_ : ival_before_[i], false, false, true);
 
-            /* remember previous pos */
-            ival_before_[i] = cur_direct_out_pos;
+                    ival_before_[i] = folded;
+                  }
+              }
+              break;
+            case EditType::Volume:
+              if constexpr (std::derived_from<TrackT, ChannelTrack>)
+                {
+                  z_return_if_fail (track);
+                  track->channel_->fader_->set_amp (
+                    _do ? val_after_ : val_before_);
+                }
+              break;
+            case EditType::Pan:
+              if constexpr (std::derived_from<TrackT, ChannelTrack>)
+                {
+                  z_return_if_fail (track);
+                  track->get_channel ()->set_balance_control (
+                    _do ? val_after_ : val_before_);
+                }
+              break;
+            case EditType::MidiFaderMode:
+              if constexpr (std::derived_from<TrackT, ChannelTrack>)
+                {
+                  z_return_if_fail (track);
+                  if (_do)
+                    {
+                      ival_before_[i] =
+                        static_cast<int> (track->channel_->fader_->midi_mode_);
+                      track->channel_->fader_->set_midi_mode (
+                        static_cast<Fader::MidiFaderMode> (ival_after_), false,
+                        true);
+                    }
+                  else
+                    {
+                      track->channel_->fader_->set_midi_mode (
+                        static_cast<Fader::MidiFaderMode> (ival_before_[i]),
+                        false, true);
+                    }
+                }
+              break;
+            case EditType::DirectOut:
+              if constexpr (std::derived_from<TrackT, ChannelTrack>)
+                {
+                  {
+                    z_return_if_fail (track);
 
-            need_recalc_graph = true;
-          }
-          break;
-        case EditType::Rename:
-          {
-            const auto &cur_name = track->get_name ();
-            track->set_name (*TRACKLIST, new_txt_, false);
+                    int cur_direct_out_pos = -1;
+                    if (track->get_channel ()->has_output_)
+                      {
+                        auto cur_direct_out_track =
+                          track->get_channel ()->get_output_track ();
+                        cur_direct_out_pos = cur_direct_out_track->pos_;
+                      }
 
-            /* remember the new name */
-            new_txt_ = cur_name;
+                    /* disconnect from the current track */
+                    if (track->get_channel ()->has_output_)
+                      {
+                        auto target_track = TRACKLIST->find_track_by_name_hash (
+                          track->get_channel ()->output_name_hash_);
+                        dynamic_cast<GroupTargetTrack *> (target_track)
+                          ->remove_child (
+                            track->get_name_hash (), true, false, true);
+                      }
 
-            need_tracklist_cache_update = true;
-            need_recalc_graph = true;
-          }
-          break;
-        case EditType::RenameLane:
-          {
-            std::visit (
-              [&] (auto &&t) {
-                auto       &lane = t->lanes_[lane_pos_];
-                const auto &cur_name = lane->name_;
-                lane->rename (new_txt_, false);
+                    int target_pos = _do ? ival_after_ : ival_before_[i];
+
+                    /* reconnect to the new track */
+                    if (target_pos != -1)
+                      {
+                        z_return_if_fail_cmp (
+                          target_pos, !=, track->channel_->track_->pos_);
+                        auto _group_target_track =
+                          TRACKLIST->get_track (target_pos);
+                        std::visit (
+                          [&] (auto &&group_target_track) {
+                            using GroupTrackT =
+                              base_type<decltype (group_target_track)>;
+                            if constexpr (
+                              std::derived_from<GroupTrackT, GroupTargetTrack>)
+                              {
+                                group_target_track->add_child (
+                                  track->get_name_hash (), true, false, true);
+                              }
+                            else
+                              {
+                                z_return_if_reached ();
+                              }
+                          },
+                          _group_target_track);
+                      }
+
+                    /* remember previous pos */
+                    ival_before_[i] = cur_direct_out_pos;
+
+                    need_recalc_graph = true;
+                  }
+                }
+              break;
+            case EditType::Rename:
+              {
+                const auto &cur_name = track->get_name ();
+                track->set_name (*TRACKLIST, new_txt_, false);
 
                 /* remember the new name */
                 new_txt_ = cur_name;
-              },
-              convert_to_variant<LanedTrackPtrVariant> (laned_track));
-          }
-          break;
-        case EditType::Color:
-          {
-            auto cur_color = track->color_;
-            track->set_color (_do ? new_color_ : colors_before_[i], false, true);
 
-            /* remember color */
-            colors_before_[i] = cur_color;
-          }
-          break;
-        case EditType::Icon:
-          {
-            auto cur_icon = track->icon_name_;
-            track->set_icon (new_txt_, false, true);
+                need_tracklist_cache_update = true;
+                need_recalc_graph = true;
+              }
+              break;
+            case EditType::RenameLane:
+              {
+                if constexpr (std::derived_from<TrackT, LanedTrack>)
+                  {
+                    auto       &lane = track->lanes_[lane_pos_];
+                    const auto &cur_name = lane->name_;
+                    lane->rename (new_txt_, false);
 
-            new_txt_ = cur_icon;
-          }
-          break;
-        case EditType::Comment:
-          {
-            auto cur_comment = track->comment_;
-            track->set_comment (new_txt_, false);
+                    /* remember the new name */
+                    new_txt_ = cur_name;
+                  }
+              }
+              break;
+            case EditType::Color:
+              {
+                auto cur_color = track->color_;
+                track->set_color (
+                  _do ? new_color_ : colors_before_[i], false, true);
 
-            new_txt_ = cur_comment;
-          }
-          break;
-        }
+                /* remember color */
+                colors_before_[i] = cur_color;
+              }
+              break;
+            case EditType::Icon:
+              {
+                auto cur_icon = track->icon_name_;
+                track->set_icon (new_txt_, false, true);
 
-      /* EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, track.get ()); */
+                new_txt_ = cur_icon;
+              }
+              break;
+            case EditType::Comment:
+              {
+                auto cur_comment = track->comment_;
+                track->set_comment (new_txt_, false);
+
+                new_txt_ = cur_comment;
+              }
+              break;
+            }
+
+          /* EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, track.get ()); */
+        },
+        _track);
     }
 
   /* restore connections */

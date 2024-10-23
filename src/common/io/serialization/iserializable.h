@@ -31,17 +31,6 @@
  * @{
  */
 
-// Helper concept to check if a type is a container
-template <typename T>
-concept ContainerType = requires (T t) {
-  typename T::value_type;
-  typename T::iterator;
-  typename T::const_iterator;
-  { t.begin () } -> std::same_as<typename T::iterator>;
-  { t.end () } -> std::same_as<typename T::iterator>;
-  { t.size () } -> std::convertible_to<std::size_t>;
-};
-
 // Concept for a container with signed integral value types
 template <typename T>
 concept SignedIntegralContainer =
@@ -198,7 +187,7 @@ template <typename Derived>
 class ISerializable : virtual public ISerializableBase
 {
 public:
-  virtual ~ISerializable () = default;
+  ~ISerializable () override = default;
 
   template <typename T>
   using is_serializable = std::is_base_of<ISerializable<T>, T>;
@@ -235,6 +224,9 @@ public:
   };
   template <typename T>
   struct is_serializable_pointer<std::shared_ptr<T>> : is_serializable<T>
+  {
+  };
+  template <typename T> struct is_serializable_pointer<T *> : is_serializable<T>
   {
   };
   template <typename T>
@@ -359,6 +351,7 @@ public:
           || std::is_same_v<FieldT, std::vector<int>>
           || std::is_same_v<FieldT, std::vector<unsigned int>>
           || std::is_same_v<FieldT, std::vector<std::string>>
+          || VectorOfVariantPointers<FieldT>
           || is_container_of_serializable_objects_v<FieldT>
           || is_container_of_serializable_pointers_v<FieldT>
           || std::is_enum_v<FieldT> || is_atomic_serializable_v<FieldT>);
@@ -678,13 +671,29 @@ public:
       {
         if (value)
           {
-            using ObjType = typename T::element_type;
-            yyjson_mut_val * child_obj = yyjson_mut_obj_add_obj (doc, obj, key);
-            ctx.mut_obj_ = child_obj;
-            value->ISerializable<ObjType>::serialize (ctx);
-            if (!yyjson_mut_obj_add_val (doc, obj, key, child_obj))
+            if constexpr (IsPointer<T>)
               {
-                throw ZrythmException ("Failed to add field");
+                using ObjType = base_type<T>;
+                yyjson_mut_val * child_obj =
+                  yyjson_mut_obj_add_obj (doc, obj, key);
+                ctx.mut_obj_ = child_obj;
+                value->ISerializable<ObjType>::serialize (ctx);
+                if (!yyjson_mut_obj_add_val (doc, obj, key, child_obj))
+                  {
+                    throw ZrythmException ("Failed to add field");
+                  }
+              }
+            else
+              {
+                using ObjType = typename T::element_type;
+                yyjson_mut_val * child_obj =
+                  yyjson_mut_obj_add_obj (doc, obj, key);
+                ctx.mut_obj_ = child_obj;
+                value->ISerializable<ObjType>::serialize (ctx);
+                if (!yyjson_mut_obj_add_val (doc, obj, key, child_obj))
+                  {
+                    throw ZrythmException ("Failed to add field");
+                  }
               }
           }
         else if (optional)
@@ -872,6 +881,31 @@ public:
           }
         yyjson_mut_obj_add_val (doc, obj, key, arr);
       }
+    else if constexpr (VectorOfVariantPointers<T>)
+      {
+        yyjson_mut_val * arr = yyjson_mut_arr (doc);
+        for (const auto &variant_ptr : value)
+          {
+
+            std::visit (
+              [&] (auto &&ptr) {
+                using PtrType = base_type<decltype (ptr)>;
+                if (ptr)
+                  {
+                    yyjson_mut_val * child_obj =
+                      yyjson_mut_arr_add_obj (doc, arr);
+                    ctx.mut_obj_ = child_obj;
+                    ptr->ISerializable<PtrType>::serialize (ctx);
+                  }
+                else
+                  {
+                    yyjson_mut_arr_add_null (doc, arr);
+                  }
+              },
+              variant_ptr);
+          }
+        yyjson_mut_obj_add_val (doc, obj, key, arr);
+      }
     else if constexpr (is_container_of_serializable_objects_v<T>)
       {
         yyjson_mut_val * arr = yyjson_mut_arr (doc);
@@ -949,21 +983,38 @@ public:
       {
         if (yyjson_is_obj (val))
           {
-            using ObjType = typename T::element_type;
-            if constexpr (is_unique_ptr_v<T>)
-              value = std::make_unique<ObjType> ();
-            else if constexpr (is_shared_ptr_v<T>)
-              value = std::make_shared<ObjType> ();
+            if constexpr (IsPointer<T>)
+              {
+                using ObjType = base_type<T>;
+                value = new ObjType ();
+                ctx.obj_ = val;
+                value->ISerializable<ObjType>::deserialize (ctx);
+              }
             else
-              static_assert (
-                dependent_false_v<T, VariantT>, "Unsupported pointer type");
-            ctx.obj_ = val;
-            value->ISerializable<ObjType>::deserialize (ctx);
+              {
+                using ObjType = typename T::element_type;
+                if constexpr (is_unique_ptr_v<T>)
+                  value = std::make_unique<ObjType> ();
+                else if constexpr (is_shared_ptr_v<T>)
+                  value = std::make_shared<ObjType> ();
+                else
+                  static_assert (
+                    dependent_false_v<T, VariantT>, "Unsupported pointer type");
+                ctx.obj_ = val;
+                value->ISerializable<ObjType>::deserialize (ctx);
+              }
             return;
           }
-        else if (yyjson_is_null (val))
+        if (yyjson_is_null (val))
           {
-            value.reset ();
+            if constexpr (IsPointer<T>)
+              {
+                delete value;
+              }
+            else
+              {
+                value.reset ();
+              }
             return;
           }
         else
@@ -1151,6 +1202,42 @@ public:
                               static_cast<ObjType> (yyjson_get_uint (elem)));
                           }
                       }
+                  }
+              }
+            return;
+          }
+      }
+    else if constexpr (VectorOfVariantPointers<T>)
+      {
+        // !!! NOTE: UNTESTED !!!
+        if (yyjson_is_arr (val))
+          {
+            value.clear ();
+            size_t len = yyjson_arr_size (val);
+            for (size_t i = 0; i < len; ++i)
+              {
+                yyjson_val * elem = yyjson_arr_get (val, i);
+                if (yyjson_is_obj (elem))
+                  {
+                    ctx.obj_ = elem;
+                    typename T::value_type variant_ptr;
+                    // Attempt to deserialize into each possible type in the
+                    // variant
+                    bool deserialized = false;
+                    std::visit (
+                      [&] (auto &&ptr) {
+                        using PtrType =
+                          std::remove_pointer_t<std::decay_t<decltype (ptr)>>;
+                        if (!deserialized)
+                          {
+                            auto new_ptr = std::make_unique<PtrType> ();
+                            new_ptr->ISerializable<PtrType>::deserialize (ctx);
+                            variant_ptr = new_ptr.release ();
+                            deserialized = true;
+                          }
+                      },
+                      variant_ptr);
+                    value.push_back (std::move (variant_ptr));
                   }
               }
             return;

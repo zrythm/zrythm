@@ -10,9 +10,6 @@ EditorSettings::set_scroll_start_x (int x, bool validate)
   scroll_start_x_ = MAX (x, 0);
   if (validate)
     {
-      if (this == PRJ_TIMELINE.get ())
-        {
-        }
     }
   /*z_debug ("scrolled horizontally to {}", scroll_start_x_);*/
 }

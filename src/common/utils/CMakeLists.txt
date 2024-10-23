@@ -29,6 +29,7 @@ target_sources(zrythm_lib
     networking.cpp
     objects.cpp
     progress_info.cpp
+    qt.h
     resampler.cpp
     rt_thread_id.cpp
     string.cpp

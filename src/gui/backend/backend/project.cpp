@@ -53,9 +53,9 @@ Project::Project (QObject * parent)
         SnapGrid::Type::Timeline,
         NoteLength::NOTE_LENGTH_BAR,
         true)),
-      timeline_ (std::make_unique<Timeline> ()),
+      timeline_ (new Timeline (this)),
       midi_mappings_ (std::make_unique<MidiMappings> ()),
-      tracklist_ (std::make_shared<Tracklist> (*this)),
+      tracklist_ (new Tracklist (*this)),
       undo_manager_ (std::make_unique<UndoManager> ())
 {
   init_selections ();
@@ -511,10 +511,10 @@ Project::get_all_ports (std::vector<Port *> &ports) const
 {
   audio_engine_->append_ports (ports);
 
-  for (const auto &tr : tracklist_->tracks_)
-    {
-      tr->append_ports (ports, true);
-    }
+  std::ranges::for_each (tracklist_->tracks_, [&] (const auto &track) {
+    auto tr = Track::from_variant (track);
+    tr->append_ports (ports, false);
+  });
 }
 
 char *
@@ -977,11 +977,16 @@ Project::save (
   else
     {
       Project *  cloned_prj = nullptr;
+      QThread *  currentThread = QThread::currentThread ();
       QEventLoop loop;
       QMetaObject::invokeMethod (
         QCoreApplication::instance (),
-        [this, is_backup, &cloned_prj, &loop] () {
+        [this, currentThread, is_backup, &cloned_prj, &loop] () {
           cloned_prj = clone (is_backup);
+
+          // need to move the temporary cloned project to the outer scope's
+          // thread, because it will be free'd on that thread too
+          cloned_prj->moveToThread (currentThread);
           loop.quit ();
         },
         Qt::QueuedConnection);
@@ -1091,9 +1096,11 @@ Project::init_after_cloning (const Project &other)
   datetime_str_ = other.datetime_str_;
   version_ = other.version_;
   audio_engine_ = other.audio_engine_->clone_unique ();
-  tracklist_ = other.tracklist_->clone_shared ();
+  tracklist_ = other.tracklist_->clone_raw_ptr ();
+  tracklist_->setParent (this);
   clip_editor_ = other.clip_editor_;
-  timeline_ = std::make_unique<Timeline> (*other.timeline_);
+  timeline_ = other.timeline_->clone_raw_ptr ();
+  timeline_->setParent (this);
   snap_grid_timeline_ = std::make_unique<SnapGrid> (*other.snap_grid_timeline_);
   snap_grid_editor_ = std::make_unique<SnapGrid> (*other.snap_grid_editor_);
   quantize_opts_timeline_ =
@@ -1109,7 +1116,7 @@ Project::init_after_cloning (const Project &other)
   audio_selections_ = other.audio_selections_->clone_unique ();
   tracklist_selections_ =
     std::make_unique<SimpleTracklistSelections> (*other.tracklist_selections_);
-  tracklist_selections_->tracklist_ = tracklist_.get ();
+  tracklist_selections_->tracklist_ = tracklist_;
   region_link_group_manager_ = other.region_link_group_manager_;
   port_connections_manager_ = other.port_connections_manager_->clone_unique ();
   midi_mappings_ = other.midi_mappings_->clone_unique ();
@@ -1148,6 +1155,18 @@ Project::setDirectory (const QString &directory)
 
   dir_ = directory.toStdString ();
   Q_EMIT directoryChanged (directory);
+}
+
+Tracklist *
+Project::getTracklist () const
+{
+  return tracklist_;
+}
+
+Timeline *
+Project::getTimeline () const
+{
+  return timeline_;
 }
 
 Project *

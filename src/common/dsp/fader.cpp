@@ -799,27 +799,34 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
                   /* TODO add "listen" buffer on fader struct and add listened
                    * tracks to it during processing instead of looping here */
                   float listen_amp = CONTROL_ROOM->listen_fader_->get_amp ();
-                  for (auto &t : TRACKLIST->tracks_)
+                  for (auto &cur_t : TRACKLIST->tracks_)
                     {
-                      if (
-                        t->has_channel ()
-                        && t->out_signal_type_ == PortType::Audio
-                        && t->get_listened ())
-                        {
-                          auto channel_track =
-                            dynamic_cast<ChannelTrack *> (t.get ());
-                          auto f = channel_track->get_fader (true);
-                          dsp_mix2 (
-                            &stereo_out_->get_l ().buf_[time_nfo.local_offset_],
-                            &f->stereo_out_->get_l ()
-                               .buf_[time_nfo.local_offset_],
-                            1.f, listen_amp, time_nfo.nframes_);
-                          dsp_mix2 (
-                            &stereo_out_->get_r ().buf_[time_nfo.local_offset_],
-                            &f->stereo_out_->get_r ()
-                               .buf_[time_nfo.local_offset_],
-                            1.f, listen_amp, time_nfo.nframes_);
-                        }
+                      std::visit (
+                        [&] (auto &&t) {
+                          using TrackT = base_type<decltype (t)>;
+                          if constexpr (std::derived_from<TrackT, ChannelTrack>)
+                            {
+                              if (
+                                t->out_signal_type_ == PortType::Audio
+                                && t->get_listened ())
+                                {
+                                  auto f = t->get_fader (true);
+                                  dsp_mix2 (
+                                    &stereo_out_->get_l ()
+                                       .buf_[time_nfo.local_offset_],
+                                    &f->stereo_out_->get_l ()
+                                       .buf_[time_nfo.local_offset_],
+                                    1.f, listen_amp, time_nfo.nframes_);
+                                  dsp_mix2 (
+                                    &stereo_out_->get_r ()
+                                       .buf_[time_nfo.local_offset_],
+                                    &f->stereo_out_->get_r ()
+                                       .buf_[time_nfo.local_offset_],
+                                    1.f, listen_amp, time_nfo.nframes_);
+                                }
+                            }
+                        },
+                        cur_t);
                     }
                 } /* endif have listened tracks */
 

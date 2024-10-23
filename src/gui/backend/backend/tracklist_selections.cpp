@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <ranges>
+
 #include "common/dsp/engine.h"
 #include "common/dsp/foldable_track.h"
 #include "common/dsp/master_track.h"
@@ -111,7 +113,7 @@ SimpleTracklistSelections::
 
   for (int i = min_pos; i <= max_pos; i++)
     {
-      Track * track = tracklist_->get_track (i);
+      Track * track = Track::from_variant (tracklist_->get_track (i));
       add_track (*track, fire_events);
     }
 
@@ -124,13 +126,17 @@ SimpleTracklistSelections::clear (const bool fire_events)
   z_debug ("clearing tracklist selections...");
 
   z_return_if_fail (tracklist_);
-  for (auto it = track_names_.rbegin (); it != track_names_.rend (); ++it)
+  for (auto &track_name : std::ranges::reverse_view (track_names_))
     {
-      Track * track = tracklist_->find_track_by_name (*it);
-      remove_track (*track, false);
+      auto track = tracklist_->find_track_by_name (track_name);
+      z_return_if_fail (track);
 
-      if (track->is_in_active_project ())
-        {
+      std::visit (
+        [&] (auto &&tr) {
+          remove_track (*tr, false);
+
+          if (tr->is_in_active_project ())
+            {
 #if 0
           /* process now because the track might get deleted after this */
           if (track->widget_ && GTK_IS_WIDGET (track->widget_))
@@ -139,7 +145,9 @@ SimpleTracklistSelections::clear (const bool fire_events)
                 GTK_WIDGET (track->widget_), track->visible_);
             }
 #endif
-        }
+            }
+        },
+        *track);
     }
 
   if (fire_events && ZRYTHM_HAVE_UI && PROJECT->loaded_)
@@ -156,19 +164,25 @@ SimpleTracklistSelections::select_foldable_children ()
   int num_tracklist_sel = track_names_.size ();
   for (int i = 0; i < num_tracklist_sel; i++)
     {
-      Track * cur_track = tracklist_->find_track_by_name (track_names_[i]);
-      if (cur_track->is_foldable ())
-        {
-          auto * foldable_track = dynamic_cast<FoldableTrack *> (cur_track);
-          for (int j = 1; j < foldable_track->size_; ++j)
+      auto cur_track = tracklist_->find_track_by_name (track_names_[i]);
+      z_return_if_fail (cur_track);
+      std::visit (
+        [&] (auto &&cur_t) {
+          using TrackT = base_type<decltype (cur_t)>;
+          if constexpr (std::derived_from<TrackT, FoldableTrack>)
             {
-              Track * child_track = TRACKLIST->get_track (j + cur_track->pos_);
-              if (!contains_track (*child_track))
+              for (int j = 1; j < cur_t->size_; ++j)
                 {
-                  child_track->select (true, false, false);
+                  Track * child_track = Track::from_variant (
+                    TRACKLIST->get_track (j + cur_t->pos_));
+                  if (!contains_track (*child_track))
+                    {
+                      child_track->select (true, false, false);
+                    }
                 }
             }
-        }
+        },
+        *cur_track);
     }
 }
 
@@ -227,12 +241,16 @@ SimpleTracklistSelections::
 void
 SimpleTracklistSelections::select_all (bool visible_only)
 {
-  for (auto &track : tracklist_->tracks_)
+  for (auto &tr : tracklist_->tracks_)
     {
-      if (track->visible_ || !visible_only)
-        {
-          add_track (*track, false);
-        }
+      std::visit (
+        [&] (auto &&track) {
+          if (track->visible_ || !visible_only)
+            {
+              add_track (*track, false);
+            }
+        },
+        tr);
     }
 
   /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr); */
@@ -274,16 +292,20 @@ SimpleTracklistSelections::remove_track (Track &track, int fire_events)
 bool
 SimpleTracklistSelections::contains_uninstantiated_plugin () const
 {
-  for (auto &track_name : track_names_)
+  // collect all tracks
+  std::vector<std::optional<TrackPtrVariant>> track_ptrs;
+  for (const auto &track_name : track_names_)
     {
-      auto track = tracklist_->find_track_by_name (track_name);
-      if (track->contains_uninstantiated_plugin ())
-        {
-          return true;
-        }
+      track_ptrs.push_back (tracklist_->find_track_by_name (track_name));
     }
 
-  return false;
+  return std::any_of (
+    track_ptrs.begin (), track_ptrs.end (), [] (const auto &track_ptr) {
+      return track_ptr
+             && std::visit (
+               [&] (auto &&tr) { return tr->contains_uninstantiated_plugin (); },
+               *track_ptr);
+    });
 }
 
 template <typename DerivedTrackType, typename Predicate>
@@ -308,9 +330,10 @@ SimpleTracklistSelections::contains_track_matching (Predicate predicate) const
     track_names_.begin (), track_names_.end (),
     [this, &predicate] (const auto &track_name) {
       auto track = tracklist_->find_track_by_name (track_name);
-      if (auto derived_track = dynamic_cast<DerivedTrackType *> (track))
+      if (track)
         {
-          return predicate (*derived_track);
+          return predicate (
+            *dynamic_cast<DerivedTrackType *> (Track::from_variant (*track)));
         }
       return false;
     });
@@ -427,9 +450,9 @@ SimpleTracklistSelections::select_single (Track &track, bool fire_events)
 void
 SimpleTracklistSelections::select_last_visible ()
 {
-  Track * track = tracklist_->get_last_track (Tracklist::PinOption::Both, true);
-  z_warn_if_fail (track);
-  select_single (*track, true);
+  auto track = tracklist_->get_last_track (Tracklist::PinOption::Both, true);
+  z_return_if_fail (track);
+  select_single (*Track::from_variant (*track), true);
 }
 
 void
@@ -449,7 +472,7 @@ SimpleTracklistSelections::toggle_visibility ()
       auto track = tracklist_->find_track_by_name (track_name);
       if (track)
         {
-          track->visible_ = !track->visible_;
+          std::visit ([&] (auto &&tr) { tr->visible_ = !tr->visible_; }, *track);
         }
     }
 
@@ -472,11 +495,15 @@ SimpleTracklistSelections::mark_for_bounce (bool with_parents, bool mark_master)
       auto track = tracklist_->find_track_by_name (track_name);
       if (track)
         {
-          if (!with_parents)
-            {
-              track->bounce_to_master_ = true;
-            }
-          track->mark_for_bounce (true, true, true, with_parents);
+          std::visit (
+            [&] (auto &&tr) {
+              if (!with_parents)
+                {
+                  tr->bounce_to_master_ = true;
+                }
+              tr->mark_for_bounce (true, true, true, with_parents);
+            },
+            *track);
         }
     }
 
@@ -497,8 +524,7 @@ SimpleTracklistSelections::gen_tracklist_selections () const
         continue;
 
       std::visit (
-        [&] (auto &&t) { ret->add_track (t->clone_unique ()); },
-        convert_to_variant<TrackPtrVariant> (track));
+        [&] (auto &&t) { ret->add_track (t->clone_unique ()); }, *track);
     }
   return ret;
 }
@@ -506,7 +532,7 @@ SimpleTracklistSelections::gen_tracklist_selections () const
 void
 TracklistSelections::init_after_cloning (const TracklistSelections &other)
 {
-  for (auto &track : other.tracks_)
+  for (const auto &track : other.tracks_)
     {
       tracks_.emplace_back (
         clone_unique_with_variant<TrackVariant> (track.get ()));

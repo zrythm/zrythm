@@ -17,7 +17,7 @@ ChordTrack::ChordTrack (int pos)
         PortType::Event,
         PortType::Event)
 {
-  color_ = Color ("#1C71D8");
+  color_ = Color (QColor ("#1C71D8"));
   icon_name_ = "minuet-chords";
 }
 

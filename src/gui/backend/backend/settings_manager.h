@@ -100,6 +100,9 @@ class SettingsManager final : public QObject
            .toStdString ())
        / QCoreApplication::applicationName ().toStdString ())
         .string ()))
+  DEFINE_SETTING_PROPERTY (bool, leftPanelVisible, true)
+  DEFINE_SETTING_PROPERTY (bool, rightPanelVisible, true)
+  DEFINE_SETTING_PROPERTY (bool, bottomPanelVisible, true)
 
 public:
   SettingsManager (QObject * parent = nullptr);

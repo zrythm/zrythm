@@ -11,12 +11,17 @@
  * @brief A track that can contain other tracks.
  */
 class FolderTrack final
-    : public FoldableTrack,
+    : public QObject,
+      public FoldableTrack,
       public ChannelTrack,
       public ICloneable<FolderTrack>,
       public ISerializable<FolderTrack>,
       public InitializableObjectFactory<FolderTrack>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_TRACK_QML_PROPERTIES
+
   friend class InitializableObjectFactory<FolderTrack>;
 
 public:

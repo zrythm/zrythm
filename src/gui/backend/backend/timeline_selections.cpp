@@ -32,30 +32,34 @@ TimelineSelections::TimelineSelections (
   for (auto &track : TRACKLIST->tracks_)
     {
       std::vector<ArrangerObject *> objs;
-      track->append_objects (objs);
+      std::visit (
+        [&] (auto &&tr) {
+          tr->append_objects (objs);
 
-      for (auto * obj : objs)
-        {
-          std::visit (
-            [&] (auto &&o) {
-              using ObjT = base_type<decltype (o)>;
-              if constexpr (std::derived_from<ObjT, LengthableObject>)
-                {
-                  if (o->is_hit_by_range (start_pos, end_pos))
+          for (auto * obj : objs)
+            {
+              std::visit (
+                [&] (auto &&o) {
+                  using ObjT = base_type<decltype (o)>;
+                  if constexpr (std::derived_from<ObjT, LengthableObject>)
                     {
-                      add_object_owned (o->clone_unique ());
+                      if (o->is_hit_by_range (start_pos, end_pos))
+                        {
+                          add_object_owned (o->clone_unique ());
+                        }
                     }
-                }
-              else
-                {
-                  if (o->is_start_hit_by_range (start_pos, end_pos))
+                  else
                     {
-                      add_object_owned (o->clone_unique ());
+                      if (o->is_start_hit_by_range (start_pos, end_pos))
+                        {
+                          add_object_owned (o->clone_unique ());
+                        }
                     }
-                }
-            },
-            convert_to_variant<ArrangerObjectPtrVariant> (obj));
-        }
+                },
+                convert_to_variant<ArrangerObjectPtrVariant> (obj));
+            }
+        },
+        track);
     }
 }
 
@@ -385,7 +389,7 @@ TimelineSelections::can_be_pasted_at_impl (const Position pos, const int idx) co
 {
   auto tr =
     idx >= 0
-      ? TRACKLIST->get_track (idx)
+      ? Track::from_variant (TRACKLIST->get_track (idx))
       : TRACKLIST_SELECTIONS->get_highest_track ();
   if (!tr)
     return false;
@@ -507,24 +511,38 @@ TimelineSelections::move_regions_to_new_lanes_or_tracks_or_ats (
    * - the lane bounds are not exceeded
    */
   bool compatible = true;
-  for (auto region : regions_arr)
+  for (auto * region : regions_arr)
     {
-      auto track = region->get_track ();
+      auto * track = region->get_track ();
       if (vis_track_diff != 0)
         {
           auto visible =
             TRACKLIST->get_visible_track_after_delta (*track, vis_track_diff);
-          if (
-            !visible
-            || !Track::type_is_compatible_for_moving (
-              track->type_, visible->type_)
-            ||
-            /* do not allow moving automation tracks to other tracks for now */
-            region->is_automation ())
+          if (!visible)
             {
               compatible = false;
               break;
             }
+
+          bool should_break = std::visit (
+            [&] (auto &&visible_tr) {
+              if (
+                !Track::type_is_compatible_for_moving (
+                  track->type_, visible_tr->type_)
+                ||
+                /* do not allow moving automation tracks to other tracks for now
+                 */
+                region->is_automation ())
+                {
+                  compatible = false;
+                  return true;
+                }
+
+              return false;
+            },
+            *visible);
+          if (should_break)
+            break;
         }
       else if (lane_diff != 0)
         {
@@ -618,7 +636,11 @@ TimelineSelections::move_regions_to_new_lanes_or_tracks_or_ats (
               auto track_to_move_to = TRACKLIST->get_visible_track_after_delta (
                 *region_track, vis_track_diff);
               z_return_val_if_fail (track_to_move_to, false);
-              r->move_to_track (track_to_move_to, -1, -1);
+              std::visit (
+                [&] (auto &&tr_to_move_to) {
+                  r->move_to_track (tr_to_move_to, -1, -1);
+                },
+                *track_to_move_to);
             }
           else if (lane_diff != 0)
             {

@@ -205,8 +205,7 @@ TrackLaneImpl<RegionT>::get_tracklist () const
 {
   if (is_auditioner ())
     return SAMPLE_PROCESSOR->tracklist_.get ();
-  else
-    return TRACKLIST.get ();
+  return TRACKLIST;
 }
 
 /**
@@ -226,10 +225,8 @@ TrackLaneImpl<RegionT>::calculate_lane_idx () const
           pos += pos_;
           break;
         }
-      else
-        {
-          pos += static_cast<int> (cur_track->lanes_.size ());
-        }
+
+      pos += static_cast<int> (cur_track->lanes_.size ());
     }
 
   return pos;

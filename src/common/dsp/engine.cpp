@@ -163,7 +163,11 @@ AudioEngine::update_frames_per_tick (
 
   for (const auto &track : project_->tracklist_->tracks_)
     {
-      track->update_positions (update_from_ticks, bpm_change);
+      std::visit (
+        [&] (auto &&tr) {
+          tr->update_positions (update_from_ticks, bpm_change);
+        },
+        track);
     }
 
   updating_frames_per_tick_ = false;
@@ -311,8 +315,12 @@ AudioEngine::append_ports (std::vector<Port *> &ports)
 
   for (const auto &tr : sample_processor_->tracklist_->tracks_)
     {
-      z_warn_if_fail (tr->is_auditioner ());
-      tr->append_ports (ports, true);
+      std::visit (
+        [&] (auto &&track) {
+          z_warn_if_fail (track->is_auditioner ());
+          track->append_ports (ports, true);
+        },
+        tr);
     }
 
   add_port (transport_->roll_.get ());
@@ -673,8 +681,7 @@ AudioEngine::init_loaded (Project * project)
   auto * tempo_track = project->tracklist_->tempo_track_;
   if (!tempo_track)
     {
-      tempo_track =
-        project->tracklist_->get_track_by_type<TempoTrack> (Track::Type::Tempo);
+      tempo_track = project->tracklist_->get_track_by_type<TempoTrack> ();
     }
   if (!tempo_track)
     {

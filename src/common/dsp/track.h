@@ -11,6 +11,8 @@
 #include "common/plugins/plugin.h"
 #include "common/utils/format.h"
 
+#include <QColor>
+
 #include <glib/gi18n.h>
 
 class FileDescriptor;
@@ -31,7 +33,21 @@ class ChordTrack;
 class ModulatorTrack;
 class TempoTrack;
 
-TYPEDEF_STRUCT_UNDERSCORED (TrackWidget);
+using TrackVariant = std::variant<
+  MarkerTrack,
+  InstrumentTrack,
+  MidiTrack,
+  MasterTrack,
+  MidiGroupTrack,
+  AudioGroupTrack,
+  FolderTrack,
+  MidiBusTrack,
+  AudioBusTrack,
+  AudioTrack,
+  ChordTrack,
+  ModulatorTrack,
+  TempoTrack>;
+using TrackPtrVariant = to_pointer_variant<TrackVariant>;
 
 /**
  * @addtogroup dsp
@@ -45,6 +61,57 @@ constexpr int TRACK_DEF_HEIGHT = 48;
 constexpr int TRACK_MAGIC = 21890135;
 #define IS_TRACK(x) (((Track *) x)->magic_ == TRACK_MAGIC)
 #define IS_TRACK_AND_NONNULL(x) (x && IS_TRACK (x))
+
+#define DEFINE_TRACK_QML_PROPERTIES \
+  Q_PROPERTY (QString name READ getName WRITE setName NOTIFY nameChanged) \
+  QString getName () const \
+  { \
+    return QString::fromStdString (name_); \
+  } \
+  void setName (const QString &name) \
+  { \
+    if (name_ == name.toStdString ()) \
+      return; \
+\
+    name_ = name.toStdString (); \
+    Q_EMIT nameChanged (name); \
+  } \
+\
+  Q_SIGNAL void nameChanged (const QString &name); \
+\
+  Q_PROPERTY (QColor color READ getColor WRITE setColor NOTIFY colorChanged) \
+\
+  QColor getColor () const \
+  { \
+    return color_.to_qcolor (); \
+  } \
+  void setColor (const QColor &color) \
+  { \
+    if (color_.to_qcolor () == color) \
+      return; \
+\
+    color_ = color; \
+    Q_EMIT colorChanged (color); \
+  } \
+\
+  Q_SIGNAL void colorChanged (const QColor &color); \
+\
+  Q_PROPERTY ( \
+    bool visible READ getVisible WRITE setVisible NOTIFY visibleChanged) \
+  bool getVisible () const \
+  { \
+    return visible_; \
+  } \
+  void setVisible (bool visible) \
+  { \
+    if (visible_ == visible) \
+      return; \
+\
+    visible_ = visible; \
+    Q_EMIT visibleChanged (visible); \
+  } \
+\
+  Q_SIGNAL void visibleChanged (bool visible);
 
 /**
  * The Track's type.
@@ -135,7 +202,7 @@ using TracksReadyCallback = void (*) (const FileImportInfo *);
  * Subclasses of `Track` represent specific types of tracks, such as
  * MIDI tracks, instrument tracks, and audio tracks.
  */
-class Track : public ISerializable<Track>
+class Track : virtual public ISerializable<Track>
 {
 public:
   using Type = TrackType;
@@ -350,6 +417,8 @@ public:
 
 public:
   ~Track () override = default;
+  JUCE_DECLARE_NON_COPYABLE (Track)
+  JUCE_DECLARE_NON_MOVEABLE (Track)
 
   static std::unique_ptr<Track> create_unique_from_type (Type type);
 
@@ -411,6 +480,8 @@ public:
   bool is_instrument () const { return type_ == Type::Instrument; }
   bool is_midi () const { return type_ == Type::Midi; }
   bool is_master () const { return type_ == Type::Master; }
+
+  static Track * from_variant (const TrackPtrVariant &variant);
 
   bool has_lanes () const { return type_has_lanes (type_); }
 
@@ -919,7 +990,7 @@ public:
    *
    * 1 track has 1 widget.
    */
-  TrackWidget * widget_ = nullptr;
+  // TrackWidget * widget_ = nullptr;
 
   /** Whole Track is visible or not. */
   bool visible_ = true;
@@ -1034,22 +1105,6 @@ concept TrackSubclass = std::derived_from<T, Track>;
 
 template <typename TrackT>
 concept FinalTrackSubclass = TrackSubclass<TrackT> && FinalClass<TrackT>;
-
-using TrackVariant = std::variant<
-  MarkerTrack,
-  InstrumentTrack,
-  MidiTrack,
-  MasterTrack,
-  MidiGroupTrack,
-  AudioGroupTrack,
-  FolderTrack,
-  MidiBusTrack,
-  AudioBusTrack,
-  AudioTrack,
-  ChordTrack,
-  ModulatorTrack,
-  TempoTrack>;
-using TrackPtrVariant = to_pointer_variant<TrackVariant>;
 
 extern template FoldableTrack *
 Track::find_by_name (const std::string &);

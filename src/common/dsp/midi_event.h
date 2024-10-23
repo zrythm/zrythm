@@ -66,7 +66,7 @@ public:
   midi_time_t time_ = 0;
 
   /** Time using g_get_monotonic_time(). */
-  qint64 systime_;
+  std::int64_t systime_ = 0;
 };
 
 inline bool

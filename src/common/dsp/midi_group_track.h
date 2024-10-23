@@ -8,12 +8,17 @@
 #include "common/dsp/group_target_track.h"
 
 class MidiGroupTrack final
-    : public FoldableTrack,
+    : public QObject,
+      public FoldableTrack,
       public GroupTargetTrack,
       public ICloneable<MidiGroupTrack>,
       public ISerializable<MidiGroupTrack>,
       public InitializableObjectFactory<MidiGroupTrack>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_TRACK_QML_PROPERTIES
+
   friend class InitializableObjectFactory<MidiGroupTrack>;
 
 public:

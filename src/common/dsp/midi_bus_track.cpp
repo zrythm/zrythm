@@ -6,7 +6,7 @@
 MidiBusTrack::MidiBusTrack (const std::string &name, int pos)
     : Track (Track::Type::MidiBus, name, pos, PortType::Event, PortType::Event)
 {
-  color_ = Color ("#F5C211");
+  color_ = Color (QColor ("#F5C211"));
   icon_name_ = "signal-midi";
 }
 

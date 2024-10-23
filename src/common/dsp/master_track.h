@@ -21,11 +21,16 @@
 #define P_MASTER_TRACK (TRACKLIST->master_track_)
 
 class MasterTrack final
-    : public GroupTargetTrack,
+    : public QObject,
+      public GroupTargetTrack,
       public ICloneable<MasterTrack>,
       public ISerializable<MasterTrack>,
       public InitializableObjectFactory<MasterTrack>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_TRACK_QML_PROPERTIES
+
 public:
   friend class InitializableObjectFactory<MasterTrack>;
 

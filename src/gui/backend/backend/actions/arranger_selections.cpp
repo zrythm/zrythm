@@ -615,8 +615,10 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
       z_return_if_fail (r);
 
       const auto * track_before = r->get_track ();
-      auto         track_to_move_to = TRACKLIST->get_visible_track_after_delta (
+      auto _track_to_move_to = TRACKLIST->get_visible_track_after_delta (
         *r->get_track (), tracks_diff);
+      z_return_if_fail (_track_to_move_to);
+      auto * track_to_move_to = Track::from_variant (_track_to_move_to.value ());
       z_trace (
         "Moving from track {} ({}) to track: {} ({})",
         track_before->get_name (), track_before->get_name_hash (),

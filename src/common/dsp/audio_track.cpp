@@ -19,7 +19,7 @@ AudioTrack::AudioTrack (const std::string &name, int pos, unsigned int samplerat
     : Track (Track::Type::Audio, name, pos, PortType::Audio, PortType::Audio),
       samplerate_ (samplerate)
 {
-  color_ = Color ("#19664c");
+  color_ = Color (QColor ("#19664c"));
   /* signal-audio also works */
   icon_name_ = "view-media-visualization";
   rt_stretcher_ = stretcher_new_rubberband (samplerate_, 2, 1.0, 1.0, true);

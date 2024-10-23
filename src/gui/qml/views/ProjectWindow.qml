@@ -52,7 +52,7 @@ ApplicationWindow {
                     SplitView.fillHeight: true
                     SplitView.preferredWidth: 200
                     SplitView.minimumWidth: 30
-                    visible: headerBar.leftDockVisible
+                    visible: GlobalState.settingsManager.leftPanelVisible
                 }
 
                 SplitView {
@@ -69,12 +69,20 @@ ApplicationWindow {
                     orientation: Qt.Vertical
 
                     CenterDock {
+                        project: root.project
+                        SplitView.fillWidth: true
+                        SplitView.fillHeight: true
+                        SplitView.preferredHeight: 200
+                        SplitView.minimumHeight: implicitHeight
+                        Layout.verticalStretchFactor: 2
                     }
 
                     BottomDock {
                         SplitView.fillWidth: true
                         SplitView.fillHeight: true
                         SplitView.minimumHeight: 30
+                        visible: GlobalState.settingsManager.bottomPanelVisible
+                        Layout.verticalStretchFactor: 1
                     }
 
                 }
@@ -85,7 +93,7 @@ ApplicationWindow {
                     SplitView.fillHeight: true
                     SplitView.preferredWidth: 200
                     SplitView.minimumWidth: 30
-                    visible: headerBar.rightDockVisible
+                    visible: GlobalState.settingsManager.rightPanelVisible
                 }
 
             }

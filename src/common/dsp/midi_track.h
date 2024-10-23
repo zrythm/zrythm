@@ -16,12 +16,17 @@
  */
 
 class MidiTrack final
-    : public PianoRollTrack,
+    : public QObject,
+      public PianoRollTrack,
       public ChannelTrack,
       public ICloneable<MidiTrack>,
       public ISerializable<MidiTrack>,
       public InitializableObjectFactory<MidiTrack>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_TRACK_QML_PROPERTIES
+
   friend class InitializableObjectFactory<MidiTrack>;
 
 public:

@@ -11,6 +11,17 @@
 #include <variant>
 #include <vector>
 
+// Helper concept to check if a type is a container
+template <typename T>
+concept ContainerType = requires (T t) {
+  typename T::value_type;
+  typename T::iterator;
+  typename T::const_iterator;
+  { t.begin () } -> std::same_as<typename T::iterator>;
+  { t.end () } -> std::same_as<typename T::iterator>;
+  { t.size () } -> std::convertible_to<std::size_t>;
+};
+
 // Dependent false (for preventing static_assertions from being executed before
 // template instantiations)
 template <typename...> struct dependent_false : std::false_type
@@ -42,6 +53,15 @@ concept VariantOfPointers = requires {
       ((IsPointer<Ts> || std::is_null_pointer_v<Ts>) && ...),
       "All types in the variant must be pointers");
   }(static_cast<T *> (nullptr));
+};
+
+// Concept to check if a type is a vector of variants of pointers (allows
+// std::nullptr_t)
+template <typename T>
+concept VectorOfVariantPointers = requires {
+  typename T::value_type;
+  requires VariantOfPointers<typename T::value_type>;
+  requires ContainerType<T>;
 };
 
 // Primary template
@@ -184,6 +204,11 @@ operator| (R &&r, type_is<T>)
            else if constexpr (std::is_pointer_v<U>)
              {
                return dynamic_cast<T *> (u);
+             }
+           else if constexpr (VariantOfPointers<U>)
+             {
+               return std::visit (
+                 [] (auto ptr) { return dynamic_cast<T *> (ptr); }, u);
              }
            else
              {

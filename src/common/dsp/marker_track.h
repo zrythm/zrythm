@@ -16,11 +16,16 @@
 #define P_MARKER_TRACK (TRACKLIST->marker_track_)
 
 class MarkerTrack final
-    : public Track,
+    : public QObject,
+      public Track,
       public ICloneable<MarkerTrack>,
       public ISerializable<MarkerTrack>,
       public InitializableObjectFactory<MarkerTrack>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_TRACK_QML_PROPERTIES
+
   friend class InitializableObjectFactory<MarkerTrack>;
 
 public:

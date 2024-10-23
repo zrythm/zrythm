@@ -23,7 +23,7 @@ FoldableTrack::is_status (MixerStatus status) const
   for (int i = 1; i < size_; i++)
     {
       int     pos = pos_ + i;
-      Track * child = tracklist_->get_track (pos);
+      Track * child = Track::from_variant (tracklist_->get_track (pos));
       z_return_val_if_fail (IS_TRACK_AND_NONNULL (child), false);
 
       if (child->has_channel ())

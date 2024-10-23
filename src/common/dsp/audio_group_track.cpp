@@ -7,7 +7,7 @@ AudioGroupTrack::AudioGroupTrack (const std::string &name, int pos)
     : Track (Track::Type::AudioGroup, name, pos, PortType::Audio, PortType::Audio)
 {
   /* GTK color picker color */
-  color_ = Color ("#26A269");
+  color_ = Color (QColor ("#26A269"));
   icon_name_ = "effect";
 }
 

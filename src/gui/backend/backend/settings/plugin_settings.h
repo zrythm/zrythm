@@ -148,7 +148,7 @@ public:
 
   /** Last datetime instantiated (number of microseconds since January 1, 1970
    * UTC). */
-  gint64 last_instantiated_time_ = 0;
+  std::int64_t last_instantiated_time_ = 0;
 
   /** Number of times this plugin has been instantiated. */
   int num_instantiations_ = 0;

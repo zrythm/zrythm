@@ -24,6 +24,18 @@
 
 #include <glib/gi18n.h>
 
+Tracklist::Tracklist (QObject * parent) : QAbstractListModel (parent) { }
+
+Tracklist::Tracklist (Project &project)
+    : QAbstractListModel (&project), project_ (&project)
+{
+}
+
+Tracklist::Tracklist (SampleProcessor &sample_processor)
+    : sample_processor_ (&sample_processor)
+{
+}
+
 void
 Tracklist::init_loaded (Project * project, SampleProcessor * sample_processor)
 {
@@ -33,19 +45,89 @@ Tracklist::init_loaded (Project * project, SampleProcessor * sample_processor)
   z_debug ("initializing loaded Tracklist...");
   for (auto &track : tracks_)
     {
-      if (track->is_chord ())
-        chord_track_ = dynamic_cast<ChordTrack *> (track.get ());
-      else if (track->is_marker ())
-        marker_track_ = dynamic_cast<MarkerTrack *> (track.get ());
-      else if (track->is_master ())
-        master_track_ = dynamic_cast<MasterTrack *> (track.get ());
-      else if (track->is_tempo ())
-        tempo_track_ = dynamic_cast<TempoTrack *> (track.get ());
-      else if (track->is_modulator ())
-        modulator_track_ = dynamic_cast<ModulatorTrack *> (track.get ());
-      track->tracklist_ = this;
-      track->init_loaded ();
+      std::visit (
+        [&] (auto &track) {
+          using T = base_type<decltype (track)>;
+          if constexpr (std::is_same_v<T, ChordTrack>)
+            {
+              chord_track_ = track;
+            }
+          else if constexpr (std::is_same_v<T, MarkerTrack>)
+            {
+              marker_track_ = track;
+            }
+          else if constexpr (std::is_same_v<T, MasterTrack>)
+            {
+              master_track_ = track;
+            }
+          else if constexpr (std::is_same_v<T, TempoTrack>)
+            {
+              tempo_track_ = track;
+            }
+          else if constexpr (std::is_same_v<T, ModulatorTrack>)
+            {
+              modulator_track_ = track;
+            }
+          track->setParent (this);
+          track->tracklist_ = this;
+          track->init_loaded ();
+        },
+        track);
     }
+}
+
+QHash<int, QByteArray>
+Tracklist::roleNames () const
+{
+  QHash<int, QByteArray> roles;
+  roles[TrackPtrRole] = "track";
+  roles[TrackNameRole] = "trackName";
+  return roles;
+}
+
+int
+Tracklist::rowCount (const QModelIndex &parent) const
+{
+  return static_cast<int> (tracks_.size ());
+}
+
+QVariant
+Tracklist::data (const QModelIndex &index, int role) const
+{
+  if (!index.isValid ())
+    return {};
+
+  auto track = tracks_.at (index.row ());
+
+  z_debug (
+    "getting role {} for track {}", role,
+    QString::fromStdString (
+      Track::from_variant (tracks_.at (index.row ()))->name_));
+
+  switch (role)
+    {
+    case TrackPtrRole:
+      return QVariant::fromStdVariant (track);
+    case TrackNameRole:
+      return QString::fromStdString (Track::from_variant (track)->name_);
+    default:
+      return {};
+    }
+}
+
+std::optional<TrackPtrVariant>
+Tracklist::find_track_by_name (const std::string &name) const
+{
+  auto found = std::ranges::find_if (tracks_, [&] (auto &tr) {
+    auto * track = Track::from_variant (tr);
+    return track->name_ == name;
+  });
+  if (found != tracks_.end ())
+    {
+      return *found;
+    }
+
+  return std::nullopt;
 }
 
 void
@@ -53,20 +135,38 @@ Tracklist::select_all (bool select, bool fire_events)
 {
   for (auto &track : tracks_)
     {
-      track->select (select, false, fire_events);
+      std::visit (
+        [&] (auto &&t) { t->select (select, false, fire_events); }, track);
     }
 
   if (!select)
-    tracks_.back ()->select (true, true, fire_events);
+    {
+      std::visit (
+        [&] (auto &&t) { t->select (true, true, fire_events); },
+        tracks_.back ());
+    }
+}
+
+std::optional<TrackPtrVariant>
+Tracklist::get_last_track (const PinOption pin_opt, const bool visible_only) const
+{
+  int idx = get_last_pos (pin_opt, visible_only);
+  return tracks_.at (idx);
 }
 
 void
 Tracklist::get_visible_tracks (std::vector<Track *> visible_tracks) const
 {
-  for (const auto &track : TRACKLIST->tracks_)
+  for (const auto &track : tracks_)
     {
-      if (track->should_be_visible ())
-        visible_tracks.push_back (track.get ());
+      std::visit (
+        [&] (auto &&t) {
+          if (t->should_be_visible ())
+            {
+              visible_tracks.push_back (t);
+            }
+        },
+        track);
     }
 }
 
@@ -80,10 +180,14 @@ Tracklist::get_visible_track_diff (const Track &src, const Track &dest) const
         auto it = tracks_.begin () + src.pos_;
         it != tracks_.begin () + dest.pos_; ++it)
         {
-          if ((*it)->should_be_visible ())
-            {
-              count++;
-            }
+          std::visit (
+            [&] (auto &&tr) {
+              if (tr->should_be_visible ())
+                {
+                  count++;
+                }
+            },
+            (*it));
         }
     }
   else if (src.pos_ > dest.pos_)
@@ -92,10 +196,14 @@ Tracklist::get_visible_track_diff (const Track &src, const Track &dest) const
         auto it = tracks_.begin () + dest.pos_;
         it != tracks_.begin () + src.pos_; ++it)
         {
-          if ((*it)->should_be_visible ())
-            {
-              count--;
-            }
+          std::visit (
+            [&] (auto &&tr) {
+              if (tr->should_be_visible ())
+                {
+                  count--;
+                }
+            },
+            (*it));
         }
     }
 
@@ -108,27 +216,34 @@ Tracklist::print_tracks () const
   z_info ("----- tracklist tracks ------");
   for (size_t i = 0; i < tracks_.size (); i++)
     {
-      const auto &track = tracks_[i];
-      if (track)
-        {
-          std::string                  parent_str;
-          std::vector<FoldableTrack *> parents;
-          track->add_folder_parents (parents, false);
-          parent_str.append (parents.size () * 2, '-');
-          if (!parents.empty ())
-            parent_str += ' ';
+      std::visit (
+        [&] (auto &&track) {
+          if (track)
+            {
+              std::string                  parent_str;
+              std::vector<FoldableTrack *> parents;
+              track->add_folder_parents (parents, false);
+              parent_str.append (parents.size () * 2, '-');
+              if (!parents.empty ())
+                parent_str += ' ';
 
-          z_info (
-            "[{:03}] {}{} (pos {}, parents {}, size {})", i, parent_str,
-            track->name_, track->pos_, parents.size (),
-            track->is_foldable ()
-              ? dynamic_cast<FoldableTrack *> (track.get ())->size_
-              : 1);
-        }
-      else
-        {
-          z_info ("[{:03}] (null)", i);
-        }
+              int fold_size = 1;
+              if constexpr (
+                std::is_same_v<base_type<decltype (track)>, FoldableTrack>)
+                {
+                  fold_size = track->size_;
+                }
+
+              z_info (
+                "[{:03}] {}{} (pos {}, parents {}, size {})", i, parent_str,
+                track->name_, track->pos_, parents.size (), fold_size);
+            }
+          else
+            {
+              z_info ("[{:03}] (null)", i);
+            }
+        },
+        tracks_.at (i));
     }
   z_info ("------ end ------");
 }
@@ -140,8 +255,8 @@ Tracklist::swap_tracks (const size_t index1, const size_t index2)
   swapping_tracks_ = true;
 
   {
-    const auto &src_track = tracks_[index1];
-    const auto &dest_track = tracks_[index2];
+    const auto &src_track = Track::from_variant (tracks_.at (index1));
+    const auto &dest_track = Track::from_variant (tracks_.at (index2));
     z_debug (
       "swapping tracks {} [{}] and {} [{}]...",
       src_track ? src_track->name_ : "(none)", index1,
@@ -151,8 +266,8 @@ Tracklist::swap_tracks (const size_t index1, const size_t index2)
   std::iter_swap (tracks_.begin () + index1, tracks_.begin () + index2);
 
   {
-    const auto &src_track = tracks_[index1];
-    const auto &dest_track = tracks_[index2];
+    const auto &src_track = Track::from_variant (tracks_.at (index1));
+    const auto &dest_track = Track::from_variant (tracks_.at (index2));
 
     if (src_track)
       src_track->pos_ = index1;
@@ -197,9 +312,9 @@ Tracklist::insert_track (
   track->set_name (*this, track->name_, false);
 
   /* append the track at the end */
-  auto added_track =
-    dynamic_cast<T *> (tracks_.emplace_back (std::move (track)).get ());
+  T * added_track = std::get<T *> (tracks_.emplace_back (track.release ()));
   added_track->tracklist_ = this;
+  added_track->setParent (this);
 
   /* remember important tracks */
   if constexpr (std::is_same_v<T, MasterTrack>)
@@ -355,7 +470,7 @@ Tracklist::append_track (
 ChordTrack *
 Tracklist::get_chord_track () const
 {
-  return get_track_by_type<ChordTrack> (Track::Type::Chord);
+  return get_track_by_type<ChordTrack> ();
 }
 
 template <typename T>
@@ -369,10 +484,10 @@ Tracklist::find_track_by_name_hash (unsigned int hash) const
     && !is_auditioner ()) [[likely]]
     {
       auto found = std::ranges::find_if (tracks_, [hash] (const auto &track) {
-        return track->name_hash_ == hash;
+        return Track::from_variant (track)->name_hash_ == hash;
       });
       if (found != tracks_.end ())
-        return dynamic_cast<T *> (found->get ());
+        return dynamic_cast<T *> (Track::from_variant (*found));
 
       return nullptr;
     }
@@ -380,12 +495,8 @@ Tracklist::find_track_by_name_hash (unsigned int hash) const
     {
       for (const auto &track : tracks_)
         {
-          if (ZRYTHM_TESTING)
-            {
-              z_return_val_if_fail (track, nullptr);
-            }
-          if (track->get_name_hash () == hash)
-            return dynamic_cast<T *> (track.get ());
+          if (Track::from_variant (track)->get_name_hash () == hash)
+            return dynamic_cast<T *> (Track::from_variant (track));
         }
     }
   return nullptr;
@@ -400,10 +511,11 @@ Tracklist::multiply_track_heights (
 {
   for (auto &tr : tracks_)
     {
-      if (visible_only && !tr->should_be_visible ())
+      auto * const track = Track::from_variant (tr);
+      if (visible_only && !track->should_be_visible ())
         continue;
 
-      bool ret = tr->multiply_heights (multiplier, visible_only, check_only);
+      bool ret = track->multiply_heights (multiplier, visible_only, check_only);
 
       if (!ret)
         {
@@ -425,10 +537,10 @@ Tracklist::get_track_pos (Track &track) const
 {
   auto it =
     std::find_if (tracks_.cbegin (), tracks_.cend (), [&track] (const auto &t) {
-      return t.get () == &track;
+      return Track::from_variant (t) == &track;
     });
   z_return_val_if_fail (it != tracks_.cend (), -1);
-  return std::distance (tracks_.cbegin (), it);
+  return static_cast<int> (std::distance (tracks_.cbegin (), it));
 }
 
 bool
@@ -441,29 +553,30 @@ Tracklist::validate () const
     {
       ret_vals.emplace_back (std::async ([this, &track] () {
         // z_return_val_if_fail (track && track->is_in_active_project (), false);
-        z_return_val_if_fail (track, false);
+        auto * tr = Track::from_variant (track);
+        z_return_val_if_fail (tr, false);
 
-        if (!track->validate ())
+        if (!tr->validate ())
           return false;
 
-        if (track->pos_ != get_track_pos (*track))
+        if (tr->pos_ != get_track_pos (*tr))
           {
             return false;
           }
 
         /* validate size */
         int track_size = 1;
-        if (auto foldable_track = dynamic_cast<FoldableTrack *> (track.get ()))
+        if (const auto * foldable_track = dynamic_cast<FoldableTrack *> (tr))
           {
             track_size = foldable_track->size_;
           }
         z_return_val_if_fail (
-          track->pos_ + track_size <= (int) tracks_.size (), false);
+          tr->pos_ + track_size <= (int) tracks_.size (), false);
 
         /* validate connections */
-        if (auto channel_track = dynamic_cast<ChannelTrack *> (track.get ()))
+        if (const auto * channel_track = dynamic_cast<ChannelTrack *> (tr))
           {
-            auto &channel = channel_track->get_channel ();
+            const auto &channel = channel_track->get_channel ();
             for (const auto &send : channel->sends_)
               {
                 send->validate ();
@@ -483,7 +596,7 @@ Tracklist::get_last_pos (const PinOption pin_opt, const bool visible_only) const
 {
   for (int i = tracks_.size () - 1; i >= 0; i--)
     {
-      const auto &tr = tracks_[i];
+      const auto &tr = Track::from_variant (tracks_[i]);
 
       if (pin_opt == PinOption::PinnedOnly && !tr->is_pinned ())
         continue;
@@ -506,51 +619,55 @@ Tracklist::is_in_active_project () const
          || (sample_processor_ && sample_processor_->is_in_active_project ());
 }
 
-Track *
+std::optional<TrackPtrVariant>
 Tracklist::get_visible_track_after_delta (Track &track, int delta) const
 {
-  auto vis_track = &track;
+  auto * vis_track = &track;
   while (delta != 0)
     {
-      vis_track =
+      auto vis_after_delta =
         delta > 0
           ? get_next_visible_track (*vis_track)
           : get_prev_visible_track (*vis_track);
-      if (!vis_track)
-        return nullptr;
+      if (!vis_after_delta)
+        return std::nullopt;
+      vis_track = Track::from_variant (vis_after_delta.value ());
       delta += delta > 0 ? -1 : 1;
     }
-  return vis_track;
+  return std::make_optional (convert_to_variant<TrackPtrVariant> (vis_track));
 }
 
-Track *
+std::optional<TrackPtrVariant>
 Tracklist::get_first_visible_track (const bool pinned) const
 {
   auto it =
     std::find_if (tracks_.begin (), tracks_.end (), [pinned] (const auto &tr) {
-      return tr->should_be_visible () && tr->is_pinned () == pinned;
+      auto track = Track::from_variant (tr);
+      return track->should_be_visible () && track->is_pinned () == pinned;
     });
-  return it != tracks_.end () ? it->get () : nullptr;
+  return it != tracks_.end () ? std::make_optional (*it) : std::nullopt;
 }
 
-Track *
+std::optional<TrackPtrVariant>
 Tracklist::get_prev_visible_track (const Track &track) const
 {
   auto it = std::find_if (
     tracks_.rbegin (), tracks_.rend (), [&track] (const auto &tr) {
-      return tr->pos_ < track.pos_ && tr->should_be_visible ();
+      auto cur_tr = Track::from_variant (tr);
+      return cur_tr->pos_ < track.pos_ && cur_tr->should_be_visible ();
     });
-  return it != tracks_.rend () ? it->get () : nullptr;
+  return it != tracks_.rend () ? std::make_optional (*it) : std::nullopt;
 }
 
-Track *
+std::optional<TrackPtrVariant>
 Tracklist::get_next_visible_track (const Track &track) const
 {
   auto it =
     std::find_if (tracks_.begin (), tracks_.end (), [&track] (const auto &tr) {
-      return tr->pos_ > track.pos_ && tr->should_be_visible ();
+      auto cur_tr = Track::from_variant (tr);
+      return cur_tr->pos_ > track.pos_ && cur_tr->should_be_visible ();
     });
-  return it != tracks_.end () ? it->get () : nullptr;
+  return it != tracks_.end () ? std::make_optional (*it) : std::nullopt;
 }
 
 void
@@ -569,8 +686,8 @@ Tracklist::remove_track (
     track.pos_, track.get_name (), rm_pl, free_track, publish_events,
     recalc_graph, tracks_.size ());
 
-  Track * prev_visible = nullptr;
-  Track * next_visible = nullptr;
+  std::optional<TrackPtrVariant> prev_visible = std::nullopt;
+  std::optional<TrackPtrVariant> next_visible = std::nullopt;
   if (!is_auditioner ())
     {
       prev_visible = get_prev_visible_track (track);
@@ -596,10 +713,11 @@ Tracklist::remove_track (
 
   auto it =
     std::find_if (tracks_.begin (), tracks_.end (), [&track] (const auto &ptr) {
-      return ptr.get () == &track;
+      auto ptr_track = Track::from_variant (ptr);
+      return ptr_track == &track;
     });
   z_return_if_fail (it != tracks_.end ());
-  std::unique_ptr<Track> removed_track = std::move (*it);
+  auto removed_track = *it;
   tracks_.erase (it);
 
   if (is_in_active_project () && !is_auditioner ())
@@ -607,24 +725,32 @@ Tracklist::remove_track (
       /* if it was the only track selected, select the next one */
       if (TRACKLIST_SELECTIONS->empty ())
         {
-          Track * track_to_select = next_visible ? next_visible : prev_visible;
+          auto track_to_select = next_visible ? next_visible : prev_visible;
           if (!track_to_select && !tracks_.empty ())
             {
-              track_to_select = tracks_[0].get ();
+              track_to_select = tracks_.at (0);
             }
           if (track_to_select)
             {
-              TRACKLIST_SELECTIONS->add_track (*track_to_select, publish_events);
+              std::visit (
+                [publish_events] (auto &&tr) {
+                  TRACKLIST_SELECTIONS->add_track (*tr, publish_events);
+                },
+                *track_to_select);
             }
         }
     }
 
-  removed_track->pos_ = -1;
+  std::visit (
+    [free_track] (auto &&tr) {
+      tr->pos_ = -1;
 
-  if (free_track)
-    {
-      removed_track.reset ();
-    }
+      if (free_track)
+        {
+          tr->deleteLater ();
+        }
+    },
+    removed_track);
 
   if (recalc_graph)
     {
@@ -654,8 +780,8 @@ Tracklist::move_track (
 
   bool move_higher = pos < track.pos_;
 
-  Track * prev_visible = get_prev_visible_track (track);
-  Track * next_visible = get_next_visible_track (track);
+  auto prev_visible = get_prev_visible_track (track);
+  auto next_visible = get_next_visible_track (track);
 
   int idx = get_track_pos (track);
   z_return_if_fail (track.pos_ == idx);
@@ -686,8 +812,12 @@ Tracklist::move_track (
       /* if it was the only track selected, select the next one */
       if (TRACKLIST_SELECTIONS->empty () && (prev_visible || next_visible))
         {
-          TRACKLIST_SELECTIONS->add_track (
-            next_visible ? *next_visible : *prev_visible, publish_events);
+          auto track_to_add = next_visible ? *next_visible : *prev_visible;
+          std::visit (
+            [publish_events] (auto &&tr) {
+              TRACKLIST_SELECTIONS->add_track (*tr, publish_events);
+            },
+            track_to_add);
         }
     }
 
@@ -744,15 +874,17 @@ Tracklist::track_name_is_unique (const std::string &name, Track * track_to_skip)
   const
 {
   return std::none_of (
-    tracks_.begin (), tracks_.end (), [&name, track_to_skip] (const auto &track) {
-      return track->get_name () == name && track.get () != track_to_skip;
+    tracks_.begin (), tracks_.end (), [&name, track_to_skip] (const auto &tr) {
+      auto track = Track::from_variant (tr);
+      return track->get_name () == name && track != track_to_skip;
     });
 }
 
 bool
 Tracklist::has_soloed () const
 {
-  return std::any_of (tracks_.begin (), tracks_.end (), [] (const auto &track) {
+  return std::any_of (tracks_.begin (), tracks_.end (), [] (const auto &tr) {
+    auto track = Track::from_variant (tr);
     return track->has_channel () && track->get_soloed ();
   });
 }
@@ -760,7 +892,8 @@ Tracklist::has_soloed () const
 bool
 Tracklist::has_listened () const
 {
-  return std::any_of (tracks_.begin (), tracks_.end (), [] (const auto &track) {
+  return std::any_of (tracks_.begin (), tracks_.end (), [] (const auto &tr) {
+    auto track = Track::from_variant (tr);
     return track->has_channel () && track->get_listened ();
   });
 }
@@ -768,7 +901,8 @@ Tracklist::has_listened () const
 int
 Tracklist::get_num_muted_tracks () const
 {
-  return std::count_if (tracks_.begin (), tracks_.end (), [] (const auto &track) {
+  return std::count_if (tracks_.begin (), tracks_.end (), [] (const auto &tr) {
+    auto track = Track::from_variant (tr);
     return track->has_channel () && track->get_muted ();
   });
 }
@@ -776,7 +910,8 @@ Tracklist::get_num_muted_tracks () const
 int
 Tracklist::get_num_soloed_tracks () const
 {
-  return std::count_if (tracks_.begin (), tracks_.end (), [] (const auto &track) {
+  return std::count_if (tracks_.begin (), tracks_.end (), [] (const auto &tr) {
+    auto track = Track::from_variant (tr);
     return track->has_channel () && track->get_soloed ();
   });
 }
@@ -784,7 +919,8 @@ Tracklist::get_num_soloed_tracks () const
 int
 Tracklist::get_num_listened_tracks () const
 {
-  return std::count_if (tracks_.begin (), tracks_.end (), [] (const auto &track) {
+  return std::count_if (tracks_.begin (), tracks_.end (), [] (const auto &tr) {
+    auto track = Track::from_variant (tr);
     return track->has_channel () && track->get_listened ();
   });
 }
@@ -792,26 +928,27 @@ Tracklist::get_num_listened_tracks () const
 void
 Tracklist::get_plugins (std::vector<zrythm::plugins::Plugin *> &arr) const
 {
-  for (auto &track : tracks_)
-    {
-      track->get_plugins (arr);
-    }
+  std::ranges::for_each (tracks_, [&arr] (const auto &tr) {
+    auto track = Track::from_variant (tr);
+    track->get_plugins (arr);
+  });
 }
 
 void
 Tracklist::activate_all_plugins (bool activate)
 {
-  for (auto &track : tracks_)
-    {
-      track->activate_all_plugins (activate);
-    }
+  std::ranges::for_each (tracks_, [&activate] (const auto &tr) {
+    auto track = Track::from_variant (tr);
+    track->activate_all_plugins (activate);
+  });
 }
 
 int
 Tracklist::get_num_visible_tracks (bool visible) const
 {
   return std::count_if (
-    tracks_.begin (), tracks_.end (), [visible] (const auto &track) {
+    tracks_.begin (), tracks_.end (), [visible] (const auto &tr) {
+      auto track = Track::from_variant (tr);
       return track->should_be_visible () == visible;
     });
 }
@@ -819,7 +956,7 @@ Tracklist::get_num_visible_tracks (bool visible) const
 void
 Tracklist::expose_ports_to_backend ()
 {
-  for (auto track : tracks_ | type_is<ChannelTrack> ())
+  for (auto * track : tracks_ | type_is<ChannelTrack> ())
     {
       track->channel_->expose_ports_to_backend ();
     }
@@ -872,7 +1009,8 @@ Tracklist::import_regions (
                 {
                   int index = import_info->track_idx_ + iter;
                   Track::create_empty_at_idx_with_action (track_type, index);
-                  track = get_track (index);
+                  auto tmp = get_track (index);
+                  std::visit ([&track] (auto * t) { track = t; }, tmp);
                   executed_actions++;
                 }
               z_return_if_fail (track);
@@ -1306,19 +1444,19 @@ Tracklist::handle_move_or_copy (
 void
 Tracklist::mark_all_tracks_for_bounce (bool bounce)
 {
-  for (auto &track : tracks_)
-    {
-      track->mark_for_bounce (bounce, true, false, false);
-    }
+  std::ranges::for_each (tracks_, [bounce] (auto &tr) {
+    auto track = Track::from_variant (tr);
+    track->mark_for_bounce (bounce, true, false, false);
+  });
 }
 
 int
 Tracklist::get_total_bars (const Transport &transport, int total_bars) const
 {
-  for (const auto &track : tracks_)
-    {
-      total_bars = track->get_total_bars (transport, total_bars);
-    }
+  std::ranges::for_each (tracks_, [&] (auto &tr) {
+    auto track = Track::from_variant (tr);
+    total_bars = track->get_total_bars (transport, total_bars);
+  });
   return total_bars;
 }
 
@@ -1337,48 +1475,47 @@ Tracklist::contains_chord_track () const
 void
 Tracklist::set_caches (CacheType types)
 {
-  for (auto &track : tracks_)
-    {
-      track->set_caches (types);
-    }
+  std::ranges::for_each (tracks_, [types] (auto &tr) {
+    auto track = Track::from_variant (tr);
+    track->set_caches (types);
+  });
 }
 
 void
 Tracklist::init_after_cloning (const Tracklist &other)
 {
   pinned_tracks_cutoff_ = other.pinned_tracks_cutoff_;
-  clone_variant_container<TrackVariant> (tracks_, other.tracks_);
-}
 
-Tracklist::Tracklist (Project &project) : project_ (&project) { }
-
-Tracklist::Tracklist (SampleProcessor &sample_processor)
-    : sample_processor_ (&sample_processor)
-{
+  tracks_.clear ();
+  tracks_.reserve (other.tracks_.size ());
+  for (const auto &track : other.tracks_)
+    {
+      std::visit (
+        [&] (auto &tr) {
+          auto raw_ptr = tr->clone_raw_ptr ();
+          raw_ptr->setParent (this);
+          tracks_.push_back (raw_ptr);
+        },
+        track);
+    }
 }
 
 Tracklist::~Tracklist ()
 {
   z_debug ("freeing tracklist...");
 
-  auto new_end =
-    std::remove_if (tracks_.begin (), tracks_.end (), [this] (auto &track) {
-      return track.get () != tempo_track_;
-    });
-  tracks_.erase (new_end, tracks_.end ());
+  // Disconnect all signals to prevent access during destruction
+  disconnect ();
 
-#if 0
-  for (auto &track : std::ranges::reverse_view (tracks_))
-    {
-      if (track.get () == tempo_track_)
-        continue;
-
-      remove_track (*track, true, true, false, false);
-    }
-#endif
-
-  /* remove tempo track last (used when printing positions) */
-  tracks_.clear ();
+  // Schedule tempo track for later deletion because it might be used when
+  // printing positions
+  std::ranges::for_each (children (), [] (QObject * child) {
+    if (dynamic_cast<TempoTrack *> (child) != nullptr)
+      {
+        child->setParent (nullptr);
+        child->deleteLater ();
+      }
+  });
 }
 
 template ProcessableTrack *

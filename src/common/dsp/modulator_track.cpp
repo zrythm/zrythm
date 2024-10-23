@@ -23,7 +23,7 @@ ModulatorTrack::ModulatorTrack (int track_pos)
 {
   main_height_ = TRACK_DEF_HEIGHT / 2;
 
-  color_ = Color ("#222222");
+  color_ = Color (QColor ("#222222"));
   icon_name_ = "gnome-icon-library-encoder-knob-symbolic";
 
   /* set invisible */

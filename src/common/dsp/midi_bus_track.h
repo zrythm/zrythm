@@ -15,11 +15,16 @@
  * processes MIDI data.
  */
 class MidiBusTrack final
-    : public ChannelTrack,
+    : public QObject,
+      public ChannelTrack,
       public ICloneable<MidiBusTrack>,
       public ISerializable<MidiBusTrack>,
       public InitializableObjectFactory<MidiBusTrack>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_TRACK_QML_PROPERTIES
+
   friend class InitializableObjectFactory<MidiBusTrack>;
 
 public:
