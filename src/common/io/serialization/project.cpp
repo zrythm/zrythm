@@ -113,6 +113,7 @@ Project::define_fields (const Context &ctx)
     T::make_field ("snapGridEditor", snap_grid_editor_),
     T::make_field ("quantizeOptsTimeline", quantize_opts_timeline_),
     T::make_field ("quantizeOptsEditor", quantize_opts_editor_),
+    T::make_field ("transport", transport_),
     T::make_field ("audioEngine", audio_engine_),
     T::make_field ("tracklist", tracklist_),
     T::make_field ("mixerSelections", mixer_selections_, true),

@@ -18,6 +18,7 @@ T.Button {
     hoverEnabled: true
     font: Style.buttonTextFont
     opacity: Style.getOpacity(control.enabled, control.Window.active)
+    layer.enabled: true
 
     TextMetrics {
         id: textMetrics
@@ -72,6 +73,9 @@ T.Button {
             animation: Style.propertyAnimation
         }
 
+    }
+
+    layer.effect: DropShadowEffect {
     }
 
 }

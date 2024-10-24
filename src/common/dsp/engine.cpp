@@ -72,8 +72,6 @@
 #  include "weakjack/weak_libjack.h"
 #endif
 
-#include <glibmm.h>
-
 void
 AudioEngine::init_after_cloning (const AudioEngine &other)
 {
@@ -83,7 +81,6 @@ AudioEngine::init_after_cloning (const AudioEngine &other)
   monitor_out_ = other.monitor_out_->clone_unique ();
   midi_editor_manual_press_ = other.midi_editor_manual_press_->clone_unique ();
   midi_in_ = other.midi_in_->clone_unique ();
-  transport_ = other.transport_->clone_unique ();
   pool_ = other.pool_->clone_unique ();
   pool_->engine_ = this;
   control_room_ = other.control_room_->clone_unique ();
@@ -141,7 +138,7 @@ AudioEngine::update_frames_per_tick (
 
   z_return_if_fail (
     beats_per_bar > 0 && bpm > 0 && sample_rate > 0
-    && transport_->ticks_per_bar_ > 0);
+    && project_->transport_->ticks_per_bar_ > 0);
 
   z_debug (
     "frames per tick before: {:f} | ticks per frame before: {:f}",
@@ -150,7 +147,7 @@ AudioEngine::update_frames_per_tick (
   frames_per_tick_ =
     (static_cast<double> (sample_rate) * 60.0
      * static_cast<double> (beats_per_bar))
-    / (static_cast<double> (bpm) * static_cast<double> (transport_->ticks_per_bar_));
+    / (static_cast<double> (bpm) * static_cast<double> (project_->transport_->ticks_per_bar_));
   z_return_if_fail (frames_per_tick_ > 1.0);
   ticks_per_frame_ = 1.0 / frames_per_tick_;
 
@@ -159,7 +156,7 @@ AudioEngine::update_frames_per_tick (
     frames_per_tick_, ticks_per_frame_);
 
   /* update positions */
-  transport_->update_positions (update_from_ticks);
+  project_->transport_->update_positions (update_from_ticks);
 
   for (const auto &track : project_->tracklist_->tracks_)
     {
@@ -323,12 +320,12 @@ AudioEngine::append_ports (std::vector<Port *> &ports)
         tr);
     }
 
-  add_port (transport_->roll_.get ());
-  add_port (transport_->stop_.get ());
-  add_port (transport_->backward_.get ());
-  add_port (transport_->forward_.get ());
-  add_port (transport_->loop_toggle_.get ());
-  add_port (transport_->rec_toggle_.get ());
+  add_port (project_->transport_->roll_.get ());
+  add_port (project_->transport_->stop_.get ());
+  add_port (project_->transport_->backward_.get ());
+  add_port (project_->transport_->forward_.get ());
+  add_port (project_->transport_->loop_toggle_.get ());
+  add_port (project_->transport_->rec_toggle_.get ());
 
   for (const auto &port : hw_in_processor_->audio_ports_)
     {
@@ -678,17 +675,6 @@ AudioEngine::init_loaded (Project * project)
 
   pool_->init_loaded (this);
 
-  auto * tempo_track = project->tracklist_->tempo_track_;
-  if (!tempo_track)
-    {
-      tempo_track = project->tracklist_->get_track_by_type<TempoTrack> ();
-    }
-  if (!tempo_track)
-    {
-      throw ZrythmException ("Tempo track not found");
-    }
-
-  transport_->init_loaded (this, tempo_track);
   control_room_->init_loaded (this);
   sample_processor_->init_loaded (this);
   hw_in_processor_->init_loaded (this);
@@ -734,7 +720,6 @@ AudioEngine::AudioEngine (Project * project)
     : project_ (project), sample_rate_ (44000),
       control_room_ (std::make_unique<ControlRoom> (this)),
       pool_ (std::make_unique<AudioPool> (this)),
-      transport_ (std::make_unique<Transport> (this)),
       sample_processor_ (std::make_unique<SampleProcessor> (this))
 {
   z_debug ("Creating audio engine...");
@@ -773,8 +758,8 @@ AudioEngine::wait_for_pause (State &state, bool force_pause, bool with_fadeout)
   z_debug ("waiting for engine to pause...");
 
   state.running_ = run_.load ();
-  state.playing_ = transport_->is_rolling ();
-  state.looping_ = transport_->loop_;
+  state.playing_ = project_->transport_->isRolling ();
+  state.looping_ = project_->transport_->loop_;
   if (!state.running_)
     {
       z_debug ("engine not running - won't wait for pause");
@@ -814,16 +799,17 @@ AudioEngine::wait_for_pause (State &state, bool force_pause, bool with_fadeout)
 
   if (state.playing_)
     {
-      transport_->request_pause (true);
+      project_->transport_->requestPause (true);
 
       if (force_pause)
         {
-          transport_->play_state_ = Transport::PlayState::Paused;
+          project_->transport_->play_state_ = Transport::PlayState::Paused;
         }
       else
         {
           while (
-            transport_->play_state_ == Transport::PlayState::PauseRequested
+            project_->transport_->play_state_
+              == Transport::PlayState::PauseRequested
             && !dummy_audio_thread_->threadShouldExit ())
             {
               std::this_thread::sleep_for (std::chrono::microseconds (100));
@@ -852,10 +838,10 @@ AudioEngine::wait_for_pause (State &state, bool force_pause, bool with_fadeout)
       process_prepare (1, &sem);
 
       EngineProcessTimeInfo time_nfo = {
-        .g_start_frame_ =
-          static_cast<unsigned_frame_t> (transport_->playhead_pos_.frames_),
-        .g_start_frame_w_offset_ =
-          static_cast<unsigned_frame_t> (transport_->playhead_pos_.frames_),
+        .g_start_frame_ = static_cast<unsigned_frame_t> (
+          project_->transport_->playhead_pos_.frames_),
+        .g_start_frame_w_offset_ = static_cast<unsigned_frame_t> (
+          project_->transport_->playhead_pos_.frames_),
         .local_offset_ = 0,
         .nframes_ = 1,
       };
@@ -875,17 +861,18 @@ AudioEngine::resume (State &state)
       z_debug ("engine was not running - won't resume");
       return;
     }
-  transport_->loop_ = state.looping_;
+  project_->transport_->loop_ = state.looping_;
   if (state.playing_)
     {
-      transport_->playhead_before_pause_.update_frames_from_ticks (0.0);
-      transport_->move_playhead (
-        &transport_->playhead_before_pause_, false, false, false);
-      transport_->request_roll (true);
+      project_->transport_->playhead_before_pause_.update_frames_from_ticks (
+        0.0);
+      project_->transport_->move_playhead (
+        &project_->transport_->playhead_before_pause_, false, false, false);
+      project_->transport_->requestRoll (true);
     }
   else
     {
-      transport_->request_pause (true);
+      project_->transport_->requestPause (true);
     }
 
   z_debug ("restarting engine: setting fade in samples");
@@ -1043,9 +1030,10 @@ AudioEngine::update_position_info (
   PositionInfo   &pos_nfo,
   const nframes_t frames_to_add)
 {
+  auto     transport_ = project_->transport_;
   Position playhead = transport_->playhead_pos_;
   playhead.add_frames (frames_to_add, ticks_per_frame_);
-  pos_nfo.is_rolling_ = transport_->is_rolling ();
+  pos_nfo.is_rolling_ = transport_->isRolling ();
   pos_nfo.bpm_ = P_TEMPO_TRACK->get_current_bpm ();
   pos_nfo.bar_ = playhead.get_bars (*transport_, true);
   pos_nfo.beat_ =
@@ -1086,6 +1074,7 @@ AudioEngine::process_prepare (
 
   nframes_ = nframes;
 
+  auto transport_ = project_->transport_;
   if (transport_->play_state_ == Transport::PlayState::PauseRequested)
     {
       if (ZRYTHM_TESTING)
@@ -1141,7 +1130,7 @@ AudioEngine::process_prepare (
   update_position_info (pos_nfo_current_, 0);
   {
     nframes_t frames_to_add = 0;
-    if (transport_->is_rolling ())
+    if (transport_->isRolling ())
       {
         if (remaining_latency_preroll_ < nframes)
           {
@@ -1255,6 +1244,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
 
   /* --- handle preroll --- */
 
+  auto *                transport_ = project_->transport_;
   EngineProcessTimeInfo split_time_nfo = {
     .g_start_frame_ = (unsigned_frame_t) transport_->playhead_pos_.frames_,
     .g_start_frame_w_offset_ =
@@ -1329,7 +1319,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
       nframes_t cur_offset = total_frames_to_process - total_frames_remaining;
 
       /* queue metronome if met within this cycle */
-      if (transport_->metronome_enabled_ && transport_->is_rolling ())
+      if (transport_->metronome_enabled_ && transport_->isRolling ())
         {
           metronome_->queue_events (this, cur_offset, total_frames_remaining);
         }
@@ -1435,7 +1425,8 @@ AudioEngine::post_process (const nframes_t roll_nframes, const nframes_t nframes
   update_position_info (pos_nfo_before_, 0);
 
   /* move the playhead if rolling and not pre-rolling */
-  if (transport_->is_rolling () && remaining_latency_preroll_ == 0)
+  auto * transport_ = project_->transport_;
+  if (transport_->isRolling () && remaining_latency_preroll_ == 0)
     {
       transport_->add_to_playhead (roll_nframes);
 #if HAVE_JACK

@@ -77,7 +77,7 @@ _test (
   ASSERT_EQ (latency, node->route_playback_latency_);
 
   /* 3. start playback */
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
 
   /* let the engine run */
   g_usleep (4000000);
@@ -119,7 +119,7 @@ _test (
   ASSERT_EQ (latency2, node->route_playback_latency_);
 
   /* 3. start playback */
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
 
   /* let the engine run */
   g_usleep (4000000);

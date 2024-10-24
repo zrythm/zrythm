@@ -276,7 +276,7 @@ SimpleTracklistSelections::remove_track (Track &track, int fire_events)
     dynamic_cast<RecordableTrack *> (const_cast<Track *> (&track));
   if (
     recordable_track && recordable_track->record_set_automatically_
-    && !(TRANSPORT->is_recording () && TRANSPORT->is_rolling ()))
+    && !(TRANSPORT->is_recording () && TRANSPORT->isRolling ()))
     {
       recordable_track->set_recording (false, fire_events);
       recordable_track->record_set_automatically_ = false;

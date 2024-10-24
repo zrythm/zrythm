@@ -154,7 +154,7 @@ MidiNote::set_val (const uint8_t val)
   z_return_if_fail (val < 128);
 
   /* if currently playing set a note off event. */
-  if (is_hit (PLAYHEAD.frames_) && TRANSPORT->is_rolling ())
+  if (is_hit (PLAYHEAD.frames_) && TRANSPORT->isRolling ())
     {
       auto region = dynamic_cast<MidiRegion *> (get_region ());
       z_return_if_fail (region);

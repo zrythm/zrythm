@@ -67,7 +67,7 @@ ProcessableTrack::fill_events_common (
   MidiEventVector *            midi_events,
   StereoPorts *                stereo_ports) const
 {
-  if (!is_auditioner () && !TRANSPORT->is_rolling ())
+  if (!is_auditioner () && !TRANSPORT->isRolling ())
     {
       return;
     }

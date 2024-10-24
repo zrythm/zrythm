@@ -544,7 +544,7 @@ TEST_F (ZrythmFixture, RenameMidiTrackWithEvents)
   TRACKLIST->validate ();
 
   /* play and let engine run */
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
   AUDIO_ENGINE->wait_n_cycles (3);
 
   UNDO_MANAGER->undo ();
@@ -556,7 +556,7 @@ TEST_F (ZrythmFixture, RenameMidiTrackWithEvents)
     TRACKLIST->get_num_tracks ()));
 
   /* play and let engine run */
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
   AUDIO_ENGINE->wait_n_cycles (3);
 }
 
@@ -580,7 +580,7 @@ TEST_F (ZrythmFixture, RenameTrackWithSend)
   TRACKLIST->validate ();
 
   /* play and let engine run */
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
   AUDIO_ENGINE->wait_n_cycles (3);
 
   /* change the name of the group track */
@@ -590,7 +590,7 @@ TEST_F (ZrythmFixture, RenameTrackWithSend)
   TRACKLIST->validate ();
 
   /* play and let engine run */
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
   AUDIO_ENGINE->wait_n_cycles (3);
 
   UNDO_MANAGER->undo ();

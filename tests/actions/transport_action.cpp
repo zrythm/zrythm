@@ -156,7 +156,7 @@ TEST_F (ZrythmFixture, ChangeBPMTwiceDuringPlayback)
   ASSERT_TRUE (r->validate (true, 0));
 
   /* start playback */
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
   AUDIO_ENGINE->wait_n_cycles (3);
 
   bpm_t bpm_before = P_TEMPO_TRACK->get_current_bpm ();
@@ -168,7 +168,7 @@ TEST_F (ZrythmFixture, ChangeBPMTwiceDuringPlayback)
   AUDIO_ENGINE->wait_n_cycles (3);
   ASSERT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 40.f, 0.001f);
 
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
   AUDIO_ENGINE->wait_n_cycles (3);
 
   /* change bpm to 140 */
@@ -179,7 +179,7 @@ TEST_F (ZrythmFixture, ChangeBPMTwiceDuringPlayback)
   AUDIO_ENGINE->wait_n_cycles (3);
   ASSERT_NEAR (P_TEMPO_TRACK->get_current_bpm (), 140.f, 0.001f);
 
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
   AUDIO_ENGINE->wait_n_cycles (3);
 
   /* validate */

@@ -317,7 +317,7 @@ public:
    *
    * This is used when recording automation in "touch" mode.
    */
-  RtTimePoint last_change_time_;
+  RtTimePoint last_change_time_{};
 
   /** Default value. */
   float deff_ = 0.f;

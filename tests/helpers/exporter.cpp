@@ -14,7 +14,7 @@
 std::string
 test_exporter_export_audio (Exporter::TimeRange time_range, Exporter::Mode mode)
 {
-  EXPECT_FALSE (TRANSPORT->is_rolling ());
+  EXPECT_FALSE (TRANSPORT->isRolling ());
   EXPECT_EQ (TRANSPORT->playhead_pos_.frames_, 0);
 
   constexpr auto filename = "test_export.wav";

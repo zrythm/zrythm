@@ -42,10 +42,23 @@ class TempoTrack final
   Q_OBJECT
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES
+  Q_PROPERTY (double bpm READ getBpm WRITE setBpm NOTIFY bpmChanged FINAL)
 
   friend class InitializableObjectFactory<TempoTrack>;
 
 public:
+  // ==================================================================
+  // QML Interface
+  // ==================================================================
+
+  double          getBpm () const;
+  void            setBpm (double bpm);
+  Q_SIGNAL void   bpmChanged (double bpm);
+  Q_INVOKABLE int getBeatUnit () const;
+  Q_INVOKABLE int getBeatsPerBar () const;
+
+  // ==================================================================
+
   /**
    * Removes all objects from the tempo track.
    *

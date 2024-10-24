@@ -693,11 +693,6 @@ public:
    */
   std::unique_ptr<juce::Thread> dummy_audio_thread_;
 
-  /**
-   * Timeline metadata like BPM, time signature, etc.
-   */
-  std::unique_ptr<Transport> transport_;
-
   /* note: these 2 are ignored at the moment */
   /** Pan law. */
   PanLaw pan_law_ = {};

@@ -94,7 +94,7 @@ UndoableAction::copy_members_from (const UndoableAction &other)
 void
 UndoableAction::do_or_undo (bool perform)
 {
-  AudioEngine::State state;
+  AudioEngine::State state{};
   if (needs_pause ())
     {
       /* stop engine and give it some time to stop running */
@@ -119,7 +119,7 @@ UndoableAction::do_or_undo (bool perform)
   if (needs_transport_total_bar_update (perform))
     {
       /* recalculate transport bars */
-      PROJECT->audio_engine_->transport_->recalculate_total_bars (nullptr);
+      TRANSPORT->recalculate_total_bars (nullptr);
     }
 
   if (affects_audio_region_internal_positions ())

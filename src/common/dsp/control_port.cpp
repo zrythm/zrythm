@@ -528,7 +528,7 @@ ControlPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
        * rolling, we will force the last known automation point value
        * regardless of whether there is a region at current pos */
       const bool can_read_previous_automation =
-        TRANSPORT->is_rolling ()
+        TRANSPORT->isRolling ()
         || (TRANSPORT->last_manual_playhead_change_ - AUDIO_ENGINE->last_timestamp_start_ > 0);
 
       /* if there was an automation event at the playhead position, set

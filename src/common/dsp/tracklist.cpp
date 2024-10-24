@@ -99,7 +99,7 @@ Tracklist::data (const QModelIndex &index, int role) const
 
   auto track = tracks_.at (index.row ());
 
-  z_debug (
+  z_trace (
     "getting role {} for track {}", role,
     QString::fromStdString (
       Track::from_variant (tracks_.at (index.row ()))->name_));
@@ -113,6 +113,12 @@ Tracklist::data (const QModelIndex &index, int role) const
     default:
       return {};
     }
+}
+
+TempoTrack *
+Tracklist::getTempoTrack () const
+{
+  return tempo_track_;
 }
 
 std::optional<TrackPtrVariant>

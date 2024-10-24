@@ -16,7 +16,7 @@ T.MenuItem {
     spacing: Style.buttonPadding
     icon.width: Style.buttonHeight - 2 * control.padding
     // icon.height: 24
-    icon.color: control.palette.windowText
+    icon.color: Style.colorPalette.windowText
     font: Style.semiBoldTextFont
 
     contentItem: IconLabel {
@@ -32,7 +32,7 @@ T.MenuItem {
         icon: control.icon
         text: control.text
         font: control.font
-        color: control.highlighted ? control.palette.highlightedText : control.palette.windowText
+        color: control.highlighted ? Style.colorPalette.highlightedText : Style.colorPalette.windowText
     }
 
     indicator: ColorImage {
@@ -40,7 +40,7 @@ T.MenuItem {
         y: control.topPadding + (control.availableHeight - height) / 2
         visible: control.checked
         source: control.checkable ? "qrc:/qt-project.org/imports/QtQuick/Controls/Basic/images/check.png" : ""
-        color: control.palette.windowText
+        color: Style.colorPalette.windowText
         defaultColor: "#353637"
     }
 
@@ -50,12 +50,12 @@ T.MenuItem {
         visible: control.subMenu
         mirror: control.mirrored
         source: control.subMenu ? "qrc:/qt-project.org/imports/QtQuick/Controls/Basic/images/arrow-indicator.png" : ""
-        color: control.palette.windowText
+        color: Style.colorPalette.windowText
         defaultColor: "#353637"
     }
 
     background: Rectangle {
-        readonly property color baseColor: control.highlighted ? control.palette.highlight : control.palette.button
+        readonly property color baseColor: control.highlighted ? Style.colorPalette.highlight : Style.colorPalette.button
         readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(baseColor, /*control.hovered*/ false, control.visualFocus, control.down)
 
         implicitWidth: 200

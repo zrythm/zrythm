@@ -22,13 +22,13 @@ QuantizeOptions::update_quantize_points (const Transport &transport)
   double swing_offset = (swing_ / 100.0) * ticks / 2.0;
   while (tmp < end_pos)
     {
-      tmp.add_ticks (ticks, transport.audio_engine_->frames_per_tick_);
+      tmp.add_ticks (ticks, transport.project_->audio_engine_->frames_per_tick_);
 
       /* delay every second point by swing */
       if ((q_points_.size () + 1) % 2 == 0)
         {
           tmp.add_ticks (
-            swing_offset, transport.audio_engine_->frames_per_tick_);
+            swing_offset, transport.project_->audio_engine_->frames_per_tick_);
         }
 
       q_points_.push_back (tmp);

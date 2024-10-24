@@ -101,6 +101,24 @@ TempoTrack::get_current_bpm () const
   return bpm_port_->get_control_value (false);
 }
 
+double
+TempoTrack::getBpm () const
+{
+  return get_current_bpm ();
+}
+
+int
+TempoTrack::getBeatUnit () const
+{
+  return get_beat_unit ();
+}
+
+int
+TempoTrack::getBeatsPerBar () const
+{
+  return get_beats_per_bar ();
+}
+
 std::string
 TempoTrack::get_current_bpm_as_str ()
 {
@@ -146,8 +164,19 @@ TempoTrack::set_bpm (bpm_t bpm, bpm_t start_bpm, bool temporary, bool fire_event
 
   if (fire_events)
     {
-      // EVENTS_PUSH (EventType::ET_BPM_CHANGED, nullptr);
+      Q_EMIT bpmChanged (bpm);
     }
+}
+
+void
+TempoTrack::setBpm (double bpm)
+{
+  if (math_doubles_equal_epsilon (bpm, get_current_bpm (), 0.001))
+    {
+      return;
+    }
+
+  set_bpm (static_cast<float> (bpm), get_current_bpm (), false, true);
 }
 
 void
@@ -161,7 +190,7 @@ TempoTrack::set_bpm_from_str (const std::string &str)
       return;
     }
 
-  set_bpm (bpm, get_current_bpm (), false, true);
+  setBpm (bpm);
 }
 
 void

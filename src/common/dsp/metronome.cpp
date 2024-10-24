@@ -64,34 +64,34 @@ Metronome::Metronome (AudioEngine &engine)
 
 void
 Metronome::queue_events (
-  AudioEngine *   self,
+  AudioEngine *   engine,
   const nframes_t loffset,
   const nframes_t nframes)
 {
-  const auto playhead = self->transport_->playhead_pos_;
+  auto *     transport_ = engine->project_->transport_;
+  const auto playhead = transport_->playhead_pos_;
   Position   bar_pos, beat_pos;
   Position   playhead_pos = playhead;
   Position   unlooped_playhead = playhead;
-  self->transport_->position_add_frames (&playhead_pos, nframes);
-  unlooped_playhead.add_frames ((long) nframes, self->ticks_per_frame_);
+  transport_->position_add_frames (&playhead_pos, nframes);
+  unlooped_playhead.add_frames ((long) nframes, engine->ticks_per_frame_);
   bool loop_crossed = unlooped_playhead.frames_ != playhead_pos.frames_;
   if (loop_crossed)
     {
       /* find each bar / beat change until loop end */
-      self->sample_processor_->find_and_queue_metronome (
-        playhead, self->transport_->loop_end_pos_, loffset);
+      engine->sample_processor_->find_and_queue_metronome (
+        playhead, transport_->loop_end_pos_, loffset);
 
       /* find each bar / beat change after loop start */
-      self->sample_processor_->find_and_queue_metronome (
-        self->transport_->loop_start_pos_, playhead_pos,
+      engine->sample_processor_->find_and_queue_metronome (
+        transport_->loop_start_pos_, playhead_pos,
         loffset
-          + (nframes_t) (self->transport_->loop_end_pos_.frames_
-                         - playhead.frames_));
+          + (nframes_t) (transport_->loop_end_pos_.frames_ - playhead.frames_));
     }
   else /* loop not crossed */
     {
       /* find each bar / beat change from start to finish */
-      self->sample_processor_->find_and_queue_metronome (
+      engine->sample_processor_->find_and_queue_metronome (
         playhead, playhead_pos, loffset);
     }
 }

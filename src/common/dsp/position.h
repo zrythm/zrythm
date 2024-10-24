@@ -1,17 +1,13 @@
 // SPDX-FileCopyrightText: © 2018-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Position struct and API.
- */
-
 #ifndef __AUDIO_POSITION_H__
 #define __AUDIO_POSITION_H__
 
 #include "common/io/serialization/iserializable.h"
 #include "common/utils/types.h"
+
+#include <QMetaType>
 
 /**
  * @addtogroup dsp
@@ -48,6 +44,10 @@ class TempoTrack;
  */
 class Position final : public ISerializable<Position>
 {
+  Q_GADGET
+
+  Q_PROPERTY (double ticks READ getTicks)
+  Q_PROPERTY (signed_frame_t frames READ getFrames)
 public:
   // Rule of 0
   Position () = default;
@@ -70,6 +70,17 @@ public:
   {
     from_frames (frames, ticks_per_frame);
   }
+
+  // ==========================================================================
+  // QML Interface
+  // ==========================================================================
+
+  signed_frame_t getFrames () const { return frames_; }
+  double         getTicks () const { return ticks_; }
+  Q_INVOKABLE QString
+  toString (Transport * transport, TempoTrack * tempo_track) const;
+
+  // ===========================================================================
 
   void zero () { *this = Position (); }
 
@@ -579,6 +590,8 @@ operator== (const Position &lhs, const Position &rhs)
 DEFINE_OBJECT_FORMATTER (Position, [] (const Position &obj) {
   return obj.to_string ();
 });
+
+Q_DECLARE_METATYPE (Position)
 
 /**
  * @}

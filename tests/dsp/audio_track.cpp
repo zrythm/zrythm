@@ -30,7 +30,7 @@ TEST_F (ZrythmFixture, FillWhenRegionStartsOnLoopEnd)
   FileDescriptor file (fs::path (TESTS_SRCDIR) / "test_start_with_signal.mp3");
   int            num_tracks_before = TRACKLIST->get_num_tracks ();
 
-  TRANSPORT->request_pause (true);
+  TRANSPORT->requestPause (true);
   Track::create_with_action (
     Track::Type::Audio, nullptr, &file, &TRANSPORT->loop_end_pos_,
     num_tracks_before, 1, -1, nullptr);

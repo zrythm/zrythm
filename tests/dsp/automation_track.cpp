@@ -136,7 +136,7 @@ TEST_F (ZrythmFixture, CurveValue)
     std::make_unique<CreateArrangerSelectionsAction> (*AUTOMATION_SELECTIONS));
   ASSERT_SIZE_EQ (region->aps_, 3);
 
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
   AUDIO_ENGINE->process (40);
 
   ASSERT_NEAR (port->control_, 2.32830644e-10, 0.0001f);

@@ -45,6 +45,7 @@ class Tracklist final
 {
   Q_OBJECT
   QML_ELEMENT
+  Q_PROPERTY (TempoTrack * tempoTrack READ getTempoTrack CONSTANT FINAL)
 
 public:
   /**
@@ -71,10 +72,17 @@ public:
   JUCE_DECLARE_NON_COPYABLE (Tracklist)
   ~Tracklist () override;
 
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
   QHash<int, QByteArray> roleNames () const override;
   int rowCount (const QModelIndex &parent = QModelIndex ()) const override;
   QVariant
   data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
+
+  TempoTrack * getTempoTrack () const;
+
+  // ========================================================================
 
   /**
    * @brief A list of track types that must be unique in the tracklist.

@@ -198,6 +198,7 @@ ApplicationWindow {
 
     header: MainToolbar {
         id: headerBar
+        project: root.project
     }
 
 }

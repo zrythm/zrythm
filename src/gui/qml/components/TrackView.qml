@@ -40,8 +40,4 @@ Rectangle {
 
     }
 
-    Component.onCompleted: {
-        console.log("TrackView:", track, typeof(track));
-    }
-
 }

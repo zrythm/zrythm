@@ -748,7 +748,7 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
               pr->midi_events_.queued_events_.panic ();
             }
           /* get events from track if playing */
-          else if (TRANSPORT->is_rolling () || tr->is_auditioner ())
+          else if (TRANSPORT->isRolling () || tr->is_auditioner ())
             {
             /* fill midi events from piano roll data */
 #if 0

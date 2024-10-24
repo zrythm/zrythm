@@ -70,14 +70,14 @@ Position::set_to_bar (const Transport &transport, int bar)
       bar--;
       from_ticks (
         transport.ticks_per_bar_ * bar,
-        transport.audio_engine_->frames_per_tick_);
+        transport.project_->audio_engine_->frames_per_tick_);
     }
   else if (bar < 0)
     {
       bar++;
       from_ticks (
         transport.ticks_per_bar_ * bar,
-        transport.audio_engine_->frames_per_tick_);
+        transport.project_->audio_engine_->frames_per_tick_);
     }
   else
     {
@@ -94,6 +94,12 @@ Position::to_ms () const
     }
   return math_round_double_to_signed_frame_t (
     (1000.0 * (double) frames_) / ((double) AUDIO_ENGINE->sample_rate_));
+}
+
+QString
+Position::toString (Transport * transport, TempoTrack * tempo_track) const
+{
+  return QString::fromStdString (to_string (transport, tempo_track, 3));
 }
 
 signed_frame_t

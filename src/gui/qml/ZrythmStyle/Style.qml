@@ -28,6 +28,7 @@ QtObject {
     property color textColor: darkMode ? "#E3E3E3" : "#161616" // used in contrast with pageColor
     property color pageColor: darkMode ? "#161616" : "#E3E3E3" // used in contrast with textColor
     readonly property color dangerColor: "#D90368"
+    readonly property color shadowColor: Qt.alpha(backgroundColor, 0.17)
     readonly property real lightenFactor: 1.3 // lighten things up 10%, mainly used for hovering but can be used for other things like making parts of the UI stand out from the background
     readonly property real downEnhancementFactor: lightenFactor // enhance things pressed down by 30%
     readonly property real inactiveOpacityFactor: 0.85
@@ -47,6 +48,11 @@ QtObject {
         "family": root.fontFamily,
         "pixelSize": 12,
         "weight": Font.Normal
+    })
+    readonly property font fadedTextFont: ({
+        "family": root.fontFamily,
+        "pixelSize": 11,
+        "weight": Font.Normal,
     })
     readonly property real buttonRadius: 9
     readonly property real toolButtonRadius: 6
@@ -70,7 +76,7 @@ QtObject {
         mid: root.getColorBlendedTowardsContrast(root.buttonBackgroundColor) // docs say "between button background color and text color", no idea where it's used
         midlight: root.getColorBlendedTowardsContrast(buttonBackgroundColor)
         placeholderText: root.placeholderTextColor
-        shadow: root.pageColor
+        shadow: root.shadowColor
         text: root.textColor
         toolTipBase: root.buttonBackgroundColor
         toolTipText: root.textColor

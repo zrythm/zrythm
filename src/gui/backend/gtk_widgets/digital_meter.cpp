@@ -677,7 +677,7 @@ on_change_finished (DigitalMeterWidget * self)
     case DigitalMeterType::DIGITAL_METER_TYPE_TIMESIG:
       {
         /* no update if rolling */
-        if (TRANSPORT->is_rolling ())
+        if (TRANSPORT->isRolling ())
           {
             break;
           }
@@ -862,7 +862,7 @@ on_scroll (
       break;
     case DigitalMeterType::DIGITAL_METER_TYPE_TIMESIG:
       /* no update if rolling */
-      if (TRANSPORT->is_rolling ())
+      if (TRANSPORT->isRolling ())
         {
           break;
         }
@@ -1083,7 +1083,7 @@ drag_update (
       break;
     case DigitalMeterType::DIGITAL_METER_TYPE_TIMESIG:
       /* no update if rolling */
-      if (TRANSPORT->is_rolling ())
+      if (TRANSPORT->isRolling ())
         {
           break;
         }

@@ -68,8 +68,8 @@ AudioEngine::define_fields (const Context &ctx)
     make_field ("framesPerTick", frames_per_tick_),
     make_field ("monitorOut", monitor_out_),
     make_field ("midiEditorManualPress", midi_editor_manual_press_),
-    make_field ("midiIn", midi_in_), make_field ("transport", transport_),
-    make_field ("pool", pool_), make_field ("controlRoom", control_room_),
+    make_field ("midiIn", midi_in_), make_field ("pool", pool_),
+    make_field ("controlRoom", control_room_),
     make_field ("sampleProcessor", sample_processor_),
     make_field ("hwInProcessor", hw_in_processor_),
     make_field ("hwOutProcessor", hw_out_processor_));

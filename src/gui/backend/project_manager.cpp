@@ -160,10 +160,8 @@ ProjectManager::create_default (const fs::path &prj_dir, const std::string &name
 
   prj->clip_editor_.init ();
 
-  prj->quantize_opts_timeline_->update_quantize_points (
-    *prj->audio_engine_->transport_);
-  prj->quantize_opts_editor_->update_quantize_points (
-    *prj->audio_engine_->transport_);
+  prj->quantize_opts_timeline_->update_quantize_points (*prj->transport_);
+  prj->quantize_opts_editor_->update_quantize_points (*prj->transport_);
 
   z_debug ("done creating default project");
 

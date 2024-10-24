@@ -30,7 +30,7 @@ T.ToolTip {
         text: control.text
         font: control.font
         wrapMode: Text.Wrap
-        color: control.palette.toolTipText
+        color: Style.colorPalette.toolTipText
     }
 
     background: PopupBackgroundRect {}

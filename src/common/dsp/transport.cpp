@@ -56,9 +56,9 @@ Transport::init_common ()
 }
 
 void
-Transport::init_loaded (AudioEngine * engine, const TempoTrack * tempo_track)
+Transport::init_loaded (Project * project, const TempoTrack * tempo_track)
 {
-  audio_engine_ = engine;
+  project_ = project;
 
   z_return_if_fail_cmp (total_bars_, >, 0);
 
@@ -83,14 +83,20 @@ Transport::init_loaded (AudioEngine * engine, const TempoTrack * tempo_track)
 #undef INIT_LOADED_PORT
 }
 
-Transport::Transport (AudioEngine * engine) : audio_engine_ (engine)
+Transport::Transport (Project * parent) : QObject (parent), project_ (parent)
 {
   z_debug ("Creating transport...");
+
+  if (parent == nullptr)
+    {
+      init_common ();
+      return;
+    }
 
   /* set initial total number of beats this is applied to the ruler */
   total_bars_ = TRANSPORT_DEFAULT_TOTAL_BARS;
 
-  z_return_if_fail (engine->sample_rate_ > 0);
+  z_return_if_fail (project_->audio_engine_->sample_rate_ > 0);
 
   double ticks_per_bar = TICKS_PER_QUARTER_NOTE * 4.0;
   loop_end_pos_.ticks_ = 4 * ticks_per_bar;
@@ -144,6 +150,46 @@ Transport::Transport (AudioEngine * engine) : audio_engine_ (engine)
   rec_toggle_->id_.flags2_ |= PortIdentifier::Flags2::TransportRecToggle;
 
   init_common ();
+}
+
+void
+Transport::setLoopEnabled (bool enabled)
+{
+  if (loop_ == enabled)
+    {
+      return;
+    }
+
+  set_loop (enabled, true);
+}
+
+void
+Transport::setRecordEnabled (bool enabled)
+{
+  if (recording_ == enabled)
+    {
+      return;
+    }
+
+  set_recording (enabled, true);
+}
+
+Transport::PlayState
+Transport::getPlayState () const
+{
+  return play_state_;
+}
+
+Position
+Transport::getPlayheadPosition () const
+{
+  return playhead_pos_;
+}
+
+void
+Transport::setPlayheadPosition (const Position &pos)
+{
+  set_playhead_pos (pos);
 }
 
 void
@@ -301,8 +347,9 @@ Transport::update_caches (int beats_per_bar, int beat_unit)
 }
 
 void
-Transport::request_pause (bool with_wait)
+Transport::requestPause (bool with_wait)
 {
+  auto * audio_engine_ = project_->audio_engine_.get ();
   /* can only be called from the gtk thread or when preparing to export */
   z_return_if_fail (
     !audio_engine_->run_.load () || ZRYTHM_IS_QT_THREAD
@@ -330,8 +377,10 @@ Transport::request_pause (bool with_wait)
 }
 
 void
-Transport::request_roll (bool with_wait)
+Transport::requestRoll (bool with_wait)
 {
+  auto * audio_engine_ = project_->audio_engine_.get ();
+
   /* can only be called from the gtk thread */
   z_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_IS_QT_THREAD);
 
@@ -385,14 +434,16 @@ void
 Transport::add_to_playhead (const signed_frame_t nframes)
 {
   playhead_pos_.add_frames (nframes);
-  // EVENTS_PUSH (EventType::ET_PLAYHEAD_POS_CHANGED, nullptr);
+  Q_EMIT playheadPositionChanged (playhead_pos_);
 }
 
 void
 Transport::set_playhead_pos (const Position pos)
 {
+  if (playhead_pos_ == pos)
+    return;
   playhead_pos_ = pos;
-  // EVENTS_PUSH (EventType::ET_PLAYHEAD_POS_CHANGED_MANUALLY, nullptr);
+  Q_EMIT playheadPositionChanged (pos);
 }
 
 void
@@ -417,8 +468,8 @@ bool
 Transport::can_user_move_playhead () const
 {
   if (
-    recording_ && play_state_ == PlayState::Rolling && audio_engine_
-    && audio_engine_->run_.load ())
+    recording_ && play_state_ == PlayState::Rolling && project_->audio_engine_
+    && project_->audio_engine_->run_.load ())
     return false;
   else
     return true;
@@ -484,7 +535,7 @@ Transport::move_playhead (
       /* FIXME use another flag to decide when to do this */
       last_manual_playhead_change_ = g_get_monotonic_time ();
 
-      // EVENTS_PUSH (EventType::ET_PLAYHEAD_POS_CHANGED_MANUALLY, nullptr);
+      Q_EMIT playheadPositionChanged (playhead_pos_);
     }
 }
 
@@ -506,6 +557,8 @@ Transport::get_ppqn () const
 void
 Transport::update_positions (bool update_from_ticks)
 {
+  auto * audio_engine_ = project_->audio_engine_.get ();
+
   playhead_pos_.update (update_from_ticks, audio_engine_->frames_per_tick_);
   cue_pos_.update (update_from_ticks, audio_engine_->frames_per_tick_);
   loop_start_pos_.update (update_from_ticks, audio_engine_->frames_per_tick_);
@@ -582,7 +635,7 @@ Transport::goto_prev_marker ()
         continue;
 
       if (
-        is_rolling () && i > 0
+        isRolling () && i > 0
         && (playhead_pos_.to_ms () - markers[i].to_ms ()) < REPEATED_BACKWARD_MS)
         {
           continue;
@@ -629,6 +682,8 @@ Transport::goto_next_marker ()
 void
 Transport::set_loop (bool enabled, bool with_wait)
 {
+  auto * audio_engine_ = project_->audio_engine_.get ();
+
   /* can only be called from the gtk thread */
   z_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_IS_QT_THREAD);
 
@@ -645,7 +700,7 @@ Transport::set_loop (bool enabled, bool with_wait)
       g_settings_set_boolean (S_TRANSPORT, "loop", enabled);
     }
 
-  // EVENTS_PUSH (EventType::ET_LOOP_TOGGLED, nullptr);
+  Q_EMIT (loopEnabledChanged (loop_));
 }
 
 void
@@ -790,7 +845,7 @@ Transport::recalculate_total_bars (ArrangerSelections * sel)
 bool
 Transport::is_in_active_project () const
 {
-  return audio_engine_ == AUDIO_ENGINE;
+  return project_ == Project::get_active_instance ();
 }
 
 void
@@ -812,6 +867,8 @@ Transport::update_total_bars (int total_bars, bool fire_events)
 void
 Transport::move_backward (bool with_wait)
 {
+  auto * audio_engine_ = project_->audio_engine_.get ();
+
   /* can only be called from the gtk thread */
   z_return_if_fail (!AUDIO_ENGINE->run_.load () || ZRYTHM_IS_QT_THREAD);
 
@@ -829,7 +886,7 @@ Transport::move_backward (bool with_wait)
    * more */
   if (
     pos.frames_ > 0
-    && (pos == playhead_pos_ || (is_rolling () && (playhead_pos_.to_ms () - pos.to_ms ()) < REPEATED_BACKWARD_MS)))
+    && (pos == playhead_pos_ || (isRolling () && (playhead_pos_.to_ms () - pos.to_ms ()) < REPEATED_BACKWARD_MS)))
     {
       Position tmp = pos;
       tmp.add_ticks (-1);
@@ -842,6 +899,8 @@ Transport::move_backward (bool with_wait)
 void
 Transport::move_forward (bool with_wait)
 {
+  auto * audio_engine_ = project_->audio_engine_.get ();
+
   /* can only be called from the gtk thread */
   z_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_IS_QT_THREAD);
 
@@ -862,10 +921,12 @@ Transport::move_forward (bool with_wait)
  * Sets recording on/off.
  */
 void
-Transport::set_recording (bool record, bool with_wait, bool fire_events)
+Transport::set_recording (bool record, bool with_wait)
 {
+  auto * audio_engine_ = project_->audio_engine_.get ();
+
   /* can only be called from the gtk thread */
-  z_return_if_fail (!AUDIO_ENGINE->run_.load () || ZRYTHM_IS_QT_THREAD);
+  z_return_if_fail (!audio_engine_->run_.load () || ZRYTHM_IS_QT_THREAD);
 
   std::optional<SemaphoreRAII<std::counting_semaphore<>>> sem;
   if (with_wait)
@@ -875,8 +936,5 @@ Transport::set_recording (bool record, bool with_wait, bool fire_events)
 
   recording_ = record;
 
-  if (fire_events)
-    {
-      // EVENTS_PUSH (EventType::ET_TRANSPORT_RECORDING_ON_OFF_CHANGED, nullptr);
-    }
+  Q_EMIT recordEnabledChanged (recording_);
 }

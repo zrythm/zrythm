@@ -11,7 +11,6 @@ import ZrythmStyle 1.0
 T.Menu {
     id: control
 
-    palette: Style.colorPalette
     implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, contentWidth + leftPadding + rightPadding)
     implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, contentHeight + topPadding + bottomPadding)
     margins: 0
@@ -30,13 +29,13 @@ T.Menu {
         headerPositioning: ListView.OverlayHeader
         footerPositioning: ListView.OverlayFooter
 
-        header: Item {
-            height: Style.buttonRadius
-        }
+        // header: Item {
+        //     height: Style.buttonRadius
+        // }
 
-        footer: Item {
-            height: Style.buttonRadius
-        }
+        // footer: Item {
+        //     height: Style.buttonRadius
+        // }
 
         ScrollIndicator.vertical: ScrollIndicator {
         }
@@ -45,6 +44,7 @@ T.Menu {
 
     background: PopupBackgroundRect {
         implicitWidth: 200
+        radius: 0
     }
 
     T.Overlay.modal: Rectangle {

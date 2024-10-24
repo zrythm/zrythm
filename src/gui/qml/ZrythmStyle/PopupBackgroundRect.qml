@@ -7,9 +7,10 @@ import ZrythmStyle 1.0
 
 Rectangle {
     id: root
+
     implicitWidth: Style.buttonHeight // 200
     implicitHeight: Style.buttonHeight
-    color: palette.button
+    color: Style.colorPalette.button
     radius: Style.buttonRadius
     layer.enabled: true
 
@@ -18,12 +19,7 @@ Rectangle {
         width: 1
     }
 
-    layer.effect: MultiEffect {
-        shadowEnabled: true
-        shadowHorizontalOffset: 3
-        shadowVerticalOffset: 3
-        shadowColor: root.palette.shadow
-        shadowBlur: 0.8
+    layer.effect: DropShadowEffect {
     }
 
 }

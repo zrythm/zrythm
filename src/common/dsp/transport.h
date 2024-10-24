@@ -1,12 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Transport API.
- */
-
 #ifndef __AUDIO_TRANSPORT_H__
 #define __AUDIO_TRANSPORT_H__
 
@@ -29,7 +23,7 @@ TYPEDEF_STRUCT_UNDERSCORED (ArrangerWidget);
  * @{
  */
 
-#define TRANSPORT (AUDIO_ENGINE->transport_)
+#define TRANSPORT (PROJECT->transport_)
 constexpr int TRANSPORT_DEFAULT_TOTAL_BARS = 128;
 
 #define PLAYHEAD (TRANSPORT->playhead_pos_)
@@ -55,9 +49,23 @@ static const char * preroll_count_bars_str[] = {
  * functionality.
  */
 class Transport final
-    : public ICloneable<Transport>,
+    : public QObject,
+      public ICloneable<Transport>,
       public ISerializable<Transport>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  Q_PROPERTY (
+    bool loopEnabled READ is_looping WRITE setLoopEnabled NOTIFY
+      loopEnabledChanged)
+  Q_PROPERTY (
+    bool recordEnabled READ is_recording WRITE setRecordEnabled NOTIFY
+      recordEnabledChanged)
+  Q_PROPERTY (PlayState playState READ getPlayState NOTIFY playStateChanged)
+  Q_PROPERTY (
+    Position playheadPosition READ getPlayheadPosition WRITE setPlayheadPosition
+      NOTIFY playheadPositionChanged)
+
 public:
   enum class PlayState
   {
@@ -66,6 +74,7 @@ public:
     PauseRequested,
     Paused
   };
+  Q_ENUM (PlayState)
 
   /**
    * Corrseponts to "transport-display" in the
@@ -76,6 +85,7 @@ public:
     BBT,
     Time,
   };
+  Q_ENUM (Display)
 
   /**
    * Recording mode for MIDI and audio.
@@ -118,10 +128,29 @@ public:
      */
     TakesMuted,
   };
+  Q_ENUM (RecordingMode)
 
 public:
-  Transport () { init_common (); };
-  Transport (AudioEngine * audio_engine);
+  Transport (Project * parent = nullptr);
+
+  // ==================================================================
+  // QML Interface
+  // ==================================================================
+
+  void          setLoopEnabled (bool enabled);
+  Q_SIGNAL void loopEnabledChanged (bool enabled);
+
+  void          setRecordEnabled (bool enabled);
+  Q_SIGNAL void recordEnabledChanged (bool enabled);
+
+  PlayState     getPlayState () const;
+  Q_SIGNAL void playStateChanged (PlayState state);
+
+  Position      getPlayheadPosition () const;
+  void          setPlayheadPosition (const Position &pos);
+  Q_SIGNAL void playheadPositionChanged (Position pos);
+
+  // ==================================================================
 
   static inline const char * preroll_count_to_str (PrerollCountBars bars)
   {
@@ -146,9 +175,15 @@ public:
 
   bool is_in_active_project () const;
 
-  bool is_rolling () const { return play_state_ == PlayState::Rolling; }
+  Q_INVOKABLE bool isRolling () const
+  {
+    return play_state_ == PlayState::Rolling;
+  }
 
-  bool is_paused () const { return play_state_ == PlayState::Paused; }
+  Q_INVOKABLE bool isPaused () const
+  {
+    return play_state_ == PlayState::Paused;
+  }
 
   bool is_looping () const { return loop_; }
 
@@ -160,7 +195,7 @@ public:
    * @param tempo_track Tempo track, used to initialize the caches. Only needed
    * on the active project transport.
    */
-  void init_loaded (AudioEngine * engine, const TempoTrack * tempo_track);
+  void init_loaded (Project * project, const TempoTrack * tempo_track);
 
   /**
    * Prepares audio regions for stretching (sets the
@@ -209,7 +244,7 @@ public:
    * given samples, taking into account the loop
    * end point.
    */
-  void add_to_playhead (const signed_frame_t nframes);
+  void add_to_playhead (signed_frame_t nframes);
 
   /**
    * Request pause.
@@ -219,7 +254,7 @@ public:
    *
    * @param with_wait Wait for lock before requesting.
    */
-  void request_pause (bool with_wait);
+  Q_INVOKABLE void requestPause (bool with_wait);
 
   /**
    * Request playback.
@@ -229,12 +264,12 @@ public:
    *
    * @param with_wait Wait for lock before requesting.
    */
-  void request_roll (bool with_wait);
+  Q_INVOKABLE void requestRoll (bool with_wait);
 
   /**
    * Setter for playhead Position.
    */
-  void set_playhead_pos (const Position pos);
+  void set_playhead_pos (Position pos);
 
   void set_playhead_to_bar (int bar);
 
@@ -333,7 +368,7 @@ frames_add_frames (
    * Adds frames to the given position similar to position_add_frames, except
    * that it adjusts the new Position if the loop end point was crossed.
    */
-  void position_add_frames (Position * pos, const signed_frame_t frames);
+  void position_add_frames (Position * pos, signed_frame_t frames);
 
   /**
    * Returns the PPQN (Parts/Ticks Per Quarter Note).
@@ -396,7 +431,7 @@ frames_add_frames (
     return 0;
   }
 
-  bool position_is_inside_punch_range (const Position pos);
+  bool position_is_inside_punch_range (Position pos);
 
   /**
    * Recalculates the total bars based on the last object's position.
@@ -416,7 +451,7 @@ frames_add_frames (
   /**
    * Sets recording on/off.
    */
-  void set_recording (bool record, bool with_wait, bool fire_events);
+  void set_recording (bool record, bool with_wait);
 
   void init_after_cloning (const Transport &other) override;
 
@@ -546,10 +581,10 @@ public:
   PlayState play_state_ = {};
 
   /** Last timestamp the playhead position was changed manually. */
-  RtTimePoint last_manual_playhead_change_;
+  RtTimePoint last_manual_playhead_change_ = 0;
 
-  /** Pointer to owner audio engine, if any. */
-  AudioEngine * audio_engine_ = nullptr;
+  /** Pointer to owner, if any. */
+  Project * project_ = nullptr;
 };
 
 /**

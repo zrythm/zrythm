@@ -390,7 +390,7 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
 
           /* queue playback if recording and we should record on MIDI input */
           if (
-            TRANSPORT->is_recording () && TRANSPORT->is_paused ()
+            TRANSPORT->is_recording () && TRANSPORT->isPaused ()
             && TRANSPORT->start_playback_on_midi_input_)
             {
               // EVENTS_PUSH (EventType::ET_TRANSPORT_ROLL_REQUIRED, nullptr);
@@ -419,7 +419,7 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
     {
       /* continue or start */
       bool start =
-        TRANSPORT->is_rolling () && !AUDIO_ENGINE->pos_nfo_before_.is_rolling_;
+        TRANSPORT->isRolling () && !AUDIO_ENGINE->pos_nfo_before_.is_rolling_;
       if (start)
         {
           uint8_t start_msg = MIDI_CLOCK_CONTINUE;
@@ -430,7 +430,7 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
           events.add_raw (&start_msg, 1, 0);
         }
       else if (
-        !TRANSPORT->is_rolling () && AUDIO_ENGINE->pos_nfo_before_.is_rolling_)
+        !TRANSPORT->isRolling () && AUDIO_ENGINE->pos_nfo_before_.is_rolling_)
         {
           uint8_t stop_msg = MIDI_CLOCK_STOP;
           events.add_raw (&stop_msg, 1, 0);

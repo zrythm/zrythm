@@ -301,7 +301,7 @@ timebase_cb (
   if (!self->run_.load ())
     return;
 
-  const auto &transport = *self->transport_;
+  const auto &transport = *self->project_->transport_;
   Position    playhead = transport.playhead_pos_;
   const auto &tempo_track = *P_TEMPO_TRACK;
 

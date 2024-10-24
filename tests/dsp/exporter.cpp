@@ -173,7 +173,7 @@ TEST_F (ZrythmFixture, ExportWav)
     {
       for (int j = 0; j < 2; j++)
         {
-          ASSERT_FALSE (TRANSPORT->is_rolling ());
+          ASSERT_FALSE (TRANSPORT->isRolling ());
           ASSERT_EQ (TRANSPORT->playhead_pos_.frames_, 0);
 
           auto filename = fmt::format ("test_wav{}.wav", i);
@@ -219,7 +219,7 @@ TEST_F (ZrythmFixture, ExportWav)
 
           io_remove (settings.file_uri_);
 
-          ASSERT_FALSE (TRANSPORT->is_rolling ());
+          ASSERT_FALSE (TRANSPORT->isRolling ());
           ASSERT_EQ (TRANSPORT->playhead_pos_.frames_, 0);
         }
     }

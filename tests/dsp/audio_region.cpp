@@ -45,7 +45,7 @@ TEST_F (ZrythmFixture, ChangeSampleRate)
 
   pos.from_frames (301824);
   TRANSPORT->move_playhead (&pos, F_NO_PANIC, false, false);
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
 
   /* process manually */
   AUDIO_ENGINE->process (256);
@@ -153,12 +153,12 @@ TEST_P (AudioRegionSampleRateTest, LoadProjectWithDifferentSampleRate)
   /* play the region */
   Position end;
   end.set_to_bar (4);
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
   while (PLAYHEAD < end)
     {
       AUDIO_ENGINE->wait_n_cycles (3);
     }
-  TRANSPORT->request_pause (true);
+  TRANSPORT->requestPause (true);
   AUDIO_ENGINE->wait_n_cycles (1);
 }
 

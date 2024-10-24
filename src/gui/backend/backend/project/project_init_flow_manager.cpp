@@ -367,10 +367,8 @@ ProjectInitFlowManager::create_default (
 
   prj->clip_editor_.init ();
 
-  prj->quantize_opts_timeline_->update_quantize_points (
-    *prj->audio_engine_->transport_);
-  prj->quantize_opts_editor_->update_quantize_points (
-    *prj->audio_engine_->transport_);
+  prj->quantize_opts_timeline_->update_quantize_points (*prj->transport_);
+  prj->quantize_opts_editor_->update_quantize_points (*prj->transport_);
 
   if (have_ui)
     {
@@ -656,6 +654,17 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
 
   try
     {
+      auto * tempo_track = prj->tracklist_->tempo_track_;
+      if (!tempo_track)
+        {
+          tempo_track = prj->tracklist_->get_track_by_type<TempoTrack> ();
+        }
+      if (!tempo_track)
+        {
+          throw ZrythmException ("Tempo track not found");
+        }
+
+      prj->transport_->init_loaded (prj, tempo_track);
       prj->audio_engine_->init_loaded (prj);
     }
   catch (const ZrythmException &e)
@@ -723,10 +732,8 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
 
   prj->tracklist_selections_->init_loaded (*tracklist);
 
-  prj->quantize_opts_timeline_->update_quantize_points (
-    *prj->audio_engine_->transport_);
-  prj->quantize_opts_editor_->update_quantize_points (
-    *prj->audio_engine_->transport_);
+  prj->quantize_opts_timeline_->update_quantize_points (*prj->transport_);
+  prj->quantize_opts_editor_->update_quantize_points (*prj->transport_);
 
   // replace_main_window (mww);
 

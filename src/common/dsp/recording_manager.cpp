@@ -139,7 +139,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
   selections_before_start_.reset ();
 
   /* disarm transport record button */
-  TRANSPORT->set_recording (false, true, true);
+  TRANSPORT->set_recording (false, true);
 
   num_active_recordings_--;
   recorded_ids_.clear ();
@@ -196,7 +196,7 @@ RecordingManager::handle_recording (
   /* else if not recording at all (recording stopped) */
   else if (
     !TRANSPORT->is_recording () || !recordable_track->recording_
-    || !TRANSPORT->is_rolling ())
+    || !TRANSPORT->isRolling ())
     {
       /* if track had previously recorded */
       if (
@@ -255,7 +255,7 @@ RecordingManager::handle_recording (
       /* if should stop automation recording */
       if (
         Q_UNLIKELY (at->recording_started_)
-        && (!TRANSPORT->is_rolling () || !at_should_be_recording))
+        && (!TRANSPORT->isRolling () || !at_should_be_recording))
         {
           /* send stop automation recording event */
           auto re = event_obj_pool_.acquire ();
@@ -280,7 +280,7 @@ RecordingManager::handle_recording (
         }
 
       /* if automation should be recording */
-      if (TRANSPORT->is_rolling () && at_should_be_recording)
+      if (TRANSPORT->isRolling () && at_should_be_recording)
         {
           /* if recording hasn't started yet */
           if (!at->recording_started_ && !at->recording_start_sent_)
@@ -349,7 +349,7 @@ RecordingManager::handle_recording (
 
   /* add automation events */
 
-  if (!TRANSPORT->is_rolling ())
+  if (!TRANSPORT->isRolling ())
     return;
 
   for (auto at : atl->ats_in_record_mode_)

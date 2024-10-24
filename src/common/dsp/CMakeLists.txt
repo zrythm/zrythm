@@ -100,12 +100,14 @@ target_sources(zrythm_lib
     scale_object.cpp
     snap_grid.cpp
     stretcher.cpp
+    tempo_track.h
     tempo_track.cpp
     timeline_object.cpp
     track.cpp
     track_lane.cpp
     track_processor.cpp
     tracklist.cpp
+    transport.h
     transport.cpp
     true_peak_dsp.cpp
     velocity.cpp

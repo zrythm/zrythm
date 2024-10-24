@@ -42,6 +42,8 @@
 Project::Project (QObject * parent)
     : QObject (parent), version_ (Zrythm::get_version (false)),
       port_connections_manager_ (std::make_unique<PortConnectionsManager> ()),
+      audio_engine_ (std::make_unique<AudioEngine> (this)),
+      transport_ (new Transport (this)),
       quantize_opts_editor_ (
         std::make_unique<QuantizeOptions> (NoteLength::NOTE_LENGTH_1_8)),
       quantize_opts_timeline_ (
@@ -61,7 +63,7 @@ Project::Project (QObject * parent)
   init_selections ();
   tracklist_selections_ =
     std::make_unique<SimpleTracklistSelections> (*tracklist_);
-  audio_engine_ = std::make_unique<AudioEngine> (this);
+  // audio_engine_ = std::make_unique<AudioEngine> (this);
 }
 
 Project::Project (const std::string &title, QObject * parent) : Project (parent)
@@ -357,7 +359,7 @@ Project::add_default_tracks ()
   int   beats_per_bar = tracklist_->tempo_track_->get_beats_per_bar ();
   int   beat_unit = tracklist_->tempo_track_->get_beat_unit ();
   bpm_t bpm = tracklist_->tempo_track_->get_current_bpm ();
-  audio_engine_->transport_->update_caches (beats_per_bar, beat_unit);
+  transport_->update_caches (beats_per_bar, beat_unit);
   audio_engine_->update_frames_per_tick (
     beats_per_bar, bpm, audio_engine_->sample_rate_, true, true, false);
 
@@ -365,8 +367,7 @@ Project::add_default_tracks ()
   add_track.operator()<ModulatorTrack> ();
 
   /* marker */
-  add_track.operator()<MarkerTrack> ()->add_default_markers (
-    *audio_engine_->transport_);
+  add_track.operator()<MarkerTrack> ()->add_default_markers (*transport_);
 
   tracklist_->pinned_tracks_cutoff_ = tracklist_->tracks_.size ();
 
@@ -1095,6 +1096,8 @@ Project::init_after_cloning (const Project &other)
   title_ = other.title_;
   datetime_str_ = other.datetime_str_;
   version_ = other.version_;
+  transport_ = other.transport_->clone_raw_ptr ();
+  transport_->setParent (this);
   audio_engine_ = other.audio_engine_->clone_unique ();
   tracklist_ = other.tracklist_->clone_raw_ptr ();
   tracklist_->setParent (this);
@@ -1167,6 +1170,12 @@ Timeline *
 Project::getTimeline () const
 {
   return timeline_;
+}
+
+Transport *
+Project::getTransport () const
+{
+  return transport_;
 }
 
 Project *

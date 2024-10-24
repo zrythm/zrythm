@@ -61,7 +61,7 @@ do_takes_no_loop_no_punch (
   MasterTrack *     master_track)
 {
   TRANSPORT->recording_ = true;
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
 
   /* disable loop & punch */
   TRANSPORT->set_loop (false, true);
@@ -250,7 +250,7 @@ do_takes_no_loop_no_punch (
 
   /* run engine 1 more cycle to finalize recording */
   set_caches_and_process ();
-  TRANSPORT->request_pause (true);
+  TRANSPORT->requestPause (true);
   RECORDING_MANAGER->process_events ();
 
   ASSERT_EQ (RECORDING_MANAGER->num_active_recordings_, 0);
@@ -271,7 +271,7 @@ do_takes_loop_no_punch (
   MasterTrack *     master_track)
 {
   TRANSPORT->recording_ = true;
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
 
   /* enable loop & disable punch */
   TRANSPORT->set_loop (true, true);
@@ -613,7 +613,7 @@ TEST_F (ZrythmFixture, AutomationTouchRecording)
 
   prepare ();
   TRANSPORT->recording_ = true;
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
 
   /* enable loop & disable punch */
   TRANSPORT->set_loop (true, true);
@@ -706,7 +706,7 @@ TEST_F (ZrythmFixture, MonoRecording)
 
   prepare ();
   TRANSPORT->recording_ = true;
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
 
   /* disable loop & punch */
   TRANSPORT->set_loop (false, true);
@@ -760,7 +760,7 @@ TEST_F (ZrythmFixture, MonoRecording)
 
   /* run engine 1 more cycle to finalize recording */
   set_caches_and_process ();
-  TRANSPORT->request_pause (true);
+  TRANSPORT->requestPause (true);
   RECORDING_MANAGER->process_events ();
 
   /* save and undo/redo */
@@ -782,7 +782,7 @@ TEST_F (ZrythmFixture, LongAudioRecording)
 
   prepare ();
   TRANSPORT->recording_ = true;
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
 
   /* disable loop & punch */
   TRANSPORT->set_loop (false, true);
@@ -868,7 +868,7 @@ TEST_F (ZrythmFixture, LongAudioRecording)
 
   /* run engine 1 more cycle to finalize recording */
   set_caches_and_process ();
-  TRANSPORT->request_pause (true);
+  TRANSPORT->requestPause (true);
   RECORDING_MANAGER->process_events ();
 
   /* save and undo/redo */
@@ -910,7 +910,7 @@ TEST_F (ZrythmFixture, SecondAudioRecording)
 
   prepare ();
   TRANSPORT->recording_ = true;
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
 
   /* disable loop & punch */
   TRANSPORT->set_loop (false, true);
@@ -974,7 +974,7 @@ TEST_F (ZrythmFixture, SecondAudioRecording)
 
   /* run engine 1 more cycle to finalize recording */
   set_caches_and_process ();
-  TRANSPORT->request_pause (true);
+  TRANSPORT->requestPause (true);
   RECORDING_MANAGER->process_events ();
 
   /* save and undo/redo */
@@ -994,7 +994,7 @@ TEST_F (ZrythmFixture, ChordTrackRecording)
 
   prepare ();
   TRANSPORT->recording_ = true;
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
 
   /* set loop */
   TRANSPORT->set_loop (true, true);
@@ -1027,7 +1027,7 @@ TEST_F (ZrythmFixture, ChordTrackRecording)
   /* run engine 1 more cycle to finalize
    * recording */
   set_caches_and_process ();
-  TRANSPORT->request_pause (true);
+  TRANSPORT->requestPause (true);
   RECORDING_MANAGER->process_events ();
 
   /* save and undo/redo */

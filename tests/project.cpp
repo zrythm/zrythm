@@ -187,7 +187,7 @@ TEST_F (ZrythmFixture, NewFromTemplate)
 
   /* start playback and process for a couple of cycles */
   TRANSPORT->set_playhead_to_bar (1);
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
 
@@ -205,7 +205,7 @@ TEST_F (ZrythmFixture, NewFromTemplate)
 
   /* start playback and process for a couple of cycles */
   TRANSPORT->set_playhead_to_bar (1);
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
 
@@ -233,7 +233,7 @@ TEST_F (ZrythmFixture, NewFromTemplate)
 
   /* start playback and process for a couple of cycles */
   TRANSPORT->set_playhead_to_bar (1);
-  TRANSPORT->request_roll (true);
+  TRANSPORT->requestRoll (true);
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
 

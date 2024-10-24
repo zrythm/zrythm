@@ -7,7 +7,9 @@ import Zrythm 1.0
 import ZrythmStyle 1.0
 
 ZrythmToolBar {
-    id: headerBar
+    id: root
+
+    required property var project
 
     leftItems: [
         ToolButton {
@@ -67,6 +69,14 @@ ZrythmToolBar {
             // Add ToolboxWidget properties and functionality
 
             id: toolbox
+        }
+    ]
+    centerItems: [
+        TransportControls {
+            id: transportControls
+
+            transport: root.project.transport
+            tempoTrack: root.project.tracklist.tempoTrack
         }
     ]
     rightItems: [

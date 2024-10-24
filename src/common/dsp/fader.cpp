@@ -757,7 +757,7 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
         {
 
           /* if track frozen and transport is rolling */
-          if (track && track->frozen_ && TRANSPORT->is_rolling ())
+          if (track && track->frozen_ && TRANSPORT->isRolling ())
             {
 #if 0
               /* get audio from clip */

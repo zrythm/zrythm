@@ -109,6 +109,7 @@ class Project final
       directoryChanged FINAL)
   Q_PROPERTY (Tracklist * tracklist READ getTracklist CONSTANT FINAL)
   Q_PROPERTY (Timeline * timeline READ getTimeline CONSTANT FINAL)
+  Q_PROPERTY (Transport * transport READ getTransport CONSTANT FINAL)
 
 public:
   Project (QObject * parent = nullptr);
@@ -153,6 +154,7 @@ public:
   void    setDirectory (const QString &directory);
   Tracklist * getTracklist () const;
   Timeline *  getTimeline () const;
+  Transport * getTransport () const;
 
   Q_SIGNAL void titleChanged (const QString &title);
   Q_SIGNAL void directoryChanged (const QString &directory);
@@ -488,6 +490,11 @@ public:
    * The audio backend.
    */
   std::unique_ptr<AudioEngine> audio_engine_;
+
+  /**
+   * Timeline metadata like BPM, time signature, etc.
+   */
+  Transport * transport_;
 
   /** Zoom levels. TODO & move to clip_editor */
   double piano_roll_zoom_ = 0;

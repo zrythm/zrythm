@@ -372,8 +372,8 @@ SampleProcessor::queue_file_or_chord_preset (
     }
 
   Position start_pos;
-  start_pos.set_to_bar (*audio_engine_->transport_, 1);
-  file_end_pos_.set_to_bar (*audio_engine_->transport_, 1);
+  start_pos.set_to_bar (*audio_engine_->project_->transport_, 1);
+  file_end_pos_.set_to_bar (*audio_engine_->project_->transport_, 1);
 
   /* create master track */
   {
@@ -523,7 +523,7 @@ SampleProcessor::queue_file_or_chord_preset (
     }
 
   roll_ = true;
-  playhead_.set_to_bar (*audio_engine_->transport_, 1);
+  playhead_.set_to_bar (*audio_engine_->project_->transport_, 1);
 
   /* add some room to end pos */
   z_info ("playing until {}", file_end_pos_.to_string ());
@@ -561,7 +561,7 @@ void
 SampleProcessor::stop_file_playback ()
 {
   roll_ = false;
-  playhead_.set_to_bar (*audio_engine_->transport_, 1);
+  playhead_.set_to_bar (*audio_engine_->project_->transport_, 1);
 }
 
 void
@@ -587,7 +587,7 @@ SampleProcessor::find_and_queue_metronome (
     return;
 
   const auto &audio_engine = *audio_engine_;
-  const auto &transport = *audio_engine.transport_;
+  const auto &transport = *audio_engine.project_->transport_;
   const auto &tempo_track = *tracklist_->tempo_track_;
 
   /* find each bar / beat change from start to finish */

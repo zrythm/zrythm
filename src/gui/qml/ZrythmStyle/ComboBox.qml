@@ -19,7 +19,6 @@ T.ComboBox {
     hoverEnabled: true
     font: Style.buttonTextFont
     opacity: Style.getOpacity(control.enabled, control.Window.active)
-    palette: Style.colorPalette
 
     delegate: ItemDelegate {
         required property var model
@@ -123,7 +122,7 @@ T.ComboBox {
             ParallelAnimation {
                 PropertyAnimation {
                     property: "y"
-                    from: 0
+                    from: control.height / 2
                     to: control.height - 1
                     duration: Style.animationDuration
                     easing.type: Style.animationEasingType

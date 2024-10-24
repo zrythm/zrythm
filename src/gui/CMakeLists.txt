@@ -72,6 +72,9 @@ foreach(font_filepath ${font_filepaths})
 endforeach()
 
 set(rel_qml_file_paths
+  components/basic/EditableValueDisplay.qml
+  components/basic/LinkedButtons.qml
+  components/basic/RecordButton.qml
   components/basic/ZrythmActionRow.qml
   components/basic/ZrythmAlertDialog.qml
   components/basic/ZrythmFilePicker.qml
@@ -88,6 +91,7 @@ set(rel_qml_file_paths
   components/Timeline.qml
   components/Tracklist.qml
   components/TrackView.qml
+  components/TransportControls.qml
   components/ZrythmArranger.qml
   components/ZrythmRegion.qml
   Greeter.qml

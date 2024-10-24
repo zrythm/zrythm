@@ -20,6 +20,7 @@ qt_add_qml_module(zrythm_style
     ComboBox.qml
     DialogButtonBox.qml
     # Dialog.qml
+    DropShadowEffect.qml
     # Label.qml
     ItemDelegate.qml
     Menu.qml
