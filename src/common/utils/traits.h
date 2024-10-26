@@ -346,4 +346,18 @@ get_ptr_variant_as_base_ptr (PtrVariantT &&variant)
     std::forward<PtrVariantT> (variant));
 }
 
+/**
+ * @brief Overload pattern.
+ *
+ * Usage: `auto result = std::visit (overload {
+ *   [] (int x) { return x * 2; },
+ *   [] (const std::string &str) { return str.size (); },
+ *   [] (const std::vector<int> &vec) { return vec.size (); }
+ * }, var);`
+ */
+template <class... Ts> struct overload : Ts...
+{
+  using Ts::operator()...;
+};
+
 #endif // __UTILS_TRAITS_H__

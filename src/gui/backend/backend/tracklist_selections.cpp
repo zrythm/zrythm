@@ -14,7 +14,7 @@
 #include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/actions/tracklist_selections.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
+#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/tracklist_selections.h"
 #include "gui/backend/backend/zrythm.h"
 
@@ -71,36 +71,42 @@ TracklistSelections::get_lowest_track () const
 }
 
 void
-SimpleTracklistSelections::add_track (Track &track, bool fire_events)
+SimpleTracklistSelections::add_track (Track &tr, bool fire_events)
 {
-  if (!contains_track (track))
-    {
-      track_names_.push_back (track.name_);
-
-      if (fire_events)
+  std::visit (
+    [&] (auto &&track) {
+      using TrackT = base_type<decltype (track)>;
+      if (!contains_track (*track))
         {
-          /* EVENTS_PUSH (EventType::ET_TRACK_CHANGED, &track); */
-          /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr); */
+          track_names_.push_back (track->name_);
+
+          if (fire_events)
+            {
+              Q_EMIT track->selectedChanged (true);
+              /* EVENTS_PUSH (EventType::ET_TRACK_CHANGED, &track); */
+              /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED,
+               * nullptr); */
+            }
         }
-    }
 
-  if (track.can_record ())
-    {
-      auto &rec_track = dynamic_cast<RecordableTrack &> (track);
-
-      z_debug (
-        "%s currently recording: %d, have channel: %d", track.name_,
-        rec_track.get_recording (), track.has_channel ());
-
-      /* if recording is not already on, auto-arm */
-      if (
-        ZRYTHM_HAVE_UI && g_settings_get_boolean (S_UI, "track-autoarm")
-        && !rec_track.get_recording () && track.has_channel ())
+      if constexpr (std::derived_from<TrackT, RecordableTrack>)
         {
-          rec_track.set_recording (true, fire_events);
-          rec_track.record_set_automatically_ = true;
+          z_debug (
+            "{} currently recording: {}, have channel: {}", track->name_,
+            track->get_recording (), track->has_channel ());
+
+          /* if recording is not already on, auto-arm */
+          if (
+            ZRYTHM_HAVE_UI
+            && zrythm::gui::SettingsManager::get_instance ()->get_trackAutoArm ()
+            && !track->get_recording () && track->has_channel ())
+            {
+              track->set_recording (true, fire_events);
+              track->record_set_automatically_ = true;
+            }
         }
-    }
+    },
+    convert_to_variant<TrackPtrVariant> (&tr));
 }
 
 void
@@ -133,7 +139,7 @@ SimpleTracklistSelections::clear (const bool fire_events)
 
       std::visit (
         [&] (auto &&tr) {
-          remove_track (*tr, false);
+          remove_track (*tr, fire_events);
 
           if (tr->is_in_active_project ())
             {
@@ -259,35 +265,45 @@ SimpleTracklistSelections::select_all (bool visible_only)
 void
 SimpleTracklistSelections::remove_track (Track &track, int fire_events)
 {
-  auto it = std::find (track_names_.begin (), track_names_.end (), track.name_);
-  if (it == track_names_.end ())
-    {
+  std::visit (
+    [&] (auto &&tr) {
+      using TrackT = base_type<decltype (tr)>;
+      auto it =
+        std::find (track_names_.begin (), track_names_.end (), track.name_);
+      if (it == track_names_.end ())
+        {
+          if (fire_events)
+            {
+              /* EVENTS_PUSH (EventType::ET_TRACK_CHANGED, &track); */
+              /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED,
+               * nullptr); */
+            }
+          return;
+        }
+
+      /* if record mode was set automatically when the track was selected, turn
+       * record off - unless currently recording */
+      if constexpr (std::derived_from<TrackT, RecordableTrack>)
+        {
+          if (
+            tr->record_set_automatically_
+            && !(TRANSPORT->is_recording () && TRANSPORT->isRolling ()))
+            {
+              tr->set_recording (false, fire_events);
+              tr->record_set_automatically_ = false;
+            }
+        }
+
+      track_names_.erase (it);
+
       if (fire_events)
         {
-          /* EVENTS_PUSH (EventType::ET_TRACK_CHANGED, &track); */
-          /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr); */
+          Q_EMIT tr->selectedChanged (false);
+          /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr);
+           */
         }
-      return;
-    }
-
-  /* if record mode was set automatically when the track was selected, turn
-   * record off - unless currently recording */
-  RecordableTrack * recordable_track =
-    dynamic_cast<RecordableTrack *> (const_cast<Track *> (&track));
-  if (
-    recordable_track && recordable_track->record_set_automatically_
-    && !(TRANSPORT->is_recording () && TRANSPORT->isRolling ()))
-    {
-      recordable_track->set_recording (false, fire_events);
-      recordable_track->record_set_automatically_ = false;
-    }
-
-  track_names_.erase (it);
-
-  if (fire_events)
-    {
-      /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr); */
-    }
+    },
+    convert_to_variant<TrackPtrVariant> (&track));
 }
 bool
 SimpleTracklistSelections::contains_uninstantiated_plugin () const
@@ -438,8 +454,8 @@ TracklistSelections::contains_track_index (int track_idx) const
 void
 SimpleTracklistSelections::select_single (Track &track, bool fire_events)
 {
-  clear (false);
-  add_track (track, false);
+  clear (fire_events);
+  add_track (track, fire_events);
 
   if (fire_events)
     {

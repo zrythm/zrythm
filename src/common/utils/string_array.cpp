@@ -19,6 +19,14 @@ StringArray::StringArray (const char * const * strs)
     }
 }
 
+StringArray::StringArray (const QStringList &qlist)
+{
+  for (const auto &s : qlist)
+    {
+      add (s.toStdString ());
+    }
+}
+
 char **
 StringArray::getNullTerminated () const
 {

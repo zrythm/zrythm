@@ -18,7 +18,7 @@ class ChannelTrack
       public ISerializable<ChannelTrack>
 {
 public:
-  virtual ~ChannelTrack () { remove_ats_from_automation_tracklist (false); };
+  ~ChannelTrack () override;
 
   void init_loaded () override;
 
@@ -101,6 +101,9 @@ public:
 
 protected:
   ChannelTrack ();
+
+  void
+  append_member_ports (std::vector<Port *> &ports, bool include_plugins) const;
 
   void copy_members_from (const ChannelTrack &other);
 

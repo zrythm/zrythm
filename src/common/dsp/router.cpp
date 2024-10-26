@@ -53,6 +53,8 @@
 #  include "weakjack/weak_libjack.h"
 #endif
 
+Router::Router (AudioEngine * engine) : audio_engine_ (engine) { }
+
 nframes_t
 Router::get_max_route_playback_latency ()
 {

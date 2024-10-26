@@ -63,6 +63,7 @@ constexpr int TRACK_MAGIC = 21890135;
 #define IS_TRACK_AND_NONNULL(x) (x && IS_TRACK (x))
 
 #define DEFINE_TRACK_QML_PROPERTIES \
+public: \
   Q_PROPERTY (QString name READ getName WRITE setName NOTIFY nameChanged) \
   QString getName () const \
   { \
@@ -111,7 +112,41 @@ constexpr int TRACK_MAGIC = 21890135;
     Q_EMIT visibleChanged (visible); \
   } \
 \
-  Q_SIGNAL void visibleChanged (bool visible);
+  Q_SIGNAL void visibleChanged (bool visible); \
+\
+  Q_PROPERTY ( \
+    double fullVisibleHeight READ getFullVisibleHeight NOTIFY \
+      fullVisibleHeightChanged) \
+  double getFullVisibleHeight () const \
+  { \
+    return get_full_visible_height (); \
+  } \
+\
+  Q_SIGNAL void fullVisibleHeightChanged (double fullVisibleHeight); \
+\
+  Q_PROPERTY ( \
+    bool enabled READ getEnabled WRITE setEnabled NOTIFY enabledChanged) \
+  bool getEnabled () const \
+  { \
+    return enabled_; \
+  } \
+\
+  void setEnabled (bool enabled) \
+  { \
+    set_enabled (enabled, true, true, true); \
+  } \
+  Q_SIGNAL void enabledChanged (bool enabled); \
+\
+  Q_PROPERTY (bool selected READ getSelected NOTIFY selectedChanged) \
+  bool getSelected () const \
+  { \
+    return is_selected (); \
+  } \
+  Q_INVOKABLE void setExclusivelySelected (bool selected) \
+  { \
+    select (selected, true, true); \
+  } \
+  Q_SIGNAL void selectedChanged (bool selected);
 
 /**
  * The Track's type.
@@ -746,7 +781,8 @@ public:
   /**
    * Appends all channel ports and optionally plugin ports to the array.
    */
-  void append_ports (std::vector<Port *> &ports, bool include_plugins) const;
+  virtual void
+  append_ports (std::vector<Port *> &ports, bool include_plugins) const = 0;
 
   /**
    * Freezes or unfreezes the track.

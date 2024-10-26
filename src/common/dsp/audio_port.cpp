@@ -510,20 +510,21 @@ StereoPorts::StereoPorts (const AudioPort &l, const AudioPort &r)
 }
 
 void
-StereoPorts::disconnect ()
+StereoPorts::disconnect (PortConnectionsManager &mgr)
 {
   l_->disconnect_all ();
   r_->disconnect_all ();
 }
 
 void
-StereoPorts::connect_to (StereoPorts &dest, bool locked)
+StereoPorts::
+  connect_to (PortConnectionsManager &mgr, StereoPorts &dest, bool locked)
 {
-  l_->connect_to (*dest.l_, locked);
-  r_->connect_to (*dest.r_, locked);
+  l_->connect_to (mgr, *dest.l_, locked);
+  r_->connect_to (mgr, *dest.r_, locked);
 }
 
 StereoPorts::~StereoPorts ()
 {
-  disconnect ();
+  disconnect (*PORT_CONNECTIONS_MGR);
 }

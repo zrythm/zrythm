@@ -180,10 +180,10 @@ public:
     r_->set_owner (owner);
   }
 
-  void set_expose_to_backend (bool expose)
+  void set_expose_to_backend (AudioEngine &engine, bool expose)
   {
-    l_->set_expose_to_backend (expose);
-    r_->set_expose_to_backend (expose);
+    l_->set_expose_to_backend (engine, expose);
+    r_->set_expose_to_backend (engine, expose);
   }
 
   void disconnect_hw_inputs ()
@@ -212,9 +212,10 @@ public:
    * @param dest Destination port.
    * @param locked Lock the connection.
    */
-  ATTR_NONNULL void connect_to (StereoPorts &dest, bool locked);
+  ATTR_NONNULL void
+  connect_to (PortConnectionsManager &mgr, StereoPorts &dest, bool locked);
 
-  void disconnect ();
+  void disconnect (PortConnectionsManager &mgr);
 
   void set_write_ring_buffers (bool on)
   {

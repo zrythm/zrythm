@@ -13,7 +13,7 @@
 MarkerTrack::MarkerTrack (int track_pos)
     : Track (
         Track::Type::Marker,
-        _ ("Markers"),
+        tr ("Markers").toStdString (),
         track_pos,
         PortType::Unknown,
         PortType::Unknown)
@@ -142,6 +142,11 @@ MarkerTrack::validate () const
       z_return_val_if_fail (m->marker_track_index_ == (int) i, false);
     }
   return true;
+}
+
+void
+MarkerTrack::append_ports (std::vector<Port *> &ports, bool include_plugins) const
+{
 }
 
 MarkerTrack::MarkerPtr

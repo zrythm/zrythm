@@ -213,7 +213,7 @@ ModulatorTrack::remove_modulator (
   z_debug ("Removing {} from {}:{}", plugin->get_name (), name_, slot);
 
   /* unexpose all JACK ports */
-  plugin->expose_ports (F_NOT_EXPOSE, true, true);
+  plugin->expose_ports (*AUDIO_ENGINE, F_NOT_EXPOSE, true, true);
 
   /* if deleting plugin disconnect the plugin entirely */
   if (deleting_modulator)
@@ -257,6 +257,28 @@ ModulatorTrack::init_after_cloning (const ModulatorTrack &other)
     }
   clone_unique_ptr_container (
     modulator_macro_processors_, other.modulator_macro_processors_);
+}
+
+void
+ModulatorTrack::append_ports (std::vector<Port *> &ports, bool include_plugins)
+  const
+{
+  ProcessableTrack::append_member_ports (ports, include_plugins);
+  auto add_port = [&ports] (Port * port) {
+    if (port != nullptr)
+      ports.push_back (port);
+    else
+      z_warning ("Port is null");
+  };
+
+  for (const auto &modulator : modulators_)
+    modulator->append_ports (ports);
+  for (const auto &macro : modulator_macro_processors_)
+    {
+      add_port (macro->macro_.get ());
+      add_port (macro->cv_in_.get ());
+      add_port (macro->cv_out_.get ());
+    }
 }
 
 bool

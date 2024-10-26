@@ -38,7 +38,7 @@ AutomatableTrack::init_loaded ()
               PortIdentifier::Flags, port->id_.flags_,
               PortIdentifier::Flags::Automatable))
             {
-              auto              ctrl = dynamic_cast<ControlPort *> (port);
+              auto *            ctrl = dynamic_cast<ControlPort *> (port);
               AutomationTrack * at =
                 AutomationTrack::find_from_port (*ctrl, this, true);
               z_return_if_fail (at);
@@ -53,7 +53,7 @@ AutomatableTrack::generate_automation_tracks ()
 {
   auto &atl = automation_tracklist_;
   auto  create_and_add_at = [&] (ControlPort &port) -> AutomationTrack  &{
-    auto at = atl->add_at (std::make_unique<AutomationTrack> (port));
+    auto * at = atl->add_at (std::make_unique<AutomationTrack> (port));
     return *at;
   };
 
@@ -157,8 +157,8 @@ AutomatableTrack::set_automation_visible (const bool visible)
 
       if (num_visible == 0)
         {
-          auto at = atl.get_first_invisible_at ();
-          if (at)
+          auto * at = atl.get_first_invisible_at ();
+          if (at != nullptr)
             {
               at->created_ = true;
               atl.set_at_visible (*at, true);
@@ -182,7 +182,7 @@ AutomatableTrack::validate_base () const
       std::vector<Port *> ports;
       append_ports (ports, true);
       unsigned int name_hash = get_name_hash ();
-      for (auto port : ports)
+      for (const auto * port : ports)
         {
           z_return_val_if_fail (port->id_.track_name_hash_ == name_hash, false);
           if (port->id_.owner_type_ == PortIdentifier::OwnerType::Plugin)
@@ -194,7 +194,8 @@ AutomatableTrack::validate_base () const
               z_return_val_if_fail (pl->id_ == pid, false);
               if (pid.slot_type_ == zrythm::plugins::PluginSlotType::Instrument)
                 {
-                  auto channel_track = dynamic_cast<const ChannelTrack *> (this);
+                  const auto * channel_track =
+                    dynamic_cast<const ChannelTrack *> (this);
                   z_return_val_if_fail (
                     pl == channel_track->channel_->instrument_.get (), false);
                 }
@@ -206,9 +207,10 @@ AutomatableTrack::validate_base () const
               PortIdentifier::Flags, port->id_.flags_,
               PortIdentifier::Flags::Automatable))
             {
-              auto ctrl = dynamic_cast<ControlPort *> (port);
-              auto at = AutomationTrack::find_from_port (*ctrl, this, true);
-              if (!at)
+              const auto * ctrl = dynamic_cast<const ControlPort *> (port);
+              const auto * at =
+                AutomationTrack::find_from_port (*ctrl, this, true);
+              if (at == nullptr)
                 {
                   z_error (
                     "Could not find automation track for port '{}'",

@@ -960,11 +960,11 @@ Tracklist::get_num_visible_tracks (bool visible) const
 }
 
 void
-Tracklist::expose_ports_to_backend ()
+Tracklist::expose_ports_to_backend (AudioEngine &engine)
 {
   for (auto * track : tracks_ | type_is<ChannelTrack> ())
     {
-      track->channel_->expose_ports_to_backend ();
+      track->channel_->expose_ports_to_backend (engine);
     }
 }
 

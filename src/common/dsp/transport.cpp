@@ -938,3 +938,9 @@ Transport::set_recording (bool record, bool with_wait)
 
   Q_EMIT recordEnabledChanged (recording_);
 }
+
+QString
+Transport::getPlayheadPositionString (const TempoTrack * tempo_track) const
+{
+  return QString::fromStdString (playhead_pos_.to_string (this, tempo_track, 0));
+}

@@ -973,15 +973,18 @@ TrackProcessor::disconnect_from_prefader ()
     case PortType::Audio:
       if (tr->out_signal_type_ == PortType::Audio)
         {
-          stereo_out_->get_l ().disconnect_from (prefader->stereo_in_->get_l ());
+          stereo_out_->get_l ().disconnect_from (
+            *PORT_CONNECTIONS_MGR, prefader->stereo_in_->get_l ());
 
-          stereo_out_->get_r ().disconnect_from (prefader->stereo_in_->get_r ());
+          stereo_out_->get_r ().disconnect_from (
+            *PORT_CONNECTIONS_MGR, prefader->stereo_in_->get_r ());
         }
       break;
     case PortType::Event:
       if (tr->out_signal_type_ == PortType::Event)
         {
-          midi_out_->disconnect_from (*prefader->midi_in_);
+          midi_out_->disconnect_from (
+            *PORT_CONNECTIONS_MGR, *prefader->midi_in_);
         }
       break;
     default:
@@ -1002,16 +1005,16 @@ TrackProcessor::connect_to_prefader ()
       if (tr->out_signal_type_ == PortType::Audio)
         {
           stereo_out_->get_l ().connect_to (
-            prefader->stereo_in_->get_l (), true);
+            *PORT_CONNECTIONS_MGR, prefader->stereo_in_->get_l (), true);
 
           stereo_out_->get_r ().connect_to (
-            prefader->stereo_in_->get_r (), true);
+            *PORT_CONNECTIONS_MGR, prefader->stereo_in_->get_r (), true);
         }
       break;
     case PortType::Event:
       if (tr->out_signal_type_ == PortType::Event)
         {
-          midi_out_->connect_to (*prefader->midi_in_, 1);
+          midi_out_->connect_to (*PORT_CONNECTIONS_MGR, *prefader->midi_in_, 1);
         }
       break;
     default:
@@ -1033,9 +1036,11 @@ TrackProcessor::disconnect_from_plugin (zrythm::plugins::Plugin &pl)
             continue;
 
           if (stereo_out_->get_l ().is_connected_to (*in_port))
-            stereo_out_->get_l ().disconnect_from (*in_port);
+            stereo_out_->get_l ().disconnect_from (
+              *PORT_CONNECTIONS_MGR, *in_port);
           if (stereo_out_->get_r ().is_connected_to (*in_port))
-            stereo_out_->get_r ().disconnect_from (*in_port);
+            stereo_out_->get_r ().disconnect_from (
+              *PORT_CONNECTIONS_MGR, *in_port);
         }
       else if (tr->in_signal_type_ == PortType::Event)
         {
@@ -1043,7 +1048,7 @@ TrackProcessor::disconnect_from_plugin (zrythm::plugins::Plugin &pl)
             continue;
 
           if (midi_out_->is_connected_to (*in_port))
-            midi_out_->disconnect_from (*in_port);
+            midi_out_->disconnect_from (*PORT_CONNECTIONS_MGR, *in_port);
         }
     }
 }
@@ -1065,7 +1070,7 @@ TrackProcessor::connect_to_plugin (zrythm::plugins::Plugin &pl)
             in_port->id_.type_ == PortType::Event
             && in_port->id_.flow_ == PortFlow::Input)
             {
-              midi_out_->connect_to (*in_port, true);
+              midi_out_->connect_to (*PORT_CONNECTIONS_MGR, *in_port, true);
             }
         }
     }
@@ -1099,13 +1104,15 @@ TrackProcessor::connect_to_plugin (zrythm::plugins::Plugin &pl)
                 {
                   if (i == 0)
                     {
-                      stereo_out_->get_l ().connect_to (*in_port, true);
+                      stereo_out_->get_l ().connect_to (
+                        *PORT_CONNECTIONS_MGR, *in_port, true);
                       last_index++;
                       break;
                     }
                   else if (i == 1)
                     {
-                      stereo_out_->get_r ().connect_to (*in_port, true);
+                      stereo_out_->get_r ().connect_to (
+                        *PORT_CONNECTIONS_MGR, *in_port, true);
                       last_index++;
                       break;
                     }

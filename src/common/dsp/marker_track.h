@@ -77,6 +77,9 @@ public:
 
   void init_after_cloning (const MarkerTrack &other) override;
 
+  void
+  append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
+
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:

@@ -103,6 +103,13 @@ class SettingsManager final : public QObject
   DEFINE_SETTING_PROPERTY (bool, leftPanelVisible, true)
   DEFINE_SETTING_PROPERTY (bool, rightPanelVisible, true)
   DEFINE_SETTING_PROPERTY (bool, bottomPanelVisible, true)
+  DEFINE_SETTING_PROPERTY (bool, trackAutoArm, true)
+  DEFINE_SETTING_PROPERTY (int, audioBackend, 0) // dummy
+  DEFINE_SETTING_PROPERTY (int, midiBackend, 0)  // dummy
+  DEFINE_SETTING_PROPERTY (int, panLaw, 1)
+  DEFINE_SETTING_PROPERTY (int, panAlgorithm, 2)
+  DEFINE_SETTING_PROPERTY (QStringList, midiControllers, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, audioInputs, QStringList ())
 
 public:
   SettingsManager (QObject * parent = nullptr);

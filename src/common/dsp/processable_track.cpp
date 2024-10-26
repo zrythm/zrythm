@@ -270,3 +270,11 @@ ProcessableTrack::fill_events_common (
     },
     convert_to_variant<ProcessableTrackPtrVariant> (this));
 }
+
+void
+ProcessableTrack::append_member_ports (
+  std::vector<Port *> &ports,
+  bool                 include_plugins) const
+{
+  processor_->append_ports (ports);
+}

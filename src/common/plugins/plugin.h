@@ -268,7 +268,8 @@ public:
    * @param inputs Expose/unexpose inputs.
    * @param outputs Expose/unexpose outputs.
    */
-  void expose_ports (bool expose, bool inputs, bool outputs);
+  void
+  expose_ports (AudioEngine &engine, bool expose, bool inputs, bool outputs);
 
   /**
    * Gets a port by its symbol.

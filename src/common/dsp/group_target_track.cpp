@@ -30,13 +30,14 @@ GroupTargetTrack::update_child_output (
         {
         case PortType::Audio:
           ch->stereo_out_->get_l ().disconnect_from (
-            track->processor_->stereo_in_->get_l ());
+            *PORT_CONNECTIONS_MGR, track->processor_->stereo_in_->get_l ());
 
           ch->stereo_out_->get_r ().disconnect_from (
-            track->processor_->stereo_in_->get_r ());
+            *PORT_CONNECTIONS_MGR, track->processor_->stereo_in_->get_r ());
           break;
         case PortType::Event:
-          ch->midi_out_->disconnect_from (*track->processor_->midi_in_);
+          ch->midi_out_->disconnect_from (
+            *PORT_CONNECTIONS_MGR, *track->processor_->midi_in_);
           break;
         default:
           break;
@@ -51,12 +52,15 @@ GroupTargetTrack::update_child_output (
         case PortType::Audio:
 
           ch->stereo_out_->get_l ().connect_to (
-            output->processor_->stereo_in_->get_l (), true);
+            *PORT_CONNECTIONS_MGR, output->processor_->stereo_in_->get_l (),
+            true);
           ch->stereo_out_->get_r ().connect_to (
-            output->processor_->stereo_in_->get_r (), true);
+            *PORT_CONNECTIONS_MGR, output->processor_->stereo_in_->get_r (),
+            true);
           break;
         case PortType::Event:
-          ch->midi_out_->connect_to (*output->processor_->midi_in_, true);
+          ch->midi_out_->connect_to (
+            *PORT_CONNECTIONS_MGR, *output->processor_->midi_in_, true);
           break;
         default:
           break;

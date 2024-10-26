@@ -29,6 +29,8 @@
 #ifndef __AUDIO_GRAPH_NODE_H__
 #define __AUDIO_GRAPH_NODE_H__
 
+#include "common/dsp/track.h"
+#include "common/plugins/plugin.h"
 #include "common/utils/types.h"
 
 class GraphNode;
@@ -61,6 +63,7 @@ class Plugin;
 class GraphNode
 {
 public:
+#if 0
   /**
    * @brief Graph node type.
    *
@@ -101,17 +104,32 @@ public:
     /** Channel send. */
     ChannelSend,
   };
+#endif
+
+  using NodeData = std::variant<
+    PortPtrVariant,
+    zrythm::plugins::PluginPtrVariant,
+    TrackPtrVariant,
+    Fader *, // Used for normal fader, prefader and monitor fader
+    SampleProcessor *,
+    HardwareProcessor *,
+    ModulatorMacroProcessor *,
+    ChannelSend *,
+    std::monostate // For initial processor (dummy processor in the chain
+                   // processed before anything else. )
+    >;
 
 public:
   GraphNode () = default;
-  GraphNode (Graph * graph, Type type, void * data);
+
+  GraphNode (Graph * graph, NodeData data);
 
   /**
    * Returns a human friendly name of the node.
    */
   std::string get_name () const;
 
-  void * get_pointer () const;
+  // void * get_pointer () const;
 
   /** For general debugging. */
   std::string print_to_str () const;
@@ -150,7 +168,7 @@ public:
 private:
   ATTR_HOT void on_finish (GraphThread &thread);
 
-  ATTR_HOT void process_internal (const EngineProcessTimeInfo time_nfo);
+  ATTR_HOT void process_internal (EngineProcessTimeInfo time_nfo);
 
   void add_feeds (GraphNode &dest);
   void add_depends (GraphNode &src);
@@ -174,7 +192,7 @@ public:
   std::atomic<int> refcount_ = 0;
 
   /** Initial incoming node count. */
-  gint init_refcount_ = 0;
+  int init_refcount_ = 0;
 
   /**
    * @brief Incoming nodes.
@@ -186,29 +204,7 @@ public:
    */
   std::vector<GraphNode *> parentnodes_;
 
-  /** Port, if not a plugin or fader. */
-  Port * port_ = nullptr;
-
-  /** Plugin, if plugin. */
-  zrythm::plugins::Plugin * pl_ = nullptr;
-
-  /** Fader, if fader. */
-  Fader * fader_ = nullptr;
-
-  Track * track_ = nullptr;
-
-  /** Pre-Fader, if prefader node. */
-  Fader * prefader_ = nullptr;
-
-  /** Sample processor, if sample processor. */
-  SampleProcessor * sample_processor_ = nullptr;
-
-  /** Hardware processor, if hardware processor. */
-  HardwareProcessor * hw_processor_ = nullptr;
-
-  ModulatorMacroProcessor * modulator_macro_processor_ = nullptr;
-
-  ChannelSend * send_ = nullptr;
+  NodeData data_;
 
   /** For debugging. */
   bool terminal_ = false;
@@ -219,8 +215,45 @@ public:
 
   /** The route's playback latency so far. */
   nframes_t route_playback_latency_ = 0;
+};
 
-  Type type_ = {};
+template <> struct std::hash<GraphNode::NodeData>
+{
+  size_t operator() (const GraphNode::NodeData &data) const
+  {
+    return std::visit (
+      overload{
+        [] (const PortPtrVariant &p) {
+          return std::visit (
+            [] (auto * ptr) {
+              z_return_val_if_fail (ptr, static_cast<size_t> (0));
+              return reinterpret_cast<size_t> (ptr);
+            },
+            p);
+        },
+        [] (const zrythm::plugins::PluginPtrVariant &pl) {
+          return std::visit (
+            [] (auto * ptr) {
+              z_return_val_if_fail (ptr, static_cast<size_t> (0));
+              return reinterpret_cast<size_t> (ptr);
+            },
+            pl);
+        },
+        [] (const TrackPtrVariant &t) {
+          return std::visit (
+            [] (auto * ptr) {
+              z_return_val_if_fail (ptr, static_cast<size_t> (0));
+              return reinterpret_cast<size_t> (ptr);
+            },
+            t);
+        },
+        [] (const std::monostate &) -> size_t { return 1; },
+        [] (auto * ptr) {
+          z_return_val_if_fail (ptr, static_cast<size_t> (0));
+          return reinterpret_cast<size_t> (ptr);
+        } },
+      data);
+  }
 };
 
 /**

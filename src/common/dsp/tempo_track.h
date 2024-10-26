@@ -135,6 +135,9 @@ public:
 
   int get_beat_unit () const;
 
+  void
+  append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
+
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:

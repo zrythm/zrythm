@@ -33,7 +33,7 @@ RecordableTrack::set_recording (bool recording, bool fire_events)
 
   if (recording)
     {
-      z_info ("enabled recording on {}");
+      z_info ("enabled recording on {}", name_);
     }
   else
     {
@@ -46,5 +46,20 @@ RecordableTrack::set_recording (bool recording, bool fire_events)
   if (fire_events)
     {
       // EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, this);
+    }
+}
+
+void
+RecordableTrack::append_member_ports (
+  std::vector<Port *> &ports,
+  bool                 include_plugins) const
+{
+  if (recording_)
+    {
+      ports.push_back (recording_.get ());
+    }
+  else
+    {
+      z_warning ("recording port unset");
     }
 }

@@ -72,7 +72,8 @@ engine_dummy_setup (AudioEngine * self)
     }
 #endif
 
-  int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
+  int beats_per_bar =
+    self->project_->tracklist_->tempo_track_->get_beats_per_bar ();
   z_warn_if_fail (beats_per_bar >= 1);
 
   z_info ("Dummy Engine set up [samplerate: {}]", self->sample_rate_);

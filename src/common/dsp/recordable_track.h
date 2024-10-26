@@ -17,8 +17,10 @@ class RecordableTrack
 public:
   // Rule of 0
   RecordableTrack ();
+  JUCE_DECLARE_NON_COPYABLE (RecordableTrack)
+  JUCE_DECLARE_NON_MOVEABLE (RecordableTrack)
 
-  virtual ~RecordableTrack () = default;
+  ~RecordableTrack () override = default;
 
   void init_loaded () override;
 
@@ -38,6 +40,9 @@ protected:
     recording_ = other.recording_->clone_unique ();
     record_set_automatically_ = other.record_set_automatically_;
   }
+
+  void
+  append_member_ports (std::vector<Port *> &ports, bool include_plugins) const;
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

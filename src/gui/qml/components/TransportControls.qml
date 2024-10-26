@@ -60,8 +60,26 @@ RowLayout {
         }
 
         EditableValueDisplay {
+            id: timeDisplay
+
             value: transport.playheadPosition.toString(transport, tempoTrack)
             label: "time"
+            minValueWidth: timeTextMetrics.width
+
+            // FrameAnimation {
+            //     running: true
+            //     onTriggered: {
+            //         timeDisplay.value = transport.getPlayheadPositionString(tempoTrack);
+            //     }
+            // }
+
+            TextMetrics {
+                id: timeTextMetrics
+
+                text: "99.9.9.999"
+                font: Style.semiBoldTextFont
+            }
+
         }
 
         EditableValueDisplay {

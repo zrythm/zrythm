@@ -99,7 +99,7 @@ Position::to_ms () const
 QString
 Position::toString (Transport * transport, TempoTrack * tempo_track) const
 {
-  return QString::fromStdString (to_string (transport, tempo_track, 3));
+  return QString::fromStdString (to_string (transport, tempo_track, 0));
 }
 
 signed_frame_t
@@ -417,13 +417,13 @@ Position::to_string (
   if (ZRYTHM_TESTING)
     {
       sprintf (
-        buf, "%d.%d.%d.%.*f (%" SIGNED_FRAME_FORMAT ")", bars, abs (beats),
+        buf, "%d.%d.%d.%03.*f (%" SIGNED_FRAME_FORMAT ")", bars, abs (beats),
         abs (sixteenths), decimal_places, fabs (ticks), frames_);
     }
   else
     {
       sprintf (
-        buf, "%d.%d.%d.%.*f", bars, abs (beats), abs (sixteenths),
+        buf, "%d.%d.%d.%03.*f", bars, abs (beats), abs (sixteenths),
         decimal_places, fabs (ticks));
     }
 }

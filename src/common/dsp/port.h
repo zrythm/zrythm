@@ -42,6 +42,7 @@ class AutomationTrack;
 class TruePeakDsp;
 class ExtPort;
 class AudioClip;
+class PortConnectionsManager;
 class ChannelSend;
 class Transport;
 struct EngineProcessTimeInfo;
@@ -182,7 +183,7 @@ public:
    * It checks what the backend is using the engine's audio backend or midi
    * backend settings.
    */
-  void set_expose_to_backend (bool expose);
+  void set_expose_to_backend (AudioEngine &engine, bool expose);
 
   /**
    * Returns if the port is exposed to the backend.
@@ -284,12 +285,12 @@ public:
    * multiplier: 1.0
    * }
    */
-  void connect_to (Port &dest, bool locked);
+  void connect_to (PortConnectionsManager &mgr, Port &dest, bool locked);
 
   /**
    * @brief Removes the connection to @p dest.
    */
-  void disconnect_from (Port &dest);
+  void disconnect_from (PortConnectionsManager &mgr, Port &dest);
 
 protected:
   Port () = default;

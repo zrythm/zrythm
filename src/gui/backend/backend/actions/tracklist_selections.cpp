@@ -291,11 +291,11 @@ TracklistSelectionsAction::TracklistSelectionsAction (
           for (auto &tr : TRACKLIST->tracks_)
             {
               std::visit (
-                [&] (auto &&track) {
-                  using TrackT = base_type<decltype (track)>;
+                [&] (auto &&track_inner) {
+                  using TrackT = base_type<decltype (track_inner)>;
                   if constexpr (std::derived_from<TrackT, FoldableTrack>)
                     {
-                      auto new_track = track->clone_unique ();
+                      auto new_track = track_inner->clone_unique ();
                       foldable_tls_before_->add_track (std::move (new_track));
                     }
                 },

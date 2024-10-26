@@ -134,7 +134,7 @@ public:
   /**
    * Called when the input has changed for Midi, Instrument or Audio tracks.
    */
-  void reconnect_ext_input_ports ();
+  void reconnect_ext_input_ports (AudioEngine &engine);
 
   /**
    * Convenience function to get the automation track of the given type for the
@@ -241,14 +241,14 @@ public:
   /**
    * Exposes the channel's ports to the backend.
    */
-  void expose_ports_to_backend ();
+  void expose_ports_to_backend (AudioEngine &engine);
 
   /**
    * Connects the channel's ports.
    *
    * This should only be called on project tracks.
    */
-  void connect ();
+  void connect (PortConnectionsManager &mgr, AudioEngine &engine);
 
   void set_phase (float phase);
 
@@ -415,7 +415,7 @@ public:
    *
    * If all_midi_channels is enabled, this is ignored.
    */
-  std::array<bool, 16> midi_channels_;
+  std::array<bool, 16> midi_channels_{};
 
   /** If true, the channel will accept MIDI messages from all MIDI channels.
    */
@@ -462,7 +462,7 @@ public:
   int magic_ = CHANNEL_MAGIC;
 
   /** Owner track. */
-  ChannelTrack * track_;
+  ChannelTrack * track_ = nullptr;
 };
 
 /**

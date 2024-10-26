@@ -77,12 +77,12 @@ Plugin::set_stereo_outs_and_midi_in ()
           if (num_audio_outs == 0)
             {
               out_port->id_.flags_ |= PortIdentifier::Flags::StereoL;
-              l_out_ = static_cast<AudioPort *> (out_port.get ());
+              l_out_ = dynamic_cast<AudioPort *> (out_port.get ());
             }
           else if (num_audio_outs == 1)
             {
               out_port->id_.flags_ |= PortIdentifier::Flags::StereoR;
-              r_out_ = static_cast<AudioPort *> (out_port.get ());
+              r_out_ = dynamic_cast<AudioPort *> (out_port.get ());
             }
           num_audio_outs++;
         }
@@ -112,7 +112,7 @@ Plugin::set_stereo_outs_and_midi_in ()
           PortIdentifier::Flags2, port->id_.flags2_,
           PortIdentifier::Flags2::SupportsMidi))
         {
-          midi_in_port_ = static_cast<MidiPort *> (port.get ());
+          midi_in_port_ = dynamic_cast<MidiPort *> (port.get ());
           break;
         }
     }
@@ -142,13 +142,13 @@ Plugin::set_enabled_and_gain ()
         ENUM_BITSET_TEST (
           PortIdentifier::Flags, id.flags_, PortIdentifier::Flags::PluginEnabled))
         {
-          enabled_ = static_cast<ControlPort *> (port.get ());
+          enabled_ = dynamic_cast<ControlPort *> (port.get ());
         }
       if (
         ENUM_BITSET_TEST (
           PortIdentifier::Flags, id.flags_, PortIdentifier::Flags::PluginGain))
         {
-          gain_ = static_cast<ControlPort *> (port.get ());
+          gain_ = dynamic_cast<ControlPort *> (port.get ());
         }
     }
   z_return_if_fail (enabled_ && gain_);
@@ -236,7 +236,7 @@ Plugin::init (
   port->control_ = 1.f;
   port->unsnapped_control_ = 1.f;
   port->carla_param_id_ = -1;
-  enabled_ = static_cast<ControlPort *> (add_in_port (std::move (port)));
+  enabled_ = dynamic_cast<ControlPort *> (add_in_port (std::move (port)));
 
   /* add gain port */
   port = std::make_unique<ControlPort> (_ ("Gain"));
@@ -252,7 +252,7 @@ Plugin::init (
   port->deff_ = 1.f;
   port->set_control_value (1.f, false, false);
   port->carla_param_id_ = -1;
-  gain_ = static_cast<ControlPort *> (add_in_port (std::move (port)));
+  gain_ = dynamic_cast<ControlPort *> (add_in_port (std::move (port)));
 
   selected_bank_.bank_idx_ = -1;
   selected_bank_.idx_ = -1;
@@ -1132,16 +1132,16 @@ Plugin::set_caches ()
       switch (port->id_.type_)
         {
         case PortType::Control:
-          ctrl_in_ports_.push_back (static_cast<ControlPort *> (port.get ()));
+          ctrl_in_ports_.push_back (dynamic_cast<ControlPort *> (port.get ()));
           break;
         case PortType::Audio:
-          audio_in_ports_.push_back (static_cast<AudioPort *> (port.get ()));
+          audio_in_ports_.push_back (dynamic_cast<AudioPort *> (port.get ()));
           break;
         case PortType::CV:
-          cv_in_ports_.push_back (static_cast<CVPort *> (port.get ()));
+          cv_in_ports_.push_back (dynamic_cast<CVPort *> (port.get ()));
           break;
         case PortType::Event:
-          midi_in_ports_.push_back (static_cast<MidiPort *> (port.get ()));
+          midi_in_ports_.push_back (dynamic_cast<MidiPort *> (port.get ()));
           break;
         default:
           break;
@@ -1442,8 +1442,9 @@ Plugin::process_passthrough (const EngineProcessTimeInfo time_nfo)
                   PortIdentifier::Flags2, out_port->id_.flags2_,
                   PortIdentifier::Flags2::SupportsMidi))
                 {
-                  auto midi_in_port = static_cast<MidiPort *> (in_port.get ());
-                  auto midi_out_port = static_cast<MidiPort *> (out_port.get ());
+                  auto midi_in_port = dynamic_cast<MidiPort *> (in_port.get ());
+                  auto midi_out_port =
+                    dynamic_cast<MidiPort *> (out_port.get ());
                   /* copy */
                   midi_out_port->midi_events_.active_events_.append (
                     midi_in_port->midi_events_.active_events_,
@@ -1498,6 +1499,8 @@ Plugin::connect_to_plugin (Plugin &dest)
   size_t num_src_audio_outs = 0;
   size_t num_dest_audio_ins = 0;
 
+  PortConnectionsManager * connections_mgr = PORT_CONNECTIONS_MGR;
+
   for (const auto &out_port : out_ports_)
     {
       if (out_port->id_.type_ == PortType::Audio)
@@ -1520,7 +1523,7 @@ Plugin::connect_to_plugin (Plugin &dest)
                 {
                   if (in_port->id_.type_ == PortType::Audio)
                     {
-                      out_port->connect_to (*in_port, true);
+                      out_port->connect_to (*connections_mgr, *in_port, true);
                       goto done1;
                     }
                 }
@@ -1539,7 +1542,7 @@ Plugin::connect_to_plugin (Plugin &dest)
                 {
                   if (in_port->id_.type_ == PortType::Audio)
                     {
-                      out_port->connect_to (*in_port, true);
+                      out_port->connect_to (*connections_mgr, *in_port, true);
                     }
                 }
               break;
@@ -1558,7 +1561,7 @@ Plugin::connect_to_plugin (Plugin &dest)
                 {
                   if (out_port->id_.type_ == PortType::Audio)
                     {
-                      out_port->connect_to (*in_port, true);
+                      out_port->connect_to (*connections_mgr, *in_port, true);
                       goto done1;
                     }
                 }
@@ -1582,7 +1585,7 @@ Plugin::connect_to_plugin (Plugin &dest)
                   auto &in_port = *dest.in_ports_[last_index];
                   if (in_port.id_.type_ == PortType::Audio)
                     {
-                      out_port->connect_to (in_port, true);
+                      out_port->connect_to (*connections_mgr, in_port, true);
                       last_index++;
                       ports_connected++;
                       break;
@@ -1614,7 +1617,7 @@ done1:
                   PortIdentifier::Flags2, in_port->id_.flags2_,
                   PortIdentifier::Flags2::SupportsMidi))
                 {
-                  out_port->connect_to (*in_port, true);
+                  out_port->connect_to (*connections_mgr, *in_port, true);
                 }
             }
           break;
@@ -1641,7 +1644,7 @@ Plugin::connect_to_prefader (Channel &ch)
               PortIdentifier::Flags2::SupportsMidi)
             && out_port->id_.flow_ == PortFlow::Output)
             {
-              out_port->connect_to (*ch.midi_out_, true);
+              out_port->connect_to (*PORT_CONNECTIONS_MGR, *ch.midi_out_, true);
             }
         }
     }
@@ -1649,8 +1652,10 @@ Plugin::connect_to_prefader (Channel &ch)
     {
       if (l_out_ && r_out_)
         {
-          l_out_->connect_to (ch.prefader_->stereo_in_->get_l (), true);
-          r_out_->connect_to (ch.prefader_->stereo_in_->get_r (), true);
+          l_out_->connect_to (
+            *PORT_CONNECTIONS_MGR, ch.prefader_->stereo_in_->get_l (), true);
+          r_out_->connect_to (
+            *PORT_CONNECTIONS_MGR, ch.prefader_->stereo_in_->get_r (), true);
         }
     }
 }
@@ -1666,9 +1671,11 @@ Plugin::disconnect_from_prefader (Channel &ch)
       if (type == PortType::Audio && out_port->id_.type_ == PortType::Audio)
         {
           if (out_port->is_connected_to (ch.prefader_->stereo_in_->get_l ()))
-            out_port->disconnect_from (ch.prefader_->stereo_in_->get_l ());
+            out_port->disconnect_from (
+              *PORT_CONNECTIONS_MGR, ch.prefader_->stereo_in_->get_l ());
           if (out_port->is_connected_to (ch.prefader_->stereo_in_->get_r ()))
-            out_port->disconnect_from (ch.prefader_->stereo_in_->get_r ());
+            out_port->disconnect_from (
+              *PORT_CONNECTIONS_MGR, ch.prefader_->stereo_in_->get_r ());
         }
       else if (
         type == PortType::Event && out_port->id_.type_ == PortType::Event
@@ -1677,7 +1684,8 @@ Plugin::disconnect_from_prefader (Channel &ch)
           PortIdentifier::Flags2::SupportsMidi))
         {
           if (out_port->is_connected_to (*ch.prefader_->midi_in_))
-            out_port->disconnect_from (*ch.prefader_->midi_in_);
+            out_port->disconnect_from (
+              *PORT_CONNECTIONS_MGR, *ch.prefader_->midi_in_);
         }
     }
 }
@@ -1710,7 +1718,8 @@ Plugin::disconnect_from_plugin (Plugin &dest)
                 {
                   if (in_port->id_.type_ == PortType::Audio)
                     {
-                      out_port->disconnect_from (*in_port);
+                      out_port->disconnect_from (
+                        *PORT_CONNECTIONS_MGR, *in_port);
                       goto done2;
                     }
                 }
@@ -1729,7 +1738,8 @@ Plugin::disconnect_from_plugin (Plugin &dest)
                 {
                   if (in_port->id_.type_ == PortType::Audio)
                     {
-                      out_port->disconnect_from (*in_port);
+                      out_port->disconnect_from (
+                        *PORT_CONNECTIONS_MGR, *in_port);
                     }
                 }
               break;
@@ -1748,7 +1758,8 @@ Plugin::disconnect_from_plugin (Plugin &dest)
                 {
                   if (out_port->id_.type_ == PortType::Audio)
                     {
-                      out_port->disconnect_from (*in_port);
+                      out_port->disconnect_from (
+                        *PORT_CONNECTIONS_MGR, *in_port);
                       goto done2;
                     }
                 }
@@ -1773,7 +1784,7 @@ Plugin::disconnect_from_plugin (Plugin &dest)
                   auto &in_port = *dest.in_ports_[last_index];
                   if (in_port.id_.type_ == PortType::Audio)
                     {
-                      out_port->disconnect_from (in_port);
+                      out_port->disconnect_from (*PORT_CONNECTIONS_MGR, in_port);
                       last_index++;
                       ports_disconnected++;
                       break;
@@ -1804,7 +1815,7 @@ done2:
                   PortIdentifier::Flags2, in_port->id_.flags2_,
                   PortIdentifier::Flags2::SupportsMidi))
                 {
-                  out_port->disconnect_from (*in_port);
+                  out_port->disconnect_from (*PORT_CONNECTIONS_MGR, *in_port);
                 }
             }
         }
@@ -1863,12 +1874,12 @@ Plugin::delete_state_files ()
 }
 
 void
-Plugin::expose_ports (bool expose, bool inputs, bool outputs)
+Plugin::expose_ports (AudioEngine &engine, bool expose, bool inputs, bool outputs)
 {
-  auto set_expose = [expose] (auto &port) {
+  auto set_expose = [expose, &engine] (auto &port) {
     bool is_exposed = port->is_exposed_to_backend ();
     if (expose != is_exposed)
-      port->set_expose_to_backend (expose);
+      port->set_expose_to_backend (engine, expose);
   };
 
   if (inputs)

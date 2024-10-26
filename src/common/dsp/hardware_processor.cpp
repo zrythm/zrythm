@@ -13,8 +13,8 @@
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/string.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/settings/settings.h"
+#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 
 void
@@ -204,17 +204,16 @@ HardwareProcessor::setup ()
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING || ZRYTHM_GENERATING_PROJECT)
     return;
 
-  z_return_if_fail (ZRYTHM_IS_QT_THREAD && S_P_GENERAL_ENGINE);
+  z_warn_if_fail (ZRYTHM_IS_QT_THREAD);
 
   if (is_input_)
     {
       /* cache selections */
-      auto tmp = g_settings_get_strv (S_P_GENERAL_ENGINE, "midi-controllers");
+      auto tmp =
+        zrythm::gui::SettingsManager::get_instance ()->get_midiControllers ();
       selected_midi_ports_ = StringArray (tmp).toStdStringVector ();
-      g_strfreev (tmp);
-      tmp = g_settings_get_strv (S_P_GENERAL_ENGINE, "audio-inputs");
+      tmp = zrythm::gui::SettingsManager::get_instance ()->get_audioInputs ();
       selected_audio_ports_ = StringArray (tmp).toStdStringVector ();
-      g_strfreev (tmp);
     }
 
   /* ---- scan current ports ---- */

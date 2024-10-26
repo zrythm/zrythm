@@ -389,7 +389,7 @@ Channel::init_loaded (ChannelTrack &track)
       /* make sure master is exposed to backend */
       if (track_->is_master ())
         {
-          stereo_out_->set_expose_to_backend (true);
+          stereo_out_->set_expose_to_backend (*AUDIO_ENGINE, true);
         }
       break;
     default:
@@ -424,7 +424,7 @@ Channel::init_loaded (ChannelTrack &track)
 }
 
 void
-Channel::expose_ports_to_backend ()
+Channel::expose_ports_to_backend (AudioEngine &engine)
 {
   /* skip if auditioner */
   if (track_->is_auditioner ())
@@ -433,24 +433,24 @@ Channel::expose_ports_to_backend ()
   z_debug ("exposing ports to backend: {}", track_->get_name ());
   if (track_->in_signal_type_ == PortType::Audio)
     {
-      track_->processor_->stereo_in_->set_expose_to_backend (true);
+      track_->processor_->stereo_in_->set_expose_to_backend (engine, true);
     }
   if (track_->in_signal_type_ == PortType::Event)
     {
-      track_->processor_->midi_in_->set_expose_to_backend (true);
+      track_->processor_->midi_in_->set_expose_to_backend (engine, true);
     }
   if (track_->out_signal_type_ == PortType::Audio)
     {
-      stereo_out_->set_expose_to_backend (true);
+      stereo_out_->set_expose_to_backend (engine, true);
     }
   if (track_->out_signal_type_ == PortType::Event)
     {
-      midi_out_->set_expose_to_backend (true);
+      midi_out_->set_expose_to_backend (engine, true);
     }
 }
 
 void
-Channel::reconnect_ext_input_ports ()
+Channel::reconnect_ext_input_ports (AudioEngine &engine)
 {
   /* skip if auditioner track */
   if (track_->is_auditioner ())
@@ -475,7 +475,7 @@ Channel::reconnect_ext_input_ports ()
 
       /* if the project was loaded with another backend, the port might not be
        * exposed yet, so expose it */
-      midi_in->set_expose_to_backend (true);
+      midi_in->set_expose_to_backend (engine, true);
 
       /* disconnect all connections to hardware */
       midi_in->disconnect_hw_inputs ();
@@ -513,7 +513,7 @@ Channel::reconnect_ext_input_ports ()
     {
       /* if the project was loaded with another backend, the port might not be
        * exposed yet, so expose it */
-      track_->processor_->stereo_in_->set_expose_to_backend (true);
+      track_->processor_->stereo_in_->set_expose_to_backend (engine, true);
 
       /* disconnect all connections to hardware */
       track_->processor_->stereo_in_->disconnect_hw_inputs ();
@@ -813,7 +813,7 @@ Channel::connect_plugins ()
 }
 
 void
-Channel::connect ()
+Channel::connect (PortConnectionsManager &mgr, AudioEngine &engine)
 {
   auto &tr = track_;
 
@@ -826,10 +826,10 @@ Channel::connect ()
     {
       output_name_hash_ = 0;
       has_output_ = false;
-      PORT_CONNECTIONS_MGR->ensure_connect (
+      mgr.ensure_connect (
         this->stereo_out_->get_l ().id_,
         MONITOR_FADER->stereo_in_->get_l ().id_, 1.f, true, true);
-      PORT_CONNECTIONS_MGR->ensure_connect (
+      mgr.ensure_connect (
         this->stereo_out_->get_r ().id_,
         MONITOR_FADER->stereo_in_->get_r ().id_, 1.f, true, true);
     }
@@ -837,24 +837,24 @@ Channel::connect ()
   if (tr->out_signal_type_ == PortType::Audio)
     {
       /* connect stereo in to stereo out through fader */
-      PORT_CONNECTIONS_MGR->ensure_connect (
+      mgr.ensure_connect (
         prefader_->stereo_out_->get_l ().id_, fader_->stereo_in_->get_l ().id_,
         1.f, true, true);
-      PORT_CONNECTIONS_MGR->ensure_connect (
+      mgr.ensure_connect (
         prefader_->stereo_out_->get_r ().id_, fader_->stereo_in_->get_r ().id_,
         1.f, true, true);
-      PORT_CONNECTIONS_MGR->ensure_connect (
+      mgr.ensure_connect (
         fader_->stereo_out_->get_l ().id_, stereo_out_->get_l ().id_, 1.f, true,
         true);
-      PORT_CONNECTIONS_MGR->ensure_connect (
+      mgr.ensure_connect (
         fader_->stereo_out_->get_r ().id_, stereo_out_->get_r ().id_, 1.f, true,
         true);
     }
   else if (tr->out_signal_type_ == PortType::Event)
     {
-      PORT_CONNECTIONS_MGR->ensure_connect (
+      mgr.ensure_connect (
         prefader_->midi_out_->id_, fader_->midi_in_->id_, 1.f, true, true);
-      PORT_CONNECTIONS_MGR->ensure_connect (
+      mgr.ensure_connect (
         fader_->midi_out_->id_, midi_out_->id_, 1.f, true, true);
     }
 
@@ -865,9 +865,9 @@ Channel::connect ()
   connect_plugins ();
 
   /* expose ports to backend */
-  if (AUDIO_ENGINE && AUDIO_ENGINE->setup_)
+  if (engine.setup_)
     {
-      expose_ports_to_backend ();
+      expose_ports_to_backend (engine);
     }
 
   /* connect sends */
@@ -878,7 +878,7 @@ Channel::connect ()
     }
 
   /* connect the designated midi inputs */
-  reconnect_ext_input_ports ();
+  reconnect_ext_input_ports (engine);
 
   z_info ("done connecting channel {}", track_->name_);
 }
@@ -1152,7 +1152,7 @@ Channel::disconnect_plugin_from_strip (int pos, zrythm::plugins::Plugin &pl)
     }
 
   /* unexpose all JACK ports */
-  pl.expose_ports (false, true, true);
+  pl.expose_ports (*AUDIO_ENGINE, false, true, true);
 }
 
 std::unique_ptr<zrythm::plugins::Plugin>

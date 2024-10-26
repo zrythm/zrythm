@@ -65,7 +65,7 @@
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/ui.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
+#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 
 #if HAVE_JACK
@@ -210,7 +210,8 @@ AudioEngine::clean_duplicate_events_and_copy (std::array<Event *, 100> &ret)
 bool
 AudioEngine::process_events ()
 {
-  z_return_val_if_fail (ZRYTHM_IS_QT_THREAD, SourceFuncRemove);
+  // we may be creating a project on a different thread
+  z_warn_if_fail (ZRYTHM_IS_QT_THREAD);
 
   if (exporting_)
     {
@@ -499,14 +500,16 @@ AudioEngine::setup ()
   buf_size_set_ = false;
 
   sample_processor_->fader_->stereo_out_->connect_to (
+    *project_->port_connections_manager_,
     *control_room_->monitor_fader_->stereo_in_, true);
-  control_room_->monitor_fader_->stereo_out_->connect_to (*monitor_out_, true);
+  control_room_->monitor_fader_->stereo_out_->connect_to (
+    *project_->port_connections_manager_, *monitor_out_, true);
 
   setup_ = true;
 
-  midi_in_->set_expose_to_backend (true);
-  monitor_out_->set_expose_to_backend (true);
-  midi_clock_out_->set_expose_to_backend (true);
+  midi_in_->set_expose_to_backend (*this, true);
+  monitor_out_->set_expose_to_backend (*this, true);
+  midi_clock_out_->set_expose_to_backend (*this, true);
 
   z_debug ("processing engine events");
   process_events ();
@@ -518,7 +521,7 @@ void
 AudioEngine::init_common ()
 {
   metronome_ = std::make_unique<Metronome> (*this);
-  router_ = std::make_unique<Router> ();
+  router_ = std::make_unique<Router> (this);
 
   auto ab_code = AudioBackend::AUDIO_BACKEND_DUMMY;
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
@@ -537,7 +540,7 @@ AudioEngine::init_common ()
   else
     {
       ab_code = static_cast<AudioBackend> (
-        g_settings_get_enum (S_P_GENERAL_ENGINE, "audio-backend"));
+        zrythm::gui::SettingsManager::get_instance ()->get_audioBackend ());
     }
 
   bool backend_reset_to_dummy = false;
@@ -574,8 +577,7 @@ AudioEngine::init_common ()
     default:
       audio_backend_ = AudioBackend::AUDIO_BACKEND_DUMMY;
       z_warning ("selected audio backend not found. switching to dummy");
-      g_settings_set_enum (
-        S_P_GENERAL_ENGINE, "audio-backend",
+      zrythm::gui::SettingsManager::get_instance ()->set_audioBackend (
         ENUM_VALUE_TO_INT (AudioBackend::AUDIO_BACKEND_DUMMY));
       backend_reset_to_dummy = true;
       break;
@@ -598,7 +600,7 @@ AudioEngine::init_common ()
   else
     {
       mb_code = static_cast<MidiBackend> (
-        g_settings_get_enum (S_P_GENERAL_ENGINE, "midi-backend"));
+        zrythm::gui::SettingsManager::get_instance ()->get_midiBackend ());
     }
 
   switch (mb_code)
@@ -621,8 +623,7 @@ AudioEngine::init_common ()
     default:
       midi_backend_ = MidiBackend::MIDI_BACKEND_DUMMY;
       z_warning ("selected midi backend not found. switching to dummy");
-      g_settings_set_enum (
-        S_P_GENERAL_ENGINE, "midi-backend",
+      zrythm::gui::SettingsManager::get_instance ()->set_midiBackend (
         ENUM_VALUE_TO_INT (MidiBackend::MIDI_BACKEND_DUMMY));
       backend_reset_to_dummy = true;
       break;
@@ -644,12 +645,13 @@ AudioEngine::init_common ()
   pan_law_ =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? PanLaw::PAN_LAW_MINUS_3DB
-      : static_cast<PanLaw> (g_settings_get_enum (S_P_DSP_PAN, "pan-law"));
+      : static_cast<PanLaw> (
+          zrythm::gui::SettingsManager::get_instance ()->get_panLaw ());
   pan_algo_ =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? PanAlgorithm::PAN_ALGORITHM_SINE_LAW
       : static_cast<PanAlgorithm> (
-          g_settings_get_enum (S_P_DSP_PAN, "pan-algorithm"));
+          zrythm::gui::SettingsManager::get_instance ()->get_panAlgorithm ());
 
   if (block_length_ == 0)
     {
@@ -1559,11 +1561,9 @@ AudioEngine::set_default_backends (bool reset_to_dummy)
 
   if (reset_to_dummy)
     {
-      g_settings_set_enum (
-        S_P_GENERAL_ENGINE, "audio-backend",
+      zrythm::gui::SettingsManager::get_instance ()->set_audioBackend (
         ENUM_VALUE_TO_INT (AudioBackend::AUDIO_BACKEND_DUMMY));
-      g_settings_set_enum (
-        S_P_GENERAL_ENGINE, "midi-backend",
+      zrythm::gui::SettingsManager::get_instance ()->set_midiBackend (
         ENUM_VALUE_TO_INT (MidiBackend::MIDI_BACKEND_DUMMY));
     }
 
@@ -1693,7 +1693,7 @@ AudioEngine::~AudioEngine ()
 
   if (PROJECT && AUDIO_ENGINE && this == AUDIO_ENGINE)
     {
-      monitor_out_->disconnect ();
+      monitor_out_->disconnect (*PORT_CONNECTIONS_MGR);
       midi_in_->disconnect_all ();
       midi_editor_manual_press_->disconnect_all ();
     }

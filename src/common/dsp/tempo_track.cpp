@@ -263,6 +263,14 @@ TempoTrack::clear_objects ()
 }
 
 void
+TempoTrack::append_ports (std::vector<Port *> &ports, bool include_plugins) const
+{
+  ports.push_back (bpm_port_.get ());
+  ports.push_back (beats_per_bar_port_.get ());
+  ports.push_back (beat_unit_port_.get ());
+}
+
+void
 TempoTrack::init_after_cloning (const TempoTrack &other)
 {
   bpm_port_ = other.bpm_port_->clone_unique ();

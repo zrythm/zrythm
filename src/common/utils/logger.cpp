@@ -24,7 +24,10 @@ protected:
     if (msg.level >= spdlog::level::err)
       {
         auto bt = Backtrace ().get_backtrace ("", 32, false);
-        fmt::println (stderr, "Backtrace:\n{}", bt);
+        if (!juce::Process::isRunningUnderDebugger ())
+          {
+            fmt::println (stderr, "Backtrace:\n{}", bt);
+          }
 
         if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING || ZRYTHM_BREAK_ON_ERROR)
           {

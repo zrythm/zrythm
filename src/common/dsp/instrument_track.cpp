@@ -70,6 +70,15 @@ InstrumentTrack::toggle_plugin_visible ()
 }
 
 void
+InstrumentTrack::append_ports (std::vector<Port *> &ports, bool include_plugins)
+  const
+{
+  ChannelTrack::append_member_ports (ports, include_plugins);
+  ProcessableTrack::append_member_ports (ports, include_plugins);
+  RecordableTrack::append_member_ports (ports, include_plugins);
+}
+
+void
 InstrumentTrack::init_after_cloning (const InstrumentTrack &other)
 {
   Track::copy_members_from (other);

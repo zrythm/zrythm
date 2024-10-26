@@ -62,6 +62,8 @@ class Track;
 class Router final
 {
 public:
+  Router (AudioEngine * engine = nullptr);
+
   /**
    * Recalculates the process acyclic directed graph.
    *
@@ -173,6 +175,8 @@ public:
   /** Message queue for control port changes, used for BPM/time signature
    * changes. */
   RingBuffer<ControlPort::ChangeEvent> ctrl_port_change_queue_{ 32 };
+
+  AudioEngine * audio_engine_ = nullptr;
 };
 
 /**

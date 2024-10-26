@@ -326,7 +326,7 @@ public:
    * graph and begins processing.
    *
    */
-  void activate ();
+  Q_INVOKABLE void activate ();
 
   /**
    * @brief Gets all the ports in the project.

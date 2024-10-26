@@ -1256,50 +1256,60 @@ Track::mark_for_bounce (
           }
 }
 
+#if 0
+template <typename T>
 void
-Track::append_ports (std::vector<Port *> &ports, bool include_plugins) const
+Track::append_ports (
+  const T*      track_var,
+  std::vector<Port *> &ports,
+  bool                 include_plugins)
 {
-  if (type_has_channel (type_))
-    if (auto * channel_track = dynamic_cast<const ChannelTrack *> (this))
-      channel_track->get_channel ()->append_ports (ports, include_plugins);
-
-  auto processable_track = dynamic_cast<const ProcessableTrack *> (this);
-  if (processable_track)
-    processable_track->processor_->append_ports (ports);
-
-  auto add_port = [&ports] (Port * port) {
-    if (port)
-      ports.push_back (port);
-    else
-      z_warning ("Port is null");
-  };
-
-  if (type_can_record (type_))
-    if (auto * recordable_track = dynamic_cast<const RecordableTrack *> (this))
-      add_port (recordable_track->recording_.get ());
-
-  if (type_ == Type::Tempo)
-    {
-      if (auto * tempo_track = dynamic_cast<const TempoTrack *> (this))
+  std::visit (
+    [&] (auto &&track) {
+      using TrackT = base_type<decltype (track)>;
+      if constexpr (std::derived_from<TrackT, ChannelTrack>)
         {
-          add_port (tempo_track->bpm_port_.get ());
-          add_port (tempo_track->beats_per_bar_port_.get ());
-          add_port (tempo_track->beat_unit_port_.get ());
+          track->get_channel ()->append_ports (ports, include_plugins);
         }
-    }
-  else if (type_ == Type::Modulator)
-    if (auto * modulator_track = dynamic_cast<const ModulatorTrack *> (this))
-      {
-        for (const auto &modulator : modulator_track->modulators_)
-          modulator->append_ports (ports);
-        for (const auto &macro : modulator_track->modulator_macro_processors_)
-          {
-            add_port (macro->macro_.get ());
-            add_port (macro->cv_in_.get ());
-            add_port (macro->cv_out_.get ());
-          }
-      }
+
+      if constexpr (std::derived_from<TrackT, ProcessableTrack>)
+        {
+          track->processor_->append_ports (ports);
+        }
+
+      auto add_port = [&ports] (Port * port) {
+        if (port)
+          ports.push_back (port);
+        else
+          z_warning ("Port is null");
+      };
+
+      if constexpr (std::derived_from<TrackT, RecordableTrack>)
+        {
+          add_port (track->recording_.get ());
+        }
+
+      if constexpr (std::is_same_v<TrackT, TempoTrack>)
+        {
+          add_port (track->bpm_port_.get ());
+          add_port (track->beats_per_bar_port_.get ());
+          add_port (track->beat_unit_port_.get ());
+        }
+      else if constexpr (std::is_same_v<TrackT, ModulatorTrack>)
+        {
+          for (const auto &modulator : track->modulators_)
+            modulator->append_ports (ports);
+          for (const auto &macro : track->modulator_macro_processors_)
+            {
+              add_port (macro->macro_.get ());
+              add_port (macro->cv_in_.get ());
+              add_port (macro->cv_out_.get ());
+            }
+        }
+    },
+    track_var);
 }
+#endif
 
 void
 Track::set_enabled (
@@ -1308,6 +1318,9 @@ Track::set_enabled (
   bool auto_select,
   bool fire_events)
 {
+  if (enabled_ == enabled)
+    return;
+
   enabled_ = enabled;
   z_debug ("Setting track {} {}", name_, enabled_ ? "enabled" : "disabled");
 
@@ -1333,7 +1346,9 @@ Track::set_enabled (
 
       if (fire_events)
         {
-          // EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, this);
+          std::visit (
+            [this] (auto &&track) { Q_EMIT track->enabledChanged (enabled_); },
+            convert_to_variant<TrackPtrVariant> (this));
         }
     }
 }

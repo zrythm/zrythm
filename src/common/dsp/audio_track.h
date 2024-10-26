@@ -63,6 +63,9 @@ public:
     const Position *       p1,
     const Position *       p2) override;
 
+  void
+  append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
+
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:

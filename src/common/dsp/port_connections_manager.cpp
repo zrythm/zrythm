@@ -173,7 +173,7 @@ PortConnectionsManager::ensure_connect (
   bool                  locked,
   bool                  enabled)
 {
-  z_return_val_if_fail (ZRYTHM_IS_QT_THREAD, nullptr);
+  z_warn_if_fail (ZRYTHM_IS_QT_THREAD);
 
   for (auto &conn : connections_)
     {

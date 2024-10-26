@@ -313,11 +313,11 @@ Project::activate ()
 
   /* connect channel inputs to hardware and re-expose ports to
    * backend. has to be done after engine activation */
-  for (auto track : tracklist_->tracks_ | type_is<ChannelTrack> ())
+  for (auto * track : tracklist_->tracks_ | type_is<ChannelTrack> ())
     {
-      track->channel_->reconnect_ext_input_ports ();
+      track->channel_->reconnect_ext_input_ports (*audio_engine_);
     }
-  tracklist_->expose_ports_to_backend ();
+  tracklist_->expose_ports_to_backend (*audio_engine_);
 
   /* reconnect graph */
   audio_engine_->router_->recalc_graph (false);
@@ -512,9 +512,15 @@ Project::get_all_ports (std::vector<Port *> &ports) const
 {
   audio_engine_->append_ports (ports);
 
-  std::ranges::for_each (tracklist_->tracks_, [&] (const auto &track) {
-    auto tr = Track::from_variant (track);
-    tr->append_ports (ports, false);
+  std::ranges::for_each (tracklist_->tracks_, [&] (auto &&track_var) {
+    std::visit (
+      [&] (const auto &track) {
+        z_debug (
+          "Getting all ports of track {} at {:p}", track->name_,
+          fmt::ptr (track));
+        track->append_ports (ports, false);
+      },
+      track_var);
   });
 }
 

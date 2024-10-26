@@ -115,7 +115,7 @@ ExtPort::activate (Port * port, bool activate)
                       full_name_);
                     return false;
                   }
-                port_->set_expose_to_backend (true);
+                port_->set_expose_to_backend (*AUDIO_ENGINE, true);
 
                 z_info (
                   "attempting to connect jack port {} to jack port {}",
@@ -202,7 +202,7 @@ ExtPort::activate (Port * port, bool activate)
                       full_name_);
                     return false;
                   }
-                port_->set_expose_to_backend (true);
+                port_->set_expose_to_backend (*AUDIO_ENGINE, true);
 
                 z_info (
                   "attempting to connect jack port {} to jack port {}",
@@ -325,7 +325,7 @@ ExtPort::ExtPort (jack_port_t * jport)
     : jport_ (jport), full_name_ (jack_port_name (jport)),
       short_name_ (jack_port_short_name (jport)), type_ (Type::JACK)
 {
-  std::array<char *, 2> aliases;
+  std::array<char *, 2> aliases{};
   aliases[0] = static_cast<char *> (g_malloc0 (jack_port_name_size ()));
   aliases[1] = static_cast<char *> (g_malloc0 (jack_port_name_size ()));
   num_aliases_ = jack_port_get_aliases (jport, aliases.data ());

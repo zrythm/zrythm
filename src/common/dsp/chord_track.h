@@ -127,6 +127,9 @@ public:
     clone_unique_ptr_container (scales_, other.scales_);
   }
 
+  void
+  append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
+
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:

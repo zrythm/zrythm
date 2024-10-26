@@ -1,3 +1,4 @@
+#include "common/dsp/router.h"
 #include "common/utils/directory_manager.h"
 #include "common/utils/io.h"
 #include "gui/backend/zrythm_application.h"
@@ -21,6 +22,11 @@ ProjectManager::ProjectManager (QObject * parent)
         {
           auto * project = std::get<Project *> (project_res);
           setActiveProject (project);
+
+          /* recalculate the routing graph & kick off engine processing */
+          project->audio_engine_->router_->recalc_graph (false);
+          project->audio_engine_->run_.store (true);
+
           Q_EMIT projectLoaded (project);
         }
       else
@@ -136,16 +142,30 @@ ProjectManager::getRecentProjects () const
 }
 
 Project *
-ProjectManager::create_default (const fs::path &prj_dir, const std::string &name)
+ProjectManager::create_default (
+  const fs::path    &prj_dir,
+  const std::string &name,
+  bool               with_engine)
 {
   z_info ("Creating default project '{}' in {}", name, prj_dir);
 
-  auto * prj = new Project (name, this);
+  auto * prj = new Project (name);
   prj->add_default_tracks ();
 
   /* pre-setup engine */
   auto * engine = prj->audio_engine_.get ();
   z_return_val_if_fail (engine, nullptr);
+  if (with_engine)
+    {
+      engine->pre_setup ();
+    }
+
+  engine->setup ();
+
+  if (with_engine)
+    {
+      prj->tracklist_->expose_ports_to_backend (*engine);
+    }
 
   auto beats_per_bar = prj->tracklist_->tempo_track_->get_beats_per_bar ();
   engine->update_frames_per_tick (
@@ -189,7 +209,7 @@ ProjectManager::createNewProject (
           if (template_file.isEmpty ())
             {
               project = create_default (
-                directory_file.toStdString (), name.toStdString ());
+                directory_file.toStdString (), name.toStdString (), true);
             }
           else
             {
@@ -204,8 +224,10 @@ ProjectManager::createNewProject (
           // save the newly created project
           project->save (project->dir_, false, false, false);
 
-          // TODO call project->activate() when the project window is ready
-          // project->activate ();
+          // setting the parent must be done on the same thread as the parent
+          QMetaObject::invokeMethod (
+            this, [this, project] () { project->setParent (this); },
+            Qt::BlockingQueuedConnection);
 
           return ProjectLoadResult (project);
         }

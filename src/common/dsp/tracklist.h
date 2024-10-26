@@ -437,7 +437,7 @@ public:
    *
    * This should be called after setting up the engine.
    */
-  void expose_ports_to_backend ();
+  void expose_ports_to_backend (AudioEngine &engine);
 
   /**
    * Marks or unmarks all tracks for bounce.

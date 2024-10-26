@@ -97,6 +97,14 @@ AudioTrack::fill_events (
 }
 
 void
+AudioTrack::append_ports (std::vector<Port *> &ports, bool include_plugins) const
+{
+  ChannelTrack::append_member_ports (ports, include_plugins);
+  ProcessableTrack::append_member_ports (ports, include_plugins);
+  RecordableTrack::append_member_ports (ports, include_plugins);
+}
+
+void
 AudioTrack::init_after_cloning (const AudioTrack &other)
 {
   samplerate_ = other.samplerate_;

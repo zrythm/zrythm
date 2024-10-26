@@ -737,9 +737,10 @@ engine_jack_activate (AudioEngine * self, bool activate)
 {
   if (activate)
     {
-      /* Tell the JACK server that we are ready to
-       * roll.  Our process() callback will start
-       * running now. */
+      z_return_val_if_fail (self->client_, -1);
+
+      /* Tell the JACK server that we are ready to roll.  Our process() callback
+       * will start running now. */
       if (jack_activate (self->client_))
         {
           z_warning ("cannot activate client");
@@ -747,17 +748,12 @@ engine_jack_activate (AudioEngine * self, bool activate)
         }
       z_info ("Jack activated");
 
-      /* Connect the ports.  You can't do this before
-       * the client is
-       * activated, because we can't make connections
-       * to clients
-       * that aren't running.  Note the confusing (but
-       * necessary)
+      /* Connect the ports.  You can't do this before the client is
+       * activated, because we can't make connections to clients
+       * that aren't running.  Note the confusing (but necessary)
        * orientation of the driver backend ports:
-       * playback ports are
-       * "input" to the backend, and capture ports are
-       * "output" from
-       * it.
+       * playback ports are "input" to the backend, and capture ports are
+       * "output" from it.
        */
 
       z_return_val_if_fail (

@@ -23,7 +23,9 @@ public:
   // Rule of 0
   ProcessableTrack ();
 
-  virtual ~ProcessableTrack () = default;
+  ~ProcessableTrack () override = default;
+  JUCE_DECLARE_NON_COPYABLE (ProcessableTrack)
+  JUCE_DECLARE_NON_MOVEABLE (ProcessableTrack)
 
   void init_loaded () override;
 
@@ -67,6 +69,9 @@ protected:
     StereoPorts *                stereo_ports) const;
 
   void copy_members_from (const ProcessableTrack &other);
+
+  void
+  append_member_ports (std::vector<Port *> &ports, bool include_plugins) const;
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

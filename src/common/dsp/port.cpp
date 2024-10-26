@@ -557,14 +557,14 @@ Port::sum_data_from_jack (const nframes_t start_frame, const nframes_t nframes)
   if (
     is_midi () && AUDIO_ENGINE->midi_backend_ == MidiBackend::MIDI_BACKEND_JACK)
     {
-      auto midi_port = static_cast<MidiPort *> (this);
+      auto midi_port = dynamic_cast<MidiPort *> (this);
       midi_port->receive_midi_events_from_jack (start_frame, nframes);
     }
   else if (
     is_audio ()
     && AUDIO_ENGINE->audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
     {
-      auto audio_port = static_cast<AudioPort *> (this);
+      auto audio_port = dynamic_cast<AudioPort *> (this);
       audio_port->receive_audio_data_from_jack (start_frame, nframes);
     }
 }
@@ -578,14 +578,14 @@ Port::send_data_to_jack (const nframes_t start_frame, const nframes_t nframes)
   if (
     is_midi () && AUDIO_ENGINE->midi_backend_ == MidiBackend::MIDI_BACKEND_JACK)
     {
-      auto midi_port = static_cast<MidiPort *> (this);
+      auto * midi_port = dynamic_cast<MidiPort *> (this);
       midi_port->send_midi_events_to_jack (start_frame, nframes);
     }
   if (
     is_audio ()
     && AUDIO_ENGINE->audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
     {
-      auto audio_port = static_cast<AudioPort *> (this);
+      auto * audio_port = dynamic_cast<AudioPort *> (this);
       audio_port->send_audio_data_to_jack (start_frame, nframes);
     }
 }
@@ -693,7 +693,7 @@ Port::set_owner (T * owner)
 
       if (is_control ())
         {
-          auto control_port = static_cast<ControlPort *> (this);
+          auto * control_port = dynamic_cast<ControlPort *> (this);
           if (control_port->at_)
             {
               control_port->at_->port_id_ = id_;
@@ -994,11 +994,9 @@ Port::disconnect_hw_inputs ()
 }
 
 void
-Port::set_expose_to_backend (bool expose)
+Port::set_expose_to_backend (AudioEngine &engine, bool expose)
 {
-  z_return_if_fail (AUDIO_ENGINE);
-
-  if (!AUDIO_ENGINE->setup_)
+  if (!engine.setup_)
     {
       z_warning (
         "audio engine not set up, skipping expose to backend for {}", id_.sym_);
@@ -1007,9 +1005,9 @@ Port::set_expose_to_backend (bool expose)
 
   if (this->id_.type_ == PortType::Audio)
     {
-      auto audio_port = static_cast<AudioPort *> (this);
+      auto * audio_port = dynamic_cast<AudioPort *> (this);
       (void) audio_port;
-      switch (AUDIO_ENGINE->audio_backend_)
+      switch (engine.audio_backend_)
         {
         case AudioBackend::AUDIO_BACKEND_DUMMY:
           z_debug ("called with dummy audio backend");
@@ -1035,9 +1033,9 @@ Port::set_expose_to_backend (bool expose)
     }
   else if (this->id_.type_ == PortType::Event)
     {
-      auto midi_port = static_cast<MidiPort *> (this);
+      auto * midi_port = dynamic_cast<MidiPort *> (this);
       (void) midi_port;
-      switch (AUDIO_ENGINE->midi_backend_)
+      switch (engine.midi_backend_)
         {
         case MidiBackend::MIDI_BACKEND_DUMMY:
           z_debug ("called with MIDI dummy backend");
@@ -1353,15 +1351,15 @@ Port::is_in_active_project () const
 }
 
 void
-Port::connect_to (Port &dest, bool locked)
+Port::connect_to (PortConnectionsManager &mgr, Port &dest, bool locked)
 {
-  PORT_CONNECTIONS_MGR->ensure_connect (id_, dest.id_, 1.f, locked, true);
+  mgr.ensure_connect (id_, dest.id_, 1.f, locked, true);
 }
 
 void
-Port::disconnect_from (Port &dest)
+Port::disconnect_from (PortConnectionsManager &mgr, Port &dest)
 {
-  PORT_CONNECTIONS_MGR->ensure_disconnect (id_, dest.id_);
+  mgr.ensure_disconnect (id_, dest.id_);
 }
 
 template MidiPort *

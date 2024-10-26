@@ -336,7 +336,7 @@ ProjectInitFlowManager::create_default (
 
   if (with_engine)
     {
-      prj->tracklist_->expose_ports_to_backend ();
+      prj->tracklist_->expose_ports_to_backend (*engine);
     }
 
   auto beats_per_bar = prj->tracklist_->tempo_track_->get_beats_per_bar ();
@@ -750,7 +750,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
     {
       if (port->is_exposed_to_backend ())
         {
-          port->set_expose_to_backend (true);
+          port->set_expose_to_backend (*AUDIO_ENGINE, true);
         }
     }
 

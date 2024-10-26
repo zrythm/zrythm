@@ -38,6 +38,14 @@ MidiGroupTrack::init_after_cloning (const MidiGroupTrack &other)
   Track::copy_members_from (other);
 }
 
+void
+MidiGroupTrack::append_ports (std::vector<Port *> &ports, bool include_plugins)
+  const
+{
+  ChannelTrack::append_member_ports (ports, include_plugins);
+  ProcessableTrack::append_member_ports (ports, include_plugins);
+}
+
 bool
 MidiGroupTrack::validate () const
 {

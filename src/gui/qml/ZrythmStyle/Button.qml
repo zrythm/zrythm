@@ -10,6 +10,8 @@ import ZrythmStyle 1.0
 T.Button {
     id: control
 
+    property real styleHeight: Style.buttonHeight
+
     implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
     implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
     padding: 4
@@ -28,7 +30,7 @@ T.Button {
     }
 
     icon {
-        width: Math.max(Style.buttonHeight - padding * 2, textMetrics.height)
+        width: Math.max(control.styleHeight - padding * 2, textMetrics.height)
         // height: 24
         color: control.checked || control.highlighted ? control.palette.brightText : control.flat && !control.down ? (control.visualFocus ? control.palette.highlight : control.palette.windowText) : control.palette.buttonText
     }
@@ -57,8 +59,8 @@ T.Button {
         readonly property color colorAdjustedForChecked: control.checked ? control.palette.accent : baseColor
         readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(colorAdjustedForChecked, control.hovered, control.visualFocus, control.down)
 
-        implicitWidth: Style.buttonHeight
-        implicitHeight: Style.buttonHeight
+        implicitWidth: control.styleHeight
+        implicitHeight: control.styleHeight
         visible: !control.flat || control.down || control.checked || control.highlighted
         color: colorAdjustedForHoverOrFocusOrDown
         border.color: control.palette.highlight

@@ -109,7 +109,7 @@ ZrythmToolBar {
             id: menuButton
 
             text: qsTr("Menu")
-            icon.source: Qt.resolvedUrl("qrc:/qt/qml/Zrythm/icons/gnome-icon-library/open-menu-symbolic.svg")
+            // icon.source: Style.getIcon("gnome-icon-library", "open-menu-symbolic.svg")
             onClicked: primaryMenu.open()
 
             Menu {

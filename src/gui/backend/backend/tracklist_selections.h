@@ -239,7 +239,7 @@ public:
   /**
    * Clears the selections.
    */
-  void clear (const bool fire_events);
+  void clear (bool fire_events);
 
   size_t get_num_tracks () const { return track_names_.size (); }
 

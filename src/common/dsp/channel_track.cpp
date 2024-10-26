@@ -232,3 +232,16 @@ ChannelTrack::generate_channel_context_menu ()
   return channel_submenu;
 }
 #endif
+
+void
+ChannelTrack::append_member_ports (
+  std::vector<Port *> &ports,
+  bool                 include_plugins) const
+{
+  get_channel ()->append_ports (ports, include_plugins);
+}
+
+ChannelTrack::~ChannelTrack ()
+{
+  remove_ats_from_automation_tracklist (false);
+}

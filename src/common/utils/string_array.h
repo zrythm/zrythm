@@ -30,6 +30,8 @@ public:
   }
   StringArray (const char * const * strs);
 
+  StringArray (const QStringList &qlist);
+
   /**
    * @brief Returns the strings in a newly-allocated NULL-terminated array.
    *

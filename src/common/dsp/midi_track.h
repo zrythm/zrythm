@@ -34,6 +34,9 @@ public:
 
   bool validate () const override;
 
+  void
+  append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
+
   void init_after_cloning (const MidiTrack &other) override;
 
 private:

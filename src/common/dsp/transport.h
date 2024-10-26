@@ -455,6 +455,9 @@ frames_add_frames (
 
   void init_after_cloning (const Transport &other) override;
 
+  Q_INVOKABLE QString
+  getPlayheadPositionString (const TempoTrack * tempo_track) const;
+
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:

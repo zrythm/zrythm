@@ -30,6 +30,7 @@
 #include <semaphore>
 
 #include "common/dsp/graph_node.h"
+#include "common/dsp/track.h"
 #include "common/plugins/plugin.h"
 #include "common/utils/mpmc_queue.h"
 #include "common/utils/types.h"
@@ -65,21 +66,18 @@ public:
 
   void print () const;
 
-  GraphNode * find_node_from_port (const Port * port) const;
-
-  GraphNode * find_node_from_plugin (const zrythm::plugins::Plugin * pl) const;
+  GraphNode * find_node_from_port (PortPtrVariant port) const;
 
   GraphNode *
-  find_node_from_track (const Track * track, bool use_setup_nodes) const;
+  find_node_from_plugin (zrythm::plugins::PluginPtrVariant pl) const;
+
+  GraphNode *
+  find_node_from_track (TrackPtrVariant track, bool use_setup_nodes) const;
 
   GraphNode * find_node_from_fader (const Fader * fader) const;
 
-  GraphNode * find_node_from_prefader (const Fader * prefader) const;
-
   GraphNode * find_node_from_sample_processor (
     const SampleProcessor * sample_processor) const;
-
-  GraphNode * find_node_from_monitor_fader (const Fader * fader) const;
 
   GraphNode * find_node_from_modulator_macro_processor (
     const ModulatorMacroProcessor * processor) const;
@@ -150,19 +148,20 @@ private:
   void add_plugin (zrythm::plugins::Plugin &pl);
   void
   connect_plugin (zrythm::plugins::Plugin &pl, bool drop_unnecessary_ports);
-  GraphNode * add_port (Port &port, bool drop_if_unnecessary);
+  GraphNode *
+  add_port (Port &port, PortConnectionsManager &mgr, bool drop_if_unnecessary);
 
   /**
    * @brief Connects the port as a node.
    *
    * @param port
    */
-  void connect_port (Port &port);
+  void connect_port (PortPtrVariant port);
 
   /**
    * Creates a new node, adds it to the graph and returns it.
    */
-  GraphNode * create_node (GraphNode::Type type, void * data);
+  GraphNode * create_node (GraphNode::NodeData data);
 
 public:
   /**
@@ -172,7 +171,8 @@ public:
    *
    * The key is a raw pointer to a Plugin, Port, etc.
    */
-  std::unordered_map<void *, std::unique_ptr<GraphNode>> graph_nodes_map_;
+  std::unordered_map<GraphNode::NodeData, std::unique_ptr<GraphNode>>
+    graph_nodes_map_;
 
   /**
    * @brief Chain used to setup in the background.
@@ -181,7 +181,8 @@ public:
    *
    * @see graph_nodes_map_
    */
-  std::unordered_map<void *, std::unique_ptr<GraphNode>> setup_graph_nodes_map_;
+  std::unordered_map<GraphNode::NodeData, std::unique_ptr<GraphNode>>
+    setup_graph_nodes_map_;
 
   /* --- caches for current graph --- */
   GraphNode * bpm_node_ = nullptr;
@@ -224,7 +225,7 @@ public:
   std::vector<GraphNode *> setup_terminal_nodes_;
 
   /** Dummy member to make lookups work. */
-  int initial_processor_ = 0;
+  // int initial_processor_ = 0;
 
   /* ------------------------------------ */
 
