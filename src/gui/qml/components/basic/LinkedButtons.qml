@@ -28,7 +28,8 @@ RowLayout {
                 if (i === 0) {
                     child.background.bottomLeftRadius = root.radius;
                     child.background.topLeftRadius = root.radius;
-                } else if (i === children.length - 1) {
+                }
+                if (i === children.length - 1) {
                     child.background.bottomRightRadius = root.radius;
                     child.background.topRightRadius = root.radius;
                 }

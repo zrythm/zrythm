@@ -514,12 +514,7 @@ Project::get_all_ports (std::vector<Port *> &ports) const
 
   std::ranges::for_each (tracklist_->tracks_, [&] (auto &&track_var) {
     std::visit (
-      [&] (const auto &track) {
-        z_debug (
-          "Getting all ports of track {} at {:p}", track->name_,
-          fmt::ptr (track));
-        track->append_ports (ports, false);
-      },
+      [&] (const auto &track) { track->append_ports (ports, false); },
       track_var);
   });
 }

@@ -12,6 +12,7 @@ Control {
     property alias value: valueDisplay.text
     property string label
     property real minValueWidth: 0
+    property real minValueHeight: 0
 
     implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
     implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
@@ -25,19 +26,22 @@ Control {
         implicitWidth: valueDisplay.implicitWidth + textDisplay.implicitWidth + spacing
         implicitHeight: Math.max(valueDisplay.implicitHeight, textDisplay.implicitHeight)
 
-
         Text {
             id: valueDisplay
 
             color: control.palette.text
             font: Style.semiBoldTextFont
             Layout.alignment: Qt.AlignBaseline
-            Layout.minimumWidth: minValueWidth
+            Layout.minimumWidth: control.minValueWidth
+            Layout.minimumHeight: control.minValueHeight
+            Layout.fillWidth: true
             horizontalAlignment: Text.AlignCenter
+            textFormat: Text.PlainText
 
             Behavior on text {
                 animation: Style.propertyAnimation
             }
+
         }
 
         Text {

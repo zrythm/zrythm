@@ -233,7 +233,7 @@ engine_jack_prepare_process (AudioEngine * self)
       /* get position from timebase master */
       Position tmp;
       tmp.from_frames (pos.frame);
-      TRANSPORT->set_playhead_pos (tmp);
+      TRANSPORT->set_playhead_pos_rt_safe (tmp);
 
       /* BBT and BPM changes */
       if (pos.valid & JackPositionBBT)

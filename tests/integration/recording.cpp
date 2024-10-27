@@ -284,7 +284,7 @@ do_takes_loop_no_punch (
   Position pos;
   pos = TRANSPORT->loop_end_pos_;
   pos.add_frames (-FRAMES_BEFORE_LOOP);
-  TRANSPORT->set_playhead_pos (pos);
+  TRANSPORT->set_playhead_pos_rt_safe (pos);
 
   /* enable recording for audio & ins track */
   ins_track->set_recording (true, false);
@@ -626,7 +626,7 @@ TEST_F (ZrythmFixture, AutomationTouchRecording)
   Position pos;
   pos = TRANSPORT->loop_end_pos_;
   pos.add_frames (-(CYCLE_SIZE + FRAMES_BEFORE_LOOP));
-  TRANSPORT->set_playhead_pos (pos);
+  TRANSPORT->set_playhead_pos_rt_safe (pos);
 
   /* enable recording for audio & ins track */
   ControlPort *     touch_port;
@@ -715,7 +715,7 @@ TEST_F (ZrythmFixture, MonoRecording)
   /* move playhead to 2.1.1.0 */
   Position pos;
   pos.set_to_bar (PLAYHEAD_START_BAR);
-  TRANSPORT->set_playhead_pos (pos);
+  TRANSPORT->set_playhead_pos_rt_safe (pos);
 
   /* enable recording for audio track */
   audio_track->set_recording (true, false);
@@ -791,7 +791,7 @@ TEST_F (ZrythmFixture, LongAudioRecording)
   /* move playhead to 2.1.1.0 */
   Position pos, init_pos;
   pos.set_to_bar (PLAYHEAD_START_BAR);
-  TRANSPORT->set_playhead_pos (pos);
+  TRANSPORT->set_playhead_pos_rt_safe (pos);
   init_pos = pos;
 
   /* enable recording for audio track */
@@ -919,7 +919,7 @@ TEST_F (ZrythmFixture, SecondAudioRecording)
   /* move playhead to 1.1.1.0 */
   Position pos, init_pos;
   pos.set_to_bar (1);
-  TRANSPORT->set_playhead_pos (pos);
+  TRANSPORT->set_playhead_pos_rt_safe (pos);
   init_pos = pos;
 
   /* enable recording for audio track */
@@ -1004,7 +1004,7 @@ TEST_F (ZrythmFixture, ChordTrackRecording)
   Position pos, init_pos;
   pos = TRANSPORT->loop_end_pos_;
   pos.add_frames (-CYCLE_SIZE);
-  TRANSPORT->set_playhead_pos (pos);
+  TRANSPORT->set_playhead_pos_rt_safe (pos);
   init_pos = pos;
 
   /* enable recording for audio track */

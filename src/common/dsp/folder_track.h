@@ -13,14 +13,14 @@
 class FolderTrack final
     : public QObject,
       public FoldableTrack,
-      public ChannelTrack,
+      // public ChannelTrack,
       public ICloneable<FolderTrack>,
       public ISerializable<FolderTrack>,
       public InitializableObjectFactory<FolderTrack>
 {
   Q_OBJECT
   QML_ELEMENT
-  DEFINE_TRACK_QML_PROPERTIES
+  DEFINE_TRACK_QML_PROPERTIES (FolderTrack)
 
   friend class InitializableObjectFactory<FolderTrack>;
 
@@ -40,14 +40,9 @@ public:
   }
 
   bool get_soloed () const override { return is_status (MixerStatus::Soloed); }
-  void init_loaded () override { }
+  void init_loaded () override;
 
-  void init_after_cloning (const FolderTrack &other) override
-  {
-    FoldableTrack::copy_members_from (other);
-    Track::copy_members_from (other);
-  }
-
+  void init_after_cloning (const FolderTrack &other) override;
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 

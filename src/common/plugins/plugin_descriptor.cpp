@@ -211,12 +211,13 @@ PluginDescriptor::category_to_string (ZPluginCategory category)
 bool
 PluginDescriptor::is_valid_for_slot_type (
   zrythm::plugins::PluginSlotType slot_type,
-  Track::Type                     track_type) const
+  int                             track_type) const
 {
+  const auto tt = ENUM_INT_TO_VALUE (Track::Type, track_type);
   switch (slot_type)
     {
     case zrythm::plugins::PluginSlotType::Insert:
-      if (track_type == Track::Type::Midi)
+      if (tt == Track::Type::Midi)
         {
           return num_midi_outs_ > 0;
         }
@@ -228,7 +229,7 @@ PluginDescriptor::is_valid_for_slot_type (
       return num_midi_outs_ > 0;
       break;
     case zrythm::plugins::PluginSlotType::Instrument:
-      return track_type == Track::Type::Instrument && is_instrument ();
+      return tt == Track::Type::Instrument && is_instrument ();
     default:
       break;
     }

@@ -15,10 +15,12 @@ RowLayout {
     LinkedButtons {
         Button {
             icon.source: Style.getIcon("gnome-icon-library", "seek-backward-large-symbolic.svg")
+            onClicked: transport.moveBackward()
         }
 
         Button {
             icon.source: Style.getIcon("gnome-icon-library", "seek-forward-large-symbolic.svg")
+            onClicked: transport.moveForward()
         }
 
         Button {
@@ -65,6 +67,7 @@ RowLayout {
             value: transport.playheadPosition.toString(transport, tempoTrack)
             label: "time"
             minValueWidth: timeTextMetrics.width
+            minValueHeight: timeTextMetrics.height
 
             // FrameAnimation {
             //     running: true

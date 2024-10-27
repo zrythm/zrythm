@@ -143,7 +143,7 @@ TEST_F (ZrythmFixture, CurveValue)
 
   pos.set_to_bar (3);
   pos.add_frames (-80);
-  TRANSPORT->set_playhead_pos (pos);
+  TRANSPORT->set_playhead_pos_rt_safe (pos);
 
   AUDIO_ENGINE->process (40);
 

@@ -48,6 +48,8 @@ class Position final : public ISerializable<Position>
 
   Q_PROPERTY (double ticks READ getTicks)
   Q_PROPERTY (signed_frame_t frames READ getFrames)
+  Q_PROPERTY (
+    double ticksPerSixteenthNote READ getTicksPerSixteenthNote CONSTANT)
 public:
   // Rule of 0
   Position () = default;
@@ -77,6 +79,10 @@ public:
 
   signed_frame_t getFrames () const { return frames_; }
   double         getTicks () const { return ticks_; }
+  static double  getTicksPerSixteenthNote ()
+  {
+    return TICKS_PER_SIXTEENTH_NOTE_DBL;
+  }
   Q_INVOKABLE QString
   toString (Transport * transport, TempoTrack * tempo_track) const;
 

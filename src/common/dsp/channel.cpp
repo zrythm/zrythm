@@ -1419,7 +1419,7 @@ do_import (PluginImportData * data)
         return;
 
       if (data->pl->setting_->get_descriptor ()->is_valid_for_slot_type (
-            data->slot_type, data->ch->track_->type_))
+            data->slot_type, ENUM_VALUE_TO_INT (data->ch->track_->type_)))
         {
           try
             {
@@ -1455,7 +1455,7 @@ do_import (PluginImportData * data)
     {
       /* validate */
       if (data->descr->is_valid_for_slot_type (
-            data->slot_type, data->ch->track_->type_))
+            data->slot_type, ENUM_VALUE_TO_INT (data->ch->track_->type_)))
         {
           PluginSetting setting (*data->descr);
           try

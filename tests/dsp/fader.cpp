@@ -84,7 +84,7 @@ test_track_has_sound (ChannelTrack * track, bool expect_sound)
 {
   Position pos;
   pos.set_to_bar (1);
-  TRANSPORT->set_playhead_pos (pos);
+  TRANSPORT->set_playhead_pos_rt_safe (pos);
   TRANSPORT->requestRoll (true);
 
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);

@@ -15,8 +15,8 @@ FolderTrack::FolderTrack (const std::string &name, int pos)
 bool
 FolderTrack::initialize ()
 {
-  init_channel ();
-  generate_automation_tracks ();
+  // init_channel ();
+  // generate_automation_tracks ();
 
   return true;
 }
@@ -24,13 +24,25 @@ FolderTrack::initialize ()
 void
 FolderTrack::append_ports (std::vector<Port *> &ports, bool include_plugins) const
 {
-  ChannelTrack::append_member_ports (ports, include_plugins);
-  ProcessableTrack::append_member_ports (ports, include_plugins);
+  // ChannelTrack::append_member_ports (ports, include_plugins);
+  // ProcessableTrack::append_member_ports (ports, include_plugins);
 }
 
 bool
 FolderTrack::validate () const
 {
-  return Track::validate_base () && ChannelTrack::validate_base ()
-         && AutomatableTrack::validate_base ();
+  return Track::validate_base ();
+  // && ChannelTrack::validate_base () && AutomatableTrack::validate_base ();
+}
+
+void
+FolderTrack::init_after_cloning (const FolderTrack &other)
+{
+  FoldableTrack::copy_members_from (other);
+  Track::copy_members_from (other);
+}
+
+void
+FolderTrack::init_loaded ()
+{
 }

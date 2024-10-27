@@ -293,151 +293,157 @@ Tracklist::insert_track (
   bool                 publish_events,
   bool                 recalc_graph)
 {
-  z_info ("inserting {} at {}", track->name_, pos);
+  beginResetModel ();
+  auto ret = [&] () -> T * {
+    z_info ("inserting {} at {}", track->name_, pos);
 
-  /* throw error if attempted to add a special track (like master) when it
-   * already exists */
-  if (
-    !Track::type_is_deletable (Track::get_type_for_class<T> ())
-    && contains_track_type<T> ())
-    {
-      z_error (
-        "cannot add track of type {} when it already exists",
-        Track::get_type_for_class<T> ());
-      return nullptr;
-    }
+    /* throw error if attempted to add a special track (like master) when it
+     * already exists */
+    if (
+      !Track::type_is_deletable (Track::get_type_for_class<T> ())
+      && contains_track_type<T> ())
+      {
+        z_error (
+          "cannot add track of type {} when it already exists",
+          Track::get_type_for_class<T> ());
+        return nullptr;
+      }
 
-  /* set to -1 so other logic knows it is a new track */
-  track->pos_ = -1;
-  if constexpr (std::derived_from<T, ChannelTrack>)
-    {
-      track->channel_->track_pos_ = -1;
-    }
+    /* set to -1 so other logic knows it is a new track */
+    track->pos_ = -1;
+    if constexpr (std::derived_from<T, ChannelTrack>)
+      {
+        track->channel_->track_pos_ = -1;
+      }
 
-  /* this needs to be called before appending the track to the tracklist */
-  track->set_name (*this, track->name_, false);
+    /* this needs to be called before appending the track to the tracklist */
+    track->set_name (*this, track->name_, false);
 
-  /* append the track at the end */
-  T * added_track = std::get<T *> (tracks_.emplace_back (track.release ()));
-  added_track->tracklist_ = this;
-  added_track->setParent (this);
+    /* append the track at the end */
+    T * added_track = std::get<T *> (tracks_.emplace_back (track.release ()));
+    added_track->tracklist_ = this;
+    added_track->setParent (this);
 
-  /* remember important tracks */
-  if constexpr (std::is_same_v<T, MasterTrack>)
-    master_track_ = added_track;
-  else if constexpr (std::is_same_v<T, ChordTrack>)
-    chord_track_ = added_track;
-  else if constexpr (std::is_same_v<T, MarkerTrack>)
-    marker_track_ = added_track;
-  else if constexpr (std::is_same_v<T, TempoTrack>)
-    tempo_track_ = added_track;
-  else if constexpr (std::is_same_v<T, ModulatorTrack>)
-    modulator_track_ = added_track;
+    /* remember important tracks */
+    if constexpr (std::is_same_v<T, MasterTrack>)
+      master_track_ = added_track;
+    else if constexpr (std::is_same_v<T, ChordTrack>)
+      chord_track_ = added_track;
+    else if constexpr (std::is_same_v<T, MarkerTrack>)
+      marker_track_ = added_track;
+    else if constexpr (std::is_same_v<T, TempoTrack>)
+      tempo_track_ = added_track;
+    else if constexpr (std::is_same_v<T, ModulatorTrack>)
+      modulator_track_ = added_track;
 
-  /* add flags for auditioner track ports */
-  if (is_auditioner ())
-    {
-      std::vector<Port *> ports;
-      added_track->append_ports (ports, true);
-      for (auto * port : ports)
-        {
-          port->id_.flags2_ |= PortIdentifier::Flags2::SampleProcessorTrack;
-        }
-    }
+    /* add flags for auditioner track ports */
+    if (is_auditioner ())
+      {
+        std::vector<Port *> ports;
+        added_track->append_ports (ports, true);
+        for (auto * port : ports)
+          {
+            port->id_.flags2_ |= PortIdentifier::Flags2::SampleProcessorTrack;
+          }
+      }
 
-  /* if inserting it, swap until it reaches its position */
-  if (static_cast<size_t> (pos) != tracks_.size () - 1)
-    {
-      for (int i = static_cast<int> (tracks_.size ()) - 1; i > pos; --i)
-        {
-          swap_tracks (i, i - 1);
-        }
-    }
+    /* if inserting it, swap until it reaches its position */
+    if (static_cast<size_t> (pos) != tracks_.size () - 1)
+      {
+        for (int i = static_cast<int> (tracks_.size ()) - 1; i > pos; --i)
+          {
+            swap_tracks (i, i - 1);
+          }
+      }
 
-  added_track->pos_ = pos;
+    added_track->pos_ = pos;
 
-  if (
-    is_in_active_project ()
-    /* auditioner doesn't need automation */
-    && !is_auditioner ())
-    {
-      /* make the track the only selected track */
-      TRACKLIST_SELECTIONS->select_single (*added_track, publish_events);
+    if (
+      is_in_active_project ()
+      /* auditioner doesn't need automation */
+      && !is_auditioner ())
+      {
+        /* make the track the only selected track */
+        TRACKLIST_SELECTIONS->select_single (*added_track, publish_events);
 
-      /* set automation track on ports */
-      if constexpr (std::derived_from<T, AutomatableTrack>)
-        {
-          const auto &atl = added_track->get_automation_tracklist ();
-          for (const auto &at : atl.ats_)
-            {
-              auto port = Port::find_from_identifier<ControlPort> (at->port_id_);
-              z_return_val_if_fail (port, nullptr);
-              port->at_ = at.get ();
-            }
-        }
-    }
+        /* set automation track on ports */
+        if constexpr (std::derived_from<T, AutomatableTrack>)
+          {
+            const auto &atl = added_track->get_automation_tracklist ();
+            for (const auto &at : atl.ats_)
+              {
+                auto port =
+                  Port::find_from_identifier<ControlPort> (at->port_id_);
+                z_return_val_if_fail (port, nullptr);
+                port->at_ = at.get ();
+              }
+          }
+      }
 
-  if constexpr (std::derived_from<T, ChannelTrack>)
-    {
-      // TODO!!!!
-      // added_track->channel_->connect ();
-    }
+    if constexpr (std::derived_from<T, ChannelTrack>)
+      {
+        // TODO!!!!
+        // added_track->channel_->connect ();
+      }
 
-  /* if audio output route to master */
-  if constexpr (!std::is_same_v<T, MasterTrack>)
-    {
-      if (added_track->out_signal_type_ == PortType::Audio && master_track_)
-        {
-          master_track_->add_child (
-            added_track->get_name_hash (), true, false, false);
-        }
-    }
+    /* if audio output route to master */
+    if constexpr (!std::is_same_v<T, MasterTrack>)
+      {
+        if (added_track->out_signal_type_ == PortType::Audio && master_track_)
+          {
+            master_track_->add_child (
+              added_track->get_name_hash (), true, false, false);
+          }
+      }
 
-  if (is_in_active_project ())
-    {
-      added_track->activate_all_plugins (true);
-    }
+    if (is_in_active_project ())
+      {
+        added_track->activate_all_plugins (true);
+      }
 
-  if (!is_auditioner ())
-    {
-      /* verify */
-      z_return_val_if_fail (added_track->validate (), nullptr);
-    }
+    if (!is_auditioner ())
+      {
+        /* verify */
+        z_return_val_if_fail (added_track->validate (), nullptr);
+      }
 
-  if (ZRYTHM_TESTING)
-    {
-      for (auto * cur_track : tracks_ | type_is<ChannelTrack> ())
-        {
-          auto ch = cur_track->channel_;
-          if (ch->has_output_)
-            {
-              z_return_val_if_fail (
-                ch->output_name_hash_ != cur_track->get_name_hash (), nullptr);
-            }
-        }
-    }
+    if (ZRYTHM_TESTING)
+      {
+        for (auto * cur_track : tracks_ | type_is<ChannelTrack> ())
+          {
+            auto ch = cur_track->channel_;
+            if (ch->has_output_)
+              {
+                z_return_val_if_fail (
+                  ch->output_name_hash_ != cur_track->get_name_hash (), nullptr);
+              }
+          }
+      }
 
-  if (ZRYTHM_HAVE_UI && !is_auditioner ())
-    {
-      /* generate track widget */
-      // added_track->widget_ = track_widget_new (added_track);
-    }
+    if (ZRYTHM_HAVE_UI && !is_auditioner ())
+      {
+        /* generate track widget */
+        // added_track->widget_ = track_widget_new (added_track);
+      }
 
-  if (recalc_graph)
-    {
-      ROUTER->recalc_graph (false);
-    }
+    if (recalc_graph)
+      {
+        ROUTER->recalc_graph (false);
+      }
 
-  if (publish_events)
-    {
-      // EVENTS_PUSH (EventType::ET_TRACK_ADDED, added_track);
-    }
+    if (publish_events)
+      {
+        // EVENTS_PUSH (EventType::ET_TRACK_ADDED, added_track);
+      }
 
-  z_debug (
-    "done - inserted track '{}' ({}) at {}", added_track->name_,
-    added_track->get_name_hash (), pos);
+    z_debug (
+      "done - inserted track '{}' ({}) at {}", added_track->name_,
+      added_track->get_name_hash (), pos);
 
-  return added_track;
+    return added_track;
+  }();
+  endResetModel ();
+  return ret;
 }
 
 Track *

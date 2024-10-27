@@ -78,7 +78,7 @@ TEST_F (ZrythmFixture, FillMidiEventsFromEngine)
   Position pos;
   pos = r->end_pos_;
   pos.add_frames (-20);
-  TRANSPORT->set_playhead_pos (pos);
+  TRANSPORT->set_playhead_pos_rt_safe (pos);
   TRANSPORT->requestRoll (true);
 
   /* run the engine for 1 cycle */

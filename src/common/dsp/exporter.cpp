@@ -181,7 +181,7 @@ Exporter::export_audio (Settings &info)
   auto [start_pos, end_pos] = info.get_export_time_range ();
 
   Position prev_playhead_pos = TRANSPORT->playhead_pos_;
-  TRANSPORT->set_playhead_pos (start_pos);
+  TRANSPORT->set_playhead_pos_rt_safe (start_pos);
 
   AUDIO_ENGINE->bounce_mode_ =
     info.mode_ == Mode::Full ? BounceMode::BOUNCE_OFF : BounceMode::BOUNCE_ON;
@@ -641,7 +641,7 @@ Exporter::create_audio_track_after_bounce (Position pos)
   z_return_if_fail (last_track != nullptr);
 
   Position tmp = TRANSPORT->playhead_pos_;
-  TRANSPORT->set_playhead_pos (settings_.custom_start_);
+  TRANSPORT->set_playhead_pos_rt_safe (settings_.custom_start_);
   try
     {
       Track::create_with_action (
@@ -653,7 +653,7 @@ Exporter::create_audio_track_after_bounce (Position pos)
       ex.handle (_ ("Failed to create audio track"));
     }
 
-  TRANSPORT->set_playhead_pos (tmp);
+  TRANSPORT->set_playhead_pos_rt_safe (tmp);
 }
 
 void

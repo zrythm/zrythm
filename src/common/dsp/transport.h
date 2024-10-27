@@ -61,10 +61,27 @@ class Transport final
   Q_PROPERTY (
     bool recordEnabled READ is_recording WRITE setRecordEnabled NOTIFY
       recordEnabledChanged)
-  Q_PROPERTY (PlayState playState READ getPlayState NOTIFY playStateChanged)
+  Q_PROPERTY (
+    PlayState playState READ getPlayState WRITE setPlayState NOTIFY
+      playStateChanged)
   Q_PROPERTY (
     Position playheadPosition READ getPlayheadPosition WRITE setPlayheadPosition
       NOTIFY playheadPositionChanged)
+  Q_PROPERTY (
+    Position cuePosition READ getCuePosition WRITE setCuePosition NOTIFY
+      cuePositionChanged)
+  Q_PROPERTY (
+    Position loopStartPosition READ getLoopStartPosition WRITE
+      setLoopStartPosition NOTIFY loopRangeChanged)
+  Q_PROPERTY (
+    Position loopEndPosition READ getLoopEndPosition WRITE setLoopEndPosition
+      NOTIFY loopRangeChanged)
+  Q_PROPERTY (
+    Position punchInPosition READ getPunchInPosition WRITE setPunchInPosition
+      NOTIFY punchRangeChanged)
+  Q_PROPERTY (
+    Position punchOutPosition READ getPunchOutPosition WRITE setPunchOutPosition
+      NOTIFY punchRangeChanged)
 
 public:
   enum class PlayState
@@ -144,11 +161,33 @@ public:
   Q_SIGNAL void recordEnabledChanged (bool enabled);
 
   PlayState     getPlayState () const;
+  void          setPlayState (PlayState state);
   Q_SIGNAL void playStateChanged (PlayState state);
 
   Position      getPlayheadPosition () const;
   void          setPlayheadPosition (const Position &pos);
   Q_SIGNAL void playheadPositionChanged (Position pos);
+
+  Position      getCuePosition () const;
+  void          setCuePosition (const Position &pos);
+  Q_SIGNAL void cuePositionChanged (Position pos);
+
+  Position getLoopStartPosition () const;
+  void     setLoopStartPosition (const Position &pos);
+
+  Position      getLoopEndPosition () const;
+  void          setLoopEndPosition (const Position &pos);
+  Q_SIGNAL void loopRangeChanged (Position loop_start, Position loop_end);
+
+  Position getPunchInPosition () const;
+  void     setPunchInPosition (const Position &pos);
+
+  Position      getPunchOutPosition () const;
+  void          setPunchOutPosition (const Position &pos);
+  Q_SIGNAL void punchRangeChanged (Position punch_in, Position punch_out);
+
+  Q_INVOKABLE void moveBackward ();
+  Q_INVOKABLE void moveForward ();
 
   // ==================================================================
 
@@ -269,9 +308,11 @@ public:
   /**
    * Setter for playhead Position.
    */
-  void set_playhead_pos (Position pos);
+  void set_playhead_pos_rt_safe (Position pos);
 
   void set_playhead_to_bar (int bar);
+
+  void set_play_state_rt_safe (PlayState state);
 
   /**
    * Getter for playhead Position.
@@ -588,6 +629,17 @@ public:
 
   /** Pointer to owner, if any. */
   Project * project_ = nullptr;
+
+private:
+  /**
+   * @brief Timer used to notify the property system of changes (e.g.
+   * playhead position).
+   *
+   * This is used to avoid Q_EMIT on realtime threads because Q_EMIT is not
+   * realtime safe.
+   */
+  QTimer *          property_notification_timer_ = nullptr;
+  std::atomic<bool> needs_property_notification_{ false };
 };
 
 /**

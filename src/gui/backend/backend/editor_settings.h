@@ -5,6 +5,7 @@
 #define __GUI_BACKEND_EDITOR_SETTINGS_H__
 
 #include "common/io/serialization/iserializable.h"
+#include "common/utils/math.h"
 
 /**
  * @addtogroup gui_backend
@@ -27,7 +28,39 @@
     Q_EMIT xChanged (x); \
   } \
 \
-  Q_SIGNAL void xChanged (double x);
+  Q_SIGNAL void xChanged (double x); \
+\
+  Q_PROPERTY (double y READ getY WRITE setY NOTIFY yChanged) \
+  double getY () const \
+  { \
+    return scroll_start_y_; \
+  } \
+  void setY (double y) \
+  { \
+    if (scroll_start_y_ == static_cast<int> (std::round (y))) \
+      return; \
+    scroll_start_y_ = static_cast<int> (std::round (y)); \
+    Q_EMIT yChanged (y); \
+  } \
+\
+  Q_SIGNAL void yChanged (double y); \
+\
+  Q_PROPERTY ( \
+    double horizontalZoomLevel READ getHorizontalZoomLevel WRITE \
+      setHorizontalZoomLevel NOTIFY horizontalZoomLevelChanged) \
+  double getHorizontalZoomLevel () const \
+  { \
+    return hzoom_level_; \
+  } \
+  void setHorizontalZoomLevel (double hzoom_level) \
+  { \
+    if (math_doubles_equal (hzoom_level_, hzoom_level)) \
+      return; \
+    hzoom_level_ = hzoom_level; \
+    Q_EMIT horizontalZoomLevelChanged (hzoom_level); \
+  } \
+\
+  Q_SIGNAL void horizontalZoomLevelChanged (double hzoom_level);
 
 /**
  * Common editor settings.

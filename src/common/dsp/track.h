@@ -62,7 +62,7 @@ constexpr int TRACK_MAGIC = 21890135;
 #define IS_TRACK(x) (((Track *) x)->magic_ == TRACK_MAGIC)
 #define IS_TRACK_AND_NONNULL(x) (x && IS_TRACK (x))
 
-#define DEFINE_TRACK_QML_PROPERTIES \
+#define DEFINE_TRACK_QML_PROPERTIES(ClassType) \
 public: \
   Q_PROPERTY (QString name READ getName WRITE setName NOTIFY nameChanged) \
   QString getName () const \
@@ -146,80 +146,22 @@ public: \
   { \
     select (selected, true, true); \
   } \
-  Q_SIGNAL void selectedChanged (bool selected);
-
-/**
- * The Track's type.
- */
-enum class TrackType
-{
-  /**
-   * Instrument tracks must have an Instrument plugin at the first slot and
-   * they produce audio output.
-   */
-  Instrument,
-
-  /**
-   * Audio tracks can record and contain audio clips. Other than that their
-   * channel strips are similar to buses.
-   */
-  Audio,
-
-  /**
-   * The master track is a special type of group track.
-   */
-  Master,
-
-  /**
-   * The chord track contains chords that can be used to modify midi in real
-   * time or to color the piano roll.
-   */
-  Chord,
-
-  /**
-   * Marker Track's contain named markers at specific Position's in the song.
-   */
-  Marker,
-
-  /**
-   * Special track for BPM (tempo) and time signature events.
-   */
-  Tempo,
-
-  /**
-   * Special track to contain global Modulator's.
-   */
-  Modulator,
-
-  /**
-   * Buses are channels that receive audio input and have effects on their
-   * channel strip. They are similar to Group Tracks, except that they
-   * cannot be routed to directly. Buses are used for send effects.
-   */
-  AudioBus,
-
-  /**
-   * Group Tracks are used for grouping audio signals, for example routing
-   * multiple drum tracks to a "Drums" group track. Like buses, they only
-   * contain effects but unlike buses they can be routed to.
-   */
-  AudioGroup,
-
-  /**
-   * Midi tracks can only have MIDI effects in the strip and produce MIDI
-   * output that can be routed to instrument channels or hardware.
-   */
-  Midi,
-
-  /** Same with audio bus but for MIDI signals. */
-  MidiBus,
-
-  /** Same with audio group but for MIDI signals. */
-  MidiGroup,
-
-  /** Foldable track used for visual grouping. */
-  Folder,
-};
+  Q_SIGNAL void selectedChanged (bool selected); \
+\
+  Q_PROPERTY (int type READ getType CONSTANT) \
+  int getType () const \
+  { \
+    return ENUM_VALUE_TO_INT (type_); \
+  } \
+  Q_PROPERTY (bool isRecordable READ getIsRecordable CONSTANT) \
+  bool getIsRecordable () const \
+  { \
+    if constexpr (std::derived_from<ClassType, RecordableTrack>) \
+      { \
+        return true; \
+      } \
+    return false; \
+  }
 
 /**
  * Called when track(s) are actually imported into the project.
@@ -239,8 +181,82 @@ using TracksReadyCallback = void (*) (const FileImportInfo *);
  */
 class Track : virtual public ISerializable<Track>
 {
+  Q_GADGET
+  QML_ELEMENT
 public:
-  using Type = TrackType;
+  /**
+   * The Track's type.
+   */
+  enum class Type
+  {
+    /**
+     * Instrument tracks must have an Instrument plugin at the first slot and
+     * they produce audio output.
+     */
+    Instrument,
+
+    /**
+     * Audio tracks can record and contain audio clips. Other than that their
+     * channel strips are similar to buses.
+     */
+    Audio,
+
+    /**
+     * The master track is a special type of group track.
+     */
+    Master,
+
+    /**
+     * The chord track contains chords that can be used to modify midi in real
+     * time or to color the piano roll.
+     */
+    Chord,
+
+    /**
+     * Marker Track's contain named markers at specific Position's in the song.
+     */
+    Marker,
+
+    /**
+     * Special track for BPM (tempo) and time signature events.
+     */
+    Tempo,
+
+    /**
+     * Special track to contain global Modulator's.
+     */
+    Modulator,
+
+    /**
+     * Buses are channels that receive audio input and have effects on their
+     * channel strip. They are similar to Group Tracks, except that they
+     * cannot be routed to directly. Buses are used for send effects.
+     */
+    AudioBus,
+
+    /**
+     * Group Tracks are used for grouping audio signals, for example routing
+     * multiple drum tracks to a "Drums" group track. Like buses, they only
+     * contain effects but unlike buses they can be routed to.
+     */
+    AudioGroup,
+
+    /**
+     * Midi tracks can only have MIDI effects in the strip and produce MIDI
+     * output that can be routed to instrument channels or hardware.
+     */
+    Midi,
+
+    /** Same with audio bus but for MIDI signals. */
+    MidiBus,
+
+    /** Same with audio group but for MIDI signals. */
+    MidiGroup,
+
+    /** Foldable track used for visual grouping. */
+    Folder,
+  };
+  Q_ENUM (Type)
 
   using NameHashT = unsigned int;
 
@@ -263,6 +279,7 @@ public:
       case Type::AudioGroup:
         return Fader::Type::AudioChannel;
       case Type::Marker:
+      case Type::Folder:
         return Fader::Type::None;
       default:
         z_return_val_if_reached (Fader::Type::None);

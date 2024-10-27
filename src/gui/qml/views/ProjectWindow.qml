@@ -37,75 +37,67 @@ ApplicationWindow {
         anchors.bottom: parent.bottom
         spacing: 0
 
-        Rectangle {
-            id: centerBox
+        SplitView {
+            id: mainSplitView
 
             Layout.fillWidth: true
             Layout.fillHeight: true
+            orientation: Qt.Horizontal
+
+            LeftDock {
+                SplitView.fillHeight: true
+                SplitView.preferredWidth: 200
+                SplitView.minimumWidth: 30
+                visible: GlobalState.settingsManager.leftPanelVisible
+            }
 
             SplitView {
-                id: mainSplitView
+                // Pane {
+                //     SplitView.fillWidth: true
+                //     SplitView.preferredHeight: 200
+                //     SplitView.minimumHeight: 30
+                // }
 
-                anchors.fill: parent
-                orientation: Qt.Horizontal
+                id: centerSplitView
 
-                LeftDock {
-                    SplitView.fillHeight: true
-                    SplitView.preferredWidth: 200
-                    SplitView.minimumWidth: 30
-                    visible: GlobalState.settingsManager.leftPanelVisible
-                }
+                SplitView.fillWidth: true
+                SplitView.fillHeight: true
+                orientation: Qt.Vertical
 
-                SplitView {
-                    // Pane {
-                    //     SplitView.fillWidth: true
-                    //     SplitView.preferredHeight: 200
-                    //     SplitView.minimumHeight: 30
-                    // }
-
-                    id: centerSplitView
-
+                CenterDock {
+                    project: root.project
                     SplitView.fillWidth: true
                     SplitView.fillHeight: true
-                    orientation: Qt.Vertical
-
-                    CenterDock {
-                        project: root.project
-                        SplitView.fillWidth: true
-                        SplitView.fillHeight: true
-                        SplitView.preferredHeight: 200
-                        SplitView.minimumHeight: implicitHeight
-                        Layout.verticalStretchFactor: 2
-                    }
-
-                    BottomDock {
-                        SplitView.fillWidth: true
-                        SplitView.fillHeight: true
-                        SplitView.minimumHeight: 30
-                        visible: GlobalState.settingsManager.bottomPanelVisible
-                        Layout.verticalStretchFactor: 1
-                    }
-
+                    SplitView.preferredHeight: 200
+                    SplitView.minimumHeight: implicitHeight
+                    Layout.verticalStretchFactor: 2
                 }
 
-                RightDock {
-                    id: rightDock
-
+                BottomDock {
+                    SplitView.fillWidth: true
                     SplitView.fillHeight: true
-                    SplitView.preferredWidth: 200
-                    SplitView.minimumWidth: 30
-                    visible: GlobalState.settingsManager.rightPanelVisible
+                    SplitView.minimumHeight: 30
+                    visible: GlobalState.settingsManager.bottomPanelVisible
+                    Layout.verticalStretchFactor: 1
                 }
 
             }
 
+            RightDock {
+                id: rightDock
+
+                SplitView.fillHeight: true
+                SplitView.preferredWidth: 200
+                SplitView.minimumWidth: 30
+                visible: GlobalState.settingsManager.rightPanelVisible
+            }
+
         }
 
-        Rectangle {
+        Item {
             id: botBar
 
             implicitHeight: 24
-            color: "#2C2C2C"
             Layout.fillWidth: true
 
             Text {
@@ -199,6 +191,7 @@ ApplicationWindow {
 
     header: MainToolbar {
         id: headerBar
+
         project: root.project
     }
 

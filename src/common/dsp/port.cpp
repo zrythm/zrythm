@@ -706,6 +706,7 @@ Port::set_owner (T * owner)
       z_return_if_fail (track);
       id_.track_name_hash_ = get_track_name_hash (track);
       id_.owner_type_ = PortIdentifier::OwnerType::TrackProcessor;
+      track_ = track;
     }
   else if constexpr (std::derived_from<T, Channel>)
     {
@@ -713,6 +714,7 @@ Port::set_owner (T * owner)
       z_return_if_fail (track);
       id_.track_name_hash_ = get_track_name_hash (track);
       id_.owner_type_ = PortIdentifier::OwnerType::Channel;
+      track_ = track;
     }
   else if constexpr (std::derived_from<T, ExtPort>)
     {

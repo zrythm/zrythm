@@ -29,9 +29,9 @@ qt_add_qml_module(zrythm_style
     MenuSeparator.qml
     MenuItem.qml
     # Overlay.qml
-    # Page.qml
+    Page.qml
     # PageIndicator.qml
-    # Pane.qml
+    Pane.qml
     Popup.qml
     PopupBackgroundRect.qml
     RoundButton.qml

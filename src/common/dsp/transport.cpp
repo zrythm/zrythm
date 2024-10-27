@@ -87,6 +87,17 @@ Transport::Transport (Project * parent) : QObject (parent), project_ (parent)
 {
   z_debug ("Creating transport...");
 
+  property_notification_timer_ = new QTimer (this);
+  property_notification_timer_->setInterval (16);
+  property_notification_timer_->callOnTimeout ([this] () {
+    if (needs_property_notification_.exchange (false))
+      {
+        Q_EMIT playStateChanged (play_state_);
+        Q_EMIT playheadPositionChanged (playhead_pos_);
+      }
+  });
+  property_notification_timer_->start ();
+
   if (parent == nullptr)
     {
       init_common ();
@@ -180,6 +191,18 @@ Transport::getPlayState () const
   return play_state_;
 }
 
+void
+Transport::setPlayState (PlayState state)
+{
+  if (play_state_ == state)
+    {
+      return;
+    }
+
+  play_state_ = state;
+  Q_EMIT playStateChanged (play_state_);
+}
+
 Position
 Transport::getPlayheadPosition () const
 {
@@ -189,7 +212,109 @@ Transport::getPlayheadPosition () const
 void
 Transport::setPlayheadPosition (const Position &pos)
 {
-  set_playhead_pos (pos);
+  set_playhead_pos_rt_safe (pos);
+}
+
+Position
+Transport::getCuePosition () const
+{
+  return cue_pos_;
+}
+
+void
+Transport::setCuePosition (const Position &pos)
+{
+  if (pos == cue_pos_)
+    {
+      return;
+    }
+
+  cue_pos_ = pos;
+  Q_EMIT cuePositionChanged (cue_pos_);
+}
+
+Position
+Transport::getLoopStartPosition () const
+{
+  return loop_start_pos_;
+}
+
+void
+Transport::setLoopStartPosition (const Position &pos)
+{
+  if (pos == loop_start_pos_)
+    {
+      return;
+    }
+
+  loop_start_pos_ = pos;
+  Q_EMIT loopRangeChanged (loop_start_pos_, loop_end_pos_);
+}
+
+Position
+Transport::getLoopEndPosition () const
+{
+  return loop_end_pos_;
+}
+
+void
+Transport::setLoopEndPosition (const Position &pos)
+{
+  if (pos == loop_end_pos_)
+    {
+      return;
+    }
+
+  loop_end_pos_ = pos;
+  Q_EMIT loopRangeChanged (loop_start_pos_, loop_end_pos_);
+}
+
+Position
+Transport::getPunchInPosition () const
+{
+  return punch_in_pos_;
+}
+
+void
+Transport::setPunchInPosition (const Position &pos)
+{
+  if (pos == punch_in_pos_)
+    {
+      return;
+    }
+
+  punch_in_pos_ = pos;
+  Q_EMIT punchRangeChanged (punch_in_pos_, punch_out_pos_);
+}
+
+Position
+Transport::getPunchOutPosition () const
+{
+  return punch_out_pos_;
+}
+
+void
+Transport::setPunchOutPosition (const Position &pos)
+{
+  if (pos == punch_out_pos_)
+    {
+      return;
+    }
+
+  punch_out_pos_ = pos;
+  Q_EMIT punchRangeChanged (punch_in_pos_, punch_out_pos_);
+}
+
+void
+Transport::moveBackward ()
+{
+  move_backward (true);
+}
+
+void
+Transport::moveForward ()
+{
+  move_forward (true);
 }
 
 void
@@ -219,6 +344,18 @@ Transport::init_after_cloning (const Transport &other)
   forward_ = clone_port (other.forward_);
   loop_toggle_ = clone_port (other.loop_toggle_);
   rec_toggle_ = clone_port (other.rec_toggle_);
+}
+
+void
+Transport::set_play_state_rt_safe (PlayState state)
+{
+  if (play_state_ == state)
+    {
+      return;
+    }
+
+  play_state_ = state;
+  needs_property_notification_.store (true);
 }
 
 void
@@ -360,7 +497,7 @@ Transport::requestPause (bool with_wait)
       audio_engine_->port_operation_lock_.acquire ();
     }
 
-  play_state_ = PlayState::PauseRequested;
+  setPlayState (PlayState::PauseRequested);
 
   playhead_before_pause_ = playhead_pos_;
   if (
@@ -418,7 +555,7 @@ Transport::requestRoll (bool with_wait)
           if (!pos.is_positive ())
             pos = Position ();
           preroll_frames_remaining_ = playhead_pos_.frames_ - pos.frames_;
-          set_playhead_pos (pos);
+          set_playhead_pos_rt_safe (pos);
 #if 0
           z_debug (
             "preroll %ld frames",
@@ -427,23 +564,23 @@ Transport::requestRoll (bool with_wait)
         }
     }
 
-  play_state_ = PlayState::RollRequested;
+  setPlayState (PlayState::RollRequested);
 }
 
 void
 Transport::add_to_playhead (const signed_frame_t nframes)
 {
   playhead_pos_.add_frames (nframes);
-  Q_EMIT playheadPositionChanged (playhead_pos_);
+  needs_property_notification_.store (true, std::memory_order_relaxed);
 }
 
 void
-Transport::set_playhead_pos (const Position pos)
+Transport::set_playhead_pos_rt_safe (const Position pos)
 {
   if (playhead_pos_ == pos)
     return;
   playhead_pos_ = pos;
-  Q_EMIT playheadPositionChanged (pos);
+  needs_property_notification_.store (true, std::memory_order_relaxed);
 }
 
 void
@@ -451,7 +588,7 @@ Transport::set_playhead_to_bar (int bar)
 {
   Position pos;
   pos.set_to_bar (*this, bar);
-  set_playhead_pos (pos);
+  set_playhead_pos_rt_safe (pos);
 }
 
 /**
@@ -565,6 +702,11 @@ Transport::update_positions (bool update_from_ticks)
   loop_end_pos_.update (update_from_ticks, audio_engine_->frames_per_tick_);
   punch_in_pos_.update (update_from_ticks, audio_engine_->frames_per_tick_);
   punch_out_pos_.update (update_from_ticks, audio_engine_->frames_per_tick_);
+
+  Q_EMIT playheadPositionChanged (playhead_pos_);
+  Q_EMIT cuePositionChanged (cue_pos_);
+  Q_EMIT loopRangeChanged (loop_start_pos_, loop_end_pos_);
+  Q_EMIT punchRangeChanged (punch_in_pos_, punch_out_pos_);
 }
 
 #if 0
@@ -792,6 +934,8 @@ Transport::set_loop_range (
     {
       pos_to_set->snap (start_pos, nullptr, nullptr, *SNAP_GRID_TIMELINE);
     }
+
+  Q_EMIT loopRangeChanged (loop_start_pos_, loop_end_pos_);
 }
 
 bool

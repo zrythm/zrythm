@@ -24,7 +24,7 @@ Control {
             if (control.hovered)
                 c = Style.getColorBlendedTowardsContrast(c);
 
-            if (track.selected)
+            if (track.selected || control.down)
                 c = Style.getColorBlendedTowardsContrast(c);
 
             return c;
@@ -103,13 +103,17 @@ Control {
 
         }
 
-        RoundButton {
-            // styleHeight: linkedButtons.buttonHeight
-            padding: control.buttonPadding
-            checkable: true
-            radius: Style.textFieldRadius
-            icon.source: Style.getIcon("zrythm-dark", "automation-4p.svg")
+        LinkedButtons {
+            id: bottomRightButtons
+
             layer.enabled: true
+
+            Button {
+                styleHeight: control.buttonHeight
+                padding: control.buttonPadding
+                checkable: true
+                icon.source: Style.getIcon("zrythm-dark", "automation-4p.svg")
+            }
 
             layer.effect: DropShadowEffect {
             }

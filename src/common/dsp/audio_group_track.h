@@ -22,7 +22,7 @@ class AudioGroupTrack final
 {
   Q_OBJECT
   QML_ELEMENT
-  DEFINE_TRACK_QML_PROPERTIES
+  DEFINE_TRACK_QML_PROPERTIES (AudioGroupTrack)
 
   friend class InitializableObjectFactory<AudioGroupTrack>;
 

@@ -88,8 +88,10 @@ set(rel_qml_file_paths
   components/CenterDock.qml
   components/LeftDock.qml
   components/RightDock.qml
+  components/Ruler.qml
   components/Timeline.qml
   components/Tracklist.qml
+  components/TracklistHeader.qml
   components/TrackView.qml
   components/TransportControls.qml
   components/ZrythmArranger.qml
@@ -133,6 +135,8 @@ qt_add_qml_module(zrythm
     ${icon_files}
     ${font_files}
   SOURCES # for some reason singletons must be added here
+    backend/action_controller.h
+    backend/action_controller.cpp
     backend/global_state.h
     backend/global_state.cpp
     backend/recent_projects_model.h

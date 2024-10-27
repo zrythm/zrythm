@@ -16,48 +16,106 @@ ColumnLayout {
         Layout.fillHeight: true
         currentIndex: centerTabBar.currentIndex
 
-        GridLayout {
-            rows: 2
-            columns: 2
-            rowSpacing: 0
-            columnSpacing: 0
+        SplitView {
             Layout.fillWidth: true
             Layout.fillHeight: true
+            orientation: Qt.Horizontal
 
-            Label {
-                text: "track header"
+            ColumnLayout {
+                id: leftPane
+
+                spacing: 1
+                SplitView.minimumWidth: 120
+                SplitView.preferredWidth: 200
+
+                TracklistHeader {
+                    id: tracklistHeader
+
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: ruler.height
+                    Layout.maximumHeight: ruler.height
+                    tracklist: project.tracklist
+                }
+
+                Tracklist {
+                    id: pinnedTracklist
+
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: contentHeight
+                    tracklist: project.tracklist
+                    pinned: true
+                }
+
+                Tracklist {
+                    id: unpinnedTracklist
+
+                    tracklist: project.tracklist
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: unpinnedTimelineArranger.height
+                    Layout.maximumHeight: unpinnedTimelineArranger.height
+                    pinned: false
+                }
+
             }
 
-            Label {
-                text: "ruler"
-            }
+            ColumnLayout {
+                id: rightPane
 
-            Tracklist {
-                tracklist: project.tracklist
-                pinned: true
-            }
+                spacing: 1
+                SplitView.fillWidth: true
+                SplitView.fillHeight: true
+                SplitView.minimumWidth: 200
 
-            Timeline {
-                id: pinnedTimelineArranger
+                ScrollView {
+                    id: rulerScrollView
 
-                pinned: true
-                timeline: project.timeline
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-            }
+                    Layout.fillWidth: true
+                    height: ruler.height
+                    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                    ScrollBar.vertical.policy: ScrollBar.AlwaysOff
 
-            Tracklist {
-                tracklist: project.tracklist
-                pinned: false
-            }
+                    Ruler {
+                        id: ruler
 
-            Timeline {
-                id: unpinnedTimelineArranger
+                        editorSettings: project.timeline
+                        transport: project.transport
+                    }
 
-                pinned: false
-                timeline: project.timeline
-                     Layout.fillWidth: true
-                Layout.fillHeight: true
+                    Binding {
+                        target: rulerScrollView.contentItem
+                        property: "contentX"
+                        value: root.project.timeline.x
+                    }
+
+                    Connections {
+                        function onContentXChanged() {
+                            root.project.timeline.x = rulerScrollView.contentItem.contentX;
+                        }
+
+                        target: rulerScrollView.contentItem
+                    }
+
+                }
+
+                Timeline {
+                    id: pinnedTimelineArranger
+
+                    pinned: true
+                    timeline: project.timeline
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: pinnedTracklist.height
+                    Layout.maximumHeight: pinnedTracklist.height
+                }
+
+                Timeline {
+                    id: unpinnedTimelineArranger
+
+                    pinned: false
+                    timeline: project.timeline
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                }
+
             }
 
         }
@@ -82,7 +140,6 @@ ColumnLayout {
         id: centerTabBar
 
         Layout.fillWidth: true
-        Layout.fillHeight: true
 
         TabButton {
             icon.source: Style.getIcon("zrythm-dark", "roadmap.svg")

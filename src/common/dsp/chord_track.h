@@ -46,7 +46,7 @@ class ChordTrack final
 {
   Q_OBJECT
   QML_ELEMENT
-  DEFINE_TRACK_QML_PROPERTIES
+  DEFINE_TRACK_QML_PROPERTIES (ChordTrack)
 
   friend class InitializableObjectFactory<ChordTrack>;
 

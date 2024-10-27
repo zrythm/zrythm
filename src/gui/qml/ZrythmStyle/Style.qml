@@ -28,7 +28,7 @@ QtObject {
     property color textColor: darkMode ? "#E3E3E3" : "#161616" // used in contrast with pageColor
     property color pageColor: darkMode ? "#161616" : "#E3E3E3" // used in contrast with textColor
     readonly property color dangerColor: "#D90368"
-    readonly property color shadowColor: Qt.alpha(backgroundColor, 0.17)
+    readonly property color shadowColor: Qt.rgba(0, 0, 0, 0.7) // Qt.alpha(backgroundColor, 0.17)
     readonly property real lightenFactor: 1.3 // lighten things up 10%, mainly used for hovering but can be used for other things like making parts of the UI stand out from the background
     readonly property real downEnhancementFactor: lightenFactor // enhance things pressed down by 30%
     readonly property real inactiveOpacityFactor: 0.85
@@ -52,7 +52,27 @@ QtObject {
     readonly property font fadedTextFont: ({
         "family": root.fontFamily,
         "pixelSize": 11,
-        "weight": Font.Normal,
+        "weight": Font.Normal
+    })
+    readonly property font semiBoldMonoFont: ({
+        "family": monoFont.name,
+        "pixelSize": 12,
+        "weight": Font.Medium
+    })
+    readonly property font smallTextFont: ({
+        "family": root.fontFamily,
+        "pixelSize": 10,
+        "weight": Font.Normal
+    })
+    readonly property font xSmallTextFont: ({
+        "family": root.fontFamily,
+        "pixelSize": 9,
+        "weight": Font.Normal
+    })
+    readonly property font xxSmallTextFont: ({
+        "family": root.fontFamily,
+        "pixelSize": 8,
+        "weight": Font.Normal
     })
     readonly property real buttonRadius: 9
     readonly property real toolButtonRadius: 6

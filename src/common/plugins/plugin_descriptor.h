@@ -13,8 +13,6 @@
 
 #include <QObject>
 
-enum class TrackType;
-
 /**
  * @addtogroup plugins
  *
@@ -137,8 +135,7 @@ public:
   /**
    * Returns if this can be dropped in a slot of the given type.
    */
-  bool
-  is_valid_for_slot_type (PluginSlotType slot_type, TrackType track_type) const;
+  bool is_valid_for_slot_type (PluginSlotType slot_type, int track_type) const;
 
   /**
    * Returns whether the two descriptors describe the same plugin, ignoring

@@ -805,7 +805,7 @@ AudioEngine::wait_for_pause (State &state, bool force_pause, bool with_fadeout)
 
       if (force_pause)
         {
-          project_->transport_->play_state_ = Transport::PlayState::Paused;
+          project_->transport_->setPlayState (Transport::PlayState::Paused);
         }
       else
         {
@@ -1083,7 +1083,7 @@ AudioEngine::process_prepare (
         {
           z_debug ("pause requested handled");
         }
-      transport_->play_state_ = Transport::PlayState::Paused;
+      transport_->set_play_state_rt_safe (Transport::PlayState::Paused);
 #if HAVE_JACK
       if (audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
         {
@@ -1095,7 +1095,7 @@ AudioEngine::process_prepare (
     transport_->play_state_ == Transport::PlayState::RollRequested
     && transport_->countin_frames_remaining_ == 0)
     {
-      transport_->play_state_ = Transport::PlayState::Rolling;
+      transport_->set_play_state_rt_safe (Transport::PlayState::Rolling);
       remaining_latency_preroll_ = router_->get_max_route_playback_latency ();
 #if HAVE_JACK
       if (audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
