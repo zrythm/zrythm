@@ -107,7 +107,10 @@ Exporter::Settings::get_export_time_range () const
         return { start->pos_, end->pos_ };
       }
     case Exporter::TimeRange::Loop:
-      return { TRANSPORT->loop_start_pos_, TRANSPORT->loop_end_pos_ };
+      return {
+        TRANSPORT->loop_start_pos_->get_position (),
+        TRANSPORT->loop_end_pos_->get_position ()
+      };
     case Exporter::TimeRange::Custom:
       return { custom_start_, custom_end_ };
     default:
@@ -180,7 +183,7 @@ Exporter::export_audio (Settings &info)
 
   auto [start_pos, end_pos] = info.get_export_time_range ();
 
-  Position prev_playhead_pos = TRANSPORT->playhead_pos_;
+  Position prev_playhead_pos = TRANSPORT->playhead_pos_->get_position ();
   TRANSPORT->set_playhead_pos_rt_safe (start_pos);
 
   AUDIO_ENGINE->bounce_mode_ =
@@ -227,7 +230,8 @@ Exporter::export_audio (Settings &info)
   do
     {
       /* calculate number of frames to process this time */
-      const double    nticks = end_pos.ticks_ - TRANSPORT->playhead_pos_.ticks_;
+      const double nticks =
+        end_pos.ticks_ - TRANSPORT->playhead_pos_->getTicks ();
       const nframes_t nframes = (nframes_t) MIN (
         (long) ceil (AUDIO_ENGINE->frames_per_tick_ * nticks),
         (long) AUDIO_ENGINE->block_length_);
@@ -279,11 +283,11 @@ Exporter::export_audio (Settings &info)
       covered_ticks += AUDIO_ENGINE->ticks_per_frame_ * nframes;
 
       progress_info_->update_progress (
-        (TRANSPORT->playhead_pos_.ticks_ - start_pos.ticks_) / total_ticks,
+        (TRANSPORT->playhead_pos_->getTicks () - start_pos.ticks_) / total_ticks,
         nullptr);
     }
   while (
-    TRANSPORT->playhead_pos_.ticks_ < end_pos.ticks_
+    TRANSPORT->playhead_pos_->getTicks () < end_pos.ticks_
     && !progress_info_->pending_cancellation ());
 
   writer_ptr.reset ();
@@ -640,7 +644,7 @@ Exporter::create_audio_track_after_bounce (Position pos)
     }
   z_return_if_fail (last_track != nullptr);
 
-  Position tmp = TRANSPORT->playhead_pos_;
+  Position tmp = TRANSPORT->playhead_pos_->get_position ();
   TRANSPORT->set_playhead_pos_rt_safe (settings_.custom_start_);
   try
     {

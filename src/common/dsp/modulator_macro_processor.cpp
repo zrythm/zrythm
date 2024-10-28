@@ -42,9 +42,11 @@ ModulatorMacroProcessor::process (const EngineProcessTimeInfo time_nfo)
   /* if there are inputs, multiply by the knob value */
   if (!cv_in_->srcs_.empty ())
     {
-      dsp_mix2 (
+      dsp_copy (
         &cv_out_->buf_[time_nfo.local_offset_],
-        &cv_in_->buf_[time_nfo.local_offset_], 0.f, macro_->get_val (),
+        &cv_in_->buf_[time_nfo.local_offset_], time_nfo.nframes_);
+      dsp_mul_k2 (
+        &cv_out_->buf_[time_nfo.local_offset_], macro_->get_val (),
         time_nfo.nframes_);
     }
   /* else if there are no inputs, set the knob value as the output */

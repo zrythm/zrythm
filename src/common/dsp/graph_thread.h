@@ -31,10 +31,6 @@
 
 #include "common/utils/types.h"
 
-#if HAVE_LSP_DSP
-#  include <lsp-plug.in/dsp/dsp.h>
-#endif
-
 #include "juce_wrapper.h"
 
 class Graph;
@@ -99,11 +95,6 @@ public:
 
   /** Pointer back to the graph. */
   Graph &graph_;
-
-#if HAVE_LSP_DSP
-  /** LSP DSP context. */
-  lsp::dsp::context_t lsp_ctx_ = {};
-#endif
 };
 
 /**

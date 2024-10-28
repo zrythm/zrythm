@@ -36,6 +36,7 @@ RowLayout {
 
         RecordButton {
             id: recordButton
+
             checked: transport.recordEnabled
             onCheckedChanged: {
                 transport.recordEnabled = checked;
@@ -62,19 +63,22 @@ RowLayout {
         }
 
         EditableValueDisplay {
-            id: timeDisplay
-
-            value: transport.playheadPosition.toString(transport, tempoTrack)
-            label: "time"
-            minValueWidth: timeTextMetrics.width
-            minValueHeight: timeTextMetrics.height
-
             // FrameAnimation {
             //     running: true
             //     onTriggered: {
             //         timeDisplay.value = transport.getPlayheadPositionString(tempoTrack);
             //     }
             // }
+
+            id: timeDisplay
+
+            value: {
+                transport.playheadPosition.ticks; // Force property dependency
+                return transport.playheadPosition.getStringDisplay(transport, tempoTrack);
+            }
+            label: "time"
+            minValueWidth: timeTextMetrics.width
+            minValueHeight: timeTextMetrics.height
 
             TextMetrics {
                 id: timeTextMetrics

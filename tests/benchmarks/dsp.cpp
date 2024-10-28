@@ -11,10 +11,6 @@
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
-#if HAVE_LSP_DSP
-#  include <lsp-plug.in/dsp/dsp.h>
-#endif
-
 #include <benchmark/benchmark.h>
 
 // Buffer sizes
@@ -60,7 +56,7 @@ BM_DspFunctions (benchmark::State &state)
           dsp_fill (buf.data (), val, buf_size);
           break;
         case 1:
-          dsp_limit1 (buf.data (), -1.0f, 1.1f, buf_size);
+          dsp_clip (buf.data (), -1.0f, 1.1f, buf_size);
           break;
         case 2:
           dsp_add2 (buf.data (), src.data (), buf_size);
@@ -83,9 +79,6 @@ BM_DspFunctions (benchmark::State &state)
           dsp_copy (buf.data (), src.data (), buf_size);
           break;
         case 8:
-          dsp_mix2 (buf.data (), src.data (), 0.1f, 0.2f, buf_size);
-          break;
-        case 9:
           dsp_mix_add2 (
             buf.data (), src.data (), src.data (), 0.1f, 0.2f, buf_size);
           break;
@@ -97,7 +90,7 @@ BM_DspFunctions (benchmark::State &state)
 static const std::vector<std::vector<int64_t>> argument_ranges = {
   { 0, 1 }, // First argument: optimized (0 or 1)
   { 0, 1 }, // Second argument: large buffer (0 or 1)
-  { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }  // Third argument: algorithm to run
+  { 0, 1, 2, 3, 4, 5, 6, 7, 8 }  // Third argument: algorithm to run
 };
 
 BENCHMARK (BM_DspFunctions)->ArgsProduct (argument_ranges);

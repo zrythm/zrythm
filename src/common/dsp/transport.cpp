@@ -83,17 +83,22 @@ Transport::init_loaded (Project * project, const TempoTrack * tempo_track)
 #undef INIT_LOADED_PORT
 }
 
-Transport::Transport (Project * parent) : QObject (parent), project_ (parent)
+Transport::Transport (Project * parent)
+    : QObject (parent), playhead_pos_ (new PositionProxy (this)),
+      cue_pos_ (new PositionProxy (this)),
+      loop_start_pos_ (new PositionProxy (this)),
+      loop_end_pos_ (new PositionProxy (this)),
+      punch_in_pos_ (new PositionProxy (this)),
+      punch_out_pos_ (new PositionProxy (this)), project_ (parent),
+      property_notification_timer_ (new QTimer (this))
 {
   z_debug ("Creating transport...");
 
-  property_notification_timer_ = new QTimer (this);
   property_notification_timer_->setInterval (16);
   property_notification_timer_->callOnTimeout ([this] () {
     if (needs_property_notification_.exchange (false))
       {
         Q_EMIT playStateChanged (play_state_);
-        Q_EMIT playheadPositionChanged (playhead_pos_);
       }
   });
   property_notification_timer_->start ();
@@ -110,9 +115,9 @@ Transport::Transport (Project * parent) : QObject (parent), project_ (parent)
   z_return_if_fail (project_->audio_engine_->sample_rate_ > 0);
 
   double ticks_per_bar = TICKS_PER_QUARTER_NOTE * 4.0;
-  loop_end_pos_.ticks_ = 4 * ticks_per_bar;
-  punch_in_pos_.ticks_ = 2 * ticks_per_bar;
-  punch_out_pos_.ticks_ = 4 * ticks_per_bar;
+  loop_end_pos_->ticks_ = 4 * ticks_per_bar;
+  punch_in_pos_->ticks_ = 2 * ticks_per_bar;
+  punch_out_pos_->ticks_ = 4 * ticks_per_bar;
 
   range_1_.ticks_ = 1 * ticks_per_bar;
   range_2_.ticks_ = 1 * ticks_per_bar;
@@ -203,106 +208,40 @@ Transport::setPlayState (PlayState state)
   Q_EMIT playStateChanged (play_state_);
 }
 
-Position
+PositionProxy *
 Transport::getPlayheadPosition () const
 {
   return playhead_pos_;
 }
 
-void
-Transport::setPlayheadPosition (const Position &pos)
-{
-  set_playhead_pos_rt_safe (pos);
-}
-
-Position
+PositionProxy *
 Transport::getCuePosition () const
 {
   return cue_pos_;
 }
 
-void
-Transport::setCuePosition (const Position &pos)
-{
-  if (pos == cue_pos_)
-    {
-      return;
-    }
-
-  cue_pos_ = pos;
-  Q_EMIT cuePositionChanged (cue_pos_);
-}
-
-Position
+PositionProxy *
 Transport::getLoopStartPosition () const
 {
   return loop_start_pos_;
 }
 
-void
-Transport::setLoopStartPosition (const Position &pos)
-{
-  if (pos == loop_start_pos_)
-    {
-      return;
-    }
-
-  loop_start_pos_ = pos;
-  Q_EMIT loopRangeChanged (loop_start_pos_, loop_end_pos_);
-}
-
-Position
+PositionProxy *
 Transport::getLoopEndPosition () const
 {
   return loop_end_pos_;
 }
 
-void
-Transport::setLoopEndPosition (const Position &pos)
-{
-  if (pos == loop_end_pos_)
-    {
-      return;
-    }
-
-  loop_end_pos_ = pos;
-  Q_EMIT loopRangeChanged (loop_start_pos_, loop_end_pos_);
-}
-
-Position
+PositionProxy *
 Transport::getPunchInPosition () const
 {
   return punch_in_pos_;
 }
 
-void
-Transport::setPunchInPosition (const Position &pos)
-{
-  if (pos == punch_in_pos_)
-    {
-      return;
-    }
-
-  punch_in_pos_ = pos;
-  Q_EMIT punchRangeChanged (punch_in_pos_, punch_out_pos_);
-}
-
-Position
+PositionProxy *
 Transport::getPunchOutPosition () const
 {
   return punch_out_pos_;
-}
-
-void
-Transport::setPunchOutPosition (const Position &pos)
-{
-  if (pos == punch_out_pos_)
-    {
-      return;
-    }
-
-  punch_out_pos_ = pos;
-  Q_EMIT punchRangeChanged (punch_in_pos_, punch_out_pos_);
 }
 
 void
@@ -324,12 +263,12 @@ Transport::init_after_cloning (const Transport &other)
   has_range_ = other.has_range_;
   position_ = other.position_;
 
-  loop_start_pos_ = other.loop_start_pos_;
-  playhead_pos_ = other.playhead_pos_;
-  loop_end_pos_ = other.loop_end_pos_;
-  cue_pos_ = other.cue_pos_;
-  punch_in_pos_ = other.punch_in_pos_;
-  punch_out_pos_ = other.punch_out_pos_;
+  loop_start_pos_->set_position_rtsafe (*other.loop_start_pos_);
+  playhead_pos_->set_position_rtsafe (*other.playhead_pos_);
+  loop_end_pos_->set_position_rtsafe (*other.loop_end_pos_);
+  cue_pos_->set_position_rtsafe (*other.cue_pos_);
+  punch_in_pos_->set_position_rtsafe (*other.punch_in_pos_);
+  punch_out_pos_->set_position_rtsafe (*other.punch_out_pos_);
   range_1_ = other.range_1_;
   range_2_ = other.range_2_;
 
@@ -497,14 +436,15 @@ Transport::requestPause (bool with_wait)
       audio_engine_->port_operation_lock_.acquire ();
     }
 
-  setPlayState (PlayState::PauseRequested);
+  set_play_state_rt_safe (PlayState::PauseRequested);
 
-  playhead_before_pause_ = playhead_pos_;
+  playhead_before_pause_ = playhead_pos_->get_position ();
   if (
     !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING
     && g_settings_get_boolean (S_TRANSPORT, "return-to-cue"))
     {
-      move_playhead (&cue_pos_, F_PANIC, F_NO_SET_CUE_POINT, true);
+      auto tmp = cue_pos_->get_position ();
+      move_playhead (&tmp, F_PANIC, F_NO_SET_CUE_POINT, true);
     }
 
   if (with_wait)
@@ -549,12 +489,12 @@ Transport::requestRoll (bool with_wait)
             PrerollCountBars,
             g_settings_get_enum (S_TRANSPORT, "recording-preroll"));
           num_bars = preroll_count_bars_enum_to_int (bars);
-          Position pos = playhead_pos_;
+          Position pos = playhead_pos_->get_position ();
           pos.add_bars (-num_bars);
           pos.print ();
           if (!pos.is_positive ())
             pos = Position ();
-          preroll_frames_remaining_ = playhead_pos_.frames_ - pos.frames_;
+          preroll_frames_remaining_ = playhead_pos_->frames_ - pos.frames_;
           set_playhead_pos_rt_safe (pos);
 #if 0
           z_debug (
@@ -570,17 +510,13 @@ Transport::requestRoll (bool with_wait)
 void
 Transport::add_to_playhead (const signed_frame_t nframes)
 {
-  playhead_pos_.add_frames (nframes);
-  needs_property_notification_.store (true, std::memory_order_relaxed);
+  playhead_pos_->add_frames_rtsafe (nframes);
 }
 
 void
 Transport::set_playhead_pos_rt_safe (const Position pos)
 {
-  if (playhead_pos_ == pos)
-    return;
-  playhead_pos_ = pos;
-  needs_property_notification_.store (true, std::memory_order_relaxed);
+  playhead_pos_->set_position_rtsafe (pos);
 }
 
 void
@@ -599,7 +535,7 @@ Transport::get_playhead_pos (Position * pos)
 {
   z_return_if_fail (pos);
 
-  *pos = playhead_pos_;
+  *pos = playhead_pos_->get_position ();
 }
 bool
 Transport::can_user_move_playhead () const
@@ -635,7 +571,7 @@ Transport::move_playhead (
             {
               for (const auto &region : lane->regions_)
                 {
-                  if (!region->is_hit (playhead_pos_.frames_, true))
+                  if (!region->is_hit (playhead_pos_->frames_, true))
                     continue;
 
                   if constexpr (
@@ -644,7 +580,7 @@ Transport::move_playhead (
                     {
                       for (auto &midi_note : region->midi_notes_)
                         {
-                          if (midi_note->is_hit (playhead_pos_.frames_))
+                          if (midi_note->is_hit (playhead_pos_->frames_))
                             {
                               t->processor_->piano_roll_->midi_events_
                                 .queued_events_
@@ -659,20 +595,18 @@ Transport::move_playhead (
     }
 
   /* move to new pos */
-  playhead_pos_ = *target;
+  playhead_pos_->set_position_rtsafe (*target);
 
   if (set_cue_point)
     {
       /* move cue point */
-      cue_pos_ = *target;
+      cue_pos_->set_position_rtsafe (*target);
     }
 
   if (fire_events)
     {
       /* FIXME use another flag to decide when to do this */
       last_manual_playhead_change_ = g_get_monotonic_time ();
-
-      Q_EMIT playheadPositionChanged (playhead_pos_);
     }
 }
 
@@ -696,17 +630,17 @@ Transport::update_positions (bool update_from_ticks)
 {
   auto * audio_engine_ = project_->audio_engine_.get ();
 
-  playhead_pos_.update (update_from_ticks, audio_engine_->frames_per_tick_);
-  cue_pos_.update (update_from_ticks, audio_engine_->frames_per_tick_);
-  loop_start_pos_.update (update_from_ticks, audio_engine_->frames_per_tick_);
-  loop_end_pos_.update (update_from_ticks, audio_engine_->frames_per_tick_);
-  punch_in_pos_.update (update_from_ticks, audio_engine_->frames_per_tick_);
-  punch_out_pos_.update (update_from_ticks, audio_engine_->frames_per_tick_);
-
-  Q_EMIT playheadPositionChanged (playhead_pos_);
-  Q_EMIT cuePositionChanged (cue_pos_);
-  Q_EMIT loopRangeChanged (loop_start_pos_, loop_end_pos_);
-  Q_EMIT punchRangeChanged (punch_in_pos_, punch_out_pos_);
+  playhead_pos_->update_rtsafe (
+    update_from_ticks, audio_engine_->frames_per_tick_);
+  cue_pos_->update_rtsafe (update_from_ticks, audio_engine_->frames_per_tick_);
+  loop_start_pos_->update_rtsafe (
+    update_from_ticks, audio_engine_->frames_per_tick_);
+  loop_end_pos_->update_rtsafe (
+    update_from_ticks, audio_engine_->frames_per_tick_);
+  punch_in_pos_->update_rtsafe (
+    update_from_ticks, audio_engine_->frames_per_tick_);
+  punch_out_pos_->update_rtsafe (
+    update_from_ticks, audio_engine_->frames_per_tick_);
 }
 
 #if 0
@@ -765,28 +699,26 @@ Transport::goto_prev_marker ()
     {
       markers.push_back (marker->pos_);
     }
-  markers.push_back (cue_pos_);
-  markers.push_back (loop_start_pos_);
-  markers.push_back (loop_end_pos_);
-  markers.push_back (Position ());
+  markers.emplace_back (cue_pos_->get_position ());
+  markers.emplace_back (loop_start_pos_->get_position ());
+  markers.emplace_back (loop_end_pos_->get_position ());
+  markers.emplace_back ();
   std::sort (markers.begin (), markers.end ());
 
-  for (int i = markers.size () - 1; i >= 0; i--)
+  for (int i = (int) markers.size () - 1; i >= 0; i--)
     {
-      if (markers[i] >= playhead_pos_)
+      if (markers[i] >= *playhead_pos_)
         continue;
 
       if (
         isRolling () && i > 0
-        && (playhead_pos_.to_ms () - markers[i].to_ms ()) < REPEATED_BACKWARD_MS)
+        && (playhead_pos_->to_ms () - markers[i].to_ms ()) < REPEATED_BACKWARD_MS)
         {
           continue;
         }
-      else
-        {
-          move_to_marker_or_pos_and_fire_events (nullptr, &markers[i]);
-          break;
-        }
+
+      move_to_marker_or_pos_and_fire_events (nullptr, &markers[i]);
+      break;
     }
 }
 
@@ -802,15 +734,15 @@ Transport::goto_next_marker ()
     {
       markers.push_back (marker->pos_);
     }
-  markers.push_back (cue_pos_);
-  markers.push_back (loop_start_pos_);
-  markers.push_back (loop_end_pos_);
-  markers.push_back (Position ());
+  markers.push_back (cue_pos_->get_position ());
+  markers.push_back (loop_start_pos_->get_position ());
+  markers.push_back (loop_end_pos_->get_position ());
+  markers.emplace_back ();
   std::sort (markers.begin (), markers.end ());
 
   for (auto &marker : markers)
     {
-      if (marker > playhead_pos_)
+      if (marker > *playhead_pos_)
         {
           move_to_marker_or_pos_and_fire_events (nullptr, &marker);
           break;
@@ -854,13 +786,13 @@ Transport::position_add_frames (Position * pos, const signed_frame_t frames)
   /* if start frames were before the loop-end point and the new frames are after
    * (loop crossed) */
   if (
-    loop_ && pos_before_adding.frames_ < loop_end_pos_.frames_
-    && pos->frames_ >= loop_end_pos_.frames_)
+    loop_ && pos_before_adding.frames_ < loop_end_pos_->frames_
+    && pos->frames_ >= loop_end_pos_->frames_)
     {
       /* adjust the new frames */
-      pos->add_ticks (loop_start_pos_.ticks_ - loop_end_pos_.ticks_);
+      pos->add_ticks (loop_start_pos_->ticks_ - loop_end_pos_->ticks_);
 
-      z_warn_if_fail (pos->frames_ < loop_end_pos_.frames_);
+      z_warn_if_fail (pos->frames_ < loop_end_pos_->frames_);
     }
 }
 
@@ -883,7 +815,8 @@ Transport::get_range_positions () const
 std::pair<Position, Position>
 Transport::get_loop_range_positions () const
 {
-  return std::make_pair (loop_start_pos_, loop_end_pos_);
+  return std::make_pair (
+    loop_start_pos_->get_position (), loop_end_pos_->get_position ());
 }
 
 void
@@ -918,31 +851,29 @@ Transport::set_loop_range (
   const Position * pos,
   bool             snap)
 {
-  Position * pos_to_set = range1 ? &loop_start_pos_ : &loop_end_pos_;
+  auto * pos_to_set = range1 ? loop_start_pos_ : loop_end_pos_;
 
   Position init_pos;
   if (*pos < init_pos)
     {
-      *pos_to_set = init_pos;
+      pos_to_set->set_position_rtsafe (init_pos);
     }
   else
     {
-      *pos_to_set = *pos;
+      pos_to_set->set_position_rtsafe (*pos);
     }
 
   if (snap)
     {
       pos_to_set->snap (start_pos, nullptr, nullptr, *SNAP_GRID_TIMELINE);
     }
-
-  Q_EMIT loopRangeChanged (loop_start_pos_, loop_end_pos_);
 }
 
 bool
 Transport::position_is_inside_punch_range (const Position pos)
 {
-  return pos.frames_ >= punch_in_pos_.frames_
-         && pos.frames_ < punch_out_pos_.frames_;
+  return pos.frames_ >= punch_in_pos_->frames_
+         && pos.frames_ < punch_out_pos_->frames_;
 }
 
 void
@@ -1024,13 +955,13 @@ Transport::move_backward (bool with_wait)
 
   Position pos;
   bool     ret =
-    SNAP_GRID_TIMELINE->get_nearby_snap_point (pos, playhead_pos_, true);
+    SNAP_GRID_TIMELINE->get_nearby_snap_point (pos, *playhead_pos_, true);
   z_return_if_fail (ret);
   /* if prev snap point is exactly at the playhead or very close it, go back
    * more */
   if (
     pos.frames_ > 0
-    && (pos == playhead_pos_ || (isRolling () && (playhead_pos_.to_ms () - pos.to_ms ()) < REPEATED_BACKWARD_MS)))
+    && (pos == *playhead_pos_ || (isRolling () && (playhead_pos_->to_ms () - pos.to_ms ()) < REPEATED_BACKWARD_MS)))
     {
       Position tmp = pos;
       tmp.add_ticks (-1);
@@ -1056,7 +987,7 @@ Transport::move_forward (bool with_wait)
 
   Position pos;
   bool     ret =
-    SNAP_GRID_TIMELINE->get_nearby_snap_point (pos, playhead_pos_, false);
+    SNAP_GRID_TIMELINE->get_nearby_snap_point (pos, *playhead_pos_, false);
   z_return_if_fail (ret);
   move_playhead (&pos, true, true, true);
 }
@@ -1086,5 +1017,5 @@ Transport::set_recording (bool record, bool with_wait)
 QString
 Transport::getPlayheadPositionString (const TempoTrack * tempo_track) const
 {
-  return QString::fromStdString (playhead_pos_.to_string (this, tempo_track, 0));
+  return playhead_pos_->getStringDisplay (this, tempo_track);
 }

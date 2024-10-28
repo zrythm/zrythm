@@ -317,9 +317,9 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
         }
       else
         {
-          dsp_mix2 (
+          dsp_mix_product (
             &buf_[time_nfo.local_offset_],
-            &src_port->buf_[time_nfo.local_offset_], 1.f, multiplier,
+            &src_port->buf_[time_nfo.local_offset_], multiplier,
             time_nfo.nframes_);
         }
 
@@ -333,7 +333,7 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
             {
               /* this limiting wastes around 50% of port processing so only
                * do it on CV connections and faders if they exceed maxf */
-              dsp_limit1 (
+              dsp_clip (
                 &buf_[time_nfo.local_offset_], minf, maxf, time_nfo.nframes_);
             }
         }

@@ -574,7 +574,7 @@ Fader::set_fader_val_with_action_from_db (const std::string &str)
 {
   bool  is_valid = false;
   float val;
-  if (math_is_string_valid_float (str.c_str (), &val))
+  if (math_is_string_valid_float (str, &val))
     {
       if (val <= 6.f)
         {
@@ -811,18 +811,18 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
                                 && t->get_listened ())
                                 {
                                   auto f = t->get_fader (true);
-                                  dsp_mix2 (
+                                  dsp_mix_product (
                                     &stereo_out_->get_l ()
                                        .buf_[time_nfo.local_offset_],
                                     &f->stereo_out_->get_l ()
                                        .buf_[time_nfo.local_offset_],
-                                    1.f, listen_amp, time_nfo.nframes_);
-                                  dsp_mix2 (
+                                    listen_amp, time_nfo.nframes_);
+                                  dsp_mix_product (
                                     &stereo_out_->get_r ()
                                        .buf_[time_nfo.local_offset_],
                                     &f->stereo_out_->get_r ()
                                        .buf_[time_nfo.local_offset_],
-                                    1.f, listen_amp, time_nfo.nframes_);
+                                    listen_amp, time_nfo.nframes_);
                                 }
                             }
                         },
@@ -1013,10 +1013,10 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
             (type_ == Type::AudioChannel && track && track->is_master ())
             || type_ == Type::Monitor || type_ == Type::SampleProcessor)
             {
-              dsp_limit1 (
+              dsp_clip (
                 &stereo_out_->get_l ().buf_[time_nfo.local_offset_], -2.f, 2.f,
                 time_nfo.nframes_);
-              dsp_limit1 (
+              dsp_clip (
                 &stereo_out_->get_r ().buf_[time_nfo.local_offset_], -2.f, 2.f,
                 time_nfo.nframes_);
             }

@@ -71,8 +71,8 @@ Metronome::queue_events (
   auto *     transport_ = engine->project_->transport_;
   const auto playhead = transport_->playhead_pos_;
   Position   bar_pos, beat_pos;
-  Position   playhead_pos = playhead;
-  Position   unlooped_playhead = playhead;
+  Position   playhead_pos = playhead->get_position ();
+  Position   unlooped_playhead = playhead->get_position ();
   transport_->position_add_frames (&playhead_pos, nframes);
   unlooped_playhead.add_frames ((long) nframes, engine->ticks_per_frame_);
   bool loop_crossed = unlooped_playhead.frames_ != playhead_pos.frames_;
@@ -80,19 +80,21 @@ Metronome::queue_events (
     {
       /* find each bar / beat change until loop end */
       engine->sample_processor_->find_and_queue_metronome (
-        playhead, transport_->loop_end_pos_, loffset);
+        playhead->get_position (), transport_->loop_end_pos_->get_position (),
+        loffset);
 
       /* find each bar / beat change after loop start */
       engine->sample_processor_->find_and_queue_metronome (
-        transport_->loop_start_pos_, playhead_pos,
+        transport_->loop_start_pos_->get_position (), playhead_pos,
         loffset
-          + (nframes_t) (transport_->loop_end_pos_.frames_ - playhead.frames_));
+          + (nframes_t) (transport_->loop_end_pos_->getFrames ()
+                         - playhead->getFrames ()));
     }
   else /* loop not crossed */
     {
       /* find each bar / beat change from start to finish */
       engine->sample_processor_->find_and_queue_metronome (
-        playhead, playhead_pos, loffset);
+        playhead->get_position (), playhead_pos, loffset);
     }
 }
 

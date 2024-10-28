@@ -39,11 +39,7 @@
 #define ZRYTHM_HAVE_UI (gZrythm && gZrythm->have_ui_)
 #define ZRYTHM_BREAK_ON_ERROR (gZrythm && gZrythm->break_on_error_)
 
-#if HAVE_LSP_DSP
-#  define ZRYTHM_USE_OPTIMIZED_DSP (Q_LIKELY (gZrythm->use_optimized_dsp_))
-#else
-#  define ZRYTHM_USE_OPTIMIZED_DSP false
-#endif
+#define ZRYTHM_USE_OPTIMIZED_DSP (Q_LIKELY (gZrythm->use_optimized_dsp_))
 
 /**
  * To be used throughout the program.
@@ -243,7 +239,7 @@ public:
   /**
    * @brief LSP DSP context for the main thread.
    */
-  std::unique_ptr<LspDspContextRAII> lsp_dsp_context_;
+  std::unique_ptr<DspContextRAII> lsp_dsp_context_;
 
   /**
    * @brief Whether currently running under the benchmarker.

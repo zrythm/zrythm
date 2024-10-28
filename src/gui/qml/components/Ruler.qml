@@ -27,7 +27,8 @@ Item {
     readonly property real pxPerBar: pxPerSixteenth * 16
     readonly property real ticksPerBeat: ticksPerSixteenth * 4
     readonly property real pxPerBeat: pxPerSixteenth * 4
-    readonly property real detailMeasurePxThreshold: 60 // threshold to show/hide more detailed measures
+    readonly property real detailMeasurePxThreshold: 32 // threshold to show/hide more detailed measures
+    readonly property real detailMeasureLabelPxThreshold: 64 // threshold to show/hide labels for more detailed measures
 
     height: rulerHeight
     width: 1000 * pxPerBar
@@ -89,6 +90,7 @@ Item {
                         anchors.top: parent.top
                         anchors.leftMargin: 2
                         font: Style.xSmallTextFont
+                        visible: control.pxPerBeat > control.detailMeasureLabelPxThreshold
                     }
 
                 }
@@ -123,6 +125,7 @@ Item {
                         anchors.top: parent.top
                         anchors.leftMargin: 2
                         font: Style.xxSmallTextFont
+                        visible: control.pxPerSixteenth > control.detailMeasureLabelPxThreshold
                     }
 
                 }
@@ -265,14 +268,23 @@ Item {
     }
 
     MouseArea {
+        property bool dragging: false
+
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
-        onClicked: (mouse) => {
+        onPressed: (mouse) => {
             if (mouse.button === Qt.LeftButton) {
-                const pos = transport.playheadPosition;
-                pos.ticks = (mouse.x + editorSettings.x) / (defaultPxPerTick * editorSettings.horizontalZoomLevel);
-                transport.playheadPosition = pos;
+                dragging = true;
+                transport.playheadPosition.ticks = mouse.x / (defaultPxPerTick * editorSettings.horizontalZoomLevel);
             }
+        }
+        onReleased: {
+            dragging = false;
+        }
+        onPositionChanged: (mouse) => {
+            if (dragging)
+                transport.playheadPosition.ticks = mouse.x / (defaultPxPerTick * editorSettings.horizontalZoomLevel);
+
         }
         onWheel: (wheel) => {
             if (wheel.modifiers & Qt.ControlModifier) {

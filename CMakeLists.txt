@@ -179,7 +179,6 @@ option(ZRYTHM_WITH_X11 "Build with X11 support" ${OS_GNU})
 option(ZRYTHM_WITH_RTMIDI "Build with RtMidi support" ON)
 option(ZRYTHM_WITH_RTAUDIO "Build with RtAudio support" ON)
 option(ZRYTHM_WITH_JACK "Build with JACK support" ${OS_GNU})
-option(ZRYTHM_WITH_LSP_DSP "Build with LSP DSP for optimized float math" ON)
 option(ZRYTHM_WITH_VALGRIND "Compile with valgrind lib (only for debugging)" OFF)
 
 #==============================================================================
@@ -358,21 +357,6 @@ if(${ZRYTHM_WITH_JACK})
   check_library_exists("${JACK_LIBRARIES}" jack_set_property "" HAVE_JACK_SET_PROPERTY)
   check_library_exists("${JACK_LIBRARIES}" jack_port_type_get_buffer_size "" HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE)
 endif()
-
-# Glib/GTK-related compile definitions
-set(gnome_compile_definitions)
-string(REPLACE "." ";" glib_version_arr ${glib_req})
-list(GET glib_version_arr 0 glib_major_version)
-list(GET glib_version_arr 1 glib_minor_version)
-string(REPLACE "." ";" gtk_version_arr ${gtk_req})
-list(GET gtk_version_arr 0 gtk_major_version)
-list(GET gtk_version_arr 1 gtk_minor_version)
-list(APPEND gnome_compile_definitions
-    GLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_${glib_major_version}_${glib_minor_version}
-    GLIB_VERSION_MAX_ALLOWED=GLIB_VERSION_${glib_major_version}_${glib_minor_version}
-    GDK_VERSION_MIN_REQUIRED=GDK_VERSION_${gtk_major_version}_${gtk_minor_version}
-    GDK_VERSION_MAX_ALLOWED=GDK_VERSION_${gtk_major_version}_14
-)
 
 #==============================================================================
 # Global Flags
@@ -873,11 +857,6 @@ endif()
 
 find_package(zstd REQUIRED)
 
-pkg_check_modules(LSP_DSP_LIB lsp-dsp-lib>=0.5.5 IMPORTED_TARGET)
-if(LSP_DSP_LIB_FOUND)
-  set(HAVE_LSP_DSP TRUE)
-endif()
-
 pkg_check_modules(XXHASH libxxhash REQUIRED IMPORTED_TARGET)
 
 pkg_check_modules(VAMP_SDK vamp-sdk IMPORTED_TARGET)
@@ -925,7 +904,6 @@ endif()
 
 pkg_check_modules(GLIBMM glibmm-2.68 REQUIRED IMPORTED_TARGET)
 pkg_check_modules(GIOMM giomm-2.68 REQUIRED IMPORTED_TARGET)
-# pkg_check_modules(GTKMM gtkmm-4.0 REQUIRED IMPORTED_TARGET)
 
 pkg_check_modules(RUBBERBAND rubberband REQUIRED IMPORTED_TARGET)
 
@@ -980,9 +958,6 @@ list(APPEND zrythm_link_libs
 
 if(CHROMAPRINT_FOUND)
   list(APPEND zrythm_link_libs PkgConfig::CHROMAPRINT)
-endif()
-if(LSP_DSP_LIB_FOUND)
-  list(APPEND zrythm_link_libs PkgConfig::LSP_DSP_LIB)
 endif()
 
 if(OS_GNU)

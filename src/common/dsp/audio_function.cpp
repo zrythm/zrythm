@@ -393,7 +393,7 @@ audio_function_apply (
       use_interleaved = false;
       for (size_t j = 0; j < channels; j++)
         {
-          dsp_reverse2 (
+          dsp_reverse (
             &ch_dest_frames.getWritePointer (j)[0],
             &ch_src_frames.getReadPointer (j)[0], num_frames);
         }

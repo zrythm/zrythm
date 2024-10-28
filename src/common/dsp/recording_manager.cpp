@@ -267,7 +267,7 @@ RecordingManager::handle_recording (
           skip_adding_automation_events = true;
         }
       /* if pausing (only at loop end) */
-      else if (Q_UNLIKELY (at->recording_start_sent_ && time_nfo->nframes_ == 0) && (time_nfo->g_start_frame_w_offset_ == static_cast<unsigned_frame_t> (TRANSPORT->loop_end_pos_.frames_)))
+      else if (Q_UNLIKELY (at->recording_start_sent_ && time_nfo->nframes_ == 0) && (time_nfo->g_start_frame_w_offset_ == static_cast<unsigned_frame_t> (TRANSPORT->loop_end_pos_->getFrames())))
         {
           /* send pause event */
           auto re = event_obj_pool_.acquire ();

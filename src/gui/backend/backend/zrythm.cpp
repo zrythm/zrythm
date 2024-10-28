@@ -43,7 +43,7 @@ Zrythm::pre_init (const char * exe_path, bool have_ui, bool optimized_dsp)
   use_optimized_dsp_ = optimized_dsp;
   if (use_optimized_dsp_)
     {
-      lsp_dsp_context_ = std::make_unique<LspDspContextRAII> ();
+      lsp_dsp_context_ = std::make_unique<DspContextRAII> ();
     }
   settings_ = std::make_unique<Settings> ();
 
@@ -123,10 +123,6 @@ Zrythm::get_version_with_capabilities (char * buf, bool include_system_info)
 #endif
 #if HAVE_RTAUDIO
     "    +rtaudio\n"
-#endif
-
-#if HAVE_LSP_DSP
-    "    +lsp-dsp-lib\n"
 #endif
 
     "",

@@ -53,6 +53,7 @@
 #include "zrythm-config.h"
 
 #include "common/utils/dsp.h"
+#include "common/utils/dsp_context.h"
 #include "common/utils/logger.h"
 
 #include <fmt/format.h>
@@ -134,10 +135,10 @@ GraphThread::run_worker ()
 {
   auto * graph = &graph_;
 
-  std::optional<LspDspContextRAII> lsp_dsp_context_raii;
+  std::optional<DspContextRAII> dsp_context_raii;
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
-      lsp_dsp_context_raii.emplace ();
+      dsp_context_raii.emplace ();
     }
 
   z_info (

@@ -141,10 +141,15 @@ qt_add_qml_module(zrythm
     backend/global_state.cpp
     backend/recent_projects_model.h
     backend/recent_projects_model.cpp
+    backend/position_proxy.h
+    backend/position_proxy.cpp
     backend/project_info.h
     backend/project_info.cpp
     backend/project_templates_model.h
     backend/project_templates_model.cpp
+    backend/realtime_property.h
+    backend/realtime_updater.h
+    backend/realtime_updater.cpp
     backend/track_filter_proxy_model.h
     backend/track_filter_proxy_model.cpp
 

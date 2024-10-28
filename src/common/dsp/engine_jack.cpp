@@ -302,7 +302,7 @@ timebase_cb (
     return;
 
   const auto &transport = *self->project_->transport_;
-  Position    playhead = transport.playhead_pos_;
+  Position    playhead = transport.playhead_pos_->get_position ();
   const auto &tempo_track = *P_TEMPO_TRACK;
 
   /* Mandatory fields */

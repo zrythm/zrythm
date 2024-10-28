@@ -40,15 +40,22 @@ RangeAction::RangeAction (Type type, Position start_pos, Position end_pos)
 
 #define _MOVE_TRANSPORT_MARKER(x, _ticks, _do) \
   if ( \
-    type_ == RangeAction::Type::Remove && TRANSPORT->x >= start_pos_ \
-    && TRANSPORT->x <= end_pos_) \
+    type_ == RangeAction::Type::Remove && *TRANSPORT->x >= start_pos_ \
+    && *TRANSPORT->x <= end_pos_) \
     { \
       /* move position to range start or back to  original pos */ \
-      TRANSPORT->x = _do ? start_pos_ : transport_->x; \
+      if (_do) \
+        { \
+          TRANSPORT->x->set_position_rtsafe (start_pos_); \
+        } \
+      else \
+        { \
+          TRANSPORT->x->set_position_rtsafe (*transport_->x); \
+        } \
     } \
-  else if (TRANSPORT->x >= start_pos_) \
+  else if (*TRANSPORT->x >= start_pos_) \
     { \
-      TRANSPORT->x.add_ticks (_ticks); \
+      TRANSPORT->x->addTicks (_ticks); \
     }
 
 #define MOVE_TRANSPORT_MARKER(x, _do) \

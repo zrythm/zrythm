@@ -841,9 +841,9 @@ AudioEngine::wait_for_pause (State &state, bool force_pause, bool with_fadeout)
 
       EngineProcessTimeInfo time_nfo = {
         .g_start_frame_ = static_cast<unsigned_frame_t> (
-          project_->transport_->playhead_pos_.frames_),
+          project_->transport_->playhead_pos_->getFrames ()),
         .g_start_frame_w_offset_ = static_cast<unsigned_frame_t> (
-          project_->transport_->playhead_pos_.frames_),
+          project_->transport_->playhead_pos_->getFrames ()),
         .local_offset_ = 0,
         .nframes_ = 1,
       };
@@ -1033,7 +1033,7 @@ AudioEngine::update_position_info (
   const nframes_t frames_to_add)
 {
   auto     transport_ = project_->transport_;
-  Position playhead = transport_->playhead_pos_;
+  Position playhead = transport_->playhead_pos_->get_position ();
   playhead.add_frames (frames_to_add, ticks_per_frame_);
   pos_nfo.is_rolling_ = transport_->isRolling ();
   pos_nfo.bpm_ = P_TEMPO_TRACK->get_current_bpm ();
@@ -1248,9 +1248,9 @@ AudioEngine::process (const nframes_t total_frames_to_process)
 
   auto *                transport_ = project_->transport_;
   EngineProcessTimeInfo split_time_nfo = {
-    .g_start_frame_ = (unsigned_frame_t) transport_->playhead_pos_.frames_,
+    .g_start_frame_ = (unsigned_frame_t) transport_->playhead_pos_->getFrames (),
     .g_start_frame_w_offset_ =
-      (unsigned_frame_t) transport_->playhead_pos_.frames_,
+      (unsigned_frame_t) transport_->playhead_pos_->getFrames (),
     .local_offset_ = 0,
     .nframes_ = 0,
   };

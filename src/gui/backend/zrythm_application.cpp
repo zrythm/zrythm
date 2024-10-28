@@ -4,6 +4,7 @@
 #include "common/utils/directory_manager.h"
 #include "common/utils/pcg_rand.h"
 #include "gui/backend/backend/settings_manager.h"
+#include "gui/backend/realtime_updater.h"
 
 #include <QFontDatabase>
 #include <QQmlApplicationEngine>
@@ -45,6 +46,7 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   settings_manager_ = new SettingsManager (this);
   theme_manager_ = new ThemeManager (this);
   project_manager_ = new ProjectManager (this);
+  RealtimeUpdater::instance ();
 
   launch_engine_process ();
 

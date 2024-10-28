@@ -8,6 +8,7 @@
 #include "common/dsp/port.h"
 #include "common/dsp/position.h"
 #include "common/utils/types.h"
+#include "gui/backend/position_proxy.h"
 
 #include <glib/gi18n.h>
 
@@ -26,7 +27,7 @@ TYPEDEF_STRUCT_UNDERSCORED (ArrangerWidget);
 #define TRANSPORT (PROJECT->transport_)
 constexpr int TRANSPORT_DEFAULT_TOTAL_BARS = 128;
 
-#define PLAYHEAD (TRANSPORT->playhead_pos_)
+#define PLAYHEAD (TRANSPORT->playhead_pos_->get_position ())
 
 enum class PrerollCountBars
 {
@@ -64,24 +65,13 @@ class Transport final
   Q_PROPERTY (
     PlayState playState READ getPlayState WRITE setPlayState NOTIFY
       playStateChanged)
+  Q_PROPERTY (PositionProxy * playheadPosition READ getPlayheadPosition CONSTANT)
+  Q_PROPERTY (PositionProxy * cuePosition READ getCuePosition CONSTANT)
   Q_PROPERTY (
-    Position playheadPosition READ getPlayheadPosition WRITE setPlayheadPosition
-      NOTIFY playheadPositionChanged)
-  Q_PROPERTY (
-    Position cuePosition READ getCuePosition WRITE setCuePosition NOTIFY
-      cuePositionChanged)
-  Q_PROPERTY (
-    Position loopStartPosition READ getLoopStartPosition WRITE
-      setLoopStartPosition NOTIFY loopRangeChanged)
-  Q_PROPERTY (
-    Position loopEndPosition READ getLoopEndPosition WRITE setLoopEndPosition
-      NOTIFY loopRangeChanged)
-  Q_PROPERTY (
-    Position punchInPosition READ getPunchInPosition WRITE setPunchInPosition
-      NOTIFY punchRangeChanged)
-  Q_PROPERTY (
-    Position punchOutPosition READ getPunchOutPosition WRITE setPunchOutPosition
-      NOTIFY punchRangeChanged)
+    PositionProxy * loopStartPosition READ getLoopStartPosition CONSTANT)
+  Q_PROPERTY (PositionProxy * loopEndPosition READ getLoopEndPosition CONSTANT)
+  Q_PROPERTY (PositionProxy * punchInPosition READ getPunchInPosition CONSTANT)
+  Q_PROPERTY (PositionProxy * punchOutPosition READ getPunchOutPosition CONSTANT)
 
 public:
   enum class PlayState
@@ -164,27 +154,17 @@ public:
   void          setPlayState (PlayState state);
   Q_SIGNAL void playStateChanged (PlayState state);
 
-  Position      getPlayheadPosition () const;
-  void          setPlayheadPosition (const Position &pos);
-  Q_SIGNAL void playheadPositionChanged (Position pos);
+  PositionProxy * getPlayheadPosition () const;
 
-  Position      getCuePosition () const;
-  void          setCuePosition (const Position &pos);
-  Q_SIGNAL void cuePositionChanged (Position pos);
+  PositionProxy * getCuePosition () const;
 
-  Position getLoopStartPosition () const;
-  void     setLoopStartPosition (const Position &pos);
+  PositionProxy * getLoopStartPosition () const;
 
-  Position      getLoopEndPosition () const;
-  void          setLoopEndPosition (const Position &pos);
-  Q_SIGNAL void loopRangeChanged (Position loop_start, Position loop_end);
+  PositionProxy * getLoopEndPosition () const;
 
-  Position getPunchInPosition () const;
-  void     setPunchInPosition (const Position &pos);
+  PositionProxy * getPunchInPosition () const;
 
-  Position      getPunchOutPosition () const;
-  void          setPunchOutPosition (const Position &pos);
-  Q_SIGNAL void punchRangeChanged (Position punch_in, Position punch_out);
+  PositionProxy * getPunchOutPosition () const;
 
   Q_INVOKABLE void moveBackward ();
   Q_INVOKABLE void moveForward ();
@@ -462,12 +442,12 @@ frames_add_frames (
   is_loop_point_met (const signed_frame_t g_start_frames, const nframes_t nframes)
   {
     bool loop_end_between_start_and_end =
-      (loop_end_pos_.frames_ > g_start_frames
-       && loop_end_pos_.frames_ <= g_start_frames + (long) nframes);
+      (loop_end_pos_->frames_ > g_start_frames
+       && loop_end_pos_->frames_ <= g_start_frames + (long) nframes);
 
     if (loop_ && loop_end_between_start_and_end) [[unlikely]]
       {
-        return (nframes_t) (loop_end_pos_.frames_ - g_start_frames);
+        return (nframes_t) (loop_end_pos_->frames_ - g_start_frames);
       }
     return 0;
   }
@@ -519,22 +499,22 @@ public:
   int total_bars_ = 0;
 
   /** Playhead position. */
-  Position playhead_pos_;
+  PositionProxy * playhead_pos_ = nullptr;
 
   /** Cue point position. */
-  Position cue_pos_;
+  PositionProxy * cue_pos_ = nullptr;
 
   /** Loop start position. */
-  Position loop_start_pos_;
+  PositionProxy * loop_start_pos_ = nullptr;
 
   /** Loop end position. */
-  Position loop_end_pos_;
+  PositionProxy * loop_end_pos_ = nullptr;
 
   /** Punch in position. */
-  Position punch_in_pos_;
+  PositionProxy * punch_in_pos_ = nullptr;
 
   /** Punch out position. */
-  Position punch_out_pos_;
+  PositionProxy * punch_out_pos_ = nullptr;
 
   /**
    * Selected range.

@@ -307,8 +307,8 @@ GraphNode::process (EngineProcessTimeInfo time_nfo, GraphThread &thread)
         /* loop back to loop start */
         unsigned_frame_t frames_to_add =
           (num_processable_frames
-           + (unsigned_frame_t) TRANSPORT->loop_start_pos_.frames_)
-          - (unsigned_frame_t) TRANSPORT->loop_end_pos_.frames_;
+           + (unsigned_frame_t) TRANSPORT->loop_start_pos_->getFrames ())
+          - (unsigned_frame_t) TRANSPORT->loop_end_pos_->getFrames ();
         time_nfo.g_start_frame_w_offset_ += frames_to_add;
         time_nfo.g_start_frame_ += frames_to_add;
         time_nfo.local_offset_ += num_processable_frames;

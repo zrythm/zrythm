@@ -193,13 +193,13 @@ ChannelSend::process (const nframes_t local_offset, const nframes_t nframes)
         }
       else
         {
-          dsp_mix2 (
+          dsp_mix_product (
             &stereo_out_->get_l ().buf_[local_offset],
-            &stereo_in_->get_l ().buf_[local_offset], 1.f, amount_->control_,
+            &stereo_in_->get_l ().buf_[local_offset], amount_->control_,
             nframes);
-          dsp_mix2 (
+          dsp_mix_product (
             &stereo_out_->get_r ().buf_[local_offset],
-            &stereo_in_->get_r ().buf_[local_offset], 1.f, amount_->control_,
+            &stereo_in_->get_r ().buf_[local_offset], amount_->control_,
             nframes);
         }
     }

@@ -96,12 +96,6 @@ Position::to_ms () const
     (1000.0 * (double) frames_) / ((double) AUDIO_ENGINE->sample_rate_));
 }
 
-QString
-Position::toString (Transport * transport, TempoTrack * tempo_track) const
-{
-  return QString::fromStdString (to_string (transport, tempo_track, 0));
-}
-
 signed_frame_t
 Position::ms_to_frames (double ms)
 {

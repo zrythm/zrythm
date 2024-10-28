@@ -44,7 +44,7 @@ set_target_properties(zrythm_lib PROPERTIES
   OUTPUT_NAME zrythm_lib
 )
 target_include_directories(zrythm_lib PUBLIC ${zrythm_include_dirs})
-target_compile_definitions(zrythm_lib PUBLIC ${zrythm_definitions} ${gnome_compile_definitions})
+target_compile_definitions(zrythm_lib PUBLIC ${zrythm_definitions})
 target_compile_options(zrythm_lib PUBLIC ${zrythm_compile_args})
 target_link_libraries(zrythm_lib PUBLIC ${zrythm_link_libs})
 

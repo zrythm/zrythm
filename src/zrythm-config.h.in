@@ -92,8 +92,6 @@
 
 #cmakedefine01 HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE
 
-#cmakedefine01 HAVE_LSP_DSP
-
 #cmakedefine01 HAVE_LV2_1_18
 
 #cmakedefine01 HAVE_MLOCK

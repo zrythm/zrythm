@@ -159,13 +159,12 @@ SampleProcessor::process (const nframes_t cycle_offset, const nframes_t nframes)
           // ensure we don't overflow the sample playback buffer
           z_return_if_fail_cmp (
             sp.offset_ + len, <=, (unsigned_frame_t) sp.buf_->getNumSamples ());
-          dsp_mix2 (
-            &l[fader_buf_offset], sp.buf_->getReadPointer (0), 1.f, sp.volume_,
-            len);
-          dsp_mix2 (
+          dsp_mix_product (
+            &l[fader_buf_offset], sp.buf_->getReadPointer (0), sp.volume_, len);
+          dsp_mix_product (
             &r[fader_buf_offset],
             sp.buf_->getReadPointer (sp.buf_->getNumChannels () > 1 ? 1 : 0),
-            1.f, sp.volume_, len);
+            sp.volume_, len);
           sp.offset_ += len;
         };
 
@@ -257,11 +256,11 @@ SampleProcessor::process (const nframes_t cycle_offset, const nframes_t nframes)
 
               if (audio_data_l && audio_data_r)
                 {
-                  dsp_mix2 (
-                    &l[cycle_offset], &audio_data_l[cycle_offset], 1.f,
+                  dsp_mix_product (
+                    &l[cycle_offset], &audio_data_l[cycle_offset],
                     fader_->amp_->control_, nframes);
-                  dsp_mix2 (
-                    &r[cycle_offset], &audio_data_r[cycle_offset], 1.f,
+                  dsp_mix_product (
+                    &r[cycle_offset], &audio_data_r[cycle_offset],
                     fader_->amp_->control_, nframes);
                 }
             }

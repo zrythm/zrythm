@@ -7,8 +7,6 @@
 #include "common/io/serialization/iserializable.h"
 #include "common/utils/types.h"
 
-#include <QMetaType>
-
 /**
  * @addtogroup dsp
  *
@@ -42,14 +40,8 @@ class TempoTrack;
  * The class also provides various comparison operators and utility functions
  * for working with positions.
  */
-class Position final : public ISerializable<Position>
+class Position : public ISerializable<Position>
 {
-  Q_GADGET
-
-  Q_PROPERTY (double ticks READ getTicks)
-  Q_PROPERTY (signed_frame_t frames READ getFrames)
-  Q_PROPERTY (
-    double ticksPerSixteenthNote READ getTicksPerSixteenthNote CONSTANT)
 public:
   // Rule of 0
   Position () = default;
@@ -72,21 +64,6 @@ public:
   {
     from_frames (frames, ticks_per_frame);
   }
-
-  // ==========================================================================
-  // QML Interface
-  // ==========================================================================
-
-  signed_frame_t getFrames () const { return frames_; }
-  double         getTicks () const { return ticks_; }
-  static double  getTicksPerSixteenthNote ()
-  {
-    return TICKS_PER_SIXTEENTH_NOTE_DBL;
-  }
-  Q_INVOKABLE QString
-  toString (Transport * transport, TempoTrack * tempo_track) const;
-
-  // ===========================================================================
 
   void zero () { *this = Position (); }
 
@@ -323,15 +300,7 @@ public:
    */
   ATTR_HOT ATTR_NONNULL void update_frames_from_ticks (double frames_per_tick);
 
-  /**
-   * Updates the position from ticks or frames.
-   *
-   * @param from_ticks Whether to update the
-   *   position based on ticks (true) or frames
-   *   (false).
-   * @param ratio Frames per tick when @ref from_ticks is true
-   *   and ticks per frame when false.
-   */
+  /* FIXME DELETE since update_rtsafe exists !!!!!!!!!!!!!!!!!!!!!!!!!!! */
   inline void update (bool from_ticks, double ratio)
   {
     if (from_ticks)
@@ -492,12 +461,12 @@ private:
   /**
    * @brief Get closest snap point.
    *
-   * @param track Track, used when moving things in the timeline. If keep offset
-   * is on and this is passed, the objects in the track will be taken into
-   * account. If keep offset is on and this is nullptr, all applicable objects
-   * will be taken into account. Not used if keep offset is off.
-   * @param region Region, used when moving things in the editor. Same behavior
-   * as @ref track.
+   * @param track Track, used when moving things in the timeline. If keep
+   * offset is on and this is passed, the objects in the track will be taken
+   * into account. If keep offset is on and this is nullptr, all applicable
+   * objects will be taken into account. Not used if keep offset is off.
+   * @param region Region, used when moving things in the editor. Same
+   * behavior as @ref track.
    * @param sg SnapGrid options.
    * @param closest_sp Position to set.
    *
@@ -514,12 +483,12 @@ private:
    *
    * Must only be called on positive positions.
    *
-   * @param track Track, used when moving things in the timeline. If keep offset
-   * is on and this is passed, the objects in the track will be taken into
-   * account. If keep offset is on and this is nullptr, all applicable objects
-   * will be taken into account. Not used if keep offset is off.
-   * @param region Region, used when moving things in the editor. Same behavior
-   * as @ref track.
+   * @param track Track, used when moving things in the timeline. If keep
+   * offset is on and this is passed, the objects in the track will be taken
+   * into account. If keep offset is on and this is nullptr, all applicable
+   * objects will be taken into account. Not used if keep offset is off.
+   * @param region Region, used when moving things in the editor. Same
+   * behavior as @ref track.
    * @param sg SnapGrid options.
    * @param next_snap_point Position to set.
    *
@@ -538,12 +507,12 @@ private:
    *
    * TODO check what happens if there is no snap point & improve this API
    *
-   * @param track Track, used when moving things in the timeline. If keep offset
-   * is on and this is passed, the objects in the track will be taken into
-   * account. If keep offset is on and this is nullptr, all applicable objects
-   * will be taken into account. Not used if keep offset is off.
-   * @param region Region, used when moving things in the editor. Same behavior
-   * as @p track.
+   * @param track Track, used when moving things in the timeline. If keep
+   * offset is on and this is passed, the objects in the track will be taken
+   * into account. If keep offset is on and this is nullptr, all applicable
+   * objects will be taken into account. Not used if keep offset is off.
+   * @param region Region, used when moving things in the editor. Same
+   * behavior as @p track.
    * @param sg SnapGrid options.
    * @param prev_snap_point The position to set.
    *
@@ -596,8 +565,6 @@ operator== (const Position &lhs, const Position &rhs)
 DEFINE_OBJECT_FORMATTER (Position, [] (const Position &obj) {
   return obj.to_string ();
 });
-
-Q_DECLARE_METATYPE (Position)
 
 /**
  * @}

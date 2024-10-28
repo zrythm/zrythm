@@ -12,6 +12,8 @@ target_sources(zrythm_lib
     cpu_windows.cpp
     datetime.cpp
     directory_manager.cpp
+    dsp_context.h
+    dsp_context.cpp
     env.cpp
     exceptions.cpp
     file.cpp
@@ -23,7 +25,6 @@ target_sources(zrythm_lib
     json.cpp
     localization.cpp
     logger.cpp
-    lsp_dsp_context.cpp
     math.cpp
     mem.cpp
     networking.cpp
@@ -76,10 +77,8 @@ if(ZRYTHM_TESTS)
   target_link_libraries(zrythm_lv2apply PRIVATE 
     SndFile::sndfile
     PkgConfig::LILV
-    # PkgConfig::GTK4
     PkgConfig::GLIBMM
     PkgConfig::GIOMM
-    # PkgConfig::GTKMM
     Qt6::Core
     Qt6::Gui
     Qt6::Widgets

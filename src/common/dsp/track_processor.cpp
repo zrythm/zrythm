@@ -481,22 +481,25 @@ TrackProcessor::handle_recording (const EngineProcessTimeInfo &time_nfo)
   each_nframes[0] = time_nfo.nframes_;
   if (TRANSPORT->loop_)
     {
-      if ((unsigned_frame_t) TRANSPORT->loop_end_pos_.frames_ == end_frames)
+      if (
+        (unsigned_frame_t) TRANSPORT->loop_end_pos_->getFrames () == end_frames)
         {
           loop_hit = true;
           num_split_points = 3;
 
           /* adjust start slot until loop end */
           each_nframes[0] =
-            (unsigned_frame_t) TRANSPORT->loop_end_pos_.frames_ - start_frames;
+            (unsigned_frame_t) TRANSPORT->loop_end_pos_->getFrames ()
+            - start_frames;
 
           /* add loop end pause */
-          split_points[1] = (unsigned_frame_t) TRANSPORT->loop_end_pos_.frames_;
+          split_points[1] =
+            (unsigned_frame_t) TRANSPORT->loop_end_pos_->getFrames ();
           each_nframes[1] = 0;
 
           /* add part after looping */
           split_points[2] =
-            (unsigned_frame_t) TRANSPORT->loop_start_pos_.frames_;
+            (unsigned_frame_t) TRANSPORT->loop_start_pos_->getFrames ();
           each_nframes[2] =
             (unsigned_frame_t) time_nfo.nframes_ - each_nframes[0];
         }
@@ -507,8 +510,9 @@ TrackProcessor::handle_recording (const EngineProcessTimeInfo &time_nfo)
         {
           /* before loop */
           if (
-            TRANSPORT->punch_in_pos_.is_between_frames_excluding_2nd (
-              (signed_frame_t) start_frames, TRANSPORT->loop_end_pos_.frames_))
+            TRANSPORT->punch_in_pos_->is_between_frames_excluding_2nd (
+              (signed_frame_t) start_frames,
+              TRANSPORT->loop_end_pos_->getFrames ()))
             {
               punch_in_hit = true;
               num_split_points = 4;
@@ -521,18 +525,19 @@ TrackProcessor::handle_recording (const EngineProcessTimeInfo &time_nfo)
 
               /* add punch in pos */
               split_points[1] =
-                (unsigned_frame_t) TRANSPORT->punch_in_pos_.frames_;
+                (unsigned_frame_t) TRANSPORT->punch_in_pos_->getFrames ();
               each_nframes[1] =
-                (unsigned_frame_t) TRANSPORT->loop_end_pos_.frames_
-                - (unsigned_frame_t) TRANSPORT->punch_in_pos_.frames_;
+                (unsigned_frame_t) TRANSPORT->loop_end_pos_->getFrames ()
+                - (unsigned_frame_t) TRANSPORT->punch_in_pos_->getFrames ();
 
               /* adjust num frames for initial
                * pos */
               each_nframes[0] -= each_nframes[1];
             }
           if (
-            TRANSPORT->punch_out_pos_.is_between_frames_excluding_2nd (
-              (signed_frame_t) start_frames, TRANSPORT->loop_end_pos_.frames_))
+            TRANSPORT->punch_out_pos_->is_between_frames_excluding_2nd (
+              (signed_frame_t) start_frames,
+              TRANSPORT->loop_end_pos_->getFrames ()))
             {
               if (punch_in_hit)
                 {
@@ -546,10 +551,10 @@ TrackProcessor::handle_recording (const EngineProcessTimeInfo &time_nfo)
 
                   /* add punch out pos */
                   split_points[2] =
-                    (unsigned_frame_t) TRANSPORT->punch_out_pos_.frames_;
+                    (unsigned_frame_t) TRANSPORT->punch_out_pos_->getFrames ();
                   each_nframes[2] =
-                    (unsigned_frame_t) TRANSPORT->loop_end_pos_.frames_
-                    - (unsigned_frame_t) TRANSPORT->punch_out_pos_.frames_;
+                    (unsigned_frame_t) TRANSPORT->loop_end_pos_->getFrames ()
+                    - (unsigned_frame_t) TRANSPORT->punch_out_pos_->getFrames ();
 
                   /* add pause */
                   split_points[3] = split_points[2] + each_nframes[2];
@@ -571,10 +576,10 @@ TrackProcessor::handle_recording (const EngineProcessTimeInfo &time_nfo)
 
                   /* add punch out pos */
                   split_points[1] =
-                    (unsigned_frame_t) TRANSPORT->punch_out_pos_.frames_;
+                    (unsigned_frame_t) TRANSPORT->punch_out_pos_->getFrames ();
                   each_nframes[1] =
-                    (unsigned_frame_t) TRANSPORT->loop_end_pos_.frames_
-                    - (unsigned_frame_t) TRANSPORT->punch_out_pos_.frames_;
+                    (unsigned_frame_t) TRANSPORT->loop_end_pos_->getFrames ()
+                    - (unsigned_frame_t) TRANSPORT->punch_out_pos_->getFrames ();
 
                   /* add pause */
                   split_points[2] = split_points[1] + each_nframes[1];
@@ -588,7 +593,7 @@ TrackProcessor::handle_recording (const EngineProcessTimeInfo &time_nfo)
         }
       else /* loop not hit */
         {
-          if (TRANSPORT->punch_in_pos_.is_between_frames_excluding_2nd (
+          if (TRANSPORT->punch_in_pos_->is_between_frames_excluding_2nd (
                 (signed_frame_t) start_frames, (signed_frame_t) end_frames))
             {
               punch_in_hit = true;
@@ -596,15 +601,16 @@ TrackProcessor::handle_recording (const EngineProcessTimeInfo &time_nfo)
 
               /* add punch in pos */
               split_points[1] =
-                (unsigned_frame_t) TRANSPORT->punch_in_pos_.frames_;
+                (unsigned_frame_t) TRANSPORT->punch_in_pos_->getFrames ();
               each_nframes[1] =
-                end_frames - (unsigned_frame_t) TRANSPORT->punch_in_pos_.frames_;
+                end_frames
+                - (unsigned_frame_t) TRANSPORT->punch_in_pos_->getFrames ();
 
               /* adjust num frames for initial
                * pos */
               each_nframes[0] -= each_nframes[1];
             }
-          if (TRANSPORT->punch_out_pos_.is_between_frames_excluding_2nd (
+          if (TRANSPORT->punch_out_pos_->is_between_frames_excluding_2nd (
                 (signed_frame_t) start_frames, (signed_frame_t) end_frames))
             {
               if (punch_in_hit)
@@ -613,10 +619,10 @@ TrackProcessor::handle_recording (const EngineProcessTimeInfo &time_nfo)
 
                   /* add punch out pos */
                   split_points[2] =
-                    (unsigned_frame_t) TRANSPORT->punch_out_pos_.frames_;
+                    (unsigned_frame_t) TRANSPORT->punch_out_pos_->getFrames ();
                   each_nframes[2] =
                     end_frames
-                    - (unsigned_frame_t) TRANSPORT->punch_out_pos_.frames_;
+                    - (unsigned_frame_t) TRANSPORT->punch_out_pos_->getFrames ();
 
                   /* add pause */
                   split_points[3] = split_points[2] + each_nframes[2];
@@ -632,10 +638,10 @@ TrackProcessor::handle_recording (const EngineProcessTimeInfo &time_nfo)
 
                   /* add punch out pos */
                   split_points[1] =
-                    (unsigned_frame_t) TRANSPORT->punch_out_pos_.frames_;
+                    (unsigned_frame_t) TRANSPORT->punch_out_pos_->getFrames ();
                   each_nframes[1] =
                     end_frames
-                    - (unsigned_frame_t) TRANSPORT->punch_out_pos_.frames_;
+                    - (unsigned_frame_t) TRANSPORT->punch_out_pos_->getFrames ();
 
                   /* add pause */
                   split_points[2] = split_points[1] + each_nframes[1];
@@ -840,24 +846,24 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
             tr->type_ != Track::Type::Audio
             || (tr->type_ == Track::Type::Audio && monitor_audio_->is_toggled ()))
             {
-              dsp_mix2 (
+              dsp_mix_product (
                 &stereo_out_->get_l ().buf_[time_nfo.local_offset_],
-                &stereo_in_->get_l ().buf_[time_nfo.local_offset_], 1.f,
+                &stereo_in_->get_l ().buf_[time_nfo.local_offset_],
                 input_gain_ ? input_gain_->control_ : 1.f, time_nfo.nframes_);
 
               if (mono_ && mono_->is_toggled ())
                 {
-                  dsp_mix2 (
+                  dsp_mix_product (
                     &stereo_out_->get_r ().buf_[time_nfo.local_offset_],
-                    &stereo_in_->get_l ().buf_[time_nfo.local_offset_], 1.f,
+                    &stereo_in_->get_l ().buf_[time_nfo.local_offset_],
                     input_gain_ ? input_gain_->control_ : 1.f,
                     time_nfo.nframes_);
                 }
               else
                 {
-                  dsp_mix2 (
+                  dsp_mix_product (
                     &stereo_out_->get_r ().buf_[time_nfo.local_offset_],
-                    &stereo_in_->get_r ().buf_[time_nfo.local_offset_], 1.f,
+                    &stereo_in_->get_r ().buf_[time_nfo.local_offset_],
                     input_gain_ ? input_gain_->control_ : 1.f,
                     time_nfo.nframes_);
                 }

@@ -158,7 +158,7 @@ ProcessableTrack::fill_events_common (
               TRANSPORT->is_looping ()
               && (signed_frame_t) time_nfo.g_start_frame_w_offset_
                      + num_frames_to_process
-                   == TRANSPORT->loop_end_pos_.frames_;
+                   == TRANSPORT->loop_end_pos_->getFrames ();
 
             /* whether we need a note off */
             const bool need_note_off =
