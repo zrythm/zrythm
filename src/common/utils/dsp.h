@@ -10,8 +10,8 @@
  * https://github.com/DISTRHO/DPF-Max-Gen/blob/master/plugins/common/gen_dsp/genlib_ops.h#L313
  */
 
-#ifndef __UTILS_DSP_H__
-#define __UTILS_DSP_H__
+#ifndef __COMMON_UTILS_DSP_H__
+#define __COMMON_UTILS_DSP_H__
 
 #include "zrythm-config.h"
 
@@ -139,7 +139,7 @@ dsp_abs_max_with_existing_peak (float * buf, float * cur_peak, size_t size)
 /**
  * Gets the minimum of the buffer.
  */
-ATTR_NONNULL float
+ATTR_NONNULL static inline float
 dsp_min (const float * buf, size_t size)
 {
   if (ZRYTHM_USE_OPTIMIZED_DSP)
@@ -155,7 +155,7 @@ dsp_min (const float * buf, size_t size)
 /**
  * Gets the maximum of the buffer.
  */
-ATTR_NONNULL float
+ATTR_NONNULL static inline float
 dsp_max (const float * buf, size_t size)
 {
   if (ZRYTHM_USE_OPTIMIZED_DSP)
