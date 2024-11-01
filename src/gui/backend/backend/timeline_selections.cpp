@@ -567,8 +567,9 @@ TimelineSelections::move_regions_to_new_lanes_or_tracks_or_ats (
               using RegionT = base_type<decltype (r)>;
               if constexpr (std::derived_from<RegionT, LaneOwnedObject>)
                 {
-                  auto laned_track_impl =
-                    dynamic_cast<LanedTrackImpl<base_type<RegionT>> *> (track);
+                  auto laned_track_impl = dynamic_cast<LanedTrackImpl<
+                    typename LaneOwnedObjectImpl<RegionT>::TrackLaneT> *> (
+                    track);
                   auto lane = r->get_lane ();
                   z_return_val_if_fail (region && lane, false);
                   int new_lane_pos = lane->pos_ + lane_diff;

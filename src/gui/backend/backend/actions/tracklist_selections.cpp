@@ -1172,12 +1172,15 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
               {
                 if constexpr (std::derived_from<TrackT, LanedTrack>)
                   {
-                    auto &lane = track->lanes_[lane_pos_];
-                    bool  soloed = lane->get_soloed ();
-                    lane->set_soloed (
-                      _do ? ival_after_ : ival_before_[i], false, false);
-
-                    ival_before_[i] = soloed;
+                    auto lane_var = track->lanes_.at (lane_pos_);
+                    std::visit (
+                      [&] (auto &&lane) {
+                        bool soloed = lane->get_soloed ();
+                        lane->set_soloed (
+                          _do ? ival_after_ : ival_before_[i], false, false);
+                        ival_before_[i] = soloed;
+                      },
+                      lane_var);
                   }
               }
               break;
@@ -1195,12 +1198,16 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
               {
                 if constexpr (std::derived_from<TrackT, LanedTrack>)
                   {
-                    auto &lane = track->lanes_[lane_pos_];
-                    bool  muted = lane->get_muted ();
-                    lane->set_muted (
-                      _do ? ival_after_ : ival_before_[i], false, false);
+                    auto lane_var = track->lanes_.at (lane_pos_);
+                    std::visit (
+                      [&] (auto &&lane) {
+                        bool muted = lane->get_muted ();
+                        lane->set_muted (
+                          _do ? ival_after_ : ival_before_[i], false, false);
 
-                    ival_before_[i] = muted;
+                        ival_before_[i] = muted;
+                      },
+                      lane_var);
                   }
               }
               break;
@@ -1345,12 +1352,16 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
               {
                 if constexpr (std::derived_from<TrackT, LanedTrack>)
                   {
-                    auto       &lane = track->lanes_[lane_pos_];
-                    const auto &cur_name = lane->name_;
-                    lane->rename (new_txt_, false);
+                    auto lane_var = track->lanes_.at (lane_pos_);
+                    std::visit (
+                      [&] (auto &&lane) {
+                        const auto &cur_name = lane->name_;
+                        lane->rename (new_txt_, false);
 
-                    /* remember the new name */
-                    new_txt_ = cur_name;
+                        /* remember the new name */
+                        new_txt_ = cur_name;
+                      },
+                      lane_var);
                   }
               }
               break;

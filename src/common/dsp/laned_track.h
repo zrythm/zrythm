@@ -8,6 +8,39 @@
 #include "common/dsp/midi_region.h"
 #include "common/dsp/track.h"
 #include "common/dsp/track_lane.h"
+#include "common/dsp/track_lane_list.h"
+
+#define DEFINE_LANED_TRACK_QML_PROPERTIES(ClassType) \
+public: \
+  /* ================================================================ */ \
+  /* lanesVisible */ \
+  /* ================================================================ */ \
+  Q_PROPERTY ( \
+    bool lanesVisible READ getLanesVisible WRITE setLanesVisible NOTIFY \
+      lanesVisibleChanged) \
+  bool getLanesVisible () const \
+  { \
+    return lanes_visible_; \
+  } \
+  void setLanesVisible (bool visible) \
+  { \
+    if (lanes_visible_ == visible) \
+      return; \
+\
+    lanes_visible_ = visible; \
+    Q_EMIT lanesVisibleChanged (visible); \
+  } \
+\
+  Q_SIGNAL void lanesVisibleChanged (bool visible); \
+\
+  /* ================================================================ */ \
+  /* lanes */ \
+  /* ================================================================ */ \
+  Q_PROPERTY (TrackLaneList * lanes READ getLanes CONSTANT) \
+  TrackLaneList * getLanes () const \
+  { \
+    return const_cast<TrackLaneList *> (&lanes_); \
+  }
 
 /**
  * Interface for a track that has lanes.
@@ -15,7 +48,7 @@
 class LanedTrack : virtual public Track
 {
 public:
-  virtual ~LanedTrack () = default;
+  ~LanedTrack () override = default;
 
   /**
    * Set lanes visible and fire events.
@@ -48,48 +81,27 @@ public:
 /**
  * Interface for a track that has lanes.
  */
-template <typename RegionT>
+template <typename TrackLaneT>
 class LanedTrackImpl
-    : virtual public LanedTrack,
-      public ISerializable<LanedTrackImpl<RegionT>>
+    : public LanedTrack,
+      public ISerializable<LanedTrackImpl<TrackLaneT>>
 {
 public:
-  // Rule of 0
-  LanedTrackImpl () { add_lane (false); }
+  using RegionT = typename TrackLaneT::RegionT;
+  using TrackLaneType = TrackLaneT;
 
-  virtual ~LanedTrackImpl () = default;
+  LanedTrackImpl ();
 
-  using RegionType = RegionT;
-  using TrackLaneT = TrackLaneImpl<RegionT>;
+  ~LanedTrackImpl () override = default;
 
-  // void init () override { add_lane (false); }
-
-  void init_loaded () override
-  {
-    for (auto &lane : lanes_)
-      {
-        lane->init_loaded (this);
-      }
-  }
+  void init_loaded () override;
 
   /**
    * Creates missing TrackLane's until pos.
    *
    * @return Whether a new lane was created.
    */
-  bool create_missing_lanes (const int pos)
-  {
-    if (block_auto_creation_and_deletion_)
-      return false;
-
-    bool created_new_lane = false;
-    while (static_cast<size_t> (pos + 2) > lanes_.size ())
-      {
-        add_lane (false);
-        created_new_lane = true;
-      }
-    return created_new_lane;
-  }
+  bool create_missing_lanes (int pos);
 
   /**
    * Removes the empty last lanes of the Track (except the last one).
@@ -102,7 +114,7 @@ public:
   bool has_soloed_lanes () const
   {
     return std::ranges::any_of (lanes_, [] (const auto &lane) {
-      return lane->get_soloed ();
+      return std::get<TrackLaneT *> (lane)->get_soloed ();
     });
   }
 
@@ -123,27 +135,10 @@ public:
   void get_regions_in_range (
     std::vector<Region *> &regions,
     const Position *       p1,
-    const Position *       p2) override
-  {
-    for (auto &lane : lanes_)
-      {
-        for (auto &region : lane->regions_)
-          {
-            add_region_if_in_range (p1, p2, regions, region.get ());
-          }
-      }
-  }
+    const Position *       p2) override;
 
 protected:
-  void copy_members_from (const LanedTrackImpl &other)
-  {
-    clone_unique_ptr_container (lanes_, other.lanes_);
-    for (auto &lane : lanes_)
-      {
-        lane->track_ = this;
-      }
-    lanes_visible_ = other.lanes_visible_;
-  }
+  void copy_members_from (const LanedTrackImpl &other);
 
   bool validate_base () const;
 
@@ -158,16 +153,18 @@ private:
 
 public:
   /** Lanes in this track containing Regions. */
-  std::vector<std::unique_ptr<TrackLaneT>> lanes_;
+  TrackLaneList lanes_;
 
   /** Snapshots used during playback. */
   std::vector<std::unique_ptr<TrackLaneT>> lane_snapshots_;
+
+  static_assert (TrackLaneSubclass<TrackLaneT>);
 };
 
 using LanedTrackVariant = std::variant<MidiTrack, InstrumentTrack, AudioTrack>;
 using LanedTrackPtrVariant = to_pointer_variant<LanedTrackVariant>;
 
-extern template class LanedTrackImpl<MidiRegion>;
-extern template class LanedTrackImpl<AudioRegion>;
+extern template class LanedTrackImpl<MidiLane>;
+extern template class LanedTrackImpl<AudioLane>;
 
 #endif // __AUDIO_LANED_TRACK_H__

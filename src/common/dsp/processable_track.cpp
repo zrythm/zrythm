@@ -237,8 +237,10 @@ ProcessableTrack::fill_events_common (
             }
           else
             {
-              for (auto &lane : track->lanes_)
+              for (auto &lane_var : track->lanes_)
                 {
+                  using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
+                  auto lane = std::get<TrackLaneT *> (lane_var);
                   for (auto &region : lane->regions_)
                     {
                       process_single_region (*region);

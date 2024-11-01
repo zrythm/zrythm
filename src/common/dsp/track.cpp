@@ -3,6 +3,7 @@
 
 #include "common/dsp/audio_bus_track.h"
 #include "common/dsp/audio_group_track.h"
+#include "common/dsp/audio_lane.h"
 #include "common/dsp/audio_region.h"
 #include "common/dsp/audio_track.h"
 #include "common/dsp/automation_point.h"
@@ -17,6 +18,7 @@
 #include "common/dsp/midi_bus_track.h"
 #include "common/dsp/midi_event.h"
 #include "common/dsp/midi_group_track.h"
+#include "common/dsp/midi_lane.h"
 #include "common/dsp/midi_track.h"
 #include "common/dsp/modulator_macro_processor.h"
 #include "common/dsp/modulator_track.h"
@@ -248,21 +250,23 @@ Track::insert_region (
   std::shared_ptr<T> added_region;
   if constexpr (RegionImpl<T>::is_laned ())
     {
-      auto laned_track = dynamic_cast<LanedTrackImpl<T> *> (this);
+      using LanedTrackT = TrackLaneImpl<T>::LanedTrackT;
+      auto laned_track = dynamic_cast<LanedTrackT *> (this);
       z_return_val_if_fail (laned_track, nullptr);
 
       /* enable extra lane if necessary */
       laned_track->create_missing_lanes (lane_pos);
 
-      z_return_val_if_fail (laned_track->lanes_[lane_pos], nullptr);
+      auto lane = std::get<typename LanedTrackT::TrackLaneType *> (
+        laned_track->lanes_.at (lane_pos));
+      z_return_val_if_fail (lane, nullptr);
       if (idx == -1)
         {
-          added_region = laned_track->lanes_[lane_pos]->add_region (region);
+          added_region = lane->add_region (region);
         }
       else
         {
-          added_region =
-            laned_track->lanes_[lane_pos]->insert_region (region, idx);
+          added_region = lane->insert_region (region, idx);
         }
       z_return_val_if_fail (added_region != nullptr, nullptr);
       z_return_val_if_fail (added_region->id_.idx_ >= 0, nullptr);
@@ -462,10 +466,13 @@ Track::multiply_heights (double multiplier, bool visible_only, bool check_only)
     {
       auto ret = std::visit (
         [&] (auto &&track) {
+          using TrackT = base_type<decltype (track)>;
           if (!visible_only || track->lanes_visible_)
             {
-              for (auto &lane : track->lanes_)
+              for (auto &lane_var : track->lanes_)
                 {
+                  using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
+                  auto lane = std::get<TrackLaneT *> (lane_var);
                   if (lane->height_ * multiplier < TRACK_MIN_HEIGHT)
                     {
                       return false;
@@ -802,8 +809,11 @@ Track::append_objects (std::vector<ArrangerObject *> &objs) const
     {
       std::visit (
         [&objs] (auto &&lt) {
-          for (auto &lane : lt->lanes_)
+          using TrackT = base_type<decltype (lt)>;
+          for (auto &lane_var : lt->lanes_)
             {
+              using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
+              auto lane = std::get<TrackLaneT *> (lane_var);
               for (auto &region : lane->regions_)
                 objs.push_back (region.get ());
             }
@@ -1224,8 +1234,11 @@ Track::mark_for_bounce (
         {
           std::visit (
             [bounce] (auto &&laned_track) {
-              for (auto &lane : laned_track->lanes_)
+              using TrackT = base_type<decltype (laned_track)>;
+              for (auto &lane_var : laned_track->lanes_)
                 {
+                  auto lane = std::get<
+                    typename TrackT::LanedTrackImpl::TrackLaneType *> (lane_var);
                   for (auto &region : lane->regions_)
                     if (region->is_midi () || region->is_audio ())
                       region->bounce_ = bounce;

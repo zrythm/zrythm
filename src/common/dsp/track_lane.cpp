@@ -33,7 +33,7 @@ TrackLaneImpl<RegionT>::init_loaded (LanedTrackT * track)
   track_ = track;
   for (auto &region : this->regions_)
     {
-      region->set_lane (*this);
+      region->set_lane (*dynamic_cast<TrackLaneT *> (this));
       region->init_loaded ();
     }
 }
@@ -304,10 +304,29 @@ TrackLaneImpl<RegionT>::write_to_midi_file (
 }
 
 template <typename RegionT>
-std::unique_ptr<TrackLaneImpl<RegionT>>
+void
+TrackLaneImpl<RegionT>::copy_members_from (const TrackLaneImpl &other)
+{
+  pos_ = other.pos_;
+  name_ = other.name_;
+  // y_ = other.y_;
+  height_ = other.height_;
+  mute_ = other.mute_;
+  solo_ = other.solo_;
+  clone_unique_ptr_container (this->regions_, other.regions_);
+  for (auto &region : this->regions_)
+    {
+      region->is_auditioner_ = is_auditioner ();
+      region->owner_lane_ = dynamic_cast<TrackLaneT *> (this);
+      region->gen_name (region->name_.c_str (), nullptr, nullptr);
+    }
+}
+
+template <typename RegionT>
+std::unique_ptr<typename TrackLaneImpl<RegionT>::TrackLaneT>
 TrackLaneImpl<RegionT>::gen_snapshot () const
 {
-  auto ret = this->clone_unique ();
+  auto ret = dynamic_cast<const TrackLaneT *> (this)->clone_unique ();
   ret->track_ = track_;
 
   /* clone_unique above creates the regions in `regions_` but we want them in
@@ -318,25 +337,6 @@ TrackLaneImpl<RegionT>::gen_snapshot () const
     }
   ret->regions_.clear ();
   return ret;
-}
-
-template <typename RegionT>
-void
-TrackLaneImpl<RegionT>::init_after_cloning (const TrackLaneImpl &other)
-{
-  pos_ = other.pos_;
-  name_ = other.name_;
-  y_ = other.y_;
-  height_ = other.height_;
-  mute_ = other.mute_;
-  solo_ = other.solo_;
-  clone_unique_ptr_container (this->regions_, other.regions_);
-  for (auto &region : this->regions_)
-    {
-      region->is_auditioner_ = is_auditioner ();
-      region->owner_lane_ = this;
-      region->gen_name (region->name_.c_str (), nullptr, nullptr);
-    }
 }
 
 template class TrackLaneImpl<MidiRegion>;

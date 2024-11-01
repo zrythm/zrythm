@@ -1,16 +1,18 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_TRACK_LANE_H__
-#define __AUDIO_TRACK_LANE_H__
+#pragma once
 
 #include "common/dsp/midi_event.h"
 #include "common/dsp/region.h"
 #include "common/dsp/region_owner.h"
 
 using MIDI_FILE = void;
+class MidiLane;
+class AudioLane;
 class Tracklist;
-template <typename RegionT> class LanedTrackImpl;
+
+template <typename TrackLaneT> class LanedTrackImpl;
 
 /**
  * @addtogroup dsp
@@ -18,9 +20,48 @@ template <typename RegionT> class LanedTrackImpl;
  * @{
  */
 
-constexpr int TRACK_LANE_MAGIC = 3418552;
-#define IS_TRACK_LANE(x) (((TrackLane *) x)->magic_ == TRACK_LANE_MAGIC)
-#define IS_TRACK_LANE_AND_NONNULL(x) (x && IS_TRACK_LANE (x))
+#define DEFINE_TRACK_LANE_QML_PROPERTIES(ClassType) \
+public: \
+  /* ================================================================ */ \
+  /* name */ \
+  /* ================================================================ */ \
+  Q_PROPERTY (QString name READ getName WRITE setName NOTIFY nameChanged) \
+  QString getName () const \
+  { \
+    return QString::fromStdString (name_); \
+  } \
+  void setName (const QString &name) \
+  { \
+    auto std_name = name.toStdString (); \
+    if (name_ == std_name) \
+      return; \
+\
+    name_ = std_name; \
+    Q_EMIT nameChanged (name); \
+  } \
+\
+  Q_SIGNAL void nameChanged (const QString &name); \
+  /* ================================================================ */ \
+  /* height */ \
+  /* ================================================================ */ \
+  Q_PROPERTY (double height READ getHeight WRITE setHeight NOTIFY heightChanged) \
+  double getHeight () const \
+  { \
+    return height_; \
+  } \
+  void setHeight (const double height) \
+  { \
+    if (math_doubles_equal(height_, height)) \
+      return; \
+\
+    height_ = height; \
+    Q_EMIT heightChanged (height); \
+  } \
+\
+  Q_SIGNAL void heightChanged (double height);
+
+
+constexpr double TRACK_LANE_DEF_HEIGHT = 48;
 
 /**
  * A TrackLane belongs to a Track (can have many TrackLanes in a Track) and
@@ -32,9 +73,9 @@ constexpr int TRACK_LANE_MAGIC = 3418552;
 class TrackLane : virtual public RegionOwner
 {
 public:
-  virtual ~TrackLane () = default;
+  ~TrackLane () override = default;
 
-  std::string get_name () { return this->name_; }
+  std::string get_name () const { return this->name_; }
 
   bool get_soloed () const { return solo_; }
 
@@ -56,11 +97,8 @@ public:
   /** Name of lane, e.g. "Lane 1". */
   std::string name_;
 
-  /** Y local to track. */
-  int y_ = 0;
-
   /** Position of handle. */
-  double height_ = 0;
+  double height_ = TRACK_LANE_DEF_HEIGHT;
 
   /** Muted or not. */
   bool mute_ = false;
@@ -74,8 +112,6 @@ public:
    * If this is set to 0, the value will be inherited from the Track.
    */
   uint8_t midi_ch_ = 0;
-
-  int magic_ = TRACK_LANE_MAGIC;
 };
 
 /**
@@ -86,17 +122,19 @@ public:
  * and AudioTrack.
  */
 template <typename RegionT>
-class TrackLaneImpl final
+class TrackLaneImpl
     : public TrackLane,
-      public ICloneable<TrackLaneImpl<RegionT>>,
       public RegionOwnerImpl<RegionT>,
       public ISerializable<TrackLaneImpl<RegionT>>
 {
 public:
-  using LanedTrackT = LanedTrackImpl<RegionT>;
+  using TrackLaneT =
+    std::conditional_t<std::is_same_v<RegionT, MidiRegion>, MidiLane, AudioLane>;
+  using LanedTrackT = LanedTrackImpl<TrackLaneT>;
 
 public:
   TrackLaneImpl () = default;
+  ~TrackLaneImpl () override = default;
 
   /**
    * Creates a new TrackLane at the given pos in the given Track.
@@ -198,23 +236,29 @@ public:
   /**
    * Generate a snapshot for playback.
    */
-  std::unique_ptr<TrackLaneImpl> gen_snapshot () const;
+  std::unique_ptr<TrackLaneT> gen_snapshot () const;
 
-  void init_after_cloning (const TrackLaneImpl &other) override;
+  protected:
+    void copy_members_from (const TrackLaneImpl &other);
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+    DECLARE_DEFINE_BASE_FIELDS_METHOD();
 
-private:
-  void after_remove_region () final;
+  private:
+    void after_remove_region () final;
 
-public:
-  /** Owner track. */
-  LanedTrackT * track_ = nullptr;
+  public:
+    /** Owner track. */
+    LanedTrackT * track_ = nullptr;
+
+    static_assert(FinalRegionSubclass<RegionT>);
 };
 
 using TrackLaneVariant =
-  std::variant<TrackLaneImpl<MidiRegion>, TrackLaneImpl<AudioRegion>>;
+  std::variant<MidiLane, AudioLane>;
 using TrackLanePtrVariant = to_pointer_variant<TrackLaneVariant>;
+
+template <typename T>
+concept TrackLaneSubclass = std::derived_from<T, TrackLane>;
 
 extern template class TrackLaneImpl<MidiRegion>;
 extern template class TrackLaneImpl<AudioRegion>;
@@ -222,5 +266,3 @@ extern template class TrackLaneImpl<AudioRegion>;
 /**
  * @}
  */
-
-#endif // __AUDIO_TRACK_LANE_H__

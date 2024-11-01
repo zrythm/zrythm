@@ -155,7 +155,7 @@ class Region
       public ISerializable<Region>
 {
 public:
-  virtual ~Region () = default;
+  ~Region () override = default;
 
   /**
    * Only to be used by implementing structs.
@@ -314,7 +314,7 @@ public:
 template <typename RegionT> class RegionImpl : virtual public Region
 {
 public:
-  virtual ~RegionImpl () = default;
+  ~RegionImpl () override = default;
 
   using RegionSharedPtr = std::shared_ptr<RegionT>;
 

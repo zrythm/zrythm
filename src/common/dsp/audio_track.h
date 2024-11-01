@@ -20,7 +20,7 @@ struct Stretcher;
 class AudioTrack final
     : public QObject,
       public ChannelTrack,
-      public LanedTrackImpl<AudioRegion>,
+      public LanedTrackImpl<AudioLane>,
       public RecordableTrack,
       public ICloneable<AudioTrack>,
       public ISerializable<AudioTrack>,
@@ -29,6 +29,7 @@ class AudioTrack final
   Q_OBJECT
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (AudioTrack)
+  DEFINE_LANED_TRACK_QML_PROPERTIES (AudioTrack)
 
   friend class InitializableObjectFactory<AudioTrack>;
 

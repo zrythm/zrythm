@@ -21,13 +21,13 @@ using MIDI_FILE = void;
  */
 class PianoRollTrack
     : virtual public RecordableTrack,
-      virtual public LanedTrackImpl<MidiRegion>,
+      public LanedTrackImpl<MidiLane>,
       public ISerializable<PianoRollTrack>
 {
 public:
   // Rule of 0
 
-  virtual ~PianoRollTrack () = default;
+  ~PianoRollTrack () override = default;
 
   void init_loaded () override;
 

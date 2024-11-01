@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/dsp/audio_lane.h"
 #include "common/dsp/audio_region.h"
 #include "common/dsp/automation_region.h"
 #include "common/dsp/channel.h"
@@ -10,6 +11,7 @@
 #include "common/dsp/control_port.h"
 #include "common/dsp/instrument_track.h"
 #include "common/dsp/lane_owned_object.h"
+#include "common/dsp/midi_lane.h"
 #include "common/dsp/midi_note.h"
 #include "common/dsp/midi_region.h"
 #include "common/dsp/pool.h"
@@ -405,7 +407,8 @@ RegionImpl<RegionT>::insert_clone_to_project_at_index (
     }
   else if constexpr (is_laned ())
     {
-      auto laned_track = dynamic_cast<LanedTrackImpl<RegionT> *> (track);
+      auto laned_track = dynamic_cast<LanedTrackImpl<
+        typename LaneOwnedObjectImpl<RegionT>::TrackLaneT> *> (track);
       z_return_val_if_fail (laned_track, nullptr);
       ret = track->insert_region (
         static_cast<const RegionT *> (this)->clone_shared (), nullptr,
@@ -493,7 +496,8 @@ RegionImpl<
       if constexpr (is_laned ())
         {
           /* create lanes if they don't exist */
-          auto laned_track = dynamic_cast<LanedTrackImpl<RegionT> *> (track);
+          auto laned_track = dynamic_cast<LanedTrackImpl<
+            typename LaneOwnedObjectImpl<RegionT>::TrackLaneT> *> (track);
           z_return_if_fail (laned_track);
           laned_track->create_missing_lanes (lane_pos);
         }
@@ -521,11 +525,12 @@ RegionImpl<
 
       if constexpr (is_laned ())
         {
-          auto laned_track = dynamic_cast<LanedTrackImpl<RegionT> *> (track);
+          using TrackLaneT = typename LaneOwnedObjectImpl<RegionT>::TrackLaneT;
+          auto laned_track = dynamic_cast<LanedTrackImpl<TrackLaneT> *> (track);
+          auto lane = std::get<TrackLaneT *> (laned_track->lanes_.at (lane_pos));
           z_return_if_fail (
-            !laned_track->lanes_[lane_pos]->regions_.empty ()
-            && laned_track->lanes_[lane_pos]->regions_[id_.idx_].get () == this);
-          derived_.set_lane (*laned_track->lanes_[lane_pos]);
+            !lane->regions_.empty () && lane->regions_[id_.idx_].get () == this);
+          derived_.set_lane (*lane);
 
           laned_track->create_missing_lanes (lane_pos);
 
@@ -533,8 +538,9 @@ RegionImpl<
             {
               /* remove empty lanes if the region was the last on its track lane
                */
-              auto region_laned_track =
-                dynamic_cast<LanedTrackImpl<RegionT> *> (region_track);
+              auto region_laned_track = dynamic_cast<LanedTrackImpl<
+                typename LaneOwnedObjectImpl<RegionT>::TrackLaneT> *> (
+                region_track);
               region_laned_track->remove_empty_last_lanes ();
             }
         }
@@ -771,7 +777,8 @@ RegionImpl<RegionT>::find (const RegionIdentifier &id)
   if constexpr (is_laned ())
     {
       z_return_val_if_fail (id.is_audio () || id.is_midi (), nullptr);
-      auto track = TRACKLIST->find_track_by_name_hash<LanedTrackImpl<RegionT>> (
+      auto track = TRACKLIST->find_track_by_name_hash<
+        LanedTrackImpl<typename LaneOwnedObjectImpl<RegionT>::TrackLaneT>> (
         id.track_name_hash_);
       z_return_val_if_fail (track, nullptr);
 
@@ -782,14 +789,18 @@ RegionImpl<RegionT>::find (const RegionIdentifier &id)
             id.lane_pos_, track->name_, track->pos_, track->lanes_.size ());
           return NULL;
         }
-      auto &lane = track->lanes_[id.lane_pos_];
-      z_return_val_if_fail (lane, nullptr);
+      auto lane_var = track->lanes_.at (id.lane_pos_);
+      return std::visit (
+        [&] (auto &&lane) -> std::shared_ptr<RegionT> {
+          z_return_val_if_fail (lane, nullptr);
 
-      z_return_val_if_fail_cmp (id.idx_, >=, 0, nullptr);
-      z_return_val_if_fail_cmp (
-        id.idx_, <, (int) lane->regions_.size (), nullptr);
+          z_return_val_if_fail_cmp (id.idx_, >=, 0, nullptr);
+          z_return_val_if_fail_cmp (
+            id.idx_, <, (int) lane->regions_.size (), nullptr);
 
-      return std::dynamic_pointer_cast<RegionT> (lane->regions_[id.idx_]);
+          return std::dynamic_pointer_cast<RegionT> (lane->regions_[id.idx_]);
+        },
+        lane_var);
     }
   else if constexpr (is_automation ())
     {
@@ -1012,10 +1023,12 @@ RegionImpl<RegionT>::at_position (
 
       if constexpr (is_laned ())
         {
+          using TrackLaneT = LaneOwnedObjectImpl<RegionT>::TrackLaneT;
           auto laned_track =
-            dynamic_cast<const LanedTrackImpl<RegionT> *> (track);
-          for (auto &lane : laned_track->lanes_)
+            dynamic_cast<const LanedTrackImpl<TrackLaneT> *> (track);
+          for (auto &lane_var : laned_track->lanes_)
             {
+              auto lane = std::get<TrackLaneT *> (lane_var);
               for (auto &region : lane->regions_)
                 {
                   if (region_is_at_pos (region, pos))
@@ -1166,8 +1179,11 @@ Region::get_at_pos (
             convert_to_variant<LanedTrackPtrVariant> (track);
           auto found = std::visit (
             [&] (auto &&t) -> Region * {
-              for (auto &lane : t->lanes_)
+              using T = base_type<decltype (t)>;
+              for (auto &lane_var : t->lanes_)
                 {
+                  using TrackLaneT = T::LanedTrackImpl::TrackLaneType;
+                  auto lane = std::get<TrackLaneT *> (lane_var);
                   auto ret = lane->get_region_at_pos (pos, include_region_end);
                   if (ret)
                     return ret;

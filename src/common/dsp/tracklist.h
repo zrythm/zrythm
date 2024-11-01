@@ -536,9 +536,9 @@ extern template RecordableTrack *
 Tracklist::find_track_by_name_hash (unsigned int) const;
 extern template AutomatableTrack *
 Tracklist::find_track_by_name_hash (unsigned int) const;
-extern template LanedTrackImpl<AudioRegion> *
+extern template LanedTrackImpl<AudioLane> *
 Tracklist::find_track_by_name_hash (unsigned int) const;
-extern template LanedTrackImpl<MidiRegion> *
+extern template LanedTrackImpl<MidiLane> *
 Tracklist::find_track_by_name_hash (unsigned int) const;
 extern template GroupTargetTrack *
 Tracklist::find_track_by_name_hash (unsigned int) const;

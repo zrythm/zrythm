@@ -19,8 +19,8 @@ MarkerTrack::MarkerTrack (int track_pos)
         PortType::Unknown)
 {
   main_height_ = TRACK_DEF_HEIGHT / 2;
-  icon_name_ = "gnome-icon-library-flag-outline-thick-symbolic";
-  color_ = Color (QColor ("#813D9C"));
+  icon_name_ = "gnome-icon-library-flag-filled-symbolic";
+  color_ = Color (QColor ("#7C009B"));
 }
 
 void

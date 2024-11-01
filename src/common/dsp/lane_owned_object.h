@@ -8,11 +8,14 @@
 
 class Region;
 template <typename RegionT> class TrackLaneImpl;
+class MidiLane;
+class AudioLane;
+template <typename TrackLaneT> class LanedTrackImpl;
 
 class LaneOwnedObject : virtual public TimelineObject
 {
 public:
-  virtual ~LaneOwnedObject () = default;
+  ~LaneOwnedObject () override = default;
 
 protected:
   void copy_members_from (const LaneOwnedObject &other)
@@ -37,9 +40,11 @@ template <typename RegionT>
 class LaneOwnedObjectImpl : virtual public LaneOwnedObject
 {
 public:
-  virtual ~LaneOwnedObjectImpl () = default;
+  ~LaneOwnedObjectImpl () override = default;
 
-  using TrackLaneT = TrackLaneImpl<RegionT>;
+  using TrackLaneT =
+    std::conditional_t<std::is_same_v<RegionT, MidiRegion>, MidiLane, AudioLane>;
+  using LanedTrackT = LanedTrackImpl<TrackLaneT>;
 
   /**
    * Get lane.

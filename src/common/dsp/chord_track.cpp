@@ -17,8 +17,8 @@ ChordTrack::ChordTrack (int pos)
         PortType::Event,
         PortType::Event)
 {
-  color_ = Color (QColor ("#1C71D8"));
-  icon_name_ = "minuet-chords";
+  color_ = Color (QColor ("#1C8FFB"));
+  icon_name_ = "gnome-icon-library-library-music-symbolic";
 }
 
 void

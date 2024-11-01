@@ -420,9 +420,10 @@ Project::fix_audio_regions ()
   int num_fixed = 0;
   for (const auto &track : tracklist_->tracks_ | type_is<AudioTrack> ())
     {
-      for (const auto &lane : track->lanes_)
+      for (const auto &lane_var : track->lanes_)
         {
-          for (const auto &region : lane->regions_ | type_is<AudioRegion> ())
+          auto * lane = std::get<AudioLane *> (lane_var);
+          for (const auto &region : lane->regions_)
             {
               if (region->fix_positions (0))
                 num_fixed++;

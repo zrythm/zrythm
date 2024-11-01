@@ -375,12 +375,16 @@ ArrangerSelections::select_all (bool fire_events)
                   using TrackT = base_type<decltype (track)>;
                   if constexpr (std::derived_from<TrackT, LanedTrack>)
                     {
-                      for (auto &lane : track->lanes_)
+                      for (auto &lane_var : track->lanes_)
                         {
-                          for (auto &region : lane->regions_)
-                            {
-                              add_object_ref (region);
-                            }
+                          std::visit (
+                            [&] (auto &&lane) {
+                              for (auto &region : lane->regions_)
+                                {
+                                  add_object_ref (region);
+                                }
+                            },
+                            lane_var);
                         }
                     }
 

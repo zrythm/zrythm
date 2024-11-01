@@ -107,7 +107,8 @@ RegionOwnerImpl<RegionT>::insert_region (std::shared_ptr<RegionT> region, int id
     }
   else if constexpr (std::derived_from<RegionT, LaneOwnedObjectImpl<RegionT>>)
     {
-      region->set_lane (*dynamic_cast<TrackLaneImpl<RegionT> *> (this));
+      using TrackLaneT = TrackLaneImpl<RegionT>::TrackLaneT;
+      region->set_lane (*dynamic_cast<TrackLaneT *> (this));
     }
 
   for (int i = regions_.size () - 1; i >= idx; --i)

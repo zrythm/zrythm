@@ -311,8 +311,9 @@ Transport::prepare_audio_regions_for_stretch (TimelineSelections * sel)
     {
       for (auto track : TRACKLIST->tracks_ | type_is<AudioTrack> ())
         {
-          for (auto &lane : track->lanes_)
+          for (auto &lane_var : track->lanes_)
             {
+              auto * lane = std::get<AudioLane *> (lane_var);
               for (auto &region : lane->regions_)
                 {
                   region->before_length_ = region->get_length_in_ticks ();
@@ -356,8 +357,9 @@ Transport::stretch_regions (
     {
       for (auto track : TRACKLIST->tracks_ | type_is<AudioTrack> ())
         {
-          for (auto &lane : track->lanes_)
+          for (auto &lane_var : track->lanes_)
             {
+              auto * lane = std::get<AudioLane *> (lane_var);
               for (auto &region : lane->regions_)
                 {
                   /* don't stretch regions with musical mode off */
@@ -567,8 +569,11 @@ Transport::move_playhead (
     {
       std::visit (
         [&] (auto &&t) {
-          for (auto &lane : t->lanes_)
+          using TrackT = base_type<decltype (t)>;
+          for (auto &lane_var : t->lanes_)
             {
+              using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
+              auto lane = std::get<TrackLaneT *> (lane_var);
               for (const auto &region : lane->regions_)
                 {
                   if (!region->is_hit (playhead_pos_->frames_, true))

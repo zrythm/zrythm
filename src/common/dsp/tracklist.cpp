@@ -1540,9 +1540,9 @@ template RecordableTrack *
 Tracklist::find_track_by_name_hash (unsigned int) const;
 template AutomatableTrack *
 Tracklist::find_track_by_name_hash (unsigned int) const;
-template LanedTrackImpl<AudioRegion> *
+template LanedTrackImpl<AudioLane> *
 Tracklist::find_track_by_name_hash (unsigned int) const;
-template LanedTrackImpl<MidiRegion> *
+template LanedTrackImpl<MidiLane> *
 Tracklist::find_track_by_name_hash (unsigned int) const;
 template GroupTargetTrack *
 Tracklist::find_track_by_name_hash (unsigned int) const;

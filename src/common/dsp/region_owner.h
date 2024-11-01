@@ -22,7 +22,7 @@
 class RegionOwner : virtual public IProjectOwnedObject
 {
 public:
-  virtual ~RegionOwner () = default;
+  ~RegionOwner () override = default;
 
   /**
    * @brief Get all the regions
@@ -43,7 +43,7 @@ class RegionOwnerImpl
 public:
   using SharedRegionPtr = std::shared_ptr<RegionT>;
 
-  virtual ~RegionOwnerImpl () = default;
+  ~RegionOwnerImpl () override = default;
 
   /**
    * @brief Removes the given region if found.

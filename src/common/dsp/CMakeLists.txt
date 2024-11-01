@@ -11,6 +11,8 @@ target_sources(zrythm_lib
     audio_function.cpp
     audio_group_track.h
     audio_group_track.cpp
+    audio_lane.h
+    audio_lane.cpp
     audio_port.h
     audio_port.cpp
     audio_region.h
@@ -123,6 +125,8 @@ target_sources(zrythm_lib
     midi_function.cpp
     midi_group_track.h
     midi_group_track.cpp
+    midi_lane.h
+    midi_lane.cpp
     midi_mapping.h
     midi_mapping.cpp
     midi_note.h
@@ -205,6 +209,8 @@ target_sources(zrythm_lib
     track.cpp
     track_lane.h
     track_lane.cpp
+    track_lane_list.h
+    track_lane_list.cpp
     track_processor.h
     track_processor.cpp
     tracklist.h

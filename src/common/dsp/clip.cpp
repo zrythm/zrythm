@@ -230,8 +230,7 @@ AudioClip::write_to_pool (bool parts, bool is_backup)
     {
       bool same_hash =
         !file_hash_.empty ()
-        && file_hash_
-             == hash_get_from_file (new_path.c_str (), HASH_ALGORITHM_XXH3_64);
+        && file_hash_ == hash_get_from_file (new_path, HASH_ALGORITHM_XXH3_64);
 
       if (same_hash)
         {
@@ -423,8 +422,9 @@ AudioClip::is_in_use (bool check_undo_stack) const
 {
   for (auto track : TRACKLIST->tracks_ | type_is<AudioTrack>{})
     {
-      for (auto &lane : track->lanes_)
+      for (auto &lane_var : track->lanes_)
         {
+          auto * lane = std::get<AudioLane *> (lane_var);
           for (auto region : lane->regions_ | type_is<AudioRegion>{})
             {
               if (region->pool_id_ == pool_id_)

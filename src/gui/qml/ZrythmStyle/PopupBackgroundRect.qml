@@ -11,7 +11,7 @@ Rectangle {
     implicitWidth: Style.buttonHeight // 200
     implicitHeight: Style.buttonHeight
     color: Style.colorPalette.button
-    radius: Style.buttonRadius
+    radius: Style.textFieldRadius
     layer.enabled: true
 
     border {

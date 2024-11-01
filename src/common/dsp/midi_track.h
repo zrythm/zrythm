@@ -26,6 +26,7 @@ class MidiTrack final
   Q_OBJECT
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (MidiTrack)
+  DEFINE_LANED_TRACK_QML_PROPERTIES (MidiTrack)
 
   friend class InitializableObjectFactory<MidiTrack>;
 

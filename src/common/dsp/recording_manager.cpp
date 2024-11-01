@@ -73,8 +73,10 @@ RecordingManager::handle_stop_recording (bool is_automation)
 
           std::visit (
             [&] (auto &&t) {
+              using TrackT = base_type<decltype (t)>;
+              using TrackLaneT = TrackT::TrackLaneType;
               z_return_if_fail (id.lane_pos_ < (int) t->lanes_.size ());
-              auto &lane = t->lanes_[id.lane_pos_];
+              auto lane = std::get<TrackLaneT *> (t->lanes_.at (id.lane_pos_));
               z_return_if_fail (lane);
               z_return_if_fail (
                 id.idx_ <= static_cast<int> (lane->regions_.size ()));
@@ -474,8 +476,9 @@ RecordingManager::handle_pause_event (const RecordingEvent &ev)
           using T = base_type<decltype (r)>;
           if constexpr (std::derived_from<T, LaneOwnedObject>)
             {
+              using LanedTrackT = LaneOwnedObjectImpl<T>::LanedTrackT;
               /* remember lane index */
-              auto laned_track = dynamic_cast<LanedTrackImpl<T> *> (tr);
+              auto laned_track = dynamic_cast<LanedTrackT *> (tr);
               laned_track->last_lane_idx_ = r->id_.lane_pos_;
 
               if (tr->in_signal_type_ == PortType::Event)
@@ -562,12 +565,15 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                 }
               else if constexpr (std::derived_from<T, LanedTrack>)
                 {
-                  using RegionT = T::RegionType;
+                  using RegionT = T::RegionT;
+                  using TrackLaneT = T::TrackLaneType;
                   /* start new region in new lane */
                   int new_lane_pos = casted_tr->last_lane_idx_ + 1;
                   int idx_inside_lane =
                     (int) casted_tr->lanes_.size () > new_lane_pos
-                      ? casted_tr->lanes_[new_lane_pos]->regions_.size ()
+                      ? std::get<TrackLaneT *> (
+                          casted_tr->lanes_.at (new_lane_pos))
+                          ->regions_.size ()
                       : 0;
                   std::shared_ptr<RegionT> new_region;
                   if constexpr (std::is_same_v<RegionT, MidiRegion>)
@@ -1069,12 +1075,15 @@ RecordingManager::handle_start_recording (
           if (tr->has_piano_roll ())
             {
               auto piano_roll_track = dynamic_cast<PianoRollTrack *> (tr);
+              using TrackLaneT = PianoRollTrack::LanedTrackImpl::TrackLaneType;
               /* create region */
               int  new_lane_pos = piano_roll_track->lanes_.size () - 1;
               auto region = tr->add_region (
                 std::make_shared<MidiRegion> (
                   start_pos, end_pos, tr->get_name_hash (), new_lane_pos,
-                  piano_roll_track->lanes_[new_lane_pos]->regions_.size ()),
+                  std::get<TrackLaneT *> (
+                    piano_roll_track->lanes_.at (new_lane_pos))
+                    ->regions_.size ()),
                 nullptr, new_lane_pos, true, true);
               z_return_if_fail (region);
 
@@ -1105,7 +1114,8 @@ RecordingManager::handle_start_recording (
                   -1, std::nullopt, true, nullptr, ev.nframes_, name, 2,
                   BitDepth::BIT_DEPTH_32, start_pos, tr->get_name_hash (),
                   new_lane_pos,
-                  audio_track->lanes_[new_lane_pos]->regions_.size ()),
+                  std::get<AudioLane *> (audio_track->lanes_.at (new_lane_pos))
+                    ->regions_.size ()),
                 nullptr, new_lane_pos, true, true);
               z_return_if_fail (region);
 

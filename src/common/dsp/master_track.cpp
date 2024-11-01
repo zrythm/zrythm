@@ -7,8 +7,8 @@ MasterTrack::MasterTrack (int pos)
     : Track (Track::Type::Master, _ ("Master"), pos, PortType::Audio, PortType::Audio)
 {
   /* GTK color picker color */
-  color_ = Color (QColor ("#C01C28"));
-  icon_name_ = "effect";
+  color_ = Color (QColor ("#D90368"));
+  icon_name_ = "jam-icons-crown";
 }
 
 bool

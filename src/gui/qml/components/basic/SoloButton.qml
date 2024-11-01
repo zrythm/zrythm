@@ -7,14 +7,11 @@ Button {
     id: root
     checkable: true
 
-    icon.source: Style.getIcon("zrythm-dark", "record.svg")
-
     palette {
-        buttonText: Style.dangerColor
-        accent: Style.dangerColor
+        accent: Style.soloGreenColor
     }
 
     ToolTip {
-        text: qsTr("Record")
+        text: qsTr("Solo")
     }
 }

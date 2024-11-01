@@ -15,6 +15,7 @@ RowLayout {
     layer.enabled: false
     spacing: 0
     onChildrenChanged: {
+        let firstChildFound = false;
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             child.Layout.fillWidth = true;
@@ -25,13 +26,21 @@ RowLayout {
                 child.background.topLeftRadius = 0;
                 child.background.bottomRightRadius = 0;
                 child.background.topRightRadius = 0;
-                if (i === 0) {
+                if (!firstChildFound && child.visible) {
                     child.background.bottomLeftRadius = root.radius;
                     child.background.topLeftRadius = root.radius;
+                    firstChildFound = true;
                 }
-                if (i === children.length - 1) {
+            }
+        }
+        // do the last child too
+        for (let i = children.length - 1; i >= 0; i--) {
+            const child = children[i];
+            if (child.background && child.background instanceof Rectangle) {
+                if (child.visible) {
                     child.background.bottomRightRadius = root.radius;
                     child.background.topRightRadius = root.radius;
+                    break;
                 }
             }
         }

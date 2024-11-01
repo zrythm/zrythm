@@ -122,11 +122,15 @@ file_import_thread_func (
 
   std::visit (
     [&] (auto &&t) {
+      using TrackT = base_type<decltype (t)>;
+      using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
       int lane_pos =
         self->import_info->lane_ >= 0
           ? self->import_info->lane_
           : (!t || t->lanes_.size () == 1 ? 0 : t->lanes_.size () - 2);
-      int idx_in_lane = t ? t->lanes_[lane_pos]->regions_.size () : 0;
+      int idx_in_lane =
+        t ? std::get<TrackLaneT *> (t->lanes_.at (lane_pos))->regions_.size ()
+          : 0;
       switch (track_type)
         {
         case Track::Type::Audio:

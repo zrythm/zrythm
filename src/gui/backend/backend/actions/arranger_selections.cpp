@@ -668,8 +668,8 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
               using RegionT = base_type<decltype (casted_r)>;
               if constexpr (std::derived_from<RegionT, LaneOwnedObject>)
                 {
-                  auto r_track =
-                    casted_r->template get_track_as<LanedTrackImpl<RegionT>> ();
+                  using LanedTrackT = TrackLaneImpl<RegionT>::LanedTrackT;
+                  auto r_track = casted_r->template get_track_as<LanedTrackT> ();
                   r_track->create_missing_lanes (new_lane_pos);
                   z_trace ("Created missing lanes up to {}", new_lane_pos);
                   casted_r->move_to_track (

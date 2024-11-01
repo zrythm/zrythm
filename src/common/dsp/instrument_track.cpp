@@ -87,7 +87,7 @@ InstrumentTrack::init_after_cloning (const InstrumentTrack &other)
   ChannelTrack::copy_members_from (other);
   GroupTargetTrack::copy_members_from (other);
   RecordableTrack::copy_members_from (other);
-  LanedTrackImpl<MidiRegion>::copy_members_from (other);
+  LanedTrackImpl<MidiLane>::copy_members_from (other);
   PianoRollTrack::copy_members_from (other);
 }
 
@@ -99,6 +99,6 @@ InstrumentTrack::init_loaded ()
   AutomatableTrack::init_loaded ();
   ProcessableTrack::init_loaded ();
   RecordableTrack::init_loaded ();
-  LanedTrackImpl<MidiRegion>::init_loaded ();
+  LanedTrackImpl<MidiLane>::init_loaded ();
   PianoRollTrack::init_loaded ();
 }

@@ -32,6 +32,7 @@ class AudioTrack;
 class ChordTrack;
 class ModulatorTrack;
 class TempoTrack;
+class LanedTrack;
 
 using TrackVariant = std::variant<
   MarkerTrack,
@@ -64,6 +65,9 @@ constexpr int TRACK_MAGIC = 21890135;
 
 #define DEFINE_TRACK_QML_PROPERTIES(ClassType) \
 public: \
+  /* ================================================================ */ \
+  /* name */ \
+  /* ================================================================ */ \
   Q_PROPERTY (QString name READ getName WRITE setName NOTIFY nameChanged) \
   QString getName () const \
   { \
@@ -80,6 +84,9 @@ public: \
 \
   Q_SIGNAL void nameChanged (const QString &name); \
 \
+  /* ================================================================ */ \
+  /* color */ \
+  /* ================================================================ */ \
   Q_PROPERTY (QColor color READ getColor WRITE setColor NOTIFY colorChanged) \
 \
   QColor getColor () const \
@@ -97,6 +104,9 @@ public: \
 \
   Q_SIGNAL void colorChanged (const QColor &color); \
 \
+  /* ================================================================ */ \
+  /* color */ \
+  /* ================================================================ */ \
   Q_PROPERTY ( \
     bool visible READ getVisible WRITE setVisible NOTIFY visibleChanged) \
   bool getVisible () const \
@@ -114,16 +124,9 @@ public: \
 \
   Q_SIGNAL void visibleChanged (bool visible); \
 \
-  Q_PROPERTY ( \
-    double fullVisibleHeight READ getFullVisibleHeight NOTIFY \
-      fullVisibleHeightChanged) \
-  double getFullVisibleHeight () const \
-  { \
-    return get_full_visible_height (); \
-  } \
-\
-  Q_SIGNAL void fullVisibleHeightChanged (double fullVisibleHeight); \
-\
+  /* ================================================================ */ \
+  /* enabled */ \
+  /* ================================================================ */ \
   Q_PROPERTY ( \
     bool enabled READ getEnabled WRITE setEnabled NOTIFY enabledChanged) \
   bool getEnabled () const \
@@ -137,6 +140,9 @@ public: \
   } \
   Q_SIGNAL void enabledChanged (bool enabled); \
 \
+  /* ================================================================ */ \
+  /* selected */ \
+  /* ================================================================ */ \
   Q_PROPERTY (bool selected READ getSelected NOTIFY selectedChanged) \
   bool getSelected () const \
   { \
@@ -148,11 +154,17 @@ public: \
   } \
   Q_SIGNAL void selectedChanged (bool selected); \
 \
+  /* ================================================================ */ \
+  /* type */ \
+  /* ================================================================ */ \
   Q_PROPERTY (int type READ getType CONSTANT) \
   int getType () const \
   { \
     return ENUM_VALUE_TO_INT (type_); \
   } \
+  /* ================================================================ */ \
+  /* isRecordable */ \
+  /* ================================================================ */ \
   Q_PROPERTY (bool isRecordable READ getIsRecordable CONSTANT) \
   bool getIsRecordable () const \
   { \
@@ -161,7 +173,62 @@ public: \
         return true; \
       } \
     return false; \
-  }
+  } \
+\
+  /* ================================================================ */ \
+  /* hasLanes */ \
+  /* ================================================================ */ \
+  Q_PROPERTY (bool hasLanes READ getHasLanes CONSTANT) \
+  bool getHasLanes () const \
+  { \
+    if constexpr (std::derived_from<ClassType, LanedTrack>) \
+      { \
+        return true; \
+      } \
+    return false; \
+  } \
+\
+  /* ================================================================ */ \
+  /* height */ \
+  /* ================================================================ */ \
+  Q_PROPERTY ( \
+    double height READ getHeight WRITE setHeight NOTIFY heightChanged) \
+  double getHeight () const \
+  { \
+    return main_height_; \
+  } \
+  void setHeight (double height) \
+  { \
+    if (math_doubles_equal (height, main_height_)) \
+      { \
+        return; \
+      } \
+    main_height_ = height; \
+    Q_EMIT heightChanged (height); \
+  } \
+  Q_SIGNAL void      heightChanged (double height); \
+  Q_INVOKABLE double getFullVisibleHeight () const \
+  { \
+    return get_full_visible_height (); \
+  } \
+  /* ================================================================ */ \
+  /* icon */ \
+  /* ================================================================ */ \
+  Q_PROPERTY (QString icon READ getIcon WRITE setIcon NOTIFY iconChanged) \
+  QString getIcon () const \
+  { \
+    return QString::fromStdString (icon_name_); \
+  } \
+  void setIcon (const QString &icon) \
+  { \
+    if (icon.toStdString () == icon_name_) \
+      { \
+        return; \
+      } \
+    icon_name_ = icon.toStdString (); \
+    Q_EMIT iconChanged (icon); \
+  } \
+  Q_SIGNAL void iconChanged (const QString &icon);
 
 /**
  * Called when track(s) are actually imported into the project.
@@ -1067,7 +1134,7 @@ public:
    *
    * This is used in the channels as well.
    */
-  Color color_ = {};
+  Color color_;
 
   /**
    * Flag to tell the UI that this channel had MIDI activity.

@@ -142,8 +142,11 @@ Position::get_prev_snap_point (
     {
       std::visit (
         [&] (auto &&tr) {
-          for (auto &lane : tr->lanes_)
+          using TrackT = base_type<decltype (tr)>;
+          for (auto &lane_var : tr->lanes_)
             {
+              using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
+              auto lane = std::get<TrackLaneT *> (lane_var);
               for (auto &r : lane->regions_)
                 {
                   snap_point = r->pos_;
@@ -207,8 +210,11 @@ Position::get_next_snap_point (
     {
       std::visit (
         [&] (auto &&t) {
-          for (auto &lane : t->lanes_)
+          using TrackT = base_type<decltype (t)>;
+          for (auto &lane_var : t->lanes_)
             {
+              using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
+              auto lane = std::get<TrackLaneT *> (lane_var);
               for (auto &r : lane->regions_)
                 {
                   snap_point = r->pos_;

@@ -23,8 +23,9 @@ PianoRollTrack::write_to_midi_file (
       own_events = std::make_unique<MidiEventVector> ();
     }
 
-  for (auto &lane : lanes_)
+  for (auto &lane_var : lanes_)
     {
+      auto lane = std::get<MidiLane *> (lane_var);
       lane->write_to_midi_file (
         mf, own_events ? own_events.get () : events, start, end,
         lanes_as_tracks, use_track_pos);
@@ -43,8 +44,9 @@ PianoRollTrack::get_velocities_in_range (
   std::vector<Velocity *> &velocities,
   bool                     inside) const
 {
-  for (auto &lane : lanes_)
+  for (auto &lane_var : lanes_)
     {
+      auto lane = std::get<MidiLane *> (lane_var);
       for (const auto &region : lane->regions_)
         {
           region->get_velocities_in_range (

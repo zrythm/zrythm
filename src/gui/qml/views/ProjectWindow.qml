@@ -141,6 +141,7 @@ ApplicationWindow {
 
                 Action {
                     text: qsTr("Switch Light/Dark Theme")
+                    icon.source: Style.getIcon("gnome-icon-library", "dark-mode-symbolic.svg")
                     onTriggered: {
                         Style.darkMode = !Style.darkMode;
                     }

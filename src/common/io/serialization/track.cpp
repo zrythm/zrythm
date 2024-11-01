@@ -44,19 +44,20 @@ Track::define_base_fields (const Context &ctx)
     make_field ("poolId", pool_id_));
 }
 
-template <typename RegionT>
+template <typename TrackLaneT>
 void
-LanedTrackImpl<RegionT>::define_base_fields (const Context &ctx)
+LanedTrackImpl<TrackLaneT>::define_base_fields (const Context &ctx)
 {
-  serialize_fields (
+  using T = ISerializable<LanedTrackImpl<TrackLaneT>>;
+  T::serialize_fields (
     ctx, make_field ("lanesVisible", lanes_visible_),
-    make_field ("lanes", lanes_));
+    make_field ("lanesList", lanes_));
 }
 
 template void
-LanedTrackImpl<MidiRegion>::define_base_fields (const Context &);
+LanedTrackImpl<MidiLane>::define_base_fields (const Context &);
 template void
-LanedTrackImpl<AudioRegion>::define_base_fields (const Context &);
+LanedTrackImpl<AudioLane>::define_base_fields (const Context &);
 
 template <typename RegionT>
 void
@@ -82,7 +83,8 @@ RegionOwnerImpl<ChordRegion>::define_base_fields (
 
 template <typename RegionT>
 void
-TrackLaneImpl<RegionT>::define_fields (const ISerializableBase::Context &ctx)
+TrackLaneImpl<RegionT>::define_base_fields (
+  const ISerializableBase::Context &ctx)
 {
   using T = ISerializable<TrackLaneImpl<RegionT>>;
   T::template call_all_base_define_fields<RegionOwnerImpl<RegionT>> (ctx);
@@ -93,9 +95,32 @@ TrackLaneImpl<RegionT>::define_fields (const ISerializableBase::Context &ctx)
 }
 
 template void
-TrackLaneImpl<MidiRegion>::define_fields (const ISerializableBase::Context &);
+TrackLaneImpl<MidiRegion>::define_base_fields (
+  const ISerializableBase::Context &);
 template void
-TrackLaneImpl<AudioRegion>::define_fields (const ISerializableBase::Context &);
+TrackLaneImpl<AudioRegion>::define_base_fields (
+  const ISerializableBase::Context &);
+
+void
+MidiLane::define_fields (const Context &ctx)
+{
+  using T = ISerializable<MidiLane>;
+  T::call_all_base_define_fields<TrackLaneImpl<MidiRegion>> (ctx);
+}
+
+void
+AudioLane::define_fields (const Context &ctx)
+{
+  using T = ISerializable<AudioLane>;
+  T::call_all_base_define_fields<TrackLaneImpl<AudioRegion>> (ctx);
+}
+
+void
+TrackLaneList::define_fields (const Context &ctx)
+{
+  using T = ISerializable<TrackLaneList>;
+  T::serialize_fields (ctx, T::make_field ("lanes", lanes_));
+}
 
 void
 TrackProcessor::define_fields (const Context &ctx)
@@ -270,7 +295,7 @@ MidiTrack::define_fields (const Context &ctx)
   using T = ISerializable<MidiTrack>;
   T::call_all_base_define_fields<
     Track, ProcessableTrack, AutomatableTrack, RecordableTrack, PianoRollTrack,
-    ChannelTrack, LanedTrackImpl<MidiRegion>> (ctx);
+    ChannelTrack, LanedTrackImpl<MidiLane>> (ctx);
 }
 
 void
@@ -279,7 +304,7 @@ InstrumentTrack::define_fields (const Context &ctx)
   using T = ISerializable<InstrumentTrack>;
   T::call_all_base_define_fields<
     Track, ProcessableTrack, AutomatableTrack, RecordableTrack, PianoRollTrack,
-    ChannelTrack, LanedTrackImpl<MidiRegion>, GroupTargetTrack> (ctx);
+    ChannelTrack, LanedTrackImpl<MidiLane>, GroupTargetTrack> (ctx);
 }
 
 void
@@ -299,7 +324,7 @@ AudioTrack::define_fields (const Context &ctx)
   using T = ISerializable<AudioTrack>;
   T::call_all_base_define_fields<
     Track, ProcessableTrack, AutomatableTrack, RecordableTrack, ChannelTrack,
-    LanedTrackImpl<AudioRegion>> (ctx);
+    LanedTrackImpl<AudioLane>> (ctx);
 }
 
 void
