@@ -81,10 +81,10 @@ Fader::create_swap_phase_port (bool passthrough)
 {
   auto swap_phase = std::make_unique<ControlPort> (
     passthrough ? _ ("Prefader Swap Phase") : _ ("Fader Swap Phase"));
-  swap_phase->id_.sym_ =
+  swap_phase->id_->sym_ =
     passthrough ? "prefader_swap_phase" : "fader_swap_phase";
-  swap_phase->id_.flags2_ |= PortIdentifier::Flags2::FaderSwapPhase;
-  swap_phase->id_.flags_ |= PortIdentifier::Flags::Toggle;
+  swap_phase->id_->flags2_ |= PortIdentifier::Flags2::FaderSwapPhase;
+  swap_phase->id_->flags_ |= PortIdentifier::Flags::Toggle;
   return swap_phase;
 }
 
@@ -103,17 +103,17 @@ Fader::Fader (
   amp_ = std::make_unique<ControlPort> (
     passthrough ? _ ("Prefader Volume") : _ ("Fader Volume"));
   amp_->set_owner (this);
-  amp_->id_.sym_ = passthrough ? "prefader_volume" : "fader_volume";
+  amp_->id_->sym_ = passthrough ? "prefader_volume" : "fader_volume";
   amp_->deff_ = amp;
   amp_->minf_ = 0.f;
   amp_->maxf_ = 2.f;
   amp_->set_control_value (amp, false, false);
   fader_val_ = math_get_fader_val_from_amp (amp);
-  amp_->id_.flags_ |= PortIdentifier::Flags::Amplitude;
+  amp_->id_->flags_ |= PortIdentifier::Flags::Amplitude;
   if ((type == Type::AudioChannel || type == Type::MidiChannel) && !passthrough)
     {
-      amp_->id_.flags_ |= PortIdentifier::Flags::Automatable;
-      amp_->id_.flags_ |= PortIdentifier::Flags::ChannelFader;
+      amp_->id_->flags_ |= PortIdentifier::Flags::Automatable;
+      amp_->id_->flags_ |= PortIdentifier::Flags::ChannelFader;
     }
 
   /* set pan */
@@ -121,54 +121,54 @@ Fader::Fader (
   balance_ = std::make_unique<ControlPort> (
     passthrough ? _ ("Prefader Balance") : _ ("Fader Balance"));
   balance_->set_owner (this);
-  balance_->id_.sym_ = passthrough ? "prefader_balance" : "fader_balance";
+  balance_->id_->sym_ = passthrough ? "prefader_balance" : "fader_balance";
   balance_->set_control_value (balance, 0, 0);
-  balance_->id_.flags_ |= PortIdentifier::Flags::StereoBalance;
+  balance_->id_->flags_ |= PortIdentifier::Flags::StereoBalance;
   if ((type == Type::AudioChannel || type == Type::MidiChannel) && !passthrough)
     {
-      balance_->id_.flags_ |= PortIdentifier::Flags::Automatable;
+      balance_->id_->flags_ |= PortIdentifier::Flags::Automatable;
     }
 
   /* set mute */
   mute_ = std::make_unique<ControlPort> (
     passthrough ? _ ("Prefader Mute") : _ ("Fader Mute"));
   mute_->set_owner (this);
-  mute_->id_.sym_ = passthrough ? "prefader_mute" : "fader_mute";
+  mute_->id_->sym_ = passthrough ? "prefader_mute" : "fader_mute";
   mute_->set_toggled (false, false);
-  mute_->id_.flags_ |= PortIdentifier::Flags::FaderMute;
-  mute_->id_.flags_ |= PortIdentifier::Flags::Toggle;
+  mute_->id_->flags_ |= PortIdentifier::Flags::FaderMute;
+  mute_->id_->flags_ |= PortIdentifier::Flags::Toggle;
   if ((type == Type::AudioChannel || type == Type::MidiChannel) && !passthrough)
     {
-      mute_->id_.flags_ |= PortIdentifier::Flags::Automatable;
+      mute_->id_->flags_ |= PortIdentifier::Flags::Automatable;
     }
 
   /* set solo */
   solo_ = std::make_unique<ControlPort> (
     passthrough ? _ ("Prefader Solo") : _ ("Fader Solo"));
   solo_->set_owner (this);
-  solo_->id_.sym_ = passthrough ? "prefader_solo" : "fader_solo";
+  solo_->id_->sym_ = passthrough ? "prefader_solo" : "fader_solo";
   solo_->set_toggled (false, false);
-  solo_->id_.flags2_ |= PortIdentifier::Flags2::FaderSolo;
-  solo_->id_.flags_ |= PortIdentifier::Flags::Toggle;
+  solo_->id_->flags2_ |= PortIdentifier::Flags2::FaderSolo;
+  solo_->id_->flags_ |= PortIdentifier::Flags::Toggle;
 
   /* set listen */
   listen_ = std::make_unique<ControlPort> (
     passthrough ? _ ("Prefader Listen") : _ ("Fader Listen"));
   listen_->set_owner (this);
-  listen_->id_.sym_ = passthrough ? "prefader_listen" : "fader_listen";
+  listen_->id_->sym_ = passthrough ? "prefader_listen" : "fader_listen";
   listen_->set_toggled (false, false);
-  listen_->id_.flags2_ |= PortIdentifier::Flags2::FaderListen;
-  listen_->id_.flags_ |= PortIdentifier::Flags::Toggle;
+  listen_->id_->flags2_ |= PortIdentifier::Flags2::FaderListen;
+  listen_->id_->flags_ |= PortIdentifier::Flags::Toggle;
 
   /* set mono compat */
   mono_compat_enabled_ = std::make_unique<ControlPort> (
     passthrough ? _ ("Prefader Mono Compat") : _ ("Fader Mono Compat"));
   mono_compat_enabled_->set_owner (this);
-  mono_compat_enabled_->id_.sym_ =
+  mono_compat_enabled_->id_->sym_ =
     passthrough ? "prefader_mono_compat_enabled" : "fader_mono_compat_enabled";
   mono_compat_enabled_->set_toggled (false, false);
-  mono_compat_enabled_->id_.flags2_ |= PortIdentifier::Flags2::FaderMonoCompat;
-  mono_compat_enabled_->id_.flags_ |= PortIdentifier::Flags::Toggle;
+  mono_compat_enabled_->id_->flags2_ |= PortIdentifier::Flags2::FaderMonoCompat;
+  mono_compat_enabled_->id_->flags_ |= PortIdentifier::Flags::Toggle;
 
   /* set swap phase */
   swap_phase_ = create_swap_phase_port (passthrough);
@@ -259,7 +259,7 @@ Fader::Fader (
         }
       midi_in_ = std::make_unique<MidiPort> (name, PortFlow::Input);
       midi_in_->set_owner (this);
-      midi_in_->id_.sym_ = sym;
+      midi_in_->id_->sym_ = sym;
 
       /* MIDI out */
       if (passthrough)
@@ -274,7 +274,7 @@ Fader::Fader (
         }
       midi_out_ = std::make_unique<MidiPort> (name, PortFlow::Output);
       midi_out_->set_owner (this);
-      midi_out_->id_.sym_ = sym;
+      midi_out_->id_->sym_ = sym;
     }
 }
 
@@ -1097,7 +1097,7 @@ Fader::init_after_cloning (const Fader &other)
   append_ports (ports);
   for (auto &port : ports)
     {
-      if (port->id_.owner_type_ == PortIdentifier::OwnerType::Fader)
+      if (port->id_->owner_type_ == PortIdentifier::OwnerType::Fader)
         {
           /* note: don't call set_owner() because get_track () won't work here.
            * also, all other port fields are already copied*/

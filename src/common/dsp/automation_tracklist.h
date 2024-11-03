@@ -13,6 +13,8 @@
 
 #include "common/dsp/automation_track.h"
 
+#include <QAbstractListModel>
+
 class AutomationTrack;
 class AutomatableTrack;
 
@@ -27,14 +29,38 @@ class AutomatableTrack;
  * at runtime, and filled in with automation points/curves when loading projects.
  */
 class AutomationTracklist final
-    : public ICloneable<AutomationTracklist>,
+    : public QAbstractListModel,
+      public ICloneable<AutomationTracklist>,
       public ISerializable<AutomationTracklist>
 {
+  Q_OBJECT
+  QML_ELEMENT
+
 public:
-  void init_after_cloning (const AutomationTracklist &other) override
+  AutomationTracklist (QObject * parent = nullptr);
+
+public:
+  enum Roles
   {
-    clone_unique_ptr_container (ats_, other.ats_);
-  }
+    AutomationTrackPtrRole = Qt::UserRole + 1,
+  };
+
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
+  QHash<int, QByteArray> roleNames () const override;
+  int rowCount (const QModelIndex &parent = QModelIndex ()) const override;
+  QVariant
+  data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
+
+  Q_INVOKABLE void
+  showNextAvailableAutomationTrack (AutomationTrack * current_automation_track);
+  Q_INVOKABLE void
+  hideAutomationTrack (AutomationTrack * current_automation_track);
+
+  // ========================================================================
+
+  void init_after_cloning (const AutomationTracklist &other) override;
 
   /**
    * Inits a loaded AutomationTracklist.
@@ -43,7 +69,12 @@ public:
 
   AutomatableTrack * get_track () const;
 
-  AutomationTrack * add_at (std::unique_ptr<AutomationTrack> &&at);
+  /**
+   * @brief Adds the given automation track.
+   *
+   * This takes (QObject) ownership of the AutomationTrack.
+   */
+  AutomationTrack * add_at (AutomationTrack &at);
 
   /**
    * Prints info about all the automation tracks.
@@ -56,8 +87,8 @@ public:
    * Updates the frames of each position in each child of the automation
    * tracklist recursively.
    *
-   * @param from_ticks Whether to update the positions based on ticks (true) or
-   * frames (false).
+   * @param from_ticks Whether to update the positions based on ticks (true)
+   * or frames (false).
    */
   void update_positions (bool from_ticks, bool bpm_change);
 
@@ -96,7 +127,7 @@ public:
    * @return The removed automation track (in case we want to move it). Can be
    * ignored to let it get free'd when it goes out of scope.
    */
-  std::unique_ptr<AutomationTrack>
+  AutomationTrack *
   remove_at (AutomationTrack &at, bool free, bool fire_events);
 
   /**
@@ -149,7 +180,8 @@ public:
    * to be shown.
    *
    * Marks the first invisible automation track as visible, or marks an
-   * uncreated one as created if all invisible ones are visible, and returns it.
+   * uncreated one as created if all invisible ones are visible, and returns
+   * it.
    */
   AutomationTrack * get_first_invisible_at () const;
 
@@ -193,7 +225,7 @@ public:
    * Automation tracks become active automation lanes when they have
    * automation or are selected.
    */
-  std::vector<std::unique_ptr<AutomationTrack>> ats_;
+  std::vector<AutomationTrack *> ats_;
 
   /**
    * Cache of automation tracks in record mode, used in recording manager to

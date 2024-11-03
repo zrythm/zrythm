@@ -11,6 +11,8 @@
 #include "common/dsp/position.h"
 #include "common/dsp/region_owner.h"
 
+#include <QtQmlIntegration>
+
 #include "automation_region.h"
 
 class Port;
@@ -26,6 +28,8 @@ class AutomationTracklist;
 /** Release time in ms when in touch record mode. */
 constexpr int AUTOMATION_RECORDING_TOUCH_REL_MS = 800;
 
+constexpr int AUTOMATION_TRACK_DEFAULT_HEIGHT = 48;
+
 enum class AutomationRecordMode
 {
   Touch,
@@ -40,10 +44,24 @@ DEFINE_ENUM_FORMATTER (
   N_ ("Latch"));
 
 class AutomationTrack final
-    : public ICloneable<AutomationTrack>,
+    : public QObject,
+      public ICloneable<AutomationTrack>,
       public RegionOwnerImpl<AutomationRegion>,
       public ISerializable<AutomationTrack>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  Q_PROPERTY (double height READ getHeight WRITE setHeight NOTIFY heightChanged)
+  Q_PROPERTY (
+    PortIdentifier * portIdentifier READ getPortIdentifier NOTIFY
+      portIdentifierChanged)
+  Q_PROPERTY (
+    int automationMode READ getAutomationMode WRITE setAutomationMode NOTIFY
+      automationModeChanged)
+  Q_PROPERTY (
+    int recordMode READ getRecordMode WRITE setRecordMode NOTIFY
+      recordModeChanged)
+
 public:
   AutomationTrack () = default;
 
@@ -51,6 +69,31 @@ public:
   AutomationTrack (ControlPort &port);
 
   using RegionOwnerImplType = RegionOwnerImpl<AutomationRegion>;
+
+public:
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
+
+  double        getHeight () const { return height_; }
+  void          setHeight (double height);
+  Q_SIGNAL void heightChanged (double height);
+
+  int getAutomationMode () const
+  {
+    return ENUM_VALUE_TO_INT (automation_mode_);
+  }
+  void          setAutomationMode (int automation_mode);
+  Q_SIGNAL void automationModeChanged (int automation_mode);
+
+  int  getRecordMode () const { return ENUM_VALUE_TO_INT (record_mode_); }
+  void setRecordMode (int record_mode);
+  Q_SIGNAL void recordModeChanged (int record_mode);
+
+  PortIdentifier * getPortIdentifier () const { return port_id_; }
+  Q_SIGNAL void    portIdentifierChanged (PortIdentifier * port_id);
+
+  // ========================================================================
 
   void init_loaded (AutomationTracklist * atl);
 
@@ -69,6 +112,12 @@ public:
    */
   static AutomationTrack *
   find_from_port_id (const PortIdentifier &id, bool basic_search);
+
+  /**
+   * @brief Clone the given port identifier and take ownership of the clone.
+   * @param port_id
+   */
+  void set_port_id (const PortIdentifier &port_id);
 
   /**
    * Finds the AutomationTrack associated with `port`.
@@ -205,8 +254,8 @@ public:
   /** Index in parent AutomationTracklist. */
   int index_ = 0;
 
-  /** Identifier of the Port this AutomationTrack is for. */
-  PortIdentifier port_id_;
+  /** Identifier of the Port this AutomationTrack is for (owned pointer). */
+  PortIdentifier * port_id_ = nullptr;
 
   /** Whether it has been created by the user yet or not. */
   bool created_ = false;
@@ -224,17 +273,15 @@ public:
   int y_ = 0;
 
   /** Position of multipane handle. */
-  double height_ = 0.0;
+  double height_ = AUTOMATION_TRACK_DEFAULT_HEIGHT;
 
-  /** Last value recorded in this automation
-   * track. */
+  /** Last value recorded in this automation track. */
   float last_recorded_value_ = 0.f;
 
   /** Automation mode. */
   AutomationMode automation_mode_ = AutomationMode::Read;
 
-  /** Automation record mode, when @ref AutomationTrack.automation_mode is
-   * set to record. */
+  /** Automation record mode, when @ref automation_mode_ is set to record. */
   AutomationRecordMode record_mode_ = (AutomationRecordMode) 0;
 
   /** To be set to true when recording starts (when the first change is

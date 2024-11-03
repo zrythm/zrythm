@@ -6,6 +6,39 @@
 
 #include "common/dsp/track.h"
 
+#define DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES(ClassType) \
+public: \
+  /* ================================================================ */ \
+  /* automationVisible */ \
+  /* ================================================================ */ \
+  Q_PROPERTY ( \
+    bool automationVisible READ getAutomationVisible WRITE \
+      setAutomationVisible NOTIFY automationVisibleChanged) \
+  bool getAutomationVisible () const \
+  { \
+    return automation_visible_; \
+  } \
+  void setAutomationVisible (bool visible) \
+  { \
+    if (automation_visible_ == visible) \
+      return; \
+\
+    automation_visible_ = visible; \
+    Q_EMIT automationVisibleChanged (visible); \
+  } \
+\
+  Q_SIGNAL void automationVisibleChanged (bool visible); \
+\
+  /* ================================================================ */ \
+  /* automationTracks */ \
+  /* ================================================================ */ \
+  Q_PROPERTY ( \
+    AutomationTracklist * automationTracks READ getAutomationTracks CONSTANT) \
+  AutomationTracklist * getAutomationTracks () const \
+  { \
+    return automation_tracklist_; \
+  }
+
 /**
  * Interface for a track that has automatable parameters.
  */
@@ -14,10 +47,8 @@ class AutomatableTrack
       public ISerializable<AutomatableTrack>
 {
 public:
-  // Rule of 0
   AutomatableTrack ();
-
-  virtual ~AutomatableTrack () = default;
+  ~AutomatableTrack () override = default;
 
   void init_loaded () override;
 
@@ -56,11 +87,7 @@ public:
   }
 
 protected:
-  void copy_members_from (const AutomatableTrack &other)
-  {
-    automation_tracklist_ = other.automation_tracklist_->clone_unique ();
-    automation_visible_ = other.automation_visible_;
-  }
+  void copy_members_from (const AutomatableTrack &other);
 
   bool validate_base () const;
 
@@ -77,10 +104,24 @@ protected:
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
 public:
-  std::unique_ptr<AutomationTracklist> automation_tracklist_;
+  AutomationTracklist * automation_tracklist_ = nullptr;
 
   /** Flag to set automations visible or not. */
   bool automation_visible_ = false;
 };
+
+using AutomatableTrackVariant = std::variant<
+  InstrumentTrack,
+  MidiTrack,
+  MasterTrack,
+  MidiGroupTrack,
+  AudioGroupTrack,
+  MidiBusTrack,
+  AudioBusTrack,
+  AudioTrack,
+  ChordTrack,
+  ModulatorTrack,
+  TempoTrack>;
+using AutomatableTrackPtrVariant = to_pointer_variant<AutomatableTrackVariant>;
 
 #endif // __AUDIO_AUTOMATABLE_TRACK_H__

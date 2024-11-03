@@ -6,6 +6,8 @@
 #include "common/plugins/plugin_identifier.h"
 #include "common/utils/types.h"
 
+PortIdentifier::PortIdentifier (QObject * parent) : QObject (parent) { }
+
 const char *
 port_unit_to_str (const PortUnit unit)
 {
@@ -21,6 +23,26 @@ PortIdentifier::init ()
   plugin_id_ = zrythm::plugins::PluginIdentifier{};
 }
 
+void
+PortIdentifier::init_after_cloning (const PortIdentifier &other)
+{
+  port_index_ = other.port_index_;
+  track_name_hash_ = other.track_name_hash_;
+  owner_type_ = other.owner_type_;
+  type_ = other.type_;
+  flow_ = other.flow_;
+  unit_ = other.unit_;
+  flags_ = other.flags_;
+  flags2_ = other.flags2_;
+  plugin_id_ = other.plugin_id_;
+  label_ = other.label_;
+  sym_ = other.sym_;
+  uri_ = other.uri_;
+  comment_ = other.comment_;
+  port_group_ = other.port_group_;
+  ext_port_id_ = other.ext_port_id_;
+}
+
 int
 PortIdentifier::port_group_cmp (const void * p1, const void * p2)
 {
@@ -32,7 +54,7 @@ PortIdentifier::port_group_cmp (const void * p1, const void * p2)
 
   /* use index for now - this assumes that ports inside port groups are declared
    * in sequence */
-  return control1->id_.port_index_ - control2->id_.port_index_;
+  return control1->id_->port_index_ - control2->id_->port_index_;
 
 #if 0
   return

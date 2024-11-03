@@ -56,8 +56,8 @@ using TrackPtrVariant = to_pointer_variant<TrackVariant>;
  * @{
  */
 
-constexpr int TRACK_MIN_HEIGHT = 24;
-constexpr int TRACK_DEF_HEIGHT = 48;
+constexpr int TRACK_MIN_HEIGHT = 26;
+constexpr int TRACK_DEF_HEIGHT = 52;
 
 constexpr int TRACK_MAGIC = 21890135;
 #define IS_TRACK(x) (((Track *) x)->magic_ == TRACK_MAGIC)
@@ -189,6 +189,19 @@ public: \
   } \
 \
   /* ================================================================ */ \
+  /* isAutomatable */ \
+  /* ================================================================ */ \
+  Q_PROPERTY (bool isAutomatable READ getIsAutomatable CONSTANT) \
+  bool getIsAutomatable () const \
+  { \
+    if constexpr (std::derived_from<ClassType, AutomatableTrack>) \
+      { \
+        return true; \
+      } \
+    return false; \
+  } \
+\
+  /* ================================================================ */ \
   /* height */ \
   /* ================================================================ */ \
   Q_PROPERTY ( \
@@ -206,11 +219,15 @@ public: \
     main_height_ = height; \
     Q_EMIT heightChanged (height); \
   } \
-  Q_SIGNAL void      heightChanged (double height); \
-  Q_INVOKABLE double getFullVisibleHeight () const \
+  Q_SIGNAL void heightChanged (double height); \
+  Q_PROPERTY ( \
+    double fullVisibleHeight READ getFullVisibleHeight NOTIFY \
+      fullVisibleHeightChanged) \
+  double getFullVisibleHeight () const \
   { \
     return get_full_visible_height (); \
   } \
+  Q_SIGNAL void fullVisibleHeightChanged (); \
   /* ================================================================ */ \
   /* icon */ \
   /* ================================================================ */ \

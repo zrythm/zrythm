@@ -15,10 +15,13 @@
  */
 
 class PortConnectionAction
-    : public UndoableAction,
+    : public QObject,
+      public UndoableAction,
       public ICloneable<PortConnectionAction>,
       public ISerializable<PortConnectionAction>
 {
+  Q_OBJECT
+  QML_ELEMENT
 public:
   enum class Type
   {
@@ -30,10 +33,7 @@ public:
   };
 
 public:
-  PortConnectionAction ()
-      : UndoableAction (UndoableAction::Type::PortConnection)
-  {
-  }
+  PortConnectionAction (QObject * parent = nullptr);
 
   PortConnectionAction (
     Type                   type,
@@ -41,7 +41,7 @@ public:
     const PortIdentifier * dest_id,
     float                  new_val);
 
-  virtual ~PortConnectionAction () = default;
+  ~PortConnectionAction () override = default;
 
   std::string to_string () const override;
 
@@ -59,7 +59,7 @@ private:
 public:
   Type type_ = Type ();
 
-  std::unique_ptr<PortConnection> connection_;
+  PortConnection * connection_ = nullptr;
 
   /**
    * Value before/after the change.

@@ -93,7 +93,8 @@ template <typename TrackLaneT>
 void
 LanedTrackImpl<TrackLaneT>::add_lane (bool fire_events)
 {
-  lanes_.push_back (new TrackLaneT (this, lanes_.size ()));
+  auto new_lane = new TrackLaneT (this, lanes_.size ());
+  lanes_.push_back (new_lane);
 
   if (fire_events)
     {

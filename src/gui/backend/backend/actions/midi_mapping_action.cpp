@@ -11,44 +11,53 @@
 
 #include <glib/gi18n.h>
 
+MidiMappingAction::MidiMappingAction (QObject * parent)
+    : QObject (parent), UndoableAction (UndoableAction::Type::MidiMapping)
+{
+}
+
 void
 MidiMappingAction::init_after_cloning (const MidiMappingAction &other)
 {
   UndoableAction::copy_members_from (other);
   idx_ = other.idx_;
   type_ = other.type_;
-  dest_port_id_ =
-    other.dest_port_id_
-      ? std::make_unique<PortIdentifier> (*other.dest_port_id_)
-      : nullptr;
+  if (other.dest_port_id_ != nullptr)
+    {
+      dest_port_id_ = other.dest_port_id_->clone_raw_ptr ();
+      dest_port_id_->setParent (this);
+    }
   dev_port_ =
     other.dev_port_ ? std::make_unique<ExtPort> (*other.dev_port_) : nullptr;
   buf_ = other.buf_;
 }
 
 MidiMappingAction::MidiMappingAction (int idx_to_enable_or_disable, bool enable)
-    : idx_ (idx_to_enable_or_disable),
+    : UndoableAction (UndoableAction::Type::MidiMapping),
+      idx_ (idx_to_enable_or_disable),
       type_ (enable ? Type::Enable : Type::Disable)
 {
-  MidiMappingAction ();
 }
 
 MidiMappingAction::MidiMappingAction (
   const std::array<midi_byte_t, 3> buf,
   const ExtPort *                  device_port,
   const Port                      &dest_port)
-    : type_ (Type::Bind),
-      dest_port_id_ (std::make_unique<PortIdentifier> (dest_port.id_)),
-      dev_port_ (device_port ? std::make_unique<ExtPort> (*device_port) : nullptr),
+    : UndoableAction (UndoableAction::Type::MidiMapping), type_ (Type::Bind),
+      dest_port_id_ (dest_port.id_->clone_raw_ptr ()),
+      dev_port_ (
+        (device_port != nullptr)
+          ? std::make_unique<ExtPort> (*device_port)
+          : nullptr),
       buf_ (buf)
 {
-  MidiMappingAction ();
+  dest_port_id_->setParent (this);
 }
 
 MidiMappingAction::MidiMappingAction (int idx_to_unbind)
-    : idx_ (idx_to_unbind), type_ (Type::Unbind)
+    : UndoableAction (UndoableAction::Type::MidiMapping), idx_ (idx_to_unbind),
+      type_ (Type::Unbind)
 {
-  MidiMappingAction ();
 }
 
 void
@@ -68,7 +77,8 @@ MidiMappingAction::bind_or_unbind (bool bind)
         mapping->device_port_
           ? std::make_unique<ExtPort> (*mapping->device_port_)
           : nullptr;
-      dest_port_id_ = std::make_unique<PortIdentifier> (mapping->dest_id_);
+      dest_port_id_ = mapping->dest_id_->clone_raw_ptr ();
+      dest_port_id_->setParent (this);
       MIDI_MAPPINGS->unbind (idx_, false);
     }
 }

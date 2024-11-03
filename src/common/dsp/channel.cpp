@@ -491,7 +491,7 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
                   continue;
                 }
               PORT_CONNECTIONS_MGR->ensure_connect (
-                source->id_, midi_in->id_, 1.f, true, true);
+                *source->id_, *midi_in->id_, 1.f, true, true);
             }
         }
       else
@@ -505,7 +505,7 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
                   continue;
                 }
               PORT_CONNECTIONS_MGR->ensure_connect (
-                source->id_, midi_in->id_, 1.f, true, true);
+                *source->id_, *midi_in->id_, 1.f, true, true);
             }
         }
     }
@@ -531,7 +531,7 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
                   continue;
                 }
               PORT_CONNECTIONS_MGR->ensure_connect (
-                source->id_, l.id_, 1.f, true, true);
+                *source->id_, *l.id_, 1.f, true, true);
             }
         }
       else
@@ -546,7 +546,7 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
                   continue;
                 }
               PORT_CONNECTIONS_MGR->ensure_connect (
-                source->id_, l.id_, 1.f, true, true);
+                *source->id_, *l.id_, 1.f, true, true);
             }
         }
 
@@ -561,7 +561,7 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
                   continue;
                 }
               PORT_CONNECTIONS_MGR->ensure_connect (
-                source->id_, r.id_, 1.f, true, true);
+                *source->id_, *r.id_, 1.f, true, true);
             }
         }
       else
@@ -576,7 +576,7 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
                   continue;
                 }
               PORT_CONNECTIONS_MGR->ensure_connect (
-                source->id_, r.id_, 1.f, true, true);
+                *source->id_, *r.id_, 1.f, true, true);
             }
         }
     }
@@ -827,35 +827,35 @@ Channel::connect (PortConnectionsManager &mgr, AudioEngine &engine)
       output_name_hash_ = 0;
       has_output_ = false;
       mgr.ensure_connect (
-        this->stereo_out_->get_l ().id_,
-        MONITOR_FADER->stereo_in_->get_l ().id_, 1.f, true, true);
+        *stereo_out_->get_l ().id_, *MONITOR_FADER->stereo_in_->get_l ().id_,
+        1.f, true, true);
       mgr.ensure_connect (
-        this->stereo_out_->get_r ().id_,
-        MONITOR_FADER->stereo_in_->get_r ().id_, 1.f, true, true);
+        *stereo_out_->get_r ().id_, *MONITOR_FADER->stereo_in_->get_r ().id_,
+        1.f, true, true);
     }
 
   if (tr->out_signal_type_ == PortType::Audio)
     {
       /* connect stereo in to stereo out through fader */
       mgr.ensure_connect (
-        prefader_->stereo_out_->get_l ().id_, fader_->stereo_in_->get_l ().id_,
-        1.f, true, true);
+        *prefader_->stereo_out_->get_l ().id_,
+        *fader_->stereo_in_->get_l ().id_, 1.f, true, true);
       mgr.ensure_connect (
-        prefader_->stereo_out_->get_r ().id_, fader_->stereo_in_->get_r ().id_,
-        1.f, true, true);
+        *prefader_->stereo_out_->get_r ().id_,
+        *fader_->stereo_in_->get_r ().id_, 1.f, true, true);
       mgr.ensure_connect (
-        fader_->stereo_out_->get_l ().id_, stereo_out_->get_l ().id_, 1.f, true,
-        true);
+        *fader_->stereo_out_->get_l ().id_, *stereo_out_->get_l ().id_, 1.f,
+        true, true);
       mgr.ensure_connect (
-        fader_->stereo_out_->get_r ().id_, stereo_out_->get_r ().id_, 1.f, true,
-        true);
+        *fader_->stereo_out_->get_r ().id_, *stereo_out_->get_r ().id_, 1.f,
+        true, true);
     }
   else if (tr->out_signal_type_ == PortType::Event)
     {
       mgr.ensure_connect (
-        prefader_->midi_out_->id_, fader_->midi_in_->id_, 1.f, true, true);
+        *prefader_->midi_out_->id_, *fader_->midi_in_->id_, 1.f, true, true);
       mgr.ensure_connect (
-        fader_->midi_out_->id_, midi_out_->id_, 1.f, true, true);
+        *fader_->midi_out_->id_, *midi_out_->id_, 1.f, true, true);
     }
 
   /** Connect MIDI in and piano roll to MIDI out. */
@@ -983,9 +983,9 @@ Channel::init_stereo_out_ports (bool loading)
     }
 
   auto l = AudioPort ("Stero out L", PortFlow::Output);
-  l.id_.sym_ = "stereo_out_l";
+  l.id_->sym_ = "stereo_out_l";
   auto r = AudioPort ("Stereo out R", PortFlow::Output);
-  r.id_.sym_ = "stereo_out_r";
+  r.id_->sym_ = "stereo_out_r";
 
   stereo_out_ = std::make_unique<StereoPorts> (std::move (l), std::move (r));
   stereo_out_->set_owner (this);
@@ -1006,7 +1006,7 @@ Channel::init ()
         midi_out_ =
           std::make_unique<MidiPort> (_ ("MIDI out"), PortFlow::Output);
         midi_out_->set_owner (this);
-        midi_out_->id_.sym_ = "midi_out";
+        midi_out_->id_->sym_ = "midi_out";
       }
       break;
     default:
@@ -1357,9 +1357,9 @@ Channel::get_automation_track (PortIdentifier::Flags port_flags)
   auto &atl = track_->get_automation_tracklist ();
   for (auto &at : atl.ats_)
     {
-      if (
-        ENUM_BITSET_TEST (PortIdentifier::Flags, at->port_id_.flags_, port_flags))
-        return at.get ();
+      if (ENUM_BITSET_TEST (
+            PortIdentifier::Flags, at->port_id_->flags_, port_flags))
+        return at;
     }
   return nullptr;
 }

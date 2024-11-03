@@ -42,6 +42,7 @@ class TempoTrack final
   Q_OBJECT
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (TempoTrack)
+  DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (TempoTrack)
   Q_PROPERTY (double bpm READ getBpm WRITE setBpm NOTIFY bpmChanged FINAL)
 
   friend class InitializableObjectFactory<TempoTrack>;

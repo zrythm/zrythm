@@ -93,8 +93,8 @@ HardwareProcessor::create_port_for_ext_port (
 {
   auto port = std::make_unique<T> (ext_port.full_name_, flow);
   port->set_owner (const_cast<ExtPort *> (&ext_port));
-  port->id_.flags_ |= PortIdentifier::Flags::Hw;
-  port->id_.ext_port_id_ = ext_port.get_id ();
+  port->id_->flags_ |= PortIdentifier::Flags::Hw;
+  port->id_->ext_port_id_ = ext_port.get_id ();
   return port;
 }
 

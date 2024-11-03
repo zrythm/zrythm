@@ -12,9 +12,21 @@
 #include "gui/backend/backend/zrythm.h"
 
 AutomatableTrack::AutomatableTrack ()
-    : automation_tracklist_ (std::make_unique<AutomationTracklist> ())
+    : automation_tracklist_ (new AutomationTracklist ())
 {
   automation_tracklist_->track_ = this;
+}
+
+void
+AutomatableTrack::copy_members_from (const AutomatableTrack &other)
+{
+  automation_tracklist_ = other.automation_tracklist_->clone_raw_ptr ();
+  if (auto * qobject = dynamic_cast<QObject *> (this))
+    {
+      automation_tracklist_->setParent (qobject);
+    }
+  automation_tracklist_->track_ = this;
+  automation_visible_ = other.automation_visible_;
 }
 
 void
@@ -30,12 +42,12 @@ AutomatableTrack::init_loaded ()
       port->track_ = this;
       if (is_in_active_project ())
         {
-          z_return_if_fail (port->id_.track_name_hash_ == name_hash);
+          z_return_if_fail (port->id_->track_name_hash_ == name_hash);
 
           /* set automation tracks on ports */
           if (
             ENUM_BITSET_TEST (
-              PortIdentifier::Flags, port->id_.flags_,
+              PortIdentifier::Flags, port->id_->flags_,
               PortIdentifier::Flags::Automatable))
             {
               auto *            ctrl = dynamic_cast<ControlPort *> (port);
@@ -53,7 +65,7 @@ AutomatableTrack::generate_automation_tracks ()
 {
   auto &atl = automation_tracklist_;
   auto  create_and_add_at = [&] (ControlPort &port) -> AutomationTrack  &{
-    auto * at = atl->add_at (std::make_unique<AutomationTrack> (port));
+    auto * at = atl->add_at (*new AutomationTrack (port));
     return *at;
   };
 
@@ -184,10 +196,10 @@ AutomatableTrack::validate_base () const
       unsigned int name_hash = get_name_hash ();
       for (const auto * port : ports)
         {
-          z_return_val_if_fail (port->id_.track_name_hash_ == name_hash, false);
-          if (port->id_.owner_type_ == PortIdentifier::OwnerType::Plugin)
+          z_return_val_if_fail (port->id_->track_name_hash_ == name_hash, false);
+          if (port->id_->owner_type_ == PortIdentifier::OwnerType::Plugin)
             {
-              const auto &pid = port->id_.plugin_id_;
+              const auto &pid = port->id_->plugin_id_;
               z_return_val_if_fail (pid.track_name_hash_ == name_hash, false);
               zrythm::plugins::Plugin * pl = zrythm::plugins::Plugin::find (pid);
               z_return_val_if_fail (pl->id_.validate (), false);
@@ -204,7 +216,7 @@ AutomatableTrack::validate_base () const
           /* check that the automation track is there */
           if (
             ENUM_BITSET_TEST (
-              PortIdentifier::Flags, port->id_.flags_,
+              PortIdentifier::Flags, port->id_->flags_,
               PortIdentifier::Flags::Automatable))
             {
               const auto * ctrl = dynamic_cast<const ControlPort *> (port);

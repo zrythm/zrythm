@@ -21,8 +21,9 @@ class ProgressInfo;
  * @{
  */
 
-class Exporter final
+class Exporter final : public QObject
 {
+  Q_OBJECT
 public:
   /**
    * Export format.
@@ -165,7 +166,8 @@ public:
   {
   public:
     ExportThread (Exporter &exporter);
-    ~ExportThread ();
+    ~ExportThread () override;
+    Q_DISABLE_COPY_MOVE (ExportThread)
 
     void run () override;
 
@@ -175,9 +177,9 @@ public:
 
 public:
   Exporter (
-    Settings settings,
-    // GtkWidget *                   parent_owner = nullptr,
-    std::shared_ptr<ProgressInfo> progress_info = nullptr);
+    Settings                      settings,
+    std::shared_ptr<ProgressInfo> progress_info = nullptr,
+    QObject *                     parent = nullptr);
 
   /**
    * This must be called on the main thread after the intended tracks have been
@@ -247,7 +249,10 @@ public:
   // GtkWidget * parent_owner_ = nullptr;
 
 private:
-  std::unique_ptr<std::vector<PortConnection>> connections_;
+  /**
+   * @brief Owned PortConnection pointers.
+   */
+  std::unique_ptr<PortConnectionsManager::ConnectionsVector> connections_;
 
   /**
    * @brief Engine state when export was started so that it can be re-set after

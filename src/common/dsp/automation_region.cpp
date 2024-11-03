@@ -50,7 +50,7 @@ AutomationRegion::get_automation_track () const
   const auto &atl = track->get_automation_tracklist ();
   z_return_val_if_fail ((int) atl.ats_.size () > id_.at_idx_, nullptr);
 
-  return atl.ats_[id_.at_idx_].get ();
+  return atl.ats_[id_.at_idx_];
 }
 
 void
@@ -58,7 +58,7 @@ AutomationRegion::set_automation_track (AutomationTrack &at)
 {
   z_debug (
     "setting region automation track to {} {}", at.index_,
-    at.port_id_.get_label ());
+    at.port_id_->get_label ());
 
   /* this must not be called on non-project regions (or during project
    * destruction) */

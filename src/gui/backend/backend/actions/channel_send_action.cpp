@@ -12,6 +12,11 @@
 
 #include <glib/gi18n.h>
 
+ChannelSendAction::ChannelSendAction (QObject * parent)
+    : QObject (parent), UndoableAction (UndoableAction::Type::ChannelSend)
+{
+}
+
 ChannelSendAction::ChannelSendAction (
   Type                           type,
   const ChannelSend             &send,
@@ -19,24 +24,52 @@ ChannelSendAction::ChannelSendAction (
   const StereoPorts *            stereo,
   float                          amount,
   const PortConnectionsManager * port_connections_mgr)
-    : send_before_ (send.clone_unique ()), amount_ (amount),
+    : UndoableAction (UndoableAction::Type::ChannelSend),
+      send_before_ (send.clone_unique ()), amount_ (amount),
       send_action_type_ (type)
 {
-  ChannelSendAction ();
-
-  if (port)
-    midi_id_ = std::make_unique<PortIdentifier> (port->id_);
-
-  if (stereo)
+  if (port != nullptr)
     {
-      l_id_ = std::make_unique<PortIdentifier> (stereo->get_l ().id_);
-      r_id_ = std::make_unique<PortIdentifier> (stereo->get_r ().id_);
+      midi_id_ = port->id_->clone_raw_ptr ();
+      midi_id_->setParent (this);
+    }
+
+  if (stereo != nullptr)
+    {
+      l_id_ = stereo->get_l ().id_->clone_raw_ptr ();
+      l_id_->setParent (this);
+      r_id_ = stereo->get_r ().id_->clone_raw_ptr ();
+      r_id_->setParent (this);
     }
 
   if (port_connections_mgr)
     {
       port_connections_before_ = port_connections_mgr->clone_unique ();
     }
+}
+
+void
+ChannelSendAction::init_after_cloning (const ChannelSendAction &other)
+{
+  UndoableAction::copy_members_from (other);
+  send_before_ = other.send_before_->clone_unique ();
+  amount_ = other.amount_;
+  if (other.l_id_ != nullptr)
+    {
+      l_id_ = other.l_id_->clone_raw_ptr ();
+      l_id_->setParent (this);
+    }
+  if (other.r_id_ != nullptr)
+    {
+      r_id_ = other.r_id_->clone_raw_ptr ();
+      r_id_->setParent (this);
+    }
+  if (other.midi_id_ != nullptr)
+    {
+      midi_id_ = other.midi_id_->clone_raw_ptr ();
+      midi_id_->setParent (this);
+    }
+  send_action_type_ = other.send_action_type_;
 }
 
 bool

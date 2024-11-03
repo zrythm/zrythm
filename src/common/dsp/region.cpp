@@ -80,7 +80,8 @@ Region::gen_name (const char * base_name, AutomationTrack * at, Track * track)
   if (base_name)
     orig_name = base_name;
   else if (at)
-    orig_name = fmt::format ("{} - {}", track->name_, at->port_id_.get_label ());
+    orig_name =
+      fmt::format ("{} - {}", track->name_, at->port_id_->get_label ());
   else
     orig_name = track->name_;
 
@@ -394,8 +395,8 @@ RegionImpl<RegionT>::insert_clone_to_project_at_index (
       auto &at =
         automatable_track->get_automation_tracklist ().ats_[id_.at_idx_];
       ret = track->insert_region (
-        static_cast<const RegionT *> (this)->clone_shared (), at.get (), -1,
-        index, true, fire_events);
+        static_cast<const RegionT *> (this)->clone_shared (), at, -1, index,
+        true, fire_events);
     }
   else if constexpr (is_chord ())
     {
@@ -462,7 +463,7 @@ RegionImpl<
       auto &at = automatable_track->automation_tracklist_->ats_[at_pos];
 
       /* convert the automation points to match the new automatable */
-      auto port = Port::find_from_identifier<ControlPort> (at->port_id_);
+      auto port = Port::find_from_identifier<ControlPort> (*at->port_id_);
       z_return_if_fail (port);
       for (auto &ap : derived_.aps_)
         {
@@ -474,12 +475,11 @@ RegionImpl<
         {
           if (index >= 0)
             {
-              track->insert_region (
-                shared_this, at.get (), -1, index, false, false);
+              track->insert_region (shared_this, at, -1, index, false, false);
             }
           else
             {
-              track->add_region (shared_this, at.get (), -1, false, false);
+              track->add_region (shared_this, at, -1, false, false);
             }
         }
       catch (const ZrythmException &e)
@@ -819,8 +819,8 @@ RegionImpl<RegionT>::find (const RegionIdentifier &id)
           atl->print_regions ();
           z_error (
             "Automation track for {} has less regions ({}) than the given index {}",
-            at->port_id_.get_label (), at->regions_.size (), id.idx_);
-          return NULL;
+            at->port_id_->get_label (), at->regions_.size (), id.idx_);
+          return nullptr;
         }
 
       return std::dynamic_pointer_cast<RegionT> (at->regions_[id.idx_]);
@@ -1251,7 +1251,7 @@ RegionImpl<RegionT>::get_region_owner () const
       z_return_val_if_fail (automatable_track, nullptr);
       auto &at =
         automatable_track->get_automation_tracklist ().ats_[id_.at_idx_];
-      return at.get ();
+      return at;
     }
   else if constexpr (is_chord ())
     {

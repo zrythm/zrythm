@@ -8,6 +8,7 @@ MidiGroupTrack::MidiGroupTrack (const std::string &name, int pos)
 {
   color_ = Color (QColor ("#E66100"));
   icon_name_ = "signal-midi";
+  automation_tracklist_->setParent (this);
 }
 
 bool

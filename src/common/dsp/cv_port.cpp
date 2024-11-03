@@ -9,6 +9,7 @@
 
 CVPort::CVPort ()
 {
+  id_->setParent (this);
   minf_ = -1.f;
   maxf_ = 1.f;
   zerof_ = 0.f;
@@ -17,6 +18,7 @@ CVPort::CVPort ()
 CVPort::CVPort (std::string label, PortFlow flow)
     : Port (label, PortType::CV, flow, -1.f, 1.f, 0.f)
 {
+  id_->setParent (this);
 }
 
 void
@@ -48,15 +50,15 @@ CVPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
     }
 
   const auto &id = id_;
-  const auto  owner_type = id.owner_type_;
+  const auto  owner_type = id->owner_type_;
   auto        track = [&] () -> Track * {
     if (owner_type == PortIdentifier::OwnerType::TrackProcessor
         || owner_type == PortIdentifier::OwnerType::Track
         || owner_type == PortIdentifier::OwnerType::Channel
         || (owner_type == PortIdentifier::OwnerType::Fader
-            && (ENUM_BITSET_TEST (PortIdentifier::Flags2, id_.flags2_, PortIdentifier::Flags2::Prefader)
-                || ENUM_BITSET_TEST (PortIdentifier::Flags2, id_.flags2_, PortIdentifier::Flags2::Postfader)))
-        || (owner_type == PortIdentifier::OwnerType::Plugin && id_.plugin_id_.slot_type_ == zrythm::plugins::PluginSlotType::Instrument))
+            && (ENUM_BITSET_TEST (PortIdentifier::Flags2, id_->flags2_, PortIdentifier::Flags2::Prefader)
+                || ENUM_BITSET_TEST (PortIdentifier::Flags2, id_->flags2_, PortIdentifier::Flags2::Postfader)))
+        || (owner_type == PortIdentifier::OwnerType::Plugin && id_->plugin_id_.slot_type_ == zrythm::plugins::PluginSlotType::Instrument))
       {
         return ZRYTHM_TESTING ? get_track (true) : track_;
       }
@@ -69,11 +71,11 @@ CVPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
     {
       const auto * src_port = srcs_[k];
       const auto  &conn = src_connections_[k];
-      if (!conn.enabled_)
+      if (!conn->enabled_)
         continue;
 
       const float depth_range = (maxf_ - minf_) * 0.5f;
-      const float multiplier = depth_range * conn.multiplier_;
+      const float multiplier = depth_range * conn->multiplier_;
 
       /* sum the signals */
       if (math_floats_equal_epsilon (multiplier, 1.f, 0.00001f)) [[likely]]

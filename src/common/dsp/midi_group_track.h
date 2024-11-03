@@ -18,6 +18,7 @@ class MidiGroupTrack final
   Q_OBJECT
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (MidiGroupTrack)
+  DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (MidiGroupTrack)
 
   friend class InitializableObjectFactory<MidiGroupTrack>;
 

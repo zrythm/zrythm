@@ -343,7 +343,7 @@ Tracklist::insert_track (
         added_track->append_ports (ports, true);
         for (auto * port : ports)
           {
-            port->id_.flags2_ |= PortIdentifier::Flags2::SampleProcessorTrack;
+            port->id_->flags2_ |= PortIdentifier::Flags2::SampleProcessorTrack;
           }
       }
 
@@ -373,9 +373,9 @@ Tracklist::insert_track (
             for (const auto &at : atl.ats_)
               {
                 auto port =
-                  Port::find_from_identifier<ControlPort> (at->port_id_);
+                  Port::find_from_identifier<ControlPort> (*at->port_id_);
                 z_return_val_if_fail (port, nullptr);
-                port->at_ = at.get ();
+                port->at_ = at;
               }
           }
       }

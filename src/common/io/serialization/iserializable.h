@@ -1333,27 +1333,52 @@ public:
                 if (yyjson_is_obj (elem))
                   {
                     using SmartPtrType = typename T::value_type;
-                    using ObjType = typename SmartPtrType::element_type;
                     SmartPtrType ptr;
-                    if constexpr (is_unique_ptr_v<SmartPtrType>)
-                      ptr = std::make_unique<ObjType> ();
-                    else if constexpr (is_shared_ptr_v<SmartPtrType>)
-                      ptr = std::make_shared<ObjType> ();
+                    ctx.obj_ = elem;
+                    if constexpr (std::is_pointer_v<SmartPtrType>)
+                      {
+                        using ObjType = base_type<SmartPtrType>;
+                        ptr = new ObjType ();
+
+                        ptr->ISerializable<ObjType>::deserialize (ctx);
+                      }
                     else
                       {
-                        static_assert (
-                          dependent_false_v<T, VariantT>,
-                          "Unsupported pointer type");
+                        using ObjType = typename SmartPtrType::element_type;
+                        if constexpr (is_unique_ptr_v<SmartPtrType>)
+                          ptr = std::make_unique<ObjType> ();
+                        else if constexpr (is_shared_ptr_v<SmartPtrType>)
+                          ptr = std::make_shared<ObjType> ();
+                        else
+                          {
+                            static_assert (
+                              dependent_false_v<T, VariantT>,
+                              "Unsupported pointer type");
+                          }
+
+                        ptr->ISerializable<ObjType>::deserialize (ctx);
                       }
-                    ctx.obj_ = elem;
-                    ptr->ISerializable<ObjType>::deserialize (ctx);
                     if constexpr (StdArray<T>)
                       {
-                        value[i] = std::move (ptr);
+                        if constexpr (std::is_pointer_v<SmartPtrType>)
+                          {
+                            value[i] = ptr;
+                          }
+                        else
+                          {
+                            value[i] = std::move (ptr);
+                          }
                       }
                     else
                       {
-                        value.emplace_back (std::move (ptr));
+                        if constexpr (std::is_pointer_v<SmartPtrType>)
+                          {
+                            value.push_back (ptr);
+                          }
+                        else
+                          {
+                            value.emplace_back (std::move (ptr));
+                          }
                       }
                   }
                 else if (yyjson_is_null (elem))

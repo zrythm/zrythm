@@ -19,6 +19,7 @@ class AudioBusTrack final
   Q_OBJECT
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (AudioBusTrack)
+  DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (AudioBusTrack)
 
   friend class InitializableObjectFactory<AudioBusTrack>;
 

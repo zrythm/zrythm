@@ -116,9 +116,9 @@ MixerSelectionsAction::
       for (const auto &at : atl->ats_)
         {
           if (
-            at->port_id_.owner_type_ != PortIdentifier::OwnerType::Plugin
-            || at->port_id_.plugin_id_.slot_ != slot
-            || at->port_id_.plugin_id_.slot_type_ != ms.type_)
+            at->port_id_->owner_type_ != PortIdentifier::OwnerType::Plugin
+            || at->port_id_->plugin_id_.slot_ != slot
+            || at->port_id_->plugin_id_.slot_type_ != ms.type_)
             continue;
 
           if (deleted)
@@ -158,7 +158,7 @@ MixerSelectionsAction::copy_at_regions (
       z_debug (
         "reverted %zu regions for automation track %d:", dest.regions_.size (),
         dest.index_);
-      dest.port_id_.print ();
+      dest.port_id_->print ();
     }
 }
 
@@ -178,16 +178,16 @@ MixerSelectionsAction::revert_automation (
   for (auto &cloned_at : ats)
     {
       if (
-        cloned_at->port_id_.plugin_id_.slot_ != slot
-        || cloned_at->port_id_.plugin_id_.slot_type_ != ms.type_)
+        cloned_at->port_id_->plugin_id_.slot_ != slot
+        || cloned_at->port_id_->plugin_id_.slot_type_ != ms.type_)
         {
           continue;
         }
 
       /* find corresponding automation track in track and copy regions */
       auto actual_at = atl->get_plugin_at (
-        ms.type_, slot, cloned_at->port_id_.port_index_,
-        cloned_at->port_id_.sym_);
+        ms.type_, slot, cloned_at->port_id_->port_index_,
+        cloned_at->port_id_->sym_);
 
       copy_at_regions (*actual_at, *cloned_at);
       num_reverted_regions += actual_at->regions_.size ();
@@ -411,7 +411,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
               pl->append_ports (ports);
               for (auto port : ports)
                 {
-                  auto prj_port = Port::find_from_identifier (port->id_);
+                  auto prj_port = Port::find_from_identifier (*port->id_);
                   prj_port->restore_from_non_project (*port);
                 }
 
@@ -583,9 +583,9 @@ MixerSelectionsAction::copy_automation_from_track1_to_track2 (
     {
       if (
         prev_at->regions_.empty ()
-        || prev_at->port_id_.owner_type_ != PortIdentifier::OwnerType::Plugin
-        || prev_at->port_id_.plugin_id_.slot_ != from_slot
-        || prev_at->port_id_.plugin_id_.slot_type_ != slot_type)
+        || prev_at->port_id_->owner_type_ != PortIdentifier::OwnerType::Plugin
+        || prev_at->port_id_->plugin_id_.slot_ != from_slot
+        || prev_at->port_id_->plugin_id_.slot_type_ != slot_type)
         {
           continue;
         }
@@ -595,10 +595,10 @@ MixerSelectionsAction::copy_automation_from_track1_to_track2 (
       for (auto &at : atl.ats_)
         {
           if (
-            at->port_id_.owner_type_ != PortIdentifier::OwnerType::Plugin
-            || at->port_id_.plugin_id_.slot_ != to_slot
-            || at->port_id_.plugin_id_.slot_type_ != slot_type
-            || at->port_id_.port_index_ != prev_at->port_id_.port_index_)
+            at->port_id_->owner_type_ != PortIdentifier::OwnerType::Plugin
+            || at->port_id_->plugin_id_.slot_ != to_slot
+            || at->port_id_->plugin_id_.slot_type_ != slot_type
+            || at->port_id_->port_index_ != prev_at->port_id_->port_index_)
             {
               continue;
             }
@@ -607,7 +607,7 @@ MixerSelectionsAction::copy_automation_from_track1_to_track2 (
           for (auto &prev_region : prev_at->regions_)
             {
               to_track.add_region (
-                prev_region->clone_shared (), at.get (), -1, false, false);
+                prev_region->clone_shared (), at, -1, false, false);
             }
           break;
         }

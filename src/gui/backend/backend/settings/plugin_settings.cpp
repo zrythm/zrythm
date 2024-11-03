@@ -295,7 +295,7 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
               /* route left port to audio fx */
               UNDO_MANAGER->perform (
                 std::make_unique<PortConnectionConnectAction> (
-                  port->id_, fx_track->processor_->stereo_in_->get_l ().id_));
+                  *port->id_, *fx_track->processor_->stereo_in_->get_l ().id_));
               num_actions++;
 
               int r_index = has_stereo_outputs ? i * 2 + 1 : i;
@@ -304,7 +304,7 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
               /* route right port to audio fx */
               UNDO_MANAGER->perform (
                 std::make_unique<PortConnectionConnectAction> (
-                  port->id_, fx_track->processor_->stereo_in_->get_r ().id_));
+                  *port->id_, *fx_track->processor_->stereo_in_->get_r ().id_));
               num_actions++;
             }
 

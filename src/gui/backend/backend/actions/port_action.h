@@ -16,7 +16,8 @@
  */
 
 class PortAction
-    : public UndoableAction,
+    : public QObject,
+      public UndoableAction,
       public ICloneable<PortAction>,
       public ISerializable<PortAction>
 {
@@ -28,8 +29,8 @@ public:
   };
 
 public:
-  PortAction () : UndoableAction (UndoableAction::Type::Port) { }
-  virtual ~PortAction () = default;
+  PortAction (QObject * parent = nullptr);
+  ~PortAction () override = default;
 
   /**
    * @brief Construct a new action for setting a control.
@@ -60,7 +61,7 @@ private:
 public:
   Type type_ = Type::SetControlValue;
 
-  PortIdentifier port_id_;
+  PortIdentifier * port_id_ = nullptr;
 
   /**
    * Real (not normalized) value before/after the change.
@@ -77,7 +78,7 @@ class PortActionResetControl : public PortAction
 {
 public:
   PortActionResetControl (const ControlPort &port)
-      : PortAction (PortAction::Type::SetControlValue, port.id_, port.deff_, false)
+      : PortAction (PortAction::Type::SetControlValue, *port.id_, port.deff_, false)
   {
   }
 };

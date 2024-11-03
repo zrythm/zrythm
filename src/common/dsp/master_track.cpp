@@ -9,6 +9,7 @@ MasterTrack::MasterTrack (int pos)
   /* GTK color picker color */
   color_ = Color (QColor ("#D90368"));
   icon_name_ = "jam-icons-crown";
+  automation_tracklist_->setParent (this);
 }
 
 bool

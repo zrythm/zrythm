@@ -9,6 +9,7 @@ AudioGroupTrack::AudioGroupTrack (const std::string &name, int pos)
   /* GTK color picker color */
   color_ = Color (QColor ("#26A269"));
   icon_name_ = "effect";
+  automation_tracklist_->setParent (this);
 }
 
 bool

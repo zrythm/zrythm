@@ -661,7 +661,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
       if (!at->recording_paused_)
         return false;
 
-      auto  port = Port::find_from_identifier<ControlPort> (at->port_id_);
+      auto  port = Port::find_from_identifier<ControlPort> (*at->port_id_);
       float value = port->get_control_value (false);
       float normalized_value = port->get_control_value (true);
 
@@ -677,7 +677,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
           try
             {
               auto ret = tr->add_region<AutomationRegion> (
-                std::move (new_region_to_add), at.get (), -1, true, true);
+                std::move (new_region_to_add), at, -1, true, true);
               new_region = ret.get ();
             }
           catch (const ZrythmException &e)
@@ -700,7 +700,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
 
           /* create/replace ap at loop start */
           create_automation_point (
-            at.get (), *new_region, value, normalized_value, resume_pos);
+            at, *new_region, value, normalized_value, resume_pos);
         }
     }
 
@@ -915,7 +915,7 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
     TRACKLIST->find_track_by_name_hash<AutomatableTrack> (ev.track_name_hash_);
   auto &atl = tr->automation_tracklist_;
   auto &at = atl->ats_[ev.automation_track_idx_];
-  auto  port = Port::find_from_identifier<ControlPort> (at->port_id_);
+  auto  port = Port::find_from_identifier<ControlPort> (*at->port_id_);
   float value = port->get_control_value (false);
   float normalized_value = port->get_control_value (true);
   if (ZRYTHM_TESTING)
@@ -959,7 +959,7 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
             std::make_shared<AutomationRegion> (
               start_pos, pos_to_end_new_r, tr->get_name_hash (), at->index_,
               at->regions_.size ()),
-            at.get (), -1, true, true)
+            at, -1, true, true)
           .get ();
       new_region_created = true;
       z_return_if_fail (region);
@@ -980,14 +980,13 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
   /* handle the samples normally */
   if (automation_value_changed)
     {
-      create_automation_point (
-        at.get (), *region, value, normalized_value, start_pos);
+      create_automation_point (at, *region, value, normalized_value, start_pos);
       at->last_recorded_value_ = value;
     }
   else if (at->record_mode_ == AutomationRecordMode::Latch)
     {
       z_return_if_fail (region);
-      delete_automation_points (at.get (), *region, start_pos);
+      delete_automation_points (at, *region, start_pos);
     }
 
   /* if we left touch mode, set last recorded ap to NULL */
@@ -1011,7 +1010,7 @@ RecordingManager::handle_start_recording (
   AutomationTrack * at = nullptr;
   if (is_automation)
     {
-      at = tr->automation_tracklist_->ats_[ev.automation_track_idx_].get ();
+      at = tr->automation_tracklist_->ats_[ev.automation_track_idx_];
     }
 
   if (num_active_recordings_ == 0)
@@ -1048,7 +1047,7 @@ RecordingManager::handle_start_recording (
       /*at->recording_paused = false;*/
 
       /* nothing, wait for event to start writing data */
-      auto * port = Port::find_from_identifier<ControlPort> (at->port_id_);
+      auto * port = Port::find_from_identifier<ControlPort> (*at->port_id_);
       float  value = port->get_control_value (false);
 
       if (at->should_be_recording (cur_time, true))

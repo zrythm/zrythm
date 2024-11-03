@@ -17,14 +17,18 @@
  * @brief MIDI port specifics.
  */
 class MidiPort final
-    : public Port,
+    : public QObject,
+      public Port,
       public ICloneable<MidiPort>,
       public ISerializable<MidiPort>
 {
+  Q_OBJECT
+  QML_ELEMENT
+
 public:
-  MidiPort () = default;
+  MidiPort ();
   MidiPort (std::string label, PortFlow flow);
-  ~MidiPort ();
+  ~MidiPort () override;
 
 #if HAVE_RTMIDI
   /**

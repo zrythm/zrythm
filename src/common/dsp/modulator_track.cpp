@@ -28,6 +28,8 @@ ModulatorTrack::ModulatorTrack (int track_pos)
 
   /* set invisible */
   visible_ = false;
+
+  automation_tracklist_->setParent (this);
 }
 
 bool

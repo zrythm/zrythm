@@ -8,6 +8,7 @@ MidiBusTrack::MidiBusTrack (const std::string &name, int pos)
 {
   color_ = Color (QColor ("#F5C211"));
   icon_name_ = "signal-midi";
+  automation_tracklist_->setParent (this);
 }
 
 bool

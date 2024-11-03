@@ -69,8 +69,11 @@ ArrangerSelectionsAction::init_after_cloning (
   delta_pitch_ = other.delta_pitch_;
   delta_vel_ = other.delta_vel_;
   delta_normalized_amount_ = other.delta_normalized_amount_;
-  if (other.target_port_)
-    target_port_ = std::make_unique<PortIdentifier> (*other.target_port_);
+  if (other.target_port_ != nullptr)
+    {
+      target_port_ = other.target_port_->clone_raw_ptr ();
+      target_port_->setParent (this);
+    }
   str_ = other.str_;
   pos_ = other.pos_;
   for (auto &r : other.r1_)
@@ -199,7 +202,8 @@ ArrangerSelectionsAction::MoveOrDuplicateAction::MoveOrDuplicateAction (
 
   if (tgt_port_id)
     {
-      target_port_ = std::make_unique<PortIdentifier> (*tgt_port_id);
+      target_port_ = tgt_port_id->clone_raw_ptr ();
+      target_port_->setParent (this);
     }
 }
 
@@ -527,8 +531,8 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
                       /* remember info in identifier */
                       own_obj_ptr->id_ = prj_obj->id_;
 
-                      target_port_ =
-                        std::make_unique<PortIdentifier> (cur_at->port_id_);
+                      target_port_ = cur_at->port_id_->clone_raw_ptr ();
+                      target_port_->setParent (this);
                     }
                   else
                     {

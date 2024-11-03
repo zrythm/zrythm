@@ -181,11 +181,11 @@ public:
    */
   int append_connection (
     const PortConnectionsManager * mgr,
-    std::vector<PortConnection>   &arr) const;
+    std::vector<PortConnection *> &arr) const;
 
   void prepare_process ();
 
-  void process (const nframes_t local_offset, const nframes_t nframes);
+  void process (nframes_t local_offset, nframes_t nframes);
 
   /**
    * Returns whether the send is connected to the given ports.

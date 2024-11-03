@@ -20,10 +20,13 @@
  * MIDI mapping action.
  */
 class MidiMappingAction final
-    : public UndoableAction,
+    : public QObject,
+      public UndoableAction,
       public ICloneable<MidiMappingAction>,
       public ISerializable<MidiMappingAction>
 {
+  Q_OBJECT
+
 public:
   enum class Type
   {
@@ -34,7 +37,7 @@ public:
   };
 
 public:
-  MidiMappingAction () : UndoableAction (UndoableAction::Type::MidiMapping) { }
+  MidiMappingAction (QObject * parent = nullptr);
 
   /**
    * @brief Create a new action for enabling/disabling a MIDI mapping.
@@ -80,11 +83,11 @@ public:
   /** Action type. */
   Type type_ = (Type) 0;
 
-  std::unique_ptr<PortIdentifier> dest_port_id_;
+  PortIdentifier * dest_port_id_ = nullptr;
 
   std::unique_ptr<ExtPort> dev_port_;
 
-  std::array<midi_byte_t, 3> buf_;
+  std::array<midi_byte_t, 3> buf_{};
 };
 
 /**

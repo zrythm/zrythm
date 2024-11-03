@@ -66,6 +66,7 @@ concept FinalPortSubclass = std::derived_from<T, Port> && FinalClass<T>;
 
 class Port : public ISerializable<Port>
 {
+  Q_DISABLE_COPY_MOVE (Port)
 public:
   /**
    * What the internal data is.
@@ -115,13 +116,13 @@ public:
 
   std::string get_label () const;
 
-  inline bool is_control () const { return id_.is_control (); }
-  inline bool is_audio () const { return id_.type_ == PortType::Audio; }
-  inline bool is_cv () const { return id_.type_ == PortType::CV; }
-  inline bool is_event () const { return id_.type_ == PortType::Event; }
+  inline bool is_control () const { return id_->is_control (); }
+  inline bool is_audio () const { return id_->type_ == PortType::Audio; }
+  inline bool is_cv () const { return id_->type_ == PortType::CV; }
+  inline bool is_event () const { return id_->type_ == PortType::Event; }
   inline bool is_midi () const { return is_event (); }
-  inline bool is_input () const { return id_.flow_ == PortFlow::Input; }
-  inline bool is_output () const { return id_.flow_ == PortFlow::Output; }
+  inline bool is_input () const { return id_->flow_ == PortFlow::Input; }
+  inline bool is_output () const { return id_->flow_ == PortFlow::Output; }
 
   /**
    * @brief Allocates buffers used during DSP.
@@ -191,7 +192,7 @@ public:
   inline bool is_exposed_to_backend () const
   {
     return internal_type_ == InternalType::JackPort
-           || id_.owner_type_ == PortIdentifier::OwnerType::AudioEngine
+           || id_->owner_type_ == PortIdentifier::OwnerType::AudioEngine
            || exposed_to_backend_;
   }
 
@@ -225,7 +226,7 @@ public:
    * @param noroll Whether to clear the port buffer in this range.
    */
   ATTR_HOT virtual void
-  process (const EngineProcessTimeInfo time_nfo, const bool noroll) = 0;
+  process (EngineProcessTimeInfo time_nfo, bool noroll) = 0;
 
   bool is_connected_to (const Port &dest) const;
 
@@ -276,9 +277,9 @@ public:
   /** Same as above, to be used as a callback. */
   static uint32_t get_hash (const void * ptr);
 
-  bool     has_label () const { return !id_.label_.empty (); }
-  PortType get_type () const { return id_.type_; }
-  PortFlow get_flow () const { return id_.flow_; }
+  bool     has_label () const { return !id_->label_.empty (); }
+  PortType get_type () const { return id_->type_; }
+  PortFlow get_flow () const { return id_->flow_; }
 
   /**
    * Connects to @p dest with default settings: { enabled: true,
@@ -293,7 +294,7 @@ public:
   void disconnect_from (PortConnectionsManager &mgr, Port &dest);
 
 protected:
-  Port () = default;
+  Port ();
 
   Port (
     std::string label,
@@ -312,8 +313,7 @@ private:
   /**
    * Sums the inputs coming in from JACK, before the port is processed.
    */
-  void
-  sum_data_from_jack (const nframes_t start_frame, const nframes_t nframes);
+  void sum_data_from_jack (nframes_t start_frame, nframes_t nframes);
 
   /**
    * Sends the port data to JACK, after the port is processed.
@@ -330,7 +330,10 @@ private:
   int get_num_unlocked (bool sources) const;
 
 public:
-  PortIdentifier id_ = PortIdentifier ();
+  /**
+   * @brief Owned pointer.
+   */
+  PortIdentifier * id_ = nullptr;
 
   /**
    * Flag to indicate that this port is exposed to the backend.
@@ -343,9 +346,12 @@ public:
   /** Caches filled when recalculating the graph. */
   std::vector<Port *> dests_;
 
-  /** Caches filled when recalculating the graph. */
-  std::vector<PortConnection> src_connections_;
-  std::vector<PortConnection> dest_connections_;
+  /** Caches filled when recalculating the graph.
+   *
+   * The pointers are owned by this instance.
+   */
+  std::vector<std::unique_ptr<PortConnection>> src_connections_;
+  std::vector<std::unique_ptr<PortConnection>> dest_connections_;
 
   /**
    * Indicates whether data or lv2_port should be used.

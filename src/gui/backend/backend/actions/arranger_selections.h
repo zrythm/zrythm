@@ -43,10 +43,13 @@
  * such as changing the name or position of the selected objects.
  */
 class ArrangerSelectionsAction
-    : public UndoableAction,
+    : public QObject,
+      public UndoableAction,
       public ICloneable<ArrangerSelectionsAction>,
       public ISerializable<ArrangerSelectionsAction>
 {
+  Q_OBJECT
+
 public:
   enum class Type
   {
@@ -120,7 +123,7 @@ public:
   };
 
   ArrangerSelectionsAction ();
-  virtual ~ArrangerSelectionsAction () = default;
+  ~ArrangerSelectionsAction () override = default;
 
   class RecordAction;
   class MoveOrDuplicateAction;
@@ -271,7 +274,7 @@ public:
   /** Target port (used to find corresponding automation track when
    * moving/copying automation regions to another automation track/another
    * track). */
-  std::unique_ptr<PortIdentifier> target_port_;
+  PortIdentifier * target_port_ = nullptr;
 
   /** String, when changing a string. */
   std::string str_;
@@ -307,7 +310,7 @@ public:
 class CreateOrDeleteArrangerSelectionsAction : public ArrangerSelectionsAction
 {
 public:
-  virtual ~CreateOrDeleteArrangerSelectionsAction () = default;
+  ~CreateOrDeleteArrangerSelectionsAction () override = default;
 
 protected:
   /**

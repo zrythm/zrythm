@@ -43,7 +43,7 @@ public:
 
   AutomationPoint (const Position &pos);
 
-  ~AutomationPoint ();
+  ~AutomationPoint () override;
 
   /**
    * Creates an AutomationPoint at the given Position.

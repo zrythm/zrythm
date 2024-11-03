@@ -76,12 +76,12 @@ Plugin::set_stereo_outs_and_midi_in ()
         {
           if (num_audio_outs == 0)
             {
-              out_port->id_.flags_ |= PortIdentifier::Flags::StereoL;
+              out_port->id_->flags_ |= PortIdentifier::Flags::StereoL;
               l_out_ = dynamic_cast<AudioPort *> (out_port.get ());
             }
           else if (num_audio_outs == 1)
             {
-              out_port->id_.flags_ |= PortIdentifier::Flags::StereoR;
+              out_port->id_->flags_ |= PortIdentifier::Flags::StereoR;
               r_out_ = dynamic_cast<AudioPort *> (out_port.get ());
             }
           num_audio_outs++;
@@ -94,7 +94,7 @@ Plugin::set_stereo_outs_and_midi_in ()
       /* this code is only accessed by beta projects before the change to force
        * stereo a few commits after beta 1.1.11 */
       z_warning ("should not happen with carla");
-      l_out_->id_.flags_ |= PortIdentifier::Flags::StereoR;
+      l_out_->id_->flags_ |= PortIdentifier::Flags::StereoR;
       r_out_ = l_out_;
     }
 
@@ -109,7 +109,7 @@ Plugin::set_stereo_outs_and_midi_in ()
     {
       if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, port->id_.flags2_,
+          PortIdentifier::Flags2, port->id_->flags2_,
           PortIdentifier::Flags2::SupportsMidi))
         {
           midi_in_port_ = dynamic_cast<MidiPort *> (port.get ());
@@ -134,19 +134,20 @@ Plugin::set_enabled_and_gain ()
       if (
         !(port->is_control ()
           && ENUM_BITSET_TEST (
-            PortIdentifier::Flags, id.flags_,
+            PortIdentifier::Flags, id->flags_,
             PortIdentifier::Flags::GenericPluginPort)))
         continue;
 
       if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags, id.flags_, PortIdentifier::Flags::PluginEnabled))
+          PortIdentifier::Flags, id->flags_,
+          PortIdentifier::Flags::PluginEnabled))
         {
           enabled_ = dynamic_cast<ControlPort *> (port.get ());
         }
       if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags, id.flags_, PortIdentifier::Flags::PluginGain))
+          PortIdentifier::Flags, id->flags_, PortIdentifier::Flags::PluginGain))
         {
           gain_ = dynamic_cast<ControlPort *> (port.get ());
         }
@@ -222,13 +223,13 @@ Plugin::init (
 
   /* add enabled port */
   auto port = std::make_unique<ControlPort> (_ ("Enabled"));
-  port->id_.sym_ = "enabled";
-  port->id_.comment_ = _ ("Enables or disables the plugin");
-  port->id_.port_group_ = "[Zrythm]";
-  port->id_.flags_ |= PortIdentifier::Flags::PluginEnabled;
-  port->id_.flags_ |= PortIdentifier::Flags::Toggle;
-  port->id_.flags_ |= PortIdentifier::Flags::Automatable;
-  port->id_.flags_ |= PortIdentifier::Flags::GenericPluginPort;
+  port->id_->sym_ = "enabled";
+  port->id_->comment_ = _ ("Enables or disables the plugin");
+  port->id_->port_group_ = "[Zrythm]";
+  port->id_->flags_ |= PortIdentifier::Flags::PluginEnabled;
+  port->id_->flags_ |= PortIdentifier::Flags::Toggle;
+  port->id_->flags_ |= PortIdentifier::Flags::Automatable;
+  port->id_->flags_ |= PortIdentifier::Flags::GenericPluginPort;
   port->minf_ = 0.f;
   port->maxf_ = 1.f;
   port->zerof_ = 0.f;
@@ -240,12 +241,12 @@ Plugin::init (
 
   /* add gain port */
   port = std::make_unique<ControlPort> (_ ("Gain"));
-  port->id_.sym_ = "gain";
-  port->id_.comment_ = _ ("Plugin gain");
-  port->id_.flags_ |= PortIdentifier::Flags::PluginGain;
-  port->id_.flags_ |= PortIdentifier::Flags::Automatable;
-  port->id_.flags_ |= PortIdentifier::Flags::GenericPluginPort;
-  port->id_.port_group_ = "[Zrythm]";
+  port->id_->sym_ = "gain";
+  port->id_->comment_ = _ ("Plugin gain");
+  port->id_->flags_ |= PortIdentifier::Flags::PluginGain;
+  port->id_->flags_ |= PortIdentifier::Flags::Automatable;
+  port->id_->flags_ |= PortIdentifier::Flags::GenericPluginPort;
+  port->id_->port_group_ = "[Zrythm]";
   port->minf_ = 0.f;
   port->maxf_ = 8.f;
   port->zerof_ = 0.f;
@@ -412,14 +413,14 @@ Plugin::remove_ats_from_automation_tracklist (bool free_ats, bool fire_events)
     {
       auto &at = *it;
       if (
-        at->port_id_.owner_type_ == PortIdentifier::OwnerType::Plugin
+        at->port_id_->owner_type_ == PortIdentifier::OwnerType::Plugin
         || ENUM_BITSET_TEST (
-          PortIdentifier::Flags, at->port_id_.flags_,
+          PortIdentifier::Flags, at->port_id_->flags_,
           PortIdentifier::Flags::PluginControl))
         {
           if (
-            at->port_id_.plugin_id_.slot_ == id_.slot_
-            && at->port_id_.plugin_id_.slot_type_ == id_.slot_type_)
+            at->port_id_->plugin_id_.slot_ == id_.slot_
+            && at->port_id_->plugin_id_.slot_type_ == id_.slot_type_)
             {
               atl.remove_at (*at, free_ats, fire_events);
             }
@@ -573,7 +574,7 @@ Plugin::set_track_and_slot (
       port->set_owner<zrythm::plugins::Plugin> (this);
       if (is_in_active_project ())
         {
-          port->update_identifier (copy_id, track, false);
+          port->update_identifier (*copy_id, track, false);
         }
     }
   for (auto &port : out_ports_)
@@ -582,7 +583,7 @@ Plugin::set_track_and_slot (
       port->set_owner<zrythm::plugins::Plugin> (this);
       if (is_in_active_project ())
         {
-          port->update_identifier (copy_id, track, false);
+          port->update_identifier (*copy_id, track, false);
         }
     }
 }
@@ -669,8 +670,8 @@ Plugin::get_port_in_group (const std::string &port_group, bool left) const
   for (const auto &port : in_ports_)
     {
       if (
-        port->id_.port_group_ == port_group
-        && ENUM_BITSET_TEST (PortIdentifier::Flags, port->id_.flags_, flag))
+        port->id_->port_group_ == port_group
+        && ENUM_BITSET_TEST (PortIdentifier::Flags, port->id_->flags_, flag))
         {
           return port.get ();
         }
@@ -678,8 +679,8 @@ Plugin::get_port_in_group (const std::string &port_group, bool left) const
   for (const auto &port : out_ports_)
     {
       if (
-        port->id_.port_group_ == port_group
-        && ENUM_BITSET_TEST (PortIdentifier::Flags, port->id_.flags_, flag))
+        port->id_->port_group_ == port_group
+        && ENUM_BITSET_TEST (PortIdentifier::Flags, port->id_->flags_, flag))
         {
           return port.get ();
         }
@@ -691,13 +692,14 @@ Plugin::get_port_in_group (const std::string &port_group, bool left) const
 Port *
 Plugin::get_port_in_same_group (const Port &port)
 {
-  if (port.id_.port_group_.empty ())
+  if (port.id_->port_group_.empty ())
     {
       z_warning ("port {} has no port group", port.get_label ());
       return nullptr;
     }
 
-  const auto &ports = port.id_.flow_ == PortFlow::Input ? in_ports_ : out_ports_;
+  const auto &ports =
+    port.id_->flow_ == PortFlow::Input ? in_ports_ : out_ports_;
 
   for (const auto &cur_port : ports)
     {
@@ -706,7 +708,7 @@ Plugin::get_port_in_same_group (const Port &port)
           continue;
         }
 
-      if (port.id_.port_group_ == cur_port->id_.port_group_ && ((ENUM_BITSET_TEST (PortIdentifier::Flags, cur_port->id_.flags_, PortIdentifier::Flags::StereoL) && ENUM_BITSET_TEST (PortIdentifier::Flags, port.id_.flags_, PortIdentifier::Flags::StereoR)) || (ENUM_BITSET_TEST (PortIdentifier::Flags, cur_port->id_.flags_, PortIdentifier::Flags::StereoR) && ENUM_BITSET_TEST (PortIdentifier::Flags, port.id_.flags_, PortIdentifier::Flags::StereoL))))
+      if (port.id_->port_group_ == cur_port->id_->port_group_ && ((ENUM_BITSET_TEST (PortIdentifier::Flags, cur_port->id_->flags_, PortIdentifier::Flags::StereoL) && ENUM_BITSET_TEST (PortIdentifier::Flags, port.id_->flags_, PortIdentifier::Flags::StereoR)) || (ENUM_BITSET_TEST (PortIdentifier::Flags, cur_port->id_->flags_, PortIdentifier::Flags::StereoR) && ENUM_BITSET_TEST (PortIdentifier::Flags, port.id_->flags_, PortIdentifier::Flags::StereoL))))
         {
           return cur_port.get ();
         }
@@ -803,7 +805,7 @@ Plugin::update_latency ()
 Port *
 Plugin::add_in_port (std::unique_ptr<Port> &&port)
 {
-  port->id_.port_index_ = in_ports_.size ();
+  port->id_->port_index_ = in_ports_.size ();
   port->set_owner<zrythm::plugins::Plugin> (this);
   in_ports_.emplace_back (std::move (port));
   return in_ports_.back ().get ();
@@ -812,7 +814,7 @@ Plugin::add_in_port (std::unique_ptr<Port> &&port)
 Port *
 Plugin::add_out_port (std::unique_ptr<Port> &&port)
 {
-  port->id_.port_index_ = out_ports_.size ();
+  port->id_->port_index_ = out_ports_.size ();
   port->set_owner<zrythm::plugins::Plugin> (this);
   out_ports_.push_back (std::move (port));
   return out_ports_.back ().get ();
@@ -837,10 +839,10 @@ Plugin::move_automation (
   auto name_hash = track.get_name_hash ();
   for (auto &at : prev_atl.ats_)
     {
-      auto port = Port::find_from_identifier<ControlPort> (at->port_id_);
+      auto port = Port::find_from_identifier<ControlPort> (*at->port_id_);
       if (!port)
         continue;
-      if (port->id_.owner_type_ == PortIdentifier::OwnerType::Plugin)
+      if (port->id_->owner_type_ == PortIdentifier::OwnerType::Plugin)
         {
           auto port_pl = port->get_plugin (true);
           if (port_pl != this)
@@ -849,24 +851,25 @@ Plugin::move_automation (
       else
         continue;
 
-      z_return_if_fail (port->at_ == at.get ());
+      z_return_if_fail (port->at_ == at);
 
       /* delete from prev channel */
       auto num_regions_before = at->regions_.size ();
-      auto removed_at = prev_atl.remove_at (*at, false, false);
+      auto * removed_at = prev_atl.remove_at (*at, false, false);
 
       /* add to new channel */
-      auto added_at = atl.add_at (std::move (removed_at));
+      auto added_at = atl.add_at (*removed_at);
       z_return_if_fail (
-        added_at == atl.ats_[added_at->index_].get ()
+        added_at == atl.ats_[added_at->index_]
         && added_at->regions_.size () == num_regions_before);
 
       /* update the automation track port identifier */
-      added_at->port_id_.plugin_id_.slot_ = new_slot;
-      added_at->port_id_.plugin_id_.slot_type_ = new_slot_type;
-      added_at->port_id_.plugin_id_.track_name_hash_ = name_hash;
+      added_at->port_id_->plugin_id_.slot_ = new_slot;
+      added_at->port_id_->plugin_id_.slot_type_ = new_slot_type;
+      added_at->port_id_->plugin_id_.track_name_hash_ = name_hash;
 
-      z_return_if_fail (added_at->port_id_.port_index_ == port->id_.port_index_);
+      z_return_if_fail (
+        added_at->port_id_->port_index_ == port->id_->port_index_);
     }
 }
 
@@ -948,13 +951,14 @@ Plugin::generate_automation_tracks (AutomatableTrack &track)
   for (auto port : in_ports_ | type_is<ControlPort> ())
     {
       if (
-        port->id_.type_ != PortType::Control
+        port->id_->type_ != PortType::Control
         || !(ENUM_BITSET_TEST (
-          PortIdentifier::Flags, port->id_.flags_,
+          PortIdentifier::Flags, port->id_->flags_,
           PortIdentifier::Flags::Automatable)))
         continue;
 
-      atl.add_at (std::make_unique<AutomationTrack> (*port));
+      auto * at = new AutomationTrack (*port);
+      atl.add_at (*at);
     }
 }
 
@@ -968,10 +972,10 @@ Plugin::get_enabled_port ()
     {
       if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags, port->id_.flags_,
+          PortIdentifier::Flags, port->id_->flags_,
           PortIdentifier::Flags::PluginEnabled)
         && ENUM_BITSET_TEST (
-          PortIdentifier::Flags, port->id_.flags_,
+          PortIdentifier::Flags, port->id_->flags_,
           PortIdentifier::Flags::GenericPluginPort))
         {
           return port.get ();
@@ -989,12 +993,12 @@ Plugin::update_identifier ()
   for (auto &port : in_ports_)
     {
       port->update_track_name_hash (*track_, id_.track_name_hash_);
-      port->id_.plugin_id_ = id_;
+      port->id_->plugin_id_ = id_;
     }
   for (auto &port : out_ports_)
     {
       port->update_track_name_hash (*track_, id_.track_name_hash_);
-      port->id_.plugin_id_ = id_;
+      port->id_->plugin_id_ = id_;
     }
 }
 
@@ -1088,7 +1092,7 @@ Plugin::process (const EngineProcessTimeInfo time_nfo)
     {
       for (auto &port : out_ports_)
         {
-          if (port->id_.type_ != PortType::Audio)
+          if (!port->is_audio ())
             continue;
 
           /* if close to 0 set it to the denormal prevention val */
@@ -1129,7 +1133,7 @@ Plugin::set_caches ()
 
   for (auto &port : in_ports_)
     {
-      switch (port->id_.type_)
+      switch (port->id_->type_)
         {
         case PortType::Control:
           ctrl_in_ports_.push_back (dynamic_cast<ControlPort *> (port.get ()));
@@ -1411,13 +1415,13 @@ Plugin::process_passthrough (const EngineProcessTimeInfo time_nfo)
   for (auto &in_port : in_ports_)
     {
       bool goto_next = false;
-      switch (in_port->id_.type_)
+      switch (in_port->id_->type_)
         {
         case PortType::Audio:
           for (size_t j = last_audio_idx; j < out_ports_.size (); j++)
             {
               auto &out_port = out_ports_[j];
-              if (out_port->id_.type_ == PortType::Audio)
+              if (out_port->is_audio ())
                 {
                   /* copy */
                   dsp_copy (
@@ -1437,9 +1441,9 @@ Plugin::process_passthrough (const EngineProcessTimeInfo time_nfo)
             {
               auto &out_port = out_ports_[j];
               if (
-                out_port->id_.type_ == PortType::Event
+                out_port->id_->type_ == PortType::Event
                 && ENUM_BITSET_TEST (
-                  PortIdentifier::Flags2, out_port->id_.flags2_,
+                  PortIdentifier::Flags2, out_port->id_->flags2_,
                   PortIdentifier::Flags2::SupportsMidi))
                 {
                   auto midi_in_port = dynamic_cast<MidiPort *> (in_port.get ());
@@ -1503,13 +1507,13 @@ Plugin::connect_to_plugin (Plugin &dest)
 
   for (const auto &out_port : out_ports_)
     {
-      if (out_port->id_.type_ == PortType::Audio)
+      if (out_port->is_audio ())
         num_src_audio_outs++;
     }
 
   for (const auto &in_port : dest.in_ports_)
     {
-      if (in_port->id_.type_ == PortType::Audio)
+      if (in_port->is_audio ())
         num_dest_audio_ins++;
     }
 
@@ -1517,11 +1521,11 @@ Plugin::connect_to_plugin (Plugin &dest)
     {
       for (auto &out_port : out_ports_)
         {
-          if (out_port->id_.type_ == PortType::Audio)
+          if (out_port->is_audio ())
             {
               for (auto &in_port : dest.in_ports_)
                 {
-                  if (in_port->id_.type_ == PortType::Audio)
+                  if (in_port->is_audio ())
                     {
                       out_port->connect_to (*connections_mgr, *in_port, true);
                       goto done1;
@@ -1536,11 +1540,11 @@ Plugin::connect_to_plugin (Plugin &dest)
        * each input */
       for (auto &out_port : out_ports_)
         {
-          if (out_port->id_.type_ == PortType::Audio)
+          if (out_port->is_audio ())
             {
               for (auto &in_port : dest.in_ports_)
                 {
-                  if (in_port->id_.type_ == PortType::Audio)
+                  if (in_port->is_audio ())
                     {
                       out_port->connect_to (*connections_mgr, *in_port, true);
                     }
@@ -1555,11 +1559,11 @@ Plugin::connect_to_plugin (Plugin &dest)
        * input channel found */
       for (auto &in_port : dest.in_ports_)
         {
-          if (in_port->id_.type_ == PortType::Audio)
+          if (in_port->is_audio ())
             {
               for (auto &out_port : out_ports_)
                 {
-                  if (out_port->id_.type_ == PortType::Audio)
+                  if (out_port->is_audio ())
                     {
                       out_port->connect_to (*connections_mgr, *in_port, true);
                       goto done1;
@@ -1578,12 +1582,12 @@ Plugin::connect_to_plugin (Plugin &dest)
       size_t ports_connected = 0;
       for (auto &out_port : out_ports_)
         {
-          if (out_port->id_.type_ == PortType::Audio)
+          if (out_port->is_audio ())
             {
               for (; last_index < dest.in_ports_.size (); last_index++)
                 {
                   auto &in_port = *dest.in_ports_[last_index];
-                  if (in_port.id_.type_ == PortType::Audio)
+                  if (in_port.is_audio ())
                     {
                       out_port->connect_to (*connections_mgr, in_port, true);
                       last_index++;
@@ -1604,17 +1608,17 @@ done1:
   for (auto &out_port : out_ports_)
     {
       if (
-        out_port->id_.type_ == PortType::Event
+        out_port->id_->type_ == PortType::Event
         && ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, out_port->id_.flags2_,
+          PortIdentifier::Flags2, out_port->id_->flags2_,
           PortIdentifier::Flags2::SupportsMidi))
         {
           for (auto &in_port : dest.in_ports_)
             {
               if (
-                in_port->id_.type_ == PortType::Event
+                in_port->id_->type_ == PortType::Event
                 && ENUM_BITSET_TEST (
-                  PortIdentifier::Flags2, in_port->id_.flags2_,
+                  PortIdentifier::Flags2, in_port->id_->flags2_,
                   PortIdentifier::Flags2::SupportsMidi))
                 {
                   out_port->connect_to (*connections_mgr, *in_port, true);
@@ -1638,11 +1642,11 @@ Plugin::connect_to_prefader (Channel &ch)
       for (auto &out_port : out_ports_)
         {
           if (
-            out_port->id_.type_ == PortType::Event
+            out_port->id_->type_ == PortType::Event
             && ENUM_BITSET_TEST (
-              PortIdentifier::Flags2, out_port->id_.flags2_,
+              PortIdentifier::Flags2, out_port->id_->flags2_,
               PortIdentifier::Flags2::SupportsMidi)
-            && out_port->id_.flow_ == PortFlow::Output)
+            && out_port->id_->flow_ == PortFlow::Output)
             {
               out_port->connect_to (*PORT_CONNECTIONS_MGR, *ch.midi_out_, true);
             }
@@ -1668,7 +1672,7 @@ Plugin::disconnect_from_prefader (Channel &ch)
 
   for (auto &out_port : out_ports_)
     {
-      if (type == PortType::Audio && out_port->id_.type_ == PortType::Audio)
+      if (type == PortType::Audio && out_port->id_->type_ == PortType::Audio)
         {
           if (out_port->is_connected_to (ch.prefader_->stereo_in_->get_l ()))
             out_port->disconnect_from (
@@ -1678,9 +1682,9 @@ Plugin::disconnect_from_prefader (Channel &ch)
               *PORT_CONNECTIONS_MGR, ch.prefader_->stereo_in_->get_r ());
         }
       else if (
-        type == PortType::Event && out_port->id_.type_ == PortType::Event
+        type == PortType::Event && out_port->id_->type_ == PortType::Event
         && ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, out_port->id_.flags2_,
+          PortIdentifier::Flags2, out_port->id_->flags2_,
           PortIdentifier::Flags2::SupportsMidi))
         {
           if (out_port->is_connected_to (*ch.prefader_->midi_in_))
@@ -1698,13 +1702,13 @@ Plugin::disconnect_from_plugin (Plugin &dest)
 
   for (auto &out_port : out_ports_)
     {
-      if (out_port->id_.type_ == PortType::Audio)
+      if (out_port->is_audio ())
         num_src_audio_outs++;
     }
 
   for (auto &in_port : dest.in_ports_)
     {
-      if (in_port->id_.type_ == PortType::Audio)
+      if (in_port->is_audio ())
         num_dest_audio_ins++;
     }
 
@@ -1712,11 +1716,11 @@ Plugin::disconnect_from_plugin (Plugin &dest)
     {
       for (auto &out_port : out_ports_)
         {
-          if (out_port->id_.type_ == PortType::Audio)
+          if (out_port->is_audio ())
             {
               for (auto &in_port : dest.in_ports_)
                 {
-                  if (in_port->id_.type_ == PortType::Audio)
+                  if (in_port->is_audio ())
                     {
                       out_port->disconnect_from (
                         *PORT_CONNECTIONS_MGR, *in_port);
@@ -1732,11 +1736,11 @@ Plugin::disconnect_from_plugin (Plugin &dest)
        * from each input */
       for (auto &out_port : out_ports_)
         {
-          if (out_port->id_.type_ == PortType::Audio)
+          if (out_port->is_audio ())
             {
               for (auto &in_port : dest.in_ports_)
                 {
-                  if (in_port->id_.type_ == PortType::Audio)
+                  if (in_port->is_audio ())
                     {
                       out_port->disconnect_from (
                         *PORT_CONNECTIONS_MGR, *in_port);
@@ -1752,11 +1756,11 @@ Plugin::disconnect_from_plugin (Plugin &dest)
        * input channel found */
       for (auto &in_port : dest.in_ports_)
         {
-          if (in_port->id_.type_ == PortType::Audio)
+          if (in_port->is_audio ())
             {
               for (auto &out_port : out_ports_)
                 {
-                  if (out_port->id_.type_ == PortType::Audio)
+                  if (out_port->is_audio ())
                     {
                       out_port->disconnect_from (
                         *PORT_CONNECTIONS_MGR, *in_port);
@@ -1777,12 +1781,12 @@ Plugin::disconnect_from_plugin (Plugin &dest)
       size_t ports_disconnected = 0;
       for (auto &out_port : out_ports_)
         {
-          if (out_port->id_.type_ == PortType::Audio)
+          if (out_port->is_audio ())
             {
               for (; last_index < dest.in_ports_.size (); ++last_index)
                 {
                   auto &in_port = *dest.in_ports_[last_index];
-                  if (in_port.id_.type_ == PortType::Audio)
+                  if (in_port.is_audio ())
                     {
                       out_port->disconnect_from (*PORT_CONNECTIONS_MGR, in_port);
                       last_index++;
@@ -1802,17 +1806,17 @@ done2:
   for (auto &out_port : out_ports_)
     {
       if (
-        out_port->id_.type_ == PortType::Event
+        out_port->id_->type_ == PortType::Event
         && ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, out_port->id_.flags2_,
+          PortIdentifier::Flags2, out_port->id_->flags2_,
           PortIdentifier::Flags2::SupportsMidi))
         {
           for (auto &in_port : dest.in_ports_)
             {
               if (
-                in_port->id_.type_ == PortType::Event
+                in_port->id_->type_ == PortType::Event
                 && ENUM_BITSET_TEST (
-                  PortIdentifier::Flags2, in_port->id_.flags2_,
+                  PortIdentifier::Flags2, in_port->id_->flags2_,
                   PortIdentifier::Flags2::SupportsMidi))
                 {
                   out_port->disconnect_from (*PORT_CONNECTIONS_MGR, *in_port);
@@ -1902,7 +1906,7 @@ Plugin::get_port_by_symbol (const std::string &sym)
 
   auto find_port = [&sym] (const auto &ports) {
     return std::find_if (ports.begin (), ports.end (), [&sym] (const auto &port) {
-      return port->id_.sym_ == sym;
+      return port->id_->sym_ == sym;
     });
   };
 

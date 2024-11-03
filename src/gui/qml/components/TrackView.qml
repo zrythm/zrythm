@@ -13,18 +13,31 @@ Control {
     required property var track
     readonly property real buttonHeight: 18
     readonly property real buttonPadding: 1
+    readonly property real contentTopMargins: 1
+    readonly property real contentBottomMargins: 3
     property bool isResizing: false
 
     hoverEnabled: true
     implicitWidth: 200
-    implicitHeight: {
-        track.height;
-        if (track.hasLanes)
-            track.lanesVisible;
-
-        return track.getFullVisibleHeight();
-    }
+    implicitHeight: track.fullVisibleHeight
     opacity: Style.getOpacity(track.enabled, control.Window.active)
+
+    Connections {
+        function onHeightChanged() {
+            track.fullVisibleHeightChanged();
+        }
+
+        function onLanesVisibleChanged() {
+            track.fullVisibleHeightChanged();
+        }
+
+        function onAutomationVisibleChanged() {
+            track.fullVisibleHeightChanged();
+        }
+
+        ignoreUnknownSignals: true
+        target: track
+    }
 
     Component {
         id: mainTrackView
@@ -36,7 +49,12 @@ Control {
                 id: mainTrackViewColumnLayout
 
                 spacing: 0
-                anchors.fill: parent
+
+                anchors {
+                    fill: parent
+                    topMargin: control.contentTopMargins
+                    bottomMargin: control.contentBottomMargins
+                }
 
                 RowLayout {
                     id: topRow
@@ -95,23 +113,14 @@ Control {
                         Layout.fillWidth: false
                         Layout.alignment: Qt.AlignRight | Qt.AlignBaseline | Qt.AlignTop
 
-                        Button {
-                            text: "M"
-                            checkable: true
+                        MuteButton {
                             styleHeight: control.buttonHeight
                             padding: control.buttonPadding
-
-                            ToolTip {
-                                text: qsTr("Mute")
-                            }
-
                         }
 
                         SoloButton {
                             id: soloButton
 
-                            text: "S"
-                            checkable: true
                             styleHeight: control.buttonHeight
                             padding: control.buttonPadding
                         }
@@ -133,8 +142,9 @@ Control {
                     id: bottomRow
 
                     Layout.fillWidth: true
-                    Layout.fillHeight: true
+                    Layout.fillHeight: false
                     Layout.alignment: Qt.AlignBottom
+                    visible: track.height > control.buttonHeight + height + 12
 
                     Label {
                         id: chordScalesLabel
@@ -155,7 +165,6 @@ Control {
                     LinkedButtons {
                         id: bottomRightButtons
 
-                        visible: track.height > topRow.contentHeight + height + (mainTrackViewColumnLayout.Layout.topMargin + mainTrackViewColumnLayout.Layout.bottomMargin + control.spacing + 8)
                         layer.enabled: true
                         Layout.alignment: Qt.AlignRight | Qt.AlignBottom
                         Layout.fillHeight: true
@@ -181,7 +190,12 @@ Control {
                             styleHeight: control.buttonHeight
                             padding: control.buttonPadding
                             checkable: true
+                            visible: track.isAutomatable
+                            checked: track.isAutomatable && track.automationVisible
                             icon.source: Style.getIcon("zrythm-dark", "automation-4p.svg")
+                            onClicked: {
+                                track.automationVisible = !track.automationVisible;
+                            }
 
                             ToolTip {
                                 text: qsTr("Show automation")
@@ -224,6 +238,14 @@ Control {
                 left: parent.left
                 right: parent.right
                 bottom: parent.bottom
+            }
+
+            Rectangle {
+                anchors.centerIn: parent
+                height: 2
+                width: 24
+                color: Qt.alpha(Style.backgroundAppendColor, 0.2)
+                radius: 2
             }
 
             DragHandler {
@@ -331,6 +353,7 @@ Control {
                     active: track.hasLanes && track.lanesVisible
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    visible: active
 
                     sourceComponent: ColumnLayout {
                         id: lanesColumnLayout
@@ -345,6 +368,7 @@ Control {
                             model: track.lanes
                             Layout.fillWidth: true
                             Layout.fillHeight: true
+                            implicitHeight: contentHeight
 
                             delegate: ItemDelegate {
                                 readonly property var lane: modelData
@@ -352,8 +376,41 @@ Control {
                                 height: lane.height
                                 width: ListView.view.width
 
-                                Label {
-                                    text: lane.name
+                                RowLayout {
+                                    spacing: 2
+
+                                    anchors {
+                                        fill: parent
+                                        topMargin: control.contentTopMargins
+                                        bottomMargin: control.contentBottomMargins
+                                    }
+
+                                    Label {
+                                        text: lane.name
+                                        Layout.fillWidth: true
+                                        Layout.fillHeight: false
+                                        Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                                    }
+
+                                    LinkedButtons {
+                                        Layout.fillWidth: false
+                                        Layout.fillHeight: false
+                                        Layout.alignment: Qt.AlignRight | Qt.AlignTop
+
+                                        SoloButton {
+                                            id: soloButton
+
+                                            styleHeight: control.buttonHeight
+                                            padding: control.buttonPadding
+                                        }
+
+                                        MuteButton {
+                                            styleHeight: control.buttonHeight
+                                            padding: control.buttonPadding
+                                        }
+
+                                    }
+
                                 }
 
                                 Loader {
@@ -367,8 +424,7 @@ Control {
 
                                 Connections {
                                     function onHeightChanged() {
-                                        // update the track height so things that depend on the track height also get updated
-                                        track.heightChanged(track.height);
+                                        track.fullVisibleHeightChanged();
                                     }
 
                                     target: lane
@@ -378,6 +434,23 @@ Control {
 
                         }
 
+                    }
+
+                }
+
+                Loader {
+                    id: automationLoader
+
+                    active: track.isAutomatable && track.automationVisible
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    sourceComponent: AutomationTracksListView {
+                        id: automationTracksListView
+
+                        track: control.track
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
                     }
 
                 }

@@ -148,8 +148,10 @@ private:
   void add_plugin (zrythm::plugins::Plugin &pl);
   void
   connect_plugin (zrythm::plugins::Plugin &pl, bool drop_unnecessary_ports);
-  GraphNode *
-  add_port (Port &port, PortConnectionsManager &mgr, bool drop_if_unnecessary);
+  GraphNode * add_port (
+    PortPtrVariant          port_var,
+    PortConnectionsManager &mgr,
+    bool                    drop_if_unnecessary);
 
   /**
    * @brief Connects the port as a node.

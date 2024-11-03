@@ -484,7 +484,7 @@ public:
    *
    * Must be free'd after engine.
    */
-  std::unique_ptr<PortConnectionsManager> port_connections_manager_;
+  PortConnectionsManager * port_connections_manager_ = nullptr;
 
   /**
    * The audio backend.

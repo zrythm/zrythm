@@ -10,6 +10,11 @@
 
 ChannelTrack::ChannelTrack () : channel_ (std::make_shared<Channel> (*this)) { }
 
+ChannelTrack::~ChannelTrack ()
+{
+  // remove_ats_from_automation_tracklist (false);
+}
+
 void
 ChannelTrack::init_loaded ()
 {
@@ -111,13 +116,13 @@ ChannelTrack::remove_ats_from_automation_tracklist (bool fire_events)
     {
       if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags, at->port_id_.flags_,
+          PortIdentifier::Flags, at->port_id_->flags_,
           PortIdentifier::Flags::ChannelFader)
         || ENUM_BITSET_TEST (
-          PortIdentifier::Flags, at->port_id_.flags_,
+          PortIdentifier::Flags, at->port_id_->flags_,
           PortIdentifier::Flags::FaderMute)
         || ENUM_BITSET_TEST (
-          PortIdentifier::Flags, at->port_id_.flags_,
+          PortIdentifier::Flags, at->port_id_->flags_,
           PortIdentifier::Flags::StereoBalance))
         {
           atl.remove_at (*at, false, fire_events);
@@ -133,7 +138,7 @@ ChannelTrack::validate_base () const
     {
       z_return_val_if_fail (
         channel_->sends_[i]->track_name_hash_
-          == channel_->sends_[i]->amount_->id_.track_name_hash_,
+          == channel_->sends_[i]->amount_->id_->track_name_hash_,
         false);
     }
 
@@ -239,9 +244,4 @@ ChannelTrack::append_member_ports (
   bool                 include_plugins) const
 {
   get_channel ()->append_ports (ports, include_plugins);
-}
-
-ChannelTrack::~ChannelTrack ()
-{
-  remove_ats_from_automation_tracklist (false);
 }

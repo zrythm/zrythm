@@ -7,7 +7,10 @@
 #include "zrythm-config.h"
 
 #include "common/plugins/plugin_identifier.h"
+#include "common/utils/icloneable.h"
 #include "common/utils/types.h"
+
+#include <QtQmlIntegration>
 
 #include "juce_wrapper.h"
 
@@ -66,8 +69,15 @@ port_unit_to_str (const PortUnit unit);
 /**
  * Struct used to identify Ports in the project.
  */
-class PortIdentifier final : public ISerializable<PortIdentifier>
+class PortIdentifier final
+    : public QObject,
+      public ISerializable<PortIdentifier>,
+      public ICloneable<PortIdentifier>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  Q_PROPERTY (QString label READ getLabel CONSTANT)
+
 public:
   /**
    * Type of owner.
@@ -336,9 +346,19 @@ public:
   };
 
 public:
-  // Rule of 0
+  explicit PortIdentifier (QObject * parent = nullptr);
 
   void init ();
+
+  // =========================================================================
+  // QML Interface
+  // =========================================================================
+
+  QString getLabel () const { return QString::fromStdString (label_); }
+
+  // =========================================================================
+
+  void init_after_cloning (const PortIdentifier &other) override;
 
   std::string  get_label () const { return label_; }
   const char * get_label_as_c_str () const { return label_.c_str (); }

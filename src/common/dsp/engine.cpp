@@ -665,7 +665,7 @@ AudioEngine::init_common ()
   midi_clock_out_ =
     std::make_unique<MidiPort> ("MIDI Clock Out", PortFlow::Output);
   midi_clock_out_->set_owner (this);
-  midi_clock_out_->id_.flags2_ |= PortIdentifier::Flags2::MidiClock;
+  midi_clock_out_->id_->flags2_ |= PortIdentifier::Flags2::MidiClock;
 }
 
 void
@@ -688,7 +688,7 @@ AudioEngine::init_loaded (Project * project)
   append_ports (ports);
   for (auto * port : ports)
     {
-      auto &id = port->id_;
+      auto &id = *port->id_;
       if (id.owner_type_ == PortIdentifier::OwnerType::AudioEngine)
         {
           port->init_loaded (this);
@@ -729,18 +729,18 @@ AudioEngine::AudioEngine (Project * project)
   midi_editor_manual_press_ =
     std::make_unique<MidiPort> ("MIDI Editor Manual Press", PortFlow::Input);
   midi_editor_manual_press_->set_owner (this);
-  midi_editor_manual_press_->id_.sym_ = "midi_editor_manual_press";
-  midi_editor_manual_press_->id_.flags_ |= PortIdentifier::Flags::ManualPress;
+  midi_editor_manual_press_->id_->sym_ = "midi_editor_manual_press";
+  midi_editor_manual_press_->id_->flags_ |= PortIdentifier::Flags::ManualPress;
 
   midi_in_ = std::make_unique<MidiPort> ("MIDI in", PortFlow::Input);
   midi_in_->set_owner (this);
-  midi_in_->id_.sym_ = "midi_in";
+  midi_in_->id_->sym_ = "midi_in";
 
   {
     AudioPort monitor_out_l ("Monitor Out L", PortFlow::Output);
-    monitor_out_l.id_.sym_ = "monitor_out_l";
+    monitor_out_l.id_->sym_ = "monitor_out_l";
     AudioPort monitor_out_r ("Monitor Out R", PortFlow::Output);
-    monitor_out_r.id_.sym_ = "monitor_out_r";
+    monitor_out_r.id_->sym_ = "monitor_out_r";
     monitor_out_ = std::make_unique<StereoPorts> (
       std::move (monitor_out_l), std::move (monitor_out_r));
     monitor_out_->set_owner (this);

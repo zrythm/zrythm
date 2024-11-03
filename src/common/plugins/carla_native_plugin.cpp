@@ -1840,11 +1840,11 @@ CarlaNativePlugin::get_midi_out_port ()
   for (auto &port : out_ports_)
     {
       if (
-        port->id_.type_ == PortType::Event
+        port->is_midi ()
         && ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, port->id_.flags2_,
+          PortIdentifier::Flags2, port->id_->flags2_,
           PortIdentifier::Flags2::SupportsMidi))
-        return static_cast<MidiPort *> (port.get ());
+        return dynamic_cast<MidiPort *> (port.get ());
     }
 
   z_return_val_if_reached (nullptr);
@@ -1856,10 +1856,10 @@ CarlaNativePlugin::get_port_from_param_id (const uint32_t id)
   int j = 0;
   for (auto &port : in_ports_)
     {
-      if (port->id_.type_ != PortType::Control)
+      if (!port->is_control ())
         continue;
 
-      auto ctrl_port = static_cast<ControlPort *> (port.get ());
+      auto ctrl_port = dynamic_cast<ControlPort *> (port.get ());
       j = ctrl_port->carla_param_id_;
       if (static_cast<int> (id) == ctrl_port->carla_param_id_)
         return ctrl_port;

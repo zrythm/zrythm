@@ -188,86 +188,93 @@ Graph::~Graph ()
 
 GraphNode *
 Graph::add_port (
-  Port                   &port,
+  PortPtrVariant          port_var,
   PortConnectionsManager &mgr,
   const bool              drop_if_unnecessary)
 {
-  auto owner = port.id_.owner_type_;
+  return std::visit (
+    [&] (auto &&port) -> GraphNode * {
+      using PortT = base_type<decltype (port)>;
+      auto owner = port->id_->owner_type_;
 
-  if (owner == PortIdentifier::OwnerType::Plugin)
-    {
-      port.plugin_ = port.get_plugin (true);
-      z_return_val_if_fail (port.plugin_, nullptr);
-    }
+      if (owner == PortIdentifier::OwnerType::Plugin)
+        {
+          port->plugin_ = port->get_plugin (true);
+          z_return_val_if_fail (port->plugin_, nullptr);
+        }
 
-  if (port.id_.track_name_hash_ != 0)
-    {
-      port.track_ = port.get_track (true);
-      z_return_val_if_fail (port.track_, nullptr);
-    }
+      if (port->id_->track_name_hash_ != 0)
+        {
+          port->track_ = port->get_track (true);
+          z_return_val_if_fail (port->track_, nullptr);
+        }
 
-  /* reset port sources/dests */
-  std::vector<PortConnection> srcs;
-  mgr.get_sources_or_dests (&srcs, port.id_, true);
-  port.srcs_.clear ();
-  port.src_connections_.clear ();
-  for (const auto &conn : srcs)
-    {
-      port.srcs_.push_back (Port::find_from_identifier (conn.src_id_));
-      z_return_val_if_fail (port.srcs_.back (), nullptr);
-      port.src_connections_.push_back (conn);
-    }
+      /* reset port sources/dests */
+      PortConnectionsManager::ConnectionsVector srcs;
+      mgr.get_sources_or_dests (&srcs, *port->id_, true);
+      port->srcs_.clear ();
+      port->src_connections_.clear ();
+      for (const auto &conn : srcs)
+        {
+          port->srcs_.push_back (Port::find_from_identifier (*conn->src_id_));
+          z_return_val_if_fail (port->srcs_.back (), nullptr);
+          port->src_connections_.emplace_back (conn->clone_unique ());
+        }
 
-  std::vector<PortConnection> dests;
-  mgr.get_sources_or_dests (&dests, port.id_, false);
-  port.dests_.clear ();
-  port.dest_connections_.clear ();
-  for (const auto &conn : dests)
-    {
-      port.dests_.push_back (Port::find_from_identifier (conn.dest_id_));
-      z_return_val_if_fail (port.dests_.back (), nullptr);
-      port.dest_connections_.push_back (conn);
-    }
+      PortConnectionsManager::ConnectionsVector dests;
+      mgr.get_sources_or_dests (&dests, *port->id_, false);
+      port->dests_.clear ();
+      port->dest_connections_.clear ();
+      for (const auto &conn : dests)
+        {
+          port->dests_.push_back (Port::find_from_identifier (*conn->dest_id_));
+          z_return_val_if_fail (port->dests_.back (), nullptr);
+          port->dest_connections_.emplace_back (conn->clone_unique ());
+        }
 
-  /* skip unnecessary control ports */
-  if (
-    drop_if_unnecessary && port.is_control ()
-    && ENUM_BITSET_TEST (
-      PortIdentifier::Flags, port.id_.flags_, PortIdentifier::Flags::Automatable))
-    {
-      auto &control_port = dynamic_cast<ControlPort &> (port);
-      auto  found_at = control_port.at_;
-      z_return_val_if_fail (found_at, nullptr);
-      if (found_at->regions_.empty () && port.srcs_.empty ())
+      /* skip unnecessary control ports */
+      if constexpr (std::is_same_v<PortT, ControlPort>)
+        {
+          if (
+            drop_if_unnecessary
+            && ENUM_BITSET_TEST (
+              PortIdentifier::Flags, port->id_->flags_,
+              PortIdentifier::Flags::Automatable))
+            {
+              auto found_at = port->at_;
+              z_return_val_if_fail (found_at, nullptr);
+              if (found_at->regions_.empty () && port->srcs_.empty ())
+                {
+                  return nullptr;
+                }
+            }
+        }
+
+      /* drop ports without sources and dests */
+      if (
+        drop_if_unnecessary && port->dests_.empty () && port->srcs_.empty ()
+        && owner != PortIdentifier::OwnerType::Plugin
+        && owner != PortIdentifier::OwnerType::Fader
+        && owner != PortIdentifier::OwnerType::TrackProcessor
+        && owner != PortIdentifier::OwnerType::Track
+        && owner != PortIdentifier::OwnerType::ModulatorMacroProcessor
+        && owner != PortIdentifier::OwnerType::Channel
+        && owner != PortIdentifier::OwnerType::ChannelSend
+        && owner != PortIdentifier::OwnerType::AudioEngine
+        && owner != PortIdentifier::OwnerType::HardwareProcessor
+        && owner != PortIdentifier::OwnerType::Transport
+        && !(ENUM_BITSET_TEST (
+          PortIdentifier::Flags, port->id_->flags_,
+          PortIdentifier::Flags::ManualPress)))
         {
           return nullptr;
         }
-    }
 
-  /* drop ports without sources and dests */
-  if (
-    drop_if_unnecessary && port.dests_.empty () && port.srcs_.empty ()
-    && owner != PortIdentifier::OwnerType::Plugin
-    && owner != PortIdentifier::OwnerType::Fader
-    && owner != PortIdentifier::OwnerType::TrackProcessor
-    && owner != PortIdentifier::OwnerType::Track
-    && owner != PortIdentifier::OwnerType::ModulatorMacroProcessor
-    && owner != PortIdentifier::OwnerType::Channel
-    && owner != PortIdentifier::OwnerType::ChannelSend
-    && owner != PortIdentifier::OwnerType::AudioEngine
-    && owner != PortIdentifier::OwnerType::HardwareProcessor
-    && owner != PortIdentifier::OwnerType::Transport
-    && !(ENUM_BITSET_TEST (
-      PortIdentifier::Flags, port.id_.flags_,
-      PortIdentifier::Flags::ManualPress)))
-    {
-      return nullptr;
-    }
-
-  /* allocate buffers to be used during DSP */
-  port.allocate_bufs ();
-  auto var = convert_to_variant<PortPtrVariant> (&port);
-  return create_node (var);
+      /* allocate buffers to be used during DSP */
+      port->allocate_bufs ();
+      return create_node (port_var);
+    },
+    port_var);
 }
 
 void
@@ -449,16 +456,17 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
   for (auto * port : ports)
     {
       z_return_if_fail (port);
-      if (port->deleting_ || (port->id_.owner_type_ == PortIdentifier::OwnerType::Plugin && port->get_plugin(true)->deleting_))
+      if (port->deleting_ || (port->id_->owner_type_ == PortIdentifier::OwnerType::Plugin && port->get_plugin(true)->deleting_))
         continue;
 
-      if (port->id_.flow_ == PortFlow::Output && port->is_exposed_to_backend ())
+      if (port->id_->flow_ == PortFlow::Output && port->is_exposed_to_backend ())
         {
           external_out_ports_.push_back (port);
         }
 
       add_port (
-        *port, *project->port_connections_manager_, drop_unnecessary_ports);
+        convert_to_variant<PortPtrVariant> (port),
+        *project->port_connections_manager_, drop_unnecessary_ports);
     }
 
   /* ========================
@@ -853,7 +861,7 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
     {
       if (port->deleting_) [[unlikely]]
         continue;
-      if (port->id_.owner_type_ == PortIdentifier::OwnerType::Plugin)
+      if (port->id_->owner_type_ == PortIdentifier::OwnerType::Plugin)
         {
           auto port_pl = port->get_plugin (true);
           if (port_pl->deleting_)

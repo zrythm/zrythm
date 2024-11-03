@@ -11,13 +11,26 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
+MidiMapping::MidiMapping (QObject * parent) : QObject (parent) { }
+
 void
 MidiMappings::init_loaded ()
 {
   for (auto &mapping : mappings_)
     {
-      mapping->dest_ = Port::find_from_identifier (mapping->dest_id_);
+      mapping->dest_ = Port::find_from_identifier (*mapping->dest_id_);
     }
+}
+
+void
+MidiMapping::init_after_cloning (const MidiMapping &other)
+{
+  key_ = other.key_;
+  if (other.device_port_)
+    device_port_ = std::make_unique<ExtPort> (*other.device_port_);
+  dest_id_ = other.dest_id_->clone_raw_ptr ();
+  dest_id_->setParent (this);
+  enabled_.store (other.enabled_.load ());
 }
 
 void
@@ -35,7 +48,8 @@ MidiMappings::bind_at (
     {
       mapping->device_port_ = std::make_unique<ExtPort> (*device_port);
     }
-  mapping->dest_id_ = dest_port.id_;
+  mapping->dest_id_ = dest_port.id_->clone_raw_ptr ();
+  mapping->dest_id_->setParent (mapping.get ());
   mapping->dest_ = &dest_port;
   mapping->enabled_.store (true);
 
@@ -46,7 +60,7 @@ MidiMappings::bind_at (
 
   if (
     !(ENUM_BITSET_TEST (
-      PortIdentifier::Flags, dest_port.id_.flags_,
+      PortIdentifier::Flags, dest_port.id_->flags_,
       PortIdentifier::Flags::MidiAutomatable)))
     {
       z_info ("bounded MIDI mapping from {} to {}", str, dest_port.get_label ());
@@ -85,13 +99,14 @@ MidiMapping::apply (std::array<midi_byte_t, 3> buf)
 {
   z_return_if_fail (dest_);
 
-  if (dest_->id_.type_ == PortType::Control)
+  if (dest_->id_->type_ == PortType::Control)
     {
-      auto dest = static_cast<ControlPort *> (dest_);
+      auto * dest = dynamic_cast<ControlPort *> (dest_);
       /* if toggle, reverse value */
       if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags, dest->id_.flags_, PortIdentifier::Flags::Toggle))
+          PortIdentifier::Flags, dest->id_->flags_,
+          PortIdentifier::Flags::Toggle))
         {
           dest->set_toggled (!dest->is_toggled (), true);
         }
@@ -102,27 +117,27 @@ MidiMapping::apply (std::array<midi_byte_t, 3> buf)
           dest->set_control_value (normalized_val, true, true);
         }
     }
-  else if (dest_->id_.type_ == PortType::Event)
+  else if (dest_->id_->type_ == PortType::Event)
     {
       /* FIXME these are called during processing they should be queued as UI
        * events instead */
       if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, dest_->id_.flags2_,
+          PortIdentifier::Flags2, dest_->id_->flags2_,
           PortIdentifier::Flags2::TransportRoll))
         {
           // EVENTS_PUSH (EventType::ET_TRANSPORT_ROLL_REQUIRED, nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, dest_->id_.flags2_,
+          PortIdentifier::Flags2, dest_->id_->flags2_,
           PortIdentifier::Flags2::TransportStop))
         {
           // EVENTS_PUSH (EventType::ET_TRANSPORT_PAUSE_REQUIRED, nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, dest_->id_.flags2_,
+          PortIdentifier::Flags2, dest_->id_->flags2_,
           PortIdentifier::Flags2::TransportBackward))
         {
           // EVENTS_PUSH (EventType::ET_TRANSPORT_MOVE_BACKWARD_REQUIRED,
@@ -130,21 +145,21 @@ MidiMapping::apply (std::array<midi_byte_t, 3> buf)
         }
       else if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, dest_->id_.flags2_,
+          PortIdentifier::Flags2, dest_->id_->flags2_,
           PortIdentifier::Flags2::TransportForward))
         {
           // EVENTS_PUSH (EventType::ET_TRANSPORT_MOVE_FORWARD_REQUIRED, nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, dest_->id_.flags2_,
+          PortIdentifier::Flags2, dest_->id_->flags2_,
           PortIdentifier::Flags2::TransportLoopToggle))
         {
           // EVENTS_PUSH (EventType::ET_TRANSPORT_TOGGLE_LOOP_REQUIRED, nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, dest_->id_.flags2_,
+          PortIdentifier::Flags2, dest_->id_->flags2_,
           PortIdentifier::Flags2::TransportRecToggle))
         {
           /* EVENTS_PUSH (

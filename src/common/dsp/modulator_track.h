@@ -30,6 +30,7 @@ class ModulatorTrack final
   Q_OBJECT
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (ModulatorTrack)
+  DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (ModulatorTrack)
 
   friend class InitializableObjectFactory<ModulatorTrack>;
 

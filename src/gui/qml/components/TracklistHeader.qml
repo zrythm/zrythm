@@ -12,10 +12,10 @@ ToolBar {
     required property var tracklist
 
     ToolButton {
-        icon.source: Style.getIcon("gnome-icon-library", "plus-large-symbolic.svg")
+        icon.source: Style.getIcon("zrythm-dark", "add.svg")
         
         ToolTip {
-            text: qsTr("Add Track")
+            text: qsTr("Add track")
         }
         
         onClicked: {

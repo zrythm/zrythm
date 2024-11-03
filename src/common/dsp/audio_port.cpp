@@ -17,6 +17,7 @@
 
 AudioPort::AudioPort ()
 {
+  id_->setParent (this);
   minf_ = -1.f;
   maxf_ = 1.f;
   zerof_ = 0.f;
@@ -25,6 +26,7 @@ AudioPort::AudioPort ()
 AudioPort::AudioPort (std::string label, PortFlow flow)
     : Port (label, PortType::Audio, flow, -1.f, 1.f, 0.f)
 {
+  id_->setParent (this);
 }
 
 void
@@ -56,23 +58,23 @@ AudioPort::sum_data_from_dummy (
   const nframes_t nframes)
 {
   if (
-    id_.owner_type_ == PortIdentifier::OwnerType::AudioEngine
-    || id_.flow_ != PortFlow::Input || id_.type_ != PortType::Audio
+    id_->owner_type_ == PortIdentifier::OwnerType::AudioEngine
+    || id_->flow_ != PortFlow::Input || id_->type_ != PortType::Audio
     || AUDIO_ENGINE->audio_backend_ != AudioBackend::AUDIO_BACKEND_DUMMY
     || AUDIO_ENGINE->midi_backend_ != MidiBackend::MIDI_BACKEND_DUMMY)
     return;
 
   if (AUDIO_ENGINE->dummy_input_)
     {
-      Port * port = NULL;
+      Port * port = nullptr;
       if (ENUM_BITSET_TEST (
-            PortIdentifier::Flags, id_.flags_, PortIdentifier::Flags::StereoL))
+            PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::StereoL))
         {
           port = &AUDIO_ENGINE->dummy_input_->get_l ();
         }
       else if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags, id_.flags_, PortIdentifier::Flags::StereoR))
+          PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::StereoR))
         {
           port = &AUDIO_ENGINE->dummy_input_->get_r ();
         }
@@ -90,9 +92,7 @@ AudioPort::receive_audio_data_from_jack (
   const nframes_t start_frames,
   const nframes_t nframes)
 {
-  if (
-    this->internal_type_ != Port::InternalType::JackPort
-    || this->id_.type_ != PortType::Audio)
+  if (internal_type_ != Port::InternalType::JackPort)
     return;
 
   float * in;
@@ -150,7 +150,7 @@ AudioPort::expose_to_rtaudio (bool expose)
 
           if (
             ENUM_BITSET_TEST (
-              PortIdentifier::Flags, id_.flags_, PortIdentifier::Flags::StereoL))
+              PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::StereoL))
             {
               if (!ch->all_stereo_l_ins_)
                 {
@@ -159,7 +159,7 @@ AudioPort::expose_to_rtaudio (bool expose)
             }
           else if (
             ENUM_BITSET_TEST (
-              PortIdentifier::Flags, id_.flags_, PortIdentifier::Flags::StereoR))
+              PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::StereoR))
             {
               if (!ch->all_stereo_r_ins_)
                 {
@@ -235,15 +235,6 @@ AudioPort::has_sound () const
   return false;
 }
 
-bool
-AudioPort::is_stereo_port () const
-{
-  return ENUM_BITSET_TEST (
-           PortIdentifier::Flags, id_.flags_, PortIdentifier::Flags::StereoL)
-         || ENUM_BITSET_TEST (
-           PortIdentifier::Flags, id_.flags_, PortIdentifier::Flags::StereoR);
-}
-
 void
 AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
 {
@@ -256,15 +247,15 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
     }
 
   const auto &id = id_;
-  const auto  owner_type = id.owner_type_;
+  const auto  owner_type = id->owner_type_;
   auto        track = [&] () -> Track * {
     if (owner_type == PortIdentifier::OwnerType::TrackProcessor
         || owner_type == PortIdentifier::OwnerType::Track
         || owner_type == PortIdentifier::OwnerType::Channel
         || (owner_type == PortIdentifier::OwnerType::Fader
-            && (ENUM_BITSET_TEST (PortIdentifier::Flags2, id_.flags2_, PortIdentifier::Flags2::Prefader)
-                || ENUM_BITSET_TEST (PortIdentifier::Flags2, id_.flags2_, PortIdentifier::Flags2::Postfader)))
-        || (owner_type == PortIdentifier::OwnerType::Plugin && id_.plugin_id_.slot_type_ == zrythm::plugins::PluginSlotType::Instrument))
+            && (ENUM_BITSET_TEST (PortIdentifier::Flags2, id_->flags2_, PortIdentifier::Flags2::Prefader)
+                || ENUM_BITSET_TEST (PortIdentifier::Flags2, id_->flags2_, PortIdentifier::Flags2::Postfader)))
+        || (owner_type == PortIdentifier::OwnerType::Plugin && id_->plugin_id_.slot_type_ == zrythm::plugins::PluginSlotType::Instrument))
       {
         return ZRYTHM_TESTING ? get_track (true) : track_;
       }
@@ -303,10 +294,10 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
     {
       const auto * src_port = srcs_[k];
       const auto  &conn = src_connections_[k];
-      if (!conn.enabled_)
+      if (!conn->enabled_)
         continue;
 
-      const float multiplier = conn.multiplier_;
+      const float multiplier = conn->multiplier_;
 
       /* sum the signals */
       if (math_floats_equal_epsilon (multiplier, 1.f, 0.00001f)) [[likely]]
@@ -397,7 +388,7 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
   /* if bouncing track directly to master (e.g., when bouncing the track on
    * its own without parents), add the buffer to master output */
   if (AUDIO_ENGINE->bounce_mode_ > BounceMode::BOUNCE_OFF 
-  && (owner_type == PortIdentifier::OwnerType::Channel || owner_type == PortIdentifier::OwnerType::TrackProcessor || (owner_type == PortIdentifier::OwnerType::Fader && ENUM_BITSET_TEST (PortIdentifier::Flags2, id.flags2_, PortIdentifier::Flags2::Prefader)) || (owner_type == PortIdentifier::OwnerType::Plugin && id.plugin_id_.slot_type_ == zrythm::plugins::PluginSlotType::Instrument)) && is_stereo && is_output() && (track != nullptr) && track->bounce_to_master_) [[unlikely]]
+  && (owner_type == PortIdentifier::OwnerType::Channel || owner_type == PortIdentifier::OwnerType::TrackProcessor || (owner_type == PortIdentifier::OwnerType::Fader && ENUM_BITSET_TEST (PortIdentifier::Flags2, id->flags2_, PortIdentifier::Flags2::Prefader)) || (owner_type == PortIdentifier::OwnerType::Plugin && id->plugin_id_.slot_type_ == zrythm::plugins::PluginSlotType::Instrument)) && is_stereo && is_output() && (track != nullptr) && track->bounce_to_master_) [[unlikely]]
     {
       auto add_to_master = [&] (const bool left) {
         auto &dest =
@@ -468,7 +459,7 @@ AudioPort::apply_pan (
 
   /* if stereo R */
   if (ENUM_BITSET_TEST (
-        PortIdentifier::Flags, id_.flags_, PortIdentifier::Flags::StereoR))
+        PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::StereoR))
     {
       dsp_mul_k2 (&buf_[start_frame], calc_r, nframes);
     }
@@ -495,18 +486,18 @@ StereoPorts::StereoPorts (bool input, std::string name, std::string symbol)
           input ? PortFlow::Input : PortFlow::Output))
 
 {
-  l_->id_.flags_ |= PortIdentifier::Flags::StereoL;
-  l_->id_.sym_ = fmt::format ("{}_l", symbol);
-  r_->id_.flags_ |= PortIdentifier::Flags::StereoR;
-  r_->id_.sym_ = fmt::format ("{}_r", symbol);
+  l_->id_->flags_ |= PortIdentifier::Flags::StereoL;
+  l_->id_->sym_ = fmt::format ("{}_l", symbol);
+  r_->id_->flags_ |= PortIdentifier::Flags::StereoR;
+  r_->id_->sym_ = fmt::format ("{}_r", symbol);
 }
 
 StereoPorts::StereoPorts (const AudioPort &l, const AudioPort &r)
 {
   l_ = l.clone_unique ();
   r_ = r.clone_unique ();
-  l_->id_.flags_ |= PortIdentifier::Flags::StereoL;
-  r_->id_.flags_ |= PortIdentifier::Flags::StereoR;
+  l_->id_->flags_ |= PortIdentifier::Flags::StereoL;
+  r_->id_->flags_ |= PortIdentifier::Flags::StereoR;
 }
 
 void

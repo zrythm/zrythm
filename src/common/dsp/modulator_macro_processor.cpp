@@ -66,28 +66,28 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (ModulatorTrack * track, int id
   name_ = format_str (_ ("Macro {}"), idx + 1);
   macro_ = std::make_unique<ControlPort> (name_);
   macro_->set_owner (this);
-  macro_->id_.sym_ = fmt::format ("macro_{}", idx + 1);
+  macro_->id_->sym_ = fmt::format ("macro_{}", idx + 1);
   macro_->minf_ = 0.f;
   macro_->maxf_ = 1.f;
   macro_->deff_ = 0.f;
   macro_->set_control_value (0.75f, false, false);
-  macro_->id_.flags_ |= PortIdentifier::Flags::Automatable;
-  macro_->id_.flags_ |= PortIdentifier::Flags::ModulatorMacro;
-  macro_->id_.port_index_ = idx;
+  macro_->id_->flags_ |= PortIdentifier::Flags::Automatable;
+  macro_->id_->flags_ |= PortIdentifier::Flags::ModulatorMacro;
+  macro_->id_->port_index_ = idx;
 
   cv_in_ = std::make_unique<CVPort> (
     format_str (_ ("Macro CV In {}"), idx + 1), PortFlow::Input);
   cv_in_->set_owner (this);
-  cv_in_->id_.sym_ = fmt::format ("macro_cv_in_{}", idx + 1);
-  cv_in_->id_.flags_ |= PortIdentifier::Flags::ModulatorMacro;
-  cv_in_->id_.port_index_ = idx;
+  cv_in_->id_->sym_ = fmt::format ("macro_cv_in_{}", idx + 1);
+  cv_in_->id_->flags_ |= PortIdentifier::Flags::ModulatorMacro;
+  cv_in_->id_->port_index_ = idx;
 
   cv_out_ = std::make_unique<CVPort> (
     format_str (_ ("Macro CV Out {}"), idx + 1), PortFlow::Output);
   cv_out_->set_owner (this);
-  cv_out_->id_.sym_ = fmt::format ("macro_cv_out_{}", idx + 1);
-  cv_out_->id_.flags_ |= PortIdentifier::Flags::ModulatorMacro;
-  cv_out_->id_.port_index_ = idx;
+  cv_out_->id_->sym_ = fmt::format ("macro_cv_out_{}", idx + 1);
+  cv_out_->id_->flags_ |= PortIdentifier::Flags::ModulatorMacro;
+  cv_out_->id_->port_index_ = idx;
 }
 
 void

@@ -18,10 +18,13 @@
  * Action for channel send changes.
  */
 class ChannelSendAction
-    : public UndoableAction,
+    : public QObject,
+      public UndoableAction,
       public ICloneable<ChannelSendAction>,
       public ISerializable<ChannelSendAction>
 {
+  Q_OBJECT
+
 public:
   enum class Type
   {
@@ -34,7 +37,7 @@ public:
   };
 
 public:
-  ChannelSendAction () : UndoableAction (UndoableAction::Type::ChannelSend) { }
+  ChannelSendAction (QObject * parent = nullptr);
 
   /**
    * Creates a new action.
@@ -54,19 +57,7 @@ public:
 
   std::string to_string () const override;
 
-  void init_after_cloning (const ChannelSendAction &other) override
-  {
-    UndoableAction::copy_members_from (other);
-    send_before_ = other.send_before_->clone_unique ();
-    amount_ = other.amount_;
-    l_id_ =
-      other.l_id_ ? std::make_unique<PortIdentifier> (*other.l_id_) : nullptr;
-    r_id_ =
-      other.r_id_ ? std::make_unique<PortIdentifier> (*other.r_id_) : nullptr;
-    midi_id_ =
-      other.midi_id_ ? std::make_unique<PortIdentifier> (*other.midi_id_) : nullptr;
-    send_action_type_ = other.send_action_type_;
-  }
+  void init_after_cloning (const ChannelSendAction &other) override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -83,9 +74,9 @@ public:
   float amount_ = 0.f;
 
   /** Target port identifiers. */
-  std::unique_ptr<PortIdentifier> l_id_;
-  std::unique_ptr<PortIdentifier> r_id_;
-  std::unique_ptr<PortIdentifier> midi_id_;
+  PortIdentifier * l_id_ = nullptr;
+  PortIdentifier * r_id_ = nullptr;
+  PortIdentifier * midi_id_ = nullptr;
 
   /** Action type. */
   Type send_action_type_ = Type ();

@@ -10,10 +10,20 @@
 
 #include <fmt/format.h>
 
+PortConnectionsManager::PortConnectionsManager (QObject * parent)
+    : QObject (parent)
+{
+}
+
 void
 PortConnectionsManager::init_after_cloning (const PortConnectionsManager &other)
 {
-  connections_ = other.connections_;
+  connections_.reserve (other.connections_.size ());
+  for (const auto &conn : other.connections_)
+    {
+      connections_.push_back (conn->clone_raw_ptr ());
+      connections_.back ()->setParent (this);
+    }
   regenerate_hashtables ();
 }
 
@@ -23,15 +33,17 @@ PortConnectionsManager::add_or_replace_connection (
   const PortIdentifier &id,
   const PortConnection &conn)
 {
-  auto it = ht.find (id);
+  auto   it = ht.find (id.get_hash ());
+  auto * clone_conn = conn.clone_raw_ptr ();
+  clone_conn->setParent (this);
   if (it != ht.end ())
     {
-      z_return_if_fail (it->first == id);
-      it->second.push_back (conn);
+      z_return_if_fail (it->first == id.get_hash ());
+      it->second.push_back (clone_conn);
     }
   else
     {
-      ht.emplace (id, ConnectionsVector{ conn });
+      ht.emplace (id.get_hash (), ConnectionsVector{ clone_conn });
     }
 }
 
@@ -46,7 +58,10 @@ PortConnectionsManager::replace_connection (
       z_return_val_if_reached (false);
     }
 
-  *it = after;
+  (*it)->setParent (nullptr);
+  (*it)->deleteLater ();
+  *it = after.clone_raw_ptr ();
+  (*it)->setParent (this);
   regenerate_hashtables ();
 
   return true;
@@ -60,8 +75,8 @@ PortConnectionsManager::regenerate_hashtables ()
 
   for (auto &conn : connections_)
     {
-      add_or_replace_connection (src_ht_, conn.src_id_, conn);
-      add_or_replace_connection (dest_ht_, conn.dest_id_, conn);
+      add_or_replace_connection (src_ht_, *conn->src_id_, *conn);
+      add_or_replace_connection (dest_ht_, *conn->dest_id_, *conn);
     }
 
 #if 0
@@ -82,7 +97,7 @@ PortConnectionsManager::get_sources_or_dests (
 {
   /* note: we look at the opposite hashtable */
   const ConnectionHashTable &ht = sources ? dest_ht_ : src_ht_;
-  auto                       it = ht.find (id);
+  auto                       it = ht.find (id.get_hash ());
 
   if (it == ht.end ())
     {
@@ -109,7 +124,7 @@ PortConnectionsManager::get_unlocked_sources_or_dests (
   bool                  sources) const
 {
   const ConnectionHashTable &ht = sources ? dest_ht_ : src_ht_;
-  auto                       it = ht.find (id);
+  auto                       it = ht.find (id.get_hash ());
 
   if (it == ht.end ())
     return 0;
@@ -117,7 +132,7 @@ PortConnectionsManager::get_unlocked_sources_or_dests (
   int ret = 0;
   for (const auto &conn : it->second)
     {
-      if (!conn.locked_)
+      if (!conn->locked_)
         ret++;
 
       /* append to the given array */
@@ -131,7 +146,7 @@ PortConnectionsManager::get_unlocked_sources_or_dests (
   return (int) ret;
 }
 
-std::optional<PortConnection>
+PortConnection *
 PortConnectionsManager::get_source_or_dest (
   const PortIdentifier &id,
   bool                  sources) const
@@ -145,24 +160,22 @@ PortConnectionsManager::get_source_or_dest (
         "expected 1 {}, found {} "
         "connections for\n{}",
         sources ? "source" : "destination", num_conns, buf);
-      return std::nullopt;
+      return nullptr;
     }
 
   return conns.front ();
 }
 
-std::optional<PortConnection>
+PortConnection *
 PortConnectionsManager::find_connection (
   const PortIdentifier &src,
   const PortIdentifier &dest) const
 {
   auto it = std::find_if (
     connections_.begin (), connections_.end (), [&] (const auto &conn) {
-      return conn.src_id_ == src && conn.dest_id_ == dest;
+      return *conn->src_id_ == src && *conn->dest_id_ == dest;
     });
-  return it != connections_.end ()
-           ? std::make_optional<PortConnection> (*it)
-           : std::nullopt;
+  return it != connections_.end () ? (*it) : nullptr;
 }
 
 const PortConnection *
@@ -177,27 +190,28 @@ PortConnectionsManager::ensure_connect (
 
   for (auto &conn : connections_)
     {
-      if (conn.src_id_ == src && conn.dest_id_ == dest)
+      if (*conn->src_id_ == src && *conn->dest_id_ == dest)
         {
-          conn.update (multiplier, locked, enabled);
+          conn->update (multiplier, locked, enabled);
           regenerate_hashtables ();
-          return &conn;
+          return conn;
         }
     }
 
-  connections_.emplace_back (src, dest, multiplier, locked, enabled);
+  connections_.push_back (
+    new PortConnection (src, dest, multiplier, locked, enabled, this));
   const auto &conn = connections_.back ();
 
   if (this == get_active_instance ())
     {
       z_debug (
-        "New connection: <{}>; have {} connections", conn.print_to_str (),
+        "New connection: <{}>; have {} connections", conn->print_to_str (),
         connections_.size ());
     }
 
   regenerate_hashtables ();
 
-  return &conn;
+  return conn;
 }
 
 void
@@ -210,7 +224,7 @@ PortConnectionsManager::remove_connection (const size_t idx)
   if (this == get_active_instance ())
     {
       z_debug (
-        "Disconnected <{}>; have {} connections", conn.print_to_str (),
+        "Disconnected <{}>; have {} connections", conn->print_to_str (),
         connections_.size ());
     }
 
@@ -227,7 +241,7 @@ PortConnectionsManager::ensure_disconnect (
   for (size_t i = 0; i < connections_.size (); i++)
     {
       const auto &conn = connections_[i];
-      if (conn.src_id_ == src && conn.dest_id_ == dest)
+      if (*conn->src_id_ == src && *conn->dest_id_ == dest)
         {
           remove_connection (i);
           return true;
@@ -245,7 +259,7 @@ PortConnectionsManager::ensure_disconnect_all (const PortIdentifier &pi)
   for (size_t i = 0; i < connections_.size (); i++)
     {
       const auto &conn = connections_[i];
-      if (conn.src_id_ == pi || conn.dest_id_ == pi)
+      if (*conn->src_id_ == pi || *conn->dest_id_ == pi)
         {
           remove_connection (i);
           i--;
@@ -278,10 +292,11 @@ PortConnectionsManager::print_ht (const ConnectionHashTable &ht)
   z_trace ("ht size: {}", ht.size ());
   for (const auto &[key, value] : ht)
     {
-      str += fmt::format ("{}\n", key.get_label ());
       for (const auto &conn : value)
         {
-          str += fmt::format ("  {}\n", conn.print_to_str ());
+          const auto * id = &ht == &src_ht_ ? conn->dest_id_ : conn->src_id_;
+          str +=
+            fmt::format ("{}\n  {}\n", id->get_label (), conn->print_to_str ());
         }
     }
   z_info ("{}", str.c_str ());
@@ -294,7 +309,7 @@ PortConnectionsManager::print () const
     fmt::format ("Port connections manager ({}):\n", (void *) this);
   for (size_t i = 0; i < connections_.size (); i++)
     {
-      str += fmt::format ("[{}] {}\n", i, connections_[i].print_to_str ());
+      str += fmt::format ("[{}] {}\n", i, connections_[i]->print_to_str ());
     }
   z_info ("{}", str.c_str ());
 }
@@ -306,7 +321,7 @@ PortConnectionsManager::get_active_instance ()
   if (prj)
     {
 
-      return prj->port_connections_manager_.get ();
+      return prj->port_connections_manager_;
     }
   return nullptr;
 }

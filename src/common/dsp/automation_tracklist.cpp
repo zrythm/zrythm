@@ -19,6 +19,11 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
+AutomationTracklist::AutomationTracklist (QObject * parent)
+    : QAbstractListModel (parent)
+{
+}
+
 void
 AutomationTracklist::init_loaded (AutomatableTrack * track)
 {
@@ -28,10 +33,94 @@ AutomationTracklist::init_loaded (AutomatableTrack * track)
       at->init_loaded (this);
       if (at->visible_)
         {
-          visible_ats_.push_back (at.get ());
+          visible_ats_.push_back (at);
         }
     }
 }
+
+void
+AutomationTracklist::init_after_cloning (const AutomationTracklist &other)
+{
+  ats_.clear ();
+  ats_.reserve (other.ats_.size ());
+  for (const auto &at : other.ats_)
+    {
+      auto * cloned_at = at->clone_raw_ptr ();
+      cloned_at->setParent (this);
+      ats_.push_back (cloned_at);
+    }
+}
+
+// ========================================================================
+// QML Interface
+// ========================================================================
+QHash<int, QByteArray>
+AutomationTracklist::roleNames () const
+{
+  static QHash<int, QByteArray> roles = {
+    { AutomationTrackPtrRole, "automationTrack" },
+  };
+  return roles;
+}
+
+int
+AutomationTracklist::rowCount (const QModelIndex &parent) const
+{
+  if (parent.isValid ())
+    return 0;
+  return static_cast<int> (ats_.size ());
+}
+
+QVariant
+AutomationTracklist::data (const QModelIndex &index, int role) const
+{
+  if (!index.isValid () || index.row () >= static_cast<int> (ats_.size ()))
+    return {};
+
+  switch (role)
+    {
+    case AutomationTrackPtrRole:
+      return QVariant::fromValue (ats_.at (index.row ()));
+    default:
+      return {};
+    }
+}
+
+void
+AutomationTracklist::showNextAvailableAutomationTrack (
+  AutomationTrack * current_automation_track)
+{
+  auto * new_at = get_first_invisible_at ();
+
+  /* if any invisible at exists, show it */
+  if (new_at != nullptr)
+    {
+      if (!new_at->created_)
+        new_at->created_ = true;
+      set_at_visible (*new_at, true);
+
+      /* move it after the clicked automation track */
+      set_at_index (*new_at, current_automation_track->index_ + 1, true);
+      Q_EMIT dataChanged (
+        index (new_at->index_), index ((int) ats_.size () - 1));
+    }
+}
+
+void
+AutomationTracklist::hideAutomationTrack (
+  AutomationTrack * current_automation_track)
+{
+  /* don't allow deleting if no other visible automation tracks */
+  if (visible_ats_.size () > 1)
+    {
+      set_at_visible (*current_automation_track, false);
+      Q_EMIT dataChanged (
+        index (current_automation_track->index_),
+        index ((int) ats_.size () - 1));
+    }
+}
+
+// ========================================================================
 
 AutomatableTrack *
 AutomationTracklist::get_track () const
@@ -41,19 +130,22 @@ AutomationTracklist::get_track () const
 }
 
 AutomationTrack *
-AutomationTracklist::add_at (std::unique_ptr<AutomationTrack> &&at)
+AutomationTracklist::add_at (AutomationTrack &at)
 {
-  auto &at_ref = ats_.emplace_back (std::move (at));
+  ats_.push_back (&at);
+  auto * at_ref = ats_.back ();
+  at_ref->setParent (this);
 
-  at_ref->index_ = ats_.size () - 1;
-  at_ref->port_id_.track_name_hash_ = track_->get_name_hash ();
+  at_ref->index_ = static_cast<int> (ats_.size ()) - 1;
+  at_ref->port_id_->track_name_hash_ = track_->get_name_hash ();
 
   /* move automation track regions */
   for (const auto region : at_ref->regions_ | type_is<AutomationRegion> ())
     {
       region->set_automation_track (*at_ref);
     }
-  return at_ref.get ();
+
+  return at_ref;
 }
 
 AutomationTrack *
@@ -64,14 +156,14 @@ AutomationTracklist::get_plugin_at (
   const std::string              &symbol)
 {
   auto it = std::find_if (ats_.begin (), ats_.end (), [&] (const auto &at) {
-    return at->port_id_.owner_type_ == PortIdentifier::OwnerType::Plugin
-           && plugin_slot == at->port_id_.plugin_id_.slot_
-           && slot_type == at->port_id_.plugin_id_.slot_type_
-           && port_index == at->port_id_.port_index_
-           && symbol == at->port_id_.sym_;
+    return at->port_id_->owner_type_ == PortIdentifier::OwnerType::Plugin
+           && plugin_slot == at->port_id_->plugin_id_.slot_
+           && slot_type == at->port_id_->plugin_id_.slot_type_
+           && port_index == at->port_id_->port_index_
+           && symbol == at->port_id_->sym_;
   });
 
-  return it != ats_.end () ? it->get () : nullptr;
+  return it != ats_.end () ? *it : nullptr;
 }
 
 void
@@ -90,7 +182,7 @@ AutomationTracklist::set_at_index (AutomationTrack &at, int index, bool push_dow
   z_return_if_fail (index < static_cast<int> (ats_.size ()) && ats_[index]);
 
   auto it = std::find_if (ats_.begin (), ats_.end (), [&] (const auto &at_ref) {
-    return at_ref.get () == &at;
+    return at_ref == &at;
   });
   z_return_if_fail (
     it != ats_.end () && std::distance (ats_.begin (), it) == at.index_);
@@ -104,7 +196,8 @@ AutomationTracklist::set_at_index (AutomationTrack &at, int index, bool push_dow
     {
       auto &clip_editor_region_id = clip_editor_region->id_;
 
-      if (clip_editor_region_id.track_name_hash_ == at.port_id_.track_name_hash_)
+      if (
+        clip_editor_region_id.track_name_hash_ == at.port_id_->track_name_hash_)
         {
           clip_editor_region_idx = clip_editor_region_id.at_idx_;
         }
@@ -160,7 +253,7 @@ AutomationTracklist::set_at_index (AutomationTrack &at, int index, bool push_dow
         }
 
       z_trace (
-        "new pos {} ({})", ats_[prev_index]->port_id_.get_label (),
+        "new pos {} ({})", ats_[prev_index]->port_id_->get_label (),
         ats_[prev_index]->index_);
     }
 }
@@ -172,10 +265,10 @@ AutomationTracklist::update_track_name_hash (AutomatableTrack &track)
   auto track_name_hash = track.get_name_hash ();
   for (auto &at : ats_)
     {
-      at->port_id_.track_name_hash_ = track_name_hash;
-      if (at->port_id_.owner_type_ == PortIdentifier::OwnerType::Plugin)
+      at->port_id_->track_name_hash_ = track_name_hash;
+      if (at->port_id_->owner_type_ == PortIdentifier::OwnerType::Plugin)
         {
-          at->port_id_.plugin_id_.track_name_hash_ = track_name_hash;
+          at->port_id_->plugin_id_.track_name_hash_ = track_name_hash;
         }
       for (auto &region : at->regions_)
         {
@@ -209,7 +302,7 @@ AutomationTracklist::get_prev_visible_at (const AutomationTrack &at) const
   auto it = std::find_if (
     ats_.rbegin () + (ats_.size () - at.index_ + 1), ats_.rend (),
     [] (const auto &at_ref) { return at_ref->created_ && at_ref->visible_; });
-  return it == ats_.rend () ? nullptr : (*std::prev (it.base ())).get ();
+  return it == ats_.rend () ? nullptr : (*std::prev (it.base ()));
 }
 
 AutomationTrack *
@@ -218,7 +311,7 @@ AutomationTracklist::get_next_visible_at (const AutomationTrack &at) const
   auto it = std::find_if (
     ats_.begin () + at.index_ + 1, ats_.end (),
     [] (const auto &at_ref) { return at_ref->created_ && at_ref->visible_; });
-  return it == ats_.end () ? nullptr : (*it).get ();
+  return it == ats_.end () ? nullptr : (*it);
 }
 
 AutomationTrack *
@@ -294,11 +387,11 @@ AutomationTrack *
 AutomationTracklist::get_at_from_port (const Port &port) const
 {
   auto it = std::find_if (ats_.begin (), ats_.end (), [&port] (const auto &at) {
-    auto at_port = Port::find_from_identifier (at->port_id_);
+    auto at_port = Port::find_from_identifier (*at->port_id_);
     return at_port == &port;
   });
 
-  return it != ats_.end () ? it->get () : nullptr;
+  return it != ats_.end () ? *it : nullptr;
 }
 
 AutomationTrack *
@@ -310,13 +403,13 @@ AutomationTracklist::get_first_invisible_at () const
   });
 
   if (it != ats_.end ())
-    return it->get ();
+    return *it;
 
   it = std::find_if (ats_.begin (), ats_.end (), [] (const auto &at) {
     return !at->created_;
   });
 
-  return it != ats_.end () ? it->get () : nullptr;
+  return it != ats_.end () ? *it : nullptr;
 }
 
 void
@@ -338,7 +431,7 @@ AutomationTracklist::set_at_visible (AutomationTrack &at, bool visible)
     }
 }
 
-std::unique_ptr<AutomationTrack>
+AutomationTrack *
 AutomationTracklist::
   remove_at (AutomationTrack &at, bool free_at, bool fire_events)
 {
@@ -354,7 +447,7 @@ AutomationTracklist::
 
   z_trace (
     "[track {} atl] removing automation track at: {} '{}'",
-    track_ ? track_->pos_ : -1, deleted_idx, at.port_id_.label_);
+    track_ ? track_->pos_ : -1, deleted_idx, at.port_id_->label_);
 
   if (free_at)
     {
@@ -364,7 +457,7 @@ AutomationTracklist::
     }
 
   auto it = std::find_if (ats_.begin (), ats_.end (), [&at] (const auto &ptr) {
-    return ptr.get () == &at;
+    return ptr == &at;
   });
   if (it == ats_.end ())
     {
@@ -372,7 +465,7 @@ AutomationTracklist::
         "[track {} atl] automation track not found", track_ ? track_->pos_ : -1);
       return nullptr;
     }
-  auto deleted_at = std::move (*it);
+  auto * deleted_at = *it;
   it = ats_.erase (it);
 
   /* move automation track regions for automation tracks after the deleted one*/
@@ -411,6 +504,13 @@ AutomationTracklist::
       // EVENTS_PUSH (EventType::ET_AUTOMATION_TRACKLIST_AT_REMOVED, this);
     }
 
+  if (free_at)
+    {
+      deleted_at->setParent (nullptr);
+      deleted_at->deleteLater ();
+      return nullptr;
+    }
+
   return deleted_at;
 }
 
@@ -436,8 +536,8 @@ AutomationTracklist::print_ats () const
     {
       const auto &at = ats_[i];
       str += fmt::format (
-        "[{}] '{}' (sym '{}')\n", i, at->port_id_.get_label (),
-        at->port_id_.sym_);
+        "[{}] '{}' (sym '{}')\n", i, at->port_id_->get_label (),
+        at->port_id_->sym_);
     }
 
   z_info (str);
@@ -461,7 +561,7 @@ AutomationTracklist::validate () const
     {
       const auto &at = ats_[i];
       z_return_val_if_fail (
-        at->port_id_.track_name_hash_ == track_name_hash && at->index_ == i,
+        at->port_id_->track_name_hash_ == track_name_hash && at->index_ == i,
         false);
       if (!at->validate ())
         return false;
@@ -500,7 +600,7 @@ AutomationTracklist::set_caches (CacheType types)
         ENUM_BITSET_TEST (CacheType, types, CacheType::AutomationLaneRecordModes)
         && at->automation_mode_ == AutomationMode::Record)
         {
-          ats_in_record_mode_.push_back (at.get ());
+          ats_in_record_mode_.push_back (at);
         }
     }
 }
@@ -512,8 +612,7 @@ AutomationTracklist::print_regions () const
   z_return_if_fail (track);
 
   std::string str = fmt::format (
-    "Automation regions for track {} "
-    "(total automation tracks {}):",
+    "Automation regions for track {} (total automation tracks {}):",
     track->get_name (), ats_.size ());
 
   for (size_t i = 0; i < ats_.size (); i++)
@@ -523,7 +622,7 @@ AutomationTracklist::print_regions () const
         continue;
 
       str += fmt::format (
-        "\n  [{}] port '{}': {} regions", i, at->port_id_.get_label (),
+        "\n  [{}] port '{}': {} regions", i, at->port_id_->get_label (),
         at->regions_.size ());
     }
 

@@ -22,45 +22,45 @@ using WrappedObjectWithChangeSignal = struct _WrappedObjectWithChangeSignal;
  * A mapping from a MIDI CC value to a destination ControlPort.
  */
 class MidiMapping final
-    : public ICloneable<MidiMapping>,
+    : public QObject,
+      public ICloneable<MidiMapping>,
       public ISerializable<MidiMapping>
 {
-public:
-  void init_after_cloning (const MidiMapping &other) override
-  {
-    key_ = other.key_;
-    if (other.device_port_)
-      device_port_ = std::make_unique<ExtPort> (*other.device_port_);
-    dest_id_ = other.dest_id_;
-    enabled_.store (other.enabled_.load ());
-  }
-
-  void set_enabled (bool enabled) { enabled_.store (enabled); }
-
-  void apply (std::array<midi_byte_t, 3> buf);
-
-  DECLARE_DEFINE_FIELDS_METHOD ();
+  Q_OBJECT
+  QML_ELEMENT
 
 public:
-  /** Raw MIDI signal. */
-  std::array<midi_byte_t, 3> key_ = {};
+    MidiMapping (QObject * parent = nullptr);
 
-  /** The device that this connection will be mapped for. */
-  std::unique_ptr<ExtPort> device_port_;
+  public:
+    void init_after_cloning (const MidiMapping &other) override;
 
-  /** Destination. */
-  PortIdentifier dest_id_ = {};
+    void set_enabled (bool enabled) { enabled_.store (enabled); }
 
-  /**
-   * Destination pointer, for convenience.
-   *
-   * @note This pointer is not owned by this instance.
-   */
-  Port * dest_ = nullptr;
+    void apply (std::array<midi_byte_t, 3> buf);
 
-  /** Whether this binding is enabled. */
-  /* TODO: check if really should be atomic */
-  std::atomic<bool> enabled_ = false;
+    DECLARE_DEFINE_FIELDS_METHOD ();
+
+  public:
+    /** Raw MIDI signal. */
+    std::array<midi_byte_t, 3> key_ = {};
+
+    /** The device that this connection will be mapped for. */
+    std::unique_ptr<ExtPort> device_port_;
+
+    /** Destination. */
+    PortIdentifier * dest_id_ = nullptr;
+
+    /**
+     * Destination pointer, for convenience.
+     *
+     * @note This pointer is not owned by this instance.
+     */
+    Port * dest_ = nullptr;
+
+    /** Whether this binding is enabled. */
+    /* TODO: check if really should be atomic */
+    std::atomic<bool> enabled_ = false;
 };
 
 /**

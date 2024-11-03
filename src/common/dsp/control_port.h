@@ -18,10 +18,14 @@
  * @brief Control port specifics.
  */
 class ControlPort final
-    : public Port,
+    : public QObject,
+      public Port,
       public ICloneable<ControlPort>,
       public ISerializable<ControlPort>
 {
+  Q_OBJECT
+  QML_ELEMENT
+
 public:
   /**
    * Used for queueing changes to be applied during
@@ -79,7 +83,7 @@ public:
   };
 
 public:
-  ControlPort () = default;
+  ControlPort ();
   ControlPort (std::string label);
 
   /**

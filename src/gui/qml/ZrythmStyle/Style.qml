@@ -34,7 +34,7 @@ QtObject {
     readonly property real downEnhancementFactor: lightenFactor // enhance things pressed down by 30%
     readonly property real inactiveOpacityFactor: 0.85
     readonly property real disabledOpacityFactor: 0.7
-    readonly property int toolTipDelay: 900
+    readonly property int toolTipDelay: 700
     readonly property font buttonTextFont: ({
         "family": root.fontFamily,
         "pixelSize": 12,

@@ -242,7 +242,7 @@ AutomationPoint::get_port () const
 {
   const AutomationTrack * const at = get_automation_track ();
   z_return_val_if_fail (at, nullptr);
-  auto port = Port::find_from_identifier<ControlPort> (at->port_id_);
+  auto port = Port::find_from_identifier<ControlPort> (*at->port_id_);
   z_return_val_if_fail (port, nullptr);
 
   return port;

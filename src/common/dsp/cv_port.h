@@ -17,10 +17,13 @@
  * @brief CV port specifics.
  */
 class CVPort final
-    : public Port,
+    : public QObject,
+      public Port,
       public ICloneable<CVPort>,
       public ISerializable<CVPort>
 {
+  Q_OBJECT
+  QML_ELEMENT
 public:
   CVPort ();
   CVPort (std::string label, PortFlow flow);

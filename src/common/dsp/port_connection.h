@@ -18,20 +18,26 @@
 /**
  * A connection between two ports.
  */
-class PortConnection final : public ISerializable<PortConnection>
+class PortConnection final
+    : public QObject,
+      public ISerializable<PortConnection>,
+      public ICloneable<PortConnection>
 {
+  Q_OBJECT
+  QML_ELEMENT
+
 public:
-  PortConnection () = default;
+  PortConnection (QObject * parent = nullptr);
+
   PortConnection (
-    PortIdentifier src,
-    PortIdentifier dest,
-    float          multiplier,
-    bool           locked,
-    bool           enabled)
-      : src_id_ (std::move (src)), dest_id_ (std::move (dest)),
-        multiplier_ (multiplier), locked_ (locked), enabled_ (enabled)
-  {
-  }
+    const PortIdentifier &src,
+    const PortIdentifier &dest,
+    float                 multiplier,
+    bool                  locked,
+    bool                  enabled,
+    QObject *             parent = nullptr);
+
+  void init_after_cloning (const PortConnection &other) override;
 
   void update (float multiplier, bool locked, bool enabled)
   {
@@ -49,8 +55,8 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 public:
-  PortIdentifier src_id_;
-  PortIdentifier dest_id_;
+  PortIdentifier * src_id_ = nullptr;
+  PortIdentifier * dest_id_ = nullptr;
 
   /**
    * Multiplier to apply, where applicable.

@@ -58,13 +58,12 @@ Exporter::ExportThread::run ()
 }
 
 Exporter::Exporter (
-  Settings settings,
-  // GtkWidget *                   parent_owner,
-  std::shared_ptr<ProgressInfo> progress_info)
-    : settings_ (std::move (settings)),
+  Settings                      settings,
+  std::shared_ptr<ProgressInfo> progress_info,
+  QObject *                     parent)
+    : QObject (parent), settings_ (std::move (settings)),
       progress_info_ (
         progress_info ? progress_info : std::make_shared<ProgressInfo> ())
-// parent_owner_ (parent_owner)
 {
 }
 
@@ -505,7 +504,7 @@ Exporter::prepare_tracks_for_export (AudioEngine &engine, Transport &transport)
   TRACKLIST->activate_all_plugins (false);
   TRACKLIST->activate_all_plugins (true);
 
-  connections_ = std::make_unique<std::vector<PortConnection>> ();
+  connections_ = std::make_unique<PortConnectionsManager::ConnectionsVector> ();
   if (settings_.mode_ != Exporter::Mode::Full)
     {
       /* disconnect all track faders from their channel outputs so that sends
@@ -518,18 +517,20 @@ Exporter::prepare_tracks_for_export (AudioEngine &engine, Transport &transport)
           auto &l_src_id = cur_tr->channel_->fader_->stereo_out_->get_l ().id_;
           auto &l_dest_id = cur_tr->channel_->stereo_out_->get_l ().id_;
           auto  l_conn =
-            PORT_CONNECTIONS_MGR->find_connection (l_src_id, l_dest_id);
+            PORT_CONNECTIONS_MGR->find_connection (*l_src_id, *l_dest_id);
           z_return_if_fail (l_conn);
-          connections_->push_back (*l_conn);
-          PORT_CONNECTIONS_MGR->ensure_disconnect (l_src_id, l_dest_id);
+          connections_->push_back (l_conn->clone_raw_ptr ());
+          connections_->back ()->setParent (this);
+          PORT_CONNECTIONS_MGR->ensure_disconnect (*l_src_id, *l_dest_id);
 
           auto &r_src_id = cur_tr->channel_->fader_->stereo_out_->get_r ().id_;
           auto &r_dest_id = cur_tr->channel_->stereo_out_->get_r ().id_;
           auto  r_conn =
-            PORT_CONNECTIONS_MGR->find_connection (r_src_id, r_dest_id);
+            PORT_CONNECTIONS_MGR->find_connection (*r_src_id, *r_dest_id);
           z_return_if_fail (r_conn);
-          connections_->push_back (*r_conn);
-          PORT_CONNECTIONS_MGR->ensure_disconnect (r_src_id, r_dest_id);
+          connections_->push_back (r_conn->clone_raw_ptr ());
+          connections_->back ()->setParent (this);
+          PORT_CONNECTIONS_MGR->ensure_disconnect (*r_src_id, *r_dest_id);
         }
 
       /* recalculate the graph to apply the changes */

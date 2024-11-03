@@ -629,7 +629,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                       for (auto port : ports)
                         {
                           Port * prj_port =
-                            Port::find_from_identifier (port->id_);
+                            Port::find_from_identifier (*port->id_);
                           prj_port->restore_from_non_project (*port);
                         }
                     }
@@ -898,7 +898,8 @@ TracklistSelectionsAction::
           std::vector<GroupTargetTrack *> outputs_in_prj (num_tracks);
           std::vector<std::array<std::unique_ptr<ChannelSend>, STRIP_SIZE>>
             sends (num_tracks);
-          std::vector<std::array<std::vector<PortConnection>, STRIP_SIZE>>
+          std::vector<
+            std::array<PortConnectionsManager::ConnectionsVector, STRIP_SIZE>>
             send_conns (num_tracks);
           for (size_t i = 0; i < num_tracks; i++)
             {
@@ -912,11 +913,13 @@ TracklistSelectionsAction::
 
                   for (size_t j = 0; j < STRIP_SIZE; ++j)
                     {
-                      auto &send = own_channel_track->get_channel ()->sends_[j];
-                      sends[i][j] = send->clone_unique ();
+                      auto &send =
+                        own_channel_track->get_channel ()->sends_.at (j);
+                      sends.at (i).at (j) = send->clone_unique ();
 
                       send->append_connection (
-                        port_connections_before_.get (), send_conns[i][j]);
+                        port_connections_before_.get (),
+                        send_conns.at (i).at (j));
                     }
                 }
               else
@@ -1005,19 +1008,19 @@ TracklistSelectionsAction::
                         && track->out_signal_type_ == PortType::Audio)
                         {
                           PORT_CONNECTIONS_MGR->ensure_connect (
-                            track_send->stereo_out_->get_l ().id_,
-                            own_conns.at (0).dest_id_, 1.f, true, true);
+                            *track_send->stereo_out_->get_l ().id_,
+                            *own_conns.at (0)->dest_id_, 1.f, true, true);
                           PORT_CONNECTIONS_MGR->ensure_connect (
-                            track_send->stereo_out_->get_r ().id_,
-                            own_conns.at (1).dest_id_, 1.f, true, true);
+                            *track_send->stereo_out_->get_r ().id_,
+                            *own_conns.at (1)->dest_id_, 1.f, true, true);
                         }
                       else if (
                         !own_conns.empty ()
                         && track->out_signal_type_ == PortType::Event)
                         {
                           PORT_CONNECTIONS_MGR->ensure_connect (
-                            track_send->midi_out_->id_,
-                            own_conns.front ().dest_id_, 1.f, true, true);
+                            *track_send->midi_out_->id_,
+                            *own_conns.front ()->dest_id_, 1.f, true, true);
                         }
                     }
 

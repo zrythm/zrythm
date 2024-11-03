@@ -26,6 +26,7 @@ class InstrumentTrack final
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (InstrumentTrack)
   DEFINE_LANED_TRACK_QML_PROPERTIES (InstrumentTrack)
+  DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (InstrumentTrack)
 
   friend class InitializableObjectFactory<InstrumentTrack>;
 

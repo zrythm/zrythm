@@ -30,6 +30,7 @@ class MasterTrack final
   Q_OBJECT
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (MasterTrack)
+  DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (MasterTrack)
 
 public:
   friend class InitializableObjectFactory<MasterTrack>;

@@ -74,6 +74,7 @@ endforeach()
 set(rel_qml_file_paths
   components/basic/EditableValueDisplay.qml
   components/basic/LinkedButtons.qml
+  components/basic/MuteButton.qml
   components/basic/RecordButton.qml
   components/basic/SoloButton.qml
   components/basic/ZrythmActionRow.qml
@@ -84,6 +85,7 @@ set(rel_qml_file_paths
   components/basic/ZrythmResizablePanel.qml
   components/basic/ZrythmSplitButton.qml
   components/basic/ZrythmToolBar.qml
+  components/AutomationTracksListView.qml
   components/MainToolbar.qml
   components/BottomDock.qml
   components/CenterDock.qml
@@ -138,6 +140,8 @@ qt_add_qml_module(zrythm
   SOURCES # for some reason singletons must be added here
     backend/action_controller.h
     backend/action_controller.cpp
+    backend/automation_tracklist_proxy_model.h
+    backend/automation_tracklist_proxy_model.cpp
     backend/global_state.h
     backend/global_state.cpp
     backend/recent_projects_model.h

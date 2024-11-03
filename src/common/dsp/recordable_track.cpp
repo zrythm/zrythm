@@ -11,10 +11,10 @@ RecordableTrack::RecordableTrack ()
 {
   recording_ = std::make_unique<ControlPort> (_ ("Track record"));
   recording_->set_owner (this);
-  recording_->id_.sym_ = "track_record";
+  recording_->id_->sym_ = "track_record";
   recording_->set_toggled (false, false);
-  recording_->id_.flags2_ |= PortIdentifier::Flags2::TrackRecording;
-  recording_->id_.flags_ |= PortIdentifier::Flags::Toggle;
+  recording_->id_->flags2_ |= PortIdentifier::Flags2::TrackRecording;
+  recording_->id_->flags_ |= PortIdentifier::Flags::Toggle;
 }
 
 void

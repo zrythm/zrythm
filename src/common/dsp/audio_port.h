@@ -17,10 +17,14 @@
  * @brief Audio port specifics.
  */
 class AudioPort final
-    : public Port,
+    : public QObject,
+      public Port,
       public ICloneable<AudioPort>,
       public ISerializable<AudioPort>
 {
+  Q_OBJECT
+  QML_ELEMENT
+
 public:
   AudioPort ();
 
@@ -91,7 +95,13 @@ public:
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
-  bool is_stereo_port () const;
+  bool is_stereo_port () const
+  {
+    return ENUM_BITSET_TEST (
+             PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::StereoL)
+           || ENUM_BITSET_TEST (
+             PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::StereoR);
+  }
 
 #if HAVE_JACK
 

@@ -153,7 +153,7 @@ PortConnection::define_fields (const Context &ctx)
     ctx,
     T::make_field (
       "baseValue", base_value_,
-      !ctx.is_serializing () || src_id_.type_ != PortType::CV));
+      !ctx.is_serializing () || src_id_->type_ != PortType::CV));
 }
 
 void

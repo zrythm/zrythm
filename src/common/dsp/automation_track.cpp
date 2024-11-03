@@ -17,24 +17,11 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
-void
-AutomationTrack::init_loaded (AutomationTracklist * atl)
-{
-  atl_ = atl;
-
-  /* init regions */
-  for (auto &region : regions_)
-    {
-      region->init_loaded ();
-    }
-}
-
 AutomationTrack::AutomationTrack (ControlPort &port)
 {
-  height_ = TRACK_DEF_HEIGHT;
-
-  z_return_if_fail (port.id_.validate ());
-  port_id_ = port.id_;
+  z_return_if_fail (port.id_->validate ());
+  port_id_ = port.id_->clone_raw_ptr ();
+  port_id_->setParent (this);
 
   port.at_ = this;
 
@@ -47,6 +34,63 @@ AutomationTrack::AutomationTrack (ControlPort &port)
         AutomationRecordMode::AUTOMATION_RECORD_MODE_TOUCH;
     }
 #endif
+}
+
+void
+AutomationTrack::init_loaded (AutomationTracklist * atl)
+{
+  atl_ = atl;
+
+  /* init regions */
+  for (auto &region : regions_)
+    {
+      region->init_loaded ();
+    }
+}
+
+// ========================================================================
+// QML Interface
+// ========================================================================
+
+void
+AutomationTrack::setHeight (double height)
+{
+  if (math_doubles_equal (height, height_))
+    return;
+
+  height_ = height;
+  Q_EMIT heightChanged (height);
+}
+
+void
+AutomationTrack::setAutomationMode (int automation_mode)
+{
+  if (automation_mode == ENUM_VALUE_TO_INT (automation_mode_))
+    return;
+
+  automation_mode_ =
+    ENUM_INT_TO_VALUE (decltype (automation_mode_), automation_mode);
+  Q_EMIT automationModeChanged (automation_mode);
+}
+
+void
+AutomationTrack::setRecordMode (int record_mode)
+{
+  if (record_mode == ENUM_VALUE_TO_INT (record_mode_))
+    return;
+
+  record_mode_ = ENUM_INT_TO_VALUE (decltype (record_mode_), record_mode);
+  Q_EMIT recordModeChanged (record_mode);
+}
+
+// ========================================================================
+
+void
+AutomationTrack::set_port_id (const PortIdentifier &id)
+{
+  port_id_ = id.clone_raw_ptr ();
+  port_id_->setParent (this);
+  Q_EMIT portIdentifierChanged (port_id_);
 }
 
 bool
@@ -64,34 +108,33 @@ AutomationTrack::is_auditioner () const
 bool
 AutomationTrack::validate () const
 {
-  z_return_val_if_fail (port_id_.validate (), false);
+  z_return_val_if_fail (port_id_->validate (), false);
 
-  unsigned int track_name_hash = port_id_.track_name_hash_;
-  if (port_id_.owner_type_ == PortIdentifier::OwnerType::Plugin)
+  unsigned int track_name_hash = port_id_->track_name_hash_;
+  if (port_id_->owner_type_ == PortIdentifier::OwnerType::Plugin)
     {
       z_return_val_if_fail (
-        port_id_.plugin_id_.track_name_hash_ == track_name_hash, false);
+        port_id_->plugin_id_.track_name_hash_ == track_name_hash, false);
     }
 
   /* this is expensive so only do this during tests */
   if (ZRYTHM_TESTING)
     {
-      auto found_at = find_from_port_id (port_id_, !ZRYTHM_TESTING);
+      auto * found_at = find_from_port_id (*port_id_, !ZRYTHM_TESTING);
       if (found_at != this)
         {
           z_warning (
-            "The automation track for the following "
-            "port identifier was not found");
-          port_id_.print ();
+            "The automation track for the following port identifier was not found");
+          port_id_->print ();
           z_warning ("automation tracks:");
-          auto atl = get_automation_tracklist ();
+          auto * atl = get_automation_tracklist ();
           atl->print_ats ();
           z_return_val_if_reached (false);
         }
     }
 
   int j = -1;
-  for (const auto region : regions_ | type_is<AutomationRegion> ())
+  for (auto * const region : regions_ | type_is<AutomationRegion> ())
     {
       ++j;
       z_return_val_if_fail (
@@ -111,9 +154,9 @@ AutomationTrack::validate () const
 AutomationTracklist *
 AutomationTrack::get_automation_tracklist () const
 {
-  auto track = get_track ();
+  auto * track = get_track ();
   z_return_val_if_fail (track, nullptr);
-  return track->automation_tracklist_.get ();
+  return track->automation_tracklist_;
 }
 
 AutomationRegion *
@@ -207,14 +250,14 @@ AutomationTrack::find_from_port (
           const auto &src = port.id_;
           const auto &dest = at->port_id_;
           if (
-            dest.owner_type_ == src.owner_type_ && dest.type_ == src.type_
-            && dest.flow_ == src.flow_ && dest.flags_ == src.flags_
-            && dest.track_name_hash_ == src.track_name_hash_
-            && (dest.sym_.empty() ? dest.label_ == src.label_ : dest.sym_ == src.sym_ ))
+            dest->owner_type_ == src->owner_type_ && dest->type_ == src->type_
+            && dest->flow_ == src->flow_ && dest->flags_ == src->flags_
+            && dest->track_name_hash_ == src->track_name_hash_
+            && (dest->sym_.empty() ? dest->label_ == src->label_ : dest->sym_ == src->sym_ ))
             {
-              if (dest.owner_type_ == PortIdentifier::OwnerType::Plugin)
+              if (dest->owner_type_ == PortIdentifier::OwnerType::Plugin)
                 {
-                  if (dest.plugin_id_ != src.plugin_id_)
+                  if (dest->plugin_id_ != src->plugin_id_)
                     {
                       continue;
                     }
@@ -231,25 +274,25 @@ AutomationTrack::find_from_port (
                        * ports with the same label but different symbol) */
                       if (
                         !ENUM_BITSET_TEST (
-                          PortIdentifier::Flags, src.flags_,
+                          PortIdentifier::Flags, src->flags_,
                           PortIdentifier::Flags::GenericPluginPort)
-                        && dest.sym_ != src.sym_)
+                        && dest->sym_ != src->sym_)
                         {
                           continue;
                         }
-                      return at.get ();
+                      return at;
                     }
                   /* if not lv2, also search by index */
-                  else if (dest.port_index_ == src.port_index_)
+                  else if (dest->port_index_ == src->port_index_)
                     {
-                      return at.get ();
+                      return at;
                     }
                 }
               else
                 {
-                  if (dest.port_index_ == src.port_index_)
+                  if (dest->port_index_ == src->port_index_)
                     {
-                      return at.get ();
+                      return at;
                     }
                 }
             }
@@ -259,7 +302,7 @@ AutomationTrack::find_from_port (
         {
           if (port.id_ == at->port_id_)
             {
-              return at.get ();
+              return at;
             }
         }
     }
@@ -271,7 +314,7 @@ AutomationTrack *
 AutomationTrack::find_from_port_id (const PortIdentifier &id, bool basic_search)
 {
   auto port = Port::find_from_identifier<ControlPort> (id);
-  z_return_val_if_fail (port && id == port->id_, nullptr);
+  z_return_val_if_fail (port && id == *port->id_, nullptr);
 
   return find_from_port (*port, nullptr, basic_search);
 }
@@ -350,8 +393,8 @@ AutomationTrack::should_be_recording (RtTimePoint cur_time, bool record_aps) con
 AutomatableTrack *
 AutomationTrack::get_track () const
 {
-  auto track = TRACKLIST->find_track_by_name_hash<AutomatableTrack> (
-    port_id_.track_name_hash_);
+  auto * track = TRACKLIST->find_track_by_name_hash<AutomatableTrack> (
+    port_id_->track_name_hash_);
   z_return_val_if_fail (track, nullptr);
   return track;
 }
@@ -377,7 +420,7 @@ AutomationTrack::get_val_at_pos (
 {
   auto ap = get_ap_before_pos (pos, ends_after, use_snapshots);
 
-  auto port = Port::find_from_identifier<ControlPort> (port_id_);
+  auto port = Port::find_from_identifier<ControlPort> (*port_id_);
   z_return_val_if_fail (port, 0.f);
 
   /* no automation points yet, return negative (no change) */
@@ -482,7 +525,7 @@ AutomationTrack::set_caches (CacheType types)
 
   if (ENUM_BITSET_TEST (CacheType, types, CacheType::AutomationLanePorts))
     {
-      port_ = Port::find_from_identifier<ControlPort> (port_id_);
+      port_ = Port::find_from_identifier<ControlPort> (*port_id_);
     }
 }
 
@@ -499,5 +542,6 @@ AutomationTrack::init_after_cloning (const AutomationTrack &other)
   height_ = other.height_;
   z_warn_if_fail (height_ >= TRACK_MIN_HEIGHT);
 
-  port_id_ = other.port_id_;
+  port_id_ = other.port_id_->clone_raw_ptr ();
+  port_id_->setParent (this);
 }

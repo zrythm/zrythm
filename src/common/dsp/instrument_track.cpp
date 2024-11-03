@@ -16,6 +16,7 @@ InstrumentTrack::InstrumentTrack (const std::string &name, int pos)
 {
   color_ = Color (QColor ("#FF9616"));
   icon_name_ = _ ("instrument");
+  automation_tracklist_->setParent (this);
 }
 
 bool

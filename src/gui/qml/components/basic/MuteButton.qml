@@ -7,14 +7,10 @@ Button {
     id: root
 
     checkable: true
-    text: "S"
-
-    palette {
-        accent: Style.soloGreenColor
-    }
+    text: "M"
 
     ToolTip {
-        text: qsTr("Solo")
+        text: qsTr("Mute")
     }
 
 }

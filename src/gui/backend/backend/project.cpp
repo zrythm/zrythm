@@ -41,7 +41,7 @@
 
 Project::Project (QObject * parent)
     : QObject (parent), version_ (Zrythm::get_version (false)),
-      port_connections_manager_ (std::make_unique<PortConnectionsManager> ()),
+      port_connections_manager_ (new PortConnectionsManager (this)),
       audio_engine_ (std::make_unique<AudioEngine> (this)),
       transport_ (new Transport (this)),
       quantize_opts_editor_ (
@@ -1123,7 +1123,8 @@ Project::init_after_cloning (const Project &other)
     std::make_unique<SimpleTracklistSelections> (*other.tracklist_selections_);
   tracklist_selections_->tracklist_ = tracklist_;
   region_link_group_manager_ = other.region_link_group_manager_;
-  port_connections_manager_ = other.port_connections_manager_->clone_unique ();
+  port_connections_manager_ = other.port_connections_manager_->clone_raw_ptr ();
+  port_connections_manager_->setParent (this);
   midi_mappings_ = other.midi_mappings_->clone_unique ();
   undo_manager_ = other.undo_manager_->clone_unique ();
 

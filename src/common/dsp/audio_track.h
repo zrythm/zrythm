@@ -30,6 +30,7 @@ class AudioTrack final
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (AudioTrack)
   DEFINE_LANED_TRACK_QML_PROPERTIES (AudioTrack)
+  DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (AudioTrack)
 
   friend class InitializableObjectFactory<AudioTrack>;
 

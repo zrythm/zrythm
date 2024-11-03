@@ -28,18 +28,26 @@ class PortConnection;
  * Port connections manager.
  */
 class PortConnectionsManager final
-    : public ICloneable<PortConnectionsManager>,
+    : public QObject,
+      public ICloneable<PortConnectionsManager>,
       public ISerializable<PortConnectionsManager>
 {
-  using ConnectionsVector = std::vector<PortConnection>;
+  Q_OBJECT
+  QML_ELEMENT
+
+public:
+  using ConnectionsVector = std::vector<PortConnection *>;
+
+  explicit PortConnectionsManager (QObject * parent = nullptr);
+
+private:
   /**
    * Hashtable to speedup lookups by port identifier.
    *
-   * Key: Port identifier
+   * Key: Port identifier hash
    * Value: A vector of PortConnection references from @ref connections_.
    */
-  using ConnectionHashTable =
-    std::unordered_map<PortIdentifier, ConnectionsVector>;
+  using ConnectionHashTable = std::unordered_map<uint32_t, ConnectionsVector>;
 
 public:
   /**
@@ -100,11 +108,20 @@ public:
    *
    * It is a programming error to call this for ports that are not expected to
    * have exactly 1  matching connection.
+   *
+   * @return The connection, owned by this, or null.
    */
-  std::optional<PortConnection>
+  PortConnection *
   get_source_or_dest (const PortIdentifier &id, bool sources) const;
 
-  std::optional<PortConnection>
+  /**
+   * @brief
+   *
+   * @param src
+   * @param dest
+   * @return The connection, owned by this, or null.
+   */
+  PortConnection *
   find_connection (const PortIdentifier &src, const PortIdentifier &dest) const;
 
   /**
@@ -132,7 +149,7 @@ public:
   ensure_connect_from_connection (const PortConnection &conn)
   {
     return ensure_connect (
-      conn.src_id_, conn.dest_id_, conn.multiplier_, conn.locked_,
+      *conn.src_id_, *conn.dest_id_, conn.multiplier_, conn.locked_,
       conn.enabled_);
   }
 
@@ -158,7 +175,7 @@ public:
 
   bool contains_connection (const PortConnection &conn) const;
 
-  static void print_ht (const ConnectionHashTable &ht);
+  void print_ht (const ConnectionHashTable &ht);
 
   void print () const;
 
@@ -177,8 +194,8 @@ private:
   void clear_connections () { connections_.clear (); }
 
 public:
-  /** Connections. */
-  std::vector<PortConnection> connections_;
+  /** Connections (owned pointers). */
+  std::vector<PortConnection *> connections_;
 
   /**
    * Hashtable to speedup lookup by source port identifier.
