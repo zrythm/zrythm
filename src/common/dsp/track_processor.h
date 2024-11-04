@@ -49,6 +49,8 @@ public:
 
   bool is_in_active_project () const;
 
+  PortConnectionsManager * get_port_connections_manager () const;
+
   inline ProcessableTrack * get_track () const
   {
     z_return_val_if_fail (track_, nullptr);
@@ -73,8 +75,7 @@ public:
   void clear_buffers ();
 
   /**
-   * Disconnects all ports connected to the
-   * TrackProcessor.
+   * Disconnects all ports connected to the TrackProcessor.
    */
   void disconnect_all ();
 

@@ -113,8 +113,6 @@ target_sources(zrythm_lib
     marker_track.cpp
     master_track.h
     master_track.cpp
-    meter.h
-    meter.cpp
     metronome.h
     metronome.cpp
     midi_bus_track.h

@@ -47,8 +47,14 @@ constexpr int FADER_DEFAULT_FADE_FRAMES_SHORT = 1024;
  * It does not necessarily have to correspond to a FaderWidget. It can be used
  * as a backend to KnobWidget's.
  */
-class Fader final : public ICloneable<Fader>, public ISerializable<Fader>
+class Fader final
+    : public QObject,
+      public ICloneable<Fader>,
+      public ISerializable<Fader>
 {
+  Q_OBJECT
+  QML_ELEMENT
+
 public:
   /**
    * Fader type.
@@ -83,7 +89,7 @@ public:
   };
 
 public:
-  Fader () = default;
+  Fader (QObject * parent = nullptr);
 
   /**
    * Creates a new fader.

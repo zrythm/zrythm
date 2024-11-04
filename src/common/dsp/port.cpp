@@ -501,7 +501,7 @@ Port::find_from_identifier (const PortIdentifier &id)
           {
             if (id.is_output ())
               {
-                return ch->midi_out_.get ();
+                return ch->midi_out_;
               }
           }
         else if constexpr (std::is_same_v<T, AudioPort>)

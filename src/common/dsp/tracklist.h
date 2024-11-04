@@ -66,10 +66,11 @@ public:
 
 public:
   Tracklist (QObject * parent = nullptr);
-  Tracklist (Project &project);
-  Tracklist (SampleProcessor &sample_processor);
-  JUCE_DECLARE_NON_MOVEABLE (Tracklist)
-  JUCE_DECLARE_NON_COPYABLE (Tracklist)
+  Tracklist (Project &project, PortConnectionsManager * port_connections_manager);
+  Tracklist (
+    SampleProcessor         &sample_processor,
+    PortConnectionsManager * port_connections_manager);
+  Q_DISABLE_COPY_MOVE (Tracklist)
   ~Tracklist () override;
 
   // ========================================================================
@@ -169,12 +170,14 @@ public:
   T * insert_track (
     std::unique_ptr<T> &&track,
     int                  pos,
+    AudioEngine         &engine,
     bool                 publish_events,
     bool                 recalc_graph);
 
   Track * insert_track (
     std::unique_ptr<Track> &&track,
     int                      pos,
+    AudioEngine             &engine,
     bool                     publish_events,
     bool                     recalc_graph);
 
@@ -182,15 +185,19 @@ public:
    * Calls insert_track with the given options.
    */
   template <FinalTrackSubclass T>
-  T *
-  append_track (std::unique_ptr<T> &&track, bool publish_events, bool recalc_graph)
+  T * append_track (
+    std::unique_ptr<T> &&track,
+    AudioEngine         &engine,
+    bool                 publish_events,
+    bool                 recalc_graph)
   {
     return insert_track<T> (
-      std::move (track), tracks_.size (), publish_events, recalc_graph);
+      std::move (track), tracks_.size (), engine, publish_events, recalc_graph);
   }
 
   Track * append_track (
     std::unique_ptr<Track> &&track,
+    AudioEngine             &engine,
     bool                     publish_events,
     bool                     recalc_graph);
 
@@ -272,8 +279,7 @@ public:
    * @param pinned 1 to check the pinned tracklist,
    *   0 to check the non-pinned tracklist.
    */
-  std::optional<TrackPtrVariant>
-  get_first_visible_track (const bool pinned) const;
+  std::optional<TrackPtrVariant> get_first_visible_track (bool pinned) const;
 
   /**
    * Returns the previous visible Track in the same
@@ -521,6 +527,8 @@ public:
 
   /** Width of track widgets. */
   int width_ = 0;
+
+  QPointer<PortConnectionsManager> port_connections_manager_;
 };
 
 class ProcessableTrack;

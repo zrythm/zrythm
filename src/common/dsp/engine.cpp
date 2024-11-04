@@ -1195,7 +1195,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
 
   z_return_val_if_fail (total_frames_to_process > 0, -1);
 
-  /*z_info ("processing...");*/
+  // z_info ("processing...");
 
   /* calculate timestamps (used for synchronizing external events like Windows
    * MME MIDI) */
@@ -1205,7 +1205,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
 
   if (!run_.load () || !has_handled_buffer_size_change ()) [[unlikely]]
     {
-      /*z_info ("skipping processing...");*/
+      // z_info ("skipping processing...");
       clear_output_buffers (total_frames_to_process);
       return 0;
     }
@@ -1232,6 +1232,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
 
   if (skip_cycle) [[unlikely]]
     {
+      // z_info ("skip cycle");
       clear_output_buffers (total_frames_to_process);
       return 0;
     }

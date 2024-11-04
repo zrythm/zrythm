@@ -401,7 +401,8 @@ TracklistSelectionsAction::create_track (int idx)
       auto track_type_str = Track_Type_to_string (track_type_, true);
       auto label = format_str (_ ("{} Track"), track_type_str);
       auto track = Track::create_track (track_type_, label, pos);
-      TRACKLIST->insert_track (std::move (track), pos, false, false);
+      TRACKLIST->insert_track (
+        std::move (track), pos, *AUDIO_ENGINE, false, false);
     }
   else /* else if track is not empty */
     {
@@ -432,8 +433,8 @@ TracklistSelectionsAction::create_track (int idx)
           pl->activate ();
         }
 
-      auto added_track =
-        TRACKLIST->insert_track (std::move (track), pos, false, false);
+      auto added_track = TRACKLIST->insert_track (
+        std::move (track), pos, *AUDIO_ENGINE, false, false);
 
       if (pl && added_track->has_channel ())
         {
@@ -555,7 +556,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
 
               /* insert it to the tracklist at its original pos */
               auto added_track = TRACKLIST->insert_track (
-                std::move (track), track->pos_, false, false);
+                std::move (track), track->pos_, *AUDIO_ENGINE, false, false);
 
               /* if group track, readd all children */
               if (added_track->can_be_group_target ())
@@ -969,7 +970,7 @@ TracklistSelectionsAction::
 
                   /* add to tracklist at given pos */
                   auto added_track = TRACKLIST->insert_track (
-                    std::move (track), target_pos, false, false);
+                    std::move (track), target_pos, *AUDIO_ENGINE, false, false);
 
                   /* select it */
                   added_track->select (true, false, false);

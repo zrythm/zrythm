@@ -346,6 +346,7 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
 
   if (time_nfo.local_offset_ + time_nfo.nframes_ == AUDIO_ENGINE->block_length_)
     {
+      // z_debug ("writing to ring for {}", get_label ());
       audio_ring_->force_write_multiple (
         buf_.data (), AUDIO_ENGINE->block_length_);
     }
@@ -494,10 +495,21 @@ StereoPorts::StereoPorts (bool input, std::string name, std::string symbol)
 
 StereoPorts::StereoPorts (const AudioPort &l, const AudioPort &r)
 {
-  l_ = l.clone_unique ();
-  r_ = r.clone_unique ();
+  l_ = l.clone_raw_ptr ();
+  r_ = r.clone_raw_ptr ();
+  l_->setParent (this);
+  r_->setParent (this);
   l_->id_->flags_ |= PortIdentifier::Flags::StereoL;
   r_->id_->flags_ |= PortIdentifier::Flags::StereoR;
+}
+
+void
+StereoPorts::init_after_cloning (const StereoPorts &other)
+{
+  l_ = other.l_->clone_raw_ptr ();
+  r_ = other.r_->clone_raw_ptr ();
+  l_->setParent (this);
+  r_->setParent (this);
 }
 
 void

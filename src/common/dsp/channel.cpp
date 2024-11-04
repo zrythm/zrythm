@@ -29,7 +29,7 @@
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/project.h"
 
-#include <glib/gi18n.h>
+Channel::Channel (QObject * parent) : QObject (parent) { }
 
 Channel::Channel (ChannelTrack &track)
     : track_pos_ (track.pos_), track_ (&track)
@@ -56,12 +56,20 @@ Channel::init_after_cloning (const Channel &other)
   all_stereo_r_ins_ = other.all_stereo_r_ins_;
   midi_channels_ = other.midi_channels_;
   all_midi_channels_ = other.all_midi_channels_;
-  fader_ = other.fader_->clone_unique ();
-  prefader_ = other.prefader_->clone_unique ();
+  fader_ = other.fader_->clone_raw_ptr ();
+  fader_->setParent (this);
+  prefader_ = other.prefader_->clone_raw_ptr ();
+  prefader_->setParent (this);
   if (other.midi_out_)
-    midi_out_ = other.midi_out_->clone_unique ();
+    {
+      midi_out_ = other.midi_out_->clone_raw_ptr ();
+      midi_out_->setParent (this);
+    }
   if (other.stereo_out_)
-    stereo_out_ = other.stereo_out_->clone_unique ();
+    {
+      stereo_out_ = other.stereo_out_->clone_raw_ptr ();
+      stereo_out_->setParent (this);
+    }
   has_output_ = other.has_output_;
   output_name_hash_ = other.output_name_hash_;
   width_ = other.width_;
@@ -459,11 +467,14 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
   if (track_->disconnecting_)
     {
       z_error (
-        "attempted to reconnect ext input ports on "
-        "track {} while it is disconnecting",
+        "attempted to reconnect ext input ports on track {} while it is disconnecting",
         track_->name_);
       return;
     }
+
+  // FIXME
+  z_warning ("unimplemented!!!!!!!!!!!!!!!!!!!!!! FIXME!!!!");
+  return;
 
   z_return_if_fail (is_in_active_project ());
 
@@ -482,9 +493,10 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
 
       if (all_midi_ins_)
         {
-          for (const auto &port_id : HW_IN_PROCESSOR->selected_midi_ports_)
+          for (
+            const auto &port_id : engine.hw_in_processor_->selected_midi_ports_)
             {
-              auto source = HW_IN_PROCESSOR->find_port (port_id);
+              auto source = engine.hw_in_processor_->find_port (port_id);
               if (!source)
                 {
                   z_warning ("port for {} not found", port_id);
@@ -498,7 +510,8 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
         {
           for (const auto &ext_port : ext_midi_ins_)
             {
-              auto * source = HW_IN_PROCESSOR->find_port (ext_port->get_id ());
+              auto * source =
+                engine.hw_in_processor_->find_port (ext_port->get_id ());
               if (source == nullptr)
                 {
                   z_warning ("port for {} not found", ext_port->get_id ());
@@ -522,9 +535,10 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
       auto &r = track_->processor_->stereo_in_->get_r ();
       if (all_stereo_l_ins_)
         {
-          for (const auto &port_id : HW_IN_PROCESSOR->selected_audio_ports_)
+          for (
+            const auto &port_id : engine.hw_in_processor_->selected_audio_ports_)
             {
-              auto * source = HW_IN_PROCESSOR->find_port (port_id);
+              auto * source = engine.hw_in_processor_->find_port (port_id);
               if (source == nullptr)
                 {
                   z_warning ("port for {} not found", port_id);
@@ -539,7 +553,8 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
           z_debug ("{} L HW ins", ext_stereo_l_ins_.size ());
           for (const auto &ext_port : ext_stereo_l_ins_)
             {
-              auto * source = HW_IN_PROCESSOR->find_port (ext_port->get_id ());
+              auto * source =
+                engine.hw_in_processor_->find_port (ext_port->get_id ());
               if (source == nullptr)
                 {
                   z_warning ("port for {} not found", ext_port->get_id ());
@@ -552,9 +567,10 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
 
       if (all_stereo_r_ins_)
         {
-          for (const auto &port_id : HW_IN_PROCESSOR->selected_audio_ports_)
+          for (
+            const auto &port_id : engine.hw_in_processor_->selected_audio_ports_)
             {
-              auto * source = HW_IN_PROCESSOR->find_port (port_id);
+              auto * source = engine.hw_in_processor_->find_port (port_id);
               if (source == nullptr)
                 {
                   z_warning ("port for {} not found", port_id);
@@ -569,7 +585,8 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
           z_debug ("{} R HW ins", ext_stereo_r_ins_.size ());
           for (const auto &ext_port : ext_stereo_r_ins_)
             {
-              auto * source = HW_IN_PROCESSOR->find_port (ext_port->get_id ());
+              auto * source =
+                engine.hw_in_processor_->find_port (ext_port->get_id ());
               if (source == nullptr)
                 {
                   z_warning ("port for {} not found", ext_port->get_id ());
@@ -581,7 +598,7 @@ Channel::reconnect_ext_input_ports (AudioEngine &engine)
         }
     }
 
-  ROUTER->recalc_graph (false);
+  engine.router_->recalc_graph (false);
 }
 
 void
@@ -630,7 +647,8 @@ Channel::set_swap_phase (bool enabled, bool fire_events)
 void
 Channel::connect_plugins ()
 {
-  z_return_if_fail (is_in_active_project ());
+  // z_return_if_fail (is_in_active_project ());
+  z_return_if_fail (get_track ()->get_tracklist ()->project_);
 
   /* loop through each slot in each of MIDI FX, instrument, inserts */
   for (int i = 0; i < 3; i++)
@@ -817,7 +835,7 @@ Channel::connect (PortConnectionsManager &mgr, AudioEngine &engine)
 {
   auto &tr = track_;
 
-  z_return_if_fail (tr->is_in_active_project () || tr->is_auditioner ());
+  // z_return_if_fail (tr->is_in_active_project () || tr->is_auditioner ());
 
   z_debug ("connecting channel...");
 
@@ -827,11 +845,13 @@ Channel::connect (PortConnectionsManager &mgr, AudioEngine &engine)
       output_name_hash_ = 0;
       has_output_ = false;
       mgr.ensure_connect (
-        *stereo_out_->get_l ().id_, *MONITOR_FADER->stereo_in_->get_l ().id_,
-        1.f, true, true);
+        *stereo_out_->get_l ().id_,
+        *engine.control_room_->monitor_fader_->stereo_in_->get_l ().id_, 1.f,
+        true, true);
       mgr.ensure_connect (
-        *stereo_out_->get_r ().id_, *MONITOR_FADER->stereo_in_->get_r ().id_,
-        1.f, true, true);
+        *stereo_out_->get_r ().id_,
+        *engine.control_room_->monitor_fader_->stereo_in_->get_r ().id_, 1.f,
+        true, true);
     }
 
   if (tr->out_signal_type_ == PortType::Audio)
@@ -925,7 +945,7 @@ Channel::append_ports (std::vector<Port *> &ports, bool include_plugins)
     }
   else if (track_->out_signal_type_ == PortType::Event)
     {
-      add_port (midi_out_.get ());
+      add_port (midi_out_);
 
       /* add fader ports */
       add_port (fader_->midi_in_.get ());
@@ -987,7 +1007,8 @@ Channel::init_stereo_out_ports (bool loading)
   auto r = AudioPort ("Stereo out R", PortFlow::Output);
   r.id_->sym_ = "stereo_out_r";
 
-  stereo_out_ = std::make_unique<StereoPorts> (std::move (l), std::move (r));
+  stereo_out_ = new StereoPorts (std::move (l), std::move (r));
+  stereo_out_->setParent (this);
   stereo_out_->set_owner (this);
 }
 
@@ -1003,8 +1024,8 @@ Channel::init ()
       break;
     case PortType::Event:
       {
-        midi_out_ =
-          std::make_unique<MidiPort> (_ ("MIDI out"), PortFlow::Output);
+        midi_out_ = new MidiPort (_ ("MIDI out"), PortFlow::Output);
+        midi_out_->setParent (this);
         midi_out_->set_owner (this);
         midi_out_->id_->sym_ = "midi_out";
       }
@@ -1015,9 +1036,10 @@ Channel::init ()
 
   auto fader_type = track_->get_fader_type ();
   auto prefader_type = Track::type_get_prefader_type (track_->type_);
-  fader_ = std::make_unique<Fader> (fader_type, false, track_, nullptr, nullptr);
-  prefader_ =
-    std::make_unique<Fader> (prefader_type, true, track_, nullptr, nullptr);
+  fader_ = new Fader (fader_type, false, track_, nullptr, nullptr);
+  prefader_ = new Fader (prefader_type, true, track_, nullptr, nullptr);
+  fader_->setParent (this);
+  prefader_->setParent (this);
 
   /* init sends */
   for (size_t i = 0; i < STRIP_SIZE; ++i)

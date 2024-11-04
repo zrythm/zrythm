@@ -10,6 +10,17 @@
 class Channel;
 class Fader;
 
+#define DEFINE_CHANNEL_TRACK_QML_PROPERTIES(ClassType) \
+public: \
+  /* ================================================================ */ \
+  /* channel */ \
+  /* ================================================================ */ \
+  Q_PROPERTY (Channel * channel READ getChannel CONSTANT) \
+  Channel * getChannel () const \
+  { \
+    return channel_; \
+  }
+
 /**
  * Abstract class for a track that has a channel in the mixer.
  */
@@ -126,11 +137,8 @@ private:
 public:
   /**
    * @brief Owned channel object.
-   *
-   * This is a shared pointer to allow weak references to it (e.g., in
-   * ChannelWidget).
    */
-  std::shared_ptr<Channel> channel_;
+  Channel * channel_ = nullptr;
 };
 
 #endif // __AUDIO_CHANNEL_TRACK_H__

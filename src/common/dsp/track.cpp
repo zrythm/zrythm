@@ -68,6 +68,15 @@ Track::get_tracklist () const
     }
 }
 
+PortConnectionsManager *
+Track::get_port_connections_manager () const
+{
+  auto * tracklist = get_tracklist ();
+  z_return_val_if_fail (tracklist, nullptr);
+  z_return_val_if_fail (tracklist_->port_connections_manager_, nullptr);
+  return tracklist->port_connections_manager_;
+}
+
 Track *
 Track::from_variant (const TrackPtrVariant &variant)
 {

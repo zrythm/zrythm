@@ -43,8 +43,7 @@ public:
   /**
    * Sums the inputs coming in from RtAudio before the port is processed.
    */
-  void
-  sum_data_from_rtaudio (const nframes_t start_frame, const nframes_t nframes);
+  void sum_data_from_rtaudio (nframes_t start_frame, nframes_t nframes);
 
   void expose_to_rtaudio (bool expose);
 #endif
@@ -56,7 +55,7 @@ public:
    * @param start_frame The start frame offset from 0 in this cycle.
    * @param nframes The number of frames to process.
    */
-  void apply_fader (float amp, nframes_t start_frame, const nframes_t nframes);
+  void apply_fader (float amp, nframes_t start_frame, nframes_t nframes);
 
   /**
    * @brief Applies the pan to the audio buffer.
@@ -68,11 +67,11 @@ public:
    * @param nframes The number of frames to process.
    */
   void apply_pan (
-    float           pan,
-    PanLaw          pan_law,
-    PanAlgorithm    pan_algo,
-    nframes_t       start_frame,
-    const nframes_t nframes);
+    float        pan,
+    PanLaw       pan_law,
+    PanAlgorithm pan_algo,
+    nframes_t    start_frame,
+    nframes_t    nframes);
 
   /**
    * @brief Returns the peak amplitude of the audio buffer.
@@ -86,8 +85,7 @@ public:
    */
   void reset_peak () { peak_ = 0.f; }
 
-  void
-  process (const EngineProcessTimeInfo time_nfo, const bool noroll) override;
+  void process (EngineProcessTimeInfo time_nfo, bool noroll) override;
 
   void allocate_bufs () override;
 
@@ -109,17 +107,14 @@ public:
    * Receives audio data from the port's exposed JACK port (if any) into the
    * port.
    */
-  void receive_audio_data_from_jack (
-    const nframes_t start_frames,
-    const nframes_t nframes);
+  void receive_audio_data_from_jack (nframes_t start_frames, nframes_t nframes);
 
   /**
    * Pastes the audio data in the port starting at @p start_frames to the JACK
    * port starting at
    * @p start_frames.
    */
-  void
-  send_audio_data_to_jack (const nframes_t start_frames, const nframes_t nframes);
+  void send_audio_data_to_jack (nframes_t start_frames, nframes_t nframes);
 #endif
 
   void init_after_cloning (const AudioPort &other) override;
@@ -129,8 +124,7 @@ private:
    * Sums the inputs coming in from the dummy engine StereoPorts, before the
    * port is processed.
    */
-  void
-  sum_data_from_dummy (const nframes_t start_frame, const nframes_t nframes);
+  void sum_data_from_dummy (nframes_t start_frame, nframes_t nframes);
 
 public:
 #if HAVE_RTAUDIO
@@ -156,17 +150,25 @@ private:
  * L & R port, for convenience.
  */
 class StereoPorts final
-    : public ICloneable<StereoPorts>,
+    : public QObject,
+      public ICloneable<StereoPorts>,
       public ISerializable<StereoPorts>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  Q_PROPERTY (AudioPort * l READ getL CONSTANT)
+  Q_PROPERTY (AudioPort * r READ getR CONSTANT)
+
 public:
   StereoPorts () = default;
   StereoPorts (const AudioPort &l, const AudioPort &r);
-
   StereoPorts (std::unique_ptr<AudioPort> &&l, std::unique_ptr<AudioPort> &&r)
-      : l_ (std::move (l)), r_ (std::move (r))
+      : l_ (l.release ()), r_ (r.release ())
   {
+    l_->setParent (this);
+    r_->setParent (this);
   }
+  Q_DISABLE_COPY_MOVE (StereoPorts)
 
   /**
    * Creates stereo ports for generic use.
@@ -177,6 +179,15 @@ public:
   StereoPorts (bool input, std::string name, std::string symbol);
 
   ~StereoPorts () override;
+
+  // ==========================================================================
+  // QML Interface
+  // ==========================================================================
+
+  AudioPort * getL () const { return l_; }
+  AudioPort * getR () const { return r_; }
+
+  // ==========================================================================
 
   template <typename T> void init_loaded (T * owner)
   {
@@ -238,15 +249,11 @@ public:
   const AudioPort &get_l () const { return *l_; }
   const AudioPort &get_r () const { return *r_; }
 
-  void init_after_cloning (const StereoPorts &other) override
-  {
-    l_ = other.l_->clone_unique ();
-    r_ = other.r_->clone_unique ();
-  }
+  void init_after_cloning (const StereoPorts &other) override;
 
 private:
-  std::unique_ptr<AudioPort> l_; ///< Left port
-  std::unique_ptr<AudioPort> r_; ///< Right port
+  AudioPort * l_ = nullptr; ///< Left port
+  AudioPort * r_ = nullptr; ///< Right port
 };
 
 /**

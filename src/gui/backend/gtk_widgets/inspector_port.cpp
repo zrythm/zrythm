@@ -355,7 +355,7 @@ inspector_port_widget_new (Port * port)
     g_object_new (INSPECTOR_PORT_WIDGET_TYPE, nullptr));
 
   self->port = port;
-  self->meter = std::make_unique<Meter> (*port);
+  self->meter = std::make_unique<MeterProcessor> (*port);
 
   char str[200];
   int  has_str = 0;

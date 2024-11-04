@@ -90,6 +90,7 @@ set(rel_qml_file_paths
   components/BottomDock.qml
   components/CenterDock.qml
   components/LeftDock.qml
+  components/Meter.qml
   components/RightDock.qml
   components/Ruler.qml
   components/Timeline.qml
@@ -137,7 +138,8 @@ qt_add_qml_module(zrythm
     ${CMAKE_CURRENT_SOURCE_DIR}/resources/qtquickcontrols2.conf
     ${icon_files}
     ${font_files}
-  SOURCES # for some reason singletons must be added here
+  # objects that need to be creatable and signletons must be added here
+  SOURCES
     backend/action_controller.h
     backend/action_controller.cpp
     backend/automation_tracklist_proxy_model.h
@@ -157,6 +159,8 @@ qt_add_qml_module(zrythm
     backend/realtime_updater.cpp
     backend/track_filter_proxy_model.h
     backend/track_filter_proxy_model.cpp
+    backend/meter.h
+    backend/meter.cpp
 
   # compile qml files listed in QML_FILES to C++ using qmltc
   # (currently cannot extend QtQuick Controls directly)

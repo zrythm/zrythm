@@ -189,6 +189,19 @@ public: \
   } \
 \
   /* ================================================================ */ \
+  /* hasChannel */ \
+  /* ================================================================ */ \
+  Q_PROPERTY (bool hasChannel READ getHasChannel CONSTANT) \
+  bool getHasChannel () const \
+  { \
+    if constexpr (std::derived_from<ClassType, ChannelTrack>) \
+      { \
+        return true; \
+      } \
+    return false; \
+  } \
+\
+  /* ================================================================ */ \
   /* isAutomatable */ \
   /* ================================================================ */ \
   Q_PROPERTY (bool isAutomatable READ getIsAutomatable CONSTANT) \
@@ -584,6 +597,8 @@ public:
   NameHashT get_name_hash () const { return g_str_hash (name_.c_str ()); }
 
   Tracklist * get_tracklist () const;
+
+  PortConnectionsManager * get_port_connections_manager () const;
 
   bool has_channel () const { return type_has_channel (type_); }
 

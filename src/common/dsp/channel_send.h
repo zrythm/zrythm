@@ -209,6 +209,8 @@ private:
 
   void construct_for_slot (int slot);
 
+  PortConnectionsManager * get_port_connections_manager () const;
+
 public:
   /** Slot index in the channel sends. */
   int slot_ = 0;

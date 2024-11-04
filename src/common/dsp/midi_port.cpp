@@ -558,12 +558,14 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
 
               ev.systime_ = g_get_monotonic_time ();
               midi_ring_->write (ev);
+              // z_debug ("writing to ring for {}", get_label ());
             }
         }
       else
         {
           if (events.has_any ())
             {
+              // z_debug ("no write to ring for {}", get_label ());
               last_midi_event_time_ = g_get_monotonic_time ();
               has_midi_events_.store (true);
             }

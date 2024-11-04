@@ -189,7 +189,7 @@ private:
     const PortIdentifier &id,
     const PortConnection &conn);
 
-  void remove_connection (const size_t idx);
+  void remove_connection (size_t idx);
 
   void clear_connections () { connections_.clear (); }
 

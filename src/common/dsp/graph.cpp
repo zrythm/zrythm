@@ -414,10 +414,10 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
               auto &channel = tr->channel_;
 
               /* add the fader */
-              create_node (channel->fader_.get ());
+              create_node (channel->fader_);
 
               /* add the prefader */
-              create_node (channel->prefader_.get ());
+              create_node (channel->prefader_);
 
               /* add plugins */
               std::vector<zrythm::plugins::Plugin *> plugins;
@@ -741,7 +741,7 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
           auto &fader = ch->fader_;
 
           /* connect the fader */
-          auto * const fader_node = find_node_from_fader (fader.get ());
+          auto * const fader_node = find_node_from_fader (fader);
           z_warn_if_fail (fader_node);
           if (fader->type_ == Fader::Type::AudioChannel)
             {
@@ -787,7 +787,7 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
           }
 
           /* connect the prefader */
-          auto * const prefader_node = find_node_from_fader (prefader.get ());
+          auto * const prefader_node = find_node_from_fader (prefader);
           z_warn_if_fail (prefader_node);
           if (prefader->type_ == Fader::Type::AudioChannel)
             {

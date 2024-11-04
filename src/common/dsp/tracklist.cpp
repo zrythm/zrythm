@@ -26,13 +26,19 @@
 
 Tracklist::Tracklist (QObject * parent) : QAbstractListModel (parent) { }
 
-Tracklist::Tracklist (Project &project)
-    : QAbstractListModel (&project), project_ (&project)
+Tracklist::Tracklist (
+  Project                 &project,
+  PortConnectionsManager * port_connections_manager)
+    : QAbstractListModel (&project), project_ (&project),
+      port_connections_manager_ (port_connections_manager)
 {
 }
 
-Tracklist::Tracklist (SampleProcessor &sample_processor)
-    : sample_processor_ (&sample_processor)
+Tracklist::Tracklist (
+  SampleProcessor         &sample_processor,
+  PortConnectionsManager * port_connections_manager)
+    : sample_processor_ (&sample_processor),
+      port_connections_manager_ (port_connections_manager)
 {
 }
 
@@ -290,6 +296,7 @@ T *
 Tracklist::insert_track (
   std::unique_ptr<T> &&track,
   int                  pos,
+  AudioEngine         &engine,
   bool                 publish_events,
   bool                 recalc_graph)
 {
@@ -382,8 +389,8 @@ Tracklist::insert_track (
 
     if constexpr (std::derived_from<T, ChannelTrack>)
       {
-        // TODO!!!!
-        // added_track->channel_->connect ();
+        z_return_val_if_fail (port_connections_manager_, nullptr);
+        added_track->channel_->connect (*port_connections_manager_, engine);
       }
 
     /* if audio output route to master */
@@ -450,6 +457,7 @@ Track *
 Tracklist::insert_track (
   std::unique_ptr<Track> &&track,
   int                      pos,
+  AudioEngine             &engine,
   bool                     publish_events,
   bool                     recalc_graph)
 {
@@ -458,7 +466,8 @@ Tracklist::insert_track (
       using T = base_type<decltype (t)>;
       auto track_unique_ptr = std::unique_ptr<T> (t);
       return dynamic_cast<Track *> (insert_track<T> (
-        std::move (track_unique_ptr), pos, publish_events, recalc_graph));
+        std::move (track_unique_ptr), pos, engine, publish_events,
+        recalc_graph));
     },
     convert_to_variant<TrackPtrVariant> (track.release ()));
 }
@@ -466,6 +475,7 @@ Tracklist::insert_track (
 Track *
 Tracklist::append_track (
   std::unique_ptr<Track> &&track,
+  AudioEngine             &engine,
   bool                     publish_events,
   bool                     recalc_graph)
 {
@@ -474,7 +484,7 @@ Tracklist::append_track (
       using T = base_type<decltype (t)>;
       auto track_unique_ptr = std::unique_ptr<T> (t);
       return dynamic_cast<Track *> (append_track<T> (
-        std::move (track_unique_ptr), publish_events, recalc_graph));
+        std::move (track_unique_ptr), engine, publish_events, recalc_graph));
     },
     convert_to_variant<TrackPtrVariant> (track.release ()));
 }

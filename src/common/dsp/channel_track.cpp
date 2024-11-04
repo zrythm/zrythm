@@ -8,7 +8,7 @@
 #include "gui/backend/backend/tracklist_selections.h"
 #include "gui/backend/backend/zrythm.h"
 
-ChannelTrack::ChannelTrack () : channel_ (std::make_shared<Channel> (*this)) { }
+ChannelTrack::ChannelTrack () : channel_ (new Channel (*this)) { }
 
 ChannelTrack::~ChannelTrack ()
 {
@@ -24,7 +24,9 @@ ChannelTrack::init_loaded ()
 void
 ChannelTrack::copy_members_from (const ChannelTrack &other)
 {
-  channel_ = other.channel_->clone_shared ();
+  channel_ = other.channel_->clone_raw_ptr ();
+  if (auto * qobject = dynamic_cast<QObject *> (this))
+    channel_->setParent (qobject);
   channel_->set_track_ptr (*this);
 }
 
@@ -32,6 +34,8 @@ void
 ChannelTrack::init_channel ()
 {
   channel_->init ();
+  if (auto * qobject = dynamic_cast<QObject *> (this))
+    channel_->setParent (qobject);
 }
 
 void
@@ -174,11 +178,11 @@ ChannelTrack::get_fader (bool post_fader)
     {
       if (post_fader)
         {
-          return ch->fader_.get ();
+          return ch->fader_;
         }
       else
         {
-          return ch->prefader_.get ();
+          return ch->prefader_;
         }
     }
 

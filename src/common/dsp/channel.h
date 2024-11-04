@@ -45,13 +45,31 @@ static constexpr float MAX_FADER_AMP = 1.42f;
  * @see Track
  */
 class Channel final
-    : public ICloneable<Channel>,
-      public std::enable_shared_from_this<Channel>,
+    : public QObject,
+      public ICloneable<Channel>,
       public ISerializable<Channel>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  Q_PROPERTY (Fader * fader READ getFader CONSTANT)
+  Q_PROPERTY (Fader * preFader READ getPreFader CONSTANT)
+  Q_PROPERTY (StereoPorts * stereoOut READ getStereoOut CONSTANT)
+  Q_PROPERTY (MidiPort * midiOut READ getMidiOut CONSTANT)
+
 public:
-  Channel () = default;
+  Channel (QObject * parent = nullptr);
   explicit Channel (ChannelTrack &track);
+
+  // ============================================================================
+  // QML Interface
+  // ============================================================================
+
+  Fader *       getFader () const { return fader_; }
+  Fader *       getPreFader () const { return prefader_; }
+  StereoPorts * getStereoOut () const { return stereo_out_; }
+  MidiPort *    getMidiOut () const { return midi_out_; }
+
+  // ============================================================================
 
   /**
    * @brief Initializes the Channel (performs logic that needs the object to be
@@ -231,7 +249,7 @@ public:
    * @param g_frames_start Global start frames.
    * @param nframes Number of frames to process.
    */
-  void handle_recording (const long g_frames_start, const nframes_t nframes);
+  void handle_recording (long g_frames_start, nframes_t nframes);
 
   /**
    * Appends all channel ports and optionally plugin ports to the array.
@@ -422,26 +440,26 @@ public:
   bool all_midi_channels_ = true;
 
   /** The channel fader. */
-  std::unique_ptr<Fader> fader_;
+  Fader * fader_ = nullptr;
 
   /**
    * Prefader.
    *
    * The last plugin should connect to this.
    */
-  std::unique_ptr<Fader> prefader_;
+  Fader * prefader_ = nullptr;
 
   /**
    * MIDI output for sending MIDI signals to other destinations, such as
    * other channels when directly routed (eg MIDI track to ins track).
    */
-  std::unique_ptr<MidiPort> midi_out_;
+  MidiPort * midi_out_ = nullptr;
 
   /*
    * Ports for direct (track-to-track) routing with the exception of
    * master, which will route the output to monitor in.
    */
-  std::unique_ptr<StereoPorts> stereo_out_;
+  StereoPorts * stereo_out_ = nullptr;
 
   /**
    * Whether or not output_pos corresponds to a Track or not.

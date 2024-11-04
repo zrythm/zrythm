@@ -48,6 +48,7 @@ class ChordTrack final
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (ChordTrack)
   DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (ChordTrack)
+  DEFINE_CHANNEL_TRACK_QML_PROPERTIES (ChordTrack)
 
   friend class InitializableObjectFactory<ChordTrack>;
 

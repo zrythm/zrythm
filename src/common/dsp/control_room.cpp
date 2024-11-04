@@ -99,6 +99,12 @@ ControlRoom::init_common ()
   monitor_fader_->mute_->set_control_value (mute ? 1.f : 0.f, false, false);
 }
 
+void
+ControlRoom::init_after_cloning (const ControlRoom &other)
+{
+  monitor_fader_ = other.monitor_fader_->clone_unique ();
+}
+
 bool
 ControlRoom::is_in_active_project () const
 {

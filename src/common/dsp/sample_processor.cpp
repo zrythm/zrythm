@@ -77,7 +77,7 @@ SampleProcessor::load_instrument_if_empty ()
 void
 SampleProcessor::init_common ()
 {
-  tracklist_ = std::make_unique<Tracklist> (*this);
+  tracklist_ = std::make_unique<Tracklist> (*this, PORT_CONNECTIONS_MGR);
   midi_events_ = std::make_unique<MidiEvents> ();
   current_samples_.reserve (256);
 }
@@ -381,7 +381,8 @@ SampleProcessor::queue_file_or_chord_preset (
     track->set_name (*tracklist_, "Sample Processor Master", false);
     tracklist_->master_track_ = track.get ();
     tracklist_->insert_track (
-      std::move (track), tracklist_->tracks_.size (), false, false);
+      std::move (track), tracklist_->tracks_.size (), *AUDIO_ENGINE, false,
+      false);
   }
 
   if (file && file->is_audio ())
@@ -391,7 +392,8 @@ SampleProcessor::queue_file_or_chord_preset (
         "Sample processor audio", tracklist_->tracks_.size (),
         AUDIO_ENGINE->sample_rate_);
       auto audio_track_ptr = tracklist_->insert_track (
-        std::move (audio_track), tracklist_->tracks_.size (), false, false);
+        std::move (audio_track), tracklist_->tracks_.size (), *AUDIO_ENGINE,
+        false, false);
 
       /* create an audio region & add to track */
       try
@@ -415,7 +417,8 @@ SampleProcessor::queue_file_or_chord_preset (
       auto instrument_track = *InstrumentTrack::create_unique (
         "Sample processor instrument", tracklist_->tracks_.size ());
       auto * instr_track_ptr = tracklist_->insert_track (
-        std::move (instrument_track), tracklist_->tracks_.size (), false, false);
+        std::move (instrument_track), tracklist_->tracks_.size (),
+        *AUDIO_ENGINE, false, false);
       try
         {
           auto pl = zrythm::plugins::Plugin::create_with_setting (
@@ -440,8 +443,8 @@ SampleProcessor::queue_file_or_chord_preset (
                 fmt::format ("Sample processor MIDI {}", i),
                 tracklist_->tracks_.size ());
               auto * midi_track_ptr = tracklist_->insert_track (
-                std::move (midi_track), tracklist_->tracks_.size (), false,
-                false);
+                std::move (midi_track), tracklist_->tracks_.size (),
+                *AUDIO_ENGINE, false, false);
 
               /* route track to instrument */
               instr_track_ptr->add_child (

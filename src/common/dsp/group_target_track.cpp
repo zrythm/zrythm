@@ -113,7 +113,7 @@ GroupTargetTrack::remove_child (
   if (disconnect)
     {
       update_child_output (
-        child->get_channel ().get (), nullptr, recalc_graph, pub_events);
+        child->get_channel (), nullptr, recalc_graph, pub_events);
     }
   std::erase (children_, child_name_hash);
 
@@ -169,7 +169,7 @@ GroupTargetTrack::add_child (
       z_return_if_fail (
         IS_TRACK_AND_NONNULL (out_track) && out_track->get_channel ());
       update_child_output (
-        out_track->get_channel ().get (), this, recalc_graph, pub_events);
+        out_track->get_channel (), this, recalc_graph, pub_events);
     }
 
   children_.push_back (child_name_hash);

@@ -25,6 +25,7 @@ class MidiBusTrack final
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (MidiBusTrack)
   DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (MidiBusTrack)
+  DEFINE_CHANNEL_TRACK_QML_PROPERTIES (MidiBusTrack)
 
   friend class InitializableObjectFactory<MidiBusTrack>;
 

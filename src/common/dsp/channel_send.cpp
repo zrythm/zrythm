@@ -225,16 +225,18 @@ ChannelSend::get_target_track (const ChannelTrack * owner)
   if (is_empty ())
     return nullptr;
 
+  auto * mgr = get_port_connections_manager ();
+  z_return_val_if_fail (mgr, nullptr);
+
   PortType                      type = get_signal_type ();
   PortConnection *              conn = nullptr;
   switch (type)
     {
     case PortType::Audio:
-      conn = PORT_CONNECTIONS_MGR->get_source_or_dest (
-        *stereo_out_->get_l ().id_, false);
+      conn = mgr->get_source_or_dest (*stereo_out_->get_l ().id_, false);
       break;
     case PortType::Event:
-      conn = PORT_CONNECTIONS_MGR->get_source_or_dest (*midi_out_->id_, false);
+      conn = mgr->get_source_or_dest (*midi_out_->id_, false);
       break;
     default:
       z_return_val_if_reached (nullptr);
@@ -256,14 +258,15 @@ ChannelSend::get_target_sidechain ()
   PortType type = get_signal_type ();
   z_return_val_if_fail (type == PortType::Audio, nullptr);
 
-  auto * conn = PORT_CONNECTIONS_MGR->get_source_or_dest (
-    *stereo_out_->get_l ().id_, false);
+  auto * mgr = get_port_connections_manager ();
+  z_return_val_if_fail (mgr, nullptr);
+
+  auto * conn = mgr->get_source_or_dest (*stereo_out_->get_l ().id_, false);
   z_return_val_if_fail (conn, nullptr);
   auto * l = Port::find_from_identifier<AudioPort> (*conn->dest_id_);
   z_return_val_if_fail (l, nullptr);
 
-  conn = PORT_CONNECTIONS_MGR->get_source_or_dest (
-    *stereo_out_->get_r ().id_, false);
+  conn = mgr->get_source_or_dest (*stereo_out_->get_r ().id_, false);
   z_return_val_if_fail (conn, nullptr);
   auto * r = Port::find_from_identifier<AudioPort> (*conn->dest_id_);
   z_return_val_if_fail (r, nullptr);
@@ -274,6 +277,9 @@ ChannelSend::get_target_sidechain ()
 void
 ChannelSend::connect_to_owner ()
 {
+  auto * mgr = get_port_connections_manager ();
+  z_return_if_fail (mgr);
+
   PortType type = get_signal_type ();
   switch (type)
     {
@@ -298,8 +304,7 @@ ChannelSend::connect_to_owner ()
             }
 
           /* make the connection if not exists */
-          PORT_CONNECTIONS_MGR->ensure_connect (
-            *src_port->id_, *self_port.id_, 1.f, true, true);
+          mgr->ensure_connect (*src_port->id_, *self_port.id_, 1.f, true, true);
         }
       break;
     case PortType::Event:
@@ -316,8 +321,7 @@ ChannelSend::connect_to_owner ()
           }
 
         /* make the connection if not exists */
-        PORT_CONNECTIONS_MGR->ensure_connect (
-          *src_port->id_, *self_port->id_, 1.f, true, true);
+        mgr->ensure_connect (*src_port->id_, *self_port->id_, 1.f, true, true);
       }
       break;
     default:
@@ -350,6 +354,9 @@ ChannelSend::connect_stereo (
   bool          recalc_graph,
   bool          validate)
 {
+  auto * mgr = get_port_connections_manager ();
+  z_return_val_if_fail (mgr, false);
+
   /* verify can be connected */
   if (validate && l->is_in_active_project ())
     {
@@ -370,10 +377,8 @@ ChannelSend::connect_stereo (
       r = &stereo->get_r ();
     }
 
-  PORT_CONNECTIONS_MGR->ensure_connect (
-    *stereo_out_->get_l ().id_, *l->id_, 1.f, true, true);
-  PORT_CONNECTIONS_MGR->ensure_connect (
-    *stereo_out_->get_r ().id_, *r->id_, 1.f, true, true);
+  mgr->ensure_connect (*stereo_out_->get_l ().id_, *l->id_, 1.f, true, true);
+  mgr->ensure_connect (*stereo_out_->get_r ().id_, *r->id_, 1.f, true, true);
 
   enabled_->set_control_value (1.f, false, true);
   is_sidechain_ = sidechain;
@@ -392,6 +397,9 @@ ChannelSend::connect_stereo (
 bool
 ChannelSend::connect_midi (MidiPort &port, bool recalc_graph, bool validate)
 {
+  auto * mgr = get_port_connections_manager ();
+  z_return_val_if_fail (mgr, false);
+
   /* verify can be connected */
   if (validate && port.is_in_active_project ())
     {
@@ -404,8 +412,7 @@ ChannelSend::connect_midi (MidiPort &port, bool recalc_graph, bool validate)
 
   disconnect (false);
 
-  PORT_CONNECTIONS_MGR->ensure_connect (
-    *midi_out_->id_, *port.id_, 1.f, true, true);
+  mgr->ensure_connect (*midi_out_->id_, *port.id_, 1.f, true, true);
 
   enabled_->set_control_value (1.f, false, true);
 
@@ -418,31 +425,35 @@ ChannelSend::connect_midi (MidiPort &port, bool recalc_graph, bool validate)
 void
 ChannelSend::disconnect_midi ()
 {
-  const auto conn =
-    PORT_CONNECTIONS_MGR->get_source_or_dest (*midi_out_->id_, false);
+  auto * mgr = get_port_connections_manager ();
+  z_return_if_fail (mgr);
+
+  const auto conn = mgr->get_source_or_dest (*midi_out_->id_, false);
   if (!conn)
     return;
 
   auto * dest_port = Port::find_from_identifier (*conn->dest_id_);
   z_return_if_fail (dest_port);
 
-  PORT_CONNECTIONS_MGR->ensure_disconnect (*midi_out_->id_, *dest_port->id_);
+  mgr->ensure_disconnect (*midi_out_->id_, *dest_port->id_);
 }
 
 void
 ChannelSend::disconnect_audio ()
 {
+  auto * mgr = get_port_connections_manager ();
+  z_return_if_fail (mgr);
+
   for (int i = 0; i < 2; i++)
     {
       auto * src_port = i == 0 ? &stereo_out_->get_l () : &stereo_out_->get_r ();
-      const auto conn =
-        PORT_CONNECTIONS_MGR->get_source_or_dest (*src_port->id_, false);
+      const auto conn = mgr->get_source_or_dest (*src_port->id_, false);
       if (!conn)
         continue;
 
       auto * dest_port = Port::find_from_identifier (*conn->dest_id_);
       z_return_if_fail (dest_port);
-      PORT_CONNECTIONS_MGR->ensure_disconnect (*src_port->id_, *dest_port->id_);
+      mgr->ensure_disconnect (*src_port->id_, *dest_port->id_);
     }
 }
 
@@ -476,6 +487,16 @@ ChannelSend::disconnect (bool recalc_graph)
     ROUTER->recalc_graph (false);
 }
 
+PortConnectionsManager *
+ChannelSend::get_port_connections_manager () const
+{
+  auto * track = get_track ();
+  z_return_val_if_fail (track, nullptr);
+  auto * mgr = track->get_port_connections_manager ();
+  z_return_val_if_fail (mgr, nullptr);
+  return mgr;
+}
+
 void
 ChannelSend::set_amount (float amount)
 {
@@ -489,6 +510,9 @@ ChannelSend::set_amount (float amount)
 std::string
 ChannelSend::get_dest_name () const
 {
+  auto * mgr = get_port_connections_manager ();
+  z_return_val_if_fail (mgr, "");
+
   if (is_empty ())
     {
       if (is_prefader ())
@@ -503,8 +527,7 @@ ChannelSend::get_dest_name () const
         (type == PortType::Audio)
           ? static_cast<Port &> (stereo_out_->get_l ())
           : static_cast<Port &> (*midi_out_);
-      const auto conn =
-        PORT_CONNECTIONS_MGR->get_source_or_dest (*search_port.id_, false);
+      const auto conn = mgr->get_source_or_dest (*search_port.id_, false);
       z_return_val_if_fail (conn, {});
       auto * dest = Port::find_from_identifier (*conn->dest_id_);
       z_return_val_if_fail (dest, {});
@@ -567,6 +590,9 @@ ChannelSend::is_enabled () const
   if (!enabled)
     return false;
 
+  auto * mgr = get_port_connections_manager ();
+  z_return_val_if_fail (mgr, false);
+
   PortType    signal_type = get_signal_type ();
   const Port &search_port =
     (signal_type == PortType::Audio)
@@ -595,8 +621,7 @@ ChannelSend::is_enabled () const
     }
 
   /* get dest port */
-  const auto conn =
-    PORT_CONNECTIONS_MGR->get_source_or_dest (*search_port.id_, false);
+  const auto conn = mgr->get_source_or_dest (*search_port.id_, false);
   z_return_val_if_fail (conn, false);
   auto * dest = Port::find_from_identifier (*conn->dest_id_);
   z_return_val_if_fail (IS_PORT_AND_NONNULL (dest), false);
@@ -638,22 +663,25 @@ ChannelSend::find_in_project () const
 bool
 ChannelSend::validate ()
 {
+  auto * mgr = get_port_connections_manager ();
+  z_return_val_if_fail (mgr, false);
+
   if (is_enabled ())
     {
       PortType signal_type = get_signal_type ();
       if (signal_type == PortType::Audio)
         {
-          int num_dests = PORT_CONNECTIONS_MGR->get_sources_or_dests (
+          int num_dests = mgr->get_sources_or_dests (
             nullptr, *stereo_out_->get_l ().id_, false);
           z_return_val_if_fail (num_dests == 1, false);
-          num_dests = PORT_CONNECTIONS_MGR->get_sources_or_dests (
+          num_dests = mgr->get_sources_or_dests (
             nullptr, *stereo_out_->get_r ().id_, false);
           z_return_val_if_fail (num_dests == 1, false);
         }
       else if (signal_type == PortType::Event)
         {
-          int num_dests = PORT_CONNECTIONS_MGR->get_sources_or_dests (
-            nullptr, *midi_out_->id_, false);
+          int num_dests =
+            mgr->get_sources_or_dests (nullptr, *midi_out_->id_, false);
           z_return_val_if_fail (num_dests == 1, false);
         }
     } /* endif channel send is enabled */
@@ -720,11 +748,14 @@ ChannelSend::append_connection (
 bool
 ChannelSend::is_connected_to (const StereoPorts * stereo, const Port * midi) const
 {
-  PortConnectionsManager::ConnectionsVector conns;
-  int num_conns = append_connection (PORT_CONNECTIONS_MGR, conns);
+  auto * mgr = get_port_connections_manager ();
+  z_return_val_if_fail (mgr, false);
+
+  std::unique_ptr<PortConnectionsManager::ConnectionsVector> conns;
+  int num_conns = append_connection (mgr, *conns);
   for (int i = 0; i < num_conns; i++)
     {
-      const auto &conn = conns[i];
+      const auto &conn = conns->at (i);
       if (((stereo != nullptr) && (conn->dest_id_ == stereo->get_l ().id_ || conn->dest_id_ == stereo->get_r ().id_)) ||
           ((midi != nullptr) && conn->dest_id_ == midi->id_))
         {

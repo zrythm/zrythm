@@ -25,7 +25,7 @@
 #include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
+Fader::Fader (QObject * parent) : QObject (parent) { }
 
 void
 Fader::init_loaded (
@@ -306,7 +306,7 @@ Fader::find_from_port_identifier (const PortIdentifier &id)
     {
       auto channel_track = dynamic_cast<ChannelTrack *> (tr);
       z_return_val_if_fail (channel_track, nullptr);
-      return channel_track->channel_->prefader_.get ();
+      return channel_track->channel_->prefader_;
     }
   else if (
     ENUM_BITSET_TEST (
@@ -314,7 +314,7 @@ Fader::find_from_port_identifier (const PortIdentifier &id)
     {
       auto channel_track = dynamic_cast<ChannelTrack *> (tr);
       z_return_val_if_fail (channel_track, nullptr);
-      return channel_track->channel_->fader_.get ();
+      return channel_track->channel_->fader_;
     }
 
   z_return_val_if_reached (nullptr);
@@ -598,7 +598,7 @@ Fader::get_channel () const
   auto track = dynamic_cast<ChannelTrack *> (get_track ());
   z_return_val_if_fail (track, nullptr);
 
-  return track->get_channel ().get ();
+  return track->get_channel ();
 }
 
 Track *

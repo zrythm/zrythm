@@ -49,10 +49,7 @@ public:
    */
   void set_dim_output (bool dim_output) { dim_output_ = dim_output; }
 
-  void init_after_cloning (const ControlRoom &other) override
-  {
-    monitor_fader_ = other.monitor_fader_->clone_unique ();
-  }
+  void init_after_cloning (const ControlRoom &other) override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

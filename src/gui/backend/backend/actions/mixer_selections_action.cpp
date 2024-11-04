@@ -302,7 +302,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
 
   Channel * ch =
     track->has_channel ()
-      ? dynamic_cast<ChannelTrack *> (track)->channel_.get ()
+      ? dynamic_cast<ChannelTrack *> (track)->channel_
       : nullptr;
   auto &own_ms = ms_before_;
   auto  slot_type = create ? slot_type_ : own_ms->type_;
@@ -492,7 +492,7 @@ MixerSelectionsAction::do_or_undo_change_status (bool do_it)
   auto track = TRACKLIST->find_track_by_name_hash (ms_before_->track_name_hash_);
   auto ch =
     track->has_channel ()
-      ? dynamic_cast<ChannelTrack *> (track)->channel_.get ()
+      ? dynamic_cast<ChannelTrack *> (track)->channel_
       : nullptr;
 
   for (size_t i = 0; i < ms->slots_.size (); i++)
@@ -517,7 +517,7 @@ MixerSelectionsAction::do_or_undo_change_load_behavior (bool do_it)
   auto track = TRACKLIST->find_track_by_name_hash (ms_before_->track_name_hash_);
   auto ch =
     track->has_channel ()
-      ? dynamic_cast<ChannelTrack *> (track)->channel_.get ()
+      ? dynamic_cast<ChannelTrack *> (track)->channel_
       : nullptr;
 
   for (size_t i = 0; i < ms->slots_.size (); i++)
@@ -639,7 +639,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
           to_tr = dynamic_cast<AutomatableTrack *> (TRACKLIST->append_track (
             Track::create_track (
               Track::Type::AudioBus, str, TRACKLIST->tracks_.size ()),
-            false, false));
+            *AUDIO_ENGINE, false, false));
 
           /* remember to track pos */
           to_track_name_hash_ = to_tr->get_name_hash ();
@@ -653,7 +653,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
 
       [[maybe_unused]] auto to_ch =
         to_tr->has_channel ()
-          ? dynamic_cast<ChannelTrack *> (to_tr)->channel_.get ()
+          ? dynamic_cast<ChannelTrack *> (to_tr)->channel_
           : nullptr;
 
       MIXER_SELECTIONS->clear (false);
@@ -772,7 +772,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
       Track * to_tr = TRACKLIST->find_track_by_name_hash (to_track_name_hash_);
       [[maybe_unused]] Channel * to_ch =
         to_tr->has_channel ()
-          ? dynamic_cast<ChannelTrack *> (to_tr)->channel_.get ()
+          ? dynamic_cast<ChannelTrack *> (to_tr)->channel_
           : nullptr;
       z_return_if_fail (to_tr);
 

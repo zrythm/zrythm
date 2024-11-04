@@ -57,7 +57,7 @@ Project::Project (QObject * parent)
         true)),
       timeline_ (new Timeline (this)),
       midi_mappings_ (std::make_unique<MidiMappings> ()),
-      tracklist_ (new Tracklist (*this)),
+      tracklist_ (new Tracklist (*this, port_connections_manager_)),
       undo_manager_ (std::make_unique<UndoManager> ())
 {
   init_selections ();
@@ -343,7 +343,8 @@ Project::add_default_tracks ()
 
     z_debug ("adding {} track...", typeid (T).name ());
     return tracklist_->append_track (
-      *T::create_unique (tracklist_->tracks_.size ()), false, false);
+      *T::create_unique (tracklist_->tracks_.size ()), *audio_engine_, false,
+      false);
   };
 
   /* chord */

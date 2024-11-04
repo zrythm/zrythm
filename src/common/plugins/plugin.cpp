@@ -603,7 +603,7 @@ Plugin::get_channel () const
   auto ch = track->channel_;
   z_return_val_if_fail (ch, nullptr);
 
-  return ch.get ();
+  return ch;
 }
 
 Plugin *
@@ -620,7 +620,7 @@ Plugin::find (const PluginIdentifier &id)
     || id.slot_type_ == zrythm::plugins::PluginSlotType::Insert)
     {
       auto channel_track = dynamic_cast<ChannelTrack *> (track);
-      ch = channel_track->channel_.get ();
+      ch = channel_track->channel_;
       z_return_val_if_fail (ch, nullptr);
     }
   Plugin * ret = nullptr;

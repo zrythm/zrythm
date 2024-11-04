@@ -457,22 +457,48 @@ Control {
 
             }
 
-            RowLayout {
-                id: meters
+            Loader {
+                id: audioMetersLoader
 
+                active: track.hasChannel && track.channel.stereoOut
+                visible: active
                 Layout.fillHeight: true
-                spacing: 0
+                Layout.fillWidth: false
 
-                Rectangle {
-                    width: 4
-                    color: "red"
-                    Layout.fillHeight: true
+                sourceComponent: RowLayout {
+                    id: meters
+
+                    spacing: 0
+                    anchors.fill: parent
+
+                    Meter {
+                        Layout.fillHeight: true
+                        Layout.preferredWidth: width
+                        port: track.channel.stereoOut.l
+                    }
+
+                    Meter {
+                        Layout.fillHeight: true
+                        Layout.preferredWidth: width
+                        port: track.channel.stereoOut.r
+                    }
+
                 }
 
-                Rectangle {
-                    width: 4
-                    color: "green"
-                    Layout.fillHeight: true
+            }
+
+            Loader {
+                id: midiMetersLoader
+
+                active: track.hasChannel && track.channel.midiOut
+                visible: active
+                Layout.fillHeight: true
+                Layout.fillWidth: false
+                Layout.preferredWidth: 4
+
+                sourceComponent: Meter {
+                    anchors.fill: parent
+                    port: track.channel.midiOut
                 }
 
             }

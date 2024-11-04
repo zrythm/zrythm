@@ -166,25 +166,28 @@ GraphNode::process_internal (const EngineProcessTimeInfo time_nfo)
   z_return_if_fail_cmp (
     time_nfo.g_start_frame_w_offset_, >=, time_nfo.g_start_frame_);
 
+  // z_info ("processing {}", get_name ());
+
   std::visit (
     overload{
-      [&] (const PortPtrVariant &p) {
+      [&] (PortPtrVariant &p) {
         std::visit (
           [&] (auto * port) {
             using PortT = base_type<decltype (port)>;
-            if constexpr (std::is_same_v<PortT, MidiPort>) {
-            if (port == AUDIO_ENGINE->midi_editor_manual_press_.get ())
+            if constexpr (std::is_same_v<PortT, MidiPort>)
               {
-                port->midi_events_.dequeue (
-                  time_nfo.local_offset_, time_nfo.nframes_);
-                  return;
+                if (port == AUDIO_ENGINE->midi_editor_manual_press_.get ())
+                  {
+                    port->midi_events_.dequeue (
+                      time_nfo.local_offset_, time_nfo.nframes_);
+                    return;
+                  }
               }
-            }
-            
-            if (
-              AUDIO_ENGINE->is_port_own (*port) && AUDIO_ENGINE->exporting_)
+
+            if (AUDIO_ENGINE->is_port_own (*port) && AUDIO_ENGINE->exporting_)
               {
-                /* if exporting and the port is not a project port, skip processing */
+                /* if exporting and the port is not a project port, skip
+                 * processing */
               }
             else
               {
@@ -193,13 +196,13 @@ GraphNode::process_internal (const EngineProcessTimeInfo time_nfo)
           },
           p);
       },
-      [&] (const zrythm::plugins::PluginPtrVariant &pl) {
+      [&] (zrythm::plugins::PluginPtrVariant &pl) {
         std::visit ([&] (auto * plugin) { plugin->process (time_nfo); }, pl);
       },
-      [&] (const TrackPtrVariant &t) {
+      [&] (TrackPtrVariant &t) {
         std::visit (
           [&] (auto * track) {
-            using TrackT = base_type<decltype(track)>;
+            using TrackT = base_type<decltype (track)>;
             if constexpr (std::derived_from<TrackT, ProcessableTrack>)
               {
                 track->processor_->process (time_nfo);
@@ -215,7 +218,9 @@ GraphNode::process_internal (const EngineProcessTimeInfo time_nfo)
       [&] (ChannelSend * s) {
         s->process (time_nfo.local_offset_, time_nfo.nframes_);
       },
-      [] (auto &&) { /* No processing needed */ } },
+      [] (auto &&) { /* No processing needed */
+
+      } },
     data_);
 }
 
@@ -224,7 +229,7 @@ GraphNode::process (EngineProcessTimeInfo time_nfo, GraphThread &thread)
 {
   z_return_if_fail (graph_ && graph_->router_);
 
-  /*z_info ("processing {}", graph_node_get_name (node));*/
+  // z_info ("processing {}", get_name ());
 
   // use immediately invoked lambda to handle return scope
   [&] () {
@@ -329,8 +334,8 @@ GraphNode::process (EngineProcessTimeInfo time_nfo, GraphThread &thread)
     }
 }
 
-  void
-  GraphNode::trigger ()
+void
+GraphNode::trigger ()
 {
   /* check if we can run */
   if (refcount_.fetch_sub (1) == 1)

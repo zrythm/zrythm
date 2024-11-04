@@ -1,0 +1,147 @@
+// SPDX-FileCopyrightText: © 2020, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+#ifndef __AUDIO_METER_H__
+#define __AUDIO_METER_H__
+
+#include "common/dsp/kmeter_dsp.h"
+#include "common/dsp/peak_dsp.h"
+#include "common/dsp/true_peak_dsp.h"
+#include "common/utils/traits.h"
+#include "common/utils/types.h"
+
+#include <QtQmlIntegration>
+
+class TruePeakDsp;
+class KMeterDsp;
+class PeakDsp;
+class Port;
+class MidiPort;
+class AudioPort;
+
+/**
+ * @addtogroup dsp
+ *
+ * @{
+ */
+
+enum class MeterAlgorithm
+{
+  /** Use default algorithm for the port. */
+  METER_ALGORITHM_AUTO,
+
+  METER_ALGORITHM_DIGITAL_PEAK,
+
+  /** @note True peak is intensive, only use it where needed (mixer). */
+  METER_ALGORITHM_TRUE_PEAK,
+  METER_ALGORITHM_RMS,
+  METER_ALGORITHM_K,
+};
+
+/**
+ * @brief A meter processor for a single GUI element.
+ *
+ * This class is responsible for processing the meter values for a single GUI
+ * element, such as a volume meter. It supports various meter algorithms,
+ * including digital peak, true peak, RMS, and K-meter.
+ *
+ * The meter processor is associated with a port, which can be either an
+ * AudioPort or a MidiPort. The meter values are updated based on the data
+ * from the associated port.
+ *
+ * The meter processor emits the `valuesChanged` signal whenever the meter
+ * values are updated, allowing the GUI to update the display accordingly.
+ */
+class MeterProcessor : public QObject
+{
+  Q_OBJECT
+  QML_ELEMENT
+  Q_PROPERTY (QVariant port READ getPort WRITE setPort REQUIRED)
+  Q_PROPERTY (
+    float currentAmplitude READ getCurrentAmplitude NOTIFY
+      currentAmplitudeChanged)
+  Q_PROPERTY (
+    float peakAmplitude READ getPeakAmplitude NOTIFY peakAmplitudeChanged)
+
+public:
+  using MeterPortVariant = std::variant<MidiPort, AudioPort>;
+  using MeterPortPtrVariant = to_pointer_variant<MeterPortVariant>;
+
+  MeterProcessor (QObject * parent = nullptr);
+
+  // ================================================================
+  // QML Interface
+  // ================================================================
+
+  QVariant getPort () const { return QVariant::fromValue (port_obj_); }
+  void     setPort (QVariant port_var);
+
+  float getCurrentAmplitude () const
+  {
+    return current_amp_.load (std::memory_order_relaxed);
+  }
+  Q_SIGNAL void currentAmplitudeChanged (float value);
+
+  float getPeakAmplitude () const
+  {
+    return peak_amp_.load (std::memory_order_relaxed);
+  }
+  Q_SIGNAL void peakAmplitudeChanged (float value);
+
+  Q_INVOKABLE float toDBFS (float amp) const;
+  Q_INVOKABLE float toFader (float amp) const;
+
+  // ================================================================
+
+private:
+  /**
+   * Get the current meter value.
+   *
+   * This should only be called once in a draw cycle.
+   */
+  void get_value (AudioValueFormat format, float * val, float * max);
+
+public:
+  /** Port associated with this meter. */
+  QPointer<QObject> port_obj_;
+
+  /** True peak processor. */
+  std::unique_ptr<TruePeakDsp> true_peak_processor_;
+  std::unique_ptr<TruePeakDsp> true_peak_max_processor_;
+
+  /** Current true peak. */
+  float true_peak_ = 0.f;
+  float true_peak_max_ = 0.f;
+
+  /** K RMS processor, if K meter. */
+  std::unique_ptr<KMeterDsp> kmeter_processor_;
+
+  std::unique_ptr<PeakDsp> peak_processor_;
+
+  /**
+   * Algorithm to use.
+   *
+   * Auto by default.
+   */
+  MeterAlgorithm algorithm_ = MeterAlgorithm::METER_ALGORITHM_AUTO;
+
+  /** Previous max, used when holding the max value. */
+  float prev_max_ = 0.f;
+
+  /** Last meter value (in amplitude), used to show a falloff and avoid sudden
+   * dips. */
+  float last_amp_ = 0.f;
+
+  /** Time the last val was taken at (last draw time). */
+  SteadyTimePoint last_draw_time_;
+
+  qint64 last_midi_trigger_time_ = 0;
+
+private:
+  std::vector<float> tmp_buf_;
+
+  std::atomic<float> current_amp_ = 0.f;
+  std::atomic<float> peak_amp_ = 0.f;
+};
+
+#endif
