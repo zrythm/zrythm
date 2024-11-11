@@ -16,21 +16,22 @@
 # CyCode <cycode@cycode.eu>, 2023.
 # UltraBlack <mail@chonkyrabbit.eu>, 2023.
 # Arnold <as103@mailbox.org>, 2023.
+# nilsholle <nils@hollemail.de>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2024-04-17 21:18+0900\n"
-"PO-Revision-Date: 2023-12-22 20:45+0000\n"
-"Last-Translator: Arnold <as103@mailbox.org>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
-">\n"
+"PO-Revision-Date: 2024-10-19 11:45+0000\n"
+"Last-Translator: nilsholle <nils@hollemail.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
+"\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.8-rc\n"
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
@@ -225,7 +226,7 @@ msgstr "Tonhöhenrad"
 
 #: inc/dsp/audio_function.h:59
 msgid "Copy L to R"
-msgstr ""
+msgstr "L nach R kopieren"
 
 #: inc/dsp/audio_function.h:59
 msgid "External program"
