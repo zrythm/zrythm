@@ -5,13 +5,14 @@
 # kakiremora <piotrek.pastuszak2003@gmail.com>, 2021.
 # marcin mikołajczak <me@mkljczk.pl>, 2023, 2024.
 # Krylan <drapeg1@gmail.com>, 2024.
+# Prefex <dczip89@gmail.com>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2024-04-17 21:18+0900\n"
-"PO-Revision-Date: 2024-06-07 11:45+0000\n"
-"Last-Translator: Krylan <drapeg1@gmail.com>\n"
+"PO-Revision-Date: 2024-07-31 11:45+0000\n"
+"Last-Translator: Prefex <dczip89@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/zrythm/zrythm/pl/>"
 "\n"
 "Language: pl\n"
@@ -20,7 +21,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.6-dev\n"
+"X-Generator: Weblate 5.7-dev\n"
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
@@ -66,33 +67,33 @@ msgstr "Tempo"
 
 #: inc/dsp/track.h:169
 msgid "Modulator"
-msgstr ""
+msgstr "Modulator"
 
 #: inc/dsp/track.h:170
 msgid "Audio FX"
-msgstr ""
+msgstr "Efekty dźwiękowe"
 
 #: inc/dsp/track.h:171
 msgid "Audio Group"
-msgstr ""
+msgstr "Grupa dźwięków"
 
 #: inc/dsp/track.h:172 src/dsp/region.c:468
 #: src/gui/widgets/popovers/automatable_selector_popover.c:342
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: inc/dsp/track.h:173
 #: src/gui/widgets/popovers/automatable_selector_popover.c:323
 msgid "MIDI FX"
-msgstr ""
+msgstr "Efekty MIDI"
 
 #: inc/dsp/track.h:174
 msgid "MIDI Group"
-msgstr ""
+msgstr "Grupa MIDI"
 
 #: inc/dsp/track.h:175
 msgid "Folder"
-msgstr ""
+msgstr "Folder"
 
 #: inc/dsp/snap_grid.h:52
 msgid "bar"
@@ -162,7 +163,7 @@ msgstr "Atrapa"
 
 #: inc/dsp/engine.h:240
 msgid "Dummy (libsoundio)"
-msgstr ""
+msgstr "Atrapa (libsoundio)"
 
 #: inc/dsp/engine.h:296
 msgid "ALSA Sequencer (not working)"
@@ -577,7 +578,7 @@ msgstr ""
 
 #: inc/dsp/pan.h:62
 msgid "Sine"
-msgstr ""
+msgstr "Sinusoidalna"
 
 #: inc/dsp/curve.h:98 src/dsp/curve.c:58
 #, c-format
@@ -601,7 +602,7 @@ msgstr ""
 #: inc/dsp/curve.h:102 src/dsp/curve.c:70 src/dsp/curve.c:358
 #, c-format
 msgid "Logarithmic"
-msgstr ""
+msgstr "Logarytmiczna"
 
 #: inc/utils/gtk.h:42
 msgid "MIDI learn"
@@ -638,7 +639,7 @@ msgstr "Wybierz..."
 
 #: inc/utils/gtk.h:64
 msgid "Duplicate"
-msgstr ""
+msgstr "Zduplikuj"
 
 #: inc/utils/gtk.h:67 src/gui/widgets/track.c:333
 #: src/gui/widgets/monitor_section.c:35 src/gui/widgets/monitor_section.c:272
@@ -664,7 +665,7 @@ msgstr "Niska"
 
 #: inc/utils/ui.h:84
 msgid "Ultra Low"
-msgstr ""
+msgstr "Bardzo Niska"
 
 #: inc/gui/backend/arranger_object.h:81
 msgid "All"
@@ -680,11 +681,11 @@ msgstr "Nuta Midi"
 
 #: inc/gui/backend/arranger_object.h:84
 msgid "Chord Object"
-msgstr ""
+msgstr "Obiekt Akordu"
 
 #: inc/gui/backend/arranger_object.h:85
 msgid "Scale Object"
-msgstr ""
+msgstr "Obiekt Skali"
 
 #: inc/gui/backend/arranger_object.h:87
 msgid "Automation Point"
@@ -698,27 +699,26 @@ msgid "Velocity"
 msgstr "Prędkość"
 
 #: src/project.c:301
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create backup directory %s"
-msgstr "_Prefix nazwa wtyczki"
+msgstr "Nie udało się stworzyć folderu z kopią zapasową: %s"
 
 #: src/project.c:490
 #, c-format
 msgid "Unable to read file at %s"
-msgstr ""
+msgstr "Nie udało się przeczytać pliku %s"
 
 #: src/project.c:506
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to decompress project file at %s"
-msgstr "Wczytywanie projektu"
+msgstr "Nie udało się zdekompresować pliku projektu %s"
 
 #: src/project.c:630 src/actions/actions.c:690 src/actions/actions.c:751
 #: src/actions/actions.c:805 src/actions/actions.c:824
 #: src/gui/widgets/main_window.c:120
 #: src/project/project_init_flow_manager.c:675
-#, fuzzy
 msgid "Failed to save project"
-msgstr "_Prefix nazwa wtyczki"
+msgstr "Nie udało się zapisać projektu"
 
 #: src/project.c:784
 #, fuzzy
@@ -726,13 +726,12 @@ msgid "Failed to serialize project"
 msgstr "Wczytywanie projektu"
 
 #: src/project.c:797
-#, fuzzy
 msgid "Failed to compress project file"
-msgstr "_Prefix nazwa wtyczki"
+msgstr "Nie udało się skompresować pliku projektu"
 
 #: src/project.c:838 src/project.c:841
 msgid "Backup saved."
-msgstr ""
+msgstr "Zapisano kopię zapasową."
 
 #: src/project.c:851
 msgid "Project saved."
@@ -744,23 +743,22 @@ msgid "Failed to write audio pool to disk"
 msgstr "Wczytywanie projektu"
 
 #: src/project.c:1057
-#, fuzzy
 msgid "Failed to clone project"
-msgstr "_Prefix nazwa wtyczki"
+msgstr "Nie udało się sklonować projektu"
 
 #: src/zrythm_app.c:127
 msgid "Error - Backtrace:\n"
-msgstr ""
+msgstr "Błąd, Ślad stosu:\n"
 
 #: src/zrythm_app.c:129
 #, c-format
 msgid "Error: %s - Backtrace:\n"
-msgstr ""
+msgstr "Błąd: %s, Ślad stosu:\n"
 
 #: src/zrythm_app.c:156
 #, c-format
 msgid "%s has crashed. "
-msgstr ""
+msgstr "%s się wysypał. "
 
 #: src/zrythm_app.c:215
 msgid "Failed fetching the latest release version"
@@ -803,17 +801,16 @@ msgstr ""
 "teraz zamknięty."
 
 #: src/zrythm_app.c:409
-#, fuzzy
 msgid "Loading Project"
 msgstr "Wczytywanie projektu"
 
 #: src/zrythm_app.c:427
 msgid "Initializing"
-msgstr ""
+msgstr "Inicjalizacja"
 
 #: src/zrythm_app.c:427
 msgid "Initializing settings"
-msgstr ""
+msgstr "Inicjalizowanie ustawień"
 
 #: src/zrythm_app.c:432
 #, c-format
@@ -826,11 +823,11 @@ msgstr ""
 
 #: src/zrythm_app.c:467
 msgid "Initializing caches"
-msgstr ""
+msgstr "Inicjalizowanie pamięci podręcznej"
 
 #: src/zrythm_app.c:471
 msgid "Initializing file manager"
-msgstr ""
+msgstr "Inicjalizowanie menadżera plików"
 
 #: src/zrythm_app.c:475
 msgid "Scanning Plugins"
@@ -838,7 +835,7 @@ msgstr "Skanowanie wtyczek"
 
 #: src/zrythm_app.c:706
 msgid "Icon Theme Not Found"
-msgstr ""
+msgstr "Nie Znaleziono Skórki Ikonek"
 
 #: src/zrythm_app.c:750
 #, c-format
@@ -847,6 +844,10 @@ msgid ""
 "memory. This may cause audio dropouts. Please refer to the 'Getting Started' "
 "section in the user manual for details."
 msgstr ""
+"Twój użytkownik nie ma wystarczających uprawnień, żeby %s zablokować "
+"nielimitowany obszar pamięci. Brak może spowodować zaniki dźwięku. Proszę "
+"zajrzeć do sekcji 'Getting Started' w instrukcji obsługi po więcej "
+"informacji."
 
 #: src/zrythm_app.c:766
 #, c-format
@@ -856,7 +857,7 @@ msgstr ""
 #: src/zrythm_app.c:785
 #, c-format
 msgid "Cannot lock down memory: %s"
-msgstr ""
+msgstr "Nie udało się zablokować obszaru pamięci: %s"
 
 #: src/zrythm_app.c:911
 #, c-format
@@ -901,7 +902,7 @@ msgstr ""
 
 #: src/zrythm_app.c:1443 src/gui/widgets/preferences.c:705
 msgid "Reset to factory settings"
-msgstr ""
+msgstr "Zresetuj do ustawień fabrycznych"
 
 #: src/zrythm_app.c:1445
 msgid "Override the audio backend to use"
@@ -941,47 +942,47 @@ msgstr ""
 
 #: src/actions/range_action.c:673
 msgid "Insert silence"
-msgstr ""
+msgstr "Wprowadź ciszę"
 
 #: src/actions/range_action.c:676
 msgid "Delete range"
-msgstr ""
+msgstr "Usuń zakres"
 
 #: src/actions/undo_manager.c:188 src/actions/actions.c:985
 msgid "Failed to undo action"
-msgstr ""
+msgstr "Nie udało się cofnąć akcji"
 
 #: src/actions/undo_manager.c:238 src/actions/actions.c:981
 msgid "Failed to redo action"
-msgstr ""
+msgstr "Nie udało się ponowić akcji"
 
 #: src/actions/undo_manager.c:281
 msgid "Failed to perform action"
-msgstr ""
+msgstr "Nie udało się wykonać akcji"
 
 #: src/actions/chord_action.c:157
 msgid "Change chords"
-msgstr ""
+msgstr "Zmień akordy"
 
 #: src/actions/port_connection_action.c:167
 msgid "Connect ports"
-msgstr ""
+msgstr "Połącz gniazda"
 
 #: src/actions/port_connection_action.c:170
 msgid "Disconnect ports"
-msgstr ""
+msgstr "Odłącz gniazda"
 
 #: src/actions/port_connection_action.c:173
 msgid "Enable port connection"
-msgstr ""
+msgstr "Włącz połączenie gniazda"
 
 #: src/actions/port_connection_action.c:176
 msgid "Disable port connection"
-msgstr ""
+msgstr "Wyłącz połączenie gniazda"
 
 #: src/actions/port_connection_action.c:179
 msgid "Change port connection"
-msgstr ""
+msgstr "Zmień połączenie gniazda"
 
 #: src/actions/midi_mapping_action.c:223
 msgid "MIDI mapping enable"
@@ -1078,11 +1079,11 @@ msgstr ""
 
 #: src/actions/actions.c:877
 msgid "Image (PNG)"
-msgstr ""
+msgstr "Obraz (PNG)"
 
 #: src/actions/actions.c:877
 msgid "Image (SVG)"
-msgstr ""
+msgstr "Obraz (SVG)"
 
 #: src/actions/actions.c:877
 msgid "Dot graph"
@@ -1101,16 +1102,16 @@ msgstr ""
 
 #: src/actions/actions.c:957 src/guile/actions/undo_manager.c:53
 msgid "Failed to undo"
-msgstr ""
+msgstr "Nie udało się cofnąć"
 
 #: src/actions/actions.c:1020 src/guile/actions/undo_manager.c:76
 msgid "Failed to redo"
-msgstr ""
+msgstr "Nie udało się ponowić"
 
 #: src/actions/actions.c:1057 src/actions/actions.c:1070
 #: src/actions/actions.c:1292
 msgid "Failed to delete selections"
-msgstr ""
+msgstr "Nie udało się usunąć selekcji"
 
 #: src/actions/actions.c:1108
 msgid "Selections copied to clipboard"
@@ -1179,9 +1180,8 @@ msgid "Failed to delete tracks"
 msgstr ""
 
 #: src/actions/actions.c:1861
-#, fuzzy
 msgid "Delete Tracks?"
-msgstr "_Usuń ścieżkę"
+msgstr "Usunąć ścieżki?"
 
 #: src/actions/actions.c:1862
 msgid ""
@@ -5443,7 +5443,7 @@ msgstr "Wyjścia"
 
 #: src/gui/widgets/popovers/tracklist_preferences_popover.c:54
 msgid "Behavior"
-msgstr ""
+msgstr "Zachowanie"
 
 #: src/gui/widgets/popovers/tracklist_preferences_popover.c:60
 msgid "Auto-arm for Recording"
@@ -5463,7 +5463,7 @@ msgstr ""
 
 #: src/gui/widgets/popovers/track_filter_popover.c:249
 msgid "Filter"
-msgstr ""
+msgstr "Filtr"
 
 #: src/gui/widgets/popovers/track_filter_popover.c:266
 msgid "Track types"
