@@ -33,15 +33,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-04-17 21:18+0900\n"
-"PO-Revision-Date: 2022-08-09 12:29+0000\n"
-"Last-Translator: Q mo <qqmo520316@gmail.com>\n"
-"Language: zh_TW\n"
+"PO-Revision-Date: 2024-06-02 11:45+0000\n"
+"Last-Translator: hugoalh <hugoalh@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hant/>\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.6-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -1575,7 +1576,7 @@ msgstr ""
 
 #: ../../editing/automation-editor.rst:32
 msgid "Exponent"
-msgstr ""
+msgstr "指數"
 
 #: ../../editing/automation-editor.rst:33
 msgid "Exponential curve."
@@ -1583,7 +1584,7 @@ msgstr ""
 
 #: ../../editing/automation-editor.rst:34
 msgid "Superellipse"
-msgstr ""
+msgstr "超橢圓"
 
 #: ../../editing/automation-editor.rst:35
 msgid "Elliptical curve."
@@ -1599,7 +1600,7 @@ msgstr ""
 
 #: ../../editing/automation-editor.rst:40
 msgid "Pulse"
-msgstr ""
+msgstr "脈搏"
 
 #: ../../editing/automation-editor.rst:40
 msgid "Pulse wave."
@@ -2074,7 +2075,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:153
 msgid "Edit Tool"
-msgstr ""
+msgstr "編輯工具"
 
 #: ../../editing/edit-tools.rst:154
 msgid ""
@@ -2101,7 +2102,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:174
 msgid "Cut Tool"
-msgstr ""
+msgstr "切割工具"
 
 #: ../../editing/edit-tools.rst:175
 msgid ""
@@ -2466,7 +2467,7 @@ msgstr ""
 
 #: ../../editing/editor-toolbars.rst:153 ../../editing/intro.rst:9
 msgid "Editing"
-msgstr ""
+msgstr "正在編輯"
 
 #: ../../editing/editor-toolbars.rst:155
 msgid ""
@@ -2837,7 +2838,7 @@ msgstr ""
 
 #: ../../editing/piano-roll.rst:9
 msgid "Piano Roll"
-msgstr ""
+msgstr "鋼琴捲簾"
 
 #: ../../editing/piano-roll.rst:11
 msgid ""
@@ -3367,7 +3368,7 @@ msgstr "線性"
 
 #: ../../editing/timeline.rst:300
 msgid "Exponential"
-msgstr ""
+msgstr "指數"
 
 #: ../../editing/timeline.rst:305
 msgid "Elliptic (Superellipse)"
@@ -3526,9 +3527,8 @@ msgid ""
 msgstr ""
 
 #: ../../exporting/audio-and-midi.rst:37
-#, fuzzy
 msgid "Dither"
-msgstr "編輯器"
+msgstr "抖動"
 
 #: ../../exporting/audio-and-midi.rst:39
 msgid ""
@@ -3570,7 +3570,7 @@ msgstr ""
 
 #: ../../exporting/audio-and-midi.rst:61
 msgid "Mixdown"
-msgstr ""
+msgstr "混音"
 
 #: ../../exporting/audio-and-midi.rst:62
 msgid ""
@@ -3902,7 +3902,7 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:14
 msgid "Installers"
-msgstr ""
+msgstr "安裝程式"
 
 #: ../../getting-started/installation.rst:15
 msgid ""
@@ -4543,7 +4543,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:72 ../../tracks/track-types.rst:73
 #: ../../tracks/track-types.rst:77 ../../tracks/track-types.rst:78
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../glossary/intro.rst:101
 msgid ""
@@ -4614,7 +4614,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:138
 msgid "Range"
-msgstr ""
+msgstr "範圍"
 
 #: ../../glossary/intro.rst:140
 msgid "A Range is a selection of time between two positions."
@@ -5151,7 +5151,7 @@ msgstr ""
 
 #: ../../playback-and-recording/overview.rst:24
 msgid "Position"
-msgstr ""
+msgstr "位置"
 
 #: ../../playback-and-recording/overview.rst:26
 msgid "Zrythm uses the following format for positions:"
@@ -5212,7 +5212,7 @@ msgstr ""
 #: ../../playback-and-recording/recording.rst:42
 #: ../../tracks/inspector-page.rst:47
 msgid "Inputs"
-msgstr ""
+msgstr "輸入"
 
 #: ../../playback-and-recording/recording.rst:43
 msgid ""
@@ -5352,9 +5352,8 @@ msgid "Playback is controlled by the following transport controls."
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:18
-#, fuzzy
 msgid "Controls"
-msgstr "控制室"
+msgstr "控制"
 
 #: ../../playback-and-recording/transport-controls.rst:32
 msgid "Metronome toggle"
@@ -5559,17 +5558,16 @@ msgstr ""
 #: ../../tracks/track-types.rst:32 ../../tracks/track-types.rst:33
 #: ../../tracks/track-types.rst:48 ../../tracks/track-types.rst:57
 #: ../../tracks/track-types.rst:58
-#, fuzzy
 msgid "Audio"
-msgstr "音訊效果"
+msgstr "音訊"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:63
 msgid "Only show audio files."
-msgstr ""
+msgstr "只顯示音訊檔案。"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:65
 msgid "Only show MIDI files."
-msgstr ""
+msgstr "只顯示 MIDI 檔案。"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:67
 msgid "Only show preset files (currently unused/unimplemented)."
@@ -7057,7 +7055,7 @@ msgstr ""
 
 #: ../../scripting/intro.rst:9
 msgid "Scripting"
-msgstr ""
+msgstr "腳本編寫"
 
 #: ../../scripting/overview.rst:10
 msgid "Deprecation Notice"
@@ -7681,7 +7679,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:164
 msgid "Listen"
-msgstr ""
+msgstr "聽"
 
 #: ../../tracks/inspector-page.rst:162
 msgid ""

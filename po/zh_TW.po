@@ -8,13 +8,14 @@
 # tommyliu313 <liuchaktin@gmail.com>, 2022.
 # Q mo <qqmo520316@gmail.com>, 2022.
 # StarAtt <tea55688@gmail.com>, 2022.
+# hugoalh <hugoalh@users.noreply.hosted.weblate.org>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2024-04-17 21:18+0900\n"
-"PO-Revision-Date: 2022-08-28 15:52+0000\n"
-"Last-Translator: StarAtt <tea55688@gmail.com>\n"
+"PO-Revision-Date: 2024-06-02 11:45+0000\n"
+"Last-Translator: hugoalh <hugoalh@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -22,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14.1-dev\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: inc/dsp/exporter.h:127
 #, fuzzy
@@ -303,7 +304,7 @@ msgstr "使用全域的設定"
 #: inc/dsp/region.h:63 src/dsp/automation_track.c:154
 #: src/gui/widgets/snap_grid.c:42 src/gui/widgets/bot_bar.c:421
 msgid "Off"
-msgstr "Off"
+msgstr "關閉"
 
 #: inc/dsp/region.h:64 src/dsp/automation_track.c:148
 #: src/gui/widgets/cc_bindings_tree.c:131
@@ -596,12 +597,12 @@ msgstr "正弦"
 #: inc/dsp/curve.h:98 src/dsp/curve.c:58
 #, c-format
 msgid "Exponent"
-msgstr "Exponent"
+msgstr "指數"
 
 #: inc/dsp/curve.h:99 src/dsp/curve.c:61
 #, c-format
 msgid "Superellipse"
-msgstr "Superellipse"
+msgstr "超橢圓"
 
 #: inc/dsp/curve.h:100 src/dsp/curve.c:361
 msgid "Vital"
@@ -610,7 +611,7 @@ msgstr "Vital"
 #: inc/dsp/curve.h:101 src/dsp/curve.c:67
 #, c-format
 msgid "Pulse"
-msgstr "Pulse"
+msgstr "脈搏"
 
 #: inc/dsp/curve.h:102 src/dsp/curve.c:70 src/dsp/curve.c:358
 #, c-format
@@ -821,9 +822,8 @@ msgid "Loading Project"
 msgstr "載入專案中"
 
 #: src/zrythm_app.c:427
-#, fuzzy
 msgid "Initializing"
-msgstr "正在初始化..."
+msgstr "正在初始化"
 
 #: src/zrythm_app.c:427
 msgid "Initializing settings"
@@ -869,12 +869,12 @@ msgid "Could not get system memory lock limit (%s)"
 msgstr ""
 
 #: src/zrythm_app.c:785
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot lock down memory: %s"
-msgstr "釘選/取消釘選全部"
+msgstr "無法鎖定記憶體：%s"
 
 #: src/zrythm_app.c:911
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s-%s\n"
 "%s\n"
@@ -888,15 +888,16 @@ msgid ""
 "Support this project at https://liberapay.com/Zrythm\n"
 "\n"
 msgstr ""
-"%s-%s Copyright (C) 2018-2020 The Zrythm 貢獻者\n"
+"%s-%s\n"
+"%s\n"
 "\n"
-"本軟體 %s 不負擔保責任！\n"
+"%s 絕對不提供任何保固！\n"
 "\n"
-"這是自由軟體，你可以在限定的條件內自由散布它。\n"
-"詳情請看 `COPYING' 檔案。 \n"
+"這是自由軟體，歡迎你在限定的條件內重新分發它。\n"
+"詳情請參閱檔案「COPYING」。\n"
 "\n"
-"到這個網站 %s 提出意見或回報程式錯誤\n"
-"到這裡 https://liberapay.com/Zrythm 支持本專案\n"
+"在 %s 撰寫評論和報告錯誤\n"
+"在 https://liberapay.com/Zrythm 支持本專案\n"
 "\n"
 
 #: src/zrythm_app.c:1282
@@ -1091,9 +1092,8 @@ msgid "_Save"
 msgstr "儲存"
 
 #: src/actions/actions.c:767 src/gui/widgets/main_window.c:148
-#, fuzzy
 msgid "Save Changes?"
-msgstr "儲存專案"
+msgstr "儲存變更？"
 
 #: src/actions/actions.c:768
 msgid ""
@@ -1216,9 +1216,8 @@ msgid "Failed to delete tracks"
 msgstr "無法刪除音軌"
 
 #: src/actions/actions.c:1861
-#, fuzzy
 msgid "Delete Tracks?"
-msgstr "刪除所選音軌"
+msgstr "刪除音軌？"
 
 #: src/actions/actions.c:1862
 msgid ""
@@ -1326,9 +1325,8 @@ msgid "Failed to apply audio function"
 msgstr "無法應用音訊功能"
 
 #: src/actions/actions.c:2512
-#, fuzzy
 msgid "Please enter a ratio between 0.0001 and 100."
-msgstr "請輸入名稱"
+msgstr "請輸入 0.0001 至 100 之間的比率。"
 
 #: src/actions/actions.c:2650
 #, fuzzy
@@ -1373,7 +1371,7 @@ msgstr "請輸入BPM"
 #: src/gui/widgets/tracklist.c:320 src/gui/widgets/tracklist.c:364
 #: src/gui/widgets/fader_buttons.c:242
 msgid "Unimplemented"
-msgstr ""
+msgstr "未實現"
 
 #: src/actions/actions.c:2922
 msgid "Tap BPM not implemented yet"
@@ -1420,9 +1418,8 @@ msgstr "預設包名稱"
 
 #: src/actions/actions.c:3381 src/actions/actions.c:3433
 #: src/actions/actions.c:3701 src/actions/actions.c:3964
-#, fuzzy
 msgid "Delete?"
-msgstr "刪除"
+msgstr "刪除？"
 
 #: src/actions/actions.c:3382
 #, fuzzy
@@ -1462,18 +1459,15 @@ msgid "Failed to delete plugins"
 msgstr "無法刪除外掛程式"
 
 #: src/actions/actions.c:3578
-#, fuzzy
 msgid "Delete Plugins?"
-msgstr "刪除外掛"
+msgstr "刪除外掛程式？"
 
 #: src/actions/actions.c:3579
-#, fuzzy
 msgid ""
 "The selection contains uninstantiated plugins. Deleting them will not be "
 "undoable and the undo history will be cleared."
-msgstr ""
-"所選內容包含未經證實（Uninstantiated）的外掛程式。刪除它們將無法還原，並且將"
-"清除還原歷史記錄。是否繼續刪除？"
+msgstr "所選內容包含未經證實（Uninstantiated）的外掛程式。刪除它們將無法還原，並且將"
+"清除還原歷史記錄。"
 
 #: src/actions/actions.c:3630
 #, fuzzy, c-format
@@ -1500,10 +1494,10 @@ msgid "Collection name"
 msgstr "收藏名稱"
 
 #: src/actions/actions.c:3967
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "The collection '%s' contains %d plugins. Are you sure you want to remove it?"
-msgstr "此收藏包含 %d 外掛程式。是否確定要將其刪除？"
+msgstr "收藏「%s」包含 %d 個外掛程式。是否確定要將其刪除？"
 
 #: src/actions/actions.c:4146
 #, fuzzy
@@ -2321,11 +2315,11 @@ msgstr "無法開啟檔案: %s"
 
 #: src/dsp/curve.c:350
 msgid "Exponential"
-msgstr ""
+msgstr "指數"
 
 #: src/dsp/curve.c:354
 msgid "Elliptic"
-msgstr ""
+msgstr "橢圓形"
 
 #: src/dsp/audio_function.c:132 src/gui/widgets/drag_dest_box.c:291
 #, fuzzy
@@ -3556,7 +3550,7 @@ msgstr "音高"
 #: src/gui/widgets/digital_meter.c:101 src/gui/widgets/item_factory.c:201
 #: src/gui/widgets/item_factory.c:677
 msgid "Position"
-msgstr ""
+msgstr "位置"
 
 #: src/gui/widgets/event_viewer.c:664 src/gui/widgets/item_factory.c:766
 msgid "Index"
@@ -3647,7 +3641,7 @@ msgstr ""
 
 #: src/gui/widgets/track.c:344 src/gui/widgets/monitor_section.c:41
 msgid "Listen"
-msgstr ""
+msgstr "聽"
 
 #: src/gui/widgets/track.c:353
 msgid "Mono compatibility"
@@ -3797,7 +3791,7 @@ msgstr "MIDI 通道 %d"
 
 #: src/gui/widgets/track.c:844
 msgid "Piano Roll"
-msgstr ""
+msgstr "鋼琴捲簾"
 
 #: src/gui/widgets/track.c:855
 #, fuzzy
@@ -4262,7 +4256,7 @@ msgstr "增益"
 #. set name and icon
 #: src/gui/widgets/track_input_expander.c:223
 msgid "Inputs"
-msgstr ""
+msgstr "輸入"
 
 #: src/gui/widgets/monitor_section.c:47 src/gui/widgets/monitor_section.c:267
 #, fuzzy
@@ -4372,7 +4366,7 @@ msgstr ""
 
 #: src/gui/widgets/ports_expander.c:208 src/gui/widgets/ports_expander.c:491
 msgid "Controls"
-msgstr ""
+msgstr "控制"
 
 #: src/gui/widgets/ports_expander.c:210
 msgid "Control Outs"
@@ -4563,7 +4557,7 @@ msgstr ""
 #: src/gui/widgets/timeline_selection_info.c:252
 #: src/gui/widgets/timeline_selection_info.c:268
 msgid "position"
-msgstr ""
+msgstr "位置"
 
 #: src/gui/widgets/item_factory.c:81
 #, fuzzy
@@ -5164,7 +5158,7 @@ msgstr "目標"
 
 #: src/gui/widgets/dialogs/port_info.c:63
 msgid "Range"
-msgstr ""
+msgstr "範圍"
 
 #: src/gui/widgets/dialogs/port_info.c:64
 #, c-format
@@ -5389,7 +5383,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/export_dialog.c:1078
 msgid "Mixdown"
-msgstr ""
+msgstr "混音"
 
 #: src/gui/widgets/dialogs/export_dialog.c:1079
 msgid "Stems"
@@ -5531,7 +5525,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/arranger_object_info.c:55
 msgid "Owner"
-msgstr ""
+msgstr "擁有者"
 
 #: src/gui/widgets/dialogs/arranger_object_info.c:103
 msgid "Arranger Object Info"
@@ -5679,7 +5673,7 @@ msgstr "長度"
 
 #: src/gui/widgets/popovers/port_connections_popover.c:58
 msgid "INPUTS"
-msgstr ""
+msgstr "輸入"
 
 #: src/gui/widgets/popovers/port_connections_popover.c:80
 msgid "OUTPUTS"
@@ -7488,7 +7482,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:959
 msgid "Dither"
-msgstr ""
+msgstr "抖動"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:960
 msgid "Add low level noise to reduce errors on lower bit depths."
@@ -7826,7 +7820,7 @@ msgstr "樂器"
 #: build/data/org.zrythm.Zrythm.gschema.xml:1258
 #: build/data/org.zrythm.Zrythm.gschema.xml:1272
 msgid "Editing"
-msgstr "編輯"
+msgstr "正在編輯"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1249
 msgid "Fade algorithm"
@@ -7917,9 +7911,8 @@ msgid "Pan law"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1356
-#, fuzzy
 msgid "Scripting"
-msgstr "腳本界面"
+msgstr "腳本編寫"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1361
 msgid "Default script"
