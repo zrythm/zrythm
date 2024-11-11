@@ -38,9 +38,8 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-04-17 21:18+0900\n"
-"PO-Revision-Date: 2024-05-10 11:45+0000\n"
-"Last-Translator: Evgeniy Khramov <65224669+thejenja@users.noreply.github.com>"
-"\n"
+"PO-Revision-Date: 2024-06-03 05:02+0000\n"
+"Last-Translator: John Johnson <oksenepta@yandex.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/ru/>\n"
 "Language: ru\n"
@@ -49,7 +48,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.5.4-rc\n"
+"X-Generator: Weblate 5.6-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -1607,7 +1606,7 @@ msgstr "Другие участники"
 
 #: ../../editing/audio-editor.rst:9
 msgid "Audio Editor"
-msgstr "Звуковой редактор"
+msgstr "Редактор звука"
 
 #: ../../editing/audio-editor.rst:10
 msgid "The audio editor is displayed when an audio region is selected."
@@ -3316,7 +3315,7 @@ msgstr ""
 
 #: ../../editing/piano-roll.rst:9
 msgid "Piano Roll"
-msgstr "Пиано Ролл"
+msgstr "Редактор Нот"
 
 #: ../../editing/piano-roll.rst:11
 #, fuzzy
@@ -3345,7 +3344,7 @@ msgstr "Основная Панель Инструментов (Main Toolbar)"
 
 #: ../../editing/piano-roll.rst:39
 msgid "Drum View"
-msgstr "Барабанный вид"
+msgstr "Режим ударных"
 
 #: ../../editing/piano-roll.rst:31
 #, fuzzy
@@ -3444,7 +3443,7 @@ msgstr ""
 
 #: ../../editing/piano-roll.rst:86
 msgid "Velocity Editor"
-msgstr "Редактор скоростей"
+msgstr "Редактор скорости нажатия"
 
 #: ../../editing/piano-roll.rst:87
 msgid ""
@@ -6547,7 +6546,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:9
 msgid "File Browser"
-msgstr "Браузер файлов"
+msgstr "Поисковик файлов"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:11
 msgid ""
@@ -7876,9 +7875,8 @@ msgid "See :ref:`export-routing-graph` for details."
 msgstr "Читайте :ref:`export-routing-graph` для подробностей."
 
 #: ../../routing/monitor-section.rst:7
-#, fuzzy
 msgid "Monitor Section"
-msgstr "Цикл выделения"
+msgstr "Мониторинг секции"
 
 #: ../../routing/monitor-section.rst:8
 #, fuzzy
