@@ -4,22 +4,23 @@
 # gnu-ewm <gnu.ewm@protonmail.com>, 2021, 2022, 2023.
 # kakiremora <piotrek.pastuszak2003@gmail.com>, 2021.
 # marcin mikołajczak <me@mkljczk.pl>, 2023, 2024.
+# Krylan <drapeg1@gmail.com>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2024-04-17 21:18+0900\n"
-"PO-Revision-Date: 2024-03-25 20:45+0000\n"
-"Last-Translator: marcin mikołajczak <me@mkljczk.pl>\n"
-"Language-Team: Polish <https://hosted.weblate.org/projects/zrythm/zrythm/pl/"
-">\n"
+"PO-Revision-Date: 2024-06-07 11:45+0000\n"
+"Last-Translator: Krylan <drapeg1@gmail.com>\n"
+"Language-Team: Polish <https://hosted.weblate.org/projects/zrythm/zrythm/pl/>"
+"\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.6-dev\n"
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
@@ -61,7 +62,7 @@ msgstr "Znacznik"
 #: src/gui/widgets/popovers/automatable_selector_popover.c:153
 #: src/gui/widgets/popovers/automatable_selector_popover.c:363
 msgid "Tempo"
-msgstr ""
+msgstr "Tempo"
 
 #: inc/dsp/track.h:169
 msgid "Modulator"
@@ -115,43 +116,43 @@ msgstr ""
 
 #: inc/dsp/engine.h:170
 msgid "1,024"
-msgstr ""
+msgstr "1024"
 
 #: inc/dsp/engine.h:170
 msgid "2,048"
-msgstr ""
+msgstr "2048"
 
 #: inc/dsp/engine.h:170
 msgid "4,096"
-msgstr ""
+msgstr "4096"
 
 #: inc/dsp/engine.h:195
 msgid "22,050"
-msgstr ""
+msgstr "22050"
 
 #: inc/dsp/engine.h:195
 msgid "32,000"
-msgstr ""
+msgstr "32000"
 
 #: inc/dsp/engine.h:195
 msgid "44,100"
-msgstr ""
+msgstr "44100"
 
 #: inc/dsp/engine.h:195
 msgid "48,000"
-msgstr ""
+msgstr "48000"
 
 #: inc/dsp/engine.h:196
 msgid "88,200"
-msgstr ""
+msgstr "88200"
 
 #: inc/dsp/engine.h:196
 msgid "96,000"
-msgstr ""
+msgstr "96000"
 
 #: inc/dsp/engine.h:196
 msgid "192,000"
-msgstr ""
+msgstr "192000"
 
 #. TRANSLATORS: Dummy backend
 #: inc/dsp/engine.h:240 inc/dsp/engine.h:295
@@ -327,15 +328,15 @@ msgstr ""
 
 #: inc/dsp/scale.h:134
 msgid "Phrygian"
-msgstr ""
+msgstr "Frygijska"
 
 #: inc/dsp/scale.h:135
 msgid "Lydian"
-msgstr ""
+msgstr "Lidyjska"
 
 #: inc/dsp/scale.h:136
 msgid "Mixolydian"
-msgstr ""
+msgstr "Miksolidyjska"
 
 #: inc/dsp/scale.h:137
 msgid "Aeolian"
@@ -767,7 +768,7 @@ msgstr ""
 
 #: src/zrythm_app.c:228
 msgid "Changelog"
-msgstr ""
+msgstr "Lista zmian"
 
 #: src/zrythm_app.c:230
 #, c-format
@@ -776,7 +777,7 @@ msgstr ""
 
 #: src/zrythm_app.c:250
 msgid "New Zrythm Version"
-msgstr ""
+msgstr "Nowa wersja Zrythm"
 
 #: src/zrythm_app.c:251
 #, c-format
@@ -785,17 +786,21 @@ msgid ""
 "\n"
 "Your current version is %s"
 msgstr ""
+"Nowa wersja Zrythm została wydana: <b>%s</b>\n"
+"\n"
+"Twoja aktualna wersja to %s"
 
 #: src/zrythm_app.c:382
-#, fuzzy
 msgid "No Project Selected"
-msgstr "Projekt został zapisany."
+msgstr "Projekt nie został wybrany"
 
 #: src/zrythm_app.c:385
 #, c-format
 msgid ""
 "No project has been selected or project failed to load. %s will now close."
 msgstr ""
+"Nie wybrano żadnego projektu lub projekt nie został załadowany. %s zostanie "
+"teraz zamknięty."
 
 #: src/zrythm_app.c:409
 #, fuzzy
@@ -828,9 +833,8 @@ msgid "Initializing file manager"
 msgstr ""
 
 #: src/zrythm_app.c:475
-#, fuzzy
 msgid "Scanning Plugins"
-msgstr "Wtyczki"
+msgstr "Skanowanie wtyczek"
 
 #: src/zrythm_app.c:706
 msgid "Icon Theme Not Found"
@@ -1042,7 +1046,7 @@ msgstr "_Anuluj"
 #: src/actions/actions.c:711 src/actions/actions.c:772
 #: src/gui/widgets/main_window.c:153
 msgid "_Discard"
-msgstr ""
+msgstr "_Odrzuć"
 
 #: src/actions/actions.c:712 src/actions/actions.c:773
 #: src/gui/widgets/main_window.c:154
@@ -1053,19 +1057,20 @@ msgid "_Save"
 msgstr "_Zapisz"
 
 #: src/actions/actions.c:767 src/gui/widgets/main_window.c:148
-#, fuzzy
 msgid "Save Changes?"
-msgstr "Zapisz stan"
+msgstr "Zapisać zmiany?"
 
 #: src/actions/actions.c:768
 msgid ""
 "The project contains unsaved changes. If you proceed, any unsaved changes "
 "will be lost."
 msgstr ""
+"Projekt zawiera niezapisane zmiany. Kontynuując, niezapisane zmiany zostaną "
+"utracone."
 
 #: src/actions/actions.c:843
 msgid "Save Project"
-msgstr ""
+msgstr "Zapisz projekt"
 
 #: src/actions/actions.c:876
 msgid "Export routing graph"
@@ -1402,9 +1407,8 @@ msgid "Failed to delete plugins"
 msgstr ""
 
 #: src/actions/actions.c:3578
-#, fuzzy
 msgid "Delete Plugins?"
-msgstr "Zastąpienie wtyczki"
+msgstr "Usunąć wtyczki?"
 
 #: src/actions/actions.c:3579
 msgid ""
@@ -1562,7 +1566,7 @@ msgstr ""
 
 #: src/actions/tracklist_selections.c:1884
 msgid "Mute Track"
-msgstr ""
+msgstr "Wycisz ścieżkę"
 
 #: src/actions/tracklist_selections.c:1886
 msgid "Unmute Track"
@@ -1627,15 +1631,15 @@ msgstr "_Prefix nazwa wtyczki"
 #: src/actions/tracklist_selections.c:1922
 #: src/actions/tracklist_selections.c:1970
 msgid "Change color"
-msgstr ""
+msgstr "Zmień kolor"
 
 #: src/actions/tracklist_selections.c:1924
 msgid "Change icon"
-msgstr ""
+msgstr "Zmień ikonę"
 
 #: src/actions/tracklist_selections.c:1926
 msgid "Change comment"
-msgstr ""
+msgstr "Zmień komentarz"
 
 #: src/actions/tracklist_selections.c:1928
 #: src/actions/tracklist_selections.c:1972
@@ -2203,11 +2207,11 @@ msgstr "_Prefix nazwa wtyczki"
 
 #: src/dsp/engine_jack.c:739
 msgid "left"
-msgstr ""
+msgstr "lewo"
 
 #: src/dsp/engine_jack.c:739
 msgid "right"
-msgstr ""
+msgstr "prawo"
 
 #: src/dsp/engine_jack.c:793 src/gui/widgets/monitor_section.c:202
 #, fuzzy
@@ -2326,23 +2330,23 @@ msgstr "Dodaj region"
 
 #: src/dsp/track.c:3685
 msgid "Hide Track"
-msgstr ""
+msgstr "Ukryj ścieżkę"
 
 #: src/dsp/track.c:3685
 msgid "Hide Tracks"
-msgstr ""
+msgstr "Ukryj ścieżki"
 
 #: src/dsp/track.c:3692
 msgid "Pin/Unpin Track"
-msgstr ""
+msgstr "Przypnij/odepnij ścieżkę"
 
 #: src/dsp/track.c:3692
 msgid "Pin/Unpin Tracks"
-msgstr ""
+msgstr "Przypnij/odepnij ścieżki"
 
 #: src/dsp/track.c:3698 src/gui/widgets/timeline_arranger.c:997
 msgid "Change Color..."
-msgstr ""
+msgstr "Zmień kolor..."
 
 #: src/dsp/track.c:3705
 msgid "Rename..."
@@ -2560,7 +2564,7 @@ msgstr ""
 
 #: src/dsp/tempo_track.c:50
 msgid "Beats per bar"
-msgstr ""
+msgstr "Uderzenia na takt"
 
 #: src/dsp/tempo_track.c:62
 msgid "Beat unit"
