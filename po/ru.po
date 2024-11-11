@@ -19,13 +19,15 @@
 # Yury Verpatov <inaunius@gmail.com>, 2023.
 # Макар Разин <makarrazin14@gmail.com>, 2024.
 # Yurt Page <yurtpage@gmail.com>, 2024.
+# Evgeniy Khramov <65224669+thejenja@users.noreply.github.com>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2024-04-17 21:18+0900\n"
-"PO-Revision-Date: 2024-04-13 20:45+0000\n"
-"Last-Translator: Yurt Page <yurtpage@gmail.com>\n"
+"PO-Revision-Date: 2024-05-10 11:45+0000\n"
+"Last-Translator: Evgeniy Khramov <65224669+thejenja@users.noreply.github.com>"
+"\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
 "Language: ru\n"
@@ -34,7 +36,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 5.5.4-rc\n"
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
@@ -3058,7 +3060,7 @@ msgstr "Браузер плагинов (Plugin Browser)"
 #: src/utils/gtk.c:988 src/gui/widgets/right_dock_edge.c:102
 #: src/gui/widgets/right_dock_edge.c:129
 msgid "File Browser"
-msgstr "Браузер файлов (File Browser)"
+msgstr "Браузер файлов"
 
 #: src/utils/gtk.c:990 src/gui/widgets/right_dock_edge.c:118
 msgid "Chord Preset Browser"

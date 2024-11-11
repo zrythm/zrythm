@@ -38,8 +38,9 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-04-17 21:18+0900\n"
-"PO-Revision-Date: 2024-05-09 11:40+0000\n"
-"Last-Translator: Kirill Plotnikov <ponfertato@gmail.com>\n"
+"PO-Revision-Date: 2024-05-10 11:45+0000\n"
+"Last-Translator: Evgeniy Khramov <65224669+thejenja@users.noreply.github.com>"
+"\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/ru/>\n"
 "Language: ru\n"
@@ -6546,7 +6547,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:9
 msgid "File Browser"
-msgstr "Браузер файлов (File Browser)"
+msgstr "Браузер файлов"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:11
 msgid ""
@@ -9014,7 +9015,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:109
 msgid "Aux Sends"
-msgstr "Aux посылы (Sends)"
+msgstr "Aux отправки"
 
 #: ../../tracks/inspector-page.rst:111
 msgid ""
