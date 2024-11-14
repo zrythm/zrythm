@@ -13,15 +13,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-04-17 21:18+0900\n"
-"PO-Revision-Date: 2023-01-10 23:59+0000\n"
-"Last-Translator: ssantos <ssantos@web.de>\n"
+"PO-Revision-Date: 2024-11-14 11:45+0000\n"
+"Last-Translator: Cleverson Cândido <optimuspraimu@gmail.com>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 5.9-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -175,7 +176,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:61
 msgid "GtkSourceView Stylesheets"
-msgstr ""
+msgstr "Folhas de estilo GtkSourceView"
 
 #: ../../appendix/files-and-directories.rst:62
 msgid ""
