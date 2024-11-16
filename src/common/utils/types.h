@@ -14,6 +14,8 @@
 #include <cinttypes>
 #include <cstdint>
 
+#include <QtTypes>
+
 #if defined(__GNUC__) || defined(__clang__)
 #  pragma GCC diagnostic push
 #  pragma GCC diagnostic ignored "-Wshadow"
@@ -42,7 +44,7 @@ using namespace magic_enum::bitwise_operators;
 
 #define TYPEDEF_STRUCT_UNDERSCORED(s) using s = struct _##s
 
-// gint64
+// qint64
 using RtTimePoint = int64_t;
 using RtDuration = int64_t;
 
@@ -84,6 +86,9 @@ using signed_ms_t = signed_frame_t;
 
 /** Signed second index. */
 using signed_sec_t = signed_frame_t;
+
+/** GPid equivalent. */
+using ProcessId = qint64;
 
 /**
  * Getter prototype for float values.
@@ -281,6 +286,13 @@ struct _GdkRGBA
   double alpha = 1.0;
 };
 using GdkRGBA = _GdkRGBA;
+
+template <typename T>
+std::string
+typename_to_string ()
+{
+  return typeid (T).name ();
+}
 
 /**
  * @}

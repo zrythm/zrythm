@@ -122,12 +122,12 @@ public:
   /**
    * Gets highest track in the selections.
    */
-  Track * get_highest_track () const;
+  TrackPtrVariant get_highest_track () const;
 
   /**
    * Gets lowest track in the selections.
    */
-  Track * get_lowest_track () const;
+  TrackPtrVariant get_lowest_track () const;
 
   /**
    * Marks the tracks to be bounced.
@@ -254,14 +254,7 @@ public:
    */
   std::unique_ptr<TracklistSelections> gen_tracklist_selections () const;
 
-  void sort ()
-  {
-    std::sort (
-      track_names_.begin (), track_names_.end (),
-      [] (const auto &a, const auto &b) {
-        return Track::find_by_name (a)->pos_ < Track::find_by_name (b)->pos_;
-      });
-  }
+  void sort ();
 
 public:
   /**

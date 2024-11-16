@@ -3,16 +3,14 @@
 
 #include "common/plugins/cached_plugin_descriptors.h"
 #include "common/utils/directory_manager.h"
+#include "common/utils/io.h"
 #include "common/utils/string.h"
 #include "gui/backend/backend/zrythm.h"
-
-#include <glib/gi18n.h>
-
-#include <giomm.h>
 
 constexpr const char * CACHED_PLUGIN_DESCRIPTORS_JSON_FILENAME =
   "cached-plugins.json";
 
+using namespace zrythm;
 using namespace zrythm::plugins;
 
 fs::path
@@ -47,9 +45,9 @@ CachedPluginDescriptors::serialize_to_file ()
   z_debug ("Writing cached plugin descriptors to {}...", path);
   try
     {
-      Glib::file_set_contents (path.string (), json_str.c_str ());
+      utils::io::set_file_contents (path, json_str.c_str ());
     }
-  catch (const Glib::FileError &e)
+  catch (const ZrythmException &e)
     {
       throw ZrythmException (format_str (
         "Unable to write cached plugin descriptors: {}", e.what ()));
@@ -70,9 +68,9 @@ CachedPluginDescriptors::read_or_new ()
   std::string json;
   try
     {
-      json = Glib::file_get_contents (path.string ());
+      json = utils::io::read_file_contents (path).toStdString ();
     }
-  catch (const Glib::Error &e)
+  catch (const ZrythmException &e)
     {
       z_warning ("Failed to create CachedPluginDescriptors from {}", path);
       return ret;

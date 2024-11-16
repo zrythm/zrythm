@@ -58,15 +58,15 @@ public:
 
     if (serror)
       {
-        throw ZrythmException (
-          format_str (_ ("Failed to create soxr instance: {}"), serror));
+        throw ZrythmException (fmt::format (
+          "Failed to create soxr instance: {}", std::string{ serror }));
       }
 
     serror = soxr_set_input_fn (priv_, input_func, this, block_size_);
     if (serror)
       {
-        throw ZrythmException (
-          format_str (_ ("Failed to set soxr input function: {}"), serror));
+        throw ZrythmException (fmt::format (
+          "Failed to set soxr input function: {}", std::string{ serror }));
       }
   }
 
@@ -171,8 +171,7 @@ Resampler::Impl::process ()
   soxr_error_t serror = soxr_error ((soxr_t) priv_);
   if (serror)
     {
-      throw ZrythmException (
-        format_str (_ ("soxr_process() error: {}"), serror));
+      throw ZrythmException (fmt::format ("soxr_process() error: {}", serror));
     }
 
   // De-interleave the output data into out_frames_

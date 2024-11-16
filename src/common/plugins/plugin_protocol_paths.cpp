@@ -3,6 +3,7 @@
 
 #include "common/plugins/plugin_protocol_paths.h"
 #include "common/utils/directory_manager.h"
+#include "common/utils/io.h"
 #include "gui/backend/backend/settings_manager.h"
 
 using namespace zrythm::plugins;
@@ -15,11 +16,11 @@ add_expanded_paths (auto &arr, const QStringList &paths_from_settings)
     {
       auto expanded_cur_path = string_expand_env_vars (path.toStdString ());
       /* split because the env might contain multiple paths */
-      auto expanded_paths = Glib::Regex::split_simple (
-        G_SEARCHPATH_SEPARATOR_S, expanded_cur_path.c_str ());
+      auto expanded_paths =
+        utils::io::split_paths (QString::fromStdString (expanded_cur_path));
       for (auto &expanded_path : expanded_paths)
         {
-          arr->add_path (expanded_path.c_str ());
+          arr->add_path (expanded_path.toStdString ());
         }
     }
 }
@@ -67,7 +68,7 @@ PluginProtocolPaths::get_for_protocol_separated (
         paths->getPaths (), std::back_inserter (path_strings),
         [] (const auto &path) { return path.toStdString (); });
       auto paths_separated =
-        string_join (path_strings, G_SEARCHPATH_SEPARATOR_S);
+        string_join (path_strings, utils::io::get_path_separator_string ());
       return paths_separated;
     }
 
@@ -82,17 +83,19 @@ PluginProtocolPaths::get_lv2_paths ()
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
       /* add test plugins if testing */
-      auto tests_builddir = Glib::getenv ("G_TEST_BUILDDIR");
-      auto root_builddir = Glib::getenv ("G_TEST_BUILD_ROOT_DIR");
-      z_return_val_if_fail (!tests_builddir.empty (), nullptr);
-      z_return_val_if_fail (!root_builddir.empty (), nullptr);
+      auto tests_builddir = qEnvironmentVariable ("G_TEST_BUILDDIR");
+      auto root_builddir = qEnvironmentVariable ("G_TEST_BUILD_ROOT_DIR");
+      z_return_val_if_fail (!tests_builddir.isEmpty (), nullptr);
+      z_return_val_if_fail (!root_builddir.isEmpty (), nullptr);
 
-      auto test_lv2_plugins = fs::path (tests_builddir) / "lv2plugins";
-      auto test_root_plugins = fs::path (root_builddir) / "data" / "plugins";
+      auto test_lv2_plugins =
+        fs::path (tests_builddir.toStdString ()) / "lv2plugins";
+      auto test_root_plugins =
+        fs::path (root_builddir.toStdString ()) / "data" / "plugins";
       ret->add_path (test_lv2_plugins.string ());
       ret->add_path (test_root_plugins.string ());
 
-      QStringList paths_from_settings = { "${LV2_PATH}", "/usr/lib/lv2" };
+      QStringList paths_from_settings = { u"${LV2_PATH}"_s, u"/usr/lib/lv2"_s };
       add_expanded_paths (ret, paths_from_settings);
 
       ret->print ("LV2 paths");
@@ -114,7 +117,7 @@ PluginProtocolPaths::get_lv2_paths ()
       ret->add_path ("/app/extensions/Plugins/lv2");
 #else /* non-flatpak UNIX */
       {
-        auto home_lv2 = fs::path (Glib::get_home_dir ()) / ".lv2";
+        auto home_lv2 = fs::path (QDir::homePath ().toStdString ()) / ".lv2";
         ret->add_path (home_lv2);
       }
       ret->add_path ("/usr/lib/lv2");
@@ -158,7 +161,7 @@ PluginProtocolPaths::get_vst2_paths ()
 
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
-      QStringList paths_from_settings = { "${VST_PATH}" };
+      QStringList paths_from_settings = { u"${VST_PATH}"_s };
       add_expanded_paths (ret, paths_from_settings);
 
       ret->print ("VST2 paths");
@@ -182,7 +185,7 @@ PluginProtocolPaths::get_vst2_paths ()
       ret->add_path ("/app/extensions/Plugins/vst");
 #else /* non-flatpak UNIX */
       {
-        auto home_vst = fs::path (Glib::get_home_dir ()) / ".vst";
+        auto home_vst = utils::io::get_home_path () / ".vst";
         ret->add_path (home_vst);
       }
       ret->add_path ("/usr/lib/vst");
@@ -217,7 +220,7 @@ PluginProtocolPaths::get_vst3_paths ()
 
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
-      QStringList paths_from_settings = { "${VST3_PATH}" };
+      QStringList paths_from_settings = { u"${VST3_PATH}"_s };
       add_expanded_paths (ret, paths_from_settings);
 
       ret->print ("VST3 paths");
@@ -237,7 +240,7 @@ PluginProtocolPaths::get_vst3_paths ()
       ret->add_path ("/app/extensions/Plugins/vst3");
 #else /* non-flatpak UNIX */
       {
-        auto home_vst3 = fs::path (Glib::get_home_dir ()) / ".vst3";
+        auto home_vst3 = utils::io::get_home_path () / ".vst3";
         ret->add_path (home_vst3);
       }
       ret->add_path ("/usr/lib/vst3");
@@ -272,7 +275,7 @@ PluginProtocolPaths::get_sf_paths (bool sf2)
 
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
-      ret->add_path (G_SEARCHPATH_SEPARATOR_S);
+      ret->add_path (utils::io::get_path_separator_string ());
       return ret;
     }
 
@@ -291,7 +294,7 @@ PluginProtocolPaths::get_dssi_paths ()
 
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
-      QStringList paths_from_settings = { "${DSSI_PATH}" };
+      QStringList paths_from_settings = { u"${DSSI_PATH}"_s };
       add_expanded_paths (ret, paths_from_settings);
 
       ret->print ("DSSI paths");
@@ -307,7 +310,7 @@ PluginProtocolPaths::get_dssi_paths ()
       ret.add ("/app/extensions/Plugins/dssi");
 #else /* non-flatpak UNIX */
       {
-        auto home_dssi = fs::path (Glib::get_home_dir ()) / ".dssi";
+        auto home_dssi = utils::io::get_home_path () / ".dssi";
         ret->add_path (home_dssi.string ());
       }
       ret->add_path ("/usr/lib/dssi");
@@ -342,7 +345,7 @@ PluginProtocolPaths::get_ladspa_paths ()
 
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
-      QStringList paths_from_settings = { "${LADSPA_PATH}" };
+      QStringList paths_from_settings = { u"${LADSPA_PATH}"_s };
       add_expanded_paths (ret, paths_from_settings);
 
       ret->print ("LADSPA paths");
@@ -393,7 +396,7 @@ PluginProtocolPaths::get_clap_paths ()
 
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
-      QStringList paths_from_settings = { "${CLAP_PATH}" };
+      QStringList paths_from_settings = { u"${CLAP_PATH}"_s };
       add_expanded_paths (ret, paths_from_settings);
 
       ret->print ("CLAP paths");
@@ -414,7 +417,7 @@ PluginProtocolPaths::get_clap_paths ()
       ret.add ("/app/extensions/Plugins/clap");
 #else /* non-flatpak UNIX */
       {
-        auto home_clap = fs::path (Glib::get_home_dir ()) / ".clap";
+        auto home_clap = utils::io::get_home_path () / ".clap";
         ret->add_path (home_clap);
       }
       ret->add_path ("/usr/lib/clap");
@@ -449,7 +452,7 @@ PluginProtocolPaths::get_jsfx_paths ()
 
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
-      QStringList paths_from_settings = { "${JSFX_PATH}" };
+      QStringList paths_from_settings = { u"${JSFX_PATH}"_s };
       add_expanded_paths (ret, paths_from_settings);
 
       ret->print ("JSFX paths");
@@ -476,7 +479,7 @@ PluginProtocolPaths::get_au_paths ()
 
   ret->add_path ("/Library/Audio/Plug-ins/Components");
   auto user_components =
-    fs::path (Glib::get_home_dir ()) / "Library" / "Audio" / "Plug-ins"
+    utils::io::get_home_path () / "Library" / "Audio" / "Plug-ins"
     / "Components";
   ret->add_path (user_components.string ());
 

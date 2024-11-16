@@ -98,8 +98,8 @@ HardwareProcessor::create_port_for_ext_port (
   return port;
 }
 
-bool
-HardwareProcessor::rescan_ext_ports (HardwareProcessor * self)
+void
+HardwareProcessor::rescan_ext_ports ()
 {
   z_debug ("rescanning ports...");
 
@@ -107,27 +107,27 @@ HardwareProcessor::rescan_ext_ports (HardwareProcessor * self)
   PortFlow flow =
     /* these are reversed:
      * input here -> port that outputs in backend */
-    self->is_input_ ? PortFlow::Output : PortFlow::Input;
+    is_input_ ? PortFlow::Output : PortFlow::Input;
 
   // Function to collect and add ports
   auto collect_and_add_ports = [&] (PortType type) {
     std::vector<ExtPort> ports;
-    ExtPort::ext_ports_get (type, flow, true, ports, *self->engine_);
+    ExtPort::ext_ports_get (type, flow, true, ports, *engine_);
 
     for (const auto &ext_port : ports)
       {
-        if (!self->find_ext_port (ext_port.get_id ()))
+        if (!find_ext_port (ext_port.get_id ()))
           {
             auto new_port = std::make_unique<ExtPort> (ext_port);
-            new_port->hw_processor_ = self;
+            new_port->hw_processor_ = this;
 
             if (type == PortType::Audio)
               {
-                self->ext_audio_ports_.push_back (std::move (new_port));
+                ext_audio_ports_.push_back (std::move (new_port));
               }
             else
               {
-                self->ext_midi_ports_.push_back (std::move (new_port));
+                ext_midi_ports_.push_back (std::move (new_port));
               }
 
             z_info (
@@ -144,10 +144,8 @@ HardwareProcessor::rescan_ext_ports (HardwareProcessor * self)
   collect_and_add_ports (PortType::Event);
 
   /* create ports for each ext port */
-  self->audio_ports_.reserve (
-    std::max (size_t (1), self->ext_audio_ports_.size ()));
-  self->midi_ports_.reserve (
-    std::max (size_t (1), self->ext_midi_ports_.size ()));
+  audio_ports_.reserve (std::max (size_t (1), ext_audio_ports_.size ()));
+  midi_ports_.reserve (std::max (size_t (1), ext_midi_ports_.size ()));
 
   auto create_ports =
     [&]<typename PortType> (const auto &ext_ports, auto &ports) {
@@ -158,7 +156,7 @@ HardwareProcessor::rescan_ext_ports (HardwareProcessor * self)
 
           if (i >= ports.size ())
             {
-              ports.emplace_back (self->create_port_for_ext_port<PortType> (
+              ports.emplace_back (create_port_for_ext_port<PortType> (
                 *ext_port, PortFlow::Output));
             }
 
@@ -166,36 +164,32 @@ HardwareProcessor::rescan_ext_ports (HardwareProcessor * self)
         }
     };
 
-  create_ports.template
-  operator()<AudioPort> (self->ext_audio_ports_, self->audio_ports_);
-  create_ports.template
-  operator()<MidiPort> (self->ext_midi_ports_, self->midi_ports_);
+  create_ports.template operator()<AudioPort> (ext_audio_ports_, audio_ports_);
+  create_ports.template operator()<MidiPort> (ext_midi_ports_, midi_ports_);
 
   /* TODO deactivate ports that weren't found (stop engine temporarily to
    * remove) */
 
   z_debug (
     "[{}] have {} audio and {} MIDI ports",
-    self->is_input_ ? "HW processor inputs" : "HW processor outputs",
-    self->ext_audio_ports_.size (), self->ext_midi_ports_.size ());
+    is_input_ ? "HW processor inputs" : "HW processor outputs",
+    ext_audio_ports_.size (), ext_midi_ports_.size ());
 
-  for (size_t i = 0; i < self->ext_midi_ports_.size (); i++)
+  for (size_t i = 0; i < ext_midi_ports_.size (); i++)
     {
-      auto &ext_port = self->ext_midi_ports_[i];
+      auto &ext_port = ext_midi_ports_[i];
 
       /* attempt to reconnect the if the port needs reconnect (e.g. if
        * disconnected earlier) */
       if (ext_port->pending_reconnect_)
         {
-          auto &port = self->midi_ports_[i];
+          auto &port = midi_ports_[i];
           if (ext_port->activate (port.get (), true))
             {
               ext_port->pending_reconnect_ = false;
             }
         }
     }
-
-  return G_SOURCE_CONTINUE;
 }
 
 void
@@ -218,7 +212,7 @@ HardwareProcessor::setup ()
 
   /* ---- scan current ports ---- */
 
-  rescan_ext_ports (this);
+  rescan_ext_ports ();
 
   /* ---- end scan ---- */
 
@@ -264,7 +258,7 @@ HardwareProcessor::activate (bool activate)
   else if (!activate && rescan_timeout_id_)
     {
       /* remove timeout */
-      g_source_remove (rescan_timeout_id_);
+      // g_source_remove (rescan_timeout_id_);
       rescan_timeout_id_ = 0;
     }
 

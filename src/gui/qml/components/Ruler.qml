@@ -29,6 +29,9 @@ Item {
     readonly property real pxPerBeat: pxPerSixteenth * 4
     readonly property real detailMeasurePxThreshold: 32 // threshold to show/hide more detailed measures
     readonly property real detailMeasureLabelPxThreshold: 64 // threshold to show/hide labels for more detailed measures
+    readonly property real barLineOpacity: 0.8
+    readonly property real beatLineOpacity: 0.6
+    readonly property real sixteenthLineOpacity: 0.4
 
     height: rulerHeight
     width: 1000 * pxPerBar
@@ -47,7 +50,7 @@ Item {
                 width: 2
                 height: 14 // parent.height / 3
                 color: control.palette.text
-                opacity: 0.8
+                opacity: control.barLineOpacity
                 x: index * control.pxPerBar
 
                 Text {
@@ -68,6 +71,7 @@ Item {
         // Generate beats based on zoom level
         Loader {
             active: control.pxPerBeat > control.detailMeasurePxThreshold
+            visible: active
 
             sourceComponent: Repeater {
                 model: 1000 * 4
@@ -76,7 +80,7 @@ Item {
                     width: 1
                     height: 10
                     color: control.palette.text
-                    opacity: 0.6
+                    opacity: control.beatLineOpacity
                     x: index * control.pxPerBeat
                     visible: index % 4 !== 0
 
@@ -102,6 +106,7 @@ Item {
         // Generate sixteenths based on zoom level
         Loader {
             active: control.pxPerSixteenth > control.detailMeasurePxThreshold
+            visible: active
 
             sourceComponent: Repeater {
                 model: 1000 * 4
@@ -110,7 +115,7 @@ Item {
                     width: 1
                     height: 8
                     color: control.palette.text
-                    opacity: 0.4
+                    opacity: control.sixteenthLineOpacity
                     x: index * control.pxPerSixteenth
                     visible: index % 4 !== 0
 

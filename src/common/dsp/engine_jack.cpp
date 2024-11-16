@@ -4,6 +4,7 @@
 #include "zrythm-config.h"
 
 #include "common/utils/gtest_wrapper.h"
+#include "gui/backend/backend/settings_manager.h"
 
 #if HAVE_JACK
 
@@ -25,7 +26,6 @@
 #  include "common/utils/string.h"
 #  include "common/utils/ui.h"
 #  include "gui/backend/backend/project.h"
-#  include "gui/backend/backend/settings/g_settings_manager.h"
 #  include "gui/backend/backend/settings/settings.h"
 
 #  if !defined _WIN32 && defined __GLIBC__
@@ -34,22 +34,11 @@
 
 #  include <jack/thread.h>
 
-typedef enum
-{
-  Z_AUDIO_ENGINE_JACK_ERROR_FAILED,
-  Z_AUDIO_ENGINE_JACK_ERROR_NO_PHYSICAL_PORTS,
-  Z_AUDIO_ENGINE_JACK_ERROR_CONNECTION_CHANGE_FAILED,
-} ZAudioEngineJackError;
-
-#  define Z_AUDIO_ENGINE_JACK_ERROR z_audio_engine_jack_error_quark ()
-GQuark
-z_audio_engine_jack_error_quark (void);
-G_DEFINE_QUARK (
-  z - audio - engine - jack - error - quark,
-  z_audio_engine_jack_error)
+using namespace zrythm;
 
 /**
- * Refreshes the list of external ports.
+ * @brief
+ *
  */
 void
 engine_jack_rescan_ports (AudioEngine * self)
@@ -111,7 +100,7 @@ process_change_request (AudioEngine * self)
         || cur_time > self->last_events_processed_)
         {
           z_debug ("-------- waiting for change");
-          g_usleep (1000);
+          std::this_thread::sleep_for (std::chrono::milliseconds (1000));
         }
     }
 }
@@ -173,7 +162,7 @@ engine_jack_buffer_size_cb (uint32_t nframes, AudioEngine * self)
         {
           z_info (
             "-- waiting for engine to handle JACK buffer size change on GUI thread... (engine_process_events)");
-          g_usleep (1000000);
+          std::this_thread::sleep_for (std::chrono::milliseconds (1000000));
         }
     }
 
@@ -318,7 +307,7 @@ timebase_cb (
     + (int) floor (playhead.ticks_);
   Position bar_start;
   bar_start.set_to_bar (transport, playhead.get_bars (transport, true));
-  pos->bar_start_tick = (double) (playhead.ticks_ - bar_start.ticks_);
+  pos->bar_start_tick = playhead.ticks_ - bar_start.ticks_;
   pos->beats_per_bar = (float) tempo_track.get_beats_per_bar ();
   pos->beat_type = (float) tempo_track.get_beat_unit ();
   pos->ticks_per_beat = TRANSPORT->ticks_per_beat_;
@@ -337,8 +326,8 @@ shutdown_cb (void * arg)
 
   if (ZRYTHM_HAVE_UI) //&& MAIN_WINDOW)
     {
-      char * msg = _ ("JACK has shut down");
-      ui_show_error_message (_ ("JACK Error"), msg);
+      // auto msg = QObject::tr ("JACK has shut down");
+      // ui_show_error_message (QObject::tr ("JACK Error"), msg);
     }
 }
 
@@ -426,8 +415,8 @@ engine_jack_set_transport_type (
 {
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
-      g_settings_set_enum (
-        S_UI, "jack-transport-type", ENUM_VALUE_TO_INT (type));
+      gui::SettingsManager::get_instance ()->set_jackTransportType (
+        ENUM_VALUE_TO_INT (type));
     }
 
   /* release timebase master if held */
@@ -482,7 +471,7 @@ engine_jack_test (GtkWindow * win)
       auto msg = engine_jack_get_error_message (status);
       if (win)
         {
-          ui_show_message_full (GTK_WIDGET (win), _ ("JACK Error"), msg);
+          ui_show_message_full (GTK_WIDGET (win), QObject::tr ("JACK Error"), msg);
         }
       else
         {
@@ -518,8 +507,11 @@ engine_jack_setup (AudioEngine * self)
 
   if (!self->client_)
     {
+// TODO
+#  if 0
       auto msg = engine_jack_get_error_message (status);
-      ui_show_error_message (_ ("JACK Error"), msg.c_str ());
+      ui_show_error_message (QObject::tr ("JACK Error"), msg.c_str ());
+#  endif
 
       return -1;
     }
@@ -558,7 +550,7 @@ engine_jack_setup (AudioEngine * self)
       ? AudioEngine::JackTransportType::TransportClient
       : ENUM_INT_TO_VALUE (
           AudioEngine::JackTransportType,
-          g_settings_get_enum (S_UI, "jack-transport-type")));
+          gui::SettingsManager::jackTransportType ()));
 
   z_info ("JACK set up");
   return 0;
@@ -567,58 +559,64 @@ engine_jack_setup (AudioEngine * self)
 std::string
 engine_jack_get_error_message (jack_status_t status)
 {
-  if (status & JackFailure)
-    {
-      return
-        /* TRANSLATORS: JACK failure messages */
-        _ ("Overall operation failed");
-    }
-  else if (status & JackInvalidOption)
-    {
-      return _ ("The operation contained an invalid or unsupported option");
-    }
-  else if (status & JackNameNotUnique)
-    {
-      return _ ("The desired client name was not unique");
-    }
-  else if (status & JackServerFailed)
-    {
-      return _ ("Unable to connect to the JACK server");
-    }
-  else if (status & JackServerError)
-    {
-      return _ ("Communication error with the JACK server");
-    }
-  else if (status & JackNoSuchClient)
-    {
-      return _ ("Requested client does not exist");
-    }
-  else if (status & JackLoadFailure)
-    {
-      return _ ("Unable to load internal client");
-    }
-  else if (status & JackInitFailure)
-    {
-      return _ ("Unable to initialize client");
-    }
-  else if (status & JackShmFailure)
-    {
-      return _ ("Unable to access shared memory");
-    }
-  else if (status & JackVersionError)
-    {
-      return _ ("Client's protocol version does not match");
-    }
-  else if (status & JackBackendError)
-    {
-      return _ ("Backend error");
-    }
-  else if (status & JackClientZombie)
-    {
-      return _ ("Client zombie");
-    }
+  return
+    [status] ()
+      -> QString {
+      if (status & JackFailure)
+        {
+          return
+            /* TRANSLATORS: JACK failure messages */
+            QObject::tr ("Overall operation failed");
+        }
+      else if (status & JackInvalidOption)
+        {
+          return QObject::tr (
+            "The operation contained an invalid or unsupported option");
+        }
+      else if (status & JackNameNotUnique)
+        {
+          return QObject::tr ("The desired client name was not unique");
+        }
+      else if (status & JackServerFailed)
+        {
+          return QObject::tr ("Unable to connect to the JACK server");
+        }
+      else if (status & JackServerError)
+        {
+          return QObject::tr ("Communication error with the JACK server");
+        }
+      else if (status & JackNoSuchClient)
+        {
+          return QObject::tr ("Requested client does not exist");
+        }
+      else if (status & JackLoadFailure)
+        {
+          return QObject::tr ("Unable to load internal client");
+        }
+      else if (status & JackInitFailure)
+        {
+          return QObject::tr ("Unable to initialize client");
+        }
+      else if (status & JackShmFailure)
+        {
+          return QObject::tr ("Unable to access shared memory");
+        }
+      else if (status & JackVersionError)
+        {
+          return QObject::tr ("Client's protocol version does not match");
+        }
+      else if (status & JackBackendError)
+        {
+          return QObject::tr ("Backend error");
+        }
+      else if (status & JackClientZombie)
+        {
+          return QObject::tr ("Client zombie");
+        }
 
-  z_return_val_if_reached ("unknown JACK error");
+      z_return_val_if_reached (QString::fromUtf8 ("unknown JACK error"));
+    }()
+           .toStdString ();
 }
 
 void
@@ -631,20 +629,16 @@ engine_jack_tear_down (AudioEngine * self)
   // zix_sem_init (&self->port_operation_lock, 1);
 }
 
-/**
- * Disconnects and reconnects the monitor output
- * port to the selected devices.
- *
- * @return Whether successful.
- */
-bool
-engine_jack_reconnect_monitor (AudioEngine * self, bool left, GError ** error)
+void
+engine_jack_reconnect_monitor (AudioEngine * self, bool left)
 {
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
-    return true;
+    return;
 
-  gchar ** devices =
-    g_settings_get_strv (S_MONITOR, left ? "l-devices" : "r-devices");
+  auto devices =
+    left
+      ? gui::SettingsManager::get_instance ()->get_monitorLeftOutputDeviceList ()
+      : gui::SettingsManager::get_instance ()->get_monitorRightOutputDeviceList ();
 
   auto &port =
     left ? self->monitor_out_->get_l () : self->monitor_out_->get_r ();
@@ -654,19 +648,15 @@ engine_jack_reconnect_monitor (AudioEngine * self, bool left, GError ** error)
   if (ret)
     {
       auto msg = engine_jack_get_error_message ((jack_status_t) ret);
-      g_set_error (
-        error, Z_AUDIO_ENGINE_JACK_ERROR,
-        Z_AUDIO_ENGINE_JACK_ERROR_CONNECTION_CHANGE_FAILED,
-        _ ("JACK: Failed to disconnect monitor out: %s"), msg.c_str ());
-      return false;
+      throw ZrythmException (format_qstr (
+        QObject::tr ("JACK: Failed to disconnect monitor out: {}"), msg));
     }
 
-  int i = 0;
   int num_connected = 0;
-  while (devices[i])
+  for (const auto &device : devices)
     {
-      char *    device = devices[i++];
-      ExtPort * ext_port = self->hw_out_processor_->find_ext_port (device);
+      ExtPort * ext_port =
+        self->hw_out_processor_->find_ext_port (device.toStdString ());
       if (ext_port)
         {
           /*z_return_val_if_reached (-1);*/
@@ -685,25 +675,16 @@ engine_jack_reconnect_monitor (AudioEngine * self, bool left, GError ** error)
         }
     }
 
-  if (devices)
-    {
-      g_strfreev (devices);
-    }
-
-  /* if nothing connected, attempt to connect to
-   * first port found */
+  /* if nothing connected, attempt to connect to first port found */
   if (num_connected == 0)
     {
       const char ** ports = jack_get_ports (
         self->client_, nullptr, JACK_DEFAULT_AUDIO_TYPE,
         JackPortIsPhysical | JackPortIsInput);
-      if (ports == NULL || ports[0] == NULL || ports[1] == nullptr)
+      if (ports == nullptr || ports[0] == nullptr || ports[1] == nullptr)
         {
-          g_set_error (
-            error, Z_AUDIO_ENGINE_JACK_ERROR,
-            Z_AUDIO_ENGINE_JACK_ERROR_NO_PHYSICAL_PORTS, "%s",
-            _ ("JACK: No physical playback ports found"));
-          return false;
+          throw ZrythmException (
+            QObject::tr ("JACK: No physical playback ports found"));
         }
 
       ret = jack_connect (
@@ -712,12 +693,9 @@ engine_jack_reconnect_monitor (AudioEngine * self, bool left, GError ** error)
       if (ret)
         {
           auto msg = engine_jack_get_error_message ((jack_status_t) ret);
-          g_set_error (
-            error, Z_AUDIO_ENGINE_JACK_ERROR,
-            Z_AUDIO_ENGINE_JACK_ERROR_CONNECTION_CHANGE_FAILED,
-            _ ("JACK: Failed to connect monitor output [%s]: %s"),
-            left ? _ ("left") : _ ("right"), msg.c_str ());
-          return false;
+          throw ZrythmException (format_qstr (
+            QObject::tr ("JACK: Failed to connect monitor output [{}]: {}"),
+            left ? QObject::tr ("left") : QObject::tr ("right"), msg));
         }
       else
         {
@@ -727,9 +705,7 @@ engine_jack_reconnect_monitor (AudioEngine * self, bool left, GError ** error)
       jack_free (ports);
     }
 
-  z_return_val_if_fail (num_connected > 0, false);
-
-  return true;
+  z_return_if_fail (num_connected > 0);
 }
 
 int
@@ -762,22 +738,27 @@ engine_jack_activate (AudioEngine * self, bool activate)
 
       z_info ("connecting to system out ports...");
 
-      GError * err = NULL;
-      bool     ret = engine_jack_reconnect_monitor (self, true, &err);
-      if (!ret)
+      try
+        {
+          engine_jack_reconnect_monitor (self, true);
+        }
+      catch (const ZrythmException &e)
         {
 #  if 0
           HANDLE_ERROR (
-            err, "%s", _ ("Failed to connect to left monitor output port"));
+            err, "%s", QObject::tr ("Failed to connect to left monitor output port"));
 #  endif
           return -1;
         }
-      ret = engine_jack_reconnect_monitor (self, false, &err);
-      if (!ret)
+      try
+        {
+          engine_jack_reconnect_monitor (self, false);
+        }
+      catch (const ZrythmException &e)
         {
 #  if 0
           HANDLE_ERROR (
-            err, "%s", _ ("Failed to connect to right monitor output port"));
+            err, "%s", QObject::tr ("Failed to connect to right monitor output port"));
 #  endif
           return -1;
         }

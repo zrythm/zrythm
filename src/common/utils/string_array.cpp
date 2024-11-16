@@ -4,8 +4,6 @@
 #include "common/utils/logger.h"
 #include "common/utils/string_array.h"
 
-#include <glibmm.h>
-
 StringArray::StringArray (const char * const * strs)
 {
   int          count = 0;
@@ -26,25 +24,6 @@ StringArray::StringArray (const QStringList &qlist)
       add (s.toStdString ());
     }
 }
-
-char **
-StringArray::getNullTerminated () const
-{
-  GStrvBuilder * builder = g_strv_builder_new ();
-  for (size_t i = 0; i < size (); i++)
-    {
-      juce::String str = getReference (i);
-      g_strv_builder_add (builder, str.toStdString ().c_str ());
-    }
-  return g_strv_builder_end (builder);
-}
-
-char *
-StringArray::getCStr (int index)
-{
-  return g_strdup (getReference (index).toRawUTF8 ());
-}
-
 void
 StringArray::print (std::string title) const
 {

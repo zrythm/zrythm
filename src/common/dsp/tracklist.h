@@ -138,8 +138,8 @@ public:
   /**
    * Returns the Track matching the given name, if any.
    */
-  template <typename T = Track>
-  T * find_track_by_name_hash (unsigned int hash) const;
+  std::optional<TrackPtrVariant>
+  find_track_by_name_hash (unsigned int hash) const;
 
   template <typename T> bool contains_track_type () const
   {
@@ -530,30 +530,6 @@ public:
 
   QPointer<PortConnectionsManager> port_connections_manager_;
 };
-
-class ProcessableTrack;
-class ChannelTrack;
-class GroupTargetTrack;
-extern template ProcessableTrack *
-Tracklist::find_track_by_name_hash (unsigned int) const;
-extern template ChannelTrack *
-Tracklist::find_track_by_name_hash (unsigned int) const;
-extern template FoldableTrack *
-Tracklist::find_track_by_name_hash (unsigned int) const;
-extern template RecordableTrack *
-Tracklist::find_track_by_name_hash (unsigned int) const;
-extern template AutomatableTrack *
-Tracklist::find_track_by_name_hash (unsigned int) const;
-extern template LanedTrackImpl<AudioLane> *
-Tracklist::find_track_by_name_hash (unsigned int) const;
-extern template LanedTrackImpl<MidiLane> *
-Tracklist::find_track_by_name_hash (unsigned int) const;
-extern template GroupTargetTrack *
-Tracklist::find_track_by_name_hash (unsigned int) const;
-extern template ModulatorTrack *
-Tracklist::find_track_by_name_hash (unsigned int) const;
-extern template ChordTrack *
-Tracklist::find_track_by_name_hash (unsigned int) const;
 
 /**
  * @}

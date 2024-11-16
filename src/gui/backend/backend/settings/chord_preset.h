@@ -22,28 +22,43 @@ TYPEDEF_STRUCT_UNDERSCORED (GMenuModel);
 /**
  * A preset of chord descriptors.
  */
-class ChordPreset final : public ISerializable<ChordPreset>
+class ChordPreset final
+    : public QObject,
+      public ICloneable<ChordPreset>,
+      public ISerializable<ChordPreset>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  Q_PROPERTY (QString name READ getName WRITE setName NOTIFY nameChanged)
 public:
-  ChordPreset () = default;
-  ChordPreset (const std::string &name);
+  using NameT = QString;
+  ChordPreset (QObject * parent = nullptr);
+  ChordPreset (const NameT &name, QObject * parent = nullptr);
+
+  // =================================================================
+  // QML Interface
+  // =================================================================
+
+  NameT         getName () const;
+  void          setName (const NameT &name);
+  Q_SIGNAL void nameChanged (const NameT &name);
+
+  // =================================================================
 
   /**
    * Gets informational text.
    */
   std::string get_info_text () const;
 
-  std::string get_name () const;
-
-  void set_name (const std::string &name);
-
   // GMenuModel * generate_context_menu () const;
+
+  void init_after_cloning (const ChordPreset &other) override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 public:
   /** Preset name. */
-  std::string name_;
+  NameT name_;
 
   /** Chord descriptors. */
   std::vector<ChordDescriptor> descr_;

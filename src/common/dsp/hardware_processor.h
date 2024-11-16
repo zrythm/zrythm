@@ -40,9 +40,9 @@ public:
   /**
    * Rescans the hardware ports and appends any missing ones.
    *
-   * @note This is a GSource callback.
+   * @note This was a GSource callback.
    */
-  static bool rescan_ext_ports (HardwareProcessor * self);
+  void rescan_ext_ports ();
 
   /**
    * Finds an ext port from its ID (type + full name).

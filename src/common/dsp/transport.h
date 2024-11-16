@@ -10,8 +10,6 @@
 #include "common/utils/types.h"
 #include "gui/backend/position_proxy.h"
 
-#include <glib/gi18n.h>
-
 class TimelineSelections;
 class Marker;
 class ArrangerSelections;
@@ -38,10 +36,10 @@ enum class PrerollCountBars
 };
 
 static const char * preroll_count_bars_str[] = {
-  N_ ("None"),
-  N_ ("1 bar"),
-  N_ ("2 bars"),
-  N_ ("4 bars"),
+  QT_TR_NOOP_UTF8 ("None"),
+  QT_TR_NOOP_UTF8 ("1 bar"),
+  QT_TR_NOOP_UTF8 ("2 bars"),
+  QT_TR_NOOP_UTF8 ("4 bars"),
 };
 
 /**

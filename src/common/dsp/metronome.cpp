@@ -16,19 +16,21 @@
 
 Metronome::Metronome (AudioEngine &engine)
 {
+  QProcessEnvironment env = QProcessEnvironment::systemEnvironment ();
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
-      auto src_root = Glib::getenv ("G_TEST_SRC_ROOT_DIR");
-      z_return_if_fail (!src_root.empty ());
-      emphasis_path_ = Glib::build_filename (
-        src_root, "data", "samples", "klick", "square_emphasis.wav");
-      normal_path_ = Glib::build_filename (
-        src_root, "data", "samples", "klick", "square_normal.wav");
+      auto src_root = env.value (u"G_TEST_SRC_ROOT_DIR"_s);
+      z_return_if_fail (!src_root.isEmpty ());
+      emphasis_path_ =
+        fs::path (src_root.toStdString ()) / "data" / "samples" / "klick"
+        / "square_emphasis.wav";
+      normal_path_ =
+        fs::path (src_root.toStdString ()) / "data" / "samples" / "klick"
+        / "square_normal.wav";
     }
   else
     {
-      const auto path_from_env =
-        QProcessEnvironment::systemEnvironment ().value ("ZRYTHM_SAMPLES_PATH");
+      const auto path_from_env = env.value (u"ZRYTHM_SAMPLES_PATH"_s);
       if (!path_from_env.isEmpty ())
         {
           const auto fs_path_from_env = fs::path (path_from_env.toStdString ());
@@ -58,8 +60,7 @@ Metronome::Metronome (AudioEngine &engine)
   volume_ =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? 1.f
-      : (float) zrythm::gui::SettingsManager::get_instance ()
-          ->get_metronome_volume ();
+      : (float) zrythm::gui::SettingsManager::metronomeVolume ();
 }
 
 void
@@ -105,5 +106,5 @@ Metronome::set_volume (float volume)
   volume_ = volume;
 
   // FIXME!!!! separate UI logic
-  zrythm::gui::SettingsManager::get_instance ()->set_metronome_volume (volume);
+  zrythm::gui::SettingsManager::get_instance ()->set_metronomeVolume (volume);
 }

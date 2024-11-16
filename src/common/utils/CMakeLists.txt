@@ -3,45 +3,75 @@
 
 target_sources(zrythm_lib
   PRIVATE
+    algorithms.h
     algorithms.cpp
+    audio.h
     audio.cpp
+    backtrace.h
     backtrace.cpp
+    base64.h
+    chromaprint.h
     chromaprint.cpp
+    color.h
     color.cpp
+    compression.h
     compression.cpp
+    cpu_windows.h
     cpu_windows.cpp
+    datetime.h
     datetime.cpp
+    directory_manager.h
     directory_manager.cpp
     dsp_context.h
     dsp_context.cpp
+    env.h
     env.cpp
+    exceptions.h
     exceptions.cpp
-    file.cpp
     file_path_list.h
     file_path_list.cpp
+    gtest_wrapper.h
     gtest_wrapper.cpp
+    hash.h
     hash.cpp
+    io.h
     io.cpp
+    json.h
     json.cpp
     localization.cpp
+    logger.h
     logger.cpp
+    math.h
     math.cpp
+    mem.h
     mem.cpp
+    networking.h
     networking.cpp
+    objects.h
     objects.cpp
+    progress_info.h
     progress_info.cpp
     qt.h
+    resampler.h
     resampler.cpp
+    rt_thread_id.h
     rt_thread_id.cpp
+    string.h
     string.cpp
+    string_array.h
     string_array.cpp
+    symap.h
     symap.cpp
+    ui.h
     ui.cpp
-    vamp.cpp
+    # vamp.h
+    # vamp.cpp
+    windows.h
     windows.cpp
+    windows_errors.h
     windows_errors.cpp
-    yaml.cpp
-)
+    yaml.h
+    yaml.cpp)
 
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/localization.h.in"
@@ -77,8 +107,6 @@ if(ZRYTHM_TESTS)
   target_link_libraries(zrythm_lv2apply PRIVATE 
     SndFile::sndfile
     PkgConfig::LILV
-    PkgConfig::GLIBMM
-    PkgConfig::GIOMM
     Qt6::Core
     Qt6::Gui
     Qt6::Widgets

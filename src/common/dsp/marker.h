@@ -20,11 +20,17 @@ constexpr int MARKER_WIDGET_TRIANGLE_W = 10;
  * Marker for the MarkerTrack.
  */
 class Marker final
-    : public TimelineObject,
+    : public QObject,
+      public TimelineObject,
       public NameableObject,
       public ICloneable<Marker>,
       public ISerializable<Marker>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (Marker)
+  DEFINE_NAMEABLE_OBJECT_QML_PROPERTIES (Marker)
+
 public:
   /**
    * Marker type.
@@ -39,13 +45,9 @@ public:
     Custom,
   };
 
-  // Rule of 0
-  Marker () = default;
+  Marker (QObject * parent = nullptr);
 
-  Marker (const std::string &name)
-      : ArrangerObject (ArrangerObject::Type::Marker), NameableObject (name)
-  {
-  }
+  Marker (const std::string &name, QObject * parent = nullptr);
 
   bool is_start () const { return marker_type_ == Type::Start; }
   bool is_end () const { return marker_type_ == Type::End; }
@@ -71,11 +73,12 @@ public:
 
   std::string print_to_str () const override;
 
-  ArrangerObjectPtr find_in_project () const override;
+  std::optional<ArrangerObjectPtrVariant> find_in_project () const override;
 
-  ArrangerObjectPtr add_clone_to_project (bool fire_events) const override;
+  ArrangerObjectPtrVariant
+  add_clone_to_project (bool fire_events) const override;
 
-  ArrangerObjectPtr insert_clone_to_project () const override;
+  ArrangerObjectPtrVariant insert_clone_to_project () const override;
 
   bool validate (bool is_project, double frames_per_tick) const override;
 

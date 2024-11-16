@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "common/io/file_descriptor.h"
@@ -41,13 +42,12 @@ enum class FileManagerSpecialLocation
 struct FileBrowserLocation
 {
   FileBrowserLocation (
-    const char *               label,
-    const char *               path,
+    QString                    label,
+    fs::path                   path,
     FileManagerSpecialLocation special_location)
+      : label_ (std::move (label)), path_ (std::move (path)),
+        special_location_ (special_location)
   {
-    label_ = label;
-    path_ = path;
-    special_location_ = special_location;
   }
   FileBrowserLocation () = default;
 
@@ -72,10 +72,10 @@ struct FileBrowserLocation
   // GMenuModel * generate_context_menu () const;
 
   /** Human readable label. */
-  std::string label_;
+  QString label_;
 
   /** Absolute path. */
-  std::string path_;
+  fs::path path_;
 
   /** Whether this is a standard (undeletable) location. */
   FileManagerSpecialLocation special_location_ = {};
@@ -122,7 +122,7 @@ public:
    *
    * @param abs_path The absolute path of the new location to add.
    */
-  void add_location_and_save (const char * abs_path);
+  void add_location_and_save (const fs::path &abs_path);
 
   /**
    * Removes the given location (bookmark) from the saved locations and saves
@@ -132,7 +132,8 @@ public:
    * @param skip_if_standard Whether to skip removal if the location is a
    * standard location.
    */
-  void remove_location_and_save (const char * location, bool skip_if_standard);
+  void
+  remove_location_and_save (const fs::path &location, bool skip_if_standard);
 
 private:
   /**

@@ -85,6 +85,7 @@ AudioEngine::init_after_cloning (const AudioEngine &other)
   pool_->engine_ = this;
   control_room_ = other.control_room_->clone_unique ();
   sample_processor_ = other.sample_processor_->clone_unique ();
+  sample_processor_->audio_engine_ = this;
   hw_in_processor_ = other.hw_in_processor_->clone_unique ();
   hw_out_processor_ = other.hw_out_processor_->clone_unique ();
   midi_clock_out_ = other.midi_clock_out_->clone_unique ();
@@ -406,10 +407,14 @@ AudioEngine::pre_setup ()
     {
       if (ZRYTHM_HAVE_UI && !ZRYTHM_TESTING)
         {
+// TODO
+#if 0
           ui_show_message_printf (
-            _ ("Backend Initialization Failed"),
-            _ ("Failed to initialize the %s audio backend. Will use the dummy backend instead. Please check your backend settings in the Preferences."),
+            QObject::tr ("Backend Initialization Failed"),
+            QObject::tr (
+              "Failed to initialize the %s audio backend. Will use the dummy backend instead. Please check your backend settings in the Preferences."),
             AudioBackend_to_string (audio_backend_).c_str ());
+#endif
         }
 
       audio_backend_ = AudioBackend::AUDIO_BACKEND_DUMMY;
@@ -431,10 +436,14 @@ AudioEngine::pre_setup ()
         }
       else
         {
+// TODO
+#  if 0
           ui_show_message_printf (
-            _ ("Backend Error"),
-            _ ("The JACK MIDI backend can only be used with the JACK audio backend (your current audio backend is %s). Will use the dummy MIDI backend instead."),
+            QObject::tr ("Backend Error"),
+            QObject::tr (
+              "The JACK MIDI backend can only be used with the JACK audio backend (your current audio backend is %s). Will use the dummy MIDI backend instead."),
             AudioBackend_to_string (audio_backend_).c_str ());
+#  endif
           midi_backend_ = MidiBackend::MIDI_BACKEND_DUMMY;
           mret = engine_dummy_midi_setup (this);
         }
@@ -460,10 +469,14 @@ AudioEngine::pre_setup ()
     {
       if (ZRYTHM_HAVE_UI && !ZRYTHM_TESTING)
         {
+// TODO
+#if 0
           ui_show_message_printf (
-            _ ("Backend Initialization Failed"),
-            _ ("Failed to initialize the %s MIDI backend. Will use the dummy backend instead. Please check your backend settings in the Preferences."),
+            QObject::tr ("Backend Initialization Failed"),
+            QObject::tr (
+              "Failed to initialize the %s MIDI backend. Will use the dummy backend instead. Please check your backend settings in the Preferences."),
             MidiBackend_to_string (midi_backend_).c_str ());
+#endif
         }
 
       midi_backend_ = MidiBackend::MIDI_BACKEND_DUMMY;
@@ -492,9 +505,13 @@ AudioEngine::setup ()
      && midi_backend_ != MidiBackend::MIDI_BACKEND_JACK)
     || (audio_backend_ != AudioBackend::AUDIO_BACKEND_JACK && midi_backend_ == MidiBackend::MIDI_BACKEND_JACK))
     {
+// TODO
+#if 0
       ui_show_message_literal (
-        _ ("Invalid Backend Combination"),
-        _ ("Your selected combination of backends may not work properly. If you want to use JACK, please select JACK as both your audio and MIDI backend."));
+        QObject::tr ("Invalid Backend Combination"),
+        QObject::tr (
+          "Your selected combination of backends may not work properly. If you want to use JACK, please select JACK as both your audio and MIDI backend."));
+#endif
     }
 
   buf_size_set_ = false;
@@ -631,15 +648,19 @@ AudioEngine::init_common ()
 
   if (backend_reset_to_dummy && ZRYTHM_HAVE_UI && !ZRYTHM_TESTING)
     {
+// TODO
+#if 0
       ui_show_message_printf (
-        _ ("Selected Backend Not Found"),
-        _ ("The selected MIDI/audio backend was not "
-           "found in the version of %s you have "
-           "installed. The audio and MIDI backends "
-           "were set to \"Dummy\". Please set your "
-           "preferred backend from the "
-           "preferences."),
+        QObject::tr ("Selected Backend Not Found"),
+        QObject::tr (
+          "The selected MIDI/audio backend was not "
+          "found in the version of %s you have "
+          "installed. The audio and MIDI backends "
+          "were set to \"Dummy\". Please set your "
+          "preferred backend from the "
+          "preferences."),
         PROGRAM_NAME);
+#endif
     }
 
   pan_law_ =
@@ -829,7 +850,7 @@ AudioEngine::wait_for_pause (State &state, bool force_pause, bool with_fadeout)
 
   /* scan for new ports here for now (why???) (TODO move this to a new thread
    * that runs periodically) */
-  hw_in_processor_->rescan_ext_ports (hw_in_processor_.get ());
+  hw_in_processor_->rescan_ext_ports ();
 
   control_room_->monitor_fader_->fading_out_.store (false);
 
@@ -1199,7 +1220,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
 
   /* calculate timestamps (used for synchronizing external events like Windows
    * MME MIDI) */
-  timestamp_start_ = g_get_monotonic_time ();
+  timestamp_start_ = Zrythm::getInstance ()->get_monotonic_time_usecs ();
   // timestamp_end_ = timestamp_start_ + (total_frames_to_process * 1000000) /
   // sample_rate_;
 
@@ -1404,7 +1425,8 @@ finalize_processing:
     }
 
   last_timestamp_start_ = timestamp_start_;
-  // self->last_timestamp_end = g_get_monotonic_time ();
+  // self->last_timestamp_end = Zrythm::getInstance ()->get_monotonic_time_usecs
+  // ();
 
   /*
    * processing finished, return 0 (OK)
@@ -1441,7 +1463,8 @@ AudioEngine::post_process (const nframes_t roll_nframes, const nframes_t nframes
     }
 
   /* update max time taken (for calculating DSP %) */
-  auto last_time_taken = g_get_monotonic_time () - timestamp_start_;
+  auto last_time_taken =
+    Zrythm::getInstance ()->get_monotonic_time_usecs () - timestamp_start_;
   if (max_time_taken_ < last_time_taken)
     {
       max_time_taken_ = last_time_taken;

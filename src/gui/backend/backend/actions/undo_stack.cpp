@@ -13,7 +13,7 @@
 #include "gui/backend/backend/actions/tracklist_selections.h"
 #include "gui/backend/backend/actions/transport_action.h"
 #include "gui/backend/backend/actions/undo_stack.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
+#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 
 void
@@ -28,12 +28,11 @@ UndoStack::init_loaded ()
 UndoStack::UndoStack ()
 {
   const bool testing_or_benchmarking = ZRYTHM_TESTING || ZRYTHM_BENCHMARKING;
-  z_return_if_fail (testing_or_benchmarking || G_IS_SETTINGS (S_P_EDITING_UNDO));
 
   int undo_stack_length =
     testing_or_benchmarking
       ? gZrythm->undo_stack_len_
-      : g_settings_get_int (S_P_EDITING_UNDO, "undo-stack-length");
+      : zrythm::gui::SettingsManager::get_instance ()->get_undoStackLength ();
   max_size_ = undo_stack_length;
 }
 
@@ -43,7 +42,7 @@ UndoStack::init_after_cloning (const UndoStack &other)
   max_size_ = other.max_size_;
 
   /* clone all actions */
-  for (auto &action : other.actions_)
+  for (const auto &action : other.actions_)
     {
       auto variant =
         convert_to_variant<UndoableActionPtrVariant> (action.get ());

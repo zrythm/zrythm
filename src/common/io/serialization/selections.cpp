@@ -70,8 +70,10 @@ void
 ArrangerSelections::define_base_fields (const Context &ctx)
 {
   using T = ISerializable<ArrangerSelections>;
-  T::serialize_fields (ctx, T::make_field ("type", type_));
+  T::serialize_fields (
+    ctx, T::make_field ("type", type_), T::make_field ("objects", objects_));
 
+#if 0
   if (ctx.is_serializing ())
     {
       T::serialize_field<decltype (objects_), ArrangerObjectPtrVariant> (
@@ -167,6 +169,7 @@ ArrangerSelections::define_base_fields (const Context &ctx)
             }
         }
     }
+#endif
 }
 
 void

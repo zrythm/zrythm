@@ -23,7 +23,7 @@ typedef struct PluginSetting_v1
   bool                  force_generic_ui;
   ZCarlaBridgeMode_v1   bridge_mode;
   char *                ui_uri;
-  gint64                last_instantiated_time;
+  std::uint64_t         last_instantiated_time;
   int                   num_instantiations;
 } PluginSetting_v1;
 

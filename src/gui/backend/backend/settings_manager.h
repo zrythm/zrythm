@@ -13,6 +13,8 @@
 #include <QSettings>
 #include <QStandardPaths>
 
+using namespace Qt::StringLiterals;
+
 namespace zrythm::gui
 {
 
@@ -22,7 +24,7 @@ namespace zrythm::gui
     ptype name READ get_##name WRITE set_##name NOTIFY name##_changed); \
 \
 public: \
-  [[nodiscard]] ptype get_default_##name () const \
+  [[nodiscard]] static ptype get_default_##name () \
   { \
     return default_value; \
   } \
@@ -31,6 +33,11 @@ public: \
     return settings_.value (QStringLiteral (#name), default_value) \
       .value<ptype> (); \
   } \
+  [[nodiscard]] static ptype name () \
+  { \
+    return get_instance ()->get_##name (); \
+  } \
+\
   Q_SIGNAL void name##_changed ();
 
 #define DEFINE_SETTING_PROPERTY(ptype, name, default_value) \
@@ -55,7 +62,7 @@ public: \
   void set_##name (ptype value) \
   { \
     if ( \
-      !math_doubles_equal ( \
+      !math_floats_equal ( \
         settings_.value (QStringLiteral (#name), default_value).value<ptype> (), \
         value)) \
       { \
@@ -76,10 +83,18 @@ class SettingsManager final : public QObject
     zrythm_user_path,
     QStandardPaths::writableLocation (QStandardPaths::AppDataLocation))
   DEFINE_SETTING_PROPERTY (bool, first_run, true)
-
+  DEFINE_SETTING_PROPERTY (bool, transportLoop, true)
+  DEFINE_SETTING_PROPERTY (bool, transportReturnToCue, true)
   // note: in amplitude (0 to 2)
-  DEFINE_SETTING_PROPERTY_DOUBLE (double, metronome_volume, 1.0)
-  DEFINE_SETTING_PROPERTY (QString, icon_theme, "zrythm-dark")
+  DEFINE_SETTING_PROPERTY_DOUBLE (double, metronomeVolume, 1.0)
+  DEFINE_SETTING_PROPERTY (bool, metronomeEnabled, -1)
+  DEFINE_SETTING_PROPERTY (int, metronomeCountIn, 0) // none
+  DEFINE_SETTING_PROPERTY (bool, punchModeEnabled, false)
+  DEFINE_SETTING_PROPERTY (bool, startPlaybackOnMidiInput, false)
+  DEFINE_SETTING_PROPERTY (int, recordingMode, 2)     // takes
+  DEFINE_SETTING_PROPERTY (int, recordingPreroll, 0)  // none
+  DEFINE_SETTING_PROPERTY (int, jackTransportType, 0) // timebase master
+  DEFINE_SETTING_PROPERTY (QString, icon_theme, u"zrythm-dark"_s)
   DEFINE_SETTING_PROPERTY (QStringList, recent_projects, QStringList ())
   DEFINE_SETTING_PROPERTY (QStringList, lv2_search_paths, QStringList ())
   DEFINE_SETTING_PROPERTY (QStringList, vst2_search_paths, QStringList ())
@@ -110,6 +125,52 @@ class SettingsManager final : public QObject
   DEFINE_SETTING_PROPERTY (int, panAlgorithm, 2)
   DEFINE_SETTING_PROPERTY (QStringList, midiControllers, QStringList ())
   DEFINE_SETTING_PROPERTY (QStringList, audioInputs, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, fileBrowserBookmarks, QStringList ())
+  DEFINE_SETTING_PROPERTY (QString, fileBrowserLastLocation, {})
+  DEFINE_SETTING_PROPERTY (int, undoStackLength, 128)
+  DEFINE_SETTING_PROPERTY (int, pianoRollHighlight, 3)    // both
+  DEFINE_SETTING_PROPERTY (int, pianoRollMidiModifier, 0) // velocity
+  /* these are all in amplitude (0.0 ~ 2.0) */
+  DEFINE_SETTING_PROPERTY_DOUBLE (float, monitorVolume, 1.0f)
+  DEFINE_SETTING_PROPERTY_DOUBLE (float, monitorMuteVolume, 0.0f)
+  DEFINE_SETTING_PROPERTY_DOUBLE (float, monitorListenVolume, 1.0f)
+  DEFINE_SETTING_PROPERTY_DOUBLE (float, monitorDimVolume, 0.1f)
+  DEFINE_SETTING_PROPERTY (bool, monitorDimEnabled, false)
+  DEFINE_SETTING_PROPERTY (bool, monitorMuteEnabled, false)
+  DEFINE_SETTING_PROPERTY (bool, monitorMonoEnabled, false)
+  DEFINE_SETTING_PROPERTY (bool, openPluginsOnInstantiation, true)
+  // list of output devices to connect each channel to
+  DEFINE_SETTING_PROPERTY (
+    QStringList,
+    monitorLeftOutputDeviceList,
+    QStringList ())
+  DEFINE_SETTING_PROPERTY (
+    QStringList,
+    monitorRightOutputDeviceList,
+    QStringList ())
+  DEFINE_SETTING_PROPERTY (bool, musicalMode, false)
+  DEFINE_SETTING_PROPERTY (QString, rtAudioAudioDeviceName, {})
+  DEFINE_SETTING_PROPERTY (int, sampleRate, 3)         // 48000
+  DEFINE_SETTING_PROPERTY (int, audioBufferSize, 5)    // 512
+  DEFINE_SETTING_PROPERTY (int, bounceTailLength, 100) // 100ms
+  DEFINE_SETTING_PROPERTY (bool, bounceWithParents, 100)
+  DEFINE_SETTING_PROPERTY (int, bounceStep, 2) // post-fader
+  DEFINE_SETTING_PROPERTY (bool, disableAfterBounce, true)
+  DEFINE_SETTING_PROPERTY (bool, autoSelectTracks, true)
+  DEFINE_SETTING_PROPERTY (int, lastAutomationFunction, -1)
+  DEFINE_SETTING_PROPERTY (int, lastAudioFunction, -1)
+  DEFINE_SETTING_PROPERTY_DOUBLE (double, lastAudioFunctionPitchShiftRatio, 1.0)
+  DEFINE_SETTING_PROPERTY (int, lastMidiFunction, -1)
+  DEFINE_SETTING_PROPERTY (QString, fileBrowserInstrument, {})
+  DEFINE_SETTING_PROPERTY (int, automationCurveAlgorithm, 1) // superellipse
+  DEFINE_SETTING_PROPERTY_DOUBLE (
+    double,
+    timelineLastCreatedObjectLengthInTicks,
+    3840.0)
+  DEFINE_SETTING_PROPERTY_DOUBLE (
+    double,
+    editorLastCreatedObjectLengthInTicks,
+    480.0)
 
 public:
   SettingsManager (QObject * parent = nullptr);

@@ -7,8 +7,6 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
-
 PortConnectionAction::PortConnectionAction (QObject * parent)
     : QObject (parent), UndoableAction (UndoableAction::Type::PortConnection)
 {
@@ -113,23 +111,23 @@ PortConnectionAction::do_or_undo (bool _do)
   /* EVENTS_PUSH (EventType::ET_PORT_CONNECTION_CHANGED, nullptr); */
 }
 
-std::string
+QString
 PortConnectionAction::to_string () const
 {
   switch (type_)
     {
     case Type::Connect:
-      return _ ("Connect ports");
+      return QObject::tr ("Connect ports");
     case Type::Disconnect:
-      return _ ("Disconnect ports");
+      return QObject::tr ("Disconnect ports");
     case Type::Enable:
-      return _ ("Enable port connection");
+      return QObject::tr ("Enable port connection");
     case Type::Disable:
-      return _ ("Disable port connection");
+      return QObject::tr ("Disable port connection");
     case Type::ChangeMultiplier:
-      return _ ("Change port connection");
+      return QObject::tr ("Change port connection");
     default:
       z_warn_if_reached ();
-      return "";
+      return {};
     }
 }

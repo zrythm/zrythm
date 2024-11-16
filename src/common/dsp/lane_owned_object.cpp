@@ -14,18 +14,24 @@ LaneOwnedObjectImpl<RegionT>::get_lane () const
     }
 
   auto * region = dynamic_cast<const RegionT *> (this);
-  auto track = dynamic_cast<const LanedTrackImpl<TrackLaneT> *> (get_track ());
-  z_return_val_if_fail (track, nullptr);
-  z_return_val_if_fail (
-    region->id_.lane_pos_ < (int) track->lanes_.size (), nullptr);
-
-  auto lane_var = track->lanes_.at (region->id_.lane_pos_);
+  auto   track_var = get_track ();
   return std::visit (
-    [&] (auto &&lane) -> TrackLaneT * {
-      z_return_val_if_fail (lane, nullptr);
-      return dynamic_cast<TrackLaneT *> (lane);
+    [&] (auto &&track) -> TrackLaneT * {
+      using TrackT = base_type<decltype (track)>;
+      if constexpr (std::derived_from<TrackT, LanedTrack>)
+        {
+          z_return_val_if_fail (
+            region->id_.lane_pos_ < (int) track->lanes_.size (), nullptr);
+
+          return std::get<TrackLaneT *> (
+            track->lanes_.at (region->id_.lane_pos_));
+        }
+      else
+        {
+          z_return_val_if_reached (nullptr);
+        }
     },
-    lane_var);
+    track_var);
 }
 
 template <typename RegionT>
@@ -34,8 +40,7 @@ LaneOwnedObjectImpl<RegionT>::set_lane (TrackLaneT &lane)
 {
   z_return_if_fail (lane.track_ != nullptr);
 
-  if (lane.is_auditioner ())
-    is_auditioner_ = true;
+  is_auditioner_ = lane.is_auditioner ();
 
   owner_lane_ = &lane;
 

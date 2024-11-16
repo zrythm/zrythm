@@ -63,7 +63,7 @@ public:
     const ExtPort *                  device_port,
     const Port                      &dest_port);
 
-  std::string to_string () const override;
+  QString to_string () const override;
 
   void init_after_cloning (const MidiMappingAction &other) override;
 

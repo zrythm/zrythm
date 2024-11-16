@@ -23,7 +23,7 @@ RegionT *
 RegionOwnedObjectImpl<RegionT>::get_region () const
 {
   const auto &region = RegionImpl<RegionT>::find (region_id_);
-  return region.get ();
+  return region;
 }
 
 template <typename RegionT>
@@ -31,8 +31,8 @@ void
 RegionOwnedObjectImpl<RegionT>::get_global_start_pos (Position &pos) const
 {
   auto r = get_region ();
-  pos = pos_;
-  pos.add_ticks (r->pos_.ticks_);
+  pos = *static_cast<Position *> (pos_);
+  pos.add_ticks (r->pos_->ticks_);
 }
 
 void
@@ -58,7 +58,7 @@ RegionOwnedObject::set_region_and_index (const Region &region, int index)
       trans_obj->track_name_hash_ = region.track_name_hash_;
       if (type_ == Type::MidiNote)
         {
-          auto note = dynamic_pointer_cast<MidiNote> (trans_obj);
+          auto note = dynamic_cast<MidiNote *> (trans_obj);
           note->vel_->track_name_hash_ = region.track_name_hash_;
         }
     }

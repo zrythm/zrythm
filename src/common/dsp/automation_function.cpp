@@ -7,9 +7,11 @@
 #include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/arranger_selections.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/settings/settings.h"
+#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
+
+using namespace zrythm;
 
 static void
 flip (AutomationSelections * sel, bool vertical)
@@ -58,7 +60,8 @@ automation_function_apply (AutomationSelections &sel, AutomationFunctionType typ
     }
 
   /* set last action */
-  g_settings_set_int (S_UI, "automation-function", ENUM_VALUE_TO_INT (type));
+  gui::SettingsManager::get_instance ()->set_lastAutomationFunction (
+    ENUM_VALUE_TO_INT (type));
 
   // EVENTS_PUSH (EventType::ET_EDITOR_FUNCTION_APPLIED, nullptr);
 }

@@ -7,12 +7,50 @@
 #include "common/dsp/arranger_object.h"
 #include "common/utils/color.h"
 
+#define DEFINE_COLORED_OBJECT_QML_PROPERTIES(ClassType) \
+public: \
+  /* ================================================================ */ \
+  /* useColor */ \
+  /* ================================================================ */ \
+  Q_PROPERTY ( \
+    bool useColor READ getUseColor WRITE setUseColor NOTIFY useColorChanged) \
+  bool getUseColor () const \
+  { \
+    return use_color_; \
+  } \
+  void setUseColor (bool use_color) \
+  { \
+    if (use_color_ == use_color) \
+      return; \
+    use_color_ = use_color; \
+    Q_EMIT useColorChanged (use_color_); \
+  } \
+  Q_SIGNAL void useColorChanged (bool use_color); \
+  /* ================================================================ */ \
+  /* color */ \
+  /* ================================================================ */ \
+  Q_PROPERTY (QColor color READ getColor WRITE setColor NOTIFY colorChanged) \
+  QColor getColor () const \
+  { \
+    return color_.to_qcolor (); \
+  } \
+  void setColor (QColor color) \
+  { \
+    if (color_.to_qcolor () == color) \
+      return; \
+    color_ = color; \
+    Q_EMIT colorChanged (color); \
+  } \
+  Q_SIGNAL void colorChanged (QColor color);
+
 class ColoredObject
     : virtual public ArrangerObject,
       public ISerializable<ColoredObject>
 {
 public:
-  virtual ~ColoredObject () = default;
+  ColoredObject () = default;
+  ~ColoredObject () override = default;
+  Q_DISABLE_COPY_MOVE (ColoredObject)
 
 protected:
   void copy_members_from (const ColoredObject &other);

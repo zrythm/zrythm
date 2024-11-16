@@ -15,7 +15,7 @@ InstrumentTrack::InstrumentTrack (const std::string &name, int pos)
     : Track (Track::Type::Instrument, name, pos, PortType::Event, PortType::Audio)
 {
   color_ = Color (QColor ("#FF9616"));
-  icon_name_ = _ ("instrument");
+  icon_name_ = "instrument";
   automation_tracklist_->setParent (this);
 }
 

@@ -7,8 +7,6 @@
 #include "common/utils/format.h"
 #include "common/utils/logger.h"
 
-#include <glib/gi18n.h>
-
 class AutomationSelections;
 
 /**
@@ -39,9 +37,9 @@ automation_function_apply (
 DEFINE_ENUM_FORMATTER (
   AutomationFunctionType,
   AutomationFunctionType,
-  N_ ("Flip H"),
-  N_ ("Flip V"),
-  N_ ("Flatten"));
+  QT_TR_NOOP_UTF8 ("Flip H"),
+  QT_TR_NOOP_UTF8 ("Flip V"),
+  QT_TR_NOOP_UTF8 ("Flatten"));
 
 /**
  * @}

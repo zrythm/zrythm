@@ -147,15 +147,16 @@ Position::get_prev_snap_point (
             {
               using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
               auto lane = std::get<TrackLaneT *> (lane_var);
-              for (auto &r : lane->regions_)
+              for (auto &r_var : lane->region_list_->regions_)
                 {
-                  snap_point = r->pos_;
+                  auto * r = std::get<typename TrackLaneT::RegionT *> (r_var);
+                  snap_point = *r->pos_;
                   if (snap_point <= *this && snap_point > prev_sp)
                     {
                       prev_sp = snap_point;
                       snapped = true;
                     }
-                  snap_point = r->end_pos_;
+                  snap_point = *r->end_pos_;
                   if (snap_point <= *this && snap_point > prev_sp)
                     {
                       prev_sp = snap_point;
@@ -215,15 +216,16 @@ Position::get_next_snap_point (
             {
               using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
               auto lane = std::get<TrackLaneT *> (lane_var);
-              for (auto &r : lane->regions_)
+              for (auto &r_var : lane->region_list_->regions_)
                 {
-                  snap_point = r->pos_;
+                  auto * r = std::get<typename TrackLaneT::RegionT *> (r_var);
+                  snap_point = *r->pos_;
                   if (snap_point > *this && snap_point < next_sp)
                     {
                       next_sp = snap_point;
                       snapped = true;
                     }
-                  snap_point = r->end_pos_;
+                  snap_point = *r->end_pos_;
                   if (snap_point > *this && snap_point < next_sp)
                     {
                       next_sp = snap_point;

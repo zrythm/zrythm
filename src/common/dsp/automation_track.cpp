@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cmath>
+#include <ranges>
 
 #include "common/dsp/automatable_track.h"
 #include "common/dsp/automation_point.h"
@@ -42,9 +43,9 @@ AutomationTrack::init_loaded (AutomationTracklist * atl)
   atl_ = atl;
 
   /* init regions */
-  for (auto &region : regions_)
+  for (auto &region : region_list_->regions_)
     {
-      region->init_loaded ();
+      std::get<AutomationRegion *> (region)->init_loaded ();
     }
 }
 
@@ -134,8 +135,9 @@ AutomationTrack::validate () const
     }
 
   int j = -1;
-  for (auto * const region : regions_ | type_is<AutomationRegion> ())
+  for (auto region_var : region_list_->regions_)
     {
+      auto * region = std::get<AutomationRegion *> (region_var);
       ++j;
       z_return_val_if_fail (
         region->id_.track_name_hash_ == track_name_hash
@@ -170,9 +172,19 @@ AutomationTrack::get_region_before_pos (
       {
         for (auto it = regions.rbegin (); it != regions.rend (); ++it)
           {
-            const auto &region = *it;
-            if (region->pos_ <= pos && region->end_pos_ >= pos)
-              return static_cast<AutomationRegion *> (region.get ());
+            const auto        &region_var = *it;
+            AutomationRegion * region = nullptr;
+            if constexpr (
+              std::is_same_v<base_type<decltype (region_var)>, AutomationRegion>)
+              {
+                region = region_var.get ();
+              }
+            else
+              {
+                region = std::get<AutomationRegion *> (region_var);
+              }
+            if (*region->pos_ <= pos && *region->end_pos_ >= pos)
+              return region;
           }
       }
     else
@@ -182,13 +194,23 @@ AutomationTrack::get_region_before_pos (
           std::numeric_limits<signed_frame_t>::min ();
         for (auto it = regions.rbegin (); it != regions.rend (); ++it)
           {
-            const auto    &region = *it;
+            const auto        &region_var = *it;
+            AutomationRegion * region = nullptr;
+            if constexpr (
+              std::is_same_v<base_type<decltype (region_var)>, AutomationRegion>)
+              {
+                region = region_var.get ();
+              }
+            else
+              {
+                region = std::get<AutomationRegion *> (region_var);
+              }
             signed_frame_t distance_from_r_end =
-              region->end_pos_.frames_ - pos.frames_;
-            if (region->pos_ <= pos && distance_from_r_end > latest_distance)
+              region->end_pos_->frames_ - pos.frames_;
+            if (*region->pos_ <= pos && distance_from_r_end > latest_distance)
               {
                 latest_distance = distance_from_r_end;
-                latest_r = static_cast<AutomationRegion *> (region.get ());
+                latest_r = region;
               }
           }
         return latest_r;
@@ -198,7 +220,7 @@ AutomationTrack::get_region_before_pos (
 
   return use_snapshots
            ? process_regions (region_snapshots_)
-           : process_regions (regions_);
+           : process_regions (region_list_->regions_);
 }
 
 AutomationPoint *
@@ -207,7 +229,7 @@ AutomationTrack::get_ap_before_pos (
   bool            ends_after,
   bool            use_snapshots) const
 {
-  auto r = get_region_before_pos (pos, ends_after, use_snapshots);
+  auto * r = get_region_before_pos (pos, ends_after, use_snapshots);
 
   if (!r || r->get_muted (true))
     {
@@ -216,15 +238,17 @@ AutomationTrack::get_ap_before_pos (
 
   /* if region ends before pos, assume pos is the region's end pos */
   signed_frame_t local_pos = r->timeline_frames_to_local (
-    !ends_after && (r->end_pos_.frames_ < pos.frames_)
-      ? r->end_pos_.frames_ - 1
+    !ends_after && (r->end_pos_->frames_ < pos.frames_)
+      ? r->end_pos_->frames_ - 1
       : pos.frames_,
     true);
 
-  for (auto it = r->aps_.rbegin (); it != r->aps_.rend (); ++it)
+  for (auto &ap : std::ranges::reverse_view (r->aps_))
     {
-      if ((*it)->pos_.frames_ <= local_pos)
-        return it->get ();
+      if (ap->pos_->frames_ <= local_pos)
+        {
+          return ap;
+        }
     }
 
   return nullptr;
@@ -393,10 +417,17 @@ AutomationTrack::should_be_recording (RtTimePoint cur_time, bool record_aps) con
 AutomatableTrack *
 AutomationTrack::get_track () const
 {
-  auto * track = TRACKLIST->find_track_by_name_hash<AutomatableTrack> (
-    port_id_->track_name_hash_);
-  z_return_val_if_fail (track, nullptr);
-  return track;
+  auto track_var =
+    TRACKLIST->find_track_by_name_hash (port_id_->track_name_hash_);
+  z_return_val_if_fail (track_var, nullptr);
+  return std::visit (
+    [&] (auto &track) -> AutomatableTrack * {
+      using TrackT = base_type<decltype (track)>;
+      if constexpr (std::derived_from<TrackT, AutomatableTrack>)
+        return track;
+      z_return_val_if_reached (nullptr);
+    },
+    *track_var);
 }
 
 void
@@ -404,8 +435,9 @@ AutomationTrack::set_index (int index)
 {
   index_ = index;
 
-  for (auto &region : regions_)
+  for (auto &region_var : region_list_->regions_)
     {
+      auto * region = std::get<AutomationRegion *> (region_var);
       region->id_.at_idx_ = index;
       region->update_identifier ();
     }
@@ -434,8 +466,8 @@ AutomationTrack::get_val_at_pos (
 
   /* if region ends before pos, assume pos is the region's end pos */
   signed_frame_t localp = region->timeline_frames_to_local (
-    !ends_after && (region->end_pos_.frames_ < pos.frames_)
-      ? region->end_pos_.frames_ - 1
+    !ends_after && (region->end_pos_->frames_ < pos.frames_)
+      ? region->end_pos_->frames_ - 1
       : pos.frames_,
     true);
 
@@ -452,9 +484,9 @@ AutomationTrack::get_val_at_pos (
     std::abs (ap->normalized_val_ - next_ap->normalized_val_);
 
   /* ratio of how far in we are in the curve */
-  signed_frame_t ap_frames = ap->pos_.frames_;
-  signed_frame_t next_ap_frames = next_ap->pos_.frames_;
-  double         ratio;
+  signed_frame_t ap_frames = ap->pos_->frames_;
+  signed_frame_t next_ap_frames = next_ap->pos_->frames_;
+  double         ratio = 1.0;
   signed_frame_t numerator = localp - ap_frames;
   signed_frame_t denominator = next_ap_frames - ap_frames;
   if (numerator == 0)
@@ -493,9 +525,9 @@ AutomationTrack::get_val_at_pos (
 bool
 AutomationTrack::verify () const
 {
-  for (const auto region : regions_ | type_is<AutomationRegion> ())
+  for (const auto region_var : region_list_->regions_)
     {
-      for (const auto &ap : region->aps_)
+      for (const auto &ap : std::get<AutomationRegion *> (region_var)->aps_)
         {
           if (ZRYTHM_TESTING)
             {
@@ -517,9 +549,10 @@ AutomationTrack::set_caches (CacheType types)
   if (ENUM_BITSET_TEST (CacheType, types, CacheType::PlaybackSnapshots))
     {
       region_snapshots_.clear ();
-      for (const auto &r : regions_)
+      for (const auto &r_var : region_list_->regions_)
         {
-          region_snapshots_.emplace_back (r->clone_unique ());
+          region_snapshots_.emplace_back (
+            std::get<AutomationRegion *> (r_var)->clone_unique ());
         }
     }
 

@@ -26,13 +26,6 @@
 #include <variant>
 #include <vector>
 
-#include "gui/backend/gtk_widgets/libadwaita_wrapper.h"
-#include "gui/backend/gtk_widgets/libpanel_wrapper.h"
-
-#include <glib/gi18n.h>
-
-#include <glibmm.h>
-
 #ifdef __GNUC__
 #  pragma GCC diagnostic push
 #  pragma GCC diagnostic ignored "-Wshadow"
@@ -43,6 +36,8 @@
 #endif
 
 #include "common/utils/gtest_wrapper.h"
+
+#include <QtQmlIntegration>
 
 #include <fmt/format.h>
 

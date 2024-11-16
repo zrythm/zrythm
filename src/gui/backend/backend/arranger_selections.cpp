@@ -21,15 +21,18 @@
 #include "gui/backend/backend/timeline_selections.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
+ArrangerSelections::ArrangerSelections (Type type) : type_ (type) { }
 
 void
 ArrangerSelections::init_loaded (bool project, UndoableAction * action)
 {
-  for (auto &obj_sharedptr : objects_)
+  if (project)
     {
-      auto obj_variant =
-        convert_to_variant<ArrangerObjectPtrVariant> (obj_sharedptr.get ());
+      are_objects_copies_ = false;
+    }
+
+  for (auto &obj_variant : objects_)
+    {
       std::visit (
         [&] (auto &&o) {
           using ObjectT = base_type<decltype (o)>;
@@ -42,7 +45,11 @@ ArrangerSelections::init_loaded (bool project, UndoableAction * action)
                   z_return_if_fail (clip);
                 }
               o->update_positions (true, false, nullptr);
-              obj_sharedptr = o->find_in_project ()->shared_from_this ();
+
+              // replace the object clone with the actual project object
+              obj_variant = std::get<ObjectT *> (*o->find_in_project ());
+              o->setParent (nullptr);
+              o->deleteLater ();
             }
           else /* else if not project */
             {
@@ -65,12 +72,33 @@ ArrangerSelections::init_loaded (bool project, UndoableAction * action)
 }
 
 void
+ArrangerSelections::copy_members_from (const ArrangerSelections &other)
+{
+  type_ = other.type_;
+  for (const auto &obj : other.objects_)
+    {
+      std::visit (
+        [&] (auto &&other_obj) {
+          auto cloned_obj = other_obj->clone_raw_ptr ();
+          cloned_obj->setParent (dynamic_cast<QObject *> (this));
+          objects_.push_back (cloned_obj);
+        },
+        obj);
+    }
+}
+
+void
 ArrangerSelections::sort_by_positions (bool desc)
 {
   std::sort (
-    objects_.begin (), objects_.end (), [desc] (const auto &a, const auto &b) {
-      return desc ? a->pos_.ticks_ > b->pos_.ticks_
-                  : a->pos_.ticks_ < b->pos_.ticks_;
+    objects_.begin (), objects_.end (),
+    [desc] (const auto &a_var, const auto &b_var) {
+      return std::visit (
+        [&] (auto &&a, auto &&b) {
+          return desc ? a->pos_->ticks_ > b->pos_->ticks_
+                      : a->pos_->ticks_ < b->pos_->ticks_;
+        },
+        a_var, b_var);
     });
 }
 
@@ -127,20 +155,34 @@ ArrangerSelections::is_object_allowed (const ArrangerObject &obj) const
   return true;
 }
 
+template <typename T>
 void
-ArrangerSelections::add_object_owned (std::unique_ptr<ArrangerObject> &&obj)
+ArrangerSelections::add_object_owned (std::unique_ptr<T> &&obj)
 {
-  if (is_object_allowed (*obj))
-    objects_.emplace_back (std::move (obj));
-}
-
-void
-ArrangerSelections::add_object_ref (const std::shared_ptr<ArrangerObject> &obj)
-{
+  static_assert (FinalArrangerObjectSubclass<T>);
+  z_return_if_fail (are_objects_copies_);
   if (is_object_allowed (*obj))
     {
-      obj->generate_transient ();
-      objects_.emplace_back (obj);
+      auto * ptr = obj.release ();
+      ptr->setParent (dynamic_cast<QObject *> (this));
+      objects_.emplace_back (ptr);
+    }
+  else
+    {
+      z_warning ("Object not allowed in this selection type");
+    }
+}
+
+template <typename T>
+void
+ArrangerSelections::add_object_ref (T &obj)
+{
+  static_assert (FinalArrangerObjectSubclass<T>);
+  z_return_if_fail (!are_objects_copies_);
+  if (is_object_allowed (obj))
+    {
+      obj.generate_transient ();
+      objects_.emplace_back (&obj);
     }
 }
 
@@ -156,7 +198,7 @@ ArrangerSelections::add_region_ticks (Position &pos) const
         {
           auto r = AudioRegion::find (sel->region_id_);
           z_return_if_fail (r);
-          pos.add_ticks (r->pos_.ticks_);
+          pos.add_ticks (r->pos_->ticks_);
         }
       else if constexpr (std::is_same_v<TimelineSelections, SelT>)
         {
@@ -164,7 +206,7 @@ ArrangerSelections::add_region_ticks (Position &pos) const
         }
       else
         {
-          z_return_if_fail (objects_.size () > 0);
+          z_return_if_fail (!objects_.empty ());
           std::visit (
             [&] (auto &&o) {
               using ObjT = base_type<decltype (o)>;
@@ -172,10 +214,10 @@ ArrangerSelections::add_region_ticks (Position &pos) const
                 {
                   auto r = o->get_region ();
                   z_return_if_fail (r);
-                  pos.add_ticks (r->pos_.ticks_);
+                  pos.add_ticks (r->pos_->ticks_);
                 }
             },
-            convert_to_variant<ArrangerObjectPtrVariant> (objects_[0].get ()));
+            objects_.at (0));
         }
     },
     arranger_sel_variant);
@@ -210,11 +252,11 @@ ArrangerSelections::get_first_object_and_pos (bool global) const
                       if (o->pos_ < pos)
                         {
                           ret_obj = o;
-                          pos = o->pos_;
+                          pos = *o->pos_;
                         }
                     }
                 },
-                convert_to_variant<ArrangerObjectPtrVariant> (obj.get ()));
+                obj);
             }
         }
 
@@ -250,10 +292,8 @@ ArrangerSelections::get_last_object_and_pos (bool global, bool ends_last) const
         }
       else
         {
-          for (const auto &obj : objects_)
+          for (const auto &obj_var : objects_)
             {
-              auto obj_variant =
-                convert_to_variant<ArrangerObjectPtrVariant> (obj.get ());
               std::visit (
                 [&] (auto &&o) {
                   using CurObjT = base_type<decltype (o)>;
@@ -263,32 +303,32 @@ ArrangerSelections::get_last_object_and_pos (bool global, bool ends_last) const
                         {
                           if (ends_last)
                             {
-                              if (o->end_pos_ > pos)
+                              if (*o->end_pos_ > pos)
                                 {
                                   ret_obj = o;
-                                  pos = o->end_pos_;
+                                  pos = *o->end_pos_;
                                 }
                             }
                           else
                             {
-                              if (o->pos_ > pos)
+                              if (*o->pos_ > pos)
                                 {
                                   ret_obj = o;
-                                  pos = o->pos_;
+                                  pos = *o->pos_;
                                 }
                             }
                         }
                       else
                         {
-                          if (o->pos_ > pos)
+                          if (*o->pos_ > pos)
                             {
                               ret_obj = o;
-                              pos = o->pos_;
+                              pos = *o->pos_;
                             }
                         }
                     }
                 },
-                obj_variant);
+                obj_var);
             }
         }
 
@@ -317,10 +357,8 @@ ArrangerSelections::add_to_region (Region &region)
           // no region...
           return;
         }
-      for (auto &obj : self->objects_)
+      for (auto &obj_var : self->objects_)
         {
-          auto obj_variant =
-            convert_to_variant<ArrangerObjectPtrVariant> (obj.get ());
           std::visit (
             [&] (auto &&o) {
               using ObjT = base_type<decltype (o)>;
@@ -332,14 +370,15 @@ ArrangerSelections::add_to_region (Region &region)
                       if constexpr (
                         std::is_same_v<typename RegionT::ChildT, ObjT>)
                         {
-                          auto obj_clone = o->clone_shared ();
+                          auto obj_clone = o->clone_raw_ptr ();
+
                           r->append_object (obj_clone, false);
                         }
                     },
                     convert_to_variant<RegionPtrVariant> (&region));
                 }
             },
-            obj_variant);
+            obj_var);
         }
     },
     variant);
@@ -348,9 +387,9 @@ ArrangerSelections::add_to_region (Region &region)
 void
 ArrangerSelections::add_ticks (const double ticks)
 {
-  for (auto &obj : objects_)
+  for (auto &obj_var : objects_)
     {
-      obj->move (ticks);
+      std::visit ([&] (auto &&obj) { obj->move (ticks); }, obj_var);
     }
 }
 
@@ -379,10 +418,9 @@ ArrangerSelections::select_all (bool fire_events)
                         {
                           std::visit (
                             [&] (auto &&lane) {
-                              for (auto &region : lane->regions_)
-                                {
-                                  add_object_ref (region);
-                                }
+                              lane->foreach_region ([&] (auto &region) {
+                                add_object_ref (region);
+                              });
                             },
                             lane_var);
                         }
@@ -399,10 +437,9 @@ ArrangerSelections::select_all (bool fire_events)
                               if (!at->visible_)
                                 continue;
 
-                              for (auto &region : at->regions_)
-                                {
-                                  add_object_ref (region);
-                                }
+                              at->foreach_region ([&] (auto &region) {
+                                add_object_ref (region);
+                              });
                             }
                         }
                     }
@@ -411,45 +448,44 @@ ArrangerSelections::select_all (bool fire_events)
             }
 
           /* chord regions */
-          for (auto &region : P_CHORD_TRACK->regions_)
-            {
-              add_object_ref (region);
-            }
+          P_CHORD_TRACK->foreach_region ([&] (auto &region) {
+            add_object_ref (region);
+          });
 
           /* scales */
           for (auto &scale : P_CHORD_TRACK->scales_)
             {
-              add_object_ref (scale);
+              add_object_ref (*scale);
             }
 
           /* markers */
           for (auto &marker : P_MARKER_TRACK->markers_)
             {
-              add_object_ref (marker);
+              add_object_ref (*marker);
             }
         }
       else if constexpr (std::is_same_v<ChordSelections, SelT>)
         {
-          if (!r || !r->is_chord ())
+          if (!r || !std::holds_alternative<ChordRegion *> (r.value ()))
             return;
 
-          auto cr = dynamic_cast<ChordRegion *> (r);
+          auto cr = std::get<ChordRegion *> (*r);
           for (auto &co : cr->chord_objects_)
             {
               z_return_if_fail (
                 co->chord_index_ < (int) CHORD_EDITOR->chords_.size ());
-              add_object_ref (co);
+              add_object_ref (*co);
             }
         }
       else if constexpr (std::is_same_v<MidiSelections, SelT>)
         {
-          if (!r || !r->is_midi ())
+          if (!r || !std::holds_alternative<MidiRegion *> (r.value ()))
             return;
 
-          auto mr = dynamic_cast<MidiRegion *> (r);
+          auto mr = std::get<MidiRegion *> (*r);
           for (auto &mn : mr->midi_notes_)
             {
-              add_object_ref (mn);
+              add_object_ref (*mn);
             }
         }
       else if constexpr (std::is_same_v<AudioSelections, SelT>)
@@ -458,13 +494,13 @@ ArrangerSelections::select_all (bool fire_events)
         }
       else if constexpr (std::is_same_v<AutomationSelections, SelT>)
         {
-          if (!r || !r->is_automation ())
+          if (!r || !std::holds_alternative<AutomationRegion *> (r.value ()))
             return;
 
-          auto ar = dynamic_cast<AutomationRegion *> (r);
+          auto ar = std::get<AutomationRegion *> (*r);
           for (auto &ap : ar->aps_)
             {
-              add_object_ref (ap);
+              add_object_ref (*ap);
             }
         }
 
@@ -505,9 +541,9 @@ ArrangerSelections::clear (bool fire_events)
 void
 ArrangerSelections::post_deserialize ()
 {
-  for (auto &obj : objects_)
+  for (auto &obj_var : objects_)
     {
-      obj->post_deserialize ();
+      std::visit ([&] (auto &&obj) { obj->post_deserialize (); }, obj_var);
     }
 }
 
@@ -522,7 +558,7 @@ ArrangerSelections::validate () const
         {
           auto r = RegionImpl<AudioRegion>::find (self->region_id_);
           z_return_val_if_fail (r, false);
-          if (self->sel_start_ < r->pos_ || self->sel_end_ >= r->end_pos_)
+          if (self->sel_start_ < r->pos_ || self->sel_end_ >= *r->end_pos_)
             return false;
         }
       return true;
@@ -535,15 +571,17 @@ ArrangerSelections::contains_object (const ArrangerObject &obj) const
 {
   return std::visit (
     [&] (auto &&obj_ptr) { return find_object (*obj_ptr) != nullptr; },
-    convert_to_variant<ArrangerObjectPtrVariant> (&obj));
+    convert_to_variant<ArrangerObjectWithoutVelocityPtrVariant> (&obj));
 }
 
 bool
 ArrangerSelections::contains_undeletable_object () const
 {
-  return std::any_of (objects_.begin (), objects_.end (), [] (auto &element) {
-    return !element->is_deletable ();
-  });
+  return std::any_of (
+    objects_.begin (), objects_.end (), [] (const auto &element) {
+      return std::visit (
+        [&] (auto &&obj) { return !obj->is_deletable (); }, element);
+    });
 }
 
 bool
@@ -562,42 +600,43 @@ bool
 ArrangerSelections::contains_object_with_property (Property property, bool value)
   const
 {
-
-#define CHECK_PROP(x) \
-  (property == ArrangerSelectionsProperty::ARRANGER_SELECTIONS_PROPERTY_##x)
-
-  for (auto &obj : objects_)
-    {
-      if (property == Property::HasLength && obj->has_length () == value)
-        {
-          return true;
-        }
-      if (property == Property::HasLooped)
-        {
-          if (!obj->can_loop ())
+  return std::any_of (
+    objects_.begin (), objects_.end (), [&] (const auto &element) {
+      return std::visit (
+        [&] (auto &&obj) {
+          if (property == Property::HasLength && obj->has_length () == value)
             {
-              if (!value)
+              return true;
+            }
+          if (property == Property::HasLooped)
+            {
+              if (!obj->can_loop ())
+                {
+                  if (!value)
+                    return true;
+                }
+              else
+                {
+                  auto loopable_object = dynamic_cast<LoopableObject *> (obj);
+                  if ((loopable_object->get_num_loops (false) > 0) == value)
+                    return true;
+                }
+            }
+          if (property == Property::CanLoop)
+            {
+              if (obj->can_loop () == value)
                 return true;
             }
-          else
+          if (property == Property::CanFade)
             {
-              auto loopable_object = dynamic_cast<LoopableObject *> (obj.get ());
-              if ((loopable_object->get_num_loops (false) > 0) == value)
+              if (obj->can_fade () == value)
                 return true;
             }
-        }
-      if (property == Property::CanLoop)
-        {
-          if (obj->can_loop () == value)
-            return true;
-        }
-      if (property == Property::CanFade)
-        {
-          if (obj->can_fade () == value)
-            return true;
-        }
-    }
-  return false;
+
+          return false;
+        },
+        element);
+    });
 }
 
 void
@@ -605,10 +644,21 @@ ArrangerSelections::remove_object (const ArrangerObject &obj)
 {
   auto it =
     std::find_if (objects_.begin (), objects_.end (), [&obj] (auto &element) {
-      return &obj == element.get ();
+      return std::visit (
+        [&] (auto &&cur_obj) { return &obj == cur_obj; }, element);
     });
   if (it != objects_.end ())
     {
+      auto obj_var = *it;
+      std::visit (
+        [&] (auto &&obj) {
+          if (are_objects_copies_)
+            {
+              obj->setParent (nullptr);
+              obj->deleteLater ();
+            }
+        },
+        obj_var);
       objects_.erase (it);
     }
 }
@@ -648,7 +698,6 @@ ArrangerSelections::paste_to_pos (const Position &pos, bool undoable)
       return;
     }
 
-  auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
   std::visit (
     [&] (auto &&self) {
       using SelT = base_type<decltype (self)>;
@@ -658,7 +707,8 @@ ArrangerSelections::paste_to_pos (const Position &pos, bool undoable)
       auto clone_sel = self->clone_unique ();
 
       /* clear current project selections */
-      auto project_sel = ArrangerSelections::get_for_type (self->type_);
+      auto project_sel =
+        std::get<SelT *> (ArrangerSelections::get_for_type (self->type_));
       z_return_if_fail (project_sel);
       project_sel->clear (false);
 
@@ -666,8 +716,7 @@ ArrangerSelections::paste_to_pos (const Position &pos, bool undoable)
 
       if constexpr (std::is_same_v<TimelineSelections, SelT>)
         {
-          auto track = TRACKLIST_SELECTIONS->get_highest_track ();
-          z_return_if_fail (track);
+          auto track_var = TRACKLIST_SELECTIONS->get_highest_track ();
 
           clone_sel->add_ticks (pos.ticks_ - first_obj_pair.second.ticks_);
 
@@ -675,7 +724,7 @@ ArrangerSelections::paste_to_pos (const Position &pos, bool undoable)
           for (auto obj : clone_sel->objects_)
             {
               std::visit (
-                [&] (auto &&o) {
+                [&] (auto &&o, auto &&track) {
                   using ObjT = base_type<decltype (o)>;
                   if constexpr (std::derived_from<ObjT, Region>)
                     {
@@ -684,40 +733,43 @@ ArrangerSelections::paste_to_pos (const Position &pos, bool undoable)
                         {
                           try
                             {
-                              track->add_region (
-                                o->template shared_from_this_as<ObjT> (),
-                                nullptr, o->id_.lane_pos_, false, false);
+                              track->Track::add_region (
+                                o, nullptr, o->id_.lane_pos_, false, false);
                             }
                           catch (const ZrythmException &e)
                             {
-                              e.handle (_ ("Failed to add region"));
+                              e.handle (QObject::tr ("Failed to add region"));
                             }
                         }
                     }
 
                   if constexpr (std::is_same_v<ObjT, ScaleObject>)
                     {
-                      P_CHORD_TRACK->add_scale (
-                        o->template shared_from_this_as<ObjT> ());
+                      P_CHORD_TRACK->add_scale (*o);
                     }
                   else if constexpr (std::is_same_v<ObjT, Marker>)
                     {
-                      P_MARKER_TRACK->add_marker (
-                        o->template shared_from_this_as<ObjT> ());
+                      P_MARKER_TRACK->add_marker (o);
                     }
                 },
-                convert_to_variant<ArrangerObjectPtrVariant> (obj.get ()));
+                obj, track_var);
             }
         }
       /* else if selections inside region (ie not timeline selections) */
       else
         {
-          auto * region = CLIP_EDITOR->get_region ();
+          auto region_opt = CLIP_EDITOR->get_region ();
+          z_return_if_fail (region_opt);
 
-          /* add selections to region */
-          clone_sel->add_to_region (*region);
-          clone_sel->add_ticks (
-            (pos.ticks_ - region->pos_.ticks_) - first_obj_pair.second.ticks_);
+          std::visit (
+            [&] (auto &&region) {
+              /* add selections to region */
+              clone_sel->add_to_region (*region);
+              clone_sel->add_ticks (
+                (pos.ticks_ - region->pos_->ticks_)
+                - first_obj_pair.second.ticks_);
+            },
+            *region_opt);
         }
 
       if (undoable)
@@ -729,14 +781,14 @@ ArrangerSelections::paste_to_pos (const Position &pos, bool undoable)
             }
           catch (const ZrythmException &e)
             {
-              e.handle (_ ("Failed to paste selections"));
+              e.handle (QObject::tr ("Failed to paste selections"));
             }
         }
     },
-    variant);
+    convert_to_variant<ArrangerSelectionsPtrVariant> (this));
 }
 
-ArrangerSelections *
+ArrangerSelectionsPtrVariant
 ArrangerSelections::get_for_type (ArrangerSelections::Type type)
 {
   switch (type)
@@ -750,9 +802,8 @@ ArrangerSelections::get_for_type (ArrangerSelections::Type type)
     case ArrangerSelections::Type::Automation:
       return AUTOMATION_SELECTIONS.get ();
     default:
-      z_return_val_if_reached (nullptr);
+      throw ZrythmException ("Invalid type");
     }
-  z_return_val_if_reached (nullptr);
 }
 
 bool
@@ -764,40 +815,34 @@ ArrangerSelections::can_split_at_pos (const Position pos) const
       using SelT = base_type<decltype (self)>;
       if constexpr (std::is_same_v<TimelineSelections, SelT>)
         {
-          for (auto &obj : objects_)
-            {
-              auto ret = std::visit (
-                [&] (auto &&o) {
-                  using ObjT = base_type<decltype (o)>;
-                  if constexpr (std::derived_from<ObjT, Region>)
-                    {
-                      /* don't allow splitting at edges */
-                      return !(pos <= o->pos_ || pos >= o->end_pos_);
-                    }
-                  else
-                    {
-                      /* only regions can be split*/
-                      return false;
-                    }
-                },
-                convert_to_variant<ArrangerObjectPtrVariant> (obj.get ()));
-              if (!ret)
-                return false;
-            }
+          return std::ranges::all_of (objects_, [pos] (const auto &obj_var) {
+            return std::visit (
+              [pos] (const auto &o) {
+                using ObjT = base_type<decltype (o)>;
 
-          return true;
+                if constexpr (std::derived_from<ObjT, Region>)
+                  {
+                    /* don't allow splitting at edges */
+                    return pos > *o->pos_ && pos < *o->end_pos_;
+                  }
+                else
+                  {
+                    // only regions can be split
+                    return false;
+                  }
+              },
+              obj_var);
+          });
         }
       else if constexpr (std::is_same_v<MidiSelections, SelT>)
         {
-          for (auto obj : objects_ | type_is<MidiNote> ())
-            {
-              /* don't allow splitting at edges */
-              if (pos <= obj->pos_ || pos >= obj->end_pos_)
-                {
-                  return false;
-                }
-            }
-          return true;
+          return std::ranges::none_of (objects_, [pos] (const auto &obj_var) {
+            if (const auto * note = std::get_if<MidiNote *> (&obj_var))
+              {
+                return pos <= *(*note)->pos_ || pos >= *(*note)->end_pos_;
+              }
+            return false;
+          });
         }
       else
         {
@@ -819,3 +864,40 @@ ArrangerSelections::get_first_object_and_pos (bool global) const;
 
 template std::pair<MidiNote *, Position>
 ArrangerSelections::get_last_object_and_pos (bool global, bool ends_last) const;
+
+template void
+ArrangerSelections::add_object_owned (std::unique_ptr<MidiNote> &&obj);
+template void
+ArrangerSelections::add_object_owned (std::unique_ptr<ScaleObject> &&obj);
+template void
+ArrangerSelections::add_object_owned (std::unique_ptr<ChordObject> &&obj);
+template void
+ArrangerSelections::add_object_owned (std::unique_ptr<AutomationPoint> &&obj);
+template void
+ArrangerSelections::add_object_owned (std::unique_ptr<Marker> &&obj);
+template void
+ArrangerSelections::add_object_owned (std::unique_ptr<AudioRegion> &&obj);
+template void
+ArrangerSelections::add_object_owned (std::unique_ptr<MidiRegion> &&obj);
+template void
+ArrangerSelections::add_object_owned (std::unique_ptr<ChordRegion> &&obj);
+template void
+ArrangerSelections::add_object_owned (std::unique_ptr<AutomationRegion> &&obj);
+template void
+ArrangerSelections::add_object_ref (MidiNote &obj);
+template void
+ArrangerSelections::add_object_ref (ScaleObject &obj);
+template void
+ArrangerSelections::add_object_ref (ChordObject &obj);
+template void
+ArrangerSelections::add_object_ref (AutomationPoint &obj);
+template void
+ArrangerSelections::add_object_ref (Marker &obj);
+template void
+ArrangerSelections::add_object_ref (AudioRegion &obj);
+template void
+ArrangerSelections::add_object_ref (MidiRegion &obj);
+template void
+ArrangerSelections::add_object_ref (ChordRegion &obj);
+template void
+ArrangerSelections::add_object_ref (AutomationRegion &obj);

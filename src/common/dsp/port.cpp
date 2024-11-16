@@ -71,9 +71,24 @@ Port::find_from_identifier (const PortIdentifier &id)
 {
   static_assert (FinalPortSubclass<T>);
 
-  const auto &flags = id.flags_;
-  const auto &flags2 = id.flags2_;
+  const auto  flags = id.flags_;
+  const auto  flags2 = id.flags2_;
   const auto  track_name_hash = id.track_name_hash_;
+
+  auto get_track_lambda = [track_name_hash] () -> Track * {
+    auto track_var = TRACKLIST->find_track_by_name_hash (track_name_hash);
+    if (!track_var)
+      track_var =
+        SAMPLE_PROCESSOR->tracklist_->find_track_by_name_hash (track_name_hash);
+    z_return_val_if_fail (track_var, nullptr);
+    return std::visit (
+      [&] (auto &&track_ptr) -> Track * {
+        z_return_val_if_fail (track_ptr, nullptr);
+        return track_ptr;
+      },
+      *track_var);
+  };
+
   switch (id.owner_type_)
     {
     case PortIdentifier::OwnerType::AudioEngine:
@@ -108,11 +123,7 @@ Port::find_from_identifier (const PortIdentifier &id)
       break;
     case PortIdentifier::OwnerType::Plugin:
       {
-        auto tr = TRACKLIST->find_track_by_name_hash<ProcessableTrack> (
-          track_name_hash);
-        if (!tr)
-          tr = SAMPLE_PROCESSOR->tracklist_->find_track_by_name_hash<
-            ProcessableTrack> (track_name_hash);
+        auto * tr = dynamic_cast<ProcessableTrack *> (get_track_lambda ());
         z_return_val_if_fail (tr, nullptr);
         zrythm::plugins::Plugin * pl = nullptr;
         if (tr->has_channel ())
@@ -141,26 +152,21 @@ Port::find_from_identifier (const PortIdentifier &id)
       break;
     case PortIdentifier::OwnerType::TrackProcessor:
       {
-        auto tr = TRACKLIST->find_track_by_name_hash<ProcessableTrack> (
-          track_name_hash);
-        if (!tr)
-          tr = SAMPLE_PROCESSOR->tracklist_->find_track_by_name_hash<
-            ProcessableTrack> (track_name_hash);
+        auto * tr = dynamic_cast<ProcessableTrack *> (get_track_lambda ());
         z_return_val_if_fail (tr, nullptr);
         auto &processor = tr->processor_;
         if constexpr (std::is_same_v<T, MidiPort>)
           {
             if (id.is_output ())
               return processor->midi_out_.get ();
-            else if (id.is_input ())
+            if (id.is_input ())
               {
                 if (
                   ENUM_BITSET_TEST (
                     PortIdentifier::Flags, flags,
                     PortIdentifier::Flags::PianoRoll))
                   return processor->piano_roll_.get ();
-                else
-                  return processor->midi_in_.get ();
+                return processor->midi_in_.get ();
               }
           }
         else if constexpr (std::is_same_v<T, AudioPort>)
@@ -171,7 +177,7 @@ Port::find_from_identifier (const PortIdentifier &id)
                   ENUM_BITSET_TEST (
                     PortIdentifier::Flags, flags, PortIdentifier::Flags::StereoL))
                   return &processor->stereo_out_->get_l ();
-                else if (
+                if (
                   ENUM_BITSET_TEST (
                     PortIdentifier::Flags, flags, PortIdentifier::Flags::StereoR))
                   return &processor->stereo_out_->get_r ();
@@ -183,7 +189,7 @@ Port::find_from_identifier (const PortIdentifier &id)
                   ENUM_BITSET_TEST (
                     PortIdentifier::Flags, flags, PortIdentifier::Flags::StereoL))
                   return &processor->stereo_in_->get_l ();
-                else if (
+                if (
                   ENUM_BITSET_TEST (
                     PortIdentifier::Flags, flags, PortIdentifier::Flags::StereoR))
                   return &processor->stereo_in_->get_r ();
@@ -236,10 +242,7 @@ Port::find_from_identifier (const PortIdentifier &id)
       break;
     case PortIdentifier::OwnerType::Track:
       {
-        auto tr = TRACKLIST->find_track_by_name_hash<Track> (track_name_hash);
-        if (!tr)
-          tr = SAMPLE_PROCESSOR->tracklist_->find_track_by_name_hash<Track> (
-            track_name_hash);
+        auto * tr = get_track_lambda ();
         z_return_val_if_fail (tr, nullptr);
         if constexpr (std::is_same_v<T, ControlPort>)
           {
@@ -265,7 +268,7 @@ Port::find_from_identifier (const PortIdentifier &id)
       break;
     case PortIdentifier::OwnerType::Fader:
       {
-        auto fader = Fader::find_from_port_identifier (id);
+        auto * fader = Fader::find_from_port_identifier (id);
         z_return_val_if_fail (fader, nullptr);
         if constexpr (std::is_same_v<T, MidiPort>)
           {
@@ -290,7 +293,7 @@ Port::find_from_identifier (const PortIdentifier &id)
                   ENUM_BITSET_TEST (
                     PortIdentifier::Flags, flags, PortIdentifier::Flags::StereoL))
                   return &fader->stereo_in_->get_l ();
-                else if (
+                if (
                   ENUM_BITSET_TEST (
                     PortIdentifier::Flags, flags, PortIdentifier::Flags::StereoR))
                   return &fader->stereo_in_->get_r ();
@@ -342,11 +345,7 @@ Port::find_from_identifier (const PortIdentifier &id)
       break;
     case PortIdentifier::OwnerType::ChannelSend:
       {
-        auto tr =
-          TRACKLIST->find_track_by_name_hash<ChannelTrack> (track_name_hash);
-        if (!tr)
-          tr = SAMPLE_PROCESSOR->tracklist_->find_track_by_name_hash<
-            ChannelTrack> (track_name_hash);
+        auto * tr = dynamic_cast<ChannelTrack *> (get_track_lambda ());
         z_return_val_if_fail (tr, nullptr);
         auto &ch = tr->channel_;
         if constexpr (std::is_same_v<T, ControlPort>)
@@ -356,7 +355,7 @@ Port::find_from_identifier (const PortIdentifier &id)
                 PortIdentifier::Flags2, flags2,
                 PortIdentifier::Flags2::ChannelSendEnabled))
               return ch->sends_.at (id.port_index_)->enabled_.get ();
-            else if (
+            if (
               ENUM_BITSET_TEST (
                 PortIdentifier::Flags2, flags2,
                 PortIdentifier::Flags2::ChannelSendAmount))
@@ -373,7 +372,7 @@ Port::find_from_identifier (const PortIdentifier &id)
                         PortIdentifier::Flags, flags,
                         PortIdentifier::Flags::StereoL))
                       return &ch->sends_.at (id.port_index_)->stereo_in_->get_l ();
-                    else if (
+                    if (
                       ENUM_BITSET_TEST (
                         PortIdentifier::Flags, flags,
                         PortIdentifier::Flags::StereoR))
@@ -391,7 +390,7 @@ Port::find_from_identifier (const PortIdentifier &id)
                         PortIdentifier::Flags, flags,
                         PortIdentifier::Flags::StereoL))
                       return &ch->sends_.at (id.port_index_)->stereo_out_->get_l ();
-                    else if (
+                    if (
                       ENUM_BITSET_TEST (
                         PortIdentifier::Flags, flags,
                         PortIdentifier::Flags::StereoR))
@@ -463,8 +462,7 @@ Port::find_from_identifier (const PortIdentifier &id)
         ENUM_BITSET_TEST (
           PortIdentifier::Flags, flags, PortIdentifier::Flags::ModulatorMacro))
         {
-          auto tr = TRACKLIST->find_track_by_name_hash<ModulatorTrack> (
-            track_name_hash);
+          auto * tr = dynamic_cast<ModulatorTrack *> (get_track_lambda ());
           z_return_val_if_fail (tr, nullptr);
           auto &processor = tr->modulator_macro_processors_[id.port_index_];
           if (id.is_input ())
@@ -489,11 +487,7 @@ Port::find_from_identifier (const PortIdentifier &id)
       break;
     case PortIdentifier::OwnerType::Channel:
       {
-        auto tr =
-          TRACKLIST->find_track_by_name_hash<ChannelTrack> (track_name_hash);
-        if (!tr)
-          tr = SAMPLE_PROCESSOR->tracklist_->find_track_by_name_hash<
-            ChannelTrack> (track_name_hash);
+        auto * tr = dynamic_cast<ChannelTrack *> (get_track_lambda ());
         z_return_val_if_fail (tr, nullptr);
         auto &ch = tr->channel_;
         z_return_val_if_fail (ch, nullptr);
@@ -512,7 +506,7 @@ Port::find_from_identifier (const PortIdentifier &id)
                   ENUM_BITSET_TEST (
                     PortIdentifier::Flags, flags, PortIdentifier::Flags::StereoL))
                   return &ch->stereo_out_->get_l ();
-                else if (
+                if (
                   ENUM_BITSET_TEST (
                     PortIdentifier::Flags, flags, PortIdentifier::Flags::StereoR))
                   return &ch->stereo_out_->get_r ();
@@ -1227,10 +1221,13 @@ Port::get_track (bool warn_if_fail) const
     {
       z_return_val_if_fail (gZrythm && TRACKLIST, nullptr);
 
-      track = TRACKLIST->find_track_by_name_hash (this->id_->track_name_hash_);
-      if (track == nullptr)
-        track = SAMPLE_PROCESSOR->tracklist_->find_track_by_name_hash (
+      auto track_var =
+        TRACKLIST->find_track_by_name_hash (this->id_->track_name_hash_);
+      if (!track_var)
+        track_var = SAMPLE_PROCESSOR->tracklist_->find_track_by_name_hash (
           id_->track_name_hash_);
+      z_return_val_if_fail (track_var, nullptr);
+      std::visit ([&] (auto &&track_ptr) { track = track_ptr; }, *track_var);
     }
 
   if ((track == nullptr) && warn_if_fail)

@@ -6,8 +6,6 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
-
 void
 ChordAction::init_after_cloning (const ChordAction &other)
 {
@@ -61,8 +59,8 @@ ChordAction::undo_impl ()
   do_or_undo (false);
 }
 
-std::string
+QString
 ChordAction::to_string () const
 {
-  return _ ("Change chords");
+  return QObject::tr ("Change chords");
 }

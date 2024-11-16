@@ -1,8 +1,5 @@
-/*
- * SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
- *
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- */
+// SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * @file
@@ -18,14 +15,6 @@
  *
  * @{
  */
-
-/**
- * Returns a newly allocated string.
- *
- * @param def Default value to return if not found.
- */
-char *
-env_get_string (const char * key, const char * def);
 
 /**
  * Returns an int for the given environment variable

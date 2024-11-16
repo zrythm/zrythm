@@ -40,15 +40,20 @@ constexpr int AUDIO_REGION_BUILTIN_FADE_FRAMES = 10;
  * audio stretching, gain, and musical mode.
  */
 class AudioRegion final
-    : public RegionImpl<AudioRegion>,
+    : public QObject,
+      public RegionImpl<AudioRegion>,
       public LaneOwnedObjectImpl<AudioRegion>,
       public FadeableObject,
       public ICloneable<AudioRegion>,
       public ISerializable<AudioRegion>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (AudioRegion)
+  DEFINE_REGION_QML_PROPERTIES (AudioRegion)
+
 public:
-  // Rule of 0
-  AudioRegion () = default;
+  AudioRegion (QObject * parent = nullptr);
 
   /**
    * @brief Creates a region for audio data.
@@ -69,7 +74,9 @@ public:
     Position                         start_pos,
     unsigned int                     track_name_hash,
     int                              lane_pos,
-    int                              idx_inside_lane)
+    int                              idx_inside_lane,
+    QObject *                        parent = nullptr)
+      : AudioRegion (parent)
   {
     init_default_constructed (
       pool_id, filename, read_from_pool, frames, nframes, clip_name, channels,
@@ -98,18 +105,18 @@ public:
    * @throw ZrythmException if the region couldwn't be created.
    */
   void init_default_constructed (
-    const int                        pool_id,
-    const std::optional<std::string> filename,
-    bool                             read_from_pool,
-    const float *                    frames,
-    const unsigned_frame_t           nframes,
-    const std::optional<std::string> clip_name,
-    const channels_t                 channels,
-    BitDepth                         bit_depth,
-    Position                         start_pos,
-    unsigned int                     track_name_hash,
-    int                              lane_pos,
-    int                              idx_inside_lane);
+    int                        pool_id,
+    std::optional<std::string> filename,
+    bool                       read_from_pool,
+    const float *              frames,
+    unsigned_frame_t           nframes,
+    std::optional<std::string> clip_name,
+    channels_t                 channels,
+    BitDepth                   bit_depth,
+    Position                   start_pos,
+    unsigned int               track_name_hash,
+    int                        lane_pos,
+    int                        idx_inside_lane);
 
   void init_loaded () override;
 
@@ -182,7 +189,8 @@ public:
 
   bool validate (bool is_project, double frames_per_tick) const override;
 
-  ArrangerSelections * get_arranger_selections () const override;
+  std::optional<ClipEditorArrangerSelectionsPtrVariant>
+  get_arranger_selections () const override;
 
   void init_after_cloning (const AudioRegion &other) override;
 
@@ -212,7 +220,7 @@ public:
   /**
    * @brief Temporary buffers used during audio processing.
    */
-  mutable std::array<std::array<float, 0x4000>, 2> tmp_bufs_;
+  mutable std::array<std::array<float, 0x4000>, 2> tmp_bufs_{};
 };
 
 inline bool

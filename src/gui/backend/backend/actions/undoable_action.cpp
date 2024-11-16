@@ -17,9 +17,6 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib.h>
-#include <glib/gi18n.h>
-
 #include <fmt/format.h>
 
 UndoableAction::

@@ -49,7 +49,7 @@ ProjectManager::init_templates ()
     {
       try
         {
-          auto files = io_get_files_in_dir (user_templates_dir);
+          auto files = utils::io::get_files_in_dir (user_templates_dir);
           std::transform (
             files.begin (), files.end (), std::back_inserter (templates_),
             [] (const auto &p) { return fs::path (p.toStdString ()); });
@@ -68,7 +68,7 @@ ProjectManager::init_templates ()
         {
           try
             {
-              auto files = io_get_files_in_dir (system_templates_dir);
+              auto files = utils::io::get_files_in_dir (system_templates_dir);
               std::transform (
                 files.begin (), files.end (), std::back_inserter (templates_),
                 [] (const auto &p) { return fs::path (p.toStdString ()); });
@@ -122,7 +122,7 @@ ProjectManager::getNextAvailableProjectName (
     directory.toDisplayString ());
   auto tmp =
     fs::path (directory.toLocalFile ().toStdString ()) / name.toStdString ();
-  auto dir = io_get_next_available_filepath (tmp);
+  auto dir = utils::io::get_next_available_filepath (tmp);
   auto ret = QString::fromStdString (fs::path (dir).filename ().string ());
   z_debug ("Next available untitled project name for '{}': {}", tmp, ret);
   return ret;
@@ -234,7 +234,7 @@ ProjectManager::createNewProject (
       catch (const ZrythmException &e)
         {
           z_warning ("Failed to create project: {}", e.what ());
-          return ProjectLoadResult (e.what ());
+          return ProjectLoadResult (QString::fromUtf8 (e.what ()));
         }
     });
   project_watcher_.setFuture (future);
@@ -256,7 +256,7 @@ ProjectManager::loadProject (const QString &filepath)
         return ProjectLoadResult (project);
       }
 
-    return ProjectLoadResult (QString ("Failed to load project"));
+    return ProjectLoadResult (tr ("Failed to load project"));
   });
   project_watcher_.setFuture (future);
 }

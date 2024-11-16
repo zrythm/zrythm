@@ -13,8 +13,6 @@
 #  include "common/utils/math.h"
 #  include "common/utils/objects.h"
 
-#  include <glib.h>
-
 #  include <sndfile.h>
 
 void
@@ -82,7 +80,7 @@ z_chromaprint_check_fingerprint_similarity (
   int          expected_size)
 {
   const unsigned_frame_t max_frames =
-    MIN (audio_get_num_frames (file1), audio_get_num_frames (file2));
+    std::min (audio_get_num_frames (file1), audio_get_num_frames (file2));
   ChromaprintFingerprint * fp1 =
     z_chromaprint_get_fingerprint (file1, max_frames);
   z_return_if_fail (fp1);
@@ -91,7 +89,7 @@ z_chromaprint_check_fingerprint_similarity (
     z_chromaprint_get_fingerprint (file2, max_frames);
   z_return_if_fail (fp2);
 
-  int min = MIN (fp1->size, fp2->size);
+  int min = std::min (fp1->size, fp2->size);
   z_return_if_fail (min != 0);
   int rate = 0;
   for (int i = 0; i < min; i++)

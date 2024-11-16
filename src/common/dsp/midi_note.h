@@ -29,14 +29,19 @@ constexpr int MIDI_NOTE_MAGIC = 3588791;
  * A MIDI note inside a Region shown in the piano roll.
  */
 class MidiNote final
-    : public MuteableObject,
+    : public QObject,
+      public MuteableObject,
       public RegionOwnedObjectImpl<MidiRegion>,
       public LengthableObject,
       public ICloneable<MidiNote>,
       public ISerializable<MidiNote>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (MidiNote)
+
 public:
-  MidiNote ();
+  MidiNote (QObject * parent = nullptr);
 
   /**
    * Creates a new MidiNote.
@@ -46,7 +51,10 @@ public:
     Position                start_pos,
     Position                end_pos,
     uint8_t                 val,
-    uint8_t                 vel);
+    uint8_t                 vel,
+    QObject *               parent = nullptr);
+  Q_DISABLE_COPY_MOVE (MidiNote)
+  ~MidiNote () override = default;
 
   void init_loaded () override;
 
@@ -73,26 +81,27 @@ public:
    *
    * @param delta Y (0-127)
    */
-  void shift_pitch (const int delta);
+  void shift_pitch (int delta);
 
   /**
    * Returns if the MIDI note is hit at given pos (in the timeline).
    */
-  bool is_hit (const signed_frame_t gframes) const;
+  bool is_hit (signed_frame_t gframes) const;
 
   /**
    * Sends a note off if currently playing and sets
    * the pitch of the MidiNote.
    */
-  void set_val (const uint8_t val);
+  void set_val (uint8_t val);
 
-  ArrangerObjectPtr find_in_project () const override;
+  std::optional<ArrangerObjectPtrVariant> find_in_project () const override;
 
   std::string print_to_str () const override;
 
-  ArrangerObjectPtr add_clone_to_project (bool fire_events) const override;
+  ArrangerObjectPtrVariant
+  add_clone_to_project (bool fire_events) const override;
 
-  ArrangerObjectPtr insert_clone_to_project () const override;
+  ArrangerObjectPtrVariant insert_clone_to_project () const override;
 
   // friend bool operator== (const MidiNote &lhs, const MidiNote &rhs);
 
@@ -106,7 +115,7 @@ public:
 
 public:
   /** Velocity. */
-  std::shared_ptr<Velocity> vel_;
+  Velocity * vel_ = nullptr;
 
   /** The note/pitch, (0-127). */
   uint8_t val_ = 0;
@@ -140,7 +149,7 @@ operator== (const MidiNote &lhs, const MidiNote &rhs)
 
 DEFINE_OBJECT_FORMATTER (MidiNote, [] (const MidiNote &mn) {
   return fmt::format (
-    "MidiNote [{} ~ {}]: note {}, vel {}", mn.pos_, mn.end_pos_, mn.val_,
+    "MidiNote [{} ~ {}]: note {}, vel {}", *mn.pos_, *mn.end_pos_, mn.val_,
     mn.vel_->vel_);
 });
 

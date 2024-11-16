@@ -13,10 +13,18 @@ ActionController::createEmptyTrack (int type)
 
   try
     {
-      Track::create_empty_with_action (tt);
+      auto * track_base = Track::create_empty_with_action (tt);
+      std::visit (
+        [&] (auto &&track) {
+          using TrackT = base_type<decltype (track)>;
+          z_debug (
+            "created {} track: {}", typename_to_string<TrackT> (),
+            track->get_name ());
+        },
+        convert_to_variant<TrackPtrVariant> (track_base));
     }
   catch (const ZrythmException &e)
     {
-      e.handle (_ ("Failed to create track"));
+      e.handle (QObject::tr ("Failed to create track"));
     }
 }

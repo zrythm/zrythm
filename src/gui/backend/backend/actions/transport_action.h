@@ -64,7 +64,7 @@ public:
     musical_mode_ = other.musical_mode_;
   }
 
-  std::string to_string () const override;
+  QString to_string () const override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

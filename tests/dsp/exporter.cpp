@@ -28,7 +28,7 @@ print_progress_and_sleep (ProgressInfo &info)
       auto [progress, progress_str] = info.get_progress ();
       z_info ("progress: {:.1f}", progress * 100.0);
       constexpr auto sleep_time = 10'000;
-      g_usleep (sleep_time);
+      std::this_thread::sleep_for (std::chrono::milliseconds (sleep_time));
     }
 }
 

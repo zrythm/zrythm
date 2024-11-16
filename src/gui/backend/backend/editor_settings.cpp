@@ -7,7 +7,7 @@
 void
 EditorSettings::set_scroll_start_x (int x, bool validate)
 {
-  scroll_start_x_ = MAX (x, 0);
+  scroll_start_x_ = std::max (x, 0);
   if (validate)
     {
     }

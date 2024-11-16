@@ -69,7 +69,7 @@ public:
     int                              new_val,
     zrythm::plugins::CarlaBridgeMode new_bridge_mode);
 
-  std::string to_string () const override;
+  QString to_string () const override;
 
   void get_plugins (std::vector<zrythm::plugins::Plugin *> &plugins) override
   {

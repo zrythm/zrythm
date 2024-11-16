@@ -12,7 +12,9 @@ class RegionOwnedObject
       public ISerializable<RegionOwnedObject>
 {
 public:
-  virtual ~RegionOwnedObject () = default;
+  RegionOwnedObject () = default;
+  ~RegionOwnedObject () override = default;
+  Q_DISABLE_COPY_MOVE (RegionOwnedObject)
 
   /**
    * Sets the region the object belongs to and the related index inside it.
@@ -43,7 +45,7 @@ public:
  * @tparam RegionT Region class.
  */
 template <typename RegionT>
-class RegionOwnedObjectImpl : virtual public RegionOwnedObject
+class RegionOwnedObjectImpl : public RegionOwnedObject
 {
 public:
   RegionOwnedObjectImpl () = default;
@@ -52,8 +54,8 @@ public:
     region_id_ = region_id;
     index_ = index;
   }
-
-  virtual ~RegionOwnedObjectImpl () = default;
+  Q_DISABLE_COPY_MOVE (RegionOwnedObjectImpl)
+  ~RegionOwnedObjectImpl () override = default;
 
   /**
    * Gets the global (timeline-based) start Position of the object.

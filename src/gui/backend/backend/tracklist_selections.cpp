@@ -18,42 +18,30 @@
 #include "gui/backend/backend/tracklist_selections.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
+using namespace zrythm;
 
-Track *
+TrackPtrVariant
 SimpleTracklistSelections::get_highest_track () const
 {
-  int     min_pos = 1000;
-  Track * min_track = nullptr;
-  for (const auto &track_name : track_names_)
-    {
-      Track * track = Track::find_by_name (track_name);
-      if (track && track->pos_ < min_pos)
-        {
-          min_pos = track->pos_;
-          min_track = track;
-        }
-    }
+  auto it =
+    std::ranges::min_element (track_names_, {}, [this] (const auto &name) {
+      auto track = tracklist_->find_track_by_name (name);
+      return std::visit ([] (const auto &t) { return t->pos_; }, *track);
+    });
 
-  return min_track;
+  return *tracklist_->find_track_by_name (*it);
 }
 
-Track *
+TrackPtrVariant
 SimpleTracklistSelections::get_lowest_track () const
 {
-  int     max_pos = -1;
-  Track * max_track = nullptr;
-  for (const auto &track_name : track_names_)
-    {
-      Track * track = Track::find_by_name (track_name);
-      if (track && track->pos_ > max_pos)
-        {
-          max_pos = track->pos_;
-          max_track = track;
-        }
-    }
+  auto it =
+    std::ranges::max_element (track_names_, {}, [this] (const auto &name) {
+      auto track = tracklist_->find_track_by_name (name);
+      return std::visit ([] (const auto &t) { return t->pos_; }, *track);
+    });
 
-  return max_track;
+  return *tracklist_->find_track_by_name (*it);
 }
 
 Track *
@@ -193,6 +181,22 @@ SimpleTracklistSelections::select_foldable_children ()
 }
 
 void
+SimpleTracklistSelections::sort ()
+{
+  std::sort (
+    track_names_.begin (), track_names_.end (),
+    [&] (const auto &a, const auto &b) {
+      auto track_a_var = tracklist_->find_track_by_name (a);
+      auto track_b_var = tracklist_->find_track_by_name (b);
+      return std::visit (
+        [&] (auto &&track_a, auto &&track_b) {
+          return track_a->pos_ < track_b->pos_;
+        },
+        *track_a_var, *track_b_var);
+    });
+}
+
+void
 SimpleTracklistSelections::
   handle_click (Track &track, bool ctrl, bool shift, bool dragged)
 {
@@ -217,20 +221,22 @@ SimpleTracklistSelections::
         {
           if (track_names_.size () > 0)
             {
-              Track * highest = get_highest_track ();
-              Track * lowest = get_lowest_track ();
-              z_return_if_fail (
-                IS_TRACK_AND_NONNULL (highest) && IS_TRACK_AND_NONNULL (lowest));
-              if (track.pos_ > highest->pos_)
-                {
-                  /* select all tracks in between */
-                  add_tracks_in_range (highest->pos_, track.pos_, true);
-                }
-              else if (track.pos_ < lowest->pos_)
-                {
-                  /* select all tracks in between */
-                  add_tracks_in_range (track.pos_, lowest->pos_, true);
-                }
+              auto highest_var = get_highest_track ();
+              auto lowest_var = get_lowest_track ();
+              std::visit (
+                [&] (auto &&highest, auto &&lowest) {
+                  if (track.pos_ > highest->pos_)
+                    {
+                      /* select all tracks in between */
+                      add_tracks_in_range (highest->pos_, track.pos_, true);
+                    }
+                  else if (track.pos_ < lowest->pos_)
+                    {
+                      /* select all tracks in between */
+                      add_tracks_in_range (track.pos_, lowest->pos_, true);
+                    }
+                },
+                highest_var, lowest_var);
             }
         }
       else if (ctrl)
@@ -572,6 +578,6 @@ TracklistSelections::paste_to_pos (int pos)
     }
   catch (const ZrythmException &e)
     {
-      e.handle (_ ("Failed to paste tracks"));
+      e.handle (QObject::tr ("Failed to paste tracks"));
     }
 }

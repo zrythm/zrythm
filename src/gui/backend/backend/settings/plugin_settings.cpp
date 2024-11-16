@@ -7,6 +7,7 @@
 #include "common/plugins/plugin_descriptor.h"
 #include "common/utils/directory_manager.h"
 #include "common/utils/gtest_wrapper.h"
+#include "common/utils/io.h"
 #include "common/utils/string.h"
 #include "gui/backend/backend/actions/port_connection_action.h"
 #include "gui/backend/backend/actions/tracklist_selections.h"
@@ -14,9 +15,7 @@
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
-
-#include <glibmm.h>
+using namespace zrythm;
 
 constexpr const char * PLUGIN_SETTINGS_JSON_FILENAME = "plugin-settings.json";
 
@@ -65,13 +64,12 @@ PluginSetting::print () const
 {
   z_debug (
     "[PluginSetting]\n"
-    "descr.uri=%s, "
-    "open_with_carla=%d, "
-    "force_generic_ui=%d, "
-    "bridge_mode=%s, "
-    "last_instantiated_time=%" G_GINT64_FORMAT
-    ", "
-    "num_instantiations=%d",
+    "descr.uri={}, "
+    "open_with_carla={}, "
+    "force_generic_ui={}, "
+    "bridge_mode={}, "
+    "last_instantiated_time={}, "
+    "num_instantiations={}",
     this->descr_->uri_, this->open_with_carla_, this->force_generic_ui_,
     ENUM_NAME (this->bridge_mode_), this->last_instantiated_time_,
     this->num_instantiations_);
@@ -242,7 +240,8 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
           num_actions++;
 
           /* rename group */
-          auto name = format_str (_ ("{} Output"), descr_->name_);
+          auto name = format_str (
+            QObject::tr ("{} Output").toStdString (), descr_->name_);
           UNDO_MANAGER->perform (std::make_unique<RenameTrackAction> (
             *group, *PORT_CONNECTIONS_MGR, name));
           num_actions++;
@@ -319,7 +318,7 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
     }
   catch (const ZrythmException &e)
     {
-      e.handle (_ ("Failed to instantiate plugin"));
+      e.handle (QObject::tr ("Failed to instantiate plugin"));
       has_errors = true;
     }
 
@@ -355,10 +354,10 @@ on_contains_multiple_outputs_response (
   if (string_is_equal (response, "yes"))
     {
       GtkWidget * stereo_dialog = adw_message_dialog_new (
-        GTK_WINDOW (MAIN_WINDOW), _ ("Stereo?"), _ ("Are the outputs stereo?"));
+        GTK_WINDOW (MAIN_WINDOW), QObject::tr ("Stereo?"), QObject::tr ("Are the outputs stereo?"));
       gtk_window_set_modal (GTK_WINDOW (stereo_dialog), true);
       adw_message_dialog_add_responses (
-        ADW_MESSAGE_DIALOG (stereo_dialog), "yes", _ ("_Yes"), "no", _ ("_No"),
+        ADW_MESSAGE_DIALOG (stereo_dialog), "yes", QObject::tr ("_Yes"), "no", QObject::tr ("_No"),
         nullptr);
       adw_message_dialog_set_default_response (
         ADW_MESSAGE_DIALOG (stereo_dialog), "yes");
@@ -388,11 +387,11 @@ PluginSetting::activate () const
     {
 #if 0
       AdwMessageDialog * dialog = ADW_MESSAGE_DIALOG (adw_message_dialog_new (
-        GTK_WINDOW (MAIN_WINDOW), _ ("Auto-route?"),
+        GTK_WINDOW (MAIN_WINDOW), QObject::tr ("Auto-route?"),
         _ (
           "This plugin contains multiple audio outputs. Would you like to auto-route each output to a separate FX track?")));
       adw_message_dialog_add_responses (
-        dialog, "cancel", _ ("_Cancel"), "no", _ ("_No"), "yes", _ ("_Yes"),
+        dialog, "cancel", QObject::tr ("_Cancel"), "no", QObject::tr ("_No"), "yes", QObject::tr ("_Yes"),
         nullptr);
       adw_message_dialog_set_close_response (dialog, "cancel");
       adw_message_dialog_set_response_appearance (
@@ -413,7 +412,7 @@ PluginSetting::activate () const
 void
 PluginSetting::increment_num_instantiations ()
 {
-  last_instantiated_time_ = g_get_real_time ();
+  last_instantiated_time_ = QDateTime::currentMSecsSinceEpoch ();
   ++num_instantiations_;
 
   S_PLUGIN_SETTINGS->set (*this, true);
@@ -443,9 +442,9 @@ PluginSettings::serialize_to_file ()
   z_debug ("Writing plugin settings to {}...", path);
   try
     {
-      Glib::file_set_contents (path.string (), json_str.c_str ());
+      utils::io::set_file_contents (path, json_str.c_str ());
     }
-  catch (const Glib::FileError &e)
+  catch (const ZrythmException &e)
     {
       throw ZrythmException (
         format_str ("Unable to write plugin settings: {}", e.what ()));
@@ -466,9 +465,9 @@ PluginSettings::read_or_new ()
   std::string json;
   try
     {
-      json = Glib::file_get_contents (path.string ());
+      json = utils::io::read_file_contents (path).toStdString ();
     }
-  catch (const Glib::Error &e)
+  catch (const ZrythmException &e)
     {
       z_warning ("Failed to create plugin settings from {}", path);
       return ret;

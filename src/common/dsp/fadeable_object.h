@@ -8,12 +8,14 @@
 #include "common/dsp/lengthable_object.h"
 #include "common/dsp/position.h"
 
+#define DEFINE_FADEABLE_OBJECT_QML_PROPERTIES(ClassType)
+
 class FadeableObject
     : virtual public LengthableObject,
       public ISerializable<FadeableObject>
 {
 public:
-  virtual ~FadeableObject () = default;
+  ~FadeableObject () override = default;
 
   /**
    * Getter.

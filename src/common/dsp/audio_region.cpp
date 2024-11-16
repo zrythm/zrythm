@@ -17,11 +17,18 @@
 #include "common/utils/logger.h"
 #include "common/utils/math.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
-
-#include <glib/gi18n.h>
+#include "gui/backend/backend/settings_manager.h"
 
 #include <fmt/format.h>
+
+using namespace zrythm;
+
+AudioRegion::AudioRegion (QObject * parent)
+    : ArrangerObject (Type::Region), LengthableObject (), QObject (parent)
+{
+  ArrangerObject::parent_base_qproperties (*this);
+  LengthableObject::parent_base_qproperties (*this);
+}
 
 void
 AudioRegion::init_default_constructed (
@@ -156,7 +163,7 @@ AudioRegion::replace_frames (
       int id = AUDIO_POOL->duplicate_clip (clip->pool_id_, false);
       if (id != prev_id || id < 0)
         {
-          throw ZrythmException (_ ("Failed to duplicate audio clip"));
+          throw ZrythmException (QObject::tr ("Failed to duplicate audio clip"));
         }
       clip = AUDIO_POOL->get_clip (id);
       z_return_if_fail (clip);
@@ -221,7 +228,7 @@ AudioRegion::fill_stereo_ports (
 {
   AudioClip * clip = get_clip ();
   z_return_if_fail (clip);
-  auto * track = dynamic_cast<AudioTrack *> (get_track ());
+  auto * track = std::get<AudioTrack *> (get_track ());
 
   /* if timestretching in the timeline, skip processing */
 #if 0
@@ -399,27 +406,29 @@ AudioRegion::fill_stereo_ports (
   /* apply fades */
   const signed_frame_t num_frames_in_fade_in_area = fade_in_pos_.frames_;
   const signed_frame_t num_frames_in_fade_out_area =
-    end_pos_.frames_ - (fade_out_pos_.frames_ + pos_.frames_);
+    end_pos_->frames_ - (fade_out_pos_.frames_ + pos_->frames_);
   const signed_frame_t local_builtin_fade_out_start_frames =
-    end_pos_.frames_ - (AUDIO_REGION_BUILTIN_FADE_FRAMES + pos_.frames_);
+    end_pos_->frames_ - (AUDIO_REGION_BUILTIN_FADE_FRAMES + pos_->frames_);
   for (nframes_t j = 0; j < time_nfo.nframes_; j++)
     {
       const unsigned_frame_t current_cycle_frame = time_nfo.local_offset_ + j;
 
       /* current frame local to region start */
       const signed_frame_t current_local_frame =
-        (signed_frame_t) (time_nfo.g_start_frame_w_offset_ + j) - pos_.frames_;
+        (signed_frame_t) (time_nfo.g_start_frame_w_offset_ + j) - pos_->frames_;
 
       /* skip to fade out (or builtin fade out) if not in any fade area */
       if (
-        current_local_frame
-          >= MAX (fade_in_pos_.frames_, AUDIO_REGION_BUILTIN_FADE_FRAMES)
-        && current_local_frame
-             < MIN (fade_out_pos_.frames_, local_builtin_fade_out_start_frames))
+        current_local_frame >= std::max (
+          fade_in_pos_.frames_,
+          static_cast<decltype (fade_in_pos_.frames_)> (
+            AUDIO_REGION_BUILTIN_FADE_FRAMES))
+        && current_local_frame < std::min (
+             fade_out_pos_.frames_, local_builtin_fade_out_start_frames))
         [[likely]]
         {
           j +=
-            MIN (fade_out_pos_.frames_, local_builtin_fade_out_start_frames)
+            std::min (fade_out_pos_.frames_, local_builtin_fade_out_start_frames)
             - current_local_frame;
           j--;
           continue;
@@ -508,7 +517,7 @@ AudioRegion::get_musical_mode () const
   switch (musical_mode_)
     {
     case MusicalMode::Inherit:
-      return g_settings_get_boolean (S_UI, "musical-mode");
+      return gui::SettingsManager::musicalMode ();
     case MusicalMode::Off:
       return false;
     case MusicalMode::On:
@@ -528,12 +537,12 @@ AudioRegion::fix_positions (double frames_per_tick)
   /* use global positions because sometimes the loop appears to have 1 more
    * frame due to rounding to nearest frame*/
   signed_frame_t loop_start_global = Position::get_frames_from_ticks (
-    pos_.ticks_ + loop_start_pos_.ticks_, frames_per_tick);
+    pos_->ticks_ + loop_start_pos_.ticks_, frames_per_tick);
   signed_frame_t loop_end_global = Position::get_frames_from_ticks (
-    pos_.ticks_ + loop_end_pos_.ticks_, frames_per_tick);
+    pos_->ticks_ + loop_end_pos_.ticks_, frames_per_tick);
   signed_frame_t loop_len = loop_end_global - loop_start_global;
   /*z_debug ("loop  len: %" SIGNED_FRAME_FORMAT, loop_len);*/
-  signed_frame_t region_len = end_pos_.frames_ - pos_.frames_;
+  signed_frame_t region_len = end_pos_->frames_ - pos_->frames_;
 
   signed_frame_t extra_loop_frames =
     loop_len - (signed_frame_t) clip->num_frames_;
@@ -548,7 +557,7 @@ AudioRegion::fix_positions (double frames_per_tick)
             "fixing position for audio region. before: {}", print_to_str ());
           if (loop_len == region_len)
             {
-              end_pos_.add_frames (-1);
+              end_pos_->add_frames (-1);
               if (fade_out_pos_.frames_ == loop_end_pos_.frames_)
                 {
                   fade_out_pos_.add_frames (-1);
@@ -571,7 +580,7 @@ AudioRegion::fix_positions (double frames_per_tick)
   return false;
 }
 
-ArrangerSelections *
+std::optional<ClipEditorArrangerSelectionsPtrVariant>
 AudioRegion::get_arranger_selections () const
 {
   return AUDIO_SELECTIONS.get ();
@@ -589,9 +598,9 @@ AudioRegion::validate (bool is_project, double frames_per_tick) const
       the clip. use global positions because sometimes the loop appears to have
       1 more frame due to rounding to nearest frame*/
       signed_frame_t loop_start_global = Position::get_frames_from_ticks (
-        pos_.ticks_ + loop_start_pos_.ticks_, frames_per_tick);
+        pos_->ticks_ + loop_start_pos_.ticks_, frames_per_tick);
       signed_frame_t loop_end_global = Position::get_frames_from_ticks (
-        pos_.ticks_ + loop_end_pos_.ticks_, frames_per_tick);
+        pos_->ticks_ + loop_end_pos_.ticks_, frames_per_tick);
       signed_frame_t loop_len = loop_end_global - loop_start_global;
 
       if (loop_len > (signed_frame_t) clip->num_frames_)
@@ -627,7 +636,8 @@ AudioRegion::init_after_cloning (const AudioRegion &other)
     other.clip_ ? std::make_optional (other.clip_->name_) : std::nullopt,
     other.clip_ ? other.clip_->channels_ : 0,
     other.clip_ ? other.clip_->bit_depth_ : ENUM_INT_TO_VALUE (BitDepth, 0),
-    other.pos_, other.id_.track_name_hash_, other.id_.lane_pos_, other.id_.idx_);
+    *other.pos_, other.id_.track_name_hash_, other.id_.lane_pos_,
+    other.id_.idx_);
   pool_id_ = other.pool_id_;
   gain_ = other.gain_;
   musical_mode_ = other.musical_mode_;

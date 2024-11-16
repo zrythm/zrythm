@@ -40,8 +40,8 @@ enum class AutomationRecordMode
 DEFINE_ENUM_FORMATTER (
   AutomationRecordMode,
   AutomationRecordMode,
-  N_ ("Touch"),
-  N_ ("Latch"));
+  QT_TR_NOOP_UTF8 ("Touch"),
+  QT_TR_NOOP_UTF8 ("Latch"));
 
 class AutomationTrack final
     : public QObject,
@@ -61,6 +61,7 @@ class AutomationTrack final
   Q_PROPERTY (
     int recordMode READ getRecordMode WRITE setRecordMode NOTIFY
       recordModeChanged)
+  DEFINE_REGION_OWNER_QML_PROPERTIES (AutomationTrack)
 
 public:
   AutomationTrack () = default;
@@ -244,7 +245,7 @@ public:
 
   void set_caches (CacheType types);
 
-  bool contains_automation () const { return !this->regions_.empty (); }
+  bool contains_automation () const { return !region_list_->regions_.empty (); }
 
   bool verify () const;
 

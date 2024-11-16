@@ -10,6 +10,7 @@
 
 #include "common/utils/traits.h"
 
+#include <QObject>
 #include <QString>
 
 #include "juce_wrapper.h"
@@ -103,7 +104,8 @@
                    enum_strings = { __VA_ARGS__ }; \
       const char * str = enum_strings.at (static_cast<int> (val)); \
       return format_to ( \
-        ctx.out (), FMT_STRING ("{}"), translate_ ? _ (str) : str); \
+        ctx.out (), FMT_STRING ("{}"), \
+        translate_ ? QObject::tr (str).toStdString ().c_str () : str); \
     } \
   }; \
   } \
@@ -149,6 +151,13 @@ std::string
 format_str (std::string_view format, Args &&... args)
 {
   return fmt::vformat (format, fmt::make_format_args (args...));
+}
+
+template <typename... Args>
+QString
+format_qstr (const QString &format, Args &&... args)
+{
+  return QString::fromStdString (format_str (format.toStdString (), args...));
 }
 
 // Formatter for std::filesystem::path

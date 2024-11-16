@@ -15,8 +15,6 @@
 
 #include "common/utils/pcg_rand.h"
 
-#include <glib.h>
-
 #include <time.h>
 
 PCGRand::PCGRand ()

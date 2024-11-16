@@ -22,8 +22,10 @@
 #include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/actions/tracklist_selections.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
+#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
+
+using namespace zrythm;
 
 Fader::Fader (QObject * parent) : QObject (parent) { }
 
@@ -80,7 +82,9 @@ std::unique_ptr<ControlPort>
 Fader::create_swap_phase_port (bool passthrough)
 {
   auto swap_phase = std::make_unique<ControlPort> (
-    passthrough ? _ ("Prefader Swap Phase") : _ ("Fader Swap Phase"));
+    passthrough
+      ? QObject::tr ("Prefader Swap Phase").toStdString ()
+      : QObject::tr ("Fader Swap Phase").toStdString ());
   swap_phase->id_->sym_ =
     passthrough ? "prefader_swap_phase" : "fader_swap_phase";
   swap_phase->id_->flags2_ |= PortIdentifier::Flags2::FaderSwapPhase;
@@ -101,7 +105,9 @@ Fader::Fader (
   /* set volume */
   float amp = 1.f;
   amp_ = std::make_unique<ControlPort> (
-    passthrough ? _ ("Prefader Volume") : _ ("Fader Volume"));
+    passthrough
+      ? QObject::tr ("Prefader Volume").toStdString ()
+      : QObject::tr ("Fader Volume").toStdString ());
   amp_->set_owner (this);
   amp_->id_->sym_ = passthrough ? "prefader_volume" : "fader_volume";
   amp_->deff_ = amp;
@@ -119,7 +125,9 @@ Fader::Fader (
   /* set pan */
   float balance = 0.5f;
   balance_ = std::make_unique<ControlPort> (
-    passthrough ? _ ("Prefader Balance") : _ ("Fader Balance"));
+    passthrough
+      ? QObject::tr ("Prefader Balance").toStdString ()
+      : QObject::tr ("Fader Balance").toStdString ());
   balance_->set_owner (this);
   balance_->id_->sym_ = passthrough ? "prefader_balance" : "fader_balance";
   balance_->set_control_value (balance, 0, 0);
@@ -131,7 +139,9 @@ Fader::Fader (
 
   /* set mute */
   mute_ = std::make_unique<ControlPort> (
-    passthrough ? _ ("Prefader Mute") : _ ("Fader Mute"));
+    passthrough
+      ? QObject::tr ("Prefader Mute").toStdString ()
+      : QObject::tr ("Fader Mute").toStdString ());
   mute_->set_owner (this);
   mute_->id_->sym_ = passthrough ? "prefader_mute" : "fader_mute";
   mute_->set_toggled (false, false);
@@ -144,7 +154,9 @@ Fader::Fader (
 
   /* set solo */
   solo_ = std::make_unique<ControlPort> (
-    passthrough ? _ ("Prefader Solo") : _ ("Fader Solo"));
+    passthrough
+      ? QObject::tr ("Prefader Solo").toStdString ()
+      : QObject::tr ("Fader Solo").toStdString ());
   solo_->set_owner (this);
   solo_->id_->sym_ = passthrough ? "prefader_solo" : "fader_solo";
   solo_->set_toggled (false, false);
@@ -153,7 +165,9 @@ Fader::Fader (
 
   /* set listen */
   listen_ = std::make_unique<ControlPort> (
-    passthrough ? _ ("Prefader Listen") : _ ("Fader Listen"));
+    passthrough
+      ? QObject::tr ("Prefader Listen").toStdString ()
+      : QObject::tr ("Fader Listen").toStdString ());
   listen_->set_owner (this);
   listen_->id_->sym_ = passthrough ? "prefader_listen" : "fader_listen";
   listen_->set_toggled (false, false);
@@ -162,7 +176,9 @@ Fader::Fader (
 
   /* set mono compat */
   mono_compat_enabled_ = std::make_unique<ControlPort> (
-    passthrough ? _ ("Prefader Mono Compat") : _ ("Fader Mono Compat"));
+    passthrough
+      ? QObject::tr ("Prefader Mono Compat").toStdString ()
+      : QObject::tr ("Fader Mono Compat").toStdString ());
   mono_compat_enabled_->set_owner (this);
   mono_compat_enabled_->id_->sym_ =
     passthrough ? "prefader_mono_compat_enabled" : "fader_mono_compat_enabled";
@@ -179,29 +195,29 @@ Fader::Fader (
     type == Type::AudioChannel || type == Type::Monitor
     || type == Type::SampleProcessor)
     {
-      const char * name = nullptr;
-      const char * sym = nullptr;
+      std::string name;
+      std::string sym;
       if (type == Type::AudioChannel)
         {
           if (passthrough)
             {
-              name = _ ("Ch Pre-Fader in");
+              name = QObject::tr ("Ch Pre-Fader in").toStdString ();
               sym = "ch_prefader_in";
             }
           else
             {
-              name = _ ("Ch Fader in");
+              name = QObject::tr ("Ch Fader in").toStdString ();
               sym = "ch_fader_in";
             }
         }
       else if (type == Type::SampleProcessor)
         {
-          name = _ ("Sample Processor Fader in");
+          name = QObject::tr ("Sample Processor Fader in").toStdString ();
           sym = "sample_processor_fader_in";
         }
       else
         {
-          name = _ ("Monitor Fader in");
+          name = QObject::tr ("Monitor Fader in").toStdString ();
           sym = "monitor_fader_in";
         }
 
@@ -215,23 +231,23 @@ Fader::Fader (
         {
           if (passthrough)
             {
-              name = _ ("Ch Pre-Fader out");
+              name = QObject::tr ("Ch Pre-Fader out").toStdString ();
               sym = "ch_prefader_out";
             }
           else
             {
-              name = _ ("Ch Fader out");
+              name = QObject::tr ("Ch Fader out").toStdString ();
               sym = "ch_fader_out";
             }
         }
       else if (type == Type::SampleProcessor)
         {
-          name = _ ("Sample Processor Fader out");
+          name = QObject::tr ("Sample Processor Fader out").toStdString ();
           sym = "sample_processor_fader_out";
         }
       else
         {
-          name = _ ("Monitor Fader out");
+          name = QObject::tr ("Monitor Fader out").toStdString ();
           sym = "monitor_fader_out";
         }
 
@@ -245,16 +261,16 @@ Fader::Fader (
   if (type == Type::MidiChannel)
     {
       /* MIDI in */
-      const char * name = nullptr;
-      const char * sym = nullptr;
+      std::string name;
+      std::string sym;
       if (passthrough)
         {
-          name = _ ("Ch MIDI Pre-Fader in");
+          name = QObject::tr ("Ch MIDI Pre-Fader in").toStdString ();
           sym = "ch_midi_prefader_in";
         }
       else
         {
-          name = _ ("Ch MIDI Fader in");
+          name = QObject::tr ("Ch MIDI Fader in").toStdString ();
           sym = "ch_midi_fader_in";
         }
       midi_in_ = std::make_unique<MidiPort> (name, PortFlow::Input);
@@ -264,12 +280,12 @@ Fader::Fader (
       /* MIDI out */
       if (passthrough)
         {
-          name = _ ("Ch MIDI Pre-Fader out");
+          name = QObject::tr ("Ch MIDI Pre-Fader out").toStdString ();
           sym = "ch_midi_prefader_out";
         }
       else
         {
-          name = _ ("Ch MIDI Fader out");
+          name = QObject::tr ("Ch MIDI Fader out").toStdString ();
           sym = "ch_midi_fader_out";
         }
       midi_out_ = std::make_unique<MidiPort> (name, PortFlow::Output);
@@ -281,7 +297,17 @@ Fader::Fader (
 Fader *
 Fader::find_from_port_identifier (const PortIdentifier &id)
 {
-  auto flag2 = id.flags2_;
+  const auto flag2 = id.flags2_;
+
+  if (ENUM_BITSET_TEST (
+        PortIdentifier::Flags2, flag2, PortIdentifier::Flags2::MonitorFader))
+    return MONITOR_FADER.get ();
+  if (
+    ENUM_BITSET_TEST (
+      PortIdentifier::Flags2, flag2,
+      PortIdentifier::Flags2::SampleProcessorFader))
+    return SAMPLE_PROCESSOR->fader_.get ();
+
   auto tr = TRACKLIST->find_track_by_name_hash (id.track_name_hash_);
   if (
     !tr
@@ -292,32 +318,29 @@ Fader::find_from_port_identifier (const PortIdentifier &id)
       tr = SAMPLE_PROCESSOR->tracklist_->find_track_by_name_hash (
         id.track_name_hash_);
     }
-  if (ENUM_BITSET_TEST (
-        PortIdentifier::Flags2, flag2, PortIdentifier::Flags2::MonitorFader))
-    return MONITOR_FADER.get ();
-  else if (
-    ENUM_BITSET_TEST (
-      PortIdentifier::Flags2, flag2,
-      PortIdentifier::Flags2::SampleProcessorFader))
-    return SAMPLE_PROCESSOR->fader_.get ();
-  else if (
-    ENUM_BITSET_TEST (
-      PortIdentifier::Flags2, flag2, PortIdentifier::Flags2::Prefader))
-    {
-      auto channel_track = dynamic_cast<ChannelTrack *> (tr);
-      z_return_val_if_fail (channel_track, nullptr);
-      return channel_track->channel_->prefader_;
-    }
-  else if (
-    ENUM_BITSET_TEST (
-      PortIdentifier::Flags2, flag2, PortIdentifier::Flags2::Postfader))
-    {
-      auto channel_track = dynamic_cast<ChannelTrack *> (tr);
-      z_return_val_if_fail (channel_track, nullptr);
-      return channel_track->channel_->fader_;
-    }
 
-  z_return_val_if_reached (nullptr);
+  z_return_val_if_fail (tr, nullptr);
+
+  return std::visit (
+    [&] (auto &&t) -> Fader * {
+      if (ENUM_BITSET_TEST (
+            PortIdentifier::Flags2, flag2, PortIdentifier::Flags2::Prefader))
+        {
+          auto channel_track = dynamic_cast<ChannelTrack *> (t);
+          z_return_val_if_fail (channel_track, nullptr);
+          return channel_track->channel_->prefader_;
+        }
+      if (ENUM_BITSET_TEST (
+            PortIdentifier::Flags2, flag2, PortIdentifier::Flags2::Postfader))
+        {
+          auto channel_track = dynamic_cast<ChannelTrack *> (t);
+          z_return_val_if_fail (channel_track, nullptr);
+          return channel_track->channel_->fader_;
+        }
+
+      z_return_val_if_reached (nullptr);
+    },
+    tr.value ());
 }
 
 void
@@ -371,10 +394,13 @@ Fader::get_implied_soloed () const
   /* check children */
   if (track->can_be_group_target ())
     {
-      auto group_target = dynamic_cast<GroupTargetTrack *> (track);
+      auto * group_target = dynamic_cast<GroupTargetTrack *> (track);
       for (const auto &child_hash : group_target->children_)
         {
-          auto child_track = TRACKLIST->find_track_by_name_hash (child_hash);
+          auto * child_track = std::visit (
+            [&] (auto &&t) { return dynamic_cast<Track *> (t); },
+            TRACKLIST->find_track_by_name_hash (child_hash).value ());
+
           if (
             child_track
             && (child_track->get_soloed () || child_track->get_implied_soloed ()))
@@ -458,7 +484,7 @@ Fader::set_amp_with_action (float amp_from, float amp_to, bool skip_if_equal)
         }
       catch (const ZrythmException &e)
         {
-          e.handle (_ ("Failed to change volume"));
+          e.handle (QObject::tr ("Failed to change volume"));
         }
     }
 }
@@ -488,7 +514,7 @@ Fader::set_midi_mode (MidiFaderMode mode, bool with_action, bool fire_events)
         }
       catch (const ZrythmException &e)
         {
-          e.handle (_ ("Failed to set MIDI mode"));
+          e.handle (QObject::tr ("Failed to set MIDI mode"));
         }
     }
   else
@@ -545,27 +571,19 @@ Fader::set_fader_val (float fader_val)
 
   if (this == MONITOR_FADER.get ())
     {
-      Glib::RefPtr<Gio::Settings> settings =
-        Gio::Settings::create (S_MONITOR_SCHEMA);
-      settings->set_double ("monitor-vol", static_cast<double> (fader_amp));
+      gui::SettingsManager::get_instance ()->set_monitorVolume (fader_amp);
     }
   else if (this == CONTROL_ROOM->mute_fader_.get ())
     {
-      Glib::RefPtr<Gio::Settings> settings =
-        Gio::Settings::create (S_MONITOR_SCHEMA);
-      settings->set_double ("mute-vol", static_cast<double> (fader_amp));
+      gui::SettingsManager::get_instance ()->set_monitorMuteVolume (fader_amp);
     }
   else if (this == CONTROL_ROOM->listen_fader_.get ())
     {
-      Glib::RefPtr<Gio::Settings> settings =
-        Gio::Settings::create (S_MONITOR_SCHEMA);
-      settings->set_double ("listen-vol", static_cast<double> (fader_amp));
+      gui::SettingsManager::get_instance ()->set_monitorListenVolume (fader_amp);
     }
   else if (this == CONTROL_ROOM->dim_fader_.get ())
     {
-      Glib::RefPtr<Gio::Settings> settings =
-        Gio::Settings::create (S_MONITOR_SCHEMA);
-      settings->set_double ("dim-vol", static_cast<double> (fader_amp));
+      gui::SettingsManager::get_instance ()->set_monitorDimVolume (fader_amp);
     }
 }
 
@@ -588,7 +606,8 @@ Fader::set_fader_val_with_action_from_db (const std::string &str)
     }
   else
     {
-      // ui_show_error_message (_ ("Invalid Value"), _ ("Invalid value"));
+      // ui_show_error_message (QObject::tr ("Invalid Value"), QObject::tr
+      // ("Invalid value"));
     }
 }
 
@@ -878,7 +897,7 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
                 default_fade_frames - fade_in_samples, default_fade_frames,
                 time_nfo.nframes_, mute_amp);
               fade_in_samples -= (int) time_nfo.nframes_;
-              fade_in_samples = MAX (fade_in_samples, 0);
+              fade_in_samples = std::max (fade_in_samples, 0);
               fade_in_samples_.store (fade_in_samples);
             }
 
@@ -887,8 +906,8 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
           if (fading_out_.load ()) [[unlikely]]
             {
               int fade_out_samples = fade_out_samples_.load ();
-              int samples_to_process =
-                MAX (0, MIN (fade_out_samples, (int) time_nfo.nframes_));
+              int samples_to_process = std::max (
+                0, std::min (fade_out_samples, (int) time_nfo.nframes_));
               if (fade_out_samples > 0)
                 {
                   z_return_if_fail_cmp (

@@ -22,8 +22,6 @@
 #include "gui/backend/backend/actions/tracklist_selections.h"
 #include "gui/backend/backend/project.h"
 
-#include <glib/gi18n.h>
-
 Tracklist::Tracklist (QObject * parent) : QAbstractListModel (parent) { }
 
 Tracklist::Tracklist (
@@ -82,6 +80,10 @@ Tracklist::init_loaded (Project * project, SampleProcessor * sample_processor)
     }
 }
 
+// ========================================================================
+// QML Interface
+// ========================================================================
+
 QHash<int, QByteArray>
 Tracklist::roleNames () const
 {
@@ -127,6 +129,8 @@ Tracklist::getTempoTrack () const
   return tempo_track_;
 }
 
+// ========================================================================
+
 std::optional<TrackPtrVariant>
 Tracklist::find_track_by_name (const std::string &name) const
 {
@@ -140,6 +144,32 @@ Tracklist::find_track_by_name (const std::string &name) const
     }
 
   return std::nullopt;
+}
+
+std::optional<TrackPtrVariant>
+Tracklist::find_track_by_name_hash (unsigned int hash) const
+{
+  // z_trace ("called for {}", hash);
+  auto it = [&] () {
+    if (
+      is_in_active_project () && ROUTER && ROUTER->is_processing_thread ()
+      && !is_auditioner ()) [[likely]]
+      {
+        return std::ranges::find_if (tracks_, [hash] (const auto &track) {
+          return Track::from_variant (track)->name_hash_ == hash;
+        });
+      }
+    else
+      {
+        return std::ranges::find_if (tracks_, [hash] (const auto &track) {
+          return Track::from_variant (track)->get_name_hash () == hash;
+        });
+      }
+  }();
+  if (it == tracks_.end ())
+    return std::nullopt;
+
+  return *it;
 }
 
 void
@@ -495,35 +525,6 @@ Tracklist::get_chord_track () const
   return get_track_by_type<ChordTrack> ();
 }
 
-template <typename T>
-T *
-Tracklist::find_track_by_name_hash (unsigned int hash) const
-{
-  // z_trace ("called for {}", hash);
-  static_assert (TrackSubclass<T>);
-  if (
-    is_in_active_project () && ROUTER && ROUTER->is_processing_thread ()
-    && !is_auditioner ()) [[likely]]
-    {
-      auto found = std::ranges::find_if (tracks_, [hash] (const auto &track) {
-        return Track::from_variant (track)->name_hash_ == hash;
-      });
-      if (found != tracks_.end ())
-        return dynamic_cast<T *> (Track::from_variant (*found));
-
-      return nullptr;
-    }
-  else
-    {
-      for (const auto &track : tracks_)
-        {
-          if (Track::from_variant (track)->get_name_hash () == hash)
-            return dynamic_cast<T *> (Track::from_variant (track));
-        }
-    }
-  return nullptr;
-}
-
 bool
 Tracklist::multiply_track_heights (
   double multiplier,
@@ -820,10 +821,22 @@ Tracklist::move_track (
   if (is_in_active_project () && !is_auditioner ())
     {
       /* clear the editor region if it exists and belongs to this track */
-      auto region = CLIP_EDITOR->get_region ();
-      if (region && region->get_track () == &track)
+      auto region_var = CLIP_EDITOR->get_region ();
+      if (region_var)
         {
-          CLIP_EDITOR->set_region (nullptr, publish_events);
+          std::visit (
+            [&] (auto &&region) {
+              auto region_track_var = region->get_track ();
+              std::visit (
+                [&] (auto &&region_track) {
+                  if (region_track == &track)
+                    {
+                      CLIP_EDITOR->set_region (std::nullopt, publish_events);
+                    }
+                },
+                region_track_var);
+            },
+            region_var.value ());
         }
 
       /* deselect all objects */
@@ -990,6 +1003,8 @@ Tracklist::import_regions (
   const FileImportInfo *                             import_info,
   TracksReadyCallback                                ready_cb)
 {
+// TODO
+#if 0
   z_debug ("Adding regions into the project...");
 
   AudioEngine::State state{};
@@ -1072,6 +1087,7 @@ Tracklist::import_regions (
     {
       ready_cb (import_info);
     }
+#endif
 }
 
 void
@@ -1103,12 +1119,12 @@ Tracklist::import_files (
 
   if (file_arr.empty ())
     {
-      throw ZrythmException (_ ("No file was found"));
+      throw ZrythmException (QObject::tr ("No file was found"));
     }
   else if (track && file_arr.size () > 1)
     {
       throw ZrythmException (
-        _ ("Can only drop 1 file at a time on existing tracks"));
+        QObject::tr ("Can only drop 1 file at a time on existing tracks"));
     }
 
   for (const auto &file : file_arr)
@@ -1118,22 +1134,22 @@ Tracklist::import_files (
           if (track && !track->is_audio ())
             {
               throw ZrythmException (
-                _ ("Can only drop audio files on audio tracks"));
+                QObject::tr ("Can only drop audio files on audio tracks"));
             }
         }
       else if (file.is_midi ())
         {
           if (track && !track->has_piano_roll ())
             {
-              throw ZrythmException (
-                _ ("Can only drop MIDI files on MIDI/instrument tracks"));
+              throw ZrythmException (QObject::tr (
+                "Can only drop MIDI files on MIDI/instrument tracks"));
             }
         }
       else
         {
           auto descr = FileDescriptor::get_type_description (file.type_);
           throw ZrythmException (
-            format_str (_ ("Unsupported file type {}"), descr));
+            format_qstr (QObject::tr ("Unsupported file type {}"), descr));
         }
     }
 
@@ -1143,6 +1159,8 @@ Tracklist::import_files (
       filepaths.add (file.abs_path_);
     }
 
+    // TODO
+#if 0
   auto nfo = FileImportInfo (
     track ? track->name_hash_ : 0, lane ? lane->pos_ : 0,
     pos ? *pos : Position (),
@@ -1159,25 +1177,25 @@ Tracklist::import_files (
           if (err != nullptr)
             {
               throw ZrythmException (format_str (
-                _ ("Failed to import file {}: {}"), filepath.toStdString (),
-                err->message));
+                QObject::tr ("Failed to import file {}: {}"),
+                filepath.toStdString (), err->message));
             }
           std::vector<std::vector<std::shared_ptr<Region>>> region_arrays;
           region_arrays.push_back (regions);
           import_regions (region_arrays, &nfo, ready_cb);
+
         }
     }
   else
     {
-#if 0
       auto filepaths_null_terminated = filepaths.getNullTerminated ();
       FileImportProgressDialog * dialog = file_import_progress_dialog_new (
         (const char **) filepaths_null_terminated, &nfo, ready_cb,
         UI_ACTIVE_WINDOW_OR_NULL);
       file_import_progress_dialog_run (dialog);
       g_strfreev (filepaths_null_terminated);
-#endif
     }
+#endif
 }
 
 void
@@ -1198,8 +1216,8 @@ Tracklist::move_after_copying_or_moving_inside (
     }
   catch (const ZrythmException &e)
     {
-      e.handle (
-        _ ("Failed to move tracks after copying or moving inside folder"));
+      e.handle (QObject::tr (
+        "Failed to move tracks after copying or moving inside folder"));
       return;
     }
 
@@ -1261,7 +1279,7 @@ Tracklist::handle_move_or_copy (
             }
           catch (const ZrythmException &e)
             {
-              e.handle (_ ("Failed to copy tracks inside"));
+              e.handle (QObject::tr ("Failed to copy tracks inside"));
               return;
             }
         }
@@ -1298,7 +1316,7 @@ Tracklist::handle_move_or_copy (
                     }
                   catch (const ZrythmException &e)
                     {
-                      e.handle (_ ("Failed to copy track inside"));
+                      e.handle (QObject::tr ("Failed to copy track inside"));
                       return;
                     }
 
@@ -1313,7 +1331,7 @@ Tracklist::handle_move_or_copy (
                         }
                       catch (const ZrythmException &e)
                         {
-                          e.handle (_ ("Failed to clone/add track"));
+                          e.handle (QObject::tr ("Failed to clone/add track"));
                           return;
                         }
                     }
@@ -1333,7 +1351,7 @@ Tracklist::handle_move_or_copy (
                 }
               catch (const ZrythmException &e)
                 {
-                  e.handle (_ ("Failed to copy tracks"));
+                  e.handle (QObject::tr ("Failed to copy tracks"));
                   return;
                 }
             }
@@ -1354,7 +1372,7 @@ Tracklist::handle_move_or_copy (
               if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
                 {
                   ui_show_error_message (
-                    _ ("Error"), _ ("Cannot drag folder into itself"));
+                    QObject::tr ("Error"), QObject::tr ("Cannot drag folder into itself"));
                 }
               return;
             }
@@ -1370,7 +1388,7 @@ Tracklist::handle_move_or_copy (
                 }
               catch (const ZrythmException &e)
                 {
-                  e.handle (_ ("Failed to move track inside folder"));
+                  e.handle (QObject::tr ("Failed to move track inside folder"));
                   return;
                 }
             }
@@ -1408,7 +1426,7 @@ Tracklist::handle_move_or_copy (
                     }
                   catch (const ZrythmException &e)
                     {
-                      e.handle (_ ("Failed to move track inside folder"));
+                      e.handle (QObject::tr ("Failed to move track inside folder"));
                       return;
                     }
 
@@ -1429,7 +1447,7 @@ Tracklist::handle_move_or_copy (
                         }
                       catch (const ZrythmException &e)
                         {
-                          e.handle (_ ("Failed to clone track"));
+                          e.handle (QObject::tr ("Failed to clone track"));
                           return;
                         }
                     }
@@ -1448,7 +1466,7 @@ Tracklist::handle_move_or_copy (
                 }
               catch (const ZrythmException &e)
                 {
-                  e.handle (_ ("Failed to move tracks"));
+                  e.handle (QObject::tr ("Failed to move tracks"));
                   return;
                 }
             }
@@ -1539,24 +1557,3 @@ Tracklist::~Tracklist ()
       }
   });
 }
-
-template ProcessableTrack *
-Tracklist::find_track_by_name_hash (unsigned int) const;
-template ChannelTrack *
-Tracklist::find_track_by_name_hash (unsigned int) const;
-template FoldableTrack *
-Tracklist::find_track_by_name_hash (unsigned int) const;
-template RecordableTrack *
-Tracklist::find_track_by_name_hash (unsigned int) const;
-template AutomatableTrack *
-Tracklist::find_track_by_name_hash (unsigned int) const;
-template LanedTrackImpl<AudioLane> *
-Tracklist::find_track_by_name_hash (unsigned int) const;
-template LanedTrackImpl<MidiLane> *
-Tracklist::find_track_by_name_hash (unsigned int) const;
-template GroupTargetTrack *
-Tracklist::find_track_by_name_hash (unsigned int) const;
-template ModulatorTrack *
-Tracklist::find_track_by_name_hash (unsigned int) const;
-template ChordTrack *
-Tracklist::find_track_by_name_hash (unsigned int) const;

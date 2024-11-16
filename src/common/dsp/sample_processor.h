@@ -40,7 +40,8 @@ class SampleProcessor final
 public:
   SampleProcessor () = default;
   SampleProcessor (AudioEngine * engine);
-  ~SampleProcessor ();
+  Q_DISABLE_COPY_MOVE (SampleProcessor)
+  ~SampleProcessor () override;
 
   bool is_in_active_project () const;
 
@@ -58,7 +59,7 @@ public:
   /**
    * Clears the buffers.
    */
-  void prepare_process (const nframes_t nframes);
+  void prepare_process (nframes_t nframes);
 
   /**
    * Process the samples for the given number of frames.
@@ -66,7 +67,7 @@ public:
    * @param offset The local offset in the processing cycle.
    * @param nframes The number of frames to process in this call.
    */
-  void process (const nframes_t offset, const nframes_t nframes);
+  void process (nframes_t offset, nframes_t nframes);
 
   /**
    * Removes a SamplePlayback from the array.
@@ -111,6 +112,14 @@ public:
   void disconnect ();
 
   /**
+   * @brief Get the tempo track from the actual project, using @ref
+   * audio_engine_.
+   *
+   * @return The tempo track, or nullptr if not found.
+   */
+  TempoTrack * get_tempo_track () const;
+
+  /**
    * Finds all metronome events (beat and bar changes)
    * within the given range and adds them to the
    * queue.
@@ -119,9 +128,9 @@ public:
    * @param loffset Local offset (this is where @p start_pos starts at).
    */
   void find_and_queue_metronome (
-    const Position  start_pos,
-    const Position  end_pos,
-    const nframes_t loffset);
+    Position  start_pos,
+    Position  end_pos,
+    nframes_t loffset);
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -161,8 +170,12 @@ public:
   /** Whether to roll or not. */
   bool roll_ = false;
 
-  /** Pointer to owner audio engin, if any. */
+  /** Pointer to owner audio engine, if any. */
   AudioEngine * audio_engine_ = nullptr;
+
+  /** Pointer to the tempo track in the actual project, used for position
+   * calculations. */
+  // TempoTrack * tempo_track_ = nullptr;
 
   /** Temp processing graph. */
   std::unique_ptr<Graph> graph_;

@@ -13,7 +13,6 @@
 #include <memory>
 
 #include "gui/backend/backend/settings/user_shortcuts.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 class PluginSettings;
 

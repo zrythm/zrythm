@@ -117,7 +117,8 @@ MidiFile::into_region (
         }
 
       // set a temp name
-      region.set_name (format_str (_ ("Untitled Track {}"), i), false);
+      region.set_name (
+        format_str (QObject::tr ("Untitled Track {}").toStdString (), i), false);
 
       const auto * track = midi_file_.getTrack (i);
       for (const auto * event : *track)
@@ -127,7 +128,7 @@ MidiFile::into_region (
           /* convert time to zrythm time */
           double ticks = ((double) msg.getTimeStamp () * transport_ppqn) / ppqn;
           Position pos{ ticks };
-          Position global_pos = region.pos_;
+          Position global_pos = *region.pos_;
           global_pos.add_ticks (ticks);
           z_trace (
             "event at {}: {} ", msg.getTimeStamp (), msg.getDescription ());
@@ -144,7 +145,7 @@ MidiFile::into_region (
               if (mn != nullptr)
                 {
                   mn->end_pos_setter (&pos);
-                  if (global_pos > region.end_pos_)
+                  if (global_pos > *region.end_pos_)
                     {
                       region.end_pos_setter (&global_pos);
                     }
@@ -180,6 +181,6 @@ MidiFile::into_region (
     {
       throw ZrythmException ("No events in MIDI region");
     }
-  Position loop_end_pos_to_set (region.end_pos_.ticks_ - region.pos_.ticks_);
+  Position loop_end_pos_to_set (region.end_pos_->ticks_ - region.pos_->ticks_);
   region.loop_end_pos_setter (&loop_end_pos_to_set);
 }

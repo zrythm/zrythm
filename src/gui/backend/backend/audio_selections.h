@@ -29,10 +29,14 @@ class Region;
  * copying, undoing, etc.
  */
 class AudioSelections final
-    : public ArrangerSelections,
+    : public QObject,
+      public ArrangerSelections,
       public ICloneable<AudioSelections>,
       public ISerializable<AudioSelections>
 {
+  Q_OBJECT
+  QML_ELEMENT
+
 public:
   AudioSelections ();
 
@@ -60,7 +64,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  bool can_be_pasted_at_impl (const Position pos, const int idx) const final;
+  bool can_be_pasted_at_impl (Position pos, int idx) const final;
 
 public:
   /** Whether or not a selection exists. */
@@ -76,8 +80,8 @@ public:
    * @note These are global positions and must be adjusted for the region's
    * start position.
    */
-  Position sel_start_ = {};
-  Position sel_end_ = {};
+  Position sel_start_;
+  Position sel_end_;
 
   /**
    * Audio pool ID of the associated audio file, used during serialization.
@@ -91,7 +95,7 @@ public:
    *
    * Other types of selections don't need this since their objects refer to it.
    */
-  RegionIdentifier region_id_ = {};
+  RegionIdentifier region_id_;
 };
 
 /**

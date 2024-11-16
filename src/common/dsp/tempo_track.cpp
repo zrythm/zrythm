@@ -13,12 +13,10 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
-
 TempoTrack::TempoTrack (int track_pos)
     : Track (
         Track::Type::Tempo,
-        _ ("Tempo"),
+        QObject::tr ("Tempo").toStdString (),
         track_pos,
         PortType::Unknown,
         PortType::Unknown)
@@ -44,7 +42,7 @@ bool
 TempoTrack::initialize ()
 {
   /* create bpm port */
-  bpm_port_ = std::make_unique<ControlPort> (_ ("BPM"));
+  bpm_port_ = std::make_unique<ControlPort> (QObject::tr ("BPM").toStdString ());
   bpm_port_->set_owner (this);
   bpm_port_->id_->sym_ = "bpm";
   bpm_port_->minf_ = 60.f;
@@ -55,7 +53,8 @@ TempoTrack::initialize ()
   bpm_port_->id_->flags_ |= PortIdentifier::Flags::Automatable;
 
   /* create time sig ports */
-  beats_per_bar_port_ = std::make_unique<ControlPort> (_ ("Beats per bar"));
+  beats_per_bar_port_ = std::make_unique<ControlPort> (
+    QObject::tr ("Beats per bar").toStdString ());
   beats_per_bar_port_->set_owner (this);
   beats_per_bar_port_->id_->sym_ = ("beats_per_bar");
   beats_per_bar_port_->minf_ = TEMPO_TRACK_MIN_BEATS_PER_BAR;
@@ -67,7 +66,8 @@ TempoTrack::initialize ()
   beats_per_bar_port_->id_->flags_ |= PortIdentifier::Flags::Automatable;
   beats_per_bar_port_->id_->flags_ |= PortIdentifier::Flags::Integer;
 
-  beat_unit_port_ = std::make_unique<ControlPort> (_ ("Beat unit"));
+  beat_unit_port_ =
+    std::make_unique<ControlPort> (QObject::tr ("Beat unit").toStdString ());
   beat_unit_port_->set_owner (this);
   beat_unit_port_->id_->sym_ = ("beat_unit");
   beat_unit_port_->minf_ = static_cast<float> (TEMPO_TRACK_MIN_BEAT_UNIT);
@@ -160,7 +160,7 @@ TempoTrack::set_bpm (bpm_t bpm, bpm_t start_bpm, bool temporary, bool fire_event
         }
       catch (const ZrythmException &e)
         {
-          e.handle (_ ("Failed to change BPM"));
+          e.handle (QObject::tr ("Failed to change BPM"));
         }
     }
 
@@ -187,8 +187,12 @@ TempoTrack::set_bpm_from_str (const std::string &str)
   auto bpm = (float) atof (str.c_str ());
   if (math_floats_equal (bpm, 0))
     {
+// TODO
+#if 0
       ui_show_error_message (
-        _ ("Invalid BPM Value"), _ ("Please enter a positive decimal number"));
+        QObject::tr ("Invalid BPM Value"),
+        QObject::tr ("Please enter a positive decimal number"));
+#endif
       return;
     }
 

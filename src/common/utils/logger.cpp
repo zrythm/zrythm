@@ -14,6 +14,8 @@
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
+using namespace zrythm;
+
 JUCE_IMPLEMENT_SINGLETON (Logger);
 
 class ErrorHandlingSink : public spdlog::sinks::base_sink<std::mutex>
@@ -157,7 +159,7 @@ Logger::Logger ()
           && !zrythm_app->bug_report_dialog)
           {
             char msg[500];
-            sprintf (msg, _ ("%s has encountered an error\n"), PROGRAM_NAME);
+            sprintf (msg, QObject::tr ("%s has encountered an error\n"), PROGRAM_NAME);
             GtkWindow * win =
               gtk_application_get_active_window (GTK_APPLICATION (zrythm_app));
             zrythm_app->bug_report_dialog = bug_report_dialog_new (
@@ -186,8 +188,8 @@ Logger::get_log_file_path () const
 {
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
     {
-      auto tmp_log_dir = fs::path (g_get_tmp_dir ()) / "zrythm_test_logs";
-      EXPECT_NO_THROW ({ io_mkdir (tmp_log_dir.string ()); });
+      auto tmp_log_dir = utils::io::get_temp_path () / "zrythm_test_logs";
+      EXPECT_NO_THROW ({ utils::io::mkdir (tmp_log_dir.string ()); });
       auto str_datetime = datetime_get_for_filename ();
       return (tmp_log_dir / str_datetime).string ();
     }
@@ -198,7 +200,7 @@ Logger::get_log_file_path () const
   auto log_filepath =
     fs::path (user_log_dir.toStdString ())
     / (std::string ("log_") + str_datetime);
-  io_mkdir (user_log_dir.toStdString ()); // note: throws
+  utils::io::mkdir (user_log_dir.toStdString ()); // note: throws
   return log_filepath.string ();
 }
 

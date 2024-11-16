@@ -14,8 +14,6 @@
 
 #if HAVE_CYAML
 
-#  include "gui/backend/gtk_widgets/gtk_wrapper.h"
-
 #  include "types.h"
 #  include <cyaml/cyaml.h>
 
@@ -231,17 +229,23 @@
 /**
  * Serializes to YAML.
  *
- * @return Newly allocated YAML string, or NULL if
- *   error.
+ * @return YAML string.
+ *
+ * @throw ZrythmException on error.
  */
-char *
-yaml_serialize (void * data, const cyaml_schema_value_t * schema, GError ** error);
+CStringRAII
+yaml_serialize (void * data, const cyaml_schema_value_t * schema);
 
+/**
+ * @brief
+ *
+ * @param yaml
+ * @param schema
+ * @return void*
+ * @throw ZrythmException on error.
+ */
 void *
-yaml_deserialize (
-  const char *                 yaml,
-  const cyaml_schema_value_t * schema,
-  GError **                    error);
+yaml_deserialize (const char * yaml, const cyaml_schema_value_t * schema);
 
 ATTR_NONNULL void
 yaml_print (void * data, const cyaml_schema_value_t * schema);

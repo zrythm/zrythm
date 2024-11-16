@@ -19,12 +19,11 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <cassert>
 #include <cstdlib>
 #include <cstring>
 
-#include <assert.h>
-
-#include "common/utils/objects.h"
+#include "common/utils/mem.h"
 #include "common/utils/symap.h"
 
 /**
@@ -45,7 +44,7 @@
 
 Symap::~Symap ()
 {
-  g_strfreev (symbols);
+  z_free_strv (symbols);
   free (index);
 }
 
@@ -125,7 +124,7 @@ Symap::map (const char * sym)
     }
 
   const uint32_t id = ++this->size;
-  char * const   str = g_strdup (sym);
+  char * const   str = strdup (sym);
 
   /* Append new symbol to symbols array */
   this->symbols = (char **) realloc (this->symbols, this->size * sizeof (str));

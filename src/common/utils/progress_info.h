@@ -15,8 +15,6 @@
 #include <string>
 #include <utility>
 
-#include <glib.h>
-
 /**
  * @addtogroup utils
  *
@@ -64,12 +62,12 @@ public:
   /**
    * To be called by the task itself.
    */
-  void mark_completed (CompletionType type, const char * msg);
+  void mark_completed (CompletionType type, const std::string &msg);
 
   /**
    * Returns a newly allocated string.
    */
-  char * get_message () const { return g_strdup (completion_str_.c_str ()); }
+  std::string get_message () const { return completion_str_; }
 
   /**
    * To be called by the task caller.
@@ -84,7 +82,7 @@ public:
   /**
    * To be called by the task itself.
    */
-  void update_progress (double progress, const char * msg);
+  void update_progress (double progress, const std::string &msg);
 
   bool pending_cancellation () const
   {

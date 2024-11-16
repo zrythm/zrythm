@@ -160,7 +160,7 @@ ControlPort::set_control_value (
       control_ = base_value_;
 
       /* remember time */
-      last_change_time_ = g_get_monotonic_time ();
+      last_change_time_ = Zrythm::getInstance ()->get_monotonic_time_usecs ();
       value_changed_from_reading_ = false;
 
       /* if bpm, update engine */

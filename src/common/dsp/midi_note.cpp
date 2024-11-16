@@ -11,19 +11,28 @@
 
 #include <fmt/format.h>
 
-MidiNote::MidiNote () : ArrangerObject (Type::MidiNote) {};
+MidiNote::MidiNote (QObject * parent)
+    : ArrangerObject (Type::MidiNote), QObject (parent), LengthableObject ()
+{
+  ArrangerObject::parent_base_qproperties (*this);
+  LengthableObject::parent_base_qproperties (*this);
+}
 
 MidiNote::MidiNote (
   const RegionIdentifier &region_id,
   Position                start_pos,
   Position                end_pos,
   uint8_t                 val,
-  uint8_t                 vel)
-    : ArrangerObject (Type::MidiNote), RegionOwnedObjectImpl (region_id),
-      vel_ (std::make_shared<Velocity> (this, vel)), val_ (val)
+  uint8_t                 vel,
+  QObject *               parent)
+    : ArrangerObject (Type::MidiNote), QObject (parent),
+      RegionOwnedObjectImpl (region_id), LengthableObject (),
+      vel_ (new Velocity (this, vel)), val_ (val)
 {
-  pos_ = start_pos;
-  end_pos_ = end_pos;
+  ArrangerObject::parent_base_qproperties (*this);
+  LengthableObject::parent_base_qproperties (*this);
+  *static_cast<Position *> (pos_) = start_pos;
+  *static_cast<Position *> (end_pos_) = end_pos;
 }
 
 void
@@ -43,22 +52,22 @@ MidiNote::print_to_str () const
   auto lane = r ? r->get_lane ()->get_name () : "unknown";
   return fmt::format (
     "[Region '{}' : Lane '{}'] => MidiNote #{}: {} ~ {} | pitch: {} | velocity: {}",
-    region, lane, index_, pos_.to_string (), end_pos_.to_string (), val_,
+    region, lane, index_, pos_->to_string (), end_pos_->to_string (), val_,
     vel_->vel_);
 }
 
-MidiNote::ArrangerObjectPtr
+ArrangerObjectPtrVariant
 MidiNote::add_clone_to_project (bool fire_events) const
 {
-  auto ret = clone_shared ();
+  auto ret = clone_raw_ptr ();
   get_region ()->append_object (ret, true);
   return ret;
 }
 
-MidiNote::ArrangerObjectPtr
+ArrangerObjectPtrVariant
 MidiNote::insert_clone_to_project () const
 {
-  auto ret = clone_shared ();
+  auto ret = clone_raw_ptr ();
   get_region ()->insert_object (ret, index_, true);
   return ret;
 }
@@ -76,44 +85,53 @@ MidiNote::listen (bool listen)
   /*"%s: %" PRIu8 " listen %d", __func__,*/
   /*mn->val, listen);*/
 
-  auto track = dynamic_cast<PianoRollTrack *> (get_track ());
-  z_return_if_fail (track && track->processor_->midi_in_);
-  auto &events = track->processor_->midi_in_->midi_events_.queued_events_;
+  auto track_var = get_track ();
+  std::visit (
+    [&] (auto &&track) {
+      using TrackT = base_type<decltype (track)>;
+      if constexpr (std::derived_from<TrackT, PianoRollTrack>)
+        {
+          z_return_if_fail (track && track->processor_->midi_in_);
+          auto &events =
+            track->processor_->midi_in_->midi_events_.queued_events_;
 
-  if (listen)
-    {
-      /* if note is on but pitch changed */
-      if (currently_listened_ && val_ != last_listened_val_)
-        {
-          /* create midi note off */
-          events.add_note_off (1, last_listened_val_, 0);
+          if (listen)
+            {
+              /* if note is on but pitch changed */
+              if (currently_listened_ && val_ != last_listened_val_)
+                {
+                  /* create midi note off */
+                  events.add_note_off (1, last_listened_val_, 0);
 
-          /* create note on at the new value */
-          events.add_note_on (1, val_, vel_->vel_, 0);
-          last_listened_val_ = val_;
+                  /* create note on at the new value */
+                  events.add_note_on (1, val_, vel_->vel_, 0);
+                  last_listened_val_ = val_;
+                }
+              /* if note is on and pitch is the same */
+              else if (currently_listened_ && val_ == last_listened_val_)
+                {
+                  /* do nothing */
+                }
+              /* if note is not on */
+              else if (!currently_listened_)
+                {
+                  /* turn it on */
+                  events.add_note_on (1, val_, vel_->vel_, 0);
+                  last_listened_val_ = val_;
+                  currently_listened_ = 1;
+                }
+            }
+          /* if turning listening off */
+          else if (currently_listened_)
+            {
+              /* create midi note off */
+              events.add_note_off (1, last_listened_val_, 0);
+              currently_listened_ = false;
+              last_listened_val_ = 255;
+            }
         }
-      /* if note is on and pitch is the same */
-      else if (currently_listened_ && val_ == last_listened_val_)
-        {
-          /* do nothing */
-        }
-      /* if note is not on */
-      else if (!currently_listened_)
-        {
-          /* turn it on */
-          events.add_note_on (1, val_, vel_->vel_, 0);
-          last_listened_val_ = val_;
-          currently_listened_ = 1;
-        }
-    }
-  /* if turning listening off */
-  else if (currently_listened_)
-    {
-      /* create midi note off */
-      events.add_note_off (1, last_listened_val_, 0);
-      currently_listened_ = false;
-      last_listened_val_ = 255;
-    }
+    },
+    track_var);
 }
 
 std::string
@@ -158,14 +176,20 @@ MidiNote::set_val (const uint8_t val)
     {
       auto region = dynamic_cast<MidiRegion *> (get_region ());
       z_return_if_fail (region);
-      auto track = dynamic_cast<PianoRollTrack *> (region->get_track ());
-      z_return_if_fail (track);
+      auto track_var = region->get_track ();
+      std::visit (
+        [&] (auto &&track) {
+          using TrackT = base_type<decltype (track)>;
+          if constexpr (std::derived_from<TrackT, PianoRollTrack>)
+            {
+              auto &midi_events =
+                track->processor_->piano_roll_->midi_events_.queued_events_;
 
-      auto &midi_events =
-        track->processor_->piano_roll_->midi_events_.queued_events_;
-
-      uint8_t midi_ch = region->get_midi_ch ();
-      midi_events.add_note_off (midi_ch, val_, 0);
+              uint8_t midi_ch = region->get_midi_ch ();
+              midi_events.add_note_off (midi_ch, val_, 0);
+            }
+        },
+        track_var);
     }
 
   val_ = val;
@@ -182,7 +206,7 @@ void
 MidiNote::init_after_cloning (const MidiNote &other)
 {
   val_ = other.val_;
-  vel_ = std::make_shared<Velocity> (this, other.vel_->vel_);
+  vel_ = new Velocity (this, other.vel_->vel_);
   currently_listened_ = other.currently_listened_;
   last_listened_val_ = other.last_listened_val_;
   vel_->vel_at_start_ = other.vel_->vel_at_start_;
@@ -206,18 +230,18 @@ MidiNote::is_hit (const signed_frame_t gframes) const
 
   /* check for note on event on the boundary */
   /* FIXME ok? it was < and >= before */
-  if (pos_.frames_ <= local_pos && end_pos_.frames_ > local_pos)
+  if (pos_->frames_ <= local_pos && end_pos_->frames_ > local_pos)
     return true;
 
   return false;
 }
 
-MidiNote::ArrangerObjectPtr
+std::optional<ArrangerObjectPtrVariant>
 MidiNote::find_in_project () const
 {
-  auto r = MidiRegion::find (region_id_);
+  auto * r = MidiRegion::find (region_id_);
   z_return_val_if_fail (
-    r && static_cast<int> (r->midi_notes_.size ()) > index_, nullptr);
+    r && static_cast<int> (r->midi_notes_.size ()) > index_, std::nullopt);
 
   return r->midi_notes_[index_];
 }

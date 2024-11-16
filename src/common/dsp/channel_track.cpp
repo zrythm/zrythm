@@ -204,7 +204,7 @@ ChannelTrack::generate_channel_context_menu ()
     {
       /* add "route to new group" */
       menuitem = z_gtk_create_menu_item (
-        _ ("New direct out"), nullptr, "app.selected-tracks-direct-out-new");
+        QObject::tr ("New direct out"), nullptr, "app.selected-tracks-direct-out-new");
       g_menu_append_item (direct_out_submenu, menuitem);
     }
 
@@ -229,13 +229,13 @@ ChannelTrack::generate_channel_context_menu ()
   if (have_groups)
     {
       g_menu_append_section (
-        direct_out_submenu, _ ("Route Target"), G_MENU_MODEL (target_submenu));
+        direct_out_submenu, QObject::tr ("Route Target"), G_MENU_MODEL (target_submenu));
     }
 
   if (type_can_have_direct_out (type_))
     {
       g_menu_append_submenu (
-        channel_submenu, _ ("Direct Output"), G_MENU_MODEL (direct_out_submenu));
+        channel_submenu, QObject::tr ("Direct Output"), G_MENU_MODEL (direct_out_submenu));
     }
 
   return channel_submenu;

@@ -14,11 +14,8 @@
 
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/terminal.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/gtk_widgets/gtk_wrapper.h"
-
-#include <glib/gi18n.h>
 
 #define G_SETTINGS_ENABLE_BACKEND
 #include <gio/gsettingsbackend.h>
@@ -62,13 +59,13 @@ print_or_reset_schema (
   if (print_only)
     {
       sprintf (
-        tmp, _ ("Schema %s%s%s"), pretty_print ? TERMINAL_BOLD : "", schema_str,
-        pretty_print ? TERMINAL_RESET : "");
+        tmp, QObject::tr ("Schema %s%s%s"), pretty_print ? TERMINAL_BOLD : "",
+        schema_str, pretty_print ? TERMINAL_RESET : "");
       printf ("%s%s\n", pretty_print ? TERMINAL_UNDERLINE : "", tmp);
     }
   else
     {
-      printf (_ ("Resetting schema %s...\n"), schema_str);
+      printf (QObject::tr ("Resetting schema %s...\n"), schema_str);
     }
 
   int    i = 0;
@@ -98,7 +95,7 @@ print_or_reset_schema (
         /* don't reset install-dir */
         string_is_equal (key, "install-dir"))
         {
-          sprintf (tmp, _ ("skipping %s"), key);
+          sprintf (tmp, QObject::tr ("skipping %s"), key);
           printf ("  %s\n", tmp);
         }
       else
@@ -106,7 +103,7 @@ print_or_reset_schema (
           GVariant * val = g_settings_schema_key_get_default_value (schema_key);
           z_return_val_if_fail (val, -1);
           char * var_str = g_variant_print (val, 0);
-          sprintf (tmp, _ ("resetting %s to %s"), key, var_str);
+          sprintf (tmp, QObject::tr ("resetting %s to %s"), key, var_str);
           printf ("  %s\n", tmp);
           int ret = g_settings_set_value (settings, key, val);
           if (!ret)
@@ -142,7 +139,8 @@ print_or_reset (int print_only, int pretty_print, int exit_on_finish)
             {
               fprintf (
                 stderr,
-                _ ("Failed to find schema %s. %s is likely not installed"),
+                QObject::tr (
+                  "Failed to find schema %s. %s is likely not installed"),
                 schema_str, PROGRAM_NAME);
               if (exit_on_finish)
                 exit (1);
@@ -154,11 +152,15 @@ print_or_reset (int print_only, int pretty_print, int exit_on_finish)
             {
               if (print_only)
                 {
-                  fprintf (stderr, _ ("Failed to view schema %s"), schema_str);
+                  fprintf (
+                    stderr, QObject::tr ("Failed to view schema %s"),
+                    schema_str);
                 }
               else
                 {
-                  fprintf (stderr, _ ("Failed to reset schema %s"), schema_str);
+                  fprintf (
+                    stderr, QObject::tr ("Failed to reset schema %s"),
+                    schema_str);
                 }
               if (exit_on_finish)
                 exit (1);
@@ -347,11 +349,12 @@ GSettingsManager::reset_to_factory (bool confirm, bool exit_on_finish)
     {
       printf (
         "%s ",
-        _ ("This will reset Zrythm to factory settings. You will lose all your preferences. Type 'y' to continue:"));
+        QObject::tr (
+          "This will reset Zrythm to factory settings. You will lose all your preferences. Type 'y' to continue:"));
       char c = getchar ();
       if (c != 'y')
         {
-          printf (_ ("Aborting...\n"));
+          printf (QObject::tr ("Aborting...\n"));
           if (exit_on_finish)
             exit (0);
 
@@ -361,7 +364,7 @@ GSettingsManager::reset_to_factory (bool confirm, bool exit_on_finish)
 
   print_or_reset (0, 0, exit_on_finish);
 
-  printf (_ ("Reset to factory settings successful\n"));
+  printf (QObject::tr ("Reset to factory settings successful\n"));
 }
 
 void

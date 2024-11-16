@@ -33,25 +33,24 @@ class AutomationTrack;
  * An automation point inside an AutomationTrack.
  */
 class AutomationPoint final
-    : public RegionOwnedObjectImpl<AutomationRegion>,
+    : public QObject,
+      public RegionOwnedObjectImpl<AutomationRegion>,
       public ICloneable<AutomationPoint>,
       public ISerializable<AutomationPoint>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (AutomationPoint)
 public:
-  // Rule of 0
-  AutomationPoint () = default;
-
-  AutomationPoint (const Position &pos);
-
-  ~AutomationPoint () override;
-
-  /**
-   * Creates an AutomationPoint at the given Position.
-   */
+  AutomationPoint (QObject * parent = nullptr);
+  AutomationPoint (const Position &pos, QObject * parent = nullptr);
   AutomationPoint (
-    const float     value,
-    const float     normalized_val,
-    const Position &pos);
+    float           value,
+    float           normalized_val,
+    const Position &pos,
+    QObject *       parent = nullptr);
+  Q_DISABLE_COPY_MOVE (AutomationPoint)
+  ~AutomationPoint () override;
 
   /**
    * Sets the value from given real or normalized
@@ -86,7 +85,7 @@ public:
   /**
    * Sets the curviness of the AutomationPoint.
    */
-  void set_curviness (const curviness_t curviness);
+  void set_curviness (curviness_t curviness);
 
   /**
    * Convenience function to return the control port that this AutomationPoint
@@ -106,15 +105,16 @@ public:
    */
   bool curves_up () const;
 
-  ArrangerObjectPtr find_in_project () const override;
+  std::optional<ArrangerObjectPtrVariant> find_in_project () const override;
 
   void init_after_cloning (const AutomationPoint &other) override;
 
   void init_loaded () override;
 
-  ArrangerObjectPtr add_clone_to_project (bool fire_events) const override;
+  ArrangerObjectPtrVariant
+  add_clone_to_project (bool fire_events) const override;
 
-  ArrangerObjectPtr insert_clone_to_project () const override;
+  ArrangerObjectPtrVariant insert_clone_to_project () const override;
 
   bool validate (bool is_project, double frames_per_tick) const override;
 
@@ -169,13 +169,13 @@ constexpr size_t NUM_AUTOMATION_MODES =
 DEFINE_ENUM_FORMATTER (
   AutomationMode,
   AutomationMode,
-  N_ ("On"),
-  N_ ("Rec"),
-  N_ ("Off"));
+  QT_TR_NOOP ("On"),
+  QT_TR_NOOP ("Rec"),
+  QT_TR_NOOP ("Off"));
 
 DEFINE_OBJECT_FORMATTER (AutomationPoint, [] (const AutomationPoint &ap) {
   return fmt::format (
-    "AutomationPoint [{}]: val {}, normalized val {}", ap.pos_, ap.fvalue_,
+    "AutomationPoint [{}]: val {}, normalized val {}", *ap.pos_, ap.fvalue_,
     ap.normalized_val_);
 });
 

@@ -5,19 +5,36 @@
 #define __AUDIO_LENGTHABLE_OBJECT_H__
 
 #include "common/dsp/arranger_object.h"
-#include "common/dsp/position.h"
+
+#define DEFINE_LENGTHABLE_OBJECT_QML_PROPERTIES(ClassType) \
+public: \
+  /* ================================================================ */ \
+  /* endPosition */ \
+  /* ================================================================ */ \
+  Q_PROPERTY (PositionProxy * endPosition READ getEndPosition CONSTANT) \
+  PositionProxy * getEndPosition () const \
+  { \
+    return end_pos_; \
+  }
 
 class LengthableObject
     : virtual public ArrangerObject,
       public ISerializable<LengthableObject>
 {
 public:
-  virtual ~LengthableObject () = default;
+  LengthableObject ();
+  ~LengthableObject () override = default;
+  Q_DISABLE_COPY_MOVE (LengthableObject)
 
   /**
    * Getter.
    */
-  void get_end_pos (Position * pos) const { *pos = end_pos_; }
+  void get_end_pos (Position * pos) const
+  {
+    *pos = *static_cast<Position *> (end_pos_);
+  }
+
+  void parent_base_qproperties (QObject &derived);
 
   /**
    * The setter is for use in e.g. the digital meters whereas the set_pos func
@@ -35,7 +52,7 @@ public:
    */
   inline double get_length_in_ticks () const
   {
-    return end_pos_.ticks_ - pos_.ticks_;
+    return end_pos_->ticks_ - pos_->ticks_;
   }
 
   /**
@@ -45,7 +62,7 @@ public:
    */
   inline signed_frame_t get_length_in_frames () const
   {
-    return end_pos_.frames_ - pos_.frames_;
+    return end_pos_->frames_ - pos_->frames_;
   }
 
   /**
@@ -59,11 +76,7 @@ public:
    *
    * @throw ZrythmException on failure.
    */
-  void resize (
-    const bool   left,
-    ResizeType   type,
-    const double ticks,
-    bool         during_ui_action);
+  void resize (bool left, ResizeType type, double ticks, bool during_ui_action);
 
   /**
    * Sets the end position of the ArrangerObject and also sets the loop end and
@@ -98,16 +111,15 @@ public:
    * @throw ZrythmException on error.
    */
   template <typename T>
-  static std::pair<std::shared_ptr<T>, std::shared_ptr<T>>
-  split (T &self, const Position pos, const bool pos_is_local, bool is_project);
+  static std::pair<T *, T *>
+  split (T &self, Position pos, bool pos_is_local, bool is_project);
 
   /**
    * Undoes what @ref split() did.
    *
    * @throw ZrythmException on error.
    */
-  template <typename T>
-  static std::shared_ptr<T> unsplit (T &r1, T &r2, bool fire_events);
+  template <typename T> static T * unsplit (T &r1, T &r2, bool fire_events);
 
   /**
    * Returns whether the object is hit by the given position.
@@ -124,9 +136,9 @@ public:
   bool
   is_hit (const signed_frame_t frames, bool object_end_pos_inclusive = false) const
   {
-    signed_frame_t obj_start = pos_.frames_;
+    signed_frame_t obj_start = pos_->frames_;
     signed_frame_t obj_end =
-      object_end_pos_inclusive ? end_pos_.frames_ : end_pos_.frames_ - 1;
+      object_end_pos_inclusive ? end_pos_->frames_ : end_pos_->frames_ - 1;
 
     return obj_start <= frames && obj_end >= frames;
   }
@@ -154,11 +166,11 @@ public:
   }
 
   bool is_hit_by_range (
-    const signed_frame_t global_frames_start,
-    const signed_frame_t global_frames_end,
-    bool                 range_start_inclusive = true,
-    bool                 range_end_inclusive = false,
-    bool                 object_end_pos_inclusive = false) const
+    signed_frame_t global_frames_start,
+    signed_frame_t global_frames_end,
+    bool           range_start_inclusive = true,
+    bool           range_end_inclusive = false,
+    bool           object_end_pos_inclusive = false) const
   {
     /*
      * Case 1: Object start is inside range
@@ -186,9 +198,9 @@ public:
       range_start_inclusive ? global_frames_start : global_frames_start + 1;
     signed_frame_t range_end =
       range_end_inclusive ? global_frames_end : global_frames_end - 1;
-    signed_frame_t obj_start = pos_.frames_;
+    signed_frame_t obj_start = pos_->frames_;
     signed_frame_t obj_end =
-      object_end_pos_inclusive ? end_pos_.frames_ : end_pos_.frames_ - 1;
+      object_end_pos_inclusive ? end_pos_->frames_ : end_pos_->frames_ - 1;
 
     /* 1. object start is inside range */
     if (obj_start >= range_start && obj_start <= range_end)
@@ -210,9 +222,9 @@ public:
   virtual bool
   is_inside_range (const Position &start, const Position &end) const
   {
-    return pos_.is_between_excl_both (start, end)
-           || end_pos_.is_between_excl_both (start, end)
-           || (pos_ < start && end_pos_ >= end);
+    return pos_->is_between_excl_both (start, end)
+           || end_pos_->is_between_excl_both (start, end)
+           || (*pos_ < start && *end_pos_ >= end);
   }
 
   friend bool
@@ -243,7 +255,7 @@ public:
    * This is exclusive of the material, i.e., the data at this position is not
    * counted (for audio regions at least, TODO check for others).
    */
-  Position end_pos_ = {};
+  PositionProxy * end_pos_ = nullptr;
 };
 
 template <typename T>
@@ -253,7 +265,7 @@ concept FinalLengthedObjectSubclass =
 inline bool
 operator== (const LengthableObject &lhs, const LengthableObject &rhs)
 {
-  return lhs.end_pos_ == rhs.end_pos_;
+  return *lhs.end_pos_ == *rhs.end_pos_;
 }
 
 using LengthableObjectVariant =
@@ -261,11 +273,10 @@ using LengthableObjectVariant =
 using LengthableObjectPtrVariant = to_pointer_variant<LengthableObjectVariant>;
 
 #define DEFINE_OR_DECLARE_TEMPLATES_FOR_LENGTHABLE_OBJECT(_extern, subclass) \
-  _extern template std::pair< \
-    std::shared_ptr<subclass>, std::shared_ptr<subclass>> \
+  _extern template std::pair<subclass *, subclass *> \
   LengthableObject::split<subclass> ( \
     subclass &, const Position, const bool, bool); \
-  _extern template std::shared_ptr<subclass> \
+  _extern template subclass * \
   LengthableObject::unsplit<subclass> (subclass &, subclass &, bool);
 
 #define DECLARE_EXTERN_TEMPLATES_FOR_LENGTHABLE_OBJECT(subclass) \

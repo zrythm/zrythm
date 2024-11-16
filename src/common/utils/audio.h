@@ -16,8 +16,6 @@
 #include "common/utils/logger.h"
 #include "common/utils/types.h"
 
-#include <glib/gi18n.h>
-
 /**
  * @addtogroup utils
  *
@@ -69,9 +67,9 @@ audio_bit_depth_int_to_enum (int depth)
 DEFINE_ENUM_FORMATTER (
   BitDepth,
   BitDepth,
-  N_ ("16 bit"),
-  N_ ("24 bit"),
-  N_ ("32 bit"));
+  QT_TR_NOOP_UTF8 ("16 bit"),
+  QT_TR_NOOP_UTF8 ("24 bit"),
+  QT_TR_NOOP_UTF8 ("32 bit"));
 
 /**
  * Number of plugin slots per channel.

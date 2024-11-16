@@ -23,7 +23,7 @@ public:
   {
     double secs_per_block =
       (double) engine_.block_length_ / engine_.sample_rate_;
-    auto sleep_time = (gulong) (secs_per_block * 1000.0 * 1000);
+    auto sleep_time = (unsigned_frame_t) (secs_per_block * 1000.0 * 1000);
 
     z_info ("Running dummy audio engine thread for first time");
 

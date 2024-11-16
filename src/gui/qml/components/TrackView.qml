@@ -10,7 +10,7 @@ import ZrythmStyle 1.0
 Control {
     id: control
 
-    required property var track
+    required property var track // connected automatically when used as a delegate for a Tracklist model
     readonly property real buttonHeight: 18
     readonly property real buttonPadding: 1
     readonly property real contentTopMargins: 1

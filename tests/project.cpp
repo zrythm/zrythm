@@ -68,7 +68,7 @@ TEST_F (BootstrapTimelineFixture, SaveBackupWithPoolAndPlugins)
   PROJECT.reset ();
 
   /* load the backup directly */
-  auto filepath = Glib::build_filename (backup_dir, PROJECT_FILE);
+  auto filepath = backup_dir / PROJECT_FILE;
   test_project_reload (filepath);
 
   /* undo history not saved with backups anymore */
@@ -84,7 +84,7 @@ TEST_F (BootstrapTimelineFixture, SaveBackupWithPoolAndPlugins)
 
   /* attempt to open the latest backup (mimic behavior from UI) */
   gZrythm->open_newer_backup_ = true;
-  filepath = Glib::build_filename (dir, "project.zpj");
+  filepath = dir / "project.zpj";
   test_project_reload (filepath);
 }
 
@@ -95,7 +95,7 @@ TEST_F (BootstrapTimelineFixture, SaveAsAndLoadWithPool)
   ASSERT_NONEMPTY (orig_dir);
   char * new_dir = g_dir_make_tmp ("zrythm_test_project_XXXXXX", nullptr);
   ASSERT_NO_THROW (PROJECT->save (new_dir, false, false, false));
-  auto filepath = Glib::build_filename (new_dir, "project.zpj");
+  auto filepath = new_dir / "project.zpj";
   ASSERT_TRUE (fs::exists (filepath));
 
   /* free the project */
@@ -125,7 +125,7 @@ TEST_F (BootstrapTimelineFixture, SaveAndLoadWithData)
 
   /* save the project */
   ASSERT_NO_THROW (PROJECT->save (PROJECT->dir_, 0, 0, false));
-  auto prj_file = Glib::build_filename (PROJECT->dir_, PROJECT_FILE);
+  auto prj_file = PROJECT->dir_ / PROJECT_FILE;
 
   /* stop the engine */
   AudioEngine::State state;
@@ -218,7 +218,7 @@ TEST_F (ZrythmFixture, NewFromTemplate)
   /* create a new project using old one as template */
   auto orig_dir = PROJECT->dir_;
   ASSERT_NONEMPTY (orig_dir);
-  auto filepath = Glib::build_filename (orig_dir, "project.zpj");
+  auto filepath = orig_dir / "project.zpj";
   gZrythm->create_project_path_.clear ();
   char * tmp = g_dir_make_tmp ("zrythm_test_project_XXXXXX", nullptr);
   gZrythm->create_project_path_ = tmp;

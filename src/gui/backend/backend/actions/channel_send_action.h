@@ -55,7 +55,7 @@ public:
     float                          amount,
     const PortConnectionsManager * port_connections_mgr);
 
-  std::string to_string () const override;
+  QString to_string () const override;
 
   void init_after_cloning (const ChannelSendAction &other) override;
 

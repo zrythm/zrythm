@@ -156,7 +156,7 @@ TEST_F (ZrythmFixture, GetTotalBeats)
 TEST_F (ZrythmFixture, PositionBenchmarks)
 {
   double   ticks = 50000.0;
-  gint64   loop_times = 5;
+  qint64   loop_times = 5;
   gint     total_time;
   Position pos{ ticks };
 
@@ -164,12 +164,12 @@ TEST_F (ZrythmFixture, PositionBenchmarks)
   total_time = 0;
   for (int j = 0; j < loop_times; j++)
     {
-      gint64 before = g_get_monotonic_time ();
+      auto before = Zrythm::getInstance ()->get_monotonic_time_usecs ();
       for (int i = 0; i < 100000; i++)
         {
           pos.add_frames (1000);
         }
-      gint64 after = g_get_monotonic_time ();
+      auto after = Zrythm::getInstance ()->get_monotonic_time_usecs ();
       total_time += after - before;
     }
   z_info ("time: {}", total_time / loop_times);

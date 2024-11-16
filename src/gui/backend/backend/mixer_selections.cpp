@@ -10,17 +10,15 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
-
-Track *
+OptionalTrackPtrVariant
 MixerSelections::get_track () const
 {
   if (!has_any_)
-    return nullptr;
+    return std::nullopt;
 
-  Track * track = TRACKLIST->find_track_by_name_hash (track_name_hash_);
-  z_return_val_if_fail (track, nullptr);
-  return track;
+  auto ret = TRACKLIST->find_track_by_name_hash (track_name_hash_);
+  z_return_val_if_fail (ret, std::nullopt);
+  return ret;
 }
 
 void
@@ -127,12 +125,10 @@ MixerSelections::contains_plugin (const zrythm::plugins::Plugin &pl) const
       return pl.id_.slot_type_ == zrythm::plugins::PluginSlotType::Instrument
              && pl.id_.track_name_hash_ == track_name_hash_;
     }
-  else
-    {
-      return std::ranges::any_of (slots_, [&pl, this] (auto slot) {
-        return slot == pl.id_.slot_ && type_ == pl.id_.slot_type_;
-      });
-    }
+
+  return std::ranges::any_of (slots_, [&pl, this] (auto slot) {
+    return slot == pl.id_.slot_ && type_ == pl.id_.slot_type_;
+  });
 }
 
 bool
@@ -151,24 +147,28 @@ MixerSelections::get_first_plugin () const
 {
   if (has_any_)
     {
-      ChannelTrack * track = dynamic_cast<ChannelTrack *> (get_track ());
-      z_return_val_if_fail (track, nullptr);
-      switch (type_)
-        {
-        case zrythm::plugins::PluginSlotType::Instrument:
-          return track->channel_->instrument_.get ();
-        case zrythm::plugins::PluginSlotType::Insert:
-          return track->channel_->inserts_[slots_[0]].get ();
-        case zrythm::plugins::PluginSlotType::MidiFx:
-          return track->channel_->midi_fx_[slots_[0]].get ();
-        case zrythm::plugins::PluginSlotType::Modulator:
-          return dynamic_cast<ModulatorTrack *> (track)
-            ->modulators_[slots_[0]]
-            .get ();
-        default:
+      auto track_var = get_track ();
+      z_return_val_if_fail (track_var, nullptr);
+      std::visit (
+        [&] (auto &&track) -> zrythm::plugins::Plugin * {
+          using TrackT = base_type<decltype (track)>;
+          if constexpr (std::derived_from<TrackT, ChannelTrack>)
+            {
+              if (type_ == zrythm::plugins::PluginSlotType::Instrument)
+                return track->channel_->instrument_.get ();
+              if (type_ == zrythm::plugins::PluginSlotType::Insert)
+                return track->channel_->inserts_.at (slots_.at (0)).get ();
+              if (type_ == zrythm::plugins::PluginSlotType::MidiFx)
+                return track->channel_->midi_fx_.at (slots_.at (0)).get ();
+            }
+          else if constexpr (std::is_same_v<TrackT, ModulatorTrack>)
+            {
+              if (type_ == zrythm::plugins::PluginSlotType::Modulator)
+                return track->modulators_.at (slots_.at (0)).get ();
+            }
           z_return_val_if_reached (nullptr);
-          break;
-        }
+        },
+        *track_var);
     }
 
   return nullptr;
@@ -178,33 +178,44 @@ void
 MixerSelections::get_plugins (
   std::vector<zrythm::plugins::Plugin *> &plugins) const
 {
-  Track * track = get_track ();
-  z_return_if_fail (IS_TRACK_AND_NONNULL (track));
+  auto track_var = get_track ();
+  z_return_if_fail (track_var);
 
-  for (int slot : slots_)
-    {
-      zrythm::plugins::Plugin * pl = nullptr;
-      switch (type_)
+  std::visit (
+    [&] (auto &&track) -> void {
+      using TrackT = base_type<decltype (track)>;
+
+      for (int slot : slots_)
         {
-        case zrythm::plugins::PluginSlotType::Instrument:
-        case zrythm::plugins::PluginSlotType::Insert:
-        case zrythm::plugins::PluginSlotType::MidiFx:
-          {
-            auto &channel_track = dynamic_cast<ChannelTrack &> (*track);
-            pl = channel_track.get_channel ()->get_plugin_at_slot (slot, type_);
-          }
-          break;
-        case zrythm::plugins::PluginSlotType::Modulator:
-          pl = dynamic_cast<ModulatorTrack *> (track)->modulators_[slot].get ();
-          break;
-        default:
-          z_return_if_reached ();
+          zrythm::plugins::Plugin * pl = nullptr;
+          switch (type_)
+            {
+            case zrythm::plugins::PluginSlotType::Instrument:
+            case zrythm::plugins::PluginSlotType::Insert:
+            case zrythm::plugins::PluginSlotType::MidiFx:
+              if constexpr (std::derived_from<TrackT, ChannelTrack>)
+                {
+                  auto &channel_track = dynamic_cast<ChannelTrack &> (*track);
+                  pl = channel_track.get_channel ()->get_plugin_at_slot (
+                    slot, type_);
+                }
+              break;
+            case zrythm::plugins::PluginSlotType::Modulator:
+              if constexpr (std::is_same_v<TrackT, ModulatorTrack>)
+                {
+                  pl = track->modulators_[slot].get ();
+                }
+              break;
+            default:
+              z_return_if_reached ();
+            }
+
+          z_return_if_fail (pl);
+
+          plugins.push_back (pl);
         }
-
-      z_return_if_fail (pl);
-
-      plugins.push_back (pl);
-    }
+    },
+    *track_var);
 }
 
 void
@@ -222,34 +233,40 @@ MixerSelections::validate () const
   if (!has_any_)
     return true;
 
-  Track * track = get_track ();
-  z_return_val_if_fail (IS_TRACK_AND_NONNULL (track), false);
+  auto track_var = get_track ();
+  z_return_val_if_fail (track_var, false);
 
-  for (int slot : slots_)
-    {
-      zrythm::plugins::Plugin * pl = nullptr;
-      switch (type_)
+  return std::visit (
+    [&] (auto &&track) -> bool {
+      for (int slot : slots_)
         {
-        case zrythm::plugins::PluginSlotType::Instrument:
-        case zrythm::plugins::PluginSlotType::Insert:
-        case zrythm::plugins::PluginSlotType::MidiFx:
-          {
-            auto &channel_track = dynamic_cast<ChannelTrack &> (*track);
-            pl = channel_track.get_channel ()->get_plugin_at_slot (slot, type_);
-          }
-          break;
-        case zrythm::plugins::PluginSlotType::Modulator:
-          pl = dynamic_cast<ModulatorTrack *> (track)->modulators_[slot].get ();
-          break;
-        default:
-          z_return_val_if_reached (false);
-          break;
+          zrythm::plugins::Plugin * pl = nullptr;
+          switch (type_)
+            {
+            case zrythm::plugins::PluginSlotType::Instrument:
+            case zrythm::plugins::PluginSlotType::Insert:
+            case zrythm::plugins::PluginSlotType::MidiFx:
+              {
+                auto &channel_track = dynamic_cast<ChannelTrack &> (*track);
+                pl = channel_track.get_channel ()->get_plugin_at_slot (
+                  slot, type_);
+              }
+              break;
+            case zrythm::plugins::PluginSlotType::Modulator:
+              pl =
+                dynamic_cast<ModulatorTrack *> (track)->modulators_[slot].get ();
+              break;
+            default:
+              z_return_val_if_reached (false);
+              break;
+            }
+
+          z_return_val_if_fail (pl, false);
         }
 
-      z_return_val_if_fail (pl, false);
-    }
-
-  return true;
+      return true;
+    },
+    *track_var);
 }
 
 void
@@ -272,46 +289,52 @@ MixerSelections::gen_full_from_this () const
   ret->track_name_hash_ = track_name_hash_;
   ret->has_any_ = has_any_;
 
-  Track * track = TRACKLIST->find_track_by_name_hash (track_name_hash_);
-  z_return_val_if_fail (IS_TRACK_AND_NONNULL (track), nullptr);
+  auto track_var = TRACKLIST->find_track_by_name_hash (track_name_hash_);
+  z_return_val_if_fail (track_var, nullptr);
 
-  for (int slot : slots_)
-    {
-      zrythm::plugins::Plugin * pl = nullptr;
-      switch (type_)
+  return std::visit (
+    [&] (auto &&track) -> std::unique_ptr<FullMixerSelections> {
+      for (int slot : slots_)
         {
-        case zrythm::plugins::PluginSlotType::Instrument:
-        case zrythm::plugins::PluginSlotType::Insert:
-        case zrythm::plugins::PluginSlotType::MidiFx:
-          {
-            auto &channel_track = dynamic_cast<ChannelTrack &> (*track);
-            pl = channel_track.get_channel ()->get_plugin_at_slot (slot, type_);
-          }
-          break;
-        case zrythm::plugins::PluginSlotType::Modulator:
-          pl = dynamic_cast<ModulatorTrack *> (track)->modulators_[slot].get ();
-          break;
-        default:
-          z_return_val_if_reached (nullptr);
+          zrythm::plugins::Plugin * pl = nullptr;
+          switch (type_)
+            {
+            case zrythm::plugins::PluginSlotType::Instrument:
+            case zrythm::plugins::PluginSlotType::Insert:
+            case zrythm::plugins::PluginSlotType::MidiFx:
+              {
+                auto &channel_track = dynamic_cast<ChannelTrack &> (*track);
+                pl = channel_track.get_channel ()->get_plugin_at_slot (
+                  slot, type_);
+              }
+              break;
+            case zrythm::plugins::PluginSlotType::Modulator:
+              pl =
+                dynamic_cast<ModulatorTrack *> (track)->modulators_[slot].get ();
+              break;
+            default:
+              z_return_val_if_reached (nullptr);
+            }
+
+          z_return_val_if_fail (pl, nullptr);
+
+          try
+            {
+              auto pl_clone =
+                clone_unique_with_variant<zrythm::plugins::PluginVariant> (pl);
+              ret->plugins_.emplace_back (std::move (pl_clone));
+            }
+          catch (const ZrythmException &e)
+            {
+              throw ZrythmException (fmt::format (
+                "Failed to clone plugin {}: {}", pl->get_name (), e.what ()));
+              return nullptr;
+            }
         }
 
-      z_return_val_if_fail (pl, nullptr);
-
-      try
-        {
-          auto pl_clone =
-            clone_unique_with_variant<zrythm::plugins::PluginVariant> (pl);
-          ret->plugins_.emplace_back (std::move (pl_clone));
-        }
-      catch (const ZrythmException &e)
-        {
-          throw ZrythmException (fmt::format (
-            "Failed to clone plugin {}: {}", pl->get_name (), e.what ()));
-          return nullptr;
-        }
-    }
-
-  return ret;
+      return std::move (ret);
+    },
+    *track_var);
 }
 
 bool
@@ -339,6 +362,6 @@ MixerSelections::
     }
   catch (const ZrythmException &e)
     {
-      e.handle (_ ("Failed to paste plugins"));
+      e.handle (QObject::tr ("Failed to paste plugins"));
     }
 }

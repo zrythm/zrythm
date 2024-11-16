@@ -51,7 +51,7 @@ prepare (void)
   /* sleep for a bit because Port's last_change interferes
    * with touch automation recording if it's too close to the
    * current time */
-  g_usleep (1000000); // 1 sec
+  std::this_thread::sleep_for (std::chrono::milliseconds (1000000)); // 1 sec
 }
 
 static void

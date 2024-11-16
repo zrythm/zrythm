@@ -10,8 +10,6 @@
 #ifndef __AUDIO_PAN_H__
 #define __AUDIO_PAN_H__
 
-#include <glib/gi18n.h>
-
 /** The amplitude of -3dBfs (0.707945784f). */
 #define PAN_MINUS_3DB_AMP (-0.292054216f)
 
@@ -35,9 +33,9 @@ enum class PanLaw
 
 static const char * pan_law_str[] = {
   /* TRANSLATORS: decibels */
-  N_ ("0dB"),
-  N_ ("-3dB"),
-  N_ ("-6dB"),
+  QT_TR_NOOP_UTF8 ("0dB"),
+  QT_TR_NOOP_UTF8 ("-3dB"),
+  QT_TR_NOOP_UTF8 ("-6dB"),
 };
 
 static inline const char *
@@ -57,9 +55,9 @@ enum class PanAlgorithm
 };
 
 static const char * pan_algorithm_str[] = {
-  N_ ("Linear"),
-  N_ ("Square Root"),
-  N_ ("Sine"),
+  QT_TR_NOOP_UTF8 ("Linear"),
+  QT_TR_NOOP_UTF8 ("Square Root"),
+  QT_TR_NOOP_UTF8 ("Sine"),
 };
 
 static inline const char *

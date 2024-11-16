@@ -6,7 +6,7 @@
 #include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/piano_roll.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
+#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 
 static const char * drum_labels[47] = {
@@ -177,7 +177,8 @@ PianoRoll::init_loaded ()
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       highlighting_ = ENUM_INT_TO_VALUE (
-        Highlighting, g_settings_get_enum (S_UI, "piano-roll-highlight"));
+        Highlighting,
+        zrythm::gui::SettingsManager::get_instance ()->get_pianoRollHighlight ());
     }
 
   init_descriptors ();
@@ -207,8 +208,8 @@ PianoRoll::set_highlighting (Highlighting highlighting)
 {
   highlighting_ = highlighting;
 
-  g_settings_set_enum (
-    S_UI, "piano-roll-highlight", ENUM_VALUE_TO_INT (highlighting));
+  zrythm::gui::SettingsManager::get_instance ()->set_pianoRollHighlight (
+    ENUM_VALUE_TO_INT (highlighting));
 
   /* EVENTS_PUSH (EventType::ET_PIANO_ROLL_HIGHLIGHTING_CHANGED, nullptr); */
 }
@@ -260,9 +261,12 @@ PianoRoll::init ()
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       highlighting_ = ENUM_INT_TO_VALUE (
-        Highlighting, g_settings_get_enum (S_UI, "piano-roll-highlight"));
+        Highlighting,
+        zrythm::gui::SettingsManager::get_instance ()->get_pianoRollHighlight ());
       midi_modifier_ = ENUM_INT_TO_VALUE (
-        MidiModifier, g_settings_get_enum (S_UI, "piano-roll-midi-modifier"));
+        MidiModifier,
+        zrythm::gui::SettingsManager::get_instance ()
+          ->get_pianoRollMidiModifier ());
     }
 
   init_descriptors ();

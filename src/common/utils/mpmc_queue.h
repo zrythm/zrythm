@@ -37,8 +37,7 @@
 #  include <atomic>
 #  define MPMC_QUEUE_TYPE std::atomic<size_t>
 #else
-#  include <glib.h>
-#  define MPMC_QUEUE_TYPE guint
+#  define MPMC_QUEUE_TYPE unsigned int
 #endif
 
 /**

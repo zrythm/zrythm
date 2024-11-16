@@ -12,6 +12,7 @@
 #include "common/dsp/tracklist.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/logger.h"
+#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #if HAVE_JACK
 #  include "common/dsp/engine_jack.h"
@@ -30,14 +31,12 @@
 #include "common/utils/progress_info.h"
 #include "common/utils/ui.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
-
-#include <glib/gi18n.h>
 
 #include "juce_wrapper.h"
 #include "midilib/src/midifile.h"
-#include <glibmm.h>
 #include <sndfile.h>
+
+using namespace zrythm;
 
 #define AMPLITUDE (1.0 * 0x7F000000)
 
@@ -103,7 +102,7 @@ Exporter::Settings::get_export_time_range () const
       {
         auto start = P_MARKER_TRACK->get_start_marker ();
         auto end = P_MARKER_TRACK->get_end_marker ();
-        return { start->pos_, end->pos_ };
+        return { *start->pos_, *end->pos_ };
       }
     case Exporter::TimeRange::Loop:
       return {
@@ -231,7 +230,7 @@ Exporter::export_audio (Settings &info)
       /* calculate number of frames to process this time */
       const double nticks =
         end_pos.ticks_ - TRANSPORT->playhead_pos_->getTicks ();
-      const nframes_t nframes = (nframes_t) MIN (
+      const nframes_t nframes = (nframes_t) std::min (
         (long) ceil (AUDIO_ENGINE->frames_per_tick_ * nticks),
         (long) AUDIO_ENGINE->block_length_);
       z_return_if_fail (nframes > 0);
@@ -283,7 +282,7 @@ Exporter::export_audio (Settings &info)
 
       progress_info_->update_progress (
         (TRANSPORT->playhead_pos_->getTicks () - start_pos.ticks_) / total_ticks,
-        nullptr);
+        "");
     }
   while (
     TRANSPORT->playhead_pos_->getTicks () < end_pos.ticks_
@@ -299,7 +298,7 @@ Exporter::export_audio (Settings &info)
 
   /* TODO silence output */
 
-  progress_info_->update_progress (1.0, nullptr);
+  progress_info_->update_progress (1.0, "");
 
   /* set jack freewheeling mode and transport type */
 #if HAVE_JACK
@@ -325,7 +324,7 @@ Exporter::export_audio (Settings &info)
     {
       outputFile.deleteFile ();
       progress_info_->mark_completed (
-        ProgressInfo::CompletionType::CANCELLED, nullptr);
+        ProgressInfo::CompletionType::CANCELLED, {});
     }
   else
     {
@@ -335,16 +334,18 @@ Exporter::export_audio (Settings &info)
         {
           float       max_db = math_amp_to_dbfs (clip_amp);
           std::string warn_str = format_str (
-            _ ("The exported audio contains segments louder than 0 dB (max detected %.1f dB)."),
+            QObject::tr (
+              "The exported audio contains segments louder than 0 dB (max detected %.1f dB).")
+              .toStdString (),
             max_db);
           progress_info_->mark_completed (
-            ProgressInfo::CompletionType::HAS_WARNING, warn_str.c_str ());
+            ProgressInfo::CompletionType::HAS_WARNING, warn_str);
         }
       else
         {
           /* return normally */
           progress_info_->mark_completed (
-            ProgressInfo::CompletionType::SUCCESS, nullptr);
+            ProgressInfo::CompletionType::SUCCESS, {});
         }
     }
 }
@@ -405,14 +406,13 @@ Exporter::export_midi (Settings &info)
             }
 
           progress_info_->update_progress (
-            (double) i / (double) TRACKLIST->tracks_.size (), nullptr);
+            (double) i / (double) TRACKLIST->tracks_.size (), {});
         }
 
       midiFileClose (mf);
     }
 
-  progress_info_->mark_completed (
-    ProgressInfo::CompletionType::SUCCESS, nullptr);
+  progress_info_->mark_completed (ProgressInfo::CompletionType::SUCCESS, {});
 }
 
 void
@@ -443,30 +443,30 @@ Exporter::Settings::set_bounce_defaults (
       disable_after_bounce_ =
         ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
           ? false
-          : g_settings_get_boolean (S_UI, "disable-after-bounce");
+          : gui::SettingsManager::disableAfterBounce ();
       [[fallthrough]];
     case Mode::Full:
       {
         auto start = P_MARKER_TRACK->get_start_marker ();
         auto end = P_MARKER_TRACK->get_end_marker ();
-        custom_start_ = start->pos_;
-        custom_end_ = end->pos_;
+        custom_start_ = *start->pos_;
+        custom_end_ = *end->pos_;
       }
       break;
     }
   custom_end_.add_ms (
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? 100
-      : g_settings_get_int (S_UI, "bounce-tail"));
+      : gui::SettingsManager::bounceTailLength ());
 
   bounce_step_ =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? BounceStep::PostFader
-      : ENUM_INT_TO_VALUE (BounceStep, g_settings_get_enum (S_UI, "bounce-step"));
+      : ENUM_INT_TO_VALUE (BounceStep, gui::SettingsManager::bounceStep ());
   bounce_with_parents_ =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? true
-      : g_settings_get_boolean (S_UI, "bounce-with-parents");
+      : gui::SettingsManager::bounceWithParents ();
 
   if (!filepath.empty ())
     {
@@ -474,10 +474,12 @@ Exporter::Settings::set_bounce_defaults (
     }
   else
     {
-      std::string  tmp_dir = io_create_tmp_dir ("zrythm_bounce_XXXXXX");
+      auto tmp_dir = utils::io::make_tmp_dir (
+        std::make_optional (QString::fromUtf8 ("zrythm_bounce_XXXXXX")));
+      tmp_dir->setAutoRemove (false);
       const char * ext = format_get_ext (format_);
       std::string  filename = bounce_name + "." + ext;
-      file_uri_ = Glib::build_filename (tmp_dir, filename);
+      file_uri_ = fs::path (tmp_dir->path ().toStdString ()) / filename;
     }
 }
 
@@ -625,37 +627,41 @@ Exporter::create_audio_track_after_bounce (Position pos)
   FileDescriptor descr (settings_.file_uri_);
 
   /* find next track */
-  Track * last_track = nullptr;
-  Track * track_to_disable = nullptr;
+  std::optional<TrackPtrVariant> last_track_var;
+  std::optional<TrackPtrVariant> track_to_disable_var;
   switch (settings_.mode_)
     {
     case Mode::Regions:
-      last_track = TL_SELECTIONS->get_last_track ();
+      last_track_var = TL_SELECTIONS->get_last_track ();
       break;
     case Mode::Tracks:
-      last_track = TRACKLIST_SELECTIONS->get_lowest_track ();
+      last_track_var = TRACKLIST_SELECTIONS->get_lowest_track ();
       if (settings_.disable_after_bounce_)
         {
-          track_to_disable = last_track;
+          track_to_disable_var = last_track_var;
         }
       break;
     case Mode::Full:
       z_return_if_reached ();
       break;
     }
-  z_return_if_fail (last_track != nullptr);
+  z_return_if_fail (last_track_var.has_value());
 
   Position tmp = TRANSPORT->playhead_pos_->get_position ();
   TRANSPORT->set_playhead_pos_rt_safe (settings_.custom_start_);
   try
     {
-      Track::create_with_action (
-        Track::Type::Audio, nullptr, &descr, &pos, last_track->pos_ + 1, 1,
-        track_to_disable ? track_to_disable->pos_ : -1, nullptr);
+      std::visit (
+        [&] (auto &&last_track, auto &&track_to_disable) {
+          Track::create_with_action (
+            Track::Type::Audio, nullptr, &descr, &pos, last_track->pos_ + 1, 1,
+            track_to_disable ? track_to_disable->pos_ : -1, nullptr);
+        },
+        *last_track_var, *track_to_disable_var);
     }
   catch (const ZrythmException &ex)
     {
-      ex.handle (_ ("Failed to create audio track"));
+      ex.handle (QObject::tr ("Failed to create audio track"));
     }
 
   TRANSPORT->set_playhead_pos_rt_safe (tmp);
@@ -680,7 +686,8 @@ Exporter::export_to_file ()
         || settings_.custom_start_ < init_pos)
         {
           progress_info_->mark_completed (
-            ProgressInfo::CompletionType::HAS_ERROR, _ ("Invalid time range"));
+            ProgressInfo::CompletionType::HAS_ERROR,
+            QObject::tr ("Invalid time range").toStdString ());
           z_warning ("invalid time range");
           return; // FIXME: throw exception?
         }
@@ -701,7 +708,7 @@ Exporter::export_to_file ()
     }
   catch (const ZrythmException &ex)
     {
-      ex.handle (_ ("Failed to export"));
+      ex.handle (QObject::tr ("Failed to export"));
     }
 
   z_debug ("done exporting");

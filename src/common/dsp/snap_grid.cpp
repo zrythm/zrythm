@@ -6,18 +6,27 @@
 #include "common/dsp/transport.h"
 #include "common/utils/gtest_wrapper.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
-
-#include <glib/gi18n.h>
+#include "gui/backend/backend/settings_manager.h"
 
 #include <fmt/printf.h>
+
+using namespace zrythm;
 
 const char **
 note_length_get_strings (void)
 {
   static const char * note_length_strings[] = {
-    N_ ("bar"), N_ ("beat"), "2/1",  "1/1",  "1/2",   "1/4",
-    "1/8",      "1/16",      "1/32", "1/64", "1/128",
+    QT_TR_NOOP_UTF8 ("bar"),
+    QT_TR_NOOP_UTF8 ("beat"),
+    "2/1",
+    "1/1",
+    "1/2",
+    "1/4",
+    "1/8",
+    "1/16",
+    "1/32",
+    "1/64",
+    "1/128",
   };
   return note_length_strings;
 }
@@ -32,9 +41,9 @@ const char **
 note_type_get_strings (void)
 {
   static const char * note_type_strings[] = {
-    N_ ("normal"),
-    N_ ("dotted"),
-    N_ ("triplet"),
+    QT_TR_NOOP_UTF8 ("normal"),
+    QT_TR_NOOP_UTF8 ("dotted"),
+    QT_TR_NOOP_UTF8 ("triplet"),
   };
   return note_type_strings;
 }
@@ -186,12 +195,12 @@ SnapGrid::get_default_ticks () const
       if (type_ == SnapGrid::Type::Timeline)
         {
           last_obj_length =
-            g_settings_get_double (S_UI, "timeline-last-object-length");
+            gui::SettingsManager::timelineLastCreatedObjectLengthInTicks ();
         }
       else if (type_ == SnapGrid::Type::Editor)
         {
           last_obj_length =
-            g_settings_get_double (S_UI, "editor-last-object-length");
+            gui::SettingsManager::editorLastCreatedObjectLengthInTicks ();
         }
       return (int) last_obj_length;
     }
@@ -227,7 +236,7 @@ SnapGrid::stringize () const
 {
   if (snap_adaptive_)
     {
-      return _ ("Adaptive");
+      return QObject::tr ("Adaptive").toStdString ();
     }
   else
     {

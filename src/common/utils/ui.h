@@ -18,8 +18,6 @@
 #include "common/utils/logger.h"
 #include "common/utils/types.h"
 
-#include <glib/gi18n.h>
-
 #include "format.h"
 
 class Position;
@@ -79,10 +77,10 @@ enum class UiDetail
 DEFINE_ENUM_FORMATTER (
   UiDetail,
   UiDetail,
-  N_ ("High"),
-  N_ ("Normal"),
-  N_ ("Low"),
-  N_ ("Ultra Low"));
+  QT_TR_NOOP_UTF8 ("High"),
+  QT_TR_NOOP_UTF8 ("Normal"),
+  QT_TR_NOOP_UTF8 ("Low"),
+  QT_TR_NOOP_UTF8 ("Ultra Low"));
 
 /**
  * Commonly used UI colors.
@@ -160,8 +158,8 @@ public:
   // UiTextures    textures;
   std::vector<std::unique_ptr<UiCursor>> cursors_;
 
-  bool     detail_level_set_;
-  UiDetail detail_level_;
+  bool     detail_level_set_{ false };
+  UiDetail detail_level_{};
 };
 
 /**
@@ -206,21 +204,20 @@ static constexpr const char * TARGET_ENTRY_CHORD_DESCR = "CHORD_DESCR";
 /* */
 static constexpr const char * TARGET_ENTRY_TL_SELECTIONS = "TL_SELECTIONS";
 
+// TODO
+#if 0
 /**
  * Shows the notification when idle.
  *
  * This should be called from threads other than GTK main thread.
  */
-#define ui_show_notification_idle_printf(fmt, ...) \
-  char * text = g_strdup_printf (fmt, __VA_ARGS__); \
-  g_idle_add ((GSourceFunc) ui_show_notification_idle_func, (void *) text)
+#  define ui_show_notification_idle_printf(fmt, ...) \
+    char * text = g_strdup_printf (fmt, __VA_ARGS__); \
+    g_idle_add ((GSourceFunc) ui_show_notification_idle_func, (void *) text)
 
-#define ui_show_notification_idle(msg) \
-  ui_show_notification_idle_printf ("%s", msg)
-
-#define ui_is_widget_revealed(widget) \
-  (gtk_widget_get_height (GTK_WIDGET (widget)) > 1 \
-   || gtk_widget_get_width (GTK_WIDGET (widget)) > 1)
+#  define ui_show_notification_idle(msg) \
+    ui_show_notification_idle_printf ("%s", msg)
+#endif
 
 /**
  * Various cursor states to be shared.
@@ -614,6 +611,8 @@ ui_px_to_pos_editor (double px, bool has_padding);
 void
 ui_show_notification (const char * msg);
 
+// TODO
+#if 0
 /**
  * Show notification from non-GTK threads.
  *
@@ -622,6 +621,7 @@ ui_show_notification (const char * msg);
  */
 int
 ui_show_notification_idle_func (char * msg);
+#endif
 
 #if 0
 /**
@@ -663,12 +663,10 @@ ui_setup_audio_device_name_combo_row (
 #endif
 
 /**
- * Returns the "a locale for the language you have
- * selected..." text based on the given language.
- *
- * Must be free'd by caller.
+ * Returns the "a locale for the language you have selected..." text based on
+ * the given language.
  */
-char *
+std::string
 ui_get_locale_not_available_string (LocalizationLanguage lang);
 
 void

@@ -80,9 +80,9 @@ enum class BounceStep
 DEFINE_ENUM_FORMATTER (
   BounceStep,
   BounceStep,
-  N_ ("Before inserts"),
-  N_ ("Pre-fader"),
-  N_ ("Post fader"));
+  QT_TR_NOOP_UTF8 ("Before inserts"),
+  QT_TR_NOOP_UTF8 ("Pre-fader"),
+  QT_TR_NOOP_UTF8 ("Post fader"));
 
 #define DENORMAL_PREVENTION_VAL(engine_) ((engine_)->denormal_prevention_val_)
 
@@ -850,8 +850,8 @@ DEFINE_ENUM_FORMATTER (
   AudioBackend,
   AudioBackend,
   /* TRANSLATORS: Dummy backend */
-  N_ ("Dummy"),
-  N_ ("Dummy (libsoundio)"),
+  QT_TR_NOOP_UTF8 ("Dummy"),
+  QT_TR_NOOP_UTF8 ("Dummy (libsoundio)"),
   "ALSA (not working)",
   "ALSA (libsoundio)",
   "ALSA (rtaudio)",
@@ -872,9 +872,9 @@ DEFINE_ENUM_FORMATTER (
   MidiBackend,
   MidiBackend,
   /* TRANSLATORS: Dummy backend */
-  N_ ("Dummy"),
-  N_ ("ALSA Sequencer (not working)"),
-  N_ ("ALSA Sequencer (rtmidi)"),
+  QT_TR_NOOP_UTF8 ("Dummy"),
+  QT_TR_NOOP_UTF8 ("ALSA Sequencer (not working)"),
+  QT_TR_NOOP_UTF8 ("ALSA Sequencer (rtmidi)"),
   "JACK MIDI",
   "JACK MIDI (rtmidi)",
   "Windows MME",
@@ -885,13 +885,13 @@ DEFINE_ENUM_FORMATTER (
 DEFINE_ENUM_FORMATTER (
   AudioEngine::SampleRate,
   AudioEngine_SampleRate,
-  N_ ("22,050"),
-  N_ ("32,000"),
-  N_ ("44,100"),
-  N_ ("48,000"),
-  N_ ("88,200"),
-  N_ ("96,000"),
-  N_ ("192,000"))
+  QT_TR_NOOP_UTF8 ("22,050"),
+  QT_TR_NOOP_UTF8 ("32,000"),
+  QT_TR_NOOP_UTF8 ("44,100"),
+  QT_TR_NOOP_UTF8 ("48,000"),
+  QT_TR_NOOP_UTF8 ("88,200"),
+  QT_TR_NOOP_UTF8 ("96,000"),
+  QT_TR_NOOP_UTF8 ("192,000"))
 
 DEFINE_ENUM_FORMATTER (
   AudioEngine::BufferSize,
@@ -902,9 +902,9 @@ DEFINE_ENUM_FORMATTER (
   "128",
   "256",
   "512",
-  N_ ("1,024"),
-  N_ ("2,048"),
-  N_ ("4,096"))
+  QT_TR_NOOP_UTF8 ("1,024"),
+  QT_TR_NOOP_UTF8 ("2,048"),
+  QT_TR_NOOP_UTF8 ("4,096"))
 
 /**
  * @}

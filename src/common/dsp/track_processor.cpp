@@ -27,11 +27,8 @@
 #include "common/utils/midi.h"
 #include "common/utils/mpmc_queue.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
-
-#include <glib/gi18n.h>
 
 #include <fmt/format.h>
 
@@ -815,8 +812,11 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
         {
           if constexpr (std::derived_from<TrackT, ChannelTrack>)
             {
-              Track * clip_editor_track = CLIP_EDITOR->get_track ();
-              if (clip_editor_track == tr)
+              auto clip_editor_track_var = CLIP_EDITOR->get_track ();
+              if (
+                clip_editor_track_var.has_value ()
+                && std::get_if<TrackT *> (&clip_editor_track_var.value ())
+                && std::get<TrackT *> (clip_editor_track_var.value ()) == tr)
                 {
                   /* if not set to "all channels", filter-append */
                   if (!tr->channel_->all_midi_channels_)

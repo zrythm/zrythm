@@ -9,8 +9,6 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
-
 #include "midilib/src/midifile.h"
 #include "midilib/src/midiinfo.h"
 #include <fmt/printf.h>
@@ -22,7 +20,8 @@ TrackLane::TrackLane (int pos, std::string name)
 
 template <typename RegionT>
 TrackLaneImpl<RegionT>::TrackLaneImpl (LanedTrackT * track, int pos)
-    : TrackLane (pos, format_str (_ ("Lane {}"), pos + 1)), track_ (track)
+    : TrackLane (pos, format_str (QObject::tr ("Lane {}").toStdString (), pos + 1)),
+      track_ (track)
 {
 }
 
@@ -31,8 +30,9 @@ void
 TrackLaneImpl<RegionT>::init_loaded (LanedTrackT * track)
 {
   track_ = track;
-  for (auto &region : this->regions_)
+  for (auto &region_var : this->region_list_->regions_)
     {
+      auto region = std::get<RegionT *> (region_var);
       region->set_lane (*dynamic_cast<TrackLaneT *> (this));
       region->init_loaded ();
     }
@@ -49,8 +49,9 @@ template <typename RegionT>
 void
 TrackLaneImpl<RegionT>::unselect_all ()
 {
-  for (auto &region : this->regions_)
+  for (auto &region_var : this->region_list_->regions_)
     {
+      auto region = std::get<RegionT *> (region_var);
       region->select (false, false, false);
     }
 }
@@ -68,7 +69,7 @@ TrackLaneImpl<RegionT>::rename (const std::string &new_name, bool with_action)
         }
       catch (const ZrythmException &e)
         {
-          e.handle (_ ("Failed to rename lane"));
+          e.handle (QObject::tr ("Failed to rename lane"));
           return;
         }
       // EVENTS_PUSH (EventType::ET_TRACK_LANES_VISIBILITY_CHANGED, nullptr);
@@ -93,7 +94,7 @@ TrackLaneImpl<
         }
       catch (const ZrythmException &e)
         {
-          e.handle (_ ("Cannot set track lane soloed"));
+          e.handle (QObject::tr ("Cannot set track lane soloed"));
           return;
         }
     }
@@ -123,7 +124,7 @@ TrackLaneImpl<RegionT>::set_muted (bool mute, bool trigger_undo, bool fire_event
         }
       catch (const ZrythmException &e)
         {
-          e.handle (_ ("Could not mute/unmute track lane"));
+          e.handle (QObject::tr ("Could not mute/unmute track lane"));
           return;
         }
     }
@@ -184,8 +185,9 @@ TrackLaneImpl<RegionT>::update_track_name_hash ()
 {
   z_return_if_fail (track_);
 
-  for (auto &region : this->regions_)
+  for (auto &region_var : this->region_list_->regions_)
     {
+      auto region = std::get<RegionT *> (region_var);
       region->id_.track_name_hash_ = track_->get_name_hash ();
       region->id_.lane_pos_ = pos_;
       region->update_identifier ();
@@ -279,17 +281,18 @@ TrackLaneImpl<RegionT>::write_to_midi_file (
       midiTrackAddText (mf, midi_track_pos, textTrackName, midi_track_name);
     }
 
-  for (auto &region : this->regions_)
+  for (auto &region_var : this->region_list_->regions_)
     {
+      auto region = std::get<RegionT *> (region_var);
       /* skip regions not inside the given range */
       if (start)
         {
-          if (region->end_pos_ < *start)
+          if (*region->end_pos_ < *start)
             continue;
         }
       if (end)
         {
-          if (region->pos_ > *end)
+          if (*region->pos_ > *end)
             continue;
         }
 
@@ -313,9 +316,9 @@ TrackLaneImpl<RegionT>::copy_members_from (const TrackLaneImpl &other)
   height_ = other.height_;
   mute_ = other.mute_;
   solo_ = other.solo_;
-  clone_unique_ptr_container (this->regions_, other.regions_);
-  for (auto &region : this->regions_)
+  for (auto &region_var : this->region_list_->regions_)
     {
+      auto region = std::get<RegionT *> (region_var);
       region->is_auditioner_ = is_auditioner ();
       region->owner_lane_ = dynamic_cast<TrackLaneT *> (this);
       region->gen_name (region->name_.c_str (), nullptr, nullptr);
@@ -331,11 +334,12 @@ TrackLaneImpl<RegionT>::gen_snapshot () const
 
   /* clone_unique above creates the regions in `regions_` but we want them in
    * `region_snapshots_`... */
-  for (auto &region : ret->regions_)
+  for (auto &region_var : this->region_list_->regions_)
     {
+      auto region = std::get<RegionT *> (region_var);
       ret->region_snapshots_.emplace_back (region->clone_unique ());
     }
-  ret->regions_.clear ();
+  ret->region_list_->clear ();
   return ret;
 }
 

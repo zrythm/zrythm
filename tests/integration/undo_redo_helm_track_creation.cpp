@@ -37,7 +37,7 @@ _test (
   UNDO_MANAGER->undo ();
 
   /* let the engine run */
-  g_usleep (1000000);
+  std::this_thread::sleep_for (std::chrono::milliseconds (1000000));
 
   /* 4. reload project */
   test_project_save_and_reload ();
@@ -49,7 +49,7 @@ _test (
   UNDO_MANAGER->undo ();
 
   /* let the engine run */
-  g_usleep (1000000);
+  std::this_thread::sleep_for (std::chrono::milliseconds (1000000));
 }
 #endif
 

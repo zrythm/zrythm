@@ -326,8 +326,10 @@ ExtPort::ExtPort (jack_port_t * jport)
       short_name_ (jack_port_short_name (jport)), type_ (Type::JACK)
 {
   std::array<char *, 2> aliases{};
-  aliases[0] = static_cast<char *> (g_malloc0 (jack_port_name_size ()));
-  aliases[1] = static_cast<char *> (g_malloc0 (jack_port_name_size ()));
+  aliases[0] =
+    static_cast<char *> (calloc (jack_port_name_size (), sizeof (char)));
+  aliases[1] =
+    static_cast<char *> (calloc (jack_port_name_size (), sizeof (char)));
   num_aliases_ = jack_port_get_aliases (jport, aliases.data ());
 
   if (num_aliases_ == 2)
@@ -353,8 +355,8 @@ ExtPort::ExtPort (jack_port_t * jport)
         }
     }
 
-  g_free (aliases[0]);
-  g_free (aliases[1]);
+  free (aliases[0]);
+  free (aliases[1]);
 }
 
 static void

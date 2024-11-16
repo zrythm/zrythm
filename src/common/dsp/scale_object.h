@@ -20,15 +20,33 @@ constexpr int SCALE_OBJECT_MAGIC = 13187994;
 #define IS_SCALE_OBJECT(tr) (tr && tr->magic_ == SCALE_OBJECT_MAGIC)
 
 class ScaleObject final
-    : public TimelineObject,
+    : public QObject,
+      public TimelineObject,
       public MuteableObject,
       public ICloneable<ScaleObject>,
       public ISerializable<ScaleObject>
 {
-public:
-  ScaleObject () = default;
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (ScaleObject)
+  Q_PROPERTY (QString name READ getName NOTIFY nameChanged)
 
-  ScaleObject (const MusicalScale &descr);
+public:
+  ScaleObject (QObject * parent = nullptr);
+
+  ScaleObject (const MusicalScale &descr, QObject * parent = nullptr);
+
+  // =========================================================
+  // QML Interface
+  // =========================================================
+
+  QString getName () const
+  {
+    return QString::fromStdString (gen_human_friendly_name ());
+  }
+  Q_SIGNAL void nameChanged (const QString &name);
+
+  // =========================================================
 
   void init_after_cloning (const ScaleObject &other) override;
 
@@ -40,11 +58,12 @@ public:
 
   std::string print_to_str () const override;
 
-  ArrangerObjectPtr find_in_project () const override;
+  std::optional<ArrangerObjectPtrVariant> find_in_project () const override;
 
-  ArrangerObjectPtr add_clone_to_project (bool fire_events) const override;
+  ArrangerObjectPtrVariant
+  add_clone_to_project (bool fire_events) const override;
 
-  ArrangerObjectPtr insert_clone_to_project () const override;
+  ArrangerObjectPtrVariant insert_clone_to_project () const override;
 
   bool validate (bool is_project, double frames_per_tick) const override;
 

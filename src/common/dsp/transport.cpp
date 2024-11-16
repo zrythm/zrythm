@@ -17,7 +17,9 @@
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
+#include "gui/backend/backend/settings_manager.h"
+
+using namespace zrythm;
 
 /**
  * A buffer of n bars after the end of the last object.
@@ -36,23 +38,19 @@ Transport::init_common ()
 
   const bool testing_or_benchmarking = ZRYTHM_TESTING || ZRYTHM_BENCHMARKING;
   loop_ =
-    testing_or_benchmarking ? true : g_settings_get_boolean (S_TRANSPORT, "loop");
+    testing_or_benchmarking ? true : gui::SettingsManager::transportLoop ();
   metronome_enabled_ =
-    testing_or_benchmarking
-      ? true
-      : g_settings_get_boolean (S_TRANSPORT, "metronome-enabled");
+    testing_or_benchmarking ? true : gui::SettingsManager::metronomeEnabled ();
   punch_mode_ =
-    testing_or_benchmarking
-      ? true
-      : g_settings_get_boolean (S_TRANSPORT, "punch-mode");
+    testing_or_benchmarking ? true : gui::SettingsManager::punchModeEnabled ();
   start_playback_on_midi_input_ =
     testing_or_benchmarking
       ? false
-      : g_settings_get_boolean (S_TRANSPORT, "start-on-midi-input");
+      : gui::SettingsManager::startPlaybackOnMidiInput ();
   recording_mode_ =
     testing_or_benchmarking
       ? RecordingMode::Takes
-      : (RecordingMode) g_settings_get_enum (S_TRANSPORT, "recording-mode");
+      : ENUM_INT_TO_VALUE (RecordingMode, gui::SettingsManager::recordingMode ());
 }
 
 void
@@ -84,18 +82,18 @@ Transport::init_loaded (Project * project, const TempoTrack * tempo_track)
 }
 
 Transport::Transport (Project * parent)
-    : QObject (parent), playhead_pos_ (new PositionProxy (this)),
-      cue_pos_ (new PositionProxy (this)),
-      loop_start_pos_ (new PositionProxy (this)),
-      loop_end_pos_ (new PositionProxy (this)),
-      punch_in_pos_ (new PositionProxy (this)),
-      punch_out_pos_ (new PositionProxy (this)), project_ (parent),
-      property_notification_timer_ (new QTimer (this))
+    : QObject (parent), playhead_pos_ (new PositionProxy (this, nullptr, true)),
+      cue_pos_ (new PositionProxy (this, nullptr, true)),
+      loop_start_pos_ (new PositionProxy (this, nullptr, true)),
+      loop_end_pos_ (new PositionProxy (this, nullptr, true)),
+      punch_in_pos_ (new PositionProxy (this, nullptr, true)),
+      punch_out_pos_ (new PositionProxy (this, nullptr, true)),
+      project_ (parent), property_notification_timer_ (new QTimer (this))
 {
   z_debug ("Creating transport...");
 
   property_notification_timer_->setInterval (16);
-  property_notification_timer_->callOnTimeout ([this] () {
+  property_notification_timer_->callOnTimeout (this, [this] () {
     if (needs_property_notification_.exchange (false))
       {
         Q_EMIT playStateChanged (play_state_);
@@ -314,8 +312,9 @@ Transport::prepare_audio_regions_for_stretch (TimelineSelections * sel)
           for (auto &lane_var : track->lanes_)
             {
               auto * lane = std::get<AudioLane *> (lane_var);
-              for (auto &region : lane->regions_)
+              for (auto &region_var : lane->region_list_->regions_)
                 {
+                  auto * region = std::get<AudioRegion *> (region_var);
                   region->before_length_ = region->get_length_in_ticks ();
                 }
             }
@@ -360,8 +359,9 @@ Transport::stretch_regions (
           for (auto &lane_var : track->lanes_)
             {
               auto * lane = std::get<AudioLane *> (lane_var);
-              for (auto &region : lane->regions_)
+              for (auto &region_var : lane->region_list_->regions_)
                 {
+                  auto * region = std::get<AudioRegion *> (region_var);
                   /* don't stretch regions with musical mode off */
                   if (!region->get_musical_mode ())
                     continue;
@@ -384,7 +384,7 @@ Transport::set_punch_mode_enabled (bool enabled)
 
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
-      g_settings_set_boolean (S_TRANSPORT, "punch-mode", enabled);
+      gui::SettingsManager::get_instance ()->set_punchModeEnabled (enabled);
     }
 }
 
@@ -392,7 +392,7 @@ void
 Transport::set_start_playback_on_midi_input (bool enabled)
 {
   start_playback_on_midi_input_ = enabled;
-  g_settings_set_boolean (S_TRANSPORT, "start-on-midi-input", enabled);
+  gui::SettingsManager::get_instance ()->set_startPlaybackOnMidiInput (enabled);
 }
 
 void
@@ -402,8 +402,8 @@ Transport::set_recording_mode (RecordingMode mode)
 
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
-      g_settings_set_enum (
-        S_TRANSPORT, "recording-mode", ENUM_VALUE_TO_INT (mode));
+      gui::SettingsManager::get_instance ()->set_recordingMode (
+        ENUM_VALUE_TO_INT (mode));
     }
 }
 
@@ -443,7 +443,7 @@ Transport::requestPause (bool with_wait)
   playhead_before_pause_ = playhead_pos_->get_position ();
   if (
     !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING
-    && g_settings_get_boolean (S_TRANSPORT, "return-to-cue"))
+    && gui::SettingsManager::transportReturnToCue ())
     {
       auto tmp = cue_pos_->get_position ();
       move_playhead (&tmp, F_PANIC, F_NO_SET_CUE_POINT, true);
@@ -473,8 +473,7 @@ Transport::requestRoll (bool with_wait)
     {
       /* handle countin */
       PrerollCountBars bars = ENUM_INT_TO_VALUE (
-        PrerollCountBars,
-        g_settings_get_enum (S_TRANSPORT, "metronome-countin"));
+        PrerollCountBars, gui::SettingsManager::metronomeCountIn ());
       int    num_bars = preroll_count_bars_enum_to_int (bars);
       double frames_per_bar =
         audio_engine_->frames_per_tick_ * (double) ticks_per_bar_;
@@ -488,8 +487,7 @@ Transport::requestRoll (bool with_wait)
         {
           /* handle preroll */
           bars = ENUM_INT_TO_VALUE (
-            PrerollCountBars,
-            g_settings_get_enum (S_TRANSPORT, "recording-preroll"));
+            PrerollCountBars, gui::SettingsManager::recordingPreroll ());
           num_bars = preroll_count_bars_enum_to_int (bars);
           Position pos = playhead_pos_->get_position ();
           pos.add_bars (-num_bars);
@@ -574,14 +572,15 @@ Transport::move_playhead (
             {
               using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
               auto lane = std::get<TrackLaneT *> (lane_var);
-              for (const auto &region : lane->regions_)
+              for (const auto &region_var : lane->region_list_->regions_)
                 {
+                  auto * region =
+                    std::get<typename TrackLaneT::RegionT *> (region_var);
                   if (!region->is_hit (playhead_pos_->frames_, true))
                     continue;
 
                   if constexpr (
-                    std::is_same_v<
-                      base_type<decltype (region.get ())>, MidiRegion>)
+                    std::is_same_v<typename TrackLaneT::RegionT, MidiRegion>)
                     {
                       for (auto &midi_note : region->midi_notes_)
                         {
@@ -611,7 +610,8 @@ Transport::move_playhead (
   if (fire_events)
     {
       /* FIXME use another flag to decide when to do this */
-      last_manual_playhead_change_ = g_get_monotonic_time ();
+      last_manual_playhead_change_ =
+        Zrythm::getInstance ()->get_monotonic_time_usecs ();
     }
 }
 
@@ -619,7 +619,7 @@ void
 Transport::set_metronome_enabled (bool enabled)
 {
   metronome_enabled_ = enabled;
-  g_settings_set_boolean (S_TRANSPORT, "metronome-enabled", enabled);
+  gui::SettingsManager::get_instance ()->set_metronomeEnabled (enabled);
 }
 
 double
@@ -662,7 +662,7 @@ Transport::move_to_marker_or_pos_and_fire_events (
   const Marker *   marker,
   const Position * pos)
 {
-  move_playhead (marker ? &marker->pos_ : pos, true, true, true);
+  move_playhead (marker ? marker->pos_ : pos, true, true, true);
 
   if (ZRYTHM_HAVE_UI)
     {
@@ -678,7 +678,7 @@ Transport::goto_start_marker ()
 {
   auto start_marker = P_MARKER_TRACK->get_start_marker ();
   z_return_if_fail (start_marker);
-  move_to_marker_or_pos_and_fire_events (start_marker.get (), nullptr);
+  move_to_marker_or_pos_and_fire_events (start_marker, nullptr);
 }
 
 /**
@@ -689,7 +689,7 @@ Transport::goto_end_marker ()
 {
   auto end_marker = P_MARKER_TRACK->get_end_marker ();
   z_return_if_fail (end_marker);
-  move_to_marker_or_pos_and_fire_events (end_marker.get (), nullptr);
+  move_to_marker_or_pos_and_fire_events (end_marker, nullptr);
 }
 
 /**
@@ -702,7 +702,7 @@ Transport::goto_prev_marker ()
   std::vector<Position> markers;
   for (auto &marker : P_MARKER_TRACK->markers_)
     {
-      markers.push_back (marker->pos_);
+      markers.push_back (*marker->pos_);
     }
   markers.emplace_back (cue_pos_->get_position ());
   markers.emplace_back (loop_start_pos_->get_position ());
@@ -737,7 +737,7 @@ Transport::goto_next_marker ()
   std::vector<Position> markers;
   for (auto &marker : P_MARKER_TRACK->markers_)
     {
-      markers.push_back (marker->pos_);
+      markers.push_back (*marker->pos_);
     }
   markers.push_back (cue_pos_->get_position ());
   markers.push_back (loop_start_pos_->get_position ());
@@ -776,7 +776,7 @@ Transport::set_loop (bool enabled, bool with_wait)
 
   if (gZrythm && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
-      g_settings_set_boolean (S_TRANSPORT, "loop", enabled);
+      gui::SettingsManager::get_instance ()->set_transportLoop (enabled);
     }
 
   Q_EMIT (loopEnabledChanged (loop_));
@@ -890,23 +890,28 @@ Transport::recalculate_total_bars (ArrangerSelections * sel)
   int total_bars = total_bars_;
   if (sel)
     {
-      for (const auto &obj : sel->objects_)
+      for (const auto &obj_var : sel->objects_)
         {
-          Position pos;
-          if (ArrangerObject::type_has_length (obj->type_))
-            {
-              obj->get_position_from_type (
-                &pos, ArrangerObject::PositionType::End);
-            }
-          else
-            {
-              obj->get_pos (&pos);
-            }
-          int pos_bars = pos.get_total_bars (*this, true);
-          if (pos_bars > total_bars - 3)
-            {
-              total_bars = pos_bars + BARS_END_BUFFER;
-            }
+          std::visit (
+            [&] (auto &&obj) {
+              using ObjT = base_type<decltype (obj)>;
+              Position pos;
+              if constexpr (std::derived_from<ObjT, LengthableObject>)
+                {
+                  obj->get_position_from_type (
+                    &pos, ArrangerObject::PositionType::End);
+                }
+              else
+                {
+                  obj->get_pos (&pos);
+                }
+              int pos_bars = pos.get_total_bars (*this, true);
+              if (pos_bars > total_bars - 3)
+                {
+                  total_bars = pos_bars + BARS_END_BUFFER;
+                }
+            },
+            obj_var);
         }
     }
   /* else no selections, calculate total bars for

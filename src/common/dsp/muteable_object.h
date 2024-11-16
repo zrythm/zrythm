@@ -11,7 +11,9 @@ class MuteableObject
       public ISerializable<MuteableObject>
 {
 public:
+  MuteableObject () = default;
   virtual ~MuteableObject () = default;
+  Q_DISABLE_COPY_MOVE (MuteableObject)
 
   /**
    * Gets the mute status of the object.

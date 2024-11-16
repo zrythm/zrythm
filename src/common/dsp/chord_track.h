@@ -34,9 +34,12 @@
  * The chord regions and scales are stored in sorted vectors, and the class
  * provides methods for clearing all objects from the track, which is mainly
  * used for testing.
+ *
+ * This is an abstract list model for ScaleObject's. For chord regions, @see
+ * RegionOwner.
  */
 class ChordTrack final
-    : public QObject,
+    : public QAbstractListModel,
       public RecordableTrack,
       public ChannelTrack,
       public RegionOwnerImpl<ChordRegion>,
@@ -49,10 +52,29 @@ class ChordTrack final
   DEFINE_TRACK_QML_PROPERTIES (ChordTrack)
   DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (ChordTrack)
   DEFINE_CHANNEL_TRACK_QML_PROPERTIES (ChordTrack)
+  DEFINE_REGION_OWNER_QML_PROPERTIES (ChordTrack)
 
   friend class InitializableObjectFactory<ChordTrack>;
 
 public:
+  using ScaleObjectPtr = ScaleObject *;
+
+  // =========================================================================
+  // QML Interface
+  // =========================================================================
+
+  enum Role
+  {
+    ScaleObjectPtrRole = Qt::UserRole + 1,
+  };
+
+  QHash<int, QByteArray> roleNames () const override;
+  int rowCount (const QModelIndex &parent = QModelIndex ()) const override;
+  QVariant
+  data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
+
+  // =========================================================================
+
   void init_loaded () override;
 
   bool is_in_active_project () const override
@@ -63,23 +85,24 @@ public:
   bool is_auditioner () const override { return Track::is_auditioner (); }
 
   /**
-   * Inserts a scale to the track.
+   * Inserts a scale object to the track.
+   *
+   * This takes ownership of the scale object.
    */
-  std::shared_ptr<ScaleObject>
-  insert_scale (std::shared_ptr<ScaleObject> scale, int index);
+  void insert_scale (ScaleObject &scale, int index);
 
   /**
    * Adds a scale to the track.
    */
-  std::shared_ptr<ScaleObject> add_scale (std::shared_ptr<ScaleObject> scale)
+  void add_scale (ScaleObject &scale)
   {
-    return insert_scale (std::move (scale), scales_.size ());
+    return insert_scale (scale, scales_.size ());
   }
 
   /**
    * Removes a scale from the chord Track.
    */
-  void remove_scale (ScaleObject &scale);
+  void remove_scale (ScaleObject &scale, bool delete_scale);
 
 /**
  * Returns the current chord.
@@ -90,7 +113,7 @@ public:
    * Returns the ChordObject at the given Position
    * in the TimelineArranger.
    */
-  ChordObject * get_chord_at_pos (const Position pos) const;
+  ChordObject * get_chord_at_pos (Position pos) const;
 
 /**
  * Returns the current scale.
@@ -101,7 +124,7 @@ public:
    * Returns the ScaleObject at the given Position
    * in the TimelineArranger.
    */
-  ScaleObject * get_scale_at_pos (const Position pos) const;
+  ScaleObject * get_scale_at_pos (Position pos) const;
 
   bool validate () const override;
 
@@ -112,22 +135,12 @@ public:
     const Position *       p1,
     const Position *       p2) override
   {
-    for (auto &region : regions_)
-      {
-        add_region_if_in_range (p1, p2, regions, region.get ());
-      }
+    std::ranges::for_each (regions, [&] (auto &region) {
+      add_region_if_in_range (p1, p2, regions, region);
+    });
   }
 
-  void init_after_cloning (const ChordTrack &other) override
-  {
-    Track::copy_members_from (other);
-    AutomatableTrack::copy_members_from (other);
-    ProcessableTrack::copy_members_from (other);
-    RecordableTrack::copy_members_from (other);
-    ChannelTrack::copy_members_from (other);
-    RegionOwnerImpl::copy_members_from (other);
-    clone_unique_ptr_container (scales_, other.scales_);
-  }
+  void init_after_cloning (const ChordTrack &other) override;
 
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
@@ -144,7 +157,7 @@ public:
   /**
    * @note These must always be sorted by Position.
    */
-  std::vector<std::shared_ptr<ScaleObject>> scales_;
+  std::vector<ScaleObjectPtr> scales_;
 
   /** Snapshots used during playback TODO unimplemented. */
   std::vector<std::unique_ptr<ScaleObject>> scale_snapshots_;

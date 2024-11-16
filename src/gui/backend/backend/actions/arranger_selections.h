@@ -131,7 +131,7 @@ public:
   class MoveOrDuplicateMidiAction;
   class MoveOrDuplicateAutomationAction;
   class MoveOrDuplicateChordAction;
-  class MoveByTicksAction;
+  // class MoveByTicksAction;
   class MoveMidiAction;
   class MoveChordAction;
   class LinkAction;
@@ -145,16 +145,7 @@ public:
 
   void init_after_cloning (const ArrangerSelectionsAction &other) final;
 
-  bool needs_transport_total_bar_update (bool perform) const override
-  {
-    if (
-      (perform && type_ == Type::Create) || (!perform && type_ == Type::Delete)
-      || (perform && type_ == Type::Duplicate)
-      || (perform && type_ == Type::Link))
-      return false;
-
-    return true;
-  }
+  bool needs_transport_total_bar_update (bool perform) const override;
 
   bool needs_pause () const override
   {
@@ -174,25 +165,31 @@ protected:
    *
    * @param before_sel Selections before the change.
    */
-  ArrangerSelectionsAction (const ArrangerSelections &before_sel, Type type);
+  template <FinalArrangerSelectionsSubclass T>
+  ArrangerSelectionsAction (const T &before_sel, Type type)
+      : UndoableAction (UndoableAction::Type::ArrangerSelections), type_ (type),
+        first_run_ (true)
+  {
+    set_before_selections (before_sel);
+  }
 
   /**
    * @brief Sets @ref sel_ to a clone of @p src.
    *
    * @param src
    */
-  void set_before_selections (const ArrangerSelections &src);
+  template <FinalArrangerSelectionsSubclass T>
+  void set_before_selections (const T &src);
 
   /**
    * @brief Sets @ref sel_after_ to a clone of @p src.
    *
    * @param src
    */
-  void set_after_selections (const ArrangerSelections &src);
+  template <FinalArrangerSelectionsSubclass T>
+  void set_after_selections (const T &src);
 
-  char * arranger_selections_action_stringize (ArrangerSelectionsAction * self);
-
-  std::string to_string () const final;
+  [[nodiscard]] QString to_string () const final;
 
 private:
   /** Common logic for perform/undo. */
@@ -225,13 +222,13 @@ private:
    * @param index_in_prev_lane
    */
   void move_obj_by_tracks_and_lanes (
-    ArrangerObject &obj,
-    int             tracks_diff,
-    int             lanes_diff,
-    bool            use_index_in_prev_lane,
-    int             index_in_prev_lane);
+    ArrangerObjectWithoutVelocityPtrVariant obj_var,
+    int                                     tracks_diff,
+    int                                     lanes_diff,
+    bool                                    use_index_in_prev_lane,
+    int                                     index_in_prev_lane);
 
-  ArrangerSelections * get_actual_arranger_selections () const;
+  ArrangerSelectionsPtrVariant get_actual_arranger_selections () const;
 
   void init_loaded_impl () final;
   void perform_impl () final;
@@ -242,13 +239,13 @@ public:
   Type type_ = (Type) 0;
 
   /** A clone of the ArrangerSelections before the change. */
-  std::unique_ptr<ArrangerSelections> sel_;
+  std::optional<ArrangerSelectionsPtrVariant> sel_;
 
   /**
    * A clone of the ArrangerSelections after the change (used in the EDIT
    * action and quantize).
    */
-  std::unique_ptr<ArrangerSelections> sel_after_;
+  std::optional<ArrangerSelectionsPtrVariant> sel_after_;
 
   /** Type of edit action, if an Edit action. */
   EditType edit_type_ = (EditType) 0;
@@ -283,8 +280,8 @@ public:
   Position pos_;
 
   /** Used when splitting - these are the split ArrangerObject's. */
-  std::vector<std::unique_ptr<LengthableObject>> r1_;
-  std::vector<std::unique_ptr<LengthableObject>> r2_;
+  std::vector<LengthableObjectPtrVariant> r1_;
+  std::vector<LengthableObjectPtrVariant> r2_;
 
   /** Number of split objects. */
   size_t num_split_objs_ = 0;
@@ -300,8 +297,8 @@ public:
   std::unique_ptr<QuantizeOptions> opts_;
 
   /** Used for automation autofill action. */
-  std::unique_ptr<Region> region_before_;
-  std::unique_ptr<Region> region_after_;
+  std::optional<RegionPtrVariant> region_before_;
+  std::optional<RegionPtrVariant> region_after_;
 
   /** Used by the resize action. */
   ResizeType resize_type_ = (ResizeType) 0;
@@ -319,25 +316,26 @@ protected:
    * @param create If this is true, the action will create objects. If false,
    * it will delete them.
    */
-  CreateOrDeleteArrangerSelectionsAction (
-    const ArrangerSelections &sel,
-    bool                      create);
+  template <FinalArrangerSelectionsSubclass T>
+  CreateOrDeleteArrangerSelectionsAction (const T &sel, bool create);
 };
 
 class CreateArrangerSelectionsAction
   final : public CreateOrDeleteArrangerSelectionsAction
 {
 public:
-  CreateArrangerSelectionsAction (const ArrangerSelections &sel)
-      : CreateOrDeleteArrangerSelectionsAction (sel, true) {};
+  template <FinalArrangerSelectionsSubclass T>
+  CreateArrangerSelectionsAction (const T &sel)
+      : CreateOrDeleteArrangerSelectionsAction (sel, true){};
 };
 
 class DeleteArrangerSelectionsAction
   final : public CreateOrDeleteArrangerSelectionsAction
 {
 public:
-  DeleteArrangerSelectionsAction (const ArrangerSelections &sel)
-      : CreateOrDeleteArrangerSelectionsAction (sel, false) {};
+  template <FinalArrangerSelectionsSubclass T>
+  DeleteArrangerSelectionsAction (const T &sel)
+      : CreateOrDeleteArrangerSelectionsAction (sel, false){};
 };
 
 class ArrangerSelectionsAction::RecordAction : public ArrangerSelectionsAction
@@ -350,10 +348,8 @@ public:
    * @param sel_after
    * @param already_recorded
    */
-  RecordAction (
-    const ArrangerSelections &sel_before,
-    const ArrangerSelections &sel_after,
-    bool                      already_recorded);
+  template <FinalArrangerSelectionsSubclass T>
+  RecordAction (const T &sel_before, const T &sel_after, bool already_recorded);
 };
 
 class ArrangerSelectionsAction::MoveOrDuplicateAction
@@ -367,17 +363,18 @@ public:
    * @param delta_normalized_amount Difference in a normalized amount, such as
    * automation point normalized value.
    */
+  template <FinalArrangerSelectionsSubclass T>
   MoveOrDuplicateAction (
-    const ArrangerSelections &sel,
-    bool                      move,
-    double                    ticks,
-    int                       delta_chords,
-    int                       delta_pitch,
-    int                       delta_tracks,
-    int                       delta_lanes,
-    double                    delta_normalized_amount,
-    const PortIdentifier *    tgt_port_id,
-    bool                      already_moved);
+    const T               &sel,
+    bool                   move,
+    double                 ticks,
+    int                    delta_chords,
+    int                    delta_pitch,
+    int                    delta_tracks,
+    int                    delta_lanes,
+    double                 delta_normalized_amount,
+    const PortIdentifier * tgt_port_id,
+    bool                   already_moved);
 };
 
 class ArrangerSelectionsAction::MoveOrDuplicateTimelineAction
@@ -393,7 +390,7 @@ public:
     const PortIdentifier *    tgt_port_id,
     bool                      already_moved)
       : MoveOrDuplicateAction (
-          dynamic_cast<const ArrangerSelections &> (sel),
+          sel,
           move,
           ticks,
           0,
@@ -415,17 +412,8 @@ public:
     double                ticks,
     int                   delta_pitch,
     bool                  already_moved)
-      : MoveOrDuplicateAction (
-          dynamic_cast<const ArrangerSelections &> (sel),
-          move,
-          ticks,
-          0,
-          delta_pitch,
-          0,
-          0,
-          0,
-          nullptr,
-          already_moved) {};
+      : MoveOrDuplicateAction (sel, move, ticks, 0, delta_pitch, 0, 0, 0, nullptr, already_moved) {
+        };
 };
 
 class ArrangerSelectionsAction::MoveOrDuplicateChordAction
@@ -438,17 +426,8 @@ public:
     double           ticks,
     int              delta_chords,
     bool             already_moved)
-      : MoveOrDuplicateAction (
-          dynamic_cast<ArrangerSelections &> (sel),
-          move,
-          ticks,
-          delta_chords,
-          0,
-          0,
-          0,
-          0,
-          nullptr,
-          already_moved) {};
+      : MoveOrDuplicateAction (sel, move, ticks, delta_chords, 0, 0, 0, 0, nullptr, already_moved) {
+        };
 };
 
 class ArrangerSelectionsAction::MoveOrDuplicateAutomationAction
@@ -462,7 +441,7 @@ public:
     int                   delta_normalized_amount,
     bool                  already_moved)
       : MoveOrDuplicateAction (
-          dynamic_cast<ArrangerSelections &> (sel),
+          sel,
           move,
           ticks,
           0,
@@ -474,18 +453,18 @@ public:
           already_moved) {};
 };
 
+#if 0
 class ArrangerSelectionsAction::MoveByTicksAction
     : public ArrangerSelectionsAction::MoveOrDuplicateAction
 {
 public:
-  MoveByTicksAction (
-    const ArrangerSelections &sel,
-    double                    ticks,
-    bool                      already_moved)
+  template <FinalArrangerSelectionsSubclass T>
+  MoveByTicksAction (const T &sel, double ticks, bool already_moved)
       : MoveOrDuplicateAction (sel, true, ticks, 0, 0, 0, 0, 0, nullptr, already_moved)
   {
   }
 };
+#endif
 
 class ArrangerSelectionsAction::MoveMidiAction
     : public ArrangerSelectionsAction::MoveOrDuplicateAction
@@ -525,13 +504,14 @@ public:
    * @param sel_before Original selections.
    * @param sel_after Selections after duplication.
    */
+  template <FinalArrangerSelectionsSubclass T>
   LinkAction (
-    const ArrangerSelections &sel_before,
-    const ArrangerSelections &sel_after,
-    double                    ticks,
-    int                       delta_tracks,
-    int                       delta_lanes,
-    bool                      already_moved);
+    const T &sel_before,
+    const T &sel_after,
+    double   ticks,
+    int      delta_tracks,
+    int      delta_lanes,
+    bool     already_moved);
 };
 
 class EditArrangerSelectionsAction : public ArrangerSelectionsAction
@@ -544,20 +524,22 @@ public:
    * @param sel_after The selections after the change.
    * @param type Indication of which field has changed.
    */
+  template <FinalArrangerSelectionsSubclass T>
   EditArrangerSelectionsAction (
-    const ArrangerSelections  &sel_before,
-    const ArrangerSelections * sel_after,
-    EditType                   type,
-    bool                       already_edited);
+    const T  &sel_before,
+    const T * sel_after,
+    EditType  type,
+    bool      already_edited);
 
   /**
    * @brief Wrapper for a single object.
    */
+  template <FinalArrangerObjectSubclass T>
   static std::unique_ptr<EditArrangerSelectionsAction> create (
-    const ArrangerObject &obj_before,
-    const ArrangerObject &obj_after,
-    EditType              type,
-    bool                  already_edited);
+    const T &obj_before,
+    const T &obj_after,
+    EditType type,
+    bool     already_edited);
 
   /**
    * @brief Wrapper for MIDI functions.
@@ -578,10 +560,10 @@ public:
    * @brief Wrapper for audio functions.
    */
   static std::unique_ptr<EditArrangerSelectionsAction> create (
-    const AudioSelections &sel_before,
-    AudioFunctionType      audio_func_type,
-    AudioFunctionOpts      opts,
-    const std::string *    uri);
+    const AudioSelections     &sel_before,
+    AudioFunctionType          audio_func_type,
+    AudioFunctionOpts          opts,
+    std::optional<std::string> uri);
 };
 
 class ArrangerSelectionsAction::AutomationFillAction
@@ -595,10 +577,11 @@ public:
    * @param region_after The region after the change.
    * @param already_changed Whether the change was already made.
    */
+  template <FinalRegionSubclass RegionT>
   AutomationFillAction (
-    const Region &region_before,
-    const Region &region_after,
-    bool          already_changed);
+    const RegionT &region_before,
+    const RegionT &region_after,
+    bool           already_changed);
 };
 
 class ArrangerSelectionsAction::SplitAction : public ArrangerSelectionsAction
@@ -609,7 +592,8 @@ public:
    *
    * @param pos Global position to split at.
    */
-  SplitAction (const ArrangerSelections &sel, Position pos);
+  template <FinalArrangerSelectionsSubclass T>
+  SplitAction (const T &sel, Position pos);
 };
 
 class ArrangerSelectionsAction::MergeAction : public ArrangerSelectionsAction
@@ -618,8 +602,8 @@ public:
   /**
    * Creates a new action for merging objects.
    */
-  MergeAction (const ArrangerSelections &sel)
-      : ArrangerSelectionsAction (sel, Type::Merge)
+  template <FinalArrangerSelectionsSubclass T>
+  MergeAction (const T &sel) : ArrangerSelectionsAction (sel, Type::Merge)
   {
   }
 };
@@ -633,11 +617,12 @@ public:
    * @param sel_after Optional selections after resizing (if already resized).
    * @param ticks How many ticks to add to the resizing edge.
    */
+  template <FinalArrangerSelectionsSubclass T>
   ResizeAction (
-    const ArrangerSelections  &sel_before,
-    const ArrangerSelections * sel_after,
-    ResizeType                 type,
-    double                     ticks);
+    const T   &sel_before,
+    const T *  sel_after,
+    ResizeType type,
+    double     ticks);
 };
 
 class ArrangerSelectionsAction::QuantizeAction : public ArrangerSelectionsAction
@@ -648,7 +633,8 @@ public:
    *
    * @param opts Quantize options.
    */
-  QuantizeAction (const ArrangerSelections &sel, QuantizeOptions opts)
+  template <FinalArrangerSelectionsSubclass T>
+  QuantizeAction (const T &sel, const QuantizeOptions &opts)
       : ArrangerSelectionsAction (sel, Type::Quantize)
   {
     opts_ = std::make_unique<QuantizeOptions> (opts);
@@ -670,5 +656,121 @@ DEFINE_ENUM_FORMATTER (
 /**
  * @}
  */
+
+extern template CreateArrangerSelectionsAction::CreateArrangerSelectionsAction (
+  const TimelineSelections &sel);
+extern template CreateArrangerSelectionsAction::CreateArrangerSelectionsAction (
+  const MidiSelections &sel);
+extern template CreateArrangerSelectionsAction::CreateArrangerSelectionsAction (
+  const AutomationSelections &sel);
+extern template CreateArrangerSelectionsAction::CreateArrangerSelectionsAction (
+  const ChordSelections &sel);
+extern template CreateArrangerSelectionsAction::CreateArrangerSelectionsAction (
+  const AudioSelections &sel);
+
+extern template DeleteArrangerSelectionsAction::DeleteArrangerSelectionsAction (
+  const TimelineSelections &sel);
+extern template DeleteArrangerSelectionsAction::DeleteArrangerSelectionsAction (
+  const MidiSelections &sel);
+extern template DeleteArrangerSelectionsAction::DeleteArrangerSelectionsAction (
+  const AutomationSelections &sel);
+extern template DeleteArrangerSelectionsAction::DeleteArrangerSelectionsAction (
+  const ChordSelections &sel);
+extern template DeleteArrangerSelectionsAction::DeleteArrangerSelectionsAction (
+  const AudioSelections &sel);
+
+extern template ArrangerSelectionsAction::RecordAction::RecordAction (
+  const TimelineSelections &sel_before,
+  const TimelineSelections &sel_after,
+  bool                      already_recorded);
+extern template ArrangerSelectionsAction::RecordAction::RecordAction (
+  const MidiSelections &sel_before,
+  const MidiSelections &sel_after,
+  bool                  already_recorded);
+extern template ArrangerSelectionsAction::RecordAction::RecordAction (
+  const AutomationSelections &sel_before,
+  const AutomationSelections &sel_after,
+  bool                        already_recorded);
+extern template ArrangerSelectionsAction::RecordAction::RecordAction (
+  const ChordSelections &sel_before,
+  const ChordSelections &sel_after,
+  bool                   already_recorded);
+extern template ArrangerSelectionsAction::RecordAction::RecordAction (
+  const AudioSelections &sel_before,
+  const AudioSelections &sel_after,
+  bool                   already_recorded);
+
+extern template ArrangerSelectionsAction::ResizeAction::ResizeAction (
+  const TimelineSelections  &sel_before,
+  const TimelineSelections * sel_after,
+  ResizeType                 type,
+  double                     ticks);
+extern template ArrangerSelectionsAction::ResizeAction::ResizeAction (
+  const MidiSelections  &sel_before,
+  const MidiSelections * sel_after,
+  ResizeType             type,
+  double                 ticks);
+extern template ArrangerSelectionsAction::ResizeAction::ResizeAction (
+  const AutomationSelections  &sel_before,
+  const AutomationSelections * sel_after,
+  ResizeType                   type,
+  double                       ticks);
+extern template ArrangerSelectionsAction::ResizeAction::ResizeAction (
+  const ChordSelections  &sel_before,
+  const ChordSelections * sel_after,
+  ResizeType              type,
+  double                  ticks);
+extern template ArrangerSelectionsAction::ResizeAction::ResizeAction (
+  const AudioSelections  &sel_before,
+  const AudioSelections * sel_after,
+  ResizeType              type,
+  double                  ticks);
+
+extern template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
+  const TimelineSelections &sel,
+  const QuantizeOptions    &opts);
+extern template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
+  const MidiSelections  &sel,
+  const QuantizeOptions &opts);
+extern template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
+  const AutomationSelections &sel,
+  const QuantizeOptions      &opts);
+extern template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
+  const ChordSelections &sel,
+  const QuantizeOptions &opts);
+extern template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
+  const AudioSelections &sel,
+  const QuantizeOptions &opts);
+
+extern template std::unique_ptr<EditArrangerSelectionsAction>
+EditArrangerSelectionsAction::create (
+  const MidiRegion &obj_before,
+  const MidiRegion &obj_after,
+  EditType          type,
+  bool              already_edited);
+extern template std::unique_ptr<EditArrangerSelectionsAction>
+EditArrangerSelectionsAction::create (
+  const AudioRegion &obj_before,
+  const AudioRegion &obj_after,
+  EditType           type,
+  bool               already_edited);
+extern template std::unique_ptr<EditArrangerSelectionsAction>
+EditArrangerSelectionsAction::create (
+  const ChordRegion &obj_before,
+  const ChordRegion &obj_after,
+  EditType           type,
+  bool               already_edited);
+extern template std::unique_ptr<EditArrangerSelectionsAction>
+EditArrangerSelectionsAction::create (
+  const AutomationRegion &obj_before,
+  const AutomationRegion &obj_after,
+  EditType                type,
+  bool                    already_edited);
+extern template std::unique_ptr<EditArrangerSelectionsAction>
+EditArrangerSelectionsAction::create (
+  const Marker &obj_before,
+  const Marker &obj_after,
+  EditType      type,
+  bool          already_edited);
 
 #endif

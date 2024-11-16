@@ -15,8 +15,6 @@
 #include "common/utils/format.h"
 #include "common/utils/logger.h"
 
-#include <glib/gi18n.h>
-
 class ArrangerSelections;
 class Plugin;
 
@@ -111,29 +109,29 @@ audio_function_get_plugin_uri_for_type (AudioFunctionType type)
  */
 void
 audio_function_apply (
-  ArrangerSelections &sel,
-  AudioFunctionType   type,
-  AudioFunctionOpts   opts,
-  const std::string * uri);
+  AudioSelections           &sel,
+  AudioFunctionType          type,
+  AudioFunctionOpts          opts,
+  std::optional<std::string> uri);
 
 DEFINE_ENUM_FORMATTER (
   AudioFunctionType,
   AudioFunctionType,
-  N_ ("Invert"),
-  N_ ("Normalize peak"),
-  N_ ("Normalize RMS"),
-  N_ ("Normalize LUFS"),
-  N_ ("Linear fade in"),
-  N_ ("Linear fade out"),
-  N_ ("Nudge left"),
-  N_ ("Nudge right"),
-  N_ ("Reverse"),
-  N_ ("Pitch shift"),
-  N_ ("Copy L to R"),
-  N_ ("External program"),
-  N_ ("Guile script"),
-  N_ ("Custom plugin"),
-  N_ ("Invalid"));
+  QT_TR_NOOP_UTF8 ("Invert"),
+  QT_TR_NOOP_UTF8 ("Normalize peak"),
+  QT_TR_NOOP_UTF8 ("Normalize RMS"),
+  QT_TR_NOOP_UTF8 ("Normalize LUFS"),
+  QT_TR_NOOP_UTF8 ("Linear fade in"),
+  QT_TR_NOOP_UTF8 ("Linear fade out"),
+  QT_TR_NOOP_UTF8 ("Nudge left"),
+  QT_TR_NOOP_UTF8 ("Nudge right"),
+  QT_TR_NOOP_UTF8 ("Reverse"),
+  QT_TR_NOOP_UTF8 ("Pitch shift"),
+  QT_TR_NOOP_UTF8 ("Copy L to R"),
+  QT_TR_NOOP_UTF8 ("External program"),
+  QT_TR_NOOP_UTF8 ("Guile script"),
+  QT_TR_NOOP_UTF8 ("Custom plugin"),
+  QT_TR_NOOP_UTF8 ("Invalid"));
 
 /**
  * @}

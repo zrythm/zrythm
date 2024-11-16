@@ -32,13 +32,6 @@ public:
 
   StringArray (const QStringList &qlist);
 
-  /**
-   * @brief Returns the strings in a newly-allocated NULL-terminated array.
-   *
-   * To be used for C APIs.
-   */
-  char ** getNullTerminated () const;
-
   void insert (int index, const char * s)
   {
     arr_.insert (index, juce::CharPointer_UTF8 (s));
@@ -50,7 +43,6 @@ public:
   {
     arr_.set (index, juce::CharPointer_UTF8 (s));
   };
-  char *       getCStr (int index);
   juce::String getReference (int index) const
   {
     return arr_.getReference (index);

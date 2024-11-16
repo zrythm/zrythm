@@ -140,7 +140,7 @@ public:
   {
   }
 
-  std::string to_string () const final;
+  QString to_string () const final;
 
   bool needs_transport_total_bar_update (bool perform) const override
   {

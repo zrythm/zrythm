@@ -1,31 +1,5 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *
- * ---
- *
- * Copyright (C) 1999-2008 Novell, Inc. (www.novell.com)
- * Copyright (C) 2012 Intel Corporation
- *
- * This library is free software: you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
- * License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library. If not, see <http://www.gnu.org/licenses/>.
- *
- * Authors: Rodrigo Moya <rodrigo@ximian.com>
- *          Tristan Van Berkom <tristanvb@openismus.com>
- *
- * ---
- */
 
 /**
  * @file
@@ -35,6 +9,10 @@
 
 #ifndef __UTILS_STRING_H__
 #define __UTILS_STRING_H__
+
+#include "common/utils/traits.h"
+
+#include <QString>
 
 #include <fmt/format.h>
 
@@ -49,6 +27,9 @@ class String;
  * @{
  */
 
+std::string
+string_escape_html (const std::string &str);
+
 juce::String
 string_view_to_juce_string (std::string_view sv);
 
@@ -57,12 +38,6 @@ string_view_to_juce_string (std::string_view sv);
  */
 bool
 string_is_ascii (std::string_view string);
-
-/**
- * Returns the matched string if the string array contains the given substring.
- */
-char *
-string_array_contains_substr (char ** str_array, int num_str, const char * substr);
 
 /**
  * Returns if the given string contains the given substring.
@@ -94,14 +69,12 @@ string_to_lower_ascii (std::string &str);
 /**
  * Returns if the two strings are exactly equal.
  */
-#define string_is_equal(str1, str2) (!g_strcmp0 (str1, str2))
+#define string_is_equal(str1, str2) \
+  (std::string_view (str1) == std::string_view (str2))
 
 /**
  * Returns if the two strings are equal ignoring case.
  */
-bool
-string_is_equal_ignore_case (const char * str1, const char * str2);
-
 bool
 string_is_equal_ignore_case (const std::string &str1, const std::string &str2);
 
@@ -111,24 +84,27 @@ string_is_equal_ignore_case (const std::string &str1, const std::string &str2);
  *
  * Example: "MIDI Region #1" -> "MIDI_Region_1".
  */
-ATTR_NONNULL char *
-string_convert_to_filename (const char * str);
+std::string
+string_convert_to_filename (const std::string &str);
 
 /**
  * Removes the suffix starting from @ref suffix
  * from @ref full_str and returns a newly allocated
  * string.
  */
-ATTR_NONNULL char *
-string_get_substr_before_suffix (const char * str, const char * suffix);
+std::string
+string_get_substr_before_suffix (
+  const std::string &str,
+  const std::string &suffix);
 
 /**
- * Removes everything up to and including the first
- * match of @ref match from the start of the string
- * and returns a newly allocated string.
+ * Removes everything up to and including the first match of @ref match from the
+ * start of the string.
  */
-char *
-string_remove_until_after_first_match (const char * str, const char * match);
+std::string
+string_remove_until_after_first_match (
+  const std::string &str,
+  const std::string &match);
 
 std::string
 string_replace (
@@ -191,8 +167,8 @@ string_array_sort_and_remove_duplicates (char ** str_arr);
  * Returns a new string with only ASCII alphanumeric
  * characters and replaces the rest with underscore.
  */
-char *
-string_symbolify (const char * in);
+std::string
+string_symbolify (const std::string &in);
 
 /**
  * Returns whether the string is NULL or empty.
@@ -201,31 +177,10 @@ bool
 string_is_empty (const char * str);
 
 /**
- * Compares two UTF-8 strings using approximate case-insensitive ordering.
- *
- * @return < 0 if @param s1 compares before @param s2, 0 if they compare
- *equal, > 0 if @param s1 compares after @param s2
- *
- * @note Taken from src/libedataserver/e-data-server-util.c in
- *evolution-data-center (e_util_utf8_strcasecmp).
- **/
-int
-string_utf8_strcasecmp (const char * s1, const char * s2);
-
-/**
  * Expands environment variables enclosed in ${} in the given string.
  */
 std::string
 string_expand_env_vars (const std::string &src);
-
-void
-string_print_strv (const char * prefix, char ** strv);
-
-/**
- * Clones the given string array.
- */
-char **
-string_array_clone (const char ** src);
 
 #include <cstdlib>
 #include <utility>
@@ -234,7 +189,7 @@ class CStringRAII
 {
 public:
   // Constructor that takes ownership of the given string
-  explicit CStringRAII (char * str) noexcept : str_ (str) { }
+  CStringRAII (char * str) noexcept : str_ (str) { }
 
   // Destructor
   ~CStringRAII () { free (str_); }
@@ -262,6 +217,8 @@ public:
 
   // Getter for the underlying C-string
   [[nodiscard]] const char * c_str () const noexcept { return str_; }
+
+  bool empty () const noexcept { return str_ && strlen (str_) > 0; }
 
 private:
   char * str_;

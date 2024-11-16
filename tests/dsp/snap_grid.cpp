@@ -13,8 +13,8 @@ TEST_F (ZrythmFixture, UpdateSnapPoints)
   SnapGrid sg (SnapGrid::Type::Timeline, NoteLength::NOTE_LENGTH_1_128, false);
 
   auto TEST_WITH_MAX_BARS = [] (auto x) {
-    auto before = g_get_monotonic_time ();
-    auto after = g_get_monotonic_time ();
+    auto before = Zrythm::getInstance ()->get_monotonic_time_usecs ();
+    auto after = Zrythm::getInstance ()->get_monotonic_time_usecs ();
     z_info ("time {}", after - before);
   };
 

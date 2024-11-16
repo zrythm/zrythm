@@ -7,8 +7,10 @@
 #include "common/utils/string.h"
 #include "gui/backend/backend/arranger_selections.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
+#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
+
+using namespace zrythm;
 
 /**
  * Returns a string identifier for the type.
@@ -74,7 +76,7 @@ midi_function_apply (
         double total_ticks = last_pos.ticks_ - first_pos.ticks_;
         for (auto mn : sel.objects_ | type_is<MidiNote> ())
           {
-            double mn_ticks_from_start = mn->pos_.ticks_ - first_pos.ticks_;
+            double mn_ticks_from_start = mn->pos_->ticks_ - first_pos.ticks_;
             double vel_multiplier = curve_opts.get_normalized_y (
               mn_ticks_from_start / total_ticks,
               opts.start_vel_ > opts.end_vel_);
@@ -89,11 +91,11 @@ midi_function_apply (
         /* currently MIDI functions assume no new notes are
          * added so currently disabled */
         break;
-        std::vector<std::shared_ptr<MidiNote>> new_midi_notes;
+        std::vector<MidiNote *> new_midi_notes;
         for (auto mn : sel.objects_ | type_is<MidiNote> ())
           {
             double len = mn->get_length_in_ticks ();
-            auto   new_mn = mn->clone_shared ();
+            auto   new_mn = mn->clone_raw_ptr ();
             new_midi_notes.push_back (new_mn);
             double opt_ticks = Position::ms_to_ticks ((signed_ms_t) opts.time_);
             new_mn->move (opt_ticks);
@@ -101,16 +103,16 @@ midi_function_apply (
               {
                 /* make new note as long as existing note was and make existing
                  * note up to the new note */
-                new_mn->end_pos_.add_ticks (len - opt_ticks);
-                mn->end_pos_.add_ticks (
-                  (-(new_mn->end_pos_.ticks_ - new_mn->pos_.ticks_)) + 1);
+                new_mn->end_pos_->add_ticks (len - opt_ticks);
+                mn->end_pos_->add_ticks (
+                  (-(new_mn->end_pos_->ticks_ - new_mn->pos_->ticks_)) + 1);
               }
             else
               {
                 /* make new note up to the existing note */
                 new_mn->end_pos_ = new_mn->pos_;
-                new_mn->end_pos_.add_ticks (
-                  ((mn->end_pos_.ticks_ - mn->pos_.ticks_) - opt_ticks) - 1);
+                new_mn->end_pos_->add_ticks (
+                  ((mn->end_pos_->ticks_ - mn->pos_->ticks_) - opt_ticks) - 1);
               }
           }
         for (auto &mn : new_midi_notes)
@@ -144,15 +146,17 @@ midi_function_apply (
         std::vector<Position> poses;
         for (auto mn : sel.objects_ | type_is<MidiNote> ())
           {
-            poses.push_back (mn->pos_);
+            poses.push_back (*mn->pos_);
           }
         int i = 0;
         for (auto mn : sel.objects_ | type_is<MidiNote> ())
           {
             double ticks = mn->get_length_in_ticks ();
-            mn->pos_ = poses[(sel.objects_.size () - i) - 1];
-            mn->end_pos_ = mn->pos_;
-            mn->end_pos_.add_ticks (ticks);
+            *static_cast<Position *> (mn->pos_) =
+              poses[(sel.objects_.size () - i) - 1];
+            *static_cast<Position *> (mn->end_pos_) =
+              *static_cast<Position *> (mn->pos_);
+            mn->end_pos_->add_ticks (ticks);
             ++i;
           }
       }
@@ -163,13 +167,13 @@ midi_function_apply (
         for (
           auto it = sel.objects_.begin (); it < (sel.objects_.end () - 1); ++it)
           {
-            auto mn = dynamic_pointer_cast<MidiNote> (*it);
-            auto next_mn = dynamic_pointer_cast<MidiNote> (*(it + 1));
+            auto mn = std::get<MidiNote *> (*it);
+            auto next_mn = std::get<MidiNote *> (*(it + 1));
             mn->end_pos_ = next_mn->pos_;
             /* make sure the note has a length */
-            if (mn->end_pos_.ticks_ - mn->pos_.ticks_ < 1.0)
+            if (mn->end_pos_->ticks_ - mn->pos_->ticks_ < 1.0)
               {
-                mn->end_pos_.add_ms (40.0);
+                mn->end_pos_->add_ms (40.0);
               }
           }
       }
@@ -182,15 +186,16 @@ midi_function_apply (
         for (
           auto it = sel.objects_.begin (); it < (sel.objects_.end () - 1); ++it)
           {
-            auto mn = dynamic_pointer_cast<MidiNote> (*it);
-            auto next_mn = dynamic_pointer_cast<MidiNote> (*(it + 1));
+            auto mn = std::get<MidiNote *> (*it);
+            auto next_mn = std::get<MidiNote *> (*(it + 1));
             mn->end_pos_ = next_mn->pos_;
-            mn->end_pos_.add_ms (-80.0);
+            mn->end_pos_->add_ms (-80.0);
             /* make sure the note has a length */
-            if (mn->end_pos_.ticks_ - mn->pos_.ticks_ < 1.0)
+            if (mn->end_pos_->ticks_ - mn->pos_->ticks_ < 1.0)
               {
-                mn->end_pos_ = next_mn->pos_;
-                mn->end_pos_.add_ms (40.0);
+                *static_cast<Position *> (mn->end_pos_) =
+                  *static_cast<Position *> (next_mn->pos_);
+                mn->end_pos_->add_ms (40.0);
               }
           }
       }
@@ -200,9 +205,10 @@ midi_function_apply (
         for (
           auto it = sel.objects_.begin (); it < (sel.objects_.end () - 1); ++it)
           {
-            auto mn = dynamic_pointer_cast<MidiNote> (*it);
-            mn->end_pos_ = mn->pos_;
-            mn->end_pos_.add_ms (140.0);
+            auto mn = std::get<MidiNote *> (*it);
+            *static_cast<Position *> (mn->end_pos_) =
+              *static_cast<Position *> (mn->pos_);
+            mn->end_pos_->add_ms (140.0);
           }
       }
       break;
@@ -213,11 +219,10 @@ midi_function_apply (
         curve_opts.curviness_ = opts.curviness_;
 
         sel.sort_by_pitch (!opts.ascending_);
-        const auto first_mn =
-          dynamic_pointer_cast<MidiNote> (sel.objects_.front ());
+        const auto * first_mn = std::get<MidiNote *> (sel.objects_.front ());
         for (auto it = sel.objects_.begin (); it != sel.objects_.end (); ++it)
           {
-            auto   mn = dynamic_pointer_cast<MidiNote> (*it);
+            auto * mn = std::get<MidiNote *> (*it);
             double ms_multiplier = curve_opts.get_normalized_y (
               (double) std::distance (sel.objects_.begin (), it)
                 / (double) sel.get_num_objects (),
@@ -225,10 +230,12 @@ midi_function_apply (
             double ms_to_add = ms_multiplier * opts.time_;
             z_trace ("multi {:f}, ms {:f}", ms_multiplier, ms_to_add);
             double len_ticks = mn->get_length_in_ticks ();
-            mn->pos_ = first_mn->pos_;
-            mn->pos_.add_ms (ms_to_add);
+            mn->pos_ =
+              first_mn->pos_; // FIXME!!!!!!! setting pointers instead of
+                              // assigning position !!!!! fix others above too
+            mn->pos_->add_ms (ms_to_add);
             mn->end_pos_ = mn->pos_;
-            mn->end_pos_.add_ticks (len_ticks);
+            mn->end_pos_->add_ticks (len_ticks);
           }
       }
       break;
@@ -239,7 +246,8 @@ midi_function_apply (
   /* set last action */
   if (ZRYTHM_HAVE_UI)
     {
-      g_settings_set_int (S_UI, "midi-function", ENUM_VALUE_TO_INT (type));
+      gui::SettingsManager::get_instance ()->set_lastMidiFunction (
+        ENUM_VALUE_TO_INT (type));
     }
 
   // EVENTS_PUSH (EventType::ET_EDITOR_FUNCTION_APPLIED, nullptr);

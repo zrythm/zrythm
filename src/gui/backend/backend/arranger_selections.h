@@ -59,9 +59,8 @@ public:
   };
 
 public:
-  ArrangerSelections () = default;
-  ArrangerSelections (Type type) : type_ (type) { }
-  virtual ~ArrangerSelections () = default;
+  ~ArrangerSelections () override = default;
+  Q_DISABLE_COPY_MOVE (ArrangerSelections)
 
   static std::unique_ptr<ArrangerSelections> new_from_type (Type type);
 
@@ -85,30 +84,19 @@ public:
   bool is_chord () const { return type_ == Type::Chord; }
   bool is_audio () const { return type_ == Type::Audio; }
 
-#if 0
-  /**
-   * Appends the given object to the selections.
-   */
-  [[deprecated ("Use add_object() with rvalue ref instead")]] void
-  add_object (const ArrangerObject &obj)
-  {
-    add_object (obj.clone_as<ArrangerObject> ());
-  }
-#endif
-
   /**
    * @brief Adds the given object clone to the selections.
    *
    * @param obj
    */
-  void add_object_owned (std::unique_ptr<ArrangerObject> &&obj);
+  template <typename T> void add_object_owned (std::unique_ptr<T> &&obj);
 
   /**
    * @brief Adds a reference to the given object to the selections.
    *
    * @param obj
    */
-  void add_object_ref (const std::shared_ptr<ArrangerObject> &obj);
+  template <typename T> void add_object_ref (T &obj);
 
   /**
    * Sorts the selections by their indices (eg, for regions, their track
@@ -148,7 +136,10 @@ public:
   /**
    * Returns the number of selected objects.
    */
-  [[nodiscard]] int get_num_objects () const { return objects_.size (); };
+  [[nodiscard]] int get_num_objects () const
+  {
+    return static_cast<int> (objects_.size ());
+  };
 
   template <typename T = ArrangerObject> int get_num_objects () const
   {
@@ -203,7 +194,7 @@ public:
    *
    * @param ticks Ticks to add.
    */
-  void add_ticks (const double ticks);
+  void add_ticks (double ticks);
 
   /**
    * Selects all possible objects from the project.
@@ -245,16 +236,16 @@ public:
       std::find_if (objects_.begin (), objects_.end (), [&obj] (auto &element) {
         return std::visit (
           [&] (auto &&derived_obj) {
-            if constexpr (std::is_same_v<T, base_type<decltype (derived_obj)>>)
+            using ObjT = base_type<decltype (derived_obj)>;
+            if constexpr (std::is_same_v<T, ObjT>)
               {
                 return obj == *derived_obj;
               }
             return false;
           },
-          convert_to_variant<ArrangerObjectPtrVariant> (element.get ()));
-        return obj == *element;
+          element);
       });
-    return it != objects_.end () ? dynamic_cast<T *> ((*it).get ()) : nullptr;
+    return it != objects_.end () ? std::get<T *> (*it) : nullptr;
   }
 
   /**
@@ -305,7 +296,7 @@ public:
    * @param pos Position to paste to.
    * @param idx Track index to start pasting to, if applicable.
    */
-  bool can_be_pasted_at (const Position pos, const int idx = -1) const;
+  bool can_be_pasted_at (Position pos, int idx = -1) const;
 
   virtual bool contains_looped () const { return false; };
 
@@ -316,21 +307,16 @@ public:
   /** Whether the selections contain the given clip.*/
   virtual bool contains_clip (const AudioClip &clip) const { return false; };
 
-  bool can_split_at_pos (const Position pos) const;
+  bool can_split_at_pos (Position pos) const;
 
-  static ArrangerSelections * get_for_type (ArrangerSelections::Type type);
+  static ArrangerSelectionsPtrVariant
+  get_for_type (ArrangerSelections::Type type);
 
 protected:
-  void copy_members_from (const ArrangerSelections &other)
-  {
-    type_ = other.type_;
-    for (auto &obj : other.objects_)
-      {
-        objects_.emplace_back (
-          clone_unique_with_variant<ArrangerObjectWithoutVelocityVariant> (
-            obj.get ()));
-      }
-  }
+  ArrangerSelections () = default;
+  ArrangerSelections (Type type);
+
+  void copy_members_from (const ArrangerSelections &other);
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
@@ -344,8 +330,7 @@ private:
    */
   void add_region_ticks (Position &pos) const;
 
-  virtual bool
-  can_be_pasted_at_impl (const Position pos, const int idx) const = 0;
+  virtual bool can_be_pasted_at_impl (Position pos, int idx) const = 0;
 
 public:
   /** Type of selections. */
@@ -353,9 +338,11 @@ public:
 
   int magic = ARRANGER_SELECTIONS_MAGIC;
 
-  /** Either copies of selected objects (when used in actions), or shared
-   * references to live objects in the project. */
-  std::vector<std::shared_ptr<ArrangerObject>> objects_;
+  /** Either copies of selected objects (when used in actions), or
+   * unowned references to live objects in the project. */
+  bool are_objects_copies_ = true;
+
+  std::vector<ArrangerObjectWithoutVelocityPtrVariant> objects_;
 };
 
 DEFINE_ENUM_FORMATTER (
@@ -368,19 +355,9 @@ DEFINE_ENUM_FORMATTER (
   "Automation",
   "Audio");
 
-class TimelineSelections;
-class MidiSelections;
-class ChordSelections;
-class AutomationSelections;
-class AudioSelections;
-using ArrangerSelectionsVariant = std::variant<
-  TimelineSelections,
-  MidiSelections,
-  ChordSelections,
-  AutomationSelections,
-  AudioSelections>;
-using ArrangerSelectionsPtrVariant =
-  to_pointer_variant<ArrangerSelectionsVariant>;
+template <typename T>
+concept FinalArrangerSelectionsSubclass =
+  FinalClass<T> && DerivedButNotBase<T, ArrangerSelections>;
 
 /**
  * @}
@@ -391,5 +368,42 @@ ArrangerSelections::get_first_object_and_pos (bool global) const;
 
 extern template std::pair<MidiNote *, Position>
 ArrangerSelections::get_last_object_and_pos (bool global, bool ends_last) const;
+
+extern template void
+ArrangerSelections::add_object_owned (std::unique_ptr<MidiNote> &&obj);
+extern template void
+ArrangerSelections::add_object_owned (std::unique_ptr<ScaleObject> &&obj);
+extern template void
+ArrangerSelections::add_object_owned (std::unique_ptr<ChordObject> &&obj);
+extern template void
+ArrangerSelections::add_object_owned (std::unique_ptr<AutomationPoint> &&obj);
+extern template void
+ArrangerSelections::add_object_owned (std::unique_ptr<Marker> &&obj);
+extern template void
+ArrangerSelections::add_object_owned (std::unique_ptr<AudioRegion> &&obj);
+extern template void
+ArrangerSelections::add_object_owned (std::unique_ptr<MidiRegion> &&obj);
+extern template void
+ArrangerSelections::add_object_owned (std::unique_ptr<ChordRegion> &&obj);
+extern template void
+ArrangerSelections::add_object_owned (std::unique_ptr<AutomationRegion> &&obj);
+extern template void
+ArrangerSelections::add_object_ref (MidiNote &obj);
+extern template void
+ArrangerSelections::add_object_ref (ScaleObject &obj);
+extern template void
+ArrangerSelections::add_object_ref (ChordObject &obj);
+extern template void
+ArrangerSelections::add_object_ref (AutomationPoint &obj);
+extern template void
+ArrangerSelections::add_object_ref (Marker &obj);
+extern template void
+ArrangerSelections::add_object_ref (AudioRegion &obj);
+extern template void
+ArrangerSelections::add_object_ref (MidiRegion &obj);
+extern template void
+ArrangerSelections::add_object_ref (ChordRegion &obj);
+extern template void
+ArrangerSelections::add_object_ref (AutomationRegion &obj);
 
 #endif

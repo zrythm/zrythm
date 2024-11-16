@@ -4,22 +4,30 @@
 #include "common/utils/exceptions.h"
 #include "common/utils/ui.h"
 
-#include <glib/gi18n.h>
-
 #include <fmt/format.h>
+
+ZrythmException::ZrythmException (const char * message)
+    : ZrythmException (std::string (message))
+{
+}
 
 ZrythmException::ZrythmException (const std::string &message)
     : message_ (message)
 {
-  z_warning ("Exception:\n" + message);
+  z_warning ("Exception:\n{}", message);
+}
+
+ZrythmException::ZrythmException (const QString &message)
+    : ZrythmException (message.toStdString ())
+{
 }
 
 template <typename... Args>
 void
 ZrythmException::handle (const std::string &format, Args &&... args) const
 {
-  std::string errorMessage =
-    fmt::format ("{}\n- {} -\n{}", _ ("Error"), _ ("Details"), what ());
+  std::string errorMessage = fmt::format (
+    "{}\n- {} -\n{}", QObject ::tr ("Error"), QObject::tr ("Details"), what ());
   // std::string formattedMessage =
   // fmt::format (fmt::runtime (format), std::forward<Args> (args)...);
   std::string formattedMessage =
@@ -30,7 +38,7 @@ ZrythmException::handle (const std::string &format, Args &&... args) const
   AdwDialog * win = nullptr;
   if (ZRYTHM_HAVE_UI)
     {
-      win = ui_show_message_literal (_ ("Error"), errorMessage.c_str ());
+      win = ui_show_message_literal (QObject::tr ("Error"), errorMessage.c_str ());
     }
   else
     {
@@ -51,6 +59,12 @@ ZrythmException::handle (const char * str) const
 
 void
 ZrythmException::handle (const std::string &str) const
+{
+  handle ("{}", str);
+}
+
+void
+ZrythmException::handle (const QString &str) const
 {
   handle ("{}", str);
 }

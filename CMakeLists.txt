@@ -770,21 +770,6 @@ if(NOT soxr_FOUND)
   endif()
 endif()
 
-# link to fontconfig/pangoft2 directly because
-# they are used in utils/pango.c
-# pkg_check_modules(FONTCONFIG fontconfig>=2.13.0 REQUIRED IMPORTED_TARGET)
-# pkg_check_modules(PANGOFT2 pangoft2>=1.50 REQUIRED IMPORTED_TARGET)
-
-# include separately with -isystem to bypass
-# https://github.com/ebassi/graphene/issues/249
-# NOTE this won't fix the issue when using graphene as a subproject
-# pkg_check_modules(GRAPHENE graphene-1.0 REQUIRED IMPORTED_TARGET)
-
-# pkg_check_modules(GTK4 "gtk4>=${gtk_req}" REQUIRED IMPORTED_TARGET)
-
-# pkg_check_modules(LIBADWAITA libadwaita-1>=1.5 REQUIRED IMPORTED_TARGET)
-# pkg_check_modules(LIBPANEL libpanel-1>=1.0.1 REQUIRED IMPORTED_TARGET)
-
 pkg_check_modules(LV2 lv2>=1.16.0 REQUIRED IMPORTED_TARGET)
 if(${LV2_VERSION} VERSION_GREATER_EQUAL 1.18.0)
   set(HAVE_LV2_1_18 TRUE)
@@ -859,19 +844,22 @@ find_package(zstd REQUIRED)
 
 pkg_check_modules(XXHASH libxxhash REQUIRED IMPORTED_TARGET)
 
-pkg_check_modules(VAMP_SDK vamp-sdk IMPORTED_TARGET)
-pkg_check_modules(VAMP_HOST_SDK vamp-hostsdk IMPORTED_TARGET)
-if((WIN32 AND NOT MSVC) OR (NOT VAMP_FOUND) OR (NOT VAMP_HOST_SDK_FOUND))
-  FetchContent_Declare(
-    vamp-sdk
-    GIT_REPOSITORY https://github.com/vamp-plugins/vamp-plugin-sdk.git
-    # master on 2024-10-01
-    GIT_TAG 703438d8e55dbfd1c2021d0bc12e36edd1e227e2
-  )
-  FetchContent_MakeAvailable(vamp-sdk)
-else()
-  add_library(vamp-plugin-sdk::vamp-hostsdk ALIAS PkgConfig::VAMP_HOST_SDK)
-  add_library(vamp-plugin-sdk::vamp-sdk ALIAS PkgConfig::VAMP_SDK)
+# not used, might use in the future
+if(0)
+  pkg_check_modules(VAMP_SDK vamp-sdk IMPORTED_TARGET)
+  pkg_check_modules(VAMP_HOST_SDK vamp-hostsdk IMPORTED_TARGET)
+  if((WIN32 AND NOT MSVC) OR (NOT VAMP_FOUND) OR (NOT VAMP_HOST_SDK_FOUND))
+    FetchContent_Declare(
+      vamp-sdk
+      GIT_REPOSITORY https://github.com/vamp-plugins/vamp-plugin-sdk.git
+      # master on 2024-10-01
+      GIT_TAG 703438d8e55dbfd1c2021d0bc12e36edd1e227e2
+    )
+    FetchContent_MakeAvailable(vamp-sdk)
+  else()
+    add_library(vamp-plugin-sdk::vamp-hostsdk ALIAS PkgConfig::VAMP_HOST_SDK)
+    add_library(vamp-plugin-sdk::vamp-sdk ALIAS PkgConfig::VAMP_SDK)
+  endif()
 endif()
 
 FetchContent_Declare(
@@ -902,9 +890,6 @@ else()
   )
 endif()
 
-pkg_check_modules(GLIBMM glibmm-2.68 REQUIRED IMPORTED_TARGET)
-pkg_check_modules(GIOMM giomm-2.68 REQUIRED IMPORTED_TARGET)
-
 pkg_check_modules(RUBBERBAND rubberband REQUIRED IMPORTED_TARGET)
 
 pkg_check_modules(EPOXY epoxy REQUIRED IMPORTED_TARGET)
@@ -918,6 +903,10 @@ qt_standard_project_setup()
 qt_policy(SET QTP0001 NEW)
 qt_policy(SET QTP0004 NEW)
 qt_policy(SET QTP0005 NEW)
+target_compile_definitions(Qt6::Core INTERFACE
+  "QT_ENABLE_STRICT_MODE_UP_TO=0x060900"
+  "QT_NO_KEYWORDS"
+)
 
 list(APPEND zrythm_link_libs
   zita-resampler::zita-resampler
@@ -933,8 +922,6 @@ list(APPEND zrythm_link_libs
   ${CMAKE_DL_LIBS}
   FFTW3::FFTW3
   PkgConfig::XXHASH
-  vamp-plugin-sdk::vamp-sdk
-  vamp-plugin-sdk::vamp-hostsdk
   yyjson::yyjson
   magic_enum::magic_enum
   juce_lib
@@ -942,8 +929,6 @@ list(APPEND zrythm_link_libs
   backward_cpp::backward_cpp
   fmt::fmt
   spdlog::spdlog
-  PkgConfig::GLIBMM
-  PkgConfig::GIOMM
   Qt6::Core
   Qt6::Gui
   Qt6::Widgets

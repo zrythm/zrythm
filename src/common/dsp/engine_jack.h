@@ -37,10 +37,10 @@ engine_jack_rescan_ports (AudioEngine * self);
  * Disconnects and reconnects the monitor output
  * port to the selected devices.
  *
- * @return Whether successful.
+ * @throw ZrythmException on error.
  */
-bool
-engine_jack_reconnect_monitor (AudioEngine * self, bool left, GError ** error);
+void
+engine_jack_reconnect_monitor (AudioEngine * self, bool left);
 
 void
 engine_jack_handle_position_change (AudioEngine * self);

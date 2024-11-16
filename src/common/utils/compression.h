@@ -1,29 +1,33 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * @file
- *
- * Compression utilities.
- */
 
 #ifndef __UTILS_COMPRESSION_H__
 #define __UTILS_COMPRESSION_H__
 
 #include "common/utils/types.h"
 
-#include <glib.h>
+/**
+ * @brief Compression utilities.
+ */
+namespace zrythm::utils::compression
+{
 
 /**
  * Compresses a NULL-terminated string.
+ *
+ * @throw ZrythmException on error.
  */
-char *
-compression_compress_to_base64_str (const char * src, GError ** error);
+QByteArray
+compress_to_base64_str (const QByteArray &src);
 
 /**
  * Decompresses a NULL-terminated string.
+ *
+ * @throw ZrythmException on error.
  */
-char *
-compression_decompress_from_base64_str (const char * b64, GError ** error);
+CStringRAII
+decompress_string_from_base64 (const QByteArray &b64);
+
+}; // namespace zrythm::utils::compression
 
 #endif // __UTILS_COMPRESSION_H__

@@ -5,6 +5,8 @@
 #include "common/utils/io.h"
 #include "gui/backend/backend/settings_manager.h"
 
+using namespace zrythm;
+
 JUCE_IMPLEMENT_SINGLETON (DirectoryManager)
 
 fs::path
@@ -37,7 +39,7 @@ DirectoryManager::remove_testing_dir ()
   if (testing_dir_.empty ())
     return;
 
-  io_rmdir (testing_dir_, true);
+  utils::io::rmdir (testing_dir_, true);
   testing_dir_.clear ();
 }
 
@@ -46,10 +48,10 @@ DirectoryManager::get_testing_dir ()
 {
   if (testing_dir_.empty ())
     {
-      char * new_testing_dir =
-        g_dir_make_tmp ("zrythm_test_dir_XXXXXX", nullptr);
-      testing_dir_ = new_testing_dir;
-      g_free (new_testing_dir);
+      auto new_testing_dir =
+        utils::io::make_tmp_dir (QString::fromUtf8 ("zrythm_test_dir_XXXXXX"));
+      new_testing_dir->setAutoRemove (false);
+      testing_dir_ = { new_testing_dir->path ().toStdString () };
     }
   return testing_dir_;
 }

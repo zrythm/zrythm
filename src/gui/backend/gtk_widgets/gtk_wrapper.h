@@ -11,18 +11,6 @@
 #include <QtGui>
 #include <QtWidgets>
 
-// Save Qt's macros
-#define QT_SIGNALS signals
-#define QT_SLOTS slots
-#define QT_EMIT emit
-#define QT_FOREACH foreach
-
-// Undefine Qt's macros
-#undef signals
-#undef slots
-#undef emit
-#undef foreach
-
 #include <glibmm.h>
 
 #ifdef __GNUC__
@@ -118,12 +106,6 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 #ifdef _WIN32
 // #  include <gdk/win32/gdkwin32.h>
 #endif
-
-// Redefine Qt's macros
-#define signals QT_SIGNALS
-#define slots QT_SLOTS
-#define emit QT_EMIT
-#define foreach QT_FOREACH
 
 // NOLINTEND
 

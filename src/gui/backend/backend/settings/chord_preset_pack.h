@@ -22,15 +22,30 @@
  * Chord preset pack.
  */
 class ChordPresetPack final
-    : public ISerializable<ChordPresetPack>,
+    : public QObject,
+      public ISerializable<ChordPresetPack>,
       public ICloneable<ChordPresetPack>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  Q_PROPERTY (QString name READ getName WRITE setName NOTIFY nameChanged)
 public:
-  ChordPresetPack () = default;
-  ChordPresetPack (std::string name, bool is_standard)
-      : name_ (std::move (name)), is_standard_ (is_standard)
-  {
-  }
+  using NameT = QString;
+  ChordPresetPack (QObject * parent = nullptr);
+  ChordPresetPack (
+    const NameT &name,
+    bool         is_standard,
+    QObject *    parent = nullptr);
+
+  // ====================================================================
+  // QML Interface
+  // ====================================================================
+
+  QString       getName () const { return name_; }
+  void          setName (const QString &name);
+  Q_SIGNAL void nameChanged (const QString &name);
+
+  // ============================================================================
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -48,11 +63,11 @@ public:
     presets_ = other.presets_;
     for (auto &pset : presets_)
       {
-        pset.pack_ = this;
+        pset->pack_ = this;
       }
   }
 
-  bool contains_name (const std::string &name) const;
+  bool contains_name (const NameT &name) const;
 
   bool contains_preset (const ChordPreset &pset) const;
 
@@ -67,14 +82,6 @@ public:
     return std::distance (presets_.begin (), it);
   }
 
-  std::string get_name () const { return name_; }
-
-  /**
-   * @brief Sets @ref name_ and emits @ref
-   * EventType::ET_CHORD_PRESET_PACK_EDITED.
-   */
-  void set_name (const std::string &name);
-
   // GMenuModel * generate_context_menu () const;
 
   /**
@@ -84,10 +91,10 @@ public:
 
 public:
   /** Pack name. */
-  std::string name_;
+  NameT name_;
 
   /** Presets. */
-  std::vector<ChordPreset> presets_;
+  std::vector<ChordPreset *> presets_;
 
   /** Whether this is a standard preset pack (not user-defined). */
   bool is_standard_ = false;

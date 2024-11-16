@@ -10,6 +10,23 @@
 
 #include <fmt/format.h>
 
+ChordObject::ChordObject (QObject * parent)
+    : ArrangerObject (Type::ChordObject), QObject (parent)
+{
+  ArrangerObject::parent_base_qproperties (*this);
+}
+
+ChordObject::ChordObject (
+  const RegionIdentifier &region_id,
+  int                     chord_index,
+  int                     index,
+  QObject *               parent)
+    : ArrangerObject (Type::ChordObject), QObject (parent),
+      RegionOwnedObjectImpl (region_id, index), chord_index_ (chord_index)
+{
+  ArrangerObject::parent_base_qproperties (*this);
+}
+
 void
 ChordObject::init_after_cloning (const ChordObject &other)
 {
@@ -38,33 +55,37 @@ ChordObject::get_chord_descriptor () const
   return &CHORD_EDITOR->chords_[chord_index_];
 }
 
-ArrangerObject::ArrangerObjectPtr
+std::optional<ArrangerObjectPtrVariant>
 ChordObject::find_in_project () const
 {
   /* get actual region - clone's region might be an unused clone */
   auto r = RegionImpl<ChordRegion>::find (region_id_);
-  z_return_val_if_fail (r, nullptr);
+  z_return_val_if_fail (r, std::nullopt);
 
   z_return_val_if_fail (
-    r && r->chord_objects_.size () > (size_t) index_, nullptr);
-  z_return_val_if_fail_cmp (index_, >=, 0, nullptr);
+    r && r->chord_objects_.size () > (size_t) index_, std::nullopt);
+  z_return_val_if_fail_cmp (index_, >=, 0, std::nullopt);
 
   auto &co = r->chord_objects_[index_];
-  z_return_val_if_fail (co, nullptr);
-  z_return_val_if_fail (*co == *this, nullptr);
+  z_return_val_if_fail (co, std::nullopt);
+  z_return_val_if_fail (*co == *this, std::nullopt);
   return co;
 }
 
-ArrangerObject::ArrangerObjectPtr
+ArrangerObjectPtrVariant
 ChordObject::add_clone_to_project (bool fire_events) const
 {
-  return get_region ()->append_object (clone_shared (), true);
+  auto * clone = clone_raw_ptr ();
+  get_region ()->append_object (clone, true);
+  return clone;
 }
 
-ArrangerObject::ArrangerObjectPtr
+ArrangerObjectPtrVariant
 ChordObject::insert_clone_to_project () const
 {
-  return get_region ()->insert_object (clone_shared (), index_, true);
+  auto * clone = clone_raw_ptr ();
+  get_region ()->insert_object (clone, index_, true);
+  return clone;
 }
 
 std::string

@@ -18,7 +18,6 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/timeline_selections.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 TimelineSelections::TimelineSelections () : ArrangerSelections (Type::Timeline)
 {
@@ -56,7 +55,8 @@ TimelineSelections::TimelineSelections (
                         }
                     }
                 },
-                convert_to_variant<ArrangerObjectPtrVariant> (obj));
+                convert_to_variant<ArrangerObjectWithoutVelocityPtrVariant> (
+                  obj));
             }
         },
         track);
@@ -67,40 +67,53 @@ void
 TimelineSelections::sort_by_indices (bool desc)
 {
   auto sort_regions = [] (const auto &a, const auto &b) {
-    Track * at = TRACKLIST->find_track_by_name_hash (a.id_.track_name_hash_);
-    z_return_val_if_fail (at, false);
-    Track * bt = TRACKLIST->find_track_by_name_hash (b.id_.track_name_hash_);
-    z_return_val_if_fail (bt, false);
-    if (at->pos_ < bt->pos_)
-      return true;
-    else if (at->pos_ > bt->pos_)
-      return false;
+    using AType = base_type<decltype (a)>;
+    using BType = base_type<decltype (b)>;
+    auto at_var = TRACKLIST->find_track_by_name_hash (a.id_.track_name_hash_);
+    auto bt_var = TRACKLIST->find_track_by_name_hash (b.id_.track_name_hash_);
+    z_return_val_if_fail (at_var, false);
+    z_return_val_if_fail (bt_var, false);
+    auto track_pos_compare_result = std::visit (
+      [&] (auto &&track_a, auto &&track_b) -> std::optional<bool> {
+        if (track_a->pos_ < track_b->pos_)
+          return true;
+        if (track_a->pos_ > track_b->pos_)
+          return false;
+        return std::nullopt;
+      },
+      *at_var, *bt_var);
+    if (track_pos_compare_result)
+      {
+        return *track_pos_compare_result;
+      }
 
-    int have_lane = region_type_has_lane (a.id_.type_);
-    /* order doesn't matter in this case */
-    if (have_lane != region_type_has_lane (b.id_.type_))
+    /* if one of the objects is laned and the other isn't, just return - order
+     * doesn't matter in this case */
+    if constexpr (
+      std::derived_from<AType, LaneOwnedObject>
+      != std::derived_from<BType, LaneOwnedObject>)
       return true;
 
-    if (have_lane)
+    if constexpr (std::derived_from<AType, LaneOwnedObject>)
       {
         if (a.id_.lane_pos_ < b.id_.lane_pos_)
           {
             return true;
           }
-        else if (a.id_.lane_pos_ > b.id_.lane_pos_)
+        if (a.id_.lane_pos_ > b.id_.lane_pos_)
           {
             return false;
           }
       }
-    else if (
-      a.id_.type_ == RegionType::Automation
-      && b.id_.type_ == RegionType::Automation)
+    else if constexpr (
+      std::is_same_v<AType, AutomationRegion>
+      && std::is_same_v<BType, AutomationRegion>)
       {
         if (a.id_.at_idx_ < b.id_.at_idx_)
           {
             return true;
           }
-        else if (a.id_.at_idx_ > b.id_.at_idx_)
+        if (a.id_.at_idx_ > b.id_.at_idx_)
           {
             return false;
           }
@@ -111,44 +124,54 @@ TimelineSelections::sort_by_indices (bool desc)
 
   std::sort (
     objects_.begin (), objects_.end (),
-    [desc, sort_regions] (const auto &a, const auto &b) {
+    [desc, sort_regions] (const auto &a_var, const auto &b_var) {
       bool ret = false;
-      // z_trace ("sorting {} {}", typeid (*a).name (), typeid (*b).name ());
-      if (typeid (*a) == typeid (*b))
-        {
-          if (a->is_region ())
+      return std::visit (
+        [&] (auto &&a, auto &&b) {
+          using AType = base_type<decltype (a)>;
+          using BType = base_type<decltype (b)>;
+          if constexpr (std::is_same_v<AType, BType>)
             {
-              ret = sort_regions (
-                dynamic_cast<Region &> (*a), dynamic_cast<Region &> (*b));
+              if constexpr (std::derived_from<AType, Region>)
+                {
+                  ret = sort_regions (*a, *b);
+                }
+              else if constexpr (std::is_same_v<AType, ScaleObject>)
+                {
+                  ret = a->index_in_chord_track_ < b->index_in_chord_track_;
+                }
+              else if constexpr (std::is_same_v<AType, Marker>)
+                {
+                  ret = a->marker_track_index_ < b->marker_track_index_;
+                }
             }
-          else if (a->is_scale_object ())
+          else
             {
               ret =
-                dynamic_cast<ScaleObject &> (*a).index_in_chord_track_
-                < dynamic_cast<ScaleObject &> (*b).index_in_chord_track_;
+                std::type_index (typeid (*a)) < std::type_index (typeid (*b));
             }
-          else if (a->is_marker ())
-            {
-              ret =
-                dynamic_cast<Marker &> (*a).marker_track_index_
-                < dynamic_cast<Marker &> (*b).marker_track_index_;
-            }
-        }
-      else
-        {
-          ret = std::type_index (typeid (*a)) < std::type_index (typeid (*b));
-        }
-      return desc ? !ret : ret;
+          return desc ? !ret : ret;
+        },
+        a_var, b_var);
     });
 }
 
 bool
 TimelineSelections::contains_looped () const
 {
-  return std::any_of (objects_.begin (), objects_.end (), [] (const auto &obj) {
-    return obj->can_loop ()
-           && dynamic_cast<LoopableObject *> (obj.get ())->is_looped ();
-  });
+  return std::any_of (
+    objects_.begin (), objects_.end (), [] (const auto &obj_var) {
+      return std::visit (
+        [&] (auto &&obj) {
+          using ObjT = base_type<decltype (obj)>;
+          if constexpr (std::derived_from<ObjT, LoopableObject>)
+            {
+              return obj->is_looped ();
+            }
+          return false;
+        },
+        obj_var);
+    });
 }
 
 bool
@@ -157,31 +180,28 @@ TimelineSelections::all_on_same_lane () const
   if (objects_.empty ())
     return true;
 
-  auto first_obj =
-    convert_to_variant<ArrangerObjectPtrVariant> (objects_.front ().get ());
+  auto first_obj_var = objects_.front ();
   return std::visit (
     [&] (auto &&first) {
-      if constexpr (std::derived_from<base_type<decltype (first)>, Region>)
+      using FirstObjT = base_type<decltype (first)>;
+      if constexpr (std::derived_from<FirstObjT, Region>)
         {
           const auto &id = first->id_;
           return std::all_of (
-            objects_.begin () + 1, objects_.end (), [&] (const auto &obj) {
+            objects_.begin () + 1, objects_.end (), [&] (const auto &obj_var) {
               return std::visit (
                 [&] (auto &&curr) {
-                  if constexpr (
-                    std::derived_from<base_type<decltype (curr)>, Region>)
+                  using CurObjT = base_type<decltype (curr)>;
+                  if constexpr (std::derived_from<CurObjT, Region>)
                     {
                       if (id.type_ != curr->id_.type_)
                         return false;
 
-                      if constexpr (
-                        std::derived_from<
-                          base_type<decltype (curr)>, LaneOwnedObject>)
+                      if constexpr (std::derived_from<CurObjT, LaneOwnedObject>)
                         return id.track_name_hash_ == curr->id_.track_name_hash_
                                && id.lane_pos_ == curr->id_.lane_pos_;
                       else if constexpr (
-                        std::is_same_v<
-                          base_type<decltype (curr)>, AutomationRegion>)
+                        std::is_same_v<CurObjT, AutomationRegion>)
                         return id.track_name_hash_ == curr->id_.track_name_hash_
                                && id.at_idx_ == curr->id_.at_idx_;
                       else
@@ -192,7 +212,7 @@ TimelineSelections::all_on_same_lane () const
                       return false;
                     }
                 },
-                convert_to_variant<ArrangerObjectPtrVariant> (obj.get ()));
+                obj_var);
             });
         }
       else
@@ -200,7 +220,7 @@ TimelineSelections::all_on_same_lane () const
           return false;
         }
     },
-    first_obj);
+    first_obj_var);
 }
 
 bool
@@ -225,200 +245,229 @@ TimelineSelections::merge ()
   Position end_pos{ pos.ticks_ + ticks_length };
 
   z_return_if_fail (!first_obj || !first_obj->is_region ());
-  auto &first_r = dynamic_cast<Region &> (*first_obj);
 
-  std::unique_ptr<Region> new_r;
-  switch (first_r.get_type ())
-    {
-    case RegionType::Midi:
-      {
-        new_r = std::make_unique<MidiRegion> (
-          pos, end_pos, first_r.id_.track_name_hash_, first_r.id_.lane_pos_,
-          first_r.id_.idx_);
-        for (auto &obj : objects_)
-          {
-            auto  &r = dynamic_cast<MidiRegion &> (*obj);
-            double ticks_diff = r.pos_.ticks_ - first_obj->pos_.ticks_;
+  std::visit (
+    [&] (auto &&first_r) {
+      using RegionT = base_type<decltype (first_r)>;
 
-            for (auto &mn : r.midi_notes_)
-              {
-                auto new_mn = mn->clone_shared ();
-                new_mn->move (ticks_diff);
-                dynamic_cast<MidiRegion &> (*new_r).append_object (
-                  new_mn, false);
-              }
-          }
-      }
-      break;
-    case RegionType::Audio:
-      {
-        std::vector<float> lframes (num_frames, 0);
-        std::vector<float> rframes (num_frames, 0);
-        std::vector<float> frames (num_frames * 2, 0);
-        auto first_r_clip = dynamic_cast<AudioRegion &> (first_r).get_clip ();
-        auto max_depth = first_r_clip->bit_depth_;
-        z_return_if_fail (!first_r_clip->name_.empty ());
-        for (auto &obj : objects_)
-          {
-            auto &r = dynamic_cast<AudioRegion &> (*obj);
-            long  frames_diff = r.pos_.frames_ - first_obj->pos_.frames_;
-            long  r_frames_length = r.get_length_in_frames ();
+      RegionT * new_r;
+      if constexpr (std::is_same_v<RegionT, MidiRegion>)
+        {
+          new_r = new MidiRegion (
+            pos, end_pos, first_r->id_.track_name_hash_, first_r->id_.lane_pos_,
+            first_r->id_.idx_);
+          for (auto &obj : objects_)
+            {
+              auto * r = std::get<MidiRegion *> (obj);
+              double ticks_diff = r->pos_->ticks_ - first_obj->pos_->ticks_;
 
-            auto clip = r.get_clip ();
-            dsp_add2 (
-              &lframes[frames_diff], clip->ch_frames_.getReadPointer (0),
-              static_cast<size_t> (r_frames_length));
+              for (auto &mn : r->midi_notes_)
+                {
+                  auto new_mn = mn->clone_raw_ptr ();
+                  new_mn->move (ticks_diff);
+                  new_r->append_object (new_mn, false);
+                }
+            }
+        }
+      else if constexpr (std::is_same_v<RegionT, AudioRegion>)
+        {
+          std::vector<float> lframes (num_frames, 0);
+          std::vector<float> rframes (num_frames, 0);
+          std::vector<float> frames (num_frames * 2, 0);
+          auto               first_r_clip = first_r->get_clip ();
+          auto               max_depth = first_r_clip->bit_depth_;
+          z_return_if_fail (!first_r_clip->name_.empty ());
+          for (auto &obj : objects_)
+            {
+              auto * r = std::get<AudioRegion *> (obj);
+              long   frames_diff = r->pos_->frames_ - first_obj->pos_->frames_;
+              long   r_frames_length = r->get_length_in_frames ();
 
-            max_depth = std::max (max_depth, clip->bit_depth_);
-          }
-        /* interleave */
-        for (unsigned_frame_t i = 0; i < num_frames; i++)
-          {
-            frames[i * 2] = lframes[i];
-            frames[i * 2 + 1] = rframes[i];
-          }
+              auto * clip = r->get_clip ();
+              dsp_add2 (
+                &lframes[frames_diff], clip->ch_frames_.getReadPointer (0),
+                static_cast<size_t> (r_frames_length));
 
-        new_r = std::make_unique<AudioRegion> (
-          -1, std::nullopt, true, frames.data (), num_frames,
-          first_r_clip->name_, 2, max_depth, pos, first_r.id_.track_name_hash_,
-          first_r.id_.lane_pos_, first_r.id_.idx_);
-      }
-      break;
-    case RegionType::Chord:
-      {
-        new_r = std::make_unique<ChordRegion> (pos, end_pos, first_r.id_.idx_);
-        for (auto &obj : objects_)
-          {
-            auto  &r = dynamic_cast<ChordRegion &> (*obj);
-            double ticks_diff = r.pos_.ticks_ - first_obj->pos_.ticks_;
+              max_depth = std::max (max_depth, clip->bit_depth_);
+            }
+          /* interleave */
+          for (unsigned_frame_t i = 0; i < num_frames; i++)
+            {
+              frames[i * 2] = lframes[i];
+              frames[i * 2 + 1] = rframes[i];
+            }
 
-            for (auto &co : r.chord_objects_)
-              {
-                auto new_co = co->clone_shared ();
-                new_co->move (ticks_diff);
-                dynamic_cast<ChordRegion &> (*new_r).append_object (
-                  new_co, false);
-              }
-          }
-      }
-      break;
-    case RegionType::Automation:
-      {
-        new_r = std::make_unique<AutomationRegion> (
-          pos, end_pos, first_r.id_.track_name_hash_, first_r.id_.at_idx_,
-          first_r.id_.idx_);
-        for (auto &obj : objects_)
-          {
-            auto  &r = dynamic_cast<AutomationRegion &> (*obj);
-            double ticks_diff = r.pos_.ticks_ - first_obj->pos_.ticks_;
+          new_r = new AudioRegion (
+            -1, std::nullopt, true, frames.data (), num_frames,
+            first_r_clip->name_, 2, max_depth, pos,
+            first_r->id_.track_name_hash_, first_r->id_.lane_pos_,
+            first_r->id_.idx_);
+        }
+      else if constexpr (std::is_same_v<RegionT, ChordRegion>)
+        {
+          new_r = new ChordRegion (pos, end_pos, first_r->id_.idx_);
+          for (auto &obj : objects_)
+            {
+              auto * r = std::get<ChordRegion *> (obj);
+              double ticks_diff = r->pos_->ticks_ - first_obj->pos_->ticks_;
 
-            for (auto &ap : r.aps_)
-              {
-                auto new_ap = ap->clone_shared ();
-                new_ap->move (ticks_diff);
-                dynamic_cast<AutomationRegion &> (*new_r).append_object (
-                  new_ap, false);
-              }
-          }
-      }
-      break;
-    }
+              for (auto &co : r->chord_objects_)
+                {
+                  auto new_co = co->clone_raw_ptr ();
+                  new_co->move (ticks_diff);
+                  new_r->append_object (new_co, false);
+                }
+            }
+        }
+      else if constexpr (std::is_same_v<RegionT, AutomationRegion>)
+        {
+          new_r = new AutomationRegion (
+            pos, end_pos, first_r->id_.track_name_hash_, first_r->id_.at_idx_,
+            first_r->id_.idx_);
+          for (auto &obj : objects_)
+            {
+              auto * r = std::get<AutomationRegion *> (obj);
+              double ticks_diff = r->pos_->ticks_ - first_obj->pos_->ticks_;
 
-  new_r->gen_name (first_r.name_.c_str (), nullptr, nullptr);
+              for (auto &ap : r->aps_)
+                {
+                  auto * new_ap = ap->clone_raw_ptr ();
+                  new_ap->move (ticks_diff);
+                  new_r->append_object (new_ap, false);
+                }
+            }
+        }
 
-  clear (false);
-  add_object_owned (std::move (new_r));
+      new_r->gen_name (first_r->name_.c_str (), nullptr, nullptr);
+
+      clear (false);
+      add_object_owned (std::unique_ptr<RegionT> (new_r));
+    },
+    convert_to_variant<RegionPtrVariant> (first_obj));
 }
 
-Track *
+OptionalTrackPtrVariant
 TimelineSelections::get_first_track () const
 {
-  return (*std::min_element (
-            objects_.begin (), objects_.end (),
-            [] (const auto &a, const auto &b) {
-              auto track_a = a->get_track ();
-              auto track_b = b->get_track ();
+  auto it = std::min_element (
+    objects_.begin (), objects_.end (),
+    [] (const auto &a_var, const auto &b_var) {
+      return std::visit (
+        [&] (auto &&a, auto &&b) {
+          auto track_a_var = a->get_track ();
+          auto track_b_var = b->get_track ();
+          return std::visit (
+            [&] (auto &&track_a, auto &&track_b) {
               return track_a && (!track_b || track_a->pos_ < track_b->pos_);
-            }))
-    ->get_track ();
+            },
+            track_a_var, track_b_var);
+        },
+        a_var, b_var);
+    });
+  if (it == objects_.end ())
+    return std::nullopt;
+  return std::visit ([&] (auto &&obj) { return obj->get_track (); }, *it);
 }
 
-Track *
+OptionalTrackPtrVariant
 TimelineSelections::get_last_track () const
 {
-  return (*std::max_element (
-            objects_.begin (), objects_.end (),
-            [] (const auto &a, const auto &b) {
-              auto track_a = a->get_track ();
-              auto track_b = b->get_track ();
+  auto it = std::max_element (
+    objects_.begin (), objects_.end (),
+    [] (const auto &a_var, const auto &b_var) {
+      return std::visit (
+        [&] (auto &&a, auto &&b) {
+          auto track_a_var = a->get_track ();
+          auto track_b_var = b->get_track ();
+          return std::visit (
+            [&] (auto &&track_a, auto &&track_b) {
               return !track_a || (track_b && track_a->pos_ < track_b->pos_);
-            }))
-    ->get_track ();
+            },
+            track_a_var, track_b_var);
+        },
+        a_var, b_var);
+    });
+  if (it == objects_.end ())
+    return std::nullopt;
+
+  return std::visit ([] (auto &&obj) { return obj->get_track (); }, *it);
 }
 
 void
 TimelineSelections::set_vis_track_indices ()
 {
-  auto highest_tr = get_first_track ();
-  if (!highest_tr)
+  auto highest_tr_var_opt = get_first_track ();
+  if (!highest_tr_var_opt)
     return;
 
-  for (auto &obj : objects_)
-    {
-      auto region_track = obj->get_track ();
-      if (obj->is_region ())
-        {
-          region_track_vis_index_ =
-            TRACKLIST->get_visible_track_diff (*highest_tr, *region_track);
-        }
-      else if (obj->is_marker ())
-        {
-          marker_track_vis_index_ =
-            TRACKLIST->get_visible_track_diff (*highest_tr, *P_MARKER_TRACK);
-        }
-      else if (obj->is_chord_object ())
-        {
-          chord_track_vis_index_ =
-            TRACKLIST->get_visible_track_diff (*highest_tr, *P_CHORD_TRACK);
-        }
-    }
+  std::ranges::for_each (objects_, [&] (auto &obj_var) {
+    std::visit (
+      [&] (auto &&obj, auto &&highest_tr) {
+        using ObjT = base_type<decltype (obj)>;
+        if constexpr (std::derived_from<ObjT, Region>)
+          {
+            auto region_track = obj->get_track ();
+            std::visit (
+              [&] (auto &&track) {
+                region_track_vis_index_ =
+                  TRACKLIST->get_visible_track_diff (*highest_tr, *track);
+              },
+              region_track);
+          }
+        else if constexpr (std::is_same_v<ObjT, Marker>)
+          {
+            marker_track_vis_index_ =
+              TRACKLIST->get_visible_track_diff (*highest_tr, *P_MARKER_TRACK);
+          }
+        else if constexpr (std::is_same_v<ObjT, ChordObject>)
+          {
+            chord_track_vis_index_ =
+              TRACKLIST->get_visible_track_diff (*highest_tr, *P_CHORD_TRACK);
+          }
+      },
+      obj_var, *highest_tr_var_opt);
+  });
 }
 
 bool
 TimelineSelections::can_be_pasted_at_impl (const Position pos, const int idx) const
 {
-  auto tr =
+  auto tr_var =
     idx >= 0
-      ? Track::from_variant (TRACKLIST->get_track (idx))
+      ? TRACKLIST->get_track (idx)
       : TRACKLIST_SELECTIONS->get_highest_track ();
-  if (!tr)
-    return false;
 
-  for (const auto &obj : objects_)
-    {
-      if (obj->is_region ())
-        {
-          auto r = dynamic_cast<const Region *> (obj.get ());
-          // automation regions can't be copy-pasted this way
-          if (r->is_automation ())
-            return false;
-
-          // check if this track can host this region
-          if (!Track::type_can_host_region_type (tr->type_, r->get_type ()))
-            {
-              z_info (
-                "track {} can't host region type {}", tr->get_name (),
-                r->get_type ());
+  return std::ranges::all_of (objects_, [&] (auto &&obj_var) {
+    return std::visit (
+      [&] (auto &&obj, auto &&tr) {
+        using ObjT = base_type<decltype (obj)>;
+        using TrackT = base_type<decltype (tr)>;
+        if constexpr (std::derived_from<ObjT, Region>)
+          {
+            // automation regions can't be copy-pasted this way
+            if constexpr (std::is_same_v<ObjT, AutomationRegion>)
               return false;
-            }
-        }
-      else if (obj->is_marker () && !tr->is_marker ())
-        return false;
-      else if (obj->is_chord_object () && !tr->is_chord ())
-        return false;
-    }
 
-  return true;
+            // check if this track can host this region
+            if (!Track::type_can_host_region_type (tr->type_, obj->get_type ()))
+              {
+                z_info (
+                  "track {} can't host region type {}", tr->get_name (),
+                  obj->get_type ());
+                return false;
+              }
+          }
+        else if constexpr (
+          std::is_same_v<ObjT, Marker> && !std::is_same_v<TrackT, MarkerTrack>)
+          return false;
+        else if constexpr (
+          std::is_same_v<ObjT, ChordObject>
+          && !std::is_same_v<TrackT, ChordTrack>)
+          return false;
+        return true;
+      },
+      obj_var, tr_var);
+  });
 }
 
 void
@@ -426,32 +475,46 @@ TimelineSelections::mark_for_bounce (bool with_parents)
 {
   AUDIO_ENGINE->reset_bounce_mode ();
 
-  for (const auto &obj : objects_)
+  for (const auto &obj_var : objects_)
     {
-      auto track = obj->get_track ();
-      if (!track)
-        continue;
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjT = base_type<decltype (obj)>;
+          auto track_var = obj->get_track ();
 
-      if (!with_parents)
-        {
-          track->bounce_to_master_ = true;
-        }
-      track->mark_for_bounce (true, false, true, with_parents);
+          std::visit (
+            [&] (auto &&track) {
+              if (!with_parents)
+                {
+                  track->bounce_to_master_ = true;
+                }
+              track->mark_for_bounce (true, false, true, with_parents);
+            },
+            track_var);
 
-      if (obj->is_region ())
-        {
-          auto r = dynamic_cast<Region *> (obj.get ());
-          r->bounce_ = true;
-        }
+          if constexpr (std::derived_from<ObjT, Region>)
+            {
+              obj->bounce_ = true;
+            }
+        },
+        obj_var);
     }
 }
 
 bool
 TimelineSelections::contains_clip (const AudioClip &clip) const
 {
-  return std::ranges::any_of (objects_, [&clip] (const auto &obj) {
-    auto r = dynamic_cast<const AudioRegion *> (obj.get ());
-    return r && r->pool_id_ == clip.pool_id_;
+  return std::ranges::any_of (objects_, [&clip] (const auto &obj_var) {
+    return std::visit (
+      [&] (auto &&obj) {
+        using ObjT = base_type<decltype (obj)>;
+        if constexpr (std::is_same_v<ObjT, AudioRegion>)
+          {
+            return obj->pool_id_ == clip.pool_id_;
+          }
+        return false;
+      },
+      obj_var);
   });
 }
 
@@ -480,8 +543,9 @@ TimelineSelections::move_regions_to_new_lanes_or_tracks_or_ats (
     }
 
   /* if there are objects other than regions, moving is not supported */
-  if (std::ranges::any_of (objects_, [] (const auto &obj) {
-        return !obj->is_region ();
+  if (std::ranges::any_of (objects_, [] (const auto &obj_var) {
+        return std::visit (
+          [&] (auto &&obj) { return !obj->is_region (); }, obj_var);
       }))
     {
       z_debug (
@@ -496,10 +560,18 @@ TimelineSelections::move_regions_to_new_lanes_or_tracks_or_ats (
   sort_by_indices (false);
 
   /* store selected regions because they will be deselected during moving */
-  std::vector<Region *> regions_arr;
-  for (const auto &obj : objects_)
+  std::vector<RegionPtrVariant> regions_arr;
+  for (const auto &obj_var : objects_)
     {
-      regions_arr.push_back (dynamic_cast<Region *> (obj.get ()));
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjT = base_type<decltype (obj)>;
+          if constexpr (std::derived_from<ObjT, Region>)
+            {
+              regions_arr.push_back (obj);
+            }
+        },
+        obj_var);
     }
 
   /*
@@ -510,145 +582,144 @@ TimelineSelections::move_regions_to_new_lanes_or_tracks_or_ats (
    * - only lane regions are selected
    * - the lane bounds are not exceeded
    */
-  bool compatible = true;
-  for (auto * region : regions_arr)
-    {
-      auto * track = region->get_track ();
-      if (vis_track_diff != 0)
-        {
-          auto visible =
-            TRACKLIST->get_visible_track_after_delta (*track, vis_track_diff);
-          if (!visible)
-            {
-              compatible = false;
-              break;
-            }
+  bool compatible = std::ranges::all_of (regions_arr, [&] (auto &&region_var) {
+    return std::visit (
+      [&] (auto &&region) {
+        using RegionT = base_type<decltype (region)>;
+        auto track_var = region->get_track ();
+        return std::visit (
+          [&] (auto &&track) {
+            using TrackT = base_type<decltype (track)>;
+            if (vis_track_diff != 0)
+              {
+                auto visible = TRACKLIST->get_visible_track_after_delta (
+                  *track, vis_track_diff);
+                if (!visible)
+                  {
+                    return false;
+                  }
 
-          bool should_break = std::visit (
-            [&] (auto &&visible_tr) {
-              if (
-                !Track::type_is_compatible_for_moving (
-                  track->type_, visible_tr->type_)
-                ||
-                /* do not allow moving automation tracks to other tracks for now
-                 */
-                region->is_automation ())
-                {
-                  compatible = false;
-                  return true;
-                }
+                bool track_incompatible = std::visit (
+                  [&] (auto &&visible_tr) {
+                    if (
+                      !Track::type_is_compatible_for_moving (
+                        track->type_, visible_tr->type_)
+                      ||
+                      /* do not allow moving automation tracks to other tracks
+                       * for now
+                       */
+                      region->is_automation ())
+                      {
+                        return true;
+                      }
 
-              return false;
-            },
-            *visible);
-          if (should_break)
-            break;
-        }
-      else if (lane_diff != 0)
-        {
-          auto laned_track = dynamic_cast<LanedTrack *> (track);
-          if (!laned_track)
-            {
-              compatible = false;
-              break;
-            }
-
-          laned_track->block_auto_creation_and_deletion_ = true;
-          if (region->id_.lane_pos_ + lane_diff < 0)
-            {
-              compatible = false;
-              break;
-            }
-
-          /* don't create more than 1 extra lanes */
-          auto r_variant = convert_to_variant<RegionPtrVariant> (region);
-          compatible = std::visit (
-            [&] (auto &&r) {
-              using RegionT = base_type<decltype (r)>;
-              if constexpr (std::derived_from<RegionT, LaneOwnedObject>)
-                {
-                  auto laned_track_impl = dynamic_cast<LanedTrackImpl<
-                    typename LaneOwnedObjectImpl<RegionT>::TrackLaneT> *> (
-                    track);
-                  auto lane = r->get_lane ();
-                  z_return_val_if_fail (region && lane, false);
-                  int new_lane_pos = lane->pos_ + lane_diff;
-                  z_return_val_if_fail (new_lane_pos >= 0, false);
-                  if (new_lane_pos >= (int) laned_track_impl->lanes_.size ())
-                    {
-                      z_debug (
-                        "new lane position %d is >= the number of lanes in the track (%d)",
-                        new_lane_pos, laned_track_impl->lanes_.size ());
-                      return false;
-                    }
-                  if (
-                    new_lane_pos > laned_track_impl->last_lane_created_
-                    && laned_track_impl->last_lane_created_ > 0 && lane_diff > 0)
-                    {
-                      z_debug (
-                        "already created a new lane at %d, skipping new lane for %d",
-                        laned_track_impl->last_lane_created_, new_lane_pos);
-                      return false;
-                    }
-
-                  return true;
-                }
-              else
-                {
+                    return false;
+                  },
+                  *visible);
+                if (track_incompatible)
                   return false;
-                }
-            },
-            r_variant);
+              }
+            else if (lane_diff != 0)
+              {
+                if constexpr (std::derived_from<TrackT, LanedTrack>)
+                  {
+                    track->block_auto_creation_and_deletion_ = true;
+                    if (region->id_.lane_pos_ + lane_diff < 0)
+                      {
+                        return false;
+                      }
 
-          if (!compatible)
-            {
-              break;
-            }
-        }
-      else if (vis_at_diff != 0)
-        {
-          if (!region->is_automation ())
-            {
-              compatible = false;
-              break;
-            }
+                    /* don't create more than 1 extra lanes */
+                    if constexpr (std::derived_from<RegionT, LaneOwnedObject>)
+                      {
+                        auto lane = region->get_lane ();
+                        z_return_val_if_fail (region && lane, false);
+                        int new_lane_pos = lane->pos_ + lane_diff;
+                        z_return_val_if_fail (new_lane_pos >= 0, false);
+                        if (new_lane_pos >= (int) track->lanes_.size ())
+                          {
+                            z_debug (
+                              "new lane position %d is >= the number of lanes in the track (%d)",
+                              new_lane_pos, track->lanes_.size ());
+                            return false;
+                          }
+                        if (
+                          new_lane_pos > track->last_lane_created_
+                          && track->last_lane_created_ > 0 && lane_diff > 0)
+                          {
+                            z_debug (
+                              "already created a new lane at %d, skipping new lane for %d",
+                              track->last_lane_created_, new_lane_pos);
+                            return false;
+                          }
 
-          /* don't allow moving automation regions -- too error prone */
-          compatible = false;
-          break;
-        }
-    }
+                        return true;
+                      }
+                    else
+                      {
+                        return false;
+                      }
+                  }
+                else
+                  {
+                    return false;
+                  }
+              }
+            else if (vis_at_diff != 0)
+              {
+                if (!region->is_automation ())
+                  {
+                    return false;
+                  }
+
+                /* don't allow moving automation regions -- too error prone */
+                return false;
+              }
+            return true;
+          },
+          track_var);
+      },
+      region_var);
+  });
   if (!compatible)
     {
       return false;
     }
 
   /* new positions are all compatible, move the regions */
-  for (auto region : regions_arr)
+  for (auto region_var : regions_arr)
     {
-      auto r_variant = convert_to_variant<RegionPtrVariant> (region);
       auto success = std::visit (
-        [&] (auto &&r) {
-          using RegionT = base_type<decltype (r)>;
+        [&] (auto &&region) {
+          using RegionT = base_type<decltype (region)>;
           if (vis_track_diff != 0)
             {
-              auto region_track = region->get_track ();
-              z_warn_if_fail (region && region_track);
-              auto track_to_move_to = TRACKLIST->get_visible_track_after_delta (
-                *region_track, vis_track_diff);
-              z_return_val_if_fail (track_to_move_to, false);
-              std::visit (
-                [&] (auto &&tr_to_move_to) {
-                  r->move_to_track (tr_to_move_to, -1, -1);
+              auto region_track_var = region->get_track ();
+              bool moved_successfully = std::visit (
+                [&] (auto &&region_track) -> bool {
+                  auto track_to_move_to =
+                    TRACKLIST->get_visible_track_after_delta (
+                      *region_track, vis_track_diff);
+                  z_return_val_if_fail (track_to_move_to, false);
+                  std::visit (
+                    [&] (auto &&tr_to_move_to) {
+                      region->move_to_track (tr_to_move_to, -1, -1);
+                    },
+                    *track_to_move_to);
+                  return true;
                 },
-                *track_to_move_to);
+                region_track_var);
+              if (!moved_successfully)
+                {
+                  return false;
+                }
             }
           else if (lane_diff != 0)
             {
               if constexpr (std::derived_from<RegionT, LaneOwnedObject>)
                 {
-                  auto lane = r->get_lane ();
-                  z_return_val_if_fail (r && lane, false);
+                  auto lane = region->get_lane ();
+                  z_return_val_if_fail (lane, false);
 
                   int new_lane_pos = lane->pos_ + lane_diff;
                   z_return_val_if_fail (new_lane_pos >= 0, false);
@@ -659,15 +730,15 @@ TimelineSelections::move_regions_to_new_lanes_or_tracks_or_ats (
                     {
                       laned_track->last_lane_created_ = new_lane_pos;
                     }
-                  r->move_to_track (laned_track, new_lane_pos, -1);
+                  region->move_to_track (laned_track, new_lane_pos, -1);
                 }
             }
           else if (vis_at_diff != 0)
             {
               if constexpr (std::is_same_v<RegionT, AutomationRegion>)
                 {
-                  auto at = r->get_automation_track ();
-                  z_return_val_if_fail (region && at, false);
+                  auto at = region->get_automation_track ();
+                  z_return_val_if_fail (at, false);
                   auto              atl = at->get_automation_tracklist ();
                   AutomationTrack * new_at =
                     atl->get_visible_at_after_delta (*at, vis_at_diff);
@@ -683,11 +754,14 @@ TimelineSelections::move_regions_to_new_lanes_or_tracks_or_ats (
             }
           return true;
         },
-        r_variant);
+        region_var);
 
       if (!success)
         {
-          z_warning ("failed to move region {}", region->get_name ());
+          z_warning (
+            "failed to move region {}",
+            std::visit (
+              [&] (auto &&region) { return region->get_name (); }, region_var));
           return false;
         }
     }
@@ -718,46 +792,51 @@ TimelineSelections::move_regions_to_new_tracks (const int vis_track_diff)
 void
 TimelineSelections::set_index_in_prev_lane ()
 {
-  for (auto &obj : objects_)
+  for (auto &obj_var : objects_)
     {
-      if (auto region = dynamic_cast<Region *> (obj.get ()))
-        {
-          auto r_variant = convert_to_variant<RegionPtrVariant> (region);
-          std::visit (
-            [&] (auto &&r) {
-              if constexpr (
-                std::derived_from<base_type<decltype (r)>, LaneOwnedObject>)
-                {
-                  r->index_in_prev_lane_ = region->id_.idx_;
-                }
-            },
-            r_variant);
-        }
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjT = base_type<decltype (obj)>;
+          if constexpr (std::derived_from<ObjT, LaneOwnedObject>)
+            obj->index_in_prev_lane_ = obj->id_.idx_;
+        },
+        obj_var);
     }
 }
 
 bool
 TimelineSelections::contains_only_regions () const
 {
-  return std::all_of (objects_.begin (), objects_.end (), [] (const auto &obj) {
-    return obj->is_region ();
-  });
+  return std::all_of (
+    objects_.begin (), objects_.end (), [] (const auto &obj_var) {
+      return std::visit (
+        [&] (auto &&obj) {
+          using ObjT = base_type<decltype (obj)>;
+          if constexpr (std::derived_from<ObjT, Region>)
+            return true;
+          return false;
+        },
+        obj_var);
+    });
 }
 
 bool
 TimelineSelections::contains_only_region_types (RegionType type) const
 {
-  if (!contains_only_regions ())
-    return false;
-
   return std::all_of (
-    objects_.begin (), objects_.end (), [type] (const auto &obj) {
-      auto region = dynamic_cast<Region *> (obj.get ());
-      return region && region->get_type () == type;
+    objects_.begin (), objects_.end (), [type] (const auto &obj_var) {
+      return std::visit (
+        [&] (auto &&obj) {
+          using ObjT = base_type<decltype (obj)>;
+          if constexpr (std::derived_from<ObjT, Region>)
+            return obj->get_type () == type;
+          return false;
+        },
+        obj_var);
     });
 }
 
-bool
+void
 TimelineSelections::export_to_midi_file (
   const char * full_path,
   int          midi_version,
@@ -766,7 +845,7 @@ TimelineSelections::export_to_midi_file (
 {
   auto mf = midiFileCreate (full_path, true);
   if (!mf)
-    return false;
+    throw ZrythmException ("Failed to create MIDI file");
 
   /* write tempo info to track 1 */
   auto tempo_track = TRACKLIST->tempo_track_;
@@ -790,54 +869,69 @@ TimelineSelections::export_to_midi_file (
   int                              last_midi_track_pos = -1;
   std::unique_ptr<MidiEventVector> events;
 
-  for (const auto &obj : sel_clone->objects_)
+  for (const auto &obj_var : sel_clone->objects_)
     {
-      auto region = dynamic_cast<MidiRegion *> (obj.get ());
-      if (!region)
-        continue;
-
-      int midi_track_pos = 1;
-      if (midi_version > 0)
-        {
-          auto track = dynamic_cast<PianoRollTrack *> (region->get_track ());
-          if (!track)
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjT = base_type<decltype (obj)>;
+          if constexpr (std::derived_from<ObjT, MidiRegion>)
             {
-              z_return_val_if_fail (track, false);
-            }
 
-          std::string midi_track_name;
-          if (lanes_as_tracks)
-            {
-              auto lane = region->get_lane ();
-              z_return_val_if_fail (lane, false);
-              midi_track_name =
-                fmt::format ("{} - {}", track->name_, lane->name_);
-              midi_track_pos = lane->calculate_lane_idx ();
-            }
-          else
-            {
-              midi_track_name = track->name_;
-              midi_track_pos = track->pos_;
-            }
-          midiTrackAddText (
-            mf, midi_track_pos, textTrackName, midi_track_name.c_str ());
-        }
+              int midi_track_pos = 1;
+              if (midi_version > 0)
+                {
+                  auto track_var = obj->get_track ();
 
-      if (last_midi_track_pos != midi_track_pos)
-        {
-          /* finish prev events (if any) */
-          if (events)
-            {
-              events->write_to_midi_file (mf, last_midi_track_pos);
+                  std::visit (
+                    [&] (auto &&track) {
+                      using TrackT = base_type<decltype (track)>;
+                      if constexpr (std::derived_from<TrackT, PianoRollTrack>)
+                        {
+                          std::string midi_track_name;
+                          if (lanes_as_tracks)
+                            {
+                              auto lane = obj->get_lane ();
+                              z_return_if_fail (lane);
+                              midi_track_name = fmt::format (
+                                "{} - {}", track->name_, lane->name_);
+                              midi_track_pos = lane->calculate_lane_idx ();
+                            }
+                          else
+                            {
+                              midi_track_name = track->name_;
+                              midi_track_pos = track->pos_;
+                            }
+                          midiTrackAddText (
+                            mf, midi_track_pos, textTrackName,
+                            midi_track_name.c_str ());
+                        }
+                      else
+                        {
+                          throw ZrythmException ("Expected PianoRollTrack");
+                        }
+                    },
+                    track_var);
+                }
+
+              if (last_midi_track_pos != midi_track_pos)
+                {
+                  /* finish prev events (if any) */
+                  if (events)
+                    {
+                      events->write_to_midi_file (mf, last_midi_track_pos);
+                    }
+
+                  /* start new events */
+                  events = std::make_unique<MidiEventVector> ();
+                }
+
+              /* append to the current events */
+              obj->add_events (
+                *events, nullptr, nullptr, true, export_full_regions);
+              last_midi_track_pos = midi_track_pos;
             }
-
-          /* start new events */
-          events = std::make_unique<MidiEventVector> ();
-        }
-
-      /* append to the current events */
-      region->add_events (*events, nullptr, nullptr, true, export_full_regions);
-      last_midi_track_pos = midi_track_pos;
+        },
+        obj_var);
     }
 
   /* finish prev events (if any) again */
@@ -847,7 +941,6 @@ TimelineSelections::export_to_midi_file (
     }
 
   midiFileClose (mf);
-  return true;
 }
 
 #if 0

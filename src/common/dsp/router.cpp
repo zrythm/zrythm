@@ -160,7 +160,7 @@ Router::recalc_graph (bool soft)
       AUDIO_ENGINE->run_.store (false);
       while (AUDIO_ENGINE->cycle_running_.load ())
         {
-          g_usleep (100);
+          std::this_thread::sleep_for (std::chrono::milliseconds (100));
         }
       graph_setup_in_progress_.store (true);
       graph_->setup (true, true);

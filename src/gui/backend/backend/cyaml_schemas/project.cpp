@@ -6,22 +6,11 @@
 
 #include <yyjson.h>
 
-typedef enum
-{
-  Z_SCHEMAS_PROJECT_ERROR_FAILED,
-} ZSchemasProjectError;
-
-#define Z_SCHEMAS_PROJECT_ERROR z_schemas_project_error_quark ()
-GQuark
-z_schemas_project_error_quark (void);
-G_DEFINE_QUARK (z - schemas - project - error - quark, z_schemas_project_error)
-
 static bool
 gdk_rgba_serialize_to_json (
   yyjson_mut_doc * doc,
   yyjson_mut_val * rgba_obj,
-  const GdkRGBA *  rgba,
-  GError **        error)
+  const GdkRGBA *  rgba)
 {
   yyjson_mut_obj_add_real (doc, rgba_obj, "red", rgba->red);
   yyjson_mut_obj_add_real (doc, rgba_obj, "green", rgba->green);
@@ -34,8 +23,7 @@ static bool
 position_v1_serialize_to_json (
   yyjson_mut_doc *    doc,
   yyjson_mut_val *    pos_obj,
-  const Position_v1 * pos,
-  GError **           error)
+  const Position_v1 * pos)
 {
   yyjson_mut_obj_add_real (doc, pos_obj, "ticks", pos->ticks);
   yyjson_mut_obj_add_int (doc, pos_obj, "frames", pos->frames);
@@ -46,8 +34,7 @@ static bool
 curve_options_v1_serialize_to_json (
   yyjson_mut_doc *        doc,
   yyjson_mut_val *        opts_obj,
-  const CurveOptions_v1 * opts,
-  GError **               error)
+  const CurveOptions_v1 * opts)
 {
   yyjson_mut_obj_add_int (doc, opts_obj, "algorithm", opts->algo);
   yyjson_mut_obj_add_real (doc, opts_obj, "curviness", opts->curviness);
@@ -58,8 +45,7 @@ static bool
 chord_descriptor_v2_serialize_to_json (
   yyjson_mut_doc *           doc,
   yyjson_mut_val *           descr_obj,
-  const ChordDescriptor_v2 * descr,
-  GError **                  error)
+  const ChordDescriptor_v2 * descr)
 {
   yyjson_mut_obj_add_bool (doc, descr_obj, "hasBass", descr->has_bass);
   yyjson_mut_obj_add_int (doc, descr_obj, "rootNote", descr->root_note);
@@ -79,8 +65,7 @@ static bool
 plugin_identifier_v1_serialize_to_json (
   yyjson_mut_doc *            doc,
   yyjson_mut_val *            pi_obj,
-  const PluginIdentifier_v1 * pi,
-  GError **                   error)
+  const PluginIdentifier_v1 * pi)
 {
   yyjson_mut_obj_add_int (doc, pi_obj, "slotType", pi->slot_type);
   yyjson_mut_obj_add_uint (doc, pi_obj, "trackNameHash", pi->track_name_hash);
@@ -92,8 +77,7 @@ static bool
 plugin_descriptor_v1_serialize_to_json (
   yyjson_mut_doc *            doc,
   yyjson_mut_val *            pd_obj,
-  const PluginDescriptor_v1 * pd,
-  GError **                   error)
+  const PluginDescriptor_v1 * pd)
 {
   if (pd->author)
     {
@@ -141,11 +125,10 @@ static bool
 plugin_setting_v1_serialize_to_json (
   yyjson_mut_doc *         doc,
   yyjson_mut_val *         ps_obj,
-  const PluginSetting_v1 * ps,
-  GError **                error)
+  const PluginSetting_v1 * ps)
 {
   yyjson_mut_val * pd_obj = yyjson_mut_obj_add_obj (doc, ps_obj, "descriptor");
-  plugin_descriptor_v1_serialize_to_json (doc, pd_obj, ps->descr, error);
+  plugin_descriptor_v1_serialize_to_json (doc, pd_obj, ps->descr);
   yyjson_mut_obj_add_bool (doc, ps_obj, "openWithCarla", ps->open_with_carla);
   yyjson_mut_obj_add_bool (doc, ps_obj, "forceGenericUI", ps->force_generic_ui);
   yyjson_mut_obj_add_int (doc, ps_obj, "bridgeMode", ps->bridge_mode);
@@ -160,14 +143,12 @@ static bool
 plugin_preset_identifier_v1_serialize_to_json (
   yyjson_mut_doc *                  doc,
   yyjson_mut_val *                  pid_obj,
-  const PluginPresetIdentifier_v1 * pid,
-  GError **                         error)
+  const PluginPresetIdentifier_v1 * pid)
 {
   yyjson_mut_obj_add_int (doc, pid_obj, "index", pid->idx);
   yyjson_mut_obj_add_int (doc, pid_obj, "bankIndex", pid->bank_idx);
   yyjson_mut_val * pl_id_obj = yyjson_mut_obj_add_obj (doc, pid_obj, "pluginId");
-  plugin_identifier_v1_serialize_to_json (
-    doc, pl_id_obj, &pid->plugin_id, error);
+  plugin_identifier_v1_serialize_to_json (doc, pl_id_obj, &pid->plugin_id);
   return true;
 }
 
@@ -175,8 +156,7 @@ static bool
 plugin_preset_v1_serialize_to_json (
   yyjson_mut_doc *        doc,
   yyjson_mut_val *        pset_obj,
-  const PluginPreset_v1 * pset,
-  GError **               error)
+  const PluginPreset_v1 * pset)
 {
   yyjson_mut_obj_add_str (doc, pset_obj, "name", pset->name);
   if (pset->uri)
@@ -185,7 +165,7 @@ plugin_preset_v1_serialize_to_json (
     }
   yyjson_mut_obj_add_int (doc, pset_obj, "carlaProgram", pset->carla_program);
   yyjson_mut_val * pid_obj = yyjson_mut_obj_add_obj (doc, pset_obj, "id");
-  plugin_preset_identifier_v1_serialize_to_json (doc, pid_obj, &pset->id, error);
+  plugin_preset_identifier_v1_serialize_to_json (doc, pid_obj, &pset->id);
   return true;
 }
 
@@ -193,8 +173,7 @@ static bool
 plugin_bank_v1_serialize_to_json (
   yyjson_mut_doc *      doc,
   yyjson_mut_val *      bank_obj,
-  const PluginBank_v1 * bank,
-  GError **             error)
+  const PluginBank_v1 * bank)
 {
   yyjson_mut_obj_add_str (doc, bank_obj, "name", bank->name);
   yyjson_mut_val * psets_arr = yyjson_mut_obj_add_arr (doc, bank_obj, "presets");
@@ -202,14 +181,14 @@ plugin_bank_v1_serialize_to_json (
     {
       PluginPreset_v1 * pset = bank->presets[i];
       yyjson_mut_val *  pset_obj = yyjson_mut_arr_add_obj (doc, psets_arr);
-      plugin_preset_v1_serialize_to_json (doc, pset_obj, pset, error);
+      plugin_preset_v1_serialize_to_json (doc, pset_obj, pset);
     }
   if (bank->uri)
     {
       yyjson_mut_obj_add_str (doc, bank_obj, "uri", bank->uri);
     }
   yyjson_mut_val * id_obj = yyjson_mut_obj_add_obj (doc, bank_obj, "id");
-  plugin_preset_identifier_v1_serialize_to_json (doc, id_obj, &bank->id, error);
+  plugin_preset_identifier_v1_serialize_to_json (doc, id_obj, &bank->id);
   return true;
 }
 
@@ -217,8 +196,7 @@ static bool
 port_identifier_v1_serialize_to_json (
   yyjson_mut_doc *          doc,
   yyjson_mut_val *          pi_obj,
-  const PortIdentifier_v1 * pi,
-  GError **                 error)
+  const PortIdentifier_v1 * pi)
 {
   if (pi->label)
     {
@@ -245,8 +223,7 @@ port_identifier_v1_serialize_to_json (
   yyjson_mut_obj_add_uint (doc, pi_obj, "trackNameHash", pi->track_name_hash);
   yyjson_mut_val * plugin_id_obj =
     yyjson_mut_obj_add_obj (doc, pi_obj, "pluginId");
-  plugin_identifier_v1_serialize_to_json (
-    doc, plugin_id_obj, &pi->plugin_id, error);
+  plugin_identifier_v1_serialize_to_json (doc, plugin_id_obj, &pi->plugin_id);
   if (pi->port_group)
     {
       yyjson_mut_obj_add_str (doc, pi_obj, "portGroup", pi->port_group);
@@ -263,11 +240,10 @@ static bool
 port_v1_serialize_to_json (
   yyjson_mut_doc * doc,
   yyjson_mut_val * port_obj,
-  const Port_v1 *  port,
-  GError **        error)
+  const Port_v1 *  port)
 {
   yyjson_mut_val * pi_id_obj = yyjson_mut_obj_add_obj (doc, port_obj, "id");
-  port_identifier_v1_serialize_to_json (doc, pi_id_obj, &port->id, error);
+  port_identifier_v1_serialize_to_json (doc, pi_id_obj, &port->id);
   yyjson_mut_obj_add_bool (
     doc, port_obj, "exposedToBackend", port->exposed_to_backend);
   yyjson_mut_obj_add_real (doc, port_obj, "control", port->control);
@@ -284,13 +260,12 @@ static bool
 stereo_ports_v1_serialize_to_json (
   yyjson_mut_doc *       doc,
   yyjson_mut_val *       sp_obj,
-  const StereoPorts_v1 * sp,
-  GError **              error)
+  const StereoPorts_v1 * sp)
 {
   yyjson_mut_val * l_obj = yyjson_mut_obj_add_obj (doc, sp_obj, "l");
-  port_v1_serialize_to_json (doc, l_obj, sp->l, error);
+  port_v1_serialize_to_json (doc, l_obj, sp->l);
   yyjson_mut_val * r_obj = yyjson_mut_obj_add_obj (doc, sp_obj, "r");
-  port_v1_serialize_to_json (doc, r_obj, sp->r, error);
+  port_v1_serialize_to_json (doc, r_obj, sp->r);
   return true;
 }
 
@@ -298,20 +273,19 @@ static bool
 plugin_v1_serialize_to_json (
   yyjson_mut_doc *  doc,
   yyjson_mut_val *  plugin_obj,
-  const Plugin_v1 * plugin,
-  GError **         error)
+  const Plugin_v1 * plugin)
 {
   yyjson_mut_val * pi_obj = yyjson_mut_obj_add_obj (doc, plugin_obj, "id");
-  plugin_identifier_v1_serialize_to_json (doc, pi_obj, &plugin->id, error);
+  plugin_identifier_v1_serialize_to_json (doc, pi_obj, &plugin->id);
   yyjson_mut_val * ps_obj = yyjson_mut_obj_add_obj (doc, plugin_obj, "setting");
-  plugin_setting_v1_serialize_to_json (doc, ps_obj, plugin->setting, error);
+  plugin_setting_v1_serialize_to_json (doc, ps_obj, plugin->setting);
   yyjson_mut_val * in_ports_arr =
     yyjson_mut_obj_add_arr (doc, plugin_obj, "inPorts");
   for (int i = 0; i < plugin->num_in_ports; i++)
     {
       Port_v1 *        port = plugin->in_ports[i];
       yyjson_mut_val * port_obj = yyjson_mut_arr_add_obj (doc, in_ports_arr);
-      port_v1_serialize_to_json (doc, port_obj, port, error);
+      port_v1_serialize_to_json (doc, port_obj, port);
     }
   yyjson_mut_val * out_ports_arr =
     yyjson_mut_obj_add_arr (doc, plugin_obj, "outPorts");
@@ -319,23 +293,23 @@ plugin_v1_serialize_to_json (
     {
       Port_v1 *        port = plugin->out_ports[i];
       yyjson_mut_val * port_obj = yyjson_mut_arr_add_obj (doc, out_ports_arr);
-      port_v1_serialize_to_json (doc, port_obj, port, error);
+      port_v1_serialize_to_json (doc, port_obj, port);
     }
   yyjson_mut_val * banks_arr = yyjson_mut_obj_add_arr (doc, plugin_obj, "banks");
   for (int i = 0; i < plugin->num_banks; i++)
     {
       PluginBank_v1 *  bank = plugin->banks[i];
       yyjson_mut_val * bank_obj = yyjson_mut_arr_add_obj (doc, banks_arr);
-      plugin_bank_v1_serialize_to_json (doc, bank_obj, bank, error);
+      plugin_bank_v1_serialize_to_json (doc, bank_obj, bank);
     }
   yyjson_mut_val * selected_bank_obj =
     yyjson_mut_obj_add_obj (doc, plugin_obj, "selectedBank");
   plugin_preset_identifier_v1_serialize_to_json (
-    doc, selected_bank_obj, &plugin->selected_bank, error);
+    doc, selected_bank_obj, &plugin->selected_bank);
   yyjson_mut_val * selected_preset_obj =
     yyjson_mut_obj_add_obj (doc, plugin_obj, "selectedPreset");
   plugin_preset_identifier_v1_serialize_to_json (
-    doc, selected_preset_obj, &plugin->selected_preset, error);
+    doc, selected_preset_obj, &plugin->selected_preset);
   yyjson_mut_obj_add_bool (doc, plugin_obj, "visible", plugin->visible);
   if (plugin->state_dir)
     {
@@ -348,8 +322,7 @@ static bool
 ext_port_v1_serialize_to_json (
   yyjson_mut_doc *   doc,
   yyjson_mut_val *   ep_obj,
-  const ExtPort_v1 * ep,
-  GError **          error)
+  const ExtPort_v1 * ep)
 {
   yyjson_mut_obj_add_str (doc, ep_obj, "fullName", ep->full_name);
   if (ep->short_name)
@@ -381,14 +354,13 @@ static bool
 port_connection_v1_serialize_to_json (
   yyjson_mut_doc *          doc,
   yyjson_mut_val *          conn_obj,
-  const PortConnection_v1 * conn,
-  GError **                 error)
+  const PortConnection_v1 * conn)
 {
   yyjson_mut_val * src_id_obj = yyjson_mut_obj_add_obj (doc, conn_obj, "srcId");
-  port_identifier_v1_serialize_to_json (doc, src_id_obj, conn->src_id, error);
+  port_identifier_v1_serialize_to_json (doc, src_id_obj, conn->src_id);
   yyjson_mut_val * dest_id_obj =
     yyjson_mut_obj_add_obj (doc, conn_obj, "destId");
-  port_identifier_v1_serialize_to_json (doc, dest_id_obj, conn->dest_id, error);
+  port_identifier_v1_serialize_to_json (doc, dest_id_obj, conn->dest_id);
   yyjson_mut_obj_add_real (doc, conn_obj, "multiplier", conn->multiplier);
   yyjson_mut_obj_add_bool (doc, conn_obj, "enabled", conn->enabled);
   yyjson_mut_obj_add_bool (doc, conn_obj, "locked", conn->locked);
@@ -400,8 +372,7 @@ static bool
 port_connections_manager_v1_serialize_to_json (
   yyjson_mut_doc *                  doc,
   yyjson_mut_val *                  mgr_obj,
-  const PortConnectionsManager_v1 * mgr,
-  GError **                         error)
+  const PortConnectionsManager_v1 * mgr)
 {
   if (mgr->connections)
     {
@@ -411,7 +382,7 @@ port_connections_manager_v1_serialize_to_json (
         {
           PortConnection_v1 * conn = mgr->connections[i];
           yyjson_mut_val * conn_obj = yyjson_mut_arr_add_obj (doc, conns_arr);
-          port_connection_v1_serialize_to_json (doc, conn_obj, conn, error);
+          port_connection_v1_serialize_to_json (doc, conn_obj, conn);
         }
     }
   return true;
@@ -421,16 +392,15 @@ static bool
 modulator_macro_processor_v1_serialize_to_json (
   yyjson_mut_doc *                   doc,
   yyjson_mut_val *                   mmp_obj,
-  const ModulatorMacroProcessor_v1 * mmp,
-  GError **                          error)
+  const ModulatorMacroProcessor_v1 * mmp)
 {
   yyjson_mut_obj_add_str (doc, mmp_obj, "name", mmp->name);
   yyjson_mut_val * cv_in_obj = yyjson_mut_obj_add_obj (doc, mmp_obj, "cvIn");
-  port_v1_serialize_to_json (doc, cv_in_obj, mmp->cv_in, error);
+  port_v1_serialize_to_json (doc, cv_in_obj, mmp->cv_in);
   yyjson_mut_val * cv_out_obj = yyjson_mut_obj_add_obj (doc, mmp_obj, "cvOut");
-  port_v1_serialize_to_json (doc, cv_out_obj, mmp->cv_out, error);
+  port_v1_serialize_to_json (doc, cv_out_obj, mmp->cv_out);
   yyjson_mut_val * macro_obj = yyjson_mut_obj_add_obj (doc, mmp_obj, "macro");
-  port_v1_serialize_to_json (doc, macro_obj, mmp->macro, error);
+  port_v1_serialize_to_json (doc, macro_obj, mmp->macro);
   return true;
 }
 
@@ -438,64 +408,60 @@ static bool
 track_processor_v1_serialize_to_json (
   yyjson_mut_doc *          doc,
   yyjson_mut_val *          tp_obj,
-  const TrackProcessor_v1 * tp,
-  GError **                 error)
+  const TrackProcessor_v1 * tp)
 {
   if (tp->mono)
     {
       yyjson_mut_val * mono_obj = yyjson_mut_obj_add_obj (doc, tp_obj, "mono");
-      port_v1_serialize_to_json (doc, mono_obj, tp->mono, error);
+      port_v1_serialize_to_json (doc, mono_obj, tp->mono);
     }
   if (tp->input_gain)
     {
       yyjson_mut_val * input_gain_obj =
         yyjson_mut_obj_add_obj (doc, tp_obj, "inputGain");
-      port_v1_serialize_to_json (doc, input_gain_obj, tp->input_gain, error);
+      port_v1_serialize_to_json (doc, input_gain_obj, tp->input_gain);
     }
   if (tp->output_gain)
     {
       yyjson_mut_val * output_gain_obj =
         yyjson_mut_obj_add_obj (doc, tp_obj, "outputGain");
-      port_v1_serialize_to_json (doc, output_gain_obj, tp->output_gain, error);
+      port_v1_serialize_to_json (doc, output_gain_obj, tp->output_gain);
     }
   if (tp->midi_in)
     {
       yyjson_mut_val * midi_in_obj =
         yyjson_mut_obj_add_obj (doc, tp_obj, "midiIn");
-      port_v1_serialize_to_json (doc, midi_in_obj, tp->midi_in, error);
+      port_v1_serialize_to_json (doc, midi_in_obj, tp->midi_in);
     }
   if (tp->midi_out)
     {
       yyjson_mut_val * midi_out_obj =
         yyjson_mut_obj_add_obj (doc, tp_obj, "midiOut");
-      port_v1_serialize_to_json (doc, midi_out_obj, tp->midi_out, error);
+      port_v1_serialize_to_json (doc, midi_out_obj, tp->midi_out);
     }
   if (tp->piano_roll)
     {
       yyjson_mut_val * piano_roll_obj =
         yyjson_mut_obj_add_obj (doc, tp_obj, "pianoRoll");
-      port_v1_serialize_to_json (doc, piano_roll_obj, tp->piano_roll, error);
+      port_v1_serialize_to_json (doc, piano_roll_obj, tp->piano_roll);
     }
   if (tp->monitor_audio)
     {
       yyjson_mut_val * monitor_audio_obj =
         yyjson_mut_obj_add_obj (doc, tp_obj, "monitorAudio");
-      port_v1_serialize_to_json (
-        doc, monitor_audio_obj, tp->monitor_audio, error);
+      port_v1_serialize_to_json (doc, monitor_audio_obj, tp->monitor_audio);
     }
   if (tp->stereo_in)
     {
       yyjson_mut_val * stereo_in_obj =
         yyjson_mut_obj_add_obj (doc, tp_obj, "stereoIn");
-      stereo_ports_v1_serialize_to_json (
-        doc, stereo_in_obj, tp->stereo_in, error);
+      stereo_ports_v1_serialize_to_json (doc, stereo_in_obj, tp->stereo_in);
     }
   if (tp->stereo_out)
     {
       yyjson_mut_val * stereo_out_obj =
         yyjson_mut_obj_add_obj (doc, tp_obj, "stereoOut");
-      stereo_ports_v1_serialize_to_json (
-        doc, stereo_out_obj, tp->stereo_out, error);
+      stereo_ports_v1_serialize_to_json (doc, stereo_out_obj, tp->stereo_out);
     }
   if (tp->midi_cc[0])
     {
@@ -505,7 +471,7 @@ track_processor_v1_serialize_to_json (
         {
           Port_v1 *        port = tp->midi_cc[j];
           yyjson_mut_val * port_obj = yyjson_mut_arr_add_obj (doc, midi_cc_arr);
-          port_v1_serialize_to_json (doc, port_obj, port, error);
+          port_v1_serialize_to_json (doc, port_obj, port);
         }
       yyjson_mut_val * pitch_bend_arr =
         yyjson_mut_obj_add_arr (doc, tp_obj, "pitchBend");
@@ -514,7 +480,7 @@ track_processor_v1_serialize_to_json (
           Port_v1 *        port = tp->pitch_bend[j];
           yyjson_mut_val * port_obj =
             yyjson_mut_arr_add_obj (doc, pitch_bend_arr);
-          port_v1_serialize_to_json (doc, port_obj, port, error);
+          port_v1_serialize_to_json (doc, port_obj, port);
         }
       yyjson_mut_val * poly_key_pressure_arr =
         yyjson_mut_obj_add_arr (doc, tp_obj, "polyKeyPressure");
@@ -523,7 +489,7 @@ track_processor_v1_serialize_to_json (
           Port_v1 *        port = tp->poly_key_pressure[j];
           yyjson_mut_val * port_obj =
             yyjson_mut_arr_add_obj (doc, poly_key_pressure_arr);
-          port_v1_serialize_to_json (doc, port_obj, port, error);
+          port_v1_serialize_to_json (doc, port_obj, port);
         }
       yyjson_mut_val * channel_pressure_arr =
         yyjson_mut_obj_add_arr (doc, tp_obj, "channelPressure");
@@ -532,7 +498,7 @@ track_processor_v1_serialize_to_json (
           Port_v1 *        port = tp->channel_pressure[j];
           yyjson_mut_val * port_obj =
             yyjson_mut_arr_add_obj (doc, channel_pressure_arr);
-          port_v1_serialize_to_json (doc, port_obj, port, error);
+          port_v1_serialize_to_json (doc, port_obj, port);
         }
     }
   return true;
@@ -542,8 +508,7 @@ static bool
 region_identifier_v1_serialize_to_json (
   yyjson_mut_doc *            doc,
   yyjson_mut_val *            id_obj,
-  const RegionIdentifier_v1 * id,
-  GError **                   error)
+  const RegionIdentifier_v1 * id)
 {
   yyjson_mut_obj_add_int (doc, id_obj, "type", id->type);
   yyjson_mut_obj_add_int (doc, id_obj, "linkGroup", id->link_group);
@@ -558,47 +523,40 @@ static bool
 arranger_object_v1_serialize_to_json (
   yyjson_mut_doc *          doc,
   yyjson_mut_val *          ao_obj,
-  const ArrangerObject_v1 * ao,
-  GError **                 error)
+  const ArrangerObject_v1 * ao)
 {
   yyjson_mut_obj_add_int (doc, ao_obj, "type", ao->type);
   yyjson_mut_obj_add_int (doc, ao_obj, "flags", ao->flags);
   yyjson_mut_obj_add_bool (doc, ao_obj, "muted", ao->muted);
   yyjson_mut_val * pos_obj = yyjson_mut_obj_add_obj (doc, ao_obj, "pos");
-  position_v1_serialize_to_json (doc, pos_obj, &ao->pos, error);
+  position_v1_serialize_to_json (doc, pos_obj, &ao->pos);
   yyjson_mut_val * end_pos_obj = yyjson_mut_obj_add_obj (doc, ao_obj, "endPos");
-  position_v1_serialize_to_json (doc, end_pos_obj, &ao->end_pos, error);
+  position_v1_serialize_to_json (doc, end_pos_obj, &ao->end_pos);
   yyjson_mut_val * clip_start_pos_obj =
     yyjson_mut_obj_add_obj (doc, ao_obj, "clipStartPos");
-  position_v1_serialize_to_json (
-    doc, clip_start_pos_obj, &ao->clip_start_pos, error);
+  position_v1_serialize_to_json (doc, clip_start_pos_obj, &ao->clip_start_pos);
   yyjson_mut_val * loop_start_pos_obj =
     yyjson_mut_obj_add_obj (doc, ao_obj, "loopStartPos");
-  position_v1_serialize_to_json (
-    doc, loop_start_pos_obj, &ao->loop_start_pos, error);
+  position_v1_serialize_to_json (doc, loop_start_pos_obj, &ao->loop_start_pos);
   yyjson_mut_val * loop_end_pos_obj =
     yyjson_mut_obj_add_obj (doc, ao_obj, "loopEndPos");
-  position_v1_serialize_to_json (
-    doc, loop_end_pos_obj, &ao->loop_end_pos, error);
+  position_v1_serialize_to_json (doc, loop_end_pos_obj, &ao->loop_end_pos);
   yyjson_mut_val * fade_in_pos_obj =
     yyjson_mut_obj_add_obj (doc, ao_obj, "fadeInPos");
-  position_v1_serialize_to_json (doc, fade_in_pos_obj, &ao->fade_in_pos, error);
+  position_v1_serialize_to_json (doc, fade_in_pos_obj, &ao->fade_in_pos);
   yyjson_mut_val * fade_out_pos_obj =
     yyjson_mut_obj_add_obj (doc, ao_obj, "fadeOutPos");
-  position_v1_serialize_to_json (
-    doc, fade_out_pos_obj, &ao->fade_out_pos, error);
+  position_v1_serialize_to_json (doc, fade_out_pos_obj, &ao->fade_out_pos);
   yyjson_mut_val * fade_in_opts_obj =
     yyjson_mut_obj_add_obj (doc, ao_obj, "fadeInOpts");
-  curve_options_v1_serialize_to_json (
-    doc, fade_in_opts_obj, &ao->fade_in_opts, error);
+  curve_options_v1_serialize_to_json (doc, fade_in_opts_obj, &ao->fade_in_opts);
   yyjson_mut_val * fade_out_opts_obj =
     yyjson_mut_obj_add_obj (doc, ao_obj, "fadeOutOpts");
   curve_options_v1_serialize_to_json (
-    doc, fade_out_opts_obj, &ao->fade_out_opts, error);
+    doc, fade_out_opts_obj, &ao->fade_out_opts);
   yyjson_mut_val * region_id_obj =
     yyjson_mut_obj_add_obj (doc, ao_obj, "regionId");
-  region_identifier_v1_serialize_to_json (
-    doc, region_id_obj, &ao->region_id, error);
+  region_identifier_v1_serialize_to_json (doc, region_id_obj, &ao->region_id);
   return true;
 }
 
@@ -606,11 +564,10 @@ static bool
 velocity_v1_serialize_to_json (
   yyjson_mut_doc *    doc,
   yyjson_mut_val *    vel_obj,
-  const Velocity_v1 * vel,
-  GError **           error)
+  const Velocity_v1 * vel)
 {
   yyjson_mut_val * base_obj = yyjson_mut_obj_add_obj (doc, vel_obj, "base");
-  arranger_object_v1_serialize_to_json (doc, base_obj, &vel->base, error);
+  arranger_object_v1_serialize_to_json (doc, base_obj, &vel->base);
   yyjson_mut_obj_add_uint (doc, vel_obj, "velocity", vel->vel);
   return true;
 }
@@ -619,13 +576,12 @@ static bool
 midi_note_v1_serialize_to_json (
   yyjson_mut_doc *    doc,
   yyjson_mut_val *    mn_obj,
-  const MidiNote_v1 * mn,
-  GError **           error)
+  const MidiNote_v1 * mn)
 {
   yyjson_mut_val * base_obj = yyjson_mut_obj_add_obj (doc, mn_obj, "base");
-  arranger_object_v1_serialize_to_json (doc, base_obj, &mn->base, error);
+  arranger_object_v1_serialize_to_json (doc, base_obj, &mn->base);
   yyjson_mut_val * vel_obj = yyjson_mut_obj_add_obj (doc, mn_obj, "velocity");
-  velocity_v1_serialize_to_json (doc, vel_obj, mn->vel, error);
+  velocity_v1_serialize_to_json (doc, vel_obj, mn->vel);
   yyjson_mut_obj_add_uint (doc, mn_obj, "value", mn->val);
   yyjson_mut_obj_add_bool (doc, mn_obj, "muted", mn->muted);
   yyjson_mut_obj_add_int (doc, mn_obj, "pos", mn->pos);
@@ -636,18 +592,16 @@ static bool
 automation_point_v1_serialize_to_json (
   yyjson_mut_doc *           doc,
   yyjson_mut_val *           ap_obj,
-  const AutomationPoint_v1 * ap,
-  GError **                  error)
+  const AutomationPoint_v1 * ap)
 {
   yyjson_mut_val * base_obj = yyjson_mut_obj_add_obj (doc, ap_obj, "base");
-  arranger_object_v1_serialize_to_json (doc, base_obj, &ap->base, error);
+  arranger_object_v1_serialize_to_json (doc, base_obj, &ap->base);
   yyjson_mut_obj_add_real (doc, ap_obj, "fValue", ap->fvalue);
   yyjson_mut_obj_add_real (doc, ap_obj, "normalizedValue", ap->normalized_val);
   yyjson_mut_obj_add_int (doc, ap_obj, "index", ap->index);
   yyjson_mut_val * curve_opts_obj =
     yyjson_mut_obj_add_obj (doc, ap_obj, "curveOpts");
-  curve_options_v1_serialize_to_json (
-    doc, curve_opts_obj, &ap->curve_opts, error);
+  curve_options_v1_serialize_to_json (doc, curve_opts_obj, &ap->curve_opts);
   return true;
 }
 
@@ -655,11 +609,10 @@ static bool
 chord_object_v1_serialize_to_json (
   yyjson_mut_doc *       doc,
   yyjson_mut_val *       co_obj,
-  const ChordObject_v1 * co,
-  GError **              error)
+  const ChordObject_v1 * co)
 {
   yyjson_mut_val * base_obj = yyjson_mut_obj_add_obj (doc, co_obj, "base");
-  arranger_object_v1_serialize_to_json (doc, base_obj, &co->base, error);
+  arranger_object_v1_serialize_to_json (doc, base_obj, &co->base);
   yyjson_mut_obj_add_int (doc, co_obj, "index", co->index);
   return true;
 }
@@ -668,19 +621,18 @@ static bool
 region_v1_serialize_to_json (
   yyjson_mut_doc *   doc,
   yyjson_mut_val *   r_obj,
-  const ZRegion_v1 * r,
-  GError **          error)
+  const ZRegion_v1 * r)
 {
   yyjson_mut_val * base_obj = yyjson_mut_obj_add_obj (doc, r_obj, "base");
-  arranger_object_v1_serialize_to_json (doc, base_obj, &r->base, error);
+  arranger_object_v1_serialize_to_json (doc, base_obj, &r->base);
   yyjson_mut_val * id_obj = yyjson_mut_obj_add_obj (doc, r_obj, "id");
-  region_identifier_v1_serialize_to_json (doc, id_obj, &r->id, error);
+  region_identifier_v1_serialize_to_json (doc, id_obj, &r->id);
   yyjson_mut_obj_add_str (doc, r_obj, "name", r->name);
   yyjson_mut_obj_add_int (doc, r_obj, "poolId", r->pool_id);
   yyjson_mut_obj_add_real (doc, r_obj, "gain", r->gain);
   yyjson_mut_val * color_obj = yyjson_mut_obj_add_obj (doc, r_obj, "color");
   GdkRGBA          color = { 0.0, 0.0, 0.0, 0.0 };
-  gdk_rgba_serialize_to_json (doc, color_obj, &color, error);
+  gdk_rgba_serialize_to_json (doc, color_obj, &color);
   yyjson_mut_obj_add_false (doc, r_obj, "useColor");
   switch (r->id.type)
     {
@@ -695,7 +647,7 @@ region_v1_serialize_to_json (
             MidiNote_v1 *    mn = r->midi_notes[i];
             yyjson_mut_val * mn_obj =
               yyjson_mut_arr_add_obj (doc, midi_notes_arr);
-            midi_note_v1_serialize_to_json (doc, mn_obj, mn, error);
+            midi_note_v1_serialize_to_json (doc, mn_obj, mn);
           }
       }
       break;
@@ -708,7 +660,7 @@ region_v1_serialize_to_json (
             ChordObject_v1 * co = r->chord_objects[i];
             yyjson_mut_val * co_obj =
               yyjson_mut_arr_add_obj (doc, chord_objects_arr);
-            chord_object_v1_serialize_to_json (doc, co_obj, co, error);
+            chord_object_v1_serialize_to_json (doc, co_obj, co);
           }
       }
       break;
@@ -721,7 +673,7 @@ region_v1_serialize_to_json (
             AutomationPoint_v1 * ap = r->aps[i];
             yyjson_mut_val *     ap_obj =
               yyjson_mut_arr_add_obj (doc, automation_points_arr);
-            automation_point_v1_serialize_to_json (doc, ap_obj, ap, error);
+            automation_point_v1_serialize_to_json (doc, ap_obj, ap);
           }
       }
       break;
@@ -733,8 +685,7 @@ static bool
 musical_scale_v2_serialize_to_json (
   yyjson_mut_doc *        doc,
   yyjson_mut_val *        scale_obj,
-  const MusicalScale_v2 * scale,
-  GError **               error)
+  const MusicalScale_v2 * scale)
 {
   yyjson_mut_obj_add_int (doc, scale_obj, "type", scale->type);
   yyjson_mut_obj_add_int (doc, scale_obj, "rootKey", scale->root_key);
@@ -745,14 +696,13 @@ static bool
 scale_object_v1_serialize_to_json (
   yyjson_mut_doc *       doc,
   yyjson_mut_val *       so_obj,
-  const ScaleObject_v1 * so,
-  GError **              error)
+  const ScaleObject_v1 * so)
 {
   yyjson_mut_val * base_obj = yyjson_mut_obj_add_obj (doc, so_obj, "base");
-  arranger_object_v1_serialize_to_json (doc, base_obj, &so->base, error);
+  arranger_object_v1_serialize_to_json (doc, base_obj, &so->base);
   yyjson_mut_obj_add_int (doc, so_obj, "index", so->index);
   yyjson_mut_val * scale_obj = yyjson_mut_obj_add_obj (doc, so_obj, "scale");
-  musical_scale_v2_serialize_to_json (doc, scale_obj, so->scale, error);
+  musical_scale_v2_serialize_to_json (doc, scale_obj, so->scale);
   return true;
 }
 
@@ -760,11 +710,10 @@ static bool
 marker_v1_serialize_to_json (
   yyjson_mut_doc *  doc,
   yyjson_mut_val *  m_obj,
-  const Marker_v1 * m,
-  GError **         error)
+  const Marker_v1 * m)
 {
   yyjson_mut_val * base_obj = yyjson_mut_obj_add_obj (doc, m_obj, "base");
-  arranger_object_v1_serialize_to_json (doc, base_obj, &m->base, error);
+  arranger_object_v1_serialize_to_json (doc, base_obj, &m->base);
   yyjson_mut_obj_add_str (doc, m_obj, "name", m->name);
   yyjson_mut_obj_add_uint (doc, m_obj, "trackNameHash", m->track_name_hash);
   yyjson_mut_obj_add_int (doc, m_obj, "index", m->index);
@@ -776,12 +725,11 @@ static bool
 automation_track_v1_serialize_to_json (
   yyjson_mut_doc *           doc,
   yyjson_mut_val *           at_obj,
-  const AutomationTrack_v1 * at,
-  GError **                  error)
+  const AutomationTrack_v1 * at)
 {
   yyjson_mut_obj_add_int (doc, at_obj, "index", at->index);
   yyjson_mut_val * port_id_obj = yyjson_mut_obj_add_obj (doc, at_obj, "portId");
-  port_identifier_v1_serialize_to_json (doc, port_id_obj, &at->port_id, error);
+  port_identifier_v1_serialize_to_json (doc, port_id_obj, &at->port_id);
   if (at->regions)
     {
       yyjson_mut_val * regions_arr =
@@ -790,7 +738,7 @@ automation_track_v1_serialize_to_json (
         {
           ZRegion_v1 *     r = at->regions[i];
           yyjson_mut_val * r_obj = yyjson_mut_arr_add_obj (doc, regions_arr);
-          region_v1_serialize_to_json (doc, r_obj, r, error);
+          region_v1_serialize_to_json (doc, r_obj, r);
         }
     }
   yyjson_mut_obj_add_bool (doc, at_obj, "created", at->created);
@@ -805,40 +753,37 @@ static bool
 channel_send_v1_serialize_to_json (
   yyjson_mut_doc *       doc,
   yyjson_mut_val *       cs_obj,
-  const ChannelSend_v1 * cs,
-  GError **              error)
+  const ChannelSend_v1 * cs)
 {
   yyjson_mut_obj_add_int (doc, cs_obj, "slot", cs->slot);
   yyjson_mut_val * amount_obj = yyjson_mut_obj_add_obj (doc, cs_obj, "amount");
-  port_v1_serialize_to_json (doc, amount_obj, cs->amount, error);
+  port_v1_serialize_to_json (doc, amount_obj, cs->amount);
   yyjson_mut_val * enabled_obj = yyjson_mut_obj_add_obj (doc, cs_obj, "enabled");
-  port_v1_serialize_to_json (doc, enabled_obj, cs->enabled, error);
+  port_v1_serialize_to_json (doc, enabled_obj, cs->enabled);
   yyjson_mut_obj_add_bool (doc, cs_obj, "isSidechain", cs->is_sidechain);
   if (cs->midi_in)
     {
       yyjson_mut_val * midi_in_obj =
         yyjson_mut_obj_add_obj (doc, cs_obj, "midiIn");
-      port_v1_serialize_to_json (doc, midi_in_obj, cs->midi_in, error);
+      port_v1_serialize_to_json (doc, midi_in_obj, cs->midi_in);
     }
   if (cs->stereo_in)
     {
       yyjson_mut_val * stereo_in_obj =
         yyjson_mut_obj_add_obj (doc, cs_obj, "stereoIn");
-      stereo_ports_v1_serialize_to_json (
-        doc, stereo_in_obj, cs->stereo_in, error);
+      stereo_ports_v1_serialize_to_json (doc, stereo_in_obj, cs->stereo_in);
     }
   if (cs->midi_out)
     {
       yyjson_mut_val * midi_out_obj =
         yyjson_mut_obj_add_obj (doc, cs_obj, "midiOut");
-      port_v1_serialize_to_json (doc, midi_out_obj, cs->midi_out, error);
+      port_v1_serialize_to_json (doc, midi_out_obj, cs->midi_out);
     }
   if (cs->stereo_out)
     {
       yyjson_mut_val * stereo_out_obj =
         yyjson_mut_obj_add_obj (doc, cs_obj, "stereoOut");
-      stereo_ports_v1_serialize_to_json (
-        doc, stereo_out_obj, cs->stereo_out, error);
+      stereo_ports_v1_serialize_to_json (doc, stereo_out_obj, cs->stereo_out);
     }
   yyjson_mut_obj_add_uint (doc, cs_obj, "trackNameHash", cs->track_name_hash);
   return true;
@@ -848,54 +793,51 @@ static bool
 fader_v2_serialize_to_json (
   yyjson_mut_doc * doc,
   yyjson_mut_val * f_obj,
-  const Fader_v2 * f,
-  GError **        error)
+  const Fader_v2 * f)
 {
   yyjson_mut_obj_add_int (doc, f_obj, "type", f->type);
   yyjson_mut_obj_add_real (doc, f_obj, "volume", f->volume);
   yyjson_mut_val * amp_obj = yyjson_mut_obj_add_obj (doc, f_obj, "amp");
-  port_v1_serialize_to_json (doc, amp_obj, f->amp, error);
+  port_v1_serialize_to_json (doc, amp_obj, f->amp);
   yyjson_mut_obj_add_real (doc, f_obj, "phase", f->phase);
   yyjson_mut_val * balance_obj = yyjson_mut_obj_add_obj (doc, f_obj, "balance");
-  port_v1_serialize_to_json (doc, balance_obj, f->balance, error);
+  port_v1_serialize_to_json (doc, balance_obj, f->balance);
   yyjson_mut_val * mute_obj = yyjson_mut_obj_add_obj (doc, f_obj, "mute");
-  port_v1_serialize_to_json (doc, mute_obj, f->mute, error);
+  port_v1_serialize_to_json (doc, mute_obj, f->mute);
   yyjson_mut_val * solo_obj = yyjson_mut_obj_add_obj (doc, f_obj, "solo");
-  port_v1_serialize_to_json (doc, solo_obj, f->solo, error);
+  port_v1_serialize_to_json (doc, solo_obj, f->solo);
   yyjson_mut_val * listen_obj = yyjson_mut_obj_add_obj (doc, f_obj, "listen");
-  port_v1_serialize_to_json (doc, listen_obj, f->listen, error);
+  port_v1_serialize_to_json (doc, listen_obj, f->listen);
   yyjson_mut_val * mono_compat_enabled_obj =
     yyjson_mut_obj_add_obj (doc, f_obj, "monoCompatEnabled");
   port_v1_serialize_to_json (
-    doc, mono_compat_enabled_obj, f->mono_compat_enabled, error);
+    doc, mono_compat_enabled_obj, f->mono_compat_enabled);
   yyjson_mut_val * swap_phase_obj =
     yyjson_mut_obj_add_obj (doc, f_obj, "swapPhase");
-  port_v1_serialize_to_json (doc, swap_phase_obj, f->swap_phase, error);
+  port_v1_serialize_to_json (doc, swap_phase_obj, f->swap_phase);
   if (f->midi_in)
     {
       yyjson_mut_val * midi_in_obj =
         yyjson_mut_obj_add_obj (doc, f_obj, "midiIn");
-      port_v1_serialize_to_json (doc, midi_in_obj, f->midi_in, error);
+      port_v1_serialize_to_json (doc, midi_in_obj, f->midi_in);
     }
   if (f->midi_out)
     {
       yyjson_mut_val * midi_out_obj =
         yyjson_mut_obj_add_obj (doc, f_obj, "midiOut");
-      port_v1_serialize_to_json (doc, midi_out_obj, f->midi_out, error);
+      port_v1_serialize_to_json (doc, midi_out_obj, f->midi_out);
     }
   if (f->stereo_in)
     {
       yyjson_mut_val * stereo_in_obj =
         yyjson_mut_obj_add_obj (doc, f_obj, "stereoIn");
-      stereo_ports_v1_serialize_to_json (
-        doc, stereo_in_obj, f->stereo_in, error);
+      stereo_ports_v1_serialize_to_json (doc, stereo_in_obj, f->stereo_in);
     }
   if (f->stereo_out)
     {
       yyjson_mut_val * stereo_out_obj =
         yyjson_mut_obj_add_obj (doc, f_obj, "stereoOut");
-      stereo_ports_v1_serialize_to_json (
-        doc, stereo_out_obj, f->stereo_out, error);
+      stereo_ports_v1_serialize_to_json (doc, stereo_out_obj, f->stereo_out);
     }
   yyjson_mut_obj_add_int (doc, f_obj, "midiMode", f->midi_mode);
   yyjson_mut_obj_add_bool (doc, f_obj, "passthrough", f->passthrough);
@@ -906,8 +848,7 @@ static bool
 channel_v2_serialize_to_json (
   yyjson_mut_doc *   doc,
   yyjson_mut_val *   ch_obj,
-  const Channel_v2 * ch,
-  GError **          error)
+  const Channel_v2 * ch)
 {
   yyjson_mut_val * midi_fx_arr = yyjson_mut_obj_add_arr (doc, ch_obj, "midiFx");
   for (auto pl : ch->midi_fx)
@@ -915,7 +856,7 @@ channel_v2_serialize_to_json (
       if (pl)
         {
           yyjson_mut_val * pl_obj = yyjson_mut_arr_add_obj (doc, midi_fx_arr);
-          plugin_v1_serialize_to_json (doc, pl_obj, pl, error);
+          plugin_v1_serialize_to_json (doc, pl_obj, pl);
         }
       else
         {
@@ -928,7 +869,7 @@ channel_v2_serialize_to_json (
       if (pl)
         {
           yyjson_mut_val * pl_obj = yyjson_mut_arr_add_obj (doc, inserts_arr);
-          plugin_v1_serialize_to_json (doc, pl_obj, pl, error);
+          plugin_v1_serialize_to_json (doc, pl_obj, pl);
         }
       else
         {
@@ -938,32 +879,32 @@ channel_v2_serialize_to_json (
   yyjson_mut_val * sends_arr = yyjson_mut_obj_add_arr (doc, ch_obj, "sends");
   for (auto cs : ch->sends)
     {
-      g_return_val_if_fail (cs, false);
+      z_return_val_if_fail (cs, false);
       yyjson_mut_val * cs_obj = yyjson_mut_arr_add_obj (doc, sends_arr);
-      channel_send_v1_serialize_to_json (doc, cs_obj, cs, error);
+      channel_send_v1_serialize_to_json (doc, cs_obj, cs);
     }
   if (ch->instrument)
     {
       yyjson_mut_val * pl_obj =
         yyjson_mut_obj_add_obj (doc, ch_obj, "instrument");
-      plugin_v1_serialize_to_json (doc, pl_obj, ch->instrument, error);
+      plugin_v1_serialize_to_json (doc, pl_obj, ch->instrument);
     }
   yyjson_mut_val * prefader_obj =
     yyjson_mut_obj_add_obj (doc, ch_obj, "prefader");
-  fader_v2_serialize_to_json (doc, prefader_obj, ch->prefader, error);
+  fader_v2_serialize_to_json (doc, prefader_obj, ch->prefader);
   yyjson_mut_val * fader_obj = yyjson_mut_obj_add_obj (doc, ch_obj, "fader");
-  fader_v2_serialize_to_json (doc, fader_obj, ch->fader, error);
+  fader_v2_serialize_to_json (doc, fader_obj, ch->fader);
   if (ch->midi_out)
     {
       yyjson_mut_val * port_obj =
         yyjson_mut_obj_add_obj (doc, ch_obj, "midiOut");
-      port_v1_serialize_to_json (doc, port_obj, ch->midi_out, error);
+      port_v1_serialize_to_json (doc, port_obj, ch->midi_out);
     }
   if (ch->stereo_out)
     {
       yyjson_mut_val * port_obj =
         yyjson_mut_obj_add_obj (doc, ch_obj, "stereoOut");
-      stereo_ports_v1_serialize_to_json (doc, port_obj, ch->stereo_out, error);
+      stereo_ports_v1_serialize_to_json (doc, port_obj, ch->stereo_out);
     }
   yyjson_mut_obj_add_bool (doc, ch_obj, "hasOutput", ch->has_output);
   yyjson_mut_obj_add_uint (doc, ch_obj, "outputNameHash", ch->output_name_hash);
@@ -977,7 +918,7 @@ channel_v2_serialize_to_json (
           ExtPort_v1 *     ep = ch->ext_midi_ins[i];
           yyjson_mut_val * ep_obj =
             yyjson_mut_arr_add_obj (doc, ext_midi_ins_arr);
-          ext_port_v1_serialize_to_json (doc, ep_obj, ep, error);
+          ext_port_v1_serialize_to_json (doc, ep_obj, ep);
         }
     }
   yyjson_mut_obj_add_bool (doc, ch_obj, "allMidiIns", ch->all_midi_ins);
@@ -1001,7 +942,7 @@ channel_v2_serialize_to_json (
           ExtPort_v1 *     ep = ch->ext_stereo_l_ins[i];
           yyjson_mut_val * ep_obj =
             yyjson_mut_arr_add_obj (doc, ext_stereo_l_ins_arr);
-          ext_port_v1_serialize_to_json (doc, ep_obj, ep, error);
+          ext_port_v1_serialize_to_json (doc, ep_obj, ep);
         }
     }
   yyjson_mut_obj_add_bool (doc, ch_obj, "allStereoLIns", ch->all_stereo_l_ins);
@@ -1014,7 +955,7 @@ channel_v2_serialize_to_json (
           ExtPort_v1 *     ep = ch->ext_stereo_r_ins[i];
           yyjson_mut_val * ep_obj =
             yyjson_mut_arr_add_obj (doc, ext_stereo_r_ins_arr);
-          ext_port_v1_serialize_to_json (doc, ep_obj, ep, error);
+          ext_port_v1_serialize_to_json (doc, ep_obj, ep);
         }
     }
   yyjson_mut_obj_add_bool (doc, ch_obj, "allStereoRIns", ch->all_stereo_r_ins);
@@ -1026,8 +967,7 @@ static bool
 track_v2_serialize_to_json (
   yyjson_mut_doc * doc,
   yyjson_mut_val * track_obj,
-  const Track_v2 * track,
-  GError **        error)
+  const Track_v2 * track)
 {
   yyjson_mut_obj_add_str (doc, track_obj, "name", track->name);
   yyjson_mut_obj_add_str (doc, track_obj, "iconName", track->icon_name);
@@ -1044,11 +984,11 @@ track_v2_serialize_to_json (
     {
       yyjson_mut_val * recording_obj =
         yyjson_mut_obj_add_obj (doc, track_obj, "recording");
-      port_v1_serialize_to_json (doc, recording_obj, track->recording, error);
+      port_v1_serialize_to_json (doc, recording_obj, track->recording);
     }
   yyjson_mut_obj_add_bool (doc, track_obj, "enabled", track->enabled);
   yyjson_mut_val * color_obj = yyjson_mut_obj_add_obj (doc, track_obj, "color");
-  gdk_rgba_serialize_to_json (doc, color_obj, &track->color, error);
+  gdk_rgba_serialize_to_json (doc, color_obj, &track->color);
   yyjson_mut_val * lanes_arr = yyjson_mut_obj_add_arr (doc, track_obj, "lanes");
   for (int j = 0; j < track->num_lanes; j++)
     {
@@ -1066,7 +1006,7 @@ track_v2_serialize_to_json (
           ZRegion_v1 *     region = lane->regions[k];
           yyjson_mut_val * region_obj =
             yyjson_mut_arr_add_obj (doc, regions_arr);
-          region_v1_serialize_to_json (doc, region_obj, region, error);
+          region_v1_serialize_to_json (doc, region_obj, region);
         }
       yyjson_mut_obj_add_uint (doc, lane_obj, "midiCh", lane->midi_ch);
     }
@@ -1079,7 +1019,7 @@ track_v2_serialize_to_json (
           ZRegion_v1 *     r = track->chord_regions[j];
           yyjson_mut_val * r_obj =
             yyjson_mut_arr_add_obj (doc, chord_regions_arr);
-          region_v1_serialize_to_json (doc, r_obj, r, error);
+          region_v1_serialize_to_json (doc, r_obj, r);
         }
       yyjson_mut_val * scales_arr =
         yyjson_mut_obj_add_arr (doc, track_obj, "scaleObjects");
@@ -1087,7 +1027,7 @@ track_v2_serialize_to_json (
         {
           ScaleObject_v1 * so = track->scales[j];
           yyjson_mut_val * so_obj = yyjson_mut_arr_add_obj (doc, scales_arr);
-          scale_object_v1_serialize_to_json (doc, so_obj, so, error);
+          scale_object_v1_serialize_to_json (doc, so_obj, so);
         }
     }
   if (track->type == TRACK_TYPE_MARKER_v1)
@@ -1098,25 +1038,24 @@ track_v2_serialize_to_json (
         {
           Marker_v1 *      m = track->markers[j];
           yyjson_mut_val * m_obj = yyjson_mut_arr_add_obj (doc, markers_arr);
-          marker_v1_serialize_to_json (doc, m_obj, m, error);
+          marker_v1_serialize_to_json (doc, m_obj, m);
         }
     }
   if (track->channel)
     {
       yyjson_mut_val * ch_obj =
         yyjson_mut_obj_add_obj (doc, track_obj, "channel");
-      channel_v2_serialize_to_json (doc, ch_obj, track->channel, error);
+      channel_v2_serialize_to_json (doc, ch_obj, track->channel);
     }
   if (track->type == TRACK_TYPE_TEMPO_v1)
     {
       yyjson_mut_val * port_obj =
         yyjson_mut_obj_add_obj (doc, track_obj, "bpmPort");
-      port_v1_serialize_to_json (doc, port_obj, track->bpm_port, error);
+      port_v1_serialize_to_json (doc, port_obj, track->bpm_port);
       port_obj = yyjson_mut_obj_add_obj (doc, track_obj, "beatsPerBarPort");
-      port_v1_serialize_to_json (
-        doc, port_obj, track->beats_per_bar_port, error);
+      port_v1_serialize_to_json (doc, port_obj, track->beats_per_bar_port);
       port_obj = yyjson_mut_obj_add_obj (doc, track_obj, "beatUnitPort");
-      port_v1_serialize_to_json (doc, port_obj, track->beat_unit_port, error);
+      port_v1_serialize_to_json (doc, port_obj, track->beat_unit_port);
     }
   if (track->modulators)
     {
@@ -1126,7 +1065,7 @@ track_v2_serialize_to_json (
         {
           Plugin_v1 * pl = track->modulators[j];
           yyjson_mut_val * pl_obj = yyjson_mut_arr_add_obj (doc, modulators_arr);
-          plugin_v1_serialize_to_json (doc, pl_obj, pl, error);
+          plugin_v1_serialize_to_json (doc, pl_obj, pl);
         }
     }
   yyjson_mut_val * modulator_macros_arr =
@@ -1136,13 +1075,13 @@ track_v2_serialize_to_json (
       ModulatorMacroProcessor_v1 * mmp = track->modulator_macros[j];
       yyjson_mut_val *             mmp_obj =
         yyjson_mut_arr_add_obj (doc, modulator_macros_arr);
-      modulator_macro_processor_v1_serialize_to_json (doc, mmp_obj, mmp, error);
+      modulator_macro_processor_v1_serialize_to_json (doc, mmp_obj, mmp);
     }
   yyjson_mut_obj_add_int (
     doc, track_obj, "numVisibleModulatorMacros",
     track->num_visible_modulator_macros);
   yyjson_mut_val * tp_obj = yyjson_mut_obj_add_obj (doc, track_obj, "processor");
-  track_processor_v1_serialize_to_json (doc, tp_obj, track->processor, error);
+  track_processor_v1_serialize_to_json (doc, tp_obj, track->processor);
   yyjson_mut_val * atl_obj =
     yyjson_mut_obj_add_obj (doc, track_obj, "automationTracklist");
   yyjson_mut_val * ats_arr =
@@ -1151,7 +1090,7 @@ track_v2_serialize_to_json (
     {
       AutomationTrack_v1 * at = track->automation_tracklist.ats[j];
       yyjson_mut_val *     at_obj = yyjson_mut_arr_add_obj (doc, ats_arr);
-      automation_track_v1_serialize_to_json (doc, at_obj, at, error);
+      automation_track_v1_serialize_to_json (doc, at_obj, at);
     }
   yyjson_mut_obj_add_int (doc, track_obj, "inSignalType", track->in_signal_type);
   yyjson_mut_obj_add_int (
@@ -1178,8 +1117,7 @@ static bool
 editor_settings_v1_serialize_to_json (
   yyjson_mut_doc *          doc,
   yyjson_mut_val *          settings_obj,
-  const EditorSettings_v1 * settings,
-  GError **                 error)
+  const EditorSettings_v1 * settings)
 {
   yyjson_mut_obj_add_int (
     doc, settings_obj, "scrollStartX", settings->scroll_start_x);
@@ -1194,15 +1132,14 @@ static bool
 piano_roll_v1_serialize_to_json (
   yyjson_mut_doc *     doc,
   yyjson_mut_val *     pr_obj,
-  const PianoRoll_v1 * pr,
-  GError **            error)
+  const PianoRoll_v1 * pr)
 {
   yyjson_mut_obj_add_real (doc, pr_obj, "notesZoom", pr->notes_zoom);
   yyjson_mut_obj_add_int (doc, pr_obj, "midiModifier", pr->midi_modifier);
   yyjson_mut_val * editor_settings_obj =
     yyjson_mut_obj_add_obj (doc, pr_obj, "editorSettings");
   editor_settings_v1_serialize_to_json (
-    doc, editor_settings_obj, &pr->editor_settings, error);
+    doc, editor_settings_obj, &pr->editor_settings);
   return true;
 }
 
@@ -1210,13 +1147,12 @@ static bool
 automation_editor_v1_serialize_to_json (
   yyjson_mut_doc *            doc,
   yyjson_mut_val *            ae_obj,
-  const AutomationEditor_v1 * ae,
-  GError **                   error)
+  const AutomationEditor_v1 * ae)
 {
   yyjson_mut_val * editor_settings_obj =
     yyjson_mut_obj_add_obj (doc, ae_obj, "editorSettings");
   editor_settings_v1_serialize_to_json (
-    doc, editor_settings_obj, &ae->editor_settings, error);
+    doc, editor_settings_obj, &ae->editor_settings);
   return true;
 }
 
@@ -1224,20 +1160,19 @@ static bool
 chord_editor_v1_serialize_to_json (
   yyjson_mut_doc *       doc,
   yyjson_mut_val *       ce_obj,
-  const ChordEditor_v1 * ce,
-  GError **              error)
+  const ChordEditor_v1 * ce)
 {
   yyjson_mut_val * chords_arr = yyjson_mut_obj_add_arr (doc, ce_obj, "chords");
   for (int i = 0; i < ce->num_chords; i++)
     {
       const ChordDescriptor_v2 * chord = ce->chords[i];
       yyjson_mut_val * chord_obj = yyjson_mut_arr_add_obj (doc, chords_arr);
-      chord_descriptor_v2_serialize_to_json (doc, chord_obj, chord, error);
+      chord_descriptor_v2_serialize_to_json (doc, chord_obj, chord);
     }
   yyjson_mut_val * editor_settings_obj =
     yyjson_mut_obj_add_obj (doc, ce_obj, "editorSettings");
   editor_settings_v1_serialize_to_json (
-    doc, editor_settings_obj, &ce->editor_settings, error);
+    doc, editor_settings_obj, &ce->editor_settings);
   return true;
 }
 
@@ -1245,13 +1180,12 @@ static bool
 audio_clip_editor_v1_serialize_to_json (
   yyjson_mut_doc *           doc,
   yyjson_mut_val *           editor_obj,
-  const AudioClipEditor_v1 * editor,
-  GError **                  error)
+  const AudioClipEditor_v1 * editor)
 {
   yyjson_mut_val * editor_settings_obj =
     yyjson_mut_obj_add_obj (doc, editor_obj, "editorSettings");
   editor_settings_v1_serialize_to_json (
-    doc, editor_settings_obj, &editor->editor_settings, error);
+    doc, editor_settings_obj, &editor->editor_settings);
   return true;
 }
 
@@ -1259,29 +1193,26 @@ static bool
 clip_editor_v1_serialize_to_json (
   yyjson_mut_doc *      doc,
   yyjson_mut_val *      ce_obj,
-  const ClipEditor_v1 * ce,
-  GError **             error)
+  const ClipEditor_v1 * ce)
 {
   yyjson_mut_val * region_id_obj =
     yyjson_mut_obj_add_obj (doc, ce_obj, "regionId");
-  region_identifier_v1_serialize_to_json (
-    doc, region_id_obj, &ce->region_id, error);
+  region_identifier_v1_serialize_to_json (doc, region_id_obj, &ce->region_id);
   yyjson_mut_obj_add_bool (doc, ce_obj, "hasRegion", ce->has_region);
   yyjson_mut_val * piano_roll_obj =
     yyjson_mut_obj_add_obj (doc, ce_obj, "pianoRoll");
-  piano_roll_v1_serialize_to_json (doc, piano_roll_obj, ce->piano_roll, error);
+  piano_roll_v1_serialize_to_json (doc, piano_roll_obj, ce->piano_roll);
   yyjson_mut_val * automation_editor_obj =
     yyjson_mut_obj_add_obj (doc, ce_obj, "automationEditor");
   automation_editor_v1_serialize_to_json (
-    doc, automation_editor_obj, ce->automation_editor, error);
+    doc, automation_editor_obj, ce->automation_editor);
   yyjson_mut_val * chord_editor_obj =
     yyjson_mut_obj_add_obj (doc, ce_obj, "chordEditor");
-  chord_editor_v1_serialize_to_json (
-    doc, chord_editor_obj, ce->chord_editor, error);
+  chord_editor_v1_serialize_to_json (doc, chord_editor_obj, ce->chord_editor);
   yyjson_mut_val * audio_clip_editor_obj =
     yyjson_mut_obj_add_obj (doc, ce_obj, "audioClipEditor");
   audio_clip_editor_v1_serialize_to_json (
-    doc, audio_clip_editor_obj, ce->audio_clip_editor, error);
+    doc, audio_clip_editor_obj, ce->audio_clip_editor);
   return true;
 }
 
@@ -1289,13 +1220,12 @@ static bool
 timeline_v1_serialize_to_json (
   yyjson_mut_doc *    doc,
   yyjson_mut_val *    t_obj,
-  const Timeline_v1 * t,
-  GError **           error)
+  const Timeline_v1 * t)
 {
   yyjson_mut_val * editor_settings_obj =
     yyjson_mut_obj_add_obj (doc, t_obj, "editorSettings");
   editor_settings_v1_serialize_to_json (
-    doc, editor_settings_obj, &t->editor_settings, error);
+    doc, editor_settings_obj, &t->editor_settings);
   return true;
 }
 
@@ -1303,8 +1233,7 @@ static bool
 snap_grid_v1_serialize_to_json (
   yyjson_mut_doc *    doc,
   yyjson_mut_val *    sg_obj,
-  const SnapGrid_v1 * sg,
-  GError **           error)
+  const SnapGrid_v1 * sg)
 {
   yyjson_mut_obj_add_int (doc, sg_obj, "type", sg->type);
   yyjson_mut_obj_add_int (doc, sg_obj, "snapNoteLength", sg->snap_note_length);
@@ -1326,8 +1255,7 @@ static bool
 quantize_options_v1_serialize_to_json (
   yyjson_mut_doc *           doc,
   yyjson_mut_val *           qo_obj,
-  const QuantizeOptions_v1 * qo,
-  GError **                  error)
+  const QuantizeOptions_v1 * qo)
 {
   yyjson_mut_obj_add_int (doc, qo_obj, "noteLength", qo->note_length);
   yyjson_mut_obj_add_int (doc, qo_obj, "noteType", qo->note_type);
@@ -1343,8 +1271,7 @@ static bool
 tracklist_selections_v2_serialize_to_json (
   yyjson_mut_doc *               doc,
   yyjson_mut_val *               sel_obj,
-  const TracklistSelections_v2 * sel,
-  GError **                      error)
+  const TracklistSelections_v2 * sel)
 {
   yyjson_mut_obj_add_bool (doc, sel_obj, "isProject", sel->is_project);
   yyjson_mut_val * tracks_arr = yyjson_mut_obj_add_arr (doc, sel_obj, "tracks");
@@ -1352,7 +1279,7 @@ tracklist_selections_v2_serialize_to_json (
     {
       Track_v2 *       track = sel->tracks[i];
       yyjson_mut_val * track_obj = yyjson_mut_arr_add_obj (doc, tracks_arr);
-      track_v2_serialize_to_json (doc, track_obj, track, error);
+      track_v2_serialize_to_json (doc, track_obj, track);
     }
   return true;
 }
@@ -1361,61 +1288,59 @@ static bool
 transport_v1_serialize_to_json (
   yyjson_mut_doc *     doc,
   yyjson_mut_val *     transport_obj,
-  const Transport_v1 * transport,
-  GError **            error)
+  const Transport_v1 * transport)
 {
   yyjson_mut_obj_add_int (
     doc, transport_obj, "totalBars", transport->total_bars);
   yyjson_mut_val * playhead_pos_obj =
     yyjson_mut_obj_add_obj (doc, transport_obj, "playheadPos");
   position_v1_serialize_to_json (
-    doc, playhead_pos_obj, &transport->playhead_pos, error);
+    doc, playhead_pos_obj, &transport->playhead_pos);
   yyjson_mut_val * cue_pos_obj =
     yyjson_mut_obj_add_obj (doc, transport_obj, "cuePos");
-  position_v1_serialize_to_json (doc, cue_pos_obj, &transport->cue_pos, error);
+  position_v1_serialize_to_json (doc, cue_pos_obj, &transport->cue_pos);
   yyjson_mut_val * loop_start_pos_obj =
     yyjson_mut_obj_add_obj (doc, transport_obj, "loopStartPos");
   position_v1_serialize_to_json (
-    doc, loop_start_pos_obj, &transport->loop_start_pos, error);
+    doc, loop_start_pos_obj, &transport->loop_start_pos);
   yyjson_mut_val * loop_end_pos_obj =
     yyjson_mut_obj_add_obj (doc, transport_obj, "loopEndPos");
   position_v1_serialize_to_json (
-    doc, loop_end_pos_obj, &transport->loop_end_pos, error);
+    doc, loop_end_pos_obj, &transport->loop_end_pos);
   yyjson_mut_val * punch_in_pos_obj =
     yyjson_mut_obj_add_obj (doc, transport_obj, "punchInPos");
   position_v1_serialize_to_json (
-    doc, punch_in_pos_obj, &transport->punch_in_pos, error);
+    doc, punch_in_pos_obj, &transport->punch_in_pos);
   yyjson_mut_val * punch_out_pos_obj =
     yyjson_mut_obj_add_obj (doc, transport_obj, "punchOutPos");
   position_v1_serialize_to_json (
-    doc, punch_out_pos_obj, &transport->punch_out_pos, error);
+    doc, punch_out_pos_obj, &transport->punch_out_pos);
   yyjson_mut_val * range_1_obj =
     yyjson_mut_obj_add_obj (doc, transport_obj, "range1");
-  position_v1_serialize_to_json (doc, range_1_obj, &transport->range_1, error);
+  position_v1_serialize_to_json (doc, range_1_obj, &transport->range_1);
   yyjson_mut_val * range_2_obj =
     yyjson_mut_obj_add_obj (doc, transport_obj, "range2");
-  position_v1_serialize_to_json (doc, range_2_obj, &transport->range_2, error);
+  position_v1_serialize_to_json (doc, range_2_obj, &transport->range_2);
   yyjson_mut_obj_add_bool (doc, transport_obj, "hasRange", transport->has_range);
   yyjson_mut_obj_add_uint (doc, transport_obj, "position", transport->position);
   yyjson_mut_val * roll_obj =
     yyjson_mut_obj_add_obj (doc, transport_obj, "roll");
-  port_v1_serialize_to_json (doc, roll_obj, transport->roll, error);
+  port_v1_serialize_to_json (doc, roll_obj, transport->roll);
   yyjson_mut_val * stop_obj =
     yyjson_mut_obj_add_obj (doc, transport_obj, "stop");
-  port_v1_serialize_to_json (doc, stop_obj, transport->stop, error);
+  port_v1_serialize_to_json (doc, stop_obj, transport->stop);
   yyjson_mut_val * backward_obj =
     yyjson_mut_obj_add_obj (doc, transport_obj, "backward");
-  port_v1_serialize_to_json (doc, backward_obj, transport->backward, error);
+  port_v1_serialize_to_json (doc, backward_obj, transport->backward);
   yyjson_mut_val * forward_obj =
     yyjson_mut_obj_add_obj (doc, transport_obj, "forward");
-  port_v1_serialize_to_json (doc, forward_obj, transport->forward, error);
+  port_v1_serialize_to_json (doc, forward_obj, transport->forward);
   yyjson_mut_val * loop_toggle_obj =
     yyjson_mut_obj_add_obj (doc, transport_obj, "loopToggle");
-  port_v1_serialize_to_json (
-    doc, loop_toggle_obj, transport->loop_toggle, error);
+  port_v1_serialize_to_json (doc, loop_toggle_obj, transport->loop_toggle);
   yyjson_mut_val * rec_toggle_obj =
     yyjson_mut_obj_add_obj (doc, transport_obj, "recToggle");
-  port_v1_serialize_to_json (doc, rec_toggle_obj, transport->rec_toggle, error);
+  port_v1_serialize_to_json (doc, rec_toggle_obj, transport->rec_toggle);
   return true;
 }
 
@@ -1423,8 +1348,7 @@ static bool
 audio_clip_v1_serialize_to_json (
   yyjson_mut_doc *     doc,
   yyjson_mut_val *     clip_obj,
-  const AudioClip_v1 * clip,
-  GError **            error)
+  const AudioClip_v1 * clip)
 {
   yyjson_mut_obj_add_str (doc, clip_obj, "name", clip->name);
   if (clip->file_hash)
@@ -1443,8 +1367,7 @@ static bool
 audio_pool_v1_serialize_to_json (
   yyjson_mut_doc *     doc,
   yyjson_mut_val *     pool_obj,
-  const AudioPool_v1 * pool,
-  GError **            error)
+  const AudioPool_v1 * pool)
 {
   yyjson_mut_val * clips_arr = yyjson_mut_obj_add_arr (doc, pool_obj, "clips");
   for (int i = 0; i < pool->num_clips; i++)
@@ -1453,7 +1376,7 @@ audio_pool_v1_serialize_to_json (
       if (clip)
         {
           yyjson_mut_val * clip_obj = yyjson_mut_arr_add_obj (doc, clips_arr);
-          audio_clip_v1_serialize_to_json (doc, clip_obj, clip, error);
+          audio_clip_v1_serialize_to_json (doc, clip_obj, clip);
         }
       else
         {
@@ -1467,12 +1390,11 @@ static bool
 control_room_v2_serialize_to_json (
   yyjson_mut_doc *       doc,
   yyjson_mut_val *       cr_obj,
-  const ControlRoom_v2 * cr,
-  GError **              error)
+  const ControlRoom_v2 * cr)
 {
   yyjson_mut_val * monitor_fader_obj =
     yyjson_mut_obj_add_obj (doc, cr_obj, "monitorFader");
-  fader_v2_serialize_to_json (doc, monitor_fader_obj, cr->monitor_fader, error);
+  fader_v2_serialize_to_json (doc, monitor_fader_obj, cr->monitor_fader);
   return true;
 }
 
@@ -1480,11 +1402,10 @@ static bool
 sample_processor_v2_serialize_to_json (
   yyjson_mut_doc *           doc,
   yyjson_mut_val *           sp_obj,
-  const SampleProcessor_v2 * sp,
-  GError **                  error)
+  const SampleProcessor_v2 * sp)
 {
   yyjson_mut_val * fader_obj = yyjson_mut_obj_add_obj (doc, sp_obj, "fader");
-  fader_v2_serialize_to_json (doc, fader_obj, sp->fader, error);
+  fader_v2_serialize_to_json (doc, fader_obj, sp->fader);
   return true;
 }
 
@@ -1492,8 +1413,7 @@ static bool
 hardware_processor_v1_serialize_to_json (
   yyjson_mut_doc *             doc,
   yyjson_mut_val *             hp_obj,
-  const HardwareProcessor_v1 * hp,
-  GError **                    error)
+  const HardwareProcessor_v1 * hp)
 {
   yyjson_mut_obj_add_bool (doc, hp_obj, "isInput", hp->is_input);
   if (hp->ext_audio_ports)
@@ -1505,7 +1425,7 @@ hardware_processor_v1_serialize_to_json (
           ExtPort_v1 *     port = hp->ext_audio_ports[i];
           yyjson_mut_val * port_obj =
             yyjson_mut_arr_add_obj (doc, ext_audio_ports_arr);
-          ext_port_v1_serialize_to_json (doc, port_obj, port, error);
+          ext_port_v1_serialize_to_json (doc, port_obj, port);
         }
     }
   if (hp->ext_midi_ports)
@@ -1517,7 +1437,7 @@ hardware_processor_v1_serialize_to_json (
           ExtPort_v1 *     port = hp->ext_midi_ports[i];
           yyjson_mut_val * port_obj =
             yyjson_mut_arr_add_obj (doc, ext_midi_ports_arr);
-          ext_port_v1_serialize_to_json (doc, port_obj, port, error);
+          ext_port_v1_serialize_to_json (doc, port_obj, port);
         }
     }
   if (hp->audio_ports)
@@ -1529,7 +1449,7 @@ hardware_processor_v1_serialize_to_json (
           Port_v1 *        port = hp->audio_ports[i];
           yyjson_mut_val * port_obj =
             yyjson_mut_arr_add_obj (doc, audio_ports_arr);
-          port_v1_serialize_to_json (doc, port_obj, port, error);
+          port_v1_serialize_to_json (doc, port_obj, port);
         }
     }
   if (hp->midi_ports)
@@ -1541,7 +1461,7 @@ hardware_processor_v1_serialize_to_json (
           Port_v1 *        port = hp->midi_ports[i];
           yyjson_mut_val * port_obj =
             yyjson_mut_arr_add_obj (doc, midi_ports_arr);
-          port_v1_serialize_to_json (doc, port_obj, port, error);
+          port_v1_serialize_to_json (doc, port_obj, port);
         }
     }
   return true;
@@ -1551,8 +1471,7 @@ static bool
 audio_engine_v2_serialize_to_json (
   yyjson_mut_doc *       doc,
   yyjson_mut_val *       engine_obj,
-  const AudioEngine_v2 * engine,
-  GError **              error)
+  const AudioEngine_v2 * engine)
 {
   yyjson_mut_obj_add_int (
     doc, engine_obj, "transportType", engine->transport_type);
@@ -1561,36 +1480,35 @@ audio_engine_v2_serialize_to_json (
     doc, engine_obj, "framesPerTick", engine->frames_per_tick);
   yyjson_mut_val * monitor_out_obj =
     yyjson_mut_obj_add_obj (doc, engine_obj, "monitorOut");
-  stereo_ports_v1_serialize_to_json (
-    doc, monitor_out_obj, engine->monitor_out, error);
+  stereo_ports_v1_serialize_to_json (doc, monitor_out_obj, engine->monitor_out);
   yyjson_mut_val * midi_editor_manual_press_obj =
     yyjson_mut_obj_add_obj (doc, engine_obj, "midiEditorManualPress");
   port_v1_serialize_to_json (
-    doc, midi_editor_manual_press_obj, engine->midi_editor_manual_press, error);
+    doc, midi_editor_manual_press_obj, engine->midi_editor_manual_press);
   yyjson_mut_val * midi_in_obj =
     yyjson_mut_obj_add_obj (doc, engine_obj, "midiIn");
-  port_v1_serialize_to_json (doc, midi_in_obj, engine->midi_in, error);
+  port_v1_serialize_to_json (doc, midi_in_obj, engine->midi_in);
   yyjson_mut_val * transport_obj =
     yyjson_mut_obj_add_obj (doc, engine_obj, "transport");
-  transport_v1_serialize_to_json (doc, transport_obj, engine->transport, error);
+  transport_v1_serialize_to_json (doc, transport_obj, engine->transport);
   yyjson_mut_val * pool_obj = yyjson_mut_obj_add_obj (doc, engine_obj, "pool");
-  audio_pool_v1_serialize_to_json (doc, pool_obj, engine->pool, error);
+  audio_pool_v1_serialize_to_json (doc, pool_obj, engine->pool);
   yyjson_mut_val * control_room_obj =
     yyjson_mut_obj_add_obj (doc, engine_obj, "controlRoom");
   control_room_v2_serialize_to_json (
-    doc, control_room_obj, engine->control_room, error);
+    doc, control_room_obj, engine->control_room);
   yyjson_mut_val * sample_processor_obj =
     yyjson_mut_obj_add_obj (doc, engine_obj, "sampleProcessor");
   sample_processor_v2_serialize_to_json (
-    doc, sample_processor_obj, engine->sample_processor, error);
+    doc, sample_processor_obj, engine->sample_processor);
   yyjson_mut_val * hw_in_processor_obj =
     yyjson_mut_obj_add_obj (doc, engine_obj, "hwInProcessor");
   hardware_processor_v1_serialize_to_json (
-    doc, hw_in_processor_obj, engine->hw_in_processor, error);
+    doc, hw_in_processor_obj, engine->hw_in_processor);
   yyjson_mut_val * hw_out_processor_obj =
     yyjson_mut_obj_add_obj (doc, engine_obj, "hwOutProcessor");
   hardware_processor_v1_serialize_to_json (
-    doc, hw_out_processor_obj, engine->hw_out_processor, error);
+    doc, hw_out_processor_obj, engine->hw_out_processor);
   return true;
 }
 
@@ -1598,8 +1516,7 @@ static bool
 region_link_group_manager_v1_serialize_to_json (
   yyjson_mut_doc *                  doc,
   yyjson_mut_val *                  mgr_obj,
-  const RegionLinkGroupManager_v1 * mgr,
-  GError **                         error)
+  const RegionLinkGroupManager_v1 * mgr)
 {
   if (mgr->groups)
     {
@@ -1615,7 +1532,7 @@ region_link_group_manager_v1_serialize_to_json (
             {
               RegionIdentifier_v1 * id = &group->ids[j];
               yyjson_mut_val * id_obj = yyjson_mut_arr_add_obj (doc, ids_arr);
-              region_identifier_v1_serialize_to_json (doc, id_obj, id, error);
+              region_identifier_v1_serialize_to_json (doc, id_obj, id);
             }
           yyjson_mut_obj_add_int (doc, group_obj, "groupIdx", group->group_idx);
         }
@@ -1627,8 +1544,7 @@ static bool
 midi_mappings_v1_serialize_to_json (
   yyjson_mut_doc *        doc,
   yyjson_mut_val *        mm_obj,
-  const MidiMappings_v1 * mm,
-  GError **               error)
+  const MidiMappings_v1 * mm)
 {
   if (mm->mappings)
     {
@@ -1645,31 +1561,27 @@ midi_mappings_v1_serialize_to_json (
               yyjson_mut_val * device_port_obj =
                 yyjson_mut_obj_add_obj (doc, m_obj, "devicePort");
               ext_port_v1_serialize_to_json (
-                doc, device_port_obj, m->device_port, error);
+                doc, device_port_obj, m->device_port);
             }
           yyjson_mut_val * dest_id_obj =
             yyjson_mut_obj_add_obj (doc, m_obj, "destId");
-          port_identifier_v1_serialize_to_json (
-            doc, dest_id_obj, &m->dest_id, error);
+          port_identifier_v1_serialize_to_json (doc, dest_id_obj, &m->dest_id);
           yyjson_mut_obj_add_bool (doc, m_obj, "enabled", m->enabled);
         }
     }
   return true;
 }
 
-char *
-project_v5_serialize_to_json_str (const Project_v5 * prj, GError ** error)
+CStringRAII
+project_v5_serialize_to_json_str (const Project_v5 * prj)
 {
-  g_return_val_if_fail (prj, NULL);
+  z_return_val_if_fail (prj, CStringRAII ({}));
 
   yyjson_mut_doc * doc = yyjson_mut_doc_new (NULL);
   yyjson_mut_val * root = yyjson_mut_obj (doc);
   if (!root)
     {
-      g_set_error_literal (
-        error, Z_SCHEMAS_PROJECT_ERROR, Z_SCHEMAS_PROJECT_ERROR_FAILED,
-        "Failed to create root obj");
-      return NULL;
+      throw ZrythmException ("Failed to create root obj");
     }
   yyjson_mut_doc_set_root (doc, root);
 
@@ -1693,50 +1605,48 @@ project_v5_serialize_to_json_str (const Project_v5 * prj, GError ** error)
     {
       Track_v2 *       track = prj->tracklist->tracks[i];
       yyjson_mut_val * track_obj = yyjson_mut_arr_add_obj (doc, tracks_arr);
-      track_v2_serialize_to_json (doc, track_obj, track, error);
+      track_v2_serialize_to_json (doc, track_obj, track);
     }
   yyjson_mut_val * clip_editor_obj =
     yyjson_mut_obj_add_obj (doc, root, "clipEditor");
-  clip_editor_v1_serialize_to_json (
-    doc, clip_editor_obj, prj->clip_editor, error);
+  clip_editor_v1_serialize_to_json (doc, clip_editor_obj, prj->clip_editor);
   yyjson_mut_val * timeline_obj = yyjson_mut_obj_add_obj (doc, root, "timeline");
-  timeline_v1_serialize_to_json (doc, timeline_obj, prj->timeline, error);
+  timeline_v1_serialize_to_json (doc, timeline_obj, prj->timeline);
   yyjson_mut_val * snap_grid_tl_obj =
     yyjson_mut_obj_add_obj (doc, root, "snapGridTimeline");
   snap_grid_v1_serialize_to_json (
-    doc, snap_grid_tl_obj, prj->snap_grid_timeline, error);
+    doc, snap_grid_tl_obj, prj->snap_grid_timeline);
   yyjson_mut_val * snap_grid_editor_obj =
     yyjson_mut_obj_add_obj (doc, root, "snapGridEditor");
   snap_grid_v1_serialize_to_json (
-    doc, snap_grid_editor_obj, prj->snap_grid_editor, error);
+    doc, snap_grid_editor_obj, prj->snap_grid_editor);
   yyjson_mut_val * quantize_options_tl_obj =
     yyjson_mut_obj_add_obj (doc, root, "quantizeOptsTimeline");
   quantize_options_v1_serialize_to_json (
-    doc, quantize_options_tl_obj, prj->quantize_opts_timeline, error);
+    doc, quantize_options_tl_obj, prj->quantize_opts_timeline);
   yyjson_mut_val * quantize_options_editor_obj =
     yyjson_mut_obj_add_obj (doc, root, "quantizeOptsEditor");
   quantize_options_v1_serialize_to_json (
-    doc, quantize_options_editor_obj, prj->quantize_opts_editor, error);
+    doc, quantize_options_editor_obj, prj->quantize_opts_editor);
   yyjson_mut_val * audio_engine_obj =
     yyjson_mut_obj_add_obj (doc, root, "audioEngine");
-  audio_engine_v2_serialize_to_json (
-    doc, audio_engine_obj, prj->audio_engine, error);
+  audio_engine_v2_serialize_to_json (doc, audio_engine_obj, prj->audio_engine);
   yyjson_mut_val * tracklist_selections_obj =
     yyjson_mut_obj_add_obj (doc, root, "tracklistSelections");
   tracklist_selections_v2_serialize_to_json (
-    doc, tracklist_selections_obj, prj->tracklist_selections, error);
+    doc, tracklist_selections_obj, prj->tracklist_selections);
   yyjson_mut_val * region_link_group_mgr_obj =
     yyjson_mut_obj_add_obj (doc, root, "regionLinkGroupManager");
   region_link_group_manager_v1_serialize_to_json (
-    doc, region_link_group_mgr_obj, prj->region_link_group_manager, error);
+    doc, region_link_group_mgr_obj, prj->region_link_group_manager);
   yyjson_mut_val * port_connections_mgr_obj =
     yyjson_mut_obj_add_obj (doc, root, "portConnectionsManager");
   port_connections_manager_v1_serialize_to_json (
-    doc, port_connections_mgr_obj, prj->port_connections_manager, error);
+    doc, port_connections_mgr_obj, prj->port_connections_manager);
   yyjson_mut_val * midi_mappings_obj =
     yyjson_mut_obj_add_obj (doc, root, "midiMappings");
   midi_mappings_v1_serialize_to_json (
-    doc, midi_mappings_obj, prj->midi_mappings, error);
+    doc, midi_mappings_obj, prj->midi_mappings);
   yyjson_mut_obj_add_int (doc, root, "lastSelection", prj->last_selection);
 
   /* to string - minified */
@@ -1747,11 +1657,8 @@ project_v5_serialize_to_json_str (const Project_v5 * prj, GError ** error)
 
   if (!json)
     {
-      g_set_error_literal (
-        error, Z_SCHEMAS_PROJECT_ERROR, Z_SCHEMAS_PROJECT_ERROR_FAILED,
-        "Failed to write JSON");
-      return NULL;
+      throw ZrythmException ("Failed to write JSON");
     }
 
-  return json;
+  return CStringRAII (json);
 }

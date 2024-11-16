@@ -11,8 +11,6 @@
 #include "common/io/serialization/iserializable.h"
 #include "common/utils/format.h"
 
-#include <glib/gi18n.h>
-
 /**
  * @addtogroup dsp
  *
@@ -127,7 +125,7 @@ struct CurveFadePreset final
   CurveFadePreset () = default;
   CurveFadePreset (
     std::string             id,
-    std::string             label,
+    QString                 label,
     CurveOptions::Algorithm algo,
     double                  curviness);
   ~CurveFadePreset () noexcept;
@@ -139,7 +137,7 @@ struct CurveFadePreset final
 
   CurveOptions opts_;
   std::string  id_;
-  std::string  label_;
+  QString      label_;
 };
 
 #if 0
@@ -171,11 +169,11 @@ fade_get_y_normalized (const CurveOptions &opts, double x, bool fade_in)
 DEFINE_ENUM_FORMATTER (
   CurveOptions::Algorithm,
   CurveOptions_Algorithm,
-  N_ ("Exponent"),
-  N_ ("Superellipse"),
+  QT_TR_NOOP_UTF8 ("Exponent"),
+  QT_TR_NOOP_UTF8 ("Superellipse"),
   "Vital",
-  N_ ("Pulse"),
-  N_ ("Logarithmic"));
+  QT_TR_NOOP_UTF8 ("Pulse"),
+  QT_TR_NOOP_UTF8 ("Logarithmic"));
 
 /**
  * @}

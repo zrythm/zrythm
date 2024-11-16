@@ -23,6 +23,8 @@ LanedTrackImpl<TrackLaneT>::remove_empty_last_lanes ()
   if (last_lane_created_ > 0)
     return;
 
+  lanes_.beginResetModel ();
+
   z_info ("removing empty last lanes from {}", name_);
   bool removed = false;
   for (int i = lanes_.size () - 1; i >= 1; i--)
@@ -31,16 +33,20 @@ LanedTrackImpl<TrackLaneT>::remove_empty_last_lanes ()
       auto prev_lane = std::get<TrackLaneT *> (lanes_.at (i - 1));
       z_return_if_fail (lane && prev_lane);
 
-      if (!lane->regions_.empty ())
+      if (!lane->region_list_->regions_.empty ())
         break;
 
-      if (lane->regions_.empty () && prev_lane->regions_.empty ())
+      if (
+        lane->region_list_->regions_.empty ()
+        && prev_lane->region_list_->regions_.empty ())
         {
           z_info ("removing lane {}", i);
           lanes_.erase (i);
           removed = true;
         }
     }
+
+  lanes_.endResetModel ();
 
   if (removed)
     {
@@ -58,7 +64,8 @@ LanedTrackImpl<TrackLaneT>::clear_objects ()
       // lane might have been deleted above
       if (
         !lanes_.empty ()
-        && std::get<TrackLaneT *> (lanes_.back ())->regions_.empty ())
+        && std::get<TrackLaneT *> (lanes_.back ())
+             ->region_list_->regions_.empty ())
         {
           lanes_.pop_back ();
         }
@@ -110,9 +117,10 @@ LanedTrackImpl<TrackLaneT>::validate_base () const
   for (const auto &lane_var : lanes_)
     {
       auto lane = std::get<TrackLaneT *> (lane_var);
-      for (const auto &region : lane->regions_)
+      for (const auto &region_var : lane->region_list_->regions_)
         {
-          region->validate (is_in_active_project (), 0);
+          std::get<typename TrackLaneT::RegionT *> (region_var)
+            ->validate (is_in_active_project (), 0);
         }
     }
 
@@ -197,9 +205,10 @@ LanedTrackImpl<TrackLaneT>::get_regions_in_range (
     {
       std::visit (
         [&] (auto &&l) {
-          for (auto &region : l->regions_)
+          for (auto &region_var : l->region_list_->regions_)
             {
-              add_region_if_in_range (p1, p2, regions, region.get ());
+              add_region_if_in_range (
+                p1, p2, regions, std::get<RegionT *> (region_var));
             }
         },
         lane);

@@ -85,6 +85,16 @@ set(rel_qml_file_paths
   components/basic/ZrythmResizablePanel.qml
   components/basic/ZrythmSplitButton.qml
   components/basic/ZrythmToolBar.qml
+  components/arranger/AudioRegion.qml
+  components/arranger/AutomationRegion.qml
+  components/arranger/Arranger.qml
+  components/arranger/ArrangerObjectBase.qml
+  components/arranger/ChordRegion.qml
+  components/arranger/Marker.qml
+  components/arranger/MidiRegion.qml
+  components/arranger/RegionBase.qml
+  components/arranger/ScaleObject.qml
+  components/arranger/Timeline.qml
   components/AutomationTracksListView.qml
   components/MainToolbar.qml
   components/BottomDock.qml
@@ -93,13 +103,10 @@ set(rel_qml_file_paths
   components/Meter.qml
   components/RightDock.qml
   components/Ruler.qml
-  components/Timeline.qml
   components/Tracklist.qml
   components/TracklistHeader.qml
   components/TrackView.qml
   components/TransportControls.qml
-  components/ZrythmArranger.qml
-  components/ZrythmRegion.qml
   Greeter.qml
   DemoView.qml
   views/ProjectWindow.qml

@@ -21,11 +21,12 @@
   } \
   void setX (double x) \
   { \
-    if (scroll_start_x_ == static_cast<int> (std::round (x))) \
+    auto int_x = std::max (0, static_cast<int> (std::round (x))); \
+    if (scroll_start_x_ == int_x) \
       return; \
 \
-    scroll_start_x_ = static_cast<int> (std::round (x)); \
-    Q_EMIT xChanged (x); \
+    scroll_start_x_ = int_x; \
+    Q_EMIT xChanged (scroll_start_x_); \
   } \
 \
   Q_SIGNAL void xChanged (double x); \
@@ -37,10 +38,11 @@
   } \
   void setY (double y) \
   { \
-    if (scroll_start_y_ == static_cast<int> (std::round (y))) \
+    auto int_y = std::max (0, static_cast<int> (std::round (y))); \
+    if (scroll_start_y_ == int_y) \
       return; \
-    scroll_start_y_ = static_cast<int> (std::round (y)); \
-    Q_EMIT yChanged (y); \
+    scroll_start_y_ = int_y; \
+    Q_EMIT yChanged (scroll_start_y_); \
   } \
 \
   Q_SIGNAL void yChanged (double y); \

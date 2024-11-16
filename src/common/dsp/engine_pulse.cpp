@@ -22,7 +22,6 @@
 #  include "gui/backend/gtk_widgets/zrythm_app.h"
 #  include "gui/widgets/main_window.h"
 
-#  include <glib/gi18n.h>
 #  include <gtk/gtk.h>
 
 #  include <pulse/def.h>
@@ -84,8 +83,9 @@ engine_pulse_notify_underflow (void * userdata)
   if (MAIN_WINDOW)
     {
       ui_show_error_message (
-        _ ("Buffer Underflow"),
-        _ ("A buffer underflow has occurred. Try increasing the buffer size in the settings to avoid audio glitches."));
+        QObject::tr ("Buffer Underflow"),
+        QObject::tr (
+          "A buffer underflow has occurred. Try increasing the buffer size in the settings to avoid audio glitches."));
     }
 
   return G_SOURCE_REMOVE;
@@ -204,7 +204,8 @@ engine_pulse_try_lock_connect_sync (
     pa_context_connect (*context, nullptr, PA_CONTEXT_NOAUTOSPAWN, nullptr) != 0)
     {
       *msg = g_strdup_printf (
-        _ ("PulseAudio Error: %s"), pa_strerror (pa_context_errno (*context)));
+        QObject::tr ("PulseAudio Error: %s"),
+        pa_strerror (pa_context_errno (*context)));
       pa_threaded_mainloop_unlock (*mainloop);
       return FALSE;
     }
@@ -413,7 +414,8 @@ engine_pulse_test (GtkWindow * win)
       if (win)
         {
           ui_show_message_full (
-            GTK_WIDGET (win), _ ("Pulseaudio Backend Test Failed"), msg);
+            GTK_WIDGET (win), QObject::tr ("Pulseaudio Backend Test Failed"),
+            msg);
         }
       else
         {

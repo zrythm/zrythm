@@ -62,7 +62,7 @@ _test (
   port->set_val_from_normalized (0.1f, false);
 
   /* let the engine run */
-  g_usleep (1000000);
+  std::this_thread::sleep_for (std::chrono::milliseconds (1000000));
   nframes_t latency = pl->latency_;
   ASSERT_GT (latency, 0);
 
@@ -73,20 +73,20 @@ _test (
   ASSERT_EQ (latency, node->route_playback_latency_);
 
   /* let the engine run */
-  g_usleep (1000000);
+  std::this_thread::sleep_for (std::chrono::milliseconds (1000000));
   ASSERT_EQ (latency, node->route_playback_latency_);
 
   /* 3. start playback */
   TRANSPORT->requestRoll (true);
 
   /* let the engine run */
-  g_usleep (4000000);
+  std::this_thread::sleep_for (std::chrono::milliseconds (4000000));
 
   /* 4. reload project */
   test_project_save_and_reload ();
 
   /* let the engine run */
-  g_usleep (1000000);
+  std::this_thread::sleep_for (std::chrono::milliseconds (1000000));
 
   /* add another track with latency and check if
    * OK */
@@ -100,7 +100,7 @@ _test (
   port->set_val_from_normalized (0.2f, false);
 
   /* let the engine run */
-  g_usleep (1000000);
+  std::this_thread::sleep_for (std::chrono::milliseconds (1000000));
   nframes_t latency2 = pl->latency_;
   ASSERT_GT (latency2, 0);
   ASSERT_GT (latency2, latency);
@@ -115,14 +115,14 @@ _test (
   ASSERT_EQ (latency2, node->route_playback_latency_);
 
   /* let the engine run */
-  g_usleep (1000000);
+  std::this_thread::sleep_for (std::chrono::milliseconds (1000000));
   ASSERT_EQ (latency2, node->route_playback_latency_);
 
   /* 3. start playback */
   TRANSPORT->requestRoll (true);
 
   /* let the engine run */
-  g_usleep (4000000);
+  std::this_thread::sleep_for (std::chrono::milliseconds (4000000));
 
   /* set latencies to 0 and verify that the updated
    * latency for tempo is 0 */
@@ -134,7 +134,7 @@ _test (
   port = get_delay_port (pl);
   port->set_val_from_normalized (0.f, false);
 
-  g_usleep (1000000);
+  std::this_thread::sleep_for (std::chrono::milliseconds (1000000));
   ASSERT_EQ (pl->latency_, 0);
 
   /* recalculate graph to update latencies */

@@ -27,10 +27,13 @@
  * Used for copying, undoing, etc.
  */
 class MidiSelections final
-    : public ArrangerSelections,
+    : public QObject,
+      public ArrangerSelections,
       public ICloneable<MidiSelections>,
       public ISerializable<MidiSelections>
 {
+  Q_OBJECT
+  QML_ELEMENT
 public:
   MidiSelections ();
 
@@ -56,7 +59,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  bool can_be_pasted_at_impl (const Position pos, const int idx) const override;
+  bool can_be_pasted_at_impl (Position pos, int idx) const override;
 };
 
 /**

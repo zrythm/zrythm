@@ -56,8 +56,13 @@ RegionLinkGroup::remove_region (
       /* if only one region left in group, remove it */
       if (ids_.size () == 1)
         {
-          auto last_region = Region::find (ids_[0]);
-          remove_region (*last_region, true, update_identifier);
+          auto last_region_var = Region::find (ids_[0]);
+          z_return_if_fail (last_region_var.has_value ());
+          std::visit (
+            [&] (auto &&last_region) {
+              remove_region (*last_region, true, update_identifier);
+            },
+            last_region_var.value ());
         }
       /* if no regions left, remove the group */
       else if (ids_.empty ())
@@ -82,26 +87,25 @@ RegionLinkGroup::update (const Region &main_region)
 {
   for (const auto &id : ids_)
     {
-      auto region = Region::find (id);
-      z_return_if_fail (region);
-
       if (id == main_region.id_)
         continue;
 
-      z_debug ("updating {} ({})", region->id_.idx_, region->get_name ());
-
+      auto region_var = Region::find (id);
+      z_return_if_fail (region_var.has_value ());
       std::visit (
-        [&] (auto &&r) {
-          using T = base_type<decltype (r)>;
-          if constexpr (RegionWithChildren<T>)
+        [&] (auto &&region) {
+          using RegionT = base_type<decltype (region)>;
+          z_debug ("updating {} ({})", region->id_.idx_, region->get_name ());
+          if constexpr (RegionWithChildren<RegionT>)
             {
               /* delete and readd all children */
-              r->remove_all_children ();
-              auto main_region_casted = dynamic_cast<const T *> (&main_region);
-              r->copy_children (*main_region_casted);
+              region->remove_all_children ();
+              auto main_region_casted =
+                dynamic_cast<const RegionT *> (&main_region);
+              region->copy_children (*main_region_casted);
             }
         },
-        convert_to_variant<RegionPtrVariant> (region.get ()));
+        region_var.value ());
     }
 }
 
@@ -110,10 +114,15 @@ RegionLinkGroup::validate () const
 {
   for (const auto &id : ids_)
     {
-      auto region = Region::find (id);
-      z_return_val_if_fail (region, false);
-      RegionLinkGroup * link_group = region->get_link_group ();
-      z_return_val_if_fail (link_group == this, false);
+      auto region_var = Region::find (id);
+      z_return_val_if_fail (region_var.has_value (), false);
+      return std::visit (
+        [&] (auto &&region) {
+          RegionLinkGroup * link_group = region->get_link_group ();
+          z_return_val_if_fail (link_group == this, false);
+          return true;
+        },
+        region_var.value ());
     }
 
   return true;

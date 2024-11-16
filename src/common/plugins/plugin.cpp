@@ -24,7 +24,6 @@
 #include "common/plugins/plugin_manager.h"
 #include "common/utils/dsp.h"
 #include "common/utils/exceptions.h"
-#include "common/utils/file.h"
 #include "common/utils/flags.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/io.h"
@@ -36,14 +35,11 @@
 #include "common/utils/ui.h"
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/settings/settings.h"
 
 #include <fmt/printf.h>
-#define _GNU_SOURCE 1 /* To pick up REG_RIP */
 
-#include <glib/gi18n.h>
-
+using namespace zrythm;
 using namespace zrythm::plugins;
 
 Plugin::~Plugin ()
@@ -194,8 +190,8 @@ Plugin::init_loaded (AutomatableTrack * track, MixerSelections * ms)
         {
           /* disable plugin, instantiation failed */
           instantiation_failed_ = true;
-          throw ZrythmException (format_str (
-            _ ("Instantiation failed for plugin '{}'. Disabling..."),
+          throw ZrythmException (format_qstr (
+            QObject::tr ("Instantiation failed for plugin '{}'. Disabling..."),
             get_name ()));
         }
 
@@ -222,9 +218,11 @@ Plugin::init (
   id_.slot_ = slot;
 
   /* add enabled port */
-  auto port = std::make_unique<ControlPort> (_ ("Enabled"));
+  auto port =
+    std::make_unique<ControlPort> (QObject::tr ("Enabled").toStdString ());
   port->id_->sym_ = "enabled";
-  port->id_->comment_ = _ ("Enables or disables the plugin");
+  port->id_->comment_ =
+    QObject::tr ("Enables or disables the plugin").toStdString ();
   port->id_->port_group_ = "[Zrythm]";
   port->id_->flags_ |= PortIdentifier::Flags::PluginEnabled;
   port->id_->flags_ |= PortIdentifier::Flags::Toggle;
@@ -240,9 +238,9 @@ Plugin::init (
   enabled_ = dynamic_cast<ControlPort *> (add_in_port (std::move (port)));
 
   /* add gain port */
-  port = std::make_unique<ControlPort> (_ ("Gain"));
+  port = std::make_unique<ControlPort> (QObject::tr ("Gain").toStdString ());
   port->id_->sym_ = "gain";
-  port->id_->comment_ = _ ("Plugin gain");
+  port->id_->comment_ = QObject::tr ("Plugin gain").toStdString ();
   port->id_->flags_ |= PortIdentifier::Flags::PluginGain;
   port->id_->flags_ |= PortIdentifier::Flags::Automatable;
   port->id_->flags_ |= PortIdentifier::Flags::GenericPluginPort;
@@ -612,46 +610,50 @@ Plugin::find (const PluginIdentifier &id)
   auto track = TRACKLIST->find_track_by_name_hash (id.track_name_hash_);
   z_return_val_if_fail (track, nullptr);
 
-  Channel * ch = nullptr;
-  if (
-    !track->is_modulator ()
-    || id.slot_type_ == zrythm::plugins::PluginSlotType::MidiFx
-    || id.slot_type_ == zrythm::plugins::PluginSlotType::Instrument
-    || id.slot_type_ == zrythm::plugins::PluginSlotType::Insert)
-    {
-      auto channel_track = dynamic_cast<ChannelTrack *> (track);
-      ch = channel_track->channel_;
-      z_return_val_if_fail (ch, nullptr);
-    }
-  Plugin * ret = nullptr;
-  switch (id.slot_type_)
-    {
-    case zrythm::plugins::PluginSlotType::MidiFx:
-      z_return_val_if_fail (ch, nullptr);
-      ret = ch->midi_fx_[id.slot_].get ();
-      break;
-    case zrythm::plugins::PluginSlotType::Instrument:
-      z_return_val_if_fail (ch, nullptr);
-      ret = ch->instrument_.get ();
-      break;
-    case zrythm::plugins::PluginSlotType::Insert:
-      z_return_val_if_fail (ch, nullptr);
-      ret = ch->inserts_[id.slot_].get ();
-      break;
-    case zrythm::plugins::PluginSlotType::Modulator:
-      {
-        auto modulator_track = dynamic_cast<ModulatorTrack *> (track);
-        z_return_val_if_fail (modulator_track, nullptr);
-        ret = modulator_track->modulators_[id.slot_].get ();
-      }
-      break;
-    default:
-      z_return_val_if_reached (nullptr);
-      break;
-    }
-  z_return_val_if_fail (ret, nullptr);
+  return std::visit (
+    [&] (auto &&t) -> Plugin * {
+      Channel * ch = nullptr;
+      if (
+        !t->is_modulator ()
+        || id.slot_type_ == zrythm::plugins::PluginSlotType::MidiFx
+        || id.slot_type_ == zrythm::plugins::PluginSlotType::Instrument
+        || id.slot_type_ == zrythm::plugins::PluginSlotType::Insert)
+        {
+          auto * channel_track = dynamic_cast<ChannelTrack *> (t);
+          ch = channel_track->channel_;
+          z_return_val_if_fail (ch, nullptr);
+        }
+      Plugin * ret = nullptr;
+      switch (id.slot_type_)
+        {
+        case zrythm::plugins::PluginSlotType::MidiFx:
+          z_return_val_if_fail (ch, nullptr);
+          ret = ch->midi_fx_[id.slot_].get ();
+          break;
+        case zrythm::plugins::PluginSlotType::Instrument:
+          z_return_val_if_fail (ch, nullptr);
+          ret = ch->instrument_.get ();
+          break;
+        case zrythm::plugins::PluginSlotType::Insert:
+          z_return_val_if_fail (ch, nullptr);
+          ret = ch->inserts_[id.slot_].get ();
+          break;
+        case zrythm::plugins::PluginSlotType::Modulator:
+          {
+            auto * modulator_track = dynamic_cast<ModulatorTrack *> (t);
+            z_return_val_if_fail (modulator_track, nullptr);
+            ret = modulator_track->modulators_[id.slot_].get ();
+          }
+          break;
+        default:
+          z_return_val_if_reached (nullptr);
+          break;
+        }
+      z_return_val_if_fail (ret, nullptr);
 
-  return ret;
+      return ret;
+    },
+    *track);
 }
 
 std::string
@@ -854,14 +856,14 @@ Plugin::move_automation (
       z_return_if_fail (port->at_ == at);
 
       /* delete from prev channel */
-      auto num_regions_before = at->regions_.size ();
+      auto   num_regions_before = at->region_list_->regions_.size ();
       auto * removed_at = prev_atl.remove_at (*at, false, false);
 
       /* add to new channel */
       auto added_at = atl.add_at (*removed_at);
       z_return_if_fail (
         added_at == atl.ats_[added_at->index_]
-        && added_at->regions_.size () == num_regions_before);
+        && added_at->region_list_->regions_.size () == num_regions_before);
 
       /* update the automation track port identifier */
       added_at->port_id_->plugin_id_.slot_ = new_slot;
@@ -876,6 +878,8 @@ Plugin::move_automation (
 void
 Plugin::set_ui_refresh_rate ()
 {
+  // TODO ? if needed
+#if 0
   if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING || ZRYTHM_GENERATING_PROJECT)
     {
       ui_update_hz_ = 30.f;
@@ -940,6 +944,7 @@ Plugin::set_ui_refresh_rate ()
 return_refresh_rate_and_scale_factor:
   z_debug ("refresh rate set to {:f}", (double) ui_update_hz_);
   z_debug ("scale factor set to {:f}", (double) ui_scale_factor_);
+#endif
 }
 
 void
@@ -1232,18 +1237,18 @@ Plugin::copy_state_dir (
   auto dir_to_use =
     abs_state_dir ? *abs_state_dir : get_abs_state_dir (is_backup, true);
   {
-    auto files_in_dir = io_get_files_in_dir (dir_to_use);
+    auto files_in_dir = utils::io::get_files_in_dir (dir_to_use);
     z_return_if_fail (files_in_dir.isEmpty ());
   }
 
   auto src_dir_to_use = src.get_abs_state_dir (is_backup);
   z_return_if_fail (!src_dir_to_use.empty ());
   {
-    auto files_in_src_dir = io_get_files_in_dir (src_dir_to_use);
+    auto files_in_src_dir = utils::io::get_files_in_dir (src_dir_to_use);
     z_return_if_fail (!files_in_src_dir.isEmpty ());
   }
 
-  io_copy_dir (dir_to_use, src_dir_to_use, true, true);
+  utils::io::copy_dir (dir_to_use, src_dir_to_use, true, true);
 }
 
 std::string
@@ -1279,26 +1284,31 @@ Plugin::ensure_state_dir (bool is_backup)
   if (!state_dir_.empty ())
     {
       auto abs_state_dir = get_abs_state_dir (state_dir_, is_backup);
-      io_mkdir (abs_state_dir);
+      utils::io::mkdir (abs_state_dir);
       return;
     }
 
-  auto escaped_name = io_get_legal_file_name (get_name ());
+  auto escaped_name = utils::io::get_legal_file_name (get_name ());
   auto parent_dir = PROJECT->get_path (ProjectPath::PluginStates, is_backup);
   z_return_if_fail (!parent_dir.empty ());
-  io_mkdir (parent_dir);
+  utils::io::mkdir (parent_dir);
   auto tmp = fmt::format ("{}_XXXXXX", escaped_name);
   auto abs_state_dir_template = fs::path (parent_dir) / tmp;
-  tmp = abs_state_dir_template.string ();
-  char * abs_state_dir = g_mkdtemp (tmp.data ());
-  if (!abs_state_dir)
+  try
+    {
+      auto abs_state_dir =
+        utils::io::make_tmp_dir_at_path (abs_state_dir_template);
+      abs_state_dir->setAutoRemove (false);
+      state_dir_ =
+        utils::io::path_get_basename (abs_state_dir->path ().toStdString ());
+      z_debug ("set plugin state dir to {}", state_dir_);
+    }
+  catch (const ZrythmException &e)
     {
       throw ZrythmException (format_str (
-        "Failed to make state dir using template {}: {}",
-        abs_state_dir_template.string (), strerror (errno)));
+        "Failed to make state dir using template {}",
+        abs_state_dir_template.string ()));
     }
-  state_dir_ = Glib::path_get_basename (abs_state_dir);
-  z_debug ("set plugin state dir to {}", state_dir_);
 }
 
 void
@@ -1577,7 +1587,8 @@ Plugin::connect_to_plugin (Plugin &dest)
     {
       /* connect to as many audio outs this plugin has, or until we can't
        * connect anymore */
-      auto num_ports_to_connect = MIN (num_src_audio_outs, num_dest_audio_ins);
+      auto num_ports_to_connect =
+        std::min (num_src_audio_outs, num_dest_audio_ins);
       size_t last_index = 0;
       size_t ports_connected = 0;
       for (auto &out_port : out_ports_)

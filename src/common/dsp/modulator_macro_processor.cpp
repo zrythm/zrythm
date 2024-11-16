@@ -9,10 +9,10 @@
 #include "common/utils/debug.h"
 #include "common/utils/dsp.h"
 
-#include <glib/gi18n.h>
-
 #include <fmt/format.h>
 #include <fmt/printf.h>
+
+using namespace zrythm;
 
 bool
 ModulatorMacroProcessor::is_in_active_project () const
@@ -63,7 +63,7 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (ModulatorTrack * track, int id
     : track_ (track)
 {
 
-  name_ = format_str (_ ("Macro {}"), idx + 1);
+  name_ = format_str (QObject::tr ("Macro {}").toStdString (), idx + 1);
   macro_ = std::make_unique<ControlPort> (name_);
   macro_->set_owner (this);
   macro_->id_->sym_ = fmt::format ("macro_{}", idx + 1);
@@ -76,14 +76,16 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (ModulatorTrack * track, int id
   macro_->id_->port_index_ = idx;
 
   cv_in_ = std::make_unique<CVPort> (
-    format_str (_ ("Macro CV In {}"), idx + 1), PortFlow::Input);
+    format_str (QObject::tr ("Macro CV In {}").toStdString (), idx + 1),
+    PortFlow::Input);
   cv_in_->set_owner (this);
   cv_in_->id_->sym_ = fmt::format ("macro_cv_in_{}", idx + 1);
   cv_in_->id_->flags_ |= PortIdentifier::Flags::ModulatorMacro;
   cv_in_->id_->port_index_ = idx;
 
   cv_out_ = std::make_unique<CVPort> (
-    format_str (_ ("Macro CV Out {}"), idx + 1), PortFlow::Output);
+    format_str (QObject::tr ("Macro CV Out {}").toStdString (), idx + 1),
+    PortFlow::Output);
   cv_out_->set_owner (this);
   cv_out_->id_->sym_ = fmt::format ("macro_cv_out_{}", idx + 1);
   cv_out_->id_->flags_ |= PortIdentifier::Flags::ModulatorMacro;

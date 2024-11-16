@@ -16,8 +16,6 @@
 #include "common/utils/format.h"
 #include "common/utils/logger.h"
 
-#include <glib/gi18n.h>
-
 /**
  * @addtogroup dsp
  *
@@ -38,10 +36,10 @@ enum class RegionType
 DEFINE_ENUM_FORMATTER (
   RegionType,
   RegionType,
-  N_ ("MIDI"),
-  N_ ("Audio"),
-  N_ ("Automation"),
-  N_ ("Chord"));
+  QT_TR_NOOP_UTF8 ("MIDI"),
+  QT_TR_NOOP_UTF8 ("Audio"),
+  QT_TR_NOOP_UTF8 ("Automation"),
+  QT_TR_NOOP_UTF8 ("Chord"));
 
 /**
  * Index/identifier for a Region, so we can get Region objects quickly with it

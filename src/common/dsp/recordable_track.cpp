@@ -7,9 +7,12 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
+using namespace zrythm;
+
 RecordableTrack::RecordableTrack ()
 {
-  recording_ = std::make_unique<ControlPort> (_ ("Track record"));
+  recording_ =
+    std::make_unique<ControlPort> (QObject::tr ("Track record").toStdString ());
   recording_->set_owner (this);
   recording_->id_->sym_ = "track_record";
   recording_->set_toggled (false, false);

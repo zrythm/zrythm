@@ -81,8 +81,8 @@ midi_in_cb (
   SemaphoreRAII<> sem_raii (self->midi_ring_sem_);
 
   /* generate timestamp */
-  gint64 cur_time = g_get_monotonic_time ();
-  gint64 ts = cur_time - self->port_->last_midi_dequeue_;
+  auto   cur_time = Zrythm::getInstance ()->get_monotonic_time_usecs ();
+  qint64 ts = cur_time - self->port_->last_midi_dequeue_;
   z_return_if_fail (ts >= 0);
   if (DEBUGGING)
     {

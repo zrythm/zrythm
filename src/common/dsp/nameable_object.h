@@ -6,6 +6,25 @@
 
 #include "common/dsp/arranger_object.h"
 
+#define DEFINE_NAMEABLE_OBJECT_QML_PROPERTIES(ClassType) \
+public: \
+  /* ================================================================ */ \
+  /* name */ \
+  /* ================================================================ */ \
+  Q_PROPERTY (QString name READ getName WRITE setName NOTIFY nameChanged) \
+  QString getName () const \
+  { \
+    return QString::fromStdString (name_); \
+  } \
+  void setName (const QString &name) \
+  { \
+    if (name_ == name.toStdString ()) \
+      return; \
+    set_name_with_action (name.toStdString ()); \
+    Q_EMIT nameChanged (name); \
+  } \
+  Q_SIGNAL void nameChanged (const QString &name);
+
 /**
  * @class NameableObject
  * @brief Base class for objects that have a name.
@@ -26,8 +45,8 @@ public:
   {
     gen_escaped_name ();
   }
-
-  virtual ~NameableObject () = default;
+  Q_DISABLE_COPY_MOVE (NameableObject)
+  ~NameableObject () override = default;
 
   void init_loaded_base ();
 

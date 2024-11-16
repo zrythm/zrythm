@@ -171,7 +171,7 @@ TruePeakDsp::init (float samplerate)
   src_.setup (
     static_cast<unsigned int> (samplerate),
     static_cast<unsigned int> (samplerate * 4.f), 1, 24, 1.0);
-  buf_ = static_cast<float *> (g_malloc (32768 * sizeof (float)));
+  buf_ = static_cast<float *> (malloc (32768 * sizeof (float)));
 
   z1_ = z2_ = .0f;
   w1_ = 4000.f / samplerate / 4.f;

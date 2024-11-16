@@ -110,7 +110,7 @@ public:
   /**
    * Get current Track whose plugins are selected from the active project.
    */
-  Track * get_track () const;
+  OptionalTrackPtrVariant get_track () const;
 
   /**
    * Returns if the plugin is selected or not.

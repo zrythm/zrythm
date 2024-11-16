@@ -7,6 +7,7 @@
 #include "gui/backend/realtime_updater.h"
 
 #include <QFontDatabase>
+#include <QIcon>
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
 #include <QQmlContext>
@@ -18,6 +19,7 @@
 #include "zrythm_application.h"
 
 using namespace zrythm::gui;
+using namespace Qt::StringLiterals;
 
 JUCE_CREATE_APPLICATION_DEFINE (ZrythmJuceApplicationWrapper)
 
@@ -27,11 +29,11 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   Backtrace::init_signal_handlers ();
 
   /* app info */
-  setApplicationName ("Zrythm");
-  setApplicationVersion (PACKAGE_VERSION);
-  setOrganizationName ("Zrythm.org");
-  setOrganizationDomain ("zrythm.org");
-  setApplicationDisplayName ("Zrythm");
+  setApplicationName (u"Zrythm"_s);
+  setApplicationVersion (QString::fromUtf8 (PACKAGE_VERSION));
+  setOrganizationName (u"Zrythm.org"_s);
+  setOrganizationDomain (u"zrythm.org"_s);
+  setApplicationDisplayName (u"Zrythm"_s);
   // setWindowIcon (QIcon (":/org.zrythm.Zrythm/resources/icons/zrythm.svg"));
 
   /* setup command line parser */
@@ -110,17 +112,18 @@ void
 ZrythmApplication::setup_command_line_options ()
 {
   cmd_line_parser_.setApplicationDescription (
-    "Zrythm Digital Audio Workstation");
+    u"Zrythm Digital Audio Workstation"_s);
   cmd_line_parser_.addHelpOption ();
   cmd_line_parser_.addVersionOption ();
 
   cmd_line_parser_.addOptions ({
-    { "project", "Open project", "project", "project" },
-    { "new-project", "Create new project", "new-project", "new-project" },
-    { "new-project-with-template", "Create new project with template",
-     "new-project-with-template", "new-project-with-template" },
+    { u"project"_s, tr ("Open project"), u"project"_s, u"project"_s },
+    { u"new-project"_s, tr ("Create new project"), u"new-project"_s,
+     u"new-project"_s },
+    { u"new-project-with-template"_s, tr ("Create new project with template"),
+     u"new-project-with-template"_s, u"new-project-with-template"_s },
     {
-     "dummy", "Use dummy audio/midi engine",
+     u"dummy"_s, tr ("Use dummy audio/midi engine"),
      },
   });
 }
@@ -153,7 +156,7 @@ void
 ZrythmApplication::setup_ui ()
 {
   // QQuickStyle::setStyle ("Imagine");
-  QIcon::setThemeName ("dark");
+  QIcon::setThemeName (u"dark"_s);
 
   // note: this is the system palette - different from qtquick palette
   // it's just used to set the window frame color
@@ -213,7 +216,7 @@ ZrythmApplication::setup_ui ()
   // files in host file system are compiled at runtime
   // ${RESOURCE_PREFIX}/${URI}
   // const QUrl url ("qrc:/qt/qml/Zrythm/DemoView.qml");
-  const QUrl url ("qrc:/qt/qml/Zrythm/Greeter.qml");
+  const QUrl url (u"qrc:/qt/qml/Zrythm/Greeter.qml"_s);
   qml_engine_->load (url);
   // qml_engine_->loadFromModule ("Zrythm", "greeter");
 
@@ -244,17 +247,16 @@ void
 ZrythmApplication::onEngineOutput ()
 {
   QByteArray output = engine_process_->readAllStandardOutput ();
-  QString    outputString (output);
   z_info (
     "\n[ === Engine output === ]\n{}\n[ === End engine output === ]",
-    outputString.toStdString ());
+    output.toStdString ());
 }
 
 void
 ZrythmApplication::setup_ipc ()
 {
   socket_ = new QLocalSocket (this);
-  socket_->connectToServer (IPC_SOCKET_NAME);
+  socket_->connectToServer (QString::fromUtf8 (IPC_SOCKET_NAME));
   if (socket_->waitForConnected (1000))
     {
       z_info ("Connected to IPC server");
@@ -272,7 +274,7 @@ ZrythmApplication::launch_engine_process ()
   engine_process_->setProcessChannelMode (QProcess::MergedChannels);
   fs::path   path;
   const auto path_from_env =
-    QProcessEnvironment::systemEnvironment ().value ("ZRYTHM_ENGINE_PATH");
+    QProcessEnvironment::systemEnvironment ().value (u"ZRYTHM_ENGINE_PATH"_s);
   if (!path_from_env.isEmpty ())
     {
       path = fs::path (path_from_env.toStdString ());
@@ -290,7 +292,7 @@ ZrythmApplication::launch_engine_process ()
     engine_process_, &QProcess::readyReadStandardOutput, this,
     &ZrythmApplication::onEngineOutput);
 
-  engine_process_->start (QString (path.string ().c_str ()));
+  engine_process_->start (QString::fromStdString (path.string ()));
   if (engine_process_->waitForStarted ())
     {
       z_info ("Started engine process");

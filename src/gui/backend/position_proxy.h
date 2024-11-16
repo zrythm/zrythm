@@ -5,6 +5,7 @@
 #define __GUI_BACKEND_POSITION_PROXY_H__
 
 #include "common/dsp/position.h"
+#include "common/utils/icloneable.h"
 #include "common/utils/math.h"
 
 #include <QObject>
@@ -16,7 +17,8 @@ class PositionProxy
     : public QObject,
       public IRealtimeProperty,
       public Position,
-      public ISerializable<PositionProxy>
+      public ISerializable<PositionProxy>,
+      public ICloneable<PositionProxy>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -28,8 +30,12 @@ class PositionProxy
     double ticksPerSixteenthNote READ getTicksPerSixteenthNote CONSTANT)
 
 public:
-  PositionProxy (QObject * parent = nullptr, const Position * pos = nullptr);
+  PositionProxy (
+    QObject *        parent = nullptr,
+    const Position * pos = nullptr,
+    bool             realtime_updateable = false);
   ~PositionProxy () override;
+  Q_DISABLE_COPY_MOVE (PositionProxy)
 
   signed_frame_t getFrames () const { return frames_; }
   void           setFrames (signed_frame_t frames);
@@ -106,8 +112,28 @@ public:
 
   bool processUpdates () override;
 
+  void init_after_cloning (const PositionProxy &other) override;
+
 private:
   std::atomic<bool> has_update_{ false };
+  bool              realtime_updateable_;
 };
+
+inline auto
+operator<=> (const PositionProxy &lhs, const PositionProxy &rhs)
+{
+  return static_cast<const Position &> (lhs)
+         <=> static_cast<const Position &> (rhs);
+}
+
+inline bool
+operator== (const PositionProxy &lhs, const PositionProxy &rhs)
+{
+  return (lhs <=> rhs) == 0;
+}
+
+DEFINE_OBJECT_FORMATTER (PositionProxy, [] (const PositionProxy &obj) {
+  return obj.to_string ();
+});
 
 #endif // __GUI_BACKEND_POSITION_PROXY_H__

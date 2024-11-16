@@ -7,12 +7,15 @@
 #include "common/dsp/lengthable_object.h"
 #include "common/utils/types.h"
 
+#define DEFINE_LOOPABLE_OBJECT_QML_PROPERTIES(ClassType) \
+  DEFINE_LENGTHABLE_OBJECT_QML_PROPERTIES (ClassType)
+
 class LoopableObject
     : virtual public LengthableObject,
       public ISerializable<LoopableObject>
 {
 public:
-  virtual ~LoopableObject () = default;
+  ~LoopableObject () override = default;
 
   /**
    * Returns the number of loops in the ArrangerObject, optionally including
@@ -84,12 +87,12 @@ public:
     loop_start_pos_.ticks_ > 0
     || clip_start_pos_.ticks_ > 0
     ||
-    (end_pos_.ticks_ - pos_.ticks_) >
+    (end_pos_->ticks_ - pos_->ticks_) >
        (loop_end_pos_.ticks_ +
          /* add some buffer because these are not accurate */
           0.1)
     ||
-    (end_pos_.ticks_ - pos_.ticks_) <
+    (end_pos_->ticks_ - pos_->ticks_) <
        (loop_end_pos_.ticks_ -
          /* add some buffer because these are not accurate */
           0.1);

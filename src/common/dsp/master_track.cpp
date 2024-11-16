@@ -3,8 +3,15 @@
 
 #include "common/dsp/master_track.h"
 
+using namespace zrythm;
+
 MasterTrack::MasterTrack (int pos)
-    : Track (Track::Type::Master, _ ("Master"), pos, PortType::Audio, PortType::Audio)
+    : Track (
+        Track::Type::Master,
+        QObject::tr ("Master").toStdString (),
+        pos,
+        PortType::Audio,
+        PortType::Audio)
 {
   /* GTK color picker color */
   color_ = Color (QColor ("#D90368"));

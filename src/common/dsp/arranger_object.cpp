@@ -21,10 +21,15 @@
 #include "gui/backend/backend/automation_selections.h"
 #include "gui/backend/backend/chord_selections.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
+#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/timeline_selections.h"
 
-#include <glib/gi18n.h>
+using namespace zrythm;
+
+ArrangerObject::ArrangerObject (Type type)
+    : pos_ (new PositionProxy ()), type_ (type)
+{
+}
 
 template <typename T>
 T *
@@ -49,71 +54,97 @@ ArrangerObject::get_selections_for_type (Type type)
 }
 
 void
+ArrangerObject::parent_base_qproperties (QObject &derived)
+{
+  pos_->setParent (&derived);
+}
+
+void
 ArrangerObject::generate_transient ()
 {
   std::visit (
     [this] (auto &&obj_ptr) {
-      obj_ptr->transient_ = obj_ptr->clone_shared ();
-      obj_ptr->transient_->main_ = this->shared_from_this ();
+      using ObjT = base_type<decltype (obj_ptr)>;
+      if (obj_ptr->transient_)
+        {
+          dynamic_cast<ObjT *> (obj_ptr->transient_)->deleteLater ();
+        }
+      obj_ptr->transient_ = obj_ptr->clone_raw_ptr ();
+      dynamic_cast<ObjT *> (obj_ptr->transient_)->setParent (obj_ptr);
+      obj_ptr->transient_->main_ = this;
     },
     convert_to_variant<ArrangerObjectPtrVariant> (this));
 }
 
 void
 ArrangerObject::select (
-  const std::shared_ptr<ArrangerObject> &obj,
-  bool                                   select,
-  bool                                   append,
-  bool                                   fire_events)
+  const ArrangerObjectPtr &base_obj,
+  bool                     select,
+  bool                     append,
+  bool                     fire_events)
 {
-  /* if velocity, do the selection on the owner MidiNote instead */
-  if (obj->type_ == ArrangerObject::Type::Velocity)
-    {
-      auto vel = dynamic_cast<Velocity *> (obj.get ());
-      auto obj_to_select = vel->get_midi_note ();
-      z_return_if_fail (obj_to_select);
-      ArrangerObject::select (
-        obj_to_select->shared_from_this_as<MidiNote> (), select, append,
-        fire_events);
-    }
-
-  auto selections =
-    ArrangerObject::get_selections_for_type<ArrangerSelections> (obj->type_);
-
-  /* if nothing to do, return */
-  bool is_selected = obj->is_selected ();
-  if ((is_selected && select && append) || (!is_selected && !select))
-    {
-      return;
-    }
-
-  if (select)
-    {
-      if (!append)
+  std::visit (
+    [&] (auto &&obj) {
+      using ObjT = base_type<decltype (obj)>;
+      /* if velocity, do the selection on the owner MidiNote instead */
+      if constexpr (std::is_same_v<ObjT, Velocity>)
         {
-          selections->clear (fire_events);
+          auto * obj_to_select = obj->get_midi_note ();
+          z_return_if_fail (obj_to_select);
+          ArrangerObject::select (obj_to_select, select, append, fire_events);
+          return;
         }
-      selections->add_object_ref (obj);
-    }
-  else
-    {
-      selections->remove_object (*obj);
-    }
-
-  if (ZRYTHM_HAVE_UI)
-    {
-      bool autoselect_track = g_settings_get_boolean (S_UI, "track-autoselect");
-      auto track = obj->get_track ();
-      if (autoselect_track && track && track->is_in_active_project ())
+      else
         {
-          track->select (true, true, true);
-        }
-    }
 
-  if (fire_events)
-    {
-      // EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CHANGED, obj.get ());
-    }
+          auto selections = ArrangerObject::get_selections_for_type<
+            ArrangerSelections> (obj->type_);
+
+          /* if nothing to do, return */
+          bool is_selected = obj->is_selected ();
+          if ((is_selected && select && append) || (!is_selected && !select))
+            {
+              return;
+            }
+
+          if (select)
+            {
+              if (!append)
+                {
+                  selections->clear (fire_events);
+                }
+              selections->add_object_ref (*obj);
+            }
+          else
+            {
+              selections->remove_object (*obj);
+            }
+
+          if (ZRYTHM_HAVE_UI)
+            {
+              bool autoselect_track = gui::SettingsManager::autoSelectTracks ();
+              if (autoselect_track)
+                {
+                  auto track_var = obj->get_track ();
+                  std::visit (
+                    [&] (auto &&track) {
+                      if (track->is_in_active_project ())
+                        {
+                          track->select (true, true, true);
+                        }
+                    },
+                    track_var);
+                }
+            }
+
+          if (fire_events)
+            {
+              // EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CHANGED, obj.get ());
+            }
+        }
+    },
+    convert_to_variant<ArrangerObjectPtrVariant> (
+      const_cast<ArrangerObject *> (base_obj)));
 }
 
 /**
@@ -122,7 +153,7 @@ ArrangerObject::select (
 bool
 ArrangerObject::is_selected () const
 {
-  auto selections =
+  auto * selections =
     ArrangerObject::get_selections_for_type<ArrangerSelections> (type_);
 
   return selections->contains_object (*this);
@@ -161,51 +192,64 @@ ArrangerObject::create_arranger_selections_from_this () const
   auto sel = ArrangerSelections::new_from_type (arranger_selections_type);
   auto variant = convert_to_variant<ArrangerObjectPtrVariant> (this);
   std::visit (
-    [&] (auto &&obj) { sel->add_object_owned (obj->clone_unique ()); }, variant);
+    [&] (auto &&obj) {
+      using ObjT = base_type<decltype (obj)>;
+      if constexpr (std::is_same_v<ObjT, Velocity>)
+        {
+          auto * midi_note = obj->get_midi_note ();
+          sel->add_object_owned (midi_note->clone_unique ());
+        }
+      else
+        {
+          sel->add_object_owned (obj->clone_unique ());
+        }
+    },
+    variant);
   return sel;
 }
 
-std::shared_ptr<ArrangerObject>
-ArrangerObject::remove_from_project (bool fire_events)
+std::optional<ArrangerObjectPtrVariant>
+ArrangerObject::remove_from_project (bool free_obj, bool fire_events)
 {
   /* TODO make sure no event contains this object */
   /*event_manager_remove_events_for_obj (*/
   /*EVENT_MANAGER, obj);*/
 
   return std::visit (
-    [&] (auto &&obj) -> std::shared_ptr<ArrangerObject> {
+    [&] (auto &&obj) -> std::optional<ArrangerObjectPtrVariant> {
       using ObjT = base_type<decltype (obj)>;
-
-      /* get a shared ptr to prevent this from getting deleted (we will also
-       * return this)*/
-      auto ret = shared_from_this ();
 
       if constexpr (std::is_same_v<ObjT, Velocity>)
         {
-          // nothing to do
+          z_return_val_if_reached (std::nullopt);
         }
       else if constexpr (std::derived_from<ObjT, RegionOwnedObject>)
         {
           auto * region = obj->get_region ();
-          z_return_val_if_fail (region, nullptr);
-          region->remove_object (*obj, fire_events);
+          z_return_val_if_fail (region, std::nullopt);
+          region->remove_object (*obj, free_obj, fire_events);
           region->update_link_group ();
         }
       else if constexpr (std::derived_from<ObjT, Region>)
         {
           auto * owner = obj->get_region_owner ();
-          z_return_val_if_fail (owner, nullptr);
-          owner->remove_region (*obj, fire_events);
+          z_return_val_if_fail (owner, std::nullopt);
+          owner->remove_region (*obj, free_obj, fire_events);
         }
       else if constexpr (std::is_same_v<ObjT, ScaleObject>)
         {
-          P_CHORD_TRACK->remove_scale (*obj);
+          P_CHORD_TRACK->remove_scale (*obj, free_obj);
         }
       else if constexpr (std::is_same_v<ObjT, Marker>)
         {
-          P_MARKER_TRACK->remove_marker (*obj, fire_events);
+          P_MARKER_TRACK->remove_marker (*obj, free_obj, fire_events);
         }
-      return ret;
+
+      if (free_obj)
+        {
+          return std::nullopt;
+        }
+      return obj;
     },
     convert_to_variant<ArrangerObjectPtrVariant> (this));
 }
@@ -216,12 +260,12 @@ ArrangerObject::get_position_ptr (PositionType pos_type)
   switch (pos_type)
     {
     case PositionType::Start:
-      return &pos_;
+      return pos_;
     case PositionType::End:
       {
         auto lo = dynamic_cast<LengthableObject *> (this);
         z_return_val_if_fail (lo != nullptr, nullptr);
-        return &lo->end_pos_;
+        return lo->end_pos_;
       }
     case PositionType::ClipStart:
       {
@@ -268,7 +312,7 @@ ArrangerObject::is_position_valid (const Position &pos, PositionType pos_type)
         {
           auto lo = dynamic_cast<const LengthableObject *> (this);
           z_return_val_if_fail (lo != nullptr, false);
-          if (pos >= lo->end_pos_)
+          if (pos >= *lo->end_pos_)
             return false;
 
           if (!type_owned_by_region (type_))
@@ -282,7 +326,7 @@ ArrangerObject::is_position_valid (const Position &pos, PositionType pos_type)
               auto fo = dynamic_cast<const FadeableObject *> (this);
               z_return_val_if_fail (fo != nullptr, false);
               signed_frame_t frames_diff =
-                pos.get_total_frames () - this->pos_.get_total_frames ();
+                pos.get_total_frames () - this->pos_->get_total_frames ();
               Position expected_fade_out = fo->fade_out_pos_;
               expected_fade_out.add_frames (-frames_diff);
               if (expected_fade_out <= fo->fade_in_pos_)
@@ -341,14 +385,14 @@ ArrangerObject::is_position_valid (const Position &pos, PositionType pos_type)
       {
         auto lo = dynamic_cast<const LengthableObject *> (this);
         z_return_val_if_fail (lo != nullptr, false);
-        bool is_valid = pos > this->pos_;
+        bool is_valid = pos > *pos_;
 
         if (can_fade ())
           {
             auto fo = dynamic_cast<const FadeableObject *> (this);
             z_return_val_if_fail (fo != nullptr, false);
             signed_frame_t frames_diff =
-              pos.get_total_frames () - lo->end_pos_.get_total_frames ();
+              pos.get_total_frames () - lo->end_pos_->get_total_frames ();
             Position expected_fade_out = fo->fade_out_pos_;
             expected_fade_out.add_frames (frames_diff);
             if (expected_fade_out <= fo->fade_in_pos_)
@@ -362,7 +406,7 @@ ArrangerObject::is_position_valid (const Position &pos, PositionType pos_type)
         auto fo = dynamic_cast<const FadeableObject *> (this);
         z_return_val_if_fail (fo != nullptr, false);
         Position local_end_pos (
-          fo->end_pos_.get_total_frames () - this->pos_.get_total_frames ());
+          fo->end_pos_->get_total_frames () - this->pos_->get_total_frames ());
         return pos >= Position () && pos.get_total_frames () >= 0
                && pos < local_end_pos && pos < fo->fade_out_pos_;
       }
@@ -372,7 +416,7 @@ ArrangerObject::is_position_valid (const Position &pos, PositionType pos_type)
         auto fo = dynamic_cast<const FadeableObject *> (this);
         z_return_val_if_fail (fo != nullptr, false);
         Position local_end_pos (
-          fo->end_pos_.get_total_frames () - this->pos_.get_total_frames ());
+          fo->end_pos_->get_total_frames () - this->pos_->get_total_frames ());
         return pos >= Position () && pos <= local_end_pos
                && pos > fo->fade_in_pos_;
       }
@@ -583,16 +627,16 @@ ArrangerObject::
             }
         }
 
-      obj->pos_.update (from_ticks, ratio);
+      obj->pos_->update (from_ticks, ratio);
       if constexpr (std::derived_from<ObjT, LengthableObject>)
         {
-          obj->end_pos_.update (from_ticks, ratio);
+          obj->end_pos_->update (from_ticks, ratio);
 
           if (ROUTER->is_processing_kickoff_thread ())
             {
               /* do some validation */
               z_return_if_fail (
-                obj->is_position_valid (obj->end_pos_, PositionType::End));
+                obj->is_position_valid (*obj->end_pos_, PositionType::End));
             }
         }
       if constexpr (std::derived_from<ObjT, LoopableObject>)
@@ -631,7 +675,7 @@ ArrangerObject::
                     }
                 }
               z_return_if_fail_cmp (obj->loop_end_pos_.frames_, >=, 0);
-              signed_frame_t tl_frames = obj->end_pos_.frames_ - 1;
+              signed_frame_t tl_frames = obj->end_pos_->frames_ - 1;
               signed_frame_t local_frames;
               AudioClip *    clip;
               local_frames = obj->timeline_frames_to_local (tl_frames, true);
@@ -743,7 +787,7 @@ ArrangerObject::edit_finish (int action_edit_type) const
     }
   catch (const ZrythmException &e)
     {
-      e.handle (_ ("Failed to edit object"));
+      e.handle (QObject::tr ("Failed to edit object"));
     }
   arranger->start_object.reset ();
 #endif
@@ -768,39 +812,45 @@ ArrangerObject::pos_setter (const Position * pos)
 bool
 ArrangerObject::are_members_valid (bool is_project) const
 {
-  if (!is_position_valid (pos_, PositionType::Start))
+  if (!is_position_valid (*pos_, PositionType::Start))
     {
       if (ZRYTHM_TESTING)
         {
-          z_info ("invalid start pos {}", pos_);
+          z_info ("invalid start pos {}", *pos_);
         }
       return false;
     }
   return true;
 }
 
-Track *
+TrackPtrVariant
 ArrangerObject::get_track () const
 {
-  if (track_ != nullptr)
-    return track_;
+  if (track_)
+    return *track_;
 
-  z_return_val_if_fail (track_name_hash_ != 0, nullptr);
+  if (track_name_hash_ == 0) [[unlikely]]
+    {
+      throw ZrythmException ("track_name_hash_ is 0");
+    }
 
   const auto &tracklist =
     is_auditioner_ ? *SAMPLE_PROCESSOR->tracklist_ : *TRACKLIST;
 
-  auto track = tracklist.find_track_by_name_hash (track_name_hash_);
-  z_return_val_if_fail (track, nullptr);
-  return track;
+  auto track_opt = tracklist.find_track_by_name_hash (track_name_hash_);
+  if (!track_opt) [[unlikely]]
+    {
+      throw ZrythmException ("track not found");
+    }
+
+  return *track_opt;
 }
 
 bool
 ArrangerObject::is_frozen () const
 {
-  auto track = get_track ();
-  z_return_val_if_fail (track, false);
-  return track->frozen_;
+  return std::visit (
+    [&] (auto &&track) { return track->frozen_; }, get_track ());
 }
 
 bool
@@ -813,11 +863,14 @@ ArrangerObject::is_hovered () const
 void
 ArrangerObject::copy_members_from (const ArrangerObject &other)
 {
-  pos_ = other.pos_;
+  pos_ = other.pos_->clone_raw_ptr ();
+  if (auto * qobject = dynamic_cast<QObject *> (this))
+    {
+      pos_->setParent (qobject);
+    }
   type_ = other.type_;
   track_name_hash_ = other.track_name_hash_;
   deleted_temporarily_ = other.deleted_temporarily_;
-  // flags_ = other.flags_;
 }
 
 void

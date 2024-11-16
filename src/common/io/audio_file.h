@@ -14,8 +14,6 @@
 
 #include <memory>
 
-#include <glib.h>
-
 #include "juce_wrapper.h"
 
 /**

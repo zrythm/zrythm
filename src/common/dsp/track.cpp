@@ -38,8 +38,6 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
-
 Track::Track (
   Type        type,
   std::string name,
@@ -233,14 +231,14 @@ Track::type_get_from_plugin_descriptor (
 }
 
 template <FinalRegionSubclass T>
-std::shared_ptr<T>
+T *
 Track::insert_region (
-  std::shared_ptr<T> region,
-  AutomationTrack *  at,
-  int                lane_pos,
-  int                idx,
-  bool               gen_name,
-  bool               fire_events)
+  T *               region,
+  AutomationTrack * at,
+  int               lane_pos,
+  int               idx,
+  bool              gen_name,
+  bool              fire_events)
 {
   z_return_val_if_fail (region->validate (false, 0), nullptr);
   z_return_val_if_fail (
@@ -256,7 +254,7 @@ Track::insert_region (
     "inserting region '{}' to track '{}' at lane {} (idx {})", region->name_,
     name_, lane_pos, idx);
 
-  std::shared_ptr<T> added_region;
+  T * added_region = nullptr;
   if constexpr (RegionImpl<T>::is_laned ())
     {
       using LanedTrackT = TrackLaneImpl<T>::LanedTrackT;
@@ -271,11 +269,13 @@ Track::insert_region (
       z_return_val_if_fail (lane, nullptr);
       if (idx == -1)
         {
-          added_region = lane->add_region (region);
+          lane->add_region (region);
+          added_region = region;
         }
       else
         {
-          added_region = lane->insert_region (region, idx);
+          lane->insert_region (region, idx);
+          added_region = region;
         }
       z_return_val_if_fail (added_region != nullptr, nullptr);
       z_return_val_if_fail (added_region->id_.idx_ >= 0, nullptr);
@@ -285,11 +285,13 @@ Track::insert_region (
       z_return_val_if_fail (at, nullptr);
       if (idx == -1)
         {
-          added_region = at->add_region (region);
+          at->add_region (region);
+          added_region = region;
         }
       else
         {
-          added_region = at->insert_region (region, idx);
+          at->insert_region (region, idx);
+          added_region = region;
         }
     }
   else if constexpr (std::is_same_v<T, ChordRegion>)
@@ -297,10 +299,13 @@ Track::insert_region (
       auto chord_track = dynamic_cast<ChordTrack *> (this);
       z_return_val_if_fail (chord_track, nullptr);
 
-      added_region = chord_track->RegionOwnerImpl<ChordRegion>::insert_region (
-        region, idx == -1 ? chord_track->regions_.size () : idx);
+      chord_track->RegionOwnerImpl<ChordRegion>::insert_region (
+        region, idx == -1 ? chord_track->region_list_->regions_.size () : idx);
+      added_region = region;
     }
   z_return_val_if_fail (added_region, nullptr);
+  z_return_val_if_fail (
+    added_region->track_name_hash_ == get_name_hash (), nullptr);
 
   /* write clip if audio region */
   if constexpr (std::is_same_v<T, AudioRegion>)
@@ -326,38 +331,6 @@ Track::insert_region (
     }
 
   return added_region;
-}
-
-std::shared_ptr<Region>
-Track::add_region_plain (
-  std::shared_ptr<Region> region,
-  AutomationTrack *       at,
-  int                     lane_pos,
-  bool                    gen_name,
-  bool                    fire_events)
-{
-  std::visit (
-    [&] (auto &&region_ptr) {
-      using T = base_type<decltype (region_ptr)>;
-      add_region<T> (
-        dynamic_pointer_cast<T> (region), at, lane_pos, gen_name, fire_events);
-    },
-    convert_to_variant<RegionPtrVariant> (region.get ()));
-  return region;
-}
-
-template <typename T>
-T *
-Track::find_by_name (const std::string &name)
-{
-  static_assert (std::derived_from<T, Track>);
-  auto it = std::ranges::find_if (TRACKLIST->tracks_, [&name] (const auto &tr) {
-    auto track = Track::from_variant (tr);
-    return track->name_ == name;
-  });
-  return it != TRACKLIST->tracks_.end ()
-           ? dynamic_cast<T *> (Track::from_variant (*it))
-           : nullptr;
 }
 
 void
@@ -571,7 +544,7 @@ freeze_progress_close_cb (ExportData * data)
       if (!clip)
         {
           HANDLE_ERROR (
-            err, _ ("Failed creating audio clip from file at {}"),
+            err, QObject::tr ("Failed creating audio clip from file at {}"),
             data->info->file_uri);
           return;
         }
@@ -814,62 +787,61 @@ Track::unselect_all ()
 void
 Track::append_objects (std::vector<ArrangerObject *> &objs) const
 {
-  if (auto * laned_track = dynamic_cast<const LanedTrack *> (this))
-    {
-      std::visit (
-        [&objs] (auto &&lt) {
-          using TrackT = base_type<decltype (lt)>;
-          for (auto &lane_var : lt->lanes_)
+  std::visit (
+    [&] (auto &&self) {
+      using TrackT = base_type<decltype (self)>;
+
+      if constexpr (std::derived_from<TrackT, LanedTrack>)
+        {
+          for (auto &lane_var : self->lanes_)
             {
               using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
               auto lane = std::get<TrackLaneT *> (lane_var);
-              for (auto &region : lane->regions_)
-                objs.push_back (region.get ());
+              for (auto &region_var : lane->region_list_->regions_)
+                {
+                  auto * region =
+                    std::get<typename TrackLaneT::RegionT *> (region_var);
+                  objs.push_back (region);
+                }
             }
-        },
-        convert_to_variant<LanedTrackPtrVariant> (laned_track));
-    }
+        }
 
-  auto * region_owner = dynamic_cast<const RegionOwner *> (this);
-  if (region_owner)
-    {
-      std::visit (
-        [&objs] (auto &&casted_region_owner) {
-          for (auto &region : casted_region_owner->regions_)
+      if constexpr (std::derived_from<TrackT, RegionOwner>)
+        {
+          for (auto &region_var : self->region_list_->regions_)
             {
-              objs.push_back (region.get ());
+              auto * region = std::get<typename TrackT::RegionTPtr> (region_var);
+              objs.push_back (region);
             }
-        },
-        convert_to_variant<RegionOwnerPtrVariant> (region_owner));
-    }
+        }
 
-  if (type_ == Type::Chord)
-    {
-      auto * chord_track = dynamic_cast<const ChordTrack *> (this);
-      for (auto &scale : chord_track->scales_)
+      if constexpr (std::is_same_v<TrackT, ChordTrack>)
         {
-          objs.push_back (scale.get ());
-        }
-    }
-  else if (type_ == Type::Marker)
-    {
-      auto * marker_track = dynamic_cast<const MarkerTrack *> (this);
-      for (auto &marker : marker_track->markers_)
-        {
-          objs.push_back (marker.get ());
-        }
-    }
-  auto * automatable_track = dynamic_cast<const AutomatableTrack *> (this);
-  if (automatable_track)
-    {
-      for (auto &at : automatable_track->get_automation_tracklist ().ats_)
-        {
-          for (auto &region : at->regions_)
+          for (auto &scale : self->scales_)
             {
-              objs.push_back (region.get ());
+              objs.push_back (scale);
             }
         }
-    }
+      else if constexpr (std::is_same_v<TrackT, MarkerTrack>)
+        {
+          for (auto &marker : self->markers_)
+            {
+              objs.push_back (marker);
+            }
+        }
+      if constexpr (std::derived_from<TrackT, AutomatableTrack>)
+        {
+          for (auto &at : self->get_automation_tracklist ().ats_)
+            {
+              for (auto &region_var : at->region_list_->regions_)
+                {
+                  auto * region = std::get<AutomationRegion *> (region_var);
+                  objs.push_back (region);
+                }
+            }
+        }
+    },
+    convert_to_variant<TrackPtrVariant> (const_cast<Track *> (this)));
 }
 
 bool
@@ -924,7 +896,7 @@ Track::set_name_with_action_full (const std::string &name)
     }
   catch (const ZrythmException &ex)
     {
-      ex.handle (_ ("Failed to rename track"));
+      ex.handle (QObject::tr ("Failed to rename track"));
       return false;
     }
 }
@@ -1122,7 +1094,7 @@ Track::set_comment (const std::string &comment, bool undoable)
         }
       catch (const ZrythmException &e)
         {
-          e.handle (_ ("Failed to set track comment"));
+          e.handle (QObject::tr ("Failed to set track comment"));
           return;
         }
     }
@@ -1146,7 +1118,7 @@ Track::set_color (const Color &color, bool undoable, bool fire_events)
         }
       catch (const ZrythmException &e)
         {
-          e.handle (_ ("Failed to set track color"));
+          e.handle (QObject::tr ("Failed to set track color"));
           return;
         }
     }
@@ -1175,7 +1147,7 @@ Track::set_icon (const std::string &icon_name, bool undoable, bool fire_events)
         }
       catch (const ZrythmException &e)
         {
-          e.handle (_ ("Cannot set track icon"));
+          e.handle (QObject::tr ("Cannot set track icon"));
           return;
         }
     }
@@ -1246,19 +1218,25 @@ Track::mark_for_bounce (
               using TrackT = base_type<decltype (laned_track)>;
               for (auto &lane_var : laned_track->lanes_)
                 {
-                  auto lane = std::get<
-                    typename TrackT::LanedTrackImpl::TrackLaneType *> (lane_var);
-                  for (auto &region : lane->regions_)
-                    if (region->is_midi () || region->is_audio ())
+                  using LaneT = TrackT::TrackLaneType;
+                  auto lane = std::get<LaneT *> (lane_var);
+                  for (auto &region_var : lane->region_list_->regions_)
+                    {
+                      auto region =
+                        std::get<typename LaneT::RegionTPtr> (region_var);
                       region->bounce_ = bounce;
+                    }
                 }
             },
             convert_to_variant<LanedTrackPtrVariant> (this));
         }
 
       if (auto chord_track = dynamic_cast<ChordTrack *> (this))
-        for (auto &region : chord_track->regions_)
-          region->bounce_ = bounce;
+        for (auto &region_var : chord_track->region_list_->regions_)
+          {
+            auto region = std::get<ChordRegion *> (region_var);
+            region->bounce_ = bounce;
+          }
     }
 
   if (auto channel_track = dynamic_cast<ChannelTrack *> (this))
@@ -1269,13 +1247,23 @@ Track::mark_for_bounce (
     }
 
   if (mark_children)
-    if (auto group_target_track = dynamic_cast<GroupTargetTrack *> (this))
-      for (auto child_hash : group_target_track->children_)
-        if (auto child = TRACKLIST->find_track_by_name_hash<Track> (child_hash))
-          {
-            child->bounce_to_master_ = bounce_to_master_;
-            child->mark_for_bounce (bounce, mark_regions, true, false);
-          }
+    {
+      if (auto group_target_track = dynamic_cast<GroupTargetTrack *> (this))
+        {
+          for (auto child_hash : group_target_track->children_)
+            {
+              if (auto child = TRACKLIST->find_track_by_name_hash (child_hash))
+                {
+                  std::visit (
+                    [&] (auto &&c) {
+                      c->bounce_to_master_ = bounce_to_master_;
+                      c->mark_for_bounce (bounce, mark_regions, true, false);
+                    },
+                    *child);
+                }
+            }
+        }
+    }
 }
 
 #if 0
@@ -1358,7 +1346,7 @@ Track::set_enabled (
         }
       catch (const ZrythmException &e)
         {
-          e.handle (_ ("Cannot set track enabled status"));
+          e.handle (QObject::tr ("Cannot set track enabled status"));
           return;
         }
     }
@@ -1539,9 +1527,9 @@ Track::generate_edit_context_menu (int num_selected)
       char * str;
       /* delete track */
       if (num_selected == 1)
-        str = g_strdup (_ ("_Delete Track"));
+        str = g_strdup (QObject::tr ("_Delete Track"));
       else
-        str = g_strdup (_ ("_Delete Tracks"));
+        str = g_strdup (QObject::tr ("_Delete Tracks"));
       menuitem = g_menu_item_new (str, "app.delete-selected-tracks");
       g_menu_item_set_attribute (
         menuitem, "verb-icon", "s",
@@ -1551,9 +1539,9 @@ Track::generate_edit_context_menu (int num_selected)
 
       /* duplicate track */
       if (num_selected == 1)
-        str = g_strdup (_ ("Duplicate Track"));
+        str = g_strdup (QObject::tr ("Duplicate Track"));
       else
-        str = g_strdup (_ ("Duplicate Tracks"));
+        str = g_strdup (QObject::tr ("Duplicate Tracks"));
       menuitem = g_menu_item_new (str, "app.duplicate-selected-tracks");
       g_menu_item_set_attribute (
         menuitem, "verb-icon", "s", "gnome-icon-library-copy-symbolic");
@@ -1573,27 +1561,27 @@ Track::generate_edit_context_menu (int num_selected)
 #  endif
 
   menuitem = g_menu_item_new (
-    num_selected == 1 ? _ ("Hide Track") : _ ("Hide Tracks"),
+    num_selected == 1 ? QObject::tr ("Hide Track") : QObject::tr ("Hide Tracks"),
     "app.hide-selected-tracks");
   g_menu_item_set_attribute (
     menuitem, "verb-icon", "s", "gnome-icon-library-eye-not-looking-symbolic");
   g_menu_append_item (edit_submenu, menuitem);
 
   menuitem = g_menu_item_new (
-    num_selected == 1 ? _ ("Pin/Unpin Track") : _ ("Pin/Unpin Tracks"),
+    num_selected == 1 ? QObject::tr ("Pin/Unpin Track") : QObject::tr ("Pin/Unpin Tracks"),
     "app.pin-selected-tracks");
   g_menu_item_set_attribute (
     menuitem, "verb-icon", "s", "gnome-icon-library-pin-symbolic");
   g_menu_append_item (edit_submenu, menuitem);
 
-  menuitem = g_menu_item_new (_ ("Change Color..."), "app.change-track-color");
+  menuitem = g_menu_item_new (QObject::tr ("Change Color..."), "app.change-track-color");
   g_menu_item_set_attribute (
     menuitem, "verb-icon", "s", "gnome-icon-library-color-picker-symbolic");
   g_menu_append_item (edit_submenu, menuitem);
 
   if (num_selected == 1)
     {
-      menuitem = g_menu_item_new (_ ("Rename..."), "app.rename-track");
+      menuitem = g_menu_item_new (QObject::tr ("Rename..."), "app.rename-track");
       g_menu_item_set_attribute (
         menuitem, "verb-icon", "s", "gnome-icon-library-text-insert-symbolic");
       g_menu_append_item (edit_submenu, menuitem);
@@ -1609,16 +1597,6 @@ Track::is_pinned () const
   return pos_ < TRACKLIST->pinned_tracks_cutoff_;
 }
 
-template FoldableTrack *
-Track::find_by_name (const std::string &);
-template RecordableTrack *
-Track::find_by_name (const std::string &);
-template AutomatableTrack *
-Track::find_by_name (const std::string &);
-template Track *
-Track::find_by_name (const std::string &);
-template ChordTrack *
-Track::find_by_name (const std::string &);
 template zrythm::plugins::Plugin *
 Track::insert_plugin (
   std::unique_ptr<zrythm::plugins::Plugin> &&pl,
@@ -1643,3 +1621,32 @@ Track::insert_plugin (
   bool                                                  gen_automatables,
   bool                                                  recalc_graph,
   bool                                                  fire_events);
+
+template MidiRegion *
+Track::add_region (
+  MidiRegion *      region,
+  AutomationTrack * at,
+  int               lane_pos,
+  bool              gen_name,
+  bool              fire_events);
+template AudioRegion *
+Track::add_region (
+  AudioRegion *     region,
+  AutomationTrack * at,
+  int               lane_pos,
+  bool              gen_name,
+  bool              fire_events);
+template ChordRegion *
+Track::add_region (
+  ChordRegion *     region,
+  AutomationTrack * at,
+  int               lane_pos,
+  bool              gen_name,
+  bool              fire_events);
+template AutomationRegion *
+Track::add_region (
+  AutomationRegion * region,
+  AutomationTrack *  at,
+  int                lane_pos,
+  bool               gen_name,
+  bool               fire_events);

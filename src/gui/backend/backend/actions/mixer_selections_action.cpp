@@ -14,11 +14,11 @@
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/mixer_selections.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/settings/settings.h"
+#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
+using namespace zrythm;
 
 void
 MixerSelectionsAction::init_loaded_impl ()
@@ -104,8 +104,9 @@ void
 MixerSelectionsAction::
   clone_ats (const FullMixerSelections &ms, bool deleted, int start_slot)
 {
-  auto track =
-    TRACKLIST->find_track_by_name_hash<AutomatableTrack> (ms.track_name_hash_);
+  auto * track = std::visit (
+    [&] (auto &&t) { return dynamic_cast<AutomatableTrack *> (t); },
+    TRACKLIST->find_track_by_name_hash (ms.track_name_hash_).value ());
   z_return_if_fail (track);
   z_debug ("cloning automation tracks for track {}", track->name_);
   auto &atl = track->automation_tracklist_;
@@ -130,7 +131,7 @@ MixerSelectionsAction::
               ats_.emplace_back (at->clone_unique ());
             }
           count++;
-          regions_count += at->regions_.size ();
+          regions_count += at->region_list_->regions_.size ();
         }
     }
   z_debug (
@@ -143,21 +144,21 @@ MixerSelectionsAction::copy_at_regions (
   AutomationTrack       &dest,
   const AutomationTrack &src)
 {
-  dest.regions_.clear ();
-  dest.regions_.reserve (src.regions_.size ());
+  dest.region_list_->regions_.clear ();
+  dest.region_list_->regions_.reserve (src.region_list_->regions_.size ());
 
-  for (auto &src_region : src.regions_)
-    {
-      auto dest_region = src_region->clone_shared ();
-      dest_region->set_automation_track (dest);
-      dest.regions_.emplace_back (std::move (dest_region));
-    }
+  src.foreach_region ([&] (auto &src_r) {
+    auto dest_region = src_r.clone_raw_ptr ();
+    dest_region->set_automation_track (dest);
+    dest_region->setParent (&dest);
+    dest.region_list_->regions_.push_back (dest_region);
+  });
 
-  if (!dest.regions_.empty ())
+  if (!dest.region_list_->regions_.empty ())
     {
       z_debug (
-        "reverted %zu regions for automation track %d:", dest.regions_.size (),
-        dest.index_);
+        "reverted {} regions for automation track {}:",
+        dest.region_list_->regions_.size (), dest.index_);
       dest.port_id_->print ();
     }
 }
@@ -190,7 +191,7 @@ MixerSelectionsAction::revert_automation (
         cloned_at->port_id_->sym_);
 
       copy_at_regions (*actual_at, *cloned_at);
-      num_reverted_regions += actual_at->regions_.size ();
+      num_reverted_regions += actual_at->region_list_->regions_.size ();
       num_reverted_ats++;
     }
 
@@ -288,16 +289,12 @@ void
 MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
 {
   AutomatableTrack * track = nullptr;
-  if (create)
-    {
-      track = TRACKLIST->find_track_by_name_hash<AutomatableTrack> (
-        to_track_name_hash_);
-    }
-  else
-    {
-      track = TRACKLIST->find_track_by_name_hash<AutomatableTrack> (
-        ms_before_->track_name_hash_);
-    }
+  track = std::visit (
+    [&] (auto &&t) { return dynamic_cast<AutomatableTrack *> (t); },
+    TRACKLIST
+      ->find_track_by_name_hash (
+        create ? to_track_name_hash_ : ms_before_->track_name_hash_)
+      .value ());
   z_return_if_fail (track);
 
   Channel * ch =
@@ -383,8 +380,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
               /* set visible from settings */
               added_pl->visible_ =
                 ZRYTHM_HAVE_UI
-                && g_settings_get_boolean (
-                  S_P_PLUGINS_UIS, "open-on-instantiate");
+                && gui::SettingsManager::openPluginsOnInstantiation ();
             }
           else if (delete_)
             {
@@ -489,7 +485,10 @@ void
 MixerSelectionsAction::do_or_undo_change_status (bool do_it)
 {
   auto ms = ms_before_.get ();
-  auto track = TRACKLIST->find_track_by_name_hash (ms_before_->track_name_hash_);
+  auto * track = std::visit (
+    [&] (auto &&t) { return dynamic_cast<Track *> (t); },
+    TRACKLIST->find_track_by_name_hash (ms_before_->track_name_hash_).value ());
+
   auto ch =
     track->has_channel ()
       ? dynamic_cast<ChannelTrack *> (track)->channel_
@@ -514,7 +513,9 @@ void
 MixerSelectionsAction::do_or_undo_change_load_behavior (bool do_it)
 {
   auto ms = ms_before_.get ();
-  auto track = TRACKLIST->find_track_by_name_hash (ms_before_->track_name_hash_);
+  auto track = std::visit (
+    [&] (auto &&t) { return dynamic_cast<Track *> (t); },
+    TRACKLIST->find_track_by_name_hash (ms_before_->track_name_hash_).value ());
   auto ch =
     track->has_channel ()
       ? dynamic_cast<ChannelTrack *> (track)->channel_
@@ -559,9 +560,13 @@ MixerSelectionsAction::do_or_undo_change_load_behavior (bool do_it)
 
   if (ZRYTHM_HAVE_UI)
     {
+// TODO
+#if 0
       ui_show_error_message (
-        _ ("Project Reload Needed"),
-        _ ("Plugin load behavior changes will only take effect after you save and re-load the project"));
+        QObject::tr ("Project Reload Needed"),
+        QObject::tr (
+          "Plugin load behavior changes will only take effect after you save and re-load the project"));
+#endif
     }
 
   if (ch)
@@ -582,7 +587,7 @@ MixerSelectionsAction::copy_automation_from_track1_to_track2 (
   for (auto &prev_at : prev_atl.ats_)
     {
       if (
-        prev_at->regions_.empty ()
+        prev_at->region_list_->regions_.empty ()
         || prev_at->port_id_->owner_type_ != PortIdentifier::OwnerType::Plugin
         || prev_at->port_id_->plugin_id_.slot_ != from_slot
         || prev_at->port_id_->plugin_id_.slot_type_ != slot_type)
@@ -604,11 +609,10 @@ MixerSelectionsAction::copy_automation_from_track1_to_track2 (
             }
 
           /* copy the automation regions */
-          for (auto &prev_region : prev_at->regions_)
-            {
-              to_track.add_region (
-                prev_region->clone_shared (), at, -1, false, false);
-            }
+          prev_at->foreach_region ([&] (auto &prev_region) {
+            to_track.add_region (
+              prev_region.clone_raw_ptr (), at, -1, false, false);
+          });
           break;
         }
     }
@@ -620,8 +624,9 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
   auto                            own_ms = ms_before_.get ();
   zrythm::plugins::PluginSlotType from_slot_type = own_ms->type_;
   zrythm::plugins::PluginSlotType to_slot_type = slot_type_;
-  auto from_tr = TRACKLIST->find_track_by_name_hash<AutomatableTrack> (
-    own_ms->track_name_hash_);
+  auto *                          from_tr = std::visit (
+    [&] (auto &&t) { return dynamic_cast<AutomatableTrack *> (t); },
+    TRACKLIST->find_track_by_name_hash (own_ms->track_name_hash_).value ());
   z_return_if_fail (from_tr);
   bool move = !copy;
 
@@ -647,8 +652,9 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
       /* else if not new track/channel */
       else
         {
-          to_tr = TRACKLIST->find_track_by_name_hash<AutomatableTrack> (
-            to_track_name_hash_);
+          to_tr = std::visit (
+            [&] (auto &&t) { return dynamic_cast<AutomatableTrack *> (t); },
+            TRACKLIST->find_track_by_name_hash (to_track_name_hash_).value ());
         }
 
       [[maybe_unused]] auto to_ch =
@@ -769,7 +775,9 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
   /* else if undoing (deleting/moving plugins back) */
   else
     {
-      Track * to_tr = TRACKLIST->find_track_by_name_hash (to_track_name_hash_);
+      Track * to_tr = std::visit (
+        [&] (auto &&t) { return dynamic_cast<Track *> (t); },
+        TRACKLIST->find_track_by_name_hash (to_track_name_hash_).value ());
       [[maybe_unused]] Channel * to_ch =
         to_tr->has_channel ()
           ? dynamic_cast<ChannelTrack *> (to_tr)->channel_
@@ -907,7 +915,7 @@ MixerSelectionsAction::undo_impl ()
   do_or_undo (false);
 }
 
-std::string
+QString
 MixerSelectionsAction::to_string () const
 {
   switch (mixer_selections_action_type_)
@@ -915,68 +923,74 @@ MixerSelectionsAction::to_string () const
     case Type::Create:
       if (num_plugins_ == 1)
         {
-          return format_str (_ ("Create {}"), setting_->get_name ());
+          return format_qstr (QObject::tr ("Create {}"), setting_->get_name ());
         }
       else
         {
-          return format_str (
-            _ ("Create {} {}s"), num_plugins_, setting_->get_name ());
+          return format_qstr (
+            QObject::tr ("Create {} {}s"), num_plugins_, setting_->get_name ());
         }
     case Type::Delete:
       if (ms_before_->slots_.size () == 1)
         {
-          return _ ("Delete Plugin");
+          return QObject::tr ("Delete Plugin");
         }
       else
         {
-          return format_str (
-            _ ("Delete {} Plugins"), ms_before_->slots_.size ());
+          return format_qstr (
+            QObject::tr ("Delete {} Plugins"), ms_before_->slots_.size ());
         }
     case Type::Move:
       if (ms_before_->slots_.size () == 1)
         {
-          return format_str (
-            _ ("Move {}"), ms_before_->plugins_[0]->get_name ());
+          return format_qstr (
+            QObject::tr ("Move {}"), ms_before_->plugins_[0]->get_name ());
         }
       else
         {
-          return format_str (_ ("Move {} Plugins"), ms_before_->slots_.size ());
+          return format_qstr (
+            QObject::tr ("Move {} Plugins"), ms_before_->slots_.size ());
         }
     case Type::Copy:
       if (ms_before_->slots_.size () == 1)
         {
-          return format_str (
-            _ ("Copy {}"), ms_before_->plugins_[0]->get_name ());
+          return format_qstr (
+            QObject::tr ("Copy {}"), ms_before_->plugins_[0]->get_name ());
         }
       else
         {
-          return format_str (_ ("Copy {} Plugins"), ms_before_->slots_.size ());
+          return format_qstr (
+            QObject::tr ("Copy {} Plugins"), ms_before_->slots_.size ());
         }
     case Type::Paste:
       if (ms_before_->slots_.size () == 1)
         {
-          return format_str (
-            _ ("Paste {}"), ms_before_->plugins_[0]->get_name ());
+          return format_qstr (
+            QObject::tr ("Paste {}"), ms_before_->plugins_[0]->get_name ());
         }
       else
         {
-          return format_str (_ ("Paste {} Plugins"), ms_before_->slots_.size ());
+          return format_qstr (
+            QObject::tr ("Paste {} Plugins"), ms_before_->slots_.size ());
         }
     case Type::ChangeStatus:
       if (ms_before_->slots_.size () == 1)
         {
-          return format_str (
-            _ ("Change Status for {}"), ms_before_->plugins_[0]->get_name ());
+          return format_qstr (
+            QObject::tr ("Change Status for {}"),
+            ms_before_->plugins_[0]->get_name ());
         }
       else
         {
-          return format_str (
-            _ ("Change Status for {} Plugins"), ms_before_->slots_.size ());
+          return format_qstr (
+            QObject::tr ("Change Status for {} Plugins"),
+            ms_before_->slots_.size ());
         }
     case Type::ChangeLoadBehavior:
-      return format_str (
-        _ ("Change Load Behavior for {}"), ms_before_->plugins_[0]->get_name ());
+      return format_qstr (
+        QObject::tr ("Change Load Behavior for {}"),
+        ms_before_->plugins_[0]->get_name ());
     }
 
-  return "";
+  return {};
 }

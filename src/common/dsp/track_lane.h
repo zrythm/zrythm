@@ -21,6 +21,7 @@ template <typename TrackLaneT> class LanedTrackImpl;
  */
 
 #define DEFINE_TRACK_LANE_QML_PROPERTIES(ClassType) \
+  DEFINE_REGION_OWNER_QML_PROPERTIES (ClassType) \
 public: \
   /* ================================================================ */ \
   /* name */ \
@@ -44,22 +45,41 @@ public: \
   /* ================================================================ */ \
   /* height */ \
   /* ================================================================ */ \
-  Q_PROPERTY (double height READ getHeight WRITE setHeight NOTIFY heightChanged) \
+  Q_PROPERTY ( \
+    double height READ getHeight WRITE setHeight NOTIFY heightChanged) \
   double getHeight () const \
   { \
     return height_; \
   } \
   void setHeight (const double height) \
   { \
-    if (math_doubles_equal(height_, height)) \
+    if (math_doubles_equal (height_, height)) \
       return; \
 \
     height_ = height; \
     Q_EMIT heightChanged (height); \
   } \
 \
-  Q_SIGNAL void heightChanged (double height);
-
+  Q_SIGNAL void heightChanged (double height); \
+  /* ================================================================ */ \
+  /* position */ \
+  /* ================================================================ */ \
+  Q_PROPERTY ( \
+    int position READ getPosition WRITE setPosition NOTIFY positionChanged) \
+  int getPosition () const \
+  { \
+    return pos_; \
+  } \
+  void setPosition (const int position) \
+  { \
+    if (pos_ == position) \
+      return; \
+\
+    pos_ = position; \
+    Q_EMIT positionChanged (position); \
+  } \
+\
+  Q_SIGNAL void positionChanged (int position);
 
 constexpr double TRACK_LANE_DEF_HEIGHT = 48;
 
@@ -74,6 +94,7 @@ class TrackLane : virtual public RegionOwner
 {
 public:
   ~TrackLane () override = default;
+  Q_DISABLE_COPY_MOVE (TrackLane)
 
   std::string get_name () const { return this->name_; }
 
@@ -135,6 +156,7 @@ public:
 public:
   TrackLaneImpl () = default;
   ~TrackLaneImpl () override = default;
+  Q_DISABLE_COPY_MOVE (TrackLaneImpl)
 
   /**
    * Creates a new TrackLane at the given pos in the given Track.

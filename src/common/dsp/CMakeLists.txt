@@ -179,6 +179,8 @@ target_sources(zrythm_lib
     region_link_group.cpp
     region_link_group_manager.h
     region_link_group_manager.cpp
+    region_list.h
+    region_list.cpp
     region_owned_object.h
     region_owned_object.cpp
     region_owner.h
@@ -220,7 +222,6 @@ target_sources(zrythm_lib
     velocity.h
     velocity.cpp
 )
-add_subdirectory(vamp-ports)
 
 # optimized audio
 add_library(zrythm_optimized_audio_lib STATIC

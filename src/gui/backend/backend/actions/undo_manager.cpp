@@ -9,8 +9,6 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
-
 void
 UndoManager::init_loaded ()
 {

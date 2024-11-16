@@ -6,8 +6,6 @@
 #include "common/utils/hash.h"
 #include "common/utils/logger.h"
 
-#include <glib.h>
-
 #include <xxhash.h>
 
 #define BUF_SIZE 16384
@@ -42,9 +40,11 @@ get_xxh32_hash (FILE * stream, char ** hash_str)
   XXH32_canonicalFromHash (&canonical, hash);
   if (hash_str)
     {
-      *hash_str = g_strdup_printf (
-        "%x%x%x%x", canonical.digest[0], canonical.digest[1],
-        canonical.digest[2], canonical.digest[3]);
+      *hash_str = qstrdup (
+        fmt::format (
+          "{:x}{:x}{:x}{:x}", canonical.digest[0], canonical.digest[1],
+          canonical.digest[2], canonical.digest[3])
+          .c_str ());
     }
 
   return hash;
@@ -79,10 +79,13 @@ get_xxh3_64_hash (FILE * stream, char ** hash_str)
   XXH64_canonicalFromHash (&canonical, hash);
   if (hash_str)
     {
-      *hash_str = g_strdup_printf (
-        "%x%x%x%x%x%x%x%x", canonical.digest[0], canonical.digest[1],
-        canonical.digest[2], canonical.digest[3], canonical.digest[4],
-        canonical.digest[5], canonical.digest[6], canonical.digest[7]);
+      *hash_str = qstrdup (
+        fmt::format (
+          "{:x}{:x}{:x}{:x}{:x}{:x}{:x}{:x}", canonical.digest[0],
+          canonical.digest[1], canonical.digest[2], canonical.digest[3],
+          canonical.digest[4], canonical.digest[5], canonical.digest[6],
+          canonical.digest[7])
+          .c_str ());
     }
 
   return hash;
@@ -95,7 +98,7 @@ hash_get_from_file (const std::string &filepath, HashAlgorithm algo)
   z_debug ("calculating hash for {}...", filepath);
 
   FILE * stream = fopen (filepath.c_str (), "rb");
-  z_return_val_if_fail (stream, g_strdup ("INVALID"));
+  z_return_val_if_fail (stream, strdup ("INVALID"));
 
   char * ret_str = NULL;
   switch (algo)
@@ -115,7 +118,7 @@ hash_get_from_file (const std::string &filepath, HashAlgorithm algo)
   z_debug ("hash for {}: {}", filepath, ret_str);
 
   auto ret = std::string (ret_str);
-  g_free (ret_str);
+  free (ret_str);
   return ret;
 }
 

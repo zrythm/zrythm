@@ -16,7 +16,6 @@
 #  include "common/utils/ui.h"
 #  include "gui/backend/backend/project.h"
 
-#  include <glib/gi18n.h>
 #  include <gtk/gtk.h>
 
 /**
@@ -191,7 +190,8 @@ engine_pa_test (GtkWindow * win)
   PaError err = Pa_Initialize ();
   if (err != paNoError)
     {
-      msg = g_strdup_printf (_ ("PortAudio Error: %s"), Pa_GetErrorText (err));
+      msg = g_strdup_printf (
+        QObject::tr ("PortAudio Error: %s"), Pa_GetErrorText (err));
       ui_show_error_message (win, msg);
       g_free (msg);
       return 1;
@@ -202,14 +202,16 @@ engine_pa_test (GtkWindow * win)
     &stream, 2, 2, paFloat32, 48000, 512, nullptr, nullptr);
   if (err != paNoError)
     {
-      msg = g_strdup_printf (_ ("PortAudio Error: %s"), Pa_GetErrorText (err));
+      msg = g_strdup_printf (
+        QObject::tr ("PortAudio Error: %s"), Pa_GetErrorText (err));
       ui_show_error_message (win, msg);
       g_free (msg);
       return 1;
     }
   else if ((err = Pa_Terminate ()) != paNoError)
     {
-      msg = g_strdup_printf (_ ("PortAudio Error: %s"), Pa_GetErrorText (err));
+      msg = g_strdup_printf (
+        QObject::tr ("PortAudio Error: %s"), Pa_GetErrorText (err));
       ui_show_error_message (win, msg);
       g_free (msg);
       return 1;

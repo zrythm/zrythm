@@ -26,12 +26,13 @@ AudioSelections::contains_clip (const AudioClip &clip) const
 bool
 AudioSelections::can_be_pasted_at_impl (const Position pos, const int idx) const
 {
-  Region * r = CLIP_EDITOR->get_region ();
-
-  if (!r || !r->is_audio ())
+  auto r = CLIP_EDITOR->get_region ();
+  if (!r || !std::holds_alternative<AudioRegion *> (r.value ()))
     return false;
 
-  if (r->pos_.frames_ + pos.frames_ < 0)
+  auto * audio_r = std::get<AudioRegion *> (r.value ());
+
+  if (audio_r->pos_->frames_ + pos.frames_ < 0)
     return false;
 
   /* TODO */

@@ -121,9 +121,18 @@ FoldableTrack::
 
   if (trigger_undo)
     {
-      z_return_if_fail (
-        TRACKLIST_SELECTIONS->get_num_tracks () == 1
-        && TRACKLIST_SELECTIONS->get_highest_track () == this);
+      auto highest_track_var = TRACKLIST_SELECTIONS->get_highest_track ();
+      std::visit (
+        [&] (auto &&highest_track) {
+          if (
+            TRACKLIST_SELECTIONS->get_num_tracks () != 1
+            || dynamic_cast<FoldableTrack *> (highest_track) != this)
+            {
+              throw ZrythmException (
+                "Cannot set track folded: not the highest track");
+            }
+        },
+        highest_track_var);
 
       try
         {
@@ -132,7 +141,7 @@ FoldableTrack::
         }
       catch (const ZrythmException &e)
         {
-          e.handle (_ ("Cannot set track folded"));
+          e.handle (QObject::tr ("Cannot set track folded"));
           return;
         }
     }

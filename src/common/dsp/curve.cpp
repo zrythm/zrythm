@@ -34,8 +34,6 @@
 #include "common/utils/math.h"
 #include "common/utils/string.h"
 
-#include <glib/gi18n.h>
-
 #if 0
 static const char *
 curve_algorithm_get_string_id (CurveOptions::Algorithm algo)
@@ -202,9 +200,12 @@ CurveOptions::get_normalized_y (double x, bool start_higher) const
       {
         /* convert curviness to bound */
         static const float bound = 1e-12f;
-        float s = CLAMP (fabsf ((float) curviness_), 0.01f, 1 - bound) * 10.f;
+        float              s =
+          std::clamp (
+            static_cast<float> (std::fabs (curviness_)), 0.01f, 1.f - bound)
+          * 10.f;
         float curviness_for_calc =
-          CLAMP ((10.f - s) / (powf (s, s)), bound, 10.f);
+          std::clamp ((10.f - s) / (std::pow<float> (s, s)), bound, 10.f);
 
         if (!start_higher)
           x = 1.0 - x;
@@ -261,12 +262,12 @@ CurveOptions::get_normalized_y (double x, bool start_higher) const
     default:
       z_return_val_if_reached (-1);
     }
-  return CLAMP (val, 0.0, 1.0);
+  return std::clamp (val, 0.0, 1.0);
 }
 
 CurveFadePreset::CurveFadePreset (
   std::string             id,
-  std::string             label,
+  QString                 label,
   CurveOptions::Algorithm algo,
   double                  curviness)
     : opts_ (curviness, algo), id_ (std::move (id)), label_ (std::move (label))
@@ -279,16 +280,18 @@ CurveFadePreset::get_fade_presets ()
   std::vector<CurveFadePreset> presets;
 
   presets.emplace_back (
-    "linear", _ ("Linear"), CurveOptions::Algorithm::SuperEllipse, 0);
+    "linear", QObject::tr ("Linear"), CurveOptions::Algorithm::SuperEllipse, 0);
   presets.emplace_back (
-    "exponential", _ ("Exponential"), CurveOptions::Algorithm::Exponent, -0.6);
+    "exponential", QObject::tr ("Exponential"),
+    CurveOptions::Algorithm::Exponent, -0.6);
   presets.emplace_back (
-    "elliptic", _ ("Elliptic"), CurveOptions::Algorithm::SuperEllipse, -0.5);
-  presets.emplace_back (
-    "logarithmic", _ ("Logarithmic"), CurveOptions::Algorithm::Logarithmic,
+    "elliptic", QObject::tr ("Elliptic"), CurveOptions::Algorithm::SuperEllipse,
     -0.5);
   presets.emplace_back (
-    "vital", _ ("Vital"), CurveOptions::Algorithm::Vital, -0.5);
+    "logarithmic", QObject::tr ("Logarithmic"),
+    CurveOptions::Algorithm::Logarithmic, -0.5);
+  presets.emplace_back (
+    "vital", QObject::tr ("Vital"), CurveOptions::Algorithm::Vital, -0.5);
 
   return presets;
 }

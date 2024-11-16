@@ -10,9 +10,6 @@
 #include "common/utils/gtest_wrapper.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib.h>
-#include <glib/gi18n.h>
-
 #ifdef G_OS_UNIX
 #  include <glib-unix.h>
 #endif

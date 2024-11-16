@@ -18,13 +18,20 @@
  * recorded automation point is also stored.
  */
 class AutomationRegion final
-    : public RegionImpl<AutomationRegion>,
+    : public QAbstractListModel,
+      public RegionImpl<AutomationRegion>,
       public ICloneable<AutomationRegion>,
       public ISerializable<AutomationRegion>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (AutomationRegion)
+  DEFINE_REGION_QML_PROPERTIES (AutomationRegion)
+
+  friend class RegionImpl<AutomationRegion>;
+
 public:
-  // Rule of 0
-  AutomationRegion () = default;
+  AutomationRegion (QObject * parent = nullptr);
 
   /**
    * @brief Construct a new Automation Region object.
@@ -40,7 +47,23 @@ public:
     const Position &end_pos,
     unsigned int    track_name_hash,
     int             at_idx,
-    int             idx_inside_at);
+    int             idx_inside_at,
+    QObject *       parent = nullptr);
+
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
+  enum AutomationRegionRoles
+  {
+    AutomationPointPtrRole = Qt::UserRole + 1,
+  };
+
+  QHash<int, QByteArray> roleNames () const override;
+  int rowCount (const QModelIndex &parent = QModelIndex ()) const override;
+  QVariant
+  data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
+
+  // ========================================================================
 
   void init_loaded () override;
 
@@ -130,28 +153,14 @@ public:
   {
     for (const auto &ap : aps_)
       {
-        children.push_back (ap.get ());
+        children.push_back (ap);
       }
   }
 
-  ArrangerSelections * get_arranger_selections () const override;
+  std::optional<ClipEditorArrangerSelectionsPtrVariant>
+  get_arranger_selections () const override;
 
-  void init_after_cloning (const AutomationRegion &other) override
-  {
-    init (
-      other.pos_, other.end_pos_, other.id_.track_name_hash_, other.id_.at_idx_,
-      other.id_.idx_);
-    clone_unique_ptr_container (aps_, other.aps_);
-    RegionImpl::copy_members_from (other);
-    TimelineObject::copy_members_from (other);
-    NameableObject::copy_members_from (other);
-    LoopableObject::copy_members_from (other);
-    MuteableObject::copy_members_from (other);
-    LengthableObject::copy_members_from (other);
-    ColoredObject::copy_members_from (other);
-    ArrangerObject::copy_members_from (other);
-    force_sort ();
-  }
+  void init_after_cloning (const AutomationRegion &other) override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -159,12 +168,11 @@ public:
   /**
    * The automation points this region contains.
    *
-   * Could also be used in audio regions for volume
-   * automation.
+   * Could also be used in audio regions for volume automation.
    *
    * Must always stay sorted by position.
    */
-  std::vector<std::shared_ptr<AutomationPoint>> aps_;
+  std::vector<AutomationPoint *> aps_;
 
   /** Last recorded automation point. */
   AutomationPoint * last_recorded_ap_ = nullptr;

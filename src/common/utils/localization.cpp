@@ -15,11 +15,8 @@
 #include "common/utils/localization.h"
 #include "common/utils/string.h"
 #include "common/utils/ui.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
-
-#include <glib/gi18n.h>
 
 #include "zrythm-locales.h" // note: auto-generated
 #include <locale.h>
@@ -86,6 +83,8 @@ localization_get_language_strings_w_codes (void)
   return language_strings_w_codes;
 }
 
+// TODO (disabled when removing glib)
+#if 0
 static char *
 get_match (
   char **      installed_locales,
@@ -128,10 +127,10 @@ get_match (
 std::string
 localization_locale_exists (LocalizationLanguage lang)
 {
-#ifdef _WIN32
+#  ifdef _WIN32
   const char * _code = localization_get_string_code (lang);
   return g_strdup (_code);
-#else
+#  else
 
   /* get available locales on the system */
   FILE * fp;
@@ -143,7 +142,7 @@ localization_locale_exists (LocalizationLanguage lang)
   fp = popen ("locale -a", "r");
   if (fp == nullptr)
     {
-      g_error ("localization_init: popen failed");
+      z_error ("localization_init: popen failed");
       exit (1);
     }
 
@@ -157,16 +156,16 @@ localization_locale_exists (LocalizationLanguage lang)
   /* close */
   pclose (fp);
 
-#  define IS_MATCH(caps, code) \
-  case LL_##caps: \
-    match = \
-      get_match (installed_locales, num_installed_locales, code, CODESET); \
-    if (!match) \
-      { \
-        match = get_match ( \
-          installed_locales, num_installed_locales, code, ALT_CODESET); \
-      } \
-    break
+#    define IS_MATCH(caps, code) \
+    case LL_##caps: \
+      match = \
+        get_match (installed_locales, num_installed_locales, code, CODESET); \
+      if (!match) \
+        { \
+          match = get_match ( \
+            installed_locales, num_installed_locales, code, ALT_CODESET); \
+        } \
+      break
 
   char * match = NULL;
   switch (lang)
@@ -214,16 +213,16 @@ localization_locale_exists (LocalizationLanguage lang)
       z_return_val_if_reached ("");
     }
 
-#  undef IS_MATCH
+#    undef IS_MATCH
 
-  match = g_strdup (match);
+  match = strdup (match);
   for (int i = 0; i < num_installed_locales; i++)
     {
-      g_free (installed_locales[i]);
+      free (installed_locales[i]);
     }
 
   return match;
-#endif
+#  endif
 }
 
 /**
@@ -289,11 +288,11 @@ localization_init (
         {
           z_info ("setting locale to {} (found {})", code, match);
         }
-#if defined(_WIN32) || defined(__APPLE__)
+#  if defined(_WIN32) || defined(__APPLE__)
       char buf[120];
       sprintf (buf, "LANG=%s", code);
       putenv (buf);
-#endif
+#  endif
       g_free (code);
     }
   else
@@ -305,11 +304,11 @@ localization_init (
             language_strings[lang]);
           if (queue_error_if_not_installed)
             {
-#if 0
+#  if 0
               std::lock_guard<std::mutex> lock (
                 zrythm_app->startup_error_queue_mutex_);
               zrythm_app->startup_error_queue_.push (msg);
-#endif
+#  endif
             }
           z_warning ("{}", msg);
         }
@@ -324,18 +323,18 @@ localization_init (
     }
 
     /* bind text domain */
-#if defined(_WIN32) && ZRYTHM_IS_INSTALLER_VER
+#  if defined(_WIN32) && ZRYTHM_IS_INSTALLER_VER
   const char * windows_localedir = "share/locale";
   bindtextdomain (GETTEXT_PACKAGE, windows_localedir);
   bindtextdomain ("libadwaita", windows_localedir);
-#else
+#  else
   auto * dir_mgr = DirectoryManager::getInstance ();
   auto   localedir =
     dir_mgr->get_dir (DirectoryManager::DirectoryType::SYSTEM_LOCALEDIR);
   bindtextdomain (GETTEXT_PACKAGE, localedir.c_str ());
   bindtextdomain ("libadwaita", localedir.c_str ());
   z_debug ("setting textdomain: {}, {}", GETTEXT_PACKAGE, localedir);
-#endif
+#  endif
 
   /* set domain codeset */
   bind_textdomain_codeset (GETTEXT_PACKAGE, CODESET);
@@ -345,3 +344,5 @@ localization_init (
 
   return match != NULL;
 }
+
+#endif

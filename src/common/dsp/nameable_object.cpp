@@ -9,12 +9,11 @@
 #include "gui/backend/backend/zrythm.h"
 
 #include <fmt/printf.h>
-#include <glibmm.h>
 
 void
 NameableObject::gen_escaped_name ()
 {
-  escaped_name_ = Glib::Markup::escape_text (name_);
+  escaped_name_ = QString::fromStdString (name_).toHtmlEscaped ().toStdString ();
 }
 
 void
@@ -31,7 +30,11 @@ NameableObject::set_name (const std::string &name, bool fire_events)
 
   if (fire_events)
     {
-      // EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CHANGED, this);
+      std::visit (
+        [&] (auto &&obj) {
+          Q_EMIT (obj->nameChanged (QString::fromStdString (name)));
+        },
+        convert_to_variant<NameableObjectPtrVariant> (this));
     }
 }
 
@@ -41,23 +44,31 @@ NameableObject::set_name_with_action (const std::string &name)
   /* validate */
   if (!validate_name (name))
     {
-      std::string msg = fmt::sprintf (_ ("Invalid object name %s"), name);
-      ui_show_error_message (_ ("Invalid Name"), msg.c_str ());
+// TODO
+#if 0
+      std::string msg =
+        fmt::sprintf (QObject::tr ("Invalid object name %s"), name);
+      ui_show_error_message (QObject::tr ("Invalid Name"), msg);
+#endif
       return;
     }
 
-  auto clone_obj = clone_shared_with_variant<NameableObjectVariant> (this);
+  std::visit (
+    [&] (auto &&self) {
+      auto clone_obj = self->clone_unique ();
 
-  /* prepare the before/after selections to create the undoable action */
-  clone_obj->set_name (name, false);
+      /* prepare the before/after selections to create the undoable action */
+      clone_obj->set_name (name, false);
 
-  try
-    {
-      UNDO_MANAGER->perform (EditArrangerSelectionsAction::create (
-        *this, *clone_obj, ArrangerSelectionsAction::EditType::Name, false));
-    }
-  catch (const ZrythmException &e)
-    {
-      e.handle (_ ("Failed to rename object"));
-    }
+      try
+        {
+          UNDO_MANAGER->perform (EditArrangerSelectionsAction::create (
+            *self, *clone_obj, ArrangerSelectionsAction::EditType::Name, false));
+        }
+      catch (const ZrythmException &e)
+        {
+          e.handle (QObject::tr ("Failed to rename object"));
+        }
+    },
+    convert_to_variant<NameableObjectPtrVariant> (this));
 }

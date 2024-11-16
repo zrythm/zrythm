@@ -10,8 +10,6 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
-
 ChannelSendAction::ChannelSendAction (QObject * parent)
     : QObject (parent), UndoableAction (UndoableAction::Type::ChannelSend)
 {
@@ -210,23 +208,23 @@ ChannelSendAction::undo_impl ()
   /* EVENTS_PUSH (EventType::ET_CHANNEL_SEND_CHANGED, send); */
 }
 
-std::string
+QString
 ChannelSendAction::to_string () const
 {
   switch (send_action_type_)
     {
     case Type::ConnectSidechain:
-      return _ ("Connect sidechain");
+      return QObject::tr ("Connect sidechain");
     case Type::ConnectStereo:
-      return _ ("Connect stereo");
+      return QObject::tr ("Connect stereo");
     case Type::ConnectMidi:
-      return _ ("Connect MIDI");
+      return QObject::tr ("Connect MIDI");
     case Type::Disconnect:
-      return _ ("Disconnect");
+      return QObject::tr ("Disconnect");
     case Type::ChangeAmount:
-      return _ ("Change amount");
+      return QObject::tr ("Change amount");
     case Type::ChangePorts:
-      return _ ("Change ports");
+      return QObject::tr ("Change ports");
     }
-  return _ ("Channel send connection");
+  return QObject::tr ("Channel send connection");
 }

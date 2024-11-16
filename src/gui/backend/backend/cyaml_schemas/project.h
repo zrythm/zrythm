@@ -1,7 +1,5 @@
-// clang-format off
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-// clang-format on
 
 /**
  * \file
@@ -205,9 +203,11 @@ static const cyaml_schema_value_t project_schema_v5 = {
  * Serializes the project into a JSON string.
  *
  * Used when converting old projects to the newer JSON format.
+ *
+ * @throw ZrythmException on error.
  */
-char *
-project_v5_serialize_to_json_str (const Project_v5 * prj, GError ** error);
+CStringRAII
+project_v5_serialize_to_json_str (const Project_v5 * prj);
 
 #endif /* HAVE_CYAML */
 

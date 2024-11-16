@@ -30,7 +30,7 @@ class ArrangerSelections;
 
 #define RECORDING_MANAGER (gZrythm->recording_manager_)
 
-class RecordingManager
+class RecordingManager : public QObject
 {
 public:
   /**
@@ -38,9 +38,9 @@ public:
    *
    * Must be called from a GTK thread.
    */
-  RecordingManager ();
-
-  ~RecordingManager ();
+  RecordingManager (QObject * parent = nullptr);
+  Q_DISABLE_COPY_MOVE (RecordingManager)
+  ~RecordingManager () override;
 
   /**
    * Handles the recording logic inside the process cycle.
@@ -57,20 +57,7 @@ public:
     const TrackProcessor *        track_processor,
     const EngineProcessTimeInfo * time_nfo);
 
-  int process_events ();
-
-  /**
-   * GSourceFunc to be added using idle add.
-   *
-   * This will loop indefinintely.
-   *
-   * It can also be called to process the events immediately. Should only be
-   * called from the GTK thread.
-   */
-  static int process_events_source_func (RecordingManager * self)
-  {
-    return self->process_events ();
-  }
+  Q_SLOT void process_events ();
 
 private:
   void handle_start_recording (const RecordingEvent &ev, bool is_automation);
@@ -158,9 +145,6 @@ public:
 
   /** Cloned selections before starting recording. */
   std::unique_ptr<ArrangerSelections> selections_before_start_;
-
-  /** Source func ID. */
-  guint source_id_ = 0;
 
   /**
    * Recorded region identifiers, to be used for creating the undoable actions.

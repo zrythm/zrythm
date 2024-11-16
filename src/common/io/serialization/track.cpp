@@ -65,7 +65,13 @@ RegionOwnerImpl<RegionT>::define_base_fields (
   const ISerializableBase::Context &ctx)
 {
   using T = ISerializable<RegionOwnerImpl<RegionT>>;
-  T::serialize_fields (ctx, T::make_field ("regions", regions_));
+  T::serialize_fields (ctx, T::make_field ("regionList", region_list_));
+}
+
+void
+RegionList::define_fields (const ISerializableBase::Context &ctx)
+{
+  serialize_fields (ctx, make_field ("regions", regions_));
 }
 
 template void
@@ -148,7 +154,8 @@ AutomationTrack::define_fields (const Context &ctx)
   T::call_all_base_define_fields<RegionOwnerImplType> (ctx);
   T::serialize_fields (
     ctx, T::make_field ("index", index_), T::make_field ("portId", port_id_),
-    T::make_field ("regions", regions_), T::make_field ("created", created_),
+    T::make_field ("regionList", region_list_),
+    T::make_field ("created", created_),
     T::make_field ("automationMode", automation_mode_),
     T::make_field ("recordMode", record_mode_),
     T::make_field ("visible", visible_), T::make_field ("height", height_));

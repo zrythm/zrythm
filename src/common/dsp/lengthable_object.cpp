@@ -13,10 +13,22 @@
 #include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/zrythm.h"
 
+LengthableObject::LengthableObject () : end_pos_ (new PositionProxy ()) { }
+
+void
+LengthableObject::parent_base_qproperties (QObject &derived)
+{
+  end_pos_->setParent (&derived);
+}
+
 void
 LengthableObject::copy_members_from (const LengthableObject &other)
 {
-  end_pos_ = other.end_pos_;
+  end_pos_ = other.end_pos_->clone_raw_ptr ();
+  if (auto * qobject = dynamic_cast<QObject *> (this))
+    {
+      end_pos_->setParent (qobject);
+    }
 }
 
 void
@@ -27,11 +39,11 @@ LengthableObject::init_loaded_base ()
 bool
 LengthableObject::are_members_valid (bool is_project) const
 {
-  if (!is_position_valid (end_pos_, PositionType::End))
+  if (!is_position_valid (*end_pos_, PositionType::End))
     {
       if (ZRYTHM_TESTING)
         {
-          z_info ("invalid end pos {}", end_pos_);
+          z_info ("invalid end pos {}", *end_pos_);
         }
       return false;
     }
@@ -62,7 +74,7 @@ LengthableObject::resize (
         }
       else
         {
-          tmp = pos_;
+          tmp = *static_cast<Position *> (pos_);
           tmp.add_ticks (ticks);
           set_position (&tmp, PositionType::Start, false);
 
@@ -119,24 +131,24 @@ LengthableObject::resize (
     {
       if (type == ResizeType::Fade)
         {
-          auto fo = dynamic_cast<FadeableObject *> (this);
+          auto * fo = dynamic_cast<FadeableObject *> (this);
           tmp = fo->fade_out_pos_;
           tmp.add_ticks (ticks);
           set_position (&tmp, PositionType::FadeOut, false);
         }
       else
         {
-          tmp = end_pos_;
+          tmp = *end_pos_;
           Position prev_end_pos = tmp;
           tmp.add_ticks (ticks);
           set_position (&tmp, PositionType::End, false);
 
           double change_ratio =
-            (get_length_in_ticks ()) / (prev_end_pos.ticks_ - pos_.ticks_);
+            (get_length_in_ticks ()) / (prev_end_pos.ticks_ - pos_->ticks_);
 
           if (type != ResizeType::Loop && can_loop ())
             {
-              auto lo = dynamic_cast<LoopableObject *> (this);
+              auto * lo = dynamic_cast<LoopableObject *> (this);
               tmp = lo->loop_end_pos_;
               if (
                 type == ResizeType::RESIZE_STRETCH_BPM_CHANGE
@@ -255,7 +267,7 @@ LengthableObject::set_start_pos_full_size (const Position * pos)
 {
   pos_setter (pos);
   set_loop_and_fade_to_full_size ();
-  z_warn_if_fail (pos->frames_ == pos_.frames_);
+  z_warn_if_fail (pos->frames_ == pos_->frames_);
 }
 
 void
@@ -263,11 +275,11 @@ LengthableObject::set_end_pos_full_size (const Position * pos)
 {
   end_pos_setter (pos);
   set_loop_and_fade_to_full_size ();
-  z_warn_if_fail (pos->frames_ == end_pos_.frames_);
+  z_warn_if_fail (pos->frames_ == end_pos_->frames_);
 }
 
 template <typename T>
-std::pair<std::shared_ptr<T>, std::shared_ptr<T>>
+std::pair<T *, T *>
 LengthableObject::
   split (T &self, const Position pos, const bool pos_is_local, bool is_project)
 {
@@ -276,8 +288,8 @@ LengthableObject::
   using SelfT = T;
 
   /* create the new objects */
-  auto r1 = self.clone_shared ();
-  auto r2 = self.clone_shared ();
+  auto * r1 = self.clone_raw_ptr ();
+  auto * r2 = self.clone_raw_ptr ();
 
   z_debug ("splitting objects...");
 
@@ -288,10 +300,15 @@ LengthableObject::
         {
           /* change to r1 if the original region was the clip editor region */
           auto clip_editor_region = CLIP_EDITOR->get_region ();
-          if (clip_editor_region == &self)
+          if (clip_editor_region)
             {
-              set_clip_editor_region = true;
-              CLIP_EDITOR->set_region (nullptr, true);
+              if (
+                std::holds_alternative<T *> (clip_editor_region.value ())
+                && std::get<T *> (clip_editor_region.value ()) == &self)
+                {
+                  set_clip_editor_region = true;
+                  CLIP_EDITOR->set_region (std::nullopt, true);
+                }
             }
         }
     }
@@ -302,7 +319,7 @@ LengthableObject::
     if (pos_is_local)
       {
         Position global = pos;
-        global.add_ticks (self.pos_.ticks_);
+        global.add_ticks (self.pos_->ticks_);
         return std::make_pair (global, pos);
       }
     else
@@ -350,16 +367,16 @@ LengthableObject::
                 !prev_r1->name_.empty (), std::make_pair (nullptr, nullptr));
               z_return_val_if_fail_cmp (
                 localp.frames_, >=, 0, std::make_pair (nullptr, nullptr));
-              auto new_r1 = std::make_shared<AudioRegion> (
+              auto new_r1 = new AudioRegion (
                 -1, std::nullopt, true, frames.data (),
                 (unsigned_frame_t) localp.frames_, prev_r1->name_,
                 prev_r1_clip->channels_, prev_r1_clip->bit_depth_,
-                prev_r1->pos_, prev_r1->id_.track_name_hash_,
+                *prev_r1->pos_, prev_r1->id_.track_name_hash_,
                 prev_r1->id_.lane_pos_, prev_r1->id_.idx_);
               z_return_val_if_fail (
                 new_r1->pool_id_ != prev_r1->pool_id_,
                 std::make_pair (nullptr, nullptr));
-              r1 = new_r1;
+              r1 = new_r1; // FIXME? memleak?
             }
           else if constexpr (RegionSubclass<SelfT>)
             {
@@ -368,7 +385,7 @@ LengthableObject::
               r1->append_children (children);
               for (auto child : children)
                 {
-                  if (child->pos_ > localp)
+                  if (*child->pos_ > localp)
                     {
                       auto casted_child =
                         dynamic_cast<RegionChildType_t<SelfT> *> (child);
@@ -389,8 +406,8 @@ LengthableObject::
       r2->clip_start_pos_setter (&localp);
     }
   r2->pos_setter (&globalp);
-  Position r2_local_end = r2->end_pos_;
-  r2_local_end.add_ticks (-r2->pos_.ticks_);
+  Position r2_local_end = *r2->end_pos_;
+  r2_local_end.add_ticks (-r2->pos_->ticks_);
   if constexpr (std::derived_from<SelfT, FadeableObject>)
     {
       r2->set_position (
@@ -435,7 +452,7 @@ LengthableObject::
                   z_return_val_if_fail_cmp (
                     r2_local_end.frames_, >=, 0,
                     std::make_pair (nullptr, nullptr));
-                  auto new_r2 = std::make_shared<AudioRegion> (
+                  auto new_r2 = new AudioRegion (
                     -1, std::nullopt, true, frames.data (),
                     (unsigned_frame_t) r2_local_end.frames_, prev_r2->name_,
                     prev_r2_clip->channels_, prev_r2_clip->bit_depth_, globalp,
@@ -454,7 +471,7 @@ LengthableObject::
                   r2->append_children (children);
                   for (auto child : children)
                     {
-                      if (child->pos_.frames_ < 0)
+                      if (child->pos_->frames_ < 0)
                         r2->remove_object (
                           *static_cast<ChildType *> (child), false);
                     }
@@ -466,14 +483,18 @@ LengthableObject::
   /* make sure regions have names */
   if constexpr (RegionSubclass<SelfT>)
     {
-      auto              track = self.get_track ();
-      AutomationTrack * at = nullptr;
-      if constexpr (std::is_same_v<SelfT, AutomationRegion>)
-        {
-          at = self.get_automation_track ();
-        }
-      r1->gen_name (self.name_.c_str (), at, track);
-      r2->gen_name (self.name_.c_str (), at, track);
+      auto track_var = self.get_track ();
+      std::visit (
+        [&] (auto &&track) {
+          AutomationTrack * at = nullptr;
+          if constexpr (std::is_same_v<SelfT, AutomationRegion>)
+            {
+              at = self.get_automation_track ();
+            }
+          r1->gen_name (self.name_.c_str (), at, track);
+          r2->gen_name (self.name_.c_str (), at, track);
+        },
+        track_var);
     }
 
   /* skip rest if non-project object */
@@ -485,35 +506,37 @@ LengthableObject::
   /* add them to the parent */
   if constexpr (RegionSubclass<SelfT>)
     {
-      auto              track = self.get_track ();
-      AutomationTrack * at = nullptr;
-      if constexpr (std::is_same_v<SelfT, AutomationRegion>)
-        {
-          at = self.get_automation_track ();
-        }
-      track->add_region (r1, at, self.id_.lane_pos_, true, true);
-
-      if (!r2->is_looped ())
-        {
+      auto track_var = self.get_track ();
+      std::visit (
+        [&] (auto &&track) {
+          AutomationTrack * at = nullptr;
           if constexpr (std::is_same_v<SelfT, AutomationRegion>)
             {
-              /* adjust indices before adding r2 */
-              for (auto &ap : r2->aps_)
+              at = self.get_automation_track ();
+            }
+          track->Track::add_region (r1, at, self.id_.lane_pos_, true, true);
+
+          if (!r2->is_looped ())
+            {
+              if constexpr (std::is_same_v<SelfT, AutomationRegion>)
                 {
-                  /* note: not sure what this is supposed to do,
-                   * was `region2->num_aps` but changed to fix
-                   * a bug - TODO replace this with a comment
-                   * about what this does and why it's needed */
-                  const int r1_aps_size = r1->aps_.size ();
-                  z_return_val_if_fail (
-                    ap->index_ >= r1_aps_size,
-                    std::make_pair (nullptr, nullptr));
-                  ap->index_ -= r1_aps_size;
+                  /* adjust indices before adding r2 */
+                  for (auto &ap : r2->aps_)
+                    {
+                      /* note: not sure what this is supposed to do,
+                       * was `region2->num_aps` but changed to fix
+                       * a bug - TODO replace this with a comment
+                       * about what this does and why it's needed */
+                      const int r1_aps_size = r1->aps_.size ();
+                      z_return_if_fail (ap->index_ >= r1_aps_size);
+                      ap->index_ -= r1_aps_size;
+                    }
                 }
             }
-        }
 
-      track->add_region (r2, at, self.id_.lane_pos_, true, true);
+          track->Track::add_region (r2, at, self.id_.lane_pos_, true, true);
+        },
+        track_var);
     }
   else if constexpr (std::is_same_v<SelfT, MidiNote>)
     {
@@ -525,7 +548,7 @@ LengthableObject::
   /* select the first one */
   auto sel = self.get_selections_for_type (self.type_);
   sel->remove_object (self);
-  sel->add_object_ref (r1);
+  sel->add_object_ref (*r1);
   /*arranger_selections_add_object (sel, *r2);*/
 
   /* remove and free the original object */
@@ -535,10 +558,10 @@ LengthableObject::
       if constexpr (std::is_same_v<SelfT, ChordRegion>)
         {
           z_return_val_if_fail (
-            r1->id_.idx_ < (int) P_CHORD_TRACK->regions_.size (),
+            r1->id_.idx_ < (int) P_CHORD_TRACK->region_list_->regions_.size (),
             std::make_pair (nullptr, nullptr));
           z_return_val_if_fail (
-            r2->id_.idx_ < (int) P_CHORD_TRACK->regions_.size (),
+            r2->id_.idx_ < (int) P_CHORD_TRACK->region_list_->regions_.size (),
             std::make_pair (nullptr, nullptr));
         }
     }
@@ -552,7 +575,7 @@ LengthableObject::
     {
       if (set_clip_editor_region)
         {
-          CLIP_EDITOR->set_region (r1.get (), true);
+          CLIP_EDITOR->set_region (r1, true);
         }
     }
 
@@ -563,34 +586,37 @@ LengthableObject::
 }
 
 template <typename T>
-std::shared_ptr<T>
+T *
 LengthableObject::unsplit (T &r1, T &r2, bool fire_events)
 {
   static_assert (FinalLengthedObjectSubclass<T>);
 
   z_debug ("unsplitting objects...");
 
-  /* change to the original region if the clip
-   * editor region is r1 or r2 */
-  Region * clip_editor_region = CLIP_EDITOR->get_region ();
+  /* change to the original region if the clip editor region is r1 or r2 */
+  auto     clip_editor_region_opt = CLIP_EDITOR->get_region ();
   bool     set_clip_editor_region = false;
-  if constexpr (RegionSubclass<T>)
+  if (clip_editor_region_opt)
     {
-      if (clip_editor_region == &r1 || clip_editor_region == &r2)
+      if constexpr (RegionSubclass<T>)
         {
-          set_clip_editor_region = true;
-          CLIP_EDITOR->set_region (nullptr, true);
+          auto * clip_editor_region = std::get<T *> (*clip_editor_region_opt);
+          if (clip_editor_region == &r1 || clip_editor_region == &r2)
+            {
+              set_clip_editor_region = true;
+              CLIP_EDITOR->set_region (std::nullopt, true);
+            }
         }
     }
 
   /* create the new object */
-  auto obj = r1.clone_shared ();
+  auto * obj = r1.clone_raw_ptr ();
 
   /* set the end pos to the end pos of r2 and
    * fade out */
-  obj->end_pos_setter (&r2.end_pos_);
-  Position fade_out_pos = r2.end_pos_;
-  fade_out_pos.add_ticks (-r2.pos_.ticks_);
+  obj->end_pos_setter (r2.end_pos_);
+  Position fade_out_pos = *r2.end_pos_;
+  fade_out_pos.add_ticks (-r2.pos_->ticks_);
   obj->set_position (
     &fade_out_pos, ArrangerObject::PositionType::FadeOut, F_NO_VALIDATE);
 
@@ -602,7 +628,12 @@ LengthableObject::unsplit (T &r1, T &r2, bool fire_events)
         {
           at = r1.get_automation_track ();
         }
-      r1.get_track ()->add_region (obj, at, r1.id_.lane_pos_, true, fire_events);
+      std::visit (
+        [&] (auto &&track) {
+          track->Track::add_region (
+            obj, at, r1.id_.lane_pos_, true, fire_events);
+        },
+        r1.get_track ());
     }
   else if constexpr (std::is_same_v<T, MidiNote>)
     {
@@ -619,7 +650,7 @@ LengthableObject::unsplit (T &r1, T &r2, bool fire_events)
   z_return_val_if_fail (sel, nullptr);
   sel->remove_object (r1);
   sel->remove_object (r2);
-  sel->add_object_ref (obj);
+  sel->add_object_ref (*obj);
 
   /* remove and free the original regions */
   if constexpr (RegionSubclass<T>)
@@ -639,7 +670,7 @@ LengthableObject::unsplit (T &r1, T &r2, bool fire_events)
     {
       if (set_clip_editor_region)
         {
-          CLIP_EDITOR->set_region (obj.get (), true);
+          CLIP_EDITOR->set_region (obj, true);
         }
     }
 

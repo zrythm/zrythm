@@ -25,6 +25,9 @@ public:
   TrackLaneList (QObject * parent = nullptr);
   ~TrackLaneList () override;
 
+  friend class LanedTrackImpl<AudioLane>;
+  friend class LanedTrackImpl<MidiLane>;
+
   // ========================================================================
   // QML Interface
   // ========================================================================

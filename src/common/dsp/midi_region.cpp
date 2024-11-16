@@ -43,8 +43,12 @@
 #include "midilib/src/midifile.h"
 #include "midilib/src/midiutil.h"
 
-MidiRegion::MidiRegion ()
+MidiRegion::MidiRegion (QObject * parent)
+    : ArrangerObject (Type::Region), LengthableObject (),
+      QAbstractListModel (parent)
 {
+  ArrangerObject::parent_base_qproperties (*this);
+  LengthableObject::parent_base_qproperties (*this);
   unended_notes_.reserve (12000);
 }
 
@@ -53,8 +57,9 @@ MidiRegion::MidiRegion (
   const Position &end_pos,
   unsigned int    track_name_hash,
   int             lane_pos,
-  int             idx_inside_lane)
-    : MidiRegion ()
+  int             idx_inside_lane,
+  QObject *       parent)
+    : MidiRegion (parent)
 {
   id_.type_ = RegionType::Midi;
 
@@ -65,8 +70,9 @@ MidiRegion::MidiRegion (
   ChordDescriptor &descr,
   unsigned int     track_name_hash,
   int              lane_pos,
-  int              idx_inside_lane)
-    : MidiRegion ()
+  int              idx_inside_lane,
+  QObject *        parent)
+    : MidiRegion (parent)
 {
   int r_length_ticks = SNAP_GRID_TIMELINE->get_default_ticks ();
   int mn_length_ticks = SNAP_GRID_EDITOR->get_default_ticks ();
@@ -89,11 +95,42 @@ MidiRegion::MidiRegion (
       if (descr.notes_[i])
         {
           append_object (
-            std::make_shared<MidiNote> (
-              id_, mn_pos, mn_end_pos, i + 36, VELOCITY_DEFAULT),
+            new MidiNote (
+              id_, mn_pos, mn_end_pos, i + 36, VELOCITY_DEFAULT, this),
             false);
         }
     }
+}
+
+MidiRegion::MidiRegion (
+  const Position    &start_pos,
+  const std::string &abs_path,
+  unsigned int       track_name_hash,
+  int                lane_pos,
+  int                idx_inside_lane,
+  int                midi_track_idx,
+  QObject *          parent)
+    : MidiRegion (parent)
+{
+  z_debug ("reading from {}...", abs_path);
+
+  id_.type_ = RegionType::Midi;
+
+  Position end_pos = start_pos;
+  end_pos.add_ticks (1);
+  init (start_pos, end_pos, track_name_hash, lane_pos, idx_inside_lane);
+
+  MidiFile mf (abs_path);
+  mf.into_region (*this, *TRANSPORT, midi_track_idx);
+
+  if (*pos_ >= end_pos_)
+    {
+      throw ZrythmException (fmt::format (
+        "Invalid positions: start {} end {}", pos_->to_string (),
+        end_pos_->to_string ()));
+    }
+
+  z_info ("done ~ {} MIDI notes read", midi_notes_.size ());
 }
 
 void
@@ -106,6 +143,59 @@ MidiRegion::init_loaded ()
       note->init_loaded ();
     }
 }
+
+void
+MidiRegion::init_after_cloning (const MidiRegion &other)
+{
+  midi_notes_.reserve (other.midi_notes_.size ());
+  for (const auto &note : other.midi_notes_)
+    {
+      auto * clone = note->clone_raw_ptr ();
+      clone->setParent (this);
+      midi_notes_.push_back (clone);
+    }
+  LaneOwnedObjectImpl::copy_members_from (other);
+  Region::copy_members_from (other);
+  TimelineObject::copy_members_from (other);
+  NameableObject::copy_members_from (other);
+  LoopableObject::copy_members_from (other);
+  MuteableObject::copy_members_from (other);
+  LengthableObject::copy_members_from (other);
+  ColoredObject::copy_members_from (other);
+  ArrangerObject::copy_members_from (other);
+}
+
+// ========================================================================
+// QML Interface
+// ========================================================================
+
+QHash<int, QByteArray>
+MidiRegion::roleNames () const
+{
+  QHash<int, QByteArray> roles;
+  roles[MidiNotePtrRole] = "midiNote";
+  return roles;
+}
+int
+MidiRegion::rowCount (const QModelIndex &parent) const
+{
+  return midi_notes_.size ();
+}
+
+QVariant
+MidiRegion::data (const QModelIndex &index, int role) const
+{
+  if (index.row () < 0 || index.row () >= static_cast<int> (midi_notes_.size ()))
+    return {};
+
+  if (role == MidiNotePtrRole)
+    {
+      return QVariant::fromValue (midi_notes_.at (index.row ()));
+    }
+  return {};
+}
+
+// ========================================================================
 
 void
 MidiRegion::print_midi_notes () const
@@ -144,65 +234,32 @@ MidiRegion::pop_unended_note (int pitch)
 MidiNote *
 MidiRegion::get_first_midi_note ()
 {
-  return midi_notes_.empty () ? nullptr : midi_notes_.front ().get ();
+  return midi_notes_.empty () ? nullptr : midi_notes_.front ();
 }
 
 MidiNote *
 MidiRegion::get_last_midi_note ()
 {
   return (*std::max_element (
-            midi_notes_.begin (), midi_notes_.end (),
-            [] (const auto &a, const auto &b) {
-              return a->end_pos_.ticks_ < b->end_pos_.ticks_;
-            }))
-    .get ();
+    midi_notes_.begin (), midi_notes_.end (), [] (const auto &a, const auto &b) {
+      return a->end_pos_->ticks_ < b->end_pos_->ticks_;
+    }));
 }
 
 MidiNote *
 MidiRegion::get_highest_midi_note ()
 {
   return (*std::max_element (
-            midi_notes_.begin (), midi_notes_.end (),
-            [] (const auto &a, const auto &b) { return a->val_ < b->val_; }))
-    .get ();
+    midi_notes_.begin (), midi_notes_.end (),
+    [] (const auto &a, const auto &b) { return a->val_ < b->val_; }));
 }
 
 MidiNote *
 MidiRegion::get_lowest_midi_note ()
 {
   return (*std::min_element (
-            midi_notes_.begin (), midi_notes_.end (),
-            [] (const auto &a, const auto &b) { return a->val_ < b->val_; }))
-    .get ();
-}
-
-MidiRegion::MidiRegion (
-  const Position    &start_pos,
-  const std::string &abs_path,
-  unsigned int       track_name_hash,
-  int                lane_pos,
-  int                idx_inside_lane,
-  int                midi_track_idx)
-{
-  z_debug ("reading from {}...", abs_path);
-
-  id_.type_ = RegionType::Midi;
-
-  Position end_pos = start_pos;
-  end_pos.add_ticks (1);
-  init (start_pos, end_pos, track_name_hash, lane_pos, idx_inside_lane);
-
-  MidiFile mf (abs_path);
-  mf.into_region (*this, *TRANSPORT, midi_track_idx);
-
-  if (pos_ >= end_pos_)
-    {
-      throw ZrythmException (fmt::format (
-        "Invalid positions: start {} end {}", pos_.to_string (),
-        end_pos_.to_string ()));
-    }
-
-  z_info ("done ~ {} MIDI notes read", midi_notes_.size ());
+    midi_notes_.begin (), midi_notes_.end (),
+    [] (const auto &a, const auto &b) { return a->val_ < b->val_; }));
 }
 
 void
@@ -227,12 +284,12 @@ MidiRegion::start_unended_note (
       end_pos.add_ticks (1);
     }
 
-  auto mn = append_object (
-    std::make_shared<MidiNote> (id_, *start_pos, end_pos, pitch, vel),
-    pub_events);
+  auto * mn = new MidiNote (id_, *start_pos, end_pos, pitch, vel, this);
+
+  append_object (mn, pub_events);
 
   /* add to unended notes */
-  unended_notes_.push_back (mn.get ());
+  unended_notes_.push_back (mn);
 }
 
 void
@@ -315,8 +372,8 @@ MidiRegion::is_note_playable (const MidiNote &midi_note) const
     }
 
   if (
-    !midi_note.pos_.is_between_excl_2nd (loop_start_pos_, loop_end_pos_)
-    && !midi_note.pos_.is_between_excl_2nd (clip_start_pos_, loop_start_pos_))
+    !midi_note.pos_->is_between_excl_2nd (loop_start_pos_, loop_end_pos_)
+    && !midi_note.pos_->is_between_excl_2nd (clip_start_pos_, loop_start_pos_))
     {
       return false;
     }
@@ -368,7 +425,7 @@ MidiRegion::add_events (
 {
   double region_start = 0;
   if (add_region_start)
-    region_start = pos_.ticks_;
+    region_start = pos_->ticks_;
 
   double loop_length_in_ticks = get_loop_length_in_ticks ();
   int    number_of_loop_repeats = (int) ceil (
@@ -387,12 +444,12 @@ MidiRegion::add_events (
 
       do
         {
-          Position mn_pos = mn->pos_;
-          Position mn_end_pos = mn->end_pos_;
+          Position mn_pos = *static_cast<Position *> (mn->pos_);
+          Position mn_end_pos = *mn->end_pos_;
 
           if (full)
             {
-              if (mn->pos_.is_between_excl_2nd (loop_start_pos_, loop_end_pos_))
+              if (mn->pos_->is_between_excl_2nd (loop_start_pos_, loop_end_pos_))
                 {
                   write_only_once = false;
                 }
@@ -449,13 +506,13 @@ MidiRegion::get_velocities_in_range (
       if (
         inside && global_start_pos >= *start_pos && global_start_pos <= *end_pos)
         {
-          velocities.push_back (mn->vel_.get ());
+          velocities.push_back (mn->vel_);
         }
       else if (
         !inside
         && ((global_start_pos < *start_pos) || global_start_pos > *end_pos))
         {
-          velocities.push_back (mn->vel_.get ());
+          velocities.push_back (mn->vel_);
         }
     }
 }
@@ -478,7 +535,7 @@ MidiRegion::validate (bool is_project, double frames_per_tick) const
   return true;
 }
 
-ArrangerSelections *
+std::optional<ClipEditorArrangerSelectionsPtrVariant>
 MidiRegion::get_arranger_selections () const
 {
   return MIDI_SELECTIONS.get ();

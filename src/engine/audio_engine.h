@@ -36,7 +36,7 @@ public:
         client_connection_->disconnectFromServer ();
         client_connection_->close ();
       }
-    QLocalServer::removeServer (IPC_SOCKET_NAME);
+    QLocalServer::removeServer (QString::fromUtf8 (IPC_SOCKET_NAME));
   }
 
 private:
@@ -69,16 +69,16 @@ private:
       &AudioEngine::onNewConnection);
 
     qDebug () << "Removing old socket";
-    QLocalServer::removeServer (IPC_SOCKET_NAME);
+    QLocalServer::removeServer (QString::fromUtf8 (IPC_SOCKET_NAME));
 
     qDebug () << "Starting server";
-    if (!server_->listen (IPC_SOCKET_NAME))
+    if (!server_->listen (QString::fromUtf8 (IPC_SOCKET_NAME)))
       {
         qDebug () << "Unable to start the server:" << server_->errorString ();
       }
   }
 
-private slots:
+private Q_SLOTS:
   void onNewConnection ()
   {
     qDebug () << "New connection";
@@ -97,7 +97,7 @@ private slots:
     IPCMessage  message;
     in >> message;
 
-    qDebug () << "Received message:" << QString (message.data_);
+    qDebug () << "Received message:" << message.data_;
   }
 
 private:

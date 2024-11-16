@@ -7,6 +7,8 @@ import Zrythm 1.0
 import ZrythmStyle 1.0
 
 ColumnLayout {
+    id: root
+
     required property var project
 
     spacing: 0
@@ -102,6 +104,8 @@ ColumnLayout {
 
                     pinned: true
                     timeline: project.timeline
+                    tracklist: project.tracklist
+                    ruler: ruler
                     Layout.fillWidth: true
                     Layout.minimumHeight: pinnedTracklist.height
                     Layout.maximumHeight: pinnedTracklist.height
@@ -112,6 +116,8 @@ ColumnLayout {
 
                     pinned: false
                     timeline: project.timeline
+                    tracklist: project.tracklist
+                    ruler: ruler
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                 }

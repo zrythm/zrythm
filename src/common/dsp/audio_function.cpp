@@ -12,11 +12,11 @@
 #include "common/utils/string.h"
 #include "gui/backend/backend/arranger_selections.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
-
-#include <glib/gi18n.h>
+#include "gui/backend/backend/settings_manager.h"
 
 #include <rubberband/rubberband-c.h>
+
+using namespace zrythm;
 
 std::string
 audio_function_get_action_target_for_type (AudioFunctionType type)
@@ -102,7 +102,7 @@ apply_plugin (
     plugin_new_from_setting (setting, 0, zrythm::plugins::PluginSlotType::Insert, 0, &err);
   if (!IS_PLUGIN_AND_NONNULL (pl))
     {
-      PROPAGATE_PREFIXED_ERROR (error, err, "%s", _ ("Failed to create plugin"));
+      PROPAGATE_PREFIXED_ERROR (error, err, "%s", QObject::tr ("Failed to create plugin"));
       return -1;
     }
   pl->is_function = true;
@@ -110,7 +110,7 @@ apply_plugin (
   if (ret != 0)
     {
       PROPAGATE_PREFIXED_ERROR (
-        error, err, "%s", _ ("Failed to instantiate plugin"));
+        error, err, "%s", QObject::tr ("Failed to instantiate plugin"));
       return -1;
     }
   ret = plugin_activate (pl, true);
@@ -281,10 +281,10 @@ apply_plugin (
 
 void
 audio_function_apply (
-  ArrangerSelections &sel,
-  AudioFunctionType   type,
-  AudioFunctionOpts   opts,
-  const std::string * uri)
+  AudioSelections           &sel,
+  AudioFunctionType          type,
+  AudioFunctionOpts          opts,
+  std::optional<std::string> uri)
 {
   z_debug ("applying {}...", AudioFunctionType_to_string (type));
 
@@ -292,24 +292,25 @@ audio_function_apply (
 
   auto r = AudioRegion::find (audio_sel.region_id_);
   z_return_if_fail (r);
-  auto tr = r->get_track_as<AudioTrack> ();
+  auto tr = std::get<AudioTrack *> (r->get_track ());
   z_return_if_fail (tr);
   auto * orig_clip = r->get_clip ();
   z_return_if_fail (orig_clip);
 
   Position init_pos;
-  if (audio_sel.sel_start_ < r->pos_ || audio_sel.sel_end_ > r->end_pos_)
+  if (audio_sel.sel_start_ < *r->pos_ || audio_sel.sel_end_ > *r->end_pos_)
     {
       audio_sel.sel_start_.print ();
       audio_sel.sel_end_.print ();
-      throw ZrythmException (_ ("Invalid positions - skipping function"));
+      throw ZrythmException (
+        QObject::tr ("Invalid positions - skipping function"));
     }
 
   /* adjust the positions */
   Position start = audio_sel.sel_start_;
   Position end = audio_sel.sel_end_;
-  start.add_frames (-r->pos_.frames_);
-  end.add_frames (-r->pos_.frames_);
+  start.add_frames (-r->pos_->frames_);
+  end.add_frames (-r->pos_->frames_);
 
   /* create a copy of the frames to be replaced */
   auto num_frames = (unsigned_frame_t) (end.frames_ - start.frames_);
@@ -427,7 +428,7 @@ audio_function_apply (
         while (frames_read < num_frames)
           {
             unsigned int samples_required =
-              MIN (num_frames - samples_fed, max_process_size);
+              std::min (num_frames - samples_fed, max_process_size);
             /*rubberband_get_samples_required (*/
             /*rubberband_state));*/
             std::array<const float * const, 2> tmp_in_arrays = {
@@ -542,7 +543,7 @@ audio_function_apply (
         if (ret != 0)
           {
             PROPAGATE_PREFIXED_ERROR (
-              error, err, "%s", _ ("Failed to apply plugin"));
+              error, err, "%s", QObject::tr ("Failed to apply plugin"));
             return false;
           }
 #endif
@@ -600,11 +601,12 @@ audio_function_apply (
     && type != AudioFunctionType::CustomPlugin)
     {
       /* set last action */
-      g_settings_set_int (S_UI, "audio-function", ENUM_VALUE_TO_INT (type));
+      gui::SettingsManager::get_instance ()->set_lastAudioFunction (
+        ENUM_VALUE_TO_INT (type));
       if (type == AudioFunctionType::PitchShift)
         {
-          g_settings_set_double (
-            S_UI, "audio-function-pitch-shift-ratio", opts.amount_);
+          gui::SettingsManager::get_instance ()
+            ->set_lastAudioFunctionPitchShiftRatio (opts.amount_);
         }
     }
 

@@ -7,6 +7,15 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
+Marker::Marker (QObject * parent) : Marker ({}, parent) { }
+
+Marker::Marker (const std::string &name, QObject * parent)
+    : ArrangerObject (ArrangerObject::Type::Marker), QObject (parent),
+      NameableObject (name)
+{
+  ArrangerObject::parent_base_qproperties (*this);
+}
+
 void
 Marker::init_loaded ()
 {
@@ -30,7 +39,7 @@ Marker::find_by_name (const std::string &name)
   for (auto &marker : P_MARKER_TRACK->markers_)
     {
       if (name == marker->name_)
-        return marker.get ();
+        return marker;
     }
 
   return nullptr;
@@ -41,30 +50,34 @@ Marker::print_to_str () const
 {
   return fmt::format (
     "Marker: name: {}, type: {}, track index: {}, position: {}", name_,
-    ENUM_NAME (marker_type_), marker_track_index_, pos_.to_string ());
+    ENUM_NAME (marker_type_), marker_track_index_, pos_->to_string ());
 }
 
-Marker::ArrangerObjectPtr
+std::optional<ArrangerObjectPtrVariant>
 Marker::find_in_project () const
 {
   z_return_val_if_fail (
-    (int) P_MARKER_TRACK->markers_.size () > marker_track_index_, nullptr);
+    (int) P_MARKER_TRACK->markers_.size () > marker_track_index_, std::nullopt);
 
   auto &marker = P_MARKER_TRACK->markers_.at (marker_track_index_);
-  z_return_val_if_fail (*marker == *this, nullptr);
+  z_return_val_if_fail (*marker == *this, std::nullopt);
   return marker;
 }
 
-Marker::ArrangerObjectPtr
+ArrangerObjectPtrVariant
 Marker::add_clone_to_project (bool fire_events) const
 {
-  return P_MARKER_TRACK->add_marker (clone_shared ());
+  auto * clone = clone_raw_ptr ();
+  P_MARKER_TRACK->add_marker (clone);
+  return clone;
 }
 
-Marker::ArrangerObjectPtr
+ArrangerObjectPtrVariant
 Marker::insert_clone_to_project () const
 {
-  return P_MARKER_TRACK->insert_marker (clone_shared (), marker_track_index_);
+  auto * clone = clone_raw_ptr ();
+  P_MARKER_TRACK->insert_marker (clone, marker_track_index_);
+  return clone;
 }
 
 bool

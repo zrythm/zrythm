@@ -9,8 +9,6 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
-
 MidiMappingAction::MidiMappingAction (QObject * parent)
     : QObject (parent), UndoableAction (UndoableAction::Type::MidiMapping)
 {
@@ -127,20 +125,20 @@ MidiMappingAction::undo_impl ()
   /* EVENTS_PUSH (EventType::ET_MIDI_BINDINGS_CHANGED, nullptr); */
 }
 
-std::string
+QString
 MidiMappingAction::to_string () const
 {
   switch (type_)
     {
     case Type::Enable:
-      return _ ("MIDI mapping enable");
+      return QObject::tr ("MIDI mapping enable");
     case Type::Disable:
-      return _ ("MIDI mapping disable");
+      return QObject::tr ("MIDI mapping disable");
     case Type::Bind:
-      return _ ("MIDI mapping bind");
+      return QObject::tr ("MIDI mapping bind");
     case Type::Unbind:
-      return _ ("MIDI mapping unbind");
+      return QObject::tr ("MIDI mapping unbind");
     default:
-      z_return_val_if_reached ("");
+      z_return_val_if_reached ({});
     }
 }

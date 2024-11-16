@@ -129,30 +129,30 @@ PortIdentifier::get_hash () const
   uint32_t hash = 0;
   if (!sym_.empty ())
     {
-      hash = hash ^ g_str_hash (sym_.c_str ());
+      hash = hash ^ qHash (sym_);
     }
   /* don't check label when have symbol because label might be
    * localized */
   else if (!label_.empty ())
     {
-      hash = hash ^ g_str_hash (label_.c_str ());
+      hash = hash ^ qHash (label_);
     }
 
   if (!uri_.empty ())
-    hash = hash ^ g_str_hash (uri_.c_str ());
-  hash = hash ^ g_int_hash (&owner_type_);
-  hash = hash ^ g_int_hash (&type_);
-  hash = hash ^ g_int_hash (&flow_);
-  hash = hash ^ g_int_hash (&flags_);
-  hash = hash ^ g_int_hash (&flags2_);
-  hash = hash ^ g_int_hash (&unit_);
+    hash = hash ^ qHash (uri_);
+  hash = hash ^ qHash (owner_type_);
+  hash = hash ^ qHash (type_);
+  hash = hash ^ qHash (flow_);
+  hash = hash ^ qHash (flags_);
+  hash = hash ^ qHash (flags2_);
+  hash = hash ^ qHash (unit_);
   hash = hash ^ zrythm::plugins::PluginIdentifier::get_hash (&plugin_id_);
   if (!port_group_.empty ())
-    hash = hash ^ g_str_hash (port_group_.c_str ());
+    hash = hash ^ qHash (port_group_);
   if (!ext_port_id_.empty ())
-    hash = hash ^ g_str_hash (ext_port_id_.c_str ());
+    hash = hash ^ qHash (ext_port_id_);
   hash = hash ^ track_name_hash_;
-  hash = hash ^ g_int_hash (&port_index_);
+  hash = hash ^ qHash (port_index_);
   // z_trace ("hash for {}: {}", sym_, hash);
   return hash;
 }

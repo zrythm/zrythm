@@ -25,7 +25,6 @@
 #include "gui/backend/backend/timeline_selections.h"
 #include "gui/backend/backend/tool.h"
 #include "gui/backend/backend/tracklist_selections.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 /**
  * @addtogroup project Project
@@ -170,7 +169,7 @@ public:
    * @param backup Whether to get the path for the current backup instead of the
    * main project.
    */
-  std::string get_path (ProjectPath path, bool backup);
+  fs::path get_path (ProjectPath path, bool backup);
 
   /**
    * Checks that everything is okay with the project.
@@ -196,7 +195,8 @@ public:
    */
   bool fix_audio_regions ();
 
-  ArrangerSelections * get_arranger_selections_for_last_selection ();
+  std::optional<ArrangerSelectionsPtrVariant>
+  get_arranger_selections_for_last_selection ();
 
   /**
    * Saves the project to a project file in the given dir.
@@ -289,14 +289,12 @@ public:
   /**
    * Returns the uncompressed text representation of the saved project file.
    *
-   * To be free'd with free().
-   *
    * @param backup Whether to use the project file from the most recent
    * backup.
    *
    * @throw ZrythmException If an error occurs.
    */
-  char * get_existing_uncompressed_text (bool backup);
+  std::string get_existing_uncompressed_text (bool backup);
 
   bool has_unsaved_changes () const;
 
@@ -407,8 +405,10 @@ private:
   /**
    * Idle func to check if the project has finished saving and show a
    * notification.
+   *
+   * @return Whether to continue calling this.
    */
-  static int idle_saved_callback (SaveContext * ctx);
+  static bool idle_saved_callback (SaveContext * ctx);
 
 public:
   /** Project title. */

@@ -243,7 +243,9 @@ Graph::add_port (
             {
               auto found_at = port->at_;
               z_return_val_if_fail (found_at, nullptr);
-              if (found_at->regions_.empty () && port->srcs_.empty ())
+              if (
+                found_at->region_list_->regions_.empty ()
+                && port->srcs_.empty ())
                 {
                   return nullptr;
                 }

@@ -364,7 +364,7 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
         this == &ch->stereo_out_->get_l () || this == &ch->stereo_out_->get_r ())
         {
           /* reset peak if needed */
-          gint64 time_now = g_get_monotonic_time ();
+          auto time_now = Zrythm::getInstance ()->get_monotonic_time_usecs ();
           if (time_now - peak_timestamp_ > TIME_TO_RESET_PEAK)
             peak_ = -1.f;
 
@@ -372,7 +372,8 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
             &buf_[time_nfo.local_offset_], &peak_, time_nfo.nframes_);
           if (changed)
             {
-              peak_timestamp_ = g_get_monotonic_time ();
+              peak_timestamp_ =
+                Zrythm::getInstance ()->get_monotonic_time_usecs ();
             }
         }
     }

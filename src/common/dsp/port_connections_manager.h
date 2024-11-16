@@ -10,8 +10,6 @@
 #include "common/utils/icloneable.h"
 #include "common/utils/types.h"
 
-#include <glib.h>
-
 class Port;
 class PortIdentifier;
 class PortConnection;

@@ -111,7 +111,7 @@ TEST (String, IsEqual)
 
   const char * str;
   int test_times = 40;
-  gint64 start = g_get_monotonic_time ();
+  auto start = Zrythm::getInstance ()->get_monotonic_time_usecs ();
   for (int j = 0; j < test_times; j++)
     {
       for (size_t i = 0;
@@ -123,11 +123,11 @@ TEST (String, IsEqual)
             str, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         }
     }
-  gint64 end = g_get_monotonic_time ();
-  gint64 orig_time = end - start;
+  auto end = Zrythm::getInstance ()->get_monotonic_time_usecs ();
+  qint64 orig_time = end - start;
   z_info ("orig: {} us", orig_time);
 
-  start = g_get_monotonic_time ();
+  start = Zrythm::getInstance ()->get_monotonic_time_usecs ();
   for (int j = 0; j < test_times; j++)
     {
       for (size_t i = 0;
@@ -139,8 +139,8 @@ TEST (String, IsEqual)
             str, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         }
     }
-  end = g_get_monotonic_time ();
-  gint64 fast_time = end - start;
+  end = Zrythm::getInstance ()->get_monotonic_time_usecs ();
+  qint64 fast_time = end - start;
   z_info ("fast: {} us", fast_time);
 
   ASSERT_LT (fast_time, orig_time);

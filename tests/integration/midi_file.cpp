@@ -95,7 +95,7 @@ TEST_F (ZrythmFixture, MidiFilePlayback)
         }
 
       /* sleep to avoid being killed */
-      g_usleep (1000);
+      std::this_thread::sleep_for (std::chrono::milliseconds (1000));
 
       if (iter++ == MAX_FILES)
         break;

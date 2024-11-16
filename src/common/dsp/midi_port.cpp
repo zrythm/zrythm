@@ -206,7 +206,7 @@ MidiPort::prepare_rtmidi_events ()
     // is_input() &&
     midi_backend_is_rtmidi (AUDIO_ENGINE->midi_backend_));
 
-  gint64 cur_time = g_get_monotonic_time ();
+  auto cur_time = Zrythm::getInstance ()->get_monotonic_time_usecs ();
   for (auto &dev : rtmidi_ins_)
     {
       /* clear the events */
@@ -217,7 +217,7 @@ MidiPort::prepare_rtmidi_events ()
       while (dev->midi_ring_.read (ev))
         {
           /* calculate event timestamp */
-          gint64 length = cur_time - last_midi_dequeue_;
+          qint64 length = cur_time - last_midi_dequeue_;
           auto   ev_time =
             (midi_time_t) (((double) ev.systime_ / (double) length)
                            * (double) AUDIO_ENGINE->block_length_);
@@ -556,7 +556,7 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
                   midi_ring_->skip (1);
                 }
 
-              ev.systime_ = g_get_monotonic_time ();
+              ev.systime_ = Zrythm::getInstance ()->get_monotonic_time_usecs ();
               midi_ring_->write (ev);
               // z_debug ("writing to ring for {}", get_label ());
             }
@@ -566,7 +566,8 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
           if (events.has_any ())
             {
               // z_debug ("no write to ring for {}", get_label ());
-              last_midi_event_time_ = g_get_monotonic_time ();
+              last_midi_event_time_ =
+                Zrythm::getInstance ()->get_monotonic_time_usecs ();
               has_midi_events_.store (true);
             }
         }

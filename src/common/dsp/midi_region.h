@@ -30,13 +30,21 @@ using MIDI_FILE = void;
  * constructed from a MIDI file or a chord descriptor.
  */
 class MidiRegion final
-    : public LaneOwnedObjectImpl<MidiRegion>,
+    : public QAbstractListModel,
+      public LaneOwnedObjectImpl<MidiRegion>,
       public RegionImpl<MidiRegion>,
       public ICloneable<MidiRegion>,
       public ISerializable<MidiRegion>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (MidiRegion)
+  DEFINE_REGION_QML_PROPERTIES (MidiRegion)
+
+  friend class RegionImpl<MidiRegion>;
+
 public:
-  MidiRegion ();
+  MidiRegion (QObject * parent = nullptr);
 
   /**
    * @brief Construct a new Midi Region object
@@ -52,7 +60,8 @@ public:
     const Position &end_pos,
     unsigned int    track_name_hash,
     int             lane_pos,
-    int             idx_inside_lane);
+    int             idx_inside_lane,
+    QObject *       parent = nullptr);
 
   /**
    * Creates a MIDI region from the given MIDI file path, starting at the given
@@ -70,7 +79,8 @@ public:
     unsigned int       track_name_hash,
     int                lane_pos,
     int                idx_inside_lane,
-    int                midi_track_idx);
+    int                midi_track_idx,
+    QObject *          parent = nullptr);
 
   /**
    * Create a region from the chord descriptor.
@@ -83,7 +93,23 @@ public:
     ChordDescriptor &descr,
     unsigned int     track_name_hash,
     int              lane_pos,
-    int              idx_inside_lane);
+    int              idx_inside_lane,
+    QObject *        parent = nullptr);
+
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
+  enum MidiRegionRoles
+  {
+    MidiNotePtrRole = Qt::UserRole + 1,
+  };
+
+  QHash<int, QByteArray> roleNames () const override;
+  int rowCount (const QModelIndex &parent = QModelIndex ()) const override;
+  QVariant
+  data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
+
+  // ========================================================================
 
   void init_loaded () override;
 
@@ -153,10 +179,9 @@ public:
    * @param use_track_or_lane_pos Whether to use the track/lane position in the
    * MIDI data. The MIDI track will be set to 1 if false.
    */
-  void write_to_midi_file (
-    MIDI_FILE * mf,
-    const bool  add_region_start,
-    bool        export_full) const;
+  void
+  write_to_midi_file (MIDI_FILE * mf, bool add_region_start, bool export_full)
+    const;
 
   /**
    * Exports the Region to a specified MIDI file.
@@ -170,7 +195,7 @@ public:
   void export_to_midi_file (
     const std::string &full_path,
     int                midi_version,
-    const bool         export_full) const;
+    bool               export_full) const;
 
   /**
    * Returns the MIDI channel that this region should be played on, starting
@@ -200,8 +225,8 @@ public:
     MidiEventVector &events,
     const Position * start,
     const Position * end,
-    const bool       add_region_start,
-    const bool       full) const;
+    bool             add_region_start,
+    bool             full) const;
 
   /**
    * Fills in the array with all the velocities in the project that are within
@@ -226,7 +251,7 @@ public:
   {
     for (const auto &mn : midi_notes_)
       {
-        children.push_back (mn.get ());
+        children.push_back (mn);
       }
   }
 
@@ -240,21 +265,10 @@ public:
 
   bool validate (bool is_project, double frames_per_tick) const override;
 
-  ArrangerSelections * get_arranger_selections () const override;
+  std::optional<ClipEditorArrangerSelectionsPtrVariant>
+  get_arranger_selections () const override;
 
-  void init_after_cloning (const MidiRegion &other) override
-  {
-    clone_unique_ptr_container (midi_notes_, other.midi_notes_);
-    LaneOwnedObjectImpl::copy_members_from (other);
-    Region::copy_members_from (other);
-    TimelineObject::copy_members_from (other);
-    NameableObject::copy_members_from (other);
-    LoopableObject::copy_members_from (other);
-    MuteableObject::copy_members_from (other);
-    LengthableObject::copy_members_from (other);
-    ColoredObject::copy_members_from (other);
-    ArrangerObject::copy_members_from (other);
-  }
+  void init_after_cloning (const MidiRegion &other) override;
 
   /**
    * Set positions to the exact values in the export region as it is played
@@ -284,7 +298,7 @@ public:
   /**
    * MIDI notes.
    */
-  std::vector<std::shared_ptr<MidiNote>> midi_notes_;
+  std::vector<MidiNote *> midi_notes_;
 
   /**
    * Unended notes started in recording with MIDI NOTE ON signal but haven't

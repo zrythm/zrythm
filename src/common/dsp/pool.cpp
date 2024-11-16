@@ -7,14 +7,13 @@
 #include "common/dsp/pool.h"
 #include "common/dsp/track.h"
 #include "common/dsp/tracklist.h"
-#include "common/utils/file.h"
 #include "common/utils/io.h"
 #include "common/utils/string.h"
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
+using namespace zrythm;
 
 AudioPool::AudioPool (AudioEngine * engine) : engine_ (engine) { }
 
@@ -47,7 +46,7 @@ void
 AudioPool::ensure_unique_clip_name (AudioClip &clip)
 {
   constexpr bool is_backup = false;
-  auto        orig_name_without_ext = io_file_strip_ext (clip.name_.c_str ());
+  auto           orig_name_without_ext = utils::io::file_strip_ext (clip.name_);
   auto        orig_path_in_pool = clip.get_path_in_pool (is_backup);
   std::string new_name = orig_name_without_ext;
   z_return_if_fail (!new_name.empty ());
@@ -221,7 +220,8 @@ AudioPool::remove_unused (bool backup)
 
   /* remove untracked files from pool directory */
   auto prj_pool_dir = PROJECT->get_path (ProjectPath::POOL, backup);
-  auto files = io_get_files_in_dir_ending_in (prj_pool_dir, true, std::nullopt);
+  auto files =
+    utils::io::get_files_in_dir_ending_in (prj_pool_dir, true, std::nullopt);
   for (const auto &path : files)
     {
       bool found = false;
@@ -240,7 +240,7 @@ AudioPool::remove_unused (bool backup)
       /* if file not found in pool clips, delete */
       if (!found)
         {
-          io_remove (path.toStdString ());
+          utils::io::remove (path.toStdString ());
         }
     }
 
@@ -280,12 +280,6 @@ struct WriteClipData
   /** To be set after writing the file. */
   bool        successful = false;
   std::string error;
-
-  static void free (void * data, GClosure * closure)
-  {
-    auto * self = (WriteClipData *) data;
-    delete self;
-  }
 };
 
 void
@@ -295,11 +289,11 @@ AudioPool::write_to_disk (bool is_backup)
 
   /* ensure pool dir exists */
   auto prj_pool_dir = engine_->project_->get_path (ProjectPath::POOL, is_backup);
-  if (!file_path_exists (prj_pool_dir))
+  if (!utils::io::path_exists (prj_pool_dir))
     {
       try
         {
-          io_mkdir (prj_pool_dir);
+          utils::io::mkdir (prj_pool_dir);
         }
       catch (const ZrythmException &e)
         {

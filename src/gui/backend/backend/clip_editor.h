@@ -44,21 +44,15 @@ public:
    *
    * To be called only from GTK threads.
    */
-  void set_region (Region * region, bool fire_events);
+  void
+  set_region (std::optional<RegionPtrVariant> region_opt_var, bool fire_events);
 
-  /**
-   * @brief Get the region object dynamic-casted to @p T.
-   *
-   * @tparam T
-   * @return T*
-   */
-  template <FinalRegionSubclass T> T * get_region () const;
+  std::optional<RegionPtrVariant> get_region () const;
 
-  Region * get_region () const;
+  std::optional<ClipEditorArrangerSelectionsPtrVariant>
+  get_arranger_selections ();
 
-  ArrangerSelections * get_arranger_selections ();
-
-  Track * get_track ();
+  std::optional<TrackPtrVariant> get_track ();
 
   /**
    * To be called when recalculating the graph.
@@ -79,23 +73,11 @@ public:
   AutomationEditor automation_editor_;
   ChordEditor      chord_editor_;
 
-  /** Flag used by rulers when region first changes. */
-  bool region_changed_ = false;
-
   /* --- caches --- */
-  Region * region_ = nullptr;
+  std::optional<RegionPtrVariant> region_;
 
-  Track * track_ = nullptr;
+  std::optional<TrackPtrVariant> track_;
 };
-
-extern template MidiRegion *
-ClipEditor::get_region<MidiRegion> () const;
-extern template AudioRegion *
-ClipEditor::get_region<AudioRegion> () const;
-extern template AutomationRegion *
-ClipEditor::get_region<AutomationRegion> () const;
-extern template ChordRegion *
-ClipEditor::get_region<ChordRegion> () const;
 
 /**
  * @}

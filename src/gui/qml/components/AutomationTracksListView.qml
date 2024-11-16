@@ -9,6 +9,7 @@ ListView {
     property var track
 
     interactive: false
+    clip: true
     implicitHeight: contentHeight
 
     Connections {

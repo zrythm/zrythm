@@ -11,8 +11,6 @@
 #include "common/dsp/position.h"
 #include "common/utils/audio.h"
 
-#include <glib/gi18n.h>
-
 class ProgressInfo;
 
 /**
@@ -282,9 +280,9 @@ DEFINE_ENUM_FORMATTER (
 DEFINE_ENUM_FORMATTER (
   Exporter::TimeRange,
   Exporter_TimeRange,
-  "Loop",
-  "Song",
-  "Custom");
+  QT_TR_NOOP_UTF8 ("Loop"),
+  QT_TR_NOOP_UTF8 ("Song"),
+  QT_TR_NOOP_UTF8 ("Custom"));
 
 DEFINE_ENUM_FORMATTER (Exporter::Mode, Exporter_Mode, "Full", "Tracks", "Regions");
 

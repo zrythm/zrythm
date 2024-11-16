@@ -43,20 +43,20 @@ class ChordRegion;
  * for the Pango layout used to draw the chord name.
  */
 class ChordObject final
-    : public MuteableObject,
+    : public QObject,
+      public MuteableObject,
       public RegionOwnedObjectImpl<ChordRegion>,
       public ICloneable<ChordObject>,
       public ISerializable<ChordObject>
 {
 public:
-  // Rule of 0
-  ChordObject () = default;
+  ChordObject (QObject * parent = nullptr);
 
-  ChordObject (const RegionIdentifier &region_id, int chord_index, int index)
-      : ArrangerObject (Type::ChordObject),
-        RegionOwnedObjectImpl (region_id, index), chord_index_ (chord_index)
-  {
-  }
+  ChordObject (
+    const RegionIdentifier &region_id,
+    int                     chord_index,
+    int                     index,
+    QObject *               parent = nullptr);
 
   using RegionOwnedObjectT = RegionOwnedObjectImpl<ChordRegion>;
 
@@ -65,11 +65,12 @@ public:
    */
   ChordDescriptor * get_chord_descriptor () const;
 
-  ArrangerObjectPtr find_in_project () const override;
+  std::optional<ArrangerObjectPtrVariant> find_in_project () const override;
 
-  ArrangerObjectPtr add_clone_to_project (bool fire_events) const override;
+  ArrangerObjectPtrVariant
+  add_clone_to_project (bool fire_events) const override;
 
-  ArrangerObjectPtr insert_clone_to_project () const override;
+  ArrangerObjectPtrVariant insert_clone_to_project () const override;
 
   std::string print_to_str () const override;
 
@@ -106,7 +107,7 @@ operator== (const ChordObject &lhs, const ChordObject &rhs)
 
 DEFINE_OBJECT_FORMATTER (ChordObject, [] (const ChordObject &co) {
   return fmt::format (
-    "ChordObject [{}]: chord index {}", co.pos_, co.chord_index_);
+    "ChordObject [{}]: chord index {}", *co.pos_, co.chord_index_);
 });
 
 /**

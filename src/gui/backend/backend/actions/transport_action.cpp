@@ -10,10 +10,10 @@
 #include "common/utils/gtest_wrapper.h"
 #include "gui/backend/backend/actions/transport_action.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
+#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
+using namespace zrythm;
 
 TransportAction::
   TransportAction (bpm_t bpm_before, bpm_t bpm_after, bool already_done)
@@ -23,7 +23,7 @@ TransportAction::
       musical_mode_ (
         ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
           ? false
-          : g_settings_get_boolean (S_UI, "musical-mode"))
+          : gui::SettingsManager::get_instance ()->get_musicalMode ())
 {
 }
 
@@ -34,7 +34,7 @@ TransportAction::
       musical_mode_ (
         ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
           ? false
-          : g_settings_get_boolean (S_UI, "musical-mode"))
+          : gui::SettingsManager::get_instance ()->get_musicalMode ())
 {
   if (type == Type::TempoChange)
     {
@@ -141,21 +141,23 @@ TransportAction::undo_impl ()
   /* EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, nullptr); */
 }
 
-std::string
+QString
 TransportAction::to_string () const
 {
   switch (type_)
     {
     case Type::TempoChange:
-      return format_str (
-        _ ("Change BPM from {:.2f} to {:.2f}"), bpm_before_, bpm_after_);
+      return format_qstr (
+        QObject::tr ("Change BPM from {:.2f} to {:.2f}"), bpm_before_,
+        bpm_after_);
     case Type::BeatsPerBarChange:
-      return format_str (
-        _ ("Change beats per bar from {} to {}"), int_before_, int_after_);
+      return format_qstr (
+        QObject::tr ("Change beats per bar from {} to {}"), int_before_,
+        int_after_);
     case Type::BeatUnitChange:
-      return format_str (
-        _ ("Change beat unit from {} to {}"), int_before_, int_after_);
+      return format_qstr (
+        QObject::tr ("Change beat unit from {} to {}"), int_before_, int_after_);
     }
 
-  z_return_val_if_reached ("");
+  z_return_val_if_reached ({});
 }

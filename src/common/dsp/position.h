@@ -437,6 +437,12 @@ public:
    */
   double get_ticks () const;
 
+  void set_to_pos (const Position &pos)
+  {
+    ticks_ = pos.ticks_;
+    frames_ = pos.frames_;
+  }
+
   bool validate () const;
 
 private:

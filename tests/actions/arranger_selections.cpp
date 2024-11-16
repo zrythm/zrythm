@@ -24,8 +24,6 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib.h>
-
 #include "tests/helpers/project_helper.h"
 
 auto REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK =

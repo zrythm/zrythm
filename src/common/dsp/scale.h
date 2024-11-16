@@ -17,8 +17,6 @@
 #include "common/dsp/chord_descriptor.h"
 #include "common/io/serialization/iserializable.h"
 
-#include <glib/gi18n.h>
-
 /**
  * @addtogroup dsp
  *
@@ -153,7 +151,7 @@ public:
   static std::array<ChordType, 12>
   get_triad_types_for_type (Type type, bool ascending);
 
-  static const char * type_to_string (Type type);
+  static std::string type_to_string (Type type);
 
   /**
    * Prints the MusicalScale to a string.

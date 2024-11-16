@@ -16,8 +16,6 @@
 #include "common/utils/format.h"
 #include "common/utils/types.h"
 
-#include <glib/gi18n.h>
-
 class MidiSelections;
 
 /**
@@ -81,14 +79,14 @@ midi_function_apply (
 DEFINE_ENUM_FORMATTER (
   MidiFunctionType,
   MidiFunctionType,
-  N_ ("Crescendo"),
-  N_ ("Flam"),
-  N_ ("Flip H"),
-  N_ ("Flip V"),
-  N_ ("Legato"),
-  N_ ("Portato"),
-  N_ ("Staccato"),
-  N_ ("Strum"));
+  QT_TR_NOOP_UTF8 ("Crescendo"),
+  QT_TR_NOOP_UTF8 ("Flam"),
+  QT_TR_NOOP_UTF8 ("Flip H"),
+  QT_TR_NOOP_UTF8 ("Flip V"),
+  QT_TR_NOOP_UTF8 ("Legato"),
+  QT_TR_NOOP_UTF8 ("Portato"),
+  QT_TR_NOOP_UTF8 ("Staccato"),
+  QT_TR_NOOP_UTF8 ("Strum"));
 
 /**
  * @}

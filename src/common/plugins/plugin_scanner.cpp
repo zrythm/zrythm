@@ -44,6 +44,7 @@
 
 using namespace zrythm::plugins;
 using namespace zrythm::plugins::scanner_private;
+using namespace Qt::StringLiterals;
 
 constexpr auto PLUGIN_SCAN_TIMEOUT = std::chrono::seconds (4);
 
@@ -52,7 +53,7 @@ constexpr auto PLUGIN_SCAN_TIMEOUT = std::chrono::seconds (4);
 OutOfProcessPluginScanner::SubprocessCoordinator::SubprocessCoordinator ()
 {
   const auto path_from_env = QProcessEnvironment::systemEnvironment ().value (
-    "ZRYTHM_PLUGIN_SCANNER_PATH");
+    u"ZRYTHM_PLUGIN_SCANNER_PATH"_s);
   juce::File path;
   if (!path_from_env.isEmpty ())
     {
@@ -258,7 +259,7 @@ PluginScanner::PluginScanner (
   std::shared_ptr<juce::KnownPluginList> known_plugins,
   QObject *                              parent)
     : QObject (parent), known_plugin_list_ (known_plugins),
-      currently_scanning_plugin_ ("Scanning...")
+      currently_scanning_plugin_ (tr ("Scanning..."))
 {
 }
 

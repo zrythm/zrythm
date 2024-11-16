@@ -9,23 +9,7 @@
 
 #include "common/utils/env.h"
 
-#include <glib.h>
-
 #include "juce_wrapper.h"
-
-/**
- * Returns a newly allocated string.
- *
- * @param def Default value to return if not found.
- */
-char *
-env_get_string (const char * key, const char * def)
-{
-  const char * val = g_getenv (key);
-  if (!val)
-    return g_strdup (def);
-  return g_strdup (val);
-}
 
 /**
  * Returns an int for the given environment variable

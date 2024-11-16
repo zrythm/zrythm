@@ -40,8 +40,6 @@
 
 #include <QtConcurrent>
 
-#include <glib/gi18n.h>
-
 using namespace zrythm::plugins;
 
 PluginManager::PluginManager (QObject * parent)
@@ -159,7 +157,7 @@ PluginManager::get_known_plugins_xml_path ()
   QString local_app_data_path =
     QStandardPaths::writableLocation (QStandardPaths::AppLocalDataLocation);
   QDir dir (local_app_data_path);
-  return dir.absoluteFilePath ("known_plugins.xml").toStdString ();
+  return dir.absoluteFilePath (u"known_plugins.xml"_s).toStdString ();
 }
 
 void

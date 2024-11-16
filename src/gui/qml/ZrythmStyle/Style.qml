@@ -60,6 +60,16 @@ QtObject {
         "pixelSize": 12,
         "weight": Font.Medium
     })
+     readonly property font arrangerObjectTextFont: ({
+        "family": root.fontFamily,
+        "pixelSize": 11,
+        "weight": Font.Medium
+    })
+    readonly property font arrangerObjectBoldTextFont: ({
+        "family": root.fontFamily,
+        "pixelSize": 11,
+        "weight": Font.Bold
+    })
     readonly property font smallTextFont: ({
         "family": root.fontFamily,
         "pixelSize": 10,
@@ -80,6 +90,7 @@ QtObject {
     readonly property real textFieldRadius: 4
     readonly property real buttonHeight: 24
     readonly property real buttonPadding: 4
+    readonly property real scrollLoaderBufferPx: 64
     readonly property Palette
     colorPalette: Palette {
         accent: root.primaryColor

@@ -12,7 +12,6 @@
 #include "common/utils/debug.h"
 #include "common/utils/dsp.h"
 #include "common/utils/exceptions.h"
-#include "common/utils/file.h"
 #include "common/utils/flags.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/hash.h"
@@ -21,11 +20,9 @@
 #include "common/utils/objects.h"
 #include "gui/backend/backend/project.h"
 
-#include <glib/gi18n.h>
-
 #include <fmt/printf.h>
-#include <giomm.h>
-#include <glibmm.h>
+
+using namespace zrythm;
 
 void
 AudioClip::update_channel_caches (size_t start_from)
@@ -190,15 +187,15 @@ AudioClip::get_path_in_pool_from_name (
   bool               use_flac,
   bool               is_backup)
 {
-  std::string prj_pool_dir = PROJECT->get_path (ProjectPath::POOL, is_backup);
-  if (!file_path_exists (prj_pool_dir))
+  auto prj_pool_dir = PROJECT->get_path (ProjectPath::POOL, is_backup);
+  if (!utils::io::path_exists (prj_pool_dir))
     {
       z_error ("{} does not exist", prj_pool_dir);
       return "";
     }
   std::string basename =
-    io_file_strip_ext (name) + (use_flac ? ".FLAC" : ".wav");
-  return Glib::build_filename (prj_pool_dir, basename);
+    utils::io::file_strip_ext (name) + (use_flac ? ".FLAC" : ".wav");
+  return prj_pool_dir / basename;
 }
 
 std::string
@@ -226,7 +223,7 @@ AudioClip::write_to_pool (bool parts, bool is_backup)
   bool need_new_write = true;
 
   /* skip if file with same hash already exists */
-  if (file_path_exists (new_path) && !parts)
+  if (utils::io::path_exists (new_path) && !parts)
     {
       bool same_hash =
         !file_hash_.empty ()
@@ -244,7 +241,7 @@ AudioClip::write_to_pool (bool parts, bool is_backup)
   if (need_new_write && !file_hash_.empty () && is_backup)
     {
       bool exists_in_main_project = false;
-      if (file_path_exists (path_in_main_project))
+      if (utils::io::path_exists (path_in_main_project))
         {
           exists_in_main_project =
             file_hash_
@@ -253,32 +250,19 @@ AudioClip::write_to_pool (bool parts, bool is_backup)
 
       if (exists_in_main_project)
         {
-          /* try reflink */
+          /* try reflink and fall back to normal copying */
           z_debug (
             "reflinking clip from main project ('{}' to '{}')",
             path_in_main_project, new_path);
 
-          if (!file_reflink (path_in_main_project, new_path))
+          if (!utils::io::reflink_file (path_in_main_project, new_path))
             {
               z_debug ("failed to reflink, copying instead");
-
-              /* copy */
-              auto src_file = Gio::File::create_for_path (path_in_main_project);
-              auto dest_file = Gio::File::create_for_path (new_path);
               z_debug (
                 "copying clip from main project ('{}' to '{}')",
                 path_in_main_project, new_path);
-              try
-                {
-                  src_file->copy (dest_file);
-                }
-              catch (const Gio::Error &e2)
-                {
-                  throw ZrythmException (fmt::format (
-                    "Failed to copy '{}' to '{}': {}", path_in_main_project,
-                    new_path, e2.what ()));
-                }
-            } /* endif reflink fail */
+              utils::io::copy_file (new_path, path_in_main_project);
+            }
         }
     }
 
@@ -374,7 +358,7 @@ AudioClip::write_to_file (const std::string &filepath, bool parts)
         ch_frames_, frames_written_, nframes_to_write_this_time);
 
       frames_written_ = num_frames_;
-      last_write_ = g_get_monotonic_time ();
+      last_write_ = Zrythm::getInstance ()->get_monotonic_time_usecs ();
     }
   else
     {
@@ -425,8 +409,9 @@ AudioClip::is_in_use (bool check_undo_stack) const
       for (auto &lane_var : track->lanes_)
         {
           auto * lane = std::get<AudioLane *> (lane_var);
-          for (auto region : lane->regions_ | type_is<AudioRegion>{})
+          for (auto region_var : lane->region_list_->regions_)
             {
+              auto * region = std::get<AudioRegion *> (region_var);
               if (region->pool_id_ == pool_id_)
                 return true;
             }
@@ -507,9 +492,9 @@ AudioClip::edit_in_ext_program ()
   const char * content_type = g_file_info_get_content_type (file_info);
 
   GtkWidget * dialog = gtk_dialog_new_with_buttons (
-    _ ("Edit in external app"), GTK_WINDOW (MAIN_WINDOW),
-    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, _ ("_OK"),
-    GTK_RESPONSE_ACCEPT, _ ("_Cancel"), GTK_RESPONSE_REJECT, nullptr);
+    QObject::tr ("Edit in external app"), GTK_WINDOW (MAIN_WINDOW),
+    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, QObject::tr ("_OK"),
+    GTK_RESPONSE_ACCEPT, QObject::tr ("_Cancel"), GTK_RESPONSE_REJECT, nullptr);
 
   /* populate content area */
   GtkWidget * content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
@@ -523,7 +508,7 @@ AudioClip::edit_in_ext_program ()
   GtkWidget * lbl = gtk_label_new ("");
   gtk_label_set_selectable (GTK_LABEL (lbl), true);
   char * markup = g_markup_printf_escaped (
-    _ ("Edit the file at <u>%s</u>, then press OK"), abs_path.c_str ());
+    QObject::tr ("Edit the file at <u>%s</u>, then press OK"), abs_path.c_str ());
   gtk_label_set_markup (GTK_LABEL (lbl), markup);
   gtk_box_append (GTK_BOX (main_box), lbl);
 
@@ -531,7 +516,7 @@ AudioClip::edit_in_ext_program ()
   gtk_widget_set_halign (launch_box, GTK_ALIGN_CENTER);
   GtkWidget * app_chooser_button = gtk_app_chooser_button_new (content_type);
   gtk_box_append (GTK_BOX (launch_box), app_chooser_button);
-  GtkWidget *     btn = gtk_button_new_with_label (_ ("Launch"));
+  GtkWidget *     btn = gtk_button_new_with_label (QObject::tr ("Launch"));
   AppLaunchData * data = object_new (AppLaunchData);
   data->file = file;
   data->app_chooser = GTK_APP_CHOOSER (app_chooser_button);
@@ -560,5 +545,5 @@ AudioClip::remove (bool backup)
   std::string path = get_path_in_pool (backup);
   z_debug ("removing clip at {}", path);
   z_return_if_fail (path.length () > 0);
-  io_remove (path);
+  utils::io::remove (path);
 }

@@ -6,8 +6,6 @@
 #include "common/utils/format.h"
 #include "gui/backend/backend/actions/port_action.h"
 
-#include <glib/gi18n.h>
-
 void
 PortAction::init_after_cloning (const PortAction &other)
 {
@@ -70,15 +68,16 @@ PortAction::undo_impl ()
   do_or_undo (false);
 }
 
-std::string
+QString
 PortAction::to_string () const
 {
   switch (type_)
     {
     case Type::SetControlValue:
-      return format_str (_ ("Set {} to {}"), port_id_->get_label (), val_);
+      return format_qstr (
+        QObject::tr ("Set {} to {}"), port_id_->get_label (), val_);
       break;
     }
 
-  z_return_val_if_reached ("");
+  z_return_val_if_reached ({});
 }

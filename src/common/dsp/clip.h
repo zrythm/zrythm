@@ -225,7 +225,7 @@ public:
   /**
    * Bit depth of the clip when the clip was imported into the project.
    */
-  BitDepth bit_depth_;
+  BitDepth bit_depth_{};
 
   /** Whether the clip should use FLAC when being serialized. */
   bool use_flac_ = false;
@@ -250,7 +250,7 @@ public:
    *
    * @see AudioClip.frames_written.
    */
-  gint64 last_write_ = 0;
+  std::uint64_t last_write_ = 0;
 
   /** Number of frames per channel. FIXME this might not be needed since we have
    * ch_frames_ */

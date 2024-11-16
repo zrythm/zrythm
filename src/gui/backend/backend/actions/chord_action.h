@@ -57,7 +57,7 @@ public:
    */
   ChordAction (const ChordDescriptor &chord, const int chord_idx);
 
-  std::string to_string () const override;
+  QString to_string () const override;
 
   void init_after_cloning (const ChordAction &other) override;
 

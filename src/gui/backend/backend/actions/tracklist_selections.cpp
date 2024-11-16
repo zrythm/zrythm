@@ -19,6 +19,7 @@
 #include "common/io/file_descriptor.h"
 #include "common/io/midi_file.h"
 #include "common/plugins/plugin.h"
+#include "common/utils/base64.h"
 #include "common/utils/debug.h"
 #include "common/utils/exceptions.h"
 #include "common/utils/io.h"
@@ -27,12 +28,10 @@
 #include "common/utils/ui.h"
 #include "gui/backend/backend/actions/tracklist_selections.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
+#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
-
-#include <glibmm.h>
+using namespace zrythm;
 
 void
 TracklistSelectionsAction::init_after_cloning (
@@ -96,8 +95,16 @@ TracklistSelectionsAction::reset_foldable_track_sizes ()
 {
   for (auto own_tr : foldable_tls_before_->tracks_ | type_is<FoldableTrack> ())
     {
-      auto prj_tr = Track::find_by_name<FoldableTrack> (own_tr->name_);
-      prj_tr->size_ = own_tr->size_;
+      auto prj_tr_var = TRACKLIST->find_track_by_name (own_tr->name_);
+      std::visit (
+        [&] (auto &&prj_tr) {
+          using TrackT = base_type<decltype (prj_tr)>;
+          if constexpr (std::derived_from<TrackT, FoldableTrack>)
+            {
+              prj_tr->size_ = own_tr->size_;
+            }
+        },
+        *prj_tr_var);
     }
 }
 
@@ -171,16 +178,16 @@ TracklistSelectionsAction::TracklistSelectionsAction (
      || tracklist_selections_action_type_ == Type::CopyInside)
     && tls_before->contains_uncopyable_track ())
     {
-      throw ZrythmException (
-        _ ("Cannot copy tracks: selection contains an uncopyable track"));
+      throw ZrythmException (QObject::tr (
+        "Cannot copy tracks: selection contains an uncopyable track"));
     }
 
   if (
     tracklist_selections_action_type_ == Type::Delete
     && tls_before->contains_undeletable_track ())
     {
-      throw ZrythmException (
-        _ ("Cannot delete tracks: selection contains an undeletable track"));
+      throw ZrythmException (QObject::tr (
+        "Cannot delete tracks: selection contains an undeletable track"));
     }
 
   if (
@@ -247,9 +254,9 @@ TracklistSelectionsAction::TracklistSelectionsAction (
         {
           try
             {
-              std::string contents =
-                Glib::file_get_contents (file_descr->abs_path_);
-              base64_midi_ = Glib::Base64::encode (contents);
+              auto contents =
+                utils::io::read_file_contents (file_descr->abs_path_);
+              base64_midi_ = utils::base64::encode (contents).toStdString ();
             }
           catch (const std::exception &e)
             {
@@ -267,7 +274,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
           z_return_if_reached ();
         }
 
-      file_basename_ = Glib::path_get_basename (file_descr->abs_path_);
+      file_basename_ = utils::io::path_get_basename (file_descr->abs_path_);
     }
 
   bool need_full_selections = true;
@@ -280,7 +287,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
     {
       if (tls_before->tracks_.empty ())
         {
-          throw ZrythmException (_ ("No tracks selected"));
+          throw ZrythmException (QObject::tr ("No tracks selected"));
         }
 
       if (need_full_selections)
@@ -399,8 +406,8 @@ TracklistSelectionsAction::create_track (int idx)
   if (is_empty_)
     {
       auto track_type_str = Track_Type_to_string (track_type_, true);
-      auto label = format_str (_ ("{} Track"), track_type_str);
-      auto track = Track::create_track (track_type_, label, pos);
+      auto label = format_qstr (QObject::tr ("{} Track"), track_type_str);
+      auto track = Track::create_track (track_type_, label.toStdString (), pos);
       TRACKLIST->insert_track (
         std::move (track), pos, *AUDIO_ENGINE, false, false);
     }
@@ -453,7 +460,7 @@ TracklistSelectionsAction::create_track (int idx)
         {
           /* create an audio region & add to track*/
           added_track->add_region (
-            std::make_shared<AudioRegion> (
+            new AudioRegion (
               pool_id_, nullptr, true, nullptr, 0, nullptr, 0,
               ENUM_INT_TO_VALUE (BitDepth, 0), start_pos,
               added_track->get_name_hash (), 0, 0),
@@ -464,25 +471,25 @@ TracklistSelectionsAction::create_track (int idx)
         && !file_basename_.empty ())
         {
           /* create a temporary midi file */
-          std::string dir_str = io_create_tmp_dir ("zrythm_tmp_midi_XXXXXX");
-          auto        full_path = Glib::build_filename (dir_str, "data.MID");
-          auto        data = Glib::Base64::decode (base64_midi_);
-          io_write_file_atomic (full_path, data);
+          auto full_path_file = utils::io::make_tmp_file (
+            std::make_optional<std::string> ("data.MID"));
+          fs::path full_path (full_path_file->fileName ().toStdString ());
+          auto     data =
+            utils::base64::decode (QByteArray::fromStdString (base64_midi_));
+          utils::io::set_file_contents (
+            full_path, data.constData (), data.size ());
 
           /* create a MIDI region from the MIDI file & add to track */
           added_track->add_region (
-            std::make_shared<MidiRegion> (
+            new MidiRegion (
               pos_, full_path, added_track->get_name_hash (), 0, 0, idx),
             nullptr, 0, true, false);
-
-          /* remove temporary data */
-          io_remove (full_path);
-          io_rmdir (dir_str, false);
         }
 
       if (
         added_pl && ZRYTHM_HAVE_UI
-        && g_settings_get_boolean (S_P_PLUGINS_UIS, "open-on-instantiate"))
+        && gui::SettingsManager::get_instance ()
+             ->get_openPluginsOnInstantiation ())
         {
           added_pl->visible_ = true;
           /* EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, added_pl); */
@@ -608,9 +615,13 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                             prj_track->get_channel ()->get_output_track ();
                           out_track->remove_child (
                             prj_track->get_name_hash (), true, false, false);
-                          out_track = dynamic_cast<GroupTargetTrack *> (
-                            TRACKLIST->find_track_by_name_hash (
-                              out_track_hashes_[i]));
+                          out_track = std::visit (
+                            [&] (auto &&t) {
+                              return dynamic_cast<GroupTargetTrack *> (t);
+                            },
+                            TRACKLIST
+                              ->find_track_by_name_hash (out_track_hashes_[i])
+                              .value ());
                           out_track->add_child (
                             prj_track->get_name_hash (), true, false, false);
                         }
@@ -767,7 +778,7 @@ TracklistSelectionsAction::
   bool unpin = tracklist_selections_action_type_ == Type::Unpin;
 
   /* if moving, this will be set back */
-  Region * prev_clip_editor_region = CLIP_EDITOR->get_region ();
+  auto prev_clip_editor_region_opt = CLIP_EDITOR->get_region ();
 
   if (_do)
     {
@@ -1128,7 +1139,7 @@ TracklistSelectionsAction::
 
   if (move)
     {
-      CLIP_EDITOR->set_region (prev_clip_editor_region, false);
+      CLIP_EDITOR->set_region (prev_clip_editor_region_opt, false);
     }
 
   /* restore connections */
@@ -1299,11 +1310,16 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
                     /* disconnect from the current track */
                     if (track->get_channel ()->has_output_)
                       {
-                        auto target_track = TRACKLIST->find_track_by_name_hash (
-                          track->get_channel ()->output_name_hash_);
-                        dynamic_cast<GroupTargetTrack *> (target_track)
-                          ->remove_child (
-                            track->get_name_hash (), true, false, true);
+                        auto target_track = std::visit (
+                          [&] (auto &&t) {
+                            return dynamic_cast<GroupTargetTrack *> (t);
+                          },
+                          TRACKLIST
+                            ->find_track_by_name_hash (
+                              track->get_channel ()->output_name_hash_)
+                            .value ());
+                        target_track->remove_child (
+                          track->get_name_hash (), true, false, true);
                       }
 
                     int target_pos = _do ? ival_after_ : ival_before_[i];
@@ -1460,7 +1476,7 @@ TracklistSelectionsAction::undo_impl ()
   do_or_undo (false);
 }
 
-std::string
+QString
 TracklistSelectionsAction::to_string () const
 {
   switch (tracklist_selections_action_type_)
@@ -1470,40 +1486,42 @@ TracklistSelectionsAction::to_string () const
       if (tls_before_->tracks_.size () == 1)
         {
           if (tracklist_selections_action_type_ == Type::CopyInside)
-            return _ ("Copy Track inside");
+            return QObject::tr ("Copy Track inside");
           else
-            return _ ("Copy Track");
+            return QObject::tr ("Copy Track");
         }
       else
         {
           if (tracklist_selections_action_type_ == Type::CopyInside)
-            return format_str (
-              _ ("Copy {} Tracks inside"), tls_before_->tracks_.size ());
+            return format_qstr (
+              QObject::tr ("Copy {} Tracks inside"),
+              tls_before_->tracks_.size ());
           else
-            return format_str (
-              _ ("Copy {} Tracks"), tls_before_->tracks_.size ());
+            return format_qstr (
+              QObject::tr ("Copy {} Tracks"), tls_before_->tracks_.size ());
         }
     case Type::Create:
       {
         auto type = Track_Type_to_string (track_type_);
         if (num_tracks_ == 1)
           {
-            return format_str (_ ("Create {} Track"), type);
+            return format_qstr (QObject::tr ("Create {} Track"), type);
           }
         else
           {
-            return format_str (_ ("Create {} {} Tracks"), num_tracks_, type);
+            return format_qstr (
+              QObject::tr ("Create {} {} Tracks"), num_tracks_, type);
           }
       }
     case Type::Delete:
       if (tls_before_->tracks_.size () == 1)
         {
-          return _ ("Delete Track");
+          return QObject::tr ("Delete Track");
         }
       else
         {
-          return format_str (
-            _ ("Delete {} Tracks"), tls_before_->tracks_.size ());
+          return format_qstr (
+            QObject::tr ("Delete {} Tracks"), tls_before_->tracks_.size ());
         }
     case Type::Edit:
       if (
@@ -1513,60 +1531,61 @@ TracklistSelectionsAction::to_string () const
             {
             case EditType::Solo:
               if (ival_after_)
-                return _ ("Solo Track");
+                return QObject::tr ("Solo Track");
               else
-                return _ ("Unsolo Track");
+                return QObject::tr ("Unsolo Track");
             case EditType::SoloLane:
               if (ival_after_)
-                return _ ("Solo Lane");
+                return QObject::tr ("Solo Lane");
               else
-                return _ ("Unsolo Lane");
+                return QObject::tr ("Unsolo Lane");
             case EditType::Mute:
               if (ival_after_)
-                return _ ("Mute Track");
+                return QObject::tr ("Mute Track");
               else
-                return _ ("Unmute Track");
+                return QObject::tr ("Unmute Track");
             case EditType::MuteLane:
               if (ival_after_)
-                return _ ("Mute Lane");
+                return QObject::tr ("Mute Lane");
               else
-                return _ ("Unmute Lane");
+                return QObject::tr ("Unmute Lane");
             case EditType::Listen:
               if (ival_after_)
-                return _ ("Listen Track");
+                return QObject::tr ("Listen Track");
               else
-                return _ ("Unlisten Track");
+                return QObject::tr ("Unlisten Track");
             case EditType::Enable:
               if (ival_after_)
-                return _ ("Enable Track");
+                return QObject::tr ("Enable Track");
               else
-                return _ ("Disable Track");
+                return QObject::tr ("Disable Track");
             case EditType::Fold:
               if (ival_after_)
-                return _ ("Fold Track");
+                return QObject::tr ("Fold Track");
               else
-                return _ ("Unfold Track");
+                return QObject::tr ("Unfold Track");
             case EditType::Volume:
-              return format_str (
-                _ ("Change Fader from {:.1f} to {:.1f}"), val_before_,
+              return format_qstr (
+                QObject::tr ("Change Fader from {:.1f} to {:.1f}"), val_before_,
                 val_after_);
             case EditType::Pan:
-              return format_str (
-                _ ("Change Pan from {:.1f} to {:.1f}"), val_before_, val_after_);
+              return format_qstr (
+                QObject::tr ("Change Pan from {:.1f} to {:.1f}"), val_before_,
+                val_after_);
             case EditType::DirectOut:
-              return _ ("Change direct out");
+              return QObject::tr ("Change direct out");
             case EditType::Rename:
-              return _ ("Rename track");
+              return QObject::tr ("Rename track");
             case EditType::RenameLane:
-              return _ ("Rename lane");
+              return QObject::tr ("Rename lane");
             case EditType::Color:
-              return _ ("Change color");
+              return QObject::tr ("Change color");
             case EditType::Icon:
-              return _ ("Change icon");
+              return QObject::tr ("Change icon");
             case EditType::Comment:
-              return _ ("Change comment");
+              return QObject::tr ("Change comment");
             case EditType::MidiFaderMode:
-              return _ ("Change MIDI fader mode");
+              return QObject::tr ("Change MIDI fader mode");
             }
         }
       else
@@ -1575,41 +1594,48 @@ TracklistSelectionsAction::to_string () const
             {
             case EditType::Solo:
               if (ival_after_)
-                return format_str (_ ("Solo {} Tracks"), num_tracks_);
+                return format_qstr (QObject::tr ("Solo {} Tracks"), num_tracks_);
               else
-                return format_str (_ ("Unsolo {} Tracks"), num_tracks_);
+                return format_qstr (
+                  QObject::tr ("Unsolo {} Tracks"), num_tracks_);
             case EditType::Mute:
               if (ival_after_)
-                return format_str (_ ("Mute {} Tracks"), num_tracks_);
+                return format_qstr (QObject::tr ("Mute {} Tracks"), num_tracks_);
               else
-                return format_str (_ ("Unmute {} Tracks"), num_tracks_);
+                return format_qstr (
+                  QObject::tr ("Unmute {} Tracks"), num_tracks_);
             case EditType::Listen:
               if (ival_after_)
-                return format_str (_ ("Listen {} Tracks"), num_tracks_);
+                return format_qstr (
+                  QObject::tr ("Listen {} Tracks"), num_tracks_);
               else
-                return format_str (_ ("Unlisten {} Tracks"), num_tracks_);
+                return format_qstr (
+                  QObject::tr ("Unlisten {} Tracks"), num_tracks_);
             case EditType::Enable:
               if (ival_after_)
-                return format_str (_ ("Enable {} Tracks"), num_tracks_);
+                return format_qstr (
+                  QObject::tr ("Enable {} Tracks"), num_tracks_);
               else
-                return format_str (_ ("Disable {} Tracks"), num_tracks_);
+                return format_qstr (
+                  QObject::tr ("Disable {} Tracks"), num_tracks_);
             case EditType::Fold:
               if (ival_after_)
-                return format_str (_ ("Fold {} Tracks"), num_tracks_);
+                return format_qstr (QObject::tr ("Fold {} Tracks"), num_tracks_);
               else
-                return format_str (_ ("Unfold {} Tracks"), num_tracks_);
+                return format_qstr (
+                  QObject::tr ("Unfold {} Tracks"), num_tracks_);
             case EditType::Color:
-              return _ ("Change color");
+              return QObject::tr ("Change color");
             case EditType::MidiFaderMode:
-              return _ ("Change MIDI fader mode");
+              return QObject::tr ("Change MIDI fader mode");
             case EditType::DirectOut:
-              return _ ("Change direct out");
+              return QObject::tr ("Change direct out");
             case EditType::SoloLane:
-              return _ ("Solo lanes");
+              return QObject::tr ("Solo lanes");
             case EditType::MuteLane:
-              return _ ("Mute lanes");
+              return QObject::tr ("Mute lanes");
             default:
-              return _ ("Edit tracks");
+              return QObject::tr ("Edit tracks");
             }
         }
     case Type::Move:
@@ -1618,46 +1644,48 @@ TracklistSelectionsAction::to_string () const
         {
           if (tracklist_selections_action_type_ == Type::MoveInside)
             {
-              return _ ("Move Track inside");
+              return QObject::tr ("Move Track inside");
             }
           else
             {
-              return _ ("Move Track");
+              return QObject::tr ("Move Track");
             }
         }
       else
         {
           if (tracklist_selections_action_type_ == Type::MoveInside)
             {
-              return format_str (
-                _ ("Move {} Tracks inside"), tls_before_->tracks_.size ());
+              return format_qstr (
+                QObject::tr ("Move {} Tracks inside"),
+                tls_before_->tracks_.size ());
             }
           else
             {
-              return format_str (
-                _ ("Move {} Tracks"), tls_before_->tracks_.size ());
+              return format_qstr (
+                QObject::tr ("Move {} Tracks"), tls_before_->tracks_.size ());
             }
         }
     case Type::Pin:
       if (tls_before_->tracks_.size () == 1)
         {
-          return _ ("Pin Track");
+          return QObject::tr ("Pin Track");
         }
       else
         {
-          return format_str (_ ("Pin {} Tracks"), tls_before_->tracks_.size ());
+          return format_qstr (
+            QObject::tr ("Pin {} Tracks"), tls_before_->tracks_.size ());
         }
     case Type::Unpin:
       if (tls_before_->tracks_.size () == 1)
         {
-          return _ ("Unpin Track");
+          return QObject::tr ("Unpin Track");
         }
       else
         {
-          return format_str (
-            _ ("Unpin {} Tracks"), tls_before_->tracks_.size ());
+          return format_qstr (
+            QObject::tr ("Unpin {} Tracks"), tls_before_->tracks_.size ());
         }
     }
 
-  z_return_val_if_reached ("");
+  z_return_val_if_reached ({});
 }

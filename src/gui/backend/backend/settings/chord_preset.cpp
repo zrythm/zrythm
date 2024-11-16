@@ -7,17 +7,25 @@
 #include "gui/backend/backend/settings/chord_preset_pack_manager.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
+ChordPreset::ChordPreset (QObject * parent) : QObject (parent) { }
 
-ChordPreset::ChordPreset (const std::string &name) : ChordPreset ()
+ChordPreset::ChordPreset (const ChordPreset::NameT &name, QObject * parent)
+    : ChordPreset (parent)
 {
   name_ = name;
+}
+
+void
+ChordPreset::init_after_cloning (const ChordPreset &other)
+{
+  name_ = other.name_;
+  descr_ = other.descr_;
 }
 
 std::string
 ChordPreset::get_info_text () const
 {
-  std::string str = _ ("Chords");
+  std::string str = QObject::tr ("Chords").toStdString ();
   str += ":\n";
   bool have_any = false;
   for (const auto &descr : descr_)
@@ -38,18 +46,20 @@ ChordPreset::get_info_text () const
   return str;
 }
 
-std::string
-ChordPreset::get_name () const
+ChordPreset::NameT
+ChordPreset::getName () const
 {
   return name_;
 }
 
 void
-ChordPreset::set_name (const std::string &name)
+ChordPreset::setName (const ChordPreset::NameT &name)
 {
-  name_ = name;
+  if (name_ == name)
+    return;
 
-  /* EVENTS_PUSH (EventType::ET_CHORD_PRESET_EDITED, nullptr); */
+  name_ = name;
+  Q_EMIT nameChanged (name_);
 }
 
 #if 0
@@ -68,12 +78,12 @@ ChordPreset::generate_context_menu () const
   /* rename */
   sprintf (action, "app.rename-chord-preset::%p", this);
   g_menu_append_item (
-    menu, z_gtk_create_menu_item (_ ("_Rename"), "edit-rename", action));
+    menu, z_gtk_create_menu_item (QObject::tr ("_Rename"), "edit-rename", action));
 
   /* delete */
   sprintf (action, "app.delete-chord-preset::%p", this);
   g_menu_append_item (
-    menu, z_gtk_create_menu_item (_ ("_Delete"), "edit-delete", action));
+    menu, z_gtk_create_menu_item (QObject::tr ("_Delete"), "edit-delete", action));
 
   return G_MENU_MODEL (menu);
 }

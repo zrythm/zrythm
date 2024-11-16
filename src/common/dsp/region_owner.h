@@ -14,7 +14,19 @@
 #include "common/dsp/iproject_owned_object.h"
 #include "common/dsp/midi_region.h"
 #include "common/dsp/position.h"
+#include "common/dsp/region_list.h"
 #include "common/utils/types.h"
+
+#define DEFINE_REGION_OWNER_QML_PROPERTIES(ClassType) \
+public: \
+  /* ================================================================ */ \
+  /* regions */ \
+  /* ================================================================ */ \
+  Q_PROPERTY (RegionList * regions READ getRegions CONSTANT) \
+  RegionList * getRegions () const \
+  { \
+    return region_list_; \
+  }
 
 /**
  * Interface for an object that can own regions.
@@ -22,6 +34,7 @@
 class RegionOwner : virtual public IProjectOwnedObject
 {
 public:
+  Q_DISABLE_COPY_MOVE (RegionOwner)
   ~RegionOwner () override = default;
 
   /**
@@ -30,10 +43,13 @@ public:
    * @note Not realtime-safe.
    */
   // virtual std::vector<RegionVariant *> get_regions () = 0;
+
+protected:
+  RegionOwner () = default;
 };
 
 /**
- * Interface for an object that can own regions.
+ * Base class for an object that can own regions.
  */
 template <typename RegionT>
 class RegionOwnerImpl
@@ -41,9 +57,12 @@ class RegionOwnerImpl
       public ISerializable<RegionOwnerImpl<RegionT>>
 {
 public:
-  using SharedRegionPtr = std::shared_ptr<RegionT>;
+  using RegionTPtr = RegionT *;
 
   ~RegionOwnerImpl () override = default;
+  Q_DISABLE_COPY_MOVE (RegionOwnerImpl)
+
+  void parent_base_qproperties (QObject &derived);
 
   /**
    * @brief Removes the given region if found.
@@ -52,14 +71,14 @@ public:
    * @param fire_events
    * @return Whether removed.
    */
-  bool remove_region (RegionT &region, bool fire_events);
+  bool remove_region (RegionT &region, bool free_region, bool fire_events);
 
   /**
    * @see @ref insert_region().
    */
-  SharedRegionPtr add_region (SharedRegionPtr region)
+  void add_region (RegionTPtr region)
   {
-    return insert_region (region, regions_.size ());
+    return insert_region (region, region_list_->rowCount ());
   }
 
   /**
@@ -67,7 +86,7 @@ public:
    *
    * @warning This must not be used directly. Use Track.insert_region() instead.
    */
-  SharedRegionPtr insert_region (SharedRegionPtr region, int idx);
+  void insert_region (RegionTPtr region, int idx);
 
   /**
    * Returns the region at the given position, or NULL.
@@ -78,28 +97,28 @@ public:
   RegionT *
   get_region_at_pos (Position pos, bool include_region_end = false) const
   {
-    auto it = std::ranges::find_if (regions_, [&] (const auto &r) {
-      return r->pos_ <= pos
-             && r->end_pos_.frames_ + (include_region_end ? 1 : 0) > pos.frames_;
-    });
-    return it != regions_.end () ? it->get () : nullptr;
+    auto it =
+      std::ranges::find_if (region_list_->regions_, [&] (const auto &r_var) {
+        return *std::get<RegionT *> (r_var)->pos_ <= pos
+               && std::get<RegionT *> (r_var)->end_pos_->frames_
+                      + (include_region_end ? 1 : 0)
+                    > pos.frames_;
+      });
+    return it != region_list_->regions_.end () ? std::get<RegionT *> (*it) : nullptr;
   }
 
   void clear_regions ();
 
-  void unselect_all ()
-  {
-    for (auto &region : regions_)
-      {
-        region->select (false, false, false);
-      }
-  }
+  void unselect_all ();
+
+  void foreach_region (std::function<void (RegionT &)> func);
+
+  void foreach_region (std::function<void (RegionT &)> func) const;
 
 protected:
-  void copy_members_from (const RegionOwnerImpl &other)
-  {
-    clone_ptr_vector (regions_, other.regions_);
-  }
+  RegionOwnerImpl ();
+
+  void copy_members_from (const RegionOwnerImpl &other);
 
   /**
    * @brief Optional callback after removing a region.
@@ -111,12 +130,7 @@ protected:
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
 public:
-  /**
-   * @brief Regions in this region owner.
-   *
-   * @note must always be sorted by position.
-   */
-  std::vector<SharedRegionPtr> regions_;
+  RegionList * region_list_ = nullptr;
 
   /** Snapshots used during playback, if applicable. */
   std::vector<std::unique_ptr<RegionT>> region_snapshots_;

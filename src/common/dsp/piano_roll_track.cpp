@@ -47,9 +47,9 @@ PianoRollTrack::get_velocities_in_range (
   for (auto &lane_var : lanes_)
     {
       auto lane = std::get<MidiLane *> (lane_var);
-      for (const auto &region : lane->regions_)
+      for (const auto &region : lane->region_list_->regions_)
         {
-          region->get_velocities_in_range (
+          std::get<MidiRegion *> (region)->get_velocities_in_range (
             start_pos, end_pos, velocities, inside);
         }
     }

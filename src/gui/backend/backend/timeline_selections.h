@@ -21,10 +21,13 @@
  * undoing, etc.
  */
 class TimelineSelections final
-    : public ArrangerSelections,
+    : public QObject,
+      public ArrangerSelections,
       public ICloneable<TimelineSelections>,
       public ISerializable<TimelineSelections>
 {
+  Q_OBJECT
+  QML_ELEMENT
 public:
   TimelineSelections ();
 
@@ -78,14 +81,14 @@ public:
   }
 
   /**
-   * Gets highest track in the selections.
+   * Gets the highest track in the selections.
    */
-  Track * get_first_track () const;
+  OptionalTrackPtrVariant get_first_track () const;
 
   /**
-   * Gets lowest track in the selections.
+   * Gets the lowest track in the selections.
    */
-  Track * get_last_track () const;
+  OptionalTrackPtrVariant get_last_track () const;
 
   /**
    * @brief Returns a new vector containing only the objects derived from
@@ -128,7 +131,7 @@ public:
    *
    * @return True if moved.
    */
-  bool move_regions_to_new_ats (const int vis_at_diff);
+  bool move_regions_to_new_ats (int vis_at_diff);
 
   /**
    * Move the selected Regions to new lanes.
@@ -137,7 +140,7 @@ public:
    *
    * @return True if moved.
    */
-  bool move_regions_to_new_lanes (const int diff);
+  bool move_regions_to_new_lanes (int diff);
 
   /**
    * Move the selected Regions to the new Track.
@@ -147,7 +150,7 @@ public:
    *
    * @return True if moved.
    */
-  bool move_regions_to_new_tracks (const int vis_track_diff);
+  bool move_regions_to_new_tracks (int vis_track_diff);
 
   /**
    * Sets the regions'
@@ -161,12 +164,14 @@ public:
 
   /**
    * Exports the selections to the given MIDI file.
+   *
+   * @throw ZrythmException on error.
    */
-  [[nodiscard]] bool export_to_midi_file (
+  void export_to_midi_file (
     const char * full_path,
     int          midi_version,
-    const bool   export_full_regions,
-    const bool   lanes_as_tracks) const;
+    bool         export_full_regions,
+    bool         lanes_as_tracks) const;
 
   void init_after_cloning (const TimelineSelections &other) override
   {
@@ -180,9 +185,9 @@ public:
 
 private:
   bool move_regions_to_new_lanes_or_tracks_or_ats (
-    const int vis_track_diff,
-    const int lane_diff,
-    const int vis_at_diff);
+    int vis_track_diff,
+    int lane_diff,
+    int vis_at_diff);
 
   /**
    * Returns whether the selections can be pasted.
@@ -193,7 +198,7 @@ private:
    * @param pos Position to paste to.
    * @param idx Track index to start pasting to.
    */
-  bool can_be_pasted_at_impl (const Position pos, const int idx) const override;
+  bool can_be_pasted_at_impl (Position pos, int idx) const override;
 
 public:
   /** Visible track index, used during copying. */
@@ -210,9 +215,7 @@ DEFINE_OBJECT_FORMATTER (TimelineSelections, [] (const TimelineSelections &sel) 
   std::string objs;
   for (const auto &obj : sel.objects_)
     {
-      std::visit (
-        [&] (auto &&o) { objs += fmt::format ("{}\n", *o); },
-        convert_to_variant<TimelineObjectPtrVariant> (obj.get ()));
+      std::visit ([&] (auto &&o) { objs += fmt::format ("{}\n", *o); }, obj);
     }
   return fmt::format (
     "TimelineSelections [{} objects: [\n{}]]", sel.get_num_objects (), objs);

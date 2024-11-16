@@ -28,7 +28,6 @@ list(APPEND zrythm_link_libs
   whereami::whereami
   zrythm_optimized_audio_lib
   optimized_utils_lib
-  vamp_plugins_lib
 )
 
 if(USE_WEAK_JACK)

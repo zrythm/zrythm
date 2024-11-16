@@ -140,9 +140,9 @@ AutomationTracklist::add_at (AutomationTrack &at)
   at_ref->port_id_->track_name_hash_ = track_->get_name_hash ();
 
   /* move automation track regions */
-  for (const auto region : at_ref->regions_ | type_is<AutomationRegion> ())
+  for (const auto region_var : at_ref->region_list_->regions_)
     {
-      region->set_automation_track (*at_ref);
+      std::get<AutomationRegion *> (region_var)->set_automation_track (*at_ref);
     }
 
   return at_ref;
@@ -190,17 +190,22 @@ AutomationTracklist::set_at_index (AutomationTrack &at, int index, bool push_dow
   if (at.index_ == index)
     return;
 
-  auto clip_editor_region = CLIP_EDITOR->get_region ();
+  auto clip_editor_region_opt = CLIP_EDITOR->get_region ();
   int  clip_editor_region_idx = -2;
-  if (clip_editor_region)
+  if (clip_editor_region_opt)
     {
-      auto &clip_editor_region_id = clip_editor_region->id_;
+      std::visit (
+        [&] (auto &&clip_editor_region) {
+          auto &clip_editor_region_id = clip_editor_region->id_;
 
-      if (
-        clip_editor_region_id.track_name_hash_ == at.port_id_->track_name_hash_)
-        {
-          clip_editor_region_idx = clip_editor_region_id.at_idx_;
-        }
+          if (
+            clip_editor_region_id.track_name_hash_
+            == at.port_id_->track_name_hash_)
+            {
+              clip_editor_region_idx = clip_editor_region_id.at_idx_;
+            }
+        },
+        clip_editor_region_opt.value ());
     }
 
   if (push_down)
@@ -270,8 +275,9 @@ AutomationTracklist::update_track_name_hash (AutomatableTrack &track)
         {
           at->port_id_->plugin_id_.track_name_hash_ = track_name_hash;
         }
-      for (auto &region : at->regions_)
+      for (auto &region_var : at->region_list_->regions_)
         {
+          auto * region = std::get<AutomationRegion *> (region_var);
           region->id_.track_name_hash_ = track_name_hash;
           region->update_identifier ();
         }
@@ -435,6 +441,8 @@ AutomationTrack *
 AutomationTracklist::
   remove_at (AutomationTrack &at, bool free_at, bool fire_events)
 {
+  beginRemoveRows ({}, at.index_, at.index_);
+
   int deleted_idx = 0;
 
   {
@@ -463,6 +471,7 @@ AutomationTracklist::
     {
       z_warning (
         "[track {} atl] automation track not found", track_ ? track_->pos_ : -1);
+      endRemoveRows ();
       return nullptr;
     }
   auto * deleted_at = *it;
@@ -473,8 +482,9 @@ AutomationTracklist::
     {
       auto &cur_at = *cur_it;
       cur_at->index_ = std::distance (ats_.begin (), cur_it);
-      for (auto region : cur_at->regions_ | type_is<AutomationRegion> ())
+      for (auto region_var : cur_at->region_list_->regions_)
         {
+          auto * region = std::get<AutomationRegion *> (region_var);
           region->set_automation_track (*cur_at);
         }
     }
@@ -499,6 +509,8 @@ AutomationTracklist::
         }
     }
 
+  endRemoveRows ();
+
   if (fire_events)
     {
       // EVENTS_PUSH (EventType::ET_AUTOMATION_TRACKLIST_AT_REMOVED, this);
@@ -519,9 +531,9 @@ AutomationTracklist::append_objects (std::vector<ArrangerObject *> objects) cons
 {
   for (auto &at : ats_)
     {
-      for (auto &r : at->regions_)
+      for (auto &r : at->region_list_->regions_)
         {
-          objects.push_back (r.get ());
+          objects.push_back (std::get<AutomationRegion *> (r));
         }
     }
 }
@@ -574,8 +586,9 @@ int
 AutomationTracklist::get_num_regions () const
 {
   return std::accumulate (
-    ats_.begin (), ats_.end (), 0,
-    [] (int sum, const auto &at) { return sum + at->regions_.size (); });
+    ats_.begin (), ats_.end (), 0, [] (int sum, const auto &at) {
+      return sum + at->region_list_->regions_.size ();
+    });
 }
 
 void
@@ -617,13 +630,13 @@ AutomationTracklist::print_regions () const
 
   for (size_t i = 0; i < ats_.size (); i++)
     {
-      const auto &at = ats_[i];
-      if (at->regions_.empty ())
+      const auto &at = ats_.at (i);
+      if (at->region_list_->regions_.empty ())
         continue;
 
       str += fmt::format (
         "\n  [{}] port '{}': {} regions", i, at->port_id_->get_label (),
-        at->regions_.size ());
+        at->region_list_->regions_.size ());
     }
 
   z_info (str);

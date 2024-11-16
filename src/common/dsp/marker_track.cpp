@@ -8,8 +8,6 @@
 #include "gui/backend/backend/timeline_selections.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
-
 MarkerTrack::MarkerTrack (int track_pos)
     : Track (
         Track::Type::Marker,
@@ -27,21 +25,67 @@ void
 MarkerTrack::add_default_markers (const Transport &transport)
 {
   /* add start and end markers */
-  auto     marker_name = fmt::format ("[{}]", _ ("start"));
-  auto     marker = std::make_shared<Marker> (marker_name);
+  auto     marker_name = fmt::format ("[{}]", QObject::tr ("start"));
+  auto *   marker = new Marker (marker_name, this);
   Position pos;
   pos.set_to_bar (transport, 1);
   marker->pos_setter (&pos);
   marker->marker_type_ = Marker::Type::Start;
   add_marker (marker);
 
-  marker_name = fmt::format ("[{}]", _ ("end"));
-  marker = std::make_shared<Marker> (marker_name);
+  marker_name = fmt::format ("[{}]", QObject::tr ("end"));
+  marker = new Marker (marker_name, this);
   pos.set_to_bar (transport, 129);
   marker->pos_setter (&pos);
   marker->marker_type_ = Marker::Type::End;
   add_marker (marker);
+
+  // FIXME DELETE!!!!!!!
+  for (int i = 2; i < 2000; ++i)
+    {
+      marker = new Marker (fmt::format ("{}", i), this);
+      pos.set_to_bar (transport, i);
+      marker->pos_setter (&pos);
+      marker->marker_type_ = Marker::Type::Custom;
+      add_marker (marker);
+    }
 }
+
+// ========================================================================
+// QML Interface
+// ========================================================================
+QHash<int, QByteArray>
+MarkerTrack::roleNames () const
+{
+  QHash<int, QByteArray> roles;
+  roles[MarkerPtrRole] = "marker";
+  return roles;
+}
+
+int
+MarkerTrack::rowCount (const QModelIndex &parent) const
+{
+  return static_cast<int> (markers_.size ());
+}
+
+QVariant
+MarkerTrack::data (const QModelIndex &index, int role) const
+{
+  if (!index.isValid ())
+    return {};
+
+  auto marker = markers_.at (index.row ());
+
+  switch (role)
+    {
+    case MarkerPtrRole:
+      return QVariant::fromValue (marker);
+    default:
+      return {};
+    }
+}
+
+// ========================================================================
 
 bool
 MarkerTrack::initialize ()
@@ -81,10 +125,11 @@ MarkerTrack::get_end_marker () const
 }
 
 MarkerTrack::MarkerPtr
-MarkerTrack::insert_marker (std::shared_ptr<Marker> marker, int pos)
+MarkerTrack::insert_marker (MarkerTrack::MarkerPtr marker, int pos)
 {
   marker->set_track_name_hash (get_name_hash ());
   markers_.insert (markers_.begin () + pos, marker);
+  marker->setParent (this);
 
   for (size_t i = pos; i < markers_.size (); ++i)
     {
@@ -106,7 +151,7 @@ MarkerTrack::clear_objects ()
     {
       if (marker->is_start () || marker->is_end ())
         continue;
-      remove_marker (*marker, true);
+      remove_marker (*marker, true, true);
     }
 }
 
@@ -124,7 +169,13 @@ MarkerTrack::set_playback_caches ()
 void
 MarkerTrack::init_after_cloning (const MarkerTrack &other)
 {
-  clone_unique_ptr_container (markers_, other.markers_);
+  markers_.reserve (other.markers_.size ());
+  for (auto &marker : markers_)
+    {
+      auto * clone = marker->clone_raw_ptr ();
+      clone->setParent (this);
+      markers_.push_back (clone);
+    }
   Track::copy_members_from (other);
 }
 
@@ -150,28 +201,33 @@ MarkerTrack::append_ports (std::vector<Port *> &ports, bool include_plugins) con
 }
 
 MarkerTrack::MarkerPtr
-MarkerTrack::remove_marker (Marker &marker, bool fire_events)
+MarkerTrack::remove_marker (Marker &marker, bool free_marker, bool fire_events)
 {
   /* deselect */
   TL_SELECTIONS->remove_object (marker);
 
   auto it =
     std::find_if (markers_.begin (), markers_.end (), [&] (const auto &m) {
-      return m.get () == &marker;
+      return m == &marker;
     });
   z_return_val_if_fail (it != markers_.end (), nullptr);
   auto ret = *it;
   it = markers_.erase (it);
+  ret->setParent (nullptr);
+  if (free_marker)
+    {
+      ret->deleteLater ();
+    }
 
   for (
     size_t i = std::distance (markers_.begin (), it); i < markers_.size (); ++i)
     {
-      auto m = markers_[i];
+      auto * m = markers_[i];
       m->set_marker_track_index (i);
     }
 
   /* EVENTS_PUSH (
     EventType::ET_ARRANGER_OBJECT_REMOVED, ArrangerObject::Type::Marker); */
 
-  return ret;
+  return free_marker ? nullptr : ret;
 }

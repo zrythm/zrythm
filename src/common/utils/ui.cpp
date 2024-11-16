@@ -15,7 +15,6 @@
 #include "common/utils/string.h"
 #include "common/utils/ui.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/settings/settings.h"
 
 UiCursor::UiCursor (std::string name, int offset_x, int offset_y)
@@ -136,7 +135,7 @@ ui_show_message_full (std::string_view title, std::string_view msg)
 #if 0
       AdwAlertDialog * dialog =
         ADW_ALERT_DIALOG (adw_alert_dialog_new (title.data (), msg.data ()));
-      adw_alert_dialog_add_responses (dialog, "ok", _ ("_OK"), nullptr);
+      adw_alert_dialog_add_responses (dialog, "ok", QObject::tr ("_OK"), nullptr);
       adw_alert_dialog_set_default_response (dialog, "ok");
       adw_alert_dialog_set_response_appearance (
         dialog, "ok", ADW_RESPONSE_SUGGESTED);
@@ -428,6 +427,7 @@ ui_show_notification (const char * msg)
 #endif
 }
 
+#if 0
 /**
  * Show notification from non-GTK threads.
  *
@@ -442,6 +442,7 @@ ui_show_notification_idle_func (char * msg)
 
   return G_SOURCE_REMOVE;
 }
+#endif
 
 #if 0
 /**
@@ -659,41 +660,33 @@ ui_gen_midi_backends_combo_row (bool with_signal)
 }
 #endif
 
-/**
- * Returns the "a locale for the language you have
- * selected..." text based on the given language.
- *
- * Must be free'd by caller.
- */
-char *
+std::string
 ui_get_locale_not_available_string (LocalizationLanguage lang)
 {
   /* show warning */
 #ifdef _WIN32
 #  define _TEMPLATE \
-    _ ( \
+    QObject::tr ( \
       "A locale for the language you have \
-selected (%s) is not available. Please install one first \
-and restart %s")
+selected ({}) is not available. Please install one first \
+and restart {}")
 #else
 #  define _TEMPLATE \
-    _ ( \
+    QObject::tr ( \
       "A locale for the language you have selected is \
 not available. Please enable one first using \
 the steps below and try again.\n\
 1. Uncomment any locale starting with the \
-language code <b>%s</b> in <b>/etc/locale.gen</b> (needs \
+language code <b>{}</b> in <b>/etc/locale.gen</b> (needs \
 root privileges)\n\
 2. Run <b>locale-gen</b> as root\n\
-3. Restart %s")
+3. Restart {}")
 #endif
 
   const char * code = localization_get_string_code (lang);
-  char *       str = g_strdup_printf (_TEMPLATE, code, PROGRAM_NAME);
+  return format_str (_TEMPLATE.toStdString (), code, PROGRAM_NAME);
 
 #undef _TEMPLATE
-
-  return str;
 }
 
 void
@@ -702,11 +695,15 @@ ui_show_warning_for_tempo_track_experimental_feature (void)
   static bool shown = false;
   if (!shown)
     {
+// TODO
+#if 0
       ui_show_message_literal (
-        _ ("Experimental Feature"),
-        _ ("BPM and time signature automation is an "
-           "experimental feature. Using it may corrupt your "
-           "project."));
+        QObject::tr ("Experimental Feature"),
+        QObject::tr (
+          "BPM and time signature automation is an "
+          "experimental feature. Using it may corrupt your "
+          "project."));
+#endif
       shown = true;
     }
 }

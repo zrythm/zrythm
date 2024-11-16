@@ -17,28 +17,35 @@
 #include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/actions/arranger_selections.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
-
-#include <glib/gi18n.h>
+#include "gui/backend/backend/settings_manager.h"
 
 #include <fmt/printf.h>
 
-AutomationPoint::AutomationPoint (const Position &pos)
-    : ArrangerObject (Type::AutomationPoint)
+using namespace zrythm;
+
+AutomationPoint::AutomationPoint (QObject * parent)
+    : ArrangerObject (Type::AutomationPoint), QObject (parent)
 {
-  pos_ = pos;
+  ArrangerObject::parent_base_qproperties (*this);
+}
+
+AutomationPoint::AutomationPoint (const Position &pos, QObject * parent)
+    : AutomationPoint (parent)
+{
+  *static_cast<Position *> (pos_) = pos;
   curve_opts_.algo_ =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? CurveOptions::Algorithm::SuperEllipse
-      : (CurveOptions::Algorithm) g_settings_get_enum (
-          S_P_EDITING_AUTOMATION, "curve-algorithm");
+      : (CurveOptions::Algorithm)
+          gui::SettingsManager::automationCurveAlgorithm ();
 }
 
 AutomationPoint::AutomationPoint (
   const float     value,
   const float     normalized_val,
-  const Position &pos)
-    : AutomationPoint (pos)
+  const Position &pos,
+  QObject *       parent)
+    : AutomationPoint (pos, parent)
 {
   if (ZRYTHM_TESTING)
     {
@@ -62,18 +69,18 @@ AutomationPoint::print_to_str () const
 {
   return fmt::format (
     "AutomationPoint(fvalue={}, normalized_val={}, pos={})", fvalue_,
-    normalized_val_, pos_.to_string ());
+    normalized_val_, pos_->to_string ());
 }
 
-ArrangerObject::ArrangerObjectPtr
+std::optional<ArrangerObjectPtrVariant>
 AutomationPoint::find_in_project () const
 {
   auto region = AutomationRegion::find (region_id_);
   z_return_val_if_fail (
-    region && ((int) region->aps_.size () > index_), nullptr);
+    region && ((int) region->aps_.size () > index_), std::nullopt);
 
   auto &ap = region->aps_[index_];
-  z_return_val_if_fail (*this == *ap, nullptr);
+  z_return_val_if_fail (*this == *ap, std::nullopt);
 
   return ap;
 }
@@ -97,16 +104,20 @@ AutomationPoint::init_after_cloning (const AutomationPoint &other)
   ArrangerObject::copy_members_from (other);
 }
 
-ArrangerObject::ArrangerObjectPtr
+ArrangerObjectPtrVariant
 AutomationPoint::add_clone_to_project (bool fire_events) const
 {
-  return get_region ()->append_object (clone_shared (), true);
+  auto * clone = clone_raw_ptr ();
+  get_region ()->append_object (clone, true);
+  return clone;
 }
 
-ArrangerObject::ArrangerObjectPtr
+ArrangerObjectPtrVariant
 AutomationPoint::insert_clone_to_project () const
 {
-  return get_region ()->insert_object (clone_shared (), index_, true);
+  auto * clone = clone_raw_ptr ();
+  get_region ()->insert_object (clone, index_, true);
+  return clone;
 }
 
 bool
@@ -141,13 +152,13 @@ AutomationPoint::set_fvalue (float real_val, bool is_normalized, bool pub_events
   if (is_normalized)
     {
       z_info ("received normalized val {:f}", (double) real_val);
-      normalized_val = CLAMP (real_val, 0.f, 1.f);
+      normalized_val = std::clamp (real_val, 0.f, 1.f);
       real_val = port->normalized_val_to_real (normalized_val);
     }
   else
     {
       z_info ("reveived real val {:f}", (double) real_val);
-      real_val = CLAMP (real_val, port->minf_, port->maxf_);
+      real_val = std::clamp (real_val, port->minf_, port->maxf_);
       normalized_val = port->real_val_to_normalized (real_val);
     }
   z_info ("setting to {:f}", (double) real_val);
@@ -192,7 +203,7 @@ AutomationPoint::set_fvalue_with_action (const std::string &fval_str)
     {
 #if 0
       ui_show_error_message_printf (
-        _ ("Invalid Value"), _ ("Please enter a number between {:f} and {:f}"),
+        QObject::tr ("Invalid Value"), QObject::tr ("Please enter a number between {:f} and {:f}"),
         port->minf_, port->maxf_);
 #endif
       return;

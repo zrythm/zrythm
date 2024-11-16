@@ -11,8 +11,8 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
-
+// TODO
+#if 0
 G_DEFINE_TYPE (FileImport, file_import, G_TYPE_OBJECT);
 
 typedef enum
@@ -20,7 +20,7 @@ typedef enum
   Z_IO_FILE_IMPORT_ERROR_FAILED,
 } ZIOFileImportError;
 
-#define Z_IO_FILE_IMPORT_ERROR z_io_file_import_error_quark ()
+#  define Z_IO_FILE_IMPORT_ERROR z_io_file_import_error_quark ()
 GQuark
 z_io_file_import_error_quark (void);
 G_DEFINE_QUARK (
@@ -69,7 +69,7 @@ file_import_thread_func (
       GError * err = NULL;
       g_set_error (
         &err, Z_IO_FILE_IMPORT_ERROR, Z_IO_FILE_IMPORT_ERROR_FAILED,
-        _ ("Unsupported file type %s"), descr.c_str ());
+        QObject::tr ("Unsupported file type %s"), descr.c_str ());
       g_task_return_error (task, err);
       return;
     }
@@ -82,7 +82,8 @@ file_import_thread_func (
         {
           g_task_return_new_error (
             task, Z_IO_FILE_IMPORT_ERROR, Z_IO_FILE_IMPORT_ERROR_FAILED,
-            _ ("The MIDI file at %s contains no data"), self->filepath.c_str ());
+            QObject::tr ("The MIDI file at %s contains no data"),
+            self->filepath.c_str ());
           return;
         }
     }
@@ -100,9 +101,10 @@ file_import_thread_func (
             {
               g_task_return_new_error (
                 task, Z_IO_FILE_IMPORT_ERROR, Z_IO_FILE_IMPORT_ERROR_FAILED,
-                _ ("This MIDI file contains %d "
-                   "tracks. It cannot be dropped "
-                   "into an existing track"),
+                QObject::tr (
+                  "This MIDI file contains %d "
+                  "tracks. It cannot be dropped "
+                  "into an existing track"),
                 num_nonempty_midi_tracks);
               return;
             }
@@ -114,7 +116,7 @@ file_import_thread_func (
         {
           g_task_return_new_error (
             task, Z_IO_FILE_IMPORT_ERROR, Z_IO_FILE_IMPORT_ERROR_FAILED,
-            _ ("Failed to get track from hash %u"),
+            QObject::tr ("Failed to get track from hash %u"),
             self->import_info->track_name_hash_);
           return;
         }
@@ -146,7 +148,8 @@ file_import_thread_func (
               {
                 g_task_return_new_error (
                   task, Z_IO_FILE_IMPORT_ERROR, Z_IO_FILE_IMPORT_ERROR_FAILED,
-                  _ ("Failed to create an audio region for file %s: %s"),
+                  QObject::tr (
+                    "Failed to create an audio region for file %s: %s"),
                   self->filepath.c_str (), e.what ());
                 return;
               }
@@ -166,7 +169,8 @@ file_import_thread_func (
                 {
                   g_task_return_new_error (
                     task, Z_IO_FILE_IMPORT_ERROR, Z_IO_FILE_IMPORT_ERROR_FAILED,
-                    _ ("Failed to create a MIDI region for file %s: %s"),
+                    QObject::tr (
+                      "Failed to create a MIDI region for file %s: %s"),
                     self->filepath.c_str (), e.what ());
                   return;
                 }
@@ -287,3 +291,5 @@ file_import_init (FileImport * self)
   std::construct_at (&self->filepath);
   std::construct_at (&self->import_info);
 }
+
+#endif

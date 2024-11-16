@@ -14,6 +14,8 @@
 #include <sstream>
 #include <string>
 
+#include <QString>
+
 /**
  * @addtogroup utils
  *
@@ -26,7 +28,9 @@
 class ZrythmException : public std::nested_exception
 {
 public:
+  explicit ZrythmException (const char * message);
   explicit ZrythmException (const std::string &message);
+  explicit ZrythmException (const QString &message);
 
   const char * what () const noexcept;
 
@@ -35,6 +39,7 @@ public:
 
   void handle (const char * str) const;
   void handle (const std::string &str) const;
+  void handle (const QString &str) const;
 
 private:
   std::string         message_;

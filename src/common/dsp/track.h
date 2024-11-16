@@ -12,43 +12,12 @@
 #include "common/utils/format.h"
 
 #include <QColor>
-
-#include <glib/gi18n.h>
+#include <QHash>
 
 class FileDescriptor;
 class TracklistSelections;
 class FoldableTrack;
 struct FileImportInfo;
-class MarkerTrack;
-class InstrumentTrack;
-class MidiTrack;
-class MasterTrack;
-class MidiGroupTrack;
-class AudioGroupTrack;
-class FolderTrack;
-class MidiBusTrack;
-class AudioBusTrack;
-class AudioTrack;
-class ChordTrack;
-class ModulatorTrack;
-class TempoTrack;
-class LanedTrack;
-
-using TrackVariant = std::variant<
-  MarkerTrack,
-  InstrumentTrack,
-  MidiTrack,
-  MasterTrack,
-  MidiGroupTrack,
-  AudioGroupTrack,
-  FolderTrack,
-  MidiBusTrack,
-  AudioBusTrack,
-  AudioTrack,
-  ChordTrack,
-  ModulatorTrack,
-  TempoTrack>;
-using TrackPtrVariant = to_pointer_variant<TrackVariant>;
 
 /**
  * @addtogroup dsp
@@ -195,6 +164,19 @@ public: \
   bool getHasChannel () const \
   { \
     if constexpr (std::derived_from<ClassType, ChannelTrack>) \
+      { \
+        return true; \
+      } \
+    return false; \
+  } \
+\
+  /* ================================================================ */ \
+  /* hasChannel */ \
+  /* ================================================================ */ \
+  Q_PROPERTY (bool isRegionOwner READ getIsRegionOwner CONSTANT) \
+  bool getIsRegionOwner () const \
+  { \
+    if constexpr (std::derived_from<ClassType, RegionOwner>) \
       { \
         return true; \
       } \
@@ -566,8 +548,7 @@ public:
 
 public:
   ~Track () override = default;
-  JUCE_DECLARE_NON_COPYABLE (Track)
-  JUCE_DECLARE_NON_MOVEABLE (Track)
+  Q_DISABLE_COPY_MOVE (Track)
 
   static std::unique_ptr<Track> create_unique_from_type (Type type);
 
@@ -594,7 +575,10 @@ public:
    */
   virtual void init_loaded () = 0;
 
-  NameHashT get_name_hash () const { return g_str_hash (name_.c_str ()); }
+  NameHashT get_name_hash () const
+  {
+    return qHash (QString::fromStdString (name_));
+  }
 
   Tracklist * get_tracklist () const;
 
@@ -679,13 +663,13 @@ public:
    * @throw ZrythmException if the insertion fails.
    */
   template <FinalRegionSubclass T>
-  std::shared_ptr<T> insert_region (
-    std::shared_ptr<T> region,
-    AutomationTrack *  at,
-    int                lane_pos,
-    int                idx,
-    bool               gen_name,
-    bool               fire_events);
+  T * insert_region (
+    T *               region,
+    AutomationTrack * at,
+    int               lane_pos,
+    int               idx,
+    bool              gen_name,
+    bool              fire_events);
 
   /**
    * Appends a Region to the given lane or AutomationTrack of the track.
@@ -695,23 +679,15 @@ public:
    * @throw ZrythmException if the insertion fails.
    */
   template <FinalRegionSubclass T>
-  std::shared_ptr<T> add_region (
-    std::shared_ptr<T> region,
-    AutomationTrack *  at,
-    int                lane_pos,
-    bool               gen_name,
-    bool               fire_events)
+  T * add_region (
+    T *               region,
+    AutomationTrack * at,
+    int               lane_pos,
+    bool              gen_name,
+    bool              fire_events)
   {
-    return insert_region<T> (
-      std::move (region), at, lane_pos, -1, gen_name, fire_events);
+    return insert_region<T> (region, at, lane_pos, -1, gen_name, fire_events);
   }
-
-  std::shared_ptr<Region> add_region_plain (
-    std::shared_ptr<Region> region,
-    AutomationTrack *       at,
-    int                     lane_pos,
-    bool                    gen_name,
-    bool                    fire_events);
 
   /**
    * Appends the Track to the selections.
@@ -778,9 +754,6 @@ public:
    * Used when deleting tracks.
    */
   void remove_from_folder_parents ();
-
-  template <typename T = Track>
-  static T * find_by_name (const std::string &name);
 
   /**
    * Getter for the track name.
@@ -1238,19 +1211,19 @@ operator< (const Track &lhs, const Track &rhs)
 DEFINE_ENUM_FORMATTER (
   Track::Type,
   Track_Type,
-  N_ ("Instrument"),
-  N_ ("Audio"),
-  N_ ("Master"),
-  N_ ("Chord"),
-  N_ ("Marker"),
-  N_ ("Tempo"),
-  N_ ("Modulator"),
-  N_ ("Audio FX"),
-  N_ ("Audio Group"),
-  N_ ("MIDI"),
-  N_ ("MIDI FX"),
-  N_ ("MIDI Group"),
-  N_ ("Folder"));
+  QT_TR_NOOP_UTF8 ("Instrument"),
+  QT_TR_NOOP_UTF8 ("Audio"),
+  QT_TR_NOOP_UTF8 ("Master"),
+  QT_TR_NOOP_UTF8 ("Chord"),
+  QT_TR_NOOP_UTF8 ("Marker"),
+  QT_TR_NOOP_UTF8 ("Tempo"),
+  QT_TR_NOOP_UTF8 ("Modulator"),
+  QT_TR_NOOP_UTF8 ("Audio FX"),
+  QT_TR_NOOP_UTF8 ("Audio Group"),
+  QT_TR_NOOP_UTF8 ("MIDI"),
+  QT_TR_NOOP_UTF8 ("MIDI FX"),
+  QT_TR_NOOP_UTF8 ("MIDI Group"),
+  QT_TR_NOOP_UTF8 ("Folder"));
 
 template <typename T>
 concept TrackSubclass = std::derived_from<T, Track>;
@@ -1258,17 +1231,8 @@ concept TrackSubclass = std::derived_from<T, Track>;
 template <typename TrackT>
 concept FinalTrackSubclass = TrackSubclass<TrackT> && FinalClass<TrackT>;
 
-extern template FoldableTrack *
-Track::find_by_name (const std::string &);
 class RecordableTrack;
-extern template RecordableTrack *
-Track::find_by_name (const std::string &);
-extern template AutomatableTrack *
-Track::find_by_name (const std::string &);
-extern template Track *
-Track::find_by_name (const std::string &);
-extern template ChordTrack *
-Track::find_by_name (const std::string &);
+
 extern template zrythm::plugins::Plugin *
 Track::insert_plugin (
   std::unique_ptr<zrythm::plugins::Plugin> &&pl,
@@ -1293,6 +1257,38 @@ Track::insert_plugin (
   bool                                                  gen_automatables,
   bool                                                  recalc_graph,
   bool                                                  fire_events);
+
+extern template MidiRegion *
+Track::add_region (
+  MidiRegion *      region,
+  AutomationTrack * at,
+  int               lane_pos,
+  bool              gen_name,
+  bool              fire_events);
+
+extern template AudioRegion *
+Track::add_region (
+  AudioRegion *     region,
+  AutomationTrack * at,
+  int               lane_pos,
+  bool              gen_name,
+  bool              fire_events);
+
+extern template ChordRegion *
+Track::add_region (
+  ChordRegion *     region,
+  AutomationTrack * at,
+  int               lane_pos,
+  bool              gen_name,
+  bool              fire_events);
+
+extern template AutomationRegion *
+Track::add_region (
+  AutomationRegion * region,
+  AutomationTrack *  at,
+  int                lane_pos,
+  bool               gen_name,
+  bool               fire_events);
 
 /**
  * @}

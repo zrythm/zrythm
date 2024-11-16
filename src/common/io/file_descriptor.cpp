@@ -9,31 +9,20 @@
 #include "common/utils/logger.h"
 #include "common/utils/string.h"
 
-#include <glib/gi18n.h>
+using namespace zrythm;
 
 FileDescriptor::FileDescriptor (const std::string &_abs_path)
 {
   // z_debug ("creating new FileDescriptor for {}", path);
   abs_path_ = _abs_path;
   type_ = get_type_from_path (_abs_path.c_str ());
-  label_ = Glib::path_get_basename (_abs_path);
+  label_ = utils::io::path_get_basename (_abs_path);
 }
 
 std::unique_ptr<FileDescriptor>
 FileDescriptor::new_from_uri (const std::string &uri)
 {
-  GError * err = NULL;
-  char *   path = g_filename_from_uri (uri.c_str (), nullptr, &err);
-  if (!path)
-    {
-      throw ZrythmException (fmt::format (
-        "Error getting file path from URI <{}>: {}", uri, err->message));
-    }
-
-  auto self = std::make_unique<FileDescriptor> (path);
-  g_free (path);
-
-  return self;
+  return std::make_unique<FileDescriptor> (utils::io::uri_to_file (uri));
 }
 
 bool
@@ -94,7 +83,7 @@ FileDescriptor::get_type_description (FileType type)
 FileType
 FileDescriptor::get_type_from_path (const fs::path &file)
 {
-  const auto ext = io_file_get_ext (file.string ());
+  const auto ext = utils::io::file_get_ext (file);
   FileType   type = FileType::Other;
 
   if (fs::is_directory (file))
@@ -194,36 +183,33 @@ FileDescriptor::get_info_text_for_label () const
         {
           AudioFile af (abs_path_);
           auto      metadata = af.read_metadata ();
-          auto      label_str = g_markup_printf_escaped (
-            _ ("<b>%s</b>\n"
-                         "Sample rate: %d\n"
-                         "Length: %" PRId64 "s "
-                         "%" PRId64 " ms | BPM: %.1f\n"
-                         "Channel(s): %u | Bitrate: %'d.%d kb/s\n"
-                         "Bit depth: %d bits"),
-            this->label_.c_str (), metadata.samplerate, metadata.length / 1000,
-            metadata.length % 1000, (double) metadata.bpm, metadata.channels,
-            metadata.bit_rate / 1000, (metadata.bit_rate % 1000) / 100,
-            metadata.bit_depth);
-          std::string ret = label_str;
-          g_free (label_str);
-          return ret;
+          return format_str (
+            QObject::tr (
+              "<b>{}</b>\n"
+              "Sample rate: {}\n"
+              "Length: {}s "
+              "{} ms | BPM: {:.1f}\n"
+              "Channel(s): {} | Bitrate: {:L}.{} kb/s\n"
+              "Bit depth: {} bits")
+              .toStdString (),
+            string_escape_html (label_), metadata.samplerate,
+            metadata.length / 1000, metadata.length % 1000,
+            (double) metadata.bpm, metadata.channels, metadata.bit_rate / 1000,
+            (metadata.bit_rate % 1000) / 100, metadata.bit_depth);
         }
       catch (const ZrythmException &e)
         {
           z_warning ("Error reading metadata from {}: {}", abs_path_, e.what ());
-          return format_str (_ ("Failed reading metadata for {}"), abs_path_);
+          return format_str (
+            QObject::tr ("Failed reading metadata for {}").toStdString (),
+            abs_path_);
         }
     }
   else
     {
-      auto label_str = g_markup_printf_escaped (
-        "<b>%s</b>\n"
-        "Type: %s",
-        label_.c_str (), file_type_label.c_str ());
-      std::string ret = label_str;
-      g_free (label_str);
-      return ret;
+      return format_str (
+        "<b>{}</b>\nType: {}", string_escape_html (label_),
+        string_escape_html (file_type_label));
     }
 }
 

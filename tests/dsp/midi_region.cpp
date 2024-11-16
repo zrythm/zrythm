@@ -47,7 +47,7 @@ TEST_P (MidiRegionExportTest, Export)
   const auto &region = track->lanes_[0]->regions_[0];
 
   char * export_dir = g_dir_make_tmp ("test_midi_export_XXXXXX", nullptr);
-  auto   basename = Glib::path_get_basename (midi_file_);
+  auto   basename = io_path_get_basename (midi_file_);
   auto   export_filepath = Glib::build_filename (export_dir, basename);
 
   /* export the region again */

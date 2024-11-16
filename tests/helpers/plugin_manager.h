@@ -65,7 +65,7 @@ test_plugin_manager_get_plugin_setting (
   bool         with_carla)
 {
   {
-    auto   basename = Glib::path_get_basename (pl_bundle);
+    auto   basename = io_path_get_basename (pl_bundle);
     char * tmpdir = g_dir_make_tmp ("zrythm_vst_XXXXXX", nullptr);
     auto   dest_path = Glib::build_filename (tmpdir, basename);
     if (g_str_has_suffix (pl_bundle, "vst3"))
@@ -119,9 +119,8 @@ test_plugin_manager_get_plugin_setting (
         }
       else if (cur_descr.protocol_ != PluginProtocol::LV2)
         {
-          auto basename = Glib::path_get_basename (pl_bundle);
-          auto descr_basename =
-            Glib::path_get_basename (cur_descr.path_.string ());
+          auto basename = io_path_get_basename (pl_bundle);
+          auto descr_basename = io_path_get_basename (cur_descr.path_.string ());
           if (descr_basename == basename)
             {
               descr = cur_descr;

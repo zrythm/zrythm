@@ -1,39 +1,17 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *
- * ---
- *
- * Copyright (C) 1999-2008 Novell, Inc. (www.novell.com)
- * Copyright (C) 2012 Intel Corporation
- *
- * This library is free software: you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation.
- *
- * This library is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
- * License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library. If not, see <http://www.gnu.org/licenses/>.
- *
- * Authors: Rodrigo Moya <rodrigo@ximian.com>
- *          Tristan Van Berkom <tristanvb@openismus.com>
- *
- * ---
- */
 
 #include <cstring>
 #include <regex>
 
 #include "common/utils/logger.h"
-#include "common/utils/objects.h"
 #include "common/utils/string.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
+
+std::string
+string_escape_html (const std::string &str)
+{
+  return QString::fromStdString (str).toHtmlEscaped ().toStdString ();
+}
 
 juce::String
 string_view_to_juce_string (std::string_view sv)
@@ -46,36 +24,9 @@ string_view_to_juce_string (std::string_view sv)
 bool
 string_is_ascii (std::string_view string)
 {
-  Glib::ustring ustr (string.data (), string.data () + string.size ());
-  return ustr.is_ascii ();
-}
-
-/**
- * Returns the matched string if the string array
- * contains the given substring.
- */
-char *
-string_array_contains_substr (char ** str_array, int num_str, const char * substr)
-{
-  for (int i = 0; i < num_str; i++)
-    {
-      if (g_str_match_string (substr, str_array[i], 0))
-        return str_array[i];
-    }
-
-  return NULL;
-}
-
-bool
-string_is_equal_ignore_case (const char * str1, const char * str2)
-{
-  char * str1_casefolded = g_utf8_casefold (str1, -1);
-  char * str2_casefolded = g_utf8_casefold (str2, -1);
-  int    ret = !g_strcmp0 (str1_casefolded, str2_casefolded);
-  g_free (str1_casefolded);
-  g_free (str2_casefolded);
-
-  return ret;
+  return std::ranges::all_of (string, [] (unsigned char c) {
+    return c <= 127;
+  });
 }
 
 bool
@@ -86,25 +37,18 @@ string_is_equal_ignore_case (const std::string &str1, const std::string &str2)
   });
 }
 
-/**
- * Returns if the given string contains the given
- * substring.
- */
 bool
 string_contains_substr (const char * str, const char * substr)
 {
-  return g_strrstr (str, substr) != NULL;
+  return QString::fromUtf8 (str).contains (
+    QString::fromUtf8 (substr), Qt::CaseSensitive);
 }
 
 bool
 string_contains_substr_case_insensitive (const char * str, const char * substr)
 {
-  std::string new_str (str);
-  string_to_upper_ascii (new_str);
-  std::string new_substr (substr);
-  string_to_upper_ascii (new_substr);
-
-  return string_contains_substr (new_str.c_str (), new_substr.c_str ());
+  return QString::fromUtf8 (str).contains (
+    QString::fromUtf8 (substr), Qt::CaseInsensitive);
 }
 
 void
@@ -123,64 +67,43 @@ string_to_lower_ascii (std::string &str)
   });
 }
 
-/**
- * Returns a newly allocated string that is a
- * filename version of the given string.
- *
- * Example: "MIDI Region #1" -> "MIDI_Region_1".
- */
-char *
-string_convert_to_filename (const char * str)
+std::string
+string_convert_to_filename (const std::string &str)
 {
   /* convert illegal characters to '_' */
-  char * new_str = g_strdup (str);
-  for (int i = 0; i < (int) strlen (str); i++)
-    {
-      if (
-        str[i] == '#' || str[i] == '%' || str[i] == '&' || str[i] == '{'
-        || str[i] == '}' || str[i] == '\\' || str[i] == '<' || str[i] == '>'
-        || str[i] == '*' || str[i] == '?' || str[i] == '/' || str[i] == ' '
-        || str[i] == '$' || str[i] == '!' || str[i] == '\'' || str[i] == '"'
-        || str[i] == ':' || str[i] == '@')
-        new_str[i] = '_';
-    }
-  return new_str;
+  juce::String new_str (str);
+  new_str = new_str.replaceCharacters ("#%&{}\\<>*?/ $!'\":@", "_");
+  return new_str.toStdString ();
 }
 
-/**
- * Removes the suffix starting from @ref suffix
- * from @ref full_str and returns a newly allocated
- * string.
- */
-char *
-string_get_substr_before_suffix (const char * str, const char * suffix)
+std::string
+string_get_substr_before_suffix (
+  const std::string &str,
+  const std::string &suffix)
 {
   /* get the part without the suffix */
-  char ** parts = g_strsplit (str, suffix, 0);
-  char *  part = g_strdup (parts[0]);
-  g_strfreev (parts);
-  return part;
+  auto qstr = QString::fromStdString (str);
+  auto idx = qstr.indexOf (QString::fromStdString (suffix));
+  if (idx == -1)
+    {
+      return str;
+    }
+  return qstr.left (idx).toStdString ();
 }
 
-/**
- * Removes everything up to and including the first
- * match of @ref match from the start of the string
- * and returns a newly allocated string.
- */
-char *
-string_remove_until_after_first_match (const char * str, const char * match)
+std::string
+string_remove_until_after_first_match (
+  const std::string &str,
+  const std::string &match)
 {
-  z_return_val_if_fail (str, nullptr);
+  if (str.empty ())
+    return "";
 
-  char ** parts = g_strsplit (str, match, 2);
-#if 0
-  z_info ("after removing prefix: {}", prefix);
-  z_info ("part 0 {}", parts[0]);
-  z_info ("part 1 {}", parts[1]);
-#endif
-  char * part = g_strdup (parts[1]);
-  g_strfreev (parts);
-  return part;
+  auto pos = str.find (match);
+  if (pos == std::string::npos)
+    return str;
+
+  return str.substr (pos + match.length ());
 }
 
 std::string
@@ -264,26 +187,24 @@ string_array_sort_and_remove_duplicates (char ** str_arr)
   z_return_val_if_reached (nullptr);
 }
 
-/**
- * Returns a new string with only ASCII alphanumeric
- * characters and replaces the rest with underscore.
- */
-char *
-string_symbolify (const char * in)
+std::string
+string_symbolify (const std::string &in)
 {
-  const size_t len = strlen (in);
-  char *       out = (char *) object_new_n_sizeof (len + 1, 1);
-  for (size_t i = 0; i < len; ++i)
+  std::string out;
+  out.reserve (in.length ());
+
+  for (const auto &c : in)
     {
-      if (g_ascii_isalnum (in[i]))
+      if (std::isalnum (static_cast<unsigned char> (c)))
         {
-          out[i] = in[i];
+          out.push_back (c);
         }
       else
         {
-          out[i] = '_';
+          out.push_back ('_');
         }
     }
+
   return out;
 }
 
@@ -297,37 +218,6 @@ string_is_empty (const char * str)
     return true;
 
   return false;
-}
-
-/**
- * Compares two UTF-8 strings using approximate case-insensitive ordering.
- *
- * @return < 0 if @param s1 compares before @param s2, 0 if they compare equal,
- *          > 0 if @param s1 compares after @param s2
- *
- * @note Taken from src/libedataserver/e-data-server-util.c in
- *evolution-data-center (e_util_utf8_strcasecmp).
- **/
-int
-string_utf8_strcasecmp (const char * s1, const char * s2)
-{
-  gchar *folded_s1, *folded_s2;
-  gint   retval;
-
-  z_return_val_if_fail (s1 != NULL && s2 != nullptr, -1);
-
-  if (strcmp (s1, s2) == 0)
-    return 0;
-
-  folded_s1 = g_utf8_casefold (s1, -1);
-  folded_s2 = g_utf8_casefold (s2, -1);
-
-  retval = g_utf8_collate (folded_s1, folded_s2);
-
-  g_free (folded_s2);
-  g_free (folded_s1);
-
-  return retval;
 }
 
 std::string
@@ -346,33 +236,6 @@ string_expand_env_vars (const std::string &src)
     }
 
   return result;
-}
-
-void
-string_print_strv (const char * prefix, char ** strv)
-{
-  const char * cur = NULL;
-  GString *    gstr = g_string_new (prefix);
-  g_string_append (gstr, ":");
-  for (int i = 0; (cur = strv[i]) != NULL; i++)
-    {
-      g_string_append_printf (gstr, " %s |", cur);
-    }
-  char * res = g_string_free (gstr, false);
-  res[strlen (res) - 1] = '\0';
-  z_info ("{}", res);
-  g_free (res);
-}
-
-/**
- * Clones the given string array.
- */
-char **
-string_array_clone (const char ** src)
-{
-  GStrvBuilder * builder = g_strv_builder_new ();
-  g_strv_builder_addv (builder, src);
-  return g_strv_builder_end (builder);
 }
 
 std::string

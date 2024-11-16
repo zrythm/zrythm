@@ -1,12 +1,6 @@
 // SPDX-FileCopyrightText: © 2019, 2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * API for selections in the piano roll.
- */
-
 #ifndef __GUI_BACKEND_CHORD_SELECTIONS_H__
 #define __GUI_BACKEND_CHORD_SELECTIONS_H__
 
@@ -25,10 +19,13 @@
  * current selections, copying, undoing, etc.
  */
 class ChordSelections final
-    : public ArrangerSelections,
+    : public QObject,
+      public ArrangerSelections,
       public ICloneable<ChordSelections>,
       public ISerializable<ChordSelections>
 {
+  Q_OBJECT
+  QML_ELEMENT
 public:
   ChordSelections ();
 

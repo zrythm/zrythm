@@ -360,4 +360,28 @@ template <class... Ts> struct overload : Ts...
   using Ts::operator()...;
 };
 
+template <typename T>
+concept IsVariant = requires {
+  []<typename... Ts> (std::variant<Ts...> *) {}(static_cast<T *> (nullptr));
+};
+
+template <typename Variant>
+auto
+createObjectAtVariantIndex (size_t index)
+{
+  auto creator = [&]<size_t... I> (std::index_sequence<I...>) {
+    using Result = std::variant<typename std::remove_pointer_t<
+      std::variant_alternative_t<I, Variant>> *...>;
+    Result result{};
+    ((I == index
+        ? (result = Result{ new typename std::remove_pointer_t<
+             std::variant_alternative_t<I, Variant>>{} })
+        : Result{}),
+     ...);
+    return result;
+  };
+
+  return creator (std::make_index_sequence<std::variant_size_v<Variant>>{});
+}
+
 #endif // __UTILS_TRAITS_H__

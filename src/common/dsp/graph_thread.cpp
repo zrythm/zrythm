@@ -76,8 +76,6 @@
 #include "common/dsp/router.h"
 #include "common/utils/rt_thread_id.h"
 
-#include <glib/gi18n.h>
-
 /* uncomment to show debug messages */
 // #define DEBUG_THREADS 1
 

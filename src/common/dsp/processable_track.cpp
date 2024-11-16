@@ -118,8 +118,8 @@ ProcessableTrack::fill_events_common (
             return;
           }
 
-        signed_frame_t num_frames_to_process = MIN (
-          r.end_pos_.frames_ - (signed_frame_t) time_nfo.g_start_frame_w_offset_,
+        signed_frame_t num_frames_to_process = std::min (
+          r.end_pos_->frames_ - (signed_frame_t) time_nfo.g_start_frame_w_offset_,
           (signed_frame_t) time_nfo.nframes_);
         nframes_t frames_processed = 0;
 
@@ -152,7 +152,7 @@ ProcessableTrack::fill_events_common (
             const bool is_region_end =
               (signed_frame_t) time_nfo.g_start_frame_w_offset_
                 + num_frames_to_process
-              == r.end_pos_.frames_;
+              == r.end_pos_->frames_;
 
             const bool is_transport_end =
               TRANSPORT->is_looping ()
@@ -170,7 +170,7 @@ ProcessableTrack::fill_events_common (
               || is_transport_end;
 
             /* number of frames to process this time */
-            cur_num_frames_till_next_r_loop_or_end = MIN (
+            cur_num_frames_till_next_r_loop_or_end = std::min (
               cur_num_frames_till_next_r_loop_or_end, num_frames_to_process);
 
             const EngineProcessTimeInfo nfo = {
@@ -217,9 +217,9 @@ ProcessableTrack::fill_events_common (
             }
           else
             {
-              for (auto &region : track->regions_)
+              for (auto &region : track->region_list_->regions_)
                 {
-                  process_single_region (*region);
+                  process_single_region (*std::get<ChordRegion *> (region));
                 }
             }
         }
@@ -241,9 +241,10 @@ ProcessableTrack::fill_events_common (
                 {
                   using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
                   auto lane = std::get<TrackLaneT *> (lane_var);
-                  for (auto &region : lane->regions_)
+                  for (auto &region : lane->region_list_->regions_)
                     {
-                      process_single_region (*region);
+                      process_single_region (
+                        *std::get<typename TrackLaneT::RegionT *> (region));
                     }
                 }
             }

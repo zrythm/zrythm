@@ -55,10 +55,22 @@ PortConnection::print_to_str () const
     gZrythm && PROJECT && PORT_CONNECTIONS_MGR
     && PORT_CONNECTIONS_MGR->contains_connection (*this))
     {
-      Track * src_track =
+      auto src_track_var =
         TRACKLIST->find_track_by_name_hash (src_id_->track_name_hash_);
-      Track * dest_track =
+      auto dest_track_var =
         TRACKLIST->find_track_by_name_hash (dest_id_->track_name_hash_);
+      Track * src_track =
+        src_track_var
+          ? std::visit (
+              [&] (auto &&t) { return dynamic_cast<Track *> (t); },
+              src_track_var.value ())
+          : nullptr;
+      Track * dest_track =
+        dest_track_var
+          ? std::visit (
+              [&] (auto &&t) { return dynamic_cast<Track *> (t); },
+              dest_track_var.value ())
+          : nullptr;
       return fmt::format (
         "[{} ({})] {} => [{} ({})] {}{}",
         (src_track != nullptr) ? src_track->name_ : "(none)",

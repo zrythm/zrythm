@@ -3,14 +3,14 @@
 
 #include "common/plugins/collections.h"
 #include "common/utils/directory_manager.h"
+#include "common/utils/io.h"
 #include "common/utils/string.h"
 #include "gui/backend/backend/zrythm.h"
-
-#include <glib/gi18n.h>
 
 constexpr const char * PLUGIN_COLLECTIONS_JSON_FILENAME =
   "plugin-collections.json";
 
+using namespace zrythm;
 using namespace zrythm::plugins;
 
 bool
@@ -34,8 +34,9 @@ PluginCollection::add_descriptor (const zrythm::plugins::PluginDescriptor &descr
   auto new_descr = descr.clone_unique ();
   if (!descr.path_.empty ())
     {
-      auto file = Gio::File::create_for_path (descr.path_.string ());
-      new_descr->ghash_ = file->hash ();
+      // TODO? or delete
+      // auto file = Gio::File::create_for_path (descr.path_.string ());
+      // new_descr->ghash_ =  file->hash ();
     }
   descriptors_.emplace_back (std::move (new_descr));
 }
@@ -56,10 +57,10 @@ PluginCollection::generate_context_menu () const
   auto menu = Gio::Menu::create ();
 
   // TODO icon name edit-rename
-  menu->append (_ ("Rename"), "app.plugin-collection-rename");
+  menu->append (QObject::tr ("Rename"), "app.plugin-collection-rename");
 
   // TODO icon name edit-delete
-  menu->append (_ ("Delete"), "app.plugin-collection-remove");
+  menu->append (QObject::tr ("Delete"), "app.plugin-collection-remove");
 
   return menu;
 }
@@ -96,9 +97,9 @@ PluginCollections::serialize_to_file () const
   z_debug ("Writing plugin collections to {}...", path);
   try
     {
-      Glib::file_set_contents (path.string (), json.c_str ());
+      utils::io::set_file_contents (path, json.c_str ());
     }
-  catch (const Glib::FileError &e)
+  catch (const ZrythmException &e)
     {
       throw ZrythmException (
         format_str ("Unable to write plugin collections: {}", e.what ()));
@@ -139,9 +140,9 @@ PluginCollections::read_or_new ()
   std::string json;
   try
     {
-      json = Glib::file_get_contents (path.string ());
+      json = utils::io::read_file_contents (path).toStdString ();
     }
-  catch (const Glib::Error &e)
+  catch (const ZrythmException &e)
     {
       z_warning ("Failed to create PluginCollections from {}", path);
       return ret;

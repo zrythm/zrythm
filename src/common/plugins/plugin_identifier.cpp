@@ -6,8 +6,6 @@
 #include "common/plugins/plugin_identifier.h"
 #include "common/utils/types.h"
 
-#include <glib.h>
-
 using namespace zrythm::plugins;
 
 bool
@@ -28,8 +26,8 @@ uint32_t
 PluginIdentifier::get_hash () const
 {
   uint32_t hash = 0;
-  hash = hash ^ g_int_hash (&slot_type_);
+  hash = hash ^ qHash (slot_type_);
   hash = hash ^ track_name_hash_;
-  hash = hash ^ g_int_hash (&slot_);
+  hash = hash ^ qHash (slot_);
   return hash;
 }

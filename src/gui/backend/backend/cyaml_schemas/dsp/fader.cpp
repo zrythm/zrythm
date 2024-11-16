@@ -38,11 +38,9 @@ fader_upgrade_from_v1 (Fader_v1 * old)
   swap_phase.minf = 0.f;
   swap_phase.maxf = 2.f;
   swap_phase.zerof = 0.f;
-  GError * err = NULL;
-  char * swap_phase_yaml = yaml_serialize (&swap_phase, &port_schema_v1, &err);
+  auto      swap_phase_yaml = yaml_serialize (&swap_phase, &port_schema_v1);
   Port_v1 * swap_phase_v1 =
-    (Port_v1 *) yaml_deserialize (swap_phase_yaml, &port_schema_v1, &err);
-  g_free (swap_phase_yaml);
+    (Port_v1 *) yaml_deserialize (swap_phase_yaml.c_str (), &port_schema_v1);
   self->swap_phase = swap_phase_v1;
   self->swap_phase->id.track_name_hash = self->amp->id.track_name_hash;
   self->swap_phase->id.owner_type = self->amp->id.owner_type;

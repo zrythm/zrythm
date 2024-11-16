@@ -3,15 +3,25 @@
 #include "position_proxy.h"
 #include "realtime_updater.h"
 
-PositionProxy::PositionProxy (QObject * parent, const Position * pos)
-    : QObject (parent), Position (pos ? *pos : Position ())
+PositionProxy::PositionProxy (
+  QObject *        parent,
+  const Position * pos,
+  bool             realtime_updateable)
+    : QObject (parent), Position ((pos != nullptr) ? *pos : Position ()),
+      realtime_updateable_ (realtime_updateable)
 {
-  RealtimeUpdater::instance ().registerObject (this);
+  if (realtime_updateable_)
+    {
+      RealtimeUpdater::instance ().registerObject (this);
+    }
 }
 
 PositionProxy::~PositionProxy ()
 {
-  RealtimeUpdater::instance ().deregisterObject (this);
+  if (realtime_updateable_)
+    {
+      RealtimeUpdater::instance ().deregisterObject (this);
+    }
 }
 
 bool
@@ -57,4 +67,15 @@ PositionProxy::getStringDisplay (
   const TempoTrack * tempo_track) const
 {
   return QString::fromStdString (to_string (transport, tempo_track, 0));
+}
+
+void
+PositionProxy::init_after_cloning (const PositionProxy &other)
+{
+  static_cast<Position &> (*this) = static_cast<const Position &> (other);
+  realtime_updateable_ = other.realtime_updateable_;
+  if (realtime_updateable_)
+    {
+      RealtimeUpdater::instance ().registerObject (this);
+    }
 }

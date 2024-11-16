@@ -35,8 +35,6 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
-
 void
 RecordingManager::handle_stop_recording (bool is_automation)
 {
@@ -53,7 +51,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
     "{}{}", "----- stopped recording", is_automation ? " (automation)" : "");
 
   /* cache the current selections */
-  auto prev_selections = std::make_unique<TimelineSelections> (*TL_SELECTIONS);
+  auto prev_selections = TL_SELECTIONS->clone_unique ();
 
   /* select all the recorded regions */
   TL_SELECTIONS->clear (false);
@@ -67,31 +65,41 @@ RecordingManager::handle_stop_recording (bool is_automation)
       /* do some sanity checks for lane regions */
       if (region_type_has_lane (id.type_))
         {
-          auto track = dynamic_cast<LanedTrack *> (
-            TRACKLIST->find_track_by_name_hash (id.track_name_hash_));
-          z_return_if_fail (track);
+          auto track_var =
+            TRACKLIST->find_track_by_name_hash (id.track_name_hash_);
+          z_return_if_fail (track_var);
 
           std::visit (
             [&] (auto &&t) {
               using TrackT = base_type<decltype (t)>;
-              using TrackLaneT = TrackT::TrackLaneType;
-              z_return_if_fail (id.lane_pos_ < (int) t->lanes_.size ());
-              auto lane = std::get<TrackLaneT *> (t->lanes_.at (id.lane_pos_));
-              z_return_if_fail (lane);
-              z_return_if_fail (
-                id.idx_ <= static_cast<int> (lane->regions_.size ()));
+              if constexpr (std::derived_from<TrackT, LanedTrack>)
+                {
+                  using TrackLaneT = TrackT::TrackLaneType;
+                  z_return_if_fail (id.lane_pos_ < (int) t->lanes_.size ());
+                  auto lane =
+                    std::get<TrackLaneT *> (t->lanes_.at (id.lane_pos_));
+                  z_return_if_fail (lane);
+                  z_return_if_fail (
+                    id.idx_
+                    <= static_cast<int> (lane->region_list_->regions_.size ()));
+                }
+              else
+                {
+                  z_return_if_reached ();
+                }
             },
-            convert_to_variant<LanedTrackPtrVariant> (track));
+            *track_var);
         }
 
-      auto region = Region::find (id);
-      z_return_if_fail (region);
-      TL_SELECTIONS->add_object_ref (region);
+      auto region_var = Region::find (id);
+      z_return_if_fail (region_var);
+      std::visit (
+        [&] (auto &&region) { TL_SELECTIONS->add_object_ref (*region); },
+        *region_var);
 
       if (is_automation)
         {
-          auto automation_region =
-            dynamic_pointer_cast<AutomationRegion> (region);
+          auto * automation_region = std::get<AutomationRegion *> (*region_var);
           automation_region->last_recorded_ap_ = nullptr;
         }
     }
@@ -101,20 +109,22 @@ RecordingManager::handle_stop_recording (bool is_automation)
     {
       UNDO_MANAGER->perform (
         std::make_unique<ArrangerSelectionsAction::RecordAction> (
-          *selections_before_start_, *TL_SELECTIONS, true));
+          *dynamic_cast<TimelineSelections *> (selections_before_start_.get ()),
+          *TL_SELECTIONS, true));
     }
   catch (const ZrythmException &ex)
     {
-      ex.handle (_ ("Failed to create recorded regions"));
+      ex.handle ("Failed to create recorded regions");
     }
 
   /* update frame caches and write audio clips to pool */
   for (auto &id : recorded_ids_)
     {
       auto r = Region::find (id);
-      if (r->is_audio ())
+      z_return_if_fail (r.has_value ());
+      if (std::holds_alternative<AudioRegion *> (r.value ()))
         {
-          auto        ar = dynamic_pointer_cast<AudioRegion> (r);
+          auto *      ar = std::get<AudioRegion *> (r.value ());
           AudioClip * clip = ar->get_clip ();
           try
             {
@@ -130,11 +140,17 @@ RecordingManager::handle_stop_recording (bool is_automation)
 
   /* restore the selections */
   TL_SELECTIONS->clear (false);
-  for (auto &obj : prev_selections->objects_)
+  for (auto &obj_var : prev_selections->objects_)
     {
-      auto found_obj = obj->find_in_project ();
-      z_return_if_fail (found_obj);
-      found_obj->select (true, true, false);
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjT = base_type<decltype (obj)>;
+          auto found_obj_var = obj->find_in_project ();
+          z_return_if_fail (found_obj_var);
+          auto * found_obj = std::get<ObjT *> (found_obj_var.value ());
+          found_obj->select (true, true, false);
+        },
+        obj_var);
     }
 
   /* free the temporary selections */
@@ -189,7 +205,7 @@ RecordingManager::handle_recording (
   auto   tr = track_processor->get_track ();
   auto   atl = &tr->get_automation_tracklist ();
   auto   recordable_track = dynamic_cast<RecordableTrack *> (tr);
-  gint64 cur_time = g_get_monotonic_time ();
+  auto   cur_time = Zrythm::getInstance ()->get_monotonic_time_usecs ();
 
   /* if track type can't record do nothing */
   if (!tr->can_record ()) [[unlikely]]
@@ -400,12 +416,11 @@ RecordingManager::delete_automation_points (
         }
 
       Position adj_pos = pos;
-      adj_pos.add_ticks (-region.pos_.ticks_);
-      auto ap = region.append_object (
-        std::make_shared<AutomationPoint> (
-          prev_fvalue, prev_normalized_val, adj_pos),
-        true);
-      region.last_recorded_ap_ = ap.get ();
+      adj_pos.add_ticks (-region.pos_->ticks_);
+      auto * ap =
+        new AutomationPoint (prev_fvalue, prev_normalized_val, adj_pos);
+      region.append_object (ap, true);
+      region.last_recorded_ap_ = ap;
     }
 }
 
@@ -424,7 +439,7 @@ RecordingManager::create_automation_point (
     }
 
   Position adj_pos = pos;
-  adj_pos.add_ticks (-region.pos_.ticks_);
+  adj_pos.add_ticks (-region.pos_->ticks_);
   if (
     region.last_recorded_ap_
     && math_floats_equal (
@@ -437,12 +452,12 @@ RecordingManager::create_automation_point (
     }
   else
     {
-      auto ap = region.append_object (
-        std::make_shared<AutomationPoint> (val, normalized_val, adj_pos), true);
+      auto * ap = new AutomationPoint (val, normalized_val, adj_pos);
+      region.append_object (ap, true);
       ap->curve_opts_.curviness_ = 1.0;
       ap->curve_opts_.algo_ = CurveOptions::Algorithm::Pulse;
-      region.last_recorded_ap_ = ap.get ();
-      return ap.get ();
+      region.last_recorded_ap_ = ap;
+      return ap;
     }
 
   return nullptr;
@@ -451,157 +466,259 @@ RecordingManager::create_automation_point (
 void
 RecordingManager::handle_pause_event (const RecordingEvent &ev)
 {
-  auto tr =
-    TRACKLIST->find_track_by_name_hash<RecordableTrack> (ev.track_name_hash_);
-  z_return_if_fail (tr);
+  auto tr_var = TRACKLIST->find_track_by_name_hash (ev.track_name_hash_);
+  z_return_if_fail (tr_var);
 
-  /* position to pause at */
-  Position pause_pos;
-  pause_pos.from_frames ((signed_frame_t) ev.g_start_frame_w_offset_);
+  std::visit (
+    [&] (auto &&tr) {
+      using TrackT = base_type<decltype (tr)>;
+      if constexpr (std::derived_from<TrackT, AutomatableTrack>)
+        {
+
+          /* position to pause at */
+          Position pause_pos;
+          pause_pos.from_frames ((signed_frame_t) ev.g_start_frame_w_offset_);
 
 #if 0
   z_debug ("track {} pause start frames {}, nframes {}", tr->name_.c_str(), pause_pos.frames_, ev.nframes_);
 #endif
 
-  if (ev.type_ == RecordingEvent::Type::PauseTrackRecording)
-    {
-      tr->recording_paused_ = true;
-
-      /* get the recording region */
-      Region * region = tr->recording_region_;
-      z_return_if_fail (region);
-
-      std::visit (
-        [&] (auto &&r) {
-          using T = base_type<decltype (r)>;
-          if constexpr (std::derived_from<T, LaneOwnedObject>)
+          if (ev.type_ == RecordingEvent::Type::PauseTrackRecording)
             {
-              using LanedTrackT = LaneOwnedObjectImpl<T>::LanedTrackT;
-              /* remember lane index */
-              auto laned_track = dynamic_cast<LanedTrackT *> (tr);
-              laned_track->last_lane_idx_ = r->id_.lane_pos_;
-
-              if (tr->in_signal_type_ == PortType::Event)
+              if constexpr (std::derived_from<TrackT, RecordableTrack>)
                 {
-                  auto midi_region = dynamic_cast<MidiRegion *> (r);
-                  /* add midi note offs at the end */
-                  MidiNote * mn;
-                  while ((mn = midi_region->pop_unended_note (-1)))
-                    {
-                      mn->end_pos_setter (&pause_pos);
-                    }
+                  tr->recording_paused_ = true;
+
+                  /* get the recording region */
+                  Region * region = tr->recording_region_;
+                  z_return_if_fail (region);
+
+                  std::visit (
+                    [&] (auto &&r) {
+                      using T = base_type<decltype (r)>;
+                      if constexpr (std::derived_from<T, LaneOwnedObject>)
+                        {
+                          using LanedTrackT =
+                            LaneOwnedObjectImpl<T>::LanedTrackT;
+                          /* remember lane index */
+                          auto laned_track = dynamic_cast<LanedTrackT *> (tr);
+                          laned_track->last_lane_idx_ = r->id_.lane_pos_;
+
+                          if (tr->in_signal_type_ == PortType::Event)
+                            {
+                              auto midi_region = dynamic_cast<MidiRegion *> (r);
+                              /* add midi note offs at the end */
+                              MidiNote * mn;
+                              while ((mn = midi_region->pop_unended_note (-1)))
+                                {
+                                  mn->end_pos_setter (&pause_pos);
+                                }
+                            }
+                        }
+                    },
+                    convert_to_variant<RegionPtrVariant> (region));
+                }
+              else
+                {
+                  z_error ("track {} is not recordable", tr->get_name ());
                 }
             }
-        },
-        convert_to_variant<RegionPtrVariant> (region));
-    }
-  else if (ev.type_ == RecordingEvent::Type::PauseAutomationRecording)
-    {
-      auto &at = tr->get_automation_tracklist ().ats_[ev.automation_track_idx_];
-      at->recording_paused_ = true;
-    }
+          else if (ev.type_ == RecordingEvent::Type::PauseAutomationRecording)
+            {
+              auto &at =
+                tr->get_automation_tracklist ().ats_[ev.automation_track_idx_];
+              at->recording_paused_ = true;
+            }
+        }
+      else
+        {
+          z_error ("track {} is not automatable", tr->get_name ());
+        }
+    },
+    *tr_var);
 }
 
 bool
 RecordingManager::handle_resume_event (const RecordingEvent &ev)
 {
-  auto * tr =
-    TRACKLIST->find_track_by_name_hash<AutomatableTrack> (ev.track_name_hash_);
-  gint64 cur_time = g_get_monotonic_time ();
+  auto tr_var = TRACKLIST->find_track_by_name_hash (ev.track_name_hash_);
 
-  /* position to resume from */
-  Position resume_pos ((signed_frame_t) ev.g_start_frame_w_offset_);
+  return std::visit (
+    [&] (auto &&tr) {
+      using TrackT = base_type<decltype (tr)>;
+      auto cur_time = Zrythm::getInstance ()->get_monotonic_time_usecs ();
 
-  /* position 1 frame afterwards */
-  Position end_pos = resume_pos;
-  end_pos.add_frames (1);
+      /* position to resume from */
+      Position resume_pos ((signed_frame_t) ev.g_start_frame_w_offset_);
 
-  auto recording_track = dynamic_cast<RecordableTrack *> (tr);
-  if (
-    ev.type_ == RecordingEvent::Type::Midi
-    || ev.type_ == RecordingEvent::Type::Audio)
-    {
-      /* not paused, nothing to do */
-      if (!recording_track->recording_paused_)
-        {
-          return false;
-        }
+      /* position 1 frame afterwards */
+      Position end_pos = resume_pos;
+      end_pos.add_frames (1);
 
-      recording_track->recording_paused_ = false;
-
+      auto recording_track = dynamic_cast<RecordableTrack *> (tr);
       if (
-        TRANSPORT->recording_mode_ == Transport::RecordingMode::Takes
-        || TRANSPORT->recording_mode_ == Transport::RecordingMode::TakesMuted
+        ev.type_ == RecordingEvent::Type::Midi
         || ev.type_ == RecordingEvent::Type::Audio)
         {
-          /* mute the previous region */
-          if (
-            (TRANSPORT->recording_mode_ == Transport::RecordingMode::TakesMuted
-             || (TRANSPORT->recording_mode_ == Transport::RecordingMode::OverwriteEvents && ev.type_ == RecordingEvent::Type::Audio))
-            && recording_track->recording_region_)
+          /* not paused, nothing to do */
+          if (!recording_track->recording_paused_)
             {
-              recording_track->recording_region_->set_muted (true, true);
+              return false;
             }
 
-          auto success = std::visit (
-            [&] (auto &&casted_tr) {
-              using T = base_type<decltype (casted_tr)>;
-              std::shared_ptr<Region> added_region;
-              if constexpr (std::is_same_v<T, ChordTrack>)
+          recording_track->recording_paused_ = false;
+
+          if (
+            TRANSPORT->recording_mode_ == Transport::RecordingMode::Takes
+            || TRANSPORT->recording_mode_ == Transport::RecordingMode::TakesMuted
+            || ev.type_ == RecordingEvent::Type::Audio)
+            {
+              /* mute the previous region */
+              if (
+                (TRANSPORT->recording_mode_ == Transport::RecordingMode::TakesMuted
+                 || (TRANSPORT->recording_mode_ == Transport::RecordingMode::OverwriteEvents && ev.type_ == RecordingEvent::Type::Audio))
+                && recording_track->recording_region_)
                 {
-                  auto chord_track = dynamic_cast<ChordTrack *> (casted_tr);
-                  auto new_region = std::make_shared<ChordRegion> (
-                    resume_pos, end_pos, chord_track->regions_.size ());
-                  try
-                    {
-                      added_region = casted_tr->Track::add_region (
-                        std::move (new_region), nullptr, -1, true, true);
-                    }
-                  catch (const ZrythmException &ex)
-                    {
-                      ex.handle ("Failed to add region to track");
-                      return false;
-                    }
+                  recording_track->recording_region_->set_muted (true, true);
                 }
-              else if constexpr (std::derived_from<T, LanedTrack>)
+
+              auto success = [&] () {
+                Region * added_region;
+                if constexpr (std::is_same_v<TrackT, ChordTrack>)
+                  {
+                    auto chord_track = tr;
+                    auto new_region = new ChordRegion (
+                      resume_pos, end_pos,
+                      chord_track->region_list_->regions_.size ());
+                    try
+                      {
+                        added_region = tr->Track::add_region (
+                          new_region, nullptr, -1, true, true);
+                      }
+                    catch (const ZrythmException &ex)
+                      {
+                        ex.handle ("Failed to add region to track");
+                        return false;
+                      }
+                  }
+                else if constexpr (std::derived_from<TrackT, LanedTrack>)
+                  {
+                    using RegionT = TrackT::RegionT;
+                    using TrackLaneT = TrackT::TrackLaneType;
+                    /* start new region in new lane */
+                    int new_lane_pos = tr->last_lane_idx_ + 1;
+                    int idx_inside_lane =
+                      (int) tr->lanes_.size () > new_lane_pos
+                        ? std::get<TrackLaneT *> (tr->lanes_.at (new_lane_pos))
+                            ->region_list_->regions_.size ()
+                        : 0;
+                    RegionT * new_region = nullptr;
+                    if constexpr (std::is_same_v<RegionT, MidiRegion>)
+                      {
+                        new_region = new MidiRegion (
+                          resume_pos, end_pos, tr->get_name_hash (),
+                          new_lane_pos, idx_inside_lane);
+                      }
+                    else if constexpr (std::is_same_v<RegionT, AudioRegion>)
+                      {
+                        auto name = AUDIO_POOL->gen_name_for_recording_clip (
+                          *tr, new_lane_pos);
+                        new_region = new AudioRegion (
+                          -1, std::nullopt, true, nullptr, 1, name, 2,
+                          BitDepth::BIT_DEPTH_32, resume_pos,
+                          tr->get_name_hash (), new_lane_pos, idx_inside_lane);
+                      }
+                    else
+                      {
+                        [[maybe_unused]] typedef
+                          typename RegionT::something_made_up X;
+                      }
+                    try
+                      {
+                        added_region = tr->Track::add_region (
+                          new_region, nullptr, new_lane_pos, true, true);
+                      }
+                    catch (const ZrythmException &e)
+                      {
+                        e.handle ("Failed to add region to track");
+                        return false;
+                      }
+                  }
+                else
+                  {
+                    /* nothing to do for this track type */
+                    return true;
+                  }
+
+                if constexpr (std::derived_from<TrackT, RecordableTrack>)
+                  {
+                    /* remember region */
+                    recorded_ids_.push_back (added_region->id_);
+                    tr->recording_region_ = added_region;
+                  }
+
+                return true;
+              }();
+
+              if (!success)
                 {
-                  using RegionT = T::RegionT;
-                  using TrackLaneT = T::TrackLaneType;
-                  /* start new region in new lane */
-                  int new_lane_pos = casted_tr->last_lane_idx_ + 1;
-                  int idx_inside_lane =
-                    (int) casted_tr->lanes_.size () > new_lane_pos
-                      ? std::get<TrackLaneT *> (
-                          casted_tr->lanes_.at (new_lane_pos))
-                          ->regions_.size ()
-                      : 0;
-                  std::shared_ptr<RegionT> new_region;
-                  if constexpr (std::is_same_v<RegionT, MidiRegion>)
-                    {
-                      new_region = std::make_shared<MidiRegion> (
-                        resume_pos, end_pos, casted_tr->get_name_hash (),
-                        new_lane_pos, idx_inside_lane);
-                    }
-                  else if constexpr (std::is_same_v<RegionT, AudioRegion>)
-                    {
-                      auto name = AUDIO_POOL->gen_name_for_recording_clip (
-                        *casted_tr, new_lane_pos);
-                      new_region = std::make_shared<AudioRegion> (
-                        -1, std::nullopt, true, nullptr, 1, name, 2,
-                        BitDepth::BIT_DEPTH_32, resume_pos,
-                        casted_tr->get_name_hash (), new_lane_pos,
-                        idx_inside_lane);
-                    }
-                  else
-                    {
-                      [[maybe_unused]] typedef
-                        typename RegionT::something_made_up X;
-                    }
+                  return false;
+                }
+            }
+          /* if MIDI and overwriting or merging events */
+          else if (recording_track->recording_region_)
+            {
+              /* extend the previous region */
+              if (resume_pos < recording_track->recording_region_->pos_)
+                {
+                  double ticks_delta =
+                    recording_track->recording_region_->pos_->ticks_
+                    - resume_pos.ticks_;
+                  recording_track->recording_region_->set_start_pos_full_size (
+                    &resume_pos);
+                  recording_track->recording_region_->add_ticks_to_children (
+                    ticks_delta);
+                }
+              if (end_pos > *recording_track->recording_region_->end_pos_)
+                {
+                  recording_track->recording_region_->set_end_pos_full_size (
+                    &end_pos);
+                }
+            }
+        }
+      else if (ev.type_ == RecordingEvent::Type::Automation)
+        {
+          if constexpr (std::derived_from<TrackT, AutomatableTrack>)
+            {
+              auto &at =
+                tr->automation_tracklist_->ats_[ev.automation_track_idx_];
+              z_return_val_if_fail (at, false);
+
+              /* not paused, nothing to do */
+              if (!at->recording_paused_)
+                return false;
+
+              auto port =
+                Port::find_from_identifier<ControlPort> (*at->port_id_);
+              float value = port->get_control_value (false);
+              float normalized_value = port->get_control_value (true);
+
+              /* get or start new region at resume pos */
+              auto new_region =
+                at->get_region_before_pos (resume_pos, true, false);
+              if (!new_region && at->should_be_recording (cur_time, false))
+                {
+                  /* create region */
+                  auto new_region_to_add = new AutomationRegion (
+                    resume_pos, end_pos, tr->get_name_hash (), at->index_,
+                    at->region_list_->regions_.size ());
+                  z_return_val_if_fail (new_region, false);
                   try
                     {
-                      added_region = casted_tr->add_region (
-                        std::move (new_region), nullptr, new_lane_pos, true,
-                        true);
+                      auto ret =
+                        tr->Track::template add_region<AutomationRegion> (
+                          new_region_to_add, at, -1, true, true);
+                      new_region = ret;
                     }
                   catch (const ZrythmException &e)
                     {
@@ -609,102 +726,32 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                       return false;
                     }
                 }
-              else
+              z_return_val_if_fail (new_region, false);
+              recorded_ids_.push_back (new_region->id_);
+
+              if (at->should_be_recording (cur_time, true))
                 {
-                  /* nothing to do for this track type */
-                  return true;
+                  while (
+                    new_region->aps_.size () > 0
+                    && new_region->aps_[0]->pos_ == resume_pos)
+                    {
+                      new_region->remove_object (*new_region->aps_[0], true);
+                    }
+
+                  /* create/replace ap at loop start */
+                  create_automation_point (
+                    at, *new_region, value, normalized_value, resume_pos);
                 }
-
-              if constexpr (std::derived_from<T, RecordableTrack>)
-                {
-                  /* remember region */
-                  recorded_ids_.push_back (added_region->id_);
-                  casted_tr->recording_region_ = added_region.get ();
-                }
-
-              return true;
-            },
-            convert_to_variant<TrackPtrVariant> (tr));
-
-          if (!success)
+            }
+          else
             {
-              return false;
+              z_return_val_if_reached (false);
             }
         }
-      /* if MIDI and overwriting or merging events */
-      else if (recording_track->recording_region_)
-        {
-          /* extend the previous region */
-          if (resume_pos < recording_track->recording_region_->pos_)
-            {
-              double ticks_delta =
-                recording_track->recording_region_->pos_.ticks_
-                - resume_pos.ticks_;
-              recording_track->recording_region_->set_start_pos_full_size (
-                &resume_pos);
-              recording_track->recording_region_->add_ticks_to_children (
-                ticks_delta);
-            }
-          if (end_pos > recording_track->recording_region_->end_pos_)
-            {
-              recording_track->recording_region_->set_end_pos_full_size (
-                &end_pos);
-            }
-        }
-    }
-  else if (ev.type_ == RecordingEvent::Type::Automation)
-    {
-      auto &at = tr->automation_tracklist_->ats_[ev.automation_track_idx_];
-      z_return_val_if_fail (at, false);
 
-      /* not paused, nothing to do */
-      if (!at->recording_paused_)
-        return false;
-
-      auto  port = Port::find_from_identifier<ControlPort> (*at->port_id_);
-      float value = port->get_control_value (false);
-      float normalized_value = port->get_control_value (true);
-
-      /* get or start new region at resume pos */
-      auto new_region = at->get_region_before_pos (resume_pos, true, false);
-      if (!new_region && at->should_be_recording (cur_time, false))
-        {
-          /* create region */
-          auto new_region_to_add = std::make_shared<AutomationRegion> (
-            resume_pos, end_pos, tr->get_name_hash (), at->index_,
-            at->regions_.size ());
-          z_return_val_if_fail (new_region, false);
-          try
-            {
-              auto ret = tr->add_region<AutomationRegion> (
-                std::move (new_region_to_add), at, -1, true, true);
-              new_region = ret.get ();
-            }
-          catch (const ZrythmException &e)
-            {
-              e.handle ("Failed to add region to track");
-              return false;
-            }
-        }
-      z_return_val_if_fail (new_region, false);
-      recorded_ids_.push_back (new_region->id_);
-
-      if (at->should_be_recording (cur_time, true))
-        {
-          while (
-            new_region->aps_.size () > 0
-            && new_region->aps_[0]->pos_ == resume_pos)
-            {
-              new_region->remove_object (*new_region->aps_[0]);
-            }
-
-          /* create/replace ap at loop start */
-          create_automation_point (
-            at, *new_region, value, normalized_value, resume_pos);
-        }
-    }
-
-  return true;
+      return true;
+    },
+    *tr_var);
 }
 void
 RecordingManager::handle_audio_event (const RecordingEvent &ev)
@@ -713,9 +760,9 @@ RecordingManager::handle_audio_event (const RecordingEvent &ev)
   (void) handled_resume;
   /*z_debug ("handled resume {}", handled_resume);*/
 
-  auto tr =
-    TRACKLIST->find_track_by_name_hash<RecordableTrack> (ev.track_name_hash_);
-
+  auto tr_var = TRACKLIST->find_track_by_name_hash (ev.track_name_hash_);
+  z_return_if_fail (tr_var);
+  auto * tr = std::get<AudioTrack *> (*tr_var);
   /* get end position */
   unsigned_frame_t start_frames = ev.g_start_frame_w_offset_;
   unsigned_frame_t end_frames = start_frames + ev.nframes_;
@@ -735,20 +782,20 @@ RecordingManager::handle_audio_event (const RecordingEvent &ev)
   region->set_end_pos_full_size (&end_pos);
 
   signed_frame_t r_obj_len_frames =
-    (region->end_pos_.frames_ - region->pos_.frames_);
+    (region->end_pos_->frames_ - region->pos_->frames_);
   z_return_if_fail_cmp (r_obj_len_frames, >=, 0);
   clip->num_frames_ = (unsigned_frame_t) r_obj_len_frames;
   clip->frames_.setSize (1, clip->channels_ * clip->num_frames_);
 
   region->loop_end_pos_.from_frames (
-    region->end_pos_.frames_ - region->pos_.frames_);
+    region->end_pos_->frames_ - region->pos_->frames_);
   region->fade_out_pos_ = region->loop_end_pos_;
 
   /* handle the samples normally */
   nframes_t cur_local_offset = 0;
   for (
-    signed_frame_t i = (signed_frame_t) start_frames - region->pos_.frames_;
-    i < (signed_frame_t) end_frames - region->pos_.frames_; ++i)
+    signed_frame_t i = (signed_frame_t) start_frames - region->pos_->frames_;
+    i < (signed_frame_t) end_frames - region->pos_->frames_; ++i)
     {
       z_return_if_fail_cmp (i, >=, 0);
       z_return_if_fail_cmp (i, <, (signed_frame_t) clip->num_frames_);
@@ -768,13 +815,15 @@ RecordingManager::handle_audio_event (const RecordingEvent &ev)
   clip->update_channel_caches ((size_t) clip->frames_written_);
 
   /* write to pool if 2 seconds passed since last write */
-  gint64 cur_time = g_get_monotonic_time ();
-  gint64 nano_sec_to_wait = 2 * 1000 * 1000;
+  auto   cur_time = Zrythm::getInstance ()->get_monotonic_time_usecs ();
+  qint64 usec_to_wait = 2 * 1000 * 1000;
   if (ZRYTHM_TESTING)
     {
-      nano_sec_to_wait = 20 * 1000;
+      usec_to_wait = 20 * 1000;
     }
-  if ((cur_time - clip->last_write_) > nano_sec_to_wait)
+  if (
+    static_cast<decltype (usec_to_wait)> (cur_time - clip->last_write_)
+    > usec_to_wait)
     {
       try
         {
@@ -792,118 +841,132 @@ RecordingManager::handle_midi_event (const RecordingEvent &ev)
 {
   handle_resume_event (ev);
 
-  auto tr =
-    TRACKLIST->find_track_by_name_hash<RecordableTrack> (ev.track_name_hash_);
-
-  z_return_if_fail (tr->recording_region_);
-
-  Position start_pos, end_pos;
-  start_pos.from_frames ((signed_frame_t) ev.g_start_frame_w_offset_);
-  end_pos.from_frames (
-    (signed_frame_t) ev.g_start_frame_w_offset_ + (signed_frame_t) ev.nframes_);
+  auto tr_var = TRACKLIST->find_track_by_name_hash (ev.track_name_hash_);
+  z_return_if_fail (tr_var);
 
   std::visit (
-    [&] (auto &&region) {
-      using RegionT = base_type<decltype (region)>;
-
-      /* set region end pos */
-      bool set_end_pos = false;
-      switch (TRANSPORT->recording_mode_)
+    [&] (auto &&tr) {
+      using TrackT = base_type<decltype (tr)>;
+      if constexpr (std::derived_from<TrackT, RecordableTrack>)
         {
-        case Transport::RecordingMode::OverwriteEvents:
-        case Transport::RecordingMode::MergeEvents:
-          if (region->end_pos_ < end_pos)
-            {
-              set_end_pos = true;
-            }
-          break;
-        case Transport::RecordingMode::Takes:
-        case Transport::RecordingMode::TakesMuted:
-          set_end_pos = true;
-          break;
-        }
-      if (set_end_pos)
-        {
-          region->set_end_pos_full_size (&end_pos);
-        }
+          z_return_if_fail (tr->recording_region_);
 
-      tr->recording_region_ = region;
+          Position start_pos, end_pos;
+          start_pos.from_frames ((signed_frame_t) ev.g_start_frame_w_offset_);
+          end_pos.from_frames (
+            (signed_frame_t) ev.g_start_frame_w_offset_
+            + (signed_frame_t) ev.nframes_);
 
-      /* get local positions */
-      Position local_pos = start_pos;
-      Position local_end_pos = end_pos;
-      local_pos.add_ticks (-region->pos_.ticks_);
-      local_end_pos.add_ticks (-region->pos_.ticks_);
+          std::visit (
+            [&] (auto &&region) {
+              using RegionT = base_type<decltype (region)>;
 
-      /* if overwrite mode, clear any notes inside the range */
-      if (
-        TRANSPORT->recording_mode_ == Transport::RecordingMode::OverwriteEvents)
-        {
-          if constexpr (std::is_same_v<RegionT, MidiRegion>)
-            {
-              for (int i = region->midi_notes_.size () - 1; i >= 0; --i)
+              /* set region end pos */
+              bool set_end_pos = false;
+              switch (TRANSPORT->recording_mode_)
                 {
-                  auto &mn = region->midi_notes_[i];
-
-                  if (mn->is_hit_by_range (
-                        local_pos, local_end_pos, false, false, true))
+                case Transport::RecordingMode::OverwriteEvents:
+                case Transport::RecordingMode::MergeEvents:
+                  if (region->end_pos_ < end_pos)
                     {
-                      region->remove_object (*mn, true);
+                      set_end_pos = true;
+                    }
+                  break;
+                case Transport::RecordingMode::Takes:
+                case Transport::RecordingMode::TakesMuted:
+                  set_end_pos = true;
+                  break;
+                }
+              if (set_end_pos)
+                {
+                  region->set_end_pos_full_size (&end_pos);
+                }
+
+              tr->recording_region_ = region;
+
+              /* get local positions */
+              Position local_pos = start_pos;
+              Position local_end_pos = end_pos;
+              local_pos.add_ticks (-region->pos_->ticks_);
+              local_end_pos.add_ticks (-region->pos_->ticks_);
+
+              /* if overwrite mode, clear any notes inside the range */
+              if (
+                TRANSPORT->recording_mode_
+                == Transport::RecordingMode::OverwriteEvents)
+                {
+                  if constexpr (std::is_same_v<RegionT, MidiRegion>)
+                    {
+                      for (int i = region->midi_notes_.size () - 1; i >= 0; --i)
+                        {
+                          auto &mn = region->midi_notes_[i];
+
+                          if (mn->is_hit_by_range (
+                                local_pos, local_end_pos, false, false, true))
+                            {
+                              region->remove_object (*mn, true);
+                            }
+                        }
                     }
                 }
-            }
-        }
 
-      if (!ev.has_midi_event_)
-        return;
+              if (!ev.has_midi_event_)
+                return;
 
-      /* convert MIDI data to midi notes */
-      MidiNote *  mn;
-      const auto &mev = ev.midi_event_;
-      const auto &buf = mev.raw_buffer_.data ();
+              /* convert MIDI data to midi notes */
+              MidiNote *  mn;
+              const auto &mev = ev.midi_event_;
+              const auto &buf = mev.raw_buffer_.data ();
 
-      if constexpr (std::is_same_v<RegionT, ChordRegion>)
-        {
-          if (midi_is_note_on (buf))
-            {
-              midi_byte_t             note_number = midi_get_note_number (buf);
-              const ChordDescriptor * descr =
-                CHORD_EDITOR->get_chord_from_note_number (note_number);
-              z_return_if_fail (descr);
-              int  chord_idx = CHORD_EDITOR->get_chord_index (*descr);
-              auto co = std::make_shared<ChordObject> (
-                region->id_, chord_idx, region->chord_objects_.size ());
-              region->append_object (std::move (co), true);
-              co->set_position (
-                &local_pos, ArrangerObject::PositionType::Start, false);
-            }
-        }
-      /* else if not chord track */
-      else if constexpr (std::is_same_v<RegionT, MidiRegion>)
-        {
-          if (midi_is_note_on (buf))
-            {
-              z_return_if_fail (region);
-              region->start_unended_note (
-                &local_pos, &local_end_pos, midi_get_note_number (buf),
-                midi_get_velocity (buf), true);
-            }
-          else if (midi_is_note_off (buf))
-            {
-              z_return_if_fail (region);
-              mn = region->pop_unended_note (midi_get_note_number (buf));
-              if (mn)
+              if constexpr (std::is_same_v<RegionT, ChordRegion>)
                 {
-                  mn->end_pos_setter (&local_end_pos);
+                  if (midi_is_note_on (buf))
+                    {
+                      midi_byte_t note_number = midi_get_note_number (buf);
+                      const ChordDescriptor * descr =
+                        CHORD_EDITOR->get_chord_from_note_number (note_number);
+                      z_return_if_fail (descr);
+                      int  chord_idx = CHORD_EDITOR->get_chord_index (*descr);
+                      auto co = new ChordObject (
+                        region->id_, chord_idx, region->chord_objects_.size ());
+                      region->append_object (co, true);
+                      co->set_position (
+                        &local_pos, ArrangerObject::PositionType::Start, false);
+                    }
                 }
-            }
-          else
-            {
-              /* TODO */
-            }
+              /* else if not chord track */
+              else if constexpr (std::is_same_v<RegionT, MidiRegion>)
+                {
+                  if (midi_is_note_on (buf))
+                    {
+                      z_return_if_fail (region);
+                      region->start_unended_note (
+                        &local_pos, &local_end_pos, midi_get_note_number (buf),
+                        midi_get_velocity (buf), true);
+                    }
+                  else if (midi_is_note_off (buf))
+                    {
+                      z_return_if_fail (region);
+                      mn = region->pop_unended_note (midi_get_note_number (buf));
+                      if (mn)
+                        {
+                          mn->end_pos_setter (&local_end_pos);
+                        }
+                    }
+                  else
+                    {
+                      /* TODO */
+                    }
+                }
+            },
+            convert_to_variant<RegionPtrVariant> (tr->recording_region_));
+        }
+      else
+        {
+          z_return_if_reached ();
         }
     },
-    convert_to_variant<RegionPtrVariant> (tr->recording_region_));
+    *tr_var);
 }
 
 void
@@ -911,91 +974,103 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
 {
   handle_resume_event (ev);
 
-  auto * tr =
-    TRACKLIST->find_track_by_name_hash<AutomatableTrack> (ev.track_name_hash_);
-  auto &atl = tr->automation_tracklist_;
-  auto &at = atl->ats_[ev.automation_track_idx_];
-  auto  port = Port::find_from_identifier<ControlPort> (*at->port_id_);
-  float value = port->get_control_value (false);
-  float normalized_value = port->get_control_value (true);
-  if (ZRYTHM_TESTING)
-    {
-      math_assert_nonnann (value);
-      math_assert_nonnann (normalized_value);
-    }
-  bool automation_value_changed =
-    !port->value_changed_from_reading_
-    && !math_floats_equal (value, at->last_recorded_value_);
-  gint64 cur_time = g_get_monotonic_time ();
-
-  /* get end position */
-  unsigned_frame_t start_frames = ev.g_start_frame_w_offset_;
-  unsigned_frame_t end_frames = start_frames + ev.nframes_;
-
-  Position start_pos (static_cast<signed_frame_t> (start_frames));
-  Position end_pos (static_cast<signed_frame_t> (end_frames));
-
-  bool new_region_created = false;
-
-  /* get the recording region */
-  auto region = at->get_region_before_pos (start_pos, true, false);
-
-  auto region_at_end = at->get_region_before_pos (end_pos, true, false);
-  if (!region && automation_value_changed)
-    {
-      z_debug ("creating new automation region (automation value changed)");
-      /* create region */
-      Position pos_to_end_new_r;
-      if (region_at_end)
+  auto tr_var = TRACKLIST->find_track_by_name_hash (ev.track_name_hash_);
+  std::visit (
+    [&] (auto &&tr) {
+      using TrackT = base_type<decltype (tr)>;
+      if constexpr (std::derived_from<TrackT, AutomatableTrack>)
         {
-          pos_to_end_new_r = region_at_end->pos_;
+          auto &atl = tr->automation_tracklist_;
+          auto &at = atl->ats_[ev.automation_track_idx_];
+          auto  port = Port::find_from_identifier<ControlPort> (*at->port_id_);
+          float value = port->get_control_value (false);
+          float normalized_value = port->get_control_value (true);
+          if (ZRYTHM_TESTING)
+            {
+              math_assert_nonnann (value);
+              math_assert_nonnann (normalized_value);
+            }
+          bool automation_value_changed =
+            !port->value_changed_from_reading_
+            && !math_floats_equal (value, at->last_recorded_value_);
+          auto cur_time = Zrythm::getInstance ()->get_monotonic_time_usecs ();
+
+          /* get end position */
+          unsigned_frame_t start_frames = ev.g_start_frame_w_offset_;
+          unsigned_frame_t end_frames = start_frames + ev.nframes_;
+
+          Position start_pos (static_cast<signed_frame_t> (start_frames));
+          Position end_pos (static_cast<signed_frame_t> (end_frames));
+
+          bool new_region_created = false;
+
+          /* get the recording region */
+          auto region = at->get_region_before_pos (start_pos, true, false);
+
+          auto region_at_end = at->get_region_before_pos (end_pos, true, false);
+          if (!region && automation_value_changed)
+            {
+              z_debug (
+                "creating new automation region (automation value changed)");
+              /* create region */
+              Position pos_to_end_new_r;
+              if (region_at_end)
+                {
+                  pos_to_end_new_r = *region_at_end->pos_;
+                }
+              else
+                {
+                  pos_to_end_new_r = end_pos;
+                }
+              region = tr->Track::add_region (
+                new AutomationRegion (
+                  start_pos, pos_to_end_new_r, tr->get_name_hash (), at->index_,
+                  at->region_list_->regions_.size ()),
+                at, -1, true, true);
+              new_region_created = true;
+              z_return_if_fail (region);
+
+              recorded_ids_.push_back (region->id_);
+            }
+
+          at->recording_region_ = region;
+
+          if (new_region_created || (region && region->end_pos_ < end_pos))
+            {
+              /* set region end pos */
+              region->set_end_pos_full_size (&end_pos);
+            }
+
+          at->recording_region_ = region;
+
+          /* handle the samples normally */
+          if (automation_value_changed)
+            {
+              create_automation_point (
+                at, *region, value, normalized_value, start_pos);
+              at->last_recorded_value_ = value;
+            }
+          else if (at->record_mode_ == AutomationRecordMode::Latch)
+            {
+              z_return_if_fail (region);
+              delete_automation_points (at, *region, start_pos);
+            }
+
+          /* if we left touch mode, set last recorded ap to NULL */
+          if (
+            at->record_mode_ == AutomationRecordMode::Touch
+            && !at->should_be_recording (cur_time, true)
+            && at->recording_region_)
+            {
+              at->recording_region_->last_recorded_ap_ = nullptr;
+            }
         }
       else
         {
-          pos_to_end_new_r = end_pos;
+          z_return_if_reached ();
         }
-      region =
-        tr->add_region (
-            std::make_shared<AutomationRegion> (
-              start_pos, pos_to_end_new_r, tr->get_name_hash (), at->index_,
-              at->regions_.size ()),
-            at, -1, true, true)
-          .get ();
-      new_region_created = true;
-      z_return_if_fail (region);
-
-      recorded_ids_.push_back (region->id_);
-    }
-
-  at->recording_region_ = region;
-
-  if (new_region_created || (region && region->end_pos_ < end_pos))
-    {
-      /* set region end pos */
-      region->set_end_pos_full_size (&end_pos);
-    }
-
-  at->recording_region_ = region;
-
-  /* handle the samples normally */
-  if (automation_value_changed)
-    {
-      create_automation_point (at, *region, value, normalized_value, start_pos);
-      at->last_recorded_value_ = value;
-    }
-  else if (at->record_mode_ == AutomationRecordMode::Latch)
-    {
-      z_return_if_fail (region);
-      delete_automation_points (at, *region, start_pos);
-    }
-
-  /* if we left touch mode, set last recorded ap to NULL */
-  if (
-    at->record_mode_ == AutomationRecordMode::Touch
-    && !at->should_be_recording (cur_time, true) && at->recording_region_)
-    {
-      at->recording_region_->last_recorded_ap_ = nullptr;
-    }
+    },
+    *tr_var);
 }
 
 void
@@ -1003,139 +1078,149 @@ RecordingManager::handle_start_recording (
   const RecordingEvent &ev,
   bool                  is_automation)
 {
-  auto tr =
-    TRACKLIST->find_track_by_name_hash<AutomatableTrack> (ev.track_name_hash_);
-  z_return_if_fail (tr);
-  gint64            cur_time = g_get_monotonic_time ();
-  AutomationTrack * at = nullptr;
-  if (is_automation)
-    {
-      at = tr->automation_tracklist_->ats_[ev.automation_track_idx_];
-    }
-
-  if (num_active_recordings_ == 0)
-    {
-      selections_before_start_ =
-        std::make_unique<TimelineSelections> (*TL_SELECTIONS);
-    }
-
-  /* this could be called multiple times, ignore if already processed */
-  auto * recordable_track = dynamic_cast<RecordableTrack *> (tr);
-  if (
-    !is_automation && (recordable_track->recording_region_ != nullptr)
-    && !is_automation)
-    {
-      z_warning ("record start already processed");
-      num_active_recordings_++;
-      return;
-    }
-
-  /* get end position */
-  unsigned_frame_t start_frames = ev.g_start_frame_w_offset_;
-  unsigned_frame_t end_frames = start_frames + ev.nframes_;
-
-  z_debug ("start {}, end {}", start_frames, end_frames);
-
-  z_return_if_fail (start_frames < end_frames);
-
-  Position start_pos (static_cast<signed_frame_t> (start_frames));
-  Position end_pos (static_cast<signed_frame_t> (end_frames));
-
-  if (is_automation)
-    {
-      /* don't unset recording paused, this will be unset by handle_resume() */
-      /*at->recording_paused = false;*/
-
-      /* nothing, wait for event to start writing data */
-      auto * port = Port::find_from_identifier<ControlPort> (*at->port_id_);
-      float  value = port->get_control_value (false);
-
-      if (at->should_be_recording (cur_time, true))
+  auto tr_var = TRACKLIST->find_track_by_name_hash (ev.track_name_hash_);
+  z_return_if_fail (tr_var);
+  std::visit (
+    [&] (auto &&tr) {
+      using TrackT = base_type<decltype (tr)>;
+      auto cur_time = Zrythm::getInstance ()->get_monotonic_time_usecs ();
+      AutomationTrack * at = nullptr;
+      if (is_automation)
         {
-          /* set recorded value to something else to force the recorder to start
-           * writing */
-          // z_info ("SHOULD BE RECORDING");
-          at->last_recorded_value_ = value + 2.f;
+          if constexpr (std::derived_from<TrackT, AutomatableTrack>)
+            {
+              at = tr->automation_tracklist_->ats_[ev.automation_track_idx_];
+            }
+          else
+            {
+              z_return_if_reached ();
+            }
+        }
+
+      if (num_active_recordings_ == 0)
+        {
+          selections_before_start_ = TL_SELECTIONS->clone_unique ();
+        }
+
+      /* this could be called multiple times, ignore if already processed */
+      auto * recordable_track = dynamic_cast<RecordableTrack *> (tr);
+      if (
+        !is_automation && (recordable_track->recording_region_ != nullptr)
+        && !is_automation)
+        {
+          z_warning ("record start already processed");
+          num_active_recordings_++;
+          return;
+        }
+
+      /* get end position */
+      unsigned_frame_t start_frames = ev.g_start_frame_w_offset_;
+      unsigned_frame_t end_frames = start_frames + ev.nframes_;
+
+      z_debug ("start {}, end {}", start_frames, end_frames);
+
+      z_return_if_fail (start_frames < end_frames);
+
+      Position start_pos (static_cast<signed_frame_t> (start_frames));
+      Position end_pos (static_cast<signed_frame_t> (end_frames));
+
+      if (is_automation)
+        {
+          /* don't unset recording paused, this will be unset by handle_resume()
+           */
+          /*at->recording_paused = false;*/
+
+          /* nothing, wait for event to start writing data */
+          auto * port = Port::find_from_identifier<ControlPort> (*at->port_id_);
+          float  value = port->get_control_value (false);
+
+          if (at->should_be_recording (cur_time, true))
+            {
+              /* set recorded value to something else to force the recorder to
+               * start writing */
+              // z_info ("SHOULD BE RECORDING");
+              at->last_recorded_value_ = value + 2.f;
+            }
+          else
+            {
+              // z_info ("SHOULD NOT BE RECORDING");
+              /** set the current value so that nothing is recorded until it
+               * changes
+               */
+              at->last_recorded_value_ = value;
+            }
         }
       else
         {
-          // z_info ("SHOULD NOT BE RECORDING");
-          /** set the current value so that nothing is recorded until it changes
-           */
-          at->last_recorded_value_ = value;
-        }
-    }
-  else
-    {
-      recordable_track->recording_paused_ = false;
+          recordable_track->recording_paused_ = false;
 
-      try
-        {
-          if (tr->has_piano_roll ())
+          try
             {
-              auto piano_roll_track = dynamic_cast<PianoRollTrack *> (tr);
-              using TrackLaneT = PianoRollTrack::LanedTrackImpl::TrackLaneType;
-              /* create region */
-              int  new_lane_pos = piano_roll_track->lanes_.size () - 1;
-              auto region = tr->add_region (
-                std::make_shared<MidiRegion> (
-                  start_pos, end_pos, tr->get_name_hash (), new_lane_pos,
-                  std::get<TrackLaneT *> (
-                    piano_roll_track->lanes_.at (new_lane_pos))
-                    ->regions_.size ()),
-                nullptr, new_lane_pos, true, true);
-              z_return_if_fail (region);
+              if constexpr (std::derived_from<TrackT, PianoRollTrack>)
+                {
+                  using TrackLaneT =
+                    PianoRollTrack::LanedTrackImpl::TrackLaneType;
+                  /* create region */
+                  int  new_lane_pos = tr->lanes_.size () - 1;
+                  auto region = tr->Track::add_region (
+                    new MidiRegion (
+                      start_pos, end_pos, tr->get_name_hash (), new_lane_pos,
+                      std::get<TrackLaneT *> (tr->lanes_.at (new_lane_pos))
+                        ->region_list_->regions_.size ()),
+                    nullptr, new_lane_pos, true, true);
+                  z_return_if_fail (region);
 
-              recordable_track->recording_region_ = region.get ();
-              recorded_ids_.push_back (region->id_);
+                  recordable_track->recording_region_ = region;
+                  recorded_ids_.push_back (region->id_);
+                }
+              else if constexpr (std::is_same_v<TrackT, ChordTrack>)
+                {
+                  auto region = tr->Track::add_region (
+                    new ChordRegion (
+                      start_pos, end_pos, tr->region_list_->regions_.size ()),
+                    nullptr, -1, true, true);
+                  z_return_if_fail (region);
+
+                  recordable_track->recording_region_ = region;
+                  recorded_ids_.push_back (region->id_);
+                }
+              else if constexpr (std::is_same_v<TrackT, AudioTrack>)
+                {
+                  /* create region */
+                  int  new_lane_pos = tr->lanes_.size () - 1;
+                  auto name =
+                    AUDIO_POOL->gen_name_for_recording_clip (*tr, new_lane_pos);
+                  auto region = tr->Track::add_region (
+                    new AudioRegion (
+                      -1, std::nullopt, true, nullptr, ev.nframes_, name, 2,
+                      BitDepth::BIT_DEPTH_32, start_pos, tr->get_name_hash (),
+                      new_lane_pos,
+                      std::get<AudioLane *> (tr->lanes_.at (new_lane_pos))
+                        ->region_list_->regions_.size ()),
+                    nullptr, new_lane_pos, true, true);
+                  z_return_if_fail (region);
+
+                  recordable_track->recording_region_ = region;
+                  recorded_ids_.push_back (region->id_);
+                }
             }
-          else if (tr->is_chord ())
+          catch (const ZrythmException &ex)
             {
-              auto chord_track = dynamic_cast<ChordTrack *> (tr);
-              auto region = tr->add_region (
-                std::make_shared<ChordRegion> (
-                  start_pos, end_pos, chord_track->regions_.size ()),
-                nullptr, -1, true, true);
-              z_return_if_fail (region);
-
-              recordable_track->recording_region_ = region.get ();
-              recorded_ids_.push_back (region->id_);
-            }
-          else if (tr->type_ == Track::Type::Audio)
-            {
-              auto audio_track = dynamic_cast<AudioTrack *> (tr);
-              /* create region */
-              int  new_lane_pos = audio_track->lanes_.size () - 1;
-              auto name =
-                AUDIO_POOL->gen_name_for_recording_clip (*tr, new_lane_pos);
-              auto region = tr->add_region (
-                std::make_shared<AudioRegion> (
-                  -1, std::nullopt, true, nullptr, ev.nframes_, name, 2,
-                  BitDepth::BIT_DEPTH_32, start_pos, tr->get_name_hash (),
-                  new_lane_pos,
-                  std::get<AudioLane *> (audio_track->lanes_.at (new_lane_pos))
-                    ->regions_.size ()),
-                nullptr, new_lane_pos, true, true);
-              z_return_if_fail (region);
-
-              recordable_track->recording_region_ = region.get ();
-              recorded_ids_.push_back (region->id_);
+              ex.handle ("Failed to add region");
+              return;
             }
         }
-      catch (const ZrythmException &ex)
-        {
-          ex.handle ("Failed to add region");
-          return;
-        }
-    }
 
-  num_active_recordings_++;
+      num_active_recordings_++;
+    },
+    *tr_var);
 }
-int
+
+void
 RecordingManager::process_events ()
 {
   SemaphoreRAII lock (processing_sem_);
-  z_return_val_if_fail (!currently_processing_, G_SOURCE_REMOVE);
+  z_return_if_fail (!currently_processing_);
   currently_processing_ = true;
 
   RecordingEvent * ev;
@@ -1167,60 +1252,100 @@ RecordingManager::process_events ()
           break;
         case RecordingEvent::Type::StopTrackRecording:
           {
-            auto tr = TRACKLIST->find_track_by_name_hash<RecordableTrack> (
-              ev->track_name_hash_);
-            z_return_val_if_fail (tr, G_SOURCE_CONTINUE);
-            z_debug ("-------- STOP TRACK RECORDING ({})", tr->name_);
-            handle_stop_recording (false);
-            tr->recording_region_ = nullptr;
-            tr->recording_start_sent_ = false;
-            tr->recording_stop_sent_ = false;
+            auto tr_var =
+              TRACKLIST->find_track_by_name_hash (ev->track_name_hash_);
+            z_return_if_fail (tr_var);
+            std::visit (
+              [&] (auto &&tr) {
+                using TrackT = base_type<decltype (tr)>;
+                if constexpr (std::derived_from<TrackT, RecordableTrack>)
+                  {
+                    z_debug ("-------- STOP TRACK RECORDING ({})", tr->name_);
+                    handle_stop_recording (false);
+                    tr->recording_region_ = nullptr;
+                    tr->recording_start_sent_ = false;
+                    tr->recording_stop_sent_ = false;
+                  }
+                else
+                  {
+                    z_return_if_reached ();
+                  }
+              },
+              *tr_var);
           }
           z_debug ("num active recordings: {}", num_active_recordings_);
           break;
         case RecordingEvent::Type::StopAutomationRecording:
           z_debug ("-------- STOP AUTOMATION RECORDING");
           {
-            auto tr = TRACKLIST->find_track_by_name_hash<AutomatableTrack> (
-              ev->track_name_hash_);
-            auto &at =
-              tr->automation_tracklist_->ats_[ev->automation_track_idx_];
-            z_return_val_if_fail (at, G_SOURCE_REMOVE);
-            if (at->recording_started_)
-              {
-                handle_stop_recording (true);
-              }
-            at->recording_started_ = false;
-            at->recording_start_sent_ = false;
-            at->recording_region_ = nullptr;
+            auto tr_var =
+              TRACKLIST->find_track_by_name_hash (ev->track_name_hash_);
+            std::visit (
+              [&] (auto &tr) {
+                using TrackT = base_type<decltype (tr)>;
+                if constexpr (std::derived_from<TrackT, AutomatableTrack>)
+                  {
+                    auto &at =
+                      tr->automation_tracklist_->ats_[ev->automation_track_idx_];
+                    z_return_if_fail (at);
+                    if (at->recording_started_)
+                      {
+                        handle_stop_recording (true);
+                      }
+                    at->recording_started_ = false;
+                    at->recording_start_sent_ = false;
+                    at->recording_region_ = nullptr;
+                  }
+                else
+                  {
+                    z_return_if_reached ();
+                  }
+              },
+              *tr_var);
           }
           z_debug ("num active recordings: {}", num_active_recordings_);
           break;
         case RecordingEvent::Type::StartTrackRecording:
           {
-            auto tr = TRACKLIST->find_track_by_name_hash<RecordableTrack> (
-              ev->track_name_hash_);
-            z_return_val_if_fail (tr, G_SOURCE_CONTINUE);
-            z_debug ("-------- START TRACK RECORDING ({})", tr->name_);
-            handle_start_recording (*ev, false);
-            z_debug ("num active recordings: {}", num_active_recordings_);
+            auto tr_var =
+              TRACKLIST->find_track_by_name_hash (ev->track_name_hash_);
+            z_return_if_fail (tr_var);
+            std::visit (
+              [&] (auto &&tr) {
+                z_debug ("-------- START TRACK RECORDING ({})", tr->name_);
+                handle_start_recording (*ev, false);
+                z_debug ("num active recordings: {}", num_active_recordings_);
+              },
+              *tr_var);
           }
           break;
         case RecordingEvent::Type::StartAutomationRecording:
           z_info ("-------- START AUTOMATION RECORDING");
           {
-            auto tr = TRACKLIST->find_track_by_name_hash<AutomatableTrack> (
-              ev->track_name_hash_);
-            auto &at =
-              tr->automation_tracklist_->ats_[ev->automation_track_idx_];
-            z_return_val_if_fail (at, G_SOURCE_REMOVE);
-            if (!at->recording_started_)
-              {
-                handle_start_recording (*ev, true);
-              }
-            at->recording_started_ = true;
+            auto tr_var =
+              TRACKLIST->find_track_by_name_hash (ev->track_name_hash_);
+            std::visit (
+              [&] (auto &tr) {
+                using TrackT = base_type<decltype (tr)>;
+                if constexpr (std::derived_from<TrackT, AutomatableTrack>)
+                  {
+                    auto &at =
+                      tr->automation_tracklist_->ats_[ev->automation_track_idx_];
+                    z_return_if_fail (at);
+                    if (!at->recording_started_)
+                      {
+                        handle_start_recording (*ev, true);
+                      }
+                    at->recording_started_ = true;
+                  }
+                else
+                  {
+                    z_return_if_reached ();
+                  }
+              },
+              *tr_var);
+            z_debug ("num active recordings: {}", num_active_recordings_);
           }
-          z_debug ("num active recordings: {}", num_active_recordings_);
           break;
         }
 
@@ -1229,11 +1354,9 @@ return_to_pool:
     }
 
   currently_processing_ = false;
-
-  return G_SOURCE_CONTINUE;
 }
 
-RecordingManager::RecordingManager ()
+RecordingManager::RecordingManager (QObject * parent) : QObject (parent)
 {
   recorded_ids_.reserve (8000);
 
@@ -1241,8 +1364,11 @@ RecordingManager::RecordingManager ()
   event_obj_pool_.reserve (max_events);
   event_queue_.reserve (max_events);
 
-  source_id_ =
-    g_timeout_add (12, (GSourceFunc) process_events_source_func, this);
+  auto * timer = new QTimer (this);
+  timer->setInterval (12);
+  timer->setSingleShot (false);
+  connect (timer, &QTimer::timeout, this, &RecordingManager::process_events);
+  timer->start ();
 }
 
 RecordingManager::~RecordingManager ()
@@ -1250,9 +1376,6 @@ RecordingManager::~RecordingManager ()
   z_info ("{}: Freeing...", __func__);
 
   freeing_ = true;
-
-  /* stop source func */
-  g_source_remove_and_zero (source_id_);
 
   /* process pending events */
   process_events ();

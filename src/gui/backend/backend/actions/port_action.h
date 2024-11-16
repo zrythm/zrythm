@@ -46,7 +46,7 @@ public:
     float                 val,
     bool                  is_normalized);
 
-  std::string to_string () const override;
+  QString to_string () const override;
 
   void init_after_cloning (const PortAction &other) override;
 

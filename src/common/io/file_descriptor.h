@@ -9,8 +9,6 @@
 
 #include "common/utils/types.h"
 
-#include <glib.h>
-
 TYPEDEF_STRUCT_UNDERSCORED (WrappedObjectWithChangeSignal);
 
 /**

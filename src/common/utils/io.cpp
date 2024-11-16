@@ -29,45 +29,70 @@
 
 #include "zrythm-config.h"
 
+#include <cerrno>
+#include <cstdlib>
+#include <cstring>
 #include <filesystem>
 
 #include "common/utils/exceptions.h"
 #include "common/utils/logger.h"
+#ifdef __linux__
+#  include <sys/ioctl.h>
+#  include <sys/stat.h>
+#  include <sys/types.h>
+
+#  include <fcntl.h>
+#  include <linux/fs.h>
+#endif
 
 #ifdef _WIN32
 #  include <windows.h>
 #endif
 
-#include <sys/stat.h>
-#include <sys/types.h>
-
 #include "common/utils/datetime.h"
-#include "common/utils/file.h"
 #include "common/utils/io.h"
 #include "common/utils/string.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
-#include <glib/gstdio.h>
-
 #include "juce_wrapper.h"
 #include <fmt/format.h>
-#include <giomm.h>
-#include <glibmm.h>
 
 #if defined(__APPLE__) && ZRYTHM_IS_INSTALLER_VER
 #  include "CoreFoundation/CoreFoundation.h"
 #  include <libgen.h>
 #endif
 
-std::string
-io_get_dir (const std::string &filename)
+namespace zrythm::utils::io
 {
-  return Glib::path_get_dirname (filename);
+
+std::string
+get_path_separator_string ()
+{
+  return { QDir::listSeparator ().toLatin1 () };
+}
+
+fs::path
+get_home_path ()
+{
+  return { QDir::homePath ().toStdString () };
+}
+
+fs::path
+get_temp_path ()
+{
+  return { QDir::tempPath ().toStdString () };
+}
+
+std::string
+get_dir (const std::string &filename)
+{
+  return QFileInfo (QString::fromStdString (filename))
+    .absolutePath ()
+    .toStdString ();
 }
 
 void
-io_mkdir (const std::string &dir)
+mkdir (const std::string &dir)
 {
   // this is called during logger instantiation so check if logger exists
   if (Logger::getInstanceWithoutCreating ())
@@ -87,31 +112,18 @@ io_mkdir (const std::string &dir)
 }
 
 std::string
-io_create_tmp_dir (const std::string template_name)
+file_get_ext (const std::string &filename)
 {
-  std::string temp_dir_template = Glib::build_filename (
-    std::filesystem::temp_directory_path ().string (), template_name);
-  std::string temp_dir =
-    std::filesystem::path (g_mkdtemp (temp_dir_template.data ())).string ();
-  if (temp_dir.empty ())
-    throw ZrythmException (fmt::format (
-      "Failed to create temporary directory: {}", temp_dir_template));
-
-  return temp_dir;
-}
-
-std::string
-io_file_get_ext (const std::string &filename)
-{
-  const char * dot = strrchr (filename.c_str (), '.');
-  if (!dot || dot == filename)
-    return "";
-
-  return dot + 1;
+  if (
+    auto pos = filename.find_last_of ('.'); pos != std::string::npos && pos > 0)
+    {
+      return filename.substr (pos + 1);
+    }
+  return "";
 }
 
 bool
-io_touch_file (const std::string &file_path)
+touch_file (const std::string &file_path)
 {
   juce::File file (file_path);
   if (file.exists ())
@@ -127,7 +139,7 @@ io_touch_file (const std::string &file_path)
 }
 
 std::string
-io_file_strip_ext (const std::string &filename)
+file_strip_ext (const std::string &filename)
 {
   /* if last char is a dot, return the string without the dot */
   size_t len = strlen (filename.c_str ());
@@ -136,7 +148,7 @@ io_file_strip_ext (const std::string &filename)
       return filename.substr (0, len - 1);
     }
 
-  const auto dot = io_file_get_ext (filename);
+  const auto dot = file_get_ext (filename);
 
   /* if no dot, return filename */
   if (dot.empty ())
@@ -149,76 +161,35 @@ io_file_strip_ext (const std::string &filename)
 }
 
 std::string
-io_path_get_basename_without_ext (const std::string &filename)
+path_get_basename (const std::string &filename)
 {
-  auto basename = Glib::path_get_basename (filename);
-  return io_file_strip_ext (basename);
+  return QFileInfo (QString::fromStdString (filename)).fileName ().toStdString ();
 }
 
-#if 0
-char *
-io_path_get_parent_dir (const char * path)
+std::string
+path_get_basename_without_ext (const std::string &filename)
 {
-#  ifdef _WIN32
-#    define PATH_SEP "\\\\"
-#    define ROOT_REGEX "[A-Z]:" PATH_SEP
-#  else
-#    define PATH_SEP "/"
-#    define ROOT_REGEX "/"
-#  endif
-  char   regex[] = "(" ROOT_REGEX ".*)" PATH_SEP "[^" PATH_SEP "]+";
-  char * parent = string_get_regex_group (path, regex, 1);
-#  if 0
-  z_info ("[%s]\npath: {}\nregex: {}\nparent: {}",
-    __func__, path, regex, parent);
-#  endif
+  return QFileInfo (QString::fromStdString (filename))
+    .completeBaseName ()
+    .toStdString ();
+}
 
-  if (!parent)
+qint64
+file_get_last_modified_datetime (const std::string &filename)
+{
+  juce::File file (filename);
+  if (file.exists ())
     {
-      strcpy (regex, "(" ROOT_REGEX ")[^" PATH_SEP "]*");
-      parent = string_get_regex_group (path, regex, 1);
-#  if 0
-      z_info ("path: {}\nregex: {}\nparent: {}",
-        path, regex, parent);
-#  endif
-    }
-
-#  undef PATH_SEP
-#  undef ROOT_REGEX
-
-  return parent;
-}
-#endif
-
-char *
-io_file_get_creation_datetime (const char * filename)
-{
-  /* TODO */
-  return NULL;
-}
-
-/**
- * Returns the number of seconds since the epoch, or
- * -1 if failed.
- */
-gint64
-io_file_get_last_modified_datetime (const char * filename)
-{
-  struct stat result
-  {
-  };
-  if (stat (filename, &result) == 0)
-    {
-      return result.st_mtime;
+      return file.getLastModificationTime ().toMilliseconds () / 1000;
     }
   z_info ("Failed to get last modified for {}", filename);
   return -1;
 }
 
 std::string
-io_file_get_last_modified_datetime_as_str (const char * filename)
+file_get_last_modified_datetime_as_str (const std::string &filename)
 {
-  gint64 secs = io_file_get_last_modified_datetime (filename);
+  qint64 secs = file_get_last_modified_datetime (filename);
   if (secs == -1)
     return NULL;
 
@@ -226,7 +197,7 @@ io_file_get_last_modified_datetime_as_str (const char * filename)
 }
 
 bool
-io_remove (const std::string &path)
+remove (const std::string &path)
 {
   if (gZrythm)
     {
@@ -243,27 +214,25 @@ io_remove (const std::string &path)
   bool success = file.deleteFile ();
   if (success)
     return true;
-  else
-    {
-      throw ZrythmException (fmt::format ("Failed to remove {}", path));
-    };
+
+  throw ZrythmException (fmt::format ("Failed to remove {}", path));
 }
 
 bool
-io_rmdir (const std::string &path, bool force)
+rmdir (const fs::path &path, bool force)
 {
-  juce::File dir (path);
 
-  if (!dir.exists () || !dir.isDirectory ())
+  if (!path.is_absolute () || !fs::exists (path) || !fs::is_directory (path))
     {
+      z_warning ("refusing to remove {}", path);
       return false;
     }
   z_info ("Removing {}{}", path, force ? " recursively" : "");
 
   if (force)
     {
-      z_return_val_if_fail (
-        Glib::path_is_absolute (path) && strlen (path.c_str ()) > 20, false);
+      z_return_val_if_fail (path.string ().length () > 20, false);
+      juce::File dir (path.string ());
       return dir.deleteRecursively ();
     }
 
@@ -304,91 +273,97 @@ append_files_from_dir_ending_in (
 }
 
 StringArray
-io_get_files_in_dir (const std::string &_dir)
+get_files_in_dir (const std::string &_dir)
 {
-  return io_get_files_in_dir_ending_in (_dir, false, std::nullopt);
+  return get_files_in_dir_ending_in (_dir, false, std::nullopt);
 }
 
 void
-io_copy_dir (
-  const std::string_view destdir_str,
-  const std::string_view srcdir_str,
-  bool                   follow_symlinks,
-  bool                   recursive)
+copy_dir (
+  const fs::path &destdir,
+  const fs::path &srcdir,
+  bool            follow_symlinks,
+  bool            recursive)
 {
-
   z_debug (
-    "attempting to copy dir '{}' to '{}' (recursive: {})", srcdir_str,
-    destdir_str, recursive);
+    "attempting to copy dir '{}' to '{}' (recursive: {})", srcdir, destdir,
+    recursive);
 
-  GError * err = NULL;
-  GDir *   srcdir = g_dir_open (srcdir_str.data (), 0, &err);
-  if (!srcdir)
+  QDir src_dir (QString::fromStdString (srcdir.string ()));
+  QDir dest_dir (QString::fromStdString (destdir.string ()));
+
+  if (!src_dir.exists ())
     {
-      throw ZrythmException (fmt::format (
-        "Failed opening directory '{}': {}", srcdir_str, err->message));
+      throw ZrythmException (
+        fmt::format ("Failed opening directory '{}'", srcdir));
     }
 
-  io_mkdir (destdir_str.data ());
-
-  const gchar * filename;
-  while ((filename = g_dir_read_name (srcdir)))
+  if (!dest_dir.exists ())
     {
-      auto src_full_path = Glib::build_filename (srcdir_str.data (), filename);
-      auto dest_full_path = Glib::build_filename (destdir_str.data (), filename);
+      mkdir (destdir.string ());
+    }
 
-      bool is_dir = Glib::file_test (src_full_path, Glib::FileTest::IS_DIR);
+  const auto entries =
+    src_dir.entryInfoList (QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+
+  for (const auto &entry : entries)
+    {
+      const auto dest_path = dest_dir.filePath (entry.fileName ());
+      const auto src_path = entry.filePath ();
 
       /* recurse if necessary */
-      if (recursive && is_dir)
+      if (entry.isDir ())
         {
-          io_copy_dir (
-            dest_full_path, src_full_path, follow_symlinks, recursive);
+          if (recursive)
+            {
+              copy_dir (
+                dest_path.toStdString (), src_path.toStdString (),
+                follow_symlinks, recursive);
+            }
         }
       /* otherwise if not dir, copy file */
-      else if (!is_dir)
+      else
         {
-          GFile * src_file = g_file_new_for_path (src_full_path.c_str ());
-          GFile * dest_file = g_file_new_for_path (dest_full_path.c_str ());
-          z_return_if_fail (src_file && dest_file);
-          int flags = (int) G_FILE_COPY_OVERWRITE;
-          if (!follow_symlinks)
-            {
-              flags |= (int) G_FILE_COPY_NOFOLLOW_SYMLINKS;
-            }
-          bool success = g_file_copy (
-            src_file, dest_file, (GFileCopyFlags) flags, nullptr, nullptr,
-            nullptr, &err);
-          if (!success)
+          // not following symlinks unimplemented
+          z_return_if_fail (!follow_symlinks);
+
+          if (!QFile::copy (src_path, dest_path))
             {
               throw ZrythmException (fmt::format (
-                "Failed copying file {} to {}", src_full_path, dest_full_path,
-                err->message));
+                "Failed copying file {} to {}", src_path, dest_path));
             }
-
-          g_object_unref (src_file);
-          g_object_unref (dest_file);
         }
     }
-  g_dir_close (srcdir);
+}
+
+void
+copy_file (const fs::path &destfile, const fs::path &srcfile)
+{
+  auto src_file = QFile (QString::fromStdString (srcfile));
+  if (!src_file.copy (QString::fromStdString (destfile.string ())))
+    {
+      throw ZrythmException (fmt::format (
+        "Failed to copy '{}' to '{}': {}", srcfile, destfile,
+        src_file.errorString ()));
+    }
 }
 
 StringArray
-io_get_files_in_dir_as_basenames (const std::string &_dir)
+get_files_in_dir_as_basenames (const std::string &_dir)
 {
-  StringArray files = io_get_files_in_dir (_dir);
+  StringArray files = get_files_in_dir (_dir);
 
   StringArray files_as_basenames;
   for (const auto &filename : files)
     {
-      files_as_basenames.add (Glib::path_get_basename (filename.toStdString ()));
+      files_as_basenames.add (path_get_basename (filename.toStdString ()));
     }
 
   return files_as_basenames;
 }
 
 StringArray
-io_get_files_in_dir_ending_in (
+get_files_in_dir_ending_in (
   const std::string                &_dir,
   bool                              recursive,
   const std::optional<std::string> &end_string)
@@ -399,15 +374,15 @@ io_get_files_in_dir_ending_in (
 }
 
 std::string
-io_get_next_available_filepath (const std::string &filepath)
+get_next_available_filepath (const std::string &filepath)
 {
   int  i = 1;
-  auto file_without_ext = io_file_strip_ext (filepath);
-  auto file_ext = io_file_get_ext (filepath);
+  auto file_without_ext = file_strip_ext (filepath);
+  auto file_ext = file_get_ext (filepath);
   auto new_path = filepath;
-  while (file_path_exists (new_path))
+  while (path_exists (new_path))
     {
-      if (Glib::file_test (new_path, Glib::FileTest::IS_DIR))
+      if (fs::is_directory (new_path))
         {
           new_path = fmt::format ("{} ({})", filepath, i++);
         }
@@ -420,55 +395,64 @@ io_get_next_available_filepath (const std::string &filepath)
   return new_path;
 }
 
-/**
- * Opens the given directory using the default
- * program.
- */
-void
-io_open_directory (const char * path)
+std::unique_ptr<QTemporaryDir>
+make_tmp_dir (std::optional<QString> template_str, bool in_temp_dir)
 {
-  z_return_if_fail (g_file_test (path, G_FILE_TEST_IS_DIR));
-
-  std::string command;
-#ifdef _WIN32
-  auto canonical_path = Glib::canonicalize_filename (path, nullptr);
-  auto new_path = string_replace (canonical_path, "\\", "\\\\");
-  command = fmt::format ("{} \"{}\"", OPEN_DIR_CMD, new_path);
-#else
-  command = fmt::format ("{} \"{}\"", OPEN_DIR_CMD, path);
-#endif
-  system (command.c_str ());
-  z_info ("executed: {}", command);
+  std::unique_ptr<QTemporaryDir> ret;
+  if (template_str)
+    {
+      QString path =
+        in_temp_dir ? QDir::tempPath () + QDir::separator () : QString ();
+      ret = std::make_unique<QTemporaryDir> (path + *template_str);
+    }
+  else
+    {
+      ret = std::make_unique<QTemporaryDir> ();
+    }
+  if (!ret->isValid ())
+    {
+      throw ZrythmException ("Failed to create temporary directory");
+    }
+  return ret;
 }
 
-void
-io_write_file_atomic (const std::string &file_path, const std::string &data)
+std::unique_ptr<QTemporaryFile>
+make_tmp_file (std::optional<std::string> template_path, bool in_temp_dir)
 {
-  try
+  std::unique_ptr<QTemporaryFile> ret;
+  if (template_path)
     {
-      Glib::file_set_contents (file_path, data);
+      QString path =
+        in_temp_dir ? QDir::tempPath () + QDir::separator () : QString ();
+      ret = std::make_unique<QTemporaryFile> (
+        path + QString::fromStdString (*template_path));
     }
-  catch (const std::exception &e)
+  else
     {
-      throw ZrythmException (fmt::format ("Error writing file: {}", e.what ()));
+      ret = std::make_unique<QTemporaryFile> ();
     }
+  if (!ret->open ())
+    {
+      throw ZrythmException ("Failed to create temporary file");
+    }
+  return ret;
 }
 
 std::string
-io_get_legal_file_name (const std::string &file_name)
+get_legal_file_name (const std::string &file_name)
 {
   return juce::File::createLegalFileName (file_name).toStdString ();
 }
 
 std::string
-io_get_legal_path_name (const std::string &path)
+get_legal_path_name (const std::string &path)
 {
   return juce::File::createLegalPathName (path).toStdString ();
 }
 
 #ifdef _WIN32
 std::string
-io_get_registry_string_val (const std::string &key)
+get_registry_string_val (const std::string &key)
 {
   auto full_path = fmt::format (
     "HKEY_LOCAL_MACHINE\\Software\\{}\\{}\\Settings\\{}", PROGRAM_NAME,
@@ -493,7 +477,7 @@ io_get_registry_string_val (const std::string &key)
  * @return Non-zero on fail.
  */
 int
-io_get_bundle_path (char * bundle_path)
+get_bundle_path (char * bundle_path)
 {
   CFBundleRef bundle = CFBundleGetMainBundle ();
   CFURLRef    bundleURL = CFBundleCopyBundleURL (bundle);
@@ -507,30 +491,113 @@ io_get_bundle_path (char * bundle_path)
 }
 #endif
 
-/**
- * Returns the new path after traversing any symlinks (using
- * readlink()).
- */
-char *
-io_traverse_path (const char * abs_path)
+bool
+path_exists (const fs::path &path)
 {
-  /* TODO handle on other platforms as well */
-#if defined(__linux__) || defined(__FreeBSD__)
-  char * traversed_path = realpath (abs_path, nullptr);
-  if (traversed_path)
+  return fs::exists (path);
+}
+
+bool
+reflink_file (const std::string &dest, const std::string &src)
+{
+#ifdef __linux__
+  int src_fd = open (src.c_str (), O_RDONLY);
+  if (src_fd == -1)
     {
-      if (!string_is_equal (traversed_path, abs_path))
-        {
-          z_debug ("traversed path: {} => {}", abs_path, traversed_path);
-        }
-      return traversed_path;
+      z_warning ("Failed to open source file {}", src);
+      return false;
+    }
+  int dest_fd = open (dest.c_str (), O_RDWR | O_CREAT, 0644);
+  if (dest_fd == -1)
+    {
+      z_warning ("Failed to open destination file {}", dest);
+      return false;
+    }
+  if (ioctl (dest_fd, FICLONE, src_fd) != 0)
+    {
+      z_warning ("Failed to reflink '{}' to '{}'", src, dest);
+      return false;
+    }
+  return true;
+#else
+  z_warning ("Reflink not supported on this platform");
+  return false;
+#endif
+}
+
+bool
+is_file_hidden (const fs::path &file)
+{
+  return QFileInfo (file).isHidden ();
+}
+
+QByteArray
+read_file_contents (const fs::path &path)
+{
+  QFile file (path);
+  if (file.open (QIODevice::ReadOnly))
+    {
+      return file.readAll ();
+    }
+  throw ZrythmException (fmt::format (
+    "Failed to open file for reading: '{}' ({})", path.string (),
+    file.errorString ()));
+}
+
+void
+set_file_contents (const fs::path &path, const char * contents, size_t size)
+{
+  QFile file (path);
+  if (file.open (QIODevice::WriteOnly))
+    {
+      file.write (contents, size);
     }
   else
     {
-      z_warning ("realpath() failed: {}", strerror (errno));
-      return g_strdup (abs_path);
+      throw ZrythmException (fmt::format (
+        "Failed to open file for writing: '{}' ({})", path.string (),
+        file.errorString ()));
     }
-#else
-  return g_strdup (abs_path);
-#endif
 }
+
+void
+set_file_contents (const fs::path &file_path, const std::string &data)
+{
+  juce::File file (file_path.string ());
+  if (!file.create ())
+    {
+      throw ZrythmException ("Failed to create file");
+    }
+
+  if (!file.replaceWithText (data))
+    {
+      throw ZrythmException ("Failed to write file contents");
+    }
+}
+
+/**
+ * @brief Splits a string of paths separated by the system's list separator
+ * character.
+ *
+ * This function takes a string of paths separated by the system's list
+ * separator character (e.g. ';' on Windows, ':' on Unix-like systems) and
+ * splits it into a
+ */
+QStringList
+split_paths (const QString &paths)
+{
+  return paths.split (QDir::listSeparator ());
+}
+
+fs::path
+uri_to_file (const std::string &uri)
+{
+  auto url = QUrl (QString::fromStdString (uri));
+  if (!url.isValid ())
+    {
+      throw ZrythmException (fmt::format ("Failed to parse URI '{}'", uri));
+    }
+  return { url.toLocalFile ().toStdString () };
+}
+
+}; // namespace zrythm::utils::io

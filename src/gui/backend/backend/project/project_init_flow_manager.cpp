@@ -24,14 +24,16 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/project_manager.h"
 
-#include <glibmm.h>
 #include <yyjson.h>
+
+using namespace zrythm;
 
 ProjectInitFlowManager::~ProjectInitFlowManager ()
 {
   if (open_backup_response_cb_id_)
     {
-      g_source_remove (open_backup_response_cb_id_);
+      // TODO
+      // g_source_remove (open_backup_response_cb_id_);
       open_backup_response_cb_id_ = 0;
     }
 }
@@ -130,25 +132,24 @@ ProjectInitFlowManager::upgrade_schema (char ** yaml, int src_ver)
     case 1:
       {
         /* deserialize into the previous version of the struct */
-        GError *     err = NULL;
         Project_v1 * self =
-          (Project_v1 *) yaml_deserialize (*yaml, &project_schema_v1, &err);
+          (Project_v1 *) yaml_deserialize (*yaml, &project_schema_v1);
         if (!self)
           {
-            g_error_free (err);
-            throw ZrythmException (_ ("Failed to deserialize v1 project file"));
+            throw ZrythmException (
+              QObject::tr ("Failed to deserialize v1 project file"));
           }
 
         /* only dropping undo history, so just re-serialize
          * into YAML */
-        g_free (*yaml);
-        err = NULL;
-        *yaml = yaml_serialize (self, &project_schema_v1, &err);
-        if (!*yaml)
+        free (*yaml);
+        auto ret = yaml_serialize (self, &project_schema_v1);
+        if (ret.empty ())
           {
-            g_error_free (err);
-            throw ZrythmException (_ ("Failed to serialize v1 project file"));
+            throw ZrythmException (
+              QObject::tr ("Failed to serialize v1 project file"));
           }
+        *yaml = strdup (ret.c_str ());
         cyaml_config_t cyaml_config;
         yaml_get_cyaml_config (&cyaml_config);
 
@@ -164,14 +165,12 @@ ProjectInitFlowManager::upgrade_schema (char ** yaml, int src_ver)
     case 3:
       {
         /* deserialize into the previous version of the struct */
-        GError *     err = NULL;
         Project_v1 * old_prj =
-          (Project_v1 *) yaml_deserialize (*yaml, &project_schema_v1, &err);
+          (Project_v1 *) yaml_deserialize (*yaml, &project_schema_v1);
         if (!old_prj)
           {
-            g_error_free (err);
             throw ZrythmException (
-              _ ("Failed to deserialize v1/2/3 project file"));
+              QObject::tr ("Failed to deserialize v1/2/3 project file"));
           }
 
         /* create the new project and serialize it */
@@ -181,8 +180,8 @@ ProjectInitFlowManager::upgrade_schema (char ** yaml, int src_ver)
         new_prj->schema_version = 4;
         new_prj->title = old_prj->title;
         new_prj->datetime_str =
-          g_strdup (datetime_get_current_as_string ().c_str ());
-        new_prj->version = g_strdup (Zrythm::get_version (false).c_str ());
+          strdup (datetime_get_current_as_string ().c_str ());
+        new_prj->version = strdup (Zrythm::get_version (false).c_str ());
 
         /* upgrade */
         new_prj->tracklist = tracklist_upgrade_from_v1 (old_prj->tracklist);
@@ -202,14 +201,14 @@ ProjectInitFlowManager::upgrade_schema (char ** yaml, int src_ver)
         new_prj->last_selection = old_prj->last_selection;
 
         /* re-serialize */
-        g_free (*yaml);
-        err = NULL;
-        *yaml = yaml_serialize (new_prj, &project_schema_v5, &err);
-        if (!*yaml)
+        free (*yaml);
+        auto ret = yaml_serialize (new_prj, &project_schema_v5);
+        if (ret.empty ())
           {
-            g_error_free (err);
-            throw ZrythmException (_ ("Failed to serialize v3 project file"));
+            throw ZrythmException (
+              QObject::tr ("Failed to serialize v3 project file"));
           }
+        *yaml = strdup (ret.c_str ());
         cyaml_config_t cyaml_config;
         yaml_get_cyaml_config (&cyaml_config);
 
@@ -231,13 +230,12 @@ ProjectInitFlowManager::upgrade_schema (char ** yaml, int src_ver)
        * selections. */
       {
         /* deserialize into the current version of the struct */
-        GError *     err = NULL;
         Project_v5 * old_prj =
-          (Project_v5 *) yaml_deserialize (*yaml, &project_schema_v5, &err);
+          (Project_v5 *) yaml_deserialize (*yaml, &project_schema_v5);
         if (!old_prj)
           {
-            g_error_free (err);
-            throw ZrythmException (_ ("Failed to deserialize v4 project file"));
+            throw ZrythmException (
+              QObject::tr ("Failed to deserialize v4 project file"));
           }
 
         /* create the new project and serialize it */
@@ -248,18 +246,18 @@ ProjectInitFlowManager::upgrade_schema (char ** yaml, int src_ver)
         new_prj->schema_version = 5;
         new_prj->title = old_prj->title;
         new_prj->datetime_str =
-          g_strdup (datetime_get_current_as_string ().c_str ());
-        new_prj->version = g_strdup (Zrythm::get_version (false).c_str ());
+          strdup (datetime_get_current_as_string ().c_str ());
+        new_prj->version = strdup (Zrythm::get_version (false).c_str ());
 
         /* re-serialize */
-        g_free (*yaml);
-        err = NULL;
-        *yaml = yaml_serialize (new_prj, &project_schema_v5, &err);
-        if (!*yaml)
+        free (*yaml);
+        auto ret = yaml_serialize (new_prj, &project_schema_v5);
+        if (ret.empty ())
           {
-            g_error_free (err);
-            throw ZrythmException (_ ("Failed to serialize v4 project file"));
+            throw ZrythmException (
+              QObject::tr ("Failed to serialize v4 project file"));
           }
+        *yaml = strdup (ret.c_str ());
         cyaml_config_t cyaml_config;
         yaml_get_cyaml_config (&cyaml_config);
 
@@ -280,22 +278,21 @@ ProjectInitFlowManager::upgrade_schema (char ** yaml, int src_ver)
 void
 ProjectInitFlowManager::upgrade_to_json (char ** txt)
 {
-  GError *     err = NULL;
   Project_v5 * old_prj =
-    (Project_v5 *) yaml_deserialize (*txt, &project_schema_v5, &err);
+    (Project_v5 *) yaml_deserialize (*txt, &project_schema_v5);
   if (!old_prj)
     {
-      g_error_free (err);
-      throw ZrythmException (_ ("Failed to deserialize v5 project file"));
+      throw ZrythmException (
+        QObject::tr ("Failed to deserialize v5 project file"));
     }
 
-  *txt = project_v5_serialize_to_json_str (old_prj, &err);
-  if (*txt == nullptr)
+  auto ret = project_v5_serialize_to_json_str (old_prj);
+  if (ret.empty ())
     {
-      g_error_free (err);
       throw ZrythmException (
-        _ ("Failed to convert v5 YAML project file to JSON"));
+        QObject::tr ("Failed to convert v5 YAML project file to JSON"));
     }
+  *txt = strdup (ret.c_str ());
 }
 #endif
 
@@ -319,7 +316,7 @@ ProjectInitFlowManager::create_default (
     }
 #endif
 
-  auto prj_dir_basename = Glib::path_get_basename (prj_dir);
+  auto prj_dir_basename = utils::io::path_get_basename (prj_dir);
   prj = std::make_unique<Project> (prj_dir_basename);
 
   prj->add_default_tracks ();
@@ -346,7 +343,7 @@ ProjectInitFlowManager::create_default (
 
   /* set directory/title and create standard dirs */
   prj->dir_ = prj_dir;
-  prj->title_ = Glib::path_get_basename (prj_dir.data ());
+  prj->title_ = utils::io::path_get_basename (prj_dir);
   prj->make_project_dirs (false);
 
   if (have_ui)
@@ -437,7 +434,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
   bool use_backup = !PROJECT->backup_dir_.empty ();
   PROJECT->loading_from_backup_ = use_backup;
 
-  char * text = nullptr;
+  std::string text;
   try
     {
       text = PROJECT->get_existing_uncompressed_text (use_backup);
@@ -450,8 +447,10 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
 
   struct yyjson_read_err json_read_err = {};
   yyjson_doc *           doc = yyjson_read_opts (
-    text, strlen (text), YYJSON_READ_NOFLAG, nullptr, &json_read_err);
-  bool json_read_success = doc != NULL;
+    // NOLINTNEXTLINE
+    const_cast<char *> (text.c_str ()), text.length (), YYJSON_READ_NOFLAG,
+    nullptr, &json_read_err);
+  bool json_read_success = doc != nullptr;
   object_free_w_func_and_null (yyjson_doc_free, doc);
   [[maybe_unused]] bool upgraded = false;
   int                   yaml_schema_ver = -1;
@@ -468,7 +467,8 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
             string_get_regex_group (text, "\nversion: (.*)\n", 1);
           if (prj_ver_str.empty ())
             {
-              call_last_callback_fail (_ ("Invalid project: missing version"));
+              call_last_callback_fail (
+                QObject::tr ("Invalid project: missing version").toStdString ());
               return;
             }
           z_info ("project from text (version {})...", prj_ver_str);
@@ -482,7 +482,10 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
                 {
                   /* upgrade project */
 #if HAVE_CYAML
-                  upgrade_schema (&text, schema_ver);
+                  char * txt_copy = strdup (text.c_str ());
+                  upgrade_schema (&txt_copy, schema_ver);
+                  text = txt_copy;
+                  free (txt_copy);
                   upgraded = true;
 #else
                   upgraded = false;
@@ -490,9 +493,9 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
                 }
               catch (const ZrythmException &e)
                 {
-                  free (text);
                   call_last_callback_fail (
-                    _ ("Failed to upgrade YAML project schema"));
+                    QObject::tr ("Failed to upgrade YAML project schema")
+                      .toStdString ());
                   return;
                 }
             }
@@ -501,7 +504,10 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
             {
               /* upgrade latest yaml to json */
 #if HAVE_CYAML
-              upgrade_to_json (&text);
+              char * txt_copy = strdup (text.c_str ());
+              upgrade_to_json (&txt_copy);
+              text = txt_copy;
+              free (txt_copy);
               upgraded = true;
 #else
               upgraded = false;
@@ -509,18 +515,17 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
             }
           catch (const ZrythmException &e)
             {
-              free (text);
               call_last_callback_fail (
-                _ ("Failed to upgrade project schema to JSON"));
+                QObject::tr ("Failed to upgrade project schema to JSON")
+                  .toStdString ());
               return;
             }
         }
       else
         {
           std::string err_str = format_str (
-            _ ("Failed to read JSON: [code: {}, pos: {}] {}"),
-            json_read_err.code, json_read_err.pos, json_read_err.msg);
-          free (text);
+            "Failed to read JSON: [code: {}, pos: {}] {}", json_read_err.code,
+            json_read_err.pos, json_read_err.msg);
           call_last_callback_fail (err_str);
           return;
         }
@@ -529,32 +534,32 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
   std::unique_ptr<Project> deserialized_project = std::make_unique<Project> ();
   try
     {
-      gint64 time_before = g_get_monotonic_time ();
-      deserialized_project->deserialize_from_json_string (text);
-      gint64 time_after = g_get_monotonic_time ();
+      auto time_before = Zrythm::getInstance ()->get_monotonic_time_usecs ();
+      deserialized_project->deserialize_from_json_string (text.c_str ());
+      auto time_after = Zrythm::getInstance ()->get_monotonic_time_usecs ();
       z_info (
-        "time to deserialize: %ldms", (long) (time_after - time_before) / 1000);
+        "time to deserialize: {}ms", (long) (time_after - time_before) / 1000);
     }
   catch (const ZrythmException &e)
     {
-      free (text);
-      call_last_callback_fail (_ ("Failed to deserialize project YAML"));
+      call_last_callback_fail (
+        QObject::tr ("Failed to deserialize project YAML").toStdString ());
       return;
     }
-  free (text);
   deserialized_project->backup_dir_ = PROJECT->backup_dir_;
 
   /* check for FINISHED file */
   if (yaml_schema_ver > 3)
     {
-      std::string finished_file_path =
+      auto finished_file_path =
         PROJECT->get_path (ProjectPath::FINISHED_FILE, use_backup);
-      bool finished_file_exists =
-        Glib::file_test (finished_file_path, Glib::FileTest::EXISTS);
+      bool finished_file_exists = fs::exists (finished_file_path);
       if (!finished_file_exists)
         {
           call_last_callback_fail (format_str (
-            _ ("Could not load project: Corrupted project detected (missing FINISHED file at '{}')."),
+            QObject::tr (
+              "Could not load project: Corrupted project detected (missing FINISHED file at '{}').")
+              .toStdString (),
             finished_file_path));
           return;
         }
@@ -565,19 +570,18 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
   /* if template, also copy the pool and plugin states */
   if (is_template_)
     {
-      auto prev_pool_dir = Glib::build_filename (dir_, PROJECT_POOL_DIR);
+      auto prev_pool_dir = fs::path (dir_) / PROJECT_POOL_DIR;
       auto new_pool_dir =
-        Glib::build_filename (gZrythm->create_project_path_, PROJECT_POOL_DIR);
-      auto prev_plugins_dir = Glib::build_filename (dir_, PROJECT_PLUGINS_DIR);
-      auto new_plugins_dir = Glib::build_filename (
-        gZrythm->create_project_path_, PROJECT_PLUGINS_DIR);
+        fs::path (gZrythm->create_project_path_) / PROJECT_POOL_DIR;
+      auto prev_plugins_dir = fs::path (dir_) / PROJECT_PLUGINS_DIR;
+      auto new_plugins_dir =
+        fs::path (gZrythm->create_project_path_) / PROJECT_PLUGINS_DIR;
       try
         {
-          io_copy_dir (
-            new_pool_dir, prev_pool_dir, F_NO_FOLLOW_SYMLINKS, F_RECURSIVE);
-          io_copy_dir (
-            new_plugins_dir, prev_plugins_dir, F_NO_FOLLOW_SYMLINKS,
-            F_RECURSIVE);
+          utils::io::copy_dir (
+            new_pool_dir, prev_pool_dir, F_NO_FOLLOW_SYMLINKS, true);
+          utils::io::copy_dir (
+            new_plugins_dir, prev_plugins_dir, F_NO_FOLLOW_SYMLINKS, true);
         }
       catch (const ZrythmException &e)
         {
@@ -593,14 +597,12 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
     {
       const auto &prev_prj_backup_dir = deserialized_project->backup_dir_;
       z_return_if_fail (!prev_prj_backup_dir.empty ());
-      auto prev_plugins_dir =
-        Glib::build_filename (prev_prj_backup_dir, PROJECT_PLUGINS_DIR);
-      auto new_plugins_dir = Glib::build_filename (dir_, PROJECT_PLUGINS_DIR);
+      auto prev_plugins_dir = prev_prj_backup_dir / PROJECT_PLUGINS_DIR;
+      auto new_plugins_dir = fs::path (dir_) / PROJECT_PLUGINS_DIR;
       try
         {
-          io_copy_dir (
-            new_plugins_dir, prev_plugins_dir, F_NO_FOLLOW_SYMLINKS,
-            F_RECURSIVE);
+          utils::io::copy_dir (
+            new_plugins_dir, prev_plugins_dir, F_NO_FOLLOW_SYMLINKS, true);
         }
       catch (const ZrythmException &e)
         {
@@ -632,7 +634,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
       break;
     }
 
-  std::string filepath_noext = Glib::path_get_basename (dir_);
+  std::string filepath_noext = utils::io::path_get_basename (dir_);
 
   prj->title_ = filepath_noext;
 
@@ -644,7 +646,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
 #if 0
     GError *    err = g_error_new (0, 0, "%s", e.what ());
     AdwDialog * err_win = error_handle_prv (
-      err, "%s", _ ("Failed to initialize the audio file pool"));
+      err, "%s", QObject::tr ("Failed to initialize the audio file pool"));
     g_signal_connect (
       err_win, "closed", G_CALLBACK (ZrythmApp::exit_response_callback),
       nullptr);
@@ -773,13 +775,17 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
     prj->format_minor_ != prj->get_format_minor_version ()
     || yaml_schema_ver > 0)
     {
+// TODO
+#if 0
       ui_show_message_printf (
-        _ ("Project Upgraded"),
-        _ ("This project has been automatically upgraded "
-           "to v{}.{}. Saving this project will overwrite the "
-           "old one. If you would like to keep both, please "
-           "use 'Save As...'."),
+        QObject::tr ("Project Upgraded"),
+        QObject::tr (
+          "This project has been automatically upgraded "
+          "to v{}.{}. Saving this project will overwrite the "
+          "old one. If you would like to keep both, please "
+          "use 'Save As...'."),
         prj->get_format_major_version (), prj->get_format_minor_version ());
+#endif
     }
 
   call_last_callback_success ();
@@ -809,7 +815,7 @@ void
 ProjectInitFlowManager::load_from_file ()
 {
   z_return_if_fail (!filename_.empty ());
-  dir_ = io_get_dir (filename_);
+  dir_ = utils::io::get_dir (filename_);
 
   if (!PROJECT)
     {
@@ -840,13 +846,13 @@ ProjectInitFlowManager::load_from_file ()
             {
 #if 0
               AdwMessageDialog * dialog = ADW_MESSAGE_DIALOG (
-                adw_message_dialog_new (nullptr, _ ("Open Backup?"), nullptr));
+                adw_message_dialog_new (nullptr, QObject::tr ("Open Backup?"), nullptr));
               adw_message_dialog_format_body_markup (
-                dialog, _ ("Newer backup found:\n  %s.\nUse the newer backup?"),
+                dialog, QObject::tr ("Newer backup found:\n  %s.\nUse the newer backup?"),
                 PROJECT->backup_dir_.c_str ());
               adw_message_dialog_add_responses (
-                dialog, "open-backup", _ ("Open Backup"), "ignore",
-                _ ("Ignore"), nullptr);
+                dialog, "open-backup", QObject::tr ("Open Backup"), "ignore",
+                QObject::tr ("Ignore"), nullptr);
               gtk_window_present (GTK_WINDOW (dialog));
               if (MAIN_WINDOW)
                 {

@@ -9,7 +9,6 @@
 #include "common/utils/hash.h"
 #include "common/utils/logger.h"
 
-#include <glibmm.h>
 #include <xxhash.h>
 
 TEST (Hash, GetFromFile)

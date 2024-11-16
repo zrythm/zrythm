@@ -5,8 +5,7 @@
 #define __UTILS_OBJECTS_H__
 
 #include <cstddef>
-
-#include <gmodule.h>
+#include <cstring>
 
 /**
  * @addtogroup utils
@@ -43,7 +42,7 @@ _object_zero_and_free_unresizable (void ** ptr, size_t sz)
 /**
  * Allocates memory for an object of type @ref type.
  */
-#define object_new(type) (type *) g_malloc0 (sizeof (type))
+#define object_new(type) (type *) calloc (1, sizeof (type))
 
 /**
  * Allocates memory for an object of type @ref type.
@@ -61,7 +60,7 @@ _object_zero_and_free_unresizable (void ** ptr, size_t sz)
 /**
  * Calloc equivalent.
  */
-#define object_new_n_sizeof(n, sz) g_malloc0_n (n, sz)
+#define object_new_n_sizeof(n, sz) calloc (n, sz)
 
 /**
  * Calloc @ref n blocks for type @ref type.
@@ -132,26 +131,11 @@ _object_zero_and_free_unresizable (void ** ptr, size_t sz)
   object_free_w_func_and_null (g_object_unref, ptr)
 
 /** Convenience wrapper. */
-#define g_free_and_null(ptr) object_free_w_func_and_null (g_free, ptr)
+#define g_free_and_null(ptr) object_free_w_func_and_null (free, ptr)
 
 /** Convenience wrapper. */
 #define g_error_free_and_null(ptr) \
   object_free_w_func_and_null (g_error_free, ptr)
-
-/** Convenience wrapper. */
-#define object_free_w_func_and_null_cast(_func, _cast, _obj) \
-  if (_obj) \
-    { \
-      _func ((_cast) _obj); \
-      _obj = NULL; \
-    }
-
-#define g_source_remove_and_zero(src_id) \
-  if (src_id != 0) \
-    { \
-      g_source_remove (src_id); \
-      src_id = 0; \
-    }
 
 /**
  * @}

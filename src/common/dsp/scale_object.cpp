@@ -11,9 +11,16 @@
 
 #include <fmt/format.h>
 
-ScaleObject::ScaleObject (const MusicalScale &descr)
-    : ArrangerObject (ArrangerObject::Type::ScaleObject), scale_ (descr)
+ScaleObject::ScaleObject (QObject * parent)
+    : ArrangerObject (ArrangerObject::Type::ScaleObject), QObject (parent)
 {
+  ArrangerObject::parent_base_qproperties (*this);
+}
+
+ScaleObject::ScaleObject (const MusicalScale &descr, QObject * parent)
+    : ScaleObject (parent)
+{
+  scale_ = descr;
 }
 
 void
@@ -36,16 +43,16 @@ std::string
 ScaleObject::print_to_str () const
 {
   return fmt::format (
-    "ScaleObject: {} | {}", "TODO print scale", pos_.to_string ());
+    "ScaleObject: {} | {}", "TODO print scale", pos_->to_string ());
 }
 
-ScaleObject::ArrangerObjectPtr
+std::optional<ArrangerObjectPtrVariant>
 ScaleObject::find_in_project () const
 {
   z_return_val_if_fail (
-    index_in_chord_track_ < (int) P_CHORD_TRACK->scales_.size (), nullptr);
-  auto &ret = P_CHORD_TRACK->scales_[index_in_chord_track_];
-  z_return_val_if_fail (*ret == *this, nullptr);
+    index_in_chord_track_ < (int) P_CHORD_TRACK->scales_.size (), std::nullopt);
+  auto &ret = P_CHORD_TRACK->scales_.at (index_in_chord_track_);
+  z_return_val_if_fail (*ret == *this, std::nullopt);
   return ret;
 }
 
@@ -55,16 +62,20 @@ ScaleObject::gen_human_friendly_name () const
   return scale_.to_string ();
 }
 
-ScaleObject::ArrangerObjectPtr
+ArrangerObjectPtrVariant
 ScaleObject::add_clone_to_project (bool fire_events) const
 {
-  return P_CHORD_TRACK->add_scale (clone_shared ());
+  auto * clone = clone_raw_ptr ();
+  P_CHORD_TRACK->add_scale (*clone);
+  return clone;
 }
 
-ScaleObject::ArrangerObjectPtr
+ArrangerObjectPtrVariant
 ScaleObject::insert_clone_to_project () const
 {
-  return P_CHORD_TRACK->insert_scale (clone_shared (), index_in_chord_track_);
+  auto * clone = clone_raw_ptr ();
+  P_CHORD_TRACK->insert_scale (*clone, index_in_chord_track_);
+  return clone;
 }
 
 void

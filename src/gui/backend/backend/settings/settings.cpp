@@ -7,12 +7,6 @@
 #include "gui/backend/backend/settings/plugin_settings.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
-
-#include <glib/gi18n.h>
-
-#define G_SETTINGS_ENABLE_BACKEND
-#include <gio/gsettingsbackend.h>
 
 void
 Settings::init ()

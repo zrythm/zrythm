@@ -12,8 +12,6 @@
 
 #include <string>
 
-#include <glib.h>
-
 /**
  * @addtogroup utils
  *
@@ -28,7 +26,7 @@ datetime_get_current_as_string (void);
 
 std::string
 datetime_epoch_to_str (
-  gint64             epoch,
+  qint64             epoch,
   const std::string &format = "%Y-%m-%d %H:%M:%S");
 
 /**

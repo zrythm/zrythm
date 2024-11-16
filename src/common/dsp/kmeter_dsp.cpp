@@ -33,8 +33,6 @@
 
 #include "common/dsp/kmeter_dsp.h"
 
-#include <glib.h>
-
 void
 KMeterDsp::process (float * p, int n)
 {

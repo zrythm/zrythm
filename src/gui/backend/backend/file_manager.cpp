@@ -28,11 +28,10 @@
 #include "common/utils/objects.h"
 #include "common/utils/types.h"
 #include "gui/backend/backend/file_manager.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
+#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
-#include <glib/gi18n.h>
+using namespace zrythm;
 
 #if 0
 void
@@ -73,7 +72,7 @@ FileManager::FileManager ()
   /* add standard locations */
   FileBrowserLocation fl = FileBrowserLocation (
     /* TRANSLATORS: Home directory */
-    _ ("Home"), g_get_home_dir (),
+    QObject::tr ("Home"), QDir::home ().filesystemAbsolutePath (),
     FileManagerSpecialLocation::FILE_MANAGER_HOME);
   locations.push_back (fl);
 
@@ -82,7 +81,7 @@ FileManager::FileManager ()
 #if 0
   fl = file_browser_location_new ();
   /* TRANSLATORS: Desktop directory */
-  fl->label = g_strdup (_ ("Desktop"));
+  fl->label = g_strdup (QObject::tr ("Desktop"));
   fl->path = g_strdup (g_get_user_special_dir (G_USER_DIRECTORY_DESKTOP));
   fl->special_location = FileManagerSpecialLocation::FILE_MANAGER_DESKTOP;
   g_ptr_array_add (self->locations, fl);
@@ -144,32 +143,33 @@ FileManager::FileManager ()
   if (ZRYTHM_HAVE_UI && !ZRYTHM_TESTING)
     {
       /* add bookmarks */
-      z_debug ("adding bookmarks...");
-      char ** bookmarks =
-        g_settings_get_strv (S_UI_FILE_BROWSER, "file-browser-bookmarks");
-      for (size_t i = 0; bookmarks[i] != NULL; i++)
-        {
-          char * bookmark = bookmarks[i];
-          char * basename = g_path_get_basename (bookmark);
-          fl = FileBrowserLocation (
-            basename, bookmark, FileManagerSpecialLocation::FILE_MANAGER_NONE);
-          g_free (basename);
-          locations.push_back (fl);
-        }
-      g_strfreev (bookmarks);
+      {
+        z_debug ("adding bookmarks...");
+        auto bookmarks =
+          zrythm::gui::SettingsManager::get_instance ()
+            ->get_fileBrowserBookmarks ();
+        for (const auto &bookmark : bookmarks)
+          {
+            auto basename = QFileInfo (bookmark).baseName ();
+            locations.emplace_back (
+              basename, QFileInfo (bookmark).filesystemAbsoluteFilePath (),
+              FileManagerSpecialLocation::FILE_MANAGER_NONE);
+          }
+      }
 
       /* set remembered location */
-      FileBrowserLocation loc = FileBrowserLocation ();
-      char *              last_location =
-        g_settings_get_string (S_UI_FILE_BROWSER, "last-location");
-      loc.path_ = last_location;
-      if (
-        loc.path_.length () > 0
-        && g_file_test (last_location, G_FILE_TEST_IS_DIR))
+      FileBrowserLocation loc;
+      auto                last_location =
+        zrythm::gui::SettingsManager::get_instance ()
+          ->get_fileBrowserLastLocation ();
+      if (!last_location.isEmpty ())
         {
-          set_selection (loc, true, false);
+          loc.path_ = QFileInfo (last_location).filesystemAbsoluteFilePath ();
+          if (!loc.path_.empty () && fs::is_directory (loc.path_))
+            {
+              set_selection (loc, true, false);
+            }
         }
-      g_free (last_location);
     }
 }
 
@@ -178,14 +178,10 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
 {
   files.clear ();
 
-  try
-    {
-      Glib::Dir dir (location.path_);
-
       /* create special parent dir entry */
       {
         auto parent_dir = fs::path (location.path_).parent_path ();
-        auto fd = FileDescriptor ();
+        FileDescriptor fd;
         fd.abs_path_ = parent_dir.string ();
         fd.type_ = FileType::ParentDirectory;
         fd.hidden_ = false;
@@ -196,28 +192,16 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
           }
       }
 
-      for (const auto &file : dir)
+      for (const auto &file : fs::directory_iterator (location.path_))
         {
           FileDescriptor fd;
 
           /* set absolute path & label */
-          auto absolute_path = fs::path (location.path_) / file;
+          auto absolute_path = file.path ();
           fd.abs_path_ = absolute_path.string ();
-          fd.label_ = file;
+          fd.label_ = file.path ().filename ().string ();
 
-          try
-            {
-              auto gfile = Gio::File::create_for_path (absolute_path.string ());
-              auto info =
-                gfile->query_info (G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN);
-              fd.hidden_ = info->is_hidden ();
-            }
-          catch (const Glib::Error &ex)
-            {
-              z_warning (
-                "Failed to query file info for {}: {}", absolute_path,
-                ex.what ());
-            }
+          fd.hidden_ = utils::io::is_file_hidden (absolute_path);
 
           /* set type */
           if (fs::is_directory (absolute_path))
@@ -229,19 +213,9 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
               fd.type_ = FileDescriptor::get_type_from_path (file);
             }
 
-          /* force hidden if starts with . */
-          if (file[0] == '.')
-            fd.hidden_ = true;
-
           /* add to list */
           files.push_back (fd);
         }
-    }
-  catch (const Glib::Error &e)
-    {
-      z_warning ("Could not open dir {}", location.path_);
-      return;
-    }
 
   /* sort alphabetically */
   std::sort (files.begin (), files.end (), [] (const auto &a, const auto &b) {
@@ -278,46 +252,40 @@ FileManager::set_selection (
     }
   if (save_to_settings)
     {
-      g_settings_set_string (
-        S_UI_FILE_BROWSER, "last-location", selection->path_.c_str ());
+      gui::SettingsManager::get_instance ()->set_fileBrowserLastLocation (
+        QString::fromStdString (selection->path_.string ()));
     }
 }
 
 void
 FileManager::save_locations ()
 {
-  GStrvBuilder * strv_builder = g_strv_builder_new ();
+  QStringList strv_builder;
   for (auto &loc : locations)
     {
       if (loc.special_location_ > FileManagerSpecialLocation::FILE_MANAGER_NONE)
         continue;
 
-      g_strv_builder_add (strv_builder, loc.path_.c_str ());
+      strv_builder.append (QString::fromStdString (loc.path_.string ()));
     }
 
-  char ** strings = g_strv_builder_end (strv_builder);
-  g_settings_set_strv (
-    S_UI_FILE_BROWSER, "file-browser-bookmarks", (const char * const *) strings);
-  g_strfreev (strings);
+  gui::SettingsManager::get_instance ()->set_fileBrowserBookmarks (strv_builder);
 }
 
 void
-FileManager::add_location_and_save (const char * abs_path)
+FileManager::add_location_and_save (const fs::path &abs_path)
 {
-  auto loc = FileBrowserLocation ();
+  FileBrowserLocation loc;
   loc.path_ = abs_path;
-  char * tmp = g_path_get_basename (abs_path);
-  loc.label_ = tmp;
-  g_free (tmp);
-
+  loc.label_ = QFileInfo (abs_path).baseName ();
   locations.push_back (loc);
   save_locations ();
 }
 
 void
 FileManager::remove_location_and_save (
-  const char * location,
-  bool         skip_if_standard)
+  const fs::path &location,
+  bool            skip_if_standard)
 {
   auto it = std::find_if (locations.begin (), locations.end (), [&] (auto &loc) {
     return loc.path_ == location;
@@ -346,8 +314,8 @@ void
 FileBrowserLocation::print () const
 {
   z_info (
-    "[FileBrowserLocation] %s: '%s', special: %s", label_.c_str (),
-    path_.c_str (), ENUM_NAME (special_location_));
+    "[FileBrowserLocation] {}: '{}', special: {}", label_, path_.c_str (),
+    ENUM_NAME (special_location_));
 }
 
 #if 0
@@ -358,7 +326,7 @@ FileBrowserLocation::generate_context_menu () const
   GMenuItem * menuitem;
 
   menuitem = z_gtk_create_menu_item (
-    _ ("Delete"), "edit-delete", "app.panel-file-browser-delete-bookmark");
+    QObject::tr ("Delete"), "edit-delete", "app.panel-file-browser-delete-bookmark");
   g_menu_append_item (menu, menuitem);
 
   return G_MENU_MODEL (menu);

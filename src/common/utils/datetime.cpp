@@ -28,23 +28,20 @@ datetime_get_current_as_string ()
 }
 
 std::string
-datetime_epoch_to_str (gint64 epoch, const std::string &format)
+datetime_epoch_to_str (qint64 epoch, const std::string &format)
 {
-  GDateTime * dt = g_date_time_new_from_unix_local (epoch);
-  z_return_val_if_fail (dt, "");
-  char * str = g_date_time_format (dt, format.c_str ());
-  g_date_time_unref (dt);
-  z_return_val_if_fail (str, "");
-  std::string ret = str;
-  g_free (str);
-  return ret;
+  QDateTime dt = QDateTime::fromSecsSinceEpoch (epoch);
+  z_return_val_if_fail (!dt.isNull (), "");
+  QString str = dt.toString (QString::fromStdString (format));
+  return str.toStdString ();
 }
 
 std::string
 datetime_get_for_filename ()
 {
-  Glib::DateTime datetime = Glib::DateTime::create_now_local ();
-  std::string    str_datetime = datetime.format ("%F_%H-%M-%S");
+  QDateTime datetime = QDateTime::currentDateTime ();
+  QString   str_datetime =
+    datetime.toString (QString::fromUtf8 ("yyyy-MM-dd_HH-mm-ss"));
 
-  return str_datetime;
+  return str_datetime.toStdString ();
 }

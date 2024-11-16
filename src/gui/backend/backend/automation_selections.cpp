@@ -20,11 +20,12 @@ AutomationSelections::can_be_pasted_at_impl (const Position pos, const int idx)
   if (!ArrangerSelections::can_be_pasted_at (pos))
     return false;
 
-  Region * r = CLIP_EDITOR->get_region ();
-  if (!r || !r->is_automation ())
+  auto r_opt = CLIP_EDITOR->get_region ();
+  if (!r_opt || !std::holds_alternative<AutomationRegion *> (r_opt.value ()))
     return false;
 
-  if (r->pos_.frames_ + pos.frames_ < 0)
+  auto * r = std::get<AutomationRegion *> (r_opt.value ());
+  if (r->pos_->frames_ + pos.frames_ < 0)
     return false;
 
   return true;
@@ -37,8 +38,8 @@ AutomationSelections::sort_by_indices (bool desc)
     objects_.begin (), objects_.end (), [desc] (const auto &a, const auto &b) {
       bool ret = false;
       ret =
-        dynamic_cast<AutomationPoint &> (*a).index_
-        < dynamic_cast<AutomationPoint &> (*b).index_;
+        std::get<AutomationPoint *> (a)->index_
+        < std::get<AutomationPoint *> (b)->index_;
       return desc ? !ret : ret;
     });
 }

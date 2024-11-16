@@ -43,7 +43,7 @@ public:
 
   ~PortConnectionAction () override = default;
 
-  std::string to_string () const override;
+  QString to_string () const override;
 
   void init_after_cloning (const PortConnectionAction &other) override;
 

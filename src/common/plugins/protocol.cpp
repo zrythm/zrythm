@@ -2,7 +2,7 @@
 
 using namespace zrythm::plugins;
 
-constexpr const char * plugin_protocol_strings[] = {
+constexpr std::array<const char *, 11> plugin_protocol_strings = {
   "Internal",  "LV2", "DSSI", "LADSPA", "VST",  "VST3",
   "AudioUnit", "SFZ", "SF2",  "CLAP",   "JSFX",
 };
@@ -40,18 +40,20 @@ Protocol::get_icon_name (ProtocolType prot)
 std::string
 Protocol::to_string (ProtocolType prot)
 {
-  return plugin_protocol_strings[ENUM_VALUE_TO_INT (prot)];
+  return plugin_protocol_strings.at (ENUM_VALUE_TO_INT (prot));
 }
 
 Protocol::ProtocolType
 Protocol::from_string (const std::string &str)
 {
-  for (size_t i = 0; i < G_N_ELEMENTS (plugin_protocol_strings); i++)
+  size_t i = 0;
+  for (auto &cur_str : plugin_protocol_strings)
     {
-      if (plugin_protocol_strings[i] == str)
+      if (cur_str == str)
         {
           return (ProtocolType) i;
         }
+      ++i;
     }
   z_return_val_if_reached (ProtocolType::LV2);
 }

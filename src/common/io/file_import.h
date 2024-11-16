@@ -15,7 +15,8 @@
 #include "common/dsp/position.h"
 #include "common/utils/types.h"
 
-#include <glib.h>
+// TODO
+#if 0
 
 G_BEGIN_DECLS
 
@@ -25,7 +26,7 @@ G_BEGIN_DECLS
  * @{
  */
 
-#define FILE_IMPORT_TYPE (file_import_get_type ())
+#  define FILE_IMPORT_TYPE (file_import_get_type ())
 G_DECLARE_FINAL_TYPE (FileImport, file_import, Z, FILE_IMPORT, GObject);
 
 struct FileImportInfo
@@ -117,6 +118,7 @@ file_import_sync (FileImport * self, GError ** error);
  */
 std::vector<std::shared_ptr<Region>>
 file_import_finish (FileImport * self, GAsyncResult * result, GError ** error);
+#endif // 0
 
 /**
  * @}

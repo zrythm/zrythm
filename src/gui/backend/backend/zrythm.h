@@ -19,9 +19,6 @@
 #include "gui/backend/backend/settings/chord_preset_pack_manager.h"
 #include "gui/backend/backend/settings/settings.h"
 
-#include <gio/gio.h>
-#include <glib.h>
-
 #include "juce_wrapper.h"
 
 /**
@@ -133,6 +130,16 @@ public:
 
   FileManager &get_file_manager () { return file_manager_; }
 
+  qint64 get_monotonic_time_nsecs () const
+  {
+    return elapsed_timer_.nsecsElapsed ();
+  }
+
+  qint64 get_monotonic_time_usecs () const
+  {
+    return get_monotonic_time_nsecs () / 1000;
+  }
+
 private:
   Zrythm ();
 
@@ -210,7 +217,7 @@ public:
   bool use_pipewire_in_tests_ = false;
 
   /** Process ID for pipewire (used in tests). */
-  GPid pipewire_pid_ = 0;
+  ProcessId pipewire_pid_ = 0;
 
   /** Chord preset pack manager. */
   std::unique_ptr<ChordPresetPackManager> chord_preset_pack_manager_;
@@ -223,7 +230,7 @@ public:
   std::unique_ptr<zrythm::plugins::PluginManager> plugin_manager_;
 
   /** Recording manager. */
-  std::unique_ptr<RecordingManager> recording_manager_;
+  RecordingManager * recording_manager_ = nullptr;
 
   /**
    * Project data.
@@ -245,6 +252,8 @@ public:
    * @brief Whether currently running under the benchmarker.
    */
   bool benchmarking_ = false;
+
+  QElapsedTimer elapsed_timer_;
 
   JUCE_DECLARE_SINGLETON_SINGLETHREADED (Zrythm, false)
 

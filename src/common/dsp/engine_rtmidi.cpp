@@ -22,9 +22,6 @@
 #  include "gui/backend/backend/settings/settings.h"
 #  include "gui/widgets/main_window.h"
 
-#  include <glib/gi18n.h>
-#  include <gtk/gtk.h>
-
 #  include <rtmidi_c.h>
 
 /**

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -26,16 +26,20 @@
  * copying, undoing, etc.
  */
 class AutomationSelections final
-    : public ArrangerSelections,
+    : public QObject,
+      public ArrangerSelections,
       public ICloneable<AutomationSelections>,
       public ISerializable<AutomationSelections>
 {
+  Q_OBJECT
+  QML_ELEMENT
+
 public:
   AutomationSelections ();
 
   const AutomationPoint * get_automation_point (int index) const
   {
-    return dynamic_cast<AutomationPoint *> (objects_[index].get ());
+    return std::get<AutomationPoint *> (objects_.at (index));
   }
 
   void sort_by_indices (bool desc) override;
@@ -48,7 +52,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  bool can_be_pasted_at_impl (const Position pos, const int idx) const final;
+  bool can_be_pasted_at_impl (Position pos, int idx) const final;
 };
 
 /**

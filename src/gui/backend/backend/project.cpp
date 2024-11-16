@@ -19,7 +19,6 @@
 #include "common/dsp/transport.h"
 #include "common/utils/datetime.h"
 #include "common/utils/exceptions.h"
-#include "common/utils/file.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/io.h"
 #include "common/utils/logger.h"
@@ -27,17 +26,15 @@
 #include "common/utils/progress_info.h"
 #include "common/utils/ui.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/tracklist_selections.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/project_manager.h"
 
-#include <glib/gi18n.h>
-
 #include "juce_wrapper.h"
 #include <fmt/printf.h>
-#include <glibmm.h>
 #include <zstd.h>
+
+using namespace zrythm;
 
 Project::Project (QObject * parent)
     : QObject (parent), version_ (Zrythm::get_version (false)),
@@ -142,7 +139,7 @@ Project::make_project_dirs (bool is_backup)
       z_return_if_fail (dir.length () > 0);
       try
         {
-          io_mkdir (dir);
+          utils::io::mkdir (dir);
         }
       catch (ZrythmException &e)
         {
@@ -166,39 +163,37 @@ Project::compress_or_decompress (
     "using zstd v{}.{}.{}", ZSTD_VERSION_MAJOR, ZSTD_VERSION_MINOR,
     ZSTD_VERSION_RELEASE);
 
-  char * src = NULL;
-  size_t src_size = 0;
+  QByteArray src{};
+  // size_t src_size = 0;
   switch (src_type)
     {
     case ProjectCompressionFlag::PROJECT_COMPRESS_DATA:
-      src = (char *) _src;
-      src_size = _src_size;
+      src.setRawData (_src, _src_size);
       break;
     case ProjectCompressionFlag::PROJECT_COMPRESS_FILE:
       {
-        GError * err = NULL;
-        gsize    file_contents_sz = 0;
-        bool success = g_file_get_contents (_src, &src, &file_contents_sz, &err);
-        src_size = static_cast<size_t> (file_contents_sz);
-        if (!success)
+        try
           {
-            std::string msg = err->message;
-            g_error_free_and_null (err);
-            throw ZrythmException (fmt::format (
-              "Failed to get contents from file '{}': {}", _src, msg));
+            src = utils::io::read_file_contents (_src);
+          }
+        catch (const ZrythmException &e)
+          {
+            throw ZrythmException (
+              fmt::format ("Failed to read file '{}': {}", _src, e.what ()));
           }
       }
       break;
     }
 
-  char * dest = NULL;
+  char * dest = nullptr;
   size_t dest_size = 0;
   if (compress)
     {
       z_info ("compressing project...");
-      size_t compress_bound = ZSTD_compressBound (src_size);
+      size_t compress_bound = ZSTD_compressBound (src.size ());
       dest = (char *) malloc (compress_bound);
-      dest_size = ZSTD_compress (dest, compress_bound, src, src_size, 1);
+      dest_size =
+        ZSTD_compress (dest, compress_bound, src.constData (), src.size (), 1);
       if (ZSTD_isError (dest_size))
         {
           free (dest);
@@ -211,18 +206,19 @@ Project::compress_or_decompress (
     {
 #if (ZSTD_VERSION_MAJOR == 1 && ZSTD_VERSION_MINOR < 3)
       unsigned long long const frame_content_size =
-        ZSTD_getDecompressedSize (src, src_size);
+        ZSTD_getDecompressedSize (src.constData (), src.size ());
       if (frame_content_size == 0)
 #else
       unsigned long long const frame_content_size =
-        ZSTD_getFrameContentSize (src, src_size);
+        ZSTD_getFrameContentSize (src.constData (), src.size ());
       if (frame_content_size == ZSTD_CONTENTSIZE_ERROR)
 #endif
         {
           throw ZrythmException ("Project not compressed by zstd");
         }
       dest = (char *) malloc ((size_t) frame_content_size);
-      dest_size = ZSTD_decompress (dest, frame_content_size, src, src_size);
+      dest_size = ZSTD_decompress (
+        dest, frame_content_size, src.constData (), src.size ());
       if (ZSTD_isError (dest_size))
         {
           free (dest);
@@ -240,7 +236,7 @@ Project::compress_or_decompress (
 
   z_debug (
     "{} : {} bytes -> {} bytes", compress ? "Compression" : "Decompression",
-    (unsigned) src_size, (unsigned) dest_size);
+    src.size (), dest_size);
 
   switch (dest_type)
     {
@@ -250,15 +246,15 @@ Project::compress_or_decompress (
       break;
     case ProjectCompressionFlag::PROJECT_COMPRESS_FILE:
       {
-        GError * err = NULL;
-        bool     success =
-          g_file_set_contents (*_dest, dest, (gssize) dest_size, &err);
-        if (!success)
+        // setting the resulting data to the file at path `_dest`
+        try
           {
-            std::string msg = err->message;
-            g_error_free_and_null (err);
+            utils::io::set_file_contents (fs::path (*_dest), dest, dest_size);
+          }
+        catch (const ZrythmException &e)
+          {
             throw ZrythmException (
-              fmt::sprintf ("Failed to write project file", msg));
+              fmt::format ("Failed to write project file: {}", e.what ()));
           }
       }
       break;
@@ -268,7 +264,7 @@ Project::compress_or_decompress (
 void
 Project::set_and_create_next_available_backup_dir ()
 {
-  std::string backups_dir = get_path (ProjectPath::BACKUPS, false);
+  auto backups_dir = get_path (ProjectPath::BACKUPS, false);
 
   int i = 0;
   do
@@ -276,25 +272,25 @@ Project::set_and_create_next_available_backup_dir ()
       if (i > 0)
         {
           std::string bak_title = fmt::format ("{}.bak{}", title_, i);
-          backup_dir_ = Glib::build_filename (backups_dir, bak_title);
+          backup_dir_ = backups_dir / bak_title;
         }
       else
         {
           std::string bak_title = fmt::format ("{}.bak", title_);
-          backup_dir_ = Glib::build_filename (backups_dir, bak_title);
+          backup_dir_ = backups_dir / bak_title;
         }
       i++;
     }
-  while (file_path_exists (backup_dir_));
+  while (utils::io::path_exists (backup_dir_));
 
   try
     {
-      io_mkdir (backup_dir_);
+      utils::io::mkdir (backup_dir_);
     }
   catch (ZrythmException &e)
     {
-      throw ZrythmException (
-        format_str (_ ("Failed to create backup directory {}"), backup_dir_));
+      throw ZrythmException (format_qstr (
+        QObject::tr ("Failed to create backup directory {}"), backup_dir_));
     }
 }
 
@@ -350,11 +346,6 @@ Project::add_default_tracks ()
   /* chord */
   add_track.operator()<ChordTrack> ();
 
-  /* add a scale */
-  auto scale = std::make_unique<ScaleObject> (
-    MusicalScale (MusicalScale::Type::Aeolian, MusicalNote::A));
-  tracklist_->chord_track_->add_scale (std::move (scale));
-
   /* tempo */
   add_track.operator()<TempoTrack> ();
   int   beats_per_bar = tracklist_->tempo_track_->get_beats_per_bar ();
@@ -363,6 +354,13 @@ Project::add_default_tracks ()
   transport_->update_caches (beats_per_bar, beat_unit);
   audio_engine_->update_frames_per_tick (
     beats_per_bar, bpm, audio_engine_->sample_rate_, true, true, false);
+
+  /* add a scale */
+  {
+    auto * scale = new ScaleObject (
+      MusicalScale (MusicalScale::Type::Aeolian, MusicalNote::A));
+    tracklist_->chord_track_->add_scale (*scale);
+  }
 
   /* modulator */
   add_track.operator()<ModulatorTrack> ();
@@ -424,11 +422,10 @@ Project::fix_audio_regions ()
       for (const auto &lane_var : track->lanes_)
         {
           auto * lane = std::get<AudioLane *> (lane_var);
-          for (const auto &region : lane->regions_)
-            {
-              if (region->fix_positions (0))
-                num_fixed++;
-            }
+          lane->foreach_region ([&] (auto &region) {
+            if (region.fix_positions (0))
+              num_fixed++;
+          });
         }
     }
 
@@ -473,26 +470,40 @@ project_get_arranger_for_last_selection (
 }
 #endif
 
-ArrangerSelections *
+std::optional<ArrangerSelectionsPtrVariant>
 Project::get_arranger_selections_for_last_selection ()
 {
   auto r = CLIP_EDITOR->get_region ();
   switch (last_selection_)
     {
     case Project::SelectionType::Timeline:
-      return TL_SELECTIONS.get ();
+      return timeline_selections_.get ();
       break;
     case Project::SelectionType::Editor:
       if (r)
         {
-          return r->get_arranger_selections ();
+          return std::visit (
+            [&] (auto &&region) -> std::optional<ArrangerSelectionsPtrVariant> {
+              if (region->get_arranger_selections ().has_value ())
+                {
+                  return std::visit (
+                    [&] (auto &&sel)
+                      -> std::optional<ArrangerSelectionsPtrVariant> {
+                      return sel;
+                    },
+                    region->get_arranger_selections ().value ());
+                }
+
+              return std::nullopt;
+            },
+            *r);
         }
       break;
     default:
-      return NULL;
+      return std::nullopt;
     }
 
-  return NULL;
+  return std::nullopt;
 }
 
 void
@@ -501,10 +512,15 @@ Project::init_selections (bool including_arranger_selections)
   if (including_arranger_selections)
     {
       automation_selections_ = std::make_unique<AutomationSelections> ();
+      automation_selections_->are_objects_copies_ = false;
       audio_selections_ = std::make_unique<AudioSelections> ();
+      audio_selections_->are_objects_copies_ = false;
       chord_selections_ = std::make_unique<ChordSelections> ();
+      chord_selections_->are_objects_copies_ = false;
       timeline_selections_ = std::make_unique<TimelineSelections> ();
+      timeline_selections_->are_objects_copies_ = false;
       midi_selections_ = std::make_unique<MidiSelections> ();
+      midi_selections_->are_objects_copies_ = false;
     }
   mixer_selections_ = std::make_unique<ProjectMixerSelections> ();
 }
@@ -521,49 +537,48 @@ Project::get_all_ports (std::vector<Port *> &ports) const
   });
 }
 
-char *
+std::string
 Project::get_existing_uncompressed_text (bool backup)
 {
   /* get file contents */
   std::string project_file_path = get_path (ProjectPath::ProjectFile, backup);
   z_debug ("getting text for project file {}", project_file_path);
 
-  char *   compressed_pj;
-  gsize    compressed_pj_size;
-  GError * err = NULL;
-  g_file_get_contents (
-    project_file_path.c_str (), &compressed_pj, &compressed_pj_size, &err);
-  if (err != nullptr)
+  QByteArray compressed_pj{};
+  try
     {
-      std::string msg = err->message;
-      g_error_free_and_null (err);
-      throw ZrythmException (format_str (
-        _ ("Unable to read file at {}: {}"), project_file_path, msg));
+      compressed_pj = utils::io::read_file_contents (project_file_path);
+    }
+  catch (const ZrythmException &e)
+    {
+      throw ZrythmException (format_qstr (
+        QObject::tr ("Unable to read file at {}: {}"), project_file_path,
+        e.what ()));
     }
 
   /* decompress */
-  z_info ("{}: decompressing project...", __func__);
-  char * text = NULL;
-  size_t text_size;
-  err = NULL;
+  z_info ("decompressing project...");
+  char * text = nullptr;
+  size_t text_size = 0;
   try
     {
       decompress (
-        &text, &text_size, PROJECT_DECOMPRESS_DATA, compressed_pj,
-        compressed_pj_size, PROJECT_DECOMPRESS_DATA);
+        &text, &text_size, PROJECT_DECOMPRESS_DATA, compressed_pj.constData (),
+        compressed_pj.size (), PROJECT_DECOMPRESS_DATA);
     }
   catch (ZrythmException &e)
     {
-      throw ZrythmException (format_str (
-        _ ("Unable to decompress project file at {}"), project_file_path));
+      throw ZrythmException (format_qstr (
+        QObject::tr ("Unable to decompress project file at {}"),
+        project_file_path));
     }
-  g_free (compressed_pj);
 
   /* make string null-terminated */
-  text = (char *) g_realloc (text, text_size + sizeof (char));
+  text = (char *) realloc (text, text_size + sizeof (char));
   text[text_size] = '\0';
-
-  return text;
+  std::string ret (text);
+  free (text);
+  return ret;
 }
 
 int
@@ -657,7 +672,7 @@ Project::autosave_cb (void * data)
     {
       if (ZRYTHM_HAVE_UI)
         {
-          e.handle (_ ("Failed to save the project"));
+          e.handle (QObject::tr ("Failed to save the project"));
         }
       else
         {
@@ -665,52 +680,53 @@ Project::autosave_cb (void * data)
         }
     }
 
-#endif
   return G_SOURCE_CONTINUE;
+#endif
+  return 0;
 }
 
-std::string
+fs::path
 Project::get_path (ProjectPath path, bool backup)
 {
   auto &dir = backup ? backup_dir_ : dir_;
   switch (path)
     {
     case ProjectPath::BACKUPS:
-      return Glib::build_filename (dir, PROJECT_BACKUPS_DIR);
+      return dir / PROJECT_BACKUPS_DIR;
     case ProjectPath::EXPORTS:
-      return Glib::build_filename (dir, PROJECT_EXPORTS_DIR);
+      return dir / PROJECT_EXPORTS_DIR;
     case ProjectPath::EXPORTS_STEMS:
-      return Glib::build_filename (dir, PROJECT_EXPORTS_DIR, PROJECT_STEMS_DIR);
+      return dir / PROJECT_EXPORTS_DIR / PROJECT_STEMS_DIR;
     case ProjectPath::PLUGINS:
-      return Glib::build_filename (dir, PROJECT_PLUGINS_DIR);
+      return dir / PROJECT_PLUGINS_DIR;
     case ProjectPath::PluginStates:
       {
-        std::string plugins_dir = get_path (ProjectPath::PLUGINS, backup);
-        return Glib::build_filename (plugins_dir, PROJECT_PLUGIN_STATES_DIR);
+        auto plugins_dir = get_path (ProjectPath::PLUGINS, backup);
+        return plugins_dir / PROJECT_PLUGIN_STATES_DIR;
       }
       break;
     case ProjectPath::PLUGIN_EXT_COPIES:
       {
-        std::string plugins_dir = get_path (ProjectPath::PLUGINS, backup);
-        return Glib::build_filename (plugins_dir, PROJECT_PLUGIN_EXT_COPIES_DIR);
+        auto plugins_dir = get_path (ProjectPath::PLUGINS, backup);
+        return plugins_dir / PROJECT_PLUGIN_EXT_COPIES_DIR;
       }
       break;
     case ProjectPath::PLUGIN_EXT_LINKS:
       {
-        std::string plugins_dir = get_path (ProjectPath::PLUGINS, backup);
-        return Glib::build_filename (plugins_dir, PROJECT_PLUGIN_EXT_LINKS_DIR);
+        auto plugins_dir = get_path (ProjectPath::PLUGINS, backup);
+        return plugins_dir / PROJECT_PLUGIN_EXT_LINKS_DIR;
       }
       break;
     case ProjectPath::POOL:
-      return Glib::build_filename (dir, PROJECT_POOL_DIR);
+      return dir / PROJECT_POOL_DIR;
     case ProjectPath::ProjectFile:
-      return Glib::build_filename (dir, PROJECT_FILE);
+      return dir / PROJECT_FILE;
     case ProjectPath::FINISHED_FILE:
-      return Glib::build_filename (dir, PROJECT_FINISHED_FILE);
+      return dir / PROJECT_FINISHED_FILE;
     default:
-      z_return_val_if_reached ("");
+      z_return_val_if_reached ({});
     }
-  z_return_val_if_reached ("");
+  z_return_val_if_reached ({});
 }
 
 Project::SerializeProjectThread::SerializeProjectThread (SaveContext &ctx)
@@ -732,8 +748,8 @@ Project::SerializeProjectThread::run ()
 
   /* generate json */
   z_debug ("serializing project to json...");
-  auto                       time_before = g_get_monotonic_time ();
-  gint64                     time_after;
+  auto   time_before = Zrythm::getInstance ()->get_monotonic_time_usecs ();
+  qint64 time_after{};
   std::optional<CStringRAII> json;
   try
     {
@@ -745,7 +761,7 @@ Project::SerializeProjectThread::run ()
       ctx_.has_error_ = true;
       goto serialize_end;
     }
-  time_after = g_get_monotonic_time ();
+  time_after = Zrythm::getInstance ()->get_monotonic_time_usecs ();
   z_debug ("time to serialize: {}ms", (time_after - time_before) / 1000);
 
   /* compress */
@@ -759,7 +775,7 @@ Project::SerializeProjectThread::run ()
     }
   catch (const ZrythmException &ex)
     {
-      ex.handle (_ ("Failed to compress project file"));
+      ex.handle (QObject::tr ("Failed to compress project file"));
       ctx_.has_error_ = true;
       goto serialize_end;
     }
@@ -768,16 +784,15 @@ Project::SerializeProjectThread::run ()
   z_debug ("saving project file at {}...", ctx_.project_file_path_);
   try
     {
-      Glib::file_set_contents (
-        ctx_.project_file_path_, compressed_json,
-        static_cast<gssize> (compressed_size));
-      g_free (compressed_json);
+      utils::io::set_file_contents (
+        ctx_.project_file_path_, compressed_json, compressed_size);
     }
-  catch (const Glib::Error &e)
+  catch (const ZrythmException &e)
     {
       ctx_.has_error_ = true;
       z_error ("Unable to write project file: {}", e.what ());
     }
+  free (compressed_json);
 
   z_debug ("successfully saved project");
 
@@ -786,12 +801,12 @@ serialize_end:
   ctx_.finished_.store (true);
 }
 
-int
+bool
 Project::idle_saved_callback (SaveContext * ctx)
 {
   if (!ctx->finished_)
     {
-      return G_SOURCE_CONTINUE;
+      return true;
     }
 
   if (ctx->is_backup_)
@@ -801,7 +816,7 @@ Project::idle_saved_callback (SaveContext * ctx)
       if (ZRYTHM_HAVE_UI)
         {
 
-          ui_show_notification (_ ("Backup saved."));
+          // ui_show_notification (QObject::tr ("Backup saved."));
         }
     }
   else
@@ -812,8 +827,9 @@ Project::idle_saved_callback (SaveContext * ctx)
             QString::fromStdString (ctx->project_file_path_));
         }
       if (ctx->show_notification_)
-
-        ui_show_notification (_ ("Project saved."));
+        {
+          // ui_show_notification (QObject::tr ("Project saved."));
+        }
     }
 
 #if 0
@@ -823,10 +839,9 @@ Project::idle_saved_callback (SaveContext * ctx)
     }
 #endif
 
-  ctx->progress_info_.mark_completed (
-    ProgressInfo::CompletionType::SUCCESS, nullptr);
+  ctx->progress_info_.mark_completed (ProgressInfo::CompletionType::SUCCESS, {});
 
-  return G_SOURCE_REMOVE;
+  return false;
 }
 
 void
@@ -848,28 +863,27 @@ Project::cleanup_plugin_state_dirs (Project &main_project, bool is_backup)
 
   try
     {
-      Glib::Dir dir (plugin_states_path);
-      for (auto filename : dir)
-        {
-          auto full_path = Glib::build_filename (plugin_states_path, filename);
+      QDir       srcdir (QString::fromStdString (plugin_states_path.string ()));
+      const auto entries =
+        srcdir.entryInfoList (QDir::Files | QDir::NoDotAndDotDot);
 
-          if (!Glib::file_test (full_path, Glib::FileTest::IS_DIR))
-            {
-              continue;
-            }
+      for (auto filename : entries)
+        {
+          auto filename_str = filename.fileName ().toStdString ();
+          auto full_path = plugin_states_path / filename_str;
 
           bool found = std::any_of (
-            plugins.begin (), plugins.end (), [&filename] (const auto &pl) {
-              return pl->state_dir_ == filename;
+            plugins.begin (), plugins.end (), [&filename_str] (const auto &pl) {
+              return pl->state_dir_ == filename_str;
             });
           if (!found)
             {
               z_debug ("removing unused plugin state in {}", full_path);
-              io_rmdir (full_path, true);
+              utils::io::rmdir (full_path, true);
             }
         }
     }
-  catch (const Glib::Error &e)
+  catch (const ZrythmException &e)
     {
       z_critical ("Failed to open directory: {}", e.what ());
       return;
@@ -911,7 +925,7 @@ Project::save (
   dir_ = _dir;
   try
     {
-      io_mkdir (dir_);
+      utils::io::mkdir (dir_);
     }
 
   catch (const ZrythmException &e)
@@ -940,7 +954,8 @@ Project::save (
 
       catch (const ZrythmException &e)
         {
-          throw ZrythmException (_ ("Failed to create backup directory"));
+          throw ZrythmException (
+            QObject::tr ("Failed to create backup directory"));
         }
     }
 
@@ -951,7 +966,7 @@ Project::save (
 
   catch (const ZrythmException &e)
     {
-      throw ZrythmException (_ ("Failed to create project directories"));
+      throw ZrythmException ("Failed to create project directories");
     }
 
   if (this == get_active_instance ())
@@ -966,7 +981,7 @@ Project::save (
     }
   catch (const ZrythmException &e)
     {
-      throw ZrythmException (_ ("Failed to write audio pool to disk"));
+      throw ZrythmException ("Failed to write audio pool to disk");
     }
 
   auto ctx = std::make_unique<SaveContext> ();
@@ -1005,11 +1020,12 @@ Project::save (
       auto prj_backup_pl_states_dir = get_path (ProjectPath::PLUGINS, true);
       try
         {
-          io_copy_dir (prj_backup_pl_states_dir, prj_pl_states_dir, false, true);
+          utils::io::copy_dir (
+            prj_backup_pl_states_dir, prj_pl_states_dir, false, true);
         }
       catch (const ZrythmException &e)
         {
-          throw ZrythmException (_ ("Failed to copy plugin states"));
+          throw ZrythmException (QObject::tr ("Failed to copy plugin states"));
         }
     }
 
@@ -1028,7 +1044,16 @@ Project::save (
       /* TODO: show progress dialog */
       if (ZRYTHM_HAVE_UI && false)
         {
-          g_idle_add ((GSourceFunc) idle_saved_callback, ctx.get ());
+          auto timer = new QTimer (this);
+          QObject::connect (timer, &QTimer::timeout, this, [timer, &ctx] () {
+            bool keep_calling = idle_saved_callback (ctx.get ());
+            if (!keep_calling)
+              {
+                timer->stop ();
+                timer->deleteLater ();
+              }
+          });
+          timer->start (100);
 
           /* show progress while saving (TODO) */
         }
@@ -1055,7 +1080,7 @@ Project::save (
   /* write FINISHED file */
   {
     auto finished_file_path = get_path (ProjectPath::FINISHED_FILE, is_backup);
-    io_touch_file (finished_file_path);
+    utils::io::touch_file (finished_file_path);
   }
 
   if (ZRYTHM_TESTING)

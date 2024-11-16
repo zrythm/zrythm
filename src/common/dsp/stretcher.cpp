@@ -31,6 +31,7 @@
 #include "common/dsp/stretcher.h"
 #include "common/utils/logger.h"
 #include "common/utils/math.h"
+#include "common/utils/mem.h"
 
 #include "juce_wrapper.h"
 
@@ -94,7 +95,7 @@ stretcher_new_rubberband (
       rubberband_process (
         self->rubberband_state, in_samples,
         samples_required, false);
-      g_usleep (1000);
+      std::this_thread::sleep_for (std::chrono::milliseconds (1000));
       int avail =
         rubberband_available (
           self->rubberband_state);
@@ -115,7 +116,7 @@ stretcher_new_rubberband (
       rubberband_process (
         self->rubberband_state, in_samples,
         samples_required, false);
-      g_usleep (1000);
+      std::this_thread::sleep_for (std::chrono::milliseconds (1000));
       avail =
         rubberband_available (
           self->rubberband_state);
@@ -296,7 +297,7 @@ stretcher_stretch_interleaved (
     {
       /* samples to read now */
       unsigned int read_now =
-        (unsigned int) MIN ((size_t) self->block_size, samples_to_read);
+        (unsigned int) std::min ((size_t) self->block_size, samples_to_read);
 
       /* read */
       rubberband_study (
@@ -373,7 +374,7 @@ stretcher_stretch_interleaved (
     && total_out_frames >= out_samples_size - 1);
 
   /* store the output data in the given arrays */
-  *_out_samples = static_cast<float *> (g_realloc (
+  *_out_samples = static_cast<float *> (z_realloc (
     *_out_samples, (size_t) channels * total_out_frames * sizeof (float)));
   for (unsigned int ch = 0; ch < channels; ch++)
     {

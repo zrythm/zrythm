@@ -1,12 +1,6 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Region for ChordObject's.
- */
-
 #ifndef __AUDIO_CHORD_REGION_H__
 #define __AUDIO_CHORD_REGION_H__
 
@@ -20,22 +14,49 @@
  */
 
 class ChordRegion final
-    : public RegionImpl<ChordRegion>,
+    : public QAbstractListModel,
+      public RegionImpl<ChordRegion>,
       public ICloneable<ChordRegion>,
       public ISerializable<ChordRegion>
 {
-  // Rule of 0
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (ChordRegion)
+  DEFINE_REGION_QML_PROPERTIES (ChordRegion)
+
+  friend class RegionImpl<ChordRegion>;
+
 public:
-  ChordRegion () = default;
+  ChordRegion (QObject * parent = nullptr);
 
   /**
    * Creates a new Region for chords.
    *
    * @param idx Index inside chord track.
    */
-  ChordRegion (const Position &start_pos, const Position &end_pos, int idx);
+  ChordRegion (
+    const Position &start_pos,
+    const Position &end_pos,
+    int             idx,
+    double          ticks_per_frame = 0.0,
+    QObject *       parent = nullptr);
 
   using RegionT = RegionImpl<ChordRegion>;
+
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
+  enum ChordRegionRoles
+  {
+    ChordObjectPtrRole = Qt::UserRole + 1,
+  };
+
+  QHash<int, QByteArray> roleNames () const override;
+  int rowCount (const QModelIndex &parent = QModelIndex ()) const override;
+  QVariant
+  data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
+
+  // ========================================================================
 
   void init_loaded () override;
 
@@ -44,9 +65,9 @@ public:
   void append_children (
     std::vector<RegionOwnedObjectImpl<ChordRegion> *> &children) const override
   {
-    for (auto &chord : chord_objects_)
+    for (const auto &chord : chord_objects_)
       {
-        children.emplace_back (chord.get ());
+        children.emplace_back (chord);
       }
   }
 
@@ -58,28 +79,16 @@ public:
       }
   }
 
-  void init_after_cloning (const ChordRegion &other) override
-  {
-    init (
-      other.pos_, other.end_pos_, other.id_.track_name_hash_, 0, other.id_.idx_);
-    clone_unique_ptr_container (chord_objects_, other.chord_objects_);
-    RegionT::copy_members_from (other);
-    TimelineObject::copy_members_from (other);
-    NameableObject::copy_members_from (other);
-    LoopableObject::copy_members_from (other);
-    MuteableObject::copy_members_from (other);
-    LengthableObject::copy_members_from (other);
-    ColoredObject::copy_members_from (other);
-    ArrangerObject::copy_members_from (other);
-  }
+  void init_after_cloning (const ChordRegion &other) override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
-  ArrangerSelections * get_arranger_selections () const override;
+  std::optional<ClipEditorArrangerSelectionsPtrVariant>
+  get_arranger_selections () const override;
 
 public:
   /** ChordObject's in this Region. */
-  std::vector<std::shared_ptr<ChordObject>> chord_objects_;
+  std::vector<ChordObject *> chord_objects_;
 };
 
 inline bool

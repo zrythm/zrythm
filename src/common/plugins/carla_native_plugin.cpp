@@ -24,10 +24,7 @@
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/string.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-
-#include <glib/gi18n.h>
 
 #include "carla_wrapper.h"
 #include <fmt/format.h>
@@ -504,11 +501,11 @@ CarlaNativePlugin::populate_banks ()
   /* add default bank and preset */
   auto default_bank_uri = std::string (DEFAULT_BANK_URI);
   auto pl_def_bank =
-    add_bank_if_not_exists (&default_bank_uri, _ ("Default bank"));
+    add_bank_if_not_exists (&default_bank_uri, QObject::tr ("Default bank"));
   {
     auto pl_def_preset = Preset ();
     pl_def_preset.uri_ = INIT_PRESET_URI;
-    pl_def_preset.name_ = _ ("Init");
+    pl_def_preset.name_ = QObject::tr ("Init");
     pl_def_bank->add_preset (std::move (pl_def_preset));
   }
 
@@ -521,7 +518,7 @@ CarlaNativePlugin::populate_banks ()
       const char * program_name = carla_get_program_name (host_handle_, 0, i);
       if (strlen (program_name) == 0)
         {
-          pl_preset.name_ = format_str (_ ("Preset {}"), i);
+          pl_preset.name_ = format_str (QObject::tr ("Preset {}"), i);
         }
       else
         {
@@ -867,7 +864,7 @@ CarlaNativePlugin::create_ports (bool loading)
         descr->num_audio_ins_ == 1 ? 2 : descr->num_audio_ins_;
       for (int i = 0; i < audio_ins_to_create; i++)
         {
-          std::string port_name = fmt::format ("{} {}", _ ("Audio in"), i);
+          std::string port_name = fmt::format ("{} {}", QObject::tr ("Audio in"), i);
           auto port = std::make_unique<AudioPort> (port_name, PortFlow::Input);
           port->id_.sym_ = fmt::format ("audio_in_{}", i);
 #  ifdef CARLA_HAVE_AUDIO_PORT_HINTS
@@ -920,14 +917,14 @@ CarlaNativePlugin::create_ports (bool loading)
       for (size_t i = 0; i < audio_outs_to_create; i++)
         {
           auto port = std::make_unique<AudioPort> (
-            fmt::format ("{} {}", _ ("Audio out"), i), PortFlow::Output);
+            fmt::format ("{} {}", QObject::tr ("Audio out"), i), PortFlow::Output);
           port->id_.sym_ = fmt::format ("audio_out_{}", i);
           add_out_port (std::move (port));
         }
       for (int i = 0; i < descr->num_midi_ins_; i++)
         {
           auto port = std::make_unique<MidiPort> (
-            fmt::format ("{} {}", _ ("MIDI in"), i), PortFlow::Input);
+            fmt::format ("{} {}", QObject::tr ("MIDI in"), i), PortFlow::Input);
           port->id_.sym_ = fmt::format ("midi_in_{}", i);
           port->id_.flags2_ |= PortIdentifier::Flags2::SupportsMidi;
           add_in_port (std::move (port));
@@ -935,7 +932,7 @@ CarlaNativePlugin::create_ports (bool loading)
       for (int i = 0; i < descr->num_midi_outs_; i++)
         {
           auto port = std::make_unique<MidiPort> (
-            fmt::format ("{} {}", _ ("MIDI out"), i), PortFlow::Output);
+            fmt::format ("{} {}", QObject::tr ("MIDI out"), i), PortFlow::Output);
           port->id_.sym_ = fmt::format ("midi_out_{}", i);
           port->id_.flags2_ |= PortIdentifier::Flags2::SupportsMidi;
           add_out_port (std::move (port));
@@ -943,14 +940,14 @@ CarlaNativePlugin::create_ports (bool loading)
       for (int i = 0; i < descr->num_cv_ins_; i++)
         {
           auto port = std::make_unique<CVPort> (
-            fmt::format ("{} {}", _ ("CV in"), i), PortFlow::Input);
+            fmt::format ("{} {}", QObject::tr ("CV in"), i), PortFlow::Input);
           port->id_.sym_ = fmt::format ("cv_in_{}", i);
           add_in_port (std::move (port));
         }
       for (int i = 0; i < descr->num_cv_outs_; i++)
         {
           auto port = std::make_unique<CVPort> (
-            fmt::format ("{} {}", _ ("CV out"), i), PortFlow::Output);
+            fmt::format ("{} {}", QObject::tr ("CV out"), i), PortFlow::Output);
           port->id_.sym_ = fmt::format ("cv_out_{}", i);
           add_out_port (std::move (port));
         }
@@ -1487,7 +1484,7 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
   if (!added)
     {
       throw ZrythmException (format_str (
-        _ ("Error adding carla plugin: {}"),
+        QObject::tr ("Error adding carla plugin: {}"),
         carla_get_last_error (host_handle_)));
     }
 
@@ -1654,7 +1651,7 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
         }
       catch (const ZrythmException &e)
         {
-          e.handle (_ ("Failed to load Carla state"));
+          e.handle (QObject::tr ("Failed to load Carla state"));
         }
     }
 

@@ -16,7 +16,7 @@
 #define P_MARKER_TRACK (TRACKLIST->marker_track_)
 
 class MarkerTrack final
-    : public QObject,
+    : public QAbstractListModel,
       public Track,
       public ICloneable<MarkerTrack>,
       public ISerializable<MarkerTrack>,
@@ -29,7 +29,22 @@ class MarkerTrack final
   friend class InitializableObjectFactory<MarkerTrack>;
 
 public:
-  using MarkerPtr = std::shared_ptr<Marker>;
+  using MarkerPtr = Marker *;
+
+  enum MarkerRoles
+  {
+    MarkerPtrRole = Qt::UserRole + 1,
+  };
+
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
+  QHash<int, QByteArray> roleNames () const override;
+  int rowCount (const QModelIndex &parent = QModelIndex ()) const override;
+  QVariant
+  data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
+
+  // ========================================================================
 
   void init_loaded () override;
 
@@ -40,11 +55,15 @@ public:
 
   /**
    * Inserts a marker to the track.
+   *
+   * This takes ownership of the marker.
    */
   MarkerPtr insert_marker (MarkerPtr marker, int pos);
 
   /**
-   * Adds a marker to the track.
+   * Appends a marker to the track.
+   *
+   * @see insert_marker.
    */
   MarkerPtr add_marker (MarkerPtr marker)
   {
@@ -61,7 +80,7 @@ public:
   /**
    * Removes a marker.
    */
-  MarkerPtr remove_marker (Marker &marker, bool fire_events);
+  MarkerPtr remove_marker (Marker &marker, bool free_marker, bool fire_events);
 
   bool validate () const override;
 

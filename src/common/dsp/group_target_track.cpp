@@ -103,24 +103,32 @@ GroupTargetTrack::remove_child (
 
   auto tracklist = get_tracklist ();
 
-  auto child =
-    tracklist->find_track_by_name_hash<ChannelTrack> (child_name_hash);
-  z_return_if_fail (child);
-  z_debug (
-    "removing '%s' from '%s' - disconnect? %d", child->get_name (), get_name (),
-    disconnect);
+  auto child_var = tracklist->find_track_by_name_hash (child_name_hash);
+  z_return_if_fail (child_var);
+  std::visit (
+    [&] (auto &&child) {
+      using TrackT = base_type<decltype (child)>;
+      if constexpr (std::derived_from<TrackT, ChannelTrack>)
+        {
+          z_debug (
+            "removing '%s' from '%s' - disconnect? %d", child->get_name (),
+            get_name (), disconnect);
 
-  if (disconnect)
-    {
-      update_child_output (
-        child->get_channel (), nullptr, recalc_graph, pub_events);
-    }
-  std::erase (children_, child_name_hash);
+          if (disconnect)
+            {
+              update_child_output (
+                child->get_channel (), nullptr, recalc_graph, pub_events);
+            }
+          std::erase (children_, child_name_hash);
 
-  z_info (
-    "removed '%s' from direct out '%s' - "
-    "num children: %zu",
-    child->get_name ().c_str (), get_name ().c_str (), children_.size ());
+          z_info (
+            "removed '%s' from direct out '%s' - "
+            "num children: %zu",
+            child->get_name ().c_str (), get_name ().c_str (),
+            children_.size ());
+        }
+    },
+    *child_var);
 }
 
 void
@@ -138,11 +146,20 @@ GroupTargetTrack::validate_base () const
 {
   for (auto &child_hash : children_)
     {
-      auto track =
-        get_tracklist ()->find_track_by_name_hash<ChannelTrack> (child_hash);
-      z_return_val_if_fail (IS_TRACK_AND_NONNULL (track), false);
-      auto out_track = track->get_channel ()->get_output_track ();
-      z_return_val_if_fail (this == out_track, false);
+      auto track_var = get_tracklist ()->find_track_by_name_hash (child_hash);
+      z_return_val_if_fail (track_var, false);
+      auto ret = std::visit (
+        [&] (auto &&track) {
+          using TrackT = base_type<decltype (track)>;
+          if constexpr (std::derived_from<TrackT, ChannelTrack>)
+            {
+              auto out_track = track->get_channel ()->get_output_track ();
+              z_return_val_if_fail (this == out_track, false);
+            }
+          return true;
+        },
+        *track_var);
+      z_return_val_if_fail (ret, false);
     }
 
   return true;
@@ -164,12 +181,19 @@ GroupTargetTrack::add_child (
   if (connect)
     {
       Tracklist * tracklist = get_tracklist ();
-      auto        out_track =
-        tracklist->find_track_by_name_hash<ChannelTrack> (child_name_hash);
-      z_return_if_fail (
-        IS_TRACK_AND_NONNULL (out_track) && out_track->get_channel ());
-      update_child_output (
-        out_track->get_channel (), this, recalc_graph, pub_events);
+      auto out_track_var = tracklist->find_track_by_name_hash (child_name_hash);
+      z_return_if_fail (out_track_var);
+      std::visit (
+        [&] (auto &&out_track) {
+          using TrackT = base_type<decltype (out_track)>;
+          if constexpr (std::derived_from<TrackT, ChannelTrack>)
+            {
+              z_return_if_fail (out_track->get_channel ());
+              update_child_output (
+                out_track->get_channel (), this, recalc_graph, pub_events);
+            }
+        },
+        *out_track_var);
     }
 
   children_.push_back (child_name_hash);
@@ -206,14 +230,21 @@ GroupTargetTrack::update_children ()
   unsigned int name_hash = get_name_hash ();
   for (auto &child_hash : children_)
     {
-      auto child =
-        get_tracklist ()->find_track_by_name_hash<ChannelTrack> (child_hash);
-      z_warn_if_fail (
-        IS_TRACK (child) && child->out_signal_type_ == in_signal_type_);
-      child->get_channel ()->output_name_hash_ = name_hash;
-      z_debug (
-        "setting output of track %s [%d] to %s [%d]", child->get_name (),
-        child->pos_, get_name (), pos_);
+      auto child_var = get_tracklist ()->find_track_by_name_hash (child_hash);
+      z_return_if_fail (child_var);
+      std::visit (
+        [&] (auto &&child) {
+          using TrackT = base_type<decltype (child)>;
+          if constexpr (std::derived_from<TrackT, ChannelTrack>)
+            {
+              z_return_if_fail (child->out_signal_type_ == in_signal_type_);
+              child->get_channel ()->output_name_hash_ = name_hash;
+              z_debug (
+                "setting output of track {} [{}] to {} [{}]",
+                child->get_name (), child->pos_, get_name (), pos_);
+            }
+        },
+        *child_var);
     }
 }
 

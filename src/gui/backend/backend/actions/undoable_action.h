@@ -63,7 +63,7 @@ public:
   UndoableAction () = default;
   UndoableAction (Type type);
   UndoableAction (Type type, double frames_per_tick, sample_rate_t sample_rate);
-  virtual ~UndoableAction () = default;
+  ~UndoableAction () override = default;
 
   /**
    * @brief Create a unique from id object
@@ -161,7 +161,7 @@ public:
   /**
    * Stringizes the action to be used in Undo/Redo buttons.
    */
-  virtual std::string to_string () const = 0;
+  virtual QString to_string () const = 0;
 
 protected:
   void copy_members_from (const UndoableAction &other);

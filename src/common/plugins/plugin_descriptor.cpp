@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <cstdlib>
-
 #include "common/dsp/track.h"
 #include "common/plugins/carla_native_plugin.h"
 #include "common/plugins/collections.h"
@@ -10,8 +8,6 @@
 #include "common/plugins/plugin_manager.h"
 #include "common/utils/objects.h"
 #include "gui/backend/backend/zrythm.h"
-
-#include <glib/gi18n.h>
 
 using namespace zrythm::plugins;
 
@@ -58,15 +54,13 @@ PluginDescriptor::is_instrument () const
     {
       return true;
     }
-  else
-    {
-      return
-        /* if VSTs are instruments their category must be INSTRUMENT, otherwise
-           they are not */
-        this->protocol_ != Protocol::ProtocolType::VST
-        && this->category_ == ZPluginCategory::NONE && this->num_midi_ins_ > 0
-        && this->num_audio_outs_ > 0;
-    }
+
+  return
+    /* if VSTs are instruments their category must be INSTRUMENT, otherwise
+       they are not */
+    this->protocol_ != Protocol::ProtocolType::VST
+    && this->category_ == ZPluginCategory::NONE && this->num_midi_ins_ > 0
+    && this->num_audio_outs_ > 0;
 }
 
 bool
@@ -95,115 +89,76 @@ PluginDescriptor::is_midi_modifier () const
 
 #undef IS_CAT
 
+static const std::unordered_map<ZPluginCategory, std::string_view> category_map = {
+  { ZPluginCategory::DELAY,            "Delay"           },
+  { ZPluginCategory::REVERB,           "Reverb"          },
+  { ZPluginCategory::DISTORTION,       "Distortion"      },
+  { ZPluginCategory::WAVESHAPER,       "Waveshaper"      },
+  { ZPluginCategory::DYNAMICS,         "Dynamics"        },
+  { ZPluginCategory::AMPLIFIER,        "Amplifier"       },
+  { ZPluginCategory::COMPRESSOR,       "Compressor"      },
+  { ZPluginCategory::ENVELOPE,         "Envelope"        },
+  { ZPluginCategory::EXPANDER,         "Expander"        },
+  { ZPluginCategory::GATE,             "Gate"            },
+  { ZPluginCategory::LIMITER,          "Limiter"         },
+  { ZPluginCategory::FILTER,           "Filter"          },
+  { ZPluginCategory::ALLPASS_FILTER,   "Allpass"         },
+  { ZPluginCategory::BANDPASS_FILTER,  "Bandpass"        },
+  { ZPluginCategory::COMB_FILTER,      "Comb"            },
+  { ZPluginCategory::EQ,               "Equaliser"       },
+  { ZPluginCategory::MULTI_EQ,         "Multiband"       },
+  { ZPluginCategory::PARA_EQ,          "Para"            },
+  { ZPluginCategory::HIGHPASS_FILTER,  "Highpass"        },
+  { ZPluginCategory::LOWPASS_FILTER,   "Lowpass"         },
+  { ZPluginCategory::GENERATOR,        "Generator"       },
+  { ZPluginCategory::CONSTANT,         "Constant"        },
+  { ZPluginCategory::INSTRUMENT,       "Instrument"      },
+  { ZPluginCategory::OSCILLATOR,       "Oscillator"      },
+  { ZPluginCategory::MIDI,             "MIDI"            },
+  { ZPluginCategory::MODULATOR,        "Modulator"       },
+  { ZPluginCategory::CHORUS,           "Chorus"          },
+  { ZPluginCategory::FLANGER,          "Flanger"         },
+  { ZPluginCategory::PHASER,           "Phaser"          },
+  { ZPluginCategory::SIMULATOR,        "Simulator"       },
+  { ZPluginCategory::SIMULATOR_REVERB, "SimulatorReverb" },
+  { ZPluginCategory::SPATIAL,          "Spatial"         },
+  { ZPluginCategory::SPECTRAL,         "Spectral"        },
+  { ZPluginCategory::PITCH,            "Pitch"           },
+  { ZPluginCategory::UTILITY,          "Utility"         },
+  { ZPluginCategory::ANALYZER,         "Analyzer"        },
+  { ZPluginCategory::CONVERTER,        "Converter"       },
+  { ZPluginCategory::FUNCTION,         "Function"        },
+  { ZPluginCategory::MIXER,            "Mixer"           }
+};
+
 ZPluginCategory
 PluginDescriptor::string_to_category (const std::string &str)
 {
-  ZPluginCategory category = ZPluginCategory::NONE;
+  // Search through category_map
+  for (const auto &[category, name] : category_map)
+    {
+      if (str.find (std::string{ name }) != std::string::npos)
+        {
+          return category;
+        }
+    }
 
-#define CHECK_CAT(term, cat) \
-  if (g_strrstr (str.c_str (), term)) \
-  category = ZPluginCategory::cat
+  // Special case for "Equalizer" spelling variant
+  if (str.find ("Equalizer") != std::string::npos)
+    {
+      return ZPluginCategory::EQ;
+    }
 
-  /* add category */
-  CHECK_CAT ("Delay", DELAY);
-  CHECK_CAT ("Reverb", REVERB);
-  CHECK_CAT ("Distortion", DISTORTION);
-  CHECK_CAT ("Waveshaper", WAVESHAPER);
-  CHECK_CAT ("Dynamics", DYNAMICS);
-  CHECK_CAT ("Amplifier", AMPLIFIER);
-  CHECK_CAT ("Compressor", COMPRESSOR);
-  CHECK_CAT ("Envelope", ENVELOPE);
-  CHECK_CAT ("Expander", EXPANDER);
-  CHECK_CAT ("Gate", GATE);
-  CHECK_CAT ("Limiter", LIMITER);
-  CHECK_CAT ("Filter", FILTER);
-  CHECK_CAT ("Allpass", ALLPASS_FILTER);
-  CHECK_CAT ("Bandpass", BANDPASS_FILTER);
-  CHECK_CAT ("Comb", COMB_FILTER);
-  CHECK_CAT ("Equaliser", EQ);
-  CHECK_CAT ("Equalizer", EQ);
-  CHECK_CAT ("Multiband", MULTI_EQ);
-  CHECK_CAT ("Para", PARA_EQ);
-  CHECK_CAT ("Highpass", HIGHPASS_FILTER);
-  CHECK_CAT ("Lowpass", LOWPASS_FILTER);
-  CHECK_CAT ("Generator", GENERATOR);
-  CHECK_CAT ("Constant", CONSTANT);
-  CHECK_CAT ("Instrument", INSTRUMENT);
-  CHECK_CAT ("Oscillator", OSCILLATOR);
-  CHECK_CAT ("MIDI", MIDI);
-  CHECK_CAT ("Modulator", MODULATOR);
-  CHECK_CAT ("Chorus", CHORUS);
-  CHECK_CAT ("Flanger", FLANGER);
-  CHECK_CAT ("Phaser", PHASER);
-  CHECK_CAT ("Simulator", SIMULATOR);
-  CHECK_CAT ("SimulatorReverb", SIMULATOR_REVERB);
-  CHECK_CAT ("Spatial", SPATIAL);
-  CHECK_CAT ("Spectral", SPECTRAL);
-  CHECK_CAT ("Pitch", PITCH);
-  CHECK_CAT ("Utility", UTILITY);
-  CHECK_CAT ("Analyser", ANALYZER);
-  CHECK_CAT ("Analyzer", ANALYZER);
-  CHECK_CAT ("Converter", CONVERTER);
-  CHECK_CAT ("Function", FUNCTION);
-  CHECK_CAT ("Mixer", MIXER);
-
-#undef CHECK_CAT
-
-  return category;
+  return ZPluginCategory::NONE;
 }
 
 std::string
 PluginDescriptor::category_to_string (ZPluginCategory category)
 {
-
-#define RET_STRING(term, cat) \
-  if (category == ZPluginCategory::cat) \
-  return term
-
-  /* add category */
-  RET_STRING ("Delay", DELAY);
-  RET_STRING ("Reverb", REVERB);
-  RET_STRING ("Distortion", DISTORTION);
-  RET_STRING ("Waveshaper", WAVESHAPER);
-  RET_STRING ("Dynamics", DYNAMICS);
-  RET_STRING ("Amplifier", AMPLIFIER);
-  RET_STRING ("Compressor", COMPRESSOR);
-  RET_STRING ("Envelope", ENVELOPE);
-  RET_STRING ("Expander", EXPANDER);
-  RET_STRING ("Gate", GATE);
-  RET_STRING ("Limiter", LIMITER);
-  RET_STRING ("Filter", FILTER);
-  RET_STRING ("Allpass", ALLPASS_FILTER);
-  RET_STRING ("Bandpass", BANDPASS_FILTER);
-  RET_STRING ("Comb", COMB_FILTER);
-  RET_STRING ("Equaliser", EQ);
-  RET_STRING ("Equalizer", EQ);
-  RET_STRING ("Multiband", MULTI_EQ);
-  RET_STRING ("Para", PARA_EQ);
-  RET_STRING ("Highpass", HIGHPASS_FILTER);
-  RET_STRING ("Lowpass", LOWPASS_FILTER);
-  RET_STRING ("Generator", GENERATOR);
-  RET_STRING ("Constant", CONSTANT);
-  RET_STRING ("Instrument", INSTRUMENT);
-  RET_STRING ("Oscillator", OSCILLATOR);
-  RET_STRING ("MIDI", MIDI);
-  RET_STRING ("Modulator", MODULATOR);
-  RET_STRING ("Chorus", CHORUS);
-  RET_STRING ("Flanger", FLANGER);
-  RET_STRING ("Phaser", PHASER);
-  RET_STRING ("Simulator", SIMULATOR);
-  RET_STRING ("SimulatorReverb", SIMULATOR_REVERB);
-  RET_STRING ("Spatial", SPATIAL);
-  RET_STRING ("Spectral", SPECTRAL);
-  RET_STRING ("Pitch", PITCH);
-  RET_STRING ("Utility", UTILITY);
-  RET_STRING ("Analyser", ANALYZER);
-  RET_STRING ("Analyzer", ANALYZER);
-  RET_STRING ("Converter", CONVERTER);
-  RET_STRING ("Function", FUNCTION);
-  RET_STRING ("Mixer", MIXER);
-
-#undef RET_STRING
+  if (auto it = category_map.find (category); it != category_map.end ())
+    {
+      return std::string{ it->second };
+    }
 
   return "Plugin";
 }
@@ -417,7 +372,7 @@ PluginDescriptor::generate_context_menu () const
 
 #  if HAVE_CARLA
   sprintf (tmp, "app.plugin-browser-add-to-project-carla::%p", this);
-  menuitem = z_gtk_create_menu_item (_ ("Add to project"), nullptr, tmp);
+  menuitem = z_gtk_create_menu_item (QObject::tr ("Add to project"), nullptr, tmp);
   g_menu_append_item (menu, menuitem);
 
   PluginSetting new_setting (*this);
@@ -432,7 +387,7 @@ PluginDescriptor::generate_context_menu () const
         "bridged-ui::%p",
         this);
       menuitem = z_gtk_create_menu_item (
-        _ ("Add to project (bridged UI)"), nullptr, tmp);
+        QObject::tr ("Add to project (bridged UI)"), nullptr, tmp);
       g_menu_append_item (menu, menuitem);
     }
 
@@ -442,7 +397,7 @@ PluginDescriptor::generate_context_menu () const
     "full::%p",
     this);
   menuitem =
-    z_gtk_create_menu_item (_ ("Add to project (bridged full)"), nullptr, tmp);
+    z_gtk_create_menu_item (QObject::tr ("Add to project (bridged full)"), nullptr, tmp);
   g_menu_append_item (menu, menuitem);
 #  endif
 
@@ -478,7 +433,7 @@ PluginDescriptor::generate_context_menu () const
   if (num_added > 0)
     {
       g_menu_append_section (
-        menu, _ ("Add to collection"), G_MENU_MODEL (add_collections_submenu));
+        menu, QObject::tr ("Add to collection"), G_MENU_MODEL (add_collections_submenu));
     }
   else
     {
@@ -504,7 +459,7 @@ PluginDescriptor::generate_context_menu () const
   if (num_added > 0)
     {
       g_menu_append_section (
-        menu, _ ("Remove from collection"),
+        menu, QObject::tr ("Remove from collection"),
         G_MENU_MODEL (remove_collections_submenu));
     }
   else

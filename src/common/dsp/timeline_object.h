@@ -17,7 +17,7 @@
 class TimelineObject : virtual public ArrangerObject
 {
 public:
-  virtual ~TimelineObject () = default;
+  ~TimelineObject () override = default;
 
 protected:
   void copy_members_from (const TimelineObject &other);

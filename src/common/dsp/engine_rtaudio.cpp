@@ -3,6 +3,8 @@
 
 #include "zrythm-config.h"
 
+#include "gui/backend/backend/settings_manager.h"
+
 #if HAVE_RTAUDIO
 
 #  include "common/dsp/engine.h"
@@ -10,11 +12,12 @@
 #  include "common/utils/dsp.h"
 #  include "common/utils/string.h"
 #  include "gui/backend/backend/project.h"
-#  include "gui/backend/backend/settings/g_settings_manager.h"
 #  include "gui/backend/backend/settings/settings.h"
 #  include "gui/backend/backend/zrythm.h"
 
 #  include <rtaudio_c.h>
+
+using namespace zrythm;
 
 static rtaudio_api_t
 get_api_from_audio_backend (AudioBackend backend)
@@ -194,8 +197,7 @@ engine_rtaudio_setup (AudioEngine * self)
   /* check if selected device is found in the list
    * of devices and get the id of the output device
    * to open */
-  char * out_device =
-    g_settings_get_string (S_P_GENERAL_ENGINE, "rtaudio-audio-device-name");
+  auto         out_device = gui::SettingsManager::rtAudioAudioDeviceName ();
   unsigned int out_device_id = UINT_MAX;
   for (int i = 0; i < dev_count; i++)
     {
@@ -206,7 +208,7 @@ engine_rtaudio_setup (AudioEngine * self)
       print_dev_info (&dev_nfo, dev_nfo_str);
       z_info ("RtAudio device {}: {}", i, dev_nfo_str);
       if (
-        string_is_equal (dev_nfo.name, out_device)
+        QString::fromUtf8 (dev_nfo.name) == out_device
         && dev_nfo.output_channels > 0)
         {
           z_info ("found device with id {} at index {}", dev_id, i);
@@ -219,7 +221,7 @@ engine_rtaudio_setup (AudioEngine * self)
       out_device_id = rtaudio_get_default_output_device (self->rtaudio_);
       rtaudio_device_info_t dev_nfo =
         rtaudio_get_device_info (self->rtaudio_, out_device_id);
-      out_device = g_strdup (dev_nfo.name);
+      out_device = QString::fromUtf8 (dev_nfo.name);
     }
 
   /* prepare params */
@@ -235,12 +237,10 @@ engine_rtaudio_setup (AudioEngine * self)
     .name = "Zrythm",
   };
 
-  unsigned int samplerate = (unsigned int) AudioEngine::samplerate_enum_to_int (
-    (AudioEngine::SampleRate) g_settings_get_enum (
-      S_P_GENERAL_ENGINE, "sample-rate"));
-  unsigned int buffer_size = (unsigned int) AudioEngine::buffer_size_enum_to_int (
-    (AudioEngine::BufferSize) g_settings_get_enum (
-      S_P_GENERAL_ENGINE, "buffer-size"));
+  auto samplerate = (unsigned int) AudioEngine::samplerate_enum_to_int (
+    (AudioEngine::SampleRate) gui::SettingsManager::sampleRate ());
+  auto buffer_size = (unsigned int) AudioEngine::buffer_size_enum_to_int (
+    (AudioEngine::BufferSize) gui::SettingsManager::audioBufferSize ());
   z_info (
     "Attempting to open device [%s] with sample "
     "rate %u and buffer size %d",
@@ -318,12 +318,12 @@ engine_rtaudio_get_device_names (
       rtaudio_device_info_t dev_nfo = rtaudio_get_device_info (rtaudio, dev_id);
       if (input && (dev_nfo.input_channels > 0 || dev_nfo.duplex_channels > 0))
         {
-          names[(*num_names)++] = g_strdup (dev_nfo.name);
+          names[(*num_names)++] = strdup (dev_nfo.name);
         }
       else if (
         !input && (dev_nfo.output_channels > 0 || dev_nfo.duplex_channels > 0))
         {
-          names[(*num_names)++] = g_strdup (dev_nfo.name);
+          names[(*num_names)++] = strdup (dev_nfo.name);
         }
       else
         {

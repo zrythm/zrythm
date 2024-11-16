@@ -1,89 +1,76 @@
 // SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "common/utils/base64.h"
 #include "common/utils/compression.h"
+#include "common/utils/mem.h"
 
 #include <zstd.h>
 
-typedef enum
+namespace zrythm::utils::compression
 {
-  Z_UTILS_COMPRESSION_ERROR_FAILED,
-} ZUtilsCompressionError;
 
-#define Z_UTILS_COMPRESSION_ERROR z_utils_compression_error_quark ()
-GQuark
-z_utils_compression_error_quark (void);
-G_DEFINE_QUARK (z - utils - compression - error - quark, z_utils_compression_error)
-
-char *
-compression_compress_to_base64_str (const char * src, GError ** error)
+QByteArray
+compress_to_base64_str (const QByteArray &src)
 {
-  size_t src_size = strlen (src);
-  size_t compress_bound = ZSTD_compressBound (src_size);
+  size_t compress_bound = ZSTD_compressBound (src.size ());
   char * dest = static_cast<char *> (malloc (compress_bound));
-  size_t dest_size = ZSTD_compress (dest, compress_bound, src, src_size, 1);
+  size_t dest_size =
+    ZSTD_compress (dest, compress_bound, src.constData (), src.size (), 1);
   if (ZSTD_isError (dest_size))
     {
       free (dest);
 
-      g_set_error (
-        error, Z_UTILS_COMPRESSION_ERROR, Z_UTILS_COMPRESSION_ERROR_FAILED,
-        "Failed to compress: %s", ZSTD_getErrorName (dest_size));
-      return NULL;
+      throw ZrythmException (
+        fmt::format ("Failed to compress: {}", ZSTD_getErrorName (dest_size)));
     }
 
-  char * b64 = g_base64_encode ((const unsigned char *) dest, dest_size);
+  auto ret = utils::base64::encode (QByteArray (dest, dest_size));
 
   free (dest);
 
-  return b64;
+  return ret;
 }
 
-char *
-compression_decompress_from_base64_str (const char * b64, GError ** error)
+CStringRAII
+decompress_string_from_base64 (const QByteArray &b64)
 {
-  gsize  src_size = 0;
-  char * src = (char *) g_base64_decode (b64, &src_size);
+  auto src = utils::base64::decode (b64);
 #if (ZSTD_VERSION_MAJOR == 1 && ZSTD_VERSION_MINOR < 3)
   unsigned long long const frame_content_size =
-    ZSTD_getDecompressedSize (src, src_size);
+    ZSTD_getDecompressedSize (src.constData (), src.size ());
   if (frame_content_size == 0)
 #else
   unsigned long long const frame_content_size =
-    ZSTD_getFrameContentSize (src, src_size);
+    ZSTD_getFrameContentSize (src.constData (), src.size ());
   if (frame_content_size == ZSTD_CONTENTSIZE_ERROR)
 #endif
     {
-      g_set_error_literal (
-        error, Z_UTILS_COMPRESSION_ERROR, Z_UTILS_COMPRESSION_ERROR_FAILED,
-        "String not compressed by zstd");
-      return NULL;
+      throw ZrythmException ("String not compressed by zstd");
     }
-  char * dest = static_cast<char *> (malloc ((size_t) frame_content_size));
-  size_t dest_size = ZSTD_decompress (dest, frame_content_size, src, src_size);
+  auto   dest = static_cast<char *> (malloc ((size_t) frame_content_size));
+  size_t dest_size =
+    ZSTD_decompress (dest, frame_content_size, src.constData (), src.size ());
   if (ZSTD_isError (dest_size))
     {
       free (dest);
 
-      g_set_error (
-        error, Z_UTILS_COMPRESSION_ERROR, Z_UTILS_COMPRESSION_ERROR_FAILED,
-        "Failed to decompress string: %s", ZSTD_getErrorName (dest_size));
-      return NULL;
+      throw ZrythmException (fmt::format (
+        "Failed to decompress string: {}", ZSTD_getErrorName (dest_size)));
     }
   if (dest_size != frame_content_size)
     {
       free (dest);
 
       /* impossible because zstd will check this condition */
-      g_set_error_literal (
-        error, Z_UTILS_COMPRESSION_ERROR, Z_UTILS_COMPRESSION_ERROR_FAILED,
-        "uncompressed_size != frame_content_size");
-      return NULL;
+      throw ZrythmException ("uncompressed_size != frame_content_size");
     }
 
   /* make string null-terminated */
-  dest = static_cast<char *> (g_realloc (dest, dest_size + sizeof (char)));
+  dest = static_cast<char *> (z_realloc (dest, dest_size + sizeof (char)));
   dest[dest_size] = '\0';
 
-  return dest;
+  return { dest };
 }
+
+};

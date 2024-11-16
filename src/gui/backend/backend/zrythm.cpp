@@ -20,17 +20,19 @@
 #include "common/utils/string.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/chord_preset_pack_manager.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
 
-#include <glib/gi18n.h>
+using namespace zrythm;
 
 JUCE_IMPLEMENT_SINGLETON (Zrythm);
+
+using namespace Qt::StringLiterals;
 
 Zrythm::Zrythm ()
     : plugin_manager_ (std::make_unique<zrythm::plugins::PluginManager> ())
 {
+  elapsed_timer_.start ();
 }
 
 void
@@ -56,7 +58,7 @@ void
 Zrythm::init ()
 {
   settings_->init ();
-  recording_manager_ = std::make_unique<RecordingManager> ();
+  recording_manager_ = new RecordingManager (this);
   chord_preset_pack_manager_ = std::make_unique<ChordPresetPackManager> (
     have_ui_ && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING);
 
@@ -165,7 +167,7 @@ Zrythm::get_system_info ()
 {
   std::string gstr;
 
-  QFile file ("/etc/os-release");
+  QFile file (u"/etc/os-release"_s);
   if (file.open (QIODevice::ReadOnly | QIODevice::Text))
     {
       QTextStream in (&file);
@@ -173,10 +175,10 @@ Zrythm::get_system_info ()
     }
 
   QProcessEnvironment env = QProcessEnvironment::systemEnvironment ();
-  gstr += fmt::format ("XDG_SESSION_TYPE={}\n", env.value ("XDG_SESSION_ID"));
+  gstr += fmt::format ("XDG_SESSION_TYPE={}\n", env.value (u"XDG_SESSION_ID"_s));
   gstr += fmt::format (
-    "XDG_CURRENT_DESKTOP={}\n", Glib::getenv ("XDG_CURRENT_DESKTOP"));
-  gstr += fmt::format ("DESKTOP_SESSION={}\n", Glib::getenv ("DESKTOP_SESSION"));
+    "XDG_CURRENT_DESKTOP={}\n", env.value (u"XDG_CURRENT_DESKTOP"_s));
+  gstr += fmt::format ("DESKTOP_SESSION={}\n", env.value (u"DESKTOP_SESSION"_s));
 
   gstr += "\n";
 
@@ -267,7 +269,7 @@ Zrythm::init_user_dirs_and_files ()
       z_return_if_fail (!dir.empty ());
       try
         {
-          io_mkdir (dir);
+          utils::io::mkdir (dir);
         }
       catch (const ZrythmException &e)
         {

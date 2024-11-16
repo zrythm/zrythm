@@ -18,8 +18,6 @@
 #include "common/dsp/timeline_object.h"
 #include "common/utils/format.h"
 
-#include <glib/gi18n.h>
-
 class Track;
 
 class RegionLinkGroup;
@@ -42,6 +40,20 @@ template <typename RegionT> class RegionOwnerImpl;
 constexpr int REGION_MAGIC = 93075327;
 #define IS_REGION(x) (static_cast<Region *> (x)->magic_ == REGION_MAGIC)
 #define IS_REGION_AND_NONNULL(x) (x && IS_REGION (x))
+
+#define DEFINE_REGION_QML_PROPERTIES(ClassType) \
+public: \
+  DEFINE_LOOPABLE_OBJECT_QML_PROPERTIES (ClassType) \
+  DEFINE_NAMEABLE_OBJECT_QML_PROPERTIES (ClassType) \
+  DEFINE_COLORED_OBJECT_QML_PROPERTIES (ClassType) \
+  /* ================================================================ */ \
+  /* regionType */ \
+  /* ================================================================ */ \
+  Q_PROPERTY (int regionType READ getRegionType CONSTANT) \
+  int getRegionType () const \
+  { \
+    return ENUM_VALUE_TO_INT (id_.type_); \
+  }
 
 constexpr const char * REGION_PRINTF_FILENAME = "%s_%s.mid";
 
@@ -134,6 +146,7 @@ enum class MusicalMode
 
 using RegionVariant =
   std::variant<MidiRegion, ChordRegion, AutomationRegion, AudioRegion>;
+using RegionPtrVariant = to_pointer_variant<RegionVariant>;
 
 template <typename T>
 concept RegionTypeWithMidiEvents =
@@ -165,12 +178,13 @@ public:
     const Position &end_pos,
     unsigned int    track_name_hash,
     int             lane_pos_or_at_idx,
-    int             idx_inside_lane_or_at);
+    int             idx_inside_lane_or_at,
+    double          ticks_per_frame = 0.0);
 
   /**
    * Adds the given ticks to each included object.
    */
-  virtual void add_ticks_to_children (const double ticks) = 0;
+  virtual void add_ticks_to_children (double ticks) = 0;
 
   RegionType get_type () const { return id_.type_; }
 
@@ -200,9 +214,8 @@ public:
    *
    * @return The local frames.
    */
-  ATTR_HOT signed_frame_t timeline_frames_to_local (
-    const signed_frame_t timeline_frames,
-    const bool           normalize) const;
+  ATTR_HOT signed_frame_t
+  timeline_frames_to_local (signed_frame_t timeline_frames, bool normalize) const;
 
   /**
    * Returns the number of frames until the next loop end point or the
@@ -214,9 +227,9 @@ public:
    * false, the return frames are for the region's end).
    */
   ATTR_NONNULL void get_frames_till_next_loop_or_end (
-    const signed_frame_t timeline_frames,
-    signed_frame_t *     ret_frames,
-    bool *               is_loop) const;
+    signed_frame_t   timeline_frames,
+    signed_frame_t * ret_frames,
+    bool *           is_loop) const;
 
   inline bool has_lane () const { return region_type_has_lane (id_.type_); }
 
@@ -231,7 +244,7 @@ public:
    */
   void update_link_group ();
 
-  static std::shared_ptr<Region> find (const RegionIdentifier &id);
+  static std::optional<RegionPtrVariant> find (const RegionIdentifier &id);
 
   /**
    * Generates the filename for this region.
@@ -246,7 +259,8 @@ public:
   /**
    * Returns the ArrangerSelections based on the given region type.
    */
-  virtual ArrangerSelections * get_arranger_selections () const = 0;
+  virtual std::optional<ClipEditorArrangerSelectionsPtrVariant>
+  get_arranger_selections () const = 0;
 
   bool can_have_lanes () const override
   {
@@ -267,13 +281,16 @@ public:
    * @param at
    * @param include_region_end
    */
-  static Region * get_at_pos (
-    const Position    pos,
+  static std::optional<RegionPtrVariant> get_at_pos (
+    Position          pos,
     Track *           track,
     AutomationTrack * at,
     bool              include_region_end = false);
 
 protected:
+  Region () = default;
+  Q_DISABLE_COPY_MOVE (Region)
+
   void copy_members_from (const Region &other);
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
@@ -311,12 +328,15 @@ public:
   int magic_ = REGION_MAGIC;
 };
 
+/**
+ * @tparam RegionT The region type to specialize for (CRTP type).
+ */
 template <typename RegionT> class RegionImpl : virtual public Region
 {
 public:
   ~RegionImpl () override = default;
 
-  using RegionSharedPtr = std::shared_ptr<RegionT>;
+  using RegionTPtr = RegionT *;
 
   static constexpr bool is_midi ()
   {
@@ -346,6 +366,7 @@ public:
   }
 
   using ChildT = RegionChildType_t<RegionT>;
+  using ChildTPtr = ChildT *;
 
   /**
    * @brief Fills the given vector with all the children of this region.
@@ -356,11 +377,11 @@ public:
   /**
    * Looks for the Region matching the identifier.
    */
-  ATTR_HOT static std::shared_ptr<RegionT> find (const RegionIdentifier &id);
+  ATTR_HOT static RegionTPtr find (const RegionIdentifier &id);
 
-  ArrangerObjectPtr find_in_project () const final
+  std::optional<ArrangerObjectPtrVariant> find_in_project () const final
   {
-    return std::dynamic_pointer_cast<ArrangerObject> (this->find (id_));
+    return find (id_);
   }
 
   /**
@@ -397,10 +418,10 @@ public:
    * @tparam T Object type.
    * @return A vector of object pointers.
    */
-  std::span<std::shared_ptr<ChildT>> get_objects ()
+  std::span<ChildTPtr> get_objects ()
     requires RegionWithChildren<RegionT>;
 
-  std::vector<std::shared_ptr<ChildT>> &get_objects_vector ()
+  std::vector<ChildTPtr> &get_objects_vector ()
     requires RegionWithChildren<RegionT>;
 
   RegionOwnerImpl<RegionT> * get_region_owner () const;
@@ -425,15 +446,13 @@ public:
    * @param fire_events Whether to fire UI events.
    * @return RegionOwnedObject& The inserted object.
    */
-  std::shared_ptr<ChildT>
-  insert_object (std::shared_ptr<ChildT> obj, int index, bool fire_events = false)
+  void insert_object (ChildTPtr obj, int index, bool fire_events = false)
     requires RegionWithChildren<RegionT>;
 
   /**
    * @see insert_object().
    */
-  std::shared_ptr<ChildT>
-  append_object (std::shared_ptr<ChildT> obj, bool fire_events = false)
+  void append_object (ChildTPtr obj, bool fire_events = false)
     requires RegionWithChildren<RegionT>;
 
   /**
@@ -441,19 +460,19 @@ public:
    *
    * @tparam T
    * @param obj
-   * @return std::shared_ptr<T>
    */
-  std::shared_ptr<ChildT> remove_object (ChildT &obj, bool fire_events = false)
+  std::optional<ChildTPtr>
+  remove_object (ChildT &obj, bool free_obj, bool fire_events = false)
     requires RegionWithChildren<RegionT>;
 
   bool get_muted (bool check_parent) const override;
 
-  ArrangerObjectPtr add_clone_to_project (bool fire_events) const final
+  ArrangerObjectPtrVariant add_clone_to_project (bool fire_events) const final
   {
     return insert_clone_to_project_at_index (-1, fire_events);
   }
 
-  ArrangerObjectPtr insert_clone_to_project () const final
+  ArrangerObjectPtrVariant insert_clone_to_project () const final
   {
     return insert_clone_to_project_at_index (id_.idx_, true);
   }
@@ -472,6 +491,7 @@ public:
    * Does not free the Region or its children's resources.
    */
   void disconnect ();
+  void disconnect_region ();
 
   /**
    * To be called every time the identifier changes to update the
@@ -486,10 +506,8 @@ public:
    * @param track The track to look in, if at is NULL.
    * @param pos The position.
    */
-  static RegionT * at_position (
-    const Track *           track,
-    const AutomationTrack * at,
-    const Position          pos);
+  static RegionT *
+  at_position (const Track * track, const AutomationTrack * at, Position pos);
 
   /**
    * Removes the link group from the region, if any.
@@ -531,7 +549,7 @@ public:
   void create_link_group_if_none ();
 
 private:
-  RegionSharedPtr
+  RegionTPtr
   insert_clone_to_project_at_index (int index, bool fire_events) const;
 
   /**
@@ -575,9 +593,9 @@ concept FinalRegionSubclass =
 DEFINE_ENUM_FORMATTER (
   MusicalMode,
   MusicalMode,
-  N_ ("Inherit"),
-  N_ ("Off"),
-  N_ ("On"));
+  QT_TR_NOOP_UTF8 ("Inherit"),
+  QT_TR_NOOP_UTF8 ("Off"),
+  QT_TR_NOOP_UTF8 ("On"));
 
 inline bool
 operator== (const Region &lhs, const Region &rhs)

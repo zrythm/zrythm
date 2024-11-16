@@ -97,10 +97,16 @@ ArrangerSelectionsAction::define_fields (const Context &ctx)
     T::make_field ("deltaNormalizedAmount", delta_normalized_amount_),
     T::make_field ("targetPort", target_port_, true),
     T::make_field ("string", str_, true), T::make_field ("position", pos_),
-    T::make_field ("quantizeOptions", opts_, true));
+    T::make_field ("quantizeOptions", opts_, true),
+    T::make_field ("selections", sel_, true),
+    T::make_field ("selectionsAfter", sel_after_, true),
+    T::make_field ("regionBefore", region_before_, true),
+    T::make_field ("regionAfter", region_after_, true),
+    T::make_field ("r1", r1_, true), T::make_field ("r2", r2_, true));
 
   if (ctx.is_serializing ())
     {
+#if 0
       T::serialize_field<decltype (sel_), ArrangerSelectionsPtrVariant> (
         "selections", sel_, ctx, true);
       T::serialize_field<decltype (sel_after_), ArrangerSelectionsPtrVariant> (
@@ -113,9 +119,11 @@ ArrangerSelectionsAction::define_fields (const Context &ctx)
         "r1", r1_, ctx, true);
       T::serialize_field<decltype (r2_), LengthableObjectPtrVariant> (
         "r2", r2_, ctx, true);
+#endif
     }
   else
     {
+#if 0
       yyjson_obj_iter it = yyjson_obj_iter_with (ctx.obj_);
 
       auto handle_selections = [&] (yyjson_val * sel_obj, auto &sel) {
@@ -264,7 +272,7 @@ ArrangerSelectionsAction::define_fields (const Context &ctx)
 
       handle_lo_obj_array ("r1", r1_);
       handle_lo_obj_array ("r2", r2_);
-
+#endif
       num_split_objs_ = r1_.size ();
     }
 }

@@ -40,7 +40,6 @@
 #include "common/utils/pcg_rand.h"
 #include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/project/project_init_flow_manager.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
 
 #include "tests/helpers/zrythm_helper.h"
 // #include "gui/backend/gtk_widgets/gtk_wrapper.h"
@@ -57,9 +56,10 @@ segv_handler (int sig)
 {
   std::string prefix;
 #ifdef _WIN32
-  prefix = _ ("Error - Backtrace:\n");
+  prefix = QObject::tr ("Error - Backtrace:\n");
 #else
-  prefix = format_str (_ ("Error: {} - Backtrace:\n"), strsignal (sig));
+  prefix =
+    format_str (QObject::tr ("Error: {} - Backtrace:\n"), strsignal (sig));
 #endif
   auto bt = Backtrace ().get_backtrace (prefix, 100, false);
 
@@ -84,7 +84,8 @@ make_pipe (gint pipe_fds[2], GError ** error)
 
       g_set_error (
         error, G_SPAWN_ERROR, G_SPAWN_ERROR_FAILED,
-        _ ("Failed to create pipe for communicating with child process (%s)"),
+        QObject::tr (
+          "Failed to create pipe for communicating with child process (%s)"),
         g_strerror (errsv));
       return FALSE;
     }
@@ -92,7 +93,7 @@ make_pipe (gint pipe_fds[2], GError ** error)
 #  else
   g_set_error (
     error, G_SPAWN_ERROR, G_SPAWN_ERROR_FAILED,
-    _ ("Pipes are not supported in this platform"));
+    QObject::tr ("Pipes are not supported in this platform"));
   return FALSE;
 #  endif
 }

@@ -19,25 +19,10 @@ ClipEditor::init_loaded ()
 }
 
 void
-ClipEditor::set_region (Region * region, bool fire_events)
+ClipEditor::set_region (
+  std::optional<RegionPtrVariant> region_opt_var,
+  bool                            fire_events)
 {
-  if (region)
-    {
-      z_return_if_fail (IS_REGION (region));
-    }
-
-  z_debug (
-    "clip editor: setting region to {} ({})", fmt::ptr (region),
-    region ? region->name_ : "");
-
-  /* if first time showing a region, show the
-   * event viewer as necessary */
-  if (fire_events && !has_region_ && region)
-    {
-      // /* EVENTS_PUSH (
-      //   EventType::ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED, nullptr); */
-    }
-
   /*
    * block until current DSP cycle finishes to avoid potentially sending the
    * events to multiple tracks
@@ -51,22 +36,35 @@ ClipEditor::set_region (Region * region, bool fire_events)
       sem_aquired = true;
     }
 
-  if (region)
+  if (region_opt_var)
     {
-      has_region_ = true;
-      region_id_ = region->id_;
-      track_ = region->get_track ();
+      std::visit (
+        [&] (auto &&region) {
+          /* if first time showing a region, show the event viewer as necessary */
 
-      /* if audio region, also set it in selections */
-      AUDIO_SELECTIONS->region_id_ = region->id_;
+          if (fire_events && !has_region_)
+            {
+              // /* EVENTS_PUSH (
+              //   EventType::ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED,
+              //   nullptr); */
+            }
+
+          has_region_ = true;
+          region_id_ = region->id_;
+          track_ = region->get_track ();
+
+          /* if audio region, also set it in selections */
+          AUDIO_SELECTIONS->region_id_ = region->id_;
+        },
+        region_opt_var.value ());
     }
   else
     {
+      z_debug ("unsetting region from clip editor");
       has_region_ = false;
-      track_ = nullptr;
+      region_.reset ();
+      track_.reset ();
     }
-
-  region_changed_ = true;
 
   if (sem_aquired)
     {
@@ -86,73 +84,37 @@ ClipEditor::set_region (Region * region, bool fire_events)
 #endif
 }
 
-template <FinalRegionSubclass T>
-T *
+std::optional<RegionPtrVariant>
 ClipEditor::get_region () const
 {
-  if (ROUTER->is_processing_thread ())
-    {
-      return dynamic_cast<T *> (region_);
-    }
-
-  if (!has_region_)
-    return nullptr;
-
-  return T::find (region_id_).get ();
+  return region_;
 }
 
-Region *
-ClipEditor::get_region () const
-{
-  if (has_region_)
-    {
-      switch (region_id_.type_)
-        {
-        case RegionType::Midi:
-          return get_region<MidiRegion> ();
-        case RegionType::Audio:
-          return get_region<AudioRegion> ();
-        case RegionType::Chord:
-          return get_region<ChordRegion> ();
-        case RegionType::Automation:
-          return get_region<AutomationRegion> ();
-        default:
-          z_return_val_if_reached (nullptr);
-        }
-    }
-  else
-    {
-      return nullptr;
-    }
-}
-
-Track *
+std::optional<TrackPtrVariant>
 ClipEditor::get_track ()
 {
   if (ROUTER->is_processing_thread ())
     {
-      return track_;
+      return std::visit (
+        [&] (auto &&track) -> TrackPtrVariant { return track; }, *track_);
     }
 
   if (!has_region_)
-    return nullptr;
+    return std::nullopt;
 
-  Region * region = get_region ();
-  z_return_val_if_fail (region, nullptr);
-
-  return region->get_track ();
+  return std::visit (
+    [&] (auto &&region) { return region->get_track (); }, *region_);
 }
 
-ArrangerSelections *
+std::optional<ClipEditorArrangerSelectionsPtrVariant>
 ClipEditor::get_arranger_selections ()
 {
-  Region * region = get_region ();
-  if (!region)
-    {
-      return nullptr;
-    }
+  if (!has_region_)
+    return std::nullopt;
 
-  return region->get_arranger_selections ();
+  return std::visit (
+    [&] (auto &&region) { return region->get_arranger_selections (); },
+    *region_);
 }
 
 void
@@ -165,8 +127,8 @@ ClipEditor::set_caches ()
     }
   else
     {
-      region_ = nullptr;
-      track_ = nullptr;
+      region_.reset ();
+      track_.reset ();
     }
 }
 
@@ -177,12 +139,3 @@ ClipEditor::init ()
   chord_editor_.init ();
   // the rest of the editors are initialized in their respective classes
 }
-
-template MidiRegion *
-ClipEditor::get_region<MidiRegion> () const;
-template AudioRegion *
-ClipEditor::get_region<AudioRegion> () const;
-template AutomationRegion *
-ClipEditor::get_region<AutomationRegion> () const;
-template ChordRegion *
-ClipEditor::get_region<ChordRegion> () const;

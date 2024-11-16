@@ -911,11 +911,20 @@ Channel::get_output_track () const
 
   z_return_val_if_fail (track_, nullptr);
   auto tracklist = track_->get_tracklist ();
-  auto output_track =
-    tracklist->find_track_by_name_hash<GroupTargetTrack> (output_name_hash_);
-  z_return_val_if_fail (output_track && track_ != output_track, nullptr);
+  auto output_track_var = tracklist->find_track_by_name_hash (output_name_hash_);
+  z_return_val_if_fail (output_track_var, nullptr);
 
-  return output_track;
+  return std::visit (
+    [&] (auto &&output_track) -> GroupTargetTrack * {
+      using TrackT = base_type<decltype (output_track)>;
+      if constexpr (std::derived_from<TrackT, GroupTargetTrack>)
+        {
+          z_return_val_if_fail (track_ != output_track, nullptr);
+          return output_track;
+        }
+      z_return_val_if_reached (nullptr);
+    },
+    *output_track_var);
 }
 
 void
@@ -1024,7 +1033,8 @@ Channel::init ()
       break;
     case PortType::Event:
       {
-        midi_out_ = new MidiPort (_ ("MIDI out"), PortFlow::Output);
+        midi_out_ = new MidiPort (
+          QObject::tr ("MIDI out").toStdString (), PortFlow::Output);
         midi_out_->setParent (this);
         midi_out_->set_owner (this);
         midi_out_->id_->sym_ = "midi_out";
@@ -1431,13 +1441,25 @@ do_import (PluginImportData * data)
   bool plugin_valid = true;
   if (data->pl)
     {
-      auto orig_track =
+      auto orig_track_var =
         TRACKLIST->find_track_by_name_hash (data->pl->id_.track_name_hash_);
 
       /* if plugin at original position do nothing */
-      if (
-        data->ch->track_ == orig_track && data->slot == data->pl->id_.slot_
-        && data->slot_type == data->pl->id_.slot_type_)
+      auto do_nothing = std::visit (
+        [&] (auto &&orig_track) {
+          using TrackT = base_type<decltype (orig_track)>;
+          if constexpr (std::derived_from<TrackT, ChannelTrack>)
+            {
+              if (
+                data->ch->track_ == orig_track
+                && data->slot == data->pl->id_.slot_
+                && data->slot_type == data->pl->id_.slot_type_)
+                return true;
+            }
+          return false;
+        },
+        *orig_track_var);
+      if (do_nothing)
         return;
 
       if (data->pl->setting_->get_descriptor ()->is_valid_for_slot_type (
@@ -1464,7 +1486,7 @@ do_import (PluginImportData * data)
             }
           catch (const ZrythmException &e)
             {
-              e.handle (_ ("Failed to move or copy plugins"));
+              e.handle (QObject::tr ("Failed to move or copy plugins"));
               return;
             }
         }
@@ -1489,8 +1511,9 @@ do_import (PluginImportData * data)
             }
           catch (const ZrythmException &e)
             {
-              e.handle (format_str (
-                _ ("Failed to create plugin {}"), setting.get_name ()));
+              e.handle (format_qstr (
+                QObject::tr ("Failed to create plugin {}"),
+                setting.get_name ()));
               return;
             }
         }
@@ -1509,10 +1532,10 @@ do_import (PluginImportData * data)
     {
       const auto &pl_descr =
         data->descr ? *data->descr : *data->pl->setting_->descr_;
-      ZrythmException e (format_str (
-        _ ("zrythm::plugins::Plugin {} cannot be added to this slot"),
+      ZrythmException e (format_qstr (
+        QObject::tr ("zrythm::plugins::Plugin {} cannot be added to this slot"),
         pl_descr.name_));
-      e.handle (_ ("Failed to add plugin"));
+      e.handle (QObject::tr ("Failed to add plugin"));
     }
 }
 

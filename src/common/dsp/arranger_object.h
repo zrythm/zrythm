@@ -6,13 +6,12 @@
 
 #include <memory>
 
-#include "common/dsp/position.h"
+#include "gui/backend/position_proxy.h"
 
-#include <glib/gi18n.h>
+#include <QtGlobal>
 
 class ArrangerObject;
 class ArrangerSelections;
-TYPEDEF_STRUCT_UNDERSCORED (ArrangerWidget);
 class UndoableAction;
 class ChordObject;
 class ScaleObject;
@@ -35,15 +34,125 @@ constexpr int ARRANGER_OBJECT_MAGIC = 347616554;
 #define IS_ARRANGER_OBJECT_AND_NONNULL(x) (x && IS_ARRANGER_OBJECT (x))
 
 static const char * arranger_object_type_strings[] = {
-  N_ ("None"),         N_ ("All"),
-  N_ ("Region"),       N_ ("Midi Note"),
-  N_ ("Chord Object"), N_ ("Scale Object"),
-  N_ ("Marker"),       N_ ("Automation Point"),
-  N_ ("Velocity"),
+  QT_TR_NOOP ("None"),         QT_TR_NOOP ("All"),
+  QT_TR_NOOP ("Region"),       QT_TR_NOOP ("Midi Note"),
+  QT_TR_NOOP ("Chord Object"), QT_TR_NOOP ("Scale Object"),
+  QT_TR_NOOP ("Marker"),       QT_TR_NOOP ("Automation Point"),
+  QT_TR_NOOP ("Velocity"),
 };
 
 template <typename T>
 concept ArrangerObjectSubclass = std::derived_from<T, ArrangerObject>;
+
+class LengthableObject;
+class MidiNote;
+class MidiRegion;
+class AudioRegion;
+class AutomationRegion;
+class ChordRegion;
+using ArrangerObjectVariant = std::variant<
+  MidiNote,
+  ChordObject,
+  ScaleObject,
+  MidiRegion,
+  AudioRegion,
+  ChordRegion,
+  AutomationRegion,
+  AutomationPoint,
+  Marker,
+  Velocity>;
+using ArrangerObjectWithoutVelocityVariant = std::variant<
+  MidiNote,
+  ChordObject,
+  ScaleObject,
+  MidiRegion,
+  AudioRegion,
+  ChordRegion,
+  AutomationRegion,
+  Marker,
+  AutomationPoint>;
+using ArrangerObjectPtrVariant = to_pointer_variant<ArrangerObjectVariant>;
+using ArrangerObjectWithoutVelocityPtrVariant =
+  to_pointer_variant<ArrangerObjectWithoutVelocityVariant>;
+
+class MarkerTrack;
+class InstrumentTrack;
+class MidiTrack;
+class MasterTrack;
+class MidiGroupTrack;
+class AudioGroupTrack;
+class FolderTrack;
+class MidiBusTrack;
+class AudioBusTrack;
+class AudioTrack;
+class ChordTrack;
+class ModulatorTrack;
+class TempoTrack;
+class LanedTrack;
+
+using TrackVariant = std::variant<
+  MarkerTrack,
+  InstrumentTrack,
+  MidiTrack,
+  MasterTrack,
+  MidiGroupTrack,
+  AudioGroupTrack,
+  FolderTrack,
+  MidiBusTrack,
+  AudioBusTrack,
+  AudioTrack,
+  ChordTrack,
+  ModulatorTrack,
+  TempoTrack>;
+using TrackPtrVariant = to_pointer_variant<TrackVariant>;
+using OptionalTrackPtrVariant = std::optional<TrackPtrVariant>;
+
+class TimelineSelections;
+class MidiSelections;
+class ChordSelections;
+class AutomationSelections;
+class AudioSelections;
+using ArrangerSelectionsVariant = std::variant<
+  TimelineSelections,
+  MidiSelections,
+  ChordSelections,
+  AutomationSelections,
+  AudioSelections>;
+using ArrangerSelectionsPtrVariant =
+  to_pointer_variant<ArrangerSelectionsVariant>;
+// using ArrangerSelectionsConstPtrVariant =
+// to_const_pointer_variant<ArrangerSelectionsVariant>;
+using ClipEditorArrangerSelectionsVariant = std::
+  variant<MidiSelections, ChordSelections, AutomationSelections, AudioSelections>;
+using ClipEditorArrangerSelectionsPtrVariant =
+  to_pointer_variant<ClipEditorArrangerSelectionsVariant>;
+
+#define DEFINE_ARRANGER_OBJECT_QML_PROPERTIES(ClassType) \
+public: \
+  /* ================================================================ */ \
+  /* type */ \
+  /* ================================================================ */ \
+  Q_PROPERTY (int type READ getType CONSTANT) \
+  int getType () const \
+  { \
+    return ENUM_VALUE_TO_INT (type_); \
+  } \
+  /* ================================================================ */ \
+  /* hasLength */ \
+  /* ================================================================ */ \
+  Q_PROPERTY (bool hasLength READ getHasLength CONSTANT) \
+  bool getHasLength () const \
+  { \
+    return std::derived_from<ClassType, LengthableObject>; \
+  } \
+  /* ================================================================ */ \
+  /* position */ \
+  /* ================================================================ */ \
+  Q_PROPERTY (PositionProxy * position READ getPosition CONSTANT) \
+  PositionProxy * getPosition () const \
+  { \
+    return pos_; \
+  }
 
 /**
  * @brief Base class for all objects in the arranger.
@@ -61,10 +170,10 @@ concept ArrangerObjectSubclass = std::derived_from<T, ArrangerObject>;
  *
  * We also need shared_from_this() in various cases (TODO explain).
  */
-class ArrangerObject
-    : public std::enable_shared_from_this<ArrangerObject>,
-      public ISerializable<ArrangerObject>
+class ArrangerObject : public ISerializable<ArrangerObject>
 {
+  Q_DISABLE_COPY_MOVE (ArrangerObject)
+
 public:
   /**
    * Flag used in some functions.
@@ -127,17 +236,11 @@ public:
   };
 
 public:
-  // Rule of 0
-  ArrangerObject () = default;
-  ArrangerObject (Type type) : type_ (type) {};
-  virtual ~ArrangerObject () = default;
+  ArrangerObject (Type type);
 
-  using ArrangerObjectPtr = std::shared_ptr<ArrangerObject>;
+  ~ArrangerObject () override = default;
 
-  template <typename T> std::shared_ptr<T> shared_from_this_as ()
-  {
-    return std::dynamic_pointer_cast<T> (this->shared_from_this ());
-  }
+  using ArrangerObjectPtr = ArrangerObject *;
 
   /**
    * @brief Generate @ref transient_.
@@ -245,7 +348,7 @@ public:
 
   void select (bool select, bool append, bool fire_events)
   {
-    ArrangerObject::select (shared_from_this (), select, append, fire_events);
+    ArrangerObject::select (this, select, append, fire_events);
   }
 
   /**
@@ -277,10 +380,12 @@ public:
     bool                 range_end_inclusive = false) const
   {
     return (range_start_inclusive
-              ? (pos_.frames_ >= global_frames_start)
-              : (pos_.frames_ > global_frames_start))
-           && (range_end_inclusive ? (pos_.frames_ <= global_frames_end) : (pos_.frames_ < global_frames_end));
+              ? (pos_->frames_ >= global_frames_start)
+              : (pos_->frames_ > global_frames_start))
+           && (range_end_inclusive ? (pos_->frames_ <= global_frames_end) : (pos_->frames_ < global_frames_end));
   }
+
+  void parent_base_qproperties (QObject &derived);
 
   /**
    * Returns if the object is in the selections.
@@ -302,14 +407,16 @@ public:
   /**
    * Getter.
    */
-  void get_pos (Position * pos) const { *pos = pos_; };
+  void get_pos (Position * pos) const
+  {
+    *pos = *static_cast<Position *> (pos_);
+  };
 
   void get_position_from_type (Position * pos, PositionType type) const;
 
-  template <typename T = ArrangerObject>
-  std::shared_ptr<T> get_transient () const
+  template <typename T = ArrangerObject> T * get_transient () const
   {
-    return dynamic_pointer_cast<T> (transient_);
+    return dynamic_cast<T *> (transient_);
   };
 
   /**
@@ -373,7 +480,7 @@ public:
   /**
    * Moves the object by the given amount of ticks.
    */
-  void move (const double ticks);
+  void move (double ticks);
 
   /**
    * Returns if the object is allowed to have lanes.
@@ -402,12 +509,7 @@ public:
   /**
    * Returns the Track this ArrangerObject is in.
    */
-  ATTR_HOT virtual Track * get_track () const;
-
-  template <typename T> inline T * get_track_as () const
-  {
-    return dynamic_cast<T *> (get_track ());
-  }
+  ATTR_HOT virtual TrackPtrVariant get_track () const;
 
   static inline const char * get_type_as_string (Type type)
   {
@@ -442,7 +544,7 @@ public:
    * This should be called when we have a copy or a clone, to get the actual
    * region in the project.
    */
-  virtual ArrangerObjectPtr find_in_project () const = 0;
+  virtual std::optional<ArrangerObjectPtrVariant> find_in_project () const = 0;
 
   /**
    * Appends the ArrangerObject to where it belongs in the project (eg, a
@@ -452,7 +554,8 @@ public:
    * @throw ZrythmError on failure.
    * @return A reference to the newly added clone.
    */
-  virtual ArrangerObjectPtr add_clone_to_project (bool fire_events) const = 0;
+  virtual ArrangerObjectPtrVariant
+  add_clone_to_project (bool fire_events) const = 0;
 
   /**
    * Inserts the object where it belongs in the project (eg, a Track).
@@ -465,17 +568,17 @@ public:
    * @throw ZrythmException on failure.
    * @return A reference to the newly inserted clone.
    */
-  virtual ArrangerObjectPtr insert_clone_to_project () const = 0;
+  virtual ArrangerObjectPtrVariant insert_clone_to_project () const = 0;
 
   /**
    * Removes the object (which can be obtained from @ref find_in_project()) from
    * its parent in the project.
    *
-   * @return A shared pointer of this object to keep it alive. Alternatively,
-   * ignore the return value to let it get deleted when the caller goes out of
-   * scope.
+   * @return A pointer to the removed object (whose lifetime is now the
+   * responsibility of the caller).
    */
-  ArrangerObjectPtr remove_from_project (bool fire_events = false);
+  std::optional<ArrangerObjectPtrVariant>
+  remove_from_project (bool free_obj, bool fire_events = false);
 
   /**
    * Returns whether the arranger object is part of a frozen track.
@@ -526,15 +629,15 @@ public:
    * Midway Position between previous and next AutomationPoint's, if
    * AutomationCurve.
    */
-  Position pos_ = {};
+  PositionProxy * pos_ = nullptr;
 
-  Type type_ = {};
+  Type type_{};
 
   /** Hash of the name of the track this object belongs to. */
   unsigned int track_name_hash_ = 0;
 
   /** Track this object belongs to (cache to be set during graph calculation). */
-  Track * track_ = nullptr;
+  OptionalTrackPtrVariant track_;
 
   /**
    * A copy ArrangerObject corresponding to this, such as when ctrl+dragging.
@@ -544,12 +647,12 @@ public:
    * This will be the clone object saved in the cloned arranger selections in
    * each arranger during actions, and would get drawn separately.
    */
-  std::shared_ptr<ArrangerObject> transient_;
+  ArrangerObject * transient_ = nullptr;
 
   /**
    * The opposite of the above. This will be set on the transient objects.
    */
-  std::weak_ptr<ArrangerObject> main_;
+  ArrangerObject * main_ = nullptr;
 
   int magic_ = ARRANGER_OBJECT_MAGIC;
 
@@ -572,43 +675,13 @@ public:
 inline bool
 operator== (const ArrangerObject &lhs, const ArrangerObject &rhs)
 {
-  return lhs.type_ == rhs.type_ && lhs.pos_ == rhs.pos_
+  return lhs.type_ == rhs.type_ && *lhs.pos_ == *rhs.pos_
          && lhs.track_name_hash_ == rhs.track_name_hash_;
 }
 
 template <typename T>
 concept FinalArrangerObjectSubclass =
   std::derived_from<T, ArrangerObject> && FinalClass<T> && CompleteType<T>;
-
-class MidiNote;
-class MidiRegion;
-class AudioRegion;
-class AutomationRegion;
-class ChordRegion;
-using ArrangerObjectVariant = std::variant<
-  MidiNote,
-  ChordObject,
-  ScaleObject,
-  MidiRegion,
-  AudioRegion,
-  ChordRegion,
-  AutomationRegion,
-  AutomationPoint,
-  Marker,
-  Velocity>;
-using ArrangerObjectWithoutVelocityVariant = std::variant<
-  MidiNote,
-  ChordObject,
-  ScaleObject,
-  MidiRegion,
-  AudioRegion,
-  ChordRegion,
-  AutomationRegion,
-  Marker,
-  AutomationPoint>;
-using ArrangerObjectPtrVariant = to_pointer_variant<ArrangerObjectVariant>;
-using ArrangerObjectWithoutVelocityPtrVariant =
-  to_pointer_variant<ArrangerObjectWithoutVelocityVariant>;
 
 /**
  * @}

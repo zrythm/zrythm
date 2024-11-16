@@ -19,21 +19,19 @@
 #include "common/utils/io.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/chord_preset.h"
-#include "gui/backend/backend/settings/g_settings_manager.h"
 #include "gui/backend/backend/settings/plugin_settings.h"
 #include "gui/backend/backend/settings/settings.h"
+#include "gui/backend/backend/settings_manager.h"
 
-#include <glib/gi18n.h>
+using namespace zrythm;
 
 void
 SampleProcessor::load_instrument_if_empty ()
 {
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
-      char * _setting_json =
-        g_settings_get_string (S_UI_FILE_BROWSER, "instrument");
-      std::string setting_json = _setting_json;
-      g_free (_setting_json);
+      auto _setting_json = gui::SettingsManager::fileBrowserInstrument ();
+      std::string setting_json = _setting_json.toStdString ();
       std::unique_ptr<PluginSetting> setting;
       bool                           json_read = false;
       if (!setting_json.empty ())
@@ -91,10 +89,8 @@ SampleProcessor::init_loaded (AudioEngine * engine)
   init_common ();
 }
 
-SampleProcessor::SampleProcessor (AudioEngine * engine)
+SampleProcessor::SampleProcessor (AudioEngine * engine) : audio_engine_ (engine)
 {
-  audio_engine_ = engine;
-
   fader_ = std::make_unique<Fader> (
     Fader::Type::SampleProcessor, false, nullptr, nullptr, this);
 
@@ -280,7 +276,7 @@ void
 SampleProcessor::queue_metronome_countin ()
 {
   auto bars = ENUM_INT_TO_VALUE (
-    PrerollCountBars, g_settings_get_enum (S_TRANSPORT, "metronome-countin"));
+    PrerollCountBars, gui::SettingsManager::metronomeCountIn ());
   int num_bars = Transport::preroll_count_bars_enum_to_int (bars);
   int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
   int num_beats = beats_per_bar * num_bars;
@@ -361,7 +357,7 @@ SampleProcessor::queue_file_or_chord_preset (
                 tr->channel_->instrument_->get_abs_state_dir (false, true);
               if (!state_dir.empty ())
                 {
-                  io_rmdir (state_dir, true);
+                  utils::io::rmdir (state_dir, true);
                 }
             }
 
@@ -398,11 +394,11 @@ SampleProcessor::queue_file_or_chord_preset (
       /* create an audio region & add to track */
       try
         {
-          auto ar = std::make_shared<AudioRegion> (
+          auto ar = new AudioRegion (
             -1, file->abs_path_, false, nullptr, 0, std::nullopt, 0,
             BitDepth::BIT_DEPTH_16, start_pos, 0, 0, 0);
           audio_track_ptr->add_region (ar, nullptr, 0, true, false);
-          file_end_pos_ = ar->end_pos_;
+          file_end_pos_ = *ar->end_pos_;
         }
       catch (const ZrythmException &e)
         {
@@ -455,13 +451,14 @@ SampleProcessor::queue_file_or_chord_preset (
                   /* create a MIDI region from the MIDI file & add to track */
                   try
                     {
-                      auto mr = std::make_shared<MidiRegion> (
+                      auto mr = new MidiRegion (
                         start_pos, file->abs_path_,
                         midi_track_ptr->get_name_hash (), 0, 0, i);
                       midi_track_ptr->add_region (
                         mr, nullptr, 0, !mr->name_.empty () ? false : true,
                         false);
-                      file_end_pos_ = std::max (file_end_pos_, mr->end_pos_);
+                      file_end_pos_ = std::max (
+                        file_end_pos_, *static_cast<Position *> (mr->end_pos_));
                     }
                   catch (const ZrythmException &e)
                     {
@@ -476,7 +473,7 @@ SampleProcessor::queue_file_or_chord_preset (
                    */
                   Position end_pos;
                   end_pos.from_seconds (13.0);
-                  auto mr = std::make_shared<MidiRegion> (
+                  auto mr = new MidiRegion (
                     start_pos, end_pos, midi_track_ptr->get_name_hash (), 0, 0);
 
                   /* add notes */
@@ -494,21 +491,22 @@ SampleProcessor::queue_file_or_chord_preset (
                         {
                           if (descr.notes_[k])
                             {
-                              auto mn = std::make_shared<MidiNote> (
+                              auto mn = new MidiNote (
                                 mr->id_, cur_pos, cur_end_pos, k + 36,
                                 VELOCITY_DEFAULT);
-                              mr->append_object (std::move (mn), false);
+                              mr->append_object (mn, false);
                             }
                         }
                     }
 
-                  file_end_pos_ = std::max (file_end_pos_, mr->end_pos_);
+                  file_end_pos_ = std::max (
+                    file_end_pos_, *static_cast<Position *> (mr->end_pos_));
 
                   try
                     {
                       midi_track_ptr->add_region (
-                        std::move (mr), nullptr, 0,
-                        mr->name_.empty () ? true : false, false);
+                        mr, nullptr, 0, mr->name_.empty () ? true : false,
+                        false);
                     }
                   catch (const ZrythmException &e)
                     {
@@ -578,6 +576,12 @@ SampleProcessor::init_after_cloning (const SampleProcessor &other)
   fader_ = other.fader_->clone_unique ();
 }
 
+TempoTrack *
+SampleProcessor::get_tempo_track () const
+{
+  return audio_engine_->project_->tracklist_->tempo_track_;
+}
+
 void
 SampleProcessor::find_and_queue_metronome (
   const Position  start_pos,
@@ -590,7 +594,9 @@ SampleProcessor::find_and_queue_metronome (
 
   const auto &audio_engine = *audio_engine_;
   const auto &transport = *audio_engine.project_->transport_;
-  const auto &tempo_track = *tracklist_->tempo_track_;
+  const auto * tempo_track_ptr = get_tempo_track ();
+  z_return_if_fail (tempo_track_ptr);
+  const auto &tempo_track = *tempo_track_ptr;
 
   /* find each bar / beat change from start to finish */
   int num_bars_before = start_pos.get_total_bars (transport, false);
@@ -669,7 +675,7 @@ SampleProcessor::find_and_queue_metronome (
             beat_offset_long + (signed_frame_t) loffset;
           z_return_if_fail_cmp (metronome_offset_long, >=, 0);
 
-          nframes_t metronome_offset = (nframes_t) metronome_offset_long;
+          auto metronome_offset = (nframes_t) metronome_offset_long;
           z_return_if_fail_cmp (
             metronome_offset, <, AUDIO_ENGINE->block_length_);
           queue_metronome (Metronome::Type::Normal, metronome_offset);

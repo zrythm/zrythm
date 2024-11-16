@@ -9,11 +9,7 @@
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/logger.h"
 #include "common/utils/math.h"
-#include "common/utils/vamp.h"
 
-#include <glib/gi18n.h>
-
-#include <giomm.h>
 #include <sndfile.h>
 
 #if defined(__FreeBSD__)
@@ -169,6 +165,9 @@ audio_detect_bpm (
   unsigned int        samplerate,
   std::vector<float> &candidates)
 {
+  // unimplemented
+  z_return_val_if_reached (140.f);
+#if 0
   ZVampPlugin * plugin =
     vamp_get_plugin (Z_VAMP_PLUGIN_FIXED_TEMPO_ESTIMATOR, (float) samplerate);
   size_t step_sz = vamp_plugin_get_preferred_step_size (plugin);
@@ -228,6 +227,7 @@ audio_detect_bpm (
   vamp_feature_set_free (feature_set);
 
   return bpm;
+#endif
 }
 
 /**

@@ -16,9 +16,9 @@
 #include "common/utils/math.h"
 #include "gui/backend/backend/project.h"
 
-#include <glib/gi18n.h>
-
 #include <fmt/format.h>
+
+using namespace zrythm;
 
 PortType
 ChannelSend::get_signal_type () const
@@ -39,7 +39,7 @@ ChannelSendTarget::describe () const
   switch (type)
     {
     case ChannelSendTargetType::None:
-      return _ ("None");
+      return QObject::tr ("None").toStdString ();
     case ChannelSendTargetType::Track:
       {
         auto tr = Track::from_variant (TRACKLIST->get_track (track_pos));
@@ -53,7 +53,7 @@ ChannelSendTarget::describe () const
     default:
       break;
     }
-  z_return_val_if_reached (_ ("Invalid"));
+  z_return_val_if_reached (QObject::tr ("Invalid").toStdString ());
 }
 
 std::string
@@ -73,7 +73,7 @@ ChannelSendTarget::get_icon () const
     default:
       break;
     }
-  z_return_val_if_reached (_ ("Invalid"));
+  z_return_val_if_reached (QObject::tr ("Invalid").toStdString ());
 }
 
 void
@@ -98,16 +98,16 @@ ChannelSend::construct_for_slot (int slot)
 {
   slot_ = slot;
 
-  enabled_ = std::make_unique<ControlPort> (
-    format_str (_ ("Channel Send {} enabled"), slot + 1));
+  enabled_ = std::make_unique<ControlPort> (format_str (
+    QObject::tr ("Channel Send {} enabled").toStdString (), slot + 1));
   enabled_->id_->sym_ = fmt::format ("channel_send_{}_enabled", slot + 1);
   enabled_->id_->flags_ |= PortIdentifier::Flags::Toggle;
   enabled_->id_->flags2_ |= PortIdentifier::Flags2::ChannelSendEnabled;
   enabled_->set_owner<ChannelSend> (this);
   enabled_->set_control_value (0.f, false, false);
 
-  amount_ = std::make_unique<ControlPort> (
-    format_str (_ ("Channel Send {} amount"), slot + 1));
+  amount_ = std::make_unique<ControlPort> (format_str (
+    QObject::tr ("Channel Send {} amount").toStdString (), slot + 1));
   amount_->id_->sym_ = fmt::format ("channel_send_{}_amount", slot + 1);
   amount_->id_->flags_ |= PortIdentifier::Flags::Amplitude;
   amount_->id_->flags_ |= PortIdentifier::Flags::Automatable;
@@ -116,22 +116,29 @@ ChannelSend::construct_for_slot (int slot)
   amount_->set_control_value (1.f, false, false);
 
   stereo_in_ = std::make_unique<StereoPorts> (
-    true, format_str (_ ("Channel Send {} audio in"), slot + 1),
+    true,
+    format_str (
+      QObject::tr ("Channel Send {} audio in").toStdString (), slot + 1),
     fmt::format ("channel_send_{}_audio_in", slot + 1));
   stereo_in_->set_owner (this);
 
   midi_in_ = std::make_unique<MidiPort> (
-    format_str (_ ("Channel Send {} MIDI in"), slot + 1), PortFlow::Input);
+    format_str (QObject::tr ("Channel Send {} MIDI in").toStdString (), slot + 1),
+    PortFlow::Input);
   midi_in_->id_->sym_ = fmt::format ("channel_send_{}_midi_in", slot + 1);
   midi_in_->set_owner (this);
 
   stereo_out_ = std::make_unique<StereoPorts> (
-    false, format_str (_ ("Channel Send {} audio out"), slot + 1),
+    false,
+    format_str (
+      QObject::tr ("Channel Send {} audio out").toStdString (), slot + 1),
     fmt::format ("channel_send_{}_audio_out", slot + 1));
   stereo_out_->set_owner (this);
 
   midi_out_ = std::make_unique<MidiPort> (
-    format_str (_ ("Channel Send {} MIDI out"), slot + 1), PortFlow::Output);
+    format_str (
+      QObject::tr ("Channel Send {} MIDI out").toStdString (), slot + 1),
+    PortFlow::Output);
   midi_out_->id_->sym_ = fmt::format ("channel_send_{}_midi_out", slot + 1);
   midi_out_->set_owner (this);
 }
@@ -364,7 +371,7 @@ ChannelSend::connect_stereo (
         Port::find_from_identifier<AudioPort> (*stereo_out_->get_l ().id_);
       if (!src->can_be_connected_to (*l))
         {
-          throw ZrythmException (_ ("Ports cannot be connected"));
+          throw ZrythmException (QObject::tr ("Ports cannot be connected"));
         }
     }
 
@@ -406,7 +413,7 @@ ChannelSend::connect_midi (MidiPort &port, bool recalc_graph, bool validate)
       Port * src = Port::find_from_identifier (*midi_out_->id_);
       if (!src->can_be_connected_to (port))
         {
-          throw ZrythmException (_ ("Ports cannot be connected"));
+          throw ZrythmException (QObject::tr ("Ports cannot be connected"));
         }
     }
 
@@ -516,9 +523,9 @@ ChannelSend::get_dest_name () const
   if (is_empty ())
     {
       if (is_prefader ())
-        return _ ("Pre-fader send");
+        return QObject::tr ("Pre-fader send").toStdString ();
 
-      return _ ("Post-fader send");
+      return QObject::tr ("Post-fader send").toStdString ();
     }
   else
     {
@@ -545,7 +552,8 @@ ChannelSend::get_dest_name () const
               {
                 auto * track = dest->get_track (true);
                 z_return_val_if_fail (track, {});
-                return format_str (_ ("{} input"), track->name_);
+                return format_str (
+                  QObject::tr ("{} input").toStdString (), track->name_);
               }
               break;
             default:
@@ -653,8 +661,10 @@ ChannelSend::find_widget ()
 ChannelSend *
 ChannelSend::find_in_project () const
 {
-  auto * track =
-    TRACKLIST->find_track_by_name_hash<ChannelTrack> (track_name_hash_);
+  auto track_var = TRACKLIST->find_track_by_name_hash (track_name_hash_);
+  z_return_val_if_fail (track_var, nullptr);
+  auto * track = std::visit (
+    [&] (auto &&t) { return dynamic_cast<ChannelTrack *> (t); }, *track_var);
   z_return_val_if_fail (track, nullptr);
 
   return track->channel_->sends_[slot_].get ();

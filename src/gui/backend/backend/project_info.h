@@ -27,7 +27,7 @@ struct ProjectInfo
   std::string modified_str_;
 };
 
-#define PROJECT_INFO_FILE_NOT_FOUND_STR _ ("<File not found>")
+#define PROJECT_INFO_FILE_NOT_FOUND_STR QObject::tr ("<File not found>")
 
 /**
  * @}

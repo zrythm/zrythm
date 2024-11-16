@@ -16,7 +16,7 @@
 ModulatorTrack::ModulatorTrack (int track_pos)
     : Track (
         Track::Type::Modulator,
-        _ ("Modulators"),
+        QObject::tr ("Modulators").toStdString (),
         track_pos,
         PortType::Unknown,
         PortType::Unknown)
@@ -74,12 +74,6 @@ struct ModulatorImportData
   bool                         gen_automatables;
   bool                         recalc_graph;
   bool                         pub_events;
-
-  static void free (void * data, GClosure *)
-  {
-    auto * self = (ModulatorImportData *) data;
-    delete self;
-  }
 };
 
 static void

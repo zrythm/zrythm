@@ -12,6 +12,12 @@
 
 #include <cstddef>
 
+void *
+z_realloc (void * ptr, size_t size);
+
+void
+z_free_strv (char ** strv);
+
 /**
  * Reallocate and zero out newly added memory.
  */

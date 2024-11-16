@@ -8,8 +8,6 @@
 #include "common/utils/objects.h"
 #include "common/utils/resampler.h"
 
-#include <glib/gi18n.h>
-
 #include <fmt/printf.h>
 
 void

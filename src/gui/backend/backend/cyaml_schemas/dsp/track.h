@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -21,7 +21,6 @@
 #include "gui/backend/backend/cyaml_schemas/dsp/track_lane.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/track_processor.h"
 #include "gui/backend/backend/cyaml_schemas/plugins/plugin.h"
-#include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 typedef enum TrackType_v1
 {

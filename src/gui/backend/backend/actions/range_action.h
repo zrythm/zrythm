@@ -31,7 +31,7 @@ public:
   RangeAction ();
   RangeAction (Type type, Position start_pos, Position end_pos);
 
-  std::string to_string () const override;
+  QString to_string () const override;
 
   bool can_contain_clip () const override { return true; }
 
@@ -59,10 +59,10 @@ private:
   void undo_impl () override;
 
   void add_to_sel_after (
-    std::vector<ArrangerObject *>                &prj_objs,
-    std::vector<std::shared_ptr<ArrangerObject>> &after_objs_for_prj,
-    ArrangerObject                               &prj_obj,
-    std::shared_ptr<ArrangerObject>             &&after_obj);
+    std::vector<ArrangerObject *> &prj_objs,
+    std::vector<ArrangerObject *> &after_objs_for_prj,
+    ArrangerObject                &prj_obj,
+    ArrangerObject *               after_obj);
 
 public:
   /** Range positions. */
