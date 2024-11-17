@@ -13,7 +13,7 @@ ColumnLayout {
         Layout.fillWidth: true
 
         TabButton {
-            icon.source: Style.getIcon("gnome-icon-library", "shapes-large-symbolic.svg")
+            icon.source: ResourceManager.getIconUrl("gnome-icon-library", "shapes-large-symbolic.svg")
 
             ToolTip {
                 text: qsTr("Plugin Browser")
@@ -22,7 +22,7 @@ ColumnLayout {
         }
 
         TabButton {
-            icon.source: Style.getIcon("gnome-icon-library", "file-cabinet-symbolic.svg")
+            icon.source: ResourceManager.getIconUrl("gnome-icon-library", "file-cabinet-symbolic.svg")
 
             ToolTip {
                 text: qsTr("File Browser")
@@ -31,7 +31,7 @@ ColumnLayout {
         }
 
         TabButton {
-            icon.source: Style.getIcon("zrythm-dark", "speaker.svg")
+            icon.source: ResourceManager.getIconUrl("zrythm-dark", "speaker.svg")
 
             ToolTip {
                 text: qsTr("Monitor Section")
@@ -40,7 +40,7 @@ ColumnLayout {
         }
 
         TabButton {
-            icon.source: Style.getIcon("zrythm-dark", "minuet-chords.svg")
+            icon.source: ResourceManager.getIconUrl("zrythm-dark", "minuet-chords.svg")
 
             ToolTip {
                 text: qsTr("Chord Preset Browser")

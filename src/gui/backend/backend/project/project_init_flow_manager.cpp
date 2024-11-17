@@ -713,16 +713,15 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
    * (because it's too much work with little benefit to port the selections from
    * older projects) */
 
-  auto init_or_create_arr_selections = [] (auto &selections) {
-    using T =
-      typename std::remove_reference_t<decltype (selections)>::element_type;
+  auto init_or_create_arr_selections = [&] (auto &selections) {
+    using T = base_type<decltype (selections)>;
     if (selections)
       {
         selections->init_loaded (true, nullptr);
       }
     else
       {
-        selections = std::make_unique<T> ();
+        selections = new T (prj);
       }
   };
 

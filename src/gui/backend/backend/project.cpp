@@ -477,7 +477,7 @@ Project::get_arranger_selections_for_last_selection ()
   switch (last_selection_)
     {
     case Project::SelectionType::Timeline:
-      return timeline_selections_.get ();
+      return timeline_selections_;
       break;
     case Project::SelectionType::Editor:
       if (r)
@@ -511,15 +511,15 @@ Project::init_selections (bool including_arranger_selections)
 {
   if (including_arranger_selections)
     {
-      automation_selections_ = std::make_unique<AutomationSelections> ();
+      automation_selections_ = new AutomationSelections (this);
       automation_selections_->are_objects_copies_ = false;
-      audio_selections_ = std::make_unique<AudioSelections> ();
+      audio_selections_ = new AudioSelections (this);
       audio_selections_->are_objects_copies_ = false;
-      chord_selections_ = std::make_unique<ChordSelections> ();
+      chord_selections_ = new ChordSelections (this);
       chord_selections_->are_objects_copies_ = false;
-      timeline_selections_ = std::make_unique<TimelineSelections> ();
+      timeline_selections_ = new TimelineSelections (this);
       timeline_selections_->are_objects_copies_ = false;
-      midi_selections_ = std::make_unique<MidiSelections> ();
+      midi_selections_ = new MidiSelections (this);
       midi_selections_->are_objects_copies_ = false;
     }
   mixer_selections_ = std::make_unique<ProjectMixerSelections> ();
@@ -1124,14 +1124,11 @@ Project::init_after_cloning (const Project &other)
   title_ = other.title_;
   datetime_str_ = other.datetime_str_;
   version_ = other.version_;
-  transport_ = other.transport_->clone_raw_ptr ();
-  transport_->setParent (this);
+  transport_ = other.transport_->clone_qobject (this);
   audio_engine_ = other.audio_engine_->clone_unique ();
-  tracklist_ = other.tracklist_->clone_raw_ptr ();
-  tracklist_->setParent (this);
+  tracklist_ = other.tracklist_->clone_qobject (this);
   clip_editor_ = other.clip_editor_;
-  timeline_ = other.timeline_->clone_raw_ptr ();
-  timeline_->setParent (this);
+  timeline_ = other.timeline_->clone_qobject (this);
   snap_grid_timeline_ = std::make_unique<SnapGrid> (*other.snap_grid_timeline_);
   snap_grid_editor_ = std::make_unique<SnapGrid> (*other.snap_grid_editor_);
   quantize_opts_timeline_ =
@@ -1140,17 +1137,17 @@ Project::init_after_cloning (const Project &other)
     std::make_unique<QuantizeOptions> (*other.quantize_opts_editor_);
   mixer_selections_ =
     std::make_unique<ProjectMixerSelections> (*other.mixer_selections_);
-  timeline_selections_ = other.timeline_selections_->clone_unique ();
-  midi_selections_ = other.midi_selections_->clone_unique ();
-  chord_selections_ = other.chord_selections_->clone_unique ();
-  automation_selections_ = other.automation_selections_->clone_unique ();
-  audio_selections_ = other.audio_selections_->clone_unique ();
+  timeline_selections_ = other.timeline_selections_->clone_qobject (this);
+  midi_selections_ = other.midi_selections_->clone_qobject (this);
+  chord_selections_ = other.chord_selections_->clone_qobject (this);
+  automation_selections_ = other.automation_selections_->clone_qobject (this);
+  audio_selections_ = other.audio_selections_->clone_qobject (this);
   tracklist_selections_ =
     std::make_unique<SimpleTracklistSelections> (*other.tracklist_selections_);
   tracklist_selections_->tracklist_ = tracklist_;
   region_link_group_manager_ = other.region_link_group_manager_;
-  port_connections_manager_ = other.port_connections_manager_->clone_raw_ptr ();
-  port_connections_manager_->setParent (this);
+  port_connections_manager_ =
+    other.port_connections_manager_->clone_qobject (this);
   midi_mappings_ = other.midi_mappings_->clone_unique ();
   undo_manager_ = other.undo_manager_->clone_unique ();
 
@@ -1205,6 +1202,52 @@ Transport *
 Project::getTransport () const
 {
   return transport_;
+}
+
+AutomationSelections *
+Project::getAutomationSelections () const
+{
+  return automation_selections_;
+}
+
+AudioSelections *
+Project::getAudioSelections () const
+{
+  return audio_selections_;
+}
+
+MidiSelections *
+Project::getMidiSelections () const
+{
+  return midi_selections_;
+}
+
+ChordSelections *
+Project::getChordSelections () const
+{
+  return chord_selections_;
+}
+
+TimelineSelections *
+Project::getTimelineSelections () const
+{
+  return timeline_selections_;
+}
+
+int
+Project::getTool () const
+{
+  return ENUM_VALUE_TO_INT (tool_);
+}
+
+void
+Project::setTool (int tool)
+{
+  if (ENUM_VALUE_TO_INT (tool_) == tool)
+    return;
+
+  tool_ = ENUM_INT_TO_VALUE (Tool, tool);
+  Q_EMIT toolChanged (tool);
 }
 
 Project *

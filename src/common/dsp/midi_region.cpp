@@ -44,9 +44,9 @@
 #include "midilib/src/midiutil.h"
 
 MidiRegion::MidiRegion (QObject * parent)
-    : ArrangerObject (Type::Region), LengthableObject (),
-      QAbstractListModel (parent)
+    : ArrangerObject (Type::Region), QAbstractListModel (parent)
 {
+  id_.type_ = RegionType::Midi;
   ArrangerObject::parent_base_qproperties (*this);
   LengthableObject::parent_base_qproperties (*this);
   unended_notes_.reserve (12000);
@@ -61,8 +61,6 @@ MidiRegion::MidiRegion (
   QObject *       parent)
     : MidiRegion (parent)
 {
-  id_.type_ = RegionType::Midi;
-
   init (start_pos, end_pos, track_name_hash, lane_pos, idx_inside_lane);
 }
 MidiRegion::MidiRegion (
@@ -82,7 +80,6 @@ MidiRegion::MidiRegion (
   r_end_pos.add_ticks (r_length_ticks);
 
   /* create region */
-  id_.type_ = RegionType::Midi;
   init (pos, r_end_pos, track_name_hash, lane_pos, idx_inside_lane);
 
   /* get midi note positions */
@@ -113,8 +110,6 @@ MidiRegion::MidiRegion (
     : MidiRegion (parent)
 {
   z_debug ("reading from {}...", abs_path);
-
-  id_.type_ = RegionType::Midi;
 
   Position end_pos = start_pos;
   end_pos.add_ticks (1);
@@ -538,5 +533,5 @@ MidiRegion::validate (bool is_project, double frames_per_tick) const
 std::optional<ClipEditorArrangerSelectionsPtrVariant>
 MidiRegion::get_arranger_selections () const
 {
-  return MIDI_SELECTIONS.get ();
+  return MIDI_SELECTIONS;
 }

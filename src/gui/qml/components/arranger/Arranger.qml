@@ -5,32 +5,58 @@ import QtQuick
 import ZrythmStyle 1.0
 
 Item {
-    /*
-    // Zoom with mouse wheel
-    MouseArea {
-        anchors.fill: parent
-        acceptedButtons: Qt.NoButton
-        onWheel: {
-            if (wheel.modifiers & Qt.ControlModifier) {
-                var zoomFactor = wheel.angleDelta.y > 0 ? 1.1 : 0.9
-                pixelsPerBeat *= zoomFactor
-                pixelsPerBeat = Math.max(10, Math.min(200, pixelsPerBeat))
-            }
-        }
-    }
-    */
-
     id: root
+
+    enum CurrentAction {
+        None,
+        CreatingResizingR,
+        CreatingMoving,
+        ResizingL,
+        ResizingLLoop,
+        ResizingLFade,
+        ResizingR,
+        ResizingRLoop,
+        ResizingRFade,
+        ResizingUp,
+        ResizingUpFadeIn,
+        ResizingUpFadeOut,
+        StretchingL,
+        StretchingR,
+        StartingAuditioning,
+        Auditioning,
+        Autofilling,
+        Erasing,
+        StartingErasing,
+        StartingMoving,
+        StartingMovingCopy,
+        StartingMovingLink,
+        Moving,
+        MovingCopy,
+        MovingLink,
+        StartingChangingCurve,
+        ChangingCurve,
+        StartingSelection,
+        Selecting,
+        StartingDeleteSelection,
+        DeleteSelecting,
+        StartingRamp,
+        Ramping,
+        Cutting,
+        Renaming,
+        StartingPanning,
+        Panning
+    }
 
     required property var editorSettings
     required property Ruler ruler
+    required property var selections
+    required property int tool
+    property int currentAction: Arranger.CurrentAction.None
+    readonly property alias currentActionStartCoordinates: arrangerMouseArea.startCoordinates
+    property var arrangerSelectionsCloneAtStart // the selections at the start of the current action (own copy)
+    property var actionObject: null // the object that is being acted upon (reference)
     property bool enableYScroll: false
     property alias scrollView: scrollView
-    property int pixelsPerBeat: 50
-    property int beatsPerBar: 4
-    property int numTracks: 8
-    property int trackHeight: 80
-    property int totalBeats: 200 // Adjust this based on your needs
     default property alias content: extraContent.data
     readonly property real scrollX: root.editorSettings.x
     readonly property real scrollY: root.editorSettings.y
@@ -42,15 +68,27 @@ Item {
     width: ruler.width
     height: 100
 
+    function setArrangerSelectionsCloneAtStart(selectionsClone) {
+        if (root.arrangerSelectionsCloneAtStart) {
+            root.arrangerSelectionsCloneAtStart.destroy();
+        }
+        root.arrangerSelectionsCloneAtStart = selectionsClone;
+    }
+
+    function setActionObject(obj) {
+        root.actionObject = obj;
+    }
+
     // Arranger background
     Rectangle {
         anchors.fill: parent
         color: "transparent"
     }
 
-    // Scrollable content area
     ScrollView {
         id: scrollView
+
+        property alias currentAction: root.currentAction
 
         anchors.fill: parent
         clip: true
@@ -91,8 +129,8 @@ Item {
         Item {
             id: arrangerContent
 
-            width: totalBeats * pixelsPerBeat
-            height: numTracks * trackHeight
+            width: ruler.width
+            height: 600 // TODO: calculate height
 
             // Vertical grid lines
             Item {
@@ -174,34 +212,121 @@ Item {
                 z: 1000
             }
 
-        }
+            // Selection rectangle
+            Rectangle {
+                id: selectionRectangle
 
-    }
+                readonly property real minX: Math.min(arrangerMouseArea.startCoordinates.x, arrangerMouseArea.currentCoordinates.x)
+                readonly property real minY: Math.min(arrangerMouseArea.startCoordinates.y, arrangerMouseArea.currentCoordinates.y)
+                readonly property real maxX: Math.max(arrangerMouseArea.startCoordinates.x, arrangerMouseArea.currentCoordinates.x)
+                readonly property real maxY: Math.max(arrangerMouseArea.startCoordinates.y, arrangerMouseArea.currentCoordinates.y)
 
-    // Pan the view when dragging with middle mouse button
-    MouseArea {
-        property point lastPos
-
-        anchors.fill: scrollView
-        acceptedButtons: Qt.MiddleButton
-        cursorShape: pressed ? Qt.ClosedHandCursor : undefined
-        onPressed: (mouse) => {
-            if (mouse.button === Qt.MiddleButton)
-                lastPos = Qt.point(mouseX, mouseY);
-            else
-                mouse.accepted = false;
-        }
-        onPositionChanged: {
-            if (pressed) {
-                var dx = mouseX - lastPos.x;
-                root.editorSettings.x -= dx;
-                if (root.enableYScroll) {
-                    var dy = mouseY - lastPos.y;
-                    root.editorSettings.y -= dy;
-                }
-                lastPos = Qt.point(mouseX, mouseY);
+                visible: scrollView.currentAction === Arranger.Selecting
+                color: Qt.alpha(Style.backgroundAppendColor, 0.1)
+                border.color: Style.backgroundAppendColor
+                border.width: 2
+                z: 1
+                opacity: 0.5
+                x: minX
+                y: minY
+                width: maxX - minX
+                height: maxY - minY
             }
+
+            MouseArea {
+                id: arrangerMouseArea
+
+                property point startCoordinates
+                property point currentCoordinates
+                property alias action: scrollView.currentAction
+                property bool hovered: false
+
+                StateGroup {
+                    states: State {
+                        name: "unsetCursor"
+                        when: !arrangerMouseArea.hovered && arrangerMouseArea.action === Arranger.CurrentAction.None
+                        StateChangeScript {
+                            script: CursorManager.unsetCursor()
+                        }
+                    }
+                }
+
+                z: 1
+                anchors.fill: parent
+                acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+                hoverEnabled: true
+                preventStealing: true
+                propagateComposedEvents: true
+                onEntered: (mouse) => {
+                    console.log("Cursor entered arranger");
+                    hovered = true;
+                    updateCursor();
+                }
+                onExited: (mouse) => {
+                    console.log("Cursor exited arranger");
+                    hovered = false;
+                }
+                // This must push a cursor via the CursorManager
+                onPressed: (mouse) => {
+                    console.log("press inside arranger");
+                    startCoordinates = Qt.point(mouse.x, mouse.y);
+                    if (action === Arranger.None) {
+                        if (mouse.button === Qt.MiddleButton) {
+                            action = Arranger.StartingPanning;
+                        } else if (mouse.button === Qt.LeftButton) {
+                            action = Arranger.StartingSelection;
+                        }
+                    }
+                    updateCursor();
+                }
+                onDoubleClicked: (mouse) => {
+                    console.log("doubleClicked", action);
+                    // create an object at the mouse position
+                    if (mouse.button === Qt.LeftButton) {
+                        let obj = beginObjectCreation(mouse.x, mouse.y);
+                    }
+                }
+                onPositionChanged: (mouse) => {
+                    const prevCoordinates = Qt.point(currentCoordinates.x, currentCoordinates.y);
+                    currentCoordinates = Qt.point(mouse.x, mouse.y);
+                    const dx = mouse.x - prevCoordinates.x;
+                    const dy = mouse.y - prevCoordinates.y;
+                    let ticks = mouse.x / root.ruler.pxPerTick;
+                    if (pressed) {
+                        if (action === Arranger.StartingSelection)
+                            action = Arranger.Selecting;
+                        else if (action === Arranger.StartingPanning)
+                            action = Arranger.Panning;
+                        // ----------------------------------------------
+                        if (action === Arranger.Selecting) {
+                        } else if (action === Arranger.Panning) {
+                            currentCoordinates.x -= dx;
+                            root.editorSettings.x -= dx;
+                            if (root.enableYScroll) {
+                                currentCoordinates.y -= dy;
+                                root.editorSettings.y -= dy;
+                            }
+                        } else if (action === Arranger.CreatingResizingR) {
+                           root.actionObject.endPosition.ticks = ticks;  
+                        }
+                    }
+
+                    updateCursor();
+                }
+                onReleased: {
+                    if (action != Arranger.None) {
+                        console.log("released: clearing action");
+                        action = Arranger.None;
+                    } else {
+                        console.log("released without action");
+                    }
+                    root.actionObject = null;
+                    updateCursor();
+                }
+            }
+
         }
+
     }
 
 }

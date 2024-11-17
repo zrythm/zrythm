@@ -124,5 +124,5 @@ ChordRegion::validate (bool is_project, double frames_per_tick) const
 std::optional<ClipEditorArrangerSelectionsPtrVariant>
 ChordRegion::get_arranger_selections () const
 {
-  return CHORD_SELECTIONS.get ();
+  return CHORD_SELECTIONS;
 }

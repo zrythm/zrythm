@@ -59,22 +59,22 @@ ColumnLayout {
         Layout.fillWidth: true
 
         TabButton {
-            icon.source: Style.getIcon("zrythm-dark", "piano-roll.svg")
+            icon.source: ResourceManager.getIconUrl("zrythm-dark", "piano-roll.svg")
             text: qsTr("Editor")
         }
 
         TabButton {
-            icon.source: Style.getIcon("zrythm-dark", "mixer.svg")
+            icon.source: ResourceManager.getIconUrl("zrythm-dark", "mixer.svg")
             text: qsTr("Mixer")
         }
 
         TabButton {
-            icon.source: Style.getIcon("gnome-icon-library", "encoder-knob-symbolic.svg")
+            icon.source: ResourceManager.getIconUrl("gnome-icon-library", "encoder-knob-symbolic.svg")
             text: qsTr("Modulators")
         }
 
         TabButton {
-            icon.source: Style.getIcon("zrythm-dark", "chord-pad.svg")
+            icon.source: ResourceManager.getIconUrl("zrythm-dark", "chord-pad.svg")
             text: qsTr("Chord Pad")
         }
 

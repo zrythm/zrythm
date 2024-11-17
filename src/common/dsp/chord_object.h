@@ -49,6 +49,10 @@ class ChordObject final
       public ICloneable<ChordObject>,
       public ISerializable<ChordObject>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (ChordObject)
+
 public:
   ChordObject (QObject * parent = nullptr);
 

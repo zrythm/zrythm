@@ -151,6 +151,8 @@ qt_add_qml_module(zrythm
     backend/action_controller.cpp
     backend/automation_tracklist_proxy_model.h
     backend/automation_tracklist_proxy_model.cpp
+    backend/cursor_manager.h
+    backend/cursor_manager.cpp
     backend/global_state.h
     backend/global_state.cpp
     backend/recent_projects_model.h
@@ -164,6 +166,8 @@ qt_add_qml_module(zrythm
     backend/realtime_property.h
     backend/realtime_updater.h
     backend/realtime_updater.cpp
+    backend/resource_manager.h
+    backend/resource_manager.cpp
     backend/track_filter_proxy_model.h
     backend/track_filter_proxy_model.cpp
     backend/meter.h

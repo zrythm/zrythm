@@ -34,6 +34,16 @@ enum class CloneType
   Both
 };
 
+#define DEFINE_ICLONEABLE_QML_PROPERTIES(ClassType) \
+public: \
+  /* ================================================================ */ \
+  /* helpers */ \
+  /* ================================================================ */ \
+  Q_INVOKABLE ClassType * clone##ClassType () const \
+  { \
+    return clone_raw_ptr (); \
+  }
+
 /**
  * Interface for objects that can be cloned.
  *
@@ -100,6 +110,14 @@ public:
         cloned = new Derived ();
       }
     cloned->init_after_cloning (*get_derived ());
+    return cloned;
+  }
+
+  Derived * clone_qobject (QObject * parent) const
+    requires (Type == CloneType::Unique || Type == CloneType::Both)
+  {
+    Derived * cloned = clone_raw_ptr ();
+    cloned->setParent (parent);
     return cloned;
   }
 

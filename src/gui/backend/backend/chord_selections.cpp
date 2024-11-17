@@ -7,7 +7,10 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
-ChordSelections::ChordSelections () : ArrangerSelections (Type::Chord) { }
+ChordSelections::ChordSelections (QObject * parent)
+    : QObject (parent), ArrangerSelections (Type::Chord)
+{
+}
 
 bool
 ChordSelections::can_be_pasted_at_impl (const Position pos, const int idx) const

@@ -14,21 +14,21 @@ RowLayout {
 
     LinkedButtons {
         Button {
-            icon.source: Style.getIcon("gnome-icon-library", "seek-backward-large-symbolic.svg")
+            icon.source: ResourceManager.getIconUrl("gnome-icon-library", "seek-backward-large-symbolic.svg")
             onClicked: transport.moveBackward()
         }
 
         Button {
-            icon.source: Style.getIcon("gnome-icon-library", "seek-forward-large-symbolic.svg")
+            icon.source: ResourceManager.getIconUrl("gnome-icon-library", "seek-forward-large-symbolic.svg")
             onClicked: transport.moveForward()
         }
 
         Button {
-            icon.source: Style.getIcon("gnome-icon-library", "skip-backward-large-symbolic.svg")
+            icon.source: ResourceManager.getIconUrl("gnome-icon-library", "skip-backward-large-symbolic.svg")
         }
 
         Button {
-            icon.source: Style.getIcon("gnome-icon-library", (transport.playState == 1 ? "pause" : "play") + "-large-symbolic.svg")
+            icon.source: ResourceManager.getIconUrl("gnome-icon-library", (transport.playState == 1 ? "pause" : "play") + "-large-symbolic.svg")
             onClicked: {
                 transport.isRolling() ? transport.requestPause(true) : transport.requestRoll(true);
             }
@@ -49,7 +49,7 @@ RowLayout {
             onCheckedChanged: {
                 transport.loopEnabled = checked;
             }
-            icon.source: Style.getIcon("gnome-icon-library", "loop-arrow-symbolic.svg")
+            icon.source: ResourceManager.getIconUrl("gnome-icon-library", "loop-arrow-symbolic.svg")
         }
 
     }

@@ -583,7 +583,7 @@ AudioRegion::fix_positions (double frames_per_tick)
 std::optional<ClipEditorArrangerSelectionsPtrVariant>
 AudioRegion::get_arranger_selections () const
 {
-  return AUDIO_SELECTIONS.get ();
+  return AUDIO_SELECTIONS;
 }
 
 bool

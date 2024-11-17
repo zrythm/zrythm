@@ -7,7 +7,10 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
-AudioSelections::AudioSelections () : ArrangerSelections (Type::Audio) { }
+AudioSelections::AudioSelections (QObject * parent)
+    : QObject (parent), ArrangerSelections (Type::Audio)
+{
+}
 
 void
 AudioSelections::set_has_range (bool has_range)

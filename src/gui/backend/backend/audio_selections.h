@@ -36,9 +36,10 @@ class AudioSelections final
 {
   Q_OBJECT
   QML_ELEMENT
+  DEFINE_ARRANGER_SELECTIONS_QML_PROPERTIES (AudioSelections)
 
 public:
-  AudioSelections ();
+  AudioSelections (QObject * parent = nullptr);
 
   /**
    * Sets whether a range selection exists and sends events to update the UI.

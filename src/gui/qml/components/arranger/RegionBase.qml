@@ -18,10 +18,7 @@ ArrangerObjectBase {
     Rectangle {
         id: backgroundRect
 
-        color: {
-            let c = arrangerObject.hasColor ? arrangerObject.color : track.color;
-            return Style.adjustColorForHoverOrVisualFocusOrDown(c, root.hovered, root.visualFocus, root.down);
-        }
+        color: root.objectColor
         anchors.fill: parent
         radius: Style.toolButtonRadius
     }

@@ -34,8 +34,10 @@ class MidiSelections final
 {
   Q_OBJECT
   QML_ELEMENT
+  DEFINE_ARRANGER_SELECTIONS_QML_PROPERTIES (MidiSelections)
+
 public:
-  MidiSelections ();
+  MidiSelections (QObject * parent = nullptr);
 
   MidiNote * get_highest_note ();
 

@@ -27,7 +27,7 @@ class ChordSelections final
   Q_OBJECT
   QML_ELEMENT
 public:
-  ChordSelections ();
+  ChordSelections (QObject * parent = nullptr);
 
   void sort_by_indices (bool desc) override;
 

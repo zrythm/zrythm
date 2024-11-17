@@ -28,8 +28,10 @@ class TimelineSelections final
 {
   Q_OBJECT
   QML_ELEMENT
+  DEFINE_ARRANGER_SELECTIONS_QML_PROPERTIES (TimelineSelections)
+
 public:
-  TimelineSelections ();
+  TimelineSelections (QObject * parent = nullptr);
 
   /**
    * Creates a new TimelineSelections instance for the given range.

@@ -106,6 +106,8 @@ ColumnLayout {
                     timeline: project.timeline
                     tracklist: project.tracklist
                     ruler: ruler
+                    selections: project.timelineSelections
+                    tool: project.tool
                     Layout.fillWidth: true
                     Layout.minimumHeight: pinnedTracklist.height
                     Layout.maximumHeight: pinnedTracklist.height
@@ -118,6 +120,8 @@ ColumnLayout {
                     timeline: project.timeline
                     tracklist: project.tracklist
                     ruler: ruler
+                    selections: project.timelineSelections
+                    tool: project.tool
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                 }
@@ -148,17 +152,17 @@ ColumnLayout {
         Layout.fillWidth: true
 
         TabButton {
-            icon.source: Style.getIcon("zrythm-dark", "roadmap.svg")
+            icon.source: ResourceManager.getIconUrl("zrythm-dark", "roadmap.svg")
             text: qsTr("Timeline")
         }
 
         TabButton {
-            icon.source: Style.getIcon("zrythm-dark", "connector.svg")
+            icon.source: ResourceManager.getIconUrl("zrythm-dark", "connector.svg")
             text: qsTr("Port Connections")
         }
 
         TabButton {
-            icon.source: Style.getIcon("zrythm-dark", "signal-midi.svg")
+            icon.source: ResourceManager.getIconUrl("zrythm-dark", "signal-midi.svg")
             text: qsTr("Midi CC Bindings")
         }
 

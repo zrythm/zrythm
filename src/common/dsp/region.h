@@ -53,7 +53,10 @@ public: \
   int getRegionType () const \
   { \
     return ENUM_VALUE_TO_INT (id_.type_); \
-  }
+  } \
+  /* ================================================================ */ \
+  /* helpers */ \
+  /* ================================================================ */
 
 constexpr const char * REGION_PRINTF_FILENAME = "%s_%s.mid";
 

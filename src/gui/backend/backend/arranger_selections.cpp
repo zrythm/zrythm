@@ -183,6 +183,7 @@ ArrangerSelections::add_object_ref (T &obj)
     {
       obj.generate_transient ();
       objects_.emplace_back (&obj);
+      Q_EMIT obj.selectedChanged (true);
     }
 }
 
@@ -520,6 +521,16 @@ ArrangerSelections::clear (bool fire_events)
       return;
     }
 
+  std::ranges::for_each (objects_, [&] (auto &obj_var) {
+    std::visit (
+      [&] (auto &&obj) {
+        QMetaObject::invokeMethod (
+          obj, [obj] { Q_EMIT obj->selectedChanged (false); },
+          Qt::QueuedConnection);
+      },
+      obj_var);
+  });
+
   auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
   std::visit (
     [&] (auto &&self) {
@@ -656,6 +667,10 @@ ArrangerSelections::remove_object (const ArrangerObject &obj)
             {
               obj->setParent (nullptr);
               obj->deleteLater ();
+            }
+          else
+            {
+              Q_EMIT obj->selectedChanged (false);
             }
         },
         obj_var);
@@ -794,13 +809,13 @@ ArrangerSelections::get_for_type (ArrangerSelections::Type type)
   switch (type)
     {
     case ArrangerSelections::Type::Timeline:
-      return TL_SELECTIONS.get ();
+      return TL_SELECTIONS;
     case ArrangerSelections::Type::Midi:
-      return MIDI_SELECTIONS.get ();
+      return MIDI_SELECTIONS;
     case ArrangerSelections::Type::Chord:
-      return CHORD_SELECTIONS.get ();
+      return CHORD_SELECTIONS;
     case ArrangerSelections::Type::Automation:
-      return AUTOMATION_SELECTIONS.get ();
+      return AUTOMATION_SELECTIONS;
     default:
       throw ZrythmException ("Invalid type");
     }

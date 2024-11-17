@@ -13,7 +13,7 @@ ColumnLayout {
         Layout.fillWidth: true
 
         TabButton {
-            icon.source: Style.getIcon("zrythm-dark", "track-inspector.svg")
+            icon.source: ResourceManager.getIconUrl("zrythm-dark", "track-inspector.svg")
 
             ToolTip {
                 text: qsTr("Track Inspector")
@@ -22,7 +22,7 @@ ColumnLayout {
         }
 
         TabButton {
-            icon.source: Style.getIcon("zrythm-dark", "plug.svg")
+            icon.source: ResourceManager.getIconUrl("zrythm-dark", "plug.svg")
 
             ToolTip {
                 text: qsTr("Plugin Inspector")

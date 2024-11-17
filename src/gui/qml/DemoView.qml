@@ -149,25 +149,25 @@ ApplicationWindow {
 
                     TabBar {
                         TabButton {
-                            icon.source: Style.getIcon("zrythm-dark", "piano-roll.svg")
+                            icon.source: ResourceManager.getIconUrl("zrythm-dark", "piano-roll.svg")
                             text: qsTr("Editor")
                             enabled: enabledRepeater.enabledBoolData
                         }
 
                         TabButton {
-                            icon.source: Style.getIcon("zrythm-dark", "mixer.svg")
+                            icon.source: ResourceManager.getIconUrl("zrythm-dark", "mixer.svg")
                             text: qsTr("Mixer")
                             enabled: enabledRepeater.enabledBoolData
                         }
 
                         TabButton {
-                            icon.source: Style.getIcon("gnome-icon-library", "encoder-knob-symbolic.svg")
+                            icon.source: ResourceManager.getIconUrl("gnome-icon-library", "encoder-knob-symbolic.svg")
                             text: qsTr("Modulators")
                             enabled: enabledRepeater.enabledBoolData
                         }
 
                         TabButton {
-                            icon.source: Style.getIcon("zrythm-dark", "chord-pad.svg")
+                            icon.source: ResourceManager.getIconUrl("zrythm-dark", "chord-pad.svg")
                             text: "Chord Pad"
                             enabled: enabledRepeater.enabledBoolData
                         }
@@ -178,12 +178,12 @@ ApplicationWindow {
                         enabled: enabledRepeater.enabledBoolData
 
                         TabButton {
-                            icon.source: Style.getIcon("zrythm-dark", "track-inspector.svg")
+                            icon.source: ResourceManager.getIconUrl("zrythm-dark", "track-inspector.svg")
                             text: qsTr("Track Inspector")
                         }
 
                         TabButton {
-                            icon.source: Style.getIcon("zrythm-dark", "plug.svg")
+                            icon.source: ResourceManager.getIconUrl("zrythm-dark", "plug.svg")
                             text: qsTr("Plugin Inspector")
                         }
 
@@ -193,7 +193,7 @@ ApplicationWindow {
                         enabled: enabledRepeater.enabledBoolData
 
                         TabButton {
-                            icon.source: Style.getIcon("gnome-icon-library", "shapes-large-symbolic.svg")
+                            icon.source: ResourceManager.getIconUrl("gnome-icon-library", "shapes-large-symbolic.svg")
 
                             ToolTip {
                                 text: qsTr("Plugin Browser")
@@ -202,7 +202,7 @@ ApplicationWindow {
                         }
 
                         TabButton {
-                            icon.source: Style.getIcon("gnome-icon-library", "file-cabinet-symbolic.svg")
+                            icon.source: ResourceManager.getIconUrl("gnome-icon-library", "file-cabinet-symbolic.svg")
 
                             ToolTip {
                                 text: qsTr("File Browser")
@@ -211,7 +211,7 @@ ApplicationWindow {
                         }
 
                         TabButton {
-                            icon.source: Style.getIcon("zrythm-dark", "speaker.svg")
+                            icon.source: ResourceManager.getIconUrl("zrythm-dark", "speaker.svg")
 
                             ToolTip {
                                 text: qsTr("Monitor Section")
@@ -220,7 +220,7 @@ ApplicationWindow {
                         }
 
                         TabButton {
-                            icon.source: Style.getIcon("zrythm-dark", "minuet-chords.svg")
+                            icon.source: ResourceManager.getIconUrl("zrythm-dark", "minuet-chords.svg")
 
                             ToolTip {
                                 text: qsTr("Chord Preset Browser")
@@ -279,14 +279,14 @@ ApplicationWindow {
 
                             ToolButton {
                                 text: "Tool Button"
-                                icon.source: Style.getIcon("zrythm-dark", "zrythm-monochrome.svg")
+                                icon.source: ResourceManager.getIconUrl("zrythm-dark", "zrythm-monochrome.svg")
                                 enabled: enabledRepeater.enabledBoolData
                                 checkable: checkedFlow.checkableBoolData
                                 checked: checkedFlow.checkableBoolData
                             }
 
                             ToolButton {
-                                icon.source: Style.getIcon("zrythm-dark", "zrythm-monochrome.svg")
+                                icon.source: ResourceManager.getIconUrl("zrythm-dark", "zrythm-monochrome.svg")
                                 enabled: enabledRepeater.enabledBoolData
                                 checkable: checkedFlow.checkableBoolData
                             }
@@ -304,7 +304,7 @@ ApplicationWindow {
 
                         tooltipText: qsTr("Undo")
                         menuTooltipText: qsTr("Undo Multiple")
-                        iconSource: Style.getIcon("zrythm-dark", "edit-undo.svg")
+                        iconSource: ResourceManager.getIconUrl("zrythm-dark", "edit-undo.svg")
                         enabled: enabledRepeater.enabledBoolData
 
                         menuItems: Menu {
@@ -325,7 +325,7 @@ ApplicationWindow {
 
                         tooltipText: qsTr("Redo")
                         menuTooltipText: qsTr("Redo Multiple")
-                        iconSource: Style.getIcon("zrythm-dark", "edit-redo.svg")
+                        iconSource: ResourceManager.getIconUrl("zrythm-dark", "edit-redo.svg")
                         enabled: enabledRepeater.enabledBoolData
                     }
 

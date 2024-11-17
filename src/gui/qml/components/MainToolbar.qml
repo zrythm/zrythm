@@ -44,7 +44,7 @@ ZrythmToolBar {
 
             tooltipText: qsTr("Undo")
             menuTooltipText: qsTr("Undo Multiple")
-            iconSource: Style.getIcon("zrythm-dark", "edit-undo.svg")
+            iconSource: ResourceManager.getIconUrl("zrythm-dark", "edit-undo.svg")
 
             menuItems: Menu {
                 Action {
@@ -59,7 +59,7 @@ ZrythmToolBar {
 
             tooltipText: qsTr("Redo")
             menuTooltipText: qsTr("Redo Multiple")
-            iconSource: Style.getIcon("zrythm-dark", "edit-redo.svg")
+            iconSource: ResourceManager.getIconUrl("zrythm-dark", "edit-redo.svg")
             enabled: false
         },
         ToolSeparator {
@@ -109,7 +109,7 @@ ZrythmToolBar {
             id: menuButton
 
             text: qsTr("Menu")
-            // icon.source: Style.getIcon("gnome-icon-library", "open-menu-symbolic.svg")
+            // icon.source: ResourceManager.getIconUrl("gnome-icon-library", "open-menu-symbolic.svg")
             onClicked: primaryMenu.open()
 
             Menu {

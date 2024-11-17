@@ -19,7 +19,8 @@
 #include "gui/backend/backend/timeline_selections.h"
 #include "gui/backend/backend/zrythm.h"
 
-TimelineSelections::TimelineSelections () : ArrangerSelections (Type::Timeline)
+TimelineSelections::TimelineSelections (QObject * parent)
+    : QObject (parent), ArrangerSelections (Type::Timeline)
 {
 }
 

@@ -60,7 +60,7 @@ QtObject {
         "pixelSize": 12,
         "weight": Font.Medium
     })
-     readonly property font arrangerObjectTextFont: ({
+    readonly property font arrangerObjectTextFont: ({
         "family": root.fontFamily,
         "pixelSize": 11,
         "weight": Font.Medium
@@ -136,9 +136,13 @@ QtObject {
         return root.isColorDark(arg) ? arg.darker(root.downEnhancementFactor) : arg.lighter(root.downEnhancementFactor);
     }
 
+    function getColorBlendedTowardsContrastByFactor(arg: color, factor: real) : color {
+        return root.isColorDark(arg) ? arg.lighter(factor) : arg.darker(factor);
+    }
+
     // Makes dark colors lighter and light colors darker by the lighten factor.
     function getColorBlendedTowardsContrast(arg: color) : color {
-        return root.isColorDark(arg) ? arg.lighter(root.lightenFactor) : arg.darker(root.lightenFactor);
+        return getColorBlendedTowardsContrastByFactor(arg, root.lightenFactor);
     }
 
     function adjustColorForHoverOrVisualFocusOrDown(arg: color, hovered: bool, focused: bool, down: bool) : color {
@@ -159,14 +163,6 @@ QtObject {
             return root.disabledOpacityFactor;
         else if (!enabled && !windowActive)
             return root.disabledOpacityFactor - 0.1;
-    }
-
-    function getResource(relPath: string) : url {
-        return Qt.resolvedUrl("qrc:/qt/qml/Zrythm/" + relPath);
-    }
-
-    function getIcon(iconPack: string, iconFilename: string) : url {
-        return root.getResource("icons/" + iconPack + "/" + iconFilename);
     }
 
 }

@@ -21,11 +21,11 @@
   } \
   void setX (double x) \
   { \
-    auto int_x = std::max (0, static_cast<int> (std::round (x))); \
-    if (scroll_start_x_ == int_x) \
+    auto clamped_x = clamp_scroll_start_x (x); \
+    if (math_doubles_equal (scroll_start_x_, clamped_x)) \
       return; \
 \
-    scroll_start_x_ = int_x; \
+    scroll_start_x_ = clamped_x; \
     Q_EMIT xChanged (scroll_start_x_); \
   } \
 \
@@ -38,10 +38,10 @@
   } \
   void setY (double y) \
   { \
-    auto int_y = std::max (0, static_cast<int> (std::round (y))); \
-    if (scroll_start_y_ == int_y) \
+    auto clamped_y = clamp_scroll_start_y (y); \
+    if (math_doubles_equal (scroll_start_y_, clamped_y)) \
       return; \
-    scroll_start_y_ = int_y; \
+    scroll_start_y_ = clamped_y; \
     Q_EMIT yChanged (scroll_start_y_); \
   } \
 \
@@ -70,14 +70,14 @@
 class EditorSettings : public ISerializable<EditorSettings>
 {
 public:
-  void set_scroll_start_x (int x, bool validate);
+  double clamp_scroll_start_x (double x);
 
-  void set_scroll_start_y (int y, bool validate);
+  double clamp_scroll_start_y (double y);
 
   /**
    * Appends the given deltas to the scroll x/y values.
    */
-  void append_scroll (int dx, int dy, bool validate);
+  void append_scroll (double dx, double dy, bool validate);
 
 protected:
   void copy_members_from (const EditorSettings &other)
@@ -91,10 +91,10 @@ protected:
 
 public:
   /** Horizontal scroll start position. */
-  int scroll_start_x_ = 0;
+  double scroll_start_x_ = 0;
 
   /** Vertical scroll start position. */
-  int scroll_start_y_ = 0;
+  double scroll_start_y_ = 0;
 
   /** Horizontal zoom level. */
   double hzoom_level_ = 1.0;

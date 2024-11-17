@@ -109,6 +109,19 @@ class Project final
   Q_PROPERTY (Tracklist * tracklist READ getTracklist CONSTANT FINAL)
   Q_PROPERTY (Timeline * timeline READ getTimeline CONSTANT FINAL)
   Q_PROPERTY (Transport * transport READ getTransport CONSTANT FINAL)
+  Q_PROPERTY (
+    AutomationSelections * automationSelections READ getAutomationSelections
+      CONSTANT FINAL)
+  Q_PROPERTY (
+    AudioSelections * audioSelections READ getAudioSelections CONSTANT FINAL)
+  Q_PROPERTY (
+    MidiSelections * midiSelections READ getMidiSelections CONSTANT FINAL)
+  Q_PROPERTY (
+    ChordSelections * chordSelections READ getChordSelections CONSTANT FINAL)
+  Q_PROPERTY (
+    TimelineSelections * timelineSelections READ getTimelineSelections CONSTANT
+      FINAL)
+  Q_PROPERTY (int tool READ getTool WRITE setTool NOTIFY toolChanged FINAL)
 
 public:
   Project (QObject * parent = nullptr);
@@ -154,12 +167,20 @@ public:
   Tracklist * getTracklist () const;
   Timeline *  getTimeline () const;
   Transport * getTransport () const;
+  AutomationSelections * getAutomationSelections () const;
+  AudioSelections *      getAudioSelections () const;
+  MidiSelections *       getMidiSelections () const;
+  ChordSelections *      getChordSelections () const;
+  TimelineSelections *   getTimelineSelections () const;
+  int                    getTool () const;
+  void                   setTool (int tool);
 
   Q_SIGNAL void titleChanged (const QString &title);
   Q_SIGNAL void directoryChanged (const QString &directory);
   Q_SIGNAL void aboutToBeDeleted ();
   Q_SIGNAL void tracklistChanged (Tracklist * tracklist);
   Q_SIGNAL void timelineChanged (Timeline * timeline);
+  Q_SIGNAL void toolChanged (int tool);
 
   // =========================================================
 
@@ -503,29 +524,29 @@ public:
   /**
    * Selected MidiNote's in the MidiArrangerWidget.
    */
-  std::unique_ptr<MidiSelections> midi_selections_;
+  MidiSelections * midi_selections_ = nullptr;
 
   /**
    * Selected objects in the TimelineArrangerWidget.
    */
-  std::unique_ptr<TimelineSelections> timeline_selections_;
+  TimelineSelections * timeline_selections_ = nullptr;
 
   /**
    * Selected objects in the
    * ChordObjectArrangerWidget.
    */
-  std::unique_ptr<ChordSelections> chord_selections_;
+  ChordSelections * chord_selections_ = nullptr;
 
   /**
    * Selected objects in the audio editor.
    */
-  std::unique_ptr<AudioSelections> audio_selections_;
+  AudioSelections * audio_selections_ = nullptr;
 
   /**
    * Selected objects in the
    * AutomationArrangerWidget.
    */
-  std::unique_ptr<AutomationSelections> automation_selections_;
+  AutomationSelections * automation_selections_ = nullptr;
 
   /**
    * Selected Track's.

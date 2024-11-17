@@ -8,8 +8,8 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
-AutomationSelections::AutomationSelections ()
-    : ArrangerSelections (Type::Automation)
+AutomationSelections::AutomationSelections (QObject * parent)
+    : QObject (parent), ArrangerSelections (Type::Automation)
 {
 }
 

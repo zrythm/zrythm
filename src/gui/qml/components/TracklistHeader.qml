@@ -12,7 +12,7 @@ ToolBar {
     required property var tracklist
 
     ToolButton {
-        icon.source: Style.getIcon("zrythm-dark", "add.svg")
+        icon.source: ResourceManager.getIconUrl("zrythm-dark", "add.svg")
         
         ToolTip {
             text: qsTr("Add track")

@@ -33,9 +33,10 @@ class AutomationSelections final
 {
   Q_OBJECT
   QML_ELEMENT
+  DEFINE_ARRANGER_SELECTIONS_QML_PROPERTIES (AutomationSelections)
 
 public:
-  AutomationSelections ();
+  AutomationSelections (QObject * parent = nullptr);
 
   const AutomationPoint * get_automation_point (int index) const
   {

@@ -13,6 +13,222 @@ Arranger {
     required property var timeline
     required property var tracklist
 
+    function getTrackAtY(y: real): var {
+        const item = tracksListView.itemAt(0, y + tracksListView.contentY)
+        return item?.track ?? null
+    }
+
+    function getAutomationTrackAtY(y: real): var {
+        y += tracksListView.contentY;
+        const trackItem = tracksListView.itemAt(0, y);
+        if (!trackItem?.track?.isAutomatable || !trackItem?.track?.automationVisible) {
+            return null;
+        }
+
+        y -= trackItem.y;
+
+        // Get the automation loader instance
+        const columnLayout = trackItem.children[0] // trackSectionRows
+        const loader = columnLayout.children[2] // automationLoader
+        if (!loader?.item) {
+            return null;
+        }
+        
+        // Get relative Y position within the automation tracks list
+        const automationListY = y - loader.y;
+        const automationItem = loader.item.itemAt(0, automationListY);
+        console.log("Timeline: getAutomationTrackAtY", y, trackItem, loader, automationListY, automationItem);
+        return automationItem?.automationTrack ?? null;
+    }
+
+   function getTrackLaneAtY(y: real): var {
+        // Get the track delegate
+        const trackItem = tracksListView.itemAt(0, y + tracksListView.contentY)
+        if (!trackItem?.track?.hasLanes || !trackItem?.track?.lanesVisible) {
+            return null
+        }
+        
+        // Make y relative to trackItem
+        const relativeY = y + tracksListView.contentY - trackItem.y
+        
+        // Get ColumnLayout (trackSectionRows) and laneRegionsLoader
+        const columnLayout = trackItem.children[0]
+        const laneLoader = columnLayout.children[1] // laneRegionsLoader is second child
+        if (!laneLoader?.item) {
+            return null
+        }
+        
+        // Get relative Y position within the lanes list
+        const laneListY = relativeY - laneLoader.y
+        const laneItem = laneLoader.item.itemAt(0, laneListY)
+        console.log("Timeline: getTrackLaneAtY", relativeY, trackItem, laneLoader, laneListY, laneItem);
+        return laneItem?.trackLane ?? null
+    }
+
+    function updateCursor() {
+        let cursor = "default";
+        
+        switch (root.currentAction) {
+            case Arranger.None:
+                switch (root.tool) {
+                    case 0:
+                        CursorManager.setPointerCursor();
+                        return; 
+                        
+                    case 1:
+                        cursor = "edit";
+                        break;
+                        
+                    case 2:
+                        cursor = "cut";
+                        break;
+                        
+                    case 3:
+                        cursor = "eraser";
+                        break;
+                        
+                    case 4:
+                        cursor = "ramp";
+                        break;
+                        
+                    case 5:
+                        cursor = "audition";
+                        break;
+                }
+                break;
+                
+            case Arranger.StartingDeleteSelection:
+            case Arranger.DeleteSelecting:
+            case Arranger.StartingErasing:
+            case Arranger.Erasing:
+                cursor = "eraser";
+                break;
+                
+            case Arranger.StartingMovingCopy:
+            case Arranger.MovingCopy:
+                cursor = "copy";
+                break;
+                
+            case Arranger.StartingMovingLink:
+            case Arranger.MovingLink:
+                cursor = "link";
+                break;
+                
+            case Arranger.StartingMoving:
+            case Arranger.CreatingMoving:
+            case Arranger.Moving:
+                cursor = "grabbing";
+                break;
+                
+            case Arranger.StartingPanning:
+            case Arranger.Panning:
+                CursorManager.setClosedHandCursor();
+                return;
+                
+            case Arranger.StretchingL:
+                cursor = "stretch-l";
+                break;
+                
+            case Arranger.ResizingL:
+                cursor = "resize-l";
+                break;
+                
+            case Arranger.ResizingLLoop:
+                cursor = "resize-l-loop";
+                break;
+                
+            case Arranger.ResizingLFade:
+                cursor = "fade-in";
+                break;
+                
+            case Arranger.StretchingR:
+                cursor = "stretch-r";
+                break;
+                
+            case Arranger.CreatingResizingR:
+            case Arranger.ResizingR:
+                CursorManager.setResizeEndCursor();
+                return;
+                
+            case Arranger.ResizingRLoop:
+                cursor = "resize-r-loop";
+                break;
+                
+            case Arranger.ResizingRFade:
+                cursor = "fade-out";
+                break;
+                
+            case Arranger.ResizingUpFadeIn:
+                cursor = "fade-in";
+                break;
+                
+            case Arranger.ResizingUpFadeOut:
+                cursor = "fade-out";
+                break;
+                
+            case Arranger.Autofilling:
+                cursor = "autofill";
+                break;
+                
+            case Arranger.StartingSelection:
+            case Arranger.Selecting:
+                CursorManager.setPointerCursor();
+                return;
+                
+            case Arranger.Renaming:
+                cursor = "text";
+                break;
+                
+            case Arranger.Cutting:
+                cursor = "cut";
+                break;
+                
+            case Arranger.StartingAuditioning:
+            case Arranger.Auditioning:
+                cursor = "audition";
+                break;
+        }
+
+        CursorManager.setPointerCursor();
+        return; 
+    }
+
+    function beginObjectCreation(x: real, y: real): var {
+        const track = getTrackAtY(y);
+        if (!track) {
+            return null;
+        }
+        
+        const automationTrack = getAutomationTrackAtY(y);
+        if (!automationTrack) {
+        }
+        const trackLane = getTrackLaneAtY(y);
+        if (!trackLane) {
+        }
+        console.log("Timeline: beginObjectCreation", x, y, track, trackLane, automationTrack);
+
+        switch (track.type) {
+            case 3:
+                console.log("creating chord");
+                break;
+            case 4:
+                console.log("creating marker");
+                break;
+            case 9:
+                console.log("creating midi region");
+                
+                let region = track.createAndAddRegionForMidiTrack(x / root.ruler.pxPerTick, trackLane ? trackLane.position : -1);
+                root.currentAction = Arranger.CreatingResizingR;
+                root.setArrangerSelectionsCloneAtStart(root.selections.cloneTimelineSelections());
+                CursorManager.setResizeEndCursor();
+                root.actionObject = region;
+                return region;
+            default:
+                return null;
+        }
+        return null;
+    }
+
     editorSettings: timeline
     enableYScroll: !pinned
     scrollView.ScrollBar.horizontal.policy: pinned ? ScrollBar.AlwaysOff : ScrollBar.AsNeeded
@@ -21,6 +237,7 @@ Arranger {
         id: tracksListView
 
         anchors.fill: parent
+        interactive: false
 
         model: TrackFilterProxyModel {
             sourceModel: tracklist
@@ -30,7 +247,7 @@ Arranger {
             }
         }
 
-        delegate: ItemDelegate {
+        delegate: Item {
             id: trackDelegate
 
             required property var track

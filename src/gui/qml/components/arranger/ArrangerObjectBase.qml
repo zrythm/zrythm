@@ -14,8 +14,15 @@ Control {
     required property var ruler
     property var contextMenu
     readonly property alias down: dragArea.pressed
+    readonly property color objectColor: {
+        let c = arrangerObject.hasColor ? arrangerObject.color : track.color;
+        if (arrangerObject.selected)
+            c = Style.getColorBlendedTowardsContrastByFactor(c, 1.1);
 
-    font: Style.arrangerObjectTextFont
+        return Style.adjustColorForHoverOrVisualFocusOrDown(c, root.hovered, root.visualFocus, root.down);
+    }
+
+    font: arrangerObject.selected ? Style.arrangerObjectBoldTextFont : Style.arrangerObjectTextFont
     focusPolicy: Qt.StrongFocus
     hoverEnabled: true
     x: arrangerObject.position.ticks * ruler.pxPerTick

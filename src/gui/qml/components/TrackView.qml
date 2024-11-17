@@ -75,18 +75,18 @@ Control {
                         Layout.alignment: Qt.AlignTop | Qt.AlignBaseline
                         source: {
                             if (track.icon.startsWith("gnome-icon-library-"))
-                                return Style.getIcon("gnome-icon-library", track.icon.substring(19) + ".svg");
+                                return ResourceManager.getIconUrl("gnome-icon-library", track.icon.substring(19) + ".svg");
 
                             if (track.icon.startsWith("fluentui-"))
-                                return Style.getIcon("fluentui", track.icon.substring(9) + ".svg");
+                                return ResourceManager.getIconUrl("fluentui", track.icon.substring(9) + ".svg");
 
                             if (track.icon.startsWith("lorc-"))
-                                return Style.getIcon("lorc", track.icon.substring(5) + ".svg");
+                                return ResourceManager.getIconUrl("lorc", track.icon.substring(5) + ".svg");
 
                             if (track.icon.startsWith("jam-icons-"))
-                                return Style.getIcon("jam-icons", track.icon.substring(10) + ".svg");
+                                return ResourceManager.getIconUrl("jam-icons", track.icon.substring(10) + ".svg");
 
-                            return Style.getIcon("zrythm-dark", track.icon + ".svg");
+                            return ResourceManager.getIconUrl("zrythm-dark", track.icon + ".svg");
                         }
                         sourceSize.width: iconSize
                         sourceSize.height: iconSize
@@ -175,7 +175,7 @@ Control {
                             checkable: true
                             visible: track.hasLanes
                             checked: track.hasLanes && track.lanesVisible
-                            icon.source: Style.getIcon("gnome-icon-library", "list-compact-symbolic.svg")
+                            icon.source: ResourceManager.getIconUrl("gnome-icon-library", "list-compact-symbolic.svg")
                             onClicked: {
                                 track.lanesVisible = !track.lanesVisible;
                             }
@@ -192,7 +192,7 @@ Control {
                             checkable: true
                             visible: track.isAutomatable
                             checked: track.isAutomatable && track.automationVisible
-                            icon.source: Style.getIcon("zrythm-dark", "automation-4p.svg")
+                            icon.source: ResourceManager.getIconUrl("zrythm-dark", "automation-4p.svg")
                             onClicked: {
                                 track.automationVisible = !track.automationVisible;
                             }

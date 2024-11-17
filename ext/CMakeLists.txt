@@ -15,7 +15,7 @@ add_library(juce_lib STATIC)
 FetchContent_Declare(
   juce
   GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
-  GIT_TAG 4ada2e1f4db082f5dd803f249f37b3bf9c5f55ef  # 8.0.2
+  GIT_TAG 5179f4e720d8406ebd1b5401c86aea8da6cc83c9  # 8.0.3
 )
 FetchContent_MakeAvailable(juce)
 

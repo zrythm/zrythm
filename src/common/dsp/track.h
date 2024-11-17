@@ -53,6 +53,11 @@ public: \
 \
   Q_SIGNAL void nameChanged (const QString &name); \
 \
+  Q_INVOKABLE unsigned int getNameHash () const \
+  { \
+    return qHash (QString::fromStdString (name_)); \
+  } \
+\
   /* ================================================================ */ \
   /* color */ \
   /* ================================================================ */ \

@@ -80,7 +80,7 @@ ListView {
                     Layout.fillHeight: false
                     Layout.alignment: Qt.AlignLeft | Qt.AlignBaseline
                     text: automationTrack.portIdentifier.label
-                    icon.source: Style.getIcon("zrythm-dark", "automation-4p.svg")
+                    icon.source: ResourceManager.getIconUrl("zrythm-dark", "automation-4p.svg")
                     styleHeight: control.buttonHeight
                     padding: control.buttonPadding
                     font: automationColumnLayout.buttonFont
@@ -182,7 +182,7 @@ ListView {
                     Button {
                         id: removeAutomationTrackButton
 
-                        // icon.source: Style.getIcon("zrythm-dark", "remove.svg")
+                        // icon.source: ResourceManager.getIconUrl("zrythm-dark", "remove.svg")
                         text: "-"
                         styleHeight: control.buttonHeight
                         padding: control.buttonPadding
@@ -205,7 +205,7 @@ ListView {
                     Button {
                         id: addAutomationTrackButton
 
-                        // icon.source: Style.getIcon("zrythm-dark", "add.svg")
+                        // icon.source: ResourceManager.getIconUrl("zrythm-dark", "add.svg")
                         text: "+"
                         styleHeight: control.buttonHeight
                         padding: control.buttonPadding

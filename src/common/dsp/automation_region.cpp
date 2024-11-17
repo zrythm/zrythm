@@ -63,7 +63,7 @@ AutomationRegion::rowCount (const QModelIndex &parent) const
 QVariant
 AutomationRegion::data (const QModelIndex &index, int role) const
 {
-  if (index.row () < 0 || index.row () >= aps_.size ())
+  if (index.row () < 0 || index.row () >= static_cast<int> (aps_.size ()))
     return {};
 
   if (role == AutomationPointPtrRole)
@@ -328,5 +328,5 @@ AutomationRegion::validate (bool is_project, double frames_per_tick) const
 std::optional<ClipEditorArrangerSelectionsPtrVariant>
 AutomationRegion::get_arranger_selections () const
 {
-  return AUTOMATION_SELECTIONS.get ();
+  return AUTOMATION_SELECTIONS;
 }

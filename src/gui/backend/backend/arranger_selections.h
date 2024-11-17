@@ -26,6 +26,9 @@ constexpr int ARRANGER_SELECTIONS_MAGIC = 35867752;
 
 constexpr double ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS = 0.1;
 
+#define DEFINE_ARRANGER_SELECTIONS_QML_PROPERTIES(ClassType) \
+  DEFINE_ICLONEABLE_QML_PROPERTIES (ClassType)
+
 /**
  * @brief Represents a collection of selected objects in an arranger view.
  *

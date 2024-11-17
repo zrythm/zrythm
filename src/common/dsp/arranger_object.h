@@ -146,6 +146,24 @@ public: \
     return std::derived_from<ClassType, LengthableObject>; \
   } \
   /* ================================================================ */ \
+  /* selected (changes to be emitted by each ArrangerSelections) */ \
+  /* ================================================================ */ \
+  Q_PROPERTY (bool selected READ getSelected NOTIFY selectedChanged) \
+  bool getSelected () const \
+  { \
+    return is_selected (); \
+  } \
+  Q_INVOKABLE void selectUnique () \
+  { \
+    if (is_selected ()) \
+      { \
+        return; \
+      } \
+\
+    select (true, false, true); \
+  } \
+  Q_SIGNAL void selectedChanged (bool selected); \
+  /* ================================================================ */ \
   /* position */ \
   /* ================================================================ */ \
   Q_PROPERTY (PositionProxy * position READ getPosition CONSTANT) \

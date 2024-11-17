@@ -6,7 +6,10 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
-MidiSelections::MidiSelections () : ArrangerSelections (Type::Midi) { }
+MidiSelections::MidiSelections (QObject * parent)
+    : QObject (parent), ArrangerSelections (Type::Midi)
+{
+}
 
 auto mn_compare_func = [] (const auto &a, const auto &b) {
   return std::get<MidiNote *> (a)->val_ < std::get<MidiNote *> (b)->val_;

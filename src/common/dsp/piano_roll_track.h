@@ -16,6 +16,17 @@ class MidiEvents;
 class Velocity;
 using MIDI_FILE = void;
 
+#define DEFINE_PIANO_ROLL_TRACK_QML_PROPERTIES(ClassType) \
+public: \
+  /* ================================================================ */ \
+  /* helpers */ \
+  /* ================================================================ */ \
+  Q_INVOKABLE MidiRegion * createAndAddRegionFor##ClassType ( \
+    double startTicks, int laneIndex) \
+  { \
+    return create_and_add_midi_region (startTicks, laneIndex); \
+  }
+
 /**
  * Interface for a piano roll track.
  */
@@ -25,11 +36,13 @@ class PianoRollTrack
       public ISerializable<PianoRollTrack>
 {
 public:
-  // Rule of 0
-
+  PianoRollTrack () = default;
+  Q_DISABLE_COPY_MOVE (PianoRollTrack)
   ~PianoRollTrack () override = default;
 
   void init_loaded () override;
+
+  MidiRegion * create_and_add_midi_region (double startTicks, int laneIndex);
 
   /**
    * Writes the track to the given MIDI file.
@@ -96,5 +109,8 @@ public:
    */
   bool passthrough_midi_input_ = false;
 };
+
+using PianoRollTrackVariant = std::variant<MidiTrack, InstrumentTrack>;
+using PianoRollTrackPtrVariant = to_pointer_variant<PianoRollTrackVariant>;
 
 #endif // __DSP_PIANO_ROLL_TRACK_H__

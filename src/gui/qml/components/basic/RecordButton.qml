@@ -7,7 +7,7 @@ Button {
     id: root
     checkable: true
 
-    icon.source: Style.getIcon("zrythm-dark", "record.svg")
+    icon.source: ResourceManager.getIconUrl("zrythm-dark", "record.svg")
 
     palette {
         buttonText: Style.dangerColor

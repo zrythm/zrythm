@@ -4,6 +4,7 @@
 #include "common/dsp/midi_region.h"
 #include "common/dsp/piano_roll_track.h"
 #include "common/utils/types.h"
+#include "gui/backend/backend/settings_manager.h"
 
 void
 PianoRollTrack::write_to_midi_file (
@@ -35,6 +36,31 @@ PianoRollTrack::write_to_midi_file (
     {
       own_events->write_to_midi_file (mf, midi_track_pos);
     }
+}
+
+MidiRegion *
+PianoRollTrack::create_and_add_midi_region (double startTicks, int laneIndex)
+{
+  if (laneIndex == -1)
+    {
+      laneIndex = 0;
+    }
+  const int idx_inside_lane =
+    std::get<MidiLane *> (lanes_.at (laneIndex))->region_list_->regions_.size ();
+  return std::visit (
+    [&] (auto &&self) -> MidiRegion * {
+      auto * region = new MidiRegion (
+        Position (startTicks),
+        Position (
+          startTicks
+          + zrythm::gui::SettingsManager::
+            timelineLastCreatedObjectLengthInTicks ()),
+        get_name_hash (), laneIndex, idx_inside_lane, self);
+      self->Track::add_region (region, nullptr, laneIndex, true, true);
+      region->select (true, false, true);
+      return region;
+    },
+    convert_to_variant<PianoRollTrackPtrVariant> (this));
 }
 
 void

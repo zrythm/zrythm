@@ -13,7 +13,7 @@ ArrangerObjectBase {
     width: textMetrics.width + 2 * Style.buttonPadding
 
     Rectangle {
-        color: Style.adjustColorForHoverOrVisualFocusOrDown(track.color, root.hovered, root.visualFocus, root.down)
+        color: root.objectColor
         anchors.fill: parent
         radius: Style.toolButtonRadius
     }

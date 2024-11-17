@@ -40,14 +40,14 @@ ArrangerObject::get_selections_for_type (Type type)
     case Type::Region:
     case Type::ScaleObject:
     case Type::Marker:
-      return static_cast<T *> (TL_SELECTIONS.get ());
+      return static_cast<T *> (TL_SELECTIONS);
     case Type::MidiNote:
     case Type::Velocity:
-      return static_cast<T *> (MIDI_SELECTIONS.get ());
+      return static_cast<T *> (MIDI_SELECTIONS);
     case Type::ChordObject:
-      return static_cast<T *> (CHORD_SELECTIONS.get ());
+      return static_cast<T *> (CHORD_SELECTIONS);
     case Type::AutomationPoint:
-      return static_cast<T *> (AUTOMATION_SELECTIONS.get ());
+      return static_cast<T *> (AUTOMATION_SELECTIONS);
     default:
       return nullptr;
     }
