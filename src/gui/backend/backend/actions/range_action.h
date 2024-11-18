@@ -9,17 +9,19 @@
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/backend/backend/timeline_selections.h"
 
-/**
- * @addtogroup actions
- *
- * @{
- */
+namespace zrythm::gui::actions
+{
 
 class RangeAction
-    : public UndoableAction,
+    : public QObject,
+      public UndoableAction,
       public ICloneable<RangeAction>,
       public ISerializable<RangeAction>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_UNDOABLE_ACTION_QML_PROPERTIES (RangeAction)
+
 public:
   enum class Type
   {
@@ -28,8 +30,12 @@ public:
   };
 
 public:
-  RangeAction ();
-  RangeAction (Type type, Position start_pos, Position end_pos);
+  RangeAction (QObject * parent = nullptr);
+  RangeAction (
+    Type      type,
+    Position  start_pos,
+    Position  end_pos,
+    QObject * parent = nullptr);
 
   QString to_string () const override;
 
@@ -49,9 +55,9 @@ private:
   void init_loaded_impl () override
   {
     if (sel_before_)
-      sel_before_->init_loaded (false, this);
+      sel_before_->init_loaded (false, frames_per_tick_);
     if (sel_after_)
-      sel_after_->init_loaded (false, this);
+      sel_after_->init_loaded (false, frames_per_tick_);
     transport_->init_loaded (nullptr, nullptr);
   }
 
@@ -105,8 +111,6 @@ public:
   }
 };
 
-/**
- * @}
- */
+}; // namespace zrythm::gui::actions
 
 #endif

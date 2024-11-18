@@ -6,6 +6,37 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
+using namespace zrythm::gui::actions;
+
+ChordAction::ChordAction (QObject * parent)
+    : QObject (parent), UndoableAction (UndoableAction::Type::Chord)
+{
+}
+
+ChordAction::ChordAction (
+  const std::vector<ChordDescriptor> &chords_before,
+  const std::vector<ChordDescriptor> &chords_after,
+  QObject *                           parent)
+    : ChordAction (parent)
+{
+  type_ = Type::All;
+  chords_before_ = chords_before;
+  chords_after_ = chords_after;
+}
+
+ChordAction::ChordAction (
+  const ChordDescriptor &chord,
+  const int              chord_idx,
+  QObject *              parent)
+    : ChordAction (parent)
+{
+  type_ = Type::Single;
+  chord_before_ = CHORD_EDITOR->chords_[chord_idx];
+
+  chord_after_ = chord;
+  chord_idx_ = chord_idx;
+}
+
 void
 ChordAction::init_after_cloning (const ChordAction &other)
 {
@@ -14,22 +45,6 @@ ChordAction::init_after_cloning (const ChordAction &other)
   chord_before_ = other.chord_before_;
   chord_after_ = other.chord_after_;
   chord_idx_ = other.chord_idx_;
-}
-
-ChordAction::ChordAction (
-  const std::vector<ChordDescriptor> &chords_before,
-  const std::vector<ChordDescriptor> &chords_after)
-    : type_ (Type::All), chords_before_ (chords_before),
-      chords_after_ (chords_after)
-{
-  ChordAction ();
-}
-
-ChordAction::ChordAction (const ChordDescriptor &chord, const int chord_idx)
-    : type_ (Type::Single), chord_before_ (CHORD_EDITOR->chords_[chord_idx]),
-      chord_after_ (chord), chord_idx_ (chord_idx)
-{
-  ChordAction ();
 }
 
 void

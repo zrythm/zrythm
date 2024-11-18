@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -12,11 +12,10 @@
 #ifndef __AUDIO_AUDIO_FUNCTION_H__
 #define __AUDIO_AUDIO_FUNCTION_H__
 
+#include "common/plugins/plugin.h"
 #include "common/utils/format.h"
 #include "common/utils/logger.h"
-
-class ArrangerSelections;
-class Plugin;
+#include "gui/backend/backend/audio_selections.h"
 
 /**
  * @addtogroup dsp

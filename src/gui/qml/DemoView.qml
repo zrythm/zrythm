@@ -299,7 +299,7 @@ ApplicationWindow {
                         enabled: enabledRepeater.enabledBoolData
                     }
 
-                    ZrythmSplitButton {
+                    SplitButton {
                         id: undoBtn
 
                         tooltipText: qsTr("Undo")
@@ -320,7 +320,7 @@ ApplicationWindow {
 
                     }
 
-                    ZrythmSplitButton {
+                    SplitButton {
                         id: redoBtn
 
                         tooltipText: qsTr("Redo")

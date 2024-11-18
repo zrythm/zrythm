@@ -7,7 +7,7 @@
 #include "common/dsp/automation_track.h"
 #include "common/dsp/channel.h"
 #include "common/dsp/master_track.h"
-#include "gui/backend/backend/actions/arranger_selections.h"
+#include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 

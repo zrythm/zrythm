@@ -16,12 +16,12 @@
 #include "common/dsp/tracklist.h"
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/math.h"
-#include "gui/backend/backend/actions/arranger_selections.h"
+#include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/arranger_selections.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 
-using namespace zrythm;
+using namespace zrythm::gui::actions;
 
 ArrangerSelectionsAction::ArrangerSelectionsAction ()
     : UndoableAction (UndoableAction::Type::ArrangerSelections)
@@ -137,12 +137,13 @@ ArrangerSelectionsAction::init_loaded_impl ()
   if (sel_)
     {
       std::visit (
-        [&] (auto &&sel) { sel->init_loaded (false, this); }, sel_.value ());
+        [&] (auto &&sel) { sel->init_loaded (false, frames_per_tick_); },
+        sel_.value ());
     };
   if (sel_after_)
     {
       std::visit (
-        [&] (auto &&sel) { sel->init_loaded (false, this); },
+        [&] (auto &&sel) { sel->init_loaded (false, frames_per_tick_); },
         sel_after_.value ());
     }
 

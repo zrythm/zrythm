@@ -799,8 +799,12 @@ public:
    *
    * @param from_ticks Whether to update the positions based on ticks (true)
    * or frames (false).
+   * @param frames_per_tick This will be used when doing position conversions
+   via
+   * dependency injection instead of relying on the current project's transport.
    */
-  void update_positions (bool from_ticks, bool bpm_change);
+  void
+  update_positions (bool from_ticks, bool bpm_change, double frames_per_tick);
 
   /**
    * Returns all the regions inside the given range, or all the regions if both

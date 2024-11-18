@@ -29,6 +29,8 @@
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/project.h"
 
+using namespace zrythm;
+
 Channel::Channel (QObject * parent) : QObject (parent) { }
 
 Channel::Channel (ChannelTrack &track)
@@ -1470,7 +1472,7 @@ do_import (PluginImportData * data)
               if (data->copy)
                 {
                   UNDO_MANAGER->perform (
-                    std::make_unique<MixerSelectionsCopyAction> (
+                    new gui::actions::MixerSelectionsCopyAction (
                       *data->sel->gen_full_from_this (),
                       *PROJECT->port_connections_manager_, data->slot_type,
                       data->ch->track_, data->slot));
@@ -1478,7 +1480,7 @@ do_import (PluginImportData * data)
               else
                 {
                   UNDO_MANAGER->perform (
-                    std::make_unique<MixerSelectionsMoveAction> (
+                    new gui::actions::MixerSelectionsMoveAction (
                       *data->sel->gen_full_from_this (),
                       *PROJECT->port_connections_manager_, data->slot_type,
                       data->ch->track_, data->slot));
@@ -1505,7 +1507,7 @@ do_import (PluginImportData * data)
           try
             {
               UNDO_MANAGER->perform (
-                std::make_unique<MixerSelectionsCreateAction> (
+                new gui::actions::MixerSelectionsCreateAction (
                   data->slot_type, *data->ch->track_, data->slot, setting));
               setting.increment_num_instantiations ();
             }

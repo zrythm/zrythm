@@ -163,7 +163,7 @@ AudioEngine::update_frames_per_tick (
     {
       std::visit (
         [&] (auto &&tr) {
-          tr->update_positions (update_from_ticks, bpm_change);
+          tr->update_positions (update_from_ticks, bpm_change, frames_per_tick_);
         },
         track);
     }

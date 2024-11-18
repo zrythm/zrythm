@@ -7,15 +7,12 @@
 #include "common/dsp/automation_track.h"
 #include "common/dsp/port_connections_manager.h"
 #include "common/dsp/track.h"
+#include "common/plugins/plugin.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/backend/backend/mixer_selections.h"
 
-namespace zrythm::plugins
+namespace zrythm::gui::actions
 {
-class Plugin;
-}
-class Track;
-class MixerSelections;
 
 /**
  * Action for manipulating plugins (plugin slot selections in the mixer).
@@ -23,10 +20,15 @@ class MixerSelections;
  * @see MixerSelections
  */
 class MixerSelectionsAction
-    : public UndoableAction,
+    : public QObject,
+      public UndoableAction,
       public ICloneable<MixerSelectionsAction>,
       public ISerializable<MixerSelectionsAction>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_UNDOABLE_ACTION_QML_PROPERTIES (MixerSelectionsAction)
+
 public:
   enum class Type
   {
@@ -42,10 +44,7 @@ public:
     ChangeLoadBehavior,
   };
 
-  MixerSelectionsAction ()
-      : UndoableAction (UndoableAction::Type::MixerSelections)
-  {
-  }
+  MixerSelectionsAction (QObject * parent = nullptr);
 
   /**
    * Create a new action.
@@ -67,7 +66,8 @@ public:
     const PluginSetting *            setting,
     int                              num_plugins,
     int                              new_val,
-    zrythm::plugins::CarlaBridgeMode new_bridge_mode);
+    zrythm::plugins::CarlaBridgeMode new_bridge_mode,
+    QObject *                        parent = nullptr);
 
   QString to_string () const override;
 
@@ -373,5 +373,7 @@ public:
   {
   }
 };
+
+}; // namespace zrythm::actions
 
 #endif

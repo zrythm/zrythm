@@ -10,9 +10,11 @@
 #include "common/dsp/tracklist.h"
 #include "common/utils/flags.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/actions/tracklist_selections.h"
+#include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+
+using namespace zrythm;
 
 bool
 FoldableTrack::is_status (MixerStatus status) const
@@ -136,7 +138,7 @@ FoldableTrack::
 
       try
         {
-          UNDO_MANAGER->perform (std::make_unique<FoldTracksAction> (
+          UNDO_MANAGER->perform (new gui::actions::FoldTracksAction (
             TRACKLIST_SELECTIONS->gen_tracklist_selections ().get (), folded));
         }
       catch (const ZrythmException &e)

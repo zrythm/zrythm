@@ -4,7 +4,7 @@
 #include "zrythm-test-config.h"
 
 #include "common/utils/flags.h"
-#include "gui/backend/backend/actions/arranger_selections.h"
+#include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"

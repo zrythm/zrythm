@@ -6,7 +6,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "common/dsp/region.h"
-#include "gui/backend/backend/actions/arranger_selections.h"
+#include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/actions/range_action.h"
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/project.h"

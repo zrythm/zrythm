@@ -26,12 +26,12 @@
 #include "common/utils/traits.h"
 #include "common/utils/types.h"
 #include "common/utils/ui.h"
-#include "gui/backend/backend/actions/tracklist_selections.h"
+#include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 
-using namespace zrythm;
+using namespace zrythm::gui::actions;
 
 void
 TracklistSelectionsAction::init_after_cloning (
@@ -856,8 +856,7 @@ TracklistSelectionsAction::
                   std::vector<FoldableTrack *> parents;
                   prj_track->add_folder_parents (parents, false);
 
-                  TRACKLIST->move_track (
-                    *prj_track, target_pos, true, false, false);
+                  TRACKLIST->move_track (*prj_track, target_pos, true, false);
                   prev_track = prj_track;
 
                   /* adjust parent sizes */
@@ -888,7 +887,7 @@ TracklistSelectionsAction::
                   if (i == 0)
                     TRACKLIST_SELECTIONS->select_single (*prj_track, false);
                   else
-                    TRACKLIST_SELECTIONS->add_track (*prj_track, false);
+                    TRACKLIST_SELECTIONS->add_track (*prj_track);
 
                   TRACKLIST->print_tracks ();
                 },
@@ -1056,7 +1055,7 @@ TracklistSelectionsAction::
     {
       if (move)
         {
-          for (int i = tls_before_->tracks_.size () - 1; i >= 0; i--)
+          for (auto i = std::ssize (tls_before_->tracks_) - 1; i >= 0; i--)
             {
               auto &own_track = tls_before_->tracks_[i];
 
@@ -1065,8 +1064,7 @@ TracklistSelectionsAction::
               std::visit (
                 [&] (auto &&prj_track) {
                   int target_pos = own_track->pos_;
-                  TRACKLIST->move_track (
-                    *prj_track, target_pos, false, false, false);
+                  TRACKLIST->move_track (*prj_track, target_pos, false, false);
 
                   if (i == 0)
                     {
@@ -1074,7 +1072,7 @@ TracklistSelectionsAction::
                     }
                   else
                     {
-                      TRACKLIST_SELECTIONS->add_track (*prj_track, false);
+                      TRACKLIST_SELECTIONS->add_track (*prj_track);
                     }
                 },
                 *_prj_track);

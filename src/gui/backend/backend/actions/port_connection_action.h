@@ -8,11 +8,8 @@
 #include "common/utils/icloneable.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 
-/**
- * @addtogroup actions
- *
- * @{
- */
+namespace zrythm::gui::actions
+{
 
 class PortConnectionAction
     : public QObject,
@@ -22,6 +19,8 @@ class PortConnectionAction
 {
   Q_OBJECT
   QML_ELEMENT
+  DEFINE_UNDOABLE_ACTION_QML_PROPERTIES (PortConnectionAction)
+
 public:
   enum class Type
   {
@@ -125,8 +124,6 @@ public:
   }
 };
 
-/**
- * @}
- */
+}; // namespace zrythm::gui::actions
 
 #endif

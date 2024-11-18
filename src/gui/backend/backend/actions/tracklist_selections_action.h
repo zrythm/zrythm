@@ -13,20 +13,22 @@
 #include "gui/backend/backend/settings/plugin_settings.h"
 #include "gui/backend/backend/tracklist_selections.h"
 
-/**
- * @addtogroup actions
- *
- * @{
- */
+namespace zrythm::gui::actions
+{
 
 /**
  * Tracklist selections (tracks) action.
  */
 class TracklistSelectionsAction
-    : public UndoableAction,
+    : public QObject,
+      public UndoableAction,
       public ICloneable<TracklistSelectionsAction>,
       public ISerializable<TracklistSelectionsAction>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_UNDOABLE_ACTION_QML_PROPERTIES (TracklistSelectionsAction)
+
 public:
   enum class Type
   {
@@ -1184,8 +1186,6 @@ public:
   }
 };
 
-/**
- * @}
- */
+}; // namespace zrythm::gui::actions
 
 #endif

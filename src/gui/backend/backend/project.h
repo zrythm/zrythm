@@ -23,14 +23,16 @@
 #include "gui/backend/backend/mixer_selections.h"
 #include "gui/backend/backend/timeline.h"
 #include "gui/backend/backend/timeline_selections.h"
-#include "gui/backend/backend/tool.h"
 #include "gui/backend/backend/tracklist_selections.h"
+#include "gui/backend/tool.h"
 
 /**
  * @addtogroup project Project
  *
  * @{
  */
+
+using namespace zrythm;
 
 #define PROJECT (Project::get_active_instance ())
 constexpr const char * PROJECT_FILE = "project.zpj";
@@ -121,7 +123,9 @@ class Project final
   Q_PROPERTY (
     TimelineSelections * timelineSelections READ getTimelineSelections CONSTANT
       FINAL)
-  Q_PROPERTY (int tool READ getTool WRITE setTool NOTIFY toolChanged FINAL)
+  Q_PROPERTY (gui::backend::Tool * tool READ getTool CONSTANT FINAL)
+  Q_PROPERTY (
+    gui::actions::UndoManager * undoManager READ getUndoManager CONSTANT FINAL)
 
 public:
   Project (QObject * parent = nullptr);
@@ -172,15 +176,12 @@ public:
   MidiSelections *       getMidiSelections () const;
   ChordSelections *      getChordSelections () const;
   TimelineSelections *   getTimelineSelections () const;
-  int                    getTool () const;
-  void                   setTool (int tool);
+  gui::backend::Tool *        getTool () const;
+  gui::actions::UndoManager * getUndoManager () const;
 
   Q_SIGNAL void titleChanged (const QString &title);
   Q_SIGNAL void directoryChanged (const QString &directory);
   Q_SIGNAL void aboutToBeDeleted ();
-  Q_SIGNAL void tracklistChanged (Tracklist * tracklist);
-  Q_SIGNAL void timelineChanged (Timeline * timeline);
-  Q_SIGNAL void toolChanged (int tool);
 
   // =========================================================
 
@@ -232,9 +233,9 @@ public:
    */
   void save (
     const std::string &_dir,
-    const bool         is_backup,
-    const bool         show_notification,
-    const bool         async);
+    bool               is_backup,
+    bool               show_notification,
+    bool               async);
 
   /**
    * Autosave callback.
@@ -280,7 +281,7 @@ public:
     size_t *               _dest_size,
     ProjectCompressionFlag dest_type,
     const char *           _src,
-    const size_t           _src_size,
+    size_t                 _src_size,
     ProjectCompressionFlag src_type);
 
   static void compress (
@@ -450,13 +451,14 @@ public:
 
   /* !!! IMPORTANT: order matters (for destruction) !!! */
 
-  UndoableAction * last_action_in_last_successful_autosave_ = nullptr;
+  std::optional<gui::actions::UndoableActionPtrVariant>
+    last_action_in_last_successful_autosave_;
 
   /** Last successful autosave timestamp. */
   SteadyTimePoint last_successful_autosave_time_;
 
   /** Used to check if the project has unsaved changes. */
-  UndoableAction * last_saved_action_ = nullptr;
+  std::optional<gui::actions::UndoableActionPtrVariant> last_saved_action_;
 
   /** Semaphore used to block saving. */
   std::binary_semaphore save_sem_{ 1 };
@@ -491,7 +493,7 @@ public:
    * Currently selected tool (select - normal,
    * select - stretch, edit, delete, ramp, audition)
    */
-  Tool tool_ = Tool::Select;
+  gui::backend::Tool * tool_ = nullptr;
 
   /**
    * Plugin selections in the Mixer.
@@ -587,7 +589,7 @@ public:
    */
   Tracklist * tracklist_ = nullptr;
 
-  std::unique_ptr<UndoManager> undo_manager_;
+  gui::actions::UndoManager * undo_manager_ = nullptr;
 
   /** Used when deserializing projects. */
   int format_major_ = 0;

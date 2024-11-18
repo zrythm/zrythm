@@ -72,9 +72,9 @@ public:
    *
    * @param project Whether these are project selections (as opposed to
    * clones).
-   * @param action To be passed when this is called from an undoable action.
+   * @param frames_per_tick Frames per tick to use in position conversions.
    */
-  void init_loaded (bool project, UndoableAction * action);
+  void init_loaded (bool project, double frames_per_tick);
 
   /**
    * Initializes the selections.

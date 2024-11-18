@@ -10,11 +10,8 @@
 #include "common/utils/types.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 
-/**
- * @addtogroup actions
- *
- * @{
- */
+namespace zrythm::gui::actions
+{
 
 /**
  * MIDI mapping action.
@@ -26,6 +23,8 @@ class MidiMappingAction final
       public ISerializable<MidiMappingAction>
 {
   Q_OBJECT
+  QML_ELEMENT
+  DEFINE_UNDOABLE_ACTION_QML_PROPERTIES (MidiMappingAction)
 
 public:
   enum class Type
@@ -90,8 +89,6 @@ public:
   std::array<midi_byte_t, 3> buf_{};
 };
 
-/**
- * @}
- */
+}; // namespace zrythm::gui::actions
 
 #endif

@@ -10,6 +10,8 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
+using namespace zrythm::gui::actions;
+
 ChannelSendAction::ChannelSendAction (QObject * parent)
     : QObject (parent), UndoableAction (UndoableAction::Type::ChannelSend)
 {

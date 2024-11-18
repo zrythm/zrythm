@@ -18,7 +18,54 @@
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 
-using namespace zrythm;
+using namespace zrythm::gui::actions;
+
+MixerSelectionsAction::MixerSelectionsAction (QObject * parent)
+    : QObject (parent), UndoableAction (UndoableAction::Type::MixerSelections)
+{
+}
+
+MixerSelectionsAction::MixerSelectionsAction (
+  const FullMixerSelections *      ms,
+  const PortConnectionsManager *   connections_mgr,
+  Type                             type,
+  zrythm::plugins::PluginSlotType  slot_type,
+  unsigned int                     to_track_name_hash,
+  int                              to_slot,
+  const PluginSetting *            setting,
+  int                              num_plugins,
+  int                              new_val,
+  zrythm::plugins::CarlaBridgeMode new_bridge_mode,
+  QObject *                        parent)
+    : MixerSelectionsAction (parent)
+
+{
+  mixer_selections_action_type_ = type;
+  slot_type_ = slot_type;
+  to_slot_ = to_slot;
+  to_track_name_hash_ = to_track_name_hash;
+  new_channel_ = to_track_name_hash == 0;
+  num_plugins_ = num_plugins;
+  new_val_ = new_val;
+  new_bridge_mode_ = new_bridge_mode;
+  if (setting)
+    {
+      setting_ = setting->clone_unique ();
+      setting_->validate ();
+    }
+
+  if (ms)
+    {
+      ms_before_ = ms->clone_unique ();
+      z_return_if_fail (ms->slots_[0] == ms_before_->slots_[0]);
+
+      /* clone the automation tracks */
+      clone_ats (*ms_before_, false, 0);
+    }
+
+  if (connections_mgr)
+    port_connections_before_ = connections_mgr->clone_unique ();
+}
 
 void
 MixerSelectionsAction::init_loaded_impl ()
@@ -62,42 +109,6 @@ MixerSelectionsAction::init_after_cloning (const MixerSelectionsAction &other)
     deleted_ms_ = other.deleted_ms_->clone_unique ();
   clone_unique_ptr_container (deleted_ats_, other.deleted_ats_);
   clone_unique_ptr_container (ats_, other.ats_);
-}
-
-MixerSelectionsAction::MixerSelectionsAction (
-  const FullMixerSelections *      ms,
-  const PortConnectionsManager *   connections_mgr,
-  Type                             type,
-  zrythm::plugins::PluginSlotType  slot_type,
-  unsigned int                     to_track_name_hash,
-  int                              to_slot,
-  const PluginSetting *            setting,
-  int                              num_plugins,
-  int                              new_val,
-  zrythm::plugins::CarlaBridgeMode new_bridge_mode)
-    : UndoableAction (UndoableAction::Type::MixerSelections),
-      mixer_selections_action_type_ (type), slot_type_ (slot_type),
-      to_slot_ (to_slot), to_track_name_hash_ (to_track_name_hash),
-      new_channel_ (to_track_name_hash == 0), num_plugins_ (num_plugins),
-      new_val_ (new_val), new_bridge_mode_ (new_bridge_mode)
-{
-  if (setting)
-    {
-      setting_ = setting->clone_unique ();
-      setting_->validate ();
-    }
-
-  if (ms)
-    {
-      ms_before_ = ms->clone_unique ();
-      z_return_if_fail (ms->slots_[0] == ms_before_->slots_[0]);
-
-      /* clone the automation tracks */
-      clone_ats (*ms_before_, false, 0);
-    }
-
-  if (connections_mgr)
-    port_connections_before_ = connections_mgr->clone_unique ();
 }
 
 void

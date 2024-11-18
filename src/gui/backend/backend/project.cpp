@@ -38,6 +38,7 @@ using namespace zrythm;
 
 Project::Project (QObject * parent)
     : QObject (parent), version_ (Zrythm::get_version (false)),
+      tool_ (new gui::backend::Tool (this)),
       port_connections_manager_ (new PortConnectionsManager (this)),
       audio_engine_ (std::make_unique<AudioEngine> (this)),
       transport_ (new Transport (this)),
@@ -55,7 +56,7 @@ Project::Project (QObject * parent)
       timeline_ (new Timeline (this)),
       midi_mappings_ (std::make_unique<MidiMappings> ()),
       tracklist_ (new Tracklist (*this, port_connections_manager_)),
-      undo_manager_ (std::make_unique<UndoManager> ())
+      undo_manager_ (new gui::actions::UndoManager (this))
 {
   init_selections ();
   tracklist_selections_ =
@@ -372,7 +373,7 @@ Project::add_default_tracks ()
 
   /* add master channel to mixer and tracklist */
   add_track.operator()<MasterTrack> ();
-  tracklist_selections_->add_track (*tracklist_->master_track_, false);
+  tracklist_selections_->add_track (*tracklist_->master_track_);
   last_selection_ = SelectionType::Tracklist;
 }
 
@@ -1149,7 +1150,8 @@ Project::init_after_cloning (const Project &other)
   port_connections_manager_ =
     other.port_connections_manager_->clone_qobject (this);
   midi_mappings_ = other.midi_mappings_->clone_unique ();
-  undo_manager_ = other.undo_manager_->clone_unique ();
+  undo_manager_ = other.undo_manager_->clone_qobject (this);
+  tool_ = other.tool_->clone_qobject (this);
 
   z_debug ("finished cloning project");
 }
@@ -1234,20 +1236,16 @@ Project::getTimelineSelections () const
   return timeline_selections_;
 }
 
-int
+gui::backend::Tool *
 Project::getTool () const
 {
-  return ENUM_VALUE_TO_INT (tool_);
+  return tool_;
 }
 
-void
-Project::setTool (int tool)
+gui::actions::UndoManager *
+Project::getUndoManager () const
 {
-  if (ENUM_VALUE_TO_INT (tool_) == tool)
-    return;
-
-  tool_ = ENUM_INT_TO_VALUE (Tool, tool);
-  Q_EMIT toolChanged (tool);
+  return undo_manager_;
 }
 
 Project *
@@ -1263,7 +1261,11 @@ Project::clone (bool for_backup) const
   if (for_backup)
     {
       /* no undo history in backups */
-      ret->undo_manager_.reset ();
+      if (ret->undo_manager_)
+        {
+          delete ret->undo_manager_;
+          ret->undo_manager_ = nullptr;
+        }
     }
   return ret;
 }

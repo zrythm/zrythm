@@ -13,33 +13,63 @@
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 
-using namespace zrythm;
+using namespace zrythm::gui::actions;
 
-TransportAction::
-  TransportAction (bpm_t bpm_before, bpm_t bpm_after, bool already_done)
-    : UndoableAction (UndoableAction::Type::Transport),
-      type_ (Type::TempoChange), bpm_before_ (bpm_before),
-      bpm_after_ (bpm_after), already_done_ (already_done),
-      musical_mode_ (
-        ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
-          ? false
-          : gui::SettingsManager::get_instance ()->get_musicalMode ())
+TransportAction::TransportAction (QObject * parent)
+    : QObject (parent), UndoableAction (UndoableAction::Type::Transport)
 {
 }
 
-TransportAction::
-  TransportAction (Type type, int before, int after, bool already_done)
-    : UndoableAction (UndoableAction::Type::Transport), type_ (type),
-      int_before_ (before), int_after_ (after), already_done_ (already_done),
-      musical_mode_ (
-        ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
-          ? false
-          : gui::SettingsManager::get_instance ()->get_musicalMode ())
+TransportAction::TransportAction (
+  bpm_t     bpm_before,
+  bpm_t     bpm_after,
+  bool      already_done,
+  QObject * parent)
+    : TransportAction (parent)
+{
+  type_ = Type::TempoChange;
+  bpm_before_ = bpm_before;
+  bpm_after_ = bpm_after;
+  already_done_ = already_done;
+  musical_mode_ =
+    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
+      ? false
+      : gui::SettingsManager::get_instance ()->get_musicalMode ();
+}
+
+TransportAction::TransportAction (
+  Type      type,
+  int       before,
+  int       after,
+  bool      already_done,
+  QObject * parent)
+    : TransportAction (parent)
 {
   if (type == Type::TempoChange)
     {
       z_error ("use the other constructor for tempo changes");
     }
+
+  type_ = type;
+  int_before_ = before;
+  int_after_ = after;
+  already_done_ = already_done;
+  musical_mode_ =
+    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
+      ? false
+      : gui::SettingsManager::get_instance ()->get_musicalMode ();
+}
+void
+TransportAction::init_after_cloning (const TransportAction &other)
+{
+  UndoableAction::copy_members_from (other);
+  type_ = other.type_;
+  bpm_before_ = other.bpm_before_;
+  bpm_after_ = other.bpm_after_;
+  int_before_ = other.int_before_;
+  int_after_ = other.int_after_;
+  already_done_ = other.already_done_;
+  musical_mode_ = other.musical_mode_;
 }
 
 void

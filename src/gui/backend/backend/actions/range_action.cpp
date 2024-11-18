@@ -6,7 +6,32 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
-RangeAction::RangeAction () : UndoableAction (UndoableAction::Type::Range) { }
+using namespace zrythm::gui::actions;
+
+RangeAction::RangeAction (QObject * parent)
+    : QObject (parent), UndoableAction (UndoableAction::Type::Range)
+{
+}
+
+RangeAction::
+  RangeAction (Type type, Position start_pos, Position end_pos, QObject * parent)
+    : RangeAction (parent)
+{
+  start_pos_ = start_pos;
+  end_pos_ = end_pos;
+  type_ = type;
+  first_run_ = true;
+
+  z_return_if_fail (start_pos.validate () && end_pos.validate ());
+
+  /* create selections for overlapping objects */
+  Position inf;
+  inf.set_to_bar (*TRANSPORT, POSITION_MAX_BAR);
+  sel_before_ = std::make_unique<TimelineSelections> (start_pos, inf);
+  sel_after_ = std::make_unique<TimelineSelections> ();
+
+  transport_ = TRANSPORT->clone_unique ();
+}
 
 void
 RangeAction::init_after_cloning (const RangeAction &other)
@@ -19,21 +44,6 @@ RangeAction::init_after_cloning (const RangeAction &other)
   sel_after_ = other.sel_after_->clone_unique ();
   transport_ = other.transport_->clone_unique ();
   first_run_ = other.first_run_;
-}
-
-RangeAction::RangeAction (Type type, Position start_pos, Position end_pos)
-    : UndoableAction (UndoableAction::Type::Range), start_pos_ (start_pos),
-      end_pos_ (end_pos), type_ (type), first_run_ (true)
-{
-  z_return_if_fail (start_pos.validate () && end_pos.validate ());
-
-  /* create selections for overlapping objects */
-  Position inf;
-  inf.set_to_bar (*TRANSPORT, POSITION_MAX_BAR);
-  sel_before_ = std::make_unique<TimelineSelections> (start_pos, inf);
-  sel_after_ = std::make_unique<TimelineSelections> ();
-
-  transport_ = TRANSPORT->clone_unique ();
 }
 
 #define _MOVE_TRANSPORT_MARKER(x, _ticks, _do) \

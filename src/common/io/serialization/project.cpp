@@ -4,6 +4,15 @@
 #include "common/dsp/tracklist.h"
 #include "gui/backend/backend/project.h"
 
+using namespace zrythm;
+
+void
+gui::backend::Tool::define_fields (const Context &ctx)
+{
+  using T = ISerializable<Tool>;
+  T::serialize_fields (ctx, T::make_field ("toolValue", tool_));
+}
+
 void
 RegionLinkGroup::define_fields (const Context &ctx)
 {
@@ -37,7 +46,7 @@ MidiMappings::define_fields (const Context &ctx)
 }
 
 void
-UndoManager::define_fields (const Context &ctx)
+gui::actions::UndoManager::define_fields (const Context &ctx)
 {
   using T = ISerializable<UndoManager>;
   T::serialize_fields (

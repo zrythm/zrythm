@@ -3,10 +3,12 @@
 
 #include "common/dsp/channel_track.h"
 #include "common/dsp/tracklist.h"
-#include "gui/backend/backend/actions/tracklist_selections.h"
+#include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/tracklist_selections.h"
 #include "gui/backend/backend/zrythm.h"
+
+using namespace zrythm;
 
 ChannelTrack::ChannelTrack () : channel_ (new Channel (*this)) { }
 
@@ -53,7 +55,7 @@ ChannelTrack::
       z_return_if_fail (
         TRACKLIST_SELECTIONS->get_num_tracks () == 1 && is_selected ());
 
-      UNDO_MANAGER->perform (std::make_unique<MuteTrackAction> (*this, mute));
+      UNDO_MANAGER->perform (new gui::actions::MuteTrackAction (*this, mute));
     }
   else
     {
@@ -76,7 +78,7 @@ ChannelTrack::
       z_return_if_fail (
         TRACKLIST_SELECTIONS->get_num_tracks () == 1 && is_selected ());
 
-      UNDO_MANAGER->perform (std::make_unique<SoloTrackAction> (*this, solo));
+      UNDO_MANAGER->perform (new gui::actions::SoloTrackAction (*this, solo));
     }
   else
     {
@@ -103,7 +105,7 @@ ChannelTrack::set_listened (
         TRACKLIST_SELECTIONS->get_num_tracks () == 1 && is_selected ());
 
       UNDO_MANAGER->perform (
-        std::make_unique<ListenTrackAction> (*this, listen));
+        new gui::actions::ListenTrackAction (*this, listen));
     }
   else
     {

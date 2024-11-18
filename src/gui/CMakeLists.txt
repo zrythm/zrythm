@@ -83,7 +83,7 @@ set(rel_qml_file_paths
   components/basic/ZrythmPlaceholderPage.qml
   components/basic/ZrythmPreferencesPage.qml
   components/basic/ZrythmResizablePanel.qml
-  components/basic/ZrythmSplitButton.qml
+  components/basic/SplitButton.qml
   components/basic/ZrythmToolBar.qml
   components/arranger/AudioRegion.qml
   components/arranger/AutomationRegion.qml
@@ -103,10 +103,12 @@ set(rel_qml_file_paths
   components/Meter.qml
   components/RightDock.qml
   components/Ruler.qml
+  components/ToolBox.qml
   components/Tracklist.qml
   components/TracklistHeader.qml
   components/TrackView.qml
   components/TransportControls.qml
+  components/UndoSplitButton.qml
   Greeter.qml
   DemoView.qml
   views/ProjectWindow.qml
@@ -145,7 +147,7 @@ qt_add_qml_module(zrythm
     ${CMAKE_CURRENT_SOURCE_DIR}/resources/qtquickcontrols2.conf
     ${icon_files}
     ${font_files}
-  # objects that need to be creatable and signletons must be added here
+  # objects that need to be creatable and singletons/enums must be added here
   SOURCES
     backend/action_controller.h
     backend/action_controller.cpp
@@ -168,6 +170,8 @@ qt_add_qml_module(zrythm
     backend/realtime_updater.cpp
     backend/resource_manager.h
     backend/resource_manager.cpp
+    backend/tool.h
+    backend/tool.cpp
     backend/track_filter_proxy_model.h
     backend/track_filter_proxy_model.cpp
     backend/meter.h

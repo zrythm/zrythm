@@ -33,7 +33,7 @@ ChordEditor::apply_single_chord (
     {
       try
         {
-          UNDO_MANAGER->perform (std::make_unique<ChordAction> (chord, idx));
+          UNDO_MANAGER->perform (new gui::actions::ChordAction (chord, idx));
         }
       catch (const ZrythmException &e)
         {
@@ -58,7 +58,7 @@ ChordEditor::apply_chords (
       try
         {
           UNDO_MANAGER->perform (
-            std::make_unique<ChordAction> (chords_, chords));
+            new gui::actions::ChordAction (chords_, chords));
         }
       catch (const ZrythmException &e)
         {

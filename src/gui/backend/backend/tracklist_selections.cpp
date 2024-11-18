@@ -12,7 +12,7 @@
 #include "common/dsp/tracklist.h"
 #include "common/dsp/transport.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/actions/tracklist_selections.h"
+#include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/tracklist_selections.h"
@@ -59,7 +59,7 @@ TracklistSelections::get_lowest_track () const
 }
 
 void
-SimpleTracklistSelections::add_track (Track &tr, bool fire_events)
+SimpleTracklistSelections::add_track (Track &tr)
 {
   std::visit (
     [&] (auto &&track) {
@@ -68,13 +68,7 @@ SimpleTracklistSelections::add_track (Track &tr, bool fire_events)
         {
           track_names_.push_back (track->name_);
 
-          if (fire_events)
-            {
-              Q_EMIT track->selectedChanged (true);
-              /* EVENTS_PUSH (EventType::ET_TRACK_CHANGED, &track); */
-              /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED,
-               * nullptr); */
-            }
+          Q_EMIT track->selectedChanged (true);
         }
 
       if constexpr (std::derived_from<TrackT, RecordableTrack>)
@@ -89,7 +83,7 @@ SimpleTracklistSelections::add_track (Track &tr, bool fire_events)
             && zrythm::gui::SettingsManager::get_instance ()->get_trackAutoArm ()
             && !track->get_recording () && track->has_channel ())
             {
-              track->set_recording (true, fire_events);
+              track->set_recording (true, true);
               track->record_set_automatically_ = true;
             }
         }
@@ -108,7 +102,7 @@ SimpleTracklistSelections::
   for (int i = min_pos; i <= max_pos; i++)
     {
       Track * track = Track::from_variant (tracklist_->get_track (i));
-      add_track (*track, fire_events);
+      add_track (*track);
     }
 
   z_debug ("done");
@@ -259,7 +253,7 @@ SimpleTracklistSelections::select_all (bool visible_only)
         [&] (auto &&track) {
           if (track->visible_ || !visible_only)
             {
-              add_track (*track, false);
+              add_track (*track);
             }
         },
         tr);
@@ -461,7 +455,7 @@ void
 SimpleTracklistSelections::select_single (Track &track, bool fire_events)
 {
   clear (fire_events);
-  add_track (track, fire_events);
+  add_track (track);
 
   if (fire_events)
     {
@@ -574,7 +568,7 @@ TracklistSelections::paste_to_pos (int pos)
   try
     {
       UNDO_MANAGER->perform (
-        std::make_unique<CopyTracksAction> (*this, *PORT_CONNECTIONS_MGR, pos));
+        new gui::actions::CopyTracksAction (*this, *PORT_CONNECTIONS_MGR, pos));
     }
   catch (const ZrythmException &e)
     {

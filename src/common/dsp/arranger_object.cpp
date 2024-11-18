@@ -17,7 +17,7 @@
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/logger.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/actions/arranger_selections.h"
+#include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/automation_selections.h"
 #include "gui/backend/backend/chord_selections.h"
 #include "gui/backend/backend/project.h"
@@ -600,10 +600,12 @@ ArrangerObject::get_position_from_type (Position * pos, PositionType type) const
 
 void
 ArrangerObject::
-  update_positions (bool from_ticks, bool bpm_change, UndoableAction * action)
+  update_positions (bool from_ticks, bool bpm_change, double frames_per_tick)
 {
+  z_return_if_fail (frames_per_tick > 1e-10);
+
   std::visit (
-    [from_ticks, bpm_change, action] (auto &&obj) {
+    [from_ticks, bpm_change, frames_per_tick] (auto &&obj) {
       using ObjT = base_type<decltype (obj)>;
       signed_frame_t frames_len_before = 0;
       if constexpr (std::derived_from<ObjT, LengthableObject>)
@@ -614,18 +616,7 @@ ArrangerObject::
             }
         }
 
-      double ratio = 0.0;
-      if (action)
-        {
-          if (from_ticks)
-            {
-              ratio = action->frames_per_tick_;
-            }
-          else
-            {
-              ratio = 1.0 / action->frames_per_tick_;
-            }
-        }
+      const double ratio = from_ticks ? frames_per_tick : 1.0 / frames_per_tick;
 
       obj->pos_->update (from_ticks, ratio);
       if constexpr (std::derived_from<ObjT, LengthableObject>)
@@ -714,7 +705,7 @@ ArrangerObject::
         {
           for (auto &note : obj->midi_notes_)
             {
-              note->update_positions (from_ticks, bpm_change, action);
+              note->update_positions (from_ticks, bpm_change, ratio);
             }
         }
 
@@ -722,7 +713,7 @@ ArrangerObject::
         {
           for (auto &ap : obj->aps_)
             {
-              ap->update_positions (from_ticks, bpm_change, action);
+              ap->update_positions (from_ticks, bpm_change, ratio);
             }
         }
 
@@ -730,7 +721,7 @@ ArrangerObject::
         {
           for (auto &chord : obj->chord_objects_)
             {
-              chord->update_positions (from_ticks, bpm_change, action);
+              chord->update_positions (from_ticks, bpm_change, ratio);
             }
         }
     },
@@ -749,7 +740,7 @@ ArrangerObject::post_deserialize ()
    * so if no BPM change happened this is unnecessary, so this should be
    * refactored in the future. this was added to fix copy-pasting audio regions
    * after changing the BPM (see #4993) */
-  update_positions (true, true, nullptr);
+  update_positions (true, true, AUDIO_ENGINE->frames_per_tick_);
 
   if (is_region ())
     {
@@ -796,7 +787,8 @@ ArrangerObject::edit_finish (int action_edit_type) const
 void
 ArrangerObject::edit_position_finish () const
 {
-  edit_finish (ENUM_VALUE_TO_INT (ArrangerSelectionsAction::EditType::Position));
+  edit_finish (ENUM_VALUE_TO_INT (
+    gui::actions::ArrangerSelectionsAction::EditType::Position));
 }
 
 void

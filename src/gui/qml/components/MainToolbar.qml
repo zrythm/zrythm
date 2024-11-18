@@ -39,36 +39,22 @@ ZrythmToolBar {
         },
         ToolSeparator {
         },
-        ZrythmSplitButton {
+        UndoSplitButton {
             id: undoBtn
 
-            tooltipText: qsTr("Undo")
-            menuTooltipText: qsTr("Undo Multiple")
-            iconSource: ResourceManager.getIconUrl("zrythm-dark", "edit-undo.svg")
-
-            menuItems: Menu {
-                Action {
-                    text: qsTr("Undo Move")
-                }
-
-            }
-
+            undoManager: root.project.undoManager
+            isUndo: true
         },
-        ZrythmSplitButton {
+        UndoSplitButton {
             id: redoBtn
 
-            tooltipText: qsTr("Redo")
-            menuTooltipText: qsTr("Redo Multiple")
-            iconSource: ResourceManager.getIconUrl("zrythm-dark", "edit-redo.svg")
-            enabled: false
+            undoManager: root.project.undoManager
+            isUndo: false
         },
-        ToolSeparator {
-        },
-        // Implement ToolboxWidget
-        Rectangle {
-            // Add ToolboxWidget properties and functionality
+        ToolBox {
+            id: toolBox
 
-            id: toolbox
+            tool: root.project.tool
         }
     ]
     centerItems: [

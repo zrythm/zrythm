@@ -69,6 +69,54 @@ CursorManager::setPointerCursor ()
 }
 
 void
+CursorManager::setPencilCursor ()
+{
+  auto icon =
+    ResourceManager::getIconUrl (u"zrythm-dark"_s, u"edit-cursor.svg"_s);
+  setCursorWithSize (icon.toString (), 2, 3, 24);
+}
+
+void
+CursorManager::setBrushCursor ()
+{
+  auto icon =
+    ResourceManager::getIconUrl (u"zrythm-dark"_s, u"brush-cursor.svg"_s);
+  setCursorWithSize (icon.toString (), 2, 3, 24);
+}
+
+void
+CursorManager::setCutCursor ()
+{
+  auto icon =
+    ResourceManager::getIconUrl (u"zrythm-dark"_s, u"cut-cursor.svg"_s);
+  setCursorWithSize (icon.toString (), 9, 7, 24);
+}
+
+void
+CursorManager::setEraserCursor ()
+{
+  auto icon =
+    ResourceManager::getIconUrl (u"zrythm-dark"_s, u"eraser-cursor.svg"_s);
+  setCursorWithSize (icon.toString (), 4, 2, 24);
+}
+
+void
+CursorManager::setRampCursor ()
+{
+  auto icon =
+    ResourceManager::getIconUrl (u"zrythm-dark"_s, u"ramp-cursor.svg"_s);
+  setCursorWithSize (icon.toString (), 2, 3, 24);
+}
+
+void
+CursorManager::setAuditionCursor ()
+{
+  auto icon =
+    ResourceManager::getIconUrl (u"zrythm-dark"_s, u"audition-cursor.svg"_s);
+  setCursorWithSize (icon.toString (), 10, 12, 24);
+}
+
+void
 CursorManager::setOpenHandCursor ()
 {
   auto icon =
@@ -84,11 +132,76 @@ CursorManager::setClosedHandCursor ()
 }
 
 void
+CursorManager::setCopyCursor ()
+{
+  QCursor cursor (Qt::CursorShape::DragCopyCursor);
+  set_cursor (QString::fromUtf8 (__func__), cursor);
+}
+
+void
+CursorManager::setLinkCursor ()
+{
+  QCursor cursor (Qt::CursorShape::DragLinkCursor);
+  set_cursor (QString::fromUtf8 (__func__), cursor);
+}
+
+void
+CursorManager::setResizeStartCursor ()
+{
+  auto icon =
+    ResourceManager::getIconUrl (u"zrythm-dark"_s, u"w-resize-cursor.svg"_s);
+  setCursorWithSize (icon.toString (), 14, 11, 24);
+}
+void
+CursorManager::setStretchStartCursor ()
+{
+  auto icon =
+    ResourceManager::getIconUrl (u"zrythm-dark"_s, u"w-stretch-cursor.svg"_s);
+  setCursorWithSize (icon.toString (), 14, 11, 24);
+}
+void
+CursorManager::setResizeLoopStartCursor ()
+{
+  auto icon =
+    ResourceManager::getIconUrl (u"zrythm-dark"_s, u"w-loop-cursor.svg"_s);
+  setCursorWithSize (icon.toString (), 14, 11, 24);
+}
+
+void
 CursorManager::setResizeEndCursor ()
 {
   auto icon =
     ResourceManager::getIconUrl (u"zrythm-dark"_s, u"e-resize-cursor.svg"_s);
   setCursorWithSize (icon.toString (), 10, 11, 24);
+}
+
+void
+CursorManager::setStretchEndCursor ()
+{
+  auto icon =
+    ResourceManager::getIconUrl (u"zrythm-dark"_s, u"e-stretch-cursor.svg"_s);
+  setCursorWithSize (icon.toString (), 10, 11, 24);
+}
+void
+CursorManager::setResizeLoopEndCursor ()
+{
+  auto icon =
+    ResourceManager::getIconUrl (u"zrythm-dark"_s, u"e-loop-cursor.svg"_s);
+  setCursorWithSize (icon.toString (), 10, 11, 24);
+}
+void
+CursorManager::setFadeInCursor ()
+{
+  auto icon =
+    ResourceManager::getIconUrl (u"zrythm-dark"_s, u"fade-in-cursor.svg"_s);
+  setCursorWithSize (icon.toString (), 3, 1, 24);
+}
+void
+CursorManager::setFadeOutCursor ()
+{
+  auto icon =
+    ResourceManager::getIconUrl (u"zrythm-dark"_s, u"fade-out-cursor.svg"_s);
+  setCursorWithSize (icon.toString (), 3, 1, 24);
 }
 
 void

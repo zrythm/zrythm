@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/actions/arranger_selections.h"
+#include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/actions/channel_send_action.h"
 #include "gui/backend/backend/actions/chord_action.h"
 #include "gui/backend/backend/actions/midi_mapping_action.h"
@@ -9,16 +9,21 @@
 #include "gui/backend/backend/actions/port_action.h"
 #include "gui/backend/backend/actions/port_connection_action.h"
 #include "gui/backend/backend/actions/range_action.h"
-#include "gui/backend/backend/actions/tracklist_selections.h"
+#include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/actions/transport_action.h"
 #include "gui/backend/backend/actions/undo_stack.h"
+
+using namespace zrythm::gui::actions;
 
 void
 UndoStack::define_fields (const Context &ctx)
 {
   using T = ISerializable<UndoStack>;
-  T::serialize_fields (ctx, T::make_field ("maxLength", max_size_));
+  T::serialize_fields (
+    ctx, T::make_field ("maxLength", max_size_),
+    T::make_field ("actions", actions_));
 
+#if 0
   if (ctx.is_serializing ())
     {
       T::serialize_field<decltype (actions_), UndoableActionPtrVariant> (
@@ -66,6 +71,7 @@ UndoStack::define_fields (const Context &ctx)
             }
         }
     }
+#endif
 }
 
 void

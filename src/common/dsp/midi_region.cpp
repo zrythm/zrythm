@@ -174,7 +174,7 @@ MidiRegion::roleNames () const
 int
 MidiRegion::rowCount (const QModelIndex &parent) const
 {
-  return midi_notes_.size ();
+  return static_cast<int> (midi_notes_.size ());
 }
 
 QVariant

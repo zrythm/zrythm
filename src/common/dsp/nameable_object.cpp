@@ -4,11 +4,13 @@
 #include "common/dsp/nameable_object.h"
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/ui.h"
-#include "gui/backend/backend/actions/arranger_selections.h"
+#include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
 #include <fmt/printf.h>
+
+using namespace zrythm;
 
 void
 NameableObject::gen_escaped_name ()
@@ -62,8 +64,11 @@ NameableObject::set_name_with_action (const std::string &name)
 
       try
         {
-          UNDO_MANAGER->perform (EditArrangerSelectionsAction::create (
-            *self, *clone_obj, ArrangerSelectionsAction::EditType::Name, false));
+          UNDO_MANAGER->perform (
+            gui::actions::EditArrangerSelectionsAction::create (
+              *self, *clone_obj,
+              gui::actions::ArrangerSelectionsAction::EditType::Name, false)
+              .release ());
         }
       catch (const ZrythmException &e)
         {

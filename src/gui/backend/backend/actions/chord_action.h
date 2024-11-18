@@ -8,20 +8,22 @@
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/backend/backend/chord_editor.h"
 
-/**
- * @addtogroup actions
- *
- * @{
- */
+namespace zrythm::gui::actions
+{
 
 /**
  * Action for chord pad changes.
  */
 class ChordAction final
-    : public UndoableAction,
+    : public QObject,
+      public UndoableAction,
       public ICloneable<ChordAction>,
       public ISerializable<ChordAction>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_UNDOABLE_ACTION_QML_PROPERTIES (ChordAction)
+
 public:
   /**
    * Type of chord action.
@@ -37,7 +39,7 @@ public:
     All,
   };
 
-  ChordAction () : UndoableAction (UndoableAction::Type::Chord) { }
+  ChordAction (QObject * parent = nullptr);
 
   /**
    * @brief Creates a new action for changing all chords.
@@ -47,7 +49,8 @@ public:
    */
   ChordAction (
     const std::vector<ChordDescriptor> &chords_before,
-    const std::vector<ChordDescriptor> &chords_after);
+    const std::vector<ChordDescriptor> &chords_after,
+    QObject *                           parent = nullptr);
 
   /**
    * @brief Creates a new action for changing a single chord.
@@ -55,7 +58,10 @@ public:
    * @param chord Chord after the change.
    * @param chord_idx Index of the chord to change.
    */
-  ChordAction (const ChordDescriptor &chord, const int chord_idx);
+  ChordAction (
+    const ChordDescriptor &chord,
+    int                    chord_idx,
+    QObject *              parent = nullptr);
 
   QString to_string () const override;
 
@@ -84,8 +90,6 @@ public:
   std::vector<ChordDescriptor> chords_after_;
 };
 
-/**
- * @}
- */
+}; // namespace zrythm::gui::actions
 
 #endif

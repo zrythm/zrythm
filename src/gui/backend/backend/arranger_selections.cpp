@@ -12,7 +12,7 @@
 #include "common/dsp/tracklist.h"
 #include "common/dsp/transport.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/actions/arranger_selections.h"
+#include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/arranger_selections.h"
 #include "gui/backend/backend/automation_selections.h"
 #include "gui/backend/backend/chord_selections.h"
@@ -24,7 +24,7 @@
 ArrangerSelections::ArrangerSelections (Type type) : type_ (type) { }
 
 void
-ArrangerSelections::init_loaded (bool project, UndoableAction * action)
+ArrangerSelections::init_loaded (bool project, double frames_per_tick)
 {
   if (project)
     {
@@ -44,7 +44,7 @@ ArrangerSelections::init_loaded (bool project, UndoableAction * action)
                   auto clip = o->get_clip ();
                   z_return_if_fail (clip);
                 }
-              o->update_positions (true, false, nullptr);
+              o->update_positions (true, false, frames_per_tick);
 
               // replace the object clone with the actual project object
               obj_variant = std::get<ObjectT *> (*o->find_in_project ());
@@ -54,14 +54,13 @@ ArrangerSelections::init_loaded (bool project, UndoableAction * action)
           else /* else if not project */
             {
               o->init_loaded ();
-              o->update_positions (true, false, action);
+              o->update_positions (true, false, frames_per_tick);
               if constexpr (std::derived_from<ObjectT, Region>)
                 {
                   if constexpr (std::is_same_v<AudioRegion, ObjectT>)
                     {
-                      o->fix_positions (action ? action->frames_per_tick_ : 0);
-                      o->validate (
-                        project, action ? action->frames_per_tick_ : 0);
+                      o->fix_positions (frames_per_tick);
+                      o->validate (project, frames_per_tick);
                     }
                   o->validate (project, 0);
                 }
@@ -792,7 +791,8 @@ ArrangerSelections::paste_to_pos (const Position &pos, bool undoable)
           try
             {
               UNDO_MANAGER->perform (
-                std::make_unique<CreateArrangerSelectionsAction> (*clone_sel));
+                new zrythm::gui::actions::CreateArrangerSelectionsAction (
+                  *clone_sel));
             }
           catch (const ZrythmException &e)
             {

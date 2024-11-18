@@ -10,6 +10,8 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
+using namespace zrythm;
+
 OptionalTrackPtrVariant
 MixerSelections::get_track () const
 {
@@ -356,7 +358,7 @@ MixerSelections::
 {
   try
     {
-      UNDO_MANAGER->perform (std::make_unique<MixerSelectionsPasteAction> (
+      UNDO_MANAGER->perform (new gui::actions::MixerSelectionsPasteAction (
         *gen_full_from_this (), *PORT_CONNECTIONS_MGR, type, ch.get_track (),
         slot));
     }

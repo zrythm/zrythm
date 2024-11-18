@@ -8,7 +8,7 @@
 #include "common/dsp/router.h"
 #include "common/plugins/carla_native_plugin.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
-#include "gui/backend/backend/actions/tracklist_selections.h"
+#include "gui/backend/backend/actions/tracklist_selections_action.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"

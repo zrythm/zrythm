@@ -10,57 +10,62 @@
 
 class AudioClip;
 
-/**
- * @addtogroup actions
- *
- * @{
- */
-
 #define UNDO_MANAGER (PROJECT->undo_manager_)
+
+namespace zrythm::gui::actions
+{
 
 /**
  * Undo manager.
  */
 class UndoManager final
-    : public ICloneable<UndoManager>,
+    : public QObject,
+      public ICloneable<UndoManager>,
       public ISerializable<UndoManager>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  Q_PROPERTY (UndoStack * undoStack READ getUndoStack CONSTANT)
+  Q_PROPERTY (UndoStack * redoStack READ getRedoStack CONSTANT)
+
 public:
-  UndoManager ()
-  {
-    undo_stack_ = std::make_unique<UndoStack> ();
-    redo_stack_ = std::make_unique<UndoStack> ();
-  }
+  UndoManager (QObject * parent = nullptr);
+  Q_DISABLE_COPY_MOVE (UndoManager)
+  ~UndoManager () override = default;
 
   /**
    * Inits the undo manager by populating the undo/redo stacks.
    */
-  void init_loaded ();
+  void init_loaded (sample_rate_t engine_sample_rate);
+
+  UndoStack * getUndoStack () const { return undo_stack_; }
+  UndoStack * getRedoStack () const { return redo_stack_; }
 
   /**
    * Undo last action.
    *
    * @throw ZrythmException on error.
    */
-  void undo ();
+  Q_INVOKABLE void undo ();
 
   /**
    * Redo last undone action.
    *
    * @throw ZrythmException on error.
    */
-  void redo ();
+  Q_INVOKABLE void redo ();
 
   /**
    * Performs the action and pushes it to the undo stack.
    *
+   * @note Takes ownership of the action.
+   *
    * @throw ZrythmException If the action couldn't be performed.
    */
-  void perform (std::unique_ptr<UndoableAction> &&action);
+  Q_INVOKABLE void perform (QObject * action_qobject);
 
   /**
-   * Returns whether the given clip is used by any
-   * stack.
+   * Returns whether the given clip is used by any stack.
    */
   bool contains_clip (const AudioClip &clip) const;
 
@@ -75,7 +80,7 @@ public:
    * Returns the last performed action, or NULL if
    * the stack is empty.
    */
-  UndoableAction * get_last_action () const;
+  std::optional<UndoableActionPtrVariant> get_last_action () const;
 
   /**
    * Clears the undo and redo stacks.
@@ -94,14 +99,19 @@ private:
    * @param main_stack Undo stack if undoing, redo stack if doing.
    * @throw ZrythmException on error.
    */
-  void do_or_undo_action (
-    std::unique_ptr<UndoableAction> &&action,
-    UndoStack                        &main_stack,
-    UndoStack                        &opposite_stack);
+  template <UndoableActionSubclass T>
+  void
+  do_or_undo_action (T * action, UndoStack &main_stack, UndoStack &opposite_stack);
+
+  /**
+   * Common logic for undo/redo operations
+   * @param is_undo True if undoing, false if redoing
+   */
+  void do_undo_redo (bool is_undo);
 
 public:
-  std::unique_ptr<UndoStack> undo_stack_;
-  std::unique_ptr<UndoStack> redo_stack_;
+  UndoStack * undo_stack_ = nullptr;
+  UndoStack * redo_stack_ = nullptr;
 
   /**
    * Whether the redo stack is currently locked.
@@ -114,8 +124,57 @@ public:
   std::binary_semaphore action_sem_{ 1 };
 };
 
-/**
- * @}
- */
+extern template void
+UndoManager::do_or_undo_action (
+  ArrangerSelectionsAction * action,
+  UndoStack                 &main_stack,
+  UndoStack                 &opposite_stack);
+extern template void
+UndoManager::do_or_undo_action (
+  ChannelSendAction * action,
+  UndoStack          &main_stack,
+  UndoStack          &opposite_stack);
+extern template void
+UndoManager::do_or_undo_action (
+  ChordAction * action,
+  UndoStack    &main_stack,
+  UndoStack    &opposite_stack);
+extern template void
+UndoManager::do_or_undo_action (
+  MidiMappingAction * action,
+  UndoStack          &main_stack,
+  UndoStack          &opposite_stack);
+extern template void
+UndoManager::do_or_undo_action (
+  MixerSelectionsAction * action,
+  UndoStack              &main_stack,
+  UndoStack              &opposite_stack);
+extern template void
+UndoManager::do_or_undo_action (
+  PortAction * action,
+  UndoStack   &main_stack,
+  UndoStack   &opposite_stack);
+extern template void
+UndoManager::do_or_undo_action (
+  PortConnectionAction * action,
+  UndoStack             &main_stack,
+  UndoStack             &opposite_stack);
+extern template void
+UndoManager::do_or_undo_action (
+  RangeAction * action,
+  UndoStack    &main_stack,
+  UndoStack    &opposite_stack);
+extern template void
+UndoManager::do_or_undo_action (
+  TracklistSelectionsAction * action,
+  UndoStack                  &main_stack,
+  UndoStack                  &opposite_stack);
+extern template void
+UndoManager::do_or_undo_action (
+  TransportAction * action,
+  UndoStack        &main_stack,
+  UndoStack        &opposite_stack);
+
+}; // namespace zrythm::gui::actions
 
 #endif

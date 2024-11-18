@@ -225,15 +225,10 @@ public:
    * @param always_before_pos Whether the track should always be put before the
    * track currently at @p pos. If this is true, when moving down, the resulting
    * track position will be @p pos - 1.
-   * @param publish_events Push UI update events or not.
    * @param recalc_graph Recalculate routing graph.
    */
-  void move_track (
-    Track &track,
-    int    pos,
-    bool   always_before_pos,
-    bool   publish_events,
-    bool   recalc_graph);
+  void
+  move_track (Track &track, int pos, bool always_before_pos, bool recalc_graph);
 
   /**
    * Pins or unpins the Track.

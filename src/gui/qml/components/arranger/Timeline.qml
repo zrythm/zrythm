@@ -70,30 +70,30 @@ Arranger {
         
         switch (root.currentAction) {
             case Arranger.None:
-                switch (root.tool) {
-                    case 0:
+                switch (root.tool.toolValue) {
+                    case Tool.Select:
                         CursorManager.setPointerCursor();
                         return; 
                         
-                    case 1:
-                        cursor = "edit";
-                        break;
+                    case Tool.Edit:
+                        CursorManager.setPencilCursor();
+                        return;
                         
-                    case 2:
-                        cursor = "cut";
-                        break;
+                    case Tool.Cut:
+                        CursorManager.setCutCursor();
+                        return;
                         
-                    case 3:
-                        cursor = "eraser";
-                        break;
+                    case Tool.Eraser:
+                        CursorManager.setEraserCursor();
+                        return;
                         
-                    case 4:
-                        cursor = "ramp";
-                        break;
+                    case Tool.Ramp:
+                        CursorManager.setRampCursor();
+                        return;
                         
-                    case 5:
-                        cursor = "audition";
-                        break;
+                    case Tool.Audition:
+                        CursorManager.setAuditionCursor();
+                        return;
                 }
                 break;
                 
@@ -101,24 +101,24 @@ Arranger {
             case Arranger.DeleteSelecting:
             case Arranger.StartingErasing:
             case Arranger.Erasing:
-                cursor = "eraser";
-                break;
+                CursorManager.setEraserCursor();
+                return;
                 
             case Arranger.StartingMovingCopy:
             case Arranger.MovingCopy:
-                cursor = "copy";
-                break;
+                CursorManager.setCopyCursor();
+                return;
                 
             case Arranger.StartingMovingLink:
             case Arranger.MovingLink:
-                cursor = "link";
-                break;
+                CursorManager.setLinkCursor();
+                return;
                 
             case Arranger.StartingMoving:
             case Arranger.CreatingMoving:
             case Arranger.Moving:
-                cursor = "grabbing";
-                break;
+                CursorManager.setClosedHandCursor();
+                return;
                 
             case Arranger.StartingPanning:
             case Arranger.Panning:
@@ -126,24 +126,24 @@ Arranger {
                 return;
                 
             case Arranger.StretchingL:
-                cursor = "stretch-l";
-                break;
+                CursorManager.setStretchStartCursor();
+                return;
                 
             case Arranger.ResizingL:
-                cursor = "resize-l";
-                break;
+                CursorManager.setResizeStartCursor();
+                return;
                 
             case Arranger.ResizingLLoop:
-                cursor = "resize-l-loop";
-                break;
+                CursorManager.setResizeLoopStartCursor();
+                return;
                 
             case Arranger.ResizingLFade:
-                cursor = "fade-in";
-                break;
+                CursorManager.setFadeInCursor();
+                return;
                 
             case Arranger.StretchingR:
-                cursor = "stretch-r";
-                break;
+                CursorManager.setStretchEndCursor();
+                return;
                 
             case Arranger.CreatingResizingR:
             case Arranger.ResizingR:
@@ -151,24 +151,21 @@ Arranger {
                 return;
                 
             case Arranger.ResizingRLoop:
-                cursor = "resize-r-loop";
-                break;
+                CursorManager.setResizeLoopEndCursor();
+                return;
                 
             case Arranger.ResizingRFade:
-                cursor = "fade-out";
-                break;
+            case Arranger.ResizingUpFadeOut:
+                CursorManager.setFadeOutCursor();
+                return;
                 
             case Arranger.ResizingUpFadeIn:
-                cursor = "fade-in";
-                break;
-                
-            case Arranger.ResizingUpFadeOut:
-                cursor = "fade-out";
-                break;
+                CursorManager.setFadeInCursor();
+                return;
                 
             case Arranger.Autofilling:
-                cursor = "autofill";
-                break;
+                CursorManager.setBrushCursor();
+                return;
                 
             case Arranger.StartingSelection:
             case Arranger.Selecting:
@@ -180,13 +177,13 @@ Arranger {
                 break;
                 
             case Arranger.Cutting:
-                cursor = "cut";
-                break;
+                CursorManager.setCutCursor();
+                return;
                 
             case Arranger.StartingAuditioning:
             case Arranger.Auditioning:
-                cursor = "audition";
-                break;
+                CursorManager.setAuditionCursor();
+                return;
         }
 
         CursorManager.setPointerCursor();

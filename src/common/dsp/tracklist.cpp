@@ -18,8 +18,8 @@
 #include "common/utils/gtest_wrapper.h"
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/string.h"
-#include "gui/backend/backend/actions/arranger_selections.h"
-#include "gui/backend/backend/actions/tracklist_selections.h"
+#include "gui/backend/backend/actions/arranger_selections_action.h"
+#include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 
 Tracklist::Tracklist (QObject * parent) : QAbstractListModel (parent) { }
@@ -709,6 +709,8 @@ Tracklist::remove_track (
     track.pos_, track.get_name (), rm_pl, free_track, publish_events,
     recalc_graph, tracks_.size ());
 
+  beginRemoveRows ({}, track.pos_, track.pos_);
+
   std::optional<TrackPtrVariant> prev_visible = std::nullopt;
   std::optional<TrackPtrVariant> next_visible = std::nullopt;
   if (!is_auditioner ())
@@ -726,8 +728,8 @@ Tracklist::remove_track (
   track.disconnect (rm_pl, false);
 
   /* move track to the end */
-  int end_pos = tracks_.size () - 1;
-  move_track (track, end_pos, false, false, false);
+  auto end_pos = std::ssize (tracks_) - 1;
+  move_track (track, end_pos, false, false);
 
   if (!is_auditioner ())
     {
@@ -756,9 +758,7 @@ Tracklist::remove_track (
           if (track_to_select)
             {
               std::visit (
-                [publish_events] (auto &&tr) {
-                  TRACKLIST_SELECTIONS->add_track (*tr, publish_events);
-                },
+                [] (auto &&tr) { TRACKLIST_SELECTIONS->add_track (*tr); },
                 *track_to_select);
             }
         }
@@ -780,26 +780,21 @@ Tracklist::remove_track (
       ROUTER->recalc_graph (false);
     }
 
-  if (publish_events)
-    {
-      // EVENTS_PUSH (EventType::ET_TRACKS_REMOVED, nullptr);
-    }
+  endRemoveRows ();
 
   z_debug ("done removing track");
 }
 
 void
-Tracklist::move_track (
-  Track &track,
-  int    pos,
-  bool   always_before_pos,
-  bool   publish_events,
-  bool   recalc_graph)
+Tracklist::
+  move_track (Track &track, int pos, bool always_before_pos, bool recalc_graph)
 {
   z_debug ("moving track: {} from {} to {}", track.get_name (), track.pos_, pos);
 
   if (pos == track.pos_)
     return;
+
+  beginMoveRows ({}, track.pos_, track.pos_, {}, pos);
 
   bool move_higher = pos < track.pos_;
 
@@ -831,7 +826,7 @@ Tracklist::move_track (
                 [&] (auto &&region_track) {
                   if (region_track == &track)
                     {
-                      CLIP_EDITOR->set_region (std::nullopt, publish_events);
+                      CLIP_EDITOR->set_region (std::nullopt, true);
                     }
                 },
                 region_track_var);
@@ -842,16 +837,14 @@ Tracklist::move_track (
       /* deselect all objects */
       track.unselect_all ();
 
-      TRACKLIST_SELECTIONS->remove_track (track, publish_events);
+      TRACKLIST_SELECTIONS->remove_track (track, true);
 
       /* if it was the only track selected, select the next one */
       if (TRACKLIST_SELECTIONS->empty () && (prev_visible || next_visible))
         {
           auto track_to_add = next_visible ? *next_visible : *prev_visible;
           std::visit (
-            [publish_events] (auto &&tr) {
-              TRACKLIST_SELECTIONS->add_track (*tr, publish_events);
-            },
+            [] (auto &&tr) { TRACKLIST_SELECTIONS->add_track (*tr); },
             track_to_add);
         }
     }
@@ -888,7 +881,7 @@ Tracklist::move_track (
   if (is_in_active_project () && !is_auditioner ())
     {
       /* make the track the only selected track */
-      TRACKLIST_SELECTIONS->select_single (track, publish_events);
+      TRACKLIST_SELECTIONS->select_single (track, true);
     }
 
   if (recalc_graph)
@@ -896,10 +889,7 @@ Tracklist::move_track (
       ROUTER->recalc_graph (false);
     }
 
-  if (publish_events)
-    {
-      // EVENTS_PUSH (EventType::ET_TRACKS_MOVED, nullptr);
-    }
+  endMoveRows ();
 
   z_debug ("finished moving track");
 }
@@ -1210,7 +1200,7 @@ Tracklist::move_after_copying_or_moving_inside (
 
   try
     {
-      UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
+      UNDO_MANAGER->perform (new gui::actions::MoveTracksAction (
         after_tls,
         lowest_cloned_track_pos + diff_between_track_below_and_parent));
     }
@@ -1221,8 +1211,9 @@ Tracklist::move_after_copying_or_moving_inside (
       return;
     }
 
-  auto ua = UNDO_MANAGER->get_last_action ();
-  ua->num_actions_ = 2;
+  auto ua_opt = UNDO_MANAGER->get_last_action ();
+  z_return_if_fail (ua_opt.has_value ());
+  std::visit ([&] (auto &&ua) { ua->num_actions_ = 2; }, ua_opt.value ());
 }
 
 #if 0

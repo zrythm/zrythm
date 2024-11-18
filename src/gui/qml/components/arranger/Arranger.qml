@@ -3,6 +3,7 @@
 
 import QtQuick
 import ZrythmStyle 1.0
+import Zrythm 1.0
 
 Item {
     id: root
@@ -50,7 +51,7 @@ Item {
     required property var editorSettings
     required property Ruler ruler
     required property var selections
-    required property int tool
+    required property var tool
     property int currentAction: Arranger.CurrentAction.None
     readonly property alias currentActionStartCoordinates: arrangerMouseArea.startCoordinates
     property var arrangerSelectionsCloneAtStart // the selections at the start of the current action (own copy)
@@ -129,7 +130,7 @@ Item {
         Item {
             id: arrangerContent
 
-            width: ruler.width
+            width: root.ruler.width
             height: 600 // TODO: calculate height
 
             // Vertical grid lines
@@ -138,25 +139,25 @@ Item {
 
                 // Bar lines
                 Repeater {
-                    model: Math.ceil(arrangerContent.width / ruler.pxPerBar)
+                    model: Math.ceil(arrangerContent.width / root.ruler.pxPerBar)
 
                     Rectangle {
                         width: 1
                         height: arrangerContent.height
-                        x: index * ruler.pxPerBar
+                        x: index * root.ruler.pxPerBar
                         color: root.palette.button
-                        opacity: ruler.barLineOpacity
+                        opacity: root.ruler.barLineOpacity
                     }
 
                 }
 
                 // Beat lines
                 Loader {
-                    active: ruler.pxPerBeat > ruler.detailMeasurePxThreshold
+                    active: root.ruler.pxPerBeat > root.ruler.detailMeasurePxThreshold
                     visible: active
 
                     sourceComponent: Repeater {
-                        model: Math.ceil(arrangerContent.width / ruler.pxPerBeat)
+                        model: Math.ceil(arrangerContent.width / root.ruler.pxPerBeat)
 
                         Rectangle {
                             width: 1
@@ -173,11 +174,11 @@ Item {
 
                 // Sixteenth lines
                 Loader {
-                    active: ruler.pxPerSixteenth > ruler.detailMeasurePxThreshold
+                    active: root.ruler.pxPerSixteenth > root.ruler.detailMeasurePxThreshold
                     visible: active
 
                     sourceComponent: Repeater {
-                        model: Math.ceil(arrangerContent.width / ruler.pxPerSixteenth)
+                        model: Math.ceil(arrangerContent.width / root.ruler.pxPerSixteenth)
 
                         Rectangle {
                             width: 1

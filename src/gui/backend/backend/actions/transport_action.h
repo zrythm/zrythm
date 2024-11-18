@@ -8,20 +8,22 @@
 #include "common/utils/types.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 
-/**
- * @addtogroup actions
- *
- * @{
- */
+namespace zrythm::gui::actions
+{
 
 /**
  * Transport action.
  */
 class TransportAction final
-    : public UndoableAction,
+    : public QObject,
+      public UndoableAction,
       public ICloneable<TransportAction>,
       public ISerializable<TransportAction>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_UNDOABLE_ACTION_QML_PROPERTIES (TransportAction)
+
 public:
   enum class Type
   {
@@ -30,7 +32,7 @@ public:
     BeatUnitChange,
   };
 
-  TransportAction () : UndoableAction (UndoableAction::Type::Transport) { }
+  TransportAction (QObject * parent = nullptr);
 
   /**
    * @brief Construct a new Transport Action object for a BPM change.
@@ -39,7 +41,11 @@ public:
    * @param bpm_after
    * @param already_done
    */
-  TransportAction (bpm_t bpm_before, bpm_t bpm_after, bool already_done);
+  TransportAction (
+    bpm_t     bpm_before,
+    bpm_t     bpm_after,
+    bool      already_done,
+    QObject * parent = nullptr);
 
   /**
    * @brief Construct a new Transport object for a beat unit/beats per bar
@@ -50,19 +56,14 @@ public:
    * @param after
    * @param already_done
    */
-  TransportAction (Type type, int before, int after, bool already_done);
+  TransportAction (
+    Type      type,
+    int       before,
+    int       after,
+    bool      already_done,
+    QObject * parent = nullptr);
 
-  void init_after_cloning (const TransportAction &other) override
-  {
-    UndoableAction::copy_members_from (other);
-    type_ = other.type_;
-    bpm_before_ = other.bpm_before_;
-    bpm_after_ = other.bpm_after_;
-    int_before_ = other.int_before_;
-    int_after_ = other.int_after_;
-    already_done_ = other.already_done_;
-    musical_mode_ = other.musical_mode_;
-  }
+  void init_after_cloning (const TransportAction &other) override;
 
   QString to_string () const override;
 
@@ -96,8 +97,6 @@ public:
   bool musical_mode_ = false;
 };
 
-/**
- * @}
- */
+}; // namespace zrythm::gui::actions
 
 #endif

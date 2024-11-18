@@ -31,7 +31,7 @@
 #include "common/utils/mpmc_queue.h"
 #include "common/utils/object_pool.h"
 #include "common/utils/objects.h"
-#include "gui/backend/backend/actions/arranger_selections.h"
+#include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
@@ -108,7 +108,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
   try
     {
       UNDO_MANAGER->perform (
-        std::make_unique<ArrangerSelectionsAction::RecordAction> (
+        new gui::actions::ArrangerSelectionsAction::RecordAction (
           *dynamic_cast<TimelineSelections *> (selections_before_start_.get ()),
           *TL_SELECTIONS, true));
     }

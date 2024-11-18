@@ -6,6 +6,8 @@
 #include "common/utils/format.h"
 #include "gui/backend/backend/actions/port_action.h"
 
+using namespace zrythm::gui::actions;
+
 void
 PortAction::init_after_cloning (const PortAction &other)
 {

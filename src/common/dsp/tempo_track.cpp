@@ -13,6 +13,8 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
+using namespace zrythm;
+
 TempoTrack::TempoTrack (int track_pos)
     : Track (
         Track::Type::Tempo,
@@ -156,7 +158,7 @@ TempoTrack::set_bpm (bpm_t bpm, bpm_t start_bpm, bool temporary, bool fire_event
       try
         {
           UNDO_MANAGER->perform (
-            std::make_unique<TransportAction> (start_bpm, bpm, false));
+            new gui::actions::TransportAction (start_bpm, bpm, false));
         }
       catch (const ZrythmException &e)
         {

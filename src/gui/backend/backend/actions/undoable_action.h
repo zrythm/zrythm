@@ -5,20 +5,23 @@
 #define __UNDO_UNDOABLE_ACTION_H__
 
 #include "common/dsp/port_connections_manager.h"
+#include "common/plugins/plugin.h"
 #include "common/utils/types.h"
 
 class AudioClip;
 
-namespace zrythm::plugins
+namespace zrythm::gui::actions
 {
-class Plugin;
-}
 
-/**
- * @addtogroup actions
- *
- * @{
- */
+#define DEFINE_UNDOABLE_ACTION_QML_PROPERTIES(ClassType) \
+public: \
+  /* ================================================================ */ \
+  /* helpers */ \
+  /* ================================================================ */ \
+  Q_INVOKABLE QString getDescription () const \
+  { \
+    return to_string (); \
+  }
 
 /**
  * Base class to be inherited by implementing undoable actions.
@@ -80,7 +83,7 @@ public:
    *
    * @see init_loaded_impl().
    */
-  void init_loaded ();
+  void init_loaded (sample_rate_t engine_sample_rate);
 
   /**
    * Returns whether the action requires pausing the engine.
@@ -126,7 +129,7 @@ public:
    *
    * @param plugins
    */
-  virtual void get_plugins (std::vector<zrythm::plugins::Plugin *> &plugins) {};
+  virtual void get_plugins (std::vector<plugins::Plugin *> &plugins) {};
 
   /**
    * Sets the number of actions for this action.
@@ -242,8 +245,10 @@ using UndoableActionVariant = std::variant<
   TransportAction>;
 using UndoableActionPtrVariant = to_pointer_variant<UndoableActionVariant>;
 
-/**
- * @}
- */
+template <typename T>
+concept UndoableActionSubclass =
+  std::derived_from<T, UndoableAction> && !std::is_same_v<T, UndoableAction>;
+
+}; // namespace zrythm::gui::actions
 
 #endif

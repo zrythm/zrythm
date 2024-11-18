@@ -9,11 +9,8 @@
 #include "common/utils/icloneable.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 
-/**
- * @addtogroup actions
- *
- * @{
- */
+namespace zrythm::gui::actions
+{
 
 class PortAction
     : public QObject,
@@ -21,6 +18,10 @@ class PortAction
       public ICloneable<PortAction>,
       public ISerializable<PortAction>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_UNDOABLE_ACTION_QML_PROPERTIES (PortAction)
+
 public:
   enum class Type
   {
@@ -83,8 +84,6 @@ public:
   }
 };
 
-/**
- * @}
- */
+}; // namespace zrythm::gui::actions
 
 #endif

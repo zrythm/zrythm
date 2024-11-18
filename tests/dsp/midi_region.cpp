@@ -11,7 +11,7 @@
 #include "common/utils/flags.h"
 #include "common/utils/hash.h"
 #include "common/utils/io.h"
-#include "gui/backend/backend/actions/tracklist_selections.h"
+#include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 

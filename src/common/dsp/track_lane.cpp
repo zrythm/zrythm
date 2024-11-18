@@ -5,13 +5,15 @@
 #include "common/dsp/track_lane.h"
 #include "common/dsp/tracklist.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/actions/tracklist_selections.h"
+#include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
 #include "midilib/src/midifile.h"
 #include "midilib/src/midiinfo.h"
 #include <fmt/printf.h>
+
+using namespace zrythm;
 
 TrackLane::TrackLane (int pos, std::string name)
     : pos_ (pos), name_ (std::move (name))
@@ -65,7 +67,7 @@ TrackLaneImpl<RegionT>::rename (const std::string &new_name, bool with_action)
       try
         {
           UNDO_MANAGER->perform (
-            std::make_unique<RenameTrackLaneAction> (*this, new_name));
+            new gui::actions::RenameTrackLaneAction (*this, new_name));
         }
       catch (const ZrythmException &e)
         {
@@ -90,7 +92,7 @@ TrackLaneImpl<
       try
         {
           UNDO_MANAGER->perform (
-            std::make_unique<SoloTrackLaneAction> (*this, solo));
+            new gui::actions::SoloTrackLaneAction (*this, solo));
         }
       catch (const ZrythmException &e)
         {
@@ -120,7 +122,7 @@ TrackLaneImpl<RegionT>::set_muted (bool mute, bool trigger_undo, bool fire_event
       try
         {
           UNDO_MANAGER->perform (
-            std::make_unique<MuteTrackLaneAction> (*this, mute));
+            new gui::actions::MuteTrackLaneAction (*this, mute));
         }
       catch (const ZrythmException &e)
         {

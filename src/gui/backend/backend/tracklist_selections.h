@@ -230,9 +230,8 @@ public:
    *
    * @param track The project tracklist track to add. Non-const because it
    * might become armed for recording.
-   * @param fire_events
    */
-  void add_track (Track &track, bool fire_events);
+  void add_track (Track &track);
 
   void add_tracks_in_range (int min_pos, int max_pos, bool fire_events);
 

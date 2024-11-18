@@ -15,7 +15,7 @@
 #include "common/utils/math.h"
 #include "common/utils/objects.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/actions/arranger_selections.h"
+#include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 
@@ -211,7 +211,8 @@ AutomationPoint::set_fvalue_with_action (const std::string &fval_str)
 
   edit_begin ();
   set_fvalue (val, false, false);
-  edit_finish ((int) ArrangerSelectionsAction::EditType::Primitive);
+  edit_finish (
+    (int) gui::actions::ArrangerSelectionsAction::EditType::Primitive);
 }
 
 double

@@ -3,7 +3,7 @@
 
 #include "common/dsp/engine.h"
 #include "common/utils/logger.h"
-#include "gui/backend/backend/actions/arranger_selections.h"
+#include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/actions/channel_send_action.h"
 #include "gui/backend/backend/actions/chord_action.h"
 #include "gui/backend/backend/actions/midi_mapping_action.h"
@@ -11,13 +11,15 @@
 #include "gui/backend/backend/actions/port_action.h"
 #include "gui/backend/backend/actions/port_connection_action.h"
 #include "gui/backend/backend/actions/range_action.h"
-#include "gui/backend/backend/actions/tracklist_selections.h"
+#include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/actions/transport_action.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
 #include <fmt/format.h>
+
+using namespace zrythm::gui::actions;
 
 UndoableAction::
   UndoableAction (Type type, double frames_per_tick, sample_rate_t sample_rate)
@@ -63,12 +65,11 @@ UndoableAction::create_unique_from_type (Type type)
 }
 
 void
-UndoableAction::init_loaded ()
+UndoableAction::init_loaded (sample_rate_t engine_sample_rate)
 {
-  double sample_rate_ratio =
-    (double) AUDIO_ENGINE->sample_rate_ / (double) sample_rate_;
+  double sample_rate_ratio = (double) engine_sample_rate / (double) sample_rate_;
   frames_per_tick_ = frames_per_tick_ * sample_rate_ratio;
-  sample_rate_ = AUDIO_ENGINE->sample_rate_;
+  sample_rate_ = engine_sample_rate;
 
   /* call the virtual implementation */
   init_loaded_impl ();

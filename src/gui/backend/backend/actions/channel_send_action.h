@@ -8,11 +8,8 @@
 #include "common/dsp/port_connections_manager.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 
-/**
- * @addtogroup actions
- *
- * @{
- */
+namespace zrythm::gui::actions
+{
 
 /**
  * Action for channel send changes.
@@ -24,6 +21,8 @@ class ChannelSendAction
       public ISerializable<ChannelSendAction>
 {
   Q_OBJECT
+  QML_ELEMENT
+  DEFINE_UNDOABLE_ACTION_QML_PROPERTIES (ChannelSendAction)
 
 public:
   enum class Type
@@ -144,8 +143,6 @@ public:
   }
 };
 
-/**
- * @}
- */
+}; // namespace zrythm::gui::actions
 
 #endif

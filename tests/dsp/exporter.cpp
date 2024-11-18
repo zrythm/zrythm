@@ -7,7 +7,7 @@
 #include "common/io/file_descriptor.h"
 #include "common/utils/chromaprint.h"
 #include "common/utils/progress_info.h"
-#include "gui/backend/backend/actions/arranger_selections.h"
+#include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/actions/channel_send_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"

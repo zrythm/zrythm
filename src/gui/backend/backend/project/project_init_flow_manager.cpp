@@ -700,11 +700,11 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
   /* undo manager must be loaded after updating engine frames per tick */
   if (prj->undo_manager_)
     {
-      prj->undo_manager_->init_loaded ();
+      prj->undo_manager_->init_loaded (engine->sample_rate_);
     }
   else
     {
-      prj->undo_manager_ = std::make_unique<UndoManager> ();
+      prj->undo_manager_ = new gui::actions::UndoManager (prj);
     }
 
   prj->midi_mappings_->init_loaded ();
@@ -717,7 +717,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
     using T = base_type<decltype (selections)>;
     if (selections)
       {
-        selections->init_loaded (true, nullptr);
+        selections->init_loaded (true, prj->audio_engine_->frames_per_tick_);
       }
     else
       {

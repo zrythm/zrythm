@@ -33,10 +33,12 @@
 #include "common/utils/logger.h"
 #include "common/utils/rt_thread_id.h"
 #include "common/utils/string.h"
-#include "gui/backend/backend/actions/tracklist_selections.h"
+#include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+
+using namespace zrythm;
 
 Track::Track (
   Type        type,
@@ -156,7 +158,7 @@ Track::select (bool select, bool exclusive, bool fire_events)
         }
       else
         {
-          TRACKLIST_SELECTIONS->add_track (*this, fire_events);
+          TRACKLIST_SELECTIONS->add_track (*this);
         }
     }
   else
@@ -864,7 +866,7 @@ Track::validate_base () const
 }
 
 void
-Track::update_positions (bool from_ticks, bool bpm_change)
+Track::update_positions (bool from_ticks, bool bpm_change, double frames_per_tick)
 {
   /* not ready yet */
   if (!PROJECT || !AUDIO_ENGINE->pre_setup_)
@@ -879,7 +881,7 @@ Track::update_positions (bool from_ticks, bool bpm_change)
     {
       if (ZRYTHM_TESTING)
         obj->validate (is_in_active_project (), 0);
-      obj->update_positions (from_ticks, bpm_change);
+      obj->update_positions (from_ticks, bpm_change, frames_per_tick);
       if (ZRYTHM_TESTING)
         obj->validate (is_in_active_project (), 0);
     }
@@ -890,7 +892,7 @@ Track::set_name_with_action_full (const std::string &name)
 {
   try
     {
-      UNDO_MANAGER->perform (std::make_unique<RenameTrackAction> (
+      UNDO_MANAGER->perform (new gui::actions::RenameTrackAction (
         *this, *PORT_CONNECTIONS_MGR, name));
       return true;
     }
@@ -1090,7 +1092,7 @@ Track::set_comment (const std::string &comment, bool undoable)
       try
         {
           UNDO_MANAGER->perform (
-            std::make_unique<EditTrackCommentAction> (*this, comment));
+            new gui::actions::EditTrackCommentAction (*this, comment));
         }
       catch (const ZrythmException &e)
         {
@@ -1114,7 +1116,7 @@ Track::set_color (const Color &color, bool undoable, bool fire_events)
       try
         {
           UNDO_MANAGER->perform (
-            std::make_unique<EditTrackColorAction> (*this, color));
+            new gui::actions::EditTrackColorAction (*this, color));
         }
       catch (const ZrythmException &e)
         {
@@ -1143,7 +1145,7 @@ Track::set_icon (const std::string &icon_name, bool undoable, bool fire_events)
       try
         {
           UNDO_MANAGER->perform (
-            std::make_unique<EditTrackIconAction> (*this, icon_name));
+            new gui::actions::EditTrackIconAction (*this, icon_name));
         }
       catch (const ZrythmException &e)
         {
@@ -1342,7 +1344,7 @@ Track::set_enabled (
       try
         {
           UNDO_MANAGER->perform (
-            std::make_unique<EnableTrackAction> (*this, enabled_));
+            new gui::actions::EnableTrackAction (*this, enabled_));
         }
       catch (const ZrythmException &e)
         {
@@ -1417,7 +1419,7 @@ Track::create_with_action (
     }
   else
     {
-      UNDO_MANAGER->perform (std::make_unique<CreateTracksAction> (
+      UNDO_MANAGER->perform (new gui::actions::CreateTracksAction (
         type, pl_setting, file_descr, index, pos, num_tracks,
         disable_track_idx));
     }

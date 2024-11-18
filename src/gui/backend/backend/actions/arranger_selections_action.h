@@ -23,11 +23,8 @@
 #include "gui/backend/backend/midi_selections.h"
 #include "gui/backend/backend/timeline_selections.h"
 
-/**
- * @addtogroup actions
- *
- * @{
- */
+namespace zrythm::gui::actions
+{
 
 /**
  * @brief An action that performs changes to the arranger selections.
@@ -49,6 +46,8 @@ class ArrangerSelectionsAction
       public ISerializable<ArrangerSelectionsAction>
 {
   Q_OBJECT
+  QML_ELEMENT
+  DEFINE_UNDOABLE_ACTION_QML_PROPERTIES (ArrangerSelectionsAction)
 
 public:
   enum class Type
@@ -155,6 +154,8 @@ public:
 
   bool can_contain_clip () const override { return true; }
 
+  [[nodiscard]] QString to_string () const final;
+
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 protected:
@@ -188,8 +189,6 @@ protected:
    */
   template <FinalArrangerSelectionsSubclass T>
   void set_after_selections (const T &src);
-
-  [[nodiscard]] QString to_string () const final;
 
 private:
   /** Common logic for perform/undo. */
@@ -641,22 +640,6 @@ public:
   }
 };
 
-DEFINE_ENUM_FORMATTER (
-  ArrangerSelectionsAction::ResizeType,
-  ArrangerSelectionsAction_ResizeType,
-  "Resize L",
-  "Resize R",
-  "Resize L (loop)",
-  "Resize R (loop)",
-  "Resize L (fade)",
-  "Resize R (fade)",
-  "Stretch L",
-  "Stretch R");
-
-/**
- * @}
- */
-
 extern template CreateArrangerSelectionsAction::CreateArrangerSelectionsAction (
   const TimelineSelections &sel);
 extern template CreateArrangerSelectionsAction::CreateArrangerSelectionsAction (
@@ -772,5 +755,19 @@ EditArrangerSelectionsAction::create (
   const Marker &obj_after,
   EditType      type,
   bool          already_edited);
+
+}; // namespace zrythm::gui::actions
+
+DEFINE_ENUM_FORMATTER (
+  zrythm::gui::actions::ArrangerSelectionsAction::ResizeType,
+  ArrangerSelectionsAction_ResizeType,
+  "Resize L",
+  "Resize R",
+  "Resize L (loop)",
+  "Resize R (loop)",
+  "Resize L (fade)",
+  "Resize R (fade)",
+  "Stretch L",
+  "Stretch R");
 
 #endif

@@ -11,7 +11,7 @@
 #include "common/dsp/midi_event.h"
 #include "common/dsp/router.h"
 #include "common/dsp/tracklist.h"
-#include "gui/backend/backend/actions/tracklist_selections.h"
+#include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 
 #include "helpers/project_helper.h"

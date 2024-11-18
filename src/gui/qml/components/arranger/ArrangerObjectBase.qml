@@ -60,8 +60,6 @@ Control {
             }
         }
         onReleased: {
-            // let finalTicks = root.x / ruler.pxPerTick;
-            // arrangerObject.position.ticks = finalTicks;
         }
     }
 

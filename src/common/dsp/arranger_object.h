@@ -10,9 +10,15 @@
 
 #include <QtGlobal>
 
+namespace zrythm
+{
+namespace gui::actions
+{
+class UndoableAction;
+};
+};
 class ArrangerObject;
 class ArrangerSelections;
-class UndoableAction;
 class ChordObject;
 class ScaleObject;
 class AutomationPoint;
@@ -517,12 +523,11 @@ public:
    *
    * @param from_ticks Whether to update the positions based on ticks (true) or
    * frames (false).
-   * @param action To be passed when called from an undoable action.
+   * @param frames_per_tick This will be used when doing position conversions via
+   * dependency injection instead of relying on the current project's transport.
    */
-  void update_positions (
-    bool             from_ticks,
-    bool             bpm_change,
-    UndoableAction * action = nullptr);
+  void
+  update_positions (bool from_ticks, bool bpm_change, double frames_per_tick);
 
   /**
    * Returns the Track this ArrangerObject is in.

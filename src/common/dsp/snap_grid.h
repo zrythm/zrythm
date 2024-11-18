@@ -1,12 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Snap/grid information.
- */
-
 #ifndef __AUDIO_SNAP_GRID_H__
 #define __AUDIO_SNAP_GRID_H__
 
@@ -69,6 +63,9 @@ enum class NoteLengthType
   NOTE_LENGTH_CUSTOM,
 };
 
+/**
+ * @brief Snap/grid information.
+ */
 class SnapGrid final : public ISerializable<SnapGrid>
 {
 public:

@@ -7,6 +7,8 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
+using namespace zrythm::gui::actions;
+
 PortConnectionAction::PortConnectionAction (QObject * parent)
     : QObject (parent), UndoableAction (UndoableAction::Type::PortConnection)
 {

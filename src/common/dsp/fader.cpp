@@ -20,7 +20,7 @@
 #include "common/utils/math.h"
 #include "common/utils/midi.h"
 #include "common/utils/rt_thread_id.h"
-#include "gui/backend/backend/actions/tracklist_selections.h"
+#include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
@@ -478,9 +478,9 @@ Fader::set_amp_with_action (float amp_from, float amp_to, bool skip_if_equal)
     {
       try
         {
-          UNDO_MANAGER->perform (std::make_unique<SingleTrackFloatAction> (
-            TracklistSelectionsAction::EditType::Volume, track, amp_from,
-            amp_to, false));
+          UNDO_MANAGER->perform (new gui::actions::SingleTrackFloatAction (
+            gui::actions::TracklistSelectionsAction::EditType::Volume, track,
+            amp_from, amp_to, false));
         }
       catch (const ZrythmException &e)
         {
@@ -508,9 +508,9 @@ Fader::set_midi_mode (MidiFaderMode mode, bool with_action, bool fire_events)
 
       try
         {
-          UNDO_MANAGER->perform (std::make_unique<SingleTrackIntAction> (
-            TracklistSelectionsAction::EditType::MidiFaderMode, track,
-            static_cast<int> (mode), false));
+          UNDO_MANAGER->perform (new gui::actions::SingleTrackIntAction (
+            gui::actions::TracklistSelectionsAction::EditType::MidiFaderMode,
+            track, static_cast<int> (mode), false));
         }
       catch (const ZrythmException &e)
         {

@@ -10,7 +10,7 @@
 #include "common/utils/io.h"
 #include "common/utils/string.h"
 #include "gui/backend/backend/actions/port_connection_action.h"
-#include "gui/backend/backend/actions/tracklist_selections.h"
+#include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/settings/plugin_settings.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
@@ -228,13 +228,13 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
           /* move the plugin track inside the group */
           pl_track->select (true, true, false);
           UNDO_MANAGER->perform (
-            std::make_unique<MoveTracksInsideFoldableTrackAction> (
+            new gui::actions::MoveTracksInsideFoldableTrackAction (
               *TRACKLIST_SELECTIONS->gen_tracklist_selections (), group->pos_));
           num_actions++;
 
           /* route to nowhere */
           pl_track->select (true, true, false);
-          UNDO_MANAGER->perform (std::make_unique<RemoveTracksDirectOutAction> (
+          UNDO_MANAGER->perform (new gui::actions::RemoveTracksDirectOutAction (
             *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
             *PORT_CONNECTIONS_MGR));
           num_actions++;
@@ -242,7 +242,7 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
           /* rename group */
           auto name = format_str (
             QObject::tr ("{} Output").toStdString (), descr_->name_);
-          UNDO_MANAGER->perform (std::make_unique<RenameTrackAction> (
+          UNDO_MANAGER->perform (new gui::actions::RenameTrackAction (
             *group, *PORT_CONNECTIONS_MGR, name));
           num_actions++;
 
@@ -261,21 +261,21 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
 
               /* rename fx track */
               name = format_str ("{} {}", descr_->name_, i + 1);
-              UNDO_MANAGER->perform (std::make_unique<RenameTrackAction> (
+              UNDO_MANAGER->perform (new gui::actions::RenameTrackAction (
                 *fx_track, *PORT_CONNECTIONS_MGR, name));
               num_actions++;
 
               /* move the fx track inside the group */
               fx_track->select (true, true, false);
               UNDO_MANAGER->perform (
-                std::make_unique<MoveTracksInsideFoldableTrackAction> (
+                new gui::actions::MoveTracksInsideFoldableTrackAction (
                   *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
                   group->pos_));
               num_actions++;
 
               /* move the fx track to the end */
               fx_track->select (true, true, false);
-              UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
+              UNDO_MANAGER->perform (new gui::actions::MoveTracksAction (
                 *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
                 TRACKLIST->tracks_.size ()));
               num_actions++;
@@ -283,7 +283,7 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
               /* route to group */
               fx_track->select (true, true, false);
               UNDO_MANAGER->perform (
-                std::make_unique<ChangeTracksDirectOutAction> (
+                new gui::actions::ChangeTracksDirectOutAction (
                   *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
                   *PORT_CONNECTIONS_MGR, *group));
               num_actions++;
@@ -293,7 +293,7 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
 
               /* route left port to audio fx */
               UNDO_MANAGER->perform (
-                std::make_unique<PortConnectionConnectAction> (
+                new gui::actions::PortConnectionConnectAction (
                   *port->id_, *fx_track->processor_->stereo_in_->get_l ().id_));
               num_actions++;
 
@@ -302,13 +302,16 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
 
               /* route right port to audio fx */
               UNDO_MANAGER->perform (
-                std::make_unique<PortConnectionConnectAction> (
+                new gui::actions::PortConnectionConnectAction (
                   *port->id_, *fx_track->processor_->stereo_in_->get_r ().id_));
               num_actions++;
             }
 
-          auto ua = UNDO_MANAGER->get_last_action ();
-          ua->num_actions_ = num_actions;
+          auto ua_opt = UNDO_MANAGER->get_last_action ();
+          z_return_if_fail (ua_opt.has_value ());
+          std::visit (
+            [&] (auto &&ua) { ua->num_actions_ = num_actions; },
+            ua_opt.value ());
         }
       else /* else if not autoroute multiout */
         {
