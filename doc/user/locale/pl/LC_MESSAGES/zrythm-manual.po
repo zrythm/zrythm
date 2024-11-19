@@ -33,16 +33,17 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-04-17 21:18+0900\n"
-"PO-Revision-Date: 2023-11-04 20:45+0000\n"
-"Last-Translator: marcin mikołajczak <me@mkljczk.pl>\n"
+"PO-Revision-Date: 2024-07-31 11:45+0000\n"
+"Last-Translator: Prefex <dczip89@gmail.com>\n"
+"Language-Team: Polish <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/pl/>\n"
 "Language: pl\n"
-"Language-Team: Polish <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/pl/>\n"
-"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 5.7-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -1742,7 +1743,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:71 ../../tracks/track-operations.rst:74
 msgid "Duplicate"
-msgstr ""
+msgstr "Zduplikuj"
 
 #: ../../editing/common-operations.rst:72
 msgid ""
@@ -4472,7 +4473,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:72 ../../tracks/track-types.rst:73
 #: ../../tracks/track-types.rst:77 ../../tracks/track-types.rst:78
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../glossary/intro.rst:101
 msgid ""
@@ -7286,7 +7287,7 @@ msgstr ""
 
 #: ../../tracks/automation.rst:67
 msgid "Behavior"
-msgstr ""
+msgstr "Zachowanie"
 
 #: ../../tracks/automation.rst:68
 msgid ""
@@ -8028,7 +8029,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:26
 msgid "Audio FX"
-msgstr ""
+msgstr "Efekty dźwiękowe"
 
 #: ../../tracks/track-types.rst:29 ../../tracks/track-types.rst:34
 #: ../../tracks/track-types.rst:44 ../../tracks/track-types.rst:54
@@ -8051,7 +8052,7 @@ msgstr "Brak"
 
 #: ../../tracks/track-types.rst:31
 msgid "Audio Group"
-msgstr ""
+msgstr "Grupa dźwięków"
 
 #: ../../tracks/track-types.rst:36
 msgid "Chord"
@@ -8063,7 +8064,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:41
 msgid "Folder"
-msgstr ""
+msgstr "Folder"
 
 #: ../../tracks/track-types.rst:50 ../../tracks/track-types.rst:70
 msgid "MIDI regions"
@@ -8075,15 +8076,15 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:71
 msgid "MIDI FX"
-msgstr ""
+msgstr "Efekty MIDI"
 
 #: ../../tracks/track-types.rst:76
 msgid "MIDI Group"
-msgstr ""
+msgstr "Grupa MIDI"
 
 #: ../../tracks/track-types.rst:81
 msgid "Tempo"
-msgstr ""
+msgstr "Tempo"
 
 #: ../../tracks/track-types.rst:87
 msgid ""

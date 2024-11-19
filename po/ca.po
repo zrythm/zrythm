@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2024-04-17 21:18+0900\n"
-"PO-Revision-Date: 2024-02-12 20:45+0000\n"
+"PO-Revision-Date: 2024-10-04 11:45+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
 ">\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.4-dev\n"
+"X-Generator: Weblate 5.8-dev\n"
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
@@ -210,7 +210,7 @@ msgstr "Canvi de to"
 
 #: inc/dsp/audio_function.h:59
 msgid "Copy L to R"
-msgstr ""
+msgstr "Còpia E a D"
 
 #: inc/dsp/audio_function.h:59
 msgid "External program"
@@ -4771,6 +4771,8 @@ msgid ""
 "You can create your own templates by copying a project directory under "
 "“templates” in the <a href=\"%s\">Zrythm user path</a>."
 msgstr ""
+"Pots crear les teves pròpies plantilles copiant un directori del projecte a "
+"\"plantilles\" a la <a href=\"%s\">ruta d'usuari de Zrythm</a>."
 
 #: src/gui/widgets/greeter.c:834
 msgid "Select parent directory to save the project in"
@@ -5893,7 +5895,7 @@ msgstr "Les sortides són estèreo?"
 
 #: src/settings/plugin_settings.c:567
 msgid "Auto-route?"
-msgstr ""
+msgstr "Ruta-automàtica?"
 
 #: src/settings/plugin_settings.c:569
 msgid ""
@@ -7547,6 +7549,8 @@ msgid ""
 "LV2 plugin search paths. Paths for plugins bundled with Zrythm will be "
 "appended to this list."
 msgstr ""
+"Camins de cerca de complement LV2. Els camins dels paquets de complements "
+"inclosos amb Zrythm s'afegiran a aquesta llista."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1215
 #, fuzzy

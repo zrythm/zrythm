@@ -2,13 +2,14 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
 # AND <andrejdam@protonmail.com>, 2023.
+# AND <andam.i380f@aleeas.com>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2024-04-17 21:18+0900\n"
-"PO-Revision-Date: 2023-03-15 03:55+0000\n"
-"Last-Translator: AND <andrejdam@protonmail.com>\n"
+"PO-Revision-Date: 2024-08-17 11:45+0000\n"
+"Last-Translator: AND <andam.i380f@aleeas.com>\n"
 "Language-Team: Macedonian <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "mk/>\n"
 "Language: mk\n"
@@ -16,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n==1 || n%10==1 ? 0 : 1;\n"
-"X-Generator: Weblate 4.16.2-dev\n"
+"X-Generator: Weblate 5.7\n"
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
@@ -211,7 +212,7 @@ msgstr "Тркало на нотни висини"
 
 #: inc/dsp/audio_function.h:59
 msgid "Copy L to R"
-msgstr ""
+msgstr "Ископирај Л во Д"
 
 #: inc/dsp/audio_function.h:59
 msgid "External program"
@@ -754,7 +755,7 @@ msgstr "%s се сруши. "
 
 #: src/zrythm_app.c:215
 msgid "Failed fetching the latest release version"
-msgstr ""
+msgstr "Неуспешно добавување на последната објавена верзија"
 
 #: src/zrythm_app.c:228
 #, fuzzy
@@ -768,7 +769,7 @@ msgstr "Подигната е %s верзија <b>%s</b>%s%s"
 
 #: src/zrythm_app.c:250
 msgid "New Zrythm Version"
-msgstr ""
+msgstr "Нова Zrythm верзија"
 
 #: src/zrythm_app.c:251
 #, c-format
@@ -1071,7 +1072,7 @@ msgstr "_Одкажи"
 #: src/actions/actions.c:711 src/actions/actions.c:772
 #: src/gui/widgets/main_window.c:153
 msgid "_Discard"
-msgstr ""
+msgstr "_Одфрли"
 
 #: src/actions/actions.c:712 src/actions/actions.c:773
 #: src/gui/widgets/main_window.c:154
@@ -1164,7 +1165,7 @@ msgstr "Неуспешно лепење на ленти"
 #: src/actions/actions.c:1179
 #, c-format
 msgid "invalid clipboard data received: %s"
-msgstr ""
+msgstr "примени се невалидни податоци од привремената меморија: %s"
 
 #: src/actions/actions.c:1244
 msgid "Can't paste incompatible data"
@@ -2026,7 +2027,7 @@ msgstr "Копирај ги приклучоците %d"
 #: src/actions/mixer_selections_action.c:1266
 #, c-format
 msgid "Change Load Behavior for %s"
-msgstr ""
+msgstr "Промени го вчитувачкото однесување за %s"
 
 #: src/dsp/modulator_track.c:58 src/utils/gtk.c:974
 #: src/gui/widgets/bot_dock_edge.c:218
@@ -2292,7 +2293,7 @@ msgstr "Невалидни позиции - функција на прескок
 
 #: src/dsp/audio_function.c:553
 msgid "This function can only be used on audio clips with 2 channels"
-msgstr ""
+msgstr "Оваа функција може да се користи само на аудио снимки со 2 канала"
 
 #: src/dsp/audio_function.c:568
 msgid "Failed to get audio clip from external program"
@@ -2489,7 +2490,7 @@ msgstr ""
 
 #: src/dsp/engine.c:788
 msgid "Selected Backend Not Found"
-msgstr ""
+msgstr "Одбраниот позадински систем не е пронајден"
 
 #: src/dsp/engine.c:789
 #, c-format
@@ -2529,12 +2530,12 @@ msgstr "Невалидна SNDFILE форма %s: 0x%08X != 0x%08X"
 #: src/dsp/exporter.c:407
 #, c-format
 msgid "Export failed: Error seeking file at %ld"
-msgstr ""
+msgstr "Извадувањето е неуспешно: Грешка при наоѓањето на датотеката при %ld"
 
 #: src/dsp/exporter.c:423
 #, c-format
 msgid "Export failed: %ld frames written (expected %d)"
-msgstr ""
+msgstr "Извадувањето неуспешно: %ld рамки се запишани (очекувани %d)"
 
 #: src/dsp/exporter.c:515
 #, c-format
@@ -2575,7 +2576,7 @@ msgstr "Грешка во PulseAudio: Неуспешно поврзување"
 
 #: src/dsp/engine_pulse.c:415
 msgid "Pulseaudio Backend Test Failed"
-msgstr ""
+msgstr "Pulseaudio позадинскиот системски тест е неуспешен"
 
 #: src/dsp/chord_track.c:40 src/settings/chord_preset.c:47
 msgid "Chords"
@@ -2668,7 +2669,7 @@ msgstr "Невалидна вредност"
 #: src/dsp/automation_point.c:228
 #, c-format
 msgid "Please enter a number between %f and %f"
-msgstr ""
+msgstr "Те молам внеси број меѓу %f и %f"
 
 #: src/dsp/recording_manager.c:136
 msgid "Failed to create recorded regions"
