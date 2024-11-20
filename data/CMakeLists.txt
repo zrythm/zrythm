@@ -3,24 +3,6 @@
 
 set(app_id "org.zrythm.Zrythm")
 
-# Generate gschema
-add_custom_command(
-  OUTPUT ${app_id}.gschema.xml
-  COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/gen-gschema.py
-    ${CMAKE_CURRENT_BINARY_DIR}/${app_id}.gschema.xml ${app_id} ${locales_str}
-  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/gen-gschema.py
-  COMMENT "Generating gschema"
-)
-add_custom_target(gschema ALL DEPENDS ${app_id}.gschema.xml)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${app_id}.gschema.xml
-  DESTINATION ${gschemas_dir})
-
-# Install fonts if needed
-if(ZRYTHM_DSEG_FONT)
-  install(DIRECTORY fonts/DSEG14-Classic-MINI
-    DESTINATION ${fontsdir})
-endif()
-
 # Install samples
 set(samples
   ${CMAKE_CURRENT_SOURCE_DIR}/samples/klick/square_emphasis.wav
@@ -58,7 +40,7 @@ if(OS_GNU)
     ${CMAKE_CURRENT_BINARY_DIR}/${prog_name_lowercase}_valgrind
     DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-  # Desktop entry
+  # Desktop entry (FIXME/TODO)
   set(desktop_entry_name ${prog_name})
   if(ZRYTHM_IS_INSTALLER_VER)
     set(desktop_entry_name "${desktop_entry_name} beta")
@@ -168,16 +150,11 @@ add_subdirectory(icon-themes)
 install(FILES org.zrythm.Zrythm-mime.xml
 DESTINATION ${CMAKE_INSTALL_DATADIR}/mime/packages)
 
-# GtkSourceView styles
-install(FILES gtksourceview-monokai-extended.xml
-  DESTINATION ${sourceviewstylesdir}
-  RENAME monokai-extended-zrythm.xml)
-
 # Templates
 install(DIRECTORY DESTINATION ${zrythm_datadir}/templates)
 
 # CSS themes
-add_subdirectory(css-themes)
+# add_subdirectory(css-themes)
 
 add_subdirectory(plugins)
 set(BUNDLED_PLUGINS_FOR_TESTS "${BUNDLED_PLUGINS_FOR_TESTS}" PARENT_SCOPE)

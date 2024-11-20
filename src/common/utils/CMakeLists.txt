@@ -38,7 +38,6 @@ target_sources(zrythm_lib
     io.cpp
     json.h
     json.cpp
-    localization.cpp
     logger.h
     logger.cpp
     math.h
@@ -72,13 +71,6 @@ target_sources(zrythm_lib
     windows_errors.cpp
     yaml.h
     yaml.cpp)
-
-configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/localization.h.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/localization.h"
-  @ONLY)
-target_sources(zrythm_lib
-  PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/localization.h")
 
 # optimized utils
 add_library(optimized_utils_lib STATIC

@@ -1,43 +1,6 @@
 # SPDX-FileCopyrightText: © 2019-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-set(languages_for_gettext)
-foreach(lang_pair ${language_mappings})
-  string(REPLACE "/" ";" lang_list ${lang_pair})
-  list(GET lang_list 0 lang_code)
-  if(NOT ${lang_code} STREQUAL "en")
-    list(APPEND languages_for_gettext ${lang_code})
-  endif()
-endforeach()
-message(STATUS "Languages for gettext: ${languages_for_gettext}")
-
-
-# ================================================================
-# Generate locales.h
-# ================================================================
-
-set(ll_langs)
-set(lang_codes)
-set(lang_strings)
-set(lang_strings_w_codes)
-foreach(lang_pair ${language_mappings})
-  string(REPLACE "/" ";" lang_list ${lang_pair})
-  list(GET lang_list 0 lang_code)
-  list(GET lang_list 1 lang_name)
-  string(TOUPPER ${lang_code} lang_upper)
-  set(ll_langs "${ll_langs}  LL_${lang_upper},\n")
-  set(lang_codes "${lang_codes}  \"${lang_code}\",\n")
-  set(lang_strings "${lang_strings}  \"${lang_name}\",\n")
-  set(lang_strings_w_codes "${lang_strings_w_codes}  \"${lang_name} [${lang_code}]\",\n")
-endforeach()
-set(LL_LANGS "${ll_langs}" PARENT_SCOPE)
-
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/locales.h.in
-  ${CMAKE_BINARY_DIR}/src/zrythm-locales.h
-  @ONLY
-)
-
 return()
 
 # ================================================================
@@ -155,31 +118,3 @@ set(build_mo_files "${build_mo_files}" PARENT_SCOPE)
 set(linguas_file "${CMAKE_CURRENT_SOURCE_DIR}/LINGUAS")
 string(REPLACE ";" "\n" languages_newline "${languages_for_gettext}")
 file(WRITE ${linguas_file} "${languages_newline}")
-
-# ================================================================
-# Test PO files for errors
-# ================================================================
-
-if(GETTEXT_MSGFMT_EXECUTABLE)
-  foreach(lang_pair ${language_mappings})
-    string(REPLACE "/" ";" lang_list ${lang_pair})
-    list(GET lang_list 0 lang_code)
-    if(NOT ${lang_code} STREQUAL "en" AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${lang_code}.po)
-      add_test(
-        NAME ${lang_code}-po
-        COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -v -c ${CMAKE_CURRENT_SOURCE_DIR}/${lang_code}.po
-      )
-      set_tests_properties(${lang_code}-po PROPERTIES LABELS "i18n")
-
-      if(OS_GNU)
-        foreach(illegal_char ${illegal_chars})
-          add_test(
-            NAME ${lang_code}-po-illegal-char-${illegal_char}
-            COMMAND ${CMAKE_COMMAND} -E env LANG=C grep -n "[${illegal_char}]" ${CMAKE_CURRENT_SOURCE_DIR}/${lang_code}.po
-          )
-          set_tests_properties(${lang_code}-po-illegal-char-${illegal_char} PROPERTIES LABELS "i18n")
-        endforeach()
-      endif()
-    endif()
-  endforeach()
-endif()
