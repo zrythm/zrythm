@@ -11,12 +11,14 @@
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/theme_manager.h"
 #include "gui/backend/project_manager.h"
+#include "gui/backend/translation_manager.h"
 
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QLocalSocket>
 #include <QProcess>
 #include <QQmlApplicationEngine>
+#include <QTranslator>
 
 namespace zrythm::gui
 {
@@ -57,6 +59,9 @@ public:
   SettingsManager * get_settings_manager () const;
   ThemeManager *    get_theme_manager () const;
   ProjectManager *  get_project_manager () const;
+  TranslationManager * get_translation_manager () const;
+
+  QQmlApplicationEngine * get_qml_engine () const { return qml_engine_; }
 
   bool notify (QObject * receiver, QEvent * event) override;
 
@@ -83,6 +88,7 @@ private:
   SettingsManager * settings_manager_ = nullptr;
   ThemeManager *    theme_manager_ = nullptr;
   ProjectManager *  project_manager_ = nullptr;
+  TranslationManager * translation_manager_ = nullptr;
 
   /**
    * @brief Engine process handle.
@@ -90,6 +96,8 @@ private:
   QProcess * engine_process_ = nullptr;
 
   QQmlApplicationEngine * qml_engine_ = nullptr;
+
+  QTranslator * translator_ = nullptr;
 
   std::unique_ptr<ZrythmJuceApplicationWrapper> juce_app_wrapper_;
 };

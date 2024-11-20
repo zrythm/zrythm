@@ -35,3 +35,10 @@ GlobalState::getAlertManager ()
   return dynamic_cast<zrythm::gui::ZrythmApplication *> (qApp)
     ->get_alert_manager ();
 }
+
+zrythm::gui::TranslationManager *
+GlobalState::getTranslationManager ()
+{
+  return dynamic_cast<zrythm::gui::ZrythmApplication *> (qApp)
+    ->get_translation_manager ();
+}

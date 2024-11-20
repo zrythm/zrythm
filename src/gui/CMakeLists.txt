@@ -9,6 +9,16 @@ qt_add_executable(zrythm WIN32 MACOSX_BUNDLE)
 
 # add_subdirectory(resources)
 
+# Generate language map for config.js
+set(language_map_entries)
+foreach(lang_pair ${language_mappings})
+  string(REPLACE "/" ";" lang_list ${lang_pair})
+  list(GET lang_list 0 lang_code)
+  list(GET lang_list 1 lang_name)
+  string(APPEND language_map_entries "    \"${lang_code}\": \"${lang_name}\",\n")
+endforeach()
+set(LANGUAGE_MAP_STRING "${language_map_entries}")
+
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/js/config.js.in"
   "${CMAKE_CURRENT_BINARY_DIR}/js/config.js"
@@ -100,6 +110,7 @@ set(rel_qml_file_paths
   components/BottomDock.qml
   components/CenterDock.qml
   components/LeftDock.qml
+  components/MainMenuBar.qml
   components/Meter.qml
   components/RightDock.qml
   components/Ruler.qml
@@ -174,6 +185,8 @@ qt_add_qml_module(zrythm
     backend/tool.cpp
     backend/track_filter_proxy_model.h
     backend/track_filter_proxy_model.cpp
+    backend/translation_manager.h
+    backend/translation_manager.cpp
     backend/meter.h
     backend/meter.cpp
 

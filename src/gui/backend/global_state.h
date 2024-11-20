@@ -5,6 +5,7 @@
 #include "gui/backend/backend/theme_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/project_manager.h"
+#include "gui/backend/translation_manager.h"
 
 class GlobalState : public QObject
 {
@@ -23,6 +24,9 @@ public:
       FINAL)
   Q_PROPERTY (
     zrythm::gui::AlertManager * alertManager READ getAlertManager CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::gui::TranslationManager * translationManager READ
+      getTranslationManager CONSTANT FINAL)
 public:
   GlobalState (QObject * parent = nullptr) : QObject (parent) { }
   Zrythm *                       getZrythm ();
@@ -30,4 +34,5 @@ public:
   zrythm::gui::SettingsManager * getSettingsManager ();
   zrythm::gui::ProjectManager *  getProjectManager ();
   zrythm::gui::AlertManager *    getAlertManager ();
+  zrythm::gui::TranslationManager * getTranslationManager ();
 };

@@ -596,9 +596,9 @@ concept FinalRegionSubclass =
 DEFINE_ENUM_FORMATTER (
   MusicalMode,
   MusicalMode,
-  QT_TR_NOOP_UTF8 ("Inherit"),
-  QT_TR_NOOP_UTF8 ("Off"),
-  QT_TR_NOOP_UTF8 ("On"));
+  QT_TRANSLATE_NOOP_UTF8 ("MusicalMode", "Inherit"),
+  QT_TRANSLATE_NOOP_UTF8 ("MusicalMode", "Off"),
+  QT_TRANSLATE_NOOP_UTF8 ("MusicalMode", "On"));
 
 inline bool
 operator== (const Region &lhs, const Region &rhs)

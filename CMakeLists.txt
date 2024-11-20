@@ -261,7 +261,7 @@ endif()
 # Used for building manpages, manual, etc., using foreach.
 set(language_mappings
   "af_ZA/Afrikaans"
-  "ar/اَلْعَرَبِيَّةُ‎"
+  "ar/عربي"
   "ca/Català"
   "de/Deutsch"
   "el/Ελληνικά"
@@ -302,10 +302,14 @@ foreach(lang_pair ${language_mappings})
 endforeach()
 
 set(locales_list)
+set(locales_list_no_en)
 foreach(lang_pair ${language_mappings})
   string(REPLACE "/" ";" lang_list ${lang_pair})
   list(GET lang_list 0 lang_code)
   list(APPEND locales_list ${lang_code})
+  if(NOT ${lang_code} STREQUAL "en")
+    list(APPEND locales_list_no_en ${lang_code})
+  endif()
 endforeach()
 
 string(JOIN " " locales_str ${locales_list})
@@ -897,9 +901,19 @@ pkg_check_modules(EPOXY epoxy REQUIRED IMPORTED_TARGET)
 find_package(GTest REQUIRED)
 
 find_package(Qt6
-  COMPONENTS Core Gui Widgets Quick QuickControls2 Concurrent REQUIRED
+  COMPONENTS 
+    Core 
+    Gui 
+    Widgets 
+    Quick 
+    QuickControls2 
+    Concurrent
+    LinguistTools
+  REQUIRED
 )
-qt_standard_project_setup()
+qt_standard_project_setup(
+  I18N_TRANSLATED_LANGUAGES ${locales_list_no_en}
+)
 qt_policy(SET QTP0001 NEW)
 qt_policy(SET QTP0004 NEW)
 qt_policy(SET QTP0005 NEW)
@@ -1095,6 +1109,10 @@ endif()
 add_subdirectory(po)
 add_subdirectory(data)
 add_subdirectory(src)
+
+qt_add_translations(TARGETS zrythm
+  TS_FILE_DIR i18n 
+)
 
 message(STATUS "Zrythm compile definitions: ${zrythm_definitions}")
 message(STATUS "Zrythm compile args: ${zrythm_compile_args}")

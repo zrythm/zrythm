@@ -171,6 +171,7 @@ class SettingsManager final : public QObject
     double,
     editorLastCreatedObjectLengthInTicks,
     480.0)
+  DEFINE_SETTING_PROPERTY (QString, uiLocale, {})
 
 public:
   SettingsManager (QObject * parent = nullptr);

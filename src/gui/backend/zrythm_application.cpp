@@ -48,14 +48,13 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   settings_manager_ = new SettingsManager (this);
   theme_manager_ = new ThemeManager (this);
   project_manager_ = new ProjectManager (this);
+  translation_manager_ = new TranslationManager (this);
   RealtimeUpdater::instance ();
 
   launch_engine_process ();
 
   Zrythm::getInstance ()->pre_init (
     applicationFilePath ().toStdString ().c_str (), true, true);
-
-  // TODO: init localization
 
   AudioEngine::set_default_backends (false);
 
@@ -150,6 +149,12 @@ AlertManager *
 ZrythmApplication::get_alert_manager () const
 {
   return alert_manager_;
+}
+
+TranslationManager *
+ZrythmApplication::get_translation_manager () const
+{
+  return translation_manager_;
 }
 
 void

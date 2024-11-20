@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+import "../config.js" as Config
 import Qt.labs.platform as Labs
 import QtQuick
 import QtQuick.Layouts
@@ -110,84 +111,8 @@ ApplicationWindow {
 
     }
 
-    menuBar: MenuBar {
-        Menu {
-            title: qsTr("&File")
-
-            Action {
-                text: qsTr("New Long Long Long Long Long Long Long Long Long Name")
-            }
-
-            Action {
-                text: qsTr("Open")
-            }
-
-        }
-
-        Menu {
-            title: qsTr("&Edit")
-
-            Action {
-                text: qsTr("Undo")
-            }
-
-        }
-
-        Menu {
-            title: qsTr("&View")
-
-            Menu {
-                title: qsTr("Appearance")
-
-                Action {
-                    text: qsTr("Switch Light/Dark Theme")
-                    icon.source: ResourceManager.getIconUrl("gnome-icon-library", "dark-mode-symbolic.svg")
-                    onTriggered: {
-                        Style.darkMode = !Style.darkMode;
-                    }
-                }
-
-                Menu {
-                    title: qsTr("Theme Color")
-
-                    Action {
-                        text: qsTr("Zrythm Orange")
-                        onTriggered: {
-                            Style.primaryColor = Style.zrythmColor;
-                        }
-                    }
-
-                    Action {
-                        text: qsTr("Celestial Blue")
-                        onTriggered: {
-                            Style.primaryColor = Style.celestialBlueColor;
-                        }
-                    }
-
-                    Action {
-                        text: qsTr("Jonquil Yellow")
-                        onTriggered: {
-                            Style.primaryColor = Style.jonquilYellowColor;
-                        }
-                    }
-
-                }
-
-            }
-
-        }
-
-        Menu {
-            title: qsTr("&Help")
-
-            Action {
-                text: qsTr("About Zrythm")
-                onTriggered: {
-                }
-            }
-
-        }
-
+    menuBar: MainMenuBar {
+        id: mainMenuBar
     }
 
     header: MainToolbar {
