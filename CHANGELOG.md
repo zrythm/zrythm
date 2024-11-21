@@ -6,6 +6,10 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0] - 2024-11-21
+### Changed
+- Desktop file: use Zrythm instead of Zrythm RC
+
 ## [1.0.0-rc.2] - 2024-10-03
 ### Added
 - Remember main window width and height
