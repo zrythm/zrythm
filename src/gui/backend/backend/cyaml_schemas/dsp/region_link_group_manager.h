@@ -10,8 +10,9 @@
 #ifndef __SCHEMAS_AUDIO_REGION_LINK_GROUP_MANAGER_H__
 #define __SCHEMAS_AUDIO_REGION_LINK_GROUP_MANAGER_H__
 
-#include "common/utils/yaml.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/region_link_group.h"
+
+#include "utils/yaml.h"
 
 typedef struct RegionLinkGroupManager_v1
 {

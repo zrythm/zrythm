@@ -5,18 +5,18 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "common/dsp/audio_track.h"
-#include "common/dsp/automation_region.h"
-#include "common/dsp/chord_track.h"
-#include "common/dsp/marker_track.h"
-#include "common/dsp/master_track.h"
-#include "common/dsp/midi_track.h"
-#include "common/dsp/region.h"
-#include "common/dsp/tempo_track.h"
-#include "common/utils/dsp.h"
-#include "common/utils/flags.h"
-#include "common/utils/gtest_wrapper.h"
-#include "common/utils/string.h"
+# include "gui/dsp/audio_track.h"
+# include "gui/dsp/automation_region.h"
+# include "gui/dsp/chord_track.h"
+# include "gui/dsp/marker_track.h"
+# include "gui/dsp/master_track.h"
+# include "gui/dsp/midi_track.h"
+# include "gui/dsp/region.h"
+# include "gui/dsp/tempo_track.h"
+#include "utils/dsp.h"
+#include "utils/flags.h"
+#include "utils/gtest_wrapper.h"
+#include "utils/string.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/actions/transport_action.h"
@@ -1192,12 +1192,12 @@ TEST_F (ArrangerSelectionsFixture, AudioFunctions)
   size_t             total_frames = (size_t) orig_clip->num_frames_ * channels;
   std::vector<float> orig_frames (total_frames);
   std::vector<float> inverted_frames (total_frames);
-  dsp_copy (
+  utils::float_ranges::copy (
     orig_frames.data (), orig_clip->frames_.getReadPointer (0), total_frames);
-  dsp_copy (
+  utils::float_ranges::copy (
     inverted_frames.data (), orig_clip->frames_.getReadPointer (0),
     total_frames);
-  dsp_mul_k2 (inverted_frames.data (), -1.f, total_frames);
+  utils::float_ranges::mul_k2 (inverted_frames.data (), -1.f, total_frames);
 
   verify_audio_function (orig_frames, frames_per_channel);
 
@@ -2036,7 +2036,7 @@ TEST_F (ZrythmFixture, SplitAndMergeAudioUnlooped)
     auto clip = r->get_clip ();
     ASSERT_GT (clip->num_frames_, 0);
     l_frames.resize (clip->num_frames_, 0);
-    dsp_copy (
+    utils::float_ranges::copy (
       l_frames.data (), clip->ch_frames_.getReadPointer (0),
       (size_t) clip->num_frames_);
 
@@ -2584,7 +2584,7 @@ TEST_F (ArrangerSelectionsFixture, Stretch)
     auto orig_clip = region->get_clip ();
     total_orig_frames = (size_t) orig_clip->num_frames_ * orig_clip->channels_;
     orig_frames.resize (total_orig_frames, 0.f);
-    dsp_copy (
+    utils::float_ranges::copy (
       &orig_frames[0], orig_clip->frames_.getReadPointer (0), total_orig_frames);
 
     constexpr double move_ticks = 100.0;

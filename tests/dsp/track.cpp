@@ -3,11 +3,12 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/dsp/track.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
 #include "tests/helpers/project_helper.h"
+
+#include "gui/dsp/track.h"
 
 TEST_F (ZrythmFixture, NewTrack)
 {

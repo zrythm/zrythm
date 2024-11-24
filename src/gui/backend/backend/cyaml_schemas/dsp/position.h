@@ -10,8 +10,8 @@
 #ifndef __SCHEMAS_AUDIO_POSITION_H__
 #define __SCHEMAS_AUDIO_POSITION_H__
 
-#include "common/utils/types.h"
-#include "common/utils/yaml.h"
+#include "utils/types.h"
+#include "utils/yaml.h"
 
 typedef struct Position_v1
 {

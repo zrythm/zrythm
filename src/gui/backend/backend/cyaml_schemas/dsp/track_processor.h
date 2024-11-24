@@ -10,9 +10,10 @@
 #ifndef __SCHEMAS_AUDIO_TRACK_PROCESSOR_H__
 #define __SCHEMAS_AUDIO_TRACK_PROCESSOR_H__
 
-#include "common/utils/types.h"
-#include "common/utils/yaml.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/port.h"
+
+#include "utils/types.h"
+#include "utils/yaml.h"
 
 typedef enum TrackProcessorMidiAutomatable_v1
 {

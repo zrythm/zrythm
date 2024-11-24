@@ -10,8 +10,9 @@
 #ifndef __GUI_BACKEND_PIANO_ROLL_H__
 #define __GUI_BACKEND_PIANO_ROLL_H__
 
-#include "common/utils/icloneable.h"
 #include "gui/backend/backend/editor_settings.h"
+
+#include "utils/icloneable.h"
 
 class Track;
 
@@ -91,7 +92,7 @@ public:
 class PianoRoll final
     : public EditorSettings,
       public ICloneable<PianoRoll>,
-      public ISerializable<PianoRoll>
+      public zrythm::utils::serialization::ISerializable<PianoRoll>
 {
 public:
   /**

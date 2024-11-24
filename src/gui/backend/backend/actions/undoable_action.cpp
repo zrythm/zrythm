@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/engine.h"
-#include "common/utils/logger.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/actions/channel_send_action.h"
 #include "gui/backend/backend/actions/chord_action.h"
@@ -16,7 +14,9 @@
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/dsp/engine.h"
 
+#include "utils/logger.h"
 #include <fmt/format.h>
 
 using namespace zrythm::gui::actions;

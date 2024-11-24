@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-// #include "gui/backend/tracklist_selections.h"
-#include "common/utils/objects.h"
 #include "gui/backend/backend/cyaml_schemas/gui/backend/tracklist_selections.h"
+
+#include "utils/objects.h"
 
 TracklistSelections_v2 *
 tracklist_selections_upgrade_from_v1 (TracklistSelections_v1 * old)

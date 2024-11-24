@@ -24,7 +24,7 @@ configure_file(
   "${CMAKE_CURRENT_BINARY_DIR}/js/config.js"
 )
 
-set_source_files_properties("${CMAKE_CURRENT_BINARY_DIR}/js/config.js" 
+set_source_files_properties("${CMAKE_CURRENT_BINARY_DIR}/js/config.js"
   DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   PROPERTIES QT_RESOURCE_ALIAS "config.js"
   )
@@ -46,7 +46,7 @@ foreach(dir ${icon_dirs})
   foreach(icon ${icons})
     get_filename_component(icon_name ${icon} NAME)
     set(icon_alias "icons/${dir}/${icon_name}")
-    set_source_files_properties(${icon} 
+    set_source_files_properties(${icon}
       DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       PROPERTIES QT_RESOURCE_ALIAS ${icon_alias}
       )
@@ -137,6 +137,9 @@ endforeach()
 add_subdirectory(qml)
 
 add_subdirectory(backend)
+# temporarily keep old dsp classes here and slowly drop non-dsp dependencies
+# and move to src/dsp
+add_subdirectory(dsp)
 
 target_include_directories(zrythm
   PUBLIC
@@ -148,7 +151,6 @@ target_include_directories(zrythm
 qt_add_qml_module(zrythm
   URI Zrythm
   VERSION 1.0
-  # RESOURCE_PREFIX /org.zrythm/imports
   IMPORTS ZrythmStyle/1.0
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Zrythm
   QML_FILES
@@ -189,6 +191,8 @@ qt_add_qml_module(zrythm
     backend/translation_manager.cpp
     backend/meter.h
     backend/meter.cpp
+    backend/zrythm_application.h
+    backend/zrythm_application.cpp
 
   # compile qml files listed in QML_FILES to C++ using qmltc
   # (currently cannot extend QtQuick Controls directly)

@@ -10,8 +10,8 @@
 #ifndef __GUI_BACKEND_AUTOMATION_SELECTIONS_H__
 #define __GUI_BACKEND_AUTOMATION_SELECTIONS_H__
 
-#include "common/dsp/automation_point.h"
 #include "gui/backend/backend/arranger_selections.h"
+#include "gui/dsp/automation_point.h"
 
 /**
  * @addtogroup gui_backend
@@ -29,7 +29,7 @@ class AutomationSelections final
     : public QObject,
       public ArrangerSelections,
       public ICloneable<AutomationSelections>,
-      public ISerializable<AutomationSelections>
+      public zrythm::utils::serialization::ISerializable<AutomationSelections>
 {
   Q_OBJECT
   QML_ELEMENT

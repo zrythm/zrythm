@@ -3,23 +3,24 @@
 
 #include <ranges>
 
-#include "common/dsp/audio_region.h"
-#include "common/dsp/automation_region.h"
-#include "common/dsp/automation_track.h"
-#include "common/dsp/chord_track.h"
-#include "common/dsp/control_port.h"
-#include "common/dsp/laned_track.h"
-#include "common/dsp/marker_track.h"
-#include "common/dsp/port_identifier.h"
-#include "common/dsp/router.h"
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/gtest_wrapper.h"
-#include "common/utils/math.h"
+# include "gui/dsp/audio_region.h"
+# include "gui/dsp/automation_region.h"
+# include "gui/dsp/automation_track.h"
+# include "gui/dsp/chord_track.h"
+# include "gui/dsp/control_port.h"
+# include "gui/dsp/laned_track.h"
+# include "gui/dsp/marker_track.h"
+# include "gui/dsp/port_identifier.h"
+# include "gui/dsp/router.h"
+# include "gui/dsp/track.h"
+# include "gui/dsp/tracklist.h"
+#include "utils/gtest_wrapper.h"
+#include "utils/math.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/arranger_selections.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
+#include "gui/backend/backend/zrythm.h"
 
 using namespace zrythm::gui::actions;
 
@@ -107,7 +108,7 @@ ArrangerSelectionsAction::init_after_cloning (
   num_split_objs_ = other.num_split_objs_;
   first_run_ = other.first_run_;
   if (other.opts_)
-    opts_ = std::make_unique<QuantizeOptions> (*other.opts_);
+    opts_ = std::make_unique<dsp::QuantizeOptions> (*other.opts_);
   if (other.region_before_)
     {
       std::visit (
@@ -1532,8 +1533,8 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
                   /* adjust the positions */
                   Position start = src_audio_sel->sel_start_;
                   Position end = src_audio_sel->sel_end_;
-                  start.add_frames (-r->pos_->frames_);
-                  end.add_frames (-r->pos_->frames_);
+                  start.add_frames (-r->pos_->frames_, AUDIO_ENGINE->ticks_per_frame_);
+                  end.add_frames (-r->pos_->frames_, AUDIO_ENGINE->ticks_per_frame_);
                   auto num_frames =
                     static_cast<unsigned_frame_t> (end.frames_ - start.frames_);
                   z_return_if_fail (num_frames == src_clip->num_frames_);
@@ -2100,7 +2101,7 @@ ArrangerSelectionsAction::do_or_undo_quantize (bool do_it)
                           if constexpr (
                             std::derived_from<ObjT, LengthableObject>)
                             {
-                              obj->end_pos_->add_ticks (ticks);
+                              obj->end_pos_->add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
                             }
                         }
                       if (opts_->adj_end_)
@@ -2403,19 +2404,19 @@ template ArrangerSelectionsAction::ResizeAction::ResizeAction (
 
 template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
   const TimelineSelections &sel,
-  const QuantizeOptions    &opts);
+  const dsp::QuantizeOptions    &opts);
 template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
   const MidiSelections  &sel,
-  const QuantizeOptions &opts);
+  const dsp::QuantizeOptions &opts);
 template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
   const AutomationSelections &sel,
-  const QuantizeOptions      &opts);
+  const dsp::QuantizeOptions      &opts);
 template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
   const ChordSelections &sel,
-  const QuantizeOptions &opts);
+  const dsp::QuantizeOptions &opts);
 template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
   const AudioSelections &sel,
-  const QuantizeOptions &opts);
+  const dsp::QuantizeOptions &opts);
 
 template std::unique_ptr<EditArrangerSelectionsAction>
 EditArrangerSelectionsAction::create (

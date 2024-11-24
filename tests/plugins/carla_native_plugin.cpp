@@ -3,10 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/dsp/exporter.h"
-#include "common/dsp/fader.h"
-#include "common/dsp/router.h"
-#include "common/plugins/carla_native_plugin.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 
@@ -14,9 +10,14 @@
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
 
+#include "gui/dsp/carla_native_plugin.h"
+#include "gui/dsp/exporter.h"
+#include "gui/dsp/fader.h"
+#include "gui/dsp/router.h"
+
 #if HAVE_CARLA
 
-class zrythm::plugins::CarlaNativePluginTest
+class zrythm::gui::dsp::plugins::CarlaNativePluginTest
     : public ::testing::TestWithParam<std::string>
 {
 protected:
@@ -71,8 +72,8 @@ TEST_P (CarlaNativePluginTest, VstInstrumentMakesSound)
 }
 
 INSTANTIATE_TEST_SUITE_P (
-  zrythm::plugins::CarlaNativePlugin,
-  zrythm::plugins::CarlaNativePluginTest,
+  zrythm::gui::dsp::plugins::CarlaNativePlugin,
+  zrythm::gui::dsp::plugins::CarlaNativePluginTest,
   ::testing::Values (
 #  ifdef HAVE_NOIZEMAKER
     // vst2
@@ -108,7 +109,7 @@ TEST_F (ZrythmFixture, MonoPlugin)
     LSP_COMPRESSOR_MONO_BUNDLE, LSP_COMPRESSOR_MONO_URI, true);
 
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-    zrythm::plugins::PluginSlotType::Insert, *audio_track, 0, setting, 1));
+    zrythm::gui::dsp::plugins::PluginSlotType::Insert, *audio_track, 0, setting, 1));
 
   const auto &pl = audio_track->channel_->inserts_[0];
   ASSERT_NONNULL (pl);
@@ -166,7 +167,7 @@ TEST_F (ZrythmFixture, CrashHandling)
 
   auto setting = test_plugin_manager_get_plugin_setting (
     SIGABRT_BUNDLE_URI, SIGABRT_URI, true);
-  setting.bridge_mode_ = zrythm::plugins::CarlaBridgeMode::Full;
+  setting.bridge_mode_ = zrythm::gui::dsp::plugins::CarlaBridgeMode::Full;
 
   /* create a track from the plugin */
   auto track = Track::create_for_plugin_at_idx_w_action<AudioBusTrack> (

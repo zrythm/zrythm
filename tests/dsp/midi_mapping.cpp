@@ -3,15 +3,16 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/dsp/master_track.h"
-#include "common/dsp/midi_mapping.h"
-#include "common/utils/math.h"
-#include "common/utils/objects.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/dsp/master_track.h"
+#include "gui/dsp/midi_mapping.h"
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
+
+#include "utils/math.h"
+#include "utils/objects.h"
 
 TEST_F (ZrythmFixture, MidiMapping)
 {

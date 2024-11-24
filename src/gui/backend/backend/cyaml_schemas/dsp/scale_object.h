@@ -12,9 +12,10 @@
 
 #include <cstdint>
 
-#include "common/utils/yaml.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/scale.h"
 #include "gui/backend/backend/cyaml_schemas/gui/backend/arranger_object.h"
+
+#include "utils/yaml.h"
 
 typedef struct ScaleObject_v1
 {

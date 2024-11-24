@@ -4,10 +4,11 @@
 #ifndef __UNDO_RANGE_ACTION_H__
 #define __UNDO_RANGE_ACTION_H__
 
-#include "common/dsp/position.h"
-#include "common/dsp/transport.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/backend/backend/timeline_selections.h"
+#include "gui/dsp/transport.h"
+
+#include "dsp/position.h"
 
 namespace zrythm::gui::actions
 {
@@ -16,7 +17,7 @@ class RangeAction
     : public QObject,
       public UndoableAction,
       public ICloneable<RangeAction>,
-      public ISerializable<RangeAction>
+      public zrythm::utils::serialization::ISerializable<RangeAction>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -28,6 +29,8 @@ public:
     InsertSilence,
     Remove,
   };
+
+  using Position = zrythm::dsp::Position;
 
 public:
   RangeAction (QObject * parent = nullptr);

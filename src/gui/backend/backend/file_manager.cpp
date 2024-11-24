@@ -22,11 +22,11 @@
 #include <cstring>
 #include <memory>
 
-#include "common/io/file_descriptor.h"
-#include "common/utils/gtest_wrapper.h"
-#include "common/utils/io.h"
-#include "common/utils/objects.h"
-#include "common/utils/types.h"
+#include "gui/backend/io/file_descriptor.h"
+#include "utils/gtest_wrapper.h"
+#include "utils/io.h"
+#include "utils/objects.h"
+#include "utils/types.h"
 #include "gui/backend/backend/file_manager.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"

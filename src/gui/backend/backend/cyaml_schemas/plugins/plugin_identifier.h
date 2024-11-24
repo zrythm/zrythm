@@ -10,7 +10,7 @@
 #ifndef __SCHEMA_PLUGINS_PLUGIN_IDENTIFIER_H__
 #define __SCHEMA_PLUGINS_PLUGIN_IDENTIFIER_H__
 
-#include "common/utils/yaml.h"
+#include "utils/yaml.h"
 
 // typedef struct PluginIdentifier PluginIdentifier;
 

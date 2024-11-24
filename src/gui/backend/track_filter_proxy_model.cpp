@@ -1,6 +1,6 @@
 
-#include "common/dsp/track_all.h"
-#include "common/dsp/tracklist.h"
+#include "gui/dsp/track_all.h"
+#include "gui/dsp/tracklist.h"
 
 #include "track_filter_proxy_model.h"
 

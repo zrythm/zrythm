@@ -4,8 +4,9 @@
 #ifndef __AUDIO_AUDIO_CLIP_EDITOR_H__
 #define __AUDIO_AUDIO_CLIP_EDITOR_H__
 
-#include "common/utils/icloneable.h"
 #include "gui/backend/backend/editor_settings.h"
+
+#include "utils/icloneable.h"
 
 /**
  * @addtogroup gui_backend
@@ -23,7 +24,7 @@
 class AudioClipEditor final
     : public EditorSettings,
       public ICloneable<AudioClipEditor>,
-      public ISerializable<AudioClipEditor>
+      public zrythm::utils::serialization::ISerializable<AudioClipEditor>
 {
 public:
   DECLARE_DEFINE_FIELDS_METHOD ();

@@ -3,9 +3,9 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/dsp/midi_region.h"
-#include "common/dsp/region.h"
-#include "common/utils/flags.h"
+# include "gui/dsp/midi_region.h"
+# include "gui/dsp/region.h"
+#include "utils/flags.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 

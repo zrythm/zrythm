@@ -10,8 +10,8 @@
  * External port schema.
  */
 
-#include "common/utils/types.h"
-#include "common/utils/yaml.h"
+#include "utils/types.h"
+#include "utils/yaml.h"
 
 typedef enum ExtPortType_v1
 {

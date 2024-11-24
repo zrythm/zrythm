@@ -10,7 +10,7 @@
 #ifndef __SCHEMAS_PLUGINS_PLUGIN_DESCRIPTOR_H__
 #define __SCHEMAS_PLUGINS_PLUGIN_DESCRIPTOR_H__
 
-#include "common/utils/yaml.h"
+#include "utils/yaml.h"
 
 typedef enum ZPluginCategory_v1
 {

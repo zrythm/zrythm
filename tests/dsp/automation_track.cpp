@@ -3,16 +3,17 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/dsp/automation_region.h"
-#include "common/dsp/automation_track.h"
-#include "common/dsp/channel.h"
-#include "common/dsp/master_track.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
+
+#include "gui/dsp/automation_region.h"
+#include "gui/dsp/automation_track.h"
+#include "gui/dsp/channel.h"
+#include "gui/dsp/master_track.h"
 
 TEST_F (ZrythmFixture, SetAutomationTrackIndex)
 {

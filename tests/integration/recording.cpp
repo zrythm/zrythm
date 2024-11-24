@@ -3,12 +3,12 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/dsp/engine_dummy.h"
-#include "common/dsp/master_track.h"
-#include "common/dsp/midi_event.h"
-#include "common/dsp/midi_track.h"
-#include "common/dsp/recording_manager.h"
-#include "common/utils/flags.h"
+# include "gui/dsp/engine_dummy.h"
+# include "gui/dsp/master_track.h"
+# include "gui/dsp/midi_event.h"
+# include "gui/dsp/midi_track.h"
+# include "gui/dsp/recording_manager.h"
+#include "utils/flags.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 

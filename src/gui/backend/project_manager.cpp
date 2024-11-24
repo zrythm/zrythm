@@ -1,6 +1,7 @@
-#include "common/dsp/router.h"
-#include "common/utils/directory_manager.h"
-#include "common/utils/io.h"
+#include "gui/backend/backend/zrythm.h"
+# include "gui/dsp/router.h"
+#include "utils/directory_manager.h"
+#include "utils/io.h"
 #include "gui/backend/zrythm_application.h"
 #include "project_manager.h"
 
@@ -42,9 +43,9 @@ ProjectManager::init_templates ()
 {
   z_info ("Initializing templates...");
 
-  auto *      dir_mgr = DirectoryManager::getInstance ();
+  auto      &dir_mgr = dynamic_cast<ZrythmApplication*>(qApp)->get_directory_manager();
   std::string user_templates_dir =
-    dir_mgr->get_dir (DirectoryManager::DirectoryType::USER_TEMPLATES);
+    dir_mgr.get_dir (IDirectoryManager::DirectoryType::USER_TEMPLATES);
   if (fs::is_directory (user_templates_dir))
     {
       try
@@ -63,7 +64,7 @@ ProjectManager::init_templates ()
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       std::string system_templates_dir =
-        dir_mgr->get_dir (DirectoryManager::DirectoryType::SYSTEM_TEMPLATES);
+        dir_mgr.get_dir (IDirectoryManager::DirectoryType::SYSTEM_TEMPLATES);
       if (fs::is_directory (system_templates_dir))
         {
           try

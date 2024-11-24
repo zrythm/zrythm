@@ -10,9 +10,10 @@
 #ifndef __GUI_BACKEND_AUDIO_SELECTIONS_H__
 #define __GUI_BACKEND_AUDIO_SELECTIONS_H__
 
-#include "common/dsp/position.h"
-#include "common/dsp/region_identifier.h"
 #include "gui/backend/backend/arranger_selections.h"
+#include "gui/dsp/region_identifier.h"
+
+#include "dsp/position.h"
 
 class Region;
 
@@ -32,7 +33,7 @@ class AudioSelections final
     : public QObject,
       public ArrangerSelections,
       public ICloneable<AudioSelections>,
-      public ISerializable<AudioSelections>
+      public zrythm::utils::serialization::ISerializable<AudioSelections>
 {
   Q_OBJECT
   QML_ELEMENT

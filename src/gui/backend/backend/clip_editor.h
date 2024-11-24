@@ -4,12 +4,12 @@
 #ifndef __GUI_BACKEND_CLIP_EDITOR_H__
 #define __GUI_BACKEND_CLIP_EDITOR_H__
 
-#include "common/dsp/region.h"
-#include "common/dsp/region_identifier.h"
 #include "gui/backend/backend/audio_clip_editor.h"
 #include "gui/backend/backend/automation_editor.h"
 #include "gui/backend/backend/chord_editor.h"
 #include "gui/backend/backend/piano_roll.h"
+#include "gui/dsp/region.h"
+#include "gui/dsp/region_identifier.h"
 
 class ArrangerSelections;
 
@@ -26,8 +26,13 @@ class ArrangerSelections;
  *
  * The actual widgets should reflect the information here.
  */
-class ClipEditor final : public ISerializable<ClipEditor>
+class ClipEditor
+  final : public zrythm::utils::serialization::ISerializable<ClipEditor>
 {
+  // Q_OBJECT
+  // QML_ELEMENT
+  // TODO
+  // Q_PROPERTY(QVariant region READ get_region NOTIFY regionChanged)
 public:
   /**
    * Inits the ClipEditor after a Project is loaded.

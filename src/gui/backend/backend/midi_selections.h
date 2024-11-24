@@ -10,8 +10,8 @@
 #ifndef __GUI_BACKEND_MIDI_SELECTIONS_H__
 #define __GUI_BACKEND_MIDI_SELECTIONS_H__
 
-#include "common/dsp/midi_note.h"
 #include "gui/backend/backend/arranger_selections.h"
+#include "gui/dsp/midi_note.h"
 
 /**
  * @addtogroup gui_backend
@@ -30,7 +30,7 @@ class MidiSelections final
     : public QObject,
       public ArrangerSelections,
       public ICloneable<MidiSelections>,
-      public ISerializable<MidiSelections>
+      public zrythm::utils::serialization::ISerializable<MidiSelections>
 {
   Q_OBJECT
   QML_ELEMENT

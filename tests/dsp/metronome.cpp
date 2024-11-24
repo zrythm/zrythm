@@ -3,11 +3,12 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/dsp/metronome.h"
-#include "common/dsp/position.h"
-#include "common/dsp/sample_processor.h"
+#include "gui/dsp/metronome.h"
+#include "gui/dsp/sample_processor.h"
 
 #include "tests/helpers/zrythm_helper.h"
+
+#include "dsp/position.h"
 
 TEST_F (ZrythmFixture, FindAndQueueMetronome)
 {

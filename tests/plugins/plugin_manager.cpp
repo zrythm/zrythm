@@ -3,10 +3,10 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/plugins/plugin_manager.h"
-
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/zrythm_helper.h"
+
+#include "gui/backend/plugin_manager.h"
 
 TEST_F (ZrythmFixture, FindPlugins)
 {

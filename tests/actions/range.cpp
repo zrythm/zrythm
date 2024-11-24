@@ -5,7 +5,6 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "common/dsp/region.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/actions/range_action.h"
 #include "gui/backend/backend/actions/undo_manager.h"
@@ -13,6 +12,8 @@
 #include "gui/backend/backend/zrythm.h"
 
 #include "tests/helpers/project_helper.h"
+
+#include "gui/dsp/region.h"
 
 constexpr auto RANGE_START_BAR = 4;
 constexpr auto RANGE_END_BAR = 10;

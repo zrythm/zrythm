@@ -4,9 +4,10 @@
 #ifndef __ACTION_PORT_CONNECTION_ACTION_H__
 #define __ACTION_PORT_CONNECTION_ACTION_H__
 
-#include "common/dsp/port_connection.h"
-#include "common/utils/icloneable.h"
 #include "gui/backend/backend/actions/undoable_action.h"
+#include "gui/dsp/port_connection.h"
+
+#include "utils/icloneable.h"
 
 namespace zrythm::gui::actions
 {
@@ -15,7 +16,7 @@ class PortConnectionAction
     : public QObject,
       public UndoableAction,
       public ICloneable<PortConnectionAction>,
-      public ISerializable<PortConnectionAction>
+      public zrythm::utils::serialization::ISerializable<PortConnectionAction>
 {
   Q_OBJECT
   QML_ELEMENT

@@ -1,9 +1,10 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/automation_track.h"
-#include "common/dsp/automation_tracklist.h"
 #include "gui/backend/automation_tracklist_proxy_model.h"
+
+#include "gui/dsp/automation_track.h"
+#include "gui/dsp/automation_tracklist.h"
 
 AutomationTracklistProxyModel::AutomationTracklistProxyModel (QObject * parent)
     : QSortFilterProxyModel (parent)

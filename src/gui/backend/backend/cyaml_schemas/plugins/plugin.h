@@ -12,12 +12,13 @@
 
 #include "zrythm-config.h"
 
-#include "common/utils/types.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/port.h"
 #include "gui/backend/backend/cyaml_schemas/plugins/plugin_descriptor.h"
 #include "gui/backend/backend/cyaml_schemas/plugins/plugin_identifier.h"
 #include "gui/backend/backend/cyaml_schemas/plugins/plugin_preset.h"
 #include "gui/backend/backend/cyaml_schemas/settings/plugin_settings.h"
+
+#include "utils/types.h"
 
 typedef struct Plugin_v1
 {

@@ -3,10 +3,10 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/dsp/fader.h"
-#include "common/dsp/midi_event.h"
-#include "common/dsp/router.h"
-#include "common/utils/math.h"
+# include "gui/dsp/fader.h"
+# include "gui/dsp/midi_event.h"
+# include "gui/dsp/router.h"
+#include "utils/math.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/zrythm_helper.h"

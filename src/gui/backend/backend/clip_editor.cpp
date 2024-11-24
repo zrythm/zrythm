@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/router.h"
-#include "common/dsp/track.h"
-#include "common/utils/rt_thread_id.h"
+# include "gui/dsp/router.h"
+# include "gui/dsp/track.h"
+#include "utils/rt_thread_id.h"
 #include "gui/backend/backend/clip_editor.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"

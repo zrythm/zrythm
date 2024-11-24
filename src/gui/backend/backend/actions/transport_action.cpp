@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/control_port.h"
-#include "common/dsp/engine.h"
-#include "common/dsp/router.h"
-#include "common/dsp/tempo_track.h"
-#include "common/dsp/tracklist.h"
-#include "common/dsp/transport.h"
-#include "common/utils/gtest_wrapper.h"
+# include "gui/dsp/control_port.h"
+# include "gui/dsp/engine.h"
+# include "gui/dsp/router.h"
+# include "gui/dsp/tempo_track.h"
+# include "gui/dsp/tracklist.h"
+# include "gui/dsp/transport.h"
+#include "utils/gtest_wrapper.h"
 #include "gui/backend/backend/actions/transport_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"

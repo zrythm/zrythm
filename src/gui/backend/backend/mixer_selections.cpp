@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/channel_track.h"
-#include "common/dsp/modulator_track.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/rt_thread_id.h"
+#include "gui/dsp/channel.h"
+# include "gui/dsp/channel_track.h"
+# include "gui/dsp/modulator_track.h"
+# include "gui/dsp/tracklist.h"
+#include "utils/rt_thread_id.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/mixer_selections.h"
 #include "gui/backend/backend/project.h"
@@ -26,7 +27,7 @@ MixerSelections::get_track () const
 void
 MixerSelections::add_slot (
   const Track                    &track,
-  zrythm::plugins::PluginSlotType type,
+  zrythm::gui::dsp::plugins::PluginSlotType type,
   int                             slot,
   const bool                      fire_events)
 {
@@ -57,23 +58,23 @@ MixerSelections::add_slot (
 void
 FullMixerSelections::add_plugin (
   const Track                    &track,
-  zrythm::plugins::PluginSlotType type,
+  zrythm::gui::dsp::plugins::PluginSlotType type,
   int                             slot)
 {
   add_slot (track, type, slot, false);
 
-  zrythm::plugins::Plugin * pl = nullptr;
+  zrythm::gui::dsp::plugins::Plugin * pl = nullptr;
   switch (type)
     {
-    case zrythm::plugins::PluginSlotType::MidiFx:
-    case zrythm::plugins::PluginSlotType::Insert:
-    case zrythm::plugins::PluginSlotType::Instrument:
+    case zrythm::gui::dsp::plugins::PluginSlotType::MidiFx:
+    case zrythm::gui::dsp::plugins::PluginSlotType::Insert:
+    case zrythm::gui::dsp::plugins::PluginSlotType::Instrument:
       pl =
         dynamic_cast<const ChannelTrack &> (track)
           .get_channel ()
           ->get_plugin_at_slot (slot, type);
       break;
-    case zrythm::plugins::PluginSlotType::Modulator:
+    case zrythm::gui::dsp::plugins::PluginSlotType::Modulator:
       pl = dynamic_cast<const ModulatorTrack &> (track).modulators_[slot].get ();
       break;
     default:
@@ -84,7 +85,7 @@ FullMixerSelections::add_plugin (
   try
     {
       auto pl_clone =
-        clone_unique_with_variant<zrythm::plugins::PluginVariant> (pl);
+        clone_unique_with_variant<zrythm::gui::dsp::plugins::PluginVariant> (pl);
       plugins_.emplace_back (std::move (pl_clone));
     }
   catch (const ZrythmException &e)
@@ -97,14 +98,14 @@ FullMixerSelections::add_plugin (
 void
 MixerSelections::remove_slot (
   int                             slot,
-  zrythm::plugins::PluginSlotType type,
+  zrythm::gui::dsp::plugins::PluginSlotType type,
   bool                            publish_events)
 {
   z_info ("removing slot {}", slot);
   slots_.erase (
     std::remove (slots_.begin (), slots_.end (), slot), slots_.end ());
 
-  if (slots_.empty () || type_ == zrythm::plugins::PluginSlotType::Instrument)
+  if (slots_.empty () || type_ == zrythm::gui::dsp::plugins::PluginSlotType::Instrument)
     {
       has_any_ = false;
       track_name_hash_ = 0;
@@ -117,14 +118,14 @@ MixerSelections::remove_slot (
 }
 
 bool
-MixerSelections::contains_plugin (const zrythm::plugins::Plugin &pl) const
+MixerSelections::contains_plugin (const zrythm::gui::dsp::plugins::Plugin &pl) const
 {
   if (track_name_hash_ != pl.id_.track_name_hash_)
     return false;
 
-  if (type_ == zrythm::plugins::PluginSlotType::Instrument)
+  if (type_ == zrythm::gui::dsp::plugins::PluginSlotType::Instrument)
     {
-      return pl.id_.slot_type_ == zrythm::plugins::PluginSlotType::Instrument
+      return pl.id_.slot_type_ == zrythm::gui::dsp::plugins::PluginSlotType::Instrument
              && pl.id_.track_name_hash_ == track_name_hash_;
     }
 
@@ -136,7 +137,7 @@ MixerSelections::contains_plugin (const zrythm::plugins::Plugin &pl) const
 bool
 MixerSelections::contains_uninstantiated_plugin () const
 {
-  std::vector<zrythm::plugins::Plugin *> plugins;
+  std::vector<zrythm::gui::dsp::plugins::Plugin *> plugins;
   get_plugins (plugins);
 
   return std::ranges::any_of (plugins, [] (auto pl) {
@@ -144,7 +145,7 @@ MixerSelections::contains_uninstantiated_plugin () const
   });
 }
 
-zrythm::plugins::Plugin *
+zrythm::gui::dsp::plugins::Plugin *
 MixerSelections::get_first_plugin () const
 {
   if (has_any_)
@@ -152,20 +153,20 @@ MixerSelections::get_first_plugin () const
       auto track_var = get_track ();
       z_return_val_if_fail (track_var, nullptr);
       std::visit (
-        [&] (auto &&track) -> zrythm::plugins::Plugin * {
+        [&] (auto &&track) -> zrythm::gui::dsp::plugins::Plugin * {
           using TrackT = base_type<decltype (track)>;
           if constexpr (std::derived_from<TrackT, ChannelTrack>)
             {
-              if (type_ == zrythm::plugins::PluginSlotType::Instrument)
+              if (type_ == zrythm::gui::dsp::plugins::PluginSlotType::Instrument)
                 return track->channel_->instrument_.get ();
-              if (type_ == zrythm::plugins::PluginSlotType::Insert)
+              if (type_ == zrythm::gui::dsp::plugins::PluginSlotType::Insert)
                 return track->channel_->inserts_.at (slots_.at (0)).get ();
-              if (type_ == zrythm::plugins::PluginSlotType::MidiFx)
+              if (type_ == zrythm::gui::dsp::plugins::PluginSlotType::MidiFx)
                 return track->channel_->midi_fx_.at (slots_.at (0)).get ();
             }
           else if constexpr (std::is_same_v<TrackT, ModulatorTrack>)
             {
-              if (type_ == zrythm::plugins::PluginSlotType::Modulator)
+              if (type_ == zrythm::gui::dsp::plugins::PluginSlotType::Modulator)
                 return track->modulators_.at (slots_.at (0)).get ();
             }
           z_return_val_if_reached (nullptr);
@@ -178,7 +179,7 @@ MixerSelections::get_first_plugin () const
 
 void
 MixerSelections::get_plugins (
-  std::vector<zrythm::plugins::Plugin *> &plugins) const
+  std::vector<zrythm::gui::dsp::plugins::Plugin *> &plugins) const
 {
   auto track_var = get_track ();
   z_return_if_fail (track_var);
@@ -189,12 +190,12 @@ MixerSelections::get_plugins (
 
       for (int slot : slots_)
         {
-          zrythm::plugins::Plugin * pl = nullptr;
+          zrythm::gui::dsp::plugins::Plugin * pl = nullptr;
           switch (type_)
             {
-            case zrythm::plugins::PluginSlotType::Instrument:
-            case zrythm::plugins::PluginSlotType::Insert:
-            case zrythm::plugins::PluginSlotType::MidiFx:
+            case zrythm::gui::dsp::plugins::PluginSlotType::Instrument:
+            case zrythm::gui::dsp::plugins::PluginSlotType::Insert:
+            case zrythm::gui::dsp::plugins::PluginSlotType::MidiFx:
               if constexpr (std::derived_from<TrackT, ChannelTrack>)
                 {
                   auto &channel_track = dynamic_cast<ChannelTrack &> (*track);
@@ -202,7 +203,7 @@ MixerSelections::get_plugins (
                     slot, type_);
                 }
               break;
-            case zrythm::plugins::PluginSlotType::Modulator:
+            case zrythm::gui::dsp::plugins::PluginSlotType::Modulator:
               if constexpr (std::is_same_v<TrackT, ModulatorTrack>)
                 {
                   pl = track->modulators_[slot].get ();
@@ -222,7 +223,7 @@ MixerSelections::get_plugins (
 
 void
 FullMixerSelections::get_plugins (
-  std::vector<zrythm::plugins::Plugin *> &plugins) const
+  std::vector<zrythm::gui::dsp::plugins::Plugin *> &plugins) const
 {
   for (auto &plugin : plugins_)
     {
@@ -242,19 +243,19 @@ MixerSelections::validate () const
     [&] (auto &&track) -> bool {
       for (int slot : slots_)
         {
-          zrythm::plugins::Plugin * pl = nullptr;
+          zrythm::gui::dsp::plugins::Plugin * pl = nullptr;
           switch (type_)
             {
-            case zrythm::plugins::PluginSlotType::Instrument:
-            case zrythm::plugins::PluginSlotType::Insert:
-            case zrythm::plugins::PluginSlotType::MidiFx:
+            case zrythm::gui::dsp::plugins::PluginSlotType::Instrument:
+            case zrythm::gui::dsp::plugins::PluginSlotType::Insert:
+            case zrythm::gui::dsp::plugins::PluginSlotType::MidiFx:
               {
                 auto &channel_track = dynamic_cast<ChannelTrack &> (*track);
                 pl = channel_track.get_channel ()->get_plugin_at_slot (
                   slot, type_);
               }
               break;
-            case zrythm::plugins::PluginSlotType::Modulator:
+            case zrythm::gui::dsp::plugins::PluginSlotType::Modulator:
               pl =
                 dynamic_cast<ModulatorTrack *> (track)->modulators_[slot].get ();
               break;
@@ -277,7 +278,7 @@ MixerSelections::clear (bool fire_events)
   slots_.clear ();
   has_any_ = false;
   track_name_hash_ = 0;
-  type_ = zrythm::plugins::PluginSlotType::Invalid;
+  type_ = zrythm::gui::dsp::plugins::PluginSlotType::Invalid;
   // if (fire_events)
   /* EVENTS_PUSH (EventType::ET_MIXER_SELECTIONS_CHANGED, nullptr); */
 }
@@ -298,19 +299,19 @@ MixerSelections::gen_full_from_this () const
     [&] (auto &&track) -> std::unique_ptr<FullMixerSelections> {
       for (int slot : slots_)
         {
-          zrythm::plugins::Plugin * pl = nullptr;
+          zrythm::gui::dsp::plugins::Plugin * pl = nullptr;
           switch (type_)
             {
-            case zrythm::plugins::PluginSlotType::Instrument:
-            case zrythm::plugins::PluginSlotType::Insert:
-            case zrythm::plugins::PluginSlotType::MidiFx:
+            case zrythm::gui::dsp::plugins::PluginSlotType::Instrument:
+            case zrythm::gui::dsp::plugins::PluginSlotType::Insert:
+            case zrythm::gui::dsp::plugins::PluginSlotType::MidiFx:
               {
                 auto &channel_track = dynamic_cast<ChannelTrack &> (*track);
                 pl = channel_track.get_channel ()->get_plugin_at_slot (
                   slot, type_);
               }
               break;
-            case zrythm::plugins::PluginSlotType::Modulator:
+            case zrythm::gui::dsp::plugins::PluginSlotType::Modulator:
               pl =
                 dynamic_cast<ModulatorTrack *> (track)->modulators_[slot].get ();
               break;
@@ -323,7 +324,7 @@ MixerSelections::gen_full_from_this () const
           try
             {
               auto pl_clone =
-                clone_unique_with_variant<zrythm::plugins::PluginVariant> (pl);
+                clone_unique_with_variant<zrythm::gui::dsp::plugins::PluginVariant> (pl);
               ret->plugins_.emplace_back (std::move (pl_clone));
             }
           catch (const ZrythmException &e)
@@ -342,19 +343,19 @@ MixerSelections::gen_full_from_this () const
 bool
 MixerSelections::can_be_pasted (
   const Channel                  &ch,
-  zrythm::plugins::PluginSlotType type,
+  zrythm::gui::dsp::plugins::PluginSlotType type,
   int                             slot) const
 {
   int lowest = get_lowest_slot ();
   int highest = get_highest_slot ();
   int delta = highest - lowest;
 
-  return slot + delta < (int) STRIP_SIZE;
+  return slot + delta < (int) utils::audio::STRIP_SIZE;
 }
 
 void
 MixerSelections::
-  paste_to_slot (Channel &ch, zrythm::plugins::PluginSlotType type, int slot)
+  paste_to_slot (Channel &ch, zrythm::gui::dsp::plugins::PluginSlotType type, int slot)
 {
   try
     {

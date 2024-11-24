@@ -4,9 +4,10 @@
 #ifndef __UNDO_UNDO_STACK_H__
 #define __UNDO_UNDO_STACK_H__
 
-#include "common/io/serialization/iserializable.h"
-#include "common/utils/icloneable.h"
 #include "gui/backend/backend/actions/undoable_action_all.h"
+
+#include "utils/icloneable.h"
+#include "utils/iserializable.h"
 
 class AudioClip;
 
@@ -21,7 +22,7 @@ namespace zrythm::gui::actions
 class UndoStack final
     : public QAbstractListModel,
       public ICloneable<UndoStack>,
-      public ISerializable<UndoStack>
+      public zrythm::utils::serialization::ISerializable<UndoStack>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -109,7 +110,8 @@ public:
   /**
    * Returns the plugins referred to in the undo stack.
    */
-  void get_plugins (std::vector<zrythm::plugins::Plugin *> &arr) const;
+  void
+  get_plugins (std::vector<zrythm::gui::dsp::plugins::Plugin *> &arr) const;
 
   void init_after_cloning (const UndoStack &other) override;
 

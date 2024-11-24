@@ -9,7 +9,9 @@
 #include <utility>
 #include <vector>
 
-#include "common/io/file_descriptor.h"
+#include "gui/backend/io/file_descriptor.h"
+
+#include <QString>
 
 /**
  * @addtogroup gui_backend

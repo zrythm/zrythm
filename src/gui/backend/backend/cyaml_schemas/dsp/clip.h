@@ -10,9 +10,8 @@
 #ifndef __SCHEMAS_AUDIO_CLIP_H__
 #define __SCHEMAS_AUDIO_CLIP_H__
 
-#include "common/utils/audio.h"
-#include "common/utils/types.h"
-#include "common/utils/yaml.h"
+#include "utils/types.h"
+#include "utils/yaml.h"
 
 typedef enum BitDepth_v1
 {

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/utils/logger.h"
+#include "utils/logger.h"
 
 #include "realtime_property.h"
 #include "realtime_updater.h"

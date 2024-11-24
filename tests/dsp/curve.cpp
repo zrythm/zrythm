@@ -3,7 +3,7 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/dsp/curve.h"
+#include "gui/dsp/curve.h"
 
 #include "tests/helpers/zrythm_helper.h"
 

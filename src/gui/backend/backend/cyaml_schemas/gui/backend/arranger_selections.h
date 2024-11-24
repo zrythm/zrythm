@@ -10,7 +10,7 @@
 #ifndef __SCHEMAS_GUI_BACKEND_ARRANGER_SELECTIONS_H__
 #define __SCHEMAS_GUI_BACKEND_ARRANGER_SELECTIONS_H__
 
-#include "common/utils/yaml.h"
+#include "utils/yaml.h"
 
 typedef enum ArrangerSelectionsType_v1
 {

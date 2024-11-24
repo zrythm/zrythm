@@ -4,7 +4,7 @@
 #ifndef __SETTINGS_G_SETTINGS_MANAGER_H__
 #define __SETTINGS_G_SETTINGS_MANAGER_H__
 
-#include "common/utils/logger.h"
+#include "utils/logger.h"
 #include "gui/backend/gtk_widgets/gtk_wrapper.h"
 
 #include "juce_wrapper.h"

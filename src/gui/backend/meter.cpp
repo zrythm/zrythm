@@ -1,16 +1,16 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/audio_port.h"
-#include "common/dsp/engine.h"
-#include "common/dsp/kmeter_dsp.h"
-#include "common/dsp/midi_event.h"
-#include "common/dsp/midi_port.h"
-#include "common/dsp/peak_dsp.h"
-#include "common/dsp/track.h"
-#include "common/dsp/true_peak_dsp.h"
-#include "common/utils/math.h"
-#include "common/utils/ring_buffer.h"
+# include "gui/dsp/audio_port.h"
+# include "gui/dsp/engine.h"
+# include "gui/dsp/kmeter_dsp.h"
+# include "gui/dsp/midi_event.h"
+# include "gui/dsp/midi_port.h"
+# include "gui/dsp/peak_dsp.h"
+# include "gui/dsp/track.h"
+# include "gui/dsp/true_peak_dsp.h"
+#include "utils/math.h"
+#include "utils/ring_buffer.h"
 #include "gui/backend/meter.h"
 
 MeterProcessor::MeterProcessor (QObject * parent) : QObject (parent) { }

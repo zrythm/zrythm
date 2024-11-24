@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/utils/datetime.h"
-#include "common/utils/io.h"
-#include "common/utils/logger.h"
+#include "utils/datetime.h"
+#include "utils/io.h"
+#include "utils/logger.h"
 #include "gui/backend/backend/project_info.h"
 
 using namespace zrythm;
@@ -28,7 +28,7 @@ ProjectInfo::ProjectInfo (const std::string &name, const std::string &filename)
         }
       else
         {
-          modified_str_ = datetime_epoch_to_str (modified_);
+          modified_str_ = utils::datetime::epoch_to_str (modified_);
         }
       z_return_if_fail (!modified_str_.empty ());
     }

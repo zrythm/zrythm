@@ -3,9 +3,9 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/dsp/automation_region.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/flags.h"
+# include "gui/dsp/automation_region.h"
+# include "gui/dsp/tracklist.h"
+#include "utils/flags.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"

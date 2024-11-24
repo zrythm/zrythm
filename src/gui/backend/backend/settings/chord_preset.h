@@ -6,9 +6,10 @@
 
 #include "zrythm-config.h"
 
-#include "common/dsp/chord_descriptor.h"
-#include "common/utils/types.h"
 #include "gui/backend/backend/chord_editor.h"
+#include "gui/dsp/chord_descriptor.h"
+
+#include "utils/types.h"
 
 class ChordPresetPack;
 TYPEDEF_STRUCT_UNDERSCORED (GMenuModel);
@@ -25,7 +26,7 @@ TYPEDEF_STRUCT_UNDERSCORED (GMenuModel);
 class ChordPreset final
     : public QObject,
       public ICloneable<ChordPreset>,
-      public ISerializable<ChordPreset>
+      public zrythm::utils::serialization::ISerializable<ChordPreset>
 {
   Q_OBJECT
   QML_ELEMENT

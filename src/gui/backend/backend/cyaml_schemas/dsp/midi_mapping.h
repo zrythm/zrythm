@@ -10,9 +10,10 @@
 #ifndef __SCHEMAS_AUDIO_MIDI_MAPPING_H__
 #define __SCHEMAS_AUDIO_MIDI_MAPPING_H__
 
-#include "common/utils/midi.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/ext_port.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/port_identifier.h"
+
+#include "utils/midi.h"
 
 typedef struct MidiMapping_v1
 {

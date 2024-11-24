@@ -10,8 +10,9 @@
 #ifndef __SCHEMAS_ACTIONS_TRACKLIST_SELECTIONS_H__
 #define __SCHEMAS_ACTIONS_TRACKLIST_SELECTIONS_H__
 
-#include "common/utils/yaml.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/track.h"
+
+#include "utils/yaml.h"
 
 // typedef struct TracklistSelections TracklistSelections;
 

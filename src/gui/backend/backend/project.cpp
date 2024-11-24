@@ -5,26 +5,26 @@
 
 #include <filesystem>
 
-#include "common/dsp/audio_region.h"
-#include "common/dsp/audio_track.h"
-#include "common/dsp/chord_track.h"
-#include "common/dsp/engine.h"
-#include "common/dsp/marker_track.h"
-#include "common/dsp/master_track.h"
-#include "common/dsp/modulator_track.h"
-#include "common/dsp/port_connections_manager.h"
-#include "common/dsp/router.h"
-#include "common/dsp/tempo_track.h"
-#include "common/dsp/tracklist.h"
-#include "common/dsp/transport.h"
-#include "common/utils/datetime.h"
-#include "common/utils/exceptions.h"
-#include "common/utils/gtest_wrapper.h"
-#include "common/utils/io.h"
-#include "common/utils/logger.h"
-#include "common/utils/objects.h"
-#include "common/utils/progress_info.h"
-#include "common/utils/ui.h"
+# include "gui/dsp/audio_region.h"
+# include "gui/dsp/audio_track.h"
+# include "gui/dsp/chord_track.h"
+# include "gui/dsp/engine.h"
+# include "gui/dsp/marker_track.h"
+# include "gui/dsp/master_track.h"
+# include "gui/dsp/modulator_track.h"
+# include "gui/dsp/port_connections_manager.h"
+# include "gui/dsp/router.h"
+# include "gui/dsp/tempo_track.h"
+# include "gui/dsp/tracklist.h"
+# include "gui/dsp/transport.h"
+#include "utils/datetime.h"
+#include "utils/exceptions.h"
+#include "utils/gtest_wrapper.h"
+#include "utils/io.h"
+#include "utils/logger.h"
+#include "utils/objects.h"
+#include "utils/progress_info.h"
+#include "gui/backend/ui.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/tracklist_selections.h"
 #include "gui/backend/backend/zrythm.h"
@@ -42,17 +42,26 @@ Project::Project (QObject * parent)
       port_connections_manager_ (new PortConnectionsManager (this)),
       audio_engine_ (std::make_unique<AudioEngine> (this)),
       transport_ (new Transport (this)),
-      quantize_opts_editor_ (
-        std::make_unique<QuantizeOptions> (NoteLength::NOTE_LENGTH_1_8)),
-      quantize_opts_timeline_ (
-        std::make_unique<QuantizeOptions> (NoteLength::NOTE_LENGTH_1_1)),
-      snap_grid_editor_ (
-        std::make_unique<
-          SnapGrid> (SnapGrid::Type::Editor, NoteLength::NOTE_LENGTH_1_8, true)),
+      quantize_opts_editor_ (std::make_unique<QuantizeOptions> (
+        zrythm::utils::NoteLength::Note_1_8)),
+      quantize_opts_timeline_ (std::make_unique<QuantizeOptions> (
+        zrythm::utils::NoteLength::Note_1_1)),
+      snap_grid_editor_ (std::make_unique<SnapGrid> (
+        SnapGrid::Type::Editor,
+        utils::NoteLength::Note_1_8,
+        true,
+        [&] { return audio_engine_->frames_per_tick_; },
+        [&] { return transport_->ticks_per_bar_; },
+        [&] { return transport_->ticks_per_beat_; })),
       snap_grid_timeline_ (std::make_unique<SnapGrid> (
         SnapGrid::Type::Timeline,
-        NoteLength::NOTE_LENGTH_BAR,
-        true)),
+        utils::NoteLength::Bar,
+        true,
+        [&] { return audio_engine_->frames_per_tick_; },
+        [&] { return transport_->ticks_per_bar_; },
+        [&] { return transport_->ticks_per_beat_; }
+
+        )),
       timeline_ (new Timeline (this)),
       midi_mappings_ (std::make_unique<MidiMappings> ()),
       tracklist_ (new Tracklist (*this, port_connections_manager_)),
@@ -367,7 +376,8 @@ Project::add_default_tracks ()
   add_track.operator()<ModulatorTrack> ();
 
   /* marker */
-  add_track.operator()<MarkerTrack> ()->add_default_markers (*transport_);
+  add_track.operator()<MarkerTrack> ()->add_default_markers (
+    transport_->ticks_per_bar_, audio_engine_->frames_per_tick_);
 
   tracklist_->pinned_tracks_cutoff_ = tracklist_->tracks_.size ();
 
@@ -751,7 +761,7 @@ Project::SerializeProjectThread::run ()
   z_debug ("serializing project to json...");
   auto   time_before = Zrythm::getInstance ()->get_monotonic_time_usecs ();
   qint64 time_after{};
-  std::optional<CStringRAII> json;
+  std::optional<utils::string::CStringRAII> json;
   try
     {
       json = ctx_.project_->serialize_to_json_string ();
@@ -850,9 +860,9 @@ Project::cleanup_plugin_state_dirs (Project &main_project, bool is_backup)
 {
   z_debug ("cleaning plugin state dirs{}...", is_backup ? " for backup" : "");
 
-  std::vector<zrythm::plugins::Plugin *> plugins;
-  zrythm::plugins::Plugin::get_all (main_project, plugins, true);
-  zrythm::plugins::Plugin::get_all (*this, plugins, true);
+  std::vector<zrythm::gui::dsp::plugins::Plugin *> plugins;
+  zrythm::gui::dsp::plugins::Plugin::get_all (main_project, plugins, true);
+  zrythm::gui::dsp::plugins::Plugin::get_all (*this, plugins, true);
 
   for (size_t i = 0; i < plugins.size (); i++)
     {
@@ -940,7 +950,7 @@ Project::save (
   title_ = dir_.filename ().string ();
 
   /* save current datetime */
-  datetime_str_ = datetime_get_current_as_string ();
+  datetime_str_ = utils::datetime::get_current_as_string ();
 
   /* set the project version */
   version_ = Zrythm::get_version (false);

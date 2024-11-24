@@ -4,9 +4,10 @@
 #ifndef __ACTIONS_TRANSPORT_ACTION_H__
 #define __ACTIONS_TRANSPORT_ACTION_H__
 
-#include "common/utils/icloneable.h"
-#include "common/utils/types.h"
 #include "gui/backend/backend/actions/undoable_action.h"
+
+#include "utils/icloneable.h"
+#include "utils/types.h"
 
 namespace zrythm::gui::actions
 {
@@ -18,7 +19,7 @@ class TransportAction final
     : public QObject,
       public UndoableAction,
       public ICloneable<TransportAction>,
-      public ISerializable<TransportAction>
+      public zrythm::utils::serialization::ISerializable<TransportAction>
 {
   Q_OBJECT
   QML_ELEMENT

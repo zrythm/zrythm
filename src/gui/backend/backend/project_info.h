@@ -4,7 +4,7 @@
 #ifndef __GUI_BACKEND_PROJECT_INFO_H__
 #define __GUI_BACKEND_PROJECT_INFO_H__
 
-#include "common/utils/types.h"
+#include "utils/types.h"
 
 /**
  * @addtogroup gui_backend

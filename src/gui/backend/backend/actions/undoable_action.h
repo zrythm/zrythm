@@ -4,9 +4,10 @@
 #ifndef __UNDO_UNDOABLE_ACTION_H__
 #define __UNDO_UNDOABLE_ACTION_H__
 
-#include "common/dsp/port_connections_manager.h"
-#include "common/plugins/plugin.h"
-#include "common/utils/types.h"
+#include "gui/dsp/plugin.h"
+#include "gui/dsp/port_connections_manager.h"
+
+#include "utils/types.h"
 
 class AudioClip;
 
@@ -26,7 +27,8 @@ public: \
 /**
  * Base class to be inherited by implementing undoable actions.
  */
-class UndoableAction : public ISerializable<UndoableAction>
+class UndoableAction
+    : public zrythm::utils::serialization::ISerializable<UndoableAction>
 {
 public:
   /**
@@ -129,7 +131,8 @@ public:
    *
    * @param plugins
    */
-  virtual void get_plugins (std::vector<plugins::Plugin *> &plugins) {};
+  virtual void
+  get_plugins (std::vector<gui::dsp::plugins::Plugin *> &plugins) {};
 
   /**
    * Sets the number of actions for this action.

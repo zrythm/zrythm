@@ -7,21 +7,22 @@
 #include <memory>
 #include <vector>
 
-#include "common/dsp/audio_function.h"
-#include "common/dsp/automation_function.h"
-#include "common/dsp/lengthable_object.h"
-#include "common/dsp/midi_function.h"
-#include "common/dsp/midi_region.h"
-#include "common/dsp/port_identifier.h"
-#include "common/dsp/position.h"
-#include "common/dsp/quantize_options.h"
-#include "common/dsp/region.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/backend/backend/audio_selections.h"
 #include "gui/backend/backend/automation_selections.h"
 #include "gui/backend/backend/chord_selections.h"
 #include "gui/backend/backend/midi_selections.h"
 #include "gui/backend/backend/timeline_selections.h"
+#include "gui/dsp/audio_function.h"
+#include "gui/dsp/automation_function.h"
+#include "gui/dsp/lengthable_object.h"
+#include "gui/dsp/midi_function.h"
+#include "gui/dsp/midi_region.h"
+#include "gui/dsp/port_identifier.h"
+#include "gui/dsp/quantize_options.h"
+#include "gui/dsp/region.h"
+
+#include "dsp/position.h"
 
 namespace zrythm::gui::actions
 {
@@ -43,7 +44,7 @@ class ArrangerSelectionsAction
     : public QObject,
       public UndoableAction,
       public ICloneable<ArrangerSelectionsAction>,
-      public ISerializable<ArrangerSelectionsAction>
+      public zrythm::utils::serialization::ISerializable<ArrangerSelectionsAction>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -121,6 +122,9 @@ public:
     EditorFunction,
   };
 
+  using Position = zrythm::dsp::Position;
+
+public:
   ArrangerSelectionsAction ();
   ~ArrangerSelectionsAction () override = default;
 
@@ -293,7 +297,7 @@ public:
   bool first_run_ = false;
 
   /** QuantizeOptions clone, if quantizing. */
-  std::unique_ptr<QuantizeOptions> opts_;
+  std::unique_ptr<dsp::QuantizeOptions> opts_{};
 
   /** Used for automation autofill action. */
   std::optional<RegionPtrVariant> region_before_;
@@ -633,10 +637,10 @@ public:
    * @param opts Quantize options.
    */
   template <FinalArrangerSelectionsSubclass T>
-  QuantizeAction (const T &sel, const QuantizeOptions &opts)
+  QuantizeAction (const T &sel, const dsp::QuantizeOptions &opts)
       : ArrangerSelectionsAction (sel, Type::Quantize)
   {
-    opts_ = std::make_unique<QuantizeOptions> (opts);
+    opts_ = std::make_unique<dsp::QuantizeOptions> (opts);
   }
 };
 
@@ -710,20 +714,20 @@ extern template ArrangerSelectionsAction::ResizeAction::ResizeAction (
   double                  ticks);
 
 extern template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
-  const TimelineSelections &sel,
-  const QuantizeOptions    &opts);
+  const TimelineSelections   &sel,
+  const dsp::QuantizeOptions &opts);
 extern template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
-  const MidiSelections  &sel,
-  const QuantizeOptions &opts);
+  const MidiSelections       &sel,
+  const dsp::QuantizeOptions &opts);
 extern template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
   const AutomationSelections &sel,
-  const QuantizeOptions      &opts);
+  const dsp::QuantizeOptions &opts);
 extern template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
-  const ChordSelections &sel,
-  const QuantizeOptions &opts);
+  const ChordSelections      &sel,
+  const dsp::QuantizeOptions &opts);
 extern template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
-  const AudioSelections &sel,
-  const QuantizeOptions &opts);
+  const AudioSelections      &sel,
+  const dsp::QuantizeOptions &opts);
 
 extern template std::unique_ptr<EditArrangerSelectionsAction>
 EditArrangerSelectionsAction::create (

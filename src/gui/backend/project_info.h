@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/utils/types.h"
+#include "utils/types.h"
 
 #include <QObject>
 #include <QtQmlIntegration>

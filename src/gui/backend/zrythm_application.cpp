@@ -1,9 +1,10 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/utils/directory_manager.h"
-#include "common/utils/pcg_rand.h"
+#include "utils/directory_manager.h"
+#include "utils/pcg_rand.h"
 #include "gui/backend/backend/settings_manager.h"
+#include "gui/backend/backend/zrythm.h"
 #include "gui/backend/realtime_updater.h"
 
 #include <QFontDatabase>
@@ -26,7 +27,7 @@ JUCE_CREATE_APPLICATION_DEFINE (ZrythmJuceApplicationWrapper)
 ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
     : QApplication (argc, argv), qt_thread_id_ (current_thread_id.get ())
 {
-  Backtrace::init_signal_handlers ();
+  utils::Backtrace::init_signal_handlers ();
 
   /* app info */
   setApplicationName (u"Zrythm"_s);
@@ -35,6 +36,21 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   setOrganizationDomain (u"zrythm.org"_s);
   setApplicationDisplayName (u"Zrythm"_s);
   // setWindowIcon (QIcon (":/org.zrythm.Zrythm/resources/icons/zrythm.svg"));
+
+  settings_manager_ = new SettingsManager (this);
+  dir_manager_ = std::make_unique<DirectoryManager> ([&] () {
+    return
+      fs::path(settings_manager_->get_zrythm_user_path ()
+      .toStdString ());
+  },
+  [&] () {
+      return fs::path(SettingsManager::get_default_zrythm_user_path ()
+        .toStdString ());
+    },
+    [&]() {
+      return fs::path(applicationDirPath().toStdString());
+    });
+  utils::LoggerProvider::set_logger(std::make_shared<utils::Logger>(utils::Logger::LoggerType::GUI));
 
   /* setup command line parser */
   setup_command_line_options ();
@@ -45,7 +61,6 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   juce::MessageManager::getInstance ()->setCurrentThreadAsMessageThread ();
 
   alert_manager_ = new AlertManager (this);
-  settings_manager_ = new SettingsManager (this);
   theme_manager_ = new ThemeManager (this);
   project_manager_ = new ProjectManager (this);
   translation_manager_ = new TranslationManager (this);
@@ -173,9 +188,9 @@ ZrythmApplication::setup_ui ()
   // ();
 
   /* prepend freedesktop system icons to search path, just in case */
-  auto * dir_mgr = DirectoryManager::getInstance ();
+  auto & dir_mgr = get_directory_manager();
   auto   parent_datadir =
-    dir_mgr->get_dir (DirectoryManager::DirectoryType::SYSTEM_PARENT_DATADIR);
+    dir_mgr.get_dir (DirectoryManager::DirectoryType::SYSTEM_PARENT_DATADIR);
   auto freedesktop_icon_theme_dir = parent_datadir / "icons";
 
   auto prepend_icon_theme_search_path = [] (const fs::path &path) {
@@ -187,7 +202,7 @@ ZrythmApplication::setup_ui ()
 
   /* prepend zrythm system icons to search path */
   {
-    const auto system_icon_theme_dir = dir_mgr->get_dir (
+    const auto system_icon_theme_dir = dir_mgr.get_dir (
       DirectoryManager::DirectoryType::SYSTEM_THEMES_ICONS_DIR);
     prepend_icon_theme_search_path (system_icon_theme_dir);
   }
@@ -195,7 +210,7 @@ ZrythmApplication::setup_ui ()
   /* prepend user custom icons to search path */
   {
     auto user_icon_theme_dir =
-      dir_mgr->get_dir (DirectoryManager::DirectoryType::USER_THEMES_ICONS);
+      dir_mgr.get_dir (DirectoryManager::DirectoryType::USER_THEMES_ICONS);
     prepend_icon_theme_search_path (user_icon_theme_dir);
   }
 
@@ -300,7 +315,9 @@ ZrythmApplication::launch_engine_process ()
   engine_process_->start (QString::fromStdString (path.string ()));
   if (engine_process_->waitForStarted ())
     {
-      z_info ("Started engine process");
+      z_info (
+        "Started engine process with PID: {}", engine_process_->processId ());
+      z_info ("To debug, run: gdb -p {}", engine_process_->processId ());
     }
   else
     {
@@ -337,7 +354,6 @@ ZrythmApplication::onAboutToQuit ()
       gZrythm->deleteInstance ();
     }
 
-  DirectoryManager::deleteInstance ();
   PCGRand::deleteInstance ();
 }
 
@@ -360,9 +376,6 @@ ZrythmApplication::~ZrythmApplication ()
           engine_process_->kill ();
         }
     }
-
-  z_info ("ZrythmApplication destroyed - deleting logger...");
-  Logger::deleteInstance ();
 
   juce::MessageManager::deleteInstance ();
 }

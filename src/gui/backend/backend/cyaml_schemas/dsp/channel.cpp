@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/channel.h"
-#include "common/utils/objects.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/channel.h"
+
+#include "utils/objects.h"
 
 Channel_v2 *
 channel_upgrade_from_v1 (Channel_v1 * old)

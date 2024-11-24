@@ -4,8 +4,9 @@
 #ifndef __GUI_BACKEND_AUTOMATION_EDITOR_H__
 #define __GUI_BACKEND_AUTOMATION_EDITOR_H__
 
-#include "common/utils/icloneable.h"
 #include "gui/backend/backend/editor_settings.h"
+
+#include "utils/icloneable.h"
 
 /**
  * @addtogroup gui_backend
@@ -21,7 +22,7 @@
 class AutomationEditor final
     : public EditorSettings,
       public ICloneable<AutomationEditor>,
-      public ISerializable<AutomationEditor>
+      public zrythm::utils::serialization::ISerializable<AutomationEditor>
 {
 public:
   DECLARE_DEFINE_FIELDS_METHOD ();

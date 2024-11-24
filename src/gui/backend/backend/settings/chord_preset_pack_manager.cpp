@@ -1,21 +1,25 @@
 // SPDX-FileCopyrightText: © 2022-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/utils/directory_manager.h"
-#include "common/utils/gtest_wrapper.h"
-#include "common/utils/io.h"
-#include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/chord_preset_pack_manager.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/backend/zrythm_application.h"
+
+#include "utils/directory_manager.h"
+#include "utils/gtest_wrapper.h"
+#include "utils/io.h"
+#include "utils/rt_thread_id.h"
 
 using namespace zrythm;
 
 std::string
 ChordPresetPackManager::get_user_packs_path ()
 {
-  auto *      dir_mgr = DirectoryManager::getInstance ();
-  auto zrythm_dir = dir_mgr->get_dir (DirectoryManager::DirectoryType::USER_TOP);
+  auto zrythm_dir =
+    dynamic_cast<gui::ZrythmApplication *> (qApp)
+      ->get_directory_manager ()
+      .get_dir (IDirectoryManager::DirectoryType::USER_TOP);
   z_return_val_if_fail (!zrythm_dir.empty (), "");
 
   return zrythm_dir / UserPacksDirName;

@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: © 2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/position.h"
-#include "common/utils/rt_thread_id.h"
 #include "gui/backend/backend/audio_selections.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+
+#include "dsp/position.h"
+#include "utils/rt_thread_id.h"
 
 AudioSelections::AudioSelections (QObject * parent)
     : QObject (parent), ArrangerSelections (Type::Audio)

@@ -3,10 +3,11 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/dsp/fader.h"
-#include "common/dsp/router.h"
-#include "common/plugins/carla_discovery.h"
-#include "common/utils/math.h"
+#include "gui/dsp/carla_discovery.h"
+#include "gui/dsp/fader.h"
+#include "gui/dsp/router.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/zrythm_helper.h"
+
+#include "utils/math.h"

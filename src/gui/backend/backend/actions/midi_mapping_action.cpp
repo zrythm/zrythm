@@ -1,13 +1,14 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/channel.h"
-#include "common/dsp/midi_mapping.h"
-#include "common/dsp/port_identifier.h"
-#include "common/dsp/router.h"
 #include "gui/backend/backend/actions/midi_mapping_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+
+#include "gui/dsp/channel.h"
+#include "gui/dsp/midi_mapping.h"
+#include "gui/dsp/port_identifier.h"
+#include "gui/dsp/router.h"
 
 using namespace zrythm::gui::actions;
 

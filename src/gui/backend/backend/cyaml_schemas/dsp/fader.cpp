@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/fader.h"
-#include "common/utils/objects.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/fader.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/port.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/port_identifier.h"
+
+#include "utils/objects.h"
 
 Fader_v2 *
 fader_upgrade_from_v1 (Fader_v1 * old)

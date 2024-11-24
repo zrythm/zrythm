@@ -3,10 +3,10 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/dsp/fader.h"
-#include "common/dsp/midi_event.h"
-#include "common/dsp/router.h"
-#include "common/utils/math.h"
+# include "gui/dsp/fader.h"
+# include "gui/dsp/midi_event.h"
+# include "gui/dsp/router.h"
+#include "utils/math.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
@@ -103,7 +103,7 @@ TEST_F (ZrythmFixture, LoadPluginsNeedingBridging)
   auto setting = test_plugin_manager_get_plugin_setting (
     CALF_MONOSYNTH_BUNDLE, CALF_MONOSYNTH_URI, false);
   ASSERT_TRUE (setting.open_with_carla_);
-  ASSERT_EQ (setting.bridge_mode_, zrythm::plugins::CarlaBridgeMode::Full);
+  ASSERT_EQ (setting.bridge_mode_, zrythm::gui::dsp::plugins::CarlaBridgeMode::Full);
 
   test_project_save_and_reload ();
 #  endif

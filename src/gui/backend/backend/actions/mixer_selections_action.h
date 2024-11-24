@@ -4,12 +4,12 @@
 #ifndef __UNDO_MIXER_SELECTIONS_ACTION_H__
 #define __UNDO_MIXER_SELECTIONS_ACTION_H__
 
-#include "common/dsp/automation_track.h"
-#include "common/dsp/port_connections_manager.h"
-#include "common/dsp/track.h"
-#include "common/plugins/plugin.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/backend/backend/mixer_selections.h"
+#include "gui/dsp/automation_track.h"
+#include "gui/dsp/plugin.h"
+#include "gui/dsp/port_connections_manager.h"
+#include "gui/dsp/track.h"
 
 namespace zrythm::gui::actions
 {
@@ -23,7 +23,7 @@ class MixerSelectionsAction
     : public QObject,
       public UndoableAction,
       public ICloneable<MixerSelectionsAction>,
-      public ISerializable<MixerSelectionsAction>
+      public zrythm::utils::serialization::ISerializable<MixerSelectionsAction>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -57,21 +57,22 @@ public:
    * @param num_plugins The number of plugins to create, if creating plugins.
    */
   MixerSelectionsAction (
-    const FullMixerSelections *      ms,
-    const PortConnectionsManager *   connections_mgr,
-    Type                             type,
-    zrythm::plugins::PluginSlotType  slot_type,
-    unsigned int                     to_track_name_hash,
-    int                              to_slot,
-    const PluginSetting *            setting,
-    int                              num_plugins,
-    int                              new_val,
-    zrythm::plugins::CarlaBridgeMode new_bridge_mode,
-    QObject *                        parent = nullptr);
+    const FullMixerSelections *                ms,
+    const PortConnectionsManager *             connections_mgr,
+    Type                                       type,
+    zrythm::gui::dsp::plugins::PluginSlotType  slot_type,
+    unsigned int                               to_track_name_hash,
+    int                                        to_slot,
+    const PluginSetting *                      setting,
+    int                                        num_plugins,
+    int                                        new_val,
+    zrythm::gui::dsp::plugins::CarlaBridgeMode new_bridge_mode,
+    QObject *                                  parent = nullptr);
 
   QString to_string () const override;
 
-  void get_plugins (std::vector<zrythm::plugins::Plugin *> &plugins) override
+  void
+  get_plugins (std::vector<zrythm::gui::dsp::plugins::Plugin *> &plugins) override
   {
     if (ms_before_)
       ms_before_->get_plugins (plugins);
@@ -97,11 +98,11 @@ private:
   void clone_ats (const FullMixerSelections &ms, bool deleted, int start_slot);
 
   void copy_automation_from_track1_to_track2 (
-    const AutomatableTrack         &from_track,
-    AutomatableTrack               &to_track,
-    zrythm::plugins::PluginSlotType slot_type,
-    int                             from_slot,
-    int                             to_slot);
+    const AutomatableTrack                   &from_track,
+    AutomatableTrack                         &to_track,
+    zrythm::gui::dsp::plugins::PluginSlotType slot_type,
+    int                                       from_slot,
+    int                                       to_slot);
 
   void copy_at_regions (AutomationTrack &dest, const AutomationTrack &src);
 
@@ -120,13 +121,13 @@ private:
    * Save an existing plugin about to be replaced into @p tmp_ms.
    */
   void save_existing_plugin (
-    FullMixerSelections *           tmp_ms,
-    Track *                         from_tr,
-    zrythm::plugins::PluginSlotType from_slot_type,
-    int                             from_slot,
-    Track *                         to_tr,
-    zrythm::plugins::PluginSlotType to_slot_type,
-    int                             to_slot);
+    FullMixerSelections *                     tmp_ms,
+    Track *                                   from_tr,
+    zrythm::gui::dsp::plugins::PluginSlotType from_slot_type,
+    int                                       from_slot,
+    Track *                                   to_tr,
+    zrythm::gui::dsp::plugins::PluginSlotType to_slot_type,
+    int                                       to_slot);
 
   void revert_deleted_plugin (Track &to_tr, int to_slot);
 
@@ -140,8 +141,8 @@ public:
   Type mixer_selections_action_type_ = Type ();
 
   /** Type of starting slot to move plugins to. */
-  zrythm::plugins::PluginSlotType slot_type_ =
-    zrythm::plugins::PluginSlotType ();
+  zrythm::gui::dsp::plugins::PluginSlotType slot_type_ =
+    zrythm::gui::dsp::plugins::PluginSlotType ();
 
   /**
    * Starting target slot.
@@ -165,8 +166,8 @@ public:
   int new_val_ = 0;
 
   /** Used when changing load behavior. */
-  zrythm::plugins::CarlaBridgeMode new_bridge_mode_ =
-    zrythm::plugins::CarlaBridgeMode::None;
+  zrythm::gui::dsp::plugins::CarlaBridgeMode new_bridge_mode_ =
+    zrythm::gui::dsp::plugins::CarlaBridgeMode::None;
 
   /**
    * PluginSetting to use when creating.
@@ -208,11 +209,11 @@ class MixerSelectionsCreateAction : public MixerSelectionsAction
 {
 public:
   MixerSelectionsCreateAction (
-    zrythm::plugins::PluginSlotType slot_type,
-    const Track                    &to_track,
-    int                             to_slot,
-    const PluginSetting            &setting,
-    int                             num_plugins = 1)
+    zrythm::gui::dsp::plugins::PluginSlotType slot_type,
+    const Track                              &to_track,
+    int                                       to_slot,
+    const PluginSetting                      &setting,
+    int                                       num_plugins = 1)
       : MixerSelectionsAction (
           nullptr,
           nullptr,
@@ -223,7 +224,7 @@ public:
           &setting,
           num_plugins,
           0,
-          zrythm::plugins::CarlaBridgeMode::None)
+          zrythm::gui::dsp::plugins::CarlaBridgeMode::None)
   {
   }
 };
@@ -232,12 +233,12 @@ class MixerSelectionsTargetedAction : public MixerSelectionsAction
 {
 public:
   MixerSelectionsTargetedAction (
-    const FullMixerSelections      &ms,
-    const PortConnectionsManager   &connections_mgr,
-    MixerSelectionsAction::Type     type,
-    zrythm::plugins::PluginSlotType slot_type,
-    const Track *                   to_track,
-    int                             to_slot)
+    const FullMixerSelections                &ms,
+    const PortConnectionsManager             &connections_mgr,
+    MixerSelectionsAction::Type               type,
+    zrythm::gui::dsp::plugins::PluginSlotType slot_type,
+    const Track *                             to_track,
+    int                                       to_slot)
       : MixerSelectionsAction (
           &ms,
           &connections_mgr,
@@ -248,7 +249,7 @@ public:
           nullptr,
           0,
           0,
-          zrythm::plugins::CarlaBridgeMode::None)
+          zrythm::gui::dsp::plugins::CarlaBridgeMode::None)
   {
   }
 };
@@ -257,11 +258,11 @@ class MixerSelectionsCopyAction : public MixerSelectionsTargetedAction
 {
 public:
   MixerSelectionsCopyAction (
-    const FullMixerSelections      &ms,
-    const PortConnectionsManager   &connections_mgr,
-    zrythm::plugins::PluginSlotType slot_type,
-    const Track *                   to_track,
-    int                             to_slot)
+    const FullMixerSelections                &ms,
+    const PortConnectionsManager             &connections_mgr,
+    zrythm::gui::dsp::plugins::PluginSlotType slot_type,
+    const Track *                             to_track,
+    int                                       to_slot)
       : MixerSelectionsTargetedAction (
           ms,
           connections_mgr,
@@ -277,11 +278,11 @@ class MixerSelectionsPasteAction : public MixerSelectionsTargetedAction
 {
 public:
   MixerSelectionsPasteAction (
-    const FullMixerSelections      &ms,
-    const PortConnectionsManager   &connections_mgr,
-    zrythm::plugins::PluginSlotType slot_type,
-    const Track *                   to_track,
-    int                             to_slot)
+    const FullMixerSelections                &ms,
+    const PortConnectionsManager             &connections_mgr,
+    zrythm::gui::dsp::plugins::PluginSlotType slot_type,
+    const Track *                             to_track,
+    int                                       to_slot)
       : MixerSelectionsTargetedAction (
           ms,
           connections_mgr,
@@ -297,11 +298,11 @@ class MixerSelectionsMoveAction : public MixerSelectionsTargetedAction
 {
 public:
   MixerSelectionsMoveAction (
-    const FullMixerSelections      &ms,
-    const PortConnectionsManager   &connections_mgr,
-    zrythm::plugins::PluginSlotType slot_type,
-    const Track *                   to_track,
-    int                             to_slot)
+    const FullMixerSelections                &ms,
+    const PortConnectionsManager             &connections_mgr,
+    zrythm::gui::dsp::plugins::PluginSlotType slot_type,
+    const Track *                             to_track,
+    int                                       to_slot)
       : MixerSelectionsTargetedAction (
           ms,
           connections_mgr,
@@ -323,13 +324,13 @@ public:
           &ms,
           &connections_mgr,
           MixerSelectionsAction::Type::Delete,
-          zrythm::plugins::PluginSlotType::Invalid,
+          zrythm::gui::dsp::plugins::PluginSlotType::Invalid,
           0,
           0,
           0,
           0,
           0,
-          zrythm::plugins::CarlaBridgeMode::None)
+          zrythm::gui::dsp::plugins::CarlaBridgeMode::None)
   {
   }
 };
@@ -342,13 +343,13 @@ public:
           &ms,
           nullptr,
           MixerSelectionsAction::Type::ChangeStatus,
-          zrythm::plugins::PluginSlotType::Invalid,
+          zrythm::gui::dsp::plugins::PluginSlotType::Invalid,
           0,
           0,
           0,
           0,
           new_val,
-          zrythm::plugins::CarlaBridgeMode::None)
+          zrythm::gui::dsp::plugins::CarlaBridgeMode::None)
   {
   }
 };
@@ -357,13 +358,13 @@ class MixerSelectionsChangeLoadBehaviorAction : public MixerSelectionsAction
 {
 public:
   MixerSelectionsChangeLoadBehaviorAction (
-    const FullMixerSelections       &ms,
-    zrythm::plugins::CarlaBridgeMode new_bridge_mode)
+    const FullMixerSelections                 &ms,
+    zrythm::gui::dsp::plugins::CarlaBridgeMode new_bridge_mode)
       : MixerSelectionsAction (
           &ms,
           nullptr,
           MixerSelectionsAction::Type::ChangeLoadBehavior,
-          zrythm::plugins::PluginSlotType::Invalid,
+          zrythm::gui::dsp::plugins::PluginSlotType::Invalid,
           0,
           0,
           0,

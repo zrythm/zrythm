@@ -8,10 +8,6 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/dsp/control_port.h"
-#include "common/dsp/graph.h"
-#include "common/dsp/router.h"
-#include "common/dsp/tempo_track.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/project.h"
@@ -19,6 +15,11 @@
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
+
+#include "gui/dsp/control_port.h"
+#include "gui/dsp/graph.h"
+#include "gui/dsp/router.h"
+#include "gui/dsp/tempo_track.h"
 
 #ifdef HAVE_NO_DELAY_LINE
 static ControlPort *
@@ -54,7 +55,7 @@ _test (
 
   /* 2. add no delay line */
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-    zrythm::plugins::PluginSlotType::Insert, *track, 0, setting, 1));
+    zrythm::gui::dsp::plugins::PluginSlotType::Insert, *track, 0, setting, 1));
 
   /* 3. set delay to high value */
   auto pl = track->channel_->inserts_[0].get ();

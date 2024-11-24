@@ -10,11 +10,12 @@
 #ifndef __SCHEMAS_AUDIO_CHANNEL_H__
 #define __SCHEMAS_AUDIO_CHANNEL_H__
 
-#include "common/utils/yaml.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/channel_send.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/ext_port.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/fader.h"
 #include "gui/backend/backend/cyaml_schemas/plugins/plugin.h"
+
+#include "utils/yaml.h"
 
 typedef struct Channel_v1
 {

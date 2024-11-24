@@ -1,17 +1,17 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/audio_region.h"
-#include "common/dsp/automation_region.h"
-#include "common/dsp/chord_object.h"
-#include "common/dsp/chord_region.h"
-#include "common/dsp/chord_track.h"
-#include "common/dsp/marker.h"
-#include "common/dsp/marker_track.h"
-#include "common/dsp/scale_object.h"
-#include "common/dsp/tracklist.h"
-#include "common/dsp/transport.h"
-#include "common/utils/rt_thread_id.h"
+# include "gui/dsp/audio_region.h"
+# include "gui/dsp/automation_region.h"
+# include "gui/dsp/chord_object.h"
+# include "gui/dsp/chord_region.h"
+# include "gui/dsp/chord_track.h"
+# include "gui/dsp/marker.h"
+# include "gui/dsp/marker_track.h"
+# include "gui/dsp/scale_object.h"
+# include "gui/dsp/tracklist.h"
+# include "gui/dsp/transport.h"
+#include "utils/rt_thread_id.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/arranger_selections.h"
 #include "gui/backend/backend/automation_selections.h"
@@ -198,7 +198,7 @@ ArrangerSelections::add_region_ticks (Position &pos) const
         {
           auto r = AudioRegion::find (sel->region_id_);
           z_return_if_fail (r);
-          pos.add_ticks (r->pos_->ticks_);
+          pos.add_ticks (r->pos_->ticks_, AUDIO_ENGINE->frames_per_tick_);
         }
       else if constexpr (std::is_same_v<TimelineSelections, SelT>)
         {
@@ -214,7 +214,8 @@ ArrangerSelections::add_region_ticks (Position &pos) const
                 {
                   auto r = o->get_region ();
                   z_return_if_fail (r);
-                  pos.add_ticks (r->pos_->ticks_);
+                  pos.add_ticks (r->pos_->ticks_,
+                  AUDIO_ENGINE->frames_per_tick_);
                 }
             },
             objects_.at (0));
@@ -225,11 +226,13 @@ ArrangerSelections::add_region_ticks (Position &pos) const
 
 template <typename T>
   requires std::derived_from<T, ArrangerObject>
-std::pair<T *, Position>
+std::pair<T *, dsp::Position>
 ArrangerSelections::get_first_object_and_pos (bool global) const
 {
   Position pos;
-  pos.set_to_bar (*TRANSPORT, POSITION_MAX_BAR);
+  pos.set_to_bar (dsp::Position::POSITION_MAX_BAR,
+  TRANSPORT->ticks_per_bar_,
+  AUDIO_ENGINE->frames_per_tick_);
   T * ret_obj = nullptr;
 
   auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
@@ -275,11 +278,12 @@ ArrangerSelections::get_first_object_and_pos (bool global) const
 
 template <typename RetObjT>
   requires std::derived_from<RetObjT, ArrangerObject>
-std::pair<RetObjT *, Position>
+std::pair<RetObjT *, dsp::Position>
 ArrangerSelections::get_last_object_and_pos (bool global, bool ends_last) const
 {
   Position pos;
-  pos.set_to_bar (*TRANSPORT, -POSITION_MAX_BAR);
+  pos.set_to_bar (-dsp::Position::POSITION_MAX_BAR,
+  TRANSPORT->ticks_per_bar_, AUDIO_ENGINE->frames_per_tick_);
   RetObjT * ret_obj = nullptr;
 
   auto variant = convert_to_variant<ArrangerSelectionsPtrVariant> (this);
@@ -874,10 +878,10 @@ ArrangerSelections::can_split_at_pos (const Position pos) const
   return can_split;
 }
 
-template std::pair<MidiNote *, Position>
+template std::pair<MidiNote *, dsp::Position>
 ArrangerSelections::get_first_object_and_pos (bool global) const;
 
-template std::pair<MidiNote *, Position>
+template std::pair<MidiNote *, dsp::Position>
 ArrangerSelections::get_last_object_and_pos (bool global, bool ends_last) const;
 
 template void

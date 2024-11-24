@@ -13,8 +13,9 @@
 #ifndef __SCHEMAS_PLUGINS_PLUGIN_COLLECTIONS_H__
 #define __SCHEMAS_PLUGINS_PLUGIN_COLLECTIONS_H__
 
-#include "common/utils/yaml.h"
 #include "gui/backend/backend/cyaml_schemas/plugins/collection.h"
+
+#include "utils/yaml.h"
 
 typedef struct PluginCollections_v1
 {

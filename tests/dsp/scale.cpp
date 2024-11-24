@@ -3,9 +3,9 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/dsp/scale.h"
-
 #include "tests/helpers/zrythm_helper.h"
+
+#include "gui/dsp/scale.h"
 
 TEST (Scale, ScaleContainsNote)
 {

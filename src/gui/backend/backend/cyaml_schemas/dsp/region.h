@@ -9,13 +9,14 @@
 #ifndef __SCHEMAS_AUDIO_REGION_H__
 #define __SCHEMAS_AUDIO_REGION_H__
 
-#include "common/utils/yaml.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/automation_point.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/chord_object.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/midi_note.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/position.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/region_identifier.h"
 #include "gui/backend/backend/cyaml_schemas/gui/backend/arranger_object.h"
+
+#include "utils/yaml.h"
 
 typedef enum RegionMusicalMode_v1
 {

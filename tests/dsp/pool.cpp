@@ -3,8 +3,8 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/dsp/track.h"
-#include "common/utils/flags.h"
+# include "gui/dsp/track.h"
+#include "utils/flags.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"

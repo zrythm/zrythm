@@ -8,9 +8,10 @@
 
 #include <utility>
 
-#include "common/utils/format.h"
-#include "common/utils/icloneable.h"
 #include "gui/backend/backend/settings/chord_preset.h"
+
+#include "utils/format.h"
+#include "utils/icloneable.h"
 
 /**
  * @addtogroup settings
@@ -23,7 +24,7 @@
  */
 class ChordPresetPack final
     : public QObject,
-      public ISerializable<ChordPresetPack>,
+      public zrythm::utils::serialization::ISerializable<ChordPresetPack>,
       public ICloneable<ChordPresetPack>
 {
   Q_OBJECT

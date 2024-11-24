@@ -4,11 +4,12 @@
 #ifndef __UNDO_MIDI_MAPPING_ACTION_H__
 #define __UNDO_MIDI_MAPPING_ACTION_H__
 
-#include "common/dsp/ext_port.h"
-#include "common/dsp/port_identifier.h"
-#include "common/utils/icloneable.h"
-#include "common/utils/types.h"
 #include "gui/backend/backend/actions/undoable_action.h"
+#include "gui/dsp/ext_port.h"
+#include "gui/dsp/port_identifier.h"
+
+#include "utils/icloneable.h"
+#include "utils/types.h"
 
 namespace zrythm::gui::actions
 {
@@ -20,7 +21,7 @@ class MidiMappingAction final
     : public QObject,
       public UndoableAction,
       public ICloneable<MidiMappingAction>,
-      public ISerializable<MidiMappingAction>
+      public zrythm::utils::serialization::ISerializable<MidiMappingAction>
 {
   Q_OBJECT
   QML_ELEMENT

@@ -4,16 +4,19 @@
 #ifndef __GUI_BACKEND_TOOL_H__
 #define __GUI_BACKEND_TOOL_H__
 
-#include "common/io/serialization/iserializable.h"
-#include "common/utils/icloneable.h"
-
 #include <QObject>
 #include <QtQmlIntegration>
+
+#include "utils/icloneable.h"
+#include "utils/iserializable.h"
 
 namespace zrythm::gui::backend
 {
 
-class Tool : public QObject, public ICloneable<Tool>, public ISerializable<Tool>
+class Tool
+    : public QObject,
+      public ICloneable<Tool>,
+      public zrythm::utils::serialization::ISerializable<Tool>
 {
   Q_OBJECT
   QML_ELEMENT

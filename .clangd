@@ -6,4 +6,4 @@ Diagnostics:
     Add: [performance-*, modernize-*]
     Remove: [modernize-use-trailing-return-type, performance-unnecessary-value-param, modernize-use-nodiscard]
 CompileFlags:
-  Add: [-ferror-limit=150]
+  Add: [-ferror-limit=80]

@@ -10,7 +10,6 @@
 #ifndef __SCHEMAS_AUDIO_TRACK_H__
 #define __SCHEMAS_AUDIO_TRACK_H__
 
-#include "common/utils/yaml.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/automation_tracklist.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/channel.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/marker.h"
@@ -21,6 +20,8 @@
 #include "gui/backend/backend/cyaml_schemas/dsp/track_lane.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/track_processor.h"
 #include "gui/backend/backend/cyaml_schemas/plugins/plugin.h"
+
+#include "utils/yaml.h"
 
 typedef enum TrackType_v1
 {

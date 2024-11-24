@@ -2,26 +2,29 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
+#include "gui/backend/zrythm_application.h"
 
-#include "common/utils/directory_manager.h"
-#include "common/utils/gtest_wrapper.h"
+#include "utils/directory_manager.h"
+#include "utils/gtest_wrapper.h"
 
 #ifndef _WIN32
 #  include <sys/mman.h>
 #endif
 
-#include "common/dsp/recording_manager.h"
-#include "common/plugins/plugin_manager.h"
-#include "common/utils/dsp.h"
-#include "common/utils/env.h"
-#include "common/utils/exceptions.h"
-#include "common/utils/io.h"
-#include "common/utils/networking.h"
-#include "common/utils/string.h"
+# include "gui/dsp/recording_manager.h"
+#include "gui/backend/plugin_manager.h"
+#include "utils/dsp.h"
+#include "utils/env.h"
+#include "utils/exceptions.h"
+#include "utils/io.h"
+#include "utils/networking.h"
+#include "utils/string.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/chord_preset_pack_manager.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
+
+#include "engine/audio_engine_application.h"
 
 using namespace zrythm;
 
@@ -30,8 +33,9 @@ JUCE_IMPLEMENT_SINGLETON (Zrythm);
 using namespace Qt::StringLiterals;
 
 Zrythm::Zrythm ()
-    : plugin_manager_ (std::make_unique<zrythm::plugins::PluginManager> ())
+    : plugin_manager_ (std::make_unique<zrythm::gui::dsp::plugins::PluginManager> ())
 {
+  z_return_if_fail (!engine::AudioEngineApplication::is_audio_engine_process ());
   elapsed_timer_.start ();
 }
 
@@ -220,7 +224,7 @@ Zrythm::is_release (bool official)
     }
 #endif
 
-  return !string_contains_substr (PACKAGE_VERSION, "g");
+  return !utils::string::contains_substr (PACKAGE_VERSION, "g");
 }
 
 /**
@@ -251,7 +255,7 @@ Zrythm::init_user_dirs_and_files ()
 {
   z_info ("initing dirs and files");
 
-  auto * dir_mgr = DirectoryManager::getInstance ();
+  auto & dir_mgr = dynamic_cast<gui::ZrythmApplication*>(qApp)->get_directory_manager ();
   for (
     auto dir_type :
     { DirectoryManager::DirectoryType::USER_TOP,
@@ -265,7 +269,7 @@ Zrythm::init_user_dirs_and_files ()
       DirectoryManager::DirectoryType::USER_GDB,
       DirectoryManager::DirectoryType::USER_BACKTRACE })
     {
-      std::string dir = dir_mgr->get_dir (dir_type);
+      std::string dir = dir_mgr.get_dir (dir_type);
       z_return_if_fail (!dir.empty ());
       try
         {

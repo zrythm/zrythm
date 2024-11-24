@@ -22,7 +22,7 @@ class ChordSelections final
     : public QObject,
       public ArrangerSelections,
       public ICloneable<ChordSelections>,
-      public ISerializable<ChordSelections>
+      public zrythm::utils::serialization::ISerializable<ChordSelections>
 {
   Q_OBJECT
   QML_ELEMENT

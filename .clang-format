@@ -91,13 +91,11 @@ IncludeCategories:
   - Regex:           '^<(assert|errno|inttypes|signal|cstring|cstd.+|sys/.+|cmath|cfloat)\.h>$'
     Priority:        -2
     CaseSensitive:   true
-  - Regex:           '^"((common|gui)/.*|zrythm\.h|zrythm_app\.h|project.*\.h)'
+  - Regex:           '^"((utils|dsp|gui)/.*|zrythm\.h|zrythm_app\.h|project.*\.h)'
     Priority:        3
     CaseSensitive:   true
   - Regex:           '^<(Q|qqml).*>$'
     Priority:        10
-  - Regex:           '^<(((glib|gtk|gio)/.*)|adwaita|glib|libpanel)\.h>$'
-    Priority:        20
   - Regex:           '^"(tests|helpers)/.*"$'
     Priority:        30
   - Regex:           '.*'

@@ -12,8 +12,8 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "common/utils/gtest_wrapper.h"
-#include "common/utils/terminal.h"
+#include "utils/gtest_wrapper.h"
+#include "utils/terminal.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/gtk_widgets/gtk_wrapper.h"
 

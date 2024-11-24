@@ -4,8 +4,9 @@
 #ifndef __SCHEMAS_AUDIO_PORT_CONNECTION_H__
 #define __SCHEMAS_AUDIO_PORT_CONNECTION_H__
 
-#include "common/utils/yaml.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/port_identifier.h"
+
+#include "utils/yaml.h"
 
 typedef struct PortConnection_v1
 {

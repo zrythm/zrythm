@@ -5,12 +5,12 @@
 
 #include <random>
 
-#include "common/dsp/engine_dummy.h"
-#include "common/dsp/midi_event.h"
-#include "common/dsp/midi_track.h"
-#include "common/dsp/track.h"
-#include "common/utils/flags.h"
-#include "common/utils/io.h"
+# include "gui/dsp/engine_dummy.h"
+# include "gui/dsp/midi_event.h"
+# include "gui/dsp/midi_track.h"
+# include "gui/dsp/track.h"
+#include "utils/flags.h"
+#include "utils/io.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 

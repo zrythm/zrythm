@@ -4,13 +4,14 @@
 #ifndef __AUDIO_METER_H__
 #define __AUDIO_METER_H__
 
-#include "common/dsp/kmeter_dsp.h"
-#include "common/dsp/peak_dsp.h"
-#include "common/dsp/true_peak_dsp.h"
-#include "common/utils/traits.h"
-#include "common/utils/types.h"
+#include "gui/dsp/kmeter_dsp.h"
+#include "gui/dsp/peak_dsp.h"
+#include "gui/dsp/true_peak_dsp.h"
 
 #include <QtQmlIntegration>
+
+#include "utils/traits.h"
+#include "utils/types.h"
 
 class TruePeakDsp;
 class KMeterDsp;

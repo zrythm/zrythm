@@ -10,8 +10,9 @@
 #ifndef __SCHEMAS_AUDIO_AUTOMATION_TRACKLIST_H__
 #define __SCHEMAS_AUDIO_AUTOMATION_TRACKLIST_H__
 
-#include "common/utils/yaml.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/automation_track.h"
+
+#include "utils/yaml.h"
 
 typedef struct AutomationTracklist_v1
 {

@@ -3,8 +3,8 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/utils/dsp.h"
-#include "common/utils/objects.h"
+#include "utils/dsp.h"
+#include "utils/objects.h"
 #include "gui/backend/backend/zrythm.h"
 
 #include "tests/helpers/plugin_manager.h"
@@ -53,30 +53,30 @@ BM_DspFunctions (benchmark::State &state)
       switch (algo_to_run)
         {
         case 0:
-          dsp_fill (buf.data (), val, buf_size);
+          utils::float_ranges::fill (buf.data (), val, buf_size);
           break;
         case 1:
-          dsp_clip (buf.data (), -1.0f, 1.1f, buf_size);
+          utils::float_ranges::clip (buf.data (), -1.0f, 1.1f, buf_size);
           break;
         case 2:
-          dsp_add2 (buf.data (), src.data (), buf_size);
+          utils::float_ranges::add2 (buf.data (), src.data (), buf_size);
           break;
         case 3:
           {
-            [[maybe_unused]] float abs_max = dsp_abs_max (buf.data (), buf_size);
+            [[maybe_unused]] float abs_max = utils::float_ranges::abs_max (buf.data (), buf_size);
           }
           break;
         case 4:
-          dsp_min (buf.data (), buf_size);
+          utils::float_ranges::min (buf.data (), buf_size);
           break;
         case 5:
           dsp_max (buf.data (), buf_size);
           break;
         case 6:
-          dsp_mul_k2 (buf.data (), 0.99f, buf_size);
+          utils::float_ranges::mul_k2 (buf.data (), 0.99f, buf_size);
           break;
         case 7:
-          dsp_copy (buf.data (), src.data (), buf_size);
+          utils::float_ranges::copy (buf.data (), src.data (), buf_size);
           break;
         case 8:
           dsp_mix_add2 (

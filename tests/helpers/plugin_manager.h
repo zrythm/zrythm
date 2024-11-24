@@ -12,14 +12,15 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/dsp/tracklist.h"
-#include "common/plugins/plugin_manager.h"
-#include "common/utils/gtest_wrapper.h"
-#include "common/utils/io.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/backend/plugin_manager.h"
+#include "gui/dsp/tracklist.h"
 
 #include "tests/helpers/zrythm_helper.h"
+
+#include "utils/gtest_wrapper.h"
+#include "utils/io.h"
 
 /**
  * @addtogroup tests
@@ -95,20 +96,23 @@ test_plugin_manager_get_plugin_setting (
   }
 
   bool scan_finished = false;
-  zrythm::plugins::PluginManager::get_active_instance ()->clear_plugins ();
-  zrythm::plugins::PluginManager::get_active_instance ()->begin_scan (
+  zrythm::gui::dsp::plugins::PluginManager::get_active_instance ()
+    ->clear_plugins ();
+  zrythm::gui::dsp::plugins::PluginManager::get_active_instance ()->begin_scan (
     1.0, nullptr, [&scan_finished] () { scan_finished = true; });
   while (!scan_finished)
     {
       g_main_context_iteration (nullptr, true);
     }
   EXPECT_NONEMPTY (
-    zrythm::plugins::PluginManager::get_active_instance ()->plugin_descriptors_);
+    zrythm::gui::dsp::plugins::PluginManager::get_active_instance ()
+      ->plugin_descriptors_);
 
   std::optional<PluginDescriptor> descr;
   for (
     const auto &cur_descr :
-    zrythm::plugins::PluginManager::get_active_instance ()->plugin_descriptors_)
+    zrythm::gui::dsp::plugins::PluginManager::get_active_instance ()
+      ->plugin_descriptors_)
     {
       if (pl_uri)
         {

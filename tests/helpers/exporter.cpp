@@ -5,11 +5,12 @@
 
 #define DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
 
-#include "common/utils/gtest_wrapper.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
 #include "tests/helpers/exporter.h"
+
+#include "utils/gtest_wrapper.h"
 
 std::string
 test_exporter_export_audio (Exporter::TimeRange time_range, Exporter::Mode mode)

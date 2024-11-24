@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/utils/rt_thread_id.h"
+#include "utils/rt_thread_id.h"
 #include "gui/backend/backend/actions/range_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
@@ -26,7 +26,7 @@ RangeAction::
 
   /* create selections for overlapping objects */
   Position inf;
-  inf.set_to_bar (*TRANSPORT, POSITION_MAX_BAR);
+  inf.set_to_bar (Position::POSITION_MAX_BAR, TRANSPORT->ticks_per_bar_, AUDIO_ENGINE->frames_per_tick_);
   sel_before_ = std::make_unique<TimelineSelections> (start_pos, inf);
   sel_after_ = std::make_unique<TimelineSelections> ();
 
@@ -358,7 +358,7 @@ RangeAction::perform_impl ()
                     }
                   /* object starts and ends inside range and not marker
                    * start/end - delete */
-                  else if (ends_inside_range 
+                  else if (ends_inside_range
               && !(prj_obj->is_marker() && (dynamic_cast<Marker&>(*prj_obj).marker_type_ == Marker::Type::Start || dynamic_cast<Marker&>(*prj_obj).marker_type_ == Marker::Type::End)))
                     {
                       z_debug ("removing object:");

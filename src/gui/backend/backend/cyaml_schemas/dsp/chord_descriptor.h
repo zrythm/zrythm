@@ -12,8 +12,7 @@
 
 #include <cstdint>
 
-#include "common/dsp/position.h"
-#include "common/utils/yaml.h"
+#include "utils/yaml.h"
 
 typedef enum MusicalNote_v1
 {

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/utils/gtest_wrapper.h"
+#include "utils/gtest_wrapper.h"
 #include "gui/backend/backend/actions/undo_stack.h"
 #include "gui/backend/backend/actions/undoable_action_all.h"
 #include "gui/backend/backend/settings_manager.h"
@@ -190,7 +190,7 @@ UndoStack::contains_action (const T &ua) const
 }
 
 void
-UndoStack::get_plugins (std::vector<zrythm::plugins::Plugin *> &arr) const
+UndoStack::get_plugins (std::vector<zrythm::gui::dsp::plugins::Plugin *> &arr) const
 {
   for (const auto &action : actions_)
     {

@@ -6,14 +6,6 @@
 
 #include <string>
 
-#include "common/dsp/engine.h"
-#include "common/dsp/midi_mapping.h"
-#include "common/dsp/port.h"
-#include "common/dsp/port_connections_manager.h"
-#include "common/dsp/quantize_options.h"
-#include "common/dsp/region_link_group_manager.h"
-#include "common/plugins/plugin.h"
-#include "common/utils/progress_info.h"
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/audio_selections.h"
 #include "gui/backend/backend/automation_selections.h"
@@ -25,6 +17,15 @@
 #include "gui/backend/backend/timeline_selections.h"
 #include "gui/backend/backend/tracklist_selections.h"
 #include "gui/backend/tool.h"
+#include "gui/dsp/engine.h"
+#include "gui/dsp/midi_mapping.h"
+#include "gui/dsp/plugin.h"
+#include "gui/dsp/port.h"
+#include "gui/dsp/port_connections_manager.h"
+#include "gui/dsp/quantize_options.h"
+#include "gui/dsp/region_link_group_manager.h"
+
+#include "utils/progress_info.h"
 
 /**
  * @addtogroup project Project
@@ -98,7 +99,7 @@ enum class ProjectCompressionFlag
  **/
 class Project final
     : public QObject,
-      virtual public ISerializable<Project>,
+      virtual public zrythm::utils::serialization::ISerializable<Project>,
       public ICloneable<Project>
 {
   Q_OBJECT
@@ -126,6 +127,10 @@ class Project final
   Q_PROPERTY (gui::backend::Tool * tool READ getTool CONSTANT FINAL)
   Q_PROPERTY (
     gui::actions::UndoManager * undoManager READ getUndoManager CONSTANT FINAL)
+
+public:
+  using QuantizeOptions = zrythm::gui::dsp::QuantizeOptions;
+  using SnapGrid = zrythm::gui::SnapGrid;
 
 public:
   Project (QObject * parent = nullptr);

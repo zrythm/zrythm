@@ -10,9 +10,10 @@
 #ifndef __SCHEMAS_AUDIO_FADER_H__
 #define __SCHEMAS_AUDIO_FADER_H__
 
-#include "common/utils/types.h"
-#include "common/utils/yaml.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/port.h"
+
+#include "utils/types.h"
+#include "utils/yaml.h"
 
 typedef enum FaderType_v1
 {

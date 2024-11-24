@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/chord_descriptor.h"
-#include "common/utils/logger.h"
-#include "common/utils/rt_thread_id.h"
+# include "gui/dsp/chord_descriptor.h"
+#include "utils/logger.h"
+#include "utils/rt_thread_id.h"
 #include "gui/backend/backend/actions/chord_action.h"
 #include "gui/backend/backend/chord_editor.h"
 #include "gui/backend/backend/project.h"

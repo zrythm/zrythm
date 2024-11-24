@@ -5,9 +5,9 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "common/dsp/control_port.h"
-#include "common/dsp/region.h"
-#include "common/utils/flags.h"
+# include "gui/dsp/control_port.h"
+# include "gui/dsp/region.h"
+#include "utils/flags.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/actions/port_connection_action.h"
 #include "gui/backend/backend/actions/undo_manager.h"
@@ -37,11 +37,11 @@ test_modulator_connection (
       descr.category_ = ZPluginCategory::INSTRUMENT;
     }
   descr.category_str_ =
-    zrythm::plugins::PluginDescriptor::category_to_string (descr.category_);
+    zrythm::gui::dsp::plugins::PluginDescriptor::category_to_string (descr.category_);
 
   /* create a modulator */
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-    zrythm::plugins::PluginSlotType::Modulator, *P_MODULATOR_TRACK, 0, setting));
+    zrythm::gui::dsp::plugins::PluginSlotType::Modulator, *P_MODULATOR_TRACK, 0, setting));
 
   const auto         &macro = P_MODULATOR_TRACK->modulator_macro_processors_[0];
   const auto         &pl = P_MODULATOR_TRACK->modulators_[0];
@@ -98,7 +98,7 @@ _test_port_connection (
       descr.category_ = ZPluginCategory::INSTRUMENT;
     }
   descr.category_str_ =
-    zrythm::plugins::PluginDescriptor::category_to_string (descr.category_);
+    zrythm::gui::dsp::plugins::PluginDescriptor::category_to_string (descr.category_);
 
   /* create an extra track */
   auto target_track = Track::create_empty_with_action<AudioBusTrack> ();
@@ -114,7 +114,7 @@ _test_port_connection (
       /* create an audio fx track and add the plugin */
       auto last_track = Track::create_empty_with_action<AudioBusTrack> ();
       UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-        zrythm::plugins::PluginSlotType::Insert, *last_track, 0, setting));
+        zrythm::gui::dsp::plugins::PluginSlotType::Insert, *last_track, 0, setting));
     }
 
   auto src_track = TRACKLIST->get_track (TRACKLIST->get_num_tracks () - 1);

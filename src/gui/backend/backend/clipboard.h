@@ -15,7 +15,8 @@
 /**
  * Clipboard struct.
  */
-class Clipboard final : public ISerializable<Clipboard>
+class Clipboard
+  final : public zrythm::utils::serialization::ISerializable<Clipboard>
 {
 public:
   /**

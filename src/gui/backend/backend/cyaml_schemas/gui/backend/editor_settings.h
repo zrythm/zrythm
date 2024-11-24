@@ -10,7 +10,7 @@
 #ifndef __SCHEMAS_GUI_BACKEND_EDITOR_SETTINGS_H__
 #define __SCHEMAS_GUI_BACKEND_EDITOR_SETTINGS_H__
 
-#include "common/utils/yaml.h"
+#include "utils/yaml.h"
 
 typedef struct EditorSettings_v1
 {

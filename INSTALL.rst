@@ -30,6 +30,9 @@ Required
 .. `carla (GPLv2+) <https://kx.studio/Applications:Carla>`_
 ..   Support for various plugin formats
 
+`fmt (MIT) <https://github.com/fmtlib/fmt>`_
+  Formatting library
+
 `fftw (GPLv2+) <http://www.fftw.org/>`_
   Threaded fftw for plugins
 
@@ -51,8 +54,11 @@ Required
 `soxr (LGPLv2.1+) <https://sourceforge.net/projects/soxr/>`_
   Resampling
 
-`vamp-plugin-sdk (X11) <https://vamp-plugins.org/>`_
-  Audio analysis
+`spdlog (MIT) <https://github.com/gabime/spdlog>`_
+  Logging
+
+.. `vamp-plugin-sdk (X11) <https://vamp-plugins.org/>`_
+..   Audio analysis
 
 `xxhash (2-Clause BSD) <https://cyan4973.github.io/xxHash/>`_
   Hashing

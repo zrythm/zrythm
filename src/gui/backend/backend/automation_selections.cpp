@@ -1,12 +1,13 @@
 // SPDX-FileCopyrightText: © 2019, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/position.h"
-#include "common/dsp/region.h"
 #include "gui/backend/backend/automation_selections.h"
 #include "gui/backend/backend/clip_editor.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+
+#include "dsp/position.h"
+#include "gui/dsp/region.h"
 
 AutomationSelections::AutomationSelections (QObject * parent)
     : QObject (parent), ArrangerSelections (Type::Automation)

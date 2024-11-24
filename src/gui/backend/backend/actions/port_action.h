@@ -4,10 +4,11 @@
 #ifndef __ACTION_PORT_ACTION_H__
 #define __ACTION_PORT_ACTION_H__
 
-#include "common/dsp/control_port.h"
-#include "common/dsp/port_identifier.h"
-#include "common/utils/icloneable.h"
 #include "gui/backend/backend/actions/undoable_action.h"
+#include "gui/dsp/control_port.h"
+#include "gui/dsp/port_identifier.h"
+
+#include "utils/icloneable.h"
 
 namespace zrythm::gui::actions
 {
@@ -16,7 +17,7 @@ class PortAction
     : public QObject,
       public UndoableAction,
       public ICloneable<PortAction>,
-      public ISerializable<PortAction>
+      public zrythm::utils::serialization::ISerializable<PortAction>
 {
   Q_OBJECT
   QML_ELEMENT

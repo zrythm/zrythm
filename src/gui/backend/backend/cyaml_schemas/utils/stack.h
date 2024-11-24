@@ -12,7 +12,7 @@
 
 #include <cstdlib>
 
-#include "common/utils/yaml.h"
+#include "utils/yaml.h"
 
 typedef struct Stack_v1
 {

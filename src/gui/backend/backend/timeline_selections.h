@@ -4,9 +4,9 @@
 #ifndef __GUI_BACKEND_TL_SELECTIONS_H__
 #define __GUI_BACKEND_TL_SELECTIONS_H__
 
-#include "common/dsp/midi_region.h"
-#include "common/dsp/region.h"
 #include "gui/backend/backend/arranger_selections.h"
+#include "gui/dsp/midi_region.h"
+#include "gui/dsp/region.h"
 
 /**
  * @addtogroup gui_backend
@@ -24,7 +24,7 @@ class TimelineSelections final
     : public QObject,
       public ArrangerSelections,
       public ICloneable<TimelineSelections>,
-      public ISerializable<TimelineSelections>
+      public zrythm::utils::serialization::ISerializable<TimelineSelections>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -213,15 +213,18 @@ public:
   int marker_track_vis_index_ = 0;
 };
 
-DEFINE_OBJECT_FORMATTER (TimelineSelections, [] (const TimelineSelections &sel) {
-  std::string objs;
-  for (const auto &obj : sel.objects_)
-    {
-      std::visit ([&] (auto &&o) { objs += fmt::format ("{}\n", *o); }, obj);
-    }
-  return fmt::format (
-    "TimelineSelections [{} objects: [\n{}]]", sel.get_num_objects (), objs);
-})
+DEFINE_OBJECT_FORMATTER (
+  TimelineSelections,
+  TimelineSelections,
+  [] (const TimelineSelections &sel) {
+    std::string objs;
+    for (const auto &obj : sel.objects_)
+      {
+        std::visit ([&] (auto &&o) { objs += fmt::format ("{}\n", *o); }, obj);
+      }
+    return fmt::format (
+      "TimelineSelections [{} objects: [\n{}]]", sel.get_num_objects (), objs);
+  })
 
 /**
  * @}

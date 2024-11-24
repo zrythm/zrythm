@@ -10,10 +10,11 @@
 #ifndef __SCHEMAS_GUI_BACKEND_ARRANGER_OBJECT_H__
 #define __SCHEMAS_GUI_BACKEND_ARRANGER_OBJECT_H__
 
-#include "common/utils/yaml.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/curve.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/position.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/region_identifier.h"
+
+#include "utils/yaml.h"
 
 typedef enum ArrangerObjectType_v1
 {

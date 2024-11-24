@@ -10,8 +10,9 @@
 #ifndef __SCHEMAS_AUDIO_POOL_H__
 #define __SCHEMAS_AUDIO_POOL_H__
 
-#include "common/utils/yaml.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/clip.h"
+
+#include "utils/yaml.h"
 
 typedef struct AudioPool_v1
 {

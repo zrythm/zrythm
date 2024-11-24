@@ -10,11 +10,12 @@
 #ifndef __SCHEMAS_GUI_BACKEND_TL_SELECTIONS_H__
 #define __SCHEMAS_GUI_BACKEND_TL_SELECTIONS_H__
 
-#include "common/utils/yaml.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/marker.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/region.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/scale_object.h"
 #include "gui/backend/backend/cyaml_schemas/gui/backend/arranger_selections.h"
+
+#include "utils/yaml.h"
 
 typedef struct TimelineSelections_v1
 {

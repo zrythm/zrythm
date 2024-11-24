@@ -5,8 +5,8 @@
 
 #include <random>
 
-#include "common/dsp/track.h"
-#include "common/utils/gtest_wrapper.h"
+# include "gui/dsp/track.h"
+#include "utils/gtest_wrapper.h"
 #include "gui/backend/backend/timeline_selections.h"
 
 #include "helpers/project_helper.h"

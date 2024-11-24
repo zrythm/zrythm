@@ -206,7 +206,7 @@ static const cyaml_schema_value_t project_schema_v5 = {
  *
  * @throw ZrythmException on error.
  */
-CStringRAII
+zrythm::utils::string::CStringRAII
 project_v5_serialize_to_json_str (const Project_v5 * prj);
 
 #endif /* HAVE_CYAML */

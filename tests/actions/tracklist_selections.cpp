@@ -3,19 +3,19 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/dsp/audio_region.h"
-#include "common/dsp/automation_region.h"
-#include "common/dsp/chord_region.h"
-#include "common/dsp/control_port.h"
-#include "common/dsp/foldable_track.h"
-#include "common/dsp/master_track.h"
-#include "common/dsp/midi_event.h"
-#include "common/dsp/midi_note.h"
-#include "common/dsp/region.h"
-#include "common/dsp/router.h"
-#include "common/utils/color.h"
-#include "common/utils/flags.h"
-#include "common/utils/math.h"
+# include "gui/dsp/audio_region.h"
+# include "gui/dsp/automation_region.h"
+# include "gui/dsp/chord_region.h"
+# include "gui/dsp/control_port.h"
+# include "gui/dsp/foldable_track.h"
+# include "gui/dsp/master_track.h"
+# include "gui/dsp/midi_event.h"
+# include "gui/dsp/midi_note.h"
+# include "gui/dsp/region.h"
+# include "gui/dsp/router.h"
+#include "utils/color.h"
+#include "utils/flags.h"
+#include "utils/math.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/actions/channel_send_action.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
@@ -716,7 +716,7 @@ TEST_F (ZrythmFixture, DeleteInstrumentTrackWithAutomation)
   auto setting = test_plugin_manager_get_plugin_setting (
     TAL_FILTER_BUNDLE, TAL_FILTER_URI, false);
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-    zrythm::plugins::PluginSlotType::Insert, *track, 0, setting));
+    zrythm::gui::dsp::plugins::PluginSlotType::Insert, *track, 0, setting));
 
   AUDIO_ENGINE->activate (true);
 
@@ -850,7 +850,7 @@ _test_move_tracks (
       setting.descr_.category_ = ZPluginCategory::INSTRUMENT;
     }
   setting.descr_
-    .category_str_ = zrythm::plugins::PluginDescriptor::category_to_string (
+    .category_str_ = zrythm::gui::dsp::plugins::PluginDescriptor::category_to_string (
     setting.descr_.category_);
 
   /* create a track with an instrument */
@@ -1240,7 +1240,7 @@ TEST_F (ZrythmFixture, CheckTrackDeletionWithMixerSelections)
   ASSERT_NONNULL (pl_track);
 
   MIXER_SELECTIONS->add_slot (
-    *pl_track, zrythm::plugins::PluginSlotType::Insert, 0, false);
+    *pl_track, zrythm::gui::dsp::plugins::PluginSlotType::Insert, 0, false);
   ASSERT_TRUE (MIXER_SELECTIONS->has_any_);
   ASSERT_EQ (MIXER_SELECTIONS->track_name_hash_, pl_track->get_name_hash ());
 

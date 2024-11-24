@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2018-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/track.h"
-#include "common/utils/gtest_wrapper.h"
-#include "common/utils/rt_thread_id.h"
+# include "gui/dsp/track.h"
+#include "utils/gtest_wrapper.h"
+#include "utils/rt_thread_id.h"
 #include "gui/backend/backend/piano_roll.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"

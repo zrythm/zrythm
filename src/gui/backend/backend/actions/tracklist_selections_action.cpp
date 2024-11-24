@@ -1,31 +1,31 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/audio_bus_track.h"
-#include "common/dsp/audio_group_track.h"
-#include "common/dsp/audio_region.h"
-#include "common/dsp/audio_track.h"
-#include "common/dsp/foldable_track.h"
-#include "common/dsp/folder_track.h"
-#include "common/dsp/group_target_track.h"
-#include "common/dsp/instrument_track.h"
-#include "common/dsp/marker_track.h"
-#include "common/dsp/midi_bus_track.h"
-#include "common/dsp/midi_group_track.h"
-#include "common/dsp/midi_track.h"
-#include "common/dsp/router.h"
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/io/file_descriptor.h"
-#include "common/io/midi_file.h"
-#include "common/plugins/plugin.h"
-#include "common/utils/base64.h"
-#include "common/utils/debug.h"
-#include "common/utils/exceptions.h"
-#include "common/utils/io.h"
-#include "common/utils/traits.h"
-#include "common/utils/types.h"
-#include "common/utils/ui.h"
+# include "gui/dsp/audio_bus_track.h"
+# include "gui/dsp/audio_group_track.h"
+# include "gui/dsp/audio_region.h"
+# include "gui/dsp/audio_track.h"
+# include "gui/dsp/foldable_track.h"
+# include "gui/dsp/folder_track.h"
+# include "gui/dsp/group_target_track.h"
+# include "gui/dsp/instrument_track.h"
+# include "gui/dsp/marker_track.h"
+# include "gui/dsp/midi_bus_track.h"
+# include "gui/dsp/midi_group_track.h"
+# include "gui/dsp/midi_track.h"
+# include "gui/dsp/router.h"
+# include "gui/dsp/track.h"
+# include "gui/dsp/tracklist.h"
+#include "gui/backend/io/file_descriptor.h"
+#include "gui/backend/io/midi_file.h"
+#include "gui/dsp/plugin.h"
+#include "utils/base64.h"
+#include "utils/debug.h"
+#include "utils/exceptions.h"
+#include "utils/io.h"
+#include "utils/traits.h"
+#include "utils/types.h"
+#include "gui/backend/ui.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
@@ -413,9 +413,9 @@ TracklistSelectionsAction::create_track (int idx)
     }
   else /* else if track is not empty */
     {
-      std::unique_ptr<zrythm::plugins::Plugin> pl;
+      std::unique_ptr<zrythm::gui::dsp::plugins::Plugin> pl;
       std::unique_ptr<Track>                   track;
-      zrythm::plugins::Plugin *                added_pl = nullptr;
+      zrythm::gui::dsp::plugins::Plugin *                added_pl = nullptr;
 
       /* if creating audio track from file */
       if (track_type_ == Track::Type::Audio && pool_id_ >= 0)
@@ -450,8 +450,8 @@ TracklistSelectionsAction::create_track (int idx)
           added_pl = channel_track->channel_->add_plugin (
             std::move (pl),
             is_instrument
-              ? zrythm::plugins::PluginSlotType::Instrument
-              : zrythm::plugins::PluginSlotType::Insert,
+              ? zrythm::gui::dsp::plugins::PluginSlotType::Instrument
+              : zrythm::gui::dsp::plugins::PluginSlotType::Insert,
             is_instrument ? -1 : pl->id_.slot_, true, false, true, false, false);
         }
 
@@ -462,7 +462,7 @@ TracklistSelectionsAction::create_track (int idx)
           added_track->add_region (
             new AudioRegion (
               pool_id_, nullptr, true, nullptr, 0, nullptr, 0,
-              ENUM_INT_TO_VALUE (BitDepth, 0), start_pos,
+              ENUM_INT_TO_VALUE (utils::audio::BitDepth, 0), start_pos,
               added_track->get_name_hash (), 0, 0),
             nullptr, 0, true, false);
         }
@@ -627,7 +627,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                         }
 
                       /* reconnect any sends sent from the track */
-                      for (size_t j = 0; j < STRIP_SIZE; j++)
+                      for (size_t j = 0; j < dsp::STRIP_SIZE; j++)
                         {
                           auto &clone_send =
                             own_channel_track.get_channel ()->sends_[j];
@@ -907,10 +907,10 @@ TracklistSelectionsAction::
 
           /* get outputs & sends */
           std::vector<GroupTargetTrack *> outputs_in_prj (num_tracks);
-          std::vector<std::array<std::unique_ptr<ChannelSend>, STRIP_SIZE>>
+          std::vector<std::array<std::unique_ptr<ChannelSend>, dsp::STRIP_SIZE>>
             sends (num_tracks);
           std::vector<
-            std::array<PortConnectionsManager::ConnectionsVector, STRIP_SIZE>>
+            std::array<PortConnectionsManager::ConnectionsVector, dsp::STRIP_SIZE>>
             send_conns (num_tracks);
           for (size_t i = 0; i < num_tracks; i++)
             {
@@ -922,7 +922,7 @@ TracklistSelectionsAction::
                   outputs_in_prj.push_back (
                     own_channel_track->get_channel ()->get_output_track ());
 
-                  for (size_t j = 0; j < STRIP_SIZE; ++j)
+                  for (size_t j = 0; j < dsp::STRIP_SIZE; ++j)
                     {
                       auto &send =
                         own_channel_track->get_channel ()->sends_.at (j);
@@ -1007,7 +1007,7 @@ TracklistSelectionsAction::
               if (track->has_channel ())
                 {
                   auto channel_track = dynamic_cast<ChannelTrack *> (track);
-                  for (size_t j = 0; j < STRIP_SIZE; j++)
+                  for (size_t j = 0; j < dsp::STRIP_SIZE; j++)
                     {
                       const auto &own_send = sends.at (i).at (j);
                       const auto &own_conns = send_conns.at (i).at (j);

@@ -6,7 +6,6 @@
 
 #include "zrythm-config.h"
 
-#include "common/utils/rt_thread_id.h"
 #include "gui/backend/alert_manager.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/theme_manager.h"
@@ -19,6 +18,9 @@
 #include <QProcess>
 #include <QQmlApplicationEngine>
 #include <QTranslator>
+
+#include "utils/directory_manager.h"
+#include "utils/rt_thread_id.h"
 
 namespace zrythm::gui
 {
@@ -55,6 +57,7 @@ public:
   void setup_ipc ();
   void launch_engine_process ();
 
+  DirectoryManager    &get_directory_manager () const { return *dir_manager_; }
   AlertManager *    get_alert_manager () const;
   SettingsManager * get_settings_manager () const;
   ThemeManager *    get_theme_manager () const;
@@ -84,6 +87,7 @@ private:
    */
   QLocalSocket * socket_ = nullptr;
 
+  std::unique_ptr<DirectoryManager> dir_manager_;
   AlertManager *    alert_manager_ = nullptr;
   SettingsManager * settings_manager_ = nullptr;
   ThemeManager *    theme_manager_ = nullptr;

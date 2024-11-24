@@ -4,8 +4,8 @@
 #ifndef __GUI_BACKEND_EDITOR_SETTINGS_H__
 #define __GUI_BACKEND_EDITOR_SETTINGS_H__
 
-#include "common/io/serialization/iserializable.h"
-#include "common/utils/math.h"
+#include "utils/iserializable.h"
+#include "utils/math.h"
 
 /**
  * @addtogroup gui_backend
@@ -67,7 +67,8 @@
 /**
  * Common editor settings.
  */
-class EditorSettings : public ISerializable<EditorSettings>
+class EditorSettings
+    : public zrythm::utils::serialization::ISerializable<EditorSettings>
 {
 public:
   double clamp_scroll_start_x (double x);

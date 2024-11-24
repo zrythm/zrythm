@@ -7,13 +7,13 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "common/dsp/audio_region.h"
-#include "common/dsp/master_track.h"
-#include "common/dsp/midi_event.h"
-#include "common/dsp/region.h"
-#include "common/dsp/router.h"
-#include "common/utils/color.h"
-#include "common/utils/flags.h"
+# include "gui/dsp/audio_region.h"
+# include "gui/dsp/master_track.h"
+# include "gui/dsp/midi_event.h"
+# include "gui/dsp/region.h"
+# include "gui/dsp/router.h"
+#include "utils/color.h"
+#include "utils/flags.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/backend/backend/project.h"

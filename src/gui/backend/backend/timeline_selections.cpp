@@ -3,18 +3,18 @@
 
 #include <typeinfo>
 
-#include "common/dsp/chord_track.h"
-#include "common/dsp/engine.h"
-#include "common/dsp/marker_track.h"
-#include "common/dsp/midi_event.h"
-#include "common/dsp/position.h"
-#include "common/dsp/tempo_track.h"
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/dsp/transport.h"
-#include "common/utils/dsp.h"
-#include "common/utils/math.h"
-#include "common/utils/rt_thread_id.h"
+# include "gui/dsp/chord_track.h"
+# include "gui/dsp/engine.h"
+# include "gui/dsp/marker_track.h"
+# include "gui/dsp/midi_event.h"
+# include "dsp/position.h"
+# include "gui/dsp/tempo_track.h"
+# include "gui/dsp/track.h"
+# include "gui/dsp/tracklist.h"
+# include "gui/dsp/transport.h"
+#include "utils/dsp.h"
+#include "utils/math.h"
+#include "utils/rt_thread_id.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/timeline_selections.h"
 #include "gui/backend/backend/zrythm.h"
@@ -243,7 +243,7 @@ TimelineSelections::merge ()
   auto num_frames = static_cast<unsigned_frame_t> (
     ceil (AUDIO_ENGINE->frames_per_tick_ * ticks_length));
   auto [first_obj, pos] = get_first_object_and_pos (true);
-  Position end_pos{ pos.ticks_ + ticks_length };
+  Position end_pos{ pos.ticks_ + ticks_length, AUDIO_ENGINE->frames_per_tick_ };
 
   z_return_if_fail (!first_obj || !first_obj->is_region ());
 
@@ -285,7 +285,7 @@ TimelineSelections::merge ()
               long   r_frames_length = r->get_length_in_frames ();
 
               auto * clip = r->get_clip ();
-              dsp_add2 (
+              utils::float_ranges::add2 (
                 &lframes[frames_diff], clip->ch_frames_.getReadPointer (0),
                 static_cast<size_t> (r_frames_length));
 
@@ -856,7 +856,7 @@ TimelineSelections::export_to_midi_file (
   current channel before writing data out. channel assignments can change any
   number of times during the file and affect all track messages until changed */
   midiFileSetTracksDefaultChannel (mf, 1, MIDI_CHANNEL_1);
-  midiFileSetPPQN (mf, TICKS_PER_QUARTER_NOTE);
+  midiFileSetPPQN (mf, PositionProxy::TICKS_PER_QUARTER_NOTE);
   midiFileSetVersion (mf, midi_version);
 
   int beats_per_bar = tempo_track->get_beats_per_bar ();

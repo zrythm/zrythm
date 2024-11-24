@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/sample_processor.h"
-#include "common/utils/objects.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/sample_processor.h"
+
+#include "utils/objects.h"
 
 SampleProcessor_v2 *
 sample_processor_upgrade_from_v1 (SampleProcessor_v1 * old)

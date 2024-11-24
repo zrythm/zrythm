@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "common/plugins/plugin_descriptor.h"
-
 #include <qqmlregistration.h>
+
+#include "gui/dsp/plugin_descriptor.h"
 
 namespace zrythm::gui
 {
@@ -52,7 +52,7 @@ public:
   }
 
 public:
-  void addDescriptor (const zrythm::plugins::PluginDescriptor &descriptor)
+  void addDescriptor (const zrythm::gui::dsp::plugins::PluginDescriptor &descriptor)
   {
     beginInsertRows (QModelIndex (), descriptors_.size (), descriptors_.size ());
     descriptors_.append (descriptor.clone_raw_ptr ());
@@ -66,12 +66,12 @@ public:
     endResetModel ();
   }
 
-  zrythm::plugins::PluginDescriptor * at (int index) const
+  zrythm::gui::dsp::plugins::PluginDescriptor * at (int index) const
   {
     return descriptors_.at (index);
   }
 
 private:
-  QList<zrythm::plugins::PluginDescriptor *> descriptors_;
+  QList<zrythm::gui::dsp::plugins::PluginDescriptor *> descriptors_;
 };
 }

@@ -21,7 +21,7 @@ namespace zrythm::gui::actions
 class UndoManager final
     : public QObject,
       public ICloneable<UndoManager>,
-      public ISerializable<UndoManager>
+      public zrythm::utils::serialization::ISerializable<UndoManager>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -74,7 +74,8 @@ public:
    *
    * Used when cleaning up state dirs.
    */
-  void get_plugins (std::vector<zrythm::plugins::Plugin *> &arr) const;
+  void
+  get_plugins (std::vector<zrythm::gui::dsp::plugins::Plugin *> &arr) const;
 
   /**
    * Returns the last performed action, or NULL if

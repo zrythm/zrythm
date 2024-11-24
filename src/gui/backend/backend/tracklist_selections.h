@@ -4,20 +4,20 @@
 #ifndef __ACTIONS_TRACKLIST_SELECTIONS_H__
 #define __ACTIONS_TRACKLIST_SELECTIONS_H__
 
-#include "common/dsp/audio_bus_track.h"
-#include "common/dsp/audio_group_track.h"
-#include "common/dsp/audio_track.h"
-#include "common/dsp/chord_track.h"
-#include "common/dsp/folder_track.h"
-#include "common/dsp/instrument_track.h"
-#include "common/dsp/marker_track.h"
-#include "common/dsp/master_track.h"
-#include "common/dsp/midi_bus_track.h"
-#include "common/dsp/midi_group_track.h"
-#include "common/dsp/midi_track.h"
-#include "common/dsp/modulator_track.h"
-#include "common/dsp/tempo_track.h"
-#include "common/dsp/track.h"
+#include "gui/dsp/audio_bus_track.h"
+#include "gui/dsp/audio_group_track.h"
+#include "gui/dsp/audio_track.h"
+#include "gui/dsp/chord_track.h"
+#include "gui/dsp/folder_track.h"
+#include "gui/dsp/instrument_track.h"
+#include "gui/dsp/marker_track.h"
+#include "gui/dsp/master_track.h"
+#include "gui/dsp/midi_bus_track.h"
+#include "gui/dsp/midi_group_track.h"
+#include "gui/dsp/midi_track.h"
+#include "gui/dsp/modulator_track.h"
+#include "gui/dsp/tempo_track.h"
+#include "gui/dsp/track.h"
 
 /**
  * @addtogroup gui_backend
@@ -35,7 +35,7 @@
  */
 class TracklistSelections final
     : public ICloneable<TracklistSelections>,
-      public ISerializable<TracklistSelections>
+      public zrythm::utils::serialization::ISerializable<TracklistSelections>
 {
 public:
   TracklistSelections () = default;
@@ -71,7 +71,7 @@ public:
 
   bool contains_track_index (int track_idx) const;
 
-  void get_plugins (std::vector<zrythm::plugins::Plugin *> &arr);
+  void get_plugins (std::vector<zrythm::gui::dsp::plugins::Plugin *> &arr);
 
   /**
    * Gets lowest track in the selections.
@@ -108,8 +108,8 @@ public:
  *
  * It is invalid to allow 0 selections. There must always be a Track selected.
  */
-class SimpleTracklistSelections
-  final : public ISerializable<SimpleTracklistSelections>
+class SimpleTracklistSelections final
+    : public zrythm::utils::serialization::ISerializable<SimpleTracklistSelections>
 {
 public:
   SimpleTracklistSelections () = default;
@@ -267,16 +267,19 @@ public:
   Tracklist * tracklist_ = nullptr;
 };
 
-DEFINE_OBJECT_FORMATTER (TracklistSelections, [] (const TracklistSelections &c) {
-  std::string ret;
-  ret += "TracklistSelections { \n";
-  for (auto &track : c.tracks_)
-    {
-      ret += fmt::format ("[{}] {}\n", track->pos_, track->name_);
-    }
-  ret += "}";
-  return ret;
-})
+DEFINE_OBJECT_FORMATTER (
+  TracklistSelections,
+  TracklistSelections,
+  [] (const TracklistSelections &c) {
+    std::string ret;
+    ret += "TracklistSelections { \n";
+    for (auto &track : c.tracks_)
+      {
+        ret += fmt::format ("[{}] {}\n", track->pos_, track->name_);
+      }
+    ret += "}";
+    return ret;
+  })
 
 /**
  * @}

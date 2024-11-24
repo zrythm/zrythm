@@ -5,21 +5,22 @@
 
 #include <QCoreApplication>
 
-#include "engine/audio_engine.h"
+#include "engine/audio_engine_application.h"
+#include "utils/logger.h"
 #include <fftw3.h>
 
+#if 0
 /**
  * Application entry point.
  */
 int
 main (int argc, char ** argv)
 {
-  QCoreApplication app (argc, argv);
-  qDebug () << "Starting audio engine...";
+  zrythm::engine::AudioEngineApplication app (argc, argv);
+  z_info ("Starting audio engine...");
 
 // TODO
-#if 0
-#  if HAVE_X11
+#  if HAVE_X11 && false
   /* init xlib threads */
   z_info ("Initing X threads...");
   XInitThreads ();
@@ -29,8 +30,9 @@ main (int argc, char ** argv)
   z_info ("Making fftw planner thread safe...");
   fftw_make_planner_thread_safe ();
   fftwf_make_planner_thread_safe ();
-#endif
 
-  engine::AudioEngine engine;
   return app.exec ();
 }
+#endif
+
+START_JUCE_APPLICATION (zrythm::engine::AudioEngineApplication)

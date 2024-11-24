@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/channel.h"
-#include "common/dsp/port_identifier.h"
-#include "common/dsp/router.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/rt_thread_id.h"
+# include "gui/dsp/channel.h"
+# include "gui/dsp/port_identifier.h"
+# include "gui/dsp/router.h"
+# include "gui/dsp/tracklist.h"
+#include "utils/rt_thread_id.h"
 #include "gui/backend/backend/actions/channel_send_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"

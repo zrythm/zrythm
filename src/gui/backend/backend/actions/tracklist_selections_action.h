@@ -4,14 +4,15 @@
 #ifndef __ACTIONS_TRACKLIST_SELECTIONS_ACTION_H__
 #define __ACTIONS_TRACKLIST_SELECTIONS_ACTION_H__
 
-#include "common/dsp/channel_send.h"
-#include "common/dsp/port_connections_manager.h"
-#include "common/dsp/track.h"
-#include "common/io/file_descriptor.h"
-#include "common/utils/color.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/backend/backend/settings/plugin_settings.h"
 #include "gui/backend/backend/tracklist_selections.h"
+#include "gui/backend/io/file_descriptor.h"
+#include "gui/dsp/channel_send.h"
+#include "gui/dsp/port_connections_manager.h"
+#include "gui/dsp/track.h"
+
+#include "utils/color.h"
 
 namespace zrythm::gui::actions
 {
@@ -23,7 +24,7 @@ class TracklistSelectionsAction
     : public QObject,
       public UndoableAction,
       public ICloneable<TracklistSelectionsAction>,
-      public ISerializable<TracklistSelectionsAction>
+      public zrythm::utils::serialization::ISerializable<TracklistSelectionsAction>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -70,6 +71,9 @@ public:
 
     MidiFaderMode,
   };
+
+  using Position = zrythm::dsp::Position;
+  using Color = zrythm::utils::Color;
 
 public:
   TracklistSelectionsAction () = default;
@@ -175,7 +179,8 @@ public:
     return true;
   }
 
-  void get_plugins (std::vector<zrythm::plugins::Plugin *> &plugins) override
+  void
+  get_plugins (std::vector<zrythm::gui::dsp::plugins::Plugin *> &plugins) override
   {
     if (tls_before_)
       tls_before_->get_plugins (plugins);

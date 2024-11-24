@@ -11,13 +11,14 @@
 #ifndef __SCHEMAS_AUDIO_ENGINE_H__
 #define __SCHEMAS_AUDIO_ENGINE_H__
 
-#include "common/utils/types.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/control_room.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/ext_port.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/hardware_processor.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/pool.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/sample_processor.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/transport.h"
+
+#include "utils/types.h"
 
 typedef enum AudioEngineJackTransportType_v1
 {

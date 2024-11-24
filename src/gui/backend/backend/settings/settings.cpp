@@ -3,7 +3,7 @@
 
 #include "zrythm-config.h"
 
-#include "common/utils/gtest_wrapper.h"
+#include "utils/gtest_wrapper.h"
 #include "gui/backend/backend/settings/plugin_settings.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"

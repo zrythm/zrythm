@@ -10,10 +10,11 @@
 #ifndef __GUI_BACKEND_CHORD_EDITOR_H__
 #define __GUI_BACKEND_CHORD_EDITOR_H__
 
-#include "common/dsp/chord_descriptor.h"
-#include "common/dsp/scale.h"
-#include "common/utils/icloneable.h"
 #include "gui/backend/backend/editor_settings.h"
+#include "gui/dsp/chord_descriptor.h"
+#include "gui/dsp/scale.h"
+
+#include "utils/icloneable.h"
 
 class ChordDescriptor;
 class ChordPreset;
@@ -34,7 +35,7 @@ constexpr int CHORD_EDITOR_NUM_CHORDS = 12;
 class ChordEditor final
     : public EditorSettings,
       public ICloneable<ChordEditor>,
-      public ISerializable<ChordEditor>
+      public zrythm::utils::serialization::ISerializable<ChordEditor>
 {
 public:
   /**

@@ -8,26 +8,24 @@
 
 #include <memory>
 
-#include "common/dsp/recording_manager.h"
-#include "common/plugins/plugin_manager.h"
-#include "common/utils/dsp_context.h"
-#include "common/utils/networking.h"
-#include "common/utils/string_array.h"
-#include "common/utils/symap.h"
 #include "gui/backend/backend/file_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/chord_preset_pack_manager.h"
 #include "gui/backend/backend/settings/settings.h"
+#include "gui/backend/plugin_manager.h"
+#include "gui/dsp/recording_manager.h"
 
 #include "juce_wrapper.h"
+#include "utils/dsp_context.h"
+#include "utils/networking.h"
+#include "utils/string_array.h"
+#include "utils/symap.h"
 
 /**
  * @addtogroup general
  *
  * @{
  */
-
-#define ZRYTHM_PROJECTS_DIR "projects"
 
 #define MAX_RECENT_PROJECTS 20
 #define DEBUGGING (Q_UNLIKELY (gZrythm && gZrythm->debug_))
@@ -48,8 +46,8 @@ class Zrythm final : public QObject
   Q_OBJECT
   QML_ELEMENT
   Q_PROPERTY (
-    zrythm::plugins::PluginManager * pluginManager READ getPluginManager
-      CONSTANT FINAL)
+    zrythm::gui::dsp::plugins::PluginManager * pluginManager READ
+      getPluginManager CONSTANT FINAL)
   Q_PROPERTY (QString version READ getVersion CONSTANT FINAL)
 public:
   ~Zrythm () override;
@@ -66,7 +64,7 @@ public:
 
   void init ();
 
-  zrythm::plugins::PluginManager * getPluginManager () const
+  zrythm::gui::dsp::plugins::PluginManager * getPluginManager () const
   {
     return plugin_manager_.get ();
   }
@@ -227,7 +225,7 @@ public:
   /**
    * Manages plugins (loading, instantiating, etc.)
    */
-  std::unique_ptr<zrythm::plugins::PluginManager> plugin_manager_;
+  std::unique_ptr<zrythm::gui::dsp::plugins::PluginManager> plugin_manager_;
 
   /** Recording manager. */
   RecordingManager * recording_manager_ = nullptr;

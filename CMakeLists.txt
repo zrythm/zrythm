@@ -8,7 +8,7 @@ if(APPLE)
   # 11.0 -> semaphore.try_acquire
   # must be specified before project()
   set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum OS X deployment version")
-  
+
   # this might be needed for homebrew
   if(NOT DEFINED CMAKE_OSX_SYSROOT)
     execute_process(COMMAND xcrun --show-sdk-path OUTPUT_VARIABLE CMAKE_OSX_SYSROOT OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -46,6 +46,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++20")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_AUTOUIC OFF)
 # Enable precompiled headers
 set(CMAKE_PCH_INSTANTIATE_TEMPLATES ON)
 
@@ -136,6 +137,7 @@ if(ZRYTHM_TESTS)
 endif()
 cmake_dependent_option(ZRYTHM_BENCHMARKS "Build benchmarks" OFF "ZRYTHM_TESTS" OFF)
 cmake_dependent_option(ZRYTHM_GUI_TESTS "Build GUI tests" OFF "ZRYTHM_TESTS" OFF)
+cmake_dependent_option(ZRYTHM_TESTS_WITH_INTERNET_ACCESS "Enable tests that require internet access" OFF "ZRYTHM_TESTS" OFF)
 option(ZRYTHM_BUNDLED_PLUGINS "Build and install bundled plugins" ON)
 option(ZRYTHM_BUNDLED_PLUGINS_WITH_STATIC_LINKING "Build bundled plugins with static libs (libgcc/libstdc++). Distros should turn this off" ON)
 option(ZRYTHM_MAINTAINER_MODE "Whether to enable maintainer options (only for use by Zrythm maintainers/developers)" OFF)
@@ -844,7 +846,20 @@ endif()
 
 find_package(zstd REQUIRED)
 
-pkg_check_modules(XXHASH libxxhash REQUIRED IMPORTED_TARGET)
+FetchContent_Declare(
+  xxHash
+  GIT_REPOSITORY https://github.com/Cyan4973/xxHash
+  # 0.8.2
+  GIT_TAG bbb27a5efb85b92a0486cf361a8635715a53f6ba
+  SOURCE_SUBDIR cmake_unofficial
+)
+pkg_check_modules(XXHASH libxxhash>=0.8 IMPORTED_TARGET)
+if(XXHASH_FOUND)
+  add_library(xxHash::xxhash ALIAS PkgConfig::XXHASH)
+else()
+  set(XXHASH_BUILD_XXHSUM OFF)
+  FetchContent_MakeAvailable(xxHash)
+endif()
 
 # not used, might use in the future
 if(0)
@@ -864,6 +879,7 @@ if(0)
   endif()
 endif()
 
+# magic_enum
 FetchContent_Declare(
   magic_enum
   GIT_REPOSITORY https://github.com/Neargye/magic_enum.git
@@ -875,36 +891,70 @@ if(NOT magic_enum_FOUND)
   FetchContent_MakeAvailable(magic_enum)
 endif()
 
-find_package(fmt REQUIRED)
-
-find_package(spdlog REQUIRED)
-target_compile_definitions(spdlog::spdlog INTERFACE
-  SPDLOG_FMT_EXTERNAL
-  SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE
-)
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
-  target_compile_definitions(spdlog::spdlog INTERFACE
-    SPDLOG_FUNCTION=__PRETTY_FUNCTION__
+# fmt
+find_package(fmt QUIET)
+if(NOT fmt_FOUND)
+  FetchContent_Declare(
+    fmt
+    GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+    # 11.0.2
+    GIT_TAG 0c9fce2ffefecfdce794e1859584e25877b7b592
   )
-else()
-  target_compile_definitions(spdlog::spdlog INTERFACE
-    SPDLOG_FUNCTION=__FUNCTION__
-  )
+  FetchContent_MakeAvailable(fmt)
 endif()
 
-pkg_check_modules(RUBBERBAND rubberband REQUIRED IMPORTED_TARGET)
+# spdlog
+find_package(spdlog QUIET)
+if(spdlog_FOUND)
+  target_compile_definitions(spdlog::spdlog INTERFACE
+    SPDLOG_FMT_EXTERNAL
+    SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE
+  )
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    target_compile_definitions(spdlog::spdlog INTERFACE
+      SPDLOG_FUNCTION=__PRETTY_FUNCTION__
+    )
+  else()
+    target_compile_definitions(spdlog::spdlog INTERFACE
+      SPDLOG_FUNCTION=__FUNCTION__
+    )
+  endif()
+else()
+  FetchContent_Declare(
+    spdlog
+    GIT_REPOSITORY https://github.com/gabime/spdlog.git
+    # 1.15.0
+    GIT_TAG 8e5613379f5140fefb0b60412fbf1f5406e7c7f8
+  )
+  set(SPDLOG_FMT_EXTERNAL ON)
+  FetchContent_MakeAvailable(spdlog)
+  target_compile_definitions(spdlog INTERFACE
+    SPDLOG_FMT_EXTERNAL
+    SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE
+  )
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+    target_compile_definitions(spdlog INTERFACE
+      SPDLOG_FUNCTION=__PRETTY_FUNCTION__
+    )
+  else()
+    target_compile_definitions(spdlog INTERFACE
+      SPDLOG_FUNCTION=__FUNCTION__
+    )
+  endif()
+endif()
 
-pkg_check_modules(EPOXY epoxy REQUIRED IMPORTED_TARGET)
+
+pkg_check_modules(RUBBERBAND rubberband REQUIRED IMPORTED_TARGET)
 
 find_package(GTest REQUIRED)
 
 find_package(Qt6
-  COMPONENTS 
-    Core 
-    Gui 
-    Widgets 
-    Quick 
-    QuickControls2 
+  COMPONENTS
+    Core
+    Gui
+    Widgets
+    Quick
+    QuickControls2
     Concurrent
     LinguistTools
   REQUIRED
@@ -933,7 +983,7 @@ list(APPEND zrythm_link_libs
   PkgConfig::RUBBERBAND
   ${CMAKE_DL_LIBS}
   FFTW3::FFTW3
-  PkgConfig::XXHASH
+  xxHash::xxhash
   yyjson::yyjson
   magic_enum::magic_enum
   juce_lib
@@ -1109,7 +1159,7 @@ add_subdirectory(data)
 add_subdirectory(src)
 
 qt_add_translations(TARGETS zrythm
-  TS_FILE_DIR i18n 
+  TS_FILE_DIR i18n
 )
 
 message(STATUS "Zrythm compile definitions: ${zrythm_definitions}")

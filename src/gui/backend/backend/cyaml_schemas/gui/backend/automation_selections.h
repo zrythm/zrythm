@@ -10,9 +10,7 @@
 #ifndef __SCHEMAS_GUI_BACKEND_AUTOMATION_SELECTIONS_H__
 #define __SCHEMAS_GUI_BACKEND_AUTOMATION_SELECTIONS_H__
 
-#include "common/dsp/automation_point.h"
-// #include "gui/backend/arranger_selections.h"
-#include "common/utils/yaml.h"
+#include "utils/yaml.h"
 
 typedef struct AutomationSelections_v1
 {

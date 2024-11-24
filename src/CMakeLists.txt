@@ -3,31 +3,35 @@
 
 qt_add_library(zrythm_lib STATIC)
 
+# each executable/library has its own subdirectory
+add_subdirectory(plugin-scanner)
+add_subdirectory(utils)
+add_subdirectory(lv2apply)
+add_subdirectory(dsp)
 add_subdirectory(gui)
 
 target_sources(zrythm_lib PRIVATE globals.cpp)
 
-# Add the translators C string header to the sources
-add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/translators.h
-  COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/gen-translators-list.py
-          ${CMAKE_CURRENT_BINARY_DIR}/translators.h about
-          ${CMAKE_SOURCE_DIR}/TRANSLATORS
-  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/gen-translators-list.py
-          ${CMAKE_SOURCE_DIR}/TRANSLATORS
-)
-target_sources(zrythm_lib
-  PRIVATE
-    ${CMAKE_CURRENT_BINARY_DIR}/translators.h)
-
-add_subdirectory(common)
+if(0) # TODO
+  # Add the translators C string header to the sources
+  add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/translators.h
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/gen-translators-list.py
+            ${CMAKE_CURRENT_BINARY_DIR}/translators.h about
+            ${CMAKE_SOURCE_DIR}/TRANSLATORS
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/gen-translators-list.py
+            ${CMAKE_SOURCE_DIR}/TRANSLATORS
+  )
+  target_sources(zrythm_lib
+    PRIVATE
+      ${CMAKE_CURRENT_BINARY_DIR}/translators.h)
+endif()
 
 list(APPEND zrythm_link_libs
   midilib::midilib
   kissfft::kissfft
   whereami::whereami
-  zrythm_optimized_audio_lib
-  optimized_utils_lib
+  zrythm_dsp_lib
 )
 
 if(USE_WEAK_JACK)
@@ -50,7 +54,7 @@ target_link_libraries(zrythm_lib PUBLIC ${zrythm_link_libs})
 # precompile header
 set(zrythm_pch ${CMAKE_CURRENT_SOURCE_DIR}/pch/zrythm_pch.h)
 target_precompile_headers(zrythm_lib
-  PRIVATE 
+  PRIVATE
     $<$<COMPILE_LANGUAGE:CXX>:${zrythm_pch}>)
 
 target_sources(zrythm PRIVATE main.cpp)
@@ -87,11 +91,3 @@ install(TARGETS zrythm RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 add_subdirectory(engine)
 add_dependencies(zrythm zrythm-engine plugin-scanner)
-
-# Run stoat
-if(STOAT_FOUND AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_custom_target(run_stoat
-    COMMAND ${CMAKE_SOURCE_DIR}/scripts/run_stoat.sh
-    DEPENDS zrythm_lib
-  )
-endif()

@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/utils/objects.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/engine.h"
+
+#include "utils/objects.h"
 
 AudioEngine_v2 *
 engine_upgrade_from_v1 (AudioEngine_v1 * old)

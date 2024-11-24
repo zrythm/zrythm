@@ -5,14 +5,15 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/dsp/master_track.h"
-#include "common/dsp/region.h"
-#include "common/dsp/router.h"
 #include "gui/backend/backend/actions/channel_send_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 
 #include "tests/helpers/zrythm_helper.h"
+
+#include "gui/dsp/master_track.h"
+#include "gui/dsp/region.h"
+#include "gui/dsp/router.h"
 
 TEST_F (ZrythmFixture, RouteMasterSendToFx)
 {

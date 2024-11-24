@@ -5,7 +5,7 @@
 
 #include "zrythm-config.h"
 
-#include "common/plugins/plugin_descriptor.h"
+#include "gui/dsp/plugin_descriptor.h"
 
 #if 0
 namespace zrythm::gui::wrappers

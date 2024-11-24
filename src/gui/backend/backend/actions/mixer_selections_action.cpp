@@ -1,16 +1,16 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/automation_region.h"
-#include "common/dsp/channel.h"
-#include "common/dsp/channel_track.h"
-#include "common/dsp/modulator_track.h"
-#include "common/dsp/router.h"
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/plugins/carla_native_plugin.h"
-#include "common/utils/logger.h"
-#include "common/utils/ui.h"
+# include "gui/dsp/automation_region.h"
+# include "gui/dsp/channel.h"
+# include "gui/dsp/channel_track.h"
+# include "gui/dsp/modulator_track.h"
+# include "gui/dsp/router.h"
+# include "gui/dsp/track.h"
+# include "gui/dsp/tracklist.h"
+#include "gui/dsp/carla_native_plugin.h"
+#include "utils/logger.h"
+#include "gui/backend/ui.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/mixer_selections.h"
 #include "gui/backend/backend/project.h"
@@ -29,13 +29,13 @@ MixerSelectionsAction::MixerSelectionsAction (
   const FullMixerSelections *      ms,
   const PortConnectionsManager *   connections_mgr,
   Type                             type,
-  zrythm::plugins::PluginSlotType  slot_type,
+  zrythm::gui::dsp::plugins::PluginSlotType  slot_type,
   unsigned int                     to_track_name_hash,
   int                              to_slot,
   const PluginSetting *            setting,
   int                              num_plugins,
   int                              new_val,
-  zrythm::plugins::CarlaBridgeMode new_bridge_mode,
+  zrythm::gui::dsp::plugins::CarlaBridgeMode new_bridge_mode,
   QObject *                        parent)
     : MixerSelectionsAction (parent)
 
@@ -215,10 +215,10 @@ void
 MixerSelectionsAction::save_existing_plugin (
   FullMixerSelections *           tmp_ms,
   Track *                         from_tr,
-  zrythm::plugins::PluginSlotType from_slot_type,
+  zrythm::gui::dsp::plugins::PluginSlotType from_slot_type,
   int                             from_slot,
   Track *                         to_tr,
-  zrythm::plugins::PluginSlotType to_slot_type,
+  zrythm::gui::dsp::plugins::PluginSlotType to_slot_type,
   int                             to_slot)
 {
   auto existing_pl = to_tr->get_plugin_at_slot (to_slot_type, to_slot);
@@ -253,7 +253,7 @@ MixerSelectionsAction::revert_deleted_plugin (Track &to_tr, int to_slot)
 
   z_debug ("reverting deleted plugin at {}#{}", to_tr.name_, to_slot);
 
-  if (deleted_ms_->type_ == zrythm::plugins::PluginSlotType::Modulator)
+  if (deleted_ms_->type_ == zrythm::gui::dsp::plugins::PluginSlotType::Modulator)
     {
       /* modulators are never replaced */
       return;
@@ -274,7 +274,7 @@ MixerSelectionsAction::revert_deleted_plugin (Track &to_tr, int to_slot)
 
       /* add to channel - note: cloning deleted_pl also instantiates the clone */
       auto added_pl = to_tr.insert_plugin (
-        clone_unique_with_variant<zrythm::plugins::PluginVariant> (
+        clone_unique_with_variant<zrythm::gui::dsp::plugins::PluginVariant> (
           deleted_pl.get ()),
         deleted_ms_->type_, slot_to_revert, true, true, false, false, true,
         false, false);
@@ -308,7 +308,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
       .value ());
   z_return_if_fail (track);
 
-  Channel * ch =
+  auto * ch =
     track->has_channel ()
       ? dynamic_cast<ChannelTrack *> (track)->channel_
       : nullptr;
@@ -332,12 +332,12 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
           int slot = create ? (to_slot_ + i) : own_ms->plugins_[i]->id_.slot_;
 
           /* create new plugin */
-          std::unique_ptr<zrythm::plugins::Plugin> pl;
+          std::unique_ptr<zrythm::gui::dsp::plugins::Plugin> pl;
           if (create)
             {
               if (mixer_selections_action_type_ == Type::Paste)
                 {
-                  pl = clone_unique_with_variant<zrythm::plugins::PluginVariant> (
+                  pl = clone_unique_with_variant<zrythm::gui::dsp::plugins::PluginVariant> (
                     own_ms->plugins_[i].get ());
                 }
               else
@@ -353,7 +353,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
           else if (delete_)
             {
               /* note: this also instantiates the plugin */
-              pl = clone_unique_with_variant<zrythm::plugins::PluginVariant> (
+              pl = clone_unique_with_variant<zrythm::gui::dsp::plugins::PluginVariant> (
                 own_ms->plugins_[i].get ());
             }
 
@@ -371,7 +371,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
           /* save any plugin about to be deleted */
           save_existing_plugin (
             deleted_ms_.get (), nullptr, slot_type, -1,
-            slot_type == zrythm::plugins::PluginSlotType::Modulator
+            slot_type == zrythm::gui::dsp::plugins::PluginSlotType::Modulator
               ? P_MODULATOR_TRACK
               : track,
             slot_type, slot);
@@ -508,7 +508,7 @@ MixerSelectionsAction::do_or_undo_change_status (bool do_it)
   for (size_t i = 0; i < ms->slots_.size (); i++)
     {
       auto own_pl = ms->plugins_[i].get ();
-      auto pl = zrythm::plugins::Plugin::find (own_pl->id_);
+      auto pl = zrythm::gui::dsp::plugins::Plugin::find (own_pl->id_);
       pl->set_enabled (
         do_it ? new_val_ : own_pl->is_enabled (false),
         i == ms->slots_.size () - 1);
@@ -535,7 +535,7 @@ MixerSelectionsAction::do_or_undo_change_load_behavior (bool do_it)
   for (size_t i = 0; i < ms->slots_.size (); i++)
     {
       auto own_pl = ms->plugins_[i].get ();
-      auto pl = zrythm::plugins::Plugin::find (own_pl->id_);
+      auto pl = zrythm::gui::dsp::plugins::Plugin::find (own_pl->id_);
       pl->setting_->bridge_mode_ =
         do_it ? new_bridge_mode_ : own_pl->setting_->bridge_mode_;
 
@@ -548,11 +548,11 @@ MixerSelectionsAction::do_or_undo_change_load_behavior (bool do_it)
 
       switch (pl->setting_->bridge_mode_)
         {
-        case zrythm::plugins::CarlaBridgeMode::Full:
+        case zrythm::gui::dsp::plugins::CarlaBridgeMode::Full:
           carla_set_engine_option (
             pl->carla->host_handle, ENGINE_OPTION_PREFER_PLUGIN_BRIDGES, true, nullptr);
           break;
-        case zrythm::plugins::CarlaBridgeMode::UI:
+        case zrythm::gui::dsp::plugins::CarlaBridgeMode::UI:
           carla_set_engine_option (
             pl->carla->host_handle, ENGINE_OPTION_PREFER_UI_BRIDGES, true, nullptr);
           break;
@@ -590,7 +590,7 @@ void
 MixerSelectionsAction::copy_automation_from_track1_to_track2 (
   const AutomatableTrack         &from_track,
   AutomatableTrack               &to_track,
-  zrythm::plugins::PluginSlotType slot_type,
+  zrythm::gui::dsp::plugins::PluginSlotType slot_type,
   int                             from_slot,
   int                             to_slot)
 {
@@ -633,8 +633,8 @@ void
 MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
 {
   auto                            own_ms = ms_before_.get ();
-  zrythm::plugins::PluginSlotType from_slot_type = own_ms->type_;
-  zrythm::plugins::PluginSlotType to_slot_type = slot_type_;
+  zrythm::gui::dsp::plugins::PluginSlotType from_slot_type = own_ms->type_;
+  zrythm::gui::dsp::plugins::PluginSlotType to_slot_type = slot_type_;
   auto *                          from_tr = std::visit (
     [&] (auto &&t) { return dynamic_cast<AutomatableTrack *> (t); },
     TRACKLIST->find_track_by_name_hash (own_ms->track_name_hash_).value ());
@@ -694,8 +694,8 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
         {
           /* get/create the actual plugin */
           int from_slot = own_ms->plugins_[i]->id_.slot_;
-          std::unique_ptr<zrythm::plugins::Plugin> new_pl;
-          zrythm::plugins::Plugin *                pl = nullptr;
+          std::unique_ptr<zrythm::gui::dsp::plugins::Plugin> new_pl;
+          zrythm::gui::dsp::plugins::Plugin *                pl = nullptr;
           if (move)
             {
               pl = from_tr->get_plugin_at_slot (own_ms->type_, from_slot);
@@ -704,7 +704,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
             }
           else
             {
-              new_pl = clone_unique_with_variant<zrythm::plugins::PluginVariant> (
+              new_pl = clone_unique_with_variant<zrythm::gui::dsp::plugins::PluginVariant> (
                 own_ms->plugins_[i].get ());
             }
 
@@ -789,7 +789,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
       Track * to_tr = std::visit (
         [&] (auto &&t) { return dynamic_cast<Track *> (t); },
         TRACKLIST->find_track_by_name_hash (to_track_name_hash_).value ());
-      [[maybe_unused]] Channel * to_ch =
+      [[maybe_unused]] auto* to_ch =
         to_tr->has_channel ()
           ? dynamic_cast<ChannelTrack *> (to_tr)->channel_
           : nullptr;
@@ -811,7 +811,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
         {
           /* get the actual plugin */
           int                       to_slot = to_slot_ + i;
-          zrythm::plugins::Plugin * pl =
+          zrythm::gui::dsp::plugins::Plugin * pl =
             to_tr->get_plugin_at_slot (to_slot_type, to_slot);
           z_return_if_fail (pl);
 

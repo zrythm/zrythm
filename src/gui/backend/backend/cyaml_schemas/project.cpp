@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/utils/objects.h"
 #include "gui/backend/backend/cyaml_schemas/project.h"
 
+#include "utils/exceptions.h"
 #include <yyjson.h>
 
 static bool
@@ -1572,10 +1572,10 @@ midi_mappings_v1_serialize_to_json (
   return true;
 }
 
-CStringRAII
+zrythm::utils::string::CStringRAII
 project_v5_serialize_to_json_str (const Project_v5 * prj)
 {
-  z_return_val_if_fail (prj, CStringRAII ({}));
+  z_return_val_if_fail (prj, zrythm::utils::string::CStringRAII ({}));
 
   yyjson_mut_doc * doc = yyjson_mut_doc_new (NULL);
   yyjson_mut_val * root = yyjson_mut_obj (doc);
@@ -1660,5 +1660,5 @@ project_v5_serialize_to_json_str (const Project_v5 * prj)
       throw ZrythmException ("Failed to write JSON");
     }
 
-  return CStringRAII (json);
+  return { json };
 }

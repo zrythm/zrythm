@@ -4,20 +4,28 @@
 #ifndef __GUI_BACKEND_POSITION_PROXY_H__
 #define __GUI_BACKEND_POSITION_PROXY_H__
 
-#include "common/dsp/position.h"
-#include "common/utils/icloneable.h"
-#include "common/utils/math.h"
+# include "dsp/position.h"
+#include "utils/icloneable.h"
+#include "utils/math.h"
 
 #include <QObject>
 #include <QtQmlIntegration>
 
 #include "realtime_property.h"
 
+class Transport;
+class TempoTrack;
+
+Q_DECLARE_OPAQUE_POINTER (Transport *)
+Q_DECLARE_OPAQUE_POINTER (const Transport *)
+Q_DECLARE_OPAQUE_POINTER (TempoTrack *)
+Q_DECLARE_OPAQUE_POINTER (const TempoTrack *)
+
 class PositionProxy
     : public QObject,
       public IRealtimeProperty,
-      public Position,
-      public ISerializable<PositionProxy>,
+      public zrythm::dsp::Position,
+      public zrythm::utils::serialization::ISerializable<PositionProxy>,
       public ICloneable<PositionProxy>
 {
   Q_OBJECT
@@ -122,8 +130,8 @@ private:
 inline auto
 operator<=> (const PositionProxy &lhs, const PositionProxy &rhs)
 {
-  return static_cast<const Position &> (lhs)
-         <=> static_cast<const Position &> (rhs);
+  return static_cast<const zrythm::dsp::Position &> (lhs)
+         <=> static_cast<const zrythm::dsp::Position &> (rhs);
 }
 
 inline bool
@@ -132,8 +140,8 @@ operator== (const PositionProxy &lhs, const PositionProxy &rhs)
   return (lhs <=> rhs) == 0;
 }
 
-DEFINE_OBJECT_FORMATTER (PositionProxy, [] (const PositionProxy &obj) {
-  return obj.to_string ();
+DEFINE_OBJECT_FORMATTER (PositionProxy, PositionProxy, [] (const auto &obj) {
+  return Position_to_string(obj);
 });
 
 #endif // __GUI_BACKEND_POSITION_PROXY_H__

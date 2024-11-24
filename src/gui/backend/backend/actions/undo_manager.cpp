@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/router.h"
-#include "common/utils/gtest_wrapper.h"
+# include "gui/dsp/router.h"
+#include "utils/gtest_wrapper.h"
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/actions/undo_stack.h"
 #include "gui/backend/backend/actions/undoable_action.h"
@@ -161,7 +161,7 @@ UndoManager::contains_clip (const AudioClip &clip) const
 }
 
 void
-UndoManager::get_plugins (std::vector<zrythm::plugins::Plugin *> &plugins) const
+UndoManager::get_plugins (std::vector<zrythm::gui::dsp::plugins::Plugin *> &plugins) const
 {
   undo_stack_->get_plugins (plugins);
   redo_stack_->get_plugins (plugins);

@@ -13,7 +13,6 @@
 #ifndef __SCHEMAS_UNDO_UNDO_STACK_H__
 #define __SCHEMAS_UNDO_UNDO_STACK_H__
 
-#include "common/utils/yaml.h"
 #include "gui/backend/backend/cyaml_schemas/actions/arranger_selections.h"
 #include "gui/backend/backend/cyaml_schemas/actions/channel_send_action.h"
 #include "gui/backend/backend/cyaml_schemas/actions/midi_mapping_action.h"
@@ -24,6 +23,8 @@
 #include "gui/backend/backend/cyaml_schemas/actions/tracklist_selections.h"
 #include "gui/backend/backend/cyaml_schemas/actions/transport_action.h"
 #include "gui/backend/backend/cyaml_schemas/utils/stack.h"
+
+#include "utils/yaml.h"
 
 typedef struct UndoStack_v1
 {

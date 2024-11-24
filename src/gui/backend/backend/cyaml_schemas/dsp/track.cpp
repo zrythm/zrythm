@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/utils/objects.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/track.h"
+
+#include "utils/objects.h"
 
 Track_v2 *
 track_upgrade_from_v1 (Track_v1 * old)

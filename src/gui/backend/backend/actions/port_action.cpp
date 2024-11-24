@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/control_port.h"
-#include "common/dsp/port.h"
-#include "common/utils/format.h"
+# include "gui/dsp/control_port.h"
+# include "gui/dsp/port.h"
+#include "utils/format.h"
 #include "gui/backend/backend/actions/port_action.h"
 
 using namespace zrythm::gui::actions;

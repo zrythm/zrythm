@@ -7,9 +7,10 @@
 #include <memory>
 #include <vector>
 
-#include "common/dsp/arranger_object_all.h"
-#include "common/utils/icloneable.h"
-#include "common/utils/traits.h"
+#include "gui/dsp/arranger_object_all.h"
+
+#include "utils/icloneable.h"
+#include "utils/traits.h"
 
 class AudioClip;
 
@@ -40,7 +41,8 @@ constexpr double ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS = 0.1;
  *
  * This collection is mainly used for performing actions.
  */
-class ArrangerSelections : public ISerializable<ArrangerSelections>
+class ArrangerSelections
+    : public zrythm::utils::serialization::ISerializable<ArrangerSelections>
 {
 public:
   enum class Type
@@ -60,6 +62,8 @@ public:
     HasLooped,
     CanFade,
   };
+
+  using Position = dsp::Position;
 
 public:
   ~ArrangerSelections () override = default;
@@ -366,10 +370,10 @@ concept FinalArrangerSelectionsSubclass =
  * @}
  */
 
-extern template std::pair<MidiNote *, Position>
+extern template std::pair<MidiNote *, ArrangerSelections::Position>
 ArrangerSelections::get_first_object_and_pos (bool global) const;
 
-extern template std::pair<MidiNote *, Position>
+extern template std::pair<MidiNote *, ArrangerSelections::Position>
 ArrangerSelections::get_last_object_and_pos (bool global, bool ends_last) const;
 
 extern template void

@@ -6,7 +6,7 @@ if(NOT ZRYTHM_TESTS)
 endif()
 
 if("${BUNDLED_PLUGINS_FOR_TESTS_TGTS}" STREQUAL "")
-  message(WARNING "Built-in plugins are not generated - generate them first")  
+  message(WARNING "Built-in plugins are not generated - generate them first")
   return()
 endif()
 
@@ -101,7 +101,7 @@ foreach(pl ${BUNDLED_PLUGINS_FOR_TESTS})
 #   get_target_property(pl_bundle_path ${target} PLUGIN_BUNDLE_DIR_PATH)
   set(plugin_bundle_uri "file://${pl_bundle_path}/" )
   string(TOUPPER ${name} name_upper)
-  list(APPEND test_defs_list 
+  list(APPEND test_defs_list
     "HAVE_${name_upper}=1"
     "${name_upper}_URI=\"${uri}\""
     "${name_upper}_BUNDLE=\"${plugin_bundle_uri}\"")
@@ -207,6 +207,8 @@ configure_file(
   ${CMAKE_CURRENT_BINARY_DIR}/zrythm-test-config.h
 )
 
+add_subdirectory(unit)
+
 # set(TEST_LINK_ARGS -fPIC)
 
 set(TESTS
@@ -233,7 +235,6 @@ dsp/midi_note
 dsp/midi_region
 dsp/midi_track
 dsp/pool
-dsp/position
 dsp/port
 dsp/region
 dsp/sample_processor
@@ -254,15 +255,6 @@ plugins/plugin
 plugins/plugin_manager
 project
 settings/settings
-utils/compression
-utils/datetime
-utils/file
-utils/hash
-utils/math
-utils/midi
-utils/object_pool
-utils/io
-utils/string
 utils/ui
 utils/yaml
 zrythm_app
@@ -303,8 +295,8 @@ helpers/zrythm_helper.cpp
 target_link_libraries(test_helpers PUBLIC zrythm_lib)
 add_dependencies(test_helpers ${test_lv2_plugin_libs})
 target_include_directories(test_helpers
-  PUBLIC 
-    ${all_inc} 
+  PUBLIC
+    ${all_inc}
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -317,15 +309,15 @@ foreach(test_path IN LISTS TESTS)
         if(benchmark_FOUND)
             set(benchmark_target_name "${test_target}_benchmark")
             add_executable(${benchmark_target_name} ${test_path}.cpp)
-            target_link_libraries(${benchmark_target_name} PRIVATE 
-                zrythm_lib 
+            target_link_libraries(${benchmark_target_name} PRIVATE
+                zrythm_lib
                 test_helpers
                 benchmark::benchmark
                 benchmark::benchmark_main
                 )
-            
+
             add_test(${benchmark_target_name} ${benchmark_target_name})
-            set_tests_properties(${benchmark_target_name} PROPERTIES 
+            set_tests_properties(${benchmark_target_name} PROPERTIES
             ENVIRONMENT "${TEST_ENV};ZRYTHM_BENCHMARKING=1"
             TIMEOUT 680
             )
@@ -334,15 +326,15 @@ foreach(test_path IN LISTS TESTS)
     else()
         set(test_target_name ${test_target}_test)
         add_executable(${test_target_name} ${test_path}.cpp)
-        target_link_libraries(${test_target_name} PRIVATE 
-            zrythm_lib 
+        target_link_libraries(${test_target_name} PRIVATE
+            zrythm_lib
             test_helpers
             GTest::gtest
             GTest::gtest_main
         )
 
         add_test(${test_target_name} ${test_target_name})
-        set_tests_properties(${test_target_name} PROPERTIES 
+        set_tests_properties(${test_target_name} PROPERTIES
             ENVIRONMENT "${TEST_ENV}"
             TIMEOUT 240
         )

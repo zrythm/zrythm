@@ -10,8 +10,9 @@
 #ifndef __GUI_BACKEND_TIMELINE_H__
 #define __GUI_BACKEND_TIMELINE_H__
 
-#include "common/utils/icloneable.h"
 #include "gui/backend/backend/editor_settings.h"
+
+#include "utils/icloneable.h"
 
 /**
  * @addtogroup gui_backend
@@ -28,7 +29,7 @@ class Timeline final
     : public QObject,
       public EditorSettings,
       public ICloneable<Timeline>,
-      public ISerializable<Timeline>
+      public zrythm::utils::serialization::ISerializable<Timeline>
 {
   Q_OBJECT
   QML_ELEMENT

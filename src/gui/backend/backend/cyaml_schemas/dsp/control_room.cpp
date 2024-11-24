@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/control_room.h"
-#include "common/utils/objects.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/control_room.h"
+
+#include "utils/objects.h"
 
 ControlRoom_v2 *
 control_room_upgrade_from_v1 (ControlRoom_v1 * old)

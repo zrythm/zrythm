@@ -10,9 +10,10 @@
 #ifndef __SCHEMAS_GUI_BACKEND_CHORD_EDITOR_H__
 #define __SCHEMAS_GUI_BACKEND_CHORD_EDITOR_H__
 
-#include "common/utils/yaml.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/chord_descriptor.h"
 #include "gui/backend/backend/cyaml_schemas/gui/backend/editor_settings.h"
+
+#include "utils/yaml.h"
 
 typedef struct ChordEditor_v1
 {

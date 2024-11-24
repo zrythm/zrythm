@@ -3,16 +3,16 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/dsp/chord_track.h"
-#include "common/dsp/engine_dummy.h"
-#include "common/dsp/marker_track.h"
-#include "common/dsp/tempo_track.h"
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/dsp.h"
-#include "common/utils/flags.h"
-#include "common/utils/io.h"
-#include "common/utils/ui.h"
+# include "gui/dsp/chord_track.h"
+# include "gui/dsp/engine_dummy.h"
+# include "gui/dsp/marker_track.h"
+# include "gui/dsp/tempo_track.h"
+# include "gui/dsp/track.h"
+# include "gui/dsp/tracklist.h"
+#include "utils/dsp.h"
+#include "utils/flags.h"
+#include "utils/io.h"
+#include "gui/backend/ui.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
@@ -192,7 +192,7 @@ TEST_F (ZrythmFixture, NewFromTemplate)
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
 
   ASSERT_GT (
-    dsp_abs_max (
+    utils::float_ranges::abs_max (
       MONITOR_FADER->stereo_out_->get_l ().buf_.data (),
       AUDIO_ENGINE->block_length_),
     0.0001f);
@@ -210,7 +210,7 @@ TEST_F (ZrythmFixture, NewFromTemplate)
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
 
   ASSERT_GT (
-    dsp_abs_max (
+    utils::float_ranges::abs_max (
       MONITOR_FADER->stereo_out_->get_l ().buf_.data (),
       AUDIO_ENGINE->block_length_),
     0.0001f);
@@ -238,7 +238,7 @@ TEST_F (ZrythmFixture, NewFromTemplate)
   AUDIO_ENGINE->process (AUDIO_ENGINE->block_length_);
 
   ASSERT_GT (
-    dsp_abs_max (
+    utils::float_ranges::abs_max (
       &MONITOR_FADER->stereo_out_->get_l ().buf_[0], AUDIO_ENGINE->block_length_),
     0.0001f);
 }

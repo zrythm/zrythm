@@ -10,8 +10,9 @@
 #ifndef __SCHEMAS_AUDIO_MODULATOR_MACRO_PROCESSOR_H__
 #define __SCHEMAS_AUDIO_MODULATOR_MACRO_PROCESSOR_H__
 
-#include "common/utils/yaml.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/port.h"
+
+#include "utils/yaml.h"
 
 typedef struct ModulatorMacroProcessor_v1
 {

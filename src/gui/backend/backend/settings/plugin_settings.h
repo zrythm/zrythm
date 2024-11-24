@@ -8,10 +8,10 @@
 
 #include <memory>
 
-#include "common/plugins/plugin_descriptor.h"
-#include "common/plugins/plugin_identifier.h"
+#include "gui/dsp/plugin_descriptor.h"
+#include "gui/dsp/plugin_identifier.h"
 
-namespace zrythm::plugins
+namespace zrythm::gui::dsp::plugins
 {
 class Plugin;
 }
@@ -26,7 +26,7 @@ class Plugin;
  * A setting for a specific plugin descriptor.
  */
 class PluginSetting final
-    : public ISerializable<PluginSetting>,
+    : public zrythm::utils::serialization::ISerializable<PluginSetting>,
       public ICloneable<PluginSetting>
 {
 public:
@@ -36,7 +36,7 @@ public:
    * Creates a plugin setting with the recommended settings for the given plugin
    * descriptor based on the current setup.
    */
-  PluginSetting (const zrythm::plugins::PluginDescriptor &descr);
+  PluginSetting (const zrythm::gui::dsp::plugins::PluginDescriptor &descr);
 
   enum class HostingType
   {
@@ -101,7 +101,7 @@ public:
   }
 #endif
 
-  zrythm::plugins::PluginDescriptor * get_descriptor () const
+  zrythm::gui::dsp::plugins::PluginDescriptor * get_descriptor () const
   {
     return descr_.get ();
   }
@@ -114,12 +114,12 @@ public:
    * @param track_name_hash
    * @param slot_type
    * @param slot
-   * @return std::unique_ptr<zrythm::plugins::Plugin>
+   * @return std::unique_ptr<zrythm::gui::dsp::plugins::Plugin>
    */
-  std::unique_ptr<zrythm::plugins::Plugin> create_plugin (
-    unsigned int                    track_name_hash = 0,
-    zrythm::plugins::PluginSlotType slot_type =
-      zrythm::plugins::PluginSlotType::Insert,
+  std::unique_ptr<zrythm::gui::dsp::plugins::Plugin> create_plugin (
+    unsigned int                              track_name_hash = 0,
+    zrythm::gui::dsp::plugins::PluginSlotType slot_type =
+      zrythm::gui::dsp::plugins::PluginSlotType::Insert,
     int slot = 0);
 
   /**
@@ -132,7 +132,7 @@ private:
 
 public:
   /** The descriptor of the plugin this setting is for. */
-  std::unique_ptr<zrythm::plugins::PluginDescriptor> descr_;
+  std::unique_ptr<zrythm::gui::dsp::plugins::PluginDescriptor> descr_;
 
   HostingType hosting_type_ = HostingType::Carla;
 
@@ -143,8 +143,8 @@ public:
   bool force_generic_ui_ = false;
 
   /** Requested carla bridge mode. */
-  zrythm::plugins::CarlaBridgeMode bridge_mode_ =
-    (zrythm::plugins::CarlaBridgeMode) 0;
+  zrythm::gui::dsp::plugins::CarlaBridgeMode bridge_mode_ =
+    (zrythm::gui::dsp::plugins::CarlaBridgeMode) 0;
 
   /** Last datetime instantiated (number of microseconds since January 1, 1970
    * UTC). */
@@ -154,7 +154,8 @@ public:
   int num_instantiations_ = 0;
 };
 
-class PluginSettings final : public ISerializable<PluginSettings>
+class PluginSettings
+  final : public zrythm::utils::serialization::ISerializable<PluginSettings>
 {
 public:
   /**
@@ -197,7 +198,8 @@ public:
    *
    * @return The found setting or NULL.
    */
-  PluginSetting * find (const zrythm::plugins::PluginDescriptor &descr);
+  PluginSetting *
+  find (const zrythm::gui::dsp::plugins::PluginDescriptor &descr);
 
   /**
    * Replaces a setting or appends a setting to the cache.

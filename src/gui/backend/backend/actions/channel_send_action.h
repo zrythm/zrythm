@@ -4,9 +4,9 @@
 #ifndef __UNDO_CHANNEL_SEND_ACTION_H__
 #define __UNDO_CHANNEL_SEND_ACTION_H__
 
-#include "common/dsp/channel_send.h"
-#include "common/dsp/port_connections_manager.h"
 #include "gui/backend/backend/actions/undoable_action.h"
+#include "gui/dsp/channel_send.h"
+#include "gui/dsp/port_connections_manager.h"
 
 namespace zrythm::gui::actions
 {
@@ -18,7 +18,7 @@ class ChannelSendAction
     : public QObject,
       public UndoableAction,
       public ICloneable<ChannelSendAction>,
-      public ISerializable<ChannelSendAction>
+      public zrythm::utils::serialization::ISerializable<ChannelSendAction>
 {
   Q_OBJECT
   QML_ELEMENT

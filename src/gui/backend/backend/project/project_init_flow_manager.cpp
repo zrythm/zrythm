@@ -8,22 +8,22 @@
 #include <inttypes.h>
 #include <sys/stat.h>
 
-#include "common/dsp/router.h"
-#include "common/dsp/tempo_track.h"
-#include "common/dsp/tracklist.h"
-#include "common/utils/datetime.h"
-#include "common/utils/flags.h"
-#include "common/utils/gtest_wrapper.h"
-#include "common/utils/io.h"
-#include "common/utils/objects.h"
-#include "common/utils/string.h"
-#include "common/utils/ui.h"
 #include "gui/backend/backend/cyaml_schemas/project.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/project/project_init_flow_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/project_manager.h"
+#include "gui/backend/ui.h"
+#include "gui/dsp/router.h"
+#include "gui/dsp/tempo_track.h"
+#include "gui/dsp/tracklist.h"
 
+#include "utils/datetime.h"
+#include "utils/flags.h"
+#include "utils/gtest_wrapper.h"
+#include "utils/io.h"
+#include "utils/objects.h"
+#include "utils/string.h"
 #include <yyjson.h>
 
 using namespace zrythm;
@@ -180,7 +180,7 @@ ProjectInitFlowManager::upgrade_schema (char ** yaml, int src_ver)
         new_prj->schema_version = 4;
         new_prj->title = old_prj->title;
         new_prj->datetime_str =
-          strdup (datetime_get_current_as_string ().c_str ());
+          strdup (utils::datetime::get_current_as_string ().c_str ());
         new_prj->version = strdup (Zrythm::get_version (false).c_str ());
 
         /* upgrade */
@@ -246,7 +246,7 @@ ProjectInitFlowManager::upgrade_schema (char ** yaml, int src_ver)
         new_prj->schema_version = 5;
         new_prj->title = old_prj->title;
         new_prj->datetime_str =
-          strdup (datetime_get_current_as_string ().c_str ());
+          strdup (utils::datetime::get_current_as_string ().c_str ());
         new_prj->version = strdup (Zrythm::get_version (false).c_str ());
 
         /* re-serialize */
@@ -457,14 +457,14 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
   if (!json_read_success)
     {
       /* failed to read JSON - check if YAML */
-      int schema_ver = string_get_regex_group_as_int (
+      int schema_ver = utils::string::get_regex_group_as_int (
         text, "---\nschema_version: (.*)\n", 1, -1);
       if (schema_ver > 0)
         {
           yaml_schema_ver = schema_ver;
           /* upgrade YAML and set doc */
           auto prj_ver_str =
-            string_get_regex_group (text, "\nversion: (.*)\n", 1);
+            utils::string::get_regex_group (text, "\nversion: (.*)\n", 1);
           if (prj_ver_str.empty ())
             {
               call_last_callback_fail (
@@ -473,7 +473,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
             }
           z_info ("project from text (version {})...", prj_ver_str);
 
-          schema_ver = string_get_regex_group_as_int (
+          schema_ver = utils::string::get_regex_group_as_int (
             text, "---\nschema_version: (.*)\n", 1, -1);
           z_info ("detected schema version {}", schema_ver);
           if (schema_ver != 5)

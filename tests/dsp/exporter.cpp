@@ -3,18 +3,18 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/dsp/exporter.h"
-#include "common/io/file_descriptor.h"
-#include "common/utils/chromaprint.h"
-#include "common/utils/progress_info.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/actions/channel_send_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/backend/io/file_descriptor.h"
+#include "gui/dsp/exporter.h"
 
 #include "helpers/plugin_manager.h"
 #include "tests/helpers/zrythm_helper.h"
 
+#include "utils/chromaprint.h"
+#include "utils/progress_info.h"
 #include <sndfile.h>
 
 constexpr midi_byte_t DUMMY_NOTE_PITCH = 70;
@@ -588,8 +588,8 @@ test_bounce_instrument_track (BounceStep bounce_step, bool with_parents)
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (MVERB_BUNDLE, MVERB_URI, false);
   mixer_selections_action_perform_create (
-    zrythm::plugins::PluginSlotType::Insert, ins_track->get_name_hash (), 0,
-    setting, 1, nullptr);
+    zrythm::gui::dsp::plugins::PluginSlotType::Insert,
+    ins_track->get_name_hash (), 0, setting, 1, nullptr);
 
   /* adjust fader */
   Fader * fader = track_get_fader (ins_track, true);

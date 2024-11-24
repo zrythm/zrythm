@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "common/dsp/position.h"
 #include "gui/backend/backend/midi_selections.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+
+#include "dsp/position.h"
 
 MidiSelections::MidiSelections (QObject * parent)
     : QObject (parent), ArrangerSelections (Type::Midi)

@@ -3,15 +3,15 @@
 
 #include <ranges>
 
-#include "common/dsp/engine.h"
-#include "common/dsp/foldable_track.h"
-#include "common/dsp/master_track.h"
-#include "common/dsp/position.h"
-#include "common/dsp/recordable_track.h"
-#include "common/dsp/track.h"
-#include "common/dsp/tracklist.h"
-#include "common/dsp/transport.h"
-#include "common/utils/rt_thread_id.h"
+# include "gui/dsp/engine.h"
+# include "gui/dsp/foldable_track.h"
+# include "gui/dsp/master_track.h"
+# include "dsp/position.h"
+# include "gui/dsp/recordable_track.h"
+# include "gui/dsp/track.h"
+# include "gui/dsp/tracklist.h"
+# include "gui/dsp/transport.h"
+#include "utils/rt_thread_id.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
@@ -472,7 +472,7 @@ SimpleTracklistSelections::select_last_visible ()
 }
 
 void
-TracklistSelections::get_plugins (std::vector<zrythm::plugins::Plugin *> &arr)
+TracklistSelections::get_plugins (std::vector<zrythm::gui::dsp::plugins::Plugin *> &arr)
 {
   for (auto &track : tracks_)
     {

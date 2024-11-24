@@ -3,13 +3,14 @@
 
 #include "zrythm-test-config.h"
 
-#include "common/dsp/track.h"
-#include "common/utils/flags.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/dsp/track.h"
 
 #include "tests/helpers/exporter.h"
 #include "tests/helpers/plugin_manager.h"
+
+#include "utils/flags.h"
 
 TEST_F (ZrythmFixture, MidiFxRouting)
 {
@@ -47,7 +48,7 @@ TEST_F (ZrythmFixture, MidiFxRouting)
   setting = test_plugin_manager_get_plugin_setting (
     PLUMBING_BUNDLE_URI, "http://gareus.org/oss/lv2/plumbing#eat1", true);
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-    zrythm::plugins::PluginSlotType::MidiFx, *track, 0, setting, 1));
+    zrythm::gui::dsp::plugins::PluginSlotType::MidiFx, *track, 0, setting, 1));
 
   num_dests = PORT_CONNECTIONS_MGR->get_sources_or_dests (
     nullptr, track->processor_->midi_out_->id_, false);
