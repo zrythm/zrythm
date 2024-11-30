@@ -96,22 +96,22 @@ test_plugin_manager_get_plugin_setting (
   }
 
   bool scan_finished = false;
-  zrythm::gui::dsp::plugins::PluginManager::get_active_instance ()
+  zrythm::gui::old_dsp::plugins::PluginManager::get_active_instance ()
     ->clear_plugins ();
-  zrythm::gui::dsp::plugins::PluginManager::get_active_instance ()->begin_scan (
-    1.0, nullptr, [&scan_finished] () { scan_finished = true; });
+  zrythm::gui::old_dsp::plugins::PluginManager::get_active_instance ()
+    ->begin_scan (1.0, nullptr, [&scan_finished] () { scan_finished = true; });
   while (!scan_finished)
     {
       g_main_context_iteration (nullptr, true);
     }
   EXPECT_NONEMPTY (
-    zrythm::gui::dsp::plugins::PluginManager::get_active_instance ()
+    zrythm::gui::old_dsp::plugins::PluginManager::get_active_instance ()
       ->plugin_descriptors_);
 
   std::optional<PluginDescriptor> descr;
   for (
     const auto &cur_descr :
-    zrythm::gui::dsp::plugins::PluginManager::get_active_instance ()
+    zrythm::gui::old_dsp::plugins::PluginManager::get_active_instance ()
       ->plugin_descriptors_)
     {
       if (pl_uri)

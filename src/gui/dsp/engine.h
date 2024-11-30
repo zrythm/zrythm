@@ -13,17 +13,16 @@
 
 #include "zrythm-config.h"
 
+#include "dsp/panning.h"
+#include "gui/backend/channel.h"
 #include "gui/dsp/audio_port.h"
-#include "gui/dsp/channel.h"
 #include "gui/dsp/control_room.h"
 #include "gui/dsp/ext_port.h"
 #include "gui/dsp/hardware_processor.h"
 #include "gui/dsp/midi_port.h"
-#include "gui/dsp/pan.h"
 #include "gui/dsp/pool.h"
 #include "gui/dsp/sample_processor.h"
 #include "gui/dsp/transport.h"
-
 #include "utils/backtrace.h"
 #include "utils/concurrency.h"
 #include "utils/object_pool.h"
@@ -45,7 +44,7 @@
 #  include <rtaudio_c.h>
 #endif
 
-namespace zrythm::gui::dsp::plugins
+namespace zrythm::gui::old_dsp::plugins
 {
 class Plugin;
 }
@@ -696,9 +695,9 @@ public:
 
   /* note: these 2 are ignored at the moment */
   /** Pan law. */
-  PanLaw pan_law_ = {};
+  dsp::PanLaw pan_law_ = {};
   /** Pan algorithm */
-  PanAlgorithm pan_algo_ = {};
+  dsp::PanAlgorithm pan_algo_ = {};
 
   /** Time taken to process in the last cycle */
   // SteadyDuration last_time_taken_;

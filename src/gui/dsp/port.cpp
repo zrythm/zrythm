@@ -3,10 +3,11 @@
 
 #include "zrythm-config.h"
 
+#include "dsp/port_identifier.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/backend/channel.h"
 #include "gui/dsp/carla_native_plugin.h"
-#include "gui/dsp/channel.h"
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/cv_port.h"
 #include "gui/dsp/engine_jack.h"
@@ -19,20 +20,19 @@
 #include "gui/dsp/modulator_track.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/port.h"
-#include "gui/dsp/port_identifier.h"
 #include "gui/dsp/recordable_track.h"
 #include "gui/dsp/router.h"
 #include "gui/dsp/rtaudio_device.h"
 #include "gui/dsp/rtmidi_device.h"
 #include "gui/dsp/tempo_track.h"
 #include "gui/dsp/tracklist.h"
-
 #include "utils/dsp.h"
 #include "utils/hash.h"
 #include "utils/rt_thread_id.h"
+
 #include <fmt/format.h>
 
-Port::Port () : id_ (new PortIdentifier ()) { }
+Port::Port () : id_ (std::make_unique<PortIdentifier> ()) { }
 
 Port::Port (
   std::string label,
@@ -41,7 +41,8 @@ Port::Port (
   float       minf,
   float       maxf,
   float       zerof)
-    : id_ (new PortIdentifier ()), minf_ (minf), maxf_ (maxf), zerof_ (zerof)
+    : id_ (std::make_unique<PortIdentifier> ()), minf_ (minf), maxf_ (maxf),
+      zerof_ (zerof)
 {
   id_->label_ = label;
   id_->type_ = type;
@@ -68,7 +69,7 @@ Port::create_unique_from_type (PortType type)
 
 template <typename T>
 T *
-Port::find_from_identifier (const PortIdentifier &id)
+Port::find_from_identifier (const zrythm::dsp::PortIdentifier &id)
 {
   static_assert (FinalPortSubclass<T>);
 
@@ -126,7 +127,7 @@ Port::find_from_identifier (const PortIdentifier &id)
       {
         auto * tr = dynamic_cast<ProcessableTrack *> (get_track_lambda ());
         z_return_val_if_fail (tr, nullptr);
-        zrythm::gui::dsp::plugins::Plugin * pl = nullptr;
+        zrythm::gui::old_dsp::plugins::Plugin * pl = nullptr;
         if (tr->has_channel ())
           {
             auto channel_track = dynamic_cast<ChannelTrack *> (tr);
@@ -523,7 +524,7 @@ Port::find_from_identifier (const PortIdentifier &id)
 }
 
 Port *
-Port::find_from_identifier (const PortIdentifier &id)
+Port::find_from_identifier (const zrythm::dsp::PortIdentifier &id)
 {
   switch (id.type_)
     {
@@ -683,7 +684,7 @@ Port::set_owner (T * owner)
     return track->name_.empty () ? 0 : track->get_name_hash ();
   };
 
-  if constexpr (std::derived_from<T, zrythm::gui::dsp::plugins::Plugin>)
+  if constexpr (std::derived_from<T, zrythm::gui::old_dsp::plugins::Plugin>)
     {
       id_->plugin_id_ = owner->id_;
       id_->track_name_hash_ = owner->id_.track_name_hash_;
@@ -706,7 +707,7 @@ Port::set_owner (T * owner)
       id_->owner_type_ = PortIdentifier::OwnerType::TrackProcessor;
       track_ = track;
     }
-  else if constexpr (std::derived_from<T, zrythm::gui::dsp::Channel>)
+  else if constexpr (std::derived_from<T, zrythm::gui::Channel>)
     {
       auto track = owner->get_track ();
       z_return_if_fail (track);
@@ -923,8 +924,7 @@ Port::update_identifier (
           if (conn->dest_id_ != id_)
             {
               auto new_conn = conn->clone_unique ();
-              new_conn->dest_id_ = id_->clone_raw_ptr ();
-              new_conn->dest_id_->setParent (new_conn.get ());
+              new_conn->dest_id_ = id_->clone_unique ();
               PORT_CONNECTIONS_MGR->replace_connection (conn, *new_conn);
             }
         }
@@ -937,8 +937,7 @@ Port::update_identifier (
           if (conn->src_id_ != id_)
             {
               auto new_conn = conn->clone_unique ();
-              new_conn->src_id_ = id_->clone_raw_ptr ();
-              new_conn->src_id_->setParent (new_conn.get ());
+              new_conn->src_id_ = id_->clone_unique ();
               PORT_CONNECTIONS_MGR->replace_connection (conn, *new_conn);
             }
         }
@@ -976,9 +975,7 @@ Port::update_track_name_hash (Track &track, unsigned int new_hash)
 void
 Port::copy_members_from (const Port &other)
 {
-  id_ = other.id_->clone_raw_ptr ();
-  auto * qobject = dynamic_cast<QObject *> (this);
-  id_->setParent (qobject);
+  id_ = other.id_->clone_unique ();
   exposed_to_backend_ = other.exposed_to_backend_;
   minf_ = other.minf_;
   maxf_ = other.maxf_;
@@ -1241,7 +1238,7 @@ Port::get_track (bool warn_if_fail) const
   return track;
 }
 
-zrythm::gui::dsp::plugins::Plugin *
+zrythm::gui::old_dsp::plugins::Plugin *
 Port::get_plugin (bool warn_if_fail) const
 {
   z_return_val_if_fail (IS_PORT (this), nullptr);
@@ -1272,26 +1269,26 @@ Port::get_plugin (bool warn_if_fail) const
       return nullptr;
     }
 
-  zrythm::gui::dsp::plugins::Plugin * pl = nullptr;
+  zrythm::gui::old_dsp::plugins::Plugin * pl = nullptr;
   const auto                         &pl_id = id_->plugin_id_;
   switch (pl_id.slot_type_)
     {
-    case zrythm::gui::dsp::plugins::PluginSlotType::MidiFx:
+    case zrythm::dsp::PluginSlotType::MidiFx:
       pl =
         dynamic_cast<ChannelTrack *> (track)
           ->channel_->midi_fx_[pl_id.slot_]
           .get ();
       break;
-    case zrythm::gui::dsp::plugins::PluginSlotType::Instrument:
+    case zrythm::dsp::PluginSlotType::Instrument:
       pl = dynamic_cast<ChannelTrack *> (track)->channel_->instrument_.get ();
       break;
-    case zrythm::gui::dsp::plugins::PluginSlotType::Insert:
+    case zrythm::dsp::PluginSlotType::Insert:
       pl =
         dynamic_cast<ChannelTrack *> (track)
           ->channel_->inserts_[pl_id.slot_]
           .get ();
       break;
-    case zrythm::gui::dsp::plugins::PluginSlotType::Modulator:
+    case zrythm::dsp::PluginSlotType::Modulator:
       pl =
         dynamic_cast<ModulatorTrack *> (track)->modulators_[pl_id.slot_].get ();
       break;
@@ -1372,16 +1369,16 @@ Port::disconnect_from (PortConnectionsManager &mgr, Port &dest)
 }
 
 template MidiPort *
-Port::find_from_identifier<MidiPort> (const PortIdentifier &);
+Port::find_from_identifier<MidiPort> (const zrythm::dsp::PortIdentifier &);
 template AudioPort *
-Port::find_from_identifier (const PortIdentifier &);
+Port::find_from_identifier (const zrythm::dsp::PortIdentifier &);
 template CVPort *
-Port::find_from_identifier (const PortIdentifier &);
+Port::find_from_identifier (const zrythm::dsp::PortIdentifier &);
 template ControlPort *
-Port::find_from_identifier (const PortIdentifier &);
+Port::find_from_identifier (const zrythm::dsp::PortIdentifier &);
 template void
-Port::set_owner<zrythm::gui::dsp::plugins::Plugin> (
-  zrythm::gui::dsp::plugins::Plugin *);
+Port::set_owner<zrythm::gui::old_dsp::plugins::Plugin> (
+  zrythm::gui::old_dsp::plugins::Plugin *);
 template void
 Port::set_owner<Transport> (Transport *);
 template void
@@ -1397,7 +1394,7 @@ Port::set_owner<ModulatorMacroProcessor> (ModulatorMacroProcessor *);
 template void
 Port::set_owner<ExtPort> (ExtPort *);
 template void
-Port::set_owner (zrythm::gui::dsp::Channel *);
+Port::set_owner (zrythm::gui::Channel *);
 template void
 Port::set_owner<TrackProcessor> (TrackProcessor *);
 template void

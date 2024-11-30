@@ -31,6 +31,8 @@ class MidiMapping final
   QML_ELEMENT
 
 public:
+  using PortIdentifier = zrythm::dsp::PortIdentifier;
+
   MidiMapping (QObject * parent = nullptr);
 
 public:
@@ -50,7 +52,7 @@ public:
   std::unique_ptr<ExtPort> device_port_;
 
   /** Destination. */
-  PortIdentifier * dest_id_ = nullptr;
+  std::unique_ptr<PortIdentifier> dest_id_;
 
   /**
    * Destination pointer, for convenience.

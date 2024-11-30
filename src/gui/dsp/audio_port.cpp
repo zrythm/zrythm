@@ -18,7 +18,6 @@
 
 AudioPort::AudioPort ()
 {
-  id_->setParent (this);
   minf_ = -1.f;
   maxf_ = 1.f;
   zerof_ = 0.f;
@@ -27,7 +26,6 @@ AudioPort::AudioPort ()
 AudioPort::AudioPort (std::string label, PortFlow flow)
     : Port (label, PortType::Audio, flow, -1.f, 1.f, 0.f)
 {
-  id_->setParent (this);
 }
 
 void
@@ -259,7 +257,7 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
         || (owner_type == PortIdentifier::OwnerType::Fader
             && (ENUM_BITSET_TEST (PortIdentifier::Flags2, id_->flags2_, PortIdentifier::Flags2::Prefader)
                 || ENUM_BITSET_TEST (PortIdentifier::Flags2, id_->flags2_, PortIdentifier::Flags2::Postfader)))
-        || (owner_type == PortIdentifier::OwnerType::Plugin && id_->plugin_id_.slot_type_ == zrythm::gui::dsp::plugins::PluginSlotType::Instrument))
+        || (owner_type == PortIdentifier::OwnerType::Plugin && id_->plugin_id_.slot_type_ == zrythm::dsp::PluginSlotType::Instrument))
       {
         return ZRYTHM_TESTING ? get_track (true) : track_;
       }
@@ -394,7 +392,7 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
   /* if bouncing track directly to master (e.g., when bouncing the track on
    * its own without parents), add the buffer to master output */
   if (AUDIO_ENGINE->bounce_mode_ > BounceMode::BOUNCE_OFF
-  && (owner_type == PortIdentifier::OwnerType::Channel || owner_type == PortIdentifier::OwnerType::TrackProcessor || (owner_type == PortIdentifier::OwnerType::Fader && ENUM_BITSET_TEST (PortIdentifier::Flags2, id->flags2_, PortIdentifier::Flags2::Prefader)) || (owner_type == PortIdentifier::OwnerType::Plugin && id->plugin_id_.slot_type_ == zrythm::gui::dsp::plugins::PluginSlotType::Instrument)) && is_stereo && is_output() && (track != nullptr) && track->bounce_to_master_) [[unlikely]]
+  && (owner_type == PortIdentifier::OwnerType::Channel || owner_type == PortIdentifier::OwnerType::TrackProcessor || (owner_type == PortIdentifier::OwnerType::Fader && ENUM_BITSET_TEST (PortIdentifier::Flags2, id->flags2_, PortIdentifier::Flags2::Prefader)) || (owner_type == PortIdentifier::OwnerType::Plugin && id->plugin_id_.slot_type_ == zrythm::dsp::PluginSlotType::Instrument)) && is_stereo && is_output() && (track != nullptr) && track->bounce_to_master_) [[unlikely]]
     {
       auto add_to_master = [&] (const bool left) {
         auto &dest =
@@ -454,14 +452,13 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
 
 void
 AudioPort::apply_pan (
-  float           pan,
-  PanLaw          pan_law,
-  PanAlgorithm    pan_algo,
-  nframes_t       start_frame,
-  const nframes_t nframes)
+  float                     pan,
+  zrythm::dsp::PanLaw       pan_law,
+  zrythm::dsp::PanAlgorithm pan_algo,
+  nframes_t                 start_frame,
+  const nframes_t           nframes)
 {
-  float calc_r, calc_l;
-  pan_get_calc_lr (pan_law, pan_algo, pan, &calc_l, &calc_r);
+  auto [calc_r, calc_l] = dsp::calculate_panning (pan_law, pan_algo, pan);
 
   /* if stereo R */
   if (ENUM_BITSET_TEST (
@@ -486,15 +483,15 @@ StereoPorts::StereoPorts (bool input, std::string name, std::string symbol)
     : StereoPorts (
         AudioPort (
           fmt::format ("{} L", name),
-          input ? PortFlow::Input : PortFlow::Output),
+          input ? dsp::PortFlow::Input : dsp::PortFlow::Output),
         AudioPort (
           fmt::format ("{} R", name),
-          input ? PortFlow::Input : PortFlow::Output))
+          input ? dsp::PortFlow::Input : dsp::PortFlow::Output))
 
 {
-  l_->id_->flags_ |= PortIdentifier::Flags::StereoL;
+  l_->id_->flags_ |= dsp::PortIdentifier::Flags::StereoL;
   l_->id_->sym_ = fmt::format ("{}_l", symbol);
-  r_->id_->flags_ |= PortIdentifier::Flags::StereoR;
+  r_->id_->flags_ |= dsp::PortIdentifier::Flags::StereoR;
   r_->id_->sym_ = fmt::format ("{}_r", symbol);
 }
 
@@ -504,8 +501,8 @@ StereoPorts::StereoPorts (const AudioPort &l, const AudioPort &r)
   r_ = r.clone_raw_ptr ();
   l_->setParent (this);
   r_->setParent (this);
-  l_->id_->flags_ |= PortIdentifier::Flags::StereoL;
-  r_->id_->flags_ |= PortIdentifier::Flags::StereoR;
+  l_->id_->flags_ |= dsp::PortIdentifier::Flags::StereoL;
+  r_->id_->flags_ |= dsp::PortIdentifier::Flags::StereoR;
 }
 
 void

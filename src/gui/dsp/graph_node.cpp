@@ -41,7 +41,7 @@ GraphNode::get_name () const
         return std::visit (
           [] (auto * port) { return port->get_full_designation (); }, p);
       },
-      [] (const zrythm::gui::dsp::plugins::PluginPtrVariant &pl) {
+      [] (const zrythm::gui::old_dsp::plugins::PluginPtrVariant &pl) {
         return std::visit (
           [] (auto * plugin) {
             Track * track = plugin->get_track ();
@@ -198,7 +198,7 @@ GraphNode::process_internal (const EngineProcessTimeInfo time_nfo)
           },
           p);
       },
-      [&] (zrythm::gui::dsp::plugins::PluginPtrVariant &pl) {
+      [&] (zrythm::gui::old_dsp::plugins::PluginPtrVariant &pl) {
         std::visit ([&] (auto * plugin) { plugin->process (time_nfo); }, pl);
       },
       [&] (TrackPtrVariant &t) {
@@ -387,7 +387,7 @@ GraphNode::get_single_playback_latency () const
 {
   return std::visit (
     overload{
-      [&] (const zrythm::gui::dsp::plugins::PluginPtrVariant &pl) -> nframes_t {
+      [&] (const zrythm::gui::old_dsp::plugins::PluginPtrVariant &pl) -> nframes_t {
         return std::visit (
           [&] (auto * plugin) { /* latency is already set at this point */
                                 return plugin->latency_;

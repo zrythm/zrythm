@@ -4,10 +4,9 @@
 #ifndef __UNDO_MIDI_MAPPING_ACTION_H__
 #define __UNDO_MIDI_MAPPING_ACTION_H__
 
+#include "dsp/port_identifier.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/dsp/ext_port.h"
-#include "gui/dsp/port_identifier.h"
-
 #include "utils/icloneable.h"
 #include "utils/types.h"
 
@@ -83,7 +82,7 @@ public:
   /** Action type. */
   Type type_ = (Type) 0;
 
-  PortIdentifier * dest_port_id_ = nullptr;
+  std::unique_ptr<dsp::PortIdentifier> dest_port_id_;
 
   std::unique_ptr<ExtPort> dev_port_;
 

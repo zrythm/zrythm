@@ -2,6 +2,9 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_executable(dsp_unit_tests
+  panning_test.cpp
+  plugin_identifier_test.cpp
+  port_identifier_test.cpp
   position_test.cpp
 )
 

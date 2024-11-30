@@ -5,17 +5,18 @@
 
 #include <ranges>
 
+#include "dsp/plugin_identifier.h"
+#include "dsp/position.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/project.h"
+#include "gui/backend/channel.h"
 #include "gui/dsp/automation_track.h"
 #include "gui/dsp/automation_tracklist.h"
-#include "gui/dsp/channel.h"
 #include "gui/dsp/ext_port.h"
 #include "gui/dsp/group_target_track.h"
 #include "gui/dsp/hardware_processor.h"
 #include "gui/dsp/midi_event.h"
 #include "gui/dsp/plugin.h"
-#include "gui/dsp/plugin_identifier.h"
 #include "gui/dsp/port.h"
 #include "gui/dsp/port_connections_manager.h"
 #include "gui/dsp/router.h"
@@ -23,14 +24,12 @@
 #include "gui/dsp/track.h"
 #include "gui/dsp/track_processor.h"
 #include "gui/dsp/tracklist.h"
-
-#include "dsp/position.h"
 #include "utils/logger.h"
 #include "utils/objects.h"
 #include "utils/rt_thread_id.h"
 #include "utils/string.h"
 
-namespace zrythm::gui::dsp
+namespace zrythm::gui
 {
 
 Channel::Channel (QObject * parent) : QObject (parent) { }
@@ -44,13 +43,13 @@ void
 Channel::init_after_cloning (const Channel &other)
 {
   track_pos_ = other.track_pos_;
-  clone_variant_container<zrythm::gui::dsp::plugins::PluginVariant> (
+  clone_variant_container<zrythm::gui::old_dsp::plugins::PluginVariant> (
     midi_fx_, other.midi_fx_);
-  clone_variant_container<zrythm::gui::dsp::plugins::PluginVariant> (
+  clone_variant_container<zrythm::gui::old_dsp::plugins::PluginVariant> (
     inserts_, other.inserts_);
   if (other.instrument_)
     instrument_ = clone_unique_with_variant<
-      zrythm::gui::dsp::plugins::PluginVariant> (other.instrument_.get ());
+      zrythm::gui::old_dsp::plugins::PluginVariant> (other.instrument_.get ());
   clone_unique_ptr_container (sends_, other.sends_);
   clone_unique_ptr_container (ext_midi_ins_, other.ext_midi_ins_);
   all_midi_ins_ = other.all_midi_ins_;
@@ -88,7 +87,7 @@ Channel::set_track_ptr (ChannelTrack &track)
   prefader_->track_ = track_;
   fader_->track_ = track_;
 
-  std::vector<zrythm::gui::dsp::plugins::Plugin *> pls;
+  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> pls;
   get_plugins (pls);
   for (auto * pl : pls)
     {
@@ -108,7 +107,7 @@ Channel::is_in_active_project () const
 }
 
 void
-Channel::connect_no_prev_no_next (zrythm::gui::dsp::plugins::Plugin &pl)
+Channel::connect_no_prev_no_next (zrythm::gui::old_dsp::plugins::Plugin &pl)
 {
   z_debug ("connect no prev no next");
 
@@ -137,8 +136,8 @@ Channel::connect_no_prev_no_next (zrythm::gui::dsp::plugins::Plugin &pl)
 
 void
 Channel::connect_no_prev_next (
-  zrythm::gui::dsp::plugins::Plugin &pl,
-  zrythm::gui::dsp::plugins::Plugin &next_pl)
+  zrythm::gui::old_dsp::plugins::Plugin &pl,
+  zrythm::gui::old_dsp::plugins::Plugin &next_pl)
 {
   z_debug ("connect no prev next");
 
@@ -165,8 +164,8 @@ Channel::connect_no_prev_next (
 
 void
 Channel::connect_prev_no_next (
-  zrythm::gui::dsp::plugins::Plugin &prev_pl,
-  zrythm::gui::dsp::plugins::Plugin &pl)
+  zrythm::gui::old_dsp::plugins::Plugin &prev_pl,
+  zrythm::gui::old_dsp::plugins::Plugin &pl)
 {
   z_debug ("connect prev no next");
 
@@ -193,9 +192,9 @@ Channel::connect_prev_no_next (
 
 void
 Channel::connect_prev_next (
-  zrythm::gui::dsp::plugins::Plugin &prev_pl,
-  zrythm::gui::dsp::plugins::Plugin &pl,
-  zrythm::gui::dsp::plugins::Plugin &next_pl)
+  zrythm::gui::old_dsp::plugins::Plugin &prev_pl,
+  zrythm::gui::old_dsp::plugins::Plugin &pl,
+  zrythm::gui::old_dsp::plugins::Plugin &next_pl)
 {
   z_debug ("connect prev next");
 
@@ -221,7 +220,7 @@ Channel::connect_prev_next (
 }
 
 void
-Channel::disconnect_no_prev_no_next (zrythm::gui::dsp::plugins::Plugin &pl)
+Channel::disconnect_no_prev_no_next (zrythm::gui::old_dsp::plugins::Plugin &pl)
 {
   /* -------------------------------------------
    * disconnect input ports
@@ -246,8 +245,8 @@ Channel::disconnect_no_prev_no_next (zrythm::gui::dsp::plugins::Plugin &pl)
 
 void
 Channel::disconnect_no_prev_next (
-  zrythm::gui::dsp::plugins::Plugin &pl,
-  zrythm::gui::dsp::plugins::Plugin &next_pl)
+  zrythm::gui::old_dsp::plugins::Plugin &pl,
+  zrythm::gui::old_dsp::plugins::Plugin &next_pl)
 {
   /* -------------------------------------------
    * Disconnect input ports
@@ -272,8 +271,8 @@ Channel::disconnect_no_prev_next (
 
 void
 Channel::disconnect_prev_no_next (
-  zrythm::gui::dsp::plugins::Plugin &prev_pl,
-  zrythm::gui::dsp::plugins::Plugin &pl)
+  zrythm::gui::old_dsp::plugins::Plugin &prev_pl,
+  zrythm::gui::old_dsp::plugins::Plugin &pl)
 {
   /* -------------------------------------------
    * disconnect input ports
@@ -298,9 +297,9 @@ Channel::disconnect_prev_no_next (
 
 void
 Channel::disconnect_prev_next (
-  zrythm::gui::dsp::plugins::Plugin &prev_pl,
-  zrythm::gui::dsp::plugins::Plugin &pl,
-  zrythm::gui::dsp::plugins::Plugin &next_pl)
+  zrythm::gui::old_dsp::plugins::Plugin &prev_pl,
+  zrythm::gui::old_dsp::plugins::Plugin &pl,
+  zrythm::gui::old_dsp::plugins::Plugin &next_pl)
 {
   /* -------------------------------------------
    * disconnect input ports
@@ -409,9 +408,7 @@ Channel::init_loaded (ChannelTrack &track)
     }
 
   auto init_plugin =
-    [this] (
-      auto &_pl, int _slot,
-      zrythm::gui::dsp::plugins::PluginSlotType _slot_type) {
+    [this] (auto &_pl, int _slot, zrythm::dsp::PluginSlotType _slot_type) {
       if (_pl)
         {
           auto &id = _pl->id_;
@@ -423,15 +420,12 @@ Channel::init_loaded (ChannelTrack &track)
     };
 
   /* init plugins */
-  for (int i = 0; i < (int) STRIP_SIZE; i++)
+  for (int i = 0; i < (int) dsp::STRIP_SIZE; i++)
     {
-      init_plugin (
-        inserts_.at (i), i, zrythm::gui::dsp::plugins::PluginSlotType::Insert);
-      init_plugin (
-        midi_fx_.at (i), i, zrythm::gui::dsp::plugins::PluginSlotType::MidiFx);
+      init_plugin (inserts_.at (i), i, zrythm::dsp::PluginSlotType::Insert);
+      init_plugin (midi_fx_.at (i), i, zrythm::dsp::PluginSlotType::MidiFx);
     }
-  init_plugin (
-    instrument_, -1, zrythm::gui::dsp::plugins::PluginSlotType::Instrument);
+  init_plugin (instrument_, -1, zrythm::dsp::PluginSlotType::Instrument);
 
   /* init sends */
   for (auto &send : sends_)
@@ -662,24 +656,24 @@ Channel::connect_plugins ()
   /* loop through each slot in each of MIDI FX, instrument, inserts */
   for (int i = 0; i < 3; i++)
     {
-      zrythm::gui::dsp::plugins::PluginSlotType slot_type;
-      for (size_t j = 0; j < STRIP_SIZE; j++)
+      zrythm::dsp::PluginSlotType slot_type;
+      for (size_t j = 0; j < dsp::STRIP_SIZE; j++)
         {
-          zrythm::gui::dsp::plugins::Plugin * plugin = nullptr;
-          int                                 slot = j;
+          zrythm::gui::old_dsp::plugins::Plugin * plugin = nullptr;
+          int                                     slot = j;
           if (i == 0)
             {
-              slot_type = zrythm::gui::dsp::plugins::PluginSlotType::MidiFx;
+              slot_type = zrythm::dsp::PluginSlotType::MidiFx;
               plugin = midi_fx_[j].get ();
             }
           else if (i == 1)
             {
-              slot_type = zrythm::gui::dsp::plugins::PluginSlotType::Instrument;
+              slot_type = zrythm::dsp::PluginSlotType::Instrument;
               plugin = instrument_.get ();
             }
           else
             {
-              slot_type = zrythm::gui::dsp::plugins::PluginSlotType::Insert;
+              slot_type = zrythm::dsp::PluginSlotType::Insert;
               plugin = inserts_.at (j).get ();
             }
           if (plugin == nullptr)
@@ -693,49 +687,47 @@ Channel::connect_plugins ()
 
           auto add_plugin_ptrs =
             [] (
-              auto                                             &plugins,
-              std::vector<zrythm::gui::dsp::plugins::Plugin *> &dest) {
+              auto                                                 &plugins,
+              std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &dest) {
               for (auto &p : plugins)
                 {
                   dest.push_back (p.get ());
                 }
             };
 
-          std::vector<zrythm::gui::dsp::plugins::Plugin *> prev_plugins;
+          std::vector<zrythm::gui::old_dsp::plugins::Plugin *> prev_plugins;
           switch (slot_type)
             {
-            case zrythm::gui::dsp::plugins::PluginSlotType::Insert:
+            case zrythm::dsp::PluginSlotType::Insert:
               add_plugin_ptrs (inserts_, prev_plugins);
               break;
-            case zrythm::gui::dsp::plugins::PluginSlotType::Instrument:
-            case zrythm::gui::dsp::plugins::PluginSlotType::MidiFx:
+            case zrythm::dsp::PluginSlotType::Instrument:
+            case zrythm::dsp::PluginSlotType::MidiFx:
               add_plugin_ptrs (midi_fx_, prev_plugins);
               break;
             default:
               z_return_if_reached ();
             }
-          std::vector<zrythm::gui::dsp::plugins::Plugin *> next_plugins;
+          std::vector<zrythm::gui::old_dsp::plugins::Plugin *> next_plugins;
           switch (slot_type)
             {
-            case zrythm::gui::dsp::plugins::PluginSlotType::Insert:
+            case zrythm::dsp::PluginSlotType::Insert:
               add_plugin_ptrs (inserts_, next_plugins);
               break;
-            case zrythm::gui::dsp::plugins::PluginSlotType::MidiFx:
-            case zrythm::gui::dsp::plugins::PluginSlotType::Instrument:
+            case zrythm::dsp::PluginSlotType::MidiFx:
+            case zrythm::dsp::PluginSlotType::Instrument:
               add_plugin_ptrs (midi_fx_, next_plugins);
               break;
             default:
               z_return_if_reached ();
             }
 
-          z_return_if_fail (next_plugins.size () == STRIP_SIZE);
-          zrythm::gui::dsp::plugins::Plugin * next_pl = nullptr;
+          z_return_if_fail (next_plugins.size () == dsp::STRIP_SIZE);
+          zrythm::gui::old_dsp::plugins::Plugin * next_pl = nullptr;
           for (
             size_t k =
-              (slot_type == zrythm::gui::dsp::plugins::PluginSlotType::Instrument
-                 ? 0
-                 : slot + 1);
-            k < STRIP_SIZE; k++)
+              (slot_type == zrythm::dsp::PluginSlotType::Instrument ? 0 : slot + 1);
+            k < dsp::STRIP_SIZE; k++)
             {
               next_pl = next_plugins[k];
               if (next_pl != nullptr)
@@ -743,7 +735,7 @@ Channel::connect_plugins ()
             }
           if (
             (next_pl == nullptr)
-            && slot_type == zrythm::gui::dsp::plugins::PluginSlotType::MidiFx)
+            && slot_type == zrythm::dsp::PluginSlotType::MidiFx)
             {
               if (instrument_)
                 next_pl = instrument_.get ();
@@ -758,9 +750,9 @@ Channel::connect_plugins ()
                 }
             }
 
-          zrythm::gui::dsp::plugins::Plugin * prev_pl = nullptr;
+          zrythm::gui::old_dsp::plugins::Plugin * prev_pl = nullptr;
           /* if instrument, find previous MIDI FX (if any) */
-          if (slot_type == zrythm::gui::dsp::plugins::PluginSlotType::Instrument)
+          if (slot_type == zrythm::dsp::PluginSlotType::Instrument)
             {
               for (auto &prev_plugin : std::ranges::reverse_view (prev_plugins))
                 {
@@ -784,9 +776,7 @@ Channel::connect_plugins ()
 
           /* if still not found and slot is insert, check instrument or MIDI FX
            * where applicable */
-          if (
-            !prev_pl
-            && slot_type == zrythm::gui::dsp::plugins::PluginSlotType::Insert)
+          if (!prev_pl && slot_type == zrythm::dsp::PluginSlotType::Insert)
             {
               if (instrument_)
                 prev_pl = instrument_.get ();
@@ -805,7 +795,7 @@ Channel::connect_plugins ()
             }
 
           auto instantiate_if_needed =
-            [] (zrythm::gui::dsp::plugins::Plugin * pl) {
+            [] (zrythm::gui::old_dsp::plugins::Plugin * pl) {
               if (pl && !pl->instantiated_ && !pl->instantiation_failed_)
                 {
                   pl->instantiate ();
@@ -1025,9 +1015,9 @@ Channel::init_stereo_out_ports (bool loading)
       return;
     }
 
-  auto l = AudioPort ("Stero out L", PortFlow::Output);
+  auto l = AudioPort ("Stero out L", dsp::PortFlow::Output);
   l.id_->sym_ = "stereo_out_l";
-  auto r = AudioPort ("Stereo out R", PortFlow::Output);
+  auto r = AudioPort ("Stereo out R", dsp::PortFlow::Output);
   r.id_->sym_ = "stereo_out_r";
 
   stereo_out_ = new StereoPorts (std::move (l), std::move (r));
@@ -1048,7 +1038,7 @@ Channel::init ()
     case PortType::Event:
       {
         midi_out_ = new MidiPort (
-          QObject::tr ("MIDI out").toStdString (), PortFlow::Output);
+          QObject::tr ("MIDI out").toStdString (), dsp::PortFlow::Output);
         midi_out_->setParent (this);
         midi_out_->set_owner (this);
         midi_out_->id_->sym_ = "midi_out";
@@ -1066,7 +1056,7 @@ Channel::init ()
   prefader_->setParent (this);
 
   /* init sends */
-  for (size_t i = 0; i < STRIP_SIZE; ++i)
+  for (size_t i = 0; i < dsp::STRIP_SIZE; ++i)
     {
       sends_[i] =
         std::make_unique<ChannelSend> (track_->get_name_hash (), i, track_);
@@ -1105,20 +1095,20 @@ Channel::get_balance_control () const
 
 void
 Channel::disconnect_plugin_from_strip (
-  int                                pos,
-  zrythm::gui::dsp::plugins::Plugin &pl)
+  int                                    pos,
+  zrythm::gui::old_dsp::plugins::Plugin &pl)
 {
   auto slot_type = pl.id_.slot_type_;
   auto prev_plugins_ptr =
-    (slot_type == zrythm::gui::dsp::plugins::PluginSlotType::Insert) ? &inserts_
-    : (slot_type == zrythm::gui::dsp::plugins::PluginSlotType::MidiFx) ? &midi_fx_
-    : (slot_type == zrythm::gui::dsp::plugins::PluginSlotType::Instrument)
+    (slot_type == zrythm::dsp::PluginSlotType::Insert)   ? &inserts_
+    : (slot_type == zrythm::dsp::PluginSlotType::MidiFx) ? &midi_fx_
+    : (slot_type == zrythm::dsp::PluginSlotType::Instrument)
       ? &midi_fx_
       : nullptr;
   auto next_plugins_ptr =
-    (slot_type == zrythm::gui::dsp::plugins::PluginSlotType::Insert) ? &inserts_
-    : (slot_type == zrythm::gui::dsp::plugins::PluginSlotType::MidiFx) ? &midi_fx_
-    : (slot_type == zrythm::gui::dsp::plugins::PluginSlotType::Instrument)
+    (slot_type == zrythm::dsp::PluginSlotType::Insert)   ? &inserts_
+    : (slot_type == zrythm::dsp::PluginSlotType::MidiFx) ? &midi_fx_
+    : (slot_type == zrythm::dsp::PluginSlotType::Instrument)
       ? &inserts_
       : nullptr;
 
@@ -1130,8 +1120,8 @@ Channel::disconnect_plugin_from_strip (
   auto &prev_plugins = *prev_plugins_ptr;
   auto &next_plugins = *next_plugins_ptr;
 
-  zrythm::gui::dsp::plugins::Plugin * next_plugin = nullptr;
-  for (size_t i = pos + 1; i < STRIP_SIZE; ++i)
+  zrythm::gui::old_dsp::plugins::Plugin * next_plugin = nullptr;
+  for (size_t i = pos + 1; i < dsp::STRIP_SIZE; ++i)
     {
       if (next_plugins[i])
         {
@@ -1139,9 +1129,7 @@ Channel::disconnect_plugin_from_strip (
           break;
         }
     }
-  if (
-    !next_plugin
-    && slot_type == zrythm::gui::dsp::plugins::PluginSlotType::MidiFx)
+  if (!next_plugin && slot_type == zrythm::dsp::PluginSlotType::MidiFx)
     {
       if (instrument_)
         next_plugin = instrument_.get ();
@@ -1158,7 +1146,7 @@ Channel::disconnect_plugin_from_strip (
         }
     }
 
-  zrythm::gui::dsp::plugins::Plugin * prev_plugin = nullptr;
+  zrythm::gui::old_dsp::plugins::Plugin * prev_plugin = nullptr;
   for (int i = pos - 1; i >= 0; --i)
     {
       if (prev_plugins[i])
@@ -1167,9 +1155,7 @@ Channel::disconnect_plugin_from_strip (
           break;
         }
     }
-  if (
-    !prev_plugin
-    && slot_type == zrythm::gui::dsp::plugins::PluginSlotType::Insert)
+  if (!prev_plugin && slot_type == zrythm::dsp::PluginSlotType::Insert)
     {
       if (instrument_)
         prev_plugin = instrument_.get ();
@@ -1207,25 +1193,25 @@ Channel::disconnect_plugin_from_strip (
   pl.expose_ports (*AUDIO_ENGINE, false, true, true);
 }
 
-std::unique_ptr<zrythm::gui::dsp::plugins::Plugin>
+std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin>
 Channel::remove_plugin (
-  zrythm::gui::dsp::plugins::PluginSlotType slot_type,
-  int                                       slot,
-  bool                                      moving_plugin,
-  bool                                      deleting_plugin,
-  bool                                      deleting_channel,
-  bool                                      recalc_graph)
+  zrythm::dsp::PluginSlotType slot_type,
+  int                         slot,
+  bool                        moving_plugin,
+  bool                        deleting_plugin,
+  bool                        deleting_channel,
+  bool                        recalc_graph)
 {
-  std::unique_ptr<zrythm::gui::dsp::plugins::Plugin> * plugin_ptr = nullptr;
+  std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin> * plugin_ptr = nullptr;
   switch (slot_type)
     {
-    case zrythm::gui::dsp::plugins::PluginSlotType::Insert:
+    case zrythm::dsp::PluginSlotType::Insert:
       plugin_ptr = &inserts_[slot];
       break;
-    case zrythm::gui::dsp::plugins::PluginSlotType::MidiFx:
+    case zrythm::dsp::PluginSlotType::MidiFx:
       plugin_ptr = &midi_fx_[slot];
       break;
-    case zrythm::gui::dsp::plugins::PluginSlotType::Instrument:
+    case zrythm::dsp::PluginSlotType::Instrument:
       plugin_ptr = &instrument_;
       break;
     default:
@@ -1274,32 +1260,30 @@ Channel::remove_plugin (
   if (recalc_graph)
     ROUTER->recalc_graph (false);
 
-  return std::unique_ptr<zrythm::gui::dsp::plugins::Plugin> (raw_ptr);
+  return std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin> (raw_ptr);
 }
 
-zrythm::gui::dsp::plugins::Plugin *
+zrythm::gui::old_dsp::plugins::Plugin *
 Channel::add_plugin (
-  std::unique_ptr<zrythm::gui::dsp::plugins::Plugin> &&plugin,
-  zrythm::gui::dsp::plugins::PluginSlotType            slot_type,
-  int                                                  slot,
-  bool                                                 confirm,
-  bool                                                 moving_plugin,
-  bool                                                 gen_automatables,
-  bool                                                 recalc_graph,
-  bool                                                 pub_events)
+  std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin> &&plugin,
+  zrythm::dsp::PluginSlotType                              slot_type,
+  int                                                      slot,
+  bool                                                     confirm,
+  bool                                                     moving_plugin,
+  bool                                                     gen_automatables,
+  bool                                                     recalc_graph,
+  bool                                                     pub_events)
 {
   z_return_val_if_fail (
-    zrythm::gui::dsp::plugins::PluginIdentifier::validate_slot_type_slot_combo (
-      slot_type, slot),
+    dsp::PluginIdentifier::validate_slot_type_slot_combo (slot_type, slot),
     nullptr);
 
   bool prev_enabled = track_->enabled_;
   track_->enabled_ = false;
 
   auto existing_pl =
-    (slot_type == zrythm::gui::dsp::plugins::PluginSlotType::Instrument)
-      ? instrument_.get ()
-    : (slot_type == zrythm::gui::dsp::plugins::PluginSlotType::Insert)
+    (slot_type == zrythm::dsp::PluginSlotType::Instrument) ? instrument_.get ()
+    : (slot_type == zrythm::dsp::PluginSlotType::Insert)
       ? inserts_[slot].get ()
       : midi_fx_[slot].get ();
 
@@ -1319,13 +1303,13 @@ Channel::add_plugin (
     plugin->get_descriptor ().name_, track_->get_name (), ENUM_NAME (slot_type),
     slot);
 
-  zrythm::gui::dsp::plugins::Plugin * plugin_ptr = nullptr;
-  if (slot_type == zrythm::gui::dsp::plugins::PluginSlotType::Instrument)
+  zrythm::gui::old_dsp::plugins::Plugin * plugin_ptr = nullptr;
+  if (slot_type == zrythm::dsp::PluginSlotType::Instrument)
     {
       instrument_ = std::move (plugin);
       plugin_ptr = instrument_.get ();
     }
-  else if (slot_type == zrythm::gui::dsp::plugins::PluginSlotType::Insert)
+  else if (slot_type == zrythm::dsp::PluginSlotType::Insert)
     {
       inserts_[slot] = std::move (plugin);
       plugin_ptr = inserts_[slot].get ();
@@ -1416,20 +1400,18 @@ Channel::get_automation_track (PortIdentifier::Flags port_flags)
   return nullptr;
 }
 
-zrythm::gui::dsp::plugins::Plugin *
-Channel::get_plugin_at_slot (
-  int                                       slot,
-  zrythm::gui::dsp::plugins::PluginSlotType slot_type) const
+zrythm::gui::old_dsp::plugins::Plugin *
+Channel::get_plugin_at_slot (int slot, zrythm::dsp::PluginSlotType slot_type) const
 {
   switch (slot_type)
     {
-    case zrythm::gui::dsp::plugins::PluginSlotType::Insert:
+    case zrythm::dsp::PluginSlotType::Insert:
       return inserts_[slot].get ();
-    case zrythm::gui::dsp::plugins::PluginSlotType::MidiFx:
+    case zrythm::dsp::PluginSlotType::MidiFx:
       return midi_fx_[slot].get ();
-    case zrythm::gui::dsp::plugins::PluginSlotType::Instrument:
+    case zrythm::dsp::PluginSlotType::Instrument:
       return instrument_.get ();
-    case zrythm::gui::dsp::plugins::PluginSlotType::Modulator:
+    case zrythm::dsp::PluginSlotType::Modulator:
     default:
       z_return_val_if_reached (nullptr);
     }
@@ -1437,14 +1419,14 @@ Channel::get_plugin_at_slot (
 
 struct PluginImportData
 {
-  Channel *                                           ch;
-  const zrythm::gui::dsp::plugins::Plugin *           pl;
-  const MixerSelections *                             sel;
-  const zrythm::gui::dsp::plugins::PluginDescriptor * descr;
-  int                                                 slot;
-  zrythm::gui::dsp::plugins::PluginSlotType           slot_type;
-  bool                                                copy;
-  bool                                                ask_if_overwrite;
+  Channel *                                               ch;
+  const zrythm::gui::old_dsp::plugins::Plugin *           pl;
+  const MixerSelections *                                 sel;
+  const zrythm::gui::old_dsp::plugins::PluginDescriptor * descr;
+  int                                                     slot;
+  zrythm::dsp::PluginSlotType                             slot_type;
+  bool                                                    copy;
+  bool                                                    ask_if_overwrite;
 };
 
 #if 0
@@ -1555,7 +1537,7 @@ do_import (PluginImportData * data)
         data->descr ? *data->descr : *data->pl->setting_->descr_;
       ZrythmException e (format_qstr (
         QObject::tr (
-          "zrythm::gui::dsp::plugins::Plugin {} cannot be added to this slot"),
+          "zrythm::gui::old_dsp::plugins::Plugin {} cannot be added to this slot"),
         pl_descr.name_));
       e.handle (QObject::tr ("Failed to add plugin"));
     }
@@ -1580,13 +1562,13 @@ overwrite_plugin_response_cb (
 
 void
 Channel::handle_plugin_import (
-  const zrythm::gui::dsp::plugins::Plugin *           pl,
-  const MixerSelections *                             sel,
-  const zrythm::gui::dsp::plugins::PluginDescriptor * descr,
-  int                                                 slot,
-  zrythm::gui::dsp::plugins::PluginSlotType           slot_type,
-  bool                                                copy,
-  bool                                                ask_if_overwrite)
+  const zrythm::gui::old_dsp::plugins::Plugin *           pl,
+  const MixerSelections *                                 sel,
+  const zrythm::gui::old_dsp::plugins::PluginDescriptor * descr,
+  int                                                     slot,
+  zrythm::dsp::PluginSlotType                             slot_type,
+  bool                                                    copy,
+  bool                                                    ask_if_overwrite)
 {
   auto data = new PluginImportData ();
   data->ch = this;
@@ -1640,7 +1622,7 @@ Channel::handle_plugin_import (
 }
 
 void
-Channel::select_all (zrythm::gui::dsp::plugins::PluginSlotType type, bool select)
+Channel::select_all (zrythm::dsp::PluginSlotType type, bool select)
 {
   MIXER_SELECTIONS->clear (true);
   if (!select)
@@ -1648,7 +1630,7 @@ Channel::select_all (zrythm::gui::dsp::plugins::PluginSlotType type, bool select
 
   switch (type)
     {
-    case zrythm::gui::dsp::plugins::PluginSlotType::Insert:
+    case zrythm::dsp::PluginSlotType::Insert:
       for (auto &insert : inserts_)
         {
           if (insert)
@@ -1657,7 +1639,7 @@ Channel::select_all (zrythm::gui::dsp::plugins::PluginSlotType type, bool select
             }
         }
       break;
-    case zrythm::gui::dsp::plugins::PluginSlotType::MidiFx:
+    case zrythm::dsp::PluginSlotType::MidiFx:
       for (auto &midi_fx : midi_fx_)
         {
           if (midi_fx)
@@ -1675,7 +1657,7 @@ Channel::select_all (zrythm::gui::dsp::plugins::PluginSlotType type, bool select
 void
 Channel::set_caches ()
 {
-  std::vector<zrythm::gui::dsp::plugins::Plugin *> pls;
+  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> pls;
   Channel::get_plugins (pls);
 
   for (auto pl : pls)
@@ -1685,7 +1667,7 @@ Channel::set_caches ()
 }
 
 void
-Channel::get_plugins (std::vector<zrythm::gui::dsp::plugins::Plugin *> &pls)
+Channel::get_plugins (std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &pls)
 {
   for (auto &insert : inserts_)
     {
@@ -1713,26 +1695,26 @@ Channel::disconnect (bool remove_pl)
   z_debug ("disconnecting channel {}", track_->get_name ());
   if (remove_pl)
     {
-      for (size_t i = 0; i < STRIP_SIZE; i++)
+      for (size_t i = 0; i < dsp::STRIP_SIZE; i++)
         {
           if (inserts_[i])
             {
               Channel::remove_plugin (
-                zrythm::gui::dsp::plugins::PluginSlotType::Insert, i, false,
-                remove_pl, false, false);
+                zrythm::dsp::PluginSlotType::Insert, i, false, remove_pl, false,
+                false);
             }
           if (midi_fx_[i])
             {
               Channel::remove_plugin (
-                zrythm::gui::dsp::plugins::PluginSlotType::MidiFx, i, false,
-                remove_pl, false, false);
+                zrythm::dsp::PluginSlotType::MidiFx, i, false, remove_pl, false,
+                false);
             }
         }
       if (instrument_)
         {
           Channel::remove_plugin (
-            zrythm::gui::dsp::plugins::PluginSlotType::Instrument, 0, false,
-            remove_pl, false, false);
+            zrythm::dsp::PluginSlotType::Instrument, 0, false, remove_pl, false,
+            false);
         }
     }
 
@@ -1765,4 +1747,4 @@ Channel::disconnect (bool remove_pl)
     }
 }
 
-}; // namespace zrythm::gui::dsp
+}; // namespace zrythm::gui::old_dsp

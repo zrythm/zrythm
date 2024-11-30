@@ -37,7 +37,9 @@ MeterProcessor::setPort (QVariant port_var)
           if (port_->is_audio () || port_->is_cv ())
             {
               bool is_master_fader = false;
-              if (port_->id_->owner_type_ == PortIdentifier::OwnerType::Track)
+              if (
+                port_->id_->owner_type_
+                == zrythm::dsp::PortIdentifier::OwnerType::Track)
                 {
                   Track * track = port_->get_track (true);
                   if (track->is_master ())

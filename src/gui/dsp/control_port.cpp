@@ -20,15 +20,11 @@
 #include "utils/math.h"
 #include "utils/rt_thread_id.h"
 
-ControlPort::ControlPort ()
-{
-  id_->setParent (this);
-}
+ControlPort::ControlPort () { }
 
 ControlPort::ControlPort (std::string label)
     : Port (label, PortType::Control, PortFlow::Input, 0.f, 1.f, 0.f)
 {
-  id_->setParent (this);
 }
 
 void
@@ -46,23 +42,23 @@ ControlPort::set_unit_from_str (const std::string &str)
 {
   if (str == "Hz")
     {
-      id_->unit_ = PortUnit::Hz;
+      id_->unit_ = dsp::PortUnit::Hz;
     }
   else if (str == "ms")
     {
-      id_->unit_ = PortUnit::Ms;
+      id_->unit_ = dsp::PortUnit::Ms;
     }
   else if (str == "dB")
     {
-      id_->unit_ = PortUnit::Db;
+      id_->unit_ = dsp::PortUnit::Db;
     }
   else if (str == "s")
     {
-      id_->unit_ = PortUnit::Seconds;
+      id_->unit_ = dsp::PortUnit::Seconds;
     }
   else if (str == "us")
     {
-      id_->unit_ = PortUnit::Us;
+      id_->unit_ = dsp::PortUnit::Us;
     }
 }
 
@@ -78,7 +74,7 @@ ControlPort::forward_control_change_event ()
           if (pl->setting_->open_with_carla_ && carla_param_id_ >= 0)
             {
               auto carla = dynamic_cast<
-                zrythm::gui::dsp::plugins::CarlaNativePlugin *> (pl);
+                zrythm::gui::old_dsp::plugins::CarlaNativePlugin *> (pl);
               z_return_if_fail (carla);
               carla->set_param_value (
                 static_cast<uint32_t> (carla_param_id_), control_);
@@ -272,7 +268,7 @@ ControlPort::get_control_value (const bool normalize) const
       PortIdentifier::Flags, this->id_->flags_,
       PortIdentifier::Flags::PluginControl))
     {
-      zrythm::gui::dsp::plugins::Plugin * pl = get_plugin (true);
+      zrythm::gui::old_dsp::plugins::Plugin * pl = get_plugin (true);
       z_return_val_if_fail (pl, 0.f);
     }
 

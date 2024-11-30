@@ -33,7 +33,8 @@ JUCE_IMPLEMENT_SINGLETON (Zrythm);
 using namespace Qt::StringLiterals;
 
 Zrythm::Zrythm ()
-    : plugin_manager_ (std::make_unique<zrythm::gui::dsp::plugins::PluginManager> ())
+    : plugin_manager_ (
+        std::make_unique<zrythm::gui::old_dsp::plugins::PluginManager> ())
 {
   z_return_if_fail (!engine::AudioEngineApplication::is_audio_engine_process ());
   elapsed_timer_.start ();

@@ -56,7 +56,7 @@ SampleProcessor::load_instrument_if_empty ()
         {
           /* pick first instrument found */
           auto instrument =
-            zrythm::gui::dsp::plugins::PluginManager::get_active_instance ()
+            zrythm::gui::old_dsp::plugins::PluginManager::get_active_instance ()
               ->pick_instrument ();
           if (!instrument)
             return;
@@ -423,16 +423,15 @@ SampleProcessor::queue_file_or_chord_preset (
         *AUDIO_ENGINE, false, false);
       try
         {
-          auto pl = zrythm::gui::dsp::plugins::Plugin::create_with_setting (
+          auto pl = zrythm::gui::old_dsp::plugins::Plugin::create_with_setting (
             *instrument_setting_, instr_track_ptr->get_name_hash (),
-            zrythm::gui::dsp::plugins::PluginSlotType::Instrument, -1);
+            zrythm::dsp::PluginSlotType::Instrument, -1);
           pl->instantiate ();
           pl->activate (true);
           z_return_if_fail (pl->midi_in_port_ && pl->l_out_ && pl->r_out_);
 
           instr_track_ptr->channel_->add_plugin (
-            std::move (pl),
-            zrythm::gui::dsp::plugins::PluginSlotType::Instrument,
+            std::move (pl), zrythm::dsp::PluginSlotType::Instrument,
             pl->id_.slot_, false, false, true, false, false);
 
           int num_tracks =

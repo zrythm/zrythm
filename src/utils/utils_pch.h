@@ -35,9 +35,10 @@
 #  pragma GCC diagnostic pop
 #endif
 
+#include "utils/gtest_wrapper.h"
+
 #include <QtQmlIntegration>
 
-#include "utils/gtest_wrapper.h"
 #include <fmt/format.h>
 
 /* This also includes all native platform headers. */
@@ -48,6 +49,12 @@
 /*             zrythm headers             */
 /* ====================================== */
 
+#include "utils/exceptions.h"
+#include "utils/hash.h"
+#include "utils/io.h"
+#include "utils/math.h"
+#include "utils/midi.h"
+#include "utils/string.h"
 #include "utils/traits.h"
 #include "utils/types.h"
 

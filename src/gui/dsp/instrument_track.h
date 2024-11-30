@@ -38,9 +38,9 @@ public:
 
   void init_after_cloning (const InstrumentTrack &other) override;
 
-  zrythm::gui::dsp::plugins::Plugin * get_instrument ();
+  zrythm::gui::old_dsp::plugins::Plugin * get_instrument ();
 
-  const zrythm::gui::dsp::plugins::Plugin * get_instrument () const;
+  const zrythm::gui::old_dsp::plugins::Plugin * get_instrument () const;
 
   /**
    * Returns if the first plugin's UI in the instrument track is visible.

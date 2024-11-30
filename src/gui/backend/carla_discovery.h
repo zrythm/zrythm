@@ -15,7 +15,7 @@
 #  include "carla_wrapper.h"
 #  include "utils/types.h"
 
-namespace zrythm::gui::dsp::plugins
+namespace zrythm::gui::old_dsp::plugins
 {
 
 class PluginDescriptor;
@@ -95,7 +95,7 @@ public:
   ZCarlaDiscovery &discovery_;
 };
 
-} // namespace zrythm::gui::dsp::plugins
+} // namespace zrythm::gui::old_dsp::plugins
 
 /**
  * @}

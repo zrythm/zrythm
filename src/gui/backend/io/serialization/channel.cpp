@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "gui/backend/channel.h"
 #include "gui/dsp/carla_native_plugin.h"
-#include "gui/dsp/channel.h"
 
 void
 ChannelSend::define_fields (const Context &ctx)
@@ -35,21 +35,21 @@ Fader::define_fields (const Context &ctx)
 }
 
 void
-zrythm::gui::dsp::Channel::define_fields (const Context &ctx)
+zrythm::gui::Channel::define_fields (const Context &ctx)
 {
   using T = ISerializable<Channel>;
 
   if (ctx.is_serializing ())
     {
       T::serialize_field<
-        decltype (midi_fx_), zrythm::gui::dsp::plugins::PluginPtrVariant> (
+        decltype (midi_fx_), zrythm::gui::old_dsp::plugins::PluginPtrVariant> (
         "midiFx", midi_fx_, ctx);
       T::serialize_field<
-        decltype (inserts_), zrythm::gui::dsp::plugins::PluginPtrVariant> (
+        decltype (inserts_), zrythm::gui::old_dsp::plugins::PluginPtrVariant> (
         "inserts", inserts_, ctx);
       T::serialize_field ("sends", sends_, ctx);
       T::serialize_field<
-        decltype (instrument_), zrythm::gui::dsp::plugins::PluginPtrVariant> (
+        decltype (instrument_), zrythm::gui::old_dsp::plugins::PluginPtrVariant> (
         "instrument", instrument_, ctx, true);
     }
   else
@@ -67,15 +67,15 @@ zrythm::gui::dsp::Channel::define_fields (const Context &ctx)
             auto          setting_obj = yyjson_obj_iter_get (&pl_it, "setting");
             PluginSetting setting;
             setting.deserialize (Context (setting_obj, ctx));
-            auto pl = zrythm::gui::dsp::plugins::Plugin::
+            auto pl = zrythm::gui::old_dsp::plugins::Plugin::
               create_unique_from_hosting_type (setting.hosting_type_);
             std::visit (
               [&] (auto &&p) {
                 using PluginT = base_type<decltype (p)>;
                 p->ISerializable<PluginT>::deserialize (Context (pl_obj, ctx));
               },
-              convert_to_variant<zrythm::gui::dsp::plugins::PluginPtrVariant> (
-                pl.get ()));
+              convert_to_variant<
+                zrythm::gui::old_dsp::plugins::PluginPtrVariant> (pl.get ()));
             plugin = std::move (pl);
           }
       };

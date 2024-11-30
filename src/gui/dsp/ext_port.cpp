@@ -363,8 +363,8 @@ ExtPort::ExtPort (jack_port_t * jport)
 
 static void
 get_ext_ports_from_jack (
-  PortType              type,
-  PortFlow              flow,
+  dsp::PortType         type,
+  dsp::PortFlow         flow,
   bool                  hw,
   std::vector<ExtPort> &ports,
   AudioEngine          &engine)
@@ -372,9 +372,9 @@ get_ext_ports_from_jack (
   unsigned long flags = 0;
   if (hw)
     flags |= JackPortIsPhysical;
-  if (flow == PortFlow::Input)
+  if (flow == dsp::PortFlow::Input)
     flags |= JackPortIsInput;
-  else if (flow == PortFlow::Output)
+  else if (flow == dsp::PortFlow::Output)
     flags |= JackPortIsOutput;
   const char * jtype = engine_jack_get_jack_type (type);
   if (!jtype)
@@ -475,13 +475,13 @@ ext_port_from_rtaudio (
 
 static void
 get_ext_ports_from_rtaudio (
-  PortFlow              flow,
+  dsp::PortFlow         flow,
   std::vector<ExtPort> &ports,
   AudioEngine          &engine)
 {
   /* note: this is an output port from the graph side that will be used as an
    * input port on the zrythm side */
-  if (flow == PortFlow::Output || flow == PortFlow::Input)
+  if (flow == dsp::PortFlow::Output || flow == dsp::PortFlow::Input)
     {
       bool      reuse_rtaudio = true;
       rtaudio_t rtaudio = engine.rtaudio_;
@@ -505,7 +505,7 @@ get_ext_ports_from_rtaudio (
             rtaudio_get_device_info (rtaudio, dev_id);
 
           unsigned int channels =
-            (flow == PortFlow::Output)
+            (flow == dsp::PortFlow::Output)
               ? dev_nfo.input_channels
               : dev_nfo.output_channels;
 
@@ -514,7 +514,8 @@ get_ext_ports_from_rtaudio (
               for (unsigned int j = 0; j < channels; j++)
                 {
                   ports.push_back (*ext_port_from_rtaudio (
-                    dev_id, j, dev_nfo.name, flow == PortFlow::Output, false));
+                    dev_id, j, dev_nfo.name, flow == dsp::PortFlow::Output,
+                    false));
                 }
               /* TODO? duplex channels */
             }

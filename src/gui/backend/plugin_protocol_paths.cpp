@@ -5,11 +5,11 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/plugin_protocol_paths.h"
 #include "gui/backend/zrythm_application.h"
-
 #include "utils/directory_manager.h"
+#include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 
-using namespace zrythm::gui::dsp::plugins;
+using namespace zrythm::gui::old_dsp::plugins;
 using namespace zrythm;
 
 static void

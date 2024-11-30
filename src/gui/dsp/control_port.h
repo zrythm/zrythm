@@ -358,7 +358,7 @@ public:
    *
    * Only used for generic UIs.
    */
-  zrythm::gui::dsp::plugins::PluginGtkController * widget_ = 0;
+  zrythm::gui::old_dsp::plugins::PluginGtkController * widget_ = 0;
 };
 
 /**

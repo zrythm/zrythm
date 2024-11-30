@@ -38,7 +38,8 @@ PluginSetting::init_after_cloning (const PluginSetting &other)
   copy_fields_from (other);
 }
 
-PluginSetting::PluginSetting (const zrythm::gui::dsp::plugins::PluginDescriptor &descr)
+PluginSetting::PluginSetting (
+  const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr)
 {
   PluginSetting * existing = nullptr;
   if (S_PLUGIN_SETTINGS && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
@@ -55,7 +56,7 @@ PluginSetting::PluginSetting (const zrythm::gui::dsp::plugins::PluginDescriptor 
     {
       descr_ = descr.clone_unique ();
       /* bridge all plugins by default */
-      this->bridge_mode_ = zrythm::gui::dsp::plugins::CarlaBridgeMode::Full;
+      this->bridge_mode_ = zrythm::gui::old_dsp::plugins::CarlaBridgeMode::Full;
       validate (false);
     }
 }
@@ -95,15 +96,15 @@ PluginSetting::validate (bool print_result)
 
   const auto prot = get_descriptor ()->protocol_;
   if (
-    prot == zrythm::gui::dsp::plugins::Protocol::ProtocolType::VST
-    || prot == zrythm::gui::dsp::plugins::Protocol::ProtocolType::VST3
-    || prot == zrythm::gui::dsp::plugins::Protocol::ProtocolType::AudioUnit
-    || prot == zrythm::gui::dsp::plugins::Protocol::ProtocolType::SFZ
-    || prot == zrythm::gui::dsp::plugins::Protocol::ProtocolType::SF2
-    || prot == zrythm::gui::dsp::plugins::Protocol::ProtocolType::DSSI
-    || prot == zrythm::gui::dsp::plugins::Protocol::ProtocolType::LADSPA
-    || prot == zrythm::gui::dsp::plugins::Protocol::ProtocolType::JSFX
-    || prot == zrythm::gui::dsp::plugins::Protocol::ProtocolType::CLAP)
+    prot == zrythm::gui::old_dsp::plugins::Protocol::ProtocolType::VST
+    || prot == zrythm::gui::old_dsp::plugins::Protocol::ProtocolType::VST3
+    || prot == zrythm::gui::old_dsp::plugins::Protocol::ProtocolType::AudioUnit
+    || prot == zrythm::gui::old_dsp::plugins::Protocol::ProtocolType::SFZ
+    || prot == zrythm::gui::old_dsp::plugins::Protocol::ProtocolType::SF2
+    || prot == zrythm::gui::old_dsp::plugins::Protocol::ProtocolType::DSSI
+    || prot == zrythm::gui::old_dsp::plugins::Protocol::ProtocolType::LADSPA
+    || prot == zrythm::gui::old_dsp::plugins::Protocol::ProtocolType::JSFX
+    || prot == zrythm::gui::old_dsp::plugins::Protocol::ProtocolType::CLAP)
     {
       this->open_with_carla_ = true;
 #if !HAVE_CARLA
@@ -132,17 +133,19 @@ PluginSetting::validate (bool print_result)
 #if HAVE_CARLA
   /* if no bridge mode specified, calculate the bridge mode here */
   /*z_debug ("{}: recalculating bridge mode...", __func__);*/
-  if (this->bridge_mode_ == zrythm::gui::dsp::plugins::CarlaBridgeMode::None)
+  if (this->bridge_mode_ == zrythm::gui::old_dsp::plugins::CarlaBridgeMode::None)
     {
       this->bridge_mode_ = get_descriptor ()->min_bridge_mode_;
-      if (this->bridge_mode_ == zrythm::gui::dsp::plugins::CarlaBridgeMode::None)
+      if (
+        this->bridge_mode_
+        == zrythm::gui::old_dsp::plugins::CarlaBridgeMode::None)
         {
 #  if 0
           /* bridge if plugin is not whitelisted */
           if (!plugin_descriptor_is_whitelisted (descr))
             {
               this->open_with_carla_ = true;
-              this->bridge_mode_ = zrythm::gui::dsp::plugins::CarlaBridgeMode::Full;
+              this->bridge_mode_ = zrythm::gui::old_dsp::plugins::CarlaBridgeMode::Full;
               /*z_debug (*/
               /*"plugin descriptor not whitelisted - will bridge full");*/
             }
@@ -156,9 +159,10 @@ PluginSetting::validate (bool print_result)
   else
     {
       this->open_with_carla_ = true;
-      zrythm::gui::dsp::plugins::CarlaBridgeMode mode = descr_->min_bridge_mode_;
+      zrythm::gui::old_dsp::plugins::CarlaBridgeMode mode =
+        descr_->min_bridge_mode_;
 
-      if (mode == zrythm::gui::dsp::plugins::CarlaBridgeMode::Full)
+      if (mode == zrythm::gui::old_dsp::plugins::CarlaBridgeMode::Full)
         {
           this->bridge_mode_ = mode;
         }
@@ -166,9 +170,9 @@ PluginSetting::validate (bool print_result)
 
 #  if 0
   /* force bridge mode */
-  if (this->bridge_mode_ == zrythm::gui::dsp::plugins::CarlaBridgeMode::None)
+  if (this->bridge_mode_ == zrythm::gui::old_dsp::plugins::CarlaBridgeMode::None)
     {
-      this->bridge_mode_ = zrythm::gui::dsp::plugins::CarlaBridgeMode::Full;
+      this->bridge_mode_ = zrythm::gui::old_dsp::plugins::CarlaBridgeMode::Full;
     }
 #  endif
 
@@ -500,12 +504,13 @@ PluginSettings::read_or_new ()
       return {};
     }
 
-// FIXME: do this in the deserialize override of zrythm::gui::dsp::plugins::PluginDescriptor
+// FIXME: do this in the deserialize override of
+// zrythm::gui::old_dsp::plugins::PluginDescriptor
 #if 0
 for (size_t i = 0; i < self->descriptors->len; i++)
   {
-    zrythm::gui::dsp::plugins::PluginDescriptor * descr =
-      (zrythm::gui::dsp::plugins::PluginDescriptor *) g_ptr_array_index (self->descriptors, i);
+    zrythm::gui::old_dsp::plugins::PluginDescriptor * descr =
+      (zrythm::gui::old_dsp::plugins::PluginDescriptor *) g_ptr_array_index (self->descriptors, i);
     descr->category = plugin_descriptor_string_to_category (descr->category_str);
   }
 #endif
@@ -531,7 +536,8 @@ PluginSettings::delete_file ()
 }
 
 PluginSetting *
-PluginSettings::find (const zrythm::gui::dsp::plugins::PluginDescriptor &descr)
+PluginSettings::find (
+  const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr)
 {
   auto it = std::find_if (
     settings_.begin (), settings_.end (),
@@ -571,13 +577,14 @@ PluginSettings::set (const PluginSetting &setting, bool _serialize)
     }
 }
 
-std::unique_ptr<zrythm::gui::dsp::plugins::Plugin>
+std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin>
 PluginSetting::create_plugin (
-  unsigned int                    track_name_hash,
-  zrythm::gui::dsp::plugins::PluginSlotType slot_type,
-  int                             slot)
+  unsigned int                track_name_hash,
+  zrythm::dsp::PluginSlotType slot_type,
+  int                         slot)
 {
-  auto plugin = std::make_unique<zrythm::gui::dsp::plugins::CarlaNativePlugin> (
-    *this->descr_, track_name_hash, slot_type, slot);
+  auto plugin =
+    std::make_unique<zrythm::gui::old_dsp::plugins::CarlaNativePlugin> (
+      *this->descr_, track_name_hash, slot_type, slot);
   return plugin;
 }

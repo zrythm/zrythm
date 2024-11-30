@@ -132,7 +132,7 @@ public:
    * @param plugins
    */
   virtual void
-  get_plugins (std::vector<gui::dsp::plugins::Plugin *> &plugins) {};
+  get_plugins (std::vector<gui::old_dsp::plugins::Plugin *> &plugins) {};
 
   /**
    * Sets the number of actions for this action.

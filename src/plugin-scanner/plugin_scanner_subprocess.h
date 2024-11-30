@@ -43,7 +43,7 @@
 
 #include "juce_wrapper.h"
 
-namespace zrythm::gui::dsp::plugins
+namespace zrythm::gui::old_dsp::plugins
 {
 
 /**
@@ -99,4 +99,4 @@ private:
   std::chrono::steady_clock::time_point start_time_;
 };
 
-} // namespace zrythm::gui::dsp::plugins
+} // namespace zrythm::gui::old_dsp::plugins

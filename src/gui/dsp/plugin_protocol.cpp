@@ -1,8 +1,8 @@
 #include "gui/dsp/plugin_protocol.h"
-
 #include "utils/logger.h"
+#include "utils/types.h"
 
-using namespace zrythm::gui::dsp::plugins;
+using namespace zrythm::gui::old_dsp::plugins;
 
 constexpr std::array<const char *, 11> plugin_protocol_strings = {
   "Internal",  "LV2", "DSSI", "LADSPA", "VST",  "VST3",

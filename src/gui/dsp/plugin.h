@@ -10,14 +10,13 @@
 #include <string>
 #include <vector>
 
+#include "dsp/plugin_identifier.h"
 #include "gui/backend/backend/settings/plugin_settings.h"
 #include "gui/dsp/plugin_descriptor.h"
-#include "gui/dsp/plugin_identifier.h"
 #include "gui/dsp/port.h"
-
 #include "utils/types.h"
 
-namespace zrythm::gui::dsp
+namespace zrythm::gui::old_dsp
 {
 class Channel;
 };
@@ -33,7 +32,7 @@ class MixerSelections;
 class AutomatableTrack;
 using WrappedObjectWithChangeSignal = struct _WrappedObjectWithChangeSignal;
 
-namespace zrythm::gui::dsp::plugins
+namespace zrythm::gui::old_dsp::plugins
 {
 
 class Lv2Plugin;
@@ -57,6 +56,11 @@ constexpr auto PLUGIN_MAGIC = 43198683;
 class Plugin : public zrythm::utils::serialization::ISerializable<Plugin>
 {
 public:
+  using PluginIdentifier = zrythm::dsp::PluginIdentifier;
+  using PortIdentifier = zrythm::dsp::PortIdentifier;
+  using PluginSlotType = zrythm::dsp::PluginSlotType;
+  using Channel = zrythm::gui::Channel;
+
   /**
    * Preset identifier.
    */

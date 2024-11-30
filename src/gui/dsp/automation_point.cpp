@@ -1,25 +1,25 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/position.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/backend/channel.h"
 #include "gui/dsp/automation_point.h"
 #include "gui/dsp/automation_region.h"
 #include "gui/dsp/automation_track.h"
-#include "gui/dsp/channel.h"
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/instrument_track.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/port.h"
 #include "gui/dsp/track.h"
-
-#include "dsp/position.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/rt_thread_id.h"
+
 #include <fmt/printf.h>
 
 using namespace zrythm;

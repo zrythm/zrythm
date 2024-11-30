@@ -19,7 +19,7 @@
 #endif
 
 class Port;
-namespace zrythm::gui::dsp::plugins
+namespace zrythm::gui::old_dsp::plugins
 {
 
 class PluginDescriptor;
@@ -261,7 +261,7 @@ public:
   unsigned int max_variant_midi_outs_ = 0;
 };
 
-} // namespace zrythm::gui::dsp::plugins
+} // namespace zrythm::gui::old_dsp::plugins
 
 /**
  * @}

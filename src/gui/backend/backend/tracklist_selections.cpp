@@ -472,7 +472,8 @@ SimpleTracklistSelections::select_last_visible ()
 }
 
 void
-TracklistSelections::get_plugins (std::vector<zrythm::gui::dsp::plugins::Plugin *> &arr)
+TracklistSelections::get_plugins (
+  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &arr)
 {
   for (auto &track : tracks_)
     {

@@ -1,22 +1,12 @@
 // SPDX-FileCopyrightText: © 2020-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __PLUGINS_PLUGIN_IDENTIFIER_H__
-#define __PLUGINS_PLUGIN_IDENTIFIER_H__
-
-#include "zrythm-config.h"
-
-#include <cstdint>
+#ifndef ZRYTHM_DSP_PLUGIN_IDENTIFIER_H
+#define ZRYTHM_DSP_PLUGIN_IDENTIFIER_H
 
 #include "utils/iserializable.h"
 
-/**
- * @addtogroup plugins
- *
- * @{
- */
-
-namespace zrythm::gui::dsp::plugins
+namespace zrythm::dsp
 {
 
 enum class PluginSlotType
@@ -34,18 +24,29 @@ enum class PluginSlotType
  * Plugin identifier.
  */
 class PluginIdentifier
-  final : public zrythm::utils::serialization::ISerializable<PluginIdentifier>
+    : public zrythm::utils::serialization::ISerializable<PluginIdentifier>
 {
-public:
-  // Rule of 0
+  friend auto
+  operator<=> (const PluginIdentifier &lhs, const PluginIdentifier &rhs)
+  {
+    return std::tie (lhs.slot_type_, lhs.track_name_hash_, lhs.slot_)
+           <=> std::tie (rhs.slot_type_, rhs.track_name_hash_, rhs.slot_);
+  }
 
-  bool validate () const;
+  // Needed for testing
+  friend bool
+  operator== (const PluginIdentifier &lhs, const PluginIdentifier &rhs)
+  {
+    return (lhs <=> rhs) == 0;
+  }
+
+public:
+  [[nodiscard]] bool validate () const;
 
   /**
    * Verifies that @p slot_type and @p slot is a valid combination.
    */
-  static inline bool
-  validate_slot_type_slot_combo (PluginSlotType slot_type, int slot)
+  static bool validate_slot_type_slot_combo (PluginSlotType slot_type, int slot)
   {
     return (slot_type == PluginSlotType::Instrument && slot == -1)
            || (slot_type == PluginSlotType::Invalid && slot == -1)
@@ -55,11 +56,6 @@ public:
   std::string print_to_str () const;
 
   uint32_t get_hash () const;
-
-  static uint32_t get_hash (const void * id)
-  {
-    return static_cast<const PluginIdentifier *> (id)->get_hash ();
-  }
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -78,23 +74,6 @@ public:
   int slot_ = -1;
 };
 
-inline bool
-operator== (const PluginIdentifier &lhs, const PluginIdentifier &rhs)
-{
-  return lhs.slot_type_ == rhs.slot_type_
-         && lhs.track_name_hash_ == rhs.track_name_hash_ && lhs.slot_ == rhs.slot_;
-}
-
-inline bool
-operator< (const PluginIdentifier &lhs, const PluginIdentifier &rhs)
-{
-  return lhs.slot_ < rhs.slot_;
-}
-
-} // namespace zrythm::gui::dsp::plugins
-
-/**
- * @}
- */
+}; // namespace zrythm::dsp
 
 #endif

@@ -138,6 +138,8 @@ public:
   Q_ENUM (RecordingMode)
 
   using Position = zrythm::dsp::Position;
+  using PortIdentifier = zrythm::dsp::PortIdentifier;
+  using PortFlow = zrythm::dsp::PortFlow;
 
 public:
   Transport (Project * parent = nullptr);

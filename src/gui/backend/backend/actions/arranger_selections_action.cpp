@@ -3,24 +3,24 @@
 
 #include <ranges>
 
-# include "gui/dsp/audio_region.h"
-# include "gui/dsp/automation_region.h"
-# include "gui/dsp/automation_track.h"
-# include "gui/dsp/chord_track.h"
-# include "gui/dsp/control_port.h"
-# include "gui/dsp/laned_track.h"
-# include "gui/dsp/marker_track.h"
-# include "gui/dsp/port_identifier.h"
-# include "gui/dsp/router.h"
-# include "gui/dsp/track.h"
-# include "gui/dsp/tracklist.h"
-#include "utils/gtest_wrapper.h"
-#include "utils/math.h"
+#include "dsp/port_identifier.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/arranger_selections.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/dsp/audio_region.h"
+#include "gui/dsp/automation_region.h"
+#include "gui/dsp/automation_track.h"
+#include "gui/dsp/chord_track.h"
+#include "gui/dsp/control_port.h"
+#include "gui/dsp/laned_track.h"
+#include "gui/dsp/marker_track.h"
+#include "gui/dsp/router.h"
+#include "gui/dsp/track.h"
+#include "gui/dsp/tracklist.h"
+#include "utils/gtest_wrapper.h"
+#include "utils/math.h"
 
 using namespace zrythm::gui::actions;
 
@@ -80,8 +80,7 @@ ArrangerSelectionsAction::init_after_cloning (
   delta_normalized_amount_ = other.delta_normalized_amount_;
   if (other.target_port_ != nullptr)
     {
-      target_port_ = other.target_port_->clone_raw_ptr ();
-      target_port_->setParent (this);
+      target_port_ = other.target_port_->clone_unique ();
     }
   str_ = other.str_;
   pos_ = other.pos_;
@@ -108,7 +107,7 @@ ArrangerSelectionsAction::init_after_cloning (
   num_split_objs_ = other.num_split_objs_;
   first_run_ = other.first_run_;
   if (other.opts_)
-    opts_ = std::make_unique<dsp::QuantizeOptions> (*other.opts_);
+    opts_ = std::make_unique<old_dsp::QuantizeOptions> (*other.opts_);
   if (other.region_before_)
     {
       std::visit (
@@ -261,8 +260,7 @@ ArrangerSelectionsAction::MoveOrDuplicateAction::MoveOrDuplicateAction (
 
   if (tgt_port_id)
     {
-      target_port_ = tgt_port_id->clone_raw_ptr ();
-      target_port_->setParent (this);
+      target_port_ = tgt_port_id->clone_unique ();
     }
 }
 
@@ -620,8 +618,7 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
                           /* remember info in identifier */
                           own_obj_ptr->id_ = prj_obj->id_;
 
-                          target_port_ = cur_at->port_id_->clone_raw_ptr ();
-                          target_port_->setParent (this);
+                          target_port_ = cur_at->port_id_->clone_unique ();
                         }
                       else
                         {
@@ -2403,20 +2400,20 @@ template ArrangerSelectionsAction::ResizeAction::ResizeAction (
   double                  ticks);
 
 template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
-  const TimelineSelections &sel,
-  const dsp::QuantizeOptions    &opts);
+  const TimelineSelections       &sel,
+  const old_dsp::QuantizeOptions &opts);
 template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
-  const MidiSelections  &sel,
-  const dsp::QuantizeOptions &opts);
+  const MidiSelections           &sel,
+  const old_dsp::QuantizeOptions &opts);
 template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
-  const AutomationSelections &sel,
-  const dsp::QuantizeOptions      &opts);
+  const AutomationSelections     &sel,
+  const old_dsp::QuantizeOptions &opts);
 template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
-  const ChordSelections &sel,
-  const dsp::QuantizeOptions &opts);
+  const ChordSelections          &sel,
+  const old_dsp::QuantizeOptions &opts);
 template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
-  const AudioSelections &sel,
-  const dsp::QuantizeOptions &opts);
+  const AudioSelections          &sel,
+  const old_dsp::QuantizeOptions &opts);
 
 template std::unique_ptr<EditArrangerSelectionsAction>
 EditArrangerSelectionsAction::create (

@@ -79,7 +79,7 @@ ListView {
                     Layout.fillWidth: true
                     Layout.fillHeight: false
                     Layout.alignment: Qt.AlignLeft | Qt.AlignBaseline
-                    text: automationTrack.portIdentifier.label
+                    text: automationTrack.label
                     icon.source: ResourceManager.getIconUrl("zrythm-dark", "automation-4p.svg")
                     styleHeight: control.buttonHeight
                     padding: control.buttonPadding

@@ -7,6 +7,8 @@
 #include <memory>
 #include <vector>
 
+#include "dsp/port_identifier.h"
+#include "dsp/position.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/backend/backend/audio_selections.h"
 #include "gui/backend/backend/automation_selections.h"
@@ -18,11 +20,8 @@
 #include "gui/dsp/lengthable_object.h"
 #include "gui/dsp/midi_function.h"
 #include "gui/dsp/midi_region.h"
-#include "gui/dsp/port_identifier.h"
 #include "gui/dsp/quantize_options.h"
 #include "gui/dsp/region.h"
-
-#include "dsp/position.h"
 
 namespace zrythm::gui::actions
 {
@@ -123,6 +122,7 @@ public:
   };
 
   using Position = zrythm::dsp::Position;
+  using PortIdentifier = dsp::PortIdentifier;
 
 public:
   ArrangerSelectionsAction ();
@@ -274,7 +274,7 @@ public:
   /** Target port (used to find corresponding automation track when
    * moving/copying automation regions to another automation track/another
    * track). */
-  PortIdentifier * target_port_ = nullptr;
+  std::unique_ptr<PortIdentifier> target_port_;
 
   /** String, when changing a string. */
   std::string str_;
@@ -297,7 +297,7 @@ public:
   bool first_run_ = false;
 
   /** QuantizeOptions clone, if quantizing. */
-  std::unique_ptr<dsp::QuantizeOptions> opts_{};
+  std::unique_ptr<gui::old_dsp::QuantizeOptions> opts_{};
 
   /** Used for automation autofill action. */
   std::optional<RegionPtrVariant> region_before_;
@@ -637,10 +637,10 @@ public:
    * @param opts Quantize options.
    */
   template <FinalArrangerSelectionsSubclass T>
-  QuantizeAction (const T &sel, const dsp::QuantizeOptions &opts)
+  QuantizeAction (const T &sel, const old_dsp::QuantizeOptions &opts)
       : ArrangerSelectionsAction (sel, Type::Quantize)
   {
-    opts_ = std::make_unique<dsp::QuantizeOptions> (opts);
+    opts_ = std::make_unique<old_dsp::QuantizeOptions> (opts);
   }
 };
 
@@ -714,20 +714,20 @@ extern template ArrangerSelectionsAction::ResizeAction::ResizeAction (
   double                  ticks);
 
 extern template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
-  const TimelineSelections   &sel,
-  const dsp::QuantizeOptions &opts);
+  const TimelineSelections       &sel,
+  const old_dsp::QuantizeOptions &opts);
 extern template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
-  const MidiSelections       &sel,
-  const dsp::QuantizeOptions &opts);
+  const MidiSelections           &sel,
+  const old_dsp::QuantizeOptions &opts);
 extern template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
-  const AutomationSelections &sel,
-  const dsp::QuantizeOptions &opts);
+  const AutomationSelections     &sel,
+  const old_dsp::QuantizeOptions &opts);
 extern template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
-  const ChordSelections      &sel,
-  const dsp::QuantizeOptions &opts);
+  const ChordSelections          &sel,
+  const old_dsp::QuantizeOptions &opts);
 extern template ArrangerSelectionsAction::QuantizeAction::QuantizeAction (
-  const AudioSelections      &sel,
-  const dsp::QuantizeOptions &opts);
+  const AudioSelections          &sel,
+  const old_dsp::QuantizeOptions &opts);
 
 extern template std::unique_ptr<EditArrangerSelectionsAction>
 EditArrangerSelectionsAction::create (

@@ -41,7 +41,7 @@
 #include "utils/gtest_wrapper.h"
 #include "utils/windows.h"
 
-using namespace zrythm::gui::dsp::plugins;
+using namespace zrythm::gui::old_dsp::plugins;
 
 PluginManager::PluginManager (QObject * parent)
     : QObject (parent),
@@ -146,7 +146,7 @@ PluginManager::supports_protocol (Protocol::ProtocolType protocol)
 
 void
 PluginManager::add_descriptor (
-  const zrythm::gui::dsp::plugins::PluginDescriptor &descr)
+  const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr)
 {
   z_return_if_fail (descr.protocol_ > Protocol::ProtocolType::Internal);
   plugin_descriptors_->addDescriptor (descr);
@@ -273,7 +273,7 @@ PluginManager::find_plugin_from_uri (std::string_view uri) const
 #if 0
   auto it = std::find_if (
     plugin_descriptors_.begin (), plugin_descriptors_.end (),
-    [&uri] (const zrythm::gui::dsp::plugins::PluginDescriptor &descr) {
+    [&uri] (const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr) {
       return uri == descr.uri_;
     });
   if (it != plugin_descriptors_.end ())
@@ -291,13 +291,13 @@ PluginManager::find_plugin_from_uri (std::string_view uri) const
 
 std::unique_ptr<PluginDescriptor>
 PluginManager::find_from_descriptor (
-  const zrythm::gui::dsp::plugins::PluginDescriptor &src_descr) const
+  const zrythm::gui::old_dsp::plugins::PluginDescriptor &src_descr) const
 {
 // TODO
 #if 0
   auto it = std::find_if (
     plugin_descriptors_.begin (), plugin_descriptors_.end (),
-    [&src_descr] (const zrythm::gui::dsp::plugins::PluginDescriptor &descr) {
+    [&src_descr] (const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr) {
       return src_descr.is_same_plugin (descr);
     });
   if (it != plugin_descriptors_.end ())

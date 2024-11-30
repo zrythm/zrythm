@@ -5,13 +5,12 @@
 
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/channel.h"
+#include "gui/backend/channel.h"
 #include "gui/dsp/group_target_track.h"
 #include "gui/dsp/router.h"
 #include "gui/dsp/track.h"
 #include "gui/dsp/track_processor.h"
 #include "gui/dsp/tracklist.h"
-
 #include "utils/rt_thread_id.h"
 
 void

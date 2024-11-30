@@ -54,11 +54,6 @@ bit_depth_int_to_enum (int depth)
 }
 
 /**
- * Number of plugin slots per channel.
- */
-constexpr size_t STRIP_SIZE = 9;
-
-/**
  * Returns the number of frames in the given audio
  * file.
  */

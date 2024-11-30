@@ -11,7 +11,7 @@
 #include "utils/algorithms.h"
 #include "utils/pcg_rand.h"
 
-namespace zrythm::gui::dsp
+namespace zrythm::gui::old_dsp
 {
 
 void
@@ -159,4 +159,4 @@ QuantizeOptions::quantize_position (Position * pos)
   return diff;
 }
 
-}; // namespace zrythm::gui::dsp
+}; // namespace zrythm::gui::old_dsp

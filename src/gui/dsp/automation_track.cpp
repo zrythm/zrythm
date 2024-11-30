@@ -4,6 +4,7 @@
 #include <cmath>
 #include <ranges>
 
+#include "dsp/port_identifier.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/automatable_track.h"
@@ -11,10 +12,8 @@
 #include "gui/dsp/automation_region.h"
 #include "gui/dsp/automation_track.h"
 #include "gui/dsp/control_port.h"
-#include "gui/dsp/port_identifier.h"
 #include "gui/dsp/track.h"
 #include "gui/dsp/tracklist.h"
-
 #include "utils/gtest_wrapper.h"
 #include "utils/math.h"
 #include "utils/rt_thread_id.h"
@@ -22,8 +21,7 @@
 AutomationTrack::AutomationTrack (ControlPort &port)
 {
   z_return_if_fail (port.id_->validate ());
-  port_id_ = port.id_->clone_raw_ptr ();
-  port_id_->setParent (this);
+  port_id_ = port.id_->clone_unique ();
 
   port.at_ = this;
 
@@ -90,9 +88,8 @@ AutomationTrack::setRecordMode (int record_mode)
 void
 AutomationTrack::set_port_id (const PortIdentifier &id)
 {
-  port_id_ = id.clone_raw_ptr ();
-  port_id_->setParent (this);
-  Q_EMIT portIdentifierChanged (port_id_);
+  port_id_ = id.clone_unique ();
+  Q_EMIT labelChanged (getLabel ());
 }
 
 bool
@@ -292,7 +289,7 @@ AutomationTrack::find_from_port (
 
                   if (
                     pl->get_protocol ()
-                    == zrythm::gui::dsp::plugins::Protocol::ProtocolType::LV2)
+                    == zrythm::gui::old_dsp::plugins::Protocol::ProtocolType::LV2)
                     {
                       /* if lv2 plugin port (not standard zrythm-provided port),
                        * make sure the symbol matches (some plugins have multiple
@@ -576,6 +573,5 @@ AutomationTrack::init_after_cloning (const AutomationTrack &other)
   height_ = other.height_;
   z_warn_if_fail (height_ >= TRACK_MIN_HEIGHT);
 
-  port_id_ = other.port_id_->clone_raw_ptr ();
-  port_id_->setParent (this);
+  port_id_ = other.port_id_->clone_unique ();
 }

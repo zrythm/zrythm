@@ -4,9 +4,9 @@
 #ifndef __ACTION_PORT_CONNECTION_ACTION_H__
 #define __ACTION_PORT_CONNECTION_ACTION_H__
 
+#include "dsp/port_identifier.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/dsp/port_connection.h"
-
 #include "utils/icloneable.h"
 
 namespace zrythm::gui::actions
@@ -31,6 +31,9 @@ public:
     Disable,
     ChangeMultiplier,
   };
+
+  using PortType = dsp::PortType;
+  using PortIdentifier = dsp::PortIdentifier;
 
 public:
   PortConnectionAction (QObject * parent = nullptr);

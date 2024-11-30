@@ -225,7 +225,7 @@ public:
   };
 
   template <typename T>
-  inline static constexpr bool is_container_v = is_container<T>::value;
+   static constexpr bool is_container_v = is_container<T>::value;
 #endif
 
   template <typename T> struct is_serializable_pointer : std::false_type
@@ -243,7 +243,7 @@ public:
   {
   };
   template <typename T>
-  inline static constexpr bool is_serializable_pointer_v =
+  static constexpr bool is_serializable_pointer_v =
     is_serializable_pointer<T>::value;
 
   template <typename T, std::size_t N> struct is_array_of_serializable_pointers
@@ -269,7 +269,7 @@ public:
 
   // note: doesn't work, needs testing
   template <typename T, std::size_t N>
-  inline static constexpr bool is_array_of_serializable_pointers_v =
+  static constexpr bool is_array_of_serializable_pointers_v =
     is_array_of_serializable_pointers<T, N>::value;
 
   template <typename T, typename = void>
@@ -286,7 +286,7 @@ public:
   };
 
   template <typename T>
-  inline static constexpr bool is_container_of_serializable_objects_v =
+  static constexpr bool is_container_of_serializable_objects_v =
     is_container_of_serializable_objects<T>::value;
 
   template <typename T, typename = void>
@@ -303,7 +303,7 @@ public:
   };
 
   template <typename T>
-  inline static constexpr bool is_container_of_serializable_pointers_v =
+  static constexpr bool is_container_of_serializable_pointers_v =
     is_container_of_serializable_pointers<T>::value;
 
   template <typename FieldT, typename VariantT, typename = void>
@@ -326,7 +326,7 @@ public:
   };
 
   template <typename FieldT, typename VariantT>
-  inline static constexpr bool is_convertible_pointer_v =
+  static constexpr bool is_convertible_pointer_v =
     is_convertible_pointer<FieldT, VariantT>::value;
 
   template <typename FieldT, typename VariantT, typename = void>
@@ -345,7 +345,7 @@ public:
   };
 
   template <typename FieldT, typename VariantT>
-  inline static constexpr bool is_container_of_convertible_pointers_v =
+  static constexpr bool is_container_of_convertible_pointers_v =
     is_container_of_convertible_pointers<FieldT, VariantT>::value;
 
   template <typename FieldT, typename VariantT = void>
@@ -386,7 +386,7 @@ public:
   };
 
   template <typename Owner, typename T, typename VariantT = void>
-  inline static constexpr bool is_field_serializable_v =
+  static constexpr bool is_field_serializable_v =
     is_field_serializable<Owner, T, VariantT>::value;
 
   template <typename T> struct is_atomic_serializable : std::false_type
@@ -400,7 +400,7 @@ public:
   };
 
   template <typename T>
-  inline static constexpr bool is_atomic_serializable_v =
+  static constexpr bool is_atomic_serializable_v =
     is_atomic_serializable<T>::value;
 
   /**
@@ -410,10 +410,9 @@ public:
    */
   virtual std::string get_document_type () const
   {
-    static std::string doc_type = fmt::format (
-      "Please implement ISerializable::get_document_type() for {}",
-      typeid (*this).name ());
-    throw std::runtime_error (doc_type);
+    const std::string doc_type = typeid (Derived).name ();
+    z_warning (
+      "Please implement ISerializable::get_document_type() for {}", doc_type);
     return doc_type;
   }
 

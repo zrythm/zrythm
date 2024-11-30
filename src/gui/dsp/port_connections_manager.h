@@ -12,8 +12,6 @@
 #include "utils/types.h"
 
 class Port;
-class PortIdentifier;
-class PortConnection;
 
 /**
  * @addtogroup dsp
@@ -35,6 +33,7 @@ class PortConnectionsManager final
   QML_ELEMENT
 
 public:
+  using PortIdentifier = zrythm::dsp::PortIdentifier;
   using ConnectionsVector = std::vector<PortConnection *>;
 
   explicit PortConnectionsManager (QObject * parent = nullptr);

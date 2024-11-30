@@ -14,18 +14,13 @@
 #include "utils/types.h"
 #include <fmt/printf.h>
 
-namespace zrythm::gui::dsp
+namespace zrythm::gui
 {
 class Channel;
 };
 
-class StereoPorts;
-class MidiPort;
-class ControlPort;
-class Port;
 class ControlRoom;
 class SampleProcessor;
-class PortIdentifier;
 class Track;
 
 /**
@@ -92,7 +87,7 @@ public:
     MIDI_FADER_MODE_CC_VOLUME,
   };
 
-  using Channel = zrythm::gui::dsp::Channel;
+  using Channel = zrythm::gui::Channel;
 
 public:
   Fader (QObject * parent = nullptr);
@@ -120,7 +115,8 @@ public:
     ControlRoom *     control_room,
     SampleProcessor * sample_processor);
 
-  static Fader * find_from_port_identifier (const PortIdentifier &id);
+  static Fader *
+  find_from_port_identifier (const zrythm::dsp::PortIdentifier &id);
 
   static std::unique_ptr<ControlPort> create_swap_phase_port (bool passthrough);
 

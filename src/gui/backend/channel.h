@@ -6,12 +6,11 @@
 
 #include "zrythm-config.h"
 
+#include "dsp/channel.h"
 #include "gui/dsp/channel_send.h"
 #include "gui/dsp/ext_port.h"
 #include "gui/dsp/fader.h"
 #include "gui/dsp/plugin.h"
-
-#include "utils/audio.h"
 #include "utils/icloneable.h"
 
 class AutomationTrack;
@@ -19,15 +18,13 @@ class ChannelTrack;
 class GroupTargetTrack;
 class ExtPort;
 
-namespace zrythm::gui::dsp
+namespace zrythm::gui
 {
 
 /** Magic number to identify channels. */
 static constexpr int CHANNEL_MAGIC = 8431676;
 
 static constexpr float MAX_FADER_AMP = 1.42f;
-
-static constexpr auto STRIP_SIZE = zrythm::utils::audio::STRIP_SIZE;
 
 #define IS_CHANNEL(x) (((Channel *) x)->magic_ == CHANNEL_MAGIC)
 #define IS_CHANNEL_AND_NONNULL(x) (x && IS_CHANNEL (x))
@@ -57,7 +54,9 @@ class Channel final
   Q_PROPERTY (MidiPort * midiOut READ getMidiOut CONSTANT)
 
 public:
-  static constexpr auto STRIP_SIZE = zrythm::utils::audio::STRIP_SIZE;
+  static constexpr auto STRIP_SIZE = zrythm::dsp::STRIP_SIZE;
+  using PortType = zrythm::dsp::PortType;
+  using PortIdentifier = dsp::PortIdentifier;
 
 public:
   Channel (QObject * parent = nullptr);
@@ -98,13 +97,13 @@ public:
    * overwrites existing plugins.
    */
   void handle_plugin_import (
-    const zrythm::gui::dsp::plugins::Plugin *           pl,
-    const MixerSelections *                             sel,
-    const zrythm::gui::dsp::plugins::PluginDescriptor * descr,
-    int                                                 slot,
-    zrythm::gui::dsp::plugins::PluginSlotType           slot_type,
-    bool                                                copy,
-    bool                                                ask_if_overwrite);
+    const zrythm::gui::old_dsp::plugins::Plugin *           pl,
+    const MixerSelections *                                 sel,
+    const zrythm::gui::old_dsp::plugins::PluginDescriptor * descr,
+    int                                                     slot,
+    zrythm::dsp::PluginSlotType                             slot_type,
+    bool                                                    copy,
+    bool                                                    ask_if_overwrite);
 
   /**
    * @brief Prepares the channel for processing.
@@ -138,15 +137,15 @@ public:
    *
    * @throw ZrythmException on error.
    */
-  zrythm::gui::dsp::plugins::Plugin * add_plugin (
-    std::unique_ptr<zrythm::gui::dsp::plugins::Plugin> &&plugin,
-    zrythm::gui::dsp::plugins::PluginSlotType            slot_type,
-    int                                                  slot,
-    bool                                                 confirm,
-    bool                                                 moving_plugin,
-    bool                                                 gen_automatables,
-    bool                                                 recalc_graph,
-    bool                                                 pub_events);
+  zrythm::gui::old_dsp::plugins::Plugin * add_plugin (
+    std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin> &&plugin,
+    zrythm::dsp::PluginSlotType                              slot_type,
+    int                                                      slot,
+    bool                                                     confirm,
+    bool                                                     moving_plugin,
+    bool                                                     gen_automatables,
+    bool                                                     recalc_graph,
+    bool                                                     pub_events);
 
   ChannelTrack * get_track () const { return track_; }
 
@@ -177,13 +176,13 @@ public:
    *
    * @return The plugin that was removed (in case we want to move it).
    */
-  std::unique_ptr<zrythm::gui::dsp::plugins::Plugin> remove_plugin (
-    zrythm::gui::dsp::plugins::PluginSlotType slot_type,
-    int                                       slot,
-    bool                                      moving_plugin,
-    bool                                      deleting_plugin,
-    bool                                      deleting_channel,
-    bool                                      recalc_graph);
+  std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin> remove_plugin (
+    zrythm::dsp::PluginSlotType slot_type,
+    int                         slot,
+    bool                        moving_plugin,
+    bool                        deleting_plugin,
+    bool                        deleting_channel,
+    bool                        recalc_graph);
 
   /**
    * Updates the track name hash in the channel and all related ports and
@@ -192,7 +191,7 @@ public:
   void
   update_track_name_hash (unsigned int old_name_hash, unsigned int new_name_hash);
 
-  void get_plugins (std::vector<zrythm::gui::dsp::plugins::Plugin *> &pls);
+  void get_plugins (std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &pls);
 
   /**
    * Gets whether mono compatibility is enabled.
@@ -214,14 +213,13 @@ public:
    */
   void set_swap_phase (bool enabled, bool fire_events);
 
-  zrythm::gui::dsp::plugins::Plugin * get_plugin_at_slot (
-    int                                       slot,
-    zrythm::gui::dsp::plugins::PluginSlotType slot_type) const;
+  zrythm::gui::old_dsp::plugins::Plugin *
+  get_plugin_at_slot (int slot, zrythm::dsp::PluginSlotType slot_type) const;
 
   /**
    * Selects/deselects all plugins in the given slot type.
    */
-  void select_all (zrythm::gui::dsp::plugins::PluginSlotType type, bool select);
+  void select_all (zrythm::dsp::PluginSlotType type, bool select);
 
   /**
    * Sets caches for processing.
@@ -237,7 +235,7 @@ public:
    * channel_free should be designed to be called later after an arbitrary
    * delay.
    *
-   * @param remove_pl Remove the zrythm::gui::dsp::plugins::Plugin from the
+   * @param remove_pl Remove the zrythm::gui::old_dsp::plugins::Plugin from the
    * Channel. Useful when deleting the channel.
    * @param recalc_graph Recalculate mixer graph.
    */
@@ -302,56 +300,56 @@ private:
   /**
    * Connect ports in the case of !prev && !next.
    */
-  void connect_no_prev_no_next (zrythm::gui::dsp::plugins::Plugin &pl);
+  void connect_no_prev_no_next (zrythm::gui::old_dsp::plugins::Plugin &pl);
 
   /**
    * Connect ports in the case of !prev && next.
    */
   void connect_no_prev_next (
-    zrythm::gui::dsp::plugins::Plugin &pl,
-    zrythm::gui::dsp::plugins::Plugin &next_pl);
+    zrythm::gui::old_dsp::plugins::Plugin &pl,
+    zrythm::gui::old_dsp::plugins::Plugin &next_pl);
 
   /**
    * Connect ports in the case of prev && !next.
    */
   void connect_prev_no_next (
-    zrythm::gui::dsp::plugins::Plugin &prev_pl,
-    zrythm::gui::dsp::plugins::Plugin &pl);
+    zrythm::gui::old_dsp::plugins::Plugin &prev_pl,
+    zrythm::gui::old_dsp::plugins::Plugin &pl);
 
   /**
    * Connect ports in the case of prev && next.
    */
   void connect_prev_next (
-    zrythm::gui::dsp::plugins::Plugin &prev_pl,
-    zrythm::gui::dsp::plugins::Plugin &pl,
-    zrythm::gui::dsp::plugins::Plugin &next_pl);
+    zrythm::gui::old_dsp::plugins::Plugin &prev_pl,
+    zrythm::gui::old_dsp::plugins::Plugin &pl,
+    zrythm::gui::old_dsp::plugins::Plugin &next_pl);
 
   /**
    * Disconnect ports in the case of !prev && !next.
    */
-  void disconnect_no_prev_no_next (zrythm::gui::dsp::plugins::Plugin &pl);
+  void disconnect_no_prev_no_next (zrythm::gui::old_dsp::plugins::Plugin &pl);
 
   /**
    * Disconnect ports in the case of !prev && next.
    */
   void disconnect_no_prev_next (
-    zrythm::gui::dsp::plugins::Plugin &pl,
-    zrythm::gui::dsp::plugins::Plugin &next_pl);
+    zrythm::gui::old_dsp::plugins::Plugin &pl,
+    zrythm::gui::old_dsp::plugins::Plugin &next_pl);
 
   /**
    * Connect ports in the case of prev && !next.
    */
   void disconnect_prev_no_next (
-    zrythm::gui::dsp::plugins::Plugin &prev_pl,
-    zrythm::gui::dsp::plugins::Plugin &pl);
+    zrythm::gui::old_dsp::plugins::Plugin &prev_pl,
+    zrythm::gui::old_dsp::plugins::Plugin &pl);
 
   /**
    * Connect ports in the case of prev && next.
    */
   void disconnect_prev_next (
-    zrythm::gui::dsp::plugins::Plugin &prev_pl,
-    zrythm::gui::dsp::plugins::Plugin &pl,
-    zrythm::gui::dsp::plugins::Plugin &next_pl);
+    zrythm::gui::old_dsp::plugins::Plugin &prev_pl,
+    zrythm::gui::old_dsp::plugins::Plugin &pl,
+    zrythm::gui::old_dsp::plugins::Plugin &next_pl);
 
   void connect_plugins ();
 
@@ -365,8 +363,9 @@ private:
    */
   void init_stereo_out_ports (bool loading);
 
-  void
-  disconnect_plugin_from_strip (int pos, zrythm::gui::dsp::plugins::Plugin &pl);
+  void disconnect_plugin_from_strip (
+    int                                    pos,
+    zrythm::gui::old_dsp::plugins::Plugin &pl);
 
 public:
   /**
@@ -374,15 +373,15 @@ public:
    *
    * This is processed before the instrument/inserts.
    */
-  std::array<std::unique_ptr<zrythm::gui::dsp::plugins::Plugin>, STRIP_SIZE>
+  std::array<std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin>, STRIP_SIZE>
     midi_fx_;
 
   /** The channel insert strip. */
-  std::array<std::unique_ptr<zrythm::gui::dsp::plugins::Plugin>, STRIP_SIZE>
+  std::array<std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin>, STRIP_SIZE>
     inserts_;
 
   /** The instrument plugin, if instrument track. */
-  std::unique_ptr<zrythm::gui::dsp::plugins::Plugin> instrument_;
+  std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin> instrument_;
 
   /**
    * The sends strip.
@@ -490,6 +489,6 @@ public:
   ChannelTrack * track_ = nullptr;
 };
 
-};
+}; // namespace zrythm::gui
 
 #endif

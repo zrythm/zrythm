@@ -14,7 +14,7 @@
  * @{
  */
 
-namespace zrythm::gui::dsp::plugins
+namespace zrythm::gui::old_dsp::plugins
 {
 
 /**
@@ -149,7 +149,7 @@ public:
   std::vector<std::unique_ptr<PluginCollection>> collections_;
 };
 
-} // namespace zrythm::gui::dsp::plugins
+} // namespace zrythm::gui::old_dsp::plugins
 
 /**
  * @}

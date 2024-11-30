@@ -30,8 +30,6 @@ endif()
 list(APPEND zrythm_link_libs
   midilib::midilib
   kissfft::kissfft
-  whereami::whereami
-  zrythm_dsp_lib
 )
 
 if(USE_WEAK_JACK)
@@ -49,13 +47,8 @@ set_target_properties(zrythm_lib PROPERTIES
 target_include_directories(zrythm_lib PUBLIC ${zrythm_include_dirs})
 target_compile_definitions(zrythm_lib PUBLIC ${zrythm_definitions})
 target_compile_options(zrythm_lib PUBLIC ${zrythm_compile_args})
-target_link_libraries(zrythm_lib PUBLIC ${zrythm_link_libs})
-
-# precompile header
-set(zrythm_pch ${CMAKE_CURRENT_SOURCE_DIR}/pch/zrythm_pch.h)
-target_precompile_headers(zrythm_lib
-  PRIVATE
-    $<$<COMPILE_LANGUAGE:CXX>:${zrythm_pch}>)
+target_link_libraries(zrythm_lib PUBLIC ${zrythm_link_libs} zrythm_dsp_lib)
+target_precompile_headers(zrythm_lib REUSE_FROM zrythm_dsp_lib)
 
 target_sources(zrythm PRIVATE main.cpp)
 target_link_libraries(zrythm PRIVATE zrythm_lib)

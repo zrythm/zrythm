@@ -47,7 +47,7 @@ struct EngineProcessTimeInfo;
 class ChannelSend;
 class GraphThread;
 
-namespace zrythm::gui::dsp::plugins
+namespace zrythm::gui::old_dsp::plugins
 {
 class Plugin;
 }
@@ -76,7 +76,7 @@ public:
   {
     /** Port. */
     Port,
-    /** zrythm::gui::dsp::plugins::Plugin processor. */
+    /** zrythm::gui::old_dsp::plugins::Plugin processor. */
     Plugin,
     /** Track processor. */
     Track,
@@ -109,7 +109,7 @@ public:
 
   using NodeData = std::variant<
     PortPtrVariant,
-    zrythm::gui::dsp::plugins::PluginPtrVariant,
+    zrythm::gui::old_dsp::plugins::PluginPtrVariant,
     TrackPtrVariant,
     Fader *, // Used for normal fader, prefader and monitor fader
     SampleProcessor *,
@@ -232,7 +232,7 @@ template <> struct std::hash<GraphNode::NodeData>
             },
             p);
         },
-        [] (const zrythm::gui::dsp::plugins::PluginPtrVariant &pl) {
+        [] (const zrythm::gui::old_dsp::plugins::PluginPtrVariant &pl) {
           return std::visit (
             [] (auto * ptr) {
               z_return_val_if_fail (ptr, static_cast<size_t> (0));

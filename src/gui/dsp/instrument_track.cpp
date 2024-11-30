@@ -37,7 +37,7 @@ InstrumentTrack::validate () const
          && GroupTargetTrack::validate_base ();
 }
 
-zrythm::gui::dsp::plugins::Plugin *
+zrythm::gui::old_dsp::plugins::Plugin *
 InstrumentTrack::get_instrument ()
 {
   auto &plugin = channel_->instrument_;
@@ -45,7 +45,7 @@ InstrumentTrack::get_instrument ()
   return plugin.get ();
 }
 
-const zrythm::gui::dsp::plugins::Plugin *
+const zrythm::gui::old_dsp::plugins::Plugin *
 InstrumentTrack::get_instrument () const
 {
   auto &plugin = channel_->instrument_;
@@ -64,7 +64,7 @@ InstrumentTrack::is_plugin_visible () const
 void
 InstrumentTrack::toggle_plugin_visible ()
 {
-  zrythm::gui::dsp::plugins::Plugin * plugin = get_instrument ();
+  zrythm::gui::old_dsp::plugins::Plugin * plugin = get_instrument ();
   z_return_if_fail (plugin);
   plugin->visible_ = !plugin->visible_;
 

@@ -7,12 +7,11 @@
 
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/channel.h"
+#include "gui/backend/channel.h"
 #include "gui/dsp/ditherer.h"
 #include "gui/dsp/engine.h"
 #include "gui/dsp/piano_roll_track.h"
 #include "gui/dsp/tracklist.h"
-
 #include "utils/gtest_wrapper.h"
 #include "utils/logger.h"
 #if HAVE_JACK
@@ -517,7 +516,8 @@ Exporter::prepare_tracks_for_export (AudioEngine &engine, Transport &transport)
        * and custom connections will work */
       for (auto cur_tr : TRACKLIST->tracks_ | type_is<ChannelTrack> ())
         {
-          if (cur_tr->bounce_ || cur_tr->out_signal_type_ != PortType::Audio)
+          if (
+            cur_tr->bounce_ || cur_tr->out_signal_type_ != dsp::PortType::Audio)
             continue;
 
           auto &l_src_id = cur_tr->channel_->fader_->stereo_out_->get_l ().id_;

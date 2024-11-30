@@ -161,7 +161,8 @@ UndoManager::contains_clip (const AudioClip &clip) const
 }
 
 void
-UndoManager::get_plugins (std::vector<zrythm::gui::dsp::plugins::Plugin *> &plugins) const
+UndoManager::get_plugins (
+  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &plugins) const
 {
   undo_stack_->get_plugins (plugins);
   redo_stack_->get_plugins (plugins);

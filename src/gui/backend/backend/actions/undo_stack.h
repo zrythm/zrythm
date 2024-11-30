@@ -111,7 +111,7 @@ public:
    * Returns the plugins referred to in the undo stack.
    */
   void
-  get_plugins (std::vector<zrythm::gui::dsp::plugins::Plugin *> &arr) const;
+  get_plugins (std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &arr) const;
 
   void init_after_cloning (const UndoStack &other) override;
 

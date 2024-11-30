@@ -13,11 +13,11 @@ constexpr const char * PLUGIN_COLLECTIONS_JSON_FILENAME =
   "plugin-collections.json";
 
 using namespace zrythm;
-using namespace zrythm::gui::dsp::plugins;
+using namespace zrythm::gui::old_dsp::plugins;
 
 bool
 PluginCollection::contains_descriptor (
-  const zrythm::gui::dsp::plugins::PluginDescriptor &descr) const
+  const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr) const
 {
   return std::any_of (
     descriptors_.begin (), descriptors_.end (), [&descr] (const auto &cur_descr) {
@@ -27,7 +27,7 @@ PluginCollection::contains_descriptor (
 
 void
 PluginCollection::add_descriptor (
-  const zrythm::gui::dsp::plugins::PluginDescriptor &descr)
+  const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr)
 {
   if (contains_descriptor (descr))
     {
@@ -46,7 +46,7 @@ PluginCollection::add_descriptor (
 
 void
 PluginCollection::remove_descriptor (
-  const zrythm::gui::dsp::plugins::PluginDescriptor &descr)
+  const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr)
 {
   std::erase_if (descriptors_, [&descr] (const auto &cur_descr) {
     return cur_descr->is_same_plugin (descr);
@@ -180,8 +180,8 @@ PluginCollections::read_or_new ()
 
 void
 PluginCollections::add (
-  const zrythm::gui::dsp::plugins::PluginCollection &collection,
-  bool                                               serialize)
+  const zrythm::gui::old_dsp::plugins::PluginCollection &collection,
+  bool                                                   serialize)
 {
   collections_.emplace_back (collection.clone_unique ());
 
@@ -191,7 +191,7 @@ PluginCollections::add (
     }
 }
 
-const zrythm::gui::dsp::plugins::PluginCollection *
+const zrythm::gui::old_dsp::plugins::PluginCollection *
 PluginCollections::find_from_name (std::string_view name) const
 {
   auto it = std::find_if (

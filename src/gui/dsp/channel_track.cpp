@@ -122,14 +122,14 @@ ChannelTrack::remove_ats_from_automation_tracklist (bool fire_events)
     {
       if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags, at->port_id_->flags_,
-          PortIdentifier::Flags::ChannelFader)
+          dsp::PortIdentifier::Flags, at->port_id_->flags_,
+          dsp::PortIdentifier::Flags::ChannelFader)
         || ENUM_BITSET_TEST (
-          PortIdentifier::Flags, at->port_id_->flags_,
-          PortIdentifier::Flags::FaderMute)
+          dsp::PortIdentifier::Flags, at->port_id_->flags_,
+          dsp::PortIdentifier::Flags::FaderMute)
         || ENUM_BITSET_TEST (
-          PortIdentifier::Flags, at->port_id_->flags_,
-          PortIdentifier::Flags::StereoBalance))
+          dsp::PortIdentifier::Flags, at->port_id_->flags_,
+          dsp::PortIdentifier::Flags::StereoBalance))
         {
           atl.remove_at (*at, false, fire_events);
         }
@@ -153,7 +153,7 @@ ChannelTrack::validate_base () const
     false);
 
   /* verify plugins */
-  std::vector<zrythm::gui::dsp::plugins::Plugin *> plugins;
+  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
   channel_->get_plugins (plugins);
   for (auto pl : plugins)
     {

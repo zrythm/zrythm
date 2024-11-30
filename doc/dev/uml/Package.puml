@@ -1,0 +1,61 @@
+@startuml Zrythm Package
+package "GUI executable" as gui {
+  package "C++ backend" as cpp_backend {
+    [i18n]
+    [Proxy list models]
+    [Project serialization]
+    [File import/export]
+    [User preferences]
+    [Undo/redo]
+  }
+  package "QML modules" as qml {
+    package "Main module" as main_qml_module {
+      [Arranger editing]
+      [Mixer view]
+      [Inspectors]
+    }
+    package "Style module" as style_qml_module {
+      [Theme management]
+      [QML utilities]
+    }
+  }
+}
+
+package "DSP library" as dsp {
+  [Engine API]
+  [Identifiers]
+  [Graph processing]
+  [Audio/MIDI device IO]
+  [MIDI clock & timing]
+  [MIDI controller mapping]
+  [Plugin hosting]
+  [Timeline structures]
+  [Transport control]
+  [Tempo & time signature handling]
+}
+
+package "Utilities library" as utils {
+  [Algorithms]
+  [Audio utils]
+  [MIDI utils]
+  [IO]
+  [Math]
+}
+
+package "Plugin Scanner executable" as plugin_scanner {
+  [Scanner subprocess]
+}
+
+package "Engine executable" as engine_process {
+  [Engine startup]
+}
+
+cpp_backend --> dsp
+cpp_backend --> utils
+gui --> engine_process
+gui --> plugin_scanner
+qml --> cpp_backend
+dsp --> utils
+plugin_scanner --> utils
+engine_process --> dsp
+@enduml

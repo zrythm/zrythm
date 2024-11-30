@@ -39,7 +39,7 @@
 
 #include "plugin_scanner_subprocess.h"
 
-using namespace zrythm::gui::dsp::plugins;
+using namespace zrythm::gui::old_dsp::plugins;
 
 PluginScannerSubprocess::PluginScannerSubprocess ()
     : file_logger_ (std::make_unique<juce::FileLogger> (

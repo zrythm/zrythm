@@ -1,14 +1,14 @@
 // SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-# include "gui/dsp/channel.h"
-# include "gui/dsp/port_identifier.h"
-# include "gui/dsp/router.h"
-# include "gui/dsp/tracklist.h"
-#include "utils/rt_thread_id.h"
+#include "dsp/port_identifier.h"
 #include "gui/backend/backend/actions/channel_send_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/backend/channel.h"
+#include "gui/dsp/router.h"
+#include "gui/dsp/tracklist.h"
+#include "utils/rt_thread_id.h"
 
 using namespace zrythm::gui::actions;
 
@@ -30,16 +30,13 @@ ChannelSendAction::ChannelSendAction (
 {
   if (port != nullptr)
     {
-      midi_id_ = port->id_->clone_raw_ptr ();
-      midi_id_->setParent (this);
+      midi_id_ = port->id_->clone_unique ();
     }
 
   if (stereo != nullptr)
     {
-      l_id_ = stereo->get_l ().id_->clone_raw_ptr ();
-      l_id_->setParent (this);
-      r_id_ = stereo->get_r ().id_->clone_raw_ptr ();
-      r_id_->setParent (this);
+      l_id_ = stereo->get_l ().id_->clone_unique ();
+      r_id_ = stereo->get_r ().id_->clone_unique ();
     }
 
   if (port_connections_mgr)
@@ -56,18 +53,15 @@ ChannelSendAction::init_after_cloning (const ChannelSendAction &other)
   amount_ = other.amount_;
   if (other.l_id_ != nullptr)
     {
-      l_id_ = other.l_id_->clone_raw_ptr ();
-      l_id_->setParent (this);
+      l_id_ = other.l_id_->clone_unique ();
     }
   if (other.r_id_ != nullptr)
     {
-      r_id_ = other.r_id_->clone_raw_ptr ();
-      r_id_->setParent (this);
+      r_id_ = other.r_id_->clone_unique ();
     }
   if (other.midi_id_ != nullptr)
     {
-      midi_id_ = other.midi_id_->clone_raw_ptr ();
-      midi_id_->setParent (this);
+      midi_id_ = other.midi_id_->clone_unique ();
     }
   send_action_type_ = other.send_action_type_;
 }

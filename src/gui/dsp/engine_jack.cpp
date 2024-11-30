@@ -14,8 +14,8 @@
 
 #  include "gui/backend/backend/project.h"
 #  include "gui/backend/backend/settings/settings.h"
+#  include "gui/backend/channel.h"
 #  include "gui/backend/ui.h"
-#  include "gui/dsp/channel.h"
 #  include "gui/dsp/engine.h"
 #  include "gui/dsp/engine_jack.h"
 #  include "gui/dsp/ext_port.h"
@@ -25,7 +25,6 @@
 #  include "gui/dsp/tempo_track.h"
 #  include "gui/dsp/tracklist.h"
 #  include "gui/dsp/transport.h"
-
 #  include "utils/midi.h"
 #  include "utils/mpmc_queue.h"
 #  include "utils/object_pool.h"
@@ -789,14 +788,14 @@ engine_jack_activate (AudioEngine * self, bool activate)
  * Returns the JACK type string.
  */
 const char *
-engine_jack_get_jack_type (PortType type)
+engine_jack_get_jack_type (dsp::PortType type)
 {
   switch (type)
     {
-    case PortType::Audio:
+    case dsp::PortType::Audio:
       return JACK_DEFAULT_AUDIO_TYPE;
       break;
-    case PortType::Event:
+    case dsp::PortType::Event:
       return JACK_DEFAULT_MIDI_TYPE;
       break;
     default:

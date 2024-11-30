@@ -13,8 +13,7 @@ PortAction::init_after_cloning (const PortAction &other)
 {
   UndoableAction::copy_members_from (other);
   type_ = other.type_;
-  port_id_ = other.port_id_->clone_raw_ptr ();
-  port_id_->setParent (this);
+  port_id_ = other.port_id_->clone_unique ();
   val_ = other.val_;
 }
 
@@ -29,14 +28,13 @@ PortAction::PortAction (
   float                 val,
   bool                  is_normalized)
     : UndoableAction (UndoableAction::Type::Port), type_ (type),
-      port_id_ (port_id.clone_raw_ptr ()),
+      port_id_ (port_id.clone_unique ()),
       val_ (
         is_normalized
           ? Port::find_from_identifier<ControlPort> (port_id)
               ->normalized_val_to_real (val)
           : val)
 {
-  port_id_->setParent (this);
 }
 
 void

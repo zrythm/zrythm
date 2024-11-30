@@ -8,8 +8,8 @@
 #ifdef HAVE_PORT_AUDIO
 
 #  include "gui/backend/backend/project.h"
+#  include "gui/backend/channel.h"
 #  include "gui/backend/ui.h"
-#  include "gui/dsp/channel.h"
 #  include "gui/dsp/engine.h"
 #  include "gui/dsp/engine_pa.h"
 #  include "gui/dsp/master_track.h"

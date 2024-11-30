@@ -97,7 +97,7 @@ zrythm::gui::SnapGrid::define_fields (const Context &ctx)
 }
 
 void
-zrythm::gui::dsp::QuantizeOptions::define_fields (const Context &ctx)
+zrythm::gui::old_dsp::QuantizeOptions::define_fields (const Context &ctx)
 {
   using T = ISerializable<QuantizeOptions>;
   T::serialize_fields (

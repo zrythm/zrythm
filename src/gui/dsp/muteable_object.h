@@ -11,8 +11,8 @@ class MuteableObject
       public zrythm::utils::serialization::ISerializable<MuteableObject>
 {
 public:
-  MuteableObject () = default;
-  virtual ~MuteableObject () = default;
+  MuteableObject () noexcept = default;
+  ~MuteableObject () noexcept override = default;
   Q_DISABLE_COPY_MOVE (MuteableObject)
 
   /**

@@ -30,7 +30,7 @@
 #include <fmt/format.h>
 #include <fmt/printf.h>
 
-using namespace zrythm::gui::dsp::plugins;
+using namespace zrythm::gui::old_dsp::plugins;
 
 #if HAVE_CARLA
 static GdkGLContext *
@@ -537,7 +537,7 @@ CarlaNativePlugin::populate_banks ()
 
 bool
 CarlaNativePlugin::has_custom_ui (
-  const zrythm::gui::dsp::plugins::PluginDescriptor &descr)
+  const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr)
 {
 #if 0
   auto native_pl = _create (nullptr);
@@ -833,10 +833,10 @@ CarlaNativePlugin::get_descriptor_from_cached (
 #endif // HAVE_CARLA
 
 CarlaNativePlugin::CarlaNativePlugin (
-  const PluginSetting                      &setting,
-  unsigned int                              track_name_hash,
-  zrythm::gui::dsp::plugins::PluginSlotType slot_type,
-  int                                       slot)
+  const PluginSetting        &setting,
+  unsigned int                track_name_hash,
+  zrythm::dsp::PluginSlotType slot_type,
+  int                         slot)
     : Plugin (setting, track_name_hash, slot_type, slot)
 {
   z_return_if_fail (setting.open_with_carla_);
@@ -1147,13 +1147,13 @@ CarlaNativePlugin::update_buffer_size_and_sample_rate ()
 
 bool
 CarlaNativePlugin::add_internal_plugin_from_descr (
-  const zrythm::gui::dsp::plugins::PluginDescriptor &descr)
+  const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr)
 {
 #if HAVE_CARLA
   /** Number of instances to instantiate (1 normally or 2 for mono plugins). */
   auto num_instances = descr.num_audio_ins_ == 1 ? 2 : 1;
 
-  const auto type = zrythm::gui::dsp::plugins::PluginDescriptor::
+  const auto type = zrythm::gui::old_dsp::plugins::PluginDescriptor::
     get_carla_plugin_type_from_protocol (descr.protocol_);
   bool added = false;
 
@@ -1201,7 +1201,7 @@ CarlaNativePlugin::add_internal_plugin_from_descr (
           {
             /* the URI is a relative path - make it absolute */
             auto pl_path =
-              zrythm::gui::dsp::plugins::PluginManager::get_active_instance ()
+              zrythm::gui::old_dsp::plugins::PluginManager::get_active_instance ()
                 ->find_plugin_from_rel_path (descr.protocol_, descr.uri_);
             added = carla_add_plugin (
               host_handle_,
@@ -1409,9 +1409,9 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
   /* set plugin paths */
   {
     auto paths =
-      zrythm::gui::dsp::plugins::PluginManager::get_active_instance ()
+      zrythm::gui::old_dsp::plugins::PluginManager::get_active_instance ()
         ->get_paths_for_protocol_separated (get_protocol ());
-    auto ptype = zrythm::gui::dsp::plugins::PluginDescriptor::
+    auto ptype = zrythm::gui::old_dsp::plugins::PluginDescriptor::
       get_carla_plugin_type_from_protocol (get_protocol ());
     carla_set_engine_option (
       host_handle_, CarlaBackend::ENGINE_OPTION_PLUGIN_PATH, ptype,
@@ -1444,13 +1444,13 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
   /* set bridging on if needed */
   switch (setting_->bridge_mode_)
     {
-    case zrythm::gui::dsp::plugins::CarlaBridgeMode::Full:
+    case zrythm::gui::old_dsp::plugins::CarlaBridgeMode::Full:
       z_debug ("plugin must be bridged whole, using plugin bridge");
       carla_set_engine_option (
         host_handle_, CarlaBackend::ENGINE_OPTION_PREFER_PLUGIN_BRIDGES, true,
         nullptr);
       break;
-    case zrythm::gui::dsp::plugins::CarlaBridgeMode::UI:
+    case zrythm::gui::old_dsp::plugins::CarlaBridgeMode::UI:
       z_debug ("using UI bridge only");
       carla_set_engine_option (
         host_handle_, CarlaBackend::ENGINE_OPTION_PREFER_UI_BRIDGES, true,
@@ -1462,8 +1462,9 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
 
   /* raise bridge timeout to 8 sec */
   if (
-    setting_->bridge_mode_ == zrythm::gui::dsp::plugins::CarlaBridgeMode::Full
-    || setting_->bridge_mode_ == zrythm::gui::dsp::plugins::CarlaBridgeMode::UI)
+    setting_->bridge_mode_ == zrythm::gui::old_dsp::plugins::CarlaBridgeMode::Full
+    || setting_->bridge_mode_
+         == zrythm::gui::old_dsp::plugins::CarlaBridgeMode::UI)
     {
       carla_set_engine_option (
         host_handle_, CarlaBackend::ENGINE_OPTION_UI_BRIDGES_TIMEOUT, 8000,
@@ -1961,7 +1962,7 @@ CarlaNativePlugin::load_state (const std::string * abs_path)
 
 void
 CarlaNativePlugin::init_after_cloning (
-  const zrythm::gui::dsp::plugins::CarlaNativePlugin &other)
+  const zrythm::gui::old_dsp::plugins::CarlaNativePlugin &other)
 {
   Plugin::copy_members_from (
     const_cast<Plugin &> (*dynamic_cast<const Plugin *> (&other)));

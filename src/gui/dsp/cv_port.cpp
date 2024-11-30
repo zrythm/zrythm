@@ -10,7 +10,6 @@
 
 CVPort::CVPort ()
 {
-  id_->setParent (this);
   minf_ = -1.f;
   maxf_ = 1.f;
   zerof_ = 0.f;
@@ -19,7 +18,6 @@ CVPort::CVPort ()
 CVPort::CVPort (std::string label, PortFlow flow)
     : Port (label, PortType::CV, flow, -1.f, 1.f, 0.f)
 {
-  id_->setParent (this);
 }
 
 void
@@ -59,7 +57,7 @@ CVPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
         || (owner_type == PortIdentifier::OwnerType::Fader
             && (ENUM_BITSET_TEST (PortIdentifier::Flags2, id_->flags2_, PortIdentifier::Flags2::Prefader)
                 || ENUM_BITSET_TEST (PortIdentifier::Flags2, id_->flags2_, PortIdentifier::Flags2::Postfader)))
-        || (owner_type == PortIdentifier::OwnerType::Plugin && id_->plugin_id_.slot_type_ == zrythm::gui::dsp::plugins::PluginSlotType::Instrument))
+        || (owner_type == PortIdentifier::OwnerType::Plugin && id_->plugin_id_.slot_type_ == zrythm::dsp::PluginSlotType::Instrument))
       {
         return ZRYTHM_TESTING ? get_track (true) : track_;
       }

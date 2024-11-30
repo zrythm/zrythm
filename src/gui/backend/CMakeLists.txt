@@ -9,6 +9,8 @@ target_sources(zrythm_lib
     cached_plugin_descriptors.cpp
     carla_discovery.h
     carla_discovery.cpp
+    channel.h
+    channel.cpp
     plugin_collections.h
     plugin_collections.cpp
     plugin_descriptor.h

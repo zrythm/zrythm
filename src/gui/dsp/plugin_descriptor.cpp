@@ -10,11 +10,11 @@
 
 #include "utils/objects.h"
 
-using namespace zrythm::gui::dsp::plugins;
+using namespace zrythm::gui::old_dsp::plugins;
 
 void
 PluginDescriptor::init_after_cloning (
-  const zrythm::gui::dsp::plugins::PluginDescriptor &other)
+  const zrythm::gui::old_dsp::plugins::PluginDescriptor &other)
 {
   author_ = other.author_;
   name_ = other.name_;
@@ -166,13 +166,13 @@ PluginDescriptor::category_to_string (ZPluginCategory category)
 
 bool
 PluginDescriptor::is_valid_for_slot_type (
-  zrythm::gui::dsp::plugins::PluginSlotType slot_type,
-  int                                       track_type) const
+  zrythm::dsp::PluginSlotType slot_type,
+  int                         track_type) const
 {
   const auto tt = ENUM_INT_TO_VALUE (Track::Type, track_type);
   switch (slot_type)
     {
-    case zrythm::gui::dsp::plugins::PluginSlotType::Insert:
+    case zrythm::dsp::PluginSlotType::Insert:
       if (tt == Track::Type::Midi)
         {
           return num_midi_outs_ > 0;
@@ -181,10 +181,10 @@ PluginDescriptor::is_valid_for_slot_type (
         {
           return num_audio_outs_ > 0;
         }
-    case zrythm::gui::dsp::plugins::PluginSlotType::MidiFx:
+    case zrythm::dsp::PluginSlotType::MidiFx:
       return num_midi_outs_ > 0;
       break;
-    case zrythm::gui::dsp::plugins::PluginSlotType::Instrument:
+    case zrythm::dsp::PluginSlotType::Instrument:
       return tt == Track::Type::Instrument && is_instrument ();
     default:
       break;
@@ -205,7 +205,8 @@ PluginDescriptor::has_custom_ui () const
     case Protocol::ProtocolType::CLAP:
     case Protocol::ProtocolType::JSFX:
 #if HAVE_CARLA
-      return zrythm::gui::dsp::plugins::CarlaNativePlugin::has_custom_ui (*this);
+      return zrythm::gui::old_dsp::plugins::CarlaNativePlugin::has_custom_ui (
+        *this);
 #else
       return false;
 #endif
@@ -221,12 +222,12 @@ PluginDescriptor::has_custom_ui () const
 CarlaBridgeMode
 PluginDescriptor::get_min_bridge_mode () const
 {
-  zrythm::gui::dsp::plugins::CarlaBridgeMode mode =
-    zrythm::gui::dsp::plugins::CarlaBridgeMode::None;
+  zrythm::gui::old_dsp::plugins::CarlaBridgeMode mode =
+    zrythm::gui::old_dsp::plugins::CarlaBridgeMode::None;
 
   if (arch_ == PluginArchitecture::ARCH_32_BIT)
     {
-      mode = zrythm::gui::dsp::plugins::CarlaBridgeMode::Full;
+      mode = zrythm::gui::old_dsp::plugins::CarlaBridgeMode::Full;
     }
 
   return mode;
@@ -361,7 +362,7 @@ PluginDescriptor::generate_context_menu () const
   /* add option for native generic LV2 UI */
   if (this->protocol == PluginProtocol::LV2
       &&
-      this->min_bridge_mode_ == zrythm::gui::dsp::plugins::CarlaBridgeMode::None)
+      this->min_bridge_mode_ == zrythm::gui::old_dsp::plugins::CarlaBridgeMode::None)
     {
       menuitem =
         z_gtk_create_menu_item (
@@ -380,7 +381,7 @@ PluginDescriptor::generate_context_menu () const
   PluginSetting new_setting (*this);
   if (
     has_custom_ui_
-    && this->min_bridge_mode_ == zrythm::gui::dsp::plugins::CarlaBridgeMode::None
+    && this->min_bridge_mode_ == zrythm::gui::old_dsp::plugins::CarlaBridgeMode::None
     && !new_setting.force_generic_ui_)
     {
       sprintf (
@@ -420,7 +421,7 @@ PluginDescriptor::generate_context_menu () const
   /* add to collection */
   GMenu * add_collections_submenu = g_menu_new ();
   int     num_added = 0;
-  for (auto &coll : zrythm::gui::dsp::plugins::PluginManager::get_active_instance ()->collections_->collections_)
+  for (auto &coll : zrythm::gui::old_dsp::plugins::PluginManager::get_active_instance ()->collections_->collections_)
     {
       if (coll->contains_descriptor (*this))
         {
@@ -445,7 +446,7 @@ PluginDescriptor::generate_context_menu () const
   /* remove from collection */
   GMenu * remove_collections_submenu = g_menu_new ();
   num_added = 0;
-  for (auto &coll : zrythm::gui::dsp::plugins::PluginManager::get_active_instance ()->collections_->collections_)
+  for (auto &coll : zrythm::gui::old_dsp::plugins::PluginManager::get_active_instance ()->collections_->collections_)
     {
       if (!coll->contains_descriptor (*this))
         {
@@ -475,7 +476,7 @@ PluginDescriptor::generate_context_menu () const
 
 bool
 PluginDescriptor::is_same_plugin (
-  const zrythm::gui::dsp::plugins::PluginDescriptor &other) const
+  const zrythm::gui::old_dsp::plugins::PluginDescriptor &other) const
 {
   return *this == other;
 }

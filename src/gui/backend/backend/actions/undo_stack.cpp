@@ -190,7 +190,8 @@ UndoStack::contains_action (const T &ua) const
 }
 
 void
-UndoStack::get_plugins (std::vector<zrythm::gui::dsp::plugins::Plugin *> &arr) const
+UndoStack::get_plugins (
+  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &arr) const
 {
   for (const auto &action : actions_)
     {

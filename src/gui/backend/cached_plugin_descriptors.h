@@ -20,7 +20,7 @@
  * @{
  */
 
-namespace zrythm::gui::dsp::plugins
+namespace zrythm::gui::old_dsp::plugins
 {
 
 /**
@@ -138,7 +138,7 @@ public:
   std::vector<std::string> blacklisted_sha1s_;
 };
 
-} // namespace zrythm::gui::dsp::plugins
+} // namespace zrythm::gui::old_dsp::plugins
 
 /**
  * @}

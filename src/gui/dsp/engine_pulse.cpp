@@ -9,9 +9,9 @@
 #  include "gui/backend/backend/project.h"
 #  include "gui/backend/backend/settings/g_settings_manager.h"
 #  include "gui/backend/backend/settings/settings.h"
+#  include "gui/backend/channel.h"
 #  include "gui/backend/gtk_widgets/zrythm_app.h"
 #  include "gui/backend/ui.h"
-#  include "gui/dsp/channel.h"
 #  include "gui/dsp/engine.h"
 #  include "gui/dsp/engine_pulse.h"
 #  include "gui/dsp/master_track.h"
@@ -23,7 +23,6 @@
 #  include "gui/widgets/main_window.h"
 
 #  include <gtk/gtk.h>
-
 #  include <pulse/def.h>
 #  include <pulse/sample.h>
 #  include <pulse/stream.h>

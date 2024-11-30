@@ -4,10 +4,9 @@
 #ifndef __ACTION_PORT_ACTION_H__
 #define __ACTION_PORT_ACTION_H__
 
+#include "dsp/port_identifier.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/dsp/control_port.h"
-#include "gui/dsp/port_identifier.h"
-
 #include "utils/icloneable.h"
 
 namespace zrythm::gui::actions
@@ -29,6 +28,7 @@ public:
     /** Set control port value. */
     SetControlValue,
   };
+  using PortIdentifier = zrythm::dsp::PortIdentifier;
 
 public:
   PortAction (QObject * parent = nullptr);
@@ -63,7 +63,7 @@ private:
 public:
   Type type_ = Type::SetControlValue;
 
-  PortIdentifier * port_id_ = nullptr;
+  std::unique_ptr<dsp::PortIdentifier> port_id_;
 
   /**
    * Real (not normalized) value before/after the change.

@@ -17,7 +17,7 @@
 
 class Transport;
 
-namespace zrythm::gui::dsp
+namespace zrythm::gui::old_dsp
 {
 
 class QuantizeOptions

@@ -1,26 +1,17 @@
 // SPDX-FileCopyrightText: © 2018-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_PORT_IDENTIFIER_H__
-#define __AUDIO_PORT_IDENTIFIER_H__
+#ifndef ZRYTHM_DSP_PORT_IDENTIFIER_H
+#define ZRYTHM_DSP_PORT_IDENTIFIER_H
 
 #include "zrythm-config.h"
 
-#include "gui/dsp/plugin_identifier.h"
-
-#include <QtQmlIntegration>
-
-#include "juce_wrapper.h"
+#include "dsp/plugin_identifier.h"
 #include "utils/icloneable.h"
 #include "utils/types.h"
 
-/**
- * @addtogroup dsp
- *
- * @{
- */
-
-constexpr int PORT_IDENTIFIER_MAGIC = 3411841;
+namespace zrythm::dsp
+{
 
 /**
  * Direction of the signal.
@@ -63,21 +54,13 @@ enum class PortUnit
   Us,
 };
 
-const char *
-port_unit_to_str (const PortUnit unit);
-
 /**
  * Struct used to identify Ports in the project.
  */
-class PortIdentifier final
-    : public QObject,
-      public zrythm::utils::serialization::ISerializable<PortIdentifier>,
+class PortIdentifier
+    : public zrythm::utils::serialization::ISerializable<PortIdentifier>,
       public ICloneable<PortIdentifier>
 {
-  Q_OBJECT
-  QML_ELEMENT
-  Q_PROPERTY (QString label READ getLabel CONSTANT)
-
 public:
   /**
    * Type of owner.
@@ -87,7 +70,7 @@ public:
     /* NONE, */
     AudioEngine,
 
-    /** zrythm::gui::dsp::plugins::Plugin owner. */
+    /** zrythm::gui::old_dsp::plugins::Plugin owner. */
     Plugin,
 
     /** Track owner. */
@@ -243,9 +226,9 @@ public:
     Logarithmic = 1 << 29,
 
     /**
-     * zrythm::gui::dsp::plugins::Plugin control is a property (changes are set
-     * via atom message on the plugin's control port),
-     * as opposed to conventional float control ports.
+     * zrythm::gui::old_dsp::plugins::Plugin control is a property (changes are
+     * set via atom message on the plugin's control port), as opposed to
+     * conventional float control ports.
      *
      * An input Port is created for each parameter
      * declared as either writable or readable (or
@@ -345,20 +328,10 @@ public:
     MidiClock = 1 << 30,
   };
 
+  friend bool operator== (const PortIdentifier &lhs, const PortIdentifier &rhs);
+
 public:
-  explicit PortIdentifier (QObject * parent = nullptr);
-
-  void init ();
-
-  // =========================================================================
-  // QML Interface
-  // =========================================================================
-
-  QString getLabel () const { return QString::fromStdString (label_); }
-
-  // =========================================================================
-
-  void init_after_cloning (const PortIdentifier &other) override;
+  // void init ();
 
   std::string get_label () const { return label_; }
 
@@ -375,7 +348,7 @@ public:
    *
    * @note MIDI channels start from 1 (not 0).
    */
-  inline int get_midi_channel () const
+  int get_midi_channel () const
   {
     if (
       static_cast<int> (flags2_ & PortIdentifier::Flags2::MidiPitchBend) != 0
@@ -386,8 +359,7 @@ public:
       {
         return port_index_ + 1;
       }
-    else if (
-      static_cast<int> (flags_ & PortIdentifier::Flags::MidiAutomatable) != 0)
+    if (static_cast<int> (flags_ & PortIdentifier::Flags::MidiAutomatable) != 0)
       {
         return port_index_ / 128 + 1;
       }
@@ -399,11 +371,12 @@ public:
   bool        validate () const;
   uint32_t    get_hash () const;
 
-  /**
-   * Port group comparator function where @ref p1 and
-   * @ref p2 are pointers to Port.
-   */
-  static int port_group_cmp (const void * p1, const void * p2);
+  static std::string port_unit_to_string (PortUnit unit);
+
+  void init_after_cloning (const PortIdentifier &other) override
+  {
+    *this = other;
+  }
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -429,7 +402,7 @@ public:
   PortIdentifier::Flags2 flags2_ = (Flags2) 0;
 
   /** Identifier of plugin. */
-  zrythm::gui::dsp::plugins::PluginIdentifier plugin_id_ = {};
+  zrythm::dsp::PluginIdentifier plugin_id_ = {};
 
   /** Human readable label. */
   std::string label_;
@@ -450,22 +423,17 @@ public:
   std::string ext_port_id_;
 };
 
-ENUM_ENABLE_BITSET (PortIdentifier::Flags);
-ENUM_ENABLE_BITSET (PortIdentifier::Flags2);
+}; // namespace zrythm::dsp
 
-bool
-operator== (const PortIdentifier &lhs, const PortIdentifier &rhs);
+ENUM_ENABLE_BITSET (zrythm::dsp::PortIdentifier::Flags);
+ENUM_ENABLE_BITSET (zrythm::dsp::PortIdentifier::Flags2);
 
 namespace std
 {
-template <> struct hash<PortIdentifier>
+template <> struct hash<zrythm::dsp::PortIdentifier>
 {
-  size_t operator() (const PortIdentifier &id) const { return id.get_hash (); }
+  size_t operator() (const auto &id) const { return id.get_hash (); }
 };
 }
-
-/**
- * @}
- */
 
 #endif

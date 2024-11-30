@@ -15,7 +15,7 @@
 
 #include "utils/string_array.h"
 
-namespace zrythm::gui::dsp::plugins
+namespace zrythm::gui::old_dsp::plugins
 {
 
 /**
@@ -136,6 +136,6 @@ public:
   int num_new_plugins_ = 0;
 };
 
-} // namespace zrythm::gui::dsp::plugins
+} // namespace zrythm::gui::old_dsp::plugins
 
 #endif // ZRYTHM_COMMON_PLUGINS_PLUGIN_MANAGER_H

@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/port_identifier.h"
 #include "gui/backend/backend/actions/midi_mapping_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-
-#include "gui/dsp/channel.h"
+#include "gui/backend/channel.h"
 #include "gui/dsp/midi_mapping.h"
-#include "gui/dsp/port_identifier.h"
 #include "gui/dsp/router.h"
 
 using namespace zrythm::gui::actions;
@@ -25,8 +24,7 @@ MidiMappingAction::init_after_cloning (const MidiMappingAction &other)
   type_ = other.type_;
   if (other.dest_port_id_ != nullptr)
     {
-      dest_port_id_ = other.dest_port_id_->clone_raw_ptr ();
-      dest_port_id_->setParent (this);
+      dest_port_id_ = other.dest_port_id_->clone_unique ();
     }
   dev_port_ =
     other.dev_port_ ? std::make_unique<ExtPort> (*other.dev_port_) : nullptr;
@@ -45,14 +43,13 @@ MidiMappingAction::MidiMappingAction (
   const ExtPort *                  device_port,
   const Port                      &dest_port)
     : UndoableAction (UndoableAction::Type::MidiMapping), type_ (Type::Bind),
-      dest_port_id_ (dest_port.id_->clone_raw_ptr ()),
+      dest_port_id_ (dest_port.id_->clone_unique ()),
       dev_port_ (
         (device_port != nullptr)
           ? std::make_unique<ExtPort> (*device_port)
           : nullptr),
       buf_ (buf)
 {
-  dest_port_id_->setParent (this);
 }
 
 MidiMappingAction::MidiMappingAction (int idx_to_unbind)
@@ -78,8 +75,7 @@ MidiMappingAction::bind_or_unbind (bool bind)
         mapping->device_port_
           ? std::make_unique<ExtPort> (*mapping->device_port_)
           : nullptr;
-      dest_port_id_ = mapping->dest_id_->clone_raw_ptr ();
-      dest_port_id_->setParent (this);
+      dest_port_id_ = mapping->dest_id_->clone_unique ();
       MIDI_MAPPINGS->unbind (idx_, false);
     }
 }

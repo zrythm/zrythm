@@ -60,6 +60,9 @@ public:
     RtAudio,
   };
 
+  using PortType = zrythm::dsp::PortType;
+  using PortFlow = zrythm::dsp::PortFlow;
+
 public:
   ExtPort () = default;
 #if HAVE_JACK

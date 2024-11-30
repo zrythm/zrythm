@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
 #include "dsp/position.h"
 #include "utils/gtest_wrapper.h"
 
@@ -148,4 +151,22 @@ TEST_F (PositionTest, RejectsZeroBasedPositions)
     "1.0.1.0", beats_per_bar_, sixteenths_per_beat_, frames_per_tick_));
   EXPECT_ANY_THROW (Position (
     "1.1.0.0", beats_per_bar_, sixteenths_per_beat_, frames_per_tick_));
+}
+
+TEST_F (PositionTest, Serialization)
+{
+  Position pos1;
+  pos1.ticks_ = 1920.0;
+  pos1.frames_ = 43534;
+
+  // Serialize to JSON
+  auto json_str = pos1.serialize_to_json_string ();
+
+  // Create new object and deserialize
+  Position pos2;
+  pos2.deserialize_from_json_string (json_str.c_str ());
+
+  // Verify all fields match
+  EXPECT_EQ (pos1.ticks_, pos2.ticks_);
+  EXPECT_EQ (pos1.frames_, pos2.frames_);
 }

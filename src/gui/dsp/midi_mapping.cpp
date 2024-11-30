@@ -29,8 +29,7 @@ MidiMapping::init_after_cloning (const MidiMapping &other)
   key_ = other.key_;
   if (other.device_port_)
     device_port_ = std::make_unique<ExtPort> (*other.device_port_);
-  dest_id_ = other.dest_id_->clone_raw_ptr ();
-  dest_id_->setParent (this);
+  dest_id_ = other.dest_id_->clone_unique ();
   enabled_.store (other.enabled_.load ());
 }
 
@@ -49,8 +48,7 @@ MidiMappings::bind_at (
     {
       mapping->device_port_ = std::make_unique<ExtPort> (*device_port);
     }
-  mapping->dest_id_ = dest_port.id_->clone_raw_ptr ();
-  mapping->dest_id_->setParent (mapping.get ());
+  mapping->dest_id_ = dest_port.id_->clone_unique ();
   mapping->dest_ = &dest_port;
   mapping->enabled_.store (true);
 
@@ -61,8 +59,8 @@ MidiMappings::bind_at (
 
   if (
     !(ENUM_BITSET_TEST (
-      PortIdentifier::Flags, dest_port.id_->flags_,
-      PortIdentifier::Flags::MidiAutomatable)))
+      dsp::PortIdentifier::Flags, dest_port.id_->flags_,
+      dsp::PortIdentifier::Flags::MidiAutomatable)))
     {
       z_info ("bounded MIDI mapping from {} to {}", str, dest_port.get_label ());
     }
@@ -100,7 +98,7 @@ MidiMapping::apply (std::array<midi_byte_t, 3> buf)
 {
   z_return_if_fail (dest_);
 
-  if (dest_->id_->type_ == PortType::Control)
+  if (dest_->id_->type_ == dsp::PortType::Control)
     {
       auto * dest = dynamic_cast<ControlPort *> (dest_);
       /* if toggle, reverse value */
@@ -118,7 +116,7 @@ MidiMapping::apply (std::array<midi_byte_t, 3> buf)
           dest->set_control_value (normalized_val, true, true);
         }
     }
-  else if (dest_->id_->type_ == PortType::Event)
+  else if (dest_->id_->type_ == dsp::PortType::Event)
     {
       /* FIXME these are called during processing they should be queued as UI
        * events instead */

@@ -6,15 +6,10 @@
 
 #include "zrythm-config.h"
 
-#include "gui/dsp/port_identifier.h"
-
+#include "dsp/port_identifier.h"
 #include "utils/math.h"
 
-/**
- * @addtogroup dsp
- *
- * @{
- */
+#include <QtQmlIntegration>
 
 /**
  * A connection between two ports.
@@ -28,6 +23,8 @@ class PortConnection final
   QML_ELEMENT
 
 public:
+  using PortIdentifier = zrythm::dsp::PortIdentifier;
+
   PortConnection (QObject * parent = nullptr);
 
   PortConnection (
@@ -56,8 +53,8 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 public:
-  PortIdentifier * src_id_ = nullptr;
-  PortIdentifier * dest_id_ = nullptr;
+  std::unique_ptr<PortIdentifier> src_id_;
+  std::unique_ptr<PortIdentifier> dest_id_;
 
   /**
    * Multiplier to apply, where applicable.
@@ -88,9 +85,5 @@ public:
 
 bool
 operator== (const PortConnection &lhs, const PortConnection &rhs);
-
-/**
- * @}
- */
 
 #endif /* __AUDIO_PORT_CONNECTION_H__ */

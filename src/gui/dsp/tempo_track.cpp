@@ -52,8 +52,8 @@ TempoTrack::initialize ()
   bpm_port_->maxf_ = 360.f;
   bpm_port_->deff_ = 140.f;
   bpm_port_->set_control_value (bpm_port_->deff_, false, false);
-  bpm_port_->id_->flags_ |= PortIdentifier::Flags::Bpm;
-  bpm_port_->id_->flags_ |= PortIdentifier::Flags::Automatable;
+  bpm_port_->id_->flags_ |= dsp::PortIdentifier::Flags::Bpm;
+  bpm_port_->id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
 
   /* create time sig ports */
   beats_per_bar_port_ = std::make_unique<ControlPort> (
@@ -65,9 +65,9 @@ TempoTrack::initialize ()
   beats_per_bar_port_->deff_ = TEMPO_TRACK_MIN_BEATS_PER_BAR;
   beats_per_bar_port_->set_control_value (
     TEMPO_TRACK_DEFAULT_BEATS_PER_BAR, false, false);
-  beats_per_bar_port_->id_->flags2_ |= PortIdentifier::Flags2::BeatsPerBar;
-  beats_per_bar_port_->id_->flags_ |= PortIdentifier::Flags::Automatable;
-  beats_per_bar_port_->id_->flags_ |= PortIdentifier::Flags::Integer;
+  beats_per_bar_port_->id_->flags2_ |= dsp::PortIdentifier::Flags2::BeatsPerBar;
+  beats_per_bar_port_->id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
+  beats_per_bar_port_->id_->flags_ |= dsp::PortIdentifier::Flags::Integer;
 
   beat_unit_port_ =
     std::make_unique<ControlPort> (QObject::tr ("Beat unit").toStdString ());
@@ -78,9 +78,9 @@ TempoTrack::initialize ()
   beat_unit_port_->deff_ = static_cast<float> (TEMPO_TRACK_MIN_BEAT_UNIT);
   beat_unit_port_->set_control_value (
     static_cast<float> (TEMPO_TRACK_DEFAULT_BEAT_UNIT), false, false);
-  beat_unit_port_->id_->flags2_ |= PortIdentifier::Flags2::BeatUnit;
-  beat_unit_port_->id_->flags_ |= PortIdentifier::Flags::Automatable;
-  beat_unit_port_->id_->flags_ |= PortIdentifier::Flags::Integer;
+  beat_unit_port_->id_->flags2_ |= dsp::PortIdentifier::Flags2::BeatUnit;
+  beat_unit_port_->id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
+  beat_unit_port_->id_->flags_ |= dsp::PortIdentifier::Flags::Integer;
 
   generate_automation_tracks ();
 

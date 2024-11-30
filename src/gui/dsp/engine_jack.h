@@ -108,7 +108,7 @@ engine_jack_activate (AudioEngine * self, bool activate);
  * Returns the JACK type string.
  */
 const char *
-engine_jack_get_jack_type (PortType type);
+engine_jack_get_jack_type (dsp::PortType type);
 
 /** Jack buffer size callback. */
 int

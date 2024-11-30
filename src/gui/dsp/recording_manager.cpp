@@ -509,7 +509,7 @@ RecordingManager::handle_pause_event (const RecordingEvent &ev)
                           auto laned_track = dynamic_cast<LanedTrackT *> (tr);
                           laned_track->last_lane_idx_ = r->id_.lane_pos_;
 
-                          if (tr->in_signal_type_ == PortType::Event)
+                          if (tr->in_signal_type_ == dsp::PortType::Event)
                             {
                               auto midi_region = dynamic_cast<MidiRegion *> (r);
                               /* add midi note offs at the end */

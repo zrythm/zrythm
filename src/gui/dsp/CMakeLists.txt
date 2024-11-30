@@ -35,8 +35,6 @@ target_sources(zrythm_lib
     balance_control.cpp
     carla_native_plugin.h
     carla_native_plugin.cpp
-    channel.h
-    channel.cpp
     channel_send.h
     channel_send.cpp
     channel_track.h
@@ -149,8 +147,6 @@ target_sources(zrythm_lib
     muteable_object.cpp
     nameable_object.h
     nameable_object.cpp
-    pan.h
-    pan.cpp
     peak_dsp.h
     peak_dsp.cpp
     peak_fall_smooth.h
@@ -161,8 +157,6 @@ target_sources(zrythm_lib
     plugin.cpp
     plugin_descriptor.h
     plugin_descriptor.cpp
-    plugin_identifier.h
-    plugin_identifier.cpp
     plugin_protocol.h
     plugin_protocol.cpp
     pool.h
@@ -173,8 +167,6 @@ target_sources(zrythm_lib
     port_connection.cpp
     port_connections_manager.h
     port_connections_manager.cpp
-    port_identifier.h
-    port_identifier.cpp
     processable_track.h
     processable_track.cpp
     quantize_options.h

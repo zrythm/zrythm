@@ -9,10 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "dsp/port_identifier.h"
 #include "gui/dsp/midi_event.h"
 #include "gui/dsp/port_connection.h"
-#include "gui/dsp/port_identifier.h"
-
 #include "utils/ring_buffer.h"
 #include "utils/types.h"
 
@@ -24,10 +23,10 @@
 #  include <rtaudio_c.h>
 #endif
 
-namespace zrythm::gui::dsp
+namespace zrythm::gui
 {
 class Channel;
-namespace plugins
+namespace old_dsp::plugins
 {
 class Plugin;
 struct PluginGtkController;
@@ -50,8 +49,6 @@ class PortConnectionsManager;
 class ChannelSend;
 class Transport;
 struct EngineProcessTimeInfo;
-enum class PanAlgorithm;
-enum class PanLaw;
 
 /**
  * @addtogroup dsp
@@ -72,6 +69,10 @@ class Port : public zrythm::utils::serialization::ISerializable<Port>
 {
   Q_DISABLE_COPY_MOVE (Port)
 public:
+  using PortIdentifier = zrythm::dsp::PortIdentifier;
+  using PortType = zrythm::dsp::PortType;
+  using PortFlow = zrythm::dsp::PortFlow;
+
   /**
    * What the internal data is.
    */
@@ -114,19 +115,19 @@ public:
    * @param id The PortIdentifier to use for searching.
    */
   template <typename T>
-  static T * find_from_identifier (const PortIdentifier &id);
+  static T * find_from_identifier (const zrythm::dsp::PortIdentifier &id);
 
-  static Port * find_from_identifier (const PortIdentifier &id);
+  static Port * find_from_identifier (const zrythm::dsp::PortIdentifier &id);
 
   std::string get_label () const;
 
-  inline bool is_control () const { return id_->is_control (); }
-  inline bool is_audio () const { return id_->type_ == PortType::Audio; }
-  inline bool is_cv () const { return id_->type_ == PortType::CV; }
-  inline bool is_event () const { return id_->type_ == PortType::Event; }
-  inline bool is_midi () const { return is_event (); }
-  inline bool is_input () const { return id_->flow_ == PortFlow::Input; }
-  inline bool is_output () const { return id_->flow_ == PortFlow::Output; }
+  bool is_control () const { return id_->is_control (); }
+  bool is_audio () const { return id_->type_ == PortType::Audio; }
+  bool is_cv () const { return id_->type_ == PortType::CV; }
+  bool is_event () const { return id_->type_ == PortType::Event; }
+  bool is_midi () const { return is_event (); }
+  bool is_input () const { return id_->flow_ == PortFlow::Input; }
+  bool is_output () const { return id_->flow_ == PortFlow::Output; }
 
   /**
    * @brief Allocates buffers used during DSP.
@@ -159,7 +160,7 @@ public:
 
   Track * get_track (bool warn_if_fail) const;
 
-  zrythm::gui::dsp::plugins::Plugin * get_plugin (bool warn_if_fail) const;
+  zrythm::gui::old_dsp::plugins::Plugin * get_plugin (bool warn_if_fail) const;
 
   /**
    * To be called when the port's identifier changes to update corresponding
@@ -337,7 +338,7 @@ public:
   /**
    * @brief Owned pointer.
    */
-  PortIdentifier * id_ = nullptr;
+  std::unique_ptr<PortIdentifier> id_;
 
   /**
    * Flag to indicate that this port is exposed to the backend.
@@ -389,7 +390,7 @@ public:
   void * data_ = nullptr;
 
   /** Pointer to owner plugin, if any. */
-  zrythm::gui::dsp::plugins::Plugin * plugin_ = nullptr;
+  zrythm::gui::old_dsp::plugins::Plugin * plugin_ = nullptr;
 
   /** Pointer to owner transport, if any. */
   Transport * transport_ = nullptr;
@@ -487,15 +488,15 @@ class HardwareProcessor;
 class RecordableTrack;
 class TempoTrack;
 extern template MidiPort *
-Port::find_from_identifier<MidiPort> (const PortIdentifier &);
+Port::find_from_identifier<MidiPort> (const zrythm::dsp::PortIdentifier &);
 extern template AudioPort *
-Port::find_from_identifier (const PortIdentifier &);
+Port::find_from_identifier (const zrythm::dsp::PortIdentifier &);
 extern template CVPort *
-Port::find_from_identifier (const PortIdentifier &);
+Port::find_from_identifier (const zrythm::dsp::PortIdentifier &);
 extern template ControlPort *
-Port::find_from_identifier (const PortIdentifier &);
+Port::find_from_identifier (const zrythm::dsp::PortIdentifier &);
 extern template void
-Port::set_owner (zrythm::gui::dsp::plugins::Plugin *);
+Port::set_owner (zrythm::gui::old_dsp::plugins::Plugin *);
 extern template void
 Port::set_owner (Transport *);
 extern template void
@@ -511,7 +512,7 @@ Port::set_owner<ModulatorMacroProcessor> (ModulatorMacroProcessor *);
 extern template void
 Port::set_owner<ExtPort> (ExtPort *);
 extern template void
-Port::set_owner (zrythm::gui::dsp::Channel *);
+Port::set_owner (zrythm::gui::Channel *);
 extern template void
 Port::set_owner<TrackProcessor> (TrackProcessor *);
 extern template void

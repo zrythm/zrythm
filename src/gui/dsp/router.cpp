@@ -95,21 +95,24 @@ Router::start_cycle (EngineProcessTimeInfo time_nfo)
   ControlPort::ChangeEvent change{};
   while (ctrl_port_change_queue_.read (change))
     {
-      if (ENUM_BITSET_TEST (
-            PortIdentifier::Flags, change.flag1, PortIdentifier::Flags::Bpm))
+      if (
+        ENUM_BITSET_TEST (
+          dsp::PortIdentifier::Flags, change.flag1,
+          dsp::PortIdentifier::Flags::Bpm))
         {
           P_TEMPO_TRACK->set_bpm (change.real_val, 0.f, true, true);
         }
       else if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, change.flag2,
-          PortIdentifier::Flags2::BeatsPerBar))
+          dsp::PortIdentifier::Flags2, change.flag2,
+          dsp::PortIdentifier::Flags2::BeatsPerBar))
         {
           P_TEMPO_TRACK->set_beats_per_bar (change.ival);
         }
       else if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, change.flag2, PortIdentifier::Flags2::BeatUnit))
+          dsp::PortIdentifier::Flags2, change.flag2,
+          dsp::PortIdentifier::Flags2::BeatUnit))
         {
           P_TEMPO_TRACK->set_beat_unit_from_enum (change.beat_unit);
         }

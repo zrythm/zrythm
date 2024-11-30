@@ -4,7 +4,7 @@
 #ifndef __AUDIO_CHANNEL_TRACK_H__
 #define __AUDIO_CHANNEL_TRACK_H__
 
-#include "gui/dsp/channel.h"
+#include "gui/backend/channel.h"
 #include "gui/dsp/processable_track.h"
 
 #define DEFINE_CHANNEL_TRACK_QML_PROPERTIES(ClassType) \
@@ -26,7 +26,7 @@ class ChannelTrack
       public zrythm::utils::serialization::ISerializable<ChannelTrack>
 {
 public:
-  using Channel = zrythm::gui::dsp::Channel;
+  using Channel = zrythm::gui::Channel;
 
 public:
   ~ChannelTrack () override;

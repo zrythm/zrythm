@@ -6,12 +6,12 @@
 
 #include "zrythm-config.h"
 
+#include "dsp/plugin_identifier.h"
 #include "gui/dsp/plugin_protocol.h"
-
-#include <QObject>
-
 #include "utils/icloneable.h"
 #include "utils/iserializable.h"
+
+#include <QObject>
 
 /**
  * @addtogroup plugins
@@ -19,10 +19,10 @@
  * @{
  */
 
-namespace zrythm::gui::dsp::plugins
+namespace zrythm::gui::old_dsp::plugins
 {
 
-enum class PluginSlotType;
+using PluginSlotType = zrythm::dsp::PluginSlotType;
 
 /**
  * Plugin category.
@@ -238,7 +238,7 @@ operator== (const PluginDescriptor &a, const PluginDescriptor &b)
          && a.sha1_ == b.sha1_ && a.uri_ == b.uri_;
 }
 
-} // namespace zrythm::gui::dsp::plugins
+} // namespace zrythm::gui::old_dsp::plugins
 
 /**
  * @}

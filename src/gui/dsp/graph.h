@@ -68,8 +68,8 @@ public:
 
   GraphNode * find_node_from_port (PortPtrVariant port) const;
 
-  GraphNode *
-  find_node_from_plugin (zrythm::gui::dsp::plugins::PluginPtrVariant pl) const;
+  GraphNode * find_node_from_plugin (
+    zrythm::gui::old_dsp::plugins::PluginPtrVariant pl) const;
 
   GraphNode *
   find_node_from_track (TrackPtrVariant track, bool use_setup_nodes) const;
@@ -145,10 +145,10 @@ private:
 
   void rechain ();
 
-  void add_plugin (zrythm::gui::dsp::plugins::Plugin &pl);
+  void add_plugin (zrythm::gui::old_dsp::plugins::Plugin &pl);
   void connect_plugin (
-    zrythm::gui::dsp::plugins::Plugin &pl,
-    bool                               drop_unnecessary_ports);
+    zrythm::gui::old_dsp::plugins::Plugin &pl,
+    bool                                   drop_unnecessary_ports);
   GraphNode * add_port (
     PortPtrVariant          port_var,
     PortConnectionsManager &mgr,

@@ -37,10 +37,10 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/backend/channel.h"
 #include "gui/backend/ui.h"
 #include "gui/dsp/automation_track.h"
 #include "gui/dsp/carla_native_plugin.h"
-#include "gui/dsp/channel.h"
 #include "gui/dsp/channel_track.h"
 #include "gui/dsp/engine.h"
 #include "gui/dsp/engine_dummy.h"
@@ -63,7 +63,6 @@
 #include "gui/dsp/tempo_track.h"
 #include "gui/dsp/tracklist.h"
 #include "gui/dsp/transport.h"
-
 #include "utils/gtest_wrapper.h"
 #include "utils/mpmc_queue.h"
 #include "utils/object_pool.h"
@@ -666,13 +665,13 @@ AudioEngine::init_common ()
 
   pan_law_ =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
-      ? PanLaw::PAN_LAW_MINUS_3DB
-      : static_cast<PanLaw> (
+      ? zrythm::dsp::PanLaw::Minus3dB
+      : static_cast<zrythm::dsp::PanLaw> (
           zrythm::gui::SettingsManager::get_instance ()->get_panLaw ());
   pan_algo_ =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
-      ? PanAlgorithm::PAN_ALGORITHM_SINE_LAW
-      : static_cast<PanAlgorithm> (
+      ? zrythm::dsp::PanAlgorithm::SineLaw
+      : static_cast<zrythm::dsp::PanAlgorithm> (
           zrythm::gui::SettingsManager::get_instance ()->get_panAlgorithm ());
 
   if (block_length_ == 0)
@@ -685,9 +684,9 @@ AudioEngine::init_common ()
     }
 
   midi_clock_out_ =
-    std::make_unique<MidiPort> ("MIDI Clock Out", PortFlow::Output);
+    std::make_unique<MidiPort> ("MIDI Clock Out", dsp::PortFlow::Output);
   midi_clock_out_->set_owner (this);
-  midi_clock_out_->id_->flags2_ |= PortIdentifier::Flags2::MidiClock;
+  midi_clock_out_->id_->flags2_ |= dsp::PortIdentifier::Flags2::MidiClock;
 }
 
 void
@@ -711,28 +710,29 @@ AudioEngine::init_loaded (Project * project)
   for (auto * port : ports)
     {
       auto &id = *port->id_;
-      if (id.owner_type_ == PortIdentifier::OwnerType::AudioEngine)
+      if (id.owner_type_ == dsp::PortIdentifier::OwnerType::AudioEngine)
         {
           port->init_loaded (this);
         }
-      else if (id.owner_type_ == PortIdentifier::OwnerType::HardwareProcessor)
+      else if (
+        id.owner_type_ == dsp::PortIdentifier::OwnerType::HardwareProcessor)
         {
           if (id.is_output ())
             port->init_loaded (hw_in_processor_.get ());
           else if (id.is_input ())
             port->init_loaded (hw_out_processor_.get ());
         }
-      else if (id.owner_type_ == PortIdentifier::OwnerType::Fader)
+      else if (id.owner_type_ == dsp::PortIdentifier::OwnerType::Fader)
         {
           if (
             ENUM_BITSET_TEST (
-              PortIdentifier::Flags2, id.flags2_,
-              PortIdentifier::Flags2::SampleProcessorFader))
+              dsp::PortIdentifier::Flags2, id.flags2_,
+              dsp::PortIdentifier::Flags2::SampleProcessorFader))
             port->init_loaded (sample_processor_->fader_.get ());
           else if (
             ENUM_BITSET_TEST (
-              PortIdentifier::Flags2, id.flags2_,
-              PortIdentifier::Flags2::MonitorFader))
+              dsp::PortIdentifier::Flags2, id.flags2_,
+              dsp::PortIdentifier::Flags2::MonitorFader))
             port->init_loaded (control_room_->monitor_fader_.get ());
         }
     }
@@ -748,20 +748,21 @@ AudioEngine::AudioEngine (Project * project)
 {
   z_debug ("Creating audio engine...");
 
-  midi_editor_manual_press_ =
-    std::make_unique<MidiPort> ("MIDI Editor Manual Press", PortFlow::Input);
+  midi_editor_manual_press_ = std::make_unique<MidiPort> (
+    "MIDI Editor Manual Press", dsp::PortFlow::Input);
   midi_editor_manual_press_->set_owner (this);
   midi_editor_manual_press_->id_->sym_ = "midi_editor_manual_press";
-  midi_editor_manual_press_->id_->flags_ |= PortIdentifier::Flags::ManualPress;
+  midi_editor_manual_press_->id_->flags_ |=
+    dsp::PortIdentifier::Flags::ManualPress;
 
-  midi_in_ = std::make_unique<MidiPort> ("MIDI in", PortFlow::Input);
+  midi_in_ = std::make_unique<MidiPort> ("MIDI in", dsp::PortFlow::Input);
   midi_in_->set_owner (this);
   midi_in_->id_->sym_ = "midi_in";
 
   {
-    AudioPort monitor_out_l ("Monitor Out L", PortFlow::Output);
+    AudioPort monitor_out_l ("Monitor Out L", dsp::PortFlow::Output);
     monitor_out_l.id_->sym_ = "monitor_out_l";
-    AudioPort monitor_out_r ("Monitor Out R", PortFlow::Output);
+    AudioPort monitor_out_r ("Monitor Out R", dsp::PortFlow::Output);
     monitor_out_r.id_->sym_ = "monitor_out_r";
     monitor_out_ = std::make_unique<StereoPorts> (
       std::move (monitor_out_l), std::move (monitor_out_r));
@@ -1009,14 +1010,14 @@ AudioEngine::realloc_port_buffers (nframes_t nframes)
   z_info ("Block length changed to {}. reallocating buffers...", block_length_);
 
   /* TODO make function that fetches all plugins in the project */
-  std::vector<zrythm::gui::dsp::plugins::Plugin *> plugins;
+  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
   TRACKLIST->get_plugins (plugins);
   for (auto &pl : plugins)
     {
       if (pl && !pl->instantiation_failed_ && pl->setting_->open_with_carla_)
         {
-          auto carla =
-            dynamic_cast<zrythm::gui::dsp::plugins::CarlaNativePlugin *> (pl);
+          auto carla = dynamic_cast<
+            zrythm::gui::old_dsp::plugins::CarlaNativePlugin *> (pl);
           carla->update_buffer_size_and_sample_rate ();
         }
     }

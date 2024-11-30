@@ -3,10 +3,10 @@
 
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/backend/channel.h"
 #include "gui/dsp/audio_lane.h"
 #include "gui/dsp/audio_region.h"
 #include "gui/dsp/automation_region.h"
-#include "gui/dsp/channel.h"
 #include "gui/dsp/chord_region.h"
 #include "gui/dsp/chord_track.h"
 #include "gui/dsp/clip.h"
@@ -24,7 +24,6 @@
 #include "gui/dsp/stretcher.h"
 #include "gui/dsp/track.h"
 #include "gui/dsp/tracklist.h"
-
 #include "utils/debug.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/logger.h"

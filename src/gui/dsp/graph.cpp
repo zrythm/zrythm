@@ -119,24 +119,25 @@ Graph::rechain ()
 }
 
 void
-Graph::add_plugin (zrythm::gui::dsp::plugins::Plugin &pl)
+Graph::add_plugin (zrythm::gui::old_dsp::plugins::Plugin &pl)
 {
   z_return_if_fail (!pl.deleting_);
   if (!pl.in_ports_.empty () || !pl.out_ports_.empty ())
     {
       create_node (
-        convert_to_variant<zrythm::gui::dsp::plugins::PluginPtrVariant> (&pl));
+        convert_to_variant<zrythm::gui::old_dsp::plugins::PluginPtrVariant> (
+          &pl));
     }
 }
 
 void
 Graph::connect_plugin (
-  zrythm::gui::dsp::plugins::Plugin &pl,
-  bool                               drop_unnecessary_ports)
+  zrythm::gui::old_dsp::plugins::Plugin &pl,
+  bool                                   drop_unnecessary_ports)
 {
   z_return_if_fail (!pl.deleting_);
   auto * pl_node = find_node_from_plugin (
-    convert_to_variant<zrythm::gui::dsp::plugins::PluginPtrVariant> (&pl));
+    convert_to_variant<zrythm::gui::old_dsp::plugins::PluginPtrVariant> (&pl));
   z_return_if_fail (pl_node);
   for (auto &port : pl.in_ports_)
     {
@@ -201,7 +202,7 @@ Graph::add_port (
       using PortT = base_type<decltype (port)>;
       auto owner = port->id_->owner_type_;
 
-      if (owner == PortIdentifier::OwnerType::Plugin)
+      if (owner == dsp::PortIdentifier::OwnerType::Plugin)
         {
           port->plugin_ = port->get_plugin (true);
           z_return_val_if_fail (port->plugin_, nullptr);
@@ -242,8 +243,8 @@ Graph::add_port (
           if (
             drop_if_unnecessary
             && ENUM_BITSET_TEST (
-              PortIdentifier::Flags, port->id_->flags_,
-              PortIdentifier::Flags::Automatable))
+              dsp::PortIdentifier::Flags, port->id_->flags_,
+              dsp::PortIdentifier::Flags::Automatable))
             {
               auto found_at = port->at_;
               z_return_val_if_fail (found_at, nullptr);
@@ -259,19 +260,19 @@ Graph::add_port (
       /* drop ports without sources and dests */
       if (
         drop_if_unnecessary && port->dests_.empty () && port->srcs_.empty ()
-        && owner != PortIdentifier::OwnerType::Plugin
-        && owner != PortIdentifier::OwnerType::Fader
-        && owner != PortIdentifier::OwnerType::TrackProcessor
-        && owner != PortIdentifier::OwnerType::Track
-        && owner != PortIdentifier::OwnerType::ModulatorMacroProcessor
-        && owner != PortIdentifier::OwnerType::Channel
-        && owner != PortIdentifier::OwnerType::ChannelSend
-        && owner != PortIdentifier::OwnerType::AudioEngine
-        && owner != PortIdentifier::OwnerType::HardwareProcessor
-        && owner != PortIdentifier::OwnerType::Transport
+        && owner != dsp::PortIdentifier::OwnerType::Plugin
+        && owner != dsp::PortIdentifier::OwnerType::Fader
+        && owner != dsp::PortIdentifier::OwnerType::TrackProcessor
+        && owner != dsp::PortIdentifier::OwnerType::Track
+        && owner != dsp::PortIdentifier::OwnerType::ModulatorMacroProcessor
+        && owner != dsp::PortIdentifier::OwnerType::Channel
+        && owner != dsp::PortIdentifier::OwnerType::ChannelSend
+        && owner != dsp::PortIdentifier::OwnerType::AudioEngine
+        && owner != dsp::PortIdentifier::OwnerType::HardwareProcessor
+        && owner != dsp::PortIdentifier::OwnerType::Transport
         && !(ENUM_BITSET_TEST (
-          PortIdentifier::Flags, port->id_->flags_,
-          PortIdentifier::Flags::ManualPress)))
+          dsp::PortIdentifier::Flags, port->id_->flags_,
+          dsp::PortIdentifier::Flags::ManualPress)))
         {
           return nullptr;
         }
@@ -426,7 +427,7 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
               create_node (channel->prefader_);
 
               /* add plugins */
-              std::vector<zrythm::gui::dsp::plugins::Plugin *> plugins;
+              std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
               channel->get_plugins (plugins);
               for (auto * pl : plugins)
                 {
@@ -439,8 +440,8 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
 
               /* add sends */
               if (
-                tr->out_signal_type_ == PortType::Audio
-                || tr->out_signal_type_ == PortType::Event)
+                tr->out_signal_type_ == dsp::PortType::Audio
+                || tr->out_signal_type_ == dsp::PortType::Event)
                 {
                   for (auto &send : channel->sends_)
                     {
@@ -462,10 +463,10 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
   for (auto * port : ports)
     {
       z_return_if_fail (port);
-      if (port->deleting_ || (port->id_->owner_type_ == PortIdentifier::OwnerType::Plugin && port->get_plugin(true)->deleting_))
+      if (port->deleting_ || (port->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin && port->get_plugin(true)->deleting_))
         continue;
 
-      if (port->id_->flow_ == PortFlow::Output && port->is_exposed_to_backend ())
+      if (port->id_->flow_ == dsp::PortFlow::Output && port->is_exposed_to_backend ())
         {
           external_out_ports_.push_back (port);
         }
@@ -556,7 +557,7 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
           /* connect the track */
           auto * const track_node = find_node_from_track (tr, true);
           z_return_if_fail (track_node);
-          if (tr->in_signal_type_ == PortType::Audio)
+          if (tr->in_signal_type_ == dsp::PortType::Audio)
             {
               if constexpr (std::is_same_v<TrackT, AudioTrack>)
                 {
@@ -589,7 +590,7 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
                   track_node->connect_to (*node2);
                 }
             }
-          else if (tr->in_signal_type_ == PortType::Event)
+          else if (tr->in_signal_type_ == dsp::PortType::Event)
             {
               if constexpr (std::derived_from<TrackT, ProcessableTrack>)
                 {
@@ -817,7 +818,7 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
                   prefader_node->connect_to (*node2);
                 }
 
-              std::vector<zrythm::gui::dsp::plugins::Plugin *> plugins;
+              std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
               ch->get_plugins (plugins);
               for (auto * const pl : plugins)
                 {
@@ -842,14 +843,14 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
                   if (node2)
                     node2->connect_to (*send_node);
 
-                  if (tr->out_signal_type_ == PortType::Event)
+                  if (tr->out_signal_type_ == dsp::PortType::Event)
                     {
                       node2 = find_node_from_port (send->midi_in_.get ());
                       node2->connect_to (*send_node);
                       node2 = find_node_from_port (send->midi_out_.get ());
                       send_node->connect_to (*node2);
                     }
-                  else if (tr->out_signal_type_ == PortType::Audio)
+                  else if (tr->out_signal_type_ == dsp::PortType::Audio)
                     {
                       node2 = find_node_from_port (&send->stereo_in_->get_l ());
                       node2->connect_to (*send_node);
@@ -870,7 +871,7 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
     {
       if (port->deleting_) [[unlikely]]
         continue;
-      if (port->id_->owner_type_ == PortIdentifier::OwnerType::Plugin)
+      if (port->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
         {
           auto port_pl = port->get_plugin (true);
           if (port_pl->deleting_)
@@ -1084,7 +1085,7 @@ Graph::find_node_from_port (PortPtrVariant port) const
 
 GraphNode *
 Graph::find_node_from_plugin (
-  zrythm::gui::dsp::plugins::PluginPtrVariant pl) const
+  zrythm::gui::old_dsp::plugins::PluginPtrVariant pl) const
 {
   auto it = setup_graph_nodes_map_.find (pl);
   if (it != setup_graph_nodes_map_.end ())

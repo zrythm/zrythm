@@ -8,7 +8,7 @@
 
 #include "juce_wrapper.h"
 
-namespace zrythm::gui::dsp::plugins
+namespace zrythm::gui::old_dsp::plugins
 {
 
 class Protocol : public QObject
@@ -50,4 +50,4 @@ public:
   static std::string get_icon_name (ProtocolType prot);
 };
 
-} // namespace zrythm::gui::dsp::plugins
+} // namespace zrythm::gui::old_dsp::plugins

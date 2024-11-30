@@ -4,10 +4,10 @@
 #ifndef __AUDIO_CHANNEL_SEND_H__
 #define __AUDIO_CHANNEL_SEND_H__
 
+#include "dsp/plugin_identifier.h"
 #include "gui/dsp/audio_port.h"
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/midi_port.h"
-
 #include "utils/icloneable.h"
 
 class StereoPorts;
@@ -51,7 +51,7 @@ struct ChannelSendTarget
 
   int track_pos = 0;
 
-  zrythm::gui::dsp::plugins::PluginIdentifier pl_id{};
+  zrythm::dsp::PluginIdentifier pl_id{};
 
   std::string port_group;
 
@@ -75,6 +75,8 @@ class ChannelSend final
       public zrythm::utils::serialization::ISerializable<ChannelSend>
 {
 public:
+  using PortType = zrythm::dsp::PortType;
+
 public:
   ChannelSend () = default;
   /**

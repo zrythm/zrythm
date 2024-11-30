@@ -74,6 +74,7 @@ public:
 
   using Position = zrythm::dsp::Position;
   using Color = zrythm::utils::Color;
+  using PortType = zrythm::dsp::PortType;
 
 public:
   TracklistSelectionsAction () = default;
@@ -179,8 +180,8 @@ public:
     return true;
   }
 
-  void
-  get_plugins (std::vector<zrythm::gui::dsp::plugins::Plugin *> &plugins) override
+  void get_plugins (
+    std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &plugins) override
   {
     if (tls_before_)
       tls_before_->get_plugins (plugins);

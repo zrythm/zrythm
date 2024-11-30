@@ -40,7 +40,7 @@ class NameableObject
       public zrythm::utils::serialization::ISerializable<NameableObject>
 {
 public:
-  NameableObject () = default;
+  NameableObject () noexcept = default;
   NameableObject (std::string name) : name_ (std::move (name))
   {
     gen_escaped_name ();

@@ -13,7 +13,7 @@ constexpr const char * CACHED_PLUGIN_DESCRIPTORS_JSON_FILENAME =
   "cached-plugins.json";
 
 using namespace zrythm;
-using namespace zrythm::gui::dsp::plugins;
+using namespace zrythm::gui::old_dsp::plugins;
 
 fs::path
 CachedPluginDescriptors::get_file_path ()
@@ -103,11 +103,11 @@ CachedPluginDescriptors::read_or_new ()
     }
 
 // FIXME: do this in the deserialize override of
-// zrythm::gui::dsp::plugins::PluginDescriptor
+// zrythm::gui::old_dsp::plugins::PluginDescriptor
 #if 0
 for (size_t i = 0; i < self->descriptors->len; i++)
   {
-    zrythm::gui::dsp::plugins::PluginDescriptor * descr =
+    zrythm::gui::old_dsp::plugins::PluginDescriptor * descr =
       (PluginDescriptor *) g_ptr_array_index (self->descriptors, i);
     descr->category = plugin_descriptor_string_to_category (descr->category_str);
   }
@@ -207,8 +207,8 @@ CachedPluginDescriptors::blacklist (std::string_view sha1, bool serialize)
 
 void
 CachedPluginDescriptors::add (
-  const zrythm::gui::dsp::plugins::PluginDescriptor &descr,
-  bool                                               serialize)
+  const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr,
+  bool                                                   serialize)
 {
   auto new_descr = descr.clone_unique ();
   if (!descr.path_.empty ())

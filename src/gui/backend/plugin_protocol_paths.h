@@ -7,7 +7,7 @@
 
 #include "utils/file_path_list.h"
 
-namespace zrythm::gui::dsp::plugins
+namespace zrythm::gui::old_dsp::plugins
 {
 
 class PluginProtocolPaths
@@ -30,4 +30,4 @@ public:
   static std::unique_ptr<utils::FilePathList> get_au_paths ();
 };
 
-} // namespace zrythm::gui::dsp::plugins
+} // namespace zrythm::gui::old_dsp::plugins

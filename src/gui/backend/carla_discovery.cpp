@@ -18,7 +18,7 @@
 #  include "utils/directory_manager.h"
 #  include "utils/string.h"
 
-using namespace zrythm::gui::dsp::plugins;
+using namespace zrythm::gui::old_dsp::plugins;
 
 ZCarlaDiscovery::ZCarlaDiscovery (PluginManager &owner)
 {
@@ -88,10 +88,10 @@ ZCarlaDiscovery::create_au_descriptor_from_info (
     }
   else
     {
-      ret->category_ = zrythm::gui::dsp::plugins::PluginDescriptor::
+      ret->category_ = zrythm::gui::old_dsp::plugins::PluginDescriptor::
         get_category_from_carla_category (info->category);
     }
-  ret->category_str_ = zrythm::gui::dsp::plugins::PluginDescriptor::
+  ret->category_str_ = zrythm::gui::old_dsp::plugins::PluginDescriptor::
     category_to_string (ret->category_);
 
   ret->protocol_ = PluginProtocol::AU;
@@ -112,7 +112,7 @@ ZCarlaDiscovery::descriptor_from_discovery_info (
   const CarlaPluginDiscoveryMetadata * meta = &info->metadata;
 
   auto descr = std::make_unique<PluginDescriptor> ();
-  descr->protocol_ = zrythm::gui::dsp::plugins::PluginDescriptor::
+  descr->protocol_ = zrythm::gui::old_dsp::plugins::PluginDescriptor::
     get_protocol_from_carla_plugin_type (info->ptype);
   z_return_val_if_fail (descr->protocol_ > PluginProtocol::DUMMY, nullptr);
   std::string path;
@@ -140,7 +140,7 @@ ZCarlaDiscovery::descriptor_from_discovery_info (
   descr->unique_id_ = (int64_t) info->uniqueId;
   descr->name_ = meta->name;
   descr->author_ = meta->maker;
-  descr->category_ = zrythm::gui::dsp::plugins::PluginDescriptor::
+  descr->category_ = zrythm::gui::old_dsp::plugins::PluginDescriptor::
     get_category_from_carla_category (meta->category);
   if (
     meta->hints & CarlaBackend::PLUGIN_IS_SYNTH
@@ -148,7 +148,7 @@ ZCarlaDiscovery::descriptor_from_discovery_info (
     {
       descr->category_ = ZPluginCategory::INSTRUMENT;
     }
-  descr->category_str_ = zrythm::gui::dsp::plugins::PluginDescriptor::
+  descr->category_str_ = zrythm::gui::old_dsp::plugins::PluginDescriptor::
     category_to_string (descr->category_);
   descr->sha1_ = sha1;
   const CarlaPluginDiscoveryIO * io = &info->io;
@@ -165,7 +165,7 @@ ZCarlaDiscovery::descriptor_from_discovery_info (
       ? PluginArchitecture::ARCH_64_BIT
       : PluginArchitecture::ARCH_32_BIT;
   descr->has_custom_ui_ = meta->hints & CarlaBackend::PLUGIN_HAS_CUSTOM_UI;
-  descr->min_bridge_mode_ = zrythm::gui::dsp::plugins::CarlaBridgeMode::Full;
+  descr->min_bridge_mode_ = zrythm::gui::old_dsp::plugins::CarlaBridgeMode::Full;
 
   return descr;
 }
@@ -280,13 +280,13 @@ void
 CarlaDiscoveryStartThread::run ()
 {
   auto discovery_tool =
-    zrythm::gui::dsp::plugins::ZCarlaDiscovery::get_discovery_path (
+    zrythm::gui::old_dsp::plugins::ZCarlaDiscovery::get_discovery_path (
       btype_ == CarlaBackend::BINARY_NATIVE
         ? PluginArchitecture::ARCH_64_BIT
         : PluginArchitecture::ARCH_32_BIT);
-  auto paths_separated = zrythm::gui::dsp::plugins::PluginManager::
+  auto paths_separated = zrythm::gui::old_dsp::plugins::PluginManager::
     get_paths_for_protocol_separated (protocol_);
-  PluginType ptype = zrythm::gui::dsp::plugins::PluginDescriptor::
+  PluginType ptype = zrythm::gui::old_dsp::plugins::PluginDescriptor::
     get_carla_plugin_type_from_protocol (protocol_);
 
   void * handle = carla_plugin_discovery_start (

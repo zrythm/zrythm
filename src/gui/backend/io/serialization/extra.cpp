@@ -16,13 +16,6 @@ CurveOptions::define_fields (const Context &ctx)
 }
 
 void
-dsp::Position::define_fields (const Context &ctx)
-{
-  serialize_fields (
-    ctx, make_field ("ticks", ticks_), make_field ("frames", frames_));
-}
-
-void
 utils::Color::define_fields (const Context &ctx)
 {
   serialize_fields (

@@ -444,4 +444,11 @@ Position::validate () const
   return true;
 }
 
+void
+dsp::Position::define_fields (const Context &ctx)
+{
+  serialize_fields (
+    ctx, make_field ("ticks", ticks_), make_field ("frames", frames_));
+}
+
 }; // namespace zrythm::dsp

@@ -183,3 +183,6 @@ venv
 
 # CMake
 CMakeLists.txt.user
+
+# PlantUML
+out

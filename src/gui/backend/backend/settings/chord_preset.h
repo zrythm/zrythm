@@ -8,8 +8,9 @@
 
 #include "gui/backend/backend/chord_editor.h"
 #include "gui/dsp/chord_descriptor.h"
-
 #include "utils/types.h"
+
+#include <QtQmlIntegration>
 
 class ChordPresetPack;
 TYPEDEF_STRUCT_UNDERSCORED (GMenuModel);

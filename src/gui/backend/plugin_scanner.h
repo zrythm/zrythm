@@ -45,7 +45,7 @@
 #include <QString>
 #include <QtQmlIntegration>
 
-namespace zrythm::gui::dsp::plugins
+namespace zrythm::gui::old_dsp::plugins
 {
 
 //==============================================================================
@@ -293,6 +293,6 @@ private:
   JUCE_DECLARE_NON_MOVEABLE (PluginScanner)
 };
 
-} // namespace zrythm::gui::dsp::plugins
+} // namespace zrythm::gui::old_dsp::plugins
 
 #endif // ZRYTHM_COMMON_PLUGINS_PLUGIN_SCANNER_H

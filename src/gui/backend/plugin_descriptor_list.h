@@ -52,7 +52,8 @@ public:
   }
 
 public:
-  void addDescriptor (const zrythm::gui::dsp::plugins::PluginDescriptor &descriptor)
+  void addDescriptor (
+    const zrythm::gui::old_dsp::plugins::PluginDescriptor &descriptor)
   {
     beginInsertRows (QModelIndex (), descriptors_.size (), descriptors_.size ());
     descriptors_.append (descriptor.clone_raw_ptr ());
@@ -66,12 +67,12 @@ public:
     endResetModel ();
   }
 
-  zrythm::gui::dsp::plugins::PluginDescriptor * at (int index) const
+  zrythm::gui::old_dsp::plugins::PluginDescriptor * at (int index) const
   {
     return descriptors_.at (index);
   }
 
 private:
-  QList<zrythm::gui::dsp::plugins::PluginDescriptor *> descriptors_;
+  QList<zrythm::gui::old_dsp::plugins::PluginDescriptor *> descriptors_;
 };
 }

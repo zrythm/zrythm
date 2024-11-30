@@ -48,7 +48,7 @@ TEST_F (ZrythmFixture, MidiFxRouting)
   setting = test_plugin_manager_get_plugin_setting (
     PLUMBING_BUNDLE_URI, "http://gareus.org/oss/lv2/plumbing#eat1", true);
   UNDO_MANAGER->perform (std::make_unique<MixerSelectionsCreateAction> (
-    zrythm::gui::dsp::plugins::PluginSlotType::MidiFx, *track, 0, setting, 1));
+    zrythm::dsp::PluginSlotType::MidiFx, *track, 0, setting, 1));
 
   num_dests = PORT_CONNECTIONS_MGR->get_sources_or_dests (
     nullptr, track->processor_->midi_out_->id_, false);

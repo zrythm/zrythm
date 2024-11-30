@@ -5,8 +5,8 @@
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/backend/channel.h"
 #include "gui/backend/io/file_import.h"
-#include "gui/dsp/channel.h"
 #include "gui/dsp/chord_track.h"
 #include "gui/dsp/foldable_track.h"
 #include "gui/dsp/marker_track.h"
@@ -16,7 +16,6 @@
 #include "gui/dsp/tempo_track.h"
 #include "gui/dsp/track.h"
 #include "gui/dsp/tracklist.h"
-
 #include "utils/flags.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/rt_thread_id.h"
@@ -380,7 +379,8 @@ Tracklist::insert_track (
         added_track->append_ports (ports, true);
         for (auto * port : ports)
           {
-            port->id_->flags2_ |= PortIdentifier::Flags2::SampleProcessorTrack;
+            port->id_->flags2_ |=
+              dsp::PortIdentifier::Flags2::SampleProcessorTrack;
           }
       }
 
@@ -426,7 +426,8 @@ Tracklist::insert_track (
     /* if audio output route to master */
     if constexpr (!std::is_same_v<T, MasterTrack>)
       {
-        if (added_track->out_signal_type_ == PortType::Audio && master_track_)
+        if (
+          added_track->out_signal_type_ == dsp::PortType::Audio && master_track_)
           {
             master_track_->add_child (
               added_track->get_name_hash (), true, false, false);
@@ -952,7 +953,7 @@ Tracklist::get_num_listened_tracks () const
 
 void
 Tracklist::get_plugins (
-  std::vector<zrythm::gui::dsp::plugins::Plugin *> &arr) const
+  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &arr) const
 {
   std::ranges::for_each (tracks_, [&arr] (const auto &tr) {
     auto track = Track::from_variant (tr);

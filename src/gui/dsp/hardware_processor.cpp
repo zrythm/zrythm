@@ -94,7 +94,7 @@ HardwareProcessor::create_port_for_ext_port (
 {
   auto port = std::make_unique<T> (ext_port.full_name_, flow);
   port->set_owner (const_cast<ExtPort *> (&ext_port));
-  port->id_->flags_ |= PortIdentifier::Flags::Hw;
+  port->id_->flags_ |= dsp::PortIdentifier::Flags::Hw;
   port->id_->ext_port_id_ = ext_port.get_id ();
   return port;
 }
@@ -111,7 +111,7 @@ HardwareProcessor::rescan_ext_ports ()
     is_input_ ? PortFlow::Output : PortFlow::Input;
 
   // Function to collect and add ports
-  auto collect_and_add_ports = [&] (PortType type) {
+  auto collect_and_add_ports = [&] (dsp::PortType type) {
     std::vector<ExtPort> ports;
     ExtPort::ext_ports_get (type, flow, true, ports, *engine_);
 
@@ -122,7 +122,7 @@ HardwareProcessor::rescan_ext_ports ()
             auto new_port = std::make_unique<ExtPort> (ext_port);
             new_port->hw_processor_ = this;
 
-            if (type == PortType::Audio)
+            if (type == dsp::PortType::Audio)
               {
                 ext_audio_ports_.push_back (std::move (new_port));
               }
@@ -133,16 +133,17 @@ HardwareProcessor::rescan_ext_ports ()
 
             z_info (
               "[HW] Added {} port {}",
-              type == PortType::Audio ? "audio" : "MIDI", ext_port.get_id ());
+              type == dsp::PortType::Audio ? "audio" : "MIDI",
+              ext_port.get_id ());
           }
       }
   };
 
   // Collect and add audio ports
-  collect_and_add_ports (PortType::Audio);
+  collect_and_add_ports (dsp::PortType::Audio);
 
   // Collect and add MIDI ports
-  collect_and_add_ports (PortType::Event);
+  collect_and_add_ports (dsp::PortType::Event);
 
   /* create ports for each ext port */
   audio_ports_.reserve (std::max (size_t (1), ext_audio_ports_.size ()));

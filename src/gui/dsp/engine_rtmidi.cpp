@@ -9,8 +9,8 @@
 
 #  include "gui/backend/backend/project.h"
 #  include "gui/backend/backend/settings/settings.h"
+#  include "gui/backend/channel.h"
 #  include "gui/backend/ui.h"
-#  include "gui/dsp/channel.h"
 #  include "gui/dsp/engine.h"
 #  include "gui/dsp/engine_rtmidi.h"
 #  include "gui/dsp/ext_port.h"
@@ -20,8 +20,8 @@
 #  include "gui/dsp/rtmidi_device.h"
 #  include "gui/dsp/transport.h"
 #  include "gui/widgets/main_window.h"
-
 #  include "utils/midi.h"
+
 #  include <rtmidi_c.h>
 
 /**

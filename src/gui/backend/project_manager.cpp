@@ -1,9 +1,10 @@
 #include "gui/backend/backend/zrythm.h"
-# include "gui/dsp/router.h"
-#include "utils/directory_manager.h"
-#include "utils/io.h"
 #include "gui/backend/zrythm_application.h"
+#include "gui/dsp/router.h"
 #include "project_manager.h"
+#include "utils/directory_manager.h"
+#include "utils/gtest_wrapper.h"
+#include "utils/io.h"
 
 #include <QtConcurrent>
 

@@ -29,105 +29,108 @@ class HardwareProcessor final
       public zrythm::utils::serialization::ISerializable<HardwareProcessor>
 {
 public:
-  // Rule of 0
-  HardwareProcessor () = default;
+    using PortFlow = zrythm::dsp::PortFlow;
 
-  HardwareProcessor (bool input, AudioEngine * engine);
+  public:
+    // Rule of 0
+    HardwareProcessor () = default;
 
-  void init_loaded (AudioEngine * engine);
+    HardwareProcessor (bool input, AudioEngine * engine);
 
-  bool is_in_active_project () const;
+    void init_loaded (AudioEngine * engine);
 
-  /**
-   * Rescans the hardware ports and appends any missing ones.
-   *
-   * @note This was a GSource callback.
-   */
-  void rescan_ext_ports ();
+    bool is_in_active_project () const;
 
-  /**
-   * Finds an ext port from its ID (type + full name).
-   *
-   * @see ExtPort.get_id()
-   */
-  ExtPort * find_ext_port (const std::string &id);
+    /**
+     * Rescans the hardware ports and appends any missing ones.
+     *
+     * @note This was a GSource callback.
+     */
+    void rescan_ext_ports ();
 
-  /**
-   * Finds a port from its ID (type + full name).
-   *
-   * @see ExtPort.get_id()
-   */
-  template <typename T = Port> T * find_port (const std::string &id);
+    /**
+     * Finds an ext port from its ID (type + full name).
+     *
+     * @see ExtPort.get_id()
+     */
+    ExtPort * find_ext_port (const std::string &id);
 
-  /**
-   * Sets up the ports but does not start them.
-   */
-  void setup ();
+    /**
+     * Finds a port from its ID (type + full name).
+     *
+     * @see ExtPort.get_id()
+     */
+    template <typename T = Port> T * find_port (const std::string &id);
 
-  /**
-   * Starts or stops the ports.
-   *
-   * @param activate True to activate, false to deactivate
-   */
-  void activate (bool activate);
+    /**
+     * Sets up the ports but does not start them.
+     */
+    void setup ();
 
-  /**
-   * Processes the data.
-   */
-  ATTR_REALTIME
-  void process (nframes_t nframes);
+    /**
+     * Starts or stops the ports.
+     *
+     * @param activate True to activate, false to deactivate
+     */
+    void activate (bool activate);
 
-  /**
-   * To be used during serialization.
-   */
-  void init_after_cloning (const HardwareProcessor &other) override;
+    /**
+     * Processes the data.
+     */
+    ATTR_REALTIME
+    void process (nframes_t nframes);
 
-  DECLARE_DEFINE_FIELDS_METHOD ();
+    /**
+     * To be used during serialization.
+     */
+    void init_after_cloning (const HardwareProcessor &other) override;
 
-private:
-  template <typename T>
-  std::unique_ptr<T>
-  create_port_for_ext_port (const ExtPort &ext_port, PortFlow flow);
+    DECLARE_DEFINE_FIELDS_METHOD ();
 
-public:
-  /**
-   * Whether this is the processor at the start of the graph (input) or at the
-   * end (output).
-   */
-  bool is_input_ = false;
+  private:
+    template <typename T>
+    std::unique_ptr<T>
+    create_port_for_ext_port (const ExtPort &ext_port, PortFlow flow);
 
-  /**
-   * Ports selected by the user in the preferences to enable.
-   *
-   * To be cached at startup (need restart for changes to take effect).
-   *
-   * This is only for inputs.
-   */
-  std::vector<std::string> selected_midi_ports_;
-  std::vector<std::string> selected_audio_ports_;
+  public:
+    /**
+     * Whether this is the processor at the start of the graph (input) or at the
+     * end (output).
+     */
+    bool is_input_ = false;
 
-  /**
-   * All known external ports.
-   */
-  std::vector<std::unique_ptr<ExtPort>> ext_audio_ports_;
-  std::vector<std::unique_ptr<ExtPort>> ext_midi_ports_;
+    /**
+     * Ports selected by the user in the preferences to enable.
+     *
+     * To be cached at startup (need restart for changes to take effect).
+     *
+     * This is only for inputs.
+     */
+    std::vector<std::string> selected_midi_ports_;
+    std::vector<std::string> selected_audio_ports_;
 
-  /**
-   * Ports to be used by Zrythm, corresponding to the external ports.
-   */
-  std::vector<std::unique_ptr<AudioPort>> audio_ports_;
-  std::vector<std::unique_ptr<MidiPort>>  midi_ports_;
+    /**
+     * All known external ports.
+     */
+    std::vector<std::unique_ptr<ExtPort>> ext_audio_ports_;
+    std::vector<std::unique_ptr<ExtPort>> ext_midi_ports_;
 
-  /** Whether set up already. */
-  bool setup_ = false;
+    /**
+     * Ports to be used by Zrythm, corresponding to the external ports.
+     */
+    std::vector<std::unique_ptr<AudioPort>> audio_ports_;
+    std::vector<std::unique_ptr<MidiPort>>  midi_ports_;
 
-  /** Whether currently active. */
-  bool activated_ = false;
+    /** Whether set up already. */
+    bool setup_ = false;
 
-  quint64 rescan_timeout_id_ = 0;
+    /** Whether currently active. */
+    bool activated_ = false;
 
-  /** Pointer to owner engine, if any. */
-  AudioEngine * engine_ = nullptr;
+    quint64 rescan_timeout_id_ = 0;
+
+    /** Pointer to owner engine, if any. */
+    AudioEngine * engine_ = nullptr;
 };
 
 extern template std::unique_ptr<MidiPort>

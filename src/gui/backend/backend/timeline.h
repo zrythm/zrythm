@@ -11,8 +11,9 @@
 #define __GUI_BACKEND_TIMELINE_H__
 
 #include "gui/backend/backend/editor_settings.h"
-
 #include "utils/icloneable.h"
+
+#include <QtQmlIntegration>
 
 /**
  * @addtogroup gui_backend

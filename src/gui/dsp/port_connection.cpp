@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/port_identifier.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/port_connection.h"
-#include "gui/dsp/port_identifier.h"
 #include "gui/dsp/tracklist.h"
-
 #include "utils/logger.h"
+
 #include <fmt/format.h>
 
 PortConnection::PortConnection (QObject * parent) : QObject (parent) { }
@@ -19,25 +19,21 @@ PortConnection::PortConnection (
   bool                  locked,
   bool                  enabled,
   QObject *             parent)
-    : QObject (parent), src_id_ (src.clone_raw_ptr ()),
-      dest_id_ (dest.clone_raw_ptr ()), multiplier_ (multiplier),
+    : QObject (parent), src_id_ (src.clone_unique ()),
+      dest_id_ (dest.clone_unique ()), multiplier_ (multiplier),
       locked_ (locked), enabled_ (enabled)
 {
-  src_id_->setParent (this);
-  dest_id_->setParent (this);
 }
 
 void
 PortConnection::init_after_cloning (const PortConnection &other)
 {
-  src_id_ = other.src_id_->clone_raw_ptr ();
-  dest_id_ = other.dest_id_->clone_raw_ptr ();
+  src_id_ = other.src_id_->clone_unique ();
+  dest_id_ = other.dest_id_->clone_unique ();
   multiplier_ = other.multiplier_;
   locked_ = other.locked_;
   enabled_ = other.enabled_;
   base_value_ = other.base_value_;
-  src_id_->setParent (this);
-  dest_id_->setParent (this);
 }
 
 bool

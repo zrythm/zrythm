@@ -35,6 +35,9 @@ public:
     Disconnect,
   };
 
+  using PortType = zrythm::dsp::PortType;
+  using PortIdentifier = dsp::PortIdentifier;
+
 public:
   ChannelSendAction (QObject * parent = nullptr);
 
@@ -73,9 +76,9 @@ public:
   float amount_ = 0.f;
 
   /** Target port identifiers. */
-  PortIdentifier * l_id_ = nullptr;
-  PortIdentifier * r_id_ = nullptr;
-  PortIdentifier * midi_id_ = nullptr;
+  std::unique_ptr<PortIdentifier> l_id_;
+  std::unique_ptr<PortIdentifier> r_id_;
+  std::unique_ptr<PortIdentifier> midi_id_;
 
   /** Action type. */
   Type send_action_type_ = Type ();

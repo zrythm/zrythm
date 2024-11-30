@@ -89,7 +89,13 @@ target_sources(zrythm_utils_lib
     yaml.h
     yaml.cpp)
 
+# precompile header
+set(zrythm_pch ${CMAKE_CURRENT_SOURCE_DIR}/utils_pch.h)
+target_precompile_headers(zrythm_utils_lib
+  PUBLIC
+    $<$<COMPILE_LANGUAGE:CXX>:${zrythm_pch}>)
+
 target_include_directories(zrythm_utils_lib PUBLIC ${zrythm_include_dirs})
 target_compile_options(zrythm_utils_lib PUBLIC ${zrythm_compile_args})
 target_compile_definitions(zrythm_utils_lib PUBLIC ${zrythm_definitions})
-target_link_libraries(zrythm_utils_lib PUBLIC ${zrythm_link_libs} Qt6::Core)
+target_link_libraries(zrythm_utils_lib PUBLIC ${zrythm_link_libs})

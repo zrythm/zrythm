@@ -42,8 +42,8 @@
 #include "gui/backend/plugin_protocol_paths.h"
 #include "gui/backend/plugin_scanner.h"
 
-using namespace zrythm::gui::dsp::plugins;
-using namespace zrythm::gui::dsp::plugins::scanner_private;
+using namespace zrythm::gui::old_dsp::plugins;
+using namespace zrythm::gui::old_dsp::plugins::scanner_private;
 using namespace Qt::StringLiterals;
 
 constexpr auto PLUGIN_SCAN_TIMEOUT = std::chrono::seconds (4);

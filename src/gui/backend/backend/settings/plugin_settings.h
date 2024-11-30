@@ -8,10 +8,10 @@
 
 #include <memory>
 
+#include "dsp/plugin_identifier.h"
 #include "gui/dsp/plugin_descriptor.h"
-#include "gui/dsp/plugin_identifier.h"
 
-namespace zrythm::gui::dsp::plugins
+namespace zrythm::gui::old_dsp::plugins
 {
 class Plugin;
 }
@@ -36,7 +36,7 @@ public:
    * Creates a plugin setting with the recommended settings for the given plugin
    * descriptor based on the current setup.
    */
-  PluginSetting (const zrythm::gui::dsp::plugins::PluginDescriptor &descr);
+  PluginSetting (const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr);
 
   enum class HostingType
   {
@@ -101,7 +101,7 @@ public:
   }
 #endif
 
-  zrythm::gui::dsp::plugins::PluginDescriptor * get_descriptor () const
+  zrythm::gui::old_dsp::plugins::PluginDescriptor * get_descriptor () const
   {
     return descr_.get ();
   }
@@ -114,13 +114,12 @@ public:
    * @param track_name_hash
    * @param slot_type
    * @param slot
-   * @return std::unique_ptr<zrythm::gui::dsp::plugins::Plugin>
+   * @return std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin>
    */
-  std::unique_ptr<zrythm::gui::dsp::plugins::Plugin> create_plugin (
-    unsigned int                              track_name_hash = 0,
-    zrythm::gui::dsp::plugins::PluginSlotType slot_type =
-      zrythm::gui::dsp::plugins::PluginSlotType::Insert,
-    int slot = 0);
+  std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin> create_plugin (
+    unsigned int                track_name_hash = 0,
+    zrythm::dsp::PluginSlotType slot_type = zrythm::dsp::PluginSlotType::Insert,
+    int                         slot = 0);
 
   /**
    * Finishes activating a plugin setting.
@@ -132,7 +131,7 @@ private:
 
 public:
   /** The descriptor of the plugin this setting is for. */
-  std::unique_ptr<zrythm::gui::dsp::plugins::PluginDescriptor> descr_;
+  std::unique_ptr<zrythm::gui::old_dsp::plugins::PluginDescriptor> descr_;
 
   HostingType hosting_type_ = HostingType::Carla;
 
@@ -143,8 +142,8 @@ public:
   bool force_generic_ui_ = false;
 
   /** Requested carla bridge mode. */
-  zrythm::gui::dsp::plugins::CarlaBridgeMode bridge_mode_ =
-    (zrythm::gui::dsp::plugins::CarlaBridgeMode) 0;
+  zrythm::gui::old_dsp::plugins::CarlaBridgeMode bridge_mode_ =
+    (zrythm::gui::old_dsp::plugins::CarlaBridgeMode) 0;
 
   /** Last datetime instantiated (number of microseconds since January 1, 1970
    * UTC). */
@@ -199,7 +198,7 @@ public:
    * @return The found setting or NULL.
    */
   PluginSetting *
-  find (const zrythm::gui::dsp::plugins::PluginDescriptor &descr);
+  find (const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr);
 
   /**
    * Replaces a setting or appends a setting to the cache.

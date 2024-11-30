@@ -52,9 +52,7 @@ class AutomationTrack final
   Q_OBJECT
   QML_ELEMENT
   Q_PROPERTY (double height READ getHeight WRITE setHeight NOTIFY heightChanged)
-  Q_PROPERTY (
-    PortIdentifier * portIdentifier READ getPortIdentifier NOTIFY
-      portIdentifierChanged)
+  Q_PROPERTY (QString label READ getLabel NOTIFY labelChanged)
   Q_PROPERTY (
     int automationMode READ getAutomationMode WRITE setAutomationMode NOTIFY
       automationModeChanged)
@@ -65,6 +63,7 @@ class AutomationTrack final
 
 public:
   using Position = dsp::Position;
+  using PortIdentifier = dsp::PortIdentifier;
 
 public:
   AutomationTrack () = default;
@@ -78,6 +77,12 @@ public:
   // ========================================================================
   // QML Interface
   // ========================================================================
+
+  QString getLabel () const
+  {
+    return QString::fromStdString (port_id_->get_label ());
+  }
+  Q_SIGNAL void labelChanged (QString label);
 
   double        getHeight () const { return height_; }
   void          setHeight (double height);
@@ -93,9 +98,6 @@ public:
   int  getRecordMode () const { return ENUM_VALUE_TO_INT (record_mode_); }
   void setRecordMode (int record_mode);
   Q_SIGNAL void recordModeChanged (int record_mode);
-
-  PortIdentifier * getPortIdentifier () const { return port_id_; }
-  Q_SIGNAL void    portIdentifierChanged (PortIdentifier * port_id);
 
   // ========================================================================
 
@@ -259,7 +261,7 @@ public:
   int index_ = 0;
 
   /** Identifier of the Port this AutomationTrack is for (owned pointer). */
-  PortIdentifier * port_id_ = nullptr;
+  std::unique_ptr<dsp::PortIdentifier> port_id_;
 
   /** Whether it has been created by the user yet or not. */
   bool created_ = false;

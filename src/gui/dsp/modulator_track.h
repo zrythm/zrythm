@@ -35,7 +35,7 @@ class ModulatorTrack final
   friend class InitializableObjectFactory<ModulatorTrack>;
 
 public:
-  using ModulatorPtr = std::shared_ptr<zrythm::gui::dsp::plugins::Plugin>;
+  using ModulatorPtr = std::shared_ptr<zrythm::gui::old_dsp::plugins::Plugin>;
 
   /**
    * Inserts and connects a Modulator to the Track.
@@ -44,7 +44,7 @@ public:
    * (replace current modulator if true, not touching other modulators, or push
    * other modulators forward if false).
    */
-  template <typename T = zrythm::gui::dsp::plugins::Plugin>
+  template <typename T = zrythm::gui::old_dsp::plugins::Plugin>
   std::shared_ptr<T> insert_modulator (
     int                slot,
     std::shared_ptr<T> modulator,
@@ -93,21 +93,21 @@ public:
     modulator_macro_processors_;
 };
 
-extern template std::shared_ptr<zrythm::gui::dsp::plugins::Plugin>
+extern template std::shared_ptr<zrythm::gui::old_dsp::plugins::Plugin>
 ModulatorTrack::insert_modulator (
-  int                                                slot,
-  std::shared_ptr<zrythm::gui::dsp::plugins::Plugin> modulator,
-  bool                                               replace_mode,
-  bool                                               confirm,
-  bool                                               gen_automatables,
-  bool                                               recalc_graph,
-  bool                                               pub_events);
-extern template std::shared_ptr<zrythm::gui::dsp::plugins::CarlaNativePlugin>
+  int                                                    slot,
+  std::shared_ptr<zrythm::gui::old_dsp::plugins::Plugin> modulator,
+  bool                                                   replace_mode,
+  bool                                                   confirm,
+  bool                                                   gen_automatables,
+  bool                                                   recalc_graph,
+  bool                                                   pub_events);
+extern template std::shared_ptr<zrythm::gui::old_dsp::plugins::CarlaNativePlugin>
 ModulatorTrack::insert_modulator (
-  int                                                           slot,
-  std::shared_ptr<zrythm::gui::dsp::plugins::CarlaNativePlugin> modulator,
-  bool                                                          replace_mode,
-  bool                                                          confirm,
+  int                                                               slot,
+  std::shared_ptr<zrythm::gui::old_dsp::plugins::CarlaNativePlugin> modulator,
+  bool replace_mode,
+  bool confirm,
   bool gen_automatables,
   bool recalc_graph,
   bool pub_events);

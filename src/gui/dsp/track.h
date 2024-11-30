@@ -269,7 +269,10 @@ class Track : virtual public zrythm::utils::serialization::ISerializable<Track>
 {
   Q_GADGET
   QML_ELEMENT
+
 public:
+  using PortType = dsp::PortType;
+
   /**
    * The Track's type.
    */
@@ -447,7 +450,7 @@ public:
   }
 
   static Type type_get_from_plugin_descriptor (
-    const zrythm::gui::dsp::plugins::PluginDescriptor &descr);
+    const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr);
 
   /**
    * Returns if the given Type can host the given RegionType.
@@ -827,7 +830,7 @@ public:
    * Fills in the given array with all plugins in the track.
    */
   void
-  get_plugins (std::vector<zrythm::gui::dsp::plugins::Plugin *> &arr) const;
+  get_plugins (std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &arr) const;
 
   /**
    * Activate or deactivate all plugins.
@@ -864,9 +867,8 @@ public:
    *
    * @param slot The slot (ignored if instrument is selected.
    */
-  zrythm::gui::dsp::plugins::Plugin * get_plugin_at_slot (
-    zrythm::gui::dsp::plugins::PluginSlotType slot_type,
-    int                                       slot) const;
+  zrythm::gui::old_dsp::plugins::Plugin *
+  get_plugin_at_slot (zrythm::dsp::PluginSlotType slot_type, int slot) const;
 
   /**
    * Marks the track for bouncing.
@@ -908,31 +910,31 @@ public:
    *
    * @param instantiate_plugin Whether to attempt to instantiate the plugin.
    */
-  template <typename T = zrythm::gui::dsp::plugins::Plugin>
+  template <typename T = zrythm::gui::old_dsp::plugins::Plugin>
   T * insert_plugin (
-    std::unique_ptr<T>                      &&pl,
-    zrythm::gui::dsp::plugins::PluginSlotType slot_type,
-    int                                       slot,
-    bool                                      instantiate_plugin,
-    bool                                      replacing_plugin,
-    bool                                      moving_plugin,
-    bool                                      confirm,
-    bool                                      gen_automatables,
-    bool                                      recalc_graph,
-    bool                                      fire_events);
+    std::unique_ptr<T>        &&pl,
+    zrythm::dsp::PluginSlotType slot_type,
+    int                         slot,
+    bool                        instantiate_plugin,
+    bool                        replacing_plugin,
+    bool                        moving_plugin,
+    bool                        confirm,
+    bool                        gen_automatables,
+    bool                        recalc_graph,
+    bool                        fire_events);
 
   /**
    * Wrapper over channel_remove_plugin() and
    * modulator_track_remove_modulator().
    */
   void remove_plugin (
-    zrythm::gui::dsp::plugins::PluginSlotType slot_type,
-    int                                       slot,
-    bool                                      replacing_plugin,
-    bool                                      moving_plugin,
-    bool                                      deleting_plugin,
-    bool                                      deleting_track,
-    bool                                      recalc_graph);
+    zrythm::dsp::PluginSlotType slot_type,
+    int                         slot,
+    bool                        replacing_plugin,
+    bool                        moving_plugin,
+    bool                        deleting_plugin,
+    bool                        deleting_track,
+    bool                        recalc_graph);
 
   /**
    * Disconnects the track from the processing chain.
@@ -940,7 +942,7 @@ public:
    * This should be called immediately when the track is getting deleted, and
    * track_free should be designed to be called later after an arbitrary delay.
    *
-   * @param remove_pl Remove the zrythm::gui::dsp::plugins::Plugin from the
+   * @param remove_pl Remove the zrythm::gui::old_dsp::plugins::Plugin from the
    * Channel. Useful when deleting the channel.
    * @param recalc_graph Recalculate mixer graph.
    */
@@ -1248,23 +1250,23 @@ concept FinalTrackSubclass = TrackSubclass<TrackT> && FinalClass<TrackT>;
 
 class RecordableTrack;
 
-extern template zrythm::gui::dsp::plugins::Plugin *
+extern template zrythm::gui::old_dsp::plugins::Plugin *
 Track::insert_plugin (
-  std::unique_ptr<zrythm::gui::dsp::plugins::Plugin> &&pl,
-  zrythm::gui::dsp::plugins::PluginSlotType            slot_type,
-  int                                                  slot,
-  bool                                                 instantiate_plugin,
-  bool                                                 replacing_plugin,
-  bool                                                 moving_plugin,
-  bool                                                 confirm,
-  bool                                                 gen_automatables,
-  bool                                                 recalc_graph,
-  bool                                                 fire_events);
-extern template zrythm::gui::dsp::plugins::CarlaNativePlugin *
+  std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin> &&pl,
+  zrythm::dsp::PluginSlotType                              slot_type,
+  int                                                      slot,
+  bool                                                     instantiate_plugin,
+  bool                                                     replacing_plugin,
+  bool                                                     moving_plugin,
+  bool                                                     confirm,
+  bool                                                     gen_automatables,
+  bool                                                     recalc_graph,
+  bool                                                     fire_events);
+extern template zrythm::gui::old_dsp::plugins::CarlaNativePlugin *
 Track::insert_plugin (
-  std::unique_ptr<zrythm::gui::dsp::plugins::CarlaNativePlugin> &&pl,
-  zrythm::gui::dsp::plugins::PluginSlotType                       slot_type,
-  int                                                             slot,
+  std::unique_ptr<zrythm::gui::old_dsp::plugins::CarlaNativePlugin> &&pl,
+  zrythm::dsp::PluginSlotType                                         slot_type,
+  int                                                                 slot,
   bool instantiate_plugin,
   bool replacing_plugin,
   bool moving_plugin,

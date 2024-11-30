@@ -46,7 +46,7 @@ class Zrythm final : public QObject
   Q_OBJECT
   QML_ELEMENT
   Q_PROPERTY (
-    zrythm::gui::dsp::plugins::PluginManager * pluginManager READ
+    zrythm::gui::old_dsp::plugins::PluginManager * pluginManager READ
       getPluginManager CONSTANT FINAL)
   Q_PROPERTY (QString version READ getVersion CONSTANT FINAL)
 public:
@@ -64,7 +64,7 @@ public:
 
   void init ();
 
-  zrythm::gui::dsp::plugins::PluginManager * getPluginManager () const
+  zrythm::gui::old_dsp::plugins::PluginManager * getPluginManager () const
   {
     return plugin_manager_.get ();
   }
@@ -225,7 +225,7 @@ public:
   /**
    * Manages plugins (loading, instantiating, etc.)
    */
-  std::unique_ptr<zrythm::gui::dsp::plugins::PluginManager> plugin_manager_;
+  std::unique_ptr<zrythm::gui::old_dsp::plugins::PluginManager> plugin_manager_;
 
   /** Recording manager. */
   RecordingManager * recording_manager_ = nullptr;

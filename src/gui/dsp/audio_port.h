@@ -4,8 +4,8 @@
 #ifndef __AUDIO_AUDIO_PORT_H__
 #define __AUDIO_AUDIO_PORT_H__
 
+#include "dsp/panning.h"
 #include "gui/dsp/port.h"
-
 #include "utils/icloneable.h"
 
 /**
@@ -68,11 +68,11 @@ public:
    * @param nframes The number of frames to process.
    */
   void apply_pan (
-    float        pan,
-    PanLaw       pan_law,
-    PanAlgorithm pan_algo,
-    nframes_t    start_frame,
-    nframes_t    nframes);
+    float                     pan,
+    zrythm::dsp::PanLaw       pan_law,
+    zrythm::dsp::PanAlgorithm pan_algo,
+    nframes_t                 start_frame,
+    nframes_t                 nframes);
 
   /**
    * @brief Returns the peak amplitude of the audio buffer.

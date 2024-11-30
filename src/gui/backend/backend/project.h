@@ -129,7 +129,7 @@ class Project final
     gui::actions::UndoManager * undoManager READ getUndoManager CONSTANT FINAL)
 
 public:
-  using QuantizeOptions = zrythm::gui::dsp::QuantizeOptions;
+  using QuantizeOptions = zrythm::gui::old_dsp::QuantizeOptions;
   using SnapGrid = zrythm::gui::SnapGrid;
 
 public:

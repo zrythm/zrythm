@@ -3,18 +3,19 @@
 
 #include "zrythm-config.h"
 
+#include "dsp/port_identifier.h"
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/cached_plugin_descriptors.h"
+#include "gui/backend/channel.h"
 #include "gui/backend/plugin_manager.h"
 #include "gui/backend/ui.h"
 #include "gui/dsp/audio_port.h"
 #include "gui/dsp/automatable_track.h"
 #include "gui/dsp/automation_tracklist.h"
 #include "gui/dsp/carla_native_plugin.h"
-#include "gui/dsp/channel.h"
 #include "gui/dsp/channel_track.h"
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/cv_port.h"
@@ -23,11 +24,9 @@
 #include "gui/dsp/midi_port.h"
 #include "gui/dsp/modulator_track.h"
 #include "gui/dsp/plugin.h"
-#include "gui/dsp/port_identifier.h"
 #include "gui/dsp/track.h"
 #include "gui/dsp/tracklist.h"
 #include "gui/dsp/transport.h"
-
 #include "utils/dsp.h"
 #include "utils/exceptions.h"
 #include "utils/flags.h"
@@ -38,10 +37,11 @@
 #include "utils/objects.h"
 #include "utils/rt_thread_id.h"
 #include "utils/string.h"
+
 #include <fmt/printf.h>
 
 using namespace zrythm;
-using namespace zrythm::gui::dsp::plugins;
+using namespace zrythm::gui::old_dsp::plugins;
 
 Plugin::~Plugin ()
 {
@@ -51,12 +51,12 @@ Plugin::~Plugin ()
     }
 }
 
-std::unique_ptr<zrythm::gui::dsp::plugins::Plugin>
+std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin>
 Plugin::create_with_setting (
-  const PluginSetting                      &setting,
-  unsigned int                              track_name_hash,
-  zrythm::gui::dsp::plugins::PluginSlotType slot_type,
-  int                                       slot)
+  const PluginSetting        &setting,
+  unsigned int                track_name_hash,
+  zrythm::dsp::PluginSlotType slot_type,
+  int                         slot)
 {
   return std::make_unique<CarlaNativePlugin> (
     setting, track_name_hash, slot_type, slot);
@@ -203,9 +203,9 @@ Plugin::init_loaded (AutomatableTrack * track, MixerSelections * ms)
 
 void
 Plugin::init (
-  unsigned int                              track_name_hash,
-  zrythm::gui::dsp::plugins::PluginSlotType slot_type,
-  int                                       slot)
+  unsigned int                track_name_hash,
+  zrythm::dsp::PluginSlotType slot_type,
+  int                         slot)
 {
   z_debug (
     "{} ({}) track name hash {} slot {}", get_name (),
@@ -359,10 +359,10 @@ Plugin::set_selected_preset_by_name (std::string_view name)
 }
 
 Plugin::Plugin (
-  const PluginSetting                      &setting,
-  unsigned int                              track_name_hash,
-  zrythm::gui::dsp::plugins::PluginSlotType slot_type,
-  int                                       slot)
+  const PluginSetting        &setting,
+  unsigned int                track_name_hash,
+  zrythm::dsp::PluginSlotType slot_type,
+  int                         slot)
     : setting_ (setting.clone_unique ())
 {
   const auto &descr = setting_->descr_;
@@ -376,7 +376,7 @@ Plugin::Plugin (
 
 Plugin::Plugin (ZPluginCategory cat, unsigned int track_name_hash, int slot)
 {
-  zrythm::gui::dsp::plugins::PluginDescriptor descr;
+  zrythm::gui::old_dsp::plugins::PluginDescriptor descr;
   descr.author_ = "Hoge";
   descr.name_ = "Dummy Plugin";
   descr.category_ = cat;
@@ -384,8 +384,7 @@ Plugin::Plugin (ZPluginCategory cat, unsigned int track_name_hash, int slot)
 
   setting_ = std::make_unique<PluginSetting> (descr);
 
-  init (
-    track_name_hash, zrythm::gui::dsp::plugins::PluginSlotType::Insert, slot);
+  init (track_name_hash, zrythm::dsp::PluginSlotType::Insert, slot);
 }
 
 void
@@ -445,7 +444,7 @@ struct PluginMoveData
 {
   Plugin *                                  pl = nullptr;
   AutomatableTrack *                        track = nullptr;
-  zrythm::gui::dsp::plugins::PluginSlotType slot_type{};
+  zrythm::dsp::PluginSlotType               slot_type{};
   int                                       slot = 0;
   bool                                      fire_events = false;
 };
@@ -524,11 +523,11 @@ overwrite_plugin_response_cb (
 
 void
 Plugin::move (
-  AutomatableTrack *                        track,
-  zrythm::gui::dsp::plugins::PluginSlotType slot_type,
-  int                                       slot,
-  bool                                      confirm_overwrite,
-  bool                                      fire_events)
+  AutomatableTrack *          track,
+  zrythm::dsp::PluginSlotType slot_type,
+  int                         slot,
+  bool                        confirm_overwrite,
+  bool                        fire_events)
 {
   auto data = std::make_unique<PluginMoveData> ();
   data->pl = this;
@@ -556,9 +555,9 @@ Plugin::move (
 
 void
 Plugin::set_track_and_slot (
-  unsigned int                              track_name_hash,
-  zrythm::gui::dsp::plugins::PluginSlotType slot_type,
-  int                                       slot)
+  unsigned int                track_name_hash,
+  zrythm::dsp::PluginSlotType slot_type,
+  int                         slot)
 {
   z_return_if_fail (
     PluginIdentifier::validate_slot_type_slot_combo (slot_type, slot));
@@ -570,8 +569,8 @@ Plugin::set_track_and_slot (
   auto track = get_track ();
   for (auto &port : in_ports_)
     {
-      auto copy_id = port->id_;
-      port->set_owner<zrythm::gui::dsp::plugins::Plugin> (this);
+      auto copy_id = port->id_->clone_unique ();
+      port->set_owner<zrythm::gui::old_dsp::plugins::Plugin> (this);
       if (is_in_active_project ())
         {
           port->update_identifier (*copy_id, track, false);
@@ -579,8 +578,8 @@ Plugin::set_track_and_slot (
     }
   for (auto &port : out_ports_)
     {
-      auto copy_id = port->id_;
-      port->set_owner<zrythm::gui::dsp::plugins::Plugin> (this);
+      auto copy_id = port->id_->clone_unique ();
+      port->set_owner<zrythm::gui::old_dsp::plugins::Plugin> (this);
       if (is_in_active_project ())
         {
           port->update_identifier (*copy_id, track, false);
@@ -595,7 +594,7 @@ Plugin::get_track () const
   return track_;
 }
 
-gui::dsp::Channel *
+gui::Channel *
 Plugin::get_channel () const
 {
   auto track = dynamic_cast<ChannelTrack *> (get_track ());
@@ -617,9 +616,9 @@ Plugin::find (const PluginIdentifier &id)
       Channel * ch = nullptr;
       if (
         !t->is_modulator ()
-        || id.slot_type_ == zrythm::gui::dsp::plugins::PluginSlotType::MidiFx
-        || id.slot_type_ == zrythm::gui::dsp::plugins::PluginSlotType::Instrument
-        || id.slot_type_ == zrythm::gui::dsp::plugins::PluginSlotType::Insert)
+        || id.slot_type_ == zrythm::dsp::PluginSlotType::MidiFx
+        || id.slot_type_ == zrythm::dsp::PluginSlotType::Instrument
+        || id.slot_type_ == zrythm::dsp::PluginSlotType::Insert)
         {
           auto * channel_track = dynamic_cast<ChannelTrack *> (t);
           ch = channel_track->channel_;
@@ -628,19 +627,19 @@ Plugin::find (const PluginIdentifier &id)
       Plugin * ret = nullptr;
       switch (id.slot_type_)
         {
-        case zrythm::gui::dsp::plugins::PluginSlotType::MidiFx:
+        case zrythm::dsp::PluginSlotType::MidiFx:
           z_return_val_if_fail (ch, nullptr);
           ret = ch->midi_fx_[id.slot_].get ();
           break;
-        case zrythm::gui::dsp::plugins::PluginSlotType::Instrument:
+        case zrythm::dsp::PluginSlotType::Instrument:
           z_return_val_if_fail (ch, nullptr);
           ret = ch->instrument_.get ();
           break;
-        case zrythm::gui::dsp::plugins::PluginSlotType::Insert:
+        case zrythm::dsp::PluginSlotType::Insert:
           z_return_val_if_fail (ch, nullptr);
           ret = ch->inserts_[id.slot_].get ();
           break;
-        case zrythm::gui::dsp::plugins::PluginSlotType::Modulator:
+        case zrythm::dsp::PluginSlotType::Modulator:
           {
             auto * modulator_track = dynamic_cast<ModulatorTrack *> (t);
             z_return_val_if_fail (modulator_track, nullptr);
@@ -703,7 +702,7 @@ Plugin::get_port_in_same_group (const Port &port)
     }
 
   const auto &ports =
-    port.id_->flow_ == PortFlow::Input ? in_ports_ : out_ports_;
+    port.id_->flow_ == dsp::PortFlow::Input ? in_ports_ : out_ports_;
 
   for (const auto &cur_port : ports)
     {
@@ -733,14 +732,16 @@ Plugin::generate_window_title () const
   z_return_val_if_fail (!track_name.empty () && !plugin_name.empty (), {});
 
   std::string bridge_mode;
-  if (setting_->bridge_mode_ != zrythm::gui::dsp::plugins::CarlaBridgeMode::None)
+  if (
+    setting_->bridge_mode_
+    != zrythm::gui::old_dsp::plugins::CarlaBridgeMode::None)
     {
       bridge_mode =
         fmt::format (" - bridge: {}", ENUM_NAME (setting_->bridge_mode_));
     }
 
   std::string slot;
-  if (id_.slot_type_ == zrythm::gui::dsp::plugins::PluginSlotType::Instrument)
+  if (id_.slot_type_ == zrythm::dsp::PluginSlotType::Instrument)
     {
       slot = "instrument";
     }
@@ -810,7 +811,7 @@ Port *
 Plugin::add_in_port (std::unique_ptr<Port> &&port)
 {
   port->id_->port_index_ = in_ports_.size ();
-  port->set_owner<zrythm::gui::dsp::plugins::Plugin> (this);
+  port->set_owner<zrythm::gui::old_dsp::plugins::Plugin> (this);
   in_ports_.emplace_back (std::move (port));
   return in_ports_.back ().get ();
 }
@@ -819,17 +820,17 @@ Port *
 Plugin::add_out_port (std::unique_ptr<Port> &&port)
 {
   port->id_->port_index_ = out_ports_.size ();
-  port->set_owner<zrythm::gui::dsp::plugins::Plugin> (this);
+  port->set_owner<zrythm::gui::old_dsp::plugins::Plugin> (this);
   out_ports_.push_back (std::move (port));
   return out_ports_.back ().get ();
 }
 
 void
 Plugin::move_automation (
-  AutomatableTrack                         &prev_track,
-  AutomatableTrack                         &track,
-  zrythm::gui::dsp::plugins::PluginSlotType new_slot_type,
-  int                                       new_slot)
+  AutomatableTrack           &prev_track,
+  AutomatableTrack           &track,
+  zrythm::dsp::PluginSlotType new_slot_type,
+  int                         new_slot)
 {
   z_debug (
     "moving plugin '%s' automation from "
@@ -958,7 +959,7 @@ Plugin::generate_automation_tracks (AutomatableTrack &track)
   for (auto port : in_ports_ | type_is<ControlPort> ())
     {
       if (
-        port->id_->type_ != PortType::Control
+        port->id_->type_ != dsp::PortType::Control
         || !(ENUM_BITSET_TEST (
           PortIdentifier::Flags, port->id_->flags_,
           PortIdentifier::Flags::Automatable)))
@@ -1142,16 +1143,16 @@ Plugin::set_caches ()
     {
       switch (port->id_->type_)
         {
-        case PortType::Control:
+        case dsp::PortType::Control:
           ctrl_in_ports_.push_back (dynamic_cast<ControlPort *> (port.get ()));
           break;
-        case PortType::Audio:
+        case dsp::PortType::Audio:
           audio_in_ports_.push_back (dynamic_cast<AudioPort *> (port.get ()));
           break;
-        case PortType::CV:
+        case dsp::PortType::CV:
           cv_in_ports_.push_back (dynamic_cast<CVPort *> (port.get ()));
           break;
-        case PortType::Event:
+        case dsp::PortType::Event:
           midi_in_ports_.push_back (dynamic_cast<MidiPort *> (port.get ()));
           break;
         default:
@@ -1315,9 +1316,9 @@ Plugin::ensure_state_dir (bool is_backup)
 
 void
 Plugin::get_all (
-  Project                                          &prj,
-  std::vector<zrythm::gui::dsp::plugins::Plugin *> &arr,
-  bool                                              check_undo_manager)
+  Project                                              &prj,
+  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &arr,
+  bool                                                  check_undo_manager)
 {
   const auto &tracks = prj.tracklist_->tracks_;
   std::ranges::for_each (tracks.begin (), tracks.end (), [&] (auto &&track) {
@@ -1429,7 +1430,7 @@ Plugin::process_passthrough (const EngineProcessTimeInfo time_nfo)
       bool goto_next = false;
       switch (in_port->id_->type_)
         {
-        case PortType::Audio:
+        case dsp::PortType::Audio:
           for (size_t j = last_audio_idx; j < out_ports_.size (); j++)
             {
               auto &out_port = out_ports_[j];
@@ -1448,12 +1449,12 @@ Plugin::process_passthrough (const EngineProcessTimeInfo time_nfo)
                 continue;
             }
           break;
-        case PortType::Event:
+        case dsp::PortType::Event:
           for (size_t j = last_midi_idx; j < out_ports_.size (); j++)
             {
               auto &out_port = out_ports_[j];
               if (
-                out_port->id_->type_ == PortType::Event
+                out_port->id_->type_ == dsp::PortType::Event
                 && ENUM_BITSET_TEST (
                   PortIdentifier::Flags2, out_port->id_->flags2_,
                   PortIdentifier::Flags2::SupportsMidi))
@@ -1621,7 +1622,7 @@ done1:
   for (auto &out_port : out_ports_)
     {
       if (
-        out_port->id_->type_ == PortType::Event
+        out_port->id_->type_ == dsp::PortType::Event
         && ENUM_BITSET_TEST (
           PortIdentifier::Flags2, out_port->id_->flags2_,
           PortIdentifier::Flags2::SupportsMidi))
@@ -1629,7 +1630,7 @@ done1:
           for (auto &in_port : dest.in_ports_)
             {
               if (
-                in_port->id_->type_ == PortType::Event
+                in_port->id_->type_ == dsp::PortType::Event
                 && ENUM_BITSET_TEST (
                   PortIdentifier::Flags2, in_port->id_->flags2_,
                   PortIdentifier::Flags2::SupportsMidi))
@@ -1650,22 +1651,22 @@ Plugin::connect_to_prefader (Channel &ch)
   auto track = ch.get_track ();
   auto type = track->out_signal_type_;
 
-  if (type == PortType::Event)
+  if (type == dsp::PortType::Event)
     {
       for (auto &out_port : out_ports_)
         {
           if (
-            out_port->id_->type_ == PortType::Event
+            out_port->id_->type_ == dsp::PortType::Event
             && ENUM_BITSET_TEST (
               PortIdentifier::Flags2, out_port->id_->flags2_,
               PortIdentifier::Flags2::SupportsMidi)
-            && out_port->id_->flow_ == PortFlow::Output)
+            && out_port->id_->flow_ == dsp::PortFlow::Output)
             {
               out_port->connect_to (*PORT_CONNECTIONS_MGR, *ch.midi_out_, true);
             }
         }
     }
-  else if (type == PortType::Audio)
+  else if (type == dsp::PortType::Audio)
     {
       if (l_out_ && r_out_)
         {
@@ -1685,7 +1686,9 @@ Plugin::disconnect_from_prefader (Channel &ch)
 
   for (auto &out_port : out_ports_)
     {
-      if (type == PortType::Audio && out_port->id_->type_ == PortType::Audio)
+      if (
+        type == dsp::PortType::Audio
+        && out_port->id_->type_ == dsp::PortType::Audio)
         {
           if (out_port->is_connected_to (ch.prefader_->stereo_in_->get_l ()))
             out_port->disconnect_from (
@@ -1695,7 +1698,8 @@ Plugin::disconnect_from_prefader (Channel &ch)
               *PORT_CONNECTIONS_MGR, ch.prefader_->stereo_in_->get_r ());
         }
       else if (
-        type == PortType::Event && out_port->id_->type_ == PortType::Event
+        type == dsp::PortType::Event
+        && out_port->id_->type_ == dsp::PortType::Event
         && ENUM_BITSET_TEST (
           PortIdentifier::Flags2, out_port->id_->flags2_,
           PortIdentifier::Flags2::SupportsMidi))
@@ -1819,7 +1823,7 @@ done2:
   for (auto &out_port : out_ports_)
     {
       if (
-        out_port->id_->type_ == PortType::Event
+        out_port->id_->type_ == dsp::PortType::Event
         && ENUM_BITSET_TEST (
           PortIdentifier::Flags2, out_port->id_->flags2_,
           PortIdentifier::Flags2::SupportsMidi))
@@ -1827,7 +1831,7 @@ done2:
           for (auto &in_port : dest.in_ports_)
             {
               if (
-                in_port->id_->type_ == PortType::Event
+                in_port->id_->type_ == dsp::PortType::Event
                 && ENUM_BITSET_TEST (
                   PortIdentifier::Flags2, in_port->id_->flags2_,
                   PortIdentifier::Flags2::SupportsMidi))
@@ -1935,7 +1939,7 @@ Plugin::get_port_by_symbol (const std::string &sym)
   return nullptr;
 }
 
-std::unique_ptr<zrythm::gui::dsp::plugins::Plugin>
+std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin>
 Plugin::create_unique_from_hosting_type (PluginSetting::HostingType hosting_type)
 {
   switch (hosting_type)

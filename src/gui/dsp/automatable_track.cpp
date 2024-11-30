@@ -48,8 +48,8 @@ AutomatableTrack::init_loaded ()
           /* set automation tracks on ports */
           if (
             ENUM_BITSET_TEST (
-              PortIdentifier::Flags, port->id_->flags_,
-              PortIdentifier::Flags::Automatable))
+              dsp::PortIdentifier::Flags, port->id_->flags_,
+              dsp::PortIdentifier::Flags::Automatable))
             {
               auto *            ctrl = dynamic_cast<ControlPort *> (port);
               AutomationTrack * at =
@@ -198,17 +198,15 @@ AutomatableTrack::validate_base () const
       for (const auto * port : ports)
         {
           z_return_val_if_fail (port->id_->track_name_hash_ == name_hash, false);
-          if (port->id_->owner_type_ == PortIdentifier::OwnerType::Plugin)
+          if (port->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
             {
               const auto &pid = port->id_->plugin_id_;
               z_return_val_if_fail (pid.track_name_hash_ == name_hash, false);
-              zrythm::gui::dsp::plugins::Plugin * pl =
-                zrythm::gui::dsp::plugins::Plugin::find (pid);
+              zrythm::gui::old_dsp::plugins::Plugin * pl =
+                zrythm::gui::old_dsp::plugins::Plugin::find (pid);
               z_return_val_if_fail (pl->id_.validate (), false);
               z_return_val_if_fail (pl->id_ == pid, false);
-              if (
-                pid.slot_type_
-                == zrythm::gui::dsp::plugins::PluginSlotType::Instrument)
+              if (pid.slot_type_ == zrythm::dsp::PluginSlotType::Instrument)
                 {
                   const auto * channel_track =
                     dynamic_cast<const ChannelTrack *> (this);
@@ -220,8 +218,8 @@ AutomatableTrack::validate_base () const
           /* check that the automation track is there */
           if (
             ENUM_BITSET_TEST (
-              PortIdentifier::Flags, port->id_->flags_,
-              PortIdentifier::Flags::Automatable))
+              dsp::PortIdentifier::Flags, port->id_->flags_,
+              dsp::PortIdentifier::Flags::Automatable))
             {
               const auto * ctrl = dynamic_cast<const ControlPort *> (port);
               const auto * at =

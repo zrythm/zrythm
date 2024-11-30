@@ -134,7 +134,7 @@ public:
    * Removes the AutomationTrack's associated with this channel from the
    * AutomationTracklist in the corresponding Track.
    */
-  void remove_channel_ats (zrythm::gui::dsp::Channel * ch);
+  void remove_channel_ats (zrythm::gui::Channel * ch);
 
   /**
    * Returns the AutomationTrack corresponding to the given Port.
@@ -170,10 +170,10 @@ public:
    * Currently only used in mixer selections action.
    */
   AutomationTrack * get_plugin_at (
-    zrythm::gui::dsp::plugins::PluginSlotType slot_type,
-    int                                       plugin_slot,
-    int                                       port_index,
-    const std::string                        &symbol);
+    zrythm::dsp::PluginSlotType slot_type,
+    int                         plugin_slot,
+    int                         port_index,
+    const std::string          &symbol);
 
   /**
    * Used when the add button is added and a new automation track is requested

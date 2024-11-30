@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/port_identifier.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/channel_send.h"
 #include "gui/dsp/port_connections_manager.h"
-#include "gui/dsp/port_identifier.h"
-
 #include "utils/rt_thread_id.h"
+
 #include <fmt/format.h>
 
 PortConnectionsManager::PortConnectionsManager (QObject * parent)
@@ -294,7 +294,7 @@ PortConnectionsManager::print_ht (const ConnectionHashTable &ht)
     {
       for (const auto &conn : value)
         {
-          const auto * id = &ht == &src_ht_ ? conn->dest_id_ : conn->src_id_;
+          const auto &id = &ht == &src_ht_ ? conn->dest_id_ : conn->src_id_;
           str +=
             fmt::format ("{}\n  {}\n", id->get_label (), conn->print_to_str ());
         }

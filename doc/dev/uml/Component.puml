@@ -1,0 +1,38 @@
+@startuml Zrythm Components
+interface "Audio IO" as audio_io
+interface "MIDI IO" as midi_io
+interface "Plugin Scan IPC" as plugin_bridge
+interface "Engine IPC" as engine_ipc
+
+[GUI Process] as gui
+[Engine Process] as engine
+[Plugin Scanner] as scanner
+[DSP Library] as dsp
+[Audio Backend] as audio_backend
+[MIDI Backend] as midi_backend
+
+' Core communication paths
+gui -down-> engine_ipc
+engine -up-> engine_ipc
+
+' Audio/MIDI paths
+engine -right-> audio_io
+audio_backend -left-> audio_io
+engine -right-> midi_io
+midi_backend -left-> midi_io
+
+' Plugin scanning
+gui -down-> plugin_bridge
+scanner -up-> plugin_bridge
+
+' Shared library
+dsp <-left- gui
+dsp <-right- engine
+
+note right of engine_ipc
+  Bidirectional communication
+  for transport control,
+  parameter updates,
+  project state changes
+end note
+@enduml

@@ -5,6 +5,7 @@
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/backend/channel.h"
 #include "gui/dsp/audio_bus_track.h"
 #include "gui/dsp/audio_group_track.h"
 #include "gui/dsp/audio_lane.h"
@@ -12,7 +13,6 @@
 #include "gui/dsp/audio_track.h"
 #include "gui/dsp/automation_point.h"
 #include "gui/dsp/automation_track.h"
-#include "gui/dsp/channel.h"
 #include "gui/dsp/chord_track.h"
 #include "gui/dsp/foldable_track.h"
 #include "gui/dsp/folder_track.h"
@@ -31,7 +31,6 @@
 #include "gui/dsp/track.h"
 #include "gui/dsp/track_processor.h"
 #include "gui/dsp/tracklist.h"
-
 #include "utils/debug.h"
 #include "utils/flags.h"
 #include "utils/gtest_wrapper.h"
@@ -223,7 +222,7 @@ Track::is_auditioner () const
 
 Track::Type
 Track::type_get_from_plugin_descriptor (
-  const zrythm::gui::dsp::plugins::PluginDescriptor &descr)
+  const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr)
 {
   if (descr.is_instrument ())
     return Track::Type::Instrument;
@@ -517,7 +516,7 @@ Track::is_selected () const
 bool
 Track::contains_uninstantiated_plugin () const
 {
-  std::vector<zrythm::gui::dsp::plugins::Plugin *> plugins;
+  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
   get_plugins (plugins);
   return std::ranges::any_of (plugins, [] (auto pl) {
     return pl->instantiation_failed_;
@@ -626,27 +625,25 @@ track_freeze (Track * self, bool freeze, GError ** error)
 template <typename T>
 T *
 Track::insert_plugin (
-  std::unique_ptr<T>                      &&pl,
-  zrythm::gui::dsp::plugins::PluginSlotType slot_type,
-  int                                       slot,
-  bool                                      instantiate_plugin,
-  bool                                      replacing_plugin,
-  bool                                      moving_plugin,
-  bool                                      confirm,
-  bool                                      gen_automatables,
-  bool                                      recalc_graph,
-  bool                                      fire_events)
+  std::unique_ptr<T>        &&pl,
+  zrythm::dsp::PluginSlotType slot_type,
+  int                         slot,
+  bool                        instantiate_plugin,
+  bool                        replacing_plugin,
+  bool                        moving_plugin,
+  bool                        confirm,
+  bool                        gen_automatables,
+  bool                        recalc_graph,
+  bool                        fire_events)
 {
-  if (
-    !zrythm::gui::dsp::plugins::PluginIdentifier::validate_slot_type_slot_combo (
-      slot_type, slot))
+  if (!dsp::PluginIdentifier::validate_slot_type_slot_combo (slot_type, slot))
     {
       z_return_val_if_reached (nullptr);
     }
 
   T * inserted_plugin = nullptr;
 
-  if (slot_type == zrythm::gui::dsp::plugins::PluginSlotType::Modulator)
+  if (slot_type == zrythm::dsp::PluginSlotType::Modulator)
     {
       auto * modulator_track = dynamic_cast<ModulatorTrack *> (this);
       if (modulator_track)
@@ -691,16 +688,16 @@ Track::insert_plugin (
 
 void
 Track::remove_plugin (
-  zrythm::gui::dsp::plugins::PluginSlotType slot_type,
-  int                                       slot,
-  bool                                      replacing_plugin,
-  bool                                      moving_plugin,
-  bool                                      deleting_plugin,
-  bool                                      deleting_track,
-  bool                                      recalc_graph)
+  zrythm::dsp::PluginSlotType slot_type,
+  int                         slot,
+  bool                        replacing_plugin,
+  bool                        moving_plugin,
+  bool                        deleting_plugin,
+  bool                        deleting_track,
+  bool                        recalc_graph)
 {
   z_debug ("removing plugin from track {}", name_);
-  if (slot_type == zrythm::gui::dsp::plugins::PluginSlotType::Modulator)
+  if (slot_type == zrythm::dsp::PluginSlotType::Modulator)
     {
       auto * modulator_track = dynamic_cast<ModulatorTrack *> (this);
       if (modulator_track)
@@ -1034,7 +1031,8 @@ Track::set_name (
 }
 
 void
-Track::get_plugins (std::vector<zrythm::gui::dsp::plugins::Plugin *> &arr) const
+Track::get_plugins (
+  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &arr) const
 {
   if (type_has_channel (type_))
     {
@@ -1059,7 +1057,7 @@ void
 
 Track::activate_all_plugins (bool activate)
 {
-  std::vector<zrythm::gui::dsp::plugins::Plugin *> pls;
+  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> pls;
   get_plugins (pls);
 
   for (auto pl : pls)
@@ -1166,21 +1164,19 @@ Track::set_icon (const std::string &icon_name, bool undoable, bool fire_events)
     }
 }
 
-zrythm::gui::dsp::plugins::Plugin *
-Track::get_plugin_at_slot (
-  zrythm::gui::dsp::plugins::PluginSlotType slot_type,
-  int                                       slot) const
+zrythm::gui::old_dsp::plugins::Plugin *
+Track::get_plugin_at_slot (zrythm::dsp::PluginSlotType slot_type, int slot) const
 {
   if (auto channel_track = dynamic_cast<const ChannelTrack *> (this))
     {
       auto &channel = channel_track->get_channel ();
       switch (slot_type)
         {
-        case zrythm::gui::dsp::plugins::PluginSlotType::MidiFx:
+        case zrythm::dsp::PluginSlotType::MidiFx:
           return channel->midi_fx_[slot].get ();
-        case zrythm::gui::dsp::plugins::PluginSlotType::Instrument:
+        case zrythm::dsp::PluginSlotType::Instrument:
           return channel->instrument_.get ();
-        case zrythm::gui::dsp::plugins::PluginSlotType::Insert:
+        case zrythm::dsp::PluginSlotType::Insert:
           return channel->inserts_[slot].get ();
         default:
           break;
@@ -1189,7 +1185,7 @@ Track::get_plugin_at_slot (
   else if (auto modulator_track = dynamic_cast<const ModulatorTrack *> (this))
     {
       if (
-        slot_type == zrythm::gui::dsp::plugins::PluginSlotType::Modulator
+        slot_type == zrythm::dsp::PluginSlotType::Modulator
         && slot < (int) modulator_track->modulators_.size ())
         {
           return modulator_track->modulators_[slot].get ();
@@ -1604,23 +1600,23 @@ Track::is_pinned () const
   return pos_ < TRACKLIST->pinned_tracks_cutoff_;
 }
 
-template zrythm::gui::dsp::plugins::Plugin *
+template zrythm::gui::old_dsp::plugins::Plugin *
 Track::insert_plugin (
-  std::unique_ptr<zrythm::gui::dsp::plugins::Plugin> &&pl,
-  zrythm::gui::dsp::plugins::PluginSlotType            slot_type,
-  int                                                  slot,
-  bool                                                 instantiate_plugin,
-  bool                                                 replacing_plugin,
-  bool                                                 moving_plugin,
-  bool                                                 confirm,
-  bool                                                 gen_automatables,
-  bool                                                 recalc_graph,
-  bool                                                 fire_events);
-template zrythm::gui::dsp::plugins::CarlaNativePlugin *
+  std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin> &&pl,
+  zrythm::dsp::PluginSlotType                              slot_type,
+  int                                                      slot,
+  bool                                                     instantiate_plugin,
+  bool                                                     replacing_plugin,
+  bool                                                     moving_plugin,
+  bool                                                     confirm,
+  bool                                                     gen_automatables,
+  bool                                                     recalc_graph,
+  bool                                                     fire_events);
+template zrythm::gui::old_dsp::plugins::CarlaNativePlugin *
 Track::insert_plugin (
-  std::unique_ptr<zrythm::gui::dsp::plugins::CarlaNativePlugin> &&pl,
-  zrythm::gui::dsp::plugins::PluginSlotType                       slot_type,
-  int                                                             slot,
+  std::unique_ptr<zrythm::gui::old_dsp::plugins::CarlaNativePlugin> &&pl,
+  zrythm::dsp::PluginSlotType                                         slot_type,
+  int                                                                 slot,
   bool instantiate_plugin,
   bool replacing_plugin,
   bool moving_plugin,

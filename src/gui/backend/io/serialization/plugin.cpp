@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/plugin_identifier.h"
 #include "gui/backend/plugin_collections.h"
 #include "gui/dsp/audio_port.h"
 #include "gui/dsp/carla_native_plugin.h"
@@ -9,19 +10,10 @@
 #include "gui/dsp/midi_port.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/plugin_descriptor.h"
-#include "gui/dsp/plugin_identifier.h"
 
 #include <yyjson.h>
 
-using namespace zrythm::gui::dsp::plugins;
-
-void
-PluginIdentifier::define_fields (const Context &ctx)
-{
-  serialize_fields (
-    ctx, make_field ("slotType", slot_type_),
-    make_field ("trackNameHash", track_name_hash_), make_field ("slot", slot_));
-}
+using namespace zrythm::gui::old_dsp::plugins;
 
 void
 PluginDescriptor::define_fields (const Context &ctx)
@@ -89,7 +81,7 @@ Plugin::Bank::define_fields (const Context &ctx)
 void
 Plugin::define_base_fields (const Context &ctx)
 {
-  using T = ISerializable<zrythm::gui::dsp::plugins::Plugin>;
+  using T = ISerializable<zrythm::gui::old_dsp::plugins::Plugin>;
 
   T::serialize_fields (
     ctx, T::make_field ("id", id_), T::make_field ("setting", setting_));
@@ -122,7 +114,7 @@ Plugin::define_base_fields (const Context &ctx)
                   }
                 PortIdentifier port_id;
                 Context        port_id_ctx (port_id_obj, ctx);
-                port_id.deserialize (port_id_ctx);
+                port_id.ISerializable<PortIdentifier>::deserialize (port_id_ctx);
                 auto    port = Port::create_unique_from_type (port_id.type_);
                 Context port_ctx (port_val, ctx);
                 std::visit (
@@ -167,5 +159,5 @@ void
 CarlaNativePlugin::define_fields (const Context &ctx)
 {
   ISerializable<CarlaNativePlugin>::call_all_base_define_fields<
-    zrythm::gui::dsp::plugins::Plugin> (ctx);
+    zrythm::gui::old_dsp::plugins::Plugin> (ctx);
 }

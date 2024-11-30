@@ -8,9 +8,9 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/backend/channel.h"
 #include "gui/dsp/audio_region.h"
 #include "gui/dsp/audio_track.h"
-#include "gui/dsp/channel.h"
 #include "gui/dsp/clip.h"
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/control_room.h"
@@ -23,13 +23,13 @@
 #include "gui/dsp/recording_manager.h"
 #include "gui/dsp/track.h"
 #include "gui/dsp/tracklist.h"
-
 #include "utils/dsp.h"
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/mem.h"
 #include "utils/midi.h"
 #include "utils/mpmc_queue.h"
+
 #include <fmt/format.h>
 
 void
@@ -102,14 +102,15 @@ TrackProcessor::init_midi_port (bool in)
 {
   if (in)
     {
-      midi_in_ = std::make_unique<MidiPort> ("TP MIDI in", PortFlow::Input);
+      midi_in_ = std::make_unique<MidiPort> ("TP MIDI in", dsp::PortFlow::Input);
       midi_in_->set_owner (this);
       midi_in_->id_->sym_ = ("track_processor_midi_in");
-      midi_in_->id_->flags_ |= PortIdentifier::Flags::SendReceivable;
+      midi_in_->id_->flags_ |= dsp::PortIdentifier::Flags::SendReceivable;
     }
   else
     {
-      midi_out_ = std::make_unique<MidiPort> ("TP MIDI out", PortFlow::Output);
+      midi_out_ =
+        std::make_unique<MidiPort> ("TP MIDI out", dsp::PortFlow::Output);
       midi_out_->set_owner (this);
       midi_out_->id_->sym_ = ("track_processor_midi_out");
     }
@@ -119,8 +120,8 @@ void
 TrackProcessor::init_midi_cc_ports (bool loading)
 {
 #define INIT_MIDI_PORT(x, idx) \
-  x->id_->flags_ |= PortIdentifier::Flags::MidiAutomatable; \
-  x->id_->flags_ |= PortIdentifier::Flags::Automatable; \
+  x->id_->flags_ |= dsp::PortIdentifier::Flags::MidiAutomatable; \
+  x->id_->flags_ |= dsp::PortIdentifier::Flags::Automatable; \
   x->id_->port_index_ = idx;
 
   midi_cc_.resize (16 * 128);
@@ -255,14 +256,15 @@ TrackProcessor::TrackProcessor (ProcessableTrack * tr) : track_ (tr)
       output_gain_->maxf_ = 4.f;
       output_gain_->zerof_ = 0.f;
       output_gain_->deff_ = 1.f;
-      output_gain_->id_->flags2_ |= PortIdentifier::Flags2::TpOutputGain;
+      output_gain_->id_->flags2_ |= dsp::PortIdentifier::Flags2::TpOutputGain;
       output_gain_->set_control_value (1.f, false, false);
 
       monitor_audio_ = std::make_unique<ControlPort> ("Monitor audio");
       monitor_audio_->set_owner (this);
       monitor_audio_->id_->sym_ = "track_processor_monitor_audio";
-      monitor_audio_->id_->flags_ |= PortIdentifier::Flags::Toggle;
-      monitor_audio_->id_->flags2_ |= PortIdentifier::Flags2::TpMonitorAudio;
+      monitor_audio_->id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
+      monitor_audio_->id_->flags2_ |=
+        dsp::PortIdentifier::Flags2::TpMonitorAudio;
       monitor_audio_->set_control_value (0.f, false, false);
     }
 
@@ -808,7 +810,8 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
         } /* if has piano roll or is chord track */
 
       /* if currently active track on the piano roll, fetch events */
-      if (tr->in_signal_type_ == PortType::Event && CLIP_EDITOR->has_region_)
+      if (
+        tr->in_signal_type_ == dsp::PortType::Event && CLIP_EDITOR->has_region_)
         {
           if constexpr (std::derived_from<TrackT, ChannelTrack>)
             {
@@ -1032,7 +1035,8 @@ TrackProcessor::connect_to_prefader ()
 }
 
 void
-TrackProcessor::disconnect_from_plugin (zrythm::gui::dsp::plugins::Plugin &pl)
+TrackProcessor::disconnect_from_plugin (
+  zrythm::gui::old_dsp::plugins::Plugin &pl)
 {
   auto * tr = get_track ();
   z_return_if_fail (tr);
@@ -1063,7 +1067,7 @@ TrackProcessor::disconnect_from_plugin (zrythm::gui::dsp::plugins::Plugin &pl)
 }
 
 void
-TrackProcessor::connect_to_plugin (zrythm::gui::dsp::plugins::Plugin &pl)
+TrackProcessor::connect_to_plugin (zrythm::gui::old_dsp::plugins::Plugin &pl)
 {
   auto * tr = get_track ();
   z_return_if_fail (tr);

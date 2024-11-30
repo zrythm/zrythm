@@ -20,7 +20,7 @@
 
 using namespace zrythm;
 
-PortType
+dsp::PortType
 ChannelSend::get_signal_type () const
 {
   auto track = get_track ();
@@ -47,7 +47,7 @@ ChannelSendTarget::describe () const
       }
     case ChannelSendTargetType::PluginSidechain:
       {
-        auto pl = zrythm::gui::dsp::plugins::Plugin::find (pl_id);
+        auto pl = zrythm::gui::old_dsp::plugins::Plugin::find (pl_id);
         return pl->get_full_port_group_designation (port_group);
       }
     default:
@@ -101,17 +101,17 @@ ChannelSend::construct_for_slot (int slot)
   enabled_ = std::make_unique<ControlPort> (format_str (
     QObject::tr ("Channel Send {} enabled").toStdString (), slot + 1));
   enabled_->id_->sym_ = fmt::format ("channel_send_{}_enabled", slot + 1);
-  enabled_->id_->flags_ |= PortIdentifier::Flags::Toggle;
-  enabled_->id_->flags2_ |= PortIdentifier::Flags2::ChannelSendEnabled;
+  enabled_->id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
+  enabled_->id_->flags2_ |= dsp::PortIdentifier::Flags2::ChannelSendEnabled;
   enabled_->set_owner<ChannelSend> (this);
   enabled_->set_control_value (0.f, false, false);
 
   amount_ = std::make_unique<ControlPort> (format_str (
     QObject::tr ("Channel Send {} amount").toStdString (), slot + 1));
   amount_->id_->sym_ = fmt::format ("channel_send_{}_amount", slot + 1);
-  amount_->id_->flags_ |= PortIdentifier::Flags::Amplitude;
-  amount_->id_->flags_ |= PortIdentifier::Flags::Automatable;
-  amount_->id_->flags2_ |= PortIdentifier::Flags2::ChannelSendAmount;
+  amount_->id_->flags_ |= dsp::PortIdentifier::Flags::Amplitude;
+  amount_->id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
+  amount_->id_->flags2_ |= dsp::PortIdentifier::Flags2::ChannelSendAmount;
   amount_->set_owner (this);
   amount_->set_control_value (1.f, false, false);
 
@@ -124,7 +124,7 @@ ChannelSend::construct_for_slot (int slot)
 
   midi_in_ = std::make_unique<MidiPort> (
     format_str (QObject::tr ("Channel Send {} MIDI in").toStdString (), slot + 1),
-    PortFlow::Input);
+    dsp::PortFlow::Input);
   midi_in_->id_->sym_ = fmt::format ("channel_send_{}_midi_in", slot + 1);
   midi_in_->set_owner (this);
 
@@ -138,7 +138,7 @@ ChannelSend::construct_for_slot (int slot)
   midi_out_ = std::make_unique<MidiPort> (
     format_str (
       QObject::tr ("Channel Send {} MIDI out").toStdString (), slot + 1),
-    PortFlow::Output);
+    dsp::PortFlow::Output);
   midi_out_->id_->sym_ = fmt::format ("channel_send_{}_midi_out", slot + 1);
   midi_out_->set_owner (this);
 }
@@ -548,7 +548,7 @@ ChannelSend::get_dest_name () const
         {
           switch (dest->id_->owner_type_)
             {
-            case PortIdentifier::OwnerType::TrackProcessor:
+            case dsp::PortIdentifier::OwnerType::TrackProcessor:
               {
                 auto * track = dest->get_track (true);
                 z_return_val_if_fail (track, {});
@@ -614,10 +614,10 @@ ChannelSend::is_enabled () const
           auto * dest = search_port.dests_[0];
           z_return_val_if_fail (dest, false);
 
-          if (dest->id_->owner_type_ == PortIdentifier::OwnerType::Plugin)
+          if (dest->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
             {
-              auto * pl =
-                zrythm::gui::dsp::plugins::Plugin::find (dest->id_->plugin_id_);
+              auto * pl = zrythm::gui::old_dsp::plugins::Plugin::find (
+                dest->id_->plugin_id_);
               z_return_val_if_fail (pl, false);
               if (pl->instantiation_failed_)
                 return false;
@@ -637,10 +637,10 @@ ChannelSend::is_enabled () const
 
   /* if dest port is a plugin port and plugin instantiation failed, assume that
    * the send is disabled */
-  if (dest->id_->owner_type_ == PortIdentifier::OwnerType::Plugin)
+  if (dest->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
     {
       auto * pl =
-        zrythm::gui::dsp::plugins::Plugin::find (dest->id_->plugin_id_);
+        zrythm::gui::old_dsp::plugins::Plugin::find (dest->id_->plugin_id_);
       if (pl->instantiation_failed_)
         enabled = false;
     }

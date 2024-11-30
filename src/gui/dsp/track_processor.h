@@ -40,6 +40,10 @@ class TrackProcessor final
     : public ICloneable<TrackProcessor>,
       public zrythm::utils::serialization::ISerializable<TrackProcessor>
 {
+  using PortType = zrythm::dsp::PortType;
+  using PortFlow = zrythm::dsp::PortFlow;
+  using PortIdentifier = zrythm::dsp::PortIdentifier;
+
 public:
   TrackProcessor () = default;
 
@@ -118,12 +122,12 @@ public:
   /**
    * Disconnect the TrackProcessor's out ports from the Plugin's input ports.
    */
-  void disconnect_from_plugin (zrythm::gui::dsp::plugins::Plugin &pl);
+  void disconnect_from_plugin (zrythm::gui::old_dsp::plugins::Plugin &pl);
 
   /**
    * Connect the TrackProcessor's out ports to the Plugin's input ports.
    */
-  void connect_to_plugin (zrythm::gui::dsp::plugins::Plugin &pl);
+  void connect_to_plugin (zrythm::gui::old_dsp::plugins::Plugin &pl);
 
   void append_ports (std::vector<Port *> &ports);
 

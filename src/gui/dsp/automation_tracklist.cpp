@@ -5,20 +5,15 @@
 
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/backend/channel.h"
 #include "gui/dsp/automatable_track.h"
 #include "gui/dsp/automation_region.h"
 #include "gui/dsp/automation_track.h"
 #include "gui/dsp/automation_tracklist.h"
-#include "gui/dsp/channel.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/track.h"
 #include "gui/dsp/tracklist.h"
-
-#include "utils/flags.h"
-#include "utils/mem.h"
-#include "utils/objects.h"
 #include "utils/rt_thread_id.h"
-#include "utils/string.h"
 
 AutomationTracklist::AutomationTracklist (QObject * parent)
     : QAbstractListModel (parent)
@@ -151,13 +146,13 @@ AutomationTracklist::add_at (AutomationTrack &at)
 
 AutomationTrack *
 AutomationTracklist::get_plugin_at (
-  zrythm::gui::dsp::plugins::PluginSlotType slot_type,
-  const int                                 plugin_slot,
-  const int                                 port_index,
-  const std::string                        &symbol)
+  zrythm::dsp::PluginSlotType slot_type,
+  const int                   plugin_slot,
+  const int                   port_index,
+  const std::string          &symbol)
 {
   auto it = std::find_if (ats_.begin (), ats_.end (), [&] (const auto &at) {
-    return at->port_id_->owner_type_ == PortIdentifier::OwnerType::Plugin
+    return at->port_id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin
            && plugin_slot == at->port_id_->plugin_id_.slot_
            && slot_type == at->port_id_->plugin_id_.slot_type_
            && port_index == at->port_id_->port_index_
@@ -272,7 +267,7 @@ AutomationTracklist::update_track_name_hash (AutomatableTrack &track)
   for (auto &at : ats_)
     {
       at->port_id_->track_name_hash_ = track_name_hash;
-      if (at->port_id_->owner_type_ == PortIdentifier::OwnerType::Plugin)
+      if (at->port_id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
         {
           at->port_id_->plugin_id_.track_name_hash_ = track_name_hash;
         }
