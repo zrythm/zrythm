@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-target_sources(zrythm_lib
+target_sources(zrythm_gui_lib
   PRIVATE
     alert_manager.h
     alert_manager.cpp

@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-target_sources(zrythm_lib
+target_sources(zrythm_gui_lib
   PRIVATE
   active_hardware_popover.cpp
   automatable_selector_popover.cpp

@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-qt_add_library(zrythm_lib STATIC)
+qt_add_library(zrythm_gui_lib STATIC)
 
 # each executable/library has its own subdirectory
 add_subdirectory(plugin-scanner)
@@ -10,7 +10,7 @@ add_subdirectory(lv2apply)
 add_subdirectory(dsp)
 add_subdirectory(gui)
 
-target_sources(zrythm_lib PRIVATE globals.cpp)
+target_sources(zrythm_gui_lib PRIVATE globals.cpp)
 
 if(0) # TODO
   # Add the translators C string header to the sources
@@ -22,7 +22,7 @@ if(0) # TODO
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/gen-translators-list.py
             ${CMAKE_SOURCE_DIR}/TRANSLATORS
   )
-  target_sources(zrythm_lib
+  target_sources(zrythm_gui_lib
     PRIVATE
       ${CMAKE_CURRENT_BINARY_DIR}/translators.h)
 endif()
@@ -38,20 +38,20 @@ endif()
 
 if(WIN32)
   # There are problems if added to zrythm_srcs directly
-  target_sources(zrythm_lib PRIVATE ${win_res})
+  target_sources(zrythm_gui_lib PRIVATE ${win_res})
 endif()
 
-set_target_properties(zrythm_lib PROPERTIES
-  OUTPUT_NAME zrythm_lib
+set_target_properties(zrythm_gui_lib PROPERTIES
+  OUTPUT_NAME zrythm_gui_lib
 )
-target_include_directories(zrythm_lib PUBLIC ${zrythm_include_dirs})
-target_compile_definitions(zrythm_lib PUBLIC ${zrythm_definitions})
-target_compile_options(zrythm_lib PUBLIC ${zrythm_compile_args})
-target_link_libraries(zrythm_lib PUBLIC ${zrythm_link_libs} zrythm_dsp_lib)
-target_precompile_headers(zrythm_lib REUSE_FROM zrythm_dsp_lib)
+target_include_directories(zrythm_gui_lib PUBLIC ${zrythm_include_dirs})
+target_compile_definitions(zrythm_gui_lib PUBLIC ${zrythm_definitions})
+target_compile_options(zrythm_gui_lib PUBLIC ${zrythm_compile_args})
+target_link_libraries(zrythm_gui_lib PUBLIC ${zrythm_link_libs} zrythm_dsp_lib)
+target_precompile_headers(zrythm_gui_lib REUSE_FROM zrythm_dsp_lib)
 
 target_sources(zrythm PRIVATE main.cpp)
-target_link_libraries(zrythm PRIVATE zrythm_lib)
+target_link_libraries(zrythm PRIVATE zrythm_gui_lib)
 target_link_options(zrythm PRIVATE ${zrythm_link_args})
 add_dependencies(zrythm appdata-xml-merged)
 

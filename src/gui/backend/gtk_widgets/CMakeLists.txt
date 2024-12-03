@@ -3,8 +3,8 @@
 
 return()
 
-target_sources(zrythm_lib
-  PRIVATE   
+target_sources(zrythm_gui_lib
+  PRIVATE
   active_hardware_mb.cpp
   add_track_menu_button.cpp
   arranger.cpp

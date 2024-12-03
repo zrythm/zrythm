@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-target_sources(zrythm_lib
+target_sources(zrythm_gui_lib
   PRIVATE
     arranger_selections_action.h
     arranger_selections_action.cpp

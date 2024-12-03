@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-target_sources(zrythm_lib
-  PRIVATE 
+target_sources(zrythm_gui_lib
+  PRIVATE
   about_dialog.cpp
   add_tracks_to_group_dialog.cpp
   arranger_object_info.cpp

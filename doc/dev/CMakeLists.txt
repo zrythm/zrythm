@@ -27,7 +27,7 @@ if(DOXYGEN_FOUND AND DOT_EXECUTABLE)
     COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.cfg
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Generating developer documentation with Doxygen"
-    DEPENDS ${extra_dev_docs} zrythm_lib
+    DEPENDS ${extra_dev_docs} zrythm_gui_lib
     VERBATIM
   )
 endif()

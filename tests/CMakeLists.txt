@@ -223,7 +223,6 @@ dsp/automation_track
 dsp/channel
 dsp/channel_track
 dsp/chord_track
-dsp/curve
 dsp/fader
 dsp/graph_export
 dsp/marker_track
@@ -292,7 +291,7 @@ helpers/exporter.cpp
 helpers/project_helper.cpp
 helpers/zrythm_helper.cpp
 )
-target_link_libraries(test_helpers PUBLIC zrythm_lib)
+target_link_libraries(test_helpers PUBLIC zrythm_gui_lib)
 add_dependencies(test_helpers ${test_lv2_plugin_libs})
 target_include_directories(test_helpers
   PUBLIC
@@ -310,7 +309,7 @@ foreach(test_path IN LISTS TESTS)
             set(benchmark_target_name "${test_target}_benchmark")
             add_executable(${benchmark_target_name} ${test_path}.cpp)
             target_link_libraries(${benchmark_target_name} PRIVATE
-                zrythm_lib
+                zrythm_gui_lib
                 test_helpers
                 benchmark::benchmark
                 benchmark::benchmark_main
@@ -327,7 +326,7 @@ foreach(test_path IN LISTS TESTS)
         set(test_target_name ${test_target}_test)
         add_executable(${test_target_name} ${test_path}.cpp)
         target_link_libraries(${test_target_name} PRIVATE
-            zrythm_lib
+            zrythm_gui_lib
             test_helpers
             GTest::gtest
             GTest::gtest_main

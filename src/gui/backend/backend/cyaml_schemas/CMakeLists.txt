@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: © 2022-2024 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-target_sources(zrythm_lib PRIVATE
+target_sources(zrythm_gui_lib PRIVATE
   dsp/channel.cpp
   dsp/control_room.cpp
   dsp/engine.cpp
