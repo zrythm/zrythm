@@ -9,16 +9,15 @@
 #include "gui/dsp/audio_track.h"
 #include "gui/dsp/clip.h"
 #include "gui/dsp/pool.h"
-#include "gui/dsp/stretcher.h"
 #include "gui/dsp/tempo_track.h"
 #include "gui/dsp/tracklist.h"
-
 #include "utils/audio.h"
 #include "utils/debug.h"
 #include "utils/dsp.h"
 #include "utils/flags.h"
 #include "utils/logger.h"
 #include "utils/math.h"
+
 #include <fmt/format.h>
 
 using namespace zrythm;
@@ -183,44 +182,6 @@ AudioRegion::replace_frames (
   clip->write_to_pool (false, F_NOT_BACKUP);
 }
 
-static void
-timestretch_buf (
-  AudioTrack *        self,
-  const AudioRegion * r,
-  AudioClip *         clip,
-  unsigned_frame_t    in_frame_offset,
-  double              timestretch_ratio,
-  float *             lbuf_after_ts,
-  float *             rbuf_after_ts,
-  unsigned_frame_t    out_frame_offset,
-  unsigned_frame_t    frames_to_process)
-{
-  z_return_if_fail (r && self->rt_stretcher_);
-  stretcher_set_time_ratio (self->rt_stretcher_, 1.0 / timestretch_ratio);
-  unsigned_frame_t in_frames_to_process =
-    (unsigned_frame_t) (frames_to_process * timestretch_ratio);
-  z_info (
-    "{}: in frame offset %" PRIu64
-    ", "
-    "out frame offset %" PRIu64
-    ", "
-    "in frames to process %" PRIu64
-    ", "
-    "out frames to process %" PRIu64,
-    __func__, in_frame_offset, out_frame_offset, in_frames_to_process,
-    frames_to_process);
-  z_return_if_fail (
-    (in_frame_offset + in_frames_to_process) <= clip->num_frames_);
-  auto retrieved = stretcher_stretch (
-    self->rt_stretcher_, &clip->ch_frames_.getReadPointer (0)[in_frame_offset],
-    clip->channels_ == 1
-      ? &clip->ch_frames_.getWritePointer (0)[in_frame_offset]
-      : &clip->ch_frames_.getWritePointer (1)[in_frame_offset],
-    in_frames_to_process, &lbuf_after_ts[out_frame_offset],
-    &rbuf_after_ts[out_frame_offset], (size_t) frames_to_process);
-  z_return_if_fail ((unsigned_frame_t) retrieved == frames_to_process);
-}
-
 void
 AudioRegion::fill_stereo_ports (
   const EngineProcessTimeInfo &time_nfo,
@@ -326,8 +287,8 @@ AudioRegion::fill_stereo_ports (
       auto buff_index = r_local_pos;
 
       auto stretch = [&] () {
-        timestretch_buf (
-          track, this, clip, buff_index_start, timestretch_ratio, lbuf_after_ts,
+        track->timestretch_buf (
+          this, clip, buff_index_start, timestretch_ratio, lbuf_after_ts,
           rbuf_after_ts, prev_offset,
           (unsigned_frame_t) ((current_local_frame - prev_offset) + 1));
       };

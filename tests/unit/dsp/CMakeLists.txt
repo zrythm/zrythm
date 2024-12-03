@@ -9,6 +9,7 @@ add_executable(dsp_unit_tests
   plugin_identifier_test.cpp
   port_identifier_test.cpp
   position_test.cpp
+  stretcher_test.cpp
   true_peak_dsp_test.cpp
 )
 

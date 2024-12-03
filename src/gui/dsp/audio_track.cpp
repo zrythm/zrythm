@@ -11,10 +11,12 @@
 #include "gui/dsp/engine.h"
 #include "gui/dsp/pool.h"
 #include "gui/dsp/port.h"
-#include "gui/dsp/stretcher.h"
+#include "dsp/stretcher.h"
 #include "gui/dsp/tracklist.h"
 
 #include "utils/objects.h"
+
+using namespace zrythm;
 
 AudioTrack::AudioTrack (const std::string &name, int pos, unsigned int samplerate)
     : Track (Track::Type::Audio, name, pos, PortType::Audio, PortType::Audio),
@@ -23,7 +25,7 @@ AudioTrack::AudioTrack (const std::string &name, int pos, unsigned int samplerat
   color_ = Color (QColor ("#2BD700"));
   /* signal-audio also works */
   icon_name_ = "view-media-visualization";
-  rt_stretcher_ = stretcher_new_rubberband (samplerate_, 2, 1.0, 1.0, true);
+  rt_stretcher_ = dsp::Stretcher::create_rubberband (samplerate_, 2, 1.0, 1.0, true);
   automation_tracklist_->setParent (this);
 }
 
@@ -40,7 +42,8 @@ AudioTrack::init_loaded ()
     (tracklist && tracklist->project_)
       ? tracklist->project_->audio_engine_->sample_rate_
       : AUDIO_ENGINE->sample_rate_;
-  rt_stretcher_ = stretcher_new_rubberband (samplerate_, 2, 1.0, 1.0, true);
+  rt_stretcher_ =
+    dsp::Stretcher::create_rubberband (samplerate_, 2, 1.0, 1.0, true);
 }
 
 bool
@@ -57,6 +60,38 @@ AudioTrack::clear_objects ()
 {
   LanedTrackImpl::clear_objects ();
   AutomatableTrack::clear_objects ();
+}
+
+void
+AudioTrack::timestretch_buf (
+  const AudioRegion * r,
+  AudioClip *         clip,
+  unsigned_frame_t    in_frame_offset,
+  double              timestretch_ratio,
+  float *             lbuf_after_ts,
+  float *             rbuf_after_ts,
+  unsigned_frame_t    out_frame_offset,
+  unsigned_frame_t    frames_to_process)
+{
+  z_return_if_fail (r && rt_stretcher_);
+  rt_stretcher_->set_time_ratio (1.0 / timestretch_ratio);
+  auto in_frames_to_process =
+    (unsigned_frame_t) (frames_to_process * timestretch_ratio);
+  z_debug (
+    "in frame offset {}, out frame offset {}, "
+    "in frames to process {}, out frames to process {}",
+    in_frame_offset, out_frame_offset, in_frames_to_process,
+    frames_to_process);
+  z_return_if_fail (
+    (in_frame_offset + in_frames_to_process) <= clip->num_frames_);
+  auto retrieved = rt_stretcher_->stretch (
+    &clip->ch_frames_.getReadPointer (0)[in_frame_offset],
+    clip->channels_ == 1
+      ? &clip->ch_frames_.getWritePointer (0)[in_frame_offset]
+      : &clip->ch_frames_.getWritePointer (1)[in_frame_offset],
+    in_frames_to_process, &lbuf_after_ts[out_frame_offset],
+    &rbuf_after_ts[out_frame_offset], (size_t) frames_to_process);
+  z_return_if_fail ((unsigned_frame_t) retrieved == frames_to_process);
 }
 
 void
@@ -110,16 +145,12 @@ void
 AudioTrack::init_after_cloning (const AudioTrack &other)
 {
   samplerate_ = other.samplerate_;
-  rt_stretcher_ = stretcher_new_rubberband (samplerate_, 2, 1.0, 1.0, true);
+  rt_stretcher_ =
+    dsp::Stretcher::create_rubberband (samplerate_, 2, 1.0, 1.0, true);
   Track::copy_members_from (other);
   ChannelTrack::copy_members_from (other);
   ProcessableTrack::copy_members_from (other);
   AutomatableTrack::copy_members_from (other);
   RecordableTrack::copy_members_from (other);
   LanedTrackImpl::copy_members_from (other);
-}
-
-AudioTrack::~AudioTrack ()
-{
-  object_free_w_func_and_null (stretcher_free, rt_stretcher_);
 }

@@ -4,13 +4,12 @@
 #ifndef __AUDIO_AUDIO_TRACK_H__
 #define __AUDIO_AUDIO_TRACK_H__
 
+#include "dsp/stretcher.h"
 #include "gui/dsp/audio_region.h"
 #include "gui/dsp/automatable_track.h"
 #include "gui/dsp/channel_track.h"
 #include "gui/dsp/laned_track.h"
 #include "gui/dsp/recordable_track.h"
-
-struct Stretcher;
 
 /**
  * The AudioTrack class represents an audio track in the project. It
@@ -36,12 +35,6 @@ class AudioTrack final
   friend class InitializableObjectFactory<AudioTrack>;
 
 public:
-  // Uncopyable
-  AudioTrack (const AudioTrack &) = delete;
-  AudioTrack &operator= (const AudioTrack &) = delete;
-
-  ~AudioTrack ();
-
   void init_loaded () override;
 
   void init_after_cloning (const AudioTrack &other) override;
@@ -69,6 +62,16 @@ public:
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 
+  void timestretch_buf (
+    const AudioRegion * r,
+    AudioClip *         clip,
+    unsigned_frame_t    in_frame_offset,
+    double              timestretch_ratio,
+    float *             lbuf_after_ts,
+    float *             rbuf_after_ts,
+    unsigned_frame_t    out_frame_offset,
+    unsigned_frame_t    frames_to_process);
+
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
@@ -83,11 +86,10 @@ private:
 
   void update_name_hash (NameHashT new_name_hash) override;
 
-public:
-  /** Real-time time stretcher. */
-  Stretcher * rt_stretcher_ = nullptr;
-
 private:
+  /** Real-time time stretcher. */
+  std::unique_ptr<zrythm::dsp::Stretcher> rt_stretcher_;
+
   /**
    * The samplerate @ref rt_stretcher_ is working with.
    *

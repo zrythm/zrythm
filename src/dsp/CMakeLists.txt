@@ -20,6 +20,8 @@ target_sources(zrythm_dsp_lib
   port_identifier.cpp
   position.h
   position.cpp
+  stretcher.h
+  stretcher.cpp
   true_peak_dsp.h
   true_peak_dsp.cpp
 )

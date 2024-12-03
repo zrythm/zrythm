@@ -199,8 +199,6 @@ target_sources(zrythm_lib
     scale_object.cpp
     snap_grid.h
     snap_grid.cpp
-    stretcher.h
-    stretcher.cpp
     tempo_track.h
     tempo_track.cpp
     timeline_object.h

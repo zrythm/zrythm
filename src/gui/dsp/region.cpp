@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/stretcher.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/channel.h"
@@ -21,7 +22,6 @@
 #include "gui/dsp/region.h"
 #include "gui/dsp/region_link_group_manager.h"
 #include "gui/dsp/router.h"
-#include "gui/dsp/stretcher.h"
 #include "gui/dsp/track.h"
 #include "gui/dsp/tracklist.h"
 #include "utils/debug.h"
@@ -628,27 +628,21 @@ RegionImpl<RegionT>::stretch (double ratio)
       auto * new_clip = AUDIO_POOL->get_clip (new_clip_id);
       derived_.set_clip_id (new_clip->pool_id_);
 
-      auto stretcher = stretcher_new_rubberband (
+      auto stretcher = dsp::Stretcher::create_rubberband (
         AUDIO_ENGINE->sample_rate_, new_clip->channels_, ratio, 1.0, false);
 
-      float * new_frames = nullptr;
-      auto    returned_frames = stretcher_stretch_interleaved (
-        stretcher, new_clip->frames_.getReadPointer (0),
-        static_cast<size_t> (new_clip->num_frames_), &new_frames);
-      z_return_if_fail (returned_frames > 0);
-
-      new_clip->frames_ = juce::AudioBuffer<sample_t> (
-        1, static_cast<int> (returned_frames * new_clip->channels_));
-      new_clip->frames_.copyFrom (
-        0, 0, new_frames,
-        static_cast<int> (returned_frames * new_clip->channels_));
-      new_clip->num_frames_ = static_cast<unsigned_frame_t> (returned_frames);
+      new_clip->frames_ = stretcher->stretch_interleaved (new_clip->frames_);
+      auto num_frames_per_channel =
+        new_clip->frames_.getNumSamples () / new_clip->channels_;
+      z_return_if_fail (num_frames_per_channel > 0);
+      new_clip->num_frames_ =
+        static_cast<unsigned_frame_t> (num_frames_per_channel);
 
       new_clip->write_to_pool (false, false);
 
       /* readjust end position to match the number of frames exactly */
       dsp::Position new_end_pos (
-        static_cast<signed_frame_t> (returned_frames),
+        static_cast<signed_frame_t> (num_frames_per_channel),
         AUDIO_ENGINE->ticks_per_frame_);
       set_position (&new_end_pos, ArrangerObject::PositionType::LoopEnd, false);
       new_end_pos.add_frames (pos_->frames_, AUDIO_ENGINE->ticks_per_frame_);
