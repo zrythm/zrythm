@@ -30,9 +30,10 @@
 #include <cmath>
 #include <cstdlib>
 
-#include "gui/dsp/peak_dsp.h"
+#include "dsp/peak_dsp.h"
 
-#include "utils/objects.h"
+namespace zrythm::dsp
+{
 
 /**
  * Process.
@@ -45,15 +46,15 @@ PeakDsp::process (float * p, int n)
 {
   float s = 0.f, t;
 
-  if (this->fpp != n)
+  if (fpp_ != n)
     {
       /*const float FALL = 15.f;*/
       constexpr float FALL = 5.f;
-      const float     tme = (float) n / this->fsamp; // period time in seconds
-      this->fall = powf (
+      const float     tme = (float) n / fsamp_; // period time in seconds
+      fall_ = powf (
         10.f,
         -0.05f * FALL * tme); // per period fallback multiplier
-      this->fpp = n;
+      fpp_ = n;
     }
 
   t = 0;
@@ -74,68 +75,68 @@ PeakDsp::process (float * p, int n)
   if (!std::isfinite (t))
     t = 0;
 
-  if (this->flag) // Display thread has read the rms value.
+  if (flag_) // Display thread has read the rms value.
     {
-      this->rms = max;
-      this->flag = false;
+      rms_ = max;
+      flag_ = false;
     }
   else
     {
       // Adjust RMS value and update maximum since last read().
-      if (max > this->rms)
-        this->rms = max;
+      if (max > rms_)
+        rms_ = max;
     }
 
   // Digital peak hold and fallback.
-  if (t >= this->peak)
+  if (t >= peak_)
     {
       // If higher than current value, update and set hold counter.
-      this->peak = t;
-      this->cnt = this->hold;
+      peak_ = t;
+      cnt_ = hold_;
     }
-  else if (this->cnt > 0)
+  else if (cnt_ > 0)
     {
       // else decrement counter if not zero,
-      this->cnt -= this->fpp;
+      cnt_ -= fpp_;
     }
   else
     {
-      this->peak *= this->fall; // else let the peak value fall back,
-      this->peak += 1e-10f;     // and avoid denormals.
+      peak_ *= fall_;  // else let the peak value fall back,
+      peak_ += 1e-10f; // and avoid denormals.
     }
 }
 
 float
 PeakDsp::read_f ()
 {
-  float rv = this->rms;
-  this->flag = true; // Resets _rms in next process().
+  float rv = rms_;
+  flag_ = true; // Resets _rms in next process().
   return rv;
 }
 
-void
-PeakDsp::read (float * irms, float * ipeak)
+std::pair<float, float>
+PeakDsp::read ()
 {
-  *irms = this->rms;
-  *ipeak = this->peak;
-  this->flag = true; // Resets _rms in next process().
+  flag_ = true; // Resets _rms in next process().
+  return { rms_, peak_ };
 }
 
 void
 PeakDsp::reset ()
 {
-  this->rms = this->peak = .0f;
-  this->cnt = 0;
-  this->flag = false;
+  rms_ = peak_ = .0f;
+  cnt_ = 0;
+  flag_ = false;
 }
 
 void
 PeakDsp::init (float samplerate)
 {
   /*const float hold = 0.5f;*/
-  const float HOLD = 1.5f;
-  this->fsamp = samplerate;
+  constexpr float HOLD = 1.5f;
+  fsamp_ = samplerate;
 
-  this->hold =
-    (int) (HOLD * samplerate + 0.5f); // number of samples to hold peak
+  hold_ = (int) (HOLD * samplerate + 0.5f); // number of samples to hold peak
 }
+
+}; // namespace zrythm::dsp

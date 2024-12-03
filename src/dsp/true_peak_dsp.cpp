@@ -25,25 +25,38 @@
 #include <cmath>
 #include <cstdlib>
 
-#include "gui/dsp/true_peak_dsp.h"
+#include "dsp/true_peak_dsp.h"
+#include "utils/dsp.h"
+
+#include "zita-resampler/resampler.h"
+
+namespace zrythm::dsp
+{
+
+struct TruePeakDsp::Impl
+{
+  zita::Resampler src_;
+};
+
+TruePeakDsp::TruePeakDsp () : impl_ (std::make_unique<Impl> ()) { }
 
 void
 TruePeakDsp::process (float * data, int n)
 {
   assert (n > 0);
   assert (n <= 8192);
-  src_.inp_count = static_cast<unsigned int> (n);
-  src_.inp_data = data;
-  src_.out_count = static_cast<unsigned int> (n * 4);
-  src_.out_data = buf_;
-  src_.process ();
+  impl_->src_.inp_count = static_cast<unsigned int> (n);
+  impl_->src_.inp_data = data;
+  impl_->src_.out_count = static_cast<unsigned int> (n * 4);
+  impl_->src_.out_data = buf_.data ();
+  impl_->src_.process ();
 
-  float   v;
-  float   m = res_ ? 0 : m_;
-  float   p = res_ ? 0 : p_;
-  float   z1 = z1_ > 20 ? 20 : (z1_ < 0 ? 0 : z1_);
-  float   z2 = z2_ > 20 ? 20 : (z2_ < 0 ? 0 : z2_);
-  float * b = buf_;
+  float         v;
+  float         m = res_ ? 0 : m_;
+  float         p = res_ ? 0 : p_;
+  float         z1 = z1_ > 20 ? 20 : (z1_ < 0 ? 0 : z1_);
+  float         z2 = z2_ > 20 ? 20 : (z2_ < 0 ? 0 : z2_);
+  const float * b = buf_.data ();
 
   while (n--)
     {
@@ -115,15 +128,15 @@ void
 TruePeakDsp::process_max (float * p, int n)
 {
   assert (n <= 8192);
-  src_.inp_count = static_cast<unsigned int> (n);
-  src_.inp_data = p;
-  src_.out_count = static_cast<unsigned int> (n * 4);
-  src_.out_data = buf_;
-  src_.process ();
+  impl_->src_.inp_count = static_cast<unsigned int> (n);
+  impl_->src_.inp_data = p;
+  impl_->src_.out_count = static_cast<unsigned int> (n * 4);
+  impl_->src_.out_data = buf_.data ();
+  impl_->src_.process ();
 
-  float   m = res_ ? 0 : m_;
-  float   v;
-  float * b = buf_;
+  float        m = res_ ? 0 : m_;
+  float        v{};
+  const auto * b = buf_.data ();
   while (n--)
     {
       v = fabsf (*b++);
@@ -149,12 +162,11 @@ TruePeakDsp::read_f ()
   return m_;
 }
 
-void
-TruePeakDsp::read (float * m, float * p)
+std::pair<float, float>
+TruePeakDsp::read ()
 {
   res_ = true;
-  *m = m_;
-  *p = p_;
+  return { m_, p_ };
 }
 
 void
@@ -168,10 +180,10 @@ TruePeakDsp::reset ()
 void
 TruePeakDsp::init (float samplerate)
 {
-  src_.setup (
+  impl_->src_.setup (
     static_cast<unsigned int> (samplerate),
     static_cast<unsigned int> (samplerate * 4.f), 1, 24, 1.0);
-  buf_ = static_cast<float *> (malloc (32768 * sizeof (float)));
+  buf_.resize (32768);
 
   z1_ = z2_ = .0f;
   w1_ = 4000.f / samplerate / 4.f;
@@ -179,22 +191,15 @@ TruePeakDsp::init (float samplerate)
   w3_ = 1.0f - 7.f / samplerate / 4.f;
   g_ = 0.502f;
 
-  float zero[8192];
-  for (int i = 0; i < 8192; ++i)
-    {
-      zero[i] = 0.0;
-    }
-  src_.inp_count = 8192;
-  src_.inp_data = zero;
-  src_.out_count = 32768;
-  src_.out_data = buf_;
-  src_.process ();
+  std::array<float, 8192> zero{};
+  utils::float_ranges::fill (zero.data (), 0.f, zero.size ());
+  impl_->src_.inp_count = 8192;
+  impl_->src_.inp_data = zero.data ();
+  impl_->src_.out_count = 32768;
+  impl_->src_.out_data = buf_.data ();
+  impl_->src_.process ();
 }
 
-TruePeakDsp::TruePeakDsp () : res_ (true) { }
+TruePeakDsp::~TruePeakDsp () = default;
 
-TruePeakDsp::~TruePeakDsp ()
-{
-  if (buf_)
-    free (buf_);
-}
+} // namespace zrythm::dsp

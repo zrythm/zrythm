@@ -1,10 +1,8 @@
-// SPDX-FileCopyrightText: © 2020-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
  * permission notice:
- *
- * ---
  *
  * Copyright (C) 2013 Robin Gareus <robin@gareus.org>
  *
@@ -21,18 +19,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- * SPDX-License-Identifier: GPL-2.0-or-later
- *
- * ---
  */
 
-#ifndef __AUDIO_KMETER_DSP__
-#define __AUDIO_KMETER_DSP__
+#ifndef ZRYTHM_DSP_TRUE_PEAK_DSP
+#define ZRYTHM_DSP_TRUE_PEAK_DSP
 
-class KMeterDsp
+namespace zrythm::dsp
+{
+
+class TruePeakDsp
 {
 public:
+  TruePeakDsp ();
+  ~TruePeakDsp ();
+
   /**
    * Process.
    *
@@ -41,9 +41,18 @@ public:
    */
   void process (float * p, int n);
 
+  void process_max (float * p, int n);
+
   float read_f ();
 
-  void read (float * rms, float * peak);
+  /**
+   * @brief Returns @ref m_ and @ref p_.
+   *
+   * @param m
+   * @param p
+   * @return std::pair<float,float>
+   */
+  std::pair<float, float> read ();
 
   void reset ();
 
@@ -53,18 +62,23 @@ public:
   void init (float samplerate);
 
 private:
-  float z1_;   // filter state
-  float z2_;   // filter state
-  float rms_;  // max rms value since last read()
-  float peak_; // max peak value since last read()
-  int   cnt_;  // digital peak hold counter
-  int   fpp_;  // frames per period
-  float fall_; // peak fallback
-  bool  flag_; // flag set by read(), resets _rms
+  float              m_ = 0.0f;
+  float              p_ = 0.0f;
+  float              z1_ = 0.0f;
+  float              z2_ = 0.0f;
+  bool               res_ = true;
+  std::vector<float> buf_;
 
-  float omega_; // ballistics filter constant.
-  int   hold_;  // peak hold timeoute
-  float fsamp_; // sample-rate
+  float w1_ = 0.0f; // attack filter coefficient
+  float w2_ = 0.0f; // attack filter coefficient
+  float w3_ = 0.0f; // release filter coefficient
+  float g_ = 1.0f;  // gain factor
+
+  // Forward declared implementation struct to hide zita::Resampler
+  struct Impl;
+  std::unique_ptr<Impl> impl_;
 };
+
+} // namespace zrythm::dsp
 
 #endif

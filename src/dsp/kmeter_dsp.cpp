@@ -31,10 +31,13 @@
 #include <cmath>
 #include <cstdlib>
 
-#include "gui/dsp/kmeter_dsp.h"
+#include "dsp/kmeter_dsp.h"
+
+namespace zrythm::dsp
+{
 
 void
-KMeterDsp::process (float * p, int n)
+KMeterDsp::process (const float * p, int n)
 {
   float s, t, z1, z2;
 
@@ -135,12 +138,11 @@ KMeterDsp::read_f ()
   return rv;
 }
 
-void
-KMeterDsp::read (float * rms, float * peak)
+std::pair<float, float>
+KMeterDsp::read ()
 {
-  *rms = rms_;
-  *peak = peak_;
   flag_ = true; // Resets _rms in next process().
+  return std::make_pair (rms_, peak_);
 }
 
 void
@@ -161,3 +163,5 @@ KMeterDsp::init (float samplerate)
   hold_ = (int) (hold * samplerate + 0.5f); // number of samples to hold peak
   omega_ = 9.72f / samplerate;              // ballistic filter coefficient
 }
+
+} // namespace zrythm::dsp

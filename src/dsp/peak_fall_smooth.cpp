@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -15,7 +15,10 @@
 #include <cmath>
 #include <numbers>
 
-#include "gui/dsp/peak_fall_smooth.h"
+#include "dsp/peak_fall_smooth.h"
+
+namespace zrythm::dsp
+{
 
 void
 PeakFallSmooth::calculate_coeff (float frequency, float sample_rate)
@@ -42,3 +45,5 @@ PeakFallSmooth::get_smoothed_value () const
 
   return result;
 }
+
+}; // namespace zrythm::dsp

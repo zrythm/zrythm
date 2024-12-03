@@ -12,12 +12,11 @@
  * ---
  */
 
-/**
- * @file
- */
+#ifndef ZRYTHM_DSP_PEAK_FALL_SMOOTH_H
+#define ZRYTHM_DSP_PEAK_FALL_SMOOTH_H
 
-#ifndef __AUDIO_PEAK_FALL_SMOOTH_H__
-#define __AUDIO_PEAK_FALL_SMOOTH_H__
+namespace zrythm::dsp
+{
 
 class PeakFallSmooth
 {
@@ -31,5 +30,7 @@ private:
   float         value_ = 0.f;
   float         coeff_ = 0.f;
 };
+
+}; // namespace zrythm::dsp
 
 #endif

@@ -4,18 +4,14 @@
 #ifndef __AUDIO_METER_H__
 #define __AUDIO_METER_H__
 
-#include "gui/dsp/kmeter_dsp.h"
-#include "gui/dsp/peak_dsp.h"
-#include "gui/dsp/true_peak_dsp.h"
-
-#include <QtQmlIntegration>
-
+#include "dsp/kmeter_dsp.h"
+#include "dsp/peak_dsp.h"
+#include "dsp/true_peak_dsp.h"
 #include "utils/traits.h"
 #include "utils/types.h"
 
-class TruePeakDsp;
-class KMeterDsp;
-class PeakDsp;
+#include <QtQmlIntegration>
+
 class Port;
 class MidiPort;
 class AudioPort;
@@ -107,17 +103,17 @@ public:
   QPointer<QObject> port_obj_;
 
   /** True peak processor. */
-  std::unique_ptr<TruePeakDsp> true_peak_processor_;
-  std::unique_ptr<TruePeakDsp> true_peak_max_processor_;
+  std::unique_ptr<zrythm::dsp::TruePeakDsp> true_peak_processor_;
+  std::unique_ptr<zrythm::dsp::TruePeakDsp> true_peak_max_processor_;
 
   /** Current true peak. */
   float true_peak_ = 0.f;
   float true_peak_max_ = 0.f;
 
   /** K RMS processor, if K meter. */
-  std::unique_ptr<KMeterDsp> kmeter_processor_;
+  std::unique_ptr<zrythm::dsp::KMeterDsp> kmeter_processor_;
 
-  std::unique_ptr<PeakDsp> peak_processor_;
+  std::unique_ptr<zrythm::dsp::PeakDsp> peak_processor_;
 
   /**
    * Algorithm to use.

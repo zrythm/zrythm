@@ -2,10 +2,14 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_executable(dsp_unit_tests
+  kmeter_dsp_test.cpp
   panning_test.cpp
+  peak_dsp_test.cpp
+  peak_fall_smooth_test.cpp
   plugin_identifier_test.cpp
   port_identifier_test.cpp
   position_test.cpp
+  true_peak_dsp_test.cpp
 )
 
 set_target_properties(dsp_unit_tests PROPERTIES

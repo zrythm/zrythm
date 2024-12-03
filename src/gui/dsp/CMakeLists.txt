@@ -101,8 +101,6 @@ target_sources(zrythm_lib
     hardware_processor.cpp
     instrument_track.h
     instrument_track.cpp
-    kmeter_dsp.h
-    kmeter_dsp.cpp
     lane_owned_object.h
     lane_owned_object.cpp
     laned_track.h
@@ -147,10 +145,6 @@ target_sources(zrythm_lib
     muteable_object.cpp
     nameable_object.h
     nameable_object.cpp
-    peak_dsp.h
-    peak_dsp.cpp
-    peak_fall_smooth.h
-    peak_fall_smooth.cpp
     piano_roll_track.h
     piano_roll_track.cpp
     plugin.h
@@ -223,8 +217,6 @@ target_sources(zrythm_lib
     tracklist.cpp
     transport.h
     transport.cpp
-    true_peak_dsp.h
-    true_peak_dsp.cpp
     velocity.h
     velocity.cpp
 )

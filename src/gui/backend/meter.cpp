@@ -1,17 +1,15 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-# include "gui/dsp/audio_port.h"
-# include "gui/dsp/engine.h"
-# include "gui/dsp/kmeter_dsp.h"
-# include "gui/dsp/midi_event.h"
-# include "gui/dsp/midi_port.h"
-# include "gui/dsp/peak_dsp.h"
-# include "gui/dsp/track.h"
-# include "gui/dsp/true_peak_dsp.h"
+#include "dsp/kmeter_dsp.h"
+#include "gui/backend/meter.h"
+#include "gui/dsp/audio_port.h"
+#include "gui/dsp/engine.h"
+#include "gui/dsp/midi_event.h"
+#include "gui/dsp/midi_port.h"
+#include "gui/dsp/track.h"
 #include "utils/math.h"
 #include "utils/ring_buffer.h"
-#include "gui/backend/meter.h"
 
 MeterProcessor::MeterProcessor (QObject * parent) : QObject (parent) { }
 
@@ -51,13 +49,14 @@ MeterProcessor::setPort (QVariant port_var)
               if (is_master_fader)
                 {
                   algorithm_ = MeterAlgorithm::METER_ALGORITHM_K;
-                  kmeter_processor_ = std::make_unique<KMeterDsp> ();
+                  kmeter_processor_ =
+                    std::make_unique<zrythm::dsp::KMeterDsp> ();
                   kmeter_processor_->init (AUDIO_ENGINE->sample_rate_);
                 }
               else
                 {
                   algorithm_ = MeterAlgorithm::METER_ALGORITHM_DIGITAL_PEAK;
-                  peak_processor_ = std::make_unique<PeakDsp> ();
+                  peak_processor_ = std::make_unique<zrythm::dsp::PeakDsp> ();
                   peak_processor_->init (AUDIO_ENGINE->sample_rate_);
                 }
 
@@ -177,11 +176,11 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
               break;
             case MeterAlgorithm::METER_ALGORITHM_K:
               kmeter_processor_->process (port->buf_.data (), block_length);
-              kmeter_processor_->read (&amp, &max_amp);
+              std::tie (amp, max_amp) = kmeter_processor_->read ();
               break;
             case MeterAlgorithm::METER_ALGORITHM_DIGITAL_PEAK:
               peak_processor_->process (port->buf_.data (), block_length);
-              peak_processor_->read (&amp, &max_amp);
+              std::tie (amp, max_amp) = peak_processor_->read ();
               break;
             default:
               break;
