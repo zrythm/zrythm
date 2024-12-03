@@ -26,28 +26,6 @@
 using namespace zrythm;
 
 void
-AudioClip::update_channel_caches (size_t start_from)
-{
-  auto num_channels = get_num_channels ();
-  z_return_if_fail_cmp (num_channels, >, 0);
-  z_return_if_fail_cmp (num_frames_, >, 0);
-
-  /* copy the frames to the channel caches */
-  ch_frames_.setSize (num_channels, num_frames_, true, false, false);
-  const auto frames_read_ptr =
-    frames_.getReadPointer (0, start_from * num_channels);
-  auto frames_to_write = num_frames_ - start_from;
-  for (decltype (num_channels) i = 0; i < num_channels; ++i)
-    {
-      auto ch_frames_write_ptr = ch_frames_.getWritePointer (i, start_from);
-      for (decltype (frames_to_write) j = 0; j < frames_to_write; ++j)
-        {
-          ch_frames_write_ptr[j] = frames_read_ptr[j * num_channels + i];
-        }
-    }
-}
-
-void
 AudioClip::init_from_file (const std::string &full_path, bool set_bpm)
 {
   samplerate_ = (int) AUDIO_ENGINE->sample_rate_;
@@ -64,8 +42,6 @@ AudioClip::init_from_file (const std::string &full_path, bool set_bpm)
       throw ZrythmException (
         fmt::format ("Failed to read metadata from file '{}'", full_path));
     }
-  num_frames_ = file.metadata_.num_frames;
-  channels_ = file.metadata_.channels;
   bit_depth_ = utils::audio::bit_depth_int_to_enum (file.metadata_.bit_depth);
   bpm_ = file.metadata_.bpm;
 
@@ -79,8 +55,6 @@ AudioClip::init_from_file (const std::string &full_path, bool set_bpm)
       throw ZrythmException (
         fmt::format ("Failed to read frames from file '{}'", full_path));
     }
-  num_frames_ = ch_frames_.getNumSamples ();
-  channels_ = ch_frames_.getNumChannels ();
 
   name_ = juce::File (full_path).getFileNameWithoutExtension ().toStdString ();
   if (set_bpm)
@@ -88,11 +62,7 @@ AudioClip::init_from_file (const std::string &full_path, bool set_bpm)
       z_return_if_fail (PROJECT && P_TEMPO_TRACK);
       bpm_ = P_TEMPO_TRACK->get_current_bpm ();
     }
-  use_flac_ = use_flac (bit_depth_);
-
-  /* interleave into frames_ */
-  frames_ = ch_frames_;
-  AudioFile::interleave_buffer (frames_);
+  use_flac_ = should_use_flac (bit_depth_);
 }
 
 void
@@ -123,26 +93,20 @@ AudioClip::AudioClip (const std::string &full_path)
 }
 
 AudioClip::AudioClip (
-  const float *          arr,
-  const unsigned_frame_t nframes,
-  const channels_t       channels,
-  BitDepth               bit_depth,
-  const std::string     &name)
+  const utils::audio::AudioBuffer &buf,
+  BitDepth                         bit_depth,
+  const std::string               &name)
 {
-  z_return_if_fail (channels > 0);
-  frames_.setSize (1, nframes * channels, true, false, false);
-  num_frames_ = nframes;
-  channels_ = channels;
   samplerate_ = (int) AUDIO_ENGINE->sample_rate_;
   z_return_if_fail (samplerate_ > 0);
   name_ = name;
   bit_depth_ = bit_depth;
-  use_flac_ = use_flac (bit_depth);
+  use_flac_ = should_use_flac (bit_depth);
   pool_id_ = -1;
-  utils::float_ranges::copy (
-    frames_.getWritePointer (0), arr, (size_t) nframes * (size_t) channels);
+
+  ch_frames_ = buf;
+
   bpm_ = P_TEMPO_TRACK->get_current_bpm ();
-  update_channel_caches (0);
 }
 
 AudioClip::AudioClip (
@@ -150,9 +114,7 @@ AudioClip::AudioClip (
   const unsigned_frame_t nframes,
   const std::string     &name)
 {
-  channels_ = channels;
-  frames_.setSize (nframes * channels, 1, true, false, false);
-  num_frames_ = nframes;
+  ch_frames_.setSize (channels, nframes, false, true, false);
   name_ = name;
   pool_id_ = -1;
   bpm_ = P_TEMPO_TRACK->get_current_bpm ();
@@ -160,17 +122,12 @@ AudioClip::AudioClip (
   bit_depth_ = BitDepth::BIT_DEPTH_32;
   use_flac_ = false;
   z_return_if_fail (samplerate_ > 0);
-  utils::float_ranges::fill (
-    frames_.getWritePointer (0), DENORMAL_PREVENTION_VAL (AUDIO_ENGINE),
-    (size_t) nframes * (size_t) channels_);
-  update_channel_caches (0);
 }
 
 void
 AudioClip::init_after_cloning (const AudioClip &other)
 {
   name_ = other.name_;
-  frames_ = other.frames_;
   ch_frames_ = other.ch_frames_;
   bpm_ = other.bpm_;
   samplerate_ = other.samplerate_;
@@ -178,8 +135,6 @@ AudioClip::init_after_cloning (const AudioClip &other)
   use_flac_ = other.use_flac_;
   pool_id_ = other.pool_id_;
   file_hash_ = other.file_hash_;
-  num_frames_ = other.num_frames_;
-  channels_ = other.channels_;
 }
 
 std::string
@@ -302,11 +257,55 @@ AudioClip::finalize_buffered_write ()
 }
 
 void
+AudioClip::replace_frames_from_interleaved (
+  const float *    frames,
+  unsigned_frame_t start_frame,
+  unsigned_frame_t num_frames_per_channel,
+  channels_t       channels)
+{
+  utils::audio::AudioBuffer buf (1, num_frames_per_channel * channels);
+  buf.deinterleave_samples (channels);
+  replace_frames (buf, start_frame);
+}
+
+void
+AudioClip::replace_frames (
+  const utils::audio::AudioBuffer &src_frames,
+  unsigned_frame_t                 start_frame)
+{
+  z_return_if_fail_cmp (
+    src_frames.getNumChannels (), ==, ch_frames_.getNumChannels ());
+
+  /* this is needed because if the file hash doesn't change
+   * the actual file write is skipped to save time */
+  file_hash_ = 0;
+
+  for (int i = 0; i < src_frames.getNumChannels (); ++i)
+    {
+      ch_frames_.copyFrom (
+        i, start_frame, src_frames.getReadPointer (i, 0),
+        src_frames.getNumSamples ());
+    }
+}
+
+void
+AudioClip::expand_with_frames (const utils::audio::AudioBuffer &frames)
+{
+  z_return_if_fail (frames.getNumChannels () == ch_frames_.getNumChannels ());
+  z_return_if_fail (frames.getNumSamples () > 0);
+
+  unsigned_frame_t prev_end = ch_frames_.getNumSamples ();
+  ch_frames_.setSize (
+    ch_frames_.getNumChannels (),
+    ch_frames_.getNumSamples () + frames.getNumSamples (), true, false);
+  replace_frames (frames, prev_end);
+}
+
+void
 AudioClip::write_to_file (const std::string &filepath, bool parts)
 {
   z_return_if_fail (samplerate_ > 0);
   z_return_if_fail (frames_written_ < SIZE_MAX);
-  const auto before_frames = (size_t) frames_written_;
 
   auto create_writer_for_filepath = [&] () {
     juce::File file (filepath);
@@ -325,7 +324,7 @@ AudioClip::write_to_file (const std::string &filepath, bool parts)
 
     auto writer = std::unique_ptr<
       juce::AudioFormatWriter> (format->createWriterFor (
-      out_stream.release (), samplerate_, channels_,
+      out_stream.release (), samplerate_, get_num_channels (),
       utils::audio::bit_depth_enum_to_int (bit_depth_), {}, 0));
 
     if (writer == nullptr)
@@ -336,11 +335,11 @@ AudioClip::write_to_file (const std::string &filepath, bool parts)
     return writer;
   };
 
+  const auto num_frames = get_num_frames ();
   if (parts)
     {
-      z_return_if_fail_cmp (num_frames_, >=, frames_written_);
-      unsigned_frame_t nframes_to_write_this_time =
-        num_frames_ - frames_written_;
+      z_return_if_fail_cmp (num_frames, >=, (int) frames_written_);
+      unsigned_frame_t nframes_to_write_this_time = num_frames - frames_written_;
       z_return_if_fail_cmp (nframes_to_write_this_time, <, SIZE_MAX);
 
       // create writer if first time
@@ -356,13 +355,13 @@ AudioClip::write_to_file (const std::string &filepath, bool parts)
       writer_->writeFromAudioSampleBuffer (
         ch_frames_, frames_written_, nframes_to_write_this_time);
 
-      frames_written_ = num_frames_;
+      frames_written_ = num_frames;
       last_write_ = Zrythm::getInstance ()->get_monotonic_time_usecs ();
     }
   else
     {
-      z_return_if_fail_cmp (num_frames_, <, SIZE_MAX);
-      size_t nframes = num_frames_;
+      z_return_if_fail_cmp (num_frames, <, (int) INT_MAX);
+      size_t nframes = num_frames;
 
       auto writer = create_writer_for_filepath ();
       writer->writeFromAudioSampleBuffer (ch_frames_, 0, nframes);
@@ -372,17 +371,15 @@ AudioClip::write_to_file (const std::string &filepath, bool parts)
           verify_recorded_file (filepath);
         }
     }
-
-  update_channel_caches (before_frames);
 }
 
 bool
 AudioClip::verify_recorded_file (const fs::path &filepath) const
 {
   AudioClip new_clip (filepath.string ());
-  if (num_frames_ != new_clip.num_frames_)
+  if (get_num_frames () != new_clip.get_num_frames ())
     {
-      z_error ("{} != {}", num_frames_, new_clip.num_frames_);
+      z_error ("{} != {}", get_num_frames (), new_clip.get_num_frames ());
       return false;
     }
 
@@ -390,13 +387,9 @@ AudioClip::verify_recorded_file (const fs::path &filepath) const
   z_return_val_if_fail (
     utils::audio::frames_equal (
       ch_frames_.getReadPointer (0), new_clip.ch_frames_.getReadPointer (0),
-      (size_t) new_clip.num_frames_, epsilon),
+      (size_t) new_clip.get_num_frames (), epsilon),
     false);
-  z_return_val_if_fail (
-    utils::audio::frames_equal (
-      frames_.getReadPointer (0), new_clip.frames_.getReadPointer (0),
-      (size_t) new_clip.num_frames_ * new_clip.channels_, epsilon),
-    false);
+
   return true;
 }
 
@@ -536,6 +529,16 @@ AudioClip::edit_in_ext_program ()
   return std::make_unique<AudioClip> (abs_path);
 #endif
   return nullptr;
+}
+
+void
+AudioClip::define_fields (const Context &ctx)
+{
+  serialize_fields (
+    ctx, make_field ("name", name_), make_field ("fileHash", file_hash_),
+    make_field ("bpm", bpm_), make_field ("bitDepth", bit_depth_),
+    make_field ("useFlac", use_flac_), make_field ("samplerate", samplerate_),
+    make_field ("poolId", pool_id_));
 }
 
 void

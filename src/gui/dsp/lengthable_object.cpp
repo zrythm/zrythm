@@ -368,19 +368,22 @@ LengthableObject::
               auto prev_r1_clip = prev_r1->get_clip ();
               z_return_val_if_fail (
                 prev_r1_clip, std::make_pair (nullptr, nullptr));
-              std::vector<float> frames;
-              frames.resize ((size_t) localp.frames_ * prev_r1_clip->channels_);
-              utils::float_ranges::copy (
-                &frames[0], &prev_r1_clip->frames_.getReadPointer (0)[0],
-                (size_t) localp.frames_ * prev_r1_clip->channels_);
+              utils::audio::AudioBuffer frames{
+                prev_r1_clip->get_num_channels (),
+                static_cast<int> (localp.frames_)
+              };
+              for (int i = 0; i < prev_r1_clip->get_num_channels (); ++i)
+                {
+                  frames.copyFrom (
+                    i, 0, prev_r1_clip->get_samples (), i, 0,
+                    static_cast<int> (localp.frames_));
+                }
               z_return_val_if_fail (
                 !prev_r1->name_.empty (), std::make_pair (nullptr, nullptr));
               z_return_val_if_fail_cmp (
                 localp.frames_, >=, 0, std::make_pair (nullptr, nullptr));
               auto new_r1 = new AudioRegion (
-                -1, std::nullopt, true, frames.data (),
-                (unsigned_frame_t) localp.frames_, prev_r1->name_,
-                prev_r1_clip->channels_, prev_r1_clip->bit_depth_,
+                frames, true, prev_r1->name_, prev_r1_clip->get_bit_depth (),
                 *prev_r1->pos_, prev_r1->id_.track_name_hash_,
                 prev_r1->id_.lane_pos_, prev_r1->id_.idx_);
               z_return_val_if_fail (
@@ -447,25 +450,27 @@ LengthableObject::
                   z_return_val_if_fail (
                     prev_r2_clip, std::make_pair (nullptr, nullptr));
                   size_t num_frames =
-                    (size_t) r2_local_end.frames_ * prev_r2_clip->channels_;
+                    (size_t) r2_local_end.frames_
+                    * prev_r2_clip->get_num_channels ();
                   z_return_val_if_fail_cmp (
                     num_frames, >, 0, std::make_pair (nullptr, nullptr));
-                  std::vector<float> frames;
-                  frames.resize (num_frames);
-                  utils::float_ranges::copy (
-                    &frames[0],
-                    &prev_r2_clip->frames_.getReadPointer (
-                      0)[(size_t) localp.frames_ * prev_r2_clip->channels_],
-                    num_frames);
+                  utils::audio::AudioBuffer tmp{
+                    prev_r2_clip->get_num_channels (), (int) r2_local_end.frames_
+                  };
+                  for (int i = 0; i < prev_r2_clip->get_num_channels (); ++i)
+                    {
+                      tmp.copyFrom (
+                        i, 0, prev_r2_clip->get_samples (), i, localp.frames_,
+                        r2_local_end.frames_);
+                    }
                   z_return_val_if_fail (
                     !prev_r2->name_.empty (), std::make_pair (nullptr, nullptr));
                   z_return_val_if_fail_cmp (
                     r2_local_end.frames_, >=, 0,
                     std::make_pair (nullptr, nullptr));
                   auto new_r2 = new AudioRegion (
-                    -1, std::nullopt, true, frames.data (),
-                    (unsigned_frame_t) r2_local_end.frames_, prev_r2->name_,
-                    prev_r2_clip->channels_, prev_r2_clip->bit_depth_, globalp,
+                    tmp, true, prev_r2->get_name (),
+                    prev_r2_clip->get_bit_depth (), globalp,
                     prev_r2->id_.track_name_hash_, prev_r2->id_.lane_pos_,
                     prev_r2->id_.idx_);
                   z_return_val_if_fail (

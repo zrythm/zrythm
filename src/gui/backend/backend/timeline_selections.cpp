@@ -272,12 +272,12 @@ TimelineSelections::merge ()
         }
       else if constexpr (std::is_same_v<RegionT, AudioRegion>)
         {
-          std::vector<float> lframes (num_frames, 0);
-          std::vector<float> rframes (num_frames, 0);
-          std::vector<float> frames (num_frames * 2, 0);
           auto               first_r_clip = first_r->get_clip ();
-          auto               max_depth = first_r_clip->bit_depth_;
-          z_return_if_fail (!first_r_clip->name_.empty ());
+          utils::audio::AudioBuffer frames{
+            first_r_clip->get_num_channels (), static_cast<int> (num_frames)
+          };
+          auto               max_depth = first_r_clip->get_bit_depth ();
+          z_return_if_fail (!first_r_clip->get_name ().empty ());
           for (auto &obj : objects_)
             {
               auto * r = std::get<AudioRegion *> (obj);
@@ -285,22 +285,19 @@ TimelineSelections::merge ()
               long   r_frames_length = r->get_length_in_frames ();
 
               auto * clip = r->get_clip ();
-              utils::float_ranges::add2 (
-                &lframes[frames_diff], clip->ch_frames_.getReadPointer (0),
-                static_cast<size_t> (r_frames_length));
+              for (int i = 0; i < frames.getNumChannels (); ++i)
+                {
+                  utils::float_ranges::add2 (
+                    &frames.getWritePointer (i)[frames_diff],
+                    clip->get_samples ().getReadPointer (i),
+                    static_cast<size_t> (r_frames_length));
+                }
 
-              max_depth = std::max (max_depth, clip->bit_depth_);
-            }
-          /* interleave */
-          for (unsigned_frame_t i = 0; i < num_frames; i++)
-            {
-              frames[i * 2] = lframes[i];
-              frames[i * 2 + 1] = rframes[i];
+              max_depth = std::max (max_depth, clip->get_bit_depth ());
             }
 
           new_r = new AudioRegion (
-            -1, std::nullopt, true, frames.data (), num_frames,
-            first_r_clip->name_, 2, max_depth, pos,
+            frames, true, first_r_clip->get_name (), max_depth, pos,
             first_r->id_.track_name_hash_, first_r->id_.lane_pos_,
             first_r->id_.idx_);
         }
@@ -511,7 +508,7 @@ TimelineSelections::contains_clip (const AudioClip &clip) const
         using ObjT = base_type<decltype (obj)>;
         if constexpr (std::is_same_v<ObjT, AudioRegion>)
           {
-            return obj->pool_id_ == clip.pool_id_;
+            return obj->pool_id_ == clip.get_pool_id ();
           }
         return false;
       },

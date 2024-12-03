@@ -46,8 +46,25 @@ TEST (DspTest, MultiplyByConstant)
 
 TEST (DspTest, AbsMax)
 {
-  float buf[4] = { -2.0f, 1.0f, -3.0f, 2.5f };
-  EXPECT_FLOAT_EQ (abs_max (buf, 4), 3.0f);
+  // Test with mixed positive/negative values
+  float buf1[4] = { -0.7f, 0.2f, -0.9f, 0.5f };
+  EXPECT_FLOAT_EQ (abs_max (buf1, 4), 0.9f);
+
+  // Test with all positive values
+  float buf2[4] = { 0.1f, 0.4f, 0.8f, 0.6f };
+  EXPECT_FLOAT_EQ (abs_max (buf2, 4), 0.8f);
+
+  // Test with all negative values
+  float buf3[4] = { -0.2f, -0.95f, -0.4f, -0.6f };
+  EXPECT_FLOAT_EQ (abs_max (buf3, 4), 0.95f);
+
+  // Test with very quiet signals
+  float buf4[4] = { 0.001f, -0.002f, 0.001f, -0.001f };
+  EXPECT_FLOAT_EQ (abs_max (buf4, 4), 0.002f);
+
+  // Test with equal positive/negative peaks
+  float buf5[4] = { -0.75f, 0.3f, 0.75f, -0.2f };
+  EXPECT_FLOAT_EQ (abs_max (buf5, 4), 0.75f);
 }
 
 TEST (DspTest, MinMax)
@@ -95,6 +112,14 @@ TEST (DspTest, Normalize)
   float src[4] = { -2.0f, 1.0f, -3.0f, 2.5f };
   float dest[4];
   normalize (dest, src, 4, true);
+
+  // Peak value is -3.0f, so scale factor should be 1/3
+  EXPECT_FLOAT_EQ (dest[0], -2.0f / 3.0f);
+  EXPECT_FLOAT_EQ (dest[1], 1.0f / 3.0f);
+  EXPECT_FLOAT_EQ (dest[2], -1.0f);
+  EXPECT_FLOAT_EQ (dest[3], 2.5f / 3.0f);
+
+  // Verify peak is 1.0
   EXPECT_FLOAT_EQ (abs_max (dest, 4), 1.0f);
 }
 

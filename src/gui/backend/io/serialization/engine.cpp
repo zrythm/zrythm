@@ -21,16 +21,6 @@ Transport::define_fields (const Context &ctx)
 }
 
 void
-AudioClip::define_fields (const Context &ctx)
-{
-  serialize_fields (
-    ctx, make_field ("name", name_), make_field ("fileHash", file_hash_),
-    make_field ("bpm", bpm_), make_field ("bitDepth", bit_depth_),
-    make_field ("useFlac", use_flac_), make_field ("samplerate", samplerate_),
-    make_field ("poolId", pool_id_));
-}
-
-void
 AudioPool::define_fields (const Context &ctx)
 {
   serialize_fields (ctx, make_field ("clips", clips_));

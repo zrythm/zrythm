@@ -12,11 +12,11 @@ class Resampler::Impl
 {
 public:
   Impl (
-    const juce::AudioSampleBuffer &in_frames,
-    const double                   input_rate,
-    const double                   output_rate,
-    const Quality                  quality,
-    size_t                         block_size)
+    const zrythm::utils::audio::AudioBuffer &in_frames,
+    const double                             input_rate,
+    const double                             output_rate,
+    const Quality                            quality,
+    size_t                                   block_size)
       : input_rate_ (input_rate), output_rate_ (output_rate),
         block_size_ (block_size), in_frames_ (in_frames), quality_ (quality)
   {
@@ -111,7 +111,7 @@ public:
 
   void                    process ();
   bool                    is_done () const;
-  juce::AudioSampleBuffer get_out_frames () const;
+  zrythm::utils::audio::AudioBuffer get_out_frames () const;
 
 public:
   /** Private data. */
@@ -122,13 +122,13 @@ public:
   size_t block_size_ = 0;
 
   /** Given input (interleaved) frames .*/
-  const juce::AudioSampleBuffer &in_frames_;
+  const zrythm::utils::audio::AudioBuffer &in_frames_;
 
   /** Number of frames read so far. */
   size_t frames_read_ = 0;
 
   /** Resulting frames. */
-  juce::AudioSampleBuffer out_frames_;
+  zrythm::utils::audio::AudioBuffer out_frames_;
 
   /** Number of frames written so far. */
   size_t frames_written_ = 0;
@@ -142,11 +142,11 @@ public:
 };
 
 Resampler::Resampler (
-  const juce::AudioSampleBuffer &in_frames,
-  const double                   input_rate,
-  const double                   output_rate,
-  const Quality                  quality,
-  size_t                         block_size)
+  const zrythm::utils::audio::AudioBuffer &in_frames,
+  const double                             input_rate,
+  const double                             output_rate,
+  const Quality                            quality,
+  size_t                                   block_size)
     : pimpl_ (std::make_unique<
               Impl> (in_frames, input_rate, output_rate, quality, block_size))
 {
@@ -215,7 +215,7 @@ Resampler::Impl::is_done () const
   return done_.load ();
 }
 
-juce::AudioSampleBuffer
+zrythm::utils::audio::AudioBuffer
 Resampler::Impl::get_out_frames () const
 {
   return out_frames_;
@@ -233,7 +233,7 @@ Resampler::is_done () const
   return pimpl_->is_done ();
 }
 
-juce::AudioSampleBuffer
+zrythm::utils::audio::AudioBuffer
 Resampler::get_out_frames () const
 {
   if (!is_done ())

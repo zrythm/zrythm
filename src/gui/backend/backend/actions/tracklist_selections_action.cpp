@@ -111,7 +111,7 @@ TracklistSelectionsAction::reset_foldable_track_sizes ()
 bool
 TracklistSelectionsAction::contains_clip (const AudioClip &clip) const
 {
-  return clip.pool_id_ == pool_id_;
+  return clip.get_pool_id () == pool_id_;
 }
 
 bool
@@ -461,9 +461,7 @@ TracklistSelectionsAction::create_track (int idx)
           /* create an audio region & add to track*/
           added_track->add_region (
             new AudioRegion (
-              pool_id_, nullptr, true, nullptr, 0, nullptr, 0,
-              ENUM_INT_TO_VALUE (utils::audio::BitDepth, 0), start_pos,
-              added_track->get_name_hash (), 0, 0),
+              pool_id_, start_pos, added_track->get_name_hash (), 0, 0),
             nullptr, 0, true, false);
         }
       else if (

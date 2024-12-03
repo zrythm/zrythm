@@ -52,8 +52,8 @@ Metronome::Metronome (AudioEngine &engine)
         }
     }
 
-  emphasis_ = std::make_shared<juce::AudioSampleBuffer> ();
-  normal_ = std::make_unique<juce::AudioSampleBuffer> ();
+  emphasis_ = std::make_shared<zrythm::utils::audio::AudioBuffer> ();
+  normal_ = std::make_unique<zrythm::utils::audio::AudioBuffer> ();
 
   utils::audio::AudioFile file (emphasis_path_.string ());
   file.read_full (*emphasis_, engine.sample_rate_);

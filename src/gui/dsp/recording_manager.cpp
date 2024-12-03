@@ -633,9 +633,8 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                         auto name = AUDIO_POOL->gen_name_for_recording_clip (
                           *tr, new_lane_pos);
                         new_region = new AudioRegion (
-                          -1, std::nullopt, true, nullptr, 1, name, 2,
-                          AudioRegion::BitDepth::BIT_DEPTH_32, resume_pos,
-                          tr->get_name_hash (), new_lane_pos, idx_inside_lane);
+                          true, name, 1, 2, resume_pos, tr->get_name_hash (),
+                          new_lane_pos, idx_inside_lane);
                       }
                     else
                       {
@@ -795,8 +794,6 @@ RecordingManager::handle_audio_event (const RecordingEvent &ev)
   signed_frame_t r_obj_len_frames =
     (region->end_pos_->frames_ - region->pos_->frames_);
   z_return_if_fail_cmp (r_obj_len_frames, >=, 0);
-  clip->num_frames_ = (unsigned_frame_t) r_obj_len_frames;
-  clip->frames_.setSize (1, clip->channels_ * clip->num_frames_);
 
   region->loop_end_pos_.from_frames (
     region->end_pos_->frames_ - region->pos_->frames_,
@@ -804,27 +801,12 @@ RecordingManager::handle_audio_event (const RecordingEvent &ev)
   region->fade_out_pos_ = region->loop_end_pos_;
 
   /* handle the samples normally */
-  nframes_t cur_local_offset = 0;
-  for (
-    signed_frame_t i = (signed_frame_t) start_frames - region->pos_->frames_;
-    i < (signed_frame_t) end_frames - region->pos_->frames_; ++i)
-    {
-      z_return_if_fail_cmp (i, >=, 0);
-      z_return_if_fail_cmp (i, <, (signed_frame_t) clip->num_frames_);
-      z_warn_if_fail (
-        cur_local_offset >= ev.local_offset_
-        && cur_local_offset < ev.local_offset_ + ev.nframes_);
-
-      /* set clip frames */
-      clip->frames_.setSample (
-        0, i * clip->get_num_channels (), ev.lbuf_[cur_local_offset]);
-      clip->frames_.setSample (
-        0, i * clip->get_num_channels () + 1, ev.rbuf_[cur_local_offset]);
-
-      cur_local_offset++;
-    }
-
-  clip->update_channel_caches ((size_t) clip->frames_written_);
+  utils::audio::AudioBuffer buf_to_append{
+    clip->get_num_channels (), (int) ev.nframes_
+  };
+  buf_to_append.copyFrom (0, 0, ev.lbuf_.data (), ev.nframes_);
+  buf_to_append.copyFrom (1, 0, ev.rbuf_.data (), ev.nframes_);
+  clip->expand_with_frames (buf_to_append);
 
   /* write to pool if 2 seconds passed since last write */
   auto   cur_time = Zrythm::getInstance ()->get_monotonic_time_usecs ();
@@ -834,7 +816,8 @@ RecordingManager::handle_audio_event (const RecordingEvent &ev)
       usec_to_wait = 20 * 1000;
     }
   if (
-    static_cast<decltype (usec_to_wait)> (cur_time - clip->last_write_)
+    static_cast<decltype (usec_to_wait)> (
+      cur_time - clip->get_last_write_to_file ())
     > usec_to_wait)
     {
       try
@@ -1217,8 +1200,7 @@ RecordingManager::handle_start_recording (
                     AUDIO_POOL->gen_name_for_recording_clip (*tr, new_lane_pos);
                   auto region = tr->Track::add_region (
                     new AudioRegion (
-                      -1, std::nullopt, true, nullptr, ev.nframes_, name, 2,
-                      AudioRegion::BitDepth::BIT_DEPTH_32, start_pos,
+                      true, name, ev.nframes_, 2, start_pos,
                       tr->get_name_hash (), new_lane_pos,
                       std::get<AudioLane *> (tr->lanes_.at (new_lane_pos))
                         ->region_list_->regions_.size ()),

@@ -371,7 +371,8 @@ ArrangerObject::is_position_valid (const Position &pos, PositionType pos_type)
                 auto audio_region = dynamic_cast<const AudioRegion *> (r);
                 AudioClip * clip = audio_region->get_clip ();
                 is_valid =
-                  pos.frames_ <= static_cast<signed_frame_t> (clip->num_frames_);
+                  pos.frames_
+                  <= static_cast<signed_frame_t> (clip->get_num_frames ());
               }
           }
         return is_valid;
@@ -681,7 +682,7 @@ ArrangerObject::
               /* sometimes due to rounding errors, the region frames are 1
                * frame more than the clip frames. this works around it by
                * resizing the region by -1 frame*/
-              while (local_frames == (signed_frame_t) clip->num_frames_)
+              while (local_frames == (signed_frame_t) clip->get_num_frames ())
                 {
                   z_debug ("adjusting for rounding error");
                   double ticks = -AUDIO_ENGINE->ticks_per_frame_;
@@ -702,7 +703,7 @@ ArrangerObject::
                 }
 
               z_return_if_fail_cmp (
-                local_frames, <, (signed_frame_t) clip->num_frames_);
+                local_frames, <, (signed_frame_t) clip->get_num_frames ());
             }
         } // end if audio region
 

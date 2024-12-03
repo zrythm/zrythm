@@ -9,7 +9,7 @@
 #include <memory>
 #include <utility>
 
-#include "juce_wrapper.h"
+#include "utils/audio.h"
 
 namespace zrythm::utils::audio
 {
@@ -100,12 +100,9 @@ public:
    *
    * @throw ZrythmException on error.
    */
-  void
-  read_full (juce::AudioSampleBuffer &buffer, std::optional<size_t> samplerate);
-
-  static void interleave_buffer (juce::AudioSampleBuffer &buffer);
-  static void
-  deinterleave_buffer (juce::AudioSampleBuffer &buffer, size_t num_channels);
+  void read_full (
+    zrythm::utils::audio::AudioBuffer &buffer,
+    std::optional<size_t>              samplerate);
 
 private:
   /**

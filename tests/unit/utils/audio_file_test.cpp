@@ -53,7 +53,7 @@ TEST (AudioFileTest, ReadFullWithResampling)
   AudioFile file (TEST_WAV_FILE_PATH, false);
   auto      metadata = file.read_metadata ();
 
-  juce::AudioSampleBuffer buffer;
+  zrythm::utils::audio::AudioBuffer buffer;
 
   // Test without resampling
   file.read_full (buffer, std::nullopt);
@@ -64,25 +64,4 @@ TEST (AudioFileTest, ReadFullWithResampling)
   size_t target_samplerate = metadata.samplerate * 2;
   file.read_full (buffer, target_samplerate);
   EXPECT_EQ (buffer.getNumChannels (), metadata.channels);
-}
-
-TEST (AudioFileTest, BufferInterleaving)
-{
-  juce::AudioSampleBuffer buffer (2, 4);
-  for (int ch = 0; ch < 2; ch++)
-    {
-      for (int i = 0; i < 4; i++)
-        {
-          buffer.setSample (ch, i, (float) (ch * 4 + i));
-        }
-    }
-
-  AudioFile::interleave_buffer (buffer);
-  EXPECT_EQ (buffer.getNumChannels (), 1);
-  EXPECT_EQ (buffer.getNumSamples (), 8);
-
-  juce::AudioSampleBuffer deinterleaved = buffer;
-  AudioFile::deinterleave_buffer (deinterleaved, 2);
-  EXPECT_EQ (deinterleaved.getNumChannels (), 2);
-  EXPECT_EQ (deinterleaved.getNumSamples (), 4);
 }

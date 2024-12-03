@@ -51,7 +51,7 @@ public:
    */
   Metronome (AudioEngine &engine);
 
-  using SampleBufferPtr = std::shared_ptr<juce::AudioSampleBuffer>;
+  using SampleBufferPtr = std::shared_ptr<zrythm::utils::audio::AudioBuffer>;
 
   void set_volume (float volume);
 

@@ -39,7 +39,7 @@ bool
 AudioPool::name_exists (const std::string &name) const
 {
   return std::any_of (clips_.begin (), clips_.end (), [&name] (const auto &clip) {
-    return clip && clip->name_ == name;
+    return clip && clip->get_name () == name;
   });
 }
 
@@ -47,7 +47,7 @@ void
 AudioPool::ensure_unique_clip_name (AudioClip &clip)
 {
   constexpr bool is_backup = false;
-  auto           orig_name_without_ext = utils::io::file_strip_ext (clip.name_);
+  auto orig_name_without_ext = utils::io::file_strip_ext (clip.get_name ());
   auto           orig_path_in_pool = clip.get_path_in_pool (is_backup);
   std::string    new_name = orig_name_without_ext;
   z_return_if_fail (!new_name.empty ());
@@ -81,14 +81,14 @@ AudioPool::ensure_unique_clip_name (AudioClip &clip)
       changed = true;
     }
 
-  auto new_path_in_pool =
-    AudioClip::get_path_in_pool_from_name (new_name, clip.use_flac_, is_backup);
+  auto new_path_in_pool = AudioClip::get_path_in_pool_from_name (
+    new_name, clip.get_use_flac (), is_backup);
   if (changed)
     {
       z_return_if_fail (new_path_in_pool != orig_path_in_pool);
     }
 
-  clip.name_ = new_name;
+  clip.set_name (new_name);
 }
 
 int
@@ -100,7 +100,7 @@ AudioPool::get_next_id () const
       const auto &clip = clips_[i];
       if (clip)
         {
-          next_id = std::max (clip->pool_id_, next_id);
+          next_id = std::max (clip->get_pool_id (), next_id);
         }
       else
         {
@@ -114,16 +114,16 @@ AudioPool::get_next_id () const
 int
 AudioPool::add_clip (std::unique_ptr<AudioClip> &&clip)
 {
-  z_return_val_if_fail (!clip->name_.empty (), -1);
+  z_return_val_if_fail (!clip->get_name ().empty (), -1);
 
-  z_debug ("adding clip <{}> to pool...", clip->name_);
+  z_debug ("adding clip <{}> to pool...", clip->get_name ());
 
   ensure_unique_clip_name (*clip);
 
   int next_id = get_next_id ();
   z_return_val_if_fail (next_id >= 0 && next_id <= (int) clips_.size (), -1);
 
-  clip->pool_id_ = next_id;
+  clip->set_pool_id (next_id);
   if (next_id == (int) clips_.size ())
     {
       clips_.emplace_back (std::move (clip));
@@ -134,7 +134,7 @@ AudioPool::add_clip (std::unique_ptr<AudioClip> &&clip)
       clips_[next_id] = std::move (clip);
     }
 
-  z_debug ("added clip <{}> to pool", clips_[next_id]->name_);
+  z_debug ("added clip <{}> to pool", clips_[next_id]->get_name ());
   print ();
 
   return next_id;
@@ -147,7 +147,7 @@ AudioPool::get_clip (int clip_id)
 
   auto it =
     std::find_if (clips_.begin (), clips_.end (), [clip_id] (const auto &clip) {
-      return clip && clip->pool_id_ == clip_id;
+      return clip && clip->get_pool_id () == clip_id;
     });
   z_return_val_if_fail (it != clips_.end (), nullptr);
   return (*it).get ();
@@ -160,21 +160,21 @@ AudioPool::duplicate_clip (int clip_id, bool write_file)
   z_return_val_if_fail (clip, -1);
 
   auto new_id = add_clip (std::make_unique<AudioClip> (
-    clip->frames_.getReadPointer (0), clip->num_frames_, clip->channels_,
-    clip->bit_depth_, clip->name_));
+    clip->get_samples (), clip->get_bit_depth (), clip->get_name ()));
   auto new_clip = get_clip (new_id);
 
-  z_debug ("duplicating clip {} to {}...", clip->name_, new_clip->name_);
+  z_debug (
+    "duplicating clip {} to {}...", clip->get_name (), new_clip->get_name ());
 
   /* assert clip names are not the same */
-  z_return_val_if_fail (clip->name_ != new_clip->name_, -1);
+  z_return_val_if_fail (clip->get_name () != new_clip->get_name (), -1);
 
   if (write_file)
     {
       new_clip->write_to_pool (false, false);
     }
 
-  return new_clip->pool_id_;
+  return new_clip->get_pool_id ();
 }
 
 std::string
@@ -214,7 +214,7 @@ AudioPool::remove_unused (bool backup)
       auto &clip = clips_[i];
       if (clip && !clip->is_in_use (true))
         {
-          z_info ("unused clip [{}]: {}", i, clip->name_);
+          z_info ("unused clip [{}]: {}", i, clip->get_name ());
           remove_clip (i, true, backup);
           removed_clips++;
         }
@@ -267,9 +267,7 @@ AudioPool::reload_clip_frame_bufs ()
       else if (!in_use && clip->get_num_frames () > 0)
         {
           /* unload frames */
-          clip->num_frames_ = 0;
-          clip->frames_.clear ();
-          clip->ch_frames_.clear ();
+          clip->clear_frames ();
         }
     }
 }
@@ -325,7 +323,7 @@ AudioPool::write_to_disk (bool is_backup)
                 if (error_message.empty ())
                   {
                     error_message = fmt::format (
-                      "Failed to write clip {} to disk: {}", clip->name_,
+                      "Failed to write clip {} to disk: {}", clip->get_name (),
                       e.what ());
                   }
               }
@@ -355,8 +353,8 @@ AudioPool::print () const
         {
           auto pool_path = clip->get_path_in_pool (false);
           ss << fmt::format (
-            "[Clip #{}] {} ({}): {}\n", i, clip->name_, clip->file_hash_,
-            pool_path);
+            "[Clip #{}] {} ({}): {}\n", i, clip->get_name (),
+            clip->get_file_hash (), pool_path);
         }
       else
         {

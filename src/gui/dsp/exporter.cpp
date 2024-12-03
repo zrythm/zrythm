@@ -223,7 +223,8 @@ Exporter::export_audio (Settings &info)
   bool   clipped = false;
   float  clip_amp = 0.f;
 
-  juce::AudioBuffer<float> buffer (EXPORT_CHANNELS, AUDIO_ENGINE->block_length_);
+  zrythm::utils::audio::AudioBuffer buffer (
+    EXPORT_CHANNELS, AUDIO_ENGINE->block_length_);
 
   do
     {

@@ -23,7 +23,7 @@
 using namespace zrythm;
 
 AudioRegion::AudioRegion (QObject * parent)
-    : ArrangerObject (Type::Region), LengthableObject (), QObject (parent)
+    : ArrangerObject (Type::Region), QObject (parent)
 {
   ArrangerObject::parent_base_qproperties (*this);
   LengthableObject::parent_base_qproperties (*this);
@@ -31,18 +31,18 @@ AudioRegion::AudioRegion (QObject * parent)
 
 void
 AudioRegion::init_default_constructed (
-  const int                        pool_id,
-  const std::optional<std::string> filename,
-  bool                             read_from_pool,
-  const float *                    frames,
-  const unsigned_frame_t           nframes,
-  const std::optional<std::string> clip_name,
-  const channels_t                 channels,
-  utils::audio::BitDepth           bit_depth,
-  Position                         start_pos,
-  unsigned int                     track_name_hash,
-  int                              lane_pos,
-  int                              idx_inside_lane)
+  std::optional<AudioClip::PoolId>      pool_id,
+  std::optional<fs::path>               filepath,
+  bool                                  read_from_pool,
+  const utils::audio::AudioBuffer *     audio_buffer,
+  std::optional<unsigned_frame_t>       num_frames_for_recording,
+  std::optional<channels_t>             num_channels_for_recording,
+  const std::optional<std::string>      clip_name,
+  std::optional<utils::audio::BitDepth> bit_depth,
+  Position                              start_pos,
+  unsigned int                          track_name_hash,
+  int                                   lane_pos,
+  int                                   idx_inside_lane)
 {
   read_from_pool_ = read_from_pool;
   id_ = RegionIdentifier (RegionType::Audio);
@@ -51,23 +51,34 @@ AudioRegion::init_default_constructed (
 
   AudioClip * clip = nullptr;
   bool        recording = false;
-  if (pool_id == -1)
+  if (pool_id.has_value ())
+    {
+      pool_id_ = pool_id.value ();
+      clip = AUDIO_POOL->get_clip (pool_id_);
+      z_return_if_fail (clip);
+    }
+  else
     {
       std::unique_ptr<AudioClip> tmp_clip;
-      if (filename)
+      if (filepath)
         {
-          tmp_clip = std::make_unique<AudioClip> (*filename);
+          tmp_clip = std::make_unique<AudioClip> (*filepath);
         }
-      else if (frames)
+      else if (audio_buffer)
         {
           z_return_if_fail (clip_name.has_value ());
+          tmp_clip =
+            std::make_unique<AudioClip> (*audio_buffer, *bit_depth, *clip_name);
+        }
+      else if (num_frames_for_recording && num_channels_for_recording)
+        {
           tmp_clip = std::make_unique<AudioClip> (
-            frames, nframes, channels, bit_depth, *clip_name);
+            *num_channels_for_recording, *num_frames_for_recording, *clip_name);
+          recording = true;
         }
       else
         {
-          tmp_clip = std::make_unique<AudioClip> (2, nframes, *clip_name);
-          recording = true;
+          z_return_if_reached ();
         }
       z_return_if_fail (tmp_clip != nullptr);
 
@@ -83,16 +94,10 @@ AudioRegion::init_default_constructed (
           clip = clip_.get ();
         }
     }
-  else
-    {
-      pool_id_ = pool_id;
-      clip = AUDIO_POOL->get_clip (pool_id);
-      z_return_if_fail (clip);
-    }
 
   /* set end pos to sample end */
   Position end_pos = start_pos;
-  end_pos.add_frames (clip->num_frames_, AUDIO_ENGINE->ticks_per_frame_);
+  end_pos.add_frames (clip->get_num_frames (), AUDIO_ENGINE->ticks_per_frame_);
 
   /* init */
   init (start_pos, end_pos, track_name_hash, lane_pos, idx_inside_lane);
@@ -118,7 +123,7 @@ AudioRegion::get_clip () const
       clip = clip_.get ();
     }
 
-  z_return_val_if_fail (clip && clip->num_frames_ > 0, nullptr);
+  z_return_val_if_fail (clip && clip->get_num_frames () > 0, nullptr);
 
   return clip;
 }
@@ -146,10 +151,9 @@ AudioRegion::get_muted (bool check_parent) const
 
 void
 AudioRegion::replace_frames (
-  const float *    frames,
-  unsigned_frame_t start_frame,
-  unsigned_frame_t num_frames,
-  bool             duplicate_clip)
+  const utils::audio::AudioBuffer &src_frames,
+  unsigned_frame_t                 start_frame,
+  bool                             duplicate_clip)
 {
   AudioClip * clip = get_clip ();
   z_return_if_fail (clip);
@@ -158,8 +162,8 @@ AudioRegion::replace_frames (
     {
       z_warn_if_reached ();
 
-      int prev_id = clip->pool_id_;
-      int id = AUDIO_POOL->duplicate_clip (clip->pool_id_, false);
+      int prev_id = clip->get_pool_id ();
+      int id = AUDIO_POOL->duplicate_clip (clip->get_pool_id (), false);
       if (id != prev_id || id < 0)
         {
           throw ZrythmException (QObject::tr ("Failed to duplicate audio clip"));
@@ -167,19 +171,25 @@ AudioRegion::replace_frames (
       clip = AUDIO_POOL->get_clip (id);
       z_return_if_fail (clip);
 
-      pool_id_ = clip->pool_id_;
+      pool_id_ = clip->get_pool_id ();
     }
 
-  /* this is needed because if the file hash doesn't change
-   * the actual file write is skipped to save time */
-  clip->file_hash_ = 0;
-
-  utils::float_ranges::copy (
-    &clip->frames_.getWritePointer (0)[start_frame * clip->channels_], frames,
-    num_frames * clip->channels_);
-  clip->update_channel_caches (start_frame);
+  clip->replace_frames (src_frames, start_frame);
 
   clip->write_to_pool (false, F_NOT_BACKUP);
+}
+
+void
+AudioRegion::replace_frames_from_interleaved (
+  const float *    frames,
+  unsigned_frame_t start_frame,
+  unsigned_frame_t num_frames_per_channel,
+  channels_t       channels,
+  bool             duplicate_clip)
+{
+  utils::audio::AudioBuffer buf (1, num_frames_per_channel * channels);
+  buf.deinterleave_samples (channels);
+  replace_frames (buf, start_frame, duplicate_clip);
 }
 
 void
@@ -216,13 +226,13 @@ AudioRegion::fill_stereo_ports (
   bpm_t  cur_bpm = P_TEMPO_TRACK->get_bpm_at_pos (g_start_pos);
   double timestretch_ratio = 1.0;
   bool   needs_rt_timestretch = false;
-  if (get_musical_mode () && !math_floats_equal (clip->bpm_, cur_bpm))
+  if (get_musical_mode () && !math_floats_equal (clip->get_bpm (), cur_bpm))
     {
       needs_rt_timestretch = true;
-      timestretch_ratio = (double) cur_bpm / (double) clip->bpm_;
+      timestretch_ratio = (double) cur_bpm / (double) clip->get_bpm ();
       z_debug (
         "timestretching: (cur bpm {} clip bpm {}) {}", (double) cur_bpm,
-        (double) clip->bpm_, timestretch_ratio);
+        (double) clip->get_bpm (), timestretch_ratio);
     }
 
   /* buffers after timestretch */
@@ -263,7 +273,9 @@ AudioRegion::fill_stereo_ports (
     &r_local_pos_at_start, &r_local_pos_at_end);
 #endif
 
-  size_t    buff_index_start = (size_t) clip->num_frames_ + 16;
+  const auto &clip_frames = clip->get_samples ();
+
+  size_t    buff_index_start = (size_t) clip->get_num_frames () + 16;
   size_t    buff_size = 0;
   nframes_t prev_offset = time_nfo.local_offset_;
   for (
@@ -334,20 +346,20 @@ AudioRegion::fill_stereo_ports (
       else
         {
           z_return_if_fail_cmp (buff_index, >=, 0);
-          if (buff_index >= (decltype (buff_index)) clip->num_frames_)
+          if (buff_index >= (decltype (buff_index)) clip->get_num_frames ())
             [[unlikely]]
             {
               z_error (
                 "Buffer index {} exceeds {} "
                 "frames in clip '{}'",
-                buff_index, clip->num_frames_, clip->name_);
+                buff_index, clip->get_num_frames (), clip->get_name ());
               return;
             }
-          lbuf_after_ts[j] = clip->ch_frames_.getSample (0, buff_index);
+          lbuf_after_ts[j] = clip_frames.getSample (0, buff_index);
           rbuf_after_ts[j] =
-            clip->channels_ == 1
-              ? clip->ch_frames_.getSample (0, buff_index)
-              : clip->ch_frames_.getSample (1, buff_index);
+            clip->get_num_channels () == 1
+              ? clip_frames.getSample (0, buff_index)
+              : clip_frames.getSample (1, buff_index);
         }
     }
 
@@ -463,7 +475,7 @@ AudioRegion::detect_bpm (std::vector<float> &candidates)
   z_return_val_if_fail (clip, 0.f);
 
   return utils::audio::detect_bpm (
-    clip->ch_frames_.getReadPointer (0), (size_t) clip->num_frames_,
+    clip->get_samples ().getReadPointer (0), (size_t) clip->get_num_frames (),
     (unsigned int) AUDIO_ENGINE->sample_rate_, candidates);
 }
 
@@ -506,7 +518,7 @@ AudioRegion::fix_positions (double frames_per_tick)
   signed_frame_t region_len = end_pos_->frames_ - pos_->frames_;
 
   signed_frame_t extra_loop_frames =
-    loop_len - (signed_frame_t) clip->num_frames_;
+    loop_len - (signed_frame_t) clip->get_num_frames ();
   if (extra_loop_frames > 0)
     {
       /* only fix if the difference is 1 frame, which happens
@@ -533,7 +545,7 @@ AudioRegion::fix_positions (double frames_per_tick)
         {
           z_error (fmt::format (
             "Audio region loop length in frames ({}) is greater than the number of frames in the clip ({}). ",
-            loop_len, clip->num_frames_));
+            loop_len, clip->get_num_frames ()));
           return false;
         }
     }
@@ -564,13 +576,13 @@ AudioRegion::validate (bool is_project, double frames_per_tick) const
         pos_->ticks_ + loop_end_pos_.ticks_, frames_per_tick);
       signed_frame_t loop_len = loop_end_global - loop_start_global;
 
-      if (loop_len > (signed_frame_t) clip->num_frames_)
+      if (loop_len > (signed_frame_t) clip->get_num_frames ())
 
         {
           z_error (
             "Audio region loop length in frames ({}) is greater than the "
             "number of frames in the clip ({})",
-            loop_len, clip->num_frames_);
+            loop_len, clip->get_num_frames ());
           return false;
         }
     }
@@ -592,12 +604,11 @@ AudioRegion::init_after_cloning (const AudioRegion &other)
 {
   init_default_constructed (
     other.pool_id_, std::nullopt, true,
-    other.clip_ ? other.clip_->frames_.getReadPointer (0) : nullptr,
-    other.clip_ ? other.clip_->num_frames_ : 0,
-    other.clip_ ? std::make_optional (other.clip_->name_) : std::nullopt,
-    other.clip_ ? other.clip_->channels_ : 0,
+    other.clip_ ? &other.clip_->get_samples () : nullptr, std::nullopt,
+    std::nullopt,
+    other.clip_ ? std::make_optional (other.clip_->get_name ()) : std::nullopt,
     other.clip_
-      ? other.clip_->bit_depth_
+      ? other.clip_->get_bit_depth ()
       : ENUM_INT_TO_VALUE (utils::audio::BitDepth, 0),
     *other.pos_, other.id_.track_name_hash_, other.id_.lane_pos_,
     other.id_.idx_);

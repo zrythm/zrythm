@@ -110,6 +110,47 @@ audio_file_is_silent (const fs::path &filepath);
 int
 get_num_cores ();
 
+class AudioBuffer : public juce::AudioBuffer<sample_t>
+{
+public:
+  AudioBuffer () = default;
+  AudioBuffer (int num_channels, int num_frames_per_channel)
+      : juce::AudioBuffer<sample_t> (num_channels, num_frames_per_channel)
+  {
+  }
+
+  /**
+   * Creates an AudioBuffer from interleaved audio data.
+   *
+   * @param src Pointer to the interleaved audio data
+   * @param num_frames Number of frames in the audio data, per channel
+   * @param num_channels Number of channels in the audio data
+   * @return A unique pointer to the new AudioBuffer
+   * @throw std::invalid_argument on invalid arguments
+   */
+  static std::unique_ptr<AudioBuffer>
+  from_interleaved (const float * src, size_t num_frames, size_t num_channels);
+
+  /**
+   * Interleaves the samples in this buffer from non-interleaved
+   * (planar) format to interleaved format.
+   */
+  void interleave_samples ();
+
+  /**
+   * De-interleaves the samples in this buffer from interleaved
+   * format to non-interleaved (planar) format.
+   *
+   * @param num_channels Number of channels in this buffer to de-interleave from.
+   */
+  void deinterleave_samples (size_t num_channels);
+
+  // algorithms (each channel is treated as a separate signal)
+
+  void invert_phase ();
+  void normalize_peak ();
+};
+
 }; // namespace zrythm::utils::audio
 
 DEFINE_ENUM_FORMATTER (

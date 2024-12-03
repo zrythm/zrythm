@@ -259,8 +259,8 @@ Stretcher::get_latency () const
   return rubberband_get_latency (pimpl_->rubberband_state);
 }
 
-juce::AudioSampleBuffer
-Stretcher::stretch_interleaved (juce::AudioSampleBuffer &in_samples)
+zrythm::utils::audio::AudioBuffer
+Stretcher::stretch_interleaved (zrythm::utils::audio::AudioBuffer &in_samples)
 {
   z_return_val_if_fail (in_samples.getNumSamples () % pimpl_->channels == 0, {});
   z_return_val_if_fail (in_samples.getNumChannels () == 1, {});
@@ -307,7 +307,7 @@ Stretcher::stretch_interleaved (juce::AudioSampleBuffer &in_samples)
   size_t out_samples_size = (size_t) math_round_double_to_signed_64 (
     rubberband_get_time_ratio (pimpl_->rubberband_state)
     * in_samples_per_channel);
-  juce::AudioSampleBuffer out_samples (channels, out_samples_size);
+  zrythm::utils::audio::AudioBuffer out_samples (channels, out_samples_size);
 
   /* process */
   size_t processed = 0;
@@ -367,7 +367,7 @@ Stretcher::stretch_interleaved (juce::AudioSampleBuffer &in_samples)
     total_out_frames <= out_samples_size
     && total_out_frames >= out_samples_size - 1);
 
-  utils::audio::AudioFile::interleave_buffer (out_samples);
+  out_samples.interleave_samples ();
   return out_samples;
 }
 

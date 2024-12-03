@@ -3,10 +3,12 @@
 
 #include "utils/audio.h"
 #include "utils/audio_file.h"
+#include "utils/dsp.h"
 #include "utils/exceptions.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/logger.h"
 #include "utils/math.h"
+
 #include <sndfile.h>
 
 #if defined(__FreeBSD__)
@@ -87,8 +89,8 @@ audio_files_equal (
       if (metadata1.channels != metadata2.channels)
         return false;
 
-      juce::AudioSampleBuffer buf1;
-      juce::AudioSampleBuffer buf2;
+      zrythm::utils::audio::AudioBuffer buf1;
+      zrythm::utils::audio::AudioBuffer buf2;
       c1.read_full (buf1, std::nullopt);
       c2.read_full (buf2, std::nullopt);
 
@@ -251,6 +253,85 @@ get_num_cores ()
   z_info ("Number of CPU cores found: {}", num_cores);
 
   return num_cores;
+}
+
+std::unique_ptr<AudioBuffer>
+AudioBuffer::
+  from_interleaved (const float * src, size_t num_frames, size_t num_channels)
+{
+  if (num_channels == 0 || num_frames == 0)
+    {
+      throw std::invalid_argument ("num_channels and num_frames must be > 0");
+    }
+  std::unique_ptr<AudioBuffer> buf =
+    std::make_unique<AudioBuffer> (1, num_frames * num_channels);
+  buf->copyFrom (0, 0, src, num_frames * num_channels);
+  buf->deinterleave_samples (num_channels);
+  return buf;
+}
+
+void
+AudioBuffer::interleave_samples ()
+{
+  const int numChannels = getNumChannels ();
+  const int numSamples = getNumSamples ();
+
+  // Create a temporary buffer to hold the interleaved data
+  zrythm::utils::audio::AudioBuffer tempBuffer (1, numChannels * numSamples);
+
+  // Interleave the channels
+  int writeIndex = 0;
+  for (int sample = 0; sample < numSamples; ++sample)
+    {
+      for (int channel = 0; channel < numChannels; ++channel)
+        {
+          tempBuffer.setSample (0, writeIndex++, getSample (channel, sample));
+        }
+    }
+
+  // Copy the interleaved data back to the original buffer
+  *this = std::move (tempBuffer);
+}
+
+void
+AudioBuffer::deinterleave_samples (size_t num_channels)
+{
+  const size_t total_samples = getNumSamples () / num_channels;
+
+  // Create a temporary buffer to hold the deinterleaved data
+  zrythm::utils::audio::AudioBuffer tempBuffer (num_channels, total_samples);
+
+  // Deinterleave the channels
+  size_t read_index = 0;
+  for (size_t sample = 0; sample < total_samples; ++sample)
+    {
+      for (size_t channel = 0; channel < num_channels; ++channel)
+        {
+          tempBuffer.setSample (channel, sample, getSample (0, read_index++));
+        }
+    }
+
+  // Copy the deinterleaved data back to the original buffer
+  *this = std::move (tempBuffer);
+}
+
+void
+AudioBuffer::invert_phase ()
+{
+  for (int i = 0; i < getNumChannels (); ++i)
+    {
+      utils::float_ranges::mul_k2 (getWritePointer (i), -1.f, getNumSamples ());
+    }
+}
+
+void
+AudioBuffer::normalize_peak ()
+{
+  for (int i = 0; i < getNumChannels (); ++i)
+    {
+      auto write_ptr = getWritePointer (i);
+      utils::float_ranges::normalize (write_ptr, write_ptr, getNumSamples ());
+    }
 }
 
 }; // namespace zrythm::utils::audio

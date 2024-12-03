@@ -6,7 +6,7 @@
 
 #include <cstddef>
 
-#include "utils/types.h"
+#include "utils/audio.h"
 
 namespace zrythm::dsp
 {
@@ -93,8 +93,8 @@ public:
    * @param in_samples Input samples (interleaved).
    * @return The output samples (interleaved).
    */
-  juce::AudioSampleBuffer
-  stretch_interleaved (juce::AudioSampleBuffer &in_samples);
+  zrythm::utils::audio::AudioBuffer
+  stretch_interleaved (zrythm::utils::audio::AudioBuffer &in_samples);
 
 private:
   struct Impl;

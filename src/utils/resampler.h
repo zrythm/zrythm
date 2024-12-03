@@ -43,11 +43,11 @@ public:
    * @throw ZrythmException on error.
    */
   Resampler (
-    const juce::AudioSampleBuffer &in_frames,
-    const double                   input_rate,
-    const double                   output_rate,
-    const Quality                  quality,
-    size_t                         block_size = 1024);
+    const zrythm::utils::audio::AudioBuffer &in_frames,
+    const double                             input_rate,
+    const double                             output_rate,
+    const Quality                            quality,
+    size_t                                   block_size = 1024);
 
   ~Resampler ();
 
@@ -69,7 +69,7 @@ public:
    *
    * @ref is_done() must be true before calling this.
    */
-  juce::AudioSampleBuffer get_out_frames () const;
+  zrythm::utils::audio::AudioBuffer get_out_frames () const;
 
 private:
   class Impl;

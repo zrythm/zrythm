@@ -97,55 +97,6 @@ AudioFile::read_metadata ()
 }
 
 void
-AudioFile::interleave_buffer (juce::AudioBuffer<float> &buffer)
-{
-  const int numChannels = buffer.getNumChannels ();
-  const int numSamples = buffer.getNumSamples ();
-
-  // Create a temporary buffer to hold the interleaved data
-  juce::AudioBuffer<float> tempBuffer (1, numChannels * numSamples);
-
-  // Interleave the channels
-  int writeIndex = 0;
-  for (int sample = 0; sample < numSamples; ++sample)
-    {
-      for (int channel = 0; channel < numChannels; ++channel)
-        {
-          tempBuffer.setSample (
-            0, writeIndex++, buffer.getSample (channel, sample));
-        }
-    }
-
-  // Copy the interleaved data back to the original buffer
-  buffer = std::move (tempBuffer);
-}
-
-void
-AudioFile::deinterleave_buffer (
-  juce::AudioBuffer<float> &buffer,
-  size_t                    num_channels)
-{
-  const size_t total_samples = buffer.getNumSamples () / num_channels;
-
-  // Create a temporary buffer to hold the deinterleaved data
-  juce::AudioSampleBuffer tempBuffer (num_channels, total_samples);
-
-  // Deinterleave the channels
-  size_t read_index = 0;
-  for (size_t sample = 0; sample < total_samples; ++sample)
-    {
-      for (size_t channel = 0; channel < num_channels; ++channel)
-        {
-          tempBuffer.setSample (
-            channel, sample, buffer.getSample (0, read_index++));
-        }
-    }
-
-  // Copy the deinterleaved data back to the original buffer
-  buffer = std::move (tempBuffer);
-}
-
-void
 AudioFile::read_samples_interleaved (
   bool    in_parts,
   float * samples,
@@ -157,7 +108,8 @@ AudioFile::read_samples_interleaved (
   start_from = in_parts ? start_from : 0;
   num_frames_to_read = in_parts ? num_frames_to_read : metadata_.num_frames;
 
-  juce::AudioSampleBuffer buffer (metadata_.channels, num_frames_to_read);
+  zrythm::utils::audio::AudioBuffer buffer (
+    metadata_.channels, num_frames_to_read);
   bool                    success =
     reader_->read (&buffer, 0, num_frames_to_read, start_from, true, true);
   if (!success)
@@ -166,25 +118,25 @@ AudioFile::read_samples_interleaved (
         "Failed to read frames at {} from file '{}'", start_from, filepath_));
     }
 
-  interleave_buffer (buffer);
+  buffer.interleave_samples ();
   float_ranges::copy (
     samples, buffer.getReadPointer (0), num_frames_to_read * metadata_.channels);
 }
 
 void
 AudioFile::read_full (
-  juce::AudioSampleBuffer &buffer,
-  std::optional<size_t>    samplerate)
+  zrythm::utils::audio::AudioBuffer &buffer,
+  std::optional<size_t>              samplerate)
 {
   read_metadata ();
 
   /* read frames in file's sample rate */
-  juce::AudioSampleBuffer interleaved_buffer (
+  zrythm::utils::audio::AudioBuffer interleaved_buffer (
     1, metadata_.channels * (size_t) metadata_.num_frames);
 
   read_samples_interleaved (
     false, interleaved_buffer.getWritePointer (0), 0, metadata_.num_frames);
-  deinterleave_buffer (interleaved_buffer, metadata_.channels);
+  interleaved_buffer.deinterleave_samples (metadata_.channels);
 
   if (samplerate.has_value () && samplerate != metadata_.samplerate)
     {

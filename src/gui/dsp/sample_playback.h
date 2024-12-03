@@ -31,18 +31,18 @@ struct SamplePlayback
 public:
   SamplePlayback () = default;
   SamplePlayback (
-    std::shared_ptr<juce::AudioSampleBuffer> buf,
-    float                                    volume,
-    nframes_t                                start_offset,
-    const char *                             file,
-    const char *                             func,
-    int                                      lineno)
+    std::shared_ptr<zrythm::utils::audio::AudioBuffer> buf,
+    float                                              volume,
+    nframes_t                                          start_offset,
+    const char *                                       file,
+    const char *                                       func,
+    int                                                lineno)
       : buf_ (std::move (buf)), volume_ (volume), start_offset_ (start_offset),
         file_ (file), func_ (func), lineno_ (lineno)
   {
   }
   /** A pointer to the original buffer. */
-  std::shared_ptr<juce::AudioSampleBuffer> buf_;
+  std::shared_ptr<zrythm::utils::audio::AudioBuffer> buf_;
 
   /** The number of channels. */
   // channels_t channels_ = 0;

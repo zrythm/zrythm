@@ -400,9 +400,7 @@ SampleProcessor::queue_file_or_chord_preset (
       /* create an audio region & add to track */
       try
         {
-          auto ar = new AudioRegion (
-            -1, file->abs_path_, false, nullptr, 0, std::nullopt, 0,
-            AudioRegion::BitDepth::BIT_DEPTH_16, start_pos, 0, 0, 0);
+          auto ar = new AudioRegion (file->abs_path_, start_pos, 0, 0, 0);
           audio_track_ptr->add_region (ar, nullptr, 0, true, false);
           file_end_pos_ = *ar->end_pos_;
         }

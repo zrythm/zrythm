@@ -83,12 +83,13 @@ AudioTrack::timestretch_buf (
     in_frame_offset, out_frame_offset, in_frames_to_process,
     frames_to_process);
   z_return_if_fail (
-    (in_frame_offset + in_frames_to_process) <= clip->num_frames_);
+    (in_frame_offset + in_frames_to_process)
+    <= (unsigned_frame_t) clip->get_num_frames ());
   auto retrieved = rt_stretcher_->stretch (
-    &clip->ch_frames_.getReadPointer (0)[in_frame_offset],
-    clip->channels_ == 1
-      ? &clip->ch_frames_.getWritePointer (0)[in_frame_offset]
-      : &clip->ch_frames_.getWritePointer (1)[in_frame_offset],
+    &clip->get_samples ().getReadPointer (0)[in_frame_offset],
+    clip->get_num_channels () == 1
+      ? &clip->get_samples ().getReadPointer (0)[in_frame_offset]
+      : &clip->get_samples ().getReadPointer (1)[in_frame_offset],
     in_frames_to_process, &lbuf_after_ts[out_frame_offset],
     &rbuf_after_ts[out_frame_offset], (size_t) frames_to_process);
   z_return_if_fail ((unsigned_frame_t) retrieved == frames_to_process);

@@ -1085,7 +1085,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                             {
                               auto *     clip = added_obj_ref->get_clip ();
                               const auto id = AUDIO_POOL->duplicate_clip (
-                                clip->pool_id_, true);
+                                clip->get_pool_id (), true);
                               if (id < 0)
                                 {
                                   throw ZrythmException (
@@ -1093,7 +1093,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                                 }
                               clip = AUDIO_POOL->get_clip (id);
                               z_return_if_fail (clip);
-                              added_obj_ref->pool_id_ = clip->pool_id_;
+                              added_obj_ref->pool_id_ = clip->get_pool_id ();
                             }
                         }
                     } /* endif region */
@@ -1534,7 +1534,9 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
                   end.add_frames (-r->pos_->frames_, AUDIO_ENGINE->ticks_per_frame_);
                   auto num_frames =
                     static_cast<unsigned_frame_t> (end.frames_ - start.frames_);
-                  z_return_if_fail (num_frames == src_clip->num_frames_);
+                  z_return_if_fail (
+                    num_frames
+                    == (unsigned_frame_t) src_clip->get_num_frames ());
 
                   auto src_clip_path = src_clip->get_path_in_pool (false);
                   z_debug (
@@ -1542,9 +1544,16 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
                     src_clip_path);
 
                   /* replace the frames in the region */
-                  r->replace_frames (
-                    src_clip->frames_.getReadPointer (0), start.frames_,
-                    num_frames, false);
+                  utils::audio::AudioBuffer buf{
+                    src_clip->get_num_channels (), static_cast<int> (num_frames)
+                  };
+                  for (int i = 0; i < buf.getNumChannels (); ++i)
+                    {
+                      buf.copyFrom (
+                        i, 0, src_clip->get_samples (), i, start.frames_,
+                        num_frames);
+                    }
+                  r->replace_frames (buf, start.frames_, false);
                 }
               else /* not audio function */
                 {
@@ -2252,7 +2261,9 @@ ArrangerSelectionsAction::contains_clip (const AudioClip &clip) const
       auto r2 = std::get<AudioRegion *> (r2_.at (i));
       if (r1 && r2)
         {
-          if (r1->pool_id_ == clip.pool_id_ || r2->pool_id_ == clip.pool_id_)
+          if (
+            r1->pool_id_ == clip.get_pool_id ()
+            || r2->pool_id_ == clip.get_pool_id ())
             {
               return true;
             }

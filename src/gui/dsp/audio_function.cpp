@@ -315,36 +315,23 @@ audio_function_apply (
   /* create a copy of the frames to be replaced */
   auto num_frames = (unsigned_frame_t) (end.frames_ - start.frames_);
 
-  bool use_interleaved = true;
-
-  /* interleaved frames */
-  channels_t         channels = orig_clip->channels_;
-  std::vector<float> src_frames (num_frames * channels);
-  std::vector<float> dest_frames (num_frames * channels);
-  utils::float_ranges::copy (
-    &dest_frames[0],
-    &orig_clip->frames_.getReadPointer (0)[start.frames_ * (long) channels],
-    num_frames * channels);
-  utils::float_ranges::copy (
-    &src_frames[0], &dest_frames[0], num_frames * channels);
-
-  /* uninterleaved frames */
-  juce::AudioBuffer<float> ch_src_frames (channels, num_frames);
-  juce::AudioBuffer<float> ch_dest_frames (channels, num_frames);
-  for (size_t j = 0; j < channels; j++)
+  auto                      channels = orig_clip->get_num_channels ();
+  utils::audio::AudioBuffer src_frames{
+    channels, static_cast<int> (num_frames)
+  };
+  utils::audio::AudioBuffer dest_frames{
+    channels, static_cast<int> (num_frames)
+  };
+  for (int j = 0; j < channels; ++j)
     {
-      for (size_t i = 0; i < num_frames; i++)
-        {
-          ch_src_frames.getWritePointer (j)[i] = src_frames[i * channels + j];
-        }
-      utils::float_ranges::copy (
-        &ch_dest_frames.getWritePointer (j)[0],
-        &ch_src_frames.getReadPointer (j)[0], num_frames);
+      src_frames.copyFrom (
+        j, 0, orig_clip->get_samples (), j, start.frames_, num_frames);
+      dest_frames.copyFrom (
+        j, 0, orig_clip->get_samples (), j, start.frames_, num_frames);
     }
 
   auto nudge_frames = (unsigned_frame_t) Position::get_frames_from_ticks (
     ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS, 0.0);
-  unsigned_frame_t nudge_frames_all_channels = channels * nudge_frames;
   unsigned_frame_t num_frames_excl_nudge;
   z_debug ("num frames {}, nudge_frames {}", num_frames, nudge_frames);
   z_return_if_fail_cmp (nudge_frames, >, 0);
@@ -352,13 +339,10 @@ audio_function_apply (
   switch (type)
     {
     case AudioFunctionType::Invert:
-      utils::float_ranges::mul_k2 (&dest_frames[0], -1.f, num_frames * channels);
+      dest_frames.invert_phase ();
       break;
     case AudioFunctionType::NormalizePeak:
-      /* note: this normalizes by taking all channels into
-       * account */
-      utils::float_ranges::normalize (
-        &dest_frames[0], &dest_frames[0], num_frames * channels);
+      dest_frames.normalize_peak ();
       break;
     case AudioFunctionType::NormalizeRMS:
       /* TODO rms-normalize */
@@ -367,46 +351,46 @@ audio_function_apply (
       /* TODO lufs-normalize */
       break;
     case AudioFunctionType::LinearFadeIn:
-      utils::float_ranges::linear_fade_in_from (
-        &dest_frames[0], 0, num_frames * channels, num_frames * channels, 0.f);
+      dest_frames.applyGainRamp (0, num_frames, 0.f, 1.f);
       break;
     case AudioFunctionType::LinearFadeOut:
-      utils::float_ranges::linear_fade_out_to (
-        &dest_frames[0], 0, num_frames * channels, num_frames * channels, 0.f);
+      dest_frames.applyGainRamp (0, num_frames, 1.f, 0.f);
       break;
     case AudioFunctionType::NudgeLeft:
       z_return_if_fail (num_frames > nudge_frames);
       num_frames_excl_nudge = num_frames - (size_t) nudge_frames;
-      utils::float_ranges::copy (
-        &dest_frames[0], &src_frames[nudge_frames_all_channels],
-        channels * num_frames_excl_nudge);
-      utils::float_ranges::fill (
-        &dest_frames[channels * num_frames_excl_nudge], 0.f,
-        nudge_frames_all_channels);
+
+      for (int ch = 0; ch < channels; ch++)
+        {
+          // Copy shifted audio
+          dest_frames.copyFrom (
+            ch, 0, src_frames, ch, nudge_frames, num_frames_excl_nudge);
+          // Clear end
+          utils::float_ranges::fill (
+            dest_frames.getWritePointer (ch, num_frames_excl_nudge), 0.f,
+            nudge_frames);
+        }
       break;
     case AudioFunctionType::NudgeRight:
       z_return_if_fail (num_frames > nudge_frames);
       num_frames_excl_nudge = num_frames - (size_t) nudge_frames;
-      utils::float_ranges::copy (
-        &dest_frames[nudge_frames], &src_frames[0],
-        channels * num_frames_excl_nudge);
-      utils::float_ranges::fill (
-        &dest_frames[0], 0.f, nudge_frames_all_channels);
+      for (int ch = 0; ch < channels; ch++)
+        {
+          // Copy shifted audio
+          dest_frames.copyFrom (
+            ch, nudge_frames, src_frames, ch, 0, num_frames_excl_nudge);
+          // Clear beginning
+          utils::float_ranges::fill (
+            dest_frames.getWritePointer (ch), 0.f, nudge_frames);
+        }
       break;
     case AudioFunctionType::Reverse:
-      use_interleaved = false;
-      for (size_t j = 0; j < channels; j++)
-        {
-          utils::float_ranges::reverse (
-            &ch_dest_frames.getWritePointer (j)[0],
-            &ch_src_frames.getReadPointer (j)[0], num_frames);
-        }
+      dest_frames.reverse (0, num_frames);
       break;
     case AudioFunctionType::PitchShift:
       {
         z_return_if_fail_cmp (channels, >=, 2);
-        use_interleaved = false;
-        RubberBandState   rubberband_state;
+        RubberBandState   rubberband_state{};
         RubberBandOptions rubberband_opts =
           RubberBandOptionProcessOffline
         /* use finer engine if rubberband v3 */
@@ -424,7 +408,7 @@ audio_function_apply (
         rubberband_set_max_process_size (rubberband_state, max_process_size);
         rubberband_set_expected_input_duration (rubberband_state, num_frames);
         rubberband_study (
-          rubberband_state, ch_src_frames.getArrayOfReadPointers (), num_frames,
+          rubberband_state, src_frames.getArrayOfReadPointers (), num_frames,
           true);
         size_t samples_fed = 0;
         size_t frames_read = 0;
@@ -435,8 +419,8 @@ audio_function_apply (
             /*rubberband_get_samples_required (*/
             /*rubberband_state));*/
             std::array<const float * const, 2> tmp_in_arrays = {
-              &ch_src_frames.getReadPointer (0)[samples_fed],
-              &ch_src_frames.getReadPointer (1)[samples_fed]
+              &src_frames.getReadPointer (0)[samples_fed],
+              &src_frames.getReadPointer (1)[samples_fed]
             };
             samples_fed += samples_required;
             z_info (
@@ -477,8 +461,8 @@ audio_function_apply (
 #endif
                   }
                 std::array<float *, 2> tmp_out_arrays = {
-                  &ch_dest_frames.getWritePointer (0)[frames_read],
-                  &ch_dest_frames.getWritePointer (1)[frames_read]
+                  &dest_frames.getWritePointer (0)[frames_read],
+                  &dest_frames.getWritePointer (1)[frames_read]
                 };
                 size_t retrieved_out_samples = rubberband_retrieve (
                   rubberband_state, tmp_out_arrays.data (),
@@ -490,8 +474,8 @@ audio_function_apply (
                       retrieved_out_samples, avail));
                   }
                 frames_read += retrieved_out_samples;
-                z_info (
-                  "retrieved out samples %zu, frames read %zu",
+                z_debug (
+                  "retrieved out samples {}, frames read {}",
                   retrieved_out_samples, frames_read);
               }
           }
@@ -504,12 +488,11 @@ audio_function_apply (
       }
       break;
     case AudioFunctionType::CopyLtoR:
-      use_interleaved = false;
       if (channels == 2)
         {
           utils::float_ranges::copy (
-            ch_dest_frames.getWritePointer (1),
-            ch_src_frames.getReadPointer (0), num_frames);
+            dest_frames.getWritePointer (1), src_frames.getReadPointer (0),
+            num_frames);
         }
       else
         {
@@ -520,20 +503,26 @@ audio_function_apply (
     case AudioFunctionType::ExternalProgram:
       {
         AudioClip tmp_clip_before (
-          src_frames.data (), num_frames, channels,
-          AudioClip::BitDepth::BIT_DEPTH_32, "tmp-clip");
+          src_frames, AudioClip::BitDepth::BIT_DEPTH_32, "tmp-clip");
         auto tmp_clip = tmp_clip_before.edit_in_ext_program ();
-        utils::float_ranges::copy (
-          dest_frames.data (), tmp_clip->frames_.getReadPointer (0),
-          std::min (
-            static_cast<size_t> (num_frames),
-            static_cast<size_t> (tmp_clip->num_frames_))
-            * channels);
-        if ((size_t) tmp_clip->num_frames_ < num_frames)
+        for (int i = 0; i < channels; ++i)
           {
-            utils::float_ranges::fill (
-              dest_frames.data (), 0.f,
-              (num_frames - (size_t) tmp_clip->num_frames_) * channels);
+            utils::float_ranges::copy (
+              dest_frames.getWritePointer (i),
+              tmp_clip->get_samples ().getReadPointer (i),
+              std::min (
+                static_cast<size_t> (num_frames),
+                static_cast<size_t> (tmp_clip->get_num_frames ())));
+          }
+
+        if ((size_t) tmp_clip->get_num_frames () < num_frames)
+          {
+            for (int i = 0; i < channels; ++i)
+              {
+                utils::float_ranges::fill (
+                  dest_frames.getWritePointer (i), 0.f,
+                  num_frames - (size_t) tmp_clip->get_num_frames ());
+              }
           }
       }
       break;
@@ -572,31 +561,19 @@ audio_function_apply (
   g_free (tmp);
 #endif
 
-  /* convert to interleaved */
-  if (!use_interleaved)
-    {
-      for (size_t j = 0; j < channels; j++)
-        {
-          for (size_t i = 0; i < num_frames; i++)
-            {
-              dest_frames[i * channels + j] = ch_dest_frames.getSample (j, i);
-            }
-        }
-    }
-
   int  id = AUDIO_POOL->add_clip (std::make_unique<AudioClip> (
-    &dest_frames[0], num_frames, channels, AudioClip::BitDepth::BIT_DEPTH_32,
-    orig_clip->name_));
+    dest_frames, AudioClip::BitDepth::BIT_DEPTH_32, orig_clip->get_name ()));
   auto clip = AUDIO_POOL->get_clip (id);
-  z_debug ("writing {} to pool (id {})", clip->name_, clip->pool_id_);
+  z_debug (
+    "writing {} to pool (id {})", clip->get_name (), clip->get_pool_id ());
   clip->write_to_pool (false, false);
 
-  audio_sel.pool_id_ = clip->pool_id_;
+  audio_sel.pool_id_ = clip->get_pool_id ();
 
   if (type != AudioFunctionType::Invalid)
     {
       /* replace the frames in the region */
-      r->replace_frames (dest_frames.data (), start.frames_, num_frames, false);
+      r->replace_frames (dest_frames, start.frames_, false);
     }
 
   if (

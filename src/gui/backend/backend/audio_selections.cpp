@@ -24,7 +24,7 @@ AudioSelections::set_has_range (bool has_range)
 bool
 AudioSelections::contains_clip (const AudioClip &clip) const
 {
-  return pool_id_ == clip.pool_id_;
+  return pool_id_ == clip.get_pool_id ();
 }
 
 bool

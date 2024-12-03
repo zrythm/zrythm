@@ -623,20 +623,23 @@ RegionImpl<RegionT>::stretch (double ratio)
   else if constexpr (is_audio ())
     {
       auto * clip = derived_.get_clip ();
-      int    new_clip_id = AUDIO_POOL->duplicate_clip (clip->pool_id_, false);
+      int new_clip_id = AUDIO_POOL->duplicate_clip (clip->get_pool_id (), false);
       z_return_if_fail (new_clip_id >= 0);
       auto * new_clip = AUDIO_POOL->get_clip (new_clip_id);
-      derived_.set_clip_id (new_clip->pool_id_);
+      derived_.set_clip_id (new_clip->get_pool_id ());
 
       auto stretcher = dsp::Stretcher::create_rubberband (
-        AUDIO_ENGINE->sample_rate_, new_clip->channels_, ratio, 1.0, false);
+        AUDIO_ENGINE->sample_rate_, new_clip->get_num_channels (), ratio, 1.0,
+        false);
 
-      new_clip->frames_ = stretcher->stretch_interleaved (new_clip->frames_);
-      auto num_frames_per_channel =
-        new_clip->frames_.getNumSamples () / new_clip->channels_;
+      auto buf = new_clip->get_samples ();
+      buf.interleave_samples ();
+      auto stretched_buf = stretcher->stretch_interleaved (buf);
+      stretched_buf.deinterleave_samples (new_clip->get_num_channels ());
+      new_clip->clear_frames ();
+      new_clip->expand_with_frames (stretched_buf);
+      auto num_frames_per_channel = new_clip->get_num_frames ();
       z_return_if_fail (num_frames_per_channel > 0);
-      new_clip->num_frames_ =
-        static_cast<unsigned_frame_t> (num_frames_per_channel);
 
       new_clip->write_to_pool (false, false);
 
