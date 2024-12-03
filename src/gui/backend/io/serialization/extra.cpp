@@ -1,19 +1,9 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/dsp/curve.h"
-
-#include "dsp/position.h"
 #include "utils/color.h"
 
 using namespace zrythm;
-
-void
-CurveOptions::define_fields (const Context &ctx)
-{
-  serialize_fields (
-    ctx, make_field ("algorithm", algo_), make_field ("curviness", curviness_));
-}
 
 void
 utils::Color::define_fields (const Context &ctx)

@@ -11,6 +11,8 @@ target_sources(zrythm_lib
     carla_discovery.cpp
     channel.h
     channel.cpp
+    curve_preset.h
+    curve_preset.cpp
     plugin_collections.h
     plugin_collections.cpp
     plugin_descriptor.h

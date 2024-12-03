@@ -5,10 +5,10 @@
 
 #include <cstdio>
 
+#include "dsp/ditherer.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/channel.h"
-#include "gui/dsp/ditherer.h"
 #include "gui/dsp/engine.h"
 #include "gui/dsp/piano_roll_track.h"
 #include "gui/dsp/tracklist.h"
@@ -208,14 +208,12 @@ Exporter::export_audio (Settings &info)
 #endif
 
   /* init ditherer */
-  Ditherer ditherer;
-  memset (&ditherer, 0, sizeof (Ditherer));
+  zrythm::dsp::Ditherer ditherer;
   if (info.dither_)
     {
       z_debug (
         "dither {} bits", utils::audio::bit_depth_enum_to_int (info.depth_));
-      ditherer_reset (
-        &ditherer, utils::audio::bit_depth_enum_to_int (info.depth_));
+      ditherer.reset (utils::audio::bit_depth_enum_to_int (info.depth_));
     }
 
   z_return_if_fail (end_pos.frames_ >= 1 || start_pos.frames_ >= 0);
@@ -270,8 +268,8 @@ Exporter::export_audio (Settings &info)
       /* apply dither */
       if (info.dither_)
         {
-          ditherer_process (&ditherer, buffer.getWritePointer (0), nframes);
-          ditherer_process (&ditherer, buffer.getWritePointer (1), nframes);
+          ditherer.process (buffer.getWritePointer (0), nframes);
+          ditherer.process (buffer.getWritePointer (1), nframes);
         }
 
       /* write the frames for the current cycle */

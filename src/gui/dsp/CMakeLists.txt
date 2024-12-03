@@ -55,12 +55,8 @@ target_sources(zrythm_lib
     control_port.cpp
     control_room.h
     control_room.cpp
-    curve.h
-    curve.cpp
     cv_port.h
     cv_port.cpp
-    ditherer.h
-    ditherer.cpp
     engine.h
     engine.cpp
     engine_dummy.h

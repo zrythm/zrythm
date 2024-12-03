@@ -1,21 +1,14 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * @file
- *
- * Automation point API.
- */
 
 #ifndef __AUDIO_AUTOMATION_POINT_H__
 #define __AUDIO_AUTOMATION_POINT_H__
 
+#include "dsp/curve.h"
+#include "dsp/position.h"
 #include "gui/dsp/arranger_object.h"
 #include "gui/dsp/control_port.h"
-#include "gui/dsp/curve.h"
 #include "gui/dsp/region_owned_object.h"
-
-#include "dsp/position.h"
 #include "utils/icloneable.h"
 #include "utils/math.h"
 #include "utils/types.h"
@@ -23,6 +16,8 @@
 class Port;
 class AutomationRegion;
 class AutomationTrack;
+
+using namespace zrythm;
 
 /**
  * @addtogroup dsp
@@ -128,7 +123,7 @@ public:
   /** Normalized value (0 to 1) used as a cache. */
   float normalized_val_ = 0.f;
 
-  CurveOptions curve_opts_ = {};
+  dsp::CurveOptions curve_opts_{};
 };
 
 inline bool

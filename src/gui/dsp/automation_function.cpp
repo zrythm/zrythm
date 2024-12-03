@@ -38,7 +38,7 @@ flatten (AutomationSelections * sel)
     {
 
       ap->curve_opts_.curviness_ = 1.0;
-      ap->curve_opts_.algo_ = CurveOptions::Algorithm::Pulse;
+      ap->curve_opts_.algo_ = dsp::CurveOptions::Algorithm::Pulse;
     }
 }
 

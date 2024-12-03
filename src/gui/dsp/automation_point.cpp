@@ -36,8 +36,8 @@ AutomationPoint::AutomationPoint (const Position &pos, QObject * parent)
   *static_cast<Position *> (pos_) = pos;
   curve_opts_.algo_ =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
-      ? CurveOptions::Algorithm::SuperEllipse
-      : (CurveOptions::Algorithm)
+      ? dsp::CurveOptions::Algorithm::SuperEllipse
+      : (dsp::CurveOptions::Algorithm)
           gui::SettingsManager::automationCurveAlgorithm ();
 }
 

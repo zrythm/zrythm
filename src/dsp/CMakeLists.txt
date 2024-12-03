@@ -6,6 +6,10 @@ qt_add_library(zrythm_dsp_lib STATIC)
 target_sources(zrythm_dsp_lib
   PRIVATE
   channel.h
+  curve.h
+  curve.cpp
+  ditherer.h
+  ditherer.cpp
   kmeter_dsp.h
   kmeter_dsp.cpp
   panning.h

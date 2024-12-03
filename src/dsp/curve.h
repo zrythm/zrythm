@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2020, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_CURVE_H__
-#define __AUDIO_CURVE_H__
+#ifndef ZRYTHM_DSP_CURVE_H
+#define ZRYTHM_DSP_CURVE_H
 
 #include <string>
 #include <utility>
@@ -11,16 +11,8 @@
 #include "utils/format.h"
 #include "utils/iserializable.h"
 
-/**
- * @addtogroup dsp
- *
- * @{
- */
-
-/** Bounds for each algorithm. */
-constexpr double CURVE_SUPERELLIPSE_CURVINESS_BOUND = 0.82;
-constexpr double CURVE_EXPONENT_CURVINESS_BOUND = 0.95;
-constexpr double CURVE_VITAL_CURVINESS_BOUND = 1.00;
+namespace zrythm::dsp
+{
 
 /**
  * Curve options.
@@ -28,7 +20,7 @@ constexpr double CURVE_VITAL_CURVINESS_BOUND = 1.00;
  * Can find more at tracktion_AudioFadeCurve.h.
  */
 class CurveOptions
-  final : public zrythm::utils::serialization::ISerializable<CurveOptions>
+    : public zrythm::utils::serialization::ISerializable<CurveOptions>
 {
 public:
   /**
@@ -92,6 +84,11 @@ public:
     Logarithmic,
   };
 
+  /** Bounds for each algorithm. */
+  static constexpr double SUPERELLIPSE_CURVINESS_BOUND = 0.82;
+  static constexpr double EXPONENT_CURVINESS_BOUND = 0.95;
+  static constexpr double VITAL_CURVINESS_BOUND = 1.00;
+
 public:
   // Rule of 0
   CurveOptions () = default;
@@ -106,78 +103,40 @@ public:
    */
   ATTR_HOT double get_normalized_y (double x, bool start_higher) const;
 
+  /**
+   * Gets the normalized Y for a normalized X, for a fade.
+   *
+   * @param x Normalized x.
+   * @param fade_in 1 for in, 0 for out.
+   */
+  double get_normalized_y_for_fade (double x, bool fade_in) const
+  {
+    return get_normalized_y (x, !fade_in);
+  }
+
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 public:
   /** Curviness between -1 and 1, where < 0 tils downwards, > 0
    * tilts upwards and 0 is a straight line. */
-  double curviness_ = 0.0;
+  double curviness_{ 0.0 };
 
   /** Curve algorithm to use. */
-  Algorithm algo_ = (Algorithm) 0;
+  Algorithm algo_{};
 };
 
 bool
 operator== (const CurveOptions &a, const CurveOptions &b);
 
-struct CurveFadePreset final
-{
-  // Rule of 0
-  CurveFadePreset () = default;
-  CurveFadePreset (
-    std::string             id,
-    QString                 label,
-    CurveOptions::Algorithm algo,
-    double                  curviness);
-  ~CurveFadePreset () noexcept;
-
-  /**
-   * Returns an array of CurveFadePreset.
-   */
-  static std::vector<CurveFadePreset> get_fade_presets ();
-
-  CurveOptions opts_;
-  std::string  id_;
-  QString      label_;
-};
-
-#if 0
-gboolean
-curve_algorithm_get_g_settings_mapping (
-  GValue *   value,
-  GVariant * variant,
-  gpointer   user_data);
-
-GVariant *
-curve_algorithm_set_g_settings_mapping (
-  const GValue *       value,
-  const GVariantType * expected_type,
-  gpointer             user_data);
-#endif
-
-/**
- * Gets the normalized Y for a normalized X.
- *
- * @param x Normalized x.
- * @param fade_in 1 for in, 0 for out.
- */
-inline double
-fade_get_y_normalized (const CurveOptions &opts, double x, bool fade_in)
-{
-  return opts.get_normalized_y (x, !fade_in);
-}
+} // namespace zrythm::dsp
 
 DEFINE_ENUM_FORMATTER (
-  CurveOptions::Algorithm,
+  zrythm::dsp::CurveOptions::Algorithm,
   CurveOptions_Algorithm,
   QT_TR_NOOP_UTF8 ("Exponent"),
   QT_TR_NOOP_UTF8 ("Superellipse"),
   "Vital",
   QT_TR_NOOP_UTF8 ("Pulse"),
   QT_TR_NOOP_UTF8 ("Logarithmic"));
-
-/**
- * @}
- */
 
 #endif

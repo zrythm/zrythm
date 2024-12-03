@@ -12,10 +12,11 @@
 #ifndef __AUDIO_MIDI_FUNCTION_H__
 #define __AUDIO_MIDI_FUNCTION_H__
 
-#include "gui/dsp/curve.h"
-
+#include "dsp/curve.h"
 #include "utils/format.h"
 #include "utils/types.h"
+
+using namespace zrythm;
 
 class MidiSelections;
 
@@ -48,8 +49,8 @@ public:
   double time_ = 0;
   double amount_ = 0;
 
-  CurveOptions::Algorithm curve_algo_ = CurveOptions::Algorithm::Exponent;
-  double                  curviness_ = 0;
+  dsp::CurveOptions::Algorithm curve_algo_{};
+  double                       curviness_{};
 };
 
 /**

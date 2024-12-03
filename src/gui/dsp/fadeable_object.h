@@ -4,10 +4,11 @@
 #ifndef __DSP_FADEABLE_OBJECT_H__
 #define __DSP_FADEABLE_OBJECT_H__
 
-#include "gui/dsp/curve.h"
+#include "dsp/curve.h"
+#include "dsp/position.h"
 #include "gui/dsp/lengthable_object.h"
 
-#include "dsp/position.h"
+using namespace zrythm;
 
 #define DEFINE_FADEABLE_OBJECT_QML_PROPERTIES(ClassType)
 
@@ -53,10 +54,10 @@ public:
   Position fade_out_pos_;
 
   /** Fade in curve options. */
-  CurveOptions fade_in_opts_;
+  dsp::CurveOptions fade_in_opts_;
 
   /** Fade out curve options. */
-  CurveOptions fade_out_opts_;
+  dsp::CurveOptions fade_out_opts_;
 };
 
 #endif // __DSP_FADEABLE_OBJECT_H__

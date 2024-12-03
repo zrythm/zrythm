@@ -36,6 +36,8 @@
 #include "utils/object_pool.h"
 #include "utils/objects.h"
 
+using namespace zrythm;
+
 void
 RecordingManager::handle_stop_recording (bool is_automation)
 {
@@ -458,7 +460,7 @@ RecordingManager::create_automation_point (
       auto * ap = new AutomationPoint (val, normalized_val, adj_pos);
       region.append_object (ap, true);
       ap->curve_opts_.curviness_ = 1.0;
-      ap->curve_opts_.algo_ = CurveOptions::Algorithm::Pulse;
+      ap->curve_opts_.algo_ = dsp::CurveOptions::Algorithm::Pulse;
       region.last_recorded_ap_ = ap;
       return ap;
     }

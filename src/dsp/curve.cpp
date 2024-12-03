@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -29,82 +29,18 @@
 
 #include <cmath>
 
-#include "gui/dsp/curve.h"
-
+#include "dsp/curve.h"
 #include "utils/debug.h"
 #include "utils/math.h"
 #include "utils/string.h"
 
-#if 0
-static const char *
-curve_algorithm_get_string_id (CurveOptions::Algorithm algo)
+namespace zrythm::dsp
 {
-  using Algorithm = CurveOptions::Algorithm;
-  switch (algo)
-    {
-    case Algorithm::Exponent:
-      return "exponent";
-    case Algorithm::SuperEllipse:
-      return "superellipse";
-    case Algorithm::Vital:
-      return "vital";
-    case Algorithm::Pulse:
-      return "pulse";
-    case Algorithm::Logarithmic:
-      return "logarithmic";
-    default:
-      return "invalid";
-    }
-}
 
-static CurveOptions::Algorithm
-curve_algorithm_get_from_string_id (const char * str)
+CurveOptions::CurveOptions (double curviness, Algorithm algo)
+    : curviness_ (curviness), algo_ (algo)
 {
-  using Algorithm = CurveOptions::Algorithm;
-  if (string_is_equal (str, "exponent"))
-    return Algorithm::Exponent;
-  else if (string_is_equal (str, "superellipse"))
-    return Algorithm::SuperEllipse;
-  else if (string_is_equal (str, "vital"))
-    return Algorithm::Vital;
-  else if (string_is_equal (str, "pulse"))
-    return Algorithm::Pulse;
-  else if (string_is_equal (str, "logarithmic"))
-    return Algorithm::Logarithmic;
-
-  z_return_val_if_reached (Algorithm::SuperEllipse);
 }
-#endif
-
-#if 0
-gboolean
-curve_algorithm_get_g_settings_mapping (
-  GValue *   value,
-  GVariant * variant,
-  gpointer   user_data)
-{
-  const char * str = g_variant_get_string (variant, nullptr);
-
-  CurveOptions::Algorithm val = curve_algorithm_get_from_string_id (str);
-  g_value_set_uint (value, static_cast<guint> (val));
-
-  return true;
-}
-
-GVariant *
-curve_algorithm_set_g_settings_mapping (
-  const GValue *       value,
-  const GVariantType * expected_type,
-  gpointer             user_data)
-{
-  guint val = g_value_get_uint (value);
-
-  const char * str =
-    curve_algorithm_get_string_id (static_cast<CurveOptions::Algorithm> (val));
-
-  return g_variant_new_string (str);
-}
-#endif
 
 double
 CurveOptions::get_normalized_y (double x, bool start_higher) const
@@ -120,7 +56,7 @@ CurveOptions::get_normalized_y (double x, bool start_higher) const
     case CurveOptions::Algorithm::Exponent:
       {
         /* convert curviness to bound */
-        double curviness_for_calc = curviness_ * CURVE_EXPONENT_CURVINESS_BOUND;
+        double curviness_for_calc = curviness_ * EXPONENT_CURVINESS_BOUND;
 
         curviness_for_calc = 1.0 - fabs (curviness_for_calc);
         if (!start_higher)
@@ -145,8 +81,7 @@ CurveOptions::get_normalized_y (double x, bool start_higher) const
     case CurveOptions::Algorithm::SuperEllipse:
       {
         /* convert curviness to bound */
-        double curviness_for_calc =
-          curviness_ * CURVE_SUPERELLIPSE_CURVINESS_BOUND;
+        double curviness_for_calc = curviness_ * SUPERELLIPSE_CURVINESS_BOUND;
 
         curviness_for_calc = 1.0 - fabs (curviness_for_calc);
         if (!start_higher)
@@ -172,7 +107,7 @@ CurveOptions::get_normalized_y (double x, bool start_higher) const
     case CurveOptions::Algorithm::Vital:
       {
         /* convert curviness to bound */
-        double curviness_for_calc = curviness_ * CURVE_VITAL_CURVINESS_BOUND;
+        double curviness_for_calc = curviness_ * VITAL_CURVINESS_BOUND;
 
         curviness_for_calc = -curviness_for_calc * 10.0;
         if (start_higher)
@@ -266,48 +201,21 @@ CurveOptions::get_normalized_y (double x, bool start_higher) const
   return std::clamp (val, 0.0, 1.0);
 }
 
-CurveFadePreset::CurveFadePreset (
-  std::string             id,
-  QString                 label,
-  CurveOptions::Algorithm algo,
-  double                  curviness)
-    : opts_ (curviness, algo), id_ (std::move (id)), label_ (std::move (label))
+void
+CurveOptions::define_fields (const Context &ctx)
 {
+  serialize_fields (
+    ctx, make_field ("algorithm", algo_), make_field ("curviness", curviness_));
 }
 
-std::vector<CurveFadePreset>
-CurveFadePreset::get_fade_presets ()
-{
-  std::vector<CurveFadePreset> presets;
+CurveOptions::~CurveOptions () noexcept = default;
 
-  presets.emplace_back (
-    "linear", QObject::tr ("Linear"), CurveOptions::Algorithm::SuperEllipse, 0);
-  presets.emplace_back (
-    "exponential", QObject::tr ("Exponential"),
-    CurveOptions::Algorithm::Exponent, -0.6);
-  presets.emplace_back (
-    "elliptic", QObject::tr ("Elliptic"), CurveOptions::Algorithm::SuperEllipse,
-    -0.5);
-  presets.emplace_back (
-    "logarithmic", QObject::tr ("Logarithmic"),
-    CurveOptions::Algorithm::Logarithmic, -0.5);
-  presets.emplace_back (
-    "vital", QObject::tr ("Vital"), CurveOptions::Algorithm::Vital, -0.5);
-
-  return presets;
-}
-
-CurveFadePreset::~CurveFadePreset () noexcept { }
-
-CurveOptions::CurveOptions (double curviness, Algorithm algo)
-    : curviness_ (curviness), algo_ (algo)
-{
-}
-
-CurveOptions::~CurveOptions () noexcept { }
+} // namespace zrythm::dsp
 
 bool
-operator== (const CurveOptions &a, const CurveOptions &b)
+operator== (
+  const zrythm::dsp::CurveOptions &a,
+  const zrythm::dsp::CurveOptions &b)
 {
   return math_doubles_equal (a.curviness_, b.curviness_) && a.algo_ == b.algo_;
 }

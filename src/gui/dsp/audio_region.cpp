@@ -402,8 +402,7 @@ AudioRegion::fill_stereo_ports (
         current_local_frame >= 0
         && current_local_frame < num_frames_in_fade_in_area)
         {
-          float fade_in = (float) fade_get_y_normalized (
-            fade_in_opts_,
+          auto fade_in = (float) fade_in_opts_.get_normalized_y_for_fade (
             (double) current_local_frame / (double) num_frames_in_fade_in_area,
             true);
 
@@ -418,8 +417,7 @@ AudioRegion::fill_stereo_ports (
             current_local_frame - fade_out_pos_.frames_;
           z_return_if_fail_cmp (
             num_frames_from_fade_out_start, <=, num_frames_in_fade_out_area);
-          float fade_out = (float) fade_get_y_normalized (
-            fade_out_opts_,
+          auto fade_out = (float) fade_out_opts_.get_normalized_y_for_fade (
             (double) num_frames_from_fade_out_start
               / (double) num_frames_in_fade_out_area,
             false);

@@ -60,7 +60,7 @@ midi_function_apply (
     {
     case MidiFunctionType::Crescendo:
       {
-        CurveOptions curve_opts;
+        dsp::CurveOptions curve_opts;
         curve_opts.algo_ = opts.curve_algo_;
         curve_opts.curviness_ = opts.curviness_;
         int vel_interval = std::abs (opts.end_vel_ - opts.start_vel_);
@@ -227,7 +227,7 @@ midi_function_apply (
       break;
     case MidiFunctionType::Strum:
       {
-        CurveOptions curve_opts;
+        dsp::CurveOptions curve_opts;
         curve_opts.algo_ = opts.curve_algo_;
         curve_opts.curviness_ = opts.curviness_;
 
