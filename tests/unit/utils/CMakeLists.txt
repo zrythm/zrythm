@@ -17,6 +17,7 @@ add_executable(utils_unit_tests
   iserializable_test.cpp
   math_test.cpp
   midi_test.cpp
+  monotonic_time_provider_test.cpp
   mpmc_queue_test.cpp
   object_pool_test.cpp
   ring_buffer_test.cpp

@@ -132,10 +132,10 @@ public:
    */
   static Color get_arranger_object_color (
     const Color &color,
-    const bool   is_hovered,
-    const bool   is_selected,
-    const bool   is_transient,
-    const bool   is_muted);
+    bool         is_hovered,
+    bool         is_selected,
+    bool         is_transient,
+    bool         is_muted);
 
   /**
    * @brief Converts the color to a hex string.

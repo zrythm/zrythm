@@ -25,7 +25,10 @@ AudioPool::init_loaded (AudioEngine * engine)
   for (auto &clip : clips_)
     {
       if (clip)
-        clip->init_loaded ();
+        {
+          clip->init_loaded (get_clip_path_from_name (
+            clip->get_name (), clip->get_use_flac (), false));
+        }
     }
 }
 
@@ -43,12 +46,116 @@ AudioPool::name_exists (const std::string &name) const
   });
 }
 
+fs::path
+AudioPool::get_clip_path_from_name (
+  const std::string &name,
+  bool               use_flac,
+  bool               is_backup)
+{
+  auto prj_pool_dir = PROJECT->get_path (ProjectPath::POOL, is_backup);
+  if (!utils::io::path_exists (prj_pool_dir))
+    {
+      z_error ("{} does not exist", prj_pool_dir);
+      return "";
+    }
+  std::string basename =
+    utils::io::file_strip_ext (name) + (use_flac ? ".FLAC" : ".wav");
+  return prj_pool_dir / basename;
+}
+
+fs::path
+AudioPool::get_clip_path (const AudioClip &clip, bool is_backup)
+{
+  return get_clip_path_from_name (
+    clip.get_name (), clip.get_use_flac (), is_backup);
+}
+
+void
+AudioPool::write_clip (AudioClip &clip, bool parts, bool backup)
+{
+  AudioClip * pool_clip = get_clip (clip.get_pool_id ());
+  z_return_if_fail (pool_clip == &clip);
+
+  print ();
+  z_debug (
+    "attempting to write clip {} ({}) to pool...", clip.get_name (),
+    clip.get_pool_id ());
+
+  /* generate a copy of the given filename in the project dir */
+  auto path_in_main_project = get_clip_path (clip, false);
+  auto new_path = get_clip_path (clip, backup);
+  z_return_if_fail (!path_in_main_project.empty ());
+  z_return_if_fail (!new_path.empty ());
+
+  /* whether a new write is needed */
+  bool need_new_write = true;
+
+  /* skip if file with same hash already exists */
+  if (utils::io::path_exists (new_path) && !parts)
+    {
+      bool same_hash =
+        clip.get_file_hash () != 0
+        && clip.get_file_hash () == utils::hash::get_file_hash (new_path);
+
+      if (same_hash)
+        {
+          z_debug ("skipping writing to existing clip {} in pool", new_path);
+          need_new_write = false;
+        }
+    }
+
+  /* if writing to backup and same file exists in main project dir, copy (first
+   * try reflink) */
+  if (need_new_write && clip.get_file_hash () != 0 && backup)
+    {
+      bool exists_in_main_project = false;
+      if (utils::io::path_exists (path_in_main_project))
+        {
+          exists_in_main_project =
+            clip.get_file_hash ()
+            == utils::hash::get_file_hash (path_in_main_project);
+        }
+
+      if (exists_in_main_project)
+        {
+          /* try reflink and fall back to normal copying */
+          z_debug (
+            "reflinking clip from main project ('{}' to '{}')",
+            path_in_main_project, new_path);
+
+          if (!utils::io::reflink_file (path_in_main_project, new_path))
+            {
+              z_debug ("failed to reflink, copying instead");
+              z_debug (
+                "copying clip from main project ('{}' to '{}')",
+                path_in_main_project, new_path);
+              utils::io::copy_file (new_path, path_in_main_project);
+            }
+        }
+    }
+
+  if (need_new_write)
+    {
+      z_debug (
+        "writing clip {} to pool (parts {}, is backup  {}): '{}'",
+        clip.get_name (), parts, backup, new_path);
+      clip.write_to_file (new_path, parts);
+      if (!parts)
+        {
+          /* store file hash */
+          clip.set_file_hash (utils::hash::get_file_hash (new_path));
+        }
+    }
+
+  print ();
+}
+
 void
 AudioPool::ensure_unique_clip_name (AudioClip &clip)
 {
   constexpr bool is_backup = false;
   auto orig_name_without_ext = utils::io::file_strip_ext (clip.get_name ());
-  auto           orig_path_in_pool = clip.get_path_in_pool (is_backup);
+  auto orig_path_in_pool = get_clip_path (clip, is_backup);
   std::string    new_name = orig_name_without_ext;
   z_return_if_fail (!new_name.empty ());
 
@@ -81,8 +188,8 @@ AudioPool::ensure_unique_clip_name (AudioClip &clip)
       changed = true;
     }
 
-  auto new_path_in_pool = AudioClip::get_path_in_pool_from_name (
-    new_name, clip.get_use_flac (), is_backup);
+  auto new_path_in_pool =
+    get_clip_path_from_name (new_name, clip.get_use_flac (), is_backup);
   if (changed)
     {
       z_return_if_fail (new_path_in_pool != orig_path_in_pool);
@@ -160,7 +267,8 @@ AudioPool::duplicate_clip (int clip_id, bool write_file)
   z_return_val_if_fail (clip, -1);
 
   auto new_id = add_clip (std::make_unique<AudioClip> (
-    clip->get_samples (), clip->get_bit_depth (), clip->get_name ()));
+    clip->get_samples (), clip->get_bit_depth (), engine_->sample_rate_,
+    P_TEMPO_TRACK->get_current_bpm (), clip->get_name ()));
   auto new_clip = get_clip (new_id);
 
   z_debug (
@@ -171,7 +279,7 @@ AudioPool::duplicate_clip (int clip_id, bool write_file)
 
   if (write_file)
     {
-      new_clip->write_to_pool (false, false);
+      write_clip (*new_clip, false, false);
     }
 
   return new_clip->get_pool_id ();
@@ -196,7 +304,10 @@ AudioPool::remove_clip (int clip_id, bool free_and_remove_file, bool backup)
 
   if (free_and_remove_file)
     {
-      clip->remove (backup);
+      std::string path = get_clip_path (*clip, backup);
+      z_debug ("removing clip at {}", path);
+      z_return_if_fail (path.length () > 0);
+      utils::io::remove (path);
     }
 
   auto removed_clip = std::move (clips_[clip_id]);
@@ -212,7 +323,7 @@ AudioPool::remove_unused (bool backup)
   for (size_t i = 0; i < clips_.size (); ++i)
     {
       auto &clip = clips_[i];
-      if (clip && !clip->is_in_use (true))
+      if (clip && !PROJECT->is_audio_clip_in_use (*clip, true))
         {
           z_info ("unused clip [{}]: {}", i, clip->get_name ());
           remove_clip (i, true, backup);
@@ -232,7 +343,7 @@ AudioPool::remove_unused (bool backup)
           if (!clip)
             continue;
 
-          if (clip->get_path_in_pool (backup) == path)
+          if (get_clip_path (*clip, backup) == fs::path (path.toStdString ()))
             {
               found = true;
               break;
@@ -257,12 +368,13 @@ AudioPool::reload_clip_frame_bufs ()
       if (!clip)
         continue;
 
-      bool in_use = clip->is_in_use (false);
+      const auto in_use = PROJECT->is_audio_clip_in_use (*clip, false);
 
       if (in_use && clip->get_num_frames () == 0)
         {
           /* load from the file */
-          clip->init_loaded ();
+          clip->init_loaded (get_clip_path_from_name (
+            clip->get_name (), clip->get_use_flac (), false));
         }
       else if (!in_use && clip->get_num_frames () > 0)
         {
@@ -312,10 +424,10 @@ AudioPool::write_to_disk (bool is_backup)
     {
       if (clip)
         {
-          pool.addJob ([&clip, is_backup, &error_message, &error_mutex] () {
+          pool.addJob ([this, &clip, is_backup, &error_message, &error_mutex] () {
             try
               {
-                clip->write_to_pool (false, is_backup);
+                write_clip (*clip, false, is_backup);
               }
             catch (const ZrythmException &e)
               {
@@ -351,7 +463,7 @@ AudioPool::print () const
       const auto &clip = clips_[i];
       if (clip)
         {
-          auto pool_path = clip->get_path_in_pool (false);
+          auto pool_path = get_clip_path (*clip, false);
           ss << fmt::format (
             "[Clip #{}] {} ({}): {}\n", i, clip->get_name (),
             clip->get_file_hash (), pool_path);

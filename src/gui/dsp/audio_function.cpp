@@ -503,7 +503,9 @@ audio_function_apply (
     case AudioFunctionType::ExternalProgram:
       {
         AudioClip tmp_clip_before (
-          src_frames, AudioClip::BitDepth::BIT_DEPTH_32, "tmp-clip");
+          src_frames, AudioClip::BitDepth::BIT_DEPTH_32,
+          AUDIO_ENGINE->sample_rate_, P_TEMPO_TRACK->get_current_bpm (),
+          "tmp-clip");
         auto tmp_clip = tmp_clip_before.edit_in_ext_program ();
         for (int i = 0; i < channels; ++i)
           {
@@ -562,11 +564,12 @@ audio_function_apply (
 #endif
 
   int  id = AUDIO_POOL->add_clip (std::make_unique<AudioClip> (
-    dest_frames, AudioClip::BitDepth::BIT_DEPTH_32, orig_clip->get_name ()));
+    dest_frames, AudioClip::BitDepth::BIT_DEPTH_32, AUDIO_ENGINE->sample_rate_,
+    P_TEMPO_TRACK->get_current_bpm (), orig_clip->get_name ()));
   auto clip = AUDIO_POOL->get_clip (id);
   z_debug (
     "writing {} to pool (id {})", clip->get_name (), clip->get_pool_id ());
-  clip->write_to_pool (false, false);
+  AUDIO_POOL->write_clip (*clip, false, false);
 
   audio_sel.pool_id_ = clip->get_pool_id ();
 

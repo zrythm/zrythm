@@ -10,6 +10,7 @@ target_sources(zrythm_dsp_lib
   curve.cpp
   ditherer.h
   ditherer.cpp
+  dsp.h
   kmeter_dsp.h
   kmeter_dsp.cpp
   panning.h
@@ -30,7 +31,8 @@ target_sources(zrythm_dsp_lib
   true_peak_dsp.cpp
 )
 
-target_precompile_headers(zrythm_dsp_lib REUSE_FROM zrythm_utils_lib)
+target_precompile_headers(zrythm_dsp_lib PUBLIC
+  $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/dsp.h>)
 
 target_link_libraries(zrythm_dsp_lib PUBLIC ${zrythm_link_libs} zrythm_utils_lib)
 target_include_directories(zrythm_dsp_lib PUBLIC ${zrythm_include_dirs})

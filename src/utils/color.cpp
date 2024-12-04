@@ -252,6 +252,14 @@ Color::to_hex () const
   return rgb_to_hex (red_, green_, blue_);
 }
 
+void
+Color::define_fields (const Context &ctx)
+{
+  serialize_fields (
+    ctx, make_field ("red", red_), make_field ("green", green_),
+    make_field ("blue", blue_), make_field ("alpha", alpha_));
+}
+
 bool
 operator== (const Color &lhs, const Color &rhs)
 {

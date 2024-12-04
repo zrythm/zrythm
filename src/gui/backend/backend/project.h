@@ -367,6 +367,15 @@ public:
    */
   void add_default_tracks ();
 
+  /**
+   * Returns whether the clip is used inside the project.
+   *
+   * @param check_undo_stack If true, this checks both project regions and the
+   * undo stack. If false, this only checks actual project regions only.
+   */
+  bool
+  is_audio_clip_in_use (const AudioClip &clip, bool check_undo_stack) const;
+
 private:
   /**
    * Sets (and creates on the disk) the next available backup dir to use for

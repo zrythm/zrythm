@@ -83,6 +83,45 @@ Project::~Project ()
   loaded_ = false;
 }
 
+bool
+Project::is_audio_clip_in_use (const AudioClip &clip, bool check_undo_stack) const
+{
+  {
+    bool found_in_tracklist = std::ranges::any_of (
+      tracklist_->tracks_, [&clip] (const auto &track_var) {
+        return std::visit (
+          [&] (auto &&track) {
+            using TrackT = base_type<decltype (track)>;
+            if constexpr (std::is_same_v<TrackT, AudioTrack>)
+              {
+                for (auto &lane_var : track->lanes_)
+                  {
+                    auto * lane = std::get<AudioLane *> (lane_var);
+                    for (auto region_var : lane->region_list_->regions_)
+                      {
+                        auto * region = std::get<AudioRegion *> (region_var);
+                        if (region->pool_id_ == clip.get_pool_id ())
+                          return true;
+                      }
+                  }
+              }
+            return false;
+          },
+          track_var);
+      });
+
+    if (found_in_tracklist)
+      return true;
+  }
+
+  if (check_undo_stack)
+    {
+      return UNDO_MANAGER->contains_clip (clip);
+    }
+
+  return false;
+}
+
 std::string
 Project::get_newer_backup ()
 {

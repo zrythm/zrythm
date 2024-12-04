@@ -1,21 +1,15 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Audio clip.
- */
+#ifndef ZRYTHM_DSP_AUDIO_CLIP_H
+#define ZRYTHM_DSP_AUDIO_CLIP_H
 
-#ifndef __AUDIO_CLIP_H__
-#define __AUDIO_CLIP_H__
-
-#include "juce_wrapper.h"
 #include "utils/audio.h"
 #include "utils/audio_file.h"
 #include "utils/hash.h"
 #include "utils/icloneable.h"
 #include "utils/iserializable.h"
+#include "utils/monotonic_time_provider.h"
 #include "utils/types.h"
 
 using namespace zrythm;
@@ -27,7 +21,8 @@ using namespace zrythm;
  */
 class AudioClip final
     : public zrythm::utils::serialization::ISerializable<AudioClip>,
-      public ICloneable<AudioClip>
+      public ICloneable<AudioClip>,
+      private utils::QElapsedTimeProvider
 {
 public:
   using BitDepth = zrythm::utils::audio::BitDepth;
@@ -41,11 +36,17 @@ public:
   /**
    * Creates an audio clip from a file.
    *
-   * The name used is the basename of the file.
+   * The basename of the file will be used as the name of the clip.
+   *
+   * @param current_bpm Current BPM from TempoTrack. @ref bpm_ will be set to
+   * this. FIXME: should this be optional? does "current" BPM make sense?
    *
    * @throw ZrythmException on error.
    */
-  AudioClip (const std::string &full_path);
+  AudioClip (
+    const std::string &full_path,
+    sample_rate_t      project_sample_rate,
+    bpm_t              current_bpm);
 
   /**
    * Creates an audio clip by copying the given buffer.
@@ -56,6 +57,8 @@ public:
   AudioClip (
     const utils::audio::AudioBuffer &buf,
     utils::audio::BitDepth           bit_depth,
+    sample_rate_t                    project_sample_rate,
+    bpm_t                            current_bpm,
     const std::string               &name);
 
   /**
@@ -71,10 +74,14 @@ public:
     unsigned_frame_t               nframes,
     channels_t                     channels,
     zrythm::utils::audio::BitDepth bit_depth,
+    sample_rate_t                  project_sample_rate,
+    bpm_t                          current_bpm,
     const std::string             &name)
       : AudioClip (
           *utils::audio::AudioBuffer::from_interleaved (arr, nframes, channels),
           bit_depth,
+          project_sample_rate,
+          current_bpm,
           name)
   {
   }
@@ -91,6 +98,8 @@ public:
   AudioClip (
     channels_t         channels,
     unsigned_frame_t   nframes,
+    sample_rate_t      project_sample_rate,
+    bpm_t              current_bpm,
     const std::string &name);
 
 public:
@@ -108,9 +117,10 @@ public:
   /**
    * Inits after loading a Project.
    *
+   * @param full_path Full path to the corresponding audio file in the pool.
    * @throw ZrythmException on error.
    */
-  void init_loaded ();
+  void init_loaded (const fs::path &full_path);
 
   /**
    * Shows a dialog with info on how to edit a file, with an option to open an
@@ -148,6 +158,7 @@ public:
 
   void set_name (const std::string &name) { name_ = name; }
   void set_pool_id (PoolId id) { pool_id_ = id; }
+  void set_file_hash (utils::hash::HashT hash) { file_hash_ = hash; }
 
   /**
    * @brief Expands (appends to the end) the frames in the clip by the given
@@ -193,53 +204,6 @@ public:
     ch_frames_.setSize (ch_frames_.getNumChannels (), 0, false, true);
   }
 
-  /**
-   * Writes the clip to the pool as a wav file.
-   *
-   * @param parts If true, only write new data. @see AudioClip.frames_written.
-   * @param is_backup Whether writing to a backup project.
-   *
-   * @throw ZrythmException on error.
-   */
-  void write_to_pool (bool parts, bool is_backup);
-
-  /**
-   * Gets the path of a clip matching @ref name from the pool.
-   *
-   * @param use_flac Whether to look for a FLAC file instead of a wav file.
-   * @param is_backup Whether writing to a backup project.
-   */
-  static std::string get_path_in_pool_from_name (
-    const std::string &name,
-    bool               use_flac,
-    bool               is_backup);
-
-  /**
-   * Gets the path of the given clip from the pool.
-   *
-   * @param is_backup Whether writing to a backup project.
-   */
-  std::string get_path_in_pool (bool is_backup) const;
-
-  /**
-   * Returns whether the clip is used inside the project.
-   *
-   * @param check_undo_stack If true, this checks both project regions and the
-   * undo stack. If false, this only checks actual project regions only.
-   */
-  bool is_in_use (bool check_undo_stack) const;
-
-  /**
-   * To be called by audio_pool_remove_clip().
-   *
-   * Removes the file associated with the clip.
-   *
-   * @param backup Whether to remove from backup directory.
-   *
-   * @throw ZrythmException If the file cannot be removed.
-   */
-  void remove (bool backup);
-
   auto get_num_channels () const { return ch_frames_.getNumChannels (); };
   auto get_num_frames () const { return ch_frames_.getNumSamples (); };
 
@@ -251,8 +215,20 @@ public:
 
   /**
    * @brief Used during tests to verify that the recorded file is valid.
+   *
+   * @param current_bpm Current BPM from TempoTrack, used when creating a
+   * temporary clip from the filepath.
    */
-  bool verify_recorded_file (const fs::path &filepath) const;
+  bool verify_recorded_file (
+    const fs::path &filepath,
+    sample_rate_t   project_sample_rate,
+    bpm_t           current_bpm) const;
+
+  /**
+   * @brief Returns whether enough time has elapsed since the last write to
+   * file. This is used so that writing to file is done in chunks.
+   */
+  bool enough_time_elapsed_since_last_write () const;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -261,11 +237,15 @@ private:
    * @brief Initializes members from an audio file.
    *
    * @param full_path Path to the file.
-   * @param set_bpm Whether to set the BPM of the clip.
+   * @param bpm_to_set BPM of the clip to set (optional - obtained from current
+   * BPM in TempoTrack).
    *
    * @throw ZrythmException on I/O error.
    */
-  void init_from_file (const std::string &full_path, bool set_bpm);
+  void init_from_file (
+    const std::string   &full_path,
+    sample_rate_t        project_sample_rate,
+    std::optional<bpm_t> bpm_to_set);
 
 private:
   /** Name of the clip. */
@@ -279,13 +259,13 @@ private:
   /**
    * BPM of the clip, or BPM of the project when the clip was first loaded.
    */
-  bpm_t bpm_ = 0.f;
+  bpm_t bpm_{};
 
   /**
    * Samplerate of the clip, or samplerate when the clip was imported into the
    * project.
    */
-  int samplerate_ = 0;
+  sample_rate_t samplerate_{};
 
   /**
    * Bit depth of the clip when the clip was imported into the project.
@@ -293,7 +273,7 @@ private:
   utils::audio::BitDepth bit_depth_{};
 
   /** Whether the clip should use FLAC when being serialized. */
-  bool use_flac_ = false;
+  bool use_flac_{ false };
 
   /** ID in the audio pool. */
   PoolId pool_id_{};
@@ -306,7 +286,7 @@ private:
    *
    * Used when writing in chunks/parts.
    */
-  unsigned_frame_t frames_written_ = 0;
+  unsigned_frame_t frames_written_{};
 
   /**
    * Time the last write took place.
@@ -315,7 +295,7 @@ private:
    *
    * @see AudioClip.frames_written.
    */
-  std::uint64_t last_write_ = 0;
+  utils::MonotonicTime last_write_{};
 
   /**
    * @brief Audio writer mainly to be used during recording to write data

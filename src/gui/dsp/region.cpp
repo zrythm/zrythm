@@ -641,7 +641,7 @@ RegionImpl<RegionT>::stretch (double ratio)
       auto num_frames_per_channel = new_clip->get_num_frames ();
       z_return_if_fail (num_frames_per_channel > 0);
 
-      new_clip->write_to_pool (false, false);
+      AUDIO_POOL->write_clip (*new_clip, false, false);
 
       /* readjust end position to match the number of frames exactly */
       dsp::Position new_end_pos (

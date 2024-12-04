@@ -1538,7 +1538,8 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
                     num_frames
                     == (unsigned_frame_t) src_clip->get_num_frames ());
 
-                  auto src_clip_path = src_clip->get_path_in_pool (false);
+                  auto src_clip_path =
+                    AUDIO_POOL->get_clip_path (*src_clip, false);
                   z_debug (
                     "replacing audio region {} frames with {} frames", r->name_,
                     src_clip_path);

@@ -7,6 +7,7 @@
 #include "gui/dsp/clip.h"
 
 class Track;
+class AudioEngine;
 
 /**
  * @addtogroup dsp
@@ -63,6 +64,32 @@ public:
    * Returns the clip for the given ID.
    */
   AudioClip * get_clip (int clip_id);
+
+  /**
+   * Gets the path of a clip matching @ref name from the pool.
+   *
+   * @param use_flac Whether to look for a FLAC file instead of a wav file.
+   * @param is_backup Whether writing to a backup project.
+   */
+  static fs::path
+  get_clip_path_from_name (const std::string &name, bool use_flac, bool is_backup);
+
+  /**
+   * Gets the path of the given clip from the pool.
+   *
+   * @param is_backup Whether writing to a backup project.
+   */
+  static fs::path get_clip_path (const AudioClip &clip, bool is_backup);
+
+  /**
+   * Writes the clip to the pool as a wav file.
+   *
+   * @param parts If true, only write new data. @see AudioClip.frames_written.
+   * @param backup Whether writing to a backup project.
+   *
+   * @throw ZrythmException on error.
+   */
+  void write_clip (AudioClip &clip, bool parts, bool backup);
 
   /**
    * Removes the clip with the given ID from the pool and optionally frees it

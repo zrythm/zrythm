@@ -316,7 +316,7 @@ Track::insert_region (
         {
           auto clip = added_region->get_clip ();
           z_return_val_if_fail (clip, nullptr);
-          clip->write_to_pool (false, false);
+          AUDIO_POOL->write_clip (*clip, false, false);
         }
     }
 

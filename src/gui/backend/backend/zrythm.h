@@ -14,12 +14,13 @@
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/plugin_manager.h"
 #include "gui/dsp/recording_manager.h"
-
-#include "juce_wrapper.h"
 #include "utils/dsp_context.h"
+#include "utils/monotonic_time_provider.h"
 #include "utils/networking.h"
 #include "utils/string_array.h"
 #include "utils/symap.h"
+
+#include "juce_wrapper.h"
 
 /**
  * @addtogroup general
@@ -41,7 +42,7 @@
  *
  * Everything here should be global and function regardless of the project.
  */
-class Zrythm final : public QObject
+class Zrythm final : public QObject, public utils::QElapsedTimeProvider
 {
   Q_OBJECT
   QML_ELEMENT
@@ -127,16 +128,6 @@ public:
   void init_user_dirs_and_files ();
 
   FileManager &get_file_manager () { return file_manager_; }
-
-  qint64 get_monotonic_time_nsecs () const
-  {
-    return elapsed_timer_.nsecsElapsed ();
-  }
-
-  qint64 get_monotonic_time_usecs () const
-  {
-    return get_monotonic_time_nsecs () / 1000;
-  }
 
 private:
   Zrythm ();
@@ -250,8 +241,6 @@ public:
    * @brief Whether currently running under the benchmarker.
    */
   bool benchmarking_ = false;
-
-  QElapsedTimer elapsed_timer_;
 
   JUCE_DECLARE_SINGLETON_SINGLETHREADED (Zrythm, false)
 

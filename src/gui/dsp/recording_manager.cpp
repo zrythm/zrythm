@@ -131,7 +131,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
           AudioClip * clip = ar->get_clip ();
           try
             {
-              clip->write_to_pool (true, false);
+              AUDIO_POOL->write_clip (*clip, true, false);
               clip->finalize_buffered_write ();
             }
           catch (const ZrythmException &ex)
@@ -808,21 +808,12 @@ RecordingManager::handle_audio_event (const RecordingEvent &ev)
   buf_to_append.copyFrom (1, 0, ev.rbuf_.data (), ev.nframes_);
   clip->expand_with_frames (buf_to_append);
 
-  /* write to pool if 2 seconds passed since last write */
-  auto   cur_time = Zrythm::getInstance ()->get_monotonic_time_usecs ();
-  qint64 usec_to_wait = 2 * 1000 * 1000;
-  if (ZRYTHM_TESTING)
-    {
-      usec_to_wait = 20 * 1000;
-    }
-  if (
-    static_cast<decltype (usec_to_wait)> (
-      cur_time - clip->get_last_write_to_file ())
-    > usec_to_wait)
+  /* write to pool if enough time passed since last write */
+  if (clip->enough_time_elapsed_since_last_write ())
     {
       try
         {
-          clip->write_to_pool (true, false);
+          AUDIO_POOL->write_clip (*clip, true, false);
         }
       catch (const ZrythmException &ex)
         {

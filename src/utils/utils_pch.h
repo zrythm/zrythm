@@ -45,19 +45,4 @@
 /* FIXME compilation fails with internal compiler errors if this is included */
 #include "juce_wrapper.h"
 
-/* ====================================== */
-/*             zrythm headers             */
-/* ====================================== */
-
-#include "utils/exceptions.h"
-#include "utils/hash.h"
-#include "utils/icloneable.h"
-#include "utils/io.h"
-#include "utils/iserializable.h"
-#include "utils/math.h"
-#include "utils/midi.h"
-#include "utils/string.h"
-#include "utils/traits.h"
-#include "utils/types.h"
-
 #endif /* __PCH_ZRYTHM_PCH_H__ */

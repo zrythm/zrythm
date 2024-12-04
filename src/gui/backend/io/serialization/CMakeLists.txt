@@ -11,7 +11,6 @@ target_sources(zrythm_gui_lib
     channel.cpp
     gui_backend.cpp
     engine.cpp
-    extra.cpp
     plugin.cpp
     port.cpp
     project.cpp

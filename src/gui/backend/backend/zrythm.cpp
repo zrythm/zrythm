@@ -37,7 +37,6 @@ Zrythm::Zrythm ()
         std::make_unique<zrythm::gui::old_dsp::plugins::PluginManager> ())
 {
   z_return_if_fail (!engine::AudioEngineApplication::is_audio_engine_process ());
-  elapsed_timer_.start ();
 }
 
 void

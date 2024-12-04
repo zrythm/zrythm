@@ -62,18 +62,23 @@ AudioRegion::init_default_constructed (
       std::unique_ptr<AudioClip> tmp_clip;
       if (filepath)
         {
-          tmp_clip = std::make_unique<AudioClip> (*filepath);
+          tmp_clip = std::make_unique<AudioClip> (
+            *filepath, AUDIO_ENGINE->sample_rate_,
+            P_TEMPO_TRACK->get_current_bpm ());
         }
       else if (audio_buffer)
         {
           z_return_if_fail (clip_name.has_value ());
-          tmp_clip =
-            std::make_unique<AudioClip> (*audio_buffer, *bit_depth, *clip_name);
+          tmp_clip = std::make_unique<AudioClip> (
+            *audio_buffer, *bit_depth, AUDIO_ENGINE->sample_rate_,
+            P_TEMPO_TRACK->get_current_bpm (), *clip_name);
         }
       else if (num_frames_for_recording && num_channels_for_recording)
         {
           tmp_clip = std::make_unique<AudioClip> (
-            *num_channels_for_recording, *num_frames_for_recording, *clip_name);
+            *num_channels_for_recording, *num_frames_for_recording,
+            AUDIO_ENGINE->sample_rate_, P_TEMPO_TRACK->get_current_bpm (),
+            *clip_name);
           recording = true;
         }
       else
@@ -176,7 +181,7 @@ AudioRegion::replace_frames (
 
   clip->replace_frames (src_frames, start_frame);
 
-  clip->write_to_pool (false, F_NOT_BACKUP);
+  AUDIO_POOL->write_clip (*clip, false, false);
 }
 
 void

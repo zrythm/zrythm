@@ -55,6 +55,7 @@ target_sources(zrythm_utils_lib
     mem.cpp
     midi.h
     midi.cpp
+    monotonic_time_provider.h
     mpmc_queue.h
     networking.h
     networking.cpp
@@ -80,6 +81,7 @@ target_sources(zrythm_utils_lib
     string_array.cpp
     symap.h
     symap.cpp
+    utils.h
     # vamp.h
     # vamp.cpp
     windows.h
@@ -89,11 +91,8 @@ target_sources(zrythm_utils_lib
     yaml.h
     yaml.cpp)
 
-# precompile header
-set(zrythm_pch ${CMAKE_CURRENT_SOURCE_DIR}/utils_pch.h)
-target_precompile_headers(zrythm_utils_lib
-  PUBLIC
-    $<$<COMPILE_LANGUAGE:CXX>:${zrythm_pch}>)
+target_precompile_headers(zrythm_utils_lib PUBLIC
+  $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/utils.h>)
 
 target_include_directories(zrythm_utils_lib PUBLIC ${zrythm_include_dirs})
 target_compile_options(zrythm_utils_lib PUBLIC ${zrythm_compile_args})

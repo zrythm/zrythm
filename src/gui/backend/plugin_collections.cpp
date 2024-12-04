@@ -19,10 +19,9 @@ bool
 PluginCollection::contains_descriptor (
   const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr) const
 {
-  return std::any_of (
-    descriptors_.begin (), descriptors_.end (), [&descr] (const auto &cur_descr) {
-      return descr.is_same_plugin (*cur_descr);
-    });
+  return std::ranges::any_of (descriptors_, [&descr] (const auto &cur_descr) {
+    return descr.is_same_plugin (*cur_descr);
+  });
 }
 
 void

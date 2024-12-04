@@ -266,8 +266,9 @@ TracklistSelectionsAction::TracklistSelectionsAction (
         }
       else if (track_type == Track::Type::Audio)
         {
-          pool_id_ = AUDIO_POOL->add_clip (
-            std::make_unique<AudioClip> (file_descr->abs_path_));
+          pool_id_ = AUDIO_POOL->add_clip (std::make_unique<AudioClip> (
+            file_descr->abs_path_, AUDIO_ENGINE->sample_rate_,
+            P_TEMPO_TRACK->get_current_bpm ()));
         }
       else
         {
