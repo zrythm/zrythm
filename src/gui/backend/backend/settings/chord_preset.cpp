@@ -30,7 +30,7 @@ ChordPreset::get_info_text () const
   bool have_any = false;
   for (const auto &descr : descr_)
     {
-      if (descr.type_ == ChordType::None)
+      if (descr.type_ == dsp::ChordType::None)
         break;
 
       str += descr.to_string ();

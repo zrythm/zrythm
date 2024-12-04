@@ -1,31 +1,19 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Musical scales.
- *
- * See https://pianoscales.org/
- */
+#ifndef ZRYTHM_DSP_MUSICAL_SCALE_H
+#define ZRYTHM_DSP_MUSICAL_SCALE_H
 
-#ifndef __AUDIO_SCALE_H__
-#define __AUDIO_SCALE_H__
-
-#include <cstdint>
-
-#include "gui/dsp/chord_descriptor.h"
-
+#include "dsp/chord_descriptor.h"
 #include "utils/iserializable.h"
 
-/**
- * @addtogroup dsp
- *
- * @{
- */
+namespace zrythm::dsp
+{
 
 /**
  * Musical scale descriptor.
+ *
+ * @see https://pianoscales.org/
  */
 class MusicalScale
     : public zrythm::utils::serialization::ISerializable<MusicalScale>
@@ -196,8 +184,6 @@ operator== (const MusicalScale &lhs, const MusicalScale &rhs)
   return lhs.type_ == rhs.type_ && lhs.root_key_ == rhs.root_key_;
 }
 
-/**
- * @}
- */
+} // namespace zrythm::dsp
 
 #endif

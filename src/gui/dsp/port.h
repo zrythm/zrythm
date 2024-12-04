@@ -194,7 +194,7 @@ public:
   /**
    * Returns if the port is exposed to the backend.
    */
-  inline bool is_exposed_to_backend () const
+  bool is_exposed_to_backend () const
   {
     return internal_type_ == InternalType::JackPort
            || id_->owner_type_ == PortIdentifier::OwnerType::AudioEngine
@@ -323,7 +323,7 @@ private:
   /**
    * Sends the port data to JACK, after the port is processed.
    */
-  void send_data_to_jack (const nframes_t start_frame, const nframes_t nframes);
+  void send_data_to_jack (nframes_t start_frame, nframes_t nframes);
 
   /**
    * Sets whether to expose the port to JACK and exposes it or removes it from

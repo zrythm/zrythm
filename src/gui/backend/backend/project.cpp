@@ -406,8 +406,8 @@ Project::add_default_tracks ()
 
   /* add a scale */
   {
-    auto * scale = new ScaleObject (
-      MusicalScale (MusicalScale::Type::Aeolian, MusicalNote::A));
+    auto * scale = new ScaleObject (dsp::MusicalScale (
+      dsp::MusicalScale::Type::Aeolian, dsp::MusicalNote::A));
     tracklist_->chord_track_->add_scale (*scale);
   }
 

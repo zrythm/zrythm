@@ -237,7 +237,6 @@ dsp/pool
 dsp/port
 dsp/region
 dsp/sample_processor
-dsp/scale
 dsp/snap_grid
 dsp/tempo_track
 dsp/track

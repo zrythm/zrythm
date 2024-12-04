@@ -4,12 +4,11 @@
 #ifndef __AUDIO_CHORD_OBJECT_H__
 #define __AUDIO_CHORD_OBJECT_H__
 
+#include "dsp/chord_descriptor.h"
 #include "gui/dsp/arranger_object.h"
-#include "gui/dsp/chord_descriptor.h"
 #include "gui/dsp/muteable_object.h"
 #include "gui/dsp/region_identifier.h"
 #include "gui/dsp/region_owned_object.h"
-
 #include "utils/icloneable.h"
 
 /**
@@ -24,10 +23,12 @@ constexpr int CHORD_OBJECT_MAGIC = 4181694;
 
 #define CHORD_OBJECT_WIDGET_TRIANGLE_W 10
 
-#define chord_object_is_selected(r) \
-  arranger_object_is_selected ((ArrangerObject *) r)
+using namespace zrythm;
 
+namespace zrythm::dsp
+{
 class ChordDescriptor;
+}
 class ChordRegion;
 
 /**
@@ -53,6 +54,9 @@ class ChordObject final
   Q_OBJECT
   QML_ELEMENT
   DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (ChordObject)
+
+public:
+  using ChordDescriptor = dsp::ChordDescriptor;
 
 public:
   ChordObject (QObject * parent = nullptr);

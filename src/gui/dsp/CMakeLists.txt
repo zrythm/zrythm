@@ -39,8 +39,6 @@ target_sources(zrythm_gui_lib
     channel_send.cpp
     channel_track.h
     channel_track.cpp
-    chord_descriptor.h
-    chord_descriptor.cpp
     chord_object.h
     chord_object.cpp
     chord_region.h
@@ -189,8 +187,6 @@ target_sources(zrythm_gui_lib
     rtmidi_device.cpp
     sample_processor.h
     sample_processor.cpp
-    scale.h
-    scale.cpp
     scale_object.h
     scale_object.cpp
     snap_grid.h

@@ -191,14 +191,6 @@ AutomationRegion::define_fields (const Context &ctx)
 }
 
 void
-MusicalScale::define_fields (const Context &ctx)
-{
-  ISerializable<MusicalScale>::serialize_fields (
-    ctx, ISerializable<MusicalScale>::make_field ("type", type_),
-    ISerializable<MusicalScale>::make_field ("rootKey", root_key_));
-}
-
-void
 ScaleObject::define_fields (const Context &ctx)
 {
   ArrangerObject::define_base_fields (ctx);

@@ -4,9 +4,9 @@
 #ifndef __UNDO_CHORD_ACTION_H__
 #define __UNDO_CHORD_ACTION_H__
 
+#include "dsp/chord_descriptor.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/backend/backend/chord_editor.h"
-#include "gui/dsp/chord_descriptor.h"
 
 namespace zrythm::gui::actions
 {
@@ -18,13 +18,15 @@ class ChordAction final
     : public QObject,
       public UndoableAction,
       public ICloneable<ChordAction>,
-      public zrythm::utils::serialization::ISerializable<ChordAction>
+      public utils::serialization::ISerializable<ChordAction>
 {
   Q_OBJECT
   QML_ELEMENT
   DEFINE_UNDOABLE_ACTION_QML_PROPERTIES (ChordAction)
 
 public:
+  using ChordDescriptor = dsp::ChordDescriptor;
+
   /**
    * Type of chord action.
    */

@@ -1,14 +1,14 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-# include "gui/dsp/chord_descriptor.h"
-#include "utils/logger.h"
-#include "utils/rt_thread_id.h"
+#include "dsp/chord_descriptor.h"
 #include "gui/backend/backend/actions/chord_action.h"
 #include "gui/backend/backend/chord_editor.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/chord_preset.h"
 #include "gui/backend/backend/zrythm.h"
+#include "utils/logger.h"
+#include "utils/rt_thread_id.h"
 
 void
 ChordEditor::init ()
@@ -143,7 +143,7 @@ ChordEditor::transpose_chords (bool up, bool undoable)
   apply_chords (new_chords, undoable);
 }
 
-ChordDescriptor *
+ChordEditor::ChordDescriptor *
 ChordEditor::get_chord_from_note_number (midi_byte_t note_number)
 {
   if (note_number < 60 || note_number >= 72)

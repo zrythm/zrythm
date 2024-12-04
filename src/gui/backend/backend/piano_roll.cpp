@@ -75,12 +75,13 @@ PianoRoll::init_descriptors ()
       descr.custom_name_ = "";
 
       descr.note_name_ =
-        std::string (ChordDescriptor::note_to_string (
-          ENUM_INT_TO_VALUE (MusicalNote, i % 12)))
+        std::string (dsp::ChordDescriptor::note_to_string (
+          ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)))
         + std::to_string (i / 12 - 1);
       descr.note_name_pango_ = fmt::format (
         "{}<sup>{}</sup>",
-        ChordDescriptor::note_to_string (ENUM_INT_TO_VALUE (MusicalNote, i % 12)),
+        dsp::ChordDescriptor::note_to_string (
+          ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)),
         i / 12 - 1);
       idx++;
     }
@@ -98,12 +99,13 @@ PianoRoll::init_descriptors ()
       descr.custom_name_ = drum_labels[idx];
 
       descr.note_name_ =
-        std::string (ChordDescriptor::note_to_string (
-          ENUM_INT_TO_VALUE (MusicalNote, i % 12)))
+        std::string (dsp::ChordDescriptor::note_to_string (
+          ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)))
         + std::to_string (i / 12 - 1);
       descr.note_name_pango_ = fmt::format (
         "{}<sup>{}</sup>",
-        ChordDescriptor::note_to_string (ENUM_INT_TO_VALUE (MusicalNote, i % 12)),
+        dsp::ChordDescriptor::note_to_string (
+          ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)),
         i / 12 - 1);
       idx++;
     }
@@ -120,16 +122,18 @@ PianoRoll::init_descriptors ()
       descr.visible_ = true;
       descr.custom_name_ = fmt::format (
         "#{}: {}{}", i,
-        ChordDescriptor::note_to_string (ENUM_INT_TO_VALUE (MusicalNote, i % 12)),
+        dsp::ChordDescriptor::note_to_string (
+          ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)),
         i / 12 - 1);
 
       descr.note_name_ =
-        std::string (ChordDescriptor::note_to_string (
-          ENUM_INT_TO_VALUE (MusicalNote, i % 12)))
+        std::string (dsp::ChordDescriptor::note_to_string (
+          ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)))
         + std::to_string (i / 12 - 1);
       descr.note_name_pango_ = fmt::format (
         "{}<sup>{}</sup>",
-        ChordDescriptor::note_to_string (ENUM_INT_TO_VALUE (MusicalNote, i % 12)),
+        dsp::ChordDescriptor::note_to_string (
+          ENUM_INT_TO_VALUE (dsp::MusicalNote, i % 12)),
         i / 12 - 1);
       idx++;
     }

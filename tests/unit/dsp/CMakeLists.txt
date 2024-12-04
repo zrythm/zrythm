@@ -2,9 +2,11 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_executable(dsp_unit_tests
+  chord_descriptor_test.cpp
   curve_test.cpp
   ditherer_test.cpp
   kmeter_dsp_test.cpp
+  musical_scale_test.cpp
   panning_test.cpp
   peak_dsp_test.cpp
   peak_fall_smooth_test.cpp

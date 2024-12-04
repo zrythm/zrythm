@@ -1,27 +1,15 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Descriptors for chords.
- */
-
-#ifndef __AUDIO_CHORD_DESCRIPTOR_H__
-#define __AUDIO_CHORD_DESCRIPTOR_H__
-
-/**
- * @addtogroup dsp
- *
- * @{
- */
+#ifndef ZRYTHM_DSP_CHORD_DESCRIPTOR_H
+#define ZRYTHM_DSP_CHORD_DESCRIPTOR_H
 
 #include <string>
-#include <vector>
 
 #include "utils/iserializable.h"
 
-constexpr int CHORD_DESCRIPTOR_MAX_NOTES = 48;
+namespace zrythm::dsp
+{
 
 enum class MusicalNote
 {
@@ -89,8 +77,11 @@ enum class ChordAccent
  * Chord objects should include a ChordDescriptor.
  */
 class ChordDescriptor
-  final : public zrythm::utils::serialization::ISerializable<ChordDescriptor>
+    : public zrythm::utils::serialization::ISerializable<ChordDescriptor>
 {
+public:
+  static constexpr size_t MAX_NOTES = 48;
+
 public:
   ChordDescriptor () = default;
 
@@ -99,7 +90,7 @@ public:
    */
   ChordDescriptor (
     MusicalNote root,
-    int         has_bass,
+    bool        has_bass,
     MusicalNote bass,
     ChordType   type,
     ChordAccent accent,
@@ -110,7 +101,7 @@ public:
     update_notes ();
   }
 
-  inline int get_max_inversion () const
+  int get_max_inversion () const
   {
     int max_inv = 2;
     switch (accent_)
@@ -137,7 +128,7 @@ public:
     return max_inv;
   }
 
-  inline int get_min_inversion () const { return -get_max_inversion (); }
+  int get_min_inversion () const { return -get_max_inversion (); }
 
   /**
    * Returns if the given key is in the chord represented by the given
@@ -157,17 +148,17 @@ public:
   /**
    * Returns the chord type as a string (eg. "aug").
    */
-  static const char * chord_type_to_string (ChordType type);
+  static std::string_view chord_type_to_string (ChordType type);
 
   /**
    * Returns the chord accent as a string (eg. "j7").
    */
-  static const char * chord_accent_to_string (ChordAccent accent);
+  static std::string_view chord_accent_to_string (ChordAccent accent);
 
   /**
    * Returns the musical note as a string (eg. "C3").
    */
-  static const char * note_to_string (MusicalNote note);
+  static std::string_view note_to_string (MusicalNote note);
 
   /**
    * Returns the chord in human readable string.
@@ -210,7 +201,7 @@ public:
    *
    * Starts at C always, from MIDI pitch 36.
    */
-  std::vector<bool> notes_ = std::vector<bool> (CHORD_DESCRIPTOR_MAX_NOTES);
+  std::array<bool, MAX_NOTES> notes_{};
 
   /**
    * 0 no inversion,
@@ -228,8 +219,6 @@ operator== (const ChordDescriptor &lhs, const ChordDescriptor &rhs)
          && lhs.notes_ == rhs.notes_ && lhs.inversion_ == rhs.inversion_;
 }
 
-/**
- * @}
- */
+} // namespace zrythm::dsp
 
 #endif

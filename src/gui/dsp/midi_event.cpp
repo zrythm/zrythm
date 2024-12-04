@@ -27,17 +27,17 @@
  * ---
  */
 
+#include "dsp/chord_descriptor.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/chord_descriptor.h"
 #include "gui/dsp/engine.h"
 #include "gui/dsp/midi_event.h"
 #include "gui/dsp/processable_track.h"
 #include "gui/dsp/tracklist.h"
-
 #include "utils/gtest_wrapper.h"
 #include "utils/midi.h"
 #include "utils/rt_thread_id.h"
+
 #include <fmt/format.h>
 
 /**
@@ -560,7 +560,7 @@ MidiEventVector::add_note_ons_from_chord_descr (
     __func__, velocity, _time);
 #endif
 
-  for (int i = 0; i < CHORD_DESCRIPTOR_MAX_NOTES; i++)
+  for (size_t i = 0; i < ChordDescriptor::MAX_NOTES; ++i)
     {
       if (descr.notes_[i])
         {
@@ -575,7 +575,7 @@ MidiEventVector::add_note_offs_from_chord_descr (
   midi_byte_t            channel,
   midi_time_t            time)
 {
-  for (int i = 0; i < CHORD_DESCRIPTOR_MAX_NOTES; i++)
+  for (size_t i = 0; i < ChordDescriptor::MAX_NOTES; ++i)
     {
       if (descr.notes_[i])
         {

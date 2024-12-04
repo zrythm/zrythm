@@ -191,7 +191,7 @@ RegionImpl<RegionT>::fill_midi_events (
         if (obj.get_muted (false))
           return;
 
-        ChordDescriptor * descr = nullptr;
+        dsp::ChordDescriptor * descr = nullptr;
         if constexpr (std::is_same_v<ObjectType, ChordObject>)
           {
             descr = obj.get_chord_descriptor ();
@@ -252,7 +252,8 @@ RegionImpl<RegionT>::fill_midi_events (
               }
             else if constexpr (std::is_same_v<ObjectType, ChordObject>)
               {
-                for (int l = 0; l < CHORD_DESCRIPTOR_MAX_NOTES; l++)
+                for (
+                  size_t l = 0; l < ChordObject::ChordDescriptor::MAX_NOTES; l++)
                   {
                     if (descr->notes_[l])
                       {

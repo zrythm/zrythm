@@ -87,7 +87,7 @@ MidiRegion::MidiRegion (
   mn_end_pos.add_ticks (mn_length_ticks, AUDIO_ENGINE->frames_per_tick_);
 
   /* create midi notes */
-  for (int i = 0; i < CHORD_DESCRIPTOR_MAX_NOTES; i++)
+  for (size_t i = 0; i < ChordDescriptor::MAX_NOTES; i++)
     {
       if (descr.notes_[i])
         {

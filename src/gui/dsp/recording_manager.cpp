@@ -914,7 +914,7 @@ RecordingManager::handle_midi_event (const RecordingEvent &ev)
                   if (midi_is_note_on (buf))
                     {
                       midi_byte_t note_number = midi_get_note_number (buf);
-                      const ChordDescriptor * descr =
+                      const dsp::ChordDescriptor * descr =
                         CHORD_EDITOR->get_chord_from_note_number (note_number);
                       z_return_if_fail (descr);
                       int  chord_idx = CHORD_EDITOR->get_chord_index (*descr);

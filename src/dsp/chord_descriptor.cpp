@@ -1,25 +1,26 @@
-// SPDX-FileCopyrightText: © 2018-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cstdlib>
 #include <cstring>
 
-#include "gui/dsp/chord_descriptor.h"
-
+#include "dsp/chord_descriptor.h"
 #include "utils/midi.h"
-#include "utils/objects.h"
+
+namespace zrythm::dsp
+{
 
 /**
  * This edits the last 36 notes, skipping the first 12.
  */
 static void
-invert_chord (std::vector<bool> &notes, int inversion)
+invert_chord (auto &notes, int inversion)
 {
   if (inversion > 0)
     {
       for (int i = 0; i < inversion; i++)
         {
-          for (int j = 12; j < CHORD_DESCRIPTOR_MAX_NOTES; j++)
+          for (size_t j = 12; j < ChordDescriptor::MAX_NOTES; j++)
             {
               if (notes[j])
                 {
@@ -34,7 +35,7 @@ invert_chord (std::vector<bool> &notes, int inversion)
     {
       for (int i = 0; i < -inversion; i++)
         {
-          for (int j = CHORD_DESCRIPTOR_MAX_NOTES - 1; j >= 12; j--)
+          for (int j = ChordDescriptor::MAX_NOTES - 1; j >= 12; j--)
             {
               if (notes[j])
                 {
@@ -47,17 +48,13 @@ invert_chord (std::vector<bool> &notes, int inversion)
     }
 }
 
-/**
- * Updates the notes array based on the current
- * settings.
- */
 void
 ChordDescriptor::update_notes ()
 {
   if (type_ == ChordType::Custom)
     return;
 
-  notes_.assign (CHORD_DESCRIPTOR_MAX_NOTES, false);
+  std::ranges::fill (notes_, false);
 
   if (type_ == ChordType::None)
     return;
@@ -159,53 +156,44 @@ ChordDescriptor::update_notes ()
   invert_chord (notes_, inversion_);
 }
 
+static constexpr std::array<std::string_view, 8> chord_type_strings = {
+  "Invalid", "Maj", "min", "dim", "sus4", "sus2", "aug", "custom",
+};
+
+static constexpr std::array<std::string_view, 10> chord_accent_strings = {
+  "None",
+  "7",
+  "j7",
+  "\u266D9",
+  "9",
+  "\u266F9",
+  "11",
+  "\u266D5/\u266F11",
+  "\u266F5/\u266D13",
+  "6/13",
+};
+
 /**
  * Returns the musical note as a string (eg. "C3").
  */
-const char *
+std::string_view
 ChordDescriptor::note_to_string (MusicalNote note)
 {
   return midi_get_note_name ((midi_byte_t) note);
 }
 
-/**
- * Returns the chord type as a string (eg. "aug").
- */
-const char *
+std::string_view
 ChordDescriptor::chord_type_to_string (ChordType type)
 {
-  static const char * chord_type_strings[] = {
-    "Invalid", "Maj", "min", "dim", "sus4", "sus2", "aug", "custom",
-  };
-  return chord_type_strings[ENUM_VALUE_TO_INT (type)];
+  return chord_type_strings.at (ENUM_VALUE_TO_INT (type));
 }
 
-/**
- * Returns the chord accent as a string (eg. "j7").
- */
-const char *
+std::string_view
 ChordDescriptor::chord_accent_to_string (ChordAccent accent)
 {
-  static const char * chord_accent_strings[] = {
-    "None",
-    "7",
-    "j7",
-    "\u266D9",
-    "9",
-    "\u266F9",
-    "11",
-    "\u266D5/\u266F11",
-    "\u266F5/\u266D13",
-    "6/13",
-  };
-  return chord_accent_strings[ENUM_VALUE_TO_INT (accent)];
+  return chord_accent_strings.at (ENUM_VALUE_TO_INT (accent));
 }
 
-/**
- * Returns if @ref key is the bass or root note of @ref chord.
- *
- * @param key A note inside a single octave (0-11).
- */
 bool
 ChordDescriptor::is_key_bass (MusicalNote key) const
 {
@@ -213,18 +201,10 @@ ChordDescriptor::is_key_bass (MusicalNote key) const
     {
       return bass_note_ == key;
     }
-  else
-    {
-      return root_note_ == key;
-    }
+
+  return root_note_ == key;
 }
 
-/**
- * Returns if the given key is in the chord represented by the given
- * ChordDescriptor.
- *
- * @param key A note inside a single octave (0-11).
- */
 bool
 ChordDescriptor::is_key_in_chord (MusicalNote key) const
 {
@@ -233,12 +213,22 @@ ChordDescriptor::is_key_in_chord (MusicalNote key) const
       return true;
     }
 
-  for (int i = 0; i < CHORD_DESCRIPTOR_MAX_NOTES; i++)
+  for (size_t i = 0; i < MAX_NOTES; i++)
     {
       if (notes_[i] && i % 12 == (int) key)
         return true;
     }
   return false;
+}
+
+void
+ChordDescriptor::define_fields (const Context &ctx)
+{
+  serialize_fields (
+    ctx, make_field ("hasBass", has_bass_), make_field ("rootNote", root_note_),
+    make_field ("bassNote", bass_note_), make_field ("type", type_),
+    make_field ("accent", accent_), make_field ("notes", notes_),
+    make_field ("inversion", inversion_));
 }
 
 /**
@@ -247,7 +237,7 @@ ChordDescriptor::is_key_in_chord (MusicalNote key) const
 std::string
 ChordDescriptor::to_string () const
 {
-  std::string str = note_to_string (root_note_);
+  std::string str = std::string (note_to_string (root_note_));
   str += chord_type_to_string (type_);
 
   if (accent_ > ChordAccent::None)
@@ -269,3 +259,5 @@ ChordDescriptor::to_string () const
 
   return str;
 }
+
+} // namespace zrythm::dsp

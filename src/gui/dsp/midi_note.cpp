@@ -138,16 +138,16 @@ std::string
 MidiNote::get_val_as_string (PianoRoll::NoteNotation notation, bool use_markup)
   const
 {
-  const char * note_str_musical = ChordDescriptor::note_to_string (
-    ENUM_INT_TO_VALUE (MusicalNote, val_ % 12));
-  char note_str[20];
+  const auto note_str_musical = dsp::ChordDescriptor::note_to_string (
+    ENUM_INT_TO_VALUE (dsp::MusicalNote, val_ % 12));
+  std::string note_str;
   if (notation == PianoRoll::NoteNotation::Musical)
     {
-      strcpy (note_str, note_str_musical);
+      note_str = note_str_musical;
     }
   else
     {
-      sprintf (note_str, "%d", val_);
+      note_str = fmt::format ("{}", val_);
     }
 
   const int note_val = val_ / 12 - 1;
@@ -160,10 +160,8 @@ MidiNote::get_val_as_string (PianoRoll::NoteNotation notation, bool use_markup)
         }
       return buf;
     }
-  else
-    {
-      return fmt::format ("{}{}", note_str, note_val);
-    }
+
+  return fmt::format ("{}{}", note_str, note_val);
 }
 
 void

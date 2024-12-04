@@ -2,9 +2,11 @@
 
 #include "../utils/utils.h"
 #include "./channel.h"
+#include "./chord_descriptor.h"
 #include "./curve.h"
 #include "./ditherer.h"
 #include "./kmeter_dsp.h"
+#include "./musical_scale.h"
 #include "./panning.h"
 #include "./peak_dsp.h"
 #include "./peak_fall_smooth.h"

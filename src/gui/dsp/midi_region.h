@@ -8,10 +8,15 @@
 #include "gui/dsp/midi_note.h"
 #include "gui/dsp/region.h"
 
+using namespace zrythm;
+
 class Track;
 class MidiNote;
 class MidiEventVector;
+namespace zrythm::dsp
+{
 class ChordDescriptor;
+}
 class Velocity;
 using MIDI_FILE = void;
 
@@ -41,6 +46,9 @@ class MidiRegion final
   DEFINE_REGION_QML_PROPERTIES (MidiRegion)
 
   friend class RegionImpl<MidiRegion>;
+
+public:
+  using ChordDescriptor = zrythm::dsp::ChordDescriptor;
 
 public:
   MidiRegion (QObject * parent = nullptr);
@@ -88,12 +96,12 @@ public:
    * notes size will be editor snap.
    */
   MidiRegion (
-    const Position  &pos,
-    ChordDescriptor &descr,
-    unsigned int     track_name_hash,
-    int              lane_pos,
-    int              idx_inside_lane,
-    QObject *        parent = nullptr);
+    const Position       &pos,
+    dsp::ChordDescriptor &descr,
+    unsigned int          track_name_hash,
+    int                   lane_pos,
+    int                   idx_inside_lane,
+    QObject *             parent = nullptr);
 
   // ========================================================================
   // QML Interface

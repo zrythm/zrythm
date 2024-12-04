@@ -6,14 +6,13 @@
 
 #include "zrythm-config.h"
 
+#include "dsp/chord_descriptor.h"
 #include "gui/backend/backend/chord_editor.h"
-#include "gui/dsp/chord_descriptor.h"
 #include "utils/types.h"
 
 #include <QtQmlIntegration>
 
 class ChordPresetPack;
-TYPEDEF_STRUCT_UNDERSCORED (GMenuModel);
 
 /**
  * @addtogroup settings
@@ -63,7 +62,7 @@ public:
   NameT name_;
 
   /** Chord descriptors. */
-  std::vector<ChordDescriptor> descr_;
+  std::vector<dsp::ChordDescriptor> descr_;
 
   /** Pointer to owner pack. */
   ChordPresetPack * pack_ = nullptr;

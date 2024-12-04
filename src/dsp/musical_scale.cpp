@@ -1,18 +1,10 @@
 // SPDX-FileCopyrightText: © 2018-2019, 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Musical scales.
- *
- * See https://pianoscales.org/
- */
+#include "dsp/musical_scale.h"
 
-#include "gui/dsp/chord_descriptor.h"
-#include "gui/dsp/scale.h"
-
-#include "utils/types.h"
+namespace zrythm::dsp
+{
 
 std::array<ChordType, 12>
 MusicalScale::get_triad_types_for_type (Type type, bool ascending)
@@ -301,14 +293,14 @@ MusicalScale::get_notes_for_type (Type type, bool ascending)
 
 #undef SET_NOTES
 
-  return NULL;
+  return nullptr;
 }
 
 bool
 MusicalScale::contains_note (MusicalNote note) const
 {
   if (root_key_ == note)
-    return 1;
+    return true;
 
   const bool * notes = get_notes_for_type (type_, false);
 
@@ -318,14 +310,14 @@ MusicalScale::contains_note (MusicalNote note) const
 bool
 MusicalScale::contains_chord (const ChordDescriptor &chord) const
 {
-  for (int i = 0; i < CHORD_DESCRIPTOR_MAX_NOTES; i++)
+  for (size_t i = 0; i < ChordDescriptor::MAX_NOTES; i++)
     {
       if (
         chord.notes_[i]
         && !contains_note (ENUM_INT_TO_VALUE (MusicalNote, i % 12)))
-        return 0;
+        return false;
     }
-  return 1;
+  return true;
 }
 
 /**
@@ -396,7 +388,7 @@ MusicalScale::is_accent_in_scale (
 std::string
 MusicalScale::type_to_string (Type type)
 {
-  static const char * musical_scale_type_strings[] = {
+  constexpr std::string_view musical_scale_type_strings[] = {
     QT_TR_NOOP_UTF8 ("Chromatic"),
     QT_TR_NOOP_UTF8 ("Major"),
     QT_TR_NOOP_UTF8 ("Minor"),
@@ -459,7 +451,8 @@ MusicalScale::type_to_string (Type type)
     QT_TR_NOOP_UTF8 ("Japanese 1"),
     QT_TR_NOOP_UTF8 ("Japanese 2"),
   };
-  return QObject::tr (musical_scale_type_strings[(int) type]).toStdString ();
+  return QObject::tr (musical_scale_type_strings[(int) type].data ())
+    .toStdString ();
 }
 
 std::string
@@ -468,3 +461,13 @@ MusicalScale::to_string () const
   return std::string (ChordDescriptor::note_to_string (root_key_)) + " "
          + type_to_string (type_);
 }
+
+void
+MusicalScale::define_fields (const Context &ctx)
+{
+  ISerializable<MusicalScale>::serialize_fields (
+    ctx, ISerializable<MusicalScale>::make_field ("type", type_),
+    ISerializable<MusicalScale>::make_field ("rootKey", root_key_));
+}
+
+} // namespace zrythm::dsp

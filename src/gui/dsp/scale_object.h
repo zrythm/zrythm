@@ -4,10 +4,9 @@
 #ifndef __AUDIO_SCALE_OBJECT_H__
 #define __AUDIO_SCALE_OBJECT_H__
 
+#include "dsp/musical_scale.h"
 #include "gui/dsp/muteable_object.h"
-#include "gui/dsp/scale.h"
 #include "gui/dsp/timeline_object.h"
-
 #include "utils/icloneable.h"
 #include "utils/iserializable.h"
 
@@ -16,6 +15,8 @@
  *
  * @{
  */
+
+using namespace zrythm;
 
 constexpr int SCALE_OBJECT_MAGIC = 13187994;
 #define IS_SCALE_OBJECT(tr) (tr && tr->magic_ == SCALE_OBJECT_MAGIC)
@@ -31,6 +32,9 @@ class ScaleObject final
   QML_ELEMENT
   DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (ScaleObject)
   Q_PROPERTY (QString name READ getName NOTIFY nameChanged)
+
+public:
+  using MusicalScale = dsp::MusicalScale;
 
 public:
   ScaleObject (QObject * parent = nullptr);

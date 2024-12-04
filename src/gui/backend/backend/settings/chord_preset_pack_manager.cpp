@@ -28,6 +28,8 @@ ChordPresetPackManager::get_user_packs_path ()
 void
 ChordPresetPackManager::add_standard_packs ()
 {
+  using namespace zrythm::dsp;
+
   packs_.reserve (100);
 #define ADD_SIMPLE_CHORD(root, chord_type) \
   pset.descr_.emplace_back ( \

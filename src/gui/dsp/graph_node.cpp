@@ -3,8 +3,6 @@
 
 #include <cstdlib>
 
-#include <inttypes.h>
-
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/engine.h"
@@ -22,10 +20,8 @@
 #include "gui/dsp/track_processor.h"
 #include "gui/dsp/tracklist.h"
 #include "gui/dsp/transport.h"
-
 #include "utils/debug.h"
 #include "utils/mpmc_queue.h"
-#include <fmt/printf.h>
 
 GraphNode::GraphNode (Graph * graph, NodeData data)
     : id_ (graph->setup_graph_nodes_map_.size ()), graph_ (graph), data_ (data)
@@ -75,38 +71,6 @@ GraphNode::get_name () const
     },
     data_);
 }
-
-#if 0
-void *
-GraphNode::get_pointer () const
-{
-  switch (type_)
-    {
-    case Type::Port:
-      return port_;
-    case Type::Plugin:
-      return pl_;
-    case Type::Track:
-      return track_;
-    case Type::Fader:
-    case Type::MonitorFader:
-      return fader_;
-    case Type::Prefader:
-      return prefader_;
-    case Type::SampleProcessor:
-      return sample_processor_;
-    case Type::InitialProcessor:
-      return nullptr;
-    case Type::HardwareProcessor:
-      return hw_processor_;
-    case Type::ModulatorMacroProcessor:
-      return modulator_macro_processor_;
-    case Type::ChannelSend:
-      return send_;
-    }
-  return nullptr; // Unreachable, but silences compiler warning
-}
-#endif
 
 std::string
 GraphNode::print_to_str () const

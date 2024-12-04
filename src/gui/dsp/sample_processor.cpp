@@ -487,7 +487,7 @@ SampleProcessor::queue_file_or_chord_preset (
                     {
                       auto descr = chord_pset->descr_.at (j);
                       descr.update_notes ();
-                      if (descr.type_ == ChordType::None)
+                      if (descr.type_ == dsp::ChordType::None)
                         continue;
 
                       Position cur_pos, cur_end_pos;
@@ -497,7 +497,8 @@ SampleProcessor::queue_file_or_chord_preset (
                       cur_end_pos.from_seconds (
                         j * 1.0 + 0.5, audio_engine_->sample_rate_,
                         audio_engine_->ticks_per_frame_);
-                      for (int k = 0; k < CHORD_DESCRIPTOR_MAX_NOTES; k++)
+                      for (
+                        size_t k = 0; k < dsp::ChordDescriptor::MAX_NOTES; k++)
                         {
                           if (descr.notes_[k])
                             {

@@ -20,7 +20,12 @@
 #include "midilib/src/midifile.h"
 #include "utils/types.h"
 
+using namespace zrythm;
+
+namespace zrythm::dsp
+{
 class ChordDescriptor;
+}
 
 /**
  * @addtogroup dsp
@@ -57,7 +62,7 @@ public:
 
 public:
   /** Raw MIDI data. */
-  std::array<midi_byte_t, 3> raw_buffer_;
+  std::array<midi_byte_t, 3> raw_buffer_{ 0, 0, 0 };
 
   uint_fast8_t raw_buffer_sz_ = 0;
 
@@ -86,6 +91,8 @@ class MidiEventVector final
 {
 public:
   MidiEventVector () { events_.reserve (MAX_MIDI_EVENTS); }
+
+  using ChordDescriptor = dsp::ChordDescriptor;
 
   // Iterator types
   using Iterator = std::vector<MidiEvent>::iterator;
@@ -220,8 +227,8 @@ public:
   ATTR_HOT void append_w_filter (
     const MidiEventVector              &src,
     std::optional<std::array<bool, 16>> channels,
-    const nframes_t                     local_offset,
-    const nframes_t                     nframes);
+    nframes_t                           local_offset,
+    nframes_t                           nframes);
 
   /**
    * Appends the events from @p src.
@@ -229,10 +236,8 @@ public:
    * @param local_offset The start frame offset from 0 in this cycle.
    * @param nframes Number of frames to process.
    */
-  void append (
-    const MidiEventVector &src,
-    const nframes_t        local_offset,
-    const nframes_t        nframes);
+  void
+  append (const MidiEventVector &src, nframes_t local_offset, nframes_t nframes);
 
   /**
    * Transforms the given MIDI input to the MIDI notes of the corresponding
@@ -242,8 +247,8 @@ public:
    */
   void transform_chord_and_append (
     MidiEventVector &src,
-    const nframes_t  local_offset,
-    const nframes_t  nframes);
+    nframes_t        local_offset,
+    nframes_t        nframes);
 
   /**
    * Adds a note on event to the given MidiEvents.
@@ -292,8 +297,8 @@ public:
   bool has_note_on (bool check_main, bool check_queued);
 #endif
 
-  inline bool has_any () const { return !empty (); }
-  inline bool empty () const { return size () == 0; }
+  bool has_any () const { return !empty (); }
+  bool empty () const { return size () == 0; }
 
   /**
    * Parses a MidiEvent from a raw MIDI buffer.
@@ -332,7 +337,7 @@ public:
 
   void add_raw (uint8_t * buf, size_t buf_sz, midi_time_t time);
 
-  inline void add_simple (
+  void add_simple (
     midi_byte_t byte1,
     midi_byte_t byte2,
     midi_byte_t byte3,
@@ -404,7 +409,7 @@ public:
    * Sets the given MIDI channel on all applicable
    * MIDI events.
    */
-  void set_channel (const midi_byte_t channel);
+  void set_channel (midi_byte_t channel);
 
   void delete_event (const MidiEvent * ev);
 
@@ -412,10 +417,8 @@ public:
   /**
    * Writes the events to the given JACK buffer.
    */
-  void copy_to_jack (
-    const nframes_t local_start_frames,
-    const nframes_t nframes,
-    void *          buff);
+  void
+  copy_to_jack (nframes_t local_start_frames, nframes_t nframes, void * buff);
 #endif
 
 private:

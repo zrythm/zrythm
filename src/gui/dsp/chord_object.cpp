@@ -47,7 +47,7 @@ ChordObject::init_loaded ()
 /**
  * Returns the ChordDescriptor associated with this ChordObject.
  */
-ChordDescriptor *
+ChordObject::ChordDescriptor *
 ChordObject::get_chord_descriptor () const
 {
   z_return_val_if_fail (CLIP_EDITOR, nullptr);
