@@ -164,9 +164,12 @@ private:
   /**
    * Creates a new node, adds it to the graph and returns it.
    */
-  GraphNode * create_node (GraphNode::NodeData data);
+  GraphNode *
+  create_node (GraphNode::NameGetter name_getter, GraphNode::NodeData data);
 
 public:
+  using GraphNodesMap =
+    std::unordered_map<GraphNode::NodeData, std::unique_ptr<GraphNode>>;
   /**
    * @brief List of all graph nodes.
    *
@@ -174,8 +177,7 @@ public:
    *
    * The key is a raw pointer to a Plugin, Port, etc.
    */
-  std::unordered_map<GraphNode::NodeData, std::unique_ptr<GraphNode>>
-    graph_nodes_map_;
+  GraphNodesMap graph_nodes_map_;
 
   /**
    * @brief Chain used to setup in the background.
@@ -184,8 +186,7 @@ public:
    *
    * @see graph_nodes_map_
    */
-  std::unordered_map<GraphNode::NodeData, std::unique_ptr<GraphNode>>
-    setup_graph_nodes_map_;
+  GraphNodesMap setup_graph_nodes_map_;
 
   /* --- caches for current graph --- */
   GraphNode * bpm_node_ = nullptr;

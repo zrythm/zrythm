@@ -2,74 +2,53 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cstdlib>
+#include <utility>
 
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/zrythm.h"
+#include "dsp/itransport.h"
+#include "gui/dsp/audio_port.h"
+#include "gui/dsp/carla_native_plugin.h"
+#include "gui/dsp/control_port.h"
+#include "gui/dsp/cv_port.h"
 #include "gui/dsp/engine.h"
 #include "gui/dsp/fader.h"
 #include "gui/dsp/graph.h"
 #include "gui/dsp/graph_node.h"
-#include "gui/dsp/master_track.h"
 #include "gui/dsp/midi_event.h"
+#include "gui/dsp/midi_port.h"
+#include "gui/dsp/modulator_macro_processor.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/port.h"
 #include "gui/dsp/router.h"
 #include "gui/dsp/sample_processor.h"
-#include "gui/dsp/tempo_track.h"
-#include "gui/dsp/track.h"
+#include "gui/dsp/track_all.h"
 #include "gui/dsp/track_processor.h"
-#include "gui/dsp/tracklist.h"
-#include "gui/dsp/transport.h"
 #include "utils/debug.h"
 #include "utils/mpmc_queue.h"
 
-GraphNode::GraphNode (Graph * graph, NodeData data)
-    : id_ (graph->setup_graph_nodes_map_.size ()), graph_ (graph), data_ (data)
+GraphNode::GraphNode (
+  Graph *          graph,
+  NameGetter       name_getter,
+  dsp::ITransport &transport,
+  NodeData         data)
+    : id_ (graph->setup_graph_nodes_map_.size ()), graph_ (graph), data_ (data),
+      transport_ (transport), name_getter_ (std::move (name_getter))
 {
+  if (auto * port = std::get_if<PortPtrVariant> (&data_))
+    {
+      is_bpm_node_ = std::visit (
+        [&] (auto * p) -> bool {
+          return ENUM_BITSET_TEST (
+            dsp::PortIdentifier::Flags, p->id_->flags_,
+            dsp::PortIdentifier::Flags::Bpm);
+        },
+        *port);
+    }
 }
 
 std::string
 GraphNode::get_name () const
 {
-  return std::visit (
-    overload{
-      [] (const PortPtrVariant &p) {
-        return std::visit (
-          [] (auto * port) { return port->get_full_designation (); }, p);
-      },
-      [] (const zrythm::gui::old_dsp::plugins::PluginPtrVariant &pl) {
-        return std::visit (
-          [] (auto * plugin) {
-            Track * track = plugin->get_track ();
-            return fmt::format (
-              "{}/{} (Plugin)", track->name_, plugin->get_name ());
-          },
-          pl);
-      },
-      [] (const TrackPtrVariant &t) {
-        return std::visit ([] (auto * track) { return track->get_name (); }, t);
-      },
-      [] (Fader * f) {
-        if (f->type_ == Fader::Type::Monitor)
-          return std::string ("Monitor Fader");
-        Track * track = f->get_track ();
-        return fmt::format (
-          "{} {}", track->get_name (),
-          f->passthrough_ ? "Pre-Fader/Passthrough" : "Fader");
-      },
-      [] (ModulatorMacroProcessor * mmp) {
-        Track * track = mmp->cv_in_->get_track (true);
-        return fmt::format ("{} Modulator Macro Processor", track->name_);
-      },
-      [] (ChannelSend * s) {
-        auto * track = s->get_track ();
-        return fmt::format ("{}/Channel Send {}", track->name_, s->slot_ + 1);
-      },
-      [] (SampleProcessor *) { return std::string ("Sample Processor"); },
-      [] (HardwareProcessor *) { return std::string ("HW Processor"); },
-      [] (std::monostate) { return std::string ("Initial Processor"); },
-    },
-    data_);
+  return name_getter_ ();
 }
 
 std::string
@@ -142,23 +121,29 @@ GraphNode::process_internal (const EngineProcessTimeInfo time_nfo)
             using PortT = base_type<decltype (port)>;
             if constexpr (std::is_same_v<PortT, MidiPort>)
               {
-                if (port == AUDIO_ENGINE->midi_editor_manual_press_.get ())
+                if (
+                  ENUM_BITSET_TEST (
+                    dsp::PortIdentifier::Flags, port->id_->flags_,
+                    dsp::PortIdentifier::Flags::ManualPress))
                   {
                     port->midi_events_.dequeue (
                       time_nfo.local_offset_, time_nfo.nframes_);
                     return;
                   }
               }
+            if constexpr (std::is_same_v<PortT, AudioPort>)
+              {
+                if (
+                  port->id_->is_monitor_fader_stereo_in_or_out_port ()
+                  && AUDIO_ENGINE->exporting_)
+                  {
+                    /* if exporting and the port is not a project port, skip
+                     * processing */
+                    return;
+                  }
+              }
 
-            if (AUDIO_ENGINE->is_port_own (*port) && AUDIO_ENGINE->exporting_)
-              {
-                /* if exporting and the port is not a project port, skip
-                 * processing */
-              }
-            else
-              {
-                port->process (time_nfo, false);
-              }
+            port->process (time_nfo, false);
           },
           p);
       },
@@ -200,36 +185,22 @@ GraphNode::process (EngineProcessTimeInfo time_nfo, GraphThread &thread)
   // use immediately invoked lambda to handle return scope
   [&] () {
     /* skip BPM during cycle (already processed in router_start_cycle()) */
-    if (auto * port = std::get_if<PortPtrVariant> (&data_))
+    if (is_bpm_node_ && graph_->router_->callback_in_progress_) [[unlikely]]
       {
-        auto should_return = std::visit (
-          [&] (auto * p) -> bool {
-            using PortT = base_type<decltype (p)>;
-            if constexpr (std::is_same_v<PortT, ControlPort>)
-              {
-                if (
-                  graph_->router_->callback_in_progress_
-                  && p == P_TEMPO_TRACK->bpm_port_.get ()) [[unlikely]]
-                  {
-                    return true;
-                  }
-              }
-            return false;
-          },
-          *port);
-        if (should_return)
-          return;
+        // z_debug ("skipping BPM node");
+        return;
       }
 
     /* if we are doing a no-roll */
     if (route_playback_latency_ < AUDIO_ENGINE->remaining_latency_preroll_)
       {
         /* only process terminal nodes to set their buffers to 0 */
+        // z_debug ("no-roll, skipping node");
         return;
       }
 
     /* only compensate latency when rolling */
-    if (TRANSPORT->play_state_ == Transport::PlayState::Rolling)
+    if (transport_.get_play_state () == Transport::PlayState::Rolling)
       {
         /* if the playhead is before the loop-end point and the
          * latency-compensated position is after the loop-end point it means
@@ -238,11 +209,11 @@ GraphNode::process (EngineProcessTimeInfo time_nfo, GraphThread &thread)
          * if the position is before loop-end and position + frames is after
          * loop end (there is a loop inside the range), that should be handled
          * by the ports/processors instead */
-        dsp::Position playhead_copy = PLAYHEAD;
-        z_warn_if_fail (
+        dsp::Position playhead_copy = transport_.get_playhead_position ();
+        z_return_if_fail (
           route_playback_latency_ >= AUDIO_ENGINE->remaining_latency_preroll_);
-        TRANSPORT->position_add_frames (
-          &playhead_copy,
+        transport_.position_add_frames (
+          playhead_copy,
           route_playback_latency_ - AUDIO_ENGINE->remaining_latency_preroll_);
         time_nfo.g_start_frame_ = (unsigned_frame_t) playhead_copy.frames_;
         time_nfo.g_start_frame_w_offset_ =
@@ -253,18 +224,14 @@ GraphNode::process (EngineProcessTimeInfo time_nfo, GraphThread &thread)
     for (
       nframes_t num_processable_frames = 0;
       (num_processable_frames = std::min (
-         TRANSPORT->is_loop_point_met (
+         transport_.is_loop_point_met (
            (signed_frame_t) time_nfo.g_start_frame_w_offset_, time_nfo.nframes_),
          time_nfo.nframes_))
       != 0;)
       {
-#if 0
-      z_info (
-        "splitting from %ld "
-        "(num processable frames %"
-        PRIu32 ")",
-        g_start_frames, num_processable_frames);
-#endif
+        // z_debug (
+        //   "splitting from {} (num processable frames {})",
+        //   time_nfo.g_start_frame_w_offset_, num_processable_frames);
 
         /* temporarily change the nframes to avoid having to declare a separate
          * EngineProcessTimeInfo */
@@ -276,10 +243,12 @@ GraphNode::process (EngineProcessTimeInfo time_nfo, GraphThread &thread)
         time_nfo.nframes_ = orig_nframes - num_processable_frames;
 
         /* loop back to loop start */
+        auto [transport_loop_start_pos, transport_loop_end_pos] =
+          transport_.get_loop_range_positions ();
         unsigned_frame_t frames_to_add =
           (num_processable_frames
-           + (unsigned_frame_t) TRANSPORT->loop_start_pos_->getFrames ())
-          - (unsigned_frame_t) TRANSPORT->loop_end_pos_->getFrames ();
+           + (unsigned_frame_t) transport_loop_start_pos.frames_)
+          - (unsigned_frame_t) transport_loop_end_pos.frames_;
         time_nfo.g_start_frame_w_offset_ += frames_to_add;
         time_nfo.g_start_frame_ += frames_to_add;
         time_nfo.local_offset_ += num_processable_frames;

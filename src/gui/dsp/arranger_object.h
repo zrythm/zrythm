@@ -279,7 +279,7 @@ public:
   /**
    * Returns if the object type has a length.
    */
-  static inline bool type_has_length (Type type)
+  static constexpr bool type_has_length (Type type)
   {
     return (type == Type::Region || type == Type::MidiNote);
   }
@@ -289,29 +289,29 @@ public:
   /**
    * Returns if the object type has a global position.
    */
-  static inline bool type_has_global_pos (Type type)
+  static constexpr bool type_has_global_pos (Type type)
   {
     return (
       type == Type::Region || type == Type::ScaleObject || type == Type::Marker);
   }
 
-  static inline bool type_has_name (Type type)
+  static constexpr bool type_has_name (Type type)
   {
     return (type == Type::Region || type == Type::Marker);
   }
 
   /** Returns if the object can loop. */
-  static inline bool type_can_loop (Type type)
+  static constexpr bool type_can_loop (Type type)
   {
     return (type == Type::Region);
   }
 
-  static inline bool type_can_mute (Type type)
+  static constexpr bool type_can_mute (Type type)
   {
     return (type == Type::Region || type == Type::MidiNote);
   }
 
-  static inline bool type_owned_by_region (Type type)
+  static constexpr bool type_owned_by_region (Type type)
   {
     return (
       type == Type::Velocity || type == Type::MidiNote
@@ -518,7 +518,7 @@ public:
 
   virtual bool can_fade () const { return false; }
 
-  inline void set_track_name_hash (unsigned int track_name_hash)
+  void set_track_name_hash (unsigned int track_name_hash)
   {
     track_name_hash_ = track_name_hash;
   }
@@ -539,7 +539,7 @@ public:
    */
   ATTR_HOT virtual TrackPtrVariant get_track () const;
 
-  static inline const char * get_type_as_string (Type type)
+  static const char * get_type_as_string (Type type)
   {
     return arranger_object_type_strings[static_cast<int> (type)];
   }

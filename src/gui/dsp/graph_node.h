@@ -29,10 +29,12 @@
 #ifndef __AUDIO_GRAPH_NODE_H__
 #define __AUDIO_GRAPH_NODE_H__
 
+#include "dsp/itransport.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/track.h"
-
 #include "utils/types.h"
+
+using namespace zrythm;
 
 class GraphNode;
 class Graph;
@@ -64,49 +66,6 @@ class Plugin;
 class GraphNode
 {
 public:
-#if 0
-  /**
-   * @brief Graph node type.
-   *
-   * Graph nodes can be either ports (audio L input, midi input, etc.) or
-   * processors (plugin, fader, etc.). This is explained in the user manual.
-   * TODO: explain this here too.
-   */
-  enum class Type
-  {
-    /** Port. */
-    Port,
-    /** zrythm::gui::old_dsp::plugins::Plugin processor. */
-    Plugin,
-    /** Track processor. */
-    Track,
-    /** Fader/pan processor. */
-    Fader,
-    /** Fader/pan processor for monitor. */
-    MonitorFader,
-    /** Pre-Fader passthrough processor. */
-    Prefader,
-    /** Sample processor. */
-    SampleProcessor,
-
-    /**
-     * Initial processor.
-     *
-     * The initial processor is a dummy processor in the chain processed
-     * before anything else.
-     */
-    InitialProcessor,
-
-    /** Hardware processor. */
-    HardwareProcessor,
-
-    ModulatorMacroProcessor,
-
-    /** Channel send. */
-    ChannelSend,
-  };
-#endif
-
   using NodeData = std::variant<
     PortPtrVariant,
     zrythm::gui::old_dsp::plugins::PluginPtrVariant,
@@ -121,9 +80,20 @@ public:
     >;
 
 public:
-  GraphNode () = default;
+  /**
+   * @brief Function to get a human-readable identifying label for this node.
+   *
+   * Currently used for debugging.
+   */
+  using NameGetter = std::function<std::string ()>;
 
-  GraphNode (Graph * graph, NodeData data);
+  using ProcessFunc = std::function<void (EngineProcessTimeInfo)>;
+
+  GraphNode (
+    Graph *          graph,
+    NameGetter       name_getter,
+    dsp::ITransport &transport,
+    NodeData         data);
 
   /**
    * Returns a human friendly name of the node.
@@ -216,6 +186,11 @@ public:
 
   /** The route's playback latency so far. */
   nframes_t route_playback_latency_ = 0;
+
+private:
+  dsp::ITransport &transport_;
+  NameGetter       name_getter_;
+  bool             is_bpm_node_{};
 };
 
 template <> struct std::hash<GraphNode::NodeData>

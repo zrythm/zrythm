@@ -450,11 +450,6 @@ public:
   void set_buffer_size (uint32_t buf_size);
 
   /**
-   * Returns whether the port is an engine port or control room port.
-   */
-  bool is_port_own (const Port &port) const;
-
-  /**
    * Reset the bounce mode on the engine, all tracks and regions to OFF.
    */
   void reset_bounce_mode ();

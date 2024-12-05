@@ -20,7 +20,7 @@
 #include "utils/midi.h"
 #include "utils/rt_thread_id.h"
 
-MidiPort::MidiPort () { }
+MidiPort::MidiPort () = default;
 
 MidiPort::MidiPort (std::string label, PortFlow flow)
     : Port (label, PortType::Event, flow, 0.f, 1.f, 0.f)
@@ -542,6 +542,8 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
         {
           track->trigger_midi_activity_ = true;
         }
+
+      // z_warning ("{} has events", id->get_label ());
     }
 
   if (time_nfo.local_offset_ + time_nfo.nframes_ == AUDIO_ENGINE->block_length_)
@@ -557,16 +559,18 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
 
               ev.systime_ = Zrythm::getInstance ()->get_monotonic_time_usecs ();
               midi_ring_->write (ev);
-              // z_debug ("writing to ring for {}", get_label ());
+              // z_warning ("writing to ring for {}", get_label ());
             }
         }
       else
         {
           if (events.has_any ())
             {
-              // z_debug ("no write to ring for {}", get_label ());
               last_midi_event_time_ =
                 Zrythm::getInstance ()->get_monotonic_time_usecs ();
+              // z_warning (
+              //   "wrote last event time {} for '{}'", last_midi_event_time_,
+              //   get_label ());
               has_midi_events_.store (true);
             }
         }

@@ -1575,17 +1575,6 @@ AudioEngine::reset_bounce_mode ()
   TRACKLIST->mark_all_tracks_for_bounce (false);
 }
 
-bool
-AudioEngine::is_port_own (const Port &port) const
-{
-  const auto &monitor_fader = control_room_->monitor_fader_;
-  return (
-    &port == &monitor_fader->stereo_in_->get_l ()
-    || &port == &monitor_fader->stereo_in_->get_r ()
-    || &port == &monitor_fader->stereo_out_->get_l ()
-    || &port == &monitor_fader->stereo_out_->get_r ());
-}
-
 void
 AudioEngine::set_default_backends (bool reset_to_dummy)
 {

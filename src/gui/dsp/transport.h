@@ -4,11 +4,11 @@
 #ifndef __AUDIO_TRANSPORT_H__
 #define __AUDIO_TRANSPORT_H__
 
+#include "dsp/itransport.h"
+#include "dsp/position.h"
 #include "gui/backend/position_proxy.h"
 #include "gui/dsp/midi_port.h"
 #include "gui/dsp/port.h"
-
-#include "dsp/position.h"
 #include "utils/types.h"
 
 class TimelineSelections;
@@ -52,7 +52,8 @@ static const char * preroll_count_bars_str[] = {
 class Transport final
     : public QObject,
       public ICloneable<Transport>,
-      public zrythm::utils::serialization::ISerializable<Transport>
+      public zrythm::utils::serialization::ISerializable<Transport>,
+      public dsp::ITransport
 {
   Q_OBJECT
   QML_ELEMENT
@@ -74,13 +75,6 @@ class Transport final
   Q_PROPERTY (PositionProxy * punchOutPosition READ getPunchOutPosition CONSTANT)
 
 public:
-  enum class PlayState
-  {
-    RollRequested,
-    Rolling,
-    PauseRequested,
-    Paused
-  };
   Q_ENUM (PlayState)
 
   /**
@@ -175,12 +169,12 @@ public:
 
   // ==================================================================
 
-  static inline const char * preroll_count_to_str (PrerollCountBars bars)
+  static const char * preroll_count_to_str (PrerollCountBars bars)
   {
     return preroll_count_bars_str[static_cast<int> (bars)];
   }
 
-  static inline int preroll_count_bars_enum_to_int (PrerollCountBars bars)
+  static int preroll_count_bars_enum_to_int (PrerollCountBars bars)
   {
     switch (bars)
       {
@@ -308,6 +302,11 @@ public:
     self->get_playhead_pos (pos);
   }
 
+  Position get_playhead_position () const override
+  {
+    return playhead_pos_->get_position ();
+  }
+
   /**
    * Move to the previous snap point on the timeline.
    */
@@ -389,11 +388,8 @@ frames_add_frames (
   const nframes_t   frames);
 #endif
 
-  /**
-   * Adds frames to the given position similar to position_add_frames, except
-   * that it adjusts the new Position if the loop end point was crossed.
-   */
-  void position_add_frames (Position * pos, signed_frame_t frames);
+  void
+  position_add_frames (Position &pos, signed_frame_t frames) const override;
 
   /**
    * Returns the PPQN (Parts/Ticks Per Quarter Note).
@@ -401,14 +397,13 @@ frames_add_frames (
   double get_ppqn () const;
 
   /**
-   * Stores the position of the range in @ref pos.
+   * Returns the selected range positions.
    */
   std::pair<Position, Position> get_range_positions () const;
 
-  /**
-   * Stores the position of the range in @ref pos.
-   */
-  std::pair<Position, Position> get_loop_range_positions () const;
+  std::pair<Position, Position> get_loop_range_positions () const override;
+
+  PlayState get_play_state () const override { return play_state_; }
 
   /**
    * Sets if the project has range and updates UI.
@@ -437,26 +432,9 @@ frames_add_frames (
     const Position * pos,
     bool             snap);
 
-  /**
-   * Returns the number of processable frames until and excluding the loop end
-   * point as a positive number (>= 1) if the loop point was met between
-   * g_start_frames and (g_start_frames + nframes), otherwise returns 0;
-   */
-  [[nodiscard]] ATTR_HOT inline nframes_t
-  is_loop_point_met (const signed_frame_t g_start_frames, const nframes_t nframes)
-  {
-    bool loop_end_between_start_and_end =
-      (loop_end_pos_->frames_ > g_start_frames
-       && loop_end_pos_->frames_ <= g_start_frames + (long) nframes);
-
-    if (loop_ && loop_end_between_start_and_end) [[unlikely]]
-      {
-        return (nframes_t) (loop_end_pos_->frames_ - g_start_frames);
-      }
-    return 0;
-  }
-
   bool position_is_inside_punch_range (Position pos);
+
+  bool get_loop_enabled () const override { return loop_; }
 
   /**
    * Recalculates the total bars based on the last object's position.

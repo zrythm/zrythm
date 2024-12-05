@@ -79,7 +79,7 @@ Metronome::queue_events (
   Position   bar_pos, beat_pos;
   Position   playhead_pos = playhead->get_position ();
   Position   unlooped_playhead = playhead->get_position ();
-  transport_->position_add_frames (&playhead_pos, nframes);
+  transport_->position_add_frames (playhead_pos, nframes);
   unlooped_playhead.add_frames ((long) nframes, engine->ticks_per_frame_);
   bool loop_crossed = unlooped_playhead.frames_ != playhead_pos.frames_;
   if (loop_crossed)

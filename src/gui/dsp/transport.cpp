@@ -785,23 +785,23 @@ Transport::set_loop (bool enabled, bool with_wait)
 }
 
 void
-Transport::position_add_frames (Position * pos, const signed_frame_t frames)
+Transport::position_add_frames (Position &pos, const signed_frame_t frames) const
 {
-  Position pos_before_adding = *pos;
-  pos->add_frames (frames, AUDIO_ENGINE->ticks_per_frame_);
+  Position pos_before_adding = pos;
+  pos.add_frames (frames, AUDIO_ENGINE->ticks_per_frame_);
 
   /* if start frames were before the loop-end point and the new frames are after
    * (loop crossed) */
   if (
     loop_ && pos_before_adding.frames_ < loop_end_pos_->frames_
-    && pos->frames_ >= loop_end_pos_->frames_)
+    && pos.frames_ >= loop_end_pos_->frames_)
     {
       /* adjust the new frames */
-      pos->add_ticks (
+      pos.add_ticks (
         loop_start_pos_->ticks_ - loop_end_pos_->ticks_,
         AUDIO_ENGINE->frames_per_tick_);
 
-      z_warn_if_fail (pos->frames_ < loop_end_pos_->frames_);
+      z_warn_if_fail (pos.frames_ < loop_end_pos_->frames_);
     }
 }
 

@@ -116,6 +116,10 @@ public:
     /** See http://lv2plug.in/ns/ext/port-groups/port-groups.html#mainInput
      * and http://lv2plug.in/ns/ext/port-groups/port-groups.html#mainOutput. */
     MainPort = 1 << 4,
+
+    /**
+     * @brief Piano roll user (piano) key press.
+     */
     ManualPress = 1 << 5,
 
     /** Amplitude port. */
@@ -343,6 +347,12 @@ public:
   bool is_input () const { return flow_ == PortFlow::Input; }
   bool is_output () const { return flow_ == PortFlow::Output; }
 
+  bool is_monitor_fader_stereo_in_or_out_port () const
+  {
+    return ENUM_BITSET_TEST (Flags2, flags2_, Flags2::MonitorFader)
+           && (ENUM_BITSET_TEST (Flags, flags_, Flags::StereoL) || ENUM_BITSET_TEST (Flags, flags_, Flags::StereoR));
+  }
+
   /**
    * Returns the MIDI channel for a MIDI CC port, or -1 if not a MIDI CC port.
    *
@@ -395,11 +405,11 @@ public:
   PortFlow flow_ = PortFlow::Unknown;
 
   /** Port unit. */
-  PortUnit unit_ = (PortUnit) 0;
+  PortUnit unit_{};
 
   /** Flags (e.g. is side chain). */
-  PortIdentifier::Flags  flags_ = (Flags) 0;
-  PortIdentifier::Flags2 flags2_ = (Flags2) 0;
+  PortIdentifier::Flags  flags_{};
+  PortIdentifier::Flags2 flags2_{};
 
   /** Identifier of plugin. */
   zrythm::dsp::PluginIdentifier plugin_id_ = {};

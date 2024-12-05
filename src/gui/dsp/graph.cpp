@@ -122,11 +122,21 @@ void
 Graph::add_plugin (zrythm::gui::old_dsp::plugins::Plugin &pl)
 {
   z_return_if_fail (!pl.deleting_);
+  auto pl_var =
+    convert_to_variant<zrythm::gui::old_dsp::plugins::PluginPtrVariant> (&pl);
   if (!pl.in_ports_.empty () || !pl.out_ports_.empty ())
     {
       create_node (
-        convert_to_variant<zrythm::gui::old_dsp::plugins::PluginPtrVariant> (
-          &pl));
+        [pl_var] () {
+          return std::visit (
+            [] (auto * plugin) {
+              Track * track = plugin->get_track ();
+              return fmt::format (
+                "{}/{} (Plugin)", track->name_, plugin->get_name ());
+            },
+            pl_var);
+        },
+        pl_var);
     }
 }
 
@@ -279,7 +289,13 @@ Graph::add_port (
 
       /* allocate buffers to be used during DSP */
       port->allocate_bufs ();
-      return create_node (port_var);
+      return create_node (
+        [port_var] () {
+          return std::visit (
+            [] (auto * port) { return port->get_full_designation (); },
+            port_var);
+        },
+        port_var);
     },
     port_var);
 }
@@ -374,16 +390,19 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
   auto * transport = project->transport_;
 
   /* add the sample processor */
-  create_node (sample_processor);
+  create_node (
+    [] () { return std::string ("Sample Processor"); }, sample_processor);
 
   /* add the monitor fader */
-  create_node (monitor_fader);
+  create_node ([] () { return std::string ("Monitor Fader"); }, monitor_fader);
 
   /* add the initial processor */
-  create_node (std::monostate ());
+  create_node (
+    [] () { return std::string ("Initial Processor"); }, std::monostate ());
 
   /* add the hardware input processor */
-  create_node (hw_in_processor);
+  create_node (
+    [] () { return std::string ("HW In Processor"); }, hw_in_processor);
 
   /* add plugins */
   for (const auto &cur_tr : tracklist->tracks_)
@@ -394,7 +413,7 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
           using TrackT = base_type<decltype (tr)>;
 
           /* add the track */
-          create_node (tr);
+          create_node ([tr] () { return tr->get_name (); }, tr);
 
           /* handle modulator track */
           if constexpr (std::is_same_v<ModulatorTrack, TrackT>)
@@ -412,7 +431,12 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
               /* add macro processors */
               for (auto &mp : tr->modulator_macro_processors_)
                 {
-                  create_node (mp.get ());
+                  create_node (
+                    [tr] () {
+                      return fmt::format (
+                        "{} Modulator Macro Processor", tr->name_);
+                    },
+                    mp.get ());
                 }
             }
 
@@ -421,10 +445,16 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
               auto &channel = tr->channel_;
 
               /* add the fader */
-              create_node (channel->fader_);
+              create_node (
+                [tr] () { return fmt::format ("{} Fader", tr->get_name ()); },
+                channel->fader_);
 
               /* add the prefader */
-              create_node (channel->prefader_);
+              create_node (
+                [tr] () {
+                  return fmt::format ("{} Pre-Fader", tr->get_name ());
+                },
+                channel->prefader_);
 
               /* add plugins */
               std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
@@ -447,7 +477,14 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
                     {
                       /* note that we add sends even if empty so that graph
                        * renders properly */
-                      create_node (send.get ());
+                      auto * send_ptr = send.get ();
+                      create_node (
+                        [tr, send_ptr] () {
+                          return fmt::format (
+                            "{}/Channel Send {}", tr->name_,
+                            send_ptr->slot_ + 1);
+                        },
+                        send_ptr);
                     }
                 }
             }
@@ -1183,10 +1220,10 @@ Graph::find_node_from_modulator_macro_processor (
  * Creates a new node, adds it to the graph and returns it.
  */
 GraphNode *
-Graph::create_node (GraphNode::NodeData data)
+Graph::create_node (GraphNode::NameGetter name_getter, GraphNode::NodeData data)
 {
   auto [it, inserted] = setup_graph_nodes_map_.emplace (
-    data, std::make_unique<GraphNode> (this, data));
+    data, std::make_unique<GraphNode> (this, name_getter, *TRANSPORT, data));
   return it->second.get ();
 }
 
