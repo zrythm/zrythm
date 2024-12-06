@@ -53,10 +53,9 @@
 #include "zrythm-config.h"
 
 #include "gui/backend/backend/zrythm.h"
-
-#include "utils/dsp.h"
 #include "utils/dsp_context.h"
 #include "utils/logger.h"
+
 #include <fmt/format.h>
 
 #ifndef _WIN32
@@ -72,10 +71,8 @@
 
 #include "gui/dsp/engine.h"
 #include "gui/dsp/graph.h"
-#include "gui/dsp/graph_node.h"
 #include "gui/dsp/graph_thread.h"
 #include "gui/dsp/router.h"
-
 #include "utils/rt_thread_id.h"
 
 /* uncomment to show debug messages */
@@ -152,7 +149,7 @@ GraphThread::run_worker ()
 
   for (;;)
     {
-      GraphNode * to_run = nullptr;
+      dsp::GraphNode * to_run = nullptr;
 
       if (threadShouldExit ())
         {
@@ -241,7 +238,24 @@ GraphThread::run_worker ()
 #ifdef DEBUG_THREADS
       z_info ("[{}]: running node", id_);
 #endif
-      to_run->process (graph->router_->time_nfo_, *this);
+
+      to_run->process (
+        graph->router_->time_nfo_, AUDIO_ENGINE->remaining_latency_preroll_);
+
+      /* if there are no outgoing edges, this is a terminal node */
+      if (to_run->childnodes_.empty ())
+        {
+          /* notify parent graph */
+          on_reached_terminal_node ();
+        }
+      else
+        {
+          /* notify downstream nodes that depend on this node */
+          for (auto * child_node : to_run->childnodes_)
+            {
+              graph->trigger_node (*child_node);
+            }
+        }
     }
 }
 

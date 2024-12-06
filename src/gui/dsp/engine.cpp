@@ -50,7 +50,6 @@
 #include "gui/dsp/engine_rtaudio.h"
 #include "gui/dsp/engine_rtmidi.h"
 #include "gui/dsp/graph.h"
-#include "gui/dsp/graph_node.h"
 #include "gui/dsp/hardware_processor.h"
 #include "gui/dsp/metronome.h"
 #include "gui/dsp/midi_event.h"
@@ -1310,7 +1309,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
           else if (remaining_latency_preroll_ > route_latency)
             {
               /* route may need partial no-roll and partial roll from
-               * (transport_sample - remaining_latency_preroll) .. +
+               * (transport_sample - remaining_latency_preroll_) .. +
                * num_preroll_frames.
                * shorten and split the process cycle */
               num_preroll_frames = std::min (

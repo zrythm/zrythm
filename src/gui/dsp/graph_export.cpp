@@ -6,12 +6,10 @@
 #include "gui/dsp/fader.h"
 #include "gui/dsp/graph.h"
 #include "gui/dsp/graph_export.h"
-#include "gui/dsp/graph_node.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/port.h"
 #include "gui/dsp/router.h"
 #include "gui/dsp/track.h"
-
 #include "utils/flags.h"
 #include "utils/objects.h"
 
@@ -384,7 +382,7 @@ void
 graph_export_as_simple (GraphExportType type, const char * export_path)
 {
   /* pause engine */
-  AudioEngine::State state;
+  AudioEngine::State state{};
   AUDIO_ENGINE->wait_for_pause (state, Z_F_FORCE, true);
 
   Graph graph (ROUTER.get ());

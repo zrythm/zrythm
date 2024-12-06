@@ -6,6 +6,7 @@ add_executable(dsp_unit_tests
   curve_test.cpp
   ditherer_test.cpp
   kmeter_dsp_test.cpp
+  graph_node_test.cpp
   musical_scale_test.cpp
   panning_test.cpp
   peak_dsp_test.cpp
@@ -22,8 +23,8 @@ set_target_properties(dsp_unit_tests PROPERTIES
 )
 
 target_link_libraries(dsp_unit_tests PRIVATE
-  GTest::gtest
   GTest::gtest_main
+  GTest::gmock_main
   zrythm_dsp_lib
 )
 target_compile_definitions(dsp_unit_tests PRIVATE

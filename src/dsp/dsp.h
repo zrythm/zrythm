@@ -5,6 +5,7 @@
 #include "./chord_descriptor.h"
 #include "./curve.h"
 #include "./ditherer.h"
+#include "./graph_node.h"
 #include "./kmeter_dsp.h"
 #include "./musical_scale.h"
 #include "./panning.h"

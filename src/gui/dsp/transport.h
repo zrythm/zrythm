@@ -307,6 +307,22 @@ public:
     return playhead_pos_->get_position ();
   }
 
+  nframes_t is_loop_point_met (
+    const signed_frame_t g_start_frames,
+    const nframes_t      nframes) const override
+  {
+    auto [loop_start_pos, loop_end_pos] = get_loop_range_positions ();
+    bool loop_end_between_start_and_end =
+      (loop_end_pos.frames_ > g_start_frames
+       && loop_end_pos.frames_ <= g_start_frames + (long) nframes);
+
+    if (loop_end_between_start_and_end && get_loop_enabled ()) [[unlikely]]
+      {
+        return (nframes_t) (loop_end_pos.frames_ - g_start_frames);
+      }
+    return 0;
+  }
+
   /**
    * Move to the previous snap point on the timeline.
    */

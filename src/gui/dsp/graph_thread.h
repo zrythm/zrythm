@@ -54,12 +54,11 @@ public:
    * @param is_main Whether main thread.
    * @throw ZrythmException if the thread could not be started.
    */
-  explicit GraphThread (const int id, const bool is_main, Graph &graph);
+  explicit GraphThread (int id, bool is_main, Graph &graph);
 
 public:
   /**
-   * Called from a terminal node (from the Graph worker-thread)
-   * to indicate it has completed processing.
+   * Called to indicate a terminal node has completed processing.
    *
    * The thread of the last terminal node that reaches here will
    * inform the main-thread, wait, and kick off the next

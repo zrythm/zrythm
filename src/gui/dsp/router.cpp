@@ -119,23 +119,50 @@ Router::start_cycle (EngineProcessTimeInfo time_nfo)
     }
 
   /* process tempo track ports first */
+  /* Ideally, this hack should be removed and the BPM node should be
+   * processed like the other nodes, but I haven't figured how that would
+   * work yet due to changes in BPM requiring position conversions. Maybe
+   * schedule the BPM node to be processed first in the graph? What about
+   * splitting at n samples or at loop points (how does that affect position
+   * conversions)? Should there even be a BPM node?
+   */
   if (graph_->bpm_node_)
     {
-      graph_->bpm_node_->process (time_nfo, *graph_->main_thread_);
+      graph_->bpm_node_->process (
+        time_nfo, AUDIO_ENGINE->remaining_latency_preroll_);
+      graph_->bpm_node_->set_skip_processing (true);
     }
   if (graph_->beats_per_bar_node_)
     {
-      graph_->beats_per_bar_node_->process (time_nfo, *graph_->main_thread_);
+      graph_->beats_per_bar_node_->process (
+        time_nfo, AUDIO_ENGINE->remaining_latency_preroll_);
+      graph_->beats_per_bar_node_->set_skip_processing (true);
     }
   if (graph_->beat_unit_node_)
     {
-      graph_->beat_unit_node_->process (time_nfo, *graph_->main_thread_);
+      graph_->beat_unit_node_->process (
+        time_nfo, AUDIO_ENGINE->remaining_latency_preroll_);
+      graph_->beat_unit_node_->set_skip_processing (true);
     }
 
   callback_in_progress_ = true;
   graph_->callback_start_sem_.release ();
   graph_->callback_done_sem_.acquire ();
   callback_in_progress_ = false;
+
+  /* reset bypass state of special nodes */
+  if (graph_->bpm_node_)
+    {
+      graph_->bpm_node_->set_skip_processing (false);
+    }
+  if (graph_->beats_per_bar_node_)
+    {
+      graph_->beats_per_bar_node_->set_skip_processing (false);
+    }
+  if (graph_->beat_unit_node_)
+    {
+      graph_->beat_unit_node_->set_skip_processing (false);
+    }
 }
 
 void

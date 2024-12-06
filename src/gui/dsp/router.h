@@ -37,13 +37,6 @@
 #include "utils/rt_thread_id.h"
 #include "utils/types.h"
 
-class GraphNode;
-class Graph;
-class PassthroughProcessor;
-class Port;
-class Fader;
-class Track;
-
 /**
  * @addtogroup dsp
  *

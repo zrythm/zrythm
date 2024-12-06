@@ -13,6 +13,8 @@ target_sources(zrythm_dsp_lib
   ditherer.h
   ditherer.cpp
   dsp.h
+  graph_node.h
+  graph_node.cpp
   itransport.h
   kmeter_dsp.h
   kmeter_dsp.cpp

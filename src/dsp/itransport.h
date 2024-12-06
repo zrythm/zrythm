@@ -44,20 +44,8 @@ public:
    * point as a positive number (>= 1) if the loop point was met between
    * g_start_frames and (g_start_frames + nframes), otherwise returns 0;
    */
-  [[nodiscard]] ATTR_HOT inline nframes_t
-  is_loop_point_met (const signed_frame_t g_start_frames, const nframes_t nframes)
-  {
-    auto [loop_start_pos, loop_end_pos] = get_loop_range_positions ();
-    bool loop_end_between_start_and_end =
-      (loop_end_pos.frames_ > g_start_frames
-       && loop_end_pos.frames_ <= g_start_frames + (long) nframes);
-
-    if (loop_end_between_start_and_end && get_loop_enabled ()) [[unlikely]]
-      {
-        return (nframes_t) (loop_end_pos.frames_ - g_start_frames);
-      }
-    return 0;
-  }
+  virtual nframes_t
+  is_loop_point_met (signed_frame_t g_start_frames, nframes_t nframes) const = 0;
 };
 
 } // namespace zrythm::dsp

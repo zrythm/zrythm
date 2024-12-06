@@ -29,10 +29,9 @@
 
 #include <semaphore>
 
-#include "gui/dsp/graph_node.h"
+#include "dsp/graph_node.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/track.h"
-
 #include "utils/mpmc_queue.h"
 #include "utils/types.h"
 
@@ -55,11 +54,66 @@ class HardwareProcessor;
 
 constexpr int MAX_GRAPH_THREADS = 128;
 
+using NodeData = std::variant<
+  PortPtrVariant,
+  zrythm::gui::old_dsp::plugins::PluginPtrVariant,
+  TrackPtrVariant,
+  Fader *, // Used for normal fader, prefader and monitor fader
+  SampleProcessor *,
+  HardwareProcessor *,
+  ModulatorMacroProcessor *,
+  ChannelSend *,
+  std::monostate // For initial processor (dummy processor in the chain
+                 // processed before anything else. )
+  >;
+
+template <> struct std::hash<NodeData>
+{
+  size_t operator() (const NodeData &data) const
+  {
+    return std::visit (
+      overload{
+        [] (const PortPtrVariant &p) {
+          return std::visit (
+            [] (auto * ptr) {
+              z_return_val_if_fail (ptr, static_cast<size_t> (0));
+              return reinterpret_cast<size_t> (ptr);
+            },
+            p);
+        },
+        [] (const zrythm::gui::old_dsp::plugins::PluginPtrVariant &pl) {
+          return std::visit (
+            [] (auto * ptr) {
+              z_return_val_if_fail (ptr, static_cast<size_t> (0));
+              return reinterpret_cast<size_t> (ptr);
+            },
+            pl);
+        },
+        [] (const TrackPtrVariant &t) {
+          return std::visit (
+            [] (auto * ptr) {
+              z_return_val_if_fail (ptr, static_cast<size_t> (0));
+              return reinterpret_cast<size_t> (ptr);
+            },
+            t);
+        },
+        [] (const std::monostate &) -> size_t { return 1; },
+        [] (auto * ptr) {
+          z_return_val_if_fail (ptr, static_cast<size_t> (0));
+          return reinterpret_cast<size_t> (ptr);
+        } },
+      data);
+  }
+};
+
 /**
  * Graph.
  */
 class Graph final
 {
+public:
+  using GraphNode = dsp::GraphNode;
+
 public:
   Graph (Router * router, SampleProcessor * sample_processor = nullptr);
   ~Graph ();
@@ -133,6 +187,11 @@ public:
    */
   void terminate ();
 
+  /**
+   * Called when an upstream (parent) node has completed processing.
+   */
+  ATTR_HOT void trigger_node (GraphNode &node);
+
 private:
   /**
    * @brief Checks for cycles in the graph.
@@ -164,12 +223,14 @@ private:
   /**
    * Creates a new node, adds it to the graph and returns it.
    */
-  GraphNode *
-  create_node (GraphNode::NameGetter name_getter, GraphNode::NodeData data);
+  GraphNode * create_node (
+    GraphNode::NameGetter                  name_getter,
+    GraphNode::ProcessFunc                 process_func,
+    GraphNode::SinglePlaybackLatencyGetter playback_latency_getter,
+    NodeData                               data);
 
 public:
-  using GraphNodesMap =
-    std::unordered_map<GraphNode::NodeData, std::unique_ptr<GraphNode>>;
+  using GraphNodesMap = std::unordered_map<NodeData, std::unique_ptr<GraphNode>>;
   /**
    * @brief List of all graph nodes.
    *
@@ -205,8 +266,8 @@ public:
   std::atomic<int> terminal_refcnt_ = 0;
 
   /** Synchronization with main process callback. */
-  /* FIXME: this should probably be binary semaphore but i left it as a counting
-   * one out of caution while refactoring from ZixSem */
+  /* FIXME: this should probably be binary semaphore but i left it as a
+   * counting one out of caution while refactoring from ZixSem */
   std::counting_semaphore<MAX_GRAPH_THREADS> callback_start_sem_{ 0 };
   std::binary_semaphore                      callback_done_sem_{ 0 };
 
@@ -240,7 +301,8 @@ public:
    * An array of pointers to ports that are exposed to the backend and are
    * outputs.
    *
-   * Used to clear their buffers when returning early from the processing cycle.
+   * Used to clear their buffers when returning early from the processing
+   * cycle.
    */
   std::vector<Port *> external_out_ports_;
 

@@ -31,7 +31,6 @@
 #include "gui/dsp/engine.h"
 #include "gui/dsp/fader.h"
 #include "gui/dsp/graph.h"
-#include "gui/dsp/graph_node.h"
 #include "gui/dsp/graph_thread.h"
 #include "gui/dsp/hardware_processor.h"
 #include "gui/dsp/modulator_macro_processor.h"
@@ -43,18 +42,39 @@
 #include "gui/dsp/tempo_track.h"
 #include "gui/dsp/track.h"
 #include "gui/dsp/tracklist.h"
-
 #include "utils/audio.h"
 #include "utils/env.h"
 #include "utils/flags.h"
 #include "utils/mpmc_queue.h"
-#include "utils/objects.h"
+
+using namespace zrythm;
 
 Graph::Graph (Router * router, SampleProcessor * sample_processor)
     : sample_processor_ (sample_processor), router_ (router)
 {
   z_return_if_fail (
     (router && !sample_processor) || (!router && sample_processor));
+}
+
+void
+Graph::trigger_node (GraphNode &node)
+{
+  /* check if we can run */
+  if (node.refcount_.fetch_sub (1) == 1)
+    {
+      /* reset reference count for next cycle */
+      node.refcount_.store (node.init_refcount_);
+
+      // FIXME: is the code below correct? seems like it would cause data races
+      // since we are increasing the size but the pointer might not be pushed in
+      // the queue yet?
+
+      /* all nodes that feed this node have completed, so this node be
+       * processed now. */
+      trigger_queue_size_.fetch_add (1);
+      /*z_info ("triggering node, pushing back");*/
+      trigger_queue_.push_back (&node);
+    }
 }
 
 bool
@@ -124,20 +144,23 @@ Graph::add_plugin (zrythm::gui::old_dsp::plugins::Plugin &pl)
   z_return_if_fail (!pl.deleting_);
   auto pl_var =
     convert_to_variant<zrythm::gui::old_dsp::plugins::PluginPtrVariant> (&pl);
-  if (!pl.in_ports_.empty () || !pl.out_ports_.empty ())
-    {
-      create_node (
-        [pl_var] () {
-          return std::visit (
-            [] (auto * plugin) {
+  std::visit (
+    [this] (auto &&plugin) {
+      if (!plugin->in_ports_.empty () || !plugin->out_ports_.empty ())
+        {
+          create_node (
+            [plugin] () {
               Track * track = plugin->get_track ();
               return fmt::format (
-                "{}/{} (Plugin)", track->name_, plugin->get_name ());
+                "{}/{} (Plugin)", track->get_name (), plugin->get_name ());
             },
-            pl_var);
-        },
-        pl_var);
-    }
+            [plugin] (EngineProcessTimeInfo time_nfo) {
+              plugin->process (time_nfo);
+            },
+            [plugin] () -> nframes_t { return plugin->latency_; }, plugin);
+        }
+    },
+    pl_var);
 }
 
 void
@@ -201,7 +224,7 @@ Graph::~Graph ()
     }
 }
 
-GraphNode *
+Graph::GraphNode *
 Graph::add_port (
   PortPtrVariant          port_var,
   PortConnectionsManager &mgr,
@@ -289,13 +312,37 @@ Graph::add_port (
 
       /* allocate buffers to be used during DSP */
       port->allocate_bufs ();
+
       return create_node (
-        [port_var] () {
-          return std::visit (
-            [] (auto * port) { return port->get_full_designation (); },
-            port_var);
+        [port] () { return port->get_full_designation (); },
+        [port] (EngineProcessTimeInfo time_nfo) {
+          if constexpr (std::is_same_v<PortT, MidiPort>)
+            {
+              if (
+                ENUM_BITSET_TEST (
+                  dsp::PortIdentifier::Flags, port->id_->flags_,
+                  dsp::PortIdentifier::Flags::ManualPress))
+                {
+                  port->midi_events_.dequeue (
+                    time_nfo.local_offset_, time_nfo.nframes_);
+                  return;
+                }
+            }
+          if constexpr (std::is_same_v<PortT, AudioPort>)
+            {
+              if (
+                port->id_->is_monitor_fader_stereo_in_or_out_port ()
+                && AUDIO_ENGINE->exporting_)
+                {
+                  /* if exporting and the port is not a project port, skip
+                   * processing */
+                  return;
+                }
+            }
+
+          port->process (time_nfo, false);
         },
-        port_var);
+        GraphNode::DefaultSinglePlaybackLatencyGetter (), port);
     },
     port_var);
 }
@@ -391,18 +438,31 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
 
   /* add the sample processor */
   create_node (
-    [] () { return std::string ("Sample Processor"); }, sample_processor);
+    [] () { return std::string ("Sample Processor"); },
+    [sample_processor] (EngineProcessTimeInfo time_nfo) {
+      sample_processor->process (time_nfo.local_offset_, time_nfo.nframes_);
+    },
+    GraphNode::DefaultSinglePlaybackLatencyGetter (), sample_processor);
 
   /* add the monitor fader */
-  create_node ([] () { return std::string ("Monitor Fader"); }, monitor_fader);
+  create_node (
+    [] () { return std::string ("Monitor Fader"); },
+    [monitor_fader] (EngineProcessTimeInfo time_nfo) {
+      monitor_fader->process (time_nfo);
+    },
+    GraphNode::DefaultSinglePlaybackLatencyGetter (), monitor_fader);
 
   /* add the initial processor */
   create_node (
-    [] () { return std::string ("Initial Processor"); }, std::monostate ());
+    [] () { return std::string ("Initial Processor"); },
+    GraphNode::DefaultProcessFunc (),
+    GraphNode::DefaultSinglePlaybackLatencyGetter (), std::monostate ());
 
   /* add the hardware input processor */
   create_node (
-    [] () { return std::string ("HW In Processor"); }, hw_in_processor);
+    [] () { return std::string ("HW In Processor"); },
+    GraphNode::DefaultProcessFunc (),
+    GraphNode::DefaultSinglePlaybackLatencyGetter (), hw_in_processor);
 
   /* add plugins */
   for (const auto &cur_tr : tracklist->tracks_)
@@ -413,7 +473,16 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
           using TrackT = base_type<decltype (tr)>;
 
           /* add the track */
-          create_node ([tr] () { return tr->get_name (); }, tr);
+          create_node (
+            [tr] () { return tr->get_name (); },
+            [tr] (EngineProcessTimeInfo time_nfo) {
+              if constexpr (std::derived_from<TrackT, ProcessableTrack>)
+                {
+                  tr->processor_->process (time_nfo);
+                }
+              (void) tr; // silence warning
+            },
+            GraphNode::DefaultSinglePlaybackLatencyGetter (), tr);
 
           /* handle modulator track */
           if constexpr (std::is_same_v<ModulatorTrack, TrackT>)
@@ -431,12 +500,16 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
               /* add macro processors */
               for (auto &mp : tr->modulator_macro_processors_)
                 {
+                  auto * mp_ptr = mp.get ();
                   create_node (
                     [tr] () {
                       return fmt::format (
                         "{} Modulator Macro Processor", tr->name_);
                     },
-                    mp.get ());
+                    [mp_ptr] (EngineProcessTimeInfo time_nfo) {
+                      mp_ptr->process (time_nfo);
+                    },
+                    GraphNode::DefaultSinglePlaybackLatencyGetter (), mp_ptr);
                 }
             }
 
@@ -445,16 +518,24 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
               auto &channel = tr->channel_;
 
               /* add the fader */
+              auto * fader = channel->fader_;
               create_node (
                 [tr] () { return fmt::format ("{} Fader", tr->get_name ()); },
-                channel->fader_);
+                [fader] (EngineProcessTimeInfo time_nfo) {
+                  fader->process (time_nfo);
+                },
+                GraphNode::DefaultSinglePlaybackLatencyGetter (), fader);
 
               /* add the prefader */
+              auto * prefader = channel->prefader_;
               create_node (
                 [tr] () {
                   return fmt::format ("{} Pre-Fader", tr->get_name ());
                 },
-                channel->prefader_);
+                [prefader] (EngineProcessTimeInfo time_nfo) {
+                  prefader->process (time_nfo);
+                },
+                GraphNode::DefaultSinglePlaybackLatencyGetter (), prefader);
 
               /* add plugins */
               std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
@@ -484,6 +565,11 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
                             "{}/Channel Send {}", tr->name_,
                             send_ptr->slot_ + 1);
                         },
+                        [send_ptr] (EngineProcessTimeInfo time_nfo) {
+                          send_ptr->process (
+                            time_nfo.local_offset_, time_nfo.nframes_);
+                        },
+                        GraphNode::DefaultSinglePlaybackLatencyGetter (),
                         send_ptr);
                     }
                 }
@@ -1109,7 +1195,7 @@ Graph::terminate ()
   z_info ("graph terminated");
 }
 
-GraphNode *
+Graph::GraphNode *
 Graph::find_node_from_port (PortPtrVariant port) const
 {
   auto it = setup_graph_nodes_map_.find (port);
@@ -1120,7 +1206,7 @@ Graph::find_node_from_port (PortPtrVariant port) const
   return nullptr;
 }
 
-GraphNode *
+Graph::GraphNode *
 Graph::find_node_from_plugin (
   zrythm::gui::old_dsp::plugins::PluginPtrVariant pl) const
 {
@@ -1132,7 +1218,7 @@ Graph::find_node_from_plugin (
   return nullptr;
 }
 
-GraphNode *
+Graph::GraphNode *
 Graph::find_node_from_track (TrackPtrVariant track, bool use_setup_nodes) const
 {
   const auto &nodes =
@@ -1145,7 +1231,7 @@ Graph::find_node_from_track (TrackPtrVariant track, bool use_setup_nodes) const
   return nullptr;
 }
 
-GraphNode *
+Graph::GraphNode *
 Graph::find_node_from_fader (const Fader * fader) const
 {
   auto it = setup_graph_nodes_map_.find (const_cast<Fader *> (fader));
@@ -1156,7 +1242,7 @@ Graph::find_node_from_fader (const Fader * fader) const
   return nullptr;
 }
 
-GraphNode *
+Graph::GraphNode *
 Graph::find_node_from_sample_processor (
   const SampleProcessor * sample_processor) const
 {
@@ -1169,7 +1255,7 @@ Graph::find_node_from_sample_processor (
   return nullptr;
 }
 
-GraphNode *
+Graph::GraphNode *
 Graph::find_node_from_channel_send (const ChannelSend * send) const
 {
   auto it = setup_graph_nodes_map_.find (const_cast<ChannelSend *> (send));
@@ -1180,7 +1266,7 @@ Graph::find_node_from_channel_send (const ChannelSend * send) const
   return nullptr;
 }
 
-GraphNode *
+Graph::GraphNode *
 Graph::find_initial_processor_node () const
 {
   auto it = setup_graph_nodes_map_.find (std::monostate ());
@@ -1191,7 +1277,7 @@ Graph::find_initial_processor_node () const
   return nullptr;
 }
 
-GraphNode *
+Graph::GraphNode *
 Graph::find_hw_processor_node (const HardwareProcessor * processor) const
 {
   auto it =
@@ -1203,7 +1289,7 @@ Graph::find_hw_processor_node (const HardwareProcessor * processor) const
   return nullptr;
 }
 
-GraphNode *
+Graph::GraphNode *
 Graph::find_node_from_modulator_macro_processor (
   const ModulatorMacroProcessor * processor) const
 {
@@ -1219,11 +1305,18 @@ Graph::find_node_from_modulator_macro_processor (
 /**
  * Creates a new node, adds it to the graph and returns it.
  */
-GraphNode *
-Graph::create_node (GraphNode::NameGetter name_getter, GraphNode::NodeData data)
+Graph::GraphNode *
+Graph::create_node (
+  GraphNode::NameGetter                  name_getter,
+  GraphNode::ProcessFunc                 process_func,
+  GraphNode::SinglePlaybackLatencyGetter playback_latency_getter,
+  NodeData                               data)
 {
   auto [it, inserted] = setup_graph_nodes_map_.emplace (
-    data, std::make_unique<GraphNode> (this, name_getter, *TRANSPORT, data));
+    data,
+    std::make_unique<GraphNode> (
+      setup_graph_nodes_map_.size (), name_getter, *TRANSPORT, process_func,
+      playback_latency_getter));
   return it->second.get ();
 }
 

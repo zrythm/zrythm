@@ -85,8 +85,6 @@ target_sources(zrythm_gui_lib
     graph.cpp
     graph_export.h
     graph_export.cpp
-    graph_node.h
-    graph_node.cpp
     graph_thread.h
     graph_thread.cpp
     group_target_track.h
