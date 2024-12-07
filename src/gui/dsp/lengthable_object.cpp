@@ -155,7 +155,7 @@ LengthableObject::resize (
               auto * lo = dynamic_cast<LoopableObject *> (this);
               tmp = lo->loop_end_pos_;
               if (
-                type == ResizeType::RESIZE_STRETCH_BPM_CHANGE
+                type == ResizeType::StretchTempoChange
                 || type == ResizeType::Stretch)
                 {
                   tmp.from_ticks (
@@ -171,7 +171,7 @@ LengthableObject::resize (
 
               /* if stretching, also stretch loop start */
               if (
-                type == ResizeType::RESIZE_STRETCH_BPM_CHANGE
+                type == ResizeType::StretchTempoChange
                 || type == ResizeType::Stretch)
                 {
                   tmp = lo->loop_start_pos_;
@@ -187,7 +187,7 @@ LengthableObject::resize (
               auto fo = dynamic_cast<FadeableObject *> (this);
               tmp = fo->fade_out_pos_;
               if (
-                type == ResizeType::RESIZE_STRETCH_BPM_CHANGE
+                type == ResizeType::StretchTempoChange
                 || type == ResizeType::Stretch)
                 {
                   tmp.from_ticks (
@@ -203,7 +203,7 @@ LengthableObject::resize (
 
               /* if stretching, also stretch fade in */
               if (
-                type == ResizeType::RESIZE_STRETCH_BPM_CHANGE
+                type == ResizeType::StretchTempoChange
                 || type == ResizeType::Stretch)
                 {
                   tmp = fo->fade_in_pos_;
@@ -221,7 +221,7 @@ LengthableObject::resize (
                 [&] (auto &&region) {
                   double new_length = get_length_in_ticks ();
 
-                  if (type != ResizeType::RESIZE_STRETCH_BPM_CHANGE)
+                  if (type != ResizeType::StretchTempoChange)
                     {
                       /* FIXME this flag is not good,
                        * remove from this function and

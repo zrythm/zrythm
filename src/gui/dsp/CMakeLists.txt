@@ -31,8 +31,6 @@ target_sources(zrythm_gui_lib
     automation_track.cpp
     automation_tracklist.h
     automation_tracklist.cpp
-    balance_control.h
-    balance_control.cpp
     carla_native_plugin.h
     carla_native_plugin.cpp
     channel_send.h

@@ -217,7 +217,7 @@ public:
      *
      * @note Only applies to audio.
      */
-    RESIZE_STRETCH_BPM_CHANGE,
+    StretchTempoChange,
   };
 
   /**
@@ -225,10 +225,6 @@ public:
    */
   enum class Type
   {
-    /* These two are not actual object types. */
-    None,
-    All,
-
     Region,
     MidiNote,
     ChordObject,
@@ -625,9 +621,9 @@ public:
     return type_has_name (type_) && is_deletable ();
   };
 
-  inline bool can_loop () const { return type_can_loop (type_); };
+  bool can_loop () const { return type_can_loop (type_); };
 
-  inline bool is_region () const { return type_ == Type::Region; };
+  bool is_region () const { return type_ == Type::Region; };
 
   bool is_scale_object () const { return type_ == Type::ScaleObject; };
   bool is_marker () const { return type_ == Type::Marker; };
@@ -687,8 +683,8 @@ public:
   /**
    * Whether deleted with delete tool.
    *
-   * This is used to simply hide these objects until the action finishes so that
-   * they can be cloned for the actions.
+   * This is used to simply hide these objects until the action finishes so
+   * that they can be cloned for the actions.
    */
   bool deleted_temporarily_ = false;
 

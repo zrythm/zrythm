@@ -661,8 +661,7 @@ ArrangerObject::
                   try
                     {
                       obj->resize (
-                        false,
-                        ArrangerObject::ResizeType::RESIZE_STRETCH_BPM_CHANGE,
+                        false, ArrangerObject::ResizeType::StretchTempoChange,
                         ticks, false);
                     }
                   catch (const ZrythmException &e)
@@ -690,8 +689,7 @@ ArrangerObject::
                   try
                     {
                       obj->resize (
-                        false,
-                        ArrangerObject::ResizeType::RESIZE_STRETCH_BPM_CHANGE,
+                        false, ArrangerObject::ResizeType::StretchTempoChange,
                         ticks, false);
                     }
                   catch (const ZrythmException &e)
@@ -872,7 +870,4 @@ ArrangerObject::copy_members_from (const ArrangerObject &other)
 }
 
 void
-ArrangerObject::init_loaded_base ()
-{
-  z_return_if_fail (type_ > Type::None);
-};
+ArrangerObject::init_loaded_base () {};

@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/panning.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/channel.h"
 #include "gui/dsp/audio_port.h"
-#include "gui/dsp/balance_control.h"
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/control_room.h"
 #include "gui/dsp/engine.h"
@@ -965,10 +965,8 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
           float pan = balance_->get_control_value (false);
           float amp = amp_->get_control_value (false);
 
-          float calc_l, calc_r;
-          balance_control_get_calc_lr (
-            BalanceControlAlgorithm::BALANCE_CONTROL_ALGORITHM_LINEAR, pan,
-            &calc_l, &calc_r);
+          auto [calc_l, calc_r] = dsp::calculate_balance_control (
+            dsp::BalanceControlAlgorithm::Linear, pan);
 
           /* apply fader and pan */
           utils::float_ranges::mul_k2 (

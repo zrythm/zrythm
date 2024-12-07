@@ -64,4 +64,36 @@ calculate_panning (PanLaw law, PanAlgorithm algo, float pan)
   return { left_gain * compensation, right_gain * compensation };
 }
 
+std::pair<float, float>
+calculate_balance_control (
+  BalanceControlAlgorithm algorithm,
+  float                   balance_control_position)
+{
+  // Clamp pan value between 0 and 1
+  constexpr float EPSILON = 0.0000001f;
+  balance_control_position =
+    std::clamp (balance_control_position, EPSILON, 1.f - EPSILON);
+
+  float left_gain = 0.f;
+  float right_gain = 0.f;
+
+  switch (algorithm)
+    {
+    case BalanceControlAlgorithm::Linear:
+      if (balance_control_position < 0.5f)
+        {
+          left_gain = 1.f;
+          right_gain = balance_control_position / 0.5f;
+        }
+      else
+        {
+          left_gain = (1.0f - balance_control_position) / 0.5f;
+          right_gain = 1.f;
+        }
+      break;
+    }
+
+  return { left_gain, right_gain };
+}
+
 }; // namespace zrythm::dsp

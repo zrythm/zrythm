@@ -531,5 +531,8 @@ StereoPorts::
 
 StereoPorts::~StereoPorts ()
 {
-  disconnect (*PORT_CONNECTIONS_MGR);
+  if (PORT_CONNECTIONS_MGR)
+    {
+      disconnect (*PORT_CONNECTIONS_MGR);
+    }
 }

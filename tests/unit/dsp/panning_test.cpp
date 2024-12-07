@@ -123,4 +123,75 @@ TEST_F (PanningTest, EdgeCases)
     }
 }
 
+TEST_F (PanningTest, LinearBalanceControlBehavior)
+{
+  // Test center position
+  auto [left_center, right_center] =
+    calculate_balance_control (BalanceControlAlgorithm::Linear, 0.5f);
+  EXPECT_NEAR (left_center, 1.0f, EPSILON);
+  EXPECT_NEAR (right_center, 1.0f, EPSILON);
+
+  // Test full left
+  auto [left_full, right_full] =
+    calculate_balance_control (BalanceControlAlgorithm::Linear, 0.0f);
+  EXPECT_NEAR (left_full, 1.0f, EPSILON);
+  EXPECT_NEAR (right_full, 0.0f, EPSILON);
+
+  // Test full right
+  auto [left_right, right_right] =
+    calculate_balance_control (BalanceControlAlgorithm::Linear, 1.0f);
+  EXPECT_NEAR (left_right, 0.0f, EPSILON);
+  EXPECT_NEAR (right_right, 1.0f, EPSILON);
+
+  // Test intermediate positions
+  for (float pos : test_positions_)
+    {
+      auto [left, right] =
+        calculate_balance_control (BalanceControlAlgorithm::Linear, pos);
+
+      // Verify one channel always stays at unity gain
+      if (pos < 0.5f)
+        {
+          EXPECT_NEAR (left, 1.0f, EPSILON) << "Position: " << pos;
+          EXPECT_NEAR (right, pos * 2.0f, EPSILON) << "Position: " << pos;
+        }
+      else
+        {
+          EXPECT_NEAR (left, (1.0f - pos) * 2.0f, EPSILON)
+            << "Position: " << pos;
+          EXPECT_NEAR (right, 1.0f, EPSILON) << "Position: " << pos;
+        }
+
+      // Verify gains are in valid range
+      EXPECT_GE (left, 0.0f) << "Position: " << pos;
+      EXPECT_LE (left, 1.0f) << "Position: " << pos;
+      EXPECT_GE (right, 0.0f) << "Position: " << pos;
+      EXPECT_LE (right, 1.0f) << "Position: " << pos;
+    }
+}
+
+TEST_F (PanningTest, BalanceControlEdgeCases)
+{
+  std::vector<float> edge_cases = {
+    -1.0f,
+    -0.1f,
+    1.1f,
+    2.0f,
+    std::numeric_limits<float>::infinity (),
+    -std::numeric_limits<float>::infinity (),
+  };
+
+  for (float pos : edge_cases)
+    {
+      auto [left, right] =
+        calculate_balance_control (BalanceControlAlgorithm::Linear, pos);
+
+      // Verify gains are clamped to valid range
+      EXPECT_GE (left, 0.0f) << "Position: " << pos;
+      EXPECT_LE (left, 1.0f) << "Position: " << pos;
+      EXPECT_GE (right, 0.0f) << "Position: " << pos;
+      EXPECT_LE (right, 1.0f) << "Position: " << pos;
+    }
+}
+
 } // namespace zrythm::dsp
