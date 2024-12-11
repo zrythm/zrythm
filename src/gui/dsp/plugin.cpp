@@ -1096,7 +1096,7 @@ Plugin::process (const EngineProcessTimeInfo time_nfo)
   process_impl (time_nfo);
 
   /* if plugin has gain, apply it */
-  if (!math_floats_equal_epsilon (gain_->control_, 1.f, 0.001f))
+  if (!utils::math::floats_near (gain_->control_, 1.f, 0.001f))
     {
       for (auto &port : out_ports_)
         {
@@ -1104,7 +1104,7 @@ Plugin::process (const EngineProcessTimeInfo time_nfo)
             continue;
 
           /* if close to 0 set it to the denormal prevention val */
-          if (math_floats_equal_epsilon (gain_->control_, 0.f, 0.00001f))
+          if (utils::math::floats_near (gain_->control_, 0.f, 0.00001f))
             {
               utils::float_ranges::fill (
                 &port->buf_[time_nfo.local_offset_],
@@ -1684,18 +1684,25 @@ Plugin::disconnect_from_prefader (Channel &ch)
   auto track = ch.get_track ();
   auto type = track->out_signal_type_;
 
+  auto * port_connections_mgr = PORT_CONNECTIONS_MGR;
   for (auto &out_port : out_ports_)
     {
       if (
         type == dsp::PortType::Audio
         && out_port->id_->type_ == dsp::PortType::Audio)
         {
-          if (out_port->is_connected_to (ch.prefader_->stereo_in_->get_l ()))
-            out_port->disconnect_from (
-              *PORT_CONNECTIONS_MGR, ch.prefader_->stereo_in_->get_l ());
-          if (out_port->is_connected_to (ch.prefader_->stereo_in_->get_r ()))
-            out_port->disconnect_from (
-              *PORT_CONNECTIONS_MGR, ch.prefader_->stereo_in_->get_r ());
+          if (port_connections_mgr->are_ports_connected (
+                *out_port->id_, *ch.prefader_->stereo_in_->get_l ().id_))
+            {
+              out_port->disconnect_from (
+                *PORT_CONNECTIONS_MGR, ch.prefader_->stereo_in_->get_l ());
+            }
+          if (port_connections_mgr->are_ports_connected (
+                *out_port->id_, *ch.prefader_->stereo_in_->get_r ().id_))
+            {
+              out_port->disconnect_from (
+                *PORT_CONNECTIONS_MGR, ch.prefader_->stereo_in_->get_r ());
+            }
         }
       else if (
         type == dsp::PortType::Event
@@ -1704,9 +1711,12 @@ Plugin::disconnect_from_prefader (Channel &ch)
           PortIdentifier::Flags2, out_port->id_->flags2_,
           PortIdentifier::Flags2::SupportsMidi))
         {
-          if (out_port->is_connected_to (*ch.prefader_->midi_in_))
-            out_port->disconnect_from (
-              *PORT_CONNECTIONS_MGR, *ch.prefader_->midi_in_);
+          if (port_connections_mgr->are_ports_connected (
+                *out_port->id_, *ch.prefader_->midi_in_->id_))
+            {
+              out_port->disconnect_from (
+                *PORT_CONNECTIONS_MGR, *ch.prefader_->midi_in_);
+            }
         }
     }
 }

@@ -3,17 +3,16 @@
 
 #include "zrythm-config.h"
 
-#include "gui/backend/backend/zrythm.h"
-
 #if HAVE_RTMIDI
 
+#  include <utility>
+
 #  include "gui/backend/backend/project.h"
+#  include "gui/backend/backend/zrythm.h"
 #  include "gui/dsp/engine.h"
 #  include "gui/dsp/midi_event.h"
 #  include "gui/dsp/port.h"
 #  include "gui/dsp/rtmidi_device.h"
-
-#  include <gtk/gtk.h>
 
 static enum RtMidiApi
 get_api_from_midi_backend (MidiBackend backend)
@@ -81,14 +80,13 @@ midi_in_cb (
   SemaphoreRAII<> sem_raii (self->midi_ring_sem_);
 
   /* generate timestamp */
-  auto   cur_time = Zrythm::getInstance ()->get_monotonic_time_usecs ();
-  qint64 ts = cur_time - self->port_->last_midi_dequeue_;
+  auto ts = self->timestamp_generator_ ();
   z_return_if_fail (ts >= 0);
   if (DEBUGGING)
     {
       z_debug (
         "[{}] message received of size {} at {}",
-        self->port_->get_full_designation (), message_size, ts);
+        self->device_name_provider_ (), message_size, ts);
     }
 
   /* add to ring buffer */
@@ -98,8 +96,6 @@ midi_in_cb (
   ev.systime_ = ts;
   self->midi_ring_.write (ev);
 }
-
-static bool rtmidi_device_first_run = false;
 
 static int
 rtmidi_device_get_id_from_name (bool is_input, std::string name)
@@ -141,25 +137,22 @@ rtmidi_device_get_id_from_name (bool is_input, std::string name)
  *   by @ref device_id.
  */
 RtMidiDevice::RtMidiDevice (
-  bool         is_input,
-  unsigned int device_id,
-  MidiPort *   port,
-  std::string  name)
+  bool               is_input,
+  unsigned int       device_id,
+  DeviceNameProvider device_name_provider,
+  std::string        name)
+    : device_name_provider_ (std::move (device_name_provider))
 {
-  std::array<enum RtMidiApi, 32> apis;
+  std::array<enum RtMidiApi, 32> apis{};
   int num_apis = (int) rtmidi_get_compiled_api (apis.data (), apis.size ());
   if (num_apis < 0)
     {
       throw ZrythmException ("RtMidi: an error occurred fetching compiled APIs");
     }
-  if (rtmidi_device_first_run)
-    {
       for (int i = 0; i < num_apis; i++)
         {
-          z_info ("RtMidi API found: {}", rtmidi_api_name (apis[i]));
+          z_debug ("RtMidi API found: {}", rtmidi_api_name (apis[i]));
         }
-      rtmidi_device_first_run = false;
-    }
 
   enum RtMidiApi api = get_api_from_midi_backend (AUDIO_ENGINE->midi_backend_);
   if (api == RTMIDI_API_RTMIDI_DUMMY)
@@ -184,7 +177,6 @@ RtMidiDevice::RtMidiDevice (
       id_ = device_id;
     }
   is_input_ = is_input;
-  port_ = port;
   if (is_input)
     {
       in_handle_ =
@@ -203,10 +195,10 @@ RtMidiDevice::RtMidiDevice (
 }
 
 void
-RtMidiDevice::open (bool start)
+RtMidiDevice::open ()
 {
   z_debug ("opening rtmidi device");
-  auto        designation = port_->get_full_designation ();
+  auto        designation = device_name_provider_ ();
   std::string lbl = fmt::format ("{} [{}]", designation, id_);
   rtmidi_close_port (in_handle_);
   rtmidi_open_port (in_handle_, id_, lbl.c_str ());
@@ -214,11 +206,6 @@ RtMidiDevice::open (bool start)
     {
       throw ZrythmException (fmt::format (
         "An error occurred opening the RtMidi in port: %s", in_handle_->msg));
-    }
-
-  if (start)
-    {
-      this->start ();
     }
 }
 
@@ -239,8 +226,10 @@ RtMidiDevice::close ()
 }
 
 void
-RtMidiDevice::start ()
+RtMidiDevice::start (TimestampGenerator timestamp_generator)
 {
+  timestamp_generator_ = timestamp_generator;
+
   z_debug ("starting rtmidi device");
   if (is_input_)
     {

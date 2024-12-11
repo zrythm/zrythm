@@ -413,7 +413,7 @@ public:
     bool                         is_note_off_for_loop_or_region_end,
     MidiEventVector             &midi_events) const
     requires RegionTypeWithMidiEvents<RegionT>
-  ATTR_REALTIME;
+  ATTR_NONBLOCKING;
 
   /**
    * @brief Get the objects (midi notes/chord objects/etc) of this

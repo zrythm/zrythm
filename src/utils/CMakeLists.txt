@@ -45,6 +45,7 @@ target_sources(zrythm_utils_lib
     io.cpp
     icloneable.h
     iserializable.h
+    jack.h
     json.h
     json.cpp
     logger.h

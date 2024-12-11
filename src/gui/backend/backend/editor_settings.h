@@ -13,6 +13,8 @@
  * @{
  */
 
+using namespace zrythm;
+
 #define DEFINE_EDITOR_SETTINGS_QML_PROPERTIES \
   Q_PROPERTY (double x READ getX WRITE setX NOTIFY xChanged) \
   double getX () const \
@@ -22,7 +24,7 @@
   void setX (double x) \
   { \
     auto clamped_x = clamp_scroll_start_x (x); \
-    if (math_doubles_equal (scroll_start_x_, clamped_x)) \
+    if (utils::math::floats_equal (scroll_start_x_, clamped_x)) \
       return; \
 \
     scroll_start_x_ = clamped_x; \
@@ -39,7 +41,7 @@
   void setY (double y) \
   { \
     auto clamped_y = clamp_scroll_start_y (y); \
-    if (math_doubles_equal (scroll_start_y_, clamped_y)) \
+    if (utils::math::floats_equal (scroll_start_y_, clamped_y)) \
       return; \
     scroll_start_y_ = clamped_y; \
     Q_EMIT yChanged (scroll_start_y_); \
@@ -56,7 +58,7 @@
   } \
   void setHorizontalZoomLevel (double hzoom_level) \
   { \
-    if (math_doubles_equal (hzoom_level_, hzoom_level)) \
+    if (utils::math::floats_equal (hzoom_level_, hzoom_level)) \
       return; \
     hzoom_level_ = hzoom_level; \
     Q_EMIT horizontalZoomLevelChanged (hzoom_level); \
@@ -67,8 +69,7 @@
 /**
  * Common editor settings.
  */
-class EditorSettings
-    : public zrythm::utils::serialization::ISerializable<EditorSettings>
+class EditorSettings : public utils::serialization::ISerializable<EditorSettings>
 {
 public:
   double clamp_scroll_start_x (double x);

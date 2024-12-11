@@ -304,7 +304,7 @@ Stretcher::stretch_interleaved (zrythm::utils::audio::AudioBuffer &in_samples)
 
   /* create the out sample arrays */
   // float * out_samples[channels];
-  size_t out_samples_size = (size_t) math_round_double_to_signed_64 (
+  size_t out_samples_size = (size_t) utils::math::round_to_signed_64 (
     rubberband_get_time_ratio (pimpl_->rubberband_state)
     * in_samples_per_channel);
   zrythm::utils::audio::AudioBuffer out_samples (channels, out_samples_size);

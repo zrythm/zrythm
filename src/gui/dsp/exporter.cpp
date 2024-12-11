@@ -294,7 +294,7 @@ Exporter::export_audio (Settings &info)
   if (!progress_info_->pending_cancellation ())
     {
       z_warn_if_fail (
-        math_floats_equal_epsilon (covered_ticks, total_ticks, 1.0));
+        utils::math::floats_near (covered_ticks, total_ticks, 1.0));
     }
 
   /* TODO silence output */
@@ -333,7 +333,7 @@ Exporter::export_audio (Settings &info)
 
       if (clipped)
         {
-          float       max_db = math_amp_to_dbfs (clip_amp);
+          float       max_db = utils::math::amp_to_dbfs (clip_amp);
           std::string warn_str = format_str (
             QObject::tr (
               "The exported audio contains segments louder than 0 dB (max detected %.1f dB).")
@@ -372,8 +372,7 @@ Exporter::export_midi (Settings &info)
       /* common time: 4 crochet beats, per bar */
       int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
       midiSongAddSimpleTimeSig (
-        mf, 1, beats_per_bar,
-        math_round_double_to_signed_32 (TRANSPORT->ticks_per_beat_));
+        mf, 1, beats_per_bar, TRANSPORT->ticks_per_beat_);
 
       /* add generic export name if version 0 */
       if (midi_version == 0)

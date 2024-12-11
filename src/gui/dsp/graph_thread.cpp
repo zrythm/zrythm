@@ -259,7 +259,7 @@ GraphThread::run_worker ()
     }
 }
 
-ATTR_REALTIME
+ATTR_NONBLOCKING
 void
 GraphThread::run ()
 {

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -25,17 +25,8 @@
  * ---
  */
 
-/**
- * @file
- *
- * Math utils.
- *
- * For more, look at libs/pbd/pbd/control_math.h in
- * ardour.
- */
-
-#ifndef __UTILS_MATH_H__
-#define __UTILS_MATH_H__
+#ifndef ZRYTHM_UTILS_MATH_H
+#define ZRYTHM_UTILS_MATH_H
 
 #include <cfloat>
 #include <cmath>
@@ -44,69 +35,88 @@
 #include "utils/types.h"
 
 /**
- * @addtogroup utils
+ * @brief Math utils.
  *
- * @{
+ * For more, look at libs/pbd/pbd/control_math.h in ardour.
  */
+namespace zrythm::utils::math
+{
 
 /**
  * Frames to skip when calculating the RMS.
  *
  * The lower the more CPU intensive.
  */
-#define MATH_RMS_FRAMES 1
+constexpr unsigned RMS_FRAMES = 1;
 
 /** Tiny number to be used for denormaml prevention
  * (-140dB). */
-#define MATH_TINY_NUMBER (0.0000001)
+constexpr float ALMOST_SILENCE = 0.0000001f;
 
-#define MATH_MINUS_INFINITY (-HUGE_VAL)
+constexpr auto MINUS_INFINITY = -HUGE_VAL;
 
 /**
- * Checks if 2 doubles are equal.
+ * Returns whether 2 floating point numbers are equal.
  *
  * @param e The allowed difference (epsilon).
  */
-#define math_floats_equal_epsilon(a, b, e) (std::abs ((a) - (b)) < (e))
-
-#define math_doubles_equal_epsilon math_floats_equal_epsilon
-
-/**
- * Checks if 2 doubles are equal.
- */
-#define math_floats_equal(a, b) math_floats_equal_epsilon (a, b, FLT_EPSILON)
-
-#define math_doubles_equal(a, b) \
-  ((a) > (b) ? (a) - (b) < DBL_EPSILON : (b) - (a) < DBL_EPSILON)
+template <std::floating_point T>
+constexpr bool
+floats_near (T a, T b, T e)
+{
+  return std::abs (a - b) < e;
+}
 
 /**
- * Rounds a double to a (minimum) signed 32-bit
- * integer.
+ * Checks if 2 floating point numbers are equal.
  */
-#define math_round_double_to_signed_32(x) (lround (x))
+template <std::floating_point T>
+constexpr bool
+floats_equal (T a, T b)
+{
+  return floats_near (a, b, std::numeric_limits<T>::epsilon ());
+}
 
 /**
- * Rounds a double to a (minimum) signed 64-bit
- * integer.
+ * Rounds a double to a (minimum) signed 32-bit integer.
  */
-#define math_round_double_to_signed_64(x) (llround (x))
-
-#define math_round_double_to_signed_frame_t(x) \
-  math_round_double_to_signed_64 (x)
+template <std::floating_point T>
+constexpr long
+round_to_signed_32 (T x)
+{
+  if constexpr (std::is_same_v<T, float>)
+    {
+      return lroundf (x);
+    }
+  else
+    {
+      return lround (x);
+    }
+}
 
 /**
- * Rounds a float to a (minimum) signed 32-bit
- * integer.
+ * Rounds a double to a (minimum) signed 64-bit integer.
  */
-#define math_round_float_to_signed_32(x) (lroundf (x))
+template <std::floating_point T>
+constexpr long long
+round_to_signed_64 (T x)
+{
+  if constexpr (std::is_same_v<T, float>)
+    {
+      return llroundf (x);
+    }
+  else
+    {
+      return llround (x);
+    }
+}
 
-/**
- * Rounds a float to a (minimum) signed 64-bit
- * integer.
- */
-#define math_round_float_to_signed_64(x) (llroundf (x))
-
-#define math_round_float_to_signed_frame_t(x) math_round_float_to_signed_64 (x)
+template <std::floating_point T>
+constexpr signed_frame_t
+round_to_signed_frame_t (T x)
+{
+  return round_to_signed_64 (x);
+}
 
 /**
  * Fast log calculation to be used where precision
@@ -115,8 +125,8 @@
  * Taken from ardour from code in the public domain.
  */
 ATTR_CONST
-static inline float
-math_fast_log2 (float val)
+constexpr float
+fast_log2 (float val)
 {
   union
   {
@@ -126,7 +136,7 @@ math_fast_log2 (float val)
   t.f = val;
   int * const exp_ptr = &t.i;
   int         x = *exp_ptr;
-  const float log_2 = (float) (((x >> 23) & 255) - 128);
+  const auto  log_2 = (float) (((x >> 23) & 255) - 128);
 
   x &= ~(255 << 23);
   x += 127 << 23;
@@ -139,17 +149,17 @@ math_fast_log2 (float val)
 }
 
 ATTR_CONST
-static inline float
-math_fast_log (const float val)
+constexpr float
+fast_log (const float val)
 {
-  return (math_fast_log2 (val) * 0.69314718f);
+  return (fast_log2 (val) * std::numbers::ln2_v<float>);
 }
 
 ATTR_CONST
-static inline float
-math_fast_log10 (const float val)
+constexpr float
+fast_log10 (const float val)
 {
-  return math_fast_log2 (val) / 3.312500f;
+  return fast_log2 (val) / 3.312500f;
 }
 
 /**
@@ -157,13 +167,13 @@ math_fast_log10 (const float val)
  * 0.0 to 2.0 (+6 dbFS).
  */
 ATTR_CONST
-static inline sample_t
-math_get_fader_val_from_amp (sample_t amp)
+constexpr sample_t
+get_fader_val_from_amp (sample_t amp)
 {
-  const float fader_coefficient1 =
+  constexpr float fader_coefficient1 =
     /*192.f * logf (2.f);*/
     133.084258667509499408f;
-  const float fader_coefficient2 =
+  constexpr float fader_coefficient2 =
     /*powf (logf (2.f), 8.f) * powf (198.f, 8.f);*/
     1.25870863180257576e17f;
 
@@ -173,46 +183,48 @@ math_get_fader_val_from_amp (sample_t amp)
     {
       return 1e-20f;
     }
-  else
+
+  if (floats_equal (amp, 1.f))
     {
-      if (math_floats_equal (amp, 1.f))
-        {
-          amp = 1.f + 1e-20f;
-        }
-      sample_t fader =
-        powf (
-          /* note: don't use fast_log here - it causes
-           * weirdness in faders */
-          6.f * logf (amp) + fader_coefficient1, 8.f)
-        / fader_coefficient2;
-      return (sample_t) fader;
+      amp = 1.f + 1e-20f;
     }
+  sample_t fader =
+    powf (
+      /* note: don't use fast_log here - it causes
+       * weirdness in faders */
+      6.f * std::logf (amp) + fader_coefficient1, 8.f)
+    / fader_coefficient2;
+  return fader;
 }
 
 /**
- * Returns amp value 0.0 to 2.0 (+6 dbFS) from
- * fader value 0.0 to 1.0.
+ * Returns amp value 0.0 to 2.0 (+6 dbFS) from fader value 0.0 to 1.0.
  */
 ATTR_CONST
-static inline sample_t
-math_get_amp_val_from_fader (sample_t fader)
+constexpr sample_t
+get_amp_val_from_fader (sample_t fader)
 {
-  static const float val1 = 1.f / 6.f;
-  return powf (2.f, (val1) * (-192.f + 198.f * powf (fader, 1.f / 8.f)));
+  constexpr float val1 = 1.f / 6.f;
+  return std::powf (
+    2.f, (val1) * (-192.f + 198.f * std::powf (fader, 1.f / 8.f)));
 }
 
 /**
  * Convert from amplitude 0.0 to 2.0 to dbFS.
  */
 ATTR_CONST
-static inline sample_t
-math_amp_to_dbfs (sample_t amp)
+constexpr sample_t
+amp_to_dbfs (sample_t amp)
 {
-  return 20.f * log10f (amp);
+  return 20.f * std::log10f (amp);
 }
 
+/**
+ * Gets the RMS of the given signal as amplitude
+ * (0-2).
+ */
 sample_t
-math_calculate_rms_amp (sample_t * buf, const nframes_t nframes);
+calculate_rms_amp (const sample_t * buf, nframes_t nframes);
 
 /**
  * Calculate db using RMS method.
@@ -220,27 +232,30 @@ math_calculate_rms_amp (sample_t * buf, const nframes_t nframes);
  * @param buf Buffer containing the samples.
  * @param nframes Number of samples.
  */
-sample_t
-math_calculate_rms_db (sample_t * buf, const nframes_t nframes);
+static inline sample_t
+calculate_rms_db (const sample_t * buf, nframes_t nframes)
+{
+  return amp_to_dbfs (calculate_rms_amp (buf, nframes));
+}
 
 /**
  * Convert form dbFS to amplitude 0.0 to 2.0.
  */
 ATTR_CONST
-static inline sample_t
-math_dbfs_to_amp (sample_t dbfs)
+constexpr sample_t
+dbfs_to_amp (sample_t dbfs)
 {
-  return powf (10.f, (dbfs / 20.f));
+  return std::powf (10.f, (dbfs / 20.f));
 }
 
 /**
  * Convert form dbFS to fader val 0.0 to 1.0.
  */
 ATTR_CONST
-static inline sample_t
-math_dbfs_to_fader_val (sample_t dbfs)
+constexpr sample_t
+dbfs_to_fader_val (sample_t dbfs)
 {
-  return math_get_fader_val_from_amp (math_dbfs_to_amp (dbfs));
+  return get_fader_val_from_amp (dbfs_to_amp (dbfs));
 }
 
 /**
@@ -251,7 +266,7 @@ math_dbfs_to_fader_val (sample_t dbfs)
  * @return Whether the value is valid (nonnan).
  */
 bool
-math_assert_nonnann (float x);
+assert_nonnann (float x);
 
 /**
  * Returns whether the given string is a valid float.
@@ -259,10 +274,8 @@ math_assert_nonnann (float x);
  * @param ret If non-nullptr, the result will be placed here.
  */
 bool
-math_is_string_valid_float (const std::string &str, float * ret);
+is_string_valid_float (const std::string &str, float * ret);
 
-/**
- * @}
- */
+} // namespace zrythm::utils::math
 
 #endif

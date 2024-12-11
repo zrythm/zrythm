@@ -363,7 +363,7 @@ void
 MidiEventVector::copy_to_jack (
   const nframes_t local_start_frames,
   const nframes_t nframes,
-  void *          buff)
+  void *          buff) const
 {
   const std::lock_guard<crill::spin_mutex> lock (lock_);
   /*jack_midi_clear_buffer (buff);*/
@@ -584,7 +584,7 @@ MidiEventVector::add_note_offs_from_chord_descr (
     }
 }
 
-ATTR_REALTIME
+ATTR_NONBLOCKING
 void
 MidiEventVector::
   add_event_from_buf (midi_time_t time, midi_byte_t * buf, int buf_size)

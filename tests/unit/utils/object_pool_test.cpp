@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "utils/gtest_wrapper.h"
-#define DEBUG_OBJECT_POOL 1
 #include "utils/object_pool.h"
 
 class TestObject
@@ -97,10 +96,9 @@ TEST (ObjectPoolTest, MultiThreaded)
   EXPECT_EQ (released.load (), acquired.load ());
 }
 
-#ifdef DEBUG_OBJECT_POOL
 TEST (ObjectPoolTest, DebugCounters)
 {
-  ObjectPool<TestObject> pool (4);
+  ObjectPool<TestObject, true> pool (4);
 
   EXPECT_EQ (pool.get_num_in_use (), 0);
   EXPECT_EQ (pool.get_capacity (), 4);
@@ -111,7 +109,6 @@ TEST (ObjectPoolTest, DebugCounters)
   pool.release (obj);
   EXPECT_EQ (pool.get_num_in_use (), 0);
 }
-#endif
 
 template <typename T>
 static void

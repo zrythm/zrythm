@@ -95,20 +95,11 @@ engine_jack_midi_setup (AudioEngine * self);
 int
 engine_jack_setup (AudioEngine * self);
 
-std::string
-engine_jack_get_error_message (jack_status_t status);
-
 void
 engine_jack_tear_down (AudioEngine * self);
 
 int
 engine_jack_activate (AudioEngine * self, bool activate);
-
-/**
- * Returns the JACK type string.
- */
-const char *
-engine_jack_get_jack_type (dsp::PortType type);
 
 /** Jack buffer size callback. */
 int

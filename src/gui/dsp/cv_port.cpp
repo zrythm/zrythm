@@ -77,7 +77,7 @@ CVPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
       const float multiplier = depth_range * conn->multiplier_;
 
       /* sum the signals */
-      if (math_floats_equal_epsilon (multiplier, 1.f, 0.00001f)) [[likely]]
+      if (utils::math::floats_near (multiplier, 1.f, 0.00001f)) [[likely]]
         {
           utils::float_ranges::add2 (
             &buf_[time_nfo.local_offset_],

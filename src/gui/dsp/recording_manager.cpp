@@ -414,7 +414,7 @@ RecordingManager::delete_automation_points (
       float prev_normalized_val = region.last_recorded_ap_->normalized_val_;
       if (
         ap_before_recorded
-        && math_floats_equal (
+        && utils::math::floats_equal (
           ap_before_recorded->fvalue_, region.last_recorded_ap_->fvalue_))
         {
           region.remove_object (*region.last_recorded_ap_, false);
@@ -447,7 +447,7 @@ RecordingManager::create_automation_point (
   adj_pos.add_ticks (-region.pos_->ticks_, AUDIO_ENGINE->frames_per_tick_);
   if (
     region.last_recorded_ap_
-    && math_floats_equal (
+    && utils::math::floats_equal (
       region.last_recorded_ap_->normalized_val_, normalized_val)
     && region.last_recorded_ap_->pos_ == adj_pos)
     {
@@ -978,12 +978,12 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
           float normalized_value = port->get_control_value (true);
           if (ZRYTHM_TESTING)
             {
-              math_assert_nonnann (value);
-              math_assert_nonnann (normalized_value);
+              utils::math::assert_nonnann (value);
+              utils::math::assert_nonnann (normalized_value);
             }
           bool automation_value_changed =
             !port->value_changed_from_reading_
-            && !math_floats_equal (value, at->last_recorded_value_);
+            && !utils::math::floats_equal (value, at->last_recorded_value_);
           auto cur_time = Zrythm::getInstance ()->get_monotonic_time_usecs ();
 
           /* get end position */

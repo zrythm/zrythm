@@ -35,20 +35,6 @@ public:
 
   static constexpr size_t AUDIO_RING_SIZE = 65536;
 
-#if HAVE_RTAUDIO
-  /**
-   * Dequeue the audio data from the ring buffers into @ref RtAudioDevice.buf.
-   */
-  void prepare_rtaudio_data ();
-
-  /**
-   * Sums the inputs coming in from RtAudio before the port is processed.
-   */
-  void sum_data_from_rtaudio (nframes_t start_frame, nframes_t nframes);
-
-  void expose_to_rtaudio (bool expose);
-#endif
-
   /**
    * @brief Applies the fader to the audio buffer.
    *
@@ -102,22 +88,6 @@ public:
              PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::StereoR);
   }
 
-#if HAVE_JACK
-
-  /**
-   * Receives audio data from the port's exposed JACK port (if any) into the
-   * port.
-   */
-  void receive_audio_data_from_jack (nframes_t start_frames, nframes_t nframes);
-
-  /**
-   * Pastes the audio data in the port starting at @p start_frames to the JACK
-   * port starting at
-   * @p start_frames.
-   */
-  void send_audio_data_to_jack (nframes_t start_frames, nframes_t nframes);
-#endif
-
   void init_after_cloning (const AudioPort &other) override;
 
 private:
@@ -126,18 +96,6 @@ private:
    * port is processed.
    */
   void sum_data_from_dummy (nframes_t start_frame, nframes_t nframes);
-
-public:
-#if HAVE_RTAUDIO
-  /**
-   * RtAudio pointers for input ports.
-   *
-   * Each port can have multiple RtAudio devices.
-   */
-  std::vector<std::shared_ptr<RtAudioDevice>> rtaudio_ins_;
-#else
-  std::vector<std::shared_ptr<int>> rtaudio_ins_;
-#endif
 
 private:
   /** Max amplitude during processing (fabsf). */

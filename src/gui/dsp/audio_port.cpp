@@ -86,142 +86,6 @@ AudioPort::sum_data_from_dummy (
     }
 }
 
-#if HAVE_JACK
-void
-AudioPort::receive_audio_data_from_jack (
-  const nframes_t start_frames,
-  const nframes_t nframes)
-{
-  if (internal_type_ != Port::InternalType::JackPort)
-    return;
-
-  float * in;
-  in = (float *) jack_port_get_buffer (
-    JACK_PORT_T (this->data_), AUDIO_ENGINE->nframes_);
-
-  utils::float_ranges::add2 (
-    &this->buf_[start_frames], &in[start_frames], nframes);
-}
-
-void
-AudioPort::send_audio_data_to_jack (
-  const nframes_t start_frames,
-  const nframes_t nframes)
-{
-  if (internal_type_ != Port::InternalType::JackPort)
-    return;
-
-  jack_port_t * jport = JACK_PORT_T (data_);
-
-  if (jack_port_connected (jport) <= 0)
-    {
-      return;
-    }
-
-  auto * out = (float *) jack_port_get_buffer (jport, AUDIO_ENGINE->nframes_);
-
-  utils::float_ranges::copy (
-    &out[start_frames], &buf_.data ()[start_frames], nframes);
-}
-#endif // HAVE_JACK
-
-#if HAVE_RTAUDIO
-void
-AudioPort::expose_to_rtaudio (bool expose)
-{
-  auto track = dynamic_cast<ChannelTrack *> (get_track (false));
-  if (!track)
-    return;
-
-  auto &ch = track->channel_;
-
-  if (expose)
-    {
-      if (is_input ())
-        {
-          auto create_and_append_rtaudio_devices = [this] (const auto &extPorts) {
-            for (const auto &ext_port : extPorts)
-              {
-                auto dev = std::make_shared<RtAudioDevice> (
-                  ext_port->rtaudio_is_input_, ext_port->rtaudio_id_,
-                  ext_port->rtaudio_channel_idx_, this);
-                dev->open (true);
-                rtaudio_ins_.emplace_back (std::move (dev));
-              }
-          };
-
-          if (
-            ENUM_BITSET_TEST (
-              PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::StereoL))
-            {
-              if (!ch->all_stereo_l_ins_)
-                {
-                  create_and_append_rtaudio_devices (ch->ext_stereo_l_ins_);
-                }
-            }
-          else if (
-            ENUM_BITSET_TEST (
-              PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::StereoR))
-            {
-              if (!ch->all_stereo_r_ins_)
-                {
-                  create_and_append_rtaudio_devices (ch->ext_stereo_r_ins_);
-                }
-            }
-        }
-      z_debug ("exposing {}", get_full_designation ());
-    }
-  else
-    {
-      if (is_input ())
-        {
-          rtaudio_ins_.clear ();
-        }
-      z_debug ("unexposing {}", get_full_designation ());
-    }
-  exposed_to_backend_ = expose;
-}
-
-void
-AudioPort::prepare_rtaudio_data ()
-{
-  z_return_if_fail (
-    // is_input() &&
-    audio_backend_is_rtaudio (AUDIO_ENGINE->audio_backend_));
-
-  for (auto &dev : rtaudio_ins_)
-    {
-      SemaphoreRAII<> sem_raii (dev->audio_ring_sem_);
-
-      /* either copy the data from the ring buffer or fill with 0 */
-      if (!dev->audio_ring_.read_multiple (
-            dev->audio_buf_.data (), AUDIO_ENGINE->nframes_))
-        {
-          utils::float_ranges::fill (
-            dev->audio_buf_.data (), DENORMAL_PREVENTION_VAL (AUDIO_ENGINE),
-            AUDIO_ENGINE->nframes_);
-        }
-    }
-}
-
-void
-AudioPort::sum_data_from_rtaudio (
-  const nframes_t start_frame,
-  const nframes_t nframes)
-{
-  z_return_if_fail (
-    // is_input() &&
-    audio_backend_is_rtaudio (AUDIO_ENGINE->audio_backend_));
-
-  for (auto &dev : rtaudio_ins_)
-    {
-      utils::float_ranges::add2 (
-        &buf_.data ()[start_frame], &dev->audio_buf_.data ()[start_frame],
-        nframes);
-    }
-}
-#endif // HAVE_RTAUDIO
-
 bool
 AudioPort::has_sound () const
 {
@@ -276,19 +140,16 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
    * owner by a track), otherwise always consider incoming external data */
   if ((owner_type != PortIdentifier::OwnerType::TrackProcessor || (owner_type == PortIdentifier::OwnerType::TrackProcessor && recordable_track && recordable_track->get_recording())) && is_input())
     {
-      switch (AUDIO_ENGINE->audio_backend_)
+      if (backend_ && backend_->is_exposed ())
         {
-#if HAVE_JACK
-        case AudioBackend::AUDIO_BACKEND_JACK:
-          receive_audio_data_from_jack (
-            time_nfo.local_offset_, time_nfo.nframes_);
-          break;
-#endif
-        case AudioBackend::AUDIO_BACKEND_DUMMY:
+          backend_->sum_data (
+            buf_.data (), { time_nfo.local_offset_, time_nfo.nframes_ });
+        }
+      else if (AUDIO_ENGINE->audio_backend_ == AudioBackend::AUDIO_BACKEND_DUMMY)
+        {
+          // TODO: make this a PortBackend implementation too, then it will get
+          // handled by the above code
           sum_data_from_dummy (time_nfo.local_offset_, time_nfo.nframes_);
-          break;
-        default:
-          break;
         }
     }
 
@@ -302,7 +163,7 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
       const float multiplier = conn->multiplier_;
 
       /* sum the signals */
-      if (math_floats_equal_epsilon (multiplier, 1.f, 0.00001f)) [[likely]]
+      if (utils::math::floats_near (multiplier, 1.f, 0.00001f)) [[likely]]
         {
           utils::float_ranges::add2 (
             &buf_[time_nfo.local_offset_],
@@ -332,18 +193,10 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
         }
     }
 
-  if (is_output ())
+  if (is_output () && backend_ && backend_->is_exposed ())
     {
-      switch (AUDIO_ENGINE->audio_backend_)
-        {
-#if HAVE_JACK
-        case AudioBackend::AUDIO_BACKEND_JACK:
-          send_audio_data_to_jack (time_nfo.local_offset_, time_nfo.nframes_);
-          break;
-#endif
-        default:
-          break;
-        }
+      backend_->send_data (
+        buf_.data (), { time_nfo.local_offset_, time_nfo.nframes_ });
     }
 
   if (time_nfo.local_offset_ + time_nfo.nframes_ == AUDIO_ENGINE->block_length_)

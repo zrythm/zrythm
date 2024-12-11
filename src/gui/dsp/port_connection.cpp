@@ -93,7 +93,7 @@ bool
 operator== (const PortConnection &lhs, const PortConnection &rhs)
 {
   return lhs.src_id_ == rhs.src_id_ && lhs.dest_id_ == rhs.dest_id_
-         && math_floats_equal (lhs.multiplier_, rhs.multiplier_)
+         && utils::math::floats_equal (lhs.multiplier_, rhs.multiplier_)
          && lhs.locked_ == rhs.locked_ && lhs.enabled_ == rhs.enabled_
-         && math_floats_equal (lhs.base_value_, rhs.base_value_);
+         && utils::math::floats_equal (lhs.base_value_, rhs.base_value_);
 }

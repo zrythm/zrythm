@@ -31,44 +31,7 @@ public:
   MidiPort (std::string label, PortFlow flow);
   ~MidiPort () override;
 
-#if HAVE_RTMIDI
-  /**
-   * Dequeue the MIDI events from the ring buffers into @ref
-   * RtMidiDevice.events.
-   */
-  void prepare_rtmidi_events ();
-
-  /**
-   * Sums the inputs coming in from RtMidi before the port is processed.
-   */
-  void
-  sum_data_from_rtmidi (const nframes_t start_frame, const nframes_t nframes);
-
-  void expose_to_rtmidi (bool expose);
-#endif
-
-#if HAVE_JACK
-  /**
-   * Receives MIDI events from the port's exposed JACK port (if any) into the
-   * port.
-   */
-  void receive_midi_events_from_jack (
-    const nframes_t start_frames,
-    const nframes_t nframes);
-
-  /**
-   * Pastes the MIDI data in the port to the JACK port.
-   *
-   * @note MIDI timings are assumed to be at the correct positions in the
-   * current cycle (ie, already added the start_frames in this cycle).
-   */
-  void send_midi_events_to_jack (
-    const nframes_t start_frames,
-    const nframes_t nframes);
-#endif
-
-  void
-  process (const EngineProcessTimeInfo time_nfo, const bool noroll) override;
+  void process (EngineProcessTimeInfo time_nfo, bool noroll) override;
 
   void allocate_bufs () override;
 
@@ -113,29 +76,6 @@ public:
    * Not needed for JACK.
    */
   midi_byte_t last_midi_status_ = 0;
-
-  /**
-   * Last time the port finished dequeueing MIDI events.
-   *
-   * Used for some backends only.
-   */
-  qint64 last_midi_dequeue_ = 0;
-
-#if HAVE_RTMIDI
-  /**
-   * RtMidi pointers for input ports.
-   *
-   * Each RtMidi port represents a device, and this Port can be connected to
-   * multiple devices.
-   */
-  std::vector<std::shared_ptr<RtMidiDevice>> rtmidi_ins_;
-
-  /** RtMidi pointers for output ports. */
-  std::vector<std::shared_ptr<RtMidiDevice>> rtmidi_outs_;
-#else
-  std::vector<void *> rtmidi_ins_;
-  std::vector<void *> rtmidi_outs_;
-#endif
 };
 
 /**

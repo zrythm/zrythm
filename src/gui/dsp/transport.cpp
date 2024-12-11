@@ -122,7 +122,7 @@ Transport::Transport (Project * parent)
   range_1_.ticks_ = 1 * ticks_per_bar;
   range_2_.ticks_ = 1 * ticks_per_bar;
 
-  /*if (math_doubles_equal (*/
+  /*if (utils::math::floats_equal (*/
   /*frames_per_tick_before, 0))*/
   /*{*/
   /*AUDIO_ENGINE->frames_per_tick = 0;*/

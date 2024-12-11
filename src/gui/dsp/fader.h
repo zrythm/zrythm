@@ -219,7 +219,7 @@ public:
 
   float get_default_fader_val () const
   {
-    return math_get_fader_val_from_amp (amp_->deff_);
+    return utils::math::get_fader_val_from_amp (amp_->deff_);
   }
 
   std::string db_string_getter () const;

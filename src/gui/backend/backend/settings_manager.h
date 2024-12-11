@@ -62,7 +62,7 @@ public: \
   void set_##name (ptype value) \
   { \
     if ( \
-      !math_floats_equal ( \
+      !utils::math::floats_equal ( \
         settings_.value (QStringLiteral (#name), default_value).value<ptype> (), \
         value)) \
       { \

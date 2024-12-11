@@ -1054,23 +1054,22 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
 }
 
 bool
-Graph::validate_with_connection (const Port * src, const Port * dest)
+Graph::can_ports_be_connected (const Port &src, const Port &dest)
 {
-  z_return_val_if_fail (src && dest, false);
-
   AudioEngine::State state{};
   AUDIO_ENGINE->wait_for_pause (state, false, true);
 
-  z_debug ("validating for {} to {}", src->get_label (), dest->get_label ());
+  z_debug ("validating for {} to {}", src.get_label (), dest.get_label ());
 
   setup (false, false);
 
   /* connect the src/dest if not NULL */
   /* this code is only for creating graphs to test if the connection between
    * src->dest is valid */
-  auto * node = find_node_from_port (convert_to_variant<PortPtrVariant> (src));
+  auto * node = find_node_from_port (convert_to_variant<PortPtrVariant> (&src));
   z_return_val_if_fail (node, false);
-  auto * node2 = find_node_from_port (convert_to_variant<PortPtrVariant> (dest));
+  auto * node2 =
+    find_node_from_port (convert_to_variant<PortPtrVariant> (&dest));
   z_return_val_if_fail (node2, false);
   node->connect_to (*node2);
   z_return_val_if_fail (!node->terminal_, false);

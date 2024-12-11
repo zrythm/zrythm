@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_PORTS_H__
-#define __AUDIO_PORTS_H__
+#ifndef ZRYTHM_GUI_DSP_PORT_H
+#define ZRYTHM_GUI_DSP_PORT_H
 
 #include "zrythm-config.h"
 
@@ -10,18 +10,10 @@
 #include <vector>
 
 #include "dsp/port_identifier.h"
-#include "gui/dsp/midi_event.h"
+#include "gui/dsp/port_backend.h"
 #include "gui/dsp/port_connection.h"
 #include "utils/ring_buffer.h"
 #include "utils/types.h"
-
-#if HAVE_RTMIDI
-#  include <rtmidi_c.h>
-#endif
-
-#if HAVE_RTAUDIO
-#  include <rtaudio_c.h>
-#endif
 
 namespace zrythm::gui
 {
@@ -29,7 +21,6 @@ class Channel;
 namespace old_dsp::plugins
 {
 class Plugin;
-struct PluginGtkController;
 }
 }
 
@@ -65,6 +56,17 @@ constexpr int TIME_TO_RESET_PEAK = 4800000;
 template <typename T>
 concept FinalPortSubclass = std::derived_from<T, Port> && FinalClass<T>;
 
+/**
+ * @brief The Port class represents a port in the audio processing graph.
+ *
+ * Ports can be of different types (audio, MIDI, CV, control) and can be
+ * inputs or outputs. They are used to connect different components of the
+ * audio processing graph, such as tracks, plugins, and the audio engine.
+ *
+ * Ports are owned by various components in the audio processing graph, such
+ * as tracks, plugins, and the audio engine. The `set_owner()` method is used
+ * to set the owner of the port.
+ */
 class Port : public zrythm::utils::serialization::ISerializable<Port>
 {
   Q_DISABLE_COPY_MOVE (Port)
@@ -72,23 +74,6 @@ public:
   using PortIdentifier = zrythm::dsp::PortIdentifier;
   using PortType = zrythm::dsp::PortType;
   using PortFlow = zrythm::dsp::PortFlow;
-
-  /**
-   * What the internal data is.
-   */
-  enum class InternalType
-  {
-    None,
-
-    /** Pointer to Lv2Port. */
-    Lv2Port,
-
-    /** Pointer to jack_port_t. */
-    JackPort,
-
-    /** TODO */
-    PulseAudioPort,
-  };
 
   ~Port () override { disconnect_all (); }
 
@@ -194,12 +179,7 @@ public:
   /**
    * Returns if the port is exposed to the backend.
    */
-  bool is_exposed_to_backend () const
-  {
-    return internal_type_ == InternalType::JackPort
-           || id_->owner_type_ == PortIdentifier::OwnerType::AudioEngine
-           || exposed_to_backend_;
-  }
+  bool is_exposed_to_backend () const;
 
   /**
    * Renames the port on the backend side.
@@ -233,20 +213,6 @@ public:
   ATTR_HOT virtual void
   process (EngineProcessTimeInfo time_nfo, bool noroll) = 0;
 
-  bool is_connected_to (const Port &dest) const;
-
-  /**
-   * Returns whether the Port's can be connected (if the connection will be
-   * valid and won't break the acyclicity of the graph).
-   */
-  bool can_be_connected_to (const Port &dest) const;
-
-  /**
-   * Disconnects all the given ports.
-   */
-  ATTR_NONNULL static void
-  disconnect_ports (std::vector<Port *> &ports, bool deleting);
-
   /**
    * Copies the metadata from a project port to the given port.
    *
@@ -279,9 +245,6 @@ public:
    */
   uint32_t get_hash () const;
 
-  /** Same as above, to be used as a callback. */
-  static uint32_t get_hash (const void * ptr);
-
   bool     has_label () const { return !id_->label_.empty (); }
   PortType get_type () const { return id_->type_; }
   PortFlow get_flow () const { return id_->flow_; }
@@ -313,25 +276,6 @@ protected:
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
-private:
-#if HAVE_JACK
-  /**
-   * Sums the inputs coming in from JACK, before the port is processed.
-   */
-  void sum_data_from_jack (nframes_t start_frame, nframes_t nframes);
-
-  /**
-   * Sends the port data to JACK, after the port is processed.
-   */
-  void send_data_to_jack (nframes_t start_frame, nframes_t nframes);
-
-  /**
-   * Sets whether to expose the port to JACK and exposes it or removes it from
-   * JACK.
-   */
-  void expose_to_jack (bool expose);
-#endif // HAVE_JACK
-
   int get_num_unlocked (bool sources) const;
 
 public:
@@ -340,11 +284,15 @@ public:
    */
   std::unique_ptr<PortIdentifier> id_;
 
+protected:
   /**
    * Flag to indicate that this port is exposed to the backend.
+   *
+   * @note This is used for serialization only.
    */
   bool exposed_to_backend_ = false;
 
+public:
   /** Caches filled when recalculating the graph. */
   std::vector<Port *> srcs_;
 
@@ -357,11 +305,6 @@ public:
    */
   std::vector<std::unique_ptr<PortConnection>> src_connections_;
   std::vector<std::unique_ptr<PortConnection>> dest_connections_;
-
-  /**
-   * Indicates whether data or lv2_port should be used.
-   */
-  InternalType internal_type_ = ENUM_INT_TO_VALUE (InternalType, 0);
 
   /**
    * Minimum, maximum and zero values for this port.
@@ -379,15 +322,6 @@ public:
    * ports, this will be 0 amp (silence), etc.
    */
   float zerof_ = 0.f;
-
-  /**
-   * Pointer to arbitrary data.
-   *
-   * Use internal_type_ to check what data it is.
-   *
-   * FIXME just add the various data structs here and remove this ambiguity.
-   */
-  void * data_ = nullptr;
 
   /** Pointer to owner plugin, if any. */
   zrythm::gui::old_dsp::plugins::Plugin * plugin_ = nullptr;
@@ -475,6 +409,11 @@ public:
 
   /** Last allocated buffer size (used for audio ports). */
   size_t last_buf_sz_ = 0;
+
+  /**
+   * @brief Backend functionality.
+   */
+  std::unique_ptr<PortBackend> backend_;
 };
 
 class MidiPort;

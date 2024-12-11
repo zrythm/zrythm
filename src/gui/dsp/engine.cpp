@@ -1190,20 +1190,11 @@ AudioEngine::process_prepare (
 void
 AudioEngine::receive_midi_events (uint32_t nframes)
 {
-  switch (midi_backend_)
+  if (midi_in_->backend_ && midi_in_->backend_->is_exposed ())
     {
-#if HAVE_JACK
-    case MidiBackend::MIDI_BACKEND_JACK:
-      midi_in_->receive_midi_events_from_jack (0, nframes);
-      break;
-#endif
-#ifdef HAVE_ALSA
-    case MidiBackend::MIDI_BACKEND_ALSA:
-      /*engine_alsa_receive_midi_events (self, print);*/
-      break;
-#endif
-    default:
-      break;
+      midi_in_->backend_->sum_data (
+        midi_in_->midi_events_, { 0, nframes },
+        [] (midi_byte_t) { return true; });
     }
 }
 

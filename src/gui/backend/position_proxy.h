@@ -16,6 +16,8 @@
 class Transport;
 class TempoTrack;
 
+using namespace zrythm;
+
 Q_DECLARE_OPAQUE_POINTER (Transport *)
 Q_DECLARE_OPAQUE_POINTER (const Transport *)
 Q_DECLARE_OPAQUE_POINTER (TempoTrack *)
@@ -101,7 +103,7 @@ public:
 
   void set_position_rtsafe (const Position &pos)
   {
-    if (pos.frames_ == frames_ && math_doubles_equal (pos.ticks_, ticks_))
+    if (pos.frames_ == frames_ && utils::math::floats_equal (pos.ticks_, ticks_))
       return;
 
     frames_ = pos.frames_;

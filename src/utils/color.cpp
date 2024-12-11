@@ -78,10 +78,10 @@ bool
 Color::is_same (const Color &other) const
 {
   constexpr float epsilon = 0.000001f;
-  return math_floats_equal_epsilon (red_, other.red_, epsilon)
-         && math_floats_equal_epsilon (green_, other.green_, epsilon)
-         && math_floats_equal_epsilon (blue_, other.blue_, epsilon)
-         && math_floats_equal_epsilon (alpha_, other.alpha_, epsilon);
+  return utils::math::floats_near (red_, other.red_, epsilon)
+         && utils::math::floats_near (green_, other.green_, epsilon)
+         && utils::math::floats_near (blue_, other.blue_, epsilon)
+         && utils::math::floats_near (alpha_, other.alpha_, epsilon);
 }
 
 bool
@@ -263,10 +263,10 @@ Color::define_fields (const Context &ctx)
 bool
 operator== (const Color &lhs, const Color &rhs)
 {
-  return math_floats_equal (lhs.red_, rhs.red_)
-         && math_floats_equal (lhs.green_, rhs.green_)
-         && math_floats_equal (lhs.blue_, rhs.blue_)
-         && math_floats_equal (lhs.alpha_, rhs.alpha_);
+  return utils::math::floats_equal (lhs.red_, rhs.red_)
+         && utils::math::floats_equal (lhs.green_, rhs.green_)
+         && utils::math::floats_equal (lhs.blue_, rhs.blue_)
+         && utils::math::floats_equal (lhs.alpha_, rhs.alpha_);
 }
 
 }; // namespace zrythm::utils

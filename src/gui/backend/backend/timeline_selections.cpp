@@ -857,9 +857,7 @@ TimelineSelections::export_to_midi_file (
   midiFileSetVersion (mf, midi_version);
 
   int beats_per_bar = tempo_track->get_beats_per_bar ();
-  midiSongAddSimpleTimeSig (
-    mf, 1, beats_per_bar,
-    math_round_double_to_signed_32 (TRANSPORT->ticks_per_beat_));
+  midiSongAddSimpleTimeSig (mf, 1, beats_per_bar, TRANSPORT->ticks_per_beat_);
 
   auto sel_clone = clone_unique ();
   sel_clone->sort_by_indices (false);

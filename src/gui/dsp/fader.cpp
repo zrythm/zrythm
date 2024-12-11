@@ -114,7 +114,7 @@ Fader::Fader (
   amp_->minf_ = 0.f;
   amp_->maxf_ = 2.f;
   amp_->set_control_value (amp, false, false);
-  fader_val_ = math_get_fader_val_from_amp (amp);
+  fader_val_ = utils::math::get_fader_val_from_amp (amp);
   amp_->id_->flags_ |= dsp::PortIdentifier::Flags::Amplitude;
   if ((type == Type::AudioChannel || type == Type::MidiChannel) && !passthrough)
     {
@@ -437,7 +437,7 @@ Fader::set_soloed (bool solo, bool fire_events)
 std::string
 Fader::db_string_getter () const
 {
-  return fmt::format ("{:.1f}", math_amp_to_dbfs (amp_->control_));
+  return fmt::format ("{:.1f}", utils::math::amp_to_dbfs (amp_->control_));
 }
 
 bool
@@ -465,8 +465,8 @@ Fader::set_listened (bool listen, bool fire_events)
 void
 Fader::update_volume_and_fader_val ()
 {
-  volume_ = math_amp_to_dbfs (amp_->control_);
-  fader_val_ = math_get_fader_val_from_amp (amp_->control_);
+  volume_ = utils::math::amp_to_dbfs (amp_->control_);
+  fader_val_ = utils::math::get_fader_val_from_amp (amp_->control_);
 }
 
 void
@@ -480,7 +480,7 @@ void
 Fader::set_amp_with_action (float amp_from, float amp_to, bool skip_if_equal)
 {
   auto track = get_track ();
-  bool is_equal = math_floats_equal_epsilon (amp_from, amp_to, 0.0001f);
+  bool is_equal = utils::math::floats_near (amp_from, amp_to, 0.0001f);
   if (!skip_if_equal || !is_equal)
     {
       try
@@ -571,10 +571,10 @@ void
 Fader::set_fader_val (float fader_val)
 {
   fader_val_ = fader_val;
-  float fader_amp = math_get_amp_val_from_fader (fader_val);
+  float fader_amp = utils::math::get_amp_val_from_fader (fader_val);
   fader_amp = std::clamp<float> (fader_amp, amp_->minf_, amp_->maxf_);
   set_amp (fader_amp);
-  volume_ = math_amp_to_dbfs (fader_amp);
+  volume_ = utils::math::amp_to_dbfs (fader_amp);
 
   if (this == MONITOR_FADER.get ())
     {
@@ -599,7 +599,7 @@ Fader::set_fader_val_with_action_from_db (const std::string &str)
 {
   bool  is_valid = false;
   float val;
-  if (math_is_string_valid_float (str, &val))
+  if (utils::math::is_string_valid_float (str, &val))
     {
       if (val <= 6.f)
         {
@@ -609,7 +609,7 @@ Fader::set_fader_val_with_action_from_db (const std::string &str)
 
   if (is_valid)
     {
-      set_amp_with_action (get_amp (), math_dbfs_to_amp (val), true);
+      set_amp_with_action (get_amp (), utils::math::dbfs_to_amp (val), true);
     }
   else
     {
@@ -1074,7 +1074,7 @@ Fader::process (const EngineProcessTimeInfo time_nfo)
 
               if (
                 midi_mode_ == MidiFaderMode::MIDI_FADER_MODE_CC_VOLUME
-                && !math_floats_equal (last_cc_volume_, amp_->control_))
+                && !utils::math::floats_equal (last_cc_volume_, amp_->control_))
                 {
                   /* TODO add volume event on each channel */
                 }

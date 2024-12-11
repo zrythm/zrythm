@@ -79,7 +79,7 @@ public:
 
     bool operator== (const ScalePoint &other) const
     {
-      return math_floats_equal (val_, other.val_);
+      return utils::math::floats_equal (val_, other.val_);
     }
   };
 
@@ -134,7 +134,7 @@ public:
    */
   static int get_int_from_val (float val)
   {
-    return math_round_float_to_signed_32 (val);
+    return utils::math::round_to_signed_32 (val);
   }
 
   /**
@@ -238,10 +238,7 @@ public:
    manually or from within Zrythm, this should be true to notify the plugin of
    the change.
    */
-  void set_control_value (
-    const float val,
-    const bool  is_normalized,
-    const bool  forward_event);
+  void set_control_value (float val, bool is_normalized, bool forward_event);
 
   /**
    * Gets the given control value from the corresponding underlying structure in
@@ -260,7 +257,7 @@ public:
 
   void copy_metadata_from_project (const Port &project_port) override
   {
-    control_ = static_cast<const ControlPort &> (project_port).control_;
+    control_ = dynamic_cast<const ControlPort &> (project_port).control_;
   }
 
   void restore_from_non_project (const Port &non_project) override
@@ -358,7 +355,7 @@ public:
    *
    * Only used for generic UIs.
    */
-  zrythm::gui::old_dsp::plugins::PluginGtkController * widget_ = 0;
+  // zrythm::gui::old_dsp::plugins::PluginGtkController * widget_ = 0;
 };
 
 /**

@@ -56,7 +56,7 @@ frames_equal (
 {
   for (size_t i = 0; i < num_frames; i++)
     {
-      if (!math_floats_equal_epsilon (src1[i], src2[i], epsilon))
+      if (!utils::math::floats_near (src1[i], src2[i], epsilon))
         {
           z_debug (
             "[{}] {:f} != {:f}", i, static_cast<double> (src1[i]),
@@ -133,7 +133,7 @@ frames_empty (const float * src, size_t num_frames)
 {
   for (size_t i = 0; i < num_frames; i++)
     {
-      if (!math_floats_equal (src[i], 0.f))
+      if (!utils::math::floats_equal (src[i], 0.f))
         {
           z_debug ("[{}] {:f} != 0", i, static_cast<double> (src[i]));
           return false;

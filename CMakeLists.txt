@@ -376,11 +376,20 @@ endif()
 
 # Zrythm-specific compile definitions
 set(zrythm_definitions)
-if(${compiler_is_clang})
-  list(APPEND zrythm_definitions "ATTR_REALTIME=__attribute__((annotate(\"realtime\")))")
-else()
-  list(APPEND zrythm_definitions "ATTR_REALTIME=")
-endif()
+
+# Realtime-sanitizer definitions (available since clang 20.0.0)
+set(attribute_macros blocking nonblocking allocating nonallocating)
+foreach(a ${attribute_macros})
+  string(TOUPPER ${a} a_upper)
+  set(attribute_def "ATTR_${a_upper}=")
+  if(${compiler_is_clang})
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 20.0.0)
+      set(attribute_def "${attribute_def}[[clang::${a}]]")
+    endif()
+  endif()
+  list(APPEND zrythm_definitions ${attribute_def})
+endforeach()
+
 list(APPEND zrythm_definitions GETTEXT_PACKAGE="zrythm")
 
 if(WIN32)
@@ -392,9 +401,7 @@ if(WIN32)
   )
 endif()
 
-set(attribute_macros
-  cold hot nonnull returns_nonnull const
-)
+set(attribute_macros cold hot nonnull const)
 foreach(a ${attribute_macros})
   string(TOUPPER ${a} a_upper)
   set(attribute_def "ATTR_${a_upper}=")
@@ -843,6 +850,7 @@ pkg_search_module(RTMIDI librtmidi>=5.0.0 rtmidi>=5.0.0 REQUIRED IMPORTED_TARGET
 if(RTMIDI_VERSION VERSION_GREATER_EQUAL 6.0.0)
   set(HAVE_RTMIDI_6 TRUE)
 endif()
+set(HAVE_RTMIDI TRUE)
 
 find_package(zstd REQUIRED)
 

@@ -61,7 +61,6 @@ public:
     bool         is_input,
     unsigned int device_id,
     unsigned int channel_idx,
-    AudioPort *  port,
     std::string  device_name = "");
 
   ~RtAudioDevice ()
@@ -121,13 +120,10 @@ public:
 
   rtaudio_t handle_ = nullptr;
 
-  /** Associated port. */
-  AudioPort * port_ = nullptr;
-
   /**
    * Audio data buffer (see port_prepare_rtaudio_data()).
    */
-  std::array<float, 0x4000> audio_buf_;
+  std::array<float, 0x4000> audio_buf_{};
 
   /** Ring buffer for audio data. */
   RingBuffer<float> audio_ring_{ RTAUDIO_DEVICE_BUFFER_SIZE };

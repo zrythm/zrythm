@@ -41,10 +41,12 @@ Port::Port (
   float       minf,
   float       maxf,
   float       zerof)
-    : id_ (std::make_unique<PortIdentifier> ()), minf_ (minf), maxf_ (maxf),
-      zerof_ (zerof)
+    : Port ()
 {
-  id_->label_ = label;
+  minf_ = minf;
+  maxf_ = maxf;
+  zerof_ = zerof;
+  id_->label_ = std::move (label);
   id_->type_ = type;
   id_->flow_ = flow;
 }
@@ -65,6 +67,14 @@ Port::create_unique_from_type (PortType type)
     default:
       z_return_val_if_reached (nullptr);
     }
+}
+
+bool
+Port::is_exposed_to_backend () const
+{
+  return (backend_ && backend_->is_exposed ())
+         || id_->owner_type_ == PortIdentifier::OwnerType::AudioEngine
+         || exposed_to_backend_;
 }
 
 template <typename T>
@@ -284,7 +294,7 @@ Port::find_from_identifier (const zrythm::dsp::PortIdentifier &id)
                   ENUM_BITSET_TEST (
                     PortIdentifier::Flags, flags, PortIdentifier::Flags::StereoL))
                   return &fader->stereo_out_->get_l ();
-                else if (
+                if (
                   ENUM_BITSET_TEST (
                     PortIdentifier::Flags, flags, PortIdentifier::Flags::StereoR))
                   return &fader->stereo_out_->get_r ();
@@ -541,121 +551,6 @@ Port::find_from_identifier (const zrythm::dsp::PortIdentifier &id)
     };
 }
 
-#if HAVE_JACK
-void
-Port::sum_data_from_jack (const nframes_t start_frame, const nframes_t nframes)
-{
-  if (
-    id_->owner_type_ == PortIdentifier::OwnerType::AudioEngine
-    || internal_type_ != Port::InternalType::JackPort || !is_input ())
-    return;
-
-  /* append events from JACK if any */
-  if (
-    is_midi () && AUDIO_ENGINE->midi_backend_ == MidiBackend::MIDI_BACKEND_JACK)
-    {
-      auto midi_port = dynamic_cast<MidiPort *> (this);
-      midi_port->receive_midi_events_from_jack (start_frame, nframes);
-    }
-  else if (
-    is_audio ()
-    && AUDIO_ENGINE->audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
-    {
-      auto audio_port = dynamic_cast<AudioPort *> (this);
-      audio_port->receive_audio_data_from_jack (start_frame, nframes);
-    }
-}
-
-void
-Port::send_data_to_jack (const nframes_t start_frame, const nframes_t nframes)
-{
-  if (internal_type_ != Port::InternalType::JackPort || !is_output ())
-    return;
-
-  if (
-    is_midi () && AUDIO_ENGINE->midi_backend_ == MidiBackend::MIDI_BACKEND_JACK)
-    {
-      auto * midi_port = dynamic_cast<MidiPort *> (this);
-      midi_port->send_midi_events_to_jack (start_frame, nframes);
-    }
-  if (
-    is_audio ()
-    && AUDIO_ENGINE->audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
-    {
-      auto * audio_port = dynamic_cast<AudioPort *> (this);
-      audio_port->send_audio_data_to_jack (start_frame, nframes);
-    }
-}
-
-void
-Port::expose_to_jack (bool expose)
-{
-  enum JackPortFlags flags
-  {
-  };
-  if (id_->owner_type_ == PortIdentifier::OwnerType::HardwareProcessor)
-    {
-      /* these are reversed */
-      if (is_input ())
-        flags = JackPortIsOutput;
-      else if (is_output ())
-        flags = JackPortIsInput;
-      else
-        {
-          z_return_if_reached ();
-        }
-    }
-  else
-    {
-      if (is_input ())
-        flags = JackPortIsInput;
-      else if (is_output ())
-        flags = JackPortIsOutput;
-      else
-        {
-          z_return_if_reached ();
-        }
-    }
-
-  const char * type = engine_jack_get_jack_type (id_->type_);
-  if (type == nullptr)
-    z_return_if_reached ();
-
-  auto label = get_full_designation ();
-  if (expose)
-    {
-      z_info ("exposing port {} to JACK", label);
-      if (!data_)
-        {
-          data_ = (void *) jack_port_register (
-            AUDIO_ENGINE->client_, label.c_str (), type, flags, 0);
-        }
-      z_return_if_fail (data_);
-      internal_type_ = InternalType::JackPort;
-    }
-  else
-    {
-      z_info ("unexposing port {} from JACK", label);
-      if (AUDIO_ENGINE->client_)
-        {
-          z_warn_if_fail (data_);
-          int ret =
-            jack_port_unregister (AUDIO_ENGINE->client_, JACK_PORT_T (data_));
-          if (ret)
-            {
-              auto jack_error =
-                engine_jack_get_error_message ((jack_status_t) ret);
-              z_warning ("JACK port unregister error: {}", jack_error);
-            }
-        }
-      internal_type_ = InternalType::None;
-      data_ = NULL;
-    }
-
-  exposed_to_backend_ = expose;
-}
-#endif /* HAVE_JACK */
-
 int
 Port::get_num_unlocked (bool sources) const
 {
@@ -829,31 +724,6 @@ Port::get_label () const
   return id_->get_label ();
 }
 
-bool
-Port::can_be_connected_to (const Port &dest) const
-{
-  return Graph (ROUTER.get ()).validate_with_connection (this, &dest);
-}
-
-void
-Port::disconnect_ports (std::vector<Port *> &ports, bool deleting)
-{
-  if (!PORT_CONNECTIONS_MGR)
-    return;
-
-  /* can only be called from the gtk thread */
-  z_return_if_fail (ZRYTHM_IS_QT_THREAD);
-
-  /* go through each port */
-  for (auto port : ports)
-    {
-      PORT_CONNECTIONS_MGR->ensure_disconnect_all (*port->id_);
-      port->srcs_.clear ();
-      port->dests_.clear ();
-      port->deleting_ = deleting;
-    }
-}
-
 void
 Port::disconnect_all ()
 {
@@ -885,27 +755,10 @@ Port::disconnect_all ()
       PORT_CONNECTIONS_MGR->ensure_disconnect (*conn->src_id_, *conn->dest_id_);
     }
 
-#if HAVE_JACK
-  if (this->internal_type_ == Port::InternalType::JackPort)
+  if (backend_)
     {
-      expose_to_jack (false);
+      backend_->unexpose ();
     }
-#endif
-
-#if HAVE_RTMIDI
-  if (is_midi ())
-    {
-      auto midi_port = static_cast<MidiPort *> (this);
-      for (
-        auto it = midi_port->rtmidi_ins_.begin ();
-        it != midi_port->rtmidi_ins_.end (); ++it)
-        {
-          auto dev = *it;
-          dev->close ();
-          it = midi_port->rtmidi_ins_.erase (it);
-        }
-    }
-#endif
 }
 
 void
@@ -1017,7 +870,12 @@ Port::set_expose_to_backend (AudioEngine &engine, bool expose)
           return;
 #if HAVE_JACK
         case AudioBackend::AUDIO_BACKEND_JACK:
-          expose_to_jack (expose);
+          if (
+            !backend_
+            || (dynamic_cast<JackPortBackend *> (backend_.get ()) == nullptr))
+            {
+              backend_ = std::make_unique<JackPortBackend> (*engine.client_);
+            }
           break;
 #endif
 #if HAVE_RTAUDIO
@@ -1027,7 +885,42 @@ Port::set_expose_to_backend (AudioEngine &engine, bool expose)
         case AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO:
         case AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO:
         case AudioBackend::AUDIO_BACKEND_ASIO_RTAUDIO:
-          audio_port->expose_to_rtaudio (expose);
+          if (
+            !backend_
+            || (dynamic_cast<RtAudioPortBackend *> (backend_.get ()) == nullptr))
+            {
+              auto track = dynamic_cast<ChannelTrack *> (get_track (false));
+              if (!track)
+                return;
+
+              auto &ch = track->channel_;
+              bool  is_stereo_l = ENUM_BITSET_TEST (
+                PortIdentifier::Flags, id_->flags_,
+                PortIdentifier::Flags::StereoL);
+              bool is_stereo_r = ENUM_BITSET_TEST (
+                PortIdentifier::Flags, id_->flags_,
+                PortIdentifier::Flags::StereoR);
+              if (!is_stereo_l && !is_stereo_r)
+                {
+                  return;
+                }
+
+              backend_ = std::make_unique<RtAudioPortBackend> (
+                [ch, is_stereo_l] (
+                  std::vector<RtAudioPortBackend::RtAudioPortInfo> &nfo) {
+                  for (
+                    const auto &ext_port :
+                    is_stereo_l ? ch->ext_stereo_l_ins_ : ch->ext_stereo_r_ins_)
+                    {
+                      nfo.emplace_back (
+                        ext_port->rtaudio_is_input_, ext_port->rtaudio_id_,
+                        ext_port->rtaudio_channel_idx_);
+                    }
+                },
+                [ch, is_stereo_l] () {
+                  return is_stereo_l ? ch->all_stereo_l_ins_ : ch->all_stereo_r_ins_;
+                });
+            }
           break;
 #endif
         default:
@@ -1045,7 +938,12 @@ Port::set_expose_to_backend (AudioEngine &engine, bool expose)
           return;
 #if HAVE_JACK
         case MidiBackend::MIDI_BACKEND_JACK:
-          expose_to_jack (expose);
+          if (
+            !backend_
+            || (dynamic_cast<JackPortBackend *> (backend_.get ()) == nullptr))
+            {
+              backend_ = std::make_unique<JackPortBackend> (*engine.client_);
+            }
           break;
 #endif
 #if HAVE_RTMIDI
@@ -1056,7 +954,12 @@ Port::set_expose_to_backend (AudioEngine &engine, bool expose)
 #  if HAVE_RTMIDI_6
         case MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
 #  endif
-          midi_port->expose_to_rtmidi (expose);
+          if (
+            !backend_
+            || (dynamic_cast<RtMidiPortBackend *> (backend_.get ()) == nullptr))
+            {
+              backend_ = std::make_unique<RtMidiPortBackend> ();
+            }
           break;
 #endif
         default:
@@ -1067,29 +970,31 @@ Port::set_expose_to_backend (AudioEngine &engine, bool expose)
     {
       z_return_if_reached ();
     }
+
+  if (backend_)
+    {
+      if (expose)
+        {
+          backend_->expose (*id_, [this] () {
+            return get_full_designation ();
+          });
+        }
+      else
+        {
+          backend_->unexpose ();
+        }
+      exposed_to_backend_ = expose;
+    }
 }
 
 void
 Port::rename_backend ()
 {
-  if (!this->is_exposed_to_backend ())
+  if (!is_exposed_to_backend ())
     return;
 
-  switch (this->internal_type_)
-    {
-#if HAVE_JACK
-    case Port::InternalType::JackPort:
-      {
-        std::string str = this->get_full_designation ();
-        jack_port_rename (
-          AUDIO_ENGINE->client_, static_cast<jack_port_t *> (this->data_),
-          str.c_str ());
-      }
-      break;
-#endif
-    default:
-      break;
-    }
+  // just re-expose - this causes a rename if already exposed
+  set_expose_to_backend (*AUDIO_ENGINE, true);
 }
 
 std::string
@@ -1167,37 +1072,12 @@ Port::print_full_designation () const
 void
 Port::clear_external_buffer ()
 {
-  if (!this->is_exposed_to_backend ())
+  if (!is_exposed_to_backend () || !backend_)
     {
       return;
     }
 
-#if HAVE_JACK
-  if (this->internal_type_ != Port::InternalType::JackPort)
-    {
-      return;
-    }
-
-  auto jport = static_cast<jack_port_t *> (this->data_);
-  z_return_if_fail (jport);
-  void * buf = jack_port_get_buffer (jport, AUDIO_ENGINE->block_length_);
-  z_return_if_fail (buf);
-  if (
-    id_->type_ == PortType::Audio
-    && AUDIO_ENGINE->audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
-    {
-      auto fbuf = static_cast<float *> (buf);
-      utils::float_ranges::fill (
-        &fbuf[0], DENORMAL_PREVENTION_VAL (AUDIO_ENGINE),
-        AUDIO_ENGINE->block_length_);
-    }
-  else if (
-    id_->type_ == PortType::Event
-    && AUDIO_ENGINE->midi_backend_ == MidiBackend::MIDI_BACKEND_JACK)
-    {
-      jack_midi_clear_buffer (buf);
-    }
-#endif
+  backend_->clear_backend_buffer (id_->type_, AUDIO_ENGINE->block_length_);
 }
 
 Track *
@@ -1312,19 +1192,6 @@ uint32_t
 Port::get_hash () const
 {
   return utils::hash::get_object_hash (*this);
-}
-
-uint32_t
-Port::get_hash (const void * ptr)
-{
-  const auto * self = static_cast<const Port *> (ptr);
-  return self->get_hash ();
-}
-
-bool
-Port::is_connected_to (const Port &dest) const
-{
-  return PORT_CONNECTIONS_MGR->find_connection (*id_, *dest.id_) != nullptr;
 }
 
 bool

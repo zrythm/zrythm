@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cfloat>
@@ -8,32 +8,19 @@
 #include "utils/math.h"
 #include "utils/string.h"
 
-/**
- * Gets the RMS of the given signal as amplitude
- * (0-2).
- */
+namespace zrythm::utils::math
+{
+
 sample_t
-math_calculate_rms_amp (sample_t * buf, const nframes_t nframes)
+calculate_rms_amp (const sample_t * buf, const nframes_t nframes)
 {
   sample_t sum = 0, sample = 0;
-  for (unsigned int i = 0; i < nframes; i += MATH_RMS_FRAMES)
+  for (unsigned int i = 0; i < nframes; i += RMS_FRAMES)
     {
       sample = buf[i];
       sum += (sample * sample);
     }
-  return sqrtf (sum / ((sample_t) nframes / (sample_t) MATH_RMS_FRAMES));
-}
-
-/**
- * Calculate db using RMS method.
- *
- * @param buf Buffer containing the samples.
- * @param nframes Number of samples.
- */
-sample_t
-math_calculate_rms_db (sample_t * buf, const nframes_t nframes)
-{
-  return math_amp_to_dbfs (math_calculate_rms_amp (buf, nframes));
+  return std::sqrtf (sum / ((sample_t) nframes / (sample_t) RMS_FRAMES));
 }
 
 /**
@@ -44,7 +31,7 @@ math_calculate_rms_db (sample_t * buf, const nframes_t nframes)
  * @return Whether the value is valid (nonnan).
  */
 bool
-math_assert_nonnann (float x)
+assert_nonnann (float x)
 {
   auto val = fmt::format ("{:f}", (double) x);
   if (
@@ -64,13 +51,8 @@ math_assert_nonnann (float x)
   return true;
 }
 
-/**
- * Returns whether the given string is a valid float.
- *
- * @param ret If non-nullptr, the result will be placed here.
- */
 bool
-math_is_string_valid_float (const std::string &str, float * ret)
+is_string_valid_float (const std::string &str, float * ret)
 {
   int   len;
   float dummy = 0.0;
@@ -87,3 +69,5 @@ math_is_string_valid_float (const std::string &str, float * ret)
   else
     return false;
 }
+
+} // namespace zrythm::utils::math

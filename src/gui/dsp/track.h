@@ -214,7 +214,7 @@ public: \
   } \
   void setHeight (double height) \
   { \
-    if (math_doubles_equal (height, main_height_)) \
+    if (utils::math::floats_equal (height, main_height_)) \
       { \
         return; \
       } \

@@ -1821,7 +1821,7 @@ CarlaNativePlugin::set_param_value (const uint32_t id, float val)
     }
 
   float cur_val = carla_get_current_parameter_value (host_handle_, 0, id);
-  if (DEBUGGING && !math_floats_equal (cur_val, val))
+  if (DEBUGGING && !utils::math::floats_equal (cur_val, val))
     {
       z_debug ("setting param {} value to {:f}", id, (double) val);
     }

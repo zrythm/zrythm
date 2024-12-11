@@ -147,6 +147,7 @@ target_sources(zrythm_gui_lib
     pool.cpp
     port.h
     port.cpp
+    port_backend.h
     port_connection.h
     port_connection.cpp
     port_connections_manager.h

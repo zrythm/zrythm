@@ -50,8 +50,8 @@ AutomationPoint::AutomationPoint (
 {
   if (ZRYTHM_TESTING)
     {
-      math_assert_nonnann (value);
-      math_assert_nonnann (normalized_val);
+      utils::math::assert_nonnann (value);
+      utils::math::assert_nonnann (normalized_val);
     }
 
   fvalue_ = value;
@@ -92,8 +92,8 @@ AutomationPoint::init_after_cloning (const AutomationPoint &other)
   if (ZRYTHM_TESTING)
     {
       z_return_if_fail (
-        math_assert_nonnann (other.normalized_val_)
-        && math_assert_nonnann (other.fvalue_));
+        utils::math::assert_nonnann (other.normalized_val_)
+        && utils::math::assert_nonnann (other.fvalue_));
     }
 
   fvalue_ = other.fvalue_;
@@ -146,7 +146,7 @@ AutomationPoint::set_fvalue (float real_val, bool is_normalized, bool pub_events
 
   if (ZRYTHM_TESTING)
     {
-      math_assert_nonnann (real_val);
+      utils::math::assert_nonnann (real_val);
     }
 
   float normalized_val;
@@ -168,8 +168,8 @@ AutomationPoint::set_fvalue (float real_val, bool is_normalized, bool pub_events
 
   if (ZRYTHM_TESTING)
     {
-      math_assert_nonnann (fvalue_);
-      math_assert_nonnann (normalized_val_);
+      utils::math::assert_nonnann (fvalue_);
+      utils::math::assert_nonnann (normalized_val_);
     }
 
   z_return_if_fail (get_region ());
@@ -244,7 +244,7 @@ AutomationPoint::get_normalized_value_in_curve (
 void
 AutomationPoint::set_curviness (const curviness_t curviness)
 {
-  if (math_doubles_equal (curve_opts_.curviness_, curviness))
+  if (utils::math::floats_equal (curve_opts_.curviness_, curviness))
     return;
 
   curve_opts_.curviness_ = curviness;

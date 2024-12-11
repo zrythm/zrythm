@@ -189,7 +189,7 @@ ChannelSend::process (const nframes_t local_offset, const nframes_t nframes)
   z_return_if_fail (track);
   if (track->out_signal_type_ == PortType::Audio)
     {
-      if (math_floats_equal_epsilon (amount_->control_, 1.f, 0.00001f))
+      if (utils::math::floats_near (amount_->control_, 1.f, 0.00001f))
         {
           utils::float_ranges::copy (
             &stereo_out_->get_l ().buf_[local_offset],
@@ -341,7 +341,7 @@ ChannelSend::get_amount_for_widgets () const
 {
   z_return_val_if_fail (is_enabled (), 0.f);
 
-  return math_get_fader_val_from_amp (amount_->control_);
+  return utils::math::get_fader_val_from_amp (amount_->control_);
 }
 
 void
@@ -349,7 +349,7 @@ ChannelSend::set_amount_from_widget (float val)
 {
   z_return_if_fail (is_enabled ());
 
-  set_amount (math_get_amp_val_from_fader (val));
+  set_amount (utils::math::get_amp_val_from_fader (val));
 }
 
 bool
@@ -369,7 +369,7 @@ ChannelSend::connect_stereo (
     {
       auto src =
         Port::find_from_identifier<AudioPort> (*stereo_out_->get_l ().id_);
-      if (!src->can_be_connected_to (*l))
+      if (!Graph (ROUTER.get ()).can_ports_be_connected (*src, *l))
         {
           throw ZrythmException (QObject::tr ("Ports cannot be connected"));
         }
@@ -411,7 +411,7 @@ ChannelSend::connect_midi (MidiPort &port, bool recalc_graph, bool validate)
   if (validate && port.is_in_active_project ())
     {
       Port * src = Port::find_from_identifier (*midi_out_->id_);
-      if (!src->can_be_connected_to (port))
+      if (!Graph (ROUTER.get ()).can_ports_be_connected (*src, port))
         {
           throw ZrythmException (QObject::tr ("Ports cannot be connected"));
         }

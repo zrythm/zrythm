@@ -72,7 +72,7 @@ PortConnectionAction::do_or_undo (bool _do)
     case Type::Disconnect:
       if ((type_ == Type::Connect && _do) || (type_ == Type::Disconnect && !_do))
         {
-          if (!src->can_be_connected_to (*dest))
+          if (!Graph (ROUTER.get ()).can_ports_be_connected (*src, *dest))
             {
               throw ZrythmException (fmt::format (
                 "'{}' cannot be connected to '{}'", src->get_label (),

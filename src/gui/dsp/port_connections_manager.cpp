@@ -28,6 +28,24 @@ PortConnectionsManager::init_after_cloning (const PortConnectionsManager &other)
 }
 
 void
+PortConnectionsManager::disconnect_port_collection (
+  std::vector<Port *> &ports,
+  bool                 deleting)
+{
+  /* can only be called from the gtk thread */
+  z_return_if_fail (ZRYTHM_IS_QT_THREAD);
+
+  /* go through each port */
+  for (auto * port : ports)
+    {
+      ensure_disconnect_all (*port->id_);
+      port->srcs_.clear ();
+      port->dests_.clear ();
+      port->deleting_ = deleting;
+    }
+}
+
+void
 PortConnectionsManager::add_or_replace_connection (
   ConnectionHashTable  &ht,
   const PortIdentifier &id,

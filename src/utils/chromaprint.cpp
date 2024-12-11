@@ -99,7 +99,7 @@ z_chromaprint_check_fingerprint_similarity (
     }
 
   double rated = (double) rate / (double) min;
-  int    rate_perc = (int) math_round_double_to_signed_32 (rated * 100.0);
+  int rate_perc = (int) zrythm::utils::math::round_to_signed_32 (rated * 100.0);
   z_info ("{} out of {} ({}%%)", rate, min, rate_perc);
 
   z_return_if_fail (rate_perc >= perc);

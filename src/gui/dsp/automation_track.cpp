@@ -55,7 +55,7 @@ AutomationTrack::init_loaded (AutomationTracklist * atl)
 void
 AutomationTrack::setHeight (double height)
 {
-  if (math_doubles_equal (height, height_))
+  if (utils::math::floats_equal (height, height_))
     return;
 
   height_ = height;
@@ -530,8 +530,8 @@ AutomationTrack::verify () const
           if (ZRYTHM_TESTING)
             {
               if (
-                !math_assert_nonnann (ap->fvalue_)
-                || !math_assert_nonnann (ap->normalized_val_))
+                !utils::math::assert_nonnann (ap->fvalue_)
+                || !utils::math::assert_nonnann (ap->normalized_val_))
                 {
                   return false;
                 }

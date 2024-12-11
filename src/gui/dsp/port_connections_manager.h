@@ -122,6 +122,12 @@ public:
   PortConnection *
   find_connection (const PortIdentifier &src, const PortIdentifier &dest) const;
 
+  bool
+  are_ports_connected (const PortIdentifier &src, const PortIdentifier &dest) const
+  {
+    return find_connection (src, dest) != nullptr;
+  }
+
   /**
    * @brief Replaces the given @p before connection with @p after.
    *
@@ -163,6 +169,14 @@ public:
    * Disconnect all sources and dests of the given port identifier.
    */
   void ensure_disconnect_all (const PortIdentifier &pi);
+
+  /**
+   * @brief Disconnects all the given ports
+   *
+   * @param ports Ports to delete all connections for.
+   * @param deleting Whether to set the `deleting` flag on the ports.
+   */
+  void disconnect_port_collection (std::vector<Port *> &ports, bool deleting);
 
   /**
    * Removes all connections from this.

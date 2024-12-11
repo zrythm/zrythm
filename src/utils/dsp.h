@@ -135,7 +135,7 @@ abs_max_with_existing_peak (
         }
     }
 
-  bool changed = !math_floats_equal (new_peak, *cur_peak);
+  bool changed = !utils::math::floats_equal (new_peak, *cur_peak);
   *cur_peak = new_peak;
 
   return changed;

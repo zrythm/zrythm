@@ -58,7 +58,7 @@ PositionProxy::setFrames (signed_frame_t frames)
 void
 PositionProxy::setTicks (double ticks)
 {
-  if (math_doubles_equal (ticks_, ticks))
+  if (utils::math::floats_equal (ticks_, ticks))
     {
       return;
     }

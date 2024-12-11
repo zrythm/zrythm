@@ -79,14 +79,14 @@ MeterProcessor::setPort (QVariant port_var)
             // z_debug ("values: {}, {}", val, max);
           }
 
-        if (!math_doubles_equal (
+        if (!utils::math::floats_equal (
               current_amp_.load (std::memory_order_relaxed), val))
           {
             current_amp_.store (val);
             Q_EMIT currentAmplitudeChanged (val);
           }
-        if (
-          !math_doubles_equal (peak_amp_.load (std::memory_order_relaxed), max))
+        if (!utils::math::floats_equal (
+              peak_amp_.load (std::memory_order_relaxed), max))
           {
             peak_amp_.store (max);
             Q_EMIT peakAmplitudeChanged (max);
@@ -99,13 +99,13 @@ MeterProcessor::setPort (QVariant port_var)
 float
 MeterProcessor::toDBFS (const float amp) const
 {
-  return math_amp_to_dbfs (amp);
+  return utils::math::amp_to_dbfs (amp);
 }
 
 float
 MeterProcessor::toFader (const float amp) const
 {
-  return math_get_fader_val_from_amp (amp);
+  return utils::math::get_fader_val_from_amp (amp);
 }
 
 void
@@ -167,7 +167,7 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
             case MeterAlgorithm::METER_ALGORITHM_RMS:
               /* not used */
               z_warn_if_reached ();
-              amp = math_calculate_rms_amp (
+              amp = utils::math::calculate_rms_amp (
                 &tmp_buf_[start_index], (size_t) num_cycles * block_length);
               break;
             case MeterAlgorithm::METER_ALGORITHM_TRUE_PEAK:
@@ -237,8 +237,8 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
             13.3f;
 
           /* use prev val plus falloff if higher than current val */
-          float prev_val_after_falloff =
-            math_dbfs_to_amp (math_amp_to_dbfs (last_amp_) - falloff);
+          float prev_val_after_falloff = utils::math::dbfs_to_amp (
+            utils::math::amp_to_dbfs (last_amp_) - falloff);
           if (prev_val_after_falloff > amp)
             {
               amp = prev_val_after_falloff;
@@ -263,12 +263,12 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
           *max = max_amp;
           break;
         case AudioValueFormat::DBFS:
-          *val = math_amp_to_dbfs (amp);
-          *max = math_amp_to_dbfs (max_amp);
+          *val = utils::math::amp_to_dbfs (amp);
+          *max = utils::math::amp_to_dbfs (max_amp);
           break;
         case AudioValueFormat::Fader:
-          *val = math_get_fader_val_from_amp (amp);
-          *max = math_get_fader_val_from_amp (max_amp);
+          *val = utils::math::get_fader_val_from_amp (amp);
+          *max = utils::math::get_fader_val_from_amp (max_amp);
           break;
         default:
           break;

@@ -19,7 +19,6 @@
 #  include "gui/dsp/router.h"
 #  include "gui/dsp/rtmidi_device.h"
 #  include "gui/dsp/transport.h"
-#  include "gui/widgets/main_window.h"
 #  include "utils/midi.h"
 
 #  include <rtmidi_c.h>
@@ -55,20 +54,6 @@ engine_rtmidi_get_num_in_ports (AudioEngine * self)
       z_warning ("{}", e.what ());
       return 0;
     }
-}
-
-/**
- * Tests if the backend is working properly.
- *
- * Returns 0 if ok, non-null if has errors.
- *
- * If win is not null, it displays error messages
- * to it.
- */
-int
-engine_rtmidi_test (GtkWindow * win)
-{
-  return 0;
 }
 
 void

@@ -53,7 +53,7 @@ public: \
   } \
   void setHeight (const double height) \
   { \
-    if (math_doubles_equal (height_, height)) \
+    if (utils::math::floats_equal (height_, height)) \
       return; \
 \
     height_ = height; \

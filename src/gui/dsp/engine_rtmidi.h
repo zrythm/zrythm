@@ -10,6 +10,7 @@
 
 class AudioEngine;
 
+#  if 0
 /**
  * Tests if the backend is working properly.
  *
@@ -20,6 +21,7 @@ class AudioEngine;
  */
 int
 engine_rtmidi_test (GtkWindow * win);
+#  endif
 
 /**
  * Refreshes the list of external ports.

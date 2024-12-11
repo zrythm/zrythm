@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UTILS_OBJECT_POOL_H__
-#define __UTILS_OBJECT_POOL_H__
+#ifndef ZRYTHM_UTILS_OBJECT_POOL_H
+#define ZRYTHM_UTILS_OBJECT_POOL_H
 
 #include <memory>
 #include <vector>
@@ -14,7 +14,7 @@
  *
  * @tparam T The type of objects to be pooled. Must be default-constructible.
  */
-template <typename T> class ObjectPool
+template <typename T, bool EnableDebug = false> class ObjectPool
 {
 public:
   static_assert (
@@ -28,9 +28,10 @@ public:
     T * object;
     if (available_.pop_front (object))
       {
-#ifdef DEBUG_OBJECT_POOL
-        num_in_use.fetch_add (1, std::memory_order_relaxed);
-#endif
+        if constexpr (EnableDebug)
+          {
+            num_in_use.fetch_add (1, std::memory_order_relaxed);
+          }
         return object;
       }
 
@@ -45,9 +46,10 @@ public:
   void release (T * object)
   {
     available_.push_back (object);
-#ifdef DEBUG_OBJECT_POOL
-    num_in_use.fetch_add (-1);
-#endif
+    if constexpr (EnableDebug)
+      {
+        num_in_use.fetch_add (-1);
+      }
   }
 
   void reserve (size_t size)
@@ -59,11 +61,9 @@ public:
       }
   }
 
-#ifdef DEBUG_OBJECT_POOL
   auto get_num_in_use () const { return num_in_use.load (); }
   auto get_capacity () const { return capacity_; }
   auto get_size () const { return size_; }
-#endif
 
 private:
   void expand ()
@@ -98,10 +98,8 @@ private:
   size_t                          size_ = 0;
   std::mutex                      expand_mutex_;
 
-#ifdef DEBUG_OBJECT_POOL
   // Debug counter
   std::atomic<size_t> num_in_use;
-#endif
 };
 
 #endif

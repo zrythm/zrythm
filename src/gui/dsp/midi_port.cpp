@@ -27,15 +27,7 @@ MidiPort::MidiPort (std::string label, PortFlow flow)
 {
 }
 
-MidiPort::~MidiPort ()
-{
-#if HAVE_RTMIDI
-  for (auto &dev : rtmidi_ins_)
-    {
-      dev->close ();
-    }
-#endif
-}
+MidiPort::~MidiPort () = default;
 
 void
 MidiPort::init_after_cloning (const MidiPort &original)
@@ -55,233 +47,6 @@ MidiPort::clear_buffer (AudioEngine &engine)
   midi_events_.active_events_.clear ();
   // midi_events_.queued_events_.clear ();
 }
-
-#if HAVE_JACK
-void
-MidiPort::receive_midi_events_from_jack (
-  const nframes_t start_frame,
-  const nframes_t nframes)
-{
-  if (this->internal_type_ != Port::InternalType::JackPort)
-    return;
-
-  void *   port_buf = jack_port_get_buffer (JACK_PORT_T (this->data_), nframes);
-  uint32_t num_events = jack_midi_get_event_count (port_buf);
-
-  jack_midi_event_t jack_ev;
-  for (unsigned i = 0; i < num_events; i++)
-    {
-      jack_midi_event_get (&jack_ev, port_buf, i);
-
-      if (jack_ev.time >= start_frame && jack_ev.time < start_frame + nframes)
-        {
-          midi_byte_t channel = jack_ev.buffer[0] & 0xf;
-          Track *     track = this->get_track (false);
-          if (
-            this->id_->owner_type_ == PortIdentifier::OwnerType::TrackProcessor
-            && !track)
-            {
-              z_return_if_reached ();
-            }
-
-          auto channel_track = dynamic_cast<ChannelTrack *> (track);
-          if (
-            this->id_->owner_type_ == PortIdentifier::OwnerType::TrackProcessor
-            && channel_track && (track->is_midi () || track->is_instrument ())
-            && !channel_track->channel_->all_midi_channels_
-            && !channel_track->channel_->midi_channels_[channel])
-            {
-              /* different channel */
-              /*z_debug ("received event on different channel");*/
-            }
-          else if (jack_ev.size == 3)
-            {
-              /*z_debug ("received event at {}", jack_ev.time);*/
-              midi_events_.active_events_.add_event_from_buf (
-                jack_ev.time, jack_ev.buffer, (int) jack_ev.size);
-            }
-        }
-    }
-
-#  if 0
-  if (midi_events_has_any (this->midi_events_, F_NOT_QUEUED))
-    {
-      char designation[600];
-      this->get_full_designation ( designation);
-      z_debug ("JACK MIDI ({}): have {} events", designation, num_events);
-      midi_events_print (this->midi_events_, F_NOT_QUEUED);
-    }
-#  endif
-}
-
-void
-MidiPort::send_midi_events_to_jack (
-  const nframes_t start_frames,
-  const nframes_t nframes)
-{
-  if (internal_type_ != Port::InternalType::JackPort)
-    return;
-
-  jack_port_t * jport = JACK_PORT_T (data_);
-
-  if (jack_port_connected (jport) <= 0)
-    {
-      return;
-    }
-
-  void * buf = jack_port_get_buffer (jport, AUDIO_ENGINE->nframes_);
-  midi_events_.active_events_.copy_to_jack (start_frames, nframes, buf);
-}
-#endif // HAVE_JACK
-
-#if HAVE_RTMIDI
-void
-MidiPort::sum_data_from_rtmidi (
-  const nframes_t start_frame,
-  const nframes_t nframes)
-{
-  z_return_if_fail (
-    // is_input() &&
-    midi_backend_is_rtmidi (AUDIO_ENGINE->midi_backend_));
-
-  Track * track = get_track (false);
-  auto *  channel_track = dynamic_cast<ChannelTrack *> (track);
-  for (auto &dev : rtmidi_ins_)
-    {
-      for (auto &ev : dev->events_)
-        {
-          if (ev.time_ >= start_frame && ev.time_ < start_frame + nframes)
-            {
-              midi_byte_t channel = ev.raw_buffer_[0] & 0xf;
-              if (
-                id_.owner_type_ == PortIdentifier::OwnerType::TrackProcessor
-                && (track == nullptr)) [[unlikely]]
-                {
-                  z_return_if_reached ();
-                }
-
-              if (
-                id_.owner_type_ == PortIdentifier::OwnerType::TrackProcessor
-                && track->has_piano_roll () && channel_track
-                && !channel_track->channel_->all_midi_channels_
-                && !channel_track->channel_->midi_channels_.at (channel))
-                {
-                  /* different channel */
-                }
-              else
-                {
-                  midi_events_.active_events_.add_event_from_buf (
-                    ev.time_, ev.raw_buffer_.data (), 3);
-                }
-            }
-        }
-    }
-
-#  if 0
-  if (DEBUGGING &&
-      this->midi_events_->num_events > 0)
-    {
-      MidiEvent * ev =
-        &this->midi_events_->events[0];
-      char designation[600];
-      port_get_full_designation (
-        this, designation);
-      z_info (
-        "RtMidi (%s): have %d events\n"
-        "first event is: [{}] %hhx %hhx %hhx",
-        designation, this->midi_events_->num_events,
-        ev->time, ev->raw_buffer[0],
-        ev->raw_buffer[1], ev->raw_buffer[2]);
-    }
-#  endif
-}
-
-void
-MidiPort::prepare_rtmidi_events ()
-{
-  z_return_if_fail (
-    // is_input() &&
-    midi_backend_is_rtmidi (AUDIO_ENGINE->midi_backend_));
-
-  auto cur_time = Zrythm::getInstance ()->get_monotonic_time_usecs ();
-  for (auto &dev : rtmidi_ins_)
-    {
-      /* clear the events */
-      dev->events_.clear ();
-
-      SemaphoreRAII<> sem_raii (dev->midi_ring_sem_);
-      MidiEvent       ev;
-      while (dev->midi_ring_.read (ev))
-        {
-          /* calculate event timestamp */
-          qint64 length = cur_time - last_midi_dequeue_;
-          auto   ev_time =
-            (midi_time_t) (((double) ev.systime_ / (double) length)
-                           * (double) AUDIO_ENGINE->block_length_);
-
-          if (ev_time >= AUDIO_ENGINE->block_length_)
-            {
-              z_warning (
-                "event with invalid time {} received. the maximum allowed time "
-                "is {}. setting it to {}...",
-                ev_time, AUDIO_ENGINE->block_length_ - 1,
-                AUDIO_ENGINE->block_length_ - 1);
-              ev_time = (midi_byte_t) (AUDIO_ENGINE->block_length_ - 1);
-            }
-
-          dev->events_.add_event_from_buf (
-            ev_time, ev.raw_buffer_.data (), ev.raw_buffer_sz_);
-        }
-    }
-  last_midi_dequeue_ = cur_time;
-}
-
-void
-MidiPort::expose_to_rtmidi (bool expose)
-{
-  if (expose)
-    {
-#  if 0
-
-      if (self->id_.flow_ == PortFlow::Input)
-        {
-          self->rtmidi_in =
-            rtmidi_in_create (
-#    ifdef _WIN32
-              RTMIDI_API_WINDOWS_MM,
-#    elif defined(__APPLE__)
-              RTMIDI_API_MACOSX_CORE,
-#    else
-              RTMIDI_API_LINUX_ALSA,
-#    endif
-              "Zrythm",
-              AUDIO_ENGINE->midi_buf_size);
-
-          /* don't ignore any messages */
-          rtmidi_in_ignore_types (
-            self->rtmidi_in, 0, 0, 0);
-
-          rtmidi_open_port (
-            self->rtmidi_in, 1, lbl);
-        }
-#  endif
-      z_debug ("exposing {}", get_full_designation ());
-    }
-  else
-    {
-#  if 0
-      if (self->id_.flow_ == PortFlow::Input &&
-          self->rtmidi_in)
-        {
-          rtmidi_close_port (self->rtmidi_in);
-          self->rtmidi_in = NULL;
-        }
-#  endif
-      z_debug ("unexposing {}", get_full_designation ());
-    }
-  exposed_to_backend_ = expose;
-}
-#endif // HAVE_RTMIDI
 
 void
 MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
@@ -356,27 +121,33 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
    * owner by a track), otherwise always consider incoming external data */
   if ((owner_type != PortIdentifier::OwnerType::TrackProcessor || (owner_type == PortIdentifier::OwnerType::TrackProcessor && (recordable_track != nullptr) && recordable_track->get_recording())) && id->is_input())
     {
-      switch (AUDIO_ENGINE->midi_backend_)
+      if (backend_ && backend_->is_exposed ())
         {
-#if HAVE_JACK
-        case MidiBackend::MIDI_BACKEND_JACK:
-          receive_midi_events_from_jack (
-            time_nfo.local_offset_, time_nfo.nframes_);
-          break;
-#endif
-#if HAVE_RTMIDI
-        case MidiBackend::MIDI_BACKEND_ALSA_RTMIDI:
-        case MidiBackend::MIDI_BACKEND_JACK_RTMIDI:
-        case MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI:
-        case MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI:
-#  if HAVE_RTMIDI_6
-        case MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
-#  endif
-          sum_data_from_rtmidi (time_nfo.local_offset_, time_nfo.nframes_);
-          break;
-#endif
-        default:
-          break;
+          backend_->sum_data (
+            midi_events_, { time_nfo.local_offset_, time_nfo.nframes_ },
+            [this] (midi_byte_t channel) {
+              Track * track = this->get_track (false);
+              if (
+                this->id_->owner_type_ == PortIdentifier::OwnerType::TrackProcessor
+                && !track)
+                {
+                  z_return_val_if_reached (false);
+                }
+
+              auto channel_track = dynamic_cast<ChannelTrack *> (track);
+              if (
+                this->id_->owner_type_ == PortIdentifier::OwnerType::TrackProcessor
+                && channel_track
+                && (track->is_midi () || track->is_instrument ())
+                && !channel_track->channel_->all_midi_channels_
+                && !channel_track->channel_->midi_channels_[channel])
+                {
+                  /* different channel */
+                  /*z_debug ("received event on different channel");*/
+                  return false;
+                }
+              return true;
+            });
         }
     }
 
@@ -521,18 +292,10 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
         time_nfo.nframes_);
     } /* foreach source */
 
-  if (id->is_output ())
+  if (id->is_output () && backend_ && backend_->is_exposed ())
     {
-      switch (AUDIO_ENGINE->midi_backend_)
-        {
-#if HAVE_JACK
-        case MidiBackend::MIDI_BACKEND_JACK:
-          send_midi_events_to_jack (time_nfo.local_offset_, time_nfo.nframes_);
-          break;
-#endif
-        default:
-          break;
-        }
+      backend_->send_data (
+        midi_events_, { time_nfo.local_offset_, time_nfo.nframes_ });
     }
 
   /* send UI notification */

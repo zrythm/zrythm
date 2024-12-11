@@ -8,6 +8,8 @@
 #include "utils/resampler.h"
 #include <soxr.h>
 
+using namespace zrythm;
+
 class Resampler::Impl
 {
 public:
@@ -186,7 +188,7 @@ Resampler::Impl::process ()
         }
     }
 
-  if (math_doubles_equal (input_rate_, output_rate_))
+  if (utils::math::floats_equal (input_rate_, output_rate_))
     {
       for (int i = 0; i < num_channels; ++i)
         {

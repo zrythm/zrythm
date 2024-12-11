@@ -59,10 +59,8 @@ RtAudioDevice::RtAudioDevice (
   bool         is_input,
   unsigned int device_id,
   unsigned int channel_idx,
-  AudioPort *  port,
   std::string  device_name)
-    : is_input_ (is_input), channel_idx_ (channel_idx), id_ (device_id),
-      port_ (port)
+    : is_input_ (is_input), channel_idx_ (channel_idx), id_ (device_id)
 {
   handle_ =
     engine_rtaudio_create_rtaudio (AUDIO_ENGINE, AUDIO_ENGINE->audio_backend_);

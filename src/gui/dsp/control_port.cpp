@@ -153,7 +153,7 @@ ControlPort::set_control_value (
   unsnapped_control_ = base_value_;
   base_value_ = get_snapped_val_from_val (unsnapped_control_);
 
-  if (!math_floats_equal (control_, base_value_))
+  if (!utils::math::floats_equal (control_, base_value_))
     {
       control_ = base_value_;
 
@@ -223,7 +223,8 @@ ControlPort::set_control_value (
             {
               if (
                 pl->own_enabled_port_
-                && !math_floats_equal (pl->own_enabled_port_->control_, control_))
+                && !utils::math::floats_equal (
+                  pl->own_enabled_port_->control_, control_))
                 {
                   z_debug (
                     "generic enabled changed - changing plugin's own enabled");
@@ -232,7 +233,7 @@ ControlPort::set_control_value (
                     control_, false, true);
                 }
             }
-          else if (!math_floats_equal (pl->enabled_->control_, control_))
+          else if (!utils::math::floats_equal (pl->enabled_->control_, control_))
             {
               z_debug (
                 "plugin's own enabled changed - changing generic enabled");
@@ -309,10 +310,12 @@ ControlPort::normalized_val_to_real (float normalized_val) const
         ENUM_BITSET_TEST (
           PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::Logarithmic))
         {
-          auto minf = math_floats_equal (minf_, 0.f) ? 1e-20f : minf_;
-          auto maxf = math_floats_equal (maxf_, 0.f) ? 1e-20f : maxf_;
+          auto minf = utils::math::floats_equal (minf_, 0.f) ? 1e-20f : minf_;
+          auto maxf = utils::math::floats_equal (maxf_, 0.f) ? 1e-20f : maxf_;
           normalized_val =
-            math_floats_equal (normalized_val, 0.f) ? 1e-20f : normalized_val;
+            utils::math::floats_equal (normalized_val, 0.f)
+              ? 1e-20f
+              : normalized_val;
 
           /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
           return minf * std::pow (maxf / minf, normalized_val);
@@ -337,7 +340,7 @@ ControlPort::normalized_val_to_real (float normalized_val) const
     ENUM_BITSET_TEST (
       PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::ChannelFader))
     {
-      return math_get_amp_val_from_fader (normalized_val);
+      return utils::math::get_amp_val_from_fader (normalized_val);
     }
   else
     {
@@ -357,9 +360,12 @@ ControlPort::real_val_to_normalized (float real_val) const
         ENUM_BITSET_TEST (
           PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::Logarithmic))
         {
-          const auto minf = math_floats_equal (minf_, 0.f) ? 1e-20f : minf_;
-          const auto maxf = math_floats_equal (maxf_, 0.f) ? 1e-20f : maxf_;
-          real_val = math_floats_equal (real_val, 0.f) ? 1e-20f : real_val;
+          const auto minf =
+            utils::math::floats_equal (minf_, 0.f) ? 1e-20f : minf_;
+          const auto maxf =
+            utils::math::floats_equal (maxf_, 0.f) ? 1e-20f : maxf_;
+          real_val =
+            utils::math::floats_equal (real_val, 0.f) ? 1e-20f : real_val;
 
           /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
           return std::log (real_val / minf) / std::log (maxf / minf);
@@ -382,7 +388,7 @@ ControlPort::real_val_to_normalized (float real_val) const
     ENUM_BITSET_TEST (
       PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::ChannelFader))
     {
-      return math_get_fader_val_from_amp (real_val);
+      return utils::math::get_fader_val_from_amp (real_val);
     }
   auto sizef = maxf_ - minf_;
   return (sizef - (maxf_ - real_val)) / sizef;
@@ -397,7 +403,7 @@ ControlPort::set_val_from_normalized (float val, bool automating)
       PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::PluginControl))
     {
       auto real_val = normalized_val_to_real (val);
-      if (!math_floats_equal (control_, real_val))
+      if (!utils::math::floats_equal (control_, real_val))
         {
           // EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
           set_control_value (real_val, false, true);
@@ -410,7 +416,7 @@ ControlPort::set_val_from_normalized (float val, bool automating)
       PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::Toggle))
     {
       auto real_val = normalized_val_to_real (val);
-      if (!math_floats_equal (control_, real_val))
+      if (!utils::math::floats_equal (control_, real_val))
         {
           // EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
           control_ = is_val_toggled (real_val) ? 1.f : 0.f;
@@ -429,11 +435,11 @@ ControlPort::set_val_from_normalized (float val, bool automating)
     {
       auto  track = get_track (true);
       auto &ch = dynamic_cast<ChannelTrack *> (track)->get_channel ();
-      if (!math_floats_equal (ch->fader_->get_fader_val (), val))
+      if (!utils::math::floats_equal (ch->fader_->get_fader_val (), val))
         {
           // EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
         }
-      ch->fader_->set_amp (math_get_amp_val_from_fader (val));
+      ch->fader_->set_amp (utils::math::get_amp_val_from_fader (val));
     }
   else if (
     ENUM_BITSET_TEST (
@@ -441,7 +447,7 @@ ControlPort::set_val_from_normalized (float val, bool automating)
     {
       auto  track = get_track (true);
       auto &ch = dynamic_cast<ChannelTrack *> (track)->get_channel ();
-      if (!math_floats_equal (ch->get_balance_control (), val))
+      if (!utils::math::floats_equal (ch->get_balance_control (), val))
         {
           // EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
         }
@@ -452,7 +458,7 @@ ControlPort::set_val_from_normalized (float val, bool automating)
       PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::MidiAutomatable))
     {
       auto real_val = minf_ + val * (maxf_ - minf_);
-      if (!math_floats_equal (val, control_))
+      if (!utils::math::floats_equal (val, control_))
         {
           // EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
         }
@@ -463,7 +469,7 @@ ControlPort::set_val_from_normalized (float val, bool automating)
       PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::Automatable))
     {
       auto real_val = normalized_val_to_real (val);
-      if (!math_floats_equal (real_val, control_))
+      if (!utils::math::floats_equal (real_val, control_))
         {
           // EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
         }

@@ -77,7 +77,7 @@ public:
     /**
      * Processes the data.
      */
-    ATTR_REALTIME
+    ATTR_NONBLOCKING
     void process (nframes_t nframes);
 
     /**

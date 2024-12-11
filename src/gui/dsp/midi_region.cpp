@@ -327,8 +327,7 @@ MidiRegion::export_to_midi_file (
       /* common time: 4 crochet beats, per bar */
       int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
       midiSongAddSimpleTimeSig (
-        mf, 1, beats_per_bar,
-        math_round_double_to_signed_32 (TRANSPORT->ticks_per_beat_));
+        mf, 1, beats_per_bar, TRANSPORT->ticks_per_beat_);
 
       write_to_midi_file (mf, false, export_full);
 

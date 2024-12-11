@@ -544,7 +544,7 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
                       obj_map[prj_obj] = own_obj_ptr;
                     }
 
-                  if (!math_doubles_equal (ticks, 0.0))
+                  if (!utils::math::floats_equal (ticks, 0.0))
                     {
                       /* shift the actual object */
                       prj_obj->move (ticks);
@@ -626,7 +626,7 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
                         }
                     }
 
-                  if (!math_doubles_equal (delta_normalized_amt, 0.0))
+                  if (!utils::math::floats_equal (delta_normalized_amt, 0.0))
                     {
                       if constexpr (std::is_same_v<ObjT, AutomationPoint>)
                         {
@@ -852,7 +852,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                   z_debug ("{} moving original object backwards", i);
 
                   /* ticks */
-                  if (!math_doubles_equal (ticks_, 0.0))
+                  if (!utils::math::floats_equal (ticks_, 0.0))
                     {
                       obj->move (-ticks_);
                       own_obj->move (-ticks_);
@@ -926,7 +926,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                     }
 
                   /* automation value */
-                  if (!math_doubles_equal (delta_normalized_amount_, 0.0))
+                  if (!utils::math::floats_equal (delta_normalized_amount_, 0.0))
                     {
                       if constexpr (std::is_same_v<ObjT, AutomationPoint>)
                         {
@@ -974,7 +974,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                   auto added_obj_ref = add_adjusted_clone_to_project (own_obj);
 
                   /* edit both project object and the copy */
-                  if (!math_doubles_equal (ticks, 0.0))
+                  if (!utils::math::floats_equal (ticks, 0.0))
                     {
                       added_obj_ref->move (ticks);
                       own_obj->move (ticks);
@@ -1029,7 +1029,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                           added_obj_ref->move_to_track (track, at->index_, -1);
                         }
                     }
-                  if (!math_floats_equal (delta_normalized_amount, 0.f))
+                  if (!utils::math::floats_equal (delta_normalized_amount, 0.0))
                     {
                       if constexpr (std::is_same_v<ObjT, AutomationPoint>)
                         {
@@ -1138,7 +1138,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                   obj->remove_from_project (true);
 
                   /* set the copies back to original state */
-                  if (!math_doubles_equal (ticks, 0.0))
+                  if (!utils::math::floats_equal (ticks, 0.0))
                     {
                       own_obj->move (ticks);
                     }
@@ -1170,7 +1170,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                     {
                       /* nothing needed */
                     }
-                  if (!math_floats_equal (delta_normalized_amount, 0.f))
+                  if (!utils::math::floats_equal (delta_normalized_amount, 0.0))
                     {
                       if constexpr (std::is_same_v<ObjT, AutomationPoint>)
                         {

@@ -119,22 +119,23 @@ ExtPort::activate (Port * port, bool activate)
                   }
                 port_->set_expose_to_backend (*AUDIO_ENGINE, true);
 
+                auto * jack_backend =
+                  dynamic_cast<JackPortBackend *> (port_->backend_.get ());
+                auto * target_port = jack_backend->get_jack_port ();
                 z_info (
                   "attempting to connect jack port {} to jack port {}",
-                  jack_port_name (jport_),
-                  jack_port_name (static_cast<jack_port_t *> (port_->data_)));
+                  jack_port_name (jport_), jack_port_name (target_port));
 
                 int ret = jack_connect (
                   AUDIO_ENGINE->client_, jack_port_name (jport_),
-                  jack_port_name (static_cast<jack_port_t *> (port_->data_)));
+                  jack_port_name (target_port));
                 if (ret != 0 && ret != EEXIST)
                   {
-                    std::string msg = engine_jack_get_error_message (
+                    std::string msg = utils::jack::get_error_message (
                       static_cast<jack_status_t> (ret));
                     z_warning (
                       "Failed connecting {} to {}:\n{}", jack_port_name (jport_),
-                      jack_port_name (static_cast<jack_port_t *> (port_->data_)),
-                      msg);
+                      jack_port_name (target_port), msg);
                     return false;
                   }
               }
@@ -158,7 +159,8 @@ ExtPort::activate (Port * port, bool activate)
                 z_return_val_if_fail (midi_port, false);
                 port_ = midi_port;
                 rtmidi_dev_ = std::make_shared<RtMidiDevice> (
-                  true, 0, midi_port,
+                  true, 0,
+                  [midi_port] () { return midi_port->get_full_designation (); },
                   full_name_); // use rtmidi_id_ instead of 0?
                 if (!rtmidi_dev_)
                   {
@@ -166,9 +168,18 @@ ExtPort::activate (Port * port, bool activate)
                       "Failed creating RtMidi device for {}", full_name_);
                     return false;
                   }
-                rtmidi_dev_->open (true);
-                midi_port->rtmidi_ins_.clear ();
-                midi_port->rtmidi_ins_.push_back (rtmidi_dev_);
+                rtmidi_dev_->open ();
+                auto * rtmidi_backend =
+                  dynamic_cast<RtMidiPortBackend *> (port_->backend_.get ());
+                rtmidi_dev_->start ([rtmidi_backend] () {
+                  auto cur_time =
+                    rtmidi_backend->get_time_provider ()
+                      .get_monotonic_time_usecs ();
+                  return cur_time - rtmidi_backend->get_last_dequeue_time_usecs ();
+                });
+                std::vector<std::shared_ptr<RtMidiDevice>> new_ins;
+                new_ins.push_back (rtmidi_dev_);
+                rtmidi_backend->set_devices (new_ins);
               }
               break;
 #endif
@@ -206,14 +217,16 @@ ExtPort::activate (Port * port, bool activate)
                   }
                 port_->set_expose_to_backend (*AUDIO_ENGINE, true);
 
+                auto * jack_backend =
+                  dynamic_cast<JackPortBackend *> (port_->backend_.get ());
+                auto * target_port = jack_backend->get_jack_port ();
                 z_info (
                   "attempting to connect jack port {} to jack port {}",
-                  jack_port_name (jport_),
-                  jack_port_name (static_cast<jack_port_t *> (port_->data_)));
+                  jack_port_name (jport_), jack_port_name (target_port));
 
                 int ret = jack_connect (
                   AUDIO_ENGINE->client_, jack_port_name (jport_),
-                  jack_port_name (static_cast<jack_port_t *> (port_->data_)));
+                  jack_port_name (target_port));
                 if (ret != 0 && ret != EEXIST)
                   return false;
               }
@@ -232,19 +245,22 @@ ExtPort::activate (Port * port, bool activate)
                     z_info ("skipping {} (not RtAudio)", full_name_);
                     return false;
                   }
-                auto audio_port = dynamic_cast<AudioPort *> (port);
+                auto * audio_port = dynamic_cast<AudioPort *> (port);
                 z_return_val_if_fail (audio_port, false);
                 port_ = port;
                 rtaudio_dev_ = std::make_shared<RtAudioDevice> (
-                  true, 0, rtaudio_channel_idx_, audio_port,
+                  true, 0, rtaudio_channel_idx_,
                   rtaudio_dev_name_); // use rtaudio_id_ instead of 0?
                 rtaudio_dev_->open (true);
                 if (!rtaudio_dev_)
                   {
                     return false;
                   }
-                audio_port->rtaudio_ins_.clear ();
-                audio_port->rtaudio_ins_.push_back (rtaudio_dev_);
+                auto * rtaudio_backend =
+                  dynamic_cast<RtAudioPortBackend *> (port_->backend_.get ());
+                std::vector<std::shared_ptr<RtAudioDevice>> new_ins;
+                new_ins.push_back (rtaudio_dev_);
+                rtaudio_backend->set_devices (new_ins);
               }
               break;
 #endif
@@ -376,7 +392,7 @@ get_ext_ports_from_jack (
     flags |= JackPortIsInput;
   else if (flow == dsp::PortFlow::Output)
     flags |= JackPortIsOutput;
-  const char * jtype = engine_jack_get_jack_type (type);
+  const char * jtype = JackPortBackend::get_jack_type (type);
   if (!jtype)
     return;
 
@@ -426,11 +442,11 @@ ext_port_from_rtmidi (unsigned int id)
 
 static void
 get_ext_ports_from_rtmidi (
-  PortFlow              flow,
+  dsp::PortFlow         flow,
   std::vector<ExtPort> &ports,
   AudioEngine          &engine)
 {
-  if (flow == PortFlow::Output)
+  if (flow == dsp::PortFlow::Output)
     {
       unsigned int num_ports = engine_rtmidi_get_num_in_ports (&engine);
       for (unsigned int i = 0; i < num_ports; i++)
@@ -438,7 +454,7 @@ get_ext_ports_from_rtmidi (
           ports.push_back (*ext_port_from_rtmidi (i));
         }
     }
-  else if (flow == PortFlow::Input)
+  else if (flow == dsp::PortFlow::Input)
     {
       /* MIDI out devices not handled yet */
     }

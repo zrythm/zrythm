@@ -176,7 +176,7 @@ TempoTrack::set_bpm (bpm_t bpm, bpm_t start_bpm, bool temporary, bool fire_event
 void
 TempoTrack::setBpm (double bpm)
 {
-  if (math_doubles_equal_epsilon (bpm, get_current_bpm (), 0.001))
+  if (utils::math::floats_near (bpm, (double) get_current_bpm (), 0.001))
     {
       return;
     }
@@ -188,7 +188,7 @@ void
 TempoTrack::set_bpm_from_str (const std::string &str)
 {
   auto bpm = (float) atof (str.c_str ());
-  if (math_floats_equal (bpm, 0))
+  if (utils::math::floats_equal (bpm, 0.f))
     {
 // TODO
 #if 0
@@ -254,14 +254,14 @@ TempoTrack::set_beats_per_bar (int beats_per_bar)
 int
 TempoTrack::get_beats_per_bar () const
 {
-  return (int) math_round_float_to_signed_32 (beats_per_bar_port_->control_);
+  return (int) utils::math::round_to_signed_32 (beats_per_bar_port_->control_);
 }
 
 int
 TempoTrack::get_beat_unit () const
 {
   BeatUnit ebu =
-    (BeatUnit) math_round_float_to_signed_32 (beat_unit_port_->control_);
+    (BeatUnit) utils::math::round_to_signed_32 (beat_unit_port_->control_);
   return beat_unit_enum_to_int (ebu);
 }
 

@@ -71,7 +71,7 @@ signed_frame_t
 Position::get_frames_from_ticks (double ticks, double frames_per_tick)
 {
   z_return_val_if_fail (frames_per_tick > 0, -1);
-  return math_round_double_to_signed_frame_t ((ticks * frames_per_tick));
+  return utils::math::round_to_signed_frame_t ((ticks * frames_per_tick));
 }
 
 void
@@ -123,14 +123,14 @@ Position::to_ms (sample_rate_t sample_rate) const
     {
       return 0;
     }
-  return math_round_double_to_signed_frame_t (
+  return utils::math::round_to_signed_frame_t (
     (1000.0 * (double) frames_) / ((double) sample_rate));
 }
 
 signed_frame_t
 Position::ms_to_frames (double ms, sample_rate_t sample_rate)
 {
-  return math_round_double_to_signed_frame_t (
+  return utils::math::round_to_signed_frame_t (
     (ms / 1000.0) * (double) sample_rate);
 }
 
@@ -312,12 +312,12 @@ Position::get_total_sixteenths (bool include_current, double frames_per_tick) co
   int ret;
   if (ticks_ >= 0)
     {
-      ret = (int) math_round_double_to_signed_32 (
+      ret = (int) utils::math::round_to_signed_32 (
         floor (ticks_ / TICKS_PER_SIXTEENTH_NOTE_DBL));
     }
   else
     {
-      ret = (int) math_round_double_to_signed_32 (
+      ret = (int) utils::math::round_to_signed_32 (
         ceil (ticks_ / TICKS_PER_SIXTEENTH_NOTE_DBL));
     }
 
@@ -402,7 +402,7 @@ Position::get_sixteenths (
 
   auto total_beats = (double) get_total_beats (
     true, beats_per_bar,
-    math_round_double_to_signed_64 (
+    utils::math::round_to_signed_64 (
       TICKS_PER_SIXTEENTH_NOTE_DBL * (double) sixteenths_per_beat),
     frames_per_tick);
   /*z_info ("total beats {:f}", total_beats);*/

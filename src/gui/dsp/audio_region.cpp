@@ -231,7 +231,9 @@ AudioRegion::fill_stereo_ports (
   bpm_t  cur_bpm = P_TEMPO_TRACK->get_bpm_at_pos (g_start_pos);
   double timestretch_ratio = 1.0;
   bool   needs_rt_timestretch = false;
-  if (get_musical_mode () && !math_floats_equal (clip->get_bpm (), cur_bpm))
+  if (
+    get_musical_mode ()
+    && !utils::math::floats_equal (clip->get_bpm (), cur_bpm))
     {
       needs_rt_timestretch = true;
       timestretch_ratio = (double) cur_bpm / (double) clip->get_bpm ();
@@ -369,7 +371,7 @@ AudioRegion::fill_stereo_ports (
     }
 
   /* apply gain */
-  if (!math_floats_equal (gain_, 1.f))
+  if (!utils::math::floats_equal (gain_, 1.f))
     {
       utils::float_ranges::mul_k2 (&lbuf_after_ts[0], gain_, time_nfo.nframes_);
       utils::float_ranges::mul_k2 (&rbuf_after_ts[0], gain_, time_nfo.nframes_);

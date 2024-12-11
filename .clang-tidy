@@ -20,6 +20,7 @@ Checks: >
   -readability-braces-around-statements,
   -readability-uppercase-literal-suffix,
   -readability-redundant-access-specifiers,
+  -modernize-use-nodiscard
   -modernize-use-trailing-return-type
 WarningsAsErrors: >
   bugprone-undelegated-constructor,

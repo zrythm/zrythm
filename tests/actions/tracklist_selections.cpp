@@ -111,16 +111,16 @@ _test_port_and_plugin_track_pos_after_duplication (
   auto * port = Port::find_from_identifier<ControlPort> (at->port_id_);
   start_pos.set_to_bar (1);
   const auto normalized_val = port->real_val_to_normalized (port->deff_);
-  math_assert_nonnann (port->deff_);
-  math_assert_nonnann (normalized_val);
+  utils::math::assert_nonnann (port->deff_);
+  utils::math::assert_nonnann (normalized_val);
   {
     auto ap = std::make_shared<AutomationPoint> (
       port->deff_, normalized_val, start_pos);
     region->append_object (ap);
     ap->select (true, false, false);
     perform_create_arranger_sel (AUTOMATION_SELECTIONS);
-    math_assert_nonnann (ap->fvalue_);
-    math_assert_nonnann (ap->normalized_val_);
+    utils::math::assert_nonnann (ap->fvalue_);
+    utils::math::assert_nonnann (ap->normalized_val_);
   }
 
   ASSERT_TRUE (src_track->validate ());
@@ -157,8 +157,8 @@ _test_port_and_plugin_track_pos_after_duplication (
     const auto &ap = at_to_check->regions_.front ()->aps_.front ();
     ap->select (true, false, false);
     float prev_norm_val = ap->normalized_val_;
-    math_assert_nonnann (ap->normalized_val_);
-    math_assert_nonnann (prev_norm_val);
+    utils::math::assert_nonnann (ap->normalized_val_);
+    utils::math::assert_nonnann (prev_norm_val);
     ap->set_fvalue (prev_norm_val - 0.1f, F_NORMALIZED, false);
   }
   UNDO_MANAGER->perform (
@@ -1192,10 +1192,12 @@ TEST_F (ZrythmFixture, DuplicateWithOutputAndSend)
   ASSERT_TRUE (new_track->is_audio ());
   ASSERT_EQ (
     new_track->channel_->output_name_hash_, group_track->get_name_hash ());
-  ASSERT_TRUE (new_track->channel_->stereo_out_->get_l ().is_connected_to (
-    group_track->processor_->stereo_in_->get_l ()));
-  ASSERT_TRUE (new_track->channel_->stereo_out_->get_r ().is_connected_to (
-    group_track->processor_->stereo_in_->get_r ()));
+  ASSERT_TRUE (PORT_CONNECTIONS_MGR->are_ports_connected (
+    *new_track->channel_->stereo_out_->get_l ().id_,
+    *group_track->processor_->stereo_in_->get_l ().id_));
+  ASSERT_TRUE (PORT_CONNECTIONS_MGR->are_ports_connected (
+    *new_track->channel_->stereo_out_->get_r ().id_,
+    *group_track->processor_->stereo_in_->get_r ().id_));
 
   /* assert group of new group track is group of original group track */
   auto new_group_track = TRACKLIST->get_track<AudioGroupTrack> (start_pos + 2);
@@ -1203,10 +1205,12 @@ TEST_F (ZrythmFixture, DuplicateWithOutputAndSend)
   ASSERT_EQ (
     new_group_track->channel_->output_name_hash_,
     group_track2->get_name_hash ());
-  ASSERT_TRUE (new_group_track->channel_->stereo_out_->get_l ().is_connected_to (
-    group_track2->processor_->stereo_in_->get_l ()));
-  ASSERT_TRUE (new_group_track->channel_->stereo_out_->get_r ().is_connected_to (
-    group_track2->processor_->stereo_in_->get_r ()));
+  ASSERT_TRUE (PORT_CONNECTIONS_MGR->are_ports_connected (
+    *new_group_track->channel_->stereo_out_->get_l ().id_,
+    *group_track2->processor_->stereo_in_->get_l ().id_));
+  ASSERT_TRUE (PORT_CONNECTIONS_MGR->are_ports_connected (
+    *new_group_track->channel_->stereo_out_->get_r ().id_,
+    *group_track2->processor_->stereo_in_->get_r ().id_));
 
   /* assert new audio track sends connected */
   const auto &send = new_track->channel_->sends_[0];

@@ -418,7 +418,8 @@ public:
    * Writes the events to the given JACK buffer.
    */
   void
-  copy_to_jack (nframes_t local_start_frames, nframes_t nframes, void * buff);
+  copy_to_jack (nframes_t local_start_frames, nframes_t nframes, void * buff)
+    const;
 #endif
 
 private:

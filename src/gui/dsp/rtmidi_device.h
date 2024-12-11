@@ -37,16 +37,19 @@ enum RtMidiDeviceFlow
 class RtMidiDevice
 {
 public:
+  using TimestampGenerator = std::function<utils::MonotonicTime ()>;
+  using DeviceNameProvider = std::function<std::string ()>;
+
   /**
    * @param name If non-empty, search by name instead of by @ref device_id.
    *
    * @throw ZrythmException on error.
    */
   RtMidiDevice (
-    bool         is_input,
-    unsigned int device_id,
-    MidiPort *   port,
-    std::string  name = "");
+    bool               is_input,
+    unsigned int       device_id,
+    DeviceNameProvider device_name_provider,
+    std::string        name = "");
 
   ~RtMidiDevice ()
   {
@@ -71,11 +74,9 @@ public:
   /**
    * Opens the device.
    *
-   * @param start Also start the device.
-   *
    * @throw ZrythmException on error.
    */
-  void open (bool start);
+  void open ();
 
   /**
    * Close the device.
@@ -87,7 +88,7 @@ public:
    *
    * @throw ZrythmException on error.
    */
-  void start ();
+  void start (TimestampGenerator timestamp_generator);
 
   /**
    * @brief Stop the device
@@ -96,27 +97,27 @@ public:
 
 public:
   /** 1 for input, 0 for output. */
-  bool is_input_;
+  bool is_input_{};
 
   /** Index (device index from RtMidi). */
-  unsigned int id_;
+  unsigned int id_{};
 
   // std::string name_;
 
-  /** Whether opened or not. */
-  bool opened_;
+  /** Whether opened. */
+  bool opened_{};
 
-  /** Whether started (running) or not. */
-  bool started_;
+  /** Whether started (running). */
+  bool started_{};
 
   /* ---- INPUT ---- */
-  RtMidiInPtr in_handle_;
+  RtMidiInPtr in_handle_{};
 
   /* ---- OUTPUT ---- */
-  RtMidiOutPtr out_handle_;
+  RtMidiOutPtr out_handle_{};
 
   /** Associated port. */
-  MidiPort * port_;
+  // MidiPort * port_{};
 
   /** MIDI event ring buffer. */
   RingBuffer<MidiEvent> midi_ring_{ 1024 };
@@ -127,6 +128,10 @@ public:
 
   /** Semaphore for blocking writing events while events are being read. */
   std::binary_semaphore midi_ring_sem_{ 1 };
+
+  TimestampGenerator timestamp_generator_;
+
+  DeviceNameProvider device_name_provider_;
 };
 
 /**

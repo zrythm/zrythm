@@ -807,7 +807,7 @@ TEST_F (ZrythmFixture, CreateModulator)
   /* verify port connection is back */
   cv_out = Port::find_from_identifier<CVPort> (cv_out_id);
   ctrl_in = Port::find_from_identifier<ControlPort> (ctrl_in_id);
-  ASSERT_TRUE (cv_out->is_connected_to (*ctrl_in));
+  ASSERT_TRUE (PORT_CONNECTIONS_MGR->are_ports_connected (cv_out, *ctrl_in));
 
   UNDO_MANAGER->redo ();
 

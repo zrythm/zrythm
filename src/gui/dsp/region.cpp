@@ -225,7 +225,7 @@ RegionImpl<RegionT>::fill_midi_events (
           }
         else if constexpr (std::is_same_v<ObjectType, ChordObject>)
           {
-            obj_end_frames = math_round_double_to_signed_frame_t (
+            obj_end_frames = utils::math::round_to_signed_frame_t (
               obj.pos_->frames_
               + TRANSPORT->ticks_per_beat_ * AUDIO_ENGINE->frames_per_tick_);
           }

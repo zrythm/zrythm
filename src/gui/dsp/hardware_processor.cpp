@@ -269,82 +269,44 @@ HardwareProcessor::activate (bool activate)
 void
 HardwareProcessor::process (nframes_t nframes)
 {
-  /* go through each selected port and fetch data */
-  for (size_t i = 0; i < audio_ports_.size (); ++i)
-    {
-      auto &ext_port = ext_audio_ports_[i];
-      if (!ext_port->active_)
-        continue;
+  auto process_ports = [nframes] (auto &ports, auto &ext_ports) {
+    /* go through each selected port and fetch data */
+    for (size_t i = 0; i < ports.size (); ++i)
+      {
+        auto &ext_port = ext_ports[i];
+        if (!ext_port->active_)
+          continue;
 
-      auto &port = audio_ports_[i];
+        auto &port = ports[i];
 
-      /* clear the buffer */
-      port->clear_buffer (*AUDIO_ENGINE);
+        using PortType = base_type<decltype (port)>;
+        if constexpr (std::is_same_v<PortType, AudioPort>)
+          {
+            port->clear_buffer (*AUDIO_ENGINE);
+          }
+        else if constexpr (std::is_same_v<PortType, MidiPort>)
+          {
+            port->midi_events_.active_events_.clear ();
+          }
 
-      switch (AUDIO_ENGINE->audio_backend_)
-        {
-#if HAVE_JACK
-        case AudioBackend::AUDIO_BACKEND_JACK:
-          port->receive_audio_data_from_jack (0, nframes);
-          break;
-#endif
-#if HAVE_RTAUDIO
-        case AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO:
-        case AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO:
-        case AudioBackend::AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
-        case AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO:
-        case AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO:
-        case AudioBackend::AUDIO_BACKEND_ASIO_RTAUDIO:
-          /* extract audio data from the RtAudio device ring buffer into RtAudio
-           * device temp buffer */
-          port->prepare_rtaudio_data ();
+        if (port->backend_ && port->backend_->is_exposed ())
+          {
+            if constexpr (std::is_same_v<PortType, AudioPort>)
+              {
+                port->backend_->sum_data (port->buf_.data (), { 0, nframes });
+              }
+            else if constexpr (std::is_same_v<PortType, MidiPort>)
+              {
+                port->backend_->sum_data (
+                  port->midi_events_, { 0, nframes },
+                  [] (midi_byte_t) { return true; });
+              }
+          }
+      }
+  };
 
-          /* copy data from RtAudio temp buffer to normal buffer */
-          port->sum_data_from_rtaudio (0, nframes);
-          break;
-#endif
-        default:
-          break;
-        }
-    }
-  for (size_t i = 0; i < midi_ports_.size (); i++)
-    {
-      auto &ext_port = ext_midi_ports_[i];
-      if (!ext_port->active_)
-        continue;
-
-      auto &port = midi_ports_[i];
-
-      /* clear the buffer */
-      port->midi_events_.active_events_.clear ();
-
-      switch (AUDIO_ENGINE->midi_backend_)
-        {
-#if HAVE_JACK
-        case MidiBackend::MIDI_BACKEND_JACK:
-          port->receive_midi_events_from_jack (0, nframes);
-          break;
-#endif
-#if HAVE_RTMIDI
-        case MidiBackend::MIDI_BACKEND_ALSA_RTMIDI:
-        case MidiBackend::MIDI_BACKEND_JACK_RTMIDI:
-        case MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI:
-        case MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI:
-#  if HAVE_RTMIDI_6
-        case MidiBackend::MIDI_BACKEND_WINDOWS_UWP_RTMIDI:
-#  endif
-          /* extract MIDI events from the RtMidi device ring buffer into RtMidi
-           * device */
-          port->prepare_rtmidi_events ();
-
-          /* copy data from RtMidi device events to normal events */
-          port->sum_data_from_rtmidi (0, nframes);
-          break;
-#endif
-        default:
-          break;
-        }
-    }
+  process_ports (audio_ports_, ext_audio_ports_);
+  process_ports (midi_ports_, ext_midi_ports_);
 }
 
 void

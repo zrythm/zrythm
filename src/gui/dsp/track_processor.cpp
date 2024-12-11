@@ -688,7 +688,8 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
         {
           midi_out_->midi_events_.queued_events_.add_pitchbend (
             cc->midi_channel_,
-            math_round_float_to_signed_32 (cc->control_) + 0x2000, local_offset);
+            utils::math::round_to_signed_32 (cc->control_) + 0x2000,
+            local_offset);
         }
       else if (
         ENUM_BITSET_TEST (
@@ -706,14 +707,14 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
         {
           midi_out_->midi_events_.queued_events_.add_channel_pressure (
             cc->midi_channel_,
-            (midi_byte_t) math_round_float_to_signed_32 (cc->control_ * 127.f),
+            (midi_byte_t) utils::math::round_to_signed_32 (cc->control_ * 127.f),
             local_offset);
         }
       else
         {
           midi_out_->midi_events_.queued_events_.add_control_change (
             cc->midi_channel_, cc->midi_cc_no_,
-            (midi_byte_t) math_round_float_to_signed_32 (cc->control_ * 127.f),
+            (midi_byte_t) utils::math::round_to_signed_32 (cc->control_ * 127.f),
             local_offset);
         }
     }
@@ -1050,18 +1051,26 @@ TrackProcessor::disconnect_from_plugin (
           if (!in_port->is_audio ())
             continue;
 
-          if (stereo_out_->get_l ().is_connected_to (*in_port))
-            stereo_out_->get_l ().disconnect_from (*mgr, *in_port);
-          if (stereo_out_->get_r ().is_connected_to (*in_port))
-            stereo_out_->get_r ().disconnect_from (*mgr, *in_port);
+          if (
+            mgr->are_ports_connected (*stereo_out_->get_l ().id_, *in_port->id_))
+            {
+              stereo_out_->get_l ().disconnect_from (*mgr, *in_port);
+            }
+          if (
+            mgr->are_ports_connected (*stereo_out_->get_r ().id_, *in_port->id_))
+            {
+              stereo_out_->get_r ().disconnect_from (*mgr, *in_port);
+            }
         }
       else if (tr->in_signal_type_ == PortType::Event)
         {
           if (!in_port->is_midi ())
             continue;
 
-          if (midi_out_->is_connected_to (*in_port))
-            midi_out_->disconnect_from (*mgr, *in_port);
+          if (mgr->are_ports_connected (*midi_out_->id_, *in_port->id_))
+            {
+              midi_out_->disconnect_from (*mgr, *in_port);
+            }
         }
     }
 }

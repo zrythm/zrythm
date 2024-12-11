@@ -166,14 +166,12 @@ public:
    * Adds a new connection for the given src and dest ports and validates the
    * graph.
    *
-   * This is a low level function. Better used via ports_can_be_connected().
+   * @note This should be called on a new instance of Graph.
    *
-   * @note The graph should be created before this call with graph_new() and
-   * free'd after this call with graph_free().
-   *
-   * @return True if ok, false if invalid.
+   * @return Whether the ports can be connected (if the connection will
+   * be valid and won't break the acyclicity of the graph).
    */
-  bool validate_with_connection (const Port * src, const Port * dest);
+  bool can_ports_be_connected (const Port &src, const Port &dest);
 
   /**
    * Starts as many threads as there are cores.

@@ -144,7 +144,7 @@ operator== (const AutomationPoint &a, const AutomationPoint &b)
   /* note2: previously, this code was comparing position ticks, now it only
    * compares frames. TODO: if no problems are caused delete this note */
   return a.pos_ == b.pos_
-         && math_floats_equal_epsilon (a.fvalue_, b.fvalue_, 0.001f);
+         && utils::math::floats_near (a.fvalue_, b.fvalue_, 0.001f);
 }
 
 /**

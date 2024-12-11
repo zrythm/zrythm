@@ -564,69 +564,6 @@ engine_jack_setup (AudioEngine * self)
   return 0;
 }
 
-std::string
-engine_jack_get_error_message (jack_status_t status)
-{
-  return
-    [status] ()
-      -> QString {
-      if (status & JackFailure)
-        {
-          return
-            /* TRANSLATORS: JACK failure messages */
-            QObject::tr ("Overall operation failed");
-        }
-      else if (status & JackInvalidOption)
-        {
-          return QObject::tr (
-            "The operation contained an invalid or unsupported option");
-        }
-      else if (status & JackNameNotUnique)
-        {
-          return QObject::tr ("The desired client name was not unique");
-        }
-      else if (status & JackServerFailed)
-        {
-          return QObject::tr ("Unable to connect to the JACK server");
-        }
-      else if (status & JackServerError)
-        {
-          return QObject::tr ("Communication error with the JACK server");
-        }
-      else if (status & JackNoSuchClient)
-        {
-          return QObject::tr ("Requested client does not exist");
-        }
-      else if (status & JackLoadFailure)
-        {
-          return QObject::tr ("Unable to load internal client");
-        }
-      else if (status & JackInitFailure)
-        {
-          return QObject::tr ("Unable to initialize client");
-        }
-      else if (status & JackShmFailure)
-        {
-          return QObject::tr ("Unable to access shared memory");
-        }
-      else if (status & JackVersionError)
-        {
-          return QObject::tr ("Client's protocol version does not match");
-        }
-      else if (status & JackBackendError)
-        {
-          return QObject::tr ("Backend error");
-        }
-      else if (status & JackClientZombie)
-        {
-          return QObject::tr ("Client zombie");
-        }
-
-      z_return_val_if_reached (QString::fromUtf8 ("unknown JACK error"));
-    }()
-           .toStdString ();
-}
-
 void
 engine_jack_tear_down (AudioEngine * self)
 {
@@ -651,11 +588,14 @@ engine_jack_reconnect_monitor (AudioEngine * self, bool left)
   auto &port =
     left ? self->monitor_out_->get_l () : self->monitor_out_->get_r ();
 
+  auto jport =
+    dynamic_cast<JackPortBackend *> (port.backend_.get ())->get_jack_port ();
+
   /* disconnect port */
-  int ret = jack_port_disconnect (self->client_, JACK_PORT_T (port.data_));
+  int ret = jack_port_disconnect (self->client_, jport);
   if (ret)
     {
-      auto msg = engine_jack_get_error_message ((jack_status_t) ret);
+      auto msg = utils::jack::get_error_message ((jack_status_t) ret);
       throw ZrythmException (format_qstr (
         QObject::tr ("JACK: Failed to disconnect monitor out: {}"), msg));
     }
@@ -669,11 +609,11 @@ engine_jack_reconnect_monitor (AudioEngine * self, bool left)
         {
           /*z_return_val_if_reached (-1);*/
           ret = jack_connect (
-            self->client_, jack_port_name (JACK_PORT_T (port.data_)),
+            self->client_, jack_port_name (jport),
             ext_port->full_name_.c_str ());
           if (ret)
             {
-              auto msg = engine_jack_get_error_message ((jack_status_t) ret);
+              auto msg = utils::jack::get_error_message ((jack_status_t) ret);
               z_warning ("cannot connect monitor out: {}", msg);
             }
           else
@@ -696,11 +636,10 @@ engine_jack_reconnect_monitor (AudioEngine * self, bool left)
         }
 
       ret = jack_connect (
-        self->client_, jack_port_name (JACK_PORT_T (port.data_)),
-        left ? ports[0] : ports[1]);
+        self->client_, jack_port_name (jport), left ? ports[0] : ports[1]);
       if (ret)
         {
-          auto msg = engine_jack_get_error_message ((jack_status_t) ret);
+          auto msg = utils::jack::get_error_message ((jack_status_t) ret);
           throw ZrythmException (format_qstr (
             QObject::tr ("JACK: Failed to connect monitor output [{}]: {}"),
             left ? QObject::tr ("left") : QObject::tr ("right"), msg));
@@ -740,8 +679,17 @@ engine_jack_activate (AudioEngine * self, bool activate)
        * "output" from it.
        */
 
+      auto has_jack_backend = [] (const auto &port) {
+        z_return_val_if_fail (port.backend_, false);
+        z_return_val_if_fail (port.backend_->is_exposed (), false);
+        z_return_val_if_fail (
+          dynamic_cast<JackPortBackend *> (port.backend_.get ()) != nullptr,
+          false);
+        return true;
+      };
       z_return_val_if_fail (
-        self->monitor_out_->get_l ().data_ && self->monitor_out_->get_r ().data_,
+        has_jack_backend (self->monitor_out_->get_l ())
+          && has_jack_backend (self->monitor_out_->get_r ()),
         -1);
 
       z_info ("connecting to system out ports...");
@@ -776,31 +724,12 @@ engine_jack_activate (AudioEngine * self, bool activate)
       int ret = jack_deactivate (self->client_);
       if (ret != 0)
         {
-          auto msg = engine_jack_get_error_message ((jack_status_t) ret);
+          auto msg = utils::jack::get_error_message ((jack_status_t) ret);
           z_error ("Failed deactivating JACK client: {}", msg.c_str ());
         }
     }
 
   return 0;
-}
-
-/**
- * Returns the JACK type string.
- */
-const char *
-engine_jack_get_jack_type (dsp::PortType type)
-{
-  switch (type)
-    {
-    case dsp::PortType::Audio:
-      return JACK_DEFAULT_AUDIO_TYPE;
-      break;
-    case dsp::PortType::Event:
-      return JACK_DEFAULT_MIDI_TYPE;
-      break;
-    default:
-      return NULL;
-    }
 }
 
 /**

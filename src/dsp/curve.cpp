@@ -65,7 +65,7 @@ CurveOptions::get_normalized_y (double x, bool start_higher) const
           x = 1.0 - x;
 
         /* if curviness is 0, it is a straight line */
-        if (math_doubles_equal (curviness_for_calc, 0.0000))
+        if (utils::math::floats_equal (curviness_for_calc, 0.0000))
           {
             val = x;
           }
@@ -90,7 +90,7 @@ CurveOptions::get_normalized_y (double x, bool start_higher) const
           x = 1.0 - x;
 
         /* if curviness is 0, it is a straight line */
-        if (math_doubles_equal (curviness_for_calc, 0.0000))
+        if (utils::math::floats_equal (curviness_for_calc, 0.0000))
           {
             val = x;
           }
@@ -114,7 +114,7 @@ CurveOptions::get_normalized_y (double x, bool start_higher) const
           x = 1.0 - x;
 
         /* if curviness is 0, it is a straight line */
-        if (math_doubles_equal (curviness_for_calc, 0.0000))
+        if (utils::math::floats_equal (curviness_for_calc, 0.0000))
           {
             val = x;
           }
@@ -177,19 +177,22 @@ CurveOptions::get_normalized_y (double x, bool start_higher) const
         else
           {
             /* required vals */
-            const float a = math_fast_log (curviness_for_calc);
+            const float a = utils::math::fast_log (curviness_for_calc);
             const float b =
-              1.f / math_fast_log (1.f + (1.f / curviness_for_calc));
+              1.f / utils::math::fast_log (1.f + (1.f / curviness_for_calc));
 
             float fval;
             if (curve_up)
               {
-                fval = (math_fast_log ((float) x + curviness_for_calc) - a) * b;
+                fval =
+                  (utils::math::fast_log ((float) x + curviness_for_calc) - a)
+                  * b;
               }
             else
               {
                 fval =
-                  (a - math_fast_log ((float) x + curviness_for_calc)) * b + 1.f;
+                  (a - utils::math::fast_log ((float) x + curviness_for_calc)) * b
+                  + 1.f;
               }
             val = (double) fval;
           }
@@ -210,12 +213,11 @@ CurveOptions::define_fields (const Context &ctx)
 
 CurveOptions::~CurveOptions () noexcept = default;
 
-} // namespace zrythm::dsp
-
 bool
-operator== (
-  const zrythm::dsp::CurveOptions &a,
-  const zrythm::dsp::CurveOptions &b)
+operator== (const CurveOptions &a, const CurveOptions &b)
 {
-  return math_doubles_equal (a.curviness_, b.curviness_) && a.algo_ == b.algo_;
+  return utils::math::floats_equal (a.curviness_, b.curviness_)
+         && a.algo_ == b.algo_;
 }
+
+} // namespace zrythm::dsp
