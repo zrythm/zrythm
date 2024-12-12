@@ -36,16 +36,9 @@ enum class MidiBackend;
  */
 
 /**
- * Maximum external ports.
- *
- * Used for fixed-size arrays.
- */
-constexpr int EXT_PORTS_MAX = 1024;
-
-/**
  * External port.
  */
-class ExtPort final : public zrythm::utils::serialization::ISerializable<ExtPort>
+class ExtPort final : public utils::serialization::ISerializable<ExtPort>
 {
 public:
   /**

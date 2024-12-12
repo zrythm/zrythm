@@ -31,80 +31,19 @@
 
 #include "dsp/graph_node.h"
 #include "gui/dsp/plugin.h"
-#include "gui/dsp/track.h"
 #include "utils/mpmc_queue.h"
 #include "utils/types.h"
 
-class Graph;
 class Port;
-class Fader;
-class Track;
 class SampleProcessor;
 class GraphThread;
 class Router;
-class ModulatorMacroProcessor;
-class ChannelSend;
-class HardwareProcessor;
 
 /**
  * @addtogroup dsp
  *
  * @{
  */
-
-constexpr int MAX_GRAPH_THREADS = 128;
-
-using NodeData = std::variant<
-  PortPtrVariant,
-  zrythm::gui::old_dsp::plugins::PluginPtrVariant,
-  TrackPtrVariant,
-  Fader *, // Used for normal fader, prefader and monitor fader
-  SampleProcessor *,
-  HardwareProcessor *,
-  ModulatorMacroProcessor *,
-  ChannelSend *,
-  std::monostate // For initial processor (dummy processor in the chain
-                 // processed before anything else. )
-  >;
-
-template <> struct std::hash<NodeData>
-{
-  size_t operator() (const NodeData &data) const
-  {
-    return std::visit (
-      overload{
-        [] (const PortPtrVariant &p) {
-          return std::visit (
-            [] (auto * ptr) {
-              z_return_val_if_fail (ptr, static_cast<size_t> (0));
-              return reinterpret_cast<size_t> (ptr);
-            },
-            p);
-        },
-        [] (const zrythm::gui::old_dsp::plugins::PluginPtrVariant &pl) {
-          return std::visit (
-            [] (auto * ptr) {
-              z_return_val_if_fail (ptr, static_cast<size_t> (0));
-              return reinterpret_cast<size_t> (ptr);
-            },
-            pl);
-        },
-        [] (const TrackPtrVariant &t) {
-          return std::visit (
-            [] (auto * ptr) {
-              z_return_val_if_fail (ptr, static_cast<size_t> (0));
-              return reinterpret_cast<size_t> (ptr);
-            },
-            t);
-        },
-        [] (const std::monostate &) -> size_t { return 1; },
-        [] (auto * ptr) {
-          z_return_val_if_fail (ptr, static_cast<size_t> (0));
-          return reinterpret_cast<size_t> (ptr);
-        } },
-      data);
-  }
-};
 
 /**
  * Graph.
@@ -113,6 +52,13 @@ class Graph final
 {
 public:
   using GraphNode = dsp::GraphNode;
+  static constexpr int MAX_GRAPH_THREADS = 128;
+
+  class InitialProcessor final : public dsp::IProcessable
+  {
+  public:
+    std::string get_node_name () const override { return "Initial Processor"; }
+  };
 
 public:
   Graph (Router * router, SampleProcessor * sample_processor = nullptr);
@@ -120,28 +66,8 @@ public:
 
   void print () const;
 
-  GraphNode * find_node_from_port (PortPtrVariant port) const;
-
-  GraphNode * find_node_from_plugin (
-    zrythm::gui::old_dsp::plugins::PluginPtrVariant pl) const;
-
   GraphNode *
-  find_node_from_track (TrackPtrVariant track, bool use_setup_nodes) const;
-
-  GraphNode * find_node_from_fader (const Fader * fader) const;
-
-  GraphNode * find_node_from_sample_processor (
-    const SampleProcessor * sample_processor) const;
-
-  GraphNode * find_node_from_modulator_macro_processor (
-    const ModulatorMacroProcessor * processor) const;
-
-  GraphNode * find_node_from_channel_send (const ChannelSend * send) const;
-
-  GraphNode * find_initial_processor_node () const;
-
-  GraphNode *
-  find_hw_processor_node (const HardwareProcessor * processor) const;
+  find_node_for_processable (const dsp::IProcessable &processable) const;
 
   /**
    * Returns the max playback latency of the trigger
@@ -203,54 +129,38 @@ private:
   void rechain ();
 
   void add_plugin (zrythm::gui::old_dsp::plugins::Plugin &pl);
+
   void connect_plugin (
     zrythm::gui::old_dsp::plugins::Plugin &pl,
     bool                                   drop_unnecessary_ports);
+
   GraphNode * add_port (
     PortPtrVariant          port_var,
     PortConnectionsManager &mgr,
     bool                    drop_if_unnecessary);
 
   /**
-   * @brief Connects the port as a node.
-   *
-   * @param port
-   */
-  void connect_port (PortPtrVariant port);
-
-  /**
    * Creates a new node, adds it to the graph and returns it.
    */
-  GraphNode * create_node (
-    GraphNode::NameGetter                  name_getter,
-    GraphNode::ProcessFunc                 process_func,
-    GraphNode::SinglePlaybackLatencyGetter playback_latency_getter,
-    NodeData                               data);
+  GraphNode * add_node_for_processable (dsp::IProcessable &node);
 
 public:
-  using GraphNodesMap = std::unordered_map<NodeData, std::unique_ptr<GraphNode>>;
-  /**
-   * @brief List of all graph nodes.
-   *
-   * This manages the lifetime of graph nodes automatically.
-   *
-   * The key is a raw pointer to a Plugin, Port, etc.
-   */
-  GraphNodesMap graph_nodes_map_;
-
-  /**
-   * @brief Chain used to setup in the background.
-   *
-   * This is applied and cleared by @ref rechain().
-   *
-   * @see graph_nodes_map_
-   */
-  GraphNodesMap setup_graph_nodes_map_;
+  std::vector<std::unique_ptr<GraphThread>> threads_;
+  std::unique_ptr<GraphThread>              main_thread_;
 
   /* --- caches for current graph --- */
   GraphNode * bpm_node_ = nullptr;
   GraphNode * beats_per_bar_node_ = nullptr;
   GraphNode * beat_unit_node_ = nullptr;
+
+  /** Synchronization with main process callback. */
+  /* FIXME: this should probably be binary semaphore but i left it as a
+   * counting one out of caution while refactoring from ZixSem */
+  std::counting_semaphore<MAX_GRAPH_THREADS> callback_start_sem_{ 0 };
+  std::binary_semaphore                      callback_done_sem_{ 0 };
+
+  /** Number of threads waiting for work. */
+  std::atomic<int> idle_thread_cnt_ = 0;
 
   /** Nodes without incoming edges.
    * These run concurrently at the start of each
@@ -263,12 +173,6 @@ public:
   /** Remaining unprocessed terminal nodes in this cycle. */
   std::atomic<int> terminal_refcnt_ = 0;
 
-  /** Synchronization with main process callback. */
-  /* FIXME: this should probably be binary semaphore but i left it as a
-   * counting one out of caution while refactoring from ZixSem */
-  std::counting_semaphore<MAX_GRAPH_THREADS> callback_start_sem_{ 0 };
-  std::binary_semaphore                      callback_done_sem_{ 0 };
-
   /** Wake up graph node process threads. */
   std::counting_semaphore<MAX_GRAPH_THREADS> trigger_sem_{ 0 };
 
@@ -278,22 +182,18 @@ public:
   /** Number of entries in trigger queue. */
   std::atomic<int> trigger_queue_size_ = 0;
 
-  /** Number of threads waiting for work. */
-  std::atomic<int> idle_thread_cnt_ = 0;
+  using GraphNodesVector = std::vector<std::unique_ptr<GraphNode>>;
+  /**
+   * @brief List of all graph nodes.
+   *
+   * This manages the lifetime of graph nodes automatically.
+   *
+   * The key is a raw pointer to a Plugin, Port, etc.
+   */
+  GraphNodesVector graph_nodes_vector_;
 
-  std::vector<GraphNode *> setup_init_trigger_list_;
-
-  /** Used only when constructing the graph so we can traverse the graph
-   * backwards to calculate the playback latencies. */
-  std::vector<GraphNode *> setup_terminal_nodes_;
-
-  /** Dummy member to make lookups work. */
-  // int initial_processor_ = 0;
-
-  /* ------------------------------------ */
-
-  std::vector<std::unique_ptr<GraphThread>> threads_;
-  std::unique_ptr<GraphThread>              main_thread_;
+  /** Pointer back to router for convenience. */
+  Router * router_ = nullptr;
 
   /**
    * An array of pointers to ports that are exposed to the backend and are
@@ -304,11 +204,26 @@ public:
    */
   std::vector<Port *> external_out_ports_;
 
+private:
+  /**
+   * @brief Chain used to setup in the background.
+   *
+   * This is applied and cleared by @ref rechain().
+   *
+   * @see graph_nodes_vector_
+   */
+  GraphNodesVector setup_graph_nodes_vector_;
+
+  std::vector<GraphNode *> setup_init_trigger_list_;
+
+  /** Used only when constructing the graph so we can traverse the graph
+   * backwards to calculate the playback latencies. */
+  std::vector<GraphNode *> setup_terminal_nodes_;
+
   /** Sample processor, if temporary graph for sample processor. */
   SampleProcessor * sample_processor_ = nullptr;
 
-  /** Pointer back to router for convenience. */
-  Router * router_ = nullptr;
+  InitialProcessor initial_processor_;
 };
 
 /**

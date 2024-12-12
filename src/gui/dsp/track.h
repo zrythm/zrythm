@@ -265,7 +265,9 @@ using TracksReadyCallback = void (*) (const FileImportInfo *);
  * Subclasses of `Track` represent specific types of tracks, such as
  * MIDI tracks, instrument tracks, and audio tracks.
  */
-class Track : virtual public zrythm::utils::serialization::ISerializable<Track>
+class Track
+    : public dsp::IProcessable,
+      virtual public utils::serialization::ISerializable<Track>
 {
   Q_GADGET
   QML_ELEMENT
@@ -354,7 +356,7 @@ public:
   /**
    * Returns the prefader type.
    */
-  static inline Fader::Type type_get_prefader_type (const Type type)
+  static Fader::Type type_get_prefader_type (const Type type)
   {
     switch (type)
       {
@@ -486,7 +488,8 @@ public:
   /**
    * Returns if regions in tracks from @p type1 can be moved to @p type2.
    */
-  static bool type_is_compatible_for_moving (const Type type1, const Type type2)
+  static constexpr bool
+  type_is_compatible_for_moving (const Type type1, const Type type2)
   {
     return type1 == type2 || (type1 == Type::Midi && type2 == Type::Instrument)
            || (type1 == Type::Instrument && type2 == Type::Midi);
@@ -496,7 +499,7 @@ public:
    * Returns if the Track should have a piano roll.
    */
   ATTR_CONST
-  static inline bool type_has_piano_roll (const Type type)
+  static constexpr bool type_has_piano_roll (const Type type)
   {
     return type == Type::Midi || type == Type::Instrument;
   }
@@ -504,7 +507,7 @@ public:
   /**
    * Returns if the Track should have an inputs selector.
    */
-  static inline int type_has_inputs (const Type type)
+  static constexpr bool type_has_inputs (const Type type)
   {
     return type == Type::Midi || type == Type::Instrument || type == Type::Audio;
   }
@@ -546,8 +549,6 @@ public:
       return Type::Marker;
     else if constexpr (std::is_same_v<T, FolderTrack>)
       return Type::Folder;
-    else if constexpr (std::is_same_v<T, MarkerTrack>)
-      return Type::Marker;
     else if constexpr (std::is_same_v<T, AudioGroupTrack>)
       return Type::AudioGroup;
     else if constexpr (std::is_same_v<T, MidiGroupTrack>)
@@ -725,6 +726,8 @@ public:
   void unselect_all ();
 
   bool contains_uninstantiated_plugin () const;
+
+  std::string get_node_name () const override { return get_name (); }
 
   /**
    * Removes all objects recursively from the track.

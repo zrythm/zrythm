@@ -36,55 +36,34 @@ namespace zrythm::dsp
 {
 
 GraphNode::GraphNode (
-  Id                          id,
-  NameGetter                  name_getter,
-  dsp::ITransport            &transport,
-  ProcessFunc                 process_func,
-  SinglePlaybackLatencyGetter playback_latency_getter)
-    : id_ (id), transport_ (transport), name_getter_ (std::move (name_getter)),
-      process_func_ (std::move (process_func)),
-      playback_latency_getter_ (std::move (playback_latency_getter))
+  NodeId                 id,
+  const dsp::ITransport &transport,
+  dsp::IProcessable     &processable)
+    : node_id_ (id), transport_ (transport), processable_ (processable)
 {
 }
 
 std::string
-GraphNode::get_name () const
+GraphNode::print_node_to_str () const
 {
-  return name_getter_ ();
-}
-
-std::string
-GraphNode::print_to_str () const
-{
-  std::string name = get_name ();
+  std::string name = processable_.get_node_name ();
   std::string str1 = fmt::format (
     "node [({}) {}] refcount: {} | terminal: {} | initial: {} | playback latency: {}",
-    id_, name, refcount_.load (), terminal_, initial_, playback_latency_);
+    node_id_, name, refcount_.load (), terminal_, initial_, playback_latency_);
   std::string str2;
   for (auto * const dest : childnodes_)
     {
-      name = dest->get_name ();
-      str2 = fmt::format ("{} (dest [({}) {}])", str1, dest->id_, name);
+      name = dest->processable_.get_node_name ();
+      str2 = fmt::format ("{} (dest [({}) {}])", str1, dest->node_id_, name);
       str1 = str2;
     }
   return str1;
 }
 
 void
-GraphNode::print () const
+GraphNode::print_node () const
 {
-  z_info (print_to_str ());
-}
-
-void
-GraphNode::process_internal (const EngineProcessTimeInfo time_nfo) const
-{
-  z_return_if_fail_cmp (
-    time_nfo.g_start_frame_w_offset_, >=, time_nfo.g_start_frame_);
-
-  // z_debug ("processing {}", get_name ());
-
-  process_func_ (time_nfo);
+  z_info (print_node_to_str ());
 }
 
 void
@@ -131,7 +110,7 @@ GraphNode::process_chunks_after_splitting_at_loop_points (
       time_nfo.nframes_ = num_processable_frames;
 
       // process current chunk
-      process_internal (time_nfo);
+      processable_.process_block (time_nfo);
 
       /* calculate the remaining frames */
       time_nfo.nframes_ = orig_nframes - num_processable_frames;
@@ -181,7 +160,7 @@ GraphNode::process (
 
   if (time_nfo.nframes_ > 0)
     {
-      process_internal (time_nfo);
+      processable_.process_block (time_nfo);
     }
 }
 
@@ -212,12 +191,6 @@ GraphNode::add_depends (GraphNode &src)
   parentnodes_.push_back (&src);
 
   initial_ = false;
-}
-
-nframes_t
-GraphNode::get_single_playback_latency () const
-{
-  return playback_latency_getter_ ();
 }
 
 void

@@ -52,6 +52,8 @@ public:
     const EngineProcessTimeInfo &time_nfo,
     MidiEventVector             &midi_events);
 
+  void process_block (EngineProcessTimeInfo time_nfo) override;
+
 protected:
   /**
    * Common logic for audio and MIDI/instrument tracks to fill in MidiEvents or

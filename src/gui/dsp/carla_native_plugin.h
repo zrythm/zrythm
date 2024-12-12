@@ -134,7 +134,7 @@ public:
    * @param val Real value (ie, not normalized).
    */
 
-  void set_param_value (const uint32_t id, float val);
+  void set_param_value (uint32_t id, float val);
 
   void close () override;
 
@@ -144,7 +144,7 @@ public:
    * Returns the latency in samples.
    */
 
-  nframes_t get_latency () const override;
+  nframes_t get_single_playback_latency () const override;
 
   /**
    * @brief Adds the internal plugin from the given descriptor.

@@ -26,7 +26,8 @@ class AudioEngine;
  */
 class HardwareProcessor final
     : public ICloneable<HardwareProcessor>,
-      public zrythm::utils::serialization::ISerializable<HardwareProcessor>
+      public dsp::IProcessable,
+      public utils::serialization::ISerializable<HardwareProcessor>
 {
 public:
     using PortFlow = zrythm::dsp::PortFlow;
@@ -79,6 +80,8 @@ public:
      */
     ATTR_NONBLOCKING
     void process (nframes_t nframes);
+
+    std::string get_node_name () const override;
 
     /**
      * To be used during serialization.

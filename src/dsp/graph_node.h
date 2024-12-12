@@ -36,6 +36,36 @@ namespace zrythm::dsp
 {
 
 /**
+ * @brief Interface for objects that can be processed in the DSP graph.
+ *
+ * The IProcessable interface defines the basic functionality required for
+ * objects that can be processed as part of the DSP graph. It provides methods
+ * to get the node name, the single playback latency, and to process the block
+ * of audio/MIDI data.
+ *
+ * Implementations of this interface are expected to be used as nodes in the
+ * DSP graph, where they will be processed during the audio/MIDI processing
+ * cycle.
+ */
+class IProcessable
+{
+public:
+  virtual ~IProcessable () = default;
+  /**
+   * Returns a human friendly name of the node.
+   */
+  virtual std::string get_node_name () const = 0;
+
+  /**
+   * Returns the latency of only the given processable, without adding the
+   * previous/next latencies.
+   */
+  virtual ATTR_HOT nframes_t get_single_playback_latency () const { return 0; }
+
+  virtual ATTR_HOT void process_block (EngineProcessTimeInfo time_nfo) {};
+};
+
+/**
  * @brief Represents a node in a DSP graph.
  *
  * GraphNode is a fundamental building block of the DSP graph, responsible for
@@ -56,52 +86,18 @@ namespace zrythm::dsp
 class GraphNode
 {
 public:
-  /**
-   * @brief Function to get a human-readable identifying label for this node.
-   *
-   * Currently used for debugging.
-   */
-  using NameGetter = std::function<std::string ()>;
-
-  /**
-   * @brief Function to process the node.
-   */
-  using ProcessFunc = std::function<void (EngineProcessTimeInfo)>;
-
-  static ProcessFunc DefaultProcessFunc ()
-  {
-    return [] (EngineProcessTimeInfo) {};
-  }
-
-  /**
-   * @brief Function to return the single playback latency of the node in frames.
-   */
-  using SinglePlaybackLatencyGetter = std::function<nframes_t ()>;
-
-  static SinglePlaybackLatencyGetter DefaultSinglePlaybackLatencyGetter ()
-  {
-    return [] () -> nframes_t { return 0; };
-  }
-
-  using Id = int;
+  using NodeId = int;
 
   GraphNode (
-    Id                          id,
-    NameGetter                  name_getter,
-    dsp::ITransport            &transport,
-    ProcessFunc                 process_func,
-    SinglePlaybackLatencyGetter playback_latency_getter =
-      DefaultSinglePlaybackLatencyGetter ());
-
-  /**
-   * Returns a human friendly name of the node.
-   */
-  std::string get_name () const;
+    NodeId                 id,
+    const dsp::ITransport &transport,
+    IProcessable          &processable);
+  Q_DISABLE_COPY_MOVE (GraphNode)
 
   /** For general debugging. */
-  std::string print_to_str () const;
+  std::string print_node_to_str () const;
 
-  void print () const;
+  void print_node () const;
 
   /**
    * Processes the GraphNode.
@@ -117,13 +113,10 @@ public:
   process (EngineProcessTimeInfo time_nfo, nframes_t remaining_preroll_frames)
     const;
 
-  /**
-   * Returns the latency of only the given port, without adding the
-   * previous/next latencies.
-   *
-   * It returns the plugin's latency if plugin, otherwise 0.
-   */
-  ATTR_HOT nframes_t get_single_playback_latency () const;
+  nframes_t get_single_playback_latency () const
+  {
+    return processable_.get_single_playback_latency ();
+  }
 
   /**
    * Sets the playback latency of the given node recursively.
@@ -146,9 +139,9 @@ public:
    */
   void set_skip_processing (bool skip) { bypass_ = skip; }
 
-private:
-  ATTR_HOT void process_internal (EngineProcessTimeInfo time_nfo) const;
+  IProcessable &get_processable () { return processable_; }
 
+private:
   void add_feeds (GraphNode &dest);
   void add_depends (GraphNode &src);
 
@@ -205,7 +198,7 @@ public:
   std::atomic<int> refcount_ = 0;
 
 private:
-  int id_ = 0;
+  NodeId node_id_ = 0;
 
   /**
    * @brief Incoming nodes.
@@ -217,10 +210,9 @@ private:
    */
   std::vector<GraphNode *> parentnodes_;
 
-  dsp::ITransport            &transport_;
-  NameGetter                  name_getter_;
-  ProcessFunc                 process_func_;
-  SinglePlaybackLatencyGetter playback_latency_getter_;
+  const dsp::ITransport &transport_;
+
+  IProcessable &processable_;
 
   /**
    * @brief Flag to skip processing.

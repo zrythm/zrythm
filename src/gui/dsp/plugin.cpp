@@ -402,6 +402,13 @@ Plugin::append_ports (std::vector<Port *> &ports)
     }
 }
 
+std::string
+Plugin::get_node_name () const
+{
+  Track * track = get_track ();
+  return fmt::format ("{}/{} (Plugin)", track->get_name (), get_name ());
+}
+
 void
 Plugin::remove_ats_from_automation_tracklist (bool free_ats, bool fire_events)
 {
@@ -799,13 +806,15 @@ Plugin::cleanup ()
   z_debug ("done");
 }
 
+#if 0
 void
 Plugin::update_latency ()
 {
-  latency_ = get_latency ();
+  latency_ = get_single_playback_latency ();
 
   z_debug ("{} latency: {} samples", get_name (), latency_);
 }
+#endif
 
 Port *
 Plugin::add_in_port (std::unique_ptr<Port> &&port)
@@ -1071,7 +1080,7 @@ Plugin::prepare_process ()
 }
 
 void
-Plugin::process (const EngineProcessTimeInfo time_nfo)
+Plugin::process_block (const EngineProcessTimeInfo time_nfo)
 {
   if (!is_enabled (true) && !own_enabled_port_)
     {

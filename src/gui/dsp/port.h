@@ -6,9 +6,6 @@
 
 #include "zrythm-config.h"
 
-#include <string>
-#include <vector>
-
 #include "dsp/port_identifier.h"
 #include "gui/dsp/port_backend.h"
 #include "gui/dsp/port_connection.h"
@@ -24,16 +21,11 @@ class Plugin;
 }
 }
 
-class MidiEvents;
 class Fader;
 class AudioEngine;
 class Track;
 class TrackProcessor;
 class ModulatorMacroProcessor;
-class RtMidiDevice;
-class RtAudioDevice;
-class AutomationTrack;
-class TruePeakDsp;
 class ExtPort;
 class AudioClip;
 class PortConnectionsManager;
@@ -67,13 +59,13 @@ concept FinalPortSubclass = std::derived_from<T, Port> && FinalClass<T>;
  * as tracks, plugins, and the audio engine. The `set_owner()` method is used
  * to set the owner of the port.
  */
-class Port : public zrythm::utils::serialization::ISerializable<Port>
+class Port : public utils::serialization::ISerializable<Port>, public dsp::IProcessable
 {
   Q_DISABLE_COPY_MOVE (Port)
 public:
-  using PortIdentifier = zrythm::dsp::PortIdentifier;
-  using PortType = zrythm::dsp::PortType;
-  using PortFlow = zrythm::dsp::PortFlow;
+  using PortIdentifier = dsp::PortIdentifier;
+  using PortType = dsp::PortType;
+  using PortFlow = dsp::PortFlow;
 
   ~Port () override { disconnect_all (); }
 
@@ -120,6 +112,15 @@ public:
    * To be called only where necessary to save RAM.
    */
   virtual void allocate_bufs () = 0;
+
+  std::string get_node_name () const override
+  {
+    return get_full_designation ();
+  }
+
+  nframes_t get_single_playback_latency () const override { return 0; }
+
+  ATTR_HOT void process_block (EngineProcessTimeInfo time_nfo) override;
 
   /**
    * Clears the port buffer.

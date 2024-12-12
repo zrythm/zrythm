@@ -26,7 +26,8 @@ class ModulatorTrack;
  */
 class ModulatorMacroProcessor final
     : public ICloneable<ModulatorMacroProcessor>,
-      public zrythm::utils::serialization::ISerializable<ModulatorMacroProcessor>
+      public dsp::IProcessable,
+      public utils::serialization::ISerializable<ModulatorMacroProcessor>
 {
 public:
   ModulatorMacroProcessor () = default;
@@ -42,10 +43,12 @@ public:
 
   ModulatorTrack * get_track () const { return track_; }
 
-  /**
-   * Process.
-   */
-  void process (const EngineProcessTimeInfo time_nfo);
+  std::string get_node_name () const override
+  {
+    return fmt::format ("{} Modulator Macro Processor", name_);
+  }
+
+  void process_block (EngineProcessTimeInfo time_nfo) override;
 
   void init_after_cloning (const ModulatorMacroProcessor &other) override;
 
@@ -74,7 +77,7 @@ public:
   std::unique_ptr<ControlPort> macro_;
 
   /** Pointer to owner track, if any. */
-  ModulatorTrack * track_;
+  ModulatorTrack * track_{};
 };
 
 /**

@@ -50,7 +50,7 @@
 using namespace zrythm;
 
 Graph::Graph (Router * router, SampleProcessor * sample_processor)
-    : sample_processor_ (sample_processor), router_ (router)
+    : router_ (router), sample_processor_ (sample_processor)
 {
   z_return_if_fail (
     (router && !sample_processor) || (!router && sample_processor));
@@ -102,7 +102,7 @@ Graph::is_valid () const
         }
     }
 
-  for (auto &[key, node] : setup_graph_nodes_map_)
+  for (auto &node : setup_graph_nodes_vector_)
     {
       if (!node->childnodes_.empty () || node->init_refcount_ > 0)
         return false;
@@ -114,7 +114,7 @@ Graph::is_valid () const
 void
 Graph::clear_setup ()
 {
-  setup_graph_nodes_map_.clear ();
+  setup_graph_nodes_vector_.clear ();
   setup_init_trigger_list_.clear ();
   setup_terminal_nodes_.clear ();
 }
@@ -126,14 +126,14 @@ Graph::rechain ()
 
   /* --- swap setup nodes with graph nodes --- */
 
-  std::swap (graph_nodes_map_, setup_graph_nodes_map_);
+  std::swap (graph_nodes_vector_, setup_graph_nodes_vector_);
 
   std::swap (init_trigger_list_, setup_init_trigger_list_);
   std::swap (terminal_nodes_, setup_terminal_nodes_);
 
   terminal_refcnt_.store (terminal_nodes_.size ());
 
-  trigger_queue_.reserve (graph_nodes_map_.size ());
+  trigger_queue_.reserve (graph_nodes_vector_.size ());
 
   clear_setup ();
 }
@@ -148,16 +148,7 @@ Graph::add_plugin (zrythm::gui::old_dsp::plugins::Plugin &pl)
     [this] (auto &&plugin) {
       if (!plugin->in_ports_.empty () || !plugin->out_ports_.empty ())
         {
-          create_node (
-            [plugin] () {
-              Track * track = plugin->get_track ();
-              return fmt::format (
-                "{}/{} (Plugin)", track->get_name (), plugin->get_name ());
-            },
-            [plugin] (EngineProcessTimeInfo time_nfo) {
-              plugin->process (time_nfo);
-            },
-            [plugin] () -> nframes_t { return plugin->latency_; }, plugin);
+          add_node_for_processable (*plugin);
         }
     },
     pl_var);
@@ -169,14 +160,12 @@ Graph::connect_plugin (
   bool                                   drop_unnecessary_ports)
 {
   z_return_if_fail (!pl.deleting_);
-  auto * pl_node = find_node_from_plugin (
-    convert_to_variant<zrythm::gui::old_dsp::plugins::PluginPtrVariant> (&pl));
+  auto * pl_node = find_node_for_processable (pl);
   z_return_if_fail (pl_node);
   for (auto &port : pl.in_ports_)
     {
       z_return_if_fail (port->get_plugin (true) != nullptr);
-      auto * port_node =
-        find_node_from_port (convert_to_variant<PortPtrVariant> (port.get ()));
+      auto * port_node = find_node_for_processable (*port);
       if (
         drop_unnecessary_ports && (port_node == nullptr) && port->is_control ())
         {
@@ -188,9 +177,8 @@ Graph::connect_plugin (
   for (auto &port : pl.out_ports_)
     {
       z_return_if_fail (port->get_plugin (true) != nullptr);
-      auto * port_node =
-        find_node_from_port (convert_to_variant<PortPtrVariant> (port.get ()));
-      z_warn_if_fail (port_node);
+      auto * port_node = find_node_for_processable (*port);
+      z_return_if_fail (port_node);
       pl_node->connect_to (*port_node);
     }
 }
@@ -200,9 +188,9 @@ Graph::print () const
 {
   z_info ("==printing graph");
 
-  for (const auto &[_, node] : setup_graph_nodes_map_)
+  for (const auto &node : setup_graph_nodes_vector_)
     {
-      node->print ();
+      node->print_node ();
     }
 
   z_info (
@@ -313,64 +301,9 @@ Graph::add_port (
       /* allocate buffers to be used during DSP */
       port->allocate_bufs ();
 
-      return create_node (
-        [port] () { return port->get_full_designation (); },
-        [port] (EngineProcessTimeInfo time_nfo) {
-          if constexpr (std::is_same_v<PortT, MidiPort>)
-            {
-              if (
-                ENUM_BITSET_TEST (
-                  dsp::PortIdentifier::Flags, port->id_->flags_,
-                  dsp::PortIdentifier::Flags::ManualPress))
-                {
-                  port->midi_events_.dequeue (
-                    time_nfo.local_offset_, time_nfo.nframes_);
-                  return;
-                }
-            }
-          if constexpr (std::is_same_v<PortT, AudioPort>)
-            {
-              if (
-                port->id_->is_monitor_fader_stereo_in_or_out_port ()
-                && AUDIO_ENGINE->exporting_)
-                {
-                  /* if exporting and the port is not a project port, skip
-                   * processing */
-                  return;
-                }
-            }
-
-          port->process (time_nfo, false);
-        },
-        GraphNode::DefaultSinglePlaybackLatencyGetter (), port);
+      return add_node_for_processable (*port);
     },
     port_var);
-}
-
-void
-Graph::connect_port (PortPtrVariant port)
-{
-  auto * node = find_node_from_port (port);
-  std::visit (
-    [&] (auto &&p) {
-      for (auto &src : p->srcs_)
-        {
-          auto node2 =
-            find_node_from_port (convert_to_variant<PortPtrVariant> (src));
-          z_warn_if_fail (node);
-          z_warn_if_fail (node2);
-          node2->connect_to (*node);
-        }
-      for (auto &dest : p->dests_)
-        {
-          auto node2 =
-            find_node_from_port (convert_to_variant<PortPtrVariant> (dest));
-          z_warn_if_fail (node);
-          z_warn_if_fail (node2);
-          node->connect_to (*node2);
-        }
-    },
-    port);
 }
 
 nframes_t
@@ -394,9 +327,10 @@ Graph::update_latencies (bool use_setup_nodes)
   z_info ("updating graph latencies...");
 
   /* reset latencies */
-  auto &nodes = use_setup_nodes ? setup_graph_nodes_map_ : graph_nodes_map_;
+  auto &nodes =
+    use_setup_nodes ? setup_graph_nodes_vector_ : graph_nodes_vector_;
   z_debug ("setting all latencies to 0");
-  for (auto &[_, node] : nodes)
+  for (auto &node : nodes)
     {
       node->playback_latency_ = 0;
       node->route_playback_latency_ = 0;
@@ -404,7 +338,7 @@ Graph::update_latencies (bool use_setup_nodes)
   z_debug ("done setting all latencies to 0");
 
   z_debug ("iterating over {} nodes...", nodes.size ());
-  for (auto &[_, node] : nodes)
+  for (auto &node : nodes)
     {
       node->playback_latency_ = node->get_single_playback_latency ();
       if (node->playback_latency_ > 0)
@@ -437,32 +371,16 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
   auto * transport = project->transport_;
 
   /* add the sample processor */
-  create_node (
-    [] () { return std::string ("Sample Processor"); },
-    [sample_processor] (EngineProcessTimeInfo time_nfo) {
-      sample_processor->process (time_nfo.local_offset_, time_nfo.nframes_);
-    },
-    GraphNode::DefaultSinglePlaybackLatencyGetter (), sample_processor);
+  add_node_for_processable (*sample_processor);
 
   /* add the monitor fader */
-  create_node (
-    [] () { return std::string ("Monitor Fader"); },
-    [monitor_fader] (EngineProcessTimeInfo time_nfo) {
-      monitor_fader->process (time_nfo);
-    },
-    GraphNode::DefaultSinglePlaybackLatencyGetter (), monitor_fader);
+  add_node_for_processable (*monitor_fader);
 
   /* add the initial processor */
-  create_node (
-    [] () { return std::string ("Initial Processor"); },
-    GraphNode::DefaultProcessFunc (),
-    GraphNode::DefaultSinglePlaybackLatencyGetter (), std::monostate ());
+  add_node_for_processable (initial_processor_);
 
   /* add the hardware input processor */
-  create_node (
-    [] () { return std::string ("HW In Processor"); },
-    GraphNode::DefaultProcessFunc (),
-    GraphNode::DefaultSinglePlaybackLatencyGetter (), hw_in_processor);
+  add_node_for_processable (*hw_in_processor);
 
   /* add plugins */
   for (const auto &cur_tr : tracklist->tracks_)
@@ -473,16 +391,7 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
           using TrackT = base_type<decltype (tr)>;
 
           /* add the track */
-          create_node (
-            [tr] () { return tr->get_name (); },
-            [tr] (EngineProcessTimeInfo time_nfo) {
-              if constexpr (std::derived_from<TrackT, ProcessableTrack>)
-                {
-                  tr->processor_->process (time_nfo);
-                }
-              (void) tr; // silence warning
-            },
-            GraphNode::DefaultSinglePlaybackLatencyGetter (), tr);
+          add_node_for_processable (*tr);
 
           /* handle modulator track */
           if constexpr (std::is_same_v<ModulatorTrack, TrackT>)
@@ -494,22 +403,12 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
                     continue;
 
                   add_plugin (*pl);
-                  pl->update_latency ();
                 }
 
               /* add macro processors */
               for (auto &mp : tr->modulator_macro_processors_)
                 {
-                  auto * mp_ptr = mp.get ();
-                  create_node (
-                    [tr] () {
-                      return fmt::format (
-                        "{} Modulator Macro Processor", tr->name_);
-                    },
-                    [mp_ptr] (EngineProcessTimeInfo time_nfo) {
-                      mp_ptr->process (time_nfo);
-                    },
-                    GraphNode::DefaultSinglePlaybackLatencyGetter (), mp_ptr);
+                  add_node_for_processable (*mp);
                 }
             }
 
@@ -519,23 +418,11 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
 
               /* add the fader */
               auto * fader = channel->fader_;
-              create_node (
-                [tr] () { return fmt::format ("{} Fader", tr->get_name ()); },
-                [fader] (EngineProcessTimeInfo time_nfo) {
-                  fader->process (time_nfo);
-                },
-                GraphNode::DefaultSinglePlaybackLatencyGetter (), fader);
+              add_node_for_processable (*fader);
 
               /* add the prefader */
               auto * prefader = channel->prefader_;
-              create_node (
-                [tr] () {
-                  return fmt::format ("{} Pre-Fader", tr->get_name ());
-                },
-                [prefader] (EngineProcessTimeInfo time_nfo) {
-                  prefader->process (time_nfo);
-                },
-                GraphNode::DefaultSinglePlaybackLatencyGetter (), prefader);
+              add_node_for_processable (*prefader);
 
               /* add plugins */
               std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
@@ -546,7 +433,6 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
                     continue;
 
                   add_plugin (*pl);
-                  pl->update_latency ();
                 }
 
               /* add sends */
@@ -558,19 +444,7 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
                     {
                       /* note that we add sends even if empty so that graph
                        * renders properly */
-                      auto * send_ptr = send.get ();
-                      create_node (
-                        [tr, send_ptr] () {
-                          return fmt::format (
-                            "{}/Channel Send {}", tr->name_,
-                            send_ptr->slot_ + 1);
-                        },
-                        [send_ptr] (EngineProcessTimeInfo time_nfo) {
-                          send_ptr->process (
-                            time_nfo.local_offset_, time_nfo.nframes_);
-                        },
-                        GraphNode::DefaultSinglePlaybackLatencyGetter (),
-                        send_ptr);
+                      add_node_for_processable (*send);
                     }
                 }
             }
@@ -605,68 +479,69 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
 
   /* connect the sample processor */
   {
-    auto * node = find_node_from_sample_processor (sample_processor);
+    auto * node = find_node_for_processable (*sample_processor);
     z_return_if_fail (node);
     auto * port = &sample_processor->fader_->stereo_out_->get_l ();
-    auto * node2 = find_node_from_port (port);
+    auto * node2 = find_node_for_processable (*port);
     node->connect_to (*node2);
     port = &sample_processor->fader_->stereo_out_->get_r ();
-    node2 = find_node_from_port (port);
+    node2 = find_node_for_processable (*port);
     node->connect_to (*node2);
   }
 
   /* connect the monitor fader */
   {
-    auto * node = find_node_from_fader (monitor_fader);
+    auto * node = find_node_for_processable (*monitor_fader);
     auto * port = &monitor_fader->stereo_in_->get_l ();
-    auto * node2 = find_node_from_port (port);
+    auto * node2 = find_node_for_processable (*port);
     node2->connect_to (*node);
     port = &monitor_fader->stereo_in_->get_r ();
-    node2 = find_node_from_port (port);
+    node2 = find_node_for_processable (*port);
     node2->connect_to (*node);
     port = &monitor_fader->stereo_out_->get_l ();
-    node2 = find_node_from_port (port);
+    node2 = find_node_for_processable (*port);
     node->connect_to (*node2);
     port = &monitor_fader->stereo_out_->get_r ();
-    node2 = find_node_from_port (port);
+    node2 = find_node_for_processable (*port);
     node->connect_to (*node2);
   }
 
-  GraphNode * initial_processor_node = find_initial_processor_node ();
+  GraphNode * initial_processor_node =
+    find_node_for_processable (initial_processor_);
 
   /* connect the HW input processor */
-  GraphNode * hw_processor_node = find_hw_processor_node (hw_in_processor);
+  GraphNode * hw_processor_node = find_node_for_processable (*hw_in_processor);
   for (auto &port : hw_in_processor->audio_ports_)
     {
-      auto node2 = find_node_from_port (port.get ());
+      auto node2 = find_node_for_processable (*port);
       z_warn_if_fail (node2);
       hw_processor_node->connect_to (*node2);
     }
   for (auto &port : hw_in_processor->midi_ports_)
     {
-      auto node2 = find_node_from_port (port.get ());
+      auto node2 = find_node_for_processable (*port);
       hw_processor_node->connect_to (*node2);
     }
 
   /* connect MIDI editor manual press */
   {
-    auto node2 = find_node_from_port (engine->midi_editor_manual_press_.get ());
+    auto node2 = find_node_for_processable (*engine->midi_editor_manual_press_);
     node2->connect_to (*initial_processor_node);
   }
 
   /* connect the transport ports */
   {
-    auto node = find_node_from_port (transport->roll_.get ());
+    auto node = find_node_for_processable (*transport->roll_);
     node->connect_to (*initial_processor_node);
-    node = find_node_from_port (transport->stop_.get ());
+    node = find_node_for_processable (*transport->stop_);
     node->connect_to (*initial_processor_node);
-    node = find_node_from_port (transport->backward_.get ());
+    node = find_node_for_processable (*transport->backward_);
     node->connect_to (*initial_processor_node);
-    node = find_node_from_port (transport->forward_.get ());
+    node = find_node_for_processable (*transport->forward_);
     node->connect_to (*initial_processor_node);
-    node = find_node_from_port (transport->loop_toggle_.get ());
+    node = find_node_for_processable (*transport->loop_toggle_);
     node->connect_to (*initial_processor_node);
-    node = find_node_from_port (transport->rec_toggle_.get ());
+    node = find_node_for_processable (*transport->rec_toggle_);
     node->connect_to (*initial_processor_node);
   }
 
@@ -678,18 +553,18 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
           using TrackT = base_type<decltype (tr)>;
 
           /* connect the track */
-          auto * const track_node = find_node_from_track (tr, true);
+          auto * const track_node = find_node_for_processable (*tr);
           z_return_if_fail (track_node);
           if (tr->in_signal_type_ == dsp::PortType::Audio)
             {
               if constexpr (std::is_same_v<TrackT, AudioTrack>)
                 {
                   auto node2 =
-                    find_node_from_port (tr->processor_->mono_.get ());
+                    find_node_for_processable (*tr->processor_->mono_);
                   node2->connect_to (*track_node);
                   initial_processor_node->connect_to (*node2);
                   node2 =
-                    find_node_from_port (tr->processor_->input_gain_.get ());
+                    find_node_for_processable (*tr->processor_->input_gain_);
                   node2->connect_to (*track_node);
                   initial_processor_node->connect_to (*node2);
                 }
@@ -697,19 +572,19 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
               if constexpr (std::derived_from<TrackT, ProcessableTrack>)
                 {
                   auto track_processor = tr->processor_.get ();
-                  auto node2 = find_node_from_port (
-                    &track_processor->stereo_in_->get_l ());
+                  auto node2 = find_node_for_processable (
+                    track_processor->stereo_in_->get_l ());
                   node2->connect_to (*track_node);
                   initial_processor_node->connect_to (*node2);
-                  node2 = find_node_from_port (
-                    &track_processor->stereo_in_->get_r ());
+                  node2 = find_node_for_processable (
+                    track_processor->stereo_in_->get_r ());
                   node2->connect_to (*track_node);
                   initial_processor_node->connect_to (*node2);
-                  node2 = find_node_from_port (
-                    &track_processor->stereo_out_->get_l ());
+                  node2 = find_node_for_processable (
+                    track_processor->stereo_out_->get_l ());
                   track_node->connect_to (*node2);
-                  node2 = find_node_from_port (
-                    &track_processor->stereo_out_->get_r ());
+                  node2 = find_node_for_processable (
+                    track_processor->stereo_out_->get_r ());
                   track_node->connect_to (*node2);
                 }
             }
@@ -722,18 +597,18 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
                   if (tr->has_piano_roll () || tr->is_chord ())
                     {
                       /* connect piano roll */
-                      auto node2 = find_node_from_port (
-                        track_processor->piano_roll_.get ());
+                      auto node2 = find_node_for_processable (
+                        *track_processor->piano_roll_);
                       z_return_if_fail (node2);
                       node2->connect_to (*track_node);
                     }
 
                   auto node2 =
-                    find_node_from_port (track_processor->midi_in_.get ());
+                    find_node_for_processable (*track_processor->midi_in_);
                   node2->connect_to (*track_node);
                   initial_processor_node->connect_to (*node2);
                   node2 =
-                    find_node_from_port (track_processor->midi_out_.get ());
+                    find_node_for_processable (*track_processor->midi_out_);
                   track_node->connect_to (*node2);
                 }
             }
@@ -746,30 +621,30 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
                 {
                   for (int k = 0; k < 128; k++)
                     {
-                      auto node2 = find_node_from_port (
-                        track_processor->midi_cc_[j * 128 + k].get ());
+                      auto node2 = find_node_for_processable (
+                        *track_processor->midi_cc_[j * 128 + k]);
                       if (node2)
                         {
                           node2->connect_to (*track_node);
                         }
                     }
 
-                  auto node2 = find_node_from_port (
-                    track_processor->pitch_bend_[j].get ());
+                  auto node2 = find_node_for_processable (
+                    *track_processor->pitch_bend_[j]);
                   if (node2 || !drop_unnecessary_ports)
                     {
                       node2->connect_to (*track_node);
                     }
 
-                  node2 = find_node_from_port (
-                    track_processor->poly_key_pressure_[j].get ());
+                  node2 = find_node_for_processable (
+                    *track_processor->poly_key_pressure_[j]);
                   if (node2 || !drop_unnecessary_ports)
                     {
                       node2->connect_to (*track_node);
                     }
 
-                  node2 = find_node_from_port (
-                    track_processor->channel_pressure_[j].get ());
+                  node2 = find_node_for_processable (
+                    *track_processor->channel_pressure_[j]);
                   if (node2 || !drop_unnecessary_ports)
                     {
                       node2->connect_to (*track_node);
@@ -783,19 +658,19 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
               beats_per_bar_node_ = nullptr;
               beat_unit_node_ = nullptr;
 
-              auto node2 = find_node_from_port (tr->bpm_port_.get ());
+              auto node2 = find_node_for_processable (*tr->bpm_port_);
               if (node2 || !drop_unnecessary_ports)
                 {
                   bpm_node_ = node2;
                   node2->connect_to (*track_node);
                 }
-              node2 = find_node_from_port (tr->beats_per_bar_port_.get ());
+              node2 = find_node_for_processable (*tr->beats_per_bar_port_);
               if (node2 || !drop_unnecessary_ports)
                 {
                   beats_per_bar_node_ = node2;
                   node2->connect_to (*track_node);
                 }
-              node2 = find_node_from_port (tr->beat_unit_port_.get ());
+              node2 = find_node_for_processable (*tr->beat_unit_port_);
               if (node2 || !drop_unnecessary_ports)
                 {
                   beat_unit_node_ = node2;
@@ -817,8 +692,7 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
                         {
                           z_return_if_fail (
                             pl_port->get_plugin (true) != nullptr);
-                          auto port_node = find_node_from_port (
-                            convert_to_variant<PortPtrVariant> (pl_port.get ()));
+                          auto port_node = find_node_for_processable (*pl_port);
                           if (
                             drop_unnecessary_ports && !port_node
                             && pl_port->is_control ())
@@ -840,25 +714,24 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
               /* connect the modulator macro processors */
               for (auto &mmp : tr->modulator_macro_processors_)
                 {
-                  auto mmp_node =
-                    find_node_from_modulator_macro_processor (mmp.get ());
+                  auto mmp_node = find_node_for_processable (*mmp);
                   z_return_if_fail (mmp_node);
 
                   {
                     auto * const node2 =
-                      find_node_from_port (mmp->cv_in_.get ());
+                      find_node_for_processable (*mmp->cv_in_);
                     node2->connect_to (*mmp_node);
                   }
                   {
                     auto * const node2 =
-                      find_node_from_port (mmp->macro_.get ());
+                      find_node_for_processable (*mmp->macro_);
                     if (node2 || !drop_unnecessary_ports)
                       {
                         node2->connect_to (*mmp_node);
                       }
                   }
 
-                  auto * const node2 = find_node_from_port (mmp->cv_out_.get ());
+                  auto * const node2 = find_node_for_processable (*mmp->cv_out_);
                   mmp_node->connect_to (*node2);
                 }
             }
@@ -871,32 +744,35 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
               auto &fader = ch->fader_;
 
               /* connect the fader */
-              auto * const fader_node = find_node_from_fader (fader);
+              auto * const fader_node = find_node_for_processable (*fader);
               z_warn_if_fail (fader_node);
               if (fader->type_ == Fader::Type::AudioChannel)
                 {
                   /* connect ins */
                   auto node2 =
-                    find_node_from_port (&fader->stereo_in_->get_l ());
+                    find_node_for_processable (fader->stereo_in_->get_l ());
                   node2->connect_to (*fader_node);
-                  node2 = find_node_from_port (&fader->stereo_in_->get_r ());
+                  node2 =
+                    find_node_for_processable (fader->stereo_in_->get_r ());
                   node2->connect_to (*fader_node);
 
                   /* connect outs */
-                  node2 = find_node_from_port (&fader->stereo_out_->get_l ());
+                  node2 =
+                    find_node_for_processable (fader->stereo_out_->get_l ());
                   fader_node->connect_to (*node2);
-                  node2 = find_node_from_port (&fader->stereo_out_->get_r ());
+                  node2 =
+                    find_node_for_processable (fader->stereo_out_->get_r ());
                   fader_node->connect_to (*node2);
                 }
               else if (fader->type_ == Fader::Type::MidiChannel)
                 {
-                  auto node2 = find_node_from_port (fader->midi_in_.get ());
+                  auto node2 = find_node_for_processable (*fader->midi_in_);
                   node2->connect_to (*fader_node);
-                  node2 = find_node_from_port (fader->midi_out_.get ());
+                  node2 = find_node_for_processable (*fader->midi_out_);
                   fader_node->connect_to (*node2);
                 }
               {
-                auto * const node2 = find_node_from_port (fader->amp_.get ());
+                auto * const node2 = find_node_for_processable (*fader->amp_);
                 if (node2 || !drop_unnecessary_ports)
                   {
                     node2->connect_to (*fader_node);
@@ -904,14 +780,14 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
               }
               {
                 auto * const node2 =
-                  find_node_from_port (fader->balance_.get ());
+                  find_node_for_processable (*fader->balance_);
                 if (node2 || !drop_unnecessary_ports)
                   {
                     node2->connect_to (*fader_node);
                   }
               }
               {
-                auto * const node2 = find_node_from_port (fader->mute_.get ());
+                auto * const node2 = find_node_for_processable (*fader->mute_);
                 if (node2 || !drop_unnecessary_ports)
                   {
                     node2->connect_to (*fader_node);
@@ -919,25 +795,28 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
               }
 
               /* connect the prefader */
-              auto * const prefader_node = find_node_from_fader (prefader);
+              auto * const prefader_node = find_node_for_processable (*prefader);
               z_warn_if_fail (prefader_node);
               if (prefader->type_ == Fader::Type::AudioChannel)
                 {
                   auto * node2 =
-                    find_node_from_port (&prefader->stereo_in_->get_l ());
+                    find_node_for_processable (prefader->stereo_in_->get_l ());
                   node2->connect_to (*prefader_node);
-                  node2 = find_node_from_port (&prefader->stereo_in_->get_r ());
+                  node2 =
+                    find_node_for_processable (prefader->stereo_in_->get_r ());
                   node2->connect_to (*prefader_node);
-                  node2 = find_node_from_port (&prefader->stereo_out_->get_l ());
+                  node2 =
+                    find_node_for_processable (prefader->stereo_out_->get_l ());
                   prefader_node->connect_to (*node2);
-                  node2 = find_node_from_port (&prefader->stereo_out_->get_r ());
+                  node2 =
+                    find_node_for_processable (prefader->stereo_out_->get_r ());
                   prefader_node->connect_to (*node2);
                 }
               else if (prefader->type_ == Fader::Type::MidiChannel)
                 {
-                  auto * node2 = find_node_from_port (prefader->midi_in_.get ());
+                  auto * node2 = find_node_for_processable (*prefader->midi_in_);
                   node2->connect_to (*prefader_node);
-                  node2 = find_node_from_port (prefader->midi_out_.get ());
+                  node2 = find_node_for_processable (*prefader->midi_out_);
                   prefader_node->connect_to (*node2);
                 }
 
@@ -956,32 +835,35 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
                   /* note that we do not skip empty sends because then port
                    * connection validation will not detect invalid connections
                    * properly */
-                  auto * const send_node =
-                    find_node_from_channel_send (send.get ());
+                  auto * const send_node = find_node_for_processable (*send);
 
-                  auto * node2 = find_node_from_port (send->amount_.get ());
+                  auto * node2 = find_node_for_processable (*send->amount_);
                   if (node2)
                     node2->connect_to (*send_node);
-                  node2 = find_node_from_port (send->enabled_.get ());
+                  node2 = find_node_for_processable (*send->enabled_);
                   if (node2)
                     node2->connect_to (*send_node);
 
                   if (tr->out_signal_type_ == dsp::PortType::Event)
                     {
-                      node2 = find_node_from_port (send->midi_in_.get ());
+                      node2 = find_node_for_processable (*send->midi_in_);
                       node2->connect_to (*send_node);
-                      node2 = find_node_from_port (send->midi_out_.get ());
+                      node2 = find_node_for_processable (*send->midi_out_);
                       send_node->connect_to (*node2);
                     }
                   else if (tr->out_signal_type_ == dsp::PortType::Audio)
                     {
-                      node2 = find_node_from_port (&send->stereo_in_->get_l ());
+                      node2 =
+                        find_node_for_processable (send->stereo_in_->get_l ());
                       node2->connect_to (*send_node);
-                      node2 = find_node_from_port (&send->stereo_in_->get_r ());
+                      node2 =
+                        find_node_for_processable (send->stereo_in_->get_r ());
                       node2->connect_to (*send_node);
-                      node2 = find_node_from_port (&send->stereo_out_->get_l ());
+                      node2 =
+                        find_node_for_processable (send->stereo_out_->get_l ());
                       send_node->connect_to (*node2);
-                      node2 = find_node_from_port (&send->stereo_out_->get_r ());
+                      node2 =
+                        find_node_for_processable (send->stereo_out_->get_r ());
                       send_node->connect_to (*node2);
                     }
                 }
@@ -989,6 +871,24 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
         },
         cur_tr);
     }
+
+  auto connect_port = [&]<FinalPortSubclass PortT> (PortT &p) {
+    auto * node = find_node_for_processable (p);
+    for (auto &src : p.srcs_)
+      {
+        auto node2 = find_node_for_processable (*src);
+        z_warn_if_fail (node);
+        z_warn_if_fail (node2);
+        node2->connect_to (*node);
+      }
+    for (auto &dest : p.dests_)
+      {
+        auto node2 = find_node_for_processable (*dest);
+        z_warn_if_fail (node);
+        z_warn_if_fail (node2);
+        node->connect_to (*node2);
+      }
+  };
 
   for (auto &port : ports)
     {
@@ -1001,7 +901,9 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
             continue;
         }
 
-      connect_port (convert_to_variant<PortPtrVariant> (port));
+      std::visit (
+        [&] (auto &&p) { connect_port (*p); },
+        convert_to_variant<PortPtrVariant> (port));
     }
 
   /* ========================
@@ -1010,7 +912,7 @@ Graph::setup (const bool drop_unnecessary_ports, const bool rechain)
 
   setup_terminal_nodes_.clear ();
   setup_init_trigger_list_.clear ();
-  for (const auto &[key, node] : setup_graph_nodes_map_)
+  for (const auto &node : setup_graph_nodes_vector_)
     {
       if (node->childnodes_.empty ())
         {
@@ -1066,14 +968,24 @@ Graph::can_ports_be_connected (const Port &src, const Port &dest)
   /* connect the src/dest if not NULL */
   /* this code is only for creating graphs to test if the connection between
    * src->dest is valid */
-  auto * node = find_node_from_port (convert_to_variant<PortPtrVariant> (&src));
-  z_return_val_if_fail (node, false);
-  auto * node2 =
-    find_node_from_port (convert_to_variant<PortPtrVariant> (&dest));
-  z_return_val_if_fail (node2, false);
-  node->connect_to (*node2);
-  z_return_val_if_fail (!node->terminal_, false);
-  z_return_val_if_fail (!node2->initial_, false);
+  bool success = std::visit (
+    [&] (auto &&srcp, auto &&destp) {
+      auto * node = find_node_for_processable (*srcp);
+      z_return_val_if_fail (node, false);
+      auto * node2 = find_node_for_processable (*destp);
+      z_return_val_if_fail (node2, false);
+      node->connect_to (*node2);
+      z_return_val_if_fail (!node->terminal_, false);
+      z_return_val_if_fail (!node2->initial_, false);
+      return true;
+    },
+    convert_to_variant<PortPtrVariant> (&src),
+    convert_to_variant<PortPtrVariant> (&dest));
+  if (!success)
+    {
+      z_info ("failed to connect {} to {}", src.get_label (), dest.get_label ());
+      return false;
+    }
 
   bool valid = is_valid ();
 
@@ -1195,128 +1107,25 @@ Graph::terminate ()
 }
 
 Graph::GraphNode *
-Graph::find_node_from_port (PortPtrVariant port) const
-{
-  auto it = setup_graph_nodes_map_.find (port);
-  if (it != setup_graph_nodes_map_.end ())
-    {
-      return it->second.get ();
-    }
-  return nullptr;
-}
-
-Graph::GraphNode *
-Graph::find_node_from_plugin (
-  zrythm::gui::old_dsp::plugins::PluginPtrVariant pl) const
-{
-  auto it = setup_graph_nodes_map_.find (pl);
-  if (it != setup_graph_nodes_map_.end ())
-    {
-      return it->second.get ();
-    }
-  return nullptr;
-}
-
-Graph::GraphNode *
-Graph::find_node_from_track (TrackPtrVariant track, bool use_setup_nodes) const
-{
-  const auto &nodes =
-    use_setup_nodes ? setup_graph_nodes_map_ : graph_nodes_map_;
-  auto it = nodes.find (track);
-  if (it != nodes.end ())
-    {
-      return it->second.get ();
-    }
-  return nullptr;
-}
-
-Graph::GraphNode *
-Graph::find_node_from_fader (const Fader * fader) const
-{
-  auto it = setup_graph_nodes_map_.find (const_cast<Fader *> (fader));
-  if (it != setup_graph_nodes_map_.end ())
-    {
-      return it->second.get ();
-    }
-  return nullptr;
-}
-
-Graph::GraphNode *
-Graph::find_node_from_sample_processor (
-  const SampleProcessor * sample_processor) const
-{
-  auto it = setup_graph_nodes_map_.find (
-    const_cast<SampleProcessor *> (sample_processor));
-  if (it != setup_graph_nodes_map_.end ())
-    {
-      return it->second.get ();
-    }
-  return nullptr;
-}
-
-Graph::GraphNode *
-Graph::find_node_from_channel_send (const ChannelSend * send) const
-{
-  auto it = setup_graph_nodes_map_.find (const_cast<ChannelSend *> (send));
-  if (it != setup_graph_nodes_map_.end ())
-    {
-      return it->second.get ();
-    }
-  return nullptr;
-}
-
-Graph::GraphNode *
-Graph::find_initial_processor_node () const
-{
-  auto it = setup_graph_nodes_map_.find (std::monostate ());
-  if (it != setup_graph_nodes_map_.end ())
-    {
-      return it->second.get ();
-    }
-  return nullptr;
-}
-
-Graph::GraphNode *
-Graph::find_hw_processor_node (const HardwareProcessor * processor) const
+Graph::find_node_for_processable (const dsp::IProcessable &processable) const
 {
   auto it =
-    setup_graph_nodes_map_.find (const_cast<HardwareProcessor *> (processor));
-  if (it != setup_graph_nodes_map_.end ())
+    std::ranges::find_if (setup_graph_nodes_vector_, [&] (const auto &node) {
+      return &node->get_processable () == &processable;
+    });
+  if (it != setup_graph_nodes_vector_.end ())
     {
-      return it->second.get ();
+      return it->get ();
     }
   return nullptr;
 }
 
 Graph::GraphNode *
-Graph::find_node_from_modulator_macro_processor (
-  const ModulatorMacroProcessor * processor) const
+Graph::add_node_for_processable (dsp::IProcessable &node)
 {
-  auto it = setup_graph_nodes_map_.find (
-    const_cast<ModulatorMacroProcessor *> (processor));
-  if (it != setup_graph_nodes_map_.end ())
-    {
-      return it->second.get ();
-    }
-  return nullptr;
-}
-
-/**
- * Creates a new node, adds it to the graph and returns it.
- */
-Graph::GraphNode *
-Graph::create_node (
-  GraphNode::NameGetter                  name_getter,
-  GraphNode::ProcessFunc                 process_func,
-  GraphNode::SinglePlaybackLatencyGetter playback_latency_getter,
-  NodeData                               data)
-{
-  auto [it, inserted] = setup_graph_nodes_map_.emplace (
-    data,
-    std::make_unique<GraphNode> (
-      setup_graph_nodes_map_.size (), name_getter, *TRANSPORT, process_func,
-      playback_latency_getter));
-  return it->second.get ();
+  setup_graph_nodes_vector_.emplace_back (std::make_unique<GraphNode> (
+    setup_graph_nodes_vector_.size (), *TRANSPORT, node));
+  return setup_graph_nodes_vector_.back ().get ();
 }
 
 #if 0

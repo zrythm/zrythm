@@ -179,12 +179,21 @@ ChannelSend::prepare_process ()
     }
 }
 
+std::string
+ChannelSend::get_node_name () const
+{
+  auto * tr = get_track ();
+  return fmt::format ("{}/Channel Send {}", tr->name_, slot_ + 1);
+}
+
 void
-ChannelSend::process (const nframes_t local_offset, const nframes_t nframes)
+ChannelSend::process_block (const EngineProcessTimeInfo time_nfo)
 {
   if (is_empty ())
     return;
 
+  const auto local_offset = time_nfo.local_offset_;
+  const auto nframes = time_nfo.nframes_;
   Track * track = get_track ();
   z_return_if_fail (track);
   if (track->out_signal_type_ == PortType::Audio)

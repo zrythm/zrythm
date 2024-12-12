@@ -72,10 +72,11 @@ struct ChannelSendTarget
  */
 class ChannelSend final
     : public ICloneable<ChannelSend>,
-      public zrythm::utils::serialization::ISerializable<ChannelSend>
+      public dsp::IProcessable,
+      public utils::serialization::ISerializable<ChannelSend>
 {
 public:
-  using PortType = zrythm::dsp::PortType;
+  using PortType = dsp::PortType;
 
 public:
   ChannelSend () = default;
@@ -96,6 +97,8 @@ public:
    * Gets the owner track.
    */
   ChannelTrack * get_track () const;
+
+  std::string get_node_name () const override;
 
   bool is_enabled () const;
 
@@ -188,7 +191,7 @@ public:
 
   void prepare_process ();
 
-  void process (nframes_t local_offset, nframes_t nframes);
+  void process_block (EngineProcessTimeInfo time_nfo) override;
 
   /**
    * Returns whether the send is connected to the given ports.

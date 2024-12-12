@@ -266,6 +266,12 @@ HardwareProcessor::activate (bool activate)
   activated_ = activate;
 }
 
+std::string
+HardwareProcessor::get_node_name () const
+{
+  return is_input_ ? "HW In Processor" : "HW Out Processor";
+}
+
 void
 HardwareProcessor::process (nframes_t nframes)
 {

@@ -53,7 +53,9 @@ constexpr auto PLUGIN_MAGIC = 43198683;
  * The plugin can be of various types, such as LV2, Carla native, etc., and this
  * class provides a common interface for working with them.
  */
-class Plugin : public zrythm::utils::serialization::ISerializable<Plugin>
+class Plugin
+    : public utils::serialization::ISerializable<Plugin>,
+      public dsp::IProcessable
 {
 public:
   using PluginIdentifier = zrythm::dsp::PluginIdentifier;
@@ -367,7 +369,7 @@ public:
    * Calls the plugin format's get_latency()
    * function and stores the result in the plugin.
    */
-  void update_latency ();
+  // void update_latency ();
 
   /**
    * Generates automatables for the plugin.
@@ -399,7 +401,9 @@ public:
   /**
    * Process plugin.
    */
-  ATTR_HOT void process (const EngineProcessTimeInfo time_nfo);
+  ATTR_HOT void process_block (EngineProcessTimeInfo time_nfo) override;
+
+  std::string get_node_name () const override;
 
   std::string generate_window_title () const;
 
@@ -561,11 +565,6 @@ private:
   virtual void cleanup_impl () = 0;
 
   /**
-   * @brief Returns the latency in number of samples.
-   */
-  virtual nframes_t get_latency () const = 0;
-
-  /**
    * @brief Called by @ref instantiate().
    *
    * @param loading Whether loading an existing plugin or not.
@@ -688,7 +687,7 @@ public:
   bool visible_ = false;
 
   /** Latency reported by the Lv2Plugin, if any, in samples. */
-  nframes_t latency_ = 0;
+  // nframes_t latency_ = 0;
 
   /** Whether the plugin is currently instantiated or not. */
   bool instantiated_ = false;

@@ -551,6 +551,42 @@ Port::find_from_identifier (const zrythm::dsp::PortIdentifier &id)
     };
 }
 
+void
+Port::process_block (EngineProcessTimeInfo time_nfo)
+{
+  // FIXME: avoid this mess and calling another process function
+  std::visit (
+    [&] (auto &&port) {
+      using PortT = base_type<decltype (port)>;
+      if constexpr (std::is_same_v<PortT, MidiPort>)
+        {
+          if (
+            ENUM_BITSET_TEST (
+              dsp::PortIdentifier::Flags, port->id_->flags_,
+              dsp::PortIdentifier::Flags::ManualPress))
+            {
+              port->midi_events_.dequeue (
+                time_nfo.local_offset_, time_nfo.nframes_);
+              return;
+            }
+        }
+      if constexpr (std::is_same_v<PortT, AudioPort>)
+        {
+          if (
+            port->id_->is_monitor_fader_stereo_in_or_out_port ()
+            && AUDIO_ENGINE->exporting_)
+            {
+              /* if exporting and the port is not a project port, skip
+               * processing */
+              return;
+            }
+        }
+
+      port->process (time_nfo, false);
+    },
+    convert_to_variant<PortPtrVariant> (this));
+}
+
 int
 Port::get_num_unlocked (bool sources) const
 {
@@ -579,7 +615,7 @@ Port::set_owner (T * owner)
     return track->name_.empty () ? 0 : track->get_name_hash ();
   };
 
-  if constexpr (std::derived_from<T, zrythm::gui::old_dsp::plugins::Plugin>)
+  if constexpr (std::derived_from<T, gui::old_dsp::plugins::Plugin>)
     {
       id_->plugin_id_ = owner->id_;
       id_->track_name_hash_ = owner->id_.track_name_hash_;
@@ -602,7 +638,7 @@ Port::set_owner (T * owner)
       id_->owner_type_ = PortIdentifier::OwnerType::TrackProcessor;
       track_ = track;
     }
-  else if constexpr (std::derived_from<T, zrythm::gui::Channel>)
+  else if constexpr (std::derived_from<T, gui::Channel>)
     {
       auto track = owner->get_track ();
       z_return_if_fail (track);

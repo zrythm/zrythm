@@ -30,11 +30,8 @@ ModulatorMacroProcessor::init_loaded (ModulatorTrack &track)
   cv_out_->init_loaded (this);
 }
 
-/**
- * Process.
- */
 void
-ModulatorMacroProcessor::process (const EngineProcessTimeInfo time_nfo)
+ModulatorMacroProcessor::process_block (const EngineProcessTimeInfo time_nfo)
 {
   z_return_if_fail_cmp (
     time_nfo.local_offset_ + time_nfo.nframes_, <=, cv_out_->last_buf_sz_);

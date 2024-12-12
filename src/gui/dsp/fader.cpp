@@ -707,11 +707,28 @@ Fader::fade_frames_for_type (Type type)
            : FADER_DEFAULT_FADE_FRAMES_SHORT;
 }
 
+std::string
+Fader::get_node_name () const
+{
+  if (type_ == Type::AudioChannel || type_ == Type::MidiChannel)
+    {
+      auto * track = get_track ();
+      return fmt::format (
+        "{} {}", track->get_name (), passthrough_ ? "Pre-Fader" : "Fader");
+    }
+  if (type_ == Type::Monitor)
+    {
+      return "Monitor Fader";
+    }
+
+  return "Fader";
+}
+
 /**
  * Process the Fader.
  */
 void
-Fader::process (const EngineProcessTimeInfo time_nfo)
+Fader::process_block (const EngineProcessTimeInfo time_nfo)
 {
   if (ZRYTHM_TESTING)
     {

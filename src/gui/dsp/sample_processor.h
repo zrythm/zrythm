@@ -36,7 +36,8 @@ class AudioEngine;
  */
 class SampleProcessor final
     : public ICloneable<SampleProcessor>,
-      public zrythm::utils::serialization::ISerializable<SampleProcessor>
+      public dsp::IProcessable,
+      public utils::serialization::ISerializable<SampleProcessor>
 {
 public:
   using Position = zrythm::dsp::Position;
@@ -67,11 +68,12 @@ public:
 
   /**
    * Process the samples for the given number of frames.
-   *
-   * @param offset The local offset in the processing cycle.
-   * @param nframes The number of frames to process in this call.
    */
-  void process (nframes_t offset, nframes_t nframes);
+  void process_block (EngineProcessTimeInfo time_nfo) override;
+
+  std::string get_node_name () const override { return "Sample Processor"; }
+
+  nframes_t get_single_playback_latency () const override { return 0; }
 
   /**
    * Removes a SamplePlayback from the array.

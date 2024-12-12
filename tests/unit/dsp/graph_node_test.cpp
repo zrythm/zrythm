@@ -9,6 +9,14 @@ using namespace testing;
 namespace zrythm::dsp
 {
 
+class MockProcessable : public IProcessable
+{
+public:
+  MOCK_METHOD (std::string, get_node_name, (), (const, override));
+  MOCK_METHOD (nframes_t, get_single_playback_latency, (), (const, override));
+  MOCK_METHOD (void, process_block, (EngineProcessTimeInfo), (override));
+};
+
 class MockTransport : public ITransport
 {
 public:
@@ -38,6 +46,7 @@ protected:
   void SetUp () override
   {
     transport_ = std::make_unique<MockTransport> ();
+    processable_ = std::make_unique<MockProcessable> ();
 
     // Default expectations
     ON_CALL (*transport_, get_play_state ())
@@ -48,25 +57,25 @@ protected:
     ON_CALL (*transport_, get_loop_range_positions ())
       .WillByDefault (Return (
         std::make_pair (Position{}, Position{ 1920.0, 22.675736961451247 })));
+
+    ON_CALL (*processable_, get_node_name ())
+      .WillByDefault (Return ("test_node"));
+    ON_CALL (*processable_, get_single_playback_latency ())
+      .WillByDefault (Return (0));
   }
 
-  GraphNode create_test_node ()
-  {
-    return {
-      1, [] () { return "test_node"; }, *transport_,
-      [] (EngineProcessTimeInfo) { /* no-op */ },
-      [] () -> nframes_t { return 0; }
-    };
-  }
+  GraphNode create_test_node () { return { 1, *transport_, *processable_ }; }
 
-  std::unique_ptr<MockTransport> transport_;
+  std::unique_ptr<MockTransport>   transport_;
+  std::unique_ptr<MockProcessable> processable_;
 };
 
 TEST_F (GraphNodeTest, Construction)
 {
+  EXPECT_CALL (*processable_, get_node_name ()).WillOnce (Return ("test_node"));
+
   auto node = create_test_node ();
-  EXPECT_EQ (node.get_name (), "test_node");
-  EXPECT_EQ (node.get_single_playback_latency (), 0);
+  EXPECT_EQ (node.get_processable ().get_node_name (), "test_node");
   EXPECT_TRUE (node.childnodes_.empty ());
   EXPECT_FALSE (node.terminal_);
   EXPECT_FALSE (node.initial_);
@@ -74,24 +83,20 @@ TEST_F (GraphNodeTest, Construction)
 
 TEST_F (GraphNodeTest, ProcessingBasics)
 {
-  bool      processed = false;
-  GraphNode node (
-    1, [] () { return "test_node"; }, *transport_,
-    [&processed] (EngineProcessTimeInfo) { processed = true; });
+  EXPECT_CALL (*processable_, process_block (_)).Times (Exactly (1));
 
+  auto                  node = create_test_node ();
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = 256;
   node.process (time_info, 0);
-
-  EXPECT_TRUE (processed);
 }
 
 TEST_F (GraphNodeTest, LatencyHandling)
 {
-  GraphNode node (
-    1, [] () { return "test_node"; }, *transport_,
-    [] (EngineProcessTimeInfo) {}, [] () -> nframes_t { return 512; });
+  EXPECT_CALL (*processable_, get_single_playback_latency ())
+    .WillRepeatedly (Return (512));
 
+  auto node = create_test_node ();
   EXPECT_EQ (node.get_single_playback_latency (), 512);
 
   node.set_route_playback_latency (1024);
@@ -114,57 +119,77 @@ TEST_F (GraphNodeTest, NodeConnections)
 
 TEST_F (GraphNodeTest, SkipProcessing)
 {
-  bool      processed = false;
-  GraphNode node (
-    1, [] () { return "test_node"; }, *transport_,
-    [&processed] (EngineProcessTimeInfo) { processed = true; });
+  EXPECT_CALL (*processable_, process_block (_)).Times (0);
 
+  auto node = create_test_node ();
   node.set_skip_processing (true);
 
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = 256;
   node.process (time_info, 0);
-
-  EXPECT_FALSE (processed);
 }
 
 TEST_F (GraphNodeTest, ProcessingWithTransport)
 {
-  bool      processed = false;
-  GraphNode node (
-    1, [] () { return "test_node"; }, *transport_,
-    [&processed] (EngineProcessTimeInfo) { processed = true; });
-
   EXPECT_CALL (*transport_, get_play_state ())
     .WillOnce (Return (ITransport::PlayState::Rolling));
   EXPECT_CALL (*transport_, get_playhead_position ())
     .WillOnce (Return (Position{}));
   EXPECT_CALL (*transport_, position_add_frames (_, _)).Times (1);
+  EXPECT_CALL (*processable_, process_block (_)).Times (1);
 
+  auto                  node = create_test_node ();
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = 256;
   node.process (time_info, 0);
-
-  EXPECT_TRUE (processed);
 }
 
 TEST_F (GraphNodeTest, LoopPointProcessing)
 {
-  bool      processed = false;
-  GraphNode node (
-    1, [] () { return "test_node"; }, *transport_,
-    [&processed] (EngineProcessTimeInfo) { processed = true; });
-
   EXPECT_CALL (*transport_, get_loop_enabled ()).WillRepeatedly (Return (true));
   EXPECT_CALL (*transport_, is_loop_point_met (_, _))
     .WillOnce (Return (128))
     .WillOnce (Return (0));
+  EXPECT_CALL (*processable_, process_block (_)).Times (2);
 
+  auto                  node = create_test_node ();
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = 256;
   node.process (time_info, 0);
+}
 
-  EXPECT_TRUE (processed);
+// New test for multiple node connections
+TEST_F (GraphNodeTest, MultipleNodeConnections)
+{
+  auto node1 = create_test_node ();
+  auto node2 = create_test_node ();
+  auto node3 = create_test_node ();
+
+  node1.connect_to (node2);
+  node1.connect_to (node3);
+  node2.connect_to (node3);
+
+  EXPECT_EQ (node1.childnodes_.size (), 2);
+  EXPECT_EQ (node2.childnodes_.size (), 1);
+  EXPECT_EQ (node3.childnodes_.size (), 0);
+  EXPECT_EQ (node3.init_refcount_, 2);
+}
+
+// New test for latency propagation
+TEST_F (GraphNodeTest, LatencyPropagation)
+{
+  auto node1 = create_test_node ();
+  auto node2 = create_test_node ();
+  auto node3 = create_test_node ();
+
+  node1.connect_to (node2);
+  node2.connect_to (node3);
+
+  node3.set_route_playback_latency (1000);
+
+  EXPECT_EQ (node3.route_playback_latency_, 1000);
+  EXPECT_EQ (node2.route_playback_latency_, 1000);
+  EXPECT_EQ (node1.route_playback_latency_, 1000);
 }
 
 } // namespace zrythm::dsp

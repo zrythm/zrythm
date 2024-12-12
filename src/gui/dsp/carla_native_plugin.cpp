@@ -1876,7 +1876,7 @@ CarlaNativePlugin::get_port_from_param_id (const uint32_t id)
 }
 
 nframes_t
-CarlaNativePlugin::get_latency () const
+CarlaNativePlugin::get_single_playback_latency () const
 {
 #if HAVE_CARLA
   return carla_get_plugin_latency (host_handle_, 0);

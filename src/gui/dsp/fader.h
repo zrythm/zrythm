@@ -49,7 +49,8 @@ constexpr int FADER_DEFAULT_FADE_FRAMES_SHORT = 1024;
 class Fader final
     : public QObject,
       public ICloneable<Fader>,
-      public zrythm::utils::serialization::ISerializable<Fader>
+      public dsp::IProcessable,
+      public utils::serialization::ISerializable<Fader>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -124,6 +125,8 @@ public:
    * Appends the ports owned by fader to the given array.
    */
   void append_ports (std::vector<Port *> &ports) const;
+
+  std::string get_node_name () const override;
 
   /**
    * Sets the amplitude of the fader. (0.0 to 2.0)
@@ -258,7 +261,7 @@ public:
   /**
    * Process the Fader.
    */
-  ATTR_HOT void process (const EngineProcessTimeInfo time_nfo);
+  ATTR_HOT void process_block (EngineProcessTimeInfo time_nfo) override;
 
   bool is_in_active_project () const;
 

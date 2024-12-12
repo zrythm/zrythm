@@ -31,6 +31,12 @@ ProcessableTrack::copy_members_from (const ProcessableTrack &other)
   processor_->track_ = this;
 }
 
+void
+ProcessableTrack::process_block (EngineProcessTimeInfo time_nfo)
+{
+  processor_->process (time_nfo);
+}
+
 bool
 ProcessableTrack::get_monitor_audio () const
 {

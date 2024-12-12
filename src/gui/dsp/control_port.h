@@ -15,6 +15,8 @@
  * @{
  */
 
+class AutomationTrack;
+
 /**
  * @brief Control port specifics.
  */

@@ -284,7 +284,7 @@ GraphThread::run ()
       /* first time setup */
 
       /* Can't run without a graph */
-      z_warn_if_fail (!graph->graph_nodes_map_.empty ());
+      z_warn_if_fail (!graph->graph_nodes_vector_.empty ());
       z_warn_if_fail (!graph->init_trigger_list_.empty ());
       z_warn_if_fail (!graph->terminal_nodes_.empty ());
 

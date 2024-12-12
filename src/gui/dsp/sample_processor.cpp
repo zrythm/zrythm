@@ -123,8 +123,10 @@ SampleProcessor::remove_sample_playback (SamplePlayback &in_sp)
 }
 
 void
-SampleProcessor::process (const nframes_t cycle_offset, const nframes_t nframes)
+SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
 {
+  const auto    cycle_offset = time_nfo.local_offset_;
+  const auto    nframes = time_nfo.nframes_;
   SemaphoreRAII lock (rebuilding_sem_);
   if (!lock.is_acquired ())
     {
@@ -248,7 +250,7 @@ SampleProcessor::process (const nframes_t cycle_offset, const nframes_t nframes)
                       ins->prepare_process ();
                       ins->midi_in_port_->midi_events_.active_events_.append (
                         midi_events_->active_events_, cycle_offset, nframes);
-                      ins->process (time_nfo);
+                      ins->process_block (time_nfo);
                       audio_data_l = ins->l_out_->buf_.data ();
                       audio_data_r = ins->r_out_->buf_.data ();
                     }
