@@ -297,6 +297,9 @@ typename_to_string ()
   return typeid (T).name ();
 }
 
+#define Z_DISABLE_COPY_MOVE(Class) Q_DISABLE_COPY_MOVE (Class)
+#define Z_DISABLE_COPY(Class) Q_DISABLE_COPY (Class)
+
 /**
  * @}
  */

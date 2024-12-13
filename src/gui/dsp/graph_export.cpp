@@ -5,6 +5,7 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/fader.h"
 #include "gui/dsp/graph.h"
+#include "gui/dsp/graph_builder.h"
 #include "gui/dsp/graph_export.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/port.h"
@@ -385,8 +386,9 @@ graph_export_as_simple (GraphExportType type, const char * export_path)
   AudioEngine::State state{};
   AUDIO_ENGINE->wait_for_pause (state, Z_F_FORCE, true);
 
-  Graph graph (ROUTER.get ());
-  graph.setup (false, false);
+  Graph               graph;
+  ProjectGraphBuilder builder (*PROJECT, false);
+  builder.build_graph (graph, false, std::nullopt);
 
   graph_export_as (&graph, type, export_path);
 

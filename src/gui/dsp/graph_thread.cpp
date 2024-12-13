@@ -240,7 +240,7 @@ GraphThread::run_worker ()
 #endif
 
       to_run->process (
-        graph->router_->time_nfo_, AUDIO_ENGINE->remaining_latency_preroll_);
+        router_.time_nfo_, AUDIO_ENGINE->remaining_latency_preroll_);
 
       /* if there are no outgoing edges, this is a terminal node */
       if (to_run->childnodes_.empty ())
@@ -339,10 +339,14 @@ get_stack_size ()
   return rv;
 }
 
-GraphThread::GraphThread (const int id, const bool is_main, Graph &graph)
+GraphThread::GraphThread (
+  const int     id,
+  const bool    is_main,
+  Graph        &graph,
+  const Router &router)
     : juce::Thread (
         is_main ? "GraphWorkerMain" : fmt::format ("GraphWorker{}", id),
         THREAD_STACK_SIZE + get_stack_size ()),
-      id_ (id), is_main_ (is_main), graph_ (graph)
+      id_ (id), is_main_ (is_main), graph_ (graph), router_ (router)
 {
 }

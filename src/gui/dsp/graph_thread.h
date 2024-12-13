@@ -33,6 +33,7 @@
 #include "utils/types.h"
 
 class Graph;
+class Router;
 
 /**
  * @addtogroup dsp
@@ -54,7 +55,7 @@ public:
    * @param is_main Whether main thread.
    * @throw ZrythmException if the thread could not be started.
    */
-  explicit GraphThread (int id, bool is_main, Graph &graph);
+  explicit GraphThread (int id, bool is_main, Graph &graph, const Router &router);
 
 public:
   /**
@@ -93,6 +94,8 @@ public:
 
   /** Pointer back to the graph. */
   Graph &graph_;
+
+  const Router &router_;
 };
 
 /**

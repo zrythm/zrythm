@@ -7,15 +7,16 @@
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/engine.h"
 #include "gui/dsp/graph.h"
+#include "gui/dsp/graph_builder.h"
 #include "gui/dsp/midi_event.h"
 #include "gui/dsp/port.h"
 #include "gui/dsp/router.h"
 #include "gui/dsp/track.h"
 #include "gui/dsp/tracklist.h"
-
 #include "utils/dsp.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/math.h"
+
 #include <fmt/format.h>
 
 using namespace zrythm;
@@ -378,7 +379,7 @@ ChannelSend::connect_stereo (
     {
       auto src =
         Port::find_from_identifier<AudioPort> (*stereo_out_->get_l ().id_);
-      if (!Graph (ROUTER.get ()).can_ports_be_connected (*src, *l))
+      if (!ProjectGraphBuilder::can_ports_be_connected (*PROJECT, *src, *l))
         {
           throw ZrythmException (QObject::tr ("Ports cannot be connected"));
         }
@@ -420,7 +421,7 @@ ChannelSend::connect_midi (MidiPort &port, bool recalc_graph, bool validate)
   if (validate && port.is_in_active_project ())
     {
       Port * src = Port::find_from_identifier (*midi_out_->id_);
-      if (!Graph (ROUTER.get ()).can_ports_be_connected (*src, port))
+      if (!ProjectGraphBuilder::can_ports_be_connected (*PROJECT, *src, port))
         {
           throw ZrythmException (QObject::tr ("Ports cannot be connected"));
         }

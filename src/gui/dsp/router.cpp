@@ -31,7 +31,7 @@
 #include "gui/dsp/audio_track.h"
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/engine.h"
-
+#include "gui/dsp/graph_builder.h"
 #include "utils/debug.h"
 #if HAVE_JACK
 #  include "gui/dsp/engine_jack.h"
@@ -170,13 +170,21 @@ Router::recalc_graph (bool soft)
 {
   z_info ("Recalculating{}...", soft ? " (soft)" : "");
 
+  auto post_build_cb = [] () {
+    PROJECT->clip_editor_.set_caches ();
+    TRACKLIST->set_caches (ALL_CACHE_TYPES);
+  };
+
   if (!graph_ && !soft)
     {
-      graph_ = std::make_unique<Graph> (this);
+      graph_ = std::make_unique<Graph> ();
       graph_setup_in_progress_.store (true);
-      graph_->setup (true, true);
+      ProjectGraphBuilder builder (*PROJECT, true);
+      builder.build_graph (*graph_, true, post_build_cb);
       graph_setup_in_progress_.store (false);
-      graph_->start ();
+      graph_->start ([&] (bool is_main, int id, Graph &graph) {
+        return std::make_unique<GraphThread> (id, is_main, graph, *this);
+      });
       return;
     }
 
@@ -195,7 +203,8 @@ Router::recalc_graph (bool soft)
           std::this_thread::sleep_for (std::chrono::milliseconds (100));
         }
       graph_setup_in_progress_.store (true);
-      graph_->setup (true, true);
+      ProjectGraphBuilder builder (*PROJECT, true);
+      builder.build_graph (*graph_, true, post_build_cb);
       graph_setup_in_progress_.store (false);
       AUDIO_ENGINE->run_.store (running);
     }

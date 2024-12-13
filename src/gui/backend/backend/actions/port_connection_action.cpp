@@ -4,7 +4,7 @@
 #include "gui/backend/backend/actions/port_connection_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-
+#include "gui/dsp/graph_builder.h"
 #include "gui/dsp/port.h"
 #include "gui/dsp/router.h"
 
@@ -72,7 +72,8 @@ PortConnectionAction::do_or_undo (bool _do)
     case Type::Disconnect:
       if ((type_ == Type::Connect && _do) || (type_ == Type::Disconnect && !_do))
         {
-          if (!Graph (ROUTER.get ()).can_ports_be_connected (*src, *dest))
+          if (
+            !ProjectGraphBuilder::can_ports_be_connected (*PROJECT, *src, *dest))
             {
               throw ZrythmException (fmt::format (
                 "'{}' cannot be connected to '{}'", src->get_label (),

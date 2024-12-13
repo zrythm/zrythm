@@ -24,20 +24,18 @@
  * ---
  */
 
-#ifndef __AUDIO_GRAPH_H__
-#define __AUDIO_GRAPH_H__
+#ifndef ZRYTHM_DSP_GRAPH_H
+#define ZRYTHM_DSP_GRAPH_H
 
 #include <semaphore>
 
 #include "dsp/graph_node.h"
-#include "gui/dsp/plugin.h"
 #include "utils/mpmc_queue.h"
 #include "utils/types.h"
 
-class Port;
-class SampleProcessor;
+using namespace zrythm;
+
 class GraphThread;
-class Router;
 
 /**
  * @addtogroup dsp
@@ -46,12 +44,18 @@ class Router;
  */
 
 /**
- * Graph.
+ * @brief The Graph class represents a graph of DSP nodes.
+ *
+ * The Graph class manages the lifecycle of DSP nodes and their connections,
+ * allowing for efficient parallel processing of the graph. It provides
+ * functionality to start and terminate the processing, add and remove nodes,
+ * and manage the overall graph structure.
  */
 class Graph final
 {
 public:
   using GraphNode = dsp::GraphNode;
+  using GraphThreadPtr = std::unique_ptr<GraphThread>;
   static constexpr int MAX_GRAPH_THREADS = 128;
 
   class InitialProcessor final : public dsp::IProcessable
@@ -61,8 +65,9 @@ public:
   };
 
 public:
-  Graph (Router * router, SampleProcessor * sample_processor = nullptr);
+  Graph ();
   ~Graph ();
+  Z_DISABLE_COPY_MOVE (Graph)
 
   void print () const;
 
@@ -79,32 +84,26 @@ public:
 
   void update_latencies (bool use_setup_nodes);
 
-  /*
-   * Adds the graph nodes and connections, then rechains.
+  /**
+   * @brief Function that creates a thread.
    *
-   * @param drop_unnecessary_ports Drops any ports that don't connect anywhere.
-   * @param rechain Whether to rechain or not. If we are just validating this
-   * should be 0.
+   * @note May throw an exception if the thread cannot be created.
    */
-  void setup (bool drop_unnecessary_ports, bool rechain);
+  using ThreadCreateFunc =
+    std::function<GraphThreadPtr (bool is_main, int id, Graph &graph)>;
 
   /**
-   * Adds a new connection for the given src and dest ports and validates the
-   * graph.
+   * Starts processing the graph.
    *
-   * @note This should be called on a new instance of Graph.
-   *
-   * @return Whether the ports can be connected (if the connection will
-   * be valid and won't break the acyclicity of the graph).
-   */
-  bool can_ports_be_connected (const Port &src, const Port &dest);
-
-  /**
-   * Starts as many threads as there are cores.
-   *
+   * @param ThreadCreateFunc A function that creates a thread.
+   * @param num_threads Number of threads to use. If not set, uses an
+   * appropriate number based on the number of cores. If set, the number will be
+   * clamped to reasonable bounds.
    * @throw ZrythmException on failure.
    */
-  void start ();
+  void start (
+    ThreadCreateFunc   thread_create_func,
+    std::optional<int> num_threads = std::nullopt);
 
   /**
    * Tell all threads to terminate.
@@ -116,7 +115,27 @@ public:
    */
   ATTR_HOT void trigger_node (GraphNode &node);
 
-private:
+  /**
+   * Creates a new node, adds it to the graph and returns it.
+   */
+  GraphNode * add_node_for_processable (
+    dsp::IProcessable     &node,
+    const dsp::ITransport &transport);
+
+  GraphNode * add_initial_processor (const dsp::ITransport &transport)
+  {
+    return add_node_for_processable (initial_processor_, transport);
+  };
+
+  /**
+   * @brief To be called when done adding nodes to the graph.
+   *
+   * This will update initial and terminal nodes.
+   */
+  void finish_adding_nodes ();
+
+  void rechain ();
+
   /**
    * @brief Checks for cycles in the graph.
    *
@@ -124,29 +143,14 @@ private:
    */
   bool is_valid () const;
 
+private:
   void clear_setup ();
 
-  void rechain ();
-
-  void add_plugin (zrythm::gui::old_dsp::plugins::Plugin &pl);
-
-  void connect_plugin (
-    zrythm::gui::old_dsp::plugins::Plugin &pl,
-    bool                                   drop_unnecessary_ports);
-
-  GraphNode * add_port (
-    PortPtrVariant          port_var,
-    PortConnectionsManager &mgr,
-    bool                    drop_if_unnecessary);
-
-  /**
-   * Creates a new node, adds it to the graph and returns it.
-   */
-  GraphNode * add_node_for_processable (dsp::IProcessable &node);
+  void set_initial_and_terminal_nodes ();
 
 public:
-  std::vector<std::unique_ptr<GraphThread>> threads_;
-  std::unique_ptr<GraphThread>              main_thread_;
+  std::vector<GraphThreadPtr> threads_;
+  GraphThreadPtr              main_thread_;
 
   /* --- caches for current graph --- */
   GraphNode * bpm_node_ = nullptr;
@@ -192,8 +196,10 @@ public:
    */
   GraphNodesVector graph_nodes_vector_;
 
-  /** Pointer back to router for convenience. */
-  Router * router_ = nullptr;
+  /**
+   * @brief Function to be called to clear the output buffers of a node.
+   */
+  using ClearOutputBufferFunc = std::function<void ()>;
 
   /**
    * An array of pointers to ports that are exposed to the backend and are
@@ -202,7 +208,7 @@ public:
    * Used to clear their buffers when returning early from the processing
    * cycle.
    */
-  std::vector<Port *> external_out_ports_;
+  std::vector<ClearOutputBufferFunc> clear_external_output_buffer_funcs_;
 
 private:
   /**
@@ -219,9 +225,6 @@ private:
   /** Used only when constructing the graph so we can traverse the graph
    * backwards to calculate the playback latencies. */
   std::vector<GraphNode *> setup_terminal_nodes_;
-
-  /** Sample processor, if temporary graph for sample processor. */
-  SampleProcessor * sample_processor_ = nullptr;
 
   InitialProcessor initial_processor_;
 };

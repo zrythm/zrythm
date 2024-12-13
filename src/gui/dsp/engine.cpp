@@ -1044,9 +1044,9 @@ AudioEngine::clear_output_buffers (nframes_t nframes)
     return;
 
   /* clear outputs exposed to the backend */
-  for (auto &port : router_->graph_->external_out_ports_)
+  for (auto &func : router_->graph_->clear_external_output_buffer_funcs_)
     {
-      port->clear_external_buffer ();
+      func ();
     }
 }
 

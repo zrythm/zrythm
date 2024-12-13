@@ -81,6 +81,8 @@ target_sources(zrythm_gui_lib
     folder_track.cpp
     graph.h
     graph.cpp
+    graph_builder.h
+    graph_builder.cpp
     graph_export.h
     graph_export.cpp
     graph_thread.h
