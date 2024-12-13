@@ -388,7 +388,7 @@ graph_export_as_simple (GraphExportType type, const char * export_path)
 
   Graph               graph;
   ProjectGraphBuilder builder (*PROJECT, false);
-  builder.build_graph (graph, false, std::nullopt);
+  builder.build_graph (graph);
 
   graph_export_as (&graph, type, export_path);
 

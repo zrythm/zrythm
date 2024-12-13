@@ -118,10 +118,10 @@ GraphThread::on_reached_terminal_node ()
       graph_.terminal_refcnt_.store (graph_.terminal_nodes_.size ());
 
       /* and start the initial nodes */
-      for (auto &node : graph_.init_trigger_list_)
+      for (auto node : graph_.init_trigger_list_)
         {
           graph_.trigger_queue_size_.fetch_add (1);
-          graph_.trigger_queue_.push_back (node);
+          graph_.trigger_queue_.push_back (std::addressof (node.get ()));
         }
       /* continue in worker-thread */
     }
@@ -251,9 +251,9 @@ GraphThread::run_worker ()
       else
         {
           /* notify downstream nodes that depend on this node */
-          for (auto * child_node : to_run->childnodes_)
+          for (const auto child_node : to_run->childnodes_)
             {
-              graph->trigger_node (*child_node);
+              graph->trigger_node (child_node);
             }
         }
     }
@@ -284,17 +284,17 @@ GraphThread::run ()
       /* first time setup */
 
       /* Can't run without a graph */
-      z_warn_if_fail (!graph->graph_nodes_vector_.empty ());
-      z_warn_if_fail (!graph->init_trigger_list_.empty ());
-      z_warn_if_fail (!graph->terminal_nodes_.empty ());
+      z_return_if_fail (!graph->graph_nodes_vector_.empty ());
+      z_return_if_fail (!graph->init_trigger_list_.empty ());
+      z_return_if_fail (!graph->terminal_nodes_.empty ());
 
       /* bootstrap trigger-list.
        * (later this is done by Graph.reached_terminal_node())*/
-      for (auto &node : graph->init_trigger_list_)
+      for (const auto node : graph->init_trigger_list_)
         {
           graph->trigger_queue_size_.fetch_add (1);
           /*z_info ("[main] pushing back node {} during bootstrap", i);*/
-          graph->trigger_queue_.push_back (node);
+          graph->trigger_queue_.push_back (std::addressof (node.get ()));
         }
     }
 

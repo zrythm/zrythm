@@ -1289,9 +1289,9 @@ AudioEngine::process (const nframes_t total_frames_to_process)
         }
 
       /* loop through each route */
-      for (auto start_node : router_->graph_->init_trigger_list_)
+      for (const auto start_node : router_->graph_->init_trigger_list_)
         {
-          const auto route_latency = start_node->route_playback_latency_;
+          const auto route_latency = start_node.get ().route_playback_latency_;
 
           if (remaining_latency_preroll_ > route_latency + num_preroll_frames)
             {

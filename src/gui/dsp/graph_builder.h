@@ -22,23 +22,21 @@ public:
   virtual ~IGraphBuilder () = default;
 
   /**
-   * @brief Function to be called after the graph is built and before
-   * re-chaining (if re-chaining requested).
+   * @brief Populates the graph.
    *
+   * @param graph The graph to populate.
    */
-  using PostBuildCallback = std::function<void ()>;
+  void build_graph (Graph &graph)
+  {
+    build_graph_impl (graph);
+    graph.finish_adding_nodes ();
+  };
 
+protected:
   /**
-   * @brief Builds the graph.
-   *
-   * @param graph The graph to build.
-   * @param rechain Whether to rechain (prepare the graph for processing by
-   * moving its setup nodes to active nodes).
+   * @brief Actual logic to be implemented by subclasses.
    */
-  virtual void build_graph (
-    Graph                           &graph,
-    bool                             rechain,
-    std::optional<PostBuildCallback> post_build_cb) = 0;
+  virtual void build_graph_impl (Graph &graph) = 0;
 };
 
 class ProjectGraphBuilder final : public IGraphBuilder
@@ -49,11 +47,6 @@ public:
   {
   }
 
-  void build_graph (
-    Graph                           &graph,
-    bool                             rechain,
-    std::optional<PostBuildCallback> post_build_cb) override;
-
   /**
    * Adds a new connection for the given src and dest ports and validates the
    * graph.
@@ -63,6 +56,9 @@ public:
    */
   static bool
   can_ports_be_connected (Project &project, const Port &src, const Port &dest);
+
+private:
+  void build_graph_impl (Graph &graph) override;
 
 private:
   Project &project_;

@@ -51,10 +51,11 @@ GraphNode::print_node_to_str () const
     "node [({}) {}] refcount: {} | terminal: {} | initial: {} | playback latency: {}",
     node_id_, name, refcount_.load (), terminal_, initial_, playback_latency_);
   std::string str2;
-  for (auto * const dest : childnodes_)
+  for (const auto dest : childnodes_)
     {
-      name = dest->processable_.get_node_name ();
-      str2 = fmt::format ("{} (dest [({}) {}])", str1, dest->node_id_, name);
+      name = dest.get ().processable_.get_node_name ();
+      str2 =
+        fmt::format ("{} (dest [({}) {}])", str1, dest.get ().node_id_, name);
       str1 = str2;
     }
   return str1;
@@ -168,15 +169,14 @@ void
 GraphNode::add_feeds (GraphNode &dest)
 {
   /* return if already added */
-  for (auto child : childnodes_)
+  if (std::ranges::any_of (childnodes_, [&] (const auto child) {
+        return std::addressof (child.get ()) == &dest;
+      }))
     {
-      if (child == &dest)
-        {
-          return;
-        }
+      return;
     }
 
-  childnodes_.push_back (&dest);
+  childnodes_.emplace_back (dest);
 
   terminal_ = false;
 }
@@ -188,7 +188,7 @@ GraphNode::add_depends (GraphNode &src)
   refcount_ = init_refcount_;
 
   /* add parent nodes */
-  parentnodes_.push_back (&src);
+  parentnodes_.emplace_back (src);
 
   initial_ = false;
 }
@@ -211,9 +211,9 @@ GraphNode::set_route_playback_latency (nframes_t dest_latency)
       return;
     }
 
-  for (auto parent : parentnodes_)
+  for (const auto parent : parentnodes_)
     {
-      parent->set_route_playback_latency (route_playback_latency_);
+      parent.get ().set_route_playback_latency (route_playback_latency_);
 #if 0
       z_info (
         "added %d route playback latency from node %s to "
@@ -229,9 +229,9 @@ GraphNode::set_route_playback_latency (nframes_t dest_latency)
 void
 GraphNode::connect_to (GraphNode &target)
 {
-  if (
-    std::find (childnodes_.begin (), childnodes_.end (), &target)
-    != childnodes_.end ())
+  if (std::ranges::any_of (childnodes_, [&target] (const auto &cur) {
+        return std::addressof (cur.get ()) == &target;
+      }))
     return;
 
   add_feeds (target);

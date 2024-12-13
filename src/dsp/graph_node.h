@@ -176,10 +176,8 @@ public:
    * @brief Outgoing nodes.
    *
    * Downstream nodes to activate when this node has completed processing.
-   *
-   * @note These are not owned.
    */
-  std::vector<GraphNode *> childnodes_;
+  std::vector<std::reference_wrapper<GraphNode>> childnodes_;
 
   /** Initial incoming node count. */
   int init_refcount_ = 0;
@@ -205,10 +203,8 @@ private:
    *
    * Used when creating the graph so we can traverse it backwards to set the
    * latencies.
-   *
-   * @note These are not owned.
    */
-  std::vector<GraphNode *> parentnodes_;
+  std::vector<std::reference_wrapper<GraphNode>> parentnodes_;
 
   const dsp::ITransport &transport_;
 

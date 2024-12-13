@@ -557,9 +557,8 @@ SampleProcessor::queue_file_or_chord_preset (
     AUDIO_ENGINE->port_operation_lock_);
   graph_ = std::make_unique<Graph> ();
   ProjectGraphBuilder builder (*PROJECT, true);
-  builder.build_graph (*graph_, true, [&] () {
-    tracklist_->set_caches (ALL_CACHE_TYPES);
-  });
+  builder.build_graph (*graph_);
+  tracklist_->set_caches (ALL_CACHE_TYPES);
   graph_.reset ();
 }
 

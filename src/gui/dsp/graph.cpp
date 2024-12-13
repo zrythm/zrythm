@@ -56,35 +56,32 @@ Graph::trigger_node (GraphNode &node)
 bool
 Graph::is_valid () const
 {
-  std::vector<GraphNode *> triggers;
-  for (auto trigger : setup_init_trigger_list_)
+  std::vector<std::reference_wrapper<GraphNode>> triggers;
+  triggers.reserve (setup_init_trigger_list_.size ());
+  for (const auto trigger : setup_init_trigger_list_)
     {
       triggers.push_back (trigger);
     }
 
   while (!triggers.empty ())
     {
-      auto trigger = triggers.back ();
+      const auto trigger = triggers.back ();
       triggers.pop_back ();
 
-      for (auto child : trigger->childnodes_)
+      for (const auto child : trigger.get ().childnodes_)
         {
-          trigger->childnodes_.pop_back ();
-          child->init_refcount_--;
-          if (child->init_refcount_ == 0)
+          trigger.get ().childnodes_.pop_back ();
+          child.get ().init_refcount_--;
+          if (child.get ().init_refcount_ == 0)
             {
               triggers.push_back (child);
             }
         }
     }
 
-  for (auto &node : setup_graph_nodes_vector_)
-    {
-      if (!node->childnodes_.empty () || node->init_refcount_ > 0)
-        return false;
-    }
-
-  return true;
+  return std::ranges::none_of (setup_graph_nodes_vector_, [] (const auto &node) {
+    return !node->childnodes_.empty () || node->init_refcount_ > 0;
+  });
 }
 
 void
@@ -98,6 +95,8 @@ Graph::clear_setup ()
 void
 Graph::rechain ()
 {
+  z_debug ("rechaining graph...");
+
   z_return_if_fail (trigger_queue_size_.load () == 0);
 
   /* --- swap setup nodes with graph nodes --- */
@@ -112,6 +111,8 @@ Graph::rechain ()
   trigger_queue_.reserve (graph_nodes_vector_.size ());
 
   clear_setup ();
+
+  z_debug ("rechaining done");
 }
 
 void
@@ -149,10 +150,10 @@ Graph::get_max_route_playback_latency (bool use_setup_nodes)
   nframes_t   max = 0;
   const auto &nodes =
     use_setup_nodes ? setup_init_trigger_list_ : init_trigger_list_;
-  for (const auto &node : nodes)
+  for (const auto node : nodes)
     {
-      if (node->route_playback_latency_ > max)
-        max = node->route_playback_latency_;
+      if (node.get ().route_playback_latency_ > max)
+        max = node.get ().route_playback_latency_;
     }
 
   return max;
@@ -220,13 +221,13 @@ Graph::set_initial_and_terminal_nodes ()
         {
           /* terminal node */
           node->terminal_ = true;
-          setup_terminal_nodes_.push_back (node.get ());
+          setup_terminal_nodes_.emplace_back (*node);
         }
       if (node->init_refcount_ == 0)
         {
           /* initial node */
           node->initial_ = true;
-          setup_init_trigger_list_.push_back (node.get ());
+          setup_init_trigger_list_.emplace_back (*node);
         }
     }
 }

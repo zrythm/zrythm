@@ -5,11 +5,10 @@
 #include "gui/dsp/graph_builder.h"
 
 void
-ProjectGraphBuilder::build_graph (
-  Graph                           &graph,
-  bool                             rechain,
-  std::optional<PostBuildCallback> post_build_cb)
+ProjectGraphBuilder::build_graph_impl (Graph &graph)
 {
+  z_debug ("building graph...");
+
   const bool drop_unnecessary_ports = drop_unnecessary_ports_;
 
   /* ========================
@@ -711,22 +710,7 @@ ProjectGraphBuilder::build_graph (
         convert_to_variant<PortPtrVariant> (port));
     }
 
-  graph.finish_adding_nodes ();
-
-  /* ========================
-   * set up caches to tracks, channels, plugins, automation tracks, etc.
-   *
-   * this is because indices can be changed by the GUI thread while the graph is
-   * running TODO or maybe not needed since there is a lock now
-   * ======================== */
-
-  if (post_build_cb)
-    {
-      post_build_cb.value () ();
-    }
-
-  if (rechain)
-    graph.rechain ();
+  z_debug ("done building graph");
 }
 
 bool
@@ -740,7 +724,7 @@ ProjectGraphBuilder::
 
   ProjectGraphBuilder builder (project, false);
   Graph               graph;
-  builder.build_graph (graph, false, std::nullopt); // FIXME: last arg
+  builder.build_graph (graph);
 
   /* connect the src/dest if not NULL */
   /* this code is only for creating graphs to test if the connection between

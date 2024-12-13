@@ -54,6 +54,7 @@ class GraphThread;
 class Graph final
 {
 public:
+  friend class IGraphBuilder;
   using GraphNode = dsp::GraphNode;
   using GraphThreadPtr = std::unique_ptr<GraphThread>;
   static constexpr int MAX_GRAPH_THREADS = 128;
@@ -75,13 +76,17 @@ public:
   find_node_for_processable (const dsp::IProcessable &processable) const;
 
   /**
-   * Returns the max playback latency of the trigger
-   * nodes.
+   * Returns the max playback latency of the trigger nodes.
    */
   nframes_t get_max_route_playback_latency (bool use_setup_nodes);
 
   // GraphThread * get_current_thread () const;
 
+  /**
+   * @brief Updates the latencies of all nodes.
+   *
+   * @param use_setup_nodes
+   */
   void update_latencies (bool use_setup_nodes);
 
   /**
@@ -127,13 +132,6 @@ public:
     return add_node_for_processable (initial_processor_, transport);
   };
 
-  /**
-   * @brief To be called when done adding nodes to the graph.
-   *
-   * This will update initial and terminal nodes.
-   */
-  void finish_adding_nodes ();
-
   void rechain ();
 
   /**
@@ -147,6 +145,13 @@ private:
   void clear_setup ();
 
   void set_initial_and_terminal_nodes ();
+
+  /**
+   * @brief To be called when done adding nodes to the graph.
+   *
+   * This will update initial and terminal nodes.
+   */
+  void finish_adding_nodes ();
 
 public:
   std::vector<GraphThreadPtr> threads_;
@@ -169,10 +174,10 @@ public:
   /** Nodes without incoming edges.
    * These run concurrently at the start of each
    * cycle to kick off processing */
-  std::vector<GraphNode *> init_trigger_list_;
+  std::vector<std::reference_wrapper<GraphNode>> init_trigger_list_;
 
   /** Number of graph nodes without an outgoing edge. */
-  std::vector<GraphNode *> terminal_nodes_;
+  std::vector<std::reference_wrapper<GraphNode>> terminal_nodes_;
 
   /** Remaining unprocessed terminal nodes in this cycle. */
   std::atomic<int> terminal_refcnt_ = 0;
@@ -189,10 +194,6 @@ public:
   using GraphNodesVector = std::vector<std::unique_ptr<GraphNode>>;
   /**
    * @brief List of all graph nodes.
-   *
-   * This manages the lifetime of graph nodes automatically.
-   *
-   * The key is a raw pointer to a Plugin, Port, etc.
    */
   GraphNodesVector graph_nodes_vector_;
 
@@ -220,11 +221,11 @@ private:
    */
   GraphNodesVector setup_graph_nodes_vector_;
 
-  std::vector<GraphNode *> setup_init_trigger_list_;
+  std::vector<std::reference_wrapper<GraphNode>> setup_init_trigger_list_;
 
   /** Used only when constructing the graph so we can traverse the graph
    * backwards to calculate the playback latencies. */
-  std::vector<GraphNode *> setup_terminal_nodes_;
+  std::vector<std::reference_wrapper<GraphNode>> setup_terminal_nodes_;
 
   InitialProcessor initial_processor_;
 };
