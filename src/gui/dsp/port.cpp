@@ -3,6 +3,7 @@
 
 #include "zrythm-config.h"
 
+#include "dsp/graph.h"
 #include "dsp/port_identifier.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
@@ -11,7 +12,6 @@
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/cv_port.h"
 #include "gui/dsp/engine_jack.h"
-#include "gui/dsp/graph.h"
 #include "gui/dsp/hardware_processor.h"
 #include "gui/dsp/master_track.h"
 #include "gui/dsp/midi_event.h"
@@ -549,6 +549,13 @@ Port::find_from_identifier (const zrythm::dsp::PortIdentifier &id)
     default:
       z_return_val_if_reached (nullptr);
     };
+}
+
+bool
+Port::needs_external_buffer_clear_when_returning_early_from_processing_cycle ()
+  const
+{
+  return id_->flow_ == dsp::PortFlow::Output && is_exposed_to_backend ();
 }
 
 void

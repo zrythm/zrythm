@@ -240,4 +240,98 @@ GraphNode::connect_to (GraphNode &target)
   z_warn_if_fail (!terminal_ && !target.initial_);
 }
 
+nframes_t
+GraphNodeCollection::get_max_route_playback_latency () const
+{
+  nframes_t   max = 0;
+  const auto &nodes = trigger_nodes_;
+  for (const auto node : nodes)
+    {
+      if (node.get ().route_playback_latency_ > max)
+        max = node.get ().route_playback_latency_;
+    }
+
+  return max;
+}
+
+void
+GraphNodeCollection::update_latencies ()
+{
+  z_info ("updating graph latencies...");
+
+  /* reset latencies */
+  auto &nodes = graph_nodes_;
+  z_debug ("setting all latencies to 0");
+  for (auto &node : nodes)
+    {
+      node->playback_latency_ = 0;
+      node->route_playback_latency_ = 0;
+    }
+  z_debug ("done setting all latencies to 0");
+
+  z_debug ("iterating over {} nodes...", nodes.size ());
+  nframes_t max_playback_latency = 0;
+  for (auto &node : nodes)
+    {
+      node->playback_latency_ = node->get_single_playback_latency ();
+      if (node->playback_latency_ > 0)
+        {
+          node->set_route_playback_latency (node->playback_latency_);
+
+          if (node->playback_latency_ > max_playback_latency)
+            max_playback_latency = node->playback_latency_;
+        }
+    }
+  z_debug ("iterating done...");
+
+  z_info (
+    "Total latencies:\n"
+    "Playback: {}\n"
+    "Recording: {}\n",
+    max_playback_latency, 0);
+}
+
+void
+GraphNodeCollection::set_initial_and_terminal_nodes ()
+{
+  terminal_nodes_.clear ();
+  trigger_nodes_.clear ();
+  for (const auto &node : graph_nodes_)
+    {
+      if (node->childnodes_.empty ())
+        {
+          /* terminal node */
+          node->terminal_ = true;
+          terminal_nodes_.emplace_back (*node);
+        }
+      if (node->init_refcount_ == 0)
+        {
+          /* initial node */
+          node->initial_ = true;
+          trigger_nodes_.emplace_back (*node);
+        }
+    }
+}
+
+dsp::GraphNode *
+GraphNodeCollection::find_node_for_processable (
+  const dsp::IProcessable &processable) const
+{
+  auto it = std::ranges::find_if (graph_nodes_, [&] (const auto &node) {
+    return std::addressof (node->get_processable ())
+           == std::addressof (processable);
+  });
+  if (it != graph_nodes_.end ())
+    {
+      return it->get ();
+    }
+  return nullptr;
+}
+
+void
+GraphNodeCollection::add_special_node (dsp::GraphNode &node)
+{
+  special_nodes_.emplace_back (node);
+}
+
 } // namespace zrythm::dsp

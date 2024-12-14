@@ -13,8 +13,16 @@ target_sources(zrythm_dsp_lib
   ditherer.h
   ditherer.cpp
   dsp.h
+  graph.h
+  graph.cpp
+  graph_builder.h
+  graph_builder.cpp
   graph_node.h
   graph_node.cpp
+  graph_scheduler.h
+  graph_scheduler.cpp
+  graph_thread.h
+  graph_thread.cpp
   itransport.h
   kmeter_dsp.h
   kmeter_dsp.cpp

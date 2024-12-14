@@ -4,17 +4,18 @@
 #ifndef __AUDIO_SAMPLE_PROCESSOR_H__
 #define __AUDIO_SAMPLE_PROCESSOR_H__
 
+#include "dsp/graph.h"
+#include "dsp/position.h"
 #include "gui/backend/backend/settings/plugin_settings.h"
 #include "gui/dsp/fader.h"
-#include "gui/dsp/graph.h"
 #include "gui/dsp/metronome.h"
 #include "gui/dsp/midi_event.h"
 #include "gui/dsp/port.h"
 #include "gui/dsp/sample_playback.h"
 #include "gui/dsp/tracklist.h"
-
-#include "dsp/position.h"
 #include "utils/types.h"
+
+using namespace zrythm;
 
 class FileDescriptor;
 class ChordPreset;
@@ -178,13 +179,6 @@ public:
 
   /** Pointer to owner audio engine, if any. */
   AudioEngine * audio_engine_ = nullptr;
-
-  /** Pointer to the tempo track in the actual project, used for position
-   * calculations. */
-  // TempoTrack * tempo_track_ = nullptr;
-
-  /** Temp processing graph. */
-  std::unique_ptr<Graph> graph_;
 
   /** Semaphore to be locked while rebuilding the sample processor tracklist and
    * graph. */

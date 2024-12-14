@@ -1,14 +1,14 @@
 // SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/graph.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/fader.h"
-#include "gui/dsp/graph.h"
-#include "gui/dsp/graph_builder.h"
 #include "gui/dsp/graph_export.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/port.h"
+#include "gui/dsp/project_graph_builder.h"
 #include "gui/dsp/router.h"
 #include "gui/dsp/track.h"
 #include "utils/flags.h"
@@ -386,7 +386,7 @@ graph_export_as_simple (GraphExportType type, const char * export_path)
   AudioEngine::State state{};
   AUDIO_ENGINE->wait_for_pause (state, Z_F_FORCE, true);
 
-  Graph               graph;
+  dsp::Graph          graph;
   ProjectGraphBuilder builder (*PROJECT, false);
   builder.build_graph (graph);
 
@@ -402,7 +402,10 @@ graph_export_as_simple (GraphExportType type, const char * export_path)
  * Engine must be paused before calling this.
  */
 void
-graph_export_as (Graph * graph, GraphExportType type, const char * export_path)
+graph_export_as (
+  dsp::Graph *    graph,
+  GraphExportType type,
+  const char *    export_path)
 {
   z_info ("exporting graph to {}...", export_path);
 

@@ -3,9 +3,9 @@
 
 #include "zrythm-test-config.h"
 
+#include "dsp/graph.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/graph.h"
 #include "gui/dsp/graph_export.h"
 
 #include "tests/helpers/zrythm_helper.h"

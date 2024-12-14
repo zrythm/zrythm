@@ -32,8 +32,7 @@
 #include <cmath>
 #include <cstdlib>
 
-#include <signal.h>
-
+#include "dsp/graph_scheduler.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
@@ -49,7 +48,6 @@
 #include "gui/dsp/engine_pulse.h"
 #include "gui/dsp/engine_rtaudio.h"
 #include "gui/dsp/engine_rtmidi.h"
-#include "gui/dsp/graph.h"
 #include "gui/dsp/hardware_processor.h"
 #include "gui/dsp/metronome.h"
 #include "gui/dsp/midi_event.h"
@@ -1044,10 +1042,7 @@ AudioEngine::clear_output_buffers (nframes_t nframes)
     return;
 
   /* clear outputs exposed to the backend */
-  for (auto &func : router_->graph_->clear_external_output_buffer_funcs_)
-    {
-      func ();
-    }
+  router_->scheduler_->clear_external_output_buffers ();
 }
 
 void
@@ -1289,7 +1284,8 @@ AudioEngine::process (const nframes_t total_frames_to_process)
         }
 
       /* loop through each route */
-      for (const auto start_node : router_->graph_->init_trigger_list_)
+      for (
+        const auto start_node : router_->scheduler_->get_nodes ().trigger_nodes_)
         {
           const auto route_latency = start_node.get ().route_playback_latency_;
 
@@ -1663,10 +1659,10 @@ AudioEngine::~AudioEngine ()
 
   stop_events ();
 
-  if (router_ && router_->graph_)
+  if (router_ && router_->scheduler_)
     {
       /* terminate graph threads */
-      router_->graph_->terminate ();
+      router_->scheduler_->terminate_threads ();
     }
 
   if (activated_)

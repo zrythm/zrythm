@@ -11,11 +11,11 @@
 #include "gui/backend/plugin_manager.h"
 #include "gui/dsp/audio_region.h"
 #include "gui/dsp/engine.h"
-#include "gui/dsp/graph_builder.h"
 #include "gui/dsp/metronome.h"
 #include "gui/dsp/midi_event.h"
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/port.h"
+#include "gui/dsp/project_graph_builder.h"
 #include "gui/dsp/router.h"
 #include "gui/dsp/sample_processor.h"
 #include "gui/dsp/tempo_track.h"
@@ -555,11 +555,10 @@ SampleProcessor::queue_file_or_chord_preset (
    */
   SemaphoreRAII<std::counting_semaphore<>> port_op_raii (
     AUDIO_ENGINE->port_operation_lock_);
-  graph_ = std::make_unique<Graph> ();
+  dsp::Graph          graph;
   ProjectGraphBuilder builder (*PROJECT, true);
-  builder.build_graph (*graph_);
+  builder.build_graph (graph);
   tracklist_->set_caches (ALL_CACHE_TYPES);
-  graph_.reset ();
 }
 
 void

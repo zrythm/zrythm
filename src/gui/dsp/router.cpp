@@ -31,7 +31,7 @@
 #include "gui/dsp/audio_track.h"
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/engine.h"
-#include "gui/dsp/graph_builder.h"
+#include "gui/dsp/project_graph_builder.h"
 #include "utils/debug.h"
 #if HAVE_JACK
 #  include "gui/dsp/engine_jack.h"
@@ -39,17 +39,14 @@
 #ifdef HAVE_PORT_AUDIO
 #  include "gui/dsp/engine_pa.h"
 #endif
+#include "dsp/graph.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/graph.h"
-#include "gui/dsp/graph_thread.h"
 #include "gui/dsp/port.h"
 #include "gui/dsp/router.h"
 #include "gui/dsp/tempo_track.h"
 #include "gui/dsp/track_processor.h"
 #include "gui/dsp/tracklist.h"
-
-#include "utils/flags.h"
 
 #if HAVE_JACK
 #  include "weakjack/weak_libjack.h"
@@ -60,8 +57,9 @@ Router::Router (AudioEngine * engine) : audio_engine_ (engine) { }
 nframes_t
 Router::get_max_route_playback_latency ()
 {
-  z_return_val_if_fail (graph_, 0);
-  max_route_playback_latency_ = graph_->get_max_route_playback_latency (false);
+  z_return_val_if_fail (scheduler_, 0);
+  max_route_playback_latency_ =
+    scheduler_->get_nodes ().get_max_route_playback_latency ();
 
   return max_route_playback_latency_;
 }
@@ -69,7 +67,7 @@ Router::get_max_route_playback_latency ()
 void
 Router::start_cycle (EngineProcessTimeInfo time_nfo)
 {
-  z_return_if_fail (graph_);
+  z_return_if_fail (scheduler_);
   z_return_if_fail (
     time_nfo.local_offset_ + time_nfo.nframes_ <= AUDIO_ENGINE->nframes_);
 
@@ -118,51 +116,9 @@ Router::start_cycle (EngineProcessTimeInfo time_nfo)
         }
     }
 
-  /* process tempo track ports first */
-  /* Ideally, this hack should be removed and the BPM node should be
-   * processed like the other nodes, but I haven't figured how that would
-   * work yet due to changes in BPM requiring position conversions. Maybe
-   * schedule the BPM node to be processed first in the graph? What about
-   * splitting at n samples or at loop points (how does that affect position
-   * conversions)? Should there even be a BPM node?
-   */
-  if (graph_->bpm_node_)
-    {
-      graph_->bpm_node_->process (
-        time_nfo, AUDIO_ENGINE->remaining_latency_preroll_);
-      graph_->bpm_node_->set_skip_processing (true);
-    }
-  if (graph_->beats_per_bar_node_)
-    {
-      graph_->beats_per_bar_node_->process (
-        time_nfo, AUDIO_ENGINE->remaining_latency_preroll_);
-      graph_->beats_per_bar_node_->set_skip_processing (true);
-    }
-  if (graph_->beat_unit_node_)
-    {
-      graph_->beat_unit_node_->process (
-        time_nfo, AUDIO_ENGINE->remaining_latency_preroll_);
-      graph_->beat_unit_node_->set_skip_processing (true);
-    }
-
   callback_in_progress_ = true;
-  graph_->callback_start_sem_.release ();
-  graph_->callback_done_sem_.acquire ();
+  scheduler_->run_cycle (time_nfo_, AUDIO_ENGINE->remaining_latency_preroll_);
   callback_in_progress_ = false;
-
-  /* reset bypass state of special nodes */
-  if (graph_->bpm_node_)
-    {
-      graph_->bpm_node_->set_skip_processing (false);
-    }
-  if (graph_->beats_per_bar_node_)
-    {
-      graph_->beats_per_bar_node_->set_skip_processing (false);
-    }
-  if (graph_->beat_unit_node_)
-    {
-      graph_->beat_unit_node_->set_skip_processing (false);
-    }
 }
 
 void
@@ -173,27 +129,26 @@ Router::recalc_graph (bool soft)
   auto rebuild_graph = [&] () {
     graph_setup_in_progress_.store (true);
     ProjectGraphBuilder builder (*PROJECT, true);
-    builder.build_graph (*graph_);
+    dsp::Graph          graph;
+    builder.build_graph (graph);
     PROJECT->clip_editor_.set_caches ();
     TRACKLIST->set_caches (ALL_CACHE_TYPES);
-    graph_->rechain ();
+    scheduler_->rechain_from_node_collection (graph.steal_nodes ());
     graph_setup_in_progress_.store (false);
   };
 
-  if (!graph_ && !soft)
+  if (!scheduler_ && !soft)
     {
-      graph_ = std::make_unique<Graph> ();
+      scheduler_ = std::make_unique<dsp::GraphScheduler> ();
       rebuild_graph ();
-      graph_->start ([&] (bool is_main, int id, Graph &graph) {
-        return std::make_unique<GraphThread> (id, is_main, graph, *this);
-      });
+      scheduler_->start_threads ();
       return;
     }
 
   if (soft)
     {
       graph_access_sem_.acquire ();
-      graph_->update_latencies (false);
+      scheduler_->get_nodes ().update_latencies ();
       graph_access_sem_.release ();
     }
   else

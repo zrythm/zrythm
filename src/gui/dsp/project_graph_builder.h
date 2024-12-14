@@ -3,43 +3,14 @@
 
 #pragma once
 
-#include "gui/dsp/graph.h"
+#include "dsp/graph_builder.h"
+
+using namespace zrythm;
 
 class Project;
 class Port;
 
-/**
- * @brief Interface for building a graph of nodes.
- *
- * Implementations of this interface are responsible for constructing the
- * graph of nodes that represent the audio processing pipeline.
- */
-class IGraphBuilder
-{
-public:
-  using GraphNode = Graph::GraphNode;
-
-  virtual ~IGraphBuilder () = default;
-
-  /**
-   * @brief Populates the graph.
-   *
-   * @param graph The graph to populate.
-   */
-  void build_graph (Graph &graph)
-  {
-    build_graph_impl (graph);
-    graph.finish_adding_nodes ();
-  };
-
-protected:
-  /**
-   * @brief Actual logic to be implemented by subclasses.
-   */
-  virtual void build_graph_impl (Graph &graph) = 0;
-};
-
-class ProjectGraphBuilder final : public IGraphBuilder
+class ProjectGraphBuilder final : public dsp::IGraphBuilder
 {
 public:
   ProjectGraphBuilder (Project &project, bool drop_unnecessary_ports)
@@ -58,7 +29,7 @@ public:
   can_ports_be_connected (Project &project, const Port &src, const Port &dest);
 
 private:
-  void build_graph_impl (Graph &graph) override;
+  void build_graph_impl (dsp::Graph &graph) override;
 
 private:
   Project &project_;

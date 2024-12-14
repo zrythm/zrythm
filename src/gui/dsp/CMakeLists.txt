@@ -79,14 +79,8 @@ target_sources(zrythm_gui_lib
     foldable_track.cpp
     folder_track.h
     folder_track.cpp
-    graph.h
-    graph.cpp
-    graph_builder.h
-    graph_builder.cpp
     graph_export.h
     graph_export.cpp
-    graph_thread.h
-    graph_thread.cpp
     group_target_track.h
     group_target_track.cpp
     hardware_processor.h
@@ -156,6 +150,8 @@ target_sources(zrythm_gui_lib
     port_connections_manager.cpp
     processable_track.h
     processable_track.cpp
+    project_graph_builder.h
+    project_graph_builder.cpp
     quantize_options.h
     quantize_options.cpp
     recordable_track.h

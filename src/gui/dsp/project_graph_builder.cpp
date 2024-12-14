@@ -1,11 +1,14 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/graph.h"
 #include "gui/backend/backend/project.h"
-#include "gui/dsp/graph_builder.h"
+#include "gui/dsp/project_graph_builder.h"
+
+using namespace zrythm;
 
 void
-ProjectGraphBuilder::build_graph_impl (Graph &graph)
+ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
 {
   z_debug ("building graph...");
 
@@ -39,7 +42,7 @@ ProjectGraphBuilder::build_graph_impl (Graph &graph)
   /* add the hardware input processor */
   add_node_for_processable (*hw_in_processor);
 
-  auto add_plugin = [&] (Graph &graph, auto &pl) {
+  auto add_plugin = [&] (auto &graph, auto &pl) {
     z_return_if_fail (!pl.deleting_);
     std::visit (
       [&] (auto &&plugin) {
@@ -121,14 +124,12 @@ ProjectGraphBuilder::build_graph_impl (Graph &graph)
         cur_tr);
     }
 
-  graph.clear_external_output_buffer_funcs_.clear ();
-
   auto add_port =
     [&] (
-      Graph &graph, PortPtrVariant port_var, PortConnectionsManager &mgr,
+      auto &graph, PortPtrVariant port_var, PortConnectionsManager &mgr,
       const bool drop_if_unnecessary) {
       return std::visit (
-        [&] (auto &&port) -> Graph::GraphNode * {
+        [&] (auto &&port) -> dsp::GraphNode * {
           using PortT = base_type<decltype (port)>;
           auto owner = port->id_->owner_type_;
 
@@ -226,15 +227,6 @@ ProjectGraphBuilder::build_graph_impl (Graph &graph)
       if (port->deleting_ || (port->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin && port->get_plugin(true)->deleting_))
         continue;
 
-      if (
-        port->id_->flow_ == dsp::PortFlow::Output
-        && port->is_exposed_to_backend ())
-        {
-          graph.clear_external_output_buffer_funcs_.emplace_back ([port] () {
-            port->clear_external_buffer ();
-          });
-        }
-
       add_port (
         graph, convert_to_variant<PortPtrVariant> (port),
         *project.port_connections_manager_, drop_unnecessary_ports);
@@ -246,15 +238,16 @@ ProjectGraphBuilder::build_graph_impl (Graph &graph)
 
   auto connect_plugin =
     [&] (
-      Graph &graph, gui::old_dsp::plugins::Plugin &pl,
+      auto &graph, gui::old_dsp::plugins::Plugin &pl,
       bool drop_unnecessary_ports) {
       z_return_if_fail (!pl.deleting_);
-      auto * pl_node = graph.find_node_for_processable (pl);
+      auto * pl_node = graph.get_nodes ().find_node_for_processable (pl);
       z_return_if_fail (pl_node);
       for (auto &port : pl.in_ports_)
         {
           z_return_if_fail (port->get_plugin (true) != nullptr);
-          auto * port_node = graph.find_node_for_processable (*port);
+          auto * port_node =
+            graph.get_nodes ().find_node_for_processable (*port);
           if (
             drop_unnecessary_ports && (port_node == nullptr)
             && port->is_control ())
@@ -267,7 +260,8 @@ ProjectGraphBuilder::build_graph_impl (Graph &graph)
       for (auto &port : pl.out_ports_)
         {
           z_return_if_fail (port->get_plugin (true) != nullptr);
-          auto * port_node = graph.find_node_for_processable (*port);
+          auto * port_node =
+            graph.get_nodes ().find_node_for_processable (*port);
           z_return_if_fail (port_node);
           pl_node->connect_to (*port_node);
         }
@@ -275,68 +269,71 @@ ProjectGraphBuilder::build_graph_impl (Graph &graph)
 
   /* connect the sample processor */
   {
-    auto * node = graph.find_node_for_processable (*sample_processor);
+    auto * node =
+      graph.get_nodes ().find_node_for_processable (*sample_processor);
     z_return_if_fail (node);
     auto * port = &sample_processor->fader_->stereo_out_->get_l ();
-    auto * node2 = graph.find_node_for_processable (*port);
+    auto * node2 = graph.get_nodes ().find_node_for_processable (*port);
     node->connect_to (*node2);
     port = &sample_processor->fader_->stereo_out_->get_r ();
-    node2 = graph.find_node_for_processable (*port);
+    node2 = graph.get_nodes ().find_node_for_processable (*port);
     node->connect_to (*node2);
   }
 
   /* connect the monitor fader */
   {
-    auto * node = graph.find_node_for_processable (*monitor_fader);
+    auto * node = graph.get_nodes ().find_node_for_processable (*monitor_fader);
     auto * port = &monitor_fader->stereo_in_->get_l ();
-    auto * node2 = graph.find_node_for_processable (*port);
+    auto * node2 = graph.get_nodes ().find_node_for_processable (*port);
     node2->connect_to (*node);
     port = &monitor_fader->stereo_in_->get_r ();
-    node2 = graph.find_node_for_processable (*port);
+    node2 = graph.get_nodes ().find_node_for_processable (*port);
     node2->connect_to (*node);
     port = &monitor_fader->stereo_out_->get_l ();
-    node2 = graph.find_node_for_processable (*port);
+    node2 = graph.get_nodes ().find_node_for_processable (*port);
     node->connect_to (*node2);
     port = &monitor_fader->stereo_out_->get_r ();
-    node2 = graph.find_node_for_processable (*port);
+    node2 = graph.get_nodes ().find_node_for_processable (*port);
     node->connect_to (*node2);
   }
 
   /* connect the HW input processor */
   GraphNode * hw_processor_node =
-    graph.find_node_for_processable (*hw_in_processor);
+    graph.get_nodes ().find_node_for_processable (*hw_in_processor);
   for (auto &port : hw_in_processor->audio_ports_)
     {
-      auto node2 = graph.find_node_for_processable (*port);
+      auto node2 = graph.get_nodes ().find_node_for_processable (*port);
       z_warn_if_fail (node2);
       hw_processor_node->connect_to (*node2);
     }
   for (auto &port : hw_in_processor->midi_ports_)
     {
-      auto node2 = graph.find_node_for_processable (*port);
+      auto node2 = graph.get_nodes ().find_node_for_processable (*port);
       hw_processor_node->connect_to (*node2);
     }
 
   /* connect MIDI editor manual press */
   {
-    auto node2 =
-      graph.find_node_for_processable (*engine->midi_editor_manual_press_);
+    auto node2 = graph.get_nodes ().find_node_for_processable (
+      *engine->midi_editor_manual_press_);
     node2->connect_to (*initial_processor_node);
   }
 
   /* connect the transport ports */
   {
-    auto node = graph.find_node_for_processable (*transport->roll_);
+    auto node = graph.get_nodes ().find_node_for_processable (*transport->roll_);
     node->connect_to (*initial_processor_node);
-    node = graph.find_node_for_processable (*transport->stop_);
+    node = graph.get_nodes ().find_node_for_processable (*transport->stop_);
     node->connect_to (*initial_processor_node);
-    node = graph.find_node_for_processable (*transport->backward_);
+    node = graph.get_nodes ().find_node_for_processable (*transport->backward_);
     node->connect_to (*initial_processor_node);
-    node = graph.find_node_for_processable (*transport->forward_);
+    node = graph.get_nodes ().find_node_for_processable (*transport->forward_);
     node->connect_to (*initial_processor_node);
-    node = graph.find_node_for_processable (*transport->loop_toggle_);
+    node =
+      graph.get_nodes ().find_node_for_processable (*transport->loop_toggle_);
     node->connect_to (*initial_processor_node);
-    node = graph.find_node_for_processable (*transport->rec_toggle_);
+    node =
+      graph.get_nodes ().find_node_for_processable (*transport->rec_toggle_);
     node->connect_to (*initial_processor_node);
   }
 
@@ -348,17 +345,18 @@ ProjectGraphBuilder::build_graph_impl (Graph &graph)
           using TrackT = base_type<decltype (tr)>;
 
           /* connect the track */
-          auto * const track_node = graph.find_node_for_processable (*tr);
+          auto * const track_node =
+            graph.get_nodes ().find_node_for_processable (*tr);
           z_return_if_fail (track_node);
           if (tr->in_signal_type_ == dsp::PortType::Audio)
             {
               if constexpr (std::is_same_v<TrackT, AudioTrack>)
                 {
-                  auto node2 =
-                    graph.find_node_for_processable (*tr->processor_->mono_);
+                  auto node2 = graph.get_nodes ().find_node_for_processable (
+                    *tr->processor_->mono_);
                   node2->connect_to (*track_node);
                   initial_processor_node->connect_to (*node2);
-                  node2 = graph.find_node_for_processable (
+                  node2 = graph.get_nodes ().find_node_for_processable (
                     *tr->processor_->input_gain_);
                   node2->connect_to (*track_node);
                   initial_processor_node->connect_to (*node2);
@@ -367,18 +365,18 @@ ProjectGraphBuilder::build_graph_impl (Graph &graph)
               if constexpr (std::derived_from<TrackT, ProcessableTrack>)
                 {
                   auto track_processor = tr->processor_.get ();
-                  auto node2 = graph.find_node_for_processable (
+                  auto node2 = graph.get_nodes ().find_node_for_processable (
                     track_processor->stereo_in_->get_l ());
                   node2->connect_to (*track_node);
                   initial_processor_node->connect_to (*node2);
-                  node2 = graph.find_node_for_processable (
+                  node2 = graph.get_nodes ().find_node_for_processable (
                     track_processor->stereo_in_->get_r ());
                   node2->connect_to (*track_node);
                   initial_processor_node->connect_to (*node2);
-                  node2 = graph.find_node_for_processable (
+                  node2 = graph.get_nodes ().find_node_for_processable (
                     track_processor->stereo_out_->get_l ());
                   track_node->connect_to (*node2);
-                  node2 = graph.find_node_for_processable (
+                  node2 = graph.get_nodes ().find_node_for_processable (
                     track_processor->stereo_out_->get_r ());
                   track_node->connect_to (*node2);
                 }
@@ -392,17 +390,17 @@ ProjectGraphBuilder::build_graph_impl (Graph &graph)
                   if (tr->has_piano_roll () || tr->is_chord ())
                     {
                       /* connect piano roll */
-                      auto node2 = graph.find_node_for_processable (
+                      auto node2 = graph.get_nodes ().find_node_for_processable (
                         *track_processor->piano_roll_);
                       z_return_if_fail (node2);
                       node2->connect_to (*track_node);
                     }
 
-                  auto node2 = graph.find_node_for_processable (
+                  auto node2 = graph.get_nodes ().find_node_for_processable (
                     *track_processor->midi_in_);
                   node2->connect_to (*track_node);
                   initial_processor_node->connect_to (*node2);
-                  node2 = graph.find_node_for_processable (
+                  node2 = graph.get_nodes ().find_node_for_processable (
                     *track_processor->midi_out_);
                   track_node->connect_to (*node2);
                 }
@@ -416,7 +414,7 @@ ProjectGraphBuilder::build_graph_impl (Graph &graph)
                 {
                   for (int k = 0; k < 128; k++)
                     {
-                      auto node2 = graph.find_node_for_processable (
+                      auto node2 = graph.get_nodes ().find_node_for_processable (
                         *track_processor->midi_cc_[j * 128 + k]);
                       if (node2)
                         {
@@ -424,21 +422,21 @@ ProjectGraphBuilder::build_graph_impl (Graph &graph)
                         }
                     }
 
-                  auto node2 = graph.find_node_for_processable (
+                  auto node2 = graph.get_nodes ().find_node_for_processable (
                     *track_processor->pitch_bend_[j]);
                   if (node2 || !drop_unnecessary_ports)
                     {
                       node2->connect_to (*track_node);
                     }
 
-                  node2 = graph.find_node_for_processable (
+                  node2 = graph.get_nodes ().find_node_for_processable (
                     *track_processor->poly_key_pressure_[j]);
                   if (node2 || !drop_unnecessary_ports)
                     {
                       node2->connect_to (*track_node);
                     }
 
-                  node2 = graph.find_node_for_processable (
+                  node2 = graph.get_nodes ().find_node_for_processable (
                     *track_processor->channel_pressure_[j]);
                   if (node2 || !drop_unnecessary_ports)
                     {
@@ -449,26 +447,25 @@ ProjectGraphBuilder::build_graph_impl (Graph &graph)
 
           if constexpr (std::is_same_v<TrackT, TempoTrack>)
             {
-              graph.bpm_node_ = nullptr;
-              graph.beats_per_bar_node_ = nullptr;
-              graph.beat_unit_node_ = nullptr;
-
-              auto node2 = graph.find_node_for_processable (*tr->bpm_port_);
+              auto node2 =
+                graph.get_nodes ().find_node_for_processable (*tr->bpm_port_);
               if (node2 || !drop_unnecessary_ports)
                 {
-                  graph.bpm_node_ = node2;
+                  graph.get_nodes ().add_special_node (*node2);
                   node2->connect_to (*track_node);
                 }
-              node2 = graph.find_node_for_processable (*tr->beats_per_bar_port_);
+              node2 = graph.get_nodes ().find_node_for_processable (
+                *tr->beats_per_bar_port_);
               if (node2 || !drop_unnecessary_ports)
                 {
-                  graph.beats_per_bar_node_ = node2;
+                  graph.get_nodes ().add_special_node (*node2);
                   node2->connect_to (*track_node);
                 }
-              node2 = graph.find_node_for_processable (*tr->beat_unit_port_);
+              node2 = graph.get_nodes ().find_node_for_processable (
+                *tr->beat_unit_port_);
               if (node2 || !drop_unnecessary_ports)
                 {
-                  graph.beat_unit_node_ = node2;
+                  graph.get_nodes ().add_special_node (*node2);
                   node2->connect_to (*track_node);
                 }
               track_node->connect_to (*initial_processor_node);
@@ -488,7 +485,8 @@ ProjectGraphBuilder::build_graph_impl (Graph &graph)
                           z_return_if_fail (
                             pl_port->get_plugin (true) != nullptr);
                           auto port_node =
-                            graph.find_node_for_processable (*pl_port);
+                            graph.get_nodes ().find_node_for_processable (
+                              *pl_port);
                           if (
                             drop_unnecessary_ports && !port_node
                             && pl_port->is_control ())
@@ -510,17 +508,18 @@ ProjectGraphBuilder::build_graph_impl (Graph &graph)
               /* connect the modulator macro processors */
               for (auto &mmp : tr->modulator_macro_processors_)
                 {
-                  auto mmp_node = graph.find_node_for_processable (*mmp);
+                  auto mmp_node =
+                    graph.get_nodes ().find_node_for_processable (*mmp);
                   z_return_if_fail (mmp_node);
 
                   {
                     auto * const node2 =
-                      graph.find_node_for_processable (*mmp->cv_in_);
+                      graph.get_nodes ().find_node_for_processable (*mmp->cv_in_);
                     node2->connect_to (*mmp_node);
                   }
                   {
                     auto * const node2 =
-                      graph.find_node_for_processable (*mmp->macro_);
+                      graph.get_nodes ().find_node_for_processable (*mmp->macro_);
                     if (node2 || !drop_unnecessary_ports)
                       {
                         node2->connect_to (*mmp_node);
@@ -528,7 +527,7 @@ ProjectGraphBuilder::build_graph_impl (Graph &graph)
                   }
 
                   auto * const node2 =
-                    graph.find_node_for_processable (*mmp->cv_out_);
+                    graph.get_nodes ().find_node_for_processable (*mmp->cv_out_);
                   mmp_node->connect_to (*node2);
                 }
             }
@@ -541,37 +540,39 @@ ProjectGraphBuilder::build_graph_impl (Graph &graph)
               auto &fader = ch->fader_;
 
               /* connect the fader */
-              auto * const fader_node = graph.find_node_for_processable (*fader);
+              auto * const fader_node =
+                graph.get_nodes ().find_node_for_processable (*fader);
               z_warn_if_fail (fader_node);
               if (fader->type_ == Fader::Type::AudioChannel)
                 {
                   /* connect ins */
-                  auto node2 = graph.find_node_for_processable (
+                  auto node2 = graph.get_nodes ().find_node_for_processable (
                     fader->stereo_in_->get_l ());
                   node2->connect_to (*fader_node);
-                  node2 = graph.find_node_for_processable (
+                  node2 = graph.get_nodes ().find_node_for_processable (
                     fader->stereo_in_->get_r ());
                   node2->connect_to (*fader_node);
 
                   /* connect outs */
-                  node2 = graph.find_node_for_processable (
+                  node2 = graph.get_nodes ().find_node_for_processable (
                     fader->stereo_out_->get_l ());
                   fader_node->connect_to (*node2);
-                  node2 = graph.find_node_for_processable (
+                  node2 = graph.get_nodes ().find_node_for_processable (
                     fader->stereo_out_->get_r ());
                   fader_node->connect_to (*node2);
                 }
               else if (fader->type_ == Fader::Type::MidiChannel)
                 {
-                  auto node2 =
-                    graph.find_node_for_processable (*fader->midi_in_);
+                  auto node2 = graph.get_nodes ().find_node_for_processable (
+                    *fader->midi_in_);
                   node2->connect_to (*fader_node);
-                  node2 = graph.find_node_for_processable (*fader->midi_out_);
+                  node2 = graph.get_nodes ().find_node_for_processable (
+                    *fader->midi_out_);
                   fader_node->connect_to (*node2);
                 }
               {
                 auto * const node2 =
-                  graph.find_node_for_processable (*fader->amp_);
+                  graph.get_nodes ().find_node_for_processable (*fader->amp_);
                 if (node2 || !drop_unnecessary_ports)
                   {
                     node2->connect_to (*fader_node);
@@ -579,7 +580,7 @@ ProjectGraphBuilder::build_graph_impl (Graph &graph)
               }
               {
                 auto * const node2 =
-                  graph.find_node_for_processable (*fader->balance_);
+                  graph.get_nodes ().find_node_for_processable (*fader->balance_);
                 if (node2 || !drop_unnecessary_ports)
                   {
                     node2->connect_to (*fader_node);
@@ -587,7 +588,7 @@ ProjectGraphBuilder::build_graph_impl (Graph &graph)
               }
               {
                 auto * const node2 =
-                  graph.find_node_for_processable (*fader->mute_);
+                  graph.get_nodes ().find_node_for_processable (*fader->mute_);
                 if (node2 || !drop_unnecessary_ports)
                   {
                     node2->connect_to (*fader_node);
@@ -596,29 +597,30 @@ ProjectGraphBuilder::build_graph_impl (Graph &graph)
 
               /* connect the prefader */
               auto * const prefader_node =
-                graph.find_node_for_processable (*prefader);
+                graph.get_nodes ().find_node_for_processable (*prefader);
               z_warn_if_fail (prefader_node);
               if (prefader->type_ == Fader::Type::AudioChannel)
                 {
-                  auto * node2 = graph.find_node_for_processable (
+                  auto * node2 = graph.get_nodes ().find_node_for_processable (
                     prefader->stereo_in_->get_l ());
                   node2->connect_to (*prefader_node);
-                  node2 = graph.find_node_for_processable (
+                  node2 = graph.get_nodes ().find_node_for_processable (
                     prefader->stereo_in_->get_r ());
                   node2->connect_to (*prefader_node);
-                  node2 = graph.find_node_for_processable (
+                  node2 = graph.get_nodes ().find_node_for_processable (
                     prefader->stereo_out_->get_l ());
                   prefader_node->connect_to (*node2);
-                  node2 = graph.find_node_for_processable (
+                  node2 = graph.get_nodes ().find_node_for_processable (
                     prefader->stereo_out_->get_r ());
                   prefader_node->connect_to (*node2);
                 }
               else if (prefader->type_ == Fader::Type::MidiChannel)
                 {
-                  auto * node2 =
-                    graph.find_node_for_processable (*prefader->midi_in_);
+                  auto * node2 = graph.get_nodes ().find_node_for_processable (
+                    *prefader->midi_in_);
                   node2->connect_to (*prefader_node);
-                  node2 = graph.find_node_for_processable (*prefader->midi_out_);
+                  node2 = graph.get_nodes ().find_node_for_processable (
+                    *prefader->midi_out_);
                   prefader_node->connect_to (*node2);
                 }
 
@@ -638,35 +640,38 @@ ProjectGraphBuilder::build_graph_impl (Graph &graph)
                    * connection validation will not detect invalid connections
                    * properly */
                   auto * const send_node =
-                    graph.find_node_for_processable (*send);
+                    graph.get_nodes ().find_node_for_processable (*send);
 
-                  auto * node2 =
-                    graph.find_node_for_processable (*send->amount_);
+                  auto * node2 = graph.get_nodes ().find_node_for_processable (
+                    *send->amount_);
                   if (node2)
                     node2->connect_to (*send_node);
-                  node2 = graph.find_node_for_processable (*send->enabled_);
+                  node2 = graph.get_nodes ().find_node_for_processable (
+                    *send->enabled_);
                   if (node2)
                     node2->connect_to (*send_node);
 
                   if (tr->out_signal_type_ == dsp::PortType::Event)
                     {
-                      node2 = graph.find_node_for_processable (*send->midi_in_);
+                      node2 = graph.get_nodes ().find_node_for_processable (
+                        *send->midi_in_);
                       node2->connect_to (*send_node);
-                      node2 = graph.find_node_for_processable (*send->midi_out_);
+                      node2 = graph.get_nodes ().find_node_for_processable (
+                        *send->midi_out_);
                       send_node->connect_to (*node2);
                     }
                   else if (tr->out_signal_type_ == dsp::PortType::Audio)
                     {
-                      node2 = graph.find_node_for_processable (
+                      node2 = graph.get_nodes ().find_node_for_processable (
                         send->stereo_in_->get_l ());
                       node2->connect_to (*send_node);
-                      node2 = graph.find_node_for_processable (
+                      node2 = graph.get_nodes ().find_node_for_processable (
                         send->stereo_in_->get_r ());
                       node2->connect_to (*send_node);
-                      node2 = graph.find_node_for_processable (
+                      node2 = graph.get_nodes ().find_node_for_processable (
                         send->stereo_out_->get_l ());
                       send_node->connect_to (*node2);
-                      node2 = graph.find_node_for_processable (
+                      node2 = graph.get_nodes ().find_node_for_processable (
                         send->stereo_out_->get_r ());
                       send_node->connect_to (*node2);
                     }
@@ -677,17 +682,17 @@ ProjectGraphBuilder::build_graph_impl (Graph &graph)
     }
 
   auto connect_port = [&]<FinalPortSubclass PortT> (PortT &p) {
-    auto * node = graph.find_node_for_processable (p);
+    auto * node = graph.get_nodes ().find_node_for_processable (p);
     for (auto &src : p.srcs_)
       {
-        auto node2 = graph.find_node_for_processable (*src);
+        auto node2 = graph.get_nodes ().find_node_for_processable (*src);
         z_warn_if_fail (node);
         z_warn_if_fail (node2);
         node2->connect_to (*node);
       }
     for (auto &dest : p.dests_)
       {
-        auto node2 = graph.find_node_for_processable (*dest);
+        auto node2 = graph.get_nodes ().find_node_for_processable (*dest);
         z_warn_if_fail (node);
         z_warn_if_fail (node2);
         node->connect_to (*node2);
@@ -723,7 +728,7 @@ ProjectGraphBuilder::
   z_debug ("validating for {} to {}", src.get_label (), dest.get_label ());
 
   ProjectGraphBuilder builder (project, false);
-  Graph               graph;
+  dsp::Graph          graph;
   builder.build_graph (graph);
 
   /* connect the src/dest if not NULL */
@@ -731,9 +736,9 @@ ProjectGraphBuilder::
    * src->dest is valid */
   bool success = std::visit (
     [&] (auto &&srcp, auto &&destp) {
-      auto * node = graph.find_node_for_processable (*srcp);
+      auto * node = graph.get_nodes ().find_node_for_processable (*srcp);
       z_return_val_if_fail (node, false);
-      auto * node2 = graph.find_node_for_processable (*destp);
+      auto * node2 = graph.get_nodes ().find_node_for_processable (*destp);
       z_return_val_if_fail (node2, false);
       node->connect_to (*node2);
       z_return_val_if_fail (!node->terminal_, false);

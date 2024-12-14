@@ -63,6 +63,20 @@ public:
   virtual ATTR_HOT nframes_t get_single_playback_latency () const { return 0; }
 
   virtual ATTR_HOT void process_block (EngineProcessTimeInfo time_nfo) {};
+
+  virtual void clear_external_buffer () {};
+
+  virtual bool
+  needs_external_buffer_clear_when_returning_early_from_processing_cycle () const
+  {
+    return false;
+  };
+};
+
+class InitialProcessor final : public IProcessable
+{
+public:
+  std::string get_node_name () const override { return "Initial Processor"; }
 };
 
 /**
@@ -214,6 +228,74 @@ private:
    * @brief Flag to skip processing.
    */
   bool bypass_ = false;
+};
+
+/**
+ * @brief Manages the collection of graph nodes.
+ *
+ * This class holds a main collection of graph nodes, as well as subsets of
+ * those nodes that are initial trigger nodes and terminal nodes.
+ */
+class GraphNodeCollection
+{
+public:
+  /**
+   * Returns the max playback latency of the trigger nodes.
+   */
+  nframes_t get_max_route_playback_latency () const;
+
+  /**
+   * @brief Updates the latencies of all nodes.
+   */
+  void update_latencies ();
+
+  /**
+   * @brief Updates the initial and terminal nodes based on @ref graph_nodes_.
+   */
+  void set_initial_and_terminal_nodes ();
+
+  dsp::GraphNode *
+  find_node_for_processable (const dsp::IProcessable &processable) const;
+
+  void add_special_node (dsp::GraphNode &node);
+
+public:
+  /**
+   * @brief All nodes in the graph.
+   */
+  std::vector<std::unique_ptr<dsp::GraphNode>> graph_nodes_;
+
+  /**
+   * @brief A subset of @ref graph_nodes_ that are trigger nodes.
+   *
+   * Trigger nodes are nodes without incoming edges. They run
+   * concurrently at the start of each cycle to kick off processing.
+   */
+  std::vector<std::reference_wrapper<dsp::GraphNode>> trigger_nodes_;
+
+  /**
+   * @brief A subset of @ref graph_nodes_ that are terminal nodes.
+   *
+   * Terminal nodes are nodes without outgoing edges.
+   */
+  std::vector<std::reference_wrapper<dsp::GraphNode>> terminal_nodes_;
+
+  std::unique_ptr<dsp::InitialProcessor> initial_processor_;
+
+  /**
+   * @brief Special nodes that are processed separately at the start of
+   * each cycle.
+   *
+   * This is currently used for tempo track ports.
+   *
+   * Ideally, this hack should be removed and the BPM node should be
+   * processed like the other nodes, but I haven't figured how that would
+   * work yet due to changes in BPM requiring position conversions. Maybe
+   * schedule the BPM node to be processed first in the graph? What about
+   * splitting at n samples or at loop points (how does that affect position
+   * conversions)? Should there even be a BPM node?
+   */
+  std::vector<std::reference_wrapper<dsp::GraphNode>> special_nodes_;
 };
 
 } // namespace zrythm::dsp

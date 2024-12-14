@@ -4,8 +4,8 @@
 #include "gui/backend/backend/actions/port_connection_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/graph_builder.h"
 #include "gui/dsp/port.h"
+#include "gui/dsp/project_graph_builder.h"
 #include "gui/dsp/router.h"
 
 using namespace zrythm::gui::actions;

@@ -234,7 +234,10 @@ public:
   /**
    * Clears the backend's port buffer.
    */
-  ATTR_HOT void clear_external_buffer ();
+  ATTR_HOT void clear_external_buffer () override;
+
+  bool needs_external_buffer_clear_when_returning_early_from_processing_cycle ()
+    const override;
 
   /**
    * Disconnects all srcs and dests from port.

@@ -1,15 +1,15 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/graph.h"
 #include "gui/backend/backend/project.h"
 #include "gui/dsp/channel_send.h"
 #include "gui/dsp/channel_track.h"
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/engine.h"
-#include "gui/dsp/graph.h"
-#include "gui/dsp/graph_builder.h"
 #include "gui/dsp/midi_event.h"
 #include "gui/dsp/port.h"
+#include "gui/dsp/project_graph_builder.h"
 #include "gui/dsp/router.h"
 #include "gui/dsp/track.h"
 #include "gui/dsp/tracklist.h"

@@ -29,11 +29,9 @@
 
 #include "zrythm-config.h"
 
+#include "dsp/graph_scheduler.h"
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/engine.h"
-#include "gui/dsp/graph.h"
-#include "gui/dsp/graph_thread.h"
-
 #include "utils/rt_thread_id.h"
 #include "utils/types.h"
 
@@ -99,26 +97,14 @@ public:
         return is_processing_thread;
       }
 
-    if (!graph_) [[unlikely]]
+    if (!scheduler_) [[unlikely]]
       {
         have_result = false;
         is_processing_thread = false;
         return false;
       }
 
-    for (const auto &thread : graph_->threads_)
-      {
-        if (current_thread_id.get () == thread->rt_thread_id_)
-          {
-            is_processing_thread = true;
-            have_result = true;
-            return true;
-          }
-      }
-
-    if (
-      graph_->main_thread_
-      && current_thread_id.get () == graph_->main_thread_->rt_thread_id_)
+    if (scheduler_->contains_thread (current_thread_id.get ()))
       {
         is_processing_thread = true;
         have_result = true;
@@ -138,10 +124,7 @@ public:
   void queue_control_port_change (const ControlPort::ChangeEvent &change);
 
 public:
-  /**
-   * @brief The currently active graph.
-   */
-  std::unique_ptr<Graph> graph_;
+  std::unique_ptr<dsp::GraphScheduler> scheduler_;
 
   /** An atomic variable to check if the graph is currently being setup (so that
    * we can avoid accessing buffers changed by this). */
