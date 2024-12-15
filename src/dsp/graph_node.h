@@ -185,6 +185,12 @@ private:
     EngineProcessTimeInfo &time_nfo) const;
 
 public:
+  /** Incoming node count. */
+  std::atomic<int> refcount_ = 0;
+
+  /** The playback latency of the node, in samples. */
+  nframes_t playback_latency_ = 0;
+
   /**
    * @brief Outgoing nodes.
    *
@@ -195,9 +201,6 @@ public:
   /** Initial incoming node count. */
   int init_refcount_ = 0;
 
-  /** The playback latency of the node, in samples. */
-  nframes_t playback_latency_ = 0;
-
   /** The route's playback latency so far. */
   nframes_t route_playback_latency_ = 0;
 
@@ -205,9 +208,6 @@ public:
    * GraphNodeCollection.set_initial_and_terminal_nodes(). */
   bool terminal_ = false;
   bool initial_ = false;
-
-  /** Incoming node count. */
-  std::atomic<int> refcount_ = 0;
 
 private:
   NodeId node_id_ = 0;

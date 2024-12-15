@@ -167,7 +167,7 @@ GraphThread::run_worker ()
     {
       dsp::GraphNode * to_run = nullptr;
 
-      if (threadShouldExit ())
+      if (threadShouldExit ()) [[unlikely]]
         {
           if (id_ == -1)
             {
@@ -235,7 +235,7 @@ GraphThread::run_worker ()
 
           scheduler->trigger_sem_.acquire ();
 
-          if (threadShouldExit ())
+          if (threadShouldExit ()) [[unlikely]]
             {
               return;
             }

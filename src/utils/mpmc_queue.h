@@ -61,10 +61,7 @@
 template <typename T> class MPMCQueue
 {
 public:
-  MPMCQueue (size_t buffer_size = 8) : _buffer (0), _buffer_mask (0)
-  {
-    reserve (buffer_size);
-  }
+  MPMCQueue (size_t buffer_size = 8) { reserve (buffer_size); }
 
   ~MPMCQueue () { delete[] _buffer; }
 
@@ -177,10 +174,10 @@ private:
   };
 
   char            _pad0[64] = {};
-  cell_t *        _buffer = nullptr;
-  size_t          _buffer_mask = 0;
+  cell_t *        _buffer{ nullptr };
+  size_t          _buffer_mask{};
   char            _pad1[64 - sizeof (cell_t *) - sizeof (size_t)] = {};
-  MPMC_QUEUE_TYPE _enqueue_pos = 0;
+  MPMC_QUEUE_TYPE _enqueue_pos{ 0 };
   char            _pad2[64 - sizeof (size_t)] = {};
   MPMC_QUEUE_TYPE _dequeue_pos = 0;
   char            _pad3[64 - sizeof (size_t)] = {};
