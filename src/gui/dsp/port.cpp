@@ -552,8 +552,7 @@ Port::find_from_identifier (const zrythm::dsp::PortIdentifier &id)
 }
 
 bool
-Port::needs_external_buffer_clear_when_returning_early_from_processing_cycle ()
-  const
+Port::needs_external_buffer_clear_on_early_return () const
 {
   return id_->flow_ == dsp::PortFlow::Output && is_exposed_to_backend ();
 }

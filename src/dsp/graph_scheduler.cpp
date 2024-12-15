@@ -70,8 +70,7 @@ GraphScheduler::rechain_from_node_collection (dsp::GraphNodeCollection &&nodes)
   for (const auto &node : graph_nodes_.graph_nodes_)
     {
       if (
-        node->get_processable ()
-          .needs_external_buffer_clear_when_returning_early_from_processing_cycle ())
+        node->get_processable ().needs_external_buffer_clear_on_early_return ())
         {
           processables_that_need_external_buffer_clear_when_returning_early_from_processing_cycle_
             .emplace_back (node->get_processable ());

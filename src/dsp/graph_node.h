@@ -66,8 +66,7 @@ public:
 
   virtual void clear_external_buffer () {};
 
-  virtual bool
-  needs_external_buffer_clear_when_returning_early_from_processing_cycle () const
+  virtual bool needs_external_buffer_clear_on_early_return () const
   {
     return false;
   };
@@ -202,7 +201,8 @@ public:
   /** The route's playback latency so far. */
   nframes_t route_playback_latency_ = 0;
 
-  /** For debugging. */
+  /* For debugging. These are set by
+   * GraphNodeCollection.set_initial_and_terminal_nodes(). */
   bool terminal_ = false;
   bool initial_ = false;
 
@@ -241,6 +241,8 @@ class GraphNodeCollection
 public:
   /**
    * Returns the max playback latency of the trigger nodes.
+   *
+   * @note Requires calling set_initial_and_terminal_nodes() first.
    */
   nframes_t get_max_route_playback_latency () const;
 
@@ -253,6 +255,15 @@ public:
    * @brief Updates the initial and terminal nodes based on @ref graph_nodes_.
    */
   void set_initial_and_terminal_nodes ();
+
+  /**
+   * @brief To be called when all nodes have been added.
+   */
+  void finalize_nodes ()
+  {
+    set_initial_and_terminal_nodes ();
+    update_latencies ();
+  }
 
   dsp::GraphNode *
   find_node_for_processable (const dsp::IProcessable &processable) const;

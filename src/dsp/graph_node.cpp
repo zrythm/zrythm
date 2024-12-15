@@ -243,6 +243,13 @@ GraphNode::connect_to (GraphNode &target)
 nframes_t
 GraphNodeCollection::get_max_route_playback_latency () const
 {
+  if (graph_nodes_.empty ()) [[unlikely]]
+    {
+      return 0;
+    }
+
+  z_return_val_if_fail (!trigger_nodes_.empty (), 0);
+
   nframes_t   max = 0;
   const auto &nodes = trigger_nodes_;
   for (const auto node : nodes)

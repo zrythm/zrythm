@@ -42,9 +42,6 @@ namespace zrythm::dsp
  */
 class Graph final
 {
-  friend class IGraphBuilder;
-  using GraphNode = dsp::GraphNode;
-
 public:
   void print () const;
 
@@ -78,13 +75,7 @@ public:
 
   auto &get_nodes () { return setup_nodes_; }
 
-private:
-  /**
-   * @brief To be called when done adding nodes to the graph.
-   *
-   * This will update initial and terminal nodes.
-   */
-  void finish_adding_nodes ();
+  void finalize_nodes () { setup_nodes_.finalize_nodes (); }
 
 private:
   /**

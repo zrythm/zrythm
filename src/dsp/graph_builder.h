@@ -17,8 +17,6 @@ namespace zrythm::dsp
 class IGraphBuilder
 {
 public:
-  using GraphNode = Graph::GraphNode;
-
   virtual ~IGraphBuilder () = default;
 
   /**
@@ -29,7 +27,7 @@ public:
   void build_graph (Graph &graph)
   {
     build_graph_impl (graph);
-    graph.finish_adding_nodes ();
+    graph.finalize_nodes ();
   };
 
 protected:

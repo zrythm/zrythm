@@ -298,7 +298,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
   }
 
   /* connect the HW input processor */
-  GraphNode * hw_processor_node =
+  dsp::GraphNode * hw_processor_node =
     graph.get_nodes ().find_node_for_processable (*hw_in_processor);
   for (auto &port : hw_in_processor->audio_ports_)
     {

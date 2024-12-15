@@ -6,7 +6,10 @@ add_executable(dsp_unit_tests
   curve_test.cpp
   ditherer_test.cpp
   kmeter_dsp_test.cpp
+  graph_builder_test.cpp
   graph_node_test.cpp
+  graph_scheduler_test.cpp
+  graph_test.cpp
   musical_scale_test.cpp
   panning_test.cpp
   peak_dsp_test.cpp

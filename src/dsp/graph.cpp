@@ -53,24 +53,7 @@ Graph::print () const
   z_info ("==finish printing graph");
 }
 
-void
-Graph::finish_adding_nodes ()
-{
-
-  /* ========================
-   * set initial and terminal nodes
-   * ======================== */
-
-  setup_nodes_.set_initial_and_terminal_nodes ();
-
-  /* ========================
-   * calculate latencies of each port and each processor
-   * ======================== */
-
-  setup_nodes_.update_latencies ();
-}
-
-Graph::GraphNode *
+GraphNode *
 Graph::add_node_for_processable (
   dsp::IProcessable     &node,
   const dsp::ITransport &transport)

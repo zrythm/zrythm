@@ -236,8 +236,7 @@ public:
    */
   ATTR_HOT void clear_external_buffer () override;
 
-  bool needs_external_buffer_clear_when_returning_early_from_processing_cycle ()
-    const override;
+  bool needs_external_buffer_clear_on_early_return () const override;
 
   /**
    * Disconnects all srcs and dests from port.

@@ -306,9 +306,9 @@ GraphThread::run ()
       /* first time setup */
 
       /* Can't run without a graph */
-      z_return_if_fail (!graph->graph_nodes_.graph_nodes_.empty ());
-      z_return_if_fail (!graph->graph_nodes_.trigger_nodes_.empty ());
-      z_return_if_fail (!graph->graph_nodes_.terminal_nodes_.empty ());
+      // z_return_if_fail (!graph->graph_nodes_.graph_nodes_.empty ());
+      // z_return_if_fail (!graph->graph_nodes_.trigger_nodes_.empty ());
+      // z_return_if_fail (!graph->graph_nodes_.terminal_nodes_.empty ());
 
       /* bootstrap trigger-list.
        * (later this is done by Graph.reached_terminal_node())*/

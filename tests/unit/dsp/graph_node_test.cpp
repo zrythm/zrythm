@@ -192,4 +192,104 @@ TEST_F (GraphNodeTest, LatencyPropagation)
   EXPECT_EQ (node1.route_playback_latency_, 1000);
 }
 
+TEST_F (GraphNodeTest, ProcessingWithLoopAndLatency)
+{
+  EXPECT_CALL (*transport_, get_loop_enabled ()).WillRepeatedly (Return (true));
+  EXPECT_CALL (*processable_, get_single_playback_latency ())
+    .WillRepeatedly (Return (128));
+  EXPECT_CALL (*transport_, is_loop_point_met (_, _))
+    .WillOnce (Return (64))
+    .WillOnce (Return (0));
+  EXPECT_CALL (*processable_, process_block (_)).Times (2);
+
+  auto node = create_test_node ();
+  node.set_route_playback_latency (256);
+
+  EngineProcessTimeInfo time_info{};
+  time_info.nframes_ = 256;
+  node.process (time_info, 64);
+}
+
+TEST_F (GraphNodeTest, ComplexGraphTopology)
+{
+  auto node1 = create_test_node ();
+  auto node2 = create_test_node ();
+  auto node3 = create_test_node ();
+  auto node4 = create_test_node ();
+
+  // Create diamond pattern
+  node1.connect_to (node2);
+  node1.connect_to (node3);
+  node2.connect_to (node4);
+  node3.connect_to (node4);
+
+  // Verify graph structure
+  EXPECT_EQ (node1.childnodes_.size (), 2);
+  EXPECT_EQ (node2.childnodes_.size (), 1);
+  EXPECT_EQ (node3.childnodes_.size (), 1);
+  EXPECT_EQ (node4.childnodes_.size (), 0);
+
+  // Verify reference counts
+  EXPECT_EQ (node1.init_refcount_, 0);
+  EXPECT_EQ (node2.init_refcount_, 1);
+  EXPECT_EQ (node3.init_refcount_, 1);
+  EXPECT_EQ (node4.init_refcount_, 2);
+}
+
+TEST_F (GraphNodeTest, NodeCollection)
+{
+  GraphNodeCollection collection;
+
+  auto node1 = std::make_unique<GraphNode> (1, *transport_, *processable_);
+  auto node2 = std::make_unique<GraphNode> (2, *transport_, *processable_);
+  auto node3 = std::make_unique<GraphNode> (3, *transport_, *processable_);
+
+  node1->connect_to (*node2);
+  node2->connect_to (*node3);
+
+  collection.graph_nodes_.push_back (std::move (node1));
+  collection.graph_nodes_.push_back (std::move (node2));
+  collection.graph_nodes_.push_back (std::move (node3));
+
+  collection.set_initial_and_terminal_nodes ();
+
+  EXPECT_EQ (collection.trigger_nodes_.size (), 1);
+  EXPECT_EQ (collection.terminal_nodes_.size (), 1);
+}
+
+TEST_F (GraphNodeTest, LatencyPropagationInCollection)
+{
+  GraphNodeCollection collection;
+
+  EXPECT_CALL (*processable_, get_single_playback_latency ())
+    .WillRepeatedly (Return (128));
+
+  auto node1 = std::make_unique<GraphNode> (1, *transport_, *processable_);
+  auto node2 = std::make_unique<GraphNode> (2, *transport_, *processable_);
+
+  node1->connect_to (*node2);
+  collection.graph_nodes_.push_back (std::move (node1));
+  collection.graph_nodes_.push_back (std::move (node2));
+
+  collection.finalize_nodes ();
+
+  EXPECT_EQ (collection.get_max_route_playback_latency (), 128);
+}
+
+TEST_F (GraphNodeTest, ProcessableSearch)
+{
+  GraphNodeCollection collection;
+
+  auto  node = std::make_unique<GraphNode> (1, *transport_, *processable_);
+  auto &node_ref = *node;
+  collection.graph_nodes_.push_back (std::move (node));
+
+  auto * found = collection.find_node_for_processable (*processable_);
+  EXPECT_EQ (found, &node_ref);
+
+  MockProcessable other_processable;
+  auto * not_found = collection.find_node_for_processable (other_processable);
+  EXPECT_EQ (not_found, nullptr);
+}
+
 } // namespace zrythm::dsp

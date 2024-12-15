@@ -15,6 +15,7 @@ set(test_lv2_plugin_libs)
 add_subdirectory(lv2plugins)
 
 find_package(GTest REQUIRED)
+find_package(benchmark REQUIRED)
 
 find_program(PIPEWIRE_EXECUTABLE pipewire)
 
@@ -208,6 +209,7 @@ configure_file(
 )
 
 add_subdirectory(unit)
+add_subdirectory(benchmarks)
 
 # set(TEST_LINK_ARGS -fPIC)
 
@@ -299,7 +301,6 @@ target_include_directories(test_helpers
     ${CMAKE_CURRENT_SOURCE_DIR})
 
 
-find_package(benchmark REQUIRED)
 foreach(test_path IN LISTS TESTS)
     get_filename_component(test_name ${test_path} NAME)
     string(REPLACE "/" "_" test_target ${test_path})
