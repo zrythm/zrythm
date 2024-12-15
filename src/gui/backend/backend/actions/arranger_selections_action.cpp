@@ -602,9 +602,12 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
                         {
                           auto cur_at = prj_obj->get_automation_track ();
                           z_return_if_fail (cur_at);
-                          auto port = Port::find_from_identifier<ControlPort> (
-                            *target_port_);
-                          z_return_if_fail (port);
+                          auto port_var =
+                            PROJECT->find_port_by_id (*target_port_);
+                          z_return_if_fail (
+                            port_var
+                            && std::holds_alternative<ControlPort *> (*port_var));
+                          auto port = std::get<ControlPort *> (*port_var);
                           auto track = dynamic_cast<AutomatableTrack *> (
                             port->get_track (true));
                           z_return_if_fail (track);
@@ -1015,9 +1018,13 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                         {
                           auto cur_at = added_obj_ref->get_automation_track ();
                           z_return_if_fail (cur_at);
-                          const auto * port = Port::find_from_identifier<
-                            ControlPort> (*target_port_);
-                          z_return_if_fail (port);
+                          const auto port_var =
+                            PROJECT->find_port_by_id (*target_port_);
+                          z_return_if_fail (
+                            port_var
+                            && std::holds_alternative<ControlPort *> (*port_var));
+                          const auto * port =
+                            std::get<ControlPort *> (*port_var);
                           auto * track = dynamic_cast<AutomatableTrack *> (
                             port->get_track (true));
                           z_return_if_fail (track);

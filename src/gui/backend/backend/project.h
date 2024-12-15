@@ -376,6 +376,16 @@ public:
   bool
   is_audio_clip_in_use (const AudioClip &clip, bool check_undo_stack) const;
 
+  /**
+   * Finds the Port corresponding to the identifier.
+   *
+   * @param id The PortIdentifier to use for searching.
+   *
+   * @note Ported from Port::find_from_identifier() in older code.
+   */
+  std::optional<PortPtrVariant>
+  find_port_by_id (const dsp::PortIdentifier &id) const;
+
 private:
   /**
    * Sets (and creates on the disk) the next available backup dir to use for

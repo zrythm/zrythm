@@ -255,7 +255,10 @@ AutomationPoint::get_port () const
 {
   const AutomationTrack * const at = get_automation_track ();
   z_return_val_if_fail (at, nullptr);
-  auto port = Port::find_from_identifier<ControlPort> (*at->port_id_);
+  auto port_var = PROJECT->find_port_by_id (*at->port_id_);
+  z_return_val_if_fail (
+    port_var && std::holds_alternative<ControlPort *> (*port_var), nullptr);
+  auto * port = std::get<ControlPort *> (*port_var);
   z_return_val_if_fail (port, nullptr);
 
   return port;

@@ -83,14 +83,29 @@ ChannelSendAction::connect_or_disconnect (bool connect, bool do_it)
             {
             case PortType::Event:
               {
-                auto port = Port::find_from_identifier<MidiPort> (*midi_id_);
+                const auto port_var = PROJECT->find_port_by_id (*midi_id_);
+                z_return_val_if_fail (
+                  port_var.has_value ()
+                    && std::holds_alternative<MidiPort *> (port_var.value ()),
+                  false);
+                auto * port = std::get<MidiPort *> (port_var.value ());
                 send->connect_midi (*port, false, true);
               }
               break;
             case PortType::Audio:
               {
-                auto l = Port::find_from_identifier<AudioPort> (*l_id_);
-                auto r = Port::find_from_identifier<AudioPort> (*r_id_);
+                const auto l_var = PROJECT->find_port_by_id (*l_id_);
+                z_return_val_if_fail (
+                  l_var.has_value ()
+                    && std::holds_alternative<AudioPort *> (l_var.value ()),
+                  false);
+                auto *     l = std::get<AudioPort *> (l_var.value ());
+                const auto r_var = PROJECT->find_port_by_id (*r_id_);
+                z_return_val_if_fail (
+                  r_var.has_value ()
+                    && std::holds_alternative<AudioPort *> (r_var.value ()),
+                  false);
+                auto * r = std::get<AudioPort *> (r_var.value ());
                 send->connect_stereo (
                   nullptr, l, r, send_action_type_ == Type::ConnectSidechain,
                   false, true);

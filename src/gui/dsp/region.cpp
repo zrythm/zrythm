@@ -467,7 +467,11 @@ RegionImpl<
           auto &at = automatable_track->automation_tracklist_->ats_[at_pos];
 
           /* convert the automation points to match the new automatable */
-          auto port = Port::find_from_identifier<ControlPort> (*at->port_id_);
+          auto port_var = PROJECT->find_port_by_id (*at->port_id_);
+          z_return_if_fail (
+            port_var.has_value ()
+            && std::holds_alternative<ControlPort *> (port_var.value ()));
+          auto * port = std::get<ControlPort *> (port_var.value ());
           z_return_if_fail (port);
           for (auto &ap : derived_.aps_)
             {

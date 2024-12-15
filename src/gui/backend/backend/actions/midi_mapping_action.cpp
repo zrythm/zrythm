@@ -63,9 +63,14 @@ MidiMappingAction::bind_or_unbind (bool bind)
 {
   if (bind)
     {
-      auto port = Port::find_from_identifier (*dest_port_id_);
-      idx_ = MIDI_MAPPINGS->mappings_.size ();
-      MIDI_MAPPINGS->bind_device (buf_, dev_port_.get (), *port, false);
+      auto port_var = PROJECT->find_port_by_id (*dest_port_id_);
+      z_return_if_fail (port_var);
+      std::visit (
+        [&] (auto &&port) {
+          idx_ = MIDI_MAPPINGS->mappings_.size ();
+          MIDI_MAPPINGS->bind_device (buf_, dev_port_.get (), *port, false);
+        },
+        *port_var);
     }
   else
     {

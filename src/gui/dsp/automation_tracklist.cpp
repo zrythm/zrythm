@@ -389,8 +389,12 @@ AutomationTrack *
 AutomationTracklist::get_at_from_port (const Port &port) const
 {
   auto it = std::find_if (ats_.begin (), ats_.end (), [&port] (const auto &at) {
-    auto at_port = Port::find_from_identifier (*at->port_id_);
-    return at_port == &port;
+    auto at_port_var = PROJECT->find_port_by_id (*at->port_id_);
+    z_return_val_if_fail (at_port_var, false);
+    std::visit (
+      [&] (auto &&at_port) { return at_port == std::addressof (port); },
+      *at_port_var);
+    return false;
   });
 
   return it != ats_.end () ? *it : nullptr;

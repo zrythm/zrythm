@@ -853,9 +853,12 @@ Plugin::move_automation (
   auto name_hash = track.get_name_hash ();
   for (auto &at : prev_atl.ats_)
     {
-      auto port = Port::find_from_identifier<ControlPort> (*at->port_id_);
-      if (!port)
+      auto port_var = PROJECT->find_port_by_id (*at->port_id_);
+      if (!port_var)
         continue;
+
+      z_return_if_fail (std::holds_alternative<ControlPort *> (*port_var));
+      auto * port = std::get<ControlPort *> (*port_var);
       if (port->id_->owner_type_ == PortIdentifier::OwnerType::Plugin)
         {
           auto port_pl = port->get_plugin (true);

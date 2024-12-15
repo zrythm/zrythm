@@ -60,59 +60,67 @@ PortConnectionAction::perform_impl ()
 void
 PortConnectionAction::do_or_undo (bool _do)
 {
-  Port * src = Port::find_from_identifier (*connection_->src_id_);
-  Port * dest = Port::find_from_identifier (*connection_->dest_id_);
-  z_return_if_fail (src && dest);
-  auto prj_connection = PORT_CONNECTIONS_MGR->find_connection (
-    *connection_->src_id_, *connection_->dest_id_);
+  auto src_var = PROJECT->find_port_by_id (*connection_->src_id_);
+  auto dest_var = PROJECT->find_port_by_id (*connection_->dest_id_);
+  z_return_if_fail (src_var && dest_var);
+  std::visit (
+    [&] (auto &&src, auto &&dest) {
+      using SourcePortT = base_type<decltype (src)>;
+      using DestPortT = base_type<decltype (dest)>;
+      z_return_if_fail (src && dest);
+      auto prj_connection = PORT_CONNECTIONS_MGR->find_connection (
+        *connection_->src_id_, *connection_->dest_id_);
 
-  switch (type_)
-    {
-    case Type::Connect:
-    case Type::Disconnect:
-      if ((type_ == Type::Connect && _do) || (type_ == Type::Disconnect && !_do))
+      switch (type_)
         {
+        case Type::Connect:
+        case Type::Disconnect:
           if (
-            !ProjectGraphBuilder::can_ports_be_connected (*PROJECT, *src, *dest))
+            (type_ == Type::Connect && _do)
+            || (type_ == Type::Disconnect && !_do))
             {
-              throw ZrythmException (fmt::format (
-                "'{}' cannot be connected to '{}'", src->get_label (),
-                dest->get_label ()));
-            }
-          PORT_CONNECTIONS_MGR->ensure_connect (
-            *src->id_, *dest->id_, 1.f, false, true);
+              if (!ProjectGraphBuilder::can_ports_be_connected (
+                    *PROJECT, *src, *dest))
+                {
+                  throw ZrythmException (fmt::format (
+                    "'{}' cannot be connected to '{}'", src->get_label (),
+                    dest->get_label ()));
+                }
+              PORT_CONNECTIONS_MGR->ensure_connect (
+                *src->id_, *dest->id_, 1.f, false, true);
 
-          /* set base value if cv -> control */
-          if (
-            src->id_->type_ == PortType::CV
-            && dest->id_->type_ == PortType::Control)
+              /* set base value if cv -> control */
+              if constexpr (
+                std::is_same_v<SourcePortT, CVPort>
+                && std::is_same_v<DestPortT, ControlPort>)
+                {
+                  dest->base_value_ = dest->control_;
+                }
+            }
+          else
             {
-              auto dest_control_port = dynamic_cast<ControlPort *> (dest);
-              dest_control_port->base_value_ = dest_control_port->control_;
+              PORT_CONNECTIONS_MGR->ensure_disconnect (*src->id_, *dest->id_);
             }
+          ROUTER->recalc_graph (false);
+          break;
+        case Type::Enable:
+          prj_connection->enabled_ = _do;
+          break;
+        case Type::Disable:
+          prj_connection->enabled_ = !_do;
+          break;
+        case Type::ChangeMultiplier:
+          {
+            float val_before = prj_connection->multiplier_;
+            prj_connection->multiplier_ = val_;
+            val_ = val_before;
+          }
+          break;
         }
-      else
-        {
-          PORT_CONNECTIONS_MGR->ensure_disconnect (*src->id_, *dest->id_);
-        }
-      ROUTER->recalc_graph (false);
-      break;
-    case Type::Enable:
-      prj_connection->enabled_ = _do;
-      break;
-    case Type::Disable:
-      prj_connection->enabled_ = !_do;
-      break;
-    case Type::ChangeMultiplier:
-      {
-        float val_before = prj_connection->multiplier_;
-        prj_connection->multiplier_ = val_;
-        val_ = val_before;
-      }
-      break;
-    }
 
-  /* EVENTS_PUSH (EventType::ET_PORT_CONNECTION_CHANGED, nullptr); */
+      /* EVENTS_PUSH (EventType::ET_PORT_CONNECTION_CHANGED, nullptr); */
+    },
+    *src_var, *dest_var);
 }
 
 QString

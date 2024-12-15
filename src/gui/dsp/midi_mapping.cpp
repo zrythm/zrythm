@@ -19,7 +19,9 @@ MidiMappings::init_loaded ()
 {
   for (auto &mapping : mappings_)
     {
-      mapping->dest_ = Port::find_from_identifier (*mapping->dest_id_);
+      auto dest_var = PROJECT->find_port_by_id (*mapping->dest_id_);
+      z_return_if_fail (dest_var);
+      std::visit ([&] (auto &&dest) { mapping->dest_ = dest; }, *dest_var);
     }
 }
 

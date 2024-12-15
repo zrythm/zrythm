@@ -706,8 +706,11 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
               if (!at->recording_paused_)
                 return false;
 
-              auto port =
-                Port::find_from_identifier<ControlPort> (*at->port_id_);
+              auto port_var = PROJECT->find_port_by_id (*at->port_id_);
+              z_return_val_if_fail (
+                port_var && std::holds_alternative<ControlPort *> (*port_var),
+                false);
+              auto * port = std::get<ControlPort *> (*port_var);
               float value = port->get_control_value (false);
               float normalized_value = port->get_control_value (true);
 
@@ -973,7 +976,11 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
         {
           auto &atl = tr->automation_tracklist_;
           auto &at = atl->ats_[ev.automation_track_idx_];
-          auto  port = Port::find_from_identifier<ControlPort> (*at->port_id_);
+          auto  port_var = PROJECT->find_port_by_id (*at->port_id_);
+          z_return_if_fail (
+            port_var.has_value ()
+            && std::holds_alternative<ControlPort *> (port_var.value ()));
+          auto * port = std::get<ControlPort *> (port_var.value ());
           float value = port->get_control_value (false);
           float normalized_value = port->get_control_value (true);
           if (ZRYTHM_TESTING)
@@ -1130,7 +1137,11 @@ RecordingManager::handle_start_recording (
           /*at->recording_paused = false;*/
 
           /* nothing, wait for event to start writing data */
-          auto * port = Port::find_from_identifier<ControlPort> (*at->port_id_);
+          auto port_var = PROJECT->find_port_by_id (*at->port_id_);
+          z_return_if_fail (
+            port_var.has_value ()
+            && std::holds_alternative<ControlPort *> (port_var.value ()));
+          auto * port = std::get<ControlPort *> (port_var.value ());
           float  value = port->get_control_value (false);
 
           if (at->should_be_recording (cur_time, true))

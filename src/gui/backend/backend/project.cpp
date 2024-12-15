@@ -343,6 +343,350 @@ Project::set_and_create_next_available_backup_dir ()
     }
 }
 
+std::optional<PortPtrVariant>
+Project::find_port_by_id (const dsp::PortIdentifier &id) const
+{
+  const auto flags = id.flags_;
+  const auto flags2 = id.flags2_;
+  const auto track_name_hash = id.track_name_hash_;
+
+  auto get_track_lambda = [&] () -> Track * {
+    auto track_var = tracklist_->find_track_by_name_hash (track_name_hash);
+    if (!track_var)
+      track_var =
+        audio_engine_->sample_processor_->tracklist_->find_track_by_name_hash (
+          track_name_hash);
+    z_return_val_if_fail (track_var, nullptr);
+    return std::visit (
+      [&] (auto &&track_ptr) -> Track * {
+        z_return_val_if_fail (track_ptr, nullptr);
+        return track_ptr;
+      },
+      *track_var);
+  };
+
+  using OwnerType = dsp::PortIdentifier::OwnerType;
+  using Flags = dsp::PortIdentifier::Flags;
+  using Flags2 = dsp::PortIdentifier::Flags2;
+  using PortFlow = dsp::PortFlow;
+
+  switch (id.owner_type_)
+    {
+    case OwnerType::AudioEngine:
+      if (id.is_midi ())
+        {
+          if (id.is_output ())
+            { /* TODO */
+            }
+          else if (id.is_input ())
+            {
+              if (ENUM_BITSET_TEST (Flags, flags, Flags::ManualPress))
+                return audio_engine_->midi_editor_manual_press_.get ();
+            }
+        }
+      else if (id.is_audio ())
+        {
+          if (id.is_output ())
+            {
+              if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoL))
+                return &audio_engine_->monitor_out_->get_l ();
+              else if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoR))
+                return &audio_engine_->monitor_out_->get_r ();
+            }
+        }
+      break;
+    case OwnerType::Plugin:
+      {
+        auto * tr = dynamic_cast<ProcessableTrack *> (get_track_lambda ());
+        z_return_val_if_fail (tr, std::nullopt);
+        zrythm::gui::old_dsp::plugins::Plugin * pl = nullptr;
+        if (tr->has_channel ())
+          {
+            auto channel_track = dynamic_cast<ChannelTrack *> (tr);
+            pl = channel_track->channel_->get_plugin_at_slot (
+              id.plugin_id_.slot_, id.plugin_id_.slot_type_);
+          }
+        else if (tr->is_modulator ())
+          {
+            auto modulator_track = dynamic_cast<ModulatorTrack *> (tr);
+            pl = modulator_track->modulators_[id.plugin_id_.slot_].get ();
+          }
+        z_return_val_if_fail (pl, std::nullopt);
+
+        switch (id.flow_)
+          {
+          case PortFlow::Input:
+            return convert_to_variant<PortPtrVariant> (
+              pl->in_ports_[id.port_index_].get ());
+          case PortFlow::Output:
+            return convert_to_variant<PortPtrVariant> (
+              pl->out_ports_[id.port_index_].get ());
+          default:
+            z_return_val_if_reached (std::nullopt);
+          }
+      }
+      break;
+    case OwnerType::TrackProcessor:
+      {
+        auto * tr = dynamic_cast<ProcessableTrack *> (get_track_lambda ());
+        z_return_val_if_fail (tr, std::nullopt);
+        auto &processor = tr->processor_;
+        if (id.is_midi ())
+          {
+            if (id.is_output ())
+              return processor->midi_out_.get ();
+            if (id.is_input ())
+              {
+                if (ENUM_BITSET_TEST (Flags, flags, Flags::PianoRoll))
+                  return processor->piano_roll_.get ();
+                return processor->midi_in_.get ();
+              }
+          }
+        else if (id.is_audio ())
+          {
+            if (id.is_output ())
+              {
+                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoL))
+                  return &processor->stereo_out_->get_l ();
+                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoR))
+                  return &processor->stereo_out_->get_r ();
+              }
+            else if (id.is_input ())
+              {
+                z_return_val_if_fail (processor->stereo_in_, std::nullopt);
+                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoL))
+                  return &processor->stereo_in_->get_l ();
+                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoR))
+                  return &processor->stereo_in_->get_r ();
+              }
+          }
+        else if (id.is_control ())
+          {
+            if (ENUM_BITSET_TEST (Flags, flags, Flags::TpMono))
+              return processor->mono_.get ();
+            if (ENUM_BITSET_TEST (Flags, flags, Flags::TpInputGain))
+              return processor->input_gain_.get ();
+            if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::TpOutputGain))
+              return processor->output_gain_.get ();
+            if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::TpMonitorAudio))
+              return processor->monitor_audio_.get ();
+            if (ENUM_BITSET_TEST (Flags, flags, Flags::MidiAutomatable))
+              {
+                if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::MidiPitchBend))
+                  return processor->pitch_bend_[id.port_index_].get ();
+                if (
+                  ENUM_BITSET_TEST (Flags2, flags2, Flags2::MidiPolyKeyPressure))
+                  return processor->poly_key_pressure_[id.port_index_].get ();
+                if (
+                  ENUM_BITSET_TEST (Flags2, flags2, Flags2::MidiChannelPressure))
+                  return processor->channel_pressure_[id.port_index_].get ();
+                return processor->midi_cc_[id.port_index_].get ();
+              }
+            break;
+          }
+      }
+      break;
+    case OwnerType::Track:
+      {
+        auto * tr = get_track_lambda ();
+        z_return_val_if_fail (tr, std::nullopt);
+        if (id.is_control ())
+          {
+            if (ENUM_BITSET_TEST (Flags, flags, Flags::Bpm))
+              return dynamic_cast<TempoTrack *> (tr)->bpm_port_.get ();
+            if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::BeatsPerBar))
+              return dynamic_cast<TempoTrack *> (tr)->beats_per_bar_port_.get ();
+            if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::BeatUnit))
+              return dynamic_cast<TempoTrack *> (tr)->beat_unit_port_.get ();
+            if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::TrackRecording))
+              return dynamic_cast<RecordableTrack *> (tr)->recording_.get ();
+          }
+      }
+      break;
+    case OwnerType::Fader:
+      {
+        auto * fader = Fader::find_from_port_identifier (id);
+        z_return_val_if_fail (fader, std::nullopt);
+        if (id.is_midi ())
+          {
+            return id.is_input () ? fader->midi_in_.get () : fader->midi_out_.get ();
+          }
+        if (id.is_audio ())
+          {
+            if (id.is_output ())
+              {
+                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoL))
+                  return &fader->stereo_out_->get_l ();
+                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoR))
+                  return &fader->stereo_out_->get_r ();
+              }
+            else if (id.is_input ())
+              {
+                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoL))
+                  return &fader->stereo_in_->get_l ();
+                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoR))
+                  return &fader->stereo_in_->get_r ();
+              }
+          }
+        else if (id.is_control ())
+          {
+            if (id.is_input ())
+              {
+                if (ENUM_BITSET_TEST (Flags, flags, Flags::Amplitude))
+                  return fader->amp_.get ();
+                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoBalance))
+                  return fader->balance_.get ();
+                if (ENUM_BITSET_TEST (Flags, flags, Flags::FaderMute))
+                  return fader->mute_.get ();
+                if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::FaderSolo))
+                  return fader->solo_.get ();
+                if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::FaderListen))
+                  return fader->listen_.get ();
+                if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::FaderMonoCompat))
+                  return fader->mono_compat_enabled_.get ();
+                if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::FaderSwapPhase))
+                  return fader->swap_phase_.get ();
+              }
+          }
+        z_return_val_if_reached (std::nullopt);
+      }
+      break;
+    case OwnerType::ChannelSend:
+      {
+        auto * tr = dynamic_cast<ChannelTrack *> (get_track_lambda ());
+        z_return_val_if_fail (tr, std::nullopt);
+        auto &ch = tr->channel_;
+        if (id.is_control ())
+          {
+            if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::ChannelSendEnabled))
+              return ch->sends_.at (id.port_index_)->enabled_.get ();
+            if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::ChannelSendAmount))
+              return ch->sends_.at (id.port_index_)->amount_.get ();
+          }
+        else
+          {
+            if (id.is_input ())
+              {
+                if (id.is_audio ())
+                  {
+                    if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoL))
+                      return &ch->sends_.at (id.port_index_)->stereo_in_->get_l ();
+                    if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoR))
+                      return &ch->sends_.at (id.port_index_)->stereo_in_->get_r ();
+                  }
+                else if (id.is_midi ())
+                  return ch->sends_.at (id.port_index_)->midi_in_.get ();
+              }
+            else if (id.is_output ())
+              {
+                if (id.is_audio ())
+                  {
+                    if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoL))
+                      return &ch->sends_.at (id.port_index_)->stereo_out_->get_l ();
+                    if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoR))
+                      return &ch->sends_.at (id.port_index_)->stereo_out_->get_r ();
+                  }
+                else if (id.is_midi ())
+                  return ch->sends_.at (id.port_index_)->midi_out_.get ();
+              }
+          }
+        z_return_val_if_reached (std::nullopt);
+      }
+      break;
+    case OwnerType::HardwareProcessor:
+      {
+        Port * port = nullptr;
+
+        /* note: flows are reversed */
+        if (id.is_output ())
+          port = HW_IN_PROCESSOR->find_port (id.ext_port_id_);
+        else if (id.is_input ())
+          port = HW_OUT_PROCESSOR->find_port (id.ext_port_id_);
+
+        /* just warn if hardware is not connected anymore */
+        z_warn_if_fail (port);
+
+        return convert_to_variant<PortPtrVariant> (port);
+      }
+      break;
+    case OwnerType::Transport:
+      if (id.is_midi ())
+        {
+          if (id.is_input ())
+            {
+              if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::TransportRoll))
+                return TRANSPORT->roll_.get ();
+              if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::TransportStop))
+                return TRANSPORT->stop_.get ();
+              if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::TransportBackward))
+                return TRANSPORT->backward_.get ();
+              if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::TransportForward))
+                return TRANSPORT->forward_.get ();
+              if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::TransportLoopToggle))
+                return TRANSPORT->loop_toggle_.get ();
+              if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::TransportRecToggle))
+                return TRANSPORT->rec_toggle_.get ();
+            }
+        }
+      break;
+    case OwnerType::ModulatorMacroProcessor:
+      if (ENUM_BITSET_TEST (Flags, flags, Flags::ModulatorMacro))
+        {
+          auto * tr = dynamic_cast<ModulatorTrack *> (get_track_lambda ());
+          z_return_val_if_fail (tr, std::nullopt);
+          auto &processor = tr->modulator_macro_processors_[id.port_index_];
+          if (id.is_input ())
+            {
+              if (id.is_cv ())
+                {
+                  return processor->cv_in_.get ();
+                }
+              if (id.is_control ())
+                {
+                  return processor->macro_.get ();
+                }
+            }
+          else if (id.is_output ())
+            {
+              if (id.is_cv ())
+                {
+                  return processor->cv_out_.get ();
+                }
+            }
+        }
+      break;
+    case OwnerType::Channel:
+      {
+        auto * tr = dynamic_cast<ChannelTrack *> (get_track_lambda ());
+        z_return_val_if_fail (tr, std::nullopt);
+        auto &ch = tr->channel_;
+        z_return_val_if_fail (ch, std::nullopt);
+        if (id.is_midi ())
+          {
+            if (id.is_output ())
+              {
+                return ch->midi_out_;
+              }
+          }
+        else if (id.is_audio ())
+          {
+            if (id.is_output ())
+              {
+                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoL))
+                  return &ch->stereo_out_->get_l ();
+                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoR))
+                  return &ch->stereo_out_->get_r ();
+              }
+          }
+      }
+      break;
+    default:
+      z_return_val_if_reached (std::nullopt);
+    }
+
+  z_return_val_if_reached (std::nullopt);
+}
+
 void
 Project::activate ()
 {

@@ -261,10 +261,10 @@ ChannelSend::get_target_track (const ChannelTrack * owner)
     }
 
   z_return_val_if_fail (conn, nullptr);
-  Port * port = Port::find_from_identifier (*conn->dest_id_);
-  z_return_val_if_fail (IS_PORT_AND_NONNULL (port), nullptr);
-
-  return port->get_track (true);
+  auto port_var = PROJECT->find_port_by_id (*conn->dest_id_);
+  z_return_val_if_fail (port_var, nullptr);
+  return std::visit (
+    [&] (auto &&port) { return port->get_track (true); }, *port_var);
 }
 
 std::unique_ptr<StereoPorts>
@@ -280,13 +280,17 @@ ChannelSend::get_target_sidechain ()
 
   auto * conn = mgr->get_source_or_dest (*stereo_out_->get_l ().id_, false);
   z_return_val_if_fail (conn, nullptr);
-  auto * l = Port::find_from_identifier<AudioPort> (*conn->dest_id_);
-  z_return_val_if_fail (l, nullptr);
+  auto l_var = PROJECT->find_port_by_id (*conn->dest_id_);
+  z_return_val_if_fail (
+    l_var && std::holds_alternative<AudioPort *> (*l_var), nullptr);
+  auto * l = std::get<AudioPort *> (*l_var);
 
   conn = mgr->get_source_or_dest (*stereo_out_->get_r ().id_, false);
   z_return_val_if_fail (conn, nullptr);
-  auto * r = Port::find_from_identifier<AudioPort> (*conn->dest_id_);
-  z_return_val_if_fail (r, nullptr);
+  auto r_var = PROJECT->find_port_by_id (*conn->dest_id_);
+  z_return_val_if_fail (
+    r_var && std::holds_alternative<AudioPort *> (*r_var), nullptr);
+  auto * r = std::get<AudioPort *> (*r_var);
 
   return std::make_unique<StereoPorts> (l->clone_unique (), r->clone_unique ());
 }
@@ -377,8 +381,10 @@ ChannelSend::connect_stereo (
   /* verify can be connected */
   if (validate && l->is_in_active_project ())
     {
-      auto src =
-        Port::find_from_identifier<AudioPort> (*stereo_out_->get_l ().id_);
+      auto src_var = PROJECT->find_port_by_id (*stereo_out_->get_l ().id_);
+      z_return_val_if_fail (
+        src_var && std::holds_alternative<AudioPort *> (*src_var), false);
+      auto * src = std::get<AudioPort *> (*src_var);
       if (!ProjectGraphBuilder::can_ports_be_connected (*PROJECT, *src, *l))
         {
           throw ZrythmException (QObject::tr ("Ports cannot be connected"));
@@ -420,7 +426,10 @@ ChannelSend::connect_midi (MidiPort &port, bool recalc_graph, bool validate)
   /* verify can be connected */
   if (validate && port.is_in_active_project ())
     {
-      Port * src = Port::find_from_identifier (*midi_out_->id_);
+      auto src_var = PROJECT->find_port_by_id (*midi_out_->id_);
+      z_return_val_if_fail (
+        src_var && std::holds_alternative<MidiPort *> (*src_var), false);
+      auto * src = std::get<MidiPort *> (*src_var);
       if (!ProjectGraphBuilder::can_ports_be_connected (*PROJECT, *src, port))
         {
           throw ZrythmException (QObject::tr ("Ports cannot be connected"));
@@ -445,12 +454,14 @@ ChannelSend::disconnect_midi ()
   auto * mgr = get_port_connections_manager ();
   z_return_if_fail (mgr);
 
-  const auto conn = mgr->get_source_or_dest (*midi_out_->id_, false);
+  auto * const conn = mgr->get_source_or_dest (*midi_out_->id_, false);
   if (!conn)
     return;
 
-  auto * dest_port = Port::find_from_identifier (*conn->dest_id_);
-  z_return_if_fail (dest_port);
+  auto dest_port_var = PROJECT->find_port_by_id (*conn->dest_id_);
+  z_return_if_fail (
+    dest_port_var && std::holds_alternative<MidiPort *> (*dest_port_var));
+  auto * dest_port = std::get<MidiPort *> (*dest_port_var);
 
   mgr->ensure_disconnect (*midi_out_->id_, *dest_port->id_);
 }
@@ -468,8 +479,10 @@ ChannelSend::disconnect_audio ()
       if (!conn)
         continue;
 
-      auto * dest_port = Port::find_from_identifier (*conn->dest_id_);
-      z_return_if_fail (dest_port);
+      auto dest_port_var = PROJECT->find_port_by_id (*conn->dest_id_);
+      z_return_if_fail (
+        dest_port_var && std::holds_alternative<AudioPort *> (*dest_port_var));
+      auto * dest_port = std::get<AudioPort *> (*dest_port_var);
       mgr->ensure_disconnect (*src_port->id_, *dest_port->id_);
     }
 }
@@ -537,16 +550,18 @@ ChannelSend::get_dest_name () const
 
       return QObject::tr ("Post-fader send").toStdString ();
     }
-  else
-    {
-      PortType    type = get_signal_type ();
-      const Port &search_port =
-        (type == PortType::Audio)
-          ? static_cast<Port &> (stereo_out_->get_l ())
-          : static_cast<Port &> (*midi_out_);
-      const auto conn = mgr->get_source_or_dest (*search_port.id_, false);
-      z_return_val_if_fail (conn, {});
-      auto * dest = Port::find_from_identifier (*conn->dest_id_);
+
+  PortType    type = get_signal_type ();
+  const Port &search_port =
+    (type == PortType::Audio)
+      ? static_cast<Port &> (stereo_out_->get_l ())
+      : static_cast<Port &> (*midi_out_);
+  const auto conn = mgr->get_source_or_dest (*search_port.id_, false);
+  z_return_val_if_fail (conn, {});
+  auto dest_var = PROJECT->find_port_by_id (*conn->dest_id_);
+  z_return_val_if_fail (dest_var, {});
+  return std::visit (
+    [&] (auto &&dest) -> std::string {
       z_return_val_if_fail (dest, {});
       if (is_sidechain_)
         {
@@ -554,24 +569,24 @@ ChannelSend::get_dest_name () const
           z_return_val_if_fail (pl, {});
           return pl->get_full_port_group_designation (dest->id_->port_group_);
         }
-      else /* else if not sidechain */
+      /* else if not sidechain */
+      switch (dest->id_->owner_type_)
         {
-          switch (dest->id_->owner_type_)
-            {
-            case dsp::PortIdentifier::OwnerType::TrackProcessor:
-              {
-                auto * track = dest->get_track (true);
-                z_return_val_if_fail (track, {});
-                return format_str (
-                  QObject::tr ("{} input").toStdString (), track->name_);
-              }
-              break;
-            default:
-              break;
-            }
+        case dsp::PortIdentifier::OwnerType::TrackProcessor:
+          {
+            auto * track = dest->get_track (true);
+            z_return_val_if_fail (track, {});
+            return format_str (
+              QObject::tr ("{} input").toStdString (), track->name_);
+          }
+          break;
+        default:
+          break;
         }
-    }
-  z_return_val_if_reached ({});
+
+      z_return_val_if_reached ({});
+    },
+    *dest_var);
 }
 
 void
@@ -635,27 +650,29 @@ ChannelSend::is_enabled () const
 
           return true;
         }
-      else
-        return false;
+      return false;
     }
 
   /* get dest port */
   const auto conn = mgr->get_source_or_dest (*search_port.id_, false);
   z_return_val_if_fail (conn, false);
-  auto * dest = Port::find_from_identifier (*conn->dest_id_);
-  z_return_val_if_fail (IS_PORT_AND_NONNULL (dest), false);
+  auto dest_var = PROJECT->find_port_by_id (*conn->dest_id_);
+  z_return_val_if_fail (dest_var, false);
+  return std::visit (
+    [&] (auto &&dest) {
+      /* if dest port is a plugin port and plugin instantiation failed, assume
+       * that the send is disabled */
+      if (dest->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
+        {
+          auto * pl =
+            zrythm::gui::old_dsp::plugins::Plugin::find (dest->id_->plugin_id_);
+          if (pl->instantiation_failed_)
+            enabled = false;
+        }
 
-  /* if dest port is a plugin port and plugin instantiation failed, assume that
-   * the send is disabled */
-  if (dest->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
-    {
-      auto * pl =
-        zrythm::gui::old_dsp::plugins::Plugin::find (dest->id_->plugin_id_);
-      if (pl->instantiation_failed_)
-        enabled = false;
-    }
-
-  return enabled;
+      return enabled;
+    },
+    *dest_var);
 }
 
 #if 0

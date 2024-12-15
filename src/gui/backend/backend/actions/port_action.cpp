@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: © 2020, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-# include "gui/dsp/control_port.h"
-# include "gui/dsp/port.h"
-#include "utils/format.h"
 #include "gui/backend/backend/actions/port_action.h"
+#include "gui/backend/backend/project.h"
+#include "gui/dsp/control_port.h"
+#include "gui/dsp/port.h"
+#include "utils/format.h"
 
 using namespace zrythm::gui::actions;
 
@@ -28,19 +29,28 @@ PortAction::PortAction (
   float                 val,
   bool                  is_normalized)
     : UndoableAction (UndoableAction::Type::Port), type_ (type),
-      port_id_ (port_id.clone_unique ()),
-      val_ (
-        is_normalized
-          ? Port::find_from_identifier<ControlPort> (port_id)
-              ->normalized_val_to_real (val)
-          : val)
+      port_id_ (port_id.clone_unique ())
 {
+  if (is_normalized)
+    {
+      auto port_var = PROJECT->find_port_by_id (port_id);
+      z_return_if_fail (
+        port_var && std::holds_alternative<ControlPort *> (*port_var));
+      val_ = std::get<ControlPort *> (*port_var)->normalized_val_to_real (val);
+    }
+  else
+    {
+      val_ = val;
+    }
 }
 
 void
 PortAction::do_or_undo (bool do_it)
 {
-  auto port = Port::find_from_identifier<ControlPort> (*port_id_);
+  auto port_var = PROJECT->find_port_by_id (*port_id_);
+  z_return_if_fail (
+    port_var && std::holds_alternative<ControlPort *> (*port_var));
+  auto * port = std::get<ControlPort *> (*port_var);
 
   switch (type_)
     {

@@ -86,16 +86,6 @@ public:
 
   template <typename T> void set_owner (T * owner);
 
-  /**
-   * Finds the Port corresponding to the identifier.
-   *
-   * @param id The PortIdentifier to use for searching.
-   */
-  template <typename T>
-  static T * find_from_identifier (const zrythm::dsp::PortIdentifier &id);
-
-  static Port * find_from_identifier (const zrythm::dsp::PortIdentifier &id);
-
   std::string get_label () const;
 
   bool is_control () const { return id_->is_control (); }
@@ -429,14 +419,7 @@ using PortPtrVariant = to_pointer_variant<PortVariant>;
 class HardwareProcessor;
 class RecordableTrack;
 class TempoTrack;
-extern template MidiPort *
-Port::find_from_identifier<MidiPort> (const zrythm::dsp::PortIdentifier &);
-extern template AudioPort *
-Port::find_from_identifier (const zrythm::dsp::PortIdentifier &);
-extern template CVPort *
-Port::find_from_identifier (const zrythm::dsp::PortIdentifier &);
-extern template ControlPort *
-Port::find_from_identifier (const zrythm::dsp::PortIdentifier &);
+
 extern template void
 Port::set_owner (zrythm::gui::old_dsp::plugins::Plugin *);
 extern template void

@@ -152,8 +152,11 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
           port->src_connections_.clear ();
           for (const auto &conn : srcs)
             {
-              port->srcs_.push_back (
-                Port::find_from_identifier (*conn->src_id_));
+              auto src_var = project.find_port_by_id (*conn->src_id_);
+              z_return_val_if_fail (src_var.has_value (), nullptr);
+              std::visit (
+                [&] (auto &&src) { port->srcs_.push_back (src); },
+                src_var.value ());
               z_return_val_if_fail (port->srcs_.back (), nullptr);
               port->src_connections_.emplace_back (conn->clone_unique ());
             }
@@ -164,8 +167,11 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
           port->dest_connections_.clear ();
           for (const auto &conn : dests)
             {
-              port->dests_.push_back (
-                Port::find_from_identifier (*conn->dest_id_));
+              auto dest_var = project.find_port_by_id (*conn->dest_id_);
+              z_return_val_if_fail (dest_var.has_value (), nullptr);
+              std::visit (
+                [&] (auto &&dest) { port->dests_.push_back (dest); },
+                dest_var.value ());
               z_return_val_if_fail (port->dests_.back (), nullptr);
               port->dest_connections_.emplace_back (conn->clone_unique ());
             }

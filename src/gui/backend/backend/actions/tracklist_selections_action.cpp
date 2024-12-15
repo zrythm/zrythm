@@ -639,9 +639,14 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                       own_channel_track.append_ports (ports, true);
                       for (auto port : ports)
                         {
-                          Port * prj_port =
-                            Port::find_from_identifier (*port->id_);
-                          prj_port->restore_from_non_project (*port);
+                          auto prj_port_var =
+                            PROJECT->find_port_by_id (*port->id_);
+                          z_return_if_fail (prj_port_var);
+                          std::visit (
+                            [&] (auto &&prj_port) {
+                              prj_port->restore_from_non_project (*port);
+                            },
+                            *prj_port_var);
                         }
                     }
                 },

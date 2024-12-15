@@ -335,8 +335,11 @@ AutomationTrack::find_from_port (
 AutomationTrack *
 AutomationTrack::find_from_port_id (const PortIdentifier &id, bool basic_search)
 {
-  auto port = Port::find_from_identifier<ControlPort> (id);
-  z_return_val_if_fail (port && id == *port->id_, nullptr);
+  auto port_var = PROJECT->find_port_by_id (id);
+  z_return_val_if_fail (
+    port_var && std::holds_alternative<ControlPort *> (*port_var), nullptr);
+  auto * port = std::get<ControlPort *> (*port_var);
+  z_return_val_if_fail (id == *port->id_, nullptr);
 
   return find_from_port (*port, nullptr, basic_search);
 }
@@ -450,7 +453,10 @@ AutomationTrack::get_val_at_pos (
 {
   auto ap = get_ap_before_pos (pos, ends_after, use_snapshots);
 
-  auto port = Port::find_from_identifier<ControlPort> (*port_id_);
+  auto port_var = PROJECT->find_port_by_id (*port_id_);
+  z_return_val_if_fail (
+    port_var && std::holds_alternative<ControlPort *> (*port_var), 0.f);
+  auto * port = std::get<ControlPort *> (*port_var);
   z_return_val_if_fail (port, 0.f);
 
   /* no automation points yet, return negative (no change) */
@@ -556,7 +562,10 @@ AutomationTrack::set_caches (CacheType types)
 
   if (ENUM_BITSET_TEST (CacheType, types, CacheType::AutomationLanePorts))
     {
-      port_ = Port::find_from_identifier<ControlPort> (*port_id_);
+      auto port_var = PROJECT->find_port_by_id (*port_id_);
+      z_return_if_fail (
+        port_var && std::holds_alternative<ControlPort *> (*port_var));
+      port_ = std::get<ControlPort *> (*port_var);
     }
 }
 

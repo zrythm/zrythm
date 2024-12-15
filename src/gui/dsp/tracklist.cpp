@@ -409,9 +409,12 @@ Tracklist::insert_track (
             const auto &atl = added_track->get_automation_tracklist ();
             for (const auto &at : atl.ats_)
               {
-                auto port =
-                  Port::find_from_identifier<ControlPort> (*at->port_id_);
-                z_return_val_if_fail (port, nullptr);
+                auto port_var = PROJECT->find_port_by_id (*at->port_id_);
+                z_return_val_if_fail (
+                  port_var.has_value ()
+                    && std::holds_alternative<ControlPort *> (port_var.value ()),
+                  nullptr);
+                auto port = std::get<ControlPort *> (port_var.value ());
                 port->at_ = at;
               }
           }
