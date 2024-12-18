@@ -386,6 +386,12 @@ public:
   std::optional<PortPtrVariant>
   find_port_by_id (const dsp::PortIdentifier &id) const;
 
+  std::optional<gui::old_dsp::plugins::PluginPtrVariant>
+  find_plugin_by_id (const dsp::PluginIdentifier &id) const;
+
+  std::optional<TrackPtrVariant>
+  find_track_by_name_hash (Track::NameHashT hash) const;
+
 private:
   /**
    * Sets (and creates on the disk) the next available backup dir to use for

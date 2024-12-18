@@ -11,6 +11,14 @@
 #include "gui/dsp/port_connections_manager.h"
 
 void
+PortRange::define_fields (const Context &ctx)
+{
+  serialize_fields (
+    ctx, make_field ("minf", minf_), make_field ("maxf", maxf_),
+    make_field ("zerof", zerof_));
+}
+
+void
 Port::define_base_fields (const Context &ctx)
 {
   serialize_fields (
@@ -24,8 +32,7 @@ ControlPort::define_fields (const Context &ctx)
   using T = ISerializable<ControlPort>;
   T::call_all_base_define_fields<Port> (ctx);
   T::serialize_fields (
-    ctx, T::make_field ("control", control_), T::make_field ("minf", minf_),
-    T::make_field ("maxf", maxf_), T::make_field ("zerof", zerof_),
+    ctx, T::make_field ("control", control_), T::make_field ("range", range_),
     T::make_field ("deff", deff_),
     T::make_field ("carlaParameterId", carla_param_id_),
     T::make_field ("baseValue", base_value_));
@@ -48,9 +55,7 @@ CVPort::define_fields (const Context &ctx)
 {
   using T = ISerializable<CVPort>;
   T::call_all_base_define_fields<Port> (ctx);
-  T::serialize_fields (
-    ctx, T::make_field ("minf", minf_), T::make_field ("maxf", maxf_),
-    T::make_field ("zerof", zerof_));
+  T::serialize_fields (ctx, T::make_field ("range", range_));
 }
 
 void

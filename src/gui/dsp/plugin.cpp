@@ -158,6 +158,98 @@ Plugin::is_in_active_project () const
   return track_ && track_->is_in_active_project ();
 }
 
+std::string
+Plugin::get_full_designation_for_port (const dsp::PortIdentifier &id) const
+{
+  auto * track = get_track ();
+  z_return_val_if_fail (track, {});
+  return fmt::format ("{}/{}/{}", track->get_name (), get_name (), id.label_);
+}
+
+void
+Plugin::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
+  const
+{
+  id.plugin_id_ = id_;
+  id.track_name_hash_ = id_.track_name_hash_;
+  id.owner_type_ = PortIdentifier::OwnerType::Plugin;
+
+// FIXME: this was a horrible design decision
+#if 0
+  if (id.is_control ())
+    {
+      auto * control_port = dynamic_cast<ControlPort *> (this);
+      if (control_port->at_)
+        {
+          control_port->at_->set_port_id (*id_);
+        }
+    }
+#endif
+}
+
+void
+Plugin::on_control_change_event (const dsp::PortIdentifier &id, float val)
+{
+  /* if plugin enabled port, also set plugin's own enabled port value and
+   * vice versa */
+  if (
+    is_in_active_project ()
+    && ENUM_BITSET_TEST (
+      PortIdentifier::Flags, id.flags_, PortIdentifier::Flags::PluginEnabled))
+    {
+      if (
+        ENUM_BITSET_TEST (
+          PortIdentifier::Flags, id.flags_,
+          PortIdentifier::Flags::GenericPluginPort))
+        {
+          if (
+            own_enabled_port_
+            && !utils::math::floats_equal (own_enabled_port_->control_, val))
+            {
+              z_debug (
+                "generic enabled changed - changing plugin's own enabled");
+
+              own_enabled_port_->set_control_value (val, false, true);
+            }
+        }
+      else if (!utils::math::floats_equal (enabled_->control_, val))
+        {
+          z_debug ("plugin's own enabled changed - changing generic enabled");
+          enabled_->set_control_value (val, false, true);
+        }
+    } /* endif plugin-enabled port */
+
+#if HAVE_CARLA
+  if (setting_->open_with_carla_ && carla_param_id_ >= 0)
+    {
+      auto carla =
+        dynamic_cast<zrythm::gui::old_dsp::plugins::CarlaNativePlugin *> (pl);
+      z_return_if_fail (carla);
+      carla->set_param_value (static_cast<uint32_t> (carla_param_id_), val);
+    }
+#endif
+  if (!state_changed_event_sent_.load (std::memory_order_acquire))
+    {
+      // EVENTS_PUSH (EventType::ET_PLUGIN_STATE_CHANGED, pl);
+      state_changed_event_sent_.store (true, std::memory_order_release);
+    }
+}
+
+bool
+Plugin::should_bounce_to_master (utils::audio::BounceStep step) const
+{
+  // only pre-insert bounces for instrument plugins make sense
+  if (
+    id_.slot_type_ != dsp::PluginSlotType::Instrument
+    || step != utils::audio::BounceStep::BeforeInserts)
+    {
+      return false;
+    }
+
+  auto * track = get_track ();
+  return track->bounce_to_master_;
+}
+
 bool
 Plugin::is_auditioner () const
 {
@@ -175,7 +267,7 @@ Plugin::init_loaded (AutomatableTrack * track, MixerSelections * ms)
   z_return_if_fail (!ports.empty ());
   for (auto &port : ports)
     {
-      port->plugin_ = this;
+      port->owner_ = this;
     }
 
   set_enabled_and_gain ();
@@ -229,9 +321,7 @@ Plugin::init (
   port->id_->flags_ |= PortIdentifier::Flags::Toggle;
   port->id_->flags_ |= PortIdentifier::Flags::Automatable;
   port->id_->flags_ |= PortIdentifier::Flags::GenericPluginPort;
-  port->minf_ = 0.f;
-  port->maxf_ = 1.f;
-  port->zerof_ = 0.f;
+  port->range_ = { 0.f, 1.f, 0.f };
   port->deff_ = 1.f;
   port->control_ = 1.f;
   port->unsnapped_control_ = 1.f;
@@ -246,9 +336,7 @@ Plugin::init (
   port->id_->flags_ |= PortIdentifier::Flags::Automatable;
   port->id_->flags_ |= PortIdentifier::Flags::GenericPluginPort;
   port->id_->port_group_ = "[Zrythm]";
-  port->minf_ = 0.f;
-  port->maxf_ = 8.f;
-  port->zerof_ = 0.f;
+  port->range_ = { 0.f, 8.f, 0.f };
   port->deff_ = 1.f;
   port->set_control_value (1.f, false, false);
   port->carla_param_id_ = -1;
@@ -577,7 +665,7 @@ Plugin::set_track_and_slot (
   for (auto &port : in_ports_)
     {
       auto copy_id = port->id_->clone_unique ();
-      port->set_owner<zrythm::gui::old_dsp::plugins::Plugin> (this);
+      port->set_owner (*this);
       if (is_in_active_project ())
         {
           port->update_identifier (*copy_id, track, false);
@@ -586,7 +674,7 @@ Plugin::set_track_and_slot (
   for (auto &port : out_ports_)
     {
       auto copy_id = port->id_->clone_unique ();
-      port->set_owner<zrythm::gui::old_dsp::plugins::Plugin> (this);
+      port->set_owner (*this);
       if (is_in_active_project ())
         {
           port->update_identifier (*copy_id, track, false);
@@ -820,7 +908,7 @@ Port *
 Plugin::add_in_port (std::unique_ptr<Port> &&port)
 {
   port->id_->port_index_ = in_ports_.size ();
-  port->set_owner<zrythm::gui::old_dsp::plugins::Plugin> (this);
+  port->set_owner (*this);
   in_ports_.emplace_back (std::move (port));
   return in_ports_.back ().get ();
 }
@@ -829,7 +917,7 @@ Port *
 Plugin::add_out_port (std::unique_ptr<Port> &&port)
 {
   port->id_->port_index_ = out_ports_.size ();
-  port->set_owner<zrythm::gui::old_dsp::plugins::Plugin> (this);
+  port->set_owner (*this);
   out_ports_.push_back (std::move (port));
   return out_ports_.back ().get ();
 }
@@ -861,8 +949,13 @@ Plugin::move_automation (
       auto * port = std::get<ControlPort *> (*port_var);
       if (port->id_->owner_type_ == PortIdentifier::OwnerType::Plugin)
         {
-          auto port_pl = port->get_plugin (true);
-          if (port_pl != this)
+          auto port_pl = PROJECT->find_plugin_by_id (port->id_->plugin_id_);
+          if (!port_pl.has_value ())
+            continue;
+
+          bool match =
+            std::visit ([&] (auto &&p) { return p == this; }, port_pl.value ());
+          if (!match)
             continue;
         }
       else
@@ -1374,7 +1467,7 @@ Plugin::copy_members_from (Plugin &other)
       std::visit (
         [&] (auto &&p) {
           auto new_port = p->clone_unique ();
-          new_port->set_owner (this);
+          new_port->set_owner (*this);
           in_ports_.push_back (std::move (new_port));
         },
         convert_to_variant<PortPtrVariant> (port.get ()));
@@ -1384,7 +1477,7 @@ Plugin::copy_members_from (Plugin &other)
       std::visit (
         [&] (auto &&p) {
           auto new_port = p->clone_unique ();
-          new_port->set_owner (this);
+          new_port->set_owner (*this);
           out_ports_.push_back (std::move (new_port));
         },
         convert_to_variant<PortPtrVariant> (port.get ()));
@@ -1552,7 +1645,8 @@ Plugin::connect_to_plugin (Plugin &dest)
                 {
                   if (in_port->is_audio ())
                     {
-                      out_port->connect_to (*connections_mgr, *in_port, true);
+                      connections_mgr->ensure_connect_default (
+                        *out_port->id_, *in_port->id_, true);
                       goto done1;
                     }
                 }
@@ -1571,7 +1665,8 @@ Plugin::connect_to_plugin (Plugin &dest)
                 {
                   if (in_port->is_audio ())
                     {
-                      out_port->connect_to (*connections_mgr, *in_port, true);
+                      connections_mgr->ensure_connect_default (
+                        *out_port->id_, *in_port->id_, true);
                     }
                 }
               break;
@@ -1590,7 +1685,8 @@ Plugin::connect_to_plugin (Plugin &dest)
                 {
                   if (out_port->is_audio ())
                     {
-                      out_port->connect_to (*connections_mgr, *in_port, true);
+                      connections_mgr->ensure_connect_default (
+                        *out_port->id_, *in_port->id_, true);
                       goto done1;
                     }
                 }
@@ -1615,7 +1711,8 @@ Plugin::connect_to_plugin (Plugin &dest)
                   auto &in_port = *dest.in_ports_[last_index];
                   if (in_port.is_audio ())
                     {
-                      out_port->connect_to (*connections_mgr, in_port, true);
+                      connections_mgr->ensure_connect_default (
+                        *out_port->id_, *in_port.id_, true);
                       last_index++;
                       ports_connected++;
                       break;
@@ -1647,7 +1744,8 @@ done1:
                   PortIdentifier::Flags2, in_port->id_->flags2_,
                   PortIdentifier::Flags2::SupportsMidi))
                 {
-                  out_port->connect_to (*connections_mgr, *in_port, true);
+                  connections_mgr->ensure_connect_default (
+                    *out_port->id_, *in_port->id_, true);
                 }
             }
           break;
@@ -1674,7 +1772,8 @@ Plugin::connect_to_prefader (Channel &ch)
               PortIdentifier::Flags2::SupportsMidi)
             && out_port->id_->flow_ == dsp::PortFlow::Output)
             {
-              out_port->connect_to (*PORT_CONNECTIONS_MGR, *ch.midi_out_, true);
+              PORT_CONNECTIONS_MGR->ensure_connect_default (
+                *out_port->id_, *ch.midi_out_->id_, true);
             }
         }
     }
@@ -1682,10 +1781,10 @@ Plugin::connect_to_prefader (Channel &ch)
     {
       if (l_out_ && r_out_)
         {
-          l_out_->connect_to (
-            *PORT_CONNECTIONS_MGR, ch.prefader_->stereo_in_->get_l (), true);
-          r_out_->connect_to (
-            *PORT_CONNECTIONS_MGR, ch.prefader_->stereo_in_->get_r (), true);
+          PORT_CONNECTIONS_MGR->ensure_connect_default (
+            *l_out_->id_, *ch.prefader_->stereo_in_->get_l ().id_, true);
+          PORT_CONNECTIONS_MGR->ensure_connect_default (
+            *r_out_->id_, *ch.prefader_->stereo_in_->get_r ().id_, true);
         }
     }
 }
@@ -1706,14 +1805,14 @@ Plugin::disconnect_from_prefader (Channel &ch)
           if (port_connections_mgr->are_ports_connected (
                 *out_port->id_, *ch.prefader_->stereo_in_->get_l ().id_))
             {
-              out_port->disconnect_from (
-                *PORT_CONNECTIONS_MGR, ch.prefader_->stereo_in_->get_l ());
+              port_connections_mgr->ensure_disconnect (
+                *out_port->id_, *ch.prefader_->stereo_in_->get_l ().id_);
             }
           if (port_connections_mgr->are_ports_connected (
                 *out_port->id_, *ch.prefader_->stereo_in_->get_r ().id_))
             {
-              out_port->disconnect_from (
-                *PORT_CONNECTIONS_MGR, ch.prefader_->stereo_in_->get_r ());
+              port_connections_mgr->ensure_disconnect (
+                *out_port->id_, *ch.prefader_->stereo_in_->get_r ().id_);
             }
         }
       else if (
@@ -1726,8 +1825,8 @@ Plugin::disconnect_from_prefader (Channel &ch)
           if (port_connections_mgr->are_ports_connected (
                 *out_port->id_, *ch.prefader_->midi_in_->id_))
             {
-              out_port->disconnect_from (
-                *PORT_CONNECTIONS_MGR, *ch.prefader_->midi_in_);
+              port_connections_mgr->ensure_disconnect (
+                *out_port->id_, *ch.prefader_->midi_in_->id_);
             }
         }
     }
@@ -1761,8 +1860,8 @@ Plugin::disconnect_from_plugin (Plugin &dest)
                 {
                   if (in_port->is_audio ())
                     {
-                      out_port->disconnect_from (
-                        *PORT_CONNECTIONS_MGR, *in_port);
+                      PORT_CONNECTIONS_MGR->ensure_disconnect (
+                        *out_port->id_, *in_port->id_);
                       goto done2;
                     }
                 }
@@ -1781,8 +1880,8 @@ Plugin::disconnect_from_plugin (Plugin &dest)
                 {
                   if (in_port->is_audio ())
                     {
-                      out_port->disconnect_from (
-                        *PORT_CONNECTIONS_MGR, *in_port);
+                      PORT_CONNECTIONS_MGR->ensure_disconnect (
+                        *out_port->id_, *in_port->id_);
                     }
                 }
               break;
@@ -1801,8 +1900,8 @@ Plugin::disconnect_from_plugin (Plugin &dest)
                 {
                   if (out_port->is_audio ())
                     {
-                      out_port->disconnect_from (
-                        *PORT_CONNECTIONS_MGR, *in_port);
+                      PORT_CONNECTIONS_MGR->ensure_disconnect (
+                        *out_port->id_, *in_port->id_);
                       goto done2;
                     }
                 }
@@ -1827,7 +1926,8 @@ Plugin::disconnect_from_plugin (Plugin &dest)
                   auto &in_port = *dest.in_ports_[last_index];
                   if (in_port.is_audio ())
                     {
-                      out_port->disconnect_from (*PORT_CONNECTIONS_MGR, in_port);
+                      PORT_CONNECTIONS_MGR->ensure_disconnect (
+                        *out_port->id_, *in_port.id_);
                       last_index++;
                       ports_disconnected++;
                       break;
@@ -1858,7 +1958,8 @@ done2:
                   PortIdentifier::Flags2, in_port->id_->flags2_,
                   PortIdentifier::Flags2::SupportsMidi))
                 {
-                  out_port->disconnect_from (*PORT_CONNECTIONS_MGR, *in_port);
+                  PORT_CONNECTIONS_MGR->ensure_disconnect (
+                    *out_port->id_, *in_port->id_);
                 }
             }
         }

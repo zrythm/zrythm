@@ -3,29 +3,14 @@
 
 #include "zrythm-config.h"
 
-#include "dsp/graph.h"
 #include "dsp/port_identifier.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/channel.h"
-#include "gui/dsp/carla_native_plugin.h"
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/cv_port.h"
-#include "gui/dsp/engine_jack.h"
-#include "gui/dsp/hardware_processor.h"
-#include "gui/dsp/master_track.h"
-#include "gui/dsp/midi_event.h"
 #include "gui/dsp/midi_port.h"
-#include "gui/dsp/modulator_macro_processor.h"
-#include "gui/dsp/modulator_track.h"
-#include "gui/dsp/plugin.h"
 #include "gui/dsp/port.h"
-#include "gui/dsp/recordable_track.h"
-#include "gui/dsp/router.h"
-#include "gui/dsp/rtaudio_device.h"
 #include "gui/dsp/rtmidi_device.h"
-#include "gui/dsp/tempo_track.h"
-#include "gui/dsp/tracklist.h"
 #include "utils/dsp.h"
 #include "utils/hash.h"
 #include "utils/rt_thread_id.h"
@@ -43,9 +28,9 @@ Port::Port (
   float       zerof)
     : Port ()
 {
-  minf_ = minf;
-  maxf_ = maxf;
-  zerof_ = zerof;
+  range_.minf_ = minf;
+  range_.maxf_ = maxf;
+  range_.zerof_ = zerof;
   id_->label_ = std::move (label);
   id_->type_ = type;
   id_->flow_ = flow;
@@ -139,151 +124,11 @@ Port::get_num_unlocked_srcs () const
   return get_num_unlocked (true);
 }
 
-template <typename T>
 void
-Port::set_owner (T * owner)
+Port::set_owner (IPortOwner &owner)
 {
-  auto get_track_name_hash = [] (const auto &track) -> Track::NameHashT {
-    return track->name_.empty () ? 0 : track->get_name_hash ();
-  };
-
-  if constexpr (std::derived_from<T, gui::old_dsp::plugins::Plugin>)
-    {
-      id_->plugin_id_ = owner->id_;
-      id_->track_name_hash_ = owner->id_.track_name_hash_;
-      id_->owner_type_ = PortIdentifier::OwnerType::Plugin;
-
-      if (is_control ())
-        {
-          auto * control_port = dynamic_cast<ControlPort *> (this);
-          if (control_port->at_)
-            {
-              control_port->at_->set_port_id (*id_);
-            }
-        }
-    }
-  else if constexpr (std::derived_from<T, TrackProcessor>)
-    {
-      auto track = owner->get_track ();
-      z_return_if_fail (track);
-      id_->track_name_hash_ = get_track_name_hash (track);
-      id_->owner_type_ = PortIdentifier::OwnerType::TrackProcessor;
-      track_ = track;
-    }
-  else if constexpr (std::derived_from<T, gui::Channel>)
-    {
-      auto track = owner->get_track ();
-      z_return_if_fail (track);
-      id_->track_name_hash_ = get_track_name_hash (track);
-      id_->owner_type_ = PortIdentifier::OwnerType::Channel;
-      track_ = track;
-    }
-  else if constexpr (std::derived_from<T, ExtPort>)
-    {
-      ext_port_ = owner;
-      id_->owner_type_ = PortIdentifier::OwnerType::HardwareProcessor;
-    }
-  else if constexpr (std::derived_from<T, ChannelSend>)
-    {
-      id_->track_name_hash_ = owner->track_name_hash_;
-      id_->port_index_ = owner->slot_;
-      id_->owner_type_ = PortIdentifier::OwnerType::ChannelSend;
-      channel_send_ = owner;
-
-      if (
-        ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, id_->flags2_,
-          PortIdentifier::Flags2::ChannelSendEnabled))
-        {
-          minf_ = 0.f;
-          maxf_ = 1.f;
-          zerof_ = 0.0f;
-        }
-      else if (
-        ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, id_->flags2_,
-          PortIdentifier::Flags2::ChannelSendAmount))
-        {
-          minf_ = 0.f;
-          maxf_ = 2.f;
-          zerof_ = 0.f;
-        }
-    }
-  else if constexpr (std::derived_from<T, Fader>)
-    {
-      id_->owner_type_ = PortIdentifier::OwnerType::Fader;
-      fader_ = owner;
-      z_return_if_fail (fader_);
-
-      if (
-        owner->type_ == Fader::Type::AudioChannel
-        || owner->type_ == Fader::Type::MidiChannel)
-        {
-          auto track = owner->get_track ();
-          z_return_if_fail (track);
-          id_->track_name_hash_ = get_track_name_hash (track);
-          if (owner->passthrough_)
-            {
-              id_->flags2_ |= PortIdentifier::Flags2::Prefader;
-            }
-          else
-            {
-              id_->flags2_ |= PortIdentifier::Flags2::Postfader;
-            }
-        }
-      else if (owner->type_ == Fader::Type::SampleProcessor)
-        {
-          id_->flags2_ |= PortIdentifier::Flags2::SampleProcessorFader;
-        }
-      else
-        {
-          id_->flags2_ |= PortIdentifier::Flags2::MonitorFader;
-        }
-
-      if (
-        ENUM_BITSET_TEST (
-          PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::Amplitude))
-        {
-          minf_ = 0.f;
-          maxf_ = 2.f;
-          zerof_ = 0.f;
-        }
-      else if (
-        ENUM_BITSET_TEST (
-          PortIdentifier::Flags, id_->flags_,
-          PortIdentifier::Flags::StereoBalance))
-        {
-          minf_ = 0.f;
-          maxf_ = 1.f;
-          zerof_ = 0.5f;
-        }
-    }
-  else if constexpr (std::derived_from<T, Transport>)
-    {
-      transport_ = owner;
-      id_->owner_type_ = PortIdentifier::OwnerType::Transport;
-    }
-  else if constexpr (std::derived_from<T, Track>)
-    {
-      // z_return_if_fail (!track.name_.empty ());
-      id_->track_name_hash_ =
-        owner->name_.empty () ? 0 : owner->get_name_hash ();
-      id_->owner_type_ = PortIdentifier::OwnerType::Track;
-      track_ = owner;
-    }
-  else if constexpr (std::derived_from<T, ModulatorMacroProcessor>)
-    {
-      modulator_macro_processor_ = owner;
-      id_->owner_type_ = PortIdentifier::OwnerType::ModulatorMacroProcessor;
-      z_return_if_fail (owner->get_track ());
-      id_->track_name_hash_ = owner->get_track ()->get_name_hash ();
-      track_ = owner->get_track ();
-    }
-  else if constexpr (std::derived_from<T, AudioEngine>)
-    {
-      engine_ = owner;
-      id_->owner_type_ = PortIdentifier::OwnerType::AudioEngine;
-    }
+  owner_ = std::addressof (owner);
+  owner_->set_port_metadata_from_owner (*id_, range_);
 }
 
 std::string
@@ -335,7 +180,7 @@ Port::update_identifier (
   Track *               track,
   bool                  update_automation_track)
 {
-  if (this->is_in_active_project ())
+  if (is_in_active_project ())
     {
       /* update in all sources */
       PortConnectionsManager::ConnectionsVector srcs;
@@ -398,9 +243,7 @@ Port::copy_members_from (const Port &other)
 {
   id_ = other.id_->clone_unique ();
   exposed_to_backend_ = other.exposed_to_backend_;
-  minf_ = other.minf_;
-  maxf_ = other.maxf_;
-  zerof_ = other.zerof_;
+  range_ = other.range_;
 }
 
 void
@@ -457,12 +300,7 @@ Port::set_expose_to_backend (AudioEngine &engine, bool expose)
             !backend_
             || (dynamic_cast<RtAudioPortBackend *> (backend_.get ()) == nullptr))
             {
-              auto track = dynamic_cast<ChannelTrack *> (get_track (false));
-              if (!track)
-                return;
-
-              auto &ch = track->channel_;
-              bool  is_stereo_l = ENUM_BITSET_TEST (
+              bool is_stereo_l = ENUM_BITSET_TEST (
                 PortIdentifier::Flags, id_->flags_,
                 PortIdentifier::Flags::StereoL);
               bool is_stereo_r = ENUM_BITSET_TEST (
@@ -472,6 +310,14 @@ Port::set_expose_to_backend (AudioEngine &engine, bool expose)
                 {
                   return;
                 }
+
+              // FIXME: get_track() unimplemented
+              // this is bad design anyway
+              auto track = dynamic_cast<ChannelTrack *> (get_track (false));
+              if (!track)
+                return;
+
+              auto &ch = track->channel_;
 
               backend_ = std::make_unique<RtAudioPortBackend> (
                 [ch, is_stereo_l] (
@@ -565,72 +411,6 @@ Port::rename_backend ()
   set_expose_to_backend (*AUDIO_ENGINE, true);
 }
 
-std::string
-Port::get_full_designation () const
-{
-  const auto &id = this->id_;
-
-  switch (id->owner_type_)
-    {
-    case PortIdentifier::OwnerType::AudioEngine:
-      return id->label_;
-    case PortIdentifier::OwnerType::Plugin:
-      {
-        auto * pl = this->get_plugin (true);
-        z_return_val_if_fail (pl, {});
-        auto * track = pl->get_track ();
-        z_return_val_if_fail (track, {});
-        return fmt::format (
-          "{}/{}/{}", track->get_name (), pl->get_name (), id->label_);
-      }
-    case PortIdentifier::OwnerType::Channel:
-    case PortIdentifier::OwnerType::Track:
-    case PortIdentifier::OwnerType::TrackProcessor:
-    case PortIdentifier::OwnerType::ChannelSend:
-      {
-        auto tr = this->get_track (true);
-        z_return_val_if_fail (tr, {});
-        return fmt::format ("{}/{}", tr->get_name (), id->label_);
-      }
-    case PortIdentifier::OwnerType::Fader:
-      if (
-        ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, id->flags2_, PortIdentifier::Flags2::Prefader)
-        || ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, id->flags2_, PortIdentifier::Flags2::Postfader))
-        {
-          auto * tr = this->get_track (true);
-          z_return_val_if_fail (tr, {});
-          return fmt::format ("{}/{}", tr->get_name (), id->label_);
-        }
-      else if (
-        ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, id->flags2_,
-          PortIdentifier::Flags2::MonitorFader))
-        {
-          return fmt::format ("Engine/{}", id->label_);
-        }
-      else if (
-        ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, id->flags2_,
-          PortIdentifier::Flags2::SampleProcessorFader))
-        {
-          return id->label_;
-        }
-      break;
-    case PortIdentifier::OwnerType::HardwareProcessor:
-      return fmt::format ("HW/{}", id->label_);
-    case PortIdentifier::OwnerType::Transport:
-      return fmt::format ("Transport/{}", id->label_);
-    case PortIdentifier::OwnerType::ModulatorMacroProcessor:
-      return fmt::format ("Modulator Macro Processor/{}", id->label_);
-    default:
-      break;
-    }
-
-  z_return_val_if_reached ({});
-}
-
 void
 Port::print_full_designation () const
 {
@@ -648,185 +428,8 @@ Port::clear_external_buffer ()
   backend_->clear_backend_buffer (id_->type_, AUDIO_ENGINE->block_length_);
 }
 
-Track *
-Port::get_track (bool warn_if_fail) const
-{
-  z_return_val_if_fail (IS_PORT (this), nullptr);
-
-  /* return the pointer if dsp thread */
-  if (
-    (track_ != nullptr) && PROJECT && PROJECT->loaded_ && ROUTER
-    && ROUTER->is_processing_thread ()) [[likely]]
-    {
-      z_return_val_if_fail (track_, nullptr);
-      return track_;
-    }
-
-  Track * track = nullptr;
-  if (id_->track_name_hash_ != 0)
-    {
-      z_return_val_if_fail (gZrythm && TRACKLIST, nullptr);
-
-      auto track_var =
-        TRACKLIST->find_track_by_name_hash (this->id_->track_name_hash_);
-      if (!track_var)
-        track_var = SAMPLE_PROCESSOR->tracklist_->find_track_by_name_hash (
-          id_->track_name_hash_);
-      z_return_val_if_fail (track_var, nullptr);
-      std::visit ([&] (auto &&track_ptr) { track = track_ptr; }, *track_var);
-    }
-
-  if ((track == nullptr) && warn_if_fail)
-    {
-      z_warning (
-        "track with name hash %d not found for port %s", id_->track_name_hash_,
-        id_->label_);
-    }
-
-  return track;
-}
-
-zrythm::gui::old_dsp::plugins::Plugin *
-Port::get_plugin (bool warn_if_fail) const
-{
-  z_return_val_if_fail (IS_PORT (this), nullptr);
-
-  /* if DSP thread, return the pointer */
-  if (
-    plugin_ && PROJECT && PROJECT->loaded_ && ROUTER
-    && ROUTER->is_processing_thread ()) [[likely]]
-    {
-      z_return_val_if_fail (plugin_, nullptr);
-      return plugin_;
-    }
-
-  if (this->id_->owner_type_ != PortIdentifier::OwnerType::Plugin)
-    {
-      if (warn_if_fail)
-        z_warning ("port not owned by plugin");
-      return nullptr;
-    }
-
-  auto track = this->get_track (false);
-  if (!track || (!track->is_modulator () && !track->has_channel ()))
-    {
-      if (warn_if_fail)
-        {
-          z_warning ("No track found for port");
-        }
-      return nullptr;
-    }
-
-  zrythm::gui::old_dsp::plugins::Plugin * pl = nullptr;
-  const auto                         &pl_id = id_->plugin_id_;
-  switch (pl_id.slot_type_)
-    {
-    case zrythm::dsp::PluginSlotType::MidiFx:
-      pl =
-        dynamic_cast<ChannelTrack *> (track)
-          ->channel_->midi_fx_[pl_id.slot_]
-          .get ();
-      break;
-    case zrythm::dsp::PluginSlotType::Instrument:
-      pl = dynamic_cast<ChannelTrack *> (track)->channel_->instrument_.get ();
-      break;
-    case zrythm::dsp::PluginSlotType::Insert:
-      pl =
-        dynamic_cast<ChannelTrack *> (track)
-          ->channel_->inserts_[pl_id.slot_]
-          .get ();
-      break;
-    case zrythm::dsp::PluginSlotType::Modulator:
-      pl =
-        dynamic_cast<ModulatorTrack *> (track)->modulators_[pl_id.slot_].get ();
-      break;
-    default:
-      z_return_val_if_reached (nullptr);
-      break;
-    }
-
-  if (!pl && warn_if_fail)
-    {
-      z_error (
-        "plugin at slot type %s (slot %d) not found for port %s",
-        ENUM_NAME (pl_id.slot_type_), pl_id.slot_, id_->label_);
-      return nullptr;
-    }
-
-  return pl;
-}
-
 uint32_t
 Port::get_hash () const
 {
   return utils::hash::get_object_hash (*this);
 }
-
-bool
-Port::is_in_active_project () const
-{
-  switch (id_->owner_type_)
-    {
-    case PortIdentifier::OwnerType::AudioEngine:
-      return engine_ && engine_->is_in_active_project ();
-    case PortIdentifier::OwnerType::Plugin:
-      return plugin_ && plugin_->is_in_active_project ();
-    case PortIdentifier::OwnerType::Track:
-    case PortIdentifier::OwnerType::Channel:
-    case PortIdentifier::OwnerType::TrackProcessor:
-      return track_ && track_->is_in_active_project ();
-    case PortIdentifier::OwnerType::Fader:
-      return fader_ && fader_->is_in_active_project ();
-    case PortIdentifier::OwnerType::ChannelSend:
-      return channel_send_ && channel_send_->is_in_active_project ();
-    case PortIdentifier::OwnerType::ModulatorMacroProcessor:
-      return modulator_macro_processor_
-             && modulator_macro_processor_->is_in_active_project ();
-    case PortIdentifier::OwnerType::HardwareProcessor:
-      return ext_port_ && ext_port_->is_in_active_project ();
-    case PortIdentifier::OwnerType::Transport:
-      return transport_ && transport_->is_in_active_project ();
-    default:
-      z_return_val_if_reached (false);
-    }
-}
-
-void
-Port::connect_to (PortConnectionsManager &mgr, Port &dest, bool locked)
-{
-  mgr.ensure_connect (*id_, *dest.id_, 1.f, locked, true);
-}
-
-void
-Port::disconnect_from (PortConnectionsManager &mgr, Port &dest)
-{
-  mgr.ensure_disconnect (*id_, *dest.id_);
-}
-
-template void
-Port::set_owner<zrythm::gui::old_dsp::plugins::Plugin> (
-  zrythm::gui::old_dsp::plugins::Plugin *);
-template void
-Port::set_owner<Transport> (Transport *);
-template void
-Port::set_owner<ChannelSend> (ChannelSend *);
-template void
-Port::set_owner<AudioEngine> (AudioEngine *);
-template void
-Port::set_owner<Fader> (Fader *);
-template void
-Port::set_owner<Track> (Track *);
-template void
-Port::set_owner<ModulatorMacroProcessor> (ModulatorMacroProcessor *);
-template void
-Port::set_owner<ExtPort> (ExtPort *);
-template void
-Port::set_owner (zrythm::gui::Channel *);
-template void
-Port::set_owner<TrackProcessor> (TrackProcessor *);
-template void
-Port::set_owner<HardwareProcessor> (HardwareProcessor *);
-template void
-Port::set_owner<TempoTrack> (TempoTrack *);
-template void
-Port::set_owner<RecordableTrack> (RecordableTrack *);

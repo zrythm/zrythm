@@ -82,16 +82,12 @@ ChannelSend::init_loaded (ChannelTrack * track)
 {
   this->track_ = track;
 
-#define INIT_LOADED_PORT(x) x->init_loaded (this)
-
-  INIT_LOADED_PORT (enabled_);
-  INIT_LOADED_PORT (amount_);
-  INIT_LOADED_PORT (midi_in_);
-  INIT_LOADED_PORT (midi_out_);
-  stereo_in_->init_loaded (this);
-  stereo_out_->init_loaded (this);
-
-#undef INIT_LOADED_PORT
+  enabled_->init_loaded (*this);
+  amount_->init_loaded (*this);
+  midi_in_->init_loaded (*this);
+  midi_out_->init_loaded (*this);
+  stereo_in_->init_loaded (*this);
+  stereo_out_->init_loaded (*this);
 }
 
 void
@@ -104,7 +100,7 @@ ChannelSend::construct_for_slot (int slot)
   enabled_->id_->sym_ = fmt::format ("channel_send_{}_enabled", slot + 1);
   enabled_->id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
   enabled_->id_->flags2_ |= dsp::PortIdentifier::Flags2::ChannelSendEnabled;
-  enabled_->set_owner<ChannelSend> (this);
+  enabled_->set_owner (*this);
   enabled_->set_control_value (0.f, false, false);
 
   amount_ = std::make_unique<ControlPort> (format_str (
@@ -113,7 +109,7 @@ ChannelSend::construct_for_slot (int slot)
   amount_->id_->flags_ |= dsp::PortIdentifier::Flags::Amplitude;
   amount_->id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
   amount_->id_->flags2_ |= dsp::PortIdentifier::Flags2::ChannelSendAmount;
-  amount_->set_owner (this);
+  amount_->set_owner (*this);
   amount_->set_control_value (1.f, false, false);
 
   stereo_in_ = std::make_unique<StereoPorts> (
@@ -121,27 +117,27 @@ ChannelSend::construct_for_slot (int slot)
     format_str (
       QObject::tr ("Channel Send {} audio in").toStdString (), slot + 1),
     fmt::format ("channel_send_{}_audio_in", slot + 1));
-  stereo_in_->set_owner (this);
+  stereo_in_->set_owner (*this);
 
   midi_in_ = std::make_unique<MidiPort> (
     format_str (QObject::tr ("Channel Send {} MIDI in").toStdString (), slot + 1),
     dsp::PortFlow::Input);
   midi_in_->id_->sym_ = fmt::format ("channel_send_{}_midi_in", slot + 1);
-  midi_in_->set_owner (this);
+  midi_in_->set_owner (*this);
 
   stereo_out_ = std::make_unique<StereoPorts> (
     false,
     format_str (
       QObject::tr ("Channel Send {} audio out").toStdString (), slot + 1),
     fmt::format ("channel_send_{}_audio_out", slot + 1));
-  stereo_out_->set_owner (this);
+  stereo_out_->set_owner (*this);
 
   midi_out_ = std::make_unique<MidiPort> (
     format_str (
       QObject::tr ("Channel Send {} MIDI out").toStdString (), slot + 1),
     dsp::PortFlow::Output);
   midi_out_->id_->sym_ = fmt::format ("channel_send_{}_midi_out", slot + 1);
-  midi_out_->set_owner (this);
+  midi_out_->set_owner (*this);
 }
 
 ChannelSend::
@@ -263,8 +259,14 @@ ChannelSend::get_target_track (const ChannelTrack * owner)
   z_return_val_if_fail (conn, nullptr);
   auto port_var = PROJECT->find_port_by_id (*conn->dest_id_);
   z_return_val_if_fail (port_var, nullptr);
+  auto ret = std::visit (
+    [&] (auto &&port) {
+      return PROJECT->find_track_by_name_hash (port->id_->track_name_hash_);
+    },
+    *port_var);
+  z_return_val_if_fail (ret.has_value (), nullptr);
   return std::visit (
-    [&] (auto &&port) { return port->get_track (true); }, *port_var);
+    [&] (auto &&track) -> Track * { return track; }, ret.value ());
 }
 
 std::unique_ptr<StereoPorts>
@@ -565,19 +567,29 @@ ChannelSend::get_dest_name () const
       z_return_val_if_fail (dest, {});
       if (is_sidechain_)
         {
-          auto * pl = dest->get_plugin (true);
-          z_return_val_if_fail (pl, {});
-          return pl->get_full_port_group_designation (dest->id_->port_group_);
+          auto pl_var = PROJECT->find_plugin_by_id (dest->id_->plugin_id_);
+          z_return_val_if_fail (pl_var.has_value (), {});
+          return std::visit (
+            [&] (auto &&pl) {
+              return pl->get_full_port_group_designation (
+                dest->id_->port_group_);
+            },
+            pl_var.value ());
         }
       /* else if not sidechain */
       switch (dest->id_->owner_type_)
         {
         case dsp::PortIdentifier::OwnerType::TrackProcessor:
           {
-            auto * track = dest->get_track (true);
-            z_return_val_if_fail (track, {});
-            return format_str (
-              QObject::tr ("{} input").toStdString (), track->name_);
+            auto track_var =
+              PROJECT->find_track_by_name_hash (dest->id_->track_name_hash_);
+            z_return_val_if_fail (track_var.has_value (), {});
+            return std::visit (
+              [&] (auto &&track) {
+                return format_str (
+                  QObject::tr ("{} input").toStdString (), track->name_);
+              },
+              track_var.value ());
           }
           break;
         default:
@@ -587,6 +599,14 @@ ChannelSend::get_dest_name () const
       z_return_val_if_reached ({});
     },
     *dest_var);
+}
+
+std::string
+ChannelSend::get_full_designation_for_port (const dsp::PortIdentifier &id) const
+{
+  auto * tr = get_track ();
+  z_return_val_if_fail (tr, {});
+  return fmt::format ("{}/{}", tr->get_name (), id.get_label ());
 }
 
 void
@@ -604,9 +624,9 @@ ChannelSend::init_after_cloning (const ChannelSend &other)
 
   std::vector<Port *> ports;
   append_ports (ports);
-  for (auto port : ports)
+  for (auto * port : ports)
     {
-      port->set_owner (this);
+      port->set_owner (*this);
     }
 }
 
@@ -686,6 +706,35 @@ ChannelSend::find_widget ()
   return nullptr;
 }
 #endif
+
+void
+ChannelSend::set_port_metadata_from_owner (
+  dsp::PortIdentifier &id,
+  PortRange           &range) const
+{
+  id.track_name_hash_ = track_name_hash_;
+  id.port_index_ = slot_;
+  id.owner_type_ = dsp::PortIdentifier::OwnerType::ChannelSend;
+
+  if (
+    ENUM_BITSET_TEST (
+      dsp::PortIdentifier::Flags2, id.flags2_,
+      dsp::PortIdentifier::Flags2::ChannelSendEnabled))
+    {
+      range.minf_ = 0.f;
+      range.maxf_ = 1.f;
+      range.zerof_ = 0.0f;
+    }
+  else if (
+    ENUM_BITSET_TEST (
+      dsp::PortIdentifier::Flags2, id.flags2_,
+      dsp::PortIdentifier::Flags2::ChannelSendAmount))
+    {
+      range.minf_ = 0.f;
+      range.maxf_ = 2.f;
+      range.zerof_ = 0.f;
+    }
+}
 
 ChannelSend *
 ChannelSend::find_in_project () const

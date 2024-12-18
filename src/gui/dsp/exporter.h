@@ -7,12 +7,14 @@
 #include <memory>
 #include <utility>
 
-#include "gui/dsp/engine.h"
-
 #include "dsp/position.h"
+#include "gui/dsp/engine.h"
+#include "gui/dsp/port_connections_manager.h"
 #include "utils/audio.h"
 
 class ProgressInfo;
+
+using namespace zrythm;
 
 /**
  * @addtogroup dsp
@@ -25,8 +27,9 @@ class Exporter final : public QObject
   Q_OBJECT
 
 public:
-  using Position = zrythm::dsp::Position;
-  using BitDepth = zrythm::utils::audio::BitDepth;
+  using Position = dsp::Position;
+  using BitDepth = utils::audio::BitDepth;
+  using BounceStep = utils::audio::BounceStep;
 
   /**
    * Export format.

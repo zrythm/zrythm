@@ -27,13 +27,20 @@ class ModulatorTrack;
 class ModulatorMacroProcessor final
     : public ICloneable<ModulatorMacroProcessor>,
       public dsp::IProcessable,
-      public utils::serialization::ISerializable<ModulatorMacroProcessor>
+      public utils::serialization::ISerializable<ModulatorMacroProcessor>,
+      public IPortOwner
 {
 public:
   ModulatorMacroProcessor () = default;
   ModulatorMacroProcessor (ModulatorTrack * track, int idx);
 
-  bool is_in_active_project () const;
+  bool is_in_active_project () const override;
+
+  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
+    const override;
+
+  std::string
+  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
 
   std::string get_name () const { return name_; }
 

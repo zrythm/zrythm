@@ -139,7 +139,7 @@ public:
 
   void set_automation_mode (AutomationMode mode, bool fire_events);
 
-  inline void swap_record_mode ()
+  void swap_record_mode ()
   {
     record_mode_ = static_cast<AutomationRecordMode> (
       (static_cast<int> (record_mode_) + 1)

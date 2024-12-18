@@ -11,6 +11,8 @@
 #include "utils/math.h"
 #include "utils/ring_buffer.h"
 
+#include "backend/project.h"
+
 MeterProcessor::MeterProcessor (QObject * parent) : QObject (parent) { }
 
 void
@@ -39,11 +41,17 @@ MeterProcessor::setPort (QVariant port_var)
                 port_->id_->owner_type_
                 == zrythm::dsp::PortIdentifier::OwnerType::Track)
                 {
-                  Track * track = port_->get_track (true);
-                  if (track->is_master ())
-                    {
-                      is_master_fader = true;
-                    }
+                  auto track_var = PROJECT->find_track_by_name_hash (
+                    port_->id_->track_name_hash_);
+                  z_return_if_fail (track_var.has_value ());
+                  std::visit (
+                    [&] (auto &&track) {
+                      if (track->is_master ())
+                        {
+                          is_master_fader = true;
+                        }
+                    },
+                    track_var.value ());
                 }
 
               if (is_master_fader)

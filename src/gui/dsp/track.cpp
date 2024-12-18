@@ -214,6 +214,20 @@ Track::is_in_active_project () const
   return tracklist_ && tracklist_->is_in_active_project ();
 }
 
+void
+Track::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
+  const
+{
+  id.track_name_hash_ = name_.empty () ? 0 : get_name_hash ();
+  id.owner_type_ = dsp::PortIdentifier::OwnerType::Track;
+}
+
+std::string
+Track::get_full_designation_for_port (const dsp::PortIdentifier &id) const
+{
+  return fmt::format ("{}/{}", get_name (), id.label_);
+}
+
 bool
 Track::is_auditioner () const
 {

@@ -6,22 +6,13 @@
 #include "gui/dsp/audio_port.h"
 #include "gui/dsp/channel_track.h"
 #include "gui/dsp/engine.h"
-#include "gui/dsp/engine_jack.h"
 #include "gui/dsp/master_track.h"
-#include "gui/dsp/recordable_track.h"
-#include "gui/dsp/rtaudio_device.h"
 #include "gui/dsp/tracklist.h"
-
 #include "utils/dsp.h"
-#include "utils/gtest_wrapper.h"
+
 #include <fmt/format.h>
 
-AudioPort::AudioPort ()
-{
-  minf_ = -1.f;
-  maxf_ = 1.f;
-  zerof_ = 0.f;
-}
+AudioPort::AudioPort () : AudioPort ("", PortFlow::Input) { }
 
 AudioPort::AudioPort (std::string label, PortFlow flow)
     : Port (label, PortType::Audio, flow, -1.f, 1.f, 0.f)
@@ -114,31 +105,10 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
 
   const auto &id = id_;
   const auto  owner_type = id->owner_type_;
-  auto        track = [&] () -> Track * {
-    if (owner_type == PortIdentifier::OwnerType::TrackProcessor
-        || owner_type == PortIdentifier::OwnerType::Track
-        || owner_type == PortIdentifier::OwnerType::Channel
-        || (owner_type == PortIdentifier::OwnerType::Fader
-            && (ENUM_BITSET_TEST (PortIdentifier::Flags2, id_->flags2_, PortIdentifier::Flags2::Prefader)
-                || ENUM_BITSET_TEST (PortIdentifier::Flags2, id_->flags2_, PortIdentifier::Flags2::Postfader)))
-        || (owner_type == PortIdentifier::OwnerType::Plugin && id_->plugin_id_.slot_type_ == zrythm::dsp::PluginSlotType::Instrument))
-      {
-        return ZRYTHM_TESTING ? get_track (true) : track_;
-      }
-    return nullptr;
-  }();
-  z_return_if_fail (
-    track || owner_type != PortIdentifier::OwnerType::TrackProcessor);
-
-  const auto processable_track = dynamic_cast<ProcessableTrack *> (track);
-  const auto channel_track = dynamic_cast<ChannelTrack *> (track);
-  const auto recordable_track = dynamic_cast<RecordableTrack *> (track);
 
   const bool is_stereo = is_stereo_port ();
 
-  /* only consider incoming external data if armed for recording (if the port is
-   * owner by a track), otherwise always consider incoming external data */
-  if ((owner_type != PortIdentifier::OwnerType::TrackProcessor || (owner_type == PortIdentifier::OwnerType::TrackProcessor && recordable_track && recordable_track->get_recording())) && is_input())
+  if (is_input () && owner_->should_sum_data_from_backend ())
     {
       if (backend_ && backend_->is_exposed ())
         {
@@ -211,25 +181,17 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
     owner_type == PortIdentifier::OwnerType::Channel && is_stereo
     && is_output ())
     {
-      z_return_if_fail (channel_track);
-      auto &ch = channel_track->channel_;
-
       /* calculate meter values */
-      if (
-        this == &ch->stereo_out_->get_l () || this == &ch->stereo_out_->get_r ())
-        {
-          /* reset peak if needed */
-          auto time_now = Zrythm::getInstance ()->get_monotonic_time_usecs ();
-          if (time_now - peak_timestamp_ > TIME_TO_RESET_PEAK)
-            peak_ = -1.f;
+      /* reset peak if needed */
+      auto time_now = Zrythm::getInstance ()->get_monotonic_time_usecs ();
+      if (time_now - peak_timestamp_ > TIME_TO_RESET_PEAK)
+        peak_ = -1.f;
 
-          bool changed = utils::float_ranges::abs_max_with_existing_peak (
-            &buf_[time_nfo.local_offset_], &peak_, time_nfo.nframes_);
-          if (changed)
-            {
-              peak_timestamp_ =
-                Zrythm::getInstance ()->get_monotonic_time_usecs ();
-            }
+      bool changed = utils::float_ranges::abs_max_with_existing_peak (
+        &buf_[time_nfo.local_offset_], &peak_, time_nfo.nframes_);
+      if (changed)
+        {
+          peak_timestamp_ = Zrythm::getInstance ()->get_monotonic_time_usecs ();
         }
     }
 
@@ -242,64 +204,21 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
         time_nfo.nframes_);
     }
 
-  /* if bouncing track directly to master (e.g., when bouncing the track on
+  /* if bouncing directly to master (e.g., when bouncing a track on
    * its own without parents), add the buffer to master output */
-  if (AUDIO_ENGINE->bounce_mode_ > BounceMode::BOUNCE_OFF
-  && (owner_type == PortIdentifier::OwnerType::Channel || owner_type == PortIdentifier::OwnerType::TrackProcessor || (owner_type == PortIdentifier::OwnerType::Fader && ENUM_BITSET_TEST (PortIdentifier::Flags2, id->flags2_, PortIdentifier::Flags2::Prefader)) || (owner_type == PortIdentifier::OwnerType::Plugin && id->plugin_id_.slot_type_ == zrythm::dsp::PluginSlotType::Instrument)) && is_stereo && is_output() && (track != nullptr) && track->bounce_to_master_) [[unlikely]]
+  if (
+    AUDIO_ENGINE->bounce_mode_ > BounceMode::BOUNCE_OFF && is_stereo
+    && is_output ()
+    && owner_->should_bounce_to_master (AUDIO_ENGINE->bounce_step_)) [[unlikely]]
     {
-      auto add_to_master = [&] (const bool left) {
-        auto &dest =
-          left ? P_MASTER_TRACK->channel_->stereo_out_->get_l ()
-               : P_MASTER_TRACK->channel_->stereo_out_->get_r ();
-        utils::float_ranges::add2 (
-          &dest.buf_[time_nfo.local_offset_],
-          &this->buf_[time_nfo.local_offset_], time_nfo.nframes_);
-      };
-
-      switch (AUDIO_ENGINE->bounce_step_)
-        {
-        case BounceStep::BeforeInserts:
-          {
-            const auto &tp = processable_track->processor_;
-            z_return_if_fail (tp);
-            if (track->is_instrument ())
-              {
-                if (this == channel_track->channel_->instrument_->l_out_)
-                  add_to_master (true);
-                if (this == channel_track->channel_->instrument_->r_out_)
-                  add_to_master (false);
-              }
-            else if (tp->stereo_out_ && track->bounce_)
-              {
-                if (this == &tp->stereo_out_->get_l ())
-                  add_to_master (true);
-                else if (this == &tp->stereo_out_->get_r ())
-                  add_to_master (false);
-              }
-          }
-          break;
-        case BounceStep::PreFader:
-          {
-            const auto &prefader = channel_track->channel_->prefader_;
-            if (this == &prefader->stereo_out_->get_l ())
-              add_to_master (true);
-            else if (this == &prefader->stereo_out_->get_r ())
-              add_to_master (false);
-          }
-          break;
-        case BounceStep::PostFader:
-          {
-            const auto &ch = channel_track->channel_;
-            if (!track->is_master ())
-              {
-                if (this == &ch->stereo_out_->get_l ())
-                  add_to_master (true);
-                else if (this == &ch->stereo_out_->get_r ())
-                  add_to_master (false);
-              }
-          }
-          break;
-        }
+      auto &dest =
+        ENUM_BITSET_TEST (
+          PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::StereoL)
+          ? P_MASTER_TRACK->channel_->stereo_out_->get_l ()
+          : P_MASTER_TRACK->channel_->stereo_out_->get_r ();
+      utils::float_ranges::add2 (
+        &dest.buf_[time_nfo.local_offset_], &this->buf_[time_nfo.local_offset_],
+        time_nfo.nframes_);
     }
 }
 
@@ -378,8 +297,8 @@ void
 StereoPorts::
   connect_to (PortConnectionsManager &mgr, StereoPorts &dest, bool locked)
 {
-  l_->connect_to (mgr, *dest.l_, locked);
-  r_->connect_to (mgr, *dest.r_, locked);
+  mgr.ensure_connect_default (*l_->id_, *dest.l_->id_, locked);
+  mgr.ensure_connect_default (*r_->id_, *dest.r_->id_, locked);
 }
 
 StereoPorts::~StereoPorts ()

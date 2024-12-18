@@ -8,12 +8,7 @@
 #include "utils/dsp.h"
 #include "utils/gtest_wrapper.h"
 
-CVPort::CVPort ()
-{
-  minf_ = -1.f;
-  maxf_ = 1.f;
-  zerof_ = 0.f;
-};
+CVPort::CVPort () : CVPort ({}, {}) { }
 
 CVPort::CVPort (std::string label, PortFlow flow)
     : Port (label, PortType::CV, flow, -1.f, 1.f, 0.f)
@@ -48,24 +43,6 @@ CVPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
       return;
     }
 
-  const auto &id = id_;
-  const auto  owner_type = id->owner_type_;
-  auto        track = [&] () -> Track * {
-    if (owner_type == PortIdentifier::OwnerType::TrackProcessor
-        || owner_type == PortIdentifier::OwnerType::Track
-        || owner_type == PortIdentifier::OwnerType::Channel
-        || (owner_type == PortIdentifier::OwnerType::Fader
-            && (ENUM_BITSET_TEST (PortIdentifier::Flags2, id_->flags2_, PortIdentifier::Flags2::Prefader)
-                || ENUM_BITSET_TEST (PortIdentifier::Flags2, id_->flags2_, PortIdentifier::Flags2::Postfader)))
-        || (owner_type == PortIdentifier::OwnerType::Plugin && id_->plugin_id_.slot_type_ == zrythm::dsp::PluginSlotType::Instrument))
-      {
-        return ZRYTHM_TESTING ? get_track (true) : track_;
-      }
-    return nullptr;
-  }();
-  z_return_if_fail (
-    track || owner_type != PortIdentifier::OwnerType::TrackProcessor);
-
   for (size_t k = 0; k < srcs_.size (); k++)
     {
       const auto * src_port = srcs_[k];
@@ -73,7 +50,7 @@ CVPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
       if (!conn->enabled_)
         continue;
 
-      const float depth_range = (maxf_ - minf_) * 0.5f;
+      const float depth_range = (range_.maxf_ - range_.minf_) * 0.5f;
       const float multiplier = depth_range * conn->multiplier_;
 
       /* sum the signals */
@@ -93,12 +70,12 @@ CVPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
 
       float abs_peak = utils::float_ranges::abs_max (
         &buf_[time_nfo.local_offset_], time_nfo.nframes_);
-      if (abs_peak > maxf_)
+      if (abs_peak > range_.maxf_)
         {
           /* this limiting wastes around 50% of port processing so only
            * do it on CV connections and faders if they exceed maxf */
           utils::float_ranges::clip (
-            &buf_.data ()[time_nfo.local_offset_], minf_, maxf_,
+            &buf_.data ()[time_nfo.local_offset_], range_.minf_, range_.maxf_,
             time_nfo.nframes_);
         }
     } /* foreach source */

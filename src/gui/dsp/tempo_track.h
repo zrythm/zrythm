@@ -138,6 +138,9 @@ public:
   int get_beat_unit () const;
 
   void
+  on_control_change_event (const dsp::PortIdentifier &id, float value) override;
+
+  void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 
   DECLARE_DEFINE_FIELDS_METHOD ();

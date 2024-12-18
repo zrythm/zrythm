@@ -50,7 +50,8 @@ class Fader final
     : public QObject,
       public ICloneable<Fader>,
       public dsp::IProcessable,
-      public utils::serialization::ISerializable<Fader>
+      public utils::serialization::ISerializable<Fader>,
+      public IPortOwner
 {
   Q_OBJECT
   QML_ELEMENT
@@ -263,7 +264,18 @@ public:
    */
   ATTR_HOT void process_block (EngineProcessTimeInfo time_nfo) override;
 
-  bool is_in_active_project () const;
+  bool is_in_active_project () const override;
+
+  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
+    const override;
+
+  std::string
+  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
+
+  void
+  on_control_change_event (const dsp::PortIdentifier &id, float val) override;
+
+  bool should_bounce_to_master (utils::audio::BounceStep step) const override;
 
   static int fade_frames_for_type (Type type);
 

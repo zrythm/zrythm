@@ -107,6 +107,39 @@ Channel::is_in_active_project () const
 }
 
 void
+Channel::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
+  const
+{
+  auto get_track_name_hash = [] (const auto &track) -> Track::NameHashT {
+    return track->name_.empty () ? 0 : track->get_name_hash ();
+  };
+
+  auto * track = get_track ();
+  z_return_if_fail (track);
+  id.track_name_hash_ = get_track_name_hash (track);
+  id.owner_type_ = dsp::PortIdentifier::OwnerType::Channel;
+}
+
+std::string
+Channel::get_full_designation_for_port (const dsp::PortIdentifier &id) const
+{
+  auto * tr = get_track ();
+  z_return_val_if_fail (tr, {});
+  return fmt::format ("{}/{}", tr->get_name (), id.label_);
+}
+
+bool
+Channel::should_bounce_to_master (utils::audio::BounceStep step) const
+{
+  // only post-fader bounces make sense for channel outputs
+  if (step != utils::audio::BounceStep::PostFader)
+    return false;
+
+  auto * track = get_track ();
+  return !track->is_master () && track->bounce_to_master_;
+}
+
+void
 Channel::connect_no_prev_no_next (zrythm::gui::old_dsp::plugins::Plugin &pl)
 {
   z_debug ("connect no prev no next");
@@ -1014,7 +1047,7 @@ Channel::init_stereo_out_ports (bool loading)
 
   stereo_out_ = new StereoPorts (std::move (l), std::move (r));
   stereo_out_->setParent (this);
-  stereo_out_->set_owner (this);
+  stereo_out_->set_owner (*this);
 }
 
 void
@@ -1032,7 +1065,7 @@ Channel::init ()
         midi_out_ = new MidiPort (
           QObject::tr ("MIDI out").toStdString (), dsp::PortFlow::Output);
         midi_out_->setParent (this);
-        midi_out_->set_owner (this);
+        midi_out_->set_owner (*this);
         midi_out_->id_->sym_ = "midi_out";
       }
       break;

@@ -20,10 +20,10 @@
 #include "utils/math.h"
 #include "utils/rt_thread_id.h"
 
-ControlPort::ControlPort () { }
+ControlPort::ControlPort () : ControlPort ("") { }
 
 ControlPort::ControlPort (std::string label)
-    : Port (label, PortType::Control, PortFlow::Input, 0.f, 1.f, 0.f)
+    : Port (std::move (label), PortType::Control, PortFlow::Input, 0.f, 1.f, 0.f)
 {
 }
 
@@ -63,87 +63,15 @@ ControlPort::set_unit_from_str (const std::string &str)
 }
 
 void
-ControlPort::forward_control_change_event ()
-{
-  if (id_->owner_type_ == PortIdentifier::OwnerType::Plugin)
-    {
-      auto pl = get_plugin (true);
-      if (pl)
-        {
-#if HAVE_CARLA
-          if (pl->setting_->open_with_carla_ && carla_param_id_ >= 0)
-            {
-              auto carla = dynamic_cast<
-                zrythm::gui::old_dsp::plugins::CarlaNativePlugin *> (pl);
-              z_return_if_fail (carla);
-              carla->set_param_value (
-                static_cast<uint32_t> (carla_param_id_), control_);
-            }
-#endif
-          if (!pl->state_changed_event_sent_.load (std::memory_order_acquire))
-            {
-              // EVENTS_PUSH (EventType::ET_PLUGIN_STATE_CHANGED, pl);
-              pl->state_changed_event_sent_.store (
-                true, std::memory_order_release);
-            }
-        }
-    }
-  else if (id_->owner_type_ == PortIdentifier::OwnerType::Fader)
-    {
-      auto track = dynamic_cast<ChannelTrack *> (get_track (true));
-      z_return_if_fail (track);
-
-      if (
-        ENUM_BITSET_TEST (
-          PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::FaderMute)
-        || ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, id_->flags2_, PortIdentifier::Flags2::FaderSolo)
-        || ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, id_->flags2_,
-          PortIdentifier::Flags2::FaderListen)
-        || ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, id_->flags2_,
-          PortIdentifier::Flags2::FaderMonoCompat))
-        {
-          // EVENTS_PUSH (EventType::ET_TRACK_FADER_BUTTON_CHANGED, track);
-        }
-      else if (
-        ENUM_BITSET_TEST (
-          PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::Amplitude))
-        {
-          // if (ZRYTHM_HAVE_UI)
-          // z_return_if_fail (track->channel_->widget_);
-          track->channel_->fader_->update_volume_and_fader_val ();
-          /* EVENTS_PUSH (
-            EventType::ET_CHANNEL_FADER_VAL_CHANGED, track->channel_.get ()); */
-        }
-    }
-#if 0
-  else if (id_.owner_type_ == PortIdentifier::OwnerType::ChannelSend)
-    {
-      auto track = dynamic_cast<ChannelTrack *> (get_track (true));
-      z_return_if_fail (track);
-      auto &send = track->channel_->sends_[id_.port_index_];
-      // EVENTS_PUSH (EventType::ET_CHANNEL_SEND_CHANGED, send.get ());
-    }
-  else if (id_.owner_type_ == PortIdentifier::OwnerType::Track)
-    {
-      auto track = get_track (true);
-      // EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, track);
-    }
-#endif
-}
-
-void
 ControlPort::set_control_value (
   const float val,
   const bool  is_normalized,
-  const bool  forward_events)
+  const bool  forward_event_to_plugin)
 {
   /* set the base value */
   if (is_normalized)
     {
-      base_value_ = minf_ + val * (maxf_ - minf_);
+      base_value_ = range_.minf_ + val * (range_.maxf_ - range_.minf_);
     }
   else
     {
@@ -161,118 +89,24 @@ ControlPort::set_control_value (
       last_change_time_ = Zrythm::getInstance ()->get_monotonic_time_usecs ();
       value_changed_from_reading_ = false;
 
-      /* if bpm, update engine */
-      if (ENUM_BITSET_TEST (
-            PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::Bpm))
+      if (owner_)
         {
-          /* this must only be called during processing kickoff or while the
-           * engine is stopped */
-          z_return_if_fail (
-            !AUDIO_ENGINE->run_.load ()
-            || ROUTER->is_processing_kickoff_thread ());
-
-          int beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
-          AUDIO_ENGINE->update_frames_per_tick (
-            beats_per_bar, control_, AUDIO_ENGINE->sample_rate_, false, true,
-            true);
-          // EVENTS_PUSH (EventType::ET_BPM_CHANGED, nullptr);
+          owner_->on_control_change_event (*id_, control_);
         }
-
-      /* if time sig value, update transport caches */
-      if (
-        ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, id_->flags2_,
-          PortIdentifier::Flags2::BeatsPerBar)
-        || ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, id_->flags2_, PortIdentifier::Flags2::BeatUnit))
-        {
-          /* this must only be called during processing kickoff or while the
-           * engine is stopped */
-          z_return_if_fail (
-            !AUDIO_ENGINE->run_.load ()
-            || ROUTER->is_processing_kickoff_thread ());
-
-          int   beats_per_bar = P_TEMPO_TRACK->get_beats_per_bar ();
-          int   beat_unit = P_TEMPO_TRACK->get_beat_unit ();
-          bpm_t bpm = P_TEMPO_TRACK->get_current_bpm ();
-          TRANSPORT->update_caches (beats_per_bar, beat_unit);
-          bool update_from_ticks = ENUM_BITSET_TEST (
-            PortIdentifier::Flags2, id_->flags2_,
-            PortIdentifier::Flags2::BeatsPerBar);
-          AUDIO_ENGINE->update_frames_per_tick (
-            beats_per_bar, bpm, AUDIO_ENGINE->sample_rate_, false,
-            update_from_ticks, false);
-          // EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, nullptr);
-        }
-
-      /* if plugin enabled port, also set plugin's own enabled port value and
-       * vice versa */
-      if (
-        is_in_active_project ()
-        && ENUM_BITSET_TEST (
-          PortIdentifier::Flags, id_->flags_,
-          PortIdentifier::Flags::PluginEnabled))
-        {
-          auto pl = get_plugin (true);
-          z_return_if_fail (pl);
-
-          if (
-            ENUM_BITSET_TEST (
-              PortIdentifier::Flags, id_->flags_,
-              PortIdentifier::Flags::GenericPluginPort))
-            {
-              if (
-                pl->own_enabled_port_
-                && !utils::math::floats_equal (
-                  pl->own_enabled_port_->control_, control_))
-                {
-                  z_debug (
-                    "generic enabled changed - changing plugin's own enabled");
-
-                  pl->own_enabled_port_->set_control_value (
-                    control_, false, true);
-                }
-            }
-          else if (!utils::math::floats_equal (pl->enabled_->control_, control_))
-            {
-              z_debug (
-                "plugin's own enabled changed - changing generic enabled");
-              pl->enabled_->set_control_value (control_, false, true);
-            }
-        } /* endif plugin-enabled port */
-
-      if (
-        ENUM_BITSET_TEST (
-          PortIdentifier::Flags, id_->flags_,
-          PortIdentifier::Flags::MidiAutomatable))
-        {
-          auto track = dynamic_cast<ProcessableTrack *> (get_track (true));
-          z_return_if_fail (track);
-          track->processor_->updated_midi_automatable_ports_->push_back (this);
-        }
-
     } /* endif port value changed */
 
-  if (forward_events)
+  if (forward_event_to_plugin)
     {
-      forward_control_change_event ();
+      if (owner_)
+        {
+          owner_->on_control_change_event (*id_, control_);
+        }
     }
 }
 
 float
 ControlPort::get_control_value (const bool normalize) const
 {
-  /* verify that plugin exists if plugin control */
-  if (
-    ZRYTHM_TESTING && is_in_active_project ()
-    && ENUM_BITSET_TEST (
-      PortIdentifier::Flags, this->id_->flags_,
-      PortIdentifier::Flags::PluginControl))
-    {
-      zrythm::gui::old_dsp::plugins::Plugin * pl = get_plugin (true);
-      z_return_val_if_fail (pl, 0.f);
-    }
-
   if (normalize)
     {
       return real_val_to_normalized (control_);
@@ -310,8 +144,10 @@ ControlPort::normalized_val_to_real (float normalized_val) const
         ENUM_BITSET_TEST (
           PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::Logarithmic))
         {
-          auto minf = utils::math::floats_equal (minf_, 0.f) ? 1e-20f : minf_;
-          auto maxf = utils::math::floats_equal (maxf_, 0.f) ? 1e-20f : maxf_;
+          auto minf =
+            utils::math::floats_equal (range_.minf_, 0.f) ? 1e-20f : range_.minf_;
+          auto maxf =
+            utils::math::floats_equal (range_.maxf_, 0.f) ? 1e-20f : range_.maxf_;
           normalized_val =
             utils::math::floats_equal (normalized_val, 0.f)
               ? 1e-20f
@@ -327,7 +163,7 @@ ControlPort::normalized_val_to_real (float normalized_val) const
         }
       else
         {
-          return minf_ + normalized_val * (maxf_ - minf_);
+          return range_.minf_ + normalized_val * (range_.maxf_ - range_.minf_);
         }
     }
   else if (
@@ -344,7 +180,7 @@ ControlPort::normalized_val_to_real (float normalized_val) const
     }
   else
     {
-      return minf_ + normalized_val * (maxf_ - minf_);
+      return range_.minf_ + normalized_val * (range_.maxf_ - range_.minf_);
     }
   z_return_val_if_reached (normalized_val);
 }
@@ -361,9 +197,9 @@ ControlPort::real_val_to_normalized (float real_val) const
           PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::Logarithmic))
         {
           const auto minf =
-            utils::math::floats_equal (minf_, 0.f) ? 1e-20f : minf_;
+            utils::math::floats_equal (range_.minf_, 0.f) ? 1e-20f : range_.minf_;
           const auto maxf =
-            utils::math::floats_equal (maxf_, 0.f) ? 1e-20f : maxf_;
+            utils::math::floats_equal (range_.maxf_, 0.f) ? 1e-20f : range_.maxf_;
           real_val =
             utils::math::floats_equal (real_val, 0.f) ? 1e-20f : real_val;
 
@@ -376,8 +212,8 @@ ControlPort::real_val_to_normalized (float real_val) const
           return real_val;
         }
 
-      const auto sizef = maxf_ - minf_;
-      return (sizef - (maxf_ - real_val)) / sizef;
+      const auto sizef = range_.maxf_ - range_.minf_;
+      return (sizef - (range_.maxf_ - real_val)) / sizef;
     }
   if (ENUM_BITSET_TEST (
         PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::Toggle))
@@ -390,8 +226,8 @@ ControlPort::real_val_to_normalized (float real_val) const
     {
       return utils::math::get_fader_val_from_amp (real_val);
     }
-  auto sizef = maxf_ - minf_;
-  return (sizef - (maxf_ - real_val)) / sizef;
+  auto sizef = range_.maxf_ - range_.minf_;
+  return (sizef - (range_.maxf_ - real_val)) / sizef;
   z_return_val_if_reached (0.f);
 }
 
@@ -425,39 +261,28 @@ ControlPort::set_val_from_normalized (float val, bool automating)
         ENUM_BITSET_TEST (
           PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::FaderMute))
         {
-          auto * track = dynamic_cast<ChannelTrack *> (get_track (true));
-          track->set_muted (is_toggled (), false, false, true);
+          set_control_value (is_toggled () ? 1.f : 0.f, false, true);
         }
     }
   else if (
     ENUM_BITSET_TEST (
       PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::ChannelFader))
     {
-      auto  track = get_track (true);
-      auto &ch = dynamic_cast<ChannelTrack *> (track)->get_channel ();
-      if (!utils::math::floats_equal (ch->fader_->get_fader_val (), val))
-        {
-          // EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
-        }
-      ch->fader_->set_amp (utils::math::get_amp_val_from_fader (val));
+      set_control_value (
+        utils::math::get_amp_val_from_fader (val), false, false);
     }
   else if (
     ENUM_BITSET_TEST (
       PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::StereoBalance))
     {
-      auto  track = get_track (true);
-      auto &ch = dynamic_cast<ChannelTrack *> (track)->get_channel ();
-      if (!utils::math::floats_equal (ch->get_balance_control (), val))
-        {
-          // EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
-        }
-      ch->set_balance_control (val);
+      auto real_val = normalized_val_to_real (val);
+      set_control_value (real_val, false, false);
     }
   else if (
     ENUM_BITSET_TEST (
       PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::MidiAutomatable))
     {
-      auto real_val = minf_ + val * (maxf_ - minf_);
+      auto real_val = range_.minf_ + val * (range_.maxf_ - range_.minf_);
       if (!utils::math::floats_equal (val, control_))
         {
           // EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
@@ -556,7 +381,7 @@ ControlPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
       Port * src_port = srcs_[k];
       if (src_port->id_->type_ == PortType::CV)
         {
-          const float depth_range = (maxf_ - minf_) / 2.f;
+          const float depth_range = (range_.maxf_ - range_.minf_) / 2.f;
 
           /* figure out whether to use base value or the current value */
           float val_to_use;
@@ -572,8 +397,11 @@ ControlPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
 
           control_ = std::clamp<float> (
             val_to_use + depth_range * src_port->buf_[0] * conn->multiplier_,
-            minf_, maxf_);
-          forward_control_change_event ();
+            range_.minf_, range_.maxf_);
+          if (owner_)
+            {
+              owner_->on_control_change_event (*id_, control_);
+            }
         }
     }
 }

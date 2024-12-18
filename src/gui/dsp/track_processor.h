@@ -12,7 +12,7 @@
 
 #include "gui/dsp/midi_mapping.h"
 #include "gui/dsp/port.h"
-
+#include "gui/dsp/port_connections_manager.h"
 #include "utils/icloneable.h"
 #include "utils/mpmc_queue.h"
 #include "utils/types.h"
@@ -38,7 +38,8 @@ constexpr int TRACK_PROCESSOR_MAGIC = 81213128;
  */
 class TrackProcessor final
     : public ICloneable<TrackProcessor>,
-      public zrythm::utils::serialization::ISerializable<TrackProcessor>
+      public zrythm::utils::serialization::ISerializable<TrackProcessor>,
+      public IPortOwner
 {
   using PortType = zrythm::dsp::PortType;
   using PortFlow = zrythm::dsp::PortFlow;
@@ -52,7 +53,24 @@ public:
    */
   TrackProcessor (ProcessableTrack * track);
 
-  bool is_in_active_project () const;
+  bool is_in_active_project () const override;
+
+  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
+    const override;
+
+  void
+  on_control_change_event (const dsp::PortIdentifier &id, float value) override;
+
+  std::string
+  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
+
+  bool should_sum_data_from_backend () const override;
+
+  bool should_bounce_to_master (utils::audio::BounceStep step) const override;
+
+  bool are_events_on_midi_channel_approved (midi_byte_t channel) const override;
+
+  void on_midi_activity (const dsp::PortIdentifier &id) override;
 
   PortConnectionsManager * get_port_connections_manager () const;
 
@@ -170,6 +188,11 @@ private:
    */
   ATTR_HOT void
   add_events_from_midi_cc_control_ports (const nframes_t local_offset);
+
+  void connect_ports (const Port &src, const Port &dst);
+  void disconnect_ports (const Port &src, const Port &dst);
+  void connect_ports (const StereoPorts &src, const StereoPorts &dst);
+  void disconnect_ports (const StereoPorts &src, const StereoPorts &dst);
 
 public:
   /**

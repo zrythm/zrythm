@@ -5,18 +5,9 @@
 
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/channel_track.h"
 #include "gui/dsp/engine.h"
-#include "gui/dsp/engine_jack.h"
 #include "gui/dsp/midi_port.h"
 #include "gui/dsp/piano_roll_track.h"
-#include "gui/dsp/plugin.h"
-#include "gui/dsp/processable_track.h"
-#include "gui/dsp/recordable_track.h"
-#include "gui/dsp/rtmidi_device.h"
-#include "gui/dsp/track_processor.h"
-
-#include "utils/gtest_wrapper.h"
 #include "utils/midi.h"
 #include "utils/rt_thread_id.h"
 
@@ -58,37 +49,15 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
 
   const auto &id = id_;
   const auto  owner_type = id->owner_type_;
-  Track *     track = nullptr;
-  if (
-    owner_type == PortIdentifier::OwnerType::TrackProcessor
-    || owner_type == PortIdentifier::OwnerType::Track
-    || owner_type == PortIdentifier::OwnerType::Channel ||
-    /* if track/channel fader */
-    (owner_type == PortIdentifier::OwnerType::Fader
-     && (ENUM_BITSET_TEST (PortIdentifier::Flags2, id_->flags2_, PortIdentifier::Flags2::Prefader) || ENUM_BITSET_TEST (PortIdentifier::Flags2, id_->flags2_, PortIdentifier::Flags2::Postfader)))
-    || (owner_type == PortIdentifier::OwnerType::Plugin && id_->plugin_id_.slot_type_ == zrythm::dsp::PluginSlotType::Instrument))
-    {
-      if (ZRYTHM_TESTING)
-        track = get_track (true);
-      else
-        track = track_;
-      z_return_if_fail (track);
-    }
-  const auto * const processable_track =
-    dynamic_cast<const ProcessableTrack *> (track);
-  const auto * const channel_track = dynamic_cast<const ChannelTrack *> (track);
-  const auto * const recordable_track =
-    dynamic_cast<const RecordableTrack *> (track);
   auto &events = midi_events_.active_events_;
 
   /* if piano roll keys, add the notes to the piano roll "current notes" (to
    * show pressed keys in the UI) */
   if (
-    Q_UNLIKELY (
-      owner_type == PortIdentifier::OwnerType::TrackProcessor
-      && this == processable_track->processor_->midi_out_.get ()
-      && events.has_any () && CLIP_EDITOR->has_region_
-      && CLIP_EDITOR->region_id_.track_name_hash_ == track->get_name_hash ()))
+    owner_type == PortIdentifier::OwnerType::TrackProcessor && is_output ()
+    && events.has_any () && CLIP_EDITOR->has_region_
+    && CLIP_EDITOR->region_id_.track_name_hash_ == id_->track_name_hash_)
+    [[unlikely]]
     {
       bool events_processed = false;
       for (auto &ev : events)
@@ -117,38 +86,15 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
         }
     }
 
-  /* only consider incoming external data if armed for recording (if the port is
-   * owner by a track), otherwise always consider incoming external data */
-  if ((owner_type != PortIdentifier::OwnerType::TrackProcessor || (owner_type == PortIdentifier::OwnerType::TrackProcessor && (recordable_track != nullptr) && recordable_track->get_recording())) && id->is_input())
+  if (
+    is_input () && backend_ && backend_->is_exposed ()
+    && owner_->should_sum_data_from_backend ())
     {
-      if (backend_ && backend_->is_exposed ())
-        {
-          backend_->sum_data (
-            midi_events_, { time_nfo.local_offset_, time_nfo.nframes_ },
-            [this] (midi_byte_t channel) {
-              Track * track = this->get_track (false);
-              if (
-                this->id_->owner_type_ == PortIdentifier::OwnerType::TrackProcessor
-                && !track)
-                {
-                  z_return_val_if_reached (false);
-                }
-
-              auto channel_track = dynamic_cast<ChannelTrack *> (track);
-              if (
-                this->id_->owner_type_ == PortIdentifier::OwnerType::TrackProcessor
-                && channel_track
-                && (track->is_midi () || track->is_instrument ())
-                && !channel_track->channel_->all_midi_channels_
-                && !channel_track->channel_->midi_channels_[channel])
-                {
-                  /* different channel */
-                  /*z_debug ("received event on different channel");*/
-                  return false;
-                }
-              return true;
-            });
-        }
+      backend_->sum_data (
+        midi_events_, { time_nfo.local_offset_, time_nfo.nframes_ },
+        [this] (midi_byte_t channel) {
+          return owner_->are_events_on_midi_channel_approved (channel);
+        });
     }
 
   /* set midi capture if hardware */
@@ -239,9 +185,7 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
                   uint8_t beat_msg = MIDI_CLOCK_BEAT;
                   events.add_raw (&beat_msg, 1, midi_time);
 #if 0
-                      z_debug (
-                        "(i = {}) time {} / {}", i, midi_time,
-                        time_nfo.local_offset + time_nfo.nframes_);
+                  z_debug ("(i = {}) time {} / {}", i, midi_time, time_nfo.local_offset + time_nfo.nframes_);
 #endif
                 }
             }
@@ -268,28 +212,33 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
         && owner_type == PortIdentifier::OwnerType::TrackProcessor)
         {
           /* skip if not armed */
-          if (
-            (recordable_track == nullptr) || !recordable_track->get_recording ())
+          if (!owner_->should_sum_data_from_backend ())
             continue;
 
-          /* if not set to "all channels", filter-append */
-          if (
-            (track->is_midi () || track->is_instrument ())
-            && !channel_track->channel_->all_midi_channels_)
+          for (const auto &src_ev : src_midi_port->midi_events_.active_events_)
             {
-              events.append_w_filter (
-                src_midi_port->midi_events_.active_events_,
-                channel_track->channel_->midi_channels_, time_nfo.local_offset_,
-                time_nfo.nframes_);
-              continue;
+              /* only copy events inside the current time range */
+              if (
+                src_ev.time_ < time_nfo.local_offset_
+                || src_ev.time_ >= time_nfo.local_offset_ + time_nfo.nframes_)
+                {
+                  continue;
+                }
+
+              /* only copy events on approved MIDI channels */
+              midi_byte_t channel = src_ev.raw_buffer_[0] & 0xf;
+              if (owner_->are_events_on_midi_channel_approved (channel))
+                {
+                  events.push_back (src_ev);
+                }
             }
-
-          /* otherwise append normally */
         }
-
-      events.append (
-        src_midi_port->midi_events_.active_events_, time_nfo.local_offset_,
-        time_nfo.nframes_);
+      else
+        {
+          events.append (
+            src_midi_port->midi_events_.active_events_, time_nfo.local_offset_,
+            time_nfo.nframes_);
+        }
     } /* foreach source */
 
   if (id->is_output () && backend_ && backend_->is_exposed ())
@@ -301,12 +250,7 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
   /* send UI notification */
   if (events.has_any ())
     {
-      if (owner_type == PortIdentifier::OwnerType::TrackProcessor)
-        {
-          track->trigger_midi_activity_ = true;
-        }
-
-      // z_warning ("{} has events", id->get_label ());
+      owner_->on_midi_activity (*id_);
     }
 
   if (time_nfo.local_offset_ + time_nfo.nframes_ == AUDIO_ENGINE->block_length_)

@@ -43,7 +43,7 @@ Fader::init_loaded (
   append_ports (ports);
   for (auto * port : ports)
     {
-      port->init_loaded (this);
+      port->init_loaded (*this);
     }
 
   set_amp (amp_->control_);
@@ -108,11 +108,11 @@ Fader::Fader (
     passthrough
       ? QObject::tr ("Prefader Volume").toStdString ()
       : QObject::tr ("Fader Volume").toStdString ());
-  amp_->set_owner (this);
+  amp_->set_owner (*this);
   amp_->id_->sym_ = passthrough ? "prefader_volume" : "fader_volume";
   amp_->deff_ = amp;
-  amp_->minf_ = 0.f;
-  amp_->maxf_ = 2.f;
+  amp_->range_.minf_ = 0.f;
+  amp_->range_.maxf_ = 2.f;
   amp_->set_control_value (amp, false, false);
   fader_val_ = utils::math::get_fader_val_from_amp (amp);
   amp_->id_->flags_ |= dsp::PortIdentifier::Flags::Amplitude;
@@ -128,7 +128,7 @@ Fader::Fader (
     passthrough
       ? QObject::tr ("Prefader Balance").toStdString ()
       : QObject::tr ("Fader Balance").toStdString ());
-  balance_->set_owner (this);
+  balance_->set_owner (*this);
   balance_->id_->sym_ = passthrough ? "prefader_balance" : "fader_balance";
   balance_->set_control_value (balance, 0, 0);
   balance_->id_->flags_ |= dsp::PortIdentifier::Flags::StereoBalance;
@@ -142,7 +142,7 @@ Fader::Fader (
     passthrough
       ? QObject::tr ("Prefader Mute").toStdString ()
       : QObject::tr ("Fader Mute").toStdString ());
-  mute_->set_owner (this);
+  mute_->set_owner (*this);
   mute_->id_->sym_ = passthrough ? "prefader_mute" : "fader_mute";
   mute_->set_toggled (false, false);
   mute_->id_->flags_ |= dsp::PortIdentifier::Flags::FaderMute;
@@ -157,7 +157,7 @@ Fader::Fader (
     passthrough
       ? QObject::tr ("Prefader Solo").toStdString ()
       : QObject::tr ("Fader Solo").toStdString ());
-  solo_->set_owner (this);
+  solo_->set_owner (*this);
   solo_->id_->sym_ = passthrough ? "prefader_solo" : "fader_solo";
   solo_->set_toggled (false, false);
   solo_->id_->flags2_ |= dsp::PortIdentifier::Flags2::FaderSolo;
@@ -168,7 +168,7 @@ Fader::Fader (
     passthrough
       ? QObject::tr ("Prefader Listen").toStdString ()
       : QObject::tr ("Fader Listen").toStdString ());
-  listen_->set_owner (this);
+  listen_->set_owner (*this);
   listen_->id_->sym_ = passthrough ? "prefader_listen" : "fader_listen";
   listen_->set_toggled (false, false);
   listen_->id_->flags2_ |= dsp::PortIdentifier::Flags2::FaderListen;
@@ -179,7 +179,7 @@ Fader::Fader (
     passthrough
       ? QObject::tr ("Prefader Mono Compat").toStdString ()
       : QObject::tr ("Fader Mono Compat").toStdString ());
-  mono_compat_enabled_->set_owner (this);
+  mono_compat_enabled_->set_owner (*this);
   mono_compat_enabled_->id_->sym_ =
     passthrough ? "prefader_mono_compat_enabled" : "fader_mono_compat_enabled";
   mono_compat_enabled_->set_toggled (false, false);
@@ -190,7 +190,7 @@ Fader::Fader (
   /* set swap phase */
   swap_phase_ = create_swap_phase_port (passthrough);
   swap_phase_->set_toggled (false, false);
-  swap_phase_->set_owner (this);
+  swap_phase_->set_owner (*this);
 
   if (
     type == Type::AudioChannel || type == Type::Monitor
@@ -226,7 +226,7 @@ Fader::Fader (
       stereo_in_ = std::make_unique<StereoPorts> (true, name, sym);
 
       /* set proper owner */
-      stereo_in_->set_owner (this);
+      stereo_in_->set_owner (*this);
 
       if (type == Type::AudioChannel)
         {
@@ -256,7 +256,7 @@ Fader::Fader (
       stereo_out_ = std::make_unique<StereoPorts> (false, name, sym);
 
       /* set proper owner */
-      stereo_out_->set_owner (this);
+      stereo_out_->set_owner (*this);
     }
 
   if (type == Type::MidiChannel)
@@ -275,7 +275,7 @@ Fader::Fader (
           sym = "ch_midi_fader_in";
         }
       midi_in_ = std::make_unique<MidiPort> (name, dsp::PortFlow::Input);
-      midi_in_->set_owner (this);
+      midi_in_->set_owner (*this);
       midi_in_->id_->sym_ = sym;
 
       /* MIDI out */
@@ -290,9 +290,135 @@ Fader::Fader (
           sym = "ch_midi_fader_out";
         }
       midi_out_ = std::make_unique<MidiPort> (name, dsp::PortFlow::Output);
-      midi_out_->set_owner (this);
+      midi_out_->set_owner (*this);
       midi_out_->id_->sym_ = sym;
     }
+}
+
+void
+Fader::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
+  const
+{
+  id.owner_type_ = dsp::PortIdentifier::OwnerType::Fader;
+
+  auto get_track_name_hash = [] (const auto &track) -> Track::NameHashT {
+    return track->name_.empty () ? 0 : track->get_name_hash ();
+  };
+
+  using PortIdentifier = dsp::PortIdentifier;
+
+  if (type_ == Fader::Type::AudioChannel || type_ == Fader::Type::MidiChannel)
+    {
+      auto * track = get_track ();
+      z_return_if_fail (track);
+      id.track_name_hash_ = get_track_name_hash (track);
+      if (passthrough_)
+        {
+          id.flags2_ |= PortIdentifier::Flags2::Prefader;
+        }
+      else
+        {
+          id.flags2_ |= PortIdentifier::Flags2::Postfader;
+        }
+    }
+  else if (type_ == Fader::Type::SampleProcessor)
+    {
+      id.flags2_ |= PortIdentifier::Flags2::SampleProcessorFader;
+    }
+  else
+    {
+      id.flags2_ |= PortIdentifier::Flags2::MonitorFader;
+    }
+
+  if (ENUM_BITSET_TEST (
+        PortIdentifier::Flags, id.flags_, PortIdentifier::Flags::Amplitude))
+    {
+      range.minf_ = 0.f;
+      range.maxf_ = 2.f;
+      range.zerof_ = 0.f;
+    }
+  else if (
+    ENUM_BITSET_TEST (
+      PortIdentifier::Flags, id.flags_, PortIdentifier::Flags::StereoBalance))
+    {
+      range.minf_ = 0.f;
+      range.maxf_ = 1.f;
+      range.zerof_ = 0.5f;
+    }
+}
+
+std::string
+Fader::get_full_designation_for_port (const dsp::PortIdentifier &id) const
+{
+  if (
+    ENUM_BITSET_TEST (
+      dsp::PortIdentifier::Flags2, id.flags2_,
+      dsp::PortIdentifier::Flags2::Prefader)
+    || ENUM_BITSET_TEST (
+      dsp::PortIdentifier::Flags2, id.flags2_,
+      dsp::PortIdentifier::Flags2::Postfader))
+    {
+      auto * tr = get_track ();
+      z_return_val_if_fail (tr, {});
+      return fmt::format ("{}/{}", tr->get_name (), id.get_label ());
+    }
+  if (
+    ENUM_BITSET_TEST (
+      dsp::PortIdentifier::Flags2, id.flags2_,
+      dsp::PortIdentifier::Flags2::MonitorFader))
+    {
+      return fmt::format ("Engine/{}", id.get_label ());
+    }
+  if (
+    ENUM_BITSET_TEST (
+      dsp::PortIdentifier::Flags2, id.flags2_,
+      dsp::PortIdentifier::Flags2::SampleProcessorFader))
+    {
+      return id.get_label ();
+    }
+  z_return_val_if_reached ({});
+}
+
+void
+Fader::on_control_change_event (const dsp::PortIdentifier &id, float val)
+{
+  using PortIdentifier = dsp::PortIdentifier;
+  if (
+    ENUM_BITSET_TEST (
+      PortIdentifier::Flags, id.flags_, PortIdentifier::Flags::FaderMute)
+    || ENUM_BITSET_TEST (
+      PortIdentifier::Flags2, id.flags2_, PortIdentifier::Flags2::FaderSolo)
+    || ENUM_BITSET_TEST (
+      PortIdentifier::Flags2, id.flags2_, PortIdentifier::Flags2::FaderListen)
+    || ENUM_BITSET_TEST (
+      PortIdentifier::Flags2, id.flags2_,
+      PortIdentifier::Flags2::FaderMonoCompat))
+    {
+      // EVENTS_PUSH (EventType::ET_TRACK_FADER_BUTTON_CHANGED, track);
+    }
+  else if (
+    ENUM_BITSET_TEST (
+      PortIdentifier::Flags, id.flags_, PortIdentifier::Flags::Amplitude))
+    {
+      if (!utils::math::floats_equal (val, amp_->control_))
+        {
+          update_volume_and_fader_val ();
+        }
+    }
+}
+
+bool
+Fader::should_bounce_to_master (utils::audio::BounceStep step) const
+{
+  // only pre-fader bounces make sense for faders (post-fader bounces are
+  // handled by Channel)
+  if (!passthrough_ || step != utils::audio::BounceStep::PreFader)
+    {
+      return false;
+    }
+
+  auto * track = get_track ();
+  return !track->is_master () && track->bounce_to_master_;
 }
 
 Fader *
@@ -500,7 +626,7 @@ void
 Fader::add_amp (sample_t amp)
 {
   float fader_amp = get_amp ();
-  fader_amp = std::clamp<float> (fader_amp + amp, amp_->minf_, amp_->maxf_);
+  fader_amp = amp_->range_.clamp_to_range (fader_amp + amp);
   set_amp (fader_amp);
   update_volume_and_fader_val ();
 }
@@ -572,7 +698,7 @@ Fader::set_fader_val (float fader_val)
 {
   fader_val_ = fader_val;
   float fader_amp = utils::math::get_amp_val_from_fader (fader_val);
-  fader_amp = std::clamp<float> (fader_amp, amp_->minf_, amp_->maxf_);
+  fader_amp = amp_->range_.clamp_to_range (fader_amp);
   set_amp (fader_amp);
   volume_ = utils::math::amp_to_dbfs (fader_amp);
 
@@ -1142,7 +1268,8 @@ Fader::init_after_cloning (const Fader &other)
         {
           /* note: don't call set_owner() because get_track () won't work here.
            * also, all other port fields are already copied*/
-          port->fader_ = this;
+          // FIXME: set_owner() should eventually cover this case
+          port->owner_ = this;
         }
     }
 }

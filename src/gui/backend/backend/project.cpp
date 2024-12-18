@@ -343,19 +343,60 @@ Project::set_and_create_next_available_backup_dir ()
     }
 }
 
+std::optional<TrackPtrVariant>
+Project::find_track_by_name_hash (Track::NameHashT hash) const
+{
+  auto track_var = tracklist_->find_track_by_name_hash (hash);
+  if (!track_var)
+    track_var =
+      audio_engine_->sample_processor_->tracklist_->find_track_by_name_hash (
+        hash);
+  z_return_val_if_fail (track_var, std::nullopt);
+  return track_var;
+}
+
+std::optional<gui::old_dsp::plugins::PluginPtrVariant>
+Project::find_plugin_by_id (const dsp::PluginIdentifier &id) const
+{
+  auto track_var = find_track_by_name_hash (id.track_name_hash_);
+  z_return_val_if_fail (track_var, std::nullopt);
+  return std::visit (
+    [&] (auto &&tr) -> std::optional<gui::old_dsp::plugins::PluginPtrVariant> {
+      using TrackT = base_type<decltype (tr)>;
+      if constexpr (std::derived_from<TrackT, ProcessableTrack>)
+        {
+          zrythm::gui::old_dsp::plugins::Plugin * pl = nullptr;
+          if (tr->has_channel ())
+            {
+              auto channel_track = dynamic_cast<ChannelTrack *> (tr);
+              pl = channel_track->channel_->get_plugin_at_slot (
+                id.slot_, id.slot_type_);
+            }
+          else if (tr->is_modulator ())
+            {
+              auto modulator_track = dynamic_cast<ModulatorTrack *> (tr);
+              pl = modulator_track->modulators_.at (id.slot_).get ();
+            }
+          z_return_val_if_fail (pl, std::nullopt);
+          return convert_to_variant<gui::old_dsp::plugins::PluginPtrVariant> (
+            pl);
+        }
+      else
+        {
+          z_return_val_if_reached (std::nullopt);
+        }
+    },
+    track_var.value ());
+}
+
 std::optional<PortPtrVariant>
 Project::find_port_by_id (const dsp::PortIdentifier &id) const
 {
   const auto flags = id.flags_;
   const auto flags2 = id.flags2_;
-  const auto track_name_hash = id.track_name_hash_;
 
   auto get_track_lambda = [&] () -> Track * {
-    auto track_var = tracklist_->find_track_by_name_hash (track_name_hash);
-    if (!track_var)
-      track_var =
-        audio_engine_->sample_processor_->tracklist_->find_track_by_name_hash (
-          track_name_hash);
+    auto track_var = find_track_by_name_hash (id.track_name_hash_);
     z_return_val_if_fail (track_var, nullptr);
     return std::visit (
       [&] (auto &&track_ptr) -> Track * {
@@ -397,33 +438,24 @@ Project::find_port_by_id (const dsp::PortIdentifier &id) const
       break;
     case OwnerType::Plugin:
       {
-        auto * tr = dynamic_cast<ProcessableTrack *> (get_track_lambda ());
-        z_return_val_if_fail (tr, std::nullopt);
-        zrythm::gui::old_dsp::plugins::Plugin * pl = nullptr;
-        if (tr->has_channel ())
-          {
-            auto channel_track = dynamic_cast<ChannelTrack *> (tr);
-            pl = channel_track->channel_->get_plugin_at_slot (
-              id.plugin_id_.slot_, id.plugin_id_.slot_type_);
-          }
-        else if (tr->is_modulator ())
-          {
-            auto modulator_track = dynamic_cast<ModulatorTrack *> (tr);
-            pl = modulator_track->modulators_[id.plugin_id_.slot_].get ();
-          }
-        z_return_val_if_fail (pl, std::nullopt);
+        auto pl_var = find_plugin_by_id (id.plugin_id_);
+        z_return_val_if_fail (pl_var.has_value (), std::nullopt);
 
-        switch (id.flow_)
-          {
-          case PortFlow::Input:
-            return convert_to_variant<PortPtrVariant> (
-              pl->in_ports_[id.port_index_].get ());
-          case PortFlow::Output:
-            return convert_to_variant<PortPtrVariant> (
-              pl->out_ports_[id.port_index_].get ());
-          default:
-            z_return_val_if_reached (std::nullopt);
-          }
+        return std::visit (
+          [&] (auto &&pl) -> std::optional<PortPtrVariant> {
+            switch (id.flow_)
+              {
+              case PortFlow::Input:
+                return convert_to_variant<PortPtrVariant> (
+                  pl->in_ports_[id.port_index_].get ());
+              case PortFlow::Output:
+                return convert_to_variant<PortPtrVariant> (
+                  pl->out_ports_[id.port_index_].get ());
+              default:
+                z_return_val_if_reached (std::nullopt);
+              }
+          },
+          pl_var.value ());
       }
       break;
     case OwnerType::TrackProcessor:

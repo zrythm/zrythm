@@ -73,7 +73,8 @@ struct ChannelSendTarget
 class ChannelSend final
     : public ICloneable<ChannelSend>,
       public dsp::IProcessable,
-      public utils::serialization::ISerializable<ChannelSend>
+      public utils::serialization::ISerializable<ChannelSend>,
+      public IPortOwner
 {
 public:
   using PortType = dsp::PortType;
@@ -86,7 +87,13 @@ public:
   ChannelSend (unsigned int track_name_hash, int slot, ChannelTrack * track);
   void init_loaded (ChannelTrack * track);
 
-  bool is_in_active_project () const;
+  bool is_in_active_project () const override;
+
+  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
+    const override;
+
+  std::string
+  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
 
   bool is_prefader () const
   {

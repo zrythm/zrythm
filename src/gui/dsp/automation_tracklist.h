@@ -18,6 +18,13 @@
 class AutomationTrack;
 class AutomatableTrack;
 
+using namespace zrythm;
+
+namespace zrythm::gui
+{
+class Channel;
+}
+
 /**
  * @addtogroup dsp
  *
@@ -134,7 +141,7 @@ public:
    * Removes the AutomationTrack's associated with this channel from the
    * AutomationTracklist in the corresponding Track.
    */
-  void remove_channel_ats (zrythm::gui::Channel * ch);
+  void remove_channel_ats (gui::Channel * ch);
 
   /**
    * Returns the AutomationTrack corresponding to the given Port.

@@ -14,6 +14,8 @@
  * @{
  */
 
+class PortConnectionsManager;
+
 /**
  * @brief Audio port specifics.
  */
@@ -148,13 +150,13 @@ public:
 
   // ==========================================================================
 
-  template <typename T> void init_loaded (T * owner)
+  void init_loaded (IPortOwner &owner)
   {
     l_->init_loaded (owner);
     r_->init_loaded (owner);
   }
 
-  template <typename T> void set_owner (T * owner)
+  void set_owner (IPortOwner &owner)
   {
     l_->set_owner (owner);
     r_->set_owner (owner);

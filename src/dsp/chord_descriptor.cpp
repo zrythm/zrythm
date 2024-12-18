@@ -215,7 +215,7 @@ ChordDescriptor::is_key_in_chord (MusicalNote key) const
 
   for (size_t i = 0; i < MAX_NOTES; i++)
     {
-      if (notes_[i] && i % 12 == (int) key)
+      if (notes_[i] && i % 12 == static_cast<decltype (i)> (key))
         return true;
     }
   return false;

@@ -71,16 +71,12 @@ Transport::init_loaded (Project * project, const TempoTrack * tempo_track)
       update_caches (beats_per_bar, beat_unit);
     }
 
-#define INIT_LOADED_PORT(x) x->init_loaded (this)
-
-  INIT_LOADED_PORT (roll_);
-  INIT_LOADED_PORT (stop_);
-  INIT_LOADED_PORT (backward_);
-  INIT_LOADED_PORT (forward_);
-  INIT_LOADED_PORT (loop_toggle_);
-  INIT_LOADED_PORT (rec_toggle_);
-
-#undef INIT_LOADED_PORT
+  roll_->init_loaded (*this);
+  stop_->init_loaded (*this);
+  backward_->init_loaded (*this);
+  forward_->init_loaded (*this);
+  loop_toggle_->init_loaded (*this);
+  rec_toggle_->init_loaded (*this);
 }
 
 Transport::Transport (Project * parent)
@@ -131,37 +127,37 @@ Transport::Transport (Project * parent)
   /* create ports */
   roll_ = std::make_unique<MidiPort> ("Roll", PortFlow::Input);
   roll_->id_->sym_ = ("roll");
-  roll_->set_owner<Transport> (this);
+  roll_->set_owner (*this);
   roll_->id_->flags_ |= PortIdentifier::Flags::Toggle;
   roll_->id_->flags2_ |= PortIdentifier::Flags2::TransportRoll;
 
   stop_ = std::make_unique<MidiPort> ("Stop", PortFlow::Input);
   stop_->id_->sym_ = ("stop");
-  stop_->set_owner<Transport> (this);
+  stop_->set_owner (*this);
   stop_->id_->flags_ |= PortIdentifier::Flags::Toggle;
   stop_->id_->flags2_ |= PortIdentifier::Flags2::TransportStop;
 
   backward_ = std::make_unique<MidiPort> ("Backward", PortFlow::Input);
   backward_->id_->sym_ = ("backward");
-  backward_->set_owner<Transport> (this);
+  backward_->set_owner (*this);
   backward_->id_->flags_ |= PortIdentifier::Flags::Toggle;
   backward_->id_->flags2_ |= PortIdentifier::Flags2::TransportBackward;
 
   forward_ = std::make_unique<MidiPort> ("Forward", PortFlow::Input);
   forward_->id_->sym_ = ("forward");
-  forward_->set_owner<Transport> (this);
+  forward_->set_owner (*this);
   forward_->id_->flags_ |= PortIdentifier::Flags::Toggle;
   forward_->id_->flags2_ |= PortIdentifier::Flags2::TransportForward;
 
   loop_toggle_ = std::make_unique<MidiPort> ("Loop toggle", PortFlow::Input);
   loop_toggle_->id_->sym_ = ("loop_toggle");
-  loop_toggle_->set_owner<Transport> (this);
+  loop_toggle_->set_owner (*this);
   loop_toggle_->id_->flags_ |= PortIdentifier::Flags::Toggle;
   loop_toggle_->id_->flags2_ |= PortIdentifier::Flags2::TransportLoopToggle;
 
   rec_toggle_ = std::make_unique<MidiPort> ("Rec toggle", PortFlow::Input);
   rec_toggle_->id_->sym_ = ("rec_toggle");
-  rec_toggle_->set_owner<Transport> (this);
+  rec_toggle_->set_owner (*this);
   rec_toggle_->id_->flags_ |= PortIdentifier::Flags::Toggle;
   rec_toggle_->id_->flags2_ |= PortIdentifier::Flags2::TransportRecToggle;
 
@@ -938,6 +934,20 @@ bool
 Transport::is_in_active_project () const
 {
   return project_ == Project::get_active_instance ();
+}
+
+void
+Transport::set_port_metadata_from_owner (
+  dsp::PortIdentifier &id,
+  PortRange           &range) const
+{
+  id.owner_type_ = PortIdentifier::OwnerType::Transport;
+}
+
+std::string
+Transport::get_full_designation_for_port (const dsp::PortIdentifier &id) const
+{
+  return fmt::format ("Transport/{}", id.label_);
 }
 
 void

@@ -252,12 +252,10 @@ public:
     TransportLoopToggle = 1 << 4,
     TransportRecToggle = 1 << 5,
 
-    /** LV2 control atom port supports patch
-     * messages. */
+    /** LV2 control atom port supports patch messages. */
     SupportsPatchMessage = 1 << 6,
 
-    /** Port's only reasonable values are its scale
-     * points. */
+    /** Port's only reasonable values are its scale points. */
     Enumeration = 1 << 7,
 
     /** Parameter port's value type is URI. */

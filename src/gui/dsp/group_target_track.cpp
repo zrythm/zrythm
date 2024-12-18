@@ -29,15 +29,16 @@ GroupTargetTrack::update_child_output (
       switch (track->in_signal_type_)
         {
         case PortType::Audio:
-          ch->stereo_out_->get_l ().disconnect_from (
-            *PORT_CONNECTIONS_MGR, track->processor_->stereo_in_->get_l ());
-
-          ch->stereo_out_->get_r ().disconnect_from (
-            *PORT_CONNECTIONS_MGR, track->processor_->stereo_in_->get_r ());
+          PORT_CONNECTIONS_MGR->ensure_disconnect (
+            *ch->stereo_out_->get_l ().id_,
+            *track->processor_->stereo_in_->get_l ().id_);
+          PORT_CONNECTIONS_MGR->ensure_disconnect (
+            *ch->stereo_out_->get_r ().id_,
+            *track->processor_->stereo_in_->get_r ().id_);
           break;
         case PortType::Event:
-          ch->midi_out_->disconnect_from (
-            *PORT_CONNECTIONS_MGR, *track->processor_->midi_in_);
+          PORT_CONNECTIONS_MGR->ensure_disconnect (
+            *ch->midi_out_->id_, *track->processor_->midi_in_->id_);
           break;
         default:
           break;
@@ -50,17 +51,16 @@ GroupTargetTrack::update_child_output (
       switch (output->in_signal_type_)
         {
         case PortType::Audio:
-
-          ch->stereo_out_->get_l ().connect_to (
-            *PORT_CONNECTIONS_MGR, output->processor_->stereo_in_->get_l (),
-            true);
-          ch->stereo_out_->get_r ().connect_to (
-            *PORT_CONNECTIONS_MGR, output->processor_->stereo_in_->get_r (),
-            true);
+          PORT_CONNECTIONS_MGR->ensure_connect_default (
+            *ch->stereo_out_->get_l ().id_,
+            *output->processor_->stereo_in_->get_l ().id_, true);
+          PORT_CONNECTIONS_MGR->ensure_connect_default (
+            *ch->stereo_out_->get_r ().id_,
+            *output->processor_->stereo_in_->get_r ().id_, true);
           break;
         case PortType::Event:
-          ch->midi_out_->connect_to (
-            *PORT_CONNECTIONS_MGR, *output->processor_->midi_in_, true);
+          PORT_CONNECTIONS_MGR->ensure_connect_default (
+            *ch->midi_out_->id_, *output->processor_->midi_in_->id_, true);
           break;
         default:
           break;

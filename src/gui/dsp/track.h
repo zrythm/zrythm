@@ -267,7 +267,8 @@ using TracksReadyCallback = void (*) (const FileImportInfo *);
  */
 class Track
     : public dsp::IProcessable,
-      virtual public utils::serialization::ISerializable<Track>
+      virtual public utils::serialization::ISerializable<Track>,
+      public IPortOwner
 {
   Q_GADGET
   QML_ELEMENT
@@ -1049,7 +1050,13 @@ public:
 
   // GMenu * generate_edit_context_menu (int num_selected);
 
-  bool is_in_active_project () const;
+  bool is_in_active_project () const override;
+
+  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
+    const override;
+
+  std::string
+  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
 
   virtual bool get_muted () const { return false; }
 

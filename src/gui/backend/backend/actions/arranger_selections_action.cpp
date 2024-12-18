@@ -608,20 +608,34 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
                             port_var
                             && std::holds_alternative<ControlPort *> (*port_var));
                           auto port = std::get<ControlPort *> (*port_var);
-                          auto track = dynamic_cast<AutomatableTrack *> (
-                            port->get_track (true));
-                          z_return_if_fail (track);
-                          AutomationTrack * at =
-                            AutomationTrack::find_from_port (*port, track, true);
-                          z_return_if_fail (at);
+                          auto track_var = PROJECT->find_track_by_name_hash (
+                            port->id_->track_name_hash_);
+                          z_return_if_fail (track_var.has_value ());
+                          std::visit (
+                            [&] (auto &&track) {
+                              using TrackT = base_type<decltype (track)>;
+                              if constexpr (
+                                std::derived_from<TrackT, AutomatableTrack>)
+                                {
+                                  AutomationTrack * at = AutomationTrack::
+                                    find_from_port (*port, track, true);
+                                  z_return_if_fail (at);
 
-                          /* move the actual object */
-                          prj_obj->move_to_track (track, at->index_, -1);
+                                  /* move the actual object */
+                                  prj_obj->move_to_track (track, at->index_, -1);
 
-                          /* remember info in identifier */
-                          own_obj_ptr->id_ = prj_obj->id_;
+                                  /* remember info in identifier */
+                                  own_obj_ptr->id_ = prj_obj->id_;
 
-                          target_port_ = cur_at->port_id_->clone_unique ();
+                                  target_port_ =
+                                    cur_at->port_id_->clone_unique ();
+                                }
+                              else
+                                {
+                                  z_return_if_reached ();
+                                }
+                            },
+                            track_var.value ());
                         }
                       else
                         {
@@ -1025,15 +1039,29 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                             && std::holds_alternative<ControlPort *> (*port_var));
                           const auto * port =
                             std::get<ControlPort *> (*port_var);
-                          auto * track = dynamic_cast<AutomatableTrack *> (
-                            port->get_track (true));
-                          z_return_if_fail (track);
-                          const auto * at = AutomationTrack::find_from_port (
-                            *port, track, true);
-                          z_return_if_fail (at);
+                          auto track_var = PROJECT->find_track_by_name_hash (
+                            port->id_->track_name_hash_);
+                          z_return_if_fail (track_var.has_value ());
+                          std::visit (
+                            [&] (auto &&track) {
+                              using TrackT = base_type<decltype (track)>;
+                              if constexpr (
+                                std::derived_from<TrackT, AutomatableTrack>)
+                                {
+                                  const auto * at = AutomationTrack::
+                                    find_from_port (*port, track, true);
+                                  z_return_if_fail (at);
 
-                          /* move the actual object */
-                          added_obj_ref->move_to_track (track, at->index_, -1);
+                                  /* move the actual object */
+                                  added_obj_ref->move_to_track (
+                                    track, at->index_, -1);
+                                }
+                              else
+                                {
+                                  z_return_if_reached ();
+                                }
+                            },
+                            track_var.value ());
                         }
                     }
                   if (!utils::math::floats_equal (delta_normalized_amount, 0.0))

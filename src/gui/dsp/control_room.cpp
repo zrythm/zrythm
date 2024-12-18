@@ -41,8 +41,8 @@ ControlRoom::init_common ()
       : gui::SettingsManager::get_default_monitorMuteVolume ();
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
-      mute_fader_->amp_->minf_ = 0.f;
-      mute_fader_->amp_->maxf_ = 0.5f;
+      mute_fader_->amp_->range_.minf_ = 0.f;
+      mute_fader_->amp_->range_.maxf_ = 0.5f;
     }
   mute_fader_->set_amp (amp);
 
@@ -59,8 +59,8 @@ ControlRoom::init_common ()
   listen_fader_->set_amp (amp);
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
-      listen_fader_->amp_->minf_ = 0.5f;
-      listen_fader_->amp_->maxf_ = 2.f;
+      listen_fader_->amp_->range_.minf_ = 0.5f;
+      listen_fader_->amp_->range_.maxf_ = 2.f;
     }
 
   dim_fader_ = std::make_unique<Fader> (
@@ -75,8 +75,8 @@ ControlRoom::init_common ()
       : gui::SettingsManager::get_default_monitorDimVolume ();
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
-      dim_fader_->amp_->minf_ = 0.f;
-      dim_fader_->amp_->maxf_ = 0.5f;
+      dim_fader_->amp_->range_.minf_ = 0.f;
+      dim_fader_->amp_->range_.maxf_ = 0.5f;
     }
   dim_fader_->set_amp (amp);
 

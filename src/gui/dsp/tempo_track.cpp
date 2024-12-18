@@ -46,10 +46,9 @@ TempoTrack::initialize ()
 {
   /* create bpm port */
   bpm_port_ = std::make_unique<ControlPort> (QObject::tr ("BPM").toStdString ());
-  bpm_port_->set_owner (this);
+  bpm_port_->set_owner (*this);
   bpm_port_->id_->sym_ = "bpm";
-  bpm_port_->minf_ = 60.f;
-  bpm_port_->maxf_ = 360.f;
+  bpm_port_->range_ = { 60.f, 360.f };
   bpm_port_->deff_ = 140.f;
   bpm_port_->set_control_value (bpm_port_->deff_, false, false);
   bpm_port_->id_->flags_ |= dsp::PortIdentifier::Flags::Bpm;
@@ -58,10 +57,11 @@ TempoTrack::initialize ()
   /* create time sig ports */
   beats_per_bar_port_ = std::make_unique<ControlPort> (
     QObject::tr ("Beats per bar").toStdString ());
-  beats_per_bar_port_->set_owner (this);
+  beats_per_bar_port_->set_owner (*this);
   beats_per_bar_port_->id_->sym_ = ("beats_per_bar");
-  beats_per_bar_port_->minf_ = TEMPO_TRACK_MIN_BEATS_PER_BAR;
-  beats_per_bar_port_->maxf_ = TEMPO_TRACK_MAX_BEATS_PER_BAR;
+  beats_per_bar_port_->range_ = {
+    TEMPO_TRACK_MIN_BEATS_PER_BAR, TEMPO_TRACK_MAX_BEATS_PER_BAR
+  };
   beats_per_bar_port_->deff_ = TEMPO_TRACK_MIN_BEATS_PER_BAR;
   beats_per_bar_port_->set_control_value (
     TEMPO_TRACK_DEFAULT_BEATS_PER_BAR, false, false);
@@ -71,10 +71,12 @@ TempoTrack::initialize ()
 
   beat_unit_port_ =
     std::make_unique<ControlPort> (QObject::tr ("Beat unit").toStdString ());
-  beat_unit_port_->set_owner (this);
+  beat_unit_port_->set_owner (*this);
   beat_unit_port_->id_->sym_ = ("beat_unit");
-  beat_unit_port_->minf_ = static_cast<float> (TEMPO_TRACK_MIN_BEAT_UNIT);
-  beat_unit_port_->maxf_ = static_cast<float> (TEMPO_TRACK_MAX_BEAT_UNIT);
+  beat_unit_port_->range_ = {
+    static_cast<float> (TEMPO_TRACK_MIN_BEAT_UNIT),
+    static_cast<float> (TEMPO_TRACK_MAX_BEAT_UNIT)
+  };
   beat_unit_port_->deff_ = static_cast<float> (TEMPO_TRACK_MIN_BEAT_UNIT);
   beat_unit_port_->set_control_value (
     static_cast<float> (TEMPO_TRACK_DEFAULT_BEAT_UNIT), false, false);
@@ -129,6 +131,51 @@ TempoTrack::get_current_bpm_as_str ()
 {
   auto bpm = get_current_bpm ();
   return fmt::format ("{:.2f}", bpm);
+}
+
+void
+TempoTrack::on_control_change_event (const dsp::PortIdentifier &id, float value)
+{
+  using PortIdentifier = dsp::PortIdentifier;
+
+  /* if bpm, update engine */
+  if (ENUM_BITSET_TEST (
+        PortIdentifier::Flags, id.flags_, PortIdentifier::Flags::Bpm))
+    {
+      /* this must only be called during processing kickoff or while the
+       * engine is stopped */
+      z_return_if_fail (
+        !AUDIO_ENGINE->run_.load () || ROUTER->is_processing_kickoff_thread ());
+
+      int beats_per_bar = get_beats_per_bar ();
+      AUDIO_ENGINE->update_frames_per_tick (
+        beats_per_bar, value, AUDIO_ENGINE->sample_rate_, false, true, true);
+      // EVENTS_PUSH (EventType::ET_BPM_CHANGED, nullptr);
+    }
+
+  /* if time sig value, update transport caches */
+  else if (
+    ENUM_BITSET_TEST (
+      PortIdentifier::Flags2, id.flags2_, PortIdentifier::Flags2::BeatsPerBar)
+    || ENUM_BITSET_TEST (
+      PortIdentifier::Flags2, id.flags2_, PortIdentifier::Flags2::BeatUnit))
+    {
+      /* this must only be called during processing kickoff or while the
+       * engine is stopped */
+      z_return_if_fail (
+        !AUDIO_ENGINE->run_.load () || ROUTER->is_processing_kickoff_thread ());
+
+      int   beats_per_bar = get_beats_per_bar ();
+      int   beat_unit = get_beat_unit ();
+      bpm_t bpm = get_current_bpm ();
+      TRANSPORT->update_caches (beats_per_bar, beat_unit);
+      bool update_from_ticks = ENUM_BITSET_TEST (
+        PortIdentifier::Flags2, id.flags2_, PortIdentifier::Flags2::BeatsPerBar);
+      AUDIO_ENGINE->update_frames_per_tick (
+        beats_per_bar, bpm, AUDIO_ENGINE->sample_rate_, false,
+        update_from_ticks, false);
+      // EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, nullptr);
+    }
 }
 
 void

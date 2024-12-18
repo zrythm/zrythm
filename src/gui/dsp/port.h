@@ -12,25 +12,8 @@
 #include "utils/ring_buffer.h"
 #include "utils/types.h"
 
-namespace zrythm::gui
-{
-class Channel;
-namespace old_dsp::plugins
-{
-class Plugin;
-}
-}
-
-class Fader;
 class AudioEngine;
 class Track;
-class TrackProcessor;
-class ModulatorMacroProcessor;
-class ExtPort;
-class AudioClip;
-class PortConnectionsManager;
-class ChannelSend;
-class Transport;
 struct EngineProcessTimeInfo;
 
 /**
@@ -47,6 +30,115 @@ constexpr int TIME_TO_RESET_PEAK = 4800000;
 
 template <typename T>
 concept FinalPortSubclass = std::derived_from<T, Port> && FinalClass<T>;
+
+class PortRange : public utils::serialization::ISerializable<PortRange>
+{
+public:
+  PortRange () = default;
+
+  PortRange (float min, float max, float zero = 0.f)
+      : minf_ (min), maxf_ (max), zerof_ (zero)
+  {
+  }
+
+  float clamp_to_range (float val) { return std::clamp (val, minf_, maxf_); }
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+public:
+  /**
+   * Minimum, maximum and zero values for this port.
+   *
+   * Note that for audio, this is the amplitude (0 - 2) and not the actual
+   * values.
+   */
+  float minf_ = 0.f;
+  float maxf_ = 1.f;
+
+  /**
+   * The zero position of the port.
+   *
+   * For example, in balance controls, this will be the middle. In audio
+   * ports, this will be 0 amp (silence), etc.
+   */
+  float zerof_ = 0.f;
+};
+
+class IPortOwner
+{
+public:
+  virtual ~IPortOwner () = default;
+
+  virtual bool is_in_active_project () const = 0;
+
+  /**
+   * @brief Function that will be called by the Port to update the identifier's
+   * relevant members based on this port owner.
+   *
+   * @param id The identifier to update.
+   */
+  virtual void
+  set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
+    const = 0;
+
+  virtual std::string
+  get_full_designation_for_port (const dsp::PortIdentifier &id) const
+  {
+    return id.get_label ();
+  };
+
+  /**
+   * @brief Will be called when a control port's value changes.
+   *
+   * @param val The real value of the control port.
+   *
+   * @attention This may be called from the audio thread so it must not block.
+   */
+  virtual void
+  on_control_change_event (const dsp::PortIdentifier &id, float val) {};
+
+  /**
+   * @brief Called during processing if the MIDI port contains new MIDI events.
+   */
+  virtual void on_midi_activity (const dsp::PortIdentifier &id) { }
+
+  /**
+   * @brief Whether during processing, the port should sum the data from its
+   * backend buffers coming in.
+   *
+   * If this is a TrackProcessor input port for a recordable track, this should
+   * only return true when currently armed recording. Otherwise, we always
+   * consider incoming external data.
+   */
+  virtual bool should_sum_data_from_backend () const { return true; }
+
+  /**
+   * @brief Whether the port should add its data to the master output when
+   * bouncing.
+   *
+   * When bouncing a track directly to master (e.g., when bouncing the track on
+   * its own without parents), the buffer should be added to the master track
+   * output.
+   *
+   * This is only utilized for stereo output audio ports.
+   */
+  virtual bool should_bounce_to_master (utils::audio::BounceStep step) const
+  {
+    return false;
+  }
+
+  /**
+   * @brief Returns whether MIDI events on this channel on an input port should
+   * be processed (not ignored).
+   *
+   * This is used to implement MIDI channel filtering in tracks that have piano
+   * rolls based on the enabled MIDI channels.
+   */
+  virtual bool are_events_on_midi_channel_approved (midi_byte_t channel) const
+  {
+    return true;
+  }
+};
 
 /**
  * @brief The Port class represents a port in the audio processing graph.
@@ -77,14 +169,17 @@ public:
    *
    * Should be called after the ports are deserialized from JSON.
    */
-  template <typename T> void init_loaded (T * owner) { set_owner (owner); }
+  void init_loaded (IPortOwner &owner) { set_owner (owner); }
 
   /**
    * @brief Returns whether the port is in the active project.
    */
-  bool is_in_active_project () const;
+  bool is_in_active_project () const
+  {
+    return owner_ && owner_->is_in_active_project ();
+  }
 
-  template <typename T> void set_owner (T * owner);
+  void set_owner (IPortOwner &owner);
 
   std::string get_label () const;
 
@@ -130,13 +225,14 @@ public:
    * Gets a full designation of the port in the format "Track/Port" or
    * "Track/Plugin/Port".
    */
-  std::string get_full_designation () const;
+  std::string get_full_designation () const
+  {
+    return (owner_ != nullptr)
+             ? owner_->get_full_designation_for_port (*id_)
+             : get_label ();
+  }
 
   void print_full_designation () const;
-
-  Track * get_track (bool warn_if_fail) const;
-
-  zrythm::gui::old_dsp::plugins::Plugin * get_plugin (bool warn_if_fail) const;
 
   /**
    * To be called when the port's identifier changes to update corresponding
@@ -242,18 +338,6 @@ public:
   PortType get_type () const { return id_->type_; }
   PortFlow get_flow () const { return id_->flow_; }
 
-  /**
-   * Connects to @p dest with default settings: { enabled: true,
-   * multiplier: 1.0
-   * }
-   */
-  void connect_to (PortConnectionsManager &mgr, Port &dest, bool locked);
-
-  /**
-   * @brief Removes the connection to @p dest.
-   */
-  void disconnect_from (PortConnectionsManager &mgr, Port &dest);
-
 protected:
   Port ();
 
@@ -299,50 +383,7 @@ public:
   std::vector<std::unique_ptr<PortConnection>> src_connections_;
   std::vector<std::unique_ptr<PortConnection>> dest_connections_;
 
-  /**
-   * Minimum, maximum and zero values for this port.
-   *
-   * Note that for audio, this is the amplitude (0 - 2) and not the actual
-   * values.
-   */
-  float minf_ = 0.f;
-  float maxf_ = 1.f;
-
-  /**
-   * The zero position of the port.
-   *
-   * For example, in balance controls, this will be the middle. In audio
-   * ports, this will be 0 amp (silence), etc.
-   */
-  float zerof_ = 0.f;
-
-  /** Pointer to owner plugin, if any. */
-  zrythm::gui::old_dsp::plugins::Plugin * plugin_ = nullptr;
-
-  /** Pointer to owner transport, if any. */
-  Transport * transport_ = nullptr;
-
-  /** Pointer to owner channel send, if any. */
-  ChannelSend * channel_send_ = nullptr;
-
-  /** Pointer to owner engine, if any. */
-  AudioEngine * engine_ = nullptr;
-
-  /** Pointer to owner fader, if any. */
-  Fader * fader_ = nullptr;
-
-  /**
-   * Pointer to owner track, if any.
-   *
-   * Also used for channel and track processor ports.
-   */
-  Track * track_ = nullptr;
-
-  /** Pointer to owner modulator macro processor, if any. */
-  ModulatorMacroProcessor * modulator_macro_processor_ = nullptr;
-
-  /** used when loading projects FIXME needed? */
-  int initialized_ = 0;
+  PortRange range_;
 
   /**
    * Capture latency.
@@ -394,9 +435,6 @@ public:
    */
   std::unique_ptr<RingBuffer<float>> audio_ring_;
 
-  /** Pointer to ExtPort, if hw. */
-  ExtPort * ext_port_ = nullptr;
-
   /** Magic number to identify that this is a Port. */
   int magic_ = PORT_MAGIC;
 
@@ -407,6 +445,8 @@ public:
    * @brief Backend functionality.
    */
   std::unique_ptr<PortBackend> backend_;
+
+  IPortOwner * owner_{};
 };
 
 class MidiPort;
@@ -415,37 +455,6 @@ class CVPort;
 class ControlPort;
 using PortVariant = std::variant<MidiPort, AudioPort, CVPort, ControlPort>;
 using PortPtrVariant = to_pointer_variant<PortVariant>;
-
-class HardwareProcessor;
-class RecordableTrack;
-class TempoTrack;
-
-extern template void
-Port::set_owner (zrythm::gui::old_dsp::plugins::Plugin *);
-extern template void
-Port::set_owner (Transport *);
-extern template void
-Port::set_owner (ChannelSend *);
-extern template void
-Port::set_owner (AudioEngine *);
-extern template void
-Port::set_owner<Fader> (Fader *);
-extern template void
-Port::set_owner<Track> (Track *);
-extern template void
-Port::set_owner<ModulatorMacroProcessor> (ModulatorMacroProcessor *);
-extern template void
-Port::set_owner<ExtPort> (ExtPort *);
-extern template void
-Port::set_owner (zrythm::gui::Channel *);
-extern template void
-Port::set_owner<TrackProcessor> (TrackProcessor *);
-extern template void
-Port::set_owner<HardwareProcessor> (HardwareProcessor *);
-extern template void
-Port::set_owner<TempoTrack> (TempoTrack *);
-extern template void
-Port::set_owner<RecordableTrack> (RecordableTrack *);
 
 /**
  * @}

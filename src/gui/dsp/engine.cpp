@@ -682,7 +682,7 @@ AudioEngine::init_common ()
 
   midi_clock_out_ =
     std::make_unique<MidiPort> ("MIDI Clock Out", dsp::PortFlow::Output);
-  midi_clock_out_->set_owner (this);
+  midi_clock_out_->set_owner (*this);
   midi_clock_out_->id_->flags2_ |= dsp::PortIdentifier::Flags2::MidiClock;
 }
 
@@ -709,15 +709,18 @@ AudioEngine::init_loaded (Project * project)
       auto &id = *port->id_;
       if (id.owner_type_ == dsp::PortIdentifier::OwnerType::AudioEngine)
         {
-          port->init_loaded (this);
+          port->init_loaded (*this);
         }
       else if (
         id.owner_type_ == dsp::PortIdentifier::OwnerType::HardwareProcessor)
         {
+// FIXME? this has been either broken or unused for a while
+#if 0
           if (id.is_output ())
-            port->init_loaded (hw_in_processor_.get ());
+            port->init_loaded (*hw_in_processor_);
           else if (id.is_input ())
-            port->init_loaded (hw_out_processor_.get ());
+            port->init_loaded (*hw_out_processor_);
+#endif
         }
       else if (id.owner_type_ == dsp::PortIdentifier::OwnerType::Fader)
         {
@@ -725,12 +728,12 @@ AudioEngine::init_loaded (Project * project)
             ENUM_BITSET_TEST (
               dsp::PortIdentifier::Flags2, id.flags2_,
               dsp::PortIdentifier::Flags2::SampleProcessorFader))
-            port->init_loaded (sample_processor_->fader_.get ());
+            port->init_loaded (*sample_processor_->fader_);
           else if (
             ENUM_BITSET_TEST (
               dsp::PortIdentifier::Flags2, id.flags2_,
               dsp::PortIdentifier::Flags2::MonitorFader))
-            port->init_loaded (control_room_->monitor_fader_.get ());
+            port->init_loaded (*control_room_->monitor_fader_);
         }
     }
 
@@ -747,13 +750,13 @@ AudioEngine::AudioEngine (Project * project)
 
   midi_editor_manual_press_ = std::make_unique<MidiPort> (
     "MIDI Editor Manual Press", dsp::PortFlow::Input);
-  midi_editor_manual_press_->set_owner (this);
+  midi_editor_manual_press_->set_owner (*this);
   midi_editor_manual_press_->id_->sym_ = "midi_editor_manual_press";
   midi_editor_manual_press_->id_->flags_ |=
     dsp::PortIdentifier::Flags::ManualPress;
 
   midi_in_ = std::make_unique<MidiPort> ("MIDI in", dsp::PortFlow::Input);
-  midi_in_->set_owner (this);
+  midi_in_->set_owner (*this);
   midi_in_->id_->sym_ = "midi_in";
 
   {
@@ -763,7 +766,7 @@ AudioEngine::AudioEngine (Project * project)
     monitor_out_r.id_->sym_ = "monitor_out_r";
     monitor_out_ = std::make_unique<StereoPorts> (
       std::move (monitor_out_l), std::move (monitor_out_r));
-    monitor_out_->set_owner (this);
+    monitor_out_->set_owner (*this);
   }
 
   hw_in_processor_ = std::make_unique<HardwareProcessor> (true, this);
@@ -1650,6 +1653,20 @@ bool
 AudioEngine::is_in_active_project () const
 {
   return project_ == PROJECT;
+}
+
+void
+AudioEngine::set_port_metadata_from_owner (
+  dsp::PortIdentifier &id,
+  PortRange           &range) const
+{
+  id.owner_type_ = dsp::PortIdentifier::OwnerType::AudioEngine;
+}
+
+std::string
+AudioEngine::get_full_designation_for_port (const dsp::PortIdentifier &id) const
+{
+  return id.get_label ();
 }
 
 AudioEngine::~AudioEngine ()

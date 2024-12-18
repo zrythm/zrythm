@@ -53,6 +53,13 @@ bit_depth_int_to_enum (int depth)
     }
 }
 
+enum class BounceStep
+{
+  BeforeInserts,
+  PreFader,
+  PostFader,
+};
+
 /**
  * Returns the number of frames in the given audio
  * file.
@@ -159,5 +166,12 @@ DEFINE_ENUM_FORMATTER (
   QT_TR_NOOP_UTF8 ("16 bit"),
   QT_TR_NOOP_UTF8 ("24 bit"),
   QT_TR_NOOP_UTF8 ("32 bit"));
+
+DEFINE_ENUM_FORMATTER (
+  zrythm::utils::audio::BounceStep,
+  BounceStep,
+  QT_TR_NOOP_UTF8 ("Before inserts"),
+  QT_TR_NOOP_UTF8 ("Pre-fader"),
+  QT_TR_NOOP_UTF8 ("Post fader"));
 
 #endif

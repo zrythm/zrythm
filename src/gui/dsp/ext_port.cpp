@@ -25,6 +25,19 @@ ExtPort::is_in_active_project () const
   return hw_processor_ && hw_processor_->is_in_active_project ();
 }
 
+void
+ExtPort::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
+  const
+{
+  id.owner_type_ = dsp::PortIdentifier::OwnerType::HardwareProcessor;
+}
+
+std::string
+ExtPort::get_full_designation_for_port (const dsp::PortIdentifier &id) const
+{
+  return fmt::format ("HW/{}", id.label_);
+}
+
 float *
 ExtPort::get_buffer (nframes_t nframes) const
 {

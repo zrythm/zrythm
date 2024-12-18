@@ -149,6 +149,17 @@ public:
     bool                  locked,
     bool                  enabled);
 
+  /**
+   * @brief Overload for default settings (multiplier = 1.0, enabled = true).
+   */
+  const PortConnection * ensure_connect_default (
+    const PortIdentifier &src,
+    const PortIdentifier &dest,
+    bool                  locked)
+  {
+    return ensure_connect (src, dest, 1.0f, locked, true);
+  }
+
   const PortConnection *
   ensure_connect_from_connection (const PortConnection &conn)
   {

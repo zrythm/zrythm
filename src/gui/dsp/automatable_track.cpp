@@ -40,7 +40,6 @@ AutomatableTrack::init_loaded ()
   unsigned int name_hash = get_name_hash ();
   for (auto &port : ports)
     {
-      port->track_ = this;
       if (is_in_active_project ())
         {
           z_return_if_fail (port->id_->track_name_hash_ == name_hash);

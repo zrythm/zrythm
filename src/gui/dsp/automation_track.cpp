@@ -260,7 +260,12 @@ AutomationTrack::find_from_port (
 {
   if (!track)
     {
-      track = dynamic_cast<AutomatableTrack *> (port.get_track (true));
+      auto track_var =
+        PROJECT->find_track_by_name_hash (port.id_->track_name_hash_);
+      z_return_val_if_fail (track_var.has_value (), nullptr);
+      track = std::visit (
+        [&] (auto &&t) { return dynamic_cast<AutomatableTrack *> (t); },
+        track_var.value ());
     }
   z_return_val_if_fail (track, nullptr);
 
@@ -284,7 +289,15 @@ AutomationTrack::find_from_port (
                       continue;
                     }
 
-                  auto pl = port.get_plugin (true);
+                  auto pl_var =
+                    PROJECT->find_plugin_by_id (port.id_->plugin_id_);
+                  z_return_val_if_fail (pl_var.has_value (), nullptr);
+                  auto * pl = std::visit (
+                    [&] (auto &&plugin) {
+                      return dynamic_cast<gui::old_dsp::plugins::Plugin *> (
+                        plugin);
+                    },
+                    pl_var.value ());
                   z_return_val_if_fail (pl, nullptr);
 
                   if (
@@ -305,7 +318,7 @@ AutomationTrack::find_from_port (
                       return at;
                     }
                   /* if not lv2, also search by index */
-                  else if (dest->port_index_ == src->port_index_)
+                  if (dest->port_index_ == src->port_index_)
                     {
                       return at;
                     }

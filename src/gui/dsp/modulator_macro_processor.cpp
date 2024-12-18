@@ -25,9 +25,9 @@ ModulatorMacroProcessor::init_loaded (ModulatorTrack &track)
 {
   track_ = &track;
 
-  macro_->init_loaded (this);
-  cv_in_->init_loaded (this);
-  cv_out_->init_loaded (this);
+  macro_->init_loaded (*this);
+  cv_in_->init_loaded (*this);
+  cv_out_->init_loaded (*this);
 }
 
 void
@@ -51,7 +51,8 @@ ModulatorMacroProcessor::process_block (const EngineProcessTimeInfo time_nfo)
     {
       utils::float_ranges::fill (
         &cv_out_->buf_[time_nfo.local_offset_],
-        macro_->get_val () * (cv_out_->maxf_ - cv_out_->minf_) + cv_out_->minf_,
+        macro_->get_val () * (cv_out_->range_.maxf_ - cv_out_->range_.minf_)
+          + cv_out_->range_.minf_,
         time_nfo.nframes_);
     }
 }
@@ -62,10 +63,9 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (ModulatorTrack * track, int id
 
   name_ = format_str (QObject::tr ("Macro {}").toStdString (), idx + 1);
   macro_ = std::make_unique<ControlPort> (name_);
-  macro_->set_owner (this);
+  macro_->set_owner (*this);
   macro_->id_->sym_ = fmt::format ("macro_{}", idx + 1);
-  macro_->minf_ = 0.f;
-  macro_->maxf_ = 1.f;
+  macro_->range_ = { 0.f, 1.f };
   macro_->deff_ = 0.f;
   macro_->set_control_value (0.75f, false, false);
   macro_->id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
@@ -75,7 +75,7 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (ModulatorTrack * track, int id
   cv_in_ = std::make_unique<CVPort> (
     format_str (QObject::tr ("Macro CV In {}").toStdString (), idx + 1),
     dsp::PortFlow::Input);
-  cv_in_->set_owner (this);
+  cv_in_->set_owner (*this);
   cv_in_->id_->sym_ = fmt::format ("macro_cv_in_{}", idx + 1);
   cv_in_->id_->flags_ |= dsp::PortIdentifier::Flags::ModulatorMacro;
   cv_in_->id_->port_index_ = idx;
@@ -83,10 +83,27 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (ModulatorTrack * track, int id
   cv_out_ = std::make_unique<CVPort> (
     format_str (QObject::tr ("Macro CV Out {}").toStdString (), idx + 1),
     dsp::PortFlow::Output);
-  cv_out_->set_owner (this);
+  cv_out_->set_owner (*this);
   cv_out_->id_->sym_ = fmt::format ("macro_cv_out_{}", idx + 1);
   cv_out_->id_->flags_ |= dsp::PortIdentifier::Flags::ModulatorMacro;
   cv_out_->id_->port_index_ = idx;
+}
+
+void
+ModulatorMacroProcessor::set_port_metadata_from_owner (
+  dsp::PortIdentifier &id,
+  PortRange           &range) const
+{
+  id.owner_type_ = dsp::PortIdentifier::OwnerType::ModulatorMacroProcessor;
+  z_return_if_fail (get_track ());
+  id.track_name_hash_ = get_track ()->get_name_hash ();
+}
+
+std::string
+ModulatorMacroProcessor::get_full_designation_for_port (
+  const dsp::PortIdentifier &id) const
+{
+  return fmt::format ("Modulator Macro Processor/{}", id.label_);
 }
 
 void

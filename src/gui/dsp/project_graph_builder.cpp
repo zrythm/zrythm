@@ -133,18 +133,6 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
           using PortT = base_type<decltype (port)>;
           auto owner = port->id_->owner_type_;
 
-          if (owner == dsp::PortIdentifier::OwnerType::Plugin)
-            {
-              port->plugin_ = port->get_plugin (true);
-              z_return_val_if_fail (port->plugin_, nullptr);
-            }
-
-          if (port->id_->track_name_hash_ != 0)
-            {
-              port->track_ = port->get_track (true);
-              z_return_val_if_fail (port->track_, nullptr);
-            }
-
           /* reset port sources/dests */
           PortConnectionsManager::ConnectionsVector srcs;
           mgr.get_sources_or_dests (&srcs, *port->id_, true);
@@ -230,8 +218,17 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
   for (auto * port : ports)
     {
       z_return_if_fail (port);
-      if (port->deleting_ || (port->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin && port->get_plugin(true)->deleting_))
+      if (port->deleting_)
         continue;
+
+      if (port->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
+        {
+          auto pl_var = project.find_plugin_by_id (port->id_->plugin_id_);
+          z_return_if_fail (pl_var.has_value ());
+          if (std::visit (
+                [&] (auto &&pl) { return pl->deleting_; }, pl_var.value ()))
+            continue;
+        }
 
       add_port (
         graph, convert_to_variant<PortPtrVariant> (port),
@@ -251,7 +248,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
       z_return_if_fail (pl_node);
       for (auto &port : pl.in_ports_)
         {
-          z_return_if_fail (port->get_plugin (true) != nullptr);
+          // z_return_if_fail (port->get_plugin (true) != nullptr);
           auto * port_node =
             graph.get_nodes ().find_node_for_processable (*port);
           if (
@@ -265,7 +262,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
         }
       for (auto &port : pl.out_ports_)
         {
-          z_return_if_fail (port->get_plugin (true) != nullptr);
+          // z_return_if_fail (port->get_plugin (true) != nullptr);
           auto * port_node =
             graph.get_nodes ().find_node_for_processable (*port);
           z_return_if_fail (port_node);
@@ -488,8 +485,8 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
                       connect_plugin (graph, *pl, drop_unnecessary_ports);
                       for (auto &pl_port : pl->in_ports_)
                         {
-                          z_return_if_fail (
-                            pl_port->get_plugin (true) != nullptr);
+                          // z_return_if_fail (pl_port->get_plugin (true) !=
+                          // nullptr);
                           auto port_node =
                             graph.get_nodes ().find_node_for_processable (
                               *pl_port);
@@ -711,8 +708,10 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
         continue;
       if (port->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
         {
-          auto port_pl = port->get_plugin (true);
-          if (port_pl->deleting_)
+          auto pl_var = project.find_plugin_by_id (port->id_->plugin_id_);
+          z_return_if_fail (pl_var.has_value ());
+          if (std::visit (
+                [&] (auto &&pl) { return pl->deleting_; }, pl_var.value ()))
             continue;
         }
 

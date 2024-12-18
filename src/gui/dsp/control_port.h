@@ -4,8 +4,9 @@
 #ifndef __AUDIO_CONTROL_PORT_H__
 #define __AUDIO_CONTROL_PORT_H__
 
-#include "gui/dsp/port.h"
+#include <utility>
 
+#include "gui/dsp/port.h"
 #include "utils/icloneable.h"
 #include "utils/math.h"
 
@@ -31,11 +32,9 @@ class ControlPort final
 
 public:
   /**
-   * Used for queueing changes to be applied during
-   * processing.
+   * Used for queueing changes to be applied during processing.
    *
-   * Used only for non-plugin ports such as BPM and
-   * time signature.
+   * Used only for non-plugin ports such as BPM and time signature.
    */
   struct ChangeEvent
   {
@@ -49,8 +48,7 @@ public:
     /**
      * Flag to identify the port the change is for.
      *
-     * @see BEATS_PER_BAR and
-     *   BEAT_UNIT.
+     * @see BEATS_PER_BAR and BEAT_UNIT.
      */
     PortIdentifier::Flags2 flag2{};
 
@@ -71,7 +69,10 @@ public:
     float       val_;
     std::string label_;
 
-    ScalePoint (float val, std::string label) : val_ (val), label_ (label) { }
+    ScalePoint (float val, std::string label)
+        : val_ (val), label_ (std::move (label))
+    {
+    }
     ~ScalePoint () = default;
 
     auto operator<=> (const ScalePoint &other) const
@@ -134,7 +135,7 @@ public:
   /**
    * Gets the control value for an integer port.
    */
-  static int get_int_from_val (float val)
+  static constexpr int get_int_from_val (float val)
   {
     return utils::math::round_to_signed_32 (val);
   }
@@ -142,7 +143,7 @@ public:
   /**
    * Returns the snapped value (eg, if toggle, returns 0.f or 1.f).
    */
-  inline float get_snapped_val () const
+  float get_snapped_val () const
   {
     return get_snapped_val_from_val (get_val ());
   }
@@ -157,7 +158,7 @@ public:
    *
    * TODO "normalize" parameter.
    */
-  inline float get_val () const { return control_; }
+  float get_val () const { return control_; }
 
   /**
    * Get the current normalized value of the control.
@@ -176,15 +177,12 @@ public:
   /**
    * Get the default real value of the control.
    */
-  inline float get_default_val () const { return deff_; }
+  float get_default_val () const { return deff_; }
 
   /**
    * Get the default real value of the control.
    */
-  inline void set_real_val (float val)
-  {
-    set_control_value (val, false, false);
-  }
+  void set_real_val (float val) { set_control_value (val, false, false); }
 
   /**
    * Get the default real value of the control and sends UI events.
@@ -234,13 +232,14 @@ public:
    automation lane). For CV automations this should not be used.
    *
    * @param is_normalized Whether the given value is normalized between 0 and 1.
-   * @param forward_event Whether to forward a port   control change event to
-   the plugin UI. Only
-   *   applicable for plugin control ports. If the control is being changed
-   manually or from within Zrythm, this should be true to notify the plugin of
-   the change.
+   * @param forward_event_to_plugin Whether to forward a port control change
+   event to
+   * the plugin UI. Only applicable for plugin control ports. If the control is
+   * being changed manually or from within Zrythm, this should be true to notify
+   * the plugin of the change.
    */
-  void set_control_value (float val, bool is_normalized, bool forward_event);
+  void
+  set_control_value (float val, bool is_normalized, bool forward_event_to_plugin);
 
   /**
    * Gets the given control value from the corresponding underlying structure in
@@ -274,9 +273,9 @@ public:
 private:
   /**
    * To be called when a control's value changes so that a message can be sent
-   * to the UI.
+   * to the plugin UI.
    */
-  void forward_control_change_event ();
+  // void forward_control_change_event ();
 
 public:
   /**
@@ -336,21 +335,21 @@ public:
   float unsnapped_control_ = 0.f;
 
   /** Flag that the value of the port changed from reading automation. */
-  bool value_changed_from_reading_ = false;
+  bool value_changed_from_reading_{};
 
   /**
    * @brief Automation track this port is attached to.
    *
    * To be set at runtime only (not serialized).
    */
-  AutomationTrack * at_ = nullptr;
+  AutomationTrack * at_{};
 
   /**
    * Whether the port received a UI event from the plugin UI in this cycle.
    *
    * This is used to avoid re-sending that event to the plugin.
    */
-  bool received_ui_event_ = 0;
+  bool received_ui_event_{};
 
   /**
    * Control widget, if applicable.

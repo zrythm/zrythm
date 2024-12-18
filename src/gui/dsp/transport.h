@@ -52,8 +52,9 @@ static const char * preroll_count_bars_str[] = {
 class Transport final
     : public QObject,
       public ICloneable<Transport>,
-      public zrythm::utils::serialization::ISerializable<Transport>,
-      public dsp::ITransport
+      public utils::serialization::ISerializable<Transport>,
+      public dsp::ITransport,
+      public IPortOwner
 {
   Q_OBJECT
   QML_ELEMENT
@@ -190,7 +191,13 @@ public:
     return -1;
   }
 
-  bool is_in_active_project () const;
+  bool is_in_active_project () const override;
+
+  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
+    const override;
+
+  std::string
+  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
 
   Q_INVOKABLE bool isRolling () const
   {

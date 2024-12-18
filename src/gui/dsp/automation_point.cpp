@@ -159,7 +159,7 @@ AutomationPoint::set_fvalue (float real_val, bool is_normalized, bool pub_events
   else
     {
       z_info ("reveived real val {:f}", (double) real_val);
-      real_val = std::clamp (real_val, port->minf_, port->maxf_);
+      real_val = port->range_.clamp_to_range (real_val);
       normalized_val = port->real_val_to_normalized (real_val);
     }
   z_info ("setting to {:f}", (double) real_val);
@@ -200,7 +200,9 @@ AutomationPoint::set_fvalue_with_action (const std::string &fval_str)
 
   float val;
   int   res = sscanf (fval_str.c_str (), "%f", &val);
-  if (res != 1 || res == EOF || val < port->minf_ || val > port->maxf_)
+  if (
+    res != 1 || res == EOF || val < port->range_.minf_
+    || val > port->range_.maxf_)
     {
 #if 0
       ui_show_error_message_printf (

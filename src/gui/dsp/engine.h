@@ -23,6 +23,7 @@
 #include "gui/dsp/pool.h"
 #include "gui/dsp/sample_processor.h"
 #include "gui/dsp/transport.h"
+#include "utils/audio.h"
 #include "utils/backtrace.h"
 #include "utils/concurrency.h"
 #include "utils/object_pool.h"
@@ -69,20 +70,6 @@ constexpr int BLOCK_LENGTH = 4096;
 constexpr int MIDI_BUF_SIZE = 1024;
 
 #define AUDIO_ENGINE (AudioEngine::get_active_instance ())
-
-enum class BounceStep
-{
-  BeforeInserts,
-  PreFader,
-  PostFader,
-};
-
-DEFINE_ENUM_FORMATTER (
-  BounceStep,
-  BounceStep,
-  QT_TR_NOOP_UTF8 ("Before inserts"),
-  QT_TR_NOOP_UTF8 ("Pre-fader"),
-  QT_TR_NOOP_UTF8 ("Post fader"));
 
 #define DENORMAL_PREVENTION_VAL(engine_) ((engine_)->denormal_prevention_val_)
 
@@ -185,7 +172,8 @@ midi_backend_is_rtmidi (MidiBackend backend)
  */
 class AudioEngine final
     : public ICloneable<AudioEngine>,
-      public zrythm::utils::serialization::ISerializable<AudioEngine>
+      public zrythm::utils::serialization::ISerializable<AudioEngine>,
+      public IPortOwner
 {
 public:
   enum class JackTransportType
@@ -323,7 +311,13 @@ public:
            || (audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK && handled_jack_buffer_size_change_.load());
   }
 
-  bool is_in_active_project () const;
+  bool is_in_active_project () const override;
+
+  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
+    const override;
+
+  std::string
+  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
 
   /**
    * @param force_pause Whether to force transport
@@ -762,7 +756,7 @@ public:
   BounceMode bounce_mode_ = BounceMode::BOUNCE_OFF;
 
   /** Bounce step cache. */
-  BounceStep bounce_step_ = {};
+  utils::audio::BounceStep bounce_step_ = {};
 
   /** Whether currently bouncing with parents (cache). */
   bool bounce_with_parents_ = false;

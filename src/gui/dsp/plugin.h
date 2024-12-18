@@ -16,7 +16,7 @@
 #include "gui/dsp/port.h"
 #include "utils/types.h"
 
-namespace zrythm::gui::old_dsp
+namespace zrythm::gui
 {
 class Channel;
 };
@@ -55,13 +55,14 @@ constexpr auto PLUGIN_MAGIC = 43198683;
  */
 class Plugin
     : public utils::serialization::ISerializable<Plugin>,
-      public dsp::IProcessable
+      public dsp::IProcessable,
+      public IPortOwner
 {
 public:
-  using PluginIdentifier = zrythm::dsp::PluginIdentifier;
-  using PortIdentifier = zrythm::dsp::PortIdentifier;
-  using PluginSlotType = zrythm::dsp::PluginSlotType;
-  using Channel = zrythm::gui::Channel;
+  using PluginIdentifier = dsp::PluginIdentifier;
+  using PortIdentifier = dsp::PortIdentifier;
+  using PluginSlotType = dsp::PluginSlotType;
+  using Channel = gui::Channel;
 
   /**
    * Preset identifier.
@@ -177,7 +178,18 @@ public:
    */
   void init_loaded (AutomatableTrack * track, MixerSelections * ms);
 
-  bool is_in_active_project () const;
+  bool is_in_active_project () const override;
+
+  std::string
+  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
+
+  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
+    const override;
+
+  void
+  on_control_change_event (const dsp::PortIdentifier &id, float val) override;
+
+  bool should_bounce_to_master (utils::audio::BounceStep step) const override;
 
   /** Whether the plugin is used for MIDI auditioning in SampleProcessor. */
   bool is_auditioner () const;

@@ -27,7 +27,6 @@ HardwareProcessor::init_loaded (AudioEngine * engine)
 bool
 HardwareProcessor::is_in_active_project () const
 {
-
   return engine_ && engine_->is_in_active_project ();
 }
 
@@ -93,7 +92,7 @@ HardwareProcessor::create_port_for_ext_port (
   PortFlow       flow)
 {
   auto port = std::make_unique<T> (ext_port.full_name_, flow);
-  port->set_owner (const_cast<ExtPort *> (&ext_port));
+  port->set_owner (const_cast<ExtPort &> (ext_port));
   port->id_->flags_ |= dsp::PortIdentifier::Flags::Hw;
   port->id_->ext_port_id_ = ext_port.get_id ();
   return port;

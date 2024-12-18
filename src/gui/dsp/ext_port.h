@@ -38,7 +38,9 @@ enum class MidiBackend;
 /**
  * External port.
  */
-class ExtPort final : public utils::serialization::ISerializable<ExtPort>
+class ExtPort final
+    : public utils::serialization::ISerializable<ExtPort>,
+      public IPortOwner
 {
 public:
   /**
@@ -62,7 +64,13 @@ public:
   ExtPort (jack_port_t * jport);
 #endif /* HAVE_JACK */
 
-  bool is_in_active_project () const;
+  bool is_in_active_project () const override;
+
+  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
+    const override;
+
+  std::string
+  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
 
   /**
    * Inits the ExtPort after loading a project.

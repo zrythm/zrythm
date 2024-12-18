@@ -44,7 +44,8 @@ static constexpr float MAX_FADER_AMP = 1.42f;
 class Channel final
     : public QObject,
       public ICloneable<Channel>,
-      public zrythm::utils::serialization::ISerializable<Channel>
+      public utils::serialization::ISerializable<Channel>,
+      public IPortOwner
 {
   Q_OBJECT
   QML_ELEMENT
@@ -79,7 +80,15 @@ public:
    */
   void init ();
 
-  bool is_in_active_project () const;
+  bool is_in_active_project () const override;
+
+  void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
+    const override;
+
+  std::string
+  get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
+
+  bool should_bounce_to_master (utils::audio::BounceStep step) const override;
 
   /**
    * Sets fader to 0.0.
@@ -157,8 +166,8 @@ public:
   void reconnect_ext_input_ports (AudioEngine &engine);
 
   /**
-   * Convenience function to get the automation track of the given type for the
-   * channel.
+   * Convenience function to get the automation track of the given type for
+   * the channel.
    */
   AutomationTrack * get_automation_track (PortIdentifier::Flags port_flags);
 
@@ -170,8 +179,8 @@ public:
    *
    * @param moving_plugin Whether or not we are moving the plugin.
    * @param deleting_plugin Whether or not we are deleting the plugin.
-   * @param deleting_channel If true, the automation tracks associated with the
-   * plugin are not deleted at this time.
+   * @param deleting_channel If true, the automation tracks associated with
+   * the plugin are not deleted at this time.
    * @param recalc_graph Recalculate mixer graph.
    *
    * @return The plugin that was removed (in case we want to move it).
@@ -231,12 +240,12 @@ public:
   /**
    * Disconnects the channel from the processing chain.
    *
-   * This should be called immediately when the channel is getting deleted, and
-   * channel_free should be designed to be called later after an arbitrary
+   * This should be called immediately when the channel is getting deleted,
+   * and channel_free should be designed to be called later after an arbitrary
    * delay.
    *
-   * @param remove_pl Remove the zrythm::gui::old_dsp::plugins::Plugin from the
-   * Channel. Useful when deleting the channel.
+   * @param remove_pl Remove the zrythm::gui::old_dsp::plugins::Plugin from
+   * the Channel. Useful when deleting the channel.
    * @param recalc_graph Recalculate mixer graph.
    */
   void disconnect (bool remove_pl);
