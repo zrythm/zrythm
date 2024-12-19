@@ -83,6 +83,8 @@ target_sources(zrythm_utils_lib
     symap.h
     symap.cpp
     utils.h
+    uuid_identifiable_object.h
+    uuid_identifiable_object.cpp
     # vamp.h
     # vamp.cpp
     windows.h

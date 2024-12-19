@@ -22,6 +22,9 @@
 #include "utils/string.h"
 #include "utils/traits.h"
 #include "utils/types.h"
+
+#include <QUuid>
+
 #include <yyjson.h>
 
 namespace zrythm::utils::serialization
@@ -355,9 +358,9 @@ public:
       {
         return static_cast<bool> (
           std::derived_from<FieldT, ISerializableBase>
-          || is_serializable_pointer_v<FieldT> || std::is_integral_v<FieldT>
-          || std::is_floating_point_v<FieldT> || std::is_same_v<FieldT, bool>
-          || std::is_same_v<FieldT, std::string>
+          || std::is_same_v<FieldT, QUuid> || is_serializable_pointer_v<FieldT>
+          || std::is_integral_v<FieldT> || std::is_floating_point_v<FieldT>
+          || std::is_same_v<FieldT, bool> || std::is_same_v<FieldT, std::string>
           || std::is_same_v<FieldT, QString> || std::is_same_v<FieldT, fs::path>
           || std::is_same_v<FieldT, std::vector<bool>>
           || SignedIntegralContainer<FieldT> || UnsignedIntegralContainer<FieldT>
@@ -618,7 +621,7 @@ public:
     Context ctx (
       root, document_type, deserialized_format_major_version,
       deserialized_format_minor_version);
-    dynamic_cast<Derived *> (this)->deserialize (ctx);
+    deserialize (ctx);
     z_debug ("done deserializing from json");
 
     yyjson_doc_free (doc);
@@ -705,6 +708,15 @@ public:
         else
           {
             yyjson_mut_obj_add_null (doc, obj, key);
+          }
+      }
+    else if constexpr (std::is_same_v<T, QUuid>)
+      {
+        if (!value.isNull ())
+          {
+            const auto str = value.toString ().toStdString ();
+            yyjson_mut_obj_add_strncpy (
+              doc, obj, key, str.c_str (), str.length ());
           }
       }
     else if constexpr (is_convertible_pointer_v<T, VariantT>)
@@ -1133,6 +1145,14 @@ public:
         else if (yyjson_is_null (val))
           {
             value = std::nullopt;
+            return;
+          }
+      }
+    else if constexpr (std::is_same_v<T, QUuid>)
+      {
+        if (yyjson_is_str (val))
+          {
+            value = QUuid (QString::fromUtf8 (yyjson_get_str (val)));
             return;
           }
       }

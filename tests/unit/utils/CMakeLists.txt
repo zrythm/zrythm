@@ -23,6 +23,7 @@ add_executable(utils_unit_tests
   ring_buffer_test.cpp
   string_test.cpp
   string_array_test.cpp
+  uuid_identifiable_object_test.cpp
 )
 
 if(ZRYTHM_TESTS_WITH_INTERNET_ACCESS)
