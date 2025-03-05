@@ -6449,7 +6449,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:559
 msgid ""
-"Whether to automatically select tracks when a region beloging to the track "
+"Whether to automatically select tracks when a region belonging to the track "
 "is clicked."
 msgstr ""
 
