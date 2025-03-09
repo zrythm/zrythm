@@ -8,7 +8,9 @@
 #include "utils/gtest_wrapper.h"
 
 void
-LoopableObject::copy_members_from (const LoopableObject &other)
+LoopableObject::copy_members_from (
+  const LoopableObject &other,
+  ObjectCloneType       clone_type)
 {
   clip_start_pos_ = other.clip_start_pos_;
   loop_start_pos_ = other.loop_start_pos_;

@@ -33,22 +33,24 @@ public:
   };
 
   using PortType = dsp::PortType;
-  using PortIdentifier = dsp::PortIdentifier;
+  using PortUuid = dsp::PortIdentifier::PortUuid;
 
 public:
   PortConnectionAction (QObject * parent = nullptr);
 
   PortConnectionAction (
-    Type                   type,
-    const PortIdentifier * src_id,
-    const PortIdentifier * dest_id,
-    float                  new_val);
+    Type     type,
+    PortUuid src_id,
+    PortUuid dest_id,
+    float    new_val);
 
   ~PortConnectionAction () override = default;
 
   QString to_string () const override;
 
-  void init_after_cloning (const PortConnectionAction &other) override;
+  void init_after_cloning (
+    const PortConnectionAction &other,
+    ObjectCloneType             clone_type) override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -75,10 +77,8 @@ public:
 class PortConnectionConnectAction final : public PortConnectionAction
 {
 public:
-  PortConnectionConnectAction (
-    const PortIdentifier &src_id,
-    const PortIdentifier &dest_id)
-      : PortConnectionAction (Type::Connect, &src_id, &dest_id, 0.f)
+  PortConnectionConnectAction (PortUuid src_id, const PortUuid &dest_id)
+      : PortConnectionAction (Type::Connect, src_id, dest_id, 0.f)
   {
   }
 };
@@ -86,10 +86,8 @@ public:
 class PortConnectionDisconnectAction final : public PortConnectionAction
 {
 public:
-  PortConnectionDisconnectAction (
-    const PortIdentifier &src_id,
-    const PortIdentifier &dest_id)
-      : PortConnectionAction (Type::Disconnect, &src_id, &dest_id, 0.f)
+  PortConnectionDisconnectAction (PortUuid src_id, const PortUuid &dest_id)
+      : PortConnectionAction (Type::Disconnect, src_id, dest_id, 0.f)
   {
   }
 };
@@ -97,10 +95,8 @@ public:
 class PortConnectionEnableAction final : public PortConnectionAction
 {
 public:
-  PortConnectionEnableAction (
-    const PortIdentifier &src_id,
-    const PortIdentifier &dest_id)
-      : PortConnectionAction (Type::Enable, &src_id, &dest_id, 0.f)
+  PortConnectionEnableAction (PortUuid src_id, const PortUuid &dest_id)
+      : PortConnectionAction (Type::Enable, src_id, dest_id, 0.f)
   {
   }
 };
@@ -108,10 +104,8 @@ public:
 class PortConnectionDisableAction final : public PortConnectionAction
 {
 public:
-  PortConnectionDisableAction (
-    const PortIdentifier &src_id,
-    const PortIdentifier &dest_id)
-      : PortConnectionAction (Type::Disable, &src_id, &dest_id, 0.f)
+  PortConnectionDisableAction (PortUuid src_id, const PortUuid &dest_id)
+      : PortConnectionAction (Type::Disable, src_id, dest_id, 0.f)
   {
   }
 };
@@ -120,10 +114,10 @@ class PortConnectionChangeMultiplierAction final : public PortConnectionAction
 {
 public:
   PortConnectionChangeMultiplierAction (
-    const PortIdentifier &src_id,
-    const PortIdentifier &dest_id,
-    float                 new_multiplier)
-      : PortConnectionAction (Type::ChangeMultiplier, &src_id, &dest_id, new_multiplier)
+    PortUuid src_id,
+    PortUuid dest_id,
+    float    new_multiplier)
+      : PortConnectionAction (Type::ChangeMultiplier, src_id, dest_id, new_multiplier)
   {
   }
 };

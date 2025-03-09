@@ -70,7 +70,8 @@ public:
 
   void init_loaded () override;
 
-  void init_after_cloning (const Marker &other) override;
+  void
+  init_after_cloning (const Marker &other, ObjectCloneType clone_type) override;
 
   std::string print_to_str () const override;
 

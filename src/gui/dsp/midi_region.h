@@ -58,17 +58,16 @@ public:
    *
    * @param start_pos
    * @param end_pos
-   * @param track_name_hash
    * @param lane_pos
    * @param idx_inside_lane
    */
   MidiRegion (
-    const Position &start_pos,
-    const Position &end_pos,
-    unsigned int    track_name_hash,
-    int             lane_pos,
-    int             idx_inside_lane,
-    QObject *       parent = nullptr);
+    const Position                &start_pos,
+    const Position                &end_pos,
+    dsp::PortIdentifier::TrackUuid track_uuid,
+    int                            lane_pos,
+    int                            idx_inside_lane,
+    QObject *                      parent = nullptr);
 
   /**
    * Creates a MIDI region from the given MIDI file path, starting at the given
@@ -81,13 +80,13 @@ public:
    * @throw ZrythmException on I/O error.
    */
   MidiRegion (
-    const Position    &start_pos,
-    const std::string &abs_path,
-    unsigned int       track_name_hash,
-    int                lane_pos,
-    int                idx_inside_lane,
-    int                midi_track_idx,
-    QObject *          parent = nullptr);
+    const Position                &start_pos,
+    const std::string             &abs_path,
+    dsp::PortIdentifier::TrackUuid track_uuid,
+    int                            lane_pos,
+    int                            idx_inside_lane,
+    int                            midi_track_idx,
+    QObject *                      parent = nullptr);
 
   /**
    * Create a region from the chord descriptor.
@@ -96,12 +95,12 @@ public:
    * notes size will be editor snap.
    */
   MidiRegion (
-    const Position       &pos,
-    dsp::ChordDescriptor &descr,
-    unsigned int          track_name_hash,
-    int                   lane_pos,
-    int                   idx_inside_lane,
-    QObject *             parent = nullptr);
+    const Position                &pos,
+    dsp::ChordDescriptor          &descr,
+    dsp::PortIdentifier::TrackUuid track_uuid,
+    int                            lane_pos,
+    int                            idx_inside_lane,
+    QObject *                      parent = nullptr);
 
   // ========================================================================
   // QML Interface
@@ -275,7 +274,8 @@ public:
   std::optional<ClipEditorArrangerSelectionsPtrVariant>
   get_arranger_selections () const override;
 
-  void init_after_cloning (const MidiRegion &other) override;
+  void init_after_cloning (const MidiRegion &other, ObjectCloneType clone_type)
+    override;
 
   /**
    * Set positions to the exact values in the export region as it is played

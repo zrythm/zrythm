@@ -77,7 +77,8 @@ public:
 
   bool validate (bool is_project, double frames_per_tick) const override;
 
-  void init_after_cloning (const Velocity &other) override;
+  void init_after_cloning (const Velocity &other, ObjectCloneType clone_type)
+    override;
 
   void init_loaded () override;
 

@@ -5,18 +5,16 @@
 
 #include <filesystem>
 
-# include "gui/dsp/audio_region.h"
-# include "gui/dsp/audio_track.h"
-# include "gui/dsp/chord_track.h"
-# include "gui/dsp/engine.h"
-# include "gui/dsp/marker_track.h"
-# include "gui/dsp/master_track.h"
-# include "gui/dsp/modulator_track.h"
-# include "gui/dsp/port_connections_manager.h"
-# include "gui/dsp/router.h"
-# include "gui/dsp/tempo_track.h"
-# include "gui/dsp/tracklist.h"
-# include "gui/dsp/transport.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/zrythm.h"
+#include "gui/backend/project_manager.h"
+#include "gui/backend/ui.h"
+#include "gui/dsp/audio_region.h"
+#include "gui/dsp/engine.h"
+#include "gui/dsp/port_connections_manager.h"
+#include "gui/dsp/router.h"
+#include "gui/dsp/tracklist.h"
+#include "gui/dsp/transport.h"
 #include "utils/datetime.h"
 #include "utils/exceptions.h"
 #include "utils/gtest_wrapper.h"
@@ -24,11 +22,6 @@
 #include "utils/logger.h"
 #include "utils/objects.h"
 #include "utils/progress_info.h"
-#include "gui/backend/ui.h"
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/tracklist_selections.h"
-#include "gui/backend/backend/zrythm.h"
-#include "gui/backend/project_manager.h"
 
 #include "juce_wrapper.h"
 #include <fmt/printf.h>
@@ -37,7 +30,10 @@
 using namespace zrythm;
 
 Project::Project (QObject * parent)
-    : QObject (parent), version_ (Zrythm::get_version (false)),
+    : QObject (parent), port_registry_ (new PortRegistry (this)),
+      plugin_registry_ (new PluginRegistry (this)),
+      track_registry_ (new TrackRegistry (this)),
+      version_ (Zrythm::get_version (false)),
       tool_ (new gui::backend::Tool (this)),
       port_connections_manager_ (new PortConnectionsManager (this)),
       audio_engine_ (std::make_unique<AudioEngine> (this)),
@@ -64,12 +60,14 @@ Project::Project (QObject * parent)
         )),
       timeline_ (new Timeline (this)),
       midi_mappings_ (std::make_unique<MidiMappings> ()),
-      tracklist_ (new Tracklist (*this, port_connections_manager_)),
+      tracklist_ (new Tracklist (
+        *this,
+        *port_registry_,
+        *track_registry_,
+        port_connections_manager_)),
       undo_manager_ (new gui::actions::UndoManager (this))
 {
   init_selections ();
-  tracklist_selections_ =
-    std::make_unique<SimpleTracklistSelections> (*tracklist_);
   // audio_engine_ = std::make_unique<AudioEngine> (this);
 }
 
@@ -83,12 +81,82 @@ Project::~Project ()
   loaded_ = false;
 }
 
+std::string
+Project::print_port_connection (const PortConnection &conn) const
+{
+  auto src_var = get_port_registry ().find_by_id_or_throw (conn.src_id_);
+  auto dest_var = get_port_registry ().find_by_id_or_throw (conn.dest_id_);
+  return std::visit (
+    [&] (auto &&src, auto &&dest) {
+      auto is_send =
+        src->id_->owner_type_ == dsp::PortIdentifier::OwnerType::ChannelSend;
+      const char * send_str = is_send ? " (send)" : "";
+      if (port_connections_manager_->contains_connection (conn))
+        {
+          auto src_track_var = get_track_registry ().find_by_id_or_throw (
+            src->id_->track_id_.value ());
+          auto dest_track_var = get_track_registry ().find_by_id_or_throw (
+            dest->id_->track_id_.value ());
+          return std::visit (
+            [&] (auto &&src_track, auto &&dest_track) {
+              return fmt::format (
+                "[{} ({})] {} => [{} ({})] {}{}",
+                (src_track != nullptr) ? src_track->name_ : "(none)",
+                src->id_->track_id_, src->get_label (),
+                dest_track ? dest_track->name_ : "(none)", dest->id_->track_id_,
+                dest->get_label (), send_str);
+            },
+            src_track_var, dest_track_var);
+        }
+
+      return fmt::format (
+        "[track {}] {} => [track {}] {}{}", src->id_->track_id_,
+        src->get_label (), dest->id_->track_id_, dest->get_label (), send_str);
+    },
+    src_var, dest_var);
+}
+
+auto
+Project::find_plugin_by_identifier (const PluginIdentifier &id) const
+  -> PluginPtrVariant
+{
+  auto track_var = *tracklist_->get_track (id.track_id_);
+  auto ret = std::visit (
+    [&] (auto &&t) -> std::optional<PluginPtrVariant> {
+      using TrackT = base_type<decltype (t)>;
+      const auto slot_type =
+        id.slot_.has_slot_index ()
+          ? id.slot_.get_slot_with_index ().first
+          : id.slot_.get_slot_type_only ();
+      if constexpr (std::derived_from<TrackT, ChannelTrack>)
+        {
+          if (
+            slot_type == dsp::PluginSlotType::MidiFx
+            || slot_type == dsp::PluginSlotType::Instrument
+            || slot_type == dsp::PluginSlotType::Insert)
+            {
+              return t->channel_->get_plugin_at_slot (id.slot_);
+            }
+        }
+      else if constexpr (std::is_same_v<TrackT, ModulatorTrack>)
+        {
+
+          const auto slot_no = id.slot_.get_slot_with_index ().second;
+          return t->get_modulator (slot_no);
+        }
+      z_warning ("plugin not found");
+      return std::nullopt;
+    },
+    track_var);
+  return *ret;
+}
+
 bool
 Project::is_audio_clip_in_use (const AudioClip &clip, bool check_undo_stack) const
 {
   {
     bool found_in_tracklist = std::ranges::any_of (
-      tracklist_->tracks_, [&clip] (const auto &track_var) {
+      get_track_registry ().get_hash_map (), [&clip] (const auto &track_var) {
         return std::visit (
           [&] (auto &&track) {
             using TrackT = base_type<decltype (track)>;
@@ -343,382 +411,6 @@ Project::set_and_create_next_available_backup_dir ()
     }
 }
 
-std::optional<TrackPtrVariant>
-Project::find_track_by_name_hash (Track::NameHashT hash) const
-{
-  auto track_var = tracklist_->find_track_by_name_hash (hash);
-  if (!track_var)
-    track_var =
-      audio_engine_->sample_processor_->tracklist_->find_track_by_name_hash (
-        hash);
-  z_return_val_if_fail (track_var, std::nullopt);
-  return track_var;
-}
-
-std::optional<gui::old_dsp::plugins::PluginPtrVariant>
-Project::find_plugin_by_id (const dsp::PluginIdentifier &id) const
-{
-  auto track_var = find_track_by_name_hash (id.track_name_hash_);
-  z_return_val_if_fail (track_var, std::nullopt);
-  return std::visit (
-    [&] (auto &&tr) -> std::optional<gui::old_dsp::plugins::PluginPtrVariant> {
-      using TrackT = base_type<decltype (tr)>;
-      if constexpr (std::derived_from<TrackT, ProcessableTrack>)
-        {
-          zrythm::gui::old_dsp::plugins::Plugin * pl = nullptr;
-          if (tr->has_channel ())
-            {
-              auto channel_track = dynamic_cast<ChannelTrack *> (tr);
-              pl = channel_track->channel_->get_plugin_at_slot (
-                id.slot_, id.slot_type_);
-            }
-          else if (tr->is_modulator ())
-            {
-              auto modulator_track = dynamic_cast<ModulatorTrack *> (tr);
-              pl = modulator_track->modulators_.at (id.slot_).get ();
-            }
-          z_return_val_if_fail (pl, std::nullopt);
-          return convert_to_variant<gui::old_dsp::plugins::PluginPtrVariant> (
-            pl);
-        }
-      else
-        {
-          z_return_val_if_reached (std::nullopt);
-        }
-    },
-    track_var.value ());
-}
-
-std::optional<PortPtrVariant>
-Project::find_port_by_id (const dsp::PortIdentifier &id) const
-{
-  const auto flags = id.flags_;
-  const auto flags2 = id.flags2_;
-
-  auto get_track_lambda = [&] () -> Track * {
-    auto track_var = find_track_by_name_hash (id.track_name_hash_);
-    z_return_val_if_fail (track_var, nullptr);
-    return std::visit (
-      [&] (auto &&track_ptr) -> Track * {
-        z_return_val_if_fail (track_ptr, nullptr);
-        return track_ptr;
-      },
-      *track_var);
-  };
-
-  using OwnerType = dsp::PortIdentifier::OwnerType;
-  using Flags = dsp::PortIdentifier::Flags;
-  using Flags2 = dsp::PortIdentifier::Flags2;
-  using PortFlow = dsp::PortFlow;
-
-  switch (id.owner_type_)
-    {
-    case OwnerType::AudioEngine:
-      if (id.is_midi ())
-        {
-          if (id.is_output ())
-            { /* TODO */
-            }
-          else if (id.is_input ())
-            {
-              if (ENUM_BITSET_TEST (Flags, flags, Flags::ManualPress))
-                return audio_engine_->midi_editor_manual_press_.get ();
-            }
-        }
-      else if (id.is_audio ())
-        {
-          if (id.is_output ())
-            {
-              if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoL))
-                return &audio_engine_->monitor_out_->get_l ();
-              else if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoR))
-                return &audio_engine_->monitor_out_->get_r ();
-            }
-        }
-      break;
-    case OwnerType::Plugin:
-      {
-        auto pl_var = find_plugin_by_id (id.plugin_id_);
-        z_return_val_if_fail (pl_var.has_value (), std::nullopt);
-
-        return std::visit (
-          [&] (auto &&pl) -> std::optional<PortPtrVariant> {
-            switch (id.flow_)
-              {
-              case PortFlow::Input:
-                return convert_to_variant<PortPtrVariant> (
-                  pl->in_ports_[id.port_index_].get ());
-              case PortFlow::Output:
-                return convert_to_variant<PortPtrVariant> (
-                  pl->out_ports_[id.port_index_].get ());
-              default:
-                z_return_val_if_reached (std::nullopt);
-              }
-          },
-          pl_var.value ());
-      }
-      break;
-    case OwnerType::TrackProcessor:
-      {
-        auto * tr = dynamic_cast<ProcessableTrack *> (get_track_lambda ());
-        z_return_val_if_fail (tr, std::nullopt);
-        auto &processor = tr->processor_;
-        if (id.is_midi ())
-          {
-            if (id.is_output ())
-              return processor->midi_out_.get ();
-            if (id.is_input ())
-              {
-                if (ENUM_BITSET_TEST (Flags, flags, Flags::PianoRoll))
-                  return processor->piano_roll_.get ();
-                return processor->midi_in_.get ();
-              }
-          }
-        else if (id.is_audio ())
-          {
-            if (id.is_output ())
-              {
-                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoL))
-                  return &processor->stereo_out_->get_l ();
-                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoR))
-                  return &processor->stereo_out_->get_r ();
-              }
-            else if (id.is_input ())
-              {
-                z_return_val_if_fail (processor->stereo_in_, std::nullopt);
-                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoL))
-                  return &processor->stereo_in_->get_l ();
-                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoR))
-                  return &processor->stereo_in_->get_r ();
-              }
-          }
-        else if (id.is_control ())
-          {
-            if (ENUM_BITSET_TEST (Flags, flags, Flags::TpMono))
-              return processor->mono_.get ();
-            if (ENUM_BITSET_TEST (Flags, flags, Flags::TpInputGain))
-              return processor->input_gain_.get ();
-            if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::TpOutputGain))
-              return processor->output_gain_.get ();
-            if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::TpMonitorAudio))
-              return processor->monitor_audio_.get ();
-            if (ENUM_BITSET_TEST (Flags, flags, Flags::MidiAutomatable))
-              {
-                if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::MidiPitchBend))
-                  return processor->pitch_bend_[id.port_index_].get ();
-                if (
-                  ENUM_BITSET_TEST (Flags2, flags2, Flags2::MidiPolyKeyPressure))
-                  return processor->poly_key_pressure_[id.port_index_].get ();
-                if (
-                  ENUM_BITSET_TEST (Flags2, flags2, Flags2::MidiChannelPressure))
-                  return processor->channel_pressure_[id.port_index_].get ();
-                return processor->midi_cc_[id.port_index_].get ();
-              }
-            break;
-          }
-      }
-      break;
-    case OwnerType::Track:
-      {
-        auto * tr = get_track_lambda ();
-        z_return_val_if_fail (tr, std::nullopt);
-        if (id.is_control ())
-          {
-            if (ENUM_BITSET_TEST (Flags, flags, Flags::Bpm))
-              return dynamic_cast<TempoTrack *> (tr)->bpm_port_.get ();
-            if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::BeatsPerBar))
-              return dynamic_cast<TempoTrack *> (tr)->beats_per_bar_port_.get ();
-            if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::BeatUnit))
-              return dynamic_cast<TempoTrack *> (tr)->beat_unit_port_.get ();
-            if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::TrackRecording))
-              return dynamic_cast<RecordableTrack *> (tr)->recording_.get ();
-          }
-      }
-      break;
-    case OwnerType::Fader:
-      {
-        auto * fader = Fader::find_from_port_identifier (id);
-        z_return_val_if_fail (fader, std::nullopt);
-        if (id.is_midi ())
-          {
-            return id.is_input () ? fader->midi_in_.get () : fader->midi_out_.get ();
-          }
-        if (id.is_audio ())
-          {
-            if (id.is_output ())
-              {
-                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoL))
-                  return &fader->stereo_out_->get_l ();
-                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoR))
-                  return &fader->stereo_out_->get_r ();
-              }
-            else if (id.is_input ())
-              {
-                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoL))
-                  return &fader->stereo_in_->get_l ();
-                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoR))
-                  return &fader->stereo_in_->get_r ();
-              }
-          }
-        else if (id.is_control ())
-          {
-            if (id.is_input ())
-              {
-                if (ENUM_BITSET_TEST (Flags, flags, Flags::Amplitude))
-                  return fader->amp_.get ();
-                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoBalance))
-                  return fader->balance_.get ();
-                if (ENUM_BITSET_TEST (Flags, flags, Flags::FaderMute))
-                  return fader->mute_.get ();
-                if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::FaderSolo))
-                  return fader->solo_.get ();
-                if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::FaderListen))
-                  return fader->listen_.get ();
-                if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::FaderMonoCompat))
-                  return fader->mono_compat_enabled_.get ();
-                if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::FaderSwapPhase))
-                  return fader->swap_phase_.get ();
-              }
-          }
-        z_return_val_if_reached (std::nullopt);
-      }
-      break;
-    case OwnerType::ChannelSend:
-      {
-        auto * tr = dynamic_cast<ChannelTrack *> (get_track_lambda ());
-        z_return_val_if_fail (tr, std::nullopt);
-        auto &ch = tr->channel_;
-        if (id.is_control ())
-          {
-            if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::ChannelSendEnabled))
-              return ch->sends_.at (id.port_index_)->enabled_.get ();
-            if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::ChannelSendAmount))
-              return ch->sends_.at (id.port_index_)->amount_.get ();
-          }
-        else
-          {
-            if (id.is_input ())
-              {
-                if (id.is_audio ())
-                  {
-                    if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoL))
-                      return &ch->sends_.at (id.port_index_)->stereo_in_->get_l ();
-                    if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoR))
-                      return &ch->sends_.at (id.port_index_)->stereo_in_->get_r ();
-                  }
-                else if (id.is_midi ())
-                  return ch->sends_.at (id.port_index_)->midi_in_.get ();
-              }
-            else if (id.is_output ())
-              {
-                if (id.is_audio ())
-                  {
-                    if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoL))
-                      return &ch->sends_.at (id.port_index_)->stereo_out_->get_l ();
-                    if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoR))
-                      return &ch->sends_.at (id.port_index_)->stereo_out_->get_r ();
-                  }
-                else if (id.is_midi ())
-                  return ch->sends_.at (id.port_index_)->midi_out_.get ();
-              }
-          }
-        z_return_val_if_reached (std::nullopt);
-      }
-      break;
-    case OwnerType::HardwareProcessor:
-      {
-        Port * port = nullptr;
-
-        /* note: flows are reversed */
-        if (id.is_output ())
-          port = HW_IN_PROCESSOR->find_port (id.ext_port_id_);
-        else if (id.is_input ())
-          port = HW_OUT_PROCESSOR->find_port (id.ext_port_id_);
-
-        /* just warn if hardware is not connected anymore */
-        z_warn_if_fail (port);
-
-        return convert_to_variant<PortPtrVariant> (port);
-      }
-      break;
-    case OwnerType::Transport:
-      if (id.is_midi ())
-        {
-          if (id.is_input ())
-            {
-              if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::TransportRoll))
-                return TRANSPORT->roll_.get ();
-              if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::TransportStop))
-                return TRANSPORT->stop_.get ();
-              if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::TransportBackward))
-                return TRANSPORT->backward_.get ();
-              if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::TransportForward))
-                return TRANSPORT->forward_.get ();
-              if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::TransportLoopToggle))
-                return TRANSPORT->loop_toggle_.get ();
-              if (ENUM_BITSET_TEST (Flags2, flags2, Flags2::TransportRecToggle))
-                return TRANSPORT->rec_toggle_.get ();
-            }
-        }
-      break;
-    case OwnerType::ModulatorMacroProcessor:
-      if (ENUM_BITSET_TEST (Flags, flags, Flags::ModulatorMacro))
-        {
-          auto * tr = dynamic_cast<ModulatorTrack *> (get_track_lambda ());
-          z_return_val_if_fail (tr, std::nullopt);
-          auto &processor = tr->modulator_macro_processors_[id.port_index_];
-          if (id.is_input ())
-            {
-              if (id.is_cv ())
-                {
-                  return processor->cv_in_.get ();
-                }
-              if (id.is_control ())
-                {
-                  return processor->macro_.get ();
-                }
-            }
-          else if (id.is_output ())
-            {
-              if (id.is_cv ())
-                {
-                  return processor->cv_out_.get ();
-                }
-            }
-        }
-      break;
-    case OwnerType::Channel:
-      {
-        auto * tr = dynamic_cast<ChannelTrack *> (get_track_lambda ());
-        z_return_val_if_fail (tr, std::nullopt);
-        auto &ch = tr->channel_;
-        z_return_val_if_fail (ch, std::nullopt);
-        if (id.is_midi ())
-          {
-            if (id.is_output ())
-              {
-                return ch->midi_out_;
-              }
-          }
-        else if (id.is_audio ())
-          {
-            if (id.is_output ())
-              {
-                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoL))
-                  return &ch->stereo_out_->get_l ();
-                if (ENUM_BITSET_TEST (Flags, flags, Flags::StereoR))
-                  return &ch->stereo_out_->get_r ();
-              }
-          }
-      }
-      break;
-    default:
-      z_return_val_if_reached (std::nullopt);
-    }
-
-  z_return_val_if_reached (std::nullopt);
-}
-
 void
 Project::activate ()
 {
@@ -734,11 +426,9 @@ Project::activate ()
 
   /* connect channel inputs to hardware and re-expose ports to
    * backend. has to be done after engine activation */
-  for (auto * track : tracklist_->tracks_ | type_is<ChannelTrack> ())
-    {
-      track->channel_->reconnect_ext_input_ports (*audio_engine_);
-    }
-  tracklist_->expose_ports_to_backend (*audio_engine_);
+  auto track_span = tracklist_->get_track_span ();
+  track_span.reconnect_ext_input_ports (*audio_engine_);
+  track_span.expose_ports_to_backend (*audio_engine_);
 
   /* reconnect graph */
   audio_engine_->router_->recalc_graph (false);
@@ -759,20 +449,26 @@ Project::add_default_tracks ()
 
   /* init pinned tracks */
 
-  auto add_track = [&]<typename T> () {
-    static_assert (std::derived_from<T, Track>, "T must be derived from Track");
+  auto add_track = [&]<typename TrackT> (const auto &name) {
+    static_assert (
+      std::derived_from<TrackT, Track>, "T must be derived from Track");
 
-    z_debug ("adding {} track...", typeid (T).name ());
-    return tracklist_->append_track (
-      *T::create_unique (tracklist_->tracks_.size ()), *audio_engine_, false,
-      false);
+    z_debug ("adding {} track...", typeid (TrackT).name ());
+    TrackT * track =
+      TrackT::template create_unique<TrackT> (
+        get_track_registry (), get_plugin_registry (), get_port_registry (), true)
+        .release ();
+    get_track_registry ().register_object (track);
+    track->setName (name);
+    tracklist_->append_track (track->get_uuid (), *audio_engine_, false, false);
+    return track;
   };
 
   /* chord */
-  add_track.operator()<ChordTrack> ();
+  add_track.operator()<ChordTrack> (QObject::tr ("Chords"));
 
   /* tempo */
-  add_track.operator()<TempoTrack> ();
+  add_track.operator()<TempoTrack> (QObject::tr ("Tempo"));
   int   beats_per_bar = tracklist_->tempo_track_->get_beats_per_bar ();
   int   beat_unit = tracklist_->tempo_track_->get_beat_unit ();
   bpm_t bpm = tracklist_->tempo_track_->get_current_bpm ();
@@ -788,17 +484,18 @@ Project::add_default_tracks ()
   }
 
   /* modulator */
-  add_track.operator()<ModulatorTrack> ();
+  add_track.operator()<ModulatorTrack> (QObject::tr ("Modulators"));
 
   /* marker */
-  add_track.operator()<MarkerTrack> ()->add_default_markers (
-    transport_->ticks_per_bar_, audio_engine_->frames_per_tick_);
+  add_track.operator()<MarkerTrack> (QObject::tr ("Markers"))
+    ->add_default_markers (
+      transport_->ticks_per_bar_, audio_engine_->frames_per_tick_);
 
   tracklist_->pinned_tracks_cutoff_ = tracklist_->tracks_.size ();
 
   /* add master channel to mixer and tracklist */
-  add_track.operator()<MasterTrack> ();
-  tracklist_selections_->add_track (*tracklist_->master_track_);
+  add_track.operator()<MasterTrack> (QObject::tr ("Master"));
+  tracklist_->master_track_->setSelected (true);
   last_selection_ = SelectionType::Tracklist;
 }
 
@@ -840,24 +537,7 @@ Project::validate () const
 bool
 Project::fix_audio_regions ()
 {
-  z_debug ("fixing audio region positions...");
-
-  int num_fixed = 0;
-  for (const auto &track : tracklist_->tracks_ | type_is<AudioTrack> ())
-    {
-      for (const auto &lane_var : track->lanes_)
-        {
-          auto * lane = std::get<AudioLane *> (lane_var);
-          lane->foreach_region ([&] (auto &region) {
-            if (region.fix_positions (0))
-              num_fixed++;
-          });
-        }
-    }
-
-  z_debug ("done fixing {} audio region positions", num_fixed);
-
-  return num_fixed > 0;
+  return tracklist_->get_track_span ().fix_audio_regions ();
 }
 
 #if 0
@@ -948,7 +628,6 @@ Project::init_selections (bool including_arranger_selections)
       midi_selections_ = new MidiSelections (this);
       midi_selections_->are_objects_copies_ = false;
     }
-  mixer_selections_ = std::make_unique<ProjectMixerSelections> ();
 }
 
 void
@@ -956,11 +635,12 @@ Project::get_all_ports (std::vector<Port *> &ports) const
 {
   audio_engine_->append_ports (ports);
 
-  std::ranges::for_each (tracklist_->tracks_, [&] (auto &&track_var) {
-    std::visit (
-      [&] (const auto &track) { track->append_ports (ports, false); },
-      track_var);
-  });
+  std::ranges::for_each (
+    tracklist_->get_track_span (), [&] (const auto &track_var) {
+      std::visit (
+        [&] (const auto &track) { track->append_ports (ports, false); },
+        track_var);
+    });
 }
 
 std::string
@@ -1169,8 +849,8 @@ Project::SerializeProjectThread::~SerializeProjectThread ()
 void
 Project::SerializeProjectThread::run ()
 {
-  char * compressed_json;
-  size_t compressed_size;
+  char * compressed_json{};
+  size_t compressed_size{};
 
   /* generate json */
   z_debug ("serializing project to json...");
@@ -1275,13 +955,21 @@ Project::cleanup_plugin_state_dirs (Project &main_project, bool is_backup)
 {
   z_debug ("cleaning plugin state dirs{}...", is_backup ? " for backup" : "");
 
-  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
-  zrythm::gui::old_dsp::plugins::Plugin::get_all (main_project, plugins, true);
-  zrythm::gui::old_dsp::plugins::Plugin::get_all (*this, plugins, true);
-
-  for (size_t i = 0; i < plugins.size (); i++)
+  std::vector<PluginPtrVariant> plugins;
+  for (
+    const auto &pl_var :
+    main_project.get_plugin_registry ().get_hash_map ().values ())
     {
-      z_debug ("plugin {}: {}", i, plugins[i]->state_dir_.c_str ());
+      plugins.push_back (pl_var);
+    }
+  for (const auto &pl_var : get_plugin_registry ().get_hash_map ().values ())
+    {
+      plugins.push_back (pl_var);
+    }
+
+  for (const auto &[i, pl_var] : std::views::enumerate (plugins))
+    {
+      z_debug ("plugin {}: {}", i, PluginSpan::state_dir_projection (pl_var));
     }
 
   auto plugin_states_path =
@@ -1298,10 +986,8 @@ Project::cleanup_plugin_state_dirs (Project &main_project, bool is_backup)
           auto filename_str = filename.fileName ().toStdString ();
           auto full_path = plugin_states_path / filename_str;
 
-          bool found = std::any_of (
-            plugins.begin (), plugins.end (), [&filename_str] (const auto &pl) {
-              return pl->state_dir_ == filename_str;
-            });
+          bool found = std::ranges::contains (
+            plugins, filename_str, PluginSpan::state_dir_projection);
           if (!found)
             {
               z_debug ("removing unused plugin state in {}", full_path);
@@ -1542,7 +1228,8 @@ Project::has_unsaved_changes () const
 }
 
 void
-Project::init_after_cloning (const Project &other)
+Project::init_after_cloning (const Project &other, ObjectCloneType clone_type)
+
 {
   z_return_if_fail (ZRYTHM_IS_QT_THREAD);
   z_debug ("cloning project...");
@@ -1551,7 +1238,7 @@ Project::init_after_cloning (const Project &other)
   datetime_str_ = other.datetime_str_;
   version_ = other.version_;
   transport_ = other.transport_->clone_qobject (this);
-  audio_engine_ = other.audio_engine_->clone_unique ();
+  audio_engine_ = other.audio_engine_->clone_unique (clone_type, this);
   tracklist_ = other.tracklist_->clone_qobject (this);
   clip_editor_ = other.clip_editor_;
   timeline_ = other.timeline_->clone_qobject (this);
@@ -1561,16 +1248,11 @@ Project::init_after_cloning (const Project &other)
     std::make_unique<QuantizeOptions> (*other.quantize_opts_timeline_);
   quantize_opts_editor_ =
     std::make_unique<QuantizeOptions> (*other.quantize_opts_editor_);
-  mixer_selections_ =
-    std::make_unique<ProjectMixerSelections> (*other.mixer_selections_);
   timeline_selections_ = other.timeline_selections_->clone_qobject (this);
   midi_selections_ = other.midi_selections_->clone_qobject (this);
   chord_selections_ = other.chord_selections_->clone_qobject (this);
   automation_selections_ = other.automation_selections_->clone_qobject (this);
   audio_selections_ = other.audio_selections_->clone_qobject (this);
-  tracklist_selections_ =
-    std::make_unique<SimpleTracklistSelections> (*other.tracklist_selections_);
-  tracklist_selections_->tracklist_ = tracklist_;
   region_link_group_manager_ = other.region_link_group_manager_;
   port_connections_manager_ =
     other.port_connections_manager_->clone_qobject (this);

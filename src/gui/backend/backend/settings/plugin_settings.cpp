@@ -33,7 +33,9 @@ PluginSetting::copy_fields_from (const PluginSetting &other)
 }
 
 void
-PluginSetting::init_after_cloning (const PluginSetting &other)
+PluginSetting::init_after_cloning (
+  const PluginSetting &other,
+  ObjectCloneType      clone_type)
 {
   copy_fields_from (other);
 }
@@ -228,19 +230,23 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
               type, this, TRACKLIST->tracks_.size ()));
           num_actions++;
 
-          auto &pl = pl_track->channel_->instrument_;
+          auto pl_id = pl_track->channel_->instrument_;
+          auto pl_var = pl_track->channel_->get_instrument ();
 
           /* move the plugin track inside the group */
-          pl_track->select (true, true, false);
+          TRACKLIST->get_track_span ().select_single (pl_track->get_uuid ());
           UNDO_MANAGER->perform (
             new gui::actions::MoveTracksInsideFoldableTrackAction (
-              *TRACKLIST_SELECTIONS->gen_tracklist_selections (), group->pos_));
+              TrackSpan{ std::ranges::to<std::vector> (
+                TRACKLIST->get_track_span ().get_selected_tracks ()) },
+              group->pos_));
           num_actions++;
 
           /* route to nowhere */
-          pl_track->select (true, true, false);
+          TRACKLIST->get_track_span ().select_single (pl_track->get_uuid ());
           UNDO_MANAGER->perform (new gui::actions::RemoveTracksDirectOutAction (
-            *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
+            TrackSpan{ std::ranges::to<std::vector> (
+              TRACKLIST->get_track_span ().get_selected_tracks ()) },
             *PORT_CONNECTIONS_MGR));
           num_actions++;
 
@@ -248,14 +254,17 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
           auto name = format_str (
             QObject::tr ("{} Output").toStdString (), descr_->name_);
           UNDO_MANAGER->perform (new gui::actions::RenameTrackAction (
-            *group, *PORT_CONNECTIONS_MGR, name));
+            convert_to_variant<TrackPtrVariant> (group), *PORT_CONNECTIONS_MGR,
+            name));
           num_actions++;
 
-          std::vector<AudioPort *> pl_audio_outs;
-          for (auto * cur_port : pl->out_ports_ | type_is<AudioPort> ())
-            {
-              pl_audio_outs.push_back (cur_port);
-            }
+          auto pl_audio_outs = std::visit (
+            [&] (auto &&pl) {
+              return std::ranges::to<std::vector> (
+                pl->get_output_port_span ()
+                  .template get_elements_by_type<AudioPort> ());
+            },
+            pl_var.value ());
 
           for (int i = 0; i < num_pairs; i++)
             {
@@ -267,30 +276,34 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
               /* rename fx track */
               name = format_str ("{} {}", descr_->name_, i + 1);
               UNDO_MANAGER->perform (new gui::actions::RenameTrackAction (
-                *fx_track, *PORT_CONNECTIONS_MGR, name));
+                convert_to_variant<TrackPtrVariant> (fx_track),
+                *PORT_CONNECTIONS_MGR, name));
               num_actions++;
 
               /* move the fx track inside the group */
-              fx_track->select (true, true, false);
+              TRACKLIST->get_track_span ().select_single (fx_track->get_uuid ());
               UNDO_MANAGER->perform (
                 new gui::actions::MoveTracksInsideFoldableTrackAction (
-                  *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
+                  TrackSpan{ std::ranges::to<std::vector> (
+                    TRACKLIST->get_track_span ().get_selected_tracks ()) },
                   group->pos_));
               num_actions++;
 
               /* move the fx track to the end */
-              fx_track->select (true, true, false);
+              TRACKLIST->get_track_span ().select_single (fx_track->get_uuid ());
               UNDO_MANAGER->perform (new gui::actions::MoveTracksAction (
-                *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
+                TrackSpan{ std::ranges::to<std::vector> (
+                  TRACKLIST->get_track_span ().get_selected_tracks ()) },
                 TRACKLIST->tracks_.size ()));
               num_actions++;
 
               /* route to group */
-              fx_track->select (true, true, false);
-              UNDO_MANAGER->perform (
-                new gui::actions::ChangeTracksDirectOutAction (
-                  *TRACKLIST_SELECTIONS->gen_tracklist_selections (),
-                  *PORT_CONNECTIONS_MGR, *group));
+              TRACKLIST->get_track_span ().select_single (fx_track->get_uuid ());
+              UNDO_MANAGER->perform (new gui::actions::ChangeTracksDirectOutAction (
+                TrackSpan{ std::ranges::to<std::vector> (
+                  TRACKLIST->get_track_span ().get_selected_tracks ()) },
+                *PORT_CONNECTIONS_MGR,
+                convert_to_variant<TrackPtrVariant> (group)));
               num_actions++;
 
               int  l_index = has_stereo_outputs ? i * 2 : i;
@@ -299,7 +312,8 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
               /* route left port to audio fx */
               UNDO_MANAGER->perform (
                 new gui::actions::PortConnectionConnectAction (
-                  *port->id_, *fx_track->processor_->stereo_in_->get_l ().id_));
+                  port->get_uuid (),
+                  fx_track->processor_->get_stereo_in_ports().first.get_uuid ()));
               num_actions++;
 
               int r_index = has_stereo_outputs ? i * 2 + 1 : i;
@@ -308,7 +322,8 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
               /* route right port to audio fx */
               UNDO_MANAGER->perform (
                 new gui::actions::PortConnectionConnectAction (
-                  *port->id_, *fx_track->processor_->stereo_in_->get_r ().id_));
+                  port->get_uuid (),
+                  fx_track->processor_->get_stereo_in_ports().second.get_uuid ()));
               num_actions++;
             }
 
@@ -539,9 +554,9 @@ PluginSetting *
 PluginSettings::find (
   const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr)
 {
-  auto it = std::find_if (
-    settings_.begin (), settings_.end (),
-    [&descr] (const auto &s) { return s->descr_->is_same_plugin (descr); });
+  auto it = std::ranges::find_if (settings_, [&descr] (const auto &s) {
+    return s->descr_->is_same_plugin (descr);
+  });
   if (it == settings_.end ())
     {
       return nullptr;
@@ -575,16 +590,4 @@ PluginSettings::set (const PluginSetting &setting, bool _serialize)
     {
       serialize_to_file_no_throw ();
     }
-}
-
-std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin>
-PluginSetting::create_plugin (
-  unsigned int                track_name_hash,
-  zrythm::dsp::PluginSlotType slot_type,
-  int                         slot)
-{
-  auto plugin =
-    std::make_unique<zrythm::gui::old_dsp::plugins::CarlaNativePlugin> (
-      *this->descr_, track_name_hash, slot_type, slot);
-  return plugin;
 }

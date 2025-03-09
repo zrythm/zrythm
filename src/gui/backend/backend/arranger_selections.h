@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "gui/dsp/arranger_object_all.h"
-
+#include "gui/dsp/arranger_object_span.h"
 #include "utils/icloneable.h"
 #include "utils/traits.h"
 
@@ -160,6 +160,8 @@ public:
       });
   }
 
+  ArrangerObjectSpan get_object_span () const;
+
   /**
    * Gets first object of the given type (if any, otherwise matches all types)
    * and its start position.
@@ -290,7 +292,7 @@ public:
    *
    * @note All selections must be on the same lane.
    */
-  virtual void merge () {};
+  virtual void merge () { };
 
   /**
    * Returns if the selections can be pasted at the current place/playhead.
@@ -323,7 +325,8 @@ protected:
   ArrangerSelections () = default;
   ArrangerSelections (Type type);
 
-  void copy_members_from (const ArrangerSelections &other);
+  void
+  copy_members_from (const ArrangerSelections &other, ObjectCloneType clone_type);
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

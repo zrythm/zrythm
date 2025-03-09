@@ -182,7 +182,9 @@ UndoManager::clear_stacks ()
 }
 
 void
-UndoManager::init_after_cloning (const UndoManager &other)
+UndoManager::init_after_cloning (
+  const UndoManager &other,
+  ObjectCloneType    clone_type)
 {
   undo_stack_ = other.undo_stack_->clone_qobject (this);
   redo_stack_ = other.redo_stack_->clone_qobject (this);

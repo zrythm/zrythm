@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/audio_selections.h"
@@ -51,6 +51,6 @@ Clipboard::define_fields (const Context &ctx)
     }
 
   T::serialize_fields (
-    ctx, T::make_field ("mixerSelections", mixer_sel_, true),
-    T::make_field ("tracklistSelections", tracklist_sel_, true));
+    ctx, T::make_field ("plugins", plugins_, true),
+    T::make_field ("tracklistSelections", tracks_, true));
 }

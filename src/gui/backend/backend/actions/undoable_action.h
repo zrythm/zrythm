@@ -170,7 +170,8 @@ public:
   virtual QString to_string () const = 0;
 
 protected:
-  void copy_members_from (const UndoableAction &other);
+  void
+  copy_members_from (const UndoableAction &other, ObjectCloneType clone_type);
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

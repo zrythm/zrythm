@@ -53,7 +53,8 @@ public:
 
   // GMenuModel * generate_context_menu () const;
 
-  void init_after_cloning (const ChordPreset &other) override;
+  void init_after_cloning (const ChordPreset &other, ObjectCloneType clone_type)
+    override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

@@ -57,16 +57,9 @@ public:
   int get_format_major_version () const override { return 2; }
   int get_format_minor_version () const override { return 0; }
 
-  void init_after_cloning (const ChordPresetPack &other) override
-  {
-    name_ = other.name_;
-    is_standard_ = other.is_standard_;
-    presets_ = other.presets_;
-    for (auto &pset : presets_)
-      {
-        pset->pack_ = this;
-      }
-  }
+  void
+  init_after_cloning (const ChordPresetPack &other, ObjectCloneType clone_type)
+    override;
 
   bool contains_name (const NameT &name) const;
 

@@ -3,8 +3,15 @@
 
 #include "gui/dsp/midi_group_track.h"
 
-MidiGroupTrack::MidiGroupTrack (const std::string &name, int pos)
-    : Track (Track::Type::MidiGroup, name, pos, PortType::Event, PortType::Event)
+MidiGroupTrack::MidiGroupTrack (
+  TrackRegistry  &track_registry,
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry,
+  bool            new_identity)
+    : Track (Track::Type::MidiGroup, PortType::Event, PortType::Event),
+      AutomatableTrack (port_registry, new_identity),
+      ProcessableTrack (port_registry, new_identity),
+      ChannelTrack (track_registry, plugin_registry, port_registry, new_identity)
 {
   color_ = Color (QColor ("#E66100"));
   icon_name_ = "signal-midi";
@@ -21,22 +28,27 @@ MidiGroupTrack::initialize ()
 }
 
 void
-MidiGroupTrack::init_loaded ()
+MidiGroupTrack::init_loaded (
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry)
 {
   // ChannelTrack must be initialized before AutomatableTrack
-  ChannelTrack::init_loaded ();
-  AutomatableTrack::init_loaded ();
-  ProcessableTrack::init_loaded ();
+  ChannelTrack::init_loaded (plugin_registry, port_registry);
+  AutomatableTrack::init_loaded (plugin_registry, port_registry);
+  AutomatableTrack::init_loaded (plugin_registry, port_registry);
+  ProcessableTrack::init_loaded (plugin_registry, port_registry);
 }
 
 void
-MidiGroupTrack::init_after_cloning (const MidiGroupTrack &other)
+MidiGroupTrack::init_after_cloning (
+  const MidiGroupTrack &other,
+  ObjectCloneType       clone_type)
 {
-  FoldableTrack::copy_members_from (other);
-  ChannelTrack::copy_members_from (other);
-  ProcessableTrack::copy_members_from (other);
-  AutomatableTrack::copy_members_from (other);
-  Track::copy_members_from (other);
+  FoldableTrack::copy_members_from (other, clone_type);
+  ChannelTrack::copy_members_from (other, clone_type);
+  ProcessableTrack::copy_members_from (other, clone_type);
+  AutomatableTrack::copy_members_from (other, clone_type);
+  Track::copy_members_from (other, clone_type);
 }
 
 void

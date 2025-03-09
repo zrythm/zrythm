@@ -38,9 +38,11 @@ ChordAction::ChordAction (
 }
 
 void
-ChordAction::init_after_cloning (const ChordAction &other)
+ChordAction::init_after_cloning (
+  const ChordAction &other,
+  ObjectCloneType    clone_type)
 {
-  UndoableAction::copy_members_from (other);
+  UndoableAction::copy_members_from (other, clone_type);
   type_ = other.type_;
   chord_before_ = other.chord_before_;
   chord_after_ = other.chord_after_;

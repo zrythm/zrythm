@@ -22,12 +22,13 @@ Velocity::Velocity (MidiNote * midi_note, const uint8_t vel)
 }
 
 void
-Velocity::init_after_cloning (const Velocity &other)
+Velocity::init_after_cloning (const Velocity &other, ObjectCloneType clone_type)
+
 {
   vel_ = other.vel_;
   vel_at_start_ = other.vel_at_start_;
-  RegionOwnedObject::copy_members_from (other);
-  ArrangerObject::copy_members_from (other);
+  RegionOwnedObject::copy_members_from (other, clone_type);
+  ArrangerObject::copy_members_from (other, clone_type);
 }
 
 void

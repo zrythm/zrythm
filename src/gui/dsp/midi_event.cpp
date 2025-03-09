@@ -676,12 +676,20 @@ MidiEvents::panic_all ()
 
   AUDIO_ENGINE->midi_editor_manual_press_->midi_events_.queued_events_.panic ();
 
-  for (auto track : TRACKLIST->tracks_ | type_is<ProcessableTrack> ())
+  for (auto track_var : TRACKLIST->get_track_span ())
     {
-      if (track->has_piano_roll () || track->is_chord ())
-        {
-          track->processor_->piano_roll_->midi_events_.queued_events_.panic ();
-        }
+      std::visit (
+        [&] (auto &&track) {
+          using TrackT = base_type<decltype (track)>;
+          if constexpr (
+            std::derived_from<TrackT, PianoRollTrack>
+            || std::is_same_v<TrackT, ChordTrack>)
+            {
+              track->processor_->get_piano_roll_port ()
+                .midi_events_.queued_events_.panic ();
+            }
+        },
+        track_var);
     }
 }
 

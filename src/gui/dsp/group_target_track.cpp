@@ -22,7 +22,7 @@ GroupTargetTrack::update_child_output (
 {
   z_return_if_fail (ch);
 
-  if (ch->has_output_)
+  if (ch->has_output ())
     {
       auto track = ch->get_output_track ();
       /* disconnect Channel's output from the current output channel */
@@ -30,15 +30,16 @@ GroupTargetTrack::update_child_output (
         {
         case PortType::Audio:
           PORT_CONNECTIONS_MGR->ensure_disconnect (
-            *ch->stereo_out_->get_l ().id_,
-            *track->processor_->stereo_in_->get_l ().id_);
+            ch->get_stereo_out_ports ().first.get_uuid (),
+            *track->processor_->stereo_in_left_id_);
           PORT_CONNECTIONS_MGR->ensure_disconnect (
-            *ch->stereo_out_->get_r ().id_,
-            *track->processor_->stereo_in_->get_r ().id_);
+            ch->get_stereo_out_ports ().second.get_uuid (),
+            *track->processor_->stereo_in_right_id_);
           break;
         case PortType::Event:
           PORT_CONNECTIONS_MGR->ensure_disconnect (
-            *ch->midi_out_->id_, *track->processor_->midi_in_->id_);
+            ch->get_midi_out_port ().get_uuid (),
+            track->processor_->get_midi_in_port ().get_uuid ());
           break;
         default:
           break;
@@ -52,26 +53,25 @@ GroupTargetTrack::update_child_output (
         {
         case PortType::Audio:
           PORT_CONNECTIONS_MGR->ensure_connect_default (
-            *ch->stereo_out_->get_l ().id_,
-            *output->processor_->stereo_in_->get_l ().id_, true);
+            ch->get_stereo_out_ports ().first.get_uuid (),
+            *output->processor_->stereo_in_left_id_, true);
           PORT_CONNECTIONS_MGR->ensure_connect_default (
-            *ch->stereo_out_->get_r ().id_,
-            *output->processor_->stereo_in_->get_r ().id_, true);
+            ch->get_stereo_out_ports ().second.get_uuid (),
+            *output->processor_->stereo_in_right_id_, true);
           break;
         case PortType::Event:
           PORT_CONNECTIONS_MGR->ensure_connect_default (
-            *ch->midi_out_->id_, *output->processor_->midi_in_->id_, true);
+            ch->get_midi_out_port ().get_uuid (),
+            output->processor_->get_midi_in_port ().get_uuid (), true);
           break;
         default:
           break;
         }
-      ch->has_output_ = true;
-      ch->output_name_hash_ = output->get_name_hash ();
+      ch->output_track_uuid_ = output->get_uuid ();
     }
   else
     {
-      ch->has_output_ = false;
-      ch->output_name_hash_ = 0;
+      ch->output_track_uuid_ = std::nullopt;
     }
 
   if (recalc_graph)
@@ -86,24 +86,24 @@ GroupTargetTrack::update_child_output (
 }
 
 bool
-GroupTargetTrack::contains_child (unsigned int child_name_hash)
+GroupTargetTrack::contains_child (Track::Uuid child_name_hash)
 {
   return std::ranges::find (children_, child_name_hash) != children_.end ();
 }
 
 void
 GroupTargetTrack::remove_child (
-  unsigned int child_name_hash,
-  bool         disconnect,
-  bool         recalc_graph,
-  bool         pub_events)
+  Track::Uuid child_id,
+  bool        disconnect,
+  bool        recalc_graph,
+  bool        pub_events)
 {
-  z_return_if_fail (child_name_hash != get_name_hash ());
-  z_return_if_fail (contains_child (child_name_hash));
+  z_return_if_fail (child_id != get_uuid ());
+  z_return_if_fail (contains_child (child_id));
 
-  auto tracklist = get_tracklist ();
+  auto * tracklist = get_tracklist ();
 
-  auto child_var = tracklist->find_track_by_name_hash (child_name_hash);
+  auto child_var = tracklist->get_track (child_id);
   z_return_if_fail (child_var);
   std::visit (
     [&] (auto &&child) {
@@ -119,7 +119,7 @@ GroupTargetTrack::remove_child (
               update_child_output (
                 child->get_channel (), nullptr, recalc_graph, pub_events);
             }
-          std::erase (children_, child_name_hash);
+          std::erase (children_, child_id);
 
           z_info (
             "removed '%s' from direct out '%s' - "
@@ -144,10 +144,9 @@ GroupTargetTrack::
 bool
 GroupTargetTrack::validate_base () const
 {
-  for (auto &child_hash : children_)
+  for (const auto &child_id : children_)
     {
-      auto track_var = get_tracklist ()->find_track_by_name_hash (child_hash);
-      z_return_val_if_fail (track_var, false);
+      auto track_var = get_tracklist ()->get_track (child_id);
       auto ret = std::visit (
         [&] (auto &&track) {
           using TrackT = base_type<decltype (track)>;
@@ -167,22 +166,20 @@ GroupTargetTrack::validate_base () const
 
 void
 GroupTargetTrack::add_child (
-  unsigned int child_name_hash,
-  bool         connect,
-  bool         recalc_graph,
-  bool         pub_events)
+  Track::Uuid child_id,
+  bool        connect,
+  bool        recalc_graph,
+  bool        pub_events)
 {
   z_return_if_fail (IS_TRACK (this));
 
   z_debug (
-    "adding child track with name hash {} to group %s", child_name_hash,
-    get_name ());
+    "adding child track with name hash {} to group %s", child_id, get_name ());
 
   if (connect)
     {
       Tracklist * tracklist = get_tracklist ();
-      auto out_track_var = tracklist->find_track_by_name_hash (child_name_hash);
-      z_return_if_fail (out_track_var);
+      auto        out_track_var = tracklist->get_track (child_id);
       std::visit (
         [&] (auto &&out_track) {
           using TrackT = base_type<decltype (out_track)>;
@@ -196,26 +193,26 @@ GroupTargetTrack::add_child (
         *out_track_var);
     }
 
-  children_.push_back (child_name_hash);
+  children_.push_back (child_id);
 }
 
 void
 GroupTargetTrack::add_children (
-  const std::vector<unsigned int> &children,
-  bool                             connect,
-  bool                             recalc_graph,
-  bool                             pub_events)
+  std::span<const Track::Uuid> children,
+  bool                         connect,
+  bool                         recalc_graph,
+  bool                         pub_events)
 {
-  for (auto &child_hash : children)
+  for (const auto &child_hash : children)
     {
       add_child (child_hash, connect, recalc_graph, pub_events);
     }
 }
 
 int
-GroupTargetTrack::find_child (unsigned int track_name_hash)
+GroupTargetTrack::find_child (Track::Uuid track_id)
 {
-  auto it = std::find (children_.begin (), children_.end (), track_name_hash);
+  auto it = std::ranges::find (children_, track_id);
   if (it != children_.end ())
     {
       return std::distance (children_.begin (), it);
@@ -227,18 +224,17 @@ GroupTargetTrack::find_child (unsigned int track_name_hash)
 void
 GroupTargetTrack::update_children ()
 {
-  unsigned int name_hash = get_name_hash ();
-  for (auto &child_hash : children_)
+  auto id = get_uuid ();
+  for (auto &child_id : children_)
     {
-      auto child_var = get_tracklist ()->find_track_by_name_hash (child_hash);
-      z_return_if_fail (child_var);
+      auto child_var = get_tracklist ()->get_track (child_id);
       std::visit (
         [&] (auto &&child) {
           using TrackT = base_type<decltype (child)>;
           if constexpr (std::derived_from<TrackT, ChannelTrack>)
             {
               z_return_if_fail (child->out_signal_type_ == in_signal_type_);
-              child->get_channel ()->output_name_hash_ = name_hash;
+              child->get_channel ()->output_track_uuid_ = id;
               z_debug (
                 "setting output of track {} [{}] to {} [{}]",
                 child->get_name (), child->pos_, get_name (), pos_);
@@ -249,7 +245,9 @@ GroupTargetTrack::update_children ()
 }
 
 void
-GroupTargetTrack::copy_members_from (const GroupTargetTrack &other)
+GroupTargetTrack::copy_members_from (
+  const GroupTargetTrack &other,
+  ObjectCloneType         clone_type)
 {
   children_ = other.children_;
 }

@@ -53,23 +53,23 @@ MidiRegion::MidiRegion (QObject * parent)
 }
 
 MidiRegion::MidiRegion (
-  const Position &start_pos,
-  const Position &end_pos,
-  unsigned int    track_name_hash,
-  int             lane_pos,
-  int             idx_inside_lane,
-  QObject *       parent)
+  const Position                &start_pos,
+  const Position                &end_pos,
+  dsp::PortIdentifier::TrackUuid track_uuid,
+  int                            lane_pos,
+  int                            idx_inside_lane,
+  QObject *                      parent)
     : MidiRegion (parent)
 {
-  init (start_pos, end_pos, track_name_hash, lane_pos, idx_inside_lane);
+  init (start_pos, end_pos, track_uuid, lane_pos, idx_inside_lane);
 }
 MidiRegion::MidiRegion (
-  const Position  &pos,
-  ChordDescriptor &descr,
-  unsigned int     track_name_hash,
-  int              lane_pos,
-  int              idx_inside_lane,
-  QObject *        parent)
+  const Position                &pos,
+  ChordDescriptor               &descr,
+  dsp::PortIdentifier::TrackUuid track_uuid,
+  int                            lane_pos,
+  int                            idx_inside_lane,
+  QObject *                      parent)
     : MidiRegion (parent)
 {
   int r_length_ticks = SNAP_GRID_TIMELINE->get_default_ticks ();
@@ -80,7 +80,7 @@ MidiRegion::MidiRegion (
   r_end_pos.add_ticks (r_length_ticks, AUDIO_ENGINE->frames_per_tick_);
 
   /* create region */
-  init (pos, r_end_pos, track_name_hash, lane_pos, idx_inside_lane);
+  init (pos, r_end_pos, track_uuid, lane_pos, idx_inside_lane);
 
   /* get midi note positions */
   Position mn_pos, mn_end_pos;
@@ -100,20 +100,20 @@ MidiRegion::MidiRegion (
 }
 
 MidiRegion::MidiRegion (
-  const Position    &start_pos,
-  const std::string &abs_path,
-  unsigned int       track_name_hash,
-  int                lane_pos,
-  int                idx_inside_lane,
-  int                midi_track_idx,
-  QObject *          parent)
+  const Position                &start_pos,
+  const std::string             &abs_path,
+  dsp::PortIdentifier::TrackUuid track_uuid,
+  int                            lane_pos,
+  int                            idx_inside_lane,
+  int                            midi_track_idx,
+  QObject *                      parent)
     : MidiRegion (parent)
 {
   z_debug ("reading from {}...", abs_path);
 
   Position end_pos = start_pos;
   end_pos.add_ticks (1, AUDIO_ENGINE->frames_per_tick_);
-  init (start_pos, end_pos, track_name_hash, lane_pos, idx_inside_lane);
+  init (start_pos, end_pos, track_uuid, lane_pos, idx_inside_lane);
 
   MidiFile mf (abs_path);
   mf.into_region (*this, *TRANSPORT, midi_track_idx);
@@ -139,7 +139,9 @@ MidiRegion::init_loaded ()
 }
 
 void
-MidiRegion::init_after_cloning (const MidiRegion &other)
+MidiRegion::init_after_cloning (
+  const MidiRegion &other,
+  ObjectCloneType   clone_type)
 {
   midi_notes_.reserve (other.midi_notes_.size ());
   for (const auto &note : other.midi_notes_)
@@ -148,15 +150,15 @@ MidiRegion::init_after_cloning (const MidiRegion &other)
       clone->setParent (this);
       midi_notes_.push_back (clone);
     }
-  LaneOwnedObjectImpl::copy_members_from (other);
-  Region::copy_members_from (other);
-  TimelineObject::copy_members_from (other);
-  NameableObject::copy_members_from (other);
-  LoopableObject::copy_members_from (other);
-  MuteableObject::copy_members_from (other);
-  LengthableObject::copy_members_from (other);
-  ColoredObject::copy_members_from (other);
-  ArrangerObject::copy_members_from (other);
+  LaneOwnedObjectImpl::copy_members_from (other, clone_type);
+  Region::copy_members_from (other, clone_type);
+  TimelineObject::copy_members_from (other, clone_type);
+  NameableObject::copy_members_from (other, clone_type);
+  LoopableObject::copy_members_from (other, clone_type);
+  MuteableObject::copy_members_from (other, clone_type);
+  LengthableObject::copy_members_from (other, clone_type);
+  ColoredObject::copy_members_from (other, clone_type);
+  ArrangerObject::copy_members_from (other, clone_type);
 }
 
 // ========================================================================

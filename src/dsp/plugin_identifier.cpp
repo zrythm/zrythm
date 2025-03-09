@@ -6,27 +6,42 @@
 namespace zrythm::dsp
 {
 
+void
+PluginSlot::define_fields (const Context &ctx)
+{
+  serialize_fields (
+    ctx, make_field ("type", type_), make_field ("index", slot_));
+}
+
+uint32_t
+PluginSlot::get_hash () const
+{
+  uint32_t hash = 0;
+  if (slot_.has_value ())
+    hash = hash ^ qHash (slot_.value ());
+  hash = hash ^ qHash (type_);
+  return hash;
+}
+
 bool
 PluginIdentifier::validate () const
 {
-  return validate_slot_type_slot_combo (slot_type_, slot_);
+  return slot_.validate_slot_type_slot_combo ();
 }
 
 std::string
 PluginIdentifier::print_to_str () const
 {
   return fmt::format (
-    "slot_type: {}, track_name hash: {}, slot: {}", ENUM_NAME (slot_type_),
-    track_name_hash_, slot_);
+    "track_name hash: {}, slot: {}", type_safe::get (track_id_), slot_);
 }
 
 uint32_t
 PluginIdentifier::get_hash () const
 {
   uint32_t hash = 0;
-  hash = hash ^ qHash (slot_type_);
-  hash = hash ^ track_name_hash_;
-  hash = hash ^ qHash (slot_);
+  hash = hash ^ slot_.get_hash ();
+  hash = hash ^ qHash (type_safe::get (track_id_));
   return hash;
 }
 
@@ -34,7 +49,6 @@ void
 PluginIdentifier::define_fields (const Context &ctx)
 {
   serialize_fields (
-    ctx, make_field ("slotType", slot_type_),
-    make_field ("trackNameHash", track_name_hash_), make_field ("slot", slot_));
+    ctx, make_field ("trackId", track_id_), make_field ("slot", slot_));
 }
 };

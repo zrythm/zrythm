@@ -67,7 +67,8 @@ public:
 
   QString to_string () const override;
 
-  void init_after_cloning (const ChordAction &other) override;
+  void init_after_cloning (const ChordAction &other, ObjectCloneType clone_type)
+    override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

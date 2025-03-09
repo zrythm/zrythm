@@ -8,6 +8,7 @@
 #include "gui/dsp/audio_port.h"
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/midi_port.h"
+#include "gui/dsp/track.h"
 #include "utils/icloneable.h"
 
 class StereoPorts;
@@ -78,13 +79,50 @@ class ChannelSend final
 {
 public:
   using PortType = dsp::PortType;
+  struct SlotTag
+  {
+    int value_{};
+  };
 
 public:
-  ChannelSend () = default;
+  ChannelSend (const DeserializationDependencyHolder &dh);
+
   /**
-   * Creates a channel send instance.
+   * To be used when creating a new (identity) ChannelSend.
    */
-  ChannelSend (unsigned int track_name_hash, int slot, ChannelTrack * track);
+  ChannelSend (
+    ChannelTrack  &track,
+    TrackRegistry &track_registry,
+    PortRegistry  &port_registry,
+    int            slot)
+      : ChannelSend (track_registry, port_registry, track, slot, true)
+  {
+  }
+
+  /**
+   * @brief To be used when instantiating or cloning an existing identity.
+   */
+  ChannelSend (TrackRegistry &track_registry, PortRegistry &port_registry)
+      : ChannelSend (track_registry, port_registry, std::nullopt, std::nullopt, false)
+  {
+  }
+
+private:
+  /**
+   * @brief Internal implementation detail.
+   */
+  ChannelSend (
+    TrackRegistry            &track_registry,
+    PortRegistry             &port_registry,
+    OptionalRef<ChannelTrack> track,
+    std::optional<int>        slot,
+    bool                      new_identity);
+
+private:
+  auto &get_port_registry () { return port_registry_; }
+  auto &get_port_registry () const { return port_registry_; }
+
+public:
   void init_loaded (ChannelTrack * track);
 
   bool is_in_active_project () const override;
@@ -109,7 +147,7 @@ public:
 
   bool is_enabled () const;
 
-  inline bool is_empty () const { return !is_enabled (); }
+  bool is_empty () const { return !is_enabled (); }
 
   /**
    * Returns whether the channel send target is a
@@ -119,16 +157,8 @@ public:
 
   /**
    * Gets the target track.
-   *
-   * @param owner The owner track of the send (optional).
    */
-  Track * get_target_track (const ChannelTrack * owner);
-
-  /**
-   * Gets the target sidechain port as a newly allocated instance of
-   * StereoPorts.
-   */
-  std::unique_ptr<StereoPorts> get_target_sidechain ();
+  Track * get_target_track ();
 
   /**
    * Gets the amount to be used in widgets (0.0-1.0).
@@ -140,20 +170,19 @@ public:
    */
   void set_amount_from_widget (float val);
 
+  float get_amount_value () const { return get_amount_port ().control_; }
+
   /**
    * Connects a send to stereo ports.
-   *
-   * This function takes either @ref stereo or both @ref l and @ref r.
    *
    * @throw ZrythmException if the connection fails.
    */
   bool connect_stereo (
-    StereoPorts * stereo,
-    AudioPort *   l,
-    AudioPort *   r,
-    bool          sidechain,
-    bool          recalc_graph,
-    bool          validate);
+    AudioPort &l,
+    AudioPort &r,
+    bool       sidechain,
+    bool       recalc_graph,
+    bool       validate);
 
   /**
    * Connects a send to a midi port.
@@ -169,6 +198,51 @@ public:
 
   void set_amount (float amount);
 
+  std::pair<AudioPort &, AudioPort &> get_stereo_in_ports () const
+  {
+    if (!stereo_in_left_id_.has_value ())
+      {
+        throw ZrythmException ("stereo_in_left_id_ not set");
+      }
+    auto * l = std::get<AudioPort *> (
+      get_port_registry ().find_by_id_or_throw (stereo_in_left_id_.value ()));
+    auto * r = std::get<AudioPort *> (
+      get_port_registry ().find_by_id_or_throw (stereo_in_right_id_.value ()));
+    return { *l, *r };
+  }
+  MidiPort &get_midi_in_port () const
+  {
+    return *std::get<MidiPort *> (
+      get_port_registry ().find_by_id_or_throw (midi_in_id_.value ()));
+  }
+  std::pair<AudioPort &, AudioPort &> get_stereo_out_ports () const
+  {
+    if (!stereo_out_left_id_.has_value ())
+      {
+        throw ZrythmException ("stereo_out_left_id_ not set");
+      }
+    auto * l = std::get<AudioPort *> (
+      get_port_registry ().find_by_id_or_throw (stereo_out_left_id_.value ()));
+    auto * r = std::get<AudioPort *> (
+      get_port_registry ().find_by_id_or_throw (stereo_out_right_id_.value ()));
+    return { *l, *r };
+  }
+  MidiPort &get_midi_out_port () const
+  {
+    return *std::get<MidiPort *> (
+      get_port_registry ().find_by_id_or_throw (midi_in_id_.value ()));
+  }
+  ControlPort &get_amount_port () const
+  {
+    return *std::get<ControlPort *> (
+      get_port_registry ().find_by_id_or_throw (amount_id_.value ()));
+  }
+  ControlPort &get_enabled_port () const
+  {
+    return *std::get<ControlPort *> (
+      get_port_registry ().find_by_id_or_throw (enabled_id_.value ()));
+  }
+
   /**
    * Get the name of the destination, or a placeholder
    * text if empty.
@@ -177,7 +251,8 @@ public:
 
   void copy_values_from (const ChannelSend &other);
 
-  void init_after_cloning (const ChannelSend &other) override;
+  void init_after_cloning (const ChannelSend &other, ObjectCloneType clone_type)
+    override;
 
   /**
    * Connects the ports to the owner track if not connected.
@@ -200,15 +275,22 @@ public:
 
   void process_block (EngineProcessTimeInfo time_nfo) override;
 
-  /**
-   * Returns whether the send is connected to the given ports.
-   */
-  bool is_connected_to (const StereoPorts * stereo, const Port * midi) const;
+  bool is_connected_to (std::pair<PortUuid, PortUuid> stereo) const
+  {
+    return is_connected_to (stereo, std::nullopt);
+  }
+  bool is_connected_to (const PortUuid &midi) const
+  {
+    return is_connected_to (std::nullopt, midi);
+  }
 
   /**
    * Finds the project send from a given send instance.
    */
   ChannelSend * find_in_project () const;
+
+  bool is_audio () const { return get_signal_type () == PortType::Audio; }
+  bool is_midi () const { return get_signal_type () == PortType::Event; }
 
   bool validate ();
 
@@ -220,9 +302,16 @@ private:
   void disconnect_midi ();
   void disconnect_audio ();
 
-  void construct_for_slot (int slot);
+  void construct_for_slot (ChannelTrack &track, int slot);
 
   PortConnectionsManager * get_port_connections_manager () const;
+
+  /**
+   * Returns whether the send is connected to the given ports.
+   */
+  bool is_connected_to (
+    std::optional<std::pair<PortUuid, PortUuid>> stereo,
+    std::optional<PortUuid>                      midi) const;
 
 public:
   /** Slot index in the channel sends. */
@@ -233,32 +322,34 @@ public:
    *
    * Prefader or fader stereo out should connect here.
    */
-  std::unique_ptr<StereoPorts> stereo_in_;
+  std::optional<PortUuid> stereo_in_left_id_;
+  std::optional<PortUuid> stereo_in_right_id_;
 
   /**
    * MIDI input if MIDI send.
    *
    * Prefader or fader MIDI out should connect here.
    */
-  std::unique_ptr<MidiPort> midi_in_;
+  std::optional<PortUuid> midi_in_id_;
 
   /**
    * Stereo output if audio send.
    *
    * This should connect to the send destination, if any.
    */
-  std::unique_ptr<StereoPorts> stereo_out_;
+  std::optional<PortUuid> stereo_out_left_id_;
+  std::optional<PortUuid> stereo_out_right_id_;
 
   /**
    * MIDI output if MIDI send.
    *
    * This should connect to the send destination, if any.
    */
-  std::unique_ptr<MidiPort> midi_out_;
+  std::optional<PortUuid> midi_out_id_;
 
   /** Send amount (amplitude), 0 to 2 for audio, velocity multiplier for
    * MIDI. */
-  std::unique_ptr<ControlPort> amount_;
+  std::optional<PortUuid> amount_id_;
 
   /**
    * Whether the send is currently enabled.
@@ -266,16 +357,24 @@ public:
    * If enabled, corresponding connection(s) will exist in
    * PortConnectionsManager.
    */
-  std::unique_ptr<ControlPort> enabled_;
+  std::optional<PortUuid> enabled_id_;
 
   /** If the send is a sidechain. */
   bool is_sidechain_ = false;
 
   /** Pointer back to owner track. */
-  ChannelTrack * track_ = nullptr;
+  // ChannelTrack * track_ = nullptr;
 
-  /** Track name hash (used in actions). */
-  unsigned int track_name_hash_ = 0;
+  /** Owner track ID. */
+  TrackUuid track_id_;
+
+  /**
+   * @brief Use this if set (via the new identity constructo).
+   */
+  OptionalRef<ChannelTrack> track_;
+
+  PortRegistry  &port_registry_;
+  TrackRegistry &track_registry_;
 };
 
 /**

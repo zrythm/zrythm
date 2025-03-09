@@ -479,7 +479,8 @@ frames_add_frames (
    */
   void set_recording (bool record, bool with_wait);
 
-  void init_after_cloning (const Transport &other) override;
+  void init_after_cloning (const Transport &other, ObjectCloneType clone_type)
+    override;
 
   Q_INVOKABLE QString
   getPlayheadPositionString (const TempoTrack * tempo_track) const;

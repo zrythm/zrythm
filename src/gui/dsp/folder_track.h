@@ -16,13 +16,15 @@ class FolderTrack final
       // public ChannelTrack,
       public ICloneable<FolderTrack>,
       public zrythm::utils::serialization::ISerializable<FolderTrack>,
-      public InitializableObjectFactory<FolderTrack>
+      public utils::InitializableObject
 {
   Q_OBJECT
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (FolderTrack)
 
-  friend class InitializableObjectFactory<FolderTrack>;
+  friend class InitializableObject;
+
+  DECLARE_FINAL_TRACK_CONSTRUCTORS (FolderTrack)
 
 public:
   bool validate () const override;
@@ -40,18 +42,19 @@ public:
   }
 
   bool get_soloed () const override { return is_status (MixerStatus::Soloed); }
-  void init_loaded () override;
+  void
+  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
+    override;
 
-  void init_after_cloning (const FolderTrack &other) override;
+  void init_after_cloning (const FolderTrack &other, ObjectCloneType clone_type)
+    override;
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  FolderTrack (const std::string &name = "", int pos = 0);
-
-  bool initialize () override;
+  bool initialize ();
 };
 
 #endif /* __AUDIO_FOLDER_TRACK_H__ */

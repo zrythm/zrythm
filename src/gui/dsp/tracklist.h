@@ -11,6 +11,7 @@
 #define __AUDIO_TRACKLIST_H__
 
 #include "gui/dsp/track.h"
+#include "gui/dsp/track_span.h"
 
 #include <QtQmlIntegration>
 
@@ -30,6 +31,7 @@ class ModulatorTrack;
 class MasterTrack;
 class MarkerTrack;
 class StringArray;
+class Router;
 
 /**
  * The Tracklist contains all the tracks in the Project.
@@ -48,6 +50,8 @@ class Tracklist final
   Q_PROPERTY (TempoTrack * tempoTrack READ getTempoTrack CONSTANT FINAL)
 
 public:
+  using TrackUuid = Track::Uuid;
+
   /**
    * Used in track search functions.
    */
@@ -66,11 +70,17 @@ public:
 
 public:
   Tracklist (QObject * parent = nullptr);
-  Tracklist (Project &project, PortConnectionsManager * port_connections_manager);
-  Tracklist (
-    SampleProcessor         &sample_processor,
+  explicit Tracklist (
+    Project                 &project,
+    PortRegistry            &port_registry,
+    TrackRegistry           &track_registry,
     PortConnectionsManager * port_connections_manager);
-  Q_DISABLE_COPY_MOVE (Tracklist)
+  explicit Tracklist (
+    SampleProcessor         &sample_processor,
+    PortRegistry            &port_registry,
+    TrackRegistry           &track_registry,
+    PortConnectionsManager * port_connections_manager);
+  Z_DISABLE_COPY_MOVE (Tracklist)
   ~Tracklist () override;
 
   // ========================================================================
@@ -93,6 +103,8 @@ public:
     Track::Type::Modulator
   };
 
+  TrackRegistrySpan get_track_span () const;
+
   bool is_in_active_project () const;
 
   bool is_auditioner () const
@@ -100,64 +112,26 @@ public:
     return sample_processor_ && is_in_active_project ();
   }
 
-  void init_after_cloning (const Tracklist &other) override;
+  void init_after_cloning (const Tracklist &other, ObjectCloneType clone_type)
+    override;
 
   /**
    * Initializes the tracklist when loading a project.
    */
-  void init_loaded (Project * project, SampleProcessor * sample_processor);
+  void init_loaded (
+    PortRegistry     &port_registry,
+    Project *         project,
+    SampleProcessor * sample_processor);
 
-  void init_loaded (Project &project) { init_loaded (&project, nullptr); }
-  void init_loaded (SampleProcessor &sample_processor)
+  void init_loaded (PortRegistry &port_registry, Project &project)
   {
-    init_loaded (nullptr, &sample_processor);
+    init_loaded (port_registry, &project, nullptr);
   }
-
-  /**
-   * Selects or deselects all tracks.
-   *
-   * @note When deselecting the last track will become
-   *   selected (there must always be >= 1 tracks
-   *   selected).
-   */
-  void select_all (bool select, bool fire_events);
-
-  size_t get_num_tracks () const { return tracks_.size (); }
-
-  /**
-   * Finds visible tracks and puts them in given array.
-   */
-  void get_visible_tracks (std::vector<Track *> visible_tracks) const;
-
-  /**
-   * Returns the Track matching the given name, if any.
-   */
-  std::optional<TrackPtrVariant>
-  find_track_by_name (const std::string &name) const;
-
-  /**
-   * Returns the Track matching the given name, if any.
-   */
-  std::optional<TrackPtrVariant>
-  find_track_by_name_hash (unsigned int hash) const;
-
-  template <typename T> bool contains_track_type () const
+  void
+  init_loaded (PortRegistry &port_registry, SampleProcessor &sample_processor)
   {
-    return std::any_of (tracks_.begin (), tracks_.end (), [] (const auto &track) {
-      return std::visit (
-        [] (auto &&t) { return std::is_same_v<T, base_type<decltype (t)>>; },
-        track);
-    });
+    init_loaded (port_registry, nullptr, &sample_processor);
   }
-
-  bool contains_master_track () const;
-
-  bool contains_chord_track () const;
-
-  /**
-   * Prints the tracks (for debugging).
-   */
-  void print_tracks () const;
 
   /**
    * Adds given track to given spot in tracklist.
@@ -166,40 +140,25 @@ public:
    * @param recalc_graph Recalculate routing graph.
    * @return Pointer to the newly added track.
    */
-  template <FinalTrackSubclass T>
-  T * insert_track (
-    std::unique_ptr<T> &&track,
-    int                  pos,
-    AudioEngine         &engine,
-    bool                 publish_events,
-    bool                 recalc_graph);
-
-  Track * insert_track (
-    std::unique_ptr<Track> &&track,
-    int                      pos,
-    AudioEngine             &engine,
-    bool                     publish_events,
-    bool                     recalc_graph);
+  TrackPtrVariant insert_track (
+    TrackUuid    track_id,
+    int          pos,
+    AudioEngine &engine,
+    bool         publish_events,
+    bool         recalc_graph);
 
   /**
    * Calls insert_track with the given options.
    */
-  template <FinalTrackSubclass T>
-  T * append_track (
-    std::unique_ptr<T> &&track,
-    AudioEngine         &engine,
-    bool                 publish_events,
-    bool                 recalc_graph)
+  TrackPtrVariant append_track (
+    TrackUuid    track_id,
+    AudioEngine &engine,
+    bool         publish_events,
+    bool         recalc_graph)
   {
-    return insert_track<T> (
-      std::move (track), tracks_.size (), engine, publish_events, recalc_graph);
+    return insert_track (
+      track_id, tracks_.size (), engine, publish_events, recalc_graph);
   }
-
-  Track * append_track (
-    std::unique_ptr<Track> &&track,
-    AudioEngine             &engine,
-    bool                     publish_events,
-    bool                     recalc_graph);
 
   /**
    * Removes a track from the Tracklist and the TracklistSelections.
@@ -207,16 +166,12 @@ public:
    * Also disconnects the channel.
    *
    * @param rm_pl Remove plugins or not.
-   * @param free Free the track or not (free later).
-   * @param publish_events Push a track deleted event to the UI.
-   * @param recalc_graph Recalculate the mixer graph.
+   * @param router If given, the processing graph will be soft-recalculated.
    */
   void remove_track (
-    Track &track,
-    bool   rm_pl,
-    bool   free_track,
-    bool   publish_events,
-    bool   recalc_graph);
+    TrackUuid                                     track_id,
+    std::optional<std::reference_wrapper<Router>> router,
+    bool                                          rm_pl);
 
   /**
    * Moves a track from its current position to the position given by @p pos.
@@ -225,46 +180,35 @@ public:
    * @param always_before_pos Whether the track should always be put before the
    * track currently at @p pos. If this is true, when moving down, the resulting
    * track position will be @p pos - 1.
-   * @param recalc_graph Recalculate routing graph.
+   * @param router If given, the processing graph will be soft-recalculated.
    */
-  void
-  move_track (Track &track, int pos, bool always_before_pos, bool recalc_graph);
+  void move_track (
+    TrackUuid                                     track_id,
+    int                                           pos,
+    bool                                          always_before_pos,
+    std::optional<std::reference_wrapper<Router>> router);
+
+  std::optional<TrackPtrVariant> get_track (const TrackUuid &id) const
+  {
+    auto span = get_track_span ();
+    auto it = std::ranges::find (span, id, TrackRegistrySpan::uuid_projection);
+    if (it == span.end ()) [[unlikely]]
+      {
+        return std::nullopt;
+      }
+    return std::make_optional (*it);
+  }
 
   /**
    * Pins or unpins the Track.
    */
   void set_track_pinned (
-    Track &track,
-    bool   pinned,
-    int    publish_events,
-    int    recalc_graph);
+    TrackUuid track_id,
+    bool      pinned,
+    int       publish_events,
+    int       recalc_graph);
 
   bool validate () const;
-
-  /**
-   * Returns the track at the given index or NULL if the index is invalid.
-   *
-   * Not to be used in real-time code.
-   */
-  ATTR_HOT TrackPtrVariant get_track (int idx) { return tracks_.at (idx); }
-
-  /**
-   * Returns the index of the given Track.
-   */
-  int get_track_pos (Track &track) const;
-
-  /**
-   * Returns the first track found with the given type.
-   */
-  template <TrackSubclass T> T * get_track_by_type () const
-  {
-    for (const auto &track : tracks_)
-      {
-        if (std::holds_alternative<T *> (track))
-          return std::get<T *> (track);
-      }
-    return nullptr;
-  }
 
   ChordTrack * get_chord_track () const;
 
@@ -281,14 +225,14 @@ public:
    * Tracklist as the given one (ie, pinned or not).
    */
   std::optional<TrackPtrVariant>
-  get_prev_visible_track (const Track &track) const;
+  get_prev_visible_track (Track::TrackUuid track_id) const;
 
   /**
    * Returns the next visible Track in the same
    * Tracklist as the given one (ie, pinned or not).
    */
   std::optional<TrackPtrVariant>
-  get_next_visible_track (const Track &track) const;
+  get_next_visible_track (Track::TrackUuid track_id) const;
 
   /**
    * Returns the index of the last Track.
@@ -297,9 +241,9 @@ public:
    * @param visible_only Only consider visible
    *   Track's.
    */
-  int get_last_pos (
-    const PinOption pin_opt = PinOption::Both,
-    const bool      visible_only = false) const;
+  int
+  get_last_pos (PinOption pin_opt = PinOption::Both, bool visible_only = false)
+    const;
 
   /**
    * Returns the last Track.
@@ -307,9 +251,13 @@ public:
    * @param pin_opt Pin option.
    * @param visible_only Only consider visible  Track's.
    */
-  std::optional<TrackPtrVariant> get_last_track (
-    const PinOption pin_opt = PinOption::Both,
-    const bool      visible_only = false) const;
+  std::optional<TrackPtrVariant>
+  get_last_track (PinOption pin_opt = PinOption::Both, bool visible_only = false)
+    const
+  {
+    return get_track_span ().get_track_by_pos (
+      get_last_pos (pin_opt, visible_only));
+  }
 
   /**
    * Returns the Track after delta visible Track's.
@@ -320,7 +268,7 @@ public:
    * (ie, pinned or not).
    */
   std::optional<TrackPtrVariant>
-  get_visible_track_after_delta (Track &track, int delta) const;
+  get_visible_track_after_delta (Track::TrackUuid track_id, int delta) const;
 
   /**
    * Returns the number of visible Tracks between src and dest (negative if
@@ -329,7 +277,9 @@ public:
    * The caller is responsible for checking that both tracks are in the same
    * tracklist (ie, pinned or not).
    */
-  int get_visible_track_diff (const Track &src, const Track &dest) const;
+  int get_visible_track_diff (
+    Track::TrackUuid src_track,
+    Track::TrackUuid dest_track) const;
 
   /**
    * Multiplies all tracks' heights and returns if the operation was valid.
@@ -341,6 +291,11 @@ public:
     bool   visible_only,
     bool   check_only,
     bool   fire_events);
+
+  /**
+   * Handle a click selection.
+   */
+  void handle_click (TrackUuid track_id, bool ctrl, bool shift, bool dragged);
 
   /**
    * @brief Imports regions from a region array.
@@ -397,77 +352,40 @@ public:
    * @param track_to_skip Track to skip when searching.
    */
   bool
-  track_name_is_unique (const std::string &name, Track * track_to_skip) const;
+  track_name_is_unique (const std::string &name, TrackUuid track_to_skip) const;
 
   /**
-   * Returns if the tracklist has soloed tracks.
+   * @brief Returns whether the track at @p index is pinned.
    */
-  bool has_soloed () const;
+  bool is_track_pinned (size_t index) const
+  {
+    return index < pinned_tracks_cutoff_;
+  }
 
-  /**
-   * Returns if the tracklist has listened tracks.
-   */
-  bool has_listened () const;
+  auto get_track_index (const Track::TrackUuid &track_id) const
+  {
+    return std::distance (
+      tracks_.begin (), std::ranges::find (tracks_, track_id));
+  }
 
-  int get_num_muted_tracks () const;
+  auto get_track_at_index (size_t index) const
+  {
+    if (index >= tracks_.size ())
+      throw std::out_of_range ("Track index out of range");
+    return get_track_span ().at (index);
+  }
 
-  int get_num_soloed_tracks () const;
-
-  int get_num_listened_tracks () const;
-
-  /**
-   * @brief Returns the number of visible or invisible tracks.
-   */
-  int get_num_visible_tracks (bool visible) const;
-
-  /**
-   * Fills in the given array with all plugins in the tracklist.
-   */
-  void
-  get_plugins (std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &arr) const;
-
-  /**
-   * Activate or deactivate all plugins.
-   *
-   * This is useful for exporting: deactivating and
-   * reactivating a plugin will reset its state.
-   */
-  void activate_all_plugins (bool activate);
-
-  /**
-   * Exposes each track's ports that should be exposed to the backend.
-   *
-   * This should be called after setting up the engine.
-   */
-  void expose_ports_to_backend (AudioEngine &engine);
-
-  /**
-   * Marks or unmarks all tracks for bounce.
-   */
-  void mark_all_tracks_for_bounce (bool bounce);
-
-  /**
-   * @brief Get the total (max) bars in the tracklist.
-   *
-   * @param total_bars Current known total bars
-   * @return New total bars if > than @p total_bars, or @p total_bars.
-   */
-  int get_total_bars (const Transport &transport, int total_bars) const;
-
-  /**
-   * Set various caches (snapshots, track name hashes, plugin
-   * input/output ports, etc).
-   */
-  void set_caches (CacheType types);
+  bool is_track_pinned (Track::TrackUuid track_id) const
+  {
+    return is_track_pinned (get_track_index (track_id));
+  }
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  void swap_tracks (const size_t index1, const size_t index2);
+  void swap_tracks (size_t index1, size_t index2);
 
-  static void move_after_copying_or_moving_inside (
-    TracklistSelections &after_tls,
-    int                  diff_between_track_below_and_parent);
+  TrackRegistry &get_track_registry () const;
 
 public:
   /**
@@ -487,7 +405,7 @@ public:
    *   ...
    * }
    */
-  std::vector<TrackPtrVariant> tracks_;
+  std::vector<Track::TrackUuid> tracks_;
 
   /** The chord track, for convenience. */
   ChordTrack * chord_track_ = nullptr;
@@ -509,11 +427,11 @@ public:
    *
    * Tracks before this position will be considered as pinned.
    */
-  int pinned_tracks_cutoff_ = 0;
+  size_t pinned_tracks_cutoff_ = 0;
 
   /** When this is true, some tracks may temporarily be moved
    * beyond num_tracks. */
-  bool swapping_tracks_ = false;
+  std::atomic<bool> swapping_tracks_ = false;
 
   /** Pointer to owner sample processor, if any. */
   SampleProcessor * sample_processor_ = nullptr;
@@ -525,6 +443,10 @@ public:
   int width_ = 0;
 
   QPointer<PortConnectionsManager> port_connections_manager_;
+
+  std::optional<TrackRegistryRef>                         track_registry_;
+  std::optional<PortRegistryRef>                          port_registry_;
+  std::optional<gui::old_dsp::plugins::PluginRegistryRef> plugin_registry_;
 };
 
 /**

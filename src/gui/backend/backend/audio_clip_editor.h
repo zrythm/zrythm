@@ -29,7 +29,9 @@ class AudioClipEditor final
 public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
-  void init_after_cloning (const AudioClipEditor &other) override
+  void
+  init_after_cloning (const AudioClipEditor &other, ObjectCloneType clone_type)
+    override
   {
     *this = other;
   }

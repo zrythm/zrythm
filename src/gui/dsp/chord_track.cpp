@@ -1,25 +1,31 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/project.h"
+#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/chord_region.h"
 #include "gui/dsp/chord_track.h"
 #include "gui/dsp/track.h"
-
 #include "utils/flags.h"
 #include "utils/rt_thread_id.h"
 
-ChordTrack::ChordTrack (int pos)
-    : Track (
-        Track::Type::Chord,
-        QObject::tr ("Chords").toStdString (),
-        pos,
-        PortType::Event,
-        PortType::Event)
+ChordTrack::ChordTrack (
+  TrackRegistry  &track_registry,
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry,
+  bool            new_identity)
+    : Track (Track::Type::Chord, PortType::Event, PortType::Event),
+      AutomatableTrack (port_registry, new_identity),
+      ProcessableTrack (port_registry, new_identity),
+      RecordableTrack (port_registry, new_identity),
+      ChannelTrack (track_registry, plugin_registry, port_registry, new_identity)
 {
-  color_ = Color (QColor ("#1C8FFB"));
-  icon_name_ = "gnome-icon-library-library-music-symbolic";
+  if (new_identity)
+    {
+      color_ = Color (QColor ("#1C8FFB"));
+      icon_name_ = "gnome-icon-library-library-music-symbolic";
+    }
   automation_tracklist_->setParent (this);
   RegionOwnerImpl::parent_base_qproperties (*this);
 }
@@ -62,14 +68,16 @@ ChordTrack::data (const QModelIndex &index, int role) const
 // =========================================================================
 
 void
-ChordTrack::init_after_cloning (const ChordTrack &other)
+ChordTrack::init_after_cloning (
+  const ChordTrack &other,
+  ObjectCloneType   clone_type)
 {
-  Track::copy_members_from (other);
-  AutomatableTrack::copy_members_from (other);
-  ProcessableTrack::copy_members_from (other);
-  RecordableTrack::copy_members_from (other);
-  ChannelTrack::copy_members_from (other);
-  RegionOwnerImpl::copy_members_from (other);
+  Track::copy_members_from (other, clone_type);
+  AutomatableTrack::copy_members_from (other, clone_type);
+  ProcessableTrack::copy_members_from (other, clone_type);
+  RecordableTrack::copy_members_from (other, clone_type);
+  ChannelTrack::copy_members_from (other, clone_type);
+  RegionOwnerImpl::copy_members_from (other, clone_type);
   scales_.reserve (other.scales_.size ());
   for (const auto &scale : other.scales_)
     {
@@ -91,6 +99,10 @@ ChordTrack::initialize ()
 {
   init_channel ();
   generate_automation_tracks ();
+  init_recordable_track ([] () {
+    return ZRYTHM_HAVE_UI
+           && zrythm::gui::SettingsManager::get_instance ()->get_trackAutoArm ();
+  });
 
   return true;
 }
@@ -120,9 +132,8 @@ ChordTrack::set_playback_caches ()
 {
   region_snapshots_.clear ();
   region_snapshots_.reserve (region_list_->regions_.size ());
-  const auto name_hash = get_name_hash ();
   foreach_region ([&] (auto &region) {
-    z_return_if_fail (region.track_name_hash_ == name_hash);
+    z_return_if_fail (region.track_id_ == get_uuid ());
     region_snapshots_.push_back (region.clone_unique ());
   });
 
@@ -135,21 +146,22 @@ ChordTrack::set_playback_caches ()
 }
 
 void
-ChordTrack::init_loaded ()
+ChordTrack::init_loaded (
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry)
 {
   // ChannelTrack must be initialized before AutomatableTrack
-  ChannelTrack::init_loaded ();
-  AutomatableTrack::init_loaded ();
-  ProcessableTrack::init_loaded ();
-  RecordableTrack::init_loaded ();
+  ChannelTrack::init_loaded (plugin_registry, port_registry);
+  AutomatableTrack::init_loaded (plugin_registry, port_registry);
+  ProcessableTrack::init_loaded (plugin_registry, port_registry);
+  RecordableTrack::init_loaded (plugin_registry, port_registry);
   for (auto &scale : scales_)
     {
       scale->init_loaded ();
     }
 
   foreach_region ([&] (auto &chord_region) {
-    chord_region.track_name_hash_ =
-      dynamic_cast<Track &> (*this).get_name_hash ();
+    chord_region.track_id_ = get_uuid ();
     chord_region.init_loaded ();
   });
 }
@@ -158,9 +170,9 @@ void
 ChordTrack::insert_scale (ScaleObject &scale, int idx)
 {
   z_return_if_fail (idx >= 0);
-  z_return_if_fail (name_hash_ != 0);
+  z_return_if_fail (!get_uuid ().is_null ());
   beginInsertRows ({}, idx, idx);
-  scale.set_track_name_hash (name_hash_);
+  scale.set_track_id (get_uuid ());
   scales_.insert (scales_.begin () + idx, &scale);
   for (size_t i = 0; i < scales_.size (); i++)
     {

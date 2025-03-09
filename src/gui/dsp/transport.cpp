@@ -253,7 +253,7 @@ Transport::moveForward ()
 }
 
 void
-Transport::init_after_cloning (const Transport &other)
+Transport::init_after_cloning (const Transport &other, ObjectCloneType clone_type)
 {
   total_bars_ = other.total_bars_;
   has_range_ = other.has_range_;
@@ -298,14 +298,18 @@ Transport::prepare_audio_regions_for_stretch (TimelineSelections * sel)
 {
   if (sel)
     {
-      for (auto obj : sel->objects_ | type_is<AudioRegion> ())
+      for (
+        auto * obj :
+        sel->get_object_span ().get_elements_by_type<AudioRegion> ())
         {
           obj->before_length_ = obj->get_length_in_ticks ();
         }
     }
   else
     {
-      for (auto track : TRACKLIST->tracks_ | type_is<AudioTrack> ())
+      for (
+        auto * track :
+        TRACKLIST->get_track_span ().get_elements_by_type<AudioTrack> ())
         {
           for (auto &lane_var : track->lanes_)
             {
@@ -329,7 +333,9 @@ Transport::stretch_regions (
 {
   if (sel)
     {
-      for (auto region : sel->objects_ | type_is<Region> ())
+      for (
+        auto * region :
+        sel->get_object_span ().get_elements_derived_from<Region> ())
         {
           auto r_variant = convert_to_variant<RegionPtrVariant> (region);
           std::visit (
@@ -352,7 +358,9 @@ Transport::stretch_regions (
     }
   else
     {
-      for (auto track : TRACKLIST->tracks_ | type_is<AudioTrack> ())
+      for (
+        auto * track :
+        TRACKLIST->get_track_span ().get_elements_by_type<AudioTrack> ())
         {
           for (auto &lane_var : track->lanes_)
             {
@@ -559,7 +567,9 @@ Transport::move_playhead (
     }
 
   /* send MIDI note off on currently playing timeline objects */
-  for (auto track : TRACKLIST->tracks_ | type_is<LanedTrack> ())
+  for (
+    auto * track :
+    TRACKLIST->get_track_span ().get_elements_derived_from<LanedTrack> ())
     {
       std::visit (
         [&] (auto &&t) {
@@ -582,7 +592,7 @@ Transport::move_playhead (
                         {
                           if (midi_note->is_hit (playhead_pos_->frames_))
                             {
-                              t->processor_->piano_roll_->midi_events_
+                              t->processor_->get_piano_roll_port().midi_events_
                                 .queued_events_
                                 .add_note_off (1, midi_note->val_, 0);
                             }
@@ -921,8 +931,8 @@ Transport::recalculate_total_bars (ArrangerSelections * sel)
    * every object */
   else
     {
-      total_bars =
-        TRACKLIST->get_total_bars (*this, TRANSPORT_DEFAULT_TOTAL_BARS);
+      total_bars = TRACKLIST->get_track_span ().get_total_bars (
+        *this, TRANSPORT_DEFAULT_TOTAL_BARS);
 
       total_bars += BARS_END_BUFFER;
     }

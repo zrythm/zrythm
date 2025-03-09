@@ -12,16 +12,26 @@
 #include "utils/gtest_wrapper.h"
 #include "utils/rt_thread_id.h"
 
-AutomatableTrack::AutomatableTrack ()
-    : automation_tracklist_ (new AutomationTracklist ())
+AutomatableTrack::AutomatableTrack (const DeserializationDependencyHolder &dh)
+    : AutomatableTrack (dh.get<std::reference_wrapper<PortRegistry>> ().get (), false)
+{
+}
+
+AutomatableTrack::AutomatableTrack (
+  PortRegistry &port_registry,
+  bool          new_identity)
+    : automation_tracklist_ (new AutomationTracklist (port_registry))
 {
   automation_tracklist_->track_ = this;
 }
 
 void
-AutomatableTrack::copy_members_from (const AutomatableTrack &other)
+AutomatableTrack::copy_members_from (
+  const AutomatableTrack &other,
+  ObjectCloneType         clone_type)
 {
-  automation_tracklist_ = other.automation_tracklist_->clone_raw_ptr ();
+  automation_tracklist_ = other.automation_tracklist_->clone_raw_ptr (
+    ObjectCloneType::Snapshot, tracklist_->port_registry_.value ());
   if (auto * qobject = dynamic_cast<QObject *> (this))
     {
       automation_tracklist_->setParent (qobject);
@@ -31,24 +41,24 @@ AutomatableTrack::copy_members_from (const AutomatableTrack &other)
 }
 
 void
-AutomatableTrack::init_loaded ()
+AutomatableTrack::init_loaded (
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry)
 {
-  automation_tracklist_->init_loaded (this);
+  automation_tracklist_->init_loaded (this, tracklist_->port_registry_.value ());
 
   std::vector<Port *> ports;
   append_ports (ports, true);
-  unsigned int name_hash = get_name_hash ();
+  auto this_id = get_uuid ();
   for (auto &port : ports)
     {
       if (is_in_active_project ())
         {
-          z_return_if_fail (port->id_->track_name_hash_ == name_hash);
+          z_return_if_fail (port->id_->get_track_id ().value () == this_id);
 
           /* set automation tracks on ports */
-          if (
-            ENUM_BITSET_TEST (
-              dsp::PortIdentifier::Flags, port->id_->flags_,
-              dsp::PortIdentifier::Flags::Automatable))
+          if (ENUM_BITSET_TEST (
+                port->id_->flags_, dsp::PortIdentifier::Flags::Automatable))
             {
               auto *            ctrl = dynamic_cast<ControlPort *> (port);
               AutomationTrack * at =
@@ -77,22 +87,22 @@ AutomatableTrack::generate_automation_tracks ()
       /* -- fader -- */
 
       /* volume */
-      AutomationTrack &at = create_and_add_at (*ch->fader_->amp_);
+      AutomationTrack &at = create_and_add_at (ch->fader_->get_amp_port ());
       at.created_ = true;
       atl->set_at_visible (at, true);
 
       /* balance */
-      create_and_add_at (*ch->fader_->balance_);
+      create_and_add_at (ch->fader_->get_balance_port ());
 
       /* mute */
-      create_and_add_at (*ch->fader_->mute_);
+      create_and_add_at (ch->fader_->get_mute_port ());
 
       /* --- end fader --- */
 
       /* sends */
       for (auto &send : ch->sends_)
         {
-          create_and_add_at (*send->amount_);
+          create_and_add_at (send->get_amount_port ());
         }
     }
 
@@ -105,12 +115,12 @@ AutomatableTrack::generate_automation_tracks ()
         {
           for (int j = 0; j < 128; j++)
             {
-              create_and_add_at (*processor->midi_cc_[i * 128 + j]);
+              create_and_add_at (processor->get_midi_cc_port (i * 128, j));
             }
 
-          create_and_add_at (*processor->pitch_bend_[i]);
-          create_and_add_at (*processor->poly_key_pressure_[i]);
-          create_and_add_at (*processor->channel_pressure_[i]);
+          create_and_add_at (processor->get_pitch_bend_port (i));
+          create_and_add_at (processor->get_poly_key_pressure_port (i));
+          create_and_add_at (processor->get_channel_pressure_port (i));
         }
     }
 
@@ -120,21 +130,21 @@ AutomatableTrack::generate_automation_tracks ()
       {
         auto &track = dynamic_cast<TempoTrack &> (*this);
         /* create special BPM and time sig automation tracks for tempo track */
-        auto &at = create_and_add_at (*track.bpm_port_);
+        auto &at = create_and_add_at (track.get_bpm_port ());
         at.created_ = true;
         atl->set_at_visible (at, true);
-        create_and_add_at (*track.beats_per_bar_port_);
-        create_and_add_at (*track.beat_unit_port_);
+        create_and_add_at (track.get_beats_per_bar_port ());
+        create_and_add_at (track.get_beat_unit_port ());
         break;
       }
     case Track::Type::Modulator:
       {
         auto &track = dynamic_cast<ModulatorTrack &> (*this);
-        for (auto &macro : track.modulator_macro_processors_)
+        const auto processors = track.get_modulator_macro_processors ();
+        for (const auto &macro : processors)
           {
-            auto &at = create_and_add_at (*macro->macro_);
-            if (
-              macro.get () == track.modulator_macro_processors_.front ().get ())
+            auto &at = create_and_add_at (macro->get_macro_port ());
+            if (macro.get () == processors.front ().get ())
               {
                 at.created_ = true;
                 atl->set_at_visible (at, true);
@@ -145,7 +155,7 @@ AutomatableTrack::generate_automation_tracks ()
     case Track::Type::Audio:
       {
         auto &track = dynamic_cast<ProcessableTrack &> (*this);
-        create_and_add_at (*track.processor_->output_gain_);
+        create_and_add_at (track.processor_->get_output_gain_port ());
         break;
       }
     default:
@@ -193,32 +203,42 @@ AutomatableTrack::validate_base () const
       /* verify port identifiers */
       std::vector<Port *> ports;
       append_ports (ports, true);
-      unsigned int name_hash = get_name_hash ();
+      auto this_id = get_uuid ();
       for (const auto * port : ports)
         {
-          z_return_val_if_fail (port->id_->track_name_hash_ == name_hash, false);
+          z_return_val_if_fail (port->id_->get_track_id () == this_id, false);
           if (port->id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
             {
-              const auto &pid = port->id_->plugin_id_;
-              z_return_val_if_fail (pid.track_name_hash_ == name_hash, false);
-              zrythm::gui::old_dsp::plugins::Plugin * pl =
-                zrythm::gui::old_dsp::plugins::Plugin::find (pid);
-              z_return_val_if_fail (pl->id_.validate (), false);
-              z_return_val_if_fail (pl->id_ == pid, false);
-              if (pid.slot_type_ == zrythm::dsp::PluginSlotType::Instrument)
-                {
-                  const auto * channel_track =
-                    dynamic_cast<const ChannelTrack *> (this);
-                  z_return_val_if_fail (
-                    pl == channel_track->channel_->instrument_.get (), false);
-                }
+              const auto &pid_opt = port->id_->plugin_id_;
+              z_return_val_if_fail (pid_opt.has_value (), false);
+              const auto &pid = pid_opt.value ();
+              auto        pl_var = PROJECT->find_plugin_by_id (pid);
+              z_return_val_if_fail (pl_var.has_value (), false);
+              auto pl_valid = std::visit (
+                [&] (auto &&pl) {
+                  z_return_val_if_fail (pl->id_.track_id_ == this_id, false);
+                  z_return_val_if_fail (pl->id_.validate (), false);
+                  if (
+                    !pl->id_.slot_.has_slot_index ()
+                    && pl->id_.slot_.get_slot_type_only ()
+                         == dsp::PluginSlotType::Instrument)
+                    {
+                      const auto * channel_track =
+                        dynamic_cast<const ChannelTrack *> (this);
+                      z_return_val_if_fail (
+                        pl->get_uuid ()
+                          == channel_track->channel_->instrument_.value (),
+                        false);
+                    }
+                  return true;
+                },
+                pl_var.value ());
+              z_return_val_if_fail (pl_valid, false);
             }
 
           /* check that the automation track is there */
-          if (
-            ENUM_BITSET_TEST (
-              dsp::PortIdentifier::Flags, port->id_->flags_,
-              dsp::PortIdentifier::Flags::Automatable))
+          if (ENUM_BITSET_TEST (
+                port->id_->flags_, dsp::PortIdentifier::Flags::Automatable))
             {
               const auto * ctrl = dynamic_cast<const ControlPort *> (port);
               const auto * at =

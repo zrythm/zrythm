@@ -147,7 +147,8 @@ public:
 
   void print () const;
 
-  void init_after_cloning (const AudioPool &other) override;
+  void init_after_cloning (const AudioPool &other, ObjectCloneType clone_type)
+    override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

@@ -21,7 +21,7 @@ class InstrumentTrack final
       public PianoRollTrack,
       public ICloneable<InstrumentTrack>,
       public zrythm::utils::serialization::ISerializable<InstrumentTrack>,
-      public InitializableObjectFactory<InstrumentTrack>
+      public utils::InitializableObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -31,12 +31,18 @@ class InstrumentTrack final
   DEFINE_CHANNEL_TRACK_QML_PROPERTIES (InstrumentTrack)
   DEFINE_PIANO_ROLL_TRACK_QML_PROPERTIES (InstrumentTrack)
 
-  friend class InitializableObjectFactory<InstrumentTrack>;
+  friend class InitializableObject;
+
+  DECLARE_FINAL_TRACK_CONSTRUCTORS (InstrumentTrack)
 
 public:
-  void init_loaded () override;
+  void init_loaded (
+    gui::old_dsp::plugins::PluginRegistry &plugin_registry,
+    PortRegistry                          &port_registry) override;
 
-  void init_after_cloning (const InstrumentTrack &other) override;
+  void
+  init_after_cloning (const InstrumentTrack &other, ObjectCloneType clone_type)
+    override;
 
   zrythm::gui::old_dsp::plugins::Plugin * get_instrument ();
 
@@ -60,15 +66,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  /**
-   * @brief Main constructor.
-   *
-   * @param name Track name.
-   * @param pos Track position.
-   */
-  InstrumentTrack (const std::string &name = "", int pos = 0);
-
-  bool initialize () override;
+  bool initialize ();
 
 public:
 };

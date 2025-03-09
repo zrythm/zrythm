@@ -43,7 +43,8 @@ public:
   void              setToolValue (int tool);
   Q_SIGNAL void     toolValueChanged (int tool);
 
-  void init_after_cloning (const Tool &other) override;
+  void
+  init_after_cloning (const Tool &other, ObjectCloneType clone_type) override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

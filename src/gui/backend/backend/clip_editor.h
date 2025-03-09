@@ -57,7 +57,29 @@ public:
   std::optional<ClipEditorArrangerSelectionsPtrVariant>
   get_arranger_selections ();
 
-  std::optional<TrackPtrVariant> get_track ();
+  std::optional<TrackPtrVariant> get_track () const;
+
+  std::optional<Region::TrackUuid> get_track_id () const
+  {
+    return has_region_ ? std::make_optional (region_id_.track_uuid_) : std::nullopt;
+  }
+
+  /**
+   * @brief Unsets the region if it belongs to the given track.
+   */
+  void
+  unset_region_if_belongs_to_track (Region::TrackUuid track_id, bool fire_events)
+  {
+    if (!has_region_)
+      {
+        return;
+      }
+
+    if (region_id_.track_uuid_ == track_id)
+      {
+        set_region (std::nullopt, fire_events);
+      }
+  }
 
   /**
    * To be called when recalculating the graph.

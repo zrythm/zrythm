@@ -38,7 +38,8 @@ public:
 
   // ========================================================================
 
-  void copy_members_from (const TrackLaneList &other);
+  void
+  copy_members_from (const TrackLaneList &other, ObjectCloneType clone_type);
 
   [[nodiscard]] size_t size () const noexcept { return lanes_.size (); }
 

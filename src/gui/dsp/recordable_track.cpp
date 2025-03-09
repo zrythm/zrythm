@@ -10,30 +10,36 @@
 
 using namespace zrythm;
 
-RecordableTrack::RecordableTrack ()
+RecordableTrack::RecordableTrack (PortRegistry &port_registry, bool new_identity)
+    : ProcessableTrack (port_registry, new_identity),
+      port_registry_ (port_registry)
 {
-  recording_ =
-    std::make_unique<ControlPort> (QObject::tr ("Track record").toStdString ());
-  recording_->set_owner (*this);
-  recording_->id_->sym_ = "track_record";
-  recording_->set_toggled (false, false);
-  recording_->id_->flags2_ |= dsp::PortIdentifier::Flags2::TrackRecording;
-  recording_->id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
+  if (new_identity)
+    {
+      auto * recording = port_registry.create_object<ControlPort> (
+        QObject::tr ("Track record").toStdString ());
+      recording->id_->sym_ = "track_record";
+      recording->set_toggled (false, false);
+      recording->id_->flags2_ |= dsp::PortIdentifier::Flags2::TrackRecording;
+      recording->id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
+      recording_id_ = recording->get_uuid ();
+    }
 }
 
 void
-RecordableTrack::init_loaded ()
+RecordableTrack::init_loaded (
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry)
 {
-  ProcessableTrack::init_loaded ();
+  ProcessableTrack::init_loaded (plugin_registry, port_registry);
 }
 
 void
-RecordableTrack::set_recording (bool recording, bool fire_events)
+RecordableTrack::set_recording (bool recording)
 {
-  z_debug (
-    "{}: setting recording {} (fire events: {})", name_, recording, fire_events);
+  z_debug ("{}: setting recording {}", name_, recording);
 
-  recording_->set_toggled (recording, false);
+  get_recording_port ().set_toggled (recording, false);
 
   if (recording)
     {
@@ -46,11 +52,6 @@ RecordableTrack::set_recording (bool recording, bool fire_events)
       /* send all notes off if can record MIDI */
       processor_->pending_midi_panic_ = true;
     }
-
-  if (fire_events)
-    {
-      // EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, this);
-    }
 }
 
 void
@@ -58,12 +59,5 @@ RecordableTrack::append_member_ports (
   std::vector<Port *> &ports,
   bool                 include_plugins) const
 {
-  if (recording_)
-    {
-      ports.push_back (recording_.get ());
-    }
-  else
-    {
-      z_warning ("recording port unset");
-    }
+  ports.push_back (std::addressof (get_recording_port ()));
 }

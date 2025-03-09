@@ -22,7 +22,7 @@
 #if defined(__GNUC__) || defined(__clang__)
 #  pragma GCC diagnostic push
 #  pragma GCC diagnostic ignored "-Wshadow"
-#elif defined(_MSC_VER)
+#elifdef _MSC_VER
 #  pragma warning(push)
 #  pragma warning(disable : 4458) // declaration hides class member
 #endif
@@ -31,7 +31,7 @@
 
 #if defined(__GNUC__) || defined(__clang__)
 #  pragma GCC diagnostic pop
-#elif defined(_MSC_VER)
+#elifdef _MSC_VER
 #  pragma warning(pop)
 #endif
 
@@ -117,6 +117,8 @@ using GenericStringSetter = std::function<void (const std::string &)>;
  * Generic callback.
  */
 using GenericCallback = std::function<void ()>;
+
+using GenericBoolGetter = std::function<bool ()>;
 
 /**
  * Generic comparator.
@@ -211,7 +213,7 @@ enum class BeatUnit
     static constexpr bool is_flags = true; \
   }
 #define ENUM_BITSET(_enum, _val) (magic_enum::containers::bitset<_enum> (_val))
-#define ENUM_BITSET_TEST(_enum, _val, _other_val) \
+#define ENUM_BITSET_TEST(_val, _other_val) \
   /* (ENUM_BITSET (_enum, _val).test (_other_val)) */ \
   (static_cast<int> (_val) & static_cast<int> (_other_val))
 
@@ -225,9 +227,9 @@ enum class BeatUnit
 #define ENUM_NAME_FROM_INT(_enum, _int) \
   ENUM_NAME (ENUM_INT_TO_VALUE (_enum, _int))
 
-#if defined(__clang__)
+#ifdef __clang__
 #  define ASSUME(expr) __builtin_assume (expr)
-#elif defined(__GNUC__)
+#elifdef __GNUC__
 #  define ASSUME(expr) \
     do \
       { \
@@ -235,7 +237,7 @@ enum class BeatUnit
           __builtin_unreachable (); \
       } \
     while (0)
-#elif defined(_MSC_VER)
+#elifdef _MSC_VER
 #  define ASSUME(expr) __assume (expr)
 #else
 #  define ASSUME(expr) \
@@ -248,7 +250,7 @@ enum class BeatUnit
 
 enum class CacheType
 {
-  TrackNameHashes = 1 << 0,
+  // TrackNameHashes = 1 << 0,
   PluginPorts = 1 << 1,
   PlaybackSnapshots = 1 << 2,
   AutomationLaneRecordModes = 1 << 3,
@@ -258,9 +260,8 @@ enum class CacheType
 ENUM_ENABLE_BITSET (CacheType);
 
 constexpr CacheType ALL_CACHE_TYPES =
-  CacheType::TrackNameHashes | CacheType::PluginPorts
-  | CacheType::PlaybackSnapshots | CacheType::AutomationLaneRecordModes
-  | CacheType::AutomationLanePorts;
+  CacheType::PluginPorts | CacheType::PlaybackSnapshots
+  | CacheType::AutomationLaneRecordModes | CacheType::AutomationLanePorts;
 
 /* types for simple timestamps/durations */
 using SteadyClock = std::chrono::steady_clock;
@@ -299,6 +300,81 @@ typename_to_string ()
 
 #define Z_DISABLE_COPY_MOVE(Class) Q_DISABLE_COPY_MOVE (Class)
 #define Z_DISABLE_COPY(Class) Q_DISABLE_COPY (Class)
+
+/**
+ * @brief Wrapper around std::optional<std::reference_wrapper<T>> that provides
+ * a more convenient API.
+ *
+ * This class provides a convenient wrapper around
+ * std::optional<std::reference_wrapper<T>> that allows you to easily access the
+ * underlying value without having to check for the presence of a value first.
+ *
+ * The `operator*()` and `value()` methods return a reference to the underlying
+ * value, and the `has_value()` method can be used to check if a value is
+ * present.
+ */
+template <typename T> struct OptionalRef
+{
+  OptionalRef () = default;
+  OptionalRef (std::nullopt_t) { }
+  OptionalRef (T &ref) : ref_ (ref) { }
+
+  std::optional<std::reference_wrapper<T>> ref_;
+
+  /**
+   * @brief Dereference the underlying value.
+   *
+   * @return A reference to the underlying value.
+   */
+  T &operator* ()
+  {
+    assert (has_value ());
+    return ref_->get ();
+  }
+  const T &operator* () const
+  {
+    assert (has_value ());
+    return ref_->get ();
+  }
+
+  const T * operator->() const
+  {
+    assert (has_value ());
+    return std::addressof (ref_->get ());
+  }
+  T * operator->()
+  {
+    assert (has_value ());
+    return std::addressof (ref_->get ());
+  }
+
+  explicit operator bool () const { return has_value (); }
+
+  /**
+   * @brief Check if a value is present.
+   *
+   * @return `true` if a value is present, `false` otherwise.
+   */
+  bool has_value () const { return ref_.has_value (); }
+
+  /**
+   * @brief Get a reference to the underlying value.
+   *
+   * @return A reference to the underlying value.
+   */
+  T &value ()
+  {
+    assert (has_value ());
+    return ref_->get ();
+  }
+};
+
+template <typename Tuple, typename Callable>
+void
+iterate_tuple (Callable c, Tuple &&t)
+{
+  std::apply ([&] (auto &&... args) { (c (args), ...); }, t);
+}
 
 /**
  * @}

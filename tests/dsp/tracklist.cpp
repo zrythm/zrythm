@@ -57,8 +57,10 @@ TEST_F (ZrythmFixture, SwapWithAutomationRegions)
   create_automation_region (TRACKLIST->get_last_pos ());
 
   /* swap tracks */
-  auto * track1 = TRACKLIST->get_track (TRACKLIST->get_num_tracks () - 2);
-  auto * track2 = TRACKLIST->get_track (TRACKLIST->get_num_tracks () - 1);
+  auto * track1 =
+    TRACKLIST->get_track_at_index (TRACKLIST->get_num_tracks () - 2);
+  auto * track2 =
+    TRACKLIST->get_track_at_index (TRACKLIST->get_num_tracks () - 1);
   track2->select (true, true, false);
   ASSERT_TRUE (TRACKLIST->validate ());
   UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (

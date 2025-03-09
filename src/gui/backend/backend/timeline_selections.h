@@ -93,28 +93,6 @@ public:
   OptionalTrackPtrVariant get_last_track () const;
 
   /**
-   * @brief Returns a new vector containing only the objects derived from
-   * @p T.
-   *
-   * @tparam T
-   * @return std::vector<std::shared_ptr<T>>
-   */
-  template <typename T>
-  std::vector<std::shared_ptr<T>> get_objects_of_type () const
-  {
-    std::vector<std::shared_ptr<T>> result;
-
-    for (const auto &obj : objects_)
-      {
-        if (auto casted = std::dynamic_pointer_cast<T> (obj))
-          {
-            result.push_back (casted);
-          }
-      }
-    return result;
-  }
-
-  /**
    * Replaces the track positions in each object with visible track indices
    * starting from 0.
    *
@@ -175,9 +153,11 @@ public:
     bool         export_full_regions,
     bool         lanes_as_tracks) const;
 
-  void init_after_cloning (const TimelineSelections &other) override
+  void init_after_cloning (
+    const TimelineSelections &other,
+    ObjectCloneType           clone_type) override
   {
-    ArrangerSelections::copy_members_from (other);
+    ArrangerSelections::copy_members_from (other, clone_type);
     region_track_vis_index_ = other.region_track_vis_index_;
     chord_track_vis_index_ = other.chord_track_vis_index_;
     marker_track_vis_index_ = other.marker_track_vis_index_;

@@ -113,7 +113,8 @@ public:
   void
   get_plugins (std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &arr) const;
 
-  void init_after_cloning (const UndoStack &other) override;
+  void init_after_cloning (const UndoStack &other, ObjectCloneType clone_type)
+    override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

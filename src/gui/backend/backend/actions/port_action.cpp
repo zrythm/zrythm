@@ -10,11 +10,13 @@
 using namespace zrythm::gui::actions;
 
 void
-PortAction::init_after_cloning (const PortAction &other)
+PortAction::init_after_cloning (
+  const PortAction &other,
+  ObjectCloneType   clone_type)
 {
-  UndoableAction::copy_members_from (other);
+  UndoableAction::copy_members_from (other, clone_type);
   type_ = other.type_;
-  port_id_ = other.port_id_->clone_unique ();
+  port_id_ = other.port_id_;
   val_ = other.val_;
 }
 
@@ -24,18 +26,18 @@ PortAction::PortAction (QObject * parent)
 }
 
 PortAction::PortAction (
-  Type                  type,
-  const PortIdentifier &port_id,
-  float                 val,
-  bool                  is_normalized)
-    : UndoableAction (UndoableAction::Type::Port), type_ (type),
-      port_id_ (port_id.clone_unique ())
+  Type                     type,
+  PortIdentifier::PortUuid port_id,
+  float                    val,
+  bool                     is_normalized)
+    : UndoableAction (UndoableAction::Type::Port), type_ (type), port_id_ (port_id)
 {
   if (is_normalized)
     {
       auto port_var = PROJECT->find_port_by_id (port_id);
       z_return_if_fail (
-        port_var && std::holds_alternative<ControlPort *> (*port_var));
+        port_var.has_value ()
+        && std::holds_alternative<ControlPort *> (port_var.value ()));
       val_ = std::get<ControlPort *> (*port_var)->normalized_val_to_real (val);
     }
   else
@@ -47,7 +49,7 @@ PortAction::PortAction (
 void
 PortAction::do_or_undo (bool do_it)
 {
-  auto port_var = PROJECT->find_port_by_id (*port_id_);
+  auto port_var = PROJECT->find_port_by_id (port_id_.value ());
   z_return_if_fail (
     port_var && std::holds_alternative<ControlPort *> (*port_var));
   auto * port = std::get<ControlPort *> (*port_var);
@@ -84,9 +86,14 @@ PortAction::to_string () const
   switch (type_)
     {
     case Type::SetControlValue:
-      return format_qstr (
-        QObject::tr ("Set {} to {}"), port_id_->get_label (), val_);
-      break;
+      {
+        auto port_var = PROJECT->find_port_by_id (port_id_.value ());
+        z_return_val_if_fail (
+          port_var && std::holds_alternative<ControlPort *> (*port_var), {});
+        auto * port = std::get<ControlPort *> (*port_var);
+        return format_qstr (
+          QObject::tr ("Set {} to {}"), port->get_label (), val_);
+      }
     }
 
   z_return_val_if_reached ({});

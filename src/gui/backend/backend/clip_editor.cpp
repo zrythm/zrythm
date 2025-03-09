@@ -91,7 +91,7 @@ ClipEditor::get_region () const
 }
 
 std::optional<TrackPtrVariant>
-ClipEditor::get_track ()
+ClipEditor::get_track () const
 {
   if (ROUTER->is_processing_thread ())
     {

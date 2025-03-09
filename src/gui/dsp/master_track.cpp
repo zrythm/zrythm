@@ -5,17 +5,22 @@
 
 using namespace zrythm;
 
-MasterTrack::MasterTrack (int pos)
-    : Track (
-        Track::Type::Master,
-        QObject::tr ("Master").toStdString (),
-        pos,
-        PortType::Audio,
-        PortType::Audio)
+MasterTrack::MasterTrack (
+  TrackRegistry  &track_registry,
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry,
+  bool            new_identity)
+    : Track (Track::Type::Master, PortType::Audio, PortType::Audio),
+      AutomatableTrack (port_registry, new_identity),
+      ProcessableTrack (port_registry, new_identity),
+      ChannelTrack (track_registry, plugin_registry, port_registry, new_identity)
 {
-  /* GTK color picker color */
-  color_ = Color (QColor ("#D90368"));
-  icon_name_ = "jam-icons-crown";
+  if (new_identity)
+    {
+      /* GTK color picker color */
+      color_ = Color (QColor ("#D90368"));
+      icon_name_ = "jam-icons-crown";
+    }
   automation_tracklist_->setParent (this);
 }
 
@@ -29,22 +34,26 @@ MasterTrack::initialize ()
 }
 
 void
-MasterTrack::init_loaded ()
+MasterTrack::init_loaded (
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry)
 {
   // ChannelTrack must be initialized before AutomatableTrack
-  ChannelTrack::init_loaded ();
-  AutomatableTrack::init_loaded ();
-  ProcessableTrack::init_loaded ();
+  ChannelTrack::init_loaded (plugin_registry, port_registry);
+  AutomatableTrack::init_loaded (plugin_registry, port_registry);
+  ProcessableTrack::init_loaded (plugin_registry, port_registry);
 }
 
 void
-MasterTrack::init_after_cloning (const MasterTrack &other)
+MasterTrack::init_after_cloning (
+  const MasterTrack &other,
+  ObjectCloneType    clone_type)
 {
-  Track::copy_members_from (other);
-  AutomatableTrack::copy_members_from (other);
-  ProcessableTrack::copy_members_from (other);
-  ChannelTrack::copy_members_from (other);
-  GroupTargetTrack::copy_members_from (other);
+  Track::copy_members_from (other, clone_type);
+  AutomatableTrack::copy_members_from (other, clone_type);
+  ProcessableTrack::copy_members_from (other, clone_type);
+  ChannelTrack::copy_members_from (other, clone_type);
+  GroupTargetTrack::copy_members_from (other, clone_type);
 }
 
 void

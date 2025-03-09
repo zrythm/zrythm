@@ -24,9 +24,7 @@ ChordRegion::ChordRegion (
 {
   id_.type_ = RegionType::Chord;
 
-  init (
-    start_pos, end_pos, /*P_CHORD_TRACK->get_name_hash ()  */ 0, 0, idx,
-    ticks_per_frame);
+  init (start_pos, end_pos, P_CHORD_TRACK->get_uuid (), 0, idx, ticks_per_frame);
 }
 
 void
@@ -41,7 +39,9 @@ ChordRegion::init_loaded ()
 }
 
 void
-ChordRegion::init_after_cloning (const ChordRegion &other)
+ChordRegion::init_after_cloning (
+  const ChordRegion &other,
+  ObjectCloneType    clone_type)
 {
   // init (
   // *other.pos_, *other.end_pos_, other.id_.track_name_hash_, 0, other.id_.idx_);
@@ -52,14 +52,14 @@ ChordRegion::init_after_cloning (const ChordRegion &other)
       new_chord->setParent (this);
       chord_objects_.push_back (new_chord);
     }
-  RegionT::copy_members_from (other);
-  TimelineObject::copy_members_from (other);
-  NameableObject::copy_members_from (other);
-  LoopableObject::copy_members_from (other);
-  MuteableObject::copy_members_from (other);
-  LengthableObject::copy_members_from (other);
-  ColoredObject::copy_members_from (other);
-  ArrangerObject::copy_members_from (other);
+  RegionT::copy_members_from (other, clone_type);
+  TimelineObject::copy_members_from (other, clone_type);
+  NameableObject::copy_members_from (other, clone_type);
+  LoopableObject::copy_members_from (other, clone_type);
+  MuteableObject::copy_members_from (other, clone_type);
+  LengthableObject::copy_members_from (other, clone_type);
+  ColoredObject::copy_members_from (other, clone_type);
+  ArrangerObject::copy_members_from (other, clone_type);
 }
 
 // ========================================================================

@@ -1,43 +1,31 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-# include "gui/dsp/audio_bus_track.h"
-# include "gui/dsp/audio_group_track.h"
-# include "gui/dsp/audio_region.h"
-# include "gui/dsp/audio_track.h"
-# include "gui/dsp/foldable_track.h"
-# include "gui/dsp/folder_track.h"
-# include "gui/dsp/group_target_track.h"
-# include "gui/dsp/instrument_track.h"
-# include "gui/dsp/marker_track.h"
-# include "gui/dsp/midi_bus_track.h"
-# include "gui/dsp/midi_group_track.h"
-# include "gui/dsp/midi_track.h"
-# include "gui/dsp/router.h"
-# include "gui/dsp/track.h"
-# include "gui/dsp/tracklist.h"
+#include "gui/backend/backend/actions/tracklist_selections_action.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/settings_manager.h"
+#include "gui/backend/backend/zrythm.h"
 #include "gui/backend/io/file_descriptor.h"
 #include "gui/backend/io/midi_file.h"
+#include "gui/backend/ui.h"
 #include "gui/dsp/plugin.h"
+#include "gui/dsp/router.h"
+#include "gui/dsp/tracklist.h"
 #include "utils/base64.h"
 #include "utils/debug.h"
 #include "utils/exceptions.h"
 #include "utils/io.h"
 #include "utils/traits.h"
 #include "utils/types.h"
-#include "gui/backend/ui.h"
-#include "gui/backend/backend/actions/tracklist_selections_action.h"
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings_manager.h"
-#include "gui/backend/backend/zrythm.h"
 
 using namespace zrythm::gui::actions;
 
 void
 TracklistSelectionsAction::init_after_cloning (
-  const TracklistSelectionsAction &other)
+  const TracklistSelectionsAction &other,
+  ObjectCloneType                  clone_type)
 {
-  UndoableAction::copy_members_from (other);
+  UndoableAction::copy_members_from (other, clone_type);
   tracklist_selections_action_type_ = other.tracklist_selections_action_type_;
   track_type_ = other.track_type_;
   if (other.pl_setting_)
@@ -58,12 +46,18 @@ TracklistSelectionsAction::init_after_cloning (
   base64_midi_ = other.base64_midi_;
   pool_id_ = other.pool_id_;
   if (other.tls_before_)
-    tls_before_ = other.tls_before_->clone_unique ();
+    tls_before_ = TrackSpan{ *other.tls_before_ }.create_snapshots (
+      *this, PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+      PROJECT->get_port_registry ());
   if (other.tls_after_)
-    tls_after_ = other.tls_after_->clone_unique ();
+    tls_after_ = TrackSpan{ *other.tls_after_ }.create_snapshots (
+      *this, PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+      PROJECT->get_port_registry ());
   if (other.foldable_tls_before_)
-    foldable_tls_before_ = other.foldable_tls_before_->clone_unique ();
-  out_track_hashes_ = other.out_track_hashes_;
+    foldable_tls_before_ = TrackSpan{ *foldable_tls_before_ }.create_snapshots (
+      *this, PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+      PROJECT->get_port_registry ());
+  out_track_uuids_ = other.out_track_uuids_;
   clone_unique_ptr_container (src_sends_, other.src_sends_);
   edit_type_ = other.edit_type_;
   new_txt_ = other.new_txt_;
@@ -74,37 +68,37 @@ TracklistSelectionsAction::init_after_cloning (
 
 void
 TracklistSelectionsAction::copy_track_positions_from_selections (
-  std::vector<int>          &track_positions,
-  const TracklistSelections &sel)
+  std::vector<int> &track_positions,
+  TrackSpanVariant  selections_var)
 {
-  num_tracks_ = sel.tracks_.size ();
-  for (const auto &track : sel.tracks_)
-    {
-      track_positions.push_back (track->pos_);
-    }
-  std::sort (track_positions.begin (), track_positions.end ());
+  std::visit (
+    [&] (auto &&selections) {
+      num_tracks_ = selections.size ();
+      for (const auto &track_var : selections)
+        {
+          track_positions.push_back (
+            std::visit (selections.position_projection, track_var));
+        }
+      std::ranges::sort (track_positions);
+    },
+    selections_var);
 }
 
-/**
- * Resets the foldable track sizes when undoing an action.
- *
- * @note Must only be used during undo.
- */
 void
 TracklistSelectionsAction::reset_foldable_track_sizes ()
 {
-  for (auto own_tr : foldable_tls_before_->tracks_ | type_is<FoldableTrack> ())
+  for (auto own_tr_var : *foldable_tls_before_)
     {
-      auto prj_tr_var = TRACKLIST->find_track_by_name (own_tr->name_);
       std::visit (
-        [&] (auto &&prj_tr) {
-          using TrackT = base_type<decltype (prj_tr)>;
+        [&] (auto &&own_tr) {
+          using TrackT = base_type<decltype (own_tr)>;
+          auto prj_tr_var = *TRACKLIST->get_track (own_tr->get_uuid ());
           if constexpr (std::derived_from<TrackT, FoldableTrack>)
             {
-              prj_tr->size_ = own_tr->size_;
+              std::get<TrackT *> (prj_tr_var)->size_ = own_tr->size_;
             }
         },
-        *prj_tr_var);
+        own_tr_var);
     }
 }
 
@@ -119,14 +113,18 @@ TracklistSelectionsAction::validate () const
 {
   if (tracklist_selections_action_type_ == Type::Delete)
     {
-      if (!tls_before_ || tls_before_->contains_undeletable_track ())
+      if (
+        !tls_before_ || TrackSpan{ *tls_before_ }.contains_undeletable_track ())
         {
           return false;
         }
     }
   else if (tracklist_selections_action_type_ == Type::MoveInside)
     {
-      if (!tls_before_ || tls_before_->contains_track_index (track_pos_))
+      if (
+        !tls_before_
+        || std::ranges::contains (
+          TrackSpan{ *tls_before_ }, track_pos_, TrackSpan::position_projection))
         return false;
     }
 
@@ -134,25 +132,25 @@ TracklistSelectionsAction::validate () const
 }
 
 TracklistSelectionsAction::TracklistSelectionsAction (
-  Type                           type,
-  const TracklistSelections *    tls_before,
-  const TracklistSelections *    tls_after,
-  const PortConnectionsManager * port_connections_mgr,
-  const Track *                  track,
-  Track::Type                    track_type,
-  const PluginSetting *          pl_setting,
-  const FileDescriptor *         file_descr,
-  int                            track_pos,
-  int                            lane_pos,
-  const Position *               pos,
-  int                            num_tracks,
-  EditType                       edit_type,
-  int                            ival_after,
-  const Color *                  color_new,
-  float                          val_before,
-  float                          val_after,
-  const std::string *            new_txt,
-  bool                           already_edited)
+  Type                            type,
+  std::optional<TrackSpanVariant> tls_before_var,
+  std::optional<TrackSpanVariant> tls_after_var,
+  const PortConnectionsManager *  port_connections_mgr,
+  std::optional<TrackPtrVariant>  track_var,
+  Track::Type                     track_type,
+  const PluginSetting *           pl_setting,
+  const FileDescriptor *          file_descr,
+  int                             track_pos,
+  int                             lane_pos,
+  const Position *                pos,
+  int                             num_tracks,
+  EditType                        edit_type,
+  int                             ival_after,
+  const Color *                   color_new,
+  float                           val_before,
+  float                           val_after,
+  const std::string *             new_txt,
+  bool                            already_edited)
     : UndoableAction (
         UndoableAction::Type::TracklistSelections,
         AUDIO_ENGINE->frames_per_tick_,
@@ -173,10 +171,18 @@ TracklistSelectionsAction::TracklistSelectionsAction (
       assert (num_tracks > 0);
     }
 
+  const bool need_full_selections = type != Type::Edit;
+  const bool is_copy_action =
+    type == TracklistSelectionsAction::Type::Copy
+    || type == TracklistSelectionsAction::Type::CopyInside;
+
   if (
-    (tracklist_selections_action_type_ == Type::Copy
-     || tracklist_selections_action_type_ == Type::CopyInside)
-    && tls_before->contains_uncopyable_track ())
+    is_copy_action
+    && std::visit (
+      [&] (const auto &tls_before) {
+        return tls_before.contains_uncopyable_track ();
+      },
+      *tls_before_var))
     {
       throw ZrythmException (QObject::tr (
         "Cannot copy tracks: selection contains an uncopyable track"));
@@ -184,7 +190,11 @@ TracklistSelectionsAction::TracklistSelectionsAction (
 
   if (
     tracklist_selections_action_type_ == Type::Delete
-    && tls_before->contains_undeletable_track ())
+    && std::visit (
+      [&] (const auto &tls_before) {
+        return tls_before.contains_undeletable_track ();
+      },
+      *tls_before_var))
     {
       throw ZrythmException (QObject::tr (
         "Cannot delete tracks: selection contains an undeletable track"));
@@ -194,7 +204,7 @@ TracklistSelectionsAction::TracklistSelectionsAction (
     tracklist_selections_action_type_ == Type::MoveInside
     || tracklist_selections_action_type_ == Type::CopyInside)
     {
-      auto _foldable_tr = TRACKLIST->get_track (track_pos);
+      auto _foldable_tr = TRACKLIST->get_track_at_index (track_pos);
       std::visit (
         [&] (auto &&foldable_tr) { assert (foldable_tr->is_foldable ()); },
         _foldable_tr);
@@ -278,102 +288,149 @@ TracklistSelectionsAction::TracklistSelectionsAction (
       file_basename_ = utils::io::path_get_basename (file_descr->abs_path_);
     }
 
-  bool need_full_selections = true;
-  if (type == Type::Edit)
+  if (tls_before_var)
     {
-      need_full_selections = false;
-    }
-
-  if (tls_before)
-    {
-      if (tls_before->tracks_.empty ())
-        {
-          throw ZrythmException (QObject::tr ("No tracks selected"));
-        }
-
-      if (need_full_selections)
-        {
-          tls_before_ = tls_before->clone_unique ();
-          tls_before_->sort ();
-          foldable_tls_before_ = std::make_unique<TracklistSelections> ();
-          for (auto &tr : TRACKLIST->tracks_)
+      std::visit (
+        [&] (const auto &tls_before) {
+          if (tls_before.empty ())
             {
-              std::visit (
-                [&] (auto &&track_inner) {
-                  using TrackT = base_type<decltype (track_inner)>;
-                  if constexpr (std::derived_from<TrackT, FoldableTrack>)
-                    {
-                      auto new_track = track_inner->clone_unique ();
-                      foldable_tls_before_->add_track (std::move (new_track));
-                    }
-                },
-                tr);
+              throw ZrythmException (QObject::tr ("No tracks selected"));
             }
-        }
-      else
-        {
-          copy_track_positions_from_selections (
-            track_positions_before_, *tls_before);
-        }
-    }
 
-  if (tls_after)
-    {
-      if (need_full_selections)
-        {
-          tls_after_ = tls_after->clone_unique ();
-          tls_after_->sort ();
-        }
-      else
-        {
-          copy_track_positions_from_selections (
-            track_positions_after_, *tls_after);
-        }
-    }
-
-  /* if need to clone tls_before */
-  if (tls_before && need_full_selections)
-    {
-      /* save the outputs & incoming sends */
-      for (auto &clone_track : tls_before_->tracks_)
-        {
-          auto clone_channel_track =
-            dynamic_cast<ChannelTrack *> (clone_track.get ());
-          if (clone_channel_track && clone_channel_track->channel_->has_output_)
+          if (need_full_selections)
             {
-              out_track_hashes_.push_back (
-                clone_channel_track->channel_->output_name_hash_);
+              if (is_copy_action)
+                {
+                  tls_before_ = tls_before.create_new_identities (
+                    PROJECT->get_track_registry (),
+                    PROJECT->get_plugin_registry (),
+                    PROJECT->get_port_registry ());
+                }
+              else
+                {
+                  // FIXME: this QObject is not initialized yet
+                  tls_before_ = tls_before.create_snapshots (
+                    *this, PROJECT->get_track_registry (),
+                    PROJECT->get_plugin_registry (),
+                    PROJECT->get_port_registry ());
+                }
+              TrackCollections::sort_by_position (*tls_before_);
+
+              // FIXME: need new identities?
+              const auto foldable_tracks = std::ranges::to<std::vector> (
+                TRACKLIST->get_track_span ()
+                | std::views::filter (TrackSpan::foldable_projection));
+              foldable_tls_before_ = TrackSpan{ foldable_tracks }.create_snapshots (
+                *this, PROJECT->get_track_registry (),
+                PROJECT->get_plugin_registry (), PROJECT->get_port_registry ());
             }
           else
             {
-              out_track_hashes_.push_back (0);
+              copy_track_positions_from_selections (
+                track_positions_before_, tls_before);
             }
+        },
+        tls_before_var.value ());
+    }
 
-          for (
-            const auto cur_track : TRACKLIST->tracks_ | type_is<ChannelTrack> ())
+  if (tls_after_var.has_value ())
+    {
+      std::visit (
+        [&] (const auto &tls_after) {
+          if (need_full_selections)
             {
-              for (
-                const auto &send :
-                cur_track->channel_->sends_
-                  | std::views::filter (&ChannelSend::is_enabled))
+              if (is_copy_action)
                 {
-                  Track * target_track = send->get_target_track (cur_track);
-                  z_return_if_fail (target_track);
+                  tls_after_ = tls_after.create_new_identities (
+                    PROJECT->get_track_registry (),
+                    PROJECT->get_plugin_registry (),
+                    PROJECT->get_port_registry ());
+                }
+              else
+                {
+                  // FIXME: this QObject is not initialized yet
+                  tls_after_ = tls_after.create_snapshots (
+                    *this, PROJECT->get_track_registry (),
+                    PROJECT->get_plugin_registry (),
+                    PROJECT->get_port_registry ());
+                }
 
-                  if (target_track->pos_ == clone_track->pos_)
+              TrackCollections::sort_by_position (*tls_after_);
+            }
+          else
+            {
+              copy_track_positions_from_selections (
+                track_positions_after_, tls_after);
+            }
+        },
+        *tls_after_var);
+    }
+
+  /* if need to clone tls_before */
+  if (tls_before_var && need_full_selections)
+    {
+      /* save the outputs & incoming sends */
+      for (const auto &clone_track_var : *tls_before_)
+        {
+          std::visit (
+            [&] (auto &&clone_track) {
+              if constexpr (
+                std::derived_from<base_type<decltype (clone_track)>, ChannelTrack>)
+                {
+                  if (clone_track->channel_->has_output ())
                     {
-                      src_sends_.emplace_back (send->clone_unique ());
+                      out_track_uuids_.push_back (
+                        clone_track->channel_->output_track_uuid_);
+                    }
+                  else
+                    {
+                      out_track_uuids_.emplace_back (std::nullopt);
                     }
                 }
-            }
+              else
+                {
+                  out_track_uuids_.emplace_back (std::nullopt);
+                }
+
+              for (
+                const auto &cur_track :
+                TRACKLIST->get_track_span ()
+                  | std::views::filter (
+                    TrackSpan::derived_from_type_projection<ChannelTrack>)
+                  | std::views::transform (
+                    TrackSpan::derived_type_transformation<ChannelTrack>))
+                {
+                  for (
+                    const auto &send :
+                    cur_track->channel_->sends_
+                      | std::views::filter (&ChannelSend::is_enabled))
+                    {
+                      Track * target_track = send->get_target_track ();
+                      z_return_if_fail (target_track);
+
+                      if (target_track->pos_ == clone_track->pos_)
+                        {
+                          src_sends_.emplace_back (send->clone_unique (
+                            ObjectCloneType::Snapshot,
+                            PROJECT->get_track_registry (),
+                            PROJECT->get_port_registry ()));
+                        }
+                    }
+                }
+            },
+            clone_track_var);
         }
     }
 
-  if (tracklist_selections_action_type_ == Type::Edit && track)
+  if (tracklist_selections_action_type_ == Type::Edit && track_var.has_value ())
     {
       num_tracks_ = 1;
-      track_positions_before_.push_back (track->pos_);
-      track_positions_after_.push_back (track->pos_);
+      std::visit (
+        [&] (auto &&track) {
+          track_positions_before_.push_back (track->pos_);
+          track_positions_after_.push_back (track->pos_);
+        },
+        track_var.value ());
     }
 
   if (color_new)
@@ -408,91 +465,137 @@ TracklistSelectionsAction::create_track (int idx)
     {
       auto track_type_str = Track_Type_to_string (track_type_, true);
       auto label = format_qstr (QObject::tr ("{} Track"), track_type_str);
-      auto track = Track::create_track (track_type_, label.toStdString (), pos);
-      TRACKLIST->insert_track (
-        std::move (track), pos, *AUDIO_ENGINE, false, false);
+      auto unique_track_var =
+        Track::create_track (track_type_, label.toStdString (), pos);
+      std::visit (
+        [&] (auto &&unique_track) {
+          auto track = unique_track.release ();
+          PROJECT->get_track_registry ().register_object (track);
+          TRACKLIST->insert_track (
+            track->get_uuid (), pos, *AUDIO_ENGINE, false, false);
+        },
+        unique_track_var);
     }
   else /* else if track is not empty */
     {
-      std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin> pl;
-      std::unique_ptr<Track>                   track;
-      zrythm::gui::old_dsp::plugins::Plugin *                added_pl = nullptr;
+      TrackUniquePtrVariant track;
 
       /* if creating audio track from file */
+      bool        has_plugin = false;
+      std::string name{};
       if (track_type_ == Track::Type::Audio && pool_id_ >= 0)
         {
-          track = *AudioTrack::create_unique (file_basename_, pos, sample_rate_);
+          track = AudioTrack::create_unique<AudioTrack> (
+            PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+            PROJECT->get_port_registry (), true);
+          // TODO set samplerate on AudioTrack
+          name = file_basename_;
         }
       /* else if creating MIDI track from file */
       else if (track_type_ == Track::Type::Midi && !base64_midi_.empty ())
         {
-          track = *MidiTrack::create_unique (file_basename_, pos);
+          track = MidiTrack::create_unique<MidiTrack> (
+            PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+            PROJECT->get_port_registry (), true);
+          name = file_basename_;
         }
       /* at this point we can assume it has a plugin */
       else
         {
-          const auto &setting = pl_setting_;
-          const auto &descr = setting->descr_;
+          const auto &descr = pl_setting_->descr_;
 
           track = Track::create_track (track_type_, descr->name_, pos);
-
-          pl = setting->create_plugin (track->get_name_hash ());
-          pl->instantiate ();
-          pl->activate ();
+          has_plugin = true;
+          name = descr->name_;
         }
 
-      auto added_track = TRACKLIST->insert_track (
-        std::move (track), pos, *AUDIO_ENGINE, false, false);
+      std::visit (
+        [&] (auto &&unique_track) {
+          auto * added_track = unique_track.release ();
+          using TrackT = base_type<decltype (added_track)>;
+          PROJECT->get_track_registry ().register_object (added_track);
+          added_track->setName (QString::fromStdString (name));
+          added_track->pos_ = pos;
 
-      if (pl && added_track->has_channel ())
-        {
-          bool is_instrument = added_track->type_ == Track::Type::Instrument;
-          auto channel_track = dynamic_cast<ChannelTrack *> (added_track);
-          added_pl = channel_track->channel_->add_plugin (
-            std::move (pl),
-            is_instrument
-              ? zrythm::dsp::PluginSlotType::Instrument
-              : zrythm::dsp::PluginSlotType::Insert,
-            is_instrument ? -1 : pl->id_.slot_, true, false, true, false, false);
-        }
+          old_dsp::plugins::PluginPtrVariant added_pl;
+          if (has_plugin)
+            {
+              auto pl =
+                PROJECT->get_plugin_registry ()
+                  .create_object<old_dsp::plugins::CarlaNativePlugin> (
+                    PROJECT->get_port_registry (), *pl_setting_,
+                    added_track->get_uuid (), dsp::PluginSlot{});
+              added_pl = pl;
+              pl->instantiate ();
+              pl->activate ();
+            }
 
-      Position start_pos = have_pos_ ? pos_ : Position ();
-      if (track_type_ == Track::Type::Audio)
-        {
-          /* create an audio region & add to track*/
-          added_track->add_region (
-            new AudioRegion (
-              pool_id_, start_pos, added_track->get_name_hash (), 0, 0),
-            nullptr, 0, true, false);
-        }
-      else if (
-        track_type_ == Track::Type::Midi && !base64_midi_.empty ()
-        && !file_basename_.empty ())
-        {
-          /* create a temporary midi file */
-          auto full_path_file = utils::io::make_tmp_file (
-            std::make_optional<std::string> ("data.MID"));
-          fs::path full_path (full_path_file->fileName ().toStdString ());
-          auto     data =
-            utils::base64::decode (QByteArray::fromStdString (base64_midi_));
-          utils::io::set_file_contents (
-            full_path, data.constData (), data.size ());
+          TRACKLIST->insert_track (
+            added_track->get_uuid (), pos, *AUDIO_ENGINE, false, false);
 
-          /* create a MIDI region from the MIDI file & add to track */
-          added_track->add_region (
-            new MidiRegion (
-              pos_, full_path, added_track->get_name_hash (), 0, 0, idx),
-            nullptr, 0, true, false);
-        }
+          if constexpr (std::derived_from<TrackT, ChannelTrack>)
+            {
+              if (has_plugin)
+                {
+                  std::visit (
+                    [&] (auto &&plugin) {
+                      added_track->channel_->add_plugin (
+                        plugin->get_uuid (),
+                        std::is_same_v<TrackT, InstrumentTrack>
+                          ? dsp::PluginSlot (dsp::PluginSlotType::Instrument)
+                          : dsp::PluginSlot (
+                              dsp::PluginSlotType::Insert,
+                              plugin->id_.slot_.get_slot_with_index ().second),
+                        true, false, true, false, false);
+                    },
+                    added_pl);
+                }
+            }
 
-      if (
-        added_pl && ZRYTHM_HAVE_UI
-        && gui::SettingsManager::get_instance ()
-             ->get_openPluginsOnInstantiation ())
-        {
-          added_pl->visible_ = true;
-          /* EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, added_pl); */
-        }
+          Position start_pos = have_pos_ ? pos_ : Position ();
+          if (track_type_ == Track::Type::Audio)
+            {
+              /* create an audio region & add to track*/
+              added_track->Track::add_region (
+                new AudioRegion (
+                  pool_id_, start_pos, added_track->get_uuid (), 0, 0),
+                nullptr, 0, true, false);
+            }
+          else if (
+            track_type_ == Track::Type::Midi && !base64_midi_.empty ()
+            && !file_basename_.empty ())
+            {
+              /* create a temporary midi file */
+              auto full_path_file = utils::io::make_tmp_file (
+                std::make_optional<std::string> ("data.MID"));
+              fs::path full_path (full_path_file->fileName ().toStdString ());
+              auto     data = utils::base64::decode (
+                QByteArray::fromStdString (base64_midi_));
+              utils::io::set_file_contents (
+                full_path, data.constData (), data.size ());
+
+              /* create a MIDI region from the MIDI file & add to track */
+              added_track->Track::add_region (
+                new MidiRegion (
+                  pos_, full_path, added_track->get_uuid (), 0, 0, idx),
+                nullptr, 0, true, false);
+            }
+
+          if (
+            has_plugin && ZRYTHM_HAVE_UI
+            && gui::SettingsManager::get_instance ()
+                 ->get_openPluginsOnInstantiation ())
+            {
+              std::visit (
+                [&] (auto &&plugin) {
+                  plugin->visible_ = true;
+                  /* EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED,
+                   * added_pl); */
+                },
+                added_pl);
+            }
+        },
+        track);
     }
 }
 
@@ -518,7 +621,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
             {
               z_return_if_fail (
                 ival_after_ < static_cast<int> (TRACKLIST->tracks_.size ()));
-              auto _tr_to_disable = TRACKLIST->get_track (ival_after_);
+              auto _tr_to_disable = TRACKLIST->get_track_at_index (ival_after_);
               std::visit (
                 [&] (auto &&tr_to_disable) {
                   z_return_if_fail (tr_to_disable);
@@ -530,52 +633,45 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
       /* else if delete undo */
       else
         {
-          int num_tracks = tls_before_->tracks_.size ();
-
-          for (int i = 0; i < num_tracks; i++)
+          for (auto &own_track_var : *tls_before_)
             {
-              auto &own_track = tls_before_->tracks_[i];
+              std::visit (
+                [&] (auto &&own_track) {
+                  using TrackT = base_type<decltype (own_track)>;
 
-              /* clone our own track */
-              auto track =
-                clone_unique_with_variant<TrackVariant> (own_track.get ());
+                  /* clone our own track */
+                  auto track = own_track->clone_and_register (
+                    PROJECT->get_track_registry (),
+                    PROJECT->get_track_registry (),
+                    PROJECT->get_plugin_registry (),
+                    PROJECT->get_port_registry (), true);
 
-              /* remove output */
-              if (track->has_channel ())
-                {
-                  auto channel_track =
-                    dynamic_cast<ChannelTrack *> (track.get ());
-                  channel_track->get_channel ()->has_output_ = false;
-                  channel_track->get_channel ()->output_name_hash_ = 0;
-                }
-
-              /* remove the sends (will be added later) */
-              if (track->has_channel ())
-                {
-                  auto channel_track =
-                    dynamic_cast<ChannelTrack *> (track.get ());
-                  for (auto &send : channel_track->get_channel ()->sends_)
+                  if constexpr (std::derived_from<TrackT, ChannelTrack>)
                     {
-                      send->enabled_->control_ = 0.f;
+                      /* remove output */
+                      track->get_channel ()->output_track_uuid_ = std::nullopt;
+
+                      /* remove the sends (will be added later) */
+                      for (auto &send : track->get_channel ()->sends_)
+                        {
+                          send->get_enabled_port ().control_ = 0.f;
+                        }
                     }
-                }
 
-              /* insert it to the tracklist at its original pos */
-              auto added_track = TRACKLIST->insert_track (
-                std::move (track), track->pos_, *AUDIO_ENGINE, false, false);
+                  /* insert it to the tracklist at its original pos */
+                  TRACKLIST->insert_track (
+                    track->get_uuid (), track->pos_, *AUDIO_ENGINE, false,
+                    false);
 
-              /* if group track, readd all children */
-              if (added_track->can_be_group_target ())
-                {
-                  auto &own_group_target_track =
-                    dynamic_cast<GroupTargetTrack &> (*own_track);
-                  dynamic_cast<GroupTargetTrack *> (added_track)
-                    ->add_children (
-                      own_group_target_track.children_, false, false, false);
-                }
+                  /* if group track, readd all children */
+                  if constexpr (std::derived_from<TrackT, GroupTargetTrack>)
+                    {
+                      track->add_children (
+                        own_track->children_, false, false, false);
+                    }
 
-              if (added_track->type_ == Track::Type::Instrument)
-                {
+                  if constexpr (std::is_same_v<TrackT, InstrumentTrack>)
+                    {
 #if 0
                   auto &own_instrument_track =
                     dynamic_cast<InstrumentTrack &> (*own_track);
@@ -589,58 +685,68 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                       //     ->instrument_.get ());
                     }
 #endif
-                }
+                    }
+                },
+                own_track_var);
             }
 
-          for (int i = 0; i < num_tracks; i++)
+          for (
+            const auto &[own_track_var, out_track_id] :
+            std::views::zip (*tls_before_, out_track_uuids_))
             {
-              auto &own_track = tls_before_->tracks_[i];
-
-              /* get the project track */
-              auto &_prj_track = TRACKLIST->tracks_[own_track->pos_];
               std::visit (
-                [&] (auto &&prj_track) {
-                  using TrackT = base_type<decltype (prj_track)>;
+                [&] (auto &&own_track) {
+                  using TrackT = base_type<decltype (own_track)>;
+
+                  /* get the project track */
+                  auto prj_track = std::get<TrackT *> (
+                    TRACKLIST->get_track_at_index (own_track->pos_));
                   if constexpr (std::derived_from<TrackT, ChannelTrack>)
                     {
-
-                      auto &own_channel_track =
-                        dynamic_cast<TrackT &> (*own_track);
-
                       /* reconnect output */
-                      if (out_track_hashes_[i] != 0)
+                      if (out_track_id.has_value ())
                         {
                           auto out_track =
                             prj_track->get_channel ()->get_output_track ();
                           out_track->remove_child (
-                            prj_track->get_name_hash (), true, false, false);
+                            prj_track->get_uuid (), true, false, false);
+                          auto out_track_var =
+                            PROJECT->get_track_registry ().find_by_id (
+                              out_track_id.value ());
+                          if (!out_track_var.has_value ())
+                            {
+                              throw ZrythmException ("Out track not found");
+                            }
                           out_track = std::visit (
-                            [&] (auto &&t) {
-                              return dynamic_cast<GroupTargetTrack *> (t);
+                            [&] (auto &&out_track_inner) -> GroupTargetTrack * {
+                              using InnerTrackT =
+                                base_type<decltype (out_track_inner)>;
+                              if constexpr (
+                                std::derived_from<InnerTrackT, GroupTargetTrack>)
+                                return out_track_inner;
+                              return nullptr;
                             },
-                            TRACKLIST
-                              ->find_track_by_name_hash (out_track_hashes_[i])
-                              .value ());
+                            out_track_var->get ());
                           out_track->add_child (
-                            prj_track->get_name_hash (), true, false, false);
+                            prj_track->get_uuid (), true, false, false);
                         }
 
                       /* reconnect any sends sent from the track */
-                      for (size_t j = 0; j < dsp::STRIP_SIZE; j++)
+                      for (
+                        const auto &[clone_send, send] : std::views::zip (
+                          own_track->get_channel ()->sends_,
+                          prj_track->get_channel ()->sends_))
                         {
-                          auto &clone_send =
-                            own_channel_track.get_channel ()->sends_[j];
-                          auto &send = prj_track->get_channel ()->sends_[j];
                           send->copy_values_from (*clone_send);
                         }
 
                       /* reconnect any custom connections */
                       std::vector<Port *> ports;
-                      own_channel_track.append_ports (ports, true);
-                      for (auto port : ports)
+                      own_track->append_ports (ports, true);
+                      for (auto * port : ports)
                         {
                           auto prj_port_var =
-                            PROJECT->find_port_by_id (*port->id_);
+                            PROJECT->find_port_by_id (port->get_uuid ());
                           z_return_if_fail (prj_port_var);
                           std::visit (
                             [&] (auto &&prj_port) {
@@ -650,7 +756,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                         }
                     }
                 },
-                _prj_track);
+                own_track_var);
             }
 
           /* re-connect any source sends */
@@ -658,7 +764,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
             {
 
               /* get the original send and connect it */
-              auto prj_send = clone_send->find_in_project ();
+              auto * prj_send = clone_send->find_in_project ();
               prj_send->copy_values_from (*clone_send);
             }
 
@@ -676,16 +782,13 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
       /* if create undo */
       if (create)
         {
-          for (int i = num_tracks_ - 1; i >= 0; i--)
+          for (int i : std::views::iota (0, num_tracks_) | std::views::reverse)
             {
-              auto tr = TRACKLIST->get_track (track_pos_ + i);
+              auto tr = TRACKLIST->get_track_at_index (track_pos_ + i);
               std::visit (
                 [&] (auto &&track) {
-                  z_return_if_fail (track);
-                  z_return_if_fail (
-                    TRACKLIST->get_track_pos (*track) == track->pos_);
-
-                  TRACKLIST->remove_track (*track, true, true, false, false);
+                  TRACKLIST->remove_track (
+                    track->get_uuid (), std::nullopt, true);
                 },
                 tr);
             }
@@ -695,7 +798,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
             {
               z_return_if_fail (
                 ival_after_ < static_cast<int> (TRACKLIST->tracks_.size ()));
-              auto &tr_to_enable = TRACKLIST->tracks_.at (ival_after_);
+              auto tr_to_enable = TRACKLIST->get_track_at_index (ival_after_);
               std::visit (
                 [&] (auto &&tr) { tr->set_enabled (true, false, false, true); },
                 tr_to_enable);
@@ -712,25 +815,25 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
               send->disconnect (false);
             }
 
-          for (int i = tls_before_->tracks_.size () - 1; i >= 0; i--)
+          for (
+            const auto &own_track_var :
+            TrackSpan{ *tls_before_ } | std::views::reverse)
             {
-              auto &own_track = tls_before_->tracks_[i];
-
-              /* get track from pos */
-              auto &_prj_track = TRACKLIST->tracks_[own_track->pos_];
               std::visit (
-                [&] (auto &&prj_track) {
-                  z_return_if_fail (prj_track);
-
+                [&] (auto &&own_track) {
+                  using TrackT = base_type<decltype (own_track)>;
+                  /* get track from pos */
+                  auto prj_track = std::get<TrackT *> (
+                    TRACKLIST->get_track_at_index (own_track->pos_));
                   /* remember any custom connections */
                   std::vector<Port *> prj_ports;
                   prj_track->append_ports (prj_ports, true);
                   std::vector<Port *> clone_ports;
                   own_track->append_ports (clone_ports, true);
-                  for (auto prj_port : prj_ports)
+                  for (auto * prj_port : prj_ports)
                     {
                       Port * clone_port = nullptr;
-                      for (auto cur_clone_port : clone_ports)
+                      for (auto * cur_clone_port : clone_ports)
                         {
                           if (cur_clone_port->id_ == prj_port->id_)
                             {
@@ -751,9 +854,10 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                     }
 
                   /* remove it */
-                  TRACKLIST->remove_track (*prj_track, true, true, false, false);
+                  TRACKLIST->remove_track (
+                    prj_track->get_uuid (), std::nullopt, true);
                 },
-                _prj_track);
+                own_track_var);
             }
         }
 
@@ -764,13 +868,12 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
   /* restore connections */
   save_or_load_port_connections (_do);
 
-  TRACKLIST->set_caches (ALL_CACHE_TYPES);
+  TRACKLIST->get_track_span ().set_caches (ALL_CACHE_TYPES);
   TRACKLIST->validate ();
 
   ROUTER->recalc_graph (false);
 
   TRACKLIST->validate ();
-  MIXER_SELECTIONS->validate ();
 }
 
 void
@@ -790,7 +893,7 @@ TracklistSelectionsAction::
       num_fold_change_tracks_ = 0;
       if (inside)
         {
-          auto tr = TRACKLIST->get_track (track_pos_);
+          auto tr = TRACKLIST->get_track_at_index (track_pos_);
           std::visit (
             [&] (auto &&track) {
               using TrackT = base_type<decltype (track)>;
@@ -807,34 +910,35 @@ TracklistSelectionsAction::
       if (move)
         {
           /* calculate how many tracks are not already in the folder */
-          for (const auto &track : tls_before_->tracks_)
+          for (const auto &track_var : TrackSpan{ *tls_before_ })
             {
-              auto prj_track = TRACKLIST->find_track_by_name (track->name_);
-              z_return_if_fail (prj_track);
-
               std::visit (
-                [&] (auto &&prj_tr) {
+                [&] (auto &&track) {
+                  using TrackT = base_type<decltype (track)>;
+                  auto prj_track = std::get<TrackT *> (
+                    TRACKLIST->get_track (track->get_uuid ()).value ());
+
                   if (inside)
                     {
                       std::vector<FoldableTrack *> parents;
-                      prj_tr->add_folder_parents (parents, false);
+                      prj_track->add_folder_parents (parents, false);
                       if (
-                        std::find (parents.begin (), parents.end (), foldable_tr)
+                        std::ranges::find (parents, foldable_tr)
                         == parents.end ())
                         num_fold_change_tracks_++;
                     }
                 },
-                *prj_track);
+                track_var);
             }
 
-          for (size_t i = 0; i < tls_before_->tracks_.size (); i++)
+          TRACKLIST->get_track_span ().deselect_all ();
+          for (const auto &own_track_var : TrackSpan{ *tls_before_ })
             {
-              auto _prj_track =
-                TRACKLIST->find_track_by_name (tls_before_->tracks_[i]->name_);
-              z_return_if_fail (_prj_track);
-
               std::visit (
-                [&] (auto &&prj_track) {
+                [&] (auto &&own_track) {
+                  using TrackT = base_type<decltype (own_track)>;
+                  auto prj_track = std::get<TrackT *> (
+                    TRACKLIST->get_track (own_track->get_uuid ()).value ());
                   int target_pos = -1;
                   /* if not first track to be moved */
                   if (prev_track)
@@ -854,17 +958,17 @@ TracklistSelectionsAction::
                     }
 
                   /* save index */
-                  auto &own_track = tls_before_->tracks_[i];
                   own_track->pos_ = prj_track->pos_;
 
                   std::vector<FoldableTrack *> parents;
                   prj_track->add_folder_parents (parents, false);
 
-                  TRACKLIST->move_track (*prj_track, target_pos, true, false);
+                  TRACKLIST->move_track (
+                    prj_track->get_uuid (), target_pos, true, std::nullopt);
                   prev_track = prj_track;
 
                   /* adjust parent sizes */
-                  for (auto parent : parents)
+                  for (auto * parent : parents)
                     {
                       /* if new pos is outside parent */
                       if (
@@ -888,87 +992,93 @@ TracklistSelectionsAction::
                         }
                     }
 
-                  if (i == 0)
-                    TRACKLIST_SELECTIONS->select_single (*prj_track, false);
-                  else
-                    TRACKLIST_SELECTIONS->add_track (*prj_track);
+                  prj_track->setSelected (true);
 
-                  TRACKLIST->print_tracks ();
+                  TRACKLIST->get_track_span ().print_tracks ();
                 },
-                *_prj_track);
+                own_track_var);
             }
 
           /* EVENTS_PUSH (EventType::ET_TRACKS_MOVED, nullptr); */
         }
       else if (copy)
         {
-          unsigned int num_tracks = tls_before_->tracks_.size ();
+          unsigned int num_tracks = tls_before_->size ();
 
           if (inside)
             {
-              num_fold_change_tracks_ = tls_before_->tracks_.size ();
+              num_fold_change_tracks_ = static_cast<int> (tls_before_->size ());
             }
 
           /* get outputs & sends */
           std::vector<GroupTargetTrack *> outputs_in_prj (num_tracks);
           std::vector<std::array<std::unique_ptr<ChannelSend>, dsp::STRIP_SIZE>>
             sends (num_tracks);
-          std::vector<
-            std::array<PortConnectionsManager::ConnectionsVector, dsp::STRIP_SIZE>>
+          std::vector<std::array<
+            PortConnectionsManager::ConnectionsVector, dsp::STRIP_SIZE>>
             send_conns (num_tracks);
           for (size_t i = 0; i < num_tracks; i++)
             {
-              auto &own_track = tls_before_->tracks_[i];
-              if (own_track->has_channel ())
-                {
-                  auto own_channel_track =
-                    dynamic_cast<ChannelTrack *> (own_track.get ());
-                  outputs_in_prj.push_back (
-                    own_channel_track->get_channel ()->get_output_track ());
-
-                  for (size_t j = 0; j < dsp::STRIP_SIZE; ++j)
+              auto own_track_var = TrackSpan (*tls_before_)[i];
+              std::visit (
+                [&] (auto &&own_track) {
+                  using TrackT = base_type<decltype (own_track)>;
+                  if constexpr (std::derived_from<TrackT, ChannelTrack>)
                     {
-                      auto &send =
-                        own_channel_track->get_channel ()->sends_.at (j);
-                      sends.at (i).at (j) = send->clone_unique ();
+                      outputs_in_prj.push_back (
+                        own_track->get_channel ()->get_output_track ());
 
-                      send->append_connection (
-                        port_connections_before_.get (),
-                        send_conns.at (i).at (j));
+                      for (size_t j = 0; j < dsp::STRIP_SIZE; ++j)
+                        {
+                          auto &send = own_track->get_channel ()->sends_.at (j);
+                          sends.at (i).at (j) = send->clone_unique (
+                            ObjectCloneType::Snapshot,
+                            PROJECT->get_track_registry (),
+                            PROJECT->get_port_registry ());
+
+                          send->append_connection (
+                            port_connections_before_.get (),
+                            send_conns.at (i).at (j));
+                        }
                     }
-                }
-              else
-                {
-                  outputs_in_prj.push_back (nullptr);
-                }
+                  else
+                    {
+                      outputs_in_prj.push_back (nullptr);
+                    }
+                },
+                own_track_var);
             }
 
-          TRACKLIST_SELECTIONS->clear (false);
+          TRACKLIST->get_track_span ().deselect_all ();
 
           /* create new tracks routed to master */
           std::vector<Track *> new_tracks;
-          for (size_t i = 0; i < num_tracks; i++)
+          for (
+            const auto &[index, own_track_var] :
+            std::views::enumerate (TrackSpan{ *tls_before_ }))
             {
-              auto &own_track = tls_before_->tracks_[i];
-
               std::visit (
-                [&] (const auto &&own_track_ptr) {
+                [&] (auto &&own_track_ptr) {
                   using TrackT = base_type<decltype (own_track_ptr)>;
 
                   /* create a new clone to use in the project */
-                  auto track = own_track_ptr->clone_unique ();
+                  auto track = own_track_ptr->clone_and_register (
+                    PROJECT->get_track_registry (),
+                    PROJECT->get_track_registry (),
+                    PROJECT->get_plugin_registry (),
+                    PROJECT->get_port_registry (), true);
                   z_return_if_fail (track);
 
                   if constexpr (std::derived_from<TrackT, ChannelTrack>)
                     {
                       /* remove output */
-                      track->get_channel ()->has_output_ = false;
-                      track->get_channel ()->output_name_hash_ = 0;
+                      // track->get_channel ()->has_output_ = false;
+                      track->get_channel ()->output_track_uuid_ = std::nullopt;
 
                       /* remove sends */
                       for (auto &send : track->get_channel ()->sends_)
                         {
-                          send->enabled_->control_ = 0.f;
+                          send->get_enabled_port ().control_ = 0.f;
                         }
                     }
 
@@ -978,64 +1088,63 @@ TracklistSelectionsAction::
                       track->children_.clear ();
                     }
 
-                  int target_pos = track_pos_ + i;
+                  int target_pos = track_pos_ + index;
                   if (inside)
                     target_pos++;
 
                   /* add to tracklist at given pos */
-                  auto added_track = TRACKLIST->insert_track (
-                    std::move (track), target_pos, *AUDIO_ENGINE, false, false);
+                  TRACKLIST->insert_track (
+                    track->get_uuid (), target_pos, *AUDIO_ENGINE, false, false);
 
                   /* select it */
-                  added_track->select (true, false, false);
-                  new_tracks.push_back (added_track);
+                  track->setSelected (true);
+                  new_tracks.push_back (track);
                 },
-                convert_to_variant<TrackPtrVariant> (own_track.get ()));
+                own_track_var);
             }
 
           /* reroute new tracks to correct outputs & sends */
-          for (size_t i = 0; i < num_tracks; i++)
+          for (const auto &[i, track] : std::views::enumerate (new_tracks))
             {
-              auto track = new_tracks[i];
               if (outputs_in_prj[i])
                 {
                   auto channel_track = dynamic_cast<ChannelTrack *> (track);
                   auto out_track =
                     channel_track->get_channel ()->get_output_track ();
                   out_track->remove_child (
-                    track->get_name_hash (), true, false, false);
+                    track->get_uuid (), true, false, false);
                   outputs_in_prj[i]->add_child (
-                    track->get_name_hash (), true, false, false);
+                    track->get_uuid (), true, false, false);
                 }
 
               if (track->has_channel ())
                 {
                   auto channel_track = dynamic_cast<ChannelTrack *> (track);
-                  for (size_t j = 0; j < dsp::STRIP_SIZE; j++)
+                  for (
+                    const auto &[own_send, own_conns, track_send] :
+                    std::views::zip (
+                      sends.at (i), send_conns.at (i),
+                      channel_track->get_channel ()->sends_))
                     {
-                      const auto &own_send = sends.at (i).at (j);
-                      const auto &own_conns = send_conns.at (i).at (j);
-                      const auto &track_send =
-                        channel_track->get_channel ()->sends_.at (j);
                       track_send->copy_values_from (*own_send);
                       if (
                         !own_conns.empty ()
                         && track->out_signal_type_ == PortType::Audio)
                         {
                           PORT_CONNECTIONS_MGR->ensure_connect (
-                            *track_send->stereo_out_->get_l ().id_,
-                            *own_conns.at (0)->dest_id_, 1.f, true, true);
+                            track_send->stereo_out_left_id_.value (),
+                            own_conns.at (0)->dest_id_, 1.f, true, true);
                           PORT_CONNECTIONS_MGR->ensure_connect (
-                            *track_send->stereo_out_->get_r ().id_,
-                            *own_conns.at (1)->dest_id_, 1.f, true, true);
+                            track_send->stereo_out_right_id_.value (),
+                            own_conns.at (1)->dest_id_, 1.f, true, true);
                         }
                       else if (
                         !own_conns.empty ()
                         && track->out_signal_type_ == PortType::Event)
                         {
                           PORT_CONNECTIONS_MGR->ensure_connect (
-                            *track_send->midi_out_->id_,
-                            *own_conns.front ()->dest_id_, 1.f, true, true);
+                            track_send->midi_out_id_.value (),
+                            own_conns.front ()->dest_id_, 1.f, true, true);
                         }
                     }
 
@@ -1059,49 +1168,54 @@ TracklistSelectionsAction::
     {
       if (move)
         {
-          for (auto i = std::ssize (tls_before_->tracks_) - 1; i >= 0; i--)
+          auto tls_before_span = TrackSpan{ *tls_before_ };
+          for (const auto &own_track_var : tls_before_span | std::views::reverse)
             {
-              auto &own_track = tls_before_->tracks_[i];
-
-              auto _prj_track = TRACKLIST->find_track_by_name (own_track->name_);
-              z_return_if_fail (_prj_track);
               std::visit (
-                [&] (auto &&prj_track) {
-                  int target_pos = own_track->pos_;
-                  TRACKLIST->move_track (*prj_track, target_pos, false, false);
+                [&] (auto &&own_track) {
+                  auto _prj_track =
+                    TRACKLIST->get_track (own_track->get_uuid ());
+                  z_return_if_fail (_prj_track);
+                  std::visit (
+                    [&] (auto &&prj_track) {
+                      int target_pos = own_track->pos_;
+                      TRACKLIST->move_track (
+                        prj_track->get_uuid (), target_pos, false, std::nullopt);
 
-                  if (i == 0)
-                    {
-                      TRACKLIST_SELECTIONS->select_single (*prj_track, false);
-                    }
-                  else
-                    {
-                      TRACKLIST_SELECTIONS->add_track (*prj_track);
-                    }
+                      if (
+                        own_track->get_uuid ()
+                        == std::visit (
+                          TrackSpan::uuid_projection, tls_before_span.front ()))
+                        {
+                          TRACKLIST->get_track_span ().select_single (
+                            prj_track->get_uuid ());
+                        }
+                      else
+                        {
+                          prj_track->setSelected (true);
+                        }
+                    },
+                    *_prj_track);
                 },
-                *_prj_track);
+                own_track_var);
             }
 
           /* EVENTS_PUSH (EventType::ET_TRACKS_MOVED, nullptr); */
         }
       else if (copy)
         {
-          for (int i = tls_before_->tracks_.size () - 1; i >= 0; i--)
+          for (
+            const auto i :
+            std::views::iota (tls_before_->size ()) | std::views::reverse)
             {
               /* get the track from the inserted pos */
               int target_pos = track_pos_ + i;
               if (inside)
                 target_pos++;
 
-              auto &_prj_track = TRACKLIST->tracks_[target_pos];
-              std::visit (
-                [&] (auto &&prj_track) {
-                  z_return_if_fail (prj_track);
-
-                  /* remove it */
-                  TRACKLIST->remove_track (*prj_track, true, true, false, false);
-                },
-                _prj_track);
+              /* remove it */
+              const auto prj_track_id = TRACKLIST->tracks_.at (target_pos);
+              TRACKLIST->remove_track (prj_track_id, std::nullopt, true);
             }
           /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr); */
           /* EVENTS_PUSH (EventType::ET_TRACKS_REMOVED, nullptr); */
@@ -1110,7 +1224,7 @@ TracklistSelectionsAction::
       if (inside)
         {
           /* update foldable track sizes (incl. parents) */
-          auto _foldable_tr = TRACKLIST->get_track (track_pos_);
+          auto _foldable_tr = TRACKLIST->get_track_at_index (track_pos_);
           std::visit (
             [&] (auto &&foldable_tr) {
               using TrackT = base_type<decltype (foldable_tr)>;
@@ -1132,11 +1246,11 @@ TracklistSelectionsAction::
 
   if ((pin && _do) || (unpin && !_do))
     {
-      TRACKLIST->pinned_tracks_cutoff_ += tls_before_->tracks_.size ();
+      TRACKLIST->pinned_tracks_cutoff_ += tls_before_->size ();
     }
   else if ((unpin && _do) || (pin && !_do))
     {
-      TRACKLIST->pinned_tracks_cutoff_ -= tls_before_->tracks_.size ();
+      TRACKLIST->pinned_tracks_cutoff_ -= tls_before_->size ();
     }
 
   if (move)
@@ -1147,7 +1261,7 @@ TracklistSelectionsAction::
   /* restore connections */
   save_or_load_port_connections (_do);
 
-  TRACKLIST->set_caches (ALL_CACHE_TYPES);
+  TRACKLIST->get_track_span ().set_caches (ALL_CACHE_TYPES);
   TRACKLIST->validate ();
 
   ROUTER->recalc_graph (false);
@@ -1165,9 +1279,10 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
   bool need_recalc_graph = false;
   bool need_tracklist_cache_update = false;
 
-  for (int i = 0; i < num_tracks_; i++)
+  for (const auto i : std::views::iota (num_tracks_))
     {
-      auto &_track = TRACKLIST->tracks_[track_positions_before_[i]];
+      auto track_var =
+        TRACKLIST->get_track_at_index (track_positions_before_[i]);
       std::visit (
         [&] (auto &&track) {
           using TrackT = base_type<decltype (track)>;
@@ -1302,7 +1417,7 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
                     z_return_if_fail (track);
 
                     int cur_direct_out_pos = -1;
-                    if (track->get_channel ()->has_output_)
+                    if (track->get_channel ()->has_output ())
                       {
                         auto cur_direct_out_track =
                           track->get_channel ()->get_output_track ();
@@ -1310,18 +1425,16 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
                       }
 
                     /* disconnect from the current track */
-                    if (track->get_channel ()->has_output_)
+                    if (track->get_channel ()->has_output ())
                       {
-                        auto target_track = std::visit (
-                          [&] (auto &&t) {
-                            return dynamic_cast<GroupTargetTrack *> (t);
-                          },
+                        auto target_track = dynamic_cast<
+                          GroupTargetTrack *> (Track::from_variant (
                           TRACKLIST
-                            ->find_track_by_name_hash (
-                              track->get_channel ()->output_name_hash_)
-                            .value ());
+                            ->get_track (
+                              track->get_channel ()->output_track_uuid_.value ())
+                            .value ()));
                         target_track->remove_child (
-                          track->get_name_hash (), true, false, true);
+                          track->get_uuid (), true, false, true);
                       }
 
                     int target_pos = _do ? ival_after_ : ival_before_[i];
@@ -1332,7 +1445,7 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
                         z_return_if_fail_cmp (
                           target_pos, !=, track->channel_->track_->pos_);
                         auto _group_target_track =
-                          TRACKLIST->get_track (target_pos);
+                          TRACKLIST->get_track_at_index (target_pos);
                         std::visit (
                           [&] (auto &&group_target_track) {
                             using GroupTrackT =
@@ -1341,7 +1454,7 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
                               std::derived_from<GroupTrackT, GroupTargetTrack>)
                               {
                                 group_target_track->add_child (
-                                  track->get_name_hash (), true, false, true);
+                                  track->get_uuid (), true, false, true);
                               }
                             else
                               {
@@ -1417,7 +1530,7 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
 
           /* EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, track.get ()); */
         },
-        _track);
+        track_var);
     }
 
   /* restore connections */
@@ -1425,7 +1538,7 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
 
   if (need_tracklist_cache_update)
     {
-      TRACKLIST->set_caches (ALL_CACHE_TYPES);
+      TRACKLIST->get_track_span ().set_caches (ALL_CACHE_TYPES);
     }
 
   if (need_recalc_graph)
@@ -1478,6 +1591,30 @@ TracklistSelectionsAction::undo_impl ()
   do_or_undo (false);
 }
 
+void
+TracklistSelectionsAction::init_loaded_impl ()
+{
+  if (tls_before_)
+    {
+      TrackSpan{ *tls_before_ }.init_loaded (
+        PROJECT->get_plugin_registry (), PROJECT->get_port_registry ());
+    }
+  if (tls_after_)
+    {
+      TrackSpan{ *tls_after_ }.init_loaded (
+        PROJECT->get_plugin_registry (), PROJECT->get_port_registry ());
+    }
+  if (foldable_tls_before_)
+    {
+      TrackSpan{ *foldable_tls_before_ }.init_loaded (
+        PROJECT->get_plugin_registry (), PROJECT->get_port_registry ());
+    }
+  for (auto &send : src_sends_)
+    {
+      send->init_loaded (nullptr);
+    }
+}
+
 QString
 TracklistSelectionsAction::to_string () const
 {
@@ -1485,7 +1622,7 @@ TracklistSelectionsAction::to_string () const
     {
     case Type::Copy:
     case Type::CopyInside:
-      if (tls_before_->tracks_.size () == 1)
+      if (tls_before_->size () == 1)
         {
           if (tracklist_selections_action_type_ == Type::CopyInside)
             return QObject::tr ("Copy Track inside");
@@ -1496,11 +1633,10 @@ TracklistSelectionsAction::to_string () const
         {
           if (tracklist_selections_action_type_ == Type::CopyInside)
             return format_qstr (
-              QObject::tr ("Copy {} Tracks inside"),
-              tls_before_->tracks_.size ());
+              QObject::tr ("Copy {} Tracks inside"), tls_before_->size ());
           else
             return format_qstr (
-              QObject::tr ("Copy {} Tracks"), tls_before_->tracks_.size ());
+              QObject::tr ("Copy {} Tracks"), tls_before_->size ());
         }
     case Type::Create:
       {
@@ -1516,18 +1652,17 @@ TracklistSelectionsAction::to_string () const
           }
       }
     case Type::Delete:
-      if (tls_before_->tracks_.size () == 1)
+      if (tls_before_->size () == 1)
         {
           return QObject::tr ("Delete Track");
         }
       else
         {
           return format_qstr (
-            QObject::tr ("Delete {} Tracks"), tls_before_->tracks_.size ());
+            QObject::tr ("Delete {} Tracks"), tls_before_->size ());
         }
     case Type::Edit:
-      if (
-        (tls_before_ && tls_before_->tracks_.size () == 1) || (num_tracks_ == 1))
+      if ((tls_before_ && tls_before_->size () == 1) || (num_tracks_ == 1))
         {
           switch (edit_type_)
             {
@@ -1642,7 +1777,7 @@ TracklistSelectionsAction::to_string () const
         }
     case Type::Move:
     case Type::MoveInside:
-      if (tls_before_->tracks_.size () == 1)
+      if (tls_before_->size () == 1)
         {
           if (tracklist_selections_action_type_ == Type::MoveInside)
             {
@@ -1658,34 +1793,31 @@ TracklistSelectionsAction::to_string () const
           if (tracklist_selections_action_type_ == Type::MoveInside)
             {
               return format_qstr (
-                QObject::tr ("Move {} Tracks inside"),
-                tls_before_->tracks_.size ());
+                QObject::tr ("Move {} Tracks inside"), tls_before_->size ());
             }
-          else
-            {
-              return format_qstr (
-                QObject::tr ("Move {} Tracks"), tls_before_->tracks_.size ());
-            }
+
+          return format_qstr (
+            QObject::tr ("Move {} Tracks"), tls_before_->size ());
         }
     case Type::Pin:
-      if (tls_before_->tracks_.size () == 1)
+      if (tls_before_->size () == 1)
         {
           return QObject::tr ("Pin Track");
         }
       else
         {
           return format_qstr (
-            QObject::tr ("Pin {} Tracks"), tls_before_->tracks_.size ());
+            QObject::tr ("Pin {} Tracks"), tls_before_->size ());
         }
     case Type::Unpin:
-      if (tls_before_->tracks_.size () == 1)
+      if (tls_before_->size () == 1)
         {
           return QObject::tr ("Unpin Track");
         }
       else
         {
           return format_qstr (
-            QObject::tr ("Unpin {} Tracks"), tls_before_->tracks_.size ());
+            QObject::tr ("Unpin {} Tracks"), tls_before_->size ());
         }
     }
 

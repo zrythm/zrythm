@@ -71,7 +71,9 @@ ArrangerSelections::init_loaded (bool project, double frames_per_tick)
 }
 
 void
-ArrangerSelections::copy_members_from (const ArrangerSelections &other)
+ArrangerSelections::copy_members_from (
+  const ArrangerSelections &other,
+  ObjectCloneType           clone_type)
 {
   type_ = other.type_;
   for (const auto &obj : other.objects_)
@@ -411,7 +413,7 @@ ArrangerSelections::select_all (bool fire_events)
       if constexpr (std::is_same_v<TimelineSelections, SelT>)
         {
           /* midi/audio regions */
-          for (auto &tr : TRACKLIST->tracks_)
+          for (const auto &tr_var : TRACKLIST->get_track_span ())
             {
               std::visit (
                 [&] (auto &&track) {
@@ -448,7 +450,7 @@ ArrangerSelections::select_all (bool fire_events)
                         }
                     }
                 },
-                tr);
+                tr_var);
             }
 
           /* chord regions */
@@ -734,7 +736,11 @@ ArrangerSelections::paste_to_pos (const Position &pos, bool undoable)
 
       if constexpr (std::is_same_v<TimelineSelections, SelT>)
         {
-          auto track_var = TRACKLIST_SELECTIONS->get_highest_track ();
+          auto track_var =
+            (TRACKLIST->get_track_span ()
+             | std::views::filter (TrackSpan::selected_projection)
+             | std::views::take (1))
+              .front ();
 
           clone_sel->add_ticks (pos.ticks_ - first_obj_pair.second.ticks_);
 
@@ -823,6 +829,12 @@ ArrangerSelections::get_for_type (ArrangerSelections::Type type)
     default:
       throw ZrythmException ("Invalid type");
     }
+}
+
+ArrangerObjectSpan
+ArrangerSelections::get_object_span () const
+{
+  return ArrangerObjectSpan{ std::span (objects_) };
 }
 
 bool

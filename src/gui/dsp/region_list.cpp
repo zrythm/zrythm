@@ -37,7 +37,9 @@ RegionList::data (const QModelIndex &index, int role) const
 }
 
 void
-RegionList::init_after_cloning (const RegionList &other)
+RegionList::init_after_cloning (
+  const RegionList &other,
+  ObjectCloneType   clone_type)
 {
   beginResetModel ();
   regions_.clear ();

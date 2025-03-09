@@ -4,7 +4,11 @@
 #ifndef ZRYTHM_DSP_PLUGIN_IDENTIFIER_H
 #define ZRYTHM_DSP_PLUGIN_IDENTIFIER_H
 
+#include "utils/format.h"
 #include "utils/iserializable.h"
+#include "utils/uuid_identifiable_object.h"
+
+class Track;
 
 namespace zrythm::dsp
 {
@@ -20,17 +24,101 @@ enum class PluginSlotType
   Modulator,
 };
 
+class PluginSlot : public utils::serialization::ISerializable<PluginSlot>
+{
+public:
+  using SlotNo = std::uint_fast8_t;
+
+  friend auto operator<=> (const PluginSlot &lhs, const PluginSlot &rhs)
+  {
+    return std::tie (lhs.type_, lhs.slot_) <=> std::tie (rhs.type_, rhs.slot_);
+  }
+
+  // Needed for testing
+  friend bool operator== (const PluginSlot &lhs, const PluginSlot &rhs)
+  {
+    return (lhs <=> rhs) == 0;
+  }
+
+public:
+  PluginSlot () = default;
+
+  /**
+   * @brief Construct a new Plugin Slot object for a non-instrument.
+   */
+  explicit PluginSlot (PluginSlotType type, SlotNo slot)
+      : type_ (type), slot_ (slot)
+  {
+  }
+
+  /**
+   * @brief Construct a new Plugin Slot object for an instrument.
+   */
+  explicit PluginSlot (PluginSlotType type) : type_ (type) { }
+
+  bool has_slot_index () const { return slot_.has_value (); }
+
+  auto get_slot_with_index () const
+  {
+    if (!has_slot_index ())
+      {
+        throw std::invalid_argument ("Slot has no index");
+      }
+    return std::make_pair (type_, slot_.value ());
+  }
+  auto get_slot_type_only () const
+  {
+    if (slot_.has_value ())
+      {
+        throw std::invalid_argument ("Slot has index");
+      }
+    return type_;
+  }
+
+  PluginSlot get_slot_after_n (PluginSlot::SlotNo n) const
+  {
+    if (!slot_.has_value ())
+      {
+        throw std::invalid_argument ("Slot has no index");
+      }
+    return PluginSlot (type_, slot_.value () + n);
+  }
+
+  uint32_t get_hash () const;
+
+  bool is_modulator () const { return type_ == PluginSlotType::Modulator; }
+
+  /**
+   * Verifies that slot_type and slot is a valid combination.
+   */
+  bool validate_slot_type_slot_combo () const
+  {
+    return (type_ == PluginSlotType::Instrument && !slot_.has_value ())
+           || (type_ == PluginSlotType::Invalid && !slot_.has_value ())
+           || (type_ != PluginSlotType::Instrument && slot_.has_value ());
+  }
+
+  DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  PluginSlotType        type_{ PluginSlotType::Invalid };
+  std::optional<SlotNo> slot_;
+};
+
 /**
  * Plugin identifier.
  */
 class PluginIdentifier
     : public zrythm::utils::serialization::ISerializable<PluginIdentifier>
 {
+public:
+  using TrackUuid = utils::UuidIdentifiableObject<Track>::Uuid;
+
   friend auto
   operator<=> (const PluginIdentifier &lhs, const PluginIdentifier &rhs)
   {
-    return std::tie (lhs.slot_type_, lhs.track_name_hash_, lhs.slot_)
-           <=> std::tie (rhs.slot_type_, rhs.track_name_hash_, rhs.slot_);
+    return std::tie (type_safe::get (lhs.track_id_), lhs.slot_)
+           <=> std::tie (type_safe::get (rhs.track_id_), rhs.slot_);
   }
 
   // Needed for testing
@@ -40,18 +128,7 @@ class PluginIdentifier
     return (lhs <=> rhs) == 0;
   }
 
-public:
   [[nodiscard]] bool validate () const;
-
-  /**
-   * Verifies that @p slot_type and @p slot is a valid combination.
-   */
-  static bool validate_slot_type_slot_combo (PluginSlotType slot_type, int slot)
-  {
-    return (slot_type == PluginSlotType::Instrument && slot == -1)
-           || (slot_type == PluginSlotType::Invalid && slot == -1)
-           || (slot_type != PluginSlotType::Instrument && slot >= 0);
-  }
 
   std::string print_to_str () const;
 
@@ -60,20 +137,29 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 public:
-  PluginSlotType slot_type_ = PluginSlotType::Invalid;
+  PluginSlot slot_;
 
-  /** Track name hash. */
-  unsigned int track_name_hash_ = 0;
+  /** ID of the track this plugin belongs to. */
+  TrackUuid track_id_;
 
-  /**
-   * The slot this plugin is in the channel, or the index if this is part of a
-   * modulator.
-   *
-   * If PluginIdentifier.slot_type is an instrument, this must be set to -1.
-   */
-  int slot_ = -1;
+  static_assert (type_safe::is_strong_typedef<TrackUuid>::value);
+  static_assert (StrongTypedef<TrackUuid>);
+  static_assert (std::is_same_v<type_safe::underlying_type<TrackUuid>, QUuid>);
+  // static_assert (StrongTypedef<PluginSlotType>);
 };
 
 }; // namespace zrythm::dsp
+
+DEFINE_OBJECT_FORMATTER (
+  zrythm::dsp::PluginSlot,
+  PluginSlot,
+  [] (const zrythm::dsp::PluginSlot &slot) {
+    if (slot.has_slot_index ())
+      {
+        auto ret = slot.get_slot_with_index ();
+        return fmt::format ("{}::{}", ENUM_NAME (ret.first), ret.second);
+      }
+    return fmt::format ("{}", ENUM_NAME (slot.get_slot_type_only ()));
+  });
 
 #endif

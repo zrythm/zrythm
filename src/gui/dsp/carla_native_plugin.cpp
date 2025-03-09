@@ -833,11 +833,11 @@ CarlaNativePlugin::get_descriptor_from_cached (
 #endif // HAVE_CARLA
 
 CarlaNativePlugin::CarlaNativePlugin (
-  const PluginSetting        &setting,
-  unsigned int                track_name_hash,
-  zrythm::dsp::PluginSlotType slot_type,
-  int                         slot)
-    : Plugin (setting, track_name_hash, slot_type, slot)
+  PortRegistry                  &port_registry,
+  const PluginSetting           &setting,
+  dsp::PortIdentifier::TrackUuid track_id,
+  dsp::PluginSlot                slot)
+    : Plugin (port_registry, setting, track_id, slot)
 {
   z_return_if_fail (setting.open_with_carla_);
 }
@@ -888,15 +888,12 @@ CarlaNativePlugin::create_ports (bool loading)
         {
           if (
             port->id_.type_ == PortType::Audio
-            && ENUM_BITSET_TEST (
-              PortIdentifier::Flags, port->id_.flags_,
+            && ENUM_BITSET_TEST ( port->id_.flags_,
               PortIdentifier::Flags::Sidechain)
             && port->id_.port_group_.empty ()
-            && !(ENUM_BITSET_TEST (
-              PortIdentifier::Flags, port->id_.flags_,
+            && !(ENUM_BITSET_TEST ( port->id_.flags_,
               PortIdentifier::Flags::StereoL))
-            && !(ENUM_BITSET_TEST (
-              PortIdentifier::Flags, port->id_.flags_,
+            && !(ENUM_BITSET_TEST ( port->id_.flags_,
               PortIdentifier::Flags::StereoR)))
             {
               port->id_.port_group_ = ("[Zrythm] Sidechain Group");
@@ -1836,43 +1833,37 @@ CarlaNativePlugin::set_param_value (const uint32_t id, float val)
 MidiPort *
 CarlaNativePlugin::get_midi_out_port ()
 {
-  for (auto &port : out_ports_)
-    {
-      if (
-        port->is_midi ()
-        && ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, port->id_->flags2_,
-          PortIdentifier::Flags2::SupportsMidi))
-        return dynamic_cast<MidiPort *> (port.get ());
-    }
-
-  z_return_val_if_reached (nullptr);
+  auto ports = get_output_port_span ().get_elements_by_type<MidiPort> ();
+  auto it = std::ranges::find_if (ports, [] (const MidiPort * port) {
+    return ENUM_BITSET_TEST (
+      port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi);
+  });
+  return it != ports.end () ? *it : nullptr;
 }
 
 ControlPort *
 CarlaNativePlugin::get_port_from_param_id (const uint32_t id)
 {
-  int j = 0;
-  for (auto &port : in_ports_)
+  // Iterate through all input control ports
+  auto ports = get_input_port_span ().get_elements_by_type<ControlPort> ();
+  auto it = std::ranges::find_if (ports, [id] (const ControlPort * port) {
+    return port->carla_param_id_ == static_cast<int> (id);
+  });
+  if (it != ports.end ())
     {
-      if (!port->is_control ())
-        continue;
-
-      auto ctrl_port = dynamic_cast<ControlPort *> (port.get ());
-      j = ctrl_port->carla_param_id_;
-      if (static_cast<int> (id) == ctrl_port->carla_param_id_)
-        return ctrl_port;
+      return *it;
     }
 
-  if (static_cast<int> (id) > j)
+  // If the ID is greater than the last seen parameter ID, it's likely an output
+  // parameter
+  if (static_cast<int> (id) > ports.back ()->carla_param_id_)
     {
       z_info (
         "index {} not found in input ports. this is likely an output param. ignoring",
         id);
-      return nullptr;
     }
 
-  z_return_val_if_reached (nullptr);
+  return nullptr;
 }
 
 nframes_t
@@ -1962,7 +1953,8 @@ CarlaNativePlugin::load_state (const std::string * abs_path)
 
 void
 CarlaNativePlugin::init_after_cloning (
-  const zrythm::gui::old_dsp::plugins::CarlaNativePlugin &other)
+  const zrythm::gui::old_dsp::plugins::CarlaNativePlugin &other,
+  ObjectCloneType                                         clone_type)
 {
   Plugin::copy_members_from (
     const_cast<Plugin &> (*dynamic_cast<const Plugin *> (&other)));

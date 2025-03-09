@@ -13,6 +13,8 @@
 
 class Port;
 
+using namespace zrythm;
+
 /**
  * @addtogroup dsp
  *
@@ -27,13 +29,13 @@ class Port;
 class PortConnectionsManager final
     : public QObject,
       public ICloneable<PortConnectionsManager>,
-      public zrythm::utils::serialization::ISerializable<PortConnectionsManager>
+      public utils::serialization::ISerializable<PortConnectionsManager>
 {
   Q_OBJECT
   QML_ELEMENT
 
 public:
-  using PortIdentifier = zrythm::dsp::PortIdentifier;
+  using PortUuid = PortConnection::PortUuid;
   using ConnectionsVector = std::vector<PortConnection *>;
 
   explicit PortConnectionsManager (QObject * parent = nullptr);
@@ -42,10 +44,10 @@ private:
   /**
    * Hashtable to speedup lookups by port identifier.
    *
-   * Key: Port identifier hash
+   * Key: PortUuid
    * Value: A vector of PortConnection references from @ref connections_.
    */
-  using ConnectionHashTable = std::unordered_map<uint32_t, ConnectionsVector>;
+  using ConnectionHashTable = std::unordered_map<PortUuid, ConnectionsVector>;
 
 public:
   /**
@@ -67,17 +69,16 @@ public:
    *
    * @return The number of ports found.
    */
-  int get_sources_or_dests (
-    ConnectionsVector *   arr,
-    const PortIdentifier &id,
-    bool                  sources) const;
+  int
+  get_sources_or_dests (ConnectionsVector * arr, const PortUuid &id, bool sources)
+    const;
 
-  int get_sources (ConnectionsVector * arr, const PortIdentifier &id) const
+  int get_sources (ConnectionsVector * arr, const PortUuid &id) const
   {
     return get_sources_or_dests (arr, id, true);
   }
 
-  int get_dests (ConnectionsVector * arr, const PortIdentifier &id) const
+  int get_dests (ConnectionsVector * arr, const PortUuid &id) const
   {
     return get_sources_or_dests (arr, id, false);
   }
@@ -97,9 +98,9 @@ public:
    * @return The number of ports found.
    */
   int get_unlocked_sources_or_dests (
-    ConnectionsVector *   arr,
-    const PortIdentifier &id,
-    bool                  sources) const;
+    ConnectionsVector * arr,
+    const PortUuid     &id,
+    bool                sources) const;
 
   /**
    * Wrapper over @ref get_sources_or_dests() that returns the first connection.
@@ -109,8 +110,7 @@ public:
    *
    * @return The connection, owned by this, or null.
    */
-  PortConnection *
-  get_source_or_dest (const PortIdentifier &id, bool sources) const;
+  PortConnection * get_source_or_dest (const PortUuid &id, bool sources) const;
 
   /**
    * @brief
@@ -120,10 +120,9 @@ public:
    * @return The connection, owned by this, or null.
    */
   PortConnection *
-  find_connection (const PortIdentifier &src, const PortIdentifier &dest) const;
+  find_connection (const PortUuid &src, const PortUuid &dest) const;
 
-  bool
-  are_ports_connected (const PortIdentifier &src, const PortIdentifier &dest) const
+  bool are_ports_connected (const PortUuid &src, const PortUuid &dest) const
   {
     return find_connection (src, dest) != nullptr;
   }
@@ -143,19 +142,17 @@ public:
    * @return The connection.
    */
   const PortConnection * ensure_connect (
-    const PortIdentifier &src,
-    const PortIdentifier &dest,
-    float                 multiplier,
-    bool                  locked,
-    bool                  enabled);
+    const PortUuid &src,
+    const PortUuid &dest,
+    float           multiplier,
+    bool            locked,
+    bool            enabled);
 
   /**
    * @brief Overload for default settings (multiplier = 1.0, enabled = true).
    */
-  const PortConnection * ensure_connect_default (
-    const PortIdentifier &src,
-    const PortIdentifier &dest,
-    bool                  locked)
+  const PortConnection *
+  ensure_connect_default (const PortUuid &src, const PortUuid &dest, bool locked)
   {
     return ensure_connect (src, dest, 1.0f, locked, true);
   }
@@ -164,7 +161,7 @@ public:
   ensure_connect_from_connection (const PortConnection &conn)
   {
     return ensure_connect (
-      *conn.src_id_, *conn.dest_id_, conn.multiplier_, conn.locked_,
+      conn.src_id_, conn.dest_id_, conn.multiplier_, conn.locked_,
       conn.enabled_);
   }
 
@@ -173,13 +170,12 @@ public:
    *
    * @return Whether a connection was removed.
    */
-  bool
-  ensure_disconnect (const PortIdentifier &src, const PortIdentifier &dest);
+  bool ensure_disconnect (const PortUuid &src, const PortUuid &dest);
 
   /**
    * Disconnect all sources and dests of the given port identifier.
    */
-  void ensure_disconnect_all (const PortIdentifier &pi);
+  void ensure_disconnect_all (const PortUuid &pi);
 
   /**
    * @brief Disconnects all the given ports
@@ -202,14 +198,16 @@ public:
 
   void print () const;
 
-  void init_after_cloning (const PortConnectionsManager &other) override;
+  void init_after_cloning (
+    const PortConnectionsManager &other,
+    ObjectCloneType               clone_type) override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
   void add_or_replace_connection (
     ConnectionHashTable  &ht,
-    const PortIdentifier &id,
+    const PortUuid       &id,
     const PortConnection &conn);
 
   void remove_connection (size_t idx);

@@ -176,7 +176,9 @@ public:
     return QString::fromStdString (name_);
   }
 
-  void init_after_cloning (const PluginDescriptor &other) override;
+  void
+  init_after_cloning (const PluginDescriptor &other, ObjectCloneType clone_type)
+    override;
 
 public:
   std::string     author_;

@@ -33,7 +33,7 @@
 #ifdef _MSC_VER
 #  include <intrin.h>
 #  define DEBUG_BREAK() __debugbreak ()
-#elif defined(__APPLE__)
+#elifdef __APPLE__
 #  include <TargetConditionals.h>
 #  if TARGET_OS_MAC
 #    define DEBUG_BREAK() __builtin_debugtrap ()

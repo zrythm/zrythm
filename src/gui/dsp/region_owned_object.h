@@ -27,7 +27,8 @@ public:
   operator== (const RegionOwnedObject &lhs, const RegionOwnedObject &rhs);
 
 protected:
-  void copy_members_from (const RegionOwnedObject &other);
+  void
+  copy_members_from (const RegionOwnedObject &other, ObjectCloneType clone_type);
 
   void init_loaded_base ();
 

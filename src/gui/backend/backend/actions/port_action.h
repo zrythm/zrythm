@@ -43,14 +43,15 @@ public:
    * @param is_normalized
    */
   PortAction (
-    Type                  type,
-    const PortIdentifier &port_id,
-    float                 val,
-    bool                  is_normalized);
+    Type                     type,
+    PortIdentifier::PortUuid port_id,
+    float                    val,
+    bool                     is_normalized);
 
   QString to_string () const override;
 
-  void init_after_cloning (const PortAction &other) override;
+  void init_after_cloning (const PortAction &other, ObjectCloneType clone_type)
+    override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -63,7 +64,7 @@ private:
 public:
   Type type_ = Type::SetControlValue;
 
-  std::unique_ptr<dsp::PortIdentifier> port_id_;
+  std::optional<dsp::PortIdentifier::PortUuid> port_id_;
 
   /**
    * Real (not normalized) value before/after the change.
@@ -80,7 +81,7 @@ class PortActionResetControl : public PortAction
 {
 public:
   PortActionResetControl (const ControlPort &port)
-      : PortAction (PortAction::Type::SetControlValue, *port.id_, port.deff_, false)
+      : PortAction (PortAction::Type::SetControlValue, port.get_uuid (), port.deff_, false)
   {
   }
 };

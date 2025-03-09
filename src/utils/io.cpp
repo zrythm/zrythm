@@ -190,7 +190,7 @@ file_get_last_modified_datetime_as_str (const std::string &filename)
 {
   qint64 secs = file_get_last_modified_datetime (filename);
   if (secs == -1)
-    return NULL;
+    return {};
 
   return datetime::epoch_to_str (secs, "%Y-%m-%d %H:%M:%S");
 }

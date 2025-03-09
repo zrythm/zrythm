@@ -6,9 +6,17 @@
 
 #include "zrythm-config.h"
 
-#include "dsp/plugin_identifier.h"
 #include "utils/icloneable.h"
 #include "utils/types.h"
+#include "utils/uuid_identifiable_object.h"
+
+class Track;
+namespace zrythm::gui::old_dsp::plugins
+{
+class Plugin;
+}
+
+class Port;
 
 namespace zrythm::dsp
 {
@@ -62,6 +70,11 @@ class PortIdentifier
       public ICloneable<PortIdentifier>
 {
 public:
+  using TrackUuid = utils::UuidIdentifiableObject<Track>::Uuid;
+  using PluginUuid =
+    utils::UuidIdentifiableObject<gui::old_dsp::plugins::Plugin>::Uuid;
+  using PortUuid = utils::UuidIdentifiableObject<Port>::Uuid;
+
   /**
    * Type of owner.
    */
@@ -347,32 +360,15 @@ public:
 
   bool is_monitor_fader_stereo_in_or_out_port () const
   {
-    return ENUM_BITSET_TEST (Flags2, flags2_, Flags2::MonitorFader)
-           && (ENUM_BITSET_TEST (Flags, flags_, Flags::StereoL) || ENUM_BITSET_TEST (Flags, flags_, Flags::StereoR));
+    return ENUM_BITSET_TEST (flags2_, Flags2::MonitorFader)
+           && (ENUM_BITSET_TEST (flags_, Flags::StereoL) || ENUM_BITSET_TEST (flags_, Flags::StereoR));
   }
 
-  /**
-   * Returns the MIDI channel for a MIDI CC port, or -1 if not a MIDI CC port.
-   *
-   * @note MIDI channels start from 1 (not 0).
-   */
-  int get_midi_channel () const
-  {
-    if (
-      static_cast<int> (flags2_ & PortIdentifier::Flags2::MidiPitchBend) != 0
-      || static_cast<int> (flags2_ & PortIdentifier::Flags2::MidiPolyKeyPressure)
-           != 0
-      || static_cast<int> (flags2_ & PortIdentifier::Flags2::MidiChannelPressure)
-           != 0)
-      {
-        return port_index_ + 1;
-      }
-    if (static_cast<int> (flags_ & PortIdentifier::Flags::MidiAutomatable) != 0)
-      {
-        return port_index_ / 128 + 1;
-      }
-    return -1;
-  }
+  auto get_track_id () const { return track_id_; }
+  void set_track_id (TrackUuid track_id) { track_id_ = track_id; }
+  auto get_plugin_id () const { return plugin_id_; }
+  void set_plugin_id (PluginUuid plugin_id) { plugin_id_ = plugin_id; }
+  auto get_symbol () const { return sym_; }
 
   std::string print_to_str () const;
   void        print () const;
@@ -381,7 +377,9 @@ public:
 
   static std::string port_unit_to_string (PortUnit unit);
 
-  void init_after_cloning (const PortIdentifier &other) override
+  void
+  init_after_cloning (const PortIdentifier &other, ObjectCloneType clone_type)
+    override
   {
     *this = other;
   }
@@ -389,18 +387,19 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 public:
-  /** Index (e.g. in plugin's output ports). */
-  int port_index_ = 0;
+  /** Index (e.g. in plugin's output ports, the modulator macro processor slot,
+   * etc.). */
+  size_t port_index_{};
 
-  /** Track name hash (0 for non-track ports). */
-  unsigned int track_name_hash_ = 0;
+  /** Track identifier. */
+  std::optional<TrackUuid> track_id_;
 
   /** Owner type. */
-  PortIdentifier::OwnerType owner_type_ = (OwnerType) 0;
+  PortIdentifier::OwnerType owner_type_{};
   /** Data type (e.g. AUDIO). */
-  PortType type_ = (PortType) 0;
+  PortType type_{};
   /** Flow (IN/OUT). */
-  PortFlow flow_ = PortFlow::Unknown;
+  PortFlow flow_{ PortFlow::Unknown };
 
   /** Port unit. */
   PortUnit unit_{};
@@ -410,7 +409,7 @@ public:
   PortIdentifier::Flags2 flags2_{};
 
   /** Identifier of plugin. */
-  zrythm::dsp::PluginIdentifier plugin_id_ = {};
+  std::optional<PluginUuid> plugin_id_;
 
   /** Human readable label. */
   std::string label_;
@@ -429,6 +428,9 @@ public:
 
   /** ExtPort ID (type + full name), if hw port. */
   std::string ext_port_id_;
+
+  /** MIDI channel if MIDI CC port, starting from 1 (so [1, 16]). */
+  std::optional<midi_byte_t> midi_channel_;
 };
 
 }; // namespace zrythm::dsp
@@ -438,9 +440,13 @@ ENUM_ENABLE_BITSET (zrythm::dsp::PortIdentifier::Flags2);
 
 namespace std
 {
-template <> struct hash<zrythm::dsp::PortIdentifier>
+template <> struct hash<zrythm::utils::UuidIdentifiableObject<Port>::Uuid>
 {
-  size_t operator() (const auto &id) const { return id.get_hash (); }
+  std::size_t
+  operator() (const zrythm::utils::UuidIdentifiableObject<Port>::Uuid &uuid) const
+  {
+    return uuid.hash ();
+  }
 };
 }
 

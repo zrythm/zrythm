@@ -16,9 +16,11 @@ PortConnectionAction::PortConnectionAction (QObject * parent)
 }
 
 void
-PortConnectionAction::init_after_cloning (const PortConnectionAction &other)
+PortConnectionAction::init_after_cloning (
+  const PortConnectionAction &other,
+  ObjectCloneType             clone_type)
 {
-  UndoableAction::copy_members_from (other);
+  UndoableAction::copy_members_from (other, clone_type);
   type_ = other.type_;
   if (other.connection_ != nullptr)
     {
@@ -29,20 +31,20 @@ PortConnectionAction::init_after_cloning (const PortConnectionAction &other)
 }
 
 PortConnectionAction::PortConnectionAction (
-  Type                   type,
-  const PortIdentifier * src_id,
-  const PortIdentifier * dest_id,
-  float                  new_val)
+  Type     type,
+  PortUuid src_id,
+  PortUuid dest_id,
+  float    new_val)
     : type_ (type), val_ (new_val)
 {
-  auto * const conn = PORT_CONNECTIONS_MGR->find_connection (*src_id, *dest_id);
+  auto * const conn = PORT_CONNECTIONS_MGR->find_connection (src_id, dest_id);
   if (conn != nullptr)
     {
       connection_ = conn->clone_raw_ptr ();
       connection_->setParent (this);
     }
   else
-    connection_ = new PortConnection (*src_id, *dest_id, 1.f, false, true, this);
+    connection_ = new PortConnection (src_id, dest_id, 1.f, false, true, this);
 }
 
 void
@@ -60,8 +62,8 @@ PortConnectionAction::perform_impl ()
 void
 PortConnectionAction::do_or_undo (bool _do)
 {
-  auto src_var = PROJECT->find_port_by_id (*connection_->src_id_);
-  auto dest_var = PROJECT->find_port_by_id (*connection_->dest_id_);
+  auto src_var = PROJECT->find_port_by_id (connection_->src_id_);
+  auto dest_var = PROJECT->find_port_by_id (connection_->dest_id_);
   z_return_if_fail (src_var && dest_var);
   std::visit (
     [&] (auto &&src, auto &&dest) {
@@ -69,7 +71,7 @@ PortConnectionAction::do_or_undo (bool _do)
       using DestPortT = base_type<decltype (dest)>;
       z_return_if_fail (src && dest);
       auto prj_connection = PORT_CONNECTIONS_MGR->find_connection (
-        *connection_->src_id_, *connection_->dest_id_);
+        connection_->src_id_, connection_->dest_id_);
 
       switch (type_)
         {
@@ -87,7 +89,7 @@ PortConnectionAction::do_or_undo (bool _do)
                     dest->get_label ()));
                 }
               PORT_CONNECTIONS_MGR->ensure_connect (
-                *src->id_, *dest->id_, 1.f, false, true);
+                src->get_uuid (), dest->get_uuid (), 1.f, false, true);
 
               /* set base value if cv -> control */
               if constexpr (
@@ -99,7 +101,8 @@ PortConnectionAction::do_or_undo (bool _do)
             }
           else
             {
-              PORT_CONNECTIONS_MGR->ensure_disconnect (*src->id_, *dest->id_);
+              PORT_CONNECTIONS_MGR->ensure_disconnect (
+                src->get_uuid (), dest->get_uuid ());
             }
           ROUTER->recalc_graph (false);
           break;

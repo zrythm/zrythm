@@ -14,7 +14,8 @@ TEST (PortIdentifier, Construction)
   EXPECT_EQ (id1.type_, PortType::Unknown);
   EXPECT_EQ (id1.flow_, PortFlow::Unknown);
   EXPECT_EQ (id1.port_index_, 0);
-  EXPECT_EQ (id1.track_name_hash_, 0);
+  EXPECT_FALSE (id1.track_id_.has_value ());
+  EXPECT_FALSE (id1.plugin_id_.has_value ());
   EXPECT_TRUE (id1.label_.empty ());
 }
 
@@ -52,24 +53,34 @@ TEST (PortIdentifier, PortFlow)
   EXPECT_FALSE (id.is_input ());
 }
 
-TEST (PortIdentifier, MidiChannels)
+TEST (PortIdentifier, Identifiers)
 {
   PortIdentifier id;
 
-  // Test MIDI pitch bend
-  id.flags2_ = PortIdentifier::Flags2::MidiPitchBend;
-  id.port_index_ = 2;
-  EXPECT_EQ (id.get_midi_channel (), 3); // 1-based channel numbering
+  // Test track ID
+  auto track_uuid = PortIdentifier::TrackUuid (QUuid::createUuid ());
+  id.set_track_id (track_uuid);
+  EXPECT_EQ (id.get_track_id (), track_uuid);
 
-  // Test MIDI CC
-  id.flags2_ = (PortIdentifier::Flags2) 0;
-  id.flags_ = PortIdentifier::Flags::MidiAutomatable;
-  id.port_index_ = 256; // Channel 3 (256/128 + 1)
-  EXPECT_EQ (id.get_midi_channel (), 3);
+  // Test plugin ID
+  auto plugin_uuid = PortIdentifier::PluginUuid (QUuid::createUuid ());
+  id.set_plugin_id (plugin_uuid);
+  EXPECT_EQ (id.get_plugin_id (), plugin_uuid);
+}
 
-  // Test non-MIDI port
-  id.flags_ = (PortIdentifier::Flags) 0;
-  EXPECT_EQ (id.get_midi_channel (), -1);
+TEST (PortIdentifier, MonitorFaderPorts)
+{
+  PortIdentifier id;
+
+  id.flags2_ = PortIdentifier::Flags2::MonitorFader;
+  id.flags_ = PortIdentifier::Flags::StereoL;
+  EXPECT_TRUE (id.is_monitor_fader_stereo_in_or_out_port ());
+
+  id.flags_ = PortIdentifier::Flags::StereoR;
+  EXPECT_TRUE (id.is_monitor_fader_stereo_in_or_out_port ());
+
+  id.flags_ = PortIdentifier::Flags{};
+  EXPECT_FALSE (id.is_monitor_fader_stereo_in_or_out_port ());
 }
 
 TEST (PortIdentifier, Comparison)
@@ -128,10 +139,12 @@ TEST (PortIdentifier, Serialization)
   id1.unit_ = PortUnit::Hz;
   id1.flags_ = PortIdentifier::Flags::MainPort;
   id1.flags2_ = PortIdentifier::Flags2::MidiPitchBend;
-  id1.track_name_hash_ = 12345;
   id1.port_index_ = 42;
   id1.port_group_ = "group1";
   id1.ext_port_id_ = "ext1";
+  id1.midi_channel_ = 1;
+  id1.set_track_id (PortIdentifier::TrackUuid (QUuid::createUuid ()));
+  id1.set_plugin_id (PortIdentifier::PluginUuid (QUuid::createUuid ()));
 
   // Serialize to JSON
   auto json_str = id1.serialize_to_json_string ();
@@ -151,8 +164,10 @@ TEST (PortIdentifier, Serialization)
   EXPECT_EQ (id1.unit_, id2.unit_);
   EXPECT_EQ (id1.flags_, id2.flags_);
   EXPECT_EQ (id1.flags2_, id2.flags2_);
-  EXPECT_EQ (id1.track_name_hash_, id2.track_name_hash_);
   EXPECT_EQ (id1.port_index_, id2.port_index_);
   EXPECT_EQ (id1.port_group_, id2.port_group_);
   EXPECT_EQ (id1.ext_port_id_, id2.ext_port_id_);
+  EXPECT_EQ (id1.midi_channel_, id2.midi_channel_);
+  EXPECT_EQ (id1.get_track_id (), id2.get_track_id ());
+  EXPECT_EQ (id1.get_plugin_id (), id2.get_plugin_id ());
 }

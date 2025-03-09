@@ -19,17 +19,17 @@ AutomationRegion::AutomationRegion (QObject * parent)
 }
 
 AutomationRegion::AutomationRegion (
-  const Position &start_pos,
-  const Position &end_pos,
-  unsigned int    track_name_hash,
-  int             at_idx,
-  int             idx_inside_at,
-  QObject *       parent)
+  const Position                &start_pos,
+  const Position                &end_pos,
+  dsp::PortIdentifier::TrackUuid track_id,
+  int                            at_idx,
+  int                            idx_inside_at,
+  QObject *                      parent)
     : AutomationRegion (parent)
 {
   id_ = RegionIdentifier (RegionType::Automation);
 
-  init (start_pos, end_pos, track_name_hash, at_idx, idx_inside_at);
+  init (start_pos, end_pos, track_id, at_idx, idx_inside_at);
 }
 
 void
@@ -111,8 +111,7 @@ void
 AutomationRegion::set_automation_track (AutomationTrack &at)
 {
   z_debug (
-    "setting region automation track to {} {}", at.index_,
-    at.port_id_->get_label ());
+    "setting region automation track to {} {}", at.index_, at.getLabel ());
 
   /* this must not be called on non-project regions (or during project
    * destruction) */
@@ -131,7 +130,7 @@ AutomationRegion::set_automation_track (AutomationTrack &at)
     }
   id_.at_idx_ = at.index_;
   auto track = at.get_track ();
-  id_.track_name_hash_ = track->get_name_hash ();
+  id_.track_uuid_ = track->get_uuid ();
 
   update_identifier ();
 
@@ -278,10 +277,12 @@ AutomationRegion::get_ap_around (
 }
 
 void
-AutomationRegion::init_after_cloning (const AutomationRegion &other)
+AutomationRegion::init_after_cloning (
+  const AutomationRegion &other,
+  ObjectCloneType         clone_type)
 {
   init (
-    *other.pos_, *other.end_pos_, other.id_.track_name_hash_, other.id_.at_idx_,
+    *other.pos_, *other.end_pos_, other.id_.track_uuid_, other.id_.at_idx_,
     other.id_.idx_);
   aps_.reserve (other.aps_.size ());
   for (const auto &ap : other.aps_)
@@ -290,14 +291,14 @@ AutomationRegion::init_after_cloning (const AutomationRegion &other)
       clone->setParent (this);
       aps_.push_back (clone);
     }
-  RegionImpl::copy_members_from (other);
-  TimelineObject::copy_members_from (other);
-  NameableObject::copy_members_from (other);
-  LoopableObject::copy_members_from (other);
-  MuteableObject::copy_members_from (other);
-  LengthableObject::copy_members_from (other);
-  ColoredObject::copy_members_from (other);
-  ArrangerObject::copy_members_from (other);
+  RegionImpl::copy_members_from (other, clone_type);
+  TimelineObject::copy_members_from (other, clone_type);
+  NameableObject::copy_members_from (other, clone_type);
+  LoopableObject::copy_members_from (other, clone_type);
+  MuteableObject::copy_members_from (other, clone_type);
+  LengthableObject::copy_members_from (other, clone_type);
+  ColoredObject::copy_members_from (other, clone_type);
+  ArrangerObject::copy_members_from (other, clone_type);
   force_sort ();
 }
 

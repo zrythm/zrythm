@@ -5,6 +5,9 @@ target_sources(zrythm_gui_lib
   PRIVATE
     arranger_object.h
     arranger_object.cpp
+    arranger_object_all.h
+    arranger_object_span.h
+    arranger_object_fwd.h
     audio_bus_track.h
     audio_bus_track.cpp
     audio_function.h
@@ -139,11 +142,15 @@ target_sources(zrythm_gui_lib
     plugin_descriptor.cpp
     plugin_protocol.h
     plugin_protocol.cpp
+    plugin_span.h
+    plugin_span.cpp
     pool.h
     pool.cpp
     port.h
     port.cpp
+    port_all.h
     port_backend.h
+    port_span.h
     port_connection.h
     port_connection.cpp
     port_connections_manager.h
@@ -192,6 +199,10 @@ target_sources(zrythm_gui_lib
     timeline_object.cpp
     track.h
     track.cpp
+    track_all.h
+    track_span.h
+    track_span.cpp
+    track_fwd.h
     track_lane.h
     track_lane.cpp
     track_lane_list.h

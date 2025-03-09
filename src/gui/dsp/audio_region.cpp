@@ -40,7 +40,7 @@ AudioRegion::init_default_constructed (
   const std::optional<std::string>      clip_name,
   std::optional<utils::audio::BitDepth> bit_depth,
   Position                              start_pos,
-  unsigned int                          track_name_hash,
+  dsp::PortIdentifier::TrackUuid        track_uuid,
   int                                   lane_pos,
   int                                   idx_inside_lane)
 {
@@ -105,7 +105,7 @@ AudioRegion::init_default_constructed (
   end_pos.add_frames (clip->get_num_frames (), AUDIO_ENGINE->ticks_per_frame_);
 
   /* init */
-  init (start_pos, end_pos, track_name_hash, lane_pos, idx_inside_lane);
+  init (start_pos, end_pos, track_uuid, lane_pos, idx_inside_lane);
 
   (void) recording;
   z_return_if_fail (get_clip ());
@@ -199,8 +199,8 @@ AudioRegion::replace_frames_from_interleaved (
 
 void
 AudioRegion::fill_stereo_ports (
-  const EngineProcessTimeInfo &time_nfo,
-  StereoPorts                 &stereo_ports) const
+  const EngineProcessTimeInfo        &time_nfo,
+  std::pair<AudioPort &, AudioPort &> stereo_ports) const
 {
   AudioClip * clip = get_clip ();
   z_return_if_fail (clip);
@@ -379,10 +379,10 @@ AudioRegion::fill_stereo_ports (
 
   /* copy frames */
   utils::float_ranges::copy (
-    &stereo_ports.get_l ().buf_[time_nfo.local_offset_], &lbuf_after_ts[0],
+    &stereo_ports.first.buf_[time_nfo.local_offset_], &lbuf_after_ts[0],
     time_nfo.nframes_);
   utils::float_ranges::copy (
-    &stereo_ports.get_r ().buf_[time_nfo.local_offset_], &rbuf_after_ts[0],
+    &stereo_ports.second.buf_[time_nfo.local_offset_], &rbuf_after_ts[0],
     time_nfo.nframes_);
 
   /* apply fades */
@@ -425,8 +425,8 @@ AudioRegion::fill_stereo_ports (
             (double) current_local_frame / (double) num_frames_in_fade_in_area,
             true);
 
-          stereo_ports.get_l ().buf_[current_cycle_frame] *= fade_in;
-          stereo_ports.get_r ().buf_[current_cycle_frame] *= fade_in;
+          stereo_ports.first.buf_[current_cycle_frame] *= fade_in;
+          stereo_ports.second.buf_[current_cycle_frame] *= fade_in;
         }
       /* if inside object fade out */
       if (current_local_frame >= fade_out_pos_.frames_)
@@ -441,8 +441,8 @@ AudioRegion::fill_stereo_ports (
               / (double) num_frames_in_fade_out_area,
             false);
 
-          stereo_ports.get_l ().buf_[current_cycle_frame] *= fade_out;
-          stereo_ports.get_r ().buf_[current_cycle_frame] *= fade_out;
+          stereo_ports.first.buf_[current_cycle_frame] *= fade_out;
+          stereo_ports.second.buf_[current_cycle_frame] *= fade_out;
         }
       /* if inside builtin fade in, apply builtin fade in */
       if (
@@ -453,8 +453,8 @@ AudioRegion::fill_stereo_ports (
             (float) current_local_frame
             / (float) AUDIO_REGION_BUILTIN_FADE_FRAMES;
 
-          stereo_ports.get_l ().buf_[current_cycle_frame] *= fade_in;
-          stereo_ports.get_r ().buf_[current_cycle_frame] *= fade_in;
+          stereo_ports.first.buf_[current_cycle_frame] *= fade_in;
+          stereo_ports.second.buf_[current_cycle_frame] *= fade_in;
         }
       /* if inside builtin fade out, apply builtin
        * fade out */
@@ -469,8 +469,8 @@ AudioRegion::fill_stereo_ports (
             1.f
             - ((float) num_frames_from_fade_out_start / (float) AUDIO_REGION_BUILTIN_FADE_FRAMES);
 
-          stereo_ports.get_l ().buf_[current_cycle_frame] *= fade_out;
-          stereo_ports.get_r ().buf_[current_cycle_frame] *= fade_out;
+          stereo_ports.first.buf_[current_cycle_frame] *= fade_out;
+          stereo_ports.second.buf_[current_cycle_frame] *= fade_out;
         }
     }
 }
@@ -607,7 +607,9 @@ AudioRegion::init_loaded ()
 }
 
 void
-AudioRegion::init_after_cloning (const AudioRegion &other)
+AudioRegion::init_after_cloning (
+  const AudioRegion &other,
+  ObjectCloneType    clone_type)
 {
   init_default_constructed (
     other.pool_id_, std::nullopt, true,
@@ -617,19 +619,18 @@ AudioRegion::init_after_cloning (const AudioRegion &other)
     other.clip_
       ? other.clip_->get_bit_depth ()
       : ENUM_INT_TO_VALUE (utils::audio::BitDepth, 0),
-    *other.pos_, other.id_.track_name_hash_, other.id_.lane_pos_,
-    other.id_.idx_);
+    *other.pos_, other.id_.track_uuid_, other.id_.lane_pos_, other.id_.idx_);
   pool_id_ = other.pool_id_;
   gain_ = other.gain_;
   musical_mode_ = other.musical_mode_;
-  LaneOwnedObjectImpl::copy_members_from (other);
-  RegionImpl::copy_members_from (other);
-  FadeableObject::copy_members_from (other);
-  TimelineObject::copy_members_from (other);
-  NameableObject::copy_members_from (other);
-  LoopableObject::copy_members_from (other);
-  MuteableObject::copy_members_from (other);
-  LengthableObject::copy_members_from (other);
-  ColoredObject::copy_members_from (other);
-  ArrangerObject::copy_members_from (other);
+  LaneOwnedObjectImpl::copy_members_from (other, clone_type);
+  RegionImpl::copy_members_from (other, clone_type);
+  FadeableObject::copy_members_from (other, clone_type);
+  TimelineObject::copy_members_from (other, clone_type);
+  NameableObject::copy_members_from (other, clone_type);
+  LoopableObject::copy_members_from (other, clone_type);
+  MuteableObject::copy_members_from (other, clone_type);
+  LengthableObject::copy_members_from (other, clone_type);
+  ColoredObject::copy_members_from (other, clone_type);
+  ArrangerObject::copy_members_from (other, clone_type);
 }

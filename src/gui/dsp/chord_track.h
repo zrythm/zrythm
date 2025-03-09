@@ -45,7 +45,7 @@ class ChordTrack final
       public RegionOwnerImpl<ChordRegion>,
       public ICloneable<ChordTrack>,
       public zrythm::utils::serialization::ISerializable<ChordTrack>,
-      public InitializableObjectFactory<ChordTrack>
+      public utils::InitializableObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -54,7 +54,9 @@ class ChordTrack final
   DEFINE_CHANNEL_TRACK_QML_PROPERTIES (ChordTrack)
   DEFINE_REGION_OWNER_QML_PROPERTIES (ChordTrack)
 
-  friend class InitializableObjectFactory<ChordTrack>;
+  friend class InitializableObject;
+
+  DECLARE_FINAL_TRACK_CONSTRUCTORS (ChordTrack)
 
 public:
   using ScaleObjectPtr = ScaleObject *;
@@ -75,7 +77,9 @@ public:
 
   // =========================================================================
 
-  void init_loaded () override;
+  void
+  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
+    override;
 
   bool is_in_active_project () const override
   {
@@ -140,7 +144,8 @@ public:
     });
   }
 
-  void init_after_cloning (const ChordTrack &other) override;
+  void init_after_cloning (const ChordTrack &other, ObjectCloneType clone_type)
+    override;
 
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
@@ -148,9 +153,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  ChordTrack (int track_pos = 0);
-
-  bool initialize () override;
+  bool initialize ();
   void set_playback_caches () override;
 
 public:

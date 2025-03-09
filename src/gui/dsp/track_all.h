@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __DSP_TRACK_ALL_H__
-#define __DSP_TRACK_ALL_H__
+#ifndef DSP_TRACK_ALL_H
+#define DSP_TRACK_ALL_H
 
 #include "gui/dsp/audio_bus_track.h"
 #include "gui/dsp/audio_group_track.h"
@@ -18,4 +18,4 @@
 #include "gui/dsp/modulator_track.h"
 #include "gui/dsp/tempo_track.h"
 
-#endif // __DSP_TRACK_ALL_H__
+#endif // DSP_TRACK_ALL_H

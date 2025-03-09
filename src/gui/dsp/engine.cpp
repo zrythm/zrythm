@@ -70,12 +70,15 @@
 #endif
 
 void
-AudioEngine::init_after_cloning (const AudioEngine &other)
+AudioEngine::init_after_cloning (
+  const AudioEngine &other,
+  ObjectCloneType    clone_type)
 {
   transport_type_ = other.transport_type_;
   sample_rate_ = other.sample_rate_;
   frames_per_tick_ = other.frames_per_tick_;
-  monitor_out_ = other.monitor_out_->clone_unique ();
+  monitor_out_left_ = other.monitor_out_left_;
+  monitor_out_right_ = other.monitor_out_right_;
   midi_editor_manual_press_ = other.midi_editor_manual_press_->clone_unique ();
   midi_in_ = other.midi_in_->clone_unique ();
   pool_ = other.pool_->clone_unique ();
@@ -86,6 +89,34 @@ AudioEngine::init_after_cloning (const AudioEngine &other)
   hw_in_processor_ = other.hw_in_processor_->clone_unique ();
   hw_out_processor_ = other.hw_out_processor_->clone_unique ();
   midi_clock_out_ = other.midi_clock_out_->clone_unique ();
+}
+
+std::pair<AudioPort &, AudioPort &>
+AudioEngine::get_monitor_out_ports ()
+{
+  if (!monitor_out_left_)
+    {
+      throw std::runtime_error ("No monitor outputs");
+    }
+  auto * l = std::get<AudioPort *> (
+    port_registry_->find_by_id_or_throw (monitor_out_left_.value ()));
+  auto * r = std::get<AudioPort *> (
+    port_registry_->find_by_id_or_throw (monitor_out_right_.value ()));
+  return { *l, *r };
+}
+
+std::pair<AudioPort &, AudioPort &>
+AudioEngine::get_dummy_input_ports ()
+{
+  if (!dummy_left_input_)
+    {
+      throw std::runtime_error ("No dummy inputs");
+    }
+  auto * l = std::get<AudioPort *> (
+    port_registry_->find_by_id_or_throw (dummy_left_input_.value ()));
+  auto * r = std::get<AudioPort *> (
+    port_registry_->find_by_id_or_throw (dummy_right_input_.value ()));
+  return { *l, *r };
 }
 
 void
@@ -156,7 +187,7 @@ AudioEngine::update_frames_per_tick (
   /* update positions */
   project_->transport_->update_positions (update_from_ticks);
 
-  for (const auto &track : project_->tracklist_->tracks_)
+  for (const auto &track : project_->tracklist_->get_track_span ())
     {
       std::visit (
         [&] (auto &&tr) {
@@ -288,28 +319,28 @@ AudioEngine::append_ports (std::vector<Port *> &ports)
     ports.push_back (port);
   };
 
-  add_port (control_room_->monitor_fader_->amp_.get ());
-  add_port (control_room_->monitor_fader_->balance_.get ());
-  add_port (control_room_->monitor_fader_->mute_.get ());
-  add_port (control_room_->monitor_fader_->solo_.get ());
-  add_port (control_room_->monitor_fader_->listen_.get ());
-  add_port (control_room_->monitor_fader_->mono_compat_enabled_.get ());
-  add_port (&control_room_->monitor_fader_->stereo_in_->get_l ());
-  add_port (&control_room_->monitor_fader_->stereo_in_->get_r ());
-  add_port (&control_room_->monitor_fader_->stereo_out_->get_l ());
-  add_port (&control_room_->monitor_fader_->stereo_out_->get_r ());
+  add_port (&control_room_->monitor_fader_->get_amp_port ());
+  add_port (&control_room_->monitor_fader_->get_balance_port ());
+  add_port (&control_room_->monitor_fader_->get_mute_port ());
+  add_port (&control_room_->monitor_fader_->get_solo_port ());
+  add_port (&control_room_->monitor_fader_->get_listen_port ());
+  add_port (&control_room_->monitor_fader_->get_mono_compat_enabled_port ());
+  add_port (&control_room_->monitor_fader_->get_stereo_in_ports ().first);
+  add_port (&control_room_->monitor_fader_->get_stereo_in_ports ().second);
+  add_port (&control_room_->monitor_fader_->get_stereo_out_ports ().first);
+  add_port (&control_room_->monitor_fader_->get_stereo_out_ports ().second);
 
-  add_port (&monitor_out_->get_l ());
-  add_port (&monitor_out_->get_r ());
+  iterate_tuple (
+    [&] (auto &port) { add_port (&port); }, get_monitor_out_ports ());
   add_port (midi_editor_manual_press_.get ());
   add_port (midi_in_.get ());
 
-  add_port (&sample_processor_->fader_->stereo_in_->get_l ());
-  add_port (&sample_processor_->fader_->stereo_in_->get_r ());
-  add_port (&sample_processor_->fader_->stereo_out_->get_l ());
-  add_port (&sample_processor_->fader_->stereo_out_->get_r ());
+  add_port (&sample_processor_->fader_->get_stereo_in_ports ().first);
+  add_port (&sample_processor_->fader_->get_stereo_in_ports ().second);
+  add_port (&sample_processor_->fader_->get_stereo_out_ports ().first);
+  add_port (&sample_processor_->fader_->get_stereo_out_ports ().second);
 
-  for (const auto &tr : sample_processor_->tracklist_->tracks_)
+  for (const auto &tr : sample_processor_->tracklist_->get_track_span ())
     {
       std::visit (
         [&] (auto &&track) {
@@ -513,16 +544,28 @@ AudioEngine::setup ()
 
   buf_size_set_ = false;
 
-  sample_processor_->fader_->stereo_out_->connect_to (
-    *project_->port_connections_manager_,
-    *control_room_->monitor_fader_->stereo_in_, true);
-  control_room_->monitor_fader_->stereo_out_->connect_to (
-    *project_->port_connections_manager_, *monitor_out_, true);
-
+  {
+    project_->port_connections_manager_->ensure_connect_default (
+      sample_processor_->fader_->get_stereo_out_left_id (),
+      control_room_->monitor_fader_->get_stereo_out_left_id (), true);
+    project_->port_connections_manager_->ensure_connect_default (
+      sample_processor_->fader_->get_stereo_out_right_id (),
+      control_room_->monitor_fader_->get_stereo_out_right_id (), true);
+  }
+  {
+    project_->port_connections_manager_->ensure_connect_default (
+      control_room_->monitor_fader_->get_stereo_out_left_id (),
+      *monitor_out_left_, true);
+    project_->port_connections_manager_->ensure_connect_default (
+      control_room_->monitor_fader_->get_stereo_out_right_id (),
+      *monitor_out_right_, true);
+  }
   setup_ = true;
 
   midi_in_->set_expose_to_backend (*this, true);
-  monitor_out_->set_expose_to_backend (*this, true);
+  iterate_tuple (
+    [&] (auto &port) { port.set_expose_to_backend (*this, true); },
+    get_monitor_out_ports ());
   midi_clock_out_->set_expose_to_backend (*this, true);
 
   z_debug ("processing engine events");
@@ -692,10 +735,11 @@ AudioEngine::init_loaded (Project * project)
   z_debug ("Initializing...");
 
   project_ = project;
+  port_registry_ = project->get_port_registry ();
 
   pool_->init_loaded (this);
 
-  control_room_->init_loaded (this);
+  control_room_->init_loaded (*port_registry_, this);
   sample_processor_->init_loaded (this);
   hw_in_processor_->init_loaded (this);
   hw_out_processor_->init_loaded (this);
@@ -724,15 +768,12 @@ AudioEngine::init_loaded (Project * project)
         }
       else if (id.owner_type_ == dsp::PortIdentifier::OwnerType::Fader)
         {
-          if (
-            ENUM_BITSET_TEST (
-              dsp::PortIdentifier::Flags2, id.flags2_,
-              dsp::PortIdentifier::Flags2::SampleProcessorFader))
+          if (ENUM_BITSET_TEST (
+                id.flags2_, dsp::PortIdentifier::Flags2::SampleProcessorFader))
             port->init_loaded (*sample_processor_->fader_);
           else if (
             ENUM_BITSET_TEST (
-              dsp::PortIdentifier::Flags2, id.flags2_,
-              dsp::PortIdentifier::Flags2::MonitorFader))
+              id.flags2_, dsp::PortIdentifier::Flags2::MonitorFader))
             port->init_loaded (*control_room_->monitor_fader_);
         }
     }
@@ -741,8 +782,10 @@ AudioEngine::init_loaded (Project * project)
 }
 
 AudioEngine::AudioEngine (Project * project)
-    : project_ (project), sample_rate_ (44000),
-      control_room_ (std::make_unique<ControlRoom> (this)),
+    : port_registry_ (project->get_port_registry ()), project_ (project),
+      sample_rate_ (44000),
+      control_room_ (
+        std::make_unique<ControlRoom> (project->get_port_registry (), this)),
       pool_ (std::make_unique<AudioPool> (this)),
       sample_processor_ (std::make_unique<SampleProcessor> (this))
 {
@@ -760,13 +803,10 @@ AudioEngine::AudioEngine (Project * project)
   midi_in_->id_->sym_ = "midi_in";
 
   {
-    AudioPort monitor_out_l ("Monitor Out L", dsp::PortFlow::Output);
-    monitor_out_l.id_->sym_ = "monitor_out_l";
-    AudioPort monitor_out_r ("Monitor Out R", dsp::PortFlow::Output);
-    monitor_out_r.id_->sym_ = "monitor_out_r";
-    monitor_out_ = std::make_unique<StereoPorts> (
-      std::move (monitor_out_l), std::move (monitor_out_r));
-    monitor_out_->set_owner (*this);
+    auto monitor_out = StereoPorts::create_stereo_ports (
+      project_->get_port_registry (), false, "Monitor Out", "monitor_out");
+    monitor_out_left_ = monitor_out.first->get_uuid ();
+    monitor_out_right_ = monitor_out.second->get_uuid ();
   }
 
   hw_in_processor_ = std::make_unique<HardwareProcessor> (true, this);
@@ -775,6 +815,17 @@ AudioEngine::AudioEngine (Project * project)
   init_common ();
 
   z_debug ("finished creating audio engine");
+}
+
+TrackRegistry &
+AudioEngine::get_track_registry ()
+{
+  return project_->get_track_registry ();
+}
+TrackRegistry &
+AudioEngine::get_track_registry () const
+{
+  return project_->get_track_registry ();
 }
 
 void
@@ -1011,7 +1062,7 @@ AudioEngine::realloc_port_buffers (nframes_t nframes)
 
   /* TODO make function that fetches all plugins in the project */
   std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
-  TRACKLIST->get_plugins (plugins);
+  TRACKLIST->get_track_span ().get_plugins (plugins);
   for (auto &pl : plugins)
     {
       if (pl && !pl->instantiation_failed_ && pl->setting_->open_with_carla_)
@@ -1037,7 +1088,8 @@ AudioEngine::clear_output_buffers (nframes_t nframes)
     return;
 
   /* clear the monitor output (used by rtaudio) */
-  monitor_out_->clear_buffer (*this);
+  iterate_tuple (
+    [&] (auto &port) { port.clear_buffer (*this); }, get_monitor_out_ports ());
   midi_clock_out_->clear_buffer (*this);
 
   /* if not running, do not attempt to access any possibly deleted ports */
@@ -1177,7 +1229,12 @@ AudioEngine::process_prepare (
   sample_processor_->prepare_process (nframes);
 
   /* prepare channels for this cycle */
-  for (auto track : project_->tracklist_->tracks_ | type_is<ChannelTrack> ())
+  for (
+    auto track :
+    project_->tracklist_->get_track_span ()
+      | std::views::filter (TrackSpan::derived_from_type_projection<ChannelTrack>)
+      | std::views::transform (
+        TrackSpan::derived_type_transformation<ChannelTrack>))
     {
       track->channel_->prepare_process (nframes);
     }
@@ -1561,7 +1618,7 @@ AudioEngine::reset_bounce_mode ()
 {
   bounce_mode_ = BounceMode::BOUNCE_OFF;
 
-  TRACKLIST->mark_all_tracks_for_bounce (false);
+  TRACKLIST->get_track_span ().mark_all_tracks_for_bounce (false);
 }
 
 void
@@ -1612,7 +1669,7 @@ AudioEngine::set_default_backends (bool reset_to_dummy)
         S_P_GENERAL_ENGINE, "audio-backend",
         ENUM_VALUE_TO_INT (AudioBackend::AUDIO_BACKEND_WASAPI_RTAUDIO));
       audio_set = true;
-#elif defined(__APPLE__)
+#elifdef __APPLE__
       g_settings_set_enum (
         S_P_GENERAL_ENGINE, "audio-backend",
         ENUM_VALUE_TO_INT (AudioBackend::AUDIO_BACKEND_COREAUDIO_RTAUDIO));
@@ -1628,7 +1685,7 @@ AudioEngine::set_default_backends (bool reset_to_dummy)
         S_P_GENERAL_ENGINE, "midi-backend",
         ENUM_VALUE_TO_INT (MidiBackend::MIDI_BACKEND_WINDOWS_MME_RTMIDI));
       audio_set = true;
-#elif defined(__APPLE__)
+#elifdef __APPLE__
       g_settings_set_enum (
         S_P_GENERAL_ENGINE, "midi-backend",
         ENUM_VALUE_TO_INT (MidiBackend::MIDI_BACKEND_COREMIDI_RTMIDI));
@@ -1718,7 +1775,8 @@ AudioEngine::~AudioEngine ()
 
   if (PROJECT && AUDIO_ENGINE && this == AUDIO_ENGINE)
     {
-      monitor_out_->disconnect (*PORT_CONNECTIONS_MGR);
+      iterate_tuple (
+        [&] (auto &port) { port.disconnect_all (); }, get_monitor_out_ports ());
       midi_in_->disconnect_all ();
       midi_editor_manual_press_->disconnect_all ();
     }

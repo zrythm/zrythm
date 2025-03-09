@@ -68,10 +68,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
       /* do some sanity checks for lane regions */
       if (region_type_has_lane (id.type_))
         {
-          auto track_var =
-            TRACKLIST->find_track_by_name_hash (id.track_name_hash_);
-          z_return_if_fail (track_var);
-
+          auto track_var = *TRACKLIST->get_track (id.track_uuid_);
           std::visit (
             [&] (auto &&t) {
               using TrackT = base_type<decltype (t)>;
@@ -91,7 +88,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
                   z_return_if_reached ();
                 }
             },
-            *track_var);
+            track_var);
         }
 
       auto region_var = Region::find (id);
@@ -218,7 +215,7 @@ RecordingManager::handle_recording (
     }
   /* else if not recording at all (recording stopped) */
   else if (
-    !TRANSPORT->is_recording () || !recordable_track->recording_
+    !TRANSPORT->is_recording () || !recordable_track->get_recording ()
     || !TRANSPORT->isRolling ())
     {
       /* if track had previously recorded */
@@ -329,7 +326,7 @@ RecordingManager::handle_recording (
         {
 
           auto &midi_events =
-            track_processor->midi_in_->midi_events_.active_events_;
+            track_processor->get_midi_in_port ().midi_events_.active_events_;
 
           for (const auto &me : midi_events)
             {
@@ -352,14 +349,16 @@ RecordingManager::handle_recording (
         {
           auto re = event_obj_pool_.acquire ();
           re->init (RecordingEvent::Type::Audio, *tr, *time_nfo);
+          auto tp_stereo_ins = track_processor->get_stereo_in_ports ();
           utils::float_ranges::copy (
             &re->lbuf_[time_nfo->local_offset_],
-            &track_processor->stereo_in_->get_l ().buf_[time_nfo->local_offset_],
+            &tp_stereo_ins.first.buf_[time_nfo->local_offset_],
             time_nfo->nframes_);
-          Port &r =
-            track_processor->mono_ && track_processor->mono_->is_toggled ()
-              ? track_processor->stereo_in_->get_l ()
-              : track_processor->stereo_in_->get_r ();
+          auto &r =
+            track_processor->mono_id_
+                && track_processor->get_mono_port ().is_toggled ()
+              ? tp_stereo_ins.first
+              : tp_stereo_ins.second;
           utils::float_ranges::copy (
             &re->rbuf_[time_nfo->local_offset_],
             &r.buf_[time_nfo->local_offset_], time_nfo->nframes_);
@@ -471,9 +470,7 @@ RecordingManager::create_automation_point (
 void
 RecordingManager::handle_pause_event (const RecordingEvent &ev)
 {
-  auto tr_var = TRACKLIST->find_track_by_name_hash (ev.track_name_hash_);
-  z_return_if_fail (tr_var);
-
+  auto tr_var = *TRACKLIST->get_track (ev.track_uuid_);
   std::visit (
     [&] (auto &&tr) {
       using TrackT = base_type<decltype (tr)>;
@@ -542,14 +539,13 @@ RecordingManager::handle_pause_event (const RecordingEvent &ev)
           z_error ("track {} is not automatable", tr->get_name ());
         }
     },
-    *tr_var);
+    tr_var);
 }
 
 bool
 RecordingManager::handle_resume_event (const RecordingEvent &ev)
 {
-  auto tr_var = TRACKLIST->find_track_by_name_hash (ev.track_name_hash_);
-
+  auto tr_var = *TRACKLIST->get_track (ev.track_uuid_);
   return std::visit (
     [&] (auto &&tr) {
       using TrackT = base_type<decltype (tr)>;
@@ -625,8 +621,8 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                     if constexpr (std::is_same_v<RegionT, MidiRegion>)
                       {
                         new_region = new MidiRegion (
-                          resume_pos, end_pos, tr->get_name_hash (),
-                          new_lane_pos, idx_inside_lane);
+                          resume_pos, end_pos, tr->get_uuid (), new_lane_pos,
+                          idx_inside_lane);
                       }
                     else if constexpr (std::is_same_v<RegionT, AudioRegion>)
                       {
@@ -706,7 +702,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
               if (!at->recording_paused_)
                 return false;
 
-              auto port_var = PROJECT->find_port_by_id (*at->port_id_);
+              auto port_var = PROJECT->find_port_by_id (at->port_id_);
               z_return_val_if_fail (
                 port_var && std::holds_alternative<ControlPort *> (*port_var),
                 false);
@@ -721,7 +717,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                 {
                   /* create region */
                   auto new_region_to_add = new AutomationRegion (
-                    resume_pos, end_pos, tr->get_name_hash (), at->index_,
+                    resume_pos, end_pos, tr->get_uuid (), at->index_,
                     at->region_list_->regions_.size ());
                   z_return_val_if_fail (new_region, false);
                   try
@@ -762,7 +758,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
 
       return true;
     },
-    *tr_var);
+    tr_var);
 }
 void
 RecordingManager::handle_audio_event (const RecordingEvent &ev)
@@ -771,9 +767,7 @@ RecordingManager::handle_audio_event (const RecordingEvent &ev)
   (void) handled_resume;
   /*z_debug ("handled resume {}", handled_resume);*/
 
-  auto tr_var = TRACKLIST->find_track_by_name_hash (ev.track_name_hash_);
-  z_return_if_fail (tr_var);
-  auto * tr = std::get<AudioTrack *> (*tr_var);
+  auto * tr = std::get<AudioTrack *> (*TRACKLIST->get_track (ev.track_uuid_));
   /* get end position */
   unsigned_frame_t start_frames = ev.g_start_frame_w_offset_;
   unsigned_frame_t end_frames = start_frames + ev.nframes_;
@@ -830,9 +824,7 @@ RecordingManager::handle_midi_event (const RecordingEvent &ev)
 {
   handle_resume_event (ev);
 
-  auto tr_var = TRACKLIST->find_track_by_name_hash (ev.track_name_hash_);
-  z_return_if_fail (tr_var);
-
+  auto tr_var = *TRACKLIST->get_track (ev.track_uuid_);
   std::visit (
     [&] (auto &&tr) {
       using TrackT = base_type<decltype (tr)>;
@@ -960,7 +952,7 @@ RecordingManager::handle_midi_event (const RecordingEvent &ev)
           z_return_if_reached ();
         }
     },
-    *tr_var);
+    tr_var);
 }
 
 void
@@ -968,7 +960,7 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
 {
   handle_resume_event (ev);
 
-  auto tr_var = TRACKLIST->find_track_by_name_hash (ev.track_name_hash_);
+  auto tr_var = *TRACKLIST->get_track (ev.track_uuid_);
   std::visit (
     [&] (auto &&tr) {
       using TrackT = base_type<decltype (tr)>;
@@ -976,7 +968,7 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
         {
           auto &atl = tr->automation_tracklist_;
           auto &at = atl->ats_[ev.automation_track_idx_];
-          auto  port_var = PROJECT->find_port_by_id (*at->port_id_);
+          auto  port_var = PROJECT->find_port_by_id (at->port_id_);
           z_return_if_fail (
             port_var.has_value ()
             && std::holds_alternative<ControlPort *> (port_var.value ()));
@@ -1026,7 +1018,7 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
                 }
               region = tr->Track::add_region (
                 new AutomationRegion (
-                  start_pos, pos_to_end_new_r, tr->get_name_hash (), at->index_,
+                  start_pos, pos_to_end_new_r, tr->get_uuid (), at->index_,
                   at->region_list_->regions_.size ()),
                 at, -1, true, true);
               new_region_created = true;
@@ -1072,7 +1064,7 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
           z_return_if_reached ();
         }
     },
-    *tr_var);
+    tr_var);
 }
 
 void
@@ -1080,8 +1072,7 @@ RecordingManager::handle_start_recording (
   const RecordingEvent &ev,
   bool                  is_automation)
 {
-  auto tr_var = TRACKLIST->find_track_by_name_hash (ev.track_name_hash_);
-  z_return_if_fail (tr_var);
+  auto tr_var = *TRACKLIST->get_track (ev.track_uuid_);
   std::visit (
     [&] (auto &&tr) {
       using TrackT = base_type<decltype (tr)>;
@@ -1137,7 +1128,7 @@ RecordingManager::handle_start_recording (
           /*at->recording_paused = false;*/
 
           /* nothing, wait for event to start writing data */
-          auto port_var = PROJECT->find_port_by_id (*at->port_id_);
+          auto port_var = PROJECT->find_port_by_id (at->port_id_);
           z_return_if_fail (
             port_var.has_value ()
             && std::holds_alternative<ControlPort *> (port_var.value ()));
@@ -1174,7 +1165,7 @@ RecordingManager::handle_start_recording (
                   int  new_lane_pos = tr->lanes_.size () - 1;
                   auto region = tr->Track::add_region (
                     new MidiRegion (
-                      start_pos, end_pos, tr->get_name_hash (), new_lane_pos,
+                      start_pos, end_pos, tr->get_uuid (), new_lane_pos,
                       std::get<TrackLaneT *> (tr->lanes_.at (new_lane_pos))
                         ->region_list_->regions_.size ()),
                     nullptr, new_lane_pos, true, true);
@@ -1202,8 +1193,8 @@ RecordingManager::handle_start_recording (
                     AUDIO_POOL->gen_name_for_recording_clip (*tr, new_lane_pos);
                   auto region = tr->Track::add_region (
                     new AudioRegion (
-                      true, name, ev.nframes_, 2, start_pos,
-                      tr->get_name_hash (), new_lane_pos,
+                      true, name, ev.nframes_, 2, start_pos, tr->get_uuid (),
+                      new_lane_pos,
                       std::get<AudioLane *> (tr->lanes_.at (new_lane_pos))
                         ->region_list_->regions_.size ()),
                     nullptr, new_lane_pos, true, true);
@@ -1222,7 +1213,7 @@ RecordingManager::handle_start_recording (
 
       num_active_recordings_++;
     },
-    *tr_var);
+    tr_var);
 }
 
 void
@@ -1261,9 +1252,7 @@ RecordingManager::process_events ()
           break;
         case RecordingEvent::Type::StopTrackRecording:
           {
-            auto tr_var =
-              TRACKLIST->find_track_by_name_hash (ev->track_name_hash_);
-            z_return_if_fail (tr_var);
+            auto tr_var = *TRACKLIST->get_track (ev->track_uuid_);
             std::visit (
               [&] (auto &&tr) {
                 using TrackT = base_type<decltype (tr)>;
@@ -1280,15 +1269,14 @@ RecordingManager::process_events ()
                     z_return_if_reached ();
                   }
               },
-              *tr_var);
+              tr_var);
           }
           z_debug ("num active recordings: {}", num_active_recordings_);
           break;
         case RecordingEvent::Type::StopAutomationRecording:
           z_debug ("-------- STOP AUTOMATION RECORDING");
           {
-            auto tr_var =
-              TRACKLIST->find_track_by_name_hash (ev->track_name_hash_);
+            auto tr_var = *TRACKLIST->get_track (ev->track_uuid_);
             std::visit (
               [&] (auto &tr) {
                 using TrackT = base_type<decltype (tr)>;
@@ -1310,29 +1298,26 @@ RecordingManager::process_events ()
                     z_return_if_reached ();
                   }
               },
-              *tr_var);
+              tr_var);
           }
           z_debug ("num active recordings: {}", num_active_recordings_);
           break;
         case RecordingEvent::Type::StartTrackRecording:
           {
-            auto tr_var =
-              TRACKLIST->find_track_by_name_hash (ev->track_name_hash_);
-            z_return_if_fail (tr_var);
+            auto tr_var = *TRACKLIST->get_track (ev->track_uuid_);
             std::visit (
               [&] (auto &&tr) {
                 z_debug ("-------- START TRACK RECORDING ({})", tr->name_);
                 handle_start_recording (*ev, false);
                 z_debug ("num active recordings: {}", num_active_recordings_);
               },
-              *tr_var);
+              tr_var);
           }
           break;
         case RecordingEvent::Type::StartAutomationRecording:
           z_info ("-------- START AUTOMATION RECORDING");
           {
-            auto tr_var =
-              TRACKLIST->find_track_by_name_hash (ev->track_name_hash_);
+            auto tr_var = *TRACKLIST->get_track (ev->track_uuid_);
             std::visit (
               [&] (auto &tr) {
                 using TrackT = base_type<decltype (tr)>;
@@ -1352,7 +1337,7 @@ RecordingManager::process_events ()
                     z_return_if_reached ();
                   }
               },
-              *tr_var);
+              tr_var);
             z_debug ("num active recordings: {}", num_active_recordings_);
           }
           break;

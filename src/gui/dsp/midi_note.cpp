@@ -91,9 +91,8 @@ MidiNote::listen (bool listen)
       using TrackT = base_type<decltype (track)>;
       if constexpr (std::derived_from<TrackT, PianoRollTrack>)
         {
-          z_return_if_fail (track && track->processor_->midi_in_);
           auto &events =
-            track->processor_->midi_in_->midi_events_.queued_events_;
+            track->processor_->get_midi_in_port ().midi_events_.queued_events_;
 
           if (listen)
             {
@@ -181,7 +180,8 @@ MidiNote::set_val (const uint8_t val)
           if constexpr (std::derived_from<TrackT, PianoRollTrack>)
             {
               auto &midi_events =
-                track->processor_->piano_roll_->midi_events_.queued_events_;
+                track->processor_->get_piano_roll_port ()
+                  .midi_events_.queued_events_;
 
               uint8_t midi_ch = region->get_midi_ch ();
               midi_events.add_note_off (midi_ch, val_, 0);
@@ -201,17 +201,18 @@ MidiNote::shift_pitch (const int delta)
 }
 
 void
-MidiNote::init_after_cloning (const MidiNote &other)
+MidiNote::init_after_cloning (const MidiNote &other, ObjectCloneType clone_type)
+
 {
   val_ = other.val_;
   vel_ = new Velocity (this, other.vel_->vel_);
   currently_listened_ = other.currently_listened_;
   last_listened_val_ = other.last_listened_val_;
   vel_->vel_at_start_ = other.vel_->vel_at_start_;
-  LengthableObject::copy_members_from (other);
-  MuteableObject::copy_members_from (other);
-  RegionOwnedObject::copy_members_from (other);
-  ArrangerObject::copy_members_from (other);
+  LengthableObject::copy_members_from (other, clone_type);
+  MuteableObject::copy_members_from (other, clone_type);
+  RegionOwnedObject::copy_members_from (other, clone_type);
+  ArrangerObject::copy_members_from (other, clone_type);
 }
 
 bool

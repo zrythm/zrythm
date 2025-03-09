@@ -56,7 +56,8 @@ public:
   using Color = zrythm::utils::Color;
 
 protected:
-  void copy_members_from (const ColoredObject &other);
+  void
+  copy_members_from (const ColoredObject &other, ObjectCloneType clone_type);
 
   void init_loaded_base ();
 

@@ -75,7 +75,7 @@ public:
   /**
    * Returns the length of the loop in ticks.
    */
-  inline double get_loop_length_in_ticks () const
+  double get_loop_length_in_ticks () const
   {
     return loop_end_pos_.ticks_ - loop_start_pos_.ticks_;
   }
@@ -88,7 +88,7 @@ public:
     return loop_end_pos_.frames_ - loop_start_pos_.frames_;
   }
 
-  inline bool is_looped () const
+  bool is_looped () const
   {
     return
     loop_start_pos_.ticks_ > 0
@@ -106,7 +106,8 @@ public:
   }
 
 protected:
-  void copy_members_from (const LoopableObject &other);
+  void
+  copy_members_from (const LoopableObject &other, ObjectCloneType clone_type);
 
   void init_loaded_base ();
 

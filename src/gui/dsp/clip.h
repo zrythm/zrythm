@@ -112,7 +112,8 @@ public:
 #endif
   }
 
-  void init_after_cloning (const AudioClip &other) override;
+  void init_after_cloning (const AudioClip &other, ObjectCloneType clone_type)
+    override;
 
   /**
    * Inits after loading a Project.

@@ -3,12 +3,22 @@
 
 #include "gui/dsp/audio_group_track.h"
 
-AudioGroupTrack::AudioGroupTrack (const std::string &name, int pos)
-    : Track (Track::Type::AudioGroup, name, pos, PortType::Audio, PortType::Audio)
+AudioGroupTrack::AudioGroupTrack (
+  TrackRegistry  &track_registry,
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry,
+  bool            new_identity)
+    : Track (Track::Type::AudioGroup, PortType::Audio, PortType::Audio),
+      AutomatableTrack (port_registry, new_identity),
+      ProcessableTrack (port_registry, new_identity),
+      ChannelTrack (track_registry, plugin_registry, port_registry, new_identity)
 {
-  /* GTK color picker color */
-  color_ = Color (QColor ("#26A269"));
-  icon_name_ = "effect";
+  if (new_identity)
+    {
+      /* GTK color picker color */
+      color_ = Color (QColor ("#26A269"));
+      icon_name_ = "effect";
+    }
   automation_tracklist_->setParent (this);
 }
 
@@ -37,20 +47,24 @@ AudioGroupTrack::validate () const
 }
 
 void
-AudioGroupTrack::init_loaded ()
+AudioGroupTrack::init_loaded (
+  gui::old_dsp::plugins::PluginRegistry &plugin_registry,
+  PortRegistry                          &port_registry)
 {
   // ChannelTrack must be initialized before AutomatableTrack
-  ChannelTrack::init_loaded ();
-  AutomatableTrack::init_loaded ();
-  ProcessableTrack::init_loaded ();
+  ChannelTrack::init_loaded (plugin_registry, port_registry);
+  AutomatableTrack::init_loaded (plugin_registry, port_registry);
+  ProcessableTrack::init_loaded (plugin_registry, port_registry);
 }
 
 void
-AudioGroupTrack::init_after_cloning (const AudioGroupTrack &other)
+AudioGroupTrack::init_after_cloning (
+  const AudioGroupTrack &other,
+  ObjectCloneType        clone_type)
 {
-  FoldableTrack::copy_members_from (other);
-  ChannelTrack::copy_members_from (other);
-  ProcessableTrack::copy_members_from (other);
-  AutomatableTrack::copy_members_from (other);
-  Track::copy_members_from (other);
+  FoldableTrack::copy_members_from (other, clone_type);
+  ChannelTrack::copy_members_from (other, clone_type);
+  ProcessableTrack::copy_members_from (other, clone_type);
+  AutomatableTrack::copy_members_from (other, clone_type);
+  Track::copy_members_from (other, clone_type);
 }

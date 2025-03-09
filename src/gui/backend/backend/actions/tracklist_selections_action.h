@@ -6,12 +6,11 @@
 
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/backend/backend/settings/plugin_settings.h"
-#include "gui/backend/backend/tracklist_selections.h"
 #include "gui/backend/io/file_descriptor.h"
 #include "gui/dsp/channel_send.h"
 #include "gui/dsp/port_connections_manager.h"
 #include "gui/dsp/track.h"
-
+#include "gui/dsp/track_span.h"
 #include "utils/color.h"
 
 namespace zrythm::gui::actions
@@ -92,25 +91,25 @@ public:
    * @throw ZrythmException on error.
    */
   TracklistSelectionsAction (
-    Type                           type,
-    const TracklistSelections *    tls_before,
-    const TracklistSelections *    tls_after,
-    const PortConnectionsManager * port_connections_mgr,
-    const Track *                  track,
-    Track::Type                    track_type,
-    const PluginSetting *          pl_setting,
-    const FileDescriptor *         file_descr,
-    int                            track_pos,
-    int                            lane_pos,
-    const Position *               pos,
-    int                            num_tracks,
-    EditType                       edit_type,
-    int                            ival_after,
-    const Color *                  color_new,
-    float                          val_before,
-    float                          val_after,
-    const std::string *            new_txt,
-    bool                           already_edited);
+    Type                            type,
+    std::optional<TrackSpanVariant> tls_before_var,
+    std::optional<TrackSpanVariant> tls_after_var,
+    const PortConnectionsManager *  port_connections_mgr,
+    std::optional<TrackPtrVariant>  track_var,
+    Track::Type                     track_type,
+    const PluginSetting *           pl_setting,
+    const FileDescriptor *          file_descr,
+    int                             track_pos,
+    int                             lane_pos,
+    const Position *                pos,
+    int                             num_tracks,
+    EditType                        edit_type,
+    int                             ival_after,
+    const Color *                   color_new,
+    float                           val_before,
+    float                           val_after,
+    const std::string *             new_txt,
+    bool                            already_edited);
 
   /**
    * @brief Constructor for a Create action.
@@ -126,10 +125,10 @@ public:
     int                    disable_track_pos)
       : TracklistSelectionsAction (
           Type::Create,
+          std::nullopt,
+          std::nullopt,
           nullptr,
-          nullptr,
-          nullptr,
-          nullptr,
+          std::nullopt,
           track_type,
           pl_setting,
           file_descr,
@@ -184,42 +183,31 @@ public:
     std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &plugins) override
   {
     if (tls_before_)
-      tls_before_->get_plugins (plugins);
+      {
+        TrackSpan{ *tls_before_ }.get_plugins (plugins);
+      }
     if (tls_after_)
-      tls_after_->get_plugins (plugins);
+      {
+        TrackSpan{ *tls_after_ }.get_plugins (plugins);
+      }
     if (foldable_tls_before_)
-      foldable_tls_before_->get_plugins (plugins);
+      {
+        TrackSpan{ *foldable_tls_before_ }.get_plugins (plugins);
+      }
   }
 
   bool can_contain_clip () const override { return pool_id_ >= 0; }
 
   bool contains_clip (const AudioClip &clip) const override;
 
-  void init_after_cloning (const TracklistSelectionsAction &other) final;
+  void init_after_cloning (
+    const TracklistSelectionsAction &other,
+    ObjectCloneType                  clone_type) override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  void init_loaded_impl () final
-  {
-    if (tls_before_)
-      {
-        tls_before_->init_loaded ();
-      }
-    if (tls_after_)
-      {
-        tls_after_->init_loaded ();
-      }
-    if (foldable_tls_before_)
-      {
-        foldable_tls_before_->init_loaded ();
-      }
-    for (auto &send : src_sends_)
-      {
-        send->init_loaded (nullptr);
-      }
-  }
-
+  void init_loaded_impl () final;
   void perform_impl () final;
   void undo_impl () final;
 
@@ -228,8 +216,8 @@ private:
    * also updates @ref num_tracks_.
    */
   void copy_track_positions_from_selections (
-    std::vector<int>          &track_positions,
-    const TracklistSelections &sel);
+    std::vector<int> &track_positions,
+    TrackSpanVariant  selections_var);
 
   /**
    * Resets the foldable track sizes when undoing an action.
@@ -327,10 +315,8 @@ public:
 
   /**
    * Direct out tracks of the original tracks.
-   *
-   * These are track name hashes.
    */
-  std::vector<unsigned int> out_track_hashes_;
+  std::vector<std::optional<dsp::PortIdentifier::TrackUuid>> out_track_uuids_;
 
   /**
    * Number of tracks under folder affected.
@@ -357,16 +343,16 @@ public:
   int num_tracks_ = 0;
 
   /** Clone of the TracklistSelections, if applicable. */
-  std::unique_ptr<TracklistSelections> tls_before_;
+  std::optional<std::vector<TrackPtrVariant>> tls_before_;
 
   /** Clone of the TracklistSelections, if applicable. */
-  std::unique_ptr<TracklistSelections> tls_after_;
+  std::optional<std::vector<TrackPtrVariant>> tls_after_;
 
   /**
    * Foldable tracks before the change, used when undoing to set the correct
    * sizes.
    */
-  std::unique_ptr<TracklistSelections> foldable_tls_before_;
+  std::optional<std::vector<TrackPtrVariant>> foldable_tls_before_;
 
   /* --------------- DELTAS ---------------- */
 
@@ -381,7 +367,7 @@ public:
   /* -------------- end DELTAS ------------- */
 
   std::vector<Color> colors_before_;
-  Color              new_color_ = { 0, 0, 0, 0 };
+  Color              new_color_;
 
   std::string new_txt_;
 
@@ -411,10 +397,10 @@ public:
     int                    disable_track_pos)
       : TracklistSelectionsAction (
           Type::Create,
+          std::nullopt,
+          std::nullopt,
           nullptr,
-          nullptr,
-          nullptr,
-          nullptr,
+          std::nullopt,
           track_type,
           pl_setting,
           file_descr,
@@ -480,16 +466,16 @@ class EditTracksAction : public TracklistSelectionsAction
 {
 public:
   EditTracksAction (
-    EditType                    edit_type,
-    const TracklistSelections * tls_before,
-    const TracklistSelections * tls_after,
-    bool                        already_edited)
+    EditType                        edit_type,
+    std::optional<TrackSpanVariant> tls_before,
+    std::optional<TrackSpanVariant> tls_after,
+    bool                            already_edited)
       : TracklistSelectionsAction (
           Type::Edit,
           tls_before,
           tls_after,
           nullptr,
-          nullptr,
+          std::nullopt,
           (Track::Type) 0,
           nullptr,
           nullptr,
@@ -515,15 +501,15 @@ class SingleTrackFloatAction : public TracklistSelectionsAction
 {
 public:
   SingleTrackFloatAction (
-    EditType      type,
-    const Track * track,
-    float         val_before,
-    float         val_after,
-    bool          already_edited)
+    EditType                       type,
+    std::optional<TrackPtrVariant> track,
+    float                          val_before,
+    float                          val_after,
+    bool                           already_edited)
       : TracklistSelectionsAction (
           Type::Edit,
-          nullptr,
-          nullptr,
+          std::nullopt,
+          std::nullopt,
           nullptr,
           track,
           (Track::Type) 0,
@@ -551,14 +537,14 @@ class SingleTrackIntAction : public TracklistSelectionsAction
 {
 public:
   SingleTrackIntAction (
-    EditType      type,
-    const Track * track,
-    int           val_after,
-    bool          already_edited)
+    EditType                       type,
+    std::optional<TrackPtrVariant> track,
+    int                            val_after,
+    bool                           already_edited)
       : TracklistSelectionsAction (
           Type::Edit,
-          nullptr,
-          nullptr,
+          std::nullopt,
+          std::nullopt,
           nullptr,
           track,
           (Track::Type) 0,
@@ -586,16 +572,16 @@ class MultiTrackIntAction : public TracklistSelectionsAction
 {
 protected:
   MultiTrackIntAction (
-    EditType                    type,
-    const TracklistSelections * tls_before,
-    int                         val_after,
-    bool                        already_edited)
+    EditType                        type,
+    std::optional<TrackSpanVariant> tls_before,
+    int                             val_after,
+    bool                            already_edited)
       : TracklistSelectionsAction (
           Type::Edit,
           tls_before,
+          std::nullopt,
           nullptr,
-          nullptr,
-          nullptr,
+          std::nullopt,
           (Track::Type) 0,
           nullptr,
           nullptr,
@@ -617,8 +603,8 @@ protected:
 class MuteTracksAction : public MultiTrackIntAction
 {
 public:
-  MuteTracksAction (const TracklistSelections &tls_before, bool mute_new)
-      : MultiTrackIntAction (EditType::Mute, &tls_before, mute_new, false)
+  MuteTracksAction (TrackSpanVariant tls_before, bool mute_new)
+      : MultiTrackIntAction (EditType::Mute, tls_before, mute_new, false)
   {
   }
 };
@@ -626,8 +612,8 @@ public:
 class MuteTrackAction : public MuteTracksAction
 {
 public:
-  MuteTrackAction (const Track &track, bool mute_new)
-      : MuteTracksAction (TracklistSelections (track), mute_new)
+  MuteTrackAction (TrackPtrVariant track, bool mute_new)
+      : MuteTracksAction (TrackSpan{ track }, mute_new)
   {
   }
 };
@@ -642,10 +628,10 @@ protected:
     int                     value_after)
       : TracklistSelectionsAction (
           Type::Edit,
+          std::nullopt,
+          std::nullopt,
           nullptr,
-          nullptr,
-          nullptr,
-          track_lane.get_track (),
+          convert_to_variant<TrackPtrVariant> (track_lane.get_track ()),
           (Track::Type) 0,
           nullptr,
           nullptr,
@@ -677,8 +663,8 @@ public:
 class SoloTracksAction : public MultiTrackIntAction
 {
 public:
-  SoloTracksAction (const TracklistSelections &tls_before, bool solo_new)
-      : MultiTrackIntAction (EditType::Solo, &tls_before, solo_new, false)
+  SoloTracksAction (TrackSpanVariant tls_before, bool solo_new)
+      : MultiTrackIntAction (EditType::Solo, tls_before, solo_new, false)
   {
   }
 };
@@ -686,8 +672,8 @@ public:
 class SoloTrackAction : public SoloTracksAction
 {
 public:
-  SoloTrackAction (const Track &track, bool solo_new)
-      : SoloTracksAction (TracklistSelections (track), solo_new)
+  SoloTrackAction (TrackPtrVariant track, bool solo_new)
+      : SoloTracksAction (TrackSpan{ track }, solo_new)
   {
   }
 };
@@ -705,8 +691,8 @@ public:
 class ListenTracksAction : public MultiTrackIntAction
 {
 public:
-  ListenTracksAction (const TracklistSelections &tls_before, bool listen_new)
-      : MultiTrackIntAction (EditType::Listen, &tls_before, listen_new, false)
+  ListenTracksAction (TrackSpanVariant tls_before, bool listen_new)
+      : MultiTrackIntAction (EditType::Listen, tls_before, listen_new, false)
   {
   }
 };
@@ -714,8 +700,8 @@ public:
 class ListenTrackAction : public ListenTracksAction
 {
 public:
-  ListenTrackAction (const Track &track, bool listen_new)
-      : ListenTracksAction (TracklistSelections (track), listen_new)
+  ListenTrackAction (TrackPtrVariant track, bool listen_new)
+      : ListenTracksAction (TrackSpan (track), listen_new)
   {
   }
 };
@@ -723,8 +709,8 @@ public:
 class EnableTracksAction : public MultiTrackIntAction
 {
 public:
-  EnableTracksAction (const TracklistSelections &tls_before, bool enable_new)
-      : MultiTrackIntAction (EditType::Enable, &tls_before, enable_new, false)
+  EnableTracksAction (TrackSpanVariant tls_before, bool enable_new)
+      : MultiTrackIntAction (EditType::Enable, tls_before, enable_new, false)
   {
   }
 };
@@ -732,8 +718,8 @@ public:
 class EnableTrackAction : public EnableTracksAction
 {
 public:
-  EnableTrackAction (const Track &track, bool enable_new)
-      : EnableTracksAction (TracklistSelections (track), enable_new)
+  EnableTrackAction (TrackPtrVariant track, bool enable_new)
+      : EnableTracksAction (TrackSpan (track), enable_new)
   {
   }
 };
@@ -741,7 +727,7 @@ public:
 class FoldTracksAction : public MultiTrackIntAction
 {
 public:
-  FoldTracksAction (const TracklistSelections * tls_before, bool fold_new)
+  FoldTracksAction (std::optional<TrackSpanVariant> tls_before, bool fold_new)
       : MultiTrackIntAction (EditType::Fold, tls_before, fold_new, false)
   {
   }
@@ -751,15 +737,15 @@ class TracksDirectOutAction : public TracklistSelectionsAction
 {
 public:
   TracksDirectOutAction (
-    const TracklistSelections    &tls,
-    const PortConnectionsManager &port_connections_mgr,
-    const Track *                 direct_out)
+    TrackSpanVariant               tls,
+    const PortConnectionsManager  &port_connections_mgr,
+    std::optional<TrackPtrVariant> direct_out)
       : TracklistSelectionsAction (
           Type::Edit,
-          &tls,
-          nullptr,
+          tls,
+          std::nullopt,
           &port_connections_mgr,
-          nullptr,
+          std::nullopt,
           (Track::Type) 0,
           nullptr,
           nullptr,
@@ -768,7 +754,9 @@ public:
           nullptr,
           -1,
           EditType::DirectOut,
-          direct_out ? direct_out->pos_ : -1,
+          direct_out
+            ? std::visit ([&] (auto &&track) { return track->pos_; }, *direct_out)
+            : -1,
           nullptr,
           0.f,
           0.f,
@@ -782,10 +770,10 @@ class ChangeTracksDirectOutAction : public TracksDirectOutAction
 {
 public:
   ChangeTracksDirectOutAction (
-    const TracklistSelections    &tls,
+    TrackSpanVariant              tls,
     const PortConnectionsManager &port_connections_mgr,
-    const Track                  &direct_out)
-      : TracksDirectOutAction (tls, port_connections_mgr, &direct_out)
+    TrackPtrVariant               direct_out)
+      : TracksDirectOutAction (tls, port_connections_mgr, direct_out)
   {
   }
 };
@@ -794,9 +782,9 @@ class RemoveTracksDirectOutAction : public TracksDirectOutAction
 {
 public:
   RemoveTracksDirectOutAction (
-    const TracklistSelections    &tls,
+    TrackSpanVariant              tls,
     const PortConnectionsManager &port_connections_mgr)
-      : TracksDirectOutAction (tls, port_connections_mgr, nullptr)
+      : TracksDirectOutAction (tls, port_connections_mgr, std::nullopt)
   {
   }
 };
@@ -804,14 +792,14 @@ public:
 class EditTracksColorAction : public TracklistSelectionsAction
 {
 public:
-  EditTracksColorAction (const TracklistSelections &tls, const Color &color)
+  EditTracksColorAction (TrackSpanVariant tls, const Color &color)
       : TracklistSelectionsAction (
           Type::Edit,
-          &tls,
+          tls,
+          std::nullopt,
           nullptr,
-          nullptr,
-          nullptr,
-          (Track::Type) 0,
+          std::nullopt,
+          {},
           nullptr,
           nullptr,
           -1,
@@ -832,8 +820,8 @@ public:
 class EditTrackColorAction : public EditTracksColorAction
 {
 public:
-  EditTrackColorAction (const Track &track, const Color &color)
-      : EditTracksColorAction (TracklistSelections (track), color)
+  EditTrackColorAction (TrackPtrVariant track, const Color &color)
+      : EditTracksColorAction (TrackSpan (track), color)
   {
   }
 };
@@ -842,16 +830,16 @@ class EditTracksTextAction : public TracklistSelectionsAction
 {
 protected:
   EditTracksTextAction (
-    EditType                   edit_type,
-    const TracklistSelections &tls,
-    const std::string         &txt)
+    EditType           edit_type,
+    TrackSpanVariant   tls,
+    const std::string &txt)
       : TracklistSelectionsAction (
           Type::Edit,
-          &tls,
+          tls,
+          std::nullopt,
           nullptr,
-          nullptr,
-          nullptr,
-          (Track::Type) 0,
+          std::nullopt,
+          {},
           nullptr,
           nullptr,
           -1,
@@ -872,9 +860,7 @@ protected:
 class EditTracksCommentAction : public EditTracksTextAction
 {
 public:
-  EditTracksCommentAction (
-    const TracklistSelections &tls,
-    const std::string         &comment)
+  EditTracksCommentAction (TrackSpanVariant tls, const std::string &comment)
       : EditTracksTextAction (EditType::Comment, tls, comment)
   {
   }
@@ -883,8 +869,8 @@ public:
 class EditTrackCommentAction : public EditTracksCommentAction
 {
 public:
-  EditTrackCommentAction (const Track &track, const std::string &comment)
-      : EditTracksCommentAction (TracklistSelections (track), comment)
+  EditTrackCommentAction (TrackPtrVariant track, const std::string &comment)
+      : EditTracksCommentAction (TrackSpan (track), comment)
   {
   }
 };
@@ -892,7 +878,7 @@ public:
 class EditTracksIconAction : public EditTracksTextAction
 {
 public:
-  EditTracksIconAction (const TracklistSelections &tls, const std::string &icon)
+  EditTracksIconAction (TrackSpanVariant tls, const std::string &icon)
       : EditTracksTextAction (EditType::Icon, tls, icon)
   {
   }
@@ -901,8 +887,8 @@ public:
 class EditTrackIconAction : public EditTracksIconAction
 {
 public:
-  EditTrackIconAction (const Track &track, const std::string &icon)
-      : EditTracksIconAction (TracklistSelections (track), icon)
+  EditTrackIconAction (TrackPtrVariant track, const std::string &icon)
+      : EditTracksIconAction (TrackSpan (track), icon)
   {
   }
 };
@@ -911,16 +897,16 @@ class RenameTrackAction : public TracklistSelectionsAction
 {
 public:
   RenameTrackAction (
-    const Track                  &track,
+    TrackPtrVariant               track,
     const PortConnectionsManager &port_connections_mgr,
     const std::string            &name)
       : TracklistSelectionsAction (
           Type::Edit,
-          nullptr,
-          nullptr,
+          std::nullopt,
+          std::nullopt,
           &port_connections_mgr,
-          &track,
-          (Track::Type) 0,
+          track,
+          {},
           nullptr,
           nullptr,
           -1,
@@ -947,11 +933,11 @@ public:
     const std::string      &name)
       : TracklistSelectionsAction (
           Type::Edit,
+          std::nullopt,
+          std::nullopt,
           nullptr,
-          nullptr,
-          nullptr,
-          track_lane.get_track (),
-          (Track::Type) 0,
+          convert_to_variant<TrackPtrVariant> (track_lane.get_track ()),
+          {},
           nullptr,
           nullptr,
           -1,
@@ -981,21 +967,21 @@ public:
    * insert the selections above. This is the track position before the move
    * will be executed.
    */
-  MoveTracksAction (const TracklistSelections &tls, int track_pos)
+  MoveTracksAction (TrackSpanVariant tls, int track_pos)
       : TracklistSelectionsAction (
           Type::Move,
-          &tls,
+          tls,
+          std::nullopt,
           nullptr,
-          nullptr,
-          nullptr,
-          (Track::Type) 0,
+          std::nullopt,
+          {},
           nullptr,
           nullptr,
           track_pos,
           -1,
           nullptr,
           -1,
-          (EditType) 0,
+          {},
           -1,
           nullptr,
           0.f,
@@ -1010,15 +996,15 @@ class CopyTracksAction : public TracklistSelectionsAction
 {
 public:
   CopyTracksAction (
-    const TracklistSelections    &tls,
+    TrackSpanVariant              tls,
     const PortConnectionsManager &port_connections_mgr,
     int                           track_pos)
       : TracklistSelectionsAction (
           Type::Copy,
-          &tls,
-          nullptr,
+          tls,
+          std::nullopt,
           &port_connections_mgr,
-          nullptr,
+          std::nullopt,
           (Track::Type) 0,
           nullptr,
           nullptr,
@@ -1051,15 +1037,13 @@ public:
    * @note This should be called in combination with a move action to move the
    * tracks to the required index after putting them inside a group.
    */
-  MoveTracksInsideFoldableTrackAction (
-    const TracklistSelections &tls,
-    int                        track_pos)
+  MoveTracksInsideFoldableTrackAction (TrackSpanVariant tls, int track_pos)
       : TracklistSelectionsAction (
           Type::MoveInside,
-          &tls,
+          tls,
+          std::nullopt,
           nullptr,
-          nullptr,
-          nullptr,
+          std::nullopt,
           (Track::Type) 0,
           nullptr,
           nullptr,
@@ -1082,15 +1066,15 @@ class CopyTracksInsideFoldableTrackAction : public TracklistSelectionsAction
 {
 public:
   CopyTracksInsideFoldableTrackAction (
-    const TracklistSelections    &tls,
+    TrackSpanVariant              tls,
     const PortConnectionsManager &port_connections_mgr,
     int                           track_pos)
       : TracklistSelectionsAction (
           Type::CopyInside,
-          &tls,
-          nullptr,
+          tls,
+          std::nullopt,
           &port_connections_mgr,
-          nullptr,
+          std::nullopt,
           (Track::Type) 0,
           nullptr,
           nullptr,
@@ -1113,14 +1097,14 @@ class DeleteTracksAction : public TracklistSelectionsAction
 {
 public:
   DeleteTracksAction (
-    const TracklistSelections    &tls,
+    TrackSpanVariant              tls,
     const PortConnectionsManager &port_connections_mgr)
       : TracklistSelectionsAction (
           Type::Delete,
-          &tls,
-          nullptr,
+          tls,
+          std::nullopt,
           &port_connections_mgr,
-          nullptr,
+          std::nullopt,
           (Track::Type) 0,
           nullptr,
           nullptr,
@@ -1143,16 +1127,16 @@ class PinOrUnpinTracksAction : public TracklistSelectionsAction
 {
 protected:
   PinOrUnpinTracksAction (
-    const TracklistSelections    &tls,
+    TrackSpanVariant              tls,
     const PortConnectionsManager &port_connections_mgr,
     bool                          pin)
       : TracklistSelectionsAction (
           pin ? Type::Pin : Type::Unpin,
-          &tls,
-          nullptr,
+          tls,
+          std::nullopt,
           &port_connections_mgr,
-          nullptr,
-          (Track::Type) 0,
+          std::nullopt,
+          {},
           nullptr,
           nullptr,
           -1,
@@ -1174,7 +1158,7 @@ class PinTracksAction : public PinOrUnpinTracksAction
 {
 public:
   PinTracksAction (
-    const TracklistSelections    &tls,
+    TrackSpanVariant              tls,
     const PortConnectionsManager &port_connections_mgr)
       : PinOrUnpinTracksAction (tls, port_connections_mgr, true)
   {
@@ -1185,7 +1169,7 @@ class UnpinTracksAction : public PinOrUnpinTracksAction
 {
 public:
   UnpinTracksAction (
-    const TracklistSelections    &tls,
+    TrackSpanVariant              tls,
     const PortConnectionsManager &port_connections_mgr)
       : PinOrUnpinTracksAction (tls, port_connections_mgr, false)
   {

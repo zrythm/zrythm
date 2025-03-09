@@ -11,6 +11,8 @@
 
 #include <QtQmlIntegration>
 
+using namespace zrythm;
+
 /**
  * A connection between two ports.
  */
@@ -23,19 +25,21 @@ class PortConnection final
   QML_ELEMENT
 
 public:
-  using PortIdentifier = zrythm::dsp::PortIdentifier;
+  using PortUuid = dsp::PortIdentifier::PortUuid;
 
   PortConnection (QObject * parent = nullptr);
 
   PortConnection (
-    const PortIdentifier &src,
-    const PortIdentifier &dest,
-    float                 multiplier,
-    bool                  locked,
-    bool                  enabled,
-    QObject *             parent = nullptr);
+    const PortUuid &src,
+    const PortUuid &dest,
+    float           multiplier,
+    bool            locked,
+    bool            enabled,
+    QObject *       parent = nullptr);
 
-  void init_after_cloning (const PortConnection &other) override;
+  void
+  init_after_cloning (const PortConnection &other, ObjectCloneType clone_type)
+    override;
 
   void update (float multiplier, bool locked, bool enabled)
   {
@@ -44,17 +48,11 @@ public:
     enabled_ = enabled;
   }
 
-  bool is_send () const;
-
-  std::string print_to_str () const;
-
-  void print () const;
-
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 public:
-  std::unique_ptr<PortIdentifier> src_id_;
-  std::unique_ptr<PortIdentifier> dest_id_;
+  PortUuid src_id_;
+  PortUuid dest_id_;
 
   /**
    * Multiplier to apply, where applicable.
@@ -85,5 +83,15 @@ public:
 
 bool
 operator== (const PortConnection &lhs, const PortConnection &rhs);
+
+DEFINE_OBJECT_FORMATTER (
+  PortConnection,
+  port_connection,
+  [] (const PortConnection &conn) {
+    return fmt::format (
+      "PortConnection{{src: {}, dest: {}, mult: {:.2f}, locked: {}, enabled: {}}}",
+      conn.src_id_, conn.dest_id_, conn.multiplier_, conn.locked_,
+      conn.enabled_);
+  })
 
 #endif /* __AUDIO_PORT_CONNECTION_H__ */

@@ -29,7 +29,8 @@ public:
   QVariant
   data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
-  void init_after_cloning (const RegionList &other) override;
+  void init_after_cloning (const RegionList &other, ObjectCloneType clone_type)
+    override;
 
   void clear ();
 

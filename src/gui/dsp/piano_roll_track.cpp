@@ -60,7 +60,7 @@ PianoRollTrack::create_and_add_midi_region (double startTicks, int laneIndex)
             + zrythm::gui::SettingsManager::
               timelineLastCreatedObjectLengthInTicks (),
           AUDIO_ENGINE->frames_per_tick_),
-        get_name_hash (), laneIndex, idx_inside_lane, self);
+        get_uuid (), laneIndex, idx_inside_lane, self);
       self->Track::add_region (region, nullptr, laneIndex, true, true);
       region->select (true, false, true);
       return region;
@@ -104,7 +104,9 @@ PianoRollTrack::get_regions_in_range (
 }
 
 void
-PianoRollTrack::copy_members_from (const PianoRollTrack &other)
+PianoRollTrack::copy_members_from (
+  const PianoRollTrack &other,
+  ObjectCloneType       clone_type)
 {
   drum_mode_ = other.drum_mode_;
   midi_ch_ = other.midi_ch_;
@@ -119,15 +121,10 @@ PianoRollTrack::set_playback_caches ()
 }
 
 void
-PianoRollTrack::update_name_hash (unsigned int new_name_hash)
+PianoRollTrack::init_loaded (
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry)
 {
-  AutomatableTrack::update_name_hash (new_name_hash);
-  LanedTrackImpl::update_name_hash (new_name_hash);
-}
-
-void
-PianoRollTrack::init_loaded ()
-{
-  RecordableTrack::init_loaded ();
-  LanedTrackImpl::init_loaded ();
+  RecordableTrack::init_loaded (plugin_registry, port_registry);
+  LanedTrackImpl::init_loaded (plugin_registry, port_registry);
 }

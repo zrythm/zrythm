@@ -6,7 +6,9 @@
 #include "utils/gtest_wrapper.h"
 
 void
-FadeableObject::copy_members_from (const FadeableObject &other)
+FadeableObject::copy_members_from (
+  const FadeableObject &other,
+  ObjectCloneType       clone_type)
 {
   fade_in_pos_ = other.fade_in_pos_;
   fade_out_pos_ = other.fade_out_pos_;

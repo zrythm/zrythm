@@ -18,7 +18,8 @@ public:
   ~LaneOwnedObject () override = default;
 
 protected:
-  void copy_members_from (const LaneOwnedObject &other)
+  void
+  copy_members_from (const LaneOwnedObject &other, ObjectCloneType clone_type)
   {
     index_in_prev_lane_ = other.index_in_prev_lane_;
   }

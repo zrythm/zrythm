@@ -51,9 +51,11 @@ public:
 
   bool has_any () const override { return has_selection_; }
 
-  void init_after_cloning (const AudioSelections &other) override
+  void
+  init_after_cloning (const AudioSelections &other, ObjectCloneType clone_type)
+    override
   {
-    ArrangerSelections::copy_members_from (other);
+    ArrangerSelections::copy_members_from (other, clone_type);
     has_selection_ = other.has_selection_;
     sel_start_ = other.sel_start_;
     sel_end_ = other.sel_end_;

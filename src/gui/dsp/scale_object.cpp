@@ -24,13 +24,15 @@ ScaleObject::ScaleObject (const MusicalScale &descr, QObject * parent)
 }
 
 void
-ScaleObject::init_after_cloning (const ScaleObject &other)
+ScaleObject::init_after_cloning (
+  const ScaleObject &other,
+  ObjectCloneType    clone_type)
 {
   index_in_chord_track_ = other.index_in_chord_track_;
   scale_ = other.scale_;
-  TimelineObject::copy_members_from (other);
-  MuteableObject::copy_members_from (other);
-  ArrangerObject::copy_members_from (other);
+  TimelineObject::copy_members_from (other, clone_type);
+  MuteableObject::copy_members_from (other, clone_type);
+  ArrangerObject::copy_members_from (other, clone_type);
 }
 
 void

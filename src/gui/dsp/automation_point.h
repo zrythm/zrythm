@@ -103,7 +103,9 @@ public:
 
   std::optional<ArrangerObjectPtrVariant> find_in_project () const override;
 
-  void init_after_cloning (const AutomationPoint &other) override;
+  void
+  init_after_cloning (const AutomationPoint &other, ObjectCloneType clone_type)
+    override;
 
   void init_loaded () override;
 

@@ -122,7 +122,9 @@ public:
 
   bool processUpdates () override;
 
-  void init_after_cloning (const PositionProxy &other) override;
+  void
+  init_after_cloning (const PositionProxy &other, ObjectCloneType clone_type)
+    override;
 
 private:
   std::atomic<bool> has_update_{ false };

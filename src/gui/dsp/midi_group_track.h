@@ -13,7 +13,7 @@ class MidiGroupTrack final
       public GroupTargetTrack,
       public ICloneable<MidiGroupTrack>,
       public zrythm::utils::serialization::ISerializable<MidiGroupTrack>,
-      public InitializableObjectFactory<MidiGroupTrack>
+      public utils::InitializableObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -21,12 +21,18 @@ class MidiGroupTrack final
   DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (MidiGroupTrack)
   DEFINE_CHANNEL_TRACK_QML_PROPERTIES (MidiGroupTrack)
 
-  friend class InitializableObjectFactory<MidiGroupTrack>;
+  friend class InitializableObject;
+
+  DECLARE_FINAL_TRACK_CONSTRUCTORS (MidiGroupTrack)
 
 public:
-  void init_after_cloning (const MidiGroupTrack &other) override;
+  void
+  init_after_cloning (const MidiGroupTrack &other, ObjectCloneType clone_type)
+    override;
 
-  void init_loaded () override;
+  void
+  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
+    override;
 
   bool validate () const override;
 
@@ -36,9 +42,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  MidiGroupTrack (const std::string &name = "", int pos = 0);
-
-  bool initialize () override;
+  bool initialize ();
 };
 
 #endif // __MIDI_MIDI_BUS_TRACK_H__

@@ -5,7 +5,9 @@
 #include "gui/dsp/track.h"
 
 void
-TimelineObject::copy_members_from (const TimelineObject &other)
+TimelineObject::copy_members_from (
+  const TimelineObject &other,
+  ObjectCloneType       clone_type)
 {
 }
 

@@ -3,14 +3,36 @@
 
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/tracklist_selections.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/channel_track.h"
 #include "gui/dsp/tracklist.h"
 
 using namespace zrythm;
 
-ChannelTrack::ChannelTrack () : channel_ (new Channel (*this)) { }
+ChannelTrack::ChannelTrack (const DeserializationDependencyHolder &dh)
+    : ChannelTrack (
+        dh.get<std::reference_wrapper<TrackRegistry>> ().get (),
+        dh.get<std::reference_wrapper<PluginRegistry>> ().get (),
+        dh.get<std::reference_wrapper<PortRegistry>> ().get (),
+        false)
+{
+}
+
+ChannelTrack::ChannelTrack (
+  TrackRegistry  &track_registry,
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry,
+  bool            new_identity)
+    : ProcessableTrack (port_registry, new_identity),
+      track_registry_ (track_registry), port_registry_ (port_registry),
+      plugin_registry_ (plugin_registry)
+{
+  if (new_identity)
+    {
+      channel_ =
+        new Channel (track_registry, plugin_registry, port_registry, *this);
+    }
+}
 
 ChannelTrack::~ChannelTrack ()
 {
@@ -18,17 +40,21 @@ ChannelTrack::~ChannelTrack ()
 }
 
 void
-ChannelTrack::init_loaded ()
+ChannelTrack::init_loaded (
+  gui::old_dsp::plugins::PluginRegistry &plugin_registry,
+  PortRegistry                          &port_registry)
 {
-  channel_->init_loaded (*this);
+  channel_->init_loaded ();
 }
 
 void
-ChannelTrack::copy_members_from (const ChannelTrack &other)
+ChannelTrack::copy_members_from (
+  const ChannelTrack &other,
+  ObjectCloneType     clone_type)
 {
-  channel_ = other.channel_->clone_raw_ptr ();
-  if (auto * qobject = dynamic_cast<QObject *> (this))
-    channel_->setParent (qobject);
+  channel_ = other.channel_->clone_qobject (
+    dynamic_cast<QObject *> (this), ObjectCloneType::Snapshot, track_registry_,
+    plugin_registry_, port_registry_, OptionalRef<ChannelTrack>{});
   channel_->set_track_ptr (*this);
 }
 
@@ -36,8 +62,10 @@ void
 ChannelTrack::init_channel ()
 {
   channel_->init ();
-  if (auto * qobject = dynamic_cast<QObject *> (this))
+  {
+    auto * qobject = dynamic_cast<QObject *> (this);
     channel_->setParent (qobject);
+  }
 }
 
 void
@@ -46,16 +74,21 @@ ChannelTrack::
 {
   if (auto_select)
     {
-      select (true, true, fire_events);
+      TRACKLIST->get_track_span ().select_single (get_uuid ());
     }
 
   if (trigger_undo)
     {
       /* this is only supported if only selected track */
       z_return_if_fail (
-        TRACKLIST_SELECTIONS->get_num_tracks () == 1 && is_selected ());
+        std::ranges::distance (
+          TRACKLIST->get_track_span ()
+          | std::views::filter (TrackSpan::selected_projection))
+          == 1
+        && is_selected ());
 
-      UNDO_MANAGER->perform (new gui::actions::MuteTrackAction (*this, mute));
+      UNDO_MANAGER->perform (new gui::actions::MuteTrackAction (
+        convert_to_variant<TrackPtrVariant> (this), mute));
     }
   else
     {
@@ -69,16 +102,21 @@ ChannelTrack::
 {
   if (auto_select)
     {
-      select (true, true, fire_events);
+      TRACKLIST->get_track_span ().select_single (get_uuid ());
     }
 
   if (trigger_undo)
     {
       /* this is only supported if only selected track */
       z_return_if_fail (
-        TRACKLIST_SELECTIONS->get_num_tracks () == 1 && is_selected ());
+        std::ranges::distance (
+          TRACKLIST->get_track_span ()
+          | std::views::filter (TrackSpan::selected_projection))
+          == 1
+        && is_selected ());
 
-      UNDO_MANAGER->perform (new gui::actions::SoloTrackAction (*this, solo));
+      UNDO_MANAGER->perform (new gui::actions::SoloTrackAction (
+        convert_to_variant<TrackPtrVariant> (this), solo));
     }
   else
     {
@@ -95,17 +133,21 @@ ChannelTrack::set_listened (
 {
   if (auto_select)
     {
-      select (true, true, fire_events);
+      TRACKLIST->get_track_span ().select_single (get_uuid ());
     }
 
   if (trigger_undo)
     {
       /* this is only supported if only selected track */
       z_return_if_fail (
-        TRACKLIST_SELECTIONS->get_num_tracks () == 1 && is_selected ());
+        std::ranges::distance (
+          TRACKLIST->get_track_span ()
+          | std::views::filter (TrackSpan::selected_projection))
+          == 1
+        && is_selected ());
 
-      UNDO_MANAGER->perform (
-        new gui::actions::ListenTrackAction (*this, listen));
+      UNDO_MANAGER->perform (new gui::actions::ListenTrackAction (
+        convert_to_variant<TrackPtrVariant> (this), listen));
     }
   else
     {
@@ -120,19 +162,22 @@ ChannelTrack::remove_ats_from_automation_tracklist (bool fire_events)
 
   for (auto &at : atl.ats_ | std::views::reverse)
     {
-      if (
-        ENUM_BITSET_TEST (
-          dsp::PortIdentifier::Flags, at->port_id_->flags_,
-          dsp::PortIdentifier::Flags::ChannelFader)
-        || ENUM_BITSET_TEST (
-          dsp::PortIdentifier::Flags, at->port_id_->flags_,
-          dsp::PortIdentifier::Flags::FaderMute)
-        || ENUM_BITSET_TEST (
-          dsp::PortIdentifier::Flags, at->port_id_->flags_,
-          dsp::PortIdentifier::Flags::StereoBalance))
-        {
-          atl.remove_at (*at, false, fire_events);
-        }
+      auto port_var = PROJECT->find_port_by_id (at->port_id_);
+      z_return_if_fail (port_var.has_value ());
+      std::visit (
+        [&] (auto &&port) {
+          const auto &port_id = *port->id_;
+          const auto  flags = port_id.flags_;
+          if (
+            ENUM_BITSET_TEST (flags, dsp::PortIdentifier::Flags::ChannelFader)
+            || ENUM_BITSET_TEST (flags, dsp::PortIdentifier::Flags::FaderMute)
+            || ENUM_BITSET_TEST (
+              flags, dsp::PortIdentifier::Flags::StereoBalance))
+            {
+              atl.remove_at (*at, false, fire_events);
+            }
+        },
+        port_var.value ());
     }
 }
 
@@ -143,7 +188,7 @@ ChannelTrack::validate_base () const
   for (auto &send : channel_->sends_)
     {
       z_return_val_if_fail (
-        send->track_name_hash_ == send->amount_->id_->track_name_hash_, false);
+        send->track_id_ == send->get_amount_port ().id_->get_track_id (), false);
     }
 
   /* verify output and sends */

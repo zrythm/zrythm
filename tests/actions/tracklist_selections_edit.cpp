@@ -140,7 +140,7 @@ _test_edit_tracks (
         auto group_track = TRACKLIST->get_track<AudioGroupTrack> (2);
 
         ASSERT_NE (
-          ins_track->get_name_hash (), ins_track->channel_->output_name_hash_);
+          ins_track->get_name_hash (), ins_track->channel_->output_track_uuid_);
 
         /* route the instrument to the group track */
         ins_track->select (true, true, false);

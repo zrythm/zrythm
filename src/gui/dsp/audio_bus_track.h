@@ -14,20 +14,27 @@ class AudioBusTrack final
       public ChannelTrack,
       public ICloneable<AudioBusTrack>,
       public zrythm::utils::serialization::ISerializable<AudioBusTrack>,
-      public InitializableObjectFactory<AudioBusTrack>
+      public utils::InitializableObject
 {
+public:
   Q_OBJECT
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (AudioBusTrack)
   DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (AudioBusTrack)
   DEFINE_CHANNEL_TRACK_QML_PROPERTIES (AudioBusTrack)
 
-  friend class InitializableObjectFactory<AudioBusTrack>;
+  friend class InitializableObject;
+
+  DECLARE_FINAL_TRACK_CONSTRUCTORS (AudioBusTrack)
 
 public:
-  void init_after_cloning (const AudioBusTrack &other) override;
+  void
+  init_after_cloning (const AudioBusTrack &other, ObjectCloneType clone_type)
+    override;
 
-  void init_loaded () override;
+  void init_loaded (
+    gui::old_dsp::plugins::PluginRegistry &plugin_registry,
+    PortRegistry                          &port_registry) override;
 
   bool validate () const override;
 
@@ -37,9 +44,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  AudioBusTrack (const std::string &name = "", int pos = 0);
-
-  bool initialize () override;
+  bool initialize ();
 };
 
 #endif // __AUDIO_AUDIO_BUS_TRACK_H__

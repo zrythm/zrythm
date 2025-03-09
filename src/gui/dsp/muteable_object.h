@@ -33,7 +33,8 @@ public:
   friend bool operator== (const MuteableObject &lhs, const MuteableObject &rhs);
 
 protected:
-  void copy_members_from (const MuteableObject &other);
+  void
+  copy_members_from (const MuteableObject &other, ObjectCloneType clone_type);
 
   void init_loaded_base ();
 

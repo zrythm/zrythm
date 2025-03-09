@@ -48,9 +48,9 @@ LaneOwnedObjectImpl<RegionT>::set_lane (TrackLaneT &lane)
     {
       auto region = dynamic_cast<Region *> (this);
       region->id_.lane_pos_ = lane.pos_;
-      region->id_.track_name_hash_ = lane.track_->get_name_hash ();
+      region->id_.track_uuid_ = lane.track_->get_uuid ();
     }
-  track_name_hash_ = lane.track_->get_name_hash ();
+  track_id_ = lane.track_->get_uuid ();
 }
 
 template class LaneOwnedObjectImpl<MidiRegion>;

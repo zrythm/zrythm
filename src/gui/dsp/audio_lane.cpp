@@ -12,8 +12,8 @@ AudioLane::AudioLane (LanedTrackImpl<AudioLane> * track, int pos)
 }
 
 void
-AudioLane::init_after_cloning (const AudioLane &other)
+AudioLane::init_after_cloning (const AudioLane &other, ObjectCloneType clone_type)
 {
-  RegionOwnerImpl<AudioRegion>::copy_members_from (other);
-  TrackLaneImpl::copy_members_from (other);
+  RegionOwnerImpl<AudioRegion>::copy_members_from (other, clone_type);
+  TrackLaneImpl::copy_members_from (other, clone_type);
 }

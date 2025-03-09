@@ -7,6 +7,7 @@
 #include "gui/dsp/automatable_track.h"
 #include "gui/dsp/carla_native_plugin.h"
 #include "gui/dsp/modulator_macro_processor.h"
+#include "gui/dsp/plugin_span.h"
 #include "gui/dsp/processable_track.h"
 
 /**
@@ -25,17 +26,22 @@ class ModulatorTrack final
       public ProcessableTrack,
       public ICloneable<ModulatorTrack>,
       public zrythm::utils::serialization::ISerializable<ModulatorTrack>,
-      public InitializableObjectFactory<ModulatorTrack>
+      public utils::InitializableObject
 {
   Q_OBJECT
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (ModulatorTrack)
   DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (ModulatorTrack)
 
-  friend class InitializableObjectFactory<ModulatorTrack>;
+  friend class InitializableObject;
+  friend struct ModulatorImportData;
+
+  DECLARE_FINAL_TRACK_CONSTRUCTORS (ModulatorTrack)
 
 public:
-  using ModulatorPtr = std::shared_ptr<zrythm::gui::old_dsp::plugins::Plugin>;
+  using PluginBase = gui::old_dsp::plugins::Plugin;
+  using PluginPtrVariant = gui::old_dsp::plugins::PluginPtrVariant;
+  using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
 
   /**
    * Inserts and connects a Modulator to the Track.
@@ -44,15 +50,14 @@ public:
    * (replace current modulator if true, not touching other modulators, or push
    * other modulators forward if false).
    */
-  template <typename T = zrythm::gui::old_dsp::plugins::Plugin>
-  std::shared_ptr<T> insert_modulator (
-    int                slot,
-    std::shared_ptr<T> modulator,
-    bool               replace_mode,
-    bool               confirm,
-    bool               gen_automatables,
-    bool               recalc_graph,
-    bool               pub_events);
+  PluginPtrVariant insert_modulator (
+    dsp::PluginSlot::SlotNo slot,
+    PluginUuid              modulator_id,
+    bool                    replace_mode,
+    bool                    confirm,
+    bool                    gen_automatables,
+    bool                    recalc_graph,
+    bool                    pub_events);
 
   /**
    * Removes a plugin at pos from the track.
@@ -62,55 +67,53 @@ public:
    * plugin are not deleted at this time.
    * @param recalc_graph Recalculate mixer graph.
    */
-  ModulatorPtr remove_modulator (
-    int  slot,
-    bool deleting_modulator,
-    bool deleting_track,
-    bool recalc_graph);
+  PluginPtrVariant remove_modulator (
+    dsp::PluginSlot::SlotNo slot,
+    bool                    deleting_modulator,
+    bool                    deleting_track,
+    bool                    recalc_graph);
 
-  void init_loaded () override;
+  std::optional<PluginPtrVariant>
+  get_modulator (dsp::PluginSlot::SlotNo slot) const;
 
-  void init_after_cloning (const ModulatorTrack &other) override;
+  void
+  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
+    override;
+
+  void
+  init_after_cloning (const ModulatorTrack &other, ObjectCloneType clone_type)
+    override;
 
   bool validate () const override;
 
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 
+  auto get_modulator_macro_processors () const
+  {
+    return std::span (modulator_macro_processors_);
+  }
+
+  auto get_modulator_span () const
+  {
+    return PluginRegistrySpan{ *plugin_registry_, modulators_ };
+  }
+
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  ModulatorTrack (int track_pos = 0);
+  bool initialize ();
 
-  bool initialize () override;
-
-public:
+private:
   /** Modulators. */
-  std::vector<ModulatorPtr> modulators_;
+  std::vector<PluginUuid> modulators_;
+
+  OptionalRef<PluginRegistry> plugin_registry_;
 
   /** Modulator macros. */
   std::vector<std::unique_ptr<ModulatorMacroProcessor>>
     modulator_macro_processors_;
 };
-
-extern template std::shared_ptr<zrythm::gui::old_dsp::plugins::Plugin>
-ModulatorTrack::insert_modulator (
-  int                                                    slot,
-  std::shared_ptr<zrythm::gui::old_dsp::plugins::Plugin> modulator,
-  bool                                                   replace_mode,
-  bool                                                   confirm,
-  bool                                                   gen_automatables,
-  bool                                                   recalc_graph,
-  bool                                                   pub_events);
-extern template std::shared_ptr<zrythm::gui::old_dsp::plugins::CarlaNativePlugin>
-ModulatorTrack::insert_modulator (
-  int                                                               slot,
-  std::shared_ptr<zrythm::gui::old_dsp::plugins::CarlaNativePlugin> modulator,
-  bool replace_mode,
-  bool confirm,
-  bool gen_automatables,
-  bool recalc_graph,
-  bool pub_events);
 
 /**
  * @}

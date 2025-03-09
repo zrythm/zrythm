@@ -36,7 +36,8 @@ public:
   MidiMapping (QObject * parent = nullptr);
 
 public:
-  void init_after_cloning (const MidiMapping &other) override;
+  void init_after_cloning (const MidiMapping &other, ObjectCloneType clone_type)
+    override;
 
   void set_enabled (bool enabled) { enabled_.store (enabled); }
 
@@ -52,7 +53,7 @@ public:
   std::unique_ptr<ExtPort> device_port_;
 
   /** Destination. */
-  std::unique_ptr<PortIdentifier> dest_id_;
+  std::optional<PortIdentifier::PortUuid> dest_id_;
 
   /**
    * Destination pointer, for convenience.
@@ -140,7 +141,9 @@ public:
   int
   get_for_port (const Port &dest_port, std::vector<MidiMapping *> * arr) const;
 
-  void init_after_cloning (const MidiMappings &other) override
+  void
+  init_after_cloning (const MidiMappings &other, ObjectCloneType clone_type)
+    override
   {
     clone_unique_ptr_container (mappings_, other.mappings_);
   }

@@ -82,7 +82,8 @@ public:
   void append_scroll (double dx, double dy, bool validate);
 
 protected:
-  void copy_members_from (const EditorSettings &other)
+  void
+  copy_members_from (const EditorSettings &other, ObjectCloneType clone_type)
   {
     scroll_start_x_ = other.scroll_start_x_;
     scroll_start_y_ = other.scroll_start_y_;

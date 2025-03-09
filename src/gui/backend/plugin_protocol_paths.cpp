@@ -114,9 +114,9 @@ PluginProtocolPaths::get_lv2_paths ()
       /* no paths given - use default */
 #ifdef _WIN32
       ret->add_path ("C:\\Program Files\\Common Files\\LV2");
-#elif defined(__APPLE__)
+#elifdef __APPLE__
       ret->add_path ("/Library/Audio/Plug-ins/LV2");
-#elif defined(FLATPAK_BUILD)
+#elifdef FLATPAK_BUILD
       ret->add_path ("/app/lib/lv2");
       ret->add_path ("/app/extensions/Plugins/lv2");
 #else /* non-flatpak UNIX */
@@ -184,9 +184,9 @@ PluginProtocolPaths::get_vst2_paths ()
       ret->add_path ("C:\\Program Files\\Steinberg\\VSTPlugins");
       ret->add_path ("C:\\Program Files\\Common Files\\VST2");
       ret->add_path ("C:\\Program Files\\Common Files\\Steinberg\\VST2");
-#elif defined(__APPLE__)
+#elifdef __APPLE__
       ret->add_path ("/Library/Audio/Plug-ins/VST");
-#elif defined(FLATPAK_BUILD)
+#elifdef FLATPAK_BUILD
       ret->add_path ("/app/extensions/Plugins/vst");
 #else /* non-flatpak UNIX */
       {
@@ -239,9 +239,9 @@ PluginProtocolPaths::get_vst3_paths ()
       /* no paths given - use default */
 #ifdef _WIN32
       ret->add_path ("C:\\Program Files\\Common Files\\VST3");
-#elif defined(__APPLE__)
+#elifdef __APPLE__
       ret->add_path ("/Library/Audio/Plug-ins/VST3");
-#elif defined(FLATPAK_BUILD)
+#elifdef FLATPAK_BUILD
       ret->add_path ("/app/extensions/Plugins/vst3");
 #else /* non-flatpak UNIX */
       {
@@ -416,9 +416,9 @@ PluginProtocolPaths::get_clap_paths ()
 #ifdef _WIN32
       ret.add ("C:\\Program Files\\Common Files\\CLAP");
       ret.add ("C:\\Program Files (x86)\\Common Files\\CLAP");
-#elif defined(__APPLE__)
+#elifdef __APPLE__
       ret.add ("/Library/Audio/Plug-ins/CLAP");
-#elif defined(FLATPAK_BUILD)
+#elifdef FLATPAK_BUILD
       ret.add ("/app/extensions/Plugins/clap");
 #else /* non-flatpak UNIX */
       {

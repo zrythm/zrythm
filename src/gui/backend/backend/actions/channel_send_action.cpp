@@ -4,7 +4,6 @@
 #include "dsp/port_identifier.h"
 #include "gui/backend/backend/actions/channel_send_action.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/zrythm.h"
 #include "gui/backend/channel.h"
 #include "gui/dsp/router.h"
 #include "gui/dsp/tracklist.h"
@@ -18,25 +17,28 @@ ChannelSendAction::ChannelSendAction (QObject * parent)
 }
 
 ChannelSendAction::ChannelSendAction (
-  Type                           type,
-  const ChannelSend             &send,
-  const Port *                   port,
-  const StereoPorts *            stereo,
-  float                          amount,
+  Type                                                           type,
+  const ChannelSend                                             &send,
+  const Port *                                                   port,
+  std::optional<std::pair<const AudioPort &, const AudioPort &>> stereo,
+  float                                                          amount,
   const PortConnectionsManager * port_connections_mgr)
     : UndoableAction (UndoableAction::Type::ChannelSend),
-      send_before_ (send.clone_unique ()), amount_ (amount),
-      send_action_type_ (type)
+      send_before_ (send.clone_unique (
+        ObjectCloneType::Snapshot,
+        PROJECT->get_track_registry (),
+        PROJECT->get_port_registry ())),
+      amount_ (amount), send_action_type_ (type)
 {
   if (port != nullptr)
     {
-      midi_id_ = port->id_->clone_unique ();
+      midi_id_ = port->get_uuid ();
     }
 
-  if (stereo != nullptr)
+  if (stereo.has_value ())
     {
-      l_id_ = stereo->get_l ().id_->clone_unique ();
-      r_id_ = stereo->get_r ().id_->clone_unique ();
+      l_id_ = stereo->first.get_uuid ();
+      r_id_ = stereo->second.get_uuid ();
     }
 
   if (port_connections_mgr)
@@ -46,23 +48,18 @@ ChannelSendAction::ChannelSendAction (
 }
 
 void
-ChannelSendAction::init_after_cloning (const ChannelSendAction &other)
+ChannelSendAction::init_after_cloning (
+  const ChannelSendAction &other,
+  ObjectCloneType          clone_type)
 {
-  UndoableAction::copy_members_from (other);
-  send_before_ = other.send_before_->clone_unique ();
+  UndoableAction::copy_members_from (other, clone_type);
+  send_before_ = other.send_before_->clone_unique (
+    clone_type, other.send_before_->track_registry_,
+    other.send_before_->port_registry_);
   amount_ = other.amount_;
-  if (other.l_id_ != nullptr)
-    {
-      l_id_ = other.l_id_->clone_unique ();
-    }
-  if (other.r_id_ != nullptr)
-    {
-      r_id_ = other.r_id_->clone_unique ();
-    }
-  if (other.midi_id_ != nullptr)
-    {
-      midi_id_ = other.midi_id_->clone_unique ();
-    }
+  l_id_ = other.l_id_;
+  r_id_ = other.r_id_;
+  midi_id_ = other.midi_id_;
   send_action_type_ = other.send_action_type_;
 }
 
@@ -107,8 +104,8 @@ ChannelSendAction::connect_or_disconnect (bool connect, bool do_it)
                   false);
                 auto * r = std::get<AudioPort *> (r_var.value ());
                 send->connect_stereo (
-                  nullptr, l, r, send_action_type_ == Type::ConnectSidechain,
-                  false, true);
+                  *l, *r, send_action_type_ == Type::ConnectSidechain, false,
+                  true);
               }
               break;
             default:
@@ -195,7 +192,7 @@ ChannelSendAction::undo_impl ()
       need_restore_and_recalc = true;
       break;
     case Type::ChangeAmount:
-      send->set_amount (send_before_->amount_->control_);
+      send->set_amount (send_before_->get_amount_value ());
       successful = true;
       break;
     default:

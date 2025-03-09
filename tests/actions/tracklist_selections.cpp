@@ -529,8 +529,7 @@ test_track_deletion_with_sends (
         if (
           port->id_.type_ == PortType::Control
           && ENUM_BITSET_TEST (
-            PortIdentifier::Flags, port->id_.flags_,
-            PortIdentifier::Flags::PluginControl))
+            port->id_.flags_, PortIdentifier::Flags::PluginControl))
           {
             /* connect the first in control port */
             in_port = dynamic_cast<ControlPort *> (port.get ());
@@ -809,7 +808,7 @@ TEST_F (ZrythmFixture, CheckNoVisibleTracksAfterDeletingTrack)
   auto track = Track::create_empty_with_action<AudioBusTrack> ();
 
   /* assert a track is selected */
-  ASSERT_NONEMPTY (TRACKLIST_SELECTIONS->track_names_);
+  ASSERT_NONEMPTY (TRACKLIST_SELECTIONS->track_ids_);
 
   track->select (true, true, false);
 
@@ -817,7 +816,7 @@ TEST_F (ZrythmFixture, CheckNoVisibleTracksAfterDeletingTrack)
   perform_delete ();
 
   /* assert a track is selected */
-  ASSERT_NONEMPTY (TRACKLIST_SELECTIONS->track_names_);
+  ASSERT_NONEMPTY (TRACKLIST_SELECTIONS->track_ids_);
 
   /* assert undo history is not empty */
   ASSERT_NONEMPTY (*UNDO_MANAGER->undo_stack_);
@@ -837,8 +836,8 @@ _test_move_tracks (
   UNDO_MANAGER->perform (std::make_unique<MoveTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), 0));
 
-  ASSERT_TRUE (TRACKLIST->get_track (prev_pos)->validate ());
-  ASSERT_TRUE (TRACKLIST->get_track (0)->validate ());
+  ASSERT_TRUE (TRACKLIST->get_track_at_index (prev_pos)->validate ());
+  ASSERT_TRUE (TRACKLIST->get_track_at_index (0)->validate ());
 
   auto setting =
     test_plugin_manager_get_plugin_setting (pl_bundle, pl_uri, with_carla);
@@ -1165,22 +1164,24 @@ TEST_F (ZrythmFixture, DuplicateWithOutputAndSend)
     *audio_track->channel_->sends_[0], *fx_track->processor_->stereo_in_,
     *PORT_CONNECTIONS_MGR));
 
-  ASSERT_TRUE (TRACKLIST->get_track (start_pos)->is_audio ());
-  ASSERT_TRUE (TRACKLIST->get_track (start_pos + 1)->is_audio_group ());
-  ASSERT_TRUE (TRACKLIST->get_track (start_pos + 2)->is_audio_group ());
-  ASSERT_TRUE (TRACKLIST->get_track (start_pos + 3)->is_audio_bus ());
+  ASSERT_TRUE (TRACKLIST->get_track_at_index (start_pos)->is_audio ());
+  ASSERT_TRUE (TRACKLIST->get_track_at_index (start_pos + 1)->is_audio_group ());
+  ASSERT_TRUE (TRACKLIST->get_track_at_index (start_pos + 2)->is_audio_group ());
+  ASSERT_TRUE (TRACKLIST->get_track_at_index (start_pos + 3)->is_audio_bus ());
 
   /* route audio track to group track */
-  perform_set_direct_out (TRACKLIST->get_track (start_pos), group_track);
+  perform_set_direct_out (
+    TRACKLIST->get_track_at_index (start_pos), group_track);
 
   /* route group track to group track 2 */
-  perform_set_direct_out (TRACKLIST->get_track (start_pos + 1), group_track2);
+  perform_set_direct_out (
+    TRACKLIST->get_track_at_index (start_pos + 1), group_track2);
 
   /* duplicate audio track and group track */
   TRACKLIST->tracks_[start_pos]->select (true, false, false);
-  ASSERT_SIZE_EQ (TRACKLIST_SELECTIONS->track_names_, 2);
-  ASSERT_EQ (TRACKLIST_SELECTIONS->track_names_[0], group_track->name_);
-  ASSERT_EQ (TRACKLIST_SELECTIONS->track_names_[1], audio_track->name_);
+  ASSERT_SIZE_EQ (TRACKLIST_SELECTIONS->track_ids_, 2);
+  ASSERT_EQ (TRACKLIST_SELECTIONS->track_ids_[0], group_track->name_);
+  ASSERT_EQ (TRACKLIST_SELECTIONS->track_ids_[1], audio_track->name_);
   AUDIO_ENGINE->wait_n_cycles (40);
   UNDO_MANAGER->perform (std::make_unique<CopyTracksAction> (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
@@ -1223,7 +1224,7 @@ TEST_F (ZrythmFixture, DuplicateWithOutputAndSend)
   /* test delete each track */
   for (int i = 0; i < 4; i++)
     {
-      auto cur_track = TRACKLIST->get_track (start_pos + i);
+      auto cur_track = TRACKLIST->get_track_at_index (start_pos + i);
       perform_delete_track (cur_track);
       ASSERT_TRUE (TRACKLIST->validate ());
       test_project_save_and_reload ();
@@ -1245,7 +1246,7 @@ TEST_F (ZrythmFixture, CheckTrackDeletionWithMixerSelections)
   MIXER_SELECTIONS->add_slot (
     *pl_track, zrythm::dsp::PluginSlotType::Insert, 0, false);
   ASSERT_TRUE (MIXER_SELECTIONS->has_any_);
-  ASSERT_EQ (MIXER_SELECTIONS->track_name_hash_, pl_track->get_name_hash ());
+  ASSERT_EQ (MIXER_SELECTIONS->track_id_, pl_track->get_name_hash ());
 
   first_track->select (true, true, false);
   perform_delete ();
@@ -2051,11 +2052,14 @@ TEST_F (ZrythmFixture, CopyMultipleInside)
   ASSERT_EQ (folder2->pos_, TRACKLIST->get_num_tracks () - 4);
   ASSERT_EQ (folder2->size_, 4);
   ASSERT_TRUE (
-    TRACKLIST->get_track (TRACKLIST->get_num_tracks () - 3)->is_audio_group ());
+    TRACKLIST->get_track_at_index (TRACKLIST->get_num_tracks () - 3)
+      ->is_audio_group ());
   ASSERT_TRUE (
-    TRACKLIST->get_track (TRACKLIST->get_num_tracks () - 2)->is_folder ());
+    TRACKLIST->get_track_at_index (TRACKLIST->get_num_tracks () - 2)
+      ->is_folder ());
   ASSERT_TRUE (
-    TRACKLIST->get_track (TRACKLIST->get_num_tracks () - 1)->is_audio_bus ());
+    TRACKLIST->get_track_at_index (TRACKLIST->get_num_tracks () - 1)
+      ->is_audio_bus ());
 
   UNDO_MANAGER->undo ();
   ASSERT_EQ (folder->size_, 2);
@@ -2076,11 +2080,14 @@ TEST_F (ZrythmFixture, CopyMultipleInside)
   ASSERT_EQ (folder2->pos_, TRACKLIST->get_num_tracks () - 4);
   ASSERT_EQ (folder2->size_, 4);
   ASSERT_TRUE (
-    TRACKLIST->get_track (TRACKLIST->get_num_tracks () - 3)->is_audio_group ());
+    TRACKLIST->get_track_at_index (TRACKLIST->get_num_tracks () - 3)
+      ->is_audio_group ());
   ASSERT_TRUE (
-    TRACKLIST->get_track (TRACKLIST->get_num_tracks () - 2)->is_folder ());
+    TRACKLIST->get_track_at_index (TRACKLIST->get_num_tracks () - 2)
+      ->is_folder ());
   ASSERT_TRUE (
-    TRACKLIST->get_track (TRACKLIST->get_num_tracks () - 1)->is_audio_bus ());
+    TRACKLIST->get_track_at_index (TRACKLIST->get_num_tracks () - 1)
+      ->is_audio_bus ());
 
   /*
    * [0] Chords

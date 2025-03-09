@@ -84,13 +84,12 @@ public:
 
   bool is_stereo_port () const
   {
-    return ENUM_BITSET_TEST (
-             PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::StereoL)
-           || ENUM_BITSET_TEST (
-             PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::StereoR);
+    return ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::StereoL)
+           || ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::StereoR);
   }
 
-  void init_after_cloning (const AudioPort &other) override;
+  void init_after_cloning (const AudioPort &other, ObjectCloneType clone_type)
+    override;
 
 private:
   /**
@@ -108,113 +107,24 @@ private:
 };
 
 /**
- * L & R port, for convenience.
+ * Convenience factory for L/R audio port pairs.
  */
 class StereoPorts final
-    : public QObject,
-      public ICloneable<StereoPorts>,
-      public zrythm::utils::serialization::ISerializable<StereoPorts>
 {
-  Q_OBJECT
-  QML_ELEMENT
-  Q_PROPERTY (AudioPort * l READ getL CONSTANT)
-  Q_PROPERTY (AudioPort * r READ getR CONSTANT)
-
 public:
-  StereoPorts () = default;
-  StereoPorts (const AudioPort &l, const AudioPort &r);
-  StereoPorts (std::unique_ptr<AudioPort> &&l, std::unique_ptr<AudioPort> &&r)
-      : l_ (l.release ()), r_ (r.release ())
+  static constexpr std::pair<std::string, std::string>
+  get_name_and_symbols (bool left, std::string name, std::string symbol)
   {
-    l_->setParent (this);
-    r_->setParent (this);
-  }
-  Q_DISABLE_COPY_MOVE (StereoPorts)
-
-  /**
-   * Creates stereo ports for generic use.
-   *
-   * @param input Whether input ports.
-   * @param owner Pointer to the owner. The type is determined by owner_type.
-   */
-  StereoPorts (bool input, std::string name, std::string symbol);
-
-  ~StereoPorts () override;
-
-  // ==========================================================================
-  // QML Interface
-  // ==========================================================================
-
-  AudioPort * getL () const { return l_; }
-  AudioPort * getR () const { return r_; }
-
-  // ==========================================================================
-
-  void init_loaded (IPortOwner &owner)
-  {
-    l_->init_loaded (owner);
-    r_->init_loaded (owner);
+    return std::make_pair (
+      fmt::format ("{} {}", name, left ? "L" : "R"),
+      fmt::format ("{}_{}", symbol, left ? "l" : "r"));
   }
 
-  void set_owner (IPortOwner &owner)
-  {
-    l_->set_owner (owner);
-    r_->set_owner (owner);
-  }
-
-  void set_expose_to_backend (AudioEngine &engine, bool expose)
-  {
-    l_->set_expose_to_backend (engine, expose);
-    r_->set_expose_to_backend (engine, expose);
-  }
-
-  void disconnect_hw_inputs ()
-  {
-    l_->disconnect_hw_inputs ();
-    r_->disconnect_hw_inputs ();
-  }
-
-  void clear_buffer (AudioEngine &engine)
-  {
-    l_->clear_buffer (engine);
-    r_->clear_buffer (engine);
-  }
-
-  void allocate_bufs ()
-  {
-    l_->allocate_bufs ();
-    r_->allocate_bufs ();
-  }
-
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
-  /**
-   * Connects to the given port using Port::connect().
-   *
-   * @param dest Destination port.
-   * @param locked Lock the connection.
-   */
-  ATTR_NONNULL void
-  connect_to (PortConnectionsManager &mgr, StereoPorts &dest, bool locked);
-
-  void disconnect (PortConnectionsManager &mgr);
-
-  void set_write_ring_buffers (bool on)
-  {
-    l_->write_ring_buffers_ = on;
-    r_->write_ring_buffers_ = on;
-  }
-
-  AudioPort       &get_l () { return *l_; }
-  AudioPort       &get_r () { return *r_; }
-  const AudioPort &get_l () const { return *l_; }
-  const AudioPort &get_r () const { return *r_; }
-
-  void init_after_cloning (const StereoPorts &other) override;
-
-private:
-  AudioPort * l_ = nullptr; ///< Left port
-  AudioPort * r_ = nullptr; ///< Right port
+  static std::pair<AudioPort *, AudioPort *> create_stereo_ports (
+    PortRegistry &port_registry,
+    bool          input,
+    std::string   name,
+    std::string   symbol);
 };
 
 /**

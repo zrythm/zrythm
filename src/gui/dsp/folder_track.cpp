@@ -5,11 +5,18 @@
 
 #include "gui/dsp/folder_track.h"
 
-FolderTrack::FolderTrack (const std::string &name, int pos)
-    : Track (Track::Type::Folder, name, pos, PortType::Unknown, PortType::Unknown)
+FolderTrack::FolderTrack (
+  TrackRegistry  &track_registry,
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry,
+  bool            new_identity)
+    : Track (Track::Type::Folder, PortType::Unknown, PortType::Unknown)
 {
-  color_ = Color (QColor ("#865E3C"));
-  icon_name_ = "fluentui-folder-regular";
+  if (new_identity)
+    {
+      color_ = Color (QColor ("#865E3C"));
+      icon_name_ = "fluentui-folder-regular";
+    }
 }
 
 bool
@@ -36,13 +43,17 @@ FolderTrack::validate () const
 }
 
 void
-FolderTrack::init_after_cloning (const FolderTrack &other)
+FolderTrack::init_after_cloning (
+  const FolderTrack &other,
+  ObjectCloneType    clone_type)
 {
-  FoldableTrack::copy_members_from (other);
-  Track::copy_members_from (other);
+  FoldableTrack::copy_members_from (other, clone_type);
+  Track::copy_members_from (other, clone_type);
 }
 
 void
-FolderTrack::init_loaded ()
+FolderTrack::init_loaded (
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry)
 {
 }

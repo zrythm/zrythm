@@ -15,7 +15,6 @@
 #include "automation_region.h"
 #include "dsp/position.h"
 
-class Port;
 class AutomatableTrack;
 class AutomationTracklist;
 
@@ -63,7 +62,7 @@ class AutomationTrack final
 
 public:
   using Position = dsp::Position;
-  using PortIdentifier = dsp::PortIdentifier;
+  using PortUuid = Port::Uuid;
 
 public:
   AutomationTrack () = default;
@@ -78,10 +77,7 @@ public:
   // QML Interface
   // ========================================================================
 
-  QString getLabel () const
-  {
-    return QString::fromStdString (port_id_->get_label ());
-  }
+  QString       getLabel () const;
   Q_SIGNAL void labelChanged (QString label);
 
   double        getHeight () const { return height_; }
@@ -113,17 +109,19 @@ public:
    *   if @ref PortIdentifier.at_idx is not set. Use
    *   port_get_automation_track() instead.
    *
+   * FIXME: delete this. use a map somewhere if really needed.
+   *
    * @param basic_search If true, only basic port
    *   identifier members are checked.
    */
   static AutomationTrack *
-  find_from_port_id (const PortIdentifier &id, bool basic_search);
+  find_from_port_id (const PortUuid &id, bool basic_search);
 
   /**
    * @brief Clone the given port identifier and take ownership of the clone.
    * @param port_id
    */
-  void set_port_id (const PortIdentifier &port_id);
+  void set_port_id (const PortUuid &port_id);
 
   /**
    * Finds the AutomationTrack associated with `port`.
@@ -185,7 +183,9 @@ public:
   /**
    * Clones the AutomationTrack.
    */
-  void init_after_cloning (const AutomationTrack &other) override;
+  void
+  init_after_cloning (const AutomationTrack &other, ObjectCloneType clone_type)
+    override;
 
   AutomatableTrack * get_track () const;
 
@@ -210,6 +210,8 @@ public:
   AutomationRegion *
   get_region_before_pos (const Position &pos, bool ends_after, bool use_snapshots)
     const;
+
+  ControlPort &get_port () const;
 
   /**
    * Returns the actual parameter value at the given position.
@@ -261,7 +263,7 @@ public:
   int index_ = 0;
 
   /** Identifier of the Port this AutomationTrack is for (owned pointer). */
-  std::unique_ptr<dsp::PortIdentifier> port_id_;
+  PortUuid port_id_;
 
   /** Whether it has been created by the user yet or not. */
   bool created_ = false;
@@ -315,11 +317,12 @@ public:
    */
   bool recording_paused_ = false;
 
+private:
   /** Pointer to owner automation tracklist, if any. */
   AutomationTracklist * atl_ = nullptr;
 
   /** Cache used during DSP. */
-  ControlPort * port_ = nullptr;
+  // std::optional<std::reference_wrapper<ControlPort>> port_;
 };
 
 #endif // __AUDIO_AUTOMATION_TRACK_H__

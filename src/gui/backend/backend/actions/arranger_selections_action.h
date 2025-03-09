@@ -146,7 +146,9 @@ public:
 
   bool contains_clip (const AudioClip &clip) const override;
 
-  void init_after_cloning (const ArrangerSelectionsAction &other) final;
+  void init_after_cloning (
+    const ArrangerSelectionsAction &other,
+    ObjectCloneType                 clone_type) override;
 
   bool needs_transport_total_bar_update (bool perform) const override;
 
@@ -274,7 +276,7 @@ public:
   /** Target port (used to find corresponding automation track when
    * moving/copying automation regions to another automation track/another
    * track). */
-  std::unique_ptr<PortIdentifier> target_port_;
+  std::optional<PortIdentifier::PortUuid> target_port_;
 
   /** String, when changing a string. */
   std::string str_;
@@ -368,16 +370,16 @@ public:
    */
   template <FinalArrangerSelectionsSubclass T>
   MoveOrDuplicateAction (
-    const T               &sel,
-    bool                   move,
-    double                 ticks,
-    int                    delta_chords,
-    int                    delta_pitch,
-    int                    delta_tracks,
-    int                    delta_lanes,
-    double                 delta_normalized_amount,
-    const PortIdentifier * tgt_port_id,
-    bool                   already_moved);
+    const T                                &sel,
+    bool                                    move,
+    double                                  ticks,
+    int                                     delta_chords,
+    int                                     delta_pitch,
+    int                                     delta_tracks,
+    int                                     delta_lanes,
+    double                                  delta_normalized_amount,
+    std::optional<PortIdentifier::PortUuid> tgt_port_id,
+    bool                                    already_moved);
 };
 
 class ArrangerSelectionsAction::MoveOrDuplicateTimelineAction
@@ -385,13 +387,13 @@ class ArrangerSelectionsAction::MoveOrDuplicateTimelineAction
 {
 public:
   MoveOrDuplicateTimelineAction (
-    const TimelineSelections &sel,
-    bool                      move,
-    double                    ticks,
-    int                       delta_tracks,
-    int                       delta_lanes,
-    const PortIdentifier *    tgt_port_id,
-    bool                      already_moved)
+    const TimelineSelections               &sel,
+    bool                                    move,
+    double                                  ticks,
+    int                                     delta_tracks,
+    int                                     delta_lanes,
+    std::optional<PortIdentifier::PortUuid> tgt_port_id,
+    bool                                    already_moved)
       : MoveOrDuplicateAction (
           sel,
           move,
@@ -415,8 +417,17 @@ public:
     double                ticks,
     int                   delta_pitch,
     bool                  already_moved)
-      : MoveOrDuplicateAction (sel, move, ticks, 0, delta_pitch, 0, 0, 0, nullptr, already_moved) {
-        };
+      : MoveOrDuplicateAction (
+          sel,
+          move,
+          ticks,
+          0,
+          delta_pitch,
+          0,
+          0,
+          0,
+          std::nullopt,
+          already_moved) {};
 };
 
 class ArrangerSelectionsAction::MoveOrDuplicateChordAction
@@ -429,8 +440,17 @@ public:
     double           ticks,
     int              delta_chords,
     bool             already_moved)
-      : MoveOrDuplicateAction (sel, move, ticks, delta_chords, 0, 0, 0, 0, nullptr, already_moved) {
-        };
+      : MoveOrDuplicateAction (
+          sel,
+          move,
+          ticks,
+          delta_chords,
+          0,
+          0,
+          0,
+          0,
+          std::nullopt,
+          already_moved) {};
 };
 
 class ArrangerSelectionsAction::MoveOrDuplicateAutomationAction
@@ -452,7 +472,7 @@ public:
           0,
           0,
           delta_normalized_amount,
-          nullptr,
+          std::nullopt,
           already_moved) {};
 };
 
@@ -478,7 +498,7 @@ public:
     double                ticks,
     int                   delta_pitch,
     bool                  already_moved)
-      : MoveOrDuplicateAction (sel, true, ticks, 0, delta_pitch, 0, 0, 0, nullptr, already_moved)
+      : MoveOrDuplicateAction (sel, true, ticks, 0, delta_pitch, 0, 0, 0, std::nullopt, already_moved)
   {
   }
 };
@@ -492,7 +512,7 @@ public:
     double                 ticks,
     int                    delta_chords,
     bool                   already_moved)
-      : MoveOrDuplicateAction (sel, true, ticks, delta_chords, 0, 0, 0, 0, nullptr, already_moved)
+      : MoveOrDuplicateAction (sel, true, ticks, delta_chords, 0, 0, 0, 0, std::nullopt, already_moved)
   {
   }
 };

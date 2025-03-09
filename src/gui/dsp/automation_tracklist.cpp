@@ -15,13 +15,23 @@
 #include "gui/dsp/tracklist.h"
 #include "utils/rt_thread_id.h"
 
-AutomationTracklist::AutomationTracklist (QObject * parent)
-    : QAbstractListModel (parent)
+AutomationTracklist::AutomationTracklist (
+  const DeserializationDependencyHolder &dh)
+    : AutomationTracklist (dh.get<std::reference_wrapper<PortRegistry>> ().get ())
+{
+}
+
+AutomationTracklist::AutomationTracklist (
+  PortRegistry &port_registry,
+  QObject *     parent)
+    : QAbstractListModel (parent), port_registry_ (port_registry)
 {
 }
 
 void
-AutomationTracklist::init_loaded (AutomatableTrack * track)
+AutomationTracklist::init_loaded (
+  AutomatableTrack * track,
+  PortRegistry      &port_registry)
 {
   track_ = track;
   for (auto &at : ats_)
@@ -35,7 +45,9 @@ AutomationTracklist::init_loaded (AutomatableTrack * track)
 }
 
 void
-AutomationTracklist::init_after_cloning (const AutomationTracklist &other)
+AutomationTracklist::init_after_cloning (
+  const AutomationTracklist &other,
+  ObjectCloneType            clone_type)
 {
   ats_.clear ();
   ats_.reserve (other.ats_.size ());
@@ -125,6 +137,12 @@ AutomationTracklist::get_track () const
   return track_;
 }
 
+ControlPort &
+AutomationTracklist::get_port (dsp::PortIdentifier::PortUuid id) const
+{
+  return *std::get<ControlPort *> (port_registry_.find_by_id_or_throw (id));
+}
+
 AutomationTrack *
 AutomationTracklist::add_at (AutomationTrack &at)
 {
@@ -133,7 +151,8 @@ AutomationTracklist::add_at (AutomationTrack &at)
   at_ref->setParent (this);
 
   at_ref->index_ = static_cast<int> (ats_.size ()) - 1;
-  at_ref->port_id_->track_name_hash_ = track_->get_name_hash ();
+  const auto &port = get_port (at_ref->port_id_);
+  port.id_->set_track_id (track_->get_uuid ());
 
   /* move automation track regions */
   for (const auto region_var : at_ref->region_list_->regions_)
@@ -146,17 +165,27 @@ AutomationTracklist::add_at (AutomationTrack &at)
 
 AutomationTrack *
 AutomationTracklist::get_plugin_at (
-  zrythm::dsp::PluginSlotType slot_type,
-  const int                   plugin_slot,
-  const int                   port_index,
-  const std::string          &symbol)
+  dsp::PluginSlot    slot,
+  const int          port_index,
+  const std::string &symbol)
 {
   auto it = std::find_if (ats_.begin (), ats_.end (), [&] (const auto &at) {
-    return at->port_id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin
-           && plugin_slot == at->port_id_->plugin_id_.slot_
-           && slot_type == at->port_id_->plugin_id_.slot_type_
-           && port_index == at->port_id_->port_index_
-           && symbol == at->port_id_->sym_;
+    const auto &port = get_port (at->port_id_);
+    const auto &port_id = *port.id_;
+    if (
+      port_id.owner_type_ != dsp::PortIdentifier::OwnerType::Plugin
+      || port_index != static_cast<int> (port_id.port_index_)
+      || symbol != port_id.get_symbol ())
+      return false;
+
+    auto plugin_uuid = port_id.get_plugin_id ();
+    z_return_val_if_fail (plugin_uuid.has_value (), false);
+    auto plugin_var = PROJECT->find_plugin_by_id (plugin_uuid.value ());
+    z_return_val_if_fail (plugin_var.has_value (), false);
+    const auto &plugin_id =
+      std::visit ([] (auto &&p) { return p->id_; }, plugin_var.value ());
+
+    return slot == plugin_id.slot_;
   });
 
   return it != ats_.end () ? *it : nullptr;
@@ -194,9 +223,7 @@ AutomationTracklist::set_at_index (AutomationTrack &at, int index, bool push_dow
         [&] (auto &&clip_editor_region) {
           auto &clip_editor_region_id = clip_editor_region->id_;
 
-          if (
-            clip_editor_region_id.track_name_hash_
-            == at.port_id_->track_name_hash_)
+          if (clip_editor_region_id.track_uuid_ == track_->get_uuid ())
             {
               clip_editor_region_idx = clip_editor_region_id.at_idx_;
             }
@@ -254,29 +281,8 @@ AutomationTracklist::set_at_index (AutomationTrack &at, int index, bool push_dow
         }
 
       z_trace (
-        "new pos {} ({})", ats_[prev_index]->port_id_->get_label (),
+        "new pos {} ({})", ats_[prev_index]->getLabel (),
         ats_[prev_index]->index_);
-    }
-}
-
-void
-AutomationTracklist::update_track_name_hash (AutomatableTrack &track)
-{
-  track_ = &track;
-  auto track_name_hash = track.get_name_hash ();
-  for (auto &at : ats_)
-    {
-      at->port_id_->track_name_hash_ = track_name_hash;
-      if (at->port_id_->owner_type_ == dsp::PortIdentifier::OwnerType::Plugin)
-        {
-          at->port_id_->plugin_id_.track_name_hash_ = track_name_hash;
-        }
-      for (auto &region_var : at->region_list_->regions_)
-        {
-          auto * region = std::get<AutomationRegion *> (region_var);
-          region->id_.track_name_hash_ = track_name_hash;
-          region->update_identifier ();
-        }
     }
 }
 
@@ -386,17 +392,23 @@ AutomationTracklist::get_visible_at_diff (
 }
 
 AutomationTrack *
-AutomationTracklist::get_at_from_port (const Port &port) const
+AutomationTracklist::get_at_from_port (const ControlPort &port) const
 {
-  auto it = std::find_if (ats_.begin (), ats_.end (), [&port] (const auto &at) {
-    auto at_port_var = PROJECT->find_port_by_id (*at->port_id_);
-    z_return_val_if_fail (at_port_var, false);
-    std::visit (
-      [&] (auto &&at_port) { return at_port == std::addressof (port); },
-      *at_port_var);
-    return false;
+  auto it = std::find_if (ats_.begin (), ats_.end (), [&] (const auto &at) {
+    const auto &at_port = get_port (at->port_id_);
+    return std::addressof (at_port) == std::addressof (port);
   });
 
+  return it != ats_.end () ? *it : nullptr;
+}
+
+AutomationTrack *
+AutomationTracklist::get_at_from_port_uuid (
+  dsp::PortIdentifier::PortUuid id) const
+{
+  auto it = std::find_if (ats_.begin (), ats_.end (), [&id] (const auto &at) {
+    return at->port_id_ == id;
+  });
   return it != ats_.end () ? *it : nullptr;
 }
 
@@ -455,7 +467,7 @@ AutomationTracklist::
 
   z_trace (
     "[track {} atl] removing automation track at: {} '{}'",
-    track_ ? track_->pos_ : -1, deleted_idx, at.port_id_->label_);
+    track_ ? track_->pos_ : -1, deleted_idx, at.getLabel ());
 
   if (free_at)
     {
@@ -547,9 +559,9 @@ AutomationTracklist::print_ats () const
   for (size_t i = 0; i < ats_.size (); i++)
     {
       const auto &at = ats_[i];
+      const auto &port = get_port (at->port_id_);
       str += fmt::format (
-        "[{}] '{}' (sym '{}')\n", i, at->port_id_->get_label (),
-        at->port_id_->sym_);
+        "[{}] '{}' (sym '{}')\n", i, at->getLabel (), port.id_->get_symbol ());
     }
 
   z_info (str);
@@ -568,13 +580,13 @@ AutomationTracklist::validate () const
 {
   z_return_val_if_fail (track_, false);
 
-  auto track_name_hash = track_->get_name_hash ();
+  auto track_uuid = track_->get_uuid ();
   for (int i = 0; i < static_cast<int> (ats_.size ()); i++)
     {
       const auto &at = ats_[i];
-      z_return_val_if_fail (
-        at->port_id_->track_name_hash_ == track_name_hash && at->index_ == i,
-        false);
+      const auto &port = get_port (at->port_id_);
+      z_return_val_if_fail (port.id_->get_track_id () == track_uuid, false);
+      z_return_val_if_fail (at->index_ == i, false);
       if (!at->validate ())
         return false;
     }
@@ -600,7 +612,7 @@ AutomationTracklist::set_caches (CacheType types)
   if (track->is_auditioner ())
     return;
 
-  if (ENUM_BITSET_TEST (CacheType, types, CacheType::AutomationLaneRecordModes))
+  if (ENUM_BITSET_TEST (types, CacheType::AutomationLaneRecordModes))
     {
       ats_in_record_mode_.clear ();
     }
@@ -610,7 +622,7 @@ AutomationTracklist::set_caches (CacheType types)
       at->set_caches (types);
 
       if (
-        ENUM_BITSET_TEST (CacheType, types, CacheType::AutomationLaneRecordModes)
+        ENUM_BITSET_TEST (types, CacheType::AutomationLaneRecordModes)
         && at->automation_mode_ == AutomationMode::Record)
         {
           ats_in_record_mode_.push_back (at);
@@ -635,7 +647,7 @@ AutomationTracklist::print_regions () const
         continue;
 
       str += fmt::format (
-        "\n  [{}] port '{}': {} regions", i, at->port_id_->get_label (),
+        "\n  [{}] port '{}': {} regions", i, at->getLabel (),
         at->region_list_->regions_.size ());
     }
 

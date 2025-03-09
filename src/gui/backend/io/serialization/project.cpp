@@ -59,61 +59,33 @@ Tracklist::define_fields (const Context &ctx)
 {
   using T = ISerializable<Tracklist>;
   T::serialize_fields (
-    ctx, T::make_field ("pinnedTracksCutoff", pinned_tracks_cutoff_));
-
-  if (ctx.is_serializing ())
-    {
-      T::serialize_field<decltype (tracks_)> ("tracks", tracks_, ctx);
-    }
-  else
-    {
-      yyjson_obj_iter it = yyjson_obj_iter_with (ctx.obj_);
-
-      yyjson_val * arr = yyjson_obj_iter_get (&it, "tracks");
-      size_t       arr_size = yyjson_arr_size (arr);
-      tracks_.clear ();
-      for (size_t i = 0; i < arr_size; ++i)
-        {
-          yyjson_val * val = yyjson_arr_get (arr, i);
-          if (yyjson_is_obj (val))
-            {
-              auto elem_it = yyjson_obj_iter_with (val);
-              auto type_id_int = yyjson_obj_iter_get (&elem_it, "type");
-              if (yyjson_is_int (type_id_int))
-                {
-                  try
-                    {
-                      auto type_id = ENUM_INT_TO_VALUE (
-                        Track::Type, yyjson_get_int (type_id_int));
-                      auto track = Track::create_unique_from_type (type_id);
-                      std::visit (
-                        [&] (auto &&t) {
-                          using TrackT = base_type<decltype (t)>;
-                          t->ISerializable<TrackT>::deserialize (
-                            Context (val, ctx));
-                          tracks_.push_back (
-                            dynamic_cast<TrackT *> (track.release ()));
-                        },
-                        convert_to_variant<TrackPtrVariant> (track.get ()));
-                    }
-                  catch (std::runtime_error &e)
-                    {
-                      throw ZrythmException (
-                        "Invalid type id: "
-                        + std::to_string (yyjson_get_uint (type_id_int)));
-                    }
-                }
-            }
-        }
-    }
+    ctx, T::make_field ("pinnedTracksCutoff", pinned_tracks_cutoff_),
+    T::make_field ("tracks", tracks_));
 }
 
 void
 Project::define_fields (const Context &ctx)
 {
   using T = ISerializable<Project>;
+  Context new_ctx = ctx;
+
+  // first serialize/deserialize the registries
   T::serialize_fields (
-    ctx, T::make_field ("title", title_),
+    new_ctx, T::make_field ("portRegistry", port_registry_),
+    T::make_field ("pluginRegistry", plugin_registry_),
+    T::make_field ("trackRegistry", track_registry_));
+
+  // if deserializing, add the registries to the deserialization context
+  if (ctx.is_deserializing ())
+    {
+      new_ctx.add_dependency (std::ref (get_port_registry ()));
+      new_ctx.add_dependency (std::ref (get_track_registry ()));
+      new_ctx.add_dependency (std::ref (get_plugin_registry ()));
+    }
+
+  // serialize/deserialize the rest
+  T::serialize_fields (
+    new_ctx, T::make_field ("title", title_),
     T::make_field ("datetime", datetime_str_),
     T::make_field ("version", version_),
     T::make_field ("clipEditor", clip_editor_),
@@ -125,13 +97,11 @@ Project::define_fields (const Context &ctx)
     T::make_field ("transport", transport_),
     T::make_field ("audioEngine", audio_engine_),
     T::make_field ("tracklist", tracklist_),
-    T::make_field ("mixerSelections", mixer_selections_, true),
     T::make_field ("timelineSelections", timeline_selections_, true),
     T::make_field ("midiArrangerSelections", midi_selections_, true),
     T::make_field ("chordSelections", chord_selections_, true),
     T::make_field ("automationSelections", automation_selections_, true),
     T::make_field ("audioSelections", audio_selections_, true),
-    T::make_field ("tracklistSelections", tracklist_selections_, true),
     T::make_field ("regionLinkGroupManager", region_link_group_manager_),
     T::make_field ("portConnectionsManager", port_connections_manager_),
     T::make_field ("midiMappings", midi_mappings_),

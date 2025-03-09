@@ -29,7 +29,7 @@ TimelineSelections::TimelineSelections (
   const Position &end_pos)
     : ArrangerSelections (ArrangerSelections::Type::Timeline)
 {
-  for (auto &track : TRACKLIST->tracks_)
+  for (const auto &track : TRACKLIST->get_track_span ())
     {
       std::vector<ArrangerObject *> objs;
       std::visit (
@@ -70,8 +70,8 @@ TimelineSelections::sort_by_indices (bool desc)
   auto sort_regions = [] (const auto &a, const auto &b) {
     using AType = base_type<decltype (a)>;
     using BType = base_type<decltype (b)>;
-    auto at_var = TRACKLIST->find_track_by_name_hash (a.id_.track_name_hash_);
-    auto bt_var = TRACKLIST->find_track_by_name_hash (b.id_.track_name_hash_);
+    auto at_var = TRACKLIST->get_track (a.id_.track_uuid_);
+    auto bt_var = TRACKLIST->get_track (b.id_.track_uuid_);
     z_return_val_if_fail (at_var, false);
     z_return_val_if_fail (bt_var, false);
     auto track_pos_compare_result = std::visit (
@@ -82,10 +82,11 @@ TimelineSelections::sort_by_indices (bool desc)
           return false;
         return std::nullopt;
       },
-      *at_var, *bt_var);
-    if (track_pos_compare_result)
+      at_var.value (), bt_var.value ());
+    // auto track_pos_compare_result = track_pos_compare_func (at_var, bt_var);
+    if (track_pos_compare_result.has_value ())
       {
-        return *track_pos_compare_result;
+        return track_pos_compare_result.value ();
       }
 
     /* if one of the objects is laned and the other isn't, just return - order
@@ -123,9 +124,8 @@ TimelineSelections::sort_by_indices (bool desc)
     return a.id_.idx_ < b.id_.idx_;
   };
 
-  std::sort (
-    objects_.begin (), objects_.end (),
-    [desc, sort_regions] (const auto &a_var, const auto &b_var) {
+  std::ranges::sort (
+    objects_, [desc, sort_regions] (const auto &a_var, const auto &b_var) {
       bool ret = false;
       return std::visit (
         [&] (auto &&a, auto &&b) {
@@ -199,11 +199,11 @@ TimelineSelections::all_on_same_lane () const
                         return false;
 
                       if constexpr (std::derived_from<CurObjT, LaneOwnedObject>)
-                        return id.track_name_hash_ == curr->id_.track_name_hash_
+                        return id.track_uuid_ == curr->id_.track_uuid_
                                && id.lane_pos_ == curr->id_.lane_pos_;
                       else if constexpr (
                         std::is_same_v<CurObjT, AutomationRegion>)
-                        return id.track_name_hash_ == curr->id_.track_name_hash_
+                        return id.track_uuid_ == curr->id_.track_uuid_
                                && id.at_idx_ == curr->id_.at_idx_;
                       else
                         return true;
@@ -255,7 +255,7 @@ TimelineSelections::merge ()
       if constexpr (std::is_same_v<RegionT, MidiRegion>)
         {
           new_r = new MidiRegion (
-            pos, end_pos, first_r->id_.track_name_hash_, first_r->id_.lane_pos_,
+            pos, end_pos, first_r->id_.track_uuid_, first_r->id_.lane_pos_,
             first_r->id_.idx_);
           for (auto &obj : objects_)
             {
@@ -298,8 +298,7 @@ TimelineSelections::merge ()
 
           new_r = new AudioRegion (
             frames, true, first_r_clip->get_name (), max_depth, pos,
-            first_r->id_.track_name_hash_, first_r->id_.lane_pos_,
-            first_r->id_.idx_);
+            first_r->id_.track_uuid_, first_r->id_.lane_pos_, first_r->id_.idx_);
         }
       else if constexpr (std::is_same_v<RegionT, ChordRegion>)
         {
@@ -320,7 +319,7 @@ TimelineSelections::merge ()
       else if constexpr (std::is_same_v<RegionT, AutomationRegion>)
         {
           new_r = new AutomationRegion (
-            pos, end_pos, first_r->id_.track_name_hash_, first_r->id_.at_idx_,
+            pos, end_pos, first_r->id_.track_uuid_, first_r->id_.at_idx_,
             first_r->id_.idx_);
           for (auto &obj : objects_)
             {
@@ -407,20 +406,20 @@ TimelineSelections::set_vis_track_indices ()
             auto region_track = obj->get_track ();
             std::visit (
               [&] (auto &&track) {
-                region_track_vis_index_ =
-                  TRACKLIST->get_visible_track_diff (*highest_tr, *track);
+                region_track_vis_index_ = TRACKLIST->get_visible_track_diff (
+                  highest_tr->get_uuid (), track->get_uuid ());
               },
               region_track);
           }
         else if constexpr (std::is_same_v<ObjT, Marker>)
           {
-            marker_track_vis_index_ =
-              TRACKLIST->get_visible_track_diff (*highest_tr, *P_MARKER_TRACK);
+            marker_track_vis_index_ = TRACKLIST->get_visible_track_diff (
+              highest_tr->get_uuid (), P_MARKER_TRACK->get_uuid ());
           }
         else if constexpr (std::is_same_v<ObjT, ChordObject>)
           {
-            chord_track_vis_index_ =
-              TRACKLIST->get_visible_track_diff (*highest_tr, *P_CHORD_TRACK);
+            chord_track_vis_index_ = TRACKLIST->get_visible_track_diff (
+              highest_tr->get_uuid (), P_CHORD_TRACK->get_uuid ());
           }
       },
       obj_var, *highest_tr_var_opt);
@@ -432,8 +431,11 @@ TimelineSelections::can_be_pasted_at_impl (const Position pos, const int idx) co
 {
   auto tr_var =
     idx >= 0
-      ? TRACKLIST->get_track (idx)
-      : TRACKLIST_SELECTIONS->get_highest_track ();
+      ? TRACKLIST->get_track_at_index (idx)
+      : (std::views::filter (
+           TRACKLIST->get_track_span (), TrackSpan::selected_projection)
+         | std::views::take (1))
+          .front ();
 
   return std::ranges::all_of (objects_, [&] (auto &&obj_var) {
     return std::visit (
@@ -591,7 +593,7 @@ TimelineSelections::move_regions_to_new_lanes_or_tracks_or_ats (
             if (vis_track_diff != 0)
               {
                 auto visible = TRACKLIST->get_visible_track_after_delta (
-                  *track, vis_track_diff);
+                  track->get_uuid (), vis_track_diff);
                 if (!visible)
                   {
                     return false;
@@ -697,7 +699,7 @@ TimelineSelections::move_regions_to_new_lanes_or_tracks_or_ats (
                 [&] (auto &&region_track) -> bool {
                   auto track_to_move_to =
                     TRACKLIST->get_visible_track_after_delta (
-                      *region_track, vis_track_diff);
+                      region_track->get_uuid (), vis_track_diff);
                   z_return_val_if_fail (track_to_move_to, false);
                   std::visit (
                     [&] (auto &&tr_to_move_to) {

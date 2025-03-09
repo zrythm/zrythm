@@ -10,18 +10,20 @@
 #ifndef __IO_SERIALIZATION_ISERIALIZABLE_H__
 #define __IO_SERIALIZATION_ISERIALIZABLE_H__
 
+#include <any>
 #include <filesystem>
 #include <memory>
 #include <string>
 #include <type_traits>
 #include <vector>
 
+#include "utils/dependency_holder.h"
 #include "utils/exceptions.h"
 #include "utils/json.h"
 #include "utils/logger.h"
+#include "utils/object_factory.h"
 #include "utils/string.h"
 #include "utils/traits.h"
-#include "utils/types.h"
 
 #include <QUuid>
 
@@ -40,6 +42,19 @@ template <typename T>
 concept UnsignedIntegralContainer =
   ContainerType<T> && std::is_integral_v<typename T::value_type>
   && std::is_unsigned_v<typename T::value_type>;
+
+template <typename T> struct is_uuid_qhash : std::false_type
+{
+};
+
+template <IsVariant V> struct is_uuid_qhash<QHash<QUuid, V>> : std::true_type
+{
+};
+
+template <typename T> constexpr bool is_uuid_qhash_v = is_uuid_qhash<T>::value;
+
+template <typename T>
+concept QHashType = is_uuid_qhash_v<T>;
 
 class ISerializableBase
 {
@@ -105,6 +120,12 @@ public:
       document_type_ = other.document_type_;
       format_major_version_ = other.format_major_version_;
       format_minor_version_ = other.format_minor_version_;
+      dependency_holder_ = other.dependency_holder_;
+    }
+
+    template <typename T> void add_dependency (T &&dependency)
+    {
+      dependency_holder_.put (std::forward<T> (dependency));
     }
 
     constexpr bool is_serializing () const { return mut_doc_ != nullptr; }
@@ -129,6 +150,9 @@ public:
 
     /* used during deserialization */
     yyjson_val * obj_ = nullptr;
+
+    /** Dependency storage */
+    DeserializationDependencyHolder dependency_holder_;
   };
 };
 
@@ -136,7 +160,7 @@ template <typename T>
 concept VariantOfSerializablePointers = requires {
   []<typename... Ts> (std::variant<Ts...> *) {
     static_assert (
-      (((IsPointer<Ts>
+      (((IsRawPointer<Ts>
          && std::derived_from<std::remove_pointer_t<Ts>, ISerializableBase>) )
        && ...),
       "All types in the variant must be pointers to classes deriving from ISerializable");
@@ -293,6 +317,28 @@ public:
     is_container_of_serializable_objects<T>::value;
 
   template <typename T, typename = void>
+  struct is_container_of_optional_serializable_objects : std::false_type
+  {
+  };
+
+  template <typename T>
+  struct is_container_of_optional_serializable_objects<
+    T,
+    std::void_t<
+      typename T::value_type,
+      typename T::value_type::value_type,
+      decltype (std::declval<typename T::value_type> ().has_value ())>>
+      : std::is_base_of<
+          ISerializable<typename T::value_type::value_type>,
+          typename T::value_type::value_type>
+  {
+  };
+
+  template <typename T>
+  static constexpr bool is_container_of_optional_serializable_objects_v =
+    is_container_of_optional_serializable_objects<T>::value;
+
+  template <typename T, typename = void>
   struct is_container_of_serializable_pointers : std::false_type
   {
   };
@@ -356,23 +402,43 @@ public:
   {
     if constexpr (std::is_same_v<VariantT, void>)
       {
-        return static_cast<bool> (
-          std::derived_from<FieldT, ISerializableBase>
-          || std::is_same_v<FieldT, QUuid> || is_serializable_pointer_v<FieldT>
-          || std::is_integral_v<FieldT> || std::is_floating_point_v<FieldT>
-          || std::is_same_v<FieldT, bool> || std::is_same_v<FieldT, std::string>
-          || std::is_same_v<FieldT, QString> || std::is_same_v<FieldT, fs::path>
-          || std::is_same_v<FieldT, std::vector<bool>>
-          || SignedIntegralContainer<FieldT> || UnsignedIntegralContainer<FieldT>
-          || std::is_same_v<FieldT, std::vector<int>>
-          || std::is_same_v<FieldT, std::vector<unsigned int>>
-          || std::is_same_v<FieldT, std::vector<std::string>>
-          || VectorOfVariantPointers<FieldT>
-          || is_container_of_serializable_objects_v<FieldT>
-          || is_container_of_serializable_pointers_v<FieldT>
-          || VariantOfSerializablePointers<FieldT> || std::is_enum_v<FieldT>
-          || OptionalVariantOfSerializablePointers<FieldT>
-          || FloatingPointContainer<FieldT> || is_atomic_serializable_v<FieldT>);
+        if constexpr (OptionalType<FieldT>)
+          {
+            return check_serializability<typename FieldT::value_type> ();
+          }
+        else if constexpr (SmartPtrToContainer<FieldT>)
+          {
+            return check_serializability<typename FieldT::element_type> ();
+          }
+        else
+          {
+            return static_cast<bool> (
+              std::derived_from<FieldT, ISerializableBase> || QHashType<FieldT>
+              || StrongTypedef<FieldT> || std::is_same_v<FieldT, QUuid>
+              || is_serializable_pointer_v<FieldT> || std::is_integral_v<FieldT>
+              || std::is_floating_point_v<FieldT> || std::is_same_v<FieldT, bool>
+              || std::is_same_v<FieldT, std::string>
+              || std::is_same_v<FieldT, QString>
+              || std::is_same_v<FieldT, fs::path>
+              || std::is_same_v<FieldT, std::vector<bool>>
+              || SignedIntegralContainer<FieldT>
+              || UnsignedIntegralContainer<FieldT>
+              || std::is_same_v<FieldT, std::vector<int>>
+              || std::is_same_v<FieldT, std::vector<unsigned int>>
+              || std::is_same_v<FieldT, std::vector<std::string>>
+              || VectorOfVariantPointers<FieldT>
+              || is_container_of_serializable_objects_v<FieldT>
+              || is_container_of_optional_serializable_objects_v<FieldT>
+              || is_container_of_serializable_pointers_v<FieldT>
+              || VariantOfSerializablePointers<FieldT> || std::is_enum_v<FieldT>
+              || OptionalVariantOfSerializablePointers<FieldT> // note: probably
+                                                               // not needed
+                                                               // anymore since
+                                                               // the else if
+                                                               // added below
+              || FloatingPointContainer<FieldT>
+              || is_atomic_serializable_v<FieldT>);
+          }
       }
     else
       {
@@ -579,7 +645,7 @@ public:
           fmt::format ("Failed to serialize to JSON:\n{}", write_err.msg));
       }
 
-    return string::CStringRAII (json);
+    return { json };
   }
 
   void deserialize_from_json_string (const char * json)
@@ -655,7 +721,7 @@ public:
       yyjson_get_uint (yyjson_obj_get (val, "variantIndex"));
     yyjson_val * data_obj = yyjson_obj_get (val, "data");
     ctx.obj_ = data_obj;
-    auto result = createObjectAtVariantIndex<T> (variant_index);
+    auto result = create_object_at_variant_index<T> (variant_index, ctx);
     std::visit (
       [&] (auto &&ptr) {
         using PtrType = base_type<decltype (ptr)>;
@@ -698,6 +764,28 @@ public:
             throw ZrythmException ("Failed to add field");
           }
       }
+    else if constexpr (QHashType<T>)
+      {
+        yyjson_mut_val * arr = yyjson_mut_obj_add_arr (doc, obj, key);
+        for (auto &v : value.values ())
+          {
+            yyjson_mut_val * child_obj = yyjson_mut_arr_add_obj (doc, arr);
+            serialize_variant_pointer (v, doc, child_obj, ctx);
+          }
+        yyjson_mut_obj_add_val (doc, obj, key, arr);
+      }
+    else if constexpr (SmartPtrToContainer<T>)
+      {
+        if (value)
+          {
+            // Serialize the contained container
+            serialize_field (key, *value, ctx, optional);
+          }
+        else if (!optional)
+          {
+            yyjson_mut_obj_add_null (doc, obj, key);
+          }
+      }
     else if constexpr (OptionalVariantOfSerializablePointers<T>)
       {
         if (value.has_value ())
@@ -718,6 +806,21 @@ public:
             yyjson_mut_obj_add_strncpy (
               doc, obj, key, str.c_str (), str.length ());
           }
+      }
+    else if constexpr (OptionalType<T>)
+      {
+        if (value.has_value ())
+          {
+            serialize_field (key, *value, ctx);
+          }
+        else
+          {
+            yyjson_mut_obj_add_null (doc, obj, key);
+          }
+      }
+    else if constexpr (StrongTypedef<T>)
+      {
+        serialize_field (key, type_safe::get (value), ctx, optional);
       }
     else if constexpr (is_convertible_pointer_v<T, VariantT>)
       {
@@ -749,7 +852,7 @@ public:
       {
         if (value)
           {
-            if constexpr (IsPointer<T>)
+            if constexpr (IsRawPointer<T>)
               {
                 using ObjType = base_type<T>;
                 yyjson_mut_val * child_obj =
@@ -963,6 +1066,24 @@ public:
           }
         yyjson_mut_obj_add_val (doc, obj, key, arr);
       }
+    else if constexpr (is_container_of_optional_serializable_objects_v<T>)
+      {
+        yyjson_mut_val * arr = yyjson_mut_arr (doc);
+        for (const auto &opt : value)
+          {
+            if (opt.has_value ())
+              {
+                yyjson_mut_val * child_obj = yyjson_mut_arr_add_obj (doc, arr);
+                ctx.mut_obj_ = child_obj;
+                opt.value ().serialize (ctx);
+              }
+            else
+              {
+                yyjson_mut_arr_add_null (doc, arr);
+              }
+          }
+        yyjson_mut_obj_add_val (doc, obj, key, arr);
+      }
     else if constexpr (is_container_of_convertible_pointers_v<T, VariantT>)
       {
         yyjson_mut_val * arr = yyjson_mut_arr (doc);
@@ -971,13 +1092,10 @@ public:
             if (ptr)
               {
                 yyjson_mut_val * child_obj = yyjson_mut_arr_add_obj (doc, arr);
-                // ctx.mut_obj_ = child_obj;
                 std::visit (
                   [&] (auto &&casted_ptr) {
-                    // using CastedType = base_type<decltype (casted_ptr)>;
                     VariantT var = casted_ptr;
                     serialize_variant_pointer (var, doc, child_obj, ctx);
-                    // casted_ptr->ISerializable<CastedType>::serialize (ctx);
                   },
                   convert_to_variant<VariantT> (ptr.get ()));
               }
@@ -1060,6 +1178,59 @@ public:
       }
   }
 
+  template <typename T> std::unique_ptr<T> create_object (const Context &ctx)
+  {
+    std::unique_ptr<T> obj;
+    if constexpr (utils::Initializable<T>)
+      {
+        if constexpr (ConstructibleWithDependencyHolder<T>)
+          {
+            obj = T::template create_unique<T> (ctx.dependency_holder_);
+          }
+        else
+          {
+            obj = T::template create_unique<T> ();
+          }
+      }
+    else
+      {
+        if constexpr (ConstructibleWithDependencyHolder<T>)
+          {
+            obj = std::make_unique<T> (ctx.dependency_holder_);
+          }
+        else
+          {
+            obj = std::make_unique<T> ();
+          }
+      }
+    return obj;
+  }
+
+  template <typename Variant>
+  auto create_object_at_variant_index (size_t index, const Context &ctx)
+  {
+    auto creator = [&]<size_t... I> (std::index_sequence<I...>) {
+      using Result = std::variant<typename std::remove_pointer_t<
+        std::variant_alternative_t<I, Variant>> *...>;
+      Result result{};
+
+      auto create_type_if_current_index = [&]<size_t N> () {
+        using Type =
+          std::remove_pointer_t<std::variant_alternative_t<N, Variant>>;
+        if (N == index)
+          {
+            result = Result{ create_object<Type> (ctx).release () };
+          }
+      };
+
+      (create_type_if_current_index.template operator()<I> (), ...);
+
+      return result;
+    };
+
+    return creator (std::make_index_sequence<std::variant_size_v<Variant>>{});
+  }
+
   template <typename T, typename VariantT = void>
   void deserialize_field (
     yyjson_obj_iter &it,
@@ -1091,14 +1262,51 @@ public:
         value.ISerializable<T>::deserialize (ctx);
         return;
       }
+    else if constexpr (QHashType<T>)
+      {
+        if (!yyjson_is_arr (val))
+          {
+            throw ZrythmException (
+              "Expected JSON array for UUID-variant hash table");
+          }
+
+        size_t len = yyjson_arr_size (val);
+        for (const auto i : std::views::iota (len))
+          {
+            yyjson_val * elem = yyjson_arr_get (val, i);
+            auto         child_var =
+              deserialize_variant_pointer<typename T::value_type> (elem, ctx);
+            std::visit (
+              [&] (auto &&child) {
+                value.insert (type_safe::get (child->get_uuid ()), child);
+              },
+              child_var);
+          }
+        return;
+      }
+    else if constexpr (SmartPtrToContainer<T>)
+      {
+        using ContainerType = typename T::element_type;
+
+        if (yyjson_is_null (val))
+          {
+            value.reset ();
+            return;
+          }
+
+        ContainerType temp;
+        deserialize_field (it, key, temp, ctx, optional);
+        value = std::make_unique<ContainerType> (std::move (temp));
+        return;
+      }
     else if constexpr (is_serializable_pointer_v<T>)
       {
         if (yyjson_is_obj (val))
           {
-            if constexpr (IsPointer<T>)
+            if constexpr (IsRawPointer<T>)
               {
                 using ObjType = base_type<T>;
-                value = new ObjType ();
+                value = create_object<ObjType> (ctx).release ();
                 ctx.obj_ = val;
                 value->ISerializable<ObjType>::deserialize (ctx);
               }
@@ -1106,7 +1314,7 @@ public:
               {
                 using ObjType = typename T::element_type;
                 if constexpr (is_unique_ptr_v<T>)
-                  value = std::make_unique<ObjType> ();
+                  value = create_object<ObjType> (ctx);
                 else if constexpr (is_shared_ptr_v<T>)
                   value = std::make_shared<ObjType> ();
                 else
@@ -1119,7 +1327,7 @@ public:
           }
         if (yyjson_is_null (val))
           {
-            if constexpr (IsPointer<T>)
+            if constexpr (IsRawPointer<T>)
               {
                 delete value;
               }
@@ -1155,6 +1363,27 @@ public:
             value = QUuid (QString::fromUtf8 (yyjson_get_str (val)));
             return;
           }
+      }
+    else if constexpr (OptionalType<T>)
+      {
+        if (yyjson_is_null (val))
+          {
+            value = std::nullopt;
+          }
+        else
+          {
+            typename T::value_type temp;
+            deserialize_field (it, key, temp, ctx);
+            value = std::move (temp);
+          }
+        return;
+      }
+    else if constexpr (StrongTypedef<T>)
+      {
+        typename type_safe::underlying_type<T> underlying;
+        deserialize_field (it, key, underlying, ctx, optional);
+        value = T (underlying);
+        return;
       }
     else if constexpr (FloatingPointContainer<T>)
       {
@@ -1411,6 +1640,49 @@ public:
             return;
           }
       }
+    else if constexpr (is_container_of_optional_serializable_objects_v<T>)
+      {
+        if (yyjson_is_arr (val))
+          {
+            if constexpr (!StdArray<T>)
+              {
+                value.clear ();
+              }
+            size_t len = yyjson_arr_size (val);
+            for (size_t i = 0; i < len; ++i)
+              {
+                yyjson_val * elem = yyjson_arr_get (val, i);
+                if (yyjson_is_obj (elem))
+                  {
+                    using OptionalType = typename T::value_type;
+                    using ObjType = typename OptionalType::value_type;
+                    ObjType obj;
+                    ctx.obj_ = elem;
+                    obj.deserialize (ctx);
+                    if constexpr (StdArray<T>)
+                      {
+                        value[i] = std::move (obj);
+                      }
+                    else
+                      {
+                        value.emplace_back (std::move (obj));
+                      }
+                  }
+                else if (yyjson_is_null (elem))
+                  {
+                    if constexpr (StdArray<T>)
+                      {
+                        value[i] = std::nullopt;
+                      }
+                    else
+                      {
+                        value.emplace_back (std::nullopt);
+                      }
+                  }
+              }
+            return;
+          }
+      }
     else if constexpr (is_container_of_convertible_pointers_v<T, VariantT>)
       {
         /* TODO*/
@@ -1506,17 +1778,19 @@ public:
                     if constexpr (std::is_pointer_v<SmartPtrType>)
                       {
                         using ObjType = base_type<SmartPtrType>;
-                        ptr = new ObjType ();
+                        auto unique_ptr = create_object<ObjType> (ctx);
+                        ptr = unique_ptr.release ();
 
                         ptr->ISerializable<ObjType>::deserialize (ctx);
                       }
                     else
                       {
                         using ObjType = typename SmartPtrType::element_type;
+                        auto unique_ptr = create_object<ObjType> (ctx);
                         if constexpr (is_unique_ptr_v<SmartPtrType>)
-                          ptr = std::make_unique<ObjType> ();
+                          ptr = std::move (unique_ptr);
                         else if constexpr (is_shared_ptr_v<SmartPtrType>)
-                          ptr = std::make_shared<ObjType> ();
+                          ptr = std::shared_ptr<ObjType> (unique_ptr.release ());
                         else
                           {
                             static_assert (
@@ -1643,12 +1917,12 @@ protected:
 public: \
   friend class zrythm::utils::serialization::ISerializableBase; \
   void define_base_fields ( \
-    const zrythm::utils::serialization::ISerializableBase::Context &ctx);
+    const zrythm::utils::serialization::ISerializableBase::Context &ctx)
 
 #define DECLARE_DEFINE_FIELDS_METHOD() \
 public: \
   void define_fields ( \
-    const zrythm::utils::serialization::ISerializableBase::Context &ctx);
+    const zrythm::utils::serialization::ISerializableBase::Context &ctx)
 
 }; // namespace zrythm::utils::serialization
 

@@ -23,7 +23,7 @@ class AudioTrack final
       public RecordableTrack,
       public ICloneable<AudioTrack>,
       public zrythm::utils::serialization::ISerializable<AudioTrack>,
-      public InitializableObjectFactory<AudioTrack>
+      public utils::InitializableObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -32,12 +32,32 @@ class AudioTrack final
   DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (AudioTrack)
   DEFINE_CHANNEL_TRACK_QML_PROPERTIES (AudioTrack)
 
-  friend class InitializableObjectFactory<AudioTrack>;
+  friend class InitializableObject;
 
 public:
-  void init_loaded () override;
+  AudioTrack (const DeserializationDependencyHolder &dh)
+      : AudioTrack (
+          dh.get<std::reference_wrapper<TrackRegistry>> ().get (),
+          dh.get<std::reference_wrapper<PluginRegistry>> ().get (),
+          dh.get<std::reference_wrapper<PortRegistry>> ().get (),
+          false)
+  {
+  }
 
-  void init_after_cloning (const AudioTrack &other) override;
+private:
+  AudioTrack (
+    TrackRegistry  &track_registry,
+    PluginRegistry &plugin_registry,
+    PortRegistry   &port_registry,
+    bool            new_identity);
+
+public:
+  void
+  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
+    override;
+
+  void init_after_cloning (const AudioTrack &other, ObjectCloneType clone_type)
+    override;
 
   /**
    * Wrapper for audio tracks to fill in StereoPorts from the timeline data.
@@ -47,8 +67,9 @@ public:
    *
    * @param stereo_ports StereoPorts to fill.
    */
-  void
-  fill_events (const EngineProcessTimeInfo &time_nfo, StereoPorts &stereo_ports);
+  void fill_events (
+    const EngineProcessTimeInfo        &time_nfo,
+    std::pair<AudioPort &, AudioPort &> stereo_ports);
 
   void clear_objects () override;
 
@@ -75,16 +96,9 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  AudioTrack (
-    const std::string &name = "",
-    int                pos = 0,
-    unsigned int       samplerate = 44000);
-
-  bool initialize () override;
+  bool initialize ();
 
   void set_playback_caches () override;
-
-  void update_name_hash (NameHashT new_name_hash) override;
 
 private:
   /** Real-time time stretcher. */

@@ -9,12 +9,15 @@
 #include <memory>
 
 #include "dsp/plugin_identifier.h"
+#include "dsp/port_identifier.h"
 #include "gui/dsp/plugin_descriptor.h"
 
 namespace zrythm::gui::old_dsp::plugins
 {
 class Plugin;
 }
+
+using namespace zrythm;
 
 /**
  * @addtogroup settings
@@ -92,7 +95,9 @@ public:
    */
   void increment_num_instantiations ();
 
-  void init_after_cloning (const PluginSetting &other) override;
+  void
+  init_after_cloning (const PluginSetting &other, ObjectCloneType clone_type)
+    override;
 
 #if 0
   static void free_closure (void * self, GClosure * closure)
@@ -107,19 +112,6 @@ public:
   }
 
   std::string get_name () const { return get_descriptor ()->name_; }
-
-  /**
-   * @brief Creates a plugin instance from this setting.
-   *
-   * @param track_name_hash
-   * @param slot_type
-   * @param slot
-   * @return std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin>
-   */
-  std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin> create_plugin (
-    unsigned int                track_name_hash = 0,
-    zrythm::dsp::PluginSlotType slot_type = zrythm::dsp::PluginSlotType::Insert,
-    int                         slot = 0);
 
   /**
    * Finishes activating a plugin setting.

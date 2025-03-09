@@ -66,7 +66,9 @@ public:
     bool      already_done,
     QObject * parent = nullptr);
 
-  void init_after_cloning (const TransportAction &other) override;
+  void
+  init_after_cloning (const TransportAction &other, ObjectCloneType clone_type)
+    override;
 
   QString to_string () const override;
 

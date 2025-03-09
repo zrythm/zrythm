@@ -15,8 +15,9 @@
 
 #include "utils/format.h"
 
+using namespace zrythm;
+
 class FileDescriptor;
-class TracklistSelections;
 class FoldableTrack;
 class ChannelTrack;
 struct FileImportInfo;
@@ -33,6 +34,21 @@ constexpr int TRACK_DEF_HEIGHT = 52;
 constexpr int TRACK_MAGIC = 21890135;
 #define IS_TRACK(x) (((Track *) x)->magic_ == TRACK_MAGIC)
 #define IS_TRACK_AND_NONNULL(x) (x && IS_TRACK (x))
+
+#define DECLARE_FINAL_TRACK_CONSTRUCTORS(ClassType) \
+public: \
+  ClassType (const DeserializationDependencyHolder &dh) \
+      : ClassType ( \
+          dh.get<std::reference_wrapper<TrackRegistry>> ().get (), \
+          dh.get<std::reference_wrapper<PluginRegistry>> ().get (), \
+          dh.get<std::reference_wrapper<PortRegistry>> ().get (), false) \
+  { \
+  } \
+\
+private: \
+  ClassType ( \
+    TrackRegistry &track_registry, PluginRegistry &plugin_registry, \
+    PortRegistry &port_registry, bool new_identity);
 
 #define DEFINE_TRACK_QML_PROPERTIES(ClassType) \
 public: \
@@ -124,9 +140,13 @@ public: \
   { \
     return is_selected (); \
   } \
-  Q_INVOKABLE void setExclusivelySelected (bool selected) \
+  void setSelected (bool selected) \
   { \
-    select (selected, true, true); \
+    if (selected_ == selected) \
+      return; \
+\
+    selected_ = selected; \
+    Q_EMIT selectedChanged (selected); \
   } \
   Q_SIGNAL void selectedChanged (bool selected); \
 \
@@ -267,14 +287,18 @@ using TracksReadyCallback = void (*) (const FileImportInfo *);
  */
 class Track
     : public dsp::IProcessable,
-      virtual public utils::serialization::ISerializable<Track>,
-      public IPortOwner
+      public utils::serialization::ISerializable<Track>,
+      public IPortOwner,
+      public utils::UuidIdentifiableObject<Track>
 {
   Q_GADGET
   QML_ELEMENT
 
 public:
   using PortType = dsp::PortType;
+  using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
+  using PluginPtrVariant = PluginRegistry::VariantType;
+  using PluginSlot = dsp::PluginSlot;
 
   /**
    * The Track's type.
@@ -350,7 +374,6 @@ public:
   };
   Q_ENUM (Type)
 
-  using NameHashT = unsigned int;
   using Color = zrythm::utils::Color;
   using Position = zrythm::dsp::Position;
 
@@ -380,7 +403,7 @@ public:
       }
   }
 
-  static inline constexpr bool type_has_processor (const Type type)
+  static constexpr bool type_has_processor (const Type type)
   {
     return type != Type::Tempo && type != Type::Marker;
   }
@@ -564,22 +587,16 @@ public:
   ~Track () override = default;
   Q_DISABLE_COPY_MOVE (Track)
 
-  static std::unique_ptr<Track> create_unique_from_type (Type type);
+  [[nodiscard]] static TrackUniquePtrVariant
+  create_unique_from_type (Type type);
 
 protected:
-  Track () = default;
-
   /**
    * Constructor to be used by subclasses.
    *
    * @param pos Position in the Tracklist.
    */
-  Track (
-    Type        type,
-    std::string name,
-    int         pos,
-    PortType    in_signal_type,
-    PortType    out_signal_type);
+  Track (Type type, PortType in_signal_type, PortType out_signal_type);
 
 public:
   /**
@@ -587,12 +604,8 @@ public:
    *
    * @note Each implementor must chain up to its direct superclass.
    */
-  virtual void init_loaded () = 0;
-
-  NameHashT get_name_hash () const
-  {
-    return qHash (QString::fromStdString (name_));
-  }
+  virtual void
+  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry) = 0;
 
   Tracklist * get_tracklist () const;
 
@@ -642,22 +655,103 @@ public:
    * Returns the full visible height (main height + height of all visible
    * automation tracks + height of all visible lanes).
    */
-  double get_full_visible_height () const;
+  template <typename DerivedT>
+  double get_full_visible_height (this DerivedT &&self)
+    requires std::derived_from<base_type<DerivedT>, Track>
+             && FinalClass<base_type<DerivedT>>
+  {
+    double height = self.main_height_;
 
-  bool multiply_heights (double multiplier, bool visible_only, bool check_only);
+    if constexpr (std::derived_from<DerivedT, LanedTrack>)
+      {
+        height += self.get_visible_lane_heights ();
+      }
+    if constexpr (std::derived_from<DerivedT, AutomatableTrack>)
+      {
+        if (self.automation_visible_)
+          {
+            const AutomationTracklist &atl = self.get_automation_tracklist ();
+            for (const auto &at : atl.visible_ats_)
+              {
+                z_warn_if_fail (at->height_ > 0);
+                if (at->visible_)
+                  height += at->height_;
+              }
+          }
+      }
+    return height;
+  }
+
+  template <typename DerivedT>
+  bool multiply_heights (
+    this DerivedT &&self,
+    double          multiplier,
+    bool            visible_only,
+    bool            check_only)
+    requires std::derived_from<base_type<DerivedT>, Track>
+             && FinalClass<base_type<DerivedT>>
+  {
+    if (self.main_height_ * multiplier < TRACK_MIN_HEIGHT)
+      return false;
+
+    if (!check_only)
+      {
+        self.main_height_ *= multiplier;
+      }
+
+    if constexpr (std::derived_from<DerivedT, LanedTrack>)
+      {
+        if (!visible_only || self.lanes_visible_)
+          {
+            for (auto &lane_var : self.lanes_)
+              {
+                using TrackLaneT = DerivedT::TrackLaneType;
+                auto lane = std::get<TrackLaneT *> (lane_var);
+                if (lane->height_ * multiplier < TRACK_MIN_HEIGHT)
+                  {
+                    return false;
+                  }
+
+                if (!check_only)
+                  {
+                    lane->height_ *= multiplier;
+                  }
+              }
+          }
+      }
+    if constexpr (std::derived_from<DerivedT, AutomatableTrack>)
+      {
+        if (!visible_only || self.automation_visible_)
+          {
+            auto &atl = self.get_automation_tracklist ();
+            for (auto &at : atl.ats_)
+              {
+                if (visible_only && !at->visible_)
+                  continue;
+
+                if (at->height_ * multiplier < TRACK_MIN_HEIGHT)
+                  {
+                    return false;
+                  }
+
+                if (!check_only)
+                  {
+                    at->height_ *= multiplier;
+                  }
+              }
+          }
+      }
+
+    return true;
+  }
 
   /** Whether this track is part of the SampleProcessor auditioner tracklist. */
   bool is_auditioner () const;
 
   /**
-   * Returns if Track is in TracklistSelections.
+   * Returns if the track is currently selected in the tracklist.
    */
-  bool is_selected () const;
-
-  /**
-   * Returns whether the track is pinned.
-   */
-  bool is_pinned () const;
+  bool is_selected () const { return selected_; }
 
   bool can_be_group_target () const { return type_can_be_group_target (type_); }
 
@@ -704,14 +798,6 @@ public:
   }
 
   /**
-   * Appends the Track to the selections.
-   *
-   * @param exclusive Select only this track.
-   * @param fire_events Fire events to update the UI.
-   */
-  void select (bool select, bool exclusive, bool fire_events);
-
-  /**
    * @brief Appends all the objects in the track to @p objects.
    *
    * This only appends top-level objects. For example, region children will
@@ -726,7 +812,17 @@ public:
    */
   void unselect_all ();
 
-  bool contains_uninstantiated_plugin () const;
+  template <typename DerivedT>
+  bool contains_uninstantiated_plugin (this DerivedT &&self)
+    requires std::derived_from<base_type<DerivedT>, Track>
+             && FinalClass<base_type<DerivedT>>
+  {
+    std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
+    self.get_plugins (plugins);
+    return std::ranges::any_of (plugins, [] (auto pl) {
+      return pl->instantiation_failed_;
+    });
+  }
 
   std::string get_node_name () const override { return get_name (); }
 
@@ -799,10 +895,8 @@ public:
   /**
    * Returns a unique name for a new track based on the given name.
    */
-  static std::string get_unique_name (
-    const Tracklist   &tracklist,
-    Track *            track_to_skip,
-    const std::string &name);
+  std::string
+  get_unique_name (const Tracklist &tracklist, const std::string &name);
 
   /**
    * Updates the frames/ticks of each position in each child of the track
@@ -833,8 +927,29 @@ public:
   /**
    * Fills in the given array with all plugins in the track.
    */
-  void
-  get_plugins (std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &arr) const;
+  template <typename DerivedT>
+  void get_plugins (
+    this DerivedT                                       &&self,
+    std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &arr)
+    requires std::derived_from<base_type<DerivedT>, Track>
+             && FinalClass<base_type<DerivedT>>
+  {
+    if constexpr (std::derived_from<DerivedT, ChannelTrack>)
+      {
+        self.channel_->get_plugins (arr);
+      }
+
+    if constexpr (std::is_same_v<DerivedT, ModulatorTrack>)
+      {
+        for (const auto &modulator : self.modulators_)
+          {
+            if (modulator)
+              {
+                arr.push_back (modulator.get ());
+              }
+          }
+      }
+  }
 
   /**
    * Activate or deactivate all plugins.
@@ -842,7 +957,34 @@ public:
    * This is useful for exporting: deactivating and reactivating a plugin will
    * reset its state.
    */
-  void activate_all_plugins (bool activate);
+  template <typename DerivedT>
+  void activate_all_plugins (this DerivedT &&self, bool activate)
+    requires std::derived_from<base_type<DerivedT>, Track>
+             && FinalClass<base_type<DerivedT>>
+  {
+    std::vector<zrythm::gui::old_dsp::plugins::Plugin *> pls;
+    self.get_plugins (pls);
+
+    for (auto &pl : pls)
+      {
+        if (!pl->instantiated_ && !pl->instantiation_failed_)
+          {
+            try
+              {
+                pl->instantiate ();
+              }
+            catch (const ZrythmException &e)
+              {
+                e.handle ("Failed to instantiate plugin");
+              }
+          }
+
+        if (pl->instantiated_)
+          {
+            pl->activate (activate);
+          }
+      }
+  }
 
   std::string get_comment () const { return comment_; }
 
@@ -865,14 +1007,6 @@ public:
    * Sets the track icon.
    */
   void set_icon (const std::string &icon_name, bool undoable, bool fire_events);
-
-  /**
-   * Returns the plugin at the given slot, if any.
-   *
-   * @param slot The slot (ignored if instrument is selected.
-   */
-  zrythm::gui::old_dsp::plugins::Plugin *
-  get_plugin_at_slot (zrythm::dsp::PluginSlotType slot_type, int slot) const;
 
   /**
    * Marks the track for bouncing.
@@ -914,45 +1048,94 @@ public:
    *
    * @param instantiate_plugin Whether to attempt to instantiate the plugin.
    */
-  template <typename T = zrythm::gui::old_dsp::plugins::Plugin>
-  T * insert_plugin (
-    std::unique_ptr<T>        &&pl,
-    zrythm::dsp::PluginSlotType slot_type,
-    int                         slot,
-    bool                        instantiate_plugin,
-    bool                        replacing_plugin,
-    bool                        moving_plugin,
-    bool                        confirm,
-    bool                        gen_automatables,
-    bool                        recalc_graph,
-    bool                        fire_events);
+  template <typename DerivedT>
+  PluginPtrVariant insert_plugin (
+    this DerivedT &&self,
+    PluginUuid      plugin_id,
+    dsp::PluginSlot slot,
+    bool            instantiate_plugin,
+    bool            replacing_plugin,
+    bool            moving_plugin,
+    bool            confirm,
+    bool            gen_automatables,
+    bool            recalc_graph,
+    bool            fire_events)
+    requires std::derived_from<base_type<DerivedT>, Track>
+             && FinalClass<base_type<DerivedT>>
+  {
+    if (!slot.validate_slot_type_slot_combo ())
+      {
+        throw std::runtime_error ("Invalid slot type and slot combo");
+      }
+
+    PluginPtrVariant plugin_var{};
+
+    if (slot.is_modulator ())
+      {
+        if constexpr (std::is_same_v<DerivedT, ModulatorTrack>)
+          {
+            plugin_var = self.insert_modulator (
+              slot.get_slot_with_index ().second, plugin_id, replacing_plugin,
+              confirm, gen_automatables, recalc_graph, fire_events);
+          }
+      }
+    else
+      {
+        if constexpr (std::derived_from<DerivedT, ChannelTrack>)
+          {
+            plugin_var = self.get_channel ()->add_plugin (
+              plugin_id, slot, confirm, moving_plugin, gen_automatables,
+              recalc_graph, fire_events);
+          }
+      }
+
+    std::visit (
+      [&] (auto &&plugin) {
+        if (plugin && !plugin->instantiated_ && !plugin->instantiation_failed_)
+          {
+            try
+              {
+                plugin->instantiate ();
+              }
+            catch (const ZrythmException &e)
+              {
+                e.handle ("Failed to instantiate plugin");
+              }
+          }
+      },
+      plugin_var);
+
+    return plugin_var;
+  }
 
   /**
    * Wrapper over channel_remove_plugin() and
    * modulator_track_remove_modulator().
    */
   void remove_plugin (
-    zrythm::dsp::PluginSlotType slot_type,
-    int                         slot,
-    bool                        replacing_plugin,
-    bool                        moving_plugin,
-    bool                        deleting_plugin,
-    bool                        deleting_track,
-    bool                        recalc_graph);
+    dsp::PluginSlot slot,
+    bool            replacing_plugin,
+    bool            moving_plugin,
+    bool            deleting_plugin,
+    bool            deleting_track,
+    bool            recalc_graph);
 
   /**
    * Disconnects the track from the processing chain.
    *
-   * This should be called immediately when the track is getting deleted, and
-   * track_free should be designed to be called later after an arbitrary delay.
+   * This should be called immediately when the track is getting deleted,
+   * and track_free should be designed to be called later after an arbitrary
+   * delay.
    *
-   * @param remove_pl Remove the zrythm::gui::old_dsp::plugins::Plugin from the
-   * Channel. Useful when deleting the channel.
+   * @param remove_pl Remove the zrythm::gui::old_dsp::plugins::Plugin from
+   * the Channel. Useful when deleting the channel.
    * @param recalc_graph Recalculate mixer graph.
    */
   void disconnect (bool remove_pl, bool recalc_graph);
 
   bool is_enabled () const { return enabled_; }
+  bool get_enabled () const { return enabled_; }
+  bool get_disabled () const { return !enabled_; }
 
   void set_enabled (
     bool enabled,
@@ -973,8 +1156,8 @@ public:
    * @brief Creates a new track with the given parameters.
    *
    * @param disable_track_idx Track index to disable, or -1.
-   * @param ready_cb Callback to be called when the tracks are ready (added to
-   * the project).
+   * @param ready_cb Callback to be called when the tracks are ready (added
+   * to the project).
    *
    * @throw ZrythmException on error.
    */
@@ -1043,9 +1226,8 @@ public:
    * @note Only works for non-singleton tracks.
    * @param name
    * @param pos
-   * @return std::unique_ptr<Track>
    */
-  static std::unique_ptr<Track>
+  [[nodiscard]] static TrackUniquePtrVariant
   create_track (Type type, const std::string &name, int pos);
 
   // GMenu * generate_edit_context_menu (int num_selected);
@@ -1071,7 +1253,7 @@ public:
   virtual bool get_soloed () const { return false; }
 
 protected:
-  void copy_members_from (const Track &other);
+  void copy_members_from (const Track &other, ObjectCloneType clone_type);
 
   bool validate_base () const;
 
@@ -1089,17 +1271,6 @@ protected:
     const dsp::Position *  p2,
     std::vector<Region *> &regions,
     Region *               region);
-
-  /**
-   * @brief Called by @ref set_name() when the track is renamed to update the
-   * name hash in internals.
-   *
-   * FIXME: This is a bit messy, some things are changed via here and some via
-   * Track::set_name().
-   *
-   * @param new_name_hash
-   */
-  virtual void update_name_hash (NameHashT new_name_hash) { }
 
 private:
   /**
@@ -1130,9 +1301,6 @@ public:
 
   /** Track name, used in channel too. */
   std::string name_;
-
-  /** Cache calculated when adding to graph. */
-  NameHashT name_hash_ = 0;
 
   /** Icon name of the track. */
   std::string icon_name_;
@@ -1194,7 +1362,15 @@ public:
    *
    * Only relevant for tracks that output audio.
    */
-  bool bounce_ = false;
+  bool bounce_{};
+
+  /**
+   * @brief Whether the track is selected.
+   *
+   * Selection is tracked directly on Track instances to make life easier when
+   * working with QML and to avoid having extra classes to track selection.
+   */
+  bool selected_{};
 
   /**
    * Whether to temporarily route the output to master (e.g., when bouncing
@@ -1215,12 +1391,6 @@ public:
 
   /** Pointer to owner tracklist, if any. */
   Tracklist * tracklist_ = nullptr;
-
-  /** Pointer to owner tracklist selections, if any. */
-  // TracklistSelections * ts_ = nullptr;
-
-  /** Used in Gtk. */
-  WrappedObjectWithChangeSignal * gobj_ = nullptr;
 };
 
 #if 0
@@ -1258,32 +1428,10 @@ concept TrackSubclass = std::derived_from<T, Track>;
 template <typename TrackT>
 concept FinalTrackSubclass = TrackSubclass<TrackT> && FinalClass<TrackT>;
 
-class RecordableTrack;
+using TrackRegistry = utils::OwningObjectRegistry<TrackPtrVariant, Track>;
+using TrackRegistryRef = std::reference_wrapper<TrackRegistry>;
 
-extern template zrythm::gui::old_dsp::plugins::Plugin *
-Track::insert_plugin (
-  std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin> &&pl,
-  zrythm::dsp::PluginSlotType                              slot_type,
-  int                                                      slot,
-  bool                                                     instantiate_plugin,
-  bool                                                     replacing_plugin,
-  bool                                                     moving_plugin,
-  bool                                                     confirm,
-  bool                                                     gen_automatables,
-  bool                                                     recalc_graph,
-  bool                                                     fire_events);
-extern template zrythm::gui::old_dsp::plugins::CarlaNativePlugin *
-Track::insert_plugin (
-  std::unique_ptr<zrythm::gui::old_dsp::plugins::CarlaNativePlugin> &&pl,
-  zrythm::dsp::PluginSlotType                                         slot_type,
-  int                                                                 slot,
-  bool instantiate_plugin,
-  bool replacing_plugin,
-  bool moving_plugin,
-  bool confirm,
-  bool gen_automatables,
-  bool recalc_graph,
-  bool fire_events);
+class RecordableTrack;
 
 extern template MidiRegion *
 Track::add_region (

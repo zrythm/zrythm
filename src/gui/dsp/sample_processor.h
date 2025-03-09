@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_SAMPLE_PROCESSOR_H__
-#define __AUDIO_SAMPLE_PROCESSOR_H__
+#ifndef DSP_SAMPLE_PROCESSOR_H
+#define DSP_SAMPLE_PROCESSOR_H
 
 #include "dsp/graph.h"
 #include "dsp/position.h"
@@ -51,7 +51,9 @@ public:
 
   bool is_in_active_project () const;
 
-  void init_after_cloning (const SampleProcessor &other) override;
+  void
+  init_after_cloning (const SampleProcessor &other, ObjectCloneType clone_type)
+    override;
 
   void init_loaded (AudioEngine * engine);
 

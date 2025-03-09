@@ -25,14 +25,21 @@
  * @{
  */
 
-/**
- * @brief Enum to specify cloning type.
- */
-enum class CloneType
+using namespace zrythm;
+
+enum class ObjectCloneType
 {
-  Unique,
-  Shared,
-  Both
+  /**
+   * Creates a snapshot of the object with the same identity.
+   */
+  Snapshot,
+
+  /**
+   * Creates a separately identified object.
+   *
+   * To be used only when duplicating objects as part of a user action.
+   */
+  NewIdentity,
 };
 
 #define DEFINE_ICLONEABLE_QML_PROPERTIES(ClassType) \
@@ -42,7 +49,7 @@ public: \
   /* ================================================================ */ \
   Q_INVOKABLE ClassType * clone##ClassType () const \
   { \
-    return clone_raw_ptr (); \
+    return clone_raw_ptr (ObjectCloneType::NewIdentity); \
   }
 
 /**
@@ -53,7 +60,7 @@ public: \
  *
  * @note Throws ZrythmException if cloning fails.
  */
-template <typename Derived, CloneType Type = CloneType::Both> class ICloneable
+template <typename Derived> class ICloneable
 {
 public:
   virtual ~ICloneable () = default;
@@ -66,77 +73,82 @@ public:
     return static_cast<const Derived *> (this);
   }
 
-  std::unique_ptr<Derived> clone_unique () const
-    requires (Type == CloneType::Unique || Type == CloneType::Both)
+  template <typename... Args>
+  std::unique_ptr<Derived> clone_unique (
+    ObjectCloneType clone_type = ObjectCloneType::Snapshot,
+    Args &&... args) const
   {
     std::unique_ptr<Derived> cloned;
-    if constexpr (FactoryCreatable<Derived>)
+    if constexpr (utils::Initializable<Derived>)
       {
-        cloned = *cloned->create_unique ();
+        auto result = Derived::template create_unique<Derived> (
+          std::forward<Args> (args)...);
+        if (!result)
+          return nullptr;
+        cloned = std::move (result);
       }
     else
       {
-        cloned = std::make_unique<Derived> ();
+        cloned = std::make_unique<Derived> (std::forward<Args> (args)...);
       }
-    cloned->init_after_cloning (*get_derived ());
+    cloned->init_after_cloning (*get_derived (), clone_type);
     return cloned;
   }
 
-  std::shared_ptr<Derived> clone_shared () const
-    requires (Type == CloneType::Shared || Type == CloneType::Both)
+  template <typename... Args>
+  std::shared_ptr<Derived> clone_shared (
+    ObjectCloneType clone_type = ObjectCloneType::Snapshot,
+    Args &&... args) const
   {
     std::shared_ptr<Derived> cloned;
-    if constexpr (FactoryCreatable<Derived>)
+    if constexpr (utils::Initializable<Derived>)
       {
-        cloned = *cloned->create_shared ();
+        auto result = Derived::template create_shared<Derived> (
+          std::forward<Args> (args)...);
+        if (!result)
+          return nullptr;
+        cloned = std::move (result);
       }
     else
       {
-        cloned = std::make_shared<Derived> ();
+        cloned = std::make_shared<Derived> (std::forward<Args> (args)...);
       }
-    cloned->init_after_cloning (*get_derived ());
+    cloned->init_after_cloning (*get_derived (), clone_type);
     return cloned;
   }
 
-  Derived * clone_raw_ptr () const
-    requires (Type == CloneType::Unique || Type == CloneType::Both)
+  template <typename... Args>
+  Derived * clone_raw_ptr (
+    ObjectCloneType clone_type = ObjectCloneType::Snapshot,
+    Args &&... args) const
   {
-    Derived * cloned = nullptr;
-    if constexpr (FactoryCreatable<Derived>)
+    auto unique_ptr = clone_unique (clone_type, std::forward<Args> (args)...);
+    return unique_ptr.release ();
+  }
+
+  template <typename... Args>
+  Derived * clone_qobject (
+    QObject *       parent,
+    ObjectCloneType clone_type = ObjectCloneType::Snapshot,
+    Args &&... args) const
+  {
+    auto * cloned = clone_raw_ptr (clone_type, std::forward<Args> (args)...);
+    if (cloned)
       {
-        cloned = (*cloned->create_unique ()).release ();
+        cloned->setParent (parent);
       }
-    else
-      {
-        cloned = new Derived ();
-      }
-    cloned->init_after_cloning (*get_derived ());
     return cloned;
   }
 
-  Derived * clone_qobject (QObject * parent) const
-    requires (Type == CloneType::Unique || Type == CloneType::Both)
+  template <typename Registry, typename... Args>
+  auto
+  clone_and_register (this auto &&self, Registry &registry, Args &&... args)
   {
-    Derived * cloned = clone_raw_ptr ();
-    cloned->setParent (parent);
-    return cloned;
+    auto new_obj = self.clone_raw_ptr (
+      ObjectCloneType::NewIdentity, std::forward<Args> (args)...);
+    registry.register_object (new_obj);
+    return new_obj;
   }
-
-#if 0
-  template <typename T>
-  std::unique_ptr<T> clone_unique_as () const
-    requires (Type == CloneType::Unique || Type == CloneType::Both)
-  {
-    return std::unique_ptr<T> (dynamic_cast<T *> (clone_unique ().release ()));
-  }
-
-  template <typename T>
-  std::shared_ptr<T> clone_shared_as () const
-    requires (Type == CloneType::Shared || Type == CloneType::Both)
-  {
-    return std::dynamic_pointer_cast<T> (clone_shared ());
-  }
-#endif
 
 protected:
   ICloneable () = default;
@@ -149,18 +161,10 @@ private:
    *
    * @throw ZrythmException If the object could not be cloned.
    */
-  virtual void init_after_cloning (const Derived &other) = 0;
+  virtual void init_after_cloning (
+    const Derived  &other,
+    ObjectCloneType clone_type = ObjectCloneType::Snapshot) = 0;
 };
-
-template <typename T>
-concept CloneableUnique =
-  std::is_base_of_v<ICloneable<T, CloneType::Unique>, T>
-  || std::is_base_of_v<ICloneable<T, CloneType::Both>, T>;
-
-template <typename T>
-concept CloneableShared =
-  std::is_base_of_v<ICloneable<T, CloneType::Shared>, T>
-  || std::is_base_of_v<ICloneable<T, CloneType::Both>, T>;
 
 /**
  * @brief Concept that checks if a type is cloneable (i.e., inherits from
@@ -169,8 +173,8 @@ concept CloneableShared =
  */
 template <typename T>
 concept Cloneable =
-  (CloneableUnique<T> || CloneableShared<T>)
-  && std::is_final_v<T> && std::default_initializable<T>;
+  std::derived_from<T, ICloneable<T>> && std::is_final_v<T>
+  && std::default_initializable<T>;
 
 /** Concept to check if a type inherits from a base class */
 template <typename T, typename Base>
@@ -196,21 +200,24 @@ concept AllInheritFromBase = requires {
 template <typename Variant, typename Base>
   requires AllInheritFromBase<Variant, Base>
 auto
-clone_unique_with_variant (const Base * base_ptr) -> std::unique_ptr<Base>
+clone_unique_with_variant (
+  const Base *    base_ptr,
+  ObjectCloneType clone_type = ObjectCloneType::Snapshot)
+  -> std::unique_ptr<Base>
 {
   using VariantPtr = to_pointer_variant<Variant>;
   auto variant_ptr = convert_to_variant<VariantPtr> (base_ptr);
 
   return std::visit (
-    [] (auto * ptr) -> std::unique_ptr<Base> {
+    [clone_type] (auto * ptr) -> std::unique_ptr<Base> {
       using T = base_type<decltype (ptr)>;
       if constexpr (!std::is_same_v<T, std::nullptr_t>)
         {
           if (ptr)
             {
-              if constexpr (std::is_base_of_v<Base, T> && CloneableUnique<T>)
+              if constexpr (std::is_base_of_v<Base, T>)
                 {
-                  return std::unique_ptr<Base> (ptr->clone_unique ());
+                  return std::unique_ptr<Base> (ptr->clone_unique (clone_type));
                 }
             }
         }
@@ -222,21 +229,24 @@ clone_unique_with_variant (const Base * base_ptr) -> std::unique_ptr<Base>
 template <typename Variant, typename Base>
   requires AllInheritFromBase<Variant, Base>
 auto
-clone_shared_with_variant (const Base * base_ptr) -> std::shared_ptr<Base>
+clone_shared_with_variant (
+  const Base *    base_ptr,
+  ObjectCloneType clone_type = ObjectCloneType::Snapshot)
+  -> std::shared_ptr<Base>
 {
   using VariantPtr = to_pointer_variant<Variant>;
   auto variant_ptr = convert_to_variant<VariantPtr> (base_ptr);
 
   return std::visit (
-    [] (auto * ptr) -> std::shared_ptr<Base> {
+    [clone_type] (auto * ptr) -> std::shared_ptr<Base> {
       using T = base_type<decltype (ptr)>;
       if constexpr (!std::is_same_v<T, std::nullptr_t>)
         {
           if (ptr)
             {
-              if constexpr (std::is_base_of_v<Base, T> && CloneableShared<T>)
+              if constexpr (std::is_base_of_v<Base, T>)
                 {
-                  return std::shared_ptr<Base> (ptr->clone_shared ());
+                  return std::shared_ptr<Base> (ptr->clone_shared (clone_type));
                 }
             }
         }
@@ -257,7 +267,8 @@ template <typename T, std::size_t N>
 void
 clone_unique_ptr_array (
   std::array<std::unique_ptr<T>, N>       &dest,
-  const std::array<std::unique_ptr<T>, N> &src)
+  const std::array<std::unique_ptr<T>, N> &src,
+  ObjectCloneType clone_type = ObjectCloneType::Snapshot)
 {
   for (size_t i = 0; i < N; ++i)
     {
@@ -265,7 +276,8 @@ clone_unique_ptr_array (
         {
           if constexpr (Cloneable<T>)
             {
-              dest[i] = src[i]->clone_unique ();
+              dest[i] =
+                src[i]->clone_unique (clone_type = ObjectCloneType::Snapshot);
             }
           else
             {
@@ -289,7 +301,10 @@ clone_unique_ptr_array (
  */
 template <typename T, template <typename...> class Ptr>
 void
-clone_ptr_vector (std::vector<Ptr<T>> &dest, const std::vector<Ptr<T>> &src)
+clone_ptr_vector (
+  std::vector<Ptr<T>>       &dest,
+  const std::vector<Ptr<T>> &src,
+  ObjectCloneType            clone_type = ObjectCloneType::Snapshot)
 {
   dest.clear ();
   dest.reserve (src.size ());
@@ -302,11 +317,13 @@ clone_ptr_vector (std::vector<Ptr<T>> &dest, const std::vector<Ptr<T>> &src)
             {
               if constexpr (std::is_same_v<Ptr<T>, std::unique_ptr<T>>)
                 {
-                  dest.push_back (ptr->clone_unique ());
+                  dest.push_back (
+                    ptr->clone_unique (clone_type = ObjectCloneType::Snapshot));
                 }
               else if constexpr (std::is_same_v<Ptr<T>, std::shared_ptr<T>>)
                 {
-                  dest.push_back (ptr->clone_shared ());
+                  dest.push_back (
+                    ptr->clone_shared (clone_type = ObjectCloneType::Snapshot));
                 }
             }
           else
@@ -337,22 +354,28 @@ clone_ptr_vector (std::vector<Ptr<T>> &dest, const std::vector<Ptr<T>> &src)
  */
 template <typename Container>
 void
-clone_unique_ptr_container (Container &dest, const Container &src)
+clone_unique_ptr_container (
+  Container       &dest,
+  const Container &src,
+  ObjectCloneType  clone_type = ObjectCloneType::Snapshot)
 {
   if constexpr (StdArray<Container>)
     {
-      clone_unique_ptr_array (dest, src);
+      clone_unique_ptr_array (dest, src, clone_type = ObjectCloneType::Snapshot);
     }
   else
     {
-      clone_ptr_vector (dest, src);
+      clone_ptr_vector (dest, src, clone_type = ObjectCloneType::Snapshot);
     }
 }
 
 template <typename Container, typename Variant, typename Base>
   requires AllInheritFromBase<Variant, Base>
 void
-clone_variant_container (Container &dest, const Container &src)
+clone_variant_container (
+  Container       &dest,
+  const Container &src,
+  ObjectCloneType  clone_type = ObjectCloneType::Snapshot)
 {
   if constexpr (StdArray<Container>)
     {
@@ -360,7 +383,8 @@ clone_variant_container (Container &dest, const Container &src)
         {
           if (src[i])
             {
-              dest[i] = clone_unique_with_variant<Variant, Base> (src[i].get ());
+              dest[i] = clone_unique_with_variant<Variant, Base> (
+                src[i].get (), clone_type = ObjectCloneType::Snapshot);
             }
           else
             {
@@ -377,8 +401,8 @@ clone_variant_container (Container &dest, const Container &src)
         {
           if (ptr)
             {
-              dest.push_back (
-                clone_unique_with_variant<Variant, Base> (ptr.get ()));
+              dest.push_back (clone_unique_with_variant<Variant, Base> (
+                ptr.get (), clone_type = ObjectCloneType::Snapshot));
             }
           else
             {
@@ -396,7 +420,10 @@ clone_variant_container (Container &dest, const Container &src)
 template <typename Variant, typename Container>
   requires AllInheritFromBase<Variant, typename Container::value_type::element_type>
 void
-clone_variant_container (Container &dest, const Container &src)
+clone_variant_container (
+  Container       &dest,
+  const Container &src,
+  ObjectCloneType  clone_type = ObjectCloneType::Snapshot)
 {
   using Base = typename Container::value_type::element_type;
 
@@ -407,7 +434,8 @@ clone_variant_container (Container &dest, const Container &src)
         {
           if (src[i])
             {
-              dest[i] = clone_unique_with_variant<Variant, Base> (src[i].get ());
+              dest[i] = clone_unique_with_variant<Variant, Base> (
+                src[i].get (), clone_type = ObjectCloneType::Snapshot);
             }
           else
             {
@@ -425,12 +453,104 @@ clone_variant_container (Container &dest, const Container &src)
         {
           if (ptr)
             {
-              dest.push_back (
-                clone_unique_with_variant<Variant, Base> (ptr.get ()));
+              dest.push_back (clone_unique_with_variant<Variant, Base> (
+                ptr.get (), clone_type = ObjectCloneType::Snapshot));
             }
           else
             {
               dest.push_back (nullptr);
+            }
+        }
+    }
+}
+
+/**
+ * Clones a single object and registers it in the registry
+ *
+ * @tparam Registry Registry type (must be OwningObjectRegistry)
+ * @param uuid UUID of object to clone
+ * @param registry Registry to look up and register objects
+ * @returns UUID of the newly cloned and registered object
+ */
+template <typename Registry>
+auto
+clone_and_register_object (
+  const typename Registry::UuidType &uuid,
+  Registry                          &registry) -> typename Registry::UuidType
+{
+  auto obj_var = registry.find_by_id_or_throw (uuid);
+  return std::visit (
+    [&] (auto &&obj) {
+      auto new_obj = obj->clone_raw_ptr ();
+      registry.register_object (*new_obj);
+      return new_obj->get_uuid ();
+    },
+    obj_var);
+}
+
+/**
+ * Clones objects from a container of UUIDs using a registry.
+ *
+ * @tparam Container Container type holding UUIDs (std::vector or std::array)
+ * @tparam Registry Registry type (must be OwningObjectRegistry)
+ * @tparam DestContainer Destination container type for UUIDs
+ */
+template <typename Container, typename Registry, typename DestContainer>
+void
+clone_from_registry (
+  DestContainer   &dest_uuids,
+  const Container &src_uuids,
+  Registry        &registry)
+{
+  if constexpr (StdArray<Container>)
+    {
+      // For std::array, we need to process each element in place
+      for (size_t i = 0; i < src_uuids.size (); i++)
+        {
+          if constexpr (OptionalType<typename Container::value_type>)
+            {
+              // Handle std::optional UUIDs
+              if (src_uuids[i].has_value ())
+                {
+                  dest_uuids[i] =
+                    clone_and_register_object (src_uuids[i].value (), registry);
+                }
+              else
+                {
+                  dest_uuids[i] = std::nullopt;
+                }
+            }
+          else
+            {
+              // Handle regular UUIDs
+              dest_uuids[i] = clone_and_register_object (src_uuids[i], registry);
+            }
+        }
+    }
+  else
+    {
+      // For dynamic containers like std::vector
+      dest_uuids.clear ();
+      dest_uuids.reserve (src_uuids.size ());
+
+      for (const auto &uuid_entry : src_uuids)
+        {
+          if constexpr (OptionalType<typename Container::value_type>)
+            {
+              if (uuid_entry.has_value ())
+                {
+                  dest_uuids.emplace_back (
+                    clone_and_register_object (uuid_entry.value (), registry));
+                }
+              else
+                {
+                  dest_uuids.emplace_back (std::nullopt);
+                }
+            }
+          else
+            {
+              dest_uuids.emplace_back (
+                clone_and_register_object (uuid_entry, registry));
             }
         }
     }

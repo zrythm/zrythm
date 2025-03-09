@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
+
+#include "dsp/position.h"
 #include "gui/backend/backend/midi_selections.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
-
-#include "dsp/position.h"
 
 MidiSelections::MidiSelections (QObject * parent)
     : QObject (parent), ArrangerSelections (Type::Midi)
@@ -39,23 +40,24 @@ MidiSelections::get_lowest_note ()
 void
 MidiSelections::sort_by_indices (bool desc)
 {
-  std::sort (
-    objects_.begin (), objects_.end (), [desc] (const auto &a, const auto &b) {
-      bool ret = false;
-      ret = std::get<MidiNote *> (a)->index_ < std::get<MidiNote *> (b)->index_;
-      return desc ? !ret : ret;
-    });
+  std::ranges::sort (objects_, [desc] (const auto &a, const auto &b) {
+    bool ret = false;
+    ret = std::get<MidiNote *> (a)->index_ < std::get<MidiNote *> (b)->index_;
+    return desc ? !ret : ret;
+  });
 }
 
 void
 MidiSelections::unlisten_note_diff (const MidiSelections &prev)
 {
   // Check for notes in prev that are not in objects_ and stop listening to them
-  for (const auto &prev_mn : prev.objects_ | type_is<MidiNote> ())
+  for (
+    const auto &prev_mn :
+    ArrangerObjectSpan{ prev.objects_ }
+      | std::views::filter (ArrangerObjectSpan::is_type_projection<MidiNote>)
+      | std::views::transform (ArrangerObjectSpan::type_transformation<MidiNote>))
     {
-      if (
-        std::none_of (
-          objects_.begin (), objects_.end (), [&prev_mn] (const auto &obj) {
+      if (std::ranges::none_of (objects_, [&prev_mn] (const auto &obj) {
             auto mn = std::get<MidiNote *> (obj);
             return *mn == *prev_mn;
           }))
@@ -82,10 +84,9 @@ MidiSelections::can_be_pasted_at_impl (const Position pos, const int idx) const
 void
 MidiSelections::sort_by_pitch (bool desc)
 {
-  std::sort (
-    objects_.begin (), objects_.end (), [desc] (const auto &a, const auto &b) {
-      bool ret = false;
-      ret = std::get<MidiNote *> (a)->val_ < std::get<MidiNote *> (b)->val_;
-      return desc ? !ret : ret;
-    });
+  std::ranges::sort (objects_, [desc] (const auto &a, const auto &b) {
+    bool ret = false;
+    ret = std::get<MidiNote *> (a)->val_ < std::get<MidiNote *> (b)->val_;
+    return desc ? !ret : ret;
+  });
 }

@@ -24,13 +24,14 @@ Marker::init_loaded ()
 }
 
 void
-Marker::init_after_cloning (const Marker &other)
+Marker::init_after_cloning (const Marker &other, ObjectCloneType clone_type)
+
 {
   marker_type_ = other.marker_type_;
   marker_track_index_ = other.marker_track_index_;
-  NameableObject::copy_members_from (other);
-  TimelineObject::copy_members_from (other);
-  ArrangerObject::copy_members_from (other);
+  NameableObject::copy_members_from (other, clone_type);
+  TimelineObject::copy_members_from (other, clone_type);
+  ArrangerObject::copy_members_from (other, clone_type);
 }
 
 Marker *

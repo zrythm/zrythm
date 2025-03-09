@@ -88,7 +88,8 @@ public:
    */
   void clear_stacks ();
 
-  void init_after_cloning (const UndoManager &other) override;
+  void init_after_cloning (const UndoManager &other, ObjectCloneType clone_type)
+    override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

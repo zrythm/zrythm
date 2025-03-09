@@ -105,7 +105,7 @@ rtmidi_device_get_id_from_name (bool is_input, std::string name)
       std::unique_ptr<RtMidiDevice> dev;
       try
         {
-          dev = std::make_unique<RtMidiDevice> (true, 0, nullptr, nullptr);
+          dev = std::make_unique<RtMidiDevice> (true, 0, nullptr);
         }
       catch (ZrythmException &e)
         {

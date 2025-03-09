@@ -291,8 +291,8 @@ MixerSelectionsAction::define_fields (const Context &ctx)
   using T = ISerializable<MixerSelectionsAction>;
   T::serialize_fields (
     ctx, T::make_field ("type", mixer_selections_action_type_),
-    T::make_field ("slotType", slot_type_), T::make_field ("toSlot", to_slot_),
-    T::make_field ("toTrackNameHash", to_track_name_hash_),
+     T::make_field ("toSlot", to_slot_),
+    T::make_field ("toTrackNameHash", to_track_uuid_),
     T::make_field ("newChannel", new_channel_),
     T::make_field ("numPlugins", num_plugins_),
     T::make_field ("newVal", new_val_),
@@ -329,7 +329,7 @@ TracklistSelectionsAction::define_fields (const Context &ctx)
     T::make_field ("tracklistSelectionsAfter", tls_after_, true),
     T::make_field (
       "foldableTracklistSelectionsBefore", foldable_tls_before_, true),
-    T::make_field ("outTracks", out_track_hashes_, true),
+    T::make_field ("outTracks", out_track_uuids_, true),
     T::make_field ("srcSends", src_sends_, true),
     T::make_field ("iValBefore", ival_before_, true),
     T::make_field ("iValAfter", ival_after_, true),

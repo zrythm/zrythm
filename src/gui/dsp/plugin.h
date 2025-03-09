@@ -14,6 +14,7 @@
 #include "gui/backend/backend/settings/plugin_settings.h"
 #include "gui/dsp/plugin_descriptor.h"
 #include "gui/dsp/port.h"
+#include "gui/dsp/port_span.h"
 #include "utils/types.h"
 
 namespace zrythm::gui
@@ -23,14 +24,13 @@ class Channel;
 
 class Project;
 class AutomationTrack;
-using ModulatorWidget = struct _ModulatorWidget;
+// using ModulatorWidget = struct _ModulatorWidget;
 class MidiPort;
 class AudioPort;
 class CVPort;
 class ControlPort;
-class MixerSelections;
 class AutomatableTrack;
-using WrappedObjectWithChangeSignal = struct _WrappedObjectWithChangeSignal;
+// using WrappedObjectWithChangeSignal = struct _WrappedObjectWithChangeSignal;
 
 namespace zrythm::gui::old_dsp::plugins
 {
@@ -56,12 +56,15 @@ constexpr auto PLUGIN_MAGIC = 43198683;
 class Plugin
     : public utils::serialization::ISerializable<Plugin>,
       public dsp::IProcessable,
-      public IPortOwner
+      public IPortOwner,
+      public utils::UuidIdentifiableObject<Plugin>
 {
 public:
   using PluginIdentifier = dsp::PluginIdentifier;
   using PortIdentifier = dsp::PortIdentifier;
+  using PluginSlot = dsp::PluginSlot;
   using PluginSlotType = dsp::PluginSlotType;
+  using PluginSlotNo = PluginSlot::SlotNo;
   using Channel = gui::Channel;
 
   /**
@@ -81,7 +84,7 @@ public:
     int bank_idx_ = 0;
 
     /** Plugin identifier. */
-    PluginIdentifier plugin_id_;
+    PluginUuid plugin_id_;
   };
 
   /**
@@ -153,11 +156,10 @@ public:
   /**
    * @brief Factory method to create a plugin based on the setting.
    */
-  static std::unique_ptr<Plugin> create_with_setting (
+  static Plugin * create_with_setting (
     const PluginSetting &setting,
-    unsigned int         track_name_hash,
-    PluginSlotType       slot_type,
-    int                  slot);
+    TrackUuid            track_id,
+    PluginSlot           slot);
 
   PluginDescriptor      &get_descriptor () { return *setting_->descr_; }
   std::string            get_name () const { return setting_->descr_->name_; }
@@ -165,6 +167,19 @@ public:
   {
     return setting_->descr_->protocol_;
   }
+
+  static Plugin * from_variant (const auto &variant)
+  {
+    return std::visit ([&] (auto &&pl) -> Plugin * { return pl; }, variant);
+  }
+
+  static auto name_projection (const auto &var)
+  {
+    return std::visit ([&] (auto &&val) { return val->get_name (); }, var);
+  }
+
+  PortRegistrySpan get_input_port_span () const;
+  PortRegistrySpan get_output_port_span () const;
 
   /**
    * @brief Initializes a plugin after deserialization.
@@ -176,7 +191,7 @@ public:
    *
    * @throw ZrythmException If an error occured during initialization.
    */
-  void init_loaded (AutomatableTrack * track, MixerSelections * ms);
+  void init_loaded (AutomatableTrack * track);
 
   bool is_in_active_project () const override;
 
@@ -186,8 +201,10 @@ public:
   void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
     const override;
 
-  void
-  on_control_change_event (const dsp::PortIdentifier &id, float val) override;
+  void on_control_change_event (
+    const dsp::PortIdentifier::PortUuid &port_uuid,
+    const dsp::PortIdentifier           &id,
+    float                                val) override;
 
   bool should_bounce_to_master (utils::audio::BounceStep step) const override;
 
@@ -207,7 +224,7 @@ public:
   /**
    * Gets the enable/disable port for this plugin.
    */
-  Port * get_enabled_port ();
+  ControlPort * get_enabled_port ();
 
   /**
    * Verifies that the plugin identifiers are valid.
@@ -258,18 +275,26 @@ public:
    */
   void move (
     AutomatableTrack * track,
-    PluginSlotType     slot_type,
-    int                slot,
+    PluginSlot         slot,
     bool               confirm_overwrite,
     bool               fire_events);
 
   /**
    * Sets the channel and slot on the plugin and its ports.
    */
-  void set_track_and_slot (
-    unsigned int   track_name_hash,
-    PluginSlotType slot_type,
-    int            slot);
+  void set_track_and_slot (TrackUuid track_id, PluginSlot slot);
+
+  auto get_slot () const { return id_.slot_; }
+  auto get_slot_type () const
+  {
+    const auto slot = id_.slot_;
+    if (slot.has_slot_index ())
+      {
+        return slot.get_slot_with_index ().first;
+      }
+
+    return slot.get_slot_type_only ();
+  }
 
   /**
    * @brief Moves the Plugin's automation from one Channel to another.
@@ -277,8 +302,7 @@ public:
   void move_automation (
     AutomatableTrack &prev_track,
     AutomatableTrack &track,
-    PluginSlotType    new_slot_type,
-    int               new_slot);
+    PluginSlot        new_slot);
 
   /**
    * @brief Appends this plugin's ports to the given vector.
@@ -300,7 +324,7 @@ public:
    *
    * @note Only works on LV2 plugins.
    */
-  template <typename T = Port> T * get_port_by_symbol (const std::string &sym);
+  std::optional<PortPtrVariant> get_port_by_symbol (const std::string &sym);
 
   /**
    * @brief Copies the state directory from the given source plugin to this
@@ -322,8 +346,8 @@ public:
   /**
    * Returns the state dir as an absolute path.
    *
-   * @param create_if_not_exists Whether to create the state dir if it does not
-   * exist. If this is false, the function below is called internally.
+   * @param create_if_not_exists Whether to create the state dir if it does
+   * not exist. If this is false, the function below is called internally.
    * FIXME refactor this into cleaner API.
    */
   std::string get_abs_state_dir (bool is_backup, bool create_if_not_exists);
@@ -335,7 +359,7 @@ public:
   std::string get_abs_state_dir (bool is_backup) const
   {
     return get_abs_state_dir (state_dir_, is_backup);
-  }
+    }
 
   /**
    * @brief Constructs the absolute path to the plugin state dir based on the
@@ -356,22 +380,13 @@ public:
    */
   void ensure_state_dir (bool is_backup);
 
-  /**
-   * Returns all plugins in the current project.
-   */
-  static void
-  get_all (Project &prj, std::vector<Plugin *> &arr, bool check_undo_manager);
-
   Channel * get_channel () const;
 
   AutomatableTrack * get_track () const;
 
-  static Plugin * find (const PluginIdentifier &id);
-
   /**
-   * To be called when changes to the plugin
-   * identifier were made, so we can update all
-   * children recursively.
+   * To be called when changes to the plugin identifier were made, so we can
+   * update all children recursively.
    */
   void update_identifier ();
 
@@ -408,7 +423,7 @@ public:
   /**
    * Sets the track name hash on the plugin.
    */
-  void set_track_name_hash (unsigned int track_name_hash);
+  void change_track (TrackUuid track_id);
 
   /**
    * Process plugin.
@@ -424,11 +439,11 @@ public:
    */
   void open_ui ();
 
-  /**
-   * Returns if Plugin exists in MixerSelections.
-   */
-  bool is_selected () const;
+  bool is_selected () const { return selected_; }
 
+  void set_selected (bool selected) { selected_ = selected; }
+
+#if 0
   /**
    * Selects the plugin in the MixerSelections.
    *
@@ -437,6 +452,7 @@ public:
    * to the selections.
    */
   void select (bool select, bool exclusive);
+#endif
 
   /**
    * Returns whether the plugin is enabled.
@@ -453,12 +469,7 @@ public:
    *
    * This is called when the plugin is bypassed.
    */
-  ATTR_HOT void process_passthrough (const EngineProcessTimeInfo time_nfo);
-
-  /**
-   * Returns the event ports in the plugin.
-   */
-  void get_event_ports (std::vector<Port *> &ports, bool input);
+  ATTR_HOT void process_passthrough (EngineProcessTimeInfo time_nfo);
 
   /**
    * Process hide ui
@@ -539,12 +550,12 @@ protected:
   /**
    * Adds an in port to the plugin's list and returns a reference to it.
    */
-  Port * add_in_port (std::unique_ptr<Port> &&port);
+  void add_in_port (const PortUuid &port_id);
 
   /**
    * Adds an out port to the plugin's list and returns a reference to it.
    */
-  Port * add_out_port (std::unique_ptr<Port> &&port);
+  void add_out_port (const PortUuid &port_id);
 
   /** Adds a bank to the plugin's list and returns a reference to it. */
   Bank *
@@ -565,7 +576,8 @@ protected:
 private:
   void set_stereo_outs_and_midi_in ();
   void set_enabled_and_gain ();
-  void init (unsigned int track_name_hash, PluginSlotType slot_type, int slot);
+  void init (TrackUuid track_id, PluginSlot slot);
+  void set_as_port_owner_with_index (PortUuid port_id, size_t index);
 
   virtual void populate_banks () = 0;
 
@@ -607,7 +619,7 @@ private:
 
   virtual void activate_impl (bool activate = true) = 0;
 
-  virtual void process_impl (const EngineProcessTimeInfo time_info) = 0;
+  virtual void process_impl (EngineProcessTimeInfo time_info) = 0;
 
   /**
    * @brief Deactivates, cleans up and frees underlying plugin resources.
@@ -628,15 +640,19 @@ protected:
    * @throw ZrythmException If the plugin could not be created.
    */
   Plugin (
+    PortRegistry        &port_registry,
     const PluginSetting &setting,
-    unsigned int         track_name_hash,
-    PluginSlotType       slot_type,
-    int                  slot);
+    TrackUuid            track_id,
+    PluginSlot           slot);
 
   /**
    * Create a dummy plugin for tests.
    */
-  Plugin (ZPluginCategory cat, unsigned int track_name_hash, int slot);
+  Plugin (
+    PortRegistry   &port_registry,
+    ZPluginCategory cat,
+    TrackUuid       track_id,
+    PluginSlot      slot);
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
@@ -647,7 +663,7 @@ public:
   std::unique_ptr<PluginSetting> setting_;
 
   /** Ports coming in as input. */
-  std::vector<std::unique_ptr<Port>> in_ports_;
+  std::vector<PortUuid> in_ports_;
 
   /* Caches - avoid shared_ptr due to performance cost */
   std::vector<ControlPort *> ctrl_in_ports_;
@@ -659,7 +675,7 @@ public:
   MidiPort * midi_in_port_ = nullptr;
 
   /** Outgoing ports. */
-  std::vector<std::unique_ptr<Port>> out_ports_;
+  std::vector<PortUuid> out_ports_;
 
   /**
    * Control for plugin enabled, for convenience.
@@ -702,7 +718,7 @@ public:
   // nframes_t latency_ = 0;
 
   /** Whether the plugin is currently instantiated or not. */
-  bool instantiated_ = false;
+  bool instantiated_{};
 
   /** Set to true if instantiation failed and the plugin will be treated as
    * disabled. */
@@ -744,8 +760,10 @@ public:
 
   int magic_ = PLUGIN_MAGIC;
 
-  /** Modulator widget, if modulator. */
-  ModulatorWidget * modulator_widget_ = nullptr;
+  /**
+   * Whether selected in the slot owner (mixer for example).
+   */
+  bool selected_{};
 
   /**
    * ID of GSource (if > 0).
@@ -770,11 +788,7 @@ public:
   /** Pointer to owner track, if any. */
   AutomatableTrack * track_ = nullptr;
 
-  /** Pointer to owner selections, if any. */
-  MixerSelections * ms_ = nullptr;
-
-  /** Used in Gtk. */
-  WrappedObjectWithChangeSignal * gobj_ = nullptr;
+  std::optional<std::reference_wrapper<PortRegistry>> port_registry_;
 };
 
 inline bool
@@ -787,18 +801,10 @@ class CarlaNativePlugin;
 
 using PluginVariant = std::variant<CarlaNativePlugin>;
 using PluginPtrVariant = to_pointer_variant<PluginVariant>;
+using PluginUniquePtrVariant = to_unique_ptr_variant<PluginVariant>;
+using PluginRegistry = utils::OwningObjectRegistry<PluginPtrVariant, Plugin>;
+using PluginRegistryRef = std::reference_wrapper<PluginRegistry>;
 
-extern template Port *
-Plugin::get_port_by_symbol (const std::string &);
-extern template ControlPort *
-Plugin::get_port_by_symbol (const std::string &);
-extern template AudioPort *
-Plugin::get_port_by_symbol (const std::string &);
-extern template CVPort *
-Plugin::get_port_by_symbol (const std::string &);
-extern template MidiPort *
-Plugin::get_port_by_symbol (const std::string &);
-
-}
+} // namespace zrythm::gui::old_dsp::plugins
 
 #endif

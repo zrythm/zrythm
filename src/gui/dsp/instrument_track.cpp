@@ -4,16 +4,23 @@
 #include "zrythm-config.h"
 
 #include "gui/backend/backend/project.h"
+#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/instrument_track.h"
 #include "gui/dsp/region.h"
 #include "gui/dsp/track.h"
-
-#include "dsp/position.h"
 #include "utils/rt_thread_id.h"
 
-InstrumentTrack::InstrumentTrack (const std::string &name, int pos)
-    : Track (Track::Type::Instrument, name, pos, PortType::Event, PortType::Audio)
+InstrumentTrack::InstrumentTrack (
+  TrackRegistry  &track_registry,
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry,
+  bool            new_identity)
+    : Track (Track::Type::Instrument, PortType::Event, PortType::Audio),
+      AutomatableTrack (port_registry, new_identity),
+      ProcessableTrack (port_registry, new_identity),
+      ChannelTrack (track_registry, plugin_registry, port_registry, new_identity),
+      RecordableTrack (port_registry, new_identity)
 {
   color_ = Color (QColor ("#FF9616"));
   icon_name_ = "instrument";
@@ -25,6 +32,10 @@ InstrumentTrack::initialize ()
 {
   init_channel ();
   generate_automation_tracks ();
+  init_recordable_track ([] () {
+    return ZRYTHM_HAVE_UI
+           && zrythm::gui::SettingsManager::get_instance ()->get_trackAutoArm ();
+  });
 
   return true;
 }
@@ -37,20 +48,20 @@ InstrumentTrack::validate () const
          && GroupTargetTrack::validate_base ();
 }
 
-zrythm::gui::old_dsp::plugins::Plugin *
+InstrumentTrack::Plugin *
 InstrumentTrack::get_instrument ()
 {
-  auto &plugin = channel_->instrument_;
+  auto plugin = channel_->get_instrument ();
   z_return_val_if_fail (plugin, nullptr);
-  return plugin.get ();
+  return Plugin::from_variant (*plugin);
 }
 
-const zrythm::gui::old_dsp::plugins::Plugin *
+const InstrumentTrack::Plugin *
 InstrumentTrack::get_instrument () const
 {
-  auto &plugin = channel_->instrument_;
+  auto plugin = channel_->get_instrument ();
   z_return_val_if_fail (plugin, nullptr);
-  return plugin.get ();
+  return Plugin::from_variant (*plugin);
 }
 
 bool
@@ -81,26 +92,30 @@ InstrumentTrack::append_ports (std::vector<Port *> &ports, bool include_plugins)
 }
 
 void
-InstrumentTrack::init_after_cloning (const InstrumentTrack &other)
+InstrumentTrack::init_after_cloning (
+  const InstrumentTrack &other,
+  ObjectCloneType        clone_type)
 {
-  Track::copy_members_from (other);
-  AutomatableTrack::copy_members_from (other);
-  ProcessableTrack::copy_members_from (other);
-  ChannelTrack::copy_members_from (other);
-  GroupTargetTrack::copy_members_from (other);
-  RecordableTrack::copy_members_from (other);
-  LanedTrackImpl<MidiLane>::copy_members_from (other);
-  PianoRollTrack::copy_members_from (other);
+  Track::copy_members_from (other, clone_type);
+  AutomatableTrack::copy_members_from (other, clone_type);
+  ProcessableTrack::copy_members_from (other, clone_type);
+  ChannelTrack::copy_members_from (other, clone_type);
+  GroupTargetTrack::copy_members_from (other, clone_type);
+  RecordableTrack::copy_members_from (other, clone_type);
+  LanedTrackImpl<MidiLane>::copy_members_from (other, clone_type);
+  PianoRollTrack::copy_members_from (other, clone_type);
 }
 
 void
-InstrumentTrack::init_loaded ()
+InstrumentTrack::init_loaded (
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry)
 {
   // ChannelTrack must be initialized before AutomatableTrack
-  ChannelTrack::init_loaded ();
-  AutomatableTrack::init_loaded ();
-  ProcessableTrack::init_loaded ();
-  RecordableTrack::init_loaded ();
-  LanedTrackImpl<MidiLane>::init_loaded ();
-  PianoRollTrack::init_loaded ();
+  ChannelTrack::init_loaded (plugin_registry, port_registry);
+  AutomatableTrack::init_loaded (plugin_registry, port_registry);
+  ProcessableTrack::init_loaded (plugin_registry, port_registry);
+  RecordableTrack::init_loaded (plugin_registry, port_registry);
+  LanedTrackImpl<MidiLane>::init_loaded (plugin_registry, port_registry);
+  PianoRollTrack::init_loaded (plugin_registry, port_registry);
 }

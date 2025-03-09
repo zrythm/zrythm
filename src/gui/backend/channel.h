@@ -11,6 +11,8 @@
 #include "gui/dsp/ext_port.h"
 #include "gui/dsp/fader.h"
 #include "gui/dsp/plugin.h"
+#include "gui/dsp/plugin_span.h"
+#include "gui/dsp/track.h"
 #include "utils/icloneable.h"
 
 class AutomationTrack;
@@ -18,16 +20,14 @@ class ChannelTrack;
 class GroupTargetTrack;
 class ExtPort;
 
+class Track;
+
 namespace zrythm::gui
 {
 
-/** Magic number to identify channels. */
-static constexpr int CHANNEL_MAGIC = 8431676;
-
 static constexpr float MAX_FADER_AMP = 1.42f;
 
-#define IS_CHANNEL(x) (((Channel *) x)->magic_ == CHANNEL_MAGIC)
-#define IS_CHANNEL_AND_NONNULL(x) (x && IS_CHANNEL (x))
+struct PluginImportData;
 
 /**
  * @brief Represents a channel strip on the mixer.
@@ -36,8 +36,8 @@ static constexpr float MAX_FADER_AMP = 1.42f;
  * including its plugins, fader, sends, and other properties. It provides
  * methods for managing the channel's state and processing the audio signal.
  *
- * Channels are owned by Tracks and handle the output part of the signal chain,
- * while TrackProcessor handles the input part.
+ * Channels are owned by Tracks and handle the output part of the signal
+ * chain, while TrackProcessor handles the input part.
  *
  * @see Track
  */
@@ -51,26 +51,81 @@ class Channel final
   QML_ELEMENT
   Q_PROPERTY (Fader * fader READ getFader CONSTANT)
   Q_PROPERTY (Fader * preFader READ getPreFader CONSTANT)
-  Q_PROPERTY (StereoPorts * stereoOut READ getStereoOut CONSTANT)
+  Q_PROPERTY (AudioPort * leftAudioOut READ getLeftAudioOut CONSTANT)
+  Q_PROPERTY (AudioPort * rightAudioOut READ getRightAudioOut CONSTANT)
   Q_PROPERTY (MidiPort * midiOut READ getMidiOut CONSTANT)
 
 public:
   static constexpr auto STRIP_SIZE = zrythm::dsp::STRIP_SIZE;
   using PortType = zrythm::dsp::PortType;
   using PortIdentifier = dsp::PortIdentifier;
+  using TrackUuid = utils::UuidIdentifiableObject<Track>::Uuid;
+  using Plugin = gui::old_dsp::plugins::Plugin;
+  using PluginPtrVariant = gui::old_dsp::plugins::PluginPtrVariant;
+
+  // FIXME: leftover from C port, fix/refactor how import works in channel.cpp
+  friend struct PluginImportData;
 
 public:
-  Channel (QObject * parent = nullptr);
-  explicit Channel (ChannelTrack &track);
+  Channel (const DeserializationDependencyHolder &dh);
 
+  /**
+   * @brief Main constructor used by the others.
+   *
+   * @param track_registry
+   * @param plugin_registry
+   * @param port_registry
+   * @param track_id Must be passed when creating a new Channel identity
+   * instance.
+   */
+  explicit Channel (
+    TrackRegistry            &track_registry,
+    PluginRegistry           &plugin_registry,
+    PortRegistry             &port_registry,
+    OptionalRef<ChannelTrack> track);
+
+  /**
+   * To be used when deserializing or cloning an existing identity.
+   */
+  explicit Channel (
+    TrackRegistry  &track_registry,
+    PluginRegistry &plugin_registry,
+    PortRegistry   &port_registry)
+      : Channel (track_registry, plugin_registry, port_registry, {})
+  {
+  }
+
+private:
+  auto &get_track_registry () { return track_registry_; }
+  auto &get_track_registry () const { return track_registry_; }
+  auto &get_plugin_registry () { return plugin_registry_; }
+  auto &get_plugin_registry () const { return plugin_registry_; }
+  auto &get_port_registry () { return port_registry_; }
+  auto &get_port_registry () const { return port_registry_; }
+
+public:
   // ============================================================================
   // QML Interface
   // ============================================================================
 
   Fader *       getFader () const { return fader_; }
   Fader *       getPreFader () const { return prefader_; }
-  StereoPorts * getStereoOut () const { return stereo_out_; }
-  MidiPort *    getMidiOut () const { return midi_out_; }
+  AudioPort *   getLeftAudioOut () const
+  {
+    return stereo_out_left_id_.has_value ()
+             ? std::addressof (get_stereo_out_ports ().first)
+             : nullptr;
+  }
+  AudioPort * getRightAudioOut () const
+  {
+    return stereo_out_left_id_.has_value ()
+             ? std::addressof (get_stereo_out_ports ().second)
+             : nullptr;
+  }
+  MidiPort * getMidiOut () const
+  {
+    return midi_out_id_.has_value () ? std::addressof (get_midi_out_port ()) : nullptr;
+  }
 
   // ============================================================================
 
@@ -90,6 +145,20 @@ public:
 
   bool should_bounce_to_master (utils::audio::BounceStep step) const override;
 
+  MidiPort &get_midi_out_port () const
+  {
+    return *std::get<MidiPort *> (
+      get_port_registry ().find_by_id_or_throw (midi_out_id_.value ()));
+  }
+  std::pair<AudioPort &, AudioPort &> get_stereo_out_ports () const
+  {
+    auto * l = std::get<AudioPort *> (
+      get_port_registry ().find_by_id_or_throw (stereo_out_left_id_.value ()));
+    auto * r = std::get<AudioPort *> (
+      get_port_registry ().find_by_id_or_throw (stereo_out_right_id_.value ()));
+    return { *l, *r };
+  }
+
   /**
    * Sets fader to 0.0.
    */
@@ -107,10 +176,9 @@ public:
    */
   void handle_plugin_import (
     const zrythm::gui::old_dsp::plugins::Plugin *           pl,
-    const MixerSelections *                                 sel,
+    std::optional<PluginSpanVariant>                        plugins,
     const zrythm::gui::old_dsp::plugins::PluginDescriptor * descr,
-    int                                                     slot,
-    zrythm::dsp::PluginSlotType                             slot_type,
+    dsp::PluginSlot                                         slot,
     bool                                                    copy,
     bool                                                    ask_if_overwrite);
 
@@ -146,17 +214,16 @@ public:
    *
    * @throw ZrythmException on error.
    */
-  zrythm::gui::old_dsp::plugins::Plugin * add_plugin (
-    std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin> &&plugin,
-    zrythm::dsp::PluginSlotType                              slot_type,
-    int                                                      slot,
-    bool                                                     confirm,
-    bool                                                     moving_plugin,
-    bool                                                     gen_automatables,
-    bool                                                     recalc_graph,
-    bool                                                     pub_events);
+  PluginPtrVariant add_plugin (
+    PluginUuid      plugin_id,
+    dsp::PluginSlot slot,
+    bool            confirm,
+    bool            moving_plugin,
+    bool            gen_automatables,
+    bool            recalc_graph,
+    bool            pub_events);
 
-  ChannelTrack * get_track () const { return track_; }
+  ChannelTrack &get_track () const { return *track_; }
 
   GroupTargetTrack * get_output_track () const;
 
@@ -169,7 +236,8 @@ public:
    * Convenience function to get the automation track of the given type for
    * the channel.
    */
-  AutomationTrack * get_automation_track (PortIdentifier::Flags port_flags);
+  AutomationTrack *
+  get_automation_track (PortIdentifier::Flags port_flags) const;
 
   /**
    * Removes a plugin at the given slot from the channel.
@@ -185,22 +253,19 @@ public:
    *
    * @return The plugin that was removed (in case we want to move it).
    */
-  std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin> remove_plugin (
-    zrythm::dsp::PluginSlotType slot_type,
-    int                         slot,
-    bool                        moving_plugin,
-    bool                        deleting_plugin,
-    bool                        deleting_channel,
-    bool                        recalc_graph);
+  PluginUuid remove_plugin (
+    dsp::PluginSlot slot,
+    bool            moving_plugin,
+    bool            deleting_plugin,
+    bool            deleting_channel,
+    bool            recalc_graph);
 
   /**
-   * Updates the track name hash in the channel and all related ports and
-   * identifiers.
+   * @brief Returns all existing plugins in the channel.
+   *
+   * @param pls Vector to add plugins to.
    */
-  void
-  update_track_name_hash (unsigned int old_name_hash, unsigned int new_name_hash);
-
-  void get_plugins (std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &pls);
+  void get_plugins (std::vector<Plugin *> &pls);
 
   /**
    * Gets whether mono compatibility is enabled.
@@ -222,20 +287,28 @@ public:
    */
   void set_swap_phase (bool enabled, bool fire_events);
 
-  zrythm::gui::old_dsp::plugins::Plugin *
-  get_plugin_at_slot (int slot, zrythm::dsp::PluginSlotType slot_type) const;
+  std::optional<PluginPtrVariant>
+  get_plugin_at_slot (dsp::PluginSlot slot) const;
+
+  std::optional<PluginPtrVariant> get_plugin_from_id (PluginUuid id) const;
+
+  std::optional<PluginPtrVariant> get_instrument () const
+  {
+    return get_plugin_from_id (instrument_.value ());
+  }
 
   /**
    * Selects/deselects all plugins in the given slot type.
    */
-  void select_all (zrythm::dsp::PluginSlotType type, bool select);
+  void select_all (dsp::PluginSlotType type, bool select);
 
   /**
    * Sets caches for processing.
    */
   void set_caches ();
 
-  void init_after_cloning (const Channel &other) override;
+  void
+  init_after_cloning (const Channel &other, ObjectCloneType clone_type) override;
 
   /**
    * Disconnects the channel from the processing chain.
@@ -250,7 +323,7 @@ public:
    */
   void disconnect (bool remove_pl);
 
-  void init_loaded (ChannelTrack &track);
+  void init_loaded ();
 
   /**
    * Handles the recording logic inside the process cycle.
@@ -302,6 +375,13 @@ public:
    * the constructor.
    */
   void set_track_ptr (ChannelTrack &track);
+
+  bool has_output () const { return output_track_uuid_.has_value (); }
+
+  Fader &get_post_fader () const { return *fader_; }
+  Fader &get_pre_fader () const { return *prefader_; }
+
+  auto &get_sends () const { return sends_; }
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -370,11 +450,18 @@ private:
    *
    * @param loading 1 if loading a channel, 0 if new.
    */
-  void init_stereo_out_ports (bool loading);
+  // void init_stereo_out_ports (bool loading);
 
   void disconnect_plugin_from_strip (
-    int                                    pos,
+    dsp::PluginSlot                        slot,
     zrythm::gui::old_dsp::plugins::Plugin &pl);
+
+  /**
+   * Disconnects all hardware inputs from the port.
+   */
+  void disconnect_port_hardware_inputs (Port &port);
+
+  // void disconnect_port_hardware_inputs (StereoPorts &ports);
 
 public:
   /**
@@ -382,15 +469,13 @@ public:
    *
    * This is processed before the instrument/inserts.
    */
-  std::array<std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin>, STRIP_SIZE>
-    midi_fx_;
+  std::array<std::optional<dsp::PortIdentifier::PluginUuid>, STRIP_SIZE> midi_fx_;
 
   /** The channel insert strip. */
-  std::array<std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin>, STRIP_SIZE>
-    inserts_;
+  std::array<std::optional<dsp::PortIdentifier::PluginUuid>, STRIP_SIZE> inserts_;
 
   /** The instrument plugin, if instrument track. */
-  std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin> instrument_;
+  std::optional<dsp::PortIdentifier::PluginUuid> instrument_;
 
   /**
    * The sends strip.
@@ -468,34 +553,37 @@ public:
    * MIDI output for sending MIDI signals to other destinations, such as
    * other channels when directly routed (eg MIDI track to ins track).
    */
-  MidiPort * midi_out_ = nullptr;
+  std::optional<PortUuid> midi_out_id_;
 
   /*
    * Ports for direct (track-to-track) routing with the exception of
    * master, which will route the output to monitor in.
    */
-  StereoPorts * stereo_out_ = nullptr;
+  std::optional<PortUuid> stereo_out_left_id_;
+  std::optional<PortUuid> stereo_out_right_id_;
 
   /**
    * Whether or not output_pos corresponds to a Track or not.
    *
    * If not, the channel is routed to the engine.
    */
-  bool has_output_ = false;
+  // bool has_output_ = false;
 
   /** Output track. */
-  unsigned int output_name_hash_ = 0;
+  std::optional<TrackUuid> output_track_uuid_;
 
   /** Track associated with this channel. */
-  int track_pos_ = 0;
+  std::optional<TrackUuid> track_uuid_;
 
   /** Channel widget width - reserved for future use. */
   int width_ = 0;
 
-  int magic_ = CHANNEL_MAGIC;
-
   /** Owner track. */
-  ChannelTrack * track_ = nullptr;
+  ChannelTrack * track_;
+
+  TrackRegistry  &track_registry_;
+  PortRegistry   &port_registry_;
+  PluginRegistry &plugin_registry_;
 };
 
 }; // namespace zrythm::gui

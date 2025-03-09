@@ -32,10 +32,7 @@ ApplicationWindow {
     }
 
     ColumnLayout {
-        anchors.top: headerBar.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
+        anchors.fill: parent
         spacing: 0
 
         SplitView {

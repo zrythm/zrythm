@@ -78,7 +78,7 @@ _test_copy_plugins (
   auto track = TRACKLIST->get_last_track ();
   ASSERT_EQ (
     P_MASTER_TRACK->children_[num_master_children - 1], track->get_name_hash ());
-  track = TRACKLIST->get_track (5);
+  track = TRACKLIST->get_track_at_index (5);
   ASSERT_EQ (P_MASTER_TRACK->children_[0], track->get_name_hash ());
 
   /* save and reload the project */
@@ -88,7 +88,7 @@ _test_copy_plugins (
   track = TRACKLIST->get_last_track ();
   ASSERT_EQ (
     P_MASTER_TRACK->children_[num_master_children - 1], track->get_name_hash ());
-  track = TRACKLIST->get_track (5);
+  track = TRACKLIST->get_track_at_index (5);
   ASSERT_EQ (P_MASTER_TRACK->children_[0], track->get_name_hash ());
 
   /* select track */
@@ -103,9 +103,9 @@ _test_copy_plugins (
   track = TRACKLIST->get_last_track ();
   ASSERT_EQ (
     P_MASTER_TRACK->children_[num_master_children - 1], track->get_name_hash ());
-  track = TRACKLIST->get_track (5);
+  track = TRACKLIST->get_track_at_index (5);
   ASSERT_EQ (P_MASTER_TRACK->children_[0], track->get_name_hash ());
-  track = TRACKLIST->get_track (6);
+  track = TRACKLIST->get_track_at_index (6);
   ASSERT_EQ (P_MASTER_TRACK->children_[1], track->get_name_hash ());
   auto new_track = TRACKLIST->get_last_track ();
 
@@ -375,7 +375,7 @@ _test_port_and_plugin_track_pos_after_move (
     *TRACKLIST_SELECTIONS->gen_tracklist_selections (), *PORT_CONNECTIONS_MGR,
     TRACKLIST->get_num_tracks ()));
 
-  auto dest_track = TRACKLIST->get_track (dest_track_pos);
+  auto dest_track = TRACKLIST->get_track_at_index (dest_track_pos);
 
   ASSERT_TRUE (src_track->validate ());
   ASSERT_TRUE (dest_track->validate ());
@@ -836,10 +836,7 @@ TEST_F (ZrythmFixture, MovePluginAfterDuplicatingTrack)
   AudioPort * sidechain_port = nullptr;
   for (auto port : lsp->in_ports_ | type_is<AudioPort> ())
     {
-      if (
-        ENUM_BITSET_TEST (
-          PortIdentifier::Flags, port->id_.flags_,
-          PortIdentifier::Flags::Sidechain))
+      if (ENUM_BITSET_TEST (port->id_.flags_, PortIdentifier::Flags::Sidechain))
         {
           sidechain_port = port;
           break;
@@ -1009,10 +1006,7 @@ _test_replace_instrument (
   PortIdentifier sidechain_port_id = PortIdentifier ();
   for (auto port : lsp->in_ports_ | type_is<AudioPort> ())
     {
-      if (
-        ENUM_BITSET_TEST (
-          PortIdentifier::Flags, port->id_.flags_,
-          PortIdentifier::Flags::Sidechain))
+      if (ENUM_BITSET_TEST (port->id_.flags_, PortIdentifier::Flags::Sidechain))
         {
           sidechain_port = port;
           sidechain_port_id = port->id_;

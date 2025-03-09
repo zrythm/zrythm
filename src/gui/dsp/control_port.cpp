@@ -28,9 +28,11 @@ ControlPort::ControlPort (std::string label)
 }
 
 void
-ControlPort::init_after_cloning (const ControlPort &other)
+ControlPort::init_after_cloning (
+  const ControlPort &other,
+  ObjectCloneType    clone_type)
 {
-  Port::copy_members_from (other);
+  Port::copy_members_from (other, clone_type);
   control_ = other.control_;
   base_value_ = other.base_value_;
   deff_ = other.deff_;
@@ -91,7 +93,7 @@ ControlPort::set_control_value (
 
       if (owner_)
         {
-          owner_->on_control_change_event (*id_, control_);
+          owner_->on_control_change_event (get_uuid (), *id_, control_);
         }
     } /* endif port value changed */
 
@@ -99,7 +101,7 @@ ControlPort::set_control_value (
     {
       if (owner_)
         {
-          owner_->on_control_change_event (*id_, control_);
+          owner_->on_control_change_event (get_uuid (), *id_, control_);
         }
     }
 }
@@ -119,13 +121,11 @@ float
 ControlPort::get_snapped_val_from_val (float val) const
 {
   const auto flags = id_->flags_;
-  if (ENUM_BITSET_TEST (
-        PortIdentifier::Flags, flags, PortIdentifier::Flags::Toggle))
+  if (ENUM_BITSET_TEST (flags, PortIdentifier::Flags::Toggle))
     {
       return is_val_toggled (val) ? 1.f : 0.f;
     }
-  if (ENUM_BITSET_TEST (
-        PortIdentifier::Flags, flags, PortIdentifier::Flags::Integer))
+  if (ENUM_BITSET_TEST (flags, PortIdentifier::Flags::Integer))
     {
       return (float) get_int_from_val (val);
     }
@@ -136,13 +136,9 @@ ControlPort::get_snapped_val_from_val (float val) const
 float
 ControlPort::normalized_val_to_real (float normalized_val) const
 {
-  if (
-    ENUM_BITSET_TEST (
-      PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::PluginControl))
+  if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::PluginControl))
     {
-      if (
-        ENUM_BITSET_TEST (
-          PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::Logarithmic))
+      if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::Logarithmic))
         {
           auto minf =
             utils::math::floats_equal (range_.minf_, 0.f) ? 1e-20f : range_.minf_;
@@ -156,8 +152,7 @@ ControlPort::normalized_val_to_real (float normalized_val) const
           /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
           return minf * std::pow (maxf / minf, normalized_val);
         }
-      if (ENUM_BITSET_TEST (
-            PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::Toggle))
+      if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::Toggle))
         {
           return normalized_val >= 0.001f ? 1.f : 0.f;
         }
@@ -166,15 +161,11 @@ ControlPort::normalized_val_to_real (float normalized_val) const
           return range_.minf_ + normalized_val * (range_.maxf_ - range_.minf_);
         }
     }
-  else if (
-    ENUM_BITSET_TEST (
-      PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::Toggle))
+  else if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::Toggle))
     {
       return normalized_val > 0.0001f;
     }
-  else if (
-    ENUM_BITSET_TEST (
-      PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::ChannelFader))
+  else if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::ChannelFader))
     {
       return utils::math::get_amp_val_from_fader (normalized_val);
     }
@@ -188,13 +179,9 @@ ControlPort::normalized_val_to_real (float normalized_val) const
 float
 ControlPort::real_val_to_normalized (float real_val) const
 {
-  if (
-    ENUM_BITSET_TEST (
-      PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::PluginControl))
+  if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::PluginControl))
     {
-      if (
-        ENUM_BITSET_TEST (
-          PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::Logarithmic))
+      if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::Logarithmic))
         {
           const auto minf =
             utils::math::floats_equal (range_.minf_, 0.f) ? 1e-20f : range_.minf_;
@@ -206,8 +193,7 @@ ControlPort::real_val_to_normalized (float real_val) const
           /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
           return std::log (real_val / minf) / std::log (maxf / minf);
         }
-      if (ENUM_BITSET_TEST (
-            PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::Toggle))
+      if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::Toggle))
         {
           return real_val;
         }
@@ -215,14 +201,11 @@ ControlPort::real_val_to_normalized (float real_val) const
       const auto sizef = range_.maxf_ - range_.minf_;
       return (sizef - (range_.maxf_ - real_val)) / sizef;
     }
-  if (ENUM_BITSET_TEST (
-        PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::Toggle))
+  if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::Toggle))
     {
       return real_val;
     }
-  if (
-    ENUM_BITSET_TEST (
-      PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::ChannelFader))
+  if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::ChannelFader))
     {
       return utils::math::get_fader_val_from_amp (real_val);
     }
@@ -234,9 +217,7 @@ ControlPort::real_val_to_normalized (float real_val) const
 void
 ControlPort::set_val_from_normalized (float val, bool automating)
 {
-  if (
-    ENUM_BITSET_TEST (
-      PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::PluginControl))
+  if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::PluginControl))
     {
       auto real_val = normalized_val_to_real (val);
       if (!utils::math::floats_equal (control_, real_val))
@@ -247,9 +228,7 @@ ControlPort::set_val_from_normalized (float val, bool automating)
       automating_ = automating;
       base_value_ = real_val;
     }
-  else if (
-    ENUM_BITSET_TEST (
-      PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::Toggle))
+  else if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::Toggle))
     {
       auto real_val = normalized_val_to_real (val);
       if (!utils::math::floats_equal (control_, real_val))
@@ -257,30 +236,23 @@ ControlPort::set_val_from_normalized (float val, bool automating)
           // EVENTS_PUSH (EventType::ET_AUTOMATION_VALUE_CHANGED, this);
           control_ = is_val_toggled (real_val) ? 1.f : 0.f;
         }
-      if (
-        ENUM_BITSET_TEST (
-          PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::FaderMute))
+      if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::FaderMute))
         {
           set_control_value (is_toggled () ? 1.f : 0.f, false, true);
         }
     }
-  else if (
-    ENUM_BITSET_TEST (
-      PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::ChannelFader))
+  else if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::ChannelFader))
     {
       set_control_value (
         utils::math::get_amp_val_from_fader (val), false, false);
     }
-  else if (
-    ENUM_BITSET_TEST (
-      PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::StereoBalance))
+  else if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::StereoBalance))
     {
       auto real_val = normalized_val_to_real (val);
       set_control_value (real_val, false, false);
     }
   else if (
-    ENUM_BITSET_TEST (
-      PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::MidiAutomatable))
+    ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::MidiAutomatable))
     {
       auto real_val = range_.minf_ + val * (range_.maxf_ - range_.minf_);
       if (!utils::math::floats_equal (val, control_))
@@ -289,9 +261,7 @@ ControlPort::set_val_from_normalized (float val, bool automating)
         }
       set_control_value (real_val, false, false);
     }
-  else if (
-    ENUM_BITSET_TEST (
-      PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::Automatable))
+  else if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::Automatable))
     {
       auto real_val = normalized_val_to_real (val);
       if (!utils::math::floats_equal (real_val, control_))
@@ -300,9 +270,7 @@ ControlPort::set_val_from_normalized (float val, bool automating)
         }
       set_control_value (real_val, false, false);
     }
-  else if (
-    ENUM_BITSET_TEST (
-      PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::Amplitude))
+  else if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::Amplitude))
     {
       auto real_val = normalized_val_to_real (val);
       set_control_value (real_val, false, false);
@@ -320,13 +288,10 @@ ControlPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
 
   if (
     !is_input()
-    || (owner_type == PortIdentifier::OwnerType::Fader && (ENUM_BITSET_TEST (PortIdentifier::Flags2, id_->flags2_, PortIdentifier::Flags2::MonitorFader) || ENUM_BITSET_TEST (PortIdentifier::Flags2, id_->flags2_, PortIdentifier::Flags2::Prefader)))
-    || ENUM_BITSET_TEST (
-      PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::TpMono)
-    || ENUM_BITSET_TEST (
-      PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::TpInputGain)
-    || !(ENUM_BITSET_TEST (
-      PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::Automatable)))
+    || (owner_type == PortIdentifier::OwnerType::Fader && (ENUM_BITSET_TEST ( id_->flags2_, PortIdentifier::Flags2::MonitorFader) || ENUM_BITSET_TEST ( id_->flags2_, PortIdentifier::Flags2::Prefader)))
+    || ENUM_BITSET_TEST ( id_->flags_, PortIdentifier::Flags::TpMono)
+    || ENUM_BITSET_TEST ( id_->flags_, PortIdentifier::Flags::TpInputGain)
+    || !(ENUM_BITSET_TEST ( id_->flags_, PortIdentifier::Flags::Automatable)))
     {
       return;
     }
@@ -400,7 +365,7 @@ ControlPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
             range_.minf_, range_.maxf_);
           if (owner_)
             {
-              owner_->on_control_change_event (*id_, control_);
+              owner_->on_control_change_event (get_uuid (), *id_, control_);
             }
         }
     }

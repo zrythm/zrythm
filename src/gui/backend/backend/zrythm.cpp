@@ -114,7 +114,7 @@ Zrythm::get_version_with_capabilities (char * buf, bool include_system_info)
 
 #if HAVE_JACK2
     "    +jack2\n"
-#elif defined(HAVE_JACK)
+#elifdef HAVE_JACK
     "    +jack1\n"
 #endif
 

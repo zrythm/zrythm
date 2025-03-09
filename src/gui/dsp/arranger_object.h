@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "gui/backend/position_proxy.h"
+#include "gui/dsp/arranger_object_fwd.h"
+#include "gui/dsp/track_fwd.h"
 
 #include <QtGlobal>
 
@@ -26,6 +28,7 @@ class ScaleObject;
 class AutomationPoint;
 class Velocity;
 class Marker;
+class Track;
 
 /**
  * @addtogroup dsp
@@ -53,35 +56,6 @@ template <typename T>
 concept ArrangerObjectSubclass = std::derived_from<T, ArrangerObject>;
 
 class LengthableObject;
-class MidiNote;
-class MidiRegion;
-class AudioRegion;
-class AutomationRegion;
-class ChordRegion;
-using ArrangerObjectVariant = std::variant<
-  MidiNote,
-  ChordObject,
-  ScaleObject,
-  MidiRegion,
-  AudioRegion,
-  ChordRegion,
-  AutomationRegion,
-  AutomationPoint,
-  Marker,
-  Velocity>;
-using ArrangerObjectWithoutVelocityVariant = std::variant<
-  MidiNote,
-  ChordObject,
-  ScaleObject,
-  MidiRegion,
-  AudioRegion,
-  ChordRegion,
-  AutomationRegion,
-  Marker,
-  AutomationPoint>;
-using ArrangerObjectPtrVariant = to_pointer_variant<ArrangerObjectVariant>;
-using ArrangerObjectWithoutVelocityPtrVariant =
-  to_pointer_variant<ArrangerObjectWithoutVelocityVariant>;
 
 class MarkerTrack;
 class InstrumentTrack;
@@ -97,23 +71,6 @@ class ChordTrack;
 class ModulatorTrack;
 class TempoTrack;
 class LanedTrack;
-
-using TrackVariant = std::variant<
-  MarkerTrack,
-  InstrumentTrack,
-  MidiTrack,
-  MasterTrack,
-  MidiGroupTrack,
-  AudioGroupTrack,
-  FolderTrack,
-  MidiBusTrack,
-  AudioBusTrack,
-  AudioTrack,
-  ChordTrack,
-  ModulatorTrack,
-  TempoTrack>;
-using TrackPtrVariant = to_pointer_variant<TrackVariant>;
-using OptionalTrackPtrVariant = std::optional<TrackPtrVariant>;
 
 class TimelineSelections;
 class MidiSelections;
@@ -197,11 +154,13 @@ public: \
  * We also need shared_from_this() in various cases (TODO explain).
  */
 class ArrangerObject
-    : public zrythm::utils::serialization::ISerializable<ArrangerObject>
+    : public zrythm::utils::serialization::ISerializable<ArrangerObject>,
+      public utils::UuidIdentifiableObject<ArrangerObject>
 {
   Q_DISABLE_COPY_MOVE (ArrangerObject)
 
 public:
+  using TrackUuid = utils::UuidIdentifiableObject<Track>::Uuid;
   /**
    * Flag used in some functions.
    */
@@ -514,10 +473,7 @@ public:
 
   virtual bool can_fade () const { return false; }
 
-  void set_track_name_hash (unsigned int track_name_hash)
-  {
-    track_name_hash_ = track_name_hash;
-  }
+  void set_track_id (TrackUuid track_id) { track_id_ = track_id; }
 
   /**
    * Updates the positions in each child recursively.
@@ -534,6 +490,8 @@ public:
    * Returns the Track this ArrangerObject is in.
    */
   ATTR_HOT virtual TrackPtrVariant get_track () const;
+
+  TrackUuid get_track_id () const { return track_id_; }
 
   static const char * get_type_as_string (Type type)
   {
@@ -630,7 +588,8 @@ public:
   bool is_chord_object () const { return type_ == Type::ChordObject; };
 
 protected:
-  void copy_members_from (const ArrangerObject &other);
+  void
+  copy_members_from (const ArrangerObject &other, ObjectCloneType clone_type);
 
   void init_loaded_base ();
 
@@ -657,8 +616,8 @@ public:
 
   Type type_{};
 
-  /** Hash of the name of the track this object belongs to. */
-  unsigned int track_name_hash_ = 0;
+  /** ID of the track this object belongs to. */
+  TrackUuid track_id_;
 
   /** Track this object belongs to (cache to be set during graph calculation). */
   OptionalTrackPtrVariant track_;
@@ -700,8 +659,11 @@ inline bool
 operator== (const ArrangerObject &lhs, const ArrangerObject &rhs)
 {
   return lhs.type_ == rhs.type_ && *lhs.pos_ == *rhs.pos_
-         && lhs.track_name_hash_ == rhs.track_name_hash_;
+         && lhs.track_id_ == rhs.track_id_;
 }
+
+using ArrangerObjectRegistry =
+  utils::OwningObjectRegistry<ArrangerObjectPtrVariant, ArrangerObject>;
 
 template <typename T>
 concept FinalArrangerObjectSubclass =

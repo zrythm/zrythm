@@ -46,9 +46,10 @@ CreateOrDeleteArrangerSelectionsAction::CreateOrDeleteArrangerSelectionsAction (
 
 void
 ArrangerSelectionsAction::init_after_cloning (
-  const ArrangerSelectionsAction &other)
+  const ArrangerSelectionsAction &other,
+  ObjectCloneType                 clone_type)
 {
-  UndoableAction::copy_members_from (other);
+  UndoableAction::copy_members_from (other, clone_type);
   type_ = other.type_;
   if (other.sel_)
     {
@@ -78,10 +79,7 @@ ArrangerSelectionsAction::init_after_cloning (
   delta_pitch_ = other.delta_pitch_;
   delta_vel_ = other.delta_vel_;
   delta_normalized_amount_ = other.delta_normalized_amount_;
-  if (other.target_port_ != nullptr)
-    {
-      target_port_ = other.target_port_->clone_unique ();
-    }
+  target_port_ = other.target_port_;
   str_ = other.str_;
   pos_ = other.pos_;
   for (const auto &r_var : other.r1_)
@@ -221,16 +219,16 @@ ArrangerSelectionsAction::get_actual_arranger_selections () const
 
 template <FinalArrangerSelectionsSubclass T>
 ArrangerSelectionsAction::MoveOrDuplicateAction::MoveOrDuplicateAction (
-  const T               &sel,
-  bool                   move,
-  double                 ticks,
-  int                    delta_chords,
-  int                    delta_pitch,
-  int                    delta_tracks,
-  int                    delta_lanes,
-  double                 delta_normalized_amount,
-  const PortIdentifier * tgt_port_id,
-  bool                   already_moved)
+  const T                                &sel,
+  bool                                    move,
+  double                                  ticks,
+  int                                     delta_chords,
+  int                                     delta_pitch,
+  int                                     delta_tracks,
+  int                                     delta_lanes,
+  double                                  delta_normalized_amount,
+  std::optional<PortIdentifier::PortUuid> tgt_port_id,
+  bool                                    already_moved)
     : ArrangerSelectionsAction (sel, move ? Type::Move : Type::Duplicate)
 {
   z_return_if_fail (sel.has_any ());
@@ -258,10 +256,7 @@ ArrangerSelectionsAction::MoveOrDuplicateAction::MoveOrDuplicateAction (
       set_after_selections (sel);
     }
 
-  if (tgt_port_id)
-    {
-      target_port_ = tgt_port_id->clone_unique ();
-    }
+  target_port_ = tgt_port_id;
 }
 
 template <FinalArrangerSelectionsSubclass T>
@@ -608,8 +603,8 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
                             port_var
                             && std::holds_alternative<ControlPort *> (*port_var));
                           auto port = std::get<ControlPort *> (*port_var);
-                          auto track_var = PROJECT->find_track_by_name_hash (
-                            port->id_->track_name_hash_);
+                          auto track_var = PROJECT->find_track_by_id (
+                            port->id_->get_track_id ().value ());
                           z_return_if_fail (track_var.has_value ());
                           std::visit (
                             [&] (auto &&track) {
@@ -627,8 +622,7 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
                                   /* remember info in identifier */
                                   own_obj_ptr->id_ = prj_obj->id_;
 
-                                  target_port_ =
-                                    cur_at->port_id_->clone_unique ();
+                                  target_port_ = cur_at->port_id_;
                                 }
                               else
                                 {
@@ -737,25 +731,22 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
                 [&] (auto &&track_before) {
                   auto _track_to_move_to =
                     TRACKLIST->get_visible_track_after_delta (
-                      *track_before, tracks_diff);
+                      track_before->get_uuid (), tracks_diff);
                   z_return_if_fail (_track_to_move_to);
                   auto * track_to_move_to =
                     Track::from_variant (_track_to_move_to.value ());
                   z_trace (
                     "Moving from track {} ({}) to track: {} ({})",
-                    track_before->get_name (), track_before->get_name_hash (),
+                    track_before->get_name (), track_before->get_uuid (),
                     track_to_move_to->get_name (),
-                    track_to_move_to->get_name_hash ());
+                    track_to_move_to->get_uuid ());
 
                   /* shift the actual object by tracks */
-                  if (
-                    ENUM_BITSET_TEST (
-                      ArrangerObjectFlags, obj->flags_,
-                      ArrangerObject::Flags::NonProject))
+                  if (ENUM_BITSET_TEST (
+                        obj->flags_, ArrangerObject::Flags::NonProject))
                     {
-                      obj->id_.track_name_hash_ =
-                        track_to_move_to->get_name_hash ();
-                      obj->track_name_hash_ = track_to_move_to->get_name_hash ();
+                      obj->id_.track_uuid_ = track_to_move_to->get_uuid ();
+                      obj->track_id_ = track_to_move_to->get_uuid ();
                       z_trace ("Updated track name hash for non-project object");
                     }
                   else
@@ -779,9 +770,7 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
 
               /* shift the actual object by lanes */
               if (
-                ENUM_BITSET_TEST (
-                  ArrangerObject::Flags, obj->flags_,
-                  ArrangerObject::Flags::NonProject))
+                ENUM_BITSET_TEST (obj->flags_, ArrangerObject::Flags::NonProject))
                 {
                   obj->id_.lane_pos_ = new_lane_pos;
                   z_trace ("Updated lane position for non-project object");
@@ -899,8 +888,8 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                             j++)
                             {
                               if (
-                                own_id_before_move.track_name_hash_
-                                  == own_obj->id_.track_name_hash_
+                                own_id_before_move.track_uuid_
+                                  == own_obj->id_.track_uuid_
                                 && own_id_before_move.lane_pos_
                                      == own_obj->id_.lane_pos_
                                 && own_id_before_move.at_idx_
@@ -1039,8 +1028,8 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
                             && std::holds_alternative<ControlPort *> (*port_var));
                           const auto * port =
                             std::get<ControlPort *> (*port_var);
-                          auto track_var = PROJECT->find_track_by_name_hash (
-                            port->id_->track_name_hash_);
+                          auto track_var = PROJECT->find_track_by_id (
+                            port->id_->get_track_id ().value ());
                           z_return_if_fail (track_var.has_value ());
                           std::visit (
                             [&] (auto &&track) {
@@ -2238,19 +2227,23 @@ ArrangerSelectionsAction::do_or_undo (bool do_it)
     }
 
   /* update playback caches */
-  TRACKLIST->set_caches (CacheType::PlaybackSnapshots);
+  TRACKLIST->get_track_span ().set_caches (CacheType::PlaybackSnapshots);
 
   /* reset new_lane_created */
-  for (auto track : TRACKLIST->tracks_ | type_is<LanedTrack> ())
+  for (auto track_var : TRACKLIST->get_track_span ())
     {
-      track->last_lane_created_ = 0;
-      track->block_auto_creation_and_deletion_ = false;
       std::visit (
-        [&] (auto &&t) {
-          t->create_missing_lanes (t->lanes_.size () - 1);
-          t->remove_empty_last_lanes ();
+        [&] (auto &&track) {
+          using TrackT = base_type<decltype (track)>;
+          if constexpr (std::derived_from<TrackT, LanedTrack>)
+            {
+              track->last_lane_created_ = 0;
+              track->block_auto_creation_and_deletion_ = false;
+              track->create_missing_lanes (track->lanes_.size () - 1);
+              track->remove_empty_last_lanes ();
+            }
         },
-        convert_to_variant<LanedTrackPtrVariant> (track));
+        track_var);
     }
 
   /* this is only needed in a few cases but it's cheap so send the event here

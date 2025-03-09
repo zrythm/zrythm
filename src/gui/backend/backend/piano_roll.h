@@ -194,7 +194,11 @@ public:
    */
   void init ();
 
-  void init_after_cloning (const PianoRoll &other) override { *this = other; }
+  void
+  init_after_cloning (const PianoRoll &other, ObjectCloneType clone_type) override
+  {
+    *this = other;
+  }
 
 private:
   /**

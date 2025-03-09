@@ -19,7 +19,7 @@ class MidiBusTrack final
       public ChannelTrack,
       public ICloneable<MidiBusTrack>,
       public zrythm::utils::serialization::ISerializable<MidiBusTrack>,
-      public InitializableObjectFactory<MidiBusTrack>
+      public utils::InitializableObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -27,12 +27,18 @@ class MidiBusTrack final
   DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (MidiBusTrack)
   DEFINE_CHANNEL_TRACK_QML_PROPERTIES (MidiBusTrack)
 
-  friend class InitializableObjectFactory<MidiBusTrack>;
+  friend class InitializableObject;
+
+  DECLARE_FINAL_TRACK_CONSTRUCTORS (MidiBusTrack)
 
 public:
-  void init_after_cloning (const MidiBusTrack &other) override;
+  void
+  init_after_cloning (const MidiBusTrack &other, ObjectCloneType clone_type)
+    override;
 
-  void init_loaded () override;
+  void
+  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
+    override;
 
   bool validate () const override;
 
@@ -42,9 +48,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  MidiBusTrack (const std::string &name = "", int pos = 0);
-
-  bool initialize () override;
+  bool initialize ();
 };
 
 #endif // __AUDIO_MIDI_BUS_TRACK_H__

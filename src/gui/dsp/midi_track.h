@@ -22,7 +22,7 @@ class MidiTrack final
       public ChannelTrack,
       public ICloneable<MidiTrack>,
       public zrythm::utils::serialization::ISerializable<MidiTrack>,
-      public InitializableObjectFactory<MidiTrack>
+      public utils::InitializableObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -32,22 +32,25 @@ class MidiTrack final
   DEFINE_CHANNEL_TRACK_QML_PROPERTIES (MidiTrack)
   DEFINE_PIANO_ROLL_TRACK_QML_PROPERTIES (MidiTrack)
 
-  friend class InitializableObjectFactory<MidiTrack>;
+  friend class InitializableObject;
+
+  DECLARE_FINAL_TRACK_CONSTRUCTORS (MidiTrack)
 
 public:
-  void init_loaded () override;
+  void
+  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
+    override;
 
   bool validate () const override;
 
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 
-  void init_after_cloning (const MidiTrack &other) override;
+  void init_after_cloning (const MidiTrack &other, ObjectCloneType clone_type)
+    override;
 
 private:
-  MidiTrack (const std::string &label = "", int pos = 0);
-
-  bool initialize () override;
+  bool initialize ();
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 };

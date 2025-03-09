@@ -18,6 +18,20 @@ ChordPresetPack::
 }
 
 void
+ChordPresetPack::init_after_cloning (
+  const ChordPresetPack &other,
+  ObjectCloneType        clone_type)
+{
+  name_ = other.name_;
+  is_standard_ = other.is_standard_;
+  presets_ = other.presets_;
+  for (auto &pset : presets_)
+    {
+      pset->pack_ = this;
+    }
+}
+
+void
 ChordPresetPack::add_preset (const ChordPreset &pset)
 {
   auto * clone = pset.clone_raw_ptr ();

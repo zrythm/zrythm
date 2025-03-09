@@ -253,8 +253,8 @@ Exporter::export_audio (Settings &info)
         {
           auto &ch_data =
             i == 0
-              ? P_MASTER_TRACK->channel_->stereo_out_->get_l ().buf_
-              : P_MASTER_TRACK->channel_->stereo_out_->get_r ().buf_;
+              ? P_MASTER_TRACK->channel_->get_stereo_out_ports ().first.buf_
+              : P_MASTER_TRACK->channel_->get_stereo_out_ports ().second.buf_;
           buffer.copyFrom (i, 0, ch_data.data (), (int) nframes);
         }
 
@@ -380,33 +380,37 @@ Exporter::export_midi (Settings &info)
           midiTrackAddText (mf, 1, textTrackName, info.title_.c_str ());
         }
 
-      for (size_t i = 0; i < TRACKLIST->tracks_.size (); ++i)
+      auto track_span = TRACKLIST->get_track_span ();
+      for (const auto &[index, track_var] : std::views::enumerate (track_span))
         {
-          auto * track = Track::from_variant (TRACKLIST->tracks_[i]);
-
-          if (track->has_piano_roll ())
-            {
-              auto &piano_roll_track = dynamic_cast<PianoRollTrack &> (*track);
-              std::unique_ptr<MidiEventVector> events;
-              if (midi_version == 0)
+          std::visit (
+            [&] (auto &&track) {
+              if (track->has_piano_roll ())
                 {
-                  events = std::make_unique<MidiEventVector> ();
+                  auto &piano_roll_track =
+                    dynamic_cast<PianoRollTrack &> (*track);
+                  std::unique_ptr<MidiEventVector> events;
+                  if (midi_version == 0)
+                    {
+                      events = std::make_unique<MidiEventVector> ();
+                    }
+
+                  /* write track to midi file */
+                  piano_roll_track.write_to_midi_file (
+                    mf, midi_version == 0 ? events.get () : nullptr, &start_pos,
+                    &end_pos, midi_version == 0 ? false : info.lanes_as_tracks_,
+                    midi_version == 0 ? false : true);
+
+                  if (events)
+                    {
+                      events->write_to_midi_file (mf, 1);
+                    }
                 }
 
-              /* write track to midi file */
-              piano_roll_track.write_to_midi_file (
-                mf, midi_version == 0 ? events.get () : nullptr, &start_pos,
-                &end_pos, midi_version == 0 ? false : info.lanes_as_tracks_,
-                midi_version == 0 ? false : true);
-
-              if (events)
-                {
-                  events->write_to_midi_file (mf, 1);
-                }
-            }
-
-          progress_info_->update_progress (
-            (double) i / (double) TRACKLIST->tracks_.size (), {});
+              progress_info_->update_progress (
+                (double) index / (double) track_span.size (), {});
+            },
+            track_var);
         }
 
       midiFileClose (mf);
@@ -504,48 +508,58 @@ Exporter::prepare_tracks_for_export (AudioEngine &engine, Transport &transport)
   /* deactivate and activate all plugins to make them reset their states */
   /* TODO this doesn't reset the plugin state as expected, so sending note off
    * is needed */
-  TRACKLIST->activate_all_plugins (false);
-  TRACKLIST->activate_all_plugins (true);
+  TRACKLIST->get_track_span ().activate_all_plugins (false);
+  TRACKLIST->get_track_span ().activate_all_plugins (true);
 
   connections_ = std::make_unique<PortConnectionsManager::ConnectionsVector> ();
   if (settings_.mode_ != Exporter::Mode::Full)
     {
       /* disconnect all track faders from their channel outputs so that sends
        * and custom connections will work */
-      for (auto cur_tr : TRACKLIST->tracks_ | type_is<ChannelTrack> ())
+      for (
+        auto cur_tr :
+        TRACKLIST->get_track_span ()
+          | std::views::filter (
+            TrackSpan::derived_from_type_projection<ChannelTrack>)
+          | std::views::transform (
+            TrackSpan::derived_type_transformation<ChannelTrack>))
         {
           if (
             cur_tr->bounce_ || cur_tr->out_signal_type_ != dsp::PortType::Audio)
             continue;
 
-          auto &l_src_id = cur_tr->channel_->fader_->stereo_out_->get_l ().id_;
-          auto &l_dest_id = cur_tr->channel_->stereo_out_->get_l ().id_;
-          auto  l_conn =
-            PORT_CONNECTIONS_MGR->find_connection (*l_src_id, *l_dest_id);
+          const auto &l_src_id =
+            cur_tr->channel_->fader_->get_stereo_out_left_id ();
+          const auto &l_dest_id =
+            cur_tr->channel_->get_stereo_out_ports ().first.get_uuid ();
+          auto l_conn =
+            PORT_CONNECTIONS_MGR->find_connection (l_src_id, l_dest_id);
           z_return_if_fail (l_conn);
           connections_->push_back (l_conn->clone_raw_ptr ());
           connections_->back ()->setParent (this);
-          PORT_CONNECTIONS_MGR->ensure_disconnect (*l_src_id, *l_dest_id);
+          PORT_CONNECTIONS_MGR->ensure_disconnect (l_src_id, l_dest_id);
 
-          auto &r_src_id = cur_tr->channel_->fader_->stereo_out_->get_r ().id_;
-          auto &r_dest_id = cur_tr->channel_->stereo_out_->get_r ().id_;
-          auto  r_conn =
-            PORT_CONNECTIONS_MGR->find_connection (*r_src_id, *r_dest_id);
+          const auto &r_src_id =
+            cur_tr->channel_->fader_->get_stereo_out_right_id ();
+          const auto &r_dest_id =
+            cur_tr->channel_->get_stereo_out_ports ().second.get_uuid ();
+          auto r_conn =
+            PORT_CONNECTIONS_MGR->find_connection (r_src_id, r_dest_id);
           z_return_if_fail (r_conn);
           connections_->push_back (r_conn->clone_raw_ptr ());
           connections_->back ()->setParent (this);
-          PORT_CONNECTIONS_MGR->ensure_disconnect (*r_src_id, *r_dest_id);
+          PORT_CONNECTIONS_MGR->ensure_disconnect (r_src_id, r_dest_id);
         }
 
       /* recalculate the graph to apply the changes */
       ROUTER->recalc_graph (false);
 
       /* remark all tracks for bounce */
-      TRACKLIST->mark_all_tracks_for_bounce (true);
+      TRACKLIST->get_track_span ().mark_all_tracks_for_bounce (true);
     }
 
   z_debug ("preparing playback snapshots...");
-  TRACKLIST->set_caches (CacheType::PlaybackSnapshots);
+  TRACKLIST->get_track_span ().set_caches (CacheType::PlaybackSnapshots);
 }
 
 void
@@ -572,7 +586,7 @@ Exporter::post_export ()
     }
 
   /* reset "bounce to master" on each track */
-  std::ranges::for_each (TRACKLIST->tracks_, [] (auto &track) {
+  std::ranges::for_each (TRACKLIST->get_track_span (), [] (auto &track) {
     auto tr = Track::from_variant (track);
     tr->bounce_to_master_ = false;
   });
@@ -643,7 +657,8 @@ Exporter::create_audio_track_after_bounce (Position pos)
       last_track_var = TL_SELECTIONS->get_last_track ();
       break;
     case Mode::Tracks:
-      last_track_var = TRACKLIST_SELECTIONS->get_lowest_track ();
+      last_track_var =
+        TRACKLIST->get_track_span ().get_selected_tracks ().back ();
       if (settings_.disable_after_bounce_)
         {
           track_to_disable_var = last_track_var;

@@ -23,9 +23,11 @@ class GroupTargetTrack
     : virtual public ChannelTrack,
       public zrythm::utils::serialization::ISerializable<GroupTargetTrack>
 {
+protected:
+  // GroupTargetTrack () = default;
+
 public:
-  // Rule of 0
-  virtual ~GroupTargetTrack () = default;
+  ~GroupTargetTrack () override = default;
 
   /**
    * Updates the track's children.
@@ -38,10 +40,10 @@ public:
    * Removes a child track from the list of children.
    */
   virtual void remove_child (
-    unsigned int child_name_hash,
-    bool         disconnect,
-    bool         recalc_graph,
-    bool         pub_events) final;
+    Track::Uuid child_id,
+    bool        disconnect,
+    bool        recalc_graph,
+    bool        pub_events) final;
 
   /**
    * Remove all known children.
@@ -57,24 +59,25 @@ public:
    * @param connect Connect the child to the group track.
    */
   void add_child (
-    unsigned int child_name_hash,
-    bool         connect,
-    bool         recalc_graph,
-    bool         pub_events);
+    Track::Uuid child_id,
+    bool        connect,
+    bool        recalc_graph,
+    bool        pub_events);
 
   void add_children (
-    const std::vector<unsigned int> &children,
-    bool                             connect,
-    bool                             recalc_graph,
-    bool                             pub_events);
+    std::span<const Track::Uuid> children,
+    bool                         connect,
+    bool                         recalc_graph,
+    bool                         pub_events);
 
   /**
    * Returns the index of the child matching the given hash.
    */
-  int find_child (unsigned int track_name_hash);
+  int find_child (Track::Uuid track_name_hash);
 
 protected:
-  void copy_members_from (const GroupTargetTrack &other);
+  void
+  copy_members_from (const GroupTargetTrack &other, ObjectCloneType clone_type);
 
   bool validate_base () const;
 
@@ -90,7 +93,7 @@ private:
     bool               recalc_graph,
     bool               pub_events);
 
-  bool contains_child (unsigned int child_name_hash);
+  bool contains_child (Track::Uuid child_name_hash);
 
 public:
   /**
@@ -98,7 +101,7 @@ public:
    *
    * This is used when undoing track deletion.
    */
-  std::vector<unsigned int> children_;
+  std::vector<Track::Uuid> children_;
 };
 
 #endif /* __AUDIO_GROUP_TARGET_TRACK_H__ */

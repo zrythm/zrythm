@@ -71,7 +71,11 @@ public:
 
   int get_chord_index (const ChordDescriptor &chord) const;
 
-  void init_after_cloning (const ChordEditor &other) override { *this = other; }
+  void init_after_cloning (const ChordEditor &other, ObjectCloneType clone_type)
+    override
+  {
+    *this = other;
+  }
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

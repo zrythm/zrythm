@@ -69,7 +69,9 @@ PluginCollection::generate_context_menu () const
 #endif
 
 void
-PluginCollection::init_after_cloning (const PluginCollection &other)
+PluginCollection::init_after_cloning (
+  const PluginCollection &other,
+  ObjectCloneType         clone_type)
 {
   name_ = other.name_;
   description_ = other.description_;

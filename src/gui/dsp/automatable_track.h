@@ -41,16 +41,25 @@ public: \
 
 /**
  * Interface for a track that has automatable parameters.
+ *
+ * Tracks that can have plugins must implement this interface.
  */
 class AutomatableTrack
     : virtual public Track,
       public zrythm::utils::serialization::ISerializable<AutomatableTrack>
 {
 public:
-  AutomatableTrack ();
+  AutomatableTrack (const DeserializationDependencyHolder &dh);
+  AutomatableTrack (PortRegistry &port_registry, bool new_identity);
+
   ~AutomatableTrack () override = default;
 
-  void init_loaded () override;
+  using Plugin = gui::old_dsp::plugins::Plugin;
+  using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
+
+  void
+  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
+    override;
 
   AutomationTracklist &get_automation_tracklist () const
   {
@@ -85,19 +94,44 @@ public:
       }
   }
 
+  /**
+   * Returns the plugin at the given slot, if any.
+   */
+  template <typename DerivedT>
+  std::optional<PluginPtrVariant>
+  get_plugin_at_slot (this DerivedT &&self, PluginSlot slot)
+    requires std::derived_from<base_type<DerivedT>, AutomatableTrack>
+             && FinalClass<base_type<DerivedT>>
+  {
+    if constexpr (std::derived_from<DerivedT, ChannelTrack>)
+      {
+        return std::forward (self).get_channel ()->get_plugin_at_slot (slot);
+      }
+    else if constexpr (std::derived_from<DerivedT, ModulatorTrack>)
+      {
+        if (
+          slot.is_modulator ()
+          && slot.get_slot_with_index ().second
+               < (int) std::forward (self).modulators_.size ())
+          {
+            return std::forward (self)
+              .modulators_[slot.get_slot_with_index ().second]
+              .get ();
+          }
+      }
+
+    return std::nullopt;
+  }
+
 protected:
-  void copy_members_from (const AutomatableTrack &other);
+  void
+  copy_members_from (const AutomatableTrack &other, ObjectCloneType clone_type);
 
   bool validate_base () const;
 
   void set_playback_caches () override
   {
     get_automation_tracklist ().set_caches (CacheType::PlaybackSnapshots);
-  }
-
-  void update_name_hash (unsigned int new_name_hash) override
-  {
-    get_automation_tracklist ().update_track_name_hash (*this);
   }
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();

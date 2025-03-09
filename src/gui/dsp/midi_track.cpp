@@ -3,10 +3,20 @@
 
 #include "zrythm-config.h"
 
+#include "gui/backend/backend/settings_manager.h"
+#include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/midi_track.h"
 
-MidiTrack::MidiTrack (const std::string &label, int pos)
-    : Track (Track::Type::Midi, label, pos, PortType::Event, PortType::Event)
+MidiTrack::MidiTrack (
+  TrackRegistry  &track_registry,
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry,
+  bool            new_identity)
+    : Track (Track::Type::Midi, PortType::Event, PortType::Event),
+      AutomatableTrack (port_registry, new_identity),
+      ProcessableTrack (port_registry, new_identity),
+      RecordableTrack (port_registry, new_identity),
+      ChannelTrack (track_registry, plugin_registry, port_registry, new_identity)
 {
   color_ = Color (QColor ("#F79616"));
   icon_name_ = "signal-midi";
@@ -21,27 +31,29 @@ MidiTrack::validate () const
 }
 
 void
-MidiTrack::init_loaded ()
+MidiTrack::init_loaded (
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry)
 {
   // ChannelTrack must be initialized before AutomatableTrack
-  ChannelTrack::init_loaded ();
-  AutomatableTrack::init_loaded ();
-  ProcessableTrack::init_loaded ();
-  RecordableTrack::init_loaded ();
-  LanedTrackImpl::init_loaded ();
-  PianoRollTrack::init_loaded ();
+  ChannelTrack::init_loaded (plugin_registry, port_registry);
+  AutomatableTrack::init_loaded (plugin_registry, port_registry);
+  ProcessableTrack::init_loaded (plugin_registry, port_registry);
+  RecordableTrack::init_loaded (plugin_registry, port_registry);
+  LanedTrackImpl::init_loaded (plugin_registry, port_registry);
+  PianoRollTrack::init_loaded (plugin_registry, port_registry);
 }
 
 void
-MidiTrack::init_after_cloning (const MidiTrack &other)
+MidiTrack::init_after_cloning (const MidiTrack &other, ObjectCloneType clone_type)
 {
-  Track::copy_members_from (other);
-  PianoRollTrack::copy_members_from (other);
-  ChannelTrack::copy_members_from (other);
-  ProcessableTrack::copy_members_from (other);
-  AutomatableTrack::copy_members_from (other);
-  RecordableTrack::copy_members_from (other);
-  LanedTrackImpl::copy_members_from (other);
+  Track::copy_members_from (other, clone_type);
+  PianoRollTrack::copy_members_from (other, clone_type);
+  ChannelTrack::copy_members_from (other, clone_type);
+  ProcessableTrack::copy_members_from (other, clone_type);
+  AutomatableTrack::copy_members_from (other, clone_type);
+  RecordableTrack::copy_members_from (other, clone_type);
+  LanedTrackImpl::copy_members_from (other, clone_type);
 }
 
 void
@@ -57,6 +69,10 @@ MidiTrack::initialize ()
 {
   init_channel ();
   generate_automation_tracks ();
+  init_recordable_track ([] () {
+    return ZRYTHM_HAVE_UI
+           && zrythm::gui::SettingsManager::get_instance ()->get_trackAutoArm ();
+  });
 
   return true;
 }

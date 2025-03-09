@@ -67,7 +67,7 @@ public:
 #endif
   {
     type_ = type;
-    track_name_hash_ = track.name_hash_;
+    track_uuid_ = track.get_uuid ();
     g_start_frame_w_offset_ = time_nfo.g_start_frame_w_offset_;
     local_offset_ = time_nfo.local_offset_;
     has_midi_event_ = false;
@@ -84,8 +84,8 @@ public:
 
   bool has_midi_event_ = false;
 
-  /** The name of the track this event is for. */
-  unsigned int track_name_hash_ = 0;
+  /** The identifier of the track this event is for. */
+  dsp::PortIdentifier::TrackUuid track_uuid_;
 
   /** Global start frames of the event (including offset). */
   unsigned_frame_t g_start_frame_w_offset_ = 0;
@@ -110,7 +110,7 @@ public:
   /**
    * MidiEvent, if midi.
    */
-  MidiEvent midi_event_{};
+  MidiEvent midi_event_;
 
   /* debug info */
   const char * file_ = nullptr;
@@ -128,9 +128,9 @@ DEFINE_OBJECT_FORMATTER (
       "nframes: {}, automation_track_idx: {}, "
       "has_midi_event: {}, midi_event: TODO, "
       "file: {}, func: {}, line: {} }}",
-      static_cast<int> (ev.type_), ev.track_name_hash_,
-      ev.g_start_frame_w_offset_, ev.local_offset_, ev.nframes_,
-      ev.automation_track_idx_, ev.has_midi_event_, // ev.midi_event_,
+      static_cast<int> (ev.type_), ev.track_uuid_, ev.g_start_frame_w_offset_,
+      ev.local_offset_, ev.nframes_, ev.automation_track_idx_,
+      ev.has_midi_event_, // ev.midi_event_,
       ev.file_, ev.func_, ev.lineno_);
   })
 

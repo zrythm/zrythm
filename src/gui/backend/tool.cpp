@@ -25,7 +25,7 @@ Tool::setToolValue (int tool)
 }
 
 void
-Tool::init_after_cloning (const Tool &other)
+Tool::init_after_cloning (const Tool &other, ObjectCloneType clone_type)
 {
   tool_ = other.tool_;
 }

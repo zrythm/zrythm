@@ -89,7 +89,8 @@ public:
   std::string gen_human_friendly_name () const final { return name_; }
 
 protected:
-  void copy_members_from (const NameableObject &other)
+  void
+  copy_members_from (const NameableObject &other, ObjectCloneType clone_type)
   {
     name_ = other.name_;
     escaped_name_ = other.escaped_name_;

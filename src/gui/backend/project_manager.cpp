@@ -166,7 +166,7 @@ ProjectManager::create_default (
 
   if (with_engine)
     {
-      prj->tracklist_->expose_ports_to_backend (*engine);
+      prj->tracklist_->get_track_span ().expose_ports_to_backend (*engine);
     }
 
   auto beats_per_bar = prj->tracklist_->tempo_track_->get_beats_per_bar ();

@@ -15,7 +15,7 @@ public:
 
   std::string get_document_type () const override { return "SimpleObject"; }
 
-  DECLARE_DEFINE_FIELDS_METHOD ()
+  DECLARE_DEFINE_FIELDS_METHOD ();
 };
 
 void
@@ -37,7 +37,7 @@ public:
 
   std::string get_document_type () const override { return "ContainerObject"; }
 
-  DECLARE_DEFINE_FIELDS_METHOD ()
+  DECLARE_DEFINE_FIELDS_METHOD ();
 };
 
 void
@@ -57,7 +57,7 @@ public:
   std::vector<SimpleObject> simple_vec = { SimpleObject (), SimpleObject () };
   std::unique_ptr<SimpleObject> simple_ptr = std::make_unique<SimpleObject> ();
 
-  DECLARE_DEFINE_FIELDS_METHOD ()
+  DECLARE_DEFINE_FIELDS_METHOD ();
   std::string get_document_type () const override { return "NestedObject"; }
 };
 

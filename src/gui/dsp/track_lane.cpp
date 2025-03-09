@@ -182,21 +182,6 @@ TrackLaneImpl<RegionT>::is_in_active_project () const
 }
 
 template <typename RegionT>
-void
-TrackLaneImpl<RegionT>::update_track_name_hash ()
-{
-  z_return_if_fail (track_);
-
-  for (auto &region_var : this->region_list_->regions_)
-    {
-      auto region = std::get<RegionT *> (region_var);
-      region->id_.track_name_hash_ = track_->get_name_hash ();
-      region->id_.lane_pos_ = pos_;
-      region->update_identifier ();
-    }
-}
-
-template <typename RegionT>
 bool
 TrackLaneImpl<RegionT>::is_auditioner () const
 {
@@ -222,7 +207,9 @@ TrackLaneImpl<RegionT>::calculate_lane_idx () const
   auto        track = get_track ();
   Tracklist * tracklist = get_tracklist ();
   int         pos = 1;
-  for (auto cur_track : tracklist->tracks_ | type_is<LanedTrackT> ())
+  for (
+    const auto * cur_track :
+    tracklist->get_track_span ().get_elements_derived_from<LanedTrackT> ())
     {
       if (cur_track == track)
         {
@@ -310,7 +297,9 @@ TrackLaneImpl<RegionT>::write_to_midi_file (
 
 template <typename RegionT>
 void
-TrackLaneImpl<RegionT>::copy_members_from (const TrackLaneImpl &other)
+TrackLaneImpl<RegionT>::copy_members_from (
+  const TrackLaneImpl &other,
+  ObjectCloneType      clone_type)
 {
   pos_ = other.pos_;
   name_ = other.name_;

@@ -20,13 +20,15 @@ class MarkerTrack final
       public Track,
       public ICloneable<MarkerTrack>,
       public zrythm::utils::serialization::ISerializable<MarkerTrack>,
-      public InitializableObjectFactory<MarkerTrack>
+      public utils::InitializableObject
 {
   Q_OBJECT
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (MarkerTrack)
 
-  friend class InitializableObjectFactory<MarkerTrack>;
+  friend class InitializableObject;
+
+  DECLARE_FINAL_TRACK_CONSTRUCTORS (MarkerTrack)
 
 public:
   using MarkerPtr = Marker *;
@@ -46,7 +48,9 @@ public:
 
   // ========================================================================
 
-  void init_loaded () override;
+  void
+  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
+    override;
 
   /**
    * @brief Adds the start/end markers.
@@ -94,7 +98,8 @@ public:
    */
   MarkerPtr get_end_marker () const;
 
-  void init_after_cloning (const MarkerTrack &other) override;
+  void init_after_cloning (const MarkerTrack &other, ObjectCloneType clone_type)
+    override;
 
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
@@ -102,9 +107,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  MarkerTrack (int track_pos = 0);
-
-  bool initialize () override;
+  bool initialize ();
   void set_playback_caches () override;
 
 public:

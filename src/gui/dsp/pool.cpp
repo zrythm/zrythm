@@ -33,7 +33,7 @@ AudioPool::init_loaded (AudioEngine * engine)
 }
 
 void
-AudioPool::init_after_cloning (const AudioPool &other)
+AudioPool::init_after_cloning (const AudioPool &other, ObjectCloneType clone_type)
 {
   clone_ptr_vector (clips_, other.clips_);
 }

@@ -31,8 +31,7 @@ public:
 
   bool has_sound () const override;
 
-  void
-  process (const EngineProcessTimeInfo time_nfo, const bool noroll) override;
+  void process (EngineProcessTimeInfo time_nfo, bool noroll) override;
 
   void allocate_bufs () override;
 
@@ -40,7 +39,8 @@ public:
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
-  void init_after_cloning (const CVPort &other) override;
+  void
+  init_after_cloning (const CVPort &other, ObjectCloneType clone_type) override;
 };
 
 /**

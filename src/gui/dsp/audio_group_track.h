@@ -18,19 +18,25 @@ class AudioGroupTrack final
       public GroupTargetTrack,
       public ICloneable<AudioGroupTrack>,
       public zrythm::utils::serialization::ISerializable<AudioGroupTrack>,
-      public InitializableObjectFactory<AudioGroupTrack>
+      public utils::InitializableObject
 {
   Q_OBJECT
   QML_ELEMENT
   DEFINE_TRACK_QML_PROPERTIES (AudioGroupTrack)
   DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (AudioGroupTrack)
 
-  friend class InitializableObjectFactory<AudioGroupTrack>;
+  friend class InitializableObject;
+
+  DECLARE_FINAL_TRACK_CONSTRUCTORS (AudioGroupTrack)
 
 public:
-  void init_after_cloning (const AudioGroupTrack &other) override;
+  void
+  init_after_cloning (const AudioGroupTrack &other, ObjectCloneType clone_type)
+    override;
 
-  void init_loaded () override;
+  void
+  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
+    override;
 
   bool validate () const override;
 
@@ -40,9 +46,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  AudioGroupTrack (const std::string &name = "", int pos = 0);
-
-  bool initialize () override;
+  bool initialize ();
 };
 
 #endif // __AUDIO_AUDIO_BUS_TRACK_H__

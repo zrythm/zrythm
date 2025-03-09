@@ -117,7 +117,8 @@ _test_port_connection (
         zrythm::dsp::PluginSlotType::Insert, *last_track, 0, setting));
     }
 
-  auto src_track = TRACKLIST->get_track (TRACKLIST->get_num_tracks () - 1);
+  auto src_track =
+    TRACKLIST->get_track_at_index (TRACKLIST->get_num_tracks () - 1);
 
   /* connect a plugin CV out to the track's balance */
   CVPort *            src_port1 = nullptr;
@@ -156,8 +157,7 @@ _test_port_connection (
         if (
           port->id_.owner_type_ == PortIdentifier::OwnerType::Fader
           && ENUM_BITSET_TEST (
-            PortIdentifier::Flags, port->id_.flags_,
-            PortIdentifier::Flags::StereoBalance))
+            port->id_.flags_, PortIdentifier::Flags::StereoBalance))
           {
             return dynamic_cast<ControlPort *> (port);
           }

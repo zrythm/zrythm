@@ -20,9 +20,9 @@ AudioPort::AudioPort (std::string label, PortFlow flow)
 }
 
 void
-AudioPort::init_after_cloning (const AudioPort &other)
+AudioPort::init_after_cloning (const AudioPort &other, ObjectCloneType clone_type)
 {
-  Port::copy_members_from (other);
+  Port::copy_members_from (other, clone_type);
 }
 
 void
@@ -54,19 +54,17 @@ AudioPort::sum_data_from_dummy (
     || AUDIO_ENGINE->midi_backend_ != MidiBackend::MIDI_BACKEND_DUMMY)
     return;
 
-  if (AUDIO_ENGINE->dummy_input_)
+  if (AUDIO_ENGINE->dummy_left_input_)
     {
+      auto   dummy_inputs = AUDIO_ENGINE->get_dummy_input_ports ();
       Port * port = nullptr;
-      if (ENUM_BITSET_TEST (
-            PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::StereoL))
+      if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::StereoL))
         {
-          port = &AUDIO_ENGINE->dummy_input_->get_l ();
+          port = &dummy_inputs.first;
         }
-      else if (
-        ENUM_BITSET_TEST (
-          PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::StereoR))
+      else if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::StereoR))
         {
-          port = &AUDIO_ENGINE->dummy_input_->get_r ();
+          port = &dummy_inputs.second;
         }
 
       if (port)
@@ -98,8 +96,8 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
   if (noroll)
     {
       utils::float_ranges::fill (
-        &buf_.data ()[time_nfo.local_offset_],
-        DENORMAL_PREVENTION_VAL (AUDIO_ENGINE), time_nfo.nframes_);
+        &buf_[time_nfo.local_offset_], DENORMAL_PREVENTION_VAL (AUDIO_ENGINE),
+        time_nfo.nframes_);
       return;
     }
 
@@ -113,7 +111,9 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
       if (backend_ && backend_->is_exposed ())
         {
           backend_->sum_data (
-            buf_.data (), { time_nfo.local_offset_, time_nfo.nframes_ });
+            buf_.data (),
+            { .start_frame = time_nfo.local_offset_,
+              .nframes = time_nfo.nframes_ });
         }
       else if (AUDIO_ENGINE->audio_backend_ == AudioBackend::AUDIO_BACKEND_DUMMY)
         {
@@ -123,10 +123,8 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
         }
     }
 
-  for (size_t k = 0; k < srcs_.size (); k++)
+  for (const auto &[src_port, conn] : std::views::zip (srcs_, src_connections_))
     {
-      const auto * src_port = srcs_[k];
-      const auto  &conn = src_connections_[k];
       if (!conn->enabled_)
         continue;
 
@@ -197,7 +195,12 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
 
   /* if bouncing tracks directly to master (e.g., when bouncing the track on
    * its own without parents), clear master input */
-  if (AUDIO_ENGINE->bounce_mode_ > BounceMode::BOUNCE_OFF && !AUDIO_ENGINE->bounce_with_parents_ && (this == &P_MASTER_TRACK->processor_->stereo_in_->get_l () || this == &P_MASTER_TRACK->processor_->stereo_in_->get_r ())) [[unlikely]]
+  auto master_processor_stereo_ins = std::pair (
+    *P_MASTER_TRACK->processor_->stereo_in_left_id_,
+    *P_MASTER_TRACK->processor_->stereo_in_right_id_);
+  if (AUDIO_ENGINE->bounce_mode_ > BounceMode::BOUNCE_OFF && !AUDIO_ENGINE->bounce_with_parents_ &&
+    (get_uuid() == master_processor_stereo_ins.first
+    || get_uuid() == master_processor_stereo_ins.second)) [[unlikely]]
     {
       utils::float_ranges::fill (
         &buf_[time_nfo.local_offset_], AUDIO_ENGINE->denormal_prevention_val_,
@@ -212,10 +215,9 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
     && owner_->should_bounce_to_master (AUDIO_ENGINE->bounce_step_)) [[unlikely]]
     {
       auto &dest =
-        ENUM_BITSET_TEST (
-          PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::StereoL)
-          ? P_MASTER_TRACK->channel_->stereo_out_->get_l ()
-          : P_MASTER_TRACK->channel_->stereo_out_->get_r ();
+        ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::StereoL)
+          ? P_MASTER_TRACK->channel_->get_stereo_out_ports ().first
+          : P_MASTER_TRACK->channel_->get_stereo_out_ports ().second;
       utils::float_ranges::add2 (
         &dest.buf_[time_nfo.local_offset_], &this->buf_[time_nfo.local_offset_],
         time_nfo.nframes_);
@@ -233,8 +235,7 @@ AudioPort::apply_pan (
   auto [calc_r, calc_l] = dsp::calculate_panning (pan_law, pan_algo, pan);
 
   /* if stereo R */
-  if (ENUM_BITSET_TEST (
-        PortIdentifier::Flags, id_->flags_, PortIdentifier::Flags::StereoR))
+  if (ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::StereoR))
     {
       utils::float_ranges::mul_k2 (&buf_[start_frame], calc_r, nframes);
     }
@@ -251,60 +252,22 @@ AudioPort::apply_fader (float amp, nframes_t start_frame, const nframes_t nframe
   utils::float_ranges::mul_k2 (&buf_[start_frame], amp, nframes);
 }
 
-StereoPorts::StereoPorts (bool input, std::string name, std::string symbol)
-    : StereoPorts (
-        AudioPort (
-          fmt::format ("{} L", name),
-          input ? dsp::PortFlow::Input : dsp::PortFlow::Output),
-        AudioPort (
-          fmt::format ("{} R", name),
-          input ? dsp::PortFlow::Input : dsp::PortFlow::Output))
-
+std::pair<AudioPort *, AudioPort *>
+StereoPorts::create_stereo_ports (
+  PortRegistry &port_registry,
+  bool          input,
+  std::string   name,
+  std::string   symbol)
 {
-  l_->id_->flags_ |= dsp::PortIdentifier::Flags::StereoL;
-  l_->id_->sym_ = fmt::format ("{}_l", symbol);
-  r_->id_->flags_ |= dsp::PortIdentifier::Flags::StereoR;
-  r_->id_->sym_ = fmt::format ("{}_r", symbol);
-}
-
-StereoPorts::StereoPorts (const AudioPort &l, const AudioPort &r)
-{
-  l_ = l.clone_raw_ptr ();
-  r_ = r.clone_raw_ptr ();
-  l_->setParent (this);
-  r_->setParent (this);
-  l_->id_->flags_ |= dsp::PortIdentifier::Flags::StereoL;
-  r_->id_->flags_ |= dsp::PortIdentifier::Flags::StereoR;
-}
-
-void
-StereoPorts::init_after_cloning (const StereoPorts &other)
-{
-  l_ = other.l_->clone_raw_ptr ();
-  r_ = other.r_->clone_raw_ptr ();
-  l_->setParent (this);
-  r_->setParent (this);
-}
-
-void
-StereoPorts::disconnect (PortConnectionsManager &mgr)
-{
-  l_->disconnect_all ();
-  r_->disconnect_all ();
-}
-
-void
-StereoPorts::
-  connect_to (PortConnectionsManager &mgr, StereoPorts &dest, bool locked)
-{
-  mgr.ensure_connect_default (*l_->id_, *dest.l_->id_, locked);
-  mgr.ensure_connect_default (*r_->id_, *dest.r_->id_, locked);
-}
-
-StereoPorts::~StereoPorts ()
-{
-  if (PORT_CONNECTIONS_MGR)
-    {
-      disconnect (*PORT_CONNECTIONS_MGR);
-    }
+  auto   l_names = get_name_and_symbols (true, name, symbol);
+  auto   r_names = get_name_and_symbols (false, name, symbol);
+  auto * l_port = port_registry.create_object<AudioPort> (
+    l_names.first, input ? dsp::PortFlow::Input : dsp::PortFlow::Output);
+  auto * r_port = port_registry.create_object<AudioPort> (
+    r_names.first, input ? dsp::PortFlow::Input : dsp::PortFlow::Output);
+  l_port->id_->flags_ |= dsp::PortIdentifier::Flags::StereoL;
+  l_port->id_->sym_ = l_names.second;
+  r_port->id_->flags_ |= dsp::PortIdentifier::Flags::StereoR;
+  r_port->id_->sym_ = r_names.second;
+  return std::make_pair (l_port, r_port);
 }

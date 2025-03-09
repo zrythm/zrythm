@@ -79,7 +79,8 @@ public:
       }
   }
 
-  void init_after_cloning (const ChordRegion &other) override;
+  void init_after_cloning (const ChordRegion &other, ObjectCloneType clone_type)
+    override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

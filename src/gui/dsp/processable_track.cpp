@@ -12,22 +12,50 @@
 #include "gui/dsp/track_processor.h"
 #include "gui/dsp/transport.h"
 
-ProcessableTrack::ProcessableTrack ()
+ProcessableTrack::ProcessableTrack (
+  PortRegistry &port_registry,
+  bool          new_identity)
+    : port_registry_ (port_registry)
 {
-  processor_ = std::make_unique<TrackProcessor> (this);
+  if (new_identity)
+    {
+      processor_ = std::make_unique<TrackProcessor> (*this, port_registry, true);
+    }
+}
+
+ProcessableTrack::ProcessableTrack (const DeserializationDependencyHolder &dh)
+    : ProcessableTrack (dh.get<std::reference_wrapper<PortRegistry>> ().get (), false)
+{
 }
 
 void
-ProcessableTrack::init_loaded ()
+ProcessableTrack::define_base_fields (const Context &ctx)
+{
+  using T = ISerializable<ProcessableTrack>;
+  Context new_ctx = ctx;
+  if (ctx.is_deserializing ())
+    {
+      new_ctx.dependency_holder_.put (std::ref (*this));
+    }
+  T::serialize_fields (new_ctx, T::make_field ("processor", processor_));
+}
+
+void
+ProcessableTrack::init_loaded (
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry)
 {
   processor_->track_ = this;
-  processor_->init_loaded (this);
+  processor_->init_loaded (this, port_registry);
 }
 
 void
-ProcessableTrack::copy_members_from (const ProcessableTrack &other)
+ProcessableTrack::copy_members_from (
+  const ProcessableTrack &other,
+  ObjectCloneType         clone_type)
 {
-  processor_ = other.processor_->clone_unique ();
+  processor_ = other.processor_->clone_unique (
+    ObjectCloneType::Snapshot, *this, port_registry_, false);
   processor_->track_ = this;
 }
 
@@ -40,23 +68,19 @@ ProcessableTrack::process_block (EngineProcessTimeInfo time_nfo)
 bool
 ProcessableTrack::get_monitor_audio () const
 {
-  z_return_val_if_fail (processor_ && processor_->monitor_audio_, false);
-
-  return processor_->monitor_audio_->is_toggled ();
+  return processor_->get_monitor_audio_port ().is_toggled ();
 }
 
 void
 ProcessableTrack::
   set_monitor_audio (bool monitor, bool auto_select, bool fire_events)
 {
-  z_return_if_fail (processor_ && processor_->monitor_audio_);
-
   if (auto_select)
     {
-      select (true, true, fire_events);
+      TRACKLIST->get_track_span ().select_single (get_uuid ());
     }
 
-  processor_->monitor_audio_->set_toggled (monitor, fire_events);
+  processor_->get_monitor_audio_port ().set_toggled (monitor, fire_events);
 }
 
 void
@@ -64,14 +88,14 @@ ProcessableTrack::fill_midi_events (
   const EngineProcessTimeInfo &time_nfo,
   MidiEventVector             &midi_events)
 {
-  fill_events_common (time_nfo, &midi_events, nullptr);
+  fill_events_common (time_nfo, &midi_events, std::nullopt);
 }
 
 void
 ProcessableTrack::fill_events_common (
-  const EngineProcessTimeInfo &time_nfo,
-  MidiEventVector *            midi_events,
-  StereoPorts *                stereo_ports) const
+  const EngineProcessTimeInfo                       &time_nfo,
+  MidiEventVector *                                  midi_events,
+  std::optional<std::pair<AudioPort &, AudioPort &>> stereo_ports) const
 {
   if (!is_auditioner () && !TRANSPORT->isRolling ())
     {

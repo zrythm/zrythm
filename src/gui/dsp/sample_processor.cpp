@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/project.h"
@@ -77,7 +77,9 @@ SampleProcessor::load_instrument_if_empty ()
 void
 SampleProcessor::init_common ()
 {
-  tracklist_ = std::make_unique<Tracklist> (*this, PORT_CONNECTIONS_MGR);
+  tracklist_ = std::make_unique<Tracklist> (
+    *this, audio_engine_->get_port_registry (),
+    audio_engine_->get_track_registry (), PORT_CONNECTIONS_MGR);
   midi_events_ = std::make_unique<MidiEvents> ();
   current_samples_.reserve (256);
 }
@@ -86,7 +88,7 @@ void
 SampleProcessor::init_loaded (AudioEngine * engine)
 {
   audio_engine_ = engine;
-  fader_->init_loaded (nullptr, nullptr, this);
+  fader_->init_loaded (engine->get_port_registry (), nullptr, nullptr, this);
 
   init_common ();
 }
@@ -94,7 +96,8 @@ SampleProcessor::init_loaded (AudioEngine * engine)
 SampleProcessor::SampleProcessor (AudioEngine * engine) : audio_engine_ (engine)
 {
   fader_ = std::make_unique<Fader> (
-    Fader::Type::SampleProcessor, false, nullptr, nullptr, this);
+    engine->get_port_registry (), Fader::Type::SampleProcessor, false, nullptr,
+    nullptr, this);
 
   init_common ();
 }
@@ -108,9 +111,9 @@ SampleProcessor::prepare_process (const nframes_t nframes)
 void
 SampleProcessor::remove_sample_playback (SamplePlayback &in_sp)
 {
-  auto it = std::find_if (
-    current_samples_.begin (), current_samples_.end (),
-    [&in_sp] (const SamplePlayback &sp) { return &sp == &in_sp; });
+  auto it = std::ranges::find_if (current_samples_, [&in_sp] (const auto &sp) {
+    return &sp == &in_sp;
+  });
 
   if (it != current_samples_.end ())
     {
@@ -134,8 +137,9 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
       return;
     }
 
-  auto &l = fader_->stereo_out_->get_l ().buf_;
-  auto &r = fader_->stereo_out_->get_r ().buf_;
+  auto  fader_stereo_out_ports = fader_->get_stereo_out_ports ();
+  auto &l = fader_stereo_out_ports.first.buf_;
+  auto &r = fader_stereo_out_ports.second.buf_;
 
   // Process the samples in the queue
   for (auto it = current_samples_.begin (); it != current_samples_.end ();)
@@ -202,8 +206,11 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
     {
       midi_events_->active_events_.clear ();
       for (
-        auto it = tracklist_->tracks_.rbegin ();
-        it != (tracklist_->tracks_.rend () - 1); ++it)
+        auto track_var :
+        tracklist_->get_track_span ()
+          | std::views::filter (
+            TrackSpan::derived_from_type_projection<ProcessableTrack>)
+          | std::views::reverse)
         {
           std::visit (
             [&] (auto &&track) {
@@ -228,45 +235,47 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
                   if constexpr (std::is_same_v<TrackT, AudioTrack>)
                     {
                       track->processor_->process (time_nfo);
-
-                      audio_data_l =
-                        track->processor_->stereo_out_->get_l ().buf_.data ();
-                      audio_data_r =
-                        track->processor_->stereo_out_->get_r ().buf_.data ();
+                      auto processor_stereo_outs =
+                        track->processor_->get_stereo_out_ports ();
+                      audio_data_l = processor_stereo_outs.first.buf_.data ();
+                      audio_data_r = processor_stereo_outs.second.buf_.data ();
                     }
                   else if constexpr (std::is_same_v<TrackT, MidiTrack>)
                     {
                       track->processor_->process (time_nfo);
                       midi_events_->active_events_.append (
-                        track->processor_->midi_out_->midi_events_.active_events_,
+                        track->processor_->get_midi_out_port().midi_events_.active_events_,
                         cycle_offset, nframes);
                     }
                   else if constexpr (std::is_same_v<TrackT, InstrumentTrack>)
                     {
-                      auto &ins = track->channel_->instrument_;
-                      if (!ins)
+                      auto ins_var = track->channel_->get_instrument ();
+                      if (!ins_var)
                         return;
-
-                      ins->prepare_process ();
-                      ins->midi_in_port_->midi_events_.active_events_.append (
-                        midi_events_->active_events_, cycle_offset, nframes);
-                      ins->process_block (time_nfo);
-                      audio_data_l = ins->l_out_->buf_.data ();
-                      audio_data_r = ins->r_out_->buf_.data ();
+                      std::visit (
+                        [&] (auto &&ins) {
+                          ins->prepare_process ();
+                          ins->midi_in_port_->midi_events_.active_events_.append (
+                            midi_events_->active_events_, cycle_offset, nframes);
+                          ins->process_block (time_nfo);
+                          audio_data_l = ins->l_out_->buf_.data ();
+                          audio_data_r = ins->r_out_->buf_.data ();
+                        },
+                        *ins_var);
                     }
 
                   if (audio_data_l && audio_data_r)
                     {
                       utils::float_ranges::mix_product (
                         &l[cycle_offset], &audio_data_l[cycle_offset],
-                        fader_->amp_->control_, nframes);
+                        fader_->get_amp (), nframes);
                       utils::float_ranges::mix_product (
                         &r[cycle_offset], &audio_data_r[cycle_offset],
-                        fader_->amp_->control_, nframes);
+                        fader_->get_amp (), nframes);
                     }
                 }
             },
-            *it);
+            track_var);
         }
     }
 
@@ -347,11 +356,8 @@ SampleProcessor::queue_file_or_chord_preset (
   SemaphoreRAII<std::binary_semaphore> sem_raii (rebuilding_sem_);
 
   /* clear tracks */
-  for (
-    auto it = tracklist_->tracks_.rbegin (); it != tracklist_->tracks_.rend ();
-    ++it)
+  for (auto track_var : tracklist_->get_track_span () | std::views::reverse)
     {
-      auto &track = *it;
       std::visit (
         [&] (auto &&tr) {
           using TrackT = base_type<decltype (tr)>;
@@ -359,16 +365,18 @@ SampleProcessor::queue_file_or_chord_preset (
           if constexpr (std::is_same_v<TrackT, InstrumentTrack>)
             {
               auto state_dir =
-                tr->channel_->instrument_->get_abs_state_dir (false, true);
+                zrythm::gui::old_dsp::plugins::Plugin::from_variant (
+                  *tr->channel_->get_instrument ())
+                  ->get_abs_state_dir (false, true);
               if (!state_dir.empty ())
                 {
                   utils::io::rmdir (state_dir, true);
                 }
             }
 
-          tracklist_->remove_track (*tr, true, true, false, false);
+          tracklist_->remove_track (tr->get_uuid (), std::nullopt, true);
         },
-        track);
+        track_var);
     }
 
   Position start_pos;
@@ -381,29 +389,34 @@ SampleProcessor::queue_file_or_chord_preset (
   /* create master track */
   {
     z_debug ("creating master track...");
-    auto track = *MasterTrack::create_unique (tracklist_->tracks_.size ());
+    auto * track = PROJECT->get_track_registry ().create_object<MasterTrack> (
+      PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+      PROJECT->get_port_registry (), true);
     track->set_name (*tracklist_, "Sample Processor Master", false);
-    tracklist_->master_track_ = track.get ();
+    tracklist_->master_track_ = track;
     tracklist_->insert_track (
-      std::move (track), tracklist_->tracks_.size (), *AUDIO_ENGINE, false,
+      track->get_uuid (), tracklist_->tracks_.size (), *AUDIO_ENGINE, false,
       false);
   }
 
   if (file && file->is_audio ())
     {
       z_debug ("creating audio track...");
-      auto audio_track = *AudioTrack::create_unique (
-        "Sample processor audio", tracklist_->tracks_.size (),
-        AUDIO_ENGINE->sample_rate_);
-      auto audio_track_ptr = tracklist_->insert_track (
-        std::move (audio_track), tracklist_->tracks_.size (), *AUDIO_ENGINE,
+      auto * audio_track =
+        PROJECT->get_track_registry ().create_object<AudioTrack> (
+          PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+          PROJECT->get_port_registry (), true);
+      audio_track->set_name (*tracklist_, "Sample processor audio", false);
+      tracklist_->insert_track (
+        audio_track->get_uuid (), tracklist_->tracks_.size (), *AUDIO_ENGINE,
         false, false);
 
       /* create an audio region & add to track */
       try
         {
-          auto ar = new AudioRegion (file->abs_path_, start_pos, 0, 0, 0);
-          audio_track_ptr->add_region (ar, nullptr, 0, true, false);
+          auto ar = new AudioRegion (
+            file->abs_path_, start_pos, audio_track->get_uuid (), 0, 0);
+          audio_track->add_region (ar, nullptr, 0, true, false);
           file_end_pos_ = *ar->end_pos_;
         }
       catch (const ZrythmException &e)
@@ -416,23 +429,25 @@ SampleProcessor::queue_file_or_chord_preset (
     {
       /* create an instrument track */
       z_debug ("creating instrument track...");
-      auto instrument_track = *InstrumentTrack::create_unique (
-        "Sample processor instrument", tracklist_->tracks_.size ());
-      auto * instr_track_ptr = tracklist_->insert_track (
-        std::move (instrument_track), tracklist_->tracks_.size (),
+      auto instrument_track =
+        PROJECT->get_track_registry ().create_object<InstrumentTrack> (
+          PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+          PROJECT->get_port_registry (), true);
+      instrument_track->set_name (*tracklist_, "Sample processor instrument", false);
+      tracklist_->insert_track (
+        instrument_track->get_uuid (), tracklist_->tracks_.size (),
         *AUDIO_ENGINE, false, false);
       try
         {
           auto pl = zrythm::gui::old_dsp::plugins::Plugin::create_with_setting (
-            *instrument_setting_, instr_track_ptr->get_name_hash (),
-            zrythm::dsp::PluginSlotType::Instrument, -1);
+            *instrument_setting_, instrument_track->get_uuid (),
+            dsp::PluginSlot (zrythm::dsp::PluginSlotType::Instrument));
           pl->instantiate ();
           pl->activate (true);
           z_return_if_fail (pl->midi_in_port_ && pl->l_out_ && pl->r_out_);
 
-          instr_track_ptr->channel_->add_plugin (
-            std::move (pl), zrythm::dsp::PluginSlotType::Instrument,
-            pl->id_.slot_, false, false, true, false, false);
+          instrument_track->channel_->add_plugin (
+            pl->get_uuid (), pl->id_.slot_, false, false, true, false, false);
 
           int num_tracks =
             (file != nullptr)
@@ -441,16 +456,19 @@ SampleProcessor::queue_file_or_chord_preset (
           z_debug ("creating {} MIDI tracks...", num_tracks);
           for (int i = 0; i < num_tracks; i++)
             {
-              auto midi_track = *MidiTrack::create_unique (
-                fmt::format ("Sample processor MIDI {}", i),
-                tracklist_->tracks_.size ());
-              auto * midi_track_ptr = tracklist_->insert_track (
-                std::move (midi_track), tracklist_->tracks_.size (),
+              auto * midi_track =
+                PROJECT->get_track_registry ().create_object<MidiTrack> (
+                  PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+                  PROJECT->get_port_registry (), true);
+              midi_track->set_name (
+                *tracklist_, fmt::format ("Sample processor MIDI {}", i), false);
+              tracklist_->insert_track (
+                midi_track->get_uuid (), tracklist_->tracks_.size (),
                 *AUDIO_ENGINE, false, false);
 
               /* route track to instrument */
-              instr_track_ptr->add_child (
-                midi_track_ptr->get_name_hash (), true, false, false);
+              instrument_track->add_child (
+                midi_track->get_uuid (), true, false, false);
 
               if (file)
                 {
@@ -458,9 +476,9 @@ SampleProcessor::queue_file_or_chord_preset (
                   try
                     {
                       auto mr = new MidiRegion (
-                        start_pos, file->abs_path_,
-                        midi_track_ptr->get_name_hash (), 0, 0, i);
-                      midi_track_ptr->add_region (
+                        start_pos, file->abs_path_, midi_track->get_uuid (), 0,
+                        0, i);
+                      midi_track->add_region (
                         mr, nullptr, 0, !mr->name_.empty () ? false : true,
                         false);
                       file_end_pos_ = std::max (
@@ -482,7 +500,7 @@ SampleProcessor::queue_file_or_chord_preset (
                     13.0, audio_engine_->sample_rate_,
                     audio_engine_->ticks_per_frame_);
                   auto mr = new MidiRegion (
-                    start_pos, end_pos, midi_track_ptr->get_name_hash (), 0, 0);
+                    start_pos, end_pos, midi_track->get_uuid (), 0, 0);
 
                   /* add notes */
                   for (int j = 0; j < 12; j++)
@@ -517,9 +535,8 @@ SampleProcessor::queue_file_or_chord_preset (
 
                   try
                     {
-                      midi_track_ptr->add_region (
-                        mr, nullptr, 0, mr->name_.empty () ? true : false,
-                        false);
+                      midi_track->add_region (
+                        mr, nullptr, 0, mr->name_.empty (), false);
                     }
                   catch (const ZrythmException &e)
                     {
@@ -558,7 +575,7 @@ SampleProcessor::queue_file_or_chord_preset (
   dsp::Graph          graph;
   ProjectGraphBuilder builder (*PROJECT, true);
   builder.build_graph (graph);
-  tracklist_->set_caches (ALL_CACHE_TYPES);
+  tracklist_->get_track_span ().set_caches (ALL_CACHE_TYPES);
 }
 
 void
@@ -589,7 +606,9 @@ SampleProcessor::disconnect ()
 }
 
 void
-SampleProcessor::init_after_cloning (const SampleProcessor &other)
+SampleProcessor::init_after_cloning (
+  const SampleProcessor &other,
+  ObjectCloneType        clone_type)
 {
   fader_ = other.fader_->clone_unique ();
 }

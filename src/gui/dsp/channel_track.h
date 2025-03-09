@@ -28,10 +28,20 @@ class ChannelTrack
 public:
   using Channel = zrythm::gui::Channel;
 
+protected:
+  ChannelTrack (const DeserializationDependencyHolder &dh);
+  ChannelTrack (
+    TrackRegistry  &track_registry,
+    PluginRegistry &plugin_registry,
+    PortRegistry   &port_registry,
+    bool            new_identity);
+
 public:
   ~ChannelTrack () override;
 
-  void init_loaded () override;
+  void init_loaded (
+    gui::old_dsp::plugins::PluginRegistry &plugin_registry,
+    PortRegistry                          &port_registry) override;
 
   auto &get_channel () { return channel_; }
 
@@ -47,22 +57,28 @@ public:
   /**
    * Returns if the track is muted.
    */
-  bool get_muted () const override { return channel_->fader_->get_muted (); }
+  bool get_muted () const override
+  {
+    return channel_->get_post_fader ().get_muted ();
+  }
 
   /**
    * Returns if the track is listened.
    */
   bool get_listened () const override
   {
-    return channel_->fader_->get_listened ();
+    return channel_->get_post_fader ().get_listened ();
   }
 
   bool get_implied_soloed () const override
   {
-    return channel_->fader_->get_implied_soloed ();
+    return channel_->get_post_fader ().get_implied_soloed ();
   }
 
-  bool get_soloed () const override { return channel_->fader_->get_soloed (); }
+  bool get_soloed () const override
+  {
+    return channel_->get_post_fader ().get_soloed ();
+  }
 
   /**
    * Generates a menu to be used for channel-related items, eg, fader buttons,
@@ -111,12 +127,11 @@ public:
   Fader::Type get_prefader_type () { return type_get_prefader_type (type_); }
 
 protected:
-  ChannelTrack ();
-
   void
   append_member_ports (std::vector<Port *> &ports, bool include_plugins) const;
 
-  void copy_members_from (const ChannelTrack &other);
+  void
+  copy_members_from (const ChannelTrack &other, ObjectCloneType clone_type);
 
   bool validate_base () const;
 
@@ -139,6 +154,11 @@ public:
    * @brief Owned channel object.
    */
   Channel * channel_ = nullptr;
+
+private:
+  TrackRegistry  &track_registry_;
+  PortRegistry   &port_registry_;
+  PluginRegistry &plugin_registry_;
 };
 
 #endif // __AUDIO_CHANNEL_TRACK_H__

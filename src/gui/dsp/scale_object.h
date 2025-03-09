@@ -53,7 +53,8 @@ public:
 
   // =========================================================
 
-  void init_after_cloning (const ScaleObject &other) override;
+  void init_after_cloning (const ScaleObject &other, ObjectCloneType clone_type)
+    override;
 
   void init_loaded () override;
 

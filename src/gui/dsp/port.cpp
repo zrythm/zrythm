@@ -77,10 +77,8 @@ Port::process_block (EngineProcessTimeInfo time_nfo)
       using PortT = base_type<decltype (port)>;
       if constexpr (std::is_same_v<PortT, MidiPort>)
         {
-          if (
-            ENUM_BITSET_TEST (
-              dsp::PortIdentifier::Flags, port->id_->flags_,
-              dsp::PortIdentifier::Flags::ManualPress))
+          if (ENUM_BITSET_TEST (
+                port->id_->flags_, dsp::PortIdentifier::Flags::ManualPress))
             {
               port->midi_events_.dequeue (
                 time_nfo.local_offset_, time_nfo.nframes_);
@@ -109,7 +107,7 @@ Port::get_num_unlocked (bool sources) const
 {
   z_return_val_if_fail (is_in_active_project (), 0);
   return PORT_CONNECTIONS_MGR->get_unlocked_sources_or_dests (
-    nullptr, *id_, sources);
+    nullptr, get_uuid (), sources);
 }
 
 int
@@ -155,17 +153,17 @@ Port::disconnect_all ()
     }
 
   PortConnectionsManager::ConnectionsVector srcs;
-  PORT_CONNECTIONS_MGR->get_sources_or_dests (&srcs, *id_, true);
+  PORT_CONNECTIONS_MGR->get_sources_or_dests (&srcs, get_uuid (), true);
   for (const auto &conn : srcs)
     {
-      PORT_CONNECTIONS_MGR->ensure_disconnect (*conn->src_id_, *conn->dest_id_);
+      PORT_CONNECTIONS_MGR->ensure_disconnect (conn->src_id_, conn->dest_id_);
     }
 
   PortConnectionsManager::ConnectionsVector dests;
-  PORT_CONNECTIONS_MGR->get_sources_or_dests (&dests, *id_, false);
+  PORT_CONNECTIONS_MGR->get_sources_or_dests (&dests, get_uuid (), false);
   for (const auto &conn : dests)
     {
-      PORT_CONNECTIONS_MGR->ensure_disconnect (*conn->src_id_, *conn->dest_id_);
+      PORT_CONNECTIONS_MGR->ensure_disconnect (conn->src_id_, conn->dest_id_);
     }
 
   if (backend_)
@@ -175,89 +173,17 @@ Port::disconnect_all ()
 }
 
 void
-Port::update_identifier (
-  const PortIdentifier &prev_id,
-  Track *               track,
-  bool                  update_automation_track)
+Port::change_track (IPortOwner::TrackUuid new_track_id)
 {
-  if (is_in_active_project ())
-    {
-      /* update in all sources */
-      PortConnectionsManager::ConnectionsVector srcs;
-      PORT_CONNECTIONS_MGR->get_sources_or_dests (&srcs, prev_id, true);
-      for (const auto &conn : srcs)
-        {
-          if (conn->dest_id_ != id_)
-            {
-              auto new_conn = conn->clone_unique ();
-              new_conn->dest_id_ = id_->clone_unique ();
-              PORT_CONNECTIONS_MGR->replace_connection (conn, *new_conn);
-            }
-        }
-
-      /* update in all dests */
-      PortConnectionsManager::ConnectionsVector dests;
-      PORT_CONNECTIONS_MGR->get_sources_or_dests (&dests, prev_id, false);
-      for (const auto &conn : dests)
-        {
-          if (conn->src_id_ != id_)
-            {
-              auto new_conn = conn->clone_unique ();
-              new_conn->src_id_ = id_->clone_unique ();
-              PORT_CONNECTIONS_MGR->replace_connection (conn, *new_conn);
-            }
-        }
-
-      if (
-        update_automation_track && (id_->track_name_hash_ != 0)
-        && ENUM_BITSET_TEST (
-          PortIdentifier::Flags, this->id_->flags_,
-          PortIdentifier::Flags::Automatable))
-        {
-          auto * control_port = dynamic_cast<ControlPort *> (this);
-          /* update automation track's port id */
-          auto * automatable_track = dynamic_cast<AutomatableTrack *> (track);
-          control_port->at_ = AutomationTrack::find_from_port (
-            *control_port, automatable_track, true);
-          z_return_if_fail (control_port->at_);
-          control_port->at_->set_port_id (*id_);
-        }
-    }
+  id_->set_track_id (new_track_id);
 }
 
 void
-Port::update_track_name_hash (Track &track, unsigned int new_hash)
-{
-  auto copy = id_->clone_unique ();
-
-  this->id_->track_name_hash_ = new_hash;
-  if (this->id_->owner_type_ == PortIdentifier::OwnerType::Plugin)
-    {
-      this->id_->plugin_id_.track_name_hash_ = new_hash;
-    }
-  update_identifier (*copy, &track, true);
-}
-
-void
-Port::copy_members_from (const Port &other)
+Port::copy_members_from (const Port &other, ObjectCloneType clone_type)
 {
   id_ = other.id_->clone_unique ();
   exposed_to_backend_ = other.exposed_to_backend_;
   range_ = other.range_;
-}
-
-void
-Port::disconnect_hw_inputs ()
-{
-  PortConnectionsManager::ConnectionsVector srcs;
-  PORT_CONNECTIONS_MGR->get_sources_or_dests (&srcs, *id_, true);
-  for (const auto &conn : srcs)
-    {
-      if (
-        conn->src_id_->owner_type_
-        == PortIdentifier::OwnerType::HardwareProcessor)
-        PORT_CONNECTIONS_MGR->ensure_disconnect (*conn->src_id_, *id_);
-    }
 }
 
 void
@@ -300,12 +226,10 @@ Port::set_expose_to_backend (AudioEngine &engine, bool expose)
             !backend_
             || (dynamic_cast<RtAudioPortBackend *> (backend_.get ()) == nullptr))
             {
-              bool is_stereo_l = ENUM_BITSET_TEST (
-                PortIdentifier::Flags, id_->flags_,
-                PortIdentifier::Flags::StereoL);
-              bool is_stereo_r = ENUM_BITSET_TEST (
-                PortIdentifier::Flags, id_->flags_,
-                PortIdentifier::Flags::StereoR);
+              bool is_stereo_l =
+                ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::StereoL);
+              bool is_stereo_r =
+                ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::StereoR);
               if (!is_stereo_l && !is_stereo_r)
                 {
                   return;
@@ -402,13 +326,13 @@ Port::set_expose_to_backend (AudioEngine &engine, bool expose)
 }
 
 void
-Port::rename_backend ()
+Port::rename_backend (AudioEngine &engine)
 {
   if (!is_exposed_to_backend ())
     return;
 
   // just re-expose - this causes a rename if already exposed
-  set_expose_to_backend (*AUDIO_ENGINE, true);
+  set_expose_to_backend (engine, true);
 }
 
 void

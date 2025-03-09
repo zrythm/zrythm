@@ -67,18 +67,18 @@ public:
    * @throw ZrythmException if the region couldn't be created.
    */
   AudioRegion (
-    AudioClip::PoolId pool_id,
-    Position          start_pos,
-    unsigned int      track_name_hash,
-    int               lane_pos,
-    int               idx_inside_lane,
-    QObject *         parent = nullptr)
+    AudioClip::PoolId              pool_id,
+    Position                       start_pos,
+    dsp::PortIdentifier::TrackUuid track_uuid,
+    int                            lane_pos,
+    int                            idx_inside_lane,
+    QObject *                      parent = nullptr)
       : AudioRegion (parent)
   {
     init_default_constructed (
       pool_id, std::nullopt, true, nullptr, std::nullopt, std::nullopt,
-      std::nullopt, std::nullopt, std::move (start_pos), track_name_hash,
-      lane_pos, idx_inside_lane);
+      std::nullopt, std::nullopt, std::move (start_pos), track_uuid, lane_pos,
+      idx_inside_lane);
   }
 
   /**
@@ -89,18 +89,18 @@ public:
    * @throw ZrythmException if the region couldn't be created.
    */
   AudioRegion (
-    fs::path     filepath,
-    Position     start_pos,
-    unsigned int track_name_hash,
-    int          lane_pos,
-    int          idx_inside_lane,
-    QObject *    parent = nullptr)
+    fs::path                       filepath,
+    Position                       start_pos,
+    dsp::PortIdentifier::TrackUuid track_uuid,
+    int                            lane_pos,
+    int                            idx_inside_lane,
+    QObject *                      parent = nullptr)
       : AudioRegion (parent)
   {
     init_default_constructed (
       std::nullopt, std::move (filepath), false, nullptr, std::nullopt,
       std::nullopt, std::nullopt, std::nullopt, std::move (start_pos),
-      track_name_hash, lane_pos, idx_inside_lane);
+      track_uuid, lane_pos, idx_inside_lane);
   }
 
   /**
@@ -116,7 +116,7 @@ public:
     std::string                      clip_name,
     AudioClip::BitDepth              bit_depth,
     Position                         start_pos,
-    unsigned int                     track_name_hash,
+    dsp::PortIdentifier::TrackUuid   track_uuid,
     int                              lane_pos,
     int                              idx_inside_lane,
     QObject *                        parent = nullptr)
@@ -125,7 +125,7 @@ public:
     init_default_constructed (
       std::nullopt, std::nullopt, read_from_pool, &audio_buffer, std::nullopt,
       std::nullopt, std::move (clip_name), bit_depth, std::move (start_pos),
-      track_name_hash, lane_pos, idx_inside_lane);
+      track_uuid, lane_pos, idx_inside_lane);
   }
 
   /**
@@ -136,22 +136,22 @@ public:
    * @throw ZrythmException if the region couldwn't be created.
    */
   AudioRegion (
-    bool             read_from_pool,
-    std::string      clip_name,
-    unsigned_frame_t num_frames_for_recording,
-    channels_t       num_channels_for_recording,
-    Position         start_pos,
-    unsigned int     track_name_hash,
-    int              lane_pos,
-    int              idx_inside_lane,
-    QObject *        parent = nullptr)
+    bool                           read_from_pool,
+    std::string                    clip_name,
+    unsigned_frame_t               num_frames_for_recording,
+    channels_t                     num_channels_for_recording,
+    Position                       start_pos,
+    dsp::PortIdentifier::TrackUuid track_uuid,
+    int                            lane_pos,
+    int                            idx_inside_lane,
+    QObject *                      parent = nullptr)
       : AudioRegion (parent)
   {
     init_default_constructed (
       std::nullopt, std::nullopt, read_from_pool, nullptr,
       num_frames_for_recording, num_channels_for_recording,
       std::move (clip_name), BitDepth::BIT_DEPTH_32, std::move (start_pos),
-      track_name_hash, lane_pos, idx_inside_lane);
+      track_uuid, lane_pos, idx_inside_lane);
   }
 
   using LaneOwnedObjectT = LaneOwnedObjectImpl<AudioRegion>;
@@ -185,7 +185,7 @@ public:
     std::optional<std::string>            clip_name,
     std::optional<utils::audio::BitDepth> bit_depth,
     Position                              start_pos,
-    unsigned int                          track_name_hash,
+    dsp::PortIdentifier::TrackUuid        track_uuid,
     int                                   lane_pos,
     int                                   idx_inside_lane);
 
@@ -264,8 +264,8 @@ public:
    */
   ATTR_NONBLOCKING
   ATTR_HOT void fill_stereo_ports (
-    const EngineProcessTimeInfo &time_nfo,
-    StereoPorts                 &stereo_ports) const;
+    const EngineProcessTimeInfo        &time_nfo,
+    std::pair<AudioPort &, AudioPort &> stereo_ports) const;
 
   float detect_bpm (std::vector<float> &candidates);
 
@@ -286,7 +286,8 @@ public:
   std::optional<ClipEditorArrangerSelectionsPtrVariant>
   get_arranger_selections () const override;
 
-  void init_after_cloning (const AudioRegion &other) override;
+  void init_after_cloning (const AudioRegion &other, ObjectCloneType clone_type)
+    override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

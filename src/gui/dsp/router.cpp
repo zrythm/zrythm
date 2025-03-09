@@ -93,24 +93,17 @@ Router::start_cycle (EngineProcessTimeInfo time_nfo)
   ControlPort::ChangeEvent change{};
   while (ctrl_port_change_queue_.read (change))
     {
-      if (
-        ENUM_BITSET_TEST (
-          dsp::PortIdentifier::Flags, change.flag1,
-          dsp::PortIdentifier::Flags::Bpm))
+      if (ENUM_BITSET_TEST (change.flag1, dsp::PortIdentifier::Flags::Bpm))
         {
           P_TEMPO_TRACK->set_bpm (change.real_val, 0.f, true, true);
         }
       else if (
-        ENUM_BITSET_TEST (
-          dsp::PortIdentifier::Flags2, change.flag2,
-          dsp::PortIdentifier::Flags2::BeatsPerBar))
+        ENUM_BITSET_TEST (change.flag2, dsp::PortIdentifier::Flags2::BeatsPerBar))
         {
           P_TEMPO_TRACK->set_beats_per_bar (change.ival);
         }
       else if (
-        ENUM_BITSET_TEST (
-          dsp::PortIdentifier::Flags2, change.flag2,
-          dsp::PortIdentifier::Flags2::BeatUnit))
+        ENUM_BITSET_TEST (change.flag2, dsp::PortIdentifier::Flags2::BeatUnit))
         {
           P_TEMPO_TRACK->set_beat_unit_from_enum (change.beat_unit);
         }
@@ -132,7 +125,7 @@ Router::recalc_graph (bool soft)
     dsp::Graph          graph;
     builder.build_graph (graph);
     PROJECT->clip_editor_.set_caches ();
-    TRACKLIST->set_caches (ALL_CACHE_TYPES);
+    TRACKLIST->get_track_span ().set_caches (ALL_CACHE_TYPES);
     scheduler_->rechain_from_node_collection (graph.steal_nodes ());
     graph_setup_in_progress_.store (false);
   };

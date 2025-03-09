@@ -11,10 +11,11 @@
 
 using namespace zrythm;
 
-ControlRoom::ControlRoom (AudioEngine * engine) : audio_engine_ (engine)
+ControlRoom::ControlRoom (PortRegistry &port_registry, AudioEngine * engine)
+    : audio_engine_ (engine), port_registry_ (port_registry)
 {
   monitor_fader_ = std::make_unique<Fader> (
-    Fader::Type::Monitor, false, nullptr, this, nullptr);
+    *port_registry_, Fader::Type::Monitor, false, nullptr, this, nullptr);
   init_common ();
 }
 
@@ -30,53 +31,53 @@ ControlRoom::init_common ()
 
   /* init listen/mute/dim faders */
   mute_fader_ = std::make_unique<Fader> (
-    Fader::Type::Generic, false, nullptr, this, nullptr);
+    *port_registry_, Fader::Type::Generic, false, nullptr, this, nullptr);
   amp =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? 0.f
       : gui::SettingsManager::monitorMuteVolume ();
-  mute_fader_->amp_->deff_ =
+  mute_fader_->get_amp_port ().deff_ =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? 0.f
       : gui::SettingsManager::get_default_monitorMuteVolume ();
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
-      mute_fader_->amp_->range_.minf_ = 0.f;
-      mute_fader_->amp_->range_.maxf_ = 0.5f;
+      mute_fader_->get_amp_port ().range_.minf_ = 0.f;
+      mute_fader_->get_amp_port ().range_.maxf_ = 0.5f;
     }
   mute_fader_->set_amp (amp);
 
   listen_fader_ = std::make_unique<Fader> (
-    Fader::Type::Generic, false, nullptr, this, nullptr);
+    *port_registry_, Fader::Type::Generic, false, nullptr, this, nullptr);
   amp =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? 1.f
       : gui::SettingsManager::monitorListenVolume ();
-  listen_fader_->amp_->deff_ =
+  listen_fader_->get_amp_port ().deff_ =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? 1.f
       : gui::SettingsManager::get_instance ()->get_default_monitorListenVolume ();
   listen_fader_->set_amp (amp);
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
-      listen_fader_->amp_->range_.minf_ = 0.5f;
-      listen_fader_->amp_->range_.maxf_ = 2.f;
+      listen_fader_->get_amp_port ().range_.minf_ = 0.5f;
+      listen_fader_->get_amp_port ().range_.maxf_ = 2.f;
     }
 
   dim_fader_ = std::make_unique<Fader> (
-    Fader::Type::Generic, false, nullptr, this, nullptr);
+    *port_registry_, Fader::Type::Generic, false, nullptr, this, nullptr);
   amp =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? 0.1f
       : gui::SettingsManager::monitorDimVolume ();
-  dim_fader_->amp_->deff_ =
+  dim_fader_->get_amp_port ().deff_ =
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? 0.1f
       : gui::SettingsManager::get_default_monitorDimVolume ();
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
-      dim_fader_->amp_->range_.minf_ = 0.f;
-      dim_fader_->amp_->range_.maxf_ = 0.5f;
+      dim_fader_->get_amp_port ().range_.minf_ = 0.f;
+      dim_fader_->get_amp_port ().range_.maxf_ = 0.5f;
     }
   dim_fader_->set_amp (amp);
 
@@ -94,11 +95,14 @@ ControlRoom::init_common ()
     ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
       ? false
       : gui::SettingsManager::monitorMuteEnabled ();
-  monitor_fader_->mute_->set_control_value (mute ? 1.f : 0.f, false, false);
+  monitor_fader_->get_mute_port ().set_control_value (
+    mute ? 1.f : 0.f, false, false);
 }
 
 void
-ControlRoom::init_after_cloning (const ControlRoom &other)
+ControlRoom::init_after_cloning (
+  const ControlRoom &other,
+  ObjectCloneType    clone_type)
 {
   monitor_fader_ = other.monitor_fader_->clone_unique ();
 }
@@ -110,9 +114,10 @@ ControlRoom::is_in_active_project () const
 }
 
 void
-ControlRoom::init_loaded (AudioEngine * engine)
+ControlRoom::init_loaded (PortRegistry &port_registry, AudioEngine * engine)
 {
   audio_engine_ = engine;
-  monitor_fader_->init_loaded (nullptr, this, nullptr);
+  port_registry_ = port_registry;
+  monitor_fader_->init_loaded (*port_registry_, nullptr, this, nullptr);
   init_common ();
 }

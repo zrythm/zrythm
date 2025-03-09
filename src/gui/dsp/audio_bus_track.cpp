@@ -3,12 +3,22 @@
 
 #include "gui/dsp/audio_bus_track.h"
 
-AudioBusTrack::AudioBusTrack (const std::string &name, int pos)
-    : Track (Track::Type::AudioBus, name, pos, PortType::Audio, PortType::Audio)
+AudioBusTrack::AudioBusTrack (
+  TrackRegistry  &track_registry,
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry,
+  bool            new_identity)
+    : Track (Track::Type::AudioBus, PortType::Audio, PortType::Audio),
+      AutomatableTrack (port_registry, new_identity),
+      ProcessableTrack (port_registry, new_identity),
+      ChannelTrack (track_registry, plugin_registry, port_registry, new_identity)
 {
-  /* GTK color picker color */
-  color_ = Color (QColor ("#33D17A"));
-  icon_name_ = "effect";
+  if (new_identity)
+    {
+      /* GTK color picker color */
+      color_ = Color (QColor ("#33D17A"));
+      icon_name_ = "effect";
+    }
   automation_tracklist_->setParent (this);
 }
 
@@ -30,21 +40,25 @@ AudioBusTrack::append_ports (std::vector<Port *> &ports, bool include_plugins)
 }
 
 void
-AudioBusTrack::init_loaded ()
+AudioBusTrack::init_loaded (
+  gui::old_dsp::plugins::PluginRegistry &plugin_registry,
+  PortRegistry                          &port_registry)
 {
   // ChannelTrack must be initialized before AutomatableTrack
-  ChannelTrack::init_loaded ();
-  AutomatableTrack::init_loaded ();
-  ProcessableTrack::init_loaded ();
+  ChannelTrack::init_loaded (plugin_registry, port_registry);
+  AutomatableTrack::init_loaded (plugin_registry, port_registry);
+  ProcessableTrack::init_loaded (plugin_registry, port_registry);
 }
 
 void
-AudioBusTrack::init_after_cloning (const AudioBusTrack &other)
+AudioBusTrack::init_after_cloning (
+  const AudioBusTrack &other,
+  ObjectCloneType      clone_type)
 {
-  ChannelTrack::copy_members_from (other);
-  ProcessableTrack::copy_members_from (other);
-  AutomatableTrack::copy_members_from (other);
-  Track::copy_members_from (other);
+  ChannelTrack::copy_members_from (other, clone_type);
+  ProcessableTrack::copy_members_from (other, clone_type);
+  AutomatableTrack::copy_members_from (other, clone_type);
+  Track::copy_members_from (other, clone_type);
 }
 
 bool

@@ -42,9 +42,6 @@ constexpr int FADER_DEFAULT_FADE_FRAMES_SHORT = 1024;
 
 /**
  * A Fader is a processor that is used for volume controls and pan.
- *
- * It does not necessarily have to correspond to a FaderWidget. It can be used
- * as a backend to KnobWidget's.
  */
 class Fader final
     : public QObject,
@@ -103,6 +100,7 @@ public:
    * @param ch Channel, if this is a channel Fader.
    */
   Fader (
+    PortRegistry     &port_registry,
     Type              type,
     bool              passthrough,
     Track *           track,
@@ -113,14 +111,13 @@ public:
    * Inits fader after a project is loaded.
    */
   ATTR_COLD void init_loaded (
+    PortRegistry     &port_registry,
     Track *           track,
     ControlRoom *     control_room,
     SampleProcessor * sample_processor);
 
-  static Fader *
-  find_from_port_identifier (const zrythm::dsp::PortIdentifier &id);
-
-  static std::unique_ptr<ControlPort> create_swap_phase_port (bool passthrough);
+  static ControlPort *
+  create_swap_phase_port (PortRegistry &port_registry, bool passthrough);
 
   /**
    * Appends the ports owned by fader to the given array.
@@ -159,12 +156,12 @@ public:
   /**
    * Returns if the fader is muted.
    */
-  bool get_muted () const { return mute_->is_toggled (); }
+  bool get_muted () const { return get_mute_port ().is_toggled (); }
 
   /**
    * Returns if the track is soloed.
    */
-  ATTR_HOT bool get_soloed () const { return solo_->is_toggled (); }
+  ATTR_HOT bool get_soloed () const { return get_solo_port ().is_toggled (); }
 
   /**
    * Returns whether the fader is not soloed on its
@@ -177,7 +174,7 @@ public:
   /**
    * Returns whether the fader is listened.
    */
-  bool get_listened () const { return listen_->is_toggled (); }
+  bool get_listened () const { return get_listen_port ().is_toggled (); }
 
   /**
    * Sets fader listen and optionally adds the action
@@ -194,14 +191,14 @@ public:
   /**
    * Gets the fader amplitude (not db)
    */
-  float get_amp () const { return amp_->control_; }
+  float get_amp () const { return get_amp_port ().control_; }
 
   /**
    * Gets whether mono compatibility is enabled.
    */
   bool get_mono_compat_enabled () const
   {
-    return mono_compat_enabled_->is_toggled ();
+    return get_mono_compat_enabled_port ().is_toggled ();
   }
 
   /**
@@ -212,7 +209,7 @@ public:
   /**
    * Gets whether mono compatibility is enabled.
    */
-  bool get_swap_phase () const { return swap_phase_->is_toggled (); }
+  bool get_swap_phase () const { return get_swap_phase_port ().is_toggled (); }
 
   /**
    * Sets whether mono compatibility is enabled.
@@ -223,7 +220,7 @@ public:
 
   float get_default_fader_val () const
   {
-    return utils::math::get_fader_val_from_amp (amp_->deff_);
+    return utils::math::get_fader_val_from_amp (get_amp_port ().deff_);
   }
 
   std::string db_string_getter () const;
@@ -251,14 +248,6 @@ public:
    * Disconnects all ports connected to the fader.
    */
   void disconnect_all ();
-
-  /**
-   * Copy the fader values from another fader.
-   *
-   * Used when cloning channels.
-   */
-  void copy_values (const Fader &other);
-
   /**
    * Process the Fader.
    */
@@ -272,14 +261,149 @@ public:
   std::string
   get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
 
-  void
-  on_control_change_event (const dsp::PortIdentifier &id, float val) override;
+  void on_control_change_event (
+    const PortUuid            &port_uuid,
+    const dsp::PortIdentifier &id,
+    float                      val) override;
 
   bool should_bounce_to_master (utils::audio::BounceStep step) const override;
 
   static int fade_frames_for_type (Type type);
 
-  void init_after_cloning (const Fader &other) override;
+  bool has_audio_ports () const
+  {
+    return type_ == Type::AudioChannel || type_ == Type::Monitor
+           || type_ == Type::SampleProcessor;
+  }
+
+  bool has_midi_ports () const { return type_ == Type::MidiChannel; }
+
+  void
+  init_after_cloning (const Fader &other, ObjectCloneType clone_type) override;
+
+  ControlPort &get_amp_port () const
+  {
+    return *std::get<ControlPort *> (
+      port_registry_->find_by_id_or_throw (amp_id_.value ()));
+  }
+  ControlPort &get_balance_port () const
+  {
+    return *std::get<ControlPort *> (
+      port_registry_->find_by_id_or_throw (balance_id_.value ()));
+  }
+  ControlPort &get_mute_port () const
+  {
+    return *std::get<ControlPort *> (
+      port_registry_->find_by_id_or_throw (mute_id_.value ()));
+  }
+  ControlPort &get_solo_port () const
+  {
+    return *std::get<ControlPort *> (
+      port_registry_->find_by_id_or_throw (solo_id_.value ()));
+  }
+  ControlPort &get_listen_port () const
+  {
+    return *std::get<ControlPort *> (
+      port_registry_->find_by_id_or_throw (listen_id_.value ()));
+  }
+  ControlPort &get_mono_compat_enabled_port () const
+  {
+    return *std::get<ControlPort *> (
+      port_registry_->find_by_id_or_throw (mono_compat_enabled_id_.value ()));
+  }
+  ControlPort &get_swap_phase_port () const
+  {
+    return *std::get<ControlPort *> (
+      port_registry_->find_by_id_or_throw (swap_phase_id_.value ()));
+  }
+  std::pair<AudioPort &, AudioPort &> get_stereo_in_ports () const
+  {
+    if (!has_audio_ports ())
+      {
+        throw std::runtime_error ("Not an audio fader");
+      }
+    auto * l = std::get<AudioPort *> (
+      port_registry_->find_by_id_or_throw (stereo_in_left_id_.value ()));
+    auto * r = std::get<AudioPort *> (
+      port_registry_->find_by_id_or_throw (stereo_in_right_id_.value ()));
+    return { *l, *r };
+  }
+  std::pair<AudioPort &, AudioPort &> get_stereo_out_ports () const
+  {
+    if (!has_audio_ports ())
+      {
+        throw std::runtime_error ("Not an audio fader");
+      }
+    auto * l = std::get<AudioPort *> (
+      port_registry_->find_by_id_or_throw (stereo_out_left_id_.value ()));
+    auto * r = std::get<AudioPort *> (
+      port_registry_->find_by_id_or_throw (stereo_out_right_id_.value ()));
+    return { *l, *r };
+  }
+  MidiPort &get_midi_in_port () const
+  {
+    return *std::get<MidiPort *> (
+      port_registry_->find_by_id_or_throw (midi_in_id_.value ()));
+  }
+  MidiPort &get_midi_out_port () const
+  {
+    return *std::get<MidiPort *> (
+      port_registry_->find_by_id_or_throw (midi_out_id_.value ()));
+  }
+
+  auto get_stereo_in_left_id () const
+  {
+    if (!has_audio_ports ())
+      {
+        throw std::logic_error ("Not an audio fader");
+      }
+    return stereo_in_left_id_.value ();
+  }
+
+  auto get_stereo_in_right_id () const
+  {
+    if (!has_audio_ports ())
+      {
+        throw std::logic_error ("Not an audio fader");
+      }
+    return stereo_in_right_id_.value ();
+  }
+
+  auto get_stereo_out_left_id () const
+  {
+    if (!has_audio_ports ())
+      {
+        throw std::logic_error ("Not an audio fader");
+      }
+    return stereo_out_left_id_.value ();
+  }
+
+  auto get_stereo_out_right_id () const
+  {
+    if (!has_audio_ports ())
+      {
+        throw std::logic_error ("Not an audio fader");
+      }
+    return stereo_out_right_id_.value ();
+  }
+
+  auto get_midi_in_id () const
+  {
+    if (!has_midi_ports ())
+      {
+        throw std::logic_error ("Not a MIDI fader");
+      }
+    return midi_in_id_.value ();
+  }
+
+  auto get_midi_out_id () const
+  {
+    if (!has_midi_ports ())
+      {
+        throw std::logic_error ("Not a MIDI fader");
+      }
+    return midi_out_id_.value ();
+  }
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -304,52 +428,56 @@ public:
    */
   float last_cc_volume_ = 0.f;
 
+private:
   /**
    * A control port that controls the volume in amplitude (0.0 ~ 1.5)
    */
-  std::unique_ptr<ControlPort> amp_;
+  std::optional<PortUuid> amp_id_;
 
   /** A control Port that controls the balance
    * (0.0 ~ 1.0) 0.5 is center. */
-  std::unique_ptr<ControlPort> balance_;
+  std::optional<PortUuid> balance_id_;
 
   /**
    * Control port for muting the (channel) fader.
    */
-  std::unique_ptr<ControlPort> mute_;
+  std::optional<PortUuid> mute_id_;
 
   /** Soloed or not. */
-  std::unique_ptr<ControlPort> solo_;
+  std::optional<PortUuid> solo_id_;
 
   /** Listened or not. */
-  std::unique_ptr<ControlPort> listen_;
+  std::optional<PortUuid> listen_id_;
 
   /** Whether mono compatibility switch is enabled. */
-  std::unique_ptr<ControlPort> mono_compat_enabled_;
+  std::optional<PortUuid> mono_compat_enabled_id_;
 
   /** Swap phase toggle. */
-  std::unique_ptr<ControlPort> swap_phase_;
+  std::optional<PortUuid> swap_phase_id_;
 
   /**
-   * L & R audio input ports, if audio.
+   * Audio input ports, if audio.
    */
-  std::unique_ptr<StereoPorts> stereo_in_;
+  std::optional<PortUuid> stereo_in_left_id_;
+  std::optional<PortUuid> stereo_in_right_id_;
 
   /**
-   * L & R audio output ports, if audio.
+   * Audio output ports, if audio.
    */
-  std::unique_ptr<StereoPorts> stereo_out_;
+  std::optional<PortUuid> stereo_out_left_id_;
+  std::optional<PortUuid> stereo_out_right_id_;
 
   /**
    * MIDI in port, if MIDI.
    */
-  std::unique_ptr<MidiPort> midi_in_;
+  std::optional<PortUuid> midi_in_id_;
 
   /**
    * MIDI out port, if MIDI.
    */
-  std::unique_ptr<MidiPort> midi_out_;
+  std::optional<PortUuid> midi_out_id_;
 
+public:
   /**
    * Current dBFS after processing each output port.
    *
@@ -404,6 +532,8 @@ public:
 
   /** Cache. */
   bool was_effectively_muted_ = false;
+
+  OptionalRef<PortRegistry> port_registry_;
 };
 
 /**

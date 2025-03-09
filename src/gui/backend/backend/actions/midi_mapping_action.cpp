@@ -17,15 +17,14 @@ MidiMappingAction::MidiMappingAction (QObject * parent)
 }
 
 void
-MidiMappingAction::init_after_cloning (const MidiMappingAction &other)
+MidiMappingAction::init_after_cloning (
+  const MidiMappingAction &other,
+  ObjectCloneType          clone_type)
 {
-  UndoableAction::copy_members_from (other);
+  UndoableAction::copy_members_from (other, clone_type);
   idx_ = other.idx_;
   type_ = other.type_;
-  if (other.dest_port_id_ != nullptr)
-    {
-      dest_port_id_ = other.dest_port_id_->clone_unique ();
-    }
+  dest_port_id_ = other.dest_port_id_;
   dev_port_ =
     other.dev_port_ ? std::make_unique<ExtPort> (*other.dev_port_) : nullptr;
   buf_ = other.buf_;
@@ -43,7 +42,7 @@ MidiMappingAction::MidiMappingAction (
   const ExtPort *                  device_port,
   const Port                      &dest_port)
     : UndoableAction (UndoableAction::Type::MidiMapping), type_ (Type::Bind),
-      dest_port_id_ (dest_port.id_->clone_unique ()),
+      dest_port_id_ (dest_port.get_uuid ()),
       dev_port_ (
         (device_port != nullptr)
           ? std::make_unique<ExtPort> (*device_port)
@@ -80,7 +79,7 @@ MidiMappingAction::bind_or_unbind (bool bind)
         mapping->device_port_
           ? std::make_unique<ExtPort> (*mapping->device_port_)
           : nullptr;
-      dest_port_id_ = mapping->dest_id_->clone_unique ();
+      dest_port_id_ = mapping->dest_id_;
       MIDI_MAPPINGS->unbind (idx_, false);
     }
 }

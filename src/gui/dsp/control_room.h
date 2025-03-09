@@ -36,21 +36,22 @@ class ControlRoom final
 {
 public:
   ControlRoom () = default;
-  ControlRoom (AudioEngine * engine);
+  ControlRoom (PortRegistry &port_registry, AudioEngine * engine);
 
   bool is_in_active_project () const;
 
   /**
    * Inits the control room from a project.
    */
-  void init_loaded (AudioEngine * engine);
+  void init_loaded (PortRegistry &port_registry, AudioEngine * engine);
 
   /**
    * Sets dim_output to on/off and notifies interested parties.
    */
   void set_dim_output (bool dim_output) { dim_output_ = dim_output; }
 
-  void init_after_cloning (const ControlRoom &other) override;
+  void init_after_cloning (const ControlRoom &other, ObjectCloneType clone_type)
+    override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -98,6 +99,8 @@ public:
 
   /** Pointer to owner audio engine, if any. */
   AudioEngine * audio_engine_ = nullptr;
+
+  OptionalRef<PortRegistry> port_registry_;
 };
 
 /**

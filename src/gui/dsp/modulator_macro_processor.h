@@ -31,8 +31,12 @@ class ModulatorMacroProcessor final
       public IPortOwner
 {
 public:
-  ModulatorMacroProcessor () = default;
-  ModulatorMacroProcessor (ModulatorTrack * track, int idx);
+  ModulatorMacroProcessor (const DeserializationDependencyHolder &dh);
+  ModulatorMacroProcessor (
+    PortRegistry      &port_registry,
+    ModulatorTrack *   track,
+    std::optional<int> idx,
+    bool               new_identity);
 
   bool is_in_active_project () const override;
 
@@ -57,11 +61,29 @@ public:
 
   void process_block (EngineProcessTimeInfo time_nfo) override;
 
-  void init_after_cloning (const ModulatorMacroProcessor &other) override;
+  void init_after_cloning (
+    const ModulatorMacroProcessor &other,
+    ObjectCloneType                clone_type) override;
+
+  CVPort &get_cv_in_port ()
+  {
+    return *std::get<CVPort *> (port_registry_.find_by_id_or_throw (cv_in_id_));
+  }
+
+  CVPort &get_cv_out_port ()
+  {
+    return *std::get<CVPort *> (port_registry_.find_by_id_or_throw (cv_out_id_));
+  }
+
+  ControlPort &get_macro_port ()
+  {
+    return *std::get<ControlPort *> (
+      port_registry_.find_by_id_or_throw (macro_id_));
+  }
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
-public:
+private:
   /**
    * Name to be shown in the modulators tab.
    *
@@ -71,20 +93,22 @@ public:
   std::string name_;
 
   /** CV input port for connecting CV signals to. */
-  std::unique_ptr<CVPort> cv_in_;
+  PortUuid cv_in_id_;
 
   /**
    * CV output after macro is applied.
    *
    * This can be routed to other parameters to apply the macro.
    */
-  std::unique_ptr<CVPort> cv_out_;
+  PortUuid cv_out_id_;
 
   /** Control port controlling the amount. */
-  std::unique_ptr<ControlPort> macro_;
+  PortUuid macro_id_;
 
   /** Pointer to owner track, if any. */
   ModulatorTrack * track_{};
+
+  PortRegistry &port_registry_;
 };
 
 /**

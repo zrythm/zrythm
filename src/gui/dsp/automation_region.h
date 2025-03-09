@@ -38,17 +38,16 @@ public:
    *
    * @param start_pos
    * @param end_pos
-   * @param track_name_hash
    * @param at_idx
    * @param idx_inside_at
    */
   AutomationRegion (
-    const Position &start_pos,
-    const Position &end_pos,
-    unsigned int    track_name_hash,
-    int             at_idx,
-    int             idx_inside_at,
-    QObject *       parent = nullptr);
+    const Position                &start_pos,
+    const Position                &end_pos,
+    dsp::PortIdentifier::TrackUuid track_id,
+    int                            at_idx,
+    int                            idx_inside_at,
+    QObject *                      parent = nullptr);
 
   // ========================================================================
   // QML Interface
@@ -160,7 +159,9 @@ public:
   std::optional<ClipEditorArrangerSelectionsPtrVariant>
   get_arranger_selections () const override;
 
-  void init_after_cloning (const AutomationRegion &other) override;
+  void
+  init_after_cloning (const AutomationRegion &other, ObjectCloneType clone_type)
+    override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

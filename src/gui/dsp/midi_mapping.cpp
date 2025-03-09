@@ -26,12 +26,14 @@ MidiMappings::init_loaded ()
 }
 
 void
-MidiMapping::init_after_cloning (const MidiMapping &other)
+MidiMapping::init_after_cloning (
+  const MidiMapping &other,
+  ObjectCloneType    clone_type)
 {
   key_ = other.key_;
   if (other.device_port_)
     device_port_ = std::make_unique<ExtPort> (*other.device_port_);
-  dest_id_ = other.dest_id_->clone_unique ();
+  dest_id_ = other.dest_id_;
   enabled_.store (other.enabled_.load ());
 }
 
@@ -50,7 +52,7 @@ MidiMappings::bind_at (
     {
       mapping->device_port_ = std::make_unique<ExtPort> (*device_port);
     }
-  mapping->dest_id_ = dest_port.id_->clone_unique ();
+  mapping->dest_id_ = dest_port.get_uuid ();
   mapping->dest_ = &dest_port;
   mapping->enabled_.store (true);
 
@@ -59,10 +61,8 @@ MidiMappings::bind_at (
   char str[100];
   midi_ctrl_change_get_ch_and_description (buf.data (), str);
 
-  if (
-    !(ENUM_BITSET_TEST (
-      dsp::PortIdentifier::Flags, dest_port.id_->flags_,
-      dsp::PortIdentifier::Flags::MidiAutomatable)))
+  if (!(ENUM_BITSET_TEST (
+        dest_port.id_->flags_, dsp::PortIdentifier::Flags::MidiAutomatable)))
     {
       z_info ("bounded MIDI mapping from {} to {}", str, dest_port.get_label ());
     }
@@ -104,10 +104,7 @@ MidiMapping::apply (std::array<midi_byte_t, 3> buf)
     {
       auto * dest = dynamic_cast<ControlPort *> (dest_);
       /* if toggle, reverse value */
-      if (
-        ENUM_BITSET_TEST (
-          PortIdentifier::Flags, dest->id_->flags_,
-          PortIdentifier::Flags::Toggle))
+      if (ENUM_BITSET_TEST (dest->id_->flags_, PortIdentifier::Flags::Toggle))
         {
           dest->set_toggled (!dest->is_toggled (), true);
         }
@@ -122,46 +119,39 @@ MidiMapping::apply (std::array<midi_byte_t, 3> buf)
     {
       /* FIXME these are called during processing they should be queued as UI
        * events instead */
-      if (
-        ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, dest_->id_->flags2_,
-          PortIdentifier::Flags2::TransportRoll))
+      if (ENUM_BITSET_TEST (
+            dest_->id_->flags2_, PortIdentifier::Flags2::TransportRoll))
         {
           // EVENTS_PUSH (EventType::ET_TRANSPORT_ROLL_REQUIRED, nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, dest_->id_->flags2_,
-          PortIdentifier::Flags2::TransportStop))
+          dest_->id_->flags2_, PortIdentifier::Flags2::TransportStop))
         {
           // EVENTS_PUSH (EventType::ET_TRANSPORT_PAUSE_REQUIRED, nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, dest_->id_->flags2_,
-          PortIdentifier::Flags2::TransportBackward))
+          dest_->id_->flags2_, PortIdentifier::Flags2::TransportBackward))
         {
           // EVENTS_PUSH (EventType::ET_TRANSPORT_MOVE_BACKWARD_REQUIRED,
           // nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, dest_->id_->flags2_,
-          PortIdentifier::Flags2::TransportForward))
+          dest_->id_->flags2_, PortIdentifier::Flags2::TransportForward))
         {
           // EVENTS_PUSH (EventType::ET_TRANSPORT_MOVE_FORWARD_REQUIRED, nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, dest_->id_->flags2_,
-          PortIdentifier::Flags2::TransportLoopToggle))
+          dest_->id_->flags2_, PortIdentifier::Flags2::TransportLoopToggle))
         {
           // EVENTS_PUSH (EventType::ET_TRANSPORT_TOGGLE_LOOP_REQUIRED, nullptr);
         }
       else if (
         ENUM_BITSET_TEST (
-          PortIdentifier::Flags2, dest_->id_->flags2_,
-          PortIdentifier::Flags2::TransportRecToggle))
+          dest_->id_->flags2_, PortIdentifier::Flags2::TransportRecToggle))
         {
           /* EVENTS_PUSH (
             EventType::ET_TRANSPORT_TOGGLE_RECORDING_REQUIRED, nullptr); */

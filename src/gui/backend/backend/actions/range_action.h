@@ -50,7 +50,8 @@ public:
            || (sel_after_ && sel_after_->contains_clip (clip));
   }
 
-  void init_after_cloning (const RangeAction &other) override;
+  void init_after_cloning (const RangeAction &other, ObjectCloneType clone_type)
+    override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

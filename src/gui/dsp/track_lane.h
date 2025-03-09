@@ -219,11 +219,6 @@ public:
   void unselect_all ();
 
   /**
-   * Sets the new track name hash to all the lane's objects recursively.
-   */
-  void update_track_name_hash ();
-
-  /**
    * Writes the lane to the given MIDI file.
    *
    * @param lanes_as_tracks Export lanes as separate MIDI tracks.
@@ -262,7 +257,8 @@ public:
   std::unique_ptr<TrackLaneT> gen_snapshot () const;
 
 protected:
-  void copy_members_from (const TrackLaneImpl &other);
+  void
+  copy_members_from (const TrackLaneImpl &other, ObjectCloneType clone_type);
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

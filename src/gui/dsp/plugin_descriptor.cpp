@@ -14,7 +14,8 @@ using namespace zrythm::gui::old_dsp::plugins;
 
 void
 PluginDescriptor::init_after_cloning (
-  const zrythm::gui::old_dsp::plugins::PluginDescriptor &other)
+  const PluginDescriptor &other,
+  ObjectCloneType         clone_type)
 {
   author_ = other.author_;
   name_ = other.name_;

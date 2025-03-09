@@ -50,16 +50,18 @@ public:
    *   manager at the start of the action, if needed.
    */
   ChannelSendAction (
-    Type                           type,
-    const ChannelSend             &send,
-    const Port *                   port,
-    const StereoPorts *            stereo,
-    float                          amount,
+    Type                                                           type,
+    const ChannelSend                                             &send,
+    const Port *                                                   port,
+    std::optional<std::pair<const AudioPort &, const AudioPort &>> stereo,
+    float                                                          amount,
     const PortConnectionsManager * port_connections_mgr);
 
   QString to_string () const override;
 
-  void init_after_cloning (const ChannelSendAction &other) override;
+  void
+  init_after_cloning (const ChannelSendAction &other, ObjectCloneType clone_type)
+    override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -76,9 +78,9 @@ public:
   float amount_ = 0.f;
 
   /** Target port identifiers. */
-  std::unique_ptr<PortIdentifier> l_id_;
-  std::unique_ptr<PortIdentifier> r_id_;
-  std::unique_ptr<PortIdentifier> midi_id_;
+  std::optional<PortIdentifier::PortUuid> l_id_;
+  std::optional<PortIdentifier::PortUuid> r_id_;
+  std::optional<PortIdentifier::PortUuid> midi_id_;
 
   /** Action type. */
   Type send_action_type_ = Type ();
@@ -90,7 +92,7 @@ public:
   ChannelSendDisconnectAction (
     const ChannelSend            &send,
     const PortConnectionsManager &port_connections_mgr)
-      : ChannelSendAction (Type::Disconnect, send, nullptr, nullptr, 0.f, &port_connections_mgr)
+      : ChannelSendAction (Type::Disconnect, send, nullptr, std::nullopt, 0.f, &port_connections_mgr)
   {
   }
 };
@@ -102,7 +104,7 @@ public:
     const ChannelSend            &send,
     const Port                   &midi,
     const PortConnectionsManager &port_connections_mgr)
-      : ChannelSendAction (Type::ConnectMidi, send, &midi, nullptr, 0.f, &port_connections_mgr)
+      : ChannelSendAction (Type::ConnectMidi, send, &midi, std::nullopt, 0.f, &port_connections_mgr)
   {
   }
 };
@@ -111,10 +113,10 @@ class ChannelSendConnectStereoAction final : public ChannelSendAction
 {
 public:
   ChannelSendConnectStereoAction (
-    const ChannelSend            &send,
-    const StereoPorts            &stereo,
-    const PortConnectionsManager &port_connections_mgr)
-      : ChannelSendAction (Type::ConnectStereo, send, nullptr, &stereo, 0.f, &port_connections_mgr)
+    const ChannelSend                              &send,
+    std::pair<const AudioPort &, const AudioPort &> stereo,
+    const PortConnectionsManager                   &port_connections_mgr)
+      : ChannelSendAction (Type::ConnectStereo, send, nullptr, stereo, 0.f, &port_connections_mgr)
   {
   }
 };
@@ -123,14 +125,14 @@ class ChannelSendConnectSidechainAction final : public ChannelSendAction
 {
 public:
   ChannelSendConnectSidechainAction (
-    const ChannelSend            &send,
-    const StereoPorts            &sidechain,
-    const PortConnectionsManager &port_connections_mgr)
+    const ChannelSend                              &send,
+    std::pair<const AudioPort &, const AudioPort &> sidechain,
+    const PortConnectionsManager                   &port_connections_mgr)
       : ChannelSendAction (
           Type::ConnectSidechain,
           send,
           nullptr,
-          &sidechain,
+          sidechain,
           0.f,
           &port_connections_mgr)
   {
@@ -141,7 +143,7 @@ class ChannelSendChangeAmountAction final : public ChannelSendAction
 {
 public:
   ChannelSendChangeAmountAction (const ChannelSend &send, float amount)
-      : ChannelSendAction (Type::ChangeAmount, send, nullptr, nullptr, amount, nullptr)
+      : ChannelSendAction (Type::ChangeAmount, send, nullptr, std::nullopt, amount, nullptr)
   {
   }
 };

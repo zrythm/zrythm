@@ -77,7 +77,9 @@ PositionProxy::getStringDisplay (
 }
 
 void
-PositionProxy::init_after_cloning (const PositionProxy &other)
+PositionProxy::init_after_cloning (
+  const PositionProxy &other,
+  ObjectCloneType      clone_type)
 {
   static_cast<Position &> (*this) = static_cast<const Position &> (other);
   realtime_updateable_ = other.realtime_updateable_;

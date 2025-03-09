@@ -43,7 +43,9 @@ RegionOwnerImpl<RegionT>::foreach_region (
 
 template <typename RegionT>
 void
-RegionOwnerImpl<RegionT>::copy_members_from (const RegionOwnerImpl &other)
+RegionOwnerImpl<RegionT>::copy_members_from (
+  const RegionOwnerImpl &other,
+  ObjectCloneType        clone_type)
 {
   auto * derived = dynamic_cast<QObject *> (this);
   region_list_ = other.region_list_->clone_raw_ptr ();
@@ -182,7 +184,7 @@ RegionOwnerImpl<RegionT>::insert_region (RegionTPtr region, int idx)
   else if constexpr (std::is_same_v<RegionT, ChordRegion>)
     {
       auto * chord_track = dynamic_cast<ChordTrack *> (this);
-      region->id_.track_name_hash_ = chord_track->get_name_hash ();
+      region->id_.track_uuid_ = chord_track->get_uuid ();
     }
 
   for (int i = region_list_->regions_.size () - 1; i >= idx; --i)

@@ -36,12 +36,16 @@ class PianoRollTrack
       public LanedTrackImpl<MidiLane>,
       public zrythm::utils::serialization::ISerializable<PianoRollTrack>
 {
-public:
+  Z_DISABLE_COPY_MOVE (PianoRollTrack)
+protected:
   PianoRollTrack () = default;
-  Q_DISABLE_COPY_MOVE (PianoRollTrack)
+
+public:
   ~PianoRollTrack () override = default;
 
-  void init_loaded () override;
+  void
+  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
+    override;
 
   MidiRegion * create_and_add_midi_region (double startTicks, int laneIndex);
 
@@ -83,14 +87,12 @@ public:
     const Position *       p2) override;
 
 protected:
-  void copy_members_from (const PianoRollTrack &other);
+  void
+  copy_members_from (const PianoRollTrack &other, ObjectCloneType clone_type);
 
   void set_playback_caches () override;
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
-
-private:
-  void update_name_hash (unsigned int new_name_hash) override;
 
 public:
   /**

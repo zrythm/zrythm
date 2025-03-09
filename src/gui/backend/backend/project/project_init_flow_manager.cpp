@@ -333,7 +333,7 @@ ProjectInitFlowManager::create_default (
 
   if (with_engine)
     {
-      prj->tracklist_->expose_ports_to_backend (*engine);
+      prj->tracklist_->get_track_span ().expose_ports_to_backend (*engine);
     }
 
   auto beats_per_bar = prj->tracklist_->tempo_track_->get_beats_per_bar ();
@@ -622,17 +622,20 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
 
   zrythm::gui::ProjectManager::get_instance ()->setActiveProject (
     deserialized_project.release ());
-  auto prj = zrythm::gui::ProjectManager::get_instance ()->getActiveProject ();
+  auto * prj = zrythm::gui::ProjectManager::get_instance ()->getActiveProject ();
 
   /* re-update paths for the newly loaded project */
   prj->dir_ = dir_;
 
   /* set the tempo track */
-  for (auto track : prj->tracklist_->tracks_ | type_is<TempoTrack> ())
-    {
-      prj->tracklist_->tempo_track_ = track;
-      break;
-    }
+  auto get_tempo_track = [] (auto &prj) -> TempoTrack * {
+    return (prj->tracklist_->get_track_span ()
+            | std::views::filter (TrackSpan::is_type_projection<TempoTrack>)
+            | std::views::transform (TrackSpan::type_transformation<TempoTrack>)
+            | std::views::take (1))
+      .front ();
+  };
+  prj->tracklist_->tempo_track_ = get_tempo_track (prj);
 
   std::string filepath_noext = utils::io::path_get_basename (dir_);
 
@@ -659,7 +662,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
       auto * tempo_track = prj->tracklist_->tempo_track_;
       if (!tempo_track)
         {
-          tempo_track = prj->tracklist_->get_track_by_type<TempoTrack> ();
+          tempo_track = get_tempo_track (prj);
         }
       if (!tempo_track)
         {
@@ -690,7 +693,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
   prj->clip_editor_.init_loaded ();
 
   auto * tracklist = prj->tracklist_;
-  tracklist->init_loaded (*prj);
+  tracklist->init_loaded (prj->get_port_registry (), *prj);
 
   int beats_per_bar = tracklist->tempo_track_->get_beats_per_bar ();
   engine->update_frames_per_tick (
@@ -730,8 +733,6 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
   init_or_create_arr_selections (prj->automation_selections_);
   init_or_create_arr_selections (prj->timeline_selections_);
   init_or_create_arr_selections (prj->midi_selections_);
-
-  prj->tracklist_selections_->init_loaded (*tracklist);
 
   prj->quantize_opts_timeline_->update_quantize_points (*prj->transport_);
   prj->quantize_opts_editor_->update_quantize_points (*prj->transport_);

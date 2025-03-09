@@ -47,7 +47,9 @@ TrackLaneList::data (const QModelIndex &index, int role) const
 }
 
 void
-TrackLaneList::copy_members_from (const TrackLaneList &other)
+TrackLaneList::copy_members_from (
+  const TrackLaneList &other,
+  ObjectCloneType      clone_type)
 {
   clear ();
   lanes_.reserve (other.size ());

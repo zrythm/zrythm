@@ -209,6 +209,22 @@ struct fmt::formatter<Ptr> : fmt::formatter<std::string_view>
   }
 };
 
+// Formatter for std::optional
+template <typename T>
+struct fmt::formatter<std::optional<T>> : fmt::formatter<std::string_view>
+{
+  template <typename FormatContext>
+  auto format (const std::optional<T> &opt, FormatContext &ctx) const
+  {
+    if (opt.has_value ())
+      {
+        return fmt::formatter<std::string_view>::format (
+          fmt::format ("{}", *opt), ctx);
+      }
+    return fmt::formatter<std::string_view>::format ("(nullopt)", ctx);
+  }
+};
+
 /**
  * @}
  */

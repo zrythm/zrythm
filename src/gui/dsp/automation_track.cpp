@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cmath>
+#include <cstddef>
 #include <ranges>
 
 #include "dsp/port_identifier.h"
@@ -21,7 +22,7 @@
 AutomationTrack::AutomationTrack (ControlPort &port)
 {
   z_return_if_fail (port.id_->validate ());
-  port_id_ = port.id_->clone_unique ();
+  port_id_ = port.get_uuid ();
 
   port.at_ = this;
 
@@ -51,6 +52,16 @@ AutomationTrack::init_loaded (AutomationTracklist * atl)
 // ========================================================================
 // QML Interface
 // ========================================================================
+
+QString
+AutomationTrack::getLabel () const
+{
+  auto port = PROJECT->find_port_by_id (port_id_);
+  z_return_val_if_fail (port.has_value (), QString ());
+  return std::visit (
+    [&] (auto &&p) { return QString::fromStdString (p->get_label ()); },
+    port.value ());
+}
 
 void
 AutomationTrack::setHeight (double height)
@@ -86,9 +97,9 @@ AutomationTrack::setRecordMode (int record_mode)
 // ========================================================================
 
 void
-AutomationTrack::set_port_id (const PortIdentifier &id)
+AutomationTrack::set_port_id (const PortUuid &id)
 {
-  port_id_ = id.clone_unique ();
+  port_id_ = id;
   Q_EMIT labelChanged (getLabel ());
 }
 
@@ -107,24 +118,14 @@ AutomationTrack::is_auditioner () const
 bool
 AutomationTrack::validate () const
 {
-  z_return_val_if_fail (port_id_->validate (), false);
-
-  unsigned int track_name_hash = port_id_->track_name_hash_;
-  if (port_id_->owner_type_ == PortIdentifier::OwnerType::Plugin)
-    {
-      z_return_val_if_fail (
-        port_id_->plugin_id_.track_name_hash_ == track_name_hash, false);
-    }
-
   /* this is expensive so only do this during tests */
   if (ZRYTHM_TESTING)
     {
-      auto * found_at = find_from_port_id (*port_id_, !ZRYTHM_TESTING);
+      auto found_at = find_from_port_id (port_id_, !ZRYTHM_TESTING);
       if (found_at != this)
         {
           z_warning (
-            "The automation track for the following port identifier was not found");
-          port_id_->print ();
+            "The automation track for port ID {} was not found", port_id_);
           z_warning ("automation tracks:");
           auto * atl = get_automation_tracklist ();
           atl->print_ats ();
@@ -138,13 +139,13 @@ AutomationTrack::validate () const
       auto * region = std::get<AutomationRegion *> (region_var);
       ++j;
       z_return_val_if_fail (
-        region->id_.track_name_hash_ == track_name_hash
+        region->id_.track_uuid_ == atl_->track_->get_uuid ()
           && region->id_.at_idx_ == index_ && region->id_.idx_ == j,
         false);
       for (const auto &ap : region->aps_)
         {
           z_return_val_if_fail (
-            ap->region_id_.track_name_hash_ == track_name_hash, false);
+            ap->region_id_.track_uuid_ == atl_->track_->get_uuid (), false);
         }
     }
 
@@ -260,8 +261,9 @@ AutomationTrack::find_from_port (
 {
   if (!track)
     {
-      auto track_var =
-        PROJECT->find_track_by_name_hash (port.id_->track_name_hash_);
+      auto track_id_opt = port.id_->get_track_id ();
+      z_return_val_if_fail (track_id_opt.has_value (), nullptr);
+      auto track_var = PROJECT->find_track_by_id (track_id_opt.value ());
       z_return_val_if_fail (track_var.has_value (), nullptr);
       track = std::visit (
         [&] (auto &&t) { return dynamic_cast<AutomatableTrack *> (t); },
@@ -270,89 +272,21 @@ AutomationTrack::find_from_port (
   z_return_val_if_fail (track, nullptr);
 
   auto &atl = track->get_automation_tracklist ();
-  for (const auto &at : atl.ats_)
-    {
-      if (basic_search)
-        {
-          const auto &src = port.id_;
-          const auto &dest = at->port_id_;
-          if (
-            dest->owner_type_ == src->owner_type_ && dest->type_ == src->type_
-            && dest->flow_ == src->flow_ && dest->flags_ == src->flags_
-            && dest->track_name_hash_ == src->track_name_hash_
-            && (dest->sym_.empty() ? dest->label_ == src->label_ : dest->sym_ == src->sym_ ))
-            {
-              if (dest->owner_type_ == PortIdentifier::OwnerType::Plugin)
-                {
-                  if (dest->plugin_id_ != src->plugin_id_)
-                    {
-                      continue;
-                    }
-
-                  auto pl_var =
-                    PROJECT->find_plugin_by_id (port.id_->plugin_id_);
-                  z_return_val_if_fail (pl_var.has_value (), nullptr);
-                  auto * pl = std::visit (
-                    [&] (auto &&plugin) {
-                      return dynamic_cast<gui::old_dsp::plugins::Plugin *> (
-                        plugin);
-                    },
-                    pl_var.value ());
-                  z_return_val_if_fail (pl, nullptr);
-
-                  if (
-                    pl->get_protocol ()
-                    == zrythm::gui::old_dsp::plugins::Protocol::ProtocolType::LV2)
-                    {
-                      /* if lv2 plugin port (not standard zrythm-provided port),
-                       * make sure the symbol matches (some plugins have multiple
-                       * ports with the same label but different symbol) */
-                      if (
-                        !ENUM_BITSET_TEST (
-                          PortIdentifier::Flags, src->flags_,
-                          PortIdentifier::Flags::GenericPluginPort)
-                        && dest->sym_ != src->sym_)
-                        {
-                          continue;
-                        }
-                      return at;
-                    }
-                  /* if not lv2, also search by index */
-                  if (dest->port_index_ == src->port_index_)
-                    {
-                      return at;
-                    }
-                }
-              else
-                {
-                  if (dest->port_index_ == src->port_index_)
-                    {
-                      return at;
-                    }
-                }
-            }
-        }
-      /* not basic search */
-      else
-        {
-          if (port.id_ == at->port_id_)
-            {
-              return at;
-            }
-        }
-    }
-
-  return nullptr;
+  auto  it = std::ranges::find_if (atl.ats_, [&] (const auto &at) {
+    return at->port_id_ == port.get_uuid ();
+  });
+  z_return_val_if_fail (it != atl.ats_.end (), nullptr);
+  return *it;
 }
 
 AutomationTrack *
-AutomationTrack::find_from_port_id (const PortIdentifier &id, bool basic_search)
+AutomationTrack::find_from_port_id (const PortUuid &id, bool basic_search)
 {
   auto port_var = PROJECT->find_port_by_id (id);
   z_return_val_if_fail (
     port_var && std::holds_alternative<ControlPort *> (*port_var), nullptr);
   auto * port = std::get<ControlPort *> (*port_var);
-  z_return_val_if_fail (id == *port->id_, nullptr);
+  z_return_val_if_fail (id == port->get_uuid (), nullptr);
 
   return find_from_port (*port, nullptr, basic_search);
 }
@@ -412,16 +346,20 @@ AutomationTrack::should_be_recording (RtTimePoint cur_time, bool record_aps) con
        * armed) and then only when changes are made) */
       return true;
     }
-  else if (record_mode_ == AutomationRecordMode::Touch)
+
+  if (record_mode_ == AutomationRecordMode::Touch)
     {
-      z_return_val_if_fail (port_, false);
-      auto diff = cur_time - port_->last_change_time_;
-      if (diff < AUTOMATION_RECORDING_TOUCH_REL_MS * 1000)
+      const auto &port = get_port ();
+      const auto  diff = cur_time - port.last_change_time_;
+      if (
+        diff
+        < static_cast<RtTimePoint> (AUTOMATION_RECORDING_TOUCH_REL_MS) * 1000)
         {
           /* still recording */
           return true;
         }
-      else if (!record_aps)
+
+      if (!record_aps)
         return recording_started_;
     }
 
@@ -431,8 +369,14 @@ AutomationTrack::should_be_recording (RtTimePoint cur_time, bool record_aps) con
 AutomatableTrack *
 AutomationTrack::get_track () const
 {
-  auto track_var =
-    TRACKLIST->find_track_by_name_hash (port_id_->track_name_hash_);
+  auto port_var = PROJECT->find_port_by_id (port_id_);
+  z_return_val_if_fail (
+    port_var && std::holds_alternative<ControlPort *> (*port_var), nullptr);
+  auto * port = std::get<ControlPort *> (*port_var);
+  z_return_val_if_fail (port_id_ == port->get_uuid (), nullptr);
+  auto track_id_opt = port->id_->get_track_id ();
+  z_return_val_if_fail (track_id_opt.has_value (), nullptr);
+  auto track_var = PROJECT->find_track_by_id (track_id_opt.value ());
   z_return_val_if_fail (track_var, nullptr);
   return std::visit (
     [&] (auto &track) -> AutomatableTrack * {
@@ -442,6 +386,12 @@ AutomationTrack::get_track () const
       z_return_val_if_reached (nullptr);
     },
     *track_var);
+}
+
+ControlPort &
+AutomationTrack::get_port () const
+{
+  return atl_->get_port (port_id_);
 }
 
 void
@@ -466,7 +416,7 @@ AutomationTrack::get_val_at_pos (
 {
   auto ap = get_ap_before_pos (pos, ends_after, use_snapshots);
 
-  auto port_var = PROJECT->find_port_by_id (*port_id_);
+  auto port_var = PROJECT->find_port_by_id (port_id_);
   z_return_val_if_fail (
     port_var && std::holds_alternative<ControlPort *> (*port_var), 0.f);
   auto * port = std::get<ControlPort *> (*port_var);
@@ -563,7 +513,7 @@ AutomationTrack::verify () const
 void
 AutomationTrack::set_caches (CacheType types)
 {
-  if (ENUM_BITSET_TEST (CacheType, types, CacheType::PlaybackSnapshots))
+  if (ENUM_BITSET_TEST (types, CacheType::PlaybackSnapshots))
     {
       region_snapshots_.clear ();
       for (const auto &r_var : region_list_->regions_)
@@ -573,19 +523,20 @@ AutomationTrack::set_caches (CacheType types)
         }
     }
 
-  if (ENUM_BITSET_TEST (CacheType, types, CacheType::AutomationLanePorts))
+#if 0
+  if (ENUM_BITSET_TEST ( types, CacheType::AutomationLanePorts))
     {
-      auto port_var = PROJECT->find_port_by_id (*port_id_);
-      z_return_if_fail (
-        port_var && std::holds_alternative<ControlPort *> (*port_var));
-      port_ = std::get<ControlPort *> (*port_var);
+      port_ = get_port ();
     }
+#endif
 }
 
 void
-AutomationTrack::init_after_cloning (const AutomationTrack &other)
+AutomationTrack::init_after_cloning (
+  const AutomationTrack &other,
+  ObjectCloneType        clone_type)
 {
-  RegionOwnerImpl<AutomationRegion>::copy_members_from (other);
+  RegionOwnerImpl<AutomationRegion>::copy_members_from (other, clone_type);
   visible_ = other.visible_;
   created_ = other.created_;
   index_ = other.index_;
@@ -594,6 +545,5 @@ AutomationTrack::init_after_cloning (const AutomationTrack &other)
   record_mode_ = other.record_mode_;
   height_ = other.height_;
   z_warn_if_fail (height_ >= TRACK_MIN_HEIGHT);
-
-  port_id_ = other.port_id_->clone_unique ();
+  port_id_ = other.port_id_;
 }

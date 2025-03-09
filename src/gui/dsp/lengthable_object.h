@@ -232,7 +232,8 @@ public:
   operator== (const LengthableObject &lhs, const LengthableObject &rhs);
 
 protected:
-  void copy_members_from (const LengthableObject &other);
+  void
+  copy_members_from (const LengthableObject &other, ObjectCloneType clone_type);
 
   void init_loaded_base ();
 

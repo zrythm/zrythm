@@ -118,7 +118,7 @@ AudioClip::init_loaded (const fs::path &full_path)
 }
 
 void
-AudioClip::init_after_cloning (const AudioClip &other)
+AudioClip::init_after_cloning (const AudioClip &other, ObjectCloneType clone_type)
 {
   name_ = other.name_;
   ch_frames_ = other.ch_frames_;

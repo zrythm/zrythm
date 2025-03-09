@@ -12,8 +12,9 @@ MidiLane::MidiLane (LanedTrackImpl<MidiLane> * track, int pos)
 }
 
 void
-MidiLane::init_after_cloning (const MidiLane &other)
+MidiLane::init_after_cloning (const MidiLane &other, ObjectCloneType clone_type)
+
 {
-  RegionOwnerImpl<MidiRegion>::copy_members_from (other);
-  TrackLaneImpl::copy_members_from (other);
+  RegionOwnerImpl<MidiRegion>::copy_members_from (other, clone_type);
+  TrackLaneImpl::copy_members_from (other, clone_type);
 }

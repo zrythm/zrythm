@@ -11,9 +11,11 @@
 #include "gui/dsp/port_connection.h"
 #include "utils/ring_buffer.h"
 #include "utils/types.h"
+#include "utils/uuid_identifiable_object.h"
 
 class AudioEngine;
 class Track;
+class PortConnection;
 struct EngineProcessTimeInfo;
 
 /**
@@ -67,6 +69,10 @@ public:
 class IPortOwner
 {
 public:
+  using TrackUuid = dsp::PortIdentifier::TrackUuid;
+  using PluginUuid = dsp::PortIdentifier::PluginUuid;
+  using PortUuid = dsp::PortIdentifier::PortUuid;
+
   virtual ~IPortOwner () = default;
 
   virtual bool is_in_active_project () const = 0;
@@ -94,8 +100,10 @@ public:
    *
    * @attention This may be called from the audio thread so it must not block.
    */
-  virtual void
-  on_control_change_event (const dsp::PortIdentifier &id, float val) {};
+  virtual void on_control_change_event (
+    const PortUuid            &port_uuid,
+    const dsp::PortIdentifier &id,
+    float                      val) { };
 
   /**
    * @brief Called during processing if the MIDI port contains new MIDI events.
@@ -140,6 +148,11 @@ public:
   }
 };
 
+class IPortConnectionManager
+{
+  virtual ~IPortConnectionManager () = default;
+};
+
 /**
  * @brief The Port class represents a port in the audio processing graph.
  *
@@ -151,7 +164,10 @@ public:
  * as tracks, plugins, and the audio engine. The `set_owner()` method is used
  * to set the owner of the port.
  */
-class Port : public utils::serialization::ISerializable<Port>, public dsp::IProcessable
+class Port
+    : public utils::serialization::ISerializable<Port>,
+      public dsp::IProcessable,
+      public utils::UuidIdentifiableObject<Port>
 {
   Q_DISABLE_COPY_MOVE (Port)
 public:
@@ -235,26 +251,6 @@ public:
   void print_full_designation () const;
 
   /**
-   * To be called when the port's identifier changes to update corresponding
-   * identifiers.
-   *
-   * @param prev_id Previous identifier to be used for searching.
-   * @param track The track that owns this port.
-   * @param update_automation_track Whether to update the identifier in the
-   * corresponding automation track as well. This should be false when moving
-   * a plugin.
-   */
-  void update_identifier (
-    const PortIdentifier &prev_id,
-    Track *               track,
-    bool                  update_automation_track);
-
-  /**
-   * Disconnects all hardware inputs from the port.
-   */
-  void disconnect_hw_inputs ();
-
-  /**
    * Sets whether to expose the port to the backend and exposes it or removes
    * it.
    *
@@ -271,7 +267,7 @@ public:
   /**
    * Renames the port on the backend side.
    */
-  void rename_backend ();
+  void rename_backend (AudioEngine &engine);
 
   /**
    * Returns the number of unlocked (user-editable) sources.
@@ -284,13 +280,9 @@ public:
   ATTR_NONNULL int get_num_unlocked_dests () const;
 
   /**
-   * Updates the track name hash on a track port and all its
-   * source/destination identifiers.
-   *
-   * @param track Owner track.
-   * @param hash The new hash.
+   * Updates the owner track identifier.
    */
-  void update_track_name_hash (Track &track, unsigned int new_hash);
+  void change_track (IPortOwner::TrackUuid new_track_id);
 
   /**
    * @brief Process the port for the given time range.
@@ -349,7 +341,7 @@ protected:
     float       maxf = 1.f,
     float       zerof = 0.f);
 
-  void copy_members_from (const Port &other);
+  void copy_members_from (const Port &other, ObjectCloneType clone_type);
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
@@ -455,6 +447,10 @@ class CVPort;
 class ControlPort;
 using PortVariant = std::variant<MidiPort, AudioPort, CVPort, ControlPort>;
 using PortPtrVariant = to_pointer_variant<PortVariant>;
+using PortRefVariant = to_reference_variant<PortVariant>;
+
+using PortRegistry = utils::OwningObjectRegistry<PortPtrVariant, Port>;
+using PortRegistryRef = std::reference_wrapper<PortRegistry>;
 
 /**
  * @}

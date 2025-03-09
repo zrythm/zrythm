@@ -23,7 +23,9 @@ LengthableObject::parent_base_qproperties (QObject &derived)
 }
 
 void
-LengthableObject::copy_members_from (const LengthableObject &other)
+LengthableObject::copy_members_from (
+  const LengthableObject &other,
+  ObjectCloneType         clone_type)
 {
   end_pos_ = other.end_pos_->clone_raw_ptr ();
   if (auto * qobject = dynamic_cast<QObject *> (this))
@@ -384,7 +386,7 @@ LengthableObject::
                 localp.frames_, >=, 0, std::make_pair (nullptr, nullptr));
               auto new_r1 = new AudioRegion (
                 frames, true, prev_r1->name_, prev_r1_clip->get_bit_depth (),
-                *prev_r1->pos_, prev_r1->id_.track_name_hash_,
+                *prev_r1->pos_, prev_r1->id_.track_uuid_,
                 prev_r1->id_.lane_pos_, prev_r1->id_.idx_);
               z_return_val_if_fail (
                 new_r1->pool_id_ != prev_r1->pool_id_,
@@ -471,7 +473,7 @@ LengthableObject::
                   auto new_r2 = new AudioRegion (
                     tmp, true, prev_r2->get_name (),
                     prev_r2_clip->get_bit_depth (), globalp,
-                    prev_r2->id_.track_name_hash_, prev_r2->id_.lane_pos_,
+                    prev_r2->id_.track_uuid_, prev_r2->id_.lane_pos_,
                     prev_r2->id_.idx_);
                   z_return_val_if_fail (
                     new_r2->pool_id_ != prev_r2->pool_id_,

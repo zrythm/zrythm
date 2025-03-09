@@ -27,7 +27,9 @@ class AutomationEditor final
 public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
-  void init_after_cloning (const AutomationEditor &other) override
+  void
+  init_after_cloning (const AutomationEditor &other, ObjectCloneType clone_type)
+    override
   {
     *this = other;
   }

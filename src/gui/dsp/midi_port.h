@@ -37,7 +37,8 @@ public:
 
   void clear_buffer (AudioEngine &engine) override;
 
-  void init_after_cloning (const MidiPort &original) override;
+  void init_after_cloning (const MidiPort &original, ObjectCloneType clone_type)
+    override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

@@ -87,7 +87,9 @@ AutomationPoint::find_in_project () const
 }
 
 void
-AutomationPoint::init_after_cloning (const AutomationPoint &other)
+AutomationPoint::init_after_cloning (
+  const AutomationPoint &other,
+  ObjectCloneType        clone_type)
 {
   if (ZRYTHM_TESTING)
     {
@@ -101,8 +103,8 @@ AutomationPoint::init_after_cloning (const AutomationPoint &other)
   curve_opts_ = other.curve_opts_;
   region_id_ = other.region_id_;
   index_ = other.index_;
-  RegionOwnedObject::copy_members_from (other);
-  ArrangerObject::copy_members_from (other);
+  RegionOwnedObject::copy_members_from (other, clone_type);
+  ArrangerObject::copy_members_from (other, clone_type);
 }
 
 ArrangerObjectPtrVariant
@@ -257,7 +259,7 @@ AutomationPoint::get_port () const
 {
   const AutomationTrack * const at = get_automation_track ();
   z_return_val_if_fail (at, nullptr);
-  auto port_var = PROJECT->find_port_by_id (*at->port_id_);
+  auto port_var = PROJECT->find_port_by_id (at->port_id_);
   z_return_val_if_fail (
     port_var && std::holds_alternative<ControlPort *> (*port_var), nullptr);
   auto * port = std::get<ControlPort *> (*port_var);

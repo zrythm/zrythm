@@ -21,9 +21,10 @@ PortRange::define_fields (const Context &ctx)
 void
 Port::define_base_fields (const Context &ctx)
 {
-  serialize_fields (
-    ctx, make_field ("id", id_),
-    make_field ("exposedToBackend", exposed_to_backend_));
+  using T = ISerializable<Port>;
+  T::serialize_fields (
+    ctx, T::make_field ("id", id_),
+    T::make_field ("exposedToBackend", exposed_to_backend_));
 }
 
 void
@@ -109,13 +110,6 @@ CVPort::deserialize (Context ctx)
 #endif
 
 void
-StereoPorts::define_fields (const Context &ctx)
-{
-  using T = ISerializable<StereoPorts>;
-  T::serialize_fields (ctx, T::make_field ("l", l_), T::make_field ("r", r_));
-}
-
-void
 ExtPort::define_fields (const Context &ctx)
 {
   using T = ISerializable<ExtPort>;
@@ -137,12 +131,9 @@ PortConnection::define_fields (const Context &ctx)
   T::serialize_fields (
     ctx, T::make_field ("srcId", src_id_), T::make_field ("destId", dest_id_),
     T::make_field ("multiplier", multiplier_),
-    T::make_field ("enabled", enabled_), T::make_field ("locked", locked_));
-  T::serialize_fields (
-    ctx,
-    T::make_field (
-      "baseValue", base_value_,
-      !ctx.is_serializing () || src_id_->type_ != zrythm::dsp::PortType::CV));
+    T::make_field ("enabled", enabled_), T::make_field ("locked", locked_),
+    // note: this is only needed for CV ports
+    T::make_field ("baseValue", base_value_));
 }
 
 void

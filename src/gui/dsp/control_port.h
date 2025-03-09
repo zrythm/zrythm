@@ -266,7 +266,8 @@ public:
     copy_metadata_from_project (non_project);
   }
 
-  void init_after_cloning (const ControlPort &other) override;
+  void init_after_cloning (const ControlPort &other, ObjectCloneType clone_type)
+    override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

@@ -32,7 +32,7 @@
 using namespace zrythm;
 
 void
-Region::copy_members_from (const Region &other)
+Region::copy_members_from (const Region &other, ObjectCloneType clone_type)
 {
   id_ = other.id_;
   bounce_ = other.bounce_;
@@ -40,16 +40,16 @@ Region::copy_members_from (const Region &other)
 
 void
 Region::init (
-  const dsp::Position &start_pos,
-  const dsp::Position &end_pos,
-  unsigned int         track_name_hash,
-  int                  lane_pos_or_at_idx,
-  int                  idx_inside_lane_or_at,
-  double               ticks_per_frame)
+  const dsp::Position           &start_pos,
+  const dsp::Position           &end_pos,
+  dsp::PortIdentifier::TrackUuid track_id,
+  int                            lane_pos_or_at_idx,
+  int                            idx_inside_lane_or_at,
+  double                         ticks_per_frame)
 {
   type_ = Type::Region;
 
-  id_.track_name_hash_ = track_name_hash;
+  id_.track_uuid_ = track_id;
   if (is_automation ())
     {
       id_.at_idx_ = lane_pos_or_at_idx;
@@ -82,8 +82,7 @@ Region::gen_name (const char * base_name, AutomationTrack * at, Track * track)
   if (base_name)
     orig_name = base_name;
   else if (at)
-    orig_name =
-      fmt::format ("{} - {}", track->name_, at->port_id_->get_label ());
+    orig_name = fmt::format ("{} - {}", track->name_, at->getLabel ());
   else
     orig_name = track->name_;
 
@@ -386,9 +385,7 @@ RegionImpl<RegionT>::insert_clone_to_project_at_index (
   int  index,
   bool fire_events) const
 {
-  auto track = TRACKLIST->find_track_by_name_hash (id_.track_name_hash_);
-  z_return_val_if_fail (track, nullptr);
-
+  auto      track_var = *TRACKLIST->get_track (id_.track_uuid_);
   RegionT * ret = static_cast<const RegionT *> (this)->clone_raw_ptr ();
   std::visit (
     [&] (auto &&t) {
@@ -416,7 +413,7 @@ RegionImpl<RegionT>::insert_clone_to_project_at_index (
             ret, nullptr, id_.lane_pos_, index, true, fire_events);
         }
     },
-    *track);
+    track_var);
 
   /* also set is as the clip editor region */
   CLIP_EDITOR->set_region (ret, true);
@@ -467,7 +464,7 @@ RegionImpl<
           auto &at = automatable_track->automation_tracklist_->ats_[at_pos];
 
           /* convert the automation points to match the new automatable */
-          auto port_var = PROJECT->find_port_by_id (*at->port_id_);
+          auto port_var = PROJECT->find_port_by_id (at->port_id_);
           z_return_if_fail (
             port_var.has_value ()
             && std::holds_alternative<ControlPort *> (port_var.value ()));
@@ -706,7 +703,7 @@ template <typename RegionT>
 void
 RegionImpl<RegionT>::set_link_group (int group_idx, bool update_identifier)
 {
-  if (ENUM_BITSET_TEST (Flags, flags_, Flags::NonProject))
+  if (ENUM_BITSET_TEST (flags_, Flags::NonProject))
     {
       id_.link_group_ = group_idx;
       return;
@@ -735,7 +732,7 @@ template <typename RegionT>
 void
 RegionImpl<RegionT>::create_link_group_if_none ()
 {
-  if (ENUM_BITSET_TEST (Flags, flags_, Flags::NonProject))
+  if (ENUM_BITSET_TEST (flags_, Flags::NonProject))
     return;
 
   if (id_.link_group_ < 0)
@@ -752,8 +749,7 @@ template <typename RegionT>
 void
 RegionImpl<RegionT>::unlink ()
 {
-  if (ENUM_BITSET_TEST (
-        ArrangerObject::Flags, flags_, ArrangerObject::Flags::NonProject))
+  if (ENUM_BITSET_TEST (flags_, ArrangerObject::Flags::NonProject))
     {
       id_.link_group_ = -1;
     }
@@ -798,13 +794,10 @@ template <typename RegionT>
 RegionImpl<RegionT>::RegionTPtr
 RegionImpl<RegionT>::find (const RegionIdentifier &id)
 {
-  z_return_val_if_fail (id.track_name_hash_ != 0, nullptr);
-
   if constexpr (is_laned ())
     {
       z_return_val_if_fail (id.is_audio () || id.is_midi (), nullptr);
-      auto track_var = TRACKLIST->find_track_by_name_hash (id.track_name_hash_);
-      z_return_val_if_fail (track_var, nullptr);
+      auto track_var = *TRACKLIST->get_track (id.track_uuid_);
 
       return std::visit (
         [&] (auto &&track) -> RegionTPtr {
@@ -835,14 +828,12 @@ RegionImpl<RegionT>::find (const RegionIdentifier &id)
               return nullptr;
             }
         },
-        *track_var);
+        track_var);
     }
   else if constexpr (is_automation ())
     {
       z_return_val_if_fail (id.is_automation (), nullptr);
-      auto track_var = TRACKLIST->find_track_by_name_hash (id.track_name_hash_);
-      z_return_val_if_fail (track_var, nullptr);
-
+      auto track_var = *TRACKLIST->get_track (id.track_uuid_);
       return std::visit (
         [&] (auto &&track) -> RegionTPtr {
           using TrackT = base_type<decltype (track)>;
@@ -871,7 +862,7 @@ RegionImpl<RegionT>::find (const RegionIdentifier &id)
               return nullptr;
             }
         },
-        *track_var);
+        track_var);
     }
   else if constexpr (is_chord ())
     {
@@ -894,7 +885,7 @@ RegionImpl<RegionT>::update_identifier ()
   /* reset link group */
   set_link_group (id_.link_group_, false);
 
-  track_name_hash_ = id_.track_name_hash_;
+  track_id_ = id_.track_uuid_;
   if constexpr (RegionWithChildren<RegionT>)
     {
       auto objs = get_objects ();
@@ -1044,8 +1035,8 @@ Region::print_to_str () const
     "{} [{}] - track name hash {} - lane pos {} - "
     "idx {} - address {} - <{}> to <{}> ({} frames, {} ticks) - "
     "loop end <{}> - link group {}",
-    name_, id_.type_, id_.track_name_hash_, id_.lane_pos_, id_.idx_,
-    (void *) this, *pos_, *end_pos_, end_pos_->frames_ - pos_->frames_,
+    name_, id_.type_, id_.track_uuid_, id_.lane_pos_, id_.idx_, (void *) this,
+    *pos_, *end_pos_, end_pos_->frames_ - pos_->frames_,
     end_pos_->ticks_ - pos_->ticks_, loop_end_pos_, id_.link_group_);
 }
 
@@ -1325,8 +1316,7 @@ RegionImpl<RegionT>::get_region_owner () const
     }
   else if constexpr (is_chord ())
     {
-      return std::get<ChordTrack *> (
-        TRACKLIST->find_track_by_name_hash (id_.track_name_hash_).value ());
+      return std::get<ChordTrack *> (*TRACKLIST->get_track (id_.track_uuid_));
     }
 }
 

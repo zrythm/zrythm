@@ -315,7 +315,9 @@ HardwareProcessor::process (nframes_t nframes)
 }
 
 void
-HardwareProcessor::init_after_cloning (const HardwareProcessor &other)
+HardwareProcessor::init_after_cloning (
+  const HardwareProcessor &other,
+  ObjectCloneType          clone_type)
 {
   is_input_ = other.is_input_;
 

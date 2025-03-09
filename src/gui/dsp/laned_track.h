@@ -94,7 +94,9 @@ public:
 
   ~LanedTrackImpl () override = default;
 
-  void init_loaded () override;
+  void
+  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
+    override;
 
   /**
    * Creates missing TrackLane's until pos.
@@ -138,15 +140,14 @@ public:
     const dsp::Position *  p2) override;
 
 protected:
-  void copy_members_from (const LanedTrackImpl &other);
+  void
+  copy_members_from (const LanedTrackImpl &other, ObjectCloneType clone_type);
 
   bool validate_base () const;
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
   void set_playback_caches () override;
-
-  void update_name_hash (unsigned int new_name_hash) override;
 
 private:
   void add_lane (bool fire_events);

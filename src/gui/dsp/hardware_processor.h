@@ -86,7 +86,9 @@ public:
     /**
      * To be used during serialization.
      */
-    void init_after_cloning (const HardwareProcessor &other) override;
+    void init_after_cloning (
+      const HardwareProcessor &other,
+      ObjectCloneType          clone_type) override;
 
     DECLARE_DEFINE_FIELDS_METHOD ();
 

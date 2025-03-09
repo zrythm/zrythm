@@ -34,9 +34,11 @@ RangeAction::
 }
 
 void
-RangeAction::init_after_cloning (const RangeAction &other)
+RangeAction::init_after_cloning (
+  const RangeAction &other,
+  ObjectCloneType    clone_type)
 {
-  UndoableAction::copy_members_from (other);
+  UndoableAction::copy_members_from (other, clone_type);
   start_pos_ = other.start_pos_;
   end_pos_ = other.end_pos_;
   type_ = other.type_;

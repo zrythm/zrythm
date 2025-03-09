@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/actions/mixer_selections_action.h"
-#include "gui/backend/backend/mixer_selections.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/settings_manager.h"
@@ -13,6 +12,7 @@
 #include "gui/dsp/carla_native_plugin.h"
 #include "gui/dsp/channel_track.h"
 #include "gui/dsp/modulator_track.h"
+#include "gui/dsp/plugin_span.h"
 #include "gui/dsp/router.h"
 #include "gui/dsp/track.h"
 #include "gui/dsp/tracklist.h"
@@ -26,12 +26,11 @@ MixerSelectionsAction::MixerSelectionsAction (QObject * parent)
 }
 
 MixerSelectionsAction::MixerSelectionsAction (
-  const FullMixerSelections *                    ms,
+  std::optional<PluginSpanVariant>               plugins,
   const PortConnectionsManager *                 connections_mgr,
   Type                                           type,
-  zrythm::dsp::PluginSlotType                    slot_type,
-  unsigned int                                   to_track_name_hash,
-  int                                            to_slot,
+  std::optional<Track::TrackUuid>                to_track_id,
+  std::optional<dsp::PluginSlot>                 to_slot,
   const PluginSetting *                          setting,
   int                                            num_plugins,
   int                                            new_val,
@@ -41,10 +40,9 @@ MixerSelectionsAction::MixerSelectionsAction (
 
 {
   mixer_selections_action_type_ = type;
-  slot_type_ = slot_type;
   to_slot_ = to_slot;
-  to_track_name_hash_ = to_track_name_hash;
-  new_channel_ = to_track_name_hash == 0;
+  to_track_uuid_ = to_track_id;
+  new_channel_ = !to_track_id.has_value ();
   num_plugins_ = num_plugins;
   new_val_ = new_val;
   new_bridge_mode_ = new_bridge_mode;
@@ -54,13 +52,14 @@ MixerSelectionsAction::MixerSelectionsAction (
       setting_->validate ();
     }
 
-  if (ms)
+  if (plugins)
     {
-      ms_before_ = ms->clone_unique ();
-      z_return_if_fail (ms->slots_[0] == ms_before_->slots_[0]);
+      ms_before_ = std::visit (
+        [&] (auto &&pl_span) { return pl_span.create_snapshots (*this); },
+        *plugins);
 
       /* clone the automation tracks */
-      clone_ats (*ms_before_, false, 0);
+      clone_ats (PluginSpan{ *ms_before_ }, false, 0);
     }
 
   if (connections_mgr)
@@ -72,11 +71,11 @@ MixerSelectionsAction::init_loaded_impl ()
 {
   if (ms_before_)
     {
-      ms_before_->init_loaded ();
+      PluginSpan{ *ms_before_ }.init_loaded (nullptr);
     }
   if (deleted_ms_)
     {
-      deleted_ms_->init_loaded ();
+      PluginSpan{ *deleted_ms_ }.init_loaded (nullptr);
     }
 
   for (auto &at : ats_)
@@ -90,64 +89,89 @@ MixerSelectionsAction::init_loaded_impl ()
 }
 
 void
-MixerSelectionsAction::init_after_cloning (const MixerSelectionsAction &other)
+MixerSelectionsAction::init_after_cloning (
+  const MixerSelectionsAction &other,
+  ObjectCloneType              clone_type)
 {
-  UndoableAction::copy_members_from (other);
+  UndoableAction::copy_members_from (other, clone_type);
   mixer_selections_action_type_ = other.mixer_selections_action_type_;
-  slot_type_ = other.slot_type_;
   to_slot_ = other.to_slot_;
-  to_track_name_hash_ = other.to_track_name_hash_;
+  to_track_uuid_ = other.to_track_uuid_;
   new_channel_ = other.new_channel_;
   num_plugins_ = other.num_plugins_;
   new_val_ = other.new_val_;
   new_bridge_mode_ = other.new_bridge_mode_;
   if (other.setting_)
     setting_ = other.setting_->clone_unique ();
-  if (other.ms_before_)
+  // TODO
+#if 0
+    if (other.ms_before_)
     ms_before_ = other.ms_before_->clone_unique ();
   if (other.deleted_ms_)
     deleted_ms_ = other.deleted_ms_->clone_unique ();
+#endif
   clone_unique_ptr_container (deleted_ats_, other.deleted_ats_);
   clone_unique_ptr_container (ats_, other.ats_);
 }
 
 void
 MixerSelectionsAction::
-  clone_ats (const FullMixerSelections &ms, bool deleted, int start_slot)
+  clone_ats (PluginSpanVariant plugins, bool deleted, int start_slot)
 {
-  auto * track = std::visit (
-    [&] (auto &&t) { return dynamic_cast<AutomatableTrack *> (t); },
-    TRACKLIST->find_track_by_name_hash (ms.track_name_hash_).value ());
-  z_return_if_fail (track);
-  z_debug ("cloning automation tracks for track {}", track->name_);
-  auto &atl = track->automation_tracklist_;
-  int   count = 0;
-  int   regions_count = 0;
-  for (int slot : ms.slots_)
-    {
-      for (const auto &at : atl->ats_)
+  std::visit (
+    [&] (auto &&plugin_span) {
+      auto first_pl_var = plugin_span.front ();
+      auto track = std::visit (
+        [&] (auto &&first_pl) { return first_pl->get_track (); }, first_pl_var);
+      z_return_if_fail (track);
+      z_debug ("cloning automation tracks for track {}", track->get_name ());
+      auto &atl = track->automation_tracklist_;
+      int   count = 0;
+      int   regions_count = 0;
+      for (const auto &pl_var : plugin_span)
         {
-          if (
-            at->port_id_->owner_type_ != dsp::PortIdentifier::OwnerType::Plugin
-            || at->port_id_->plugin_id_.slot_ != slot
-            || at->port_id_->plugin_id_.slot_type_ != ms.type_)
-            continue;
+          std::visit (
+            [&] (auto &&pl) {
+              const auto slot = pl->id_.slot_;
+              for (const auto &at : atl->ats_)
+                {
+                  auto port_var = PROJECT->find_port_by_id (at->port_id_);
+                  z_return_if_fail (port_var.has_value ())
+                    const auto &port_id = std::visit (
+                      [] (auto &&p) { return *p->id_; }, port_var.value ());
+                  if (
+                    port_id.owner_type_
+                    != dsp::PortIdentifier::OwnerType::Plugin)
+                    continue;
 
-          if (deleted)
-            {
-              deleted_ats_.emplace_back (at->clone_unique ());
-            }
-          else
-            {
-              ats_.emplace_back (at->clone_unique ());
-            }
-          count++;
-          regions_count += at->region_list_->regions_.size ();
+                  auto plugin_uuid = port_id.get_plugin_id ();
+                  z_return_if_fail (plugin_uuid.has_value ()) auto plugin_var =
+                    PROJECT->find_plugin_by_id (plugin_uuid.value ());
+                  z_return_if_fail (plugin_var.has_value ())
+                    const auto &plugin_id = std::visit (
+                      [] (auto &&p) { return p->id_; }, plugin_var.value ());
+                  if (plugin_id.slot_ != slot)
+                    continue;
+
+                  if (deleted)
+                    {
+                      deleted_ats_.emplace_back (at->clone_unique ());
+                    }
+                  else
+                    {
+                      ats_.emplace_back (at->clone_unique ());
+                    }
+                  count++;
+                  regions_count += at->region_list_->regions_.size ();
+                }
+            },
+            pl_var);
         }
-    }
-  z_debug (
-    "cloned %d automation tracks for track %s, total regions %d", count,
-    track->name_, regions_count);
+      z_debug (
+        "cloned %d automation tracks for track %s, total regions %d", count,
+        track->name_, regions_count);
+    },
+    plugins);
 }
 
 void
@@ -170,16 +194,14 @@ MixerSelectionsAction::copy_at_regions (
       z_debug (
         "reverted {} regions for automation track {}:",
         dest.region_list_->regions_.size (), dest.index_);
-      dest.port_id_->print ();
     }
 }
 
 void
 MixerSelectionsAction::revert_automation (
-  AutomatableTrack    &track,
-  FullMixerSelections &ms,
-  int                  slot,
-  bool                 deleted)
+  AutomatableTrack &track,
+  dsp::PluginSlot   slot,
+  bool              deleted)
 {
   z_debug ("reverting automation for {}#{}", track.name_, slot);
 
@@ -189,17 +211,24 @@ MixerSelectionsAction::revert_automation (
   int   num_reverted_regions = 0;
   for (auto &cloned_at : ats)
     {
-      if (
-        cloned_at->port_id_->plugin_id_.slot_ != slot
-        || cloned_at->port_id_->plugin_id_.slot_type_ != ms.type_)
+      auto port_var = PROJECT->find_port_by_id (cloned_at->port_id_);
+      z_return_if_fail (port_var.has_value ());
+      const auto &port_id =
+        std::visit ([] (auto &&p) { return *p->id_; }, port_var.value ());
+      auto plugin_uuid = port_id.get_plugin_id ();
+      z_return_if_fail (plugin_uuid.has_value ());
+      auto plugin_var = PROJECT->find_plugin_by_id (plugin_uuid.value ());
+      z_return_if_fail (plugin_var.has_value ());
+      const auto &plugin_id =
+        std::visit ([] (auto &&p) { return p->id_; }, plugin_var.value ());
+      if (plugin_id.slot_ != slot)
         {
           continue;
         }
 
       /* find corresponding automation track in track and copy regions */
-      auto actual_at = atl->get_plugin_at (
-        ms.type_, slot, cloned_at->port_id_->port_index_,
-        cloned_at->port_id_->sym_);
+      auto actual_at =
+        atl->get_plugin_at (slot, port_id.port_index_, port_id.get_symbol ());
 
       copy_at_regions (*actual_at, *cloned_at);
       num_reverted_regions += actual_at->region_list_->regions_.size ();
@@ -213,340 +242,410 @@ MixerSelectionsAction::revert_automation (
 
 void
 MixerSelectionsAction::save_existing_plugin (
-  FullMixerSelections *       tmp_ms,
-  Track *                     from_tr,
-  zrythm::dsp::PluginSlotType from_slot_type,
-  int                         from_slot,
-  Track *                     to_tr,
-  zrythm::dsp::PluginSlotType to_slot_type,
-  int                         to_slot)
+  std::vector<PluginPtrVariant> tmp_plugins,
+  Track *                       from_tr,
+  dsp::PluginSlot               from_slot,
+  Track *                       to_tr,
+  dsp::PluginSlot               to_slot)
 {
-  auto existing_pl = to_tr->get_plugin_at_slot (to_slot_type, to_slot);
-  z_debug (
-    "existing plugin at ({}:{}:{} => {}:{}:{}): {}",
-    from_tr ? from_tr->name_ : "(none)", ENUM_NAME (from_slot_type), from_slot,
-    to_tr ? to_tr->name_ : "(none)", ENUM_NAME (to_slot_type), to_slot,
-    existing_pl ? existing_pl->get_name () : "(none)");
-  if (
-    existing_pl
-    && (from_tr != to_tr || from_slot_type != to_slot_type || from_slot != to_slot))
-    {
-      tmp_ms->add_plugin (*to_tr, to_slot_type, to_slot);
-      clone_ats (*tmp_ms, true, tmp_ms->slots_.size () - 1);
-    }
-  else
-    {
-      z_info (
-        "skipping saving slot and cloning "
-        "automation tracks - same slot");
-    }
+  auto to_track_var = convert_to_variant<TrackPtrVariant> (to_tr);
+  std::visit (
+    [&] (auto &&to_track) {
+      using ToTrackT = base_type<decltype (to_track)>;
+      if constexpr (std::derived_from<ToTrackT, AutomatableTrack>)
+        {
+          auto existing_pl = to_track->get_plugin_at_slot (to_slot);
+          z_debug (
+            "existing plugin at ({}:{} => {}:{}): {}",
+            from_tr ? from_tr->name_ : "(none)", from_slot,
+            to_tr ? to_tr->name_ : "(none)", to_slot,
+            existing_pl
+              ? old_dsp::plugins::Plugin::name_projection (existing_pl.value ())
+              : "(none)");
+          if (existing_pl && (from_tr != to_tr || from_slot != to_slot))
+            {
+              tmp_plugins.push_back (existing_pl.value ());
+              clone_ats (
+                PluginSpan{ tmp_plugins }, true, tmp_plugins.size () - 1);
+            }
+          else
+            {
+              z_info (
+                "skipping saving slot and cloning "
+                "automation tracks - same slot");
+            }
+        }
+    },
+    to_track_var);
 }
 
 void
-MixerSelectionsAction::revert_deleted_plugin (Track &to_tr, int to_slot)
+MixerSelectionsAction::revert_deleted_plugin (
+  Track          &to_tr_base,
+  dsp::PluginSlot to_slot)
 {
-  if (!deleted_ms_)
-    {
-      z_debug ("No deleted plugin to revert at {}#{}", to_tr.name_, to_slot);
-      return;
-    }
-
-  z_debug ("reverting deleted plugin at {}#{}", to_tr.name_, to_slot);
-
-  if (deleted_ms_->type_ == zrythm::dsp::PluginSlotType::Modulator)
-    {
-      /* modulators are never replaced */
-      return;
-    }
-
-  for (size_t j = 0; j < deleted_ms_->slots_.size (); j++)
-    {
-      int slot_to_revert = deleted_ms_->slots_[j];
-      if (slot_to_revert != to_slot)
+  std::visit (
+    [&] (auto &&to_tr) {
+      using TrackT = base_type<decltype (to_tr)>;
+      if (!deleted_ms_)
         {
-          continue;
+          z_debug (
+            "No deleted plugin to revert at {}#{}", to_tr->get_name (), to_slot);
+          return;
         }
 
-      auto &deleted_pl = deleted_ms_->plugins_[j];
-      z_debug (
-        "reverting plugin {} in slot {}", deleted_pl->get_name (),
-        slot_to_revert);
+      z_debug ("reverting deleted plugin at {}#{}", to_tr->get_name (), to_slot);
 
-      /* add to channel - note: cloning deleted_pl also instantiates the clone */
-      auto added_pl = to_tr.insert_plugin (
-        clone_unique_with_variant<zrythm::gui::old_dsp::plugins::PluginVariant> (
-          deleted_pl.get ()),
-        deleted_ms_->type_, slot_to_revert, true, true, false, false, true,
-        false, false);
-
-      /* bring back automation */
-      z_return_if_fail (to_tr.is_automatable ());
-      auto automatable_track = dynamic_cast<AutomatableTrack *> (&to_tr);
-      revert_automation (*automatable_track, *deleted_ms_, slot_to_revert, true);
-
-      /* activate and set visibility */
-      added_pl->activate (true);
-
-      /* show if was visible before */
-      if (ZRYTHM_HAVE_UI && deleted_pl->visible_)
+      auto deleted_type =
+        PluginSpan{ *deleted_ms_ }.get_slot_type_of_first_plugin ();
+      if (deleted_type == dsp::PluginSlotType::Modulator)
         {
-          added_pl->visible_ = true;
-          /* EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, added_pl); */
+          /* modulators are never replaced */
+          return;
         }
-    }
+
+      for (const auto &deleted_pl_var : PluginSpan{ *deleted_ms_ })
+        {
+          std::visit (
+            [&] (auto &&deleted_pl) {
+              if constexpr (std::derived_from<TrackT, AutomationTrack>)
+                {
+                  const auto slot_to_revert = deleted_pl->get_slot ();
+                  if (slot_to_revert != to_slot)
+                    {
+                      return;
+                    }
+
+                  z_debug (
+                    "reverting plugin {} in slot {}", deleted_pl->get_name (),
+                    slot_to_revert);
+
+                  /* add to channel - note: cloning deleted_pl also instantiates
+                   * the clone */
+                  auto added_pl = to_tr->insert_plugin (
+                    deleted_pl->get_uuid (), slot_to_revert, true, true, false,
+                    false, true, false, false);
+
+                  /* bring back automation */
+                  revert_automation (*to_tr, *deleted_ms_, slot_to_revert, true);
+
+                  /* activate and set visibility */
+                  added_pl->activate (true);
+
+                  /* show if was visible before */
+                  if (ZRYTHM_HAVE_UI && deleted_pl->visible_)
+                    {
+                      added_pl->visible_ = true;
+                      /* EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED,
+                       * added_pl); */
+                    }
+                }
+            },
+            deleted_pl_var);
+        }
+    },
+    convert_to_variant<TrackPtrVariant> (&to_tr_base));
 }
 
 void
 MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
 {
-  AutomatableTrack * track = nullptr;
-  track = std::visit (
-    [&] (auto &&t) { return dynamic_cast<AutomatableTrack *> (t); },
-    TRACKLIST
-      ->find_track_by_name_hash (
-        create ? to_track_name_hash_ : ms_before_->track_name_hash_)
-      .value ());
-  z_return_if_fail (track);
+  auto track_var = *TRACKLIST->get_track (
+    create
+      ? to_track_uuid_.value ()
+      : PluginSpan::track_id_projection (PluginSpan{ *ms_before_ }.front ()));
 
-  auto * ch =
-    track->has_channel ()
-      ? dynamic_cast<ChannelTrack *> (track)->channel_
-      : nullptr;
-  auto &own_ms = ms_before_;
-  auto  slot_type = create ? slot_type_ : own_ms->type_;
-  int   loop_times =
-    create && mixer_selections_action_type_ != Type::Paste
-        ? num_plugins_
-        : own_ms->slots_.size ();
-  bool delete_ = !create;
-
-  /* if creating plugins (create do or delete undo) */
-  if ((create && do_it) || (delete_ && !do_it))
-    {
-      /* clear deleted caches */
-      deleted_ats_.clear ();
-      deleted_ms_ = std::make_unique<FullMixerSelections> ();
-
-      for (int i = 0; i < loop_times; i++)
+  std::visit (
+    [&] (auto &&track) {
+      using TrackT = base_type<decltype (track)>;
+      if constexpr (std::derived_from<TrackT, AutomatableTrack>)
         {
-          int slot = create ? (to_slot_ + i) : own_ms->plugins_[i]->id_.slot_;
+          auto * ch =
+            track->has_channel ()
+              ? dynamic_cast<ChannelTrack *> (track)->channel_
+              : nullptr;
+          auto own_ms = PluginSpan{ *ms_before_ };
+          auto slot_type =
+            create
+              ? (to_slot_->has_slot_index ()
+                   ? to_slot_->get_slot_with_index ().first
+                   : to_slot_->get_slot_type_only ())
+              : own_ms.get_slot_type_of_first_plugin ();
+          int loop_times =
+            create && mixer_selections_action_type_ != Type::Paste
+              ? num_plugins_
+              : own_ms.size ();
+          bool delete_ = !create;
 
-          /* create new plugin */
-          std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin> pl;
-          if (create)
+          auto get_slot = [&] (const auto i) {
+            if (create)
+              {
+                int to_slot_i =
+                  to_slot_->has_slot_index ()
+                    ? to_slot_->get_slot_with_index ().second
+                    : 0;
+                return dsp::PluginSlot (slot_type, to_slot_i + i);
+              }
+
+            return PluginSpan::slot_projection (own_ms[i]);
+          };
+
+          /* if creating plugins (create do or delete undo) */
+          if ((create && do_it) || (delete_ && !do_it))
             {
-              if (mixer_selections_action_type_ == Type::Paste)
+              /* clear deleted caches */
+              deleted_ats_.clear ();
+              deleted_ms_.emplace (std::vector<PluginPtrVariant> ());
+
+              for (const auto i : std::views::iota (loop_times))
                 {
-                  pl = clone_unique_with_variant<
-                    zrythm::gui::old_dsp::plugins::PluginVariant> (
-                    own_ms->plugins_[i].get ());
+                  auto slot = get_slot (i);
+                  auto own_pl_var = own_ms[i];
+
+                  /* create new plugin */
+                  Plugin * pl{};
+                  if (create)
+                    {
+                      if (mixer_selections_action_type_ == Type::Paste)
+                        {
+                          pl = std::visit (
+                            [&] (auto &&own_pl) {
+                              return own_pl->clone_and_register (
+                                PROJECT->get_plugin_registry ());
+                            },
+                            own_pl_var);
+                        }
+                      else
+                        {
+                          pl =
+                            PROJECT->get_plugin_registry ()
+                              .create_object<CarlaNativePlugin> (
+                                PROJECT->get_port_registry (), *setting_,
+                                to_track_uuid_.value (), slot);
+                        }
+                      z_return_if_fail (pl);
+
+                      /* instantiate so that ports are created */
+                      pl->instantiate ();
+                    }
+                  else if (delete_)
+                    {
+                      /* note: this also instantiates the plugin */
+                      pl = std::visit (
+                        [&] (auto &&own_pl) {
+                          return own_pl->clone_and_register (
+                            PROJECT->get_plugin_registry ());
+                        },
+                        own_pl_var);
+                    }
+
+                  /* validate */
+                  assert (pl);
+                  if (delete_)
+                    {
+                      assert (slot == PluginSpan::slot_projection (own_pl_var));
+                    }
+
+                  /* set track */
+                  pl->track_ = track;
+                  pl->change_track (track->get_uuid ());
+
+                  /* save any plugin about to be deleted */
+                  // FIXME: what is the point of from_slot?
+                  save_existing_plugin (
+                    *deleted_ms_, nullptr, dsp::PluginSlot (slot_type, -1),
+                    slot_type == zrythm::dsp::PluginSlotType::Modulator
+                      ? (Track *) P_MODULATOR_TRACK
+                      : track,
+                    slot);
+
+                  /* add to destination */
+                  // FIXME: danging pl
+                  track->insert_plugin (
+                    pl->get_uuid (), slot, true, false, false, false, true,
+                    false, false);
+
+                  /* select the plugin */
+                  pl->set_selected (true);
+
+                  /* set visibility */
+                  if (create)
+                    {
+                      /* set visible from settings */
+                      pl->visible_ =
+                        ZRYTHM_HAVE_UI
+                        && gui::SettingsManager::openPluginsOnInstantiation ();
+                    }
+                  else if (delete_)
+                    {
+                      /* set visible if plugin was visible before deletion */
+                      pl->visible_ =
+                        ZRYTHM_HAVE_UI
+                        && PluginSpan::visible_projection (own_pl_var);
+                    }
+                  /* EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED,
+                   * added_pl); */
+
+                  /* activate */
+                  pl->activate (true);
                 }
-              else
+
+              /* if undoing deletion */
+              if (delete_)
                 {
-                  pl = setting_->create_plugin (
-                    to_track_name_hash_, slot_type, slot);
+                  for (
+                    const auto &pl_var : own_ms | std::views::take (loop_times))
+                    {
+                      std::visit (
+                        [&] (auto &&pl) {
+                          /* restore port connections */
+                          z_debug (
+                            "restoring custom connections for plugin '{}'",
+                            pl->get_name ());
+                          std::vector<Port *> ports;
+                          pl->append_ports (ports);
+                          for (auto port : ports)
+                            {
+                              auto prj_port_var =
+                                PROJECT->find_port_by_id (port->get_uuid ());
+                              z_return_if_fail (prj_port_var);
+                              std::visit (
+                                [&] (auto &&prj_port) {
+                                  prj_port->restore_from_non_project (*port);
+                                },
+                                *prj_port_var);
+                            }
+
+                          /* copy automation from before deletion */
+                          if (track->is_automatable ())
+                            {
+                              revert_automation (
+                                dynamic_cast<AutomatableTrack &> (*track),
+                                pl->id_.slot_, false);
+                            }
+                        },
+                        pl_var);
+                    }
                 }
-              z_return_if_fail (pl);
 
-              /* instantiate so that ports are created */
-              pl->instantiate ();
+              track->validate ();
+
+              /* EVENTS_PUSH (EventType::ET_PLUGINS_ADDED, track); */
             }
-          else if (delete_)
+          /* else if deleting plugins (create undo or delete do) */
+          else
             {
-              /* note: this also instantiates the plugin */
-              pl = clone_unique_with_variant<
-                zrythm::gui::old_dsp::plugins::PluginVariant> (
-                own_ms->plugins_[i].get ());
+              for (const auto i : std::views::iota (loop_times))
+                {
+                  auto slot = get_slot (i);
+
+                  /* if doing deletion, remember port metadata */
+                  if (do_it)
+                    {
+                      auto own_pl_var = own_ms[i];
+                      auto prj_pl_var = track->get_plugin_at_slot (slot);
+
+                      /* remember any custom connections */
+                      std::visit (
+                        [&] (auto &&own_pl, auto &&prj_pl) {
+                          z_debug (
+                            "remembering custom connections for plugin '{}'",
+                            own_pl->get_name ());
+                          std::vector<Port *> ports, own_ports;
+                          prj_pl->append_ports (ports);
+                          own_pl->append_ports (own_ports);
+                          for (auto prj_port : ports)
+                            {
+                              auto it = std::find_if (
+                                own_ports.begin (), own_ports.end (),
+                                [&prj_port] (auto own_port) {
+                                  return own_port->id_ == prj_port->id_;
+                                });
+                              z_return_if_fail (it != own_ports.end ());
+
+                              (*it)->copy_metadata_from_project (*prj_port);
+                            }
+                        },
+                        own_pl_var, *prj_pl_var);
+                    }
+
+                  /* remove the plugin at given slot */
+                  track->remove_plugin (slot, false, false, true, false, false);
+
+                  /* if there was a plugin at the slot before, bring it back */
+                  revert_deleted_plugin (*track, slot);
+                }
+
+              /* EVENTS_PUSH (EventType::ET_PLUGINS_REMOVED, nullptr); */
             }
 
-          /* validate */
-          z_return_if_fail (pl);
-          if (delete_)
+          /* restore connections */
+          save_or_load_port_connections (do_it);
+
+          ROUTER->recalc_graph (false);
+
+          if (ch)
             {
-              z_return_if_fail (slot == own_ms->slots_[i]);
+              /* EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, ch); */
             }
-
-          /* set track */
-          pl->track_ = track;
-          pl->set_track_name_hash (track->get_name_hash ());
-
-          /* save any plugin about to be deleted */
-          save_existing_plugin (
-            deleted_ms_.get (), nullptr, slot_type, -1,
-            slot_type == zrythm::dsp::PluginSlotType::Modulator
-              ? P_MODULATOR_TRACK
-              : track,
-            slot_type, slot);
-
-          /* add to destination */
-          auto added_pl = track->insert_plugin (
-            std::move (pl), slot_type, slot, true, false, false, false, true,
-            false, false);
-
-          /* select the plugin */
-          MIXER_SELECTIONS->add_slot (
-            *track, slot_type, added_pl->id_.slot_, true);
-
-          /* set visibility */
-          if (create)
-            {
-              /* set visible from settings */
-              added_pl->visible_ =
-                ZRYTHM_HAVE_UI
-                && gui::SettingsManager::openPluginsOnInstantiation ();
-            }
-          else if (delete_)
-            {
-              /* set visible if plugin was visible before deletion */
-              added_pl->visible_ =
-                ZRYTHM_HAVE_UI && own_ms->plugins_[i]->visible_;
-            }
-          /* EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, added_pl); */
-
-          /* activate */
-          added_pl->activate (true);
         }
-
-      /* if undoing deletion */
-      if (delete_)
-        {
-          for (int i = 0; i < loop_times; i++)
-            {
-              /* restore port connections */
-              auto pl = own_ms->plugins_[i].get ();
-              z_debug (
-                "restoring custom connections for plugin '{}'", pl->get_name ());
-              std::vector<Port *> ports;
-              pl->append_ports (ports);
-              for (auto port : ports)
-                {
-                  auto prj_port_var = PROJECT->find_port_by_id (*port->id_);
-                  z_return_if_fail (prj_port_var);
-                  std::visit (
-                    [&] (auto &&prj_port) {
-                      prj_port->restore_from_non_project (*port);
-                    },
-                    *prj_port_var);
-                }
-
-              /* copy automation from before deletion */
-              int slot = pl->id_.slot_;
-              if (track->is_automatable ())
-                {
-                  revert_automation (
-                    dynamic_cast<AutomatableTrack &> (*track), *own_ms, slot,
-                    false);
-                }
-            }
-        }
-
-      track->validate ();
-
-      /* EVENTS_PUSH (EventType::ET_PLUGINS_ADDED, track); */
-    }
-  /* else if deleting plugins (create undo or delete do) */
-  else
-    {
-      for (int i = 0; i < loop_times; i++)
-        {
-          int slot = create ? (to_slot_ + i) : own_ms->plugins_[i]->id_.slot_;
-
-          /* if doing deletion, remember port metadata */
-          if (do_it)
-            {
-              auto own_pl = own_ms->plugins_[i].get ();
-              auto prj_pl = track->get_plugin_at_slot (slot_type, slot);
-
-              /* remember any custom connections */
-              z_debug (
-                "remembering custom connections for plugin '{}'",
-                own_pl->get_name ());
-              std::vector<Port *> ports, own_ports;
-              prj_pl->append_ports (ports);
-              own_pl->append_ports (own_ports);
-              for (auto prj_port : ports)
-                {
-                  auto it = std::find_if (
-                    own_ports.begin (), own_ports.end (),
-                    [&prj_port] (auto own_port) {
-                      return own_port->id_ == prj_port->id_;
-                    });
-                  z_return_if_fail (it != own_ports.end ());
-
-                  (*it)->copy_metadata_from_project (*prj_port);
-                }
-            }
-
-          /* remove the plugin at given slot */
-          track->remove_plugin (
-            slot_type, slot, false, false, true, false, false);
-
-          /* if there was a plugin at the slot before, bring it back */
-          revert_deleted_plugin (*track, slot);
-        }
-
-      /* EVENTS_PUSH (EventType::ET_PLUGINS_REMOVED, nullptr); */
-    }
-
-  /* restore connections */
-  save_or_load_port_connections (do_it);
-
-  ROUTER->recalc_graph (false);
-
-  if (ch)
-    {
-      /* EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, ch); */
-    }
+    },
+    track_var);
 }
 
 void
 MixerSelectionsAction::do_or_undo_change_status (bool do_it)
 {
-  auto ms = ms_before_.get ();
-  auto * track = std::visit (
-    [&] (auto &&t) { return dynamic_cast<Track *> (t); },
-    TRACKLIST->find_track_by_name_hash (ms_before_->track_name_hash_).value ());
+  auto ms = PluginSpan{ *ms_before_ };
+  auto track_var =
+    TRACKLIST->get_track (PluginSpan::track_id_projection (ms.front ()));
+  z_return_if_fail (track_var.has_value ());
 
-  auto ch =
-    track->has_channel ()
-      ? dynamic_cast<ChannelTrack *> (track)->channel_
-      : nullptr;
-
-  for (size_t i = 0; i < ms->slots_.size (); i++)
-    {
-      auto own_pl = ms->plugins_[i].get ();
-      auto pl = zrythm::gui::old_dsp::plugins::Plugin::find (own_pl->id_);
-      pl->set_enabled (
-        do_it ? new_val_ : own_pl->is_enabled (false),
-        i == ms->slots_.size () - 1);
-    }
-
-  if (ch)
-    {
-      /* EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, ch); */
-    }
+  std::visit (
+    [&] (auto &&track) {
+      for (const auto &own_pl_var : ms)
+        {
+          std::visit (
+            [&] (auto &&own_pl) {
+              auto project_pl_var =
+                PROJECT->find_plugin_by_identifier (own_pl->id_);
+              std::visit (
+                [&] (auto &&project_pl) {
+                  project_pl->set_enabled (
+                    do_it ? new_val_ : own_pl->is_enabled (false), true);
+                },
+                project_pl_var);
+            },
+            own_pl_var);
+        }
+    },
+    track_var.value ());
 }
 
 void
 MixerSelectionsAction::do_or_undo_change_load_behavior (bool do_it)
 {
-  auto ms = ms_before_.get ();
-  auto track = std::visit (
-    [&] (auto &&t) { return dynamic_cast<Track *> (t); },
-    TRACKLIST->find_track_by_name_hash (ms_before_->track_name_hash_).value ());
-  auto ch =
-    track->has_channel ()
-      ? dynamic_cast<ChannelTrack *> (track)->channel_
-      : nullptr;
+  auto ms = PluginSpan{ *ms_before_ };
+  auto track_var = TRACKLIST->get_track (ms.get_track_id_of_first_plugin ());
 
-  for (size_t i = 0; i < ms->slots_.size (); i++)
-    {
-      auto own_pl = ms->plugins_[i].get ();
-      auto pl = zrythm::gui::old_dsp::plugins::Plugin::find (own_pl->id_);
-      pl->setting_->bridge_mode_ =
-        do_it ? new_bridge_mode_ : own_pl->setting_->bridge_mode_;
+  std::visit (
+    [&] (auto &&track) {
+      auto ch =
+        track->has_channel ()
+          ? dynamic_cast<ChannelTrack *> (track)->channel_
+          : nullptr;
 
-      /* TODO - below is tricky */
+      for (const auto &own_pl_var : ms)
+        {
+          std::visit (
+            [&] (auto &&own_pl) {
+              auto pl_var = PROJECT->find_plugin_by_id (own_pl->get_uuid ());
+              std::visit (
+                [&] (auto &&pl) {
+                  pl->setting_->bridge_mode_ =
+                    do_it ? new_bridge_mode_ : own_pl->setting_->bridge_mode_;
+
+            /* TODO - below is tricky */
 #if 0
       carla_set_engine_option (
         pl->carla->host_handle, ENGINE_OPTION_PREFER_UI_BRIDGES, false, nullptr);
@@ -574,10 +673,14 @@ MixerSelectionsAction::do_or_undo_change_load_behavior (bool do_it)
         pl->carla, pl->setting_->descr);
       pl->activate (true);
 #endif
-    }
+                },
+                *pl_var);
+            },
+            own_pl_var);
+        }
 
-  if (ZRYTHM_HAVE_UI)
-    {
+      if (ZRYTHM_HAVE_UI)
+        {
 // TODO
 #if 0
       ui_show_error_message (
@@ -585,306 +688,374 @@ MixerSelectionsAction::do_or_undo_change_load_behavior (bool do_it)
         QObject::tr (
           "Plugin load behavior changes will only take effect after you save and re-load the project"));
 #endif
-    }
-
-  if (ch)
-    {
-      /* EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, ch); */
-    }
-}
-
-void
-MixerSelectionsAction::copy_automation_from_track1_to_track2 (
-  const AutomatableTrack     &from_track,
-  AutomatableTrack           &to_track,
-  zrythm::dsp::PluginSlotType slot_type,
-  int                         from_slot,
-  int                         to_slot)
-{
-  auto &prev_atl = from_track.get_automation_tracklist ();
-  for (auto &prev_at : prev_atl.ats_)
-    {
-      if (
-        prev_at->region_list_->regions_.empty ()
-        || prev_at->port_id_->owner_type_ != dsp::PortIdentifier::OwnerType::Plugin
-        || prev_at->port_id_->plugin_id_.slot_ != from_slot
-        || prev_at->port_id_->plugin_id_.slot_type_ != slot_type)
-        {
-          continue;
         }
 
-      /* find the corresponding at in the new track */
-      auto &atl = to_track.get_automation_tracklist ();
-      for (auto &at : atl.ats_)
+      if (ch)
         {
-          if (
-            at->port_id_->owner_type_ != dsp::PortIdentifier::OwnerType::Plugin
-            || at->port_id_->plugin_id_.slot_ != to_slot
-            || at->port_id_->plugin_id_.slot_type_ != slot_type
-            || at->port_id_->port_index_ != prev_at->port_id_->port_index_)
-            {
-              continue;
-            }
-
-          /* copy the automation regions */
-          prev_at->foreach_region ([&] (auto &prev_region) {
-            to_track.add_region (
-              prev_region.clone_raw_ptr (), at, -1, false, false);
-          });
-          break;
+          /* EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, ch); */
         }
-    }
+    },
+    track_var.value ());
 }
 
 void
 MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
 {
-  auto                            own_ms = ms_before_.get ();
-  zrythm::dsp::PluginSlotType     from_slot_type = own_ms->type_;
-  zrythm::dsp::PluginSlotType     to_slot_type = slot_type_;
-  auto *                          from_tr = std::visit (
-    [&] (auto &&t) { return dynamic_cast<AutomatableTrack *> (t); },
-    TRACKLIST->find_track_by_name_hash (own_ms->track_name_hash_).value ());
-  z_return_if_fail (from_tr);
-  bool move = !copy;
+  auto       own_ms = PluginSpan{ *ms_before_ };
+  const auto to_slot_value = to_slot_.value ();
+  auto       from_tr_var =
+    TRACKLIST->get_track (own_ms.get_track_id_of_first_plugin ());
+  z_return_if_fail (from_tr_var.has_value ());
+  const bool move = !copy;
 
-  if (do_it)
-    {
-      AutomatableTrack * to_tr = nullptr;
-
-      if (new_channel_)
+  std::visit (
+    [&] (auto &&from_tr) {
+      using FromTrackT = base_type<decltype (from_tr)>;
+      if constexpr (std::derived_from<FromTrackT, AutomatableTrack>)
         {
-          /* get the own plugin */
-          auto own_pl = own_ms->plugins_[0].get ();
-
-          /* add a new track to the tracklist */
-          std::string str = fmt::format ("{} (Copy)", own_pl->get_name ());
-          to_tr = dynamic_cast<AutomatableTrack *> (TRACKLIST->append_track (
-            Track::create_track (
-              Track::Type::AudioBus, str, TRACKLIST->tracks_.size ()),
-            *AUDIO_ENGINE, false, false));
-
-          /* remember to track pos */
-          to_track_name_hash_ = to_tr->get_name_hash ();
-        }
-      /* else if not new track/channel */
-      else
-        {
-          to_tr = std::visit (
-            [&] (auto &&t) { return dynamic_cast<AutomatableTrack *> (t); },
-            TRACKLIST->find_track_by_name_hash (to_track_name_hash_).value ());
-        }
-
-      [[maybe_unused]] auto to_ch =
-        to_tr->has_channel ()
-          ? dynamic_cast<ChannelTrack *> (to_tr)->channel_
-          : nullptr;
-
-      MIXER_SELECTIONS->clear (false);
-
-      /* sort own selections */
-      own_ms->sort ();
-
-      bool move_downwards_same_track =
-        to_tr == from_tr && !own_ms->slots_.empty ()
-        && to_slot_ > own_ms->plugins_[0]->id_.slot_;
-
-      /* clear deleted caches */
-      deleted_ats_.clear ();
-      deleted_ms_ = std::make_unique<FullMixerSelections> ();
-
-      /* foreach slot */
-      for (
-        int i = move_downwards_same_track ? own_ms->slots_.size () - 1 : 0;
-        move_downwards_same_track ? (i >= 0) : (i < (int) own_ms->slots_.size ());
-        move_downwards_same_track ? --i : ++i)
-        {
-          /* get/create the actual plugin */
-          int from_slot = own_ms->plugins_[i]->id_.slot_;
-          std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin> new_pl;
-          zrythm::gui::old_dsp::plugins::Plugin *                pl = nullptr;
-          if (move)
+          if (do_it)
             {
-              pl = from_tr->get_plugin_at_slot (own_ms->type_, from_slot);
-              z_return_if_fail (
-                new_pl->id_.track_name_hash_ == from_tr->get_name_hash ());
+              OptionalTrackPtrVariant to_tr_var;
+
+              if (new_channel_)
+                {
+                  /* get the own plugin */
+                  auto own_pl_var = own_ms.front ();
+
+                  /* add a new track to the tracklist */
+                  std::visit (
+                    [&] (auto &&own_pl) {
+                      std::string str =
+                        fmt::format ("{} (Copy)", own_pl->get_name ());
+                      auto to_tr_unique_var = Track::create_track (
+                        Track::Type::AudioBus, str, TRACKLIST->tracks_.size ());
+                      std::visit (
+                        [&] (auto &&to_tr_unique) {
+                          PROJECT->get_track_registry ().register_object (
+                            *to_tr_unique);
+                          TRACKLIST->append_track (
+                            to_tr_unique->get_uuid (), *AUDIO_ENGINE, false,
+                            false);
+
+                          /* remember to track pos */
+                          to_track_uuid_ = to_tr_unique->get_uuid ();
+
+                          to_tr_var = to_tr_unique.release ();
+                        },
+                        to_tr_unique_var);
+                    },
+                    own_pl_var);
+                }
+              /* else if not new track/channel */
+              else
+                {
+                  to_tr_var =
+                    TRACKLIST->get_track (to_track_uuid_.value ()).value ();
+                }
+
+              std::visit (
+                [&] (auto &&to_tr) {
+                  using ToTrackT = base_type<decltype (to_tr)>;
+                  if constexpr (std::derived_from<ToTrackT, AutomatableTrack>)
+                    {
+                      TRACKLIST->get_track_span ().deselect_all_plugins ();
+
+                      /* sort own selections */
+                      auto sorted_own_ms = std::ranges::to<std::vector> (own_ms);
+                      std::ranges::sort (
+                        sorted_own_ms, {}, PluginSpan::slot_projection);
+
+                      const bool move_downwards_same_track =
+                        Track::from_variant (to_tr_var.value ())->get_uuid ()
+                          == from_tr->get_uuid ()
+                        && !own_ms.empty ()
+                        && to_slot_
+                             > PluginSpan::slot_projection (own_ms.front ());
+
+                      /* clear deleted caches */
+                      deleted_ats_.clear ();
+                      deleted_ms_.emplace (std::vector<PluginPtrVariant> ());
+
+                      /* foreach slot */
+                      for (
+                        int i =
+                          move_downwards_same_track ? own_ms.size () - 1 : 0;
+                        move_downwards_same_track
+                          ? (i >= 0)
+                          : (i < (int) own_ms.size ());
+                        move_downwards_same_track ? --i : ++i)
+                        {
+                          /* get/create the actual plugin */
+                          auto from_slot =
+                            PluginSpan::slot_projection (sorted_own_ms.at (i));
+                          std::optional<gui::old_dsp::plugins::PluginPtrVariant>
+                            pl_var;
+                          if (move)
+                            {
+                              pl_var =
+                                from_tr->get_plugin_at_slot (from_slot).value ();
+                            }
+                          else
+                            {
+                              pl_var = std::visit (
+                                [&] (auto &&own_pl) {
+                                  return own_pl->clone_and_register (
+                                    PROJECT->get_plugin_registry ());
+                                },
+                                sorted_own_ms.at (i));
+                            }
+
+                          auto to_slot = to_slot_value.get_slot_after_n (i);
+
+                          /* save any plugin about to be deleted */
+                          save_existing_plugin (
+                            *deleted_ms_, from_tr, from_slot, to_tr, to_slot);
+
+                          /* move or copy the plugin */
+                          if (move)
+                            {
+                              z_debug (
+                                "moving plugin from {}:{} to {}:{}",
+                                from_tr->name_, from_slot, to_tr->name_,
+                                to_slot);
+
+                              if (
+                                from_tr->get_uuid () != to_tr->get_uuid ()
+                                || from_slot != to_slot)
+                                {
+                                  std::visit (
+                                    [&] (auto &&pl) {
+                                      pl->move (to_tr, to_slot, false, false);
+                                    },
+                                    pl_var.value ());
+                                }
+                            }
+                          else if (copy)
+                            {
+                              z_debug (
+                                "copying plugin from {}:{} to {}:{}",
+                                from_tr->get_name (), from_slot,
+                                to_tr->get_name (), to_slot);
+
+                              to_tr->insert_plugin (
+                                PluginSpan::uuid_projection (*pl_var), to_slot,
+                                true, false, false, false, true, false, false);
+
+                              std::visit (
+                                [&] (auto &&pl, auto &&own_pl) {
+                                  z_return_if_fail (
+                                    pl->in_ports_.size ()
+                                    == own_pl->in_ports_.size ());
+
+                                  /* copy automation regions from original
+                                   * plugin */
+
+                                  const auto &prev_pl = own_pl;
+                                  auto       &prev_atl =
+                                    from_tr->get_automation_tracklist ();
+                                  auto &atl = to_tr->get_automation_tracklist ();
+                                  for (
+                                    const auto &[prev_port, new_port] :
+                                    std::views::zip (
+                                      prev_pl->get_input_port_span ()
+                                        .template get_elements_by_type<
+                                          ControlPort> (),
+                                      pl->get_input_port_span ()
+                                        .template get_elements_by_type<
+                                          ControlPort> ()))
+                                    {
+                                      auto * prev_at =
+                                        prev_atl.get_at_from_port_uuid (
+                                          prev_port->get_uuid ());
+                                      auto * new_at = atl.get_at_from_port_uuid (
+                                        new_port->get_uuid ());
+                                      if (prev_at && new_at)
+                                        {
+                                          prev_at->foreach_region (
+                                            [&] (auto &prev_region) {
+                                              to_tr->Track::add_region (
+                                                prev_region.clone_raw_ptr (),
+                                                new_at, -1, false, false);
+                                            });
+                                        }
+                                    }
+                                },
+                                pl_var.value (), sorted_own_ms.at (i));
+                            }
+
+                          std::visit (
+                            [&] (auto &&pl) {
+                              pl->set_selected (true);
+
+                              /* if new plugin (copy), instantiate it, activate
+                               * it and set visibility */
+                              if (copy)
+                                {
+                                  pl->activate (true);
+
+                                  /* show if was visible before */
+                                  if (
+                                    ZRYTHM_HAVE_UI
+                                    && PluginSpan::visible_projection (
+                                      sorted_own_ms.at (i)))
+                                    {
+                                      pl->visible_ = true;
+                                      /* EVENTS_PUSH
+                                       * (EventType::ET_PLUGIN_VISIBILITY_CHANGED,
+                                       * pl); */
+                                    }
+                                }
+                            },
+                            pl_var.value ());
+                        }
+
+                      to_tr->validate ();
+
+                      if (new_channel_)
+                        {
+                          /* EVENTS_PUSH (EventType::ET_TRACKS_ADDED, nullptr); */
+                        }
+
+                      /* EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED,
+                       * to_ch);
+                       */
+                    }
+                },
+                to_tr_var.value ());
             }
+          /* else if undoing (deleting/moving plugins back) */
           else
             {
-              new_pl = clone_unique_with_variant<
-                zrythm::gui::old_dsp::plugins::PluginVariant> (
-                own_ms->plugins_[i].get ());
+              auto to_tr_var = TRACKLIST->get_track (to_track_uuid_.value ());
+              z_return_if_fail (to_tr_var.has_value ());
+              std::visit (
+                [&] (auto &&to_tr) {
+                  using ToTrackT = base_type<decltype (to_tr)>;
+                  if constexpr (std::derived_from<ToTrackT, AutomatableTrack>)
+                    {
+
+                      [[maybe_unused]] auto * to_ch =
+                        to_tr->has_channel ()
+                          ? dynamic_cast<ChannelTrack *> (to_tr)->channel_
+                          : nullptr;
+
+                      /* clear selections to readd each original plugin */
+                      TRACKLIST->get_track_span ().deselect_all_plugins ();
+
+                      /* sort own selections */
+
+                      /* sort own selections */
+                      auto sorted_own_ms = std::ranges::to<std::vector> (own_ms);
+                      std::ranges::sort (
+                        sorted_own_ms, {}, PluginSpan::slot_projection);
+
+                      bool move_downwards_same_track =
+                        to_tr->get_uuid () == from_tr->get_uuid ()
+                        && !own_ms.empty ()
+                        && to_slot_ < PluginSpan::slot_projection (
+                             sorted_own_ms.front ());
+                      for (
+                        int i =
+                          move_downwards_same_track ? sorted_own_ms.size () - 1 : 0;
+                        move_downwards_same_track
+                          ? (i >= 0)
+                          : (i < (int) sorted_own_ms.size ());
+                        move_downwards_same_track ? i-- : i++)
+                        {
+                          /* get the actual plugin */
+                          auto to_slot = to_slot_value.get_slot_after_n (i);
+                          auto pl_var = to_tr->get_plugin_at_slot (to_slot);
+                          z_return_if_fail (pl_var.has_value ());
+
+                          auto own_pl_var = sorted_own_ms.at (i);
+
+                          std::visit (
+                            [&] (auto &pl, auto &&own_pl) {
+                              /* original slot */
+                              const auto from_slot = own_pl->id_.slot_;
+                              auto       existing_pl_var =
+                                from_tr->get_plugin_at_slot (from_slot);
+
+                              /* if moving plugins back */
+                              if (move)
+                                {
+                                  /* move plugin to its original
+                                   * slot */
+                                  z_debug (
+                                    "moving plugin back from {}:{} to {}:{}",
+                                    to_tr->name_, to_slot, from_tr->name_,
+                                    from_slot);
+
+                                  if (
+                                    from_tr->get_uuid () != to_tr->get_uuid ()
+                                    || from_slot != to_slot)
+                                    {
+                                      {
+                                        z_return_if_fail (
+                                          !existing_pl_var.has_value ());
+                                      }
+                                      if constexpr (
+                                        std::derived_from<
+                                          FromTrackT, AutomatableTrack>)
+                                        {
+                                          pl->move (
+                                            from_tr, from_slot, false, false);
+                                        }
+                                    }
+                                }
+                              else if (copy)
+                                {
+                                  to_tr->remove_plugin (
+                                    to_slot, false, false, true, false, false);
+                                  pl = nullptr;
+                                }
+
+                              /* if there was a plugin at the slot before,
+                               * bring it back
+                               */
+                              revert_deleted_plugin (*to_tr, to_slot);
+
+                              if (copy)
+                                {
+                                  pl_var =
+                                    from_tr->get_plugin_at_slot (from_slot);
+                                }
+                              z_return_if_fail (pl);
+                              z_return_if_fail (pl_var.has_value ());
+
+                              /* add orig plugin to mixer selections */
+                              std::visit (
+                                [&] (auto &&prev_pl) {
+                                  prev_pl->set_selected (true);
+                                },
+                                existing_pl_var.value ());
+                            },
+                            pl_var.value (), own_pl_var);
+                        }
+
+                      /* if a new track was created delete it */
+                      if (new_channel_)
+                        {
+                          TRACKLIST->remove_track (
+                            to_tr->get_uuid (), std::nullopt, true);
+                        }
+
+                      from_tr->validate ();
+
+                      /* EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED,
+                       * to_ch); */
+                    }
+                },
+                to_tr_var.value ());
             }
 
-          int to_slot = to_slot_ + i;
+          /* restore connections */
+          save_or_load_port_connections (do_it);
 
-          /* save any plugin about to be deleted */
-          save_existing_plugin (
-            deleted_ms_.get (), from_tr, from_slot_type, from_slot, to_tr,
-            to_slot_type, to_slot);
-
-          /* move or copy the plugin */
-          if (move)
-            {
-              z_debug (
-                "moving plugin from "
-                "{}:{}:{} to {}:{}:{}",
-                from_tr->name_, ENUM_NAME (from_slot_type), from_slot,
-                to_tr->name_, ENUM_NAME (to_slot_type), to_slot);
-
-              if (
-                from_tr != to_tr || from_slot_type != to_slot_type
-                || from_slot != to_slot)
-                {
-                  pl->move (to_tr, to_slot_type, to_slot, false, false);
-                }
-            }
-          else if (copy)
-            {
-              z_debug (
-                "copying plugin from "
-                "{}:{}:{} to {}:{}:{}",
-                from_tr->name_, ENUM_NAME (from_slot_type), from_slot,
-                to_tr->name_, ENUM_NAME (to_slot_type), to_slot);
-
-              pl = to_tr->insert_plugin (
-                std::move (new_pl), to_slot_type, to_slot, true, false, false,
-                false, true, false, false);
-
-              z_return_if_fail (
-                pl->in_ports_.size () == own_ms->plugins_[i]->in_ports_.size ());
-            }
-
-          /* copy automation regions from original plugin */
-          if (copy && to_tr->is_automatable ())
-            {
-              copy_automation_from_track1_to_track2 (
-                dynamic_cast<AutomatableTrack &> (*from_tr),
-                dynamic_cast<AutomatableTrack &> (*to_tr), to_slot_type,
-                own_ms->slots_[i], to_slot);
-            }
-
-          /* select it */
-          MIXER_SELECTIONS->add_slot (*to_tr, to_slot_type, to_slot, true);
-
-          /* if new plugin (copy), instantiate it, activate it and set
-           * visibility */
-          if (copy)
-            {
-              pl->activate (true);
-
-              /* show if was visible before */
-              if (ZRYTHM_HAVE_UI && own_ms->plugins_[i]->visible_)
-                {
-                  pl->visible_ = true;
-                  /* EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED, pl); */
-                }
-            }
+          ROUTER->recalc_graph (false);
         }
-
-      to_tr->validate ();
-
-      if (new_channel_)
-        {
-          /* EVENTS_PUSH (EventType::ET_TRACKS_ADDED, nullptr); */
-        }
-
-      /* EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, to_ch); */
-    }
-  /* else if undoing (deleting/moving plugins back) */
-  else
-    {
-      Track * to_tr = std::visit (
-        [&] (auto &&t) { return dynamic_cast<Track *> (t); },
-        TRACKLIST->find_track_by_name_hash (to_track_name_hash_).value ());
-      [[maybe_unused]] auto* to_ch =
-        to_tr->has_channel ()
-          ? dynamic_cast<ChannelTrack *> (to_tr)->channel_
-          : nullptr;
-      z_return_if_fail (to_tr);
-
-      /* clear selections to readd each original plugin */
-      MIXER_SELECTIONS->clear (false);
-
-      /* sort own selections */
-      own_ms->sort ();
-
-      bool move_downwards_same_track =
-        to_tr == from_tr && !own_ms->slots_.empty ()
-        && to_slot_ < own_ms->plugins_[0]->id_.slot_;
-      for (
-        int i = move_downwards_same_track ? own_ms->slots_.size () - 1 : 0;
-        move_downwards_same_track ? (i >= 0) : (i < (int) own_ms->slots_.size ());
-        move_downwards_same_track ? i-- : i++)
-        {
-          /* get the actual plugin */
-          int                       to_slot = to_slot_ + i;
-          zrythm::gui::old_dsp::plugins::Plugin * pl =
-            to_tr->get_plugin_at_slot (to_slot_type, to_slot);
-          z_return_if_fail (pl);
-
-          /* original slot */
-          int from_slot = own_ms->plugins_[i]->id_.slot_;
-
-          /* if moving plugins back */
-          if (move)
-            {
-              /* move plugin to its original
-               * slot */
-              z_debug (
-                "moving plugin back from "
-                "{}:{}:{} to {}:{}:{}",
-                to_tr->name_, ENUM_NAME (to_slot_type), to_slot, from_tr->name_,
-                ENUM_NAME (from_slot_type), from_slot);
-
-              if (
-                from_tr != to_tr || from_slot_type != to_slot_type
-                || from_slot != to_slot)
-                {
-                  {
-                    auto existing_pl =
-                      from_tr->get_plugin_at_slot (from_slot_type, from_slot);
-                    z_return_if_fail (!existing_pl);
-                  }
-                  pl->move (from_tr, from_slot_type, from_slot, false, false);
-                }
-            }
-          else if (copy)
-            {
-              to_tr->remove_plugin (
-                to_slot_type, to_slot, false, false, true, false, false);
-              pl = nullptr;
-            }
-
-          /* if there was a plugin at the slot before, bring it back */
-          revert_deleted_plugin (*to_tr, to_slot);
-
-          if (copy)
-            {
-              pl = from_tr->get_plugin_at_slot (from_slot_type, from_slot);
-            }
-
-          /* add orig plugin to mixer selections */
-          z_return_if_fail (pl);
-          MIXER_SELECTIONS->add_slot (
-            *from_tr, from_slot_type, from_slot, false);
-        }
-
-      /* if a new track was created delete it */
-      if (new_channel_)
-        {
-          TRACKLIST->remove_track (*to_tr, true, true, true, false);
-        }
-
-      from_tr->validate ();
-
-      /* EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, to_ch); */
-    }
-
-  /* restore connections */
-  save_or_load_port_connections (do_it);
-
-  ROUTER->recalc_graph (false);
+    },
+    from_tr_var.value ());
 }
 
 void
@@ -950,65 +1121,67 @@ MixerSelectionsAction::to_string () const
             QObject::tr ("Create {} {}s"), num_plugins_, setting_->get_name ());
         }
     case Type::Delete:
-      if (ms_before_->slots_.size () == 1)
+      if (ms_before_->size () == 1)
         {
           return QObject::tr ("Delete Plugin");
         }
       else
         {
           return format_qstr (
-            QObject::tr ("Delete {} Plugins"), ms_before_->slots_.size ());
+            QObject::tr ("Delete {} Plugins"), ms_before_->size ());
         }
     case Type::Move:
-      if (ms_before_->slots_.size () == 1)
+      if (ms_before_->size () == 1)
         {
           return format_qstr (
-            QObject::tr ("Move {}"), ms_before_->plugins_[0]->get_name ());
+            QObject::tr ("Move {}"),
+            PluginSpan::name_projection (PluginSpan{ *ms_before_ }.front ()));
         }
       else
         {
           return format_qstr (
-            QObject::tr ("Move {} Plugins"), ms_before_->slots_.size ());
+            QObject::tr ("Move {} Plugins"), ms_before_->size ());
         }
     case Type::Copy:
-      if (ms_before_->slots_.size () == 1)
+      if (ms_before_->size () == 1)
         {
           return format_qstr (
-            QObject::tr ("Copy {}"), ms_before_->plugins_[0]->get_name ());
+            QObject::tr ("Copy {}"),
+            PluginSpan::name_projection (PluginSpan{ *ms_before_ }.front ()));
         }
       else
         {
           return format_qstr (
-            QObject::tr ("Copy {} Plugins"), ms_before_->slots_.size ());
+            QObject::tr ("Copy {} Plugins"), ms_before_->size ());
         }
     case Type::Paste:
-      if (ms_before_->slots_.size () == 1)
+      if (ms_before_->size () == 1)
         {
           return format_qstr (
-            QObject::tr ("Paste {}"), ms_before_->plugins_[0]->get_name ());
+            QObject::tr ("Paste {}"),
+            PluginSpan::name_projection (PluginSpan{ *ms_before_ }.front ()));
         }
       else
         {
           return format_qstr (
-            QObject::tr ("Paste {} Plugins"), ms_before_->slots_.size ());
+            QObject::tr ("Paste {} Plugins"), ms_before_->size ());
         }
     case Type::ChangeStatus:
-      if (ms_before_->slots_.size () == 1)
+      if (ms_before_->size () == 1)
         {
           return format_qstr (
             QObject::tr ("Change Status for {}"),
-            ms_before_->plugins_[0]->get_name ());
+            PluginSpan::name_projection (PluginSpan{ *ms_before_ }.front ()));
         }
       else
         {
           return format_qstr (
-            QObject::tr ("Change Status for {} Plugins"),
-            ms_before_->slots_.size ());
+            QObject::tr ("Change Status for {} Plugins"), ms_before_->size ());
         }
     case Type::ChangeLoadBehavior:
       return format_qstr (
         QObject::tr ("Change Load Behavior for {}"),
-        ms_before_->plugins_[0]->get_name ());
+        PluginSpan::name_projection (PluginSpan{ *ms_before_ }.front ()));
     }
 
   return {};

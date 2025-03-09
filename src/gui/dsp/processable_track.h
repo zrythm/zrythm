@@ -20,14 +20,15 @@ class ProcessableTrack
       public zrythm::utils::serialization::ISerializable<ProcessableTrack>
 {
 public:
-  // Rule of 0
-  ProcessableTrack ();
+  ProcessableTrack (const DeserializationDependencyHolder &dh);
+  ProcessableTrack (PortRegistry &port_registry, bool new_identity);
 
   ~ProcessableTrack () override = default;
-  JUCE_DECLARE_NON_COPYABLE (ProcessableTrack)
-  JUCE_DECLARE_NON_MOVEABLE (ProcessableTrack)
+  Z_DISABLE_COPY_MOVE (ProcessableTrack)
 
-  void init_loaded () override;
+  void init_loaded (
+    gui::old_dsp::plugins::PluginRegistry &plugin_registry,
+    PortRegistry                          &port_registry) override;
 
   /**
    * Returns whether monitor audio is on.
@@ -66,11 +67,12 @@ protected:
    * @param midi_events MidiEvents to fill (from Piano Roll Port for example).
    */
   void fill_events_common (
-    const EngineProcessTimeInfo &time_nfo,
-    MidiEventVector *            midi_events,
-    StereoPorts *                stereo_ports) const;
+    const EngineProcessTimeInfo                       &time_nfo,
+    MidiEventVector *                                  midi_events,
+    std::optional<std::pair<AudioPort &, AudioPort &>> stereo_ports) const;
 
-  void copy_members_from (const ProcessableTrack &other);
+  void
+  copy_members_from (const ProcessableTrack &other, ObjectCloneType clone_type);
 
   void
   append_member_ports (std::vector<Port *> &ports, bool include_plugins) const;
@@ -84,6 +86,9 @@ public:
    * This is the starting point when processing a Track.
    */
   std::unique_ptr<TrackProcessor> processor_;
+
+protected:
+  PortRegistry &port_registry_;
 };
 
 using ProcessableTrackVariant = std::variant<

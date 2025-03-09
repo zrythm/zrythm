@@ -4,7 +4,9 @@
 #include "gui/dsp/colored_object.h"
 
 void
-ColoredObject::copy_members_from (const ColoredObject &other)
+ColoredObject::copy_members_from (
+  const ColoredObject &other,
+  ObjectCloneType      clone_type)
 {
   color_ = other.color_;
   use_color_ = other.use_color_;

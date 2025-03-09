@@ -21,9 +21,11 @@ MidiPort::MidiPort (std::string label, PortFlow flow)
 MidiPort::~MidiPort () = default;
 
 void
-MidiPort::init_after_cloning (const MidiPort &original)
+MidiPort::init_after_cloning (
+  const MidiPort &other,
+  ObjectCloneType clone_type)
 {
-  Port::copy_members_from (original);
+  Port::copy_members_from (other, clone_type);
 }
 
 void
@@ -56,7 +58,7 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
   if (
     owner_type == PortIdentifier::OwnerType::TrackProcessor && is_output ()
     && events.has_any () && CLIP_EDITOR->has_region_
-    && CLIP_EDITOR->region_id_.track_name_hash_ == id_->track_name_hash_)
+    && CLIP_EDITOR->region_id_.track_uuid_ == id_->get_track_id ().value ())
     [[unlikely]]
     {
       bool events_processed = false;
@@ -129,8 +131,7 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
 
   /* handle MIDI clock */
   if (
-    ENUM_BITSET_TEST (
-      PortIdentifier::Flags2, id_->flags2_, PortIdentifier::Flags2::MidiClock)
+    ENUM_BITSET_TEST (id_->flags2_, PortIdentifier::Flags2::MidiClock)
     && is_output ())
     {
       /* continue or start */

@@ -40,16 +40,11 @@
 
 using namespace zrythm;
 
-Track::Track (
-  Type        type,
-  std::string name,
-  int         pos,
-  PortType    in_signal_type,
-  PortType    out_signal_type)
-    : pos_ (pos), type_ (type), name_ (std::move (name)),
-      in_signal_type_ (in_signal_type), out_signal_type_ (out_signal_type)
+Track::Track (Type type, PortType in_signal_type, PortType out_signal_type)
+    : type_ (type), in_signal_type_ (in_signal_type),
+      out_signal_type_ (out_signal_type)
 {
-  z_debug ("creating {} track '{}'", type, name_);
+  z_debug ("creating {} track", type);
 }
 
 Tracklist *
@@ -83,34 +78,57 @@ Track::from_variant (const TrackPtrVariant &variant)
   return std::visit ([&] (auto &&t) -> Track * { return t; }, variant);
 }
 
-std::unique_ptr<Track>
+TrackUniquePtrVariant
 Track::create_track (Track::Type type, const std::string &name, int pos)
 {
   switch (type)
     {
     case Track::Type::Instrument:
-      return *InstrumentTrack::create_unique (name, pos);
+      return InstrumentTrack::create_unique<InstrumentTrack> (
+        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), true);
+
       break;
     case Track::Type::Audio:
-      return *AudioTrack::create_unique (name, pos, AUDIO_ENGINE->sample_rate_);
+      return AudioTrack::create_unique<AudioTrack> (
+        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), true);
+
       break;
     case Track::Type::AudioBus:
-      return *AudioBusTrack::create_unique (name, pos);
+      return AudioBusTrack::create_unique<AudioBusTrack> (
+        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), true);
+
       break;
     case Track::Type::AudioGroup:
-      return *AudioGroupTrack::create_unique (name, pos);
+      return AudioGroupTrack::create_unique<AudioGroupTrack> (
+        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), true);
+
       break;
     case Track::Type::Midi:
-      return *MidiTrack::create_unique (name, pos);
+      return MidiTrack::create_unique<MidiTrack> (
+        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), true);
+
       break;
     case Track::Type::MidiBus:
-      return *MidiBusTrack::create_unique (name, pos);
+      return MidiBusTrack::create_unique<MidiBusTrack> (
+        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), true);
+
       break;
     case Track::Type::MidiGroup:
-      return *MidiGroupTrack::create_unique (name, pos);
+      return MidiGroupTrack::create_unique<MidiGroupTrack> (
+        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), true);
+
       break;
     case Track::Type::Folder:
-      return *FolderTrack::create_unique (name, pos);
+      return FolderTrack::create_unique<FolderTrack> (
+        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), true);
       break;
     case Track::Type::Master:
     case Track::Type::Chord:
@@ -118,18 +136,18 @@ Track::create_track (Track::Type type, const std::string &name, int pos)
     case Track::Type::Tempo:
     case Track::Type::Modulator:
     default:
-      z_return_val_if_reached (nullptr);
+      throw std::runtime_error ("Track::create_unique: invalid track type");
       break;
     }
 }
 
 void
-Track::copy_members_from (const Track &other)
+Track::copy_members_from (const Track &other, ObjectCloneType clone_type)
 {
   pos_ = other.pos_;
   type_ = other.type_;
   name_ = other.name_;
-  name_hash_ = other.name_hash_;
+  uuid_ = other.uuid_;
   icon_name_ = other.icon_name_;
   visible_ = other.visible_;
   filtered_ = other.filtered_;
@@ -145,66 +163,68 @@ Track::copy_members_from (const Track &other)
   frozen_ = other.frozen_;
   pool_id_ = other.pool_id_;
   disconnecting_ = other.disconnecting_;
+  selected_ = other.selected_;
 }
 
-void
-Track::select (bool select, bool exclusive, bool fire_events)
-{
-  if (select)
-    {
-      if (exclusive)
-        {
-          TRACKLIST_SELECTIONS->select_single (*this, fire_events);
-        }
-      else
-        {
-          TRACKLIST_SELECTIONS->add_track (*this);
-        }
-    }
-  else
-    {
-      TRACKLIST_SELECTIONS->remove_track (*this, fire_events);
-    }
-
-  if (fire_events)
-    {
-      // EVENTS_PUSH (EventType::ET_TRACK_CHANGED, this);
-    }
-}
-
-std::unique_ptr<Track>
+TrackUniquePtrVariant
 Track::create_unique_from_type (Type type)
 {
   switch (type)
     {
     case Track::Type::Instrument:
-      return *InstrumentTrack::create_unique ();
+      return InstrumentTrack::create_unique<InstrumentTrack> (
+        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), true);
     case Track::Type::Audio:
-      return *AudioTrack::create_unique ();
+      return AudioTrack::create_unique<AudioTrack> (
+        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), true);
     case Track::Type::AudioBus:
-      return *AudioBusTrack::create_unique ();
+      return AudioBusTrack::create_unique<AudioBusTrack> (
+        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), true);
     case Track::Type::AudioGroup:
-      return *AudioGroupTrack::create_unique ();
+      return AudioGroupTrack::create_unique<AudioGroupTrack> (
+        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), true);
     case Track::Type::Midi:
-      return *MidiTrack::create_unique ();
+      return MidiTrack::create_unique<MidiTrack> (
+        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), true);
     case Track::Type::MidiBus:
-      return *MidiBusTrack::create_unique ();
+      return MidiBusTrack::create_unique<MidiBusTrack> (
+        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), true);
     case Track::Type::MidiGroup:
-      return *MidiGroupTrack::create_unique ();
+      return MidiGroupTrack::create_unique<MidiGroupTrack> (
+        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), true);
     case Track::Type::Folder:
-      return *FolderTrack::create_unique ();
+      return FolderTrack::create_unique<FolderTrack> (
+        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), true);
     case Track::Type::Master:
-      return *MasterTrack::create_unique ();
+      return MasterTrack::create_unique<MasterTrack> (
+        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), true);
     case Track::Type::Chord:
-      return *ChordTrack::create_unique ();
+      return ChordTrack::create_unique<ChordTrack> (
+        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), true);
     case Track::Type::Marker:
-      return *MarkerTrack::create_unique ();
+      return MarkerTrack::create_unique<MarkerTrack> (
+        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), true);
     case Track::Type::Tempo:
-      return *TempoTrack::create_unique ();
+      return TempoTrack::create_unique<TempoTrack> (
+        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), true);
     case Track::Type::Modulator:
-      return *ModulatorTrack::create_unique ();
+      return ModulatorTrack::create_unique<ModulatorTrack> (
+        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+        PROJECT->get_port_registry (), true);
     default:
-      z_return_val_if_reached (nullptr);
+      throw std::runtime_error ("unknown track type");
     }
 }
 
@@ -218,7 +238,7 @@ void
 Track::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
   const
 {
-  id.track_name_hash_ = name_.empty () ? 0 : get_name_hash ();
+  id.set_track_id (get_uuid ());
   id.owner_type_ = dsp::PortIdentifier::OwnerType::Track;
 }
 
@@ -320,8 +340,7 @@ Track::insert_region (
       added_region = region;
     }
   z_return_val_if_fail (added_region, nullptr);
-  z_return_val_if_fail (
-    added_region->track_name_hash_ == get_name_hash (), nullptr);
+  z_return_val_if_fail (added_region->track_id_ == get_uuid (), nullptr);
 
   /* write clip if audio region */
   if constexpr (std::is_same_v<T, AudioRegion>)
@@ -353,22 +372,34 @@ void
 Track::add_folder_parents (std::vector<FoldableTrack *> &parents, bool prepend)
   const
 {
-  for (auto cur_track : TRACKLIST->tracks_ | type_is<FoldableTrack> ())
+  for (
+    const auto &cur_track_var :
+    tracklist_->get_track_span ()
+      | std::views::filter (
+        TrackSpan::derived_from_type_projection<FoldableTrack>))
     {
-      /* last position covered by the foldable track cur_track */
-      int last_covered_pos = cur_track->pos_ + (cur_track->size_ - 1);
+      std::visit (
+        [&] (const auto &cur_track) {
+          using TrackT = base_type<decltype (cur_track)>;
+          if constexpr (std::derived_from<TrackT, FoldableTrack>)
+            {
+              /* last position covered by the foldable track cur_track */
+              int last_covered_pos = cur_track->pos_ + (cur_track->size_ - 1);
 
-      if (cur_track->pos_ < pos_ && pos_ <= last_covered_pos)
-        {
-          if (prepend)
-            {
-              parents.insert (parents.begin (), cur_track);
+              if (cur_track->pos_ < pos_ && pos_ <= last_covered_pos)
+                {
+                  if (prepend)
+                    {
+                      parents.insert (parents.begin (), cur_track);
+                    }
+                  else
+                    {
+                      parents.push_back (cur_track);
+                    }
+                }
             }
-          else
-            {
-              parents.push_back (cur_track);
-            }
-        }
+        },
+        cur_track_var);
     }
 }
 
@@ -408,132 +439,8 @@ Track::should_be_visible () const
 
   std::vector<FoldableTrack *> parents;
   add_folder_parents (parents, false);
-  for (auto parent : parents)
-    {
-      if (!parent->visible_ || parent->folded_)
-        return false;
-    }
-
-  return true;
-}
-
-double
-Track::get_full_visible_height () const
-{
-  double height = main_height_;
-
-  if (has_lanes ())
-    {
-      height += std::visit (
-        [] (const auto &laned_track) {
-          return laned_track->get_visible_lane_heights ();
-        },
-        convert_to_variant<LanedTrackPtrVariant> (this));
-    }
-  if (type_has_automation (type_))
-    {
-      const auto * automatable_track =
-        dynamic_cast<const AutomatableTrack *> (this);
-      if (automatable_track && automatable_track->automation_visible_)
-        {
-          const AutomationTracklist &atl =
-            automatable_track->get_automation_tracklist ();
-          for (const auto &at : atl.visible_ats_)
-            {
-              z_warn_if_fail (at->height_ > 0);
-              if (at->visible_)
-                height += at->height_;
-            }
-        }
-    }
-  return height;
-}
-
-bool
-Track::multiply_heights (double multiplier, bool visible_only, bool check_only)
-{
-  if (main_height_ * multiplier < TRACK_MIN_HEIGHT)
-    return false;
-
-  if (!check_only)
-    {
-      main_height_ *= multiplier;
-    }
-
-  if (type_has_lanes (type_))
-    {
-      auto ret = std::visit (
-        [&] (auto &&track) {
-          using TrackT = base_type<decltype (track)>;
-          if (!visible_only || track->lanes_visible_)
-            {
-              for (auto &lane_var : track->lanes_)
-                {
-                  using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
-                  auto lane = std::get<TrackLaneT *> (lane_var);
-                  if (lane->height_ * multiplier < TRACK_MIN_HEIGHT)
-                    {
-                      return false;
-                    }
-
-                  if (!check_only)
-                    {
-                      lane->height_ *= multiplier;
-                    }
-                }
-            }
-          return true;
-        },
-        convert_to_variant<LanedTrackPtrVariant> (this));
-      if (!ret)
-        {
-          return false;
-        }
-    }
-  if (type_has_automation (type_))
-    {
-      AutomatableTrack * automatable_track =
-        dynamic_cast<AutomatableTrack *> (this);
-      if (
-        automatable_track
-        && (!visible_only || automatable_track->automation_visible_))
-        {
-          AutomationTracklist &atl =
-            automatable_track->get_automation_tracklist ();
-          for (auto &at : atl.ats_)
-            {
-              if (visible_only && !at->visible_)
-                continue;
-
-              if (at->height_ * multiplier < TRACK_MIN_HEIGHT)
-                {
-                  return false;
-                }
-
-              if (!check_only)
-                {
-                  at->height_ *= multiplier;
-                }
-            }
-        }
-    }
-
-  return true;
-}
-
-bool
-Track::is_selected () const
-{
-  return TRACKLIST_SELECTIONS->contains_track (*this);
-}
-
-bool
-Track::contains_uninstantiated_plugin () const
-{
-  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> plugins;
-  get_plugins (plugins);
-  return std::ranges::any_of (plugins, [] (auto pl) {
-    return pl->instantiation_failed_;
+  return std::ranges::all_of (parents, [] (const auto &parent) {
+    return parent->visible_ && !parent->folded_;
   });
 }
 
@@ -636,88 +543,24 @@ track_freeze (Track * self, bool freeze, GError ** error)
 }
 #endif
 
-template <typename T>
-T *
-Track::insert_plugin (
-  std::unique_ptr<T>        &&pl,
-  zrythm::dsp::PluginSlotType slot_type,
-  int                         slot,
-  bool                        instantiate_plugin,
-  bool                        replacing_plugin,
-  bool                        moving_plugin,
-  bool                        confirm,
-  bool                        gen_automatables,
-  bool                        recalc_graph,
-  bool                        fire_events)
-{
-  if (!dsp::PluginIdentifier::validate_slot_type_slot_combo (slot_type, slot))
-    {
-      z_return_val_if_reached (nullptr);
-    }
-
-  T * inserted_plugin = nullptr;
-
-  if (slot_type == zrythm::dsp::PluginSlotType::Modulator)
-    {
-      auto * modulator_track = dynamic_cast<ModulatorTrack *> (this);
-      if (modulator_track)
-        {
-          std::shared_ptr<T> pl_shared = std::move (pl);
-          inserted_plugin =
-            modulator_track
-              ->insert_modulator (
-                slot, pl_shared, replacing_plugin, confirm, gen_automatables,
-                recalc_graph, fire_events)
-              .get ();
-        }
-    }
-  else
-    {
-      auto * channel_track = dynamic_cast<ChannelTrack *> (this);
-      if (channel_track)
-        {
-          inserted_plugin = dynamic_cast<
-            T *> (channel_track->get_channel ()->add_plugin (
-            std::move (pl), slot_type, slot, confirm, moving_plugin,
-            gen_automatables, recalc_graph, fire_events));
-        }
-    }
-
-  if (
-    inserted_plugin && !inserted_plugin->instantiated_
-    && !inserted_plugin->instantiation_failed_)
-    {
-      try
-        {
-          inserted_plugin->instantiate ();
-        }
-      catch (const ZrythmException &e)
-        {
-          e.handle ("Failed to instantiate plugin");
-        }
-    }
-
-  return inserted_plugin;
-}
-
 void
 Track::remove_plugin (
-  zrythm::dsp::PluginSlotType slot_type,
-  int                         slot,
-  bool                        replacing_plugin,
-  bool                        moving_plugin,
-  bool                        deleting_plugin,
-  bool                        deleting_track,
-  bool                        recalc_graph)
+  dsp::PluginSlot slot,
+  bool            replacing_plugin,
+  bool            moving_plugin,
+  bool            deleting_plugin,
+  bool            deleting_track,
+  bool            recalc_graph)
 {
   z_debug ("removing plugin from track {}", name_);
-  if (slot_type == zrythm::dsp::PluginSlotType::Modulator)
+  if (slot.is_modulator ())
     {
       auto * modulator_track = dynamic_cast<ModulatorTrack *> (this);
       if (modulator_track)
         {
           modulator_track->remove_modulator (
-            slot, deleting_plugin, deleting_track, recalc_graph);
+            slot.get_slot_with_index ().second, deleting_plugin, deleting_track,
+            recalc_graph);
         }
     }
   else
@@ -726,8 +569,7 @@ Track::remove_plugin (
       if (channel_track)
         {
           channel_track->get_channel ()->remove_plugin (
-            slot_type, slot, moving_plugin, deleting_plugin, deleting_track,
-            recalc_graph);
+            slot, moving_plugin, deleting_plugin, deleting_track, recalc_graph);
         }
     }
 }
@@ -906,7 +748,8 @@ Track::set_name_with_action_full (const std::string &name)
   try
     {
       UNDO_MANAGER->perform (new gui::actions::RenameTrackAction (
-        *this, *PORT_CONNECTIONS_MGR, name));
+        convert_to_variant<TrackPtrVariant> (this), *PORT_CONNECTIONS_MGR,
+        name));
       return true;
     }
   catch (const ZrythmException &ex)
@@ -946,13 +789,10 @@ Track::add_region_if_in_range (
 }
 
 std::string
-Track::get_unique_name (
-  const Tracklist   &tracklist,
-  Track *            track_to_skip,
-  const std::string &name)
+Track::get_unique_name (const Tracklist &tracklist, const std::string &name)
 {
   std::string new_name = name;
-  while (!tracklist.track_name_is_unique (new_name, track_to_skip))
+  while (!tracklist.track_name_is_unique (new_name, get_uuid ()))
     {
       auto [ending_num, name_without_num] =
         utils::string::get_int_after_last_space (new_name);
@@ -974,69 +814,18 @@ Track::set_name (
   const std::string &name,
   bool               pub_events)
 {
-  auto         new_name = get_unique_name (tracklist, this, name);
-  unsigned int old_hash = name_.empty () ? 0 : get_name_hash ();
+  auto new_name = get_unique_name (tracklist, name);
   name_ = new_name;
-  unsigned int new_hash = get_name_hash ();
 
-  if (old_hash != 0)
+  std::vector<Port *> ports;
+  append_ports (ports, true);
+  for (auto * port : ports)
     {
-      update_name_hash (new_hash);
-
-      std::vector<ArrangerObject *> objects;
-      append_objects (objects);
-      for (auto obj : objects)
+      if (port->is_exposed_to_backend ())
         {
-          obj->set_track_name_hash (new_hash);
-        }
-
-      std::vector<Port *> ports;
-      append_ports (ports, true);
-      for (auto port : ports)
-        {
-          port->update_track_name_hash (*this, new_hash);
-          if (port->is_exposed_to_backend ())
-            {
-              port->rename_backend ();
-            }
-        }
-
-      auto processable_track = dynamic_cast<ProcessableTrack *> (this);
-      if (processable_track)
-        processable_track->processor_->track_ = processable_track;
-
-      auto channel_track = dynamic_cast<ChannelTrack *> (this);
-      if (channel_track)
-        channel_track->channel_->update_track_name_hash (old_hash, new_hash);
-    }
-
-  if (is_in_active_project ())
-    {
-
-      auto group_target_track = dynamic_cast<GroupTargetTrack *> (this);
-      if (group_target_track)
-        {
-          group_target_track->update_children ();
-        }
-
-      if (
-        MIXER_SELECTIONS->has_any ()
-        && MIXER_SELECTIONS->track_name_hash_ == old_hash)
-        {
-          MIXER_SELECTIONS->track_name_hash_ = new_hash;
-        }
-
-      if (
-        CLIP_EDITOR->has_region_
-        && CLIP_EDITOR->region_id_.track_name_hash_ == old_hash)
-        {
-          z_debug ("updating clip editor region track to {}", name_);
-          CLIP_EDITOR->region_id_.track_name_hash_ = new_hash;
+          port->rename_backend (*tracklist.project_->audio_engine_);
         }
     }
-
-  // added 2024/10/13
-  name_hash_ = new_hash;
 
   if (pub_events)
     {
@@ -1045,68 +834,16 @@ Track::set_name (
 }
 
 void
-Track::get_plugins (
-  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> &arr) const
-{
-  if (type_has_channel (type_))
-    {
-      auto channel_track = dynamic_cast<const ChannelTrack *> (this);
-      channel_track->channel_->get_plugins (arr);
-    }
-
-  if (type_ == Type::Modulator)
-    {
-      auto modulator_track = dynamic_cast<const ModulatorTrack *> (this);
-      for (const auto &modulator : modulator_track->modulators_)
-        {
-          if (modulator)
-            {
-              arr.push_back (modulator.get ());
-            }
-        }
-    }
-}
-
-void
-
-Track::activate_all_plugins (bool activate)
-{
-  std::vector<zrythm::gui::old_dsp::plugins::Plugin *> pls;
-  get_plugins (pls);
-
-  for (auto pl : pls)
-    {
-      if (!pl->instantiated_ && !pl->instantiation_failed_)
-        {
-          try
-            {
-
-              pl->instantiate ();
-            }
-          catch (const ZrythmException &e)
-            {
-              e.handle ("Failed to instantiate plugin");
-            }
-        }
-
-      if (pl->instantiated_)
-        {
-          pl->activate (activate);
-        }
-    }
-}
-
-void
 Track::set_comment (const std::string &comment, bool undoable)
 {
   if (undoable)
     {
-      select (true, true, false);
+      tracklist_->get_track_span ().select_single (get_uuid ());
 
       try
         {
-          UNDO_MANAGER->perform (
-            new gui::actions::EditTrackCommentAction (*this, comment));
+          UNDO_MANAGER->perform (new gui::actions::EditTrackCommentAction (
+            convert_to_variant<TrackPtrVariant> (this), comment));
         }
       catch (const ZrythmException &e)
         {
@@ -1125,12 +862,12 @@ Track::set_color (const Color &color, bool undoable, bool fire_events)
 {
   if (undoable)
     {
-      select (true, true, false);
+      tracklist_->get_track_span ().select_single (get_uuid ());
 
       try
         {
-          UNDO_MANAGER->perform (
-            new gui::actions::EditTrackColorAction (*this, color));
+          UNDO_MANAGER->perform (new gui::actions::EditTrackColorAction (
+            convert_to_variant<TrackPtrVariant> (this), color));
         }
       catch (const ZrythmException &e)
         {
@@ -1154,12 +891,12 @@ Track::set_icon (const std::string &icon_name, bool undoable, bool fire_events)
 {
   if (undoable)
     {
-      select (true, true, false);
+      tracklist_->get_track_span ().select_single (get_uuid ());
 
       try
         {
-          UNDO_MANAGER->perform (
-            new gui::actions::EditTrackIconAction (*this, icon_name));
+          UNDO_MANAGER->perform (new gui::actions::EditTrackIconAction (
+            convert_to_variant<TrackPtrVariant> (this), icon_name));
         }
       catch (const ZrythmException &e)
         {
@@ -1176,37 +913,6 @@ Track::set_icon (const std::string &icon_name, bool undoable, bool fire_events)
           // EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, this);
         }
     }
-}
-
-zrythm::gui::old_dsp::plugins::Plugin *
-Track::get_plugin_at_slot (zrythm::dsp::PluginSlotType slot_type, int slot) const
-{
-  if (auto channel_track = dynamic_cast<const ChannelTrack *> (this))
-    {
-      auto &channel = channel_track->get_channel ();
-      switch (slot_type)
-        {
-        case zrythm::dsp::PluginSlotType::MidiFx:
-          return channel->midi_fx_[slot].get ();
-        case zrythm::dsp::PluginSlotType::Instrument:
-          return channel->instrument_.get ();
-        case zrythm::dsp::PluginSlotType::Insert:
-          return channel->inserts_[slot].get ();
-        default:
-          break;
-        }
-    }
-  else if (auto modulator_track = dynamic_cast<const ModulatorTrack *> (this))
-    {
-      if (
-        slot_type == zrythm::dsp::PluginSlotType::Modulator
-        && slot < (int) modulator_track->modulators_.size ())
-        {
-          return modulator_track->modulators_[slot].get ();
-        }
-    }
-
-  return nullptr;
 }
 
 void
@@ -1265,16 +971,16 @@ Track::mark_for_bounce (
     {
       if (auto group_target_track = dynamic_cast<GroupTargetTrack *> (this))
         {
-          for (auto child_hash : group_target_track->children_)
+          for (auto child_id : group_target_track->children_)
             {
-              if (auto child = TRACKLIST->find_track_by_name_hash (child_hash))
+              if (auto child_var = TRACKLIST->get_track (child_id))
                 {
                   std::visit (
                     [&] (auto &&c) {
                       c->bounce_to_master_ = bounce_to_master_;
                       c->mark_for_bounce (bounce, mark_regions, true, false);
                     },
-                    *child);
+                    *child_var);
                 }
             }
         }
@@ -1350,14 +1056,16 @@ Track::set_enabled (
   z_debug ("Setting track {} {}", name_, enabled_ ? "enabled" : "disabled");
 
   if (auto_select)
-    select (true, true, fire_events);
+    {
+      tracklist_->get_track_span ().select_single (get_uuid ());
+    }
 
   if (trigger_undo)
     {
       try
         {
-          UNDO_MANAGER->perform (
-            new gui::actions::EnableTrackAction (*this, enabled_));
+          UNDO_MANAGER->perform (new gui::actions::EnableTrackAction (
+            convert_to_variant<TrackPtrVariant> (this), enabled_));
         }
       catch (const ZrythmException &e)
         {
@@ -1438,18 +1146,6 @@ Track::create_with_action (
         type, pl_setting, file_descr, index, pos, num_tracks,
         disable_track_idx));
     }
-
-  if (ZRYTHM_TESTING)
-    {
-      auto tr = TRACKLIST->get_track (index);
-      std::visit (
-        [&] (auto &&track) {
-          z_return_if_fail (track);
-          z_return_if_fail (track->type_ == type);
-          z_return_if_fail (track->pos_ == index);
-        },
-        tr);
-    }
 }
 
 Track *
@@ -1483,35 +1179,22 @@ Track::create_without_file_with_action (
    * it */
   create_with_action (type, pl_setting, nullptr, nullptr, index, 1, -1, nullptr);
 
-  auto track = TRACKLIST->get_track (index);
-  std::visit (
-    [&] (auto &&tr) {
-      z_return_if_fail (tr);
-      z_return_if_fail (tr->type_ == type);
-      z_return_if_fail (tr->pos_ == index);
-    },
-    track);
+  auto track = TRACKLIST->get_track_at_index (index);
   return Track::from_variant (track);
 }
 
 void
 Track::set_caches (CacheType types)
 {
-  if (ENUM_BITSET_TEST (CacheType, types, CacheType::TrackNameHashes))
-    {
-      name_hash_ = get_name_hash ();
-    }
-
   if (
-    ENUM_BITSET_TEST (CacheType, types, CacheType::PlaybackSnapshots)
-    && !is_auditioner ())
+    ENUM_BITSET_TEST (types, CacheType::PlaybackSnapshots) && !is_auditioner ())
     {
       z_return_if_fail (AUDIO_ENGINE->run_.load () == false);
 
       set_playback_caches ();
     }
 
-  if (ENUM_BITSET_TEST (CacheType, types, CacheType::PluginPorts))
+  if (ENUM_BITSET_TEST (types, CacheType::PluginPorts))
     {
       if (auto channel_track = dynamic_cast<ChannelTrack *> (this))
         {
@@ -1520,8 +1203,8 @@ Track::set_caches (CacheType types)
     }
 
   if (
-    ENUM_BITSET_TEST (CacheType, types, CacheType::AutomationLaneRecordModes)
-    || ENUM_BITSET_TEST (CacheType, types, CacheType::AutomationLanePorts))
+    ENUM_BITSET_TEST (types, CacheType::AutomationLaneRecordModes)
+    || ENUM_BITSET_TEST (types, CacheType::AutomationLanePorts))
     {
       if (auto automatable_track = dynamic_cast<AutomatableTrack *> (this))
         {
@@ -1607,37 +1290,6 @@ Track::generate_edit_context_menu (int num_selected)
   return edit_submenu;
 }
 #endif
-
-bool
-Track::is_pinned () const
-{
-  return pos_ < TRACKLIST->pinned_tracks_cutoff_;
-}
-
-template zrythm::gui::old_dsp::plugins::Plugin *
-Track::insert_plugin (
-  std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin> &&pl,
-  zrythm::dsp::PluginSlotType                              slot_type,
-  int                                                      slot,
-  bool                                                     instantiate_plugin,
-  bool                                                     replacing_plugin,
-  bool                                                     moving_plugin,
-  bool                                                     confirm,
-  bool                                                     gen_automatables,
-  bool                                                     recalc_graph,
-  bool                                                     fire_events);
-template zrythm::gui::old_dsp::plugins::CarlaNativePlugin *
-Track::insert_plugin (
-  std::unique_ptr<zrythm::gui::old_dsp::plugins::CarlaNativePlugin> &&pl,
-  zrythm::dsp::PluginSlotType                                         slot_type,
-  int                                                                 slot,
-  bool instantiate_plugin,
-  bool replacing_plugin,
-  bool moving_plugin,
-  bool confirm,
-  bool gen_automatables,
-  bool recalc_graph,
-  bool fire_events);
 
 template MidiRegion *
 Track::add_region (

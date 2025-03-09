@@ -144,19 +144,9 @@ LanedTrackImpl<TrackLaneT>::set_playback_caches ()
 
 template <typename TrackLaneT>
 void
-LanedTrackImpl<TrackLaneT>::update_name_hash (unsigned int new_name_hash)
-{
-  for (auto &lane_var : lanes_)
-    {
-      auto lane = std::get<TrackLaneT *> (lane_var);
-
-      lane->update_track_name_hash ();
-    }
-}
-
-template <typename TrackLaneT>
-void
-LanedTrackImpl<TrackLaneT>::init_loaded ()
+LanedTrackImpl<TrackLaneT>::init_loaded (
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry)
 {
   for (auto &lane_var : lanes_)
     {
@@ -168,9 +158,11 @@ LanedTrackImpl<TrackLaneT>::init_loaded ()
 
 template <typename TrackLaneT>
 void
-LanedTrackImpl<TrackLaneT>::copy_members_from (const LanedTrackImpl &other)
+LanedTrackImpl<TrackLaneT>::copy_members_from (
+  const LanedTrackImpl &other,
+  ObjectCloneType       clone_type)
 {
-  lanes_.copy_members_from (other.lanes_);
+  lanes_.copy_members_from (other.lanes_, clone_type);
   for (auto &lane_var : lanes_)
     {
       auto lane = std::get<TrackLaneT *> (lane_var);

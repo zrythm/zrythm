@@ -60,9 +60,11 @@ TransportAction::TransportAction (
       : gui::SettingsManager::get_instance ()->get_musicalMode ();
 }
 void
-TransportAction::init_after_cloning (const TransportAction &other)
+TransportAction::init_after_cloning (
+  const TransportAction &other,
+  ObjectCloneType        clone_type)
 {
-  UndoableAction::copy_members_from (other);
+  UndoableAction::copy_members_from (other, clone_type);
   type_ = other.type_;
   bpm_before_ = other.bpm_before_;
   bpm_after_ = other.bpm_after_;
@@ -155,7 +157,7 @@ TransportAction::perform_impl ()
   else
     {
       do_or_undo (true);
-      TRACKLIST->set_caches (CacheType::PlaybackSnapshots);
+      TRACKLIST->get_track_span ().set_caches (CacheType::PlaybackSnapshots);
     }
 
   /* EVENTS_PUSH (EventType::ET_BPM_CHANGED, nullptr); */

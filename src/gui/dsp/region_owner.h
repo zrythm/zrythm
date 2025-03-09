@@ -119,7 +119,8 @@ public:
 protected:
   RegionOwnerImpl ();
 
-  void copy_members_from (const RegionOwnerImpl &other);
+  void
+  copy_members_from (const RegionOwnerImpl &other, ObjectCloneType clone_type);
 
   /**
    * @brief Optional callback after removing a region.

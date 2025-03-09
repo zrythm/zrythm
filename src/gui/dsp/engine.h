@@ -305,6 +305,11 @@ public:
    */
   ~AudioEngine () override;
 
+  auto          &get_port_registry () { return *port_registry_; }
+  auto          &get_port_registry () const { return *port_registry_; }
+  TrackRegistry &get_track_registry ();
+  TrackRegistry &get_track_registry () const;
+
   bool has_handled_buffer_size_change () const
   {
     return audio_backend_ != AudioBackend::AUDIO_BACKEND_JACK
@@ -456,7 +461,11 @@ public:
    */
   static void set_default_backends (bool reset_to_dummy);
 
-  void init_after_cloning (const AudioEngine &other) override;
+  void init_after_cloning (const AudioEngine &other, ObjectCloneType clone_type)
+    override;
+
+  std::pair<AudioPort &, AudioPort &> get_monitor_out_ports ();
+  std::pair<AudioPort &, AudioPort &> get_dummy_input_ports ();
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -468,8 +477,7 @@ private:
 
   ATTR_COLD void init_common ();
 
-  void
-  update_position_info (PositionInfo &pos_nfo, const nframes_t frames_to_add);
+  void update_position_info (PositionInfo &pos_nfo, nframes_t frames_to_add);
 
   /**
    * Clears the underlying backend's output buffers.
@@ -485,6 +493,9 @@ private:
    *
    */
   void stop_events ();
+
+private:
+  OptionalRef<PortRegistry> port_registry_;
 
 public:
   /** Pointer to owner project, if any. */
@@ -577,7 +588,8 @@ public:
    *
    * Will be ignored if NULL.
    */
-  std::unique_ptr<StereoPorts> dummy_input_;
+  std::optional<PortUuid> dummy_left_input_;
+  std::optional<PortUuid> dummy_right_input_;
 
   /**
    * Monitor - these should be the last ports in the signal
@@ -585,7 +597,8 @@ public:
    *
    * The L/R ports are exposed to the backend.
    */
-  std::unique_ptr<StereoPorts> monitor_out_;
+  std::optional<PortUuid> monitor_out_left_;
+  std::optional<PortUuid> monitor_out_right_;
 
   /**
    * Flag to tell the UI that this channel had MIDI activity.

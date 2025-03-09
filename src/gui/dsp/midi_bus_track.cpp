@@ -3,12 +3,22 @@
 
 #include "gui/dsp/midi_bus_track.h"
 
-MidiBusTrack::MidiBusTrack (const std::string &name, int pos)
-    : Track (Track::Type::MidiBus, name, pos, PortType::Event, PortType::Event)
+MidiBusTrack::MidiBusTrack (
+  TrackRegistry  &track_registry,
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry,
+  bool            new_identity)
+    : Track (Track::Type::MidiBus, PortType::Event, PortType::Event),
+      AutomatableTrack (port_registry, new_identity),
+      ProcessableTrack (port_registry, new_identity),
+      ChannelTrack (track_registry, plugin_registry, port_registry, new_identity)
 {
-  color_ = Color (QColor ("#F5C211"));
-  icon_name_ = "signal-midi";
-  automation_tracklist_->setParent (this);
+  if (new_identity)
+    {
+      color_ = Color (QColor ("#F5C211"));
+      icon_name_ = "signal-midi";
+      automation_tracklist_->setParent (this);
+    }
 }
 
 bool
@@ -28,21 +38,25 @@ MidiBusTrack::append_ports (std::vector<Port *> &ports, bool include_plugins) co
 }
 
 void
-MidiBusTrack::init_loaded ()
+MidiBusTrack::init_loaded (
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry)
 {
   // ChannelTrack must be initialized before AutomatableTrack
-  ChannelTrack::init_loaded ();
-  AutomatableTrack::init_loaded ();
-  ProcessableTrack::init_loaded ();
+  ChannelTrack::init_loaded (plugin_registry, port_registry);
+  AutomatableTrack::init_loaded (plugin_registry, port_registry);
+  ProcessableTrack::init_loaded (plugin_registry, port_registry);
 }
 
 void
-MidiBusTrack::init_after_cloning (const MidiBusTrack &other)
+MidiBusTrack::init_after_cloning (
+  const MidiBusTrack &other,
+  ObjectCloneType     clone_type)
 {
-  ChannelTrack::copy_members_from (other);
-  ProcessableTrack::copy_members_from (other);
-  AutomatableTrack::copy_members_from (other);
-  Track::copy_members_from (other);
+  ChannelTrack::copy_members_from (other, clone_type);
+  ProcessableTrack::copy_members_from (other, clone_type);
+  AutomatableTrack::copy_members_from (other, clone_type);
+  Track::copy_members_from (other, clone_type);
 }
 
 bool

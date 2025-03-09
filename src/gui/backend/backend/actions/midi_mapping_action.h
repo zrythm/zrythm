@@ -58,13 +58,15 @@ public:
    * @param dest_port
    */
   MidiMappingAction (
-    const std::array<midi_byte_t, 3> buf,
-    const ExtPort *                  device_port,
-    const Port                      &dest_port);
+    std::array<midi_byte_t, 3> buf,
+    const ExtPort *            device_port,
+    const Port                &dest_port);
 
   QString to_string () const override;
 
-  void init_after_cloning (const MidiMappingAction &other) override;
+  void
+  init_after_cloning (const MidiMappingAction &other, ObjectCloneType clone_type)
+    override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -82,7 +84,7 @@ public:
   /** Action type. */
   Type type_ = (Type) 0;
 
-  std::unique_ptr<dsp::PortIdentifier> dest_port_id_;
+  std::optional<dsp::PortIdentifier::PortUuid> dest_port_id_;
 
   std::unique_ptr<ExtPort> dev_port_;
 

@@ -65,7 +65,8 @@ struct CarlaPatchbayPortInfo
 };
 
 class CarlaNativePlugin final
-    : public Plugin,
+    : public QObject,
+      public Plugin,
       public ICloneable<CarlaNativePlugin>,
       public zrythm::utils::serialization::ISerializable<CarlaNativePlugin>
 {
@@ -81,10 +82,10 @@ public:
    * @throw ZrythmException If the plugin could not be created.
    */
   CarlaNativePlugin (
-    const PluginSetting &setting,
-    unsigned int         track_name_hash,
-    PluginSlotType       slot_type,
-    int                  slot);
+    PortRegistry                  &port_registry,
+    const PluginSetting           &setting,
+    dsp::PortIdentifier::TrackUuid track_id,
+    dsp::PluginSlot                slot);
 
   /**
    * Deactivates, cleanups and frees the instance.
@@ -154,7 +155,9 @@ public:
    */
   bool add_internal_plugin_from_descr (const PluginDescriptor &descr);
 
-  void init_after_cloning (const CarlaNativePlugin &other) override;
+  void
+  init_after_cloning (const CarlaNativePlugin &other, ObjectCloneType clone_type)
+    override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -180,7 +183,7 @@ private:
   /**
    * Processes the plugin for this cycle.
    */
-  ATTR_HOT void process_impl (const EngineProcessTimeInfo time_nfo) override;
+  ATTR_HOT void process_impl (EngineProcessTimeInfo time_nfo) override;
 
   void cleanup_impl () override;
 

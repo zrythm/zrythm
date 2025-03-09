@@ -41,10 +41,10 @@ endif()
 
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++20")
+set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++23")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_AUTOUIC OFF)
 # Enable precompiled headers
@@ -556,26 +556,23 @@ if(ZRYTHM_STRICT)
       -fstrict-aliasing
       -Wstrict-aliasing=2
       -Werror=strict-aliasing
-      #-Werror=strict-overflow
+      -Werror=strict-overflow
       -Wstrict-overflow=2
       -fstrict-overflow
       -Werror=init-self
       -Werror=write-strings
-      # TODO fix and enable
-      #-Werror=sign-compare
+      -Werror=sign-compare
       -Werror=float-conversion
       -Werror=uninitialized
       -Werror=return-type
       -Werror=switch
       -Werror=overflow
-      # breaks pango subproject build
-      #-Werror=array-bounds
+      -Werror=array-bounds
       -Werror=enum-compare
       -Werror=misleading-indentation
       -Werror=int-in-bool-context
       -Werror=type-limits
-      # TODO re-enable after porting gtk widgets
-      #-Werror=deprecated-declarations
+      -Werror=deprecated-declarations
       -Werror=endif-labels
       -Werror=logical-not-parentheses
       -Werror=parentheses
@@ -599,10 +596,14 @@ if(ZRYTHM_STRICT)
       # -Werror=effc++
       -Werror=reorder
       -Werror=sequence-point
+      -Werror=invalid-constexpr
+      -Werror=pessimizing-move
+      -pedantic-errors
     )
     endif()
   if(compiler_is_gcc)
     list(APPEND zrythm_compile_args
+      -ftemplate-backtrace-limit=0
       #-Wsuggest-attribute=pure
       #-Wsuggest-attribute=const
       #-Wsuggest-attribute=noreturn
@@ -1001,6 +1002,7 @@ list(APPEND zrythm_link_libs
   backward_cpp::backward_cpp
   fmt::fmt
   spdlog::spdlog
+  type_safe
   Qt6::Core
   Qt6::Gui
   Qt6::Widgets

@@ -15,7 +15,6 @@ target_sources(zrythm_gui_lib
     editor_settings.cpp
     file_manager.cpp
     midi_selections.cpp
-    mixer_selections.cpp
     piano_roll.cpp
     project.cpp
     project/project_init_flow_manager.cpp
@@ -26,7 +25,6 @@ target_sources(zrythm_gui_lib
     theme_manager.cpp
     timeline.cpp
     timeline_selections.cpp
-    tracklist_selections.cpp
     zrythm.h
     zrythm.cpp
     )

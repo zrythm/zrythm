@@ -53,7 +53,9 @@ public:
    */
   // Glib::RefPtr<Gio::MenuModel> generate_context_menu () const;
 
-  void init_after_cloning (const PluginCollection &other) override;
+  void
+  init_after_cloning (const PluginCollection &other, ObjectCloneType clone_type)
+    override;
 
 public:
   /** Name of the collection. */

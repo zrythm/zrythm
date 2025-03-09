@@ -42,7 +42,8 @@ public:
 public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
-  void init_after_cloning (const Timeline &other) override;
+  void init_after_cloning (const Timeline &other, ObjectCloneType clone_type)
+    override;
 
 public:
   /** Width of the left side of the timeline panel. */

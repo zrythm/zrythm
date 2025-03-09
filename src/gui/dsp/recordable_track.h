@@ -14,41 +14,68 @@ class RecordableTrack
     : virtual public ProcessableTrack,
       public zrythm::utils::serialization::ISerializable<RecordableTrack>
 {
+protected:
+  RecordableTrack (PortRegistry &port_registry, bool new_identity);
+
 public:
-  // Rule of 0
-  RecordableTrack ();
-  JUCE_DECLARE_NON_COPYABLE (RecordableTrack)
-  JUCE_DECLARE_NON_MOVEABLE (RecordableTrack)
+  Q_DISABLE_COPY_MOVE (RecordableTrack)
 
   ~RecordableTrack () override = default;
 
-  void init_loaded () override;
+  void
+  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
+    override;
 
   ATTR_HOT inline bool get_recording () const
   {
-    return recording_->is_toggled ();
+    return get_recording_port ().is_toggled ();
   }
 
   /**
    * Sets recording and connects/disconnects the JACK ports.
    */
-  void set_recording (bool recording, bool fire_events);
+  void set_recording (bool recording);
+
+  /**
+   * @brief Initializes a recordable track.
+   */
+  template <typename DerivedT>
+  void init_recordable_track (
+    this DerivedT    &self,
+    GenericBoolGetter autoarm_enabled_checker)
+  {
+    self.connect (&self, &DerivedT::selectedChanged, &self, [&] {
+      if (autoarm_enabled_checker ())
+        {
+          const auto selected = self.is_selected ();
+          self.set_recording (selected);
+          self.record_set_automatically_ = selected;
+        }
+    });
+  }
 
 protected:
-  void copy_members_from (const RecordableTrack &other)
+  void
+  copy_members_from (const RecordableTrack &other, ObjectCloneType clone_type)
   {
-    recording_ = other.recording_->clone_unique ();
+    recording_id_ = other.recording_id_;
     record_set_automatically_ = other.record_set_automatically_;
   }
 
   void
   append_member_ports (std::vector<Port *> &ports, bool include_plugins) const;
 
+  ControlPort &get_recording_port () const
+  {
+    return *std::get<ControlPort *> (
+      port_registry_.find_by_id_or_throw (recording_id_));
+  }
+
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
 public:
   /** Recording or not. */
-  std::unique_ptr<ControlPort> recording_;
+  PortUuid recording_id_;
 
   /**
    * Whether record was set automatically when the channel was selected.
@@ -90,6 +117,9 @@ public:
    * See @ref RECORDING_EVENT_TYPE_PAUSE_TRACK_RECORDING.
    */
   bool recording_paused_ = false;
+
+private:
+  PortRegistry &port_registry_;
 };
 
 #endif // __AUDIO_RECORDABLE_TRACK_H__

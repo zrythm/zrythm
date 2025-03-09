@@ -10,7 +10,9 @@ public:
   int         value = 42;
   std::string text = "test";
 
-  void init_after_cloning (const SimpleCloneable &other) override
+  void
+  init_after_cloning (const SimpleCloneable &other, ObjectCloneType clone_type)
+    override
   {
     value = other.value;
     text = other.text;
@@ -24,7 +26,9 @@ public:
   std::vector<std::unique_ptr<SimpleCloneable>>   vec;
   std::array<std::unique_ptr<SimpleCloneable>, 2> arr;
 
-  void init_after_cloning (const ContainerCloneable &other) override
+  void init_after_cloning (
+    const ContainerCloneable &other,
+    ObjectCloneType           clone_type) override
   {
     clone_unique_ptr_container (vec, other.vec);
     clone_unique_ptr_array (arr, other.arr);
@@ -85,7 +89,8 @@ public:
   }
   int value;
 
-  void init_after_cloning (const TestQObject &other) override
+  void init_after_cloning (const TestQObject &other, ObjectCloneType clone_type)
+    override
   {
     value = other.value;
   }

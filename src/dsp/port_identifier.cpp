@@ -37,8 +37,7 @@ PortIdentifier::print_to_str () const
     ENUM_NAME (owner_type_), ENUM_NAME (type_), ENUM_NAME (flow_),
     ENUM_BITSET_TO_STRING (PortIdentifier::Flags, flags_),
     ENUM_BITSET_TO_STRING (PortIdentifier::Flags2, flags2_), ENUM_NAME (unit_),
-    port_group_, ext_port_id_, track_name_hash_, port_index_,
-    owner_type_ == OwnerType::Plugin ? plugin_id_.print_to_str () : "{none}");
+    port_group_, ext_port_id_, track_id_, port_index_, plugin_id_);
 }
 
 void
@@ -50,7 +49,6 @@ PortIdentifier::print () const
 bool
 PortIdentifier::validate () const
 {
-  z_return_val_if_fail (this->plugin_id_.validate (), false);
   return true;
 }
 
@@ -81,12 +79,14 @@ PortIdentifier::get_hash () const
   hash = hash ^ qHash (flags_);
   hash = hash ^ qHash (flags2_);
   hash = hash ^ qHash (unit_);
-  hash = hash ^ plugin_id_.get_hash ();
+  if (plugin_id_.has_value ())
+    hash = hash ^ qHash (type_safe::get (plugin_id_.value ()));
   if (!port_group_.empty ())
     hash = hash ^ qHash (port_group_);
   if (!ext_port_id_.empty ())
     hash = hash ^ qHash (ext_port_id_);
-  hash = hash ^ track_name_hash_;
+  if (track_id_.has_value ())
+    hash = hash ^ qHash (type_safe::get (track_id_.value ()));
   hash = hash ^ qHash (port_index_);
   // z_trace ("hash for {}: {}", sym_, hash);
   return hash;
@@ -101,11 +101,11 @@ PortIdentifier::define_fields (const Context &ctx)
     make_field ("ownerType", owner_type_), make_field ("type", type_),
     make_field ("flow", flow_), make_field ("unit", unit_),
     make_field ("flags", flags_), make_field ("flags2", flags2_),
-    make_field ("trackNameHash", track_name_hash_),
-    make_field ("pluginId", plugin_id_),
+    make_field ("trackId", track_id_), make_field ("pluginId", plugin_id_),
     make_field ("portGroup", port_group_, true),
     make_field ("externalPortId", ext_port_id_, true),
-    make_field ("portIndex", port_index_));
+    make_field ("portIndex", port_index_),
+    make_field ("midiChannel", midi_channel_));
 }
 
 bool
@@ -115,7 +115,7 @@ operator== (const PortIdentifier &lhs, const PortIdentifier &rhs)
     lhs.owner_type_ == rhs.owner_type_ && lhs.unit_ == rhs.unit_
     && lhs.type_ == rhs.type_ && lhs.flow_ == rhs.flow_
     && lhs.flags_ == rhs.flags_ && lhs.flags2_ == rhs.flags2_
-    && lhs.track_name_hash_ == rhs.track_name_hash_;
+    && lhs.track_id_ == rhs.track_id_;
   if (!eq)
     return false;
 

@@ -460,7 +460,7 @@ Control {
             Loader {
                 id: audioMetersLoader
 
-                active: track.hasChannel && track.channel.stereoOut
+                active: track.hasChannel && track.channel.leftAudioOut
                 visible: active
                 Layout.fillHeight: true
                 Layout.fillWidth: false
@@ -474,13 +474,13 @@ Control {
                     Meter {
                         Layout.fillHeight: true
                         Layout.preferredWidth: width
-                        port: track.channel.stereoOut.l
+                        port: track.channel.leftAudioOut
                     }
 
                     Meter {
                         Layout.fillHeight: true
                         Layout.preferredWidth: width
-                        port: track.channel.stereoOut.r
+                        port: track.channel.rightAudioOut
                     }
 
                 }

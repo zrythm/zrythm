@@ -45,7 +45,7 @@ UndoStack::init_loaded (sample_rate_t engine_sample_rate)
 }
 
 void
-UndoStack::init_after_cloning (const UndoStack &other)
+UndoStack::init_after_cloning (const UndoStack &other, ObjectCloneType clone_type)
 {
   max_size_ = other.max_size_;
 

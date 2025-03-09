@@ -172,7 +172,7 @@ PianoRoll::remove_current_note (int note)
 bool
 PianoRoll::contains_current_note (int note)
 {
-  return std::ranges::find (current_notes_, note) != current_notes_.end ();
+  return std::ranges::contains (current_notes_, note);
 }
 
 void
@@ -260,7 +260,7 @@ PianoRoll::init ()
 
   midi_modifier_ = MidiModifier::Velocity;
 
-  EditorSettings::copy_members_from (PianoRoll ());
+  EditorSettings::copy_members_from (PianoRoll (), ObjectCloneType::Snapshot);
 
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {

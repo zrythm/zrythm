@@ -76,7 +76,9 @@ midi_function_apply (
           }
 
         double total_ticks = last_pos.ticks_ - first_pos.ticks_;
-        for (auto mn : sel.objects_ | type_is<MidiNote> ())
+        for (
+          auto * mn :
+          ArrangerObjectSpan{ sel.objects_ }.get_elements_by_type<MidiNote> ())
           {
             double mn_ticks_from_start = mn->pos_->ticks_ - first_pos.ticks_;
             double vel_multiplier = curve_opts.get_normalized_y (
@@ -94,7 +96,9 @@ midi_function_apply (
          * added so currently disabled */
         break;
         std::vector<MidiNote *> new_midi_notes;
-        for (auto mn : sel.objects_ | type_is<MidiNote> ())
+        for (
+          auto * mn :
+          ArrangerObjectSpan{ sel.objects_ }.get_elements_by_type<MidiNote> ())
           {
             double len = mn->get_length_in_ticks ();
             auto   new_mn = mn->clone_raw_ptr ();
@@ -139,7 +143,9 @@ midi_function_apply (
         int highest_pitch = highest_note->val_;
         int lowest_pitch = lowest_note->val_;
         int diff = highest_pitch - lowest_pitch;
-        for (auto mn : sel.objects_ | type_is<MidiNote> ())
+        for (
+          auto * mn :
+          ArrangerObjectSpan{ sel.objects_ }.get_elements_by_type<MidiNote> ())
           {
             uint8_t new_val = diff - (mn->val_ - lowest_pitch);
             new_val += lowest_pitch;
@@ -151,12 +157,16 @@ midi_function_apply (
       {
         sel.sort_by_positions (false);
         std::vector<Position> poses;
-        for (auto mn : sel.objects_ | type_is<MidiNote> ())
+        for (
+          auto * mn :
+          ArrangerObjectSpan{ sel.objects_ }.get_elements_by_type<MidiNote> ())
           {
             poses.push_back (*mn->pos_);
           }
         int i = 0;
-        for (auto mn : sel.objects_ | type_is<MidiNote> ())
+        for (
+          auto * mn :
+          ArrangerObjectSpan{ sel.objects_ }.get_elements_by_type<MidiNote> ())
           {
             double ticks = mn->get_length_in_ticks ();
             *static_cast<Position *> (mn->pos_) =

@@ -26,7 +26,7 @@ FoldableTrack::is_status (MixerStatus status) const
   for (int i = 1; i < size_; i++)
     {
       int     pos = pos_ + i;
-      Track * child = Track::from_variant (tracklist_->get_track (pos));
+      Track * child = Track::from_variant (tracklist_->get_track_at_index (pos));
       z_return_val_if_fail (IS_TRACK_AND_NONNULL (child), false);
 
       if (child->has_channel ())
@@ -119,16 +119,19 @@ FoldableTrack::
   z_info ("Setting track {} folded ({})", name_, folded);
   if (auto_select)
     {
-      select (true, true, fire_events);
+      TRACKLIST->get_track_span ().select_single (get_uuid ());
     }
 
   if (trigger_undo)
     {
-      auto highest_track_var = TRACKLIST_SELECTIONS->get_highest_track ();
+      auto highest_track_var =
+        TRACKLIST->get_track_span ().get_selected_tracks ().front ();
       std::visit (
         [&] (auto &&highest_track) {
           if (
-            TRACKLIST_SELECTIONS->get_num_tracks () != 1
+            std::ranges::distance (
+              TRACKLIST->get_track_span ().get_selected_tracks ())
+              != 1
             || dynamic_cast<FoldableTrack *> (highest_track) != this)
             {
               throw ZrythmException (
@@ -140,7 +143,9 @@ FoldableTrack::
       try
         {
           UNDO_MANAGER->perform (new gui::actions::FoldTracksAction (
-            TRACKLIST_SELECTIONS->gen_tracklist_selections ().get (), folded));
+            TrackSpan{ std::ranges::to<std::vector> (
+              TRACKLIST->get_track_span ().get_selected_tracks ()) },
+            folded));
         }
       catch (const ZrythmException &e)
         {

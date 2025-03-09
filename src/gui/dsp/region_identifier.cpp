@@ -6,5 +6,5 @@
 bool
 RegionIdentifier::validate () const
 {
-  return track_name_hash_ != 0;
+  return !track_uuid_.is_null ();
 }

@@ -16,17 +16,17 @@ RegionIdentifier::define_fields (const Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("type", type_), make_field ("linkGroup", link_group_),
-    make_field ("trackNameHash", track_name_hash_),
-    make_field ("lanePos", lane_pos_),
+    make_field ("trackNameHash", track_uuid_), make_field ("lanePos", lane_pos_),
     make_field ("automationTrackIndex", at_idx_), make_field ("index", idx_));
 }
 
 void
 ArrangerObject::define_base_fields (const Context &ctx)
 {
-  serialize_fields (
-    ctx, make_field ("type", type_), make_field ("flags", flags_),
-    make_field ("trackNameHash", track_name_hash_), make_field ("pos", pos_));
+  using T = ISerializable<ArrangerObject>;
+  T::serialize_fields (
+    ctx, T::make_field ("type", type_), T::make_field ("flags", flags_),
+    T::make_field ("trackNameHash", track_id_), T::make_field ("pos", pos_));
 }
 
 void

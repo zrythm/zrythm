@@ -33,7 +33,8 @@ WarningsAsErrors: >
   readability-redundant-string-cstr,
   clang-diagnostic-reorder-ctor,
   clang-analyzer-deadcode.DeadStores,
-  cppcoreguidelines-pro-type-static-cast-downcast
+  cppcoreguidelines-pro-type-static-cast-downcast,
+  cppcoreguidelines-avoid-const-or-ref-data-members
 FormatStyle: file
 CheckOptions:
   - key: cert-dcl16-c.NewSuffixes

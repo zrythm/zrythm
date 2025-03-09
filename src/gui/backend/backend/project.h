@@ -1,10 +1,8 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __PROJECT_H__
-#define __PROJECT_H__
-
-#include <string>
+#ifndef GUI_BACKEND_PROJECT_H
+#define GUI_BACKEND_PROJECT_H
 
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/audio_selections.h"
@@ -12,10 +10,8 @@
 #include "gui/backend/backend/chord_selections.h"
 #include "gui/backend/backend/clip_editor.h"
 #include "gui/backend/backend/midi_selections.h"
-#include "gui/backend/backend/mixer_selections.h"
 #include "gui/backend/backend/timeline.h"
 #include "gui/backend/backend/timeline_selections.h"
-#include "gui/backend/backend/tracklist_selections.h"
 #include "gui/backend/tool.h"
 #include "gui/dsp/engine.h"
 #include "gui/dsp/midi_mapping.h"
@@ -24,7 +20,6 @@
 #include "gui/dsp/port_connections_manager.h"
 #include "gui/dsp/quantize_options.h"
 #include "gui/dsp/region_link_group_manager.h"
-
 #include "utils/progress_info.h"
 
 /**
@@ -131,6 +126,10 @@ class Project final
 public:
   using QuantizeOptions = zrythm::gui::old_dsp::QuantizeOptions;
   using SnapGrid = zrythm::gui::SnapGrid;
+  using TrackUuid = dsp::PortIdentifier::TrackUuid;
+  using PluginIdentifier = dsp::PluginIdentifier;
+  using PluginPtrVariant = gui::old_dsp::plugins::PluginPtrVariant;
+  using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
 
 public:
   Project (QObject * parent = nullptr);
@@ -325,7 +324,8 @@ public:
 
   bool has_unsaved_changes () const;
 
-  void init_after_cloning (const Project &other) override;
+  void
+  init_after_cloning (const Project &other, ObjectCloneType clone_type) override;
 
   /**
    * Deep-clones the given project.
@@ -376,6 +376,13 @@ public:
   bool
   is_audio_clip_in_use (const AudioClip &clip, bool check_undo_stack) const;
 
+  auto find_plugin_by_identifier (const PluginIdentifier &id) const
+    -> PluginPtrVariant;
+
+  auto &get_track_registry () const { return *track_registry_; }
+  auto &get_plugin_registry () const { return *plugin_registry_; }
+  auto &get_port_registry () const { return *port_registry_; }
+
   /**
    * Finds the Port corresponding to the identifier.
    *
@@ -383,14 +390,37 @@ public:
    *
    * @note Ported from Port::find_from_identifier() in older code.
    */
-  std::optional<PortPtrVariant>
-  find_port_by_id (const dsp::PortIdentifier &id) const;
+  std::optional<PortPtrVariant> find_port_by_id (Port::Uuid id) const
+  {
+    return get_port_registry ().find_by_id (id);
+  }
 
   std::optional<gui::old_dsp::plugins::PluginPtrVariant>
-  find_plugin_by_id (const dsp::PluginIdentifier &id) const;
+  find_plugin_by_id (gui::old_dsp::plugins::Plugin::Uuid id) const
+  {
+    return get_plugin_registry ().find_by_id (id);
+  }
 
-  std::optional<TrackPtrVariant>
-  find_track_by_name_hash (Track::NameHashT hash) const;
+  std::optional<TrackPtrVariant> find_track_by_id (Track::Uuid id) const
+  {
+    return get_track_registry ().find_by_id (id);
+  }
+
+  std::string print_port_connection (const PortConnection &conn) const;
+
+  /**
+   * To be called when the port's identifier changes to update corresponding
+   * identifiers.
+   *
+   * @param prev_id Previous identifier to be used for searching.
+   * @param track The track that owns this port.
+   * @param update_automation_track Whether to update the identifier in the
+   * corresponding automation track as well. This should be false when moving
+   * a plugin.
+   */
+  void on_port_identifier_changed (
+    const dsp::PortIdentifier &old_id,
+    Port                      &updated_port);
 
 private:
   /**
@@ -462,6 +492,11 @@ private:
    */
   static bool idle_saved_callback (SaveContext * ctx);
 
+private:
+  PortRegistry *   port_registry_{};
+  PluginRegistry * plugin_registry_{};
+  TrackRegistry *  track_registry_{};
+
 public:
   /** Project title. */
   std::string title_;
@@ -523,14 +558,7 @@ public:
    * Currently selected tool (select - normal,
    * select - stretch, edit, delete, ramp, audition)
    */
-  gui::backend::Tool * tool_ = nullptr;
-
-  /**
-   * Plugin selections in the Mixer.
-   *
-   * Must be free'd after port connections manager.
-   */
-  std::unique_ptr<ProjectMixerSelections> mixer_selections_;
+  gui::backend::Tool * tool_{};
 
   /**
    * @brief
@@ -580,11 +608,6 @@ public:
    */
   AutomationSelections * automation_selections_ = nullptr;
 
-  /**
-   * Selected Track's.
-   */
-  std::unique_ptr<SimpleTracklistSelections> tracklist_selections_;
-
   /** Manager for region link groups. */
   RegionLinkGroupManager region_link_group_manager_;
 
@@ -630,4 +653,4 @@ public:
  * @}
  */
 
-#endif
+#endif // GUI_BACKEND_PROJECT_H

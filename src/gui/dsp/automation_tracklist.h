@@ -44,7 +44,8 @@ class AutomationTracklist final
   QML_ELEMENT
 
 public:
-  AutomationTracklist (QObject * parent = nullptr);
+  AutomationTracklist (const DeserializationDependencyHolder &dh);
+  AutomationTracklist (PortRegistry &port_registry, QObject * parent = nullptr);
 
 public:
   enum Roles
@@ -67,12 +68,15 @@ public:
 
   // ========================================================================
 
-  void init_after_cloning (const AutomationTracklist &other) override;
+  void init_after_cloning (
+    const AutomationTracklist &other,
+    ObjectCloneType            clone_type) override;
 
   /**
    * Inits a loaded AutomationTracklist.
    */
-  ATTR_COLD void init_loaded (AutomatableTrack * track);
+  ATTR_COLD void
+  init_loaded (AutomatableTrack * track, PortRegistry &port_registry);
 
   AutomatableTrack * get_track () const;
 
@@ -121,13 +125,6 @@ public:
     const;
 
   /**
-   * Updates the Track position of the Automatable's and AutomationTrack's.
-   *
-   * @param track The Track to update to.
-   */
-  void update_track_name_hash (AutomatableTrack &track);
-
-  /**
    * Removes the AutomationTrack from the AutomationTracklist, optionally
    * freeing it.
    *
@@ -146,7 +143,13 @@ public:
   /**
    * Returns the AutomationTrack corresponding to the given Port.
    */
-  AutomationTrack * get_at_from_port (const Port &port) const;
+  AutomationTrack * get_at_from_port (const ControlPort &port) const;
+
+  /**
+   * Returns the AutomationTrack corresponding to the given Port.
+   */
+  AutomationTrack *
+  get_at_from_port_uuid (dsp::PortIdentifier::PortUuid id) const;
 
   /**
    * Unselects all arranger objects.
@@ -176,11 +179,8 @@ public:
    *
    * Currently only used in mixer selections action.
    */
-  AutomationTrack * get_plugin_at (
-    zrythm::dsp::PluginSlotType slot_type,
-    int                         plugin_slot,
-    int                         port_index,
-    const std::string          &symbol);
+  AutomationTrack *
+  get_plugin_at (dsp::PluginSlot slot, int port_index, const std::string &symbol);
 
   /**
    * Used when the add button is added and a new automation track is requested
@@ -214,9 +214,15 @@ public:
 
   void print_regions () const;
 
+  ControlPort &get_port (dsp::PortIdentifier::PortUuid id) const;
+
   void set_caches (CacheType types);
 
   DECLARE_DEFINE_FIELDS_METHOD ();
+
+private:
+  auto &get_port_registry () { return port_registry_; }
+  auto &get_port_registry () const { return port_registry_; }
 
 public:
   /**
@@ -251,6 +257,12 @@ public:
    * This should be set during initialization.
    */
   AutomatableTrack * track_ = nullptr;
+
+private:
+  /**
+   * @brief Lookup registry for ports.
+   */
+  PortRegistry &port_registry_;
 };
 
 /**

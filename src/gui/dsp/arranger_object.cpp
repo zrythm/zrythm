@@ -132,7 +132,8 @@ ArrangerObject::select (
                     [&] (auto &&track) {
                       if (track->is_in_active_project ())
                         {
-                          track->select (true, true, true);
+                          TRACKLIST->get_track_span ().select_single (
+                            track->get_uuid ());
                         }
                     },
                     track_var);
@@ -438,7 +439,7 @@ ArrangerObject::copy_identifier (const ArrangerObject &src)
 {
   z_return_if_fail (type_ == src.type_);
 
-  track_name_hash_ = src.track_name_hash_;
+  track_id_ = src.track_id_;
 
   if (type_owned_by_region (type_))
     {
@@ -825,7 +826,7 @@ ArrangerObject::get_track () const
   if (track_)
     return *track_;
 
-  if (track_name_hash_ == 0) [[unlikely]]
+  if (track_id_.is_null ()) [[unlikely]]
     {
       throw ZrythmException ("track_name_hash_ is 0");
     }
@@ -833,13 +834,13 @@ ArrangerObject::get_track () const
   const auto &tracklist =
     is_auditioner_ ? *SAMPLE_PROCESSOR->tracklist_ : *TRACKLIST;
 
-  auto track_opt = tracklist.find_track_by_name_hash (track_name_hash_);
+  auto track_opt = tracklist.get_track (track_id_);
   if (!track_opt) [[unlikely]]
     {
       throw ZrythmException ("track not found");
     }
 
-  return *track_opt;
+  return track_opt.value ();
 }
 
 bool
@@ -857,7 +858,9 @@ ArrangerObject::is_hovered () const
 }
 
 void
-ArrangerObject::copy_members_from (const ArrangerObject &other)
+ArrangerObject::copy_members_from (
+  const ArrangerObject &other,
+  ObjectCloneType       clone_type)
 {
   pos_ = other.pos_->clone_raw_ptr ();
   if (auto * qobject = dynamic_cast<QObject *> (this))
@@ -865,7 +868,7 @@ ArrangerObject::copy_members_from (const ArrangerObject &other)
       pos_->setParent (qobject);
     }
   type_ = other.type_;
-  track_name_hash_ = other.track_name_hash_;
+  track_id_ = other.track_id_;
   deleted_temporarily_ = other.deleted_temporarily_;
 }
 

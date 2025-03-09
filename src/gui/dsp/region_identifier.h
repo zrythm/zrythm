@@ -22,6 +22,8 @@
  * @{
  */
 
+using namespace zrythm;
+
 /**
  * Type of Region.
  */
@@ -51,6 +53,18 @@ class RegionIdentifier
 public:
   RegionIdentifier () = default;
   RegionIdentifier (RegionType type) : type_ (type) { }
+
+  friend bool
+  operator== (const RegionIdentifier &lhs, const RegionIdentifier &rhs)
+  {
+    return std::tie (
+             lhs.type_, lhs.link_group_, lhs.track_uuid_, lhs.lane_pos_,
+             lhs.idx_, lhs.at_idx_)
+           == std::tie (
+             rhs.type_, rhs.link_group_, rhs.track_uuid_, rhs.lane_pos_,
+             rhs.idx_, rhs.at_idx_);
+  }
+
   bool validate () const;
 
   bool is_automation () const { return type_ == RegionType::Automation; }
@@ -66,7 +80,7 @@ public:
   /** Link group index, if any, or -1. */
   int link_group_ = -1;
 
-  unsigned int track_name_hash_ = 0;
+  dsp::PortIdentifier::TrackUuid track_uuid_;
   int          lane_pos_ = 0;
 
   /** Automation track index in the automation tracklist, if automation region. */
@@ -76,23 +90,14 @@ public:
   int idx_ = 0;
 };
 
-inline bool
-operator== (const RegionIdentifier &lhs, const RegionIdentifier &rhs)
-{
-  return lhs.type_ == rhs.type_ && lhs.link_group_ == rhs.link_group_
-         && lhs.track_name_hash_ == rhs.track_name_hash_
-         && lhs.lane_pos_ == rhs.lane_pos_ && lhs.at_idx_ == rhs.at_idx_
-         && lhs.idx_ == rhs.idx_;
-}
-
 DEFINE_OBJECT_FORMATTER (
   RegionIdentifier,
   RegionIdentifier,
   [] (const RegionIdentifier &id) {
     return fmt::format (
       "RegionIdentifier {{ type: {}, track name hash {}, lane pos {}, at index {}, index {}, link_group: {} }}",
-      RegionType_to_string (id.type_), id.track_name_hash_, id.lane_pos_,
-      id.at_idx_, id.idx_, id.link_group_);
+      RegionType_to_string (id.type_), id.track_uuid_, id.lane_pos_, id.at_idx_,
+      id.idx_, id.link_group_);
   });
 
 /**

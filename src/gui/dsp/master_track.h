@@ -25,7 +25,7 @@ class MasterTrack final
       public GroupTargetTrack,
       public ICloneable<MasterTrack>,
       public zrythm::utils::serialization::ISerializable<MasterTrack>,
-      public InitializableObjectFactory<MasterTrack>
+      public utils::InitializableObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -33,12 +33,17 @@ class MasterTrack final
   DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (MasterTrack)
   DEFINE_CHANNEL_TRACK_QML_PROPERTIES (MasterTrack)
 
+  DECLARE_FINAL_TRACK_CONSTRUCTORS (MasterTrack)
+
 public:
-  friend class InitializableObjectFactory<MasterTrack>;
+  friend class InitializableObject;
 
-  void init_loaded () override;
+  void
+  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
+    override;
 
-  void init_after_cloning (const MasterTrack &other) override;
+  void init_after_cloning (const MasterTrack &other, ObjectCloneType clone_type)
+    override;
 
   bool validate () const override;
 
@@ -48,9 +53,7 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  MasterTrack (int pos = 0);
-
-  bool initialize () override;
+  bool initialize ();
 };
 
 /**

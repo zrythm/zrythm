@@ -8,7 +8,9 @@
 #include "utils/rt_thread_id.h"
 
 void
-MuteableObject::copy_members_from (const MuteableObject &other)
+MuteableObject::copy_members_from (
+  const MuteableObject &other,
+  ObjectCloneType       clone_type)
 {
   muted_ = other.muted_;
 }

@@ -31,9 +31,11 @@ public:
 
   void sort_by_indices (bool desc) override;
 
-  void init_after_cloning (const ChordSelections &other) override
+  void
+  init_after_cloning (const ChordSelections &other, ObjectCloneType clone_type)
+    override
   {
-    ArrangerSelections::copy_members_from (other);
+    ArrangerSelections::copy_members_from (other, clone_type);
   }
 
   DECLARE_DEFINE_FIELDS_METHOD ();

@@ -41,8 +41,8 @@ MeterProcessor::setPort (QVariant port_var)
                 port_->id_->owner_type_
                 == zrythm::dsp::PortIdentifier::OwnerType::Track)
                 {
-                  auto track_var = PROJECT->find_track_by_name_hash (
-                    port_->id_->track_name_hash_);
+                  auto track_var = PROJECT->find_track_by_id (
+                    port_->id_->get_track_id ().value ());
                   z_return_if_fail (track_var.has_value ());
                   std::visit (
                     [&] (auto &&track) {

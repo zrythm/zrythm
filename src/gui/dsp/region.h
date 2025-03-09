@@ -178,12 +178,12 @@ public:
    * Only to be used by implementing structs.
    */
   void init (
-    const dsp::Position &start_pos,
-    const dsp::Position &end_pos,
-    unsigned int         track_name_hash,
-    int                  lane_pos_or_at_idx,
-    int                  idx_inside_lane_or_at,
-    double               ticks_per_frame = 0.0);
+    const dsp::Position           &start_pos,
+    const dsp::Position           &end_pos,
+    dsp::PortIdentifier::TrackUuid track_id,
+    int                            lane_pos_or_at_idx,
+    int                            idx_inside_lane_or_at,
+    double                         ticks_per_frame = 0.0);
 
   /**
    * Adds the given ticks to each included object.
@@ -295,7 +295,7 @@ protected:
   Region () = default;
   Q_DISABLE_COPY_MOVE (Region)
 
-  void copy_members_from (const Region &other);
+  void copy_members_from (const Region &other, ObjectCloneType clone_type);
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

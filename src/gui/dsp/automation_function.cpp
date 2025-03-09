@@ -17,7 +17,8 @@ using namespace zrythm;
 static void
 flip (AutomationSelections * sel, bool vertical)
 {
-  for (auto ap : sel->objects_ | type_is<AutomationPoint> ())
+  for (
+    auto * ap : sel->get_object_span ().get_elements_by_type<AutomationPoint> ())
     {
       if (vertical)
         {
@@ -34,7 +35,8 @@ flip (AutomationSelections * sel, bool vertical)
 static void
 flatten (AutomationSelections * sel)
 {
-  for (auto ap : sel->objects_ | type_is<AutomationPoint> ())
+  for (
+    auto * ap : sel->get_object_span ().get_elements_by_type<AutomationPoint> ())
     {
 
       ap->curve_opts_.curviness_ = 1.0;

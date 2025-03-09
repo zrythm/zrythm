@@ -585,8 +585,8 @@ engine_jack_reconnect_monitor (AudioEngine * self, bool left)
       ? gui::SettingsManager::get_instance ()->get_monitorLeftOutputDeviceList ()
       : gui::SettingsManager::get_instance ()->get_monitorRightOutputDeviceList ();
 
-  auto &port =
-    left ? self->monitor_out_->get_l () : self->monitor_out_->get_r ();
+  auto  monitor_out_ports = self->get_monitor_out_ports ();
+  auto &port = left ? monitor_out_ports.first : monitor_out_ports.second;
 
   auto jport =
     dynamic_cast<JackPortBackend *> (port.backend_.get ())->get_jack_port ();
@@ -687,9 +687,10 @@ engine_jack_activate (AudioEngine * self, bool activate)
           false);
         return true;
       };
+      auto monitor_out_ports = self->get_monitor_out_ports ();
       z_return_val_if_fail (
-        has_jack_backend (self->monitor_out_->get_l ())
-          && has_jack_backend (self->monitor_out_->get_r ()),
+        has_jack_backend (monitor_out_ports.first)
+          && has_jack_backend (monitor_out_ports.second),
         -1);
 
       z_info ("connecting to system out ports...");

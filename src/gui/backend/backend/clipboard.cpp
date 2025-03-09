@@ -41,18 +41,6 @@ Clipboard::Clipboard (const ArrangerSelections &sel)
   set_type_from_arranger_selections (sel);
 }
 
-Clipboard::Clipboard (const MixerSelections &sel)
-{
-  mixer_sel_ = sel.gen_full_from_this ();
-  type_ = Type::MixerSelections;
-}
-
-Clipboard::Clipboard (const SimpleTracklistSelections &sel)
-{
-  tracklist_sel_ = sel.gen_tracklist_selections ();
-  type_ = Type::TracklistSelections;
-}
-
 ArrangerSelections *
 Clipboard::get_selections () const
 {

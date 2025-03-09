@@ -102,7 +102,8 @@ CVPort::has_sound () const
 }
 
 void
-CVPort::init_after_cloning (const CVPort &other)
+CVPort::init_after_cloning (const CVPort &other, ObjectCloneType clone_type)
+
 {
-  Port::copy_members_from (other);
+  Port::copy_members_from (other, clone_type);
 }

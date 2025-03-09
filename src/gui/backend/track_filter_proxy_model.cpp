@@ -42,7 +42,7 @@ TrackFilterProxyModel::filterAcceptsRow (
 {
   if (auto * tracklist = dynamic_cast<Tracklist *> (sourceModel ()))
     {
-      auto tr = tracklist->get_track (source_row);
+      auto tr = tracklist->get_track_at_index (source_row);
       return std::visit (
         [&] (auto &&track) {
           z_return_val_if_fail (track, false);
@@ -57,7 +57,9 @@ TrackFilterProxyModel::filterAcceptsRow (
 
           if (use_pinned_filter_)
             {
-              if (track->is_pinned () != pinned_filter_)
+              if (
+                tracklist->is_track_pinned (track->get_uuid ())
+                != pinned_filter_)
                 {
                   return false;
                 }

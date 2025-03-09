@@ -28,11 +28,13 @@ ChordObject::ChordObject (
 }
 
 void
-ChordObject::init_after_cloning (const ChordObject &other)
+ChordObject::init_after_cloning (
+  const ChordObject &other,
+  ObjectCloneType    clone_type)
 {
-  MuteableObject::copy_members_from (other);
-  RegionOwnedObjectImpl::copy_members_from (other);
-  ArrangerObject::copy_members_from (other);
+  MuteableObject::copy_members_from (other, clone_type);
+  RegionOwnedObjectImpl::copy_members_from (other, clone_type);
+  ArrangerObject::copy_members_from (other, clone_type);
   chord_index_ = other.chord_index_;
 }
 

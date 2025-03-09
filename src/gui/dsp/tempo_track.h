@@ -38,7 +38,7 @@ class TempoTrack final
       public AutomatableTrack,
       public ICloneable<TempoTrack>,
       public zrythm::utils::serialization::ISerializable<TempoTrack>,
-      public InitializableObjectFactory<TempoTrack>
+      public utils::InitializableObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -46,7 +46,9 @@ class TempoTrack final
   DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (TempoTrack)
   Q_PROPERTY (double bpm READ getBpm WRITE setBpm NOTIFY bpmChanged FINAL)
 
-  friend class InitializableObjectFactory<TempoTrack>;
+  friend class InitializableObject;
+
+  DECLARE_FINAL_TRACK_CONSTRUCTORS (TempoTrack)
 
 public:
   // ==================================================================
@@ -68,14 +70,17 @@ public:
    */
   void clear_objects () override;
 
-  void init_loaded () override;
+  void
+  init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
+    override;
 
   /**
    * Returns the BPM at the given pos.
    */
   bpm_t get_bpm_at_pos (Position pos);
 
-  void init_after_cloning (const TempoTrack &other) override;
+  void init_after_cloning (const TempoTrack &other, ObjectCloneType clone_type)
+    override;
 
   bool validate () const override;
 
@@ -84,7 +89,7 @@ public:
    */
   bpm_t get_current_bpm () const;
 
-  std::string get_current_bpm_as_str ();
+  std::string get_current_bpm_as_str () const;
   void        set_bpm_from_str (const std::string &str);
 
   /**
@@ -137,29 +142,49 @@ public:
 
   int get_beat_unit () const;
 
-  void
-  on_control_change_event (const dsp::PortIdentifier &id, float value) override;
+  void on_control_change_event (
+    const PortUuid            &port_uuid,
+    const dsp::PortIdentifier &id,
+    float                      value) override;
 
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 
+  ControlPort &get_bpm_port () const
+  {
+    return *std::get<ControlPort *> (
+      port_registry_.find_by_id_or_throw (bpm_port_));
+  }
+  ControlPort &get_beats_per_bar_port () const
+  {
+    return *std::get<ControlPort *> (
+      port_registry_.find_by_id_or_throw (beats_per_bar_port_));
+  }
+  ControlPort &get_beat_unit_port () const
+  {
+    return *std::get<ControlPort *> (
+      port_registry_.find_by_id_or_throw (beat_unit_port_));
+  }
+
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  TempoTrack (int track_pos = 0);
+  bool initialize ();
 
-  bool initialize () override;
+private:
+  PortRegistry &port_registry_;
 
-public:
   /** Automatable BPM control. */
-  std::unique_ptr<ControlPort> bpm_port_;
+  PortUuid bpm_port_;
 
   /** Automatable beats per bar port. */
-  std::unique_ptr<ControlPort> beats_per_bar_port_;
+  PortUuid beats_per_bar_port_;
 
   /** Automatable beat unit port. */
-  std::unique_ptr<ControlPort> beat_unit_port_;
+  PortUuid beat_unit_port_;
 };
+
+static_assert (ConstructibleWithDependencyHolder<TempoTrack>);
 
 /**
  * @}

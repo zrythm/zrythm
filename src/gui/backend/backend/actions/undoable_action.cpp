@@ -76,7 +76,9 @@ UndoableAction::init_loaded (sample_rate_t engine_sample_rate)
 }
 
 void
-UndoableAction::copy_members_from (const UndoableAction &other)
+UndoableAction::copy_members_from (
+  const UndoableAction &other,
+  ObjectCloneType       clone_type)
 {
   undoable_action_type_ = other.undoable_action_type_;
   frames_per_tick_ = other.frames_per_tick_;

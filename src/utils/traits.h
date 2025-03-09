@@ -11,6 +11,8 @@
 #include <variant>
 #include <vector>
 
+#include "type_safe/strong_typedef.hpp"
+
 // Helper concept to check if a type is a container
 template <typename T>
 concept ContainerType = requires (T t) {
@@ -43,14 +45,14 @@ concept CompleteType = requires { sizeof (T); };
 
 // Concept to check if a type is a raw pointer
 template <typename T>
-concept IsPointer = std::is_pointer_v<T>;
+concept IsRawPointer = std::is_pointer_v<T>;
 
 // Concept to check if a type is a variant of pointers (allows std::nullptr_t)
 template <typename T>
 concept VariantOfPointers = requires {
   []<typename... Ts> (std::variant<Ts...> *) {
     static_assert (
-      ((IsPointer<Ts> || std::is_null_pointer_v<Ts>) && ...),
+      ((IsRawPointer<Ts> || std::is_null_pointer_v<Ts>) && ...),
       "All types in the variant must be pointers");
   }(static_cast<T *> (nullptr));
 };
@@ -63,6 +65,15 @@ concept VectorOfVariantPointers = requires {
   requires VariantOfPointers<typename T::value_type>;
   requires ContainerType<T>;
 };
+
+template <typename T>
+concept OptionalType = requires {
+  typename T::value_type;
+  requires std::same_as<T, std::optional<typename T::value_type>>;
+};
+
+template <typename T>
+concept StrongTypedef = requires (T t) { typename T::strong_typedef; };
 
 // Primary template
 template <typename T> struct remove_smart_pointer
@@ -94,8 +105,10 @@ template <typename T>
 using remove_smart_pointer_t = typename remove_smart_pointer<T>::type;
 
 template <typename T>
-using base_type = std::remove_reference_t<
+using base_type = std::remove_cvref_t<
   remove_smart_pointer_t<std::remove_pointer_t<std::decay_t<T>>>>;
+
+static_assert (std::is_same_v<base_type<int * const &>, int>);
 
 // Concept to check if a type is derived from the base type pointed to by
 // another type
@@ -136,91 +149,12 @@ template <typename T>
 concept SmartPtr = is_unique_ptr_v<T> || is_shared_ptr_v<T>;
 
 template <typename T>
+concept SmartPtrToContainer =
+  SmartPtr<T> && ContainerType<typename T::element_type>;
+
+template <typename T>
 concept FloatingPointContainer =
   ContainerType<T> && std::is_floating_point_v<typename T::value_type>;
-
-/**
- * @brief A type trait that checks if a type is the same as or a pointer to a
- * specified type.
- *
- * @tparam T The type to compare against.
- */
-template <typename T> struct type_is
-{
-  /**
-   * @brief Function call operator that checks if the given type is the same as
-   * or a pointer to T.
-   *
-   * @tparam U The type to check.
-   * @param u An instance of the type to check (unused).
-   * @return true if U is the same as T, std::unique_ptr<T>, or T*; false
-   * otherwise.
-   */
-  template <typename U> bool operator() (const U &u) const;
-};
-
-/**
- * @brief Overload of the pipe operator (|) to filter elements of a specific
- * type from a range.
- *
- * This overload works with ranges of std::unique_ptr and raw pointers. It
- * transforms the range elements into pointers of type T* using dynamic_cast for
- * std::unique_ptr and raw pointers. Elements that cannot be converted to T* are
- * filtered out.
- *
- * @tparam T The type to filter for.
- * @tparam R The type of the range.
- * @param r The range to filter.
- * @param _ An instance of type_is<T> (unused).
- * @return A new range containing only elements of std::unique_ptr<T> or T*,
- * converted to T*.
- *
- * @note This overload requires C++20 and the <ranges> library.
- *
- * Example usage:
- * @code
- * std::vector<std::unique_ptr<Track>> tracks1;
- * for (auto track : tracks1 | type_is<AudioTrack>{})
- * {
- *   // `track` is of type `AudioTrack*`
- *   // ...
- * }
- *
- * std::vector<Track*> tracks2;
- * for (auto track : tracks2 | type_is<AudioTrack>{})
- * {
- *   // `track` is of type `AudioTrack*`
- *   // ...
- * }
- * @endcode
- */
-template <typename T, typename R>
-auto
-operator| (R &&r, type_is<T>)
-{
-  return std::forward<R> (r) | std::views::transform ([] (const auto &u) {
-           using U = std::decay_t<decltype (u)>;
-           if constexpr (is_unique_ptr_v<U> || is_shared_ptr_v<U>)
-             {
-               using PtrType = typename std::pointer_traits<U>::element_type;
-               return dynamic_cast<T *> (static_cast<PtrType *> (u.get ()));
-             }
-           else if constexpr (std::is_pointer_v<U>)
-             {
-               return dynamic_cast<T *> (u);
-             }
-           else if constexpr (VariantOfPointers<U>)
-             {
-               return std::visit (
-                 [] (auto ptr) { return dynamic_cast<T *> (ptr); }, u);
-             }
-           else
-             {
-               return static_cast<T *> (nullptr);
-             }
-         })
-         | std::views::filter ([] (const auto &ptr) { return ptr != nullptr; });
-}
 
 template <typename Derived, typename Base>
 concept DerivedButNotBase =
@@ -252,6 +186,51 @@ struct merge_variants<std::variant<Types1...>, std::variant<Types2...>, Rest...>
 // using Variant2 = std::variant<char, double>;
 // using MergedVariant = merge_variants_t<Variant1, Variant2>;
 // MergedVariant is now std::variant<int, float, char, double>
+
+/** @brief Helper struct to convert a variant to a variant of references */
+template <typename Variant> struct to_reference_variant_impl;
+
+/** @brief Specialization for std::variant */
+template <typename... Ts> struct to_reference_variant_impl<std::variant<Ts...>>
+{
+  /** @brief The resulting variant type with reference_wrappers */
+  using type = std::variant<std::reference_wrapper<Ts>...>;
+};
+
+/**
+ * @brief Converts a variant to a variant of reference_wrappers
+ * @tparam Variant The original variant type
+ */
+template <typename Variant>
+using to_reference_variant = typename to_reference_variant_impl<Variant>::type;
+
+// same for const ref
+template <typename Variant> struct to_const_reference_variant_impl;
+template <typename... Ts>
+struct to_const_reference_variant_impl<std::variant<Ts...>>
+{
+  using type = std::variant<std::reference_wrapper<const Ts>...>;
+};
+template <typename Variant>
+using to_const_reference_variant =
+  typename to_const_reference_variant_impl<Variant>::type;
+
+/** @brief Helper struct to convert a variant to a variant of unique_ptr's */
+template <typename Variant> struct to_unique_ptr_variant_impl;
+
+/** @brief Specialization for std::variant */
+template <typename... Ts> struct to_unique_ptr_variant_impl<std::variant<Ts...>>
+{
+  /** @brief The resulting variant type with reference_wrappers */
+  using type = std::variant<std::unique_ptr<Ts>...>;
+};
+
+/**
+ * @brief Converts a variant to a variant of reference_wrappers
+ * @tparam Variant The original variant type
+ */
+template <typename Variant>
+using to_unique_ptr_variant = typename to_unique_ptr_variant_impl<Variant>::type;
 
 /** @brief Helper struct to convert a variant to a variant of pointers */
 template <typename Variant> struct to_pointer_variant_impl;
@@ -330,7 +309,7 @@ convert_to_variant (const Base * base_ptr) -> Variant
 template <typename BaseT, typename PtrVariantT>
 static BaseT *
 get_ptr_variant_as_base_ptr (PtrVariantT &&variant)
-  requires (!IsPointer<BaseT>)
+  requires (!IsRawPointer<BaseT>)
            && VariantOfPointers<std::remove_reference_t<PtrVariantT>>
 {
   return std::visit (
@@ -368,24 +347,5 @@ template <typename T>
 concept IsVariant = requires {
   []<typename... Ts> (std::variant<Ts...> *) {}(static_cast<T *> (nullptr));
 };
-
-template <typename Variant>
-auto
-createObjectAtVariantIndex (size_t index)
-{
-  auto creator = [&]<size_t... I> (std::index_sequence<I...>) {
-    using Result = std::variant<typename std::remove_pointer_t<
-      std::variant_alternative_t<I, Variant>> *...>;
-    Result result{};
-    ((I == index
-        ? (result = Result{ new typename std::remove_pointer_t<
-             std::variant_alternative_t<I, Variant>>{} })
-        : Result{}),
-     ...);
-    return result;
-  };
-
-  return creator (std::make_index_sequence<std::variant_size_v<Variant>>{});
-}
 
 #endif // __UTILS_TRAITS_H__

@@ -9,17 +9,19 @@
 
 #include "utils/rt_thread_id.h"
 
-MarkerTrack::MarkerTrack (int track_pos)
-    : Track (
-        Track::Type::Marker,
-        tr ("Markers").toStdString (),
-        track_pos,
-        PortType::Unknown,
-        PortType::Unknown)
+MarkerTrack::MarkerTrack (
+  TrackRegistry  &track_registry,
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry,
+  bool            new_identity)
+    : Track (Track::Type::Marker, PortType::Unknown, PortType::Unknown)
 {
-  main_height_ = TRACK_DEF_HEIGHT / 2;
-  icon_name_ = "gnome-icon-library-flag-filled-symbolic";
-  color_ = Color (QColor ("#7C009B"));
+  if (new_identity)
+    {
+      main_height_ = TRACK_DEF_HEIGHT / 2;
+      icon_name_ = "gnome-icon-library-flag-filled-symbolic";
+      color_ = Color (QColor ("#7C009B"));
+    }
 }
 
 void
@@ -85,7 +87,9 @@ MarkerTrack::initialize ()
 }
 
 void
-MarkerTrack::init_loaded ()
+MarkerTrack::init_loaded (
+  PluginRegistry &plugin_registry,
+  PortRegistry   &port_registry)
 {
   for (auto &marker : markers_)
     {
@@ -118,7 +122,7 @@ MarkerTrack::get_end_marker () const
 MarkerTrack::MarkerPtr
 MarkerTrack::insert_marker (MarkerTrack::MarkerPtr marker, int pos)
 {
-  marker->set_track_name_hash (get_name_hash ());
+  marker->set_track_id (get_uuid ());
   markers_.insert (markers_.begin () + pos, marker);
   marker->setParent (this);
 
@@ -158,7 +162,9 @@ MarkerTrack::set_playback_caches ()
 }
 
 void
-MarkerTrack::init_after_cloning (const MarkerTrack &other)
+MarkerTrack::init_after_cloning (
+  const MarkerTrack &other,
+  ObjectCloneType    clone_type)
 {
   markers_.reserve (other.markers_.size ());
   for (auto &marker : markers_)
@@ -167,7 +173,7 @@ MarkerTrack::init_after_cloning (const MarkerTrack &other)
       clone->setParent (this);
       markers_.push_back (clone);
     }
-  Track::copy_members_from (other);
+  Track::copy_members_from (other, clone_type);
 }
 
 bool

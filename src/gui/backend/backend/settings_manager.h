@@ -21,7 +21,7 @@ namespace zrythm::gui
 #define DEFINE_SETTING_PROPERTY_WITHOUT_SETTER(ptype, name, default_value) \
 \
   Q_PROPERTY ( \
-    ptype name READ get_##name WRITE set_##name NOTIFY name##_changed); \
+    ptype name READ get_##name WRITE set_##name NOTIFY name##_changed) \
 \
 public: \
   [[nodiscard]] static ptype get_default_##name () \
@@ -42,7 +42,7 @@ public: \
 
 #define DEFINE_SETTING_PROPERTY(ptype, name, default_value) \
 \
-  DEFINE_SETTING_PROPERTY_WITHOUT_SETTER (ptype, name, default_value); \
+  DEFINE_SETTING_PROPERTY_WITHOUT_SETTER (ptype, name, default_value) \
   void set_##name (ptype value) \
   { \
     if ( \
@@ -58,7 +58,7 @@ public: \
 
 #define DEFINE_SETTING_PROPERTY_DOUBLE(ptype, name, default_value) \
 \
-  DEFINE_SETTING_PROPERTY_WITHOUT_SETTER (ptype, name, default_value); \
+  DEFINE_SETTING_PROPERTY_WITHOUT_SETTER (ptype, name, default_value) \
   void set_##name (ptype value) \
   { \
     if ( \

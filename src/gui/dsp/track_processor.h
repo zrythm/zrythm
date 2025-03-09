@@ -1,16 +1,11 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-/**
- * @file
- *
- * Track processor.
- */
-
 #ifndef __AUDIO_TRACK_PROCESSOR_H__
 #define __AUDIO_TRACK_PROCESSOR_H__
 
 #include "gui/dsp/midi_mapping.h"
+#include "gui/dsp/plugin.h"
 #include "gui/dsp/port.h"
 #include "gui/dsp/port_connections_manager.h"
 #include "utils/icloneable.h"
@@ -46,20 +41,29 @@ class TrackProcessor final
   using PortIdentifier = zrythm::dsp::PortIdentifier;
 
 public:
-  TrackProcessor () = default;
+  TrackProcessor (const DeserializationDependencyHolder &dh);
 
   /**
-   * Creates a new track processor for the given* track.
+   * Creates a new track processor for the given track.
    */
-  TrackProcessor (ProcessableTrack * track);
+  TrackProcessor (
+    ProcessableTrack &track,
+    PortRegistry     &port_registry,
+    bool              new_identity);
 
   bool is_in_active_project () const override;
+
+  bool is_audio () const;
+
+  bool is_midi () const;
 
   void set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
     const override;
 
-  void
-  on_control_change_event (const dsp::PortIdentifier &id, float value) override;
+  void on_control_change_event (
+    const dsp::PortIdentifier::PortUuid &port_uuid,
+    const dsp::PortIdentifier           &id,
+    float                                value) override;
 
   std::string
   get_full_designation_for_port (const dsp::PortIdentifier &id) const override;
@@ -74,7 +78,7 @@ public:
 
   PortConnectionsManager * get_port_connections_manager () const;
 
-  inline ProcessableTrack * get_track () const
+  ProcessableTrack * get_track () const
   {
     z_return_val_if_fail (track_, nullptr);
     return track_;
@@ -83,7 +87,7 @@ public:
   /**
    * Inits a TrackProcessor after a project is loaded.
    */
-  void init_loaded (ProcessableTrack * track);
+  void init_loaded (ProcessableTrack * track, PortRegistry &port_registry);
 
 #if 0
   /**
@@ -140,16 +144,99 @@ public:
   /**
    * Disconnect the TrackProcessor's out ports from the Plugin's input ports.
    */
-  void disconnect_from_plugin (zrythm::gui::old_dsp::plugins::Plugin &pl);
+  void disconnect_from_plugin (gui::old_dsp::plugins::Plugin &pl);
 
   /**
    * Connect the TrackProcessor's out ports to the Plugin's input ports.
    */
-  void connect_to_plugin (zrythm::gui::old_dsp::plugins::Plugin &pl);
+  void connect_to_plugin (gui::old_dsp::plugins::Plugin &pl);
 
   void append_ports (std::vector<Port *> &ports);
 
-  void init_after_cloning (const TrackProcessor &other) override;
+  void
+  init_after_cloning (const TrackProcessor &other, ObjectCloneType clone_type)
+    override;
+
+  std::pair<AudioPort &, AudioPort &> get_stereo_in_ports () const
+  {
+    if (!is_audio ())
+      {
+        throw std::runtime_error ("Not an audio track processor");
+      }
+    auto * l = std::get<AudioPort *> (
+      port_registry_.find_by_id_or_throw (stereo_in_left_id_.value ()));
+    auto * r = std::get<AudioPort *> (
+      port_registry_.find_by_id_or_throw (stereo_in_right_id_.value ()));
+    return { *l, *r };
+  }
+  std::pair<AudioPort &, AudioPort &> get_stereo_out_ports () const
+  {
+    if (!is_audio ())
+      {
+        throw std::runtime_error ("Not an audio track processor");
+      }
+    auto * l = std::get<AudioPort *> (
+      port_registry_.find_by_id_or_throw (stereo_out_left_id_.value ()));
+    auto * r = std::get<AudioPort *> (
+      port_registry_.find_by_id_or_throw (stereo_out_right_id_.value ()));
+    return { *l, *r };
+  }
+
+  ControlPort &get_mono_port () const
+  {
+    return *std::get<ControlPort *> (
+      port_registry_.find_by_id_or_throw (mono_id_.value ()));
+  }
+  ControlPort &get_input_gain_port () const
+  {
+    return *std::get<ControlPort *> (
+      port_registry_.find_by_id_or_throw (input_gain_id_.value ()));
+  }
+  ControlPort &get_output_gain_port () const
+  {
+    return *std::get<ControlPort *> (
+      port_registry_.find_by_id_or_throw (output_gain_id_.value ()));
+  }
+  ControlPort &get_monitor_audio_port () const
+  {
+    return *std::get<ControlPort *> (
+      port_registry_.find_by_id_or_throw (monitor_audio_id_.value ()));
+  }
+  MidiPort &get_midi_in_port () const
+  {
+    return *std::get<MidiPort *> (
+      port_registry_.find_by_id_or_throw (midi_in_id_.value ()));
+  }
+  MidiPort &get_midi_out_port () const
+  {
+    return *std::get<MidiPort *> (
+      port_registry_.find_by_id_or_throw (midi_out_id_.value ()));
+  }
+  MidiPort &get_piano_roll_port () const
+  {
+    return *std::get<MidiPort *> (
+      port_registry_.find_by_id_or_throw (piano_roll_id_.value ()));
+  }
+  ControlPort &get_midi_cc_port (int channel_index, int cc_index) const
+  {
+    return *std::get<ControlPort *> (port_registry_.find_by_id_or_throw (
+      (*midi_cc_ids_).at ((channel_index * 128) + cc_index)));
+  }
+  ControlPort &get_pitch_bend_port (int channel_index) const
+  {
+    return *std::get<ControlPort *> (port_registry_.find_by_id_or_throw (
+      (*pitch_bend_ids_).at (channel_index)));
+  }
+  ControlPort &get_poly_key_pressure_port (int channel_index) const
+  {
+    return *std::get<ControlPort *> (port_registry_.find_by_id_or_throw (
+      (*poly_key_pressure_ids_).at (channel_index)));
+  }
+  ControlPort &get_channel_pressure_port (int channel_index) const
+  {
+    return *std::get<ControlPort *> (port_registry_.find_by_id_or_throw (
+      (*channel_pressure_ids_).at (channel_index)));
+  }
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -165,7 +252,7 @@ private:
    * @param in True if input (false for output).
    */
   void init_midi_port (bool in);
-  void init_midi_cc_ports (bool);
+  void init_midi_cc_ports ();
 
   /**
    * Inits the stereo ports of the Channel while exposing them to the backend.
@@ -186,37 +273,40 @@ private:
   /**
    * Adds events to midi out based on any changes in MIDI CC control ports.
    */
-  ATTR_HOT void
-  add_events_from_midi_cc_control_ports (const nframes_t local_offset);
+  ATTR_HOT void add_events_from_midi_cc_control_ports (nframes_t local_offset);
 
-  void connect_ports (const Port &src, const Port &dst);
-  void disconnect_ports (const Port &src, const Port &dst);
-  void connect_ports (const StereoPorts &src, const StereoPorts &dst);
-  void disconnect_ports (const StereoPorts &src, const StereoPorts &dst);
+  void connect_ports (const PortUuid &src, const PortUuid &dst);
+  void disconnect_ports (const PortUuid &src, const PortUuid &dst);
+  // void connect_ports (const StereoPorts &src, const StereoPorts &dst);
+  // void disconnect_ports (const StereoPorts &src, const StereoPorts &dst);
 
 public:
+  PortRegistry &port_registry_;
+
   /**
    * L & R audio input ports, if audio.
    */
-  std::unique_ptr<StereoPorts> stereo_in_;
+  std::optional<PortUuid> stereo_in_left_id_;
+  std::optional<PortUuid> stereo_in_right_id_;
 
   /** Mono toggle, if audio. */
-  std::unique_ptr<ControlPort> mono_;
+  std::optional<PortUuid> mono_id_;
 
   /** Input gain, if audio. */
-  std::unique_ptr<ControlPort> input_gain_;
+  std::optional<PortUuid> input_gain_id_;
 
   /**
    * Output gain, if audio.
    *
    * This is applied after regions are processed to @ref stereo_out_.
    */
-  std::unique_ptr<ControlPort> output_gain_;
+  std::optional<PortUuid> output_gain_id_;
 
   /**
    * L & R audio output ports, if audio.
    */
-  std::unique_ptr<StereoPorts> stereo_out_;
+  std::optional<PortUuid> stereo_out_left_id_;
+  std::optional<PortUuid> stereo_out_right_id_;
 
   /**
    * MIDI in Port.
@@ -226,12 +316,12 @@ public:
    * This is also where piano roll, midi in and midi manual press will be
    * routed to and this will be the port used to pass midi to the plugins.
    */
-  std::unique_ptr<MidiPort> midi_in_;
+  std::optional<PortUuid> midi_in_id_;
 
   /**
    * MIDI out port, if MIDI.
    */
-  std::unique_ptr<MidiPort> midi_out_;
+  std::optional<PortUuid> midi_out_id_;
 
   /**
    * MIDI input for receiving MIDI signals from the piano roll (i.e., MIDI
@@ -240,7 +330,7 @@ public:
    * This will not be a separately exposed port during processing. It will
    * be processed by the TrackProcessor internally.
    */
-  std::unique_ptr<MidiPort> piano_roll_;
+  std::optional<PortUuid> piano_roll_id_;
 
   /**
    * Whether to monitor the audio output.
@@ -251,7 +341,7 @@ public:
    *
    * When not recording, this will only take effect when paused.
    */
-  std::unique_ptr<ControlPort> monitor_audio_;
+  std::optional<PortUuid> monitor_audio_id_;
 
   /* --- MIDI controls --- */
 
@@ -259,10 +349,12 @@ public:
   std::unique_ptr<MidiMappings> cc_mappings_;
 
   /** MIDI CC control ports, 16 channels x 128 controls. */
-  std::vector<std::unique_ptr<ControlPort>> midi_cc_;
+  std::unique_ptr<std::array<PortUuid, 16zu * 128>> midi_cc_ids_;
+
+  using SixteenPortUuidArray = std::array<PortUuid, 16>;
 
   /** Pitch bend x 16 channels. */
-  std::vector<std::unique_ptr<ControlPort>> pitch_bend_;
+  std::unique_ptr<SixteenPortUuidArray> pitch_bend_ids_;
 
   /**
    * Polyphonic key pressure (aftertouch).
@@ -273,7 +365,7 @@ public:
    * FIXME this is completely wrong. It's supposed to be per-key, so 128 x
    * 16 ports.
    */
-  std::vector<std::unique_ptr<ControlPort>> poly_key_pressure_;
+  std::unique_ptr<SixteenPortUuidArray> poly_key_pressure_ids_;
 
   /**
    * Channel pressure (aftertouch).
@@ -281,7 +373,7 @@ public:
    * This message is different from polyphonic after-touch - sends the
    * single greatest pressure value (of all the current depressed keys).
    */
-  std::vector<std::unique_ptr<ControlPort>> channel_pressure_;
+  std::unique_ptr<SixteenPortUuidArray> channel_pressure_ids_;
 
   /* --- end MIDI controls --- */
   /**

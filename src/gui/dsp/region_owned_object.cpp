@@ -8,7 +8,9 @@
 #include "utils/gtest_wrapper.h"
 
 void
-RegionOwnedObject::copy_members_from (const RegionOwnedObject &other)
+RegionOwnedObject::copy_members_from (
+  const RegionOwnedObject &other,
+  ObjectCloneType          clone_type)
 {
   region_id_ = other.region_id_;
   index_ = other.index_;
@@ -41,11 +43,11 @@ RegionOwnedObject::set_region_and_index (const Region &region, int index)
 {
   region_id_ = region.id_;
   index_ = index;
-  track_name_hash_ = region.track_name_hash_;
+  track_id_ = region.track_id_;
   if (type_ == Type::MidiNote)
     {
       auto note = dynamic_cast<MidiNote *> (this);
-      note->vel_->track_name_hash_ = region.track_name_hash_;
+      note->vel_->track_id_ = region.track_id_;
     }
 
   /* note: this was only done for automation points, not sure why */
@@ -56,11 +58,11 @@ RegionOwnedObject::set_region_and_index (const Region &region, int index)
       auto trans_obj = get_transient<RegionOwnedObject> ();
       trans_obj->region_id_ = region.id_;
       trans_obj->index_ = index_;
-      trans_obj->track_name_hash_ = region.track_name_hash_;
+      trans_obj->track_id_ = region.track_id_;
       if (type_ == Type::MidiNote)
         {
           auto note = dynamic_cast<MidiNote *> (trans_obj);
-          note->vel_->track_name_hash_ = region.track_name_hash_;
+          note->vel_->track_id_ = region.track_id_;
         }
     }
 }
