@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
+
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
@@ -220,13 +222,12 @@ void
 ChordTrack::remove_scale (ScaleObject &scale, bool delete_scale)
 {
   // Deselect the scale
-  scale.select (false, false, false);
+  scale.setSelected (false);
 
   // Find and remove the scale from the vector
-  auto it =
-    std::find_if (scales_.begin (), scales_.end (), [&scale] (const auto &s) {
-      return s == &scale;
-    });
+  auto it = std::ranges::find_if (scales_, [&scale] (const auto &s) {
+    return s == &scale;
+  });
   z_return_if_fail (it != scales_.end ());
 
   scale.index_in_chord_track_ = -1;

@@ -15,7 +15,6 @@
 #include "utils/types.h"
 
 class TrackProcessor;
-class ArrangerSelections;
 
 /**
  * @addtogroup dsp
@@ -154,8 +153,8 @@ public:
    */
   ObjectPool<RecordingEvent> event_obj_pool_;
 
-  /** Cloned selections before starting recording. */
-  std::unique_ptr<ArrangerSelections> selections_before_start_;
+  /** Cloned objects before starting recording. */
+  std::vector<ArrangerObjectPtrVariant> objects_before_start_;
 
   /**
    * Recorded region identifiers, to be used for creating the undoable actions.

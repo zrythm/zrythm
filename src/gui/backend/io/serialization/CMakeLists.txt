@@ -7,7 +7,6 @@ target_sources(zrythm_gui_lib
     arranger_objects.cpp
     clipboard.cpp
     chords.cpp
-    selections.cpp
     channel.cpp
     gui_backend.cpp
     engine.cpp

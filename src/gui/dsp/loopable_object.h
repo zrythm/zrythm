@@ -4,15 +4,14 @@
 #ifndef __DSP_LOOPABLE_OBJECT_H__
 #define __DSP_LOOPABLE_OBJECT_H__
 
-#include "gui/dsp/lengthable_object.h"
-
+#include "gui/dsp/bounded_object.h"
 #include "utils/types.h"
 
 #define DEFINE_LOOPABLE_OBJECT_QML_PROPERTIES(ClassType) \
-  DEFINE_LENGTHABLE_OBJECT_QML_PROPERTIES (ClassType)
+  DEFINE_BOUNDED_OBJECT_QML_PROPERTIES (ClassType)
 
 class LoopableObject
-    : virtual public LengthableObject,
+    : virtual public BoundedObject,
       public zrythm::utils::serialization::ISerializable<LoopableObject>
 {
 public:

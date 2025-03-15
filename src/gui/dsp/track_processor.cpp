@@ -938,7 +938,8 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
 
       /* if currently active track on the piano roll, fetch events */
       if (
-        tr->in_signal_type_ == dsp::PortType::Event && CLIP_EDITOR->has_region_)
+        tr->in_signal_type_ == dsp::PortType::Event
+        && CLIP_EDITOR->has_region ())
         {
           if constexpr (std::derived_from<TrackT, ChannelTrack>)
             {

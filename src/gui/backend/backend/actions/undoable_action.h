@@ -134,6 +134,9 @@ public:
   virtual void
   get_plugins (std::vector<gui::old_dsp::plugins::Plugin *> &plugins) {};
 
+  auto get_frames_per_tick () const { return frames_per_tick_; }
+  auto get_ticks_per_frame () const { return 1.0 / frames_per_tick_; }
+
   /**
    * Sets the number of actions for this action.
    *

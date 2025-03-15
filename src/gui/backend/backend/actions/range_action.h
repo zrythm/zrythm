@@ -4,11 +4,10 @@
 #ifndef __UNDO_RANGE_ACTION_H__
 #define __UNDO_RANGE_ACTION_H__
 
-#include "gui/backend/backend/actions/undoable_action.h"
-#include "gui/backend/backend/timeline_selections.h"
-#include "gui/dsp/transport.h"
-
 #include "dsp/position.h"
+#include "gui/backend/backend/actions/undoable_action.h"
+#include "gui/dsp/arranger_object_span.h"
+#include "gui/dsp/transport.h"
 
 namespace zrythm::gui::actions
 {
@@ -44,10 +43,11 @@ public:
 
   bool can_contain_clip () const override { return true; }
 
-  bool contains_clip (const AudioClip &clip) const override
+  bool contains_clip (const AudioClip &clip) const override;
+
+  auto get_range_size_in_ticks () const
   {
-    return (sel_before_ && sel_before_->contains_clip (clip))
-           || (sel_after_ && sel_after_->contains_clip (clip));
+    return end_pos_.ticks_ - start_pos_.ticks_;
   }
 
   void init_after_cloning (const RangeAction &other, ObjectCloneType clone_type)
@@ -56,23 +56,12 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  void init_loaded_impl () override
-  {
-    if (sel_before_)
-      sel_before_->init_loaded (false, frames_per_tick_);
-    if (sel_after_)
-      sel_after_->init_loaded (false, frames_per_tick_);
-    transport_->init_loaded (nullptr, nullptr);
-  }
+  void init_loaded_impl () override;
 
   void perform_impl () override;
   void undo_impl () override;
 
-  void add_to_sel_after (
-    std::vector<ArrangerObject *> &prj_objs,
-    std::vector<ArrangerObject *> &after_objs_for_prj,
-    ArrangerObject                &prj_obj,
-    ArrangerObject *               after_obj);
+  ArrangerObjectRegistrySpan get_before_objects () const;
 
 public:
   /** Range positions. */
@@ -82,13 +71,37 @@ public:
   /** Action type. */
   Type type_ = Type::InsertSilence;
 
-  /** Selections before the action, starting from
-   * objects intersecting with the start position and
-   * ending in infinity. */
-  std::unique_ptr<TimelineSelections> sel_before_;
+  /** Selections before the action, starting from objects intersecting with the
+   * start position and ending in infinity. */
+  std::vector<ArrangerObject::Uuid> affected_objects_before_;
+
+  /**
+   * @brief Objects removed from the project while performing the action.
+   *
+   * This is a subset of affected_objects_before_.
+   *
+   * These objects will be added back to the project on undo.
+   */
+  std::vector<ArrangerObject::Uuid> objects_removed_;
+
+  /**
+   * @brief Objects added to the project while performing the action.
+   *
+   * These objects will be removed on undo.
+   */
+  std::vector<ArrangerObject::Uuid> objects_added_;
+
+  /**
+   * @brief Objects moved (not added/removed) during the action.
+   *
+   * This is a subset of affected_objects_before_.
+   *
+   * These objects will be moved back to their original positions on undo.
+   */
+  std::vector<ArrangerObject::Uuid> objects_moved_;
 
   /** Selections after the action. */
-  std::unique_ptr<TimelineSelections> sel_after_;
+  // std::vector<ArrangerObject::Uuid> sel_after_;
 
   /** A copy of the transport at the start of the action. */
   std::unique_ptr<Transport> transport_;

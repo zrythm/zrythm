@@ -19,18 +19,5 @@ using ArrangerObjectVariant = std::variant<
   ChordRegion,
   AutomationRegion,
   AutomationPoint,
-  Marker,
-  Velocity>;
-using ArrangerObjectWithoutVelocityVariant = std::variant<
-  MidiNote,
-  ChordObject,
-  ScaleObject,
-  MidiRegion,
-  AudioRegion,
-  ChordRegion,
-  AutomationRegion,
-  Marker,
-  AutomationPoint>;
+  Marker>;
 using ArrangerObjectPtrVariant = to_pointer_variant<ArrangerObjectVariant>;
-using ArrangerObjectWithoutVelocityPtrVariant =
-  to_pointer_variant<ArrangerObjectWithoutVelocityVariant>;

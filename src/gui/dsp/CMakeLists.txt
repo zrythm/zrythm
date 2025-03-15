@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 target_sources(zrythm_gui_lib
@@ -7,6 +7,7 @@ target_sources(zrythm_gui_lib
     arranger_object.cpp
     arranger_object_all.h
     arranger_object_span.h
+    arranger_object_span.cpp
     arranger_object_fwd.h
     audio_bus_track.h
     audio_bus_track.cpp
@@ -94,8 +95,8 @@ target_sources(zrythm_gui_lib
     lane_owned_object.cpp
     laned_track.h
     laned_track.cpp
-    lengthable_object.h
-    lengthable_object.cpp
+    bounded_object.h
+    bounded_object.cpp
     loopable_object.h
     loopable_object.cpp
     marker.h
@@ -132,8 +133,8 @@ target_sources(zrythm_gui_lib
     modulator_track.cpp
     muteable_object.h
     muteable_object.cpp
-    nameable_object.h
-    nameable_object.cpp
+    named_object.h
+    named_object.cpp
     piano_roll_track.h
     piano_roll_track.cpp
     plugin.h

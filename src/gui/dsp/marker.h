@@ -10,9 +10,8 @@
  * @{
  */
 
-#include "gui/dsp/nameable_object.h"
+#include "gui/dsp/named_object.h"
 #include "gui/dsp/timeline_object.h"
-
 #include "utils/icloneable.h"
 
 constexpr int MARKER_WIDGET_TRIANGLE_W = 10;
@@ -23,7 +22,7 @@ constexpr int MARKER_WIDGET_TRIANGLE_W = 10;
 class Marker final
     : public QObject,
       public TimelineObject,
-      public NameableObject,
+      public NamedObject,
       public ICloneable<Marker>,
       public zrythm::utils::serialization::ISerializable<Marker>
 {
@@ -99,8 +98,8 @@ operator== (const Marker &lhs, const Marker &rhs)
 {
   return static_cast<const TimelineObject &> (lhs)
            == static_cast<const TimelineObject &> (rhs)
-         && static_cast<const NameableObject &> (lhs)
-              == static_cast<const NameableObject &> (rhs)
+         && static_cast<const NamedObject &> (lhs)
+              == static_cast<const NamedObject &> (rhs)
          && static_cast<const ArrangerObject &> (lhs)
               == static_cast<const ArrangerObject &> (rhs)
          && lhs.marker_type_ == rhs.marker_type_

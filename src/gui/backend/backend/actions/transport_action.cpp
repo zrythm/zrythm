@@ -134,7 +134,7 @@ TransportAction::do_or_undo (bool do_it)
 
       if (musical_mode_ && false) // doesn't work
         {
-          TRANSPORT->stretch_regions (nullptr, true, time_ratio, false);
+          TRANSPORT->stretch_regions (std::nullopt, true, time_ratio, false);
         }
     }
 }

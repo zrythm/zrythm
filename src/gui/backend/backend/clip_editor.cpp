@@ -1,12 +1,10 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-# include "gui/dsp/router.h"
-# include "gui/dsp/track.h"
-#include "utils/rt_thread_id.h"
 #include "gui/backend/backend/clip_editor.h"
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/zrythm.h"
+#include "gui/dsp/router.h"
+#include "gui/dsp/track.h"
+#include "utils/rt_thread_id.h"
 
 void
 ClipEditor::init_loaded ()
@@ -18,10 +16,10 @@ ClipEditor::init_loaded ()
   z_info ("Done initializing clip editor backend");
 }
 
+#if 0
 void
 ClipEditor::set_region (
-  std::optional<RegionPtrVariant> region_opt_var,
-  bool                            fire_events)
+  std::optional<RegionPtrVariant> region_opt_var)
 {
   /*
    * block until current DSP cycle finishes to avoid potentially sending the
@@ -72,7 +70,7 @@ ClipEditor::set_region (
       z_debug ("clip editor region successfully changed");
     }
 
-#if 0
+#  if 0
   if (fire_events && ZRYTHM_HAVE_UI && MAIN_WINDOW && MW_CLIP_EDITOR)
     {
       /* EVENTS_PUSH (EventType::ET_CLIP_EDITOR_REGION_CHANGED, nullptr); */
@@ -81,13 +79,49 @@ ClipEditor::set_region (
        * now to change the active arranger */
       EVENT_MANAGER->process_now ();
     }
+#  endif
+}
 #endif
+
+std::optional<Region::TrackUuid>
+ClipEditor::get_track_id () const
+{
+  if (!has_region ())
+    return std::nullopt;
+
+  auto region_var = object_registry_.find_by_id_or_throw (*region_id_);
+  return std::visit (
+    [&] (auto &&region) { return region->get_track_id (); }, region_var);
+}
+
+void
+ClipEditor::unset_region_if_belongs_to_track (const Region::TrackUuid &track_id)
+{
+  if (!region_id_.has_value ())
+    {
+      return;
+    }
+
+  auto region_track_id = get_track_id ();
+  if (region_track_id == track_id)
+    {
+      unset_region ();
+    }
 }
 
 std::optional<RegionPtrVariant>
 ClipEditor::get_region () const
 {
-  return region_;
+  auto region_var = std::visit (
+    [&] (auto &&obj) -> RegionPtrVariant {
+      if constexpr (std::derived_from<base_type<decltype (obj)>, Region>)
+        {
+          return obj;
+        }
+      throw std::bad_variant_access ();
+    },
+    object_registry_.find_by_id_or_throw (*region_id_));
+  return region_var;
 }
 
 std::optional<TrackPtrVariant>
@@ -99,13 +133,15 @@ ClipEditor::get_track () const
         [&] (auto &&track) -> TrackPtrVariant { return track; }, *track_);
     }
 
-  if (!has_region_)
+  if (!has_region ())
     return std::nullopt;
 
   return std::visit (
-    [&] (auto &&region) { return region->get_track (); }, *region_);
+    [&] (auto &&region) -> TrackPtrVariant { return region->get_track (); },
+    *get_region ());
 }
 
+#if 0
 std::optional<ClipEditorArrangerSelectionsPtrVariant>
 ClipEditor::get_arranger_selections ()
 {
@@ -116,18 +152,19 @@ ClipEditor::get_arranger_selections ()
     [&] (auto &&region) { return region->get_arranger_selections (); },
     *region_);
 }
+#endif
 
 void
 ClipEditor::set_caches ()
 {
-  if (has_region_)
+  if (has_region ())
     {
-      region_ = get_region ();
+      // region_ = get_region ();
       track_ = get_track ();
     }
   else
     {
-      region_.reset ();
+      // region_.reset ();
       track_.reset ();
     }
 }

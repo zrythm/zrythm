@@ -30,10 +30,10 @@ ArrangerObject::define_base_fields (const Context &ctx)
 }
 
 void
-LengthableObject::define_base_fields (const Context &ctx)
+BoundedObject::define_base_fields (const Context &ctx)
 {
-  ISerializable<LengthableObject>::serialize_fields (
-    ctx, ISerializable<LengthableObject>::make_field ("endPos", end_pos_));
+  ISerializable<BoundedObject>::serialize_fields (
+    ctx, ISerializable<BoundedObject>::make_field ("endPos", end_pos_));
 }
 
 void
@@ -64,10 +64,10 @@ MuteableObject::define_base_fields (const Context &ctx)
 }
 
 void
-NameableObject::define_base_fields (const Context &ctx)
+NamedObject::define_base_fields (const Context &ctx)
 {
-  ISerializable<NameableObject>::serialize_fields (
-    ctx, ISerializable<NameableObject>::make_field ("name", name_));
+  ISerializable<NamedObject>::serialize_fields (
+    ctx, ISerializable<NamedObject>::make_field ("name", name_));
 }
 
 void
@@ -99,8 +99,8 @@ MidiRegion::define_fields (const Context &ctx)
 {
   using T = ISerializable<MidiRegion>;
   T::call_all_base_define_fields<
-    ArrangerObject, LengthableObject, LoopableObject, MuteableObject,
-    NameableObject, ColoredObject, Region> (ctx);
+    ArrangerObject, BoundedObject, LoopableObject, MuteableObject, NamedObject,
+    ColoredObject, Region> (ctx);
   T::serialize_fields (ctx, T::make_field ("midiNotes", midi_notes_));
 }
 
@@ -118,9 +118,9 @@ MidiNote::define_fields (const Context &ctx)
 {
   using T = ISerializable<MidiNote>;
   T::call_all_base_define_fields<
-    ArrangerObject, LengthableObject, MuteableObject, RegionOwnedObject> (ctx);
+    ArrangerObject, BoundedObject, MuteableObject, RegionOwnedObject> (ctx);
   T::serialize_fields (
-    ctx, T::make_field ("velocity", vel_), T::make_field ("value", val_));
+    ctx, T::make_field ("velocity", vel_), T::make_field ("value", pitch_));
 }
 
 void
@@ -150,11 +150,11 @@ void
 AudioRegion::define_fields (const Context &ctx)
 {
   ArrangerObject::define_base_fields (ctx);
-  LengthableObject::define_base_fields (ctx);
+  BoundedObject::define_base_fields (ctx);
   LoopableObject::define_base_fields (ctx);
   FadeableObject::define_base_fields (ctx);
   MuteableObject::define_base_fields (ctx);
-  NameableObject::define_base_fields (ctx);
+  NamedObject::define_base_fields (ctx);
   ColoredObject::define_base_fields (ctx);
   Region::define_base_fields (ctx);
 
@@ -167,10 +167,10 @@ void
 ChordRegion::define_fields (const Context &ctx)
 {
   ArrangerObject::define_base_fields (ctx);
-  LengthableObject::define_base_fields (ctx);
+  BoundedObject::define_base_fields (ctx);
   LoopableObject::define_base_fields (ctx);
   MuteableObject::define_base_fields (ctx);
-  NameableObject::define_base_fields (ctx);
+  NamedObject::define_base_fields (ctx);
   ColoredObject::define_base_fields (ctx);
   Region::define_base_fields (ctx);
 
@@ -184,8 +184,8 @@ AutomationRegion::define_fields (const Context &ctx)
 {
   using T = ISerializable<AutomationRegion>;
   T::call_all_base_define_fields<
-    ArrangerObject, LengthableObject, LoopableObject, MuteableObject,
-    NameableObject, ColoredObject, Region> (ctx);
+    ArrangerObject, BoundedObject, LoopableObject, MuteableObject, NamedObject,
+    ColoredObject, Region> (ctx);
 
   T::serialize_fields (ctx, T::make_field ("automationPoints", aps_));
 }
@@ -205,7 +205,7 @@ void
 Marker::define_fields (const Context &ctx)
 {
   ArrangerObject::define_base_fields (ctx);
-  NameableObject::define_base_fields (ctx);
+  NamedObject::define_base_fields (ctx);
 
   ISerializable<Marker>::serialize_fields (
     ctx, ISerializable<Marker>::make_field ("markerType", marker_type_),

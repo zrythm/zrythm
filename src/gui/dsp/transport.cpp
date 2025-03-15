@@ -294,16 +294,19 @@ Transport::set_play_state_rt_safe (PlayState state)
 }
 
 void
-Transport::prepare_audio_regions_for_stretch (TimelineSelections * sel)
+Transport::prepare_audio_regions_for_stretch (
+  std::optional<ArrangerObjectSpanVariant> sel_var)
 {
-  if (sel)
+  if (sel_var)
     {
-      for (
-        auto * obj :
-        sel->get_object_span ().get_elements_by_type<AudioRegion> ())
-        {
-          obj->before_length_ = obj->get_length_in_ticks ();
-        }
+      std::visit (
+        [&] (auto &&sel) {
+          for (auto * obj : sel.template get_elements_by_type<AudioRegion> ())
+            {
+              obj->before_length_ = obj->get_length_in_ticks ();
+            }
+        },
+        *sel_var);
     }
   else
     {
@@ -326,35 +329,38 @@ Transport::prepare_audio_regions_for_stretch (TimelineSelections * sel)
 
 void
 Transport::stretch_regions (
-  TimelineSelections * sel,
-  bool                 with_fixed_ratio,
-  double               time_ratio,
-  bool                 force)
+  std::optional<ArrangerObjectSpanVariant> sel_var,
+  bool                                     with_fixed_ratio,
+  double                                   time_ratio,
+  bool                                     force)
 {
-  if (sel)
+  if (sel_var)
     {
-      for (
-        auto * region :
-        sel->get_object_span ().get_elements_derived_from<Region> ())
-        {
-          auto r_variant = convert_to_variant<RegionPtrVariant> (region);
-          std::visit (
-            [&] (auto &&r) {
-              if constexpr (std::is_same_v<base_type<decltype (r)>, AudioRegion>)
-                {
-                  /* don't stretch audio regions with musical mode off */
-                  if (!r->get_musical_mode () && !force)
-                    return;
-                }
+      std::visit (
+        [&] (auto &&sel) {
+          for (auto * region : sel.template get_elements_derived_from<Region> ())
+            {
+              auto r_variant = convert_to_variant<RegionPtrVariant> (region);
+              std::visit (
+                [&] (auto &&r) {
+                  if constexpr (
+                    std::is_same_v<base_type<decltype (r)>, AudioRegion>)
+                    {
+                      /* don't stretch audio regions with musical mode off */
+                      if (!r->get_musical_mode () && !force)
+                        return;
+                    }
 
-              double ratio =
-                with_fixed_ratio
-                  ? time_ratio
-                  : r->get_length_in_ticks () / r->before_length_;
-              r->stretch (ratio);
-            },
-            r_variant);
-        }
+                  double ratio =
+                    with_fixed_ratio
+                      ? time_ratio
+                      : r->get_length_in_ticks () / r->before_length_;
+                  r->stretch (ratio);
+                },
+                r_variant);
+            }
+        },
+        *sel_var);
     }
   else
     {
@@ -592,9 +598,9 @@ Transport::move_playhead (
                         {
                           if (midi_note->is_hit (playhead_pos_->frames_))
                             {
-                              t->processor_->get_piano_roll_port().midi_events_
-                                .queued_events_
-                                .add_note_off (1, midi_note->val_, 0);
+                              t->processor_->get_piano_roll_port ()
+                                .midi_events_.queued_events_
+                                .add_note_off (1, midi_note->pitch_, 0);
                             }
                         }
                     }
@@ -894,38 +900,44 @@ Transport::position_is_inside_punch_range (const Position pos)
 }
 
 void
-Transport::recalculate_total_bars (ArrangerSelections * sel)
+Transport::recalculate_total_bars (
+  std::optional<ArrangerObjectSpanVariant> sel_var)
 {
   if (!ZRYTHM_HAVE_UI)
     return;
 
   int total_bars = total_bars_;
-  if (sel)
+  if (sel_var)
     {
-      for (const auto &obj_var : sel->objects_)
-        {
-          std::visit (
-            [&] (auto &&obj) {
-              using ObjT = base_type<decltype (obj)>;
-              Position pos;
-              if constexpr (std::derived_from<ObjT, LengthableObject>)
-                {
-                  obj->get_position_from_type (
-                    &pos, ArrangerObject::PositionType::End);
-                }
-              else
-                {
-                  obj->get_pos (&pos);
-                }
-              int pos_bars = pos.get_total_bars (
-                true, ticks_per_bar_, project_->audio_engine_->frames_per_tick_);
-              if (pos_bars > total_bars - 3)
-                {
-                  total_bars = pos_bars + BARS_END_BUFFER;
-                }
-            },
-            obj_var);
-        }
+      std::visit (
+        [&] (auto &&sel) {
+          for (const auto &obj_var : sel)
+            {
+              std::visit (
+                [&] (auto &&obj) {
+                  using ObjT = base_type<decltype (obj)>;
+                  Position pos;
+                  if constexpr (std::derived_from<ObjT, BoundedObject>)
+                    {
+                      obj->get_position_from_type (
+                        &pos, ArrangerObject::PositionType::End);
+                    }
+                  else
+                    {
+                      obj->get_pos (&pos);
+                    }
+                  int pos_bars = pos.get_total_bars (
+                    true, ticks_per_bar_,
+                    project_->audio_engine_->frames_per_tick_);
+                  if (pos_bars > total_bars - 3)
+                    {
+                      total_bars = pos_bars + BARS_END_BUFFER;
+                    }
+                },
+                obj_var);
+            }
+        },
+        *sel_var);
     }
   /* else no selections, calculate total bars for
    * every object */

@@ -805,7 +805,7 @@ public:
    *
    * @param objects
    */
-  void append_objects (std::vector<ArrangerObject *> &objects) const;
+  void append_objects (std::vector<ArrangerObjectPtrVariant> &objects) const;
 
   /**
    * Unselects all arranger objects in the track.

@@ -10,6 +10,7 @@
 #ifndef __AUDIO_TRACKLIST_H__
 #define __AUDIO_TRACKLIST_H__
 
+#include "gui/dsp/arranger_object_span.h"
 #include "gui/dsp/track.h"
 #include "gui/dsp/track_span.h"
 
@@ -296,6 +297,18 @@ public:
    * Handle a click selection.
    */
   void handle_click (TrackUuid track_id, bool ctrl, bool shift, bool dragged);
+
+  std::vector<ArrangerObjectPtrVariant> get_timeline_objects_in_range (
+    std::optional<std::pair<dsp::Position, dsp::Position>> range = std::nullopt)
+    const;
+
+  /**
+   * @brief Clears either the timeline selections or the clip editor selections.
+   *
+   * @param object_id The object that is part of the target selections.
+   */
+  void
+  clear_selections_for_object_siblings (const ArrangerObject::Uuid &object_id);
 
   /**
    * @brief Imports regions from a region array.

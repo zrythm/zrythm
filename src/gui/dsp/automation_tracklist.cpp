@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
 #include <cstdlib>
 
 #include "gui/backend/backend/project.h"
@@ -206,7 +207,7 @@ AutomationTracklist::set_at_index (AutomationTrack &at, int index, bool push_dow
 
   z_return_if_fail (index < static_cast<int> (ats_.size ()) && ats_[index]);
 
-  auto it = std::find_if (ats_.begin (), ats_.end (), [&] (const auto &at_ref) {
+  auto it = std::ranges::find_if (ats_, [&] (const auto &at_ref) {
     return at_ref == &at;
   });
   z_return_if_fail (
@@ -236,17 +237,6 @@ AutomationTracklist::set_at_index (AutomationTrack &at, int index, bool push_dow
       auto from = at.index_;
       auto to = index;
 
-      auto update_at_index = [&] (int i) {
-        const auto idx_before_change = ats_[i]->index_;
-        ats_[i]->set_index (i);
-
-        /* update clip editor region if it was affected */
-        if (clip_editor_region_idx == idx_before_change)
-          {
-            CLIP_EDITOR->region_id_.at_idx_ = i;
-          }
-      };
-
       auto from_it = ats_.begin () + from;
       auto to_it = ats_.begin () + to;
       if (from < to)
@@ -260,7 +250,7 @@ AutomationTracklist::set_at_index (AutomationTrack &at, int index, bool push_dow
 
       for (auto i = std::min (from, to); i <= std::max (from, to); ++i)
         {
-          update_at_index (i);
+          ats_[i]->set_index (i);
         }
     }
   else
@@ -269,16 +259,6 @@ AutomationTracklist::set_at_index (AutomationTrack &at, int index, bool push_dow
       std::swap (ats_[index], ats_[prev_index]);
       ats_[index]->set_index (index);
       ats_[prev_index]->set_index (prev_index);
-
-      /* update clip editor region if it was affected */
-      if (clip_editor_region_idx == index)
-        {
-          CLIP_EDITOR->region_id_.at_idx_ = prev_index;
-        }
-      else if (clip_editor_region_idx == prev_index)
-        {
-          CLIP_EDITOR->region_id_.at_idx_ = index;
-        }
 
       z_trace (
         "new pos {} ({})", ats_[prev_index]->getLabel (),

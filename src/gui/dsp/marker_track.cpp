@@ -2,11 +2,9 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/timeline_selections.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/marker_track.h"
 #include "gui/dsp/track.h"
-
 #include "utils/rt_thread_id.h"
 
 MarkerTrack::MarkerTrack (
@@ -200,13 +198,7 @@ MarkerTrack::append_ports (std::vector<Port *> &ports, bool include_plugins) con
 MarkerTrack::MarkerPtr
 MarkerTrack::remove_marker (Marker &marker, bool free_marker, bool fire_events)
 {
-  /* deselect */
-  TL_SELECTIONS->remove_object (marker);
-
-  auto it =
-    std::find_if (markers_.begin (), markers_.end (), [&] (const auto &m) {
-      return m == &marker;
-    });
+  auto it = std::ranges::find (markers_, std::addressof (marker));
   z_return_val_if_fail (it != markers_.end (), nullptr);
   auto ret = *it;
   it = markers_.erase (it);

@@ -44,11 +44,6 @@ RegionOwnedObject::set_region_and_index (const Region &region, int index)
   region_id_ = region.id_;
   index_ = index;
   track_id_ = region.track_id_;
-  if (type_ == Type::MidiNote)
-    {
-      auto note = dynamic_cast<MidiNote *> (this);
-      note->vel_->track_id_ = region.track_id_;
-    }
 
   /* note: this was only done for automation points, not sure why */
   /* set the info to the transient too */
@@ -59,11 +54,6 @@ RegionOwnedObject::set_region_and_index (const Region &region, int index)
       trans_obj->region_id_ = region.id_;
       trans_obj->index_ = index_;
       trans_obj->track_id_ = region.track_id_;
-      if (type_ == Type::MidiNote)
-        {
-          auto note = dynamic_cast<MidiNote *> (trans_obj);
-          note->vel_->track_id_ = region.track_id_;
-        }
     }
 }
 

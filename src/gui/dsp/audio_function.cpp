@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/arranger_selections.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
@@ -282,7 +281,9 @@ apply_plugin (
 
 void
 audio_function_apply (
-  AudioSelections           &sel,
+  ArrangerObject::Uuid       region_id,
+  const dsp::Position       &sel_start,
+  const dsp::Position       &sel_end,
   AudioFunctionType          type,
   AudioFunctionOpts          opts,
   std::optional<std::string> uri)
@@ -290,9 +291,8 @@ audio_function_apply (
   using Position = AudioRegion::Position;
   z_debug ("applying {}...", AudioFunctionType_to_string (type));
 
-  auto &audio_sel = (AudioSelections &) sel;
-
-  auto r = AudioRegion::find (audio_sel.region_id_);
+  auto * r =
+    std::get<AudioRegion *> (*PROJECT->find_arranger_object_by_id (region_id));
   z_return_if_fail (r);
   auto tr = std::get<AudioTrack *> (r->get_track ());
   z_return_if_fail (tr);
@@ -300,15 +300,15 @@ audio_function_apply (
   z_return_if_fail (orig_clip);
 
   Position init_pos;
-  if (audio_sel.sel_start_ < *r->pos_ || audio_sel.sel_end_ > *r->end_pos_)
+  if (sel_start < *r->pos_ || sel_end > *r->end_pos_)
     {
       throw ZrythmException (
         QObject::tr ("Invalid positions - skipping function"));
     }
 
   /* adjust the positions */
-  Position start = audio_sel.sel_start_;
-  Position end = audio_sel.sel_end_;
+  Position start = sel_start;
+  Position end = sel_end;
   start.add_frames (-r->pos_->frames_, AUDIO_ENGINE->ticks_per_frame_);
   end.add_frames (-r->pos_->frames_, AUDIO_ENGINE->ticks_per_frame_);
 
@@ -331,7 +331,7 @@ audio_function_apply (
     }
 
   auto nudge_frames = (unsigned_frame_t) Position::get_frames_from_ticks (
-    ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS, 0.0);
+    ArrangerObject::DEFAULT_NUDGE_TICKS, 0.0);
   unsigned_frame_t num_frames_excl_nudge;
   z_debug ("num frames {}, nudge_frames {}", num_frames, nudge_frames);
   z_return_if_fail_cmp (nudge_frames, >, 0);
@@ -571,7 +571,8 @@ audio_function_apply (
     "writing {} to pool (id {})", clip->get_name (), clip->get_pool_id ());
   AUDIO_POOL->write_clip (*clip, false, false);
 
-  audio_sel.pool_id_ = clip->get_pool_id ();
+  // FIXME: needed?
+  // audio_sel.pool_id_ = clip->get_pool_id ();
 
   if (type != AudioFunctionType::Invalid)
     {

@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_LENGTHABLE_OBJECT_H__
-#define __AUDIO_LENGTHABLE_OBJECT_H__
+#ifndef __AUDIO_BOUNDED_OBJECT_H__
+#define __AUDIO_BOUNDED_OBJECT_H__
 
 #include "gui/dsp/arranger_object.h"
 
-#define DEFINE_LENGTHABLE_OBJECT_QML_PROPERTIES(ClassType) \
+#define DEFINE_BOUNDED_OBJECT_QML_PROPERTIES(ClassType) \
 public: \
   /* ================================================================ */ \
   /* endPosition */ \
@@ -17,14 +17,25 @@ public: \
     return end_pos_; \
   }
 
-class LengthableObject
+/**
+ * @brief Base class for all objects in the arranger that have a length.
+ *
+ * The BoundedObject class is the base class for all objects that have a length,
+ * such as regions, MIDI notes, etc. It provides common functionality and
+ * properties shared by all these objects, such as start and end positions,
+ * and methods to resize and check if the object is hit by a position or range.
+ *
+ * BoundedObject inherits from ArrangerObject and extends it with length-related
+ * functionality.
+ */
+class BoundedObject
     : virtual public ArrangerObject,
-      public zrythm::utils::serialization::ISerializable<LengthableObject>
+      public zrythm::utils::serialization::ISerializable<BoundedObject>
 {
 public:
-  LengthableObject ();
-  ~LengthableObject () override = default;
-  Q_DISABLE_COPY_MOVE (LengthableObject)
+  BoundedObject ();
+  ~BoundedObject () override = default;
+  Z_DISABLE_COPY_MOVE (BoundedObject)
 
   /**
    * Getter.
@@ -50,17 +61,14 @@ public:
    *
    * (End Position - start Position).
    */
-  inline double get_length_in_ticks () const
-  {
-    return end_pos_->ticks_ - pos_->ticks_;
-  }
+  auto get_length_in_ticks () const { return end_pos_->ticks_ - pos_->ticks_; }
 
   /**
    * Returns the length in frames.
    *
    * (End Position - start Position).
    */
-  inline signed_frame_t get_length_in_frames () const
+  auto get_length_in_frames () const
   {
     return end_pos_->frames_ - pos_->frames_;
   }
@@ -91,38 +99,8 @@ public:
   void set_end_pos_full_size (const dsp::Position * pos);
 
   /**
-   * Splits the given object at the given Position.
-   *
-   * if @ref is_project is true, it deletes the original object and adds 2 new
-   * objects in the same parent (Track or AutomationTrack or Region).
-   *
-   * @param region Object to split. This object will be deleted if @p is_project
-   * is true.
-   * @param pos The Position to split at.
-   * @param pos_is_local Whether the position is a local one (starting at region
-   * start for `RegionOwnedObject`s).
-   * @param r1 Address to hold the pointer to the newly created object 1.
-   * @param r2 Address to hold the pointer to the newly created object 2.
-   * @param is_project Whether the object being passed is a project object. If
-   * true, it will be removed from the project and the child objects will be
-   * added to the project, otherwise it will be untouched and the children will
-   * be mere clones.
-   *
-   * @throw ZrythmException on error.
-   */
-  template <typename T>
-  static std::pair<T *, T *>
-  split (T &self, dsp::Position pos, bool pos_is_local, bool is_project);
-
-  /**
-   * Undoes what @ref split() did.
-   *
-   * @throw ZrythmException on error.
-   */
-  template <typename T> static T * unsplit (T &r1, T &r2, bool fire_events);
-
-  /**
-   * Returns whether the object is hit by the given position.
+   * Returns whether the object is hit by the given position (local position if
+   * non-timeline object).
    *
    * @param pos Position to check.
    * @param obj_end_pos_inclusive Whether @ref end_pos_ is considered as part of
@@ -134,6 +112,12 @@ public:
     return is_hit (pos.frames_, object_end_pos_inclusive);
   }
 
+  /**
+   * @brief
+   *
+   * @param frames Local position if non-timeline object.
+   * @param object_end_pos_inclusive
+   */
   bool
   is_hit (const signed_frame_t frames, bool object_end_pos_inclusive = false) const
   {
@@ -228,12 +212,11 @@ public:
            || (*pos_ < start && *end_pos_ >= end);
   }
 
-  friend bool
-  operator== (const LengthableObject &lhs, const LengthableObject &rhs);
+  friend bool operator== (const BoundedObject &lhs, const BoundedObject &rhs);
 
 protected:
   void
-  copy_members_from (const LengthableObject &other, ObjectCloneType clone_type);
+  copy_members_from (const BoundedObject &other, ObjectCloneType clone_type);
 
   void init_loaded_base ();
 
@@ -261,38 +244,17 @@ public:
 };
 
 template <typename T>
-concept FinalLengthedObjectSubclass =
-  std::derived_from<T, LengthableObject> && FinalClass<T>;
+concept FinalBoundedObjectSubclass =
+  std::derived_from<T, BoundedObject> && FinalClass<T>;
 
 inline bool
-operator== (const LengthableObject &lhs, const LengthableObject &rhs)
+operator== (const BoundedObject &lhs, const BoundedObject &rhs)
 {
   return *lhs.end_pos_ == *rhs.end_pos_;
 }
 
-using LengthableObjectVariant =
+using BoundedObjectVariant =
   std::variant<MidiRegion, AudioRegion, ChordRegion, AutomationRegion, MidiNote>;
-using LengthableObjectPtrVariant = to_pointer_variant<LengthableObjectVariant>;
+using BoundedObjectPtrVariant = to_pointer_variant<BoundedObjectVariant>;
 
-#define DEFINE_OR_DECLARE_TEMPLATES_FOR_LENGTHABLE_OBJECT(_extern, subclass) \
-  _extern template std::pair<subclass *, subclass *> \
-  LengthableObject::split<subclass> ( \
-    subclass &, const Position, const bool, bool); \
-  _extern template subclass * \
-  LengthableObject::unsplit<subclass> (subclass &, subclass &, bool);
-
-#define DECLARE_EXTERN_TEMPLATES_FOR_LENGTHABLE_OBJECT(subclass) \
-  DEFINE_OR_DECLARE_TEMPLATES_FOR_LENGTHABLE_OBJECT (extern, subclass)
-
-#define DEFINE_TEMPLATES_FOR_LENGTHABLE_OBJECT(subclass) \
-  DEFINE_OR_DECLARE_TEMPLATES_FOR_LENGTHABLE_OBJECT (, subclass)
-
-DECLARE_EXTERN_TEMPLATES_FOR_LENGTHABLE_OBJECT (MidiRegion);
-DECLARE_EXTERN_TEMPLATES_FOR_LENGTHABLE_OBJECT (AudioRegion);
-DECLARE_EXTERN_TEMPLATES_FOR_LENGTHABLE_OBJECT (ChordRegion);
-DECLARE_EXTERN_TEMPLATES_FOR_LENGTHABLE_OBJECT (AutomationRegion);
-DECLARE_EXTERN_TEMPLATES_FOR_LENGTHABLE_OBJECT (MidiNote);
-
-#undef DECLARE_EXTERN_TEMPLATES_FOR_LENGTHABLE_OBJECT
-
-#endif // __AUDIO_LENGTHABLE_OBJECT_H__
+#endif // __AUDIO_BOUNDED_OBJECT_H__

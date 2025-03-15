@@ -84,9 +84,6 @@ public:
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
-  std::optional<ClipEditorArrangerSelectionsPtrVariant>
-  get_arranger_selections () const override;
-
 public:
   /** ChordObject's in this Region. */
   std::vector<ChordObject *> chord_objects_;
@@ -98,16 +95,16 @@ operator== (const ChordRegion &lhs, const ChordRegion &rhs)
   return static_cast<const Region &> (lhs) == static_cast<const Region &> (rhs)
          && static_cast<const TimelineObject &> (lhs)
               == static_cast<const TimelineObject &> (rhs)
-         && static_cast<const NameableObject &> (lhs)
-              == static_cast<const NameableObject &> (rhs)
+         && static_cast<const NamedObject &> (lhs)
+              == static_cast<const NamedObject &> (rhs)
          && static_cast<const LoopableObject &> (lhs)
               == static_cast<const LoopableObject &> (rhs)
          && static_cast<const ColoredObject &> (lhs)
               == static_cast<const ColoredObject &> (rhs)
          && static_cast<const MuteableObject &> (lhs)
               == static_cast<const MuteableObject &> (rhs)
-         && static_cast<const LengthableObject &> (lhs)
-              == static_cast<const LengthableObject &> (rhs)
+         && static_cast<const BoundedObject &> (lhs)
+              == static_cast<const BoundedObject &> (rhs)
          && static_cast<const ArrangerObject &> (lhs)
               == static_cast<const ArrangerObject &> (rhs);
 }

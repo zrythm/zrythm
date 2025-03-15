@@ -80,14 +80,6 @@ public:
 
   bool get_muted (bool check_parent) const override;
 
-#if 0
-  /**
-   * Adds an AutomationPoint to the Region and returns a reference to it.
-   */
-  AutomationPoint &
-  add_ap (std::unique_ptr<AutomationPoint> &&ap, bool pub_events);
-#endif
-
   /**
    * Returns the AutomationPoint before the given one.
    */
@@ -156,9 +148,6 @@ public:
       }
   }
 
-  std::optional<ClipEditorArrangerSelectionsPtrVariant>
-  get_arranger_selections () const override;
-
   void
   init_after_cloning (const AutomationRegion &other, ObjectCloneType clone_type)
     override;
@@ -185,16 +174,16 @@ operator== (const AutomationRegion &lhs, const AutomationRegion &rhs)
   return static_cast<const Region &> (lhs) == static_cast<const Region &> (rhs)
          && static_cast<const TimelineObject &> (lhs)
               == static_cast<const TimelineObject &> (rhs)
-         && static_cast<const NameableObject &> (lhs)
-              == static_cast<const NameableObject &> (rhs)
+         && static_cast<const NamedObject &> (lhs)
+              == static_cast<const NamedObject &> (rhs)
          && static_cast<const LoopableObject &> (lhs)
               == static_cast<const LoopableObject &> (rhs)
          && static_cast<const ColoredObject &> (lhs)
               == static_cast<const ColoredObject &> (rhs)
          && static_cast<const MuteableObject &> (lhs)
               == static_cast<const MuteableObject &> (rhs)
-         && static_cast<const LengthableObject &> (lhs)
-              == static_cast<const LengthableObject &> (rhs)
+         && static_cast<const BoundedObject &> (lhs)
+              == static_cast<const BoundedObject &> (rhs)
          && static_cast<const ArrangerObject &> (lhs)
               == static_cast<const ArrangerObject &> (rhs);
 }

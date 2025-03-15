@@ -56,7 +56,7 @@ template <typename RegionT>
 void
 RegionOwnerImpl<RegionT>::unselect_all ()
 {
-  foreach_region ([&] (auto &region) { region.select (false, false, false); });
+  foreach_region ([&] (auto &region) { region.setSelected (false); });
 }
 
 template <typename RegionT>

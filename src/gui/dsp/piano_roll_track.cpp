@@ -62,7 +62,7 @@ PianoRollTrack::create_and_add_midi_region (double startTicks, int laneIndex)
           AUDIO_ENGINE->frames_per_tick_),
         get_uuid (), laneIndex, idx_inside_lane, self);
       self->Track::add_region (region, nullptr, laneIndex, true, true);
-      region->select (true, false, true);
+      region->setSelected (true);
       return region;
     },
     convert_to_variant<PianoRollTrackPtrVariant> (this));

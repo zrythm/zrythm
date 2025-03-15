@@ -54,7 +54,7 @@ TrackLaneImpl<RegionT>::unselect_all ()
   for (auto &region_var : this->region_list_->regions_)
     {
       auto region = std::get<RegionT *> (region_var);
-      region->select (false, false, false);
+      region->setSelected (false);
     }
 }
 

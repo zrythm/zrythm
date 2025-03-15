@@ -1253,9 +1253,11 @@ TracklistSelectionsAction::
       TRACKLIST->pinned_tracks_cutoff_ -= tls_before_->size ();
     }
 
-  if (move)
+  if (move && prev_clip_editor_region_opt.has_value ())
     {
-      CLIP_EDITOR->set_region (prev_clip_editor_region_opt, false);
+      std::visit (
+        [&] (auto &&r) { CLIP_EDITOR->set_region (r->get_uuid ()); },
+        *prev_clip_editor_region_opt);
     }
 
   /* restore connections */

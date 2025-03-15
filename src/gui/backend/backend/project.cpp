@@ -32,6 +32,7 @@ using namespace zrythm;
 Project::Project (QObject * parent)
     : QObject (parent), port_registry_ (new PortRegistry (this)),
       plugin_registry_ (new PluginRegistry (this)),
+      arranger_object_registry_ (new ArrangerObjectRegistry (this)),
       track_registry_ (new TrackRegistry (this)),
       version_ (Zrythm::get_version (false)),
       tool_ (new gui::backend::Tool (this)),
@@ -59,6 +60,7 @@ Project::Project (QObject * parent)
 
         )),
       timeline_ (new Timeline (this)),
+      clip_editor_ (new ClipEditor (*arranger_object_registry_, this)),
       midi_mappings_ (std::make_unique<MidiMappings> ()),
       tracklist_ (new Tracklist (
         *this,
@@ -67,7 +69,6 @@ Project::Project (QObject * parent)
         port_connections_manager_)),
       undo_manager_ (new gui::actions::UndoManager (this))
 {
-  init_selections ();
   // audio_engine_ = std::make_unique<AudioEngine> (this);
 }
 
@@ -576,6 +577,7 @@ project_get_arranger_for_last_selection (
 }
 #endif
 
+#if 0
 std::optional<ArrangerSelectionsPtrVariant>
 Project::get_arranger_selections_for_last_selection ()
 {
@@ -611,24 +613,7 @@ Project::get_arranger_selections_for_last_selection ()
 
   return std::nullopt;
 }
-
-void
-Project::init_selections (bool including_arranger_selections)
-{
-  if (including_arranger_selections)
-    {
-      automation_selections_ = new AutomationSelections (this);
-      automation_selections_->are_objects_copies_ = false;
-      audio_selections_ = new AudioSelections (this);
-      audio_selections_->are_objects_copies_ = false;
-      chord_selections_ = new ChordSelections (this);
-      chord_selections_->are_objects_copies_ = false;
-      timeline_selections_ = new TimelineSelections (this);
-      timeline_selections_->are_objects_copies_ = false;
-      midi_selections_ = new MidiSelections (this);
-      midi_selections_->are_objects_copies_ = false;
-    }
-}
+#endif
 
 void
 Project::get_all_ports (std::vector<Port *> &ports) const
@@ -1240,7 +1225,8 @@ Project::init_after_cloning (const Project &other, ObjectCloneType clone_type)
   transport_ = other.transport_->clone_qobject (this);
   audio_engine_ = other.audio_engine_->clone_unique (clone_type, this);
   tracklist_ = other.tracklist_->clone_qobject (this);
-  clip_editor_ = other.clip_editor_;
+  clip_editor_ = other.clip_editor_->clone_qobject (
+    this, clone_type, *arranger_object_registry_);
   timeline_ = other.timeline_->clone_qobject (this);
   snap_grid_timeline_ = std::make_unique<SnapGrid> (*other.snap_grid_timeline_);
   snap_grid_editor_ = std::make_unique<SnapGrid> (*other.snap_grid_editor_);
@@ -1248,11 +1234,6 @@ Project::init_after_cloning (const Project &other, ObjectCloneType clone_type)
     std::make_unique<QuantizeOptions> (*other.quantize_opts_timeline_);
   quantize_opts_editor_ =
     std::make_unique<QuantizeOptions> (*other.quantize_opts_editor_);
-  timeline_selections_ = other.timeline_selections_->clone_qobject (this);
-  midi_selections_ = other.midi_selections_->clone_qobject (this);
-  chord_selections_ = other.chord_selections_->clone_qobject (this);
-  automation_selections_ = other.automation_selections_->clone_qobject (this);
-  audio_selections_ = other.audio_selections_->clone_qobject (this);
   region_link_group_manager_ = other.region_link_group_manager_;
   port_connections_manager_ =
     other.port_connections_manager_->clone_qobject (this);
@@ -1311,36 +1292,6 @@ Transport *
 Project::getTransport () const
 {
   return transport_;
-}
-
-AutomationSelections *
-Project::getAutomationSelections () const
-{
-  return automation_selections_;
-}
-
-AudioSelections *
-Project::getAudioSelections () const
-{
-  return audio_selections_;
-}
-
-MidiSelections *
-Project::getMidiSelections () const
-{
-  return midi_selections_;
-}
-
-ChordSelections *
-Project::getChordSelections () const
-{
-  return chord_selections_;
-}
-
-TimelineSelections *
-Project::getTimelineSelections () const
-{
-  return timeline_selections_;
 }
 
 gui::backend::Tool *

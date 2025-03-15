@@ -27,8 +27,9 @@ RangeAction::
   /* create selections for overlapping objects */
   Position inf;
   inf.set_to_bar (Position::POSITION_MAX_BAR, TRANSPORT->ticks_per_bar_, AUDIO_ENGINE->frames_per_tick_);
-  sel_before_ = std::make_unique<TimelineSelections> (start_pos, inf);
-  sel_after_ = std::make_unique<TimelineSelections> ();
+  affected_objects_before_ = std::ranges::to<std::vector> (
+    TRACKLIST->get_timeline_objects_in_range (std::make_pair (start_pos, inf))
+    | std::views::transform (ArrangerObjectSpan::uuid_projection));
 
   transport_ = TRANSPORT->clone_unique ();
 }
@@ -42,108 +43,125 @@ RangeAction::init_after_cloning (
   start_pos_ = other.start_pos_;
   end_pos_ = other.end_pos_;
   type_ = other.type_;
-  sel_before_ = other.sel_before_->clone_unique ();
-  sel_after_ = other.sel_after_->clone_unique ();
+  affected_objects_before_ = other.affected_objects_before_;
+  objects_removed_ = other.objects_removed_;
+  objects_added_ = other.objects_added_;
+  objects_moved_ = other.objects_moved_;
   transport_ = other.transport_->clone_unique ();
   first_run_ = other.first_run_;
 }
 
-#define _MOVE_TRANSPORT_MARKER(x, _ticks, _do) \
+ArrangerObjectRegistrySpan
+RangeAction::get_before_objects () const
+{
+  return ArrangerObjectRegistrySpan{
+    PROJECT->get_arranger_object_registry (), affected_objects_before_
+  };
+}
+
+bool
+RangeAction::contains_clip (const AudioClip &clip) const
+{
+  return get_before_objects ().contains_clip (clip)
+         || ArrangerObjectRegistrySpan{ PROJECT->get_arranger_object_registry (),
+                                        objects_added_ }
+              .contains_clip (clip);
+}
+
+void
+RangeAction::init_loaded_impl ()
+{
+  get_before_objects ().init_loaded (false, frames_per_tick_);
+  ArrangerObjectRegistrySpan{
+    PROJECT->get_arranger_object_registry (), objects_added_
+  }
+    .init_loaded (false, frames_per_tick_);
+  transport_->init_loaded (nullptr, nullptr);
+}
+
+#define MOVE_TRANSPORT_MARKER(_action, x, _ticks, _do) \
   if ( \
-    type_ == RangeAction::Type::Remove && *TRANSPORT->x >= start_pos_ \
-    && *TRANSPORT->x <= end_pos_) \
+    _action.type_ == RangeAction::Type::Remove \
+    && *TRANSPORT->x >= action.start_pos_ && *TRANSPORT->x <= action.end_pos_) \
     { \
       /* move position to range start or back to  original pos */ \
       if (_do) \
         { \
-          TRANSPORT->x->set_position_rtsafe (start_pos_); \
+          TRANSPORT->x->set_position_rtsafe (action.start_pos_); \
         } \
       else \
         { \
-          TRANSPORT->x->set_position_rtsafe (*transport_->x); \
+          TRANSPORT->x->set_position_rtsafe (*action.transport_->x); \
         } \
     } \
-  else if (*TRANSPORT->x >= start_pos_) \
+  else if (*TRANSPORT->x >= action.start_pos_) \
     { \
       TRANSPORT->x->addTicks (_ticks); \
     }
 
-#define MOVE_TRANSPORT_MARKER(x, _do) \
-  _MOVE_TRANSPORT_MARKER (x, range_size_ticks, _do)
+constexpr auto MOVE_TRANSPORT_MARKERS = [] (RangeAction &action, bool do_it) {
+  const auto range_size_ticks = action.get_range_size_in_ticks ();
+  MOVE_TRANSPORT_MARKER (action, playhead_pos_, range_size_ticks, do_it);
+  MOVE_TRANSPORT_MARKER (action, cue_pos_, range_size_ticks, do_it);
+  MOVE_TRANSPORT_MARKER (action, loop_start_pos_, range_size_ticks, do_it);
+  MOVE_TRANSPORT_MARKER (action, loop_end_pos_, range_size_ticks, do_it);
+};
 
-#define UNMOVE_TRANSPORT_MARKER(x, _do) \
-  _MOVE_TRANSPORT_MARKER (x, -range_size_ticks, _do)
-
-#define MOVE_TRANSPORT_MARKERS(_do) \
-  MOVE_TRANSPORT_MARKER (playhead_pos_, _do); \
-  MOVE_TRANSPORT_MARKER (cue_pos_, _do); \
-  MOVE_TRANSPORT_MARKER (loop_start_pos_, _do); \
-  MOVE_TRANSPORT_MARKER (loop_end_pos_, _do)
-
-#define UNMOVE_TRANSPORT_MARKERS(_do) \
-  UNMOVE_TRANSPORT_MARKER (playhead_pos_, _do); \
-  UNMOVE_TRANSPORT_MARKER (cue_pos_, _do); \
-  UNMOVE_TRANSPORT_MARKER (loop_start_pos_, _do); \
-  UNMOVE_TRANSPORT_MARKER (loop_end_pos_, _do)
-
-void
-RangeAction::add_to_sel_after (
-  std::vector<ArrangerObject *> &prj_objs,
-  std::vector<ArrangerObject *> &after_objs_for_prj,
-  ArrangerObject                &prj_obj,
-  ArrangerObject *               after_obj)
-{
-  // FIXME: after_obj might be getting leaked?
-  prj_objs.push_back (&prj_obj);
-  z_debug ("adding to sel after (num prj objs {})", prj_objs.size ());
-  prj_obj.print ();
-  after_objs_for_prj.push_back (after_obj);
-  std::visit (
-    [&] (auto &&last_after_obj_for_prj) {
-      sel_after_->add_object_owned (last_after_obj_for_prj->clone_unique ());
-    },
-    convert_to_variant<ArrangerObjectWithoutVelocityPtrVariant> (
-      after_objs_for_prj.back ()));
-}
+constexpr auto UNMOVE_TRANSPORT_MARKERS = [] (RangeAction &action, bool do_it) {
+  const auto range_size_ticks = action.get_range_size_in_ticks ();
+  MOVE_TRANSPORT_MARKER (action, playhead_pos_, -range_size_ticks, do_it);
+  MOVE_TRANSPORT_MARKER (action, cue_pos_, -range_size_ticks, do_it);
+  MOVE_TRANSPORT_MARKER (action, loop_start_pos_, -range_size_ticks, do_it);
+  MOVE_TRANSPORT_MARKER (action, loop_end_pos_, -range_size_ticks, do_it);
+};
 
 void
 RangeAction::perform_impl ()
 {
-  /* sort the selections in ascending order */
-  sel_before_->sort_by_indices (false);
-  sel_after_->sort_by_indices (false);
+  /* sort the selections in ascending order FIXME: needed? */
+  // sel_before_->sort_by_indices (false);
+  // sel_after_->sort_by_indices (false);
 
-  auto  &before_objs_arr = sel_before_->objects_;
-  auto  &after_objs_arr = sel_after_->objects_;
-  double range_size_ticks = end_pos_.ticks_ - start_pos_.ticks_;
-
-  /* temporary place to store project objects, so we can get their final
-   * identifiers at the end */
-  std::vector<ArrangerObject *> prj_objs;
-  prj_objs.reserve (before_objs_arr.size () * 2);
-
-  /* after objects corresponding to the above */
-  std::vector<ArrangerObject *> after_objs_for_prj;
-  after_objs_for_prj.reserve (before_objs_arr.size () * 2);
-
-  auto add_after = [&] (ArrangerObject &prj_obj, ArrangerObject * after_obj) {
-    add_to_sel_after (prj_objs, after_objs_for_prj, prj_obj, after_obj);
-  };
+  const auto range_size_ticks = get_range_size_in_ticks ();
 
   /* returns whether the object is hit (starts before or at and ends after) at
    * the given position (and thus we need to split the object at the range start
    * position) */
-  auto need_split_at_pos = [] (ArrangerObject &prj_obj, Position start_pos) {
-    auto prj_obj_lo = dynamic_cast<LengthableObject *> (&prj_obj);
-    return prj_obj_lo && prj_obj_lo->is_hit (start_pos);
+  const auto need_to_split_object_at_pos =
+    [] (auto &prj_obj, const auto &start_pos) {
+      using ObjT = base_type<decltype (prj_obj)>;
+      if constexpr (
+        std::derived_from<ObjT, BoundedObject>
+        && std::derived_from<ObjT, TimelineObject>)
+        {
+          return prj_obj.is_hit (start_pos);
+        }
+      return false;
+    };
+
+  constexpr auto handle_not_first_run = [&] () {
+    // TODO:
+    // remove objects that should be removed
+
+    // move objects that should be moved
+
+    // add objects that should be added
   };
 
-  switch (type_)
+  if (!first_run_)
     {
-    case Type::InsertSilence:
-      if (first_run_)
+      handle_not_first_run ();
+    }
+  else
+    {
+      switch (type_)
         {
-          for (auto &obj_var : std::ranges::reverse_view (before_objs_arr))
+        case Type::InsertSilence:
+          for (
+            const auto &obj_var :
+            ArrangerObjectRegistrySpan{
+              PROJECT->get_arranger_object_registry (), affected_objects_before_ }
+              | std::views::reverse)
             {
               std::visit (
                 [&] (auto &&obj) {
@@ -152,41 +170,33 @@ RangeAction::perform_impl ()
                     "looping backwards. current object {}:",
                     obj->print_to_str ());
 
-                  obj->flags_ |= ArrangerObject::Flags::NonProject;
-
-                  /* get project object */
-                  auto prj_obj_opt = obj->find_in_project ();
-                  z_return_if_fail (prj_obj_opt);
-                  auto prj_obj = std::get<ObjT *> (prj_obj_opt.value ());
-
                   /* if need split, split at range start */
-                  if (need_split_at_pos (*prj_obj, start_pos_))
+                  if (need_to_split_object_at_pos (*obj, start_pos_))
                     {
-                      if constexpr (std::derived_from<ObjT, LengthableObject>)
+                      if constexpr (std::derived_from<ObjT, BoundedObject>)
                         {
                           /* split at range start */
-                          auto [part1, part2] = LengthableObject::split (
-                            *prj_obj, start_pos_, false, false);
+                          auto [part1, part2] =
+                            ArrangerObjectSpan::split_bounded_object (
+                              *obj, PROJECT->get_arranger_object_registry (),
+                              start_pos_, AUDIO_ENGINE->frames_per_tick_);
 
                           /* move part2 by the range amount */
                           part2->move (range_size_ticks);
 
                           /* remove previous object */
-                          prj_obj->remove_from_project (true);
-
-                          /* create clones and add to project */
-                          auto prj_part1 = std::get<ObjT *> (
-                            part1->add_clone_to_project (false));
-                          auto prj_part2 = std::get<ObjT *> (
-                            part2->add_clone_to_project (false));
+                          obj->remove_from_project (true);
+                          objects_removed_.push_back (obj->get_uuid ());
 
                           z_debug (
-                            "object split and moved into the following objects");
-                          prj_part1->print ();
-                          prj_part2->print ();
+                            "object split and moved into the following objects: {}\n{}",
+                            *part1, *part2);
 
-                          add_after (*prj_part1, part1);
-                          add_after (*prj_part2, part2);
+                          // TODO: add to project
+                          // part1->add_to_project ();
+                          // part2->add_to_project ();
+                          objects_added_.push_back (part1->get_uuid ());
+                          objects_added_.push_back (part2->get_uuid ());
                         }
                       else
                         {
@@ -196,231 +206,169 @@ RangeAction::perform_impl ()
                   /* object starts at or after range start - only needs a move */
                   else
                     {
-                      prj_obj->move (range_size_ticks);
-
+                      obj->move (range_size_ticks);
+                      objects_moved_.push_back (obj->get_uuid ());
                       z_debug ("moved to object:");
-                      prj_obj->print ();
-
-                      /* clone and add to sel_after */
-                      add_after (*prj_obj, prj_obj->clone_raw_ptr ());
+                      obj->print ();
                     }
                 },
                 obj_var);
             }
-          first_run_ = false;
-        }
-      else /* not first run */
-        {
-          /* remove all matching project objects from sel_before_ */
-          for (auto &obj_var : std::ranges::reverse_view (before_objs_arr))
+      break;
+        case Type::Remove:
+          if (first_run_)
             {
-              std::visit (
-                [&] (auto &&obj) {
-                  using ObjT = base_type<decltype (obj)>;
-                  auto prj_obj =
-                    std::get<ObjT *> (obj->find_in_project ().value ());
-                  prj_obj->remove_from_project (true);
-                },
-                obj_var);
-            }
-          /* insert clones of all objects from sel_after_ to the project */
-          for (auto &obj_var : after_objs_arr)
-            {
-              std::visit (
-                [&] (auto &&obj) { obj->insert_clone_to_project (); }, obj_var);
-            }
-        }
+              for (
+                const auto &obj_var :
+                get_before_objects () | std::views::reverse)
+                {
+                  std::visit (
+                    [&] (auto &&obj) {
+                      using ObjT = base_type<decltype (obj)>;
+                      z_debug (
+                        "looping backwards. current object {}",
+                        obj->print_to_str ());
 
-      /* move transport markers */
-      MOVE_TRANSPORT_MARKERS (true);
+                      bool ends_inside_range = false;
+                      if constexpr (std::derived_from<ObjT, BoundedObject>)
+                        {
+                          ends_inside_range =
+                            *obj->pos_ >= start_pos_ && obj->end_pos_ < end_pos_;
+                        }
+                      else
+                        {
+                          ends_inside_range =
+                            *obj->pos_ >= start_pos_ && *obj->pos_ < end_pos_;
+                        }
+
+                      /* object starts before the range and ends after the range
+                       * start - split at range start */
+                      if (need_to_split_object_at_pos (*obj, start_pos_))
+                        {
+                          if constexpr (std::derived_from<ObjT, BoundedObject>)
+                            {
+                              /* split at range start */
+                              auto [part1, part2] =
+                                ArrangerObjectSpan::split_bounded_object (
+                                  *obj, PROJECT->get_arranger_object_registry (),
+                                  start_pos_, AUDIO_ENGINE->frames_per_tick_);
+
+                              /* if part 2 extends beyond the range end, split
+                               * it and remove the part before range end */
+                              if (need_to_split_object_at_pos (*part2, end_pos_))
+                                {
+                                  // part3 will be discared
+                                  auto [part3, part4] =
+                                    ArrangerObjectSpan::split_bounded_object (
+                                      *part2,
+                                      PROJECT->get_arranger_object_registry (),
+                                      end_pos_, AUDIO_ENGINE->frames_per_tick_);
+                                  PROJECT->get_arranger_object_registry ()
+                                    .delete_object_by_id (part3->get_uuid ());
+                                  PROJECT->get_arranger_object_registry ()
+                                    .delete_object_by_id (part2->get_uuid ());
+                                  part2 = part4;
+                                }
+                              /* otherwise remove the whole part2 */
+                              else
+                                {
+                                  PROJECT->get_arranger_object_registry ()
+                                    .delete_object_by_id (part2->get_uuid ());
+                                  part2 = nullptr;
+                                }
+
+                              /* if a part2 exists, move it back */
+                              if (part2)
+                                {
+                                  part2->move (-range_size_ticks);
+                                }
+
+                              /* remove previous object */
+                              // TODO: actually remove from project
+                              objects_removed_.push_back (obj->get_uuid ());
+
+                              // add new object(s) to project
+                              // TODO: actually add to project
+                              objects_added_.push_back (part1->get_uuid ());
+
+                              if (part2)
+                                {
+                                  // TODO: actually add to project
+                                  objects_added_.push_back (part2->get_uuid ());
+                                }
+                            }
+                        }
+                      /* object starts before the range end and ends after the
+                       * range end
+                       * - split at range end */
+                      else if (need_to_split_object_at_pos (*obj, end_pos_))
+                        {
+                          if constexpr (std::derived_from<ObjT, BoundedObject>)
+                            {
+                              /* split at range end */
+                              // part1 will be discarded
+                              auto [part1, part2] =
+                                ArrangerObjectSpan::split_bounded_object (
+                                  *obj, PROJECT->get_arranger_object_registry (),
+                                  end_pos_, AUDIO_ENGINE->frames_per_tick_);
+                              PROJECT->get_arranger_object_registry ()
+                                .delete_object_by_id (part1->get_uuid ());
+
+                              // move part2 by the range amount and add to
+                              // project
+                              // TODO: actually add
+                              part2->move (-range_size_ticks);
+                              objects_added_.push_back (part2->get_uuid ());
+
+                              // TODO: actually remove object
+                              objects_removed_.push_back (obj->get_uuid ());
+                            }
+                        }
+                      /* if object starts and ends inside the range and is
+                       * deletable, delete */
+                      else if (ends_inside_range && obj->is_deletable ())
+                        {
+                          // TODO: actually remove
+                          objects_removed_.push_back (obj->get_uuid ());
+                        }
+                      /* object starts at or after range start - only needs a
+                       * move */
+                      else
+                        {
+                          obj->move (-range_size_ticks);
+                          objects_moved_.push_back (obj->get_uuid ());
+
+                          /* move objects to bar 1 if negative pos */
+                          Position init_pos;
+                          if (obj->pos_ < init_pos)
+                            {
+                              z_debug ("moving object back");
+                              obj->move (-obj->pos_->ticks_);
+                            }
+
+                          obj->setSelected (true);
+                        }
+                    },
+                    obj_var);
+                }
+            }
+          break;
+        default:
+          break;
+        }
+    } // endif not first run
+
+  switch (type_)
+    {
+    case Type::InsertSilence:
+      MOVE_TRANSPORT_MARKERS (*this, true);
       break;
     case Type::Remove:
-      if (first_run_)
-        {
-          for (auto &obj_var : std::ranges::reverse_view (before_objs_arr))
-            {
-              std::visit (
-                [&] (auto &&obj) {
-                  using ObjT = base_type<decltype (obj)>;
-                  z_debug (
-                    "looping backwards. current object {}",
-                    obj->print_to_str ());
-
-                  obj->flags_ |= ArrangerObject::Flags::NonProject;
-
-                  /* get project object */
-                  auto prj_obj = std::get<ObjT *> (*obj->find_in_project ());
-
-                  bool ends_inside_range = false;
-                  if constexpr (std::derived_from<ObjT, LengthableObject>)
-                    {
-                      ends_inside_range =
-                        *prj_obj->pos_ >= start_pos_
-                        && prj_obj->end_pos_ < end_pos_;
-                    }
-                  else
-                    {
-                      ends_inside_range =
-                        *prj_obj->pos_ >= start_pos_
-                        && *prj_obj->pos_ < end_pos_;
-                    }
-
-                  /* object starts before the range and ends after the range
-                   * start - split at range start */
-                  if (need_split_at_pos (*prj_obj, start_pos_))
-                    {
-                      if constexpr (std::derived_from<ObjT, LengthableObject>)
-                        {
-                          /* split at range start */
-                          auto [part1, part2] = LengthableObject::split (
-                            *obj, start_pos_, false, false);
-
-                          /* if part 2 extends beyond the range end, split it
-                           * and remove the part before range end */
-                          if (need_split_at_pos (*part2, end_pos_))
-                            {
-                              // part3 will be discared
-                              auto [part3, part4] = LengthableObject::split (
-                                *part2, end_pos_, false, false);
-                              part2->deleteLater ();
-                              part2 = part4;
-                            }
-                          /* otherwise remove the whole part2 */
-                          else
-                            {
-                              part2->deleteLater ();
-                              part2 = nullptr;
-                            }
-
-                          /* if a part2 exists, move it back */
-                          if (part2)
-                            {
-                              part2->move (-range_size_ticks);
-                            }
-
-                          /* remove previous object */
-                          prj_obj->remove_from_project (true);
-
-                          /* create clones and add to project */
-                          auto prj_part1 = std::get<ObjT *> (
-                            part1->add_clone_to_project (false));
-                          add_after (*prj_part1, part1);
-
-                          if (part2)
-                            {
-                              auto prj_part2 = std::get<ObjT *> (
-                                part2->add_clone_to_project (false));
-                              z_debug ("object split to the following:");
-                              prj_part1->print ();
-                              prj_part2->print ();
-
-                              add_after (*prj_part2, part2);
-                            }
-                          else
-                            {
-                              z_debug ("object split to just:");
-                              prj_part1->print ();
-                            }
-                        }
-                      else
-                        {
-                          z_return_if_reached ();
-                        }
-                    }
-                  /* object starts before the range end and ends after the range
-                   * end
-                   * - split at range end */
-                  else if (need_split_at_pos (*prj_obj, end_pos_))
-                    {
-                      if constexpr (std::derived_from<ObjT, LengthableObject>)
-                        {
-                          /* split at range end */
-                          // part1 will be discarded
-                          auto [part1, part2] = LengthableObject::split (
-                            *obj, end_pos_, false, false);
-
-                          /* move part2 by the range amount */
-                          part2->move (-range_size_ticks);
-
-                          /* remove previous object */
-                          prj_obj->remove_from_project (true);
-
-                          /* create clones and add to project */
-                          auto prj_part2 = std::get<ObjT *> (
-                            part2->add_clone_to_project (false));
-                          add_after (*prj_part2, std::move (part2));
-
-                          z_debug ("object split to just:");
-                          prj_part2->print ();
-                        }
-                      else
-                        {
-                          z_return_if_reached ();
-                        }
-                    }
-                  /* object starts and ends inside range and not marker
-                   * start/end - delete */
-                  else if (ends_inside_range
-              && !(prj_obj->is_marker() && (dynamic_cast<Marker&>(*prj_obj).marker_type_ == Marker::Type::Start || dynamic_cast<Marker&>(*prj_obj).marker_type_ == Marker::Type::End)))
-                    {
-                      z_debug ("removing object:");
-                      prj_obj->print ();
-                      prj_obj->remove_from_project (true);
-                    }
-                  /* object starts at or after range start - only needs a move */
-                  else
-                    {
-                      prj_obj->move (-range_size_ticks);
-
-                      /* move objects to bar 1 if negative pos */
-                      Position init_pos;
-                      if (prj_obj->pos_ < init_pos)
-                        {
-                          z_debug ("moving object back");
-                          prj_obj->move (-prj_obj->pos_->ticks_);
-                        }
-
-                      /* clone and add to sel_after */
-                      add_after (*prj_obj, prj_obj->clone_raw_ptr ());
-                    }
-                },
-                obj_var);
-            }
-          first_run_ = false;
-        }
-      else /* not first run */
-           /* remove all matching project objects from sel_before_ */
-           for (auto &obj_var : std::ranges::reverse_view (before_objs_arr))
-             {
-               std::visit (
-                 [&] (auto &&obj) {
-                   using ObjT = base_type<decltype (obj)>;
-                   auto prj_obj = std::get<ObjT *> (*obj->find_in_project ());
-                   prj_obj->remove_from_project (true);
-                 },
-                 obj_var);
-             }
-      /* insert clones of all objects from sel_after_ to the project */
-      for (auto &obj_var : after_objs_arr)
-        {
-          std::visit (
-            [&] (auto &&obj) { obj->insert_clone_to_project (); }, obj_var);
-        }
-
-      /* move transport markers */
-      UNMOVE_TRANSPORT_MARKERS (true);
-      break;
-    default:
+      UNMOVE_TRANSPORT_MARKERS (*this, true);
       break;
     }
 
-  for (size_t i = 0; i < prj_objs.size (); ++i)
-    {
-      z_debug ("copying {}", i);
-      prj_objs[i]->print ();
-      after_objs_for_prj[i]->copy_identifier (*prj_objs[i]);
-    }
-
+  first_run_ = false;
   /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_ACTION_FINISHED, nullptr); */
   /* EVENTS_PUSH (EventType::ET_PLAYHEAD_POS_CHANGED_MANUALLY, nullptr); */
 }
@@ -429,41 +377,35 @@ void
 RangeAction::undo_impl ()
 {
   /* sort the selections in ascending order */
-  sel_before_->sort_by_indices (false);
-  sel_after_->sort_by_indices (false);
+  // sel_before_->sort_by_indices (false);
+  // sel_after_->sort_by_indices (false);
 
-  auto  &before_objs_arr = sel_before_->objects_;
-  auto  &after_objs_arr = sel_after_->objects_;
-  double range_size_ticks = end_pos_.ticks_ - start_pos_.ticks_;
+  const auto range_size_ticks = get_range_size_in_ticks ();
 
-  /* remove all matching project objects from sel_after */
-  for (auto &obj_var : std::ranges::reverse_view (after_objs_arr))
+  /* remove all objects added during perform() */
+  for (
+    const auto &obj_var : std::ranges::reverse_view (ArrangerObjectRegistrySpan{
+      PROJECT->get_arranger_object_registry (), objects_added_ }))
     {
       std::visit (
-        [&] (auto &&obj) {
-          using ObjT = base_type<decltype (obj)>;
-          /* get project object and remove it from the project */
-          auto prj_obj = std::get<ObjT *> (*obj->find_in_project ());
-          prj_obj->remove_from_project (true);
-
-          z_debug ("removing project equivalent object of:");
-          obj->print ();
-        },
-        obj_var);
+        [&] (auto &&obj) { obj->remove_from_project (true); }, obj_var);
     }
-  /* add all objects from sel_before */
-  for (auto &obj_var : before_objs_arr)
+
+  // move all moved objects backwards
+  for (
+    const auto &obj_var : std::ranges::reverse_view (ArrangerObjectRegistrySpan{
+      PROJECT->get_arranger_object_registry (), objects_moved_ }))
+    {
+      std::visit ([&] (auto &&obj) { obj->move (-range_size_ticks); }, obj_var);
+    }
+  // add back objects taht were removed
+  for (
+    const auto &obj_var : ArrangerObjectRegistrySpan{
+      PROJECT->get_arranger_object_registry (), objects_removed_ })
     {
       std::visit (
         [&] (auto &&obj) {
-          using ObjT = base_type<decltype (obj)>;
-          /* clone object and add to project */
-          auto prj_obj = std::get<ObjT *> (obj->insert_clone_to_project ());
-
-          z_debug ("adding");
-          obj->print ();
-          z_debug ("after adding");
-          prj_obj->print ();
+          // TODO: add to project
         },
         obj_var);
     }
@@ -472,10 +414,10 @@ RangeAction::undo_impl ()
   switch (type_)
     {
     case Type::InsertSilence:
-      UNMOVE_TRANSPORT_MARKERS (false);
+      UNMOVE_TRANSPORT_MARKERS (*this, false);
       break;
     case Type::Remove:
-      MOVE_TRANSPORT_MARKERS (false);
+      MOVE_TRANSPORT_MARKERS (*this, false);
       break;
     default:
       break;
@@ -498,3 +440,5 @@ RangeAction::to_string () const
       z_return_val_if_reached ({});
     }
 }
+
+#undef _MOVE_TRANSPORT_MARKER

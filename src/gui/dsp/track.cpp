@@ -633,16 +633,16 @@ Track::unselect_all ()
   if (is_auditioner ())
     return;
 
-  std::vector<ArrangerObject *> objs;
+  std::vector<ArrangerObjectPtrVariant> objs;
   append_objects (objs);
-  for (auto obj : objs)
+  for (auto obj_var : objs)
     {
-      obj->select (false, false, false);
+      std::visit ([&] (auto &&obj) { obj->setSelected (false); }, obj_var);
     }
 }
 
 void
-Track::append_objects (std::vector<ArrangerObject *> &objs) const
+Track::append_objects (std::vector<ArrangerObjectPtrVariant> &objs) const
 {
   std::visit (
     [&] (auto &&self) {
@@ -730,15 +730,19 @@ Track::update_positions (bool from_ticks, bool bpm_change, double frames_per_tic
       return;
     }
 
-  std::vector<ArrangerObject *> objects;
+  std::vector<ArrangerObjectPtrVariant> objects;
   append_objects (objects);
-  for (auto obj : objects)
+  for (auto obj_var : objects)
     {
-      if (ZRYTHM_TESTING)
-        obj->validate (is_in_active_project (), 0);
-      obj->update_positions (from_ticks, bpm_change, frames_per_tick);
-      if (ZRYTHM_TESTING)
-        obj->validate (is_in_active_project (), 0);
+      std::visit (
+        [&] (auto &&obj) {
+          if (ZRYTHM_TESTING)
+            obj->validate (is_in_active_project (), 0);
+          obj->update_positions (from_ticks, bpm_change, frames_per_tick);
+          if (ZRYTHM_TESTING)
+            obj->validate (is_in_active_project (), 0);
+        },
+        obj_var);
     }
 }
 
@@ -1093,25 +1097,29 @@ Track::get_total_bars (const Transport &transport, int total_bars) const
   pos.from_bars (
     total_bars, transport.ticks_per_bar_, AUDIO_ENGINE->frames_per_tick_);
 
-  std::vector<ArrangerObject *> objs;
+  std::vector<ArrangerObjectPtrVariant> objs;
   append_objects (objs);
 
-  for (auto obj : objs)
+  for (auto obj_var : objs)
     {
-      Position end_pos;
-      if (obj->has_length ())
-        {
-          auto lobj = dynamic_cast<const LengthableObject *> (obj);
-          lobj->get_end_pos (&end_pos);
-        }
-      else
-        {
-          obj->get_pos (&end_pos);
-        }
-      if (end_pos > pos)
-        {
-          pos = end_pos;
-        }
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjT = base_type<decltype (obj)>;
+          Position end_pos;
+          if constexpr (std::derived_from<ObjT, BoundedObject>)
+            {
+              obj->get_end_pos (&end_pos);
+            }
+          else
+            {
+              obj->get_pos (&end_pos);
+            }
+          if (end_pos > pos)
+            {
+              pos = end_pos;
+            }
+        },
+        obj_var);
     }
 
   int new_total_bars = pos.get_total_bars (

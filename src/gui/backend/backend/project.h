@@ -5,13 +5,8 @@
 #define GUI_BACKEND_PROJECT_H
 
 #include "gui/backend/backend/actions/undo_manager.h"
-#include "gui/backend/backend/audio_selections.h"
-#include "gui/backend/backend/automation_selections.h"
-#include "gui/backend/backend/chord_selections.h"
 #include "gui/backend/backend/clip_editor.h"
-#include "gui/backend/backend/midi_selections.h"
 #include "gui/backend/backend/timeline.h"
-#include "gui/backend/backend/timeline_selections.h"
 #include "gui/backend/tool.h"
 #include "gui/dsp/engine.h"
 #include "gui/dsp/midi_mapping.h"
@@ -107,18 +102,6 @@ class Project final
   Q_PROPERTY (Tracklist * tracklist READ getTracklist CONSTANT FINAL)
   Q_PROPERTY (Timeline * timeline READ getTimeline CONSTANT FINAL)
   Q_PROPERTY (Transport * transport READ getTransport CONSTANT FINAL)
-  Q_PROPERTY (
-    AutomationSelections * automationSelections READ getAutomationSelections
-      CONSTANT FINAL)
-  Q_PROPERTY (
-    AudioSelections * audioSelections READ getAudioSelections CONSTANT FINAL)
-  Q_PROPERTY (
-    MidiSelections * midiSelections READ getMidiSelections CONSTANT FINAL)
-  Q_PROPERTY (
-    ChordSelections * chordSelections READ getChordSelections CONSTANT FINAL)
-  Q_PROPERTY (
-    TimelineSelections * timelineSelections READ getTimelineSelections CONSTANT
-      FINAL)
   Q_PROPERTY (gui::backend::Tool * tool READ getTool CONSTANT FINAL)
   Q_PROPERTY (
     gui::actions::UndoManager * undoManager READ getUndoManager CONSTANT FINAL)
@@ -130,6 +113,7 @@ public:
   using PluginIdentifier = dsp::PluginIdentifier;
   using PluginPtrVariant = gui::old_dsp::plugins::PluginPtrVariant;
   using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
+  using ArrangerObjectRegistry = ArrangerObjectRegistry;
 
 public:
   Project (QObject * parent = nullptr);
@@ -174,12 +158,7 @@ public:
   void    setDirectory (const QString &directory);
   Tracklist * getTracklist () const;
   Timeline *  getTimeline () const;
-  Transport * getTransport () const;
-  AutomationSelections * getAutomationSelections () const;
-  AudioSelections *      getAudioSelections () const;
-  MidiSelections *       getMidiSelections () const;
-  ChordSelections *      getChordSelections () const;
-  TimelineSelections *   getTimelineSelections () const;
+  Transport *                 getTransport () const;
   gui::backend::Tool *        getTool () const;
   gui::actions::UndoManager * getUndoManager () const;
 
@@ -221,9 +200,6 @@ public:
    */
   bool fix_audio_regions ();
 
-  std::optional<ArrangerSelectionsPtrVariant>
-  get_arranger_selections_for_last_selection ();
-
   /**
    * Saves the project to a project file in the given dir.
    *
@@ -257,15 +233,6 @@ public:
    * @throw ZrythmException If the directories cannot be created.
    */
   void make_project_dirs (bool is_backup);
-
-  /**
-   * Initializes the selections in the project.
-   *
-   * @param including_arranger_selections Whether to also initialize the
-   * arranger selections to zero (sometimes we want to keep them, eg, when this
-   * is called after deserialization of a project to load).
-   */
-  ATTR_COLD void init_selections (bool including_arranger_selections = true);
 
   /**
    * Compresses/decompress a project from a file/data to a file/data.
@@ -382,6 +349,10 @@ public:
   auto &get_track_registry () const { return *track_registry_; }
   auto &get_plugin_registry () const { return *plugin_registry_; }
   auto &get_port_registry () const { return *port_registry_; }
+  auto &get_arranger_object_registry () const
+  {
+    return *arranger_object_registry_;
+  }
 
   /**
    * Finds the Port corresponding to the identifier.
@@ -404,6 +375,12 @@ public:
   std::optional<TrackPtrVariant> find_track_by_id (Track::Uuid id) const
   {
     return get_track_registry ().find_by_id (id);
+  }
+
+  std::optional<ArrangerObjectPtrVariant>
+  find_arranger_object_by_id (ArrangerObject::Uuid id) const
+  {
+    return get_arranger_object_registry ().find_by_id (id);
   }
 
   std::string print_port_connection (const PortConnection &conn) const;
@@ -495,6 +472,7 @@ private:
 private:
   PortRegistry *   port_registry_{};
   PluginRegistry * plugin_registry_{};
+  ArrangerObjectRegistry * arranger_object_registry_{};
   TrackRegistry *  track_registry_{};
 
 public:
@@ -581,33 +559,6 @@ public:
   double piano_roll_zoom_ = 0;
   double timeline_zoom_ = 0;
 
-  /**
-   * Selected MidiNote's in the MidiArrangerWidget.
-   */
-  MidiSelections * midi_selections_ = nullptr;
-
-  /**
-   * Selected objects in the TimelineArrangerWidget.
-   */
-  TimelineSelections * timeline_selections_ = nullptr;
-
-  /**
-   * Selected objects in the
-   * ChordObjectArrangerWidget.
-   */
-  ChordSelections * chord_selections_ = nullptr;
-
-  /**
-   * Selected objects in the audio editor.
-   */
-  AudioSelections * audio_selections_ = nullptr;
-
-  /**
-   * Selected objects in the
-   * AutomationArrangerWidget.
-   */
-  AutomationSelections * automation_selections_ = nullptr;
-
   /** Manager for region link groups. */
   RegionLinkGroupManager region_link_group_manager_;
 
@@ -627,7 +578,7 @@ public:
   Timeline * timeline_ = nullptr;
 
   /** Backend for the widget. */
-  ClipEditor clip_editor_;
+  ClipEditor * clip_editor_;
 
   /** MIDI bindings. */
   std::unique_ptr<MidiMappings> midi_mappings_;
@@ -635,10 +586,7 @@ public:
   /**
    * @brief Tracklist.
    *
-   * Shared with @ref tracklist_selections_.
-   *
-   * must be free'd before tracklist selections, mixer selections, engine,
-   * and port connection manager
+   * Must be free'd before engine and port connection manager.
    */
   Tracklist * tracklist_ = nullptr;
 

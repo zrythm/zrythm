@@ -107,40 +107,37 @@ public:
     return compare_frames (p1, p2) > 0 ? p1 : p2;
   }
 
-  inline bool is_positive () const { return frames_ >= 0 && ticks_ >= 0; }
+  bool is_positive () const { return frames_ >= 0 && ticks_ >= 0; }
 
   /**
    * Whether the position starts on or after @p f1 and before @p f2 (ie, the
    * position is between @p f1 and @p f2, exclusive of f2).
    */
-  inline bool
-  is_between_frames_excluding_2nd (signed_frame_t f1, signed_frame_t f2) const
-  {
-    return frames_ >= f1 && frames_ < f2;
+   bool
+   is_between_frames_excluding_2nd (signed_frame_t f1, signed_frame_t f2) const
+   {
+     return frames_ >= f1 && frames_ < f2;
   }
 
   /** Returns if the position is after or equal to @p start and before @p end. */
-  inline bool
-  is_between_excl_2nd (const Position &start, const Position &end) const
+  bool is_between_excl_2nd (const Position &start, const Position &end) const
   {
     return is_between_frames_excluding_2nd (start.frames_, end.frames_);
   }
 
   /** Returns if the position is after or equal to @p start and before or equal
    * to @p end (ie, inclusive of @p end). */
-  inline bool
-  is_between_incl_2nd (const Position &start, const Position &end) const
+  bool is_between_incl_2nd (const Position &start, const Position &end) const
   {
     return frames_ >= start.frames_ && frames_ <= end.frames_;
   }
 
-  inline bool
-  is_between_excl_both (const Position &start, const Position &end) const
+  bool is_between_excl_both (const Position &start, const Position &end) const
   {
     return frames_ > start.frames_ && frames_ < end.frames_;
   }
 
-  inline bool
+  bool
   is_between_excl_1st_incl_2nd (const Position &start, const Position &end) const
   {
     return frames_ > start.frames_ && frames_ <= end.frames_;
@@ -155,7 +152,7 @@ public:
    * Adds the frames to the position and updates the rest of the fields, and
    * makes sure the frames are still accurate.
    */
-  inline void add_frames (signed_frame_t frames, double ticks_per_frame)
+  void add_frames (signed_frame_t frames, double ticks_per_frame)
   {
     frames_ += frames;
     update_ticks_from_frames (ticks_per_frame);

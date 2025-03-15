@@ -4,7 +4,7 @@
 #ifndef __GUI_BACKEND_CLIPBOARD_H__
 #define __GUI_BACKEND_CLIPBOARD_H__
 
-#include "gui/backend/backend/arranger_selections.h"
+#include "gui/dsp/arranger_object_span.h"
 #include "gui/dsp/track_span.h"
 
 /**
@@ -14,8 +14,7 @@
 /**
  * Clipboard struct.
  */
-class Clipboard
-  final : public zrythm::utils::serialization::ISerializable<Clipboard>
+class Clipboard final : public utils::serialization::ISerializable<Clipboard>
 {
 public:
   using PluginUuid = Plugin::PluginUuid;
@@ -25,23 +24,24 @@ public:
    */
   enum class Type
   {
-    TimelineSelections,
-    MidiSelections,
-    AutomationSelections,
-    ChordSelections,
-    AudioSelections,
-    PluginSelections,
-    TrackCollection,
+    ArrangerObjects,
+    Plugins,
+    Tracks,
   };
 
 public:
   Clipboard () = default;
-  Clipboard (const ArrangerSelections &sel);
+  Clipboard (std::ranges::range auto arranger_objects)
+    requires std::is_same_v<decltype (*arranger_objects.begin ()), ArrangerObjectPtrVariant>
+      : type_ (Type::ArrangerObjects),
+        arranger_objects_ (std::ranges::to (arranger_objects))
+  {
+  }
 
   Clipboard (std::ranges::range auto plugins)
     requires std::is_same_v<decltype (*plugins.begin ()), PluginPtrVariant>
 
-      : type_ (Type::PluginSelections), plugins_ (std::ranges::to (plugins))
+      : type_ (Type::Plugins), plugins_ (std::ranges::to (plugins))
   {
   }
 
@@ -53,15 +53,9 @@ public:
    */
   Clipboard (std::ranges::range auto tracks)
     requires std::is_same_v<decltype (*tracks.begin ()), TrackPtrVariant>
-      : type_ (Type::TrackCollection), tracks_ (std::ranges::to (tracks))
+      : type_ (Type::Tracks), tracks_ (std::ranges::to (tracks))
   {
   }
-
-  /**
-   * Gets the ArrangerSelections, if this clipboard contains arranger
-   * selections.
-   */
-  ArrangerSelections * get_selections () const;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -69,13 +63,10 @@ public:
   int         get_format_major_version () const override { return 3; }
   int         get_format_minor_version () const override { return 0; }
 
-private:
-  void set_type_from_arranger_selections (const ArrangerSelections &sel);
-
 public:
   Type                                 type_{};
-  std::unique_ptr<ArrangerSelections>  arranger_sel_;
-  std::vector<Track::TrackUuid>        tracks_;
+  std::vector<ArrangerObject::Uuid>    arranger_objects_;
+  std::vector<Track::Uuid>             tracks_;
   std::vector<PluginUuid>              plugins_;
 };
 

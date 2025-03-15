@@ -8,6 +8,7 @@
 #include "gui/backend/backend/automation_editor.h"
 #include "gui/backend/backend/chord_editor.h"
 #include "gui/backend/backend/piano_roll.h"
+#include "gui/dsp/arranger_object_span.h"
 #include "gui/dsp/region.h"
 #include "gui/dsp/region_identifier.h"
 
@@ -19,21 +20,34 @@ class ArrangerSelections;
  * @{
  */
 
-#define CLIP_EDITOR (&PROJECT->clip_editor_)
+#define CLIP_EDITOR (PROJECT->clip_editor_)
 
 /**
  * Clip editor serializable backend.
  *
  * The actual widgets should reflect the information here.
  */
-class ClipEditor
-  final : public zrythm::utils::serialization::ISerializable<ClipEditor>
+class ClipEditor final
+    : public QObject,
+      public zrythm::utils::serialization::ISerializable<ClipEditor>,
+      public ICloneable<ClipEditor>
 {
-  // Q_OBJECT
-  // QML_ELEMENT
+  Q_OBJECT
+  QML_ELEMENT
   // TODO
   // Q_PROPERTY(QVariant region READ get_region NOTIFY regionChanged)
 public:
+  ClipEditor (const DeserializationDependencyHolder &dh)
+      : ClipEditor (
+          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get ())
+  {
+  }
+
+  ClipEditor (ArrangerObjectRegistry &reg, QObject * parent = nullptr)
+      : QObject (parent), object_registry_ (reg)
+  {
+  }
+
   /**
    * Inits the ClipEditor after a Project is loaded.
    */
@@ -46,40 +60,24 @@ public:
 
   /**
    * Sets the track and refreshes the piano roll widgets.
-   *
-   * To be called only from GTK threads.
    */
-  void
-  set_region (std::optional<RegionPtrVariant> region_opt_var, bool fire_events);
+  void set_region (Region::Uuid region_id) { region_id_ = region_id; };
+  void unset_region () { region_id_.reset (); }
+
+  bool has_region () const { return region_id_.has_value (); }
 
   std::optional<RegionPtrVariant> get_region () const;
+  std::optional<Region::Uuid> get_region_id () const {return region_id_;}
 
-  std::optional<ClipEditorArrangerSelectionsPtrVariant>
-  get_arranger_selections ();
+  // ArrangerObjectRegistrySpan get_arranger_selections ();
 
   std::optional<TrackPtrVariant> get_track () const;
 
-  std::optional<Region::TrackUuid> get_track_id () const
-  {
-    return has_region_ ? std::make_optional (region_id_.track_uuid_) : std::nullopt;
-  }
-
+  std::optional<Region::TrackUuid> get_track_id () const;
   /**
    * @brief Unsets the region if it belongs to the given track.
    */
-  void
-  unset_region_if_belongs_to_track (Region::TrackUuid track_id, bool fire_events)
-  {
-    if (!has_region_)
-      {
-        return;
-      }
-
-    if (region_id_.track_uuid_ == track_id)
-      {
-        set_region (std::nullopt, fire_events);
-      }
-  }
+  void unset_region_if_belongs_to_track (const Region::TrackUuid &track_id);
 
   /**
    * To be called when recalculating the graph.
@@ -88,12 +86,19 @@ public:
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
+  void init_after_cloning (const ClipEditor &other, ObjectCloneType clone_type)
+    override
+  {
+    region_id_ = other.region_id_;
+    audio_clip_editor_ = other.audio_clip_editor_;
+    automation_editor_ = other.automation_editor_;
+    chord_editor_ = other.chord_editor_;
+    track_ = other.track_;
+  }
+
 public:
   /** Region currently attached to the clip editor. */
-  RegionIdentifier region_id_;
-
-  /** Whether @ref region_id is a valid region. */
-  bool has_region_ = false;
+  std::optional<ArrangerObject::Uuid> region_id_;
 
   PianoRoll        piano_roll_;
   AudioClipEditor  audio_clip_editor_;
@@ -101,9 +106,11 @@ public:
   ChordEditor      chord_editor_;
 
   /* --- caches --- */
-  std::optional<RegionPtrVariant> region_;
+  // std::optional<RegionPtrVariant> region_;
 
   std::optional<TrackPtrVariant> track_;
+
+  ArrangerObjectRegistry &object_registry_;
 };
 
 /**

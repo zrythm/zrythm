@@ -5,27 +5,27 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/ui.h"
-#include "gui/dsp/nameable_object.h"
-
+#include "gui/dsp/named_object.h"
 #include "utils/rt_thread_id.h"
+
 #include <fmt/printf.h>
 
 using namespace zrythm;
 
 void
-NameableObject::gen_escaped_name ()
+NamedObject::gen_escaped_name ()
 {
   escaped_name_ = QString::fromStdString (name_).toHtmlEscaped ().toStdString ();
 }
 
 void
-NameableObject::init_loaded_base ()
+NamedObject::init_loaded_base ()
 {
   gen_escaped_name ();
 }
 
 void
-NameableObject::set_name (const std::string &name, bool fire_events)
+NamedObject::set_name (const std::string &name, bool fire_events)
 {
   name_ = name;
   gen_escaped_name ();
@@ -36,12 +36,12 @@ NameableObject::set_name (const std::string &name, bool fire_events)
         [&] (auto &&obj) {
           Q_EMIT (obj->nameChanged (QString::fromStdString (name)));
         },
-        convert_to_variant<NameableObjectPtrVariant> (this));
+        convert_to_variant<NamedObjectPtrVariant> (this));
     }
 }
 
 void
-NameableObject::set_name_with_action (const std::string &name)
+NamedObject::set_name_with_action (const std::string &name)
 {
   /* validate */
   if (!validate_name (name))
@@ -66,7 +66,7 @@ NameableObject::set_name_with_action (const std::string &name)
         {
           UNDO_MANAGER->perform (
             gui::actions::EditArrangerSelectionsAction::create (
-              *self, *clone_obj,
+              ArrangerObjectSpan{ self }, ArrangerObjectSpan{ clone_obj.get () },
               gui::actions::ArrangerSelectionsAction::EditType::Name, false)
               .release ());
         }
@@ -75,5 +75,5 @@ NameableObject::set_name_with_action (const std::string &name)
           e.handle (QObject::tr ("Failed to rename object"));
         }
     },
-    convert_to_variant<NameableObjectPtrVariant> (this));
+    convert_to_variant<NamedObjectPtrVariant> (this));
 }

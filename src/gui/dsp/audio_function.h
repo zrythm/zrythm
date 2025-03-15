@@ -12,9 +12,8 @@
 #ifndef __AUDIO_AUDIO_FUNCTION_H__
 #define __AUDIO_AUDIO_FUNCTION_H__
 
-#include "gui/backend/backend/audio_selections.h"
+#include "gui/dsp/arranger_object.h"
 #include "gui/dsp/plugin.h"
-
 #include "utils/format.h"
 #include "utils/logger.h"
 
@@ -109,7 +108,9 @@ audio_function_get_plugin_uri_for_type (AudioFunctionType type)
  */
 void
 audio_function_apply (
-  AudioSelections           &sel,
+  ArrangerObject::Uuid       region_id,
+  const dsp::Position       &sel_start,
+  const dsp::Position       &sel_end,
   AudioFunctionType          type,
   AudioFunctionOpts          opts,
   std::optional<std::string> uri);

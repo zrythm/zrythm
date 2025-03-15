@@ -44,9 +44,8 @@ LaneOwnedObjectImpl<RegionT>::set_lane (TrackLaneT &lane)
 
   owner_lane_ = &lane;
 
-  if (is_region ())
+  if (auto * region = dynamic_cast<Region *> (this))
     {
-      auto region = dynamic_cast<Region *> (this);
       region->id_.lane_pos_ = lane.pos_;
       region->id_.track_uuid_ = lane.track_->get_uuid ();
     }

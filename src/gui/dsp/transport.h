@@ -7,13 +7,12 @@
 #include "dsp/itransport.h"
 #include "dsp/position.h"
 #include "gui/backend/position_proxy.h"
+#include "gui/dsp/arranger_object_span.h"
 #include "gui/dsp/midi_port.h"
 #include "gui/dsp/port.h"
 #include "utils/types.h"
 
-class TimelineSelections;
 class Marker;
-class ArrangerSelections;
 class TempoTrack;
 class Project;
 TYPEDEF_STRUCT_UNDERSCORED (ArrangerWidget);
@@ -229,7 +228,8 @@ public:
    *   are used. If non-nullptr, only the regions in the
    *   selections are used.
    */
-  void prepare_audio_regions_for_stretch (TimelineSelections * sel);
+  void prepare_audio_regions_for_stretch (
+    std::optional<ArrangerObjectSpanVariant> sel_var);
 
   /**
    * Stretches regions.
@@ -247,10 +247,10 @@ public:
    * @throw ZrythmException if stretching fails.
    */
   void stretch_regions (
-    TimelineSelections * sel,
-    bool                 with_fixed_ratio,
-    double               time_ratio,
-    bool                 force);
+    std::optional<ArrangerObjectSpanVariant> sel_var,
+    bool                                     with_fixed_ratio,
+    double                                   time_ratio,
+    bool                                     force);
 
   void set_punch_mode_enabled (bool enabled);
 
@@ -464,8 +464,11 @@ frames_add_frames (
    *
    * @param sel If given, only these objects will be checked, otherwise every
    * object in the project will be checked.
+   *
+   * FIXME: use signals to update the total bars.
    */
-  void recalculate_total_bars (ArrangerSelections * sel);
+  void recalculate_total_bars (
+    std::optional<ArrangerObjectSpanVariant> objects = std::nullopt);
 
   /**
    * Updates the total bars.

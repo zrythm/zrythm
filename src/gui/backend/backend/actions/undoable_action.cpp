@@ -119,7 +119,7 @@ UndoableAction::do_or_undo (bool perform)
   if (needs_transport_total_bar_update (perform))
     {
       /* recalculate transport bars */
-      TRANSPORT->recalculate_total_bars (nullptr);
+      TRANSPORT->recalculate_total_bars ();
     }
 
   if (affects_audio_region_internal_positions ())

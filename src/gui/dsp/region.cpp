@@ -152,7 +152,7 @@ RegionImpl<RegionT>::send_note_offs (
               if (mn->is_hit (frame_for_note_off))
                 {
                   midi_events.add_note_off (
-                    channel, mn->val_, midi_time_for_note_off);
+                    channel, mn->pitch_, midi_time_for_note_off);
                 }
             }
         }
@@ -208,7 +208,7 @@ RegionImpl<RegionT>::fill_midi_events (
             if constexpr (std::is_same_v<RegionT, MidiRegion>)
               {
                 midi_events.add_note_on (
-                  r->get_midi_ch (), obj.val_, obj.vel_->vel_, _time);
+                  r->get_midi_ch (), obj.pitch_, obj.vel_->vel_, _time);
               }
             else if constexpr (std::is_same_v<ObjectType, ChordObject>)
               {
@@ -247,7 +247,7 @@ RegionImpl<RegionT>::fill_midi_events (
 
             if constexpr (std::is_same_v<RegionT, MidiRegion>)
               {
-                midi_events.add_note_off (r->get_midi_ch (), obj.val_, _time);
+                midi_events.add_note_off (r->get_midi_ch (), obj.pitch_, _time);
               }
             else if constexpr (std::is_same_v<ObjectType, ChordObject>)
               {
@@ -416,7 +416,7 @@ RegionImpl<RegionT>::insert_clone_to_project_at_index (
     track_var);
 
   /* also set is as the clip editor region */
-  CLIP_EDITOR->set_region (ret, true);
+  CLIP_EDITOR->set_region (ret->get_uuid ());
   return ret;
 }
 
@@ -574,13 +574,13 @@ RegionImpl<
             == dynamic_cast<RegionT *> (this))
             {
               {
-                CLIP_EDITOR->set_region (self, true);
+                CLIP_EDITOR->set_region (self->get_uuid ());
               }
             }
         }
 
       /* reselect if necessary */
-      select (selected, true, false);
+      self->setSelected (selected);
 
       z_debug ("after: {}", print_to_str ());
 
@@ -605,20 +605,20 @@ RegionImpl<RegionT>::stretch (double ratio)
       auto objs = get_objects ();
       for (auto &obj : objs)
         {
+          using ObjT = base_type<decltype (obj)>;
           /* set start pos */
           double        before_ticks = obj->pos_->ticks_;
           double        new_ticks = before_ticks * ratio;
           dsp::Position tmp (new_ticks, AUDIO_ENGINE->frames_per_tick_);
           obj->pos_setter (&tmp);
 
-          if (obj->has_length ())
+          if constexpr (std::derived_from<ObjT, BoundedObject>)
             {
               /* set end pos */
-              auto lengthable_obj = dynamic_cast<LengthableObject *> (obj);
-              before_ticks = lengthable_obj->end_pos_->ticks_;
+              before_ticks = obj->end_pos_->ticks_;
               new_ticks = before_ticks * ratio;
               tmp = dsp::Position (new_ticks, AUDIO_ENGINE->frames_per_tick_);
-              lengthable_obj->end_pos_setter (&tmp);
+              obj->end_pos_setter (&tmp);
             }
         }
     }
@@ -914,7 +914,7 @@ RegionImpl<RegionT>::remove_object (ChildT &obj, bool free_obj, bool fire_events
   requires RegionWithChildren<RegionT>
 {
   /* deselect the object */
-  obj.select (false, true, false);
+  obj.setSelected (false);
 
   if constexpr (std::is_same_v<ChildT, AutomationPoint>)
     {
@@ -1176,34 +1176,24 @@ template <typename RegionT>
 void
 RegionImpl<RegionT>::disconnect_region ()
 {
-  auto clip_editor_region = CLIP_EDITOR->get_region ();
   if (
-    clip_editor_region.has_value ()
-    && std::holds_alternative<RegionT *> (clip_editor_region.value ()))
+    CLIP_EDITOR->has_region ()
+    && CLIP_EDITOR->get_region_id ().value () == get_uuid ())
     {
-      auto * this_region = dynamic_cast<RegionT *> (this);
-      if (this_region == std::get<RegionT *> (clip_editor_region.value ()))
-        CLIP_EDITOR->set_region (std::nullopt, true);
+      CLIP_EDITOR->unset_region ();
     }
 
-  if (TL_SELECTIONS)
-    {
-      TL_SELECTIONS->remove_object (*this);
-    }
+  auto self = dynamic_cast<RegionT *> (this);
+  self->setSelected (false);
 
   if constexpr (RegionWithChildren<RegionT>)
     {
       auto objs = get_objects ();
-      auto sel_opt = get_arranger_selections ();
-      z_return_if_fail (sel_opt.has_value ());
-      std::visit (
-        [&] (auto &&sel) {
+
           for (auto &obj : objs)
             {
-              sel->remove_object (*obj);
+              obj->setSelected (false);
             }
-        },
-        *sel_opt);
     }
 
 #if 0

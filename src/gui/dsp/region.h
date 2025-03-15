@@ -7,16 +7,15 @@
 #include <format>
 #include <memory>
 
+#include "dsp/position.h"
 #include "gui/dsp/arranger_object.h"
 #include "gui/dsp/automation_point.h"
 #include "gui/dsp/colored_object.h"
 #include "gui/dsp/loopable_object.h"
 #include "gui/dsp/muteable_object.h"
-#include "gui/dsp/nameable_object.h"
+#include "gui/dsp/named_object.h"
 #include "gui/dsp/region_identifier.h"
 #include "gui/dsp/timeline_object.h"
-
-#include "dsp/position.h"
 #include "utils/format.h"
 
 class Track;
@@ -78,28 +77,6 @@ region_type_can_fade (RegionType rtype)
 {
   return rtype == RegionType::Audio;
 }
-
-#if 0
-template <typename T> struct RegionTypeFromObject;
-
-template <> struct RegionTypeFromObject<MidiNote>
-{
-  using type = MidiRegion;
-};
-
-template <> struct RegionTypeFromObject<ChordObject>
-{
-  using type = ChordRegion;
-};
-
-template <> struct RegionTypeFromObject<AutomationPoint>
-{
-  using type = AutomationRegion;
-};
-
-template <typename T>
-using RegionTypeFromObject_t = typename RegionTypeFromObject<T>::type;
-#endif
 
 template <typename RegionT> struct RegionChildType;
 
@@ -165,7 +142,7 @@ concept RegionTypeWithMidiEvents =
  */
 class Region
     : virtual public TimelineObject,
-      virtual public NameableObject,
+      virtual public NamedObject,
       virtual public MuteableObject,
       virtual public LoopableObject,
       virtual public ColoredObject,
@@ -235,7 +212,7 @@ public:
     signed_frame_t * ret_frames,
     bool *           is_loop) const;
 
-  inline bool has_lane () const { return region_type_has_lane (id_.type_); }
+  bool has_lane () const { return region_type_has_lane (id_.type_); }
 
   /**
    * Generates a name for the Region, either using the given
@@ -259,12 +236,6 @@ public:
    * Returns if this region is currently being recorded onto.
    */
   bool is_recording ();
-
-  /**
-   * Returns the ArrangerSelections based on the given region type.
-   */
-  virtual std::optional<ClipEditorArrangerSelectionsPtrVariant>
-  get_arranger_selections () const = 0;
 
   bool can_have_lanes () const override
   {
@@ -577,18 +548,6 @@ private:
 public:
   RegionT &derived_ = static_cast<RegionT &> (*this);
 };
-
-#if 0
-/**
- * @brief Partial specialization with constraints.
- *
- * @tparam RegionT
- */
-template <typename RegionT>
-requires RegionSubclass<RegionT> class RegionImpl<RegionT>
-{
-};
-#endif
 
 template <typename RegionT>
 concept FinalRegionSubclass =

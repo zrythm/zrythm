@@ -7,6 +7,7 @@
 #include "dsp/curve.h"
 #include "dsp/position.h"
 #include "gui/dsp/arranger_object.h"
+#include "gui/dsp/bounded_object.h"
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/region_owned_object.h"
 #include "utils/icloneable.h"

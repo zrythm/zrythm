@@ -6,14 +6,14 @@
 
 #include "dsp/curve.h"
 #include "dsp/position.h"
-#include "gui/dsp/lengthable_object.h"
+#include "gui/dsp/bounded_object.h"
 
 using namespace zrythm;
 
 #define DEFINE_FADEABLE_OBJECT_QML_PROPERTIES(ClassType)
 
 class FadeableObject
-    : virtual public LengthableObject,
+    : virtual public BoundedObject,
       public zrythm::utils::serialization::ISerializable<FadeableObject>
 {
 public:

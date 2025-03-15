@@ -54,10 +54,12 @@ RecordingManager::handle_stop_recording (bool is_automation)
     "{}{}", "----- stopped recording", is_automation ? " (automation)" : "");
 
   /* cache the current selections */
-  auto prev_selections = TL_SELECTIONS->clone_unique ();
+  // TODO: selection logic
+  // auto prev_selections = TL_SELECTIONS->clone_unique ();
 
   /* select all the recorded regions */
-  TL_SELECTIONS->clear (false);
+  // TODO: selection logic
+  // TL_SELECTIONS->clear (false);
   for (auto &id : recorded_ids_)
     {
       if (
@@ -94,8 +96,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
       auto region_var = Region::find (id);
       z_return_if_fail (region_var);
       std::visit (
-        [&] (auto &&region) { TL_SELECTIONS->add_object_ref (*region); },
-        *region_var);
+        [&] (auto &&region) { region->setSelected (true); }, *region_var);
 
       if (is_automation)
         {
@@ -107,10 +108,13 @@ RecordingManager::handle_stop_recording (bool is_automation)
   /* perform the create action */
   try
     {
+// FIXME: refactor and reenable
+#if 0
       UNDO_MANAGER->perform (
         new gui::actions::ArrangerSelectionsAction::RecordAction (
           *dynamic_cast<TimelineSelections *> (selections_before_start_.get ()),
           *TL_SELECTIONS, true));
+#endif
     }
   catch (const ZrythmException &ex)
     {
@@ -138,7 +142,8 @@ RecordingManager::handle_stop_recording (bool is_automation)
         }
     }
 
-  /* restore the selections */
+/* TODO: restore the selections */
+#if 0
   TL_SELECTIONS->clear (false);
   for (auto &obj_var : prev_selections->objects_)
     {
@@ -155,6 +160,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
 
   /* free the temporary selections */
   selections_before_start_.reset ();
+#endif
 
   /* disarm transport record button */
   TRANSPORT->set_recording (false, true);
@@ -1092,7 +1098,15 @@ RecordingManager::handle_start_recording (
 
       if (num_active_recordings_ == 0)
         {
-          selections_before_start_ = TL_SELECTIONS->clone_unique ();
+// TODO
+#if 0
+          auto objs = TRACKLIST->get_timeline_objects_in_range ();
+          auto obj_span = ArrangerObjectSpan{
+            objs
+          } | std::views::filter (ArrangerObjectSpan::selected_projection);
+          objects_before_start_ =
+            ArrangerObjectSpan{ obj_span }.create_snapshots (this);
+#endif
         }
 
       /* this could be called multiple times, ignore if already processed */

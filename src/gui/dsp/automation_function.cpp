@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/arranger_selections.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/settings_manager.h"
@@ -14,57 +13,55 @@
 
 using namespace zrythm;
 
-static void
-flip (AutomationSelections * sel, bool vertical)
-{
-  for (
-    auto * ap : sel->get_object_span ().get_elements_by_type<AutomationPoint> ())
-    {
-      if (vertical)
-        {
-          ap->set_fvalue (1.f - ap->normalized_val_, true, false);
-          ap->curve_opts_.curviness_ = -ap->curve_opts_.curviness_;
-        }
-      else
-        {
-          /* TODO */
-        }
-    }
-}
-
-static void
-flatten (AutomationSelections * sel)
-{
-  for (
-    auto * ap : sel->get_object_span ().get_elements_by_type<AutomationPoint> ())
-    {
-
-      ap->curve_opts_.curviness_ = 1.0;
-      ap->curve_opts_.algo_ = dsp::CurveOptions::Algorithm::Pulse;
-    }
-}
-
 void
-automation_function_apply (AutomationSelections &sel, AutomationFunctionType type)
+AutomationFunction::apply (ArrangerObjectSpanVariant sel_var, Type type)
 {
   z_debug ("applying {}...", AutomationFunctionType_to_string (type));
 
-  switch (type)
-    {
-    case AutomationFunctionType::FlipHorizontal:
-      /* TODO */
-      break;
-    case AutomationFunctionType::FlipVertical:
-      flip (&sel, true);
-      break;
-    case AutomationFunctionType::Flatten:
-      flatten (&sel);
-      break;
-    }
+  std::visit (
+    [&] (auto &&sel) {
+      const auto flip = [&] (const bool vertical) {
+        for (auto * ap : sel.template get_elements_by_type<AutomationPoint> ())
+          {
+            if (vertical)
+              {
+                ap->set_fvalue (1.f - ap->normalized_val_, true, false);
+                ap->curve_opts_.curviness_ = -ap->curve_opts_.curviness_;
+              }
+            else
+              {
+                /* TODO */
+              }
+          }
+      };
 
-  /* set last action */
-  gui::SettingsManager::get_instance ()->set_lastAutomationFunction (
-    ENUM_VALUE_TO_INT (type));
+      const auto flatten = [&] () {
+        for (auto * ap : sel.template get_elements_by_type<AutomationPoint> ())
+          {
 
-  // EVENTS_PUSH (EventType::ET_EDITOR_FUNCTION_APPLIED, nullptr);
+            ap->curve_opts_.curviness_ = 1.0;
+            ap->curve_opts_.algo_ = dsp::CurveOptions::Algorithm::Pulse;
+          }
+      };
+
+      switch (type)
+        {
+        case Type::FlipHorizontal:
+          /* TODO */
+          break;
+        case Type::FlipVertical:
+          flip (true);
+          break;
+        case Type::Flatten:
+          flatten ();
+          break;
+        }
+
+      /* set last action */
+      gui::SettingsManager::get_instance ()->set_lastAutomationFunction (
+        ENUM_VALUE_TO_INT (type));
+
+      // EVENTS_PUSH (EventType::ET_EDITOR_FUNCTION_APPLIED, nullptr);
+    },
+    sel_var);
 }

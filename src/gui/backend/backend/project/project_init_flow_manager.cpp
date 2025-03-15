@@ -362,7 +362,7 @@ ProjectInitFlowManager::create_default (
 
   prj->loaded_ = true;
 
-  prj->clip_editor_.init ();
+  prj->clip_editor_->init ();
 
   prj->quantize_opts_timeline_->update_quantize_points (*prj->transport_);
   prj->quantize_opts_editor_->update_quantize_points (*prj->transport_);
@@ -630,7 +630,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
   /* set the tempo track */
   auto get_tempo_track = [] (auto &prj) -> TempoTrack * {
     return (prj->tracklist_->get_track_span ()
-            | std::views::filter (TrackSpan::is_type_projection<TempoTrack>)
+            | std::views::filter (TrackSpan::type_projection<TempoTrack>)
             | std::views::transform (TrackSpan::type_transformation<TempoTrack>)
             | std::views::take (1))
       .front ();
@@ -640,8 +640,6 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
   std::string filepath_noext = utils::io::path_get_basename (dir_);
 
   prj->title_ = filepath_noext;
-
-  prj->init_selections (false);
 
   auto engine = prj->audio_engine_.get ();
 
@@ -690,7 +688,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
       return;
     }
 
-  prj->clip_editor_.init_loaded ();
+  prj->clip_editor_->init_loaded ();
 
   auto * tracklist = prj->tracklist_;
   tracklist->init_loaded (prj->get_port_registry (), *prj);
@@ -715,24 +713,6 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
   /* note: when converting from older projects there may be no selections
    * (because it's too much work with little benefit to port the selections from
    * older projects) */
-
-  auto init_or_create_arr_selections = [&] (auto &selections) {
-    using T = base_type<decltype (selections)>;
-    if (selections)
-      {
-        selections->init_loaded (true, prj->audio_engine_->frames_per_tick_);
-      }
-    else
-      {
-        selections = new T (prj);
-      }
-  };
-
-  init_or_create_arr_selections (prj->audio_selections_);
-  init_or_create_arr_selections (prj->chord_selections_);
-  init_or_create_arr_selections (prj->automation_selections_);
-  init_or_create_arr_selections (prj->timeline_selections_);
-  init_or_create_arr_selections (prj->midi_selections_);
 
   prj->quantize_opts_timeline_->update_quantize_points (*prj->transport_);
   prj->quantize_opts_editor_->update_quantize_points (*prj->transport_);

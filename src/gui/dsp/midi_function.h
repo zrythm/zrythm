@@ -13,12 +13,11 @@
 #define __AUDIO_MIDI_FUNCTION_H__
 
 #include "dsp/curve.h"
+#include "gui/dsp/arranger_object_span.h"
 #include "utils/format.h"
 #include "utils/types.h"
 
 using namespace zrythm;
-
-class MidiSelections;
 
 /**
  * @addtogroup dsp
@@ -26,60 +25,58 @@ class MidiSelections;
  * @{
  */
 
-enum class MidiFunctionType
-{
-  Crescendo,
-  Flam,
-  FlipHorizontal,
-  FlipVertical,
-  Legato,
-  Portato,
-  Staccato,
-  Strum,
-};
-
-class MidiFunctionOpts
+class MidiFunction
 {
 public:
-  midi_byte_t start_vel_ = 0;
-  midi_byte_t end_vel_ = 0;
-  midi_byte_t vel_ = 0;
+  enum class Type
+  {
+    Crescendo,
+    Flam,
+    FlipHorizontal,
+    FlipVertical,
+    Legato,
+    Portato,
+    Staccato,
+    Strum,
+  };
 
-  bool   ascending_ = true;
-  double time_ = 0;
-  double amount_ = 0;
+  class Options
+  {
+  public:
+    midi_byte_t start_vel_ = 0;
+    midi_byte_t end_vel_ = 0;
+    midi_byte_t vel_ = 0;
 
-  dsp::CurveOptions::Algorithm curve_algo_{};
-  double                       curviness_{};
+    bool   ascending_ = true;
+    double time_ = 0;
+    double amount_ = 0;
+
+    dsp::CurveOptions::Algorithm curve_algo_{};
+    double                       curviness_{};
+  };
+
+  /**
+   * Returns a string identifier for the type.
+   */
+  static std::string type_to_string_id (Type type);
+
+  /**
+   * Returns a string identifier for the type.
+   */
+  static auto string_id_to_type (const char * id) -> Type;
+
+  /**
+   * Applies the given action to the given selections.
+   *
+   * @param sel Selections to edit.
+   * @param type Function type.
+   * @throw ZrythmException on error.
+   */
+  static void apply (ArrangerObjectSpanVariant sel, Type type, Options opts);
 };
 
-/**
- * Returns a string identifier for the type.
- */
-std::string
-midi_function_type_to_string_id (MidiFunctionType type);
-
-/**
- * Returns a string identifier for the type.
- */
-MidiFunctionType
-midi_function_string_id_to_type (const char * id);
-
-/**
- * Applies the given action to the given selections.
- *
- * @param sel Selections to edit.
- * @param type Function type.
- * @throw ZrythmException on error.
- */
-void
-midi_function_apply (
-  MidiSelections  &sel,
-  MidiFunctionType type,
-  MidiFunctionOpts opts);
-
 DEFINE_ENUM_FORMATTER (
-  MidiFunctionType,
+  MidiFunction::Type,
   MidiFunctionType,
   QT_TR_NOOP_UTF8 ("Crescendo"),
   QT_TR_NOOP_UTF8 ("Flam"),

@@ -26,7 +26,7 @@ public: \
   Q_SIGNAL void nameChanged (const QString &name);
 
 /**
- * @class NameableObject
+ * @class NamedObject
  * @brief Base class for objects that have a name.
  *
  * This class provides a common interface for objects that have a name. It
@@ -35,18 +35,18 @@ public: \
  *
  * Derived classes must implement the pure virtual methods defined in this class.
  */
-class NameableObject
+class NamedObject
     : virtual public ArrangerObject,
-      public zrythm::utils::serialization::ISerializable<NameableObject>
+      public zrythm::utils::serialization::ISerializable<NamedObject>
 {
 public:
-  NameableObject () noexcept = default;
-  NameableObject (std::string name) : name_ (std::move (name))
+  NamedObject () noexcept = default;
+  NamedObject (std::string name) : name_ (std::move (name))
   {
     gen_escaped_name ();
   }
-  Q_DISABLE_COPY_MOVE (NameableObject)
-  ~NameableObject () override = default;
+  Q_DISABLE_COPY_MOVE (NamedObject)
+  ~NamedObject () override = default;
 
   void init_loaded_base ();
 
@@ -89,8 +89,7 @@ public:
   std::string gen_human_friendly_name () const final { return name_; }
 
 protected:
-  void
-  copy_members_from (const NameableObject &other, ObjectCloneType clone_type)
+  void copy_members_from (const NamedObject &other, ObjectCloneType clone_type)
   {
     name_ = other.name_;
     escaped_name_ = other.escaped_name_;
@@ -107,13 +106,13 @@ public:
 };
 
 inline bool
-operator== (const NameableObject &lhs, const NameableObject &rhs)
+operator== (const NamedObject &lhs, const NamedObject &rhs)
 {
   return lhs.name_ == rhs.name_;
 }
 
-using NameableObjectVariant =
+using NamedObjectVariant =
   std::variant<MidiRegion, AudioRegion, ChordRegion, AutomationRegion, Marker>;
-using NameableObjectPtrVariant = to_pointer_variant<NameableObjectVariant>;
+using NamedObjectPtrVariant = to_pointer_variant<NamedObjectVariant>;
 
 #endif // __DSP_NAMEABLE_OBJECT_H__

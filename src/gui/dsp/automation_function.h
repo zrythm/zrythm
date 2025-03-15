@@ -4,10 +4,9 @@
 #ifndef __AUDIO_AUTOMATION_FUNCTION_H__
 #define __AUDIO_AUTOMATION_FUNCTION_H__
 
+#include "gui/dsp/arranger_object_span.h"
 #include "utils/format.h"
 #include "utils/logger.h"
-
-class AutomationSelections;
 
 /**
  * @addtogroup dsp
@@ -15,27 +14,28 @@ class AutomationSelections;
  * @{
  */
 
-enum class AutomationFunctionType
+class AutomationFunction
 {
-  FlipHorizontal,
-  FlipVertical,
-  Flatten,
+public:
+  enum class Type
+  {
+    FlipHorizontal,
+    FlipVertical,
+    Flatten,
+  };
+
+  /**
+   * Applies the given action to the given selections.
+   *
+   * @param sel Selections to edit.
+   * @param type Function type.
+   * @throw ZrythmException on error.
+   */
+  static void apply (ArrangerObjectSpanVariant sel, Type type);
 };
 
-/**
- * Applies the given action to the given selections.
- *
- * @param sel Selections to edit.
- * @param type Function type.
- * @throw ZrythmException on error.
- */
-void
-automation_function_apply (
-  AutomationSelections  &sel,
-  AutomationFunctionType type);
-
 DEFINE_ENUM_FORMATTER (
-  AutomationFunctionType,
+  AutomationFunction::Type,
   AutomationFunctionType,
   QT_TR_NOOP_UTF8 ("Flip H"),
   QT_TR_NOOP_UTF8 ("Flip V"),

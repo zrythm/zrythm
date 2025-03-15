@@ -11,11 +11,10 @@
 #include "dsp/position.h"
 
 AutomationRegion::AutomationRegion (QObject * parent)
-    : ArrangerObject (Type::Region), LengthableObject (),
-      QAbstractListModel (parent)
+    : ArrangerObject (Type::Region), BoundedObject (), QAbstractListModel (parent)
 {
   ArrangerObject::parent_base_qproperties (*this);
-  LengthableObject::parent_base_qproperties (*this);
+  BoundedObject::parent_base_qproperties (*this);
 }
 
 AutomationRegion::AutomationRegion (
@@ -37,7 +36,7 @@ AutomationRegion::init_loaded ()
 {
   ArrangerObject::init_loaded_base ();
   TimelineObject::init_loaded_base ();
-  NameableObject::init_loaded_base ();
+  NamedObject::init_loaded_base ();
   for (auto &ap : aps_)
     {
       ap->init_loaded ();
@@ -118,15 +117,15 @@ AutomationRegion::set_automation_track (AutomationTrack &at)
   z_return_if_fail (PROJECT);
 
   /* if clip editor region or region selected, unselect it */
-  if (id_ == CLIP_EDITOR->region_id_)
+  if (get_uuid () == *CLIP_EDITOR->get_region_id ())
     {
-      CLIP_EDITOR->set_region (std::nullopt, true);
+      CLIP_EDITOR->unset_region ();
     }
   bool was_selected = false;
   if (is_selected ())
     {
       was_selected = true;
-      select (false, false, false);
+      setSelected (false);
     }
   id_.at_idx_ = at.index_;
   auto track = at.get_track ();
@@ -137,7 +136,7 @@ AutomationRegion::set_automation_track (AutomationTrack &at)
   /* reselect it if was selected */
   if (was_selected)
     {
-      select (true, true, false);
+      setSelected (true);
     }
 }
 
@@ -293,10 +292,10 @@ AutomationRegion::init_after_cloning (
     }
   RegionImpl::copy_members_from (other, clone_type);
   TimelineObject::copy_members_from (other, clone_type);
-  NameableObject::copy_members_from (other, clone_type);
+  NamedObject::copy_members_from (other, clone_type);
   LoopableObject::copy_members_from (other, clone_type);
   MuteableObject::copy_members_from (other, clone_type);
-  LengthableObject::copy_members_from (other, clone_type);
+  BoundedObject::copy_members_from (other, clone_type);
   ColoredObject::copy_members_from (other, clone_type);
   ArrangerObject::copy_members_from (other, clone_type);
   force_sort ();
@@ -314,10 +313,10 @@ AutomationRegion::validate (bool is_project, double frames_per_tick) const
   if (
     !Region::are_members_valid (is_project)
     || !TimelineObject::are_members_valid (is_project)
-    || !NameableObject::are_members_valid (is_project)
+    || !NamedObject::are_members_valid (is_project)
     || !LoopableObject::are_members_valid (is_project)
     || !MuteableObject::are_members_valid (is_project)
-    || !LengthableObject::are_members_valid (is_project)
+    || !BoundedObject::are_members_valid (is_project)
     || !ColoredObject::are_members_valid (is_project)
     || !ArrangerObject::are_members_valid (is_project))
     {
@@ -325,10 +324,4 @@ AutomationRegion::validate (bool is_project, double frames_per_tick) const
     }
 
   return true;
-}
-
-std::optional<ClipEditorArrangerSelectionsPtrVariant>
-AutomationRegion::get_arranger_selections () const
-{
-  return AUTOMATION_SELECTIONS;
 }

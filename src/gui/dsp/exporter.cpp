@@ -435,10 +435,11 @@ Exporter::Settings::set_bounce_defaults (
     {
     case Mode::Regions:
       {
+        auto tl_sel = TRACKLIST->get_timeline_objects_in_range ();
         auto [start_obj, start_pos] =
-          TL_SELECTIONS->get_first_object_and_pos (true);
+          ArrangerObjectSpan{ tl_sel }.get_first_object_and_pos (true);
         auto [end_obj, end_pos] =
-          TL_SELECTIONS->get_last_object_and_pos (true, true);
+          ArrangerObjectSpan{ tl_sel }.get_last_object_and_pos (true, true);
         custom_start_ = start_pos;
         custom_end_ = end_pos;
       }
@@ -651,10 +652,12 @@ Exporter::create_audio_track_after_bounce (Position pos)
   /* find next track */
   std::optional<TrackPtrVariant> last_track_var;
   std::optional<TrackPtrVariant> track_to_disable_var;
+  auto tl_sel = TRACKLIST->get_timeline_objects_in_range ();
   switch (settings_.mode_)
     {
     case Mode::Regions:
-      last_track_var = TL_SELECTIONS->get_last_track ();
+      last_track_var =
+        ArrangerObjectSpan{ tl_sel }.get_first_and_last_track ().second;
       break;
     case Mode::Tracks:
       last_track_var =

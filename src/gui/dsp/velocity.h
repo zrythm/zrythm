@@ -28,13 +28,11 @@ constexpr uint8_t VELOCITY_DEFAULT = 90;
  */
 class Velocity final
     : public QObject,
-      public RegionOwnedObjectImpl<MidiRegion>,
       public ICloneable<Velocity>,
       public zrythm::utils::serialization::ISerializable<Velocity>
 {
   Q_OBJECT
   QML_ELEMENT
-  DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (Velocity)
 public:
   Velocity (QObject * parent = nullptr);
 
@@ -59,6 +57,7 @@ public:
 
   static size_t setting_str_to_enum (const char * str);
 
+#if 0
   std::optional<ArrangerObjectPtrVariant> find_in_project () const override;
 
   /* these do not apply to velocities */
@@ -72,15 +71,16 @@ public:
   {
     throw ZrythmException ("Cannot add a velocity clone to a project");
   }
+#endif
 
-  std::string print_to_str () const override;
+  // std::string print_to_str () const override;
 
-  bool validate (bool is_project, double frames_per_tick) const override;
+  // bool validate (bool is_project, double frames_per_tick) const override;
 
   void init_after_cloning (const Velocity &other, ObjectCloneType clone_type)
     override;
 
-  void init_loaded () override;
+  // void init_loaded () override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -98,11 +98,7 @@ public:
 inline bool
 operator== (const Velocity &lhs, const Velocity &rhs)
 {
-  return lhs.vel_ == rhs.vel_
-         && static_cast<const RegionOwnedObject &> (lhs)
-              == static_cast<const RegionOwnedObject &> (rhs)
-         && static_cast<const ArrangerObject &> (lhs)
-              == static_cast<const ArrangerObject &> (rhs);
+  return lhs.vel_ == rhs.vel_;
 }
 
 /**

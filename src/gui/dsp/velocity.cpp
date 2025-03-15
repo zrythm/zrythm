@@ -7,18 +7,11 @@
 
 #include "utils/string.h"
 
-Velocity::Velocity (QObject * parent)
-    : ArrangerObject (Type::Velocity), QObject (parent)
-{
-  ArrangerObject::parent_base_qproperties (*this);
-}
+Velocity::Velocity (QObject * parent) : QObject (parent) { }
 
 Velocity::Velocity (MidiNote * midi_note, const uint8_t vel)
-    : ArrangerObject (Type::Velocity), QObject (midi_note),
-      RegionOwnedObjectImpl<MidiRegion> (midi_note->region_id_),
-      midi_note_ (midi_note), vel_ (vel)
+    : QObject (midi_note), midi_note_ (midi_note), vel_ (vel)
 {
-  ArrangerObject::parent_base_qproperties (*this);
 }
 
 void
@@ -27,16 +20,18 @@ Velocity::init_after_cloning (const Velocity &other, ObjectCloneType clone_type)
 {
   vel_ = other.vel_;
   vel_at_start_ = other.vel_at_start_;
-  RegionOwnedObject::copy_members_from (other, clone_type);
-  ArrangerObject::copy_members_from (other, clone_type);
+  // RegionOwnedObject::copy_members_from (other, clone_type);
+  // ArrangerObject::copy_members_from (other, clone_type);
 }
 
+#if 0
 void
 Velocity::init_loaded ()
 {
   ArrangerObject::init_loaded_base ();
   RegionOwnedObject::init_loaded_base ();
 }
+#endif
 
 void
 Velocity::set_val (const int val)
@@ -46,7 +41,7 @@ Velocity::set_val (const int val)
   /* re-set the midi note value to set a note off event */
   auto * note = get_midi_note ();
   z_return_if_fail (IS_MIDI_NOTE (note));
-  note->set_val (note->val_);
+  note->set_val (note->pitch_);
 }
 
 MidiNote *
@@ -101,6 +96,7 @@ Velocity::setting_str_to_enum (const char * str)
   return val;
 }
 
+#if 0
 std::optional<ArrangerObjectPtrVariant>
 Velocity::find_in_project () const
 {
@@ -124,3 +120,4 @@ Velocity::validate (bool is_project, double frames_per_tick) const
   // TODO
   return true;
 }
+#endif

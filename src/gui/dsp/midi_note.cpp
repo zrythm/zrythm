@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/midi_selections.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/midi_event.h"
@@ -13,10 +12,10 @@
 #include <fmt/format.h>
 
 MidiNote::MidiNote (QObject * parent)
-    : ArrangerObject (Type::MidiNote), QObject (parent), LengthableObject ()
+    : ArrangerObject (Type::MidiNote), QObject (parent), BoundedObject ()
 {
   ArrangerObject::parent_base_qproperties (*this);
-  LengthableObject::parent_base_qproperties (*this);
+  BoundedObject::parent_base_qproperties (*this);
 }
 
 MidiNote::MidiNote (
@@ -27,11 +26,11 @@ MidiNote::MidiNote (
   uint8_t                 vel,
   QObject *               parent)
     : ArrangerObject (Type::MidiNote), QObject (parent),
-      RegionOwnedObjectImpl (region_id), LengthableObject (),
-      vel_ (new Velocity (this, vel)), val_ (val)
+      RegionOwnedObjectImpl (region_id), BoundedObject (),
+      vel_ (new Velocity (this, vel)), pitch_ (val)
 {
   ArrangerObject::parent_base_qproperties (*this);
-  LengthableObject::parent_base_qproperties (*this);
+  BoundedObject::parent_base_qproperties (*this);
   *static_cast<Position *> (pos_) = start_pos;
   *static_cast<Position *> (end_pos_) = end_pos;
 }
@@ -42,7 +41,6 @@ MidiNote::init_loaded ()
   ArrangerObject::init_loaded_base ();
   RegionOwnedObjectImpl::init_loaded_base ();
   vel_->midi_note_ = this;
-  vel_->init_loaded ();
 }
 
 std::string
@@ -53,7 +51,7 @@ MidiNote::print_to_str () const
   auto lane = r ? r->get_lane ()->get_name () : "unknown";
   return fmt::format (
     "[Region '{}' : Lane '{}'] => MidiNote #{}: {} ~ {} | pitch: {} | velocity: {}",
-    region, lane, index_, *pos_, *end_pos_, val_, vel_->vel_);
+    region, lane, index_, *pos_, *end_pos_, pitch_, vel_->vel_);
 }
 
 ArrangerObjectPtrVariant
@@ -97,17 +95,17 @@ MidiNote::listen (bool listen)
           if (listen)
             {
               /* if note is on but pitch changed */
-              if (currently_listened_ && val_ != last_listened_val_)
+              if (currently_listened_ && pitch_ != last_listened_pitch_)
                 {
                   /* create midi note off */
-                  events.add_note_off (1, last_listened_val_, 0);
+                  events.add_note_off (1, last_listened_pitch_, 0);
 
                   /* create note on at the new value */
-                  events.add_note_on (1, val_, vel_->vel_, 0);
-                  last_listened_val_ = val_;
+                  events.add_note_on (1, pitch_, vel_->vel_, 0);
+                  last_listened_pitch_ = pitch_;
                 }
               /* if note is on and pitch is the same */
-              else if (currently_listened_ && val_ == last_listened_val_)
+              else if (currently_listened_ && pitch_ == last_listened_pitch_)
                 {
                   /* do nothing */
                 }
@@ -115,8 +113,8 @@ MidiNote::listen (bool listen)
               else if (!currently_listened_)
                 {
                   /* turn it on */
-                  events.add_note_on (1, val_, vel_->vel_, 0);
-                  last_listened_val_ = val_;
+                  events.add_note_on (1, pitch_, vel_->vel_, 0);
+                  last_listened_pitch_ = pitch_;
                   currently_listened_ = 1;
                 }
             }
@@ -124,9 +122,9 @@ MidiNote::listen (bool listen)
           else if (currently_listened_)
             {
               /* create midi note off */
-              events.add_note_off (1, last_listened_val_, 0);
+              events.add_note_off (1, last_listened_pitch_, 0);
               currently_listened_ = false;
-              last_listened_val_ = 255;
+              last_listened_pitch_ = 255;
             }
         }
     },
@@ -138,7 +136,7 @@ MidiNote::get_val_as_string (PianoRoll::NoteNotation notation, bool use_markup)
   const
 {
   const auto note_str_musical = dsp::ChordDescriptor::note_to_string (
-    ENUM_INT_TO_VALUE (dsp::MusicalNote, val_ % 12));
+    ENUM_INT_TO_VALUE (dsp::MusicalNote, pitch_ % 12));
   std::string note_str;
   if (notation == PianoRoll::NoteNotation::Musical)
     {
@@ -146,10 +144,10 @@ MidiNote::get_val_as_string (PianoRoll::NoteNotation notation, bool use_markup)
     }
   else
     {
-      note_str = fmt::format ("{}", val_);
+      note_str = fmt::format ("{}", pitch_);
     }
 
-  const int note_val = val_ / 12 - 1;
+  const int note_val = pitch_ / 12 - 1;
   if (use_markup)
     {
       auto buf = fmt::format ("{}<sup>{}</sup>", note_str, note_val);
@@ -184,55 +182,35 @@ MidiNote::set_val (const uint8_t val)
                   .midi_events_.queued_events_;
 
               uint8_t midi_ch = region->get_midi_ch ();
-              midi_events.add_note_off (midi_ch, val_, 0);
+              midi_events.add_note_off (midi_ch, pitch_, 0);
             }
         },
         track_var);
     }
 
-  val_ = val;
+  pitch_ = val;
 }
 
 void
 MidiNote::shift_pitch (const int delta)
 {
-  val_ = (uint8_t) ((int) val_ + delta);
-  set_val (val_);
+  pitch_ = (uint8_t) ((int) pitch_ + delta);
+  set_val (pitch_);
 }
 
 void
 MidiNote::init_after_cloning (const MidiNote &other, ObjectCloneType clone_type)
 
 {
-  val_ = other.val_;
+  pitch_ = other.pitch_;
   vel_ = new Velocity (this, other.vel_->vel_);
   currently_listened_ = other.currently_listened_;
-  last_listened_val_ = other.last_listened_val_;
+  last_listened_pitch_ = other.last_listened_pitch_;
   vel_->vel_at_start_ = other.vel_->vel_at_start_;
-  LengthableObject::copy_members_from (other, clone_type);
+  BoundedObject::copy_members_from (other, clone_type);
   MuteableObject::copy_members_from (other, clone_type);
   RegionOwnedObject::copy_members_from (other, clone_type);
   ArrangerObject::copy_members_from (other, clone_type);
-}
-
-bool
-MidiNote::is_hit (const signed_frame_t gframes) const
-{
-  auto region = dynamic_cast<MidiRegion *> (get_region ());
-
-  /* get local positions */
-  signed_frame_t local_pos = region->timeline_frames_to_local (gframes, true);
-
-  /* add clip_start position to start from there */
-  signed_frame_t clip_start_frames = region->clip_start_pos_.frames_;
-  local_pos += clip_start_frames;
-
-  /* check for note on event on the boundary */
-  /* FIXME ok? it was < and >= before */
-  if (pos_->frames_ <= local_pos && end_pos_->frames_ > local_pos)
-    return true;
-
-  return false;
 }
 
 std::optional<ArrangerObjectPtrVariant>

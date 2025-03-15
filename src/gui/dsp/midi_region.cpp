@@ -27,6 +27,8 @@
  *  ---
  */
 
+#include <algorithm>
+
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/io/midi_file.h"
@@ -37,18 +39,18 @@
 #include "gui/dsp/region.h"
 #include "gui/dsp/tempo_track.h"
 #include "gui/dsp/tracklist.h"
+#include "utils/logger.h"
+#include "utils/math.h"
 
 #include "midilib/src/midifile.h"
 #include "midilib/src/midiutil.h"
-#include "utils/logger.h"
-#include "utils/math.h"
 
 MidiRegion::MidiRegion (QObject * parent)
     : ArrangerObject (Type::Region), QAbstractListModel (parent)
 {
   id_.type_ = RegionType::Midi;
   ArrangerObject::parent_base_qproperties (*this);
-  LengthableObject::parent_base_qproperties (*this);
+  BoundedObject::parent_base_qproperties (*this);
   unended_notes_.reserve (12000);
 }
 
@@ -131,7 +133,7 @@ void
 MidiRegion::init_loaded ()
 {
   ArrangerObject::init_loaded_base ();
-  NameableObject::init_loaded_base ();
+  NamedObject::init_loaded_base ();
   for (auto &note : midi_notes_)
     {
       note->init_loaded ();
@@ -153,10 +155,10 @@ MidiRegion::init_after_cloning (
   LaneOwnedObjectImpl::copy_members_from (other, clone_type);
   Region::copy_members_from (other, clone_type);
   TimelineObject::copy_members_from (other, clone_type);
-  NameableObject::copy_members_from (other, clone_type);
+  NamedObject::copy_members_from (other, clone_type);
   LoopableObject::copy_members_from (other, clone_type);
   MuteableObject::copy_members_from (other, clone_type);
-  LengthableObject::copy_members_from (other, clone_type);
+  BoundedObject::copy_members_from (other, clone_type);
   ColoredObject::copy_members_from (other, clone_type);
   ArrangerObject::copy_members_from (other, clone_type);
 }
@@ -215,7 +217,7 @@ MidiRegion::pop_unended_note (int pitch)
 {
   auto it = std::find_if (
     unended_notes_.begin (), unended_notes_.end (),
-    [pitch] (MidiNote * mn) { return pitch == -1 || mn->val_ == pitch; });
+    [pitch] (MidiNote * mn) { return pitch == -1 || mn->pitch_ == pitch; });
 
   if (it != unended_notes_.end ())
     {
@@ -236,26 +238,25 @@ MidiRegion::get_first_midi_note ()
 MidiNote *
 MidiRegion::get_last_midi_note ()
 {
-  return (*std::max_element (
-    midi_notes_.begin (), midi_notes_.end (), [] (const auto &a, const auto &b) {
-      return a->end_pos_->ticks_ < b->end_pos_->ticks_;
-    }));
+  return (*std::ranges::max_element (midi_notes_,{},  &MidiNote::end_pos_));
 }
 
 MidiNote *
 MidiRegion::get_highest_midi_note ()
 {
-  return (*std::max_element (
-    midi_notes_.begin (), midi_notes_.end (),
-    [] (const auto &a, const auto &b) { return a->val_ < b->val_; }));
+  return (
+    *std::ranges::max_element (midi_notes_, [] (const auto &a, const auto &b) {
+      return a->pitch_ < b->pitch_;
+    }));
 }
 
 MidiNote *
 MidiRegion::get_lowest_midi_note ()
 {
-  return (*std::min_element (
-    midi_notes_.begin (), midi_notes_.end (),
-    [] (const auto &a, const auto &b) { return a->val_ < b->val_; }));
+  return (
+    *std::ranges::min_element (midi_notes_, [] (const auto &a, const auto &b) {
+      return a->pitch_ < b->pitch_;
+    }));
 }
 
 void
@@ -480,10 +481,10 @@ MidiRegion::add_events (
                   note_global_end_ticks -= start->ticks_;
                 }
               events.add_note_on (
-                1, mn->val_, mn->vel_->vel_,
+                1, mn->pitch_, mn->vel_->vel_,
                 (midi_time_t) (note_global_start_ticks));
               events.add_note_off (
-                1, mn->val_, (midi_time_t) (note_global_end_ticks));
+                1, mn->pitch_, (midi_time_t) (note_global_end_ticks));
             }
         }
       while (++repeat_counter < number_of_loop_repeats && !write_only_once);
@@ -524,20 +525,14 @@ MidiRegion::validate (bool is_project, double frames_per_tick) const
   if (
     !Region::are_members_valid (is_project)
     || !TimelineObject::are_members_valid (is_project)
-    || !NameableObject::are_members_valid (is_project)
+    || !NamedObject::are_members_valid (is_project)
     || !LoopableObject::are_members_valid (is_project)
     || !MuteableObject::are_members_valid (is_project)
-    || !LengthableObject::are_members_valid (is_project)
+    || !BoundedObject::are_members_valid (is_project)
     || !ColoredObject::are_members_valid (is_project)
     || !ArrangerObject::are_members_valid (is_project))
     {
       return false;
     }
   return true;
-}
-
-std::optional<ClipEditorArrangerSelectionsPtrVariant>
-MidiRegion::get_arranger_selections () const
-{
-  return MIDI_SELECTIONS;
 }

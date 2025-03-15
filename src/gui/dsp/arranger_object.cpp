@@ -1,12 +1,9 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/actions/arranger_selections_action.h"
-#include "gui/backend/backend/automation_selections.h"
-#include "gui/backend/backend/chord_selections.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
-#include "gui/backend/backend/timeline_selections.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/arranger_object.h"
 #include "gui/dsp/audio_region.h"
@@ -20,7 +17,6 @@
 #include "gui/dsp/midi_region.h"
 #include "gui/dsp/router.h"
 #include "gui/dsp/tracklist.h"
-
 #include "utils/debug.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/logger.h"
@@ -31,28 +27,6 @@ using namespace zrythm;
 ArrangerObject::ArrangerObject (Type type)
     : pos_ (new PositionProxy ()), type_ (type)
 {
-}
-
-template <typename T>
-T *
-ArrangerObject::get_selections_for_type (Type type)
-{
-  switch (type)
-    {
-    case Type::Region:
-    case Type::ScaleObject:
-    case Type::Marker:
-      return static_cast<T *> (TL_SELECTIONS);
-    case Type::MidiNote:
-    case Type::Velocity:
-      return static_cast<T *> (MIDI_SELECTIONS);
-    case Type::ChordObject:
-      return static_cast<T *> (CHORD_SELECTIONS);
-    case Type::AutomationPoint:
-      return static_cast<T *> (AUTOMATION_SELECTIONS);
-    default:
-      return nullptr;
-    }
 }
 
 void
@@ -78,6 +52,7 @@ ArrangerObject::generate_transient ()
     convert_to_variant<ArrangerObjectPtrVariant> (this));
 }
 
+#if 0
 void
 ArrangerObject::select (
   const ArrangerObjectPtr &base_obj,
@@ -149,67 +124,7 @@ ArrangerObject::select (
     convert_to_variant<ArrangerObjectPtrVariant> (
       const_cast<ArrangerObject *> (base_obj)));
 }
-
-/**
- * Returns if the object is in the selections.
- */
-bool
-ArrangerObject::is_selected () const
-{
-  auto * selections =
-    ArrangerObject::get_selections_for_type<ArrangerSelections> (type_);
-
-  return selections->contains_object (*this);
-}
-
-std::unique_ptr<ArrangerSelections>
-ArrangerObject::create_arranger_selections_from_this () const
-{
-  ArrangerSelections::Type arranger_selections_type;
-  switch (type_)
-    {
-    case Type::Region:
-      arranger_selections_type = ArrangerSelections::Type::Timeline;
-      break;
-    case Type::ScaleObject:
-      arranger_selections_type = ArrangerSelections::Type::Timeline;
-      break;
-    case Type::Marker:
-      arranger_selections_type = ArrangerSelections::Type::Timeline;
-      break;
-    case Type::MidiNote:
-      arranger_selections_type = ArrangerSelections::Type::Midi;
-      break;
-    case Type::Velocity:
-      arranger_selections_type = ArrangerSelections::Type::Midi;
-      break;
-    case Type::ChordObject:
-      arranger_selections_type = ArrangerSelections::Type::Chord;
-      break;
-    case Type::AutomationPoint:
-      arranger_selections_type = ArrangerSelections::Type::Automation;
-      break;
-    default:
-      z_return_val_if_reached (nullptr);
-    }
-  auto sel = ArrangerSelections::new_from_type (arranger_selections_type);
-  auto variant = convert_to_variant<ArrangerObjectPtrVariant> (this);
-  std::visit (
-    [&] (auto &&obj) {
-      using ObjT = base_type<decltype (obj)>;
-      if constexpr (std::is_same_v<ObjT, Velocity>)
-        {
-          auto * midi_note = obj->get_midi_note ();
-          sel->add_object_owned (midi_note->clone_unique ());
-        }
-      else
-        {
-          sel->add_object_owned (obj->clone_unique ());
-        }
-    },
-    variant);
-  return sel;
-}
+#endif
 
 std::optional<ArrangerObjectPtrVariant>
 ArrangerObject::remove_from_project (bool free_obj, bool fire_events)
@@ -266,7 +181,7 @@ ArrangerObject::get_position_ptr (PositionType pos_type)
       return pos_;
     case PositionType::End:
       {
-        auto lo = dynamic_cast<LengthableObject *> (this);
+        auto lo = dynamic_cast<BoundedObject *> (this);
         z_return_val_if_fail (lo != nullptr, nullptr);
         return lo->end_pos_;
       }
@@ -308,187 +223,133 @@ bool
 ArrangerObject::is_position_valid (const Position &pos, PositionType pos_type)
   const
 {
-  switch (pos_type)
-    {
-    case PositionType::Start:
-      if (type_has_length (type_))
+  auto obj_var = convert_to_variant<ArrangerObjectPtrVariant> (this);
+  return std::visit (
+    [&] (auto &&obj) {
+      using ObjT = base_type<decltype (obj)>;
+      switch (pos_type)
         {
-          auto lo = dynamic_cast<const LengthableObject *> (this);
-          z_return_val_if_fail (lo != nullptr, false);
-          if (pos >= *lo->end_pos_)
-            return false;
-
-          if (!type_owned_by_region (type_))
+        case PositionType::Start:
+          if constexpr (std::derived_from<ObjT, BoundedObject>)
             {
-              if (pos < Position ())
+              if (pos >= *obj->end_pos_)
                 return false;
-            }
 
-          if (can_fade ())
+              if constexpr (!std::derived_from<ObjT, RegionOwnedObject>)
+                {
+                  if (pos < Position ())
+                    return false;
+                }
+
+              if constexpr (std::derived_from<ObjT, FadeableObject>)
+                {
+                  signed_frame_t frames_diff =
+                    pos.get_total_frames () - this->pos_->get_total_frames ();
+                  Position expected_fade_out = obj->fade_out_pos_;
+                  expected_fade_out.add_frames (
+                    -frames_diff, AUDIO_ENGINE->ticks_per_frame_);
+                  if (expected_fade_out <= obj->fade_in_pos_)
+                    return false;
+                }
+
+              return true;
+            }
+          else if constexpr (std::derived_from<ObjT, TimelineObject>)
             {
-              auto fo = dynamic_cast<const FadeableObject *> (this);
-              z_return_val_if_fail (fo != nullptr, false);
-              signed_frame_t frames_diff =
-                pos.get_total_frames () - this->pos_->get_total_frames ();
-              Position expected_fade_out = fo->fade_out_pos_;
-              expected_fade_out.add_frames (
-                -frames_diff, AUDIO_ENGINE->ticks_per_frame_);
-              if (expected_fade_out <= fo->fade_in_pos_)
-                return false;
+              return pos >= Position ();
             }
-
-          return true;
-        }
-      else if (ArrangerObject::type_has_global_pos (type_))
-        {
-          return pos >= Position ();
-        }
-      else
-        {
-          return true;
-        }
-      break;
-    case PositionType::LoopStart:
-      {
-        auto lo = dynamic_cast<const LoopableObject *> (this);
-        z_return_val_if_fail (lo != nullptr, false);
-        return pos < lo->loop_end_pos_ && pos >= Position ();
-      }
-      break;
-    case PositionType::LoopEnd:
-      {
-        auto lo = dynamic_cast<const LoopableObject *> (this);
-        z_return_val_if_fail (lo != nullptr, false);
-        if (pos < lo->clip_start_pos_ || pos <= lo->loop_start_pos_)
-          return false;
-
-        bool is_valid = true;
-        if (type_ == Type::Region)
+          else
+            {
+              return true;
+            }
+          break;
+        case PositionType::LoopStart:
           {
-            auto r = dynamic_cast<const Region *> (this);
-            z_return_val_if_fail (r != nullptr, false);
-            if (r->id_.type_ == RegionType::Audio)
+            if constexpr (std::derived_from<ObjT, LoopableObject>)
               {
-                auto audio_region = dynamic_cast<const AudioRegion *> (r);
-                AudioClip * clip = audio_region->get_clip ();
-                is_valid =
-                  pos.frames_
-                  <= static_cast<signed_frame_t> (clip->get_num_frames ());
+                return pos < obj->loop_end_pos_ && pos >= Position ();
               }
           }
-        return is_valid;
-      }
-      break;
-    case PositionType::ClipStart:
-      {
-        auto lo = dynamic_cast<const LoopableObject *> (this);
-        z_return_val_if_fail (lo != nullptr, false);
-        return pos < lo->loop_end_pos_ && pos >= Position ();
-      }
-      break;
-    case PositionType::End:
-      {
-        auto lo = dynamic_cast<const LengthableObject *> (this);
-        z_return_val_if_fail (lo != nullptr, false);
-        bool is_valid = pos > *pos_;
-
-        if (can_fade ())
+          break;
+        case PositionType::LoopEnd:
           {
-            auto fo = dynamic_cast<const FadeableObject *> (this);
-            z_return_val_if_fail (fo != nullptr, false);
-            signed_frame_t frames_diff =
-              pos.get_total_frames () - lo->end_pos_->get_total_frames ();
-            Position expected_fade_out = fo->fade_out_pos_;
-            expected_fade_out.add_frames (
-              frames_diff, AUDIO_ENGINE->ticks_per_frame_);
-            if (expected_fade_out <= fo->fade_in_pos_)
-              return false;
+            if constexpr (std::derived_from<ObjT, LoopableObject>)
+              {
+                if (pos < obj->clip_start_pos_ || pos <= obj->loop_start_pos_)
+                  return false;
+
+                bool is_valid = true;
+                if constexpr (std::is_same_v<ObjT, AudioRegion>)
+                  {
+                    AudioClip * clip = obj->get_clip ();
+                    is_valid =
+                      pos.frames_
+                      <= static_cast<signed_frame_t> (clip->get_num_frames ());
+                  }
+                return is_valid;
+              }
           }
-        return is_valid;
-      }
-      break;
-    case PositionType::FadeIn:
-      {
-        auto fo = dynamic_cast<const FadeableObject *> (this);
-        z_return_val_if_fail (fo != nullptr, false);
-        Position local_end_pos (
-          fo->end_pos_->get_total_frames () - this->pos_->get_total_frames (),
-          AUDIO_ENGINE->ticks_per_frame_);
-        return pos >= Position () && pos.get_total_frames () >= 0
-               && pos < local_end_pos && pos < fo->fade_out_pos_;
-      }
-      break;
-    case PositionType::FadeOut:
-      {
-        auto fo = dynamic_cast<const FadeableObject *> (this);
-        z_return_val_if_fail (fo != nullptr, false);
-        Position local_end_pos (
-          fo->end_pos_->get_total_frames () - this->pos_->get_total_frames (),
-          AUDIO_ENGINE->ticks_per_frame_);
-        return pos >= Position () && pos <= local_end_pos
-               && pos > fo->fade_in_pos_;
-      }
-      break;
-    }
+          break;
+        case PositionType::ClipStart:
+          {
+            if constexpr (std::derived_from<ObjT, LoopableObject>)
+              {
+                return pos < obj->loop_end_pos_ && pos >= Position ();
+              }
+          }
+          break;
+        case PositionType::End:
+          {
+            if constexpr (std::derived_from<ObjT, BoundedObject>)
+              {
+                bool is_valid = pos > *pos_;
 
-  z_return_val_if_reached (false);
-}
+                if constexpr (std::derived_from<ObjT, FadeableObject>)
+                  {
+                    signed_frame_t frames_diff =
+                      pos.get_total_frames ()
+                      - obj->end_pos_->get_total_frames ();
+                    Position expected_fade_out = obj->fade_out_pos_;
+                    expected_fade_out.add_frames (
+                      frames_diff, AUDIO_ENGINE->ticks_per_frame_);
+                    if (expected_fade_out <= obj->fade_in_pos_)
+                      return false;
+                  }
+                return is_valid;
+              }
+          }
+          break;
+        case PositionType::FadeIn:
+          {
+            if constexpr (std::derived_from<ObjT, FadeableObject>)
+              {
+                Position local_end_pos (
+                  obj->end_pos_->get_total_frames ()
+                    - this->pos_->get_total_frames (),
+                  AUDIO_ENGINE->ticks_per_frame_);
+                return pos >= Position () && pos.get_total_frames () >= 0
+                       && pos < local_end_pos && pos < obj->fade_out_pos_;
+              }
+          }
+          break;
+        case PositionType::FadeOut:
+          {
+            if constexpr (std::derived_from<ObjT, FadeableObject>)
+              {
+                Position local_end_pos (
+                  obj->end_pos_->get_total_frames ()
+                    - this->pos_->get_total_frames (),
+                  AUDIO_ENGINE->ticks_per_frame_);
+                return pos >= Position () && pos <= local_end_pos
+                       && pos > obj->fade_in_pos_;
+              }
+          }
+          break;
+        }
 
-void
-ArrangerObject::copy_identifier (const ArrangerObject &src)
-{
-  z_return_if_fail (type_ == src.type_);
-
-  track_id_ = src.track_id_;
-
-  if (type_owned_by_region (type_))
-    {
-      auto       &dest = dynamic_cast<RegionOwnedObject &> (*this);
-      const auto &src_ro = dynamic_cast<const RegionOwnedObject &> (src);
-      dest.region_id_ = src_ro.region_id_;
-      dest.index_ = src_ro.index_;
-    }
-
-  if (type_has_name (type_))
-    {
-      auto       &dest = dynamic_cast<NameableObject &> (*this);
-      const auto &src_nameable = dynamic_cast<const NameableObject &> (src);
-      dest.name_ = src_nameable.name_;
-    }
-
-  switch (type_)
-    {
-    case Type::Region:
-      {
-        auto       &dest = dynamic_cast<Region &> (*this);
-        const auto &src_r = dynamic_cast<const Region &> (src);
-        dest.id_ = src_r.id_;
-      }
-      break;
-    case Type::ChordObject:
-      {
-        auto       &dest = dynamic_cast<ChordObject &> (*this);
-        const auto &src_co = dynamic_cast<const ChordObject &> (src);
-        dest.chord_index_ = src_co.chord_index_;
-      }
-      break;
-    case Type::Marker:
-      {
-        auto       &dest = dynamic_cast<Marker &> (*this);
-        const auto &src_m = dynamic_cast<const Marker &> (src);
-        dest.marker_track_index_ = src_m.marker_track_index_;
-      }
-      break;
-    case Type::ScaleObject:
-      {
-        auto       &dest = dynamic_cast<ScaleObject &> (*this);
-        const auto &src_so = dynamic_cast<const ScaleObject &> (src);
-        dest.index_in_chord_track_ = src_so.index_in_chord_track_;
-      }
-      break;
-    default:
-      break;
-    }
+      z_return_val_if_reached (false);
+    },
+    obj_var);
 }
 
 bool
@@ -522,40 +383,46 @@ ArrangerObject::print () const
 void
 ArrangerObject::move (const double ticks)
 {
-  if (ArrangerObject::type_has_length (type_))
-    {
-      signed_frame_t length_frames =
-        dynamic_cast<LengthableObject *> (this)->get_length_in_frames ();
-
-      /* start pos */
-      Position tmp;
-      get_pos (&tmp);
-      tmp.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
-      set_position (&tmp, PositionType::Start, false);
-
-      /* end pos */
-      if (type_ == ArrangerObject::Type::Region)
+  std::visit (
+    [&] (auto &&self) {
+      using ObjT = base_type<decltype (self)>;
+      if constexpr (std::derived_from<ObjT, BoundedObject>)
         {
-          /* audio regions need the exact number of frames to match the clip.
-           *
-           * this should be used for all objects but currently moving objects
-           * before 1.1.1.1 causes bugs hence this (temporary) if statement */
-          tmp.add_frames (length_frames, AUDIO_ENGINE->ticks_per_frame_);
+          signed_frame_t length_frames = self->get_length_in_frames ();
+
+          /* start pos */
+          Position tmp;
+          get_pos (&tmp);
+          tmp.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
+          set_position (&tmp, PositionType::Start, false);
+
+          /* end pos */
+          if constexpr (std::derived_from<ObjT, Region>)
+            {
+              /* audio regions need the exact number of frames to match the
+               * clip.
+               *
+               * this should be used for all objects but currently moving
+               * objects before 1.1.1.1 causes bugs hence this (temporary) if
+               * statement */
+              tmp.add_frames (length_frames, AUDIO_ENGINE->ticks_per_frame_);
+            }
+          else
+            {
+              self->get_end_pos (&tmp);
+              tmp.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
+            }
+          set_position (&tmp, PositionType::End, false);
         }
       else
         {
-          dynamic_cast<LengthableObject *> (this)->get_end_pos (&tmp);
+          Position tmp;
+          get_pos (&tmp);
           tmp.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
+          set_position (&tmp, PositionType::Start, false);
         }
-      set_position (&tmp, PositionType::End, false);
-    }
-  else
-    {
-      Position tmp;
-      get_pos (&tmp);
-      tmp.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
-      set_position (&tmp, PositionType::Start, false);
-    }
+    },
+    convert_to_variant<ArrangerObjectPtrVariant> (this));
 }
 
 void
@@ -574,7 +441,7 @@ ArrangerObject::get_position_from_type (Position * pos, PositionType type) const
       break;
     case PositionType::End:
       {
-        auto const * lo = dynamic_cast<const LengthableObject *> (this);
+        auto const * lo = dynamic_cast<const BoundedObject *> (this);
         lo->get_end_pos (pos);
       }
       break;
@@ -615,7 +482,7 @@ ArrangerObject::
     [from_ticks, bpm_change, frames_per_tick] (auto &&obj) {
       using ObjT = base_type<decltype (obj)>;
       signed_frame_t frames_len_before = 0;
-      if constexpr (std::derived_from<ObjT, LengthableObject>)
+      if constexpr (std::derived_from<ObjT, BoundedObject>)
         {
           if (bpm_change)
             {
@@ -626,7 +493,7 @@ ArrangerObject::
       const double ratio = from_ticks ? frames_per_tick : 1.0 / frames_per_tick;
 
       obj->pos_->update (from_ticks, ratio);
-      if constexpr (std::derived_from<ObjT, LengthableObject>)
+      if constexpr (std::derived_from<ObjT, BoundedObject>)
         {
           obj->end_pos_->update (from_ticks, ratio);
 
@@ -736,22 +603,26 @@ ArrangerObject::
 void
 ArrangerObject::post_deserialize ()
 {
-  if (auto * ar = dynamic_cast<AudioRegion *> (this))
-    {
-      ar->read_from_pool_ = true;
-    }
+  std::visit (
+    [&] (auto &&self) {
+      using ObjT = base_type<decltype (self)>;
+      if constexpr (std::is_same_v<ObjT, AudioRegion>)
+        {
+          self->read_from_pool_ = true;
+        }
 
-  /* TODO: this acts as if a BPM change happened (and is only effective if so),
-   * so if no BPM change happened this is unnecessary, so this should be
-   * refactored in the future. this was added to fix copy-pasting audio regions
-   * after changing the BPM (see #4993) */
-  update_positions (true, true, AUDIO_ENGINE->frames_per_tick_);
+      /* TODO: this acts as if a BPM change happened (and is only effective if
+       * so), so if no BPM change happened this is unnecessary, so this should
+       * be refactored in the future. this was added to fix copy-pasting audio
+       * regions after changing the BPM (see #4993) */
+      update_positions (true, true, AUDIO_ENGINE->frames_per_tick_);
 
-  if (is_region ())
-    {
-      auto * r = dynamic_cast<Region *> (this);
-      r->post_deserialize_children ();
-    }
+      if constexpr (std::derived_from<ObjT, Region>)
+        {
+          self->post_deserialize_children ();
+        }
+    },
+    convert_to_variant<ArrangerObjectPtrVariant> (this));
 }
 
 void

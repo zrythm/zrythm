@@ -279,6 +279,16 @@ public:
   using ValueType = typename RegistryT::VariantType;
   using SpanType = std::span<const UuidType>;
 
+  /// constructor from single element
+  explicit UuidIdentifiableObjectSpan (
+    const RegistryT &registry,
+    const UuidType  &uuid)
+      : registry_ (registry),
+        uuids_ (std::span<const UuidType>{ std::addressof (uuid), 1 })
+  {
+  }
+
+  /// constructor from span of elements
   explicit UuidIdentifiableObjectSpan (const RegistryT &registry, SpanType uuids)
       : registry_ (registry), uuids_ (uuids)
   {
@@ -493,7 +503,7 @@ public:
 #endif
   /// constructor from single element
   explicit UuidIdentifiableObjectCompatibleSpan (const value_type &object)
-      : range_ (std::span<const value_type> (&object, 1))
+      : range_ (std::span<const value_type> (std::addressof (object), 1))
   {
   }
   /// UuidIdentifiableObjectSpan constructor
@@ -502,6 +512,14 @@ public:
     std::span<const typename RegistryT::UuidType> uuids)
     requires std::is_same_v<Range, utils::UuidIdentifiableObjectSpan<RegistryT>>
       : range_ (UuidIdentifiableObjectSpan<RegistryT> (registry, uuids))
+  {
+  }
+  /// UuidIdentifiableObjectSpan single element constructor
+  explicit UuidIdentifiableObjectCompatibleSpan (
+    const RegistryT           &registry,
+    const RegistryT::UuidType &uuid)
+    requires std::is_same_v<Range, utils::UuidIdentifiableObjectSpan<RegistryT>>
+      : range_ (UuidIdentifiableObjectSpan<RegistryT> (registry, uuid))
   {
   }
 
@@ -522,14 +540,14 @@ public:
     return std::visit ([] (const auto &obj) { return obj->get_uuid (); }, var);
   }
 
-  template <typename T> static auto is_type_projection (const value_type &var)
+  template <typename T> static auto type_projection (const value_type &var)
   {
     return std::holds_alternative<T *> (var);
   }
 
   template <typename T> bool contains_type () const
   {
-    return std::ranges::any_of (*this, is_type_projection<T>);
+    return std::ranges::any_of (*this, type_projection<T>);
   }
 
   template <typename BaseType>
@@ -583,7 +601,7 @@ public:
 
   template <typename T> auto get_elements_by_type () const
   {
-    return *this | std::views::filter (is_type_projection<T>)
+    return *this | std::views::filter (type_projection<T>)
            | std::views::transform (type_transformation<T>);
   }
 

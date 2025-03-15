@@ -71,7 +71,6 @@ ClipEditor::define_fields (const Context &ctx)
   using T = ISerializable<ClipEditor>;
   T::serialize_fields (
     ctx, T::make_field ("regionId", region_id_),
-    T::make_field ("hasRegion", has_region_),
     T::make_field ("pianoRoll", piano_roll_),
     T::make_field ("automationEditor", automation_editor_),
     T::make_field ("chordEditor", chord_editor_),

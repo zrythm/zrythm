@@ -39,3 +39,5 @@ using TrackRefVariant = to_reference_variant<TrackVariant>;
 using TrackConstRefVariant = to_const_reference_variant<TrackVariant>;
 using TrackUniquePtrVariant = to_unique_ptr_variant<TrackVariant>;
 using OptionalTrackPtrVariant = std::optional<TrackPtrVariant>;
+
+using TrackUuid = utils::UuidIdentifiableObject<Track>::Uuid;

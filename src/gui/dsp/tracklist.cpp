@@ -358,7 +358,7 @@ Tracklist::get_chord_track () const
 {
   auto span = get_track_span ();
   return std::get<ChordTrack *> (
-    *std::ranges::find_if (span, TrackSpan::is_type_projection<ChordTrack>));
+    *std::ranges::find_if (span, TrackSpan::type_projection<ChordTrack>));
 }
 
 bool
@@ -607,6 +607,86 @@ Tracklist::remove_track (
 }
 
 void
+Tracklist::clear_selections_for_object_siblings (
+  const ArrangerObject::Uuid &object_id)
+{
+  auto obj_var = PROJECT->find_arranger_object_by_id (object_id);
+  std::visit (
+    [&] (auto &&obj) {
+      using ObjT = base_type<decltype (obj)>;
+      if constexpr (std::derived_from<ObjT, RegionOwnedObject>)
+        {
+          auto region = obj->get_region ();
+          auto children = region->get_objects ();
+          for (auto &child : children)
+            {
+              child->setSelected (false);
+            }
+        }
+      else
+        {
+          auto tl_objs = get_timeline_objects_in_range ();
+          for (const auto &tl_obj_var : tl_objs)
+            {
+              std::visit (
+                [&] (auto &&tl_obj) { tl_obj->setSelected (false); },
+                tl_obj_var);
+            }
+        }
+    },
+    *obj_var);
+}
+
+std::vector<ArrangerObjectPtrVariant>
+Tracklist::get_timeline_objects_in_range (
+  std::optional<std::pair<dsp::Position, dsp::Position>> range) const
+{
+  if (!range)
+    {
+      dsp::Position pos;
+      pos.set_to_bar (
+        dsp::Position::POSITION_MAX_BAR,
+        PROJECT->getTransport ()->ticks_per_bar_,
+        AUDIO_ENGINE->frames_per_tick_);
+      range.emplace (dsp::Position{}, pos);
+    }
+  std::vector<ArrangerObjectPtrVariant> ret;
+  for (const auto &track : get_track_span ())
+    {
+      std::vector<ArrangerObjectPtrVariant> objs;
+      std::visit (
+        [&] (auto &&tr) {
+          tr->append_objects (objs);
+
+          for (auto &obj_var : objs)
+            {
+              std::visit (
+                [&] (auto &&o) {
+                  using ObjT = base_type<decltype (o)>;
+                  if constexpr (std::derived_from<ObjT, BoundedObject>)
+                    {
+                      if (o->is_hit_by_range (range->first, range->second))
+                        {
+                          ret.push_back (o);
+                        }
+                    }
+                  else
+                    {
+                      if (o->is_start_hit_by_range (range->first, range->second))
+                        {
+                          ret.push_back (o);
+                        }
+                    }
+                },
+                obj_var);
+            }
+        },
+        track);
+    }
+  return ret;
+}
+
+void
 Tracklist::move_track (
   const TrackUuid                               track_id,
   int                                           pos,
@@ -636,7 +716,7 @@ Tracklist::move_track (
       if (is_in_active_project () && !is_auditioner ())
         {
           /* clear the editor region if it exists and belongs to this track */
-          CLIP_EDITOR->unset_region_if_belongs_to_track (track_id, true);
+          CLIP_EDITOR->unset_region_if_belongs_to_track (track_id);
 
           /* deselect all objects */
           track->Track::unselect_all ();

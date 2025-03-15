@@ -1,10 +1,8 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_BACKEND_ARRANGER_OBJECT_H__
 #define __GUI_BACKEND_ARRANGER_OBJECT_H__
-
-#include <memory>
 
 #include "gui/backend/position_proxy.h"
 #include "gui/dsp/arranger_object_fwd.h"
@@ -13,84 +11,6 @@
 #include <QtGlobal>
 
 using namespace zrythm;
-
-namespace zrythm
-{
-namespace gui::actions
-{
-class UndoableAction;
-};
-};
-class ArrangerObject;
-class ArrangerSelections;
-class ChordObject;
-class ScaleObject;
-class AutomationPoint;
-class Velocity;
-class Marker;
-class Track;
-
-/**
- * @addtogroup dsp
- *
- * @{
- */
-
-constexpr int ARRANGER_OBJECT_MAGIC = 347616554;
-#define IS_ARRANGER_OBJECT(tr) \
-  (static_cast<ArrangerObject *> (tr)->magic_ == ARRANGER_OBJECT_MAGIC \
-   && static_cast<ArrangerObject *> (tr)->type_ >= ArrangerObject::Type::Region \
-   && static_cast<ArrangerObject *> (tr)->type_ \
-        <= ArrangerObject::Type::Velocity)
-#define IS_ARRANGER_OBJECT_AND_NONNULL(x) (x && IS_ARRANGER_OBJECT (x))
-
-static const char * arranger_object_type_strings[] = {
-  QT_TR_NOOP ("None"),         QT_TR_NOOP ("All"),
-  QT_TR_NOOP ("Region"),       QT_TR_NOOP ("Midi Note"),
-  QT_TR_NOOP ("Chord Object"), QT_TR_NOOP ("Scale Object"),
-  QT_TR_NOOP ("Marker"),       QT_TR_NOOP ("Automation Point"),
-  QT_TR_NOOP ("Velocity"),
-};
-
-template <typename T>
-concept ArrangerObjectSubclass = std::derived_from<T, ArrangerObject>;
-
-class LengthableObject;
-
-class MarkerTrack;
-class InstrumentTrack;
-class MidiTrack;
-class MasterTrack;
-class MidiGroupTrack;
-class AudioGroupTrack;
-class FolderTrack;
-class MidiBusTrack;
-class AudioBusTrack;
-class AudioTrack;
-class ChordTrack;
-class ModulatorTrack;
-class TempoTrack;
-class LanedTrack;
-
-class TimelineSelections;
-class MidiSelections;
-class ChordSelections;
-class AutomationSelections;
-class AudioSelections;
-using ArrangerSelectionsVariant = std::variant<
-  TimelineSelections,
-  MidiSelections,
-  ChordSelections,
-  AutomationSelections,
-  AudioSelections>;
-using ArrangerSelectionsPtrVariant =
-  to_pointer_variant<ArrangerSelectionsVariant>;
-// using ArrangerSelectionsConstPtrVariant =
-// to_const_pointer_variant<ArrangerSelectionsVariant>;
-using ClipEditorArrangerSelectionsVariant = std::
-  variant<MidiSelections, ChordSelections, AutomationSelections, AudioSelections>;
-using ClipEditorArrangerSelectionsPtrVariant =
-  to_pointer_variant<ClipEditorArrangerSelectionsVariant>;
 
 #define DEFINE_ARRANGER_OBJECT_QML_PROPERTIES(ClassType) \
 public: \
@@ -108,7 +28,7 @@ public: \
   Q_PROPERTY (bool hasLength READ getHasLength CONSTANT) \
   bool getHasLength () const \
   { \
-    return std::derived_from<ClassType, LengthableObject>; \
+    return std::derived_from<ClassType, BoundedObject>; \
   } \
   /* ================================================================ */ \
   /* selected (changes to be emitted by each ArrangerSelections) */ \
@@ -118,14 +38,16 @@ public: \
   { \
     return is_selected (); \
   } \
-  Q_INVOKABLE void selectUnique () \
+  void setSelected (bool selected) \
   { \
-    if (is_selected ()) \
+    if (selected == getSelected ()) \
       { \
         return; \
       } \
 \
-    select (true, false, true); \
+    selected_ = selected; \
+\
+    Q_EMIT selectedChanged (selected); \
   } \
   Q_SIGNAL void selectedChanged (bool selected); \
   /* ================================================================ */ \
@@ -160,7 +82,10 @@ class ArrangerObject
   Q_DISABLE_COPY_MOVE (ArrangerObject)
 
 public:
-  using TrackUuid = utils::UuidIdentifiableObject<Track>::Uuid;
+  using TrackUuid = TrackUuid;
+
+  static constexpr double DEFAULT_NUDGE_TICKS = 0.1;
+
   /**
    * Flag used in some functions.
    */
@@ -232,54 +157,6 @@ public:
   void generate_transient ();
 
   /**
-   * Returns if the object type has a length.
-   */
-  static constexpr bool type_has_length (Type type)
-  {
-    return (type == Type::Region || type == Type::MidiNote);
-  }
-
-  bool has_length () const { return type_has_length (type_); }
-
-  /**
-   * Returns if the object type has a global position.
-   */
-  static constexpr bool type_has_global_pos (Type type)
-  {
-    return (
-      type == Type::Region || type == Type::ScaleObject || type == Type::Marker);
-  }
-
-  static constexpr bool type_has_name (Type type)
-  {
-    return (type == Type::Region || type == Type::Marker);
-  }
-
-  /** Returns if the object can loop. */
-  static constexpr bool type_can_loop (Type type)
-  {
-    return (type == Type::Region);
-  }
-
-  static constexpr bool type_can_mute (Type type)
-  {
-    return (type == Type::Region || type == Type::MidiNote);
-  }
-
-  static constexpr bool type_owned_by_region (Type type)
-  {
-    return (
-      type == Type::Velocity || type == Type::MidiNote
-      || type == Type::ChordObject || type == Type::AutomationPoint);
-  }
-
-  bool owned_by_region () const { return type_owned_by_region (type_); }
-
-  bool can_mute () const { return type_can_mute (type_); }
-
-  bool has_name () const { return type_has_name (type_); }
-
-  /**
    * @brief Returns whether the object is hovered in the corresponding arranger.
    *
    * @return true
@@ -304,36 +181,6 @@ public:
    * Initializes the object after loading a Project.
    */
   virtual void init_loaded () = 0;
-
-  /**
-   * Returns the ArrangerSelections corresponding to the given object type.
-   */
-  template <typename T = ArrangerSelections>
-  static T * get_selections_for_type (Type type);
-
-  /**
-   * @brief Create an ArrangerSelections instance with a clone of this object.
-   */
-  std::unique_ptr<ArrangerSelections>
-  create_arranger_selections_from_this () const;
-
-  /**
-   * Selects the object by adding it to its corresponding selections or making
-   * it the only selection.
-   *
-   * @param select 1 to select, 0 to deselect.
-   * @param append 1 to append, 0 to make it the only selection.
-   */
-  static void select (
-    const ArrangerObjectPtr &obj,
-    bool                     select,
-    bool                     append,
-    bool                     fire_events);
-
-  void select (bool select, bool append, bool fire_events)
-  {
-    ArrangerObject::select (this, select, append, fire_events);
-  }
 
   /**
    * Returns whether the given object is hit by the given  range.
@@ -374,7 +221,7 @@ public:
   /**
    * Returns if the object is in the selections.
    */
-  bool is_selected () const;
+  bool is_selected () const { return selected_; }
 
   /**
    * @brief Prints the given object to a string.
@@ -452,16 +299,6 @@ public:
   set_position (const dsp::Position * pos, PositionType pos_type, bool validate);
 
   /**
-   * Copies identifier values from src to this object.
-   *
-   * Used by `UndoableAction`s where only partial copies that identify the
-   * original objects are needed.
-   *
-   * Need to rethink this as it's not easily maintainable.
-   */
-  void copy_identifier (const ArrangerObject &src);
-
-  /**
    * Moves the object by the given amount of ticks.
    */
   void move (double ticks);
@@ -492,16 +329,6 @@ public:
   ATTR_HOT virtual TrackPtrVariant get_track () const;
 
   TrackUuid get_track_id () const { return track_id_; }
-
-  static const char * get_type_as_string (Type type)
-  {
-    return arranger_object_type_strings[static_cast<int> (type)];
-  }
-
-  const char * get_type_as_string () const
-  {
-    return get_type_as_string (type_);
-  }
 
   /**
    * @brief Performs some post-deserialization logic, like adjusting positions
@@ -574,19 +401,6 @@ public:
    */
   virtual bool is_deletable () const { return true; };
 
-  bool is_renamable () const
-  {
-    return type_has_name (type_) && is_deletable ();
-  };
-
-  bool can_loop () const { return type_can_loop (type_); };
-
-  bool is_region () const { return type_ == Type::Region; };
-
-  bool is_scale_object () const { return type_ == Type::ScaleObject; };
-  bool is_marker () const { return type_ == Type::Marker; };
-  bool is_chord_object () const { return type_ == Type::ChordObject; };
-
 protected:
   void
   copy_members_from (const ArrangerObject &other, ObjectCloneType clone_type);
@@ -637,8 +451,6 @@ public:
    */
   ArrangerObject * main_ = nullptr;
 
-  int magic_ = ARRANGER_OBJECT_MAGIC;
-
   /**
    * Whether deleted with delete tool.
    *
@@ -648,7 +460,9 @@ public:
   bool deleted_temporarily_ = false;
 
   /** Flags. */
-  Flags flags_ = {};
+  Flags flags_{};
+
+  bool selected_{};
 
   /**
    * Whether part of an auditioner track. */
@@ -666,11 +480,22 @@ using ArrangerObjectRegistry =
   utils::OwningObjectRegistry<ArrangerObjectPtrVariant, ArrangerObject>;
 
 template <typename T>
+concept ArrangerObjectSubclass = std::derived_from<T, ArrangerObject>;
+
+template <typename T>
 concept FinalArrangerObjectSubclass =
   std::derived_from<T, ArrangerObject> && FinalClass<T> && CompleteType<T>;
 
-/**
- * @}
- */
+DEFINE_ENUM_FORMATTER (
+  ArrangerObject::Type,
+  ArrangerObject_Type,
+  QT_TR_NOOP ("None"),
+  QT_TR_NOOP ("All"),
+  QT_TR_NOOP ("Region"),
+  QT_TR_NOOP ("Midi Note"),
+  QT_TR_NOOP ("Chord Object"),
+  QT_TR_NOOP ("Scale Object"),
+  QT_TR_NOOP ("Marker"),
+  QT_TR_NOOP ("Automation Point"));
 
 #endif

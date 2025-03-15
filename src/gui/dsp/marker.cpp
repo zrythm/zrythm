@@ -11,7 +11,7 @@ Marker::Marker (QObject * parent) : Marker ({}, parent) { }
 
 Marker::Marker (const std::string &name, QObject * parent)
     : ArrangerObject (ArrangerObject::Type::Marker), QObject (parent),
-      NameableObject (name)
+      NamedObject (name)
 {
   ArrangerObject::parent_base_qproperties (*this);
 }
@@ -20,7 +20,7 @@ void
 Marker::init_loaded ()
 {
   ArrangerObject::init_loaded_base ();
-  NameableObject::init_loaded_base ();
+  NamedObject::init_loaded_base ();
 }
 
 void
@@ -29,7 +29,7 @@ Marker::init_after_cloning (const Marker &other, ObjectCloneType clone_type)
 {
   marker_type_ = other.marker_type_;
   marker_track_index_ = other.marker_track_index_;
-  NameableObject::copy_members_from (other, clone_type);
+  NamedObject::copy_members_from (other, clone_type);
   TimelineObject::copy_members_from (other, clone_type);
   ArrangerObject::copy_members_from (other, clone_type);
 }
@@ -86,7 +86,7 @@ Marker::validate (bool is_project, double frames_per_tick) const
 {
   if (
     !ArrangerObject::are_members_valid (is_project)
-    || !NameableObject::are_members_valid (is_project))
+    || !NamedObject::are_members_valid (is_project))
     return false;
 
   return true;

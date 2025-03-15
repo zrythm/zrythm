@@ -57,8 +57,8 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
    * show pressed keys in the UI) */
   if (
     owner_type == PortIdentifier::OwnerType::TrackProcessor && is_output ()
-    && events.has_any () && CLIP_EDITOR->has_region_
-    && CLIP_EDITOR->region_id_.track_uuid_ == id_->get_track_id ().value ())
+    && events.has_any () && CLIP_EDITOR->has_region ()
+    && *CLIP_EDITOR->get_track_id () == id_->get_track_id ().value ())
     [[unlikely]]
     {
       bool events_processed = false;

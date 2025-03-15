@@ -9,12 +9,11 @@
 #include <cstdint>
 #include <memory>
 
+#include "dsp/position.h"
 #include "gui/backend/backend/piano_roll.h"
-#include "gui/dsp/lengthable_object.h"
+#include "gui/dsp/bounded_object.h"
 #include "gui/dsp/muteable_object.h"
 #include "gui/dsp/velocity.h"
-
-#include "dsp/position.h"
 
 /**
  * @addtogroup dsp
@@ -33,7 +32,7 @@ class MidiNote final
     : public QObject,
       public MuteableObject,
       public RegionOwnedObjectImpl<MidiRegion>,
-      public LengthableObject,
+      public BoundedObject,
       public ICloneable<MidiNote>,
       public zrythm::utils::serialization::ISerializable<MidiNote>
 {
@@ -59,7 +58,7 @@ public:
 
   void init_loaded () override;
 
-  void set_cache_val (const uint8_t val) { cache_val_ = val; }
+  void set_cache_val (const uint8_t val) { cache_pitch_ = val; }
 
   /**
    * Gets the MIDI note's value as a string (eg "C#4").
@@ -83,11 +82,6 @@ public:
    * @param delta Y (0-127)
    */
   void shift_pitch (int delta);
-
-  /**
-   * Returns if the MIDI note is hit at given pos (in the timeline).
-   */
-  bool is_hit (signed_frame_t gframes) const;
 
   /**
    * Sends a note off if currently playing and sets
@@ -120,17 +114,17 @@ public:
   Velocity * vel_ = nullptr;
 
   /** The note/pitch, (0-127). */
-  uint8_t val_ = 0;
+  uint8_t pitch_ = 0;
 
   /** Cached note, for live operations. */
-  uint8_t cache_val_ = 0;
+  uint8_t cache_pitch_ = 0;
 
   /** Whether or not this note is currently listened to */
   bool currently_listened_ = false;
 
   /** The note/pitch that is currently playing, if @ref
    * currently_listened_ is true. */
-  uint8_t last_listened_val_ = 0;
+  uint8_t last_listened_pitch_ = 0;
 
   int magic_ = MIDI_NOTE_MAGIC;
 };
@@ -138,20 +132,20 @@ public:
 inline bool
 operator== (const MidiNote &lhs, const MidiNote &rhs)
 {
-  return lhs.val_ == rhs.val_ && *lhs.vel_ == *rhs.vel_
+  return lhs.pitch_ == rhs.pitch_ && *lhs.vel_ == *rhs.vel_
          && static_cast<const MuteableObject &> (lhs)
               == static_cast<const MuteableObject &> (rhs)
          && static_cast<const RegionOwnedObject &> (lhs)
               == static_cast<const RegionOwnedObject &> (rhs)
-         && static_cast<const LengthableObject &> (lhs)
-              == static_cast<const LengthableObject &> (rhs)
+         && static_cast<const BoundedObject &> (lhs)
+              == static_cast<const BoundedObject &> (rhs)
          && static_cast<const ArrangerObject &> (lhs)
               == static_cast<const ArrangerObject &> (rhs);
 }
 
 DEFINE_OBJECT_FORMATTER (MidiNote, MidiNote, [] (const MidiNote &mn) {
   return fmt::format (
-    "MidiNote [{} ~ {}]: note {}, vel {}", *mn.pos_, *mn.end_pos_, mn.val_,
+    "MidiNote [{} ~ {}]: note {}, vel {}", *mn.pos_, *mn.end_pos_, mn.pitch_,
     mn.vel_->vel_);
 });
 

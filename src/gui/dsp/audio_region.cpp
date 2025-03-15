@@ -26,7 +26,7 @@ AudioRegion::AudioRegion (QObject * parent)
     : ArrangerObject (Type::Region), QObject (parent)
 {
   ArrangerObject::parent_base_qproperties (*this);
-  LengthableObject::parent_base_qproperties (*this);
+  BoundedObject::parent_base_qproperties (*this);
 }
 
 void
@@ -560,12 +560,6 @@ AudioRegion::fix_positions (double frames_per_tick)
   return false;
 }
 
-std::optional<ClipEditorArrangerSelectionsPtrVariant>
-AudioRegion::get_arranger_selections () const
-{
-  return AUDIO_SELECTIONS;
-}
-
 bool
 AudioRegion::validate (bool is_project, double frames_per_tick) const
 {
@@ -601,7 +595,7 @@ void
 AudioRegion::init_loaded ()
 {
   ArrangerObject::init_loaded_base ();
-  NameableObject::init_loaded_base ();
+  NamedObject::init_loaded_base ();
   read_from_pool_ = true;
   z_return_if_fail (get_clip ());
 }
@@ -627,10 +621,10 @@ AudioRegion::init_after_cloning (
   RegionImpl::copy_members_from (other, clone_type);
   FadeableObject::copy_members_from (other, clone_type);
   TimelineObject::copy_members_from (other, clone_type);
-  NameableObject::copy_members_from (other, clone_type);
+  NamedObject::copy_members_from (other, clone_type);
   LoopableObject::copy_members_from (other, clone_type);
   MuteableObject::copy_members_from (other, clone_type);
-  LengthableObject::copy_members_from (other, clone_type);
+  BoundedObject::copy_members_from (other, clone_type);
   ColoredObject::copy_members_from (other, clone_type);
   ArrangerObject::copy_members_from (other, clone_type);
 }
