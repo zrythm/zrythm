@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
@@ -14,19 +14,58 @@ ColumnLayout {
         Layout.fillHeight: true
         currentIndex: centerTabBar.currentIndex
 
-        ZrythmResizablePanel {
-            title: "Piano Roll"
-            vertical: true
+        GridLayout {
+            id: editorContentGrid
 
-            content: Rectangle {
-                color: "#1C1C1C"
+            rows: 2
+            columns: 3
 
-                Label {
-                    anchors.centerIn: parent
-                    text: "Piano Roll content"
-                    color: "white"
+            RowLayout {
+                id: selectedRegionInfo
+
+                Layout.fillHeight: true
+                Layout.rowSpan: 2
+
+                Rectangle {
+                    color: "orange"
+                    Layout.fillHeight: true
+                    width: 5
                 }
 
+                RotatedLabel {
+                    id: rotatedText
+
+                    font: Style.normalTextFont
+                    Layout.fillHeight: true
+                    text: "Audio Region 1"
+                }
+
+            }
+
+            ZrythmToolBar {
+                id: editorToolbar
+
+                Layout.columnSpan: 2
+                Layout.fillWidth: true
+                leftItems: [
+                    ToolButton {
+                        text: "left"
+                    }
+                ]
+                centerItems: [
+                    ToolButton {
+                        text: "center"
+                    }
+                ]
+                rightItems: [
+                    ToolButton {
+                        text: "right"
+                    }
+                ]
+            }
+
+            StackLayout {
+                id: editorSpecializedStack
             }
 
         }

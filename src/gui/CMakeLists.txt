@@ -86,6 +86,7 @@ set(rel_qml_file_paths
   components/basic/LinkedButtons.qml
   components/basic/MuteButton.qml
   components/basic/RecordButton.qml
+  components/basic/RotatedLabel.qml
   components/basic/SoloButton.qml
   components/basic/ZrythmActionRow.qml
   components/basic/ZrythmAlertDialog.qml
