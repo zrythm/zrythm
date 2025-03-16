@@ -1300,6 +1300,12 @@ Project::getTool () const
   return tool_;
 }
 
+ClipEditor *
+Project::getClipEditor () const
+{
+  return clip_editor_;
+}
+
 gui::actions::UndoManager *
 Project::getUndoManager () const
 {

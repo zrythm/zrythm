@@ -77,6 +77,7 @@ ApplicationWindow {
                     SplitView.minimumHeight: 30
                     visible: GlobalState.settingsManager.bottomPanelVisible
                     Layout.verticalStretchFactor: 1
+                    project: root.project
                 }
 
             }

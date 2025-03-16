@@ -44,14 +44,16 @@ public:
     this DerivedT    &self,
     GenericBoolGetter autoarm_enabled_checker)
   {
-    self.connect (&self, &DerivedT::selectedChanged, &self, [&] {
-      if (autoarm_enabled_checker ())
-        {
-          const auto selected = self.is_selected ();
-          self.set_recording (selected);
-          self.record_set_automatically_ = selected;
-        }
-    });
+    self.get_recording_port ().set_owner (self);
+    self.connect (
+      &self, &DerivedT::selectedChanged, &self, [&self, autoarm_enabled_checker] {
+        if (autoarm_enabled_checker ())
+          {
+            const auto selected = self.is_selected ();
+            self.set_recording (selected);
+            self.record_set_automatically_ = selected;
+          }
+      });
   }
 
 protected:

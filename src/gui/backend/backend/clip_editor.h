@@ -34,8 +34,7 @@ class ClipEditor final
 {
   Q_OBJECT
   QML_ELEMENT
-  // TODO
-  // Q_PROPERTY(QVariant region READ get_region NOTIFY regionChanged)
+  Q_PROPERTY (QVariant region READ getRegion NOTIFY regionChanged)
 public:
   ClipEditor (const DeserializationDependencyHolder &dh)
       : ClipEditor (
@@ -47,6 +46,23 @@ public:
       : QObject (parent), object_registry_ (reg)
   {
   }
+
+  // ============================================================================
+  // QML Interface
+  // ============================================================================
+
+  QVariant getRegion () const
+  {
+    if (has_region ())
+      {
+        return QVariant::fromStdVariant (get_region ().value ());
+      }
+
+    return QVariant{};
+  }
+  Q_SIGNAL void regionChanged (QVariant region);
+
+  // ============================================================================
 
   /**
    * Inits the ClipEditor after a Project is loaded.

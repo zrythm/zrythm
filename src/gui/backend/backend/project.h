@@ -103,6 +103,7 @@ class Project final
   Q_PROPERTY (Timeline * timeline READ getTimeline CONSTANT FINAL)
   Q_PROPERTY (Transport * transport READ getTransport CONSTANT FINAL)
   Q_PROPERTY (gui::backend::Tool * tool READ getTool CONSTANT FINAL)
+  Q_PROPERTY (ClipEditor * clipEditor READ getClipEditor CONSTANT FINAL)
   Q_PROPERTY (
     gui::actions::UndoManager * undoManager READ getUndoManager CONSTANT FINAL)
 
@@ -160,6 +161,7 @@ public:
   Timeline *  getTimeline () const;
   Transport *                 getTransport () const;
   gui::backend::Tool *        getTool () const;
+  ClipEditor *                getClipEditor () const;
   gui::actions::UndoManager * getUndoManager () const;
 
   Q_SIGNAL void titleChanged (const QString &title);

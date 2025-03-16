@@ -106,6 +106,10 @@ set(rel_qml_file_paths
   components/arranger/RegionBase.qml
   components/arranger/ScaleObject.qml
   components/arranger/Timeline.qml
+  components/editors/AudioEditorPane.qml
+  components/editors/AutomationEditorPane.qml
+  components/editors/MidiEditorPane.qml
+  components/editors/ChordEditorPane.qml
   components/AutomationTracksListView.qml
   components/MainToolbar.qml
   components/BottomDock.qml
