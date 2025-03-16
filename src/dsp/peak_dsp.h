@@ -54,7 +54,7 @@ public:
    * @param p Frame array.
    * @param n Number of samples.
    */
-  ATTR_HOT void process (float * p, int n);
+  [[gnu::hot]] void process (float * p, int n);
 
   float read_f ();
 

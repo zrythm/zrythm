@@ -110,7 +110,7 @@ public:
   /**
    * Inits fader after a project is loaded.
    */
-  ATTR_COLD void init_loaded (
+  [[gnu::cold]] void init_loaded (
     PortRegistry     &port_registry,
     Track *           track,
     ControlRoom *     control_room,
@@ -161,7 +161,10 @@ public:
   /**
    * Returns if the track is soloed.
    */
-  ATTR_HOT bool get_soloed () const { return get_solo_port ().is_toggled (); }
+  [[gnu::hot]] bool get_soloed () const
+  {
+    return get_solo_port ().is_toggled ();
+  }
 
   /**
    * Returns whether the fader is not soloed on its
@@ -234,7 +237,7 @@ public:
   /**
    * Clears all buffers.
    */
-  ATTR_HOT void clear_buffers ();
+  [[gnu::hot]] void clear_buffers ();
 
   /**
    * Sets the fader levels from a normalized value
@@ -251,7 +254,7 @@ public:
   /**
    * Process the Fader.
    */
-  ATTR_HOT void process_block (EngineProcessTimeInfo time_nfo) override;
+  [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;
 
   bool is_in_active_project () const override;
 

@@ -164,7 +164,7 @@ public:
   void
   from_seconds (double secs, sample_rate_t sample_rate, double ticks_per_frame);
 
-  inline void from_frames (const signed_frame_t frames, double ticks_per_frame)
+  void from_frames (const signed_frame_t frames, double ticks_per_frame)
   {
     frames_ = frames;
     update_ticks_from_frames (ticks_per_frame);
@@ -173,7 +173,7 @@ public:
   /**
    * Sets position to the given total tick count.
    */
-  inline void from_ticks (double ticks, double frames_per_tick)
+  void from_ticks (double ticks, double frames_per_tick)
   {
     ticks_ = ticks;
     update_frames_from_ticks (frames_per_tick);
@@ -196,12 +196,12 @@ public:
 
   void add_beats (int beats, int ticks_per_beat, double frames_per_tick);
 
-  inline void add_sixteenths (int sixteenths, double frames_per_tick)
+  void add_sixteenths (int sixteenths, double frames_per_tick)
   {
     add_ticks (sixteenths * TICKS_PER_SIXTEENTH_NOTE_DBL, frames_per_tick);
   }
 
-  inline void add_ticks (double ticks, double frames_per_tick)
+  void add_ticks (double ticks, double frames_per_tick)
   {
     ticks_ += ticks;
     update_frames_from_ticks (frames_per_tick);
@@ -225,8 +225,7 @@ public:
     return tmp.ticks_;
   }
 
-  inline void
-  add_ms (double ms, sample_rate_t sample_rate, double ticks_per_frame)
+  void add_ms (double ms, sample_rate_t sample_rate, double ticks_per_frame)
   {
     add_frames (ms_to_frames (ms, sample_rate), ticks_per_frame);
   }
@@ -250,7 +249,7 @@ public:
    * @param ticks_per_frame If zero, AudioEngine.ticks_per_frame
    *   will be used instead.
    */
-  ATTR_HOT void update_ticks_from_frames (double ticks_per_frame);
+  [[gnu::hot]] void update_ticks_from_frames (double ticks_per_frame);
 
   /**
    * Converts ticks to frames.
@@ -267,10 +266,10 @@ public:
    * @param frames_per_tick If zero, AudioEngine.frames_per_tick
    *   will be used instead.
    */
-  ATTR_HOT ATTR_NONNULL void update_frames_from_ticks (double frames_per_tick);
+  [[gnu::hot]] void update_frames_from_ticks (double frames_per_tick);
 
   /* FIXME DELETE since update_rtsafe exists !!!!!!!!!!!!!!!!!!!!!!!!!!! */
-  inline void update (bool from_ticks, double ratio)
+  void update (bool from_ticks, double ratio)
   {
     if (from_ticks)
       update_frames_from_ticks (ratio);
@@ -284,8 +283,7 @@ public:
    *
    * @param pos Position to set to.
    */
-  inline void
-  set_to_midway_pos (const Position &start_pos, const Position &end_pos)
+  void set_to_midway_pos (const Position &start_pos, const Position &end_pos)
   {
     ticks_ = start_pos.ticks_ + (end_pos.ticks_ - start_pos.ticks_) / 2.0;
     update_frames_from_ticks (0.0);
@@ -315,7 +313,7 @@ public:
     double frames_per_tick,
     int    decimal_places = 4) const;
 
-  ATTR_NONNULL void to_string (
+  [[gnu::nonnull]] void to_string (
     int    beats_per_bar,
     int    sixteenths_per_beat,
     double frames_per_tick,
@@ -368,7 +366,7 @@ public:
    *
    * For example, 4.2.1.21 would become -4.2.1.21.
    */
-  inline void change_sign ()
+  void change_sign ()
   {
     ticks_ = -ticks_;
     frames_ = -frames_;
@@ -427,7 +425,7 @@ public:
    * @param p1 Snap point 1.
    * @param p2 Snap point 2.
    */
-  inline Position &get_closest_position (Position &p1, Position &p2) const
+  Position &get_closest_position (Position &p1, Position &p2) const
   {
     if (ticks_ - p1.ticks_ <= p2.ticks_ - ticks_)
       {

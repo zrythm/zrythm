@@ -104,7 +104,7 @@ private:
    *
    * @throw ZrythmException if an error occurred.
    */
-  ATTR_COLD static void upgrade_schema (char ** yaml, int src_ver);
+  [[gnu::cold]] static void upgrade_schema (char ** yaml, int src_ver);
 
   /**
    * @brief Upgrades from YAML to JSON.
@@ -112,7 +112,7 @@ private:
    * @param txt
    * @throw ZrythmException if an error occurred.
    */
-  ATTR_COLD static void upgrade_to_json (char ** txt);
+  [[gnu::cold]] static void upgrade_to_json (char ** txt);
 #endif
 
   /**

@@ -522,7 +522,7 @@ public:
   /**
    * Returns if the Track should have a piano roll.
    */
-  ATTR_CONST
+  [[gnu::const]]
   static constexpr bool type_has_piano_roll (const Type type)
   {
     return type == Type::Midi || type == Type::Instrument;

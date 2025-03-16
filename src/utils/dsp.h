@@ -24,7 +24,7 @@ namespace zrythm::utils::float_ranges
 /**
  * Fill the buffer with the given value.
  */
-ATTR_NONNULL ATTR_HOT static inline void
+[[using gnu: nonnull, hot]] static inline void
 fill (float * buf, float val, size_t size, bool optimized = true)
 {
   if (optimized)
@@ -40,7 +40,7 @@ fill (float * buf, float val, size_t size, bool optimized = true)
 /**
  * Clamp the buffer to min/max.
  */
-ATTR_NONNULL ATTR_HOT static inline void
+[[using gnu: nonnull, hot]] static inline void
 clip (float * buf, float minf, float maxf, size_t size, bool optimized = true)
 {
   if (optimized)
@@ -58,7 +58,7 @@ clip (float * buf, float minf, float maxf, size_t size, bool optimized = true)
 /**
  * Compute dest[i] = src[i].
  */
-ATTR_NONNULL ATTR_HOT static inline void
+[[using gnu: nonnull, hot]] static inline void
 copy (float * dest, const float * src, size_t size, bool optimized = true)
 {
   if (optimized)
@@ -74,7 +74,7 @@ copy (float * dest, const float * src, size_t size, bool optimized = true)
 /**
  * Scale: dst[i] = dst[i] * k.
  */
-ATTR_NONNULL ATTR_HOT static inline void
+[[using gnu: nonnull, hot]] static inline void
 mul_k2 (float * dest, float k, size_t size, bool optimized = true)
 {
   if (optimized)
@@ -90,7 +90,7 @@ mul_k2 (float * dest, float k, size_t size, bool optimized = true)
 /**
  * Gets the maximum absolute value of the buffer (as amplitude).
  */
-[[nodiscard]] ATTR_NONNULL static inline float
+[[nodiscard]] [[using gnu: nonnull]] static inline float
 abs_max (const float * buf, size_t size, bool optimized = true)
 {
   if (optimized)
@@ -110,7 +110,7 @@ abs_max (const float * buf, size_t size, bool optimized = true)
  *
  * @return Whether the peak changed.
  */
-ATTR_HOT ATTR_NONNULL static inline bool
+[[using gnu: nonnull, hot]] static inline bool
 abs_max_with_existing_peak (
   const float * buf,
   float *       cur_peak,
@@ -144,7 +144,7 @@ abs_max_with_existing_peak (
 /**
  * Gets the minimum of the buffer.
  */
-ATTR_NONNULL static inline float
+[[gnu::nonnull]] static inline float
 min (const float * buf, size_t size, bool optimized = true)
 {
   if (optimized)
@@ -160,7 +160,7 @@ min (const float * buf, size_t size, bool optimized = true)
 /**
  * Gets the maximum of the buffer.
  */
-ATTR_NONNULL static inline float
+[[gnu::nonnull]] static inline float
 max (const float * buf, size_t size, bool optimized = true)
 {
   if (optimized)
@@ -176,7 +176,7 @@ max (const float * buf, size_t size, bool optimized = true)
 /**
  * Calculate dst[i] = dst[i] + src[i].
  */
-ATTR_NONNULL ATTR_HOT static inline void
+[[using gnu: nonnull, hot]] static inline void
 add2 (float * dest, const float * src, size_t count, bool optimized = true)
 {
   if (optimized)
@@ -192,7 +192,7 @@ add2 (float * dest, const float * src, size_t count, bool optimized = true)
 /**
  * @brief Calculate dest[i] = dest[i] + src[i] * k.
  */
-ATTR_NONNULL ATTR_HOT static inline void
+[[using gnu: nonnull, hot]] static inline void
 mix_product (
   float *       dest,
   const float * src,
@@ -215,7 +215,7 @@ mix_product (
 /**
  * Reverse the order of samples: dst[i] <=> src[count - i - 1].
  */
-ATTR_NONNULL ATTR_HOT static inline void
+[[using gnu: nonnull, hot]] static inline void
 reverse (float * dest, const float * src, size_t size)
 {
   std::reverse_copy (src, src + size, dest);
@@ -225,7 +225,7 @@ reverse (float * dest, const float * src, size_t size)
  * Calculate normalized values:
  * dst[i] = src[i] / (max { abs(src) }).
  */
-ATTR_NONNULL ATTR_HOT static inline void
+[[using gnu: nonnull, hot]] static inline void
 normalize (float * dest, const float * src, size_t size, bool optimize = true)
 {
   copy (dest, src, size, optimize);
@@ -247,7 +247,7 @@ normalize (float * dest, const float * src, size_t size, bool optimize = true)
  * @param fade_from_multiplier Multiplier to fade from (0 to
  *   fade from silence.)
  */
-ATTR_NONNULL void
+[[gnu::nonnull]] void
 linear_fade_in_from (
   float * dest,
   int32_t start_offset,
@@ -266,7 +266,7 @@ linear_fade_in_from (
  * @param fade_to_multiplier Multiplier to fade to (0 to fade
  *   to silence.)
  */
-ATTR_NONNULL void
+[[gnu::nonnull]] void
 linear_fade_out_to (
   float * dest,
   int32_t start_offset,
@@ -285,7 +285,7 @@ linear_fade_out_to (
  * - equal power sum = (L+R) * 0.7079 (-3dB)
  * - equal amplitude sum = (L+R) /2 (-6.02dB)
  */
-ATTR_NONNULL void
+[[gnu::nonnull]] void
 make_mono (
   float * l,
   float * r,

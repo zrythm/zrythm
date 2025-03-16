@@ -74,7 +74,7 @@ public:
    * non-cached region will be used.
    * @param x Normalized x.
    */
-  ATTR_HOT double
+  [[gnu::hot]] double
   get_normalized_value_in_curve (AutomationRegion * region, double x) const;
 
   std::string print_to_str () const override;

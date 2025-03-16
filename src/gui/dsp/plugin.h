@@ -411,7 +411,7 @@ public:
   /**
    * Prepare plugin for processing.
    */
-  ATTR_HOT void prepare_process ();
+  [[gnu::hot]] void prepare_process ();
 
   /**
    * Instantiates the plugin (e.g. when adding to a channel).
@@ -428,7 +428,7 @@ public:
   /**
    * Process plugin.
    */
-  ATTR_HOT void process_block (EngineProcessTimeInfo time_nfo) override;
+  [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;
 
   std::string get_node_name () const override;
 
@@ -469,7 +469,7 @@ public:
    *
    * This is called when the plugin is bypassed.
    */
-  ATTR_HOT void process_passthrough (EngineProcessTimeInfo time_nfo);
+  [[gnu::hot]] void process_passthrough (EngineProcessTimeInfo time_nfo);
 
   /**
    * Process hide ui

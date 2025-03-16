@@ -224,7 +224,7 @@ public:
    * @param local_offset The local offset from 0 in this cycle.
    * @param nframes Number of frames to process.
    */
-  ATTR_HOT void append_w_filter (
+  [[gnu::hot]] void append_w_filter (
     const MidiEventVector              &src,
     std::optional<std::array<bool, 16>> channels,
     nframes_t                           local_offset,

@@ -48,7 +48,7 @@ public:
 
   std::string get_name () const { return name_; }
 
-  ATTR_COLD void init_loaded (ModulatorTrack &track);
+  [[gnu::cold]] void init_loaded (ModulatorTrack &track);
 
   void set_name (std::string_view name) { name_ = name; }
 

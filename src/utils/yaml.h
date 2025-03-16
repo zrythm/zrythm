@@ -249,7 +249,7 @@ yaml_serialize (void * data, const cyaml_schema_value_t * schema);
 void *
 yaml_deserialize (const char * yaml, const cyaml_schema_value_t * schema);
 
-ATTR_NONNULL void
+[[gnu::nonnull]] void
 yaml_print (void * data, const cyaml_schema_value_t * schema);
 
 /**

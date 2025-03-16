@@ -225,7 +225,7 @@ ui_px_to_pos_editor (double px, bool has_padding)
 #endif
 
 #if 0
-ATTR_NONNULL static inline int
+[[gnu::nonnull]] static inline int
 pos_to_px (const Position pos, int use_padding, RulerWidget * ruler)
 {
   int px = (int) (pos.ticks_ * ruler->px_per_tick);

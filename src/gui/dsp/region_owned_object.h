@@ -70,7 +70,7 @@ public:
   /**
    * If the object is part of a Region, returns it, otherwise returns NULL.
    */
-  ATTR_HOT RegionT * get_region () const;
+  [[gnu::hot]] RegionT * get_region () const;
 };
 
 inline bool

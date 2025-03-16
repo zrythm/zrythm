@@ -377,19 +377,6 @@ endif()
 # Zrythm-specific compile definitions
 set(zrythm_definitions)
 
-# Realtime-sanitizer definitions (available since clang 20.0.0)
-set(attribute_macros blocking nonblocking allocating nonallocating)
-foreach(a ${attribute_macros})
-  string(TOUPPER ${a} a_upper)
-  set(attribute_def "ATTR_${a_upper}=")
-  if(${compiler_is_clang})
-    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 20.0.0)
-      set(attribute_def "${attribute_def}[[clang::${a}]]")
-    endif()
-  endif()
-  list(APPEND zrythm_definitions ${attribute_def})
-endforeach()
-
 list(APPEND zrythm_definitions GETTEXT_PACKAGE="zrythm")
 
 if(WIN32)
@@ -400,18 +387,6 @@ if(WIN32)
     NOMINMAX
   )
 endif()
-
-set(attribute_macros cold hot nonnull const)
-foreach(a ${attribute_macros})
-  string(TOUPPER ${a} a_upper)
-  set(attribute_def "ATTR_${a_upper}=")
-  if(MSVC)
-    # Only support specific attributes on MSVC (if any)
-  elseif(${compiler_gnulike})
-    set(attribute_def "${attribute_def}__attribute__((${a}))")
-  endif()
-  list(APPEND zrythm_definitions ${attribute_def})
-endforeach()
 
 # compile args
 set(zrythm_compile_args)

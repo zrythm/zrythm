@@ -78,7 +78,6 @@ public:
     /**
      * Processes the data.
      */
-    ATTR_NONBLOCKING
     void process (nframes_t nframes);
 
     std::string get_node_name () const override;

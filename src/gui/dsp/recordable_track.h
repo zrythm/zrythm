@@ -26,7 +26,7 @@ public:
   init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
     override;
 
-  ATTR_HOT inline bool get_recording () const
+  [[gnu::hot]] inline bool get_recording () const
   {
     return get_recording_port ().is_toggled ();
   }

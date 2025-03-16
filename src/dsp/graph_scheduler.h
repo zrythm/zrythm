@@ -86,7 +86,7 @@ public:
   /**
    * Called when an upstream (parent) node has completed processing.
    */
-  ATTR_HOT void trigger_node (GraphNode &node);
+  [[gnu::hot]] void trigger_node (GraphNode &node);
 
   auto &get_nodes () { return graph_nodes_; }
 

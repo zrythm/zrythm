@@ -130,7 +130,7 @@ public:
    *
    * FIXME use a hashtable
    */
-  ATTR_HOT static AutomationTrack * find_from_port (
+  [[gnu::hot]] static AutomationTrack * find_from_port (
     const ControlPort       &port,
     const AutomatableTrack * track,
     bool                     basic_search);
@@ -154,7 +154,7 @@ public:
    *   g_get_monotonic_time() passed here to ensure
    *   the same timestamp is Pmused in sequential calls.
    */
-  ATTR_HOT bool should_read_automation (RtTimePoint cur_time) const;
+  [[gnu::hot]] bool should_read_automation (RtTimePoint cur_time) const;
 
   /**
    * Returns if the automation track should currently be recording data.
@@ -172,7 +172,7 @@ public:
    *   inside a region regardless of whether we should create/edit automation
    *   points or not.
    */
-  ATTR_HOT bool
+  [[gnu::hot]] bool
   should_be_recording (RtTimePoint cur_time, bool record_aps) const;
 
   /**

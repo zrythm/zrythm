@@ -170,7 +170,7 @@ public:
    *
    * @return Whether a snap point was found or not.
    */
-  ATTR_HOT bool get_next_snap_point (
+  [[gnu::hot]] bool get_next_snap_point (
     const Position &pivot_pos,
     Track *         track,
     Region *        region,
@@ -194,7 +194,7 @@ public:
    *
    * @return Whether a snap point was found or not.
    */
-  ATTR_HOT bool get_prev_snap_point (
+  [[gnu::hot]] bool get_prev_snap_point (
     const Position &pivot_pos,
     Track *         track,
     Region *        region,

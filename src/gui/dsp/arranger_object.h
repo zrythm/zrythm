@@ -282,7 +282,7 @@ public:
    * @param pos The position to set to.
    * @param pos_type The type of Position to set in the ArrangerObject.
    */
-  [[nodiscard]] ATTR_HOT ATTR_NONNULL bool
+  [[nodiscard, gnu::hot]] bool
   is_position_valid (const dsp::Position &pos, PositionType pos_type) const;
 
   /**
@@ -326,7 +326,7 @@ public:
   /**
    * Returns the Track this ArrangerObject is in.
    */
-  ATTR_HOT virtual TrackPtrVariant get_track () const;
+  [[gnu::hot]] virtual TrackPtrVariant get_track () const;
 
   TrackUuid get_track_id () const { return track_id_; }
 

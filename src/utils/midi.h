@@ -71,7 +71,7 @@ midi_max_sysex_size ()
 /**
  * Return the name of the given cc (0-127).
  */
-ATTR_CONST
+[[gnu::const]]
 const char *
 midi_get_controller_name (const midi_byte_t cc);
 
@@ -172,7 +172,7 @@ midi_get_velocity (const midi_byte_t short_msg[3])
 /**
  * Returns the note name (eg, "C") for a value between 0 and 127.
  */
-ATTR_CONST
+[[gnu::const]]
 const char *
 midi_get_note_name (const midi_byte_t note);
 

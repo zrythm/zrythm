@@ -262,8 +262,7 @@ public:
    *
    * @param stereo_ports StereoPorts to fill.
    */
-  ATTR_NONBLOCKING
-  ATTR_HOT void fill_stereo_ports (
+  [[gnu::hot]] void fill_stereo_ports (
     const EngineProcessTimeInfo        &time_nfo,
     std::pair<AudioPort &, AudioPort &> stereo_ports) const;
 

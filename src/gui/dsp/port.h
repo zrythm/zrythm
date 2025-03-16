@@ -217,7 +217,7 @@ public:
 
   nframes_t get_single_playback_latency () const override { return 0; }
 
-  ATTR_HOT void process_block (EngineProcessTimeInfo time_nfo) override;
+  [[gnu::hot]] void process_block (EngineProcessTimeInfo time_nfo) override;
 
   /**
    * Clears the port buffer.
@@ -268,12 +268,12 @@ public:
   /**
    * Returns the number of unlocked (user-editable) sources.
    */
-  ATTR_NONNULL int get_num_unlocked_srcs () const;
+  int get_num_unlocked_srcs () const;
 
   /**
    * Returns the number of unlocked (user-editable) destinations.
    */
-  ATTR_NONNULL int get_num_unlocked_dests () const;
+  int get_num_unlocked_dests () const;
 
   /**
    * Updates the owner track identifier.
@@ -285,7 +285,7 @@ public:
    *
    * @param noroll Whether to clear the port buffer in this range.
    */
-  ATTR_HOT virtual void
+  [[gnu::hot]] virtual void
   process (EngineProcessTimeInfo time_nfo, bool noroll) = 0;
 
   /**
@@ -308,7 +308,7 @@ public:
   /**
    * Clears the backend's port buffer.
    */
-  ATTR_HOT void clear_external_buffer () override;
+  [[gnu::hot]] void clear_external_buffer () override;
 
   bool needs_external_buffer_clear_on_early_return () const override;
 

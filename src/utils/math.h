@@ -124,7 +124,7 @@ round_to_signed_frame_t (T x)
  *
  * Taken from ardour from code in the public domain.
  */
-ATTR_CONST
+[[gnu::const]]
 constexpr float
 fast_log2 (float val)
 {
@@ -148,14 +148,14 @@ fast_log2 (float val)
   return (val + log_2);
 }
 
-ATTR_CONST
+[[gnu::const]]
 constexpr float
 fast_log (const float val)
 {
   return (fast_log2 (val) * std::numbers::ln2_v<float>);
 }
 
-ATTR_CONST
+[[gnu::const]]
 constexpr float
 fast_log10 (const float val)
 {
@@ -166,7 +166,7 @@ fast_log10 (const float val)
  * Returns fader value 0.0 to 1.0 from amp value
  * 0.0 to 2.0 (+6 dbFS).
  */
-ATTR_CONST
+[[gnu::const]]
 constexpr sample_t
 get_fader_val_from_amp (sample_t amp)
 {
@@ -200,7 +200,7 @@ get_fader_val_from_amp (sample_t amp)
 /**
  * Returns amp value 0.0 to 2.0 (+6 dbFS) from fader value 0.0 to 1.0.
  */
-ATTR_CONST
+[[gnu::const]]
 constexpr sample_t
 get_amp_val_from_fader (sample_t fader)
 {
@@ -212,7 +212,7 @@ get_amp_val_from_fader (sample_t fader)
 /**
  * Convert from amplitude 0.0 to 2.0 to dbFS.
  */
-ATTR_CONST
+[[gnu::const]]
 constexpr sample_t
 amp_to_dbfs (sample_t amp)
 {
@@ -241,7 +241,7 @@ calculate_rms_db (const sample_t * buf, nframes_t nframes)
 /**
  * Convert form dbFS to amplitude 0.0 to 2.0.
  */
-ATTR_CONST
+[[gnu::const]]
 constexpr sample_t
 dbfs_to_amp (sample_t dbfs)
 {
@@ -251,7 +251,7 @@ dbfs_to_amp (sample_t dbfs)
 /**
  * Convert form dbFS to fader val 0.0 to 1.0.
  */
-ATTR_CONST
+[[gnu::const]]
 constexpr sample_t
 dbfs_to_fader_val (sample_t dbfs)
 {

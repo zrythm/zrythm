@@ -296,7 +296,7 @@ get_registry_string_val (const std::string &key);
  *
  * @return Non-zero on fail.
  */
-ATTR_NONNULL int
+[[gnu::nonnull]] int
 get_bundle_path (char * bundle_path);
 #endif
 

@@ -273,7 +273,8 @@ private:
   /**
    * Adds events to midi out based on any changes in MIDI CC control ports.
    */
-  ATTR_HOT void add_events_from_midi_cc_control_ports (nframes_t local_offset);
+  [[gnu::hot]] void
+  add_events_from_midi_cc_control_ports (nframes_t local_offset);
 
   void connect_ports (const PortUuid &src, const PortUuid &dst);
   void disconnect_ports (const PortUuid &src, const PortUuid &dst);

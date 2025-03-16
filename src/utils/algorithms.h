@@ -24,7 +24,7 @@ namespace zrythm::utils::algorithms
  * @param include_equal Include equal elements (if an
  *   exact match is found, return it).
  */
-ATTR_HOT ATTR_NONNULL void *
+[[using gnu: hot, nonnull]] void *
 algorithms_binary_search_nearby (
   const void *   key,
   const void *   base,

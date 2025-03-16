@@ -147,7 +147,7 @@ GraphThread::on_reached_terminal_node ()
 }
 
 void
-GraphThread::run_worker ()
+GraphThread::run_worker () [[clang::nonblocking]]
 {
   auto * scheduler = &scheduler_;
 
@@ -281,7 +281,6 @@ GraphThread::run_worker ()
     }
 }
 
-ATTR_NONBLOCKING
 void
 GraphThread::run ()
 {

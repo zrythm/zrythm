@@ -39,7 +39,7 @@ public:
    * inform the main-thread, wait, and kick off the next
    * process cycle.
    */
-  ATTR_HOT void on_reached_terminal_node ();
+  [[gnu::hot]] void on_reached_terminal_node ();
 
 private:
   void run () override;

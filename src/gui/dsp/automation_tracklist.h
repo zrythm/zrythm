@@ -75,7 +75,7 @@ public:
   /**
    * Inits a loaded AutomationTracklist.
    */
-  ATTR_COLD void
+  [[gnu::cold]] void
   init_loaded (AutomatableTrack * track, PortRegistry &port_registry);
 
   AutomatableTrack * get_track () const;

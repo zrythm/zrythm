@@ -101,7 +101,7 @@ public:
    * @param x X-coordinate, normalized.
    * @param start_higher Start at higher point.
    */
-  ATTR_HOT double get_normalized_y (double x, bool start_higher) const;
+  [[gnu::hot]] double get_normalized_y (double x, bool start_higher) const;
 
   /**
    * Gets the normalized Y for a normalized X, for a fade.

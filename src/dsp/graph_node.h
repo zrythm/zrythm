@@ -60,9 +60,12 @@ public:
    * Returns the latency of only the given processable, without adding the
    * previous/next latencies.
    */
-  virtual ATTR_HOT nframes_t get_single_playback_latency () const { return 0; }
+  [[gnu::hot]] virtual nframes_t get_single_playback_latency () const
+  {
+    return 0;
+  }
 
-  virtual ATTR_HOT void process_block (EngineProcessTimeInfo time_nfo) {};
+  [[gnu::hot]] virtual void process_block (EngineProcessTimeInfo time_nfo) { };
 
   virtual void clear_external_buffer () {};
 
@@ -122,7 +125,7 @@ public:
    * opposed to being called before/after a processing cycle (e.g., for some
    * special nodes that are processed before/after the actual processing).
    */
-  ATTR_HOT void
+  [[gnu::hot]] void
   process (EngineProcessTimeInfo time_nfo, nframes_t remaining_preroll_frames)
     const;
 
@@ -168,7 +171,7 @@ private:
    * @param time_nfo Time info to be adjusted
    * @param remaining_preroll_frames Frames remaining in preroll period
    */
-  ATTR_HOT void compensate_latency (
+  [[gnu::hot]] void compensate_latency (
     EngineProcessTimeInfo &time_nfo,
     nframes_t              remaining_preroll_frames) const;
 
@@ -181,7 +184,7 @@ private:
    *
    * @param time_nfo Time info containing frame counts and offsets
    */
-  ATTR_HOT void process_chunks_after_splitting_at_loop_points (
+  [[gnu::hot]] void process_chunks_after_splitting_at_loop_points (
     EngineProcessTimeInfo &time_nfo) const;
 
 public:

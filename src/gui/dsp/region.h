@@ -195,7 +195,7 @@ public:
    *
    * @return The local frames.
    */
-  ATTR_HOT signed_frame_t
+  [[gnu::hot]] signed_frame_t
   timeline_frames_to_local (signed_frame_t timeline_frames, bool normalize) const;
 
   /**
@@ -207,7 +207,7 @@ public:
    * @param[out] is_loop Whether the return frames are for a loop (if
    * false, the return frames are for the region's end).
    */
-  ATTR_NONNULL void get_frames_till_next_loop_or_end (
+  [[gnu::nonnull]] void get_frames_till_next_loop_or_end (
     signed_frame_t   timeline_frames,
     signed_frame_t * ret_frames,
     bool *           is_loop) const;
@@ -352,7 +352,7 @@ public:
   /**
    * Looks for the Region matching the identifier.
    */
-  ATTR_HOT static RegionTPtr find (const RegionIdentifier &id);
+  [[gnu::hot]] static RegionTPtr find (const RegionIdentifier &id);
 
   std::optional<ArrangerObjectPtrVariant> find_in_project () const final
   {
@@ -383,8 +383,7 @@ public:
     bool                         note_off_at_end,
     bool                         is_note_off_for_loop_or_region_end,
     MidiEventVector             &midi_events) const
-    requires RegionTypeWithMidiEvents<RegionT>
-  ATTR_NONBLOCKING;
+    requires RegionTypeWithMidiEvents<RegionT>;
 
   /**
    * @brief Get the objects (midi notes/chord objects/etc) of this
@@ -539,10 +538,10 @@ private:
    * note off events will be sent for notes at the border. Otherwise, a
    * single all notes off event will be sent.
    */
-  ATTR_HOT void send_note_offs (
-    MidiEventVector            &events,
-    const EngineProcessTimeInfo time_nfo,
-    bool                        is_note_off_for_loop_or_region_end) const
+  [[gnu::hot]] void send_note_offs (
+    MidiEventVector      &events,
+    EngineProcessTimeInfo time_nfo,
+    bool                  is_note_off_for_loop_or_region_end) const
     requires RegionTypeWithMidiEvents<RegionT>;
 
   const RegionT &get_derived () const
