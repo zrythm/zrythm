@@ -85,13 +85,13 @@ set(rel_qml_file_paths
   components/basic/EditableValueDisplay.qml
   components/basic/LinkedButtons.qml
   components/basic/MuteButton.qml
+  components/basic/PlaceholderPage.qml
   components/basic/RecordButton.qml
   components/basic/RotatedLabel.qml
   components/basic/SoloButton.qml
   components/basic/ZrythmActionRow.qml
   components/basic/ZrythmAlertDialog.qml
   components/basic/ZrythmFilePicker.qml
-  components/basic/ZrythmPlaceholderPage.qml
   components/basic/ZrythmPreferencesPage.qml
   components/basic/ZrythmResizablePanel.qml
   components/basic/SplitButton.qml

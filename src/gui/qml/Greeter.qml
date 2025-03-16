@@ -56,7 +56,7 @@ ApplicationWindow {
     Item {
         id: flatpakPage
 
-        ZrythmPlaceholderPage {
+        PlaceholderPage {
             icon.source: ResourceManager.getIconUrl("gnome-icon-library", "flatpak-symbolic.svg")
             title: qsTr("About Flatpak")
             description: qsTr("Only audio plugins installed via Flatpak are supported.")
@@ -67,7 +67,7 @@ ApplicationWindow {
     Item {
         id: donationPage
 
-        ZrythmPlaceholderPage {
+        PlaceholderPage {
             icon.source: ResourceManager.getIconUrl("gnome-icon-library", "credit-card-symbolic.svg")
             title: qsTr("Donate")
             description: qsTr("Zrythm relies on donations and purchases to sustain development. If you enjoy the software, please consider %1donating%2 or %3buying an installer%2.").arg("<a href=\"" + Config.DONATION_URL + "\">").arg("</a>").arg("<a href=\"" + Config.PURCHASE_URL + "\">")
@@ -78,7 +78,7 @@ ApplicationWindow {
     Item {
         id: proceedToConfigPage
 
-        ZrythmPlaceholderPage {
+        PlaceholderPage {
             title: qsTr("All Ready!")
 
             action: Action {
@@ -118,7 +118,7 @@ ApplicationWindow {
                     }
 
                     Item {
-                        ZrythmPlaceholderPage {
+                        PlaceholderPage {
                             icon.source: ResourceManager.getIconUrl("zrythm-dark", "zrythm.svg")
                             title: qsTr("Welcome")
                             description: qsTr("Welcome to the Zrythm digital audio workstation. Move to the next page to get started.")
@@ -127,7 +127,7 @@ ApplicationWindow {
                     }
 
                     Item {
-                        ZrythmPlaceholderPage {
+                        PlaceholderPage {
                             icon.source: ResourceManager.getIconUrl("gnome-icon-library", "open-book-symbolic.svg")
                             title: qsTr("Read the Manual")
                             description: qsTr("If this is your first time using Zrythm, we suggest going through the 'Getting Started' section in the %1user manual%2.").arg("<a href=\"" + Config.USER_MANUAL_URL + "\">").arg("</a>")
@@ -279,7 +279,7 @@ ApplicationWindow {
                     target: root.pluginManager()
                 }
 
-                ZrythmPlaceholderPage {
+                PlaceholderPage {
                     icon.source: ResourceManager.getIconUrl("zrythm-dark", "zrythm-monochrome.svg")
                     title: qsTr("Scanning Plugins")
                 }

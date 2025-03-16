@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
+import QtQuick.Controls.impl
 import QtQuick.Layouts
 import ZrythmStyle 1.0
 
@@ -14,11 +15,10 @@ ColumnLayout {
     property alias action: actionButton.action
     property alias buttonText: actionButton.text
 
-    anchors.centerIn: parent
     spacing: 10
     width: Math.min(parent.width - 40, parent.width * 0.8)
 
-    Image {
+    IconImage {
         id: placeholderIcon
 
         Layout.alignment: Qt.AlignHCenter
@@ -30,6 +30,7 @@ ColumnLayout {
         // these ensure SVGs are scaled and not stretched
         sourceSize.width: width
         sourceSize.height: height
+        color: root.palette.buttonText
     }
 
     Label {
