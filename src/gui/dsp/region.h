@@ -545,8 +545,11 @@ private:
     bool                        is_note_off_for_loop_or_region_end) const
     requires RegionTypeWithMidiEvents<RegionT>;
 
-public:
-  RegionT &derived_ = static_cast<RegionT &> (*this);
+  const RegionT &get_derived () const
+  {
+    return static_cast<const RegionT &> (*this);
+  }
+  RegionT &get_derived () { return static_cast<RegionT &> (*this); }
 };
 
 template <typename RegionT>

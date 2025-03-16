@@ -111,16 +111,19 @@ AutomatableTrack::generate_automation_tracks ()
       auto &track = dynamic_cast<ProcessableTrack &> (*this);
       auto &processor = track.processor_;
       /* midi automatables */
-      for (int i = 0; i < 16; i++)
+      for (const auto channel_index : std::views::iota (0, 16))
         {
-          for (int j = 0; j < 128; j++)
+          for (const auto cc_index : std::views::iota (0, 128))
             {
-              create_and_add_at (processor->get_midi_cc_port (i * 128, j));
+            create_and_add_at (
+              processor->get_midi_cc_port (channel_index, cc_index));
             }
 
-          create_and_add_at (processor->get_pitch_bend_port (i));
-          create_and_add_at (processor->get_poly_key_pressure_port (i));
-          create_and_add_at (processor->get_channel_pressure_port (i));
+          create_and_add_at (processor->get_pitch_bend_port (channel_index));
+          create_and_add_at (
+            processor->get_poly_key_pressure_port (channel_index));
+          create_and_add_at (
+            processor->get_channel_pressure_port (channel_index));
         }
     }
 

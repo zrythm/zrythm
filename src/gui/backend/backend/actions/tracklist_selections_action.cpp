@@ -1206,7 +1206,7 @@ TracklistSelectionsAction::
         {
           for (
             const auto i :
-            std::views::iota (tls_before_->size ()) | std::views::reverse)
+            std::views::iota (0zu, tls_before_->size ()) | std::views::reverse)
             {
               /* get the track from the inserted pos */
               int target_pos = track_pos_ + i;
@@ -1281,7 +1281,7 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
   bool need_recalc_graph = false;
   bool need_tracklist_cache_update = false;
 
-  for (const auto i : std::views::iota (num_tracks_))
+  for (const auto i : std::views::iota (0, num_tracks_))
     {
       auto track_var =
         TRACKLIST->get_track_at_index (track_positions_before_[i]);

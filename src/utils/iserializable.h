@@ -1271,7 +1271,7 @@ public:
           }
 
         size_t len = yyjson_arr_size (val);
-        for (const auto i : std::views::iota (len))
+        for (const auto i : std::views::iota (0zu, len))
           {
             yyjson_val * elem = yyjson_arr_get (val, i);
             auto         child_var =

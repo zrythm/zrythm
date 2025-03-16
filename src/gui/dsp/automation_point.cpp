@@ -198,7 +198,6 @@ void
 AutomationPoint::set_fvalue_with_action (const std::string &fval_str)
 {
   Port * port = get_port ();
-  z_return_if_fail (IS_PORT_AND_NONNULL (port));
 
   float val;
   int   res = sscanf (fval_str.c_str (), "%f", &val);

@@ -429,12 +429,13 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
             {
               auto track_processor = tr->processor_.get ();
 
-              for (int j = 0; j < 16; j++)
+              for (const auto channel_index : std::views::iota (0, 16))
                 {
-                  for (int k = 0; k < 128; k++)
+                  for (const auto cc_index : std::views::iota (0, 128))
                     {
                       auto node2 = graph.get_nodes ().find_node_for_processable (
-                        track_processor->get_midi_cc_port (j * 128, k));
+                        track_processor->get_midi_cc_port (
+                          channel_index, cc_index));
                       if (node2)
                         {
                           node2->connect_to (*track_node);
@@ -442,21 +443,21 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
                     }
 
                   auto node2 = graph.get_nodes ().find_node_for_processable (
-                    track_processor->get_pitch_bend_port (j));
+                    track_processor->get_pitch_bend_port (channel_index));
                   if (node2 || !drop_unnecessary_ports)
                     {
                       node2->connect_to (*track_node);
                     }
 
                   node2 = graph.get_nodes ().find_node_for_processable (
-                    track_processor->get_poly_key_pressure_port (j));
+                    track_processor->get_poly_key_pressure_port (channel_index));
                   if (node2 || !drop_unnecessary_ports)
                     {
                       node2->connect_to (*track_node);
                     }
 
                   node2 = graph.get_nodes ().find_node_for_processable (
-                    track_processor->get_channel_pressure_port (j));
+                    track_processor->get_channel_pressure_port (channel_index));
                   if (node2 || !drop_unnecessary_ports)
                     {
                       node2->connect_to (*track_node);

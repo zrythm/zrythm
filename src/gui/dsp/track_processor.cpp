@@ -170,9 +170,9 @@ TrackProcessor::init_common ()
     {
       cc_mappings_ = std::make_unique<MidiMappings> ();
 
-      for (const auto i : std::views::iota (16))
+      for (const auto i : std::views::iota (0, 16))
         {
-          for (const auto j : std::views::iota (128))
+          for (const auto j : std::views::iota (0, 128))
             {
               auto cc_port_id = (*midi_cc_ids_)[i * 128 + j];
               auto cc_port = std::get<ControlPort *> (
@@ -257,12 +257,12 @@ TrackProcessor::init_midi_cc_ports ()
   channel_pressure_ids_ =
     std::make_unique<decltype (channel_pressure_ids_)::element_type> ();
 
-  for (const auto i : std::views::iota (16))
+  for (const auto i : std::views::iota (0, 16))
     {
       /* starting from 1 */
       int channel = i + 1;
 
-      for (const auto j : std::views::iota (128))
+      for (const auto j : std::views::iota (0, 128))
         {
           auto * cc = port_registry_.create_object<ControlPort> (
             fmt::format ("Ch{} {}", channel, midi_get_controller_name (j)));
@@ -513,9 +513,9 @@ TrackProcessor::append_ports (std::vector<Port *> &ports)
     }
   if (midi_cc_ids_)
     {
-      for (const auto ch_idx : std::views::iota (16))
+      for (const auto ch_idx : std::views::iota (0, 16))
         {
-          for (const auto cc_idx : std::views::iota (128))
+          for (const auto cc_idx : std::views::iota (0, 128))
             {
               ports.push_back (
                 std::addressof (get_midi_cc_port (ch_idx, cc_idx)));

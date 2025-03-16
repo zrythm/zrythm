@@ -24,10 +24,6 @@ struct EngineProcessTimeInfo;
  * @{
  */
 
-constexpr int PORT_MAGIC = 456861194;
-#define IS_PORT(_p) (((Port *) (_p))->magic_ == PORT_MAGIC)
-#define IS_PORT_AND_NONNULL(x) ((x) && IS_PORT (x))
-
 constexpr int TIME_TO_RESET_PEAK = 4800000;
 
 template <typename T>
@@ -426,9 +422,6 @@ public:
    * FIXME should be moved to a class inherited by AudioPort and CVPort.
    */
   std::unique_ptr<RingBuffer<float>> audio_ring_;
-
-  /** Magic number to identify that this is a Port. */
-  int magic_ = PORT_MAGIC;
 
   /** Last allocated buffer size (used for audio ports). */
   size_t last_buf_sz_ = 0;

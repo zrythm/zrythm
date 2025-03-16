@@ -57,9 +57,8 @@ Port::create_unique_from_type (PortType type)
 bool
 Port::is_exposed_to_backend () const
 {
-  return (backend_ && backend_->is_exposed ())
-         || id_->owner_type_ == PortIdentifier::OwnerType::AudioEngine
-         || exposed_to_backend_;
+  return (is_audio () || is_midi ())
+         && ((backend_ && backend_->is_exposed ()) || id_->owner_type_ == PortIdentifier::OwnerType::AudioEngine || exposed_to_backend_);
 }
 
 bool

@@ -397,7 +397,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
               deleted_ats_.clear ();
               deleted_ms_.emplace (std::vector<PluginPtrVariant> ());
 
-              for (const auto i : std::views::iota (loop_times))
+              for (const auto i : std::views::iota (0, loop_times))
                 {
                   auto slot = get_slot (i);
                   auto own_pl_var = own_ms[i];
@@ -535,7 +535,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
           /* else if deleting plugins (create undo or delete do) */
           else
             {
-              for (const auto i : std::views::iota (loop_times))
+              for (const auto i : std::views::iota (0, loop_times))
                 {
                   auto slot = get_slot (i);
 

@@ -470,7 +470,7 @@ RegionImpl<
             && std::holds_alternative<ControlPort *> (port_var.value ()));
           auto * port = std::get<ControlPort *> (port_var.value ());
           z_return_if_fail (port);
-          for (auto &ap : derived_.aps_)
+          for (auto &ap : get_derived ().aps_)
             {
               ap->fvalue_ = port->normalized_val_to_real (ap->normalized_val_);
             }
@@ -495,7 +495,7 @@ RegionImpl<
             }
 
           z_warn_if_fail (id_.at_idx_ == at->index_);
-          derived_.set_automation_track (*at);
+          get_derived ().set_automation_track (*at);
         }
       else
         {
@@ -542,7 +542,7 @@ RegionImpl<
                 !lane->region_list_->regions_.empty ()
                 && std::get<RegionT *> (lane->region_list_->regions_.at (id_.idx_))
                      == dynamic_cast<RegionT *> (this));
-              derived_.set_lane (*lane);
+              get_derived ().set_lane (*lane);
 
               laned_track->create_missing_lanes (lane_pos);
 
@@ -624,11 +624,11 @@ RegionImpl<RegionT>::stretch (double ratio)
     }
   else if constexpr (is_audio ())
     {
-      auto * clip = derived_.get_clip ();
+      auto * clip = get_derived ().get_clip ();
       int new_clip_id = AUDIO_POOL->duplicate_clip (clip->get_pool_id (), false);
       z_return_if_fail (new_clip_id >= 0);
       auto * new_clip = AUDIO_POOL->get_clip (new_clip_id);
-      derived_.set_clip_id (new_clip->get_pool_id ());
+      get_derived ().set_clip_id (new_clip->get_pool_id ());
 
       auto stretcher = dsp::Stretcher::create_rubberband (
         AUDIO_ENGINE->sample_rate_, new_clip->get_num_channels (), ratio, 1.0,
@@ -918,9 +918,9 @@ RegionImpl<RegionT>::remove_object (ChildT &obj, bool free_obj, bool fire_events
 
   if constexpr (std::is_same_v<ChildT, AutomationPoint>)
     {
-      if (derived_.last_recorded_ap_ == &obj)
+      if (get_derived ().last_recorded_ap_ == &obj)
         {
-          derived_.last_recorded_ap_ = nullptr;
+          get_derived ().last_recorded_ap_ = nullptr;
         }
     }
 
@@ -965,15 +965,15 @@ RegionImpl<RegionT>::remove_object (ChildT &obj, bool free_obj, bool fire_events
 
   if constexpr (std::is_same_v<ChildT, AutomationPoint>)
     {
-      return remove_type (derived_.aps_, obj);
+      return remove_type (get_derived ().aps_, obj);
     }
   else if constexpr (std::is_same_v<ChildT, ChordObject>)
     {
-      return remove_type (derived_.chord_objects_, obj);
+      return remove_type (get_derived ().chord_objects_, obj);
     }
   else if constexpr (std::is_same_v<ChildT, MidiNote>)
     {
-      return remove_type (derived_.midi_notes_, obj);
+      return remove_type (get_derived ().midi_notes_, obj);
     }
   else
     {
@@ -1007,21 +1007,21 @@ RegionImpl<RegionT>::copy_children (const RegionImpl &other)
 
   if constexpr (std::is_same_v<RegionT, MidiRegion>)
     {
-      for (auto &obj : other.derived_.midi_notes_)
+      for (auto &obj : other.get_derived ().midi_notes_)
         {
           append_object (obj->clone_raw_ptr (), false);
         }
     }
   else if constexpr (std::is_same_v<RegionT, AutomationRegion>)
     {
-      for (auto &obj : other.derived_.aps_)
+      for (auto &obj : other.get_derived ().aps_)
         {
           append_object (obj->clone_raw_ptr (), false);
         }
     }
   else if constexpr (std::is_same_v<RegionT, ChordRegion>)
     {
-      for (auto &obj : other.derived_.chord_objects_)
+      for (auto &obj : other.get_derived ().chord_objects_)
         {
           append_object (obj->clone_raw_ptr (), false);
         }
