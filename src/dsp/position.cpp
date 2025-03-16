@@ -70,7 +70,7 @@ Position::update_ticks_from_frames (double ticks_per_frame)
 signed_frame_t
 Position::get_frames_from_ticks (double ticks, double frames_per_tick)
 {
-  z_return_val_if_fail (frames_per_tick > 0, -1);
+  assert (frames_per_tick > 0);
   return utils::math::round_to_signed_frame_t ((ticks * frames_per_tick));
 }
 
@@ -82,11 +82,11 @@ Position::update_frames_from_ticks (double frames_per_tick)
   /* assert that no overflow occurred */
   if (ticks_ >= 0)
     {
-      z_return_if_fail (frames_ >= 0);
+      assert (frames_ >= 0);
     }
   else
     {
-      z_return_if_fail (frames_ <= 0);
+      assert (frames_ <= 0);
     }
 }
 

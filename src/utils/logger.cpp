@@ -128,7 +128,7 @@ ILogger::init_sinks (bool for_testing)
     std::make_shared<spdlog::sinks::ringbuffer_sink_mt> (1000);
   set_pattern (ringbuffer_sink, false);
 
-  auto error_handling_sink = std::make_shared<ErrorHandlingSink> (for_testing);
+  auto error_handling_sink = std::make_shared<ErrorHandlingSink> (!for_testing);
   set_pattern (error_handling_sink, false);
 
   // Create a logger with all the sinks

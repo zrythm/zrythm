@@ -275,6 +275,7 @@ ZrythmApplication::onEngineOutput ()
 void
 ZrythmApplication::setup_ipc ()
 {
+  return; // skip for now
   socket_ = new QLocalSocket (this);
   socket_->connectToServer (QString::fromUtf8 (IPC_SOCKET_NAME));
   if (socket_->waitForConnected (1000))
@@ -290,6 +291,8 @@ ZrythmApplication::setup_ipc ()
 void
 ZrythmApplication::launch_engine_process ()
 {
+  return; // skip for now
+
   engine_process_ = new QProcess (this);
   engine_process_->setProcessChannelMode (QProcess::MergedChannels);
   fs::path   path;

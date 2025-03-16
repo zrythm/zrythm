@@ -38,7 +38,7 @@ public:
     const Position &start_pos,
     const Position &end_pos,
     int             idx,
-    double          ticks_per_frame = 0.0,
+    double          ticks_per_frame,
     QObject *       parent = nullptr);
 
   using RegionT = RegionImpl<ChordRegion>;

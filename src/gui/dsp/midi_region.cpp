@@ -63,7 +63,9 @@ MidiRegion::MidiRegion (
   QObject *                      parent)
     : MidiRegion (parent)
 {
-  init (start_pos, end_pos, track_uuid, lane_pos, idx_inside_lane);
+  init (
+    start_pos, end_pos, track_uuid, lane_pos, idx_inside_lane,
+    AUDIO_ENGINE->ticks_per_frame_);
 }
 MidiRegion::MidiRegion (
   const Position                &pos,
@@ -82,7 +84,9 @@ MidiRegion::MidiRegion (
   r_end_pos.add_ticks (r_length_ticks, AUDIO_ENGINE->frames_per_tick_);
 
   /* create region */
-  init (pos, r_end_pos, track_uuid, lane_pos, idx_inside_lane);
+  init (
+    pos, r_end_pos, track_uuid, lane_pos, idx_inside_lane,
+    AUDIO_ENGINE->ticks_per_frame_);
 
   /* get midi note positions */
   Position mn_pos, mn_end_pos;
@@ -115,7 +119,9 @@ MidiRegion::MidiRegion (
 
   Position end_pos = start_pos;
   end_pos.add_ticks (1, AUDIO_ENGINE->frames_per_tick_);
-  init (start_pos, end_pos, track_uuid, lane_pos, idx_inside_lane);
+  init (
+    start_pos, end_pos, track_uuid, lane_pos, idx_inside_lane,
+    AUDIO_ENGINE->ticks_per_frame_);
 
   MidiFile mf (abs_path);
   mf.into_region (*this, *TRANSPORT, midi_track_idx);

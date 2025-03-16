@@ -87,7 +87,9 @@ ArrangerObjectSpanImpl<Range>::merge (double frames_per_tick) const
                 }
               else if constexpr (std::is_same_v<RegionT, ChordRegion>)
                 {
-                  new_r = new ChordRegion (pos, end_pos, first_r->id_.idx_);
+                  new_r = new ChordRegion (
+                    pos, end_pos, first_r->id_.idx_,
+                    AUDIO_ENGINE->ticks_per_frame_);
                   for (auto &obj : *this)
                     {
                       auto * r = std::get<ChordRegion *> (obj);

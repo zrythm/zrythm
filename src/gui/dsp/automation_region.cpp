@@ -28,7 +28,9 @@ AutomationRegion::AutomationRegion (
 {
   id_ = RegionIdentifier (RegionType::Automation);
 
-  init (start_pos, end_pos, track_id, at_idx, idx_inside_at);
+  init (
+    start_pos, end_pos, track_id, at_idx, idx_inside_at,
+    AUDIO_ENGINE->ticks_per_frame_);
 }
 
 void
@@ -282,7 +284,7 @@ AutomationRegion::init_after_cloning (
 {
   init (
     *other.pos_, *other.end_pos_, other.id_.track_uuid_, other.id_.at_idx_,
-    other.id_.idx_);
+    other.id_.idx_, AUDIO_ENGINE->ticks_per_frame_);
   aps_.reserve (other.aps_.size ());
   for (const auto &ap : other.aps_)
     {

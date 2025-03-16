@@ -105,7 +105,9 @@ AudioRegion::init_default_constructed (
   end_pos.add_frames (clip->get_num_frames (), AUDIO_ENGINE->ticks_per_frame_);
 
   /* init */
-  init (start_pos, end_pos, track_uuid, lane_pos, idx_inside_lane);
+  init (
+    start_pos, end_pos, track_uuid, lane_pos, idx_inside_lane,
+    AUDIO_ENGINE->ticks_per_frame_);
 
   (void) recording;
   z_return_if_fail (get_clip ());

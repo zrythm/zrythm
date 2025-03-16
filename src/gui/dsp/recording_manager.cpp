@@ -600,7 +600,8 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                     auto chord_track = tr;
                     auto new_region = new ChordRegion (
                       resume_pos, end_pos,
-                      chord_track->region_list_->regions_.size ());
+                      chord_track->region_list_->regions_.size (),
+                      AUDIO_ENGINE->ticks_per_frame_);
                     try
                       {
                         added_region = tr->Track::add_region (
@@ -1192,7 +1193,8 @@ RecordingManager::handle_start_recording (
                 {
                   auto region = tr->Track::add_region (
                     new ChordRegion (
-                      start_pos, end_pos, tr->region_list_->regions_.size ()),
+                      start_pos, end_pos, tr->region_list_->regions_.size (),
+                      AUDIO_ENGINE->ticks_per_frame_),
                     nullptr, -1, true, true);
                   z_return_if_fail (region);
 

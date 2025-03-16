@@ -75,16 +75,21 @@ Region::init (
 }
 
 void
-Region::gen_name (const char * base_name, AutomationTrack * at, Track * track)
+Region::gen_name (
+  std::optional<std::string> base_name,
+  AutomationTrack *          at,
+  Track *                    track)
 {
   /* Name to try to assign */
   std::string orig_name;
   if (base_name)
-    orig_name = base_name;
+    orig_name = *base_name;
   else if (at)
-    orig_name = fmt::format ("{} - {}", track->name_, at->getLabel ());
+    orig_name = fmt::format ("{} - {}", track->get_name (), at->getLabel ());
   else
-    orig_name = track->name_;
+    orig_name = track->get_name ();
+
+  z_return_if_fail (orig_name.length () > 0);
 
   set_name (orig_name, false);
 }

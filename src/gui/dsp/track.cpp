@@ -81,64 +81,68 @@ Track::from_variant (const TrackPtrVariant &variant)
 TrackUniquePtrVariant
 Track::create_track (Track::Type type, const std::string &name, int pos)
 {
-  switch (type)
-    {
-    case Track::Type::Instrument:
-      return InstrumentTrack::create_unique<InstrumentTrack> (
-        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (), true);
+  auto track_var = [&] () -> TrackUniquePtrVariant {
+    switch (type)
+      {
+      case Track::Type::Instrument:
+        return InstrumentTrack::create_unique<InstrumentTrack> (
+          PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+          PROJECT->get_port_registry (), true);
 
-      break;
-    case Track::Type::Audio:
-      return AudioTrack::create_unique<AudioTrack> (
-        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (), true);
+        break;
+      case Track::Type::Audio:
+        return AudioTrack::create_unique<AudioTrack> (
+          PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+          PROJECT->get_port_registry (), true);
 
-      break;
-    case Track::Type::AudioBus:
-      return AudioBusTrack::create_unique<AudioBusTrack> (
-        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (), true);
+        break;
+      case Track::Type::AudioBus:
+        return AudioBusTrack::create_unique<AudioBusTrack> (
+          PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+          PROJECT->get_port_registry (), true);
 
-      break;
-    case Track::Type::AudioGroup:
-      return AudioGroupTrack::create_unique<AudioGroupTrack> (
-        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (), true);
+        break;
+      case Track::Type::AudioGroup:
+        return AudioGroupTrack::create_unique<AudioGroupTrack> (
+          PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+          PROJECT->get_port_registry (), true);
 
-      break;
-    case Track::Type::Midi:
-      return MidiTrack::create_unique<MidiTrack> (
-        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (), true);
+        break;
+      case Track::Type::Midi:
+        return MidiTrack::create_unique<MidiTrack> (
+          PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+          PROJECT->get_port_registry (), true);
 
-      break;
-    case Track::Type::MidiBus:
-      return MidiBusTrack::create_unique<MidiBusTrack> (
-        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (), true);
+        break;
+      case Track::Type::MidiBus:
+        return MidiBusTrack::create_unique<MidiBusTrack> (
+          PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+          PROJECT->get_port_registry (), true);
 
-      break;
-    case Track::Type::MidiGroup:
-      return MidiGroupTrack::create_unique<MidiGroupTrack> (
-        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (), true);
+        break;
+      case Track::Type::MidiGroup:
+        return MidiGroupTrack::create_unique<MidiGroupTrack> (
+          PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+          PROJECT->get_port_registry (), true);
 
-      break;
-    case Track::Type::Folder:
-      return FolderTrack::create_unique<FolderTrack> (
-        PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (), true);
-      break;
-    case Track::Type::Master:
-    case Track::Type::Chord:
-    case Track::Type::Marker:
-    case Track::Type::Tempo:
-    case Track::Type::Modulator:
-    default:
-      throw std::runtime_error ("Track::create_unique: invalid track type");
-      break;
-    }
+        break;
+      case Track::Type::Folder:
+        return FolderTrack::create_unique<FolderTrack> (
+          PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
+          PROJECT->get_port_registry (), true);
+        break;
+      case Track::Type::Master:
+      case Track::Type::Chord:
+      case Track::Type::Marker:
+      case Track::Type::Tempo:
+      case Track::Type::Modulator:
+      default:
+        throw std::runtime_error ("Track::create_unique: invalid track type");
+        break;
+      }
+  }();
+  std::visit ([&] (auto &track) { track->name_ = name; }, track_var);
+  return track_var;
 }
 
 void
@@ -282,7 +286,7 @@ Track::insert_region (
 
   if (gen_name)
     {
-      region->gen_name (nullptr, at, this);
+      region->gen_name (std::nullopt, at, this);
     }
 
   z_return_val_if_fail (region->name_.length () > 0, nullptr);

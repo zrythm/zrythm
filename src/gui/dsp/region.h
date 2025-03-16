@@ -160,7 +160,7 @@ public:
     dsp::PortIdentifier::TrackUuid track_id,
     int                            lane_pos_or_at_idx,
     int                            idx_inside_lane_or_at,
-    double                         ticks_per_frame = 0.0);
+    double                         ticks_per_frame);
 
   /**
    * Adds the given ticks to each included object.
@@ -218,7 +218,10 @@ public:
    * Generates a name for the Region, either using the given
    * AutomationTrack or Track, or appending to the given base name.
    */
-  void gen_name (const char * base_name, AutomationTrack * at, Track * track);
+  void gen_name (
+    std::optional<std::string> base_name,
+    AutomationTrack *          at,
+    Track *                    track);
 
   /**
    * Updates all other regions in the region link group, if any.
