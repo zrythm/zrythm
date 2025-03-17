@@ -35,7 +35,7 @@ ColumnLayout {
             }
 
             Loader {
-                active: currentIndex === 1
+                active: editorContentAndNoRegionLabelStack.currentIndex === 1
                 visible: active
 
                 sourceComponent: ClipEditorGrid {
