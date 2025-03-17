@@ -145,7 +145,7 @@ class Region
       virtual public NamedObject,
       virtual public MuteableObject,
       virtual public LoopableObject,
-      virtual public ColoredObject,
+      public ColoredObject,
       public zrythm::utils::serialization::ISerializable<Region>
 {
 public:

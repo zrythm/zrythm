@@ -8,8 +8,8 @@ import QtQuick.Layouts
 Item {
     id: root
 
-    property alias text: rotatedText.text
-    property alias rotation: rotatedText.rotation
+    property string text: "Text"
+    property int rotation: 270
     property alias font: rotatedText.font
 
     implicitWidth: textMetrics.height
@@ -26,8 +26,8 @@ Item {
         id: rotatedText
 
         anchors.fill: parent
-        text: "Test Label"
-        rotation: 270
+        text: root.text
+        rotation: root.rotation
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
     }

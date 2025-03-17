@@ -50,11 +50,11 @@ Item {
 
     required property var editorSettings
     required property Ruler ruler
-    required property var selections
+    required property var clipEditor
     required property var tool
     property int currentAction: Arranger.CurrentAction.None
     readonly property alias currentActionStartCoordinates: arrangerMouseArea.startCoordinates
-    property var arrangerSelectionsCloneAtStart // the selections at the start of the current action (own copy)
+    property var objectSnapshotsAtStart: null // snapshots of objects at the start
     property var actionObject: null // the object that is being acted upon (reference)
     property bool enableYScroll: false
     property alias scrollView: scrollView
@@ -69,11 +69,13 @@ Item {
     width: ruler.width
     height: 100
 
-    function setArrangerSelectionsCloneAtStart(selectionsClone) {
-        if (root.arrangerSelectionsCloneAtStart) {
-            root.arrangerSelectionsCloneAtStart.destroy();
+    // creates snapshots of currently selected objects
+    // FIXME this is pseudocode for now
+    function setObjectSnapshotsAtStart() {
+        if (root.objectSnapshotsAtStart) {
+            root.objectSnapshotsAtStart.destroy();
         }
-        root.arrangerSelectionsCloneAtStart = selectionsClone;
+        // root.objectSnapshotsAtStart = selectionsClone;
     }
 
     function setActionObject(obj) {
@@ -308,7 +310,7 @@ Item {
                                 root.editorSettings.y -= dy;
                             }
                         } else if (action === Arranger.CreatingResizingR) {
-                           root.actionObject.endPosition.ticks = ticks;  
+                           root.actionObject.endPosition.ticks = ticks;
                         }
                     }
 

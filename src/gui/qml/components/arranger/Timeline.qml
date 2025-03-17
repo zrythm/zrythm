@@ -33,7 +33,7 @@ Arranger {
         if (!loader?.item) {
             return null;
         }
-        
+
         // Get relative Y position within the automation tracks list
         const automationListY = y - loader.y;
         const automationItem = loader.item.itemAt(0, automationListY);
@@ -47,17 +47,17 @@ Arranger {
         if (!trackItem?.track?.hasLanes || !trackItem?.track?.lanesVisible) {
             return null
         }
-        
+
         // Make y relative to trackItem
         const relativeY = y + tracksListView.contentY - trackItem.y
-        
+
         // Get ColumnLayout (trackSectionRows) and laneRegionsLoader
         const columnLayout = trackItem.children[0]
         const laneLoader = columnLayout.children[1] // laneRegionsLoader is second child
         if (!laneLoader?.item) {
             return null
         }
-        
+
         // Get relative Y position within the lanes list
         const laneListY = relativeY - laneLoader.y
         const laneItem = laneLoader.item.itemAt(0, laneListY)
@@ -67,119 +67,119 @@ Arranger {
 
     function updateCursor() {
         let cursor = "default";
-        
+
         switch (root.currentAction) {
             case Arranger.None:
                 switch (root.tool.toolValue) {
                     case Tool.Select:
                         CursorManager.setPointerCursor();
-                        return; 
-                        
+                        return;
+
                     case Tool.Edit:
                         CursorManager.setPencilCursor();
                         return;
-                        
+
                     case Tool.Cut:
                         CursorManager.setCutCursor();
                         return;
-                        
+
                     case Tool.Eraser:
                         CursorManager.setEraserCursor();
                         return;
-                        
+
                     case Tool.Ramp:
                         CursorManager.setRampCursor();
                         return;
-                        
+
                     case Tool.Audition:
                         CursorManager.setAuditionCursor();
                         return;
                 }
                 break;
-                
+
             case Arranger.StartingDeleteSelection:
             case Arranger.DeleteSelecting:
             case Arranger.StartingErasing:
             case Arranger.Erasing:
                 CursorManager.setEraserCursor();
                 return;
-                
+
             case Arranger.StartingMovingCopy:
             case Arranger.MovingCopy:
                 CursorManager.setCopyCursor();
                 return;
-                
+
             case Arranger.StartingMovingLink:
             case Arranger.MovingLink:
                 CursorManager.setLinkCursor();
                 return;
-                
+
             case Arranger.StartingMoving:
             case Arranger.CreatingMoving:
             case Arranger.Moving:
                 CursorManager.setClosedHandCursor();
                 return;
-                
+
             case Arranger.StartingPanning:
             case Arranger.Panning:
                 CursorManager.setClosedHandCursor();
                 return;
-                
+
             case Arranger.StretchingL:
                 CursorManager.setStretchStartCursor();
                 return;
-                
+
             case Arranger.ResizingL:
                 CursorManager.setResizeStartCursor();
                 return;
-                
+
             case Arranger.ResizingLLoop:
                 CursorManager.setResizeLoopStartCursor();
                 return;
-                
+
             case Arranger.ResizingLFade:
                 CursorManager.setFadeInCursor();
                 return;
-                
+
             case Arranger.StretchingR:
                 CursorManager.setStretchEndCursor();
                 return;
-                
+
             case Arranger.CreatingResizingR:
             case Arranger.ResizingR:
                 CursorManager.setResizeEndCursor();
                 return;
-                
+
             case Arranger.ResizingRLoop:
                 CursorManager.setResizeLoopEndCursor();
                 return;
-                
+
             case Arranger.ResizingRFade:
             case Arranger.ResizingUpFadeOut:
                 CursorManager.setFadeOutCursor();
                 return;
-                
+
             case Arranger.ResizingUpFadeIn:
                 CursorManager.setFadeInCursor();
                 return;
-                
+
             case Arranger.Autofilling:
                 CursorManager.setBrushCursor();
                 return;
-                
+
             case Arranger.StartingSelection:
             case Arranger.Selecting:
                 CursorManager.setPointerCursor();
                 return;
-                
+
             case Arranger.Renaming:
                 cursor = "text";
                 break;
-                
+
             case Arranger.Cutting:
                 CursorManager.setCutCursor();
                 return;
-                
+
             case Arranger.StartingAuditioning:
             case Arranger.Auditioning:
                 CursorManager.setAuditionCursor();
@@ -187,7 +187,7 @@ Arranger {
         }
 
         CursorManager.setPointerCursor();
-        return; 
+        return;
     }
 
     function beginObjectCreation(x: real, y: real): var {
@@ -195,7 +195,7 @@ Arranger {
         if (!track) {
             return null;
         }
-        
+
         const automationTrack = getAutomationTrackAtY(y);
         if (!automationTrack) {
         }
@@ -213,10 +213,10 @@ Arranger {
                 break;
             case 9:
                 console.log("creating midi region");
-                
+
                 let region = track.createAndAddRegionForMidiTrack(x / root.ruler.pxPerTick, trackLane ? trackLane.position : -1);
                 root.currentAction = Arranger.CreatingResizingR;
-                root.setArrangerSelectionsCloneAtStart(root.selections.cloneTimelineSelections());
+                root.setObjectSnapshotsAtStart();
                 CursorManager.setResizeEndCursor();
                 root.actionObject = region;
                 return region;
@@ -386,6 +386,7 @@ Arranger {
                                     ChordRegion {
                                         ruler: root.ruler
                                         track: trackDelegate.track
+                                        clipEditor: root.clipEditor
                                         arrangerObject: chordRegionLoader.region
                                         x: chordRegionLoader.chordRegionX
                                         width: chordRegionLoader.chordRegionWidth
@@ -413,6 +414,7 @@ Arranger {
                             MidiRegion {
                                 ruler: root.ruler
                                 track: trackDelegate.track
+                                clipEditor: root.clipEditor
                                 arrangerObject: region
                                 lane: trackLane
                                 height: regionHeight
@@ -428,6 +430,7 @@ Arranger {
                             AudioRegion {
                                 ruler: root.ruler
                                 track: trackDelegate.track
+                                clipEditor: root.clipEditor
                                 arrangerObject: region
                                 lane: trackLane
                                 height: regionHeight
@@ -635,6 +638,7 @@ Arranger {
                                     sourceComponent: AutomationRegion {
                                         ruler: root.ruler
                                         track: trackDelegate.track
+                                        clipEditor: root.clipEditor
                                         arrangerObject: region
                                         automationTrack: automationRegionLoader.automationTrack
                                         height: automationTrack.height

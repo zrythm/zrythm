@@ -25,7 +25,7 @@ Key features include:
 * Support for various plugin and file formats
 
 Zrythm is [free software](https://www.gnu.org/philosophy/free-sw.html) written
-in C++20 using the Qt6/QML and JUCE8 frameworks.
+in C++23 using the Qt6/QML and JUCE8 frameworks.
 
 ## Features
 

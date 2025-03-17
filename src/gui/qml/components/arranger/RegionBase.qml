@@ -9,6 +9,15 @@ import ZrythmStyle 1.0
 ArrangerObjectBase {
     id: root
 
+    required property var clipEditor
+
+    Binding {
+      target: clipEditor
+      property: "region"
+      value: arrangerObject
+      when: arrangerObject.selected
+    }
+
     implicitWidth: 10
     implicitHeight: 10
     Component.onCompleted: {

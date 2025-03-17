@@ -105,8 +105,8 @@ ColumnLayout {
                     pinned: true
                     timeline: project.timeline
                     tracklist: project.tracklist
+                    clipEditor: project.clipEditor
                     ruler: ruler
-                    selections: project.timelineSelections
                     tool: project.tool
                     Layout.fillWidth: true
                     Layout.minimumHeight: pinnedTracklist.height
@@ -119,8 +119,8 @@ ColumnLayout {
                     pinned: false
                     timeline: project.timeline
                     tracklist: project.tracklist
+                    clipEditor: project.clipEditor
                     ruler: ruler
-                    selections: project.timelineSelections
                     tool: project.tool
                     Layout.fillWidth: true
                     Layout.fillHeight: true

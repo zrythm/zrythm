@@ -51,6 +51,7 @@ MidiRegion::MidiRegion (QObject * parent)
   id_.type_ = RegionType::Midi;
   ArrangerObject::parent_base_qproperties (*this);
   BoundedObject::parent_base_qproperties (*this);
+  init_colored_object ();
   unended_notes_.reserve (12000);
 }
 

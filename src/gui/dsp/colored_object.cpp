@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/dsp/colored_object.h"
+#include "gui/dsp/track_all.h"
 
 void
 ColoredObject::copy_members_from (
@@ -15,4 +16,17 @@ ColoredObject::copy_members_from (
 void
 ColoredObject::init_loaded_base ()
 {
+}
+
+QColor
+ColoredObject::get_effective_color () const
+{
+  if (use_color_)
+    {
+      return color_.to_qcolor ();
+    }
+
+  auto track_var = get_track ();
+  return std::visit (
+    [&] (auto &&track) { return track->getColor (); }, track_var);
 }

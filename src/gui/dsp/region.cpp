@@ -271,16 +271,14 @@ RegionImpl<RegionT>::fill_midi_events (
       /* process each object */
       if constexpr (std::is_same_v<RegionT, MidiRegion>)
         {
-          const auto &mr = dynamic_cast<const MidiRegion &> (*this);
-          for (const auto &mn : mr.midi_notes_)
+          for (const auto &mn : get_derived ().midi_notes_)
             {
               process_object (*mn);
             }
         }
       else if constexpr (std::is_same_v<RegionT, ChordRegion>)
         {
-          auto cr = dynamic_cast<const ChordRegion *> (this);
-          for (const auto &co : cr->chord_objects_)
+          for (const auto &co : get_derived ().chord_objects_)
             {
               process_object (*co);
             }
@@ -297,9 +295,7 @@ RegionImpl<RegionT>::get_muted (bool check_parent) const
     {
       if constexpr (is_laned ())
         {
-          auto lane_owned_obj =
-            dynamic_cast<const LaneOwnedObjectImpl<RegionT> *> (this);
-          auto lane = lane_owned_obj->get_lane ();
+          auto lane = get_derived ().get_lane ();
           z_return_val_if_fail (lane, true);
           if (lane->is_effectively_muted ())
             return true;
@@ -1185,7 +1181,7 @@ RegionImpl<RegionT>::disconnect_region ()
     CLIP_EDITOR->has_region ()
     && CLIP_EDITOR->get_region_id ().value () == get_uuid ())
     {
-      CLIP_EDITOR->unset_region ();
+      CLIP_EDITOR->unsetRegion ();
     }
 
   auto self = dynamic_cast<RegionT *> (this);

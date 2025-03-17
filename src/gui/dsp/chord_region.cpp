@@ -12,6 +12,7 @@ ChordRegion::ChordRegion (QObject * parent)
 {
   ArrangerObject::parent_base_qproperties (*this);
   BoundedObject::parent_base_qproperties (*this);
+  init_colored_object ();
 }
 
 ChordRegion::ChordRegion (

@@ -42,7 +42,17 @@ public: \
     color_ = color; \
     Q_EMIT colorChanged (color); \
   } \
-  Q_SIGNAL void colorChanged (QColor color);
+  Q_SIGNAL void colorChanged (QColor color); \
+  /* ================================================================ */ \
+  /* (utils) */ \
+  /* ================================================================ */ \
+  Q_PROPERTY ( \
+    QColor effectiveColor READ getEffectiveColor NOTIFY effectiveColorChanged) \
+  QColor getEffectiveColor () const \
+  { \
+    return get_effective_color (); \
+  } \
+  Q_SIGNAL void effectiveColorChanged (QColor color);
 
 class ColoredObject
     : virtual public ArrangerObject,
@@ -55,11 +65,26 @@ public:
 
   using Color = zrythm::utils::Color;
 
+  /**
+   * @brief Returns the color of the object if set, otherwise the owner track's
+   * color.
+   */
+  QColor get_effective_color () const;
+
 protected:
   void
   copy_members_from (const ColoredObject &other, ObjectCloneType clone_type);
 
   void init_loaded_base ();
+
+  template <typename Derived> void init_colored_object (this Derived &self)
+  {
+    const auto update_eff_color = [&self] () {
+      Q_EMIT self.effectiveColorChanged (self.get_effective_color ());
+    };
+    QObject::connect (&self, &Derived::colorChanged, &self, update_eff_color);
+    QObject::connect (&self, &Derived::useColorChanged, &self, update_eff_color);
+  }
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

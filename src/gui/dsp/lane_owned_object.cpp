@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/dsp/lane_owned_object.h"
-#include "gui/dsp/laned_track.h"
+#include "gui/dsp/track_all.h"
 
 template <typename RegionT>
 LaneOwnedObjectImpl<RegionT>::TrackLaneT *

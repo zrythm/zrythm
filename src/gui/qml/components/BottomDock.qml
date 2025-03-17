@@ -34,77 +34,12 @@ ColumnLayout {
                 description: qsTr("Select a clip from the timeline")
             }
 
-            GridLayout {
-                id: editorContentGrid
+            Loader {
+                active: currentIndex === 1
+                visible: active
 
-                rows: 2
-                columns: 3
-
-                RowLayout {
-                    id: selectedRegionInfo
-
-                    Layout.fillHeight: true
-                    Layout.rowSpan: 2
-
-                    Rectangle {
-                        color: "orange"
-                        Layout.fillHeight: true
-                        width: 5
-                    }
-
-                    RotatedLabel {
-                        id: rotatedText
-
-                        font: Style.normalTextFont
-                        Layout.fillHeight: true
-                        text: "Audio Region 1"
-                    }
-
-                }
-
-                ZrythmToolBar {
-                    id: editorToolbar
-
-                    Layout.columnSpan: 2
-                    Layout.fillWidth: true
-                    leftItems: [
-                        ToolButton {
-                            text: "left"
-                        }
-                    ]
-                    centerItems: [
-                        ToolButton {
-                            text: "center"
-                        }
-                    ]
-                    rightItems: [
-                        ToolButton {
-                            text: "right"
-                        }
-                    ]
-                }
-
-                StackLayout {
-                    id: editorSpecializedStack
-
-                    currentIndex: 0
-
-                    MidiEditorPane {
-                        id: midiEditorPane
-                    }
-
-                    AudioEditorPane {
-                        id: audioEditorPane
-                    }
-
-                    AutomationEditorPane {
-                        id: automationEditorPane
-                    }
-
-                    ChordEditorPane {
-                        id: chordEditorPane
-                    }
-
+                sourceComponent: ClipEditorGrid {
+                    region: root.project.clipEditor.region
                 }
 
             }

@@ -34,7 +34,8 @@ class ClipEditor final
 {
   Q_OBJECT
   QML_ELEMENT
-  Q_PROPERTY (QVariant region READ getRegion NOTIFY regionChanged)
+  Q_PROPERTY (
+    QVariant region READ getRegion WRITE setRegion NOTIFY regionChanged)
 public:
   ClipEditor (const DeserializationDependencyHolder &dh)
       : ClipEditor (
@@ -60,6 +61,8 @@ public:
 
     return QVariant{};
   }
+  void             setRegion (QVariant region);
+  Q_INVOKABLE void unsetRegion ();
   Q_SIGNAL void regionChanged (QVariant region);
 
   // ============================================================================
@@ -77,8 +80,14 @@ public:
   /**
    * Sets the track and refreshes the piano roll widgets.
    */
-  void set_region (Region::Uuid region_id) { region_id_ = region_id; };
-  void unset_region () { region_id_.reset (); }
+  void set_region (Region::Uuid region_id)
+  {
+    if (region_id_.has_value () && region_id_.value () == region_id)
+      return;
+
+    region_id_ = region_id;
+    Q_EMIT regionChanged (QVariant::fromStdVariant (get_region ().value ()));
+  };
 
   bool has_region () const { return region_id_.has_value (); }
 

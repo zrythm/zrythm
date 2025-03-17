@@ -15,6 +15,7 @@ AutomationRegion::AutomationRegion (QObject * parent)
 {
   ArrangerObject::parent_base_qproperties (*this);
   BoundedObject::parent_base_qproperties (*this);
+  init_colored_object ();
 }
 
 AutomationRegion::AutomationRegion (
@@ -121,7 +122,7 @@ AutomationRegion::set_automation_track (AutomationTrack &at)
   /* if clip editor region or region selected, unselect it */
   if (get_uuid () == *CLIP_EDITOR->get_region_id ())
     {
-      CLIP_EDITOR->unset_region ();
+      CLIP_EDITOR->unsetRegion ();
     }
   bool was_selected = false;
   if (is_selected ())

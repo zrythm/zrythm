@@ -16,6 +16,23 @@ ClipEditor::init_loaded ()
   z_info ("Done initializing clip editor backend");
 }
 
+void
+ClipEditor::setRegion (QVariant region)
+{
+  auto r = dynamic_cast<Region *> (region.value<QObject *> ());
+  set_region (r->get_uuid ());
+}
+
+void
+ClipEditor::unsetRegion ()
+{
+  if (!region_id_)
+    return;
+
+  region_id_.reset ();
+  Q_EMIT regionChanged ({});
+}
+
 #if 0
 void
 ClipEditor::set_region (
@@ -105,7 +122,7 @@ ClipEditor::unset_region_if_belongs_to_track (const Region::TrackUuid &track_id)
   auto region_track_id = get_track_id ();
   if (region_track_id == track_id)
     {
-      unset_region ();
+      unsetRegion ();
     }
 }
 
