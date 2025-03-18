@@ -111,7 +111,7 @@ public:
     has_update_.store (true, std::memory_order_release);
   }
 
-  void add_frames_rtsafe (signed_frame_t frames, double ticks_per_frame = 0.0)
+  void add_frames_rtsafe (signed_frame_t frames, double ticks_per_frame)
   {
     if (frames == 0)
       return;

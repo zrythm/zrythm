@@ -23,9 +23,7 @@ class ArrangerSelections;
 #define CLIP_EDITOR (PROJECT->clip_editor_)
 
 /**
- * Clip editor serializable backend.
- *
- * The actual widgets should reflect the information here.
+ * Backend for the clip editor part of the UI.
  */
 class ClipEditor final
     : public QObject,
@@ -36,6 +34,13 @@ class ClipEditor final
   QML_ELEMENT
   Q_PROPERTY (
     QVariant region READ getRegion WRITE setRegion NOTIFY regionChanged)
+  Q_PROPERTY (PianoRoll * pianoRoll READ getPianoRoll CONSTANT FINAL)
+  Q_PROPERTY (ChordEditor * chordEditor READ getChordEditor CONSTANT FINAL)
+  Q_PROPERTY (
+    AudioClipEditor * audioEditor READ getAudioClipEditor CONSTANT FINAL)
+  Q_PROPERTY (
+    AutomationEditor * automationEditor READ getAutomationEditor CONSTANT FINAL)
+
 public:
   ClipEditor (const DeserializationDependencyHolder &dh)
       : ClipEditor (
@@ -43,14 +48,16 @@ public:
   {
   }
 
-  ClipEditor (ArrangerObjectRegistry &reg, QObject * parent = nullptr)
-      : QObject (parent), object_registry_ (reg)
-  {
-  }
+  ClipEditor (ArrangerObjectRegistry &reg, QObject * parent = nullptr);
 
   // ============================================================================
   // QML Interface
   // ============================================================================
+
+  PianoRoll *        getPianoRoll () const { return piano_roll_; }
+  ChordEditor *      getChordEditor () const { return chord_editor_; }
+  AudioClipEditor *  getAudioClipEditor () const { return audio_clip_editor_; }
+  AutomationEditor * getAutomationEditor () const { return automation_editor_; }
 
   QVariant getRegion () const
   {
@@ -125,10 +132,10 @@ public:
   /** Region currently attached to the clip editor. */
   std::optional<ArrangerObject::Uuid> region_id_;
 
-  PianoRoll        piano_roll_;
-  AudioClipEditor  audio_clip_editor_;
-  AutomationEditor automation_editor_;
-  ChordEditor      chord_editor_;
+  PianoRoll *        piano_roll_{};
+  AudioClipEditor *  audio_clip_editor_{};
+  AutomationEditor * automation_editor_{};
+  ChordEditor *      chord_editor_{};
 
   /* --- caches --- */
   // std::optional<RegionPtrVariant> region_;

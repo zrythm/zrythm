@@ -102,15 +102,18 @@ set(rel_qml_file_paths
   components/arranger/ArrangerObjectBase.qml
   components/arranger/ChordRegion.qml
   components/arranger/Marker.qml
+  components/arranger/MidiArranger.qml
   components/arranger/MidiRegion.qml
   components/arranger/RegionBase.qml
   components/arranger/ScaleObject.qml
   components/arranger/Timeline.qml
+  components/arranger/VelocityArranger.qml
   components/editors/AudioEditorPane.qml
   components/editors/AutomationEditorPane.qml
   components/editors/ClipEditorGrid.qml
   components/editors/MidiEditorPane.qml
   components/editors/ChordEditorPane.qml
+  components/editors/PianoRollKeys.qml
   components/AutomationTracksListView.qml
   components/MainToolbar.qml
   components/BottomDock.qml

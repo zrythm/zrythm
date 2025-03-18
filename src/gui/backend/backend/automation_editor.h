@@ -20,10 +20,17 @@
  * Backend for the automation editor.
  */
 class AutomationEditor final
-    : public EditorSettings,
+    : public QObject,
+      public EditorSettings,
       public ICloneable<AutomationEditor>,
       public zrythm::utils::serialization::ISerializable<AutomationEditor>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_EDITOR_SETTINGS_QML_PROPERTIES
+public:
+  AutomationEditor (QObject * parent = nullptr) : QObject (parent) { }
+
 public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -31,7 +38,8 @@ public:
   init_after_cloning (const AutomationEditor &other, ObjectCloneType clone_type)
     override
   {
-    *this = other;
+    static_cast<EditorSettings &> (*this) =
+      static_cast<const EditorSettings &> (other);
   }
 };
 

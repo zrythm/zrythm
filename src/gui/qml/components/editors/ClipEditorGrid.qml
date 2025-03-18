@@ -9,7 +9,9 @@ import Zrythm 1.0
 GridLayout {
     id: root
 
-    required property var region
+    required property var project
+    required property var clipEditor
+    property var region: clipEditor.region
 
     rows: 2
     columns: 3
@@ -61,22 +63,56 @@ GridLayout {
     StackLayout {
         id: editorSpecializedStack
 
-        currentIndex: 0
+        currentIndex: region.regionType
 
-        MidiEditorPane {
-            id: midiEditorPane
+        Loader {
+            id: midiEditorLoader
+
+            active: editorSpecializedStack.currentIndex === 0
+
+            sourceComponent: MidiEditorPane {
+                project: root.project
+                region: root.region
+                clipEditor: root.clipEditor
+                pianoRoll: root.clipEditor.pianoRoll
+            }
+
         }
 
-        AudioEditorPane {
-            id: audioEditorPane
+        Loader {
+            id: audioEditorLoader
+
+            active: editorSpecializedStack.currentIndex === 1
+
+            sourceComponent: AudioEditorPane {
+                project: root.project
+                region: root.region
+            }
+
         }
 
-        AutomationEditorPane {
-            id: automationEditorPane
+        Loader {
+            id: automationEditorLoader
+
+            active: editorSpecializedStack.currentIndex === 2
+
+            sourceComponent: AutomationEditorPane {
+                project: root.project
+                region: root.region
+            }
+
         }
 
-        ChordEditorPane {
-            id: chordEditorPane
+        Loader {
+            id: chordEditorLoader
+
+            active: editorSpecializedStack.currentIndex === 3
+
+            sourceComponent: ChordEditorPane {
+                project: root.project
+                region: root.region
+            }
+
         }
 
     }

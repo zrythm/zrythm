@@ -22,7 +22,7 @@ class Track;
  * @{
  */
 
-#define PIANO_ROLL (&CLIP_EDITOR->piano_roll_)
+#define PIANO_ROLL (CLIP_EDITOR->piano_roll_)
 
 /**
  * A MIDI modifier to use to display data for.
@@ -47,7 +47,7 @@ class Region;
 class MidiNoteDescriptor
 {
 public:
-  inline std::string get_custom_name () const { return custom_name_; }
+  std::string get_custom_name () const { return custom_name_; }
 
   void set_custom_name (const std::string &str) { custom_name_ = str; }
 
@@ -90,10 +90,14 @@ public:
  * The actual widgets should reflect the information here.
  */
 class PianoRoll final
-    : public EditorSettings,
+    : public QObject,
+      public EditorSettings,
       public ICloneable<PianoRoll>,
       public zrythm::utils::serialization::ISerializable<PianoRoll>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_EDITOR_SETTINGS_QML_PROPERTIES
 public:
   /**
    * Highlighting for the piano roll.
@@ -111,6 +115,8 @@ public:
     Musical,
     Pitch,
   };
+
+  PianoRoll (QObject * parent = nullptr) : QObject (parent) { }
 
 public:
   DECLARE_DEFINE_FIELDS_METHOD ();
@@ -197,7 +203,8 @@ public:
   void
   init_after_cloning (const PianoRoll &other, ObjectCloneType clone_type) override
   {
-    *this = other;
+    static_cast<EditorSettings &> (*this) =
+      static_cast<const EditorSettings &> (other);
   }
 
 private:

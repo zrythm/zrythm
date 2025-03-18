@@ -522,7 +522,7 @@ Transport::requestRoll (bool with_wait)
 void
 Transport::add_to_playhead (const signed_frame_t nframes)
 {
-  playhead_pos_->add_frames_rtsafe (nframes);
+  playhead_pos_->add_frames_rtsafe (nframes, AUDIO_ENGINE->ticks_per_frame_);
 }
 
 void

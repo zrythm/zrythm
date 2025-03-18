@@ -25,7 +25,7 @@ class ChordPreset;
 
 using namespace zrythm;
 
-#define CHORD_EDITOR (&CLIP_EDITOR->chord_editor_)
+#define CHORD_EDITOR (CLIP_EDITOR->chord_editor_)
 
 constexpr int CHORD_EDITOR_NUM_CHORDS = 12;
 
@@ -33,16 +33,22 @@ constexpr int CHORD_EDITOR_NUM_CHORDS = 12;
  * Backend for the chord editor.
  */
 class ChordEditor final
-    : public EditorSettings,
+    : public QObject,
+      public EditorSettings,
       public ICloneable<ChordEditor>,
       public utils::serialization::ISerializable<ChordEditor>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_EDITOR_SETTINGS_QML_PROPERTIES
 public:
   using ChordDescriptor = dsp::ChordDescriptor;
   using ChordAccent = dsp::ChordAccent;
   using ChordType = dsp::ChordType;
   using MusicalScale = dsp::MusicalScale;
   using MusicalNote = dsp::MusicalNote;
+
+  ChordEditor (QObject * parent = nullptr) : QObject (parent) { }
 
   /**
    * Initializes the ChordEditor.
@@ -74,7 +80,8 @@ public:
   void init_after_cloning (const ChordEditor &other, ObjectCloneType clone_type)
     override
   {
-    *this = other;
+    static_cast<EditorSettings &> (*this) =
+      static_cast<const EditorSettings &> (other);
   }
 
   DECLARE_DEFINE_FIELDS_METHOD ();

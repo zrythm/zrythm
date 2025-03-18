@@ -6,12 +6,20 @@
 #include "gui/dsp/track.h"
 #include "utils/rt_thread_id.h"
 
+ClipEditor::ClipEditor (ArrangerObjectRegistry &reg, QObject * parent)
+    : QObject (parent), piano_roll_ (new PianoRoll (this)),
+      audio_clip_editor_ (new AudioClipEditor (this)),
+      automation_editor_ (new AutomationEditor (this)),
+      chord_editor_ (new ChordEditor (this)), object_registry_ (reg)
+{
+}
+
 void
 ClipEditor::init_loaded ()
 {
   z_info ("Initializing clip editor backend...");
 
-  piano_roll_.init_loaded ();
+  piano_roll_->init_loaded ();
 
   z_info ("Done initializing clip editor backend");
 }
@@ -144,11 +152,14 @@ ClipEditor::get_region () const
 std::optional<TrackPtrVariant>
 ClipEditor::get_track () const
 {
+#if 0
   if (ROUTER->is_processing_thread ())
     {
-      return std::visit (
-        [&] (auto &&track) -> TrackPtrVariant { return track; }, *track_);
+    assert (track_);
+    return std::visit (
+      [&] (auto &&track) -> TrackPtrVariant { return track; }, *track_);
     }
+#endif
 
   if (!has_region ())
     return std::nullopt;
@@ -189,7 +200,7 @@ ClipEditor::set_caches ()
 void
 ClipEditor::init ()
 {
-  piano_roll_.init ();
-  chord_editor_.init ();
+  piano_roll_->init ();
+  chord_editor_->init ();
   // the rest of the editors are initialized in their respective classes
 }

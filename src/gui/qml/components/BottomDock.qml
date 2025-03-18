@@ -39,7 +39,8 @@ ColumnLayout {
                 visible: active
 
                 sourceComponent: ClipEditorGrid {
-                    region: root.project.clipEditor.region
+                    project: root.project
+                    clipEditor: root.project.clipEditor
                 }
 
             }

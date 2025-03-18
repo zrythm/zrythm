@@ -22,10 +22,17 @@
  * The actual widgets should reflect the* information here.
  */
 class AudioClipEditor final
-    : public EditorSettings,
+    : public QObject,
+      public EditorSettings,
       public ICloneable<AudioClipEditor>,
       public zrythm::utils::serialization::ISerializable<AudioClipEditor>
 {
+  Q_OBJECT
+  QML_ELEMENT
+  DEFINE_EDITOR_SETTINGS_QML_PROPERTIES
+public:
+  AudioClipEditor (QObject * parent = nullptr) : QObject (parent) { }
+
 public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
@@ -33,7 +40,8 @@ public:
   init_after_cloning (const AudioClipEditor &other, ObjectCloneType clone_type)
     override
   {
-    *this = other;
+    static_cast<EditorSettings &> (*this) =
+      static_cast<const EditorSettings &> (other);
   }
 };
 
