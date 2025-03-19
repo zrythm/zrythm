@@ -17,12 +17,18 @@ Item {
     property real keyWidth: 48 // Width of white keys
     readonly property real blackKeyWidth: keyWidth * 0.6
     required property var pianoRoll
+    readonly property color borderColor: "#cccccc"
+    readonly property color blackKeyPressedColor: Qt.tint(blackKeyColor, Qt.alpha(root.palette.highlight, 0.9)) // "#6699ff"
+    readonly property color whiteKeyPressedColor: Qt.tint("white", Qt.alpha(root.palette.highlight, 0.6)) //"#88aaff"
+    readonly property color blackKeyColor: "#333333"
+    readonly property int blackKeyRadius: 2
+    readonly property color labelColor: "#666666"
+    readonly property color labelPressedColor: "white"
 
     // Signals for interaction
     signal notePressed(int note)
     signal noteReleased(int note)
     signal noteDragged(int fromNote, int toNote)
-
 
     function isWhiteKey(note) {
         const positions = [0, 2, 4, 5, 7, 9, 11];
@@ -50,35 +56,62 @@ Item {
             model: endNote - startNote + 1
 
             Item {
+                id: keyItem
+
                 property int midiNote: root.endNote - modelData
                 property bool isPressed: false
 
                 Layout.fillWidth: true
                 Layout.preferredHeight: root.keyHeight
 
+                // Top border for white keys when next note is white
+                Rectangle {
+                    id: topBorder
+
+                    visible: keyItem.midiNote < root.endNote && root.isWhiteKey(keyItem.midiNote) && root.isWhiteKey(keyItem.midiNote + 1)
+                    height: 1
+                    width: parent.width
+                    color: root.borderColor
+                    anchors.top: parent.top
+                }
+
                 // White key background
                 Rectangle {
-                    anchors.fill: parent
-                    color: parent.isPressed ? "#88aaff" : "white"
-
-                    border {
-                        width: 1
-                        color: "#cccccc"
-                    }
-
+                    anchors.top: topBorder.visible ? topBorder.bottom : parent.top
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    width: parent.width
+                    color: parent.isPressed && root.isWhiteKey(midiNote) ? root.whiteKeyPressedColor : "white"
+                    border.width: 0
                 }
 
                 // Black key
                 Rectangle {
                     visible: !root.isWhiteKey(midiNote)
-                    width: blackKeyWidth
-                    height: parent.height * 0.7
-                    color: parent.isPressed ? "#6699ff" : "#333333"
-                    radius: 2
+                    width: root.blackKeyWidth
+                    height: parent.height
+                    color: parent.isPressed ? root.blackKeyPressedColor : root.blackKeyColor
+                    topRightRadius: root.blackKeyRadius
+                    bottomRightRadius: root.blackKeyRadius
+                    border.width: 0
 
                     anchors {
-                        right: parent.right
+                        left: parent.left
                         verticalCenter: parent.verticalCenter
+                    }
+
+                    // Right-side vertical line
+                    Rectangle {
+                        visible: parent.visible
+                        height: 1
+                        width: keyItem.width - root.blackKeyWidth
+                        color: root.borderColor
+
+                        anchors {
+                            left: parent.right
+                            verticalCenter: parent.verticalCenter
+                        }
+
                     }
 
                 }
@@ -87,7 +120,7 @@ Item {
                 Text {
                     visible: root.isWhiteKey(midiNote) && (midiNote % 12 === 0)
                     text: root.noteName(midiNote)
-                    color: parent.isPressed ? "white" : "#666666"
+                    color: parent.isPressed ? root.labelPressedColor : root.labelColor
 
                     font {
                         pixelSize: 10
@@ -148,9 +181,9 @@ Item {
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         onPressed: handleNotePress(mouseY)
         onPositionChanged: {
-            if (pressed) {
+            if (pressed)
                 handleNotePress(mouseY);
-            }
+
         }
         onReleased: handleNoteRelease()
     }
