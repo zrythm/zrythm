@@ -3,11 +3,10 @@
 
 #include "zrythm-test-config.h"
 
-# include "gui/dsp/tempo_track.h"
-# include "gui/dsp/track.h"
-#include "utils/flags.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/dsp/tempo_track.h"
+#include "gui/dsp/track.h"
 
 #include "tests/helpers/zrythm_helper.h"
 

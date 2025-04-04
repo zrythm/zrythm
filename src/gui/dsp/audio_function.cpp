@@ -563,13 +563,16 @@ audio_function_apply (
   g_free (tmp);
 #endif
 
-  int  id = AUDIO_POOL->add_clip (std::make_unique<AudioClip> (
+// FIXME: where is the clip used??
+#if 0
+  int  id = AUDIO_POOL->add_clip (std::make_shared<AudioClip> (
     dest_frames, AudioClip::BitDepth::BIT_DEPTH_32, AUDIO_ENGINE->sample_rate_,
     P_TEMPO_TRACK->get_current_bpm (), orig_clip->get_name ()));
   auto clip = AUDIO_POOL->get_clip (id);
   z_debug (
     "writing {} to pool (id {})", clip->get_name (), clip->get_pool_id ());
   AUDIO_POOL->write_clip (*clip, false, false);
+#endif
 
   // FIXME: needed?
   // audio_sel.pool_id_ = clip->get_pool_id ();
@@ -577,7 +580,7 @@ audio_function_apply (
   if (type != AudioFunctionType::Invalid)
     {
       /* replace the frames in the region */
-      r->replace_frames (dest_frames, start.frames_, false);
+      r->replace_frames (dest_frames, start.frames_);
     }
 
   if (

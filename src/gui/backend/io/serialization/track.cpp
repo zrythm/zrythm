@@ -36,7 +36,7 @@ Track::define_base_fields (const Context &ctx)
     T::make_field ("inSignalType", in_signal_type_),
     T::make_field ("outSignalType", out_signal_type_),
     T::make_field ("comment", comment_, true),
-    T::make_field ("frozen", frozen_), T::make_field ("poolId", pool_id_));
+    T::make_field ("poolId", frozen_clip_id_));
 }
 
 template <typename TrackLaneT>
@@ -56,10 +56,10 @@ LanedTrackImpl<AudioLane>::define_base_fields (const Context &);
 
 template <typename RegionT>
 void
-RegionOwnerImpl<RegionT>::define_base_fields (
+RegionOwner<RegionT>::define_base_fields (
   const utils::serialization::ISerializableBase::Context &ctx)
 {
-  using T = utils::serialization::ISerializable<RegionOwnerImpl<RegionT>>;
+  using T = utils::serialization::ISerializable<RegionOwner<RegionT>>;
   T::serialize_fields (ctx, T::make_field ("regionList", region_list_));
 }
 
@@ -70,16 +70,15 @@ RegionList::define_fields (const ISerializableBase::Context &ctx)
 }
 
 template void
-RegionOwnerImpl<MidiRegion>::define_base_fields (
+RegionOwner<MidiRegion>::define_base_fields (const ISerializableBase::Context &);
+template void
+RegionOwner<AudioRegion>::define_base_fields (
   const ISerializableBase::Context &);
 template void
-RegionOwnerImpl<AudioRegion>::define_base_fields (
+RegionOwner<AutomationRegion>::define_base_fields (
   const ISerializableBase::Context &);
 template void
-RegionOwnerImpl<AutomationRegion>::define_base_fields (
-  const ISerializableBase::Context &);
-template void
-RegionOwnerImpl<ChordRegion>::define_base_fields (
+RegionOwner<ChordRegion>::define_base_fields (
   const ISerializableBase::Context &);
 
 template <typename RegionT>
@@ -88,11 +87,11 @@ TrackLaneImpl<RegionT>::define_base_fields (
   const utils::serialization::ISerializableBase::Context &ctx)
 {
   using T = utils::serialization::ISerializable<TrackLaneImpl<RegionT>>;
-  T::template call_all_base_define_fields<RegionOwnerImpl<RegionT>> (ctx);
+  T::template call_all_base_define_fields<RegionOwner<RegionT>> (ctx);
   T::serialize_fields (
-    ctx, T::make_field ("pos", pos_), T::make_field ("name", name_),
-    T::make_field ("height", height_), T::make_field ("mute", mute_),
-    T::make_field ("solo", solo_), T::make_field ("midiCh", midi_ch_));
+    ctx, T::make_field ("name", name_), T::make_field ("height", height_),
+    T::make_field ("mute", mute_), T::make_field ("solo", solo_),
+    T::make_field ("midiCh", midi_ch_));
 }
 
 template void
@@ -301,7 +300,7 @@ ChordTrack::define_fields (const Context &ctx)
   using T = ISerializable<ChordTrack>;
   T::call_all_base_define_fields<
     Track, ProcessableTrack, AutomatableTrack, ChannelTrack, RecordableTrack,
-    RegionOwnerImpl<ChordRegion>> (ctx);
+    RegionOwner<ChordRegion>> (ctx);
   T::serialize_fields (ctx, T::make_field ("scaleObjects", scales_));
 }
 

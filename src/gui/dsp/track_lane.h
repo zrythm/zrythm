@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -60,28 +60,7 @@ public: \
     Q_EMIT heightChanged (height); \
   } \
 \
-  Q_SIGNAL void heightChanged (double height); \
-  /* ================================================================ */ \
-  /* position */ \
-  /* ================================================================ */ \
-  Q_PROPERTY ( \
-    int position READ getPosition WRITE setPosition NOTIFY positionChanged) \
-  int getPosition () const \
-  { \
-    return pos_; \
-  } \
-  void setPosition (const int position) \
-  { \
-    if (pos_ == position) \
-      return; \
-\
-    pos_ = position; \
-    Q_EMIT positionChanged (position); \
-  } \
-\
-  Q_SIGNAL void positionChanged (int position);
-
-constexpr double TRACK_LANE_DEF_HEIGHT = 48;
+  Q_SIGNAL void heightChanged (double height);
 
 /**
  * A TrackLane belongs to a Track (can have many TrackLanes in a Track) and
@@ -90,13 +69,21 @@ constexpr double TRACK_LANE_DEF_HEIGHT = 48;
  * Only Tracks that have Regions can have TrackLanes, such as InstrumentTrack
  * and AudioTrack.
  */
-class TrackLane : virtual public RegionOwner
+class TrackLane : public utils::UuidIdentifiableObject<TrackLane>
 {
+public:
+  static constexpr double DEF_HEIGHT = 48;
+
 public:
   ~TrackLane () override = default;
   Q_DISABLE_COPY_MOVE (TrackLane)
 
   std::string get_name () const { return this->name_; }
+
+  void generate_name (int pos)
+  {
+    name_ = format_str (QObject::tr ("Lane {}").toStdString (), pos + 1);
+  }
 
   bool get_soloed () const { return solo_; }
 
@@ -109,23 +96,22 @@ public:
 
 protected:
   TrackLane () = default;
-  TrackLane (int pos, std::string name);
 
 public:
   /** Position in the Track. */
-  int pos_ = 0;
+  // int pos_ = 0;
 
   /** Name of lane, e.g. "Lane 1". */
   std::string name_;
 
   /** Position of handle. */
-  double height_ = TRACK_LANE_DEF_HEIGHT;
+  double height_{ DEF_HEIGHT };
 
   /** Muted or not. */
-  bool mute_ = false;
+  bool mute_{};
 
   /** Soloed or not. */
-  bool solo_ = false;
+  bool solo_{};
 
   /**
    * MIDI channel, if MIDI lane, starting at 1.
@@ -145,7 +131,7 @@ public:
 template <typename RegionT>
 class TrackLaneImpl
     : public TrackLane,
-      public RegionOwnerImpl<RegionT>,
+      public RegionOwner<RegionT>,
       public zrythm::utils::serialization::ISerializable<TrackLaneImpl<RegionT>>
 {
 public:
@@ -155,18 +141,22 @@ public:
   using Position = dsp::Position;
 
 public:
-  TrackLaneImpl () = default;
+  // TrackLaneImpl () = default;
   ~TrackLaneImpl () override = default;
   Q_DISABLE_COPY_MOVE (TrackLaneImpl)
+
+  TrackLaneT &get_derived_lane () { return *static_cast<TrackLaneT *> (this); }
+  const TrackLaneT &get_derived_lane () const
+  {
+    return *static_cast<const TrackLaneT *> (this);
+  }
 
   /**
    * Creates a new TrackLane at the given pos in the given Track.
    *
    * @param track The Track to create the TrackLane for.
-   * @param pos The position (index) in the Track that this lane will be placed
-   * in.
    */
-  TrackLaneImpl (LanedTrackT * track, int pos);
+  TrackLaneImpl (LanedTrackT * track) : track_ (track) { }
 
   bool is_in_active_project () const override;
 
@@ -246,10 +236,16 @@ public:
     return track_;
   }
 
+  int get_index_in_track (this const auto &self)
+  {
+    return self.get_derived_lane ().get_track ()->get_lane_index (
+      self.get_derived_lane ());
+  }
+
   /**
    * Calculates a unique index for this lane.
    */
-  int calculate_lane_idx () const;
+  int calculate_lane_idx_for_midi_serialization () const;
 
   /**
    * Generate a snapshot for playback.
@@ -280,6 +276,10 @@ concept TrackLaneSubclass = std::derived_from<T, TrackLane>;
 
 extern template class TrackLaneImpl<MidiRegion>;
 extern template class TrackLaneImpl<AudioRegion>;
+
+using TrackLaneRegistry =
+  utils::OwningObjectRegistry<TrackLanePtrVariant, TrackLane>;
+using TrackLaneRegistryRef = std::reference_wrapper<TrackLaneRegistry>;
 
 /**
  * @}

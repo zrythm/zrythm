@@ -540,149 +540,160 @@ Channel::expose_ports_to_backend (AudioEngine &engine)
 void
 Channel::reconnect_ext_input_ports (AudioEngine &engine)
 {
-  /* skip if auditioner track */
-  if (track_->is_auditioner ())
-    return;
+  std::visit (
+    [&] (auto &&track) {
+      using TrackT = base_type<decltype (track)>;
 
-  if (track_->disconnecting_)
-    {
-      z_error (
-        "attempted to reconnect ext input ports on track {} while it is disconnecting",
-        track_->name_);
+      /* skip if auditioner track */
+      if (track_->is_auditioner ())
+        return;
+
+      if (track_->disconnecting_)
+        {
+          z_error (
+            "attempted to reconnect ext input ports on track {} while it is disconnecting",
+            track_->name_);
+          return;
+        }
+
+      // FIXME
+      z_warning ("unimplemented!!!!!!!!!!!!!!!!!!!!!! FIXME!!!!");
       return;
-    }
 
-  // FIXME
-  z_warning ("unimplemented!!!!!!!!!!!!!!!!!!!!!! FIXME!!!!");
-  return;
+      z_return_if_fail (is_in_active_project ());
 
-  z_return_if_fail (is_in_active_project ());
+      z_debug ("reconnecting ext inputs for {}", track_->name_);
 
-  z_debug ("reconnecting ext inputs for {}", track_->name_);
-
-  if (track_->has_piano_roll () || track_->is_chord ())
-    {
-      auto &midi_in = track_->processor_->get_midi_in_port ();
-
-      /* if the project was loaded with another backend, the port might not be
-       * exposed yet, so expose it */
-      midi_in.set_expose_to_backend (engine, true);
-
-      /* disconnect all connections to hardware */
-      disconnect_port_hardware_inputs (midi_in);
-
-      if (all_midi_ins_)
+      if constexpr (
+        std::derived_from<TrackT, PianoRollTrack>
+        || std::is_same_v<TrackT, ChordTrack>)
         {
-          for (
-            const auto &port_id : engine.hw_in_processor_->selected_midi_ports_)
+          auto &midi_in = track->processor_->get_midi_in_port ();
+
+          /* if the project was loaded with another backend, the port might not
+           * be exposed yet, so expose it */
+          midi_in.set_expose_to_backend (engine, true);
+
+          /* disconnect all connections to hardware */
+          disconnect_port_hardware_inputs (midi_in);
+
+          if (all_midi_ins_)
             {
-              auto source = engine.hw_in_processor_->find_port (port_id);
-              if (!source)
+              for (
+                const auto &port_id :
+                engine.hw_in_processor_->selected_midi_ports_)
                 {
-                  z_warning ("port for {} not found", port_id);
-                  continue;
+                  auto source = engine.hw_in_processor_->find_port (port_id);
+                  if (!source)
+                    {
+                      z_warning ("port for {} not found", port_id);
+                      continue;
+                    }
+                  PORT_CONNECTIONS_MGR->ensure_connect (
+                    source->get_uuid (), midi_in.get_uuid (), 1.f, true, true);
                 }
-              PORT_CONNECTIONS_MGR->ensure_connect (
-                source->get_uuid (), midi_in.get_uuid (), 1.f, true, true);
+            }
+          else
+            {
+              for (const auto &ext_port : ext_midi_ins_)
+                {
+                  auto * source =
+                    engine.hw_in_processor_->find_port (ext_port->get_id ());
+                  if (source == nullptr)
+                    {
+                      z_warning ("port for {} not found", ext_port->get_id ());
+                      continue;
+                    }
+                  PORT_CONNECTIONS_MGR->ensure_connect (
+                    source->get_uuid (), midi_in.get_uuid (), 1.f, true, true);
+                }
             }
         }
-      else
+      else if constexpr (std::is_same_v<TrackT, AudioTrack>)
         {
-          for (const auto &ext_port : ext_midi_ins_)
-            {
-              auto * source =
-                engine.hw_in_processor_->find_port (ext_port->get_id ());
-              if (source == nullptr)
-                {
-                  z_warning ("port for {} not found", ext_port->get_id ());
-                  continue;
-                }
-              PORT_CONNECTIONS_MGR->ensure_connect (
-                source->get_uuid (), midi_in.get_uuid (), 1.f, true, true);
-            }
-        }
-    }
-  else if (track_->type_ == Track::Type::Audio)
-    {
-      /* if the project was loaded with another backend, the port might not be
-       * exposed yet, so expose it */
-      iterate_tuple (
-        [&] (auto &port) { port.set_expose_to_backend (engine, true); },
-        track_->processor_->get_stereo_in_ports ());
+          /* if the project was loaded with another backend, the port might not
+           * be exposed yet, so expose it */
+          iterate_tuple (
+            [&] (auto &port) { port.set_expose_to_backend (engine, true); },
+            track_->processor_->get_stereo_in_ports ());
 
-      /* disconnect all connections to hardware */
-      iterate_tuple (
-        [&] (auto &port) { disconnect_port_hardware_inputs (port); },
-        track_->processor_->get_stereo_in_ports ());
+          /* disconnect all connections to hardware */
+          iterate_tuple (
+            [&] (auto &port) { disconnect_port_hardware_inputs (port); },
+            track_->processor_->get_stereo_in_ports ());
 
-      auto &l = track_->processor_->get_stereo_in_ports ().first;
-      auto &r = track_->processor_->get_stereo_in_ports ().second;
-      if (all_stereo_l_ins_)
-        {
-          for (
-            const auto &port_id : engine.hw_in_processor_->selected_audio_ports_)
+          auto &l = track_->processor_->get_stereo_in_ports ().first;
+          auto &r = track_->processor_->get_stereo_in_ports ().second;
+          if (all_stereo_l_ins_)
             {
-              auto * source = engine.hw_in_processor_->find_port (port_id);
-              if (source == nullptr)
+              for (
+                const auto &port_id :
+                engine.hw_in_processor_->selected_audio_ports_)
                 {
-                  z_warning ("port for {} not found", port_id);
-                  continue;
+                  auto * source = engine.hw_in_processor_->find_port (port_id);
+                  if (source == nullptr)
+                    {
+                      z_warning ("port for {} not found", port_id);
+                      continue;
+                    }
+                  PORT_CONNECTIONS_MGR->ensure_connect (
+                    source->get_uuid (), l.get_uuid (), 1.f, true, true);
                 }
-              PORT_CONNECTIONS_MGR->ensure_connect (
-                source->get_uuid (), l.get_uuid (), 1.f, true, true);
             }
-        }
-      else
-        {
-          z_debug ("{} L HW ins", ext_stereo_l_ins_.size ());
-          for (const auto &ext_port : ext_stereo_l_ins_)
+          else
             {
-              auto * source =
-                engine.hw_in_processor_->find_port (ext_port->get_id ());
-              if (source == nullptr)
+              z_debug ("{} L HW ins", ext_stereo_l_ins_.size ());
+              for (const auto &ext_port : ext_stereo_l_ins_)
                 {
-                  z_warning ("port for {} not found", ext_port->get_id ());
-                  continue;
+                  auto * source =
+                    engine.hw_in_processor_->find_port (ext_port->get_id ());
+                  if (source == nullptr)
+                    {
+                      z_warning ("port for {} not found", ext_port->get_id ());
+                      continue;
+                    }
+                  PORT_CONNECTIONS_MGR->ensure_connect (
+                    source->get_uuid (), l.get_uuid (), 1.f, true, true);
                 }
-              PORT_CONNECTIONS_MGR->ensure_connect (
-                source->get_uuid (), l.get_uuid (), 1.f, true, true);
+            }
+
+          if (all_stereo_r_ins_)
+            {
+              for (
+                const auto &port_id :
+                engine.hw_in_processor_->selected_audio_ports_)
+                {
+                  auto * source = engine.hw_in_processor_->find_port (port_id);
+                  if (source == nullptr)
+                    {
+                      z_warning ("port for {} not found", port_id);
+                      continue;
+                    }
+                  PORT_CONNECTIONS_MGR->ensure_connect (
+                    source->get_uuid (), r.get_uuid (), 1.f, true, true);
+                }
+            }
+          else
+            {
+              z_debug ("{} R HW ins", ext_stereo_r_ins_.size ());
+              for (const auto &ext_port : ext_stereo_r_ins_)
+                {
+                  auto * source =
+                    engine.hw_in_processor_->find_port (ext_port->get_id ());
+                  if (source == nullptr)
+                    {
+                      z_warning ("port for {} not found", ext_port->get_id ());
+                      continue;
+                    }
+                  PORT_CONNECTIONS_MGR->ensure_connect (
+                    source->get_uuid (), r.get_uuid (), 1.f, true, true);
+                }
             }
         }
 
-      if (all_stereo_r_ins_)
-        {
-          for (
-            const auto &port_id : engine.hw_in_processor_->selected_audio_ports_)
-            {
-              auto * source = engine.hw_in_processor_->find_port (port_id);
-              if (source == nullptr)
-                {
-                  z_warning ("port for {} not found", port_id);
-                  continue;
-                }
-              PORT_CONNECTIONS_MGR->ensure_connect (
-                source->get_uuid (), r.get_uuid (), 1.f, true, true);
-            }
-        }
-      else
-        {
-          z_debug ("{} R HW ins", ext_stereo_r_ins_.size ());
-          for (const auto &ext_port : ext_stereo_r_ins_)
-            {
-              auto * source =
-                engine.hw_in_processor_->find_port (ext_port->get_id ());
-              if (source == nullptr)
-                {
-                  z_warning ("port for {} not found", ext_port->get_id ());
-                  continue;
-                }
-              PORT_CONNECTIONS_MGR->ensure_connect (
-                source->get_uuid (), r.get_uuid (), 1.f, true, true);
-            }
-        }
-    }
-
-  engine.router_->recalc_graph (false);
+      engine.router_->recalc_graph (false);
+    },
+    convert_to_variant<ChannelTrackPtrVariant> (this));
 }
 
 void
@@ -1470,16 +1481,11 @@ AutomationTrack *
 Channel::get_automation_track (PortIdentifier::Flags port_flags) const
 {
   auto &atl = track_->get_automation_tracklist ();
-  auto  it = std::ranges::find_if (atl.ats_, [&] (auto &at) {
-    auto port_var = PROJECT->find_port_by_id (at->port_id_);
-    z_return_val_if_fail (port_var.has_value (), false);
-    return std::visit (
-      [&] (auto &&port) -> bool {
-        return (ENUM_BITSET_TEST (port->id_->flags_, port_flags));
-      },
-      port_var.value ());
+  auto it = std::ranges::find_if (atl.get_automation_tracks (), [&] (auto &at) {
+    const auto &port = at->get_port ();
+    return (ENUM_BITSET_TEST (port.id_->flags_, port_flags));
   });
-  z_return_val_if_fail (it != atl.ats_.end (), nullptr);
+  z_return_val_if_fail (it != atl.get_automation_tracks ().end (), nullptr);
   return (*it);
 }
 

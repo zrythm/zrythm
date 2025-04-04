@@ -3,13 +3,12 @@
 
 #include "zrythm-test-config.h"
 
-# include "gui/dsp/automation_region.h"
-# include "gui/dsp/tracklist.h"
-#include "utils/flags.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/dsp/automation_region.h"
+#include "gui/dsp/tracklist.h"
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"

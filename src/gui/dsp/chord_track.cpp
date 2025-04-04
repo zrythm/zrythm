@@ -9,19 +9,25 @@
 #include "gui/dsp/chord_region.h"
 #include "gui/dsp/chord_track.h"
 #include "gui/dsp/track.h"
-#include "utils/flags.h"
 #include "utils/rt_thread_id.h"
 
 ChordTrack::ChordTrack (
-  TrackRegistry  &track_registry,
-  PluginRegistry &plugin_registry,
-  PortRegistry   &port_registry,
-  bool            new_identity)
-    : Track (Track::Type::Chord, PortType::Event, PortType::Event),
+  TrackRegistry          &track_registry,
+  PluginRegistry         &plugin_registry,
+  PortRegistry           &port_registry,
+  ArrangerObjectRegistry &obj_registry,
+  bool                    new_identity)
+    : Track (
+        Track::Type::Chord,
+        PortType::Event,
+        PortType::Event,
+        port_registry,
+        obj_registry),
       AutomatableTrack (port_registry, new_identity),
       ProcessableTrack (port_registry, new_identity),
       RecordableTrack (port_registry, new_identity),
-      ChannelTrack (track_registry, plugin_registry, port_registry, new_identity)
+      ChannelTrack (track_registry, plugin_registry, port_registry, new_identity),
+      object_registry_ (obj_registry)
 {
   if (new_identity)
     {
@@ -29,7 +35,7 @@ ChordTrack::ChordTrack (
       icon_name_ = "gnome-icon-library-library-music-symbolic";
     }
   automation_tracklist_->setParent (this);
-  RegionOwnerImpl::parent_base_qproperties (*this);
+  RegionOwner::parent_base_qproperties (*this);
 }
 
 // =========================================================================
@@ -56,7 +62,7 @@ ChordTrack::data (const QModelIndex &index, int role) const
   if (!index.isValid ())
     return {};
 
-  auto * scale = scales_.at (index.row ());
+  auto * scale = get_scale_at (index.row ());
 
   switch (role)
     {
@@ -79,13 +85,16 @@ ChordTrack::init_after_cloning (
   ProcessableTrack::copy_members_from (other, clone_type);
   RecordableTrack::copy_members_from (other, clone_type);
   ChannelTrack::copy_members_from (other, clone_type);
-  RegionOwnerImpl::copy_members_from (other, clone_type);
+  RegionOwner::copy_members_from (other, clone_type);
   scales_.reserve (other.scales_.size ());
-  for (const auto &scale : other.scales_)
+// TODO
+#if 0
+  for (const auto &scale : get_scales_view())
     {
       scales_.push_back (scale->clone_raw_ptr ());
       scales_.back ()->setParent (this);
     }
+#endif
 }
 
 void
@@ -116,9 +125,9 @@ ChordTrack::clear_objects ()
   clear_regions ();
   if (is_in_active_project ())
     {
-      for (auto &scale : std::ranges::reverse_view (scales_))
+      for (auto * scale : std::ranges::reverse_view (get_scales_view ()))
         {
-          remove_scale (*scale, true);
+          remove_scale (*scale);
         }
     }
   else
@@ -132,6 +141,8 @@ ChordTrack::clear_objects ()
 void
 ChordTrack::set_playback_caches ()
 {
+// FIXME: TODO
+#if 0
   region_snapshots_.clear ();
   region_snapshots_.reserve (region_list_->regions_.size ());
   foreach_region ([&] (auto &region) {
@@ -141,10 +152,11 @@ ChordTrack::set_playback_caches ()
 
   scale_snapshots_.clear ();
   scale_snapshots_.reserve (scales_.size ());
-  for (const auto &scale : scales_)
+  for (const auto &scale : get_scales_view ())
     {
       scale_snapshots_.push_back (scale->clone_unique ());
     }
+#endif
 }
 
 void
@@ -157,7 +169,7 @@ ChordTrack::init_loaded (
   AutomatableTrack::init_loaded (plugin_registry, port_registry);
   ProcessableTrack::init_loaded (plugin_registry, port_registry);
   RecordableTrack::init_loaded (plugin_registry, port_registry);
-  for (auto &scale : scales_)
+  for (auto * scale : get_scales_view ())
     {
       scale->init_loaded ();
     }
@@ -168,6 +180,13 @@ ChordTrack::init_loaded (
   });
 }
 
+ScaleObject *
+ChordTrack::get_scale_at (size_t index) const
+{
+  return std::get<ScaleObject *> (
+    ArrangerObjectRegistrySpan{ object_registry_, scales_ }.at (index));
+}
+
 void
 ChordTrack::insert_scale (ScaleObject &scale, int idx)
 {
@@ -175,11 +194,10 @@ ChordTrack::insert_scale (ScaleObject &scale, int idx)
   z_return_if_fail (!get_uuid ().is_null ());
   beginInsertRows ({}, idx, idx);
   scale.set_track_id (get_uuid ());
-  scales_.insert (scales_.begin () + idx, &scale);
-  for (size_t i = 0; i < scales_.size (); i++)
+  scales_.insert (scales_.begin () + idx, scale.get_uuid ());
+  for (const auto &[index, s] : std::views::enumerate (get_scales_view ()))
     {
-      auto &s = scales_[i];
-      s->set_index_in_chord_track (i);
+      s->set_index_in_chord_track (index);
     }
   scale.setParent (this);
   endInsertRows ();
@@ -190,11 +208,12 @@ ChordTrack::insert_scale (ScaleObject &scale, int idx)
 ScaleObject *
 ChordTrack::get_scale_at_pos (const Position pos) const
 {
-  auto it = std::ranges::find_if (
-    scales_ | std::views::reverse,
-    [&pos] (const auto &scale) { return *scale->pos_ <= pos; });
+  auto view = std::ranges::reverse_view (get_scales_view ());
+  auto it = std::ranges::find_if (view, [&pos] (const auto &scale) {
+    return *scale->pos_ <= pos;
+  });
 
-  return it != scales_.rend () ? (*it) : nullptr;
+  return it != view.end () ? (*it) : nullptr;
 }
 
 ChordObject *
@@ -206,44 +225,38 @@ ChordTrack::get_chord_at_pos (const Position pos) const
       return nullptr;
     }
 
-  auto local_frames = (signed_frame_t) region->timeline_frames_to_local (
-    pos.frames_, F_NORMALIZE);
+  auto local_frames =
+    (signed_frame_t) region->timeline_frames_to_local (pos.frames_, true);
 
-  auto it = std::ranges::find_if (
-    region->chord_objects_ | std::views::reverse,
-    [local_frames] (const auto &co) {
+  auto chord_objects_view =
+    region->get_object_ptrs_view () | std::views::reverse;
+  auto it =
+    std::ranges::find_if (chord_objects_view, [local_frames] (const auto &co) {
       return co->pos_->frames_ <= local_frames;
     });
 
-  return it != region->chord_objects_.rend () ? (*it) : nullptr;
+  return it != chord_objects_view.end () ? (*it) : nullptr;
 }
 
 void
-ChordTrack::remove_scale (ScaleObject &scale, bool delete_scale)
+ChordTrack::remove_scale (ScaleObject &scale)
 {
   // Deselect the scale
   scale.setSelected (false);
 
   // Find and remove the scale from the vector
-  auto it = std::ranges::find_if (scales_, [&scale] (const auto &s) {
-    return s == &scale;
-  });
+  auto it = std::ranges::find (scales_, scale.get_uuid ());
   z_return_if_fail (it != scales_.end ());
 
   scale.index_in_chord_track_ = -1;
   int pos = std::distance (scales_.begin (), it);
   beginRemoveRows ({}, pos, pos);
-  (*it)->setParent (nullptr);
-  if (delete_scale)
-    {
-      (*it)->deleteLater ();
-    }
   scales_.erase (it);
 
   // Update indices of remaining scales
-  for (size_t i = pos; i < scales_.size (); i++)
+  for (const auto &[index, s] : std::views::enumerate (get_scales_view ()))
     {
-      scales_.at (i)->set_index_in_chord_track (static_cast<int> (i));
+      s->set_index_in_chord_track (static_cast<int> (index));
     }
   endRemoveRows ();
 
@@ -269,12 +282,14 @@ ChordTrack::validate () const
   });
   z_return_val_if_fail (valid, false);
 
+#if 0
   for (size_t i = 0; i < scales_.size (); i++)
     {
       auto &m = scales_[i];
       z_return_val_if_fail (
         m->index_in_chord_track_ == static_cast<int> (i), false);
     }
+#endif
 
   return true;
 }

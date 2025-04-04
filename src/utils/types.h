@@ -300,6 +300,9 @@ typename_to_string ()
 
 #define Z_DISABLE_COPY_MOVE(Class) Q_DISABLE_COPY_MOVE (Class)
 #define Z_DISABLE_COPY(Class) Q_DISABLE_COPY (Class)
+#define Z_DISABLE_MOVE(Class) \
+  Class (Class &&) = delete; \
+  Class &operator= (Class &&) = delete;
 
 /**
  * @brief Wrapper around std::optional<std::reference_wrapper<T>> that provides

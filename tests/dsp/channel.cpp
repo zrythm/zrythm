@@ -10,8 +10,6 @@
 #include "tests/helpers/exporter.h"
 #include "tests/helpers/plugin_manager.h"
 
-#include "utils/flags.h"
-
 TEST_F (ZrythmFixture, MidiFxRouting)
 {
   /* create an instrument */

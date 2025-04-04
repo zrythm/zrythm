@@ -171,8 +171,6 @@ GroupTargetTrack::add_child (
   bool        recalc_graph,
   bool        pub_events)
 {
-  z_return_if_fail (IS_TRACK (this));
-
   z_debug (
     "adding child track with name hash {} to group %s", child_id, get_name ());
 

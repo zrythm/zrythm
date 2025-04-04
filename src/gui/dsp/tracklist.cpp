@@ -16,7 +16,6 @@
 #include "gui/dsp/tempo_track.h"
 #include "gui/dsp/track.h"
 #include "gui/dsp/tracklist.h"
-#include "utils/flags.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/rt_thread_id.h"
 #include "utils/string.h"
@@ -292,14 +291,10 @@ Tracklist::insert_track (
           if constexpr (std::derived_from<TrackT, AutomatableTrack>)
             {
               const auto &atl = track->get_automation_tracklist ();
-              for (const auto &at : atl.ats_)
+              for (auto * at : atl.get_automation_tracks ())
                 {
-                  const auto &port = std::get<ControlPort *> (
-                    port_registry_->get ()
-                      .find_by_id (at->port_id_)
-                      .value ()
-                      .get ());
-                  port->at_ = at;
+                  auto &port = at->get_port ();
+                  port.at_ = at;
                 }
             }
         }
@@ -617,8 +612,7 @@ Tracklist::clear_selections_for_object_siblings (
       if constexpr (std::derived_from<ObjT, RegionOwnedObject>)
         {
           auto region = obj->get_region ();
-          auto children = region->get_objects ();
-          for (auto &child : children)
+          for (auto * child : region->get_object_ptrs_view ())
             {
               child->setSelected (false);
             }
@@ -1284,7 +1278,7 @@ Tracklist::init_after_cloning (const Tracklist &other, ObjectCloneType clone_typ
               auto raw_ptr = tr->clone_and_register (
                 track_registry_->get (), track_registry_->get (),
                 PROJECT->get_plugin_registry (), PROJECT->get_port_registry (),
-                true);
+                PROJECT->get_arranger_object_registry (), true);
               tracks_.push_back (raw_ptr->get_uuid ());
             },
             track_var);

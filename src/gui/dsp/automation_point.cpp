@@ -24,45 +24,20 @@
 
 using namespace zrythm;
 
-AutomationPoint::AutomationPoint (QObject * parent)
-    : ArrangerObject (Type::AutomationPoint), QObject (parent)
+AutomationPoint::AutomationPoint (
+  ArrangerObjectRegistry &obj_registry,
+  QObject *               parent)
+    : ArrangerObject (Type::AutomationPoint), QObject (parent),
+      RegionOwnedObject (obj_registry)
 {
   ArrangerObject::parent_base_qproperties (*this);
-}
-
-AutomationPoint::AutomationPoint (const Position &pos, QObject * parent)
-    : AutomationPoint (parent)
-{
-  *static_cast<Position *> (pos_) = pos;
-  curve_opts_.algo_ =
-    ZRYTHM_TESTING || ZRYTHM_BENCHMARKING
-      ? dsp::CurveOptions::Algorithm::SuperEllipse
-      : (dsp::CurveOptions::Algorithm)
-          gui::SettingsManager::automationCurveAlgorithm ();
-}
-
-AutomationPoint::AutomationPoint (
-  const float     value,
-  const float     normalized_val,
-  const Position &pos,
-  QObject *       parent)
-    : AutomationPoint (pos, parent)
-{
-  if (ZRYTHM_TESTING)
-    {
-      utils::math::assert_nonnann (value);
-      utils::math::assert_nonnann (normalized_val);
-    }
-
-  fvalue_ = value;
-  normalized_val_ = normalized_val;
 }
 
 void
 AutomationPoint::init_loaded ()
 {
   ArrangerObject::init_loaded_base ();
-  RegionOwnedObjectImpl::init_loaded_base ();
+  RegionOwnedObject::init_loaded_base ();
 }
 
 std::string
@@ -76,14 +51,8 @@ AutomationPoint::print_to_str () const
 std::optional<ArrangerObjectPtrVariant>
 AutomationPoint::find_in_project () const
 {
-  auto region = AutomationRegion::find (region_id_);
-  z_return_val_if_fail (
-    region && ((int) region->aps_.size () > index_), std::nullopt);
-
-  auto &ap = region->aps_[index_];
-  z_return_val_if_fail (*this == *ap, std::nullopt);
-
-  return ap;
+  return std::get<AutomationPoint *> (
+    *PROJECT->find_arranger_object_by_id (get_uuid ()));
 }
 
 void
@@ -102,7 +71,7 @@ AutomationPoint::init_after_cloning (
   normalized_val_ = other.normalized_val_;
   curve_opts_ = other.curve_opts_;
   region_id_ = other.region_id_;
-  index_ = other.index_;
+  // index_ = other.index_;
   RegionOwnedObject::copy_members_from (other, clone_type);
   ArrangerObject::copy_members_from (other, clone_type);
 }
@@ -110,17 +79,26 @@ AutomationPoint::init_after_cloning (
 ArrangerObjectPtrVariant
 AutomationPoint::add_clone_to_project (bool fire_events) const
 {
+  return {};
+  // FIXME remove these "project" methods completely from ArrangerObject
+#if 0
   auto * clone = clone_raw_ptr ();
-  get_region ()->append_object (clone, true);
+  get_region ()->append_object (clone->get_uuid ());
   return clone;
+#endif
 }
 
 ArrangerObjectPtrVariant
 AutomationPoint::insert_clone_to_project () const
 {
+  return {};
+// FIXME remove this method
+#if 0
   auto * clone = clone_raw_ptr ();
-  get_region ()->insert_object (clone, index_, true);
+  // FIXME index missing
+  get_region ()->insert_object (clone->get_uuid (), 0);
   return clone;
+#endif
 }
 
 bool
@@ -141,7 +119,7 @@ AutomationPoint::curves_up () const
 }
 
 void
-AutomationPoint::set_fvalue (float real_val, bool is_normalized, bool pub_events)
+AutomationPoint::set_fvalue (float real_val, bool is_normalized)
 {
   auto port = get_port ();
   z_return_if_fail (port);
@@ -181,11 +159,6 @@ AutomationPoint::set_fvalue (float real_val, bool is_normalized, bool pub_events
   control_port_set_val_from_normalized (
     port, self->normalized_val, Z_F_AUTOMATING);
 #endif
-
-  if (pub_events)
-    {
-      // EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CHANGED, this);
-    }
 }
 
 std::string
@@ -214,7 +187,7 @@ AutomationPoint::set_fvalue_with_action (const std::string &fval_str)
     }
 
   edit_begin ();
-  set_fvalue (val, false, false);
+  set_fvalue (val, false);
   edit_finish (
     (int) gui::actions::ArrangerSelectionsAction::EditType::Primitive);
 }

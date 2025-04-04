@@ -1,9 +1,9 @@
-// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/clip_editor.h"
 #include "gui/dsp/router.h"
-#include "gui/dsp/track.h"
+#include "gui/dsp/track_all.h"
 #include "utils/rt_thread_id.h"
 
 ClipEditor::ClipEditor (ArrangerObjectRegistry &reg, QObject * parent)
@@ -12,6 +12,8 @@ ClipEditor::ClipEditor (ArrangerObjectRegistry &reg, QObject * parent)
       automation_editor_ (new AutomationEditor (this)),
       chord_editor_ (new ChordEditor (this)), object_registry_ (reg)
 {
+  // connect regionChanged so that trackChanged is emitted too
+  connect (this, &ClipEditor::regionChanged, this, &ClipEditor::trackChanged);
 }
 
 void
@@ -29,6 +31,18 @@ ClipEditor::setRegion (QVariant region)
 {
   auto r = dynamic_cast<Region *> (region.value<QObject *> ());
   set_region (r->get_uuid ());
+}
+
+QVariant
+ClipEditor::getTrack () const
+{
+  if (has_region ())
+    {
+      auto track = *get_track ();
+      return QVariant::fromStdVariant (track);
+    }
+
+  return {};
 }
 
 void

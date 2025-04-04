@@ -4,10 +4,6 @@
 #ifndef __DSP_REGION_OWNER_H__
 #define __DSP_REGION_OWNER_H__
 
-#include <memory>
-#include <ranges>
-#include <vector>
-
 #include "gui/dsp/audio_region.h"
 #include "gui/dsp/automation_region.h"
 #include "gui/dsp/chord_region.h"
@@ -30,38 +26,18 @@ public: \
   }
 
 /**
- * Interface for an object that can own regions.
- */
-class RegionOwner : virtual public IProjectOwnedObject
-{
-public:
-  Q_DISABLE_COPY_MOVE (RegionOwner)
-  ~RegionOwner () override = default;
-
-  /**
-   * @brief Get all the regions
-   *
-   * @note Not realtime-safe.
-   */
-  // virtual std::vector<RegionVariant *> get_regions () = 0;
-
-protected:
-  RegionOwner () = default;
-};
-
-/**
  * Base class for an object that can own regions.
  */
 template <typename RegionT>
-class RegionOwnerImpl
-    : virtual public RegionOwner,
-      public zrythm::utils::serialization::ISerializable<RegionOwnerImpl<RegionT>>
+class RegionOwner
+    : virtual public IProjectOwnedObject,
+      public zrythm::utils::serialization::ISerializable<RegionOwner<RegionT>>
 {
 public:
   using RegionTPtr = RegionT *;
 
-  ~RegionOwnerImpl () override = default;
-  Q_DISABLE_COPY_MOVE (RegionOwnerImpl)
+  ~RegionOwner () override = default;
+  Q_DISABLE_COPY_MOVE (RegionOwner)
 
   void parent_base_qproperties (QObject &derived);
 
@@ -117,10 +93,9 @@ public:
   void foreach_region (std::function<void (RegionT &)> func) const;
 
 protected:
-  RegionOwnerImpl ();
+  RegionOwner ();
 
-  void
-  copy_members_from (const RegionOwnerImpl &other, ObjectCloneType clone_type);
+  void copy_members_from (const RegionOwner &other, ObjectCloneType clone_type);
 
   /**
    * @brief Optional callback after removing a region.
@@ -149,15 +124,15 @@ class ChordRegion;
 class AutomationRegion;
 class AudioRegion;
 using RegionOwnerVariant = std::variant<
-  RegionOwnerImpl<MidiRegion>,
-  RegionOwnerImpl<ChordRegion>,
-  RegionOwnerImpl<AutomationRegion>,
-  RegionOwnerImpl<AudioRegion>>;
+  RegionOwner<MidiRegion>,
+  RegionOwner<ChordRegion>,
+  RegionOwner<AutomationRegion>,
+  RegionOwner<AudioRegion>>;
 using RegionOwnerPtrVariant = to_pointer_variant<RegionOwnerVariant>;
 
-extern template class RegionOwnerImpl<AudioRegion>;
-extern template class RegionOwnerImpl<AutomationRegion>;
-extern template class RegionOwnerImpl<ChordRegion>;
-extern template class RegionOwnerImpl<MidiRegion>;
+extern template class RegionOwner<AudioRegion>;
+extern template class RegionOwner<AutomationRegion>;
+extern template class RegionOwner<ChordRegion>;
+extern template class RegionOwner<MidiRegion>;
 
 #endif // __DSP_REGION_OWNER_H__

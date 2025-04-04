@@ -11,8 +11,6 @@
 #include "helpers/project_helper.h"
 #include "helpers/zrythm_helper.h"
 
-#include "utils/flags.h"
-
 #if 0
 typedef struct
 {

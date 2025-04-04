@@ -2,7 +2,7 @@
 
 #include "gui/dsp/region.h"
 
-template <typename RegionT> class RegionOwnerImpl;
+template <typename RegionT> class RegionOwner;
 
 /**
  * @note This needs to be a separate class so that it can be a property of
@@ -16,10 +16,10 @@ class RegionList final
   Q_OBJECT
   QML_ELEMENT
 
-  friend class RegionOwnerImpl<MidiRegion>;
-  friend class RegionOwnerImpl<ChordRegion>;
-  friend class RegionOwnerImpl<AutomationRegion>;
-  friend class RegionOwnerImpl<AudioRegion>;
+  friend class RegionOwner<MidiRegion>;
+  friend class RegionOwner<ChordRegion>;
+  friend class RegionOwner<AutomationRegion>;
+  friend class RegionOwner<AudioRegion>;
 
 public:
   RegionList (QObject * parent = nullptr);

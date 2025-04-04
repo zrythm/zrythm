@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <memory>
@@ -14,7 +14,6 @@
 #include "utils/audio.h"
 #include "utils/debug.h"
 #include "utils/dsp.h"
-#include "utils/flags.h"
 #include "utils/logger.h"
 #include "utils/math.h"
 
@@ -22,126 +21,29 @@
 
 using namespace zrythm;
 
-AudioRegion::AudioRegion (QObject * parent)
-    : ArrangerObject (Type::Region), QObject (parent)
+AudioRegion::AudioRegion (const DeserializationDependencyHolder &dh)
+    : AudioRegion (
+        dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get (),
+        dh.get<std::reference_wrapper<AudioClipResolverFunc>> ().get ())
+{
+}
+
+AudioRegion::AudioRegion (
+  ArrangerObjectRegistry      &obj_registry,
+  const AudioClipResolverFunc &clip_resolver,
+  QObject *                    parent)
+    : ArrangerObject (Type::AudioRegion), Region (obj_registry),
+      QObject (parent), clip_resolver_ (clip_resolver)
 {
   ArrangerObject::parent_base_qproperties (*this);
   BoundedObject::parent_base_qproperties (*this);
   init_colored_object ();
 }
 
-void
-AudioRegion::init_default_constructed (
-  std::optional<AudioClip::PoolId>      pool_id,
-  std::optional<fs::path>               filepath,
-  bool                                  read_from_pool,
-  const utils::audio::AudioBuffer *     audio_buffer,
-  std::optional<unsigned_frame_t>       num_frames_for_recording,
-  std::optional<channels_t>             num_channels_for_recording,
-  const std::optional<std::string>      clip_name,
-  std::optional<utils::audio::BitDepth> bit_depth,
-  Position                              start_pos,
-  dsp::PortIdentifier::TrackUuid        track_uuid,
-  int                                   lane_pos,
-  int                                   idx_inside_lane)
-{
-  read_from_pool_ = read_from_pool;
-  id_ = RegionIdentifier (RegionType::Audio);
-
-  z_return_if_fail (start_pos.frames_ >= 0);
-
-  AudioClip * clip = nullptr;
-  bool        recording = false;
-  if (pool_id.has_value ())
-    {
-      pool_id_ = pool_id.value ();
-      clip = AUDIO_POOL->get_clip (pool_id_);
-      z_return_if_fail (clip);
-    }
-  else
-    {
-      std::unique_ptr<AudioClip> tmp_clip;
-      if (filepath)
-        {
-          tmp_clip = std::make_unique<AudioClip> (
-            *filepath, AUDIO_ENGINE->sample_rate_,
-            P_TEMPO_TRACK->get_current_bpm ());
-        }
-      else if (audio_buffer)
-        {
-          z_return_if_fail (clip_name.has_value ());
-          tmp_clip = std::make_unique<AudioClip> (
-            *audio_buffer, *bit_depth, AUDIO_ENGINE->sample_rate_,
-            P_TEMPO_TRACK->get_current_bpm (), *clip_name);
-        }
-      else if (num_frames_for_recording && num_channels_for_recording)
-        {
-          tmp_clip = std::make_unique<AudioClip> (
-            *num_channels_for_recording, *num_frames_for_recording,
-            AUDIO_ENGINE->sample_rate_, P_TEMPO_TRACK->get_current_bpm (),
-            *clip_name);
-          recording = true;
-        }
-      else
-        {
-          z_return_if_reached ();
-        }
-      z_return_if_fail (tmp_clip != nullptr);
-
-      if (read_from_pool)
-        {
-          pool_id_ = AUDIO_POOL->add_clip (std::move (tmp_clip));
-          z_return_if_fail (pool_id_ > -1);
-          clip = AUDIO_POOL->get_clip (pool_id_);
-        }
-      else
-        {
-          clip_ = std::move (tmp_clip);
-          clip = clip_.get ();
-        }
-    }
-
-  /* set end pos to sample end */
-  Position end_pos = start_pos;
-  end_pos.add_frames (clip->get_num_frames (), AUDIO_ENGINE->ticks_per_frame_);
-
-  /* init */
-  init (
-    start_pos, end_pos, track_uuid, lane_pos, idx_inside_lane,
-    AUDIO_ENGINE->ticks_per_frame_);
-
-  (void) recording;
-  z_return_if_fail (get_clip ());
-}
-
 AudioClip *
 AudioRegion::get_clip () const
 {
-  z_return_val_if_fail (
-    (!read_from_pool_ && clip_) || (read_from_pool_ && pool_id_ >= 0), nullptr);
-
-  AudioClip * clip = nullptr;
-  if (read_from_pool_) [[likely]]
-    {
-      z_return_val_if_fail (pool_id_ >= 0, nullptr);
-      clip = AUDIO_POOL->get_clip (pool_id_);
-    }
-  else
-    {
-      clip = clip_.get ();
-    }
-
-  z_return_val_if_fail (clip && clip->get_num_frames () > 0, nullptr);
-
-  return clip;
-}
-
-void
-AudioRegion::set_clip_id (int clip_id)
-{
-  pool_id_ = clip_id;
-
-  /* TODO update identifier - needed? */
+  return clip_resolver_ (clip_id_);
 }
 
 bool
@@ -149,9 +51,8 @@ AudioRegion::get_muted (bool check_parent) const
 {
   if (check_parent)
     {
-      auto lane = get_lane ();
-      z_return_val_if_fail (lane, true);
-      if (lane->is_effectively_muted ())
+      auto &lane = get_lane ();
+      if (lane.is_effectively_muted ())
         return true;
     }
   return muted_;
@@ -160,44 +61,14 @@ AudioRegion::get_muted (bool check_parent) const
 void
 AudioRegion::replace_frames (
   const utils::audio::AudioBuffer &src_frames,
-  unsigned_frame_t                 start_frame,
-  bool                             duplicate_clip)
+  unsigned_frame_t                 start_frame)
 {
   AudioClip * clip = get_clip ();
   z_return_if_fail (clip);
 
-  if (duplicate_clip)
-    {
-      z_warn_if_reached ();
-
-      int prev_id = clip->get_pool_id ();
-      int id = AUDIO_POOL->duplicate_clip (clip->get_pool_id (), false);
-      if (id != prev_id || id < 0)
-        {
-          throw ZrythmException (QObject::tr ("Failed to duplicate audio clip"));
-        }
-      clip = AUDIO_POOL->get_clip (id);
-      z_return_if_fail (clip);
-
-      pool_id_ = clip->get_pool_id ();
-    }
-
   clip->replace_frames (src_frames, start_frame);
 
   AUDIO_POOL->write_clip (*clip, false, false);
-}
-
-void
-AudioRegion::replace_frames_from_interleaved (
-  const float *    frames,
-  unsigned_frame_t start_frame,
-  unsigned_frame_t num_frames_per_channel,
-  channels_t       channels,
-  bool             duplicate_clip)
-{
-  utils::audio::AudioBuffer buf (1, num_frames_per_channel * channels);
-  buf.deinterleave_samples (channels);
-  replace_frames (buf, start_frame, duplicate_clip);
 }
 
 void
@@ -246,8 +117,8 @@ AudioRegion::fill_stereo_ports (
     }
 
   /* buffers after timestretch */
-  auto lbuf_after_ts = tmp_bufs_[0].data ();
-  auto rbuf_after_ts = tmp_bufs_[1].data ();
+  auto * lbuf_after_ts = tmp_buf_->getWritePointer (0);
+  auto * rbuf_after_ts = tmp_buf_->getWritePointer (1);
   utils::float_ranges::fill (lbuf_after_ts, 0, time_nfo.nframes_);
   utils::float_ranges::fill (rbuf_after_ts, 0, time_nfo.nframes_);
 
@@ -262,7 +133,7 @@ AudioRegion::fill_stereo_ports (
 #endif
 
   signed_frame_t r_local_frames_at_start = timeline_frames_to_local (
-    (signed_frame_t) time_nfo.g_start_frame_w_offset_, F_NORMALIZE);
+    (signed_frame_t) time_nfo.g_start_frame_w_offset_, true);
 
 #if 0
   Position r_local_pos_at_start;
@@ -295,7 +166,7 @@ AudioRegion::fill_stereo_ports (
     {
       unsigned_frame_t current_local_frame = time_nfo.local_offset_ + j;
       signed_frame_t   r_local_pos = timeline_frames_to_local (
-        (signed_frame_t) (time_nfo.g_start_frame_w_offset_ + j), F_NORMALIZE);
+        (signed_frame_t) (time_nfo.g_start_frame_w_offset_ + j), true);
       if (r_local_pos < 0 || j > AUDIO_ENGINE->block_length_)
         {
           z_error (
@@ -599,7 +470,6 @@ AudioRegion::init_loaded ()
 {
   ArrangerObject::init_loaded_base ();
   NamedObject::init_loaded_base ();
-  read_from_pool_ = true;
   z_return_if_fail (get_clip ());
 }
 
@@ -608,19 +478,10 @@ AudioRegion::init_after_cloning (
   const AudioRegion &other,
   ObjectCloneType    clone_type)
 {
-  init_default_constructed (
-    other.pool_id_, std::nullopt, true,
-    other.clip_ ? &other.clip_->get_samples () : nullptr, std::nullopt,
-    std::nullopt,
-    other.clip_ ? std::make_optional (other.clip_->get_name ()) : std::nullopt,
-    other.clip_
-      ? other.clip_->get_bit_depth ()
-      : ENUM_INT_TO_VALUE (utils::audio::BitDepth, 0),
-    *other.pos_, other.id_.track_uuid_, other.id_.lane_pos_, other.id_.idx_);
-  pool_id_ = other.pool_id_;
+  clip_id_ = other.clip_id_;
   gain_ = other.gain_;
   musical_mode_ = other.musical_mode_;
-  LaneOwnedObjectImpl::copy_members_from (other, clone_type);
+  LaneOwnedObject::copy_members_from (other, clone_type);
   RegionImpl::copy_members_from (other, clone_type);
   FadeableObject::copy_members_from (other, clone_type);
   TimelineObject::copy_members_from (other, clone_type);
@@ -630,4 +491,16 @@ AudioRegion::init_after_cloning (
   BoundedObject::copy_members_from (other, clone_type);
   ColoredObject::copy_members_from (other, clone_type);
   ArrangerObject::copy_members_from (other, clone_type);
+}
+
+void
+AudioRegion::prepare_to_play (size_t max_expected_samples)
+{
+  tmp_buf_ = std::make_unique<juce::AudioSampleBuffer> (2, max_expected_samples);
+}
+
+void
+AudioRegion::release_resources ()
+{
+  tmp_buf_.release ();
 }

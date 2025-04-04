@@ -24,7 +24,6 @@
 #include "gui/dsp/track.h"
 #include "gui/dsp/tracklist.h"
 #include "utils/dsp.h"
-#include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/mem.h"
 #include "utils/midi.h"
@@ -856,7 +855,7 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
       using TrackT = base_type<decltype (tr)>;
 
       /* if frozen or disabled, skip */
-      if (tr->frozen_ || !tr->is_enabled ())
+      if (tr->is_frozen () || !tr->is_enabled ())
         {
           return;
         }
@@ -1055,11 +1054,11 @@ TrackProcessor::process (const EngineProcessTimeInfo &time_nfo)
 
       if (
         !tr->is_auditioner () && TRANSPORT->preroll_frames_remaining_ == 0
-        && (tr->can_record () || !tr->automation_tracklist_->ats_.empty ()))
+        && (std::derived_from<TrackT, RecordableTrack> || !tr->automation_tracklist_->get_automation_tracks().empty ()))
         {
-          /* handle recording. this will only create events in regions. it will
-           * not copy the input content to the output ports. this will also
-           * create automation for MIDI CC, if any (see
+          /* handle recording. this will only create events in regions. it
+           * will not copy the input content to the output ports. this will
+           * also create automation for MIDI CC, if any (see
            * midi_mappings_apply_cc_events above) */
           handle_recording (time_nfo);
         }

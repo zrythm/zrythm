@@ -11,6 +11,8 @@
 #include "gui/backend/backend/theme_manager.h"
 #include "gui/backend/project_manager.h"
 #include "gui/backend/translation_manager.h"
+#include "utils/directory_manager.h"
+#include "utils/rt_thread_id.h"
 
 #include <QApplication>
 #include <QCommandLineParser>
@@ -18,9 +20,6 @@
 #include <QProcess>
 #include <QQmlApplicationEngine>
 #include <QTranslator>
-
-#include "utils/directory_manager.h"
-#include "utils/rt_thread_id.h"
 
 namespace zrythm::gui
 {

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/zrythm.h"
@@ -9,7 +9,7 @@
 #include "gui/dsp/region.h"
 #include "utils/debug.h"
 #include "utils/dsp.h"
-#include "utils/flags.h"
+
 #include "utils/gtest_wrapper.h"
 #include "utils/rt_thread_id.h"
 
@@ -77,20 +77,20 @@ BoundedObject::resize (
                 {
                   tmp = self->fade_in_pos_;
                   tmp.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
-                  set_position (&tmp, PositionType::FadeIn, false);
+                  set_position (tmp, PositionType::FadeIn, false);
                 }
             }
           else
             {
               tmp = *static_cast<Position *> (pos_);
               tmp.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
-              set_position (&tmp, PositionType::Start, false);
+              set_position (tmp, PositionType::Start, false);
 
               if constexpr (std::derived_from<ObjT, FadeableObject>)
                 {
                   tmp = self->fade_out_pos_;
                   tmp.add_ticks (-ticks, AUDIO_ENGINE->frames_per_tick_);
-                  set_position (&tmp, PositionType::FadeOut, false);
+                  set_position (tmp, PositionType::FadeOut, false);
                 }
 
               if (type == ResizeType::Loop)
@@ -114,7 +114,7 @@ BoundedObject::resize (
                               clip_start_pos.add_ticks (
                                 loop_len, AUDIO_ENGINE->frames_per_tick_);
                             }
-                          self->clip_start_pos_setter (&clip_start_pos);
+                          self->clip_start_pos_setter (clip_start_pos);
                         }
 
                       /* make sure clip start goes back to loop start if it
@@ -125,17 +125,17 @@ BoundedObject::resize (
                           clip_start_pos.add_ticks (
                             -loop_len, AUDIO_ENGINE->frames_per_tick_);
                         }
-                      self->clip_start_pos_setter (&clip_start_pos);
+                      self->clip_start_pos_setter (clip_start_pos);
                     }
                 }
               else if constexpr (std::derived_from<ObjT, LoopableObject>)
                 {
                   tmp = self->loop_end_pos_;
                   tmp.add_ticks (-ticks, AUDIO_ENGINE->frames_per_tick_);
-                  set_position (&tmp, PositionType::LoopEnd, false);
+                  set_position (tmp, PositionType::LoopEnd, false);
 
                   /* move containing items */
-                  if constexpr (std::derived_from<ObjT, Region>)
+                  if constexpr (RegionWithChildren<ObjT>)
                     {
                       self->add_ticks_to_children (-ticks);
                     }
@@ -151,7 +151,7 @@ BoundedObject::resize (
                 {
                   tmp = self->fade_out_pos_;
                   tmp.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
-                  set_position (&tmp, PositionType::FadeOut, false);
+                  set_position (tmp, PositionType::FadeOut, false);
                 }
             }
           else
@@ -159,7 +159,7 @@ BoundedObject::resize (
               tmp = *end_pos_;
               Position prev_end_pos = tmp;
               tmp.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
-              set_position (&tmp, PositionType::End, false);
+              set_position (tmp, PositionType::End, false);
 
               double change_ratio =
                 (get_length_in_ticks ()) / (prev_end_pos.ticks_ - pos_->ticks_);
@@ -182,7 +182,7 @@ BoundedObject::resize (
                           tmp.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
                         }
                       z_return_if_fail (tmp.is_positive ());
-                      set_position (&tmp, PositionType::LoopEnd, false);
+                      set_position (tmp, PositionType::LoopEnd, false);
                       z_return_if_fail (self->loop_end_pos_.is_positive ());
 
                       /* if stretching, also stretch loop start */
@@ -195,7 +195,7 @@ BoundedObject::resize (
                             tmp.ticks_ * change_ratio,
                             AUDIO_ENGINE->frames_per_tick_);
                           z_return_if_fail (tmp.is_positive ());
-                          set_position (&tmp, PositionType::LoopStart, false);
+                          set_position (tmp, PositionType::LoopStart, false);
                           z_return_if_fail (
                             self->loop_start_pos_.is_positive ());
                         }
@@ -217,7 +217,7 @@ BoundedObject::resize (
                       tmp.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
                     }
                   z_return_if_fail (tmp.is_positive ());
-                  set_position (&tmp, PositionType::FadeOut, false);
+                  set_position (tmp, PositionType::FadeOut, false);
                   z_return_if_fail (self->fade_out_pos_.is_positive ());
 
                   /* if stretching, also stretch fade in */
@@ -230,7 +230,7 @@ BoundedObject::resize (
                         tmp.ticks_ * change_ratio,
                         AUDIO_ENGINE->frames_per_tick_);
                       z_return_if_fail (tmp.is_positive ());
-                      set_position (&tmp, PositionType::FadeIn, false);
+                      set_position (tmp, PositionType::FadeIn, false);
                       z_return_if_fail (self->fade_in_pos_.is_positive ());
                     }
                 }
@@ -273,40 +273,4 @@ BoundedObject::resize (
         }
     },
     convert_to_variant<ArrangerObjectPtrVariant> (this));
-}
-
-void
-BoundedObject::set_loop_and_fade_to_full_size ()
-{
-  std::visit (
-    [&] (auto &&self) {
-      using ObjT = base_type<decltype (self)>;
-      if constexpr (std::derived_from<ObjT, LoopableObject>)
-        {
-          auto ticks = get_length_in_ticks ();
-          self->loop_end_pos_.from_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
-        }
-      if constexpr (std::derived_from<ObjT, FadeableObject>)
-        {
-          auto ticks = get_length_in_ticks ();
-          self->fade_out_pos_.from_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
-        }
-    },
-    convert_to_variant<ArrangerObjectPtrVariant> (this));
-}
-
-void
-BoundedObject::set_start_pos_full_size (const Position * pos)
-{
-  pos_setter (pos);
-  set_loop_and_fade_to_full_size ();
-  z_warn_if_fail (pos->frames_ == pos_->frames_);
-}
-
-void
-BoundedObject::set_end_pos_full_size (const Position * pos)
-{
-  end_pos_setter (pos);
-  set_loop_and_fade_to_full_size ();
-  z_warn_if_fail (pos->frames_ == end_pos_->frames_);
 }

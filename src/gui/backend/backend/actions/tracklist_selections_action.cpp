@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
@@ -48,15 +48,15 @@ TracklistSelectionsAction::init_after_cloning (
   if (other.tls_before_)
     tls_before_ = TrackSpan{ *other.tls_before_ }.create_snapshots (
       *this, PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-      PROJECT->get_port_registry ());
+      PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry ());
   if (other.tls_after_)
     tls_after_ = TrackSpan{ *other.tls_after_ }.create_snapshots (
       *this, PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-      PROJECT->get_port_registry ());
+      PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry ());
   if (other.foldable_tls_before_)
     foldable_tls_before_ = TrackSpan{ *foldable_tls_before_ }.create_snapshots (
       *this, PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-      PROJECT->get_port_registry ());
+      PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry ());
   out_track_uuids_ = other.out_track_uuids_;
   clone_unique_ptr_container (src_sends_, other.src_sends_);
   edit_type_ = other.edit_type_;
@@ -105,7 +105,7 @@ TracklistSelectionsAction::reset_foldable_track_sizes ()
 bool
 TracklistSelectionsAction::contains_clip (const AudioClip &clip) const
 {
-  return clip.get_pool_id () == pool_id_;
+  return pool_id_.has_value () && clip.get_uuid () == *pool_id_;
 }
 
 bool
@@ -205,9 +205,8 @@ TracklistSelectionsAction::TracklistSelectionsAction (
     || tracklist_selections_action_type_ == Type::CopyInside)
     {
       auto _foldable_tr = TRACKLIST->get_track_at_index (track_pos);
-      std::visit (
-        [&] (auto &&foldable_tr) { assert (foldable_tr->is_foldable ()); },
-        _foldable_tr);
+      assert (
+        TrackSpan::derived_from_type_projection<FoldableTrack> (_foldable_tr));
     }
 
     /* --- end validation --- */
@@ -276,9 +275,11 @@ TracklistSelectionsAction::TracklistSelectionsAction (
         }
       else if (track_type == Track::Type::Audio)
         {
-          pool_id_ = AUDIO_POOL->add_clip (std::make_unique<AudioClip> (
+          auto clip = std::make_shared<AudioClip> (
             file_descr->abs_path_, AUDIO_ENGINE->sample_rate_,
-            P_TEMPO_TRACK->get_current_bpm ()));
+            P_TEMPO_TRACK->get_current_bpm ());
+          AUDIO_POOL->register_clip (clip);
+          pool_id_ = clip->get_uuid ();
         }
       else
         {
@@ -304,7 +305,8 @@ TracklistSelectionsAction::TracklistSelectionsAction (
                   tls_before_ = tls_before.create_new_identities (
                     PROJECT->get_track_registry (),
                     PROJECT->get_plugin_registry (),
-                    PROJECT->get_port_registry ());
+                    PROJECT->get_port_registry (),
+                    PROJECT->get_arranger_object_registry ());
                 }
               else
                 {
@@ -312,7 +314,8 @@ TracklistSelectionsAction::TracklistSelectionsAction (
                   tls_before_ = tls_before.create_snapshots (
                     *this, PROJECT->get_track_registry (),
                     PROJECT->get_plugin_registry (),
-                    PROJECT->get_port_registry ());
+                    PROJECT->get_port_registry (),
+                    PROJECT->get_arranger_object_registry ());
                 }
               TrackCollections::sort_by_position (*tls_before_);
 
@@ -322,7 +325,8 @@ TracklistSelectionsAction::TracklistSelectionsAction (
                 | std::views::filter (TrackSpan::foldable_projection));
               foldable_tls_before_ = TrackSpan{ foldable_tracks }.create_snapshots (
                 *this, PROJECT->get_track_registry (),
-                PROJECT->get_plugin_registry (), PROJECT->get_port_registry ());
+                PROJECT->get_plugin_registry (), PROJECT->get_port_registry (),
+                PROJECT->get_arranger_object_registry ());
             }
           else
             {
@@ -344,7 +348,8 @@ TracklistSelectionsAction::TracklistSelectionsAction (
                   tls_after_ = tls_after.create_new_identities (
                     PROJECT->get_track_registry (),
                     PROJECT->get_plugin_registry (),
-                    PROJECT->get_port_registry ());
+                    PROJECT->get_port_registry (),
+                    PROJECT->get_arranger_object_registry ());
                 }
               else
                 {
@@ -352,7 +357,8 @@ TracklistSelectionsAction::TracklistSelectionsAction (
                   tls_after_ = tls_after.create_snapshots (
                     *this, PROJECT->get_track_registry (),
                     PROJECT->get_plugin_registry (),
-                    PROJECT->get_port_registry ());
+                    PROJECT->get_port_registry (),
+                    PROJECT->get_arranger_object_registry ());
                 }
 
               TrackCollections::sort_by_position (*tls_after_);
@@ -483,11 +489,12 @@ TracklistSelectionsAction::create_track (int idx)
       /* if creating audio track from file */
       bool        has_plugin = false;
       std::string name{};
-      if (track_type_ == Track::Type::Audio && pool_id_ >= 0)
+      if (track_type_ == Track::Type::Audio && pool_id_.has_value ())
         {
           track = AudioTrack::create_unique<AudioTrack> (
             PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-            PROJECT->get_port_registry (), true);
+            PROJECT->get_port_registry (),
+            PROJECT->get_arranger_object_registry (), true);
           // TODO set samplerate on AudioTrack
           name = file_basename_;
         }
@@ -496,7 +503,8 @@ TracklistSelectionsAction::create_track (int idx)
         {
           track = MidiTrack::create_unique<MidiTrack> (
             PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-            PROJECT->get_port_registry (), true);
+            PROJECT->get_port_registry (),
+            PROJECT->get_arranger_object_registry (), true);
           name = file_basename_;
         }
       /* at this point we can assume it has a plugin */
@@ -555,30 +563,36 @@ TracklistSelectionsAction::create_track (int idx)
           Position start_pos = have_pos_ ? pos_ : Position ();
           if (track_type_ == Track::Type::Audio)
             {
-              /* create an audio region & add to track*/
-              added_track->Track::add_region (
-                new AudioRegion (
-                  pool_id_, start_pos, added_track->get_uuid (), 0, 0),
-                nullptr, 0, true, false);
+              if constexpr (std::is_same_v<TrackT, AudioTrack>)
+                {
+                  /* create an audio region & add to track*/
+                  ArrangerObjectFactory::get_instance ()
+                    ->add_audio_region_with_clip (
+                      added_track->get_lane_at (0), *pool_id_, start_pos.ticks_);
+                }
             }
           else if (
             track_type_ == Track::Type::Midi && !base64_midi_.empty ()
             && !file_basename_.empty ())
             {
-              /* create a temporary midi file */
-              auto full_path_file = utils::io::make_tmp_file (
-                std::make_optional<std::string> ("data.MID"));
-              fs::path full_path (full_path_file->fileName ().toStdString ());
-              auto     data = utils::base64::decode (
-                QByteArray::fromStdString (base64_midi_));
-              utils::io::set_file_contents (
-                full_path, data.constData (), data.size ());
+              if constexpr (std::derived_from<TrackT, PianoRollTrack>)
+                {
+                  /* create a temporary midi file */
+                  auto full_path_file = utils::io::make_tmp_file (
+                    std::make_optional<std::string> ("data.MID"));
+                  fs::path full_path (
+                    full_path_file->fileName ().toStdString ());
+                  auto data = utils::base64::decode (
+                    QByteArray::fromStdString (base64_midi_));
+                  utils::io::set_file_contents (
+                    full_path, data.constData (), data.size ());
 
-              /* create a MIDI region from the MIDI file & add to track */
-              added_track->Track::add_region (
-                new MidiRegion (
-                  pos_, full_path, added_track->get_uuid (), 0, 0, idx),
-                nullptr, 0, true, false);
+                  /* create a MIDI region from the MIDI file & add to track */
+                  ArrangerObjectFactory::get_instance ()->addMidiRegionFromMidiFile (
+                    &added_track->get_lane_at (0),
+                    QString::fromStdString (full_path.string ()), pos_.ticks_,
+                    idx);
+                }
             }
 
           if (
@@ -644,7 +658,8 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                     PROJECT->get_track_registry (),
                     PROJECT->get_track_registry (),
                     PROJECT->get_plugin_registry (),
-                    PROJECT->get_port_registry (), true);
+                    PROJECT->get_port_registry (),
+                    PROJECT->get_arranger_object_registry (), true);
 
                   if constexpr (std::derived_from<TrackT, ChannelTrack>)
                     {
@@ -1066,7 +1081,8 @@ TracklistSelectionsAction::
                     PROJECT->get_track_registry (),
                     PROJECT->get_track_registry (),
                     PROJECT->get_plugin_registry (),
-                    PROJECT->get_port_registry (), true);
+                    PROJECT->get_port_registry (),
+                    PROJECT->get_arranger_object_registry (), true);
                   z_return_if_fail (track);
 
                   if constexpr (std::derived_from<TrackT, ChannelTrack>)
@@ -1104,51 +1120,53 @@ TracklistSelectionsAction::
             }
 
           /* reroute new tracks to correct outputs & sends */
-          for (const auto &[i, track] : std::views::enumerate (new_tracks))
+          for (const auto &[i, track_base] : std::views::enumerate (new_tracks))
             {
-              if (outputs_in_prj[i])
-                {
-                  auto channel_track = dynamic_cast<ChannelTrack *> (track);
-                  auto out_track =
-                    channel_track->get_channel ()->get_output_track ();
-                  out_track->remove_child (
-                    track->get_uuid (), true, false, false);
-                  outputs_in_prj[i]->add_child (
-                    track->get_uuid (), true, false, false);
-                }
-
-              if (track->has_channel ())
-                {
-                  auto channel_track = dynamic_cast<ChannelTrack *> (track);
-                  for (
-                    const auto &[own_send, own_conns, track_send] :
-                    std::views::zip (
-                      sends.at (i), send_conns.at (i),
-                      channel_track->get_channel ()->sends_))
+              std::visit (
+                [&] (auto &&track) {
+                  using TrackT = base_type<decltype (track)>;
+                  if constexpr (std::derived_from<TrackT, ChannelTrack>)
                     {
-                      track_send->copy_values_from (*own_send);
-                      if (
-                        !own_conns.empty ()
-                        && track->out_signal_type_ == PortType::Audio)
+                      if (outputs_in_prj[i])
                         {
-                          PORT_CONNECTIONS_MGR->ensure_connect (
-                            track_send->stereo_out_left_id_.value (),
-                            own_conns.at (0)->dest_id_, 1.f, true, true);
-                          PORT_CONNECTIONS_MGR->ensure_connect (
-                            track_send->stereo_out_right_id_.value (),
-                            own_conns.at (1)->dest_id_, 1.f, true, true);
+                          auto out_track =
+                            track->get_channel ()->get_output_track ();
+                          out_track->remove_child (
+                            track->get_uuid (), true, false, false);
+                          outputs_in_prj[i]->add_child (
+                            track->get_uuid (), true, false, false);
                         }
-                      else if (
-                        !own_conns.empty ()
-                        && track->out_signal_type_ == PortType::Event)
+
+                      for (
+                        const auto &[own_send, own_conns, track_send] :
+                        std::views::zip (
+                          sends.at (i), send_conns.at (i),
+                          track->get_channel ()->sends_))
                         {
-                          PORT_CONNECTIONS_MGR->ensure_connect (
-                            track_send->midi_out_id_.value (),
-                            own_conns.front ()->dest_id_, 1.f, true, true);
+                          track_send->copy_values_from (*own_send);
+                          if (
+                            !own_conns.empty ()
+                            && track->out_signal_type_ == PortType::Audio)
+                            {
+                              PORT_CONNECTIONS_MGR->ensure_connect (
+                                track_send->stereo_out_left_id_.value (),
+                                own_conns.at (0)->dest_id_, 1.f, true, true);
+                              PORT_CONNECTIONS_MGR->ensure_connect (
+                                track_send->stereo_out_right_id_.value (),
+                                own_conns.at (1)->dest_id_, 1.f, true, true);
+                            }
+                          else if (
+                            !own_conns.empty ()
+                            && track->out_signal_type_ == PortType::Event)
+                            {
+                              PORT_CONNECTIONS_MGR->ensure_connect (
+                                track_send->midi_out_id_.value (),
+                                own_conns.front ()->dest_id_, 1.f, true, true);
+                            }
                         }
                     }
-
-                } /* endif track has channel */
+                },
+                convert_to_variant<TrackPtrVariant> (track_base));
 
             } /* endforeach track */
 

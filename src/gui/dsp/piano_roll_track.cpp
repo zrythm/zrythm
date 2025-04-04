@@ -3,6 +3,7 @@
 
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
+#include "gui/dsp/arranger_object_factory.h"
 #include "gui/dsp/engine.h"
 #include "gui/dsp/instrument_track.h"
 #include "gui/dsp/midi_region.h"
@@ -40,33 +41,6 @@ PianoRollTrack::write_to_midi_file (
     {
       own_events->write_to_midi_file (mf, midi_track_pos);
     }
-}
-
-MidiRegion *
-PianoRollTrack::create_and_add_midi_region (double startTicks, int laneIndex)
-{
-  if (laneIndex == -1)
-    {
-      laneIndex = 0;
-    }
-  const int idx_inside_lane =
-    std::get<MidiLane *> (lanes_.at (laneIndex))->region_list_->regions_.size ();
-  return std::visit (
-    [&] (auto &&self) -> MidiRegion * {
-      auto * region =
-        PROJECT->get_arranger_object_registry ().create_object<MidiRegion> (
-          Position (startTicks, AUDIO_ENGINE->frames_per_tick_),
-          Position (
-            startTicks
-              + zrythm::gui::SettingsManager::
-                timelineLastCreatedObjectLengthInTicks (),
-            AUDIO_ENGINE->frames_per_tick_),
-          get_uuid (), laneIndex, idx_inside_lane, self);
-      self->Track::add_region (region, nullptr, laneIndex, true, true);
-      region->setSelected (true);
-      return region;
-    },
-    convert_to_variant<PianoRollTrackPtrVariant> (this));
 }
 
 void

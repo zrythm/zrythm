@@ -10,7 +10,6 @@
 #include "gui/backend/backend/piano_roll.h"
 #include "gui/dsp/arranger_object_span.h"
 #include "gui/dsp/region.h"
-#include "gui/dsp/region_identifier.h"
 
 class ArrangerSelections;
 
@@ -34,6 +33,7 @@ class ClipEditor final
   QML_ELEMENT
   Q_PROPERTY (
     QVariant region READ getRegion WRITE setRegion NOTIFY regionChanged)
+  Q_PROPERTY (QVariant track READ getTrack NOTIFY trackChanged)
   Q_PROPERTY (PianoRoll * pianoRoll READ getPianoRoll CONSTANT FINAL)
   Q_PROPERTY (ChordEditor * chordEditor READ getChordEditor CONSTANT FINAL)
   Q_PROPERTY (
@@ -66,11 +66,14 @@ public:
         return QVariant::fromStdVariant (get_region ().value ());
       }
 
-    return QVariant{};
+    return {};
   }
   void             setRegion (QVariant region);
   Q_INVOKABLE void unsetRegion ();
   Q_SIGNAL void regionChanged (QVariant region);
+
+  QVariant      getTrack () const;
+  Q_SIGNAL void trackChanged (QVariant track);
 
   // ============================================================================
 

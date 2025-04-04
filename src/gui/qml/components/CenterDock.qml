@@ -106,6 +106,7 @@ ColumnLayout {
                     timeline: project.timeline
                     tracklist: project.tracklist
                     clipEditor: project.clipEditor
+                    objectFactory: project.arrangerObjectFactory
                     ruler: ruler
                     tool: project.tool
                     Layout.fillWidth: true
@@ -120,6 +121,7 @@ ColumnLayout {
                     timeline: project.timeline
                     tracklist: project.tracklist
                     clipEditor: project.clipEditor
+                    objectFactory: project.arrangerObjectFactory
                     ruler: ruler
                     tool: project.tool
                     Layout.fillWidth: true

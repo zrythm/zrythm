@@ -21,17 +21,13 @@
  * @{
  */
 
-constexpr int MIDI_NOTE_MAGIC = 3588791;
-#define IS_MIDI_NOTE(tr) \
-  ((tr) != nullptr && static_cast<MidiNote *> (tr)->magic_ == MIDI_NOTE_MAGIC)
-
 /**
  * A MIDI note inside a Region shown in the piano roll.
  */
 class MidiNote final
     : public QObject,
       public MuteableObject,
-      public RegionOwnedObjectImpl<MidiRegion>,
+      public RegionOwnedObject,
       public BoundedObject,
       public ICloneable<MidiNote>,
       public zrythm::utils::serialization::ISerializable<MidiNote>
@@ -39,22 +35,39 @@ class MidiNote final
   Q_OBJECT
   QML_ELEMENT
   DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (MidiNote)
+  DEFINE_BOUNDED_OBJECT_QML_PROPERTIES (MidiNote)
+  Q_PROPERTY (int pitch READ getPitch WRITE setPitch NOTIFY pitchChanged)
 
 public:
-  MidiNote (QObject * parent = nullptr);
+  using RegionT = MidiRegion;
 
-  /**
-   * Creates a new MidiNote.
-   */
-  MidiNote (
-    const RegionIdentifier &region_id,
-    dsp::Position           start_pos,
-    dsp::Position           end_pos,
-    uint8_t                 val,
-    uint8_t                 vel,
-    QObject *               parent = nullptr);
+  MidiNote (const DeserializationDependencyHolder &dh)
+      : MidiNote (dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get ())
+  {
+  }
+  MidiNote (ArrangerObjectRegistry &obj_registry, QObject * parent = nullptr);
+
   Q_DISABLE_COPY_MOVE (MidiNote)
   ~MidiNote () override = default;
+
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
+
+  int getPitch () const { return static_cast<int> (pitch_); }
+
+  void setPitch (int ipitch)
+  {
+    const auto pitch = static_cast<midi_byte_t> (ipitch);
+    if (pitch_ != pitch)
+      {
+        pitch_ = pitch;
+        Q_EMIT pitchChanged ();
+      }
+  }
+  Q_SIGNAL void pitchChanged ();
+
+  // ========================================================================
 
   void init_loaded () override;
 
@@ -83,11 +96,14 @@ public:
    */
   void shift_pitch (int delta);
 
+  void set_velocity (int vel) { vel_->setValue (vel); }
+
   /**
    * Sends a note off if currently playing and sets
    * the pitch of the MidiNote.
+   * FIXME: this should not be the responsibility of the MidiNote.
    */
-  void set_val (uint8_t val);
+  void set_pitch (uint8_t val);
 
   std::optional<ArrangerObjectPtrVariant> find_in_project () const override;
 
@@ -111,22 +127,20 @@ public:
 
 public:
   /** Velocity. */
-  Velocity * vel_ = nullptr;
+  Velocity * vel_{};
 
   /** The note/pitch, (0-127). */
-  uint8_t pitch_ = 0;
+  uint8_t pitch_{};
 
   /** Cached note, for live operations. */
-  uint8_t cache_pitch_ = 0;
+  uint8_t cache_pitch_{};
 
   /** Whether or not this note is currently listened to */
-  bool currently_listened_ = false;
+  bool currently_listened_{};
 
   /** The note/pitch that is currently playing, if @ref
    * currently_listened_ is true. */
-  uint8_t last_listened_pitch_ = 0;
-
-  int magic_ = MIDI_NOTE_MAGIC;
+  uint8_t last_listened_pitch_{};
 };
 
 inline bool

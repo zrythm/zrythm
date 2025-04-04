@@ -178,7 +178,7 @@ RangeAction::perform_impl ()
                           /* split at range start */
                           auto [part1, part2] =
                             ArrangerObjectSpan::split_bounded_object (
-                              *obj, PROJECT->get_arranger_object_registry (),
+                              *obj, *ArrangerObjectFactory::get_instance (),
                               start_pos_, AUDIO_ENGINE->frames_per_tick_);
 
                           /* move part2 by the range amount */
@@ -233,7 +233,8 @@ RangeAction::perform_impl ()
                       if constexpr (std::derived_from<ObjT, BoundedObject>)
                         {
                           ends_inside_range =
-                            *obj->pos_ >= start_pos_ && obj->end_pos_ < end_pos_;
+                            *obj->pos_ >= start_pos_
+                            && *obj->end_pos_ < end_pos_;
                         }
                       else
                         {
@@ -250,7 +251,7 @@ RangeAction::perform_impl ()
                               /* split at range start */
                               auto [part1, part2] =
                                 ArrangerObjectSpan::split_bounded_object (
-                                  *obj, PROJECT->get_arranger_object_registry (),
+                                  *obj, *ArrangerObjectFactory::get_instance (),
                                   start_pos_, AUDIO_ENGINE->frames_per_tick_);
 
                               /* if part 2 extends beyond the range end, split
@@ -261,7 +262,7 @@ RangeAction::perform_impl ()
                                   auto [part3, part4] =
                                     ArrangerObjectSpan::split_bounded_object (
                                       *part2,
-                                      PROJECT->get_arranger_object_registry (),
+                                      *ArrangerObjectFactory::get_instance (),
                                       end_pos_, AUDIO_ENGINE->frames_per_tick_);
                                   PROJECT->get_arranger_object_registry ()
                                     .delete_object_by_id (part3->get_uuid ());
@@ -309,7 +310,7 @@ RangeAction::perform_impl ()
                               // part1 will be discarded
                               auto [part1, part2] =
                                 ArrangerObjectSpan::split_bounded_object (
-                                  *obj, PROJECT->get_arranger_object_registry (),
+                                  *obj, *ArrangerObjectFactory::get_instance (),
                                   end_pos_, AUDIO_ENGINE->frames_per_tick_);
                               PROJECT->get_arranger_object_registry ()
                                 .delete_object_by_id (part1->get_uuid ());
@@ -339,8 +340,8 @@ RangeAction::perform_impl ()
                           objects_moved_.push_back (obj->get_uuid ());
 
                           /* move objects to bar 1 if negative pos */
-                          Position init_pos;
-                          if (obj->pos_ < init_pos)
+                          const Position init_pos;
+                          if (*obj->pos_ < init_pos)
                             {
                               z_debug ("moving object back");
                               obj->move (-obj->pos_->ticks_);

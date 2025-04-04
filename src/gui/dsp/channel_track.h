@@ -161,4 +161,16 @@ private:
   PluginRegistry &plugin_registry_;
 };
 
+using ChannelTrackVariant = std::variant<
+  AudioBusTrack,
+  AudioTrack,
+  ChordTrack,
+  MidiBusTrack,
+  MidiTrack,
+  AudioGroupTrack,
+  MidiGroupTrack,
+  InstrumentTrack,
+  MasterTrack>;
+using ChannelTrackPtrVariant = to_pointer_variant<ChannelTrackVariant>;
+
 #endif // __AUDIO_CHANNEL_TRACK_H__

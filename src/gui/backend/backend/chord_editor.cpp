@@ -13,13 +13,12 @@
 void
 ChordEditor::init ()
 {
-  chords_.resize (CHORD_EDITOR_NUM_CHORDS);
-  for (int i = 0; i < CHORD_EDITOR_NUM_CHORDS; i++)
+  for (const auto index : std::views::iota (0, CHORD_EDITOR_NUM_CHORDS))
     {
-      chords_[i] = ChordDescriptor (
-        (MusicalNote) ((int) MusicalNote::C + i), true,
-        (MusicalNote) ((int) MusicalNote::C + i), ChordType::Major,
-        ChordAccent::None, 0);
+      add_chord_descriptor (
+        { (MusicalNote) ((int) MusicalNote::C + index), true,
+          (MusicalNote) ((int) MusicalNote::C + index), ChordType::Major,
+          ChordAccent::None, 0 });
     }
 }
 
@@ -43,8 +42,7 @@ ChordEditor::apply_single_chord (
     }
   else
     {
-      chords_[idx] = chord;
-      chords_[idx].update_notes ();
+      replace_chord_descriptor (idx, ChordDescriptor{ chord });
     }
 }
 
@@ -68,10 +66,9 @@ ChordEditor::apply_chords (
     }
   else
     {
-      for (int i = 0; i < CHORD_EDITOR_NUM_CHORDS; i++)
+      for (const auto i : std::views::iota (0, CHORD_EDITOR_NUM_CHORDS))
         {
-          chords_[i] = chords[i];
-          chords_[i].update_notes ();
+          replace_chord_descriptor (i, ChordDescriptor{ chords[i] });
         }
     }
 
@@ -114,9 +111,9 @@ ChordEditor::apply_preset_from_scale (
   /* fill remaining chords with default data */
   while (cur_chord < CHORD_EDITOR_NUM_CHORDS)
     {
-      new_chords.push_back (ChordDescriptor (
+      new_chords.emplace_back (
         MusicalNote::C, false, MusicalNote::C, ChordType::None,
-        ChordAccent::None, 0));
+        ChordAccent::None, 0);
     }
 
   apply_chords (new_chords, undoable);
@@ -127,9 +124,9 @@ ChordEditor::transpose_chords (bool up, bool undoable)
 {
   std::vector<ChordDescriptor> new_chords;
   new_chords.reserve (CHORD_EDITOR_NUM_CHORDS);
-  for (int i = 0; i < CHORD_EDITOR_NUM_CHORDS; ++i)
+  for (const auto i : std::views::iota (0, CHORD_EDITOR_NUM_CHORDS))
     {
-      new_chords.push_back (chords_[i]);
+      new_chords.push_back (get_chord_at_index (i));
       ChordDescriptor &descr = new_chords.back ();
 
       int add = (up ? 1 : 11);
@@ -149,15 +146,15 @@ ChordEditor::get_chord_from_note_number (midi_byte_t note_number)
   if (note_number < 60 || note_number >= 72)
     return nullptr;
 
-  return &chords_[note_number - 60];
+  return &get_chord_at_index (note_number - 60);
 }
 
 int
 ChordEditor::get_chord_index (const ChordDescriptor &chord) const
 {
-  for (int i = 0; i < CHORD_EDITOR_NUM_CHORDS; i++)
+  for (const auto i : std::views::iota (0, CHORD_EDITOR_NUM_CHORDS))
     {
-      if (chords_[i] == chord)
+      if (get_chord_at_index (i) == chord)
         return i;
     }
 

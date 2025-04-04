@@ -6,6 +6,9 @@
 
 #include "gui/dsp/arranger_object.h"
 
+class LoopableObject;
+class FadeableObject;
+
 #define DEFINE_BOUNDED_OBJECT_QML_PROPERTIES(ClassType) \
 public: \
   /* ================================================================ */ \
@@ -51,7 +54,7 @@ public:
    * The setter is for use in e.g. the digital meters whereas the set_pos func
    * is used during arranger actions.
    */
-  void end_pos_setter (const dsp::Position * pos)
+  void end_pos_setter (const dsp::Position &pos)
   {
     set_position (pos, PositionType::End, true);
   }
@@ -90,13 +93,33 @@ public:
    * Sets the end position of the ArrangerObject and also sets the loop end and
    * fade out (if object supports those) so that they are at the end.
    */
-  void set_start_pos_full_size (const dsp::Position * pos);
+  template <typename SelfT>
+  void set_start_pos_full_size (
+    this SelfT     &self,
+    const Position &pos,
+    double          frames_per_tick)
+    requires (FinalArrangerObjectSubclass<SelfT>)
+  {
+    self.pos_setter (pos);
+    self.set_loop_and_fade_positions_from_length (frames_per_tick);
+    assert (pos.frames_ == self.pos_->frames_);
+  }
 
   /**
    * Sets the end position of the ArrangerObject and also sets the loop end and
    * fade out (if object supports those) to that position.
    */
-  void set_end_pos_full_size (const dsp::Position * pos);
+  template <typename SelfT>
+  void set_end_pos_full_size (
+    this SelfT          &self,
+    const dsp::Position &pos,
+    double               frames_per_tick)
+    requires (FinalArrangerObjectSubclass<SelfT>)
+  {
+    self.end_pos_setter (pos);
+    self.set_loop_and_fade_positions_from_length (frames_per_tick);
+    assert (pos.frames_ == self.end_pos_->frames_);
+  }
 
   /**
    * Returns whether the object is hit by the given position (local position if
@@ -228,10 +251,25 @@ private:
   /**
    * @brief Called internally by @ref set_start_pos_full_size() and @ref
    * set_end_pos_full_size().
-   *
-   * FIXME breaks encapsulation, probably belongs somewhere else.
    */
-  void set_loop_and_fade_to_full_size ();
+  template <typename SelfT>
+  void set_loop_and_fade_positions_from_length (
+    this SelfT &self,
+    double      frames_per_tick)
+    requires (FinalArrangerObjectSubclass<SelfT>)
+  {
+    // note: not sure if using ticks is OK here, maybe getting the length in
+    // frames might be less bug-prone
+    const auto ticks = self.get_length_in_ticks ();
+    if constexpr (std::derived_from<SelfT, LoopableObject>)
+      {
+        self.loop_end_pos_.from_ticks (ticks, frames_per_tick);
+      }
+    if constexpr (std::derived_from<SelfT, FadeableObject>)
+      {
+        self.fade_out_pos_.from_ticks (ticks, frames_per_tick);
+      }
+  }
 
 public:
   /**

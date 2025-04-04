@@ -44,6 +44,8 @@ RegionList::init_after_cloning (
   beginResetModel ();
   regions_.clear ();
   regions_.reserve (other.regions_.size ());
+// TODO
+#if 0
   for (const auto region_var : other.regions_)
     {
       std::visit (
@@ -53,6 +55,7 @@ RegionList::init_after_cloning (
         },
         region_var);
     }
+#endif
   endResetModel ();
 }
 

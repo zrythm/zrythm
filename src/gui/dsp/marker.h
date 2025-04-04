@@ -10,11 +10,10 @@
  * @{
  */
 
+#include "gui/dsp/bounded_object.h"
 #include "gui/dsp/named_object.h"
 #include "gui/dsp/timeline_object.h"
 #include "utils/icloneable.h"
-
-constexpr int MARKER_WIDGET_TRIANGLE_W = 10;
 
 /**
  * Marker for the MarkerTrack.
@@ -45,22 +44,25 @@ public:
     Custom,
   };
 
-  Marker (QObject * parent = nullptr);
+  Marker (const DeserializationDependencyHolder &dh)
+      : Marker (
+          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get (),
+          dh.get<NameValidator> ())
+  {
+  }
+  Marker (
+    ArrangerObjectRegistry &obj_registry,
+    NameValidator           name_validator,
+    QObject *               parent = nullptr);
 
-  Marker (const std::string &name, QObject * parent = nullptr);
+  // Marker (const std::string &name, QObject * parent = nullptr);
 
   bool is_start () const { return marker_type_ == Type::Start; }
   bool is_end () const { return marker_type_ == Type::End; }
 
-  bool validate_name (const std::string &name) override
-  {
-    /* valid if no other marker with the same name exists*/
-    return find_by_name (name) == nullptr;
-  }
-
   void set_marker_track_index (int index) { marker_track_index_ = index; }
 
-  static Marker * find_by_name (const std::string &name);
+  // static Marker * find_by_name (const std::string &name);
 
   bool is_deletable () const override
   {

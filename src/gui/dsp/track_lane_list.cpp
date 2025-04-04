@@ -53,6 +53,8 @@ TrackLaneList::copy_members_from (
 {
   clear ();
   lanes_.reserve (other.size ());
+// TODO
+#if 0
   for (const auto lane_var : other)
     {
       std::visit (
@@ -62,4 +64,5 @@ TrackLaneList::copy_members_from (
         },
         lane_var);
     }
+#endif
 }

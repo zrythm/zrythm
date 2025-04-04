@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/project.h"
@@ -7,8 +7,6 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/automation_function.h"
 #include "gui/dsp/engine.h"
-
-#include "utils/flags.h"
 #include "utils/rt_thread_id.h"
 
 using namespace zrythm;
@@ -25,7 +23,7 @@ AutomationFunction::apply (ArrangerObjectSpanVariant sel_var, Type type)
           {
             if (vertical)
               {
-                ap->set_fvalue (1.f - ap->normalized_val_, true, false);
+                ap->set_fvalue (1.f - ap->normalized_val_, true);
                 ap->curve_opts_.curviness_ = -ap->curve_opts_.curviness_;
               }
             else

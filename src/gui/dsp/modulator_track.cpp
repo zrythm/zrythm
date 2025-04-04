@@ -8,27 +8,32 @@
 #include "gui/dsp/port.h"
 #include "gui/dsp/router.h"
 #include "gui/dsp/track.h"
-#include "utils/flags.h"
 #include "utils/logger.h"
 
 ModulatorTrack::ModulatorTrack (
-  TrackRegistry  &track_registry,
-  PluginRegistry &plugin_registry,
-  PortRegistry   &port_registry,
-  bool            new_identity)
-    : Track (Track::Type::Modulator, PortType::Unknown, PortType::Unknown),
+  TrackRegistry          &track_registry,
+  PluginRegistry         &plugin_registry,
+  PortRegistry           &port_registry,
+  ArrangerObjectRegistry &obj_registry,
+  bool                    new_identity)
+    : Track (
+        Track::Type::Modulator,
+        PortType::Unknown,
+        PortType::Unknown,
+        port_registry,
+        obj_registry),
       AutomatableTrack (port_registry, new_identity),
       ProcessableTrack (port_registry, new_identity),
       plugin_registry_ (plugin_registry)
 {
   if (new_identity) {
-  main_height_ = TRACK_DEF_HEIGHT / 2;
+      main_height_ = DEF_HEIGHT / 2;
 
-  color_ = Color (QColor ("#222222"));
-  icon_name_ = "gnome-icon-library-encoder-knob-symbolic";
+      color_ = Color (QColor ("#222222"));
+      icon_name_ = "gnome-icon-library-encoder-knob-symbolic";
 
-  /* set invisible */
-  visible_ = false;
+      /* set invisible */
+      visible_ = false;
   }
 
   automation_tracklist_->setParent (this);
@@ -224,7 +229,7 @@ ModulatorTrack::remove_modulator (
       z_debug ("Removing {} from {}:{}", plugin->get_name (), name_, slot);
 
       /* unexpose all JACK ports */
-      plugin->expose_ports (*AUDIO_ENGINE, F_NOT_EXPOSE, true, true);
+      plugin->expose_ports (*AUDIO_ENGINE, false, true, true);
 
       /* if deleting plugin disconnect the plugin entirely */
       if (deleting_modulator)

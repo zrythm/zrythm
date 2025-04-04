@@ -116,6 +116,7 @@ GridLayout {
         Layout.fillHeight: true
         clipEditor: root.clipEditor
         pianoRoll: root.pianoRoll
+        objectFactory: root.project.arrangerObjectFactory
         ruler: ruler
         tool: project.tool
     }
@@ -134,6 +135,7 @@ GridLayout {
         Layout.fillHeight: true
         clipEditor: root.clipEditor
         pianoRoll: root.pianoRoll
+        objectFactory: root.project.arrangerObjectFactory
         ruler: ruler
         tool: project.tool
     }

@@ -17,13 +17,12 @@
 #include "gui/dsp/router.h"
 #include "gui/dsp/tempo_track.h"
 #include "gui/dsp/tracklist.h"
-
 #include "utils/datetime.h"
-#include "utils/flags.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/string.h"
+
 #include <yyjson.h>
 
 using namespace zrythm;
@@ -578,10 +577,8 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
         fs::path (gZrythm->create_project_path_) / PROJECT_PLUGINS_DIR;
       try
         {
-          utils::io::copy_dir (
-            new_pool_dir, prev_pool_dir, F_NO_FOLLOW_SYMLINKS, true);
-          utils::io::copy_dir (
-            new_plugins_dir, prev_plugins_dir, F_NO_FOLLOW_SYMLINKS, true);
+          utils::io::copy_dir (new_pool_dir, prev_pool_dir, false, true);
+          utils::io::copy_dir (new_plugins_dir, prev_plugins_dir, false, true);
         }
       catch (const ZrythmException &e)
         {
@@ -601,8 +598,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
       auto new_plugins_dir = fs::path (dir_) / PROJECT_PLUGINS_DIR;
       try
         {
-          utils::io::copy_dir (
-            new_plugins_dir, prev_plugins_dir, F_NO_FOLLOW_SYMLINKS, true);
+          utils::io::copy_dir (new_plugins_dir, prev_plugins_dir, false, true);
         }
       catch (const ZrythmException &e)
         {
@@ -680,7 +676,7 @@ ProjectInitFlowManager::continue_load_from_file_after_open_backup_response ()
   /* re-load clips because sample rate can change during engine pre setup */
   try
     {
-      engine->pool_->init_loaded (engine);
+      engine->pool_->init_loaded ();
     }
   catch (const ZrythmException &e)
     {

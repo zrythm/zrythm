@@ -18,26 +18,29 @@
 
 AutomationTracklist::AutomationTracklist (
   const DeserializationDependencyHolder &dh)
-    : AutomationTracklist (dh.get<std::reference_wrapper<PortRegistry>> ().get ())
+    : AutomationTracklist (
+        dh.get<std::reference_wrapper<PortRegistry>> ().get (),
+        dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get (),
+        dh.get<std::reference_wrapper<AutomatableTrack>> ().get ())
 {
 }
 
 AutomationTracklist::AutomationTracklist (
-  PortRegistry &port_registry,
-  QObject *     parent)
-    : QAbstractListModel (parent), port_registry_ (port_registry)
+  PortRegistry           &port_registry,
+  ArrangerObjectRegistry &obj_registry,
+  AutomatableTrack       &track,
+  QObject *               parent)
+    : QAbstractListModel (parent), object_registry_ (obj_registry),
+      port_registry_ (port_registry), track_ (track)
 {
 }
 
 void
-AutomationTracklist::init_loaded (
-  AutomatableTrack * track,
-  PortRegistry      &port_registry)
+AutomationTracklist::init_loaded ()
 {
-  track_ = track;
   for (auto &at : ats_)
     {
-      at->init_loaded (this);
+      at->init_loaded ();
       if (at->visible_)
         {
           visible_ats_.push_back (at);
@@ -52,12 +55,15 @@ AutomationTracklist::init_after_cloning (
 {
   ats_.clear ();
   ats_.reserve (other.ats_.size ());
+// TODO
+#if 0
   for (const auto &at : other.ats_)
     {
       auto * cloned_at = at->clone_raw_ptr ();
       cloned_at->setParent (this);
       ats_.push_back (cloned_at);
     }
+#endif
 }
 
 // ========================================================================
@@ -131,11 +137,10 @@ AutomationTracklist::hideAutomationTrack (
 
 // ========================================================================
 
-AutomatableTrack *
+TrackPtrVariant
 AutomationTracklist::get_track () const
 {
-  z_return_val_if_fail (track_, nullptr);
-  return track_;
+  return convert_to_variant<TrackPtrVariant> (&track_);
 }
 
 ControlPort &
@@ -145,7 +150,7 @@ AutomationTracklist::get_port (dsp::PortIdentifier::PortUuid id) const
 }
 
 AutomationTrack *
-AutomationTracklist::add_at (AutomationTrack &at)
+AutomationTracklist::add_automation_track (AutomationTrack &at)
 {
   ats_.push_back (&at);
   auto * at_ref = ats_.back ();
@@ -153,7 +158,7 @@ AutomationTracklist::add_at (AutomationTrack &at)
 
   at_ref->index_ = static_cast<int> (ats_.size ()) - 1;
   const auto &port = get_port (at_ref->port_id_);
-  port.id_->set_track_id (track_->get_uuid ());
+  port.id_->set_track_id (track_.get_uuid ());
 
   /* move automation track regions */
   for (const auto region_var : at_ref->region_list_->regions_)
@@ -217,19 +222,19 @@ AutomationTracklist::set_at_index (AutomationTrack &at, int index, bool push_dow
     return;
 
   auto clip_editor_region_opt = CLIP_EDITOR->get_region ();
-  int  clip_editor_region_idx = -2;
+  // int  clip_editor_region_idx = -2;
   if (clip_editor_region_opt)
     {
+#if 0
       std::visit (
         [&] (auto &&clip_editor_region) {
-          auto &clip_editor_region_id = clip_editor_region->id_;
-
-          if (clip_editor_region_id.track_uuid_ == track_->get_uuid ())
+          if (clip_editor_region->get_track_id () == track_.get_uuid ())
             {
               clip_editor_region_idx = clip_editor_region_id.at_idx_;
             }
         },
         clip_editor_region_opt.value ());
+#endif
     }
 
   if (push_down)
@@ -383,7 +388,7 @@ AutomationTracklist::get_at_from_port (const ControlPort &port) const
 }
 
 AutomationTrack *
-AutomationTracklist::get_at_from_port_uuid (
+AutomationTracklist::get_automation_track_by_port_id (
   dsp::PortIdentifier::PortUuid id) const
 {
   auto it = std::find_if (ats_.begin (), ats_.end (), [&id] (const auto &at) {
@@ -446,8 +451,8 @@ AutomationTracklist::
   }
 
   z_trace (
-    "[track {} atl] removing automation track at: {} '{}'",
-    track_ ? track_->pos_ : -1, deleted_idx, at.getLabel ());
+    "[track {} atl] removing automation track at: {} '{}'", track_.pos_,
+    deleted_idx, at.getLabel ());
 
   if (free_at)
     {
@@ -456,13 +461,12 @@ AutomationTracklist::
       at.clear_regions ();
     }
 
-  auto it = std::find_if (ats_.begin (), ats_.end (), [&at] (const auto &ptr) {
+  auto it = std::ranges::find_if (ats_, [&at] (const auto &ptr) {
     return ptr == &at;
   });
   if (it == ats_.end ())
     {
-      z_warning (
-        "[track {} atl] automation track not found", track_ ? track_->pos_ : -1);
+      z_warning ("[track {} atl] automation track not found", track_.pos_);
       endRemoveRows ();
       return nullptr;
     }
@@ -534,7 +538,7 @@ void
 AutomationTracklist::print_ats () const
 {
   std::string str =
-    "Automation tracklist (track '" + track_->get_name () + "')\n";
+    "Automation tracklist (track '" + track_.get_name () + "')\n";
 
   for (size_t i = 0; i < ats_.size (); i++)
     {
@@ -550,7 +554,7 @@ AutomationTracklist::print_ats () const
 int
 AutomationTracklist::get_num_visible () const
 {
-  return std::count_if (ats_.begin (), ats_.end (), [] (const auto &at) {
+  return std::ranges::count_if (ats_, [] (const auto &at) {
     return at->created_ && at->visible_;
   });
 }
@@ -558,9 +562,7 @@ AutomationTracklist::get_num_visible () const
 bool
 AutomationTracklist::validate () const
 {
-  z_return_val_if_fail (track_, false);
-
-  auto track_uuid = track_->get_uuid ();
+  auto track_uuid = track_.get_uuid ();
   for (int i = 0; i < static_cast<int> (ats_.size ()); i++)
     {
       const auto &at = ats_[i];
@@ -586,7 +588,7 @@ AutomationTracklist::get_num_regions () const
 void
 AutomationTracklist::set_caches (CacheType types)
 {
-  auto track = get_track ();
+  auto * track = &track_;
   z_return_if_fail (track);
 
   if (track->is_auditioner ())
@@ -613,21 +615,20 @@ AutomationTracklist::set_caches (CacheType types)
 void
 AutomationTracklist::print_regions () const
 {
-  Track * track = get_track ();
+  auto * track = &track_;
   z_return_if_fail (track);
 
   std::string str = fmt::format (
     "Automation regions for track {} (total automation tracks {}):",
     track->get_name (), ats_.size ());
 
-  for (size_t i = 0; i < ats_.size (); i++)
+  for (const auto &[index, at] : std::views::enumerate (ats_))
     {
-      const auto &at = ats_.at (i);
       if (at->region_list_->regions_.empty ())
         continue;
 
       str += fmt::format (
-        "\n  [{}] port '{}': {} regions", i, at->getLabel (),
+        "\n  [{}] port '{}': {} regions", index, at->getLabel (),
         at->region_list_->regions_.size ());
     }
 

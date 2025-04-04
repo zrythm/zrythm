@@ -5,24 +5,56 @@
 #define __DSP_LANE_OWNED_OBJECT_H__
 
 #include "gui/dsp/timeline_object.h"
+#include "gui/dsp/track_lane_fwd.h"
 
-class Region;
-template <typename RegionT> class TrackLaneImpl;
 class MidiLane;
 class AudioLane;
-template <typename TrackLaneT> class LanedTrackImpl;
+class TrackLane;
 
 class LaneOwnedObject : virtual public TimelineObject
 {
 public:
-  ~LaneOwnedObject () override = default;
+  // using TrackLaneUuid = utils::UuidIdentifiableObject<TrackLane>::Uuid;
 
-protected:
+  LaneOwnedObject () = default;
+  ~LaneOwnedObject () override = default;
+  Z_DISABLE_COPY_MOVE (LaneOwnedObject);
+
+  bool is_inserted_in_lane () const { return owner_lane_.has_value (); }
+
+  template <typename SelfT>
+  MidiLane &get_lane (this const SelfT &self)
+    requires std::is_same_v<SelfT, MidiRegion>
+  {
+    return *std::get<MidiLane *> (*self.owner_lane_);
+  }
+
+  template <typename SelfT>
+  AudioLane &get_lane (this const SelfT &self)
+    requires std::is_same_v<SelfT, AudioRegion>
+  {
+    return *std::get<AudioLane *> (*self.owner_lane_);
+  }
+
+  template <typename SelfT> auto get_lane_index (this const SelfT &self)
+  {
+    return self.get_lane ().get_index_in_track ();
+  }
+
+  /**
+   * Sets the track lane.
+   */
+  void set_lane (TrackLanePtrVariant lane) { owner_lane_ = lane; }
+
   void
   copy_members_from (const LaneOwnedObject &other, ObjectCloneType clone_type)
   {
     index_in_prev_lane_ = other.index_in_prev_lane_;
   }
+
+private:
+  /** Track lane that owns this object. */
+  std::optional<TrackLanePtrVariant> owner_lane_;
 
 public:
   /**
@@ -34,44 +66,12 @@ public:
    *
    * @see arranger_selections_action_do().
    */
-  int index_in_prev_lane_ = 0;
+  std::optional<int> index_in_prev_lane_;
 };
-
-template <typename RegionT>
-class LaneOwnedObjectImpl : virtual public LaneOwnedObject
-{
-public:
-  ~LaneOwnedObjectImpl () override = default;
-
-  using TrackLaneT =
-    std::conditional_t<std::is_same_v<RegionT, MidiRegion>, MidiLane, AudioLane>;
-  using LanedTrackT = LanedTrackImpl<TrackLaneT>;
-
-  /**
-   * Get lane.
-   */
-  TrackLaneT * get_lane () const;
-
-  /**
-   * Sets the track lane.
-   */
-  void set_lane (TrackLaneT &lane);
-
-public:
-  /** Pointer to the track lane that owns this object. */
-  TrackLaneT * owner_lane_ = nullptr;
-};
-
-template <typename RegionT>
-concept LaneOwnedRegionSubclass =
-  DerivedButNotBase<RegionT, Region>
-  && DerivedButNotBase<RegionT, LaneOwnedObjectImpl<RegionT>>;
 
 class MidiRegion;
 class AudioRegion;
 using LaneOwnedObjectVariant = std::variant<MidiRegion, AudioRegion>;
-
-extern template class LaneOwnedObjectImpl<MidiRegion>;
-extern template class LaneOwnedObjectImpl<AudioRegion>;
+using LaneOwnedObjectPtrVariant = to_pointer_variant<LaneOwnedObjectVariant>;
 
 #endif // __DSP_LANE_OWNED_OBJECT_H__

@@ -10,9 +10,7 @@
 #include "gui/dsp/hardware_processor.h"
 #include "gui/dsp/midi_event.h"
 #include "gui/dsp/port.h"
-
 #include "utils/dsp.h"
-#include "utils/flags.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/objects.h"
 #include "utils/rt_thread_id.h"

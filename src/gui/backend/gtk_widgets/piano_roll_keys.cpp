@@ -238,7 +238,7 @@ piano_roll_keys_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       /* ---- draw key ---- */
 
       /* draw note */
-      int black_note = PIANO_ROLL->is_key_black (i);
+      int black_note = PIANO_ROLL->isBlackKey (i);
 
       GdkRGBA color;
       if (black_note)

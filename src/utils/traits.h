@@ -160,6 +160,12 @@ template <typename Derived, typename Base>
 concept DerivedButNotBase =
   std::derived_from<Derived, Base> && !std::same_as<Derived, Base>;
 
+template <typename Derived, template <typename> class BaseTemplate>
+concept DerivedFromTemplatedBase = requires {
+  []<typename T> (const BaseTemplate<T> *) {
+  }(static_cast<Derived *> (nullptr));
+};
+
 // Helper struct to merge multiple std::variant types
 template <typename... Variants> struct merge_variants;
 
@@ -347,5 +353,10 @@ template <typename T>
 concept IsVariant = requires {
   []<typename... Ts> (std::variant<Ts...> *) {}(static_cast<T *> (nullptr));
 };
+
+// Trick to print the tparam type during compilation
+// i.e.: No type named 'something_made_up' in 'tparam'
+#define DEBUG_TEMPLATE_PARAM(tparam) \
+  [[maybe_unused]] typedef typename tparam::something_made_up X;
 
 #endif // __UTILS_TRAITS_H__

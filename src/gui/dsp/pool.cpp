@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cstdlib>
@@ -16,12 +16,11 @@
 
 using namespace zrythm;
 
-AudioPool::AudioPool (AudioEngine * engine) : engine_ (engine) { }
+AudioPool::AudioPool (AudioEngine &engine) : engine_ (engine) { }
 
 void
-AudioPool::init_loaded (AudioEngine * engine)
+AudioPool::init_loaded ()
 {
-  engine_ = engine;
   for (auto &clip : clips_)
     {
       if (clip)
@@ -35,15 +34,16 @@ AudioPool::init_loaded (AudioEngine * engine)
 void
 AudioPool::init_after_cloning (const AudioPool &other, ObjectCloneType clone_type)
 {
-  clone_ptr_vector (clips_, other.clips_);
+  std::ranges::for_each (other.clips_, [&] (const auto &other_clip) {
+    auto new_clip = other_clip->clone_unique (clone_type);
+    register_clip (std::move (new_clip));
+  });
 }
 
 bool
 AudioPool::name_exists (const std::string &name) const
 {
-  return std::any_of (clips_.begin (), clips_.end (), [&name] (const auto &clip) {
-    return clip && clip->get_name () == name;
-  });
+  return std::ranges::contains (clips_, name, &AudioClip::get_name);
 }
 
 fs::path
@@ -73,13 +73,13 @@ AudioPool::get_clip_path (const AudioClip &clip, bool is_backup)
 void
 AudioPool::write_clip (AudioClip &clip, bool parts, bool backup)
 {
-  AudioClip * pool_clip = get_clip (clip.get_pool_id ());
+  AudioClip * pool_clip = get_clip (clip.get_uuid ());
   z_return_if_fail (pool_clip == &clip);
 
   print ();
   z_debug (
     "attempting to write clip {} ({}) to pool...", clip.get_name (),
-    clip.get_pool_id ());
+    clip.get_uuid ());
 
   /* generate a copy of the given filename in the project dir */
   auto path_in_main_project = get_clip_path (clip, false);
@@ -198,91 +198,49 @@ AudioPool::ensure_unique_clip_name (AudioClip &clip)
   clip.set_name (new_name);
 }
 
-int
-AudioPool::get_next_id () const
+void
+AudioPool::register_clip (std::shared_ptr<AudioClip> clip)
 {
-  int next_id = -1;
-  for (size_t i = 0; i < clips_.size (); ++i)
-    {
-      const auto &clip = clips_[i];
-      if (clip)
-        {
-          next_id = std::max (clip->get_pool_id (), next_id);
-        }
-      else
-        {
-          return i;
-        }
-    }
-
-  return next_id + 1;
-}
-
-int
-AudioPool::add_clip (std::unique_ptr<AudioClip> &&clip)
-{
-  z_return_val_if_fail (!clip->get_name ().empty (), -1);
+  assert (!clip->get_name ().empty ());
 
   z_debug ("adding clip <{}> to pool...", clip->get_name ());
 
   ensure_unique_clip_name (*clip);
 
-  int next_id = get_next_id ();
-  z_return_val_if_fail (next_id >= 0 && next_id <= (int) clips_.size (), -1);
-
-  clip->set_pool_id (next_id);
-  if (next_id == (int) clips_.size ())
-    {
-      clips_.emplace_back (std::move (clip));
-    }
-  else
-    {
-      z_return_val_if_fail (clips_[next_id] == nullptr, -1);
-      clips_[next_id] = std::move (clip);
-    }
-
-  z_debug ("added clip <{}> to pool", clips_[next_id]->get_name ());
+  clips_.insert (clip->get_uuid (), clip);
   print ();
-
-  return next_id;
 }
 
 AudioClip *
-AudioPool::get_clip (int clip_id)
+AudioPool::get_clip (const AudioClip::Uuid &clip_id)
 {
-  z_return_val_if_fail (clip_id >= 0 && clip_id < (int) clips_.size (), nullptr);
-
-  auto it =
-    std::find_if (clips_.begin (), clips_.end (), [clip_id] (const auto &clip) {
-      return clip && clip->get_pool_id () == clip_id;
-    });
-  z_return_val_if_fail (it != clips_.end (), nullptr);
-  return (*it).get ();
+  auto val = clips_.value (clip_id);
+  return val.get ();
 }
 
-int
-AudioPool::duplicate_clip (int clip_id, bool write_file)
+auto
+AudioPool::duplicate_clip (const AudioClip::Uuid &clip_id, bool write_file)
+  -> AudioClip::Uuid
 {
-  const auto clip = get_clip (clip_id);
-  z_return_val_if_fail (clip, -1);
+  auto * const clip = get_clip (clip_id);
 
-  auto new_id = add_clip (std::make_unique<AudioClip> (
-    clip->get_samples (), clip->get_bit_depth (), engine_->sample_rate_,
-    P_TEMPO_TRACK->get_current_bpm (), clip->get_name ()));
-  auto new_clip = get_clip (new_id);
+  auto new_clip = std::make_shared<AudioClip> (
+    clip->get_samples (), clip->get_bit_depth (), engine_.sample_rate_,
+    P_TEMPO_TRACK->get_current_bpm (), clip->get_name ());
+  register_clip (new_clip);
 
   z_debug (
     "duplicating clip {} to {}...", clip->get_name (), new_clip->get_name ());
 
   /* assert clip names are not the same */
-  z_return_val_if_fail (clip->get_name () != new_clip->get_name (), -1);
+  assert (clip->get_name () != new_clip->get_name ());
 
   if (write_file)
     {
       write_clip (*new_clip, false, false);
     }
 
-  return new_clip->get_pool_id ();
+  return new_clip->get_uuid ();
 }
 
 std::string
@@ -295,22 +253,24 @@ AudioPool::gen_name_for_recording_clip (const Track &track, int lane)
 }
 
 void
-AudioPool::remove_clip (int clip_id, bool free_and_remove_file, bool backup)
+AudioPool::remove_clip (
+  const AudioClip::Uuid &clip_id,
+  bool                   free_and_remove_file,
+  bool                   backup)
 {
   z_debug ("removing clip with ID {}", clip_id);
 
-  auto clip = get_clip (clip_id);
-  z_return_if_fail (clip);
+  auto * clip = get_clip (clip_id);
 
   if (free_and_remove_file)
     {
       std::string path = get_clip_path (*clip, backup);
       z_debug ("removing clip at {}", path);
-      z_return_if_fail (path.length () > 0);
+      assert (path.length () > 0);
       utils::io::remove (path);
     }
 
-  auto removed_clip = std::move (clips_[clip_id]);
+  clips_.remove (clip_id);
 }
 
 void
@@ -320,14 +280,13 @@ AudioPool::remove_unused (bool backup)
 
   /* remove clips from the pool that are not in use */
   int removed_clips = 0;
-  for (size_t i = 0; i < clips_.size (); ++i)
+  for (const auto &clip : clips_)
     {
-      auto &clip = clips_[i];
-      if (clip && !PROJECT->is_audio_clip_in_use (*clip, true))
+      if (!PROJECT->is_audio_clip_in_use (*clip, true))
         {
-          z_info ("unused clip [{}]: {}", i, clip->get_name ());
-          remove_clip (i, true, backup);
-          removed_clips++;
+          z_debug ("unused clip: {}", clip->get_name ());
+          remove_clip (clip->get_uuid (), true, backup);
+          ++removed_clips;
         }
     }
 
@@ -397,10 +356,8 @@ struct WriteClipData
 void
 AudioPool::write_to_disk (bool is_backup)
 {
-  z_return_if_fail (engine_);
-
   /* ensure pool dir exists */
-  auto prj_pool_dir = engine_->project_->get_path (ProjectPath::POOL, is_backup);
+  auto prj_pool_dir = engine_.project_->get_path (ProjectPath::POOL, is_backup);
   if (!utils::io::path_exists (prj_pool_dir))
     {
       try
@@ -458,20 +415,12 @@ AudioPool::print () const
 {
   std::stringstream ss;
   ss << "[Audio Pool]\n";
-  for (size_t i = 0; i < clips_.size (); ++i)
+  for (const auto &clip : clips_)
     {
-      const auto &clip = clips_[i];
-      if (clip)
-        {
-          auto pool_path = get_clip_path (*clip, false);
-          ss << fmt::format (
-            "[Clip #{}] {} ({}): {}\n", i, clip->get_name (),
-            clip->get_file_hash (), pool_path);
-        }
-      else
-        {
-          ss << fmt::format ("[Clip #{}] <empty>\n", i);
-        }
+      auto pool_path = get_clip_path (*clip, false);
+      ss << fmt::format (
+        "[Clip #{}] {} ({}): {}\n", clip->get_uuid (), clip->get_name (),
+        clip->get_file_hash (), pool_path);
     }
   z_info ("{}", ss.str ());
 }

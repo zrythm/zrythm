@@ -12,8 +12,7 @@ Arranger {
     required property var pianoRoll
 
     function getPitchAtY(y: real): var {
-      // TODO
-      return 0;
+      return pianoRoll.getKeyAtY(y);
     }
 
     function updateCursor() {
@@ -145,40 +144,53 @@ Arranger {
         const pitch = getPitchAtY(y);
         console.log("Midi Arranger: beginObjectCreation", x, y, pitch);
 
-        // let midiNote = track.createAndAddRegionForMidiTrack(x / root.ruler.pxPerTick, trackLane ? trackLane.position : -1);
-        // root.currentAction = Arranger.CreatingResizingR;
-        // root.setObjectSnapshotsAtStart();
-        // CursorManager.setResizeEndCursor();
-        // root.actionObject = midiNote;
-        // return midiNote;
+        let midiNote = objectFactory.addMidiNote(root.clipEditor.region, x / root.ruler.pxPerTick, pitch);
+        root.currentAction = Arranger.CreatingResizingR;
+        root.setObjectSnapshotsAtStart();
+        CursorManager.setResizeEndCursor();
+        root.actionObject = midiNote;
+        return midiNote;
     }
 
     editorSettings: pianoRoll
     enableYScroll: true
     scrollView.ScrollBar.horizontal.policy: ScrollBar.AsNeeded
 
-    content: ListView {
-        id: midiNotesListView
+    content: Repeater {
+        id: midiNotesRepeater
 
         anchors.fill: parent
-        interactive: false
 
-        model: region.midiNotes
+        model: region
 
-        delegate: Item {
-            id: midiNoteDelegate
+        delegate: Loader {
+          id: midiNoteLoader
 
-            TextMetrics {
-                id: arrangerObjectTextMetrics
+          required property var midiNote
+          readonly property real midiNoteX: midiNote.position.ticks * root.ruler.pxPerTick
+          readonly property real midiNoteY: (127 - midiNote.pitch) * root.pianoRoll.keyHeight
+          readonly property real midiNoteEndX: midiNote.endPosition.ticks * root.ruler.pxPerTick
+          readonly property real midiNoteWidth: midiNoteEndX - midiNoteX
+          readonly property real midiNoteHeight: root.pianoRoll.keyHeight
 
-                text: "Some text"
-                font: Style.arrangerObjectTextFont
+          height: midiNoteHeight
+          width: midiNoteWidth
+          active: midiNoteEndX + Style.scrollLoaderBufferPx >= root.scrollX && midiNoteX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
+          visible: status === Loader.Ready
+          asynchronous: true
+
+          sourceComponent: Component {
+
+            MidiNote {
+              ruler: root.ruler
+              track: root.clipEditor.track
+              arrangerObject: midiNote
+              height: midiNoteHeight
+              x: midiNoteX
+              y: midiNoteY
+              width: midiNoteWidth
             }
-
-            Loader {
-                id: midiNotesLoader
-            }
-
+          }
         }
 
     }

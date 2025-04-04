@@ -103,6 +103,7 @@ set(rel_qml_file_paths
   components/arranger/ChordRegion.qml
   components/arranger/Marker.qml
   components/arranger/MidiArranger.qml
+  components/arranger/MidiNote.qml
   components/arranger/MidiRegion.qml
   components/arranger/RegionBase.qml
   components/arranger/ScaleObject.qml

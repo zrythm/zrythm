@@ -279,40 +279,44 @@ SnapGrid::get_prev_or_next_snap_point (
       snapped = true;
     }
 
-  if (track && track->has_lanes ())
+  if (track)
     {
       std::visit (
         [&] (auto &&t) {
           using TrackT = base_type<decltype (t)>;
-          for (auto &lane_var : t->lanes_)
+          if constexpr (std::derived_from<TrackT, LanedTrack>)
             {
-              using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
-              auto lane = std::get<TrackLaneT *> (lane_var);
-              for (auto &r_var : lane->region_list_->regions_)
+              for (auto &lane_var : t->lanes_)
                 {
-                  auto * r = std::get<typename TrackLaneT::RegionT *> (r_var);
-                  snap_point = *r->pos_;
-                  if (
-                    get_prev_point
-                      ? (snap_point <= pivot_pos && snap_point > out_pos)
-                      : (snap_point > pivot_pos && snap_point < out_pos))
+                  using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
+                  auto lane = std::get<TrackLaneT *> (lane_var);
+                  for (auto &r_var : lane->region_list_->regions_)
                     {
-                      out_pos = snap_point;
-                      snapped = true;
-                    }
-                  snap_point = *r->end_pos_;
-                  if (
-                    get_prev_point
-                      ? (snap_point <= pivot_pos && snap_point > out_pos)
-                      : (snap_point > pivot_pos && snap_point < out_pos))
-                    {
-                      out_pos = snap_point;
-                      snapped = true;
+                      auto * r =
+                        std::get<typename TrackLaneT::RegionT *> (r_var);
+                      snap_point = *r->pos_;
+                      if (
+                        get_prev_point
+                          ? (snap_point <= pivot_pos && snap_point > out_pos)
+                          : (snap_point > pivot_pos && snap_point < out_pos))
+                        {
+                          out_pos = snap_point;
+                          snapped = true;
+                        }
+                      snap_point = *r->end_pos_;
+                      if (
+                        get_prev_point
+                          ? (snap_point <= pivot_pos && snap_point > out_pos)
+                          : (snap_point > pivot_pos && snap_point < out_pos))
+                        {
+                          out_pos = snap_point;
+                          snapped = true;
+                        }
                     }
                 }
             }
         },
-        convert_to_variant<LanedTrackPtrVariant> (track));
+        convert_to_variant<TrackPtrVariant> (track));
     }
   else if (region)
     {

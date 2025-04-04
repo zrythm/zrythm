@@ -20,9 +20,10 @@ AutomatableTrack::AutomatableTrack (const DeserializationDependencyHolder &dh)
 AutomatableTrack::AutomatableTrack (
   PortRegistry &port_registry,
   bool          new_identity)
-    : automation_tracklist_ (new AutomationTracklist (port_registry))
 {
-  automation_tracklist_->track_ = this;
+  // initialized here because we use base class members
+  automation_tracklist_ =
+    new AutomationTracklist (port_registry_, object_registry_, *this);
 }
 
 void
@@ -31,12 +32,12 @@ AutomatableTrack::copy_members_from (
   ObjectCloneType         clone_type)
 {
   automation_tracklist_ = other.automation_tracklist_->clone_raw_ptr (
-    ObjectCloneType::Snapshot, tracklist_->port_registry_.value ());
+    ObjectCloneType::Snapshot, tracklist_->port_registry_.value (),
+    PROJECT->get_arranger_object_registry (), *this);
   if (auto * qobject = dynamic_cast<QObject *> (this))
     {
       automation_tracklist_->setParent (qobject);
     }
-  automation_tracklist_->track_ = this;
   automation_visible_ = other.automation_visible_;
 }
 
@@ -45,7 +46,7 @@ AutomatableTrack::init_loaded (
   PluginRegistry &plugin_registry,
   PortRegistry   &port_registry)
 {
-  automation_tracklist_->init_loaded (this, tracklist_->port_registry_.value ());
+  automation_tracklist_->init_loaded ();
 
   std::vector<Port *> ports;
   append_ports (ports, true);
@@ -73,99 +74,94 @@ AutomatableTrack::init_loaded (
 void
 AutomatableTrack::generate_automation_tracks ()
 {
-  auto &atl = automation_tracklist_;
-  auto  create_and_add_at = [&] (ControlPort &port) -> AutomationTrack  &{
-    auto * at = atl->add_at (*new AutomationTrack (port));
-    return *at;
-  };
+  std::visit (
+    [&] (auto &&self) {
+      using TrackT = base_type<decltype (self)>;
+      auto &atl = automation_tracklist_;
+      auto  create_and_add_at = [&] (ControlPort &port) -> AutomationTrack  &{
+        auto * at = atl->add_automation_track (*new AutomationTrack (
+          port_registry_, object_registry_, [self] () { return self; },
+          port.get_uuid ()));
+        return *at;
+      };
 
-  if (has_channel ())
-    {
-      auto * track = dynamic_cast<ChannelTrack *> (this);
-      auto  &ch = track->channel_;
-
-      /* -- fader -- */
-
-      /* volume */
-      AutomationTrack &at = create_and_add_at (ch->fader_->get_amp_port ());
-      at.created_ = true;
-      atl->set_at_visible (at, true);
-
-      /* balance */
-      create_and_add_at (ch->fader_->get_balance_port ());
-
-      /* mute */
-      create_and_add_at (ch->fader_->get_mute_port ());
-
-      /* --- end fader --- */
-
-      /* sends */
-      for (auto &send : ch->sends_)
+      if constexpr (std::derived_from<TrackT, ChannelTrack>)
         {
-          create_and_add_at (send->get_amount_port ());
-        }
-    }
+          auto &ch = self->channel_;
 
-  if (has_piano_roll ())
-    {
-      auto &track = dynamic_cast<ProcessableTrack &> (*this);
-      auto &processor = track.processor_;
-      /* midi automatables */
-      for (const auto channel_index : std::views::iota (0, 16))
-        {
-          for (const auto cc_index : std::views::iota (0, 128))
+          /* -- fader -- */
+
+          /* volume */
+          AutomationTrack &at = create_and_add_at (ch->fader_->get_amp_port ());
+          at.created_ = true;
+          atl->set_at_visible (at, true);
+
+          /* balance */
+          create_and_add_at (ch->fader_->get_balance_port ());
+
+          /* mute */
+          create_and_add_at (ch->fader_->get_mute_port ());
+
+          /* --- end fader --- */
+
+          /* sends */
+          for (auto &send : ch->sends_)
             {
-            create_and_add_at (
-              processor->get_midi_cc_port (channel_index, cc_index));
+              create_and_add_at (send->get_amount_port ());
             }
-
-          create_and_add_at (processor->get_pitch_bend_port (channel_index));
-          create_and_add_at (
-            processor->get_poly_key_pressure_port (channel_index));
-          create_and_add_at (
-            processor->get_channel_pressure_port (channel_index));
         }
-    }
 
-  switch (type_)
-    {
-    case Track::Type::Tempo:
-      {
-        auto &track = dynamic_cast<TempoTrack &> (*this);
-        /* create special BPM and time sig automation tracks for tempo track */
-        auto &at = create_and_add_at (track.get_bpm_port ());
-        at.created_ = true;
-        atl->set_at_visible (at, true);
-        create_and_add_at (track.get_beats_per_bar_port ());
-        create_and_add_at (track.get_beat_unit_port ());
-        break;
-      }
-    case Track::Type::Modulator:
-      {
-        auto &track = dynamic_cast<ModulatorTrack &> (*this);
-        const auto processors = track.get_modulator_macro_processors ();
-        for (const auto &macro : processors)
-          {
-            auto &at = create_and_add_at (macro->get_macro_port ());
-            if (macro.get () == processors.front ().get ())
-              {
-                at.created_ = true;
-                atl->set_at_visible (at, true);
-              }
-          }
-      }
-      break;
-    case Track::Type::Audio:
-      {
-        auto &track = dynamic_cast<ProcessableTrack &> (*this);
-        create_and_add_at (track.processor_->get_output_gain_port ());
-        break;
-      }
-    default:
-      break;
-    }
+      if constexpr (std::derived_from<TrackT, PianoRollTrack>)
+        {
+          auto &processor = self->processor_;
+          /* midi automatables */
+          for (const auto channel_index : std::views::iota (0, 16))
+            {
+              for (const auto cc_index : std::views::iota (0, 128))
+                {
+                  create_and_add_at (
+                    processor->get_midi_cc_port (channel_index, cc_index));
+                }
 
-  z_debug ("generated automation tracks for '{}'", name_);
+              create_and_add_at (processor->get_pitch_bend_port (channel_index));
+              create_and_add_at (
+                processor->get_poly_key_pressure_port (channel_index));
+              create_and_add_at (
+                processor->get_channel_pressure_port (channel_index));
+            }
+        }
+
+      if constexpr (std::is_same_v<TrackT, TempoTrack>)
+        {
+          /* create special BPM and time sig automation tracks for tempo track
+           */
+          auto &at = create_and_add_at (self->get_bpm_port ());
+          at.created_ = true;
+          atl->set_at_visible (at, true);
+          create_and_add_at (self->get_beats_per_bar_port ());
+          create_and_add_at (self->get_beat_unit_port ());
+        }
+      else if constexpr (std::is_same_v<TrackT, ModulatorTrack>)
+        {
+          const auto processors = self->get_modulator_macro_processors ();
+          for (const auto &macro : processors)
+            {
+              auto &at = create_and_add_at (macro->get_macro_port ());
+              if (macro.get () == processors.front ().get ())
+                {
+                  at.created_ = true;
+                  atl->set_at_visible (at, true);
+                }
+            }
+        }
+      else if constexpr (std::is_same_v<TrackT, AudioTrack>)
+        {
+          create_and_add_at (self->processor_->get_output_gain_port ());
+        }
+
+      z_debug ("generated automation tracks for '{}'", name_);
+    },
+    convert_to_variant<AutomatableTrackPtrVariant> (this));
 }
 
 void

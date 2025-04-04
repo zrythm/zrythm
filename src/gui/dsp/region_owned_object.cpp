@@ -13,7 +13,6 @@ RegionOwnedObject::copy_members_from (
   ObjectCloneType          clone_type)
 {
   region_id_ = other.region_id_;
-  index_ = other.index_;
 }
 
 void
@@ -21,30 +20,13 @@ RegionOwnedObject::init_loaded_base ()
 {
 }
 
-template <typename RegionT>
-RegionT *
-RegionOwnedObjectImpl<RegionT>::get_region () const
-{
-  const auto &region = RegionImpl<RegionT>::find (region_id_);
-  return region;
-}
-
-template <typename RegionT>
 void
-RegionOwnedObjectImpl<RegionT>::get_global_start_pos (Position &pos) const
+RegionOwnedObject::set_region_and_index (const Region &region)
 {
-  auto r = get_region ();
-  pos = *static_cast<Position *> (pos_);
-  pos.add_ticks (r->pos_->ticks_, AUDIO_ENGINE->frames_per_tick_);
-}
-
-void
-RegionOwnedObject::set_region_and_index (const Region &region, int index)
-{
-  region_id_ = region.id_;
-  index_ = index;
+  region_id_ = region.get_uuid ();
   track_id_ = region.track_id_;
 
+#if 0
   /* note: this was only done for automation points, not sure why */
   /* set the info to the transient too */
   if ((ZRYTHM_HAVE_UI || ZRYTHM_TESTING) && PROJECT->loaded_ && transient_)
@@ -55,8 +37,5 @@ RegionOwnedObject::set_region_and_index (const Region &region, int index)
       trans_obj->index_ = index_;
       trans_obj->track_id_ = region.track_id_;
     }
+#endif
 }
-
-template class RegionOwnedObjectImpl<MidiRegion>;
-template class RegionOwnedObjectImpl<AutomationRegion>;
-template class RegionOwnedObjectImpl<ChordRegion>;

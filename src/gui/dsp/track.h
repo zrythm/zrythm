@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_TRACK_H__
-#define __AUDIO_TRACK_H__
+#ifndef DSP_TRACK_H
+#define DSP_TRACK_H
 
 #include "gui/dsp/automation_tracklist.h"
 #include "gui/dsp/fader.h"
@@ -21,6 +21,7 @@ class FileDescriptor;
 class FoldableTrack;
 class ChannelTrack;
 struct FileImportInfo;
+class GroupTargetTrack;
 
 /**
  * @addtogroup dsp
@@ -28,27 +29,22 @@ struct FileImportInfo;
  * @{
  */
 
-constexpr int TRACK_MIN_HEIGHT = 26;
-constexpr int TRACK_DEF_HEIGHT = 52;
-
-constexpr int TRACK_MAGIC = 21890135;
-#define IS_TRACK(x) (((Track *) x)->magic_ == TRACK_MAGIC)
-#define IS_TRACK_AND_NONNULL(x) (x && IS_TRACK (x))
-
 #define DECLARE_FINAL_TRACK_CONSTRUCTORS(ClassType) \
 public: \
   ClassType (const DeserializationDependencyHolder &dh) \
       : ClassType ( \
           dh.get<std::reference_wrapper<TrackRegistry>> ().get (), \
           dh.get<std::reference_wrapper<PluginRegistry>> ().get (), \
-          dh.get<std::reference_wrapper<PortRegistry>> ().get (), false) \
+          dh.get<std::reference_wrapper<PortRegistry>> ().get (), \
+          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get (), false) \
   { \
   } \
 \
 private: \
   ClassType ( \
     TrackRegistry &track_registry, PluginRegistry &plugin_registry, \
-    PortRegistry &port_registry, bool new_identity);
+    PortRegistry &port_registry, ArrangerObjectRegistry &obj_registry, \
+    bool new_identity);
 
 #define DEFINE_TRACK_QML_PROPERTIES(ClassType) \
 public: \
@@ -203,7 +199,7 @@ public: \
   Q_PROPERTY (bool isRegionOwner READ getIsRegionOwner CONSTANT) \
   bool getIsRegionOwner () const \
   { \
-    if constexpr (std::derived_from<ClassType, RegionOwner>) \
+    if constexpr (DerivedFromTemplatedBase<ClassType, RegionOwner>) \
       { \
         return true; \
       } \
@@ -299,6 +295,9 @@ public:
   using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
   using PluginPtrVariant = PluginRegistry::VariantType;
   using PluginSlot = dsp::PluginSlot;
+
+  static constexpr int MIN_HEIGHT = 26;
+  static constexpr int DEF_HEIGHT = 52;
 
   /**
    * The Track's type.
@@ -403,62 +402,27 @@ public:
       }
   }
 
-  static constexpr bool type_has_processor (const Type type)
-  {
-    return type != Type::Tempo && type != Type::Marker;
-  }
-
-  static bool type_has_lanes (const Type type)
-  {
-    return type == Type::Audio || type == Type::Instrument || type == Type::Midi;
-  }
-
-  /**
-   * Returns if the given Type is a type of Track that has a Channel.
-   */
-  static bool type_has_channel (Type type)
-  {
-    switch (type)
-      {
-      case Type::Marker:
-      case Type::Tempo:
-      case Type::Modulator:
-      case Type::Folder:
-        return false;
-      default:
-        break;
-      }
-
-    return true;
-  }
-
   static constexpr bool type_can_have_direct_out (Type type)
   {
     return type != Type::Master;
   }
 
-  static constexpr bool
-  type_can_have_region_type (Type type, RegionType region_type)
+  static bool
+  type_can_have_region_type (Type type, ArrangerObject::Type region_type)
   {
     switch (region_type)
       {
-      case RegionType::Audio:
+      case ArrangerObject::Type::AudioRegion:
         return type == Type::Audio;
-      case RegionType::Midi:
+      case ArrangerObject::Type::MidiRegion:
         return type == Type::Midi || type == Type::Instrument;
-      case RegionType::Chord:
+      case ArrangerObject::Type::ChordRegion:
         return type == Type::Chord;
-      case RegionType::Automation:
+      case ArrangerObject::Type::AutomationRegion:
         return true;
+      default:
+        throw std::runtime_error ("Invalid region type");
       }
-
-    z_return_val_if_reached (false);
-  }
-
-  static constexpr bool type_is_foldable (Type type)
-  {
-    return type == Type::Folder || type == Type::MidiGroup
-           || type == Type::AudioGroup;
   }
 
   static constexpr bool type_is_copyable (Type type)
@@ -478,35 +442,9 @@ public:
   static Type type_get_from_plugin_descriptor (
     const zrythm::gui::old_dsp::plugins::PluginDescriptor &descr);
 
-  /**
-   * Returns if the given Type can host the given RegionType.
-   */
-  static bool type_can_host_region_type (const Type tt, const RegionType rt);
-
-  static bool type_has_mono_compat_switch (const Type tt)
+  static consteval bool type_has_mono_compat_switch (const Type tt)
   {
     return tt == Type::AudioGroup || tt == Type::Master;
-  }
-
-#define type_is_audio_group type_has_mono_compat_switch
-
-  static bool type_is_fx (const Type type)
-  {
-    return type == Type::AudioBus || type == Type::MidiBus;
-  }
-
-  /**
-   * Returns if the Track can record.
-   */
-  static int type_can_record (const Type type)
-  {
-    return type == Type::Audio || type == Type::Midi || type == Type::Chord
-           || type == Type::Instrument;
-  }
-
-  static bool type_has_automation (const Type type)
-  {
-    return type != Type::Marker && type != Type::Folder;
   }
 
   /**
@@ -596,7 +534,12 @@ protected:
    *
    * @param pos Position in the Tracklist.
    */
-  Track (Type type, PortType in_signal_type, PortType out_signal_type);
+  Track (
+    Type                    type,
+    PortType                in_signal_type,
+    PortType                out_signal_type,
+    PortRegistry           &port_registry,
+    ArrangerObjectRegistry &obj_registry);
 
 public:
   /**
@@ -611,11 +554,7 @@ public:
 
   PortConnectionsManager * get_port_connections_manager () const;
 
-  bool has_channel () const { return type_has_channel (type_); }
-
   bool has_piano_roll () const { return type_has_piano_roll (type_); }
-
-  bool can_record () const { return type_can_record (type_); }
 
   /**
    * Returns whether the track should be visible.
@@ -624,10 +563,6 @@ public:
    * parents are folded.
    */
   bool should_be_visible () const;
-
-  bool is_foldable () const { return type_is_foldable (type_); }
-
-  bool is_automatable () const { return type_has_automation (type_); }
 
   bool is_tempo () const { return type_ == Type::Tempo; }
   bool is_folder () const { return type_ == Type::Folder; }
@@ -645,11 +580,11 @@ public:
 
   static Track * from_variant (const TrackPtrVariant &variant);
 
-  bool has_lanes () const { return type_has_lanes (type_); }
+  // bool has_lanes () const { return type_has_lanes (type_); }
 
   bool is_deletable () const { return type_is_deletable (type_); }
   bool is_copyable () const { return type_is_copyable (type_); }
-  bool has_automation () const { return type_has_automation (type_); }
+  // bool has_automation () const { return type_has_automation (type_); }
 
   /**
    * Returns the full visible height (main height + height of all visible
@@ -671,7 +606,7 @@ public:
         if (self.automation_visible_)
           {
             const AutomationTracklist &atl = self.get_automation_tracklist ();
-            for (const auto &at : atl.visible_ats_)
+            for (const auto &at : atl.get_visible_automation_tracks ())
               {
                 z_warn_if_fail (at->height_ > 0);
                 if (at->visible_)
@@ -691,7 +626,7 @@ public:
     requires std::derived_from<base_type<DerivedT>, Track>
              && FinalClass<base_type<DerivedT>>
   {
-    if (self.main_height_ * multiplier < TRACK_MIN_HEIGHT)
+    if (self.main_height_ * multiplier < MIN_HEIGHT)
       return false;
 
     if (!check_only)
@@ -707,7 +642,7 @@ public:
               {
                 using TrackLaneT = DerivedT::TrackLaneType;
                 auto lane = std::get<TrackLaneT *> (lane_var);
-                if (lane->height_ * multiplier < TRACK_MIN_HEIGHT)
+                if (lane->height_ * multiplier < MIN_HEIGHT)
                   {
                     return false;
                   }
@@ -729,7 +664,7 @@ public:
                 if (visible_only && !at->visible_)
                   continue;
 
-                if (at->height_ * multiplier < TRACK_MIN_HEIGHT)
+                if (at->height_ * multiplier < MIN_HEIGHT)
                   {
                     return false;
                   }
@@ -755,6 +690,8 @@ public:
 
   bool can_be_group_target () const { return type_can_be_group_target (type_); }
 
+  bool is_frozen () const { return frozen_clip_id_.has_value (); }
+
   /**
    * Inserts a Region to the given lane or AutomationTrack of the track, at
    * the given index.
@@ -763,21 +700,96 @@ public:
    *
    * @param at The AutomationTrack of this Region, if automation region.
    * @param lane_pos The position of the lane to add to, if applicable.
-   * @param idx The index to insert the region at inside its parent, or -1 to
-   * append.
+   * @param idx The index to insert the region at inside its parent, or nullopt
+   * to append.
    * @param gen_name Generate a unique region name or not. This will be 0 if
    * the caller already generated a unique name.
    *
    * @throw ZrythmException if the insertion fails.
    */
-  template <FinalRegionSubclass T>
-  T * insert_region (
-    T *               region,
-    AutomationTrack * at,
-    int               lane_pos,
-    int               idx,
-    bool              gen_name,
-    bool              fire_events);
+  template <FinalClass SelfT, FinalRegionSubclass RegionT>
+  void insert_region (
+    this SelfT        &self,
+    RegionT *          region,
+    AutomationTrack *  at,
+    std::optional<int> lane_pos,
+    std::optional<int> idx,
+    bool               gen_name)
+  {
+    assert (region->validate (false, 0));
+    assert (type_can_have_region_type (self.type_, region->type_));
+
+    if (gen_name)
+      {
+        region->gen_name (std::nullopt, at, &self);
+      }
+
+    assert (region->get_name ().length () > 0);
+    z_debug (
+      "inserting region '{}' to track '{}' at lane {} (idx {})",
+      region->get_name (), self.name_, lane_pos, idx);
+
+    region->set_track_id (self.get_uuid ());
+
+    if constexpr (
+      std::derived_from<RegionT, LaneOwnedObject>
+      && std::derived_from<SelfT, LanedTrack>)
+      {
+        /* enable extra lane if necessary */
+        self.create_missing_lanes (*lane_pos);
+
+        auto lane = std::get<typename SelfT::TrackLaneType *> (
+          self.lanes_.at (*lane_pos));
+        if (idx.has_value ())
+          {
+            lane->insert_region (region, *idx);
+          }
+        else
+          {
+            lane->add_region (region);
+          }
+      }
+    else if constexpr (std::is_same_v<RegionT, AutomationRegion>)
+      {
+        assert (at != nullptr);
+        if (idx.has_value ())
+          {
+            at->insert_region (region, *idx);
+          }
+        else
+          {
+            at->add_region (region);
+          }
+      }
+    else if constexpr (
+      std::is_same_v<RegionT, ChordRegion> && std::is_same_v<SelfT, ChordTrack>)
+      {
+        if (idx.has_value ())
+          {
+            self.RegionOwner<ChordRegion>::insert_region (region, *idx);
+          }
+        else
+          {
+            self.RegionOwner<ChordRegion>::add_region (region);
+          }
+      }
+
+    /* write clip if audio region */
+    if constexpr (std::is_same_v<RegionT, AudioRegion>)
+      {
+        if (!self.is_auditioner ())
+          {
+            auto * clip = region->get_clip ();
+            self.write_audio_clip_to_pool_after_adding_audio_region (*clip);
+          }
+      }
+
+    z_debug ("inserted: {}", region->print_to_str ());
+  }
+
+  // FIXME: break this dependency on AudioPool
+  void
+  write_audio_clip_to_pool_after_adding_audio_region (AudioClip &clip) const;
 
   /**
    * Appends a Region to the given lane or AutomationTrack of the track.
@@ -786,15 +798,16 @@ public:
    *
    * @throw ZrythmException if the insertion fails.
    */
-  template <FinalRegionSubclass T>
-  T * add_region (
-    T *               region,
-    AutomationTrack * at,
-    int               lane_pos,
-    bool              gen_name,
-    bool              fire_events)
+  template <FinalClass SelfT, FinalRegionSubclass RegionT>
+  void add_region (
+    this SelfT        &self,
+    RegionT *          region,
+    AutomationTrack *  at,
+    std::optional<int> lane_pos,
+    bool               gen_name)
   {
-    return insert_region<T> (region, at, lane_pos, -1, gen_name, fire_events);
+    return self.Track::insert_region (
+      region, at, lane_pos, std::nullopt, gen_name);
   }
 
   /**
@@ -1016,11 +1029,80 @@ public:
    * Track.bounce_to_master must be set beforehand if this is true.
    * @param mark_parents Whether to mark all parent tracks as well.
    */
+  template <FinalClass SelfT>
   void mark_for_bounce (
-    bool bounce,
-    bool mark_regions,
-    bool mark_children,
-    bool mark_parents);
+    this SelfT &self,
+    bool        bounce,
+    bool        mark_regions,
+    bool        mark_children,
+    bool        mark_parents)
+  {
+    if constexpr (!std::derived_from<SelfT, ChannelTrack>)
+      return;
+
+    z_debug (
+      "marking {} for bounce {}, mark regions {}", self.name_, bounce,
+      mark_regions);
+
+    self.bounce_ = bounce;
+
+    if (mark_regions)
+      {
+        if constexpr (std::derived_from<SelfT, LanedTrack>)
+          {
+            for (auto &lane_var : self.lanes_)
+              {
+                using LaneT = SelfT::TrackLaneType;
+                auto lane = std::get<LaneT *> (lane_var);
+                for (auto &region_var : lane->region_list_->regions_)
+                  {
+                    auto region =
+                      std::get<typename LaneT::RegionTPtr> (region_var);
+                    region->bounce_ = bounce;
+                  }
+              }
+          }
+
+        if constexpr (std::is_same_v<SelfT, ChordTrack>)
+          for (auto &region_var : self.region_list_->regions_)
+            {
+              auto region = std::get<ChordRegion *> (region_var);
+              region->bounce_ = bounce;
+            }
+      }
+
+    if constexpr (std::derived_from<SelfT, ChannelTrack>)
+      {
+        auto * direct_out = self.get_channel ()->get_output_track ();
+        if (direct_out && mark_parents)
+          {
+            std::visit (
+              [&] (auto &&direct_out_derived) {
+                direct_out_derived->mark_for_bounce (bounce, false, false, true);
+              },
+              convert_to_variant<TrackPtrVariant> (direct_out));
+          }
+      }
+
+    if (mark_children)
+      {
+        if constexpr (std::derived_from<SelfT, GroupTargetTrack>)
+          {
+            for (auto child_id : self.children_)
+              {
+                if (auto child_var = self.get_tracklist ()->get_track (child_id))
+                  {
+                    std::visit (
+                      [&] (auto &&c) {
+                        c->bounce_to_master_ = self.bounce_to_master_;
+                        c->mark_for_bounce (bounce, mark_regions, true, false);
+                      },
+                      *child_var);
+                  }
+              }
+          }
+      }
+  }
 
   /**
    * Appends all channel ports and optionally plugin ports to the array.
@@ -1288,6 +1370,9 @@ private:
     int                   index);
 
 public:
+  PortRegistry           &port_registry_;
+  ArrangerObjectRegistry &object_registry_;
+
   /**
    * Position in the Tracklist.
    *
@@ -1319,7 +1404,7 @@ public:
   bool filtered_ = false;
 
   /** Height of the main part (without lanes). */
-  double main_height_ = TRACK_DEF_HEIGHT;
+  double main_height_{ DEF_HEIGHT };
 
   /**
    * Active (enabled) or not.
@@ -1378,13 +1463,8 @@ public:
    */
   bool bounce_to_master_ = false;
 
-  /** Whether the track is currently frozen. */
-  bool frozen_ = false;
-
-  /** Pool ID of the clip if track is frozen. */
-  int pool_id_ = 0;
-
-  int magic_ = TRACK_MAGIC;
+  /** Pool ID of the clip if track is frozen (unset if not frozen). */
+  std::optional<AudioClip::Uuid> frozen_clip_id_;
 
   /** Whether currently disconnecting. */
   bool disconnecting_ = false;
@@ -1392,12 +1472,6 @@ public:
   /** Pointer to owner tracklist, if any. */
   Tracklist * tracklist_ = nullptr;
 };
-
-#if 0
-template <typename TrackT> class TrackImpl : virtual public Track
-{
-};
-#endif
 
 inline bool
 operator< (const Track &lhs, const Track &rhs)
@@ -1432,38 +1506,6 @@ using TrackRegistry = utils::OwningObjectRegistry<TrackPtrVariant, Track>;
 using TrackRegistryRef = std::reference_wrapper<TrackRegistry>;
 
 class RecordableTrack;
-
-extern template MidiRegion *
-Track::add_region (
-  MidiRegion *      region,
-  AutomationTrack * at,
-  int               lane_pos,
-  bool              gen_name,
-  bool              fire_events);
-
-extern template AudioRegion *
-Track::add_region (
-  AudioRegion *     region,
-  AutomationTrack * at,
-  int               lane_pos,
-  bool              gen_name,
-  bool              fire_events);
-
-extern template ChordRegion *
-Track::add_region (
-  ChordRegion *     region,
-  AutomationTrack * at,
-  int               lane_pos,
-  bool              gen_name,
-  bool              fire_events);
-
-extern template AutomationRegion *
-Track::add_region (
-  AutomationRegion * region,
-  AutomationTrack *  at,
-  int                lane_pos,
-  bool               gen_name,
-  bool               fire_events);
 
 /**
  * @}

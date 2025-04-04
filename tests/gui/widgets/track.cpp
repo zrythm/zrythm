@@ -10,8 +10,6 @@
 #include "tests/helpers/fishbowl_window.h"
 #include "tests/helpers/zrythm_helper.h"
 
-#include "utils/flags.h"
-
 typedef struct
 {
   Region * midi_region;

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -67,7 +67,22 @@ Project::Project (QObject * parent)
         *port_registry_,
         *track_registry_,
         port_connections_manager_)),
-      undo_manager_ (new gui::actions::UndoManager (this))
+      undo_manager_ (new gui::actions::UndoManager (this)),
+      arranger_object_factory_ (new ArrangerObjectFactory (
+        *arranger_object_registry_,
+        *gui::SettingsManager::get_instance (),
+        [&] () { return audio_engine_->frames_per_tick_; },
+        *snap_grid_timeline_,
+        *snap_grid_editor_,
+        [&] (const AudioClip::Uuid &clip_id) {
+          return audio_engine_->pool_->get_clip (clip_id);
+        },
+        [&] (std::shared_ptr<AudioClip> clip) {
+          audio_engine_->pool_->register_clip (clip);
+        },
+        [&] () { return audio_engine_->sample_rate_; },
+        [&] () { return tracklist_->getTempoTrack ()->get_current_bpm (); },
+        this))
 {
   // audio_engine_ = std::make_unique<AudioEngine> (this);
 }
@@ -169,7 +184,7 @@ Project::is_audio_clip_in_use (const AudioClip &clip, bool check_undo_stack) con
                     for (auto region_var : lane->region_list_->regions_)
                       {
                         auto * region = std::get<AudioRegion *> (region_var);
-                        if (region->pool_id_ == clip.get_pool_id ())
+                        if (region->get_clip_id () == clip.get_uuid ())
                           return true;
                       }
                   }
@@ -457,7 +472,8 @@ Project::add_default_tracks ()
     z_debug ("adding {} track...", typeid (TrackT).name ());
     TrackT * track =
       TrackT::template create_unique<TrackT> (
-        get_track_registry (), get_plugin_registry (), get_port_registry (), true)
+        get_track_registry (), get_plugin_registry (), get_port_registry (),
+        get_arranger_object_registry (), true)
         .release ();
     get_track_registry ().register_object (track);
     track->setName (name);
@@ -478,19 +494,42 @@ Project::add_default_tracks ()
     beats_per_bar, bpm, audio_engine_->sample_rate_, true, true, false);
 
   /* add a scale */
-  {
-    auto * scale = new ScaleObject (dsp::MusicalScale (
-      dsp::MusicalScale::Type::Aeolian, dsp::MusicalNote::A));
-    tracklist_->chord_track_->add_scale (*scale);
-  }
+  arranger_object_factory_->add_scale_object (
+    *tracklist_->chord_track_,
+    dsp::MusicalScale (dsp::MusicalScale::Type::Aeolian, dsp::MusicalNote::A),
+    0);
 
   /* modulator */
   add_track.operator()<ModulatorTrack> (QObject::tr ("Modulators"));
 
-  /* marker */
-  add_track.operator()<MarkerTrack> (QObject::tr ("Markers"))
-    ->add_default_markers (
-      transport_->ticks_per_bar_, audio_engine_->frames_per_tick_);
+  /* add marker track and default markers */
+  auto * marker_track =
+    add_track.operator()<MarkerTrack> (QObject::tr ("Markers"));
+  const auto add_default_markers =
+    [] (
+      auto &marker_track, const auto &factory, const int ticks_per_bar,
+      const double frames_per_tick) {
+      {
+        auto          marker_name = fmt::format ("[{}]", QObject::tr ("start"));
+        dsp::Position pos;
+        pos.set_to_bar (1, ticks_per_bar, frames_per_tick);
+        auto * marker = factory->addMarker (
+          marker_track, QString::fromStdString (marker_name), pos.ticks_);
+        marker->marker_type_ = Marker::Type::Start;
+      }
+
+      {
+        auto          marker_name = fmt::format ("[{}]", QObject::tr ("end"));
+        dsp::Position pos;
+        pos.set_to_bar (129, ticks_per_bar, frames_per_tick);
+        auto * marker = factory->addMarker (
+          marker_track, QString::fromStdString (marker_name), pos.ticks_);
+        marker->marker_type_ = Marker::Type::End;
+      }
+    };
+  add_default_markers (
+    marker_track, arranger_object_factory_, transport_->ticks_per_bar_,
+    audio_engine_->frames_per_tick_);
 
   tracklist_->pinned_tracks_cutoff_ = tracklist_->tracks_.size ();
 
@@ -1310,6 +1349,12 @@ gui::actions::UndoManager *
 Project::getUndoManager () const
 {
   return undo_manager_;
+}
+
+ArrangerObjectFactory *
+Project::getArrangerObjectFactory () const
+{
+  return arranger_object_factory_;
 }
 
 Project *

@@ -3,6 +3,8 @@
 
 #include "zrythm-config.h"
 
+#include <algorithm>
+
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
@@ -15,9 +17,7 @@
 #include "gui/dsp/tempo_track.h"
 #include "gui/dsp/tracklist.h"
 #include "gui/dsp/transport.h"
-
 #include "utils/debug.h"
-#include "utils/flags.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/rt_thread_id.h"
 
@@ -458,7 +458,7 @@ Transport::requestPause (bool with_wait)
     && gui::SettingsManager::transportReturnToCue ())
     {
       auto tmp = cue_pos_->get_position ();
-      move_playhead (&tmp, F_PANIC, F_NO_SET_CUE_POINT, true);
+      move_playhead (&tmp, true, false, true);
     }
 
   if (with_wait)
@@ -594,7 +594,7 @@ Transport::move_playhead (
                   if constexpr (
                     std::is_same_v<typename TrackLaneT::RegionT, MidiRegion>)
                     {
-                      for (auto &midi_note : region->midi_notes_)
+                      for (auto * midi_note : region->get_object_ptrs_view ())
                         {
                           if (midi_note->is_hit (playhead_pos_->frames_))
                             {
@@ -712,7 +712,7 @@ Transport::goto_prev_marker ()
 {
   /* gather all markers */
   std::vector<Position> markers;
-  for (auto &marker : P_MARKER_TRACK->markers_)
+  for (auto * marker : P_MARKER_TRACK->get_markers ())
     {
       markers.push_back (*marker->pos_);
     }
@@ -749,7 +749,7 @@ Transport::goto_next_marker ()
 {
   /* gather all markers */
   std::vector<Position> markers;
-  for (auto &marker : P_MARKER_TRACK->markers_)
+  for (auto * marker : P_MARKER_TRACK->get_markers ())
     {
       markers.push_back (*marker->pos_);
     }
@@ -757,7 +757,7 @@ Transport::goto_next_marker ()
   markers.push_back (loop_start_pos_->get_position ());
   markers.push_back (loop_end_pos_->get_position ());
   markers.emplace_back ();
-  std::sort (markers.begin (), markers.end ());
+  std::ranges::sort (markers);
 
   for (auto &marker : markers)
     {

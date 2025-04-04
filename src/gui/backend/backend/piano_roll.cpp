@@ -141,13 +141,12 @@ PianoRoll::init_descriptors ()
   z_return_if_fail (idx == 128);
 }
 
-/* 1 = black */
-static const int notes[12] = { 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0 };
-
-bool
-PianoRoll::is_key_black (int note)
+int
+PianoRoll::getKeyAtY (double y) const
 {
-  return notes[note % 12] == 1;
+  auto key = 127 - (static_cast<int> (y) / note_height_);
+  z_debug ("key: {}", key);
+  return key;
 }
 
 void

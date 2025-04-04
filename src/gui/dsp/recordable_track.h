@@ -26,7 +26,7 @@ public:
   init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
     override;
 
-  [[gnu::hot]] inline bool get_recording () const
+  [[gnu::hot]] bool get_recording () const
   {
     return get_recording_port ().is_toggled ();
   }
@@ -35,6 +35,13 @@ public:
    * Sets recording and connects/disconnects the JACK ports.
    */
   void set_recording (bool recording);
+
+  std::optional<ArrangerObjectPtrVariant> get_recording_region () const
+  {
+    if (!recording_region_)
+      return std::nullopt;
+    return object_registry_.find_by_id_or_throw (recording_region_.value ());
+  }
 
   /**
    * @brief Initializes a recordable track.
@@ -93,7 +100,7 @@ public:
    * This must only be set by the RecordingManager when processing an event
    * and should not be touched by anything else.
    */
-  Region * recording_region_ = nullptr;
+  std::optional<Region::Uuid> recording_region_;
 
   /**
    * This is a flag to let the recording manager know that a START signal was

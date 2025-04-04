@@ -43,18 +43,14 @@ concept UnsignedIntegralContainer =
   ContainerType<T> && std::is_integral_v<typename T::value_type>
   && std::is_unsigned_v<typename T::value_type>;
 
-template <typename T> struct is_uuid_qhash : std::false_type
-{
-};
-
-template <IsVariant V> struct is_uuid_qhash<QHash<QUuid, V>> : std::true_type
-{
-};
-
-template <typename T> constexpr bool is_uuid_qhash_v = is_uuid_qhash<T>::value;
-
 template <typename T>
-concept QHashType = is_uuid_qhash_v<T>;
+concept QHashType = requires {
+  typename T::key_type;
+  typename T::mapped_type;
+  requires std::derived_from<typename T::key_type, QUuid>
+             || std::is_same_v<
+               type_safe::underlying_type<typename T::key_type>, QUuid>;
+};
 
 class ISerializableBase
 {
@@ -770,7 +766,16 @@ public:
         for (auto &v : value.values ())
           {
             yyjson_mut_val * child_obj = yyjson_mut_arr_add_obj (doc, arr);
-            serialize_variant_pointer (v, doc, child_obj, ctx);
+            if constexpr (IsVariant<typename T::value_type>)
+              {
+                serialize_variant_pointer (v, doc, child_obj, ctx);
+              }
+            else if constexpr (is_shared_ptr_v<typename T::value_type>)
+              {
+                using ObjType = typename T::value_type::element_type;
+                ctx.mut_obj_ = child_obj;
+                v->ISerializable<ObjType>::serialize (ctx);
+              }
           }
         yyjson_mut_obj_add_val (doc, obj, key, arr);
       }
@@ -1274,13 +1279,24 @@ public:
         for (const auto i : std::views::iota (0zu, len))
           {
             yyjson_val * elem = yyjson_arr_get (val, i);
-            auto         child_var =
-              deserialize_variant_pointer<typename T::value_type> (elem, ctx);
-            std::visit (
-              [&] (auto &&child) {
-                value.insert (type_safe::get (child->get_uuid ()), child);
-              },
-              child_var);
+            if constexpr (IsVariant<typename T::value_type>)
+              {
+                auto child_var = deserialize_variant_pointer<
+                  typename T::value_type> (elem, ctx);
+                std::visit (
+                  [&] (auto &&child) {
+                    value.insert (type_safe::get (child->get_uuid ()), child);
+                  },
+                  child_var);
+              }
+            else if constexpr (is_shared_ptr_v<typename T::value_type>)
+              {
+                using ObjType = typename T::value_type::element_type;
+                auto child = std::make_shared<ObjType> ();
+                ctx.obj_ = elem;
+                child->ISerializable<ObjType>::deserialize (ctx);
+                value.insert (child->get_uuid (), child);
+              }
           }
         return;
       }
@@ -1735,16 +1751,16 @@ public:
                 if (yyjson_is_obj (elem))
                   {
                     using ObjType = typename T::value_type;
-                    ObjType obj;
+                    auto obj = create_object<ObjType> (ctx);
                     ctx.obj_ = elem;
-                    obj.ISerializable<ObjType>::deserialize (ctx);
+                    obj->ISerializable<ObjType>::deserialize (ctx);
                     if constexpr (StdArray<T>)
                       {
-                        value[i] = std::move (obj);
+                        value[i] = std::move (*obj.release());
                       }
                     else
                       {
-                        value.emplace_back (std::move (obj));
+                        value.emplace_back (std::move (*obj.release()));
                       }
                   }
               }

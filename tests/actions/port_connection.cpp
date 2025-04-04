@@ -5,15 +5,14 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-# include "gui/dsp/control_port.h"
-# include "gui/dsp/region.h"
-#include "utils/flags.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/actions/port_connection_action.h"
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/dsp/control_port.h"
+#include "gui/dsp/region.h"
 
 #include "tests/helpers/plugin_manager.h"
 

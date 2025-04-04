@@ -14,8 +14,6 @@
 #include "gui/dsp/router.h"
 #include "gui/dsp/tempo_track.h"
 #include "gui/dsp/tracklist.h"
-
-#include "utils/flags.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/math.h"
 #include "utils/rt_thread_id.h"
@@ -328,8 +326,8 @@ ControlPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
         at->get_ap_before_pos (pos, !can_read_previous_automation, true);
       if (ap)
         {
-          const float val = at->get_val_at_pos (
-            pos, true, !can_read_previous_automation, Z_F_USE_SNAPSHOTS);
+          const float val =
+            at->get_val_at_pos (pos, true, !can_read_previous_automation, true);
           set_val_from_normalized (val, true);
           value_changed_from_reading_ = true;
         }

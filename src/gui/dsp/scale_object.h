@@ -5,6 +5,7 @@
 #define __AUDIO_SCALE_OBJECT_H__
 
 #include "dsp/musical_scale.h"
+#include "gui/dsp/bounded_object.h"
 #include "gui/dsp/muteable_object.h"
 #include "gui/dsp/timeline_object.h"
 #include "utils/icloneable.h"
@@ -37,9 +38,12 @@ public:
   using MusicalScale = dsp::MusicalScale;
 
 public:
-  ScaleObject (QObject * parent = nullptr);
-
-  ScaleObject (const MusicalScale &descr, QObject * parent = nullptr);
+  ScaleObject (const DeserializationDependencyHolder &dh)
+      : ScaleObject (
+          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get ())
+  {
+  }
+  ScaleObject (ArrangerObjectRegistry &obj_registry, QObject * parent = nullptr);
 
   // =========================================================
   // QML Interface
@@ -59,6 +63,8 @@ public:
   void init_loaded () override;
 
   void set_index_in_chord_track (int index);
+
+  void set_scale (const MusicalScale &scale) { scale_ = scale; }
 
   std::string gen_human_friendly_name () const override;
 

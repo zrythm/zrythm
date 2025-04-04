@@ -35,7 +35,7 @@ using MIDI_FILE = void;
  */
 class MidiRegion final
     : public QAbstractListModel,
-      public LaneOwnedObjectImpl<MidiRegion>,
+      public LaneOwnedObject,
       public RegionImpl<MidiRegion>,
       public ICloneable<MidiRegion>,
       public zrythm::utils::serialization::ISerializable<MidiRegion>
@@ -46,61 +46,18 @@ class MidiRegion final
   DEFINE_REGION_QML_PROPERTIES (MidiRegion)
 
   friend class RegionImpl<MidiRegion>;
+  friend class ArrangerObjectFactory;
 
 public:
   using ChordDescriptor = zrythm::dsp::ChordDescriptor;
 
 public:
-  MidiRegion (QObject * parent = nullptr);
-
-  /**
-   * @brief Construct a new Midi Region object
-   *
-   * @param start_pos
-   * @param end_pos
-   * @param lane_pos
-   * @param idx_inside_lane
-   */
-  MidiRegion (
-    const Position                &start_pos,
-    const Position                &end_pos,
-    dsp::PortIdentifier::TrackUuid track_uuid,
-    int                            lane_pos,
-    int                            idx_inside_lane,
-    QObject *                      parent = nullptr);
-
-  /**
-   * Creates a MIDI region from the given MIDI file path, starting at the given
-   * Position.
-   *
-   * @param midi_track_idx The index of this track, starting from 0. This will
-   * be sequential, ie, if idx 1 is requested and the MIDI file only has tracks
-   * 5 and 7, it will use track 7.
-   *
-   * @throw ZrythmException on I/O error.
-   */
-  MidiRegion (
-    const Position                &start_pos,
-    const std::string             &abs_path,
-    dsp::PortIdentifier::TrackUuid track_uuid,
-    int                            lane_pos,
-    int                            idx_inside_lane,
-    int                            midi_track_idx,
-    QObject *                      parent = nullptr);
-
-  /**
-   * Create a region from the chord descriptor.
-   *
-   * Default size will be timeline snap and default
-   * notes size will be editor snap.
-   */
-  MidiRegion (
-    const Position                &pos,
-    dsp::ChordDescriptor          &descr,
-    dsp::PortIdentifier::TrackUuid track_uuid,
-    int                            lane_pos,
-    int                            idx_inside_lane,
-    QObject *                      parent = nullptr);
+  MidiRegion (const DeserializationDependencyHolder &dh)
+      : MidiRegion (
+          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get ())
+  {
+  }
+  MidiRegion (ArrangerObjectRegistry &obj_registry, QObject * parent = nullptr);
 
   // ========================================================================
   // QML Interface
@@ -252,23 +209,6 @@ public:
    */
   std::string print_to_str () const override;
 
-  void append_children (
-    std::vector<RegionOwnedObjectImpl<MidiRegion> *> &children) const override
-  {
-    for (const auto &mn : midi_notes_)
-      {
-        children.push_back (mn);
-      }
-  }
-
-  void add_ticks_to_children (const double ticks) override
-  {
-    for (auto &mn : midi_notes_)
-      {
-        mn->move (ticks);
-      }
-  }
-
   bool validate (bool is_project, double frames_per_tick) const override;
 
   void init_after_cloning (const MidiRegion &other, ObjectCloneType clone_type)
@@ -302,7 +242,7 @@ public:
   /**
    * MIDI notes.
    */
-  std::vector<MidiNote *> midi_notes_;
+  std::vector<MidiNote::Uuid> midi_notes_;
 
   /**
    * Unended notes started in recording with MIDI NOTE ON signal but haven't
@@ -337,7 +277,7 @@ operator== (const MidiRegion &lhs, const MidiRegion &rhs)
 }
 
 DEFINE_OBJECT_FORMATTER (MidiRegion, MidiRegion, [] (const MidiRegion &mr) {
-  return fmt::format ("MidiRegion[id: {}]", mr.id_);
+  return fmt::format ("MidiRegion[id: {}]", mr.get_uuid ());
 })
 
 /**

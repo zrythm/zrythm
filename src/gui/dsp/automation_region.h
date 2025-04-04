@@ -31,23 +31,14 @@ class AutomationRegion final
   friend class RegionImpl<AutomationRegion>;
 
 public:
-  AutomationRegion (QObject * parent = nullptr);
-
-  /**
-   * @brief Construct a new Automation Region object.
-   *
-   * @param start_pos
-   * @param end_pos
-   * @param at_idx
-   * @param idx_inside_at
-   */
+  AutomationRegion (const DeserializationDependencyHolder &dh)
+      : AutomationRegion (
+          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get ())
+  {
+  }
   AutomationRegion (
-    const Position                &start_pos,
-    const Position                &end_pos,
-    dsp::PortIdentifier::TrackUuid track_id,
-    int                            at_idx,
-    int                            idx_inside_at,
-    QObject *                      parent = nullptr);
+    ArrangerObjectRegistry &obj_registry,
+    QObject *               parent = nullptr);
 
   // ========================================================================
   // QML Interface
@@ -84,14 +75,6 @@ public:
    * Returns the AutomationPoint before the given one.
    */
   AutomationPoint * get_prev_ap (const AutomationPoint &ap) const;
-
-  void add_ticks_to_children (const double ticks) override
-  {
-    for (auto &ap : aps_)
-      {
-        ap->move (ticks);
-      }
-  }
 
   /**
    * Returns the AutomationPoint after the given one.
@@ -138,16 +121,6 @@ public:
    */
   AutomationTrack * get_automation_track () const;
 
-  void append_children (
-    std::vector<RegionOwnedObjectImpl<AutomationRegion> *> &children)
-    const override
-  {
-    for (const auto &ap : aps_)
-      {
-        children.push_back (ap);
-      }
-  }
-
   void
   init_after_cloning (const AutomationRegion &other, ObjectCloneType clone_type)
     override;
@@ -162,10 +135,15 @@ public:
    *
    * Must always stay sorted by position.
    */
-  std::vector<AutomationPoint *> aps_;
+  std::vector<AutomationPoint::Uuid> aps_;
 
   /** Last recorded automation point. */
   AutomationPoint * last_recorded_ap_ = nullptr;
+
+  /**
+   * @brief Owner automation track.
+   */
+  ControlPort::Uuid automatable_port_id_;
 };
 
 inline bool
@@ -192,7 +170,7 @@ DEFINE_OBJECT_FORMATTER (
   AutomationRegion,
   AutomationRegion,
   [] (const AutomationRegion &ar) {
-    return fmt::format ("AutomationRegion[id: {}]", ar.id_);
+    return fmt::format ("AutomationRegion[id: {}]", ar.get_uuid ());
   })
 
 /**

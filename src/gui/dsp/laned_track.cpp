@@ -10,7 +10,7 @@
 template <typename TrackLaneT> LanedTrackImpl<TrackLaneT>::LanedTrackImpl ()
 {
   // lanes_.set_track (this);
-  add_lane (false);
+  add_lane ();
 }
 
 template <typename TrackLaneT>
@@ -99,15 +99,10 @@ LanedTrackImpl<TrackLaneT>::get_visible_lane_heights () const
 
 template <typename TrackLaneT>
 void
-LanedTrackImpl<TrackLaneT>::add_lane (bool fire_events)
+LanedTrackImpl<TrackLaneT>::add_lane ()
 {
-  auto new_lane = new TrackLaneT (this, lanes_.size ());
+  auto new_lane = new TrackLaneT (this);
   lanes_.push_back (new_lane);
-
-  if (fire_events)
-    {
-      // EVENTS_PUSH (EventType::ET_TRACK_LANE_ADDED, lanes_.back ().get ());
-    }
 }
 
 template <typename TrackLaneT>
@@ -181,7 +176,7 @@ LanedTrackImpl<TrackLaneT>::create_missing_lanes (const int pos)
   bool created_new_lane = false;
   while (pos + 2 > static_cast<int> (lanes_.size ()))
     {
-      add_lane (false);
+      add_lane ();
       created_new_lane = true;
     }
   return created_new_lane;

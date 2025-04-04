@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2020, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/project.h"
@@ -7,11 +7,12 @@
 #include "gui/dsp/marker_track.h"
 #include "gui/dsp/tracklist.h"
 
-Marker::Marker (QObject * parent) : Marker ({}, parent) { }
-
-Marker::Marker (const std::string &name, QObject * parent)
+Marker::Marker (
+  ArrangerObjectRegistry &obj_registry,
+  NameValidator           validator,
+  QObject *               parent)
     : ArrangerObject (ArrangerObject::Type::Marker), QObject (parent),
-      NamedObject (name)
+      NamedObject (validator)
 {
   ArrangerObject::parent_base_qproperties (*this);
 }
@@ -34,18 +35,6 @@ Marker::init_after_cloning (const Marker &other, ObjectCloneType clone_type)
   ArrangerObject::copy_members_from (other, clone_type);
 }
 
-Marker *
-Marker::find_by_name (const std::string &name)
-{
-  for (auto &marker : P_MARKER_TRACK->markers_)
-    {
-      if (name == marker->name_)
-        return marker;
-    }
-
-  return nullptr;
-}
-
 std::string
 Marker::print_to_str () const
 {
@@ -60,7 +49,7 @@ Marker::find_in_project () const
   z_return_val_if_fail (
     (int) P_MARKER_TRACK->markers_.size () > marker_track_index_, std::nullopt);
 
-  auto &marker = P_MARKER_TRACK->markers_.at (marker_track_index_);
+  auto * marker = P_MARKER_TRACK->get_markers ()[marker_track_index_];
   z_return_val_if_fail (*marker == *this, std::nullopt);
   return marker;
 }
@@ -68,17 +57,23 @@ Marker::find_in_project () const
 ArrangerObjectPtrVariant
 Marker::add_clone_to_project (bool fire_events) const
 {
+  return {};
+#if 0
   auto * clone = clone_raw_ptr ();
   P_MARKER_TRACK->add_marker (clone);
   return clone;
+#endif
 }
 
 ArrangerObjectPtrVariant
 Marker::insert_clone_to_project () const
 {
+  return {};
+#if 0
   auto * clone = clone_raw_ptr ();
   P_MARKER_TRACK->insert_marker (clone, marker_track_index_);
   return clone;
+#endif
 }
 
 bool

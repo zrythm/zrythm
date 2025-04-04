@@ -33,18 +33,22 @@ public: \
  * includes methods for getting, setting, and validating the name, as well as
  * generating an escaped version of the name for drawing purposes.
  *
- * Derived classes must implement the pure virtual methods defined in this class.
+ * Derived classes that require name validation must pass a validator callable
+ * to the constructor.
  */
 class NamedObject
     : virtual public ArrangerObject,
       public zrythm::utils::serialization::ISerializable<NamedObject>
 {
 public:
-  NamedObject () noexcept = default;
-  NamedObject (std::string name) : name_ (std::move (name))
+  using NameValidator = std::function<bool (const std::string &)>;
+
+  NamedObject (
+    NameValidator validator = [] (const std::string &) { return true; })
+      : name_validator_ (std::move (validator))
   {
-    gen_escaped_name ();
   }
+
   Q_DISABLE_COPY_MOVE (NamedObject)
   ~NamedObject () override = default;
 
@@ -53,23 +57,12 @@ public:
   /**
    * Returns the name of the object.
    */
-  virtual std::string get_name () const final { return name_; }
+  std::string get_name () const { return name_; }
 
   /**
    * Generates the escaped name for the object.
    */
-  virtual void gen_escaped_name () final;
-
-  /**
-   * Validates the given name.
-   *
-   * @return True if valid, false otherwise.
-   */
-  virtual bool validate_name (const std::string &name)
-  {
-    /* by default, all names are valid unless the derived class overrides this */
-    return true;
-  };
+  void gen_escaped_name ();
 
   /**
    * @brief Sets the name of the object.
@@ -77,16 +70,26 @@ public:
    * @param name The new name for the object.
    * @param fire_events Whether to fire events when the name is changed.
    */
-  virtual void set_name (const std::string &name, bool fire_events) final;
+  void set_name (this auto &&self, const std::string &name)
+  {
+    self.name_ = name;
+    self.gen_escaped_name ();
+    Q_EMIT (self.nameChanged (QString::fromStdString (name)));
+  }
 
   /**
    * Changes the name and adds an action to the undo stack.
    *
    * Calls @ref set_name() internally.
    */
-  virtual void set_name_with_action (const std::string &name) final;
+  void set_name_with_action (const std::string &name);
 
   std::string gen_human_friendly_name () const final { return name_; }
+
+  friend bool operator== (const NamedObject &lhs, const NamedObject &rhs)
+  {
+    return lhs.name_ == rhs.name_;
+  }
 
 protected:
   void copy_members_from (const NamedObject &other, ObjectCloneType clone_type)
@@ -97,19 +100,15 @@ protected:
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
-public:
+protected:
   /** Name to be shown on the widget. */
   std::string name_;
 
   /** Escaped name for drawing. */
   std::string escaped_name_;
-};
 
-inline bool
-operator== (const NamedObject &lhs, const NamedObject &rhs)
-{
-  return lhs.name_ == rhs.name_;
-}
+  NameValidator name_validator_;
+};
 
 using NamedObjectVariant =
   std::variant<MidiRegion, AudioRegion, ChordRegion, AutomationRegion, Marker>;

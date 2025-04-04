@@ -196,7 +196,7 @@ public:
       }
   }
 
-  bool can_contain_clip () const override { return pool_id_ >= 0; }
+  bool can_contain_clip () const override { return pool_id_.has_value (); }
 
   bool contains_clip (const AudioClip &clip) const override;
 
@@ -308,7 +308,7 @@ public:
    *
    * If this is not -1, this means that an audio file exists in the pool.
    */
-  int pool_id_ = -1;
+  std::optional<AudioClip::Uuid> pool_id_;
 
   /** Source sends that need to be deleted/ recreated on do/undo. */
   std::vector<std::unique_ptr<ChannelSend>> src_sends_;
@@ -636,7 +636,7 @@ protected:
           nullptr,
           nullptr,
           -1,
-          track_lane.pos_,
+          track_lane.get_index_in_track (),
           nullptr,
           -1,
           edit_type,

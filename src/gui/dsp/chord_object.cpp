@@ -10,30 +10,19 @@
 #include "utils/debug.h"
 #include <fmt/format.h>
 
-ChordObject::ChordObject (QObject * parent)
-    : ArrangerObject (Type::ChordObject), QObject (parent)
-{
-  ArrangerObject::parent_base_qproperties (*this);
-}
-
-ChordObject::ChordObject (
-  const RegionIdentifier &region_id,
-  int                     chord_index,
-  int                     index,
-  QObject *               parent)
+ChordObject::ChordObject (ArrangerObjectRegistry &obj_registry, QObject * parent)
     : ArrangerObject (Type::ChordObject), QObject (parent),
-      RegionOwnedObjectImpl (region_id, index), chord_index_ (chord_index)
+      RegionOwnedObject (obj_registry)
 {
   ArrangerObject::parent_base_qproperties (*this);
 }
-
 void
 ChordObject::init_after_cloning (
   const ChordObject &other,
   ObjectCloneType    clone_type)
 {
   MuteableObject::copy_members_from (other, clone_type);
-  RegionOwnedObjectImpl::copy_members_from (other, clone_type);
+  RegionOwnedObject::copy_members_from (other, clone_type);
   ArrangerObject::copy_members_from (other, clone_type);
   chord_index_ = other.chord_index_;
 }
@@ -42,7 +31,7 @@ void
 ChordObject::init_loaded ()
 {
   ArrangerObject::init_loaded_base ();
-  RegionOwnedObjectImpl::init_loaded_base ();
+  RegionOwnedObject::init_loaded_base ();
   MuteableObject::init_loaded_base ();
 }
 
@@ -50,16 +39,33 @@ ChordObject::init_loaded ()
  * Returns the ChordDescriptor associated with this ChordObject.
  */
 ChordObject::ChordDescriptor *
-ChordObject::get_chord_descriptor () const
+ChordObject::getChordDescriptor () const
 {
   z_return_val_if_fail (CLIP_EDITOR, nullptr);
-  z_return_val_if_fail_cmp (chord_index_, >=, 0, nullptr);
-  return &CHORD_EDITOR->chords_[chord_index_];
+  return &CHORD_EDITOR->get_chord_at_index (chord_index_);
+}
+
+void
+ChordObject::setChordDescriptor (dsp::ChordDescriptor * descr)
+{
+  assert (CLIP_EDITOR);
+  auto idx = CHORD_EDITOR->get_chord_index (*descr);
+  if (idx == chord_index_)
+    return;
+  chord_index_ = idx;
+  Q_EMIT chordDescriptorChanged (descr);
+}
+
+void
+ChordObject::set_chord_descriptor (int index)
+{
+  chord_index_ = index;
 }
 
 std::optional<ArrangerObjectPtrVariant>
 ChordObject::find_in_project () const
 {
+#if 0
   /* get actual region - clone's region might be an unused clone */
   auto r = RegionImpl<ChordRegion>::find (region_id_);
   z_return_val_if_fail (r, std::nullopt);
@@ -72,34 +78,42 @@ ChordObject::find_in_project () const
   z_return_val_if_fail (co, std::nullopt);
   z_return_val_if_fail (*co == *this, std::nullopt);
   return co;
+#endif
+  return std::nullopt;
 }
 
 ArrangerObjectPtrVariant
 ChordObject::add_clone_to_project (bool fire_events) const
 {
+  return {};
+#if 0
   auto * clone = clone_raw_ptr ();
   get_region ()->append_object (clone, true);
   return clone;
+#endif
 }
 
 ArrangerObjectPtrVariant
 ChordObject::insert_clone_to_project () const
 {
+  return {};
+#if 0
   auto * clone = clone_raw_ptr ();
   get_region ()->insert_object (clone, index_, true);
   return clone;
+#endif
 }
 
 std::string
 ChordObject::print_to_str () const
 {
-  return fmt::format ("ChordObject: {} {}", index_, chord_index_);
+  return fmt::format ("ChordObject: {} {}", get_uuid (), chord_index_);
 }
 
 std::string
 ChordObject::gen_human_friendly_name () const
 {
-  return get_chord_descriptor ()->to_string ();
+  return getChordDescriptor ()->to_string ();
 }
 
 bool

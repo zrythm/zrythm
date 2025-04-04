@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "utils/iserializable.h"
+#include "utils/uuid_identifiable_object.h"
 
 namespace zrythm::dsp
 {

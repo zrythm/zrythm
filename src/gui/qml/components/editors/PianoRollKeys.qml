@@ -13,7 +13,7 @@ Item {
 
     readonly property int startNote: 0 // Starting MIDI note (0-127)
     readonly property int endNote: 127 // Ending MIDI note
-    property real keyHeight: 16 // Visual height per key in pixels
+    property real keyHeight: pianoRoll.keyHeight // Visual height per key in pixels
     property real keyWidth: 48 // Width of white keys
     readonly property real blackKeyWidth: keyWidth * 0.6
     required property var pianoRoll
@@ -29,11 +29,6 @@ Item {
     signal notePressed(int note)
     signal noteReleased(int note)
     signal noteDragged(int fromNote, int toNote)
-
-    function isWhiteKey(note) {
-        const positions = [0, 2, 4, 5, 7, 9, 11];
-        return positions.includes(note % 12);
-    }
 
     function noteName(note) {
         const names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
@@ -68,7 +63,7 @@ Item {
                 Rectangle {
                     id: topBorder
 
-                    visible: keyItem.midiNote < root.endNote && root.isWhiteKey(keyItem.midiNote) && root.isWhiteKey(keyItem.midiNote + 1)
+                    visible: keyItem.midiNote < root.endNote && root.pianoRoll.isWhiteKey(keyItem.midiNote) && root.pianoRoll.isNextKeyWhite(keyItem.midiNote)
                     height: 1
                     width: parent.width
                     color: root.borderColor
@@ -81,13 +76,13 @@ Item {
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
                     width: parent.width
-                    color: parent.isPressed && root.isWhiteKey(midiNote) ? root.whiteKeyPressedColor : "white"
+                    color: parent.isPressed && root.pianoRoll.isWhiteKey(midiNote) ? root.whiteKeyPressedColor : "white"
                     border.width: 0
                 }
 
                 // Black key
                 Rectangle {
-                    visible: !root.isWhiteKey(midiNote)
+                    visible: root.pianoRoll.isBlackKey(midiNote)
                     width: root.blackKeyWidth
                     height: parent.height
                     color: parent.isPressed ? root.blackKeyPressedColor : root.blackKeyColor
@@ -100,7 +95,7 @@ Item {
                         verticalCenter: parent.verticalCenter
                     }
 
-                    // Right-side vertical line
+                    // Right-side horizontal line
                     Rectangle {
                         visible: parent.visible
                         height: 1
@@ -118,7 +113,7 @@ Item {
 
                 // Note label (C notes only)
                 Text {
-                    visible: root.isWhiteKey(midiNote) && (midiNote % 12 === 0)
+                    visible: root.pianoRoll.isWhiteKey(midiNote) && (midiNote % 12 === 0)
                     text: root.noteName(midiNote)
                     color: parent.isPressed ? root.labelPressedColor : root.labelColor
 

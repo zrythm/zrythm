@@ -5,14 +5,13 @@
 
 #include <random>
 
-# include "gui/dsp/engine_dummy.h"
-# include "gui/dsp/midi_event.h"
-# include "gui/dsp/midi_track.h"
-# include "gui/dsp/track.h"
-#include "utils/flags.h"
-#include "utils/io.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/dsp/engine_dummy.h"
+#include "gui/dsp/midi_event.h"
+#include "gui/dsp/midi_track.h"
+#include "gui/dsp/track.h"
+#include "utils/io.h"
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"

@@ -33,13 +33,29 @@ class Velocity final
 {
   Q_OBJECT
   QML_ELEMENT
+  Q_PROPERTY (int value READ getValue WRITE setValue NOTIFY valueChanged)
 public:
+  using VelocityValueT = midi_byte_t;
   Velocity (QObject * parent = nullptr);
 
-  /**
-   * Creates a new Velocity with the given value.
-   */
-  Velocity (MidiNote * midi_note, uint8_t vel);
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
+
+  int getValue () const { return static_cast<int> (vel_); }
+
+  void setValue (int ival)
+  {
+    const auto vel = static_cast<VelocityValueT> (ival);
+    if (vel_ != vel)
+      {
+        vel_ = vel;
+        Q_EMIT valueChanged ();
+      }
+  }
+  Q_SIGNAL void valueChanged ();
+
+  // ========================================================================
 
   /**
    * Sets the velocity to the given value.
@@ -51,7 +67,7 @@ public:
   /**
    * Returns the owner MidiNote.
    */
-  MidiNote * get_midi_note () const;
+  // MidiNote * get_midi_note () const;
 
   static const char * setting_enum_to_str (size_t index);
 
@@ -86,13 +102,13 @@ public:
 
 public:
   /** Pointer back to the MIDI note (this is also the QObject parent). */
-  MidiNote * midi_note_ = nullptr;
+  // MidiNote * midi_note_ = nullptr;
 
   /** Velocity value (0-127). */
-  uint8_t vel_ = 0;
+  VelocityValueT vel_ = 0;
 
   /** Velocity at drag begin - used for ramp actions only. */
-  uint8_t vel_at_start_ = 0;
+  VelocityValueT vel_at_start_ = 0;
 };
 
 inline bool

@@ -45,7 +45,7 @@ DEFINE_ENUM_FORMATTER (
 class AutomationTrack final
     : public QObject,
       public ICloneable<AutomationTrack>,
-      public RegionOwnerImpl<AutomationRegion>,
+      public RegionOwner<AutomationRegion>,
       public zrythm::utils::serialization::ISerializable<AutomationTrack>
 {
   Q_OBJECT
@@ -63,14 +63,26 @@ class AutomationTrack final
 public:
   using Position = dsp::Position;
   using PortUuid = Port::Uuid;
+  using TrackGetter = std::function<TrackPtrVariant ()>;
 
 public:
-  AutomationTrack () = default;
+  AutomationTrack (const DeserializationDependencyHolder &dh)
+      : AutomationTrack (
+          dh.get<std::reference_wrapper<PortRegistry>> ().get (),
+          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get (),
+          dh.get<TrackGetter> (),
+          dh.get<ControlPort::Uuid> ())
+  {
+  }
 
   /** Creates an automation track for the given Port. */
-  AutomationTrack (ControlPort &port);
+  AutomationTrack (
+    PortRegistry            &port_registry,
+    ArrangerObjectRegistry  &obj_registry,
+    TrackGetter              track_getter,
+    const ControlPort::Uuid &port_id);
 
-  using RegionOwnerImplType = RegionOwnerImpl<AutomationRegion>;
+  using RegionOwnerImplType = RegionOwner<AutomationRegion>;
 
 public:
   // ========================================================================
@@ -97,7 +109,7 @@ public:
 
   // ========================================================================
 
-  void init_loaded (AutomationTracklist * atl);
+  void init_loaded ();
 
   bool validate () const;
 
@@ -187,7 +199,7 @@ public:
   init_after_cloning (const AutomationTrack &other, ObjectCloneType clone_type)
     override;
 
-  AutomatableTrack * get_track () const;
+  TrackPtrVariant get_track () const;
 
   /**
    * Returns the automation point before the Position on the timeline.
@@ -259,6 +271,10 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 public:
+  PortRegistry           &port_registry_;
+  ArrangerObjectRegistry &object_registry_;
+  TrackGetter             track_getter_;
+
   /** Index in parent AutomationTracklist. */
   int index_ = 0;
 
@@ -319,7 +335,7 @@ public:
 
 private:
   /** Pointer to owner automation tracklist, if any. */
-  AutomationTracklist * atl_ = nullptr;
+  // AutomationTracklist * atl_ = nullptr;
 
   /** Cache used during DSP. */
   // std::optional<std::reference_wrapper<ControlPort>> port_;

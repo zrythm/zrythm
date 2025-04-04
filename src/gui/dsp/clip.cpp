@@ -19,7 +19,6 @@ AudioClip::AudioClip (
 {
   init_from_file (full_path, project_sample_rate, std::nullopt);
 
-  pool_id_ = -1;
   bpm_ = current_bpm;
 }
 
@@ -35,7 +34,6 @@ AudioClip::AudioClip (
   name_ = name;
   bit_depth_ = bit_depth;
   use_flac_ = should_use_flac (bit_depth);
-  pool_id_ = -1;
 
   ch_frames_ = buf;
 
@@ -51,7 +49,6 @@ AudioClip::AudioClip (
 {
   ch_frames_.setSize (channels, nframes, false, true, false);
   name_ = name;
-  pool_id_ = -1;
   bpm_ = current_bpm;
   samplerate_ = project_sample_rate;
   bit_depth_ = BitDepth::BIT_DEPTH_32;
@@ -120,13 +117,13 @@ AudioClip::init_loaded (const fs::path &full_path)
 void
 AudioClip::init_after_cloning (const AudioClip &other, ObjectCloneType clone_type)
 {
+  UuidIdentifiableObject::copy_members_from (other);
   name_ = other.name_;
   ch_frames_ = other.ch_frames_;
   bpm_ = other.bpm_;
   samplerate_ = other.samplerate_;
   bit_depth_ = other.bit_depth_;
   use_flac_ = other.use_flac_;
-  pool_id_ = other.pool_id_;
   file_hash_ = other.file_hash_;
 }
 
@@ -404,9 +401,11 @@ AudioClip::edit_in_ext_program ()
 void
 AudioClip::define_fields (const Context &ctx)
 {
-  serialize_fields (
-    ctx, make_field ("name", name_), make_field ("fileHash", file_hash_),
-    make_field ("bpm", bpm_), make_field ("bitDepth", bit_depth_),
-    make_field ("useFlac", use_flac_), make_field ("samplerate", samplerate_),
-    make_field ("poolId", pool_id_));
+  using T = utils::serialization::ISerializable<AudioClip>;
+  T::call_all_base_define_fields<UuidIdentifiableObject> (ctx);
+  T::serialize_fields (
+    ctx, T::make_field ("name", name_), T::make_field ("fileHash", file_hash_),
+    T::make_field ("bpm", bpm_), T::make_field ("bitDepth", bit_depth_),
+    T::make_field ("useFlac", use_flac_),
+    T::make_field ("samplerate", samplerate_));
 }

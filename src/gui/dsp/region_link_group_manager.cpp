@@ -36,8 +36,7 @@ RegionLinkGroupManager::get_group (int group_id)
     }
 
   RegionLinkGroup * group = &groups_[group_id];
-  z_return_val_if_fail (
-    IS_REGION_LINK_GROUP (group) && group->group_idx_ == group_id, nullptr);
+  z_return_val_if_fail (group->group_idx_ == group_id, nullptr);
   return group;
 }
 

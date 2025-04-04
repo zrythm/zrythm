@@ -22,15 +22,14 @@ using namespace zrythm;
 class AudioClip final
     : public zrythm::utils::serialization::ISerializable<AudioClip>,
       public ICloneable<AudioClip>,
+      public utils::UuidIdentifiableObject<AudioClip>,
       private utils::QElapsedTimeProvider
 {
 public:
   using BitDepth = zrythm::utils::audio::BitDepth;
   using AudioFile = zrythm::utils::audio::AudioFile;
-  using PoolId = int;
 
 public:
-  /* Rule of 0 */
   AudioClip () = default;
 
   /**
@@ -148,7 +147,6 @@ public:
    */
   void write_to_file (const std::string &filepath, bool parts);
 
-  auto        get_pool_id () const { return pool_id_; }
   auto        get_bit_depth () const { return bit_depth_; }
   auto        get_name () const { return name_; }
   auto        get_file_hash () const { return file_hash_; }
@@ -158,7 +156,6 @@ public:
   auto        get_use_flac () const { return use_flac_; }
 
   void set_name (const std::string &name) { name_ = name; }
-  void set_pool_id (PoolId id) { pool_id_ = id; }
   void set_file_hash (utils::hash::HashT hash) { file_hash_ = hash; }
 
   /**
@@ -276,9 +273,6 @@ private:
   /** Whether the clip should use FLAC when being serialized. */
   bool use_flac_{ false };
 
-  /** ID in the audio pool. */
-  PoolId pool_id_{};
-
   /** File hash, used for checking if a clip is already written to the pool. */
   utils::hash::HashT file_hash_{};
 
@@ -305,6 +299,13 @@ private:
   std::unique_ptr<juce::AudioFormatWriter> writer_;
   std::optional<fs::path>                  writer_path_;
 };
+
+using AudioClipResolverFunc =
+  std::function<AudioClip *(const AudioClip::Uuid &clip_id)>;
+using RegisterNewAudioClipFunc =
+  std::function<void (std::shared_ptr<AudioClip>)>;
+
+DEFINE_UUID_HASH_SPECIALIZATION (AudioClip::Uuid)
 
 /**
  * @}

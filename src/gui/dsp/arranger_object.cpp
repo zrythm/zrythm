@@ -38,6 +38,8 @@ ArrangerObject::parent_base_qproperties (QObject &derived)
 void
 ArrangerObject::generate_transient ()
 {
+// TODO
+#if 0
   std::visit (
     [this] (auto &&obj_ptr) {
       using ObjT = base_type<decltype (obj_ptr)>;
@@ -50,6 +52,7 @@ ArrangerObject::generate_transient ()
       obj_ptr->transient_->main_ = this;
     },
     convert_to_variant<ArrangerObjectPtrVariant> (this));
+#endif
 }
 
 #if 0
@@ -145,7 +148,7 @@ ArrangerObject::remove_from_project (bool free_obj, bool fire_events)
         {
           auto * region = obj->get_region ();
           z_return_val_if_fail (region, std::nullopt);
-          region->remove_object (*obj, free_obj, fire_events);
+          region->remove_object (obj->get_uuid ());
           region->update_link_group ();
         }
       else if constexpr (std::derived_from<ObjT, Region>)
@@ -156,11 +159,11 @@ ArrangerObject::remove_from_project (bool free_obj, bool fire_events)
         }
       else if constexpr (std::is_same_v<ObjT, ScaleObject>)
         {
-          P_CHORD_TRACK->remove_scale (*obj, free_obj);
+          P_CHORD_TRACK->remove_scale (*obj);
         }
       else if constexpr (std::is_same_v<ObjT, Marker>)
         {
-          P_MARKER_TRACK->remove_marker (*obj, free_obj, fire_events);
+          P_MARKER_TRACK->remove_marker (obj->get_uuid ());
         }
 
       if (free_obj)
@@ -353,23 +356,19 @@ ArrangerObject::is_position_valid (const Position &pos, PositionType pos_type)
 }
 
 bool
-ArrangerObject::set_position (
-  const Position * pos,
-  PositionType     pos_type,
-  const bool       validate)
+ArrangerObject::
+  set_position (const Position &pos, PositionType pos_type, const bool validate)
 {
-  z_return_val_if_fail (pos, false);
-
   /* return if validate is on and position is invalid */
-  if (validate && !is_position_valid (*pos, pos_type))
+  if (validate && !is_position_valid (pos, pos_type))
     return false;
 
   auto * pos_ptr = get_position_ptr (pos_type);
   z_return_val_if_fail (pos_ptr, false);
-  *pos_ptr = *pos;
+  *pos_ptr = pos;
 
   z_trace (
-    "set {} position {} to {}", fmt::ptr (this), ENUM_NAME (pos_type), *pos);
+    "set {} position {} to {}", fmt::ptr (this), ENUM_NAME (pos_type), pos);
 
   return true;
 }
@@ -394,7 +393,7 @@ ArrangerObject::move (const double ticks)
           Position tmp;
           get_pos (&tmp);
           tmp.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
-          set_position (&tmp, PositionType::Start, false);
+          set_position (tmp, PositionType::Start, false);
 
           /* end pos */
           if constexpr (std::derived_from<ObjT, Region>)
@@ -412,14 +411,14 @@ ArrangerObject::move (const double ticks)
               self->get_end_pos (&tmp);
               tmp.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
             }
-          set_position (&tmp, PositionType::End, false);
+          set_position (tmp, PositionType::End, false);
         }
       else
         {
           Position tmp;
           get_pos (&tmp);
           tmp.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
-          set_position (&tmp, PositionType::Start, false);
+          set_position (tmp, PositionType::Start, false);
         }
     },
     convert_to_variant<ArrangerObjectPtrVariant> (this));
@@ -436,7 +435,7 @@ ArrangerObject::get_position_from_type (Position * pos, PositionType type) const
     case PositionType::ClipStart:
       {
         auto const * lo = dynamic_cast<const LoopableObject *> (this);
-        lo->get_clip_start_pos (pos);
+        *pos = lo->get_clip_start_pos ();
       }
       break;
     case PositionType::End:
@@ -448,13 +447,13 @@ ArrangerObject::get_position_from_type (Position * pos, PositionType type) const
     case PositionType::LoopStart:
       {
         auto const * lo = dynamic_cast<const LoopableObject *> (this);
-        lo->get_loop_start_pos (pos);
+        *pos = lo->get_loop_start_pos ();
       }
       break;
     case PositionType::LoopEnd:
       {
         auto const * lo = dynamic_cast<const LoopableObject *> (this);
-        lo->get_loop_end_pos (pos);
+        *pos = lo->get_loop_end_pos ();
       }
       break;
     case PositionType::FadeIn:
@@ -573,27 +572,11 @@ ArrangerObject::
             }
         } // end if audio region
 
-      else if constexpr (std::is_same_v<ObjT, MidiRegion>)
+      else if constexpr (RegionWithChildren<ObjT>)
         {
-          for (auto &note : obj->midi_notes_)
+          for (auto * cur_obj : obj->get_object_ptrs_view ())
             {
-              note->update_positions (from_ticks, bpm_change, ratio);
-            }
-        }
-
-      else if constexpr (std::is_same_v<ObjT, AutomationRegion>)
-        {
-          for (auto &ap : obj->aps_)
-            {
-              ap->update_positions (from_ticks, bpm_change, ratio);
-            }
-        }
-
-      else if constexpr (std::is_same_v<ObjT, ChordRegion>)
-        {
-          for (auto &chord : obj->chord_objects_)
-            {
-              chord->update_positions (from_ticks, bpm_change, ratio);
+              cur_obj->update_positions (from_ticks, bpm_change, ratio);
             }
         }
     },
@@ -608,7 +591,7 @@ ArrangerObject::post_deserialize ()
       using ObjT = base_type<decltype (self)>;
       if constexpr (std::is_same_v<ObjT, AudioRegion>)
         {
-          self->read_from_pool_ = true;
+          // self->read_from_pool_ = true;
         }
 
       /* TODO: this acts as if a BPM change happened (and is only effective if
@@ -617,7 +600,7 @@ ArrangerObject::post_deserialize ()
        * regions after changing the BPM (see #4993) */
       update_positions (true, true, AUDIO_ENGINE->frames_per_tick_);
 
-      if constexpr (std::derived_from<ObjT, Region>)
+      if constexpr (RegionWithChildren<ObjT>)
         {
           self->post_deserialize_children ();
         }
@@ -668,12 +651,12 @@ ArrangerObject::edit_position_finish () const
 }
 
 void
-ArrangerObject::pos_setter (const Position * pos)
+ArrangerObject::pos_setter (const Position &pos)
 {
   bool success = set_position (pos, PositionType::Start, true);
   if (!success)
     {
-      z_debug ("failed to set position [{}]: (invalid)", *pos);
+      z_debug ("failed to set position [{}]: (invalid)", pos);
     }
 }
 
@@ -718,7 +701,7 @@ bool
 ArrangerObject::is_frozen () const
 {
   return std::visit (
-    [&] (auto &&track) { return track->frozen_; }, get_track ());
+    [&] (auto &&track) { return track->is_frozen (); }, get_track ());
 }
 
 bool

@@ -160,24 +160,17 @@ ChannelTrack::remove_ats_from_automation_tracklist (bool fire_events)
 {
   auto &atl = get_automation_tracklist ();
 
-  for (auto &at : atl.ats_ | std::views::reverse)
+  for (auto &at : atl.get_automation_tracks () | std::views::reverse)
     {
-      auto port_var = PROJECT->find_port_by_id (at->port_id_);
-      z_return_if_fail (port_var.has_value ());
-      std::visit (
-        [&] (auto &&port) {
-          const auto &port_id = *port->id_;
-          const auto  flags = port_id.flags_;
-          if (
-            ENUM_BITSET_TEST (flags, dsp::PortIdentifier::Flags::ChannelFader)
-            || ENUM_BITSET_TEST (flags, dsp::PortIdentifier::Flags::FaderMute)
-            || ENUM_BITSET_TEST (
-              flags, dsp::PortIdentifier::Flags::StereoBalance))
-            {
-              atl.remove_at (*at, false, fire_events);
-            }
-        },
-        port_var.value ());
+      const auto &port_id = *at->get_port ().id_;
+      const auto  flags = port_id.flags_;
+      if (
+        ENUM_BITSET_TEST (flags, dsp::PortIdentifier::Flags::ChannelFader)
+        || ENUM_BITSET_TEST (flags, dsp::PortIdentifier::Flags::FaderMute)
+        || ENUM_BITSET_TEST (flags, dsp::PortIdentifier::Flags::StereoBalance))
+        {
+          atl.remove_at (*at, false, fire_events);
+        }
     }
 }
 

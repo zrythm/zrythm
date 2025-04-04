@@ -1,3 +1,4 @@
+#include "gui/dsp/arranger_object_factory.h"
 #include "gui/dsp/engine.h"
 #include "gui/dsp/track_span.h"
 #include "utils/debug.h"
@@ -32,23 +33,28 @@ ArrangerObjectSpanImpl<Range>::merge (double frames_per_tick) const
           using RegionT = base_type<decltype (first_r)>;
           if constexpr (std::derived_from<RegionT, Region>)
             {
-              RegionT * new_r;
+              RegionT * new_r{};
               if constexpr (std::is_same_v<RegionT, MidiRegion>)
                 {
-                  new_r = new MidiRegion (
-                    pos, end_pos, first_r->id_.track_uuid_,
-                    first_r->id_.lane_pos_, first_r->id_.idx_);
+                  new_r =
+                    ArrangerObjectFactory::get_instance ()
+                      ->get_builder<MidiRegion> ()
+                      .with_start_ticks (pos.ticks_)
+                      .with_end_ticks (end_pos.ticks_)
+                      .build ();
                   for (auto &obj : *this)
                     {
                       auto * r = std::get<MidiRegion *> (obj);
                       double ticks_diff =
                         r->pos_->ticks_ - first_r->pos_->ticks_;
 
-                      for (auto &mn : r->midi_notes_)
+                      for (auto * mn : r->get_object_ptrs_view ())
                         {
-                          auto new_mn = mn->clone_raw_ptr ();
+                          auto new_mn =
+                            ArrangerObjectFactory::get_instance ()
+                              ->clone_new_object_identity (*mn);
                           new_mn->move (ticks_diff);
-                          new_r->append_object (new_mn, false);
+                          new_r->append_object (new_mn->get_uuid ());
                         }
                     }
                 }
@@ -80,13 +86,18 @@ ArrangerObjectSpanImpl<Range>::merge (double frames_per_tick) const
                       max_depth = std::max (max_depth, clip->get_bit_depth ());
                     }
 
+// TODO
+#if 0
                   new_r = new AudioRegion (
                     frames, true, first_r_clip->get_name (), max_depth, pos,
-                    first_r->id_.track_uuid_, first_r->id_.lane_pos_,
+                    first_r->get_track_id(), first_r->id_.lane_pos_,
                     first_r->id_.idx_);
+#endif
                 }
               else if constexpr (std::is_same_v<RegionT, ChordRegion>)
                 {
+// TODO
+#if 0
                   new_r = new ChordRegion (
                     pos, end_pos, first_r->id_.idx_,
                     AUDIO_ENGINE->ticks_per_frame_);
@@ -103,9 +114,12 @@ ArrangerObjectSpanImpl<Range>::merge (double frames_per_tick) const
                           new_r->append_object (new_co, false);
                         }
                     }
+#endif
                 }
               else if constexpr (std::is_same_v<RegionT, AutomationRegion>)
                 {
+// TODO
+#if 0
                   new_r = new AutomationRegion (
                     pos, end_pos, first_r->id_.track_uuid_,
                     first_r->id_.at_idx_, first_r->id_.idx_);
@@ -122,9 +136,10 @@ ArrangerObjectSpanImpl<Range>::merge (double frames_per_tick) const
                           new_r->append_object (new_ap, false);
                         }
                     }
+#endif
                 }
 
-              new_r->gen_name (first_r->name_.c_str (), nullptr, nullptr);
+              new_r->gen_name (first_r->get_name (), nullptr, nullptr);
               return new_r->get_uuid ();
             }
           else
@@ -147,38 +162,29 @@ ArrangerObjectSpanImpl<Range>::all_on_same_lane () const
   if (this->empty ())
     return true;
 
+  // either LaneOwnedObject or AutomationRegion
   auto first_obj_var = this->front ();
   return std::visit (
     [&] (auto &&first) {
       using FirstObjT = base_type<decltype (first)>;
-      if constexpr (std::derived_from<FirstObjT, Region>)
-        {
-          const auto &id = first->id_;
-          return std::ranges::all_of (*this, [&] (const auto &obj_var) {
-            return std::visit (
-              [&] (auto &&curr) {
-                using CurObjT = base_type<decltype (curr)>;
-                if constexpr (std::derived_from<CurObjT, Region>)
-                  {
-                    if (id.type_ != curr->id_.type_)
-                      return false;
+      if (
+        !std::ranges::all_of (*this, Base::template type_projection<FirstObjT>))
+        return false;
 
-                    if constexpr (std::derived_from<CurObjT, LaneOwnedObject>)
-                      return id.track_uuid_ == curr->id_.track_uuid_
-                             && id.lane_pos_ == curr->id_.lane_pos_;
-                    else if constexpr (std::is_same_v<CurObjT, AutomationRegion>)
-                      return id.track_uuid_ == curr->id_.track_uuid_
-                             && id.at_idx_ == curr->id_.at_idx_;
-                    else
-                      return true;
-                  }
-                else
-                  {
-                    return false;
-                  }
-              },
-              obj_var);
-          });
+      if constexpr (std::derived_from<FirstObjT, LaneOwnedObject>)
+        {
+          const auto &lane = first->get_lane ();
+          return std::ranges::all_of (
+            Base::template as_type<FirstObjT> (), [&] (auto &&obj) {
+              return std::addressof (obj->get_lane ()) == std::addressof (lane);
+            });
+        }
+      else if constexpr (std::is_same_v<FirstObjT, AutomationRegion>)
+        {
+          const auto at = first->get_automation_track ();
+          return std::ranges::all_of (
+            Base::template as_type<FirstObjT> (),
+            [&] (auto &&obj) { return obj->get_automation_track () == at; });
         }
       else
         {
@@ -211,7 +217,7 @@ ArrangerObjectSpanImpl<Range>::init_loaded (bool project, double frames_per_tick
             { /* throws an error otherwise */
               if constexpr (std::is_same_v<AudioRegion, ObjectT>)
                 {
-                  o->read_from_pool_ = true;
+                  // o->read_from_pool_ = true;
                   auto clip = o->get_clip ();
                   z_return_if_fail (clip);
                 }
@@ -312,21 +318,23 @@ ArrangerObjectSpanImpl<Range>::copy_arranger_object_identifier (
       using ObjT = base_type<decltype (dest)>;
       auto src = std::get<ObjT *> (src_var);
       dest->track_id_ = src->track_id_;
+      // TODO?
+      // dest->uuid_ = src->get_uuid();
 
       if constexpr (std::derived_from<ObjT, RegionOwnedObject>)
         {
           dest->region_id_ = src->region_id_;
-          dest->index_ = src->index_;
+          // dest->index_ = src->index_;
         }
 
       if constexpr (std::derived_from<ObjT, NamedObject>)
         {
-          dest->name_ = src->name_;
+          dest->set_name (src->get_name ());
         }
 
       if constexpr (std::derived_from<ObjT, Region>)
         {
-          dest->id_ = src->id_;
+          // dest->id_ = src->id_;
         }
 
       if constexpr (std::is_same_v<ObjT, ChordObject>)

@@ -212,9 +212,8 @@ Arranger {
                 console.log("creating marker");
                 break;
             case 9:
-                console.log("creating midi region");
-
-                let region = track.createAndAddRegionForMidiTrack(x / root.ruler.pxPerTick, trackLane ? trackLane.position : -1);
+                console.log("creating midi region", track.lanes.getFirstLane());
+                let region = objectFactory.addEmptyMidiRegion(trackLane ? trackLane : track.lanes.getFirstLane(), x / root.ruler.pxPerTick);
                 root.currentAction = Arranger.CreatingResizingR;
                 root.setObjectSnapshotsAtStart();
                 CursorManager.setResizeEndCursor();
@@ -493,6 +492,7 @@ Arranger {
                         MidiRegion {
                             ruler: root.ruler
                             track: trackDelegate.track
+                            clipEditor: root.clipEditor
                             arrangerObject: region
                             lane: trackLane
                             height: trackLane.height
@@ -508,6 +508,7 @@ Arranger {
                         AudioRegion {
                             ruler: root.ruler
                             track: trackDelegate.track
+                            clipEditor: root.clipEditor
                             arrangerObject: region
                             lane: trackLane
                             height: trackLane.height
@@ -579,12 +580,11 @@ Arranger {
                     Component {
                         id: automationRegion
 
-                        AudioRegion {
+                        AutomationRegion {
                             ruler: root.ruler
                             track: trackDelegate.track
                             arrangerObject: region
-                            lane: trackLane
-                            height: trackLane.height
+                            height: automationTrack.height
                             x: regionX
                             width: regionWidth
                         }

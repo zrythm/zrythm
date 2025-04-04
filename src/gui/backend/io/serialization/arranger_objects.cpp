@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/dsp/arranger_object.h"
@@ -10,15 +10,6 @@
 #include "gui/dsp/midi_region.h"
 #include "gui/dsp/region.h"
 #include "gui/dsp/scale_object.h"
-
-void
-RegionIdentifier::define_fields (const Context &ctx)
-{
-  serialize_fields (
-    ctx, make_field ("type", type_), make_field ("linkGroup", link_group_),
-    make_field ("trackNameHash", track_uuid_), make_field ("lanePos", lane_pos_),
-    make_field ("automationTrackIndex", at_idx_), make_field ("index", idx_));
-}
 
 void
 ArrangerObject::define_base_fields (const Context &ctx)
@@ -81,17 +72,15 @@ ColoredObject::define_base_fields (const Context &ctx)
 void
 Region::define_base_fields (const Context &ctx)
 {
-  ISerializable<Region>::serialize_fields (
-    ctx, ISerializable<Region>::make_field ("regionId", id_));
+  using T = ISerializable<Region>;
+  T::serialize_fields (ctx, T::make_field ("linkGroup", link_group_));
 }
 
 void
 RegionOwnedObject::define_base_fields (const Context &ctx)
 {
   using T = ISerializable<RegionOwnedObject>;
-  T::serialize_fields (
-    ctx, T::make_field ("regionId", region_id_),
-    T::make_field ("index", index_));
+  T::serialize_fields (ctx, T::make_field ("regionId", region_id_));
 }
 
 void
@@ -133,7 +122,7 @@ AutomationPoint::define_fields (const Context &ctx)
   T::serialize_fields (
     ctx, T::make_field ("fValue", fvalue_),
     T::make_field ("normalizedValue", normalized_val_),
-    T::make_field ("index", index_), T::make_field ("curveOpts", curve_opts_));
+    T::make_field ("curveOpts", curve_opts_));
 }
 
 void
@@ -159,7 +148,7 @@ AudioRegion::define_fields (const Context &ctx)
   Region::define_base_fields (ctx);
 
   ISerializable<AudioRegion>::serialize_fields (
-    ctx, ISerializable<AudioRegion>::make_field ("poolId", pool_id_),
+    ctx, ISerializable<AudioRegion>::make_field ("clipId", clip_id_),
     ISerializable<AudioRegion>::make_field ("gain", gain_));
 }
 

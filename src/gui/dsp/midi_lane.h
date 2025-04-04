@@ -22,12 +22,12 @@ public:
   using RegionT = MidiRegion;
 
 public:
-  MidiLane ();
-
-  /**
-   * @see TrackLaneImpl::TrackLaneImpl
-   */
-  MidiLane (LanedTrackImpl<MidiLane> * track, int pos);
+  MidiLane (const DeserializationDependencyHolder &dh)
+      : MidiLane (
+          &dh.get<std::reference_wrapper<LanedTrackImpl<MidiLane>>> ().get ())
+  {
+  }
+  MidiLane (LanedTrackImpl<MidiLane> * track);
 
   void init_after_cloning (const MidiLane &other, ObjectCloneType clone_type) override;
 

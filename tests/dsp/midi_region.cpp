@@ -11,12 +11,10 @@
 #include "gui/dsp/region.h"
 #include "gui/dsp/tracklist.h"
 #include "gui/dsp/transport.h"
-
-#include "tests/helpers/zrythm_helper.h"
-
-#include "utils/flags.h"
 #include "utils/hash.h"
 #include "utils/io.h"
+
+#include "tests/helpers/zrythm_helper.h"
 
 class MidiRegionExportTest
     : public ZrythmFixture,

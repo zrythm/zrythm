@@ -5,8 +5,6 @@
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/midi_function.h"
-
-#include "utils/flags.h"
 #include "utils/rt_thread_id.h"
 #include "utils/string.h"
 
@@ -93,6 +91,7 @@ MidiFunction::apply (ArrangerObjectSpanVariant sel_var, Type type, Options opts)
             /* currently MIDI functions assume no new notes are
              * added so currently disabled */
             break;
+#if 0
             std::vector<MidiNote *> new_midi_notes;
             for (auto * mn : sel.template get_elements_by_type<MidiNote> ())
               {
@@ -124,13 +123,14 @@ MidiFunction::apply (ArrangerObjectSpanVariant sel_var, Type type, Options opts)
               }
             for (auto &mn : new_midi_notes)
               {
-                auto r = MidiRegion::find (mn->region_id_);
-                r->append_object (mn, false);
+                auto * r = mn->get_region ();
+                r->append_object (mn->get_uuid ());
                 /* clone again because the selections are supposed to hold
                  * clones */
                 // FIXME:
                 // sel.add_object_owned (mn->clone_unique ());
               }
+#endif
           }
           break;
         case Type::FlipVertical:

@@ -6,6 +6,8 @@ target_sources(zrythm_gui_lib
     arranger_object.h
     arranger_object.cpp
     arranger_object_all.h
+    arranger_object_factory.h
+    arranger_object_factory.cpp
     arranger_object_span.h
     arranger_object_span.cpp
     arranger_object_fwd.h
@@ -170,8 +172,6 @@ target_sources(zrythm_gui_lib
     recording_manager.cpp
     region.h
     region.cpp
-    region_identifier.h
-    region_identifier.cpp
     region_link_group.h
     region_link_group.cpp
     region_link_group_manager.h

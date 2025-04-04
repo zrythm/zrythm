@@ -29,7 +29,6 @@
 #include "gui/dsp/transport.h"
 #include "utils/dsp.h"
 #include "utils/exceptions.h"
-#include "utils/flags.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 #include "utils/math.h"
@@ -509,9 +508,8 @@ Plugin::remove_ats_from_automation_tracklist (bool free_ats, bool fire_events)
   auto track = get_track ();
   z_return_if_fail (track);
   auto &atl = track->get_automation_tracklist ();
-  for (auto it = atl.ats_.rbegin (); it != atl.ats_.rend (); ++it)
+  for (auto * at : atl.get_automation_tracks () | std::views::reverse)
     {
-      auto &at = *it;
       auto  port_var = PROJECT->find_port_by_id (at->port_id_);
       z_return_if_fail (port_var.has_value ());
       std::visit (
@@ -906,7 +904,7 @@ Plugin::move_automation (
   auto &prev_atl = prev_track.get_automation_tracklist ();
   auto &atl = track.get_automation_tracklist ();
 
-  for (auto &at : prev_atl.ats_)
+  for (auto * at : prev_atl.get_automation_tracks ())
     {
       auto port_var = PROJECT->find_port_by_id (at->port_id_);
       if (!port_var)
@@ -936,9 +934,9 @@ Plugin::move_automation (
       auto * removed_at = prev_atl.remove_at (*at, false, false);
 
       /* add to new channel */
-      auto added_at = atl.add_at (*removed_at);
+      auto added_at = atl.add_automation_track (*removed_at);
       z_return_if_fail (
-        added_at == atl.ats_[added_at->index_]
+        added_at == atl.get_automation_track_at (added_at->index_)
         && added_at->region_list_->regions_.size () == num_regions_before);
     }
 }
@@ -1029,8 +1027,11 @@ Plugin::generate_automation_tracks (AutomatableTrack &track)
           PortIdentifier::Flags::Automatable)))
         continue;
 
-      auto * at = new AutomationTrack (*port);
-      atl.add_at (*at);
+      auto * at = new AutomationTrack (
+        track.port_registry_, track.object_registry_,
+        [&track] () { return convert_to_variant<TrackPtrVariant> (&track); },
+        port->get_uuid ());
+      atl.add_automation_track (*at);
     }
 }
 

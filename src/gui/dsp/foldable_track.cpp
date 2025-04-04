@@ -1,9 +1,5 @@
+// SPDX-FileCopyrightText: © 2021, 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
- */
-
-#include <cstdlib>
 
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
@@ -11,8 +7,6 @@
 #include "gui/dsp/foldable_track.h"
 #include "gui/dsp/track.h"
 #include "gui/dsp/tracklist.h"
-
-#include "utils/flags.h"
 #include "utils/rt_thread_id.h"
 
 using namespace zrythm;
@@ -26,15 +20,15 @@ FoldableTrack::is_status (MixerStatus status) const
   for (int i = 1; i < size_; i++)
     {
       int     pos = pos_ + i;
-      Track * child = Track::from_variant (tracklist_->get_track_at_index (pos));
-      z_return_val_if_fail (IS_TRACK_AND_NONNULL (child), false);
+      auto    child_var = tracklist_->get_track_at_index (pos);
 
-      if (child->has_channel ())
-        has_channel_tracks = true;
-      else
+      if (!TrackSpan::derived_from_type_projection<ChannelTrack> (child_var))
         continue;
 
-      auto ch_child = dynamic_cast<ChannelTrack *> (child);
+      has_channel_tracks = true;
+
+      auto * ch_child =
+        TrackSpan::derived_from_type_transformation<ChannelTrack> (child_var);
       switch (status)
         {
         case MixerStatus::Muted:

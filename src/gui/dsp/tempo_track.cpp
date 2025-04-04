@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/actions/transport_action.h"
@@ -10,24 +10,28 @@
 #include "gui/dsp/router.h"
 #include "gui/dsp/tempo_track.h"
 #include "gui/dsp/track.h"
-
-#include "utils/flags.h"
 #include "utils/math.h"
 
 using namespace zrythm;
 
 TempoTrack::TempoTrack (
-  TrackRegistry  &track_registry,
-  PluginRegistry &plugin_registry,
-  PortRegistry   &port_registry,
-  bool            new_identity)
-    : Track (Track::Type::Tempo, PortType::Unknown, PortType::Unknown),
+  TrackRegistry          &track_registry,
+  PluginRegistry         &plugin_registry,
+  PortRegistry           &port_registry,
+  ArrangerObjectRegistry &obj_registry,
+  bool                    new_identity)
+    : Track (
+        Track::Type::Tempo,
+        PortType::Unknown,
+        PortType::Unknown,
+        port_registry,
+        obj_registry),
       AutomatableTrack (port_registry, new_identity),
       port_registry_ (port_registry)
 {
   if (new_identity)
     {
-      main_height_ = TRACK_DEF_HEIGHT / 2;
+      main_height_ = DEF_HEIGHT / 2;
 
       color_ = Color (QColor ("#2f6c52"));
       icon_name_ = "filename-bpm-amarok";
@@ -115,7 +119,7 @@ bpm_t
 TempoTrack::get_bpm_at_pos (const Position pos)
 {
   auto at = AutomationTrack::find_from_port_id (bpm_port_, false);
-  return at->get_val_at_pos (pos, false, false, Z_F_NO_USE_SNAPSHOTS);
+  return at->get_val_at_pos (pos, false, false, false);
 }
 
 bpm_t
@@ -273,7 +277,7 @@ TempoTrack::set_beat_unit_from_enum (BeatUnit ebeat_unit)
     || (ROUTER && ROUTER->is_processing_kickoff_thread ()));
 
   get_beat_unit_port ().set_control_value (
-    static_cast<float> (ebeat_unit), F_NOT_NORMALIZED, true);
+    static_cast<float> (ebeat_unit), false, true);
   // EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, nullptr);
 }
 
@@ -310,8 +314,7 @@ TempoTrack::set_beats_per_bar (int beats_per_bar)
     !AUDIO_ENGINE->run_.load ()
     || (ROUTER && ROUTER->is_processing_kickoff_thread ()));
 
-  get_beats_per_bar_port ().set_control_value (
-    beats_per_bar, F_NOT_NORMALIZED, true);
+  get_beats_per_bar_port ().set_control_value (beats_per_bar, false, true);
   // EVENTS_PUSH (EventType::ET_TIME_SIGNATURE_CHANGED, nullptr);
 }
 

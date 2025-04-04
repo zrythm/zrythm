@@ -4,6 +4,7 @@
 #ifndef __AUDIO_MARKER_TRACK_H__
 #define __AUDIO_MARKER_TRACK_H__
 
+#include "gui/dsp/arranger_object_span.h"
 #include "gui/dsp/marker.h"
 #include "gui/dsp/track.h"
 
@@ -53,11 +54,6 @@ public:
     override;
 
   /**
-   * @brief Adds the start/end markers.
-   */
-  void add_default_markers (int ticks_per_bar, double frames_per_tick);
-
-  /**
    * Inserts a marker to the track.
    *
    * This takes ownership of the marker.
@@ -84,9 +80,33 @@ public:
   /**
    * Removes a marker.
    */
-  MarkerPtr remove_marker (Marker &marker, bool free_marker, bool fire_events);
+  void remove_marker (const Marker::Uuid &marker_id);
 
   bool validate () const override;
+
+  auto get_markers ()
+  {
+    return std::views::transform (markers_, [&] (auto &&marker_id) {
+      return std::get<Marker *> (
+        object_registry_.find_by_id_or_throw (marker_id));
+    });
+  }
+  auto get_markers () const
+  {
+    return std::views::transform (markers_, [&] (auto &&marker_id) {
+      return std::get<Marker *> (
+        object_registry_.find_by_id_or_throw (marker_id));
+    });
+  }
+  auto get_marker_at (size_t index) const { return get_markers ()[index]; }
+
+  bool validate_marker_name (const std::string &name)
+  {
+    /* valid if no other marker with the same name exists*/
+    return !std::ranges::contains (get_markers (), name, [] (const auto &marker) {
+      return marker->get_name ();
+    });
+  }
 
   /**
    * Returns the start marker.
@@ -111,7 +131,7 @@ private:
   void set_playback_caches () override;
 
 public:
-  std::vector<MarkerPtr> markers_;
+  std::vector<Marker::Uuid> markers_;
 
   /** Snapshots used during playback TODO unimplemented. */
   std::vector<std::unique_ptr<Marker>> marker_snapshots_;

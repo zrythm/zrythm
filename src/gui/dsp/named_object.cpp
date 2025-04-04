@@ -25,26 +25,10 @@ NamedObject::init_loaded_base ()
 }
 
 void
-NamedObject::set_name (const std::string &name, bool fire_events)
-{
-  name_ = name;
-  gen_escaped_name ();
-
-  if (fire_events)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          Q_EMIT (obj->nameChanged (QString::fromStdString (name)));
-        },
-        convert_to_variant<NamedObjectPtrVariant> (this));
-    }
-}
-
-void
 NamedObject::set_name_with_action (const std::string &name)
 {
   /* validate */
-  if (!validate_name (name))
+  if (!name_validator_ (name))
     {
 // TODO
 #if 0
@@ -55,12 +39,14 @@ NamedObject::set_name_with_action (const std::string &name)
       return;
     }
 
+// TODO
+#if 0
   std::visit (
     [&] (auto &&self) {
       auto clone_obj = self->clone_unique ();
 
       /* prepare the before/after selections to create the undoable action */
-      clone_obj->set_name (name, false);
+      clone_obj->set_name (name);
 
       try
         {
@@ -76,4 +62,5 @@ NamedObject::set_name_with_action (const std::string &name)
         }
     },
     convert_to_variant<NamedObjectPtrVariant> (this));
+#endif
 }

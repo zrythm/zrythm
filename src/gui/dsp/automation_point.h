@@ -31,32 +31,54 @@ using namespace zrythm;
  */
 class AutomationPoint final
     : public QObject,
-      public RegionOwnedObjectImpl<AutomationRegion>,
+      public RegionOwnedObject,
       public ICloneable<AutomationPoint>,
       public zrythm::utils::serialization::ISerializable<AutomationPoint>
 {
   Q_OBJECT
   QML_ELEMENT
   DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (AutomationPoint)
+  Q_PROPERTY (double value READ getValue WRITE setValue NOTIFY valueChanged)
 public:
-  AutomationPoint (QObject * parent = nullptr);
-  AutomationPoint (const Position &pos, QObject * parent = nullptr);
+  using RegionT = AutomationRegion;
+
+  AutomationPoint (const DeserializationDependencyHolder &dh)
+      : AutomationPoint (
+          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get ())
+  {
+  }
   AutomationPoint (
-    float           value,
-    float           normalized_val,
-    const Position &pos,
-    QObject *       parent = nullptr);
+    ArrangerObjectRegistry &obj_registry,
+    QObject *               parent = nullptr);
   Q_DISABLE_COPY_MOVE (AutomationPoint)
   ~AutomationPoint () override;
 
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
+
+  double getValue () const { return fvalue_; }
+
+  void setValue (double dval)
+  {
+    const auto val = static_cast<float> (dval);
+    if (!utils::math::floats_equal (fvalue_, val))
+      {
+        set_fvalue (val, false);
+        Q_EMIT valueChanged (dval);
+      }
+  }
+  Q_SIGNAL void valueChanged (double);
+
+  // ========================================================================
+
   /**
-   * Sets the value from given real or normalized
-   * value and notifies interested parties.
+   * Sets the value from given real or normalized value and notifies interested
+   * parties.
    *
-   * @param is_normalized Whether the given value is
-   *   normalized.
+   * @param is_normalized Whether the given value is normalized.
    */
-  void set_fvalue (float real_val, bool is_normalized, bool pub_events);
+  void set_fvalue (float real_val, bool is_normalized);
 
   /** String getter for the value. */
   std::string get_fvalue_as_string () const;
@@ -132,10 +154,12 @@ public:
 inline bool
 operator< (const AutomationPoint &a, const AutomationPoint &b)
 {
+#if 0
   if (a.pos_ == b.pos_) [[unlikely]]
     {
       return a.index_ < b.index_;
     }
+#endif
 
   return a.pos_ < b.pos_;
 }

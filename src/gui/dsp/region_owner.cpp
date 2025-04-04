@@ -9,20 +9,20 @@
 #include "utils/rt_thread_id.h"
 
 template <typename RegionT>
-RegionOwnerImpl<RegionT>::RegionOwnerImpl () : region_list_ (new RegionList ())
+RegionOwner<RegionT>::RegionOwner () : region_list_ (new RegionList ())
 {
 }
 
 template <typename RegionT>
 void
-RegionOwnerImpl<RegionT>::parent_base_qproperties (QObject &derived)
+RegionOwner<RegionT>::parent_base_qproperties (QObject &derived)
 {
   region_list_->setParent (&derived);
 }
 
 template <typename RegionT>
 void
-RegionOwnerImpl<RegionT>::foreach_region (std::function<void (RegionT &)> func)
+RegionOwner<RegionT>::foreach_region (std::function<void (RegionT &)> func)
 {
   for (auto &region_var : region_list_->regions_)
     {
@@ -32,8 +32,7 @@ RegionOwnerImpl<RegionT>::foreach_region (std::function<void (RegionT &)> func)
 
 template <typename RegionT>
 void
-RegionOwnerImpl<RegionT>::foreach_region (
-  std::function<void (RegionT &)> func) const
+RegionOwner<RegionT>::foreach_region (std::function<void (RegionT &)> func) const
 {
   for (auto &region_var : region_list_->regions_)
     {
@@ -43,9 +42,9 @@ RegionOwnerImpl<RegionT>::foreach_region (
 
 template <typename RegionT>
 void
-RegionOwnerImpl<RegionT>::copy_members_from (
-  const RegionOwnerImpl &other,
-  ObjectCloneType        clone_type)
+RegionOwner<RegionT>::copy_members_from (
+  const RegionOwner &other,
+  ObjectCloneType    clone_type)
 {
   auto * derived = dynamic_cast<QObject *> (this);
   region_list_ = other.region_list_->clone_raw_ptr ();
@@ -54,14 +53,14 @@ RegionOwnerImpl<RegionT>::copy_members_from (
 
 template <typename RegionT>
 void
-RegionOwnerImpl<RegionT>::unselect_all ()
+RegionOwner<RegionT>::unselect_all ()
 {
   foreach_region ([&] (auto &region) { region.setSelected (false); });
 }
 
 template <typename RegionT>
 bool
-RegionOwnerImpl<
+RegionOwner<
   RegionT>::remove_region (RegionT &region, bool free_region, bool fire_events)
 {
   auto it_to_remove = std::find_if (
@@ -99,24 +98,6 @@ RegionOwnerImpl<
 #endif
     }
 
-  /* prepare for link group adjustment by faking the indeces in the link group
-   * to the expected new ones */
-  for (auto it = it_to_remove + 1; it != region_list_->regions_.end (); ++it)
-    {
-      auto &r = std::get<RegionT *> (*it);
-      if (r->has_link_group ())
-        {
-          auto group = r->get_link_group ();
-          for (auto &id : group->ids_)
-            {
-              if (r->id_ == id)
-                {
-                  --id.idx_;
-                }
-            }
-        }
-    }
-
   auto next_it = region_list_->regions_.erase (it_to_remove);
   region.setParent (nullptr);
   if (free_region)
@@ -125,7 +106,7 @@ RegionOwnerImpl<
     }
   std::for_each (next_it, region_list_->regions_.end (), [&] (auto &r_var) {
     auto * r = std::get<RegionT *> (r_var);
-    r->id_.idx_ = std::distance (region_list_->regions_.begin (), next_it);
+    // r->id_.idx_ = std::distance (region_list_->regions_.begin (), next_it);
     r->update_identifier ();
     ++next_it;
   });
@@ -146,7 +127,7 @@ RegionOwnerImpl<
 
 template <typename RegionT>
 void
-RegionOwnerImpl<RegionT>::clear_regions ()
+RegionOwner<RegionT>::clear_regions ()
 {
   region_list_->beginResetModel ();
   clearing_ = true;
@@ -162,11 +143,11 @@ RegionOwnerImpl<RegionT>::clear_regions ()
 
 template <typename RegionT>
 void
-RegionOwnerImpl<RegionT>::insert_region (RegionTPtr region, int idx)
+RegionOwner<RegionT>::insert_region (RegionTPtr region, int idx)
 {
   static_assert (FinalRegionSubclass<RegionT>);
   z_return_if_fail (idx >= 0);
-  z_return_if_fail (!region->name_.empty ());
+  z_return_if_fail (!region->get_name ().empty ());
 
   region_list_->beginInsertRows ({}, idx, idx);
   region_list_->regions_.insert (region_list_->regions_.begin () + idx, region);
@@ -176,36 +157,15 @@ RegionOwnerImpl<RegionT>::insert_region (RegionTPtr region, int idx)
     {
       region->set_automation_track (static_cast<AutomationTrack &> (*this));
     }
-  else if constexpr (std::derived_from<RegionT, LaneOwnedObjectImpl<RegionT>>)
+  else if constexpr (std::derived_from<RegionT, LaneOwnedObject>)
     {
       using TrackLaneT = TrackLaneImpl<RegionT>::TrackLaneT;
-      region->set_lane (*dynamic_cast<TrackLaneT *> (this));
+      region->set_lane (dynamic_cast<TrackLaneT *> (this));
     }
   else if constexpr (std::is_same_v<RegionT, ChordRegion>)
     {
       auto * chord_track = dynamic_cast<ChordTrack *> (this);
-      region->id_.track_uuid_ = chord_track->get_uuid ();
-    }
-
-  for (int i = region_list_->regions_.size () - 1; i >= idx; --i)
-    {
-      auto &r_var = region_list_->regions_[i];
-      auto &r = std::get<RegionT *> (r_var);
-
-      if (r->has_link_group ())
-        {
-          auto group = r->get_link_group ();
-          for (auto &id_in_group : group->ids_)
-            {
-              if (r->id_ == id_in_group)
-                {
-                  id_in_group.idx_++;
-                }
-            }
-        }
-
-      r->id_.idx_ = i;
-      r->update_identifier ();
+      region->track_id_ = chord_track->get_uuid ();
     }
 
   region_list_->endInsertRows ();
@@ -218,7 +178,7 @@ RegionOwnerImpl<RegionT>::insert_region (RegionTPtr region, int idx)
     }
 }
 
-template class RegionOwnerImpl<AudioRegion>;
-template class RegionOwnerImpl<AutomationRegion>;
-template class RegionOwnerImpl<ChordRegion>;
-template class RegionOwnerImpl<MidiRegion>;
+template class RegionOwner<AudioRegion>;
+template class RegionOwner<AutomationRegion>;
+template class RegionOwner<ChordRegion>;
+template class RegionOwner<MidiRegion>;

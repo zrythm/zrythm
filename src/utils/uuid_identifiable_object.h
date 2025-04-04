@@ -70,13 +70,18 @@ public:
 
   auto get_uuid () const { return uuid_; }
 
+  void copy_members_from (const UuidIdentifiableObject &other)
+  {
+    uuid_ = other.uuid_;
+  }
+
   void define_base_fields (const serialization::ISerializableBase::Context &ctx)
   {
     using T = UuidIdentifiableObject;
     T::serialize_fields (ctx, T::make_field ("id", uuid_));
   }
 
-protected:
+private:
   Uuid uuid_;
 };
 
@@ -86,6 +91,70 @@ concept UuidIdentifiable = std::derived_from<T, UuidIdentifiableObject<T>>;
 template <typename T>
 concept UuidIdentifiableQObject =
   UuidIdentifiable<T> && std::derived_from<T, QObject>;
+
+// specialization for std::hash and QHash
+#define DEFINE_UUID_HASH_SPECIALIZATION(UuidType) \
+  namespace std \
+  { \
+  template <> struct hash<UuidType> \
+  { \
+    size_t operator() (const UuidType &uuid) const \
+    { \
+      return uuid.hash (); \
+    } \
+  }; \
+  }
+
+/**
+ * @brief A reference-counted wrapper for a UUID in a registry.
+ *
+ * Objects that refer to an object's UUID must use this wrapper.
+ *
+ * TODO: actually use this
+ *
+ * @tparam RegistryT
+ */
+template <typename RegistryT> class UuidReference
+{
+public:
+  using UuidType = typename RegistryT::UuidType;
+  using VariantType = typename RegistryT::VariantType;
+
+  UuidReference (const UuidType &id, RegistryT &registry)
+      : id_ (id), registry_ (registry)
+  {
+    registry_.acquire_reference (id_);
+  }
+
+  UuidReference (const UuidReference &other)
+      : UuidReference (other.id_, other.registry_)
+  {
+  }
+
+  Z_DISABLE_MOVE (UuidReference)
+
+  ~UuidReference () { registry_.release_reference (id_); }
+
+  UuidReference &operator= (const UuidReference &other)
+  {
+    if (this != &other)
+      {
+        registry_.acquire_reference (other.id_);
+        const auto prev_id = id_;
+        id_ = other.id_;
+        registry_.release_reference (prev_id);
+      }
+    return *this;
+  }
+
+  const UuidType &id () const { return id_; }
+
+  VariantType get_object () const { return registry_.get_object (id_); }
+
+private:
+  UuidType   id_;
+  RegistryT &registry_;
+};
 
 /**
  * @brief A registry that owns and manages objects identified by a UUID.
@@ -169,8 +238,8 @@ public:
     auto val = find_by_id (id);
     if (!val.has_value ())
       {
-        throw std::runtime_error (fmt::format (
-          "Object with id {} not found", type_safe::get (id).toString ()));
+        throw std::runtime_error (
+          fmt::format ("Object with id {} not found", id));
       }
     return val.value ().get ();
   }
@@ -475,6 +544,7 @@ class UuidIdentifiableObjectCompatibleSpan
 {
 public:
   using UuidType = RegistryT::UuidType;
+  using HasRegistry = std::true_type;
   using value_type =
     typename std::iterator_traits<typename Range::iterator>::value_type;
   using iterator = Range::iterator;
@@ -591,6 +661,12 @@ public:
   auto as_base_type () const
   {
     return std::views::transform (*this, base_projection);
+  }
+
+  // note: assumes all objects are of this type
+  template <typename T> auto as_type () const
+  {
+    return std::views::transform (*this, type_transformation<T>);
   }
 
   template <typename T> auto get_elements_derived_from () const

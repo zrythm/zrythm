@@ -1,19 +1,14 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_AUDIO_REGION_H__
-#define __AUDIO_AUDIO_REGION_H__
+#ifndef DSP_AUDIO_REGION_H
+#define DSP_AUDIO_REGION_H
 
 #include "gui/dsp/clip.h"
 #include "gui/dsp/fadeable_object.h"
 #include "gui/dsp/lane_owned_object.h"
 #include "gui/dsp/region.h"
-
-#include "dsp/position.h"
 #include "utils/audio.h"
-#include "utils/types.h"
-
-class StereoPorts;
 
 /**
  * @addtogroup dsp
@@ -43,7 +38,7 @@ constexpr int AUDIO_REGION_BUILTIN_FADE_FRAMES = 10;
 class AudioRegion final
     : public QObject,
       public RegionImpl<AudioRegion>,
-      public LaneOwnedObjectImpl<AudioRegion>,
+      public LaneOwnedObject,
       public FadeableObject,
       public ICloneable<AudioRegion>,
       public zrythm::utils::serialization::ISerializable<AudioRegion>
@@ -57,137 +52,11 @@ public:
   using BitDepth = AudioClip::BitDepth;
 
 public:
-  AudioRegion (QObject * parent = nullptr);
-
-  /**
-   * @brief Creates an audio region from a pool ID.
-   *
-   * @see init_default_constructed().
-   *
-   * @throw ZrythmException if the region couldn't be created.
-   */
+  AudioRegion (const DeserializationDependencyHolder &dh);
   AudioRegion (
-    AudioClip::PoolId              pool_id,
-    Position                       start_pos,
-    dsp::PortIdentifier::TrackUuid track_uuid,
-    int                            lane_pos,
-    int                            idx_inside_lane,
-    QObject *                      parent = nullptr)
-      : AudioRegion (parent)
-  {
-    init_default_constructed (
-      pool_id, std::nullopt, true, nullptr, std::nullopt, std::nullopt,
-      std::nullopt, std::nullopt, std::move (start_pos), track_uuid, lane_pos,
-      idx_inside_lane);
-  }
-
-  /**
-   * @brief Creates an audio region from an audio file.
-   *
-   * @see init_default_constructed().
-   *
-   * @throw ZrythmException if the region couldn't be created.
-   */
-  AudioRegion (
-    fs::path                       filepath,
-    Position                       start_pos,
-    dsp::PortIdentifier::TrackUuid track_uuid,
-    int                            lane_pos,
-    int                            idx_inside_lane,
-    QObject *                      parent = nullptr)
-      : AudioRegion (parent)
-  {
-    init_default_constructed (
-      std::nullopt, std::move (filepath), false, nullptr, std::nullopt,
-      std::nullopt, std::nullopt, std::nullopt, std::move (start_pos),
-      track_uuid, lane_pos, idx_inside_lane);
-  }
-
-  /**
-   * @brief Creates a region from an audio buffer.
-   *
-   * @see init_default_constructed().
-   *
-   * @throw ZrythmException if the region couldwn't be created.
-   */
-  AudioRegion (
-    const utils::audio::AudioBuffer &audio_buffer,
-    bool                             read_from_pool,
-    std::string                      clip_name,
-    AudioClip::BitDepth              bit_depth,
-    Position                         start_pos,
-    dsp::PortIdentifier::TrackUuid   track_uuid,
-    int                              lane_pos,
-    int                              idx_inside_lane,
-    QObject *                        parent = nullptr)
-      : AudioRegion (parent)
-  {
-    init_default_constructed (
-      std::nullopt, std::nullopt, read_from_pool, &audio_buffer, std::nullopt,
-      std::nullopt, std::move (clip_name), bit_depth, std::move (start_pos),
-      track_uuid, lane_pos, idx_inside_lane);
-  }
-
-  /**
-   * @brief Creates a region for recording.
-   *
-   * @see init_default_constructed().
-   *
-   * @throw ZrythmException if the region couldwn't be created.
-   */
-  AudioRegion (
-    bool                           read_from_pool,
-    std::string                    clip_name,
-    unsigned_frame_t               num_frames_for_recording,
-    channels_t                     num_channels_for_recording,
-    Position                       start_pos,
-    dsp::PortIdentifier::TrackUuid track_uuid,
-    int                            lane_pos,
-    int                            idx_inside_lane,
-    QObject *                      parent = nullptr)
-      : AudioRegion (parent)
-  {
-    init_default_constructed (
-      std::nullopt, std::nullopt, read_from_pool, nullptr,
-      num_frames_for_recording, num_channels_for_recording,
-      std::move (clip_name), BitDepth::BIT_DEPTH_32, std::move (start_pos),
-      track_uuid, lane_pos, idx_inside_lane);
-  }
-
-  using LaneOwnedObjectT = LaneOwnedObjectImpl<AudioRegion>;
-
-  /**
-   * @brief Initializes a default-constructed audio region.
-   *
-   * This is called by the explicit constructor.
-   *
-   * @param pool_id The pool ID. This is used when creating clone regions
-   * (non-main) and must be -1 when creating a new clip.
-   * @param filepath File path, if loading from file.
-   * @param read_from_pool
-   * Whether to save the given @p filename or @p frames to pool and read the
-   * data from the pool. Only used if @p filename or @p frames is given.
-   * @param num_frames_for_recording Number of frames for recording.
-   * @param num_channels_for_recording Number of channels for recording.
-   * @param audio_buffer Samples (optional).
-   * @param clip_name Name of audio clip, if not loading from file.
-   * @param bit_depth Bit depth, if using @ref frames.
-   *
-   * @throw ZrythmException if the region couldwn't be created.
-   */
-  void init_default_constructed (
-    std::optional<AudioClip::PoolId>      pool_id,
-    std::optional<fs::path>               filepath,
-    bool                                  read_from_pool,
-    const utils::audio::AudioBuffer *     audio_buffer,
-    std::optional<unsigned_frame_t>       num_frames_for_recording,
-    std::optional<channels_t>             num_channels_for_recording,
-    std::optional<std::string>            clip_name,
-    std::optional<utils::audio::BitDepth> bit_depth,
-    Position                              start_pos,
-    dsp::PortIdentifier::TrackUuid        track_uuid,
-    int                                   lane_pos,
-    int                                   idx_inside_lane);
+    ArrangerObjectRegistry      &obj_registry,
+    const AudioClipResolverFunc &clip_resolver,
+    QObject *                    parent = nullptr);
 
   void init_loaded () override;
 
@@ -196,20 +65,15 @@ public:
    */
   AudioClip * get_clip () const;
 
+  auto get_clip_id () const { return clip_id_; }
+
   /**
    * Sets the clip ID on the region and updates any
    * references.
    */
-  void set_clip_id (int clip_id);
+  void set_clip_id (const AudioClip::Uuid &clip_id) { clip_id_ = clip_id; }
 
   bool get_muted (bool check_parent) const override;
-
-  void append_children (
-    std::vector<RegionOwnedObjectImpl<AudioRegion> *> &children) const override
-  {
-  }
-
-  void add_ticks_to_children (const double ticks) override { }
 
   /**
    * Returns whether the region is effectively in musical mode.
@@ -221,8 +85,6 @@ public:
    *
    * @warning Not realtime safe.
    *
-   * @param duplicate_clip Whether to duplicate the clip (eg, when other
-   * regions refer to it).
    * @param frames Source frames.
    * @param start_frame Frame to start copying to (@p src_frames are always
    * copied from the start).
@@ -231,28 +93,7 @@ public:
    */
   void replace_frames (
     const utils::audio::AudioBuffer &src_frames,
-    unsigned_frame_t                 start_frame,
-    bool                             duplicate_clip);
-
-  /**
-   * Replaces the region's frames starting from @p start_frame with @p frames.
-   *
-   * @warning Not realtime safe.
-   *
-   * @param duplicate_clip Whether to duplicate the clip (eg, when other
-   * regions refer to it).
-   * @param frames Frames, interleaved.
-   * @param start_frame Frame to start copying to (@p src_frames are always
-   * copied from the start).
-   *
-   * @throw ZrythmException if the frames couldn't be replaced.
-   */
-  void replace_frames_from_interleaved (
-    const float *    interleaved_frames,
-    unsigned_frame_t start_frame,
-    unsigned_frame_t num_frames_per_channel,
-    channels_t       channels,
-    bool             duplicate_clip);
+    unsigned_frame_t                 start_frame);
 
   /**
    * Fills audio data from the region.
@@ -285,17 +126,25 @@ public:
   void init_after_cloning (const AudioRegion &other, ObjectCloneType clone_type)
     override;
 
+  // ==========================================================================
+  // Playback caches
+  // ==========================================================================
+  void prepare_to_play (size_t max_expected_samples);
+  void release_resources ();
+  // ==========================================================================
+
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 public:
-  /** Audio pool ID of the associated audio file, mostly used during
-   * serialization. */
-  int pool_id_ = -1;
+  AudioClipResolverFunc clip_resolver_;
+
+  /** ID of the associated AudioClip to be resolved with @ref clip_resolver_. */
+  AudioClip::Uuid clip_id_;
 
   /**
    * Whether to read the clip from the pool (used in most cases).
    */
-  bool read_from_pool_ = false;
+  // bool read_from_pool_ = false;
 
   /** Gain to apply to the audio (amplitude 0.0-2.0). */
   float gain_ = 1.0f;
@@ -303,15 +152,15 @@ public:
   /**
    * Clip to read frames from, if not from the pool.
    */
-  std::unique_ptr<AudioClip> clip_;
+  // std::unique_ptr<AudioClip> clip_;
 
   /** Musical mode setting. */
-  MusicalMode musical_mode_ = (MusicalMode) 0;
+  MusicalMode musical_mode_{};
 
   /**
-   * @brief Temporary buffers used during audio processing.
+   * @brief Temporary buffer used during audio processing.
    */
-  mutable std::array<std::array<float, 0x4000>, 2> tmp_bufs_{};
+  std::unique_ptr<juce::AudioSampleBuffer> tmp_buf_;
 };
 
 inline bool
@@ -335,11 +184,11 @@ operator== (const AudioRegion &lhs, const AudioRegion &rhs)
 }
 
 DEFINE_OBJECT_FORMATTER (AudioRegion, AudioRegion, [] (const AudioRegion &ar) {
-  return fmt::format ("AudioRegion[id: {}]", ar.id_);
+  return fmt::format ("AudioRegion[id: {}]", ar.get_uuid ());
 })
 
 /**
  * @}
  */
 
-#endif // __AUDIO_AUDIO_REGION_H__
+#endif // DSP_AUDIO_REGION_H

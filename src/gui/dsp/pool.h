@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_POOL_H__
@@ -30,7 +30,11 @@ struct AudioPool final
       public zrythm::utils::serialization::ISerializable<AudioPool>
 {
 public:
-  AudioPool (AudioEngine * engine = nullptr);
+  AudioPool (const DeserializationDependencyHolder &dh)
+      : AudioPool (dh.get<std::reference_wrapper<AudioEngine>> ().get ())
+  {
+  }
+  AudioPool (AudioEngine &engine);
 
 public:
   /**
@@ -38,17 +42,18 @@ public:
    *
    * @throw ZrythmException if an error occurred.
    */
-  void init_loaded (AudioEngine * engine);
+  void init_loaded ();
+
+  // AudioClip * resolve_clip_from_id (const AudioClip::Uuid &clip_id) override;
 
   /**
-   * Adds an audio clip to the pool.
+   * @brief Takes ownership of the given clip.
    *
    * Changes the name of the clip if another clip with the same name already
    * exists.
    *
-   * @return The ID in the pool.
    */
-  int add_clip (std::unique_ptr<AudioClip> &&clip);
+  void register_clip (std::shared_ptr<AudioClip> clip);
 
   /**
    * Duplicates the clip with the given ID and returns the duplicate.
@@ -58,12 +63,13 @@ public:
    *
    * @throw ZrythmException If the file could not be written.
    */
-  int duplicate_clip (int clip_id, bool write_file);
+  auto duplicate_clip (const AudioClip::Uuid &clip_id, bool write_file)
+    -> AudioClip::Uuid;
 
   /**
    * Returns the clip for the given ID.
    */
-  AudioClip * get_clip (int clip_id);
+  AudioClip * get_clip (const AudioClip::Uuid &clip_id);
 
   /**
    * Gets the path of a clip matching @ref name from the pool.
@@ -98,7 +104,10 @@ public:
    * @param backup Whether to remove from backup directory.
    * @throw ZrythmException If the file could not be removed.
    */
-  void remove_clip (int clip_id, bool free_and_remove_file, bool backup);
+  void remove_clip (
+    const AudioClip::Uuid &clip_id,
+    bool                   free_and_remove_file,
+    bool                   backup);
 
   /**
    * Removes and frees (and removes the files for) all clips not used by the
@@ -155,23 +164,16 @@ public:
 private:
   bool name_exists (const std::string &name) const;
 
-  /**
-   * Returns the next available ID.
-   */
-  int get_next_id () const;
-
-public:
-  /**
-   * Audio clips.
-   *
-   * @warning May contain NULLs.
-   */
-  std::vector<std::unique_ptr<AudioClip>> clips_;
-
+private:
   /**
    * @brief Owner engine.
    */
-  AudioEngine * engine_ = nullptr;
+  AudioEngine &engine_;
+
+  /**
+   * Audio clips.
+   */
+  QHash<AudioClip::Uuid, std::shared_ptr<AudioClip>> clips_;
 };
 
 /**

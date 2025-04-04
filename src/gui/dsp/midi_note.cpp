@@ -11,36 +11,19 @@
 #include "dsp/position.h"
 #include <fmt/format.h>
 
-MidiNote::MidiNote (QObject * parent)
-    : ArrangerObject (Type::MidiNote), QObject (parent), BoundedObject ()
-{
-  ArrangerObject::parent_base_qproperties (*this);
-  BoundedObject::parent_base_qproperties (*this);
-}
-
-MidiNote::MidiNote (
-  const RegionIdentifier &region_id,
-  Position                start_pos,
-  Position                end_pos,
-  uint8_t                 val,
-  uint8_t                 vel,
-  QObject *               parent)
+MidiNote::MidiNote (ArrangerObjectRegistry &obj_registry, QObject * parent)
     : ArrangerObject (Type::MidiNote), QObject (parent),
-      RegionOwnedObjectImpl (region_id), BoundedObject (),
-      vel_ (new Velocity (this, vel)), pitch_ (val)
+      RegionOwnedObject (obj_registry), vel_ (new Velocity (this))
 {
   ArrangerObject::parent_base_qproperties (*this);
   BoundedObject::parent_base_qproperties (*this);
-  *static_cast<Position *> (pos_) = start_pos;
-  *static_cast<Position *> (end_pos_) = end_pos;
 }
 
 void
 MidiNote::init_loaded ()
 {
   ArrangerObject::init_loaded_base ();
-  RegionOwnedObjectImpl::init_loaded_base ();
-  vel_->midi_note_ = this;
+  RegionOwnedObject::init_loaded_base ();
 }
 
 std::string
@@ -48,26 +31,33 @@ MidiNote::print_to_str () const
 {
   auto r = get_region ();
   auto region = r ? r->get_name () : "unknown";
-  auto lane = r ? r->get_lane ()->get_name () : "unknown";
+  auto lane = r ? r->get_lane ().get_name () : "unknown";
   return fmt::format (
     "[Region '{}' : Lane '{}'] => MidiNote #{}: {} ~ {} | pitch: {} | velocity: {}",
-    region, lane, index_, *pos_, *end_pos_, pitch_, vel_->vel_);
+    region, lane, get_uuid (), *pos_, *end_pos_, pitch_, vel_->vel_);
 }
 
 ArrangerObjectPtrVariant
 MidiNote::add_clone_to_project (bool fire_events) const
 {
+  return {};
+#if 0
   auto ret = clone_raw_ptr ();
   get_region ()->append_object (ret, true);
   return ret;
+#endif
 }
 
 ArrangerObjectPtrVariant
 MidiNote::insert_clone_to_project () const
 {
+  return {};
+// TODO
+#if 0
   auto ret = clone_raw_ptr ();
   get_region ()->insert_object (ret, index_, true);
   return ret;
+#endif
 }
 
 std::string
@@ -153,7 +143,7 @@ MidiNote::get_val_as_string (PianoRoll::NoteNotation notation, bool use_markup)
       auto buf = fmt::format ("{}<sup>{}</sup>", note_str, note_val);
       if (DEBUGGING)
         {
-          buf += fmt::format (" ({})", index_);
+          buf += fmt::format (" ({})", get_uuid ());
         }
       return buf;
     }
@@ -162,7 +152,7 @@ MidiNote::get_val_as_string (PianoRoll::NoteNotation notation, bool use_markup)
 }
 
 void
-MidiNote::set_val (const uint8_t val)
+MidiNote::set_pitch (const uint8_t val)
 {
   z_return_if_fail (val < 128);
 
@@ -195,7 +185,7 @@ void
 MidiNote::shift_pitch (const int delta)
 {
   pitch_ = (uint8_t) ((int) pitch_ + delta);
-  set_val (pitch_);
+  set_pitch (pitch_);
 }
 
 void
@@ -203,7 +193,7 @@ MidiNote::init_after_cloning (const MidiNote &other, ObjectCloneType clone_type)
 
 {
   pitch_ = other.pitch_;
-  vel_ = new Velocity (this, other.vel_->vel_);
+  vel_->setValue (other.vel_->getValue ());
   currently_listened_ = other.currently_listened_;
   last_listened_pitch_ = other.last_listened_pitch_;
   vel_->vel_at_start_ = other.vel_->vel_at_start_;
@@ -216,11 +206,16 @@ MidiNote::init_after_cloning (const MidiNote &other, ObjectCloneType clone_type)
 std::optional<ArrangerObjectPtrVariant>
 MidiNote::find_in_project () const
 {
-  auto * r = MidiRegion::find (region_id_);
+  // TODO remove this method
+  return std::nullopt;
+#if 0
+  auto * r =
+    std::get<MidiRegion *> (*PROJECT->find_arranger_object_by_id (region_id_));
   z_return_val_if_fail (
     r && static_cast<int> (r->midi_notes_.size ()) > index_, std::nullopt);
 
   return r->midi_notes_[index_];
+#endif
 }
 
 bool

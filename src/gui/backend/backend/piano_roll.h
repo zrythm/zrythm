@@ -98,6 +98,7 @@ class PianoRoll final
   Q_OBJECT
   QML_ELEMENT
   DEFINE_EDITOR_SETTINGS_QML_PROPERTIES
+  Q_PROPERTY (int keyHeight READ getKeyHeight NOTIFY keyHeightChanged)
 public:
   /**
    * Highlighting for the piano roll.
@@ -118,17 +119,55 @@ public:
 
   PianoRoll (QObject * parent = nullptr) : QObject (parent) { }
 
+private:
+  static constexpr std::array<bool, 12> BLACK_NOTES = {
+    false, true,  false, true,  false, false,
+    true,  false, true,  false, true,  false
+  };
+
 public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
+  // ============================================================================
+  // QML Interface
+  // ============================================================================
+
+  int getKeyHeight () const { return note_height_; }
+
+  Q_SIGNAL void keyHeightChanged ();
+
+  Q_INVOKABLE int getKeyAtY (double y) const;
   /**
    * Returns if the key is black.
    */
-  bool is_key_black (int note);
+  Q_INVOKABLE static constexpr bool isBlackKey (int note)
+  {
+    return BLACK_NOTES.at (note % 12);
+  }
+  Q_INVOKABLE static constexpr bool isWhiteKey (int note)
+  {
+    return !isBlackKey (note);
+  }
 
-  bool is_next_key_black (int note) { return is_key_black (note + 1); }
+  Q_INVOKABLE static constexpr bool isNextKeyBlack (int note)
+  {
+    return isBlackKey (note + 1);
+  }
+  Q_INVOKABLE static constexpr bool isNextKeyWhite (int note)
+  {
+    return isWhiteKey (note + 1);
+  }
 
-  bool is_prev_key_black (int note) { return is_key_black (note - 1); }
+  Q_INVOKABLE static constexpr bool isPrevKeyBlack (int note)
+  {
+    return isBlackKey (note - 1);
+  }
+  Q_INVOKABLE static constexpr bool isPrevKeyWhite (int note)
+  {
+    return isWhiteKey (note - 1);
+  }
+
+  // ============================================================================
 
   /**
    * Adds the note if it doesn't exist in @ref current_notes_.
@@ -219,6 +258,9 @@ private:
 public:
   /** Notes zoom level. */
   float notes_zoom_ = 1.0f;
+
+  /// Visual height per key in pixels
+  int note_height_{ 16 };
 
   /** Selected MidiModifier. */
   MidiModifier midi_modifier_ = MidiModifier::Velocity;

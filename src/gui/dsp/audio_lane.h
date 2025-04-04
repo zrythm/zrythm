@@ -19,14 +19,18 @@ class AudioLane final
   DEFINE_TRACK_LANE_QML_PROPERTIES (AudioLane)
 
 public:
-  using RegionT = MidiRegion;
+  using RegionT = AudioRegion;
 
 public:
-  AudioLane ();
+  AudioLane (const DeserializationDependencyHolder &dh)
+      : AudioLane (
+          &dh.get<std::reference_wrapper<LanedTrackImpl<AudioLane>>> ().get ())
+  {
+  }
   /**
    * @see TrackLaneImpl::TrackLaneImpl
    */
-  AudioLane (LanedTrackImpl<AudioLane> * track, int pos);
+  AudioLane (LanedTrackImpl<AudioLane> * track);
 
   void init_after_cloning (const AudioLane &other, ObjectCloneType clone_type) override;
 

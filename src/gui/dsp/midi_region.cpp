@@ -30,6 +30,7 @@
 #include <algorithm>
 
 #include "gui/backend/backend/project.h"
+#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/io/midi_file.h"
 #include "gui/dsp/midi_event.h"
@@ -45,95 +46,14 @@
 #include "midilib/src/midifile.h"
 #include "midilib/src/midiutil.h"
 
-MidiRegion::MidiRegion (QObject * parent)
-    : ArrangerObject (Type::Region), QAbstractListModel (parent)
+MidiRegion::MidiRegion (ArrangerObjectRegistry &obj_registry, QObject * parent)
+    : ArrangerObject (Type::MidiRegion), Region (obj_registry),
+      QAbstractListModel (parent)
 {
-  id_.type_ = RegionType::Midi;
   ArrangerObject::parent_base_qproperties (*this);
   BoundedObject::parent_base_qproperties (*this);
   init_colored_object ();
   unended_notes_.reserve (12000);
-}
-
-MidiRegion::MidiRegion (
-  const Position                &start_pos,
-  const Position                &end_pos,
-  dsp::PortIdentifier::TrackUuid track_uuid,
-  int                            lane_pos,
-  int                            idx_inside_lane,
-  QObject *                      parent)
-    : MidiRegion (parent)
-{
-  init (
-    start_pos, end_pos, track_uuid, lane_pos, idx_inside_lane,
-    AUDIO_ENGINE->ticks_per_frame_);
-}
-MidiRegion::MidiRegion (
-  const Position                &pos,
-  ChordDescriptor               &descr,
-  dsp::PortIdentifier::TrackUuid track_uuid,
-  int                            lane_pos,
-  int                            idx_inside_lane,
-  QObject *                      parent)
-    : MidiRegion (parent)
-{
-  int r_length_ticks = SNAP_GRID_TIMELINE->get_default_ticks ();
-  int mn_length_ticks = SNAP_GRID_EDITOR->get_default_ticks ();
-
-  /* get region end pos */
-  Position r_end_pos = pos;
-  r_end_pos.add_ticks (r_length_ticks, AUDIO_ENGINE->frames_per_tick_);
-
-  /* create region */
-  init (
-    pos, r_end_pos, track_uuid, lane_pos, idx_inside_lane,
-    AUDIO_ENGINE->ticks_per_frame_);
-
-  /* get midi note positions */
-  Position mn_pos, mn_end_pos;
-  mn_end_pos.add_ticks (mn_length_ticks, AUDIO_ENGINE->frames_per_tick_);
-
-  /* create midi notes */
-  for (size_t i = 0; i < ChordDescriptor::MAX_NOTES; i++)
-    {
-      if (descr.notes_[i])
-        {
-          append_object (
-            new MidiNote (
-              id_, mn_pos, mn_end_pos, i + 36, VELOCITY_DEFAULT, this),
-            false);
-        }
-    }
-}
-
-MidiRegion::MidiRegion (
-  const Position                &start_pos,
-  const std::string             &abs_path,
-  dsp::PortIdentifier::TrackUuid track_uuid,
-  int                            lane_pos,
-  int                            idx_inside_lane,
-  int                            midi_track_idx,
-  QObject *                      parent)
-    : MidiRegion (parent)
-{
-  z_debug ("reading from {}...", abs_path);
-
-  Position end_pos = start_pos;
-  end_pos.add_ticks (1, AUDIO_ENGINE->frames_per_tick_);
-  init (
-    start_pos, end_pos, track_uuid, lane_pos, idx_inside_lane,
-    AUDIO_ENGINE->ticks_per_frame_);
-
-  MidiFile mf (abs_path);
-  mf.into_region (*this, *TRANSPORT, midi_track_idx);
-
-  if (*pos_ >= end_pos_)
-    {
-      throw ZrythmException (
-        fmt::format ("Invalid positions: start {} end {}", *pos_, *end_pos_));
-    }
-
-  z_info ("done ~ {} MIDI notes read", midi_notes_.size ());
 }
 
 void
@@ -141,7 +61,7 @@ MidiRegion::init_loaded ()
 {
   ArrangerObject::init_loaded_base ();
   NamedObject::init_loaded_base ();
-  for (auto &note : midi_notes_)
+  for (auto * note : get_object_ptrs_view ())
     {
       note->init_loaded ();
     }
@@ -153,13 +73,16 @@ MidiRegion::init_after_cloning (
   ObjectCloneType   clone_type)
 {
   midi_notes_.reserve (other.midi_notes_.size ());
-  for (const auto &note : other.midi_notes_)
+// TODO
+#if 0
+  for (const auto &note : other.get_object_ptrs_view ())
     {
       auto * clone = note->clone_raw_ptr ();
       clone->setParent (this);
-      midi_notes_.push_back (clone);
+      midi_notes_.push_back (clone->get_uuid ());
     }
-  LaneOwnedObjectImpl::copy_members_from (other, clone_type);
+#endif
+  LaneOwnedObject::copy_members_from (other, clone_type);
   Region::copy_members_from (other, clone_type);
   TimelineObject::copy_members_from (other, clone_type);
   NamedObject::copy_members_from (other, clone_type);
@@ -195,7 +118,7 @@ MidiRegion::data (const QModelIndex &index, int role) const
 
   if (role == MidiNotePtrRole)
     {
-      return QVariant::fromValue (midi_notes_.at (index.row ()));
+      return QVariant::fromValue (get_object_ptrs_view ()[index.row ()]);
     }
   return {};
 }
@@ -205,7 +128,7 @@ MidiRegion::data (const QModelIndex &index, int role) const
 void
 MidiRegion::print_midi_notes () const
 {
-  for (const auto &mn : midi_notes_)
+  for (const auto &mn : get_object_ptrs_view ())
     {
       z_info ("Note");
       mn->print ();
@@ -222,9 +145,9 @@ MidiRegion::print_to_str () const
 MidiNote *
 MidiRegion::pop_unended_note (int pitch)
 {
-  auto it = std::find_if (
-    unended_notes_.begin (), unended_notes_.end (),
-    [pitch] (MidiNote * mn) { return pitch == -1 || mn->pitch_ == pitch; });
+  auto it = std::ranges::find_if (unended_notes_, [pitch] (const auto mn) {
+    return pitch == -1 || mn->pitch_ == pitch;
+  });
 
   if (it != unended_notes_.end ())
     {
@@ -239,31 +162,32 @@ MidiRegion::pop_unended_note (int pitch)
 MidiNote *
 MidiRegion::get_first_midi_note ()
 {
-  return midi_notes_.empty () ? nullptr : midi_notes_.front ();
+  return midi_notes_.empty () ? nullptr : get_object_ptrs_view ().front ();
 }
 
 MidiNote *
 MidiRegion::get_last_midi_note ()
 {
-  return (*std::ranges::max_element (midi_notes_,{},  &MidiNote::end_pos_));
+  auto notes = get_object_ptrs_view ();
+  return (*std::ranges::max_element (notes, {}, &MidiNote::end_pos_));
 }
 
 MidiNote *
 MidiRegion::get_highest_midi_note ()
 {
-  return (
-    *std::ranges::max_element (midi_notes_, [] (const auto &a, const auto &b) {
-      return a->pitch_ < b->pitch_;
-    }));
+  auto notes = get_object_ptrs_view ();
+  return (*std::ranges::max_element (notes, [] (const auto &a, const auto &b) {
+    return a->pitch_ < b->pitch_;
+  }));
 }
 
 MidiNote *
 MidiRegion::get_lowest_midi_note ()
 {
-  return (
-    *std::ranges::min_element (midi_notes_, [] (const auto &a, const auto &b) {
-      return a->pitch_ < b->pitch_;
-    }));
+  auto notes = get_object_ptrs_view ();
+  return (*std::ranges::min_element (notes, [] (const auto &a, const auto &b) {
+    return a->pitch_ < b->pitch_;
+  }));
 }
 
 void
@@ -288,9 +212,15 @@ MidiRegion::start_unended_note (
       end_pos.add_ticks (1, AUDIO_ENGINE->frames_per_tick_);
     }
 
-  auto * mn = new MidiNote (id_, *start_pos, end_pos, pitch, vel, this);
-
-  append_object (mn, pub_events);
+  auto mn_builder =
+    ArrangerObjectFactory::get_instance ()->get_builder<MidiNote> ();
+  auto * mn =
+    mn_builder.with_start_ticks (start_pos->ticks_)
+      .with_end_ticks (end_pos.ticks_)
+      .with_pitch (pitch)
+      .with_velocity (vel)
+      .build ();
+  append_object (mn->get_uuid ());
 
   /* add to unended notes */
   unended_notes_.push_back (mn);
@@ -349,13 +279,12 @@ uint8_t
 MidiRegion::get_midi_ch () const
 {
   uint8_t ret;
-  auto    lane = get_lane ();
-  z_return_val_if_fail (lane, 1);
-  if (lane->midi_ch_ > 0)
-    ret = lane->midi_ch_;
+  auto   &lane = get_lane ();
+  if (lane.midi_ch_ > 0)
+    ret = lane.midi_ch_;
   else
     {
-      auto track = lane->get_track ();
+      auto * track = lane.get_track ();
       z_return_val_if_fail (track, 1);
       auto piano_roll_track = dynamic_cast<PianoRollTrack *> (track);
       ret = piano_roll_track->midi_ch_;
@@ -441,7 +370,7 @@ MidiRegion::add_events (
     (get_length_in_ticks () - loop_start_pos_.ticks_ + clip_start_pos_.ticks_)
     / loop_length_in_ticks);
 
-  for (auto &mn : midi_notes_)
+  for (const auto * mn : get_object_ptrs_view ())
     {
       if (full && !is_note_playable (*mn))
         {
@@ -508,9 +437,10 @@ MidiRegion::get_velocities_in_range (
   bool                     inside)
 {
   Position global_start_pos;
-  for (auto &mn : midi_notes_)
+  for (const auto * mn : get_object_ptrs_view ())
     {
-      mn->get_global_start_pos (global_start_pos);
+      mn->get_global_start_pos (
+        global_start_pos, AUDIO_ENGINE->frames_per_tick_);
 
       if (
         inside && global_start_pos >= *start_pos && global_start_pos <= *end_pos)

@@ -8,6 +8,7 @@
 #include "gui/backend/backend/clip_editor.h"
 #include "gui/backend/backend/timeline.h"
 #include "gui/backend/tool.h"
+#include "gui/dsp/arranger_object_factory.h"
 #include "gui/dsp/engine.h"
 #include "gui/dsp/midi_mapping.h"
 #include "gui/dsp/plugin.h"
@@ -106,6 +107,9 @@ class Project final
   Q_PROPERTY (ClipEditor * clipEditor READ getClipEditor CONSTANT FINAL)
   Q_PROPERTY (
     gui::actions::UndoManager * undoManager READ getUndoManager CONSTANT FINAL)
+  Q_PROPERTY (
+    ArrangerObjectFactory * arrangerObjectFactory READ getArrangerObjectFactory
+      CONSTANT FINAL)
 
 public:
   using QuantizeOptions = zrythm::gui::old_dsp::QuantizeOptions;
@@ -163,6 +167,7 @@ public:
   gui::backend::Tool *        getTool () const;
   ClipEditor *                getClipEditor () const;
   gui::actions::UndoManager * getUndoManager () const;
+  ArrangerObjectFactory *     getArrangerObjectFactory () const;
 
   Q_SIGNAL void titleChanged (const QString &title);
   Q_SIGNAL void directoryChanged (const QString &directory);
@@ -590,9 +595,11 @@ public:
    *
    * Must be free'd before engine and port connection manager.
    */
-  Tracklist * tracklist_ = nullptr;
+  Tracklist * tracklist_{};
 
-  gui::actions::UndoManager * undo_manager_ = nullptr;
+  gui::actions::UndoManager * undo_manager_{};
+
+  ArrangerObjectFactory * arranger_object_factory_{};
 
   /** Used when deserializing projects. */
   int format_major_ = 0;

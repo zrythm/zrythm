@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/project.h"
@@ -7,25 +7,13 @@
 #include "gui/dsp/chord_track.h"
 #include "gui/dsp/tracklist.h"
 
-ChordRegion::ChordRegion (QObject * parent)
-    : ArrangerObject (Type::Region), QAbstractListModel (parent)
+ChordRegion::ChordRegion (ArrangerObjectRegistry &obj_registry, QObject * parent)
+    : ArrangerObject (Type::ChordRegion), Region (obj_registry),
+      QAbstractListModel (parent)
 {
   ArrangerObject::parent_base_qproperties (*this);
   BoundedObject::parent_base_qproperties (*this);
   init_colored_object ();
-}
-
-ChordRegion::ChordRegion (
-  const Position &start_pos,
-  const Position &end_pos,
-  int             idx,
-  double          ticks_per_frame,
-  QObject *       parent)
-    : ChordRegion (parent)
-{
-  id_.type_ = RegionType::Chord;
-
-  init (start_pos, end_pos, P_CHORD_TRACK->get_uuid (), 0, idx, ticks_per_frame);
 }
 
 void
@@ -33,7 +21,7 @@ ChordRegion::init_loaded ()
 {
   ArrangerObject::init_loaded_base ();
   NamedObject::init_loaded_base ();
-  for (auto &chord : chord_objects_)
+  for (const auto &chord : get_object_ptrs_view ())
     {
       chord->init_loaded ();
     }
@@ -47,12 +35,14 @@ ChordRegion::init_after_cloning (
   // init (
   // *other.pos_, *other.end_pos_, other.id_.track_name_hash_, 0, other.id_.idx_);
   chord_objects_.reserve (other.chord_objects_.size ());
-  for (const auto &chord : other.chord_objects_)
+// TODO
+#if 0
+  for (const auto * chord : get_object_ptrs_view ())
     {
-      auto * new_chord = chord->clone_raw_ptr ();
-      new_chord->setParent (this);
-      chord_objects_.push_back (new_chord);
+      auto * new_chord = chord->clone_and_register (object_registry_);
+      chord_objects_.push_back (new_chord->get_uuid ());
     }
+#endif
   RegionT::copy_members_from (other, clone_type);
   TimelineObject::copy_members_from (other, clone_type);
   NamedObject::copy_members_from (other, clone_type);
@@ -90,7 +80,8 @@ ChordRegion::data (const QModelIndex &index, int role) const
 
   if (role == ChordObjectPtrRole)
     {
-      return QVariant::fromValue (chord_objects_.at (index.row ()));
+      return QVariant::fromValue<ChordObject *> (
+        get_object_ptrs_view ()[index.row ()]);
     }
   return {};
 }
@@ -100,11 +91,13 @@ ChordRegion::data (const QModelIndex &index, int role) const
 bool
 ChordRegion::validate (bool is_project, double frames_per_tick) const
 {
+#if 0
   int idx = 0;
-  for (auto &chord : chord_objects_)
+  for (const auto &chord : get_object_ptrs_view ())
     {
       z_return_val_if_fail (chord->index_ == idx++, false);
     }
+#endif
 
   if (
     !Region::are_members_valid (is_project)

@@ -8,8 +8,6 @@
 
 #include "gui/dsp/automation_point.h"
 #include "gui/dsp/recording_event.h"
-#include "gui/dsp/region_identifier.h"
-
 #include "utils/mpmc_queue.h"
 #include "utils/object_pool.h"
 #include "utils/types.h"
@@ -157,10 +155,8 @@ public:
 
   /**
    * Recorded region identifiers, to be used for creating the undoable actions.
-   *
-   * TODO use region pointers ?
    */
-  std::vector<RegionIdentifier> recorded_ids_;
+  std::vector<Region::Uuid> recorded_ids_;
 
   /** Pending recorded automation points. */
   std::vector<AutomationPoint *> pending_aps_;

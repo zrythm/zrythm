@@ -17,16 +17,7 @@ class MidiEvents;
 class Velocity;
 using MIDI_FILE = void;
 
-#define DEFINE_PIANO_ROLL_TRACK_QML_PROPERTIES(ClassType) \
-public: \
-  /* ================================================================ */ \
-  /* helpers */ \
-  /* ================================================================ */ \
-  Q_INVOKABLE MidiRegion * createAndAddRegionFor##ClassType ( \
-    double startTicks, int laneIndex) \
-  { \
-    return create_and_add_midi_region (startTicks, laneIndex); \
-  }
+#define DEFINE_PIANO_ROLL_TRACK_QML_PROPERTIES(ClassType)
 
 /**
  * Interface for a piano roll track.
@@ -46,8 +37,6 @@ public:
   void
   init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
     override;
-
-  MidiRegion * create_and_add_midi_region (double startTicks, int laneIndex);
 
   /**
    * Writes the track to the given MIDI file.

@@ -15,7 +15,6 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/carla_discovery.h"
 #include "gui/dsp/control_port.h"
-#include "utils/flags.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"

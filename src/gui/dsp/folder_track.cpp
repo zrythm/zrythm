@@ -6,11 +6,17 @@
 #include "gui/dsp/folder_track.h"
 
 FolderTrack::FolderTrack (
-  TrackRegistry  &track_registry,
-  PluginRegistry &plugin_registry,
-  PortRegistry   &port_registry,
-  bool            new_identity)
-    : Track (Track::Type::Folder, PortType::Unknown, PortType::Unknown)
+  TrackRegistry          &track_registry,
+  PluginRegistry         &plugin_registry,
+  PortRegistry           &port_registry,
+  ArrangerObjectRegistry &obj_registry,
+  bool                    new_identity)
+    : Track (
+        Track::Type::Folder,
+        PortType::Unknown,
+        PortType::Unknown,
+        port_registry,
+        obj_registry)
 {
   if (new_identity)
     {

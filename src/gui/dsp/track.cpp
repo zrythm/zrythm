@@ -32,7 +32,7 @@
 #include "gui/dsp/track_processor.h"
 #include "gui/dsp/tracklist.h"
 #include "utils/debug.h"
-#include "utils/flags.h"
+
 #include "utils/gtest_wrapper.h"
 #include "utils/logger.h"
 #include "utils/rt_thread_id.h"
@@ -40,8 +40,11 @@
 
 using namespace zrythm;
 
-Track::Track (Type type, PortType in_signal_type, PortType out_signal_type)
-    : type_ (type), in_signal_type_ (in_signal_type),
+Track::Track (Type type, PortType in_signal_type, PortType out_signal_type,
+PortRegistry& port_registry, ArrangerObjectRegistry& obj_registry)
+    : port_registry_(port_registry), object_registry_(obj_registry),
+      type_ (type),
+      in_signal_type_ (in_signal_type),
       out_signal_type_ (out_signal_type)
 {
   z_debug ("creating {} track", type);
@@ -87,49 +90,49 @@ Track::create_track (Track::Type type, const std::string &name, int pos)
       case Track::Type::Instrument:
         return InstrumentTrack::create_unique<InstrumentTrack> (
           PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-          PROJECT->get_port_registry (), true);
+          PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry(), true);
 
         break;
       case Track::Type::Audio:
         return AudioTrack::create_unique<AudioTrack> (
           PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-          PROJECT->get_port_registry (), true);
+          PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry(), true);
 
         break;
       case Track::Type::AudioBus:
         return AudioBusTrack::create_unique<AudioBusTrack> (
           PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-          PROJECT->get_port_registry (), true);
+          PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry(), true);
 
         break;
       case Track::Type::AudioGroup:
         return AudioGroupTrack::create_unique<AudioGroupTrack> (
           PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-          PROJECT->get_port_registry (), true);
+          PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry(), true);
 
         break;
       case Track::Type::Midi:
         return MidiTrack::create_unique<MidiTrack> (
           PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-          PROJECT->get_port_registry (), true);
+          PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry(), true);
 
         break;
       case Track::Type::MidiBus:
         return MidiBusTrack::create_unique<MidiBusTrack> (
           PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-          PROJECT->get_port_registry (), true);
+          PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry(), true);
 
         break;
       case Track::Type::MidiGroup:
         return MidiGroupTrack::create_unique<MidiGroupTrack> (
           PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-          PROJECT->get_port_registry (), true);
+          PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry(), true);
 
         break;
       case Track::Type::Folder:
         return FolderTrack::create_unique<FolderTrack> (
           PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-          PROJECT->get_port_registry (), true);
+          PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry(), true);
         break;
       case Track::Type::Master:
       case Track::Type::Chord:
@@ -148,10 +151,12 @@ Track::create_track (Track::Type type, const std::string &name, int pos)
 void
 Track::copy_members_from (const Track &other, ObjectCloneType clone_type)
 {
+  UuidIdentifiableObject::copy_members_from(
+    other
+  );
   pos_ = other.pos_;
   type_ = other.type_;
   name_ = other.name_;
-  uuid_ = other.uuid_;
   icon_name_ = other.icon_name_;
   visible_ = other.visible_;
   filtered_ = other.filtered_;
@@ -164,8 +169,7 @@ Track::copy_members_from (const Track &other, ObjectCloneType clone_type)
   comment_ = other.comment_;
   bounce_ = other.bounce_;
   bounce_to_master_ = other.bounce_to_master_;
-  frozen_ = other.frozen_;
-  pool_id_ = other.pool_id_;
+  frozen_clip_id_ = other.frozen_clip_id_;
   disconnecting_ = other.disconnecting_;
   selected_ = other.selected_;
 }
@@ -178,55 +182,68 @@ Track::create_unique_from_type (Type type)
     case Track::Type::Instrument:
       return InstrumentTrack::create_unique<InstrumentTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (), true);
+        PROJECT->get_port_registry (),
+        PROJECT->get_arranger_object_registry(), true);
     case Track::Type::Audio:
       return AudioTrack::create_unique<AudioTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (), true);
+        PROJECT->get_port_registry (),
+        PROJECT->get_arranger_object_registry(), true);
     case Track::Type::AudioBus:
       return AudioBusTrack::create_unique<AudioBusTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (), true);
+        PROJECT->get_port_registry (),
+        PROJECT->get_arranger_object_registry(), true);
     case Track::Type::AudioGroup:
       return AudioGroupTrack::create_unique<AudioGroupTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (), true);
+        PROJECT->get_port_registry (),
+        PROJECT->get_arranger_object_registry(), true);
     case Track::Type::Midi:
       return MidiTrack::create_unique<MidiTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (), true);
+        PROJECT->get_port_registry (),
+        PROJECT->get_arranger_object_registry(), true);
     case Track::Type::MidiBus:
       return MidiBusTrack::create_unique<MidiBusTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (), true);
+        PROJECT->get_port_registry (),
+        PROJECT->get_arranger_object_registry(), true);
     case Track::Type::MidiGroup:
       return MidiGroupTrack::create_unique<MidiGroupTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (), true);
+        PROJECT->get_port_registry (),
+        PROJECT->get_arranger_object_registry(), true);
     case Track::Type::Folder:
       return FolderTrack::create_unique<FolderTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (), true);
+        PROJECT->get_port_registry (),
+        PROJECT->get_arranger_object_registry(), true);
     case Track::Type::Master:
       return MasterTrack::create_unique<MasterTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (), true);
+        PROJECT->get_port_registry (),
+        PROJECT->get_arranger_object_registry(), true);
     case Track::Type::Chord:
       return ChordTrack::create_unique<ChordTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (), true);
+        PROJECT->get_port_registry (),
+        PROJECT->get_arranger_object_registry(), true);
     case Track::Type::Marker:
       return MarkerTrack::create_unique<MarkerTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (), true);
+        PROJECT->get_port_registry (),
+        PROJECT->get_arranger_object_registry(), true);
     case Track::Type::Tempo:
       return TempoTrack::create_unique<TempoTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (), true);
+        PROJECT->get_port_registry (),
+        PROJECT->get_arranger_object_registry(), true);
     case Track::Type::Modulator:
       return ModulatorTrack::create_unique<ModulatorTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (), true);
+        PROJECT->get_port_registry (),
+        PROJECT->get_arranger_object_registry(), true);
     default:
       throw std::runtime_error ("unknown track type");
     }
@@ -268,108 +285,6 @@ Track::type_get_from_plugin_descriptor (
     return Track::Type::Midi;
   else
     return Track::Type::AudioBus;
-}
-
-template <FinalRegionSubclass T>
-T *
-Track::insert_region (
-  T *               region,
-  AutomationTrack * at,
-  int               lane_pos,
-  int               idx,
-  bool              gen_name,
-  bool              fire_events)
-{
-  z_return_val_if_fail (region->validate (false, 0), nullptr);
-  z_return_val_if_fail (
-    type_can_have_region_type (type_, region->id_.type_), nullptr);
-
-  if (gen_name)
-    {
-      region->gen_name (std::nullopt, at, this);
-    }
-
-  z_return_val_if_fail (region->name_.length () > 0, nullptr);
-  z_debug (
-    "inserting region '{}' to track '{}' at lane {} (idx {})", region->name_,
-    name_, lane_pos, idx);
-
-  T * added_region = nullptr;
-  if constexpr (RegionImpl<T>::is_laned ())
-    {
-      using LanedTrackT = TrackLaneImpl<T>::LanedTrackT;
-      auto laned_track = dynamic_cast<LanedTrackT *> (this);
-      z_return_val_if_fail (laned_track, nullptr);
-
-      /* enable extra lane if necessary */
-      laned_track->create_missing_lanes (lane_pos);
-
-      auto lane = std::get<typename LanedTrackT::TrackLaneType *> (
-        laned_track->lanes_.at (lane_pos));
-      z_return_val_if_fail (lane, nullptr);
-      if (idx == -1)
-        {
-          lane->add_region (region);
-          added_region = region;
-        }
-      else
-        {
-          lane->insert_region (region, idx);
-          added_region = region;
-        }
-      z_return_val_if_fail (added_region != nullptr, nullptr);
-      z_return_val_if_fail (added_region->id_.idx_ >= 0, nullptr);
-    }
-  else if constexpr (std::is_same_v<T, AutomationRegion>)
-    {
-      z_return_val_if_fail (at, nullptr);
-      if (idx == -1)
-        {
-          at->add_region (region);
-          added_region = region;
-        }
-      else
-        {
-          at->insert_region (region, idx);
-          added_region = region;
-        }
-    }
-  else if constexpr (std::is_same_v<T, ChordRegion>)
-    {
-      auto chord_track = dynamic_cast<ChordTrack *> (this);
-      z_return_val_if_fail (chord_track, nullptr);
-
-      chord_track->RegionOwnerImpl<ChordRegion>::insert_region (
-        region, idx == -1 ? chord_track->region_list_->regions_.size () : idx);
-      added_region = region;
-    }
-  z_return_val_if_fail (added_region, nullptr);
-  z_return_val_if_fail (added_region->track_id_ == get_uuid (), nullptr);
-
-  /* write clip if audio region */
-  if constexpr (std::is_same_v<T, AudioRegion>)
-    {
-      if (!is_auditioner ())
-        {
-          auto clip = added_region->get_clip ();
-          z_return_val_if_fail (clip, nullptr);
-          AUDIO_POOL->write_clip (*clip, false, false);
-        }
-    }
-
-  z_debug ("inserted: {}", added_region->print_to_str ());
-
-  if (fire_events)
-    {
-      // EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, added_region.get ());
-
-      if constexpr (RegionImpl<T>::is_laned ())
-        {
-          // EVENTS_PUSH (EventType::ET_TRACK_LANE_ADDED, nullptr);
-        }
-    }
-
-  return added_region;
 }
 
 void
@@ -416,23 +331,6 @@ Track::remove_from_folder_parents ()
     {
       parent->size_--;
     }
-}
-
-bool
-Track::type_can_host_region_type (const Track::Type tt, const RegionType rt)
-{
-  switch (rt)
-    {
-    case RegionType::Midi:
-      return tt == Track::Type::Midi || tt == Track::Type::Instrument;
-    case RegionType::Audio:
-      return tt == Track::Type::Audio;
-    case RegionType::Automation:
-      return tt != Track::Type::Chord && tt != Track::Type::Marker;
-    case RegionType::Chord:
-      return tt == Track::Type::Chord;
-    }
-  z_return_val_if_reached (false);
 }
 
 bool
@@ -598,7 +496,7 @@ Track::disconnect (bool remove_pl, bool recalc_graph)
   /* disconnect all ports and free buffers */
   std::vector<Port *> ports;
   append_ports (ports, true);
-  for (auto port : ports)
+  for (auto *port : ports)
     {
       if (port->is_in_active_project () != is_in_active_project ())
         {
@@ -620,9 +518,8 @@ Track::disconnect (bool remove_pl, bool recalc_graph)
       ROUTER->recalc_graph (false);
     }
 
-  if (has_channel ())
+  if (auto channel_track = dynamic_cast<ChannelTrack *> (this))
     {
-      auto channel_track = dynamic_cast<ChannelTrack *> (this);
       channel_track->channel_->disconnect (remove_pl);
     }
 
@@ -667,7 +564,7 @@ Track::append_objects (std::vector<ArrangerObjectPtrVariant> &objs) const
             }
         }
 
-      if constexpr (std::derived_from<TrackT, RegionOwner>)
+      if constexpr (DerivedFromTemplatedBase<TrackT, RegionOwner>)
         {
           for (auto &region_var : self->region_list_->regions_)
             {
@@ -678,21 +575,21 @@ Track::append_objects (std::vector<ArrangerObjectPtrVariant> &objs) const
 
       if constexpr (std::is_same_v<TrackT, ChordTrack>)
         {
-          for (auto &scale : self->scales_)
+          for (auto *scale : self->get_scales_view())
             {
               objs.push_back (scale);
             }
         }
       else if constexpr (std::is_same_v<TrackT, MarkerTrack>)
         {
-          for (auto &marker : self->markers_)
+          for (auto *marker : self->get_markers())
             {
               objs.push_back (marker);
             }
         }
       if constexpr (std::derived_from<TrackT, AutomatableTrack>)
         {
-          for (auto &at : self->get_automation_tracklist ().ats_)
+          for (auto *at : self->get_automation_tracklist ().get_automation_tracks())
             {
               for (auto &region_var : at->region_list_->regions_)
                 {
@@ -919,78 +816,6 @@ Track::set_icon (const std::string &icon_name, bool undoable, bool fire_events)
       if (fire_events)
         {
           // EVENTS_PUSH (EventType::ET_TRACK_STATE_CHANGED, this);
-        }
-    }
-}
-
-void
-Track::mark_for_bounce (
-  bool bounce,
-  bool mark_regions,
-  bool mark_children,
-  bool mark_parents)
-{
-  if (!has_channel ())
-    return;
-
-  z_debug (
-    "marking {} for bounce {}, mark regions {}", name_, bounce, mark_regions);
-
-  bounce_ = bounce;
-
-  if (mark_regions)
-    {
-      if (has_lanes ())
-        {
-          std::visit (
-            [bounce] (auto &&laned_track) {
-              using TrackT = base_type<decltype (laned_track)>;
-              for (auto &lane_var : laned_track->lanes_)
-                {
-                  using LaneT = TrackT::TrackLaneType;
-                  auto lane = std::get<LaneT *> (lane_var);
-                  for (auto &region_var : lane->region_list_->regions_)
-                    {
-                      auto region =
-                        std::get<typename LaneT::RegionTPtr> (region_var);
-                      region->bounce_ = bounce;
-                    }
-                }
-            },
-            convert_to_variant<LanedTrackPtrVariant> (this));
-        }
-
-      if (auto chord_track = dynamic_cast<ChordTrack *> (this))
-        for (auto &region_var : chord_track->region_list_->regions_)
-          {
-            auto region = std::get<ChordRegion *> (region_var);
-            region->bounce_ = bounce;
-          }
-    }
-
-  if (auto channel_track = dynamic_cast<ChannelTrack *> (this))
-    {
-      auto * direct_out = channel_track->get_channel ()->get_output_track ();
-      if (direct_out && mark_parents)
-        direct_out->mark_for_bounce (bounce, false, false, true);
-    }
-
-  if (mark_children)
-    {
-      if (auto group_target_track = dynamic_cast<GroupTargetTrack *> (this))
-        {
-          for (auto child_id : group_target_track->children_)
-            {
-              if (auto child_var = TRACKLIST->get_track (child_id))
-                {
-                  std::visit (
-                    [&] (auto &&c) {
-                      c->bounce_to_master_ = bounce_to_master_;
-                      c->mark_for_bounce (bounce, mark_regions, true, false);
-                    },
-                    *child_var);
-                }
-            }
         }
     }
 }
@@ -1227,6 +1052,12 @@ Track::set_caches (CacheType types)
     }
 }
 
+void
+Track::write_audio_clip_to_pool_after_adding_audio_region (AudioClip &clip) const
+{
+  AUDIO_POOL->write_clip(clip, false, false);
+}
+
 #if 0
 GMenu *
 Track::generate_edit_context_menu (int num_selected)
@@ -1302,32 +1133,3 @@ Track::generate_edit_context_menu (int num_selected)
   return edit_submenu;
 }
 #endif
-
-template MidiRegion *
-Track::add_region (
-  MidiRegion *      region,
-  AutomationTrack * at,
-  int               lane_pos,
-  bool              gen_name,
-  bool              fire_events);
-template AudioRegion *
-Track::add_region (
-  AudioRegion *     region,
-  AutomationTrack * at,
-  int               lane_pos,
-  bool              gen_name,
-  bool              fire_events);
-template ChordRegion *
-Track::add_region (
-  ChordRegion *     region,
-  AutomationTrack * at,
-  int               lane_pos,
-  bool              gen_name,
-  bool              fire_events);
-template AutomationRegion *
-Track::add_region (
-  AutomationRegion * region,
-  AutomationTrack *  at,
-  int                lane_pos,
-  bool               gen_name,
-  bool               fire_events);

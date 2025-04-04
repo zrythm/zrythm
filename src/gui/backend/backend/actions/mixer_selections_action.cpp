@@ -80,11 +80,11 @@ MixerSelectionsAction::init_loaded_impl ()
 
   for (auto &at : ats_)
     {
-      at->init_loaded (nullptr);
+      at->init_loaded ();
     }
   for (auto &at : deleted_ats_)
     {
-      at->init_loaded (nullptr);
+      at->init_loaded ();
     }
 }
 
@@ -109,9 +109,9 @@ MixerSelectionsAction::init_after_cloning (
     ms_before_ = other.ms_before_->clone_unique ();
   if (other.deleted_ms_)
     deleted_ms_ = other.deleted_ms_->clone_unique ();
-#endif
   clone_unique_ptr_container (deleted_ats_, other.deleted_ats_);
   clone_unique_ptr_container (ats_, other.ats_);
+#endif
 }
 
 void
@@ -133,18 +133,15 @@ MixerSelectionsAction::
           std::visit (
             [&] (auto &&pl) {
               const auto slot = pl->id_.slot_;
-              for (const auto &at : atl->ats_)
+              for (const auto &at : atl->get_automation_tracks ())
                 {
-                  auto port_var = PROJECT->find_port_by_id (at->port_id_);
-                  z_return_if_fail (port_var.has_value ())
-                    const auto &port_id = std::visit (
-                      [] (auto &&p) { return *p->id_; }, port_var.value ());
+                  const auto &port_id = at->get_port ().id_;
                   if (
-                    port_id.owner_type_
+                    port_id->owner_type_
                     != dsp::PortIdentifier::OwnerType::Plugin)
                     continue;
 
-                  auto plugin_uuid = port_id.get_plugin_id ();
+                  auto plugin_uuid = port_id->get_plugin_id ();
                   z_return_if_fail (plugin_uuid.has_value ()) auto plugin_var =
                     PROJECT->find_plugin_by_id (plugin_uuid.value ());
                   z_return_if_fail (plugin_var.has_value ())
@@ -153,6 +150,8 @@ MixerSelectionsAction::
                   if (plugin_id.slot_ != slot)
                     continue;
 
+// TODO
+#if 0
                   if (deleted)
                     {
                       deleted_ats_.emplace_back (at->clone_unique ());
@@ -161,6 +160,7 @@ MixerSelectionsAction::
                     {
                       ats_.emplace_back (at->clone_unique ());
                     }
+#endif
                   count++;
                   regions_count += at->region_list_->regions_.size ();
                 }
@@ -183,10 +183,13 @@ MixerSelectionsAction::copy_at_regions (
   dest.region_list_->regions_.reserve (src.region_list_->regions_.size ());
 
   src.foreach_region ([&] (auto &src_r) {
+// TODO
+#if 0
     auto dest_region = src_r.clone_raw_ptr ();
     dest_region->set_automation_track (dest);
     dest_region->setParent (&dest);
     dest.region_list_->regions_.push_back (dest_region);
+#endif
   });
 
   if (!dest.region_list_->regions_.empty ())
@@ -360,10 +363,12 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
       using TrackT = base_type<decltype (track)>;
       if constexpr (std::derived_from<TrackT, AutomatableTrack>)
         {
+#if 0
           auto * ch =
             track->has_channel ()
               ? dynamic_cast<ChannelTrack *> (track)->channel_
               : nullptr;
+#endif
           auto own_ms = PluginSpan{ *ms_before_ };
           auto slot_type =
             create
@@ -504,7 +509,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                             pl->get_name ());
                           std::vector<Port *> ports;
                           pl->append_ports (ports);
-                          for (auto port : ports)
+                          for (auto * port : ports)
                             {
                               auto prj_port_var =
                                 PROJECT->find_port_by_id (port->get_uuid ());
@@ -517,11 +522,10 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                             }
 
                           /* copy automation from before deletion */
-                          if (track->is_automatable ())
+                          if constexpr (
+                            std::derived_from<TrackT, AutomatableTrack>)
                             {
-                              revert_automation (
-                                dynamic_cast<AutomatableTrack &> (*track),
-                                pl->id_.slot_, false);
+                              revert_automation (*track, pl->id_.slot_, false);
                             }
                         },
                         pl_var);
@@ -554,7 +558,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                           std::vector<Port *> ports, own_ports;
                           prj_pl->append_ports (ports);
                           own_pl->append_ports (own_ports);
-                          for (auto prj_port : ports)
+                          for (auto * prj_port : ports)
                             {
                               auto it = std::find_if (
                                 own_ports.begin (), own_ports.end (),
@@ -583,11 +587,6 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
           save_or_load_port_connections (do_it);
 
           ROUTER->recalc_graph (false);
-
-          if (ch)
-            {
-              /* EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, ch); */
-            }
         }
     },
     track_var);
@@ -630,10 +629,12 @@ MixerSelectionsAction::do_or_undo_change_load_behavior (bool do_it)
 
   std::visit (
     [&] (auto &&track) {
+#if 0
       auto ch =
         track->has_channel ()
           ? dynamic_cast<ChannelTrack *> (track)->channel_
           : nullptr;
+#endif
 
       for (const auto &own_pl_var : ms)
         {
@@ -688,11 +689,6 @@ MixerSelectionsAction::do_or_undo_change_load_behavior (bool do_it)
         QObject::tr (
           "Plugin load behavior changes will only take effect after you save and re-load the project"));
 #endif
-        }
-
-      if (ch)
-        {
-          /* EVENTS_PUSH (EventType::ET_CHANNEL_SLOTS_CHANGED, ch); */
         }
     },
     track_var.value ());
@@ -865,17 +861,21 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                                           ControlPort> ()))
                                     {
                                       auto * prev_at =
-                                        prev_atl.get_at_from_port_uuid (
+                                        prev_atl.get_automation_track_by_port_id (
                                           prev_port->get_uuid ());
-                                      auto * new_at = atl.get_at_from_port_uuid (
-                                        new_port->get_uuid ());
+                                      auto * new_at =
+                                        atl.get_automation_track_by_port_id (
+                                          new_port->get_uuid ());
                                       if (prev_at && new_at)
                                         {
                                           prev_at->foreach_region (
                                             [&] (auto &prev_region) {
+// TODO
+#if 0
                                               to_tr->Track::add_region (
                                                 prev_region.clone_raw_ptr (),
-                                                new_at, -1, false, false);
+                                                new_at, std::nullopt, false);
+#endif
                                             });
                                         }
                                     }
@@ -933,11 +933,12 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                   using ToTrackT = base_type<decltype (to_tr)>;
                   if constexpr (std::derived_from<ToTrackT, AutomatableTrack>)
                     {
-
+#if 0
                       [[maybe_unused]] auto * to_ch =
                         to_tr->has_channel ()
                           ? dynamic_cast<ChannelTrack *> (to_tr)->channel_
                           : nullptr;
+#endif
 
                       /* clear selections to readd each original plugin */
                       TRACKLIST->get_track_span ().deselect_all_plugins ();

@@ -406,7 +406,9 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
                 {
                   auto track_processor = tr->processor_.get ();
 
-                  if (tr->has_piano_roll () || tr->is_chord ())
+                  if constexpr (
+                    std::derived_from<TrackT, PianoRollTrack>
+                    || std::is_same_v<TrackT, ChordTrack>)
                     {
                       /* connect piano roll */
                       auto node2 = graph.get_nodes ().find_node_for_processable (

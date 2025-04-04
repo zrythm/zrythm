@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstddef>
 #include <ranges>
+#include <utility>
 
 #include "dsp/port_identifier.h"
 #include "gui/backend/backend/project.h"
@@ -19,12 +20,17 @@
 #include "utils/math.h"
 #include "utils/rt_thread_id.h"
 
-AutomationTrack::AutomationTrack (ControlPort &port)
+AutomationTrack::AutomationTrack (
+  PortRegistry            &port_registry,
+  ArrangerObjectRegistry  &obj_registry,
+  TrackGetter              track_getter,
+  const ControlPort::Uuid &port_id)
+    : port_registry_ (port_registry), object_registry_ (obj_registry),
+      track_getter_ (std::move (track_getter)), port_id_ (port_id)
 {
-  z_return_if_fail (port.id_->validate ());
-  port_id_ = port.get_uuid ();
-
-  port.at_ = this;
+  auto * port =
+    std::get<ControlPort *> (port_registry.find_by_id_or_throw (port_id));
+  port->at_ = this;
 
 #if 0
   if (ENUM_BITSET_TEST(PortIdentifier::Flags,port->id_.flags,PortIdentifier::Flags::MIDI_AUTOMATABLE))
@@ -38,10 +44,8 @@ AutomationTrack::AutomationTrack (ControlPort &port)
 }
 
 void
-AutomationTrack::init_loaded (AutomationTracklist * atl)
+AutomationTrack::init_loaded ()
 {
-  atl_ = atl;
-
   /* init regions */
   for (auto &region : region_list_->regions_)
     {
@@ -106,13 +110,15 @@ AutomationTrack::set_port_id (const PortUuid &id)
 bool
 AutomationTrack::is_in_active_project () const
 {
-  return get_track ()->is_in_active_project ();
+  return std::visit (
+    [&] (auto &&track) { return track->is_in_active_project (); }, get_track ());
 }
 
 bool
 AutomationTrack::is_auditioner () const
 {
-  return get_track ()->is_auditioner ();
+  return std::visit (
+    [&] (auto &&track) { return track->is_auditioner (); }, get_track ());
 }
 
 bool
@@ -133,19 +139,22 @@ AutomationTrack::validate () const
         }
     }
 
-  int j = -1;
+  // int j = -1;
   for (auto region_var : region_list_->regions_)
     {
       auto * region = std::get<AutomationRegion *> (region_var);
-      ++j;
+      // ++j;
+#if 0
       z_return_val_if_fail (
         region->id_.track_uuid_ == atl_->track_->get_uuid ()
           && region->id_.at_idx_ == index_ && region->id_.idx_ == j,
         false);
-      for (const auto &ap : region->aps_)
+#endif
+      for (const auto &ap : region->get_object_ptrs_view ())
         {
           z_return_val_if_fail (
-            ap->region_id_.track_uuid_ == atl_->track_->get_uuid (), false);
+            ap->get_track_id () == TrackSpan::uuid_projection (track_getter_ ()),
+            false);
         }
     }
 
@@ -155,9 +164,19 @@ AutomationTrack::validate () const
 AutomationTracklist *
 AutomationTrack::get_automation_tracklist () const
 {
-  auto * track = get_track ();
-  z_return_val_if_fail (track, nullptr);
-  return track->automation_tracklist_;
+  return std::visit (
+    [&] (auto &&track) -> AutomationTracklist * {
+      if constexpr (
+        std::derived_from<base_type<decltype (track)>, AutomatableTrack>)
+        {
+          return &track->get_automation_tracklist ();
+        }
+      else
+        {
+          throw std::runtime_error ("not an automatable track");
+        }
+    },
+    track_getter_ ());
 }
 
 AutomationRegion *
@@ -242,7 +261,7 @@ AutomationTrack::get_ap_before_pos (
       : pos.frames_,
     true);
 
-  for (auto &ap : std::ranges::reverse_view (r->aps_))
+  for (auto * ap : std::ranges::reverse_view (r->get_object_ptrs_view ()))
     {
       if (ap->pos_->frames_ <= local_pos)
         {
@@ -272,10 +291,11 @@ AutomationTrack::find_from_port (
   z_return_val_if_fail (track, nullptr);
 
   auto &atl = track->get_automation_tracklist ();
-  auto  it = std::ranges::find_if (atl.ats_, [&] (const auto &at) {
+  auto &ats = atl.get_automation_tracks ();
+  auto  it = std::ranges::find_if (ats, [&] (const auto &at) {
     return at->port_id_ == port.get_uuid ();
   });
-  z_return_val_if_fail (it != atl.ats_.end (), nullptr);
+  z_return_val_if_fail (it != ats.end (), nullptr);
   return *it;
 }
 
@@ -302,22 +322,16 @@ AutomationTrack::set_automation_mode (AutomationMode mode, bool fire_events)
   /* add to atl cache if recording */
   if (mode == AutomationMode::Record)
     {
+      auto ats_in_record_mode = atl->get_automation_tracks_in_record_mode ();
       if (
-        std::find (
-          atl->ats_in_record_mode_.begin (), atl->ats_in_record_mode_.end (),
-          this)
-        == atl->ats_in_record_mode_.end ())
+        std::ranges::find (ats_in_record_mode, this)
+        == ats_in_record_mode.end ())
         {
-          atl->ats_in_record_mode_.push_back (this);
+          ats_in_record_mode.push_back (this);
         }
     }
 
   automation_mode_ = mode;
-
-  if (fire_events)
-    {
-      // EVENTS_PUSH (EventType::ET_AUTOMATION_TRACK_CHANGED, this);
-    }
 }
 
 bool
@@ -366,9 +380,11 @@ AutomationTrack::should_be_recording (RtTimePoint cur_time, bool record_aps) con
   return false;
 }
 
-AutomatableTrack *
+TrackPtrVariant
 AutomationTrack::get_track () const
 {
+  return track_getter_ ();
+#if 0
   auto port_var = PROJECT->find_port_by_id (port_id_);
   z_return_val_if_fail (
     port_var && std::holds_alternative<ControlPort *> (*port_var), nullptr);
@@ -386,12 +402,14 @@ AutomationTrack::get_track () const
       z_return_val_if_reached (nullptr);
     },
     *track_var);
+#endif
 }
 
 ControlPort &
 AutomationTrack::get_port () const
 {
-  return atl_->get_port (port_id_);
+  return *std::get<ControlPort *> (
+    port_registry_.find_by_id_or_throw (port_id_));
 }
 
 void
@@ -402,7 +420,7 @@ AutomationTrack::set_index (int index)
   for (auto &region_var : region_list_->regions_)
     {
       auto * region = std::get<AutomationRegion *> (region_var);
-      region->id_.at_idx_ = index;
+      // region->id_.at_idx_ = index;
       region->update_identifier ();
     }
 }
@@ -494,7 +512,9 @@ AutomationTrack::verify () const
 {
   for (const auto region_var : region_list_->regions_)
     {
-      for (const auto &ap : std::get<AutomationRegion *> (region_var)->aps_)
+      for (
+        const auto &ap :
+        std::get<AutomationRegion *> (region_var)->get_object_ptrs_view ())
         {
           if (ZRYTHM_TESTING)
             {
@@ -516,11 +536,14 @@ AutomationTrack::set_caches (CacheType types)
   if (ENUM_BITSET_TEST (types, CacheType::PlaybackSnapshots))
     {
       region_snapshots_.clear ();
+// TODO
+#if 0
       for (const auto &r_var : region_list_->regions_)
         {
           region_snapshots_.emplace_back (
             std::get<AutomationRegion *> (r_var)->clone_unique ());
         }
+#endif
     }
 
 #if 0
@@ -536,7 +559,7 @@ AutomationTrack::init_after_cloning (
   const AutomationTrack &other,
   ObjectCloneType        clone_type)
 {
-  RegionOwnerImpl<AutomationRegion>::copy_members_from (other, clone_type);
+  RegionOwner<AutomationRegion>::copy_members_from (other, clone_type);
   visible_ = other.visible_;
   created_ = other.created_;
   index_ = other.index_;
@@ -544,6 +567,6 @@ AutomationTrack::init_after_cloning (
   automation_mode_ = other.automation_mode_;
   record_mode_ = other.record_mode_;
   height_ = other.height_;
-  z_warn_if_fail (height_ >= TRACK_MIN_HEIGHT);
+  assert (height_ >= Track::MIN_HEIGHT);
   port_id_ = other.port_id_;
 }

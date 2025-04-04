@@ -281,10 +281,8 @@ public:
    */
   bool contains_non_automatable_track () const
   {
-    return std::ranges::any_of (*this, [&] (auto &&track_var) {
-      return std::visit (
-        [] (auto &&tr) { return !tr->has_automation (); }, track_var);
-    });
+    return !std::ranges::all_of (
+      *this, Base::template derived_from_type_projection<AutomatableTrack>);
   }
 
   bool contains_undeletable_track () const
@@ -466,10 +464,11 @@ public:
    * @return A vector of track variants.
    */
   std::vector<VariantType> create_snapshots (
-    QObject        &owner,
-    TrackRegistry  &track_registry,
-    PluginRegistry &plugin_registry,
-    PortRegistry   &port_registry) const
+    QObject                &owner,
+    TrackRegistry          &track_registry,
+    PluginRegistry         &plugin_registry,
+    PortRegistry           &port_registry,
+    ArrangerObjectRegistry &obj_registry) const
   {
     return std::ranges::to<std::vector> (
       *this | std::views::transform ([&] (const auto &track_var) {
@@ -477,16 +476,17 @@ public:
           [&] (auto &&track) -> VariantType {
             return track->clone_qobject (
               &owner, ObjectCloneType::Snapshot, track_registry,
-              plugin_registry, port_registry, false);
+              plugin_registry, port_registry, obj_registry, false);
           },
           track_var);
       }));
   }
 
   std::vector<VariantType> create_new_identities (
-    TrackRegistry  &track_registry,
-    PluginRegistry &plugin_registry,
-    PortRegistry   &port_registry) const
+    TrackRegistry          &track_registry,
+    PluginRegistry         &plugin_registry,
+    PortRegistry           &port_registry,
+    ArrangerObjectRegistry &obj_registry) const
   {
     return std::ranges::to<std::vector> (
       *this | std::views::transform ([&] (const auto &track_var) {
@@ -494,7 +494,7 @@ public:
           [&] (auto &&track) -> VariantType {
             return track->clone_and_register (
               track_registry, track_registry, plugin_registry, port_registry,
-              true);
+              obj_registry, true);
           },
           track_var);
       }));

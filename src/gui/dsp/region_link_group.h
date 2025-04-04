@@ -4,8 +4,7 @@
 #ifndef __AUDIO_REGION_LINK_GROUP_H__
 #define __AUDIO_REGION_LINK_GROUP_H__
 
-#include "gui/dsp/region_identifier.h"
-
+#include "gui/dsp/arranger_object.h"
 #include "utils/format.h"
 
 class Region;
@@ -16,10 +15,6 @@ class Region;
  * @{
  */
 
-#define REGION_LINK_GROUP_MAGIC 1222013
-#define IS_REGION_LINK_GROUP(x) \
-  (((RegionLinkGroup *) (x))->magic_ == REGION_LINK_GROUP_MAGIC)
-
 /**
  * A group of linked regions.
  */
@@ -27,7 +22,10 @@ class RegionLinkGroup
   final : public zrythm::utils::serialization::ISerializable<RegionLinkGroup>
 {
 public:
-  RegionLinkGroup () = default;
+  RegionLinkGroup (const DeserializationDependencyHolder &dh)
+      : RegionLinkGroup (dh.get<int> ())
+  {
+  }
   RegionLinkGroup (int idx) : group_idx_ (idx) { }
   void add_region (Region &region);
 
@@ -56,13 +54,11 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 public:
-  /** Identifiers for regions in this link group. */
-  std::vector<RegionIdentifier> ids_;
-
-  int magic_ = REGION_LINK_GROUP_MAGIC;
-
   /** Group index. */
-  int group_idx_ = -1;
+  int group_idx_;
+
+  /** Identifiers for regions in this link group. */
+  std::vector<ArrangerObject::Uuid> ids_;
 };
 
 DEFINE_OBJECT_FORMATTER (

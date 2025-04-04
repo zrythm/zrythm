@@ -3,7 +3,6 @@
 
 #include "zrythm-test-config.h"
 
-#include "utils/flags.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/project.h"

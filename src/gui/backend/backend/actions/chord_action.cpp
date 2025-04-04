@@ -31,7 +31,7 @@ ChordAction::ChordAction (
     : ChordAction (parent)
 {
   type_ = Type::Single;
-  chord_before_ = CHORD_EDITOR->chords_[chord_idx];
+  chord_before_ = CHORD_EDITOR->get_chord_at_index (chord_idx);
 
   chord_after_ = chord;
   chord_idx_ = chord_idx;

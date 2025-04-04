@@ -109,13 +109,15 @@ public:
    */
   enum class Type
   {
-    Region,
+    MidiRegion,
+    AudioRegion,
+    ChordRegion,
+    AutomationRegion,
     MidiNote,
     ChordObject,
     ScaleObject,
     Marker,
     AutomationPoint,
-    Velocity,
   };
 
   /**
@@ -274,7 +276,7 @@ public:
    *
    * @note This validates the position.
    */
-  void pos_setter (const dsp::Position * pos);
+  void pos_setter (const dsp::Position &pos);
 
   /**
    * Returns if the given Position is valid.
@@ -296,19 +298,12 @@ public:
    * @return Whether the position was set (false if invalid).
    */
   bool
-  set_position (const dsp::Position * pos, PositionType pos_type, bool validate);
+  set_position (const dsp::Position &pos, PositionType pos_type, bool validate);
 
   /**
    * Moves the object by the given amount of ticks.
    */
   void move (double ticks);
-
-  /**
-   * Returns if the object is allowed to have lanes.
-   */
-  virtual bool can_have_lanes () const { return false; }
-
-  virtual bool can_fade () const { return false; }
 
   void set_track_id (TrackUuid track_id) { track_id_ = track_id; }
 

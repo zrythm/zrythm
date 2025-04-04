@@ -52,6 +52,7 @@ Item {
     required property Ruler ruler
     required property var clipEditor
     required property var tool
+    required property var objectFactory
     property int currentAction: Arranger.CurrentAction.None
     readonly property alias currentActionStartCoordinates: arrangerMouseArea.startCoordinates
     property var objectSnapshotsAtStart: null // snapshots of objects at the start

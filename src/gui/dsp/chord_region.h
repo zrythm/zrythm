@@ -27,19 +27,12 @@ class ChordRegion final
   friend class RegionImpl<ChordRegion>;
 
 public:
-  ChordRegion (QObject * parent = nullptr);
-
-  /**
-   * Creates a new Region for chords.
-   *
-   * @param idx Index inside chord track.
-   */
-  ChordRegion (
-    const Position &start_pos,
-    const Position &end_pos,
-    int             idx,
-    double          ticks_per_frame,
-    QObject *       parent = nullptr);
+  ChordRegion (const DeserializationDependencyHolder &dh)
+      : ChordRegion (
+          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get ())
+  {
+  }
+  ChordRegion (ArrangerObjectRegistry &obj_registry, QObject * parent = nullptr);
 
   using RegionT = RegionImpl<ChordRegion>;
 
@@ -62,23 +55,6 @@ public:
 
   bool validate (bool is_project, double frames_per_tick) const override;
 
-  void append_children (
-    std::vector<RegionOwnedObjectImpl<ChordRegion> *> &children) const override
-  {
-    for (const auto &chord : chord_objects_)
-      {
-        children.emplace_back (chord);
-      }
-  }
-
-  void add_ticks_to_children (const double ticks) override
-  {
-    for (auto &chord : chord_objects_)
-      {
-        chord->move (ticks);
-      }
-  }
-
   void init_after_cloning (const ChordRegion &other, ObjectCloneType clone_type)
     override;
 
@@ -86,7 +62,7 @@ public:
 
 public:
   /** ChordObject's in this Region. */
-  std::vector<ChordObject *> chord_objects_;
+  std::vector<ChordObject::Uuid> chord_objects_;
 };
 
 inline bool
@@ -110,7 +86,7 @@ operator== (const ChordRegion &lhs, const ChordRegion &rhs)
 }
 
 DEFINE_OBJECT_FORMATTER (ChordRegion, ChordRegion, [] (const ChordRegion &cr) {
-  return fmt::format ("ChordRegion[id: {}]", cr.id_);
+  return fmt::format ("ChordRegion[id: {}]", cr.get_uuid ());
 })
 
 /**

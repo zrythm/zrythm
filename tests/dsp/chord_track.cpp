@@ -3,14 +3,13 @@
 
 #include "zrythm-test-config.h"
 
-# include "gui/dsp/midi_region.h"
-# include "gui/dsp/region.h"
-# include "gui/dsp/transport.h"
-#include "utils/flags.h"
-#include "utils/io.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/dsp/midi_region.h"
+#include "gui/dsp/region.h"
+#include "gui/dsp/transport.h"
+#include "utils/io.h"
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"

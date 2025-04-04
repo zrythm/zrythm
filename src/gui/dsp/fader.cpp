@@ -453,21 +453,29 @@ Fader::get_implied_soloed () const
   auto out_track = track;
   do
     {
-      if (out_track->has_channel ())
-        {
-          auto channel_track = dynamic_cast<ChannelTrack *> (out_track);
-          out_track = channel_track->channel_->get_output_track ();
-          if (out_track && out_track->get_soloed ())
+      auto soloed = std::visit (
+        [&] (auto &&out_track_casted) -> bool {
+          if constexpr (
+            std::derived_from<
+              base_type<decltype (out_track_casted)>, ChannelTrack>)
             {
-              return true;
+              out_track = out_track_casted->channel_->get_output_track ();
+              if (out_track && out_track->get_soloed ())
+                {
+                  return true;
+                }
             }
-        }
-      else
-        {
-          out_track = nullptr;
-        }
+          else
+            {
+              out_track = nullptr;
+            }
+          return false;
+        },
+        convert_to_variant<TrackPtrVariant> (out_track));
+      if (soloed)
+        return true;
     }
-  while (out_track);
+  while (out_track != nullptr);
 
   /* check children */
   if (track->can_be_group_target ())
@@ -864,7 +872,7 @@ Fader::process_block (const EngineProcessTimeInfo time_nfo)
         {
 
           /* if track frozen and transport is rolling */
-          if (track && track->frozen_ && TRANSPORT->isRolling ())
+          if (track && track->is_frozen () && TRANSPORT->isRolling ())
             {
 #if 0
               /* get audio from clip */

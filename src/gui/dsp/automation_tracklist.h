@@ -1,12 +1,5 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * @file
- *
- * Automation tracklist containing automation
- * points and curves.
- */
 
 #ifndef __AUDIO_AUTOMATION_TRACKLIST_H__
 #define __AUDIO_AUTOMATION_TRACKLIST_H__
@@ -15,7 +8,6 @@
 
 #include <QAbstractListModel>
 
-class AutomationTrack;
 class AutomatableTrack;
 
 using namespace zrythm;
@@ -45,7 +37,11 @@ class AutomationTracklist final
 
 public:
   AutomationTracklist (const DeserializationDependencyHolder &dh);
-  AutomationTracklist (PortRegistry &port_registry, QObject * parent = nullptr);
+  AutomationTracklist (
+    PortRegistry           &port_registry,
+    ArrangerObjectRegistry &object_registry,
+    AutomatableTrack       &track,
+    QObject *               parent = nullptr);
 
 public:
   enum Roles
@@ -75,17 +71,16 @@ public:
   /**
    * Inits a loaded AutomationTracklist.
    */
-  [[gnu::cold]] void
-  init_loaded (AutomatableTrack * track, PortRegistry &port_registry);
+  [[gnu::cold]] void init_loaded ();
 
-  AutomatableTrack * get_track () const;
+  TrackPtrVariant get_track () const;
 
   /**
    * @brief Adds the given automation track.
    *
    * This takes (QObject) ownership of the AutomationTrack.
    */
-  AutomationTrack * add_at (AutomationTrack &at);
+  AutomationTrack * add_automation_track (AutomationTrack &at);
 
   /**
    * Prints info about all the automation tracks.
@@ -108,6 +103,17 @@ public:
   AutomationTrack * get_next_visible_at (const AutomationTrack &at) const;
 
   void set_at_visible (AutomationTrack &at, bool visible);
+
+  AutomationTrack * get_automation_track_at (size_t index)
+  {
+    return ats_.at (index);
+  }
+
+  auto &get_automation_tracks_in_record_mode () { return ats_in_record_mode_; }
+  auto &get_automation_tracks_in_record_mode () const
+  {
+    return ats_in_record_mode_;
+  }
 
   /**
    * Returns the AutomationTrack after delta visible AutomationTrack's.
@@ -149,7 +155,7 @@ public:
    * Returns the AutomationTrack corresponding to the given Port.
    */
   AutomationTrack *
-  get_at_from_port_uuid (dsp::PortIdentifier::PortUuid id) const;
+  get_automation_track_by_port_id (dsp::PortIdentifier::PortUuid id) const;
 
   /**
    * Unselects all arranger objects.
@@ -214,6 +220,12 @@ public:
 
   void print_regions () const;
 
+  auto &get_visible_automation_tracks () { return visible_ats_; }
+  auto &get_visible_automation_tracks () const { return visible_ats_; }
+
+  auto &get_automation_tracks () { return ats_; }
+  auto &get_automation_tracks () const { return ats_; }
+
   ControlPort &get_port (dsp::PortIdentifier::PortUuid id) const;
 
   void set_caches (CacheType types);
@@ -224,7 +236,10 @@ private:
   auto &get_port_registry () { return port_registry_; }
   auto &get_port_registry () const { return port_registry_; }
 
-public:
+private:
+  ArrangerObjectRegistry &object_registry_;
+  PortRegistry           &port_registry_;
+
   /**
    * @brief Automation tracks in this automation tracklist.
    *
@@ -252,17 +267,9 @@ public:
   std::vector<AutomationTrack *> visible_ats_;
 
   /**
-   * Pointer back to the track.
-   *
-   * This should be set during initialization.
+   * Owner track.
    */
-  AutomatableTrack * track_ = nullptr;
-
-private:
-  /**
-   * @brief Lookup registry for ports.
-   */
-  PortRegistry &port_registry_;
+  AutomatableTrack &track_;
 };
 
 /**

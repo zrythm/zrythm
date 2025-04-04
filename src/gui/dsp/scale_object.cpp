@@ -11,16 +11,10 @@
 #include "dsp/position.h"
 #include <fmt/format.h>
 
-ScaleObject::ScaleObject (QObject * parent)
+ScaleObject::ScaleObject (ArrangerObjectRegistry &obj_registry, QObject * parent)
     : ArrangerObject (ArrangerObject::Type::ScaleObject), QObject (parent)
 {
   ArrangerObject::parent_base_qproperties (*this);
-}
-
-ScaleObject::ScaleObject (const MusicalScale &descr, QObject * parent)
-    : ScaleObject (parent)
-{
-  scale_ = descr;
 }
 
 void
@@ -50,11 +44,14 @@ ScaleObject::print_to_str () const
 std::optional<ArrangerObjectPtrVariant>
 ScaleObject::find_in_project () const
 {
+  return {};
+#if 0
   z_return_val_if_fail (
     index_in_chord_track_ < (int) P_CHORD_TRACK->scales_.size (), std::nullopt);
   auto &ret = P_CHORD_TRACK->scales_.at (index_in_chord_track_);
   z_return_val_if_fail (*ret == *this, std::nullopt);
   return ret;
+#endif
 }
 
 std::string
@@ -66,17 +63,23 @@ ScaleObject::gen_human_friendly_name () const
 ArrangerObjectPtrVariant
 ScaleObject::add_clone_to_project (bool fire_events) const
 {
+  return {};
+#if 0
   auto * clone = clone_raw_ptr ();
   P_CHORD_TRACK->add_scale (*clone);
   return clone;
+#endif
 }
 
 ArrangerObjectPtrVariant
 ScaleObject::insert_clone_to_project () const
 {
+  return {};
+#if 0
   auto * clone = clone_raw_ptr ();
   P_CHORD_TRACK->insert_scale (*clone, index_in_chord_track_);
   return clone;
+#endif
 }
 
 void

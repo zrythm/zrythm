@@ -119,26 +119,27 @@ public:
    */
   void init_loaded (bool project, double frames_per_tick);
 
-  std::vector<VariantType> create_snapshots (QObject &owner) const
+  std::vector<VariantType>
+  create_snapshots (const auto &object_factory, QObject &owner) const
   {
     return std::ranges::to<std::vector> (
       *this | std::views::transform ([&] (const auto &obj_var) {
         return std::visit (
           [&] (auto &&obj) -> VariantType {
-            return obj->clone_qobject (&owner, ObjectCloneType::Snapshot);
+            return object_factory.clone_object_snapshot (*obj, owner);
           },
           obj_var);
       }));
   }
 
-  std::vector<VariantType>
-  create_new_identities (ArrangerObjectRegistry &object_registry) const
+  auto create_new_identities (const auto &object_factory) const
+    -> std::vector<VariantType>
   {
     return std::ranges::to<std::vector> (
       *this | std::views::transform ([&] (const auto &obj_var) {
         return std::visit (
           [&] (auto &&obj) -> VariantType {
-            return obj->clone_and_register (object_registry);
+            return object_factory.clone_new_object_identity (*obj);
           },
           obj_var);
       }));
@@ -322,7 +323,7 @@ public:
       *this | std::views::filter (Base::template type_projection<AudioRegion>)
         | std::views::transform (Base::template type_transformation<AudioRegion>),
       [&clip] (auto &&region) {
-        return region->pool_id_ == clip.get_pool_id ();
+        return region->get_clip_id () == clip.get_uuid ();
       });
   };
 
@@ -362,16 +363,16 @@ public:
    */
   template <FinalBoundedObjectSubclass BoundedObjectT>
   static auto split_bounded_object (
-    const BoundedObjectT   &self,
-    ArrangerObjectRegistry &registry,
-    const Position         &global_pos,
+    const BoundedObjectT &self,
+    const auto           &factory,
+    const Position       &global_pos,
     double frames_per_tick) -> std::pair<BoundedObjectT *, BoundedObjectT *>
   {
     const double ticks_per_frame = 1.0 / frames_per_tick;
 
     /* create the new objects as new identities */
-    auto * new_object1 = self.clone_and_register (registry);
-    auto * new_object2 = self.clone_and_register (registry);
+    auto * new_object1 = factory.clone_new_object_identity (self);
+    auto * new_object2 = factory.clone_new_object_identity (self);
 
     z_debug ("splitting objects...");
 
@@ -393,9 +394,9 @@ public:
      * - end pos
      * - fade out pos
      */
-    new_object1->end_pos_setter (&global_pos);
+    new_object1->end_pos_setter (global_pos);
     new_object1->set_position (
-      &local_pos, ArrangerObject::PositionType::FadeOut, false);
+      local_pos, ArrangerObject::PositionType::FadeOut, false);
 
     if constexpr (std::derived_from<BoundedObjectT, LoopableObject>)
       {
@@ -403,7 +404,7 @@ public:
          * also */
         if (!self.is_looped ())
           {
-            new_object1->loop_end_pos_setter (&local_pos);
+            new_object1->loop_end_pos_setter (local_pos);
 
             if constexpr (std::is_same_v<BoundedObjectT, AudioRegion>)
               {
@@ -423,31 +424,30 @@ public:
                       static_cast<int> (local_pos.frames_));
                   }
                 z_return_val_if_fail (
-                  !prev_r1->name_.empty (), std::make_pair (nullptr, nullptr));
+                  !prev_r1->get_name ().empty (),
+                  std::make_pair (nullptr, nullptr));
                 z_return_val_if_fail_cmp (
                   local_pos.frames_, >=, 0, std::make_pair (nullptr, nullptr));
-                registry.unregister_object (new_object1->get_uuid ());
-                new_object1 = registry.create_object<AudioRegion> (
-                  frames, true, prev_r1->name_, prev_r1_clip->get_bit_depth (),
-                  *prev_r1->pos_, prev_r1->id_.track_uuid_,
-                  prev_r1->id_.lane_pos_, prev_r1->id_.idx_);
+                // FIXME delete new_object1
+                // registry.unregister_object (new_object1->get_uuid ());
+                new_object1 = factory.create_audio_region_from_audio_buffer_FIXME (
+                  prev_r1->get_lane (), frames, prev_r1_clip->get_bit_depth (),
+                  prev_r1->get_name (), prev_r1->pos_->ticks_);
                 z_return_val_if_fail (
-                  new_object1->pool_id_ != prev_r1->pool_id_,
+                  new_object1->get_clip_id () != prev_r1->get_clip_id (),
                   std::make_pair (nullptr, nullptr));
                 prev_r1->deleteLater ();
               }
-            else if constexpr (RegionSubclass<BoundedObjectT>)
+            else if constexpr (RegionWithChildren<BoundedObjectT>)
               {
                 /* remove objects starting after the end */
-                std::vector<RegionOwnedObjectImpl<BoundedObjectT> *> children;
-                new_object1->append_children (children);
-                for (auto child : children)
+                auto children = new_object1->get_objects_vector ();
+                for (const auto &child_id : children)
                   {
+                    const auto &child = new_object1->get_object_ptr (child_id);
                     if (*child->pos_ > local_pos)
                       {
-                        auto casted_child = dynamic_cast<
-                          RegionChildType_t<BoundedObjectT> *> (child);
-                        new_object1->remove_object (*casted_child, false);
+                        new_object1->remove_object (child_id);
                       }
                   }
               }
@@ -461,15 +461,15 @@ public:
      */
     if constexpr (std::derived_from<BoundedObjectT, LoopableObject>)
       {
-        new_object2->clip_start_pos_setter (&local_pos);
+        new_object2->clip_start_pos_setter (local_pos);
       }
-    new_object2->pos_setter (&global_pos);
+    new_object2->pos_setter (global_pos);
     Position r2_local_end = *new_object2->end_pos_;
     r2_local_end.add_ticks (-new_object2->pos_->ticks_, frames_per_tick);
     if constexpr (std::derived_from<BoundedObjectT, FadeableObject>)
       {
         new_object2->set_position (
-          &r2_local_end, ArrangerObject::PositionType::FadeOut, false);
+          r2_local_end, ArrangerObject::PositionType::FadeOut, false);
       }
 
     /* if original object was not looped, make the new object unlooped also */
@@ -478,14 +478,17 @@ public:
         if (!self.is_looped ())
           {
             Position init_pos;
-            new_object2->clip_start_pos_setter (&init_pos);
-            new_object2->loop_start_pos_setter (&init_pos);
-            new_object2->loop_end_pos_setter (&r2_local_end);
+            new_object2->clip_start_pos_setter (init_pos);
+            new_object2->loop_start_pos_setter (init_pos);
+            new_object2->loop_end_pos_setter (r2_local_end);
 
             if constexpr (RegionSubclass<BoundedObjectT>)
               {
-                /* move all objects backwards */
-                new_object2->add_ticks_to_children (-local_pos.ticks_);
+                if constexpr (RegionWithChildren<BoundedObjectT>)
+                  {
+                    /* move all objects backwards */
+                    new_object2->add_ticks_to_children (-local_pos.ticks_);
+                  }
 
                 /* if audio region, create a new region */
                 if constexpr (std::is_same_v<BoundedObjectT, AudioRegion>)
@@ -510,33 +513,32 @@ public:
                           local_pos.frames_, r2_local_end.frames_);
                       }
                     z_return_val_if_fail (
-                      !prev_r2->name_.empty (),
+                      !prev_r2->get_name ().empty (),
                       std::make_pair (nullptr, nullptr));
                     z_return_val_if_fail_cmp (
                       r2_local_end.frames_, >=, 0,
                       std::make_pair (nullptr, nullptr));
-                    registry.unregister_object (prev_r2->get_uuid ());
-                    new_object2 = registry.create_object<AudioRegion> (
-                      tmp, true, prev_r2->get_name (),
-                      prev_r2_clip->get_bit_depth (), local_pos,
-                      prev_r2->id_.track_uuid_, prev_r2->id_.lane_pos_,
-                      prev_r2->id_.idx_);
+                    // FIXME: delete prev_r2
+                    // registry.unregister_object (prev_r2->get_uuid ());
+                    new_object2 =
+                      factory.create_audio_region_from_audio_buffer_FIXME (
+                        prev_r2->get_lane (), tmp, prev_r2_clip->get_bit_depth (),
+                        prev_r2->get_name (), local_pos.ticks_);
                     z_return_val_if_fail (
-                      new_object2->pool_id_ != prev_r2->pool_id_,
+                      new_object2->get_clip_id () != prev_r2->get_clip_id (),
                       std::make_pair (nullptr, nullptr));
                     prev_r2->deleteLater ();
                   }
                 else if constexpr (RegionSubclass<BoundedObjectT>)
                   {
-                    using ChildType = RegionChildType_t<BoundedObjectT>;
+                    // using ChildType = RegionChildType_t<BoundedObjectT>;
                     /* remove objects starting before the start */
-                    std::vector<RegionOwnedObjectImpl<BoundedObjectT> *> children;
+                    std::vector<RegionOwnedObject *> children;
                     new_object2->append_children (children);
-                    for (auto child : children)
+                    for (auto * child : children)
                       {
                         if (child->pos_->frames_ < 0)
-                          new_object2->remove_object (
-                            *static_cast<ChildType *> (child), false);
+                          new_object2->remove_object (child->get_uuid ());
                       }
                   }
               }
@@ -554,8 +556,8 @@ public:
               {
                 at = self.get_automation_track ();
               }
-            new_object1->gen_name (self.name_.c_str (), at, track);
-            new_object2->gen_name (self.name_.c_str (), at, track);
+            new_object1->gen_name (self.get_name (), at, track);
+            new_object2->gen_name (self.get_name (), at, track);
           },
           track_var);
       }

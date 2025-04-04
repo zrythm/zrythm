@@ -10,28 +10,15 @@
 
 #include "dsp/position.h"
 
-AutomationRegion::AutomationRegion (QObject * parent)
-    : ArrangerObject (Type::Region), BoundedObject (), QAbstractListModel (parent)
+AutomationRegion::AutomationRegion (
+  ArrangerObjectRegistry &obj_registry,
+  QObject *               parent)
+    : ArrangerObject (Type::AutomationRegion), Region (obj_registry),
+      QAbstractListModel (parent)
 {
   ArrangerObject::parent_base_qproperties (*this);
   BoundedObject::parent_base_qproperties (*this);
   init_colored_object ();
-}
-
-AutomationRegion::AutomationRegion (
-  const Position                &start_pos,
-  const Position                &end_pos,
-  dsp::PortIdentifier::TrackUuid track_id,
-  int                            at_idx,
-  int                            idx_inside_at,
-  QObject *                      parent)
-    : AutomationRegion (parent)
-{
-  id_ = RegionIdentifier (RegionType::Automation);
-
-  init (
-    start_pos, end_pos, track_id, at_idx, idx_inside_at,
-    AUDIO_ENGINE->ticks_per_frame_);
 }
 
 void
@@ -40,7 +27,7 @@ AutomationRegion::init_loaded ()
   ArrangerObject::init_loaded_base ();
   TimelineObject::init_loaded_base ();
   NamedObject::init_loaded_base ();
-  for (auto &ap : aps_)
+  for (auto * ap : get_object_ptrs_view ())
     {
       ap->init_loaded ();
     }
@@ -81,9 +68,9 @@ AutomationRegion::data (const QModelIndex &index, int role) const
 void
 AutomationRegion::print_automation () const
 {
-  for (const auto &ap : aps_)
+  for (const auto &[index, ap] : std::views::enumerate (get_object_ptrs_view ()))
     {
-      z_debug ("[{}] {} : {}", ap->index_, ap->fvalue_, *ap->pos_);
+      z_debug ("[{}] {} : {}", index, ap->fvalue_, *ap->pos_);
     }
 }
 
@@ -97,9 +84,7 @@ AutomationRegion::get_automation_track () const
       if constexpr (std::derived_from<TrackT, AutomatableTrack>)
         {
           const auto &atl = track->get_automation_tracklist ();
-          z_return_val_if_fail ((int) atl.ats_.size () > id_.at_idx_, nullptr);
-
-          return atl.ats_.at (id_.at_idx_);
+          return atl.get_automation_track_by_port_id (automatable_port_id_);
         }
       else
         {
@@ -130,9 +115,9 @@ AutomationRegion::set_automation_track (AutomationTrack &at)
       was_selected = true;
       setSelected (false);
     }
-  id_.at_idx_ = at.index_;
-  auto track = at.get_track ();
-  id_.track_uuid_ = track->get_uuid ();
+  automatable_port_id_ = at.port_id_;
+  auto track_var = at.get_track ();
+  track_id_ = TrackSpan::uuid_projection (track_var);
 
   update_identifier ();
 
@@ -160,22 +145,33 @@ AutomationRegion::get_muted (bool check_parent) const
 void
 AutomationRegion::force_sort ()
 {
-  std::sort (aps_.begin (), aps_.end (), [] (const auto &a, const auto &b) {
+  std::ranges::sort (aps_, [&] (const auto &a_id, const auto &b_id) {
+    const auto a = std::get<AutomationPoint *> (
+      get_arranger_object_registry ().find_by_id_or_throw (a_id));
+    const auto b = std::get<AutomationPoint *> (
+      get_arranger_object_registry ().find_by_id_or_throw (b_id));
     return *a < *b;
   });
 
   /* refresh indices */
-  for (size_t i = 0; i < aps_.size (); i++)
+  for (const auto &ap : get_object_ptrs_view ())
     {
-      aps_.at (i)->set_region_and_index (*this, i);
+      ap->set_region_and_index (*this);
     }
 }
 
 AutomationPoint *
 AutomationRegion::get_prev_ap (const AutomationPoint &ap) const
 {
-  if (ap.index_ > 0)
-    return aps_[ap.index_ - 1];
+  auto it = std::ranges::find (aps_, ap.get_uuid ());
+
+  // if found and not the first element
+  if (it != aps_.end () && it != aps_.begin ())
+    {
+      return std::get<AutomationPoint *> (
+        get_arranger_object_registry ().find_by_id_or_throw (
+          *std::ranges::prev (it)));
+    }
 
   return nullptr;
 }
@@ -194,9 +190,9 @@ AutomationRegion::get_next_ap (
         ;
       AutomationPoint * next_ap = nullptr;
       const int         loop_times = check_transients ? 2 : 1;
-      for (auto &cur_ap_outer : aps_)
+      for (auto * cur_ap_outer : get_object_ptrs_view ())
         {
-          for (int j = 0; j < loop_times; j++)
+          for (const auto j : std::views::iota (0, loop_times))
             {
               AutomationPoint * cur_ap = cur_ap_outer;
               if (j == 1)
@@ -210,7 +206,7 @@ AutomationRegion::get_next_ap (
                     continue;
                 }
 
-              if (cur_ap == ap)
+              if (cur_ap->get_uuid () == ap.get_uuid ())
                 continue;
 
               if (
@@ -223,8 +219,17 @@ AutomationRegion::get_next_ap (
         }
       return next_ap;
     }
-  else if (ap.index_ < static_cast<int> (aps_.size ()) - 1)
-    return aps_[ap.index_ + 1];
+
+  auto it = std::ranges::find (aps_, ap.get_uuid ());
+
+  // if found and not the last element
+  if (it != aps_.end () && std::ranges::next (it) != aps_.end ())
+    {
+
+      return std::get<AutomationPoint *> (
+        get_arranger_object_registry ().find_by_id_or_throw (
+          *std::ranges::next (it)));
+    }
 
   return nullptr;
 }
@@ -239,7 +244,7 @@ AutomationRegion::get_aps_since_last_recorded (
   if ((last_recorded_ap_ == nullptr) || pos <= *last_recorded_ap_->pos_)
     return;
 
-  for (auto &ap : aps_)
+  for (auto * ap : get_object_ptrs_view ())
     {
       if (ap->pos_ > last_recorded_ap_->pos_ && *ap->pos_ <= pos)
         {
@@ -283,16 +288,16 @@ AutomationRegion::init_after_cloning (
   const AutomationRegion &other,
   ObjectCloneType         clone_type)
 {
-  init (
-    *other.pos_, *other.end_pos_, other.id_.track_uuid_, other.id_.at_idx_,
-    other.id_.idx_, AUDIO_ENGINE->ticks_per_frame_);
   aps_.reserve (other.aps_.size ());
-  for (const auto &ap : other.aps_)
+  // TODO
+#if 0
+  for (const auto &ap : other.get_object_ptrs_view ())
     {
-      auto * clone = ap->clone_raw_ptr ();
-      clone->setParent (this);
-      aps_.push_back (clone);
+      const auto * clone =
+        ap->clone_and_register (get_arranger_object_registry ());
+      aps_.push_back (clone->get_uuid ());
     }
+#endif
   RegionImpl::copy_members_from (other, clone_type);
   TimelineObject::copy_members_from (other, clone_type);
   NamedObject::copy_members_from (other, clone_type);
@@ -307,11 +312,12 @@ AutomationRegion::init_after_cloning (
 bool
 AutomationRegion::validate (bool is_project, double frames_per_tick) const
 {
-  for (size_t i = 0; i < aps_.size (); i++)
+#if 0
+  for (const auto &[index, ap] : std::views::enumerate (get_object_ptrs_view ()))
     {
-      auto * ap = aps_[i];
-      z_return_val_if_fail (ap->index_ == (int) i, false);
+      z_return_val_if_fail (ap->index_ == index, false);
     }
+#endif
 
   if (
     !Region::are_members_valid (is_project)

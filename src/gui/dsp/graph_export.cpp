@@ -11,7 +11,6 @@
 #include "gui/dsp/project_graph_builder.h"
 #include "gui/dsp/router.h"
 #include "gui/dsp/track.h"
-#include "utils/flags.h"
 #include "utils/objects.h"
 
 #ifdef HAVE_CGRAPH
@@ -383,7 +382,7 @@ graph_export_as_simple (GraphExportType type, const char * export_path)
 {
   /* pause engine */
   AudioEngine::State state{};
-  AUDIO_ENGINE->wait_for_pause (state, Z_F_FORCE, true);
+  AUDIO_ENGINE->wait_for_pause (state, true, true);
 
   dsp::Graph          graph;
   ProjectGraphBuilder builder (*PROJECT, false);

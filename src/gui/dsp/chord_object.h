@@ -6,8 +6,8 @@
 
 #include "dsp/chord_descriptor.h"
 #include "gui/dsp/arranger_object.h"
+#include "gui/dsp/bounded_object.h"
 #include "gui/dsp/muteable_object.h"
-#include "gui/dsp/region_identifier.h"
 #include "gui/dsp/region_owned_object.h"
 #include "utils/icloneable.h"
 
@@ -16,12 +16,6 @@
  *
  * @{
  */
-
-constexpr int CHORD_OBJECT_MAGIC = 4181694;
-#define IS_CHORD_OBJECT(x) (((ChordObject *) x)->magic == CHORD_OBJECT_MAGIC)
-#define IS_CHORD_OBJECT_AND_NONNULL(x) (x && IS_CHORD_OBJECT (x))
-
-#define CHORD_OBJECT_WIDGET_TRIANGLE_W 10
 
 using namespace zrythm;
 
@@ -47,32 +41,43 @@ class ChordRegion;
 class ChordObject final
     : public QObject,
       public MuteableObject,
-      public RegionOwnedObjectImpl<ChordRegion>,
+      public RegionOwnedObject,
       public ICloneable<ChordObject>,
       public zrythm::utils::serialization::ISerializable<ChordObject>
 {
   Q_OBJECT
   QML_ELEMENT
   DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (ChordObject)
+  Q_PROPERTY (
+    ChordDescriptor * chordDescriptor READ getChordDescriptor WRITE
+      setChordDescriptor NOTIFY chordDescriptorChanged)
 
 public:
+  using RegionT = ChordRegion;
   using ChordDescriptor = dsp::ChordDescriptor;
 
+  static constexpr int WIDGET_TRIANGLE_WIDTH = 10;
+
 public:
-  ChordObject (QObject * parent = nullptr);
+  ChordObject (const DeserializationDependencyHolder &dh)
+      : ChordObject (
+          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get ())
+  {
+  }
+  ChordObject (ArrangerObjectRegistry &obj_registry, QObject * parent = nullptr);
 
-  ChordObject (
-    const RegionIdentifier &region_id,
-    int                     chord_index,
-    int                     index,
-    QObject *               parent = nullptr);
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
 
-  using RegionOwnedObjectT = RegionOwnedObjectImpl<ChordRegion>;
+  ChordDescriptor * getChordDescriptor () const;
 
-  /**
-   * Returns the ChordDescriptor associated with this ChordObject.
-   */
-  ChordDescriptor * get_chord_descriptor () const;
+  void          setChordDescriptor (ChordDescriptor * descr);
+  Q_SIGNAL void chordDescriptorChanged (ChordDescriptor *);
+
+  // ========================================================================
+
+  void set_chord_descriptor (int index);
 
   std::optional<ArrangerObjectPtrVariant> find_in_project () const override;
 
@@ -99,8 +104,6 @@ public:
 public:
   /** The index of the chord it belongs to (0 topmost). */
   int chord_index_ = 0;
-
-  int magic_ = CHORD_OBJECT_MAGIC;
 };
 
 inline bool
@@ -109,15 +112,15 @@ operator== (const ChordObject &lhs, const ChordObject &rhs)
   return static_cast<const ArrangerObject &> (lhs)
            == static_cast<const ArrangerObject &> (rhs)
          && lhs.chord_index_ == rhs.chord_index_
-         && static_cast<const ChordObject::RegionOwnedObjectT &> (lhs)
-              == static_cast<const ChordObject::RegionOwnedObjectT &> (rhs)
+         && static_cast<const RegionOwnedObject &> (lhs)
+              == static_cast<const RegionOwnedObject &> (rhs)
          && static_cast<const MuteableObject &> (lhs)
               == static_cast<const MuteableObject &> (rhs);
 }
 
 DEFINE_OBJECT_FORMATTER (ChordObject, ChordObject, [] (const ChordObject &co) {
   return fmt::format (
-    "ChordObject [{}]: chord index {}", *co.pos_, co.chord_index_);
+    "ChordObject [{}]: chord ID {}", *co.pos_, co.chord_index_);
 });
 
 /**

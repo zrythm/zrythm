@@ -42,7 +42,7 @@ class ChordTrack final
     : public QAbstractListModel,
       public RecordableTrack,
       public ChannelTrack,
-      public RegionOwnerImpl<ChordRegion>,
+      public RegionOwner<ChordRegion>,
       public ICloneable<ChordTrack>,
       public zrythm::utils::serialization::ISerializable<ChordTrack>,
       public utils::InitializableObject
@@ -106,7 +106,25 @@ public:
   /**
    * Removes a scale from the chord Track.
    */
-  void remove_scale (ScaleObject &scale, bool delete_scale);
+  void remove_scale (ScaleObject &scale);
+
+  auto get_scales_view ()
+  {
+    return scales_ | std::views::transform ([&] (const auto &id) {
+             return std::get<ScaleObject *> (
+               object_registry_.find_by_id_or_throw (id));
+           });
+  }
+
+  auto get_scales_view () const
+  {
+    return scales_ | std::views::transform ([&] (const auto &id) {
+             return std::get<ScaleObject *> (
+               object_registry_.find_by_id_or_throw (id));
+           });
+  }
+
+  ScaleObject * get_scale_at (size_t index) const;
 
 /**
  * Returns the current chord.
@@ -118,11 +136,6 @@ public:
    * in the TimelineArranger.
    */
   ChordObject * get_chord_at_pos (Position pos) const;
-
-/**
- * Returns the current scale.
- */
-#define get_scale_at_playhead() get_scale_at_pos (PLAYHEAD)
 
   /**
    * Returns the ScaleObject at the given Position
@@ -157,10 +170,12 @@ private:
   void set_playback_caches () override;
 
 public:
+  ArrangerObjectRegistry &object_registry_;
+
   /**
    * @note These must always be sorted by Position.
    */
-  std::vector<ScaleObjectPtr> scales_;
+  std::vector<ScaleObject::Uuid> scales_;
 
   /** Snapshots used during playback TODO unimplemented. */
   std::vector<std::unique_ptr<ScaleObject>> scale_snapshots_;

@@ -40,16 +40,18 @@ public:
           dh.get<std::reference_wrapper<TrackRegistry>> ().get (),
           dh.get<std::reference_wrapper<PluginRegistry>> ().get (),
           dh.get<std::reference_wrapper<PortRegistry>> ().get (),
+          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get (),
           false)
   {
   }
 
 private:
   AudioTrack (
-    TrackRegistry  &track_registry,
-    PluginRegistry &plugin_registry,
-    PortRegistry   &port_registry,
-    bool            new_identity);
+    TrackRegistry          &track_registry,
+    PluginRegistry         &plugin_registry,
+    PortRegistry           &port_registry,
+    ArrangerObjectRegistry &obj_registry,
+    bool                    new_identity);
 
 public:
   void

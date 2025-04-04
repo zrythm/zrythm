@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/project.h"
@@ -8,38 +8,24 @@
 #include "utils/rt_thread_id.h"
 
 MarkerTrack::MarkerTrack (
-  TrackRegistry  &track_registry,
-  PluginRegistry &plugin_registry,
-  PortRegistry   &port_registry,
-  bool            new_identity)
-    : Track (Track::Type::Marker, PortType::Unknown, PortType::Unknown)
+  TrackRegistry          &track_registry,
+  PluginRegistry         &plugin_registry,
+  PortRegistry           &port_registry,
+  ArrangerObjectRegistry &obj_registry,
+  bool                    new_identity)
+    : Track (
+        Track::Type::Marker,
+        PortType::Unknown,
+        PortType::Unknown,
+        port_registry,
+        obj_registry)
 {
   if (new_identity)
     {
-      main_height_ = TRACK_DEF_HEIGHT / 2;
+      main_height_ = DEF_HEIGHT / 2;
       icon_name_ = "gnome-icon-library-flag-filled-symbolic";
       color_ = Color (QColor ("#7C009B"));
     }
-}
-
-void
-MarkerTrack::add_default_markers (int ticks_per_bar, double frames_per_tick)
-{
-  /* add start and end markers */
-  auto     marker_name = fmt::format ("[{}]", QObject::tr ("start"));
-  auto *   marker = new Marker (marker_name, this);
-  Position pos;
-  pos.set_to_bar (1, ticks_per_bar, frames_per_tick);
-  marker->pos_setter (&pos);
-  marker->marker_type_ = Marker::Type::Start;
-  add_marker (marker);
-
-  marker_name = fmt::format ("[{}]", QObject::tr ("end"));
-  marker = new Marker (marker_name, this);
-  pos.set_to_bar (129, ticks_per_bar, frames_per_tick);
-  marker->pos_setter (&pos);
-  marker->marker_type_ = Marker::Type::End;
-  add_marker (marker);
 }
 
 // ========================================================================
@@ -65,7 +51,7 @@ MarkerTrack::data (const QModelIndex &index, int role) const
   if (!index.isValid ())
     return {};
 
-  auto marker = markers_.at (index.row ());
+  auto * marker = get_marker_at (index.row ());
 
   switch (role)
     {
@@ -89,7 +75,7 @@ MarkerTrack::init_loaded (
   PluginRegistry &plugin_registry,
   PortRegistry   &port_registry)
 {
-  for (auto &marker : markers_)
+  for (auto * marker : get_markers ())
     {
       marker->init_loaded ();
     }
@@ -98,22 +84,22 @@ MarkerTrack::init_loaded (
 MarkerTrack::MarkerPtr
 MarkerTrack::get_start_marker () const
 {
-  auto it =
-    std::find_if (markers_.begin (), markers_.end (), [] (const auto &marker) {
-      return marker->marker_type_ == Marker::Type::Start;
-    });
-  z_return_val_if_fail (it != markers_.end (), nullptr);
+  auto markers = get_markers ();
+  auto it = std::ranges::find_if (markers, [] (const auto &marker) {
+    return marker->marker_type_ == Marker::Type::Start;
+  });
+  z_return_val_if_fail (it != markers.end (), nullptr);
   return *it;
 }
 
 MarkerTrack::MarkerPtr
 MarkerTrack::get_end_marker () const
 {
-  auto it =
-    std::find_if (markers_.begin (), markers_.end (), [] (const auto &marker) {
-      return marker->marker_type_ == Marker::Type::End;
-    });
-  z_return_val_if_fail (it != markers_.end (), nullptr);
+  auto markers = get_markers ();
+  auto it = std::ranges::find_if (markers, [] (const auto &marker) {
+    return marker->marker_type_ == Marker::Type::End;
+  });
+  z_return_val_if_fail (it != markers.end (), nullptr);
   return *it;
 }
 
@@ -121,12 +107,12 @@ MarkerTrack::MarkerPtr
 MarkerTrack::insert_marker (MarkerTrack::MarkerPtr marker, int pos)
 {
   marker->set_track_id (get_uuid ());
-  markers_.insert (markers_.begin () + pos, marker);
+  markers_.insert (markers_.begin () + pos, marker->get_uuid ());
   marker->setParent (this);
 
   for (size_t i = pos; i < markers_.size (); ++i)
     {
-      auto m = markers_[i];
+      auto * m = get_markers ()[i];
       m->set_marker_track_index (i);
     }
 
@@ -140,11 +126,16 @@ MarkerTrack::insert_marker (MarkerTrack::MarkerPtr marker, int pos)
 void
 MarkerTrack::clear_objects ()
 {
-  for (auto &marker : markers_ | std::views::reverse)
+  std::vector<Marker::Uuid> markers_to_delete;
+  for (auto * marker : get_markers () | std::views::reverse)
     {
       if (marker->is_start () || marker->is_end ())
         continue;
-      remove_marker (*marker, true, true);
+      markers_to_delete.push_back (marker->get_uuid ());
+    }
+  for (const auto &id : markers_to_delete)
+    {
+      remove_marker (id);
     }
 }
 
@@ -153,10 +144,13 @@ MarkerTrack::set_playback_caches ()
 {
   marker_snapshots_.clear ();
   marker_snapshots_.reserve (markers_.size ());
+// TODO
+#if 0
   for (const auto &marker : markers_)
     {
       marker_snapshots_.push_back (marker->clone_unique ());
     }
+#endif
 }
 
 void
@@ -165,12 +159,15 @@ MarkerTrack::init_after_cloning (
   ObjectCloneType    clone_type)
 {
   markers_.reserve (other.markers_.size ());
+// TODO
+#if 0
   for (auto &marker : markers_)
     {
       auto * clone = marker->clone_raw_ptr ();
       clone->setParent (this);
       markers_.push_back (clone);
     }
+#endif
   Track::copy_members_from (other, clone_type);
 }
 
@@ -182,10 +179,9 @@ MarkerTrack::validate () const
       return false;
     }
 
-  for (size_t i = 0; i < markers_.size (); ++i)
+  for (const auto &[index, m] : std::views::enumerate (get_markers ()))
     {
-      auto m = markers_[i];
-      z_return_val_if_fail (m->marker_track_index_ == (int) i, false);
+      z_return_val_if_fail (m->marker_track_index_ == index, false);
     }
   return true;
 }
@@ -195,28 +191,17 @@ MarkerTrack::append_ports (std::vector<Port *> &ports, bool include_plugins) con
 {
 }
 
-MarkerTrack::MarkerPtr
-MarkerTrack::remove_marker (Marker &marker, bool free_marker, bool fire_events)
+void
+MarkerTrack::remove_marker (const Marker::Uuid &marker_id)
 {
-  auto it = std::ranges::find (markers_, std::addressof (marker));
-  z_return_val_if_fail (it != markers_.end (), nullptr);
-  auto ret = *it;
+  auto it = std::ranges::find (markers_, marker_id);
+  assert (it != markers_.end ());
   it = markers_.erase (it);
-  ret->setParent (nullptr);
-  if (free_marker)
-    {
-      ret->deleteLater ();
-    }
 
   for (
     size_t i = std::distance (markers_.begin (), it); i < markers_.size (); ++i)
     {
-      auto * m = markers_[i];
+      auto * m = get_marker_at (i);
       m->set_marker_track_index (i);
     }
-
-  /* EVENTS_PUSH (
-    EventType::ET_ARRANGER_OBJECT_REMOVED, ArrangerObject::Type::Marker); */
-
-  return free_marker ? nullptr : ret;
 }

@@ -5,7 +5,6 @@
 #define __DSP_LOOPABLE_OBJECT_H__
 
 #include "gui/dsp/bounded_object.h"
-#include "utils/types.h"
 
 #define DEFINE_LOOPABLE_OBJECT_QML_PROPERTIES(ClassType) \
   DEFINE_BOUNDED_OBJECT_QML_PROPERTIES (ClassType)
@@ -26,29 +25,23 @@ public:
   /**
    * Getter.
    */
-  void get_clip_start_pos (dsp::Position * pos) const
-  {
-    *pos = clip_start_pos_;
-  }
+  const auto &get_clip_start_pos () const { return clip_start_pos_; }
 
   /**
    * Getter.
    */
-  void get_loop_start_pos (dsp::Position * pos) const
-  {
-    *pos = loop_start_pos_;
-  }
+  const auto &get_loop_start_pos () const { return loop_start_pos_; }
 
   /**
    * Getter.
    */
-  void get_loop_end_pos (dsp::Position * pos) const { *pos = loop_end_pos_; }
+  const auto &get_loop_end_pos () const { return loop_end_pos_; }
 
   /**
    * The setter is for use in e.g. the digital meters whereas the set_pos func
    * is used during arranger actions.
    */
-  void clip_start_pos_setter (const dsp::Position * pos)
+  void clip_start_pos_setter (const dsp::Position &pos)
   {
     set_position (pos, ArrangerObject::PositionType::ClipStart, true);
   }
@@ -57,7 +50,7 @@ public:
    * The setter is for use in e.g. the digital meters whereas the set_pos func
    * is used during arranger actions.
    */
-  void loop_start_pos_setter (const dsp::Position * pos)
+  void loop_start_pos_setter (const dsp::Position &pos)
   {
     set_position (pos, ArrangerObject::PositionType::LoopStart, true);
   }
@@ -66,7 +59,7 @@ public:
    * The setter is for use in e.g. the digital meters whereas the set_pos func
    * is used during arranger actions.
    */
-  void loop_end_pos_setter (const dsp::Position * pos)
+  void loop_end_pos_setter (const dsp::Position &pos)
   {
     set_position (pos, ArrangerObject::PositionType::LoopEnd, true);
   }
@@ -82,7 +75,7 @@ public:
   /**
    * Returns the length of the loop in frames.
    */
-  [[gnu::hot]] inline signed_frame_t get_loop_length_in_frames () const
+  [[gnu::hot]] auto get_loop_length_in_frames () const
   {
     return loop_end_pos_.frames_ - loop_start_pos_.frames_;
   }

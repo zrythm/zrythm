@@ -130,7 +130,7 @@ public:
    *
    * Should be called as soon as the track is created.
    */
-  void generate_lanes () { add_lane (true); }
+  void generate_lanes () { add_lane (); }
 
   void clear_objects () override;
 
@@ -138,6 +138,21 @@ public:
     std::vector<Region *> &regions,
     const dsp::Position *  p1,
     const dsp::Position *  p2) override;
+
+  int get_lane_index (const TrackLaneT &lane) const
+  {
+    return std::ranges::find_if (
+             lanes_.lanes_,
+             [&] (const auto &lane_var) {
+               return std::get<TrackLaneT *> (lane_var) == std::addressof (lane);
+             })
+           - lanes_.begin ();
+  }
+
+  TrackLaneT &get_lane_at (const size_t index)
+  {
+    return *std::get<TrackLaneT *> (lanes_.at (index));
+  }
 
 protected:
   void
@@ -150,7 +165,7 @@ protected:
   void set_playback_caches () override;
 
 private:
-  void add_lane (bool fire_events);
+  void add_lane ();
 
 public:
   /** Lanes in this track containing Regions. */

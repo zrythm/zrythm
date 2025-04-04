@@ -14,7 +14,6 @@
 #include "gui/dsp/loopable_object.h"
 #include "gui/dsp/muteable_object.h"
 #include "gui/dsp/named_object.h"
-#include "gui/dsp/region_identifier.h"
 #include "gui/dsp/timeline_object.h"
 #include "utils/format.h"
 
@@ -29,7 +28,7 @@ class ChordRegion;
 class ChordObject;
 class AudioRegion;
 class AutomationRegion;
-template <typename RegionT> class RegionOwnerImpl;
+template <typename RegionT> class RegionOwner;
 
 /**
  * @addtogroup dsp
@@ -37,46 +36,16 @@ template <typename RegionT> class RegionOwnerImpl;
  * @{
  */
 
-constexpr int REGION_MAGIC = 93075327;
-#define IS_REGION(x) (static_cast<Region *> (x)->magic_ == REGION_MAGIC)
-#define IS_REGION_AND_NONNULL(x) (x && IS_REGION (x))
-
 #define DEFINE_REGION_QML_PROPERTIES(ClassType) \
 public: \
   DEFINE_LOOPABLE_OBJECT_QML_PROPERTIES (ClassType) \
   DEFINE_NAMEABLE_OBJECT_QML_PROPERTIES (ClassType) \
   DEFINE_COLORED_OBJECT_QML_PROPERTIES (ClassType) \
   /* ================================================================ */ \
-  /* regionType */ \
-  /* ================================================================ */ \
-  Q_PROPERTY (int regionType READ getRegionType CONSTANT) \
-  int getRegionType () const \
-  { \
-    return ENUM_VALUE_TO_INT (id_.type_); \
-  } \
-  /* ================================================================ */ \
   /* helpers */ \
   /* ================================================================ */
 
 constexpr const char * REGION_PRINTF_FILENAME = "%s_%s.mid";
-
-/**
- * Returns if the given Region type can exist in TrackLane's.
- */
-static constexpr bool
-region_type_has_lane (const RegionType type)
-{
-  return type == RegionType::Midi || type == RegionType::Audio;
-}
-
-/**
- * Returns if the given Region type can have fades.
- */
-static constexpr bool
-region_type_can_fade (RegionType rtype)
-{
-  return rtype == RegionType::Audio;
-}
 
 template <typename RegionT> struct RegionChildType;
 
@@ -151,28 +120,12 @@ class Region
 public:
   ~Region () override = default;
 
-  /**
-   * Only to be used by implementing structs.
-   */
-  void init (
-    const dsp::Position           &start_pos,
-    const dsp::Position           &end_pos,
-    dsp::PortIdentifier::TrackUuid track_id,
-    int                            lane_pos_or_at_idx,
-    int                            idx_inside_lane_or_at,
-    double                         ticks_per_frame);
+  auto get_type () const { return type_; }
 
-  /**
-   * Adds the given ticks to each included object.
-   */
-  virtual void add_ticks_to_children (double ticks) = 0;
-
-  RegionType get_type () const { return id_.type_; }
-
-  bool is_midi () const { return get_type () == RegionType::Midi; }
-  bool is_audio () const { return get_type () == RegionType::Audio; }
-  bool is_automation () const { return get_type () == RegionType::Automation; }
-  bool is_chord () const { return get_type () == RegionType::Chord; }
+  bool is_midi () const { return get_type () == Type::MidiRegion; }
+  bool is_audio () const { return get_type () == Type::AudioRegion; }
+  bool is_automation () const { return get_type () == Type::AutomationRegion; }
+  bool is_chord () const { return get_type () == Type::ChordRegion; }
 
   std::string print_to_str () const override;
 
@@ -181,7 +134,7 @@ public:
    */
   RegionLinkGroup * get_link_group ();
 
-  bool has_link_group () const { return id_.link_group_ >= 0; }
+  bool has_link_group () const { return link_group_.has_value (); }
 
   /**
    * Converts frames on the timeline (global) to local frames (in the
@@ -212,8 +165,6 @@ public:
     signed_frame_t * ret_frames,
     bool *           is_loop) const;
 
-  bool has_lane () const { return region_type_has_lane (id_.type_); }
-
   /**
    * Generates a name for the Region, either using the given
    * AutomationTrack or Track, or appending to the given base name.
@@ -228,7 +179,7 @@ public:
    */
   void update_link_group ();
 
-  static std::optional<RegionPtrVariant> find (const RegionIdentifier &id);
+  // static std::optional<RegionPtrVariant> find (const RegionIdentifier &id);
 
   /**
    * Generates the filename for this region.
@@ -239,15 +190,6 @@ public:
    * Returns if this region is currently being recorded onto.
    */
   bool is_recording ();
-
-  bool can_have_lanes () const override
-  {
-    return region_type_has_lane (id_.type_);
-  }
-
-  bool can_fade () const override { return region_type_can_fade (id_.type_); }
-
-  void post_deserialize_children ();
 
   /**
    * @brief Returns the region at the given position, if any.
@@ -266,7 +208,10 @@ public:
     bool              include_region_end = false);
 
 protected:
-  Region () = default;
+  Region (ArrangerObjectRegistry &object_registry)
+      : object_registry_ (object_registry)
+  {
+  }
   Q_DISABLE_COPY_MOVE (Region)
 
   void copy_members_from (const Region &other, ObjectCloneType clone_type);
@@ -274,8 +219,11 @@ protected:
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
 public:
-  /** Unique ID. */
-  RegionIdentifier id_;
+  ArrangerObjectRegistry &object_registry_;
+
+  // FIXME: consider tracking link groups separately to decouple the link logic,
+  // region (probably) shouldn't know if it's in a link group
+  std::optional<int> link_group_;
 
   /**
    * Set to ON during bouncing if this region should be included.
@@ -302,8 +250,6 @@ public:
   double before_length_ = 0.0;
 
   /* --- stretching related end --- */
-
-  int magic_ = REGION_MAGIC;
 };
 
 /**
@@ -349,17 +295,25 @@ public:
   /**
    * @brief Fills the given vector with all the children of this region.
    */
-  virtual void append_children (
-    std::vector<RegionOwnedObjectImpl<RegionT> *> &children) const = 0;
+  void
+  append_children (this RegionT &self, std::vector<RegionOwnedObject *> &children)
+    requires RegionWithChildren<RegionT>
+  {
+    for (auto * obj : self.get_object_ptrs_view ())
+      {
+        children.push_back (obj);
+      }
+  }
 
   /**
    * Looks for the Region matching the identifier.
    */
-  [[gnu::hot]] static RegionTPtr find (const RegionIdentifier &id);
+  // [[gnu::hot]] static RegionTPtr find (const RegionIdentifier &id);
 
   std::optional<ArrangerObjectPtrVariant> find_in_project () const final
   {
-    return find (id_);
+    // TODO remove this method
+    return std::nullopt;
   }
 
   /**
@@ -388,31 +342,101 @@ public:
     MidiEventVector             &midi_events) const
     requires RegionTypeWithMidiEvents<RegionT>;
 
+  auto get_object_ptr (const ArrangerObject::Uuid id) const
+    requires RegionWithChildren<RegionT>
+  {
+    return std::get<ChildT *> (
+      get_arranger_object_registry ().find_by_id_or_throw (id));
+  }
+
+  auto &get_objects_vector (this RegionT &self)
+    requires RegionWithChildren<RegionT>
+  {
+    if constexpr (is_automation ())
+      {
+        return self.aps_;
+      }
+    else if constexpr (is_chord ())
+      {
+        return self.chord_objects_;
+      }
+    else if constexpr (is_midi ())
+      {
+        return self.midi_notes_;
+      }
+    else
+      {
+        DEBUG_TEMPLATE_PARAM (RegionT)
+      }
+  }
+
+  auto &get_objects_vector (this const RegionT &self)
+    requires RegionWithChildren<RegionT>
+  {
+    if constexpr (is_automation ())
+      {
+        return self.aps_;
+      }
+    else if constexpr (is_chord ())
+      {
+        return self.chord_objects_;
+      }
+    else if constexpr (is_midi ())
+      {
+        return self.midi_notes_;
+      }
+    else
+      {
+        DEBUG_TEMPLATE_PARAM (RegionT)
+      }
+  }
+
+  auto get_object_ptrs_view (this const RegionT &self)
+    requires RegionWithChildren<RegionT>
+  {
+    auto &vec_ref = self.get_objects_vector ();
+    return vec_ref | std::views::transform ([&] (const auto &id) {
+             return self.get_object_ptr (id);
+           });
+  }
+
+  RegionOwner<RegionT> * get_region_owner () const;
+
+  auto &get_arranger_object_registry () const { return object_registry_; }
+  auto &get_arranger_object_registry () { return object_registry_; }
+
   /**
-   * @brief Get the objects (midi notes/chord objects/etc) of this
-   * region.
-   *
-   * @tparam T Object type.
-   * @return A vector of object pointers.
+   * Adds the given ticks to each included object.
    */
-  std::span<ChildTPtr> get_objects ()
-    requires RegionWithChildren<RegionT>;
-
-  std::vector<ChildTPtr> &get_objects_vector ()
-    requires RegionWithChildren<RegionT>;
-
-  RegionOwnerImpl<RegionT> * get_region_owner () const;
+  void add_ticks_to_children (this RegionT &self, double ticks)
+    requires RegionWithChildren<RegionT>
+  {
+    for (auto * child : self.get_object_ptrs_view ())
+      {
+        child->move (ticks);
+      }
+  }
 
   /**
    * Removes all children objects from the region.
    */
-  void remove_all_children ()
-    requires RegionWithChildren<RegionT>;
+  void remove_all_children (this RegionT &self)
+    requires RegionWithChildren<RegionT>
+  {
+    z_debug ("removing all children from {} ", self.get_name ());
+
+    auto vec = self.get_objects_vector ();
+    for (auto &obj : vec)
+      {
+        self.remove_object (obj);
+      }
+  }
 
   /**
    * Clones and copies all children from @p src to @p dest.
    */
-  void copy_children (const RegionImpl &other);
+  void copy_children (const RegionImpl &other)
+    requires RegionWithChildren<RegionT>;
 
   /**
    * @brief Inserts the given object to this region (if this region has
@@ -423,24 +447,49 @@ public:
    * @param fire_events Whether to fire UI events.
    * @return RegionOwnedObject& The inserted object.
    */
-  void insert_object (ChildTPtr obj, int index, bool fire_events = false)
-    requires RegionWithChildren<RegionT>;
+  void
+  insert_object (this RegionT &self, ArrangerObject::Uuid obj_id, int index)
+    requires RegionWithChildren<RegionT>
+  {
+    z_debug ("inserting {} at index {}", obj_id, index);
+    auto &objects = self.get_objects_vector ();
+
+    self.beginInsertRows ({}, index, index);
+    // don't allow duplicates
+    z_return_if_fail (!std::ranges::contains (objects, obj_id));
+
+    objects.insert (objects.begin () + index, obj_id);
+    for (const auto &cur_obj_id : std::span (objects).subspan (index))
+      {
+        auto cur_obj = self.get_object_ptr (cur_obj_id);
+        cur_obj->set_region_and_index (self);
+      }
+
+    self.endInsertRows ();
+  }
 
   /**
    * @see insert_object().
    */
-  void append_object (ChildTPtr obj, bool fire_events = false)
-    requires RegionWithChildren<RegionT>;
+  void append_object (this RegionT &self, ArrangerObject::Uuid obj_id)
+    requires RegionWithChildren<RegionT>
+  {
+    auto &objects = self.get_objects_vector ();
+    self.insert_object (obj_id, objects.size ());
+  }
 
   /**
    * @brief Removes the given object from this region.
-   *
-   * @tparam T
-   * @param obj
    */
-  std::optional<ChildTPtr>
-  remove_object (ChildT &obj, bool free_obj, bool fire_events = false)
+  void remove_object (const ArrangerObject::Uuid &child_id)
     requires RegionWithChildren<RegionT>;
+
+  void post_deserialize_children (this RegionT &self)
+    requires RegionWithChildren<RegionT>
+  {
+    for (auto * obj : self.get_object_ptrs_view ())
+      obj->post_deserialize ();
+  }
 
   bool get_muted (bool check_parent) const override;
 
@@ -451,7 +500,7 @@ public:
 
   ArrangerObjectPtrVariant insert_clone_to_project () const final
   {
-    return insert_clone_to_project_at_index (id_.idx_, true);
+    return insert_clone_to_project_at_index (-1, true);
   }
 
   /**
@@ -474,7 +523,20 @@ public:
    * To be called every time the identifier changes to update the
    * region's children.
    */
-  void update_identifier ();
+  void update_identifier (this RegionT &self)
+  {
+    /* reset link group */
+    // set_link_group (id_.link_group_, false);
+
+    // track_id_ = id_.track_uuid_;
+    if constexpr (RegionWithChildren<RegionT>)
+      {
+        for (auto * obj : self.get_object_ptrs_view ())
+          {
+            obj->set_region_and_index (self);
+          }
+      }
+  }
 
   /**
    * Returns the region at the given position in the given Track.
@@ -568,7 +630,7 @@ DEFINE_ENUM_FORMATTER (
 inline bool
 operator== (const Region &lhs, const Region &rhs)
 {
-  return lhs.id_ == rhs.id_;
+  return lhs.get_uuid () == rhs.get_uuid ();
 }
 
 using RegionVariant =

@@ -56,7 +56,7 @@ public:
   void init ();
 
   void
-  apply_single_chord (const ChordDescriptor &chord, const int idx, bool undoable);
+  apply_single_chord (const ChordDescriptor &chord, int idx, bool undoable);
 
   void apply_chords (const std::vector<ChordDescriptor> &chords, bool undoable);
 
@@ -77,11 +77,29 @@ public:
 
   int get_chord_index (const ChordDescriptor &chord) const;
 
+  auto &get_chord_at_index (size_t index) { return chords_.at (index); }
+  auto &get_chord_at_index (size_t index) const { return chords_.at (index); }
+
   void init_after_cloning (const ChordEditor &other, ObjectCloneType clone_type)
     override
   {
     static_cast<EditorSettings &> (*this) =
       static_cast<const EditorSettings &> (other);
+  }
+
+  void add_chord_descriptor (ChordDescriptor &&chord_descr)
+  {
+    chords_.emplace_back (std::move (chord_descr));
+    chords_.back ().update_notes ();
+  }
+
+  void
+  replace_chord_descriptor (const auto index, ChordDescriptor &&chord_descr)
+  {
+    auto removed_id = chords_.at (index);
+    chords_.erase (chords_.begin () + index);
+    chords_.insert (chords_.begin () + index, std::move (chord_descr));
+    get_chord_at_index (index).update_notes ();
   }
 
   DECLARE_DEFINE_FIELDS_METHOD ();

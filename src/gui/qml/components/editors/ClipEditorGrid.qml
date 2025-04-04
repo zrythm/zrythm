@@ -11,7 +11,7 @@ GridLayout {
 
     required property var project
     required property var clipEditor
-    property var region: clipEditor.region
+    readonly property var region: clipEditor.region
 
     rows: 2
     columns: 3
@@ -63,7 +63,7 @@ GridLayout {
     StackLayout {
         id: editorSpecializedStack
 
-        currentIndex: region.regionType
+        currentIndex: root.region.regionType
 
         Loader {
             id: midiEditorLoader

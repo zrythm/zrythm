@@ -391,7 +391,8 @@ SampleProcessor::queue_file_or_chord_preset (
     z_debug ("creating master track...");
     auto * track = PROJECT->get_track_registry ().create_object<MasterTrack> (
       PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-      PROJECT->get_port_registry (), true);
+      PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry (),
+      true);
     track->set_name (*tracklist_, "Sample Processor Master", false);
     tracklist_->master_track_ = track;
     tracklist_->insert_track (
@@ -405,7 +406,8 @@ SampleProcessor::queue_file_or_chord_preset (
       auto * audio_track =
         PROJECT->get_track_registry ().create_object<AudioTrack> (
           PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-          PROJECT->get_port_registry (), true);
+          PROJECT->get_port_registry (),
+          PROJECT->get_arranger_object_registry (), true);
       audio_track->set_name (*tracklist_, "Sample processor audio", false);
       tracklist_->insert_track (
         audio_track->get_uuid (), tracklist_->tracks_.size (), *AUDIO_ENGINE,
@@ -414,9 +416,10 @@ SampleProcessor::queue_file_or_chord_preset (
       /* create an audio region & add to track */
       try
         {
-          auto ar = new AudioRegion (
-            file->abs_path_, start_pos, audio_track->get_uuid (), 0, 0);
-          audio_track->add_region (ar, nullptr, 0, true, false);
+          auto * ar =
+            ArrangerObjectFactory::get_instance ()->addAudioRegionFromFile (
+              &audio_track->get_lane_at (0),
+              QString::fromStdString (file->abs_path_), start_pos.ticks_);
           file_end_pos_ = *ar->end_pos_;
         }
       catch (const ZrythmException &e)
@@ -432,7 +435,8 @@ SampleProcessor::queue_file_or_chord_preset (
       auto instrument_track =
         PROJECT->get_track_registry ().create_object<InstrumentTrack> (
           PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-          PROJECT->get_port_registry (), true);
+          PROJECT->get_port_registry (),
+          PROJECT->get_arranger_object_registry (), true);
       instrument_track->set_name (*tracklist_, "Sample processor instrument", false);
       tracklist_->insert_track (
         instrument_track->get_uuid (), tracklist_->tracks_.size (),
@@ -458,8 +462,9 @@ SampleProcessor::queue_file_or_chord_preset (
             {
               auto * midi_track =
                 PROJECT->get_track_registry ().create_object<MidiTrack> (
-                  PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-                  PROJECT->get_port_registry (), true);
+                  PROJECT->get_track_registry (),
+                  PROJECT->get_plugin_registry (), PROJECT->get_port_registry (),
+                  PROJECT->get_arranger_object_registry (), true);
               midi_track->set_name (
                 *tracklist_, fmt::format ("Sample processor MIDI {}", i), false);
               tracklist_->insert_track (
@@ -475,12 +480,12 @@ SampleProcessor::queue_file_or_chord_preset (
                   /* create a MIDI region from the MIDI file & add to track */
                   try
                     {
-                      auto mr = new MidiRegion (
-                        start_pos, file->abs_path_, midi_track->get_uuid (), 0,
-                        0, i);
-                      midi_track->add_region (
-                        mr, nullptr, 0, !mr->name_.empty () ? false : true,
-                        false);
+                      auto mr =
+                        ArrangerObjectFactory::get_instance ()
+                          ->addMidiRegionFromMidiFile (
+                            &midi_track->get_lane_at (0),
+                            QString::fromStdString (file->abs_path_),
+                            start_pos.ticks_, i);
                       file_end_pos_ = std::max (
                         file_end_pos_, *static_cast<Position *> (mr->end_pos_));
                     }
@@ -493,50 +498,53 @@ SampleProcessor::queue_file_or_chord_preset (
                 }
               else if (chord_pset)
                 {
-                  /* create a MIDI region from the chord preset and add to track
-                   */
-                  Position end_pos;
-                  end_pos.from_seconds (
-                    13.0, audio_engine_->sample_rate_,
-                    audio_engine_->ticks_per_frame_);
-                  auto mr = new MidiRegion (
-                    start_pos, end_pos, midi_track->get_uuid (), 0, 0);
-
-                  /* add notes */
-                  for (int j = 0; j < 12; j++)
-                    {
-                      auto descr = chord_pset->descr_.at (j);
-                      descr.update_notes ();
-                      if (descr.type_ == dsp::ChordType::None)
-                        continue;
-
-                      Position cur_pos, cur_end_pos;
-                      cur_pos.from_seconds (
-                        j * 1.0, audio_engine_->sample_rate_,
-                        audio_engine_->ticks_per_frame_);
-                      cur_end_pos.from_seconds (
-                        j * 1.0 + 0.5, audio_engine_->sample_rate_,
-                        audio_engine_->ticks_per_frame_);
-                      for (
-                        size_t k = 0; k < dsp::ChordDescriptor::MAX_NOTES; k++)
-                        {
-                          if (descr.notes_[k])
-                            {
-                              auto mn = new MidiNote (
-                                mr->id_, cur_pos, cur_end_pos, k + 36,
-                                VELOCITY_DEFAULT);
-                              mr->append_object (mn, false);
-                            }
-                        }
-                    }
-
-                  file_end_pos_ = std::max (
-                    file_end_pos_, *static_cast<Position *> (mr->end_pos_));
-
                   try
                     {
-                      midi_track->add_region (
-                        mr, nullptr, 0, mr->name_.empty (), false);
+                      /* create a MIDI region from the chord preset and add to
+                       * track
+                       */
+                      Position end_pos;
+                      end_pos.from_seconds (
+                        13.0, audio_engine_->sample_rate_,
+                        audio_engine_->ticks_per_frame_);
+                      auto mr =
+                        ArrangerObjectFactory::get_instance ()->addEmptyMidiRegion (
+                          &midi_track->get_lane_at (0), start_pos.ticks_);
+                      mr->set_end_pos_full_size (
+                        end_pos, AUDIO_ENGINE->frames_per_tick_);
+
+                      /* add notes */
+                      for (const auto j : std::views::iota (0, 12))
+                        {
+                          auto descr = chord_pset->descr_.at (j);
+                          descr.update_notes ();
+                          if (descr.type_ == dsp::ChordType::None)
+                            continue;
+
+                          Position cur_pos, cur_end_pos;
+                          cur_pos.from_seconds (
+                            j * 1.0, audio_engine_->sample_rate_,
+                            audio_engine_->ticks_per_frame_);
+                          cur_end_pos.from_seconds (
+                            j * 1.0 + 0.5, audio_engine_->sample_rate_,
+                            audio_engine_->ticks_per_frame_);
+                          for (
+                            const auto k : std::views::iota (
+                              0zu, dsp::ChordDescriptor::MAX_NOTES))
+                            {
+                              if (descr.notes_[k])
+                                {
+                                  auto * mn =
+                                    ArrangerObjectFactory::get_instance ()
+                                      ->addMidiNote (mr, cur_pos.ticks_, k + 36);
+                                  mn->set_end_pos_full_size (
+                                    cur_end_pos, AUDIO_ENGINE->frames_per_tick_);
+                                }
+                            }
+                        }
+
+                      file_end_pos_ = std::max (
+                        file_end_pos_, *static_cast<Position *> (mr->end_pos_));
                     }
                   catch (const ZrythmException &e)
                     {

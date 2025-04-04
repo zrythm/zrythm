@@ -17,6 +17,7 @@
 #if HAVE_JACK
 #  include "gui/dsp/engine_jack.h"
 #endif
+#include "dsp/position.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/ui.h"
 #include "gui/dsp/exporter.h"
@@ -26,14 +27,12 @@
 #include "gui/dsp/router.h"
 #include "gui/dsp/tempo_track.h"
 #include "gui/dsp/transport.h"
-
-#include "dsp/position.h"
-#include "juce_wrapper.h"
-#include "midilib/src/midifile.h"
-#include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/math.h"
 #include "utils/progress_info.h"
+
+#include "juce_wrapper.h"
+#include "midilib/src/midifile.h"
 #include <sndfile.h>
 
 using namespace zrythm;
@@ -385,10 +384,9 @@ Exporter::export_midi (Settings &info)
         {
           std::visit (
             [&] (auto &&track) {
-              if (track->has_piano_roll ())
+              using TrackT = base_type<decltype (track)>;
+              if constexpr (std::derived_from<TrackT, PianoRollTrack>)
                 {
-                  auto &piano_roll_track =
-                    dynamic_cast<PianoRollTrack &> (*track);
                   std::unique_ptr<MidiEventVector> events;
                   if (midi_version == 0)
                     {
@@ -396,7 +394,7 @@ Exporter::export_midi (Settings &info)
                     }
 
                   /* write track to midi file */
-                  piano_roll_track.write_to_midi_file (
+                  track->write_to_midi_file (
                     mf, midi_version == 0 ? events.get () : nullptr, &start_pos,
                     &end_pos, midi_version == 0 ? false : info.lanes_as_tracks_,
                     midi_version == 0 ? false : true);
@@ -495,7 +493,7 @@ Exporter::prepare_tracks_for_export (AudioEngine &engine, Transport &transport)
   AUDIO_ENGINE->preparing_to_export_ = true;
   state_ = std::make_unique<AudioEngine::State> ();
 
-  AUDIO_ENGINE->wait_for_pause (*state_, Z_F_NO_FORCE, true);
+  AUDIO_ENGINE->wait_for_pause (*state_, false, true);
   z_info ("engine paused");
 
   TRANSPORT->play_state_ = Transport::PlayState::Rolling;

@@ -4,11 +4,17 @@
 #include "gui/dsp/audio_bus_track.h"
 
 AudioBusTrack::AudioBusTrack (
-  TrackRegistry  &track_registry,
-  PluginRegistry &plugin_registry,
-  PortRegistry   &port_registry,
-  bool            new_identity)
-    : Track (Track::Type::AudioBus, PortType::Audio, PortType::Audio),
+  TrackRegistry          &track_registry,
+  PluginRegistry         &plugin_registry,
+  PortRegistry           &port_registry,
+  ArrangerObjectRegistry &obj_registry,
+  bool                    new_identity)
+    : Track (
+        Track::Type::AudioBus,
+        PortType::Audio,
+        PortType::Audio,
+        port_registry,
+        obj_registry),
       AutomatableTrack (port_registry, new_identity),
       ProcessableTrack (port_registry, new_identity),
       ChannelTrack (track_registry, plugin_registry, port_registry, new_identity)

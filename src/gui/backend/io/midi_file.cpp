@@ -120,7 +120,7 @@ MidiFile::into_region (
 
       // set a temp name
       region.set_name (
-        format_str (QObject::tr ("Untitled Track {}").toStdString (), i), false);
+        format_str (QObject::tr ("Untitled Track {}").toStdString (), i));
 
       const auto * track = midi_file_.getTrack (i);
       for (const auto * event : *track)
@@ -146,10 +146,10 @@ MidiFile::into_region (
               auto * mn = region.pop_unended_note (msg.getNoteNumber ());
               if (mn != nullptr)
                 {
-                  mn->end_pos_setter (&pos);
+                  mn->end_pos_setter (pos);
                   if (global_pos > *region.end_pos_)
                     {
-                      region.end_pos_setter (&global_pos);
+                      region.end_pos_setter (global_pos);
                     }
                 }
               else
@@ -168,7 +168,7 @@ MidiFile::into_region (
               auto name = msg.getTextFromTextMetaEvent ();
               if (!name.isEmpty ())
                 {
-                  region.set_name (name.toStdString (), false);
+                  region.set_name (name.toStdString ());
                 }
             }
         }
@@ -186,5 +186,5 @@ MidiFile::into_region (
   Position loop_end_pos_to_set (
     region.end_pos_->ticks_ - region.pos_->ticks_,
     AUDIO_ENGINE->frames_per_tick_);
-  region.loop_end_pos_setter (&loop_end_pos_to_set);
+  region.loop_end_pos_setter (loop_end_pos_to_set);
 }

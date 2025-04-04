@@ -81,8 +81,7 @@ AudioEngine::init_after_cloning (
   monitor_out_right_ = other.monitor_out_right_;
   midi_editor_manual_press_ = other.midi_editor_manual_press_->clone_unique ();
   midi_in_ = other.midi_in_->clone_unique ();
-  pool_ = other.pool_->clone_unique ();
-  pool_->engine_ = this;
+  pool_ = other.pool_->clone_unique (clone_type, *this);
   control_room_ = other.control_room_->clone_unique ();
   sample_processor_ = other.sample_processor_->clone_unique ();
   sample_processor_->audio_engine_ = this;
@@ -737,7 +736,7 @@ AudioEngine::init_loaded (Project * project)
   project_ = project;
   port_registry_ = project->get_port_registry ();
 
-  pool_->init_loaded (this);
+  pool_->init_loaded ();
 
   control_room_->init_loaded (*port_registry_, this);
   sample_processor_->init_loaded (this);
@@ -786,7 +785,7 @@ AudioEngine::AudioEngine (Project * project)
       sample_rate_ (44000),
       control_room_ (
         std::make_unique<ControlRoom> (project->get_port_registry (), this)),
-      pool_ (std::make_unique<AudioPool> (this)),
+      pool_ (std::make_unique<AudioPool> (*this)),
       sample_processor_ (std::make_unique<SampleProcessor> (this))
 {
   z_debug ("Creating audio engine...");
@@ -1773,6 +1772,8 @@ AudioEngine::~AudioEngine ()
       break;
     }
 
+// TODO
+#if 0
   if (PROJECT && AUDIO_ENGINE && this == AUDIO_ENGINE)
     {
       iterate_tuple (
@@ -1780,6 +1781,7 @@ AudioEngine::~AudioEngine ()
       midi_in_->disconnect_all ();
       midi_editor_manual_press_->disconnect_all ();
     }
+#endif
 
   z_debug ("finished freeing engine");
 }

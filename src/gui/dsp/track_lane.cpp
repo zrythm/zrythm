@@ -15,18 +15,6 @@
 
 using namespace zrythm;
 
-TrackLane::TrackLane (int pos, std::string name)
-    : pos_ (pos), name_ (std::move (name))
-{
-}
-
-template <typename RegionT>
-TrackLaneImpl<RegionT>::TrackLaneImpl (LanedTrackT * track, int pos)
-    : TrackLane (pos, format_str (QObject::tr ("Lane {}").toStdString (), pos + 1)),
-      track_ (track)
-{
-}
-
 template <typename RegionT>
 void
 TrackLaneImpl<RegionT>::init_loaded (LanedTrackT * track)
@@ -35,7 +23,6 @@ TrackLaneImpl<RegionT>::init_loaded (LanedTrackT * track)
   for (auto &region_var : this->region_list_->regions_)
     {
       auto region = std::get<RegionT *> (region_var);
-      region->set_lane (*dynamic_cast<TrackLaneT *> (this));
       region->init_loaded ();
     }
 }
@@ -150,7 +137,7 @@ TrackLaneImpl<RegionT>::after_remove_region ()
   auto track = get_track ();
   z_return_if_fail (track);
   if (
-    !RegionOwnerImpl<RegionT>::clearing_
+    !RegionOwner<RegionT>::clearing_
     && !track->block_auto_creation_and_deletion_)
     {
       track->remove_empty_last_lanes ();
@@ -202,7 +189,7 @@ TrackLaneImpl<RegionT>::get_tracklist () const
  */
 template <typename RegionT>
 int
-TrackLaneImpl<RegionT>::calculate_lane_idx () const
+TrackLaneImpl<RegionT>::calculate_lane_idx_for_midi_serialization () const
 {
   auto        track = get_track ();
   Tracklist * tracklist = get_tracklist ();
@@ -213,7 +200,8 @@ TrackLaneImpl<RegionT>::calculate_lane_idx () const
     {
       if (cur_track == track)
         {
-          pos += pos_;
+          pos +=
+            track->get_lane_index (*dynamic_cast<const TrackLaneT *> (this));
           break;
         }
 
@@ -241,7 +229,7 @@ TrackLaneImpl<RegionT>::write_to_midi_file (
   if (lanes_as_tracks)
     {
       z_return_if_fail (!events);
-      midi_track_pos = calculate_lane_idx ();
+      midi_track_pos = calculate_lane_idx_for_midi_serialization ();
       own_events = std::make_unique<MidiEventVector> ();
     }
   else if (!use_track_or_lane_pos)
@@ -301,7 +289,7 @@ TrackLaneImpl<RegionT>::copy_members_from (
   const TrackLaneImpl &other,
   ObjectCloneType      clone_type)
 {
-  pos_ = other.pos_;
+  utils::UuidIdentifiableObject<TrackLane>::copy_members_from (other);
   name_ = other.name_;
   // y_ = other.y_;
   height_ = other.height_;
@@ -311,8 +299,8 @@ TrackLaneImpl<RegionT>::copy_members_from (
     {
       auto region = std::get<RegionT *> (region_var);
       region->is_auditioner_ = is_auditioner ();
-      region->owner_lane_ = dynamic_cast<TrackLaneT *> (this);
-      region->gen_name (region->name_.c_str (), nullptr, nullptr);
+      region->set_lane (dynamic_cast<TrackLaneT *> (this));
+      region->gen_name (region->get_name (), nullptr, nullptr);
     }
 }
 
@@ -320,7 +308,10 @@ template <typename RegionT>
 std::unique_ptr<typename TrackLaneImpl<RegionT>::TrackLaneT>
 TrackLaneImpl<RegionT>::gen_snapshot () const
 {
-  auto ret = dynamic_cast<const TrackLaneT *> (this)->clone_unique ();
+  return {};
+// TODO
+#if 0
+  auto ret = get_derived_lane().clone_unique ();
   ret->track_ = track_;
 
   /* clone_unique above creates the regions in `regions_` but we want them in
@@ -332,6 +323,7 @@ TrackLaneImpl<RegionT>::gen_snapshot () const
     }
   ret->region_list_->clear ();
   return ret;
+#endif
 }
 
 template class TrackLaneImpl<MidiRegion>;

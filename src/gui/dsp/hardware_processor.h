@@ -10,8 +10,6 @@
 
 #include "utils/icloneable.h"
 
-class AudioEngine;
-
 /**
  * @addtogroup dsp
  *

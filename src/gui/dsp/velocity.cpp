@@ -9,11 +9,6 @@
 
 Velocity::Velocity (QObject * parent) : QObject (parent) { }
 
-Velocity::Velocity (MidiNote * midi_note, const uint8_t vel)
-    : QObject (midi_note), midi_note_ (midi_note), vel_ (vel)
-{
-}
-
 void
 Velocity::init_after_cloning (const Velocity &other, ObjectCloneType clone_type)
 
@@ -39,11 +34,15 @@ Velocity::set_val (const int val)
   vel_ = std::clamp<uint8_t> (val, 0, 127);
 
   /* re-set the midi note value to set a note off event */
+// TODO
+#if 0
   auto * note = get_midi_note ();
   z_return_if_fail (IS_MIDI_NOTE (note));
-  note->set_val (note->pitch_);
+  note->set_pitch (note->pitch_);
+#endif
 }
 
+#if 0
 MidiNote *
 Velocity::get_midi_note () const
 {
@@ -51,6 +50,7 @@ Velocity::get_midi_note () const
 
   return midi_note_;
 }
+#endif
 
 const char *
 Velocity::setting_enum_to_str (size_t index)
