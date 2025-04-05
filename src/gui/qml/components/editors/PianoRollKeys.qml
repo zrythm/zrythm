@@ -24,6 +24,9 @@ Item {
     readonly property int blackKeyRadius: 2
     readonly property color labelColor: "#666666"
     readonly property color labelPressedColor: "white"
+    readonly property int numOctaves: 10
+    readonly property int whiteKeyCount: numOctaves * 7 + 5
+    readonly property int numNotes: endNote - startNote + 1
 
     // Signals for interaction
     signal notePressed(int note)
@@ -37,78 +40,45 @@ Item {
     }
 
     implicitWidth: keyWidth
-    implicitHeight: (endNote - startNote + 1) * keyHeight
+    implicitHeight: numNotes * keyHeight
 
     ColumnLayout {
-        id: keysLayout
+        id: whiteKeysLayout
 
-        anchors.fill: parent
+        anchors {
+          fill: parent
+          topMargin: - pianoRoll.keyHeight * 0.5
+        }
         spacing: 0
+        // y: - pianoRoll.keyHeight // * 0.5
 
         Repeater {
-            id: repeater
+            id: whiteKeysRepeater
 
-            model: endNote - startNote + 1
+            model: root.numNotes
 
             Item {
-                id: keyItem
+                id: whiteKeyItem
 
-                property int midiNote: root.endNote - modelData
+                readonly property int midiNote: root.endNote - modelData
                 property bool isPressed: false
+                readonly property int noteHeight: root.pianoRoll.getAdjustedKeyHeight(midiNote, root.keyHeight)
+                visible: root.pianoRoll.isWhiteKey(midiNote)
 
                 Layout.fillWidth: true
-                Layout.preferredHeight: root.keyHeight
-
-                // Top border for white keys when next note is white
-                Rectangle {
-                    id: topBorder
-
-                    visible: keyItem.midiNote < root.endNote && root.pianoRoll.isWhiteKey(keyItem.midiNote) && root.pianoRoll.isNextKeyWhite(keyItem.midiNote)
-                    height: 1
-                    width: parent.width
-                    color: root.borderColor
-                    anchors.top: parent.top
-                }
+                Layout.preferredHeight: noteHeight
 
                 // White key background
                 Rectangle {
-                    anchors.top: topBorder.visible ? topBorder.bottom : parent.top
+                    anchors.top: parent.top
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
+                    height: whiteKeyItem.noteHeight
                     width: parent.width
                     color: parent.isPressed && root.pianoRoll.isWhiteKey(midiNote) ? root.whiteKeyPressedColor : "white"
-                    border.width: 0
-                }
-
-                // Black key
-                Rectangle {
-                    visible: root.pianoRoll.isBlackKey(midiNote)
-                    width: root.blackKeyWidth
-                    height: parent.height
-                    color: parent.isPressed ? root.blackKeyPressedColor : root.blackKeyColor
+                    border.width: 1
                     topRightRadius: root.blackKeyRadius
                     bottomRightRadius: root.blackKeyRadius
-                    border.width: 0
-
-                    anchors {
-                        left: parent.left
-                        verticalCenter: parent.verticalCenter
-                    }
-
-                    // Right-side horizontal line
-                    Rectangle {
-                        visible: parent.visible
-                        height: 1
-                        width: keyItem.width - root.blackKeyWidth
-                        color: root.borderColor
-
-                        anchors {
-                            left: parent.right
-                            verticalCenter: parent.verticalCenter
-                        }
-
-                    }
-
                 }
 
                 // Note label (C notes only)
@@ -136,6 +106,59 @@ Item {
 
     }
 
+    ColumnLayout {
+        id: blackKeysLayout
+
+        anchors.fill: parent
+        spacing: 0
+        y: root.pianoRoll.getAdjustedKeyHeight(root.endNote, root.keyHeight) - pianoRoll.keyHeight * 0.5
+
+        Repeater {
+            id: blackKeysRepeater
+
+            model: root.numNotes
+
+            Item {
+                id: blackKeyItem
+
+                readonly property int midiNote: root.endNote - modelData
+                // visible: root.pianoRoll.isBlackKey(midiNote)
+
+                property bool isPressed: false
+
+                // Layout.fillWidth: true
+                Layout.preferredHeight: root.keyHeight
+                // Black key
+                Rectangle {
+                    visible: root.pianoRoll.isBlackKey(midiNote)
+                    width: root.blackKeyWidth
+                    height: parent.height
+                    color: parent.isPressed ? root.blackKeyPressedColor : root.blackKeyColor
+                    topRightRadius: root.blackKeyRadius
+                    bottomRightRadius: root.blackKeyRadius
+                    border.width: 0
+
+                    anchors {
+                        left: parent.left
+                        // verticalCenter: parent.verticalCenter
+                    }
+                }
+                // Transparent white key
+                Rectangle {
+                    visible: root.pianoRoll.isWhiteKey(midiNote)
+                    width: root.blackKeyWidth
+                    height: root.pianoRoll.getAdjustedKeyHeight(midiNote, root.keyWidth)
+                    color: "transparent"
+                    border.width: 0
+
+                    anchors {
+                        left: parent.left
+                    }
+                }
+            }
+        }
+    }
+
     MouseArea {
         id: mouseArea
 
@@ -144,7 +167,7 @@ Item {
 
         function handleNotePress(yPos) {
             var idx = Math.floor(yPos / root.keyHeight);
-            if (idx < 0 || idx >= repeater.count)
+            if (idx < 0 || idx >= root.numNotes)
                 return ;
 
             currentNote = root.endNote - idx;

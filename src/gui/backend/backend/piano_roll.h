@@ -167,6 +167,25 @@ public:
     return isWhiteKey (note - 1);
   }
 
+  Q_INVOKABLE static constexpr double
+  getAdjustedKeyHeight (int note, double baseHeight)
+  {
+    if (isBlackKey (note))
+      {
+        return baseHeight;
+      }
+    const auto normalized_note = note % 12;
+    switch (normalized_note)
+      {
+      case 2:
+      case 7:
+      case 9:
+        return baseHeight * 2;
+      default:
+        return baseHeight * 1.5;
+      }
+  }
+
   // ============================================================================
 
   /**
