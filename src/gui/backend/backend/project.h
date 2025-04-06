@@ -114,8 +114,7 @@ class Project final
 public:
   using QuantizeOptions = zrythm::gui::old_dsp::QuantizeOptions;
   using SnapGrid = zrythm::gui::SnapGrid;
-  using TrackUuid = dsp::PortIdentifier::TrackUuid;
-  using PluginIdentifier = dsp::PluginIdentifier;
+  using TrackUuid = Track::Uuid;
   using PluginPtrVariant = gui::old_dsp::plugins::PluginPtrVariant;
   using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
   using ArrangerObjectRegistry = ArrangerObjectRegistry;
@@ -349,9 +348,6 @@ public:
    */
   bool
   is_audio_clip_in_use (const AudioClip &clip, bool check_undo_stack) const;
-
-  auto find_plugin_by_identifier (const PluginIdentifier &id) const
-    -> PluginPtrVariant;
 
   auto &get_track_registry () const { return *track_registry_; }
   auto &get_plugin_registry () const { return *plugin_registry_; }

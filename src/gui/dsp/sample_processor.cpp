@@ -443,15 +443,16 @@ SampleProcessor::queue_file_or_chord_preset (
         *AUDIO_ENGINE, false, false);
       try
         {
-          auto pl = zrythm::gui::old_dsp::plugins::Plugin::create_with_setting (
-            *instrument_setting_, instrument_track->get_uuid (),
-            dsp::PluginSlot (zrythm::dsp::PluginSlotType::Instrument));
+          auto * pl = zrythm::gui::old_dsp::plugins::Plugin::create_with_setting (
+            *instrument_setting_, instrument_track->get_uuid ());
           pl->instantiate ();
           pl->activate (true);
           z_return_if_fail (pl->midi_in_port_ && pl->l_out_ && pl->r_out_);
 
           instrument_track->channel_->add_plugin (
-            pl->get_uuid (), pl->id_.slot_, false, false, true, false, false);
+            pl->get_uuid (),
+            dsp::PluginSlot (zrythm::dsp::PluginSlotType::Instrument), false,
+            false, true, false, false);
 
           int num_tracks =
             (file != nullptr)

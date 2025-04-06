@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include "dsp/plugin_identifier.h"
+#include "dsp/plugin_slot.h"
 #include "dsp/port_identifier.h"
 #include "gui/dsp/plugin_descriptor.h"
 

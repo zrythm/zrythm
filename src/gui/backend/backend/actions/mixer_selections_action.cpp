@@ -121,34 +121,42 @@ MixerSelectionsAction::
   std::visit (
     [&] (auto &&plugin_span) {
       auto first_pl_var = plugin_span.front ();
-      auto track = std::visit (
+      auto track_var = std::visit (
         [&] (auto &&first_pl) { return first_pl->get_track (); }, first_pl_var);
-      z_return_if_fail (track);
-      z_debug ("cloning automation tracks for track {}", track->get_name ());
-      auto &atl = track->automation_tracklist_;
-      int   count = 0;
-      int   regions_count = 0;
-      for (const auto &pl_var : plugin_span)
-        {
-          std::visit (
-            [&] (auto &&pl) {
-              const auto slot = pl->id_.slot_;
-              for (const auto &at : atl->get_automation_tracks ())
+      z_return_if_fail (track_var);
+      std::visit (
+        [&] (auto &&track) {
+          using TrackT = base_type<decltype (track)>;
+          if constexpr (std::derived_from<TrackT, AutomatableTrack>)
+            {
+              z_debug (
+                "cloning automation tracks for track {}", track->get_name ());
+              auto &atl = track->automation_tracklist_;
+              int   count = 0;
+              int   regions_count = 0;
+              for (const auto &pl_var : plugin_span)
                 {
-                  const auto &port_id = at->get_port ().id_;
-                  if (
-                    port_id->owner_type_
-                    != dsp::PortIdentifier::OwnerType::Plugin)
-                    continue;
+                  std::visit (
+                    [&] (auto &&pl) {
+                      const auto slot = *pl->get_slot ();
+                      for (const auto &at : atl->get_automation_tracks ())
+                        {
+                          const auto &port_id = at->get_port ().id_;
+                          if (
+                            port_id->owner_type_
+                            != dsp::PortIdentifier::OwnerType::Plugin)
+                            continue;
 
-                  auto plugin_uuid = port_id->get_plugin_id ();
-                  z_return_if_fail (plugin_uuid.has_value ()) auto plugin_var =
-                    PROJECT->find_plugin_by_id (plugin_uuid.value ());
-                  z_return_if_fail (plugin_var.has_value ())
-                    const auto &plugin_id = std::visit (
-                      [] (auto &&p) { return p->id_; }, plugin_var.value ());
-                  if (plugin_id.slot_ != slot)
-                    continue;
+                          auto plugin_uuid = port_id->get_plugin_id ();
+                          z_return_if_fail (
+                            plugin_uuid.has_value ()) auto plugin_var =
+                            PROJECT->find_plugin_by_id (plugin_uuid.value ());
+                          z_return_if_fail (plugin_var.has_value ());
+                          const auto pl_slot = std::visit (
+                            [] (auto &&p) { return *p->get_slot (); },
+                            plugin_var.value ());
+                          if (pl_slot != slot)
+                            continue;
 
 // TODO
 #if 0
@@ -161,15 +169,19 @@ MixerSelectionsAction::
                       ats_.emplace_back (at->clone_unique ());
                     }
 #endif
-                  count++;
-                  regions_count += at->region_list_->regions_.size ();
+                          count++;
+                          regions_count += at->region_list_->regions_.size ();
+                        }
+                    },
+                    pl_var);
                 }
-            },
-            pl_var);
-        }
-      z_debug (
-        "cloned %d automation tracks for track %s, total regions %d", count,
-        track->name_, regions_count);
+              z_debug (
+                "cloned {} automation tracks for track {}, total regions {}",
+                count, track->name_, regions_count);
+            }
+        },
+        *track_var);
+
     },
     plugins);
 }
@@ -222,9 +234,9 @@ MixerSelectionsAction::revert_automation (
       z_return_if_fail (plugin_uuid.has_value ());
       auto plugin_var = PROJECT->find_plugin_by_id (plugin_uuid.value ());
       z_return_if_fail (plugin_var.has_value ());
-      const auto &plugin_id =
-        std::visit ([] (auto &&p) { return p->id_; }, plugin_var.value ());
-      if (plugin_id.slot_ != slot)
+      const auto plugin_slot = PluginSpan::slot_projection (*plugin_var);
+      ;
+      if (plugin_slot != slot)
         {
           continue;
         }
@@ -426,7 +438,7 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                             PROJECT->get_plugin_registry ()
                               .create_object<CarlaNativePlugin> (
                                 PROJECT->get_port_registry (), *setting_,
-                                to_track_uuid_.value (), slot);
+                                to_track_uuid_.value ());
                         }
                       z_return_if_fail (pl);
 
@@ -452,8 +464,8 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                     }
 
                   /* set track */
-                  pl->track_ = track;
-                  pl->change_track (track->get_uuid ());
+                  // pl->track_ = track;
+                  pl->set_track (track->get_uuid ());
 
                   /* save any plugin about to be deleted */
                   // FIXME: what is the point of from_slot?
@@ -525,7 +537,8 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                           if constexpr (
                             std::derived_from<TrackT, AutomatableTrack>)
                             {
-                              revert_automation (*track, pl->id_.slot_, false);
+                              revert_automation (
+                                *track, *pl->get_slot (), false);
                             }
                         },
                         pl_var);
@@ -607,13 +620,13 @@ MixerSelectionsAction::do_or_undo_change_status (bool do_it)
           std::visit (
             [&] (auto &&own_pl) {
               auto project_pl_var =
-                PROJECT->find_plugin_by_identifier (own_pl->id_);
+                PROJECT->find_plugin_by_id (own_pl->get_uuid ());
               std::visit (
                 [&] (auto &&project_pl) {
                   project_pl->set_enabled (
                     do_it ? new_val_ : own_pl->is_enabled (false), true);
                 },
-                project_pl_var);
+                *project_pl_var);
             },
             own_pl_var);
         }
@@ -973,7 +986,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                           std::visit (
                             [&] (auto &pl, auto &&own_pl) {
                               /* original slot */
-                              const auto from_slot = own_pl->id_.slot_;
+                              const auto from_slot = *own_pl->get_slot ();
                               auto       existing_pl_var =
                                 from_tr->get_plugin_at_slot (from_slot);
 

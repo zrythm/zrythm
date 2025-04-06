@@ -6,7 +6,7 @@
 
 #include "zrythm-config.h"
 
-#include "dsp/plugin_identifier.h"
+#include "dsp/plugin_slot.h"
 #include "gui/dsp/plugin_protocol.h"
 #include "utils/icloneable.h"
 #include "utils/iserializable.h"

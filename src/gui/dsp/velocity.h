@@ -73,30 +73,8 @@ public:
 
   static size_t setting_str_to_enum (const char * str);
 
-#if 0
-  std::optional<ArrangerObjectPtrVariant> find_in_project () const override;
-
-  /* these do not apply to velocities */
-  ArrangerObjectPtrVariant
-  add_clone_to_project (bool fire_events) const override
-  {
-    throw ZrythmException ("Cannot add a velocity clone to a project");
-  }
-
-  ArrangerObjectPtrVariant insert_clone_to_project () const override
-  {
-    throw ZrythmException ("Cannot add a velocity clone to a project");
-  }
-#endif
-
-  // std::string print_to_str () const override;
-
-  // bool validate (bool is_project, double frames_per_tick) const override;
-
   void init_after_cloning (const Velocity &other, ObjectCloneType clone_type)
     override;
-
-  // void init_loaded () override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

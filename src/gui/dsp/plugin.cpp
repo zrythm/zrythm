@@ -42,6 +42,35 @@
 using namespace zrythm;
 using namespace zrythm::gui::old_dsp::plugins;
 
+Plugin::Plugin (
+  PortRegistry        &port_registry,
+  const PluginSetting &setting,
+  TrackUuid            track_id)
+    : port_registry_ (port_registry), setting_ (setting.clone_unique ())
+{
+  const auto &descr = setting_->descr_;
+
+  z_debug (
+    "creating plugin: {} ({})", descr->name_, ENUM_NAME (descr->protocol_));
+
+  init (track_id);
+}
+
+Plugin::
+  Plugin (PortRegistry &port_registry, ZPluginCategory cat, TrackUuid track_id)
+    : port_registry_ (port_registry)
+{
+  zrythm::gui::old_dsp::plugins::PluginDescriptor descr;
+  descr.author_ = "Hoge";
+  descr.name_ = "Dummy Plugin";
+  descr.category_ = cat;
+  descr.category_str_ = "Dummy Plugin Category";
+
+  setting_ = std::make_unique<PluginSetting> (descr);
+
+  init (track_id);
+}
+
 Plugin::~Plugin ()
 {
   if (activated_)
@@ -51,13 +80,10 @@ Plugin::~Plugin ()
 }
 
 zrythm::gui::old_dsp::plugins::Plugin *
-Plugin::create_with_setting (
-  const PluginSetting &setting,
-  TrackUuid            track_id,
-  dsp::PluginSlot      slot)
+Plugin::create_with_setting (const PluginSetting &setting, TrackUuid track_id)
 {
   return PROJECT->get_plugin_registry ().create_object<CarlaNativePlugin> (
-    PROJECT->get_port_registry (), setting, track_id, slot);
+    PROJECT->get_port_registry (), setting, track_id);
 }
 
 PortRegistrySpan
@@ -159,15 +185,21 @@ Plugin::set_enabled_and_gain ()
 bool
 Plugin::is_in_active_project () const
 {
-  return track_ && track_->is_in_active_project ();
+  auto track_var = get_track ();
+  if (!track_var)
+    return false;
+
+  return std::visit (
+    [&] (auto &&track) { return track->is_in_active_project (); }, *track_var);
 }
 
 std::string
 Plugin::get_full_designation_for_port (const dsp::PortIdentifier &id) const
 {
-  auto * track = get_track ();
+  auto track = get_track ();
   z_return_val_if_fail (track, {});
-  return fmt::format ("{}/{}/{}", track->get_name (), get_name (), id.label_);
+  return fmt::format (
+    "{}/{}/{}", TrackSpan::name_projection (*track), get_name (), id.label_);
 }
 
 void
@@ -175,7 +207,7 @@ Plugin::set_port_metadata_from_owner (dsp::PortIdentifier &id, PortRange &range)
   const
 {
   id.plugin_id_ = get_uuid ();
-  id.track_id_ = id_.track_id_;
+  id.track_id_ = track_id_;
   id.owner_type_ = PortIdentifier::OwnerType::Plugin;
 
 // FIXME: this was a horrible design decision
@@ -244,27 +276,30 @@ bool
 Plugin::should_bounce_to_master (utils::audio::BounceStep step) const
 {
   // only pre-insert bounces for instrument plugins make sense
+  const auto slot = get_slot ();
   if (
-    id_.slot_.has_slot_index ()
+    !slot.has_value () || slot->has_slot_index ()
     || step != utils::audio::BounceStep::BeforeInserts)
     {
       return false;
     }
 
-  auto * track = get_track ();
-  return track->bounce_to_master_;
+  return std::visit (
+    [&] (auto &&track) { return track->bounce_to_master_; }, *get_track ());
 }
 
 bool
 Plugin::is_auditioner () const
 {
-  return track_ && track_->is_auditioner ();
+  return has_track ()
+         && std::visit (
+           [&] (auto &&track) { return track->is_auditioner (); }, *get_track ());
 }
 
 void
 Plugin::init_loaded (AutomatableTrack * track)
 {
-  track_ = track;
+  track_id_ = track->get_uuid ();
 
   std::vector<Port *> ports;
   append_ports (ports);
@@ -298,16 +333,12 @@ Plugin::init_loaded (AutomatableTrack * track)
 }
 
 void
-Plugin::init (TrackUuid track_id, dsp::PluginSlot slot)
+Plugin::init (TrackUuid track_id)
 {
   z_debug (
-    "{} ({}) track name hash {} slot {}", get_name (),
-    ENUM_NAME (get_protocol ()), track_id, slot);
+    "{} ({}) track ID {}", get_name (), ENUM_NAME (get_protocol ()), track_id);
 
-  z_return_if_fail (slot.validate_slot_type_slot_combo ());
-
-  id_.track_id_ = track_id;
-  id_.slot_ = slot;
+  track_id_ = track_id;
 
   /* add enabled port */
   auto port = port_registry_->get ().create_object<ControlPort> (
@@ -448,40 +479,6 @@ Plugin::set_selected_preset_by_name (std::string_view name)
   z_return_if_reached ();
 }
 
-Plugin::Plugin (
-  PortRegistry        &port_registry,
-  const PluginSetting &setting,
-  TrackUuid            track_id,
-  dsp::PluginSlot      slot)
-    : setting_ (setting.clone_unique ()), port_registry_ (port_registry)
-{
-  const auto &descr = setting_->descr_;
-
-  z_debug (
-    "creating plugin: {} ({}) slot {}", descr->name_,
-    ENUM_NAME (descr->protocol_), slot);
-
-  init (track_id, slot);
-}
-
-Plugin::Plugin (
-  PortRegistry   &port_registry,
-  ZPluginCategory cat,
-  TrackUuid       track_id,
-  PluginSlot      slot)
-    : port_registry_ (port_registry)
-{
-  zrythm::gui::old_dsp::plugins::PluginDescriptor descr;
-  descr.author_ = "Hoge";
-  descr.name_ = "Dummy Plugin";
-  descr.category_ = cat;
-  descr.category_str_ = "Dummy Plugin Category";
-
-  setting_ = std::make_unique<PluginSetting> (descr);
-
-  init (track_id, slot);
-}
-
 void
 Plugin::append_ports (std::vector<Port *> &ports)
 {
@@ -498,41 +495,38 @@ Plugin::append_ports (std::vector<Port *> &ports)
 std::string
 Plugin::get_node_name () const
 {
-  Track * track = get_track ();
-  return fmt::format ("{}/{} (Plugin)", track->get_name (), get_name ());
+  auto track = get_track ();
+  return fmt::format (
+    "{}/{} (Plugin)",
+    track ? TrackSpan::name_projection (*track) : "(No track)", get_name ());
 }
 
 void
 Plugin::remove_ats_from_automation_tracklist (bool free_ats, bool fire_events)
 {
-  auto track = get_track ();
-  z_return_if_fail (track);
+  auto * track =
+    TrackSpan::derived_type_transformation<AutomatableTrack> (*get_track ());
   auto &atl = track->get_automation_tracklist ();
   for (auto * at : atl.get_automation_tracks () | std::views::reverse)
     {
-      auto  port_var = PROJECT->find_port_by_id (at->port_id_);
-      z_return_if_fail (port_var.has_value ());
-      std::visit (
-        [&] (auto &&port) {
-          if (port->id_->plugin_id_.has_value() && (
-            port->id_->owner_type_ == PortIdentifier::OwnerType::Plugin
-            || ENUM_BITSET_TEST ( port->id_->flags_,
+      auto &port = at->get_port ();
+      if (port.id_->plugin_id_.has_value() && (
+            port.id_->owner_type_ == PortIdentifier::OwnerType::Plugin
+            || ENUM_BITSET_TEST ( port.id_->flags_,
               PortIdentifier::Flags::PluginControl)))
-            {
-              auto pl_var =
-                PROJECT->find_plugin_by_id (port->id_->plugin_id_.value ());
-              z_return_if_fail (pl_var.has_value ());
-              std::visit (
-                [&] (auto &&pl) {
-                  if (pl->id_.slot_ == id_.slot_)
-                    {
-                      atl.remove_at (*at, free_ats, fire_events);
-                    }
-                },
-                pl_var.value ());
-            }
-        },
-        port_var.value ());
+        {
+          auto pl_var =
+            PROJECT->find_plugin_by_id (port.id_->plugin_id_.value ());
+          z_return_if_fail (pl_var.has_value ());
+          std::visit (
+            [&] (auto &&pl) {
+              if (pl->get_slot () == get_slot ())
+                {
+                  atl.remove_at (*at, free_ats, fire_events);
+                }
+            },
+            pl_var.value ());
+        }
     }
 }
 
@@ -569,11 +563,11 @@ plugin_move_data_free (void * _data, GClosure * closure)
 static void
 do_move (PluginMoveData * data)
 {
-  auto pl = data->pl;
-  auto prev_slot = pl->id_.slot_;
-  auto prev_track = pl->get_track ();
-  z_return_if_fail (prev_track);
-  auto prev_ch = pl->get_channel ();
+  auto * pl = data->pl;
+  auto   prev_slot = *pl->get_slot ();
+  auto * prev_track = TrackSpan::derived_type_transformation<AutomatableTrack> (
+    *pl->get_track ());
+  auto * prev_ch = pl->get_channel ();
   z_return_if_fail (prev_ch);
 
   std::visit (
@@ -669,37 +663,39 @@ Plugin::move (
     *data->track_var);
 }
 
-void
-Plugin::set_track_and_slot (TrackUuid track_id, dsp::PluginSlot slot)
-{
-  z_return_if_fail (slot.validate_slot_type_slot_combo ());
-
-  id_.track_id_ = track_id;
-  id_.slot_ = slot;
-
-  // TODO: replace with std::views::concat in c++26
-  for (auto port : get_input_port_span ().as_base_type ())
-    {
-      port->set_owner (*this);
-    }
-  for (auto port : get_output_port_span ().as_base_type ())
-    {
-      port->set_owner (*this);
-    }
-}
-
-AutomatableTrack *
+std::optional<TrackPtrVariant>
 Plugin::get_track () const
 {
-  z_return_val_if_fail (track_, nullptr);
-  return track_;
+  if (!track_resolver_.has_value () || !track_id_.has_value ())
+    return std::nullopt;
+  return (*track_resolver_) (*track_id_);
+}
+
+auto
+Plugin::get_slot () const -> std::optional<PluginSlot>
+{
+  if (!track_id_.has_value ())
+    return std::nullopt;
+
+  return std::visit (
+    [&] (auto &&track) -> std::optional<PluginSlot> {
+      using TrackT = base_type<decltype (track)>;
+      if constexpr (
+        std::derived_from<TrackT, ChannelTrack>
+        || std::is_same_v<TrackT, ModulatorTrack>)
+        {
+          return track->get_plugin_slot (get_uuid ());
+        }
+      throw std::runtime_error ("Plugin::get_slot: invalid track type");
+    },
+    *get_track ());
 }
 
 gui::Channel *
 Plugin::get_channel () const
 {
-  auto track = dynamic_cast<ChannelTrack *> (get_track ());
-  z_return_val_if_fail (track, nullptr);
+  auto track =
+    TrackSpan::derived_type_transformation<ChannelTrack> (*get_track ());
   auto ch = track->channel_;
   z_return_val_if_fail (ch, nullptr);
 
@@ -709,9 +705,10 @@ Plugin::get_channel () const
 std::string
 Plugin::get_full_port_group_designation (const std::string &port_group) const
 {
-  auto track = get_track ();
-  z_return_val_if_fail (track, {});
-  return fmt::format ("{}/{}/{}", track->name_, get_name (), port_group);
+  assert (has_track ());
+  return fmt::format (
+    "{}/{}/{}", TrackSpan::name_projection (*get_track ()), get_name (),
+    port_group);
 }
 
 Port *
@@ -776,42 +773,44 @@ Plugin::generate_window_title () const
 {
   z_return_val_if_fail (is_in_active_project (), {});
 
-  auto track = get_track ();
+  auto track_var = get_track ();
 
-  const auto track_name = track ? track->name_ : "";
-  const auto plugin_name = get_name ();
-  z_return_val_if_fail (!track_name.empty () && !plugin_name.empty (), {});
+  return std::visit (
+    [&] (auto &&track) -> std::string {
+      const auto track_name = track ? track->get_name () : "";
+      const auto plugin_name = get_name ();
+      z_return_val_if_fail (!track_name.empty () && !plugin_name.empty (), {});
 
-  std::string bridge_mode;
-  if (
-    setting_->bridge_mode_
-    != zrythm::gui::old_dsp::plugins::CarlaBridgeMode::None)
-    {
-      bridge_mode =
-        fmt::format (" - bridge: {}", ENUM_NAME (setting_->bridge_mode_));
-    }
+      std::string bridge_mode;
+      if (
+        setting_->bridge_mode_
+        != zrythm::gui::old_dsp::plugins::CarlaBridgeMode::None)
+        {
+          bridge_mode =
+            fmt::format (" - bridge: {}", ENUM_NAME (setting_->bridge_mode_));
+        }
 
-  std::string slot;
-  const auto  slot_type =
-    id_.slot_.has_slot_index ()
-       ? id_.slot_.get_slot_with_index ().first
-       : id_.slot_.get_slot_type_only ();
-  if (slot_type == zrythm::dsp::PluginSlotType::Instrument)
-    {
-      slot = "instrument";
-    }
-  else
-    {
-      const auto slot_no = id_.slot_.get_slot_with_index ().second;
-      slot = fmt::format ("#{}", slot_no + 1);
-    }
+      const auto  slot = *get_slot ();
+      std::string slot_str;
+      const auto  slot_type = get_slot_type ();
+      if (slot_type == zrythm::dsp::PluginSlotType::Instrument)
+        {
+          slot_str = "instrument";
+        }
+      else
+        {
+          const auto slot_no = slot.get_slot_with_index ().second;
+          slot_str = fmt::format ("#{}", slot_no + 1);
+        }
 
-  return fmt::format (
-    "{} ({} {}{}{})", plugin_name, track_name, slot,
-    /* assume all plugins use carla for now */
-    "",
-    /*setting->open_with_carla_ ? " carla" : "",*/
-    bridge_mode);
+      return fmt::format (
+        "{} ({} {}{}{})", plugin_name, track_name, slot,
+        /* assume all plugins use carla for now */
+        "",
+        /*setting->open_with_carla_ ? " carla" : "",*/
+        bridge_mode);
+    },
+    track_var.value ());
 }
 
 void
@@ -1058,10 +1057,10 @@ Plugin::get_enabled_port ()
 void
 Plugin::update_identifier ()
 {
-  z_return_if_fail (track_);
+  assert (has_track ());
 
   /* set port identifier track poses */
-  auto new_track_uuid = track_->get_uuid ();
+  const auto new_track_uuid = get_track_id ();
   for (auto port : get_input_port_span ().as_base_type ())
     {
       port->change_track (new_track_uuid);
@@ -1070,14 +1069,6 @@ Plugin::update_identifier ()
     {
       port->change_track (new_track_uuid);
     }
-}
-
-void
-Plugin::change_track (TrackUuid track_id)
-{
-  id_.track_id_ = track_id;
-
-  update_identifier ();
 }
 
 void
@@ -1185,10 +1176,14 @@ Plugin::process_block (const EngineProcessTimeInfo time_nfo)
 std::string
 Plugin::print () const
 {
-  auto track = is_in_active_project () ? track_ : nullptr;
+  const auto track_name =
+    is_in_active_project ()
+      ? TrackSpan::name_projection (*get_track ())
+      : "<no track>";
+  const auto track_pos =
+    is_in_active_project () ? TrackSpan::position_projection (*get_track ()) : -1;
   return fmt::format (
-    "{} ({}):{} - {}", track ? track->get_name () : "<no track>",
-    track ? track->pos_ : -1, id_.slot_, get_name ());
+    "{} ({}):{} - {}", track_name, track_pos, get_slot (), get_name ());
 }
 
 void
@@ -1382,7 +1377,7 @@ Plugin::copy_members_from (Plugin &other)
   /* create a new plugin with same descriptor */
   z_debug ("[2/5] creating new plugin with same setting");
   setting_ = other.setting_->clone_unique ();
-  init (other.id_.track_id_, other.id_.slot_);
+  init (other.get_track_id ());
 
   /* copy ports */
   z_debug ("[3/5] copying ports from source plugin");
@@ -1410,7 +1405,7 @@ Plugin::copy_members_from (Plugin &other)
 
   z_debug ("[5/5] done");
 
-  id_ = other.id_;
+  track_id_ = other.track_id_;
   visible_ = other.visible_;
   selected_ = other.selected_;
 }
@@ -1423,8 +1418,8 @@ Plugin::is_enabled (bool check_track) const
 
   if (check_track)
     {
-      auto track = get_track ();
-      z_return_val_if_fail (track, false);
+      auto * track =
+        TrackSpan::derived_type_transformation<ChannelTrack> (*get_track ());
       return track->is_enabled ();
     }
   else

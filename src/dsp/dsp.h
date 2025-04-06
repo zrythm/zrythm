@@ -16,7 +16,7 @@
 #include "./panning.h"
 #include "./peak_dsp.h"
 #include "./peak_fall_smooth.h"
-#include "./plugin_identifier.h"
+#include "./plugin_slot.h"
 #include "./port_identifier.h"
 #include "./position.h"
 #include "./stretcher.h"

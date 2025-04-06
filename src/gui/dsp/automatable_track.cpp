@@ -215,11 +215,11 @@ AutomatableTrack::validate_base () const
               z_return_val_if_fail (pl_var.has_value (), false);
               auto pl_valid = std::visit (
                 [&] (auto &&pl) {
-                  z_return_val_if_fail (pl->id_.track_id_ == this_id, false);
-                  z_return_val_if_fail (pl->id_.validate (), false);
+                  z_return_val_if_fail (pl->get_track_id () == this_id, false);
+                  const auto pl_slot = *pl->get_slot ();
                   if (
-                    !pl->id_.slot_.has_slot_index ()
-                    && pl->id_.slot_.get_slot_type_only ()
+                    !pl_slot.has_slot_index ()
+                    && pl_slot.get_slot_type_only ()
                          == dsp::PluginSlotType::Instrument)
                     {
                       const auto * channel_track =

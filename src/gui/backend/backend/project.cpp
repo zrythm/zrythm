@@ -132,41 +132,6 @@ Project::print_port_connection (const PortConnection &conn) const
     src_var, dest_var);
 }
 
-auto
-Project::find_plugin_by_identifier (const PluginIdentifier &id) const
-  -> PluginPtrVariant
-{
-  auto track_var = *tracklist_->get_track (id.track_id_);
-  auto ret = std::visit (
-    [&] (auto &&t) -> std::optional<PluginPtrVariant> {
-      using TrackT = base_type<decltype (t)>;
-      const auto slot_type =
-        id.slot_.has_slot_index ()
-          ? id.slot_.get_slot_with_index ().first
-          : id.slot_.get_slot_type_only ();
-      if constexpr (std::derived_from<TrackT, ChannelTrack>)
-        {
-          if (
-            slot_type == dsp::PluginSlotType::MidiFx
-            || slot_type == dsp::PluginSlotType::Instrument
-            || slot_type == dsp::PluginSlotType::Insert)
-            {
-              return t->channel_->get_plugin_at_slot (id.slot_);
-            }
-        }
-      else if constexpr (std::is_same_v<TrackT, ModulatorTrack>)
-        {
-
-          const auto slot_no = id.slot_.get_slot_with_index ().second;
-          return t->get_modulator (slot_no);
-        }
-      z_warning ("plugin not found");
-      return std::nullopt;
-    },
-    track_var);
-  return *ret;
-}
-
 bool
 Project::is_audio_clip_in_use (const AudioClip &clip, bool check_undo_stack) const
 {

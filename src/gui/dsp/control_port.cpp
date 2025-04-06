@@ -282,14 +282,13 @@ ControlPort::set_val_from_normalized (float val, bool automating)
 void
 ControlPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
 {
-  const auto owner_type = id_->owner_type_;
-
   if (
-    !is_input()
-    || (owner_type == PortIdentifier::OwnerType::Fader && (ENUM_BITSET_TEST ( id_->flags2_, PortIdentifier::Flags2::MonitorFader) || ENUM_BITSET_TEST ( id_->flags2_, PortIdentifier::Flags2::Prefader)))
-    || ENUM_BITSET_TEST ( id_->flags_, PortIdentifier::Flags::TpMono)
-    || ENUM_BITSET_TEST ( id_->flags_, PortIdentifier::Flags::TpInputGain)
-    || !(ENUM_BITSET_TEST ( id_->flags_, PortIdentifier::Flags::Automatable)))
+    !is_input ()
+    || ENUM_BITSET_TEST (id_->flags2_, PortIdentifier::Flags2::MonitorFader)
+    || ENUM_BITSET_TEST (id_->flags2_, PortIdentifier::Flags2::Prefader)
+    || ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::TpMono)
+    || ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::TpInputGain)
+    || !(ENUM_BITSET_TEST (id_->flags_, PortIdentifier::Flags::Automatable)))
     {
       return;
     }

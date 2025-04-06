@@ -532,7 +532,7 @@ TracklistSelectionsAction::create_track (int idx)
                 PROJECT->get_plugin_registry ()
                   .create_object<old_dsp::plugins::CarlaNativePlugin> (
                     PROJECT->get_port_registry (), *pl_setting_,
-                    added_track->get_uuid (), dsp::PluginSlot{});
+                    added_track->get_uuid ());
               added_pl = pl;
               pl->instantiate ();
               pl->activate ();
@@ -553,7 +553,7 @@ TracklistSelectionsAction::create_track (int idx)
                           ? dsp::PluginSlot (dsp::PluginSlotType::Instrument)
                           : dsp::PluginSlot (
                               dsp::PluginSlotType::Insert,
-                              plugin->id_.slot_.get_slot_with_index ().second),
+                              plugin->get_slot ()->get_slot_with_index ().second),
                         true, false, true, false, false);
                     },
                     added_pl);

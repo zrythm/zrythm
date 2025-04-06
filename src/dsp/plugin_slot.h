@@ -16,9 +16,9 @@ namespace zrythm::dsp
 enum class PluginSlotType
 {
   Invalid,
-  Insert,
   MidiFx,
   Instrument,
+  Insert,
 
   /** Plugin is part of a modulator. */
   Modulator,
@@ -31,7 +31,10 @@ public:
 
   friend auto operator<=> (const PluginSlot &lhs, const PluginSlot &rhs)
   {
-    return std::tie (lhs.type_, lhs.slot_) <=> std::tie (rhs.type_, rhs.slot_);
+    if (lhs.type_ != rhs.type_)
+      return lhs.type_ <=> rhs.type_;
+
+    return lhs.slot_ <=> rhs.slot_;
   }
 
   // Needed for testing
@@ -93,8 +96,10 @@ public:
    */
   bool validate_slot_type_slot_combo () const
   {
+    if (type_ == PluginSlotType::Invalid)
+      return false;
+
     return (type_ == PluginSlotType::Instrument && !slot_.has_value ())
-           || (type_ == PluginSlotType::Invalid && !slot_.has_value ())
            || (type_ != PluginSlotType::Instrument && slot_.has_value ());
   }
 
@@ -103,49 +108,6 @@ public:
 private:
   PluginSlotType        type_{ PluginSlotType::Invalid };
   std::optional<SlotNo> slot_;
-};
-
-/**
- * Plugin identifier.
- */
-class PluginIdentifier
-    : public zrythm::utils::serialization::ISerializable<PluginIdentifier>
-{
-public:
-  using TrackUuid = utils::UuidIdentifiableObject<Track>::Uuid;
-
-  friend auto
-  operator<=> (const PluginIdentifier &lhs, const PluginIdentifier &rhs)
-  {
-    return std::tie (type_safe::get (lhs.track_id_), lhs.slot_)
-           <=> std::tie (type_safe::get (rhs.track_id_), rhs.slot_);
-  }
-
-  // Needed for testing
-  friend bool
-  operator== (const PluginIdentifier &lhs, const PluginIdentifier &rhs)
-  {
-    return (lhs <=> rhs) == 0;
-  }
-
-  [[nodiscard]] bool validate () const;
-
-  std::string print_to_str () const;
-
-  uint32_t get_hash () const;
-
-  DECLARE_DEFINE_FIELDS_METHOD ();
-
-public:
-  PluginSlot slot_;
-
-  /** ID of the track this plugin belongs to. */
-  TrackUuid track_id_;
-
-  static_assert (type_safe::is_strong_typedef<TrackUuid>::value);
-  static_assert (StrongTypedef<TrackUuid>);
-  static_assert (std::is_same_v<type_safe::underlying_type<TrackUuid>, QUuid>);
-  // static_assert (StrongTypedef<PluginSlotType>);
 };
 
 }; // namespace zrythm::dsp

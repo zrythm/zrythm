@@ -120,9 +120,7 @@ struct ModulatorImportData
               self->plugin_registry_->find_by_id_or_throw (cur_mod_id);
             std::visit (
               [&] (auto &&cur_mod_ptr) {
-                cur_mod_ptr->set_track_and_slot (
-                  self->get_uuid (),
-                  dsp::PluginSlot (zrythm::dsp::PluginSlotType::Modulator, i));
+                cur_mod_ptr->set_track (self->get_uuid ());
               },
               cur_mod);
           }
@@ -221,7 +219,7 @@ ModulatorTrack::remove_modulator (
   auto plugin_var = plugin_registry_->find_by_id_or_throw (plugin_id);
   return std::visit (
     [&] (auto &&plugin) -> PluginPtrVariant {
-      assert (plugin->id_.track_id_ == get_uuid ());
+      assert (plugin->get_track_id () == get_uuid ());
 
       plugin->remove_ats_from_automation_tracklist (
         deleting_modulator, !deleting_track && !deleting_modulator);
@@ -245,14 +243,7 @@ ModulatorTrack::remove_modulator (
           const auto &mod_id = *it;
           auto mod_var = plugin_registry_->find_by_id_or_throw (mod_id);
           std::visit (
-            [&] (auto &&mod) {
-              mod->set_track_and_slot (
-                get_uuid (),
-                dsp::PluginSlot (
-                  dsp::PluginSlotType::Modulator,
-                  std::distance (modulators_.begin (), it)));
-            },
-            mod_var);
+            [&] (auto &&mod) { mod->set_track (get_uuid ()); }, mod_var);
         }
 
       if (recalc_graph)
@@ -294,6 +285,16 @@ ModulatorTrack::get_modulator (dsp::PluginSlot::SlotNo slot) const
   auto modulator_var =
     plugin_registry_->find_by_id_or_throw (modulators_[slot]);
   return modulator_var;
+}
+
+dsp::PluginSlot
+ModulatorTrack::get_plugin_slot (const PluginUuid &plugin_id) const
+{
+  const auto it = std::ranges::find (modulators_, plugin_id);
+  if (it == modulators_.end ())
+    throw std::runtime_error ("Plugin not found");
+  return dsp::PluginSlot (
+    dsp::PluginSlotType::Modulator, std::distance (modulators_.begin (), it));
 }
 
 void

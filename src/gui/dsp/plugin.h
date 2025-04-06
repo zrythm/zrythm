@@ -10,11 +10,12 @@
 #include <string>
 #include <vector>
 
-#include "dsp/plugin_identifier.h"
+#include "dsp/plugin_slot.h"
 #include "gui/backend/backend/settings/plugin_settings.h"
 #include "gui/dsp/plugin_descriptor.h"
 #include "gui/dsp/port.h"
 #include "gui/dsp/port_span.h"
+#include "gui/dsp/track_fwd.h"
 #include "utils/types.h"
 
 namespace zrythm::gui
@@ -60,12 +61,13 @@ class Plugin
       public utils::UuidIdentifiableObject<Plugin>
 {
 public:
-  using PluginIdentifier = dsp::PluginIdentifier;
   using PortIdentifier = dsp::PortIdentifier;
   using PluginSlot = dsp::PluginSlot;
   using PluginSlotType = dsp::PluginSlotType;
   using PluginSlotNo = PluginSlot::SlotNo;
   using Channel = gui::Channel;
+  using TrackResolver =
+    utils::UuidIdentifiablObjectResolver<TrackPtrVariant, TrackUuid>;
 
   /**
    * Preset identifier.
@@ -156,10 +158,8 @@ public:
   /**
    * @brief Factory method to create a plugin based on the setting.
    */
-  static Plugin * create_with_setting (
-    const PluginSetting &setting,
-    TrackUuid            track_id,
-    PluginSlot           slot);
+  static Plugin *
+  create_with_setting (const PluginSetting &setting, TrackUuid track_id);
 
   PluginDescriptor      &get_descriptor () { return *setting_->descr_; }
   std::string            get_name () const { return setting_->descr_->name_; }
@@ -279,21 +279,16 @@ public:
     bool               confirm_overwrite,
     bool               fire_events);
 
-  /**
-   * Sets the channel and slot on the plugin and its ports.
-   */
-  void set_track_and_slot (TrackUuid track_id, PluginSlot slot);
-
-  auto get_slot () const { return id_.slot_; }
   auto get_slot_type () const
   {
-    const auto slot = id_.slot_;
-    if (slot.has_slot_index ())
+    const auto slot = get_slot ();
+    assert (slot.has_value ());
+    if (slot->has_slot_index ())
       {
-        return slot.get_slot_with_index ().first;
+        return slot->get_slot_with_index ().first;
       }
 
-    return slot.get_slot_type_only ();
+    return slot->get_slot_type_only ();
   }
 
   /**
@@ -382,7 +377,21 @@ public:
 
   Channel * get_channel () const;
 
-  AutomatableTrack * get_track () const;
+  std::optional<TrackPtrVariant> get_track () const;
+
+  void set_track (const TrackUuid &track_id)
+  {
+    track_id_ = track_id;
+    update_identifier ();
+  }
+
+  TrackUuid get_track_id () const
+  {
+    assert (has_track ());
+    return *track_id_;
+  }
+
+  bool has_track () const { return track_id_.has_value (); }
 
   /**
    * To be called when changes to the plugin identifier were made, so we can
@@ -421,9 +430,11 @@ public:
   void instantiate ();
 
   /**
-   * Sets the track name hash on the plugin.
+   * @brief Returns the slot this number is inserted at in the owner.
+   *
+   * @return PluginSlot
    */
-  void change_track (TrackUuid track_id);
+  auto get_slot () const -> std::optional<PluginSlot>;
 
   /**
    * Process plugin.
@@ -576,7 +587,7 @@ protected:
 private:
   void set_stereo_outs_and_midi_in ();
   void set_enabled_and_gain ();
-  void init (TrackUuid track_id, PluginSlot slot);
+  void init (TrackUuid track_id);
   void set_as_port_owner_with_index (PortUuid port_id, size_t index);
 
   virtual void populate_banks () = 0;
@@ -642,22 +653,20 @@ protected:
   Plugin (
     PortRegistry        &port_registry,
     const PluginSetting &setting,
-    TrackUuid            track_id,
-    PluginSlot           slot);
+    TrackUuid            track_id);
 
   /**
    * Create a dummy plugin for tests.
    */
-  Plugin (
-    PortRegistry   &port_registry,
-    ZPluginCategory cat,
-    TrackUuid       track_id,
-    PluginSlot      slot);
+  Plugin (PortRegistry &port_registry, ZPluginCategory cat, TrackUuid track_id);
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
 public:
-  PluginIdentifier id_;
+  std::optional<std::reference_wrapper<PortRegistry>> port_registry_;
+  std::optional<TrackResolver>                        track_resolver_;
+
+  std::optional<TrackUuid> track_id_;
 
   /** Setting this plugin was instantiated with. */
   std::unique_ptr<PluginSetting> setting_;
@@ -758,8 +767,6 @@ public:
    */
   ulong close_request_id_ = 0;
 
-  int magic_ = PLUGIN_MAGIC;
-
   /**
    * Whether selected in the slot owner (mixer for example).
    */
@@ -786,15 +793,13 @@ public:
   bool is_function_ = false;
 
   /** Pointer to owner track, if any. */
-  AutomatableTrack * track_ = nullptr;
-
-  std::optional<std::reference_wrapper<PortRegistry>> port_registry_;
+  // AutomatableTrack * track_ = nullptr;
 };
 
 inline bool
 operator< (const Plugin &lhs, const Plugin &rhs)
 {
-  return lhs.id_ < rhs.id_;
+  return lhs.get_slot () < rhs.get_slot ();
 }
 
 class CarlaNativePlugin;

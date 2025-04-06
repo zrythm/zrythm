@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/plugin_identifier.h"
+#include "dsp/plugin_slot.h"
 #include "dsp/port_identifier.h"
 
 namespace zrythm::dsp

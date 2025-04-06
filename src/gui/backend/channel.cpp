@@ -5,7 +5,7 @@
 
 #include <ranges>
 
-#include "dsp/plugin_identifier.h"
+#include "dsp/plugin_slot.h"
 #include "dsp/position.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/project.h"
@@ -143,7 +143,7 @@ Channel::set_track_ptr (ChannelTrack &track)
   get_plugins (pls);
   for (auto * pl : pls)
     {
-      pl->track_ = track_;
+      pl->set_track (track.get_uuid ());
     }
 }
 
@@ -480,9 +480,7 @@ Channel::init_loaded ()
           get_plugin_registry ().find_by_id_or_throw (plugin_id.value ());
         std::visit (
           [&] (auto &&plugin) {
-            auto &id = plugin->id_;
-            id.track_id_ = track_->get_uuid ();
-            id.slot_ = slot;
+            plugin->set_track (track_->get_uuid ());
             plugin->init_loaded (track_);
           },
           plugin_var);
@@ -1211,7 +1209,7 @@ Channel::get_balance_control () const
 void
 Channel::disconnect_plugin_from_strip (dsp::PluginSlot slot, Channel::Plugin &pl)
 {
-  auto pl_slot = pl.id_.slot_;
+  auto pl_slot = get_plugin_slot (pl.get_uuid ());
   auto slot_type =
     pl_slot.has_slot_index ()
       ? pl_slot.get_slot_with_index ().first
@@ -1448,8 +1446,7 @@ Channel::add_plugin (
           midi_fx_[slot_index] = plugin_id;
         }
 
-      plugin->track_ = track_;
-      plugin->set_track_and_slot (track_->get_uuid (), slot);
+      plugin->set_track (track_->get_uuid ());
 
       if (track_->is_in_active_project ())
         {
@@ -1519,6 +1516,39 @@ Channel::get_plugin_at_slot (dsp::PluginSlot slot) const
   return get_plugin_registry ().find_by_id (existing_pl_id.value ());
 }
 
+dsp::PluginSlot
+Channel::get_plugin_slot (const PluginUuid &plugin_id) const
+{
+  if (plugin_id == instrument_)
+    {
+      return dsp::PluginSlot{ dsp::PluginSlotType::Instrument };
+    }
+  {
+    const auto * it = std::ranges::find (inserts_, plugin_id);
+    if (it != inserts_.end ())
+      {
+        return dsp::PluginSlot{
+          dsp::PluginSlotType::Insert,
+          static_cast<dsp::PluginSlot::SlotNo> (
+            std::distance (inserts_.begin (), it))
+        };
+      }
+  }
+  {
+    const auto * it = std::ranges::find (midi_fx_, plugin_id);
+    if (it != midi_fx_.end ())
+      {
+        return dsp::PluginSlot{
+          dsp::PluginSlotType::MidiFx,
+          static_cast<dsp::PluginSlot::SlotNo> (
+            std::distance (midi_fx_.begin (), it))
+        };
+      }
+  }
+
+  throw std::runtime_error ("Plugin not found in channel");
+}
+
 struct PluginImportData
 {
   Channel *                                  ch{};
@@ -1538,7 +1568,7 @@ struct PluginImportData
         : this->slot.get_slot_type_only ();
     if (this->pl)
       {
-        auto orig_track_var = TRACKLIST->get_track (this->pl->id_.track_id_);
+        auto orig_track_var = this->pl->get_track ();
 
         /* if plugin at original position do nothing */
         auto do_nothing = std::visit (
@@ -1548,7 +1578,8 @@ struct PluginImportData
               {
                 if (
                   this->ch->track_ == orig_track
-                  && this->slot == this->pl->id_.slot_)
+                  && this->slot
+                       == this->ch->get_plugin_slot (this->pl->get_uuid ()))
                   return true;
               }
             return false;

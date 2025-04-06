@@ -77,10 +77,10 @@ void
 Plugin::define_base_fields (const Context &ctx)
 {
   using T = ISerializable<zrythm::gui::old_dsp::plugins::Plugin>;
-
+  T::call_all_base_define_fields<UuidIdentifiableObject> (ctx);
   T::serialize_fields (
-    ctx, T::make_field ("id", id_), T::make_field ("setting", setting_),
-    T::make_field ("inPorts", in_ports_),
+    ctx, T::make_field ("trackId", track_id_),
+    T::make_field ("setting", setting_), T::make_field ("inPorts", in_ports_),
     T::make_field ("outPorts", out_ports_), T::make_field ("banks", banks_),
     T::make_field ("selectedBank", selected_bank_),
     T::make_field ("selectedPreset", selected_preset_),

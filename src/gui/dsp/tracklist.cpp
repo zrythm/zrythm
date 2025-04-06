@@ -587,8 +587,6 @@ Tracklist::remove_track (
             }
         }
 
-      get_track_registry ().unregister_object (track_id);
-
       if (router)
         {
           router->get ().recalc_graph (false);

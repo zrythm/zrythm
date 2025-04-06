@@ -24,17 +24,13 @@ public:
   {
     return std::visit ([] (const auto &pl) { return pl->get_name (); }, pl_var);
   }
-  static auto identifier_projection (const VariantType &pl_var)
-  {
-    return std::visit ([] (const auto &pl) { return pl->id_; }, pl_var);
-  }
   static auto visible_projection (const VariantType &pl_var)
   {
     return std::visit ([] (const auto &pl) { return pl->visible_; }, pl_var);
   }
   static auto slot_projection (const VariantType &pl_var)
   {
-    return std::visit ([] (const auto &pl) { return pl->get_slot (); }, pl_var);
+    return std::visit ([] (const auto &pl) { return *pl->get_slot (); }, pl_var);
   }
   static auto state_dir_projection (const VariantType &pl_var)
   {
@@ -48,7 +44,7 @@ public:
   static auto track_id_projection (const VariantType &pl_var)
   {
     return std::visit (
-      [] (const auto &pl) { return pl->id_.track_id_; }, pl_var);
+      [] (const auto &pl) { return pl->get_track_id (); }, pl_var);
   }
   static auto instantiation_failed_projection (const VariantType &pl_var)
   {

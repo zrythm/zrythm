@@ -1202,6 +1202,23 @@ public:
     bool            deleting_track,
     bool            recalc_graph);
 
+  template <typename SelfT>
+  dsp::PluginSlot
+  get_plugin_slot (this const SelfT &self, const PluginUuid &plugin_id)
+    requires (
+      std::derived_from<SelfT, ChannelTrack>
+      || std::is_same_v<SelfT, ModulatorTrack>)
+  {
+    if constexpr (std::derived_from<SelfT, ChannelTrack>)
+      {
+        return self.channel_->get_plugin_slot (plugin_id);
+      }
+    else if constexpr (std::is_same_v<SelfT, ModulatorTrack>)
+      {
+        return self.modulator_->get_plugin_slot (plugin_id);
+      }
+  }
+
   /**
    * Disconnects the track from the processing chain.
    *

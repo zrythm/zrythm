@@ -44,8 +44,6 @@ public:
    */
   void init_loaded ();
 
-  // AudioClip * resolve_clip_from_id (const AudioClip::Uuid &clip_id) override;
-
   /**
    * @brief Takes ownership of the given clip.
    *

@@ -76,6 +76,8 @@ public:
   std::optional<PluginPtrVariant>
   get_modulator (dsp::PluginSlot::SlotNo slot) const;
 
+  dsp::PluginSlot get_plugin_slot (const PluginUuid &plugin_id) const;
+
   void
   init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
     override;

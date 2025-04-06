@@ -188,10 +188,8 @@ AutomationTracklist::get_plugin_at (
     z_return_val_if_fail (plugin_uuid.has_value (), false);
     auto plugin_var = PROJECT->find_plugin_by_id (plugin_uuid.value ());
     z_return_val_if_fail (plugin_var.has_value (), false);
-    const auto &plugin_id =
-      std::visit ([] (auto &&p) { return p->id_; }, plugin_var.value ());
 
-    return slot == plugin_id.slot_;
+    return slot == PluginSpan::slot_projection (*plugin_var);
   });
 
   return it != ats_.end () ? *it : nullptr;

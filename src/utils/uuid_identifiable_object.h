@@ -106,7 +106,7 @@ concept UuidIdentifiableQObject =
   }
 
 /**
- * @brief A reference-counted wrapper for a UUID in a registry.
+ * @brief A reference-counted RAII wrapper for a UUID in a registry.
  *
  * Objects that refer to an object's UUID must use this wrapper.
  *
@@ -155,6 +155,10 @@ private:
   UuidType   id_;
   RegistryT &registry_;
 };
+
+template <typename ReturnType, typename UuidType>
+using UuidIdentifiablObjectResolver =
+  std::function<ReturnType (const UuidType &)>;
 
 /**
  * @brief A registry that owns and manages objects identified by a UUID.
@@ -277,31 +281,6 @@ public:
     register_object (&obj);
   }
 
-  /**
-   * @brief Unregisters an object.
-   *
-   * This releases ownership of the object and the caller is responsible for
-   * deleting it.
-   */
-  VariantT unregister_object (const UuidType &id)
-  {
-    if (!objects_by_id_.contains (type_safe::get (id)))
-      {
-        throw std::runtime_error (
-          fmt::format ("Object with id {} not found", id));
-      }
-
-    auto obj_var = objects_by_id_.take (type_safe::get (id));
-    std::visit ([&] (auto &&obj) { obj->setParent (nullptr); }, obj_var);
-    return obj_var;
-  }
-
-  void delete_object_by_id (const UuidType &id)
-  {
-    auto obj_var = unregister_object (id);
-    std::visit ([&] (auto &&obj) { delete obj; }, obj_var);
-  }
-
   auto &get_hash_map () const { return objects_by_id_; }
 
   /**
@@ -332,7 +311,34 @@ public:
   }
 
 private:
+  /**
+   * @brief Unregisters an object.
+   *
+   * This releases ownership of the object and the caller is responsible for
+   * deleting it.
+   */
+  VariantT unregister_object (const UuidType &id)
+  {
+    if (!objects_by_id_.contains (type_safe::get (id)))
+      {
+        throw std::runtime_error (
+          fmt::format ("Object with id {} not found", id));
+      }
+
+    auto obj_var = objects_by_id_.take (type_safe::get (id));
+    std::visit ([&] (auto &&obj) { obj->setParent (nullptr); }, obj_var);
+    return obj_var;
+  }
+
+  void delete_object_by_id (const UuidType &id)
+  {
+    auto obj_var = unregister_object (id);
+    std::visit ([&] (auto &&obj) { delete obj; }, obj_var);
+  }
+
+private:
   QHash<QUuid, VariantT> objects_by_id_;
+  QHash<QUuid, int>      ref_counts_;
 };
 
 /**

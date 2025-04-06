@@ -97,12 +97,12 @@ ChannelSendTarget::describe () const
       }
     case ChannelSendTargetType::PluginSidechain:
       {
-        auto pl_var = PROJECT->find_plugin_by_identifier (pl_id);
+        auto pl_var = PROJECT->find_plugin_by_id (pl_id);
         return std::visit (
           [&] (auto &&pl) {
             return pl->get_full_port_group_designation (port_group);
           },
-          pl_var);
+          *pl_var);
       }
     default:
       break;

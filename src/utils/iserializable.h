@@ -1756,11 +1756,11 @@ public:
                     obj->ISerializable<ObjType>::deserialize (ctx);
                     if constexpr (StdArray<T>)
                       {
-                        value[i] = std::move (*obj.release());
+                        value[i] = std::move (*obj);
                       }
                     else
                       {
-                        value.emplace_back (std::move (*obj.release()));
+                        value.emplace_back (std::move (*obj));
                       }
                   }
               }

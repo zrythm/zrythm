@@ -290,6 +290,8 @@ public:
   std::optional<PluginPtrVariant>
   get_plugin_at_slot (dsp::PluginSlot slot) const;
 
+  dsp::PluginSlot get_plugin_slot (const PluginUuid &plugin_id) const;
+
   std::optional<PluginPtrVariant> get_plugin_from_id (PluginUuid id) const;
 
   std::optional<PluginPtrVariant> get_instrument () const

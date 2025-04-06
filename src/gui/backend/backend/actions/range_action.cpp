@@ -264,17 +264,23 @@ RangeAction::perform_impl ()
                                       *part2,
                                       *ArrangerObjectFactory::get_instance (),
                                       end_pos_, AUDIO_ENGINE->frames_per_tick_);
-                                  PROJECT->get_arranger_object_registry ()
+// TODO...
+#if 0
+                                      PROJECT->get_arranger_object_registry ()
                                     .delete_object_by_id (part3->get_uuid ());
                                   PROJECT->get_arranger_object_registry ()
                                     .delete_object_by_id (part2->get_uuid ());
+#endif
                                   part2 = part4;
                                 }
                               /* otherwise remove the whole part2 */
                               else
                                 {
+// TODO
+#if 0
                                   PROJECT->get_arranger_object_registry ()
                                     .delete_object_by_id (part2->get_uuid ());
+#endif
                                   part2 = nullptr;
                                 }
 
@@ -312,8 +318,11 @@ RangeAction::perform_impl ()
                                 ArrangerObjectSpan::split_bounded_object (
                                   *obj, *ArrangerObjectFactory::get_instance (),
                                   end_pos_, AUDIO_ENGINE->frames_per_tick_);
-                              PROJECT->get_arranger_object_registry ()
+// TODO
+#if 0
+                                  PROJECT->get_arranger_object_registry ()
                                 .delete_object_by_id (part1->get_uuid ());
+#endif
 
                               // move part2 by the range amount and add to
                               // project

@@ -19,15 +19,6 @@ Velocity::init_after_cloning (const Velocity &other, ObjectCloneType clone_type)
   // ArrangerObject::copy_members_from (other, clone_type);
 }
 
-#if 0
-void
-Velocity::init_loaded ()
-{
-  ArrangerObject::init_loaded_base ();
-  RegionOwnedObject::init_loaded_base ();
-}
-#endif
-
 void
 Velocity::set_val (const int val)
 {
