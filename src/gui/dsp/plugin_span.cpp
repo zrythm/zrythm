@@ -50,3 +50,6 @@ PluginSpanImpl<Range>::can_be_pasted (const dsp::PluginSlot &slot) const
 template class PluginSpanImpl<std::span<const PluginSpan::VariantType>>;
 template class PluginSpanImpl<
   utils::UuidIdentifiableObjectSpan<PluginSpan::PluginRegistry>>;
+template class PluginSpanImpl<utils::UuidIdentifiableObjectSpan<
+  PluginSpan::PluginRegistry,
+  PluginUuidReference>>;

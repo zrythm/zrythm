@@ -21,6 +21,7 @@ InstrumentTrack::InstrumentTrack (
         Track::Type::Instrument,
         PortType::Event,
         PortType::Audio,
+        plugin_registry,
         port_registry,
         obj_registry),
       AutomatableTrack (port_registry, new_identity),

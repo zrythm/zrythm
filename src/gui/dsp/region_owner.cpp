@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/project.h"
@@ -24,7 +24,7 @@ template <typename RegionT>
 void
 RegionOwner<RegionT>::foreach_region (std::function<void (RegionT &)> func)
 {
-  for (auto &region_var : region_list_->regions_)
+  for (const auto &region_var : region_list_->get_region_vars ())
     {
       func (*std::get<RegionT *> (region_var));
     }
@@ -34,7 +34,7 @@ template <typename RegionT>
 void
 RegionOwner<RegionT>::foreach_region (std::function<void (RegionT &)> func) const
 {
-  for (auto &region_var : region_list_->regions_)
+  for (const auto &region_var : region_list_->get_region_vars ())
     {
       func (*std::get<RegionT *> (region_var));
     }
@@ -60,27 +60,30 @@ RegionOwner<RegionT>::unselect_all ()
 
 template <typename RegionT>
 bool
-RegionOwner<
-  RegionT>::remove_region (RegionT &region, bool free_region, bool fire_events)
+RegionOwner<RegionT>::remove_region (const Region::Uuid &region_id)
 {
-  auto it_to_remove = std::find_if (
-    region_list_->regions_.begin (), region_list_->regions_.end (),
-    [&region] (const auto &r) { return std::get<RegionT *> (r) == &region; });
+  auto it_to_remove = std::ranges::find (
+    region_list_->regions_, region_id, &ArrangerObjectUuidReference::id);
   if (it_to_remove == region_list_->regions_.end ())
     {
-      z_warning ("region to remove not found: {}", region);
+      z_warning ("region to remove not found: {}", region_id);
       return false;
     }
-  z_trace ("removing region: {}", region);
+  z_trace ("removing region: {}", region_id);
 
   const auto remove_idx =
     std::distance (region_list_->regions_.begin (), it_to_remove);
   region_list_->beginRemoveRows ({}, remove_idx, remove_idx);
 
-  if (is_in_active_project () && !is_auditioner ())
-    {
-      // caution: this can remove lanes
-      region.disconnect_region ();
+  auto region_ref = *it_to_remove;
+  std::visit (
+    [&] (auto &&region) {
+      if constexpr (std::derived_from<base_type<decltype (region)>, Region>)
+        {
+          if (is_in_active_project () && !is_auditioner ())
+            {
+              // caution: this can remove lanes
+              region->disconnect_region ();
 
 #if 0
       // disconnect() handles the clip editor - this should not be needed
@@ -96,27 +99,18 @@ RegionOwner<
           CLIP_EDITOR->region_id_.idx_--;
         }
 #endif
-    }
+            }
+        }
+    },
+    region_ref.get_object ());
 
   auto next_it = region_list_->regions_.erase (it_to_remove);
-  region.setParent (nullptr);
-  if (free_region)
-    {
-      region.deleteLater ();
-    }
   std::for_each (next_it, region_list_->regions_.end (), [&] (auto &r_var) {
-    auto * r = std::get<RegionT *> (r_var);
+    auto * r = std::get<RegionT *> (r_var.get_object ());
     // r->id_.idx_ = std::distance (region_list_->regions_.begin (), next_it);
     r->update_identifier ();
     ++next_it;
   });
-
-  if (fire_events)
-    {
-      // EVENTS_PUSH (
-      //   EventType::ET_ARRANGER_OBJECT_REMOVED,
-      //   ENUM_VALUE_TO_INT (ArrangerObject::Type::Region));
-    }
 
   after_remove_region ();
 
@@ -131,10 +125,9 @@ RegionOwner<RegionT>::clear_regions ()
 {
   region_list_->beginResetModel ();
   clearing_ = true;
-  for (int i = region_list_->regions_.size (); i > 0; --i)
+  for (const auto &region_ref : std::views::reverse (region_list_->regions_))
     {
-      remove_region (
-        *std::get<RegionT *> (region_list_->regions_.at (i - 1)), true, false);
+      remove_region (region_ref.id ());
     }
   region_snapshots_.clear ();
   clearing_ = false;
@@ -143,14 +136,19 @@ RegionOwner<RegionT>::clear_regions ()
 
 template <typename RegionT>
 void
-RegionOwner<RegionT>::insert_region (RegionTPtr region, int idx)
+RegionOwner<RegionT>::insert_region (
+  const ArrangerObjectUuidReference &region_ref,
+  int                                idx)
 {
   static_assert (FinalRegionSubclass<RegionT>);
   z_return_if_fail (idx >= 0);
+
+  auto * region = std::get<RegionT *> (region_ref.get_object ());
   z_return_if_fail (!region->get_name ().empty ());
 
   region_list_->beginInsertRows ({}, idx, idx);
-  region_list_->regions_.insert (region_list_->regions_.begin () + idx, region);
+  region_list_->regions_.insert (
+    region_list_->regions_.begin () + idx, region_ref);
   region->setParent (region_list_);
 
   if constexpr (std::is_same_v<RegionT, AutomationRegion>)

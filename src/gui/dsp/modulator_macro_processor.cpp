@@ -28,40 +28,46 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
   ModulatorTrack *   track,
   std::optional<int> idx,
   bool               new_identity)
-    : track_ (track), port_registry_ (port_registry)
+    : track_ (track)
 {
   if (new_identity)
     {
       assert (idx.has_value ());
       name_ = format_str (QObject::tr ("Macro {}").toStdString (), *idx + 1);
-      auto macro = port_registry.create_object<ControlPort> (name_);
-      macro->set_owner (*this);
-      macro->id_->sym_ = fmt::format ("macro_{}", *idx + 1);
-      macro->range_ = { 0.f, 1.f };
-      macro->deff_ = 0.f;
-      macro->set_control_value (0.75f, false, false);
-      macro->id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
-      macro->id_->flags_ |= dsp::PortIdentifier::Flags::ModulatorMacro;
-      macro->id_->port_index_ = *idx;
-      macro_id_ = macro->get_uuid ();
+      {
+        macro_id_ = port_registry.create_object<ControlPort> (name_);
+        auto &macro = get_macro_port ();
+        macro.set_owner (*this);
+        macro.id_->sym_ = fmt::format ("macro_{}", *idx + 1);
+        macro.range_ = { 0.f, 1.f };
+        macro.deff_ = 0.f;
+        macro.set_control_value (0.75f, false, false);
+        macro.id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
+        macro.id_->flags_ |= dsp::PortIdentifier::Flags::ModulatorMacro;
+        macro.id_->port_index_ = *idx;
+      }
 
-      auto cv_in = port_registry.create_object<CVPort> (
-        format_str (QObject::tr ("Macro CV In {}").toStdString (), *idx + 1),
-        dsp::PortFlow::Input);
-      cv_in->set_owner (*this);
-      cv_in->id_->sym_ = fmt::format ("macro_cv_in_{}", *idx + 1);
-      cv_in->id_->flags_ |= dsp::PortIdentifier::Flags::ModulatorMacro;
-      cv_in->id_->port_index_ = *idx;
-      cv_in_id_ = cv_in->get_uuid ();
+      {
+        cv_in_id_ = port_registry.create_object<CVPort> (
+          format_str (QObject::tr ("Macro CV In {}").toStdString (), *idx + 1),
+          dsp::PortFlow::Input);
+        auto &cv_in = get_cv_in_port ();
+        cv_in.set_owner (*this);
+        cv_in.id_->sym_ = fmt::format ("macro_cv_in_{}", *idx + 1);
+        cv_in.id_->flags_ |= dsp::PortIdentifier::Flags::ModulatorMacro;
+        cv_in.id_->port_index_ = *idx;
+      }
 
-      auto cv_out = port_registry.create_object<CVPort> (
-        format_str (QObject::tr ("Macro CV Out {}").toStdString (), *idx + 1),
-        dsp::PortFlow::Output);
-      cv_out->set_owner (*this);
-      cv_out->id_->sym_ = fmt::format ("macro_cv_out_{}", *idx + 1);
-      cv_out->id_->flags_ |= dsp::PortIdentifier::Flags::ModulatorMacro;
-      cv_out->id_->port_index_ = *idx;
-      cv_out_id_ = cv_out->get_uuid ();
+      {
+        cv_out_id_ = port_registry.create_object<CVPort> (
+          format_str (QObject::tr ("Macro CV Out {}").toStdString (), *idx + 1),
+          dsp::PortFlow::Output);
+        auto &cv_out = get_cv_out_port ();
+        cv_out.set_owner (*this);
+        cv_out.id_->sym_ = fmt::format ("macro_cv_out_{}", *idx + 1);
+        cv_out.id_->flags_ |= dsp::PortIdentifier::Flags::ModulatorMacro;
+        cv_out.id_->port_index_ = *idx;
+      }
     }
 }
 

@@ -6,14 +6,13 @@
 
 #include "zrythm-config.h"
 
+#include "dsp/position.h"
+#include "gui/dsp/arranger_object_all.h"
 #include "gui/dsp/automation_point.h"
 #include "gui/dsp/port.h"
 #include "gui/dsp/region_owner.h"
 
 #include <QtQmlIntegration>
-
-#include "automation_region.h"
-#include "dsp/position.h"
 
 class AutomatableTrack;
 class AutomationTracklist;

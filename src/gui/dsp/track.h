@@ -4,16 +4,15 @@
 #ifndef DSP_TRACK_H
 #define DSP_TRACK_H
 
+#include "gui/dsp/arranger_object_all.h"
 #include "gui/dsp/automation_tracklist.h"
 #include "gui/dsp/fader.h"
 #include "gui/dsp/plugin.h"
-#include "gui/dsp/region.h"
 #include "gui/dsp/track_lane.h"
+#include "utils/format.h"
 
 #include <QColor>
 #include <QHash>
-
-#include "utils/format.h"
 
 using namespace zrythm;
 
@@ -93,7 +92,28 @@ public: \
   Q_SIGNAL void colorChanged (const QColor &color); \
 \
   /* ================================================================ */ \
-  /* color */ \
+  /* comment */ \
+  /* ================================================================ */ \
+  Q_PROPERTY ( \
+    QString comment READ getComment WRITE setComment NOTIFY commentChanged) \
+\
+  QString getComment () const \
+  { \
+    return QString::fromStdString (comment_); \
+  } \
+  void setComment (const QString &comment) \
+  { \
+    if (QString::fromStdString (comment_) == comment) \
+      return; \
+\
+    comment_ = comment.toStdString (); \
+    Q_EMIT commentChanged (comment); \
+  } \
+\
+  Q_SIGNAL void commentChanged (const QString &comment); \
+\
+  /* ================================================================ */ \
+  /* visible */ \
   /* ================================================================ */ \
   Q_PROPERTY ( \
     bool visible READ getVisible WRITE setVisible NOTIFY visibleChanged) \
@@ -538,6 +558,7 @@ protected:
     Type                    type,
     PortType                in_signal_type,
     PortType                out_signal_type,
+    PluginRegistry         &plugin_registry,
     PortRegistry           &port_registry,
     ArrangerObjectRegistry &obj_registry);
 
@@ -707,15 +728,16 @@ public:
    *
    * @throw ZrythmException if the insertion fails.
    */
-  template <FinalClass SelfT, FinalRegionSubclass RegionT>
+  template <FinalRegionSubclass RegionT, FinalClass SelfT>
   void insert_region (
-    this SelfT        &self,
-    RegionT *          region,
-    AutomationTrack *  at,
-    std::optional<int> lane_pos,
-    std::optional<int> idx,
-    bool               gen_name)
+    this SelfT                 &self,
+    ArrangerObjectUuidReference region_ref,
+    AutomationTrack *           at,
+    std::optional<int>          lane_pos,
+    std::optional<int>          idx,
+    bool                        gen_name)
   {
+    auto * region = std::get<RegionT *> (region_ref.get_object ());
     assert (region->validate (false, 0));
     assert (type_can_have_region_type (self.type_, region->type_));
 
@@ -742,11 +764,11 @@ public:
           self.lanes_.at (*lane_pos));
         if (idx.has_value ())
           {
-            lane->insert_region (region, *idx);
+            lane->insert_region (region_ref, *idx);
           }
         else
           {
-            lane->add_region (region);
+            lane->add_region (region_ref);
           }
       }
     else if constexpr (std::is_same_v<RegionT, AutomationRegion>)
@@ -754,11 +776,11 @@ public:
         assert (at != nullptr);
         if (idx.has_value ())
           {
-            at->insert_region (region, *idx);
+            at->insert_region (region_ref, *idx);
           }
         else
           {
-            at->add_region (region);
+            at->add_region (region_ref);
           }
       }
     else if constexpr (
@@ -766,11 +788,11 @@ public:
       {
         if (idx.has_value ())
           {
-            self.RegionOwner<ChordRegion>::insert_region (region, *idx);
+            self.RegionOwner<ChordRegion>::insert_region (region_ref, *idx);
           }
         else
           {
-            self.RegionOwner<ChordRegion>::add_region (region);
+            self.RegionOwner<ChordRegion>::add_region (region_ref);
           }
       }
 
@@ -798,16 +820,16 @@ public:
    *
    * @throw ZrythmException if the insertion fails.
    */
-  template <FinalClass SelfT, FinalRegionSubclass RegionT>
+  template <FinalRegionSubclass RegionT>
   void add_region (
-    this SelfT        &self,
-    RegionT *          region,
+    this auto         &self,
+    auto               region_ref,
     AutomationTrack *  at,
     std::optional<int> lane_pos,
     bool               gen_name)
   {
-    return self.Track::insert_region (
-      region, at, lane_pos, std::nullopt, gen_name);
+    return self.Track::template insert_region<RegionT> (
+      region_ref, at, lane_pos, std::nullopt, gen_name);
   }
 
   /**
@@ -937,6 +959,13 @@ public:
   {
   }
 
+  // FIXME: this member is likely not needed
+  int  get_index () const { return pos_; }
+  void set_index (int index) { pos_ = index; }
+
+  auto get_input_signal_type () const { return in_signal_type_; }
+  auto get_output_signal_type () const { return out_signal_type_; }
+
   /**
    * Fills in the given array with all plugins in the track.
    */
@@ -1054,7 +1083,9 @@ public:
               {
                 using LaneT = SelfT::TrackLaneType;
                 auto lane = std::get<LaneT *> (lane_var);
-                for (auto &region_var : lane->region_list_->regions_)
+                for (
+                  const auto &region_var :
+                  lane->region_list_->get_region_vars ())
                   {
                     auto region =
                       std::get<typename LaneT::RegionTPtr> (region_var);
@@ -1064,7 +1095,7 @@ public:
           }
 
         if constexpr (std::is_same_v<SelfT, ChordTrack>)
-          for (auto &region_var : self.region_list_->regions_)
+          for (const auto &region_var : self.region_list_->get_region_vars ())
             {
               auto region = std::get<ChordRegion *> (region_var);
               region->bounce_ = bounce;
@@ -1235,6 +1266,7 @@ public:
   bool is_enabled () const { return enabled_; }
   bool get_enabled () const { return enabled_; }
   bool get_disabled () const { return !enabled_; }
+  void set_enabled (bool enabled) { enabled_ = enabled; }
 
   void set_enabled (
     bool enabled,
@@ -1351,6 +1383,21 @@ public:
 
   virtual bool get_soloed () const { return false; }
 
+  auto &get_plugin_registry () const { return plugin_registry_; }
+  auto &get_plugin_registry () { return plugin_registry_; }
+  auto &get_port_registry () const { return port_registry_; }
+  auto &get_port_registry () { return port_registry_; }
+  auto &get_object_registry () const { return object_registry_; }
+  auto &get_object_registry () { return object_registry_; }
+
+  auto get_type () const { return type_; }
+  auto get_icon_name () const { return icon_name_; }
+
+  friend bool operator< (const Track &lhs, const Track &rhs)
+  {
+    return lhs.pos_ < rhs.pos_;
+  }
+
 protected:
   void copy_members_from (const Track &other, ObjectCloneType clone_type);
 
@@ -1386,7 +1433,8 @@ private:
     const PluginSetting * pl_setting,
     int                   index);
 
-public:
+protected:
+  PluginRegistry         &plugin_registry_;
   PortRegistry           &port_registry_;
   ArrangerObjectRegistry &object_registry_;
 
@@ -1439,14 +1487,6 @@ public:
   Color color_;
 
   /**
-   * Flag to tell the UI that this channel had MIDI activity.
-   *
-   * When processing this and setting it to 0, the UI should create a separate
-   * event using EVENTS_PUSH.
-   */
-  bool trigger_midi_activity_ = false;
-
-  /**
    * The input signal type (eg audio bus tracks have audio input signals).
    */
   PortType in_signal_type_ = {};
@@ -1460,13 +1500,6 @@ public:
   std::string comment_;
 
   /**
-   * Set to ON during bouncing if this track should be included.
-   *
-   * Only relevant for tracks that output audio.
-   */
-  bool bounce_{};
-
-  /**
    * @brief Whether the track is selected.
    *
    * Selection is tracked directly on Track instances to make life easier when
@@ -1474,27 +1507,37 @@ public:
    */
   bool selected_{};
 
+public:
+  /**
+   * Set to ON during bouncing if this track should be included.
+   *
+   * Only relevant for tracks that output audio.
+   */
+  bool bounce_{};
+
   /**
    * Whether to temporarily route the output to master (e.g., when bouncing
    * the track on its own without its parents).
    */
   bool bounce_to_master_ = false;
 
-  /** Pool ID of the clip if track is frozen (unset if not frozen). */
-  std::optional<AudioClip::Uuid> frozen_clip_id_;
-
   /** Whether currently disconnecting. */
   bool disconnecting_ = false;
+
+  /**
+   * Flag to tell the UI that this channel had MIDI activity.
+   *
+   * When processing this and setting it to 0, the UI should create a separate
+   * event using EVENTS_PUSH.
+   */
+  bool trigger_midi_activity_ = false;
+
+  /** Pool ID of the clip if track is frozen (unset if not frozen). */
+  std::optional<AudioClip::Uuid> frozen_clip_id_;
 
   /** Pointer to owner tracklist, if any. */
   Tracklist * tracklist_ = nullptr;
 };
-
-inline bool
-operator< (const Track &lhs, const Track &rhs)
-{
-  return lhs.pos_ < rhs.pos_;
-}
 
 DEFINE_ENUM_FORMATTER (
   Track::Type,
@@ -1521,8 +1564,7 @@ concept FinalTrackSubclass = TrackSubclass<TrackT> && FinalClass<TrackT>;
 
 using TrackRegistry = utils::OwningObjectRegistry<TrackPtrVariant, Track>;
 using TrackRegistryRef = std::reference_wrapper<TrackRegistry>;
-
-class RecordableTrack;
+using TrackUuidReference = utils::UuidReference<TrackRegistry>;
 
 /**
  * @}

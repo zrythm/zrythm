@@ -102,8 +102,10 @@ TrackSpanImpl<Range>::move_after_copying_or_moving_inside (
   const auto &lowest_cloned_track = *(std::ranges::max_element (
     *this, [] (const auto &lhs_var, const auto &rhs_var) {
       return std::visit (
-        [&] (auto &&lhs, auto &&rhs) { return lhs->pos_ < rhs->pos_; }, lhs_var,
-        rhs_var);
+        [&] (auto &&lhs, auto &&rhs) {
+          return lhs->get_index () < rhs->get_index ();
+        },
+        lhs_var, rhs_var);
     }));
   const auto  lowest_cloned_track_pos =
     std::visit (position_projection, lowest_cloned_track);
@@ -137,3 +139,5 @@ TrackSpan::paste_to_pos (int pos)
 
 template class TrackSpanImpl<std::span<const TrackPtrVariant>>;
 template class TrackSpanImpl<utils::UuidIdentifiableObjectSpan<TrackRegistry>>;
+template class TrackSpanImpl<
+  utils::UuidIdentifiableObjectSpan<TrackRegistry, TrackUuidReference>>;

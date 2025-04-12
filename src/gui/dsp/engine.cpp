@@ -97,10 +97,8 @@ AudioEngine::get_monitor_out_ports ()
     {
       throw std::runtime_error ("No monitor outputs");
     }
-  auto * l = std::get<AudioPort *> (
-    port_registry_->find_by_id_or_throw (monitor_out_left_.value ()));
-  auto * r = std::get<AudioPort *> (
-    port_registry_->find_by_id_or_throw (monitor_out_right_.value ()));
+  auto * l = std::get<AudioPort *> (monitor_out_left_->get_object ());
+  auto * r = std::get<AudioPort *> (monitor_out_right_->get_object ());
   return { *l, *r };
 }
 
@@ -111,10 +109,8 @@ AudioEngine::get_dummy_input_ports ()
     {
       throw std::runtime_error ("No dummy inputs");
     }
-  auto * l = std::get<AudioPort *> (
-    port_registry_->find_by_id_or_throw (dummy_left_input_.value ()));
-  auto * r = std::get<AudioPort *> (
-    port_registry_->find_by_id_or_throw (dummy_right_input_.value ()));
+  auto * l = std::get<AudioPort *> (dummy_left_input_->get_object ());
+  auto * r = std::get<AudioPort *> (dummy_right_input_->get_object ());
   return { *l, *r };
 }
 
@@ -554,10 +550,10 @@ AudioEngine::setup ()
   {
     project_->port_connections_manager_->ensure_connect_default (
       control_room_->monitor_fader_->get_stereo_out_left_id (),
-      *monitor_out_left_, true);
+      monitor_out_left_->id (), true);
     project_->port_connections_manager_->ensure_connect_default (
       control_room_->monitor_fader_->get_stereo_out_right_id (),
-      *monitor_out_right_, true);
+      monitor_out_right_->id (), true);
   }
   setup_ = true;
 
@@ -804,8 +800,8 @@ AudioEngine::AudioEngine (Project * project)
   {
     auto monitor_out = StereoPorts::create_stereo_ports (
       project_->get_port_registry (), false, "Monitor Out", "monitor_out");
-    monitor_out_left_ = monitor_out.first->get_uuid ();
-    monitor_out_right_ = monitor_out.second->get_uuid ();
+    monitor_out_left_ = monitor_out.first;
+    monitor_out_right_ = monitor_out.second;
   }
 
   hw_in_processor_ = std::make_unique<HardwareProcessor> (true, this);

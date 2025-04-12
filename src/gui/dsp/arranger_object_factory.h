@@ -144,22 +144,24 @@ public:
       return *this;
     }
 
-    ObjT * build ()
+    auto build ()
     {
-      ObjT * obj{};
-      if constexpr (std::is_same_v<ObjT, AudioRegion>)
-        {
-          obj = registry_.create_object<ObjT> (registry_, *clip_resolver_);
-        }
-      else if constexpr (std::is_same_v<ObjT, Marker>)
-        {
-          obj = registry_.create_object<ObjT> (registry_, *name_validator_);
-        }
-      else
-        {
-          obj = registry_.create_object<ObjT> (registry_);
-        }
+      auto obj_ref = [&] () {
+        if constexpr (std::is_same_v<ObjT, AudioRegion>)
+          {
+            return registry_.create_object<ObjT> (registry_, *clip_resolver_);
+          }
+        else if constexpr (std::is_same_v<ObjT, Marker>)
+          {
+            return registry_.create_object<ObjT> (registry_, *name_validator_);
+          }
+        else
+          {
+            return registry_.create_object<ObjT> (registry_);
+          }
+      }();
 
+      auto * obj = std::get<ObjT *> (obj_ref.get_object ());
       if (clip_id_)
         {
           if constexpr (std::is_same_v<ObjT, AudioRegion>)
@@ -268,7 +270,7 @@ public:
             }
         }
 
-      return obj;
+      return obj_ref;
     }
 
   private:
@@ -303,31 +305,33 @@ private:
    * @brief Used for MIDI/Audio regions.
    */
   template <TrackLaneSubclass TrackLaneT>
-  void
-  add_laned_object (TrackLaneT &lane, typename TrackLaneT::RegionT &obj) const
+  void add_laned_object (TrackLaneT &lane, auto obj_ref) const
   {
+    using RegionT = typename TrackLaneT::RegionT;
     std::visit (
       [&] (auto &&track) {
         if constexpr (
           std::is_same_v<
             typename base_type<decltype (track)>::TrackLaneType, TrackLaneT>)
           {
-            track->add_region (&obj, nullptr, lane.get_index_in_track (), true);
+            track->template add_region<RegionT> (
+              obj_ref, nullptr, lane.get_index_in_track (), true);
           }
       },
       convert_to_variant<LanedTrackPtrVariant> (lane.get_track ()));
-    obj.setSelected (true);
+    auto * obj = std::get<RegionT *> (obj_ref.get_object ());
+    obj->setSelected (true);
   }
 
   /**
    * @brief To be used by the backend.
    */
-  AudioRegion * create_audio_region_with_clip (
+  auto create_audio_region_with_clip (
     AudioLane             &lane,
     const AudioClip::Uuid &clip_id,
     double                 startTicks) const
   {
-    auto * obj =
+    auto obj =
       get_builder<AudioRegion> ()
         .with_start_ticks (startTicks)
         .with_clip (clip_id)
@@ -341,7 +345,7 @@ private:
    *
    * Possible use cases: splitting audio regions, audio functions, recording.
    */
-  AudioRegion * create_audio_region_from_audio_buffer (
+  auto create_audio_region_from_audio_buffer (
     AudioLane                       &lane,
     const utils::audio::AudioBuffer &buf,
     utils::audio::BitDepth           bit_depth,
@@ -351,7 +355,7 @@ private:
     auto clip = std::make_shared<AudioClip> (
       buf, bit_depth, sample_rate_provider_ (), bpm_provider_ (), clip_name);
     new_clip_registration_func_ (clip);
-    auto * region =
+    auto region =
       create_audio_region_with_clip (lane, clip->get_uuid (), start_ticks);
     return region;
   }
@@ -386,8 +390,9 @@ private:
       {
         builder.with_chord_descriptor (std::get<int> (value));
       }
-    auto obj = builder.build ();
-    region.append_object (obj->get_uuid ());
+    auto obj_ref = builder.build ();
+    region.append_object (obj_ref);
+    auto obj = std::get<ChildT *> (obj_ref.get_object ());
     obj->setSelected (true);
     return obj;
   }
@@ -408,9 +413,9 @@ public:
   {
     // clip must already be registered before calling this method
     assert (clip_resolver_func_ (clip_id) != nullptr);
-    auto * obj = create_audio_region_with_clip (lane, clip_id, start_ticks);
-    add_laned_object (lane, *obj);
-    return obj;
+    auto obj_ref = create_audio_region_with_clip (lane, clip_id, start_ticks);
+    add_laned_object (lane, obj_ref);
+    return std::get<AudioRegion *> (obj_ref.get_object ());
   }
 
   ScaleObject * add_scale_object (
@@ -418,20 +423,20 @@ public:
     const dsp::MusicalScale &scale,
     double                   start_ticks) const
   {
-    auto * obj =
+    auto obj_ref =
       get_builder<ScaleObject> ()
         .with_start_ticks (start_ticks)
         .with_scale (scale)
         .build ();
-    chord_track.add_scale (*obj);
-    return obj;
+    chord_track.add_scale (obj_ref);
+    return std::get<ScaleObject *> (obj_ref.get_object ());
   }
 
   Q_INVOKABLE Marker *
   addMarker (MarkerTrack * markerTrack, const QString &name, double startTicks)
     const
   {
-    auto * marker =
+    auto marker_ref =
       get_builder<Marker> ()
         .with_start_ticks (startTicks)
         .with_name (
@@ -440,41 +445,42 @@ public:
             return markerTrack->validate_marker_name (name);
           })
         .build ();
-    markerTrack->add_marker (marker);
-    return marker;
+    markerTrack->add_marker (marker_ref);
+    return std::get<Marker *> (marker_ref.get_object ());
   }
 
   Q_INVOKABLE MidiRegion *
   addEmptyMidiRegion (MidiLane * lane, double startTicks) const
   {
-    auto * mr =
+    auto mr_ref =
       get_builder<MidiRegion> ().with_start_ticks (startTicks).build ();
-    add_laned_object (*lane, *mr);
-    return mr;
+    add_laned_object (*lane, mr_ref);
+    return std::get<MidiRegion *> (mr_ref.get_object ());
   }
 
   Q_INVOKABLE ChordRegion *
   addEmptyChordRegion (ChordTrack * track, double startTicks) const
   {
-    auto * cr =
+    auto cr_ref =
       get_builder<ChordRegion> ().with_start_ticks (startTicks).build ();
-    track->Track::add_region (cr, nullptr, std::nullopt, true);
-    return cr;
+    track->Track::add_region<ChordRegion> (cr_ref, nullptr, std::nullopt, true);
+    return std::get<ChordRegion *> (cr_ref.get_object ());
   }
 
   Q_INVOKABLE AutomationRegion *
   addEmptyAutomationRegion (AutomationTrack * automationTrack, double startTicks)
     const
   {
-    auto * ar =
+    auto ar_ref =
       get_builder<AutomationRegion> ().with_start_ticks (startTicks).build ();
     auto track_var = automationTrack->get_track ();
     std::visit (
       [&] (auto &&track) {
-        track->Track::add_region (ar, automationTrack, std::nullopt, true);
+        track->Track::template add_region<AutomationRegion> (
+          ar_ref, automationTrack, std::nullopt, true);
       },
       track_var);
-    return ar;
+    return std::get<AutomationRegion *> (ar_ref.get_object ());
   }
 
   AudioRegion * add_empty_audio_region_for_recording (
@@ -486,10 +492,10 @@ public:
     auto clip = std::make_shared<AudioClip> (
       num_channels, 1, sample_rate_provider_ (), bpm_provider_ (), clip_name);
     new_clip_registration_func_ (clip);
-    auto * region =
+    auto region_ref =
       create_audio_region_with_clip (lane, clip->get_uuid (), start_ticks);
-    add_laned_object (lane, *region);
-    return region;
+    add_laned_object (lane, region_ref);
+    return std::get<AudioRegion *> (region_ref.get_object ());
   }
 
   Q_INVOKABLE AudioRegion * addAudioRegionFromFile (
@@ -500,10 +506,10 @@ public:
     auto clip = std::make_shared<AudioClip> (
       absPath.toStdString (), sample_rate_provider_ (), bpm_provider_ ());
     new_clip_registration_func_ (clip);
-    auto * ar =
+    auto ar_ref =
       create_audio_region_with_clip (*lane, clip->get_uuid (), startTicks);
-    add_laned_object (*lane, *ar);
-    return ar;
+    add_laned_object (*lane, ar_ref);
+    return std::get<AudioRegion *> (ar_ref.get_object ());
   }
 
   /**
@@ -555,7 +561,7 @@ public:
    * Eventually need a public method here that not only creates the region but
    * also adds it to the project like the rest of the public API here.
    */
-  AudioRegion * create_audio_region_from_audio_buffer_FIXME (
+  auto create_audio_region_from_audio_buffer_FIXME (
     AudioLane                       &lane,
     const utils::audio::AudioBuffer &buf,
     utils::audio::BitDepth           bit_depth,
@@ -569,18 +575,15 @@ public:
   template <FinalArrangerObjectSubclass ObjT>
   auto clone_new_object_identity (const ObjT &other) const
   {
-    ObjT * new_obj{};
     if constexpr (std::is_same_v<ObjT, AudioRegion>)
       {
-        // TODO
-        new_obj = other.clone_and_register (
-          object_registry_, object_registry_, clip_resolver_func_);
+        return object_registry_.clone_object (
+          other, object_registry_, clip_resolver_func_);
       }
     else
       {
-        new_obj = other.clone_and_register (object_registry_, object_registry_);
+        return object_registry_.clone_object (other, object_registry_);
       }
-    return new_obj;
   }
 
   template <FinalArrangerObjectSubclass ObjT>

@@ -19,6 +19,7 @@ class ChordTrack;
 class ModulatorTrack;
 class TempoTrack;
 class LanedTrack;
+class RecordableTrack;
 
 using TrackVariant = std::variant<
   MarkerTrack,

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2020, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_MARKER_TRACK_H__
@@ -58,16 +58,16 @@ public:
    *
    * This takes ownership of the marker.
    */
-  MarkerPtr insert_marker (MarkerPtr marker, int pos);
+  MarkerPtr insert_marker (ArrangerObjectUuidReference marker_ref, int pos);
 
   /**
    * Appends a marker to the track.
    *
    * @see insert_marker.
    */
-  MarkerPtr add_marker (MarkerPtr marker)
+  MarkerPtr add_marker (auto marker_ref)
   {
-    return insert_marker (marker, markers_.size ());
+    return insert_marker (marker_ref, markers_.size ());
   }
 
   /**
@@ -87,15 +87,13 @@ public:
   auto get_markers ()
   {
     return std::views::transform (markers_, [&] (auto &&marker_id) {
-      return std::get<Marker *> (
-        object_registry_.find_by_id_or_throw (marker_id));
+      return std::get<Marker *> (marker_id.get_object ());
     });
   }
   auto get_markers () const
   {
     return std::views::transform (markers_, [&] (auto &&marker_id) {
-      return std::get<Marker *> (
-        object_registry_.find_by_id_or_throw (marker_id));
+      return std::get<Marker *> (marker_id.get_object ());
     });
   }
   auto get_marker_at (size_t index) const { return get_markers ()[index]; }
@@ -131,7 +129,7 @@ private:
   void set_playback_caches () override;
 
 public:
-  std::vector<Marker::Uuid> markers_;
+  std::vector<ArrangerObjectUuidReference> markers_;
 
   /** Snapshots used during playback TODO unimplemented. */
   std::vector<std::unique_ptr<Marker>> marker_snapshots_;

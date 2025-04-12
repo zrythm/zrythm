@@ -329,7 +329,7 @@ RecordingManager::handle_recording (
                   event_queue_.push_back (re);
                 }
             }
-          else if (tr->type_ == Track::Type::Audio)
+          else if (tr->get_type () == Track::Type::Audio)
             {
               auto re = event_obj_pool_.acquire ();
               re->init (RecordingEvent::Type::Audio, *tr, *time_nfo);
@@ -744,7 +744,8 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                         && *new_region->get_object_ptrs_view ().front ()->pos_
                              == resume_pos)
                         {
-                          new_region->remove_object (new_region->aps_.front ());
+                          new_region->remove_object (
+                            new_region->aps_.front ().id ());
                         }
 
                       /* create/replace ap at loop start */
@@ -1273,7 +1274,8 @@ RecordingManager::process_events ()
                 using TrackT = base_type<decltype (tr)>;
                 if constexpr (std::derived_from<TrackT, RecordableTrack>)
                   {
-                    z_debug ("-------- STOP TRACK RECORDING ({})", tr->name_);
+                    z_debug (
+                      "-------- STOP TRACK RECORDING ({})", tr->get_name ());
                     handle_stop_recording (false);
                     tr->recording_region_.reset ();
                     tr->recording_start_sent_ = false;
@@ -1323,7 +1325,7 @@ RecordingManager::process_events ()
             auto tr_var = *TRACKLIST->get_track (ev->track_uuid_);
             std::visit (
               [&] (auto &&tr) {
-                z_debug ("-------- START TRACK RECORDING ({})", tr->name_);
+                z_debug ("-------- START TRACK RECORDING ({})", tr->get_name ());
                 handle_start_recording (*ev, false);
                 z_debug ("num active recordings: {}", num_active_recordings_);
               },

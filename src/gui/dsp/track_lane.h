@@ -3,8 +3,8 @@
 
 #pragma once
 
+#include "gui/dsp/arranger_object_all.h"
 #include "gui/dsp/midi_event.h"
-#include "gui/dsp/region.h"
 #include "gui/dsp/region_owner.h"
 
 using MIDI_FILE = void;

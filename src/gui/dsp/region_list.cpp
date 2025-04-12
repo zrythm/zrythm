@@ -1,7 +1,4 @@
-#include "gui/dsp/audio_region.h"
-#include "gui/dsp/automation_region.h"
-#include "gui/dsp/chord_region.h"
-#include "gui/dsp/midi_region.h"
+#include "gui/dsp/arranger_object_all.h"
 #include "gui/dsp/region_list.h"
 
 RegionList::RegionList (QObject * parent) : QAbstractListModel (parent) { }
@@ -30,7 +27,7 @@ RegionList::data (const QModelIndex &index, int role) const
 
   if (role == Qt::DisplayRole)
     {
-      return QVariant::fromStdVariant (regions_[index.row ()]);
+      return QVariant::fromStdVariant (regions_[index.row ()].get_object ());
     }
 
   return {};

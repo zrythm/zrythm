@@ -119,18 +119,18 @@ Tracklist::data (const QModelIndex &index, int role) const
     return {};
 
   auto track_id = tracks_.at (index.row ());
-  auto track = get_track_registry ().find_by_id_or_throw (track_id);
+  auto track = track_id.get_object ();
 
   z_trace (
     "getting role {} for track {}", role,
-    QString::fromStdString (Track::from_variant (track)->name_));
+    QString::fromStdString (TrackSpan::name_projection (track)));
 
   switch (role)
     {
     case TrackPtrRole:
       return QVariant::fromStdVariant (track);
     case TrackNameRole:
-      return QString::fromStdString (Track::from_variant (track)->name_);
+      return QString::fromStdString (TrackSpan::name_projection (track));
     default:
       return {};
     }
@@ -144,21 +144,17 @@ Tracklist::getTempoTrack () const
 
 // ========================================================================
 
-TrackRegistrySpan
-Tracklist::get_track_span () const
-{
-  return TrackRegistrySpan{ *track_registry_, tracks_ };
-}
-
 int
 Tracklist::get_visible_track_diff (
   Track::TrackUuid src_track,
   Track::TrackUuid dest_track) const
 {
-  const auto src_track_index =
-    std::distance (tracks_.begin (), std::ranges::find (tracks_, src_track));
-  const auto dest_track_index =
-    std::distance (tracks_.begin (), std::ranges::find (tracks_, dest_track));
+  const auto src_track_index = std::distance (
+    tracks_.begin (),
+    std::ranges::find (tracks_, src_track, &TrackUuidReference::id));
+  const auto dest_track_index = std::distance (
+    tracks_.begin (),
+    std::ranges::find (tracks_, dest_track, &TrackUuidReference::id));
 
   // Determine range boundaries and direction
   const auto [lower, upper] = std::minmax (src_track_index, dest_track_index);
@@ -186,8 +182,8 @@ Tracklist::swap_tracks (const size_t index1, const size_t index2)
     const auto &dest_track = Track::from_variant (span.at (index2));
     z_debug (
       "swapping tracks {} [{}] and {} [{}]...",
-      src_track ? src_track->name_ : "(none)", index1,
-      dest_track ? dest_track->name_ : "(none)", index2);
+      src_track ? src_track->get_name () : "(none)", index1,
+      dest_track ? dest_track->get_name () : "(none)", index2);
   }
 
   std::iter_swap (tracks_.begin () + index1, tracks_.begin () + index2);
@@ -198,9 +194,9 @@ Tracklist::swap_tracks (const size_t index1, const size_t index2)
     const auto &dest_track = Track::from_variant (span.at (index2));
 
     if (src_track)
-      src_track->pos_ = index1;
+      src_track->set_index (index1);
     if (dest_track)
-      dest_track->pos_ = index2;
+      dest_track->set_index (index2);
   }
 
   z_debug ("tracks swapped");
@@ -208,19 +204,19 @@ Tracklist::swap_tracks (const size_t index1, const size_t index2)
 
 TrackPtrVariant
 Tracklist::insert_track (
-  const TrackUuid track_id,
-  int             pos,
-  AudioEngine    &engine,
-  bool            publish_events,
-  bool            recalc_graph)
+  const TrackUuidReference &track_id,
+  int                       pos,
+  AudioEngine              &engine,
+  bool                      publish_events,
+  bool                      recalc_graph)
 {
-  auto track_var = get_track_registry ().find_by_id_or_throw (track_id);
+  auto track_var = track_id.get_object ();
 
   beginResetModel ();
   std::visit (
     [&] (auto &&track) {
       using TrackT = base_type<decltype (track)>;
-      z_info ("inserting {} at {}", track->name_, pos);
+      z_info ("inserting {} at {}", track->get_name (), pos);
 
       /* throw error if attempted to add a special track (like master) when it
        * already exists */
@@ -235,10 +231,10 @@ Tracklist::insert_track (
         }
 
       /* set to -1 so other logic knows it is a new track */
-      track->pos_ = -1;
+      track->set_index (-1);
 
       /* this needs to be called before appending the track to the tracklist */
-      track->set_name (*this, track->name_, false);
+      track->set_name (*this, track->get_name (), false);
 
       /* append the track at the end */
       tracks_.emplace_back (track_id);
@@ -277,7 +273,7 @@ Tracklist::insert_track (
             }
         }
 
-      track->pos_ = pos;
+      track->set_index (pos);
 
       if (
         is_in_active_project ()
@@ -308,7 +304,9 @@ Tracklist::insert_track (
       /* if audio output route to master */
       if constexpr (!std::is_same_v<TrackT, MasterTrack>)
         {
-          if (track->out_signal_type_ == dsp::PortType::Audio && master_track_)
+          if (
+            track->get_output_signal_type () == dsp::PortType::Audio
+            && master_track_)
             {
               master_track_->add_child (track->get_uuid (), true, false, false);
             }
@@ -340,7 +338,7 @@ Tracklist::insert_track (
         }
 
       z_debug (
-        "done - inserted track '{}' ({}) at {}", track->name_,
+        "done - inserted track '{}' ({}) at {}", track->get_name (),
         track->get_uuid (), pos);
     },
     track_var);
@@ -411,7 +409,7 @@ Tracklist::validate () const
         if (!tr->validate ())
           return false;
 
-        if (tr->pos_ != index)
+        if (tr->get_index () != index)
           {
             return false;
           }
@@ -423,7 +421,7 @@ Tracklist::validate () const
             track_size = foldable_track->size_;
           }
         z_return_val_if_fail (
-          tr->pos_ + track_size <= (int) tracks_.size (), false);
+          tr->get_index () + track_size <= (int) tracks_.size (), false);
 
         /* validate connections */
         if (const auto * channel_track = dynamic_cast<ChannelTrack *> (tr))
@@ -452,7 +450,7 @@ Tracklist::get_last_pos (const PinOption pin_opt, const bool visible_only) const
       get_track_span (),
       [&] (const auto &track_var) {
         const auto &tr = Track::from_variant (track_var);
-        const bool  is_pinned = is_track_pinned (tr->pos_);
+        const bool  is_pinned = is_track_pinned (tr->get_index ());
         if (pin_opt == PinOption::PinnedOnly && !is_pinned)
           return false;
         if (pin_opt == PinOption::UnpinnedOnly && is_pinned)
@@ -469,7 +467,7 @@ Tracklist::get_last_pos (const PinOption pin_opt, const bool visible_only) const
     return tracks_.size () - 1;
 
   return std::visit (
-    [&] (const auto &track) { return track->pos_; }, span.front ());
+    [&] (const auto &track) { return track->get_index (); }, span.front ());
 }
 
 bool
@@ -526,14 +524,14 @@ Tracklist::remove_track (
   std::optional<std::reference_wrapper<Router>> router,
   bool                                          rm_pl)
 {
-  auto track_it = std::ranges::find (tracks_, track_id);
+  auto track_it = std::ranges::find (tracks_, track_id, &TrackUuidReference::id);
   z_return_if_fail (track_it != tracks_.end ());
   const auto track_index = std::distance (tracks_.begin (), track_it);
   auto       span = get_track_span ();
   auto       track_var = span.at (track_index);
   std::visit (
     [&] (auto &&track) {
-      z_return_if_fail (track->pos_ == track_index);
+      z_return_if_fail (track->get_index () == track_index);
       z_debug (
         "removing [{}] {} - remove plugins {} - "
         "recalc graph {} - num tracks before deletion: {}",
@@ -561,7 +559,7 @@ Tracklist::remove_track (
 
       track->setSelected (false);
 
-      track_it = std::ranges::find (tracks_, track_id);
+      track_it = std::ranges::find (tracks_, track_id, &TrackUuidReference::id);
       z_return_if_fail (track_it != tracks_.end ());
       tracks_.erase (track_it);
 
@@ -691,7 +689,7 @@ Tracklist::move_track (
 
   std::visit (
     [&] (auto &&track) {
-      z_return_if_fail (track_index == track->pos_);
+      z_return_if_fail (track_index == track->get_index ());
       z_debug (
         "moving track: {} from {} to {}", track->get_name (), track_index, pos);
 
@@ -792,9 +790,9 @@ Tracklist::track_name_is_unique (
   const TrackUuid    track_to_skip) const
 {
   auto track_ids_to_check = std::ranges::to<std::vector> (std::views::filter (
-    tracks_, [&] (const auto &id) { return id != track_to_skip; }));
-  return !TrackRegistrySpan{ *track_registry_, track_ids_to_check }
-    .contains_track_name (name);
+    tracks_, [&] (const auto &id) { return id.id () != track_to_skip; }));
+  return !TrackUuidReferenceSpan{ track_ids_to_check }.contains_track_name (
+    name);
 }
 
 void
@@ -1273,11 +1271,11 @@ Tracklist::init_after_cloning (const Tracklist &other, ObjectCloneType clone_typ
         {
           std::visit (
             [&] (auto &tr) {
-              auto raw_ptr = tr->clone_and_register (
-                track_registry_->get (), track_registry_->get (),
-                PROJECT->get_plugin_registry (), PROJECT->get_port_registry (),
+              auto id_ref = track_registry_->get ().clone_object (
+                *tr, track_registry_->get (), PROJECT->get_plugin_registry (),
+                PROJECT->get_port_registry (),
                 PROJECT->get_arranger_object_registry (), true);
-              tracks_.push_back (raw_ptr->get_uuid ());
+              tracks_.push_back (id_ref);
             },
             track_var);
         }
@@ -1332,23 +1330,17 @@ Tracklist::handle_click (TrackUuid track_id, bool ctrl, bool shift, bool dragged
                   if (track_index > highest_index)
                     {
                       /* select all tracks in between */
-                      TrackRegistrySpan tracks_to_select{
-                        *track_registry_,
-                        std::span (
-                          tracks_.begin () + highest_index,
-                          tracks_.begin () + track_index)
-                      };
+                      TrackUuidReferenceSpan tracks_to_select{ std::span (
+                        tracks_.begin () + highest_index,
+                        tracks_.begin () + track_index) };
                       tracks_to_select.select_all ();
                     }
                   else if (track_index < lowest_index)
                     {
                       /* select all tracks in between */
-                      TrackRegistrySpan tracks_to_select{
-                        *track_registry_,
-                        std::span (
-                          tracks_.begin () + track_index,
-                          tracks_.begin () + lowest_index)
-                      };
+                      TrackUuidReferenceSpan tracks_to_select{ std::span (
+                        tracks_.begin () + track_index,
+                        tracks_.begin () + lowest_index) };
                       tracks_to_select.select_all ();
                     }
                 },

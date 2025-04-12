@@ -8,7 +8,7 @@
 template <utils::UuidIdentifiableObjectPtrVariantRange Range>
 auto
 ArrangerObjectSpanImpl<Range>::merge (double frames_per_tick) const
-  -> ArrangerObjectUuid
+  -> ArrangerObjectUuidReference
 {
   bool is_timeline = std::ranges::all_of (
     *this, Base::template derived_from_type_projection<Region>);
@@ -29,11 +29,14 @@ ArrangerObjectSpanImpl<Range>::merge (double frames_per_tick) const
       Position end_pos{ pos.ticks_ + ticks_length, frames_per_tick };
 
       return std::visit (
-        [&] (auto &&first_r) -> ArrangerObject::Uuid {
+        [&] (auto &&first_r) -> ArrangerObjectUuidReference {
           using RegionT = base_type<decltype (first_r)>;
           if constexpr (std::derived_from<RegionT, Region>)
             {
-              RegionT * new_r{};
+              const auto get_new_r = [] (auto &new_r_ref) {
+                return std::get<RegionT *> (new_r_ref->get_object ());
+              };
+              std::optional<ArrangerObjectUuidReference> new_r;
               if constexpr (std::is_same_v<RegionT, MidiRegion>)
                 {
                   new_r =
@@ -53,8 +56,10 @@ ArrangerObjectSpanImpl<Range>::merge (double frames_per_tick) const
                           auto new_mn =
                             ArrangerObjectFactory::get_instance ()
                               ->clone_new_object_identity (*mn);
-                          new_mn->move (ticks_diff);
-                          new_r->append_object (new_mn->get_uuid ());
+                          std::visit (
+                            [&] (auto &&m) { m->move (ticks_diff); },
+                            new_mn.get_object ());
+                          get_new_r (new_r)->append_object (new_mn);
                         }
                     }
                 }
@@ -139,8 +144,9 @@ ArrangerObjectSpanImpl<Range>::merge (double frames_per_tick) const
 #endif
                 }
 
-              new_r->gen_name (first_r->get_name (), nullptr, nullptr);
-              return new_r->get_uuid ();
+              get_new_r (new_r)->gen_name (
+                first_r->get_name (), nullptr, nullptr);
+              return *new_r;
             }
           else
             {
@@ -357,3 +363,6 @@ template class ArrangerObjectSpanImpl<
   std::span<const ArrangerObjectSpan::VariantType>>;
 template class ArrangerObjectSpanImpl<
   utils::UuidIdentifiableObjectSpan<ArrangerObjectRegistry>>;
+template class ArrangerObjectSpanImpl<utils::UuidIdentifiableObjectSpan<
+  ArrangerObjectRegistry,
+  ArrangerObjectUuidReference>>;

@@ -42,10 +42,7 @@
 using namespace zrythm;
 using namespace zrythm::gui::old_dsp::plugins;
 
-Plugin::Plugin (
-  PortRegistry        &port_registry,
-  const PluginSetting &setting,
-  TrackUuid            track_id)
+Plugin::Plugin (PortRegistry &port_registry, const PluginSetting &setting)
     : port_registry_ (port_registry), setting_ (setting.clone_unique ())
 {
   const auto &descr = setting_->descr_;
@@ -53,11 +50,10 @@ Plugin::Plugin (
   z_debug (
     "creating plugin: {} ({})", descr->name_, ENUM_NAME (descr->protocol_));
 
-  init (track_id);
+  init ();
 }
 
-Plugin::
-  Plugin (PortRegistry &port_registry, ZPluginCategory cat, TrackUuid track_id)
+Plugin::Plugin (PortRegistry &port_registry, ZPluginCategory cat)
     : port_registry_ (port_registry)
 {
   zrythm::gui::old_dsp::plugins::PluginDescriptor descr;
@@ -68,7 +64,7 @@ Plugin::
 
   setting_ = std::make_unique<PluginSetting> (descr);
 
-  init (track_id);
+  init ();
 }
 
 Plugin::~Plugin ()
@@ -77,25 +73,6 @@ Plugin::~Plugin ()
     {
       z_return_if_fail (!visible_);
     }
-}
-
-zrythm::gui::old_dsp::plugins::Plugin *
-Plugin::create_with_setting (const PluginSetting &setting, TrackUuid track_id)
-{
-  return PROJECT->get_plugin_registry ().create_object<CarlaNativePlugin> (
-    PROJECT->get_port_registry (), setting, track_id);
-}
-
-PortRegistrySpan
-Plugin::get_input_port_span () const
-{
-  return PortRegistrySpan{ *port_registry_, in_ports_ };
-}
-
-PortRegistrySpan
-Plugin::get_output_port_span () const
-{
-  return PortRegistrySpan{ *port_registry_, out_ports_ };
 }
 
 void
@@ -333,47 +310,50 @@ Plugin::init_loaded (AutomatableTrack * track)
 }
 
 void
-Plugin::init (TrackUuid track_id)
+Plugin::init ()
 {
-  z_debug (
-    "{} ({}) track ID {}", get_name (), ENUM_NAME (get_protocol ()), track_id);
+  z_debug ("{} ({})", get_name (), ENUM_NAME (get_protocol ()));
 
-  track_id_ = track_id;
+  {
+    /* add enabled port */
+    auto port_ref = port_registry_->create_object<ControlPort> (
+      QObject::tr ("Enabled").toStdString ());
+    auto * port = std::get<ControlPort *> (port_ref.get_object ());
+    port->id_->sym_ = "enabled";
+    port->id_->comment_ =
+      QObject::tr ("Enables or disables the plugin").toStdString ();
+    port->id_->port_group_ = "[Zrythm]";
+    port->id_->flags_ |= PortIdentifier::Flags::PluginEnabled;
+    port->id_->flags_ |= PortIdentifier::Flags::Toggle;
+    port->id_->flags_ |= PortIdentifier::Flags::Automatable;
+    port->id_->flags_ |= PortIdentifier::Flags::GenericPluginPort;
+    port->range_ = { 0.f, 1.f, 0.f };
+    port->deff_ = 1.f;
+    port->control_ = 1.f;
+    port->unsnapped_control_ = 1.f;
+    port->carla_param_id_ = -1;
+    add_in_port (port_ref);
+    enabled_ = port;
+  }
 
-  /* add enabled port */
-  auto port = port_registry_->get ().create_object<ControlPort> (
-    QObject::tr ("Enabled").toStdString ());
-  port->id_->sym_ = "enabled";
-  port->id_->comment_ =
-    QObject::tr ("Enables or disables the plugin").toStdString ();
-  port->id_->port_group_ = "[Zrythm]";
-  port->id_->flags_ |= PortIdentifier::Flags::PluginEnabled;
-  port->id_->flags_ |= PortIdentifier::Flags::Toggle;
-  port->id_->flags_ |= PortIdentifier::Flags::Automatable;
-  port->id_->flags_ |= PortIdentifier::Flags::GenericPluginPort;
-  port->range_ = { 0.f, 1.f, 0.f };
-  port->deff_ = 1.f;
-  port->control_ = 1.f;
-  port->unsnapped_control_ = 1.f;
-  port->carla_param_id_ = -1;
-  add_in_port (port->get_uuid ());
-  enabled_ = port;
-
-  /* add gain port */
-  port = port_registry_->get ().create_object<ControlPort> (
-    QObject::tr ("Gain").toStdString ());
-  port->id_->sym_ = "gain";
-  port->id_->comment_ = QObject::tr ("Plugin gain").toStdString ();
-  port->id_->flags_ |= PortIdentifier::Flags::PluginGain;
-  port->id_->flags_ |= PortIdentifier::Flags::Automatable;
-  port->id_->flags_ |= PortIdentifier::Flags::GenericPluginPort;
-  port->id_->port_group_ = "[Zrythm]";
-  port->range_ = { 0.f, 8.f, 0.f };
-  port->deff_ = 1.f;
-  port->set_control_value (1.f, false, false);
-  port->carla_param_id_ = -1;
-  add_in_port (port->get_uuid ());
-  gain_ = port;
+  {
+    /* add gain port */
+    auto port_ref = port_registry_->create_object<ControlPort> (
+      QObject::tr ("Gain").toStdString ());
+    auto * port = std::get<ControlPort *> (port_ref.get_object ());
+    port->id_->sym_ = "gain";
+    port->id_->comment_ = QObject::tr ("Plugin gain").toStdString ();
+    port->id_->flags_ |= PortIdentifier::Flags::PluginGain;
+    port->id_->flags_ |= PortIdentifier::Flags::Automatable;
+    port->id_->flags_ |= PortIdentifier::Flags::GenericPluginPort;
+    port->id_->port_group_ = "[Zrythm]";
+    port->range_ = { 0.f, 8.f, 0.f };
+    port->deff_ = 1.f;
+    port->set_control_value (1.f, false, false);
+    port->carla_param_id_ = -1;
+    add_in_port (port_ref);
+    gain_ = port;
+  }
 
   selected_bank_.bank_idx_ = -1;
   selected_bank_.idx_ = -1;
@@ -587,12 +567,15 @@ do_move (PluginMoveData * data)
           pl->move_automation (*prev_track, *data_track, data->slot);
 
           /* remove plugin from its channel */
+          PluginUuidReference plugin_ref{
+            pl->get_uuid (), data_track->get_plugin_registry ()
+          };
           auto plugin_id =
             prev_ch->remove_plugin (prev_slot, true, false, false, false);
 
           /* add plugin to its new channel */
           data_track->channel_->add_plugin (
-            plugin_id, data->slot, false, true, false, true, true);
+            plugin_ref, data->slot, false, true, false, true, true);
 
           if (data->fire_events)
             {
@@ -865,28 +848,24 @@ Plugin::update_latency ()
 #endif
 
 void
-Plugin::set_as_port_owner_with_index (PortUuid port_id, size_t index)
+Plugin::set_port_index (PortUuidReference port_id)
 {
-  auto port_var = port_registry_->get ().find_by_id_or_throw (port_id);
+  auto port_var = port_id.get_object ();
   std::visit (
-    [&] (auto &&port) {
-      port->id_->port_index_ = in_ports_.size ();
-      port->set_owner (*this);
-    },
-    port_var);
+    [&] (auto &&port) { port->id_->port_index_ = in_ports_.size (); }, port_var);
 }
 
 void
-Plugin::add_in_port (const PortUuid &port_id)
+Plugin::add_in_port (const PortUuidReference &port_id)
 {
-  set_as_port_owner_with_index (port_id, in_ports_.size ());
+  set_port_index (port_id);
   in_ports_.push_back (port_id);
 }
 
 void
-Plugin::add_out_port (const PortUuid &port_id)
+Plugin::add_out_port (const PortUuidReference &port_id)
 {
-  set_as_port_owner_with_index (port_id, out_ports_.size ());
+  set_port_index (port_id);
   out_ports_.push_back (port_id);
 }
 
@@ -898,7 +877,7 @@ Plugin::move_automation (
 {
   z_debug (
     "moving plugin '{}' automation from {} to {} -> {}", get_name (),
-    prev_track.name_, track.name_, new_slot);
+    prev_track.get_name (), track.get_name (), new_slot);
 
   auto &prev_atl = prev_track.get_automation_tracklist ();
   auto &atl = track.get_automation_tracklist ();
@@ -1027,7 +1006,7 @@ Plugin::generate_automation_tracks (AutomatableTrack &track)
         continue;
 
       auto * at = new AutomationTrack (
-        track.port_registry_, track.object_registry_,
+        track.get_port_registry (), track.get_object_registry (),
         [&track] () { return convert_to_variant<TrackPtrVariant> (&track); },
         port->get_uuid ());
       atl.add_automation_track (*at);
@@ -1377,26 +1356,23 @@ Plugin::copy_members_from (Plugin &other)
   /* create a new plugin with same descriptor */
   z_debug ("[2/5] creating new plugin with same setting");
   setting_ = other.setting_->clone_unique ();
-  init (other.get_track_id ());
+  init ();
 
   /* copy ports */
   z_debug ("[3/5] copying ports from source plugin");
   enabled_ = nullptr;
   gain_ = nullptr;
-  in_ports_.clear ();
-  out_ports_.clear ();
-  in_ports_.reserve (other.in_ports_.size ());
-  out_ports_.reserve (other.out_ports_.size ());
-  for (auto &port : other.in_ports_)
-    {
-      in_ports_.push_back (
-        clone_and_register_object (port, port_registry_->get ()));
-    }
-  for (auto &port : other.out_ports_)
-    {
-      out_ports_.push_back (
-        clone_and_register_object (port, port_registry_->get ()));
-    }
+
+  const auto clone_ports = [] (auto &ports, const auto &other_ports) {
+    ports.clear ();
+    ports.reserve (other_ports.size ());
+    for (auto &port : other_ports)
+      {
+        ports.push_back (port.clone_new_identity ());
+      }
+  };
+  clone_ports (in_ports_, other.in_ports_);
+  clone_ports (out_ports_, other.out_ports_);
   set_enabled_and_gain ();
 
   /* copy the state directory */
@@ -1661,7 +1637,7 @@ Plugin::connect_to_prefader (Channel &ch)
   z_return_if_fail (instantiated_ || instantiation_failed_);
 
   auto &track = ch.get_track ();
-  auto  type = track.out_signal_type_;
+  auto  type = track.get_output_signal_type ();
 
   auto * mgr = PORT_CONNECTIONS_MGR; // FIXME global var
   if (type == dsp::PortType::Event)
@@ -1676,7 +1652,7 @@ Plugin::connect_to_prefader (Channel &ch)
             && out_port->id_->flow_ == dsp::PortFlow::Output)
             {
               mgr->ensure_connect_default (
-                out_port->get_uuid (), *ch.midi_out_id_, true);
+                out_port->get_uuid (), ch.midi_out_id_->id (), true);
             }
         }
     }
@@ -1696,7 +1672,7 @@ void
 Plugin::disconnect_from_prefader (Channel &ch)
 {
   auto      &track = ch.get_track ();
-  const auto type = track.out_signal_type_;
+  const auto type = track.get_output_signal_type ();
 
   auto * port_connections_mgr = PORT_CONNECTIONS_MGR;
   for (auto &out_port_var : get_output_port_span ())
@@ -1953,17 +1929,4 @@ Plugin::get_port_by_symbol (const std::string &sym)
 
   z_warning ("failed to find port with symbol {}", sym);
   return std::nullopt;
-}
-
-std::unique_ptr<zrythm::gui::old_dsp::plugins::Plugin>
-Plugin::create_unique_from_hosting_type (PluginSetting::HostingType hosting_type)
-{
-  switch (hosting_type)
-    {
-    case PluginSetting::HostingType::Carla:
-      return std::make_unique<CarlaNativePlugin> ();
-    default:
-      // TODO: implement other plugin hosting types
-      z_return_val_if_reached (nullptr);
-    }
 }

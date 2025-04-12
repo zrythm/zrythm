@@ -242,7 +242,7 @@ public:
   /**
    * MIDI notes.
    */
-  std::vector<MidiNote::Uuid> midi_notes_;
+  std::vector<ArrangerObjectUuidReference> midi_notes_;
 
   /**
    * Unended notes started in recording with MIDI NOTE ON signal but haven't

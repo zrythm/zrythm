@@ -17,6 +17,7 @@ MarkerTrack::MarkerTrack (
         Track::Type::Marker,
         PortType::Unknown,
         PortType::Unknown,
+        plugin_registry,
         port_registry,
         obj_registry)
 {
@@ -104,10 +105,11 @@ MarkerTrack::get_end_marker () const
 }
 
 MarkerTrack::MarkerPtr
-MarkerTrack::insert_marker (MarkerTrack::MarkerPtr marker, int pos)
+MarkerTrack::insert_marker (ArrangerObjectUuidReference marker_ref, int pos)
 {
+  auto * marker = std::get<Marker *> (marker_ref.get_object ());
   marker->set_track_id (get_uuid ());
-  markers_.insert (markers_.begin () + pos, marker->get_uuid ());
+  markers_.insert (markers_.begin () + pos, marker_ref);
   marker->setParent (this);
 
   for (size_t i = pos; i < markers_.size (); ++i)
@@ -194,7 +196,8 @@ MarkerTrack::append_ports (std::vector<Port *> &ports, bool include_plugins) con
 void
 MarkerTrack::remove_marker (const Marker::Uuid &marker_id)
 {
-  auto it = std::ranges::find (markers_, marker_id);
+  auto it =
+    std::ranges::find (markers_, marker_id, &ArrangerObjectUuidReference::id);
   assert (it != markers_.end ());
   it = markers_.erase (it);
 

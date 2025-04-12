@@ -52,8 +52,8 @@ ProjectManager::init_templates ()
       try
         {
           auto files = utils::io::get_files_in_dir (user_templates_dir);
-          std::transform (
-            files.begin (), files.end (), std::back_inserter (templates_),
+          std::ranges::transform (
+            files, std::back_inserter (templates_),
             [] (const auto &p) { return fs::path (p.toStdString ()); });
         }
       catch (const ZrythmException &e)
@@ -71,8 +71,8 @@ ProjectManager::init_templates ()
           try
             {
               auto files = utils::io::get_files_in_dir (system_templates_dir);
-              std::transform (
-                files.begin (), files.end (), std::back_inserter (templates_),
+              std::ranges::transform (
+                files, std::back_inserter (templates_),
                 [] (const auto &p) { return fs::path (p.toStdString ()); });
             }
           catch (const ZrythmException &e)
@@ -151,7 +151,8 @@ ProjectManager::create_default (
 {
   z_info ("Creating default project '{}' in {}", name, prj_dir);
 
-  auto * prj = new Project (name);
+  auto * prj = new Project ();
+  prj->setTitle (QString::fromStdString (name));
   prj->add_default_tracks ();
 
   /* pre-setup engine */

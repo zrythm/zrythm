@@ -152,15 +152,6 @@ public:
 public:
   ~Plugin () override;
 
-  static std::unique_ptr<Plugin>
-  create_unique_from_hosting_type (PluginSetting::HostingType hosting_type);
-
-  /**
-   * @brief Factory method to create a plugin based on the setting.
-   */
-  static Plugin *
-  create_with_setting (const PluginSetting &setting, TrackUuid track_id);
-
   PluginDescriptor      &get_descriptor () { return *setting_->descr_; }
   std::string            get_name () const { return setting_->descr_->name_; }
   Protocol::ProtocolType get_protocol () const
@@ -178,8 +169,14 @@ public:
     return std::visit ([&] (auto &&val) { return val->get_name (); }, var);
   }
 
-  PortRegistrySpan get_input_port_span () const;
-  PortRegistrySpan get_output_port_span () const;
+  auto get_input_port_span () const
+  {
+    return PortUuidReferenceSpan{ in_ports_ };
+  }
+  auto get_output_port_span () const
+  {
+    return PortUuidReferenceSpan{ out_ports_ };
+  }
 
   /**
    * @brief Initializes a plugin after deserialization.
@@ -561,12 +558,12 @@ protected:
   /**
    * Adds an in port to the plugin's list and returns a reference to it.
    */
-  void add_in_port (const PortUuid &port_id);
+  void add_in_port (const PortUuidReference &port_id);
 
   /**
    * Adds an out port to the plugin's list and returns a reference to it.
    */
-  void add_out_port (const PortUuid &port_id);
+  void add_out_port (const PortUuidReference &port_id);
 
   /** Adds a bank to the plugin's list and returns a reference to it. */
   Bank *
@@ -587,8 +584,8 @@ protected:
 private:
   void set_stereo_outs_and_midi_in ();
   void set_enabled_and_gain ();
-  void init (TrackUuid track_id);
-  void set_as_port_owner_with_index (PortUuid port_id, size_t index);
+  void init ();
+  void set_port_index (PortUuidReference port_id);
 
   virtual void populate_banks () = 0;
 
@@ -644,26 +641,19 @@ protected:
    * Creates/initializes a plugin and its internal plugin (LV2, etc.) using
    * the given setting.
    *
-   * @param track_name_hash The expected name hash of track the plugin will be
-   * in.
-   * @param slot The expected slot the plugin will be in.
-   *
    * @throw ZrythmException If the plugin could not be created.
    */
-  Plugin (
-    PortRegistry        &port_registry,
-    const PluginSetting &setting,
-    TrackUuid            track_id);
+  Plugin (PortRegistry &port_registry, const PluginSetting &setting);
 
   /**
    * Create a dummy plugin for tests.
    */
-  Plugin (PortRegistry &port_registry, ZPluginCategory cat, TrackUuid track_id);
+  Plugin (PortRegistry &port_registry, ZPluginCategory cat);
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
 public:
-  std::optional<std::reference_wrapper<PortRegistry>> port_registry_;
+  OptionalRef<PortRegistry>                           port_registry_;
   std::optional<TrackResolver>                        track_resolver_;
 
   std::optional<TrackUuid> track_id_;
@@ -672,7 +662,7 @@ public:
   std::unique_ptr<PluginSetting> setting_;
 
   /** Ports coming in as input. */
-  std::vector<PortUuid> in_ports_;
+  std::vector<PortUuidReference> in_ports_;
 
   /* Caches - avoid shared_ptr due to performance cost */
   std::vector<ControlPort *> ctrl_in_ports_;
@@ -684,7 +674,7 @@ public:
   MidiPort * midi_in_port_ = nullptr;
 
   /** Outgoing ports. */
-  std::vector<PortUuid> out_ports_;
+  std::vector<PortUuidReference> out_ports_;
 
   /**
    * Control for plugin enabled, for convenience.
@@ -809,6 +799,7 @@ using PluginPtrVariant = to_pointer_variant<PluginVariant>;
 using PluginUniquePtrVariant = to_unique_ptr_variant<PluginVariant>;
 using PluginRegistry = utils::OwningObjectRegistry<PluginPtrVariant, Plugin>;
 using PluginRegistryRef = std::reference_wrapper<PluginRegistry>;
+using PluginUuidReference = utils::UuidReference<PluginRegistry>;
 
 } // namespace zrythm::gui::old_dsp::plugins
 

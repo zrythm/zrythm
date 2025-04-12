@@ -135,7 +135,7 @@ public:
    *
    * Must always stay sorted by position.
    */
-  std::vector<AutomationPoint::Uuid> aps_;
+  std::vector<ArrangerObjectUuidReference> aps_;
 
   /** Last recorded automation point. */
   AutomationPoint * last_recorded_ap_ = nullptr;

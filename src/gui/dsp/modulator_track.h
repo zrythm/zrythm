@@ -52,7 +52,7 @@ public:
    */
   PluginPtrVariant insert_modulator (
     dsp::PluginSlot::SlotNo slot,
-    PluginUuid              modulator_id,
+    PluginUuidReference     modulator_id,
     bool                    replace_mode,
     bool                    confirm,
     bool                    gen_automatables,
@@ -98,7 +98,7 @@ public:
 
   auto get_modulator_span () const
   {
-    return PluginRegistrySpan{ *plugin_registry_, modulators_ };
+    return PluginUuidReferenceSpan{ modulators_ };
   }
 
   DECLARE_DEFINE_FIELDS_METHOD ();
@@ -108,9 +108,7 @@ private:
 
 private:
   /** Modulators. */
-  std::vector<PluginUuid> modulators_;
-
-  OptionalRef<PluginRegistry> plugin_registry_;
+  std::vector<PluginUuidReference> modulators_;
 
   /** Modulator macros. */
   std::vector<std::unique_ptr<ModulatorMacroProcessor>>

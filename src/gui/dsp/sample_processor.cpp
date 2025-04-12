@@ -389,29 +389,31 @@ SampleProcessor::queue_file_or_chord_preset (
   /* create master track */
   {
     z_debug ("creating master track...");
-    auto * track = PROJECT->get_track_registry ().create_object<MasterTrack> (
+    auto track_ref = PROJECT->get_track_registry ().create_object<MasterTrack> (
       PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
       PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry (),
       true);
+    auto * track = std::get<MasterTrack *> (track_ref.get_object ());
     track->set_name (*tracklist_, "Sample Processor Master", false);
     tracklist_->master_track_ = track;
     tracklist_->insert_track (
-      track->get_uuid (), tracklist_->tracks_.size (), *AUDIO_ENGINE, false,
-      false);
+      track_ref, tracklist_->tracks_.size (), *AUDIO_ENGINE, false, false);
   }
 
   if (file && file->is_audio ())
     {
       z_debug ("creating audio track...");
-      auto * audio_track =
+      auto audio_track_ref =
         PROJECT->get_track_registry ().create_object<AudioTrack> (
           PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
           PROJECT->get_port_registry (),
           PROJECT->get_arranger_object_registry (), true);
+      auto * audio_track =
+        std::get<AudioTrack *> (audio_track_ref.get_object ());
       audio_track->set_name (*tracklist_, "Sample processor audio", false);
       tracklist_->insert_track (
-        audio_track->get_uuid (), tracklist_->tracks_.size (), *AUDIO_ENGINE,
-        false, false);
+        audio_track_ref, tracklist_->tracks_.size (), *AUDIO_ENGINE, false,
+        false);
 
       /* create an audio region & add to track */
       try
@@ -432,27 +434,29 @@ SampleProcessor::queue_file_or_chord_preset (
     {
       /* create an instrument track */
       z_debug ("creating instrument track...");
-      auto instrument_track =
+      auto instrument_track_ref =
         PROJECT->get_track_registry ().create_object<InstrumentTrack> (
           PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
           PROJECT->get_port_registry (),
           PROJECT->get_arranger_object_registry (), true);
+      auto * instrument_track =
+        std::get<InstrumentTrack *> (instrument_track_ref.get_object ());
       instrument_track->set_name (*tracklist_, "Sample processor instrument", false);
       tracklist_->insert_track (
-        instrument_track->get_uuid (), tracklist_->tracks_.size (),
-        *AUDIO_ENGINE, false, false);
+        instrument_track_ref, tracklist_->tracks_.size (), *AUDIO_ENGINE, false,
+        false);
       try
         {
-          auto * pl = zrythm::gui::old_dsp::plugins::Plugin::create_with_setting (
-            *instrument_setting_, instrument_track->get_uuid ());
+          auto pl_ref = PROJECT->getPluginFactory ()->create_plugin_from_setting (
+            *instrument_setting_);
+          auto * pl = std::get<CarlaNativePlugin *> (pl_ref.get_object ());
           pl->instantiate ();
           pl->activate (true);
           z_return_if_fail (pl->midi_in_port_ && pl->l_out_ && pl->r_out_);
 
           instrument_track->channel_->add_plugin (
-            pl->get_uuid (),
-            dsp::PluginSlot (zrythm::dsp::PluginSlotType::Instrument), false,
-            false, true, false, false);
+            pl_ref, dsp::PluginSlot (zrythm::dsp::PluginSlotType::Instrument),
+            false, false, true, false, false);
 
           int num_tracks =
             (file != nullptr)
@@ -461,16 +465,18 @@ SampleProcessor::queue_file_or_chord_preset (
           z_debug ("creating {} MIDI tracks...", num_tracks);
           for (int i = 0; i < num_tracks; i++)
             {
-              auto * midi_track =
+              auto midi_track_ref =
                 PROJECT->get_track_registry ().create_object<MidiTrack> (
                   PROJECT->get_track_registry (),
                   PROJECT->get_plugin_registry (), PROJECT->get_port_registry (),
                   PROJECT->get_arranger_object_registry (), true);
+              auto * midi_track =
+                std::get<MidiTrack *> (midi_track_ref.get_object ());
               midi_track->set_name (
                 *tracklist_, fmt::format ("Sample processor MIDI {}", i), false);
               tracklist_->insert_track (
-                midi_track->get_uuid (), tracklist_->tracks_.size (),
-                *AUDIO_ENGINE, false, false);
+                midi_track_ref, tracklist_->tracks_.size (), *AUDIO_ENGINE,
+                false, false);
 
               /* route track to instrument */
               instrument_track->add_child (

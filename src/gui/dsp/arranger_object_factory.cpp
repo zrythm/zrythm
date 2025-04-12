@@ -28,14 +28,14 @@ ArrangerObjectFactory::addMidiRegionFromChordDescriptor (
     {
       if (descr.notes_.at (i))
         {
-          auto * mn =
+          auto mn =
             get_builder<MidiNote> ()
               .with_pitch (i + 36)
               .with_velocity (VELOCITY_DEFAULT)
               .with_start_ticks (0)
               .with_end_ticks (mn_len_ticks)
               .build ();
-          mr->append_object (mn->get_uuid ());
+          mr->append_object (mn);
         }
     }
 

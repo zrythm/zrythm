@@ -524,7 +524,8 @@ Exporter::prepare_tracks_for_export (AudioEngine &engine, Transport &transport)
             TrackSpan::derived_type_transformation<ChannelTrack>))
         {
           if (
-            cur_tr->bounce_ || cur_tr->out_signal_type_ != dsp::PortType::Audio)
+            cur_tr->bounce_
+            || cur_tr->get_output_signal_type () != dsp::PortType::Audio)
             continue;
 
           const auto &l_src_id =
@@ -678,8 +679,9 @@ Exporter::create_audio_track_after_bounce (Position pos)
       std::visit (
         [&] (auto &&last_track, auto &&track_to_disable) {
           Track::create_with_action (
-            Track::Type::Audio, nullptr, &descr, &pos, last_track->pos_ + 1, 1,
-            track_to_disable ? track_to_disable->pos_ : -1, nullptr);
+            Track::Type::Audio, nullptr, &descr, &pos,
+            last_track->get_index () + 1, 1,
+            track_to_disable ? track_to_disable->get_index () : -1, nullptr);
         },
         *last_track_var, *track_to_disable_var);
     }

@@ -24,6 +24,7 @@ TempoTrack::TempoTrack (
         Track::Type::Tempo,
         PortType::Unknown,
         PortType::Unknown,
+        plugin_registry,
         port_registry,
         obj_registry),
       AutomatableTrack (port_registry, new_identity),
@@ -56,52 +57,52 @@ TempoTrack::initialize ()
 {
   {
     /* create bpm port */
-    auto bpm_port = port_registry_.create_object<ControlPort> (
+    bpm_port_ = port_registry_.create_object<ControlPort> (
       QObject::tr ("BPM").toStdString ());
-    bpm_port->set_owner (*this);
-    bpm_port->id_->sym_ = "bpm";
-    bpm_port->range_ = { 60.f, 360.f };
-    bpm_port->deff_ = 140.f;
-    bpm_port->set_control_value (bpm_port->deff_, false, false);
-    bpm_port->id_->flags_ |= dsp::PortIdentifier::Flags::Bpm;
-    bpm_port->id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
-    bpm_port_ = bpm_port->get_uuid ();
+    auto &bpm_port = get_bpm_port ();
+    bpm_port.set_owner (*this);
+    bpm_port.id_->sym_ = "bpm";
+    bpm_port.range_ = { 60.f, 360.f };
+    bpm_port.deff_ = 140.f;
+    bpm_port.set_control_value (bpm_port.deff_, false, false);
+    bpm_port.id_->flags_ |= dsp::PortIdentifier::Flags::Bpm;
+    bpm_port.id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
   }
 
   {
     /* create time sig ports */
-    auto beats_per_bar_port = port_registry_.create_object<ControlPort> (
+    beats_per_bar_port_ = port_registry_.create_object<ControlPort> (
       QObject::tr ("Beats per bar").toStdString ());
-    beats_per_bar_port->set_owner (*this);
-    beats_per_bar_port->id_->sym_ = ("beats_per_bar");
-    beats_per_bar_port->range_ = {
+    auto &beats_per_bar_port = get_beats_per_bar_port ();
+    beats_per_bar_port.set_owner (*this);
+    beats_per_bar_port.id_->sym_ = ("beats_per_bar");
+    beats_per_bar_port.range_ = {
       TEMPO_TRACK_MIN_BEATS_PER_BAR, TEMPO_TRACK_MAX_BEATS_PER_BAR
     };
-    beats_per_bar_port->deff_ = TEMPO_TRACK_MIN_BEATS_PER_BAR;
-    beats_per_bar_port->set_control_value (
+    beats_per_bar_port.deff_ = TEMPO_TRACK_MIN_BEATS_PER_BAR;
+    beats_per_bar_port.set_control_value (
       TEMPO_TRACK_DEFAULT_BEATS_PER_BAR, false, false);
-    beats_per_bar_port->id_->flags2_ |= dsp::PortIdentifier::Flags2::BeatsPerBar;
-    beats_per_bar_port->id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
-    beats_per_bar_port->id_->flags_ |= dsp::PortIdentifier::Flags::Integer;
-    beats_per_bar_port_ = beats_per_bar_port->get_uuid ();
+    beats_per_bar_port.id_->flags2_ |= dsp::PortIdentifier::Flags2::BeatsPerBar;
+    beats_per_bar_port.id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
+    beats_per_bar_port.id_->flags_ |= dsp::PortIdentifier::Flags::Integer;
   }
 
   {
-    auto beat_unit_port = port_registry_.create_object<ControlPort> (
+    beat_unit_port_ = port_registry_.create_object<ControlPort> (
       QObject::tr ("Beat unit").toStdString ());
-    beat_unit_port->set_owner (*this);
-    beat_unit_port->id_->sym_ = ("beat_unit");
-    beat_unit_port->range_ = {
+    auto &beat_unit_port = get_beat_unit_port ();
+    beat_unit_port.set_owner (*this);
+    beat_unit_port.id_->sym_ = ("beat_unit");
+    beat_unit_port.range_ = {
       static_cast<float> (TEMPO_TRACK_MIN_BEAT_UNIT),
       static_cast<float> (TEMPO_TRACK_MAX_BEAT_UNIT)
     };
-    beat_unit_port->deff_ = static_cast<float> (TEMPO_TRACK_MIN_BEAT_UNIT);
-    beat_unit_port->set_control_value (
+    beat_unit_port.deff_ = static_cast<float> (TEMPO_TRACK_MIN_BEAT_UNIT);
+    beat_unit_port.set_control_value (
       static_cast<float> (TEMPO_TRACK_DEFAULT_BEAT_UNIT), false, false);
-    beat_unit_port->id_->flags2_ |= dsp::PortIdentifier::Flags2::BeatUnit;
-    beat_unit_port->id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
-    beat_unit_port->id_->flags_ |= dsp::PortIdentifier::Flags::Integer;
-    beat_unit_port_ = beat_unit_port->get_uuid ();
+    beat_unit_port.id_->flags2_ |= dsp::PortIdentifier::Flags2::BeatUnit;
+    beat_unit_port.id_->flags_ |= dsp::PortIdentifier::Flags::Automatable;
+    beat_unit_port.id_->flags_ |= dsp::PortIdentifier::Flags::Integer;
   }
 
   generate_automation_tracks ();
@@ -118,7 +119,7 @@ TempoTrack::validate () const
 bpm_t
 TempoTrack::get_bpm_at_pos (const Position pos)
 {
-  auto at = AutomationTrack::find_from_port_id (bpm_port_, false);
+  auto at = AutomationTrack::find_from_port_id (bpm_port_->id (), false);
   return at->get_val_at_pos (pos, false, false, false);
 }
 

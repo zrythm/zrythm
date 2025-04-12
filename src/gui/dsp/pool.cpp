@@ -247,7 +247,7 @@ std::string
 AudioPool::gen_name_for_recording_clip (const Track &track, int lane)
 {
   return fmt::format (
-    "{} - lane {} - recording", track.name_,
+    "{} - lane {} - recording", track.get_name (),
     /* add 1 to get human friendly index */
     lane + 1);
 }

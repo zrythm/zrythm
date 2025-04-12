@@ -226,7 +226,7 @@ AutomatableTrack::validate_base () const
                         dynamic_cast<const ChannelTrack *> (this);
                       z_return_val_if_fail (
                         pl->get_uuid ()
-                          == channel_track->channel_->instrument_.value (),
+                          == channel_track->channel_->instrument_->id (),
                         false);
                     }
                   return true;

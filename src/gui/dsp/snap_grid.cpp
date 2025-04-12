@@ -290,7 +290,8 @@ SnapGrid::get_prev_or_next_snap_point (
                 {
                   using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
                   auto lane = std::get<TrackLaneT *> (lane_var);
-                  for (auto &r_var : lane->region_list_->regions_)
+                  for (
+                    const auto &r_var : lane->region_list_->get_region_vars ())
                     {
                       auto * r =
                         std::get<typename TrackLaneT::RegionT *> (r_var);

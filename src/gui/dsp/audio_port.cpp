@@ -195,9 +195,9 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
 
   /* if bouncing tracks directly to master (e.g., when bouncing the track on
    * its own without parents), clear master input */
-  auto master_processor_stereo_ins = std::pair (
-    *P_MASTER_TRACK->processor_->stereo_in_left_id_,
-    *P_MASTER_TRACK->processor_->stereo_in_right_id_);
+  const auto master_processor_stereo_ins = std::pair (
+    P_MASTER_TRACK->processor_->stereo_in_left_id_->id (),
+    P_MASTER_TRACK->processor_->stereo_in_right_id_->id ());
   if (AUDIO_ENGINE->bounce_mode_ > BounceMode::BOUNCE_OFF && !AUDIO_ENGINE->bounce_with_parents_ &&
     (get_uuid() == master_processor_stereo_ins.first
     || get_uuid() == master_processor_stereo_ins.second)) [[unlikely]]
@@ -252,7 +252,7 @@ AudioPort::apply_fader (float amp, nframes_t start_frame, const nframes_t nframe
   utils::float_ranges::mul_k2 (&buf_[start_frame], amp, nframes);
 }
 
-std::pair<AudioPort *, AudioPort *>
+std::pair<PortUuidReference, PortUuidReference>
 StereoPorts::create_stereo_ports (
   PortRegistry &port_registry,
   bool          input,
@@ -261,13 +261,17 @@ StereoPorts::create_stereo_ports (
 {
   auto   l_names = get_name_and_symbols (true, name, symbol);
   auto   r_names = get_name_and_symbols (false, name, symbol);
-  auto * l_port = port_registry.create_object<AudioPort> (
+  auto   l_port_ref = port_registry.create_object<AudioPort> (
     l_names.first, input ? dsp::PortFlow::Input : dsp::PortFlow::Output);
-  auto * r_port = port_registry.create_object<AudioPort> (
+  auto r_port_ref = port_registry.create_object<AudioPort> (
     r_names.first, input ? dsp::PortFlow::Input : dsp::PortFlow::Output);
-  l_port->id_->flags_ |= dsp::PortIdentifier::Flags::StereoL;
-  l_port->id_->sym_ = l_names.second;
-  r_port->id_->flags_ |= dsp::PortIdentifier::Flags::StereoR;
-  r_port->id_->sym_ = r_names.second;
-  return std::make_pair (l_port, r_port);
+  {
+    auto * l_port = std::get<AudioPort *> (l_port_ref.get_object ());
+    auto * r_port = std::get<AudioPort *> (r_port_ref.get_object ());
+    l_port->id_->flags_ |= dsp::PortIdentifier::Flags::StereoL;
+    l_port->id_->sym_ = l_names.second;
+    r_port->id_->flags_ |= dsp::PortIdentifier::Flags::StereoR;
+    r_port->id_->sym_ = r_names.second;
+  }
+  return std::make_pair (l_port_ref, r_port_ref);
 }

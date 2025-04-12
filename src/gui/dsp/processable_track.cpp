@@ -247,7 +247,7 @@ ProcessableTrack::fill_events_common (
             }
           else
             {
-              for (auto &region : track->region_list_->regions_)
+              for (const auto &region : track->region_list_->get_region_vars ())
                 {
                   process_single_region (*std::get<ChordRegion *> (region));
                 }
@@ -271,7 +271,8 @@ ProcessableTrack::fill_events_common (
                 {
                   using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
                   auto lane = std::get<TrackLaneT *> (lane_var);
-                  for (auto &region : lane->region_list_->regions_)
+                  for (
+                    const auto &region : lane->region_list_->get_region_vars ())
                     {
                       process_single_region (
                         *std::get<typename TrackLaneT::RegionT *> (region));

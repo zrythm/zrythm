@@ -177,7 +177,7 @@ MixerSelectionsAction::
                 }
               z_debug (
                 "cloned {} automation tracks for track {}, total regions {}",
-                count, track->name_, regions_count);
+                count, track->get_name (), regions_count);
             }
         },
         *track_var);
@@ -218,7 +218,7 @@ MixerSelectionsAction::revert_automation (
   dsp::PluginSlot   slot,
   bool              deleted)
 {
-  z_debug ("reverting automation for {}#{}", track.name_, slot);
+  z_debug ("reverting automation for {}#{}", track.get_name (), slot);
 
   auto &atl = track.automation_tracklist_;
   auto &ats = deleted ? deleted_ats_ : ats_;
@@ -272,8 +272,8 @@ MixerSelectionsAction::save_existing_plugin (
           auto existing_pl = to_track->get_plugin_at_slot (to_slot);
           z_debug (
             "existing plugin at ({}:{} => {}:{}): {}",
-            from_tr ? from_tr->name_ : "(none)", from_slot,
-            to_tr ? to_tr->name_ : "(none)", to_slot,
+            from_tr ? from_tr->get_name () : "(none)", from_slot,
+            to_tr ? to_tr->get_name () : "(none)", to_slot,
             existing_pl
               ? old_dsp::plugins::Plugin::name_projection (existing_pl.value ())
               : "(none)");
@@ -420,91 +420,98 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                   auto own_pl_var = own_ms[i];
 
                   /* create new plugin */
-                  Plugin * pl{};
-                  if (create)
-                    {
-                      if (mixer_selections_action_type_ == Type::Paste)
+                  auto pl_ref_id = [&] () {
+                    if (create)
+                      {
+                        std::optional<PluginUuidReference> pl_ref;
+                        if (mixer_selections_action_type_ == Type::Paste)
+                          {
+                            pl_ref = std::visit (
+                              [&] (auto &&own_pl) {
+                                return PROJECT->get_plugin_registry ()
+                                  .clone_object (*own_pl);
+                              },
+                              own_pl_var);
+                          }
+                        else
+                          {
+                            pl_ref =
+                              PROJECT->getPluginFactory ()
+                                ->create_plugin_from_setting (*setting_);
+                          }
+
+                        /* instantiate so that ports are created */
+                        std::visit (
+                          [&] (auto &&pl) { pl->instantiate (); },
+                          pl_ref->get_object ());
+                        return *pl_ref;
+                      }
+                    if (delete_)
+                      {
+                        /* note: this also instantiates the plugin */
+                        return std::visit (
+                          [&] (auto &&own_pl) {
+                            return PROJECT->get_plugin_registry ()
+                              .clone_object (*own_pl);
+                          },
+                          own_pl_var);
+                      }
+                    throw std::runtime_error ("should not be reached");
+                  }();
+
+                  std::visit (
+                    [&] (auto &&pl) {
+                      /* validate */
+                      if (delete_)
                         {
-                          pl = std::visit (
-                            [&] (auto &&own_pl) {
-                              return own_pl->clone_and_register (
-                                PROJECT->get_plugin_registry ());
-                            },
-                            own_pl_var);
+                          assert (
+                            slot == PluginSpan::slot_projection (own_pl_var));
                         }
-                      else
+
+                      /* set track */
+                      // pl->track_ = track;
+                      pl->set_track (track->get_uuid ());
+
+                      /* save any plugin about to be deleted */
+                      // FIXME: what is the point of from_slot?
+                      save_existing_plugin (
+                        *deleted_ms_, nullptr, dsp::PluginSlot (slot_type, -1),
+                        slot_type == zrythm::dsp::PluginSlotType::Modulator
+                          ? (Track *) P_MODULATOR_TRACK
+                          : track,
+                        slot);
+
+                      /* add to destination */
+                      // FIXME: danging pl
+                      track->insert_plugin (
+                        pl->get_uuid (), slot, true, false, false, false, true,
+                        false, false);
+
+                      /* select the plugin */
+                      pl->set_selected (true);
+
+                      /* set visibility */
+                      if (create)
                         {
-                          pl =
-                            PROJECT->get_plugin_registry ()
-                              .create_object<CarlaNativePlugin> (
-                                PROJECT->get_port_registry (), *setting_,
-                                to_track_uuid_.value ());
+                          /* set visible from settings */
+                          pl->visible_ =
+                            ZRYTHM_HAVE_UI
+                            && gui::SettingsManager::openPluginsOnInstantiation ();
                         }
-                      z_return_if_fail (pl);
+                      else if (delete_)
+                        {
+                          /* set visible if plugin was visible before deletion */
+                          pl->visible_ =
+                            ZRYTHM_HAVE_UI
+                            && PluginSpan::visible_projection (own_pl_var);
+                        }
+                      /* EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED,
+                       * added_pl); */
 
-                      /* instantiate so that ports are created */
-                      pl->instantiate ();
-                    }
-                  else if (delete_)
-                    {
-                      /* note: this also instantiates the plugin */
-                      pl = std::visit (
-                        [&] (auto &&own_pl) {
-                          return own_pl->clone_and_register (
-                            PROJECT->get_plugin_registry ());
-                        },
-                        own_pl_var);
-                    }
-
-                  /* validate */
-                  assert (pl);
-                  if (delete_)
-                    {
-                      assert (slot == PluginSpan::slot_projection (own_pl_var));
-                    }
-
-                  /* set track */
-                  // pl->track_ = track;
-                  pl->set_track (track->get_uuid ());
-
-                  /* save any plugin about to be deleted */
-                  // FIXME: what is the point of from_slot?
-                  save_existing_plugin (
-                    *deleted_ms_, nullptr, dsp::PluginSlot (slot_type, -1),
-                    slot_type == zrythm::dsp::PluginSlotType::Modulator
-                      ? (Track *) P_MODULATOR_TRACK
-                      : track,
-                    slot);
-
-                  /* add to destination */
-                  // FIXME: danging pl
-                  track->insert_plugin (
-                    pl->get_uuid (), slot, true, false, false, false, true,
-                    false, false);
-
-                  /* select the plugin */
-                  pl->set_selected (true);
-
-                  /* set visibility */
-                  if (create)
-                    {
-                      /* set visible from settings */
-                      pl->visible_ =
-                        ZRYTHM_HAVE_UI
-                        && gui::SettingsManager::openPluginsOnInstantiation ();
-                    }
-                  else if (delete_)
-                    {
-                      /* set visible if plugin was visible before deletion */
-                      pl->visible_ =
-                        ZRYTHM_HAVE_UI
-                        && PluginSpan::visible_projection (own_pl_var);
-                    }
-                  /* EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED,
-                   * added_pl); */
-
-                  /* activate */
-                  pl->activate (true);
+                      /* activate */
+                      pl->activate (true);
+                    },
+                    pl_ref_id.get_object ());
                 }
 
               /* if undoing deletion */
@@ -743,8 +750,10 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                           PROJECT->get_track_registry ().register_object (
                             *to_tr_unique);
                           TRACKLIST->append_track (
-                            to_tr_unique->get_uuid (), *AUDIO_ENGINE, false,
-                            false);
+                            TrackUuidReference{
+                              to_tr_unique->get_uuid (),
+                              PROJECT->get_track_registry () },
+                            *AUDIO_ENGINE, false, false);
 
                           /* remember to track pos */
                           to_track_uuid_ = to_tr_unique->get_uuid ();
@@ -797,22 +806,22 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                           /* get/create the actual plugin */
                           auto from_slot =
                             PluginSpan::slot_projection (sorted_own_ms.at (i));
-                          std::optional<gui::old_dsp::plugins::PluginPtrVariant>
-                            pl_var;
-                          if (move)
-                            {
-                              pl_var =
-                                from_tr->get_plugin_at_slot (from_slot).value ();
-                            }
-                          else
-                            {
-                              pl_var = std::visit (
-                                [&] (auto &&own_pl) {
-                                  return own_pl->clone_and_register (
-                                    PROJECT->get_plugin_registry ());
-                                },
-                                sorted_own_ms.at (i));
-                            }
+                          auto pl_var = [&] () {
+                            if (move)
+                              {
+                                return from_tr->get_plugin_at_slot (from_slot)
+                                  .value ();
+                              }
+
+                            return std::visit (
+                              [&] (auto &&own_pl) {
+                                // FIXME new plugin gets deleted
+                                return PROJECT->get_plugin_registry ()
+                                  .clone_object (*own_pl)
+                                  .get_object ();
+                              },
+                              sorted_own_ms.at (i));
+                          }();
 
                           auto to_slot = to_slot_value.get_slot_after_n (i);
 
@@ -825,8 +834,8 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                             {
                               z_debug (
                                 "moving plugin from {}:{} to {}:{}",
-                                from_tr->name_, from_slot, to_tr->name_,
-                                to_slot);
+                                from_tr->get_name (), from_slot,
+                                to_tr->get_name (), to_slot);
 
                               if (
                                 from_tr->get_uuid () != to_tr->get_uuid ()
@@ -836,7 +845,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                                     [&] (auto &&pl) {
                                       pl->move (to_tr, to_slot, false, false);
                                     },
-                                    pl_var.value ());
+                                    pl_var);
                                 }
                             }
                           else if (copy)
@@ -847,7 +856,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                                 to_tr->get_name (), to_slot);
 
                               to_tr->insert_plugin (
-                                PluginSpan::uuid_projection (*pl_var), to_slot,
+                                PluginSpan::uuid_projection (pl_var), to_slot,
                                 true, false, false, false, true, false, false);
 
                               std::visit (
@@ -893,7 +902,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                                         }
                                     }
                                 },
-                                pl_var.value (), sorted_own_ms.at (i));
+                                pl_var, sorted_own_ms.at (i));
                             }
 
                           std::visit (
@@ -919,7 +928,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                                     }
                                 }
                             },
-                            pl_var.value ());
+                            pl_var);
                         }
 
                       to_tr->validate ();
@@ -997,8 +1006,8 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                                    * slot */
                                   z_debug (
                                     "moving plugin back from {}:{} to {}:{}",
-                                    to_tr->name_, to_slot, from_tr->name_,
-                                    from_slot);
+                                    to_tr->get_name (), to_slot,
+                                    from_tr->get_name (), from_slot);
 
                                   if (
                                     from_tr->get_uuid () != to_tr->get_uuid ()

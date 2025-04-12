@@ -161,7 +161,7 @@ AutomationTracklist::add_automation_track (AutomationTrack &at)
   port.id_->set_track_id (track_.get_uuid ());
 
   /* move automation track regions */
-  for (const auto region_var : at_ref->region_list_->regions_)
+  for (const auto &region_var : at_ref->region_list_->get_region_vars ())
     {
       std::get<AutomationRegion *> (region_var)->set_automation_track (*at_ref);
     }
@@ -449,7 +449,7 @@ AutomationTracklist::
   }
 
   z_trace (
-    "[track {} atl] removing automation track at: {} '{}'", track_.pos_,
+    "[track {} atl] removing automation track at: {} '{}'", track_.get_index (),
     deleted_idx, at.getLabel ());
 
   if (free_at)
@@ -464,7 +464,8 @@ AutomationTracklist::
   });
   if (it == ats_.end ())
     {
-      z_warning ("[track {} atl] automation track not found", track_.pos_);
+      z_warning (
+        "[track {} atl] automation track not found", track_.get_index ());
       endRemoveRows ();
       return nullptr;
     }
@@ -476,7 +477,7 @@ AutomationTracklist::
     {
       auto &cur_at = *cur_it;
       cur_at->index_ = std::distance (ats_.begin (), cur_it);
-      for (auto region_var : cur_at->region_list_->regions_)
+      for (auto region_var : cur_at->region_list_->get_region_vars ())
         {
           auto * region = std::get<AutomationRegion *> (region_var);
           region->set_automation_track (*cur_at);
@@ -525,7 +526,7 @@ AutomationTracklist::append_objects (std::vector<ArrangerObject *> objects) cons
 {
   for (auto &at : ats_)
     {
-      for (auto &r : at->region_list_->regions_)
+      for (const auto &r : at->region_list_->get_region_vars ())
         {
           objects.push_back (std::get<AutomationRegion *> (r));
         }

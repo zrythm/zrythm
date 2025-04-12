@@ -45,15 +45,14 @@ public:
    * @brief Removes the given region if found.
    *
    * @param region
-   * @param fire_events
    * @return Whether removed.
    */
-  bool remove_region (RegionT &region, bool free_region, bool fire_events);
+  bool remove_region (const Region::Uuid &region_id);
 
   /**
    * @see @ref insert_region().
    */
-  void add_region (RegionTPtr region)
+  void add_region (auto region)
   {
     return insert_region (region, region_list_->rowCount ());
   }
@@ -63,7 +62,7 @@ public:
    *
    * @warning This must not be used directly. Use Track.insert_region() instead.
    */
-  void insert_region (RegionTPtr region, int idx);
+  void insert_region (const ArrangerObjectUuidReference &region_ref, int idx);
 
   /**
    * Returns the region at the given position, or NULL.
@@ -74,14 +73,15 @@ public:
   RegionT *
   get_region_at_pos (dsp::Position pos, bool include_region_end = false) const
   {
+    auto region_vars = region_list_->get_region_vars ();
     auto it =
-      std::ranges::find_if (region_list_->regions_, [&] (const auto &r_var) {
+      std::ranges::find_if (region_vars, [&] (const auto &r_var) {
         return *std::get<RegionT *> (r_var)->pos_ <= pos
                && std::get<RegionT *> (r_var)->end_pos_->frames_
                       + (include_region_end ? 1 : 0)
                     > pos.frames_;
       });
-    return it != region_list_->regions_.end () ? std::get<RegionT *> (*it) : nullptr;
+    return it != region_vars.end () ? std::get<RegionT *> (*it) : nullptr;
   }
 
   void clear_regions ();

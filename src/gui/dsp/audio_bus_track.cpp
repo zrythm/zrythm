@@ -13,6 +13,7 @@ AudioBusTrack::AudioBusTrack (
         Track::Type::AudioBus,
         PortType::Audio,
         PortType::Audio,
+        plugin_registry,
         port_registry,
         obj_registry),
       AutomatableTrack (port_registry, new_identity),

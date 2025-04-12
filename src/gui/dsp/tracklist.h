@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -104,7 +104,7 @@ public:
     Track::Type::Modulator
   };
 
-  TrackRegistrySpan get_track_span () const;
+  auto get_track_span () const { return TrackUuidReferenceSpan{ tracks_ }; }
 
   bool is_in_active_project () const;
 
@@ -142,17 +142,17 @@ public:
    * @return Pointer to the newly added track.
    */
   TrackPtrVariant insert_track (
-    TrackUuid    track_id,
-    int          pos,
-    AudioEngine &engine,
-    bool         publish_events,
-    bool         recalc_graph);
+    const TrackUuidReference &track_id,
+    int                       pos,
+    AudioEngine              &engine,
+    bool                      publish_events,
+    bool                      recalc_graph);
 
   /**
    * Calls insert_track with the given options.
    */
   TrackPtrVariant append_track (
-    TrackUuid    track_id,
+    auto         track_id,
     AudioEngine &engine,
     bool         publish_events,
     bool         recalc_graph)
@@ -378,7 +378,8 @@ public:
   auto get_track_index (const Track::TrackUuid &track_id) const
   {
     return std::distance (
-      tracks_.begin (), std::ranges::find (tracks_, track_id));
+      tracks_.begin (),
+      std::ranges::find (tracks_, track_id, &TrackUuidReference::id));
   }
 
   auto get_track_at_index (size_t index) const
@@ -418,7 +419,7 @@ public:
    *   ...
    * }
    */
-  std::vector<Track::TrackUuid> tracks_;
+  std::vector<TrackUuidReference> tracks_;
 
   /** The chord track, for convenience. */
   ChordTrack * chord_track_ = nullptr;

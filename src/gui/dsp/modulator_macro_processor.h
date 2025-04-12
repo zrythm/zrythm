@@ -67,18 +67,17 @@ public:
 
   CVPort &get_cv_in_port ()
   {
-    return *std::get<CVPort *> (port_registry_.find_by_id_or_throw (cv_in_id_));
+    return *std::get<CVPort *> (cv_in_id_->get_object ());
   }
 
   CVPort &get_cv_out_port ()
   {
-    return *std::get<CVPort *> (port_registry_.find_by_id_or_throw (cv_out_id_));
+    return *std::get<CVPort *> (cv_out_id_->get_object ());
   }
 
   ControlPort &get_macro_port ()
   {
-    return *std::get<ControlPort *> (
-      port_registry_.find_by_id_or_throw (macro_id_));
+    return *std::get<ControlPort *> (macro_id_->get_object ());
   }
 
   DECLARE_DEFINE_FIELDS_METHOD ();
@@ -93,22 +92,20 @@ private:
   std::string name_;
 
   /** CV input port for connecting CV signals to. */
-  PortUuid cv_in_id_;
+  std::optional<PortUuidReference> cv_in_id_;
 
   /**
    * CV output after macro is applied.
    *
    * This can be routed to other parameters to apply the macro.
    */
-  PortUuid cv_out_id_;
+  std::optional<PortUuidReference> cv_out_id_;
 
   /** Control port controlling the amount. */
-  PortUuid macro_id_;
+  std::optional<PortUuidReference> macro_id_;
 
   /** Pointer to owner track, if any. */
   ModulatorTrack * track_{};
-
-  PortRegistry &port_registry_;
 };
 
 /**

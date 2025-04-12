@@ -76,7 +76,7 @@ ChannelSendAction::connect_or_disconnect (bool connect, bool do_it)
       if (connect)
         {
           auto track = send->get_track ();
-          switch (track->out_signal_type_)
+          switch (track->get_output_signal_type ())
             {
             case PortType::Event:
               {

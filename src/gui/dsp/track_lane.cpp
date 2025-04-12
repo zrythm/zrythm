@@ -20,7 +20,7 @@ void
 TrackLaneImpl<RegionT>::init_loaded (LanedTrackT * track)
 {
   track_ = track;
-  for (auto &region_var : this->region_list_->regions_)
+  for (const auto &region_var : this->region_list_->get_region_vars ())
     {
       auto region = std::get<RegionT *> (region_var);
       region->init_loaded ();
@@ -38,7 +38,7 @@ template <typename RegionT>
 void
 TrackLaneImpl<RegionT>::unselect_all ()
 {
-  for (auto &region_var : this->region_list_->regions_)
+  for (const auto &region_var : this->region_list_->get_region_vars ())
     {
       auto region = std::get<RegionT *> (region_var);
       region->setSelected (false);
@@ -224,7 +224,7 @@ TrackLaneImpl<RegionT>::write_to_midi_file (
 {
   auto track = get_track ();
   z_return_if_fail (track);
-  int                              midi_track_pos = track->pos_;
+  auto                             midi_track_pos = track->get_index ();
   std::unique_ptr<MidiEventVector> own_events;
   if (lanes_as_tracks)
     {
@@ -254,11 +254,12 @@ TrackLaneImpl<RegionT>::write_to_midi_file (
     {
       char midi_track_name[1000];
       sprintf (
-        midi_track_name, "%s - %s", track->name_.c_str (), name_.c_str ());
+        midi_track_name, "%s - %s", track->get_name ().c_str (),
+        get_name ().c_str ());
       midiTrackAddText (mf, midi_track_pos, textTrackName, midi_track_name);
     }
 
-  for (auto &region_var : this->region_list_->regions_)
+  for (const auto &region_var : this->region_list_->get_region_vars ())
     {
       auto region = std::get<RegionT *> (region_var);
       /* skip regions not inside the given range */
@@ -295,7 +296,7 @@ TrackLaneImpl<RegionT>::copy_members_from (
   height_ = other.height_;
   mute_ = other.mute_;
   solo_ = other.solo_;
-  for (auto &region_var : this->region_list_->regions_)
+  for (const auto &region_var : this->region_list_->get_region_vars ())
     {
       auto region = std::get<RegionT *> (region_var);
       region->is_auditioner_ = is_auditioner ();

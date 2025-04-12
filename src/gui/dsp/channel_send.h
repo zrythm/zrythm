@@ -204,16 +204,13 @@ public:
       {
         throw ZrythmException ("stereo_in_left_id_ not set");
       }
-    auto * l = std::get<AudioPort *> (
-      get_port_registry ().find_by_id_or_throw (stereo_in_left_id_.value ()));
-    auto * r = std::get<AudioPort *> (
-      get_port_registry ().find_by_id_or_throw (stereo_in_right_id_.value ()));
+    auto * l = std::get<AudioPort *> (stereo_in_left_id_->get_object ());
+    auto * r = std::get<AudioPort *> (stereo_in_right_id_->get_object ());
     return { *l, *r };
   }
   MidiPort &get_midi_in_port () const
   {
-    return *std::get<MidiPort *> (
-      get_port_registry ().find_by_id_or_throw (midi_in_id_.value ()));
+    return *std::get<MidiPort *> (midi_in_id_->get_object ());
   }
   std::pair<AudioPort &, AudioPort &> get_stereo_out_ports () const
   {
@@ -221,26 +218,21 @@ public:
       {
         throw ZrythmException ("stereo_out_left_id_ not set");
       }
-    auto * l = std::get<AudioPort *> (
-      get_port_registry ().find_by_id_or_throw (stereo_out_left_id_.value ()));
-    auto * r = std::get<AudioPort *> (
-      get_port_registry ().find_by_id_or_throw (stereo_out_right_id_.value ()));
+    auto * l = std::get<AudioPort *> (stereo_out_left_id_->get_object ());
+    auto * r = std::get<AudioPort *> (stereo_out_right_id_->get_object ());
     return { *l, *r };
   }
   MidiPort &get_midi_out_port () const
   {
-    return *std::get<MidiPort *> (
-      get_port_registry ().find_by_id_or_throw (midi_in_id_.value ()));
+    return *std::get<MidiPort *> (midi_out_id_->get_object ());
   }
   ControlPort &get_amount_port () const
   {
-    return *std::get<ControlPort *> (
-      get_port_registry ().find_by_id_or_throw (amount_id_.value ()));
+    return *std::get<ControlPort *> (amount_id_->get_object ());
   }
   ControlPort &get_enabled_port () const
   {
-    return *std::get<ControlPort *> (
-      get_port_registry ().find_by_id_or_throw (enabled_id_.value ()));
+    return *std::get<ControlPort *> (enabled_id_->get_object ());
   }
 
   /**
@@ -314,6 +306,9 @@ private:
     std::optional<PortUuid>                      midi) const;
 
 public:
+  PortRegistry  &port_registry_;
+  TrackRegistry &track_registry_;
+
   /** Slot index in the channel sends. */
   int slot_ = 0;
 
@@ -322,34 +317,34 @@ public:
    *
    * Prefader or fader stereo out should connect here.
    */
-  std::optional<PortUuid> stereo_in_left_id_;
-  std::optional<PortUuid> stereo_in_right_id_;
+  std::optional<PortUuidReference> stereo_in_left_id_;
+  std::optional<PortUuidReference> stereo_in_right_id_;
 
   /**
    * MIDI input if MIDI send.
    *
    * Prefader or fader MIDI out should connect here.
    */
-  std::optional<PortUuid> midi_in_id_;
+  std::optional<PortUuidReference> midi_in_id_;
 
   /**
    * Stereo output if audio send.
    *
    * This should connect to the send destination, if any.
    */
-  std::optional<PortUuid> stereo_out_left_id_;
-  std::optional<PortUuid> stereo_out_right_id_;
+  std::optional<PortUuidReference> stereo_out_left_id_;
+  std::optional<PortUuidReference> stereo_out_right_id_;
 
   /**
    * MIDI output if MIDI send.
    *
    * This should connect to the send destination, if any.
    */
-  std::optional<PortUuid> midi_out_id_;
+  std::optional<PortUuidReference> midi_out_id_;
 
   /** Send amount (amplitude), 0 to 2 for audio, velocity multiplier for
    * MIDI. */
-  std::optional<PortUuid> amount_id_;
+  std::optional<PortUuidReference> amount_id_;
 
   /**
    * Whether the send is currently enabled.
@@ -357,7 +352,7 @@ public:
    * If enabled, corresponding connection(s) will exist in
    * PortConnectionsManager.
    */
-  std::optional<PortUuid> enabled_id_;
+  std::optional<PortUuidReference> enabled_id_;
 
   /** If the send is a sidechain. */
   bool is_sidechain_ = false;
@@ -372,9 +367,6 @@ public:
    * @brief Use this if set (via the new identity constructo).
    */
   OptionalRef<ChannelTrack> track_;
-
-  PortRegistry  &port_registry_;
-  TrackRegistry &track_registry_;
 };
 
 /**

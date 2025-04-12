@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <utility>
+
 #include "gui/backend/backend/project.h"
 #include "gui/dsp/automation_track.h"
 #include "gui/dsp/modulator_macro_processor.h"
@@ -20,11 +22,11 @@ ModulatorTrack::ModulatorTrack (
         Track::Type::Modulator,
         PortType::Unknown,
         PortType::Unknown,
+        plugin_registry,
         port_registry,
         obj_registry),
       AutomatableTrack (port_registry, new_identity),
-      ProcessableTrack (port_registry, new_identity),
-      plugin_registry_ (plugin_registry)
+      ProcessableTrack (port_registry, new_identity)
 {
   if (new_identity) {
       main_height_ = DEF_HEIGHT / 2;
@@ -65,7 +67,7 @@ ModulatorTrack::init_loaded (
   ProcessableTrack::init_loaded (plugin_registry, port_registry);
   for (auto &modulator_id : modulators_)
     {
-      auto modulator = plugin_registry.find_by_id_or_throw (modulator_id);
+      auto modulator = modulator_id.get_object ();
       std::visit (
         [&] (auto &&pl) { pl->init_loaded (this); }, modulator);
     }
@@ -77,9 +79,13 @@ ModulatorTrack::init_loaded (
 
 struct ModulatorImportData
 {
+  ModulatorImportData (PluginUuidReference ref) : modulator_id (std::move (ref))
+  {
+  }
+
   ModulatorTrack *             track{};
   int                          slot{};
-  ModulatorTrack::PluginUuid modulator_id{};
+  PluginUuidReference              modulator_id;
   bool                         replace_mode{};
   bool                         confirm{};
   bool                         gen_automatables{};
@@ -99,25 +105,21 @@ struct ModulatorImportData
           }
       }
 
-    auto modulator =
-      self->plugin_registry_->find_by_id_or_throw (modulator_id);
-
     std::visit (
       [&] (auto &&mod) {
         /* insert the new modulator */
         z_debug (
           "Inserting modulator {} at {}:{}", mod->get_name (), self->name_,
           this->slot);
-        self->plugin_registry_->register_object (mod);
+        self->plugin_registry_.register_object (mod);
         self->modulators_.insert (
-          self->modulators_.cbegin () + this->slot, mod->get_uuid ());
+          self->modulators_.cbegin () + this->slot, modulator_id);
 
         /* adjust affected modulators */
         for (size_t i = this->slot; i < self->modulators_.size (); ++i)
           {
             const auto &cur_mod_id = self->modulators_[i];
-            auto        cur_mod =
-              self->plugin_registry_->find_by_id_or_throw (cur_mod_id);
+            auto        cur_mod = cur_mod_id.get_object ();
             std::visit (
               [&] (auto &&cur_mod_ptr) {
                 cur_mod_ptr->set_track (self->get_uuid ());
@@ -140,7 +142,7 @@ struct ModulatorImportData
             ROUTER->recalc_graph (false);
           }
       },
-      modulator);
+      modulator_id.get_object ());
   }
 };
 
@@ -164,7 +166,7 @@ overwrite_plugin_response_cb (
 ModulatorTrack::PluginPtrVariant
 ModulatorTrack::insert_modulator (
   dsp::PluginSlot::SlotNo slot,
-  PluginUuid              modulator_id,
+  PluginUuidReference     modulator_id,
   bool                    replace_mode,
   bool                    confirm,
   bool                    gen_automatables,
@@ -173,10 +175,9 @@ ModulatorTrack::insert_modulator (
 {
   z_return_val_if_fail (slot <= (int) modulators_.size (), nullptr);
 
-  ModulatorImportData data{};
+  ModulatorImportData data{ modulator_id };
   data.track = this;
   data.slot = slot;
-  data.modulator_id = modulator_id;
   data.replace_mode = replace_mode;
   data.confirm = confirm;
   data.gen_automatables = gen_automatables;
@@ -205,7 +206,7 @@ ModulatorTrack::insert_modulator (
       data.do_insert ();
       return modulator;
     },
-    PROJECT->get_plugin_registry ().find_by_id_or_throw (modulator_id));
+    modulator_id.get_object ());
 }
 
 ModulatorTrack::PluginPtrVariant
@@ -216,7 +217,7 @@ ModulatorTrack::remove_modulator (
   bool                    recalc_graph)
 {
   auto plugin_id = modulators_[slot];
-  auto plugin_var = plugin_registry_->find_by_id_or_throw (plugin_id);
+  auto plugin_var = plugin_id.get_object ();
   return std::visit (
     [&] (auto &&plugin) -> PluginPtrVariant {
       assert (plugin->get_track_id () == get_uuid ());
@@ -241,7 +242,7 @@ ModulatorTrack::remove_modulator (
       for (; it != modulators_.end (); ++it)
         {
           const auto &mod_id = *it;
-          auto mod_var = plugin_registry_->find_by_id_or_throw (mod_id);
+          auto        mod_var = mod_id.get_object ();
           std::visit (
             [&] (auto &&mod) { mod->set_track (get_uuid ()); }, mod_var);
         }
@@ -252,7 +253,7 @@ ModulatorTrack::remove_modulator (
         }
 
       auto ret_id = *it;
-      return plugin_registry_->find_by_id_or_throw (ret_id);
+      return ret_id.get_object ();
     },
     plugin_var);
 }
@@ -262,14 +263,19 @@ ModulatorTrack::init_after_cloning (
   const ModulatorTrack &other,
   ObjectCloneType       clone_type)
 {
-  plugin_registry_ = other.plugin_registry_;
-
   ProcessableTrack::copy_members_from (other, clone_type);
   AutomatableTrack::copy_members_from (other, clone_type);
   Track::copy_members_from (other, clone_type);
   if (clone_type == ObjectCloneType::NewIdentity)
     {
-      clone_from_registry (modulators_, other.modulators_, *plugin_registry_);
+      const auto clone_from_registry = [] (auto &vec, const auto &other_vec) {
+        for (const auto &other_el : other_vec)
+          {
+            vec.push_back (other_el.clone_new_identity ());
+          }
+      };
+
+      clone_from_registry (modulators_, other.modulators_);
     }
   else if (clone_type == ObjectCloneType::Snapshot)
     {
@@ -282,15 +288,15 @@ ModulatorTrack::init_after_cloning (
 std::optional<ModulatorTrack::PluginPtrVariant>
 ModulatorTrack::get_modulator (dsp::PluginSlot::SlotNo slot) const
 {
-  auto modulator_var =
-    plugin_registry_->find_by_id_or_throw (modulators_[slot]);
+  auto modulator_var = modulators_[slot].get_object ();
   return modulator_var;
 }
 
 dsp::PluginSlot
 ModulatorTrack::get_plugin_slot (const PluginUuid &plugin_id) const
 {
-  const auto it = std::ranges::find (modulators_, plugin_id);
+  const auto it =
+    std::ranges::find (modulators_, plugin_id, &PluginUuidReference::id);
   if (it == modulators_.end ())
     throw std::runtime_error ("Plugin not found");
   return dsp::PluginSlot (
@@ -311,8 +317,7 @@ ModulatorTrack::append_ports (std::vector<Port *> &ports, bool include_plugins)
 
   for (const auto &modulator_id : modulators_)
     {
-      auto modulator_var =
-        plugin_registry_->find_by_id_or_throw (modulator_id);
+      auto modulator_var = modulator_id.get_object ();
       std::visit (
         [&] (auto &&modulator) { modulator->append_ports (ports); },
         modulator_var);

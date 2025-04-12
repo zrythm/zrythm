@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/project.h"
@@ -113,7 +113,7 @@ LanedTrackImpl<TrackLaneT>::validate_base () const
   for (const auto &lane_var : lanes_)
     {
       auto lane = std::get<TrackLaneT *> (lane_var);
-      for (const auto &region_var : lane->region_list_->regions_)
+      for (const auto &region_var : lane->region_list_->get_region_vars())
         {
           std::get<typename TrackLaneT::RegionT *> (region_var)
             ->validate (is_in_active_project (), 0);
@@ -193,7 +193,7 @@ LanedTrackImpl<TrackLaneT>::get_regions_in_range (
     {
       std::visit (
         [&] (auto &&l) {
-          for (auto &region_var : l->region_list_->regions_)
+          for (const auto &region_var : l->region_list_->get_region_vars ())
             {
               add_region_if_in_range (
                 p1, p2, regions, std::get<RegionT *> (region_var));

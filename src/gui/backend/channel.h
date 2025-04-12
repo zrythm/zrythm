@@ -62,6 +62,7 @@ public:
   using TrackUuid = utils::UuidIdentifiableObject<Track>::Uuid;
   using Plugin = gui::old_dsp::plugins::Plugin;
   using PluginPtrVariant = gui::old_dsp::plugins::PluginPtrVariant;
+  using PluginUuid = Plugin::Uuid;
 
   // FIXME: leftover from C port, fix/refactor how import works in channel.cpp
   friend struct PluginImportData;
@@ -147,15 +148,12 @@ public:
 
   MidiPort &get_midi_out_port () const
   {
-    return *std::get<MidiPort *> (
-      get_port_registry ().find_by_id_or_throw (midi_out_id_.value ()));
+    return *std::get<MidiPort *> (midi_out_id_->get_object ());
   }
   std::pair<AudioPort &, AudioPort &> get_stereo_out_ports () const
   {
-    auto * l = std::get<AudioPort *> (
-      get_port_registry ().find_by_id_or_throw (stereo_out_left_id_.value ()));
-    auto * r = std::get<AudioPort *> (
-      get_port_registry ().find_by_id_or_throw (stereo_out_right_id_.value ()));
+    auto * l = std::get<AudioPort *> (stereo_out_left_id_->get_object ());
+    auto * r = std::get<AudioPort *> (stereo_out_right_id_->get_object ());
     return { *l, *r };
   }
 
@@ -215,13 +213,13 @@ public:
    * @throw ZrythmException on error.
    */
   PluginPtrVariant add_plugin (
-    PluginUuid      plugin_id,
-    dsp::PluginSlot slot,
-    bool            confirm,
-    bool            moving_plugin,
-    bool            gen_automatables,
-    bool            recalc_graph,
-    bool            pub_events);
+    PluginUuidReference plugin_id,
+    dsp::PluginSlot     slot,
+    bool                confirm,
+    bool                moving_plugin,
+    bool                gen_automatables,
+    bool                recalc_graph,
+    bool                pub_events);
 
   ChannelTrack &get_track () const { return *track_; }
 
@@ -296,7 +294,7 @@ public:
 
   std::optional<PluginPtrVariant> get_instrument () const
   {
-    return get_plugin_from_id (instrument_.value ());
+    return instrument_ ? std::make_optional (instrument_->get_object ()) : std::nullopt;
   }
 
   /**
@@ -466,18 +464,22 @@ private:
   // void disconnect_port_hardware_inputs (StereoPorts &ports);
 
 public:
+  TrackRegistry  &track_registry_;
+  PortRegistry   &port_registry_;
+  PluginRegistry &plugin_registry_;
+
   /**
    * The MIDI effect strip on instrument/MIDI tracks.
    *
    * This is processed before the instrument/inserts.
    */
-  std::array<std::optional<dsp::PortIdentifier::PluginUuid>, STRIP_SIZE> midi_fx_;
+  std::array<std::optional<PluginUuidReference>, STRIP_SIZE> midi_fx_;
 
   /** The channel insert strip. */
-  std::array<std::optional<dsp::PortIdentifier::PluginUuid>, STRIP_SIZE> inserts_;
+  std::array<std::optional<PluginUuidReference>, STRIP_SIZE> inserts_;
 
   /** The instrument plugin, if instrument track. */
-  std::optional<dsp::PortIdentifier::PluginUuid> instrument_;
+  std::optional<PluginUuidReference> instrument_;
 
   /**
    * The sends strip.
@@ -555,14 +557,14 @@ public:
    * MIDI output for sending MIDI signals to other destinations, such as
    * other channels when directly routed (eg MIDI track to ins track).
    */
-  std::optional<PortUuid> midi_out_id_;
+  std::optional<PortUuidReference> midi_out_id_;
 
   /*
    * Ports for direct (track-to-track) routing with the exception of
    * master, which will route the output to monitor in.
    */
-  std::optional<PortUuid> stereo_out_left_id_;
-  std::optional<PortUuid> stereo_out_right_id_;
+  std::optional<PortUuidReference> stereo_out_left_id_;
+  std::optional<PortUuidReference> stereo_out_right_id_;
 
   /**
    * Whether or not output_pos corresponds to a Track or not.
@@ -582,10 +584,6 @@ public:
 
   /** Owner track. */
   ChannelTrack * track_;
-
-  TrackRegistry  &track_registry_;
-  PortRegistry   &port_registry_;
-  PluginRegistry &plugin_registry_;
 };
 
 }; // namespace zrythm::gui

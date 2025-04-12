@@ -444,6 +444,7 @@ using PortRefVariant = to_reference_variant<PortVariant>;
 
 using PortRegistry = utils::OwningObjectRegistry<PortPtrVariant, Port>;
 using PortRegistryRef = std::reference_wrapper<PortRegistry>;
+using PortUuidReference = utils::UuidReference<PortRegistry>;
 
 /**
  * @}

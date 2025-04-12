@@ -120,7 +120,7 @@ public:
       fmt::format ("{}_{}", symbol, left ? "l" : "r"));
   }
 
-  static std::pair<AudioPort *, AudioPort *> create_stereo_ports (
+  static std::pair<PortUuidReference, PortUuidReference> create_stereo_ports (
     PortRegistry &port_registry,
     bool          input,
     std::string   name,

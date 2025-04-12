@@ -47,7 +47,7 @@ void
 AutomationTrack::init_loaded ()
 {
   /* init regions */
-  for (auto &region : region_list_->regions_)
+  for (auto region : region_list_->get_region_vars ())
     {
       std::get<AutomationRegion *> (region)->init_loaded ();
     }
@@ -140,7 +140,7 @@ AutomationTrack::validate () const
     }
 
   // int j = -1;
-  for (auto region_var : region_list_->regions_)
+  for (auto region_var : region_list_->get_region_vars ())
     {
       auto * region = std::get<AutomationRegion *> (region_var);
       // ++j;
@@ -188,9 +188,8 @@ AutomationTrack::get_region_before_pos (
   auto process_regions = [=] (const auto &regions) {
     if (ends_after)
       {
-        for (auto it = regions.rbegin (); it != regions.rend (); ++it)
+        for (const auto &region_var : std::views::reverse (regions))
           {
-            const auto        &region_var = *it;
             AutomationRegion * region = nullptr;
             if constexpr (
               std::is_same_v<base_type<decltype (region_var)>, AutomationRegion>)
@@ -210,9 +209,8 @@ AutomationTrack::get_region_before_pos (
         AutomationRegion * latest_r = nullptr;
         signed_frame_t     latest_distance =
           std::numeric_limits<signed_frame_t>::min ();
-        for (auto it = regions.rbegin (); it != regions.rend (); ++it)
+        for (const auto &region_var : std::views::reverse (regions))
           {
-            const auto        &region_var = *it;
             AutomationRegion * region = nullptr;
             if constexpr (
               std::is_same_v<base_type<decltype (region_var)>, AutomationRegion>)
@@ -238,7 +236,7 @@ AutomationTrack::get_region_before_pos (
 
   return use_snapshots
            ? process_regions (region_snapshots_)
-           : process_regions (region_list_->regions_);
+           : process_regions (region_list_->get_region_vars ());
 }
 
 AutomationPoint *
@@ -417,7 +415,7 @@ AutomationTrack::set_index (int index)
 {
   index_ = index;
 
-  for (auto &region_var : region_list_->regions_)
+  for (const auto &region_var : region_list_->get_region_vars ())
     {
       auto * region = std::get<AutomationRegion *> (region_var);
       // region->id_.at_idx_ = index;
@@ -510,7 +508,7 @@ AutomationTrack::get_val_at_pos (
 bool
 AutomationTrack::verify () const
 {
-  for (const auto region_var : region_list_->regions_)
+  for (const auto &region_var : region_list_->get_region_vars ())
     {
       for (
         const auto &ap :

@@ -21,6 +21,7 @@ ChordTrack::ChordTrack (
         Track::Type::Chord,
         PortType::Event,
         PortType::Event,
+        plugin_registry,
         port_registry,
         obj_registry),
       AutomatableTrack (port_registry, new_identity),
@@ -125,9 +126,9 @@ ChordTrack::clear_objects ()
   clear_regions ();
   if (is_in_active_project ())
     {
-      for (auto * scale : std::ranges::reverse_view (get_scales_view ()))
+      for (auto scale_id : std::ranges::reverse_view (scales_))
         {
-          remove_scale (*scale);
+          remove_scale (scale_id.id ());
         }
     }
   else
@@ -183,23 +184,22 @@ ChordTrack::init_loaded (
 ScaleObject *
 ChordTrack::get_scale_at (size_t index) const
 {
-  return std::get<ScaleObject *> (
-    ArrangerObjectRegistrySpan{ object_registry_, scales_ }.at (index));
+  return std::get<ScaleObject *> (scales_.at (index).get_object ());
 }
 
 void
-ChordTrack::insert_scale (ScaleObject &scale, int idx)
+ChordTrack::insert_scale (ArrangerObjectUuidReference scale_ref, int idx)
 {
   z_return_if_fail (idx >= 0);
   z_return_if_fail (!get_uuid ().is_null ());
   beginInsertRows ({}, idx, idx);
-  scale.set_track_id (get_uuid ());
-  scales_.insert (scales_.begin () + idx, scale.get_uuid ());
+  auto * scale = std::get<ScaleObject *> (scale_ref.get_object ());
+  scale->set_track_id (get_uuid ());
+  scales_.insert (scales_.begin () + idx, scale_ref);
   for (const auto &[index, s] : std::views::enumerate (get_scales_view ()))
     {
       s->set_index_in_chord_track (index);
     }
-  scale.setParent (this);
   endInsertRows ();
 
   // EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, ret.get ());
@@ -239,16 +239,19 @@ ChordTrack::get_chord_at_pos (const Position pos) const
 }
 
 void
-ChordTrack::remove_scale (ScaleObject &scale)
+ChordTrack::remove_scale (const ArrangerObject::Uuid &scale_id)
 {
-  // Deselect the scale
-  scale.setSelected (false);
-
   // Find and remove the scale from the vector
-  auto it = std::ranges::find (scales_, scale.get_uuid ());
+  auto it =
+    std::ranges::find (scales_, scale_id, &ArrangerObjectUuidReference::id);
   z_return_if_fail (it != scales_.end ());
 
-  scale.index_in_chord_track_ = -1;
+  // Deselect the scale
+  auto   scale_ref = *it;
+  auto * scale = std::get<ScaleObject *> (scale_ref.get_object ());
+  scale->setSelected (false);
+
+  scale->index_in_chord_track_ = -1;
   int pos = std::distance (scales_.begin (), it);
   beginRemoveRows ({}, pos, pos);
   scales_.erase (it);

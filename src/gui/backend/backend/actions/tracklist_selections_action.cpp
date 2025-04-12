@@ -302,11 +302,14 @@ TracklistSelectionsAction::TracklistSelectionsAction (
             {
               if (is_copy_action)
                 {
+// TODO
+#if 0
                   tls_before_ = tls_before.create_new_identities (
                     PROJECT->get_track_registry (),
                     PROJECT->get_plugin_registry (),
                     PROJECT->get_port_registry (),
                     PROJECT->get_arranger_object_registry ());
+#endif
                 }
               else
                 {
@@ -345,11 +348,14 @@ TracklistSelectionsAction::TracklistSelectionsAction (
             {
               if (is_copy_action)
                 {
+// TODO
+#if 0
                   tls_after_ = tls_after.create_new_identities (
                     PROJECT->get_track_registry (),
                     PROJECT->get_plugin_registry (),
                     PROJECT->get_port_registry (),
                     PROJECT->get_arranger_object_registry ());
+#endif
                 }
               else
                 {
@@ -414,7 +420,8 @@ TracklistSelectionsAction::TracklistSelectionsAction (
                       Track * target_track = send->get_target_track ();
                       z_return_if_fail (target_track);
 
-                      if (target_track->pos_ == clone_track->pos_)
+                      if (
+                        target_track->get_index () == clone_track->get_index ())
                         {
                           src_sends_.emplace_back (send->clone_unique (
                             ObjectCloneType::Snapshot,
@@ -433,8 +440,8 @@ TracklistSelectionsAction::TracklistSelectionsAction (
       num_tracks_ = 1;
       std::visit (
         [&] (auto &&track) {
-          track_positions_before_.push_back (track->pos_);
-          track_positions_after_.push_back (track->pos_);
+          track_positions_before_.push_back (track->get_index ());
+          track_positions_after_.push_back (track->get_index ());
         },
         track_var.value ());
     }
@@ -478,7 +485,9 @@ TracklistSelectionsAction::create_track (int idx)
           auto track = unique_track.release ();
           PROJECT->get_track_registry ().register_object (track);
           TRACKLIST->insert_track (
-            track->get_uuid (), pos, *AUDIO_ENGINE, false, false);
+            TrackUuidReference{
+              track->get_uuid (), PROJECT->get_track_registry () },
+            pos, *AUDIO_ENGINE, false, false);
         },
         unique_track_var);
     }
@@ -522,41 +531,42 @@ TracklistSelectionsAction::create_track (int idx)
           auto * added_track = unique_track.release ();
           using TrackT = base_type<decltype (added_track)>;
           PROJECT->get_track_registry ().register_object (added_track);
+          TrackUuidReference added_track_ref{
+            added_track->get_uuid (), PROJECT->get_track_registry ()
+          };
           added_track->setName (QString::fromStdString (name));
-          added_track->pos_ = pos;
+          added_track->set_index (pos);
 
-          old_dsp::plugins::PluginPtrVariant added_pl;
+          std::optional<PluginUuidReference> added_plugin_if_has_plugin;
           if (has_plugin)
             {
-              auto pl =
-                PROJECT->get_plugin_registry ()
-                  .create_object<old_dsp::plugins::CarlaNativePlugin> (
-                    PROJECT->get_port_registry (), *pl_setting_,
-                    added_track->get_uuid ());
-              added_pl = pl;
-              pl->instantiate ();
-              pl->activate ();
+              added_plugin_if_has_plugin =
+                PROJECT->getPluginFactory ()->create_plugin_from_setting (
+                  *pl_setting_);
+              auto * pl_ptr = std::get<old_dsp::plugins::CarlaNativePlugin *> (
+                added_plugin_if_has_plugin->get_object ());
+              pl_ptr->instantiate ();
+              pl_ptr->activate ();
             }
 
           TRACKLIST->insert_track (
-            added_track->get_uuid (), pos, *AUDIO_ENGINE, false, false);
+            added_track_ref, pos, *AUDIO_ENGINE, false, false);
 
           if constexpr (std::derived_from<TrackT, ChannelTrack>)
             {
               if (has_plugin)
                 {
-                  std::visit (
-                    [&] (auto &&plugin) {
-                      added_track->channel_->add_plugin (
-                        plugin->get_uuid (),
-                        std::is_same_v<TrackT, InstrumentTrack>
-                          ? dsp::PluginSlot (dsp::PluginSlotType::Instrument)
-                          : dsp::PluginSlot (
-                              dsp::PluginSlotType::Insert,
-                              plugin->get_slot ()->get_slot_with_index ().second),
-                        true, false, true, false, false);
-                    },
-                    added_pl);
+                  added_track->channel_->add_plugin (
+                    *added_plugin_if_has_plugin,
+                    std::is_same_v<TrackT, InstrumentTrack>
+                      ? dsp::PluginSlot (dsp::PluginSlotType::Instrument)
+                      : dsp::PluginSlot (
+                          dsp::PluginSlotType::Insert,
+                          PluginSpan::slot_projection (
+                            added_plugin_if_has_plugin->get_object ())
+                            .get_slot_with_index ()
+                            .second),
+                    true, false, true, false, false);
                 }
             }
 
@@ -606,7 +616,7 @@ TracklistSelectionsAction::create_track (int idx)
                   /* EVENTS_PUSH (EventType::ET_PLUGIN_VISIBILITY_CHANGED,
                    * added_pl); */
                 },
-                added_pl);
+                added_plugin_if_has_plugin->get_object ());
             }
         },
         track);
@@ -654,12 +664,13 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                   using TrackT = base_type<decltype (own_track)>;
 
                   /* clone our own track */
-                  auto track = own_track->clone_and_register (
-                    PROJECT->get_track_registry (),
-                    PROJECT->get_track_registry (),
+                  auto track_ref = PROJECT->get_track_registry ().clone_object (
+                    *own_track, PROJECT->get_track_registry (),
                     PROJECT->get_plugin_registry (),
                     PROJECT->get_port_registry (),
                     PROJECT->get_arranger_object_registry (), true);
+                  // TODO...
+                  auto track = std::get<TrackT *> (track_ref.get_object ());
 
                   if constexpr (std::derived_from<TrackT, ChannelTrack>)
                     {
@@ -675,8 +686,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
 
                   /* insert it to the tracklist at its original pos */
                   TRACKLIST->insert_track (
-                    track->get_uuid (), track->pos_, *AUDIO_ENGINE, false,
-                    false);
+                    track_ref, track->get_index (), *AUDIO_ENGINE, false, false);
 
                   /* if group track, readd all children */
                   if constexpr (std::derived_from<TrackT, GroupTargetTrack>)
@@ -715,7 +725,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
 
                   /* get the project track */
                   auto prj_track = std::get<TrackT *> (
-                    TRACKLIST->get_track_at_index (own_track->pos_));
+                    TRACKLIST->get_track_at_index (own_track->get_index ()));
                   if constexpr (std::derived_from<TrackT, ChannelTrack>)
                     {
                       /* reconnect output */
@@ -839,7 +849,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                   using TrackT = base_type<decltype (own_track)>;
                   /* get track from pos */
                   auto prj_track = std::get<TrackT *> (
-                    TRACKLIST->get_track_at_index (own_track->pos_));
+                    TRACKLIST->get_track_at_index (own_track->get_index ()));
                   /* remember any custom connections */
                   std::vector<Port *> prj_ports;
                   prj_track->append_ports (prj_ports, true);
@@ -959,7 +969,7 @@ TracklistSelectionsAction::
                   if (prev_track)
                     {
                       /* move to last track's index + 1 */
-                      target_pos = prev_track->pos_ + 1;
+                      target_pos = prev_track->get_index () + 1;
                     }
                   /* else if first track to be moved */
                   else
@@ -973,7 +983,7 @@ TracklistSelectionsAction::
                     }
 
                   /* save index */
-                  own_track->pos_ = prj_track->pos_;
+                  own_track->set_index (prj_track->get_index ());
 
                   std::vector<FoldableTrack *> parents;
                   prj_track->add_folder_parents (parents, false);
@@ -987,12 +997,14 @@ TracklistSelectionsAction::
                     {
                       /* if new pos is outside parent */
                       if (
-                        prj_track->pos_ < parent->pos_
-                        || prj_track->pos_ >= parent->pos_ + parent->size_)
+                        prj_track->get_index () < parent->get_index ()
+                        || prj_track->get_index ()
+                             >= parent->get_index () + parent->size_)
                         {
                           z_debug (
                             "new pos of {} ({}) is outside parent {}: parent--",
-                            prj_track->name_, prj_track->pos_, parent->name_);
+                            prj_track->get_name (), prj_track->get_index (),
+                            parent->get_name ());
                           --parent->size_;
                         }
 
@@ -1002,7 +1014,7 @@ TracklistSelectionsAction::
                         {
                           z_debug (
                             "foldable track {} is child of parent {}: parent--",
-                            foldable_tr->name_, parent->name_);
+                            foldable_tr->get_name (), parent->get_name ());
                           parent->size_--;
                         }
                     }
@@ -1077,13 +1089,13 @@ TracklistSelectionsAction::
                   using TrackT = base_type<decltype (own_track_ptr)>;
 
                   /* create a new clone to use in the project */
-                  auto track = own_track_ptr->clone_and_register (
-                    PROJECT->get_track_registry (),
-                    PROJECT->get_track_registry (),
+                  auto track_ref = PROJECT->get_track_registry ().clone_object (
+                    *own_track_ptr, PROJECT->get_track_registry (),
                     PROJECT->get_plugin_registry (),
                     PROJECT->get_port_registry (),
                     PROJECT->get_arranger_object_registry (), true);
-                  z_return_if_fail (track);
+                  // FIXME
+                  auto * track = std::get<TrackT *> (track_ref.get_object ());
 
                   if constexpr (std::derived_from<TrackT, ChannelTrack>)
                     {
@@ -1110,7 +1122,7 @@ TracklistSelectionsAction::
 
                   /* add to tracklist at given pos */
                   TRACKLIST->insert_track (
-                    track->get_uuid (), target_pos, *AUDIO_ENGINE, false, false);
+                    track_ref, target_pos, *AUDIO_ENGINE, false, false);
 
                   /* select it */
                   track->setSelected (true);
@@ -1146,21 +1158,21 @@ TracklistSelectionsAction::
                           track_send->copy_values_from (*own_send);
                           if (
                             !own_conns.empty ()
-                            && track->out_signal_type_ == PortType::Audio)
+                            && track->get_output_signal_type () == PortType::Audio)
                             {
                               PORT_CONNECTIONS_MGR->ensure_connect (
-                                track_send->stereo_out_left_id_.value (),
+                                track_send->stereo_out_left_id_->id (),
                                 own_conns.at (0)->dest_id_, 1.f, true, true);
                               PORT_CONNECTIONS_MGR->ensure_connect (
-                                track_send->stereo_out_right_id_.value (),
+                                track_send->stereo_out_right_id_->id (),
                                 own_conns.at (1)->dest_id_, 1.f, true, true);
                             }
                           else if (
                             !own_conns.empty ()
-                            && track->out_signal_type_ == PortType::Event)
+                            && track->get_output_signal_type () == PortType::Event)
                             {
                               PORT_CONNECTIONS_MGR->ensure_connect (
-                                track_send->midi_out_id_.value (),
+                                track_send->midi_out_id_->id (),
                                 own_conns.front ()->dest_id_, 1.f, true, true);
                             }
                         }
@@ -1196,7 +1208,7 @@ TracklistSelectionsAction::
                   z_return_if_fail (_prj_track);
                   std::visit (
                     [&] (auto &&prj_track) {
-                      int target_pos = own_track->pos_;
+                      int target_pos = own_track->get_index ();
                       TRACKLIST->move_track (
                         prj_track->get_uuid (), target_pos, false, std::nullopt);
 
@@ -1233,7 +1245,7 @@ TracklistSelectionsAction::
 
               /* remove it */
               const auto prj_track_id = TRACKLIST->tracks_.at (target_pos);
-              TRACKLIST->remove_track (prj_track_id, std::nullopt, true);
+              TRACKLIST->remove_track (prj_track_id.id (), std::nullopt, true);
             }
           /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr); */
           /* EVENTS_PUSH (EventType::ET_TRACKS_REMOVED, nullptr); */
@@ -1441,7 +1453,7 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
                       {
                         auto cur_direct_out_track =
                           track->get_channel ()->get_output_track ();
-                        cur_direct_out_pos = cur_direct_out_track->pos_;
+                        cur_direct_out_pos = cur_direct_out_track->get_index ();
                       }
 
                     /* disconnect from the current track */
@@ -1463,7 +1475,7 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
                     if (target_pos != -1)
                       {
                         z_return_if_fail_cmp (
-                          target_pos, !=, track->channel_->track_->pos_);
+                          target_pos, !=, track->channel_->track_->get_index ());
                         auto _group_target_track =
                           TRACKLIST->get_track_at_index (target_pos);
                         std::visit (
@@ -1522,7 +1534,7 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
               break;
             case EditType::Color:
               {
-                auto cur_color = track->color_;
+                Color cur_color = track->getColor ();
                 track->set_color (
                   _do ? new_color_ : colors_before_[i], false, true);
 
@@ -1532,7 +1544,7 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
               break;
             case EditType::Icon:
               {
-                auto cur_icon = track->icon_name_;
+                auto cur_icon = track->get_icon_name ();
                 track->set_icon (new_txt_, false, true);
 
                 new_txt_ = cur_icon;
@@ -1540,7 +1552,7 @@ TracklistSelectionsAction::do_or_undo_edit (bool _do)
               break;
             case EditType::Comment:
               {
-                auto cur_comment = track->comment_;
+                auto cur_comment = track->getComment ().toStdString ();
                 track->set_comment (new_txt_, false);
 
                 new_txt_ = cur_comment;

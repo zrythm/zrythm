@@ -76,15 +76,14 @@ protected:
 
   ControlPort &get_recording_port () const
   {
-    return *std::get<ControlPort *> (
-      port_registry_.find_by_id_or_throw (recording_id_));
+    return *std::get<ControlPort *> (recording_id_->get_object ());
   }
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
 public:
   /** Recording or not. */
-  PortUuid recording_id_;
+  std::optional<PortUuidReference> recording_id_;
 
   /**
    * Whether record was set automatically when the channel was selected.

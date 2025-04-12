@@ -116,9 +116,6 @@ public:
     ControlRoom *     control_room,
     SampleProcessor * sample_processor);
 
-  static ControlPort *
-  create_swap_phase_port (PortRegistry &port_registry, bool passthrough);
-
   /**
    * Appends the ports owned by fader to the given array.
    */
@@ -286,38 +283,31 @@ public:
 
   ControlPort &get_amp_port () const
   {
-    return *std::get<ControlPort *> (
-      port_registry_->find_by_id_or_throw (amp_id_.value ()));
+    return *std::get<ControlPort *> (amp_id_->get_object ());
   }
   ControlPort &get_balance_port () const
   {
-    return *std::get<ControlPort *> (
-      port_registry_->find_by_id_or_throw (balance_id_.value ()));
+    return *std::get<ControlPort *> (balance_id_->get_object ());
   }
   ControlPort &get_mute_port () const
   {
-    return *std::get<ControlPort *> (
-      port_registry_->find_by_id_or_throw (mute_id_.value ()));
+    return *std::get<ControlPort *> (mute_id_->get_object ());
   }
   ControlPort &get_solo_port () const
   {
-    return *std::get<ControlPort *> (
-      port_registry_->find_by_id_or_throw (solo_id_.value ()));
+    return *std::get<ControlPort *> (solo_id_->get_object ());
   }
   ControlPort &get_listen_port () const
   {
-    return *std::get<ControlPort *> (
-      port_registry_->find_by_id_or_throw (listen_id_.value ()));
+    return *std::get<ControlPort *> (listen_id_->get_object ());
   }
   ControlPort &get_mono_compat_enabled_port () const
   {
-    return *std::get<ControlPort *> (
-      port_registry_->find_by_id_or_throw (mono_compat_enabled_id_.value ()));
+    return *std::get<ControlPort *> (mono_compat_enabled_id_->get_object ());
   }
   ControlPort &get_swap_phase_port () const
   {
-    return *std::get<ControlPort *> (
-      port_registry_->find_by_id_or_throw (swap_phase_id_.value ()));
+    return *std::get<ControlPort *> (swap_phase_id_->get_object ());
   }
   std::pair<AudioPort &, AudioPort &> get_stereo_in_ports () const
   {
@@ -325,10 +315,8 @@ public:
       {
         throw std::runtime_error ("Not an audio fader");
       }
-    auto * l = std::get<AudioPort *> (
-      port_registry_->find_by_id_or_throw (stereo_in_left_id_.value ()));
-    auto * r = std::get<AudioPort *> (
-      port_registry_->find_by_id_or_throw (stereo_in_right_id_.value ()));
+    auto * l = std::get<AudioPort *> (stereo_in_left_id_->get_object ());
+    auto * r = std::get<AudioPort *> (stereo_in_right_id_->get_object ());
     return { *l, *r };
   }
   std::pair<AudioPort &, AudioPort &> get_stereo_out_ports () const
@@ -337,21 +325,17 @@ public:
       {
         throw std::runtime_error ("Not an audio fader");
       }
-    auto * l = std::get<AudioPort *> (
-      port_registry_->find_by_id_or_throw (stereo_out_left_id_.value ()));
-    auto * r = std::get<AudioPort *> (
-      port_registry_->find_by_id_or_throw (stereo_out_right_id_.value ()));
+    auto * l = std::get<AudioPort *> (stereo_out_left_id_->get_object ());
+    auto * r = std::get<AudioPort *> (stereo_out_right_id_->get_object ());
     return { *l, *r };
   }
   MidiPort &get_midi_in_port () const
   {
-    return *std::get<MidiPort *> (
-      port_registry_->find_by_id_or_throw (midi_in_id_.value ()));
+    return *std::get<MidiPort *> (midi_in_id_->get_object ());
   }
   MidiPort &get_midi_out_port () const
   {
-    return *std::get<MidiPort *> (
-      port_registry_->find_by_id_or_throw (midi_out_id_.value ()));
+    return *std::get<MidiPort *> (midi_out_id_->get_object ());
   }
 
   auto get_stereo_in_left_id () const
@@ -360,7 +344,7 @@ public:
       {
         throw std::logic_error ("Not an audio fader");
       }
-    return stereo_in_left_id_.value ();
+    return stereo_in_left_id_.value ().id ();
   }
 
   auto get_stereo_in_right_id () const
@@ -369,7 +353,7 @@ public:
       {
         throw std::logic_error ("Not an audio fader");
       }
-    return stereo_in_right_id_.value ();
+    return stereo_in_right_id_.value ().id ();
   }
 
   auto get_stereo_out_left_id () const
@@ -378,7 +362,7 @@ public:
       {
         throw std::logic_error ("Not an audio fader");
       }
-    return stereo_out_left_id_.value ();
+    return stereo_out_left_id_.value ().id ();
   }
 
   auto get_stereo_out_right_id () const
@@ -387,7 +371,7 @@ public:
       {
         throw std::logic_error ("Not an audio fader");
       }
-    return stereo_out_right_id_.value ();
+    return stereo_out_right_id_.value ().id ();
   }
 
   auto get_midi_in_id () const
@@ -396,7 +380,7 @@ public:
       {
         throw std::logic_error ("Not a MIDI fader");
       }
-    return midi_in_id_.value ();
+    return midi_in_id_.value ().id ();
   }
 
   auto get_midi_out_id () const
@@ -405,7 +389,7 @@ public:
       {
         throw std::logic_error ("Not a MIDI fader");
       }
-    return midi_out_id_.value ();
+    return midi_out_id_.value ().id ();
   }
 
   DECLARE_DEFINE_FIELDS_METHOD ();
@@ -435,50 +419,49 @@ private:
   /**
    * A control port that controls the volume in amplitude (0.0 ~ 1.5)
    */
-  std::optional<PortUuid> amp_id_;
+  std::optional<PortUuidReference> amp_id_;
 
-  /** A control Port that controls the balance
-   * (0.0 ~ 1.0) 0.5 is center. */
-  std::optional<PortUuid> balance_id_;
+  /** A control Port that controls the balance (0.0 ~ 1.0) 0.5 is center. */
+  std::optional<PortUuidReference> balance_id_;
 
   /**
    * Control port for muting the (channel) fader.
    */
-  std::optional<PortUuid> mute_id_;
+  std::optional<PortUuidReference> mute_id_;
 
   /** Soloed or not. */
-  std::optional<PortUuid> solo_id_;
+  std::optional<PortUuidReference> solo_id_;
 
   /** Listened or not. */
-  std::optional<PortUuid> listen_id_;
+  std::optional<PortUuidReference> listen_id_;
 
   /** Whether mono compatibility switch is enabled. */
-  std::optional<PortUuid> mono_compat_enabled_id_;
+  std::optional<PortUuidReference> mono_compat_enabled_id_;
 
   /** Swap phase toggle. */
-  std::optional<PortUuid> swap_phase_id_;
+  std::optional<PortUuidReference> swap_phase_id_;
 
   /**
    * Audio input ports, if audio.
    */
-  std::optional<PortUuid> stereo_in_left_id_;
-  std::optional<PortUuid> stereo_in_right_id_;
+  std::optional<PortUuidReference> stereo_in_left_id_;
+  std::optional<PortUuidReference> stereo_in_right_id_;
 
   /**
    * Audio output ports, if audio.
    */
-  std::optional<PortUuid> stereo_out_left_id_;
-  std::optional<PortUuid> stereo_out_right_id_;
+  std::optional<PortUuidReference> stereo_out_left_id_;
+  std::optional<PortUuidReference> stereo_out_right_id_;
 
   /**
    * MIDI in port, if MIDI.
    */
-  std::optional<PortUuid> midi_in_id_;
+  std::optional<PortUuidReference> midi_in_id_;
 
   /**
    * MIDI out port, if MIDI.
    */
-  std::optional<PortUuid> midi_out_id_;
+  std::optional<PortUuidReference> midi_out_id_;
 
 public:
   /**

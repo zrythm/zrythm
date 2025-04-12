@@ -7,8 +7,7 @@
 #include "gui/dsp/automatable_track.h"
 #include "gui/dsp/channel_track.h"
 #include "gui/dsp/piano_roll_track.h"
-
-#include "utils/object_factory.h"
+#include "utils/initializable_object.h"
 
 /**
  * @addtogroup dsp

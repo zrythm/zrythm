@@ -13,6 +13,7 @@ MidiGroupTrack::MidiGroupTrack (
         Track::Type::MidiGroup,
         PortType::Event,
         PortType::Event,
+        plugin_registry,
         port_registry,
         obj_registry),
       AutomatableTrack (port_registry, new_identity),

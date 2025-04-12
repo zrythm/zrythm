@@ -182,21 +182,18 @@ RangeAction::perform_impl ()
                               start_pos_, AUDIO_ENGINE->frames_per_tick_);
 
                           /* move part2 by the range amount */
-                          part2->move (range_size_ticks);
+                          std::get<ObjT *> (part2.get_object ())
+                            ->move (range_size_ticks);
 
                           /* remove previous object */
                           obj->remove_from_project (true);
                           objects_removed_.push_back (obj->get_uuid ());
 
-                          z_debug (
-                            "object split and moved into the following objects: {}\n{}",
-                            *part1, *part2);
-
                           // TODO: add to project
                           // part1->add_to_project ();
                           // part2->add_to_project ();
-                          objects_added_.push_back (part1->get_uuid ());
-                          objects_added_.push_back (part2->get_uuid ());
+                          objects_added_.push_back (part1.id ());
+                          objects_added_.push_back (part2.id ());
                         }
                       else
                         {
@@ -249,19 +246,24 @@ RangeAction::perform_impl ()
                           if constexpr (std::derived_from<ObjT, BoundedObject>)
                             {
                               /* split at range start */
-                              auto [part1, part2] =
+                              auto [part1_ref, part2_ref] =
                                 ArrangerObjectSpan::split_bounded_object (
                                   *obj, *ArrangerObjectFactory::get_instance (),
                                   start_pos_, AUDIO_ENGINE->frames_per_tick_);
 
+                              auto part2_opt = std::make_optional (part2_ref);
+
                               /* if part 2 extends beyond the range end, split
                                * it and remove the part before range end */
-                              if (need_to_split_object_at_pos (*part2, end_pos_))
+                              if (
+                                need_to_split_object_at_pos (
+                                  *std::get<ObjT *> (part2_ref.get_object ()),
+                                  end_pos_))
                                 {
                                   // part3 will be discared
                                   auto [part3, part4] =
                                     ArrangerObjectSpan::split_bounded_object (
-                                      *part2,
+                                      *std::get<ObjT *> (part2_ref.get_object ()),
                                       *ArrangerObjectFactory::get_instance (),
                                       end_pos_, AUDIO_ENGINE->frames_per_tick_);
 // TODO...
@@ -271,7 +273,7 @@ RangeAction::perform_impl ()
                                   PROJECT->get_arranger_object_registry ()
                                     .delete_object_by_id (part2->get_uuid ());
 #endif
-                                  part2 = part4;
+                                  part2_ref = part4;
                                 }
                               /* otherwise remove the whole part2 */
                               else
@@ -281,13 +283,14 @@ RangeAction::perform_impl ()
                                   PROJECT->get_arranger_object_registry ()
                                     .delete_object_by_id (part2->get_uuid ());
 #endif
-                                  part2 = nullptr;
+                                  part2_opt.reset ();
                                 }
 
                               /* if a part2 exists, move it back */
-                              if (part2)
+                              if (part2_opt)
                                 {
-                                  part2->move (-range_size_ticks);
+                                  std::get<ObjT *> (part2_ref.get_object ())
+                                    ->move (-range_size_ticks);
                                 }
 
                               /* remove previous object */
@@ -296,12 +299,12 @@ RangeAction::perform_impl ()
 
                               // add new object(s) to project
                               // TODO: actually add to project
-                              objects_added_.push_back (part1->get_uuid ());
+                              objects_added_.push_back (part1_ref.id ());
 
-                              if (part2)
+                              if (part2_opt)
                                 {
                                   // TODO: actually add to project
-                                  objects_added_.push_back (part2->get_uuid ());
+                                  objects_added_.push_back (part2_ref.id ());
                                 }
                             }
                         }
@@ -327,8 +330,9 @@ RangeAction::perform_impl ()
                               // move part2 by the range amount and add to
                               // project
                               // TODO: actually add
-                              part2->move (-range_size_ticks);
-                              objects_added_.push_back (part2->get_uuid ());
+                              std::get<ObjT *> (part2.get_object ())
+                                ->move (-range_size_ticks);
+                              objects_added_.push_back (part2.id ());
 
                               // TODO: actually remove object
                               objects_removed_.push_back (obj->get_uuid ());

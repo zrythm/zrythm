@@ -113,8 +113,8 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
 
               /* add sends */
               if (
-                tr->out_signal_type_ == dsp::PortType::Audio
-                || tr->out_signal_type_ == dsp::PortType::Event)
+                tr->get_output_signal_type () == dsp::PortType::Audio
+                || tr->get_output_signal_type () == dsp::PortType::Event)
                 {
                   for (auto &send : channel->sends_)
                     {
@@ -366,7 +366,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
           auto * const track_node =
             graph.get_nodes ().find_node_for_processable (*tr);
           z_return_if_fail (track_node);
-          if (tr->in_signal_type_ == dsp::PortType::Audio)
+          if (tr->get_input_signal_type () == dsp::PortType::Audio)
             {
               if constexpr (std::is_same_v<TrackT, AudioTrack>)
                 {
@@ -400,7 +400,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
                     track_processor->get_stereo_out_ports ());
                 }
             }
-          else if (tr->in_signal_type_ == dsp::PortType::Event)
+          else if (tr->get_input_signal_type () == dsp::PortType::Event)
             {
               if constexpr (std::derived_from<TrackT, ProcessableTrack>)
                 {
@@ -691,7 +691,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
                   if (node2)
                     node2->connect_to (*send_node);
 
-                  if (tr->out_signal_type_ == dsp::PortType::Event)
+                  if (tr->get_output_signal_type () == dsp::PortType::Event)
                     {
                       node2 = graph.get_nodes ().find_node_for_processable (
                         send->get_midi_in_port ());
@@ -700,7 +700,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
                         send->get_midi_out_port ());
                       send_node->connect_to (*node2);
                     }
-                  else if (tr->out_signal_type_ == dsp::PortType::Audio)
+                  else if (tr->get_output_signal_type () == dsp::PortType::Audio)
                     {
                       iterate_tuple (
                         [&] (const auto &port) {

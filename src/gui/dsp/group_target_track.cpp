@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cstdlib>
@@ -31,10 +31,10 @@ GroupTargetTrack::update_child_output (
         case PortType::Audio:
           PORT_CONNECTIONS_MGR->ensure_disconnect (
             ch->get_stereo_out_ports ().first.get_uuid (),
-            *track->processor_->stereo_in_left_id_);
+            track->processor_->stereo_in_left_id_->id ());
           PORT_CONNECTIONS_MGR->ensure_disconnect (
             ch->get_stereo_out_ports ().second.get_uuid (),
-            *track->processor_->stereo_in_right_id_);
+            track->processor_->stereo_in_right_id_->id ());
           break;
         case PortType::Event:
           PORT_CONNECTIONS_MGR->ensure_disconnect (
@@ -54,10 +54,10 @@ GroupTargetTrack::update_child_output (
         case PortType::Audio:
           PORT_CONNECTIONS_MGR->ensure_connect_default (
             ch->get_stereo_out_ports ().first.get_uuid (),
-            *output->processor_->stereo_in_left_id_, true);
+            output->processor_->stereo_in_left_id_->id (), true);
           PORT_CONNECTIONS_MGR->ensure_connect_default (
             ch->get_stereo_out_ports ().second.get_uuid (),
-            *output->processor_->stereo_in_right_id_, true);
+            output->processor_->stereo_in_right_id_->id (), true);
           break;
         case PortType::Event:
           PORT_CONNECTIONS_MGR->ensure_connect_default (
@@ -231,11 +231,12 @@ GroupTargetTrack::update_children ()
           using TrackT = base_type<decltype (child)>;
           if constexpr (std::derived_from<TrackT, ChannelTrack>)
             {
-              z_return_if_fail (child->out_signal_type_ == in_signal_type_);
+              z_return_if_fail (
+                child->get_output_signal_type () == in_signal_type_);
               child->get_channel ()->output_track_uuid_ = id;
               z_debug (
                 "setting output of track {} [{}] to {} [{}]",
-                child->get_name (), child->pos_, get_name (), pos_);
+                child->get_name (), child->get_index (), get_name (), pos_);
             }
         },
         *child_var);

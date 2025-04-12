@@ -201,7 +201,7 @@ public:
    * @param at
    * @param include_region_end
    */
-  static std::optional<RegionPtrVariant> get_at_pos (
+  static std::optional<ArrangerObjectPtrVariant> get_at_pos (
     dsp::Position     pos,
     Track *           track,
     AutomationTrack * at,
@@ -348,6 +348,11 @@ public:
     return std::get<ChildT *> (
       get_arranger_object_registry ().find_by_id_or_throw (id));
   }
+  auto get_object_ptr (const ArrangerObjectUuidReference &id) const
+    requires RegionWithChildren<RegionT>
+  {
+    return std::get<ChildT *> (id.get_object ());
+  }
 
   auto &get_objects_vector (this RegionT &self)
     requires RegionWithChildren<RegionT>
@@ -396,7 +401,7 @@ public:
   {
     auto &vec_ref = self.get_objects_vector ();
     return vec_ref | std::views::transform ([&] (const auto &id) {
-             return self.get_object_ptr (id);
+             return std::get<ChildT *> (id.get_object ());
            });
   }
 
@@ -428,7 +433,7 @@ public:
     auto vec = self.get_objects_vector ();
     for (auto &obj : vec)
       {
-        self.remove_object (obj);
+        self.remove_object (obj.id());
       }
   }
 
@@ -448,7 +453,7 @@ public:
    * @return RegionOwnedObject& The inserted object.
    */
   void
-  insert_object (this RegionT &self, ArrangerObject::Uuid obj_id, int index)
+  insert_object (this RegionT &self, ArrangerObjectUuidReference obj_id, int index)
     requires RegionWithChildren<RegionT>
   {
     z_debug ("inserting {} at index {}", obj_id, index);
@@ -461,7 +466,7 @@ public:
     objects.insert (objects.begin () + index, obj_id);
     for (const auto &cur_obj_id : std::span (objects).subspan (index))
       {
-        auto cur_obj = self.get_object_ptr (cur_obj_id);
+        auto cur_obj = std::get<ChildT *> (cur_obj_id.get_object ());
         cur_obj->set_region_and_index (self);
       }
 
@@ -471,7 +476,7 @@ public:
   /**
    * @see insert_object().
    */
-  void append_object (this RegionT &self, ArrangerObject::Uuid obj_id)
+  void append_object (this RegionT &self, auto obj_id)
     requires RegionWithChildren<RegionT>
   {
     auto &objects = self.get_objects_vector ();

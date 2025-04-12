@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/channel.h"
+#include "gui/dsp/arranger_object_all.h"
 #include "gui/dsp/carla_native_plugin.h"
 
 void

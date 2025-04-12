@@ -40,12 +40,16 @@
 
 using namespace zrythm;
 
-Track::Track (Type type, PortType in_signal_type, PortType out_signal_type,
-PortRegistry& port_registry, ArrangerObjectRegistry& obj_registry)
-    : port_registry_(port_registry), object_registry_(obj_registry),
-      type_ (type),
-      in_signal_type_ (in_signal_type),
-      out_signal_type_ (out_signal_type)
+Track::Track (
+  Type                    type,
+  PortType                in_signal_type,
+  PortType                out_signal_type,
+  PluginRegistry         &plugin_registry,
+  PortRegistry           &port_registry,
+  ArrangerObjectRegistry &obj_registry)
+    : plugin_registry_ (plugin_registry), port_registry_ (port_registry),
+      object_registry_ (obj_registry), type_ (type),
+      in_signal_type_ (in_signal_type), out_signal_type_ (out_signal_type)
 {
   z_debug ("creating {} track", type);
 }
@@ -555,7 +559,8 @@ Track::append_objects (std::vector<ArrangerObjectPtrVariant> &objs) const
             {
               using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
               auto lane = std::get<TrackLaneT *> (lane_var);
-              for (auto &region_var : lane->region_list_->regions_)
+              for (
+                const auto &region_var : lane->region_list_->get_region_vars ())
                 {
                   auto * region =
                     std::get<typename TrackLaneT::RegionT *> (region_var);
@@ -566,7 +571,7 @@ Track::append_objects (std::vector<ArrangerObjectPtrVariant> &objs) const
 
       if constexpr (DerivedFromTemplatedBase<TrackT, RegionOwner>)
         {
-          for (auto &region_var : self->region_list_->regions_)
+          for (const auto &region_var : self->region_list_->get_region_vars ())
             {
               auto * region = std::get<typename TrackT::RegionTPtr> (region_var);
               objs.push_back (region);
@@ -591,7 +596,7 @@ Track::append_objects (std::vector<ArrangerObjectPtrVariant> &objs) const
         {
           for (auto *at : self->get_automation_tracklist ().get_automation_tracks())
             {
-              for (auto &region_var : at->region_list_->regions_)
+              for (const auto &region_var : at->region_list_->get_region_vars ())
                 {
                   auto * region = std::get<AutomationRegion *> (region_var);
                   objs.push_back (region);

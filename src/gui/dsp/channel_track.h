@@ -156,9 +156,7 @@ public:
   Channel * channel_ = nullptr;
 
 private:
-  TrackRegistry  &track_registry_;
-  PortRegistry   &port_registry_;
-  PluginRegistry &plugin_registry_;
+  TrackRegistry &track_registry_;
 };
 
 using ChannelTrackVariant = std::variant<

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2020, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_CHORD_TRACK_H__
@@ -93,34 +93,32 @@ public:
    *
    * This takes ownership of the scale object.
    */
-  void insert_scale (ScaleObject &scale, int index);
+  void insert_scale (ArrangerObjectUuidReference scale_ref, int index);
 
   /**
    * Adds a scale to the track.
    */
-  void add_scale (ScaleObject &scale)
+  void add_scale (auto scale_ref)
   {
-    return insert_scale (scale, scales_.size ());
+    return insert_scale (scale_ref, scales_.size ());
   }
 
   /**
    * Removes a scale from the chord Track.
    */
-  void remove_scale (ScaleObject &scale);
+  void remove_scale (const ArrangerObject::Uuid &scale_id);
 
   auto get_scales_view ()
   {
     return scales_ | std::views::transform ([&] (const auto &id) {
-             return std::get<ScaleObject *> (
-               object_registry_.find_by_id_or_throw (id));
+             return std::get<ScaleObject *> (id.get_object ());
            });
   }
 
   auto get_scales_view () const
   {
     return scales_ | std::views::transform ([&] (const auto &id) {
-             return std::get<ScaleObject *> (
-               object_registry_.find_by_id_or_throw (id));
+             return std::get<ScaleObject *> (id.get_object ());
            });
   }
 
@@ -175,7 +173,7 @@ public:
   /**
    * @note These must always be sorted by Position.
    */
-  std::vector<ScaleObject::Uuid> scales_;
+  std::vector<ArrangerObjectUuidReference> scales_;
 
   /** Snapshots used during playback TODO unimplemented. */
   std::vector<std::unique_ptr<ScaleObject>> scale_snapshots_;

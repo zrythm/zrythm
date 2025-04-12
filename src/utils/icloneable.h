@@ -1,11 +1,5 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-/**
- * @file
- *
- * ICloneable interface.
- */
 
 #ifndef __UTILS_ICLONEABLE_H__
 #define __UTILS_ICLONEABLE_H__
@@ -15,7 +9,7 @@
 #include <variant>
 #include <vector>
 
-#include "utils/object_factory.h"
+#include "utils/initializable_object.h"
 #include "utils/traits.h"
 #include "utils/types.h"
 
@@ -138,16 +132,6 @@ public:
         cloned->setParent (parent);
       }
     return cloned;
-  }
-
-  template <typename Registry, typename... Args>
-  auto
-  clone_and_register (this auto &&self, Registry &registry, Args &&... args)
-  {
-    auto new_obj = self.clone_raw_ptr (
-      ObjectCloneType::NewIdentity, std::forward<Args> (args)...);
-    registry.register_object (new_obj);
-    return new_obj;
   }
 
 protected:
@@ -463,101 +447,5 @@ clone_variant_container (
         }
     }
 }
-
-/**
- * Clones a single object and registers it in the registry
- *
- * @tparam Registry Registry type (must be OwningObjectRegistry)
- * @param uuid UUID of object to clone
- * @param registry Registry to look up and register objects
- * @returns UUID of the newly cloned and registered object
- */
-template <typename Registry>
-auto
-clone_and_register_object (
-  const typename Registry::UuidType &uuid,
-  Registry                          &registry) -> typename Registry::UuidType
-{
-  auto obj_var = registry.find_by_id_or_throw (uuid);
-  return std::visit (
-    [&] (auto &&obj) {
-      auto new_obj = obj->clone_raw_ptr ();
-      registry.register_object (*new_obj);
-      return new_obj->get_uuid ();
-    },
-    obj_var);
-}
-
-/**
- * Clones objects from a container of UUIDs using a registry.
- *
- * @tparam Container Container type holding UUIDs (std::vector or std::array)
- * @tparam Registry Registry type (must be OwningObjectRegistry)
- * @tparam DestContainer Destination container type for UUIDs
- */
-template <typename Container, typename Registry, typename DestContainer>
-void
-clone_from_registry (
-  DestContainer   &dest_uuids,
-  const Container &src_uuids,
-  Registry        &registry)
-{
-  if constexpr (StdArray<Container>)
-    {
-      // For std::array, we need to process each element in place
-      for (size_t i = 0; i < src_uuids.size (); i++)
-        {
-          if constexpr (OptionalType<typename Container::value_type>)
-            {
-              // Handle std::optional UUIDs
-              if (src_uuids[i].has_value ())
-                {
-                  dest_uuids[i] =
-                    clone_and_register_object (src_uuids[i].value (), registry);
-                }
-              else
-                {
-                  dest_uuids[i] = std::nullopt;
-                }
-            }
-          else
-            {
-              // Handle regular UUIDs
-              dest_uuids[i] = clone_and_register_object (src_uuids[i], registry);
-            }
-        }
-    }
-  else
-    {
-      // For dynamic containers like std::vector
-      dest_uuids.clear ();
-      dest_uuids.reserve (src_uuids.size ());
-
-      for (const auto &uuid_entry : src_uuids)
-        {
-          if constexpr (OptionalType<typename Container::value_type>)
-            {
-              if (uuid_entry.has_value ())
-                {
-                  dest_uuids.emplace_back (
-                    clone_and_register_object (uuid_entry.value (), registry));
-                }
-              else
-                {
-                  dest_uuids.emplace_back (std::nullopt);
-                }
-            }
-          else
-            {
-              dest_uuids.emplace_back (
-                clone_and_register_object (uuid_entry, registry));
-            }
-        }
-    }
-}
-
-/**
- * @}
- */
 
 #endif

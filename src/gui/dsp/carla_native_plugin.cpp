@@ -833,10 +833,9 @@ CarlaNativePlugin::get_descriptor_from_cached (
 #endif // HAVE_CARLA
 
 CarlaNativePlugin::CarlaNativePlugin (
-  PortRegistry                  &port_registry,
-  const PluginSetting           &setting,
-  dsp::PortIdentifier::TrackUuid track_id)
-    : Plugin (port_registry, setting, track_id)
+  PortRegistry        &port_registry,
+  const PluginSetting &setting)
+    : Plugin (port_registry, setting)
 {
   z_return_if_fail (setting.open_with_carla_);
 }

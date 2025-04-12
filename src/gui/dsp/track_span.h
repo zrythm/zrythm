@@ -28,7 +28,7 @@ public:
   static auto position_projection (const VariantType &track_var)
   {
     return std::visit (
-      [] (const auto &track) { return track->pos_; }, track_var);
+      [] (const auto &track) { return track->get_index (); }, track_var);
   }
   static auto visible_projection (const VariantType &track_var)
   {
@@ -165,7 +165,7 @@ public:
 
             z_info (
               "[{:03}] {}{} (pos {}, parents {}, size {})", index, parent_str,
-              track.get_name (), track.pos_, parents.size (), fold_size);
+              track.get_name (), track.get_index (), parents.size (), fold_size);
           },
           track_var);
       }
@@ -200,7 +200,7 @@ public:
   {
     std::ranges::for_each (*this, [&] (auto &&track_var) {
       std::visit (
-        [&] (auto &&tr) { tr->setVisible (!tr->visible_); }, track_var);
+        [&] (auto &&tr) { tr->setVisible (!tr->getVisible ()); }, track_var);
     });
   }
 
@@ -257,7 +257,7 @@ public:
             {
               for (int i = 1; i < track_ref->size_; ++i)
                 {
-                  const size_t child_pos = track_ref->pos_ + i;
+                  const size_t child_pos = track_ref->get_index () + i;
                   const auto  &child_track_var =
                     tracklist_tracks.range_[child_pos];
                   std::visit (
@@ -482,7 +482,7 @@ public:
       }));
   }
 
-  std::vector<VariantType> create_new_identities (
+  std::vector<TrackUuidReference> create_new_identities (
     TrackRegistry          &track_registry,
     PluginRegistry         &plugin_registry,
     PortRegistry           &port_registry,
@@ -491,9 +491,9 @@ public:
     return std::ranges::to<std::vector> (
       *this | std::views::transform ([&] (const auto &track_var) {
         return std::visit (
-          [&] (auto &&track) -> VariantType {
-            return track->clone_and_register (
-              track_registry, track_registry, plugin_registry, port_registry,
+          [&] (auto &&track) -> TrackUuidReference {
+            return track_registry.clone_object (
+              *track, track_registry, plugin_registry, port_registry,
               obj_registry, true);
           },
           track_var);
@@ -516,14 +516,20 @@ private:
 using TrackSpan = TrackSpanImpl<std::span<const TrackPtrVariant>>;
 using TrackRegistrySpan =
   TrackSpanImpl<utils::UuidIdentifiableObjectSpan<TrackRegistry>>;
+using TrackUuidReferenceSpan = TrackSpanImpl<
+  utils::UuidIdentifiableObjectSpan<TrackRegistry, TrackUuidReference>>;
 extern template class TrackSpanImpl<std::span<const TrackSpan::VariantType>>;
 extern template class TrackSpanImpl<
   utils::UuidIdentifiableObjectSpan<TrackRegistry>>;
+extern template class TrackSpanImpl<
+  utils::UuidIdentifiableObjectSpan<TrackRegistry, TrackUuidReference>>;
 
 static_assert (std::ranges::random_access_range<TrackSpan>);
 static_assert (std::ranges::random_access_range<TrackRegistrySpan>);
+static_assert (std::ranges::random_access_range<TrackUuidReferenceSpan>);
 
-using TrackSpanVariant = std::variant<TrackSpan, TrackRegistrySpan>;
+using TrackSpanVariant =
+  std::variant<TrackSpan, TrackRegistrySpan, TrackUuidReferenceSpan>;
 
 namespace TrackCollections
 {

@@ -24,8 +24,7 @@ ChannelTrack::ChannelTrack (
   PortRegistry   &port_registry,
   bool            new_identity)
     : ProcessableTrack (port_registry, new_identity),
-      track_registry_ (track_registry), port_registry_ (port_registry),
-      plugin_registry_ (plugin_registry)
+      track_registry_ (track_registry)
 {
   if (new_identity)
     {

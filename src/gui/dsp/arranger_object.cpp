@@ -136,6 +136,11 @@ ArrangerObject::remove_from_project (bool free_obj, bool fire_events)
   /*event_manager_remove_events_for_obj (*/
   /*EVENT_MANAGER, obj);*/
 
+  // FIXME: this method should be deleted/moved elsewhere
+  // arranger objects shouldn't know so much about their parents
+  return std::nullopt;
+
+#if 0
   return std::visit (
     [&] (auto &&obj) -> std::optional<ArrangerObjectPtrVariant> {
       using ObjT = base_type<decltype (obj)>;
@@ -155,11 +160,11 @@ ArrangerObject::remove_from_project (bool free_obj, bool fire_events)
         {
           auto * owner = obj->get_region_owner ();
           z_return_val_if_fail (owner, std::nullopt);
-          owner->remove_region (*obj, free_obj, fire_events);
+          owner->remove_region (*obj);
         }
       else if constexpr (std::is_same_v<ObjT, ScaleObject>)
         {
-          P_CHORD_TRACK->remove_scale (*obj);
+          P_CHORD_TRACK->remove_scale (obj->get_uuid ());
         }
       else if constexpr (std::is_same_v<ObjT, Marker>)
         {
@@ -173,6 +178,7 @@ ArrangerObject::remove_from_project (bool free_obj, bool fire_events)
       return obj;
     },
     convert_to_variant<ArrangerObjectPtrVariant> (this));
+#endif
 }
 
 ArrangerObject::Position *

@@ -82,14 +82,14 @@ Project::Project (QObject * parent)
         },
         [&] () { return audio_engine_->sample_rate_; },
         [&] () { return tracklist_->getTempoTrack ()->get_current_bpm (); },
+        this)),
+      plugin_factory_ (new PluginFactory (
+        *plugin_registry_,
+        *port_registry_,
+        *gui::SettingsManager::get_instance (),
         this))
 {
   // audio_engine_ = std::make_unique<AudioEngine> (this);
-}
-
-Project::Project (const std::string &title, QObject * parent) : Project (parent)
-{
-  title_ = title;
 }
 
 Project::~Project ()
@@ -117,10 +117,10 @@ Project::print_port_connection (const PortConnection &conn) const
             [&] (auto &&src_track, auto &&dest_track) {
               return fmt::format (
                 "[{} ({})] {} => [{} ({})] {}{}",
-                (src_track != nullptr) ? src_track->name_ : "(none)",
+                (src_track != nullptr) ? src_track->get_name () : "(none)",
                 src->id_->track_id_, src->get_label (),
-                dest_track ? dest_track->name_ : "(none)", dest->id_->track_id_,
-                dest->get_label (), send_str);
+                dest_track ? dest_track->get_name () : "(none)",
+                dest->id_->track_id_, dest->get_label (), send_str);
             },
             src_track_var, dest_track_var);
         }
@@ -146,7 +146,8 @@ Project::is_audio_clip_in_use (const AudioClip &clip, bool check_undo_stack) con
                 for (auto &lane_var : track->lanes_)
                   {
                     auto * lane = std::get<AudioLane *> (lane_var);
-                    for (auto region_var : lane->region_list_->regions_)
+                    for (
+                      auto region_var : lane->region_list_->get_region_vars ())
                       {
                         auto * region = std::get<AudioRegion *> (region_var);
                         if (region->get_clip_id () == clip.get_uuid ())
@@ -442,7 +443,9 @@ Project::add_default_tracks ()
         .release ();
     get_track_registry ().register_object (track);
     track->setName (name);
-    tracklist_->append_track (track->get_uuid (), *audio_engine_, false, false);
+    tracklist_->append_track (
+      TrackUuidReference{ track->get_uuid (), get_track_registry () },
+      *audio_engine_, false, false);
     return track;
   };
 
@@ -848,7 +851,7 @@ Project::SerializeProjectThread::run ()
   std::optional<utils::string::CStringRAII> json;
   try
     {
-      json = ctx_.project_->serialize_to_json_string ();
+      json = ctx_.main_project_->serialize_to_json_string ();
     }
   catch (const ZrythmException &e)
     {
@@ -1090,29 +1093,33 @@ Project::save (
   ctx->project_file_path_ = get_path (ProjectPath::ProjectFile, is_backup);
   ctx->show_notification_ = show_notification;
   ctx->is_backup_ = is_backup;
-  if (ZRYTHM_IS_QT_THREAD)
-    {
-      ctx->project_ = std::unique_ptr<Project> (clone (is_backup));
-    }
-  else
-    {
-      Project *  cloned_prj = nullptr;
-      QThread *  currentThread = QThread::currentThread ();
-      QEventLoop loop;
-      QMetaObject::invokeMethod (
-        QCoreApplication::instance (),
-        [this, currentThread, is_backup, &cloned_prj, &loop] () {
-          cloned_prj = clone (is_backup);
+#if 0
+  ctx->project_ = [&] () {
+    if (ZRYTHM_IS_QT_THREAD)
+      {
+        return std::unique_ptr<Project> (clone (is_backup));
+      }
+    else
+      {
+        Project *  cloned_prj = nullptr;
+        QThread *  currentThread = QThread::currentThread ();
+        QEventLoop loop;
+        QMetaObject::invokeMethod (
+          QCoreApplication::instance (),
+          [this, currentThread, is_backup, &cloned_prj, &loop] () {
+            cloned_prj = clone (is_backup);
 
-          // need to move the temporary cloned project to the outer scope's
-          // thread, because it will be free'd on that thread too
-          cloned_prj->moveToThread (currentThread);
-          loop.quit ();
-        },
-        Qt::QueuedConnection);
-      loop.exec ();
-      ctx->project_ = std::unique_ptr<Project> (cloned_prj);
-    }
+            // need to move the temporary cloned project to the outer scope's
+            // thread, because it will be free'd on that thread too
+            cloned_prj->moveToThread (currentThread);
+            loop.quit ();
+          },
+          Qt::QueuedConnection);
+        loop.exec ();
+        return std::unique_ptr<Project> (cloned_prj);
+      }
+  }();
+#endif
 
   if (is_backup)
     {
@@ -1133,7 +1140,7 @@ Project::save (
   if (!is_backup)
     {
       /* cleanup unused plugin states */
-      ctx->project_->cleanup_plugin_state_dirs (*this, is_backup);
+      cleanup_plugin_state_dirs (*this, is_backup);
     }
 
   /* TODO verify all plugin states exist */
@@ -1322,6 +1329,12 @@ Project::getArrangerObjectFactory () const
   return arranger_object_factory_;
 }
 
+PluginFactory *
+Project::getPluginFactory () const
+{
+  return plugin_factory_;
+}
+
 Project *
 Project::get_active_instance ()
 {
@@ -1331,7 +1344,7 @@ Project::get_active_instance ()
 Project *
 Project::clone (bool for_backup) const
 {
-  auto ret = clone_raw_ptr ();
+  auto ret = clone_raw_ptr (ObjectCloneType::Snapshot);
   if (for_backup)
     {
       /* no undo history in backups */

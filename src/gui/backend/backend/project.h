@@ -12,6 +12,7 @@
 #include "gui/dsp/engine.h"
 #include "gui/dsp/midi_mapping.h"
 #include "gui/dsp/plugin.h"
+#include "gui/dsp/plugin_factory.h"
 #include "gui/dsp/port.h"
 #include "gui/dsp/port_connections_manager.h"
 #include "gui/dsp/quantize_options.h"
@@ -110,6 +111,7 @@ class Project final
   Q_PROPERTY (
     ArrangerObjectFactory * arrangerObjectFactory READ getArrangerObjectFactory
       CONSTANT FINAL)
+  Q_PROPERTY (PluginFactory * pluginFactory READ getPluginFactory CONSTANT FINAL)
 
 public:
   using QuantizeOptions = zrythm::gui::old_dsp::QuantizeOptions;
@@ -121,7 +123,6 @@ public:
 
 public:
   Project (QObject * parent = nullptr);
-  Project (const std::string &title, QObject * parent = nullptr);
   ~Project () override;
 
   /**
@@ -167,6 +168,7 @@ public:
   ClipEditor *                getClipEditor () const;
   gui::actions::UndoManager * getUndoManager () const;
   ArrangerObjectFactory *     getArrangerObjectFactory () const;
+  PluginFactory *             getPluginFactory () const;
 
   Q_SIGNAL void titleChanged (const QString &title);
   Q_SIGNAL void directoryChanged (const QString &directory);
@@ -427,7 +429,7 @@ private:
   struct SaveContext
   {
     /** Project clone (with memcpy). */
-    std::unique_ptr<Project> project_;
+    // std::unique_ptr<Project> project_;
 
     /**
      * @brief Original project.
@@ -596,6 +598,8 @@ public:
   gui::actions::UndoManager * undo_manager_{};
 
   ArrangerObjectFactory * arranger_object_factory_{};
+
+  PluginFactory * plugin_factory_{};
 
   /** Used when deserializing projects. */
   int format_major_ = 0;

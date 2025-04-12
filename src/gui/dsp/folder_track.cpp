@@ -15,6 +15,7 @@ FolderTrack::FolderTrack (
         Track::Type::Folder,
         PortType::Unknown,
         PortType::Unknown,
+        plugin_registry,
         port_registry,
         obj_registry)
 {

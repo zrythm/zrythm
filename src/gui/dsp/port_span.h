@@ -30,11 +30,16 @@ public:
 using PortSpan = PortSpanImpl<std::span<const PortPtrVariant>>;
 using PortRegistrySpan =
   PortSpanImpl<utils::UuidIdentifiableObjectSpan<PortRegistry>>;
+using PortUuidReferenceSpan = PortSpanImpl<
+  utils::UuidIdentifiableObjectSpan<PortRegistry, PortUuidReference>>;
 extern template class PortSpanImpl<std::span<const PortSpan::VariantType>>;
 extern template class PortSpanImpl<
   utils::UuidIdentifiableObjectSpan<PortRegistry>>;
+extern template class PortSpanImpl<
+  utils::UuidIdentifiableObjectSpan<PortRegistry, PortUuidReference>>;
 
 static_assert (std::ranges::random_access_range<PortSpan>);
 static_assert (std::ranges::random_access_range<PortRegistrySpan>);
+static_assert (std::ranges::random_access_range<PortUuidReferenceSpan>);
 
 using PortSpanVariant = std::variant<PortSpan, PortRegistrySpan>;

@@ -1,13 +1,14 @@
 // SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef UTILS_OBJECT_FACTORY_H
-#define UTILS_OBJECT_FACTORY_H
+#ifndef UTILS_INITIALIZABLE_OBJECT_H
+#define UTILS_INITIALIZABLE_OBJECT_H
 
 #include <memory>
 #include <optional>
 
-namespace zrythm::utils {
+namespace zrythm::utils
+{
 
 namespace InitializableObjectDetail
 {
@@ -30,7 +31,7 @@ public:
   {
     auto obj =
       std::shared_ptr<Derived> (new Derived (std::forward<Args> (args)...));
-    return obj->initialize () ? obj  : nullptr;
+    return obj->initialize () ? obj : nullptr;
   }
 
   /// @brief Creates a unique pointer to initialized object.
@@ -38,8 +39,9 @@ public:
     requires InitializableObjectDetail::Initializable<Derived>
   static std::unique_ptr<Derived> create_unique (Args &&... args)
   {
-    auto obj = std::unique_ptr<Derived> (new Derived (std::forward<Args> (args)...));
-    return obj->initialize () ? std::move (obj)  : nullptr;
+    auto obj =
+      std::unique_ptr<Derived> (new Derived (std::forward<Args> (args)...));
+    return obj->initialize () ? std::move (obj) : nullptr;
   }
 };
 

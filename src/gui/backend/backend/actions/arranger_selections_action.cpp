@@ -1799,8 +1799,8 @@ ArrangerSelectionsAction::do_or_undo_split (bool do_it)
                   // BoundedObject::split()
                   // to add the objects into the project
 
-                  r1_[index] = r1->get_uuid ();
-                  r2_[index] = r2->get_uuid ();
+                  r1_[index] = r1.id ();
+                  r2_[index] = r2.id ();
                   }
                   else {
                     for (const auto&[r1_var, r2_var] :
@@ -1849,7 +1849,10 @@ ArrangerSelectionsAction::do_or_undo_merge (bool do_it)
   if (first_run_)
     {
       sel_after_.emplace(std::vector<ArrangerObjectPtrVariant>());
+// TODO
+#if 0
       sel_after_->push_back(get_arranger_object_registry().find_by_id_or_throw(ArrangerObjectSpan{*sel_}.merge(get_frames_per_tick())));
+#endif
     }
 
   // sel->sort_by_indices (!do_it);

@@ -62,7 +62,7 @@ public:
 
 public:
   /** ChordObject's in this Region. */
-  std::vector<ChordObject::Uuid> chord_objects_;
+  std::vector<ArrangerObjectUuidReference> chord_objects_;
 };
 
 inline bool

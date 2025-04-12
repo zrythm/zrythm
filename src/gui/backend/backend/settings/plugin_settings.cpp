@@ -239,7 +239,7 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
             new gui::actions::MoveTracksInsideFoldableTrackAction (
               TrackSpan{ std::ranges::to<std::vector> (
                 TRACKLIST->get_track_span ().get_selected_tracks ()) },
-              group->pos_));
+              group->get_index ()));
           num_actions++;
 
           /* route to nowhere */
@@ -286,7 +286,7 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
                 new gui::actions::MoveTracksInsideFoldableTrackAction (
                   TrackSpan{ std::ranges::to<std::vector> (
                     TRACKLIST->get_track_span ().get_selected_tracks ()) },
-                  group->pos_));
+                  group->get_index ()));
               num_actions++;
 
               /* move the fx track to the end */

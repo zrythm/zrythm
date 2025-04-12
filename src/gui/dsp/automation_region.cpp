@@ -146,10 +146,8 @@ void
 AutomationRegion::force_sort ()
 {
   std::ranges::sort (aps_, [&] (const auto &a_id, const auto &b_id) {
-    const auto a = std::get<AutomationPoint *> (
-      get_arranger_object_registry ().find_by_id_or_throw (a_id));
-    const auto b = std::get<AutomationPoint *> (
-      get_arranger_object_registry ().find_by_id_or_throw (b_id));
+    const auto a = std::get<AutomationPoint *> (a_id.get_object ());
+    const auto b = std::get<AutomationPoint *> (b_id.get_object ());
     return *a < *b;
   });
 
@@ -163,14 +161,14 @@ AutomationRegion::force_sort ()
 AutomationPoint *
 AutomationRegion::get_prev_ap (const AutomationPoint &ap) const
 {
-  auto it = std::ranges::find (aps_, ap.get_uuid ());
+  auto it =
+    std::ranges::find (aps_, ap.get_uuid (), &ArrangerObjectUuidReference::id);
 
   // if found and not the first element
   if (it != aps_.end () && it != aps_.begin ())
     {
       return std::get<AutomationPoint *> (
-        get_arranger_object_registry ().find_by_id_or_throw (
-          *std::ranges::prev (it)));
+        (*std::ranges::prev (it)).get_object ());
     }
 
   return nullptr;
@@ -220,15 +218,15 @@ AutomationRegion::get_next_ap (
       return next_ap;
     }
 
-  auto it = std::ranges::find (aps_, ap.get_uuid ());
+  auto it =
+    std::ranges::find (aps_, ap.get_uuid (), &ArrangerObjectUuidReference::id);
 
   // if found and not the last element
   if (it != aps_.end () && std::ranges::next (it) != aps_.end ())
     {
 
       return std::get<AutomationPoint *> (
-        get_arranger_object_registry ().find_by_id_or_throw (
-          *std::ranges::next (it)));
+        (*std::ranges::next (it)).get_object ());
     }
 
   return nullptr;

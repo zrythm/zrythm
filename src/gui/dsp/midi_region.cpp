@@ -214,16 +214,16 @@ MidiRegion::start_unended_note (
 
   auto mn_builder =
     ArrangerObjectFactory::get_instance ()->get_builder<MidiNote> ();
-  auto * mn =
+  auto mn =
     mn_builder.with_start_ticks (start_pos->ticks_)
       .with_end_ticks (end_pos.ticks_)
       .with_pitch (pitch)
       .with_velocity (vel)
       .build ();
-  append_object (mn->get_uuid ());
+  append_object (mn);
 
   /* add to unended notes */
-  unended_notes_.push_back (mn);
+  unended_notes_.push_back (std::get<MidiNote *> (mn.get_object ()));
 }
 
 void

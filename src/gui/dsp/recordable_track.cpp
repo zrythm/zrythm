@@ -1,11 +1,8 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/zrythm.h"
-#include "gui/dsp/control_port.h"
+#include "gui/dsp/port_all.h"
 #include "gui/dsp/recordable_track.h"
-
 #include "utils/rt_thread_id.h"
 
 using namespace zrythm;
@@ -16,13 +13,13 @@ RecordableTrack::RecordableTrack (PortRegistry &port_registry, bool new_identity
 {
   if (new_identity)
     {
-      auto * recording = port_registry.create_object<ControlPort> (
+      recording_id_ = port_registry.create_object<ControlPort> (
         QObject::tr ("Track record").toStdString ());
+      auto * recording = &get_recording_port ();
       recording->id_->sym_ = "track_record";
       recording->set_toggled (false, false);
       recording->id_->flags2_ |= dsp::PortIdentifier::Flags2::TrackRecording;
       recording->id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
-      recording_id_ = recording->get_uuid ();
     }
 }
 

@@ -152,18 +152,15 @@ public:
 
   ControlPort &get_bpm_port () const
   {
-    return *std::get<ControlPort *> (
-      port_registry_.find_by_id_or_throw (bpm_port_));
+    return *std::get<ControlPort *> (bpm_port_->get_object ());
   }
   ControlPort &get_beats_per_bar_port () const
   {
-    return *std::get<ControlPort *> (
-      port_registry_.find_by_id_or_throw (beats_per_bar_port_));
+    return *std::get<ControlPort *> (beats_per_bar_port_->get_object ());
   }
   ControlPort &get_beat_unit_port () const
   {
-    return *std::get<ControlPort *> (
-      port_registry_.find_by_id_or_throw (beat_unit_port_));
+    return *std::get<ControlPort *> (beat_unit_port_->get_object ());
   }
 
   DECLARE_DEFINE_FIELDS_METHOD ();
@@ -175,13 +172,13 @@ private:
   PortRegistry &port_registry_;
 
   /** Automatable BPM control. */
-  PortUuid bpm_port_;
+  std::optional<PortUuidReference> bpm_port_;
 
   /** Automatable beats per bar port. */
-  PortUuid beats_per_bar_port_;
+  std::optional<PortUuidReference> beats_per_bar_port_;
 
   /** Automatable beat unit port. */
-  PortUuid beat_unit_port_;
+  std::optional<PortUuidReference> beat_unit_port_;
 };
 
 static_assert (ConstructibleWithDependencyHolder<TempoTrack>);

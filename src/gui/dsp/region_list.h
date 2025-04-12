@@ -32,6 +32,17 @@ public:
   void init_after_cloning (const RegionList &other, ObjectCloneType clone_type)
     override;
 
+  auto get_region_vars ()
+  {
+    return regions_
+           | std::views::transform (&ArrangerObjectUuidReference::get_object);
+  }
+  auto get_region_vars () const
+  {
+    return regions_
+           | std::views::transform (&ArrangerObjectUuidReference::get_object);
+  }
+
   void clear ();
 
   DECLARE_DEFINE_FIELDS_METHOD ();
@@ -42,5 +53,5 @@ public:
    *
    * @note must always be sorted by position.
    */
-  std::vector<RegionPtrVariant> regions_;
+  std::vector<ArrangerObjectUuidReference> regions_;
 };

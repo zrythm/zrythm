@@ -75,15 +75,9 @@ public:
   /**
    * Creates/initializes a plugin using the given setting.
    *
-   * @param track_name_hash The expected name hash of track the plugin will be
-   * in.
-   *
    * @throw ZrythmException If the plugin could not be created.
    */
-  CarlaNativePlugin (
-    PortRegistry                  &port_registry,
-    const PluginSetting           &setting,
-    dsp::PortIdentifier::TrackUuid track_id);
+  CarlaNativePlugin (PortRegistry &port_registry, const PluginSetting &setting);
 
   /**
    * Deactivates, cleanups and frees the instance.

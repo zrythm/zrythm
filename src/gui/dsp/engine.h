@@ -588,8 +588,8 @@ public:
    *
    * Will be ignored if NULL.
    */
-  std::optional<PortUuid> dummy_left_input_;
-  std::optional<PortUuid> dummy_right_input_;
+  std::optional<PortUuidReference> dummy_left_input_;
+  std::optional<PortUuidReference> dummy_right_input_;
 
   /**
    * Monitor - these should be the last ports in the signal
@@ -597,8 +597,8 @@ public:
    *
    * The L/R ports are exposed to the backend.
    */
-  std::optional<PortUuid> monitor_out_left_;
-  std::optional<PortUuid> monitor_out_right_;
+  std::optional<PortUuidReference> monitor_out_left_;
+  std::optional<PortUuidReference> monitor_out_right_;
 
   /**
    * Flag to tell the UI that this channel had MIDI activity.

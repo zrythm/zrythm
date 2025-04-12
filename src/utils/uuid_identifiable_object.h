@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
 #include "utils/format.h"
+#include "utils/initializable_object.h"
 #include "utils/iserializable.h"
-#include "utils/object_factory.h"
 
 #include <QUuid>
 
@@ -114,46 +114,133 @@ concept UuidIdentifiableQObject =
  *
  * @tparam RegistryT
  */
-template <typename RegistryT> class UuidReference
+template <typename RegistryT>
+class UuidReference
+    : public serialization::ISerializable<UuidReference<RegistryT>>
 {
 public:
   using UuidType = typename RegistryT::UuidType;
   using VariantType = typename RegistryT::VariantType;
 
+  // FIXME: temporary workaround so that Tracklist::swap_tracks() works with
+  // temporary resizing of tracks_. This should be removed after the swap logic
+  // is refactored.
+  UuidReference () = default;
+
+  UuidReference (const DeserializationDependencyHolder &dh)
+      : registry_ (dh.get<std::reference_wrapper<RegistryT>> ().get ())
+  {
+  }
+
   UuidReference (const UuidType &id, RegistryT &registry)
       : id_ (id), registry_ (registry)
   {
-    registry_.acquire_reference (id_);
+    acquire_ref ();
   }
 
   UuidReference (const UuidReference &other)
-      : UuidReference (other.id_, other.registry_)
+      : UuidReference (other.id (), other.get_registry ())
   {
   }
-
-  Z_DISABLE_MOVE (UuidReference)
-
-  ~UuidReference () { registry_.release_reference (id_); }
-
   UuidReference &operator= (const UuidReference &other)
   {
     if (this != &other)
       {
-        registry_.acquire_reference (other.id_);
-        const auto prev_id = id_;
         id_ = other.id_;
-        registry_.release_reference (prev_id);
+        acquire_ref ();
       }
     return *this;
   }
 
-  const UuidType &id () const { return id_; }
+  UuidReference (UuidReference &&other)
+  {
+    if (this != &other)
+      {
+        id_ = std::move (other.id_);
+        registry_ = std::move (other.registry_);
+        acquire_ref ();
+      }
+  }
+  UuidReference &operator= (UuidReference &&other)
+  {
+    if (this != &other)
+      {
+        id_ = std::move (other.id_);
+        registry_ = std::move (other.registry_);
+        acquire_ref ();
+      }
+    return *this;
+  }
 
-  VariantType get_object () const { return registry_.get_object (id_); }
+  ~UuidReference () { release_ref (); }
+
+  const UuidType &id () const { return *id_; }
+
+  VariantType get_object () const
+  {
+    return get_registry ().find_by_id_or_throw (id ());
+  }
+
+  template <typename... Args>
+  UuidReference clone_new_identity (Args &&... args) const
+  {
+    return std::visit (
+      [&] (auto &&obj) {
+        return get_registry ().clone_object (*obj, std::forward<Args> (args)...);
+      },
+      get_object ());
+  }
+
+  void define_fields (const serialization::ISerializableBase::Context &ctx)
+  {
+    using T = serialization::ISerializable<UuidReference>;
+    T::serialize_fields (ctx, T::make_field ("uuid", id_));
+
+    if (ctx.is_deserializing ())
+      {
+        acquire_ref ();
+      }
+  }
+
+  auto get_iterator_in_registry () const
+  {
+    return get_registry ().get_iterator_for_id (id ());
+  }
+
+  auto get_iterator_in_registry ()
+  {
+    return get_registry ().get_iterator_for_id (id ());
+  }
+
+  friend bool operator== (const UuidReference &lhs, const UuidReference &rhs)
+  {
+    return lhs.id () == rhs.id ();
+  }
 
 private:
-  UuidType   id_;
-  RegistryT &registry_;
+  void acquire_ref ()
+  {
+    if (id_.has_value ())
+      {
+        get_registry ().acquire_reference (*id_);
+      }
+  }
+  void release_ref ()
+  {
+    if (id_.has_value ())
+      {
+        get_registry ().release_reference (*id_);
+      }
+  }
+  RegistryT &get_registry () const
+  {
+    return const_cast<RegistryT &> (*registry_);
+  }
+  RegistryT &get_registry () { return *registry_; }
+
+private:
+  std::optional<UuidType> id_;
+  OptionalRef<RegistryT>  registry_;
 };
 
 template <typename ReturnType, typename UuidType>
@@ -170,6 +257,9 @@ using UuidIdentifiablObjectResolver =
  *
  * Intended to be used with variants of pointers to QObjects.
  *
+ * @note Object registration and deregistration must only be done from the main
+ * thread.
+ *
  * @tparam VariantT A variant of raw pointers to QObject-derived classes.
  * @tparam BaseT The common base class of the objects in the variant.
  */
@@ -183,15 +273,11 @@ public:
   using VariantType = VariantT;
   using BaseType = BaseT;
 
-  OwningObjectRegistry (QObject * parent = nullptr)
-  {
-    if (parent)
-      setParent (parent);
-  }
+  OwningObjectRegistry (QObject * parent = nullptr) : QObject (parent) { }
 
   // Factory method that forwards constructor arguments
   template <typename CreateType, typename... Args>
-  CreateType * create_object (Args &&... args)
+  auto create_object (Args &&... args) -> UuidReference<OwningObjectRegistry>
     requires std::derived_from<CreateType, BaseT>
   {
     CreateType * obj{};
@@ -205,8 +291,23 @@ public:
       {
         obj = new CreateType (std::forward<Args> (args)...);
       }
+    z_trace (
+      "created object of type {} with ID {}", typeid (CreateType).name (),
+      obj->get_uuid ());
     register_object (obj);
-    return obj;
+    return { obj->get_uuid (), *this };
+  }
+
+  // Creates a clone of the given object and registers it to the registry.
+  template <typename CreateType, typename... Args>
+  auto clone_object (const CreateType &other, Args &&... args)
+    -> UuidReference<OwningObjectRegistry>
+    requires std::derived_from<CreateType, BaseT>
+  {
+    CreateType * obj = other.clone_raw_ptr (
+      ObjectCloneType::NewIdentity, std::forward<Args> (args)...);
+    register_object (obj);
+    return { obj->get_uuid (), *this };
   }
 
   [[gnu::hot]] auto get_iterator_for_id (const UuidType &id) const
@@ -268,6 +369,7 @@ public:
             throw std::runtime_error (fmt::format (
               "Object with id {} already exists", obj->get_uuid ()));
           }
+        z_trace ("Registering (inserting) object {}", obj->get_uuid ());
         obj->setParent (this);
         objects_by_id_.insert (type_safe::get (obj->get_uuid ()), obj);
       },
@@ -279,6 +381,21 @@ public:
     requires std::derived_from<ObjectT, BaseT>
   {
     register_object (&obj);
+  }
+
+  void acquire_reference (const UuidType &id)
+  {
+    const auto &quuid = type_safe::get (id);
+    ref_counts_[quuid]++;
+  }
+
+  void release_reference (const UuidType &id)
+  {
+    const auto &quuid = type_safe::get (id);
+    if (--ref_counts_[quuid] <= 0)
+      {
+        delete_object_by_id (id);
+      }
   }
 
   auto &get_hash_map () const { return objects_by_id_; }
@@ -325,8 +442,14 @@ private:
           fmt::format ("Object with id {} not found", id));
       }
 
+    z_trace ("Unregistering object with id {}", id);
+
     auto obj_var = objects_by_id_.take (type_safe::get (id));
     std::visit ([&] (auto &&obj) { obj->setParent (nullptr); }, obj_var);
+    if (ref_counts_.contains (type_safe::get (id)))
+      {
+        ref_counts_.remove (type_safe::get (id));
+      }
     return obj_var;
   }
 
@@ -346,14 +469,21 @@ private:
  * registry lookups.
  *
  * @tparam RegistryT The registry type (must implement find_by_id_or_throw())
+ * @tparam SpanElementT The element type (must be a Uuid or UuidReference).
  */
-template <typename RegistryT> class UuidIdentifiableObjectSpan
+template <typename RegistryT, typename SpanElementT = RegistryT::UuidType>
+class UuidIdentifiableObjectSpan
 {
 public:
   using UuidType = typename RegistryT::UuidType;
   using ValueType = typename RegistryT::VariantType;
-  using SpanType = std::span<const UuidType>;
+  using SpanType = std::span<const SpanElementT>;
 
+private:
+  static constexpr auto is_uuid_ref =
+    std::is_same_v<SpanElementT, UuidReference<RegistryT>>;
+
+public:
   /// constructor from single element
   explicit UuidIdentifiableObjectSpan (
     const RegistryT &registry,
@@ -366,6 +496,13 @@ public:
   /// constructor from span of elements
   explicit UuidIdentifiableObjectSpan (const RegistryT &registry, SpanType uuids)
       : registry_ (registry), uuids_ (uuids)
+  {
+  }
+
+  /// constructor from span of elements
+  explicit UuidIdentifiableObjectSpan (SpanType uuids)
+    requires std::is_same_v<SpanElementT, UuidReference<RegistryT>>
+      : uuids_ (uuids)
   {
   }
 
@@ -385,10 +522,18 @@ public:
         : registry_ (registry), pos_ (pos)
     {
     }
+    Iterator (Iter pos) : pos_ (pos) { }
 
     const_reference operator* () const
     {
-      return *registry_->get ().get_iterator_for_id (*pos_);
+      if constexpr (is_uuid_ref)
+        {
+          return *(*pos_).get_iterator_in_registry ();
+        }
+      else
+        {
+          return *registry_->get_iterator_for_id (*pos_);
+        }
     }
 
     const_pointer operator->() const { return &(**this); }
@@ -420,11 +565,25 @@ public:
     // Arithmetic operations
     Iterator operator+ (difference_type n) const
     {
-      return Iterator (registry_->get (), pos_ + n);
+      if constexpr (is_uuid_ref)
+        {
+          return Iterator (pos_ + n);
+        }
+      else
+        {
+          return Iterator (*registry_, pos_ + n);
+        }
     }
     Iterator operator- (difference_type n) const
     {
-      return Iterator (registry_->get (), pos_ - n);
+      if constexpr (is_uuid_ref)
+        {
+          return Iterator (pos_ - n);
+        }
+      else
+        {
+          return Iterator (*registry_, pos_ - n);
+        }
     }
     Iterator &operator+= (difference_type n)
     {
@@ -460,7 +619,7 @@ public:
     }
 
   private:
-    std::optional<std::reference_wrapper<const RegistryT>> registry_;
+    OptionalRef<const RegistryT>                           registry_;
     Iter                                                   pos_;
   };
 
@@ -472,11 +631,25 @@ public:
   // iterator         end () { return iterator (registry_, uuids_.end ()); }
   const_iterator begin () const
   {
-    return const_iterator (registry_, uuids_.cbegin ());
+    if constexpr (is_uuid_ref)
+      {
+        return const_iterator (uuids_.cbegin ());
+      }
+    else
+      {
+        return const_iterator (*registry_, uuids_.cbegin ());
+      }
   }
   const_iterator end () const
   {
-    return const_iterator (registry_, uuids_.cend ());
+    if constexpr (is_uuid_ref)
+      {
+        return const_iterator (uuids_.cend ());
+      }
+    else
+      {
+        return const_iterator (*registry_, uuids_.cend ());
+      }
   }
   auto size () const { return uuids_.size (); }
   bool empty () const { return uuids_.empty (); }
@@ -517,7 +690,7 @@ public:
   }
 
 private:
-  std::reference_wrapper<const RegistryT> registry_;
+  OptionalRef<const RegistryT>            registry_;
   SpanType                                uuids_;
   static_assert (std::random_access_iterator<iterator>);
   static_assert (std::random_access_iterator<const_iterator>);
@@ -564,19 +737,11 @@ public:
   // constructor from contiguous range
   explicit UuidIdentifiableObjectCompatibleSpan (
     const std::ranges::range auto &range)
+    requires (
+      std::is_same_v<std::ranges::range_value_t<decltype (range)>, value_type>)
       : range_ (std::span<const value_type> (range))
   {
   }
-#if 0
-  /// constructor from non-contiguous range
-  /// @warning Not realtime-safe
-  explicit UuidIdentifiableObjectCompatibleSpan (
-    const std::ranges::range auto &range)
-    requires (!std::ranges::contiguous_range<decltype (range)>)
-      : range_ (std::ranges::to<std::vector> (range))
-  {
-  }
-#endif
   /// constructor from single element
   explicit UuidIdentifiableObjectCompatibleSpan (const value_type &object)
       : range_ (std::span<const value_type> (std::addressof (object), 1))
@@ -588,6 +753,16 @@ public:
     std::span<const typename RegistryT::UuidType> uuids)
     requires std::is_same_v<Range, utils::UuidIdentifiableObjectSpan<RegistryT>>
       : range_ (UuidIdentifiableObjectSpan<RegistryT> (registry, uuids))
+  {
+  }
+  /// UuidIdentifiableObjectSpan constructor
+  explicit UuidIdentifiableObjectCompatibleSpan (
+    std::span<const UuidReference<RegistryT>> uuid_refs)
+    requires std::is_same_v<
+      Range,
+      utils::UuidIdentifiableObjectSpan<RegistryT, UuidReference<RegistryT>>>
+      : range_ (UuidIdentifiableObjectSpan<RegistryT, UuidReference<RegistryT>> (
+          uuid_refs))
   {
   }
   /// UuidIdentifiableObjectSpan single element constructor
@@ -607,7 +782,7 @@ public:
   auto           size () const { return range_.size (); }
   auto           operator[] (size_t index) const { return range_[index]; }
   auto           empty () const { return range_.empty (); }
-  auto           data () const { return range_.data (); }
+  // auto           data () const { return range_.data (); }
   auto           front () const { return range_.front (); }
   auto           back () const { return range_.back (); }
 
@@ -713,5 +888,23 @@ struct fmt::formatter<T> : fmt::formatter<std::string_view>
   {
     return fmt::formatter<std::string_view>::format (
       type_safe::get (uuid).toString (QUuid::WithoutBraces).toStdString (), ctx);
+  }
+};
+
+// Concept to detect UuidReference types
+template <typename T>
+concept UuidReferenceType = requires (T t) {
+  { type_safe::get (t.id ()) } -> std::convertible_to<QUuid>;
+};
+
+// Formatter for UuidReference
+template <UuidReferenceType T>
+struct fmt::formatter<T> : fmt::formatter<std::string_view>
+{
+  template <typename FormatContext>
+  auto format (const T &uuid_ref, FormatContext &ctx) const
+  {
+    return fmt::formatter<std::string_view>::format (
+      fmt::format ("{}", uuid_ref.id ()), ctx);
   }
 };

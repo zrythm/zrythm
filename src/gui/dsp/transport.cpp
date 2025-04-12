@@ -317,7 +317,8 @@ Transport::prepare_audio_regions_for_stretch (
           for (auto &lane_var : track->lanes_)
             {
               auto * lane = std::get<AudioLane *> (lane_var);
-              for (auto &region_var : lane->region_list_->regions_)
+              for (
+                const auto &region_var : lane->region_list_->get_region_vars ())
                 {
                   auto * region = std::get<AudioRegion *> (region_var);
                   region->before_length_ = region->get_length_in_ticks ();
@@ -371,7 +372,8 @@ Transport::stretch_regions (
           for (auto &lane_var : track->lanes_)
             {
               auto * lane = std::get<AudioLane *> (lane_var);
-              for (auto &region_var : lane->region_list_->regions_)
+              for (
+                const auto &region_var : lane->region_list_->get_region_vars ())
                 {
                   auto * region = std::get<AudioRegion *> (region_var);
                   /* don't stretch regions with musical mode off */
@@ -584,7 +586,8 @@ Transport::move_playhead (
             {
               using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
               auto lane = std::get<TrackLaneT *> (lane_var);
-              for (const auto &region_var : lane->region_list_->regions_)
+              for (
+                const auto &region_var : lane->region_list_->get_region_vars ())
                 {
                   auto * region =
                     std::get<typename TrackLaneT::RegionT *> (region_var);

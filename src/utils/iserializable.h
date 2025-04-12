@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -19,9 +19,9 @@
 
 #include "utils/dependency_holder.h"
 #include "utils/exceptions.h"
+#include "utils/initializable_object.h"
 #include "utils/json.h"
 #include "utils/logger.h"
-#include "utils/object_factory.h"
 #include "utils/string.h"
 #include "utils/traits.h"
 
@@ -227,29 +227,6 @@ public:
 
   template <typename T>
   using is_serializable = std::is_base_of<ISerializable<T>, T>;
-
-#if 0
-  template <typename T, typename = void> struct is_container : std::false_type
-  {
-  };
-
-  template <typename T>
-  struct is_container<
-    T,
-    std::void_t<
-      typename T::value_type,
-      typename T::iterator,
-      typename T::const_iterator,
-      decltype (std::declval<T> ().begin ()),
-      decltype (std::declval<T> ().end ()),
-      decltype (std::declval<T> ().size ())>>
-      : std::negation<std::is_same<T, std::string>>
-  {
-  };
-
-  template <typename T>
-   static constexpr bool is_container_v = is_container<T>::value;
-#endif
 
   template <typename T> struct is_serializable_pointer : std::false_type
   {
@@ -505,27 +482,6 @@ public:
     return false;
   }
 
-#if 0
-  template <typename Base> void call_base_serialization (const Context &ctx)
-  {
-    static_assert (std::derived_from<Base, ISerializableBase>);
-    if (ctx.mut_doc_)
-      {
-        dynamic_cast<Base *> (this)->serialize_base (ctx);
-      }
-    else
-      {
-        dynamic_cast<Base *> (this)->deserialize_base (ctx);
-      }
-  }
-
-  template <typename... Bases>
-  void call_all_base_serializations (const Context &ctx)
-  {
-    (call_base_serialization<Bases> (ctx), ...);
-  }
-#endif
-
   template <std::derived_from<ISerializableBase> Base>
   void call_base_define_fields (const Context &ctx)
   {
@@ -541,37 +497,13 @@ public:
   template <typename SerializeFunc>
   void serialize_with_custom (const Context &ctx, SerializeFunc &&func) const
   {
-#if 0
-    if (ctx.is_serializing ())
-      {
-#endif
     func (ctx);
-#if 0
-      }
-    else
-      {
-        // FIXME: const cast is a hack
-        const_cast<Derived *> (dynamic_cast<const Derived *> (this))
-          ->define_fields (ctx);
-      }
-#endif
   }
 
   template <typename DeserializeFunc>
   void deserialize_with_custom (const Context &ctx, DeserializeFunc &&func)
   {
-#if 0
-    if (ctx.is_deserializing ())
-      {
-#endif
     func (ctx);
-#if 0
-      }
-    else
-      {
-        static_cast<Derived *> (this)->define_fields (ctx);
-      }
-#endif
   }
 
   void serialize (const Context &ctx) const
@@ -1388,9 +1320,9 @@ public:
           }
         else
           {
-            typename T::value_type temp;
-            deserialize_field (it, key, temp, ctx);
-            value = std::move (temp);
+            auto temp = create_object<typename T::value_type> (ctx);
+            deserialize_field (it, key, *temp, ctx);
+            value = *temp;
           }
         return;
       }
@@ -1672,16 +1604,16 @@ public:
                   {
                     using OptionalType = typename T::value_type;
                     using ObjType = typename OptionalType::value_type;
-                    ObjType obj;
+                    auto obj = create_object<ObjType> (ctx);
                     ctx.obj_ = elem;
-                    obj.deserialize (ctx);
+                    obj->ISerializable<ObjType>::deserialize (ctx);
                     if constexpr (StdArray<T>)
                       {
-                        value[i] = std::move (obj);
+                        value[i] = *obj;
                       }
                     else
                       {
-                        value.emplace_back (std::move (obj));
+                        value.emplace_back (*obj);
                       }
                   }
                 else if (yyjson_is_null (elem))

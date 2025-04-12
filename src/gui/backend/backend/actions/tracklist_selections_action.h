@@ -755,7 +755,7 @@ public:
           -1,
           EditType::DirectOut,
           direct_out
-            ? std::visit ([&] (auto &&track) { return track->pos_; }, *direct_out)
+            ? std::visit ([&] (auto &&track) { return track->get_index (); }, *direct_out)
             : -1,
           nullptr,
           0.f,

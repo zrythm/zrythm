@@ -209,8 +209,7 @@ RegionImpl<RegionT>::fill_midi_events (
         {
           for (
             const auto &mn :
-            ArrangerObjectRegistrySpan{
-              get_arranger_object_registry (), get_derived ().midi_notes_ }
+            ArrangerObjectUuidReferenceSpan{ get_derived ().midi_notes_ }
               .as_type<MidiNote> ())
             {
               process_object (*mn);
@@ -220,8 +219,7 @@ RegionImpl<RegionT>::fill_midi_events (
         {
           for (
             const auto &co :
-            ArrangerObjectRegistrySpan{
-              get_arranger_object_registry (), get_derived ().chord_objects_ }
+            ArrangerObjectUuidReferenceSpan{ get_derived ().chord_objects_ }
               .as_type<ChordObject> ())
             {
               process_object (*co);
@@ -329,7 +327,7 @@ RegionImpl<
 
   std::visit (
     [&] (auto &&region_track) {
-      z_debug ("moving region {} to track {}", name_, track->name_);
+      z_debug ("moving region {} to track {}", name_, track->get_name ());
       z_debug ("before: {}", print_to_str ());
 
       auto * self = dynamic_cast<RegionT *> (this);
@@ -801,7 +799,8 @@ RegionImpl<RegionT>::remove_object (const ArrangerObject::Uuid &child_id)
   auto &objects = self.get_objects_vector ();
 
   /* find the object in the list */
-  auto it = std::ranges::find (objects, child_id);
+  auto it =
+    std::ranges::find (objects, child_id, &ArrangerObjectUuidReference::id);
   assert (it != objects.end ());
 
   /* get a shared pointer before erasing to possibly keep it alive */
@@ -873,11 +872,9 @@ RegionImpl<RegionT>::at_position (
   if constexpr (is_automation ())
     {
       z_return_val_if_fail (at, nullptr);
-      auto it =
-        std::ranges::find_if (at->region_list_->regions_, region_is_at_pos);
-      return it != at->region_list_->regions_.end ()
-               ? std::get<RegionT *> (*it)
-               : nullptr;
+      auto region_vars = at->region_list_->get_region_vars ();
+      auto it = std::ranges::find_if (region_vars, region_is_at_pos);
+      return it != region_vars.end () ? std::get<RegionT *> (*it) : nullptr;
     }
   else
     {
@@ -895,9 +892,10 @@ RegionImpl<RegionT>::at_position (
                     {
                       using TrackLaneT = TrackT::TrackLaneType;
                       auto lane = std::get<TrackLaneT *> (lane_var);
-                      auto it = std::ranges::find_if (
-                        lane->region_list_->regions_, region_is_at_pos);
-                      return it != at->region_list_->regions_.end ()
+                      auto region_vars = lane->region_list_->get_region_vars ();
+                      auto it =
+                        std::ranges::find_if (region_vars, region_is_at_pos);
+                      return it != region_vars.end ()
                                ? std::get<RegionT *> (*it)
                                : nullptr;
                     }
@@ -908,11 +906,9 @@ RegionImpl<RegionT>::at_position (
         }
       else if constexpr (is_chord ())
         {
-          auto it = std::ranges::find_if (
-            P_CHORD_TRACK->region_list_->regions_, region_is_at_pos);
-          return it != at->region_list_->regions_.end ()
-                   ? std::get<RegionT *> (*it)
-                   : nullptr;
+          auto region_vars = P_CHORD_TRACK->region_list_->get_region_vars ();
+          auto it = std::ranges::find_if (region_vars, region_is_at_pos);
+          return it != region_vars.end () ? std::get<RegionT *> (*it) : nullptr;
         }
     }
 
@@ -981,7 +977,7 @@ Region::generate_filename ()
 {
   return std::visit (
     [&] (auto &&track) {
-      return fmt::sprintf (REGION_PRINTF_FILENAME, track->name_, name_);
+      return fmt::sprintf (REGION_PRINTF_FILENAME, track->get_name (), name_);
     },
     get_track ());
 }
@@ -1029,18 +1025,26 @@ RegionImpl<RegionT>::disconnect_region ()
 #endif
 }
 
-std::optional<RegionPtrVariant>
+std::optional<ArrangerObjectPtrVariant>
 Region::get_at_pos (
   const dsp::Position pos,
   Track *             track,
   AutomationTrack *   at,
   bool                include_region_end)
 {
-  auto is_at_pos = [&] (const auto &region_var) {
+  auto is_at_pos = [&] (const auto &region_var) -> bool {
     return std::visit (
-      [&] (auto &&region) {
-        return *region->pos_ <= pos
-               && (include_region_end ? *region->end_pos_ >= pos : *region->end_pos_ > pos);
+      [&] (auto &&region) -> bool {
+        using RegionT = base_type<decltype (region)>;
+        if constexpr (std::derived_from<RegionT, Region>)
+          {
+            return *region->pos_ <= pos
+                   && (include_region_end ? *region->end_pos_ >= pos : *region->end_pos_ > pos);
+          }
+        else
+          {
+            throw std::runtime_error ("expected region");
+          }
       },
       region_var);
   };
@@ -1048,7 +1052,7 @@ Region::get_at_pos (
   if (track)
     {
       return std::visit (
-        [&] (auto &&track_derived) -> std::optional<RegionPtrVariant> {
+        [&] (auto &&track_derived) -> std::optional<ArrangerObjectPtrVariant> {
           using TrackT = base_type<decltype (track_derived)>;
           if constexpr (std::derived_from<TrackT, LanedTrack>)
             {
@@ -1060,21 +1064,21 @@ Region::get_at_pos (
                   if (ret)
                     return ret;
 
-                  auto it = std::ranges::find_if (
-                    lane->region_list_->regions_, is_at_pos);
-                  if (it != lane->region_list_->regions_.end ())
+                  auto region_vars = lane->region_list_->get_region_vars ();
+                  auto it = std::ranges::find_if (region_vars, is_at_pos);
+                  if (it != region_vars.end ())
                     {
-                      return *it;
+                      return (*it);
                     }
                 }
             }
           if constexpr (std::is_same_v<TrackT, ChordTrack>)
             {
-              auto it = std::ranges::find_if (
-                track_derived->region_list_->regions_, is_at_pos);
-              if (it != track_derived->region_list_->regions_.end ())
+              auto region_vars = track_derived->region_list_->get_region_vars ();
+              auto it = std::ranges::find_if (region_vars, is_at_pos);
+              if (it != region_vars.end ())
                 {
-                  return *it;
+                  return (*it);
                 }
             }
           return std::nullopt;
@@ -1083,8 +1087,9 @@ Region::get_at_pos (
     }
   if (at)
     {
-      auto it = std::ranges::find_if (at->region_list_->regions_, is_at_pos);
-      if (it != at->region_list_->regions_.end ())
+      auto region_vars = at->region_list_->get_region_vars ();
+      auto it = std::ranges::find_if (region_vars, is_at_pos);
+      if (it != region_vars.end ())
         {
           return *it;
         }
