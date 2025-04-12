@@ -37,6 +37,7 @@ ColumnLayout {
                     Layout.minimumHeight: ruler.height
                     Layout.maximumHeight: ruler.height
                     tracklist: project.tracklist
+                    trackFactory: project.trackFactory
                 }
 
                 Tracklist {

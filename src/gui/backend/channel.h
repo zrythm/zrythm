@@ -321,7 +321,14 @@ public:
    * the Channel. Useful when deleting the channel.
    * @param recalc_graph Recalculate mixer graph.
    */
-  void disconnect (bool remove_pl);
+  void disconnect_channel (bool remove_pl);
+
+  /**
+   * Connects the channel's ports.
+   *
+   * This should only be called on project tracks.
+   */
+  void connect_channel (PortConnectionsManager &mgr, AudioEngine &engine);
 
   void init_loaded ();
 
@@ -344,13 +351,6 @@ public:
    * Exposes the channel's ports to the backend.
    */
   void expose_ports_to_backend (AudioEngine &engine);
-
-  /**
-   * Connects the channel's ports.
-   *
-   * This should only be called on project tracks.
-   */
-  void connect (PortConnectionsManager &mgr, AudioEngine &engine);
 
   void set_phase (float phase);
 

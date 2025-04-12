@@ -298,7 +298,7 @@ Tracklist::insert_track (
       if constexpr (std::derived_from<TrackT, ChannelTrack>)
         {
           z_return_if_fail (port_connections_manager_);
-          track->channel_->connect (*port_connections_manager_, engine);
+          track->channel_->connect_channel (*port_connections_manager_, engine);
         }
 
       /* if audio output route to master */
@@ -551,7 +551,7 @@ Tracklist::remove_track (
       /* remove/deselect all objects */
       track->clear_objects ();
 
-      track->Track::disconnect (rm_pl, false);
+      track->Track::disconnect_track (rm_pl, false);
 
       /* move track to the end */
       auto end_pos = std::ssize (tracks_) - 1;

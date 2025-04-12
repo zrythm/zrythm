@@ -1261,7 +1261,7 @@ public:
    * the Channel. Useful when deleting the channel.
    * @param recalc_graph Recalculate mixer graph.
    */
-  void disconnect (bool remove_pl, bool recalc_graph);
+  void disconnect_track (bool remove_pl, bool recalc_graph);
 
   bool is_enabled () const { return enabled_; }
   bool get_enabled () const { return enabled_; }

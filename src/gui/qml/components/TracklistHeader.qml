@@ -10,14 +10,15 @@ ToolBar {
     id: root
 
     required property var tracklist
+    required property var trackFactory
 
     ToolButton {
         icon.source: ResourceManager.getIconUrl("zrythm-dark", "add.svg")
-        
+
         ToolTip {
             text: qsTr("Add track")
         }
-        
+
         onClicked: {
             addMenu.popup();
         }
@@ -27,12 +28,12 @@ ToolBar {
 
             MenuItem {
                 text: qsTr("Add _MIDI Track")
-                onTriggered: ActionController.createEmptyTrack(9)
+                onTriggered: trackFactory.addEmptyTrackFromType(9)
             }
 
             MenuItem {
                 text: qsTr("Add Audio Track")
-                onTriggered: ActionController.createEmptyTrack(1)
+                onTriggered: trackFactory.addEmptyTrackFromType(1)
             }
 
             MenuSeparator {
@@ -47,12 +48,12 @@ ToolBar {
 
             MenuItem {
                 text: qsTr("Add Audio FX Track")
-                onTriggered: ActionController.createEmptyTrack(7)
+                onTriggered: trackFactory.addEmptyTrackFromType(7)
             }
 
             MenuItem {
                 text: qsTr("Add MIDI FX Track")
-                onTriggered: ActionController.createEmptyTrack(10)
+                onTriggered: trackFactory.addEmptyTrackFromType(10)
             }
 
             MenuSeparator {
@@ -60,12 +61,12 @@ ToolBar {
 
             MenuItem {
                 text: qsTr("Add Audio Group Track")
-                onTriggered: ActionController.createEmptyTrack(8)
+                onTriggered: trackFactory.addEmptyTrackFromType(8)
             }
 
             MenuItem {
                 text: qsTr("Add MIDI Group Track")
-                onTriggered: ActionController.createEmptyTrack(11)
+                onTriggered: trackFactory.addEmptyTrackFromType(11)
             }
 
             MenuSeparator {
@@ -73,7 +74,7 @@ ToolBar {
 
             MenuItem {
                 text: qsTr("Add Folder Track")
-                onTriggered: ActionController.createEmptyTrack(12)
+                onTriggered: trackFactory.addEmptyTrackFromType(12)
             }
 
         }

@@ -936,7 +936,7 @@ Channel::connect_plugins ()
 }
 
 void
-Channel::connect (PortConnectionsManager &mgr, AudioEngine &engine)
+Channel::connect_channel (PortConnectionsManager &mgr, AudioEngine &engine)
 {
   auto &tr = track_;
 
@@ -1825,31 +1825,17 @@ Channel::get_plugins (std::vector<Channel::Plugin *> &pls)
 }
 
 void
-Channel::disconnect (bool remove_pl)
+Channel::disconnect_channel (bool remove_pl)
 {
   z_debug ("disconnecting channel {}", track_->get_name ());
   if (remove_pl)
     {
-      for (size_t i = 0; i < dsp::STRIP_SIZE; i++)
+      std::vector<Plugin *> plugins;
+      get_plugins (plugins);
+      for (const auto &pl : plugins)
         {
-          if (inserts_.at (i))
-            {
-              Channel::remove_plugin (
-                dsp::PluginSlot (dsp::PluginSlotType::Insert, i), false,
-                remove_pl, false, false);
-            }
-          if (midi_fx_.at (i))
-            {
-              Channel::remove_plugin (
-                dsp::PluginSlot (dsp::PluginSlotType::MidiFx, i), false,
-                remove_pl, false, false);
-            }
-        }
-      if (instrument_)
-        {
-          Channel::remove_plugin (
-            dsp::PluginSlot (dsp::PluginSlotType::Instrument), false, remove_pl,
-            false, false);
+          const auto slot = get_plugin_slot (pl->get_uuid ());
+          remove_plugin (slot, false, remove_pl, false, false);
         }
     }
 

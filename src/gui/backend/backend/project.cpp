@@ -87,6 +87,13 @@ Project::Project (QObject * parent)
         *plugin_registry_,
         *port_registry_,
         *gui::SettingsManager::get_instance (),
+        this)),
+      track_factory_ (new TrackFactory (
+        *track_registry_,
+        *plugin_registry_,
+        *port_registry_,
+        *arranger_object_registry_,
+        *gui::SettingsManager::get_instance (),
         this))
 {
   // audio_engine_ = std::make_unique<AudioEngine> (this);
@@ -446,6 +453,7 @@ Project::add_default_tracks ()
     tracklist_->append_track (
       TrackUuidReference{ track->get_uuid (), get_track_registry () },
       *audio_engine_, false, false);
+
     return track;
   };
 
@@ -1333,6 +1341,12 @@ PluginFactory *
 Project::getPluginFactory () const
 {
   return plugin_factory_;
+}
+
+TrackFactory *
+Project::getTrackFactory () const
+{
+  return track_factory_;
 }
 
 Project *

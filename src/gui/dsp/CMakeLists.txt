@@ -202,8 +202,7 @@ target_sources(zrythm_gui_lib
     track.h
     track.cpp
     track_all.h
-    track_span.h
-    track_span.cpp
+    track_factory.h
     track_fwd.h
     track_lane.h
     track_lane.cpp
@@ -211,6 +210,8 @@ target_sources(zrythm_gui_lib
     track_lane_list.cpp
     track_processor.h
     track_processor.cpp
+    track_span.h
+    track_span.cpp
     tracklist.h
     tracklist.cpp
     transport.h

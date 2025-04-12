@@ -481,7 +481,7 @@ Track::remove_plugin (
 }
 
 void
-Track::disconnect (bool remove_pl, bool recalc_graph)
+Track::disconnect_track (bool remove_pl, bool recalc_graph)
 {
   z_debug ("disconnecting track '{}' ({})...", name_, pos_);
 
@@ -524,7 +524,7 @@ Track::disconnect (bool remove_pl, bool recalc_graph)
 
   if (auto channel_track = dynamic_cast<ChannelTrack *> (this))
     {
-      channel_track->channel_->disconnect (remove_pl);
+      channel_track->channel_->disconnect_channel (remove_pl);
     }
 
   disconnecting_ = false;

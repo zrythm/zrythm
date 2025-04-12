@@ -18,7 +18,7 @@ class ActionController : public QObject
   QML_ELEMENT
   QML_SINGLETON
 public:
-  Q_INVOKABLE void createEmptyTrack (int type);
+  // Q_INVOKABLE void createEmptyTrack (int type);
 
 public:
   ActionController (QObject * parent = nullptr);

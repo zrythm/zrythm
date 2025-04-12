@@ -17,6 +17,7 @@
 #include "gui/dsp/port_connections_manager.h"
 #include "gui/dsp/quantize_options.h"
 #include "gui/dsp/region_link_group_manager.h"
+#include "gui/dsp/track_factory.h"
 #include "utils/progress_info.h"
 
 /**
@@ -112,6 +113,7 @@ class Project final
     ArrangerObjectFactory * arrangerObjectFactory READ getArrangerObjectFactory
       CONSTANT FINAL)
   Q_PROPERTY (PluginFactory * pluginFactory READ getPluginFactory CONSTANT FINAL)
+  Q_PROPERTY (TrackFactory * trackFactory READ getTrackFactory CONSTANT FINAL)
 
 public:
   using QuantizeOptions = zrythm::gui::old_dsp::QuantizeOptions;
@@ -169,6 +171,7 @@ public:
   gui::actions::UndoManager * getUndoManager () const;
   ArrangerObjectFactory *     getArrangerObjectFactory () const;
   PluginFactory *             getPluginFactory () const;
+  TrackFactory *              getTrackFactory () const;
 
   Q_SIGNAL void titleChanged (const QString &title);
   Q_SIGNAL void directoryChanged (const QString &directory);
@@ -598,8 +601,8 @@ public:
   gui::actions::UndoManager * undo_manager_{};
 
   ArrangerObjectFactory * arranger_object_factory_{};
-
   PluginFactory * plugin_factory_{};
+  TrackFactory *          track_factory_{};
 
   /** Used when deserializing projects. */
   int format_major_ = 0;

@@ -212,8 +212,8 @@ private:
   void undo_impl () final;
 
   /**
-   * @brief Copies the track positions from @p sel into @p track_positions, and
-   * also updates @ref num_tracks_.
+   * @brief Copies the track positions from @p sel into @p track_positions,
+   * and also updates @ref num_tracks_.
    */
   void copy_track_positions_from_selections (
     std::vector<int> &track_positions,
@@ -256,7 +256,7 @@ private:
 
 public:
   /** Type of action. */
-  Type tracklist_selections_action_type_ = (Type) 0;
+  Type tracklist_selections_action_type_{};
 
   /** Position to make the tracks at.
    *
@@ -273,7 +273,7 @@ public:
   bool have_pos_ = false;
 
   /** Track type. */
-  Track::Type track_type_ = (Track::Type) 0;
+  Track::Type track_type_{};
 
   /** Flag to know if we are making an empty track. */
   bool is_empty_ = false;
@@ -323,9 +323,9 @@ public:
    *
    * Counter to be filled while doing to be used when undoing.
    */
-  int num_fold_change_tracks_ = 0;
+  int num_fold_change_tracks_{};
 
-  EditType edit_type_ = (EditType) 0;
+  EditType edit_type_{};
 
   /**
    * Track positions.
