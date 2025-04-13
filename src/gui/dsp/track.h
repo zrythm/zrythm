@@ -1574,6 +1574,8 @@ concept TrackWithPlugins =
 using TrackRegistry = utils::OwningObjectRegistry<TrackPtrVariant, Track>;
 using TrackRegistryRef = std::reference_wrapper<TrackRegistry>;
 using TrackUuidReference = utils::UuidReference<TrackRegistry>;
+using TrackSelectionManager =
+  utils::UuidIdentifiableObjectSelectionManager<TrackRegistry>;
 
 /**
  * @}

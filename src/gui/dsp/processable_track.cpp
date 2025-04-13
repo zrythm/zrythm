@@ -77,7 +77,7 @@ ProcessableTrack::
 {
   if (auto_select)
     {
-      TRACKLIST->get_selection_manager ().select_unique_track (get_uuid ());
+      TRACKLIST->get_selection_manager ().select_unique (get_uuid ());
     }
 
   processor_->get_monitor_audio_port ().set_toggled (monitor, fire_events);

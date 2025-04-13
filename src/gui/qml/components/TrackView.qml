@@ -129,6 +129,11 @@ Control {
                             styleHeight: control.buttonHeight
                             padding: control.buttonPadding
                             height: soloButton.height
+                            visible: track.isRecordable
+                            checked: track.isRecordable && track.recording
+                            onClicked: {
+                              track.recording = !track.recording;
+                            }
                         }
 
                         layer.effect: DropShadowEffect {

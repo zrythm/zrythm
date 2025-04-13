@@ -17,7 +17,8 @@ class MidiEvents;
 class Velocity;
 using MIDI_FILE = void;
 
-#define DEFINE_PIANO_ROLL_TRACK_QML_PROPERTIES(ClassType)
+#define DEFINE_PIANO_ROLL_TRACK_QML_PROPERTIES(ClassType) \
+  DEFINE_RECORDABLE_TRACK_QML_PROPERTIES (ClassType)
 
 /**
  * Interface for a piano roll track.

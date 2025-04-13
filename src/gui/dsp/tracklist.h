@@ -34,85 +34,6 @@ class MarkerTrack;
 class StringArray;
 class Router;
 
-class TrackSelectionManager
-{
-public:
-  using TrackUuidSet = std::unordered_set<TrackUuid>;
-
-  TrackSelectionManager (
-    TrackUuidSet        &selected_tracks,
-    const TrackRegistry &track_registry_)
-      : selected_tracks_ (selected_tracks), track_registry_ (track_registry_)
-  {
-  }
-  void append_track_to_selection (const TrackUuid &id)
-  {
-    if (!is_track_selected (id))
-      {
-        selected_tracks_.insert (id);
-        emit_selection_changed_for_track (id);
-      }
-  }
-  void remove_track_from_selection (const TrackUuid &id)
-  {
-    if (is_track_selected (id))
-      {
-        selected_tracks_.erase (id);
-        emit_selection_changed_for_track (id);
-      }
-  }
-  void select_unique_track (const TrackUuid &id)
-  {
-    clear_selection ();
-    append_track_to_selection (id);
-  }
-  bool is_track_selected (const TrackUuid &id) const
-  {
-    return selected_tracks_.contains (id);
-  }
-  bool is_only_selected_track (const TrackUuid &id) const
-  {
-    return selected_tracks_.size () == 1 && is_track_selected (id);
-  }
-  bool empty () const { return selected_tracks_.empty (); }
-  auto size () const { return selected_tracks_.size (); }
-
-  void clear_selection ()
-  { // Make a copy of the selected tracks to iterate over
-    auto selected_tracks_copy = selected_tracks_;
-    for (const auto &track_id : selected_tracks_copy)
-      {
-        selected_tracks_.erase (track_id);
-        emit_selection_changed_for_track (track_id);
-      }
-  }
-
-  template <RangeOf<TrackUuid> TrackUuidRange>
-  void select_only_these_tracks (TrackUuidRange &&track_uuids)
-  {
-    clear_selection ();
-    for (const auto &track_uuid : track_uuids)
-      {
-        append_track_to_selection (track_uuid);
-      }
-  }
-
-private:
-  void emit_selection_changed_for_track (const TrackUuid &id)
-  {
-    auto track_var = track_registry_.find_by_id_or_throw (id);
-    std::visit (
-      [&] (auto &&track) {
-        Q_EMIT track->selectedChanged (is_track_selected (id));
-      },
-      track_var);
-  }
-
-private:
-  std::unordered_set<TrackUuid> &selected_tracks_;
-  const TrackRegistry           &track_registry_;
-};
-
 /**
  * The Tracklist contains all the tracks in the Project.
  *
@@ -501,7 +422,7 @@ public:
                   const size_t child_pos =
                     get_track_index (track_ref->get_uuid ()) + i;
                   const auto &child_track_var = get_track_at_index (child_pos);
-                  get_selection_manager ().append_track_to_selection (
+                  get_selection_manager ().append_to_selection (
                     TrackSpan::uuid_projection (child_track_var));
                 }
             }
@@ -554,7 +475,7 @@ private:
    *
    * There must always be at least 1 selected track.
    */
-  std::unordered_set<TrackUuid> selected_tracks_;
+  TrackSelectionManager::UuidSet selected_tracks_;
 
 public:
   /** The chord track, for convenience. */

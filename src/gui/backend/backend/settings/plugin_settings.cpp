@@ -234,7 +234,7 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
           auto pl_var = pl_track->channel_->get_instrument ();
 
           /* move the plugin track inside the group */
-          TRACKLIST->get_selection_manager ().select_unique_track (
+          TRACKLIST->get_selection_manager ().select_unique (
             pl_track->get_uuid ());
           UNDO_MANAGER->perform (
             new gui::actions::MoveTracksInsideFoldableTrackAction (
@@ -244,7 +244,7 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
           num_actions++;
 
           /* route to nowhere */
-          TRACKLIST->get_selection_manager ().select_unique_track (
+          TRACKLIST->get_selection_manager ().select_unique (
             pl_track->get_uuid ());
           UNDO_MANAGER->perform (new gui::actions::RemoveTracksDirectOutAction (
             TrackSpan{ std::ranges::to<std::vector> (
@@ -283,7 +283,7 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
               num_actions++;
 
               /* move the fx track inside the group */
-              TRACKLIST->get_selection_manager ().select_unique_track (
+              TRACKLIST->get_selection_manager ().select_unique (
                 fx_track->get_uuid ());
               UNDO_MANAGER->perform (
                 new gui::actions::MoveTracksInsideFoldableTrackAction (
@@ -293,7 +293,7 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
               num_actions++;
 
               /* move the fx track to the end */
-              TRACKLIST->get_selection_manager ().select_unique_track (
+              TRACKLIST->get_selection_manager ().select_unique (
                 fx_track->get_uuid ());
               UNDO_MANAGER->perform (new gui::actions::MoveTracksAction (
                 TrackSpan{ std::ranges::to<std::vector> (
@@ -302,7 +302,7 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
               num_actions++;
 
               /* route to group */
-              TRACKLIST->get_selection_manager ().select_unique_track (
+              TRACKLIST->get_selection_manager ().select_unique (
                 fx_track->get_uuid ());
               UNDO_MANAGER->perform (new gui::actions::ChangeTracksDirectOutAction (
                 TrackSpan{ std::ranges::to<std::vector> (

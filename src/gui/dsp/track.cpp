@@ -711,7 +711,7 @@ Track::set_comment (const std::string &comment, bool undoable)
 {
   if (undoable)
     {
-      tracklist_->get_selection_manager ().select_unique_track (get_uuid ());
+      tracklist_->get_selection_manager ().select_unique (get_uuid ());
 
       try
         {
@@ -735,7 +735,7 @@ Track::set_color (const Color &color, bool undoable, bool fire_events)
 {
   if (undoable)
     {
-      tracklist_->get_selection_manager ().select_unique_track (get_uuid ());
+      tracklist_->get_selection_manager ().select_unique (get_uuid ());
 
       try
         {
@@ -764,7 +764,7 @@ Track::set_icon (const std::string &icon_name, bool undoable, bool fire_events)
 {
   if (undoable)
     {
-      tracklist_->get_selection_manager ().select_unique_track (get_uuid ());
+      tracklist_->get_selection_manager ().select_unique (get_uuid ());
 
       try
         {
@@ -858,7 +858,7 @@ Track::set_enabled (
 
   if (auto_select)
     {
-      tracklist_->get_selection_manager ().select_unique_track (get_uuid ());
+      tracklist_->get_selection_manager ().select_unique (get_uuid ());
     }
 
   if (trigger_undo)

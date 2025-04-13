@@ -23,6 +23,7 @@ add_executable(utils_unit_tests
   ring_buffer_test.cpp
   string_test.cpp
   string_array_test.cpp
+  uuid_identifiable_object_test.h
   uuid_identifiable_object_test.cpp
   variant_helpers_test.cpp
 )
@@ -32,7 +33,7 @@ if(ZRYTHM_TESTS_WITH_INTERNET_ACCESS)
 endif()
 
 set_target_properties(utils_unit_tests PROPERTIES
-  AUTOMOC OFF
+  AUTOMOC ON
 )
 
 target_link_libraries(utils_unit_tests PRIVATE

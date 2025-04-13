@@ -32,26 +32,6 @@ RecordableTrack::init_loaded (
 }
 
 void
-RecordableTrack::set_recording (bool recording)
-{
-  z_debug ("{}: setting recording {}", name_, recording);
-
-  get_recording_port ().set_toggled (recording, false);
-
-  if (recording)
-    {
-      z_info ("enabled recording on {}", name_);
-    }
-  else
-    {
-      z_info ("disabled recording on {}", name_);
-
-      /* send all notes off if can record MIDI */
-      processor_->pending_midi_panic_ = true;
-    }
-}
-
-void
 RecordableTrack::append_member_ports (
   std::vector<Port *> &ports,
   bool                 include_plugins) const

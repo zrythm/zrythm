@@ -7,6 +7,24 @@
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/processable_track.h"
 
+#define DEFINE_RECORDABLE_TRACK_QML_PROPERTIES(ClassType) \
+public: \
+  /* ================================================================ */ \
+  /* recording */ \
+  /* ================================================================ */ \
+  Q_PROPERTY ( \
+    bool recording READ getRecording WRITE setRecording NOTIFY recordingChanged) \
+  bool getRecording () const \
+  { \
+    return get_recording (); \
+  } \
+  void setRecording (bool recording) \
+  { \
+    set_recording (recording); \
+  } \
+\
+  Q_SIGNAL void recordingChanged (bool recording);
+
 /**
  * Abstract class for a track that can be recorded.
  */
@@ -34,7 +52,28 @@ public:
   /**
    * Sets recording and connects/disconnects the JACK ports.
    */
-  void set_recording (bool recording);
+  void set_recording (this auto &&self, bool recording)
+  {
+    if (self.get_recording () == recording)
+      return;
+
+    z_debug ("{}: setting recording {}", self.name_, recording);
+    self.get_recording_port ().set_toggled (recording, false);
+
+    if (recording)
+      {
+        z_info ("enabled recording on {}", self.name_);
+      }
+    else
+      {
+        z_info ("disabled recording on {}", self.name_);
+
+        /* send all notes off if can record MIDI */
+        self.processor_->pending_midi_panic_ = true;
+      }
+
+    Q_EMIT self.recordingChanged (recording);
+  }
 
   std::optional<ArrangerObjectPtrVariant> get_recording_region () const
   {

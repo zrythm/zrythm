@@ -464,6 +464,85 @@ private:
   QHash<QUuid, int>      ref_counts_;
 };
 
+template <typename RegistryT> class UuidIdentifiableObjectSelectionManager
+{
+  using UuidType = typename RegistryT::UuidType;
+
+public:
+  using UuidSet = std::unordered_set<UuidType>;
+
+  UuidIdentifiableObjectSelectionManager (
+    UuidSet         &selected_objs,
+    const RegistryT &registry)
+      : selected_objects_ (selected_objs), registry_ (registry)
+  {
+  }
+  void append_to_selection (const UuidType &id)
+  {
+    if (!is_selected (id))
+      {
+        selected_objects_.insert (id);
+        emit_selection_changed_for_object (id);
+      }
+  }
+  void remove_from_selection (const UuidType &id)
+  {
+    if (is_selected (id))
+      {
+        selected_objects_.erase (id);
+        emit_selection_changed_for_object (id);
+      }
+  }
+  void select_unique (const UuidType &id)
+  {
+    clear_selection ();
+    append_to_selection (id);
+  }
+  bool is_selected (const UuidType &id) const
+  {
+    return selected_objects_.contains (id);
+  }
+  bool is_only_selection (const UuidType &id) const
+  {
+    return selected_objects_.size () == 1 && is_selected (id);
+  }
+  bool empty () const { return selected_objects_.empty (); }
+  auto size () const { return selected_objects_.size (); }
+
+  void clear_selection ()
+  { // Make a copy of the selected tracks to iterate over
+    auto selected_objs_copy = selected_objects_;
+    for (const auto &uuid : selected_objs_copy)
+      {
+        selected_objects_.erase (uuid);
+        emit_selection_changed_for_object (uuid);
+      }
+  }
+
+  template <RangeOf<UuidType> UuidRange>
+  void select_only_these (const UuidRange &uuids)
+  {
+    clear_selection ();
+    for (const auto &uuid : uuids)
+      {
+        append_to_selection (uuid);
+      }
+  }
+
+private:
+  void emit_selection_changed_for_object (const UuidType &id)
+  {
+    auto obj_var = registry_.find_by_id_or_throw (id);
+    std::visit (
+      [&] (auto &&obj) { Q_EMIT obj->selectedChanged (is_selected (id)); },
+      obj_var);
+  }
+
+private:
+  UuidSet         &selected_objects_;
+  const RegistryT &registry_;
+};
+
 /**
  * @brief A list of UUID-identified objects that provides iteration via
  * registry lookups.

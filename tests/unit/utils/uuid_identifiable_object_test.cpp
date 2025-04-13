@@ -4,35 +4,11 @@
 #include "utils/gtest_wrapper.h"
 #include "utils/uuid_identifiable_object.h"
 
+#include "./uuid_identifiable_object_test.h"
+
 using namespace zrythm::utils;
 
 using namespace zrythm;
-
-class BaseTestObject
-    : public utils::UuidIdentifiableObject<BaseTestObject>,
-      public serialization::ISerializable<BaseTestObject>
-{
-public:
-  BaseTestObject () = default;
-  explicit BaseTestObject (Uuid id)
-      : UuidIdentifiableObject<BaseTestObject> (id)
-  {
-  }
-  ~BaseTestObject () override = default;
-  BaseTestObject (const BaseTestObject &) = default;
-  BaseTestObject &operator= (const BaseTestObject &) = default;
-  BaseTestObject (BaseTestObject &&) = default;
-  BaseTestObject &operator= (BaseTestObject &&) = default;
-
-  std::string get_document_type () const override { return "TestObject"; }
-  void        define_fields (const ISerializableBase::Context &ctx)
-  {
-    UuidIdentifiableObject::define_base_fields (ctx);
-  }
-};
-
-static_assert (UuidIdentifiable<BaseTestObject>);
-static_assert (!UuidIdentifiableQObject<BaseTestObject>);
 
 TEST (UuidIdentifiableObjectTest, Creation)
 {
@@ -81,8 +57,6 @@ TEST (UuidIdentifiableObjectTest, CopyAndMove)
   EXPECT_EQ (obj5.get_uuid (), id);
 }
 
-using TestUuid = BaseTestObject::Uuid;
-
 TEST (UuidIdentifiableObjectTest, UuidTypeOperations)
 {
   TestUuid null_uuid;
@@ -96,56 +70,6 @@ TEST (UuidIdentifiableObjectTest, UuidTypeOperations)
   EXPECT_EQ (uuid1, uuid1_copy);
   EXPECT_NE (uuid1, uuid2);
 }
-
-class DerivedTestObject
-    : public QObject,
-      public BaseTestObject,
-      public ICloneable<DerivedTestObject>
-{
-public:
-  explicit DerivedTestObject (TestUuid id, std::string name)
-      : BaseTestObject (id), name_ (std::move (name))
-  {
-  }
-
-  [[nodiscard]] std::string name () const { return name_; }
-
-  void
-  init_after_cloning (const DerivedTestObject &other, ObjectCloneType clone_type)
-    final
-  {
-    name_ = other.name_;
-  }
-
-private:
-  std::string name_;
-};
-
-// FIXME!!!
-// static_assert (UuidIdentifiableQObject<DerivedTestObject>);
-
-using TestVariant = std::variant<DerivedTestObject *>;
-using TestRegistry = utils::OwningObjectRegistry<TestVariant, BaseTestObject>;
-
-class UuidIdentifiableObjectRegistryTest : public ::testing::Test
-{
-protected:
-  void SetUp () override
-  {
-    obj1_ = new DerivedTestObject (TestUuid{ QUuid::createUuid () }, "Object1");
-    obj2_ = new DerivedTestObject (TestUuid{ QUuid::createUuid () }, "Object2");
-    obj3_ = new DerivedTestObject (TestUuid{ QUuid::createUuid () }, "Object3");
-
-    registry_.register_object (obj1_);
-    registry_.register_object (obj2_);
-    registry_.register_object (obj3_);
-  }
-
-  TestRegistry        registry_;
-  DerivedTestObject * obj1_{};
-  DerivedTestObject * obj2_{};
-  DerivedTestObject * obj3_{};
-};
 
 TEST_F (UuidIdentifiableObjectRegistryTest, BasicRegistration)
 {
@@ -270,4 +194,91 @@ TEST_F (UuidIdentifiableObjectRegistryTest, ObjectCloning)
     *obj1_, TestUuid{ QUuid::createUuid () }, "ClonedObject");
   EXPECT_NE (clone_ref.id (), obj1_->get_uuid ());
   EXPECT_EQ (registry_.size (), 4);
+}
+
+TEST_F (UuidIdentifiableObjectSelectionManagerTest, BasicSelection)
+{
+  EXPECT_TRUE (selection_manager_->empty ());
+
+  selection_manager_->append_to_selection (obj1_->get_uuid ());
+  EXPECT_TRUE (selection_manager_->is_selected (obj1_->get_uuid ()));
+  EXPECT_EQ (selection_manager_->size (), 1);
+
+  selection_manager_->append_to_selection (obj2_->get_uuid ());
+  EXPECT_TRUE (selection_manager_->is_selected (obj2_->get_uuid ()));
+  EXPECT_EQ (selection_manager_->size (), 2);
+
+  selection_manager_->remove_from_selection (obj1_->get_uuid ());
+  EXPECT_FALSE (selection_manager_->is_selected (obj1_->get_uuid ()));
+  EXPECT_EQ (selection_manager_->size (), 1);
+}
+
+TEST_F (UuidIdentifiableObjectSelectionManagerTest, SelectUnique)
+{
+  selection_manager_->append_to_selection (obj1_->get_uuid ());
+  selection_manager_->append_to_selection (obj2_->get_uuid ());
+
+  selection_manager_->select_unique (obj3_->get_uuid ());
+  EXPECT_FALSE (selection_manager_->is_selected (obj1_->get_uuid ()));
+  EXPECT_FALSE (selection_manager_->is_selected (obj2_->get_uuid ()));
+  EXPECT_TRUE (selection_manager_->is_selected (obj3_->get_uuid ()));
+  EXPECT_TRUE (selection_manager_->is_only_selection (obj3_->get_uuid ()));
+  EXPECT_EQ (selection_manager_->size (), 1);
+}
+
+TEST_F (UuidIdentifiableObjectSelectionManagerTest, ClearSelection)
+{
+  selection_manager_->append_to_selection (obj1_->get_uuid ());
+  selection_manager_->append_to_selection (obj2_->get_uuid ());
+
+  selection_manager_->clear_selection ();
+  EXPECT_TRUE (selection_manager_->empty ());
+  EXPECT_FALSE (selection_manager_->is_selected (obj1_->get_uuid ()));
+  EXPECT_FALSE (selection_manager_->is_selected (obj2_->get_uuid ()));
+}
+
+TEST_F (UuidIdentifiableObjectSelectionManagerTest, SelectOnlyThese)
+{
+  std::vector<TestUuid> uuids{ obj1_->get_uuid (), obj3_->get_uuid () };
+  selection_manager_->select_only_these (uuids);
+
+  EXPECT_TRUE (selection_manager_->is_selected (obj1_->get_uuid ()));
+  EXPECT_FALSE (selection_manager_->is_selected (obj2_->get_uuid ()));
+  EXPECT_TRUE (selection_manager_->is_selected (obj3_->get_uuid ()));
+  EXPECT_EQ (selection_manager_->size (), 2);
+}
+
+TEST_F (UuidIdentifiableObjectSelectionManagerTest, EmitsSelectionChanged)
+{
+  bool obj1_selected = false;
+  bool obj2_selected = false;
+
+  QObject::connect (
+    obj1_, &DerivedTestObject::selectedChanged, this,
+    [&] (bool selected) { obj1_selected = selected; });
+  QObject::connect (
+    obj2_, &DerivedTestObject::selectedChanged, this,
+    [&] (bool selected) { obj2_selected = selected; });
+
+  selection_manager_->append_to_selection (obj1_->get_uuid ());
+  EXPECT_TRUE (obj1_selected);
+  EXPECT_FALSE (obj2_selected);
+
+  selection_manager_->append_to_selection (obj2_->get_uuid ());
+  EXPECT_TRUE (obj1_selected);
+  EXPECT_TRUE (obj2_selected);
+
+  selection_manager_->remove_from_selection (obj1_->get_uuid ());
+  EXPECT_FALSE (obj1_selected);
+  EXPECT_TRUE (obj2_selected);
+}
+
+TEST_F (UuidIdentifiableObjectSelectionManagerTest, OnlySelectionCheck)
+{
+  selection_manager_->append_to_selection (obj1_->get_uuid ());
+  EXPECT_TRUE (selection_manager_->is_only_selection (obj1_->get_uuid ()));
+
+  selection_manager_->append_to_selection (obj2_->get_uuid ());
+  EXPECT_FALSE (selection_manager_->is_only_selection (obj1_->get_uuid ()));
+  EXPECT_FALSE (selection_manager_->is_only_selection (obj2_->get_uuid ()));
 }

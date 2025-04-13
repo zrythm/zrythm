@@ -512,8 +512,7 @@ Project::add_default_tracks ()
   /* add master track */
   auto * master_track =
     add_track.operator()<MasterTrack> (QObject::tr ("Master"));
-  tracklist_->get_selection_manager ().select_unique_track (
-    master_track->get_uuid ());
+  tracklist_->get_selection_manager ().select_unique (master_track->get_uuid ());
 
   last_selection_ = SelectionType::Tracklist;
 }

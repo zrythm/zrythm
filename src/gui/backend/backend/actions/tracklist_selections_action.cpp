@@ -1017,8 +1017,8 @@ TracklistSelectionsAction::
                         }
                     }
 
-                  TRACKLIST->get_selection_manager ()
-                    .append_track_to_selection (prj_track->get_uuid ());
+                  TRACKLIST->get_selection_manager ().append_to_selection (
+                    prj_track->get_uuid ());
 
                   TRACKLIST->get_track_span ().print_tracks ();
                 },
@@ -1124,8 +1124,8 @@ TracklistSelectionsAction::
                     track_ref, target_pos, *AUDIO_ENGINE, false, false);
 
                   /* select it */
-                  TRACKLIST->get_selection_manager ()
-                    .append_track_to_selection (track->get_uuid ());
+                  TRACKLIST->get_selection_manager ().append_to_selection (
+                    track->get_uuid ());
                   new_tracks.push_back (track);
                 },
                 own_track_var);
@@ -1217,13 +1217,13 @@ TracklistSelectionsAction::
                         == std::visit (
                           TrackSpan::uuid_projection, tls_before_span.front ()))
                         {
-                          TRACKLIST->get_selection_manager ()
-                            .select_unique_track (prj_track->get_uuid ());
+                          TRACKLIST->get_selection_manager ().select_unique (
+                            prj_track->get_uuid ());
                         }
                       else
                         {
                           TRACKLIST->get_selection_manager ()
-                            .append_track_to_selection (prj_track->get_uuid ());
+                            .append_to_selection (prj_track->get_uuid ());
                         }
                     },
                     *_prj_track);

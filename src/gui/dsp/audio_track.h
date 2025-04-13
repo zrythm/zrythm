@@ -31,6 +31,7 @@ class AudioTrack final
   DEFINE_LANED_TRACK_QML_PROPERTIES (AudioTrack)
   DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (AudioTrack)
   DEFINE_CHANNEL_TRACK_QML_PROPERTIES (AudioTrack)
+  DEFINE_RECORDABLE_TRACK_QML_PROPERTIES (AudioTrack)
 
   friend class InitializableObject;
 

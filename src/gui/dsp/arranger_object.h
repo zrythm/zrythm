@@ -475,6 +475,8 @@ using ArrangerObjectRegistry =
   utils::OwningObjectRegistry<ArrangerObjectPtrVariant, ArrangerObject>;
 using ArrangerObjectUuidReference = utils::UuidReference<ArrangerObjectRegistry>;
 static_assert (UuidReferenceType<ArrangerObjectUuidReference>);
+using ArrangerObjectSelectionManager =
+  utils::UuidIdentifiableObjectSelectionManager<ArrangerObjectRegistry>;
 
 template <typename T>
 concept ArrangerObjectSubclass = std::derived_from<T, ArrangerObject>;
