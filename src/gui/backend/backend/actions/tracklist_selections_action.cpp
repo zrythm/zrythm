@@ -812,8 +812,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
               auto tr = TRACKLIST->get_track_at_index (track_pos_ + i);
               std::visit (
                 [&] (auto &&track) {
-                  TRACKLIST->remove_track (
-                    track->get_uuid (), std::nullopt, true);
+                  TRACKLIST->remove_track (track->get_uuid ());
                 },
                 tr);
             }
@@ -879,8 +878,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
                     }
 
                   /* remove it */
-                  TRACKLIST->remove_track (
-                    prj_track->get_uuid (), std::nullopt, true);
+                  TRACKLIST->remove_track (prj_track->get_uuid ());
                 },
                 own_track_var);
             }
@@ -1245,7 +1243,7 @@ TracklistSelectionsAction::
 
               /* remove it */
               const auto prj_track_id = TRACKLIST->tracks_.at (target_pos);
-              TRACKLIST->remove_track (prj_track_id.id (), std::nullopt, true);
+              TRACKLIST->remove_track (prj_track_id.id ());
             }
           /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr); */
           /* EVENTS_PUSH (EventType::ET_TRACKS_REMOVED, nullptr); */

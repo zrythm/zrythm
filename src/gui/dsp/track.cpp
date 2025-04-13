@@ -450,38 +450,7 @@ track_freeze (Track * self, bool freeze, GError ** error)
 #endif
 
 void
-Track::remove_plugin (
-  dsp::PluginSlot slot,
-  bool            replacing_plugin,
-  bool            moving_plugin,
-  bool            deleting_plugin,
-  bool            deleting_track,
-  bool            recalc_graph)
-{
-  z_debug ("removing plugin from track {}", name_);
-  if (slot.is_modulator ())
-    {
-      auto * modulator_track = dynamic_cast<ModulatorTrack *> (this);
-      if (modulator_track)
-        {
-          modulator_track->remove_modulator (
-            slot.get_slot_with_index ().second, deleting_plugin, deleting_track,
-            recalc_graph);
-        }
-    }
-  else
-    {
-      auto * channel_track = dynamic_cast<ChannelTrack *> (this);
-      if (channel_track)
-        {
-          channel_track->get_channel ()->remove_plugin (
-            slot, moving_plugin, deleting_plugin, deleting_track, recalc_graph);
-        }
-    }
-}
-
-void
-Track::disconnect_track (bool remove_pl, bool recalc_graph)
+Track::disconnect_track ()
 {
   z_debug ("disconnecting track '{}' ({})...", name_, pos_);
 
@@ -517,14 +486,9 @@ Track::disconnect_track (bool remove_pl, bool recalc_graph)
       remove_from_folder_parents ();
     }
 
-  if (recalc_graph)
-    {
-      ROUTER->recalc_graph (false);
-    }
-
   if (auto channel_track = dynamic_cast<ChannelTrack *> (this))
     {
-      channel_track->channel_->disconnect_channel (remove_pl);
+      channel_track->channel_->disconnect_channel ();
     }
 
   disconnecting_ = false;

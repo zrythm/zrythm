@@ -374,7 +374,7 @@ SampleProcessor::queue_file_or_chord_preset (
                 }
             }
 
-          tracklist_->remove_track (tr->get_uuid (), std::nullopt, true);
+          tracklist_->remove_track (tr->get_uuid ());
         },
         track_var);
     }

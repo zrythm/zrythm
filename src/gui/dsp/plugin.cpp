@@ -559,8 +559,8 @@ do_move (PluginMoveData * data)
           auto existing_pl = data_track->get_plugin_at_slot (data->slot);
           if (existing_pl)
             {
-              data_track->channel_->remove_plugin (
-                data->slot, false, true, false, false);
+              data_track->channel_->remove_plugin_from_channel (
+                data->slot, false, true);
             }
 
           /* move plugin's automation from src to dest */
@@ -571,7 +571,7 @@ do_move (PluginMoveData * data)
             pl->get_uuid (), data_track->get_plugin_registry ()
           };
           auto plugin_id =
-            prev_ch->remove_plugin (prev_slot, true, false, false, false);
+            prev_ch->remove_plugin_from_channel (prev_slot, true, false);
 
           /* add plugin to its new channel */
           data_track->channel_->add_plugin (

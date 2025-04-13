@@ -245,18 +245,13 @@ public:
    *
    * @param moving_plugin Whether or not we are moving the plugin.
    * @param deleting_plugin Whether or not we are deleting the plugin.
-   * @param deleting_channel If true, the automation tracks associated with
-   * the plugin are not deleted at this time.
-   * @param recalc_graph Recalculate mixer graph.
    *
    * @return The plugin that was removed (in case we want to move it).
    */
-  PluginUuid remove_plugin (
+  PluginUuid remove_plugin_from_channel (
     dsp::PluginSlot slot,
     bool            moving_plugin,
-    bool            deleting_plugin,
-    bool            deleting_channel,
-    bool            recalc_graph);
+    bool            deleting_plugin);
 
   /**
    * @brief Returns all existing plugins in the channel.
@@ -311,17 +306,10 @@ public:
   init_after_cloning (const Channel &other, ObjectCloneType clone_type) override;
 
   /**
-   * Disconnects the channel from the processing chain.
-   *
-   * This should be called immediately when the channel is getting deleted,
-   * and channel_free should be designed to be called later after an arbitrary
-   * delay.
-   *
-   * @param remove_pl Remove the zrythm::gui::old_dsp::plugins::Plugin from
-   * the Channel. Useful when deleting the channel.
-   * @param recalc_graph Recalculate mixer graph.
+   * Disconnects the channel from the processing chain and removes any plugins
+   * it contains.
    */
-  void disconnect_channel (bool remove_pl);
+  void disconnect_channel ();
 
   /**
    * Connects the channel's ports.

@@ -519,10 +519,7 @@ Tracklist::get_next_visible_track (TrackUuid track_id) const
 }
 
 void
-Tracklist::remove_track (
-  const TrackUuid                               track_id,
-  std::optional<std::reference_wrapper<Router>> router,
-  bool                                          rm_pl)
+Tracklist::remove_track (const TrackUuid &track_id)
 {
   auto track_it = std::ranges::find (tracks_, track_id, &TrackUuidReference::id);
   z_return_if_fail (track_it != tracks_.end ());
@@ -533,10 +530,8 @@ Tracklist::remove_track (
     [&] (auto &&track) {
       z_return_if_fail (track->get_index () == track_index);
       z_debug (
-        "removing [{}] {} - remove plugins {} - "
-        "recalc graph {} - num tracks before deletion: {}",
-        track_index, track->get_name (), rm_pl, router.has_value (),
-        tracks_.size ());
+        "removing [{}] {} - num tracks before deletion: {}", track_index,
+        track->get_name (), tracks_.size ());
 
       beginRemoveRows ({}, track_index, track_index);
 
@@ -551,7 +546,7 @@ Tracklist::remove_track (
       /* remove/deselect all objects */
       track->clear_objects ();
 
-      track->Track::disconnect_track (rm_pl, false);
+      track->disconnect_track ();
 
       /* move track to the end */
       auto end_pos = std::ssize (tracks_) - 1;
@@ -583,11 +578,6 @@ Tracklist::remove_track (
                     *track_to_select);
                 }
             }
-        }
-
-      if (router)
-        {
-          router->get ().recalc_graph (false);
         }
 
       endRemoveRows ();

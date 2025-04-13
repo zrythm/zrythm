@@ -1222,16 +1222,27 @@ public:
   }
 
   /**
-   * Wrapper over channel_remove_plugin() and
-   * modulator_track_remove_modulator().
+   * Wrapper over Channel::remove_plugin() and
+   * ModulatorTrack::remove_modulator().
    */
-  void remove_plugin (
-    dsp::PluginSlot slot,
-    bool            replacing_plugin,
-    bool            moving_plugin,
-    bool            deleting_plugin,
-    bool            deleting_track,
-    bool            recalc_graph);
+  template <typename SelfT>
+  void remove_plugin (this SelfT &self, dsp::PluginSlot slot)
+    requires (
+      std::derived_from<SelfT, ChannelTrack>
+      || std::is_same_v<SelfT, ModulatorTrack>)
+  {
+    z_debug ("removing plugin from track {}", self.name_);
+    if constexpr (std::is_same_v<SelfT, ModulatorTrack>)
+      {
+        assert (slot.is_modulator ());
+        self.remove_modulator (slot.get_slot_with_index ().second);
+      }
+    else if constexpr (std::derived_from<SelfT, ChannelTrack>)
+      {
+        assert (!slot.is_modulator ());
+        self.get_channel ()->remove_plugin_from_channel (slot, false, true);
+      }
+  }
 
   template <typename SelfT>
   dsp::PluginSlot
@@ -1251,17 +1262,10 @@ public:
   }
 
   /**
-   * Disconnects the track from the processing chain.
-   *
-   * This should be called immediately when the track is getting deleted,
-   * and track_free should be designed to be called later after an arbitrary
-   * delay.
-   *
-   * @param remove_pl Remove the zrythm::gui::old_dsp::plugins::Plugin from
-   * the Channel. Useful when deleting the channel.
-   * @param recalc_graph Recalculate mixer graph.
+   * Disconnects the track from the processing chain and removes any plugins it
+   * contains.
    */
-  void disconnect_track (bool remove_pl, bool recalc_graph);
+  void disconnect_track ();
 
   bool is_enabled () const { return enabled_; }
   bool get_enabled () const { return enabled_; }
@@ -1274,7 +1278,6 @@ public:
     bool auto_select,
     bool fire_events);
 
-  /** TODO: document why it's a pointer. */
   int get_total_bars (const Transport &transport, int total_bars) const;
 
   /**
@@ -1561,6 +1564,11 @@ concept TrackSubclass = std::derived_from<T, Track>;
 
 template <typename TrackT>
 concept FinalTrackSubclass = TrackSubclass<TrackT> && FinalClass<TrackT>;
+
+template <typename TrackT>
+concept TrackWithPlugins =
+  FinalTrackSubclass<TrackT>
+  && (std::derived_from<TrackT, ChannelTrack> || std::is_same_v<TrackT, ModulatorTrack>);
 
 using TrackRegistry = utils::OwningObjectRegistry<TrackPtrVariant, Track>;
 using TrackRegistryRef = std::reference_wrapper<TrackRegistry>;

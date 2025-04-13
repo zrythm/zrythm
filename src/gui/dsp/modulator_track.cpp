@@ -101,7 +101,7 @@ struct ModulatorImportData
         if (this->slot < (decltype (this->slot)) self->modulators_.size ())
           {
             auto existing_id = self->modulators_.at (this->slot);
-            self->remove_modulator (this->slot, true, false, false);
+            self->remove_modulator (this->slot);
           }
       }
 
@@ -210,11 +210,7 @@ ModulatorTrack::insert_modulator (
 }
 
 ModulatorTrack::PluginPtrVariant
-ModulatorTrack::remove_modulator (
-  dsp::PluginSlot::SlotNo slot,
-  bool                    deleting_modulator,
-  bool                    deleting_track,
-  bool                    recalc_graph)
+ModulatorTrack::remove_modulator (dsp::PluginSlot::SlotNo slot)
 {
   auto plugin_id = modulators_[slot];
   auto plugin_var = plugin_id.get_object ();
@@ -222,8 +218,7 @@ ModulatorTrack::remove_modulator (
     [&] (auto &&plugin) -> PluginPtrVariant {
       assert (plugin->get_track_id () == get_uuid ());
 
-      plugin->remove_ats_from_automation_tracklist (
-        deleting_modulator, !deleting_track && !deleting_modulator);
+      plugin->remove_ats_from_automation_tracklist (true, !false && !true);
 
       z_debug ("Removing {} from {}:{}", plugin->get_name (), name_, slot);
 
@@ -231,12 +226,8 @@ ModulatorTrack::remove_modulator (
       plugin->expose_ports (*AUDIO_ENGINE, false, true, true);
 
       /* if deleting plugin disconnect the plugin entirely */
-      if (deleting_modulator)
-        {
-          plugin->set_selected(false);
-
-          plugin->Plugin::disconnect ();
-        }
+      plugin->set_selected (false);
+      plugin->Plugin::disconnect ();
 
       auto it = modulators_.erase (modulators_.begin () + slot);
       for (; it != modulators_.end (); ++it)
@@ -245,11 +236,6 @@ ModulatorTrack::remove_modulator (
           auto        mod_var = mod_id.get_object ();
           std::visit (
             [&] (auto &&mod) { mod->set_track (get_uuid ()); }, mod_var);
-        }
-
-      if (recalc_graph)
-        {
-          ROUTER->recalc_graph (false);
         }
 
       auto ret_id = *it;

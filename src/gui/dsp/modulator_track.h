@@ -60,18 +60,9 @@ public:
     bool                    pub_events);
 
   /**
-   * Removes a plugin at pos from the track.
-   *
-   * @param deleting_modulator
-   * @param deleting_track If true, the automation tracks associated with the
-   * plugin are not deleted at this time.
-   * @param recalc_graph Recalculate mixer graph.
+   * Removes the modulator (plugin) at the given slot.
    */
-  PluginPtrVariant remove_modulator (
-    dsp::PluginSlot::SlotNo slot,
-    bool                    deleting_modulator,
-    bool                    deleting_track,
-    bool                    recalc_graph);
+  PluginPtrVariant remove_modulator (dsp::PluginSlot::SlotNo slot);
 
   std::optional<PluginPtrVariant>
   get_modulator (dsp::PluginSlot::SlotNo slot) const;

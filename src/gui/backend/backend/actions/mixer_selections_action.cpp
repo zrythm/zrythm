@@ -594,7 +594,10 @@ MixerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                     }
 
                   /* remove the plugin at given slot */
-                  track->remove_plugin (slot, false, false, true, false, false);
+                  if constexpr (TrackWithPlugins<TrackT>)
+                    {
+                      track->remove_plugin (slot);
+                    }
 
                   /* if there was a plugin at the slot before, bring it back */
                   revert_deleted_plugin (*track, slot);
@@ -1028,8 +1031,10 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                                 }
                               else if (copy)
                                 {
-                                  to_tr->remove_plugin (
-                                    to_slot, false, false, true, false, false);
+                                  if constexpr (TrackWithPlugins<ToTrackT>)
+                                    {
+                                      to_tr->remove_plugin (to_slot);
+                                    }
                                   pl = nullptr;
                                 }
 
@@ -1059,8 +1064,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                       /* if a new track was created delete it */
                       if (new_channel_)
                         {
-                          TRACKLIST->remove_track (
-                            to_tr->get_uuid (), std::nullopt, true);
+                          TRACKLIST->remove_track (to_tr->get_uuid ());
                         }
 
                       from_tr->validate ();

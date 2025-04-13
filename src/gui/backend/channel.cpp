@@ -1314,31 +1314,14 @@ Channel::disconnect_plugin_from_strip (dsp::PluginSlot slot, Channel::Plugin &pl
 }
 
 Channel::PluginUuid
-Channel::remove_plugin (
+Channel::remove_plugin_from_channel (
   dsp::PluginSlot slot,
   bool            moving_plugin,
-  bool            deleting_plugin,
-  bool            deleting_channel,
-  bool            recalc_graph)
+  bool            deleting_plugin)
 {
-  auto slot_type =
-    slot.has_slot_index ()
-      ? slot.get_slot_with_index ().first
-      : slot.get_slot_type_only ();
-  auto plugin_id = [&] () {
-    switch (slot_type)
-      {
-      case zrythm::dsp::PluginSlotType::Insert:
-        return *inserts_[slot.get_slot_with_index ().second];
-      case zrythm::dsp::PluginSlotType::MidiFx:
-        return *midi_fx_[slot.get_slot_with_index ().second];
-      case zrythm::dsp::PluginSlotType::Instrument:
-        return *instrument_;
-      default:
-        throw std::runtime_error ("Invalid slot type");
-      }
-  }();
-  auto plugin_ptr = plugin_id.get_object ();
+  auto plugin_opt = get_plugin_at_slot (slot);
+  assert (plugin_opt);
+  auto plugin_ptr = *plugin_opt;
 
   return std::visit (
     [&] (auto &&plugin) {
@@ -1351,7 +1334,7 @@ Channel::remove_plugin (
       if (!moving_plugin)
         {
           plugin->remove_ats_from_automation_tracklist (
-            deleting_plugin, !deleting_channel && !deleting_plugin);
+            deleting_plugin, !deleting_plugin);
         }
 
       if (is_in_active_project ())
@@ -1367,16 +1350,6 @@ Channel::remove_plugin (
 
           plugin->Plugin::disconnect ();
         }
-
-      if (
-        track_->is_in_active_project () && !track_->disconnecting_
-        && deleting_plugin && !moving_plugin)
-        {
-          track_->validate ();
-        }
-
-      if (recalc_graph)
-        ROUTER->recalc_graph (false);
 
       return plugin->get_uuid ();
     },
@@ -1412,7 +1385,7 @@ Channel::add_plugin (
   if (existing_pl_id.has_value ())
     {
       z_debug ("existing plugin exists at {}:{}", track_->get_name (), slot);
-      remove_plugin (slot, moving_plugin, true, false, false);
+      remove_plugin_from_channel (slot, moving_plugin, true);
     }
 
   auto plugin_var = plugin_id.get_object ();
@@ -1825,19 +1798,18 @@ Channel::get_plugins (std::vector<Channel::Plugin *> &pls)
 }
 
 void
-Channel::disconnect_channel (bool remove_pl)
+Channel::disconnect_channel ()
 {
   z_debug ("disconnecting channel {}", track_->get_name ());
-  if (remove_pl)
-    {
-      std::vector<Plugin *> plugins;
-      get_plugins (plugins);
-      for (const auto &pl : plugins)
-        {
-          const auto slot = get_plugin_slot (pl->get_uuid ());
-          remove_plugin (slot, false, remove_pl, false, false);
-        }
-    }
+  {
+    std::vector<Plugin *> plugins;
+    get_plugins (plugins);
+    for (const auto &pl : plugins)
+      {
+        const auto slot = get_plugin_slot (pl->get_uuid ());
+        remove_plugin_from_channel (slot, false, true);
+      }
+  }
 
   /* disconnect from output */
   if (is_in_active_project () && has_output ())

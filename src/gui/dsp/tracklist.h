@@ -162,17 +162,12 @@ public:
   }
 
   /**
-   * Removes a track from the Tracklist and the TracklistSelections.
+   * Removes the given track from the tracklist.
    *
-   * Also disconnects the channel.
-   *
-   * @param rm_pl Remove plugins or not.
-   * @param router If given, the processing graph will be soft-recalculated.
+   * Also disconnects the channel (breaks its internal & external connections)
+   * and removes any plugins (if any).
    */
-  void remove_track (
-    TrackUuid                                     track_id,
-    std::optional<std::reference_wrapper<Router>> router,
-    bool                                          rm_pl);
+  void remove_track (const TrackUuid &track_id);
 
   /**
    * Moves a track from its current position to the position given by @p pos.
