@@ -60,11 +60,14 @@ AudioTrack::init_loaded (
   AutomatableTrack::init_loaded (plugin_registry, port_registry);
   ProcessableTrack::init_loaded (plugin_registry, port_registry);
   LanedTrackImpl::init_loaded (plugin_registry, port_registry);
+// TODO
+#if 0
   auto tracklist = get_tracklist ();
   samplerate_ =
     (tracklist && tracklist->project_)
       ? tracklist->project_->audio_engine_->sample_rate_
       : AUDIO_ENGINE->sample_rate_;
+#endif
   rt_stretcher_ =
     dsp::Stretcher::create_rubberband (samplerate_, 2, 1.0, 1.0, true);
 }

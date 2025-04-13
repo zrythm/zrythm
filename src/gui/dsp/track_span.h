@@ -43,7 +43,7 @@ public:
   static auto selected_projection (const VariantType &track_var)
   {
     return std::visit (
-      [] (const auto &track) { return track->is_selected (); }, track_var);
+      [] (const auto &track) { return track->getSelected (); }, track_var);
   }
   static auto foldable_projection (const VariantType &track_var)
   {
@@ -124,10 +124,6 @@ public:
     return std::ranges::contains (*this, name, name_projection);
   }
 
-  void select_all () { set_selected_status_for_all_tracks (true); }
-
-  void deselect_all () { set_selected_status_for_all_tracks (false); }
-
   auto get_visible_tracks () const
   {
     return std::views::filter (*this, visible_projection);
@@ -204,6 +200,7 @@ public:
     });
   }
 
+#if 0
   /**
    * Deselects all tracks except for the last visible track.
    */
@@ -217,18 +214,6 @@ public:
       }
   }
 
-  /**
-   * Deselects all tracks except for the given track.
-   */
-  void select_single (TrackUuid track_id)
-  {
-    std::ranges::for_each (*this, [&] (auto &&track_var) {
-      std::visit (
-        [&] (auto &&tr) { tr->setSelected (tr->get_uuid () == track_id); },
-        track_var);
-    });
-  }
-
   void select_all_visible_tracks ()
   {
     std::ranges::for_each (
@@ -236,44 +221,7 @@ public:
         std::visit ([] (auto &&tr) { tr->setSelected (true); }, track_var);
       });
   }
-
-  /**
-   * Make sure all children of foldable tracks in this span are also selected.
-   *
-   * This is expected to be used when this instance is the current track
-   * selection.
-   *
-   * @param tracklist_tracks All tracks in the tracklist.
-   */
-  void select_foldable_children (const TrackSpanImpl &tracklist_tracks)
-  {
-    std::vector<TrackUuid> ret;
-
-    std::ranges::for_each (*this, [&] (auto &&track_var) {
-      std::visit (
-        [&] (auto &&track_ref) {
-          using TrackT = base_type<decltype (track_ref)>;
-          if constexpr (std::derived_from<TrackT, FoldableTrack>)
-            {
-              for (int i = 1; i < track_ref->size_; ++i)
-                {
-                  const size_t child_pos = track_ref->get_index () + i;
-                  const auto  &child_track_var =
-                    tracklist_tracks.range_[child_pos];
-                  std::visit (
-                    [&] (auto &&child_track) {
-                      if (!contains_track (child_track->get_uuid ()))
-                        {
-                          child_track->setSelected (true);
-                        }
-                    },
-                    child_track_var);
-                }
-            }
-        },
-        track_var);
-    });
-  }
+#endif
 
   /**
    * Returns whether the tracklist selections contains a track that cannot have
@@ -498,18 +446,6 @@ public:
           },
           track_var);
       }));
-  }
-
-private:
-  void set_selected_status_for_all_tracks (bool selected_status)
-  {
-    std::ranges::for_each (*this, [selected_status] (auto &&track_var) {
-      std::visit (
-        [selected_status] (auto &&track) {
-          track->setSelected (selected_status);
-        },
-        track_var);
-    });
   }
 };
 

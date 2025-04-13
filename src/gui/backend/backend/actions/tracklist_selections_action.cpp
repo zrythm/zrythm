@@ -231,11 +231,11 @@ TracklistSelectionsAction::TracklistSelectionsAction (
     }
   if (type == Type::Pin)
     {
-      track_pos_ = TRACKLIST->pinned_tracks_cutoff_;
+      track_pos_ = TRACKLIST->get_pinned_tracks_cutoff_index ();
     }
   else if (type == Type::Unpin)
     {
-      track_pos_ = TRACKLIST->tracks_.size () - 1;
+      track_pos_ = TRACKLIST->track_count () - 1;
     }
 
   if (pos)
@@ -644,7 +644,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
           if (ival_after_ > -1)
             {
               z_return_if_fail (
-                ival_after_ < static_cast<int> (TRACKLIST->tracks_.size ()));
+                ival_after_ < static_cast<int> (TRACKLIST->track_count ()));
               auto _tr_to_disable = TRACKLIST->get_track_at_index (ival_after_);
               std::visit (
                 [&] (auto &&tr_to_disable) {
@@ -821,7 +821,7 @@ TracklistSelectionsAction::do_or_undo_create_or_delete (bool _do, bool create)
           if (ival_after_ > -1)
             {
               z_return_if_fail (
-                ival_after_ < static_cast<int> (TRACKLIST->tracks_.size ()));
+                ival_after_ < static_cast<int> (TRACKLIST->track_count ()));
               auto tr_to_enable = TRACKLIST->get_track_at_index (ival_after_);
               std::visit (
                 [&] (auto &&tr) { tr->set_enabled (true, false, false, true); },
@@ -954,7 +954,7 @@ TracklistSelectionsAction::
                 track_var);
             }
 
-          TRACKLIST->get_track_span ().deselect_all ();
+          TRACKLIST->get_selection_manager ().clear_selection ();
           for (const auto &own_track_var : TrackSpan{ *tls_before_ })
             {
               std::visit (
@@ -1017,7 +1017,8 @@ TracklistSelectionsAction::
                         }
                     }
 
-                  prj_track->setSelected (true);
+                  TRACKLIST->get_selection_manager ()
+                    .append_track_to_selection (prj_track->get_uuid ());
 
                   TRACKLIST->get_track_span ().print_tracks ();
                 },
@@ -1074,7 +1075,7 @@ TracklistSelectionsAction::
                 own_track_var);
             }
 
-          TRACKLIST->get_track_span ().deselect_all ();
+          TRACKLIST->get_selection_manager ().clear_selection ();
 
           /* create new tracks routed to master */
           std::vector<Track *> new_tracks;
@@ -1123,7 +1124,8 @@ TracklistSelectionsAction::
                     track_ref, target_pos, *AUDIO_ENGINE, false, false);
 
                   /* select it */
-                  track->setSelected (true);
+                  TRACKLIST->get_selection_manager ()
+                    .append_track_to_selection (track->get_uuid ());
                   new_tracks.push_back (track);
                 },
                 own_track_var);
@@ -1215,12 +1217,13 @@ TracklistSelectionsAction::
                         == std::visit (
                           TrackSpan::uuid_projection, tls_before_span.front ()))
                         {
-                          TRACKLIST->get_track_span ().select_single (
-                            prj_track->get_uuid ());
+                          TRACKLIST->get_selection_manager ()
+                            .select_unique_track (prj_track->get_uuid ());
                         }
                       else
                         {
-                          prj_track->setSelected (true);
+                          TRACKLIST->get_selection_manager ()
+                            .append_track_to_selection (prj_track->get_uuid ());
                         }
                     },
                     *_prj_track);
@@ -1242,7 +1245,8 @@ TracklistSelectionsAction::
                 target_pos++;
 
               /* remove it */
-              const auto prj_track_id = TRACKLIST->tracks_.at (target_pos);
+              const auto prj_track_id =
+                TRACKLIST->get_track_ref_at_index (target_pos);
               TRACKLIST->remove_track (prj_track_id.id ());
             }
           /* EVENTS_PUSH (EventType::ET_TRACKLIST_SELECTIONS_CHANGED, nullptr); */
@@ -1274,11 +1278,13 @@ TracklistSelectionsAction::
 
   if ((pin && _do) || (unpin && !_do))
     {
-      TRACKLIST->pinned_tracks_cutoff_ += tls_before_->size ();
+      TRACKLIST->set_pinned_tracks_cutoff_index (
+        TRACKLIST->get_pinned_tracks_cutoff_index () + tls_before_->size ());
     }
   else if ((unpin && _do) || (pin && !_do))
     {
-      TRACKLIST->pinned_tracks_cutoff_ -= tls_before_->size ();
+      TRACKLIST->set_pinned_tracks_cutoff_index (
+        TRACKLIST->get_pinned_tracks_cutoff_index () - tls_before_->size ());
     }
 
   if (move && prev_clip_editor_region_opt.has_value ())

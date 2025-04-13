@@ -42,3 +42,5 @@ using TrackUniquePtrVariant = to_unique_ptr_variant<TrackVariant>;
 using OptionalTrackPtrVariant = std::optional<TrackPtrVariant>;
 
 using TrackUuid = utils::UuidIdentifiableObject<Track>::Uuid;
+
+DEFINE_UUID_HASH_SPECIALIZATION (TrackUuid);

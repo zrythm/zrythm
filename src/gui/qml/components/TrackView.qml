@@ -301,7 +301,7 @@ Control {
         TapHandler {
             acceptedButtons: Qt.LeftButton | Qt.RightButton
             onTapped: function(point) {
-                track.setExclusivelySelected(true);
+                tracklist.setExclusivelySelectedTrack(control.track);
             }
         }
 

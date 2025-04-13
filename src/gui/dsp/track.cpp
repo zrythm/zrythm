@@ -175,7 +175,6 @@ Track::copy_members_from (const Track &other, ObjectCloneType clone_type)
   bounce_to_master_ = other.bounce_to_master_;
   frozen_clip_id_ = other.frozen_clip_id_;
   disconnecting_ = other.disconnecting_;
-  selected_ = other.selected_;
 }
 
 TrackUniquePtrVariant
@@ -712,7 +711,7 @@ Track::set_comment (const std::string &comment, bool undoable)
 {
   if (undoable)
     {
-      tracklist_->get_track_span ().select_single (get_uuid ());
+      tracklist_->get_selection_manager ().select_unique_track (get_uuid ());
 
       try
         {
@@ -736,7 +735,7 @@ Track::set_color (const Color &color, bool undoable, bool fire_events)
 {
   if (undoable)
     {
-      tracklist_->get_track_span ().select_single (get_uuid ());
+      tracklist_->get_selection_manager ().select_unique_track (get_uuid ());
 
       try
         {
@@ -765,7 +764,7 @@ Track::set_icon (const std::string &icon_name, bool undoable, bool fire_events)
 {
   if (undoable)
     {
-      tracklist_->get_track_span ().select_single (get_uuid ());
+      tracklist_->get_selection_manager ().select_unique_track (get_uuid ());
 
       try
         {
@@ -859,7 +858,7 @@ Track::set_enabled (
 
   if (auto_select)
     {
-      tracklist_->get_track_span ().select_single (get_uuid ());
+      tracklist_->get_selection_manager ().select_unique_track (get_uuid ());
     }
 
   if (trigger_undo)
@@ -963,7 +962,7 @@ Track::create_empty_at_idx_with_action (Type type, int index)
 Track *
 Track::create_empty_with_action (Type type)
 {
-  return create_empty_at_idx_with_action (type, TRACKLIST->tracks_.size ());
+  return create_empty_at_idx_with_action (type, TRACKLIST->track_count ());
 }
 
 Track *

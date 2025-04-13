@@ -87,6 +87,7 @@ target_sources(zrythm_utils_lib
     uuid_identifiable_object.cpp
     # vamp.h
     # vamp.cpp
+    variant_helpers.h
     windows.h
     windows.cpp
     windows_errors.h

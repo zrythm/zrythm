@@ -24,6 +24,7 @@ add_executable(utils_unit_tests
   string_test.cpp
   string_array_test.cpp
   uuid_identifiable_object_test.cpp
+  variant_helpers_test.cpp
 )
 
 if(ZRYTHM_TESTS_WITH_INTERNET_ACCESS)

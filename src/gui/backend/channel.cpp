@@ -745,9 +745,6 @@ Channel::set_swap_phase (bool enabled, bool fire_events)
 void
 Channel::connect_plugins ()
 {
-  // z_return_if_fail (is_in_active_project ());
-  z_return_if_fail (get_track ().get_tracklist ()->project_);
-
   /* loop through each slot in each of MIDI FX, instrument, inserts */
   for (int i = 0; i < 3; i++)
     {
@@ -1017,8 +1014,7 @@ Channel::get_output_track () const
 
   z_return_val_if_fail (track_, nullptr);
   auto * tracklist = track_->get_tracklist ();
-  auto   output_track_var =
-    tracklist->track_registry_->get ().find_by_id (output_track_uuid_.value ());
+  auto   output_track_var = tracklist->get_track (output_track_uuid_.value ());
   z_return_val_if_fail (output_track_var, nullptr);
 
   return std::visit (
@@ -1031,7 +1027,7 @@ Channel::get_output_track () const
         }
       z_return_val_if_reached (nullptr);
     },
-    output_track_var->get ());
+    *output_track_var);
 }
 
 void

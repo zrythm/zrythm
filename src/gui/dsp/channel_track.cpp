@@ -73,18 +73,14 @@ ChannelTrack::
 {
   if (auto_select)
     {
-      TRACKLIST->get_track_span ().select_single (get_uuid ());
+      TRACKLIST->get_selection_manager ().select_unique_track (get_uuid ());
     }
 
   if (trigger_undo)
     {
       /* this is only supported if only selected track */
       z_return_if_fail (
-        std::ranges::distance (
-          TRACKLIST->get_track_span ()
-          | std::views::filter (TrackSpan::selected_projection))
-          == 1
-        && is_selected ());
+        TRACKLIST->get_selection_manager ().is_only_selected_track (get_uuid ()));
 
       UNDO_MANAGER->perform (new gui::actions::MuteTrackAction (
         convert_to_variant<TrackPtrVariant> (this), mute));
@@ -101,18 +97,14 @@ ChannelTrack::
 {
   if (auto_select)
     {
-      TRACKLIST->get_track_span ().select_single (get_uuid ());
+      TRACKLIST->get_selection_manager ().select_unique_track (get_uuid ());
     }
 
   if (trigger_undo)
     {
       /* this is only supported if only selected track */
       z_return_if_fail (
-        std::ranges::distance (
-          TRACKLIST->get_track_span ()
-          | std::views::filter (TrackSpan::selected_projection))
-          == 1
-        && is_selected ());
+        TRACKLIST->get_selection_manager ().is_only_selected_track (get_uuid ()));
 
       UNDO_MANAGER->perform (new gui::actions::SoloTrackAction (
         convert_to_variant<TrackPtrVariant> (this), solo));
@@ -132,18 +124,14 @@ ChannelTrack::set_listened (
 {
   if (auto_select)
     {
-      TRACKLIST->get_track_span ().select_single (get_uuid ());
+      TRACKLIST->get_selection_manager ().select_unique_track (get_uuid ());
     }
 
   if (trigger_undo)
     {
       /* this is only supported if only selected track */
       z_return_if_fail (
-        std::ranges::distance (
-          TRACKLIST->get_track_span ()
-          | std::views::filter (TrackSpan::selected_projection))
-          == 1
-        && is_selected ());
+        TRACKLIST->get_selection_manager ().is_only_selected_track (get_uuid ()));
 
       UNDO_MANAGER->perform (new gui::actions::ListenTrackAction (
         convert_to_variant<TrackPtrVariant> (this), listen));

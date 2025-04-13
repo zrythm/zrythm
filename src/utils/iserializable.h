@@ -14,7 +14,6 @@
 #include <filesystem>
 #include <memory>
 #include <string>
-#include <type_traits>
 #include <vector>
 
 #include "utils/dependency_holder.h"
@@ -24,6 +23,7 @@
 #include "utils/logger.h"
 #include "utils/string.h"
 #include "utils/traits.h"
+#include "utils/variant_helpers.h"
 
 #include <QUuid>
 
@@ -169,6 +169,23 @@ concept OptionalVariantOfSerializablePointers = requires {
   requires VariantOfSerializablePointers<typename T::value_type>;
   requires std::same_as<T, std::optional<typename T::value_type>>;
 };
+
+// Check if a type has `insert` (e.g., std::unordered_set)
+template <typename T>
+concept HasInsert = requires (T &container, typename T::value_type value) {
+  container.insert (value);
+};
+
+// Check if a type has `emplace_back` (e.g., std::vector)
+template <typename T>
+concept HasEmplaceBack = requires (T &container, typename T::value_type value) {
+  container.emplace_back (value);
+};
+
+static_assert (HasInsert<std::unordered_set<int>>);
+static_assert (HasEmplaceBack<std::vector<int>>);
+static_assert (!HasInsert<std::vector<int>>);
+static_assert (!HasEmplaceBack<std::unordered_set<int>>);
 
 /**
  * @brief Interface for serializable objects using CRTP.
@@ -1690,9 +1707,17 @@ public:
                       {
                         value[i] = std::move (*obj);
                       }
-                    else
+                    else if constexpr (HasEmplaceBack<T>)
                       {
                         value.emplace_back (std::move (*obj));
+                      }
+                    else if constexpr (HasInsert<T>)
+                      {
+                        value.insert (std::move (*obj));
+                      }
+                    else
+                      {
+                        static_assert (false);
                       }
                   }
               }

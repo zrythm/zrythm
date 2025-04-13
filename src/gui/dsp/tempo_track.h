@@ -24,7 +24,7 @@ constexpr auto  TEMPO_TRACK_DEFAULT_BEAT_UNIT = BeatUnit::Four;
 constexpr auto  TEMPO_TRACK_MIN_BEAT_UNIT = BeatUnit::Two;
 constexpr auto  TEMPO_TRACK_MAX_BEAT_UNIT = BeatUnit::Sixteen;
 
-#define P_TEMPO_TRACK (TRACKLIST->tempo_track_)
+#define P_TEMPO_TRACK (TRACKLIST->getTempoTrack ())
 
 /**
  * @brief Represents a track that controls the tempo of the audio.

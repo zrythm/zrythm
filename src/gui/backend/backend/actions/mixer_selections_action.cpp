@@ -747,7 +747,7 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                       std::string str =
                         fmt::format ("{} (Copy)", own_pl->get_name ());
                       auto to_tr_unique_var = Track::create_track (
-                        Track::Type::AudioBus, str, TRACKLIST->tracks_.size ());
+                        Track::Type::AudioBus, str, TRACKLIST->track_count ());
                       std::visit (
                         [&] (auto &&to_tr_unique) {
                           PROJECT->get_track_registry ().register_object (

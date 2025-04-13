@@ -397,7 +397,7 @@ SampleProcessor::queue_file_or_chord_preset (
     track->set_name (*tracklist_, "Sample Processor Master", false);
     tracklist_->master_track_ = track;
     tracklist_->insert_track (
-      track_ref, tracklist_->tracks_.size (), *AUDIO_ENGINE, false, false);
+      track_ref, tracklist_->track_count (), *AUDIO_ENGINE, false, false);
   }
 
   if (file && file->is_audio ())
@@ -412,7 +412,7 @@ SampleProcessor::queue_file_or_chord_preset (
         std::get<AudioTrack *> (audio_track_ref.get_object ());
       audio_track->set_name (*tracklist_, "Sample processor audio", false);
       tracklist_->insert_track (
-        audio_track_ref, tracklist_->tracks_.size (), *AUDIO_ENGINE, false,
+        audio_track_ref, tracklist_->track_count (), *AUDIO_ENGINE, false,
         false);
 
       /* create an audio region & add to track */
@@ -443,7 +443,7 @@ SampleProcessor::queue_file_or_chord_preset (
         std::get<InstrumentTrack *> (instrument_track_ref.get_object ());
       instrument_track->set_name (*tracklist_, "Sample processor instrument", false);
       tracklist_->insert_track (
-        instrument_track_ref, tracklist_->tracks_.size (), *AUDIO_ENGINE, false,
+        instrument_track_ref, tracklist_->track_count (), *AUDIO_ENGINE, false,
         false);
       try
         {
@@ -475,7 +475,7 @@ SampleProcessor::queue_file_or_chord_preset (
               midi_track->set_name (
                 *tracklist_, fmt::format ("Sample processor MIDI {}", i), false);
               tracklist_->insert_track (
-                midi_track_ref, tracklist_->tracks_.size (), *AUDIO_ENGINE,
+                midi_track_ref, tracklist_->track_count (), *AUDIO_ENGINE,
                 false, false);
 
               /* route track to instrument */

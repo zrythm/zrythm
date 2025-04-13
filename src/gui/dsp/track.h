@@ -154,15 +154,11 @@ public: \
   Q_PROPERTY (bool selected READ getSelected NOTIFY selectedChanged) \
   bool getSelected () const \
   { \
-    return is_selected (); \
-  } \
-  void setSelected (bool selected) \
-  { \
-    if (selected_ == selected) \
-      return; \
-\
-    selected_ = selected; \
-    Q_EMIT selectedChanged (selected); \
+    if (track_selection_status_getter_) \
+      { \
+        return (*track_selection_status_getter_) (get_uuid ()); \
+      } \
+    return false; \
   } \
   Q_SIGNAL void selectedChanged (bool selected); \
 \
@@ -315,6 +311,8 @@ public:
   using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
   using PluginPtrVariant = PluginRegistry::VariantType;
   using PluginSlot = dsp::PluginSlot;
+
+  using TrackSelectionStatusGetter = std::function<bool (const TrackUuid &)>;
 
   static constexpr int MIN_HEIGHT = 26;
   static constexpr int DEF_HEIGHT = 52;
@@ -703,11 +701,6 @@ public:
 
   /** Whether this track is part of the SampleProcessor auditioner tracklist. */
   bool is_auditioner () const;
-
-  /**
-   * Returns if the track is currently selected in the tracklist.
-   */
-  bool is_selected () const { return selected_; }
 
   bool can_be_group_target () const { return type_can_be_group_target (type_); }
 
@@ -1386,6 +1379,15 @@ public:
 
   virtual bool get_soloed () const { return false; }
 
+  void set_selection_status_getter (TrackSelectionStatusGetter getter)
+  {
+    track_selection_status_getter_ = getter;
+  }
+  void unset_selection_status_getter ()
+  {
+    track_selection_status_getter_.reset ();
+  }
+
   auto &get_plugin_registry () const { return plugin_registry_; }
   auto &get_plugin_registry () { return plugin_registry_; }
   auto &get_port_registry () const { return port_registry_; }
@@ -1502,14 +1504,6 @@ protected:
   /** User comments. */
   std::string comment_;
 
-  /**
-   * @brief Whether the track is selected.
-   *
-   * Selection is tracked directly on Track instances to make life easier when
-   * working with QML and to avoid having extra classes to track selection.
-   */
-  bool selected_{};
-
 public:
   /**
    * Set to ON during bouncing if this track should be included.
@@ -1540,6 +1534,13 @@ public:
 
   /** Pointer to owner tracklist, if any. */
   Tracklist * tracklist_ = nullptr;
+
+  /**
+   * @brief Track selection status getter.
+   *
+   * To be set by the tracklist when a track gets added to it.
+   */
+  std::optional<TrackSelectionStatusGetter> track_selection_status_getter_;
 };
 
 DEFINE_ENUM_FORMATTER (

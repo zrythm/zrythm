@@ -27,9 +27,9 @@ Tracklist::Tracklist (
   PortRegistry            &port_registry,
   TrackRegistry           &track_registry,
   PortConnectionsManager * port_connections_manager)
-    : QAbstractListModel (&project), project_ (&project),
-      port_connections_manager_ (port_connections_manager),
-      track_registry_ (track_registry), port_registry_ (port_registry)
+    : QAbstractListModel (&project), track_registry_ (track_registry),
+      port_registry_ (port_registry), project_ (&project),
+      port_connections_manager_ (port_connections_manager)
 {
 }
 
@@ -38,9 +38,9 @@ Tracklist::Tracklist (
   PortRegistry            &port_registry,
   TrackRegistry           &track_registry,
   PortConnectionsManager * port_connections_manager)
-    : sample_processor_ (&sample_processor),
-      port_connections_manager_ (port_connections_manager),
-      track_registry_ (track_registry), port_registry_ (port_registry)
+    : track_registry_ (track_registry), port_registry_ (port_registry),
+      sample_processor_ (&sample_processor),
+      port_connections_manager_ (port_connections_manager)
 {
 }
 
@@ -85,12 +85,6 @@ Tracklist::init_loaded (
         },
         track_var);
     }
-}
-
-TrackRegistry &
-Tracklist::get_track_registry () const
-{
-  return track_registry_->get ();
 }
 
 // ========================================================================
@@ -140,6 +134,14 @@ TempoTrack *
 Tracklist::getTempoTrack () const
 {
   return tempo_track_;
+}
+
+void
+Tracklist::setExclusivelySelectedTrack (QVariant track)
+{
+  auto track_var = qvariantToStdVariant<TrackPtrVariant> (track);
+  get_selection_manager ().select_unique_track (
+    TrackSpan::uuid_projection (track_var));
 }
 
 // ========================================================================
@@ -238,6 +240,10 @@ Tracklist::insert_track (
 
       /* append the track at the end */
       tracks_.emplace_back (track_id);
+      track->set_selection_status_getter ([&] (const TrackUuid &id) {
+        return TrackSelectionManager{ selected_tracks_, *track_registry_ }
+          .is_track_selected (id);
+      });
       track->tracklist_ = this;
 
       /* remember important tracks */
@@ -281,7 +287,7 @@ Tracklist::insert_track (
         && !is_auditioner ())
         {
           /* make the track the only selected track */
-          get_track_span ().select_single (track->get_uuid ());
+          get_selection_manager ().select_unique_track (track->get_uuid ());
 
           /* set automation track on ports */
           if constexpr (std::derived_from<TrackT, AutomatableTrack>)
@@ -552,31 +558,28 @@ Tracklist::remove_track (const TrackUuid &track_id)
       auto end_pos = std::ssize (tracks_) - 1;
       move_track (track_id, end_pos, false, std::nullopt);
 
-      track->setSelected (false);
+      get_selection_manager ().remove_track_from_selection (track->get_uuid ());
 
       track_it = std::ranges::find (tracks_, track_id, &TrackUuidReference::id);
       z_return_if_fail (track_it != tracks_.end ());
       tracks_.erase (track_it);
+      track->unset_selection_status_getter ();
 
       // recreate the span because underlying vector changed
       span = get_track_span ();
 
-      if (is_in_active_project () && !is_auditioner ())
+      /* if it was the only track selected, select the next one */
+      if (get_selection_manager ().empty ())
         {
-          /* if it was the only track selected, select the next one */
-          if (std::ranges::count_if (span, span.selected_projection) == 0)
+          auto track_to_select = next_visible ? next_visible : prev_visible;
+          if (!track_to_select && !tracks_.empty ())
             {
-              auto track_to_select = next_visible ? next_visible : prev_visible;
-              if (!track_to_select && !tracks_.empty ())
-                {
-                  track_to_select = span.at (0);
-                }
-              if (track_to_select)
-                {
-                  std::visit (
-                    [] (auto &&tr) { tr->setSelected (true); },
-                    *track_to_select);
-                }
+              track_to_select = span.at (0);
+            }
+          if (track_to_select)
+            {
+              get_selection_manager ().append_track_to_selection (
+                TrackSpan::uuid_projection (*track_to_select));
             }
         }
 
@@ -673,7 +676,6 @@ Tracklist::move_track (
   bool                                          always_before_pos,
   std::optional<std::reference_wrapper<Router>> router)
 {
-  auto       span = get_track_span ();
   auto       track_var = get_track (track_id);
   const auto track_index = get_track_index (track_id);
 
@@ -701,16 +703,16 @@ Tracklist::move_track (
           /* deselect all objects */
           track->Track::unselect_all ();
 
-          track->setSelected (false);
+          get_selection_manager ().remove_track_from_selection (
+            track->get_uuid ());
 
           /* if it was the only track selected, select the next one */
           if (
-            std::ranges::count_if (span, span.selected_projection) == 0
-            && (prev_visible || next_visible))
+            get_selection_manager ().empty () && (prev_visible || next_visible))
             {
               auto track_to_add = next_visible ? *next_visible : *prev_visible;
-              std::visit (
-                [] (auto &&tr) { tr->setSelected (true); }, track_to_add);
+              get_selection_manager ().append_track_to_selection (
+                TrackSpan::uuid_projection (track_to_add));
             }
         }
 
@@ -753,14 +755,8 @@ Tracklist::move_track (
           tracks_.resize (tracks_.size () - 1);
         }
 
-      // recreate span
-      span = get_track_span ();
-
-      if (is_in_active_project () && !is_auditioner ())
-        {
-          /* make the track the only selected track */
-          span.select_single (track_id);
-        }
+      /* make the track the only selected track */
+      get_selection_manager ().select_unique_track (track_id);
 
       if (router)
         {
@@ -1251,6 +1247,7 @@ Tracklist::init_after_cloning (const Tracklist &other, ObjectCloneType clone_typ
   if (clone_type == ObjectCloneType::Snapshot)
     {
       tracks_ = other.tracks_;
+      selected_tracks_ = other.selected_tracks_;
     }
   else if (clone_type == ObjectCloneType::NewIdentity)
     {
@@ -1261,8 +1258,8 @@ Tracklist::init_after_cloning (const Tracklist &other, ObjectCloneType clone_typ
         {
           std::visit (
             [&] (auto &tr) {
-              auto id_ref = track_registry_->get ().clone_object (
-                *tr, track_registry_->get (), PROJECT->get_plugin_registry (),
+              auto id_ref = track_registry_->clone_object (
+                *tr, *track_registry_, PROJECT->get_plugin_registry (),
                 PROJECT->get_port_registry (),
                 PROJECT->get_arranger_object_registry (), true);
               tracks_.push_back (id_ref);
@@ -1277,21 +1274,18 @@ Tracklist::handle_click (TrackUuid track_id, bool ctrl, bool shift, bool dragged
 {
   const auto track_var_opt = get_track (track_id);
   z_return_if_fail (track_var_opt.has_value ());
-  const auto track_var = *track_var_opt;
   auto       span = get_track_span ();
   auto       selected_tracks =
     std::views::filter (span, TrackRegistrySpan::selected_projection)
     | std::ranges::to<std::vector> ();
-  bool is_selected = std::ranges::contains (
-    selected_tracks, track_id, TrackRegistrySpan::uuid_projection);
+  bool is_selected = get_selection_manager ().is_track_selected (track_id);
   if (is_selected)
     {
       if ((ctrl || shift) && !dragged)
         {
-          if (selected_tracks.size () > 1)
+          if (get_selection_manager ().size () > 1)
             {
-              std::visit (
-                [&] (auto &&track) { track->setSelected (false); }, track_var);
+              get_selection_manager ().remove_track_from_selection (track_id);
             }
         }
       else
@@ -1316,22 +1310,29 @@ Tracklist::handle_click (TrackUuid track_id, bool ctrl, bool shift, bool dragged
                   const auto lowest_index =
                     get_track_index (lowest->get_uuid ());
 
-                  selected_tracks_span.deselect_all ();
                   if (track_index > highest_index)
                     {
                       /* select all tracks in between */
-                      TrackUuidReferenceSpan tracks_to_select{ std::span (
+                      auto tracks_to_select = std::span (
                         tracks_.begin () + highest_index,
-                        tracks_.begin () + track_index) };
-                      tracks_to_select.select_all ();
+                        tracks_.begin () + track_index);
+                      get_selection_manager ().select_only_these_tracks (
+                        tracks_to_select
+                        | std::views::transform ([&] (const auto &id_ref) {
+                            return id_ref.id ();
+                          }));
                     }
                   else if (track_index < lowest_index)
                     {
                       /* select all tracks in between */
-                      TrackUuidReferenceSpan tracks_to_select{ std::span (
+                      auto tracks_to_select = std::span (
                         tracks_.begin () + track_index,
-                        tracks_.begin () + lowest_index) };
-                      tracks_to_select.select_all ();
+                        tracks_.begin () + lowest_index);
+                      get_selection_manager ().select_only_these_tracks (
+                        tracks_to_select
+                        | std::views::transform ([&] (const auto &id_ref) {
+                            return id_ref.id ();
+                          }));
                     }
                 },
                 highest_var, lowest_var);
@@ -1340,15 +1341,24 @@ Tracklist::handle_click (TrackUuid track_id, bool ctrl, bool shift, bool dragged
       else if (ctrl)
         {
           // append to selections
-          std::visit (
-            [&] (auto &&track) { track->setSelected (true); }, track_var);
+          get_selection_manager ().append_track_to_selection (track_id);
         }
       else
         {
           // select exclusively
-          span.select_single (track_id);
+          get_selection_manager ().select_unique_track (track_id);
         }
     }
+}
+
+void
+Tracklist::define_fields (const Context &ctx)
+{
+  using T = ISerializable<Tracklist>;
+  T::serialize_fields (
+    ctx, T::make_field ("pinnedTracksCutoff", pinned_tracks_cutoff_),
+    T::make_field ("tracks", tracks_),
+    T::make_field ("selectedTracks", selected_tracks_));
 }
 
 Tracklist::~Tracklist ()

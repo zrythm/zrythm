@@ -34,6 +34,85 @@ class MarkerTrack;
 class StringArray;
 class Router;
 
+class TrackSelectionManager
+{
+public:
+  using TrackUuidSet = std::unordered_set<TrackUuid>;
+
+  TrackSelectionManager (
+    TrackUuidSet        &selected_tracks,
+    const TrackRegistry &track_registry_)
+      : selected_tracks_ (selected_tracks), track_registry_ (track_registry_)
+  {
+  }
+  void append_track_to_selection (const TrackUuid &id)
+  {
+    if (!is_track_selected (id))
+      {
+        selected_tracks_.insert (id);
+        emit_selection_changed_for_track (id);
+      }
+  }
+  void remove_track_from_selection (const TrackUuid &id)
+  {
+    if (is_track_selected (id))
+      {
+        selected_tracks_.erase (id);
+        emit_selection_changed_for_track (id);
+      }
+  }
+  void select_unique_track (const TrackUuid &id)
+  {
+    clear_selection ();
+    append_track_to_selection (id);
+  }
+  bool is_track_selected (const TrackUuid &id) const
+  {
+    return selected_tracks_.contains (id);
+  }
+  bool is_only_selected_track (const TrackUuid &id) const
+  {
+    return selected_tracks_.size () == 1 && is_track_selected (id);
+  }
+  bool empty () const { return selected_tracks_.empty (); }
+  auto size () const { return selected_tracks_.size (); }
+
+  void clear_selection ()
+  { // Make a copy of the selected tracks to iterate over
+    auto selected_tracks_copy = selected_tracks_;
+    for (const auto &track_id : selected_tracks_copy)
+      {
+        selected_tracks_.erase (track_id);
+        emit_selection_changed_for_track (track_id);
+      }
+  }
+
+  template <RangeOf<TrackUuid> TrackUuidRange>
+  void select_only_these_tracks (TrackUuidRange &&track_uuids)
+  {
+    clear_selection ();
+    for (const auto &track_uuid : track_uuids)
+      {
+        append_track_to_selection (track_uuid);
+      }
+  }
+
+private:
+  void emit_selection_changed_for_track (const TrackUuid &id)
+  {
+    auto track_var = track_registry_.find_by_id_or_throw (id);
+    std::visit (
+      [&] (auto &&track) {
+        Q_EMIT track->selectedChanged (is_track_selected (id));
+      },
+      track_var);
+  }
+
+private:
+  std::unordered_set<TrackUuid> &selected_tracks_;
+  const TrackRegistry           &track_registry_;
+};
+
 /**
  * The Tracklist contains all the tracks in the Project.
  *
@@ -93,6 +172,8 @@ public:
   data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
   TempoTrack * getTempoTrack () const;
+
+  Q_INVOKABLE void setExclusivelySelectedTrack (QVariant track);
 
   // ========================================================================
 
@@ -384,19 +465,71 @@ public:
     return get_track_span ().at (index);
   }
 
+  auto get_track_ref_at_index (size_t index) const
+  {
+    if (index >= tracks_.size ())
+      throw std::out_of_range ("Track index out of range");
+    return tracks_.at (index);
+  }
+
   bool is_track_pinned (Track::TrackUuid track_id) const
   {
     return is_track_pinned (get_track_index (track_id));
   }
+
+  auto get_selection_manager ()
+  {
+    return TrackSelectionManager{ selected_tracks_, *track_registry_ };
+  }
+
+  /**
+   * @brief Also selects the children of foldable tracks in the currently
+   * selected tracks.
+   */
+  void select_foldable_children_of_current_selections ()
+  {
+    auto selected_vec = std::ranges::to<std::vector> (selected_tracks_);
+    TrackRegistrySpan span{ *track_registry_, selected_vec };
+    std::ranges::for_each (span, [&] (auto &&track_var) {
+      std::visit (
+        [&] (auto &&track_ref) {
+          using TrackT = base_type<decltype (track_ref)>;
+          if constexpr (std::derived_from<TrackT, FoldableTrack>)
+            {
+              for (int i = 1; i < track_ref->size_; ++i)
+                {
+                  const size_t child_pos =
+                    get_track_index (track_ref->get_uuid ()) + i;
+                  const auto &child_track_var = get_track_at_index (child_pos);
+                  get_selection_manager ().append_track_to_selection (
+                    TrackSpan::uuid_projection (child_track_var));
+                }
+            }
+        },
+        track_var);
+    });
+  }
+
+  auto get_pinned_tracks_cutoff_index () const { return pinned_tracks_cutoff_; }
+  void set_pinned_tracks_cutoff_index (size_t index)
+  {
+    pinned_tracks_cutoff_ = index;
+  }
+  auto track_count () const { return tracks_.size (); }
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
   void swap_tracks (size_t index1, size_t index2);
 
-  TrackRegistry &get_track_registry () const;
+  auto &get_track_registry () const { return *track_registry_; }
+  auto &get_track_registry () { return *track_registry_; }
 
-public:
+private:
+  OptionalRef<TrackRegistry>  track_registry_;
+  OptionalRef<PortRegistry>   port_registry_;
+  OptionalRef<PluginRegistry> plugin_registry_;
+
   /**
    * All tracks that exist.
    *
@@ -416,6 +549,14 @@ public:
    */
   std::vector<TrackUuidReference> tracks_;
 
+  /**
+   * @brief A subset of tracks that are currently selected.
+   *
+   * There must always be at least 1 selected track.
+   */
+  std::unordered_set<TrackUuid> selected_tracks_;
+
+public:
   /** The chord track, for convenience. */
   ChordTrack * chord_track_ = nullptr;
 
@@ -431,6 +572,7 @@ public:
   /** The master track, for convenience. */
   MasterTrack * master_track_ = nullptr;
 
+private:
   /**
    * Index starting from which tracks are unpinned.
    *
@@ -445,17 +587,14 @@ public:
   /** Pointer to owner sample processor, if any. */
   SampleProcessor * sample_processor_ = nullptr;
 
+public:
   /** Pointer to owner project, if any. */
   Project * project_ = nullptr;
 
   /** Width of track widgets. */
-  int width_ = 0;
+  // int width_ = 0;
 
   QPointer<PortConnectionsManager> port_connections_manager_;
-
-  std::optional<TrackRegistryRef>                         track_registry_;
-  std::optional<PortRegistryRef>                          port_registry_;
-  std::optional<gui::old_dsp::plugins::PluginRegistryRef> plugin_registry_;
 };
 
 /**

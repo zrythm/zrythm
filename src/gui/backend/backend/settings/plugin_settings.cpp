@@ -227,14 +227,15 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
           /* create the plugin track */
           auto * pl_track = dynamic_cast<ChannelTrack *> (
             Track::create_for_plugin_at_idx_w_action (
-              type, this, TRACKLIST->tracks_.size ()));
+              type, this, TRACKLIST->track_count ()));
           num_actions++;
 
           auto pl_id = pl_track->channel_->instrument_;
           auto pl_var = pl_track->channel_->get_instrument ();
 
           /* move the plugin track inside the group */
-          TRACKLIST->get_track_span ().select_single (pl_track->get_uuid ());
+          TRACKLIST->get_selection_manager ().select_unique_track (
+            pl_track->get_uuid ());
           UNDO_MANAGER->perform (
             new gui::actions::MoveTracksInsideFoldableTrackAction (
               TrackSpan{ std::ranges::to<std::vector> (
@@ -243,7 +244,8 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
           num_actions++;
 
           /* route to nowhere */
-          TRACKLIST->get_track_span ().select_single (pl_track->get_uuid ());
+          TRACKLIST->get_selection_manager ().select_unique_track (
+            pl_track->get_uuid ());
           UNDO_MANAGER->perform (new gui::actions::RemoveTracksDirectOutAction (
             TrackSpan{ std::ranges::to<std::vector> (
               TRACKLIST->get_track_span ().get_selected_tracks ()) },
@@ -281,7 +283,8 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
               num_actions++;
 
               /* move the fx track inside the group */
-              TRACKLIST->get_track_span ().select_single (fx_track->get_uuid ());
+              TRACKLIST->get_selection_manager ().select_unique_track (
+                fx_track->get_uuid ());
               UNDO_MANAGER->perform (
                 new gui::actions::MoveTracksInsideFoldableTrackAction (
                   TrackSpan{ std::ranges::to<std::vector> (
@@ -290,15 +293,17 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
               num_actions++;
 
               /* move the fx track to the end */
-              TRACKLIST->get_track_span ().select_single (fx_track->get_uuid ());
+              TRACKLIST->get_selection_manager ().select_unique_track (
+                fx_track->get_uuid ());
               UNDO_MANAGER->perform (new gui::actions::MoveTracksAction (
                 TrackSpan{ std::ranges::to<std::vector> (
                   TRACKLIST->get_track_span ().get_selected_tracks ()) },
-                TRACKLIST->tracks_.size ()));
+                TRACKLIST->track_count ()));
               num_actions++;
 
               /* route to group */
-              TRACKLIST->get_track_span ().select_single (fx_track->get_uuid ());
+              TRACKLIST->get_selection_manager ().select_unique_track (
+                fx_track->get_uuid ());
               UNDO_MANAGER->perform (new gui::actions::ChangeTracksDirectOutAction (
                 TrackSpan{ std::ranges::to<std::vector> (
                   TRACKLIST->get_track_span ().get_selected_tracks ()) },
@@ -336,7 +341,7 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
       else /* else if not autoroute multiout */
         {
           Track::create_for_plugin_at_idx_w_action (
-            type, this, TRACKLIST->tracks_.size ());
+            type, this, TRACKLIST->track_count ());
         }
     }
   catch (const ZrythmException &e)

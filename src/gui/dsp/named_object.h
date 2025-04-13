@@ -74,7 +74,7 @@ public:
   {
     self.name_ = name;
     self.gen_escaped_name ();
-    Q_EMIT (self.nameChanged (QString::fromStdString (name)));
+    Q_EMIT self.nameChanged (QString::fromStdString (name));
   }
 
   /**

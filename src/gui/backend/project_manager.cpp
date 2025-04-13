@@ -170,9 +170,9 @@ ProjectManager::create_default (
       prj->tracklist_->get_track_span ().expose_ports_to_backend (*engine);
     }
 
-  auto beats_per_bar = prj->tracklist_->tempo_track_->get_beats_per_bar ();
+  auto beats_per_bar = prj->tracklist_->getTempoTrack ()->get_beats_per_bar ();
   engine->update_frames_per_tick (
-    beats_per_bar, prj->tracklist_->tempo_track_->get_current_bpm (),
+    beats_per_bar, prj->tracklist_->getTempoTrack ()->get_current_bpm (),
     engine->sample_rate_, true, true, false);
 
   /* set directory/title and create standard dirs */

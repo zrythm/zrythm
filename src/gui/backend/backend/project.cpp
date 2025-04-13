@@ -507,11 +507,14 @@ Project::add_default_tracks ()
     marker_track, arranger_object_factory_, transport_->ticks_per_bar_,
     audio_engine_->frames_per_tick_);
 
-  tracklist_->pinned_tracks_cutoff_ = tracklist_->tracks_.size ();
+  tracklist_->set_pinned_tracks_cutoff_index (tracklist_->track_count ());
 
-  /* add master channel to mixer and tracklist */
-  add_track.operator()<MasterTrack> (QObject::tr ("Master"));
-  tracklist_->master_track_->setSelected (true);
+  /* add master track */
+  auto * master_track =
+    add_track.operator()<MasterTrack> (QObject::tr ("Master"));
+  tracklist_->get_selection_manager ().select_unique_track (
+    master_track->get_uuid ());
+
   last_selection_ = SelectionType::Tracklist;
 }
 

@@ -32,7 +32,7 @@ AutomatableTrack::copy_members_from (
   ObjectCloneType         clone_type)
 {
   automation_tracklist_ = other.automation_tracklist_->clone_raw_ptr (
-    ObjectCloneType::Snapshot, tracklist_->port_registry_.value (),
+    ObjectCloneType::Snapshot, port_registry_,
     PROJECT->get_arranger_object_registry (), *this);
   if (auto * qobject = dynamic_cast<QObject *> (this))
     {

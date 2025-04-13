@@ -113,7 +113,7 @@ FoldableTrack::
   z_info ("Setting track {} folded ({})", name_, folded);
   if (auto_select)
     {
-      TRACKLIST->get_track_span ().select_single (get_uuid ());
+      TRACKLIST->get_selection_manager ().select_unique_track (get_uuid ());
     }
 
   if (trigger_undo)

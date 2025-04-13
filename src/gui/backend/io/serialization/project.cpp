@@ -55,15 +55,6 @@ gui::actions::UndoManager::define_fields (const Context &ctx)
 }
 
 void
-Tracklist::define_fields (const Context &ctx)
-{
-  using T = ISerializable<Tracklist>;
-  T::serialize_fields (
-    ctx, T::make_field ("pinnedTracksCutoff", pinned_tracks_cutoff_),
-    T::make_field ("tracks", tracks_));
-}
-
-void
 Project::define_fields (const Context &ctx)
 {
   using T = ISerializable<Project>;
