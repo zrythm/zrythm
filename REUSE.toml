@@ -238,6 +238,12 @@ SPDX-FileCopyrightText = "1998-2010 Steven Goodwin <StevenGoodwin@gmail.com>"
 SPDX-License-Identifier = "GPL-2.0-or-later"
 
 [[annotations]]
+path = ["ext/typesafe**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2016-2020 Jonathan Müller"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
 path = "data/org.zrythm.Zrythm-mime.xml"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2019 Alexandros Theodotou <alex@zrythm.org>"
@@ -285,7 +291,7 @@ SPDX-License-Identifier = "LicenseRef-ZrythmLicense"
 SPDX-FileComment = "UI XML files\n  See commit history for author info."
 
 [[annotations]]
-path = "po/**.po"
+path = ["po/**.po", "i18n/**.ts"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "The Zrythm translators"
 SPDX-License-Identifier = "LicenseRef-ZrythmLicense"

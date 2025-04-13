@@ -18,6 +18,8 @@
    License along with this library; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
    USA. */
+// SPDX-FileCopyrightText: (C) 2000-2002 Richard W.E. Furse, Paul Barton-Davis, Stefan Westerfeld.
+// SPDX-License-Identifier: LGPL-2.1-or-later
 
 #ifndef LADSPA_INCLUDED
 #  define LADSPA_INCLUDED
