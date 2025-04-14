@@ -69,13 +69,12 @@ public: \
  * Only Tracks that have Regions can have TrackLanes, such as InstrumentTrack
  * and AudioTrack.
  */
-class TrackLane : public utils::UuidIdentifiableObject<TrackLane>
+class TrackLane
 {
 public:
   static constexpr double DEF_HEIGHT = 48;
 
 public:
-  ~TrackLane () override = default;
   Q_DISABLE_COPY_MOVE (TrackLane)
 
   std::string get_name () const { return this->name_; }
@@ -276,10 +275,6 @@ concept TrackLaneSubclass = std::derived_from<T, TrackLane>;
 
 extern template class TrackLaneImpl<MidiRegion>;
 extern template class TrackLaneImpl<AudioRegion>;
-
-using TrackLaneRegistry =
-  utils::OwningObjectRegistry<TrackLanePtrVariant, TrackLane>;
-using TrackLaneRegistryRef = std::reference_wrapper<TrackLaneRegistry>;
 
 /**
  * @}

@@ -82,6 +82,17 @@ Project::Project (QObject * parent)
         },
         [&] () { return audio_engine_->sample_rate_; },
         [&] () { return tracklist_->getTempoTrack ()->get_current_bpm (); },
+        ArrangerObjectSelectionManager{
+          timeline_->get_selected_object_ids (), *arranger_object_registry_ },
+        ArrangerObjectSelectionManager{
+          clip_editor_->getPianoRoll ()->get_selected_object_ids (),
+          *arranger_object_registry_ },
+        ArrangerObjectSelectionManager{
+          clip_editor_->getChordEditor ()->get_selected_object_ids (),
+          *arranger_object_registry_ },
+        ArrangerObjectSelectionManager{
+          clip_editor_->getAutomationEditor ()->get_selected_object_ids (),
+          *arranger_object_registry_ },
         this)),
       plugin_factory_ (new PluginFactory (
         *plugin_registry_,

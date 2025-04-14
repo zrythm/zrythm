@@ -109,23 +109,11 @@ AutomationRegion::set_automation_track (AutomationTrack &at)
     {
       CLIP_EDITOR->unsetRegion ();
     }
-  bool was_selected = false;
-  if (is_selected ())
-    {
-      was_selected = true;
-      setSelected (false);
-    }
   automatable_port_id_ = at.port_id_;
   auto track_var = at.get_track ();
   track_id_ = TrackSpan::uuid_projection (track_var);
 
   update_identifier ();
-
-  /* reselect it if was selected */
-  if (was_selected)
-    {
-      setSelected (true);
-    }
 }
 
 bool

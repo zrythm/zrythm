@@ -55,17 +55,6 @@ AudioClipEditor::define_fields (const Context &ctx)
 }
 
 void
-Timeline::define_fields (const Context &ctx)
-{
-  using T = ISerializable<Timeline>;
-  T::call_all_base_define_fields<EditorSettings> (ctx);
-  T::serialize_fields (
-    ctx,
-    // available after 1.8
-    T::make_field ("tracksWidth", tracks_width_, true));
-}
-
-void
 ClipEditor::define_fields (const Context &ctx)
 {
   using T = ISerializable<ClipEditor>;

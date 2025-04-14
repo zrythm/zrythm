@@ -55,7 +55,12 @@ template <typename RegionT>
 void
 RegionOwner<RegionT>::unselect_all ()
 {
-  foreach_region ([&] (auto &region) { region.setSelected (false); });
+  foreach_region ([&] (auto &region) {
+    auto selection_mgr =
+      ArrangerObjectFactory::get_instance ()->get_selection_manager_for_object (
+        region);
+    selection_mgr.remove_from_selection (region.get_uuid ());
+  });
 }
 
 template <typename RegionT>

@@ -1,5 +1,6 @@
 #pragma once
 
+class ArrangerObject;
 class MidiNote;
 class MidiRegion;
 class AudioRegion;
@@ -21,3 +22,7 @@ using ArrangerObjectVariant = std::variant<
   AutomationPoint,
   Marker>;
 using ArrangerObjectPtrVariant = to_pointer_variant<ArrangerObjectVariant>;
+
+using ArrangerObjectUuid = utils::UuidIdentifiableObject<ArrangerObject>::Uuid;
+
+DEFINE_UUID_HASH_SPECIALIZATION (ArrangerObjectUuid)

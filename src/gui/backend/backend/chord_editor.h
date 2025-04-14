@@ -13,6 +13,7 @@
 #include "dsp/chord_descriptor.h"
 #include "dsp/musical_scale.h"
 #include "gui/backend/backend/editor_settings.h"
+#include "gui/dsp/arranger_object_all.h"
 #include "utils/icloneable.h"
 
 class ChordPreset;
@@ -85,6 +86,7 @@ public:
   {
     static_cast<EditorSettings &> (*this) =
       static_cast<const EditorSettings &> (other);
+    selected_objects_ = other.selected_objects_;
   }
 
   void add_chord_descriptor (ChordDescriptor &&chord_descr)
@@ -102,6 +104,8 @@ public:
     get_chord_at_index (index).update_notes ();
   }
 
+  auto &get_selected_object_ids () { return selected_objects_; }
+
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 public:
@@ -112,6 +116,9 @@ public:
    * be added or removed.
    */
   std::vector<ChordDescriptor> chords_;
+
+private:
+  ArrangerObjectSelectionManager::UuidSet selected_objects_;
 };
 
 /**

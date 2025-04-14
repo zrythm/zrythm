@@ -505,7 +505,14 @@ Track::unselect_all ()
   append_objects (objs);
   for (auto obj_var : objs)
     {
-      std::visit ([&] (auto &&obj) { obj->setSelected (false); }, obj_var);
+      std::visit (
+        [&] (auto &&obj) {
+          auto selection_mgr =
+            ArrangerObjectFactory::get_instance ()
+              ->get_selection_manager_for_object (*obj);
+          selection_mgr.remove_from_selection (obj->get_uuid ());
+        },
+        obj_var);
     }
 }
 

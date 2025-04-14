@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2023-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -11,7 +11,7 @@
 #define __GUI_BACKEND_PIANO_ROLL_H__
 
 #include "gui/backend/backend/editor_settings.h"
-
+#include "gui/dsp/arranger_object_all.h"
 #include "utils/icloneable.h"
 
 class Track;
@@ -239,11 +239,14 @@ public:
    */
   void init ();
 
+  auto &get_selected_object_ids () { return selected_objects_; }
+
   void
   init_after_cloning (const PianoRoll &other, ObjectCloneType clone_type) override
   {
     static_cast<EditorSettings &> (*this) =
       static_cast<const EditorSettings &> (other);
+    selected_objects_ = other.selected_objects_;
   }
 
 private:
@@ -292,6 +295,8 @@ public:
    */
   std::vector<MidiNoteDescriptor> drum_descriptors_ =
     std::vector<MidiNoteDescriptor> (128);
+
+  ArrangerObjectSelectionManager::UuidSet selected_objects_;
 };
 
 /**

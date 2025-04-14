@@ -93,7 +93,7 @@ public:
   static auto selected_projection (const VariantType &obj_var)
   {
     return std::visit (
-      [&] (auto &&obj) { return obj->is_selected (); }, obj_var);
+      [&] (auto &&obj) { return obj->getSelected (); }, obj_var);
   }
   static auto deletable_projection (const VariantType &obj_var)
   {
@@ -211,31 +211,6 @@ public:
    * @param ticks Ticks to add.
    */
   void add_ticks (double ticks);
-
-  /**
-   * Selects all objects.
-   */
-  void select_all ()
-  {
-    for (const auto &obj_var : *this)
-      {
-        std::visit ([&] (auto &&obj) { obj->setSelected (true); }, obj_var);
-      }
-  }
-
-  void select_single (const ArrangerObjectPtrVariant &obj_var)
-  {
-    deselect_all ();
-    std::visit ([&] (auto &&obj) { obj->setSelected (true); }, obj_var);
-  }
-
-  void deselect_all ()
-  {
-    for (const auto &obj_var : *this)
-      {
-        std::visit ([&] (auto &&obj) { obj->setSelected (false); }, obj_var);
-      }
-  }
 
   /**
    * Code to run after deserializing.

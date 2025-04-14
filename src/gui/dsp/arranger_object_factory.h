@@ -31,6 +31,10 @@ public:
     RegisterNewAudioClipFunc        clip_registration_func,
     std::function<sample_rate_t ()> sample_rate_provider,
     std::function<bpm_t ()>         bpm_provider,
+    ArrangerObjectSelectionManager  timeline_selections_manager,
+    ArrangerObjectSelectionManager  midi_selections_manager,
+    ArrangerObjectSelectionManager  chord_selections_manager,
+    ArrangerObjectSelectionManager  automation_selections_manager,
     QObject *                       parent = nullptr)
       : QObject (parent), object_registry_ (registry),
         settings_manager_ (settings_mgr),
@@ -40,7 +44,11 @@ public:
         clip_resolver_func_ (std::move (clip_resolver)),
         new_clip_registration_func_ (std::move (clip_registration_func)),
         sample_rate_provider_ (std::move (sample_rate_provider)),
-        bpm_provider_ (std::move (bpm_provider))
+        bpm_provider_ (std::move (bpm_provider)),
+        timeline_selections_manager_ (timeline_selections_manager),
+        midi_selections_manager_ (midi_selections_manager),
+        chord_selections_manager_ (chord_selections_manager),
+        automation_selections_manager_ (automation_selections_manager)
   {
   }
 
@@ -305,7 +313,7 @@ private:
    * @brief Used for MIDI/Audio regions.
    */
   template <TrackLaneSubclass TrackLaneT>
-  void add_laned_object (TrackLaneT &lane, auto obj_ref) const
+  void add_laned_object (TrackLaneT &lane, auto obj_ref)
   {
     using RegionT = typename TrackLaneT::RegionT;
     std::visit (
@@ -320,7 +328,8 @@ private:
       },
       convert_to_variant<LanedTrackPtrVariant> (lane.get_track ()));
     auto * obj = std::get<RegionT *> (obj_ref.get_object ());
-    obj->setSelected (true);
+    timeline_selections_manager_.append_to_selection (obj->get_uuid ());
+    set_selection_handler_to_object (*obj);
   }
 
   /**
@@ -372,7 +381,7 @@ private:
   auto add_editor_object (
     RegionT                  &region,
     double                    startTicks,
-    std::variant<int, double> value) const -> RegionT::ChildT *
+    std::variant<int, double> value) -> RegionT::ChildT *
   {
     using ChildT = typename RegionT::ChildT;
     auto builder = get_builder<ChildT> ().with_start_ticks (startTicks);
@@ -393,7 +402,11 @@ private:
     auto obj_ref = builder.build ();
     region.append_object (obj_ref);
     auto obj = std::get<ChildT *> (obj_ref.get_object ());
-    obj->setSelected (true);
+    {
+      auto sel_mgr = get_selection_manager_for_object (*obj);
+      sel_mgr.append_to_selection (obj->get_uuid ());
+      set_selection_handler_to_object (*obj);
+    }
     return obj;
   }
 
@@ -409,7 +422,7 @@ public:
   AudioRegion * add_audio_region_with_clip (
     AudioLane             &lane,
     const AudioClip::Uuid &clip_id,
-    double                 start_ticks) const
+    double                 start_ticks)
   {
     // clip must already be registered before calling this method
     assert (clip_resolver_func_ (clip_id) != nullptr);
@@ -421,7 +434,7 @@ public:
   ScaleObject * add_scale_object (
     ChordTrack              &chord_track,
     const dsp::MusicalScale &scale,
-    double                   start_ticks) const
+    double                   start_ticks)
   {
     auto obj_ref =
       get_builder<ScaleObject> ()
@@ -434,7 +447,7 @@ public:
 
   Q_INVOKABLE Marker *
   addMarker (MarkerTrack * markerTrack, const QString &name, double startTicks)
-    const
+
   {
     auto marker_ref =
       get_builder<Marker> ()
@@ -450,7 +463,7 @@ public:
   }
 
   Q_INVOKABLE MidiRegion *
-  addEmptyMidiRegion (MidiLane * lane, double startTicks) const
+  addEmptyMidiRegion (MidiLane * lane, double startTicks)
   {
     auto mr_ref =
       get_builder<MidiRegion> ().with_start_ticks (startTicks).build ();
@@ -459,7 +472,7 @@ public:
   }
 
   Q_INVOKABLE ChordRegion *
-  addEmptyChordRegion (ChordTrack * track, double startTicks) const
+  addEmptyChordRegion (ChordTrack * track, double startTicks)
   {
     auto cr_ref =
       get_builder<ChordRegion> ().with_start_ticks (startTicks).build ();
@@ -469,7 +482,7 @@ public:
 
   Q_INVOKABLE AutomationRegion *
   addEmptyAutomationRegion (AutomationTrack * automationTrack, double startTicks)
-    const
+
   {
     auto ar_ref =
       get_builder<AutomationRegion> ().with_start_ticks (startTicks).build ();
@@ -487,7 +500,7 @@ public:
     AudioLane         &lane,
     int                num_channels,
     const std::string &clip_name,
-    double             start_ticks) const
+    double             start_ticks)
   {
     auto clip = std::make_shared<AudioClip> (
       num_channels, 1, sample_rate_provider_ (), bpm_provider_ (), clip_name);
@@ -501,7 +514,7 @@ public:
   Q_INVOKABLE AudioRegion * addAudioRegionFromFile (
     AudioLane *    lane,
     const QString &absPath,
-    double         startTicks) const
+    double         startTicks)
   {
     auto clip = std::make_shared<AudioClip> (
       absPath.toStdString (), sample_rate_provider_ (), bpm_provider_ ());
@@ -519,7 +532,7 @@ public:
   Q_INVOKABLE MidiRegion * addMidiRegionFromChordDescriptor (
     MidiLane *                  lane,
     const dsp::ChordDescriptor &descr,
-    double                      startTicks) const;
+    double                      startTicks);
 
   /**
    * @brief Creates a MIDI region at @p lane from MIDI file path @p abs_path
@@ -533,24 +546,24 @@ public:
     MidiLane *     lane,
     const QString &absolutePath,
     double         startTicks,
-    int            midiTrackIndex) const;
+    int            midiTrackIndex);
 
   Q_INVOKABLE MidiNote *
-  addMidiNote (MidiRegion * region, double startTicks, int pitch) const
+  addMidiNote (MidiRegion * region, double startTicks, int pitch)
   {
     return add_editor_object (*region, startTicks, pitch);
   }
 
   Q_INVOKABLE AutomationPoint *
   addAutomationPoint (AutomationRegion * region, double startTicks, double value)
-    const
+
   {
     return add_editor_object (*region, startTicks, value);
   }
 
   Q_INVOKABLE ChordObject *
   addChordObject (ChordRegion * region, double startTicks, const int chordIndex)
-    const
+
   {
     return add_editor_object (*region, startTicks, chordIndex);
   }
@@ -611,6 +624,40 @@ public:
     return new_obj;
   }
 
+  template <FinalArrangerObjectSubclass ObjT>
+  auto get_selection_manager_for_object (const ObjT &obj) const
+  {
+    if constexpr (std::derived_from<ObjT, TimelineObject>)
+      {
+        return timeline_selections_manager_;
+      }
+    else if constexpr (std::is_same_v<ObjT, MidiNote>)
+      {
+        return midi_selections_manager_;
+      }
+    else if constexpr (std::is_same_v<ObjT, AutomationPoint>)
+      {
+        return automation_selections_manager_;
+      }
+    else if constexpr (std::is_same_v<ObjT, ChordObject>)
+      {
+        return chord_selections_manager_;
+      }
+    else
+      {
+        static_assert (false);
+      }
+  }
+
+  template <FinalArrangerObjectSubclass ObjT>
+  void set_selection_handler_to_object (ObjT &obj)
+  {
+    auto sel_mgr = get_selection_manager_for_object (obj);
+    obj.set_selection_status_getter ([sel_mgr] (const ArrangerObject::Uuid &id) {
+      return sel_mgr.is_selected (id);
+    });
+  }
+
 private:
   ArrangerObjectRegistry         &object_registry_;
   gui::SettingsManager           &settings_manager_;
@@ -621,4 +668,8 @@ private:
   RegisterNewAudioClipFunc        new_clip_registration_func_;
   std::function<sample_rate_t ()> sample_rate_provider_;
   std::function<bpm_t ()>         bpm_provider_;
+  ArrangerObjectSelectionManager  timeline_selections_manager_;
+  ArrangerObjectSelectionManager  midi_selections_manager_;
+  ArrangerObjectSelectionManager  chord_selections_manager_;
+  ArrangerObjectSelectionManager  automation_selections_manager_;
 };

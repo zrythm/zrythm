@@ -1292,7 +1292,9 @@ ArrangerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
                     }
 
                   /* select it */
-                  prj_obj->setSelected (true);
+                  ArrangerObjectFactory::get_instance ()
+                    ->get_selection_manager_for_object (*prj_obj)
+                    .append_to_selection (prj_obj->get_uuid ());
 
                   /* remember new info */
                   ArrangerObjectSpan::copy_arranger_object_identifier (
@@ -1408,7 +1410,9 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
                     get_arranger_object_registry().find_by_id_or_throw(own_after_obj->get_uuid()));
 
                   /* select it */
-                  prj_obj->setSelected (true);
+                  ArrangerObjectFactory::get_instance ()
+                    ->get_selection_manager_for_object (*prj_obj)
+                    .append_to_selection (prj_obj->get_uuid ());
 
                   /* remember new info */
                   // own_after_obj->copy_identifier (*prj_obj);
@@ -1472,7 +1476,9 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
                     own_before_obj->add_clone_to_project (false));
 
                   /* select it */
-                  prj_obj->setSelected (true);
+                  ArrangerObjectFactory::get_instance ()
+                    ->get_selection_manager_for_object (*prj_obj)
+                    .append_to_selection (prj_obj->get_uuid ());
 
                   /* remember new info */
                   ArrangerObjectSpan::copy_arranger_object_identifier (
@@ -1760,7 +1766,9 @@ ArrangerSelectionsAction::do_or_undo_automation_fill (bool do_it)
           ->add_clone_to_project (false));
 
       /* select it */
-      prj_obj->setSelected (true);
+      ArrangerObjectFactory::get_instance ()
+        ->get_selection_manager_for_object (*prj_obj)
+        .append_to_selection (prj_obj->get_uuid ());
 
       /* remember new info */
       ArrangerObjectSpan::copy_arranger_object_identifier(std::get<AutomationRegion *> (do_it ? *region_after_ : *region_before_)
@@ -1909,9 +1917,9 @@ ArrangerSelectionsAction::do_or_undo_resize (bool do_it)
   bool sel_after_existed = sel_after_.has_value ();
   if (!sel_after_.has_value ())
     {
-          /* create the "after" selections here if not already given (e.g., when
-           * the objects are already edited) */
-          set_after_selections (ArrangerObjectSpan{*sel_});
+      /* create the "after" selections here if not already given (e.g., when
+       * the objects are already edited) */
+      set_after_selections (ArrangerObjectSpan{ *sel_ });
     }
 
 
@@ -2004,7 +2012,9 @@ ArrangerSelectionsAction::do_or_undo_resize (bool do_it)
                       ->insert_clone_to_project ());
 
                   /* select it */
-                  new_obj->setSelected (true);
+                  ArrangerObjectFactory::get_instance ()
+                    ->get_selection_manager_for_object (*new_obj)
+                    .append_to_selection (new_obj->get_uuid ());
                 }
             },
             own_obj_before_var, own_obj_after_var);

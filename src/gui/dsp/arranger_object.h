@@ -31,23 +31,16 @@ public: \
     return std::derived_from<ClassType, BoundedObject>; \
   } \
   /* ================================================================ */ \
-  /* selected (changes to be emitted by each ArrangerSelections) */ \
+  /* selected */ \
   /* ================================================================ */ \
   Q_PROPERTY (bool selected READ getSelected NOTIFY selectedChanged) \
   bool getSelected () const \
   { \
-    return is_selected (); \
-  } \
-  void setSelected (bool selected) \
-  { \
-    if (selected == getSelected ()) \
+    if (selection_status_getter_) \
       { \
-        return; \
+        return (*selection_status_getter_) (get_uuid ()); \
       } \
-\
-    selected_ = selected; \
-\
-    Q_EMIT selectedChanged (selected); \
+    return false; \
   } \
   Q_SIGNAL void selectedChanged (bool selected); \
   /* ================================================================ */ \
@@ -57,7 +50,12 @@ public: \
   PositionProxy * getPosition () const \
   { \
     return pos_; \
-  }
+  } \
+  /* ================================================================ */ \
+  /* misc. signals */ \
+  /* ================================================================ */ \
+  Q_SIGNAL void addedToProject (); \
+  Q_SIGNAL void removedFromProject ();
 
 /**
  * @brief Base class for all objects in the arranger.
@@ -83,6 +81,7 @@ class ArrangerObject
 
 public:
   using TrackUuid = TrackUuid;
+  using SelectionStatusGetter = std::function<bool (const Uuid &)>;
 
   static constexpr double DEFAULT_NUDGE_TICKS = 0.1;
 
@@ -219,11 +218,6 @@ public:
   }
 
   void parent_base_qproperties (QObject &derived);
-
-  /**
-   * Returns if the object is in the selections.
-   */
-  bool is_selected () const { return selected_; }
 
   /**
    * @brief Prints the given object to a string.
@@ -391,6 +385,12 @@ public:
    */
   bool is_frozen () const;
 
+  void set_selection_status_getter (SelectionStatusGetter getter)
+  {
+    selection_status_getter_ = getter;
+  }
+  void unset_selection_status_getter () { selection_status_getter_.reset (); }
+
   /**
    * Returns whether the given object is deletable or not (eg, start marker).
    */
@@ -457,11 +457,13 @@ public:
   /** Flags. */
   Flags flags_{};
 
-  bool selected_{};
+  // bool selected_{};
 
   /**
    * Whether part of an auditioner track. */
   bool is_auditioner_ = false;
+
+  std::optional<SelectionStatusGetter> selection_status_getter_;
 };
 
 inline bool

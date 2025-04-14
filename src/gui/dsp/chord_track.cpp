@@ -249,7 +249,11 @@ ChordTrack::remove_scale (const ArrangerObject::Uuid &scale_id)
   // Deselect the scale
   auto   scale_ref = *it;
   auto * scale = std::get<ScaleObject *> (scale_ref.get_object ());
-  scale->setSelected (false);
+  scale->unset_selection_status_getter ();
+  // FIXME: use of global variable. this should be dependency-injected
+  ArrangerObjectFactory::get_instance ()
+    ->get_selection_manager_for_object (*scale)
+    .remove_from_selection (scale_id);
 
   scale->index_in_chord_track_ = -1;
   int pos = std::distance (scales_.begin (), it);

@@ -118,7 +118,12 @@ protected:
   DerivedTestObject * obj2_{};
   DerivedTestObject * obj3_{};
 
-  std::unordered_set<TestUuid> selected_objects_;
+  UuidIdentifiableObjectSelectionManager<TestRegistry>::UuidSet selected_objects_;
   std::unique_ptr<utils::UuidIdentifiableObjectSelectionManager<TestRegistry>>
     selection_manager_;
 };
+
+static_assert (
+  std::copy_constructible<UuidIdentifiableObjectSelectionManager<TestRegistry>>);
+static_assert (
+  std::move_constructible<UuidIdentifiableObjectSelectionManager<TestRegistry>>);

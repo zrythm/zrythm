@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_BACKEND_AUTOMATION_EDITOR_H__
 #define __GUI_BACKEND_AUTOMATION_EDITOR_H__
 
 #include "gui/backend/backend/editor_settings.h"
-
+#include "gui/dsp/arranger_object_all.h"
 #include "utils/icloneable.h"
 
 /**
@@ -40,7 +40,13 @@ public:
   {
     static_cast<EditorSettings &> (*this) =
       static_cast<const EditorSettings &> (other);
+    selected_objects_ = other.selected_objects_;
   }
+
+  auto &get_selected_object_ids () { return selected_objects_; }
+
+private:
+  ArrangerObjectSelectionManager::UuidSet selected_objects_;
 };
 
 /**

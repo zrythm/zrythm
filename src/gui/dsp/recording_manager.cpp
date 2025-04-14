@@ -67,7 +67,10 @@ RecordingManager::handle_stop_recording (bool is_automation)
               if (is_automation != std::is_same_v<ObjT, AutomationRegion>)
                 return;
 
-              region->setSelected (true);
+              auto selection_mgr =
+                ArrangerObjectFactory::get_instance ()
+                  ->get_selection_manager_for_object (*region);
+              selection_mgr.append_to_selection (region->get_uuid ());
               if (is_automation)
                 {
                   if constexpr (std::is_same_v<ObjT, AutomationRegion>)

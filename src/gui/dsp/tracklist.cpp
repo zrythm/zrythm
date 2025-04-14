@@ -603,7 +603,10 @@ Tracklist::clear_selections_for_object_siblings (
           auto region = obj->get_region ();
           for (auto * child : region->get_object_ptrs_view ())
             {
-              child->setSelected (false);
+              auto selection_mgr =
+                ArrangerObjectFactory::get_instance ()
+                  ->get_selection_manager_for_object (*child);
+              selection_mgr.remove_from_selection (child->get_uuid ());
             }
         }
       else
@@ -612,7 +615,12 @@ Tracklist::clear_selections_for_object_siblings (
           for (const auto &tl_obj_var : tl_objs)
             {
               std::visit (
-                [&] (auto &&tl_obj) { tl_obj->setSelected (false); },
+                [&] (auto &&tl_obj) {
+                  auto selection_mgr =
+                    ArrangerObjectFactory::get_instance ()
+                      ->get_selection_manager_for_object (*tl_obj);
+                  selection_mgr.remove_from_selection (tl_obj->get_uuid ());
+                },
                 tl_obj_var);
             }
         }

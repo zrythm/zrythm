@@ -360,7 +360,9 @@ RangeAction::perform_impl ()
                               obj->move (-obj->pos_->ticks_);
                             }
 
-                          obj->setSelected (true);
+                          ArrangerObjectFactory::get_instance ()
+                            ->get_selection_manager_for_object (*obj)
+                            .append_to_selection (obj->get_uuid ());
                         }
                     },
                     obj_var);

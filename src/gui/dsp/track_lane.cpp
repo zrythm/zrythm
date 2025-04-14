@@ -41,7 +41,10 @@ TrackLaneImpl<RegionT>::unselect_all ()
   for (const auto &region_var : this->region_list_->get_region_vars ())
     {
       auto region = std::get<RegionT *> (region_var);
-      region->setSelected (false);
+      auto selection_mgr =
+        ArrangerObjectFactory::get_instance ()
+          ->get_selection_manager_for_object (*region);
+      selection_mgr.remove_from_selection (region->get_uuid ());
     }
 }
 
@@ -290,7 +293,6 @@ TrackLaneImpl<RegionT>::copy_members_from (
   const TrackLaneImpl &other,
   ObjectCloneType      clone_type)
 {
-  utils::UuidIdentifiableObject<TrackLane>::copy_members_from (other);
   name_ = other.name_;
   // y_ = other.y_;
   height_ = other.height_;

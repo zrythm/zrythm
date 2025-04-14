@@ -332,7 +332,7 @@ RegionImpl<
 
       auto * self = dynamic_cast<RegionT *> (this);
 
-      RegionLinkGroup * link_group = NULL;
+      RegionLinkGroup * link_group{};
       if (has_link_group ())
         {
           link_group = get_link_group ();
@@ -340,7 +340,7 @@ RegionImpl<
           link_group->remove_region (*this, false, true);
         }
 
-      bool selected = is_selected ();
+      const bool selected = self->getSelected ();
       auto clip_editor_region = CLIP_EDITOR->get_region ();
 
       /* keep alive while moving*/
@@ -480,7 +480,12 @@ RegionImpl<
         }
 
       /* reselect if necessary */
-      self->setSelected (selected);
+      if (selected)
+        {
+          ArrangerObjectFactory::get_instance ()
+            ->get_selection_manager_for_object (*self)
+            .append_to_selection (self->get_uuid ());
+        }
 
       z_debug ("after: {}", print_to_str ());
 
@@ -786,7 +791,9 @@ RegionImpl<RegionT>::remove_object (const ArrangerObject::Uuid &child_id)
   auto &self = get_derived ();
   auto  obj = get_object_ptr (child_id);
   /* deselect the object */
-  obj->setSelected (false);
+  ArrangerObjectFactory::get_instance ()
+    ->get_selection_manager_for_object (*obj)
+    .remove_from_selection (obj->get_uuid ());
 
   if constexpr (std::is_same_v<ChildT, AutomationPoint>)
     {
@@ -1002,14 +1009,23 @@ RegionImpl<RegionT>::disconnect_region ()
       CLIP_EDITOR->unsetRegion ();
     }
 
-  auto self = dynamic_cast<RegionT *> (this);
-  self->setSelected (false);
+  auto &self = get_derived ();
+
+  {
+    auto selection_mgr =
+      ArrangerObjectFactory::get_instance ()->get_selection_manager_for_object (
+        self);
+    selection_mgr.remove_from_selection (get_uuid ());
+  }
 
   if constexpr (RegionWithChildren<RegionT>)
     {
       for (auto * obj : get_derived ().get_object_ptrs_view ())
         {
-          obj->setSelected (false);
+          auto selection_mgr =
+            ArrangerObjectFactory::get_instance ()
+              ->get_selection_manager_for_object (*obj);
+          selection_mgr.remove_from_selection (obj->get_uuid ());
         }
     }
 

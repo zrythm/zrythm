@@ -530,12 +530,15 @@ public:
   }
 
 private:
+  auto get_object_for_id (const UuidType &id)
+  {
+    return registry_.find_by_id_or_throw (id);
+  }
   void emit_selection_changed_for_object (const UuidType &id)
   {
-    auto obj_var = registry_.find_by_id_or_throw (id);
     std::visit (
       [&] (auto &&obj) { Q_EMIT obj->selectedChanged (is_selected (id)); },
-      obj_var);
+      get_object_for_id (id));
   }
 
 private:

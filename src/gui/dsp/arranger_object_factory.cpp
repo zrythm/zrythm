@@ -13,7 +13,7 @@ MidiRegion *
 ArrangerObjectFactory::addMidiRegionFromChordDescriptor (
   MidiLane *                  lane,
   const dsp::ChordDescriptor &descr,
-  double                      startTicks) const
+  double                      startTicks)
 {
   auto *     mr = addEmptyMidiRegion (lane, startTicks);
   const auto r_len_ticks = snap_grid_timeline_.get_default_ticks ();
@@ -47,7 +47,7 @@ ArrangerObjectFactory::addMidiRegionFromMidiFile (
   MidiLane *     lane,
   const QString &abs_path,
   double         startTicks,
-  int            midi_track_idx) const
+  int            midi_track_idx)
 {
   auto * mr = addEmptyMidiRegion (lane, startTicks);
 
