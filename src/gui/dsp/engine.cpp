@@ -81,7 +81,12 @@ AudioEngine::init_after_cloning (
   monitor_out_right_ = other.monitor_out_right_;
   midi_editor_manual_press_ = other.midi_editor_manual_press_->clone_unique ();
   midi_in_ = other.midi_in_->clone_unique ();
-  pool_ = other.pool_->clone_unique (clone_type, *this);
+  pool_ = other.pool_->clone_unique (
+    clone_type,
+    [this] (bool backup) {
+      return project_->get_path (ProjectPath::POOL, backup);
+    },
+    [this] () { return sample_rate_; });
   control_room_ = other.control_room_->clone_unique ();
   sample_processor_ = other.sample_processor_->clone_unique ();
   sample_processor_->audio_engine_ = this;
@@ -781,7 +786,11 @@ AudioEngine::AudioEngine (Project * project)
       sample_rate_ (44000),
       control_room_ (
         std::make_unique<ControlRoom> (project->get_port_registry (), this)),
-      pool_ (std::make_unique<AudioPool> (*this)),
+      pool_ (std::make_unique<AudioPool> (
+        [project] (bool backup) {
+          return project->get_path (ProjectPath::POOL, backup);
+        },
+        [this] () { return sample_rate_; })),
       sample_processor_ (std::make_unique<SampleProcessor> (this))
 {
   z_debug ("Creating audio engine...");

@@ -396,6 +396,12 @@ public:
    */
   virtual bool is_deletable () const { return true; };
 
+  friend bool operator== (const ArrangerObject &lhs, const ArrangerObject &rhs)
+  {
+    return lhs.type_ == rhs.type_ && *lhs.pos_ == *rhs.pos_
+           && lhs.track_id_ == rhs.track_id_;
+  }
+
 protected:
   void
   copy_members_from (const ArrangerObject &other, ObjectCloneType clone_type);
@@ -465,13 +471,6 @@ public:
 
   std::optional<SelectionStatusGetter> selection_status_getter_;
 };
-
-inline bool
-operator== (const ArrangerObject &lhs, const ArrangerObject &rhs)
-{
-  return lhs.type_ == rhs.type_ && *lhs.pos_ == *rhs.pos_
-         && lhs.track_id_ == rhs.track_id_;
-}
 
 using ArrangerObjectRegistry =
   utils::OwningObjectRegistry<ArrangerObjectPtrVariant, ArrangerObject>;

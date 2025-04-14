@@ -631,9 +631,8 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                             else if constexpr (
                               std::is_same_v<RegionT, AudioRegion>)
                               {
-                                auto name =
-                                  AUDIO_POOL->gen_name_for_recording_clip (
-                                    *tr, new_lane_pos);
+                                const auto name = gen_name_for_recording_clip (
+                                  tr->get_name (), new_lane_pos);
                                 auto * new_region =
                                   ArrangerObjectFactory::get_instance ()
                                     ->add_empty_audio_region_for_recording (
@@ -1210,8 +1209,8 @@ RecordingManager::handle_start_recording (
                 {
                   /* create region */
                   int  new_lane_pos = tr->lanes_.size () - 1;
-                  auto name =
-                    AUDIO_POOL->gen_name_for_recording_clip (*tr, new_lane_pos);
+                  const auto name =
+                    gen_name_for_recording_clip (tr->get_name (), new_lane_pos);
                   auto region =
                     ArrangerObjectFactory::get_instance ()
                       ->add_empty_audio_region_for_recording (

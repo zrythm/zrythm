@@ -379,6 +379,8 @@ iterate_tuple (Callable c, Tuple &&t)
   std::apply ([&] (auto &&... args) { (c (args), ...); }, t);
 }
 
+using SampleRateGetter = std::function<sample_rate_t ()>;
+
 /**
  * @}
  */

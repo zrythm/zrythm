@@ -70,6 +70,7 @@ constexpr int BLOCK_LENGTH = 4096;
 constexpr int MIDI_BUF_SIZE = 1024;
 
 #define AUDIO_ENGINE (AudioEngine::get_active_instance ())
+#define AUDIO_POOL (AUDIO_ENGINE->pool_)
 
 #define DENORMAL_PREVENTION_VAL(engine_) ((engine_)->denormal_prevention_val_)
 

@@ -5,17 +5,13 @@
 #define __AUDIO_POOL_H__
 
 #include "gui/dsp/clip.h"
-
-class Track;
-class AudioEngine;
+#include "utils/types.h"
 
 /**
  * @addtogroup dsp
  *
  * @{
  */
-
-#define AUDIO_POOL (AUDIO_ENGINE->pool_)
 
 /**
  * An audio pool is a pool of audio files and their corresponding float arrays
@@ -30,11 +26,13 @@ struct AudioPool final
       public zrythm::utils::serialization::ISerializable<AudioPool>
 {
 public:
+  using ProjectPoolPathGetter = std::function<fs::path (bool backup)>;
+
   AudioPool (const DeserializationDependencyHolder &dh)
-      : AudioPool (dh.get<std::reference_wrapper<AudioEngine>> ().get ())
+      : AudioPool (dh.get<ProjectPoolPathGetter> (), dh.get<SampleRateGetter> ())
   {
   }
-  AudioPool (AudioEngine &engine);
+  AudioPool (ProjectPoolPathGetter path_getter, SampleRateGetter sr_getter);
 
 public:
   /**
@@ -75,15 +73,16 @@ public:
    * @param use_flac Whether to look for a FLAC file instead of a wav file.
    * @param is_backup Whether writing to a backup project.
    */
-  static fs::path
-  get_clip_path_from_name (const std::string &name, bool use_flac, bool is_backup);
+  fs::path
+  get_clip_path_from_name (const std::string &name, bool use_flac, bool is_backup)
+    const;
 
   /**
    * Gets the path of the given clip from the pool.
    *
    * @param is_backup Whether writing to a backup project.
    */
-  static fs::path get_clip_path (const AudioClip &clip, bool is_backup);
+  fs::path get_clip_path (const AudioClip &clip, bool is_backup) const;
 
   /**
    * Writes the clip to the pool as a wav file.
@@ -126,11 +125,6 @@ public:
   void ensure_unique_clip_name (AudioClip &clip);
 
   /**
-   * Generates a name for a recording clip.
-   */
-  static std::string gen_name_for_recording_clip (const Track &track, int lane);
-
-  /**
    * Loads the frame buffers of clips currently in use in the project from their
    * files and frees the buffers of clips not currently in use.
    *
@@ -163,10 +157,8 @@ private:
   bool name_exists (const std::string &name) const;
 
 private:
-  /**
-   * @brief Owner engine.
-   */
-  AudioEngine &engine_;
+  SampleRateGetter      sample_rate_getter_;
+  ProjectPoolPathGetter project_pool_path_getter_;
 
   /**
    * Audio clips.

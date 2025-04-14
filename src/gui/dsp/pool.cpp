@@ -1,22 +1,22 @@
 // SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <cstdlib>
-
-#include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/project.h"
-#include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/clip.h"
 #include "gui/dsp/pool.h"
-#include "gui/dsp/track.h"
-#include "gui/dsp/tracklist.h"
-
+#include "gui/dsp/tempo_track.h"
 #include "utils/io.h"
 #include "utils/string.h"
 
 using namespace zrythm;
 
-AudioPool::AudioPool (AudioEngine &engine) : engine_ (engine) { }
+AudioPool::AudioPool (
+  ProjectPoolPathGetter path_getter,
+  SampleRateGetter      sr_getter)
+    : sample_rate_getter_ (std::move (sr_getter)),
+      project_pool_path_getter_ (std::move (path_getter))
+{
+}
 
 void
 AudioPool::init_loaded ()
@@ -50,9 +50,9 @@ fs::path
 AudioPool::get_clip_path_from_name (
   const std::string &name,
   bool               use_flac,
-  bool               is_backup)
+  bool               is_backup) const
 {
-  auto prj_pool_dir = PROJECT->get_path (ProjectPath::POOL, is_backup);
+  auto prj_pool_dir = project_pool_path_getter_ (is_backup);
   if (!utils::io::path_exists (prj_pool_dir))
     {
       z_error ("{} does not exist", prj_pool_dir);
@@ -64,7 +64,7 @@ AudioPool::get_clip_path_from_name (
 }
 
 fs::path
-AudioPool::get_clip_path (const AudioClip &clip, bool is_backup)
+AudioPool::get_clip_path (const AudioClip &clip, bool is_backup) const
 {
   return get_clip_path_from_name (
     clip.get_name (), clip.get_use_flac (), is_backup);
@@ -225,7 +225,7 @@ AudioPool::duplicate_clip (const AudioClip::Uuid &clip_id, bool write_file)
   auto * const clip = get_clip (clip_id);
 
   auto new_clip = std::make_shared<AudioClip> (
-    clip->get_samples (), clip->get_bit_depth (), engine_.sample_rate_,
+    clip->get_samples (), clip->get_bit_depth (), sample_rate_getter_ (),
     P_TEMPO_TRACK->get_current_bpm (), clip->get_name ());
   register_clip (new_clip);
 
@@ -241,15 +241,6 @@ AudioPool::duplicate_clip (const AudioClip::Uuid &clip_id, bool write_file)
     }
 
   return new_clip->get_uuid ();
-}
-
-std::string
-AudioPool::gen_name_for_recording_clip (const Track &track, int lane)
-{
-  return fmt::format (
-    "{} - lane {} - recording", track.get_name (),
-    /* add 1 to get human friendly index */
-    lane + 1);
 }
 
 void
@@ -291,7 +282,7 @@ AudioPool::remove_unused (bool backup)
     }
 
   /* remove untracked files from pool directory */
-  auto prj_pool_dir = PROJECT->get_path (ProjectPath::POOL, backup);
+  auto prj_pool_dir = project_pool_path_getter_ (backup);
   auto files =
     utils::io::get_files_in_dir_ending_in (prj_pool_dir, true, std::nullopt);
   for (const auto &path : files)
@@ -357,7 +348,7 @@ void
 AudioPool::write_to_disk (bool is_backup)
 {
   /* ensure pool dir exists */
-  auto prj_pool_dir = engine_.project_->get_path (ProjectPath::POOL, is_backup);
+  auto prj_pool_dir = project_pool_path_getter_ (is_backup);
   if (!utils::io::path_exists (prj_pool_dir))
     {
       try
