@@ -5,7 +5,6 @@
 #define __AUDIO_AUDIO_CLIP_EDITOR_H__
 
 #include "gui/backend/backend/editor_settings.h"
-
 #include "utils/icloneable.h"
 
 /**

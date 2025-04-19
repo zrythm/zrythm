@@ -5,7 +5,6 @@
 #define __SCHEMAS_AUDIO_PORT_CONNECTIONS_MANAGER_H__
 
 #include "gui/backend/backend/cyaml_schemas/dsp/port_connection.h"
-
 #include "utils/yaml.h"
 
 typedef struct PortConnectionsManager_v1

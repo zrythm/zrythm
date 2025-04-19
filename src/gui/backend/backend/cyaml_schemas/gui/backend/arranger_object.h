@@ -13,7 +13,6 @@
 #include "gui/backend/backend/cyaml_schemas/dsp/curve.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/position.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/region_identifier.h"
-
 #include "utils/yaml.h"
 
 typedef enum ArrangerObjectType_v1

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/cyaml_schemas/dsp/channel.h"
-
 #include "utils/objects.h"
 
 Channel_v2 *

@@ -1,7 +1,7 @@
 
-#include "utils/logger.h"
 #include "gui/backend/cursor_manager.h"
 #include "gui/backend/resource_manager.h"
+#include "utils/logger.h"
 
 #include <QApplication>
 #include <QIcon>

@@ -3,8 +3,8 @@
 
 #include "zrythm-test-config.h"
 
-#include "utils/gtest_wrapper.h"
 #include "gui/backend/ui.h"
+#include "utils/gtest_wrapper.h"
 
 TEST (UI, OverlayActionStrings)
 {

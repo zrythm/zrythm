@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include <qqmlregistration.h>
-
 #include "gui/dsp/plugin_descriptor.h"
+
+#include <qqmlregistration.h>
 
 namespace zrythm::gui
 {

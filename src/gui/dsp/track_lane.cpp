@@ -7,10 +7,10 @@
 #include "gui/dsp/midi_event.h"
 #include "gui/dsp/track_lane.h"
 #include "gui/dsp/tracklist.h"
+#include "utils/rt_thread_id.h"
 
 #include "midilib/src/midifile.h"
 #include "midilib/src/midiinfo.h"
-#include "utils/rt_thread_id.h"
 #include <fmt/printf.h>
 
 using namespace zrythm;

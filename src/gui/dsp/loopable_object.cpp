@@ -3,7 +3,6 @@
 
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/loopable_object.h"
-
 #include "utils/debug.h"
 #include "utils/gtest_wrapper.h"
 

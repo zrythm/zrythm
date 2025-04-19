@@ -4,7 +4,6 @@
 #include "gui/backend/backend/project.h"
 #include "gui/dsp/cv_port.h"
 #include "gui/dsp/engine.h"
-
 #include "utils/dsp.h"
 #include "utils/gtest_wrapper.h"
 

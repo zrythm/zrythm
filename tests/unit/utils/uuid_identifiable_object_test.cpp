@@ -36,7 +36,7 @@ TEST (UuidIdentifiableObjectTest, Serialization)
 TEST (UuidIdentifiableObjectTest, CopyAndMove)
 {
   BaseTestObject obj1;
-  auto       id = obj1.get_uuid ();
+  auto           id = obj1.get_uuid ();
 
   // Test copy
   BaseTestObject obj2 (obj1);

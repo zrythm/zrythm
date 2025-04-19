@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "utils/directory_manager.h"
-#include "utils/pcg_rand.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/realtime_updater.h"
+#include "utils/directory_manager.h"
+#include "utils/pcg_rand.h"
 
 #include <QFontDatabase>
 #include <QIcon>
@@ -38,19 +38,18 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   // setWindowIcon (QIcon (":/org.zrythm.Zrythm/resources/icons/zrythm.svg"));
 
   settings_manager_ = new SettingsManager (this);
-  dir_manager_ = std::make_unique<DirectoryManager> ([&] () {
-    return
-      fs::path(settings_manager_->get_zrythm_user_path ()
-      .toStdString ());
-  },
-  [&] () {
-      return fs::path(SettingsManager::get_default_zrythm_user_path ()
-        .toStdString ());
+  dir_manager_ = std::make_unique<DirectoryManager> (
+    [&] () {
+      return fs::path (
+        settings_manager_->get_zrythm_user_path ().toStdString ());
     },
-    [&]() {
-      return fs::path(applicationDirPath().toStdString());
-    });
-  utils::LoggerProvider::set_logger(std::make_shared<utils::Logger>(utils::Logger::LoggerType::GUI));
+    [&] () {
+      return fs::path (
+        SettingsManager::get_default_zrythm_user_path ().toStdString ());
+    },
+    [&] () { return fs::path (applicationDirPath ().toStdString ()); });
+  utils::LoggerProvider::set_logger (
+    std::make_shared<utils::Logger> (utils::Logger::LoggerType::GUI));
 
   /* setup command line parser */
   setup_command_line_options ();
@@ -188,8 +187,8 @@ ZrythmApplication::setup_ui ()
   // ();
 
   /* prepend freedesktop system icons to search path, just in case */
-  auto & dir_mgr = get_directory_manager();
-  auto   parent_datadir =
+  auto &dir_mgr = get_directory_manager ();
+  auto  parent_datadir =
     dir_mgr.get_dir (DirectoryManager::DirectoryType::SYSTEM_PARENT_DATADIR);
   auto freedesktop_icon_theme_dir = parent_datadir / "icons";
 

@@ -7,7 +7,6 @@
 #include "zrythm-config.h"
 
 #include "gui/dsp/port_connection.h"
-
 #include "utils/icloneable.h"
 #include "utils/types.h"
 

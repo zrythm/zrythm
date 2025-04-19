@@ -8,7 +8,6 @@
 #include "gui/dsp/channel_track.h"
 #include "gui/dsp/modulator_track.h"
 #include "gui/dsp/tempo_track.h"
-
 #include "utils/gtest_wrapper.h"
 #include "utils/rt_thread_id.h"
 

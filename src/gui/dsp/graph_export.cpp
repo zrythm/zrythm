@@ -275,7 +275,7 @@ fill_anodes (Graph * graph, Agraph_t * aroot_graph, GHashTable * anodes)
         case GraphNodeType::ROUTE_NODE_TYPE_PLUGIN:
           {
             zrythm::gui::old_dsp::plugins::Plugin * pl = node->pl;
-            Track *                             tr = plugin_get_track (pl);
+            Track *                                 tr = plugin_get_track (pl);
             parent_node = graph_find_node_from_track (node->graph, tr, true);
           }
           break;

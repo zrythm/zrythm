@@ -20,7 +20,6 @@
 #include "gui/backend/backend/cyaml_schemas/dsp/track_lane.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/track_processor.h"
 #include "gui/backend/backend/cyaml_schemas/plugins/plugin.h"
-
 #include "utils/yaml.h"
 
 typedef enum TrackType_v1

@@ -11,7 +11,6 @@
 #define __SCHEMAS_AUDIO_POOL_H__
 
 #include "gui/backend/backend/cyaml_schemas/dsp/clip.h"
-
 #include "utils/yaml.h"
 
 typedef struct AudioPool_v1

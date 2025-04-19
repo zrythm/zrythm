@@ -93,7 +93,7 @@ ChannelSendTarget::describe () const
       {
         auto tr =
           Track::from_variant (TRACKLIST->get_track_at_index (track_pos));
-        return tr->get_name();
+        return tr->get_name ();
       }
     case ChannelSendTargetType::PluginSidechain:
       {
@@ -284,7 +284,7 @@ ChannelSend::process_block (const EngineProcessTimeInfo time_nfo)
 
   const auto local_offset = time_nfo.local_offset_;
   const auto nframes = time_nfo.nframes_;
-  Track * track = get_track ();
+  Track *    track = get_track ();
   z_return_if_fail (track);
   if (track->get_output_signal_type () == PortType::Audio)
     {

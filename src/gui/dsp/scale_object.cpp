@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2019, 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/position.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/arranger_object.h"
@@ -8,7 +9,6 @@
 #include "gui/dsp/scale_object.h"
 #include "gui/dsp/tracklist.h"
 
-#include "dsp/position.h"
 #include <fmt/format.h>
 
 ScaleObject::ScaleObject (ArrangerObjectRegistry &obj_registry, QObject * parent)

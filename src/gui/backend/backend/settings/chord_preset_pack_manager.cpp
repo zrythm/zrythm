@@ -5,7 +5,6 @@
 #include "gui/backend/backend/settings/chord_preset_pack_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/zrythm_application.h"
-
 #include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"

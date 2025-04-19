@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: © 2018-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-# include "gui/dsp/track.h"
-#include "utils/gtest_wrapper.h"
-#include "utils/rt_thread_id.h"
 #include "gui/backend/backend/piano_roll.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/dsp/track.h"
+#include "utils/gtest_wrapper.h"
+#include "utils/rt_thread_id.h"
 
 static const char * drum_labels[47] = {
   "Acoustic Bass Drum",

@@ -5,7 +5,6 @@
 #define __UNDO_UNDO_STACK_H__
 
 #include "gui/backend/backend/actions/undoable_action_all.h"
-
 #include "utils/icloneable.h"
 #include "utils/iserializable.h"
 
@@ -81,10 +80,10 @@ public:
    * @note The caller takes ownership of the action.
    */
   std::optional<UndoableActionPtrVariant> pop_last ();
-  auto             size () const { return actions_.size (); }
-  bool             is_empty () const { return actions_.empty (); }
-  bool             empty () const { return is_empty (); }
-  bool             is_full () const { return size () == max_size_; }
+  auto size () const { return actions_.size (); }
+  bool is_empty () const { return actions_.empty (); }
+  bool empty () const { return is_empty (); }
+  bool is_full () const { return size () == max_size_; }
 
   /**
    * @brief

@@ -8,7 +8,6 @@
 
 /* include commonly used stuff */
 #include "gui/backend/backend/zrythm.h"
-
 #include "utils/gtest_wrapper.h"
 
 #ifdef G_OS_UNIX

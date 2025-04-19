@@ -12,7 +12,6 @@
 
 #include "gui/backend/backend/cyaml_schemas/dsp/chord_descriptor.h"
 #include "gui/backend/backend/cyaml_schemas/gui/backend/editor_settings.h"
-
 #include "utils/yaml.h"
 
 typedef struct ChordEditor_v1

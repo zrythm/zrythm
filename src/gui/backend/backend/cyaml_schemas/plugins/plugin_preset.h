@@ -11,7 +11,6 @@
 #define __SCHEMAS_PLUGINS_PLUGIN_PRESET_H__
 
 #include "gui/backend/backend/cyaml_schemas/plugins/plugin_identifier.h"
-
 #include "utils/yaml.h"
 
 typedef struct PluginPresetIdentifier_v1

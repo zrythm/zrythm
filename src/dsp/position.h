@@ -177,10 +177,10 @@ public:
    * Whether the position starts on or after @p f1 and before @p f2 (ie, the
    * position is between @p f1 and @p f2, exclusive of f2).
    */
-   bool
-   is_between_frames_excluding_2nd (signed_frame_t f1, signed_frame_t f2) const
-   {
-     return frames_ >= f1 && frames_ < f2;
+  bool
+  is_between_frames_excluding_2nd (signed_frame_t f1, signed_frame_t f2) const
+  {
+    return frames_ >= f1 && frames_ < f2;
   }
 
   /** Returns if the position is after or equal to @p start and before @p end. */

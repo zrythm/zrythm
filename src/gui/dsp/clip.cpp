@@ -192,7 +192,7 @@ bool
 AudioClip::enough_time_elapsed_since_last_write () const
 {
   /* write to pool if 2 seconds passed since last write */
-  auto   cur_time = get_monotonic_time_usecs ();
+  auto                           cur_time = get_monotonic_time_usecs ();
   constexpr utils::MonotonicTime usec_to_wait = 2 * 1000 * 1000;
   return cur_time - last_write_ > usec_to_wait;
 }

@@ -4,7 +4,6 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/muteable_object.h"
-
 #include "utils/rt_thread_id.h"
 
 void

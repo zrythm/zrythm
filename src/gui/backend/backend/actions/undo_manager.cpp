@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-# include "gui/dsp/router.h"
-#include "utils/gtest_wrapper.h"
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/actions/undo_stack.h"
 #include "gui/backend/backend/actions/undoable_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/dsp/router.h"
+#include "utils/gtest_wrapper.h"
 
 using namespace zrythm::gui::actions;
 

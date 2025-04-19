@@ -3,9 +3,9 @@
 
 #include "zrythm-test-config.h"
 
+#include "gui/backend/backend/zrythm.h"
 #include "utils/dsp.h"
 #include "utils/objects.h"
-#include "gui/backend/backend/zrythm.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
@@ -63,7 +63,8 @@ BM_DspFunctions (benchmark::State &state)
           break;
         case 3:
           {
-            [[maybe_unused]] float abs_max = utils::float_ranges::abs_max (buf.data (), buf_size);
+            [[maybe_unused]] float abs_max =
+              utils::float_ranges::abs_max (buf.data (), buf_size);
           }
           break;
         case 4:

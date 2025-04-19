@@ -15,8 +15,9 @@
 
 #include "zrythm-config.h"
 
-#include "juce_wrapper.h"
 #include "utils/math.h"
+
+#include "juce_wrapper.h"
 
 namespace zrythm::utils::float_ranges
 {

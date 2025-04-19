@@ -46,7 +46,7 @@ MarkerTrack::init_loaded (
     }
 }
 
-Marker*
+Marker *
 MarkerTrack::get_start_marker () const
 {
   auto markers = get_children_view ();
@@ -79,7 +79,7 @@ MarkerTrack::clear_objects ()
     }
   for (const auto &id : markers_to_delete)
     {
-      remove_object(id);
+      remove_object (id);
     }
 }
 
@@ -103,7 +103,7 @@ MarkerTrack::init_after_cloning (
   const MarkerTrack &other,
   ObjectCloneType    clone_type)
 {
-ArrangerObjectOwner::copy_members_from(other, clone_type);
+  ArrangerObjectOwner::copy_members_from (other, clone_type);
   Track::copy_members_from (other, clone_type);
 }
 

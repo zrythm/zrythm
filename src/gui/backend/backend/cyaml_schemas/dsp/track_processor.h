@@ -11,7 +11,6 @@
 #define __SCHEMAS_AUDIO_TRACK_PROCESSOR_H__
 
 #include "gui/backend/backend/cyaml_schemas/dsp/port.h"
-
 #include "utils/types.h"
 #include "utils/yaml.h"
 

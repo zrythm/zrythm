@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/cyaml_schemas/gui/backend/tracklist_selections.h"
-
 #include "utils/objects.h"
 
 TracklistSelections_v2 *

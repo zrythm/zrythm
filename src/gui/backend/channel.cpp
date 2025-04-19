@@ -751,9 +751,9 @@ Channel::connect_plugins ()
       zrythm::dsp::PluginSlotType slot_type;
       for (size_t j = 0; j < dsp::STRIP_SIZE; j++)
         {
-          Channel::Plugin *                       plugin = nullptr;
-          int                                     slot = j;
-          std::optional<PluginUuidReference>      pl_uuid;
+          Channel::Plugin *                  plugin = nullptr;
+          int                                slot = j;
+          std::optional<PluginUuidReference> pl_uuid;
           if (i == 0)
             {
               slot_type = zrythm::dsp::PluginSlotType::MidiFx;

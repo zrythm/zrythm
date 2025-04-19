@@ -244,7 +244,8 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
                     {
                       track->processor_->process (time_nfo);
                       midi_events_->active_events_.append (
-                        track->processor_->get_midi_out_port().midi_events_.active_events_,
+                        track->processor_->get_midi_out_port ()
+                          .midi_events_.active_events_,
                         cycle_offset, nframes);
                     }
                   else if constexpr (std::is_same_v<TrackT, InstrumentTrack>)
@@ -441,7 +442,8 @@ SampleProcessor::queue_file_or_chord_preset (
           PROJECT->get_arranger_object_registry (), true);
       auto * instrument_track =
         std::get<InstrumentTrack *> (instrument_track_ref.get_object ());
-      instrument_track->set_name (*tracklist_, "Sample processor instrument", false);
+      instrument_track->set_name (
+        *tracklist_, "Sample processor instrument", false);
       tracklist_->insert_track (
         instrument_track_ref, tracklist_->track_count (), *AUDIO_ENGINE, false,
         false);

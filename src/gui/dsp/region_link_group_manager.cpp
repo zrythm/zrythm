@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/dsp/region_link_group_manager.h"
-
 #include "utils/logger.h"
 
 bool

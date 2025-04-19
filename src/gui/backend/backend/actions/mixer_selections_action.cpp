@@ -181,7 +181,6 @@ MixerSelectionsAction::
             }
         },
         *track_var);
-
     },
     plugins);
 }
@@ -658,7 +657,6 @@ MixerSelectionsAction::do_or_undo_change_load_behavior (bool do_it)
           ? dynamic_cast<ChannelTrack *> (track)->channel_
           : nullptr;
 #endif
-
       for (const auto &own_pl_var : ms)
         {
           std::visit (

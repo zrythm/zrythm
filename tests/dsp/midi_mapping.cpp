@@ -7,12 +7,11 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/master_track.h"
 #include "gui/dsp/midi_mapping.h"
+#include "utils/math.h"
+#include "utils/objects.h"
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
-
-#include "utils/math.h"
-#include "utils/objects.h"
 
 TEST_F (ZrythmFixture, MidiMapping)
 {

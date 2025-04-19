@@ -13,7 +13,6 @@
 #include "zrythm-config.h"
 
 #include "gui/dsp/port.h"
-
 #include "utils/iserializable.h"
 #include "utils/types.h"
 

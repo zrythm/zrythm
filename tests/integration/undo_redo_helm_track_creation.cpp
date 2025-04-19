@@ -7,12 +7,11 @@
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/backend/plugin_manager.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
-
-#include "gui/backend/plugin_manager.h"
 
 #ifdef HAVE_HELM
 static void

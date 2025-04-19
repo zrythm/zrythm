@@ -44,7 +44,8 @@ ProjectManager::init_templates ()
 {
   z_info ("Initializing templates...");
 
-  auto      &dir_mgr = dynamic_cast<ZrythmApplication*>(qApp)->get_directory_manager();
+  auto &dir_mgr =
+    dynamic_cast<ZrythmApplication *> (qApp)->get_directory_manager ();
   std::string user_templates_dir =
     dir_mgr.get_dir (IDirectoryManager::DirectoryType::USER_TEMPLATES);
   if (fs::is_directory (user_templates_dir))

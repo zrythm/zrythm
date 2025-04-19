@@ -6,7 +6,6 @@
 
 #include "gui/dsp/ext_port.h"
 #include "gui/dsp/port.h"
-
 #include "utils/icloneable.h"
 
 using WrappedObjectWithChangeSignal = struct _WrappedObjectWithChangeSignal;

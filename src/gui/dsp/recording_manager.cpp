@@ -981,15 +981,15 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
       using TrackT = base_type<decltype (tr)>;
       if constexpr (std::derived_from<TrackT, AutomatableTrack>)
         {
-          auto &atl = tr->automation_tracklist_;
+          auto  &atl = tr->automation_tracklist_;
           auto * at = atl->get_automation_track_at (ev.automation_track_idx_);
-          auto  port_var = PROJECT->find_port_by_id (at->port_id_);
+          auto   port_var = PROJECT->find_port_by_id (at->port_id_);
           z_return_if_fail (
             port_var.has_value ()
             && std::holds_alternative<ControlPort *> (port_var.value ()));
           auto * port = std::get<ControlPort *> (port_var.value ());
-          float value = port->get_control_value (false);
-          float normalized_value = port->get_control_value (true);
+          float  value = port->get_control_value (false);
+          float  normalized_value = port->get_control_value (true);
           if (ZRYTHM_TESTING)
             {
               utils::math::assert_nonnann (value);
@@ -1209,7 +1209,7 @@ RecordingManager::handle_start_recording (
               else if constexpr (std::is_same_v<TrackT, AudioTrack>)
                 {
                   /* create region */
-                  int  new_lane_pos = tr->lanes_.size () - 1;
+                  int        new_lane_pos = tr->lanes_.size () - 1;
                   const auto name =
                     gen_name_for_recording_clip (tr->get_name (), new_lane_pos);
                   auto region =

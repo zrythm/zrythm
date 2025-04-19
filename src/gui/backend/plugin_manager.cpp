@@ -34,12 +34,11 @@
 #include "gui/backend/cached_plugin_descriptors.h"
 #include "gui/backend/carla_discovery.h"
 #include "gui/backend/plugin_manager.h"
-
-#include <QtConcurrent>
-
 #include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/windows.h"
+
+#include <QtConcurrent>
 
 using namespace zrythm::gui::old_dsp::plugins;
 

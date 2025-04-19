@@ -4,7 +4,6 @@
 #include "gui/backend/backend/cyaml_schemas/dsp/fader.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/port.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/port_identifier.h"
-
 #include "utils/objects.h"
 
 Fader_v2 *

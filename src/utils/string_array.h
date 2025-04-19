@@ -4,10 +4,11 @@
 #ifndef __UTILS_STRING_ARRAY_H__
 #define __UTILS_STRING_ARRAY_H__
 
+#include "utils/types.h"
+
 #include <QStringList>
 
 #include "juce_wrapper.h"
-#include "utils/types.h"
 
 /**
  * @addtogroup utils

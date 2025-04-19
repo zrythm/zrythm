@@ -7,7 +7,6 @@
 #include "gui/dsp/carla_native_plugin.h"
 #include "gui/dsp/plugin_descriptor.h"
 #include "gui/dsp/track.h"
-
 #include "utils/objects.h"
 
 using namespace zrythm::gui::old_dsp::plugins;

@@ -701,8 +701,8 @@ public:
     }
 
   private:
-    OptionalRef<const RegistryT>                           registry_;
-    Iter                                                   pos_;
+    OptionalRef<const RegistryT> registry_;
+    Iter                         pos_;
   };
 
   using iterator = Iterator<typename SpanType::iterator>;
@@ -772,8 +772,8 @@ public:
   }
 
 private:
-  OptionalRef<const RegistryT>            registry_;
-  SpanType                                uuids_;
+  OptionalRef<const RegistryT> registry_;
+  SpanType                     uuids_;
   static_assert (std::random_access_iterator<iterator>);
   static_assert (std::random_access_iterator<const_iterator>);
 };
@@ -865,8 +865,8 @@ public:
   auto           operator[] (size_t index) const { return range_[index]; }
   auto           empty () const { return range_.empty (); }
   // auto           data () const { return range_.data (); }
-  auto           front () const { return range_.front (); }
-  auto           back () const { return range_.back (); }
+  auto front () const { return range_.front (); }
+  auto back () const { return range_.back (); }
 
   static UuidType uuid_projection (const value_type &var)
   {

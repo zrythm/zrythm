@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "gui/dsp/plugin.h"
-
 #include "utils/icloneable.h"
 #include "utils/types.h"
 

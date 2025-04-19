@@ -6,6 +6,7 @@
 #include "utils/exceptions.h"
 #include "utils/math.h"
 #include "utils/resampler.h"
+
 #include <soxr.h>
 
 using namespace zrythm;
@@ -111,8 +112,8 @@ public:
     return len_to_provide;
   }
 
-  void                    process ();
-  bool                    is_done () const;
+  void                              process ();
+  bool                              is_done () const;
   zrythm::utils::audio::AudioBuffer get_out_frames () const;
 
 public:

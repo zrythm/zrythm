@@ -12,10 +12,10 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "utils/gtest_wrapper.h"
-#include "utils/terminal.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/gtk_widgets/gtk_wrapper.h"
+#include "utils/gtest_wrapper.h"
+#include "utils/terminal.h"
 
 #define G_SETTINGS_ENABLE_BACKEND
 #include <gio/gsettingsbackend.h>

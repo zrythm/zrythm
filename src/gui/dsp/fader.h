@@ -9,9 +9,9 @@
 #include "gui/dsp/audio_port.h"
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/midi_port.h"
-
 #include "utils/icloneable.h"
 #include "utils/types.h"
+
 #include <fmt/printf.h>
 
 namespace zrythm::gui

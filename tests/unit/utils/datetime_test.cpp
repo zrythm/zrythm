@@ -3,11 +3,11 @@
 
 #include <regex>
 
-#include <QDateTime>
-
 #include "utils/datetime.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/types.h"
+
+#include <QDateTime>
 
 TEST (DateTimeTest, GetCurrentAsStringFormat)
 {

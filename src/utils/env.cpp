@@ -7,8 +7,9 @@
 #include <cstdlib>
 #include <format>
 
-#include "juce_wrapper.h"
 #include "utils/env.h"
+
+#include "juce_wrapper.h"
 #include <fmt/format.h>
 
 /**

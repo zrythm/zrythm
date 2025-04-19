@@ -149,10 +149,10 @@ RtMidiDevice::RtMidiDevice (
     {
       throw ZrythmException ("RtMidi: an error occurred fetching compiled APIs");
     }
-      for (int i = 0; i < num_apis; i++)
-        {
-          z_debug ("RtMidi API found: {}", rtmidi_api_name (apis[i]));
-        }
+  for (int i = 0; i < num_apis; i++)
+    {
+      z_debug ("RtMidi API found: {}", rtmidi_api_name (apis[i]));
+    }
 
   enum RtMidiApi api = get_api_from_midi_backend (AUDIO_ENGINE->midi_backend_);
   if (api == RTMIDI_API_RTMIDI_DUMMY)

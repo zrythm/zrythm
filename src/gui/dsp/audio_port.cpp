@@ -259,9 +259,9 @@ StereoPorts::create_stereo_ports (
   std::string   name,
   std::string   symbol)
 {
-  auto   l_names = get_name_and_symbols (true, name, symbol);
-  auto   r_names = get_name_and_symbols (false, name, symbol);
-  auto   l_port_ref = port_registry.create_object<AudioPort> (
+  auto l_names = get_name_and_symbols (true, name, symbol);
+  auto r_names = get_name_and_symbols (false, name, symbol);
+  auto l_port_ref = port_registry.create_object<AudioPort> (
     l_names.first, input ? dsp::PortFlow::Input : dsp::PortFlow::Output);
   auto r_port_ref = port_registry.create_object<AudioPort> (
     r_names.first, input ? dsp::PortFlow::Input : dsp::PortFlow::Output);

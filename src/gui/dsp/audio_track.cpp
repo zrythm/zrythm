@@ -110,8 +110,7 @@ AudioTrack::timestretch_buf (
   z_debug (
     "in frame offset {}, out frame offset {}, "
     "in frames to process {}, out frames to process {}",
-    in_frame_offset, out_frame_offset, in_frames_to_process,
-    frames_to_process);
+    in_frame_offset, out_frame_offset, in_frames_to_process, frames_to_process);
   z_return_if_fail (
     (in_frame_offset + in_frames_to_process)
     <= (unsigned_frame_t) clip->get_num_frames ());

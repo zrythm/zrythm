@@ -3,10 +3,11 @@
 
 #include <ctime>
 
-#include <QDateTime>
-
 #include "utils/datetime.h"
 #include "utils/logger.h"
+
+#include <QDateTime>
+
 #include <fmt/chrono.h>
 
 namespace zrythm::utils::datetime

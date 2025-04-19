@@ -5,7 +5,6 @@
 #include "gui/backend/io/midi_file.h"
 #include "gui/dsp/midi_region.h"
 #include "gui/dsp/transport.h"
-
 #include "utils/exceptions.h"
 #include "utils/logger.h"
 

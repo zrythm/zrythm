@@ -10,7 +10,6 @@
 #define __AUDIO_CONTROL_ROOM_H__
 
 #include "gui/dsp/fader.h"
-
 #include "utils/icloneable.h"
 
 class Fader;

@@ -11,7 +11,6 @@
 #define __SCHEMAS_AUDIO_AUDIO_CLIP_EDITOR_H__
 
 #include "gui/backend/backend/cyaml_schemas/gui/backend/editor_settings.h"
-
 #include "utils/yaml.h"
 
 typedef struct AudioClipEditor_v1

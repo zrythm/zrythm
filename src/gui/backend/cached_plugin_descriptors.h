@@ -11,7 +11,6 @@
 #define __PLUGINS_CACHED_PLUGIN_DESCRIPTORS_H__
 
 #include "gui/dsp/plugin_descriptor.h"
-
 #include "utils/iserializable.h"
 
 /**

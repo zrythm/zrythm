@@ -6,7 +6,6 @@
 
 #include "gui/dsp/plugin.h"
 #include "gui/dsp/port_connections_manager.h"
-
 #include "utils/types.h"
 
 class AudioClip;
@@ -135,7 +134,7 @@ public:
    * @param plugins
    */
   virtual void
-  get_plugins (std::vector<gui::old_dsp::plugins::Plugin *> &plugins) {};
+  get_plugins (std::vector<gui::old_dsp::plugins::Plugin *> &plugins) { };
 
   auto get_frames_per_tick () const { return frames_per_tick_; }
   auto get_ticks_per_frame () const

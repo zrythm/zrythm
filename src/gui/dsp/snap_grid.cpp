@@ -7,8 +7,8 @@
 #include "gui/dsp/engine.h"
 #include "gui/dsp/snap_grid.h"
 #include "gui/dsp/transport.h"
-
 #include "utils/gtest_wrapper.h"
+
 #include <fmt/printf.h>
 
 namespace zrythm::gui

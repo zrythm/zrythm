@@ -12,6 +12,7 @@
 #  include "utils/chromaprint.h"
 #  include "utils/math.h"
 #  include "utils/objects.h"
+
 #  include <sndfile.h>
 
 void

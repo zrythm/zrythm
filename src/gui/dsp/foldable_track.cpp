@@ -19,8 +19,8 @@ FoldableTrack::is_status (MixerStatus status) const
   bool has_channel_tracks = false;
   for (int i = 1; i < size_; i++)
     {
-      int     pos = pos_ + i;
-      auto    child_var = tracklist_->get_track_at_index (pos);
+      int  pos = pos_ + i;
+      auto child_var = tracklist_->get_track_at_index (pos);
 
       if (!TrackSpan::derived_from_type_projection<ChannelTrack> (child_var))
         continue;

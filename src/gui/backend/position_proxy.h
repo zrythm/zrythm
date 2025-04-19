@@ -4,7 +4,7 @@
 #ifndef __GUI_BACKEND_POSITION_PROXY_H__
 #define __GUI_BACKEND_POSITION_PROXY_H__
 
-# include "dsp/position.h"
+#include "dsp/position.h"
 #include "utils/icloneable.h"
 #include "utils/math.h"
 
@@ -140,7 +140,7 @@ private:
 };
 
 DEFINE_OBJECT_FORMATTER (PositionProxy, PositionProxy, [] (const auto &obj) {
-  return Position_to_string(obj);
+  return Position_to_string (obj);
 });
 
 #endif // __GUI_BACKEND_POSITION_PROXY_H__

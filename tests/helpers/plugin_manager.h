@@ -16,11 +16,10 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/plugin_manager.h"
 #include "gui/dsp/tracklist.h"
-
-#include "tests/helpers/zrythm_helper.h"
-
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"
+
+#include "tests/helpers/zrythm_helper.h"
 
 /**
  * @addtogroup tests

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/dsp/fadeable_object.h"
-
 #include "utils/gtest_wrapper.h"
 
 void

@@ -8,7 +8,6 @@
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/midi_event.h"
 #include "gui/dsp/midi_mapping.h"
-
 #include "utils/midi.h"
 #include "utils/rt_thread_id.h"
 

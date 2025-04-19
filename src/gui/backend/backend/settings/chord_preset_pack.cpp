@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "utils/rt_thread_id.h"
-#include "utils/string.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/chord_preset_pack.h"
 #include "gui/backend/backend/zrythm.h"
+#include "utils/rt_thread_id.h"
+#include "utils/string.h"
 
 ChordPresetPack::ChordPresetPack (QObject * parent) : QObject (parent) { }
 

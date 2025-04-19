@@ -293,7 +293,7 @@ public:
    *
    * Used when doing delete actions so that ports can be restored on undo.
    */
-  virtual void copy_metadata_from_project (const Port &project_port) {};
+  virtual void copy_metadata_from_project (const Port &project_port) { };
 
   /**
    * Reverts the data on the corresponding project port for the given
@@ -303,7 +303,7 @@ public:
    *
    * @param non_project Non-project port.
    */
-  virtual void restore_from_non_project (const Port &non_project) {};
+  virtual void restore_from_non_project (const Port &non_project) { };
 
   /**
    * Clears the backend's port buffer.

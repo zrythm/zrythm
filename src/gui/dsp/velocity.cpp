@@ -4,7 +4,6 @@
 #include "gui/dsp/midi_note.h"
 #include "gui/dsp/region.h"
 #include "gui/dsp/velocity.h"
-
 #include "utils/string.h"
 
 Velocity::Velocity (QObject * parent) : QObject (parent) { }

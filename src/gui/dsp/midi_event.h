@@ -16,9 +16,10 @@
 #include <cstdint>
 #include <cstring>
 
+#include "utils/types.h"
+
 #include "crill/spin_mutex.h"
 #include "midilib/src/midifile.h"
-#include "utils/types.h"
 
 using namespace zrythm;
 

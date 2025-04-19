@@ -64,14 +64,6 @@ public: \
  * placed in the arranger, such as regions, MIDI notes, chord objects, etc.
  * It provides common functionality and properties shared by all these
  * objects.
- *
- * Arranger objects should be managed as shared pointers because their ownership
- * is shared by both their parents and the project selections. Logically, only
- * the ArrangerObject parent actually owns the object, but if we use unique_ptr
- * we would have to use more complex strategies like observer pattern so we
- * avoid that by using shared_ptr.
- *
- * We also need shared_from_this() in various cases (TODO explain).
  */
 class ArrangerObject
     : public zrythm::utils::serialization::ISerializable<ArrangerObject>,

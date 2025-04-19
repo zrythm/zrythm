@@ -11,7 +11,6 @@
 #define __SCHEMAS_AUDIO_REGION_LINK_GROUP_MANAGER_H__
 
 #include "gui/backend/backend/cyaml_schemas/dsp/region_link_group.h"
-
 #include "utils/yaml.h"
 
 typedef struct RegionLinkGroupManager_v1

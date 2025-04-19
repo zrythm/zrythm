@@ -5,7 +5,6 @@
 #define __AUDIO_TEMPO_TRACK_H__
 
 #include "gui/dsp/automatable_track.h"
-
 #include "utils/types.h"
 
 /**

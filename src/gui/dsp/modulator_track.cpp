@@ -28,7 +28,8 @@ ModulatorTrack::ModulatorTrack (
       AutomatableTrack (port_registry, new_identity),
       ProcessableTrack (port_registry, new_identity)
 {
-  if (new_identity) {
+  if (new_identity)
+    {
       main_height_ = DEF_HEIGHT / 2;
 
       color_ = Color (QColor ("#222222"));
@@ -36,7 +37,7 @@ ModulatorTrack::ModulatorTrack (
 
       /* set invisible */
       visible_ = false;
-  }
+    }
 
   automation_tracklist_->setParent (this);
 }
@@ -49,7 +50,8 @@ ModulatorTrack::initialize ()
   for (int i = 0; i < max_macros; i++)
     {
       modulator_macro_processors_.emplace_back (
-        std::make_unique<ModulatorMacroProcessor> (port_registry_, this, i, true));
+        std::make_unique<ModulatorMacroProcessor> (
+          port_registry_, this, i, true));
     }
 
   generate_automation_tracks ();
@@ -68,8 +70,7 @@ ModulatorTrack::init_loaded (
   for (auto &modulator_id : modulators_)
     {
       auto modulator = modulator_id.get_object ();
-      std::visit (
-        [&] (auto &&pl) { pl->init_loaded (this); }, modulator);
+      std::visit ([&] (auto &&pl) { pl->init_loaded (this); }, modulator);
     }
   for (auto &macro : modulator_macro_processors_)
     {
@@ -83,14 +84,14 @@ struct ModulatorImportData
   {
   }
 
-  ModulatorTrack *             track{};
-  int                          slot{};
-  PluginUuidReference              modulator_id;
-  bool                         replace_mode{};
-  bool                         confirm{};
-  bool                         gen_automatables{};
-  bool                         recalc_graph{};
-  bool                             pub_events{};
+  ModulatorTrack *    track{};
+  int                 slot{};
+  PluginUuidReference modulator_id;
+  bool                replace_mode{};
+  bool                confirm{};
+  bool                gen_automatables{};
+  bool                recalc_graph{};
+  bool                pub_events{};
 
   void do_insert ()
   {
@@ -310,9 +311,9 @@ ModulatorTrack::append_ports (std::vector<Port *> &ports, bool include_plugins)
     }
   for (const auto &macro : modulator_macro_processors_)
     {
-      add_port (&macro->get_macro_port());
-      add_port (&macro->get_cv_in_port());
-      add_port (&macro->get_cv_out_port());
+      add_port (&macro->get_macro_port ());
+      add_port (&macro->get_cv_in_port ());
+      add_port (&macro->get_cv_out_port ());
     }
 }
 

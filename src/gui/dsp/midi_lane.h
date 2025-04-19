@@ -29,7 +29,8 @@ public:
   }
   MidiLane (LanedTrackImpl<MidiLane> * track);
 
-  void init_after_cloning (const MidiLane &other, ObjectCloneType clone_type) override;
+  void init_after_cloning (const MidiLane &other, ObjectCloneType clone_type)
+    override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 };

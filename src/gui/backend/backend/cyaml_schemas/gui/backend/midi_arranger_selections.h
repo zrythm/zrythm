@@ -15,7 +15,6 @@
 
 #include "gui/backend/backend/cyaml_schemas/dsp/midi_note.h"
 #include "gui/backend/backend/cyaml_schemas/gui/backend/arranger_selections.h"
-
 #include "utils/yaml.h"
 
 typedef struct MidiArrangerSelections_v1

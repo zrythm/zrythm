@@ -6,9 +6,9 @@
 
 #ifdef _WIN32
 
-#  include <gtk/gtk.h>
-
 #  include "utils/windows_errors.h"
+
+#  include <gtk/gtk.h>
 
 #  if 0
 void

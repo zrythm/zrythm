@@ -109,9 +109,9 @@ public:
   // QML Interface
   // ============================================================================
 
-  Fader *       getFader () const { return fader_; }
-  Fader *       getPreFader () const { return prefader_; }
-  AudioPort *   getLeftAudioOut () const
+  Fader *     getFader () const { return fader_; }
+  Fader *     getPreFader () const { return prefader_; }
+  AudioPort * getLeftAudioOut () const
   {
     return stereo_out_left_id_.has_value ()
              ? std::addressof (get_stereo_out_ports ().first)

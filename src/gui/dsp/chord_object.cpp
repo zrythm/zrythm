@@ -6,8 +6,8 @@
 #include "gui/dsp/chord_object.h"
 #include "gui/dsp/chord_region.h"
 #include "gui/dsp/chord_track.h"
-
 #include "utils/debug.h"
+
 #include <fmt/format.h>
 
 ChordObject::ChordObject (ArrangerObjectRegistry &obj_registry, QObject * parent)

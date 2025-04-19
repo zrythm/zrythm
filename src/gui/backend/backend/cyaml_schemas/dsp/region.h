@@ -15,7 +15,6 @@
 #include "gui/backend/backend/cyaml_schemas/dsp/position.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/region_identifier.h"
 #include "gui/backend/backend/cyaml_schemas/gui/backend/arranger_object.h"
-
 #include "utils/yaml.h"
 
 typedef enum RegionMusicalMode_v1

@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "utils/rt_thread_id.h"
 #include "gui/backend/backend/actions/range_action.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "utils/rt_thread_id.h"
 
 using namespace zrythm::gui::actions;
 
@@ -26,7 +26,9 @@ RangeAction::
 
   /* create selections for overlapping objects */
   Position inf;
-  inf.set_to_bar (Position::POSITION_MAX_BAR, TRANSPORT->ticks_per_bar_, AUDIO_ENGINE->frames_per_tick_);
+  inf.set_to_bar (
+    Position::POSITION_MAX_BAR, TRANSPORT->ticks_per_bar_,
+    AUDIO_ENGINE->frames_per_tick_);
   affected_objects_before_ = std::ranges::to<std::vector> (
     TRACKLIST->get_timeline_objects_in_range (std::make_pair (start_pos, inf))
     | std::views::transform (ArrangerObjectSpan::uuid_projection));
@@ -210,7 +212,7 @@ RangeAction::perform_impl ()
                 },
                 obj_var);
             }
-      break;
+          break;
         case Type::Remove:
           if (first_run_)
             {

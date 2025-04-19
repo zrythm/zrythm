@@ -8,8 +8,9 @@
 #  ifndef __AUDIO_ENGINE_PULSE_H__
 #    define __AUDIO_ENGINE_PULSE_H__
 
-#    include "gtk_wrapper.h"
 #    include "utils/types.h"
+
+#    include "gtk_wrapper.h"
 #    include <pulse/pulseaudio.h>
 
 class AudioEngine;

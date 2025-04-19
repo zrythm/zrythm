@@ -116,9 +116,8 @@ Plugin::set_stereo_outs_and_midi_in ()
   /* set MIDI input */
   for (auto * port : get_input_port_span ().get_elements_by_type<MidiPort> ())
     {
-      if (
-        ENUM_BITSET_TEST ( port->id_->flags2_,
-          PortIdentifier::Flags2::SupportsMidi))
+      if (ENUM_BITSET_TEST (
+            port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi))
         {
           midi_in_port_ = port;
           break;
@@ -139,19 +138,15 @@ Plugin::set_enabled_and_gain ()
   for (auto * port : get_input_port_span ().get_elements_by_type<ControlPort> ())
     {
       const auto &id = port->id_;
-      if (
-        !(ENUM_BITSET_TEST ( id->flags_,
-          PortIdentifier::Flags::GenericPluginPort)))
+      if (!(ENUM_BITSET_TEST (
+            id->flags_, PortIdentifier::Flags::GenericPluginPort)))
         continue;
 
-      if (
-        ENUM_BITSET_TEST ( id->flags_,
-          PortIdentifier::Flags::PluginEnabled))
+      if (ENUM_BITSET_TEST (id->flags_, PortIdentifier::Flags::PluginEnabled))
         {
           enabled_ = port;
         }
-      if (
-        ENUM_BITSET_TEST ( id->flags_, PortIdentifier::Flags::PluginGain))
+      if (ENUM_BITSET_TEST (id->flags_, PortIdentifier::Flags::PluginGain))
         {
           gain_ = port;
         }
@@ -210,11 +205,9 @@ Plugin::on_control_change_event (
    * vice versa */
   if (
     is_in_active_project ()
-    && ENUM_BITSET_TEST ( id.flags_, PortIdentifier::Flags::PluginEnabled))
+    && ENUM_BITSET_TEST (id.flags_, PortIdentifier::Flags::PluginEnabled))
     {
-      if (
-        ENUM_BITSET_TEST ( id.flags_,
-          PortIdentifier::Flags::GenericPluginPort))
+      if (ENUM_BITSET_TEST (id.flags_, PortIdentifier::Flags::GenericPluginPort))
         {
           if (
             own_enabled_port_
@@ -525,10 +518,10 @@ Plugin::validate () const
 
 struct PluginMoveData
 {
-  Plugin *                                  pl = nullptr;
-  OptionalTrackPtrVariant                   track_var;
-  dsp::PluginSlot                           slot;
-  bool                                      fire_events = false;
+  Plugin *                pl = nullptr;
+  OptionalTrackPtrVariant track_var;
+  dsp::PluginSlot         slot;
+  bool                    fire_events = false;
 };
 
 #if 0
@@ -703,7 +696,7 @@ Plugin::get_port_in_group (const std::string &port_group, bool left) const
     {
       if (
         port->id_->port_group_ == port_group
-        && ENUM_BITSET_TEST ( port->id_->flags_, flag))
+        && ENUM_BITSET_TEST (port->id_->flags_, flag))
         {
           return port;
         }
@@ -712,7 +705,7 @@ Plugin::get_port_in_group (const std::string &port_group, bool left) const
     {
       if (
         port->id_->port_group_ == port_group
-        && ENUM_BITSET_TEST ( port->id_->flags_, flag))
+        && ENUM_BITSET_TEST (port->id_->flags_, flag))
         {
           return port;
         }
@@ -1001,8 +994,8 @@ Plugin::generate_automation_tracks (AutomatableTrack &track)
     {
       if (
         port->id_->type_ != dsp::PortType::Control
-        || !(ENUM_BITSET_TEST ( port->id_->flags_,
-          PortIdentifier::Flags::Automatable)))
+        || !(ENUM_BITSET_TEST (
+          port->id_->flags_, PortIdentifier::Flags::Automatable)))
         continue;
 
       auto * at = new AutomationTrack (
@@ -1022,10 +1015,9 @@ Plugin::get_enabled_port ()
   for (auto port : get_input_port_span ().get_elements_by_type<ControlPort> ())
     {
       if (
-        ENUM_BITSET_TEST ( port->id_->flags_,
-          PortIdentifier::Flags::PluginEnabled)
-        && ENUM_BITSET_TEST ( port->id_->flags_,
-          PortIdentifier::Flags::GenericPluginPort))
+        ENUM_BITSET_TEST (port->id_->flags_, PortIdentifier::Flags::PluginEnabled)
+        && ENUM_BITSET_TEST (
+          port->id_->flags_, PortIdentifier::Flags::GenericPluginPort))
         {
           return port;
         }
@@ -1580,7 +1572,7 @@ Plugin::connect_to_plugin (Plugin &dest)
        * connect anymore */
       auto num_ports_to_connect =
         std::min (num_src_audio_outs, num_dest_audio_ins);
-      size_t last_index = 0;
+      size_t                          last_index = 0;
       decltype (num_ports_to_connect) ports_connected{};
       for (
         auto out_port :
@@ -1610,17 +1602,16 @@ done1:
   /* this connects only one midi out to all of the midi ins of the next plugin */
   for (auto out_port : get_output_port_span ().get_elements_by_type<MidiPort> ())
     {
-      if (
-        ENUM_BITSET_TEST ( out_port->id_->flags2_,
-          PortIdentifier::Flags2::SupportsMidi))
+      if (ENUM_BITSET_TEST (
+            out_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi))
         {
           for (
             auto in_port :
             dest.get_input_port_span ().get_elements_by_type<MidiPort> ())
             {
               if (
-                ENUM_BITSET_TEST ( in_port->id_->flags2_,
-                  PortIdentifier::Flags2::SupportsMidi))
+                ENUM_BITSET_TEST (
+                  in_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi))
                 {
                   connections_mgr->ensure_connect_default (
                     out_port->get_uuid (), in_port->get_uuid (), true);
@@ -1647,8 +1638,8 @@ Plugin::connect_to_prefader (Channel &ch)
         get_output_port_span ().get_elements_by_type<MidiPort> ())
         {
           if (
-            ENUM_BITSET_TEST ( out_port->id_->flags2_,
-              PortIdentifier::Flags2::SupportsMidi)
+            ENUM_BITSET_TEST (
+              out_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi)
             && out_port->id_->flow_ == dsp::PortFlow::Output)
             {
               mgr->ensure_connect_default (
@@ -1701,8 +1692,8 @@ Plugin::disconnect_from_prefader (Channel &ch)
             }
           else if (
             type == dsp::PortType::Event && std::is_same_v<PortT, MidiPort>
-            && ENUM_BITSET_TEST ( out_port->id_->flags2_,
-              PortIdentifier::Flags2::SupportsMidi))
+            && ENUM_BITSET_TEST (
+              out_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi))
             {
               if (port_connections_mgr->are_ports_connected (
                     out_port->get_uuid (), ch.prefader_->get_midi_in_id ()))
@@ -1785,7 +1776,7 @@ Plugin::disconnect_from_plugin (Plugin &dest)
        * connect anymore */
       auto num_ports_to_connect =
         std::min (num_src_audio_outs, num_dest_audio_ins);
-      size_t last_index = 0;
+      size_t                          last_index = 0;
       decltype (num_ports_to_connect) ports_disconnected{};
       for (
         auto out_port :
@@ -1814,17 +1805,16 @@ done2:
   /* disconnect MIDI connections */
   for (auto out_port : get_output_port_span ().get_elements_by_type<MidiPort> ())
     {
-      if (
-        ENUM_BITSET_TEST ( out_port->id_->flags2_,
-          PortIdentifier::Flags2::SupportsMidi))
+      if (ENUM_BITSET_TEST (
+            out_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi))
         {
           for (
             auto in_port :
             dest.get_input_port_span ().get_elements_by_type<MidiPort> ())
             {
               if (
-                ENUM_BITSET_TEST ( in_port->id_->flags2_,
-                  PortIdentifier::Flags2::SupportsMidi))
+                ENUM_BITSET_TEST (
+                  in_port->id_->flags2_, PortIdentifier::Flags2::SupportsMidi))
                 {
                   mgr->ensure_disconnect (
                     out_port->get_uuid (), in_port->get_uuid ());
@@ -1909,7 +1899,8 @@ Plugin::expose_ports (AudioEngine &engine, bool expose, bool inputs, bool output
 std::optional<PortPtrVariant>
 Plugin::get_port_by_symbol (const std::string &sym)
 {
-  z_return_val_if_fail (get_protocol () == Protocol::ProtocolType::LV2, std::nullopt);
+  z_return_val_if_fail (
+    get_protocol () == Protocol::ProtocolType::LV2, std::nullopt);
 
   auto find_port = [&sym] (const auto &ports) {
     auto it = std::ranges::find_if (ports, [&sym] (const auto &port_var) {

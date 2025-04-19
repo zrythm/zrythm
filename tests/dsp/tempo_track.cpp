@@ -5,10 +5,9 @@
 
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/dsp/transport.h"
 
 #include "tests/helpers/project_helper.h"
-
-#include "gui/dsp/transport.h"
 
 TEST_F (ZrythmFixture, LoadProjectBpm)
 {

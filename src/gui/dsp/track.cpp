@@ -32,7 +32,6 @@
 #include "gui/dsp/track_processor.h"
 #include "gui/dsp/tracklist.h"
 #include "utils/debug.h"
-
 #include "utils/gtest_wrapper.h"
 #include "utils/logger.h"
 #include "utils/rt_thread_id.h"
@@ -94,49 +93,57 @@ Track::create_track (Track::Type type, const std::string &name, int pos)
       case Track::Type::Instrument:
         return InstrumentTrack::create_unique<InstrumentTrack> (
           PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-          PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry(), true);
+          PROJECT->get_port_registry (),
+          PROJECT->get_arranger_object_registry (), true);
 
         break;
       case Track::Type::Audio:
         return AudioTrack::create_unique<AudioTrack> (
           PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-          PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry(), true);
+          PROJECT->get_port_registry (),
+          PROJECT->get_arranger_object_registry (), true);
 
         break;
       case Track::Type::AudioBus:
         return AudioBusTrack::create_unique<AudioBusTrack> (
           PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-          PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry(), true);
+          PROJECT->get_port_registry (),
+          PROJECT->get_arranger_object_registry (), true);
 
         break;
       case Track::Type::AudioGroup:
         return AudioGroupTrack::create_unique<AudioGroupTrack> (
           PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-          PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry(), true);
+          PROJECT->get_port_registry (),
+          PROJECT->get_arranger_object_registry (), true);
 
         break;
       case Track::Type::Midi:
         return MidiTrack::create_unique<MidiTrack> (
           PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-          PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry(), true);
+          PROJECT->get_port_registry (),
+          PROJECT->get_arranger_object_registry (), true);
 
         break;
       case Track::Type::MidiBus:
         return MidiBusTrack::create_unique<MidiBusTrack> (
           PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-          PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry(), true);
+          PROJECT->get_port_registry (),
+          PROJECT->get_arranger_object_registry (), true);
 
         break;
       case Track::Type::MidiGroup:
         return MidiGroupTrack::create_unique<MidiGroupTrack> (
           PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-          PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry(), true);
+          PROJECT->get_port_registry (),
+          PROJECT->get_arranger_object_registry (), true);
 
         break;
       case Track::Type::Folder:
         return FolderTrack::create_unique<FolderTrack> (
           PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-          PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry(), true);
+          PROJECT->get_port_registry (),
+          PROJECT->get_arranger_object_registry (), true);
         break;
       case Track::Type::Master:
       case Track::Type::Chord:
@@ -155,9 +162,7 @@ Track::create_track (Track::Type type, const std::string &name, int pos)
 void
 Track::copy_members_from (const Track &other, ObjectCloneType clone_type)
 {
-  UuidIdentifiableObject::copy_members_from(
-    other
-  );
+  UuidIdentifiableObject::copy_members_from (other);
   pos_ = other.pos_;
   type_ = other.type_;
   name_ = other.name_;
@@ -185,68 +190,68 @@ Track::create_unique_from_type (Type type)
     case Track::Type::Instrument:
       return InstrumentTrack::create_unique<InstrumentTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (),
-        PROJECT->get_arranger_object_registry(), true);
+        PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry (),
+        true);
     case Track::Type::Audio:
       return AudioTrack::create_unique<AudioTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (),
-        PROJECT->get_arranger_object_registry(), true);
+        PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry (),
+        true);
     case Track::Type::AudioBus:
       return AudioBusTrack::create_unique<AudioBusTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (),
-        PROJECT->get_arranger_object_registry(), true);
+        PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry (),
+        true);
     case Track::Type::AudioGroup:
       return AudioGroupTrack::create_unique<AudioGroupTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (),
-        PROJECT->get_arranger_object_registry(), true);
+        PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry (),
+        true);
     case Track::Type::Midi:
       return MidiTrack::create_unique<MidiTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (),
-        PROJECT->get_arranger_object_registry(), true);
+        PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry (),
+        true);
     case Track::Type::MidiBus:
       return MidiBusTrack::create_unique<MidiBusTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (),
-        PROJECT->get_arranger_object_registry(), true);
+        PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry (),
+        true);
     case Track::Type::MidiGroup:
       return MidiGroupTrack::create_unique<MidiGroupTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (),
-        PROJECT->get_arranger_object_registry(), true);
+        PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry (),
+        true);
     case Track::Type::Folder:
       return FolderTrack::create_unique<FolderTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (),
-        PROJECT->get_arranger_object_registry(), true);
+        PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry (),
+        true);
     case Track::Type::Master:
       return MasterTrack::create_unique<MasterTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (),
-        PROJECT->get_arranger_object_registry(), true);
+        PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry (),
+        true);
     case Track::Type::Chord:
       return ChordTrack::create_unique<ChordTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (),
-        PROJECT->get_arranger_object_registry(), true);
+        PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry (),
+        true);
     case Track::Type::Marker:
       return MarkerTrack::create_unique<MarkerTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (),
-        PROJECT->get_arranger_object_registry(), true);
+        PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry (),
+        true);
     case Track::Type::Tempo:
       return TempoTrack::create_unique<TempoTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (),
-        PROJECT->get_arranger_object_registry(), true);
+        PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry (),
+        true);
     case Track::Type::Modulator:
       return ModulatorTrack::create_unique<ModulatorTrack> (
         PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
-        PROJECT->get_port_registry (),
-        PROJECT->get_arranger_object_registry(), true);
+        PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry (),
+        true);
     default:
       throw std::runtime_error ("unknown track type");
     }
@@ -468,7 +473,7 @@ Track::disconnect_track ()
   /* disconnect all ports and free buffers */
   std::vector<Port *> ports;
   append_ports (ports, true);
-  for (auto *port : ports)
+  for (auto * port : ports)
     {
       if (port->is_in_active_project () != is_in_active_project ())
         {
@@ -550,7 +555,9 @@ Track::append_objects (std::vector<ArrangerObjectPtrVariant> &objs) const
         }
       if constexpr (std::derived_from<TrackT, AutomatableTrack>)
         {
-          for (auto *at : self->get_automation_tracklist ().get_automation_tracks())
+          for (
+            auto * at :
+            self->get_automation_tracklist ().get_automation_tracks ())
             {
               std::ranges::copy (
                 at->get_children_view (), std::back_inserter (objs));
@@ -1012,7 +1019,7 @@ Track::set_caches (CacheType types)
 void
 Track::write_audio_clip_to_pool_after_adding_audio_region (AudioClip &clip) const
 {
-  AUDIO_POOL->write_clip(clip, false, false);
+  AUDIO_POOL->write_clip (clip, false, false);
 }
 
 #if 0

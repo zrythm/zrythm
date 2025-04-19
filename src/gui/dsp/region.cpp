@@ -331,7 +331,7 @@ RegionImpl<
         }
 
       const bool selected = self->getSelected ();
-      auto clip_editor_region = CLIP_EDITOR->get_region ();
+      auto       clip_editor_region = CLIP_EDITOR->get_region ();
 
       /* keep alive while moving*/
       auto * shared_this = dynamic_cast<RegionT *> (this);

@@ -11,7 +11,6 @@
 #include "gui/dsp/ext_port.h"
 #include "gui/dsp/rtaudio_device.h"
 #include "gui/dsp/rtmidi_device.h"
-
 #include "utils/dsp.h"
 #include "utils/string.h"
 

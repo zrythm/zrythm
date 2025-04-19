@@ -14,7 +14,6 @@
 
 #include "gui/backend/backend/cyaml_schemas/dsp/port.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/position.h"
-
 #include "utils/types.h"
 
 typedef struct Transport_v1

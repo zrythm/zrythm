@@ -13,7 +13,6 @@
 #include <cstdint>
 
 #include "gui/backend/backend/cyaml_schemas/gui/backend/arranger_object.h"
-
 #include "utils/yaml.h"
 
 typedef struct ChordObject_v1

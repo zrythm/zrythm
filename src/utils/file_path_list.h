@@ -4,6 +4,7 @@
 #pragma once
 
 #include <QtQmlIntegration>
+
 #include "./types.h"
 #include "juce_wrapper.h"
 

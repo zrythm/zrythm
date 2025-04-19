@@ -70,7 +70,7 @@ public:
   }
   void             setRegion (QVariant region);
   Q_INVOKABLE void unsetRegion ();
-  Q_SIGNAL void regionChanged (QVariant region);
+  Q_SIGNAL void    regionChanged (QVariant region);
 
   QVariant      getTrack () const;
   Q_SIGNAL void trackChanged (QVariant track);
@@ -102,7 +102,7 @@ public:
   bool has_region () const { return region_id_.has_value (); }
 
   std::optional<RegionPtrVariant> get_region () const;
-  std::optional<Region::Uuid> get_region_id () const {return region_id_;}
+  std::optional<Region::Uuid>     get_region_id () const { return region_id_; }
 
   // ArrangerObjectRegistrySpan get_arranger_selections ();
 

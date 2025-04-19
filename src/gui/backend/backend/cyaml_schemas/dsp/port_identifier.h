@@ -5,7 +5,6 @@
 #define __SCHEMAS_AUDIO_PORT_IDENTIFIER_H__
 
 #include "gui/backend/backend/cyaml_schemas/plugins/plugin_identifier.h"
-
 #include "utils/yaml.h"
 
 typedef enum PortFlow_v1
@@ -55,10 +54,10 @@ static const cyaml_strval_t port_unit_strings_v1[] = {
   { "Hz",   PORT_UNIT_HZ_v1      },
   { "MHz",  PORT_UNIT_MHZ_v1     },
   { "dB",   PORT_UNIT_DB_v1      },
-  { "°",   PORT_UNIT_DEGREES_v1 },
+  { "°",    PORT_UNIT_DEGREES_v1 },
   { "s",    PORT_UNIT_SECONDS_v1 },
   { "ms",   PORT_UNIT_MS_v1      },
-  { "μs",  PORT_UNIT_US_v1      },
+  { "μs",   PORT_UNIT_US_v1      },
 };
 
 typedef enum ZPortOwnerType_v1

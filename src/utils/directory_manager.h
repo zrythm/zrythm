@@ -6,8 +6,9 @@
 
 #include <utility>
 
-#include "juce_wrapper.h"
 #include "utils/types.h"
+
+#include "juce_wrapper.h"
 
 class IDirectoryManager
 {

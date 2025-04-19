@@ -11,7 +11,6 @@
 #define __SCHEMAS_GUI_BACKEND_PIANO_ROLL_H__
 
 #include "gui/backend/backend/cyaml_schemas/gui/backend/editor_settings.h"
-
 #include "utils/yaml.h"
 
 typedef enum MidiModifier_v1

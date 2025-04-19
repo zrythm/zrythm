@@ -3,6 +3,7 @@
 
 #include "zrythm-config.h"
 
+#include "dsp/position.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
@@ -10,8 +11,6 @@
 #include "gui/dsp/engine.h"
 #include "gui/dsp/metronome.h"
 #include "gui/dsp/transport.h"
-
-#include "dsp/position.h"
 #include "utils/audio_file.h"
 #include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"

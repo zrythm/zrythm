@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "gui/backend/backend/project_info.h"
 #include "utils/datetime.h"
 #include "utils/io.h"
 #include "utils/logger.h"
-#include "gui/backend/backend/project_info.h"
 
 using namespace zrythm;
 

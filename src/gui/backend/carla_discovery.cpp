@@ -13,10 +13,10 @@
 #  include "gui/dsp/cached_plugin_descriptors.h"
 #  include "gui/dsp/carla_discovery.h"
 #  include "gui/dsp/plugin_descriptor.h"
-
-#  include "carla_wrapper.h"
 #  include "utils/directory_manager.h"
 #  include "utils/string.h"
+
+#  include "carla_wrapper.h"
 
 using namespace zrythm::gui::old_dsp::plugins;
 

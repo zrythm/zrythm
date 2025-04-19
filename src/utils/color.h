@@ -4,9 +4,9 @@
 #ifndef __UTILS_COLOR_H__
 #define __UTILS_COLOR_H__
 
-#include <QColor>
-
 #include "utils/iserializable.h"
+
+#include <QColor>
 
 namespace zrythm::utils
 {

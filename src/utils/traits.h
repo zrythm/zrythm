@@ -168,7 +168,7 @@ concept DerivedFromTemplatedBase = requires {
 
 template <typename T>
 concept IsVariant = requires {
-  []<typename... Ts> (std::variant<Ts...> *) {}(static_cast<T *> (nullptr));
+  []<typename... Ts> (std::variant<Ts...> *) { }(static_cast<T *> (nullptr));
 };
 
 // Trick to print the tparam type during compilation

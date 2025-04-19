@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/cyaml_schemas/dsp/track.h"
-
 #include "utils/objects.h"
 
 Track_v2 *

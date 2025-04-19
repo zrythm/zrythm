@@ -5,6 +5,7 @@
 #include "utils/compression.h"
 #include "utils/exceptions.h"
 #include "utils/mem.h"
+
 #include <zstd.h>
 
 namespace zrythm::utils::compression

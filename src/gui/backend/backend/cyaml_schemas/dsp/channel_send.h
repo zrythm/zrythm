@@ -5,7 +5,6 @@
 #define __SCHEMAS_AUDIO_CHANNEL_SEND_H__
 
 #include "gui/backend/backend/cyaml_schemas/dsp/port.h"
-
 #include "utils/yaml.h"
 
 typedef struct ChannelSend_v1

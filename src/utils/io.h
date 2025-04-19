@@ -8,11 +8,12 @@
 
 #include <optional>
 
+#include "utils/string_array.h"
+
 #include <QTemporaryDir>
 #include <QTemporaryFile>
 
 #include "./types.h"
-#include "utils/string_array.h"
 
 namespace zrythm::utils::io
 {

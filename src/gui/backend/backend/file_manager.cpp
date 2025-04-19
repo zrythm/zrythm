@@ -22,14 +22,14 @@
 #include <cstring>
 #include <memory>
 
+#include "gui/backend/backend/file_manager.h"
+#include "gui/backend/backend/settings_manager.h"
+#include "gui/backend/backend/zrythm.h"
 #include "gui/backend/io/file_descriptor.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/types.h"
-#include "gui/backend/backend/file_manager.h"
-#include "gui/backend/backend/settings_manager.h"
-#include "gui/backend/backend/zrythm.h"
 
 using namespace zrythm;
 
@@ -178,44 +178,44 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
 {
   files.clear ();
 
-      /* create special parent dir entry */
+  /* create special parent dir entry */
+  {
+    auto           parent_dir = fs::path (location.path_).parent_path ();
+    FileDescriptor fd;
+    fd.abs_path_ = parent_dir.string ();
+    fd.type_ = FileType::ParentDirectory;
+    fd.hidden_ = false;
+    fd.label_ = "..";
+    if (fd.abs_path_.length () > 1)
       {
-        auto parent_dir = fs::path (location.path_).parent_path ();
-        FileDescriptor fd;
-        fd.abs_path_ = parent_dir.string ();
-        fd.type_ = FileType::ParentDirectory;
-        fd.hidden_ = false;
-        fd.label_ = "..";
-        if (fd.abs_path_.length () > 1)
-          {
-            files.push_back (fd);
-          }
+        files.push_back (fd);
       }
+  }
 
-      for (const auto &file : fs::directory_iterator (location.path_))
+  for (const auto &file : fs::directory_iterator (location.path_))
+    {
+      FileDescriptor fd;
+
+      /* set absolute path & label */
+      auto absolute_path = file.path ();
+      fd.abs_path_ = absolute_path.string ();
+      fd.label_ = file.path ().filename ().string ();
+
+      fd.hidden_ = utils::io::is_file_hidden (absolute_path);
+
+      /* set type */
+      if (fs::is_directory (absolute_path))
         {
-          FileDescriptor fd;
-
-          /* set absolute path & label */
-          auto absolute_path = file.path ();
-          fd.abs_path_ = absolute_path.string ();
-          fd.label_ = file.path ().filename ().string ();
-
-          fd.hidden_ = utils::io::is_file_hidden (absolute_path);
-
-          /* set type */
-          if (fs::is_directory (absolute_path))
-            {
-              fd.type_ = FileType::Directory;
-            }
-          else
-            {
-              fd.type_ = FileDescriptor::get_type_from_path (file);
-            }
-
-          /* add to list */
-          files.push_back (fd);
+          fd.type_ = FileType::Directory;
         }
+      else
+        {
+          fd.type_ = FileDescriptor::get_type_from_path (file);
+        }
+
+      /* add to list */
+      files.push_back (fd);
+    }
 
   /* sort alphabetically */
   std::sort (files.begin (), files.end (), [] (const auto &a, const auto &b) {

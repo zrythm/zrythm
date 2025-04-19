@@ -8,11 +8,12 @@
 
 #include <filesystem>
 
+#include "utils/traits.h"
+
 #include <QObject>
 #include <QString>
 
 #include "juce_wrapper.h"
-#include "utils/traits.h"
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 #include <magic_enum.hpp>

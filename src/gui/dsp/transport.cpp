@@ -484,8 +484,8 @@ Transport::requestRoll (bool with_wait)
       /* handle countin */
       PrerollCountBars bars = ENUM_INT_TO_VALUE (
         PrerollCountBars, gui::SettingsManager::metronomeCountIn ());
-      int    num_bars = preroll_count_bars_enum_to_int (bars);
-      auto   frames_per_bar =
+      int  num_bars = preroll_count_bars_enum_to_int (bars);
+      auto frames_per_bar =
         type_safe::get (audio_engine_->frames_per_tick_)
         * (double) ticks_per_bar_;
       countin_frames_remaining_ = (long) ((double) num_bars * frames_per_bar);

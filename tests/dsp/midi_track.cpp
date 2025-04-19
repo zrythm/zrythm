@@ -7,12 +7,11 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/midi_event.h"
 #include "gui/dsp/midi_track.h"
+#include "utils/midi.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"
-
-#include "utils/midi.h"
 
 constexpr auto BUFFER_SIZE = 20;
 

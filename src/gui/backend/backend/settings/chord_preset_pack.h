@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "gui/backend/backend/settings/chord_preset.h"
-
 #include "utils/format.h"
 #include "utils/icloneable.h"
 

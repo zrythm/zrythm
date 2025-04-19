@@ -34,9 +34,9 @@ MidiFunction::string_id_to_type (const char * id) -> Type
     size_t i = ENUM_VALUE_TO_INT (Type::Crescendo);
     i <= ENUM_VALUE_TO_INT (Type::Strum); i++)
     {
-      Type             cur = ENUM_INT_TO_VALUE (Type, i);
-      auto             str = type_to_string_id (cur);
-      bool             eq = str == id;
+      Type cur = ENUM_INT_TO_VALUE (Type, i);
+      auto str = type_to_string_id (cur);
+      bool eq = str == id;
       if (eq)
         return cur;
     }

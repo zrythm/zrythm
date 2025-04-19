@@ -29,10 +29,9 @@
 #include "gui/dsp/router.h"
 #include "gui/dsp/tempo_track.h"
 #include "gui/dsp/tracklist.h"
+#include "utils/gtest_wrapper.h"
 
 #include "tests/helpers/zrythm_helper.h"
-
-#include "utils/gtest_wrapper.h"
 
 /**
  * @addtogroup tests

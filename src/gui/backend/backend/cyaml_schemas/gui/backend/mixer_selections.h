@@ -11,7 +11,6 @@
 #define __SCHEMAS_GUI_BACKEND_MIXER_SELECTIONS_H__
 
 #include "gui/backend/backend/cyaml_schemas/plugins/plugin.h"
-
 #include "utils/yaml.h"
 
 typedef struct MixerSelections_v1

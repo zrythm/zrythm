@@ -11,7 +11,6 @@
 #define __SCHEMAS_AUDIO_SAMPLE_PROCESSOR_H__
 
 #include "gui/backend/backend/cyaml_schemas/dsp/fader.h"
-
 #include "utils/types.h"
 
 typedef struct SampleProcessor_v1

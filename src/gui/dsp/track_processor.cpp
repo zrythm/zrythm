@@ -109,8 +109,8 @@ TrackProcessor::TrackProcessor (
       output_gain->id_->flags2_ |= dsp::PortIdentifier::Flags2::TpOutputGain;
       output_gain->set_control_value (1.f, false, false);
 
-       monitor_audio_id_ =
-         port_registry_.create_object<ControlPort> ("Monitor audio");
+      monitor_audio_id_ =
+        port_registry_.create_object<ControlPort> ("Monitor audio");
       auto * monitor_audio = &get_monitor_audio_port ();
       monitor_audio->set_owner (*this);
       monitor_audio->id_->sym_ = "track_processor_monitor_audio";

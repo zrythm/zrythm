@@ -159,12 +159,12 @@ public:
   // QML interface
   // =========================================================
 
-  QString getTitle () const;
-  void    setTitle (const QString &title);
-  QString getDirectory () const;
-  void    setDirectory (const QString &directory);
-  Tracklist * getTracklist () const;
-  Timeline *  getTimeline () const;
+  QString                     getTitle () const;
+  void                        setTitle (const QString &title);
+  QString                     getDirectory () const;
+  void                        setDirectory (const QString &directory);
+  Tracklist *                 getTracklist () const;
+  Timeline *                  getTimeline () const;
   Transport *                 getTransport () const;
   gui::backend::Tool *        getTool () const;
   ClipEditor *                getClipEditor () const;
@@ -478,10 +478,10 @@ private:
   static bool idle_saved_callback (SaveContext * ctx);
 
 private:
-  PortRegistry *   port_registry_{};
-  PluginRegistry * plugin_registry_{};
+  PortRegistry *           port_registry_{};
+  PluginRegistry *         plugin_registry_{};
   ArrangerObjectRegistry * arranger_object_registry_{};
-  TrackRegistry *  track_registry_{};
+  TrackRegistry *          track_registry_{};
 
 public:
   /** Project title. */
@@ -601,7 +601,7 @@ public:
   gui::actions::UndoManager * undo_manager_{};
 
   ArrangerObjectFactory * arranger_object_factory_{};
-  PluginFactory * plugin_factory_{};
+  PluginFactory *         plugin_factory_{};
   TrackFactory *          track_factory_{};
 
   /** Used when deserializing projects. */

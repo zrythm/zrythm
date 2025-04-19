@@ -4,9 +4,10 @@
 #ifndef __UTILS_STRING_H__
 #define __UTILS_STRING_H__
 
+#include "utils/traits.h"
+
 #include <QString>
 
-#include "utils/traits.h"
 #include <fmt/format.h>
 
 namespace juce

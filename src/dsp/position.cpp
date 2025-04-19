@@ -7,6 +7,7 @@
 #include "utils/exceptions.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/math.h"
+
 #include <fmt/format.h>
 
 namespace zrythm::dsp

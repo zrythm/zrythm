@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
-#include "gui/backend/zrythm_application.h"
 
+#include "gui/backend/zrythm_application.h"
 #include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
 
@@ -11,18 +11,18 @@
 #  include <sys/mman.h>
 #endif
 
-# include "gui/dsp/recording_manager.h"
+#include "gui/backend/backend/project.h"
+#include "gui/backend/backend/settings/chord_preset_pack_manager.h"
+#include "gui/backend/backend/settings/settings.h"
+#include "gui/backend/backend/zrythm.h"
 #include "gui/backend/plugin_manager.h"
+#include "gui/dsp/recording_manager.h"
 #include "utils/dsp.h"
 #include "utils/env.h"
 #include "utils/exceptions.h"
 #include "utils/io.h"
 #include "utils/networking.h"
 #include "utils/string.h"
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings/chord_preset_pack_manager.h"
-#include "gui/backend/backend/settings/settings.h"
-#include "gui/backend/backend/zrythm.h"
 
 #include "engine/audio_engine_application.h"
 
@@ -255,7 +255,8 @@ Zrythm::init_user_dirs_and_files ()
 {
   z_info ("initing dirs and files");
 
-  auto & dir_mgr = dynamic_cast<gui::ZrythmApplication*>(qApp)->get_directory_manager ();
+  auto &dir_mgr =
+    dynamic_cast<gui::ZrythmApplication *> (qApp)->get_directory_manager ();
   for (
     auto dir_type :
     { DirectoryManager::DirectoryType::USER_TOP,

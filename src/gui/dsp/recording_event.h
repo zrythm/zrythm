@@ -8,7 +8,6 @@
 
 #include "gui/dsp/midi_event.h"
 #include "gui/dsp/track.h"
-
 #include "utils/types.h"
 
 /**

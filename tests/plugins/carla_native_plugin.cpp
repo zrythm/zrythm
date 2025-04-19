@@ -5,15 +5,14 @@
 
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
-
-#include "tests/helpers/plugin_manager.h"
-#include "tests/helpers/project_helper.h"
-#include "tests/helpers/zrythm_helper.h"
-
 #include "gui/dsp/carla_native_plugin.h"
 #include "gui/dsp/exporter.h"
 #include "gui/dsp/fader.h"
 #include "gui/dsp/router.h"
+
+#include "tests/helpers/plugin_manager.h"
+#include "tests/helpers/project_helper.h"
+#include "tests/helpers/zrythm_helper.h"
 
 #if HAVE_CARLA
 

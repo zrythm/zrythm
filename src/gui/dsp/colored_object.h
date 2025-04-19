@@ -5,7 +5,6 @@
 #define __DSP_COLORED_OBJECT_H__
 
 #include "gui/dsp/arranger_object.h"
-
 #include "utils/color.h"
 
 #define DEFINE_COLORED_OBJECT_QML_PROPERTIES(ClassType) \

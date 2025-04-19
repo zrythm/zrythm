@@ -6,7 +6,6 @@
 
 #include "gui/dsp/control_port.h"
 #include "gui/dsp/cv_port.h"
-
 #include "utils/types.h"
 
 class ModulatorTrack;

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/cyaml_schemas/dsp/engine.h"
-
 #include "utils/objects.h"
 
 AudioEngine_v2 *

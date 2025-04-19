@@ -661,17 +661,17 @@ public:
   }
 
 private:
-  ArrangerObjectRegistry         &object_registry_;
-  gui::SettingsManager           &settings_manager_;
+  ArrangerObjectRegistry              &object_registry_;
+  gui::SettingsManager                &settings_manager_;
   std::function<dsp::FramesPerTick ()> frames_per_tick_getter_;
-  gui::SnapGrid                  &snap_grid_timeline_;
-  gui::SnapGrid                  &snap_grid_editor_;
-  AudioClipResolverFunc           clip_resolver_func_;
-  RegisterNewAudioClipFunc        new_clip_registration_func_;
-  std::function<sample_rate_t ()> sample_rate_provider_;
-  std::function<bpm_t ()>         bpm_provider_;
-  ArrangerObjectSelectionManager  timeline_selections_manager_;
-  ArrangerObjectSelectionManager  midi_selections_manager_;
-  ArrangerObjectSelectionManager  chord_selections_manager_;
-  ArrangerObjectSelectionManager  automation_selections_manager_;
+  gui::SnapGrid                       &snap_grid_timeline_;
+  gui::SnapGrid                       &snap_grid_editor_;
+  AudioClipResolverFunc                clip_resolver_func_;
+  RegisterNewAudioClipFunc             new_clip_registration_func_;
+  std::function<sample_rate_t ()>      sample_rate_provider_;
+  std::function<bpm_t ()>              bpm_provider_;
+  ArrangerObjectSelectionManager       timeline_selections_manager_;
+  ArrangerObjectSelectionManager       midi_selections_manager_;
+  ArrangerObjectSelectionManager       chord_selections_manager_;
+  ArrangerObjectSelectionManager       automation_selections_manager_;
 };

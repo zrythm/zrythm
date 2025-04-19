@@ -4,7 +4,6 @@
 #pragma once
 
 #include "gui/dsp/plugin_descriptor.h"
-
 #include "utils/file_path_list.h"
 
 namespace zrythm::gui::old_dsp::plugins

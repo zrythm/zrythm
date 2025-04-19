@@ -12,7 +12,6 @@
 #include "gui/backend/plugin_descriptor_list.h"
 #include "gui/backend/plugin_scanner.h"
 #include "gui/dsp/plugin_descriptor.h"
-
 #include "utils/string_array.h"
 
 namespace zrythm::gui::old_dsp::plugins

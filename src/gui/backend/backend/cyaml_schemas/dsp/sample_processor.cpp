@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/cyaml_schemas/dsp/sample_processor.h"
-
 #include "utils/objects.h"
 
 SampleProcessor_v2 *

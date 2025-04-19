@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <QStandardPaths>
-
 #include "utils/backtrace.h"
 #include "utils/datetime.h"
 #include "utils/debug.h"
@@ -10,6 +8,9 @@
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 #include "utils/logger.h"
+
+#include <QStandardPaths>
+
 #include <spdlog/sinks/msvc_sink.h>
 #include <spdlog/sinks/ringbuffer_sink.h>
 #include <spdlog/sinks/rotating_file_sink.h>

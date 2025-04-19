@@ -13,7 +13,6 @@
 #include "zrythm-config.h"
 
 #include "gui/backend/backend/cyaml_schemas/plugins/plugin_descriptor.h"
-
 #include "utils/yaml.h"
 
 typedef struct PluginSetting_v1

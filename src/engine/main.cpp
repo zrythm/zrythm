@@ -3,10 +3,11 @@
 
 #include "zrythm-config.h"
 
+#include "utils/logger.h"
+
 #include <QCoreApplication>
 
 #include "engine/audio_engine_application.h"
-#include "utils/logger.h"
 #include <fftw3.h>
 
 #if 0

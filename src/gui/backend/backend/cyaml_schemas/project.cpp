@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/cyaml_schemas/project.h"
-
 #include "utils/exceptions.h"
+
 #include <yyjson.h>
 
 static bool

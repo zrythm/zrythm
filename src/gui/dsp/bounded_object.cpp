@@ -9,7 +9,6 @@
 #include "gui/dsp/region.h"
 #include "utils/debug.h"
 #include "utils/dsp.h"
-
 #include "utils/gtest_wrapper.h"
 #include "utils/rt_thread_id.h"
 

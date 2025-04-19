@@ -7,13 +7,13 @@
 #include "gui/dsp/audio_function.h"
 #include "gui/dsp/audio_region.h"
 #include "gui/dsp/engine.h"
-
 #include "utils/debug.h"
 #include "utils/dsp.h"
 #include "utils/exceptions.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/rt_thread_id.h"
 #include "utils/string.h"
+
 #include <rubberband/rubberband-c.h>
 
 using namespace zrythm;

@@ -278,28 +278,28 @@ Fader::Fader (
                 sym = "ch_fader_out";
               }
           }
-      else if (type == Type::SampleProcessor)
-        {
-          name = QObject::tr ("Sample Processor Fader out").toStdString ();
-          sym = "sample_processor_fader_out";
-        }
-      else
-        {
-          name = QObject::tr ("Monitor Fader out").toStdString ();
-          sym = "monitor_fader_out";
-        }
+        else if (type == Type::SampleProcessor)
+          {
+            name = QObject::tr ("Sample Processor Fader out").toStdString ();
+            sym = "sample_processor_fader_out";
+          }
+        else
+          {
+            name = QObject::tr ("Monitor Fader out").toStdString ();
+            sym = "monitor_fader_out";
+          }
 
-      {
-        /* stereo out */
-        auto stereo_out_ports = StereoPorts::create_stereo_ports (
-          port_registry_.value (), false, name, sym);
-        stereo_out_left_id_ = stereo_out_ports.first;
-        stereo_out_right_id_ = stereo_out_ports.second;
-        auto &left_port = get_stereo_out_ports ().first;
-        auto &right_port = get_stereo_out_ports ().second;
-        left_port.set_owner (*this);
-        right_port.set_owner (*this);
-      }
+        {
+          /* stereo out */
+          auto stereo_out_ports = StereoPorts::create_stereo_ports (
+            port_registry_.value (), false, name, sym);
+          stereo_out_left_id_ = stereo_out_ports.first;
+          stereo_out_right_id_ = stereo_out_ports.second;
+          auto &left_port = get_stereo_out_ports ().first;
+          auto &right_port = get_stereo_out_ports ().second;
+          left_port.set_owner (*this);
+          right_port.set_owner (*this);
+        }
       }
     }
 
@@ -335,16 +335,16 @@ Fader::Fader (
             name = QObject::tr ("Ch MIDI Pre-Fader out").toStdString ();
             sym = "ch_midi_prefader_out";
           }
-      else
-        {
-          name = QObject::tr ("Ch MIDI Fader out").toStdString ();
-          sym = "ch_midi_fader_out";
-        }
-      midi_out_id_ =
-        port_registry_->create_object<MidiPort> (name, dsp::PortFlow::Output);
-      auto &midi_out_port = get_midi_out_port ();
-      midi_out_port.set_owner (*this);
-      midi_out_port.id_->sym_ = sym;
+        else
+          {
+            name = QObject::tr ("Ch MIDI Fader out").toStdString ();
+            sym = "ch_midi_fader_out";
+          }
+        midi_out_id_ =
+          port_registry_->create_object<MidiPort> (name, dsp::PortFlow::Output);
+        auto &midi_out_port = get_midi_out_port ();
+        midi_out_port.set_owner (*this);
+        midi_out_port.id_->sym_ = sym;
       }
     }
 }

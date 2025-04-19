@@ -17,7 +17,6 @@
 #include "gui/backend/backend/cyaml_schemas/plugins/plugin_identifier.h"
 #include "gui/backend/backend/cyaml_schemas/plugins/plugin_preset.h"
 #include "gui/backend/backend/cyaml_schemas/settings/plugin_settings.h"
-
 #include "utils/types.h"
 
 typedef struct Plugin_v1

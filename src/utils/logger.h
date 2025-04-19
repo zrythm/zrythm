@@ -6,8 +6,9 @@
 
 #include "zrythm-config.h"
 
-#include "juce_wrapper.h"
 #include "utils/format.h"
+
+#include "juce_wrapper.h"
 #include <spdlog/spdlog.h>
 
 namespace zrythm::utils

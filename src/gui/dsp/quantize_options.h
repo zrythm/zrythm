@@ -4,9 +4,8 @@
 #ifndef __AUDIO_QUANTIZE_OPTIONS_H__
 #define __AUDIO_QUANTIZE_OPTIONS_H__
 
-#include "gui/dsp/snap_grid.h"
-
 #include "dsp/position.h"
+#include "gui/dsp/snap_grid.h"
 
 #define QUANTIZE_OPTIONS_IS_EDITOR(qo) \
   (PROJECT->quantize_opts_editor_.get () == qo)

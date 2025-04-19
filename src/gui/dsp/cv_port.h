@@ -5,7 +5,6 @@
 #define __AUDIO_CV_PORT_H__
 
 #include "gui/dsp/port.h"
-
 #include "utils/icloneable.h"
 
 /**

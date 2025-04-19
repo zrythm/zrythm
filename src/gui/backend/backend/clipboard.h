@@ -64,10 +64,10 @@ public:
   int         get_format_minor_version () const override { return 0; }
 
 public:
-  Type                                 type_{};
-  std::vector<ArrangerObject::Uuid>    arranger_objects_;
-  std::vector<Track::Uuid>             tracks_;
-  std::vector<PluginUuid>              plugins_;
+  Type                              type_{};
+  std::vector<ArrangerObject::Uuid> arranger_objects_;
+  std::vector<Track::Uuid>          tracks_;
+  std::vector<PluginUuid>           plugins_;
 };
 
 /**

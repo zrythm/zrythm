@@ -17,8 +17,6 @@
 #include "gui/dsp/tempo_track.h"
 #include "gui/dsp/tracklist.h"
 #include "gui/dsp/transport.h"
-
-#include "carla_wrapper.h"
 #include "utils/debug.h"
 #include "utils/directory_manager.h"
 #include "utils/dsp.h"
@@ -27,6 +25,8 @@
 #include "utils/math.h"
 #include "utils/rt_thread_id.h"
 #include "utils/string.h"
+
+#include "carla_wrapper.h"
 #include <fmt/format.h>
 #include <fmt/printf.h>
 

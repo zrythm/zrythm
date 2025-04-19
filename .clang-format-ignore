@@ -7,4 +7,6 @@ inc/plugins/lv2/suil/*
 src/dsp/vamp-ports/*.cpp
 src/dsp/vamp-ports/*.h*
 src/gui/widgets/gtk_flipper.c
+src/gui/backend/gtk_widgets/**
+src/lv2apply/lv2apply.cpp
 tests/lv2plugins/**/*c

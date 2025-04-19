@@ -14,7 +14,6 @@
 #include "gui/backend/backend/cyaml_schemas/dsp/ext_port.h"
 #include "gui/backend/backend/cyaml_schemas/dsp/fader.h"
 #include "gui/backend/backend/cyaml_schemas/plugins/plugin.h"
-
 #include "utils/yaml.h"
 
 typedef struct Channel_v1

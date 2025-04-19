@@ -29,10 +29,10 @@ public:
       getTranslationManager CONSTANT FINAL)
 public:
   GlobalState (QObject * parent = nullptr) : QObject (parent) { }
-  Zrythm *                       getZrythm ();
-  zrythm::gui::ThemeManager *    getThemeManager ();
-  zrythm::gui::SettingsManager * getSettingsManager ();
-  zrythm::gui::ProjectManager *  getProjectManager ();
-  zrythm::gui::AlertManager *    getAlertManager ();
+  Zrythm *                          getZrythm ();
+  zrythm::gui::ThemeManager *       getThemeManager ();
+  zrythm::gui::SettingsManager *    getSettingsManager ();
+  zrythm::gui::ProjectManager *     getProjectManager ();
+  zrythm::gui::AlertManager *       getAlertManager ();
   zrythm::gui::TranslationManager * getTranslationManager ();
 };

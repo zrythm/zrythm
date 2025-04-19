@@ -351,7 +351,7 @@ public:
   std::string get_abs_state_dir (bool is_backup) const
   {
     return get_abs_state_dir (state_dir_, is_backup);
-    }
+  }
 
   /**
    * @brief Constructs the absolute path to the plugin state dir based on the
@@ -653,8 +653,8 @@ protected:
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
 public:
-  OptionalRef<PortRegistry>                           port_registry_;
-  std::optional<TrackResolver>                        track_resolver_;
+  OptionalRef<PortRegistry>    port_registry_;
+  std::optional<TrackResolver> track_resolver_;
 
   std::optional<TrackUuid> track_id_;
 

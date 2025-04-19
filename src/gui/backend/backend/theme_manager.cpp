@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "utils/directory_manager.h"
 #include "gui/backend/backend/theme_manager.h"
 #include "gui/backend/zrythm_application.h"
+#include "utils/directory_manager.h"
 
 using namespace zrythm::gui;
 
@@ -24,8 +24,9 @@ ThemeManager::ThemeManager (QObject * parent) : QObject (parent)
   palette_.setColor (QPalette::Highlight, QColor (42, 130, 218));
   palette_.setColor (QPalette::HighlightedText, Qt::black);
 
-  auto themes_dir = dynamic_cast<ZrythmApplication *>(qApp)->get_directory_manager().get_dir (
-    IDirectoryManager::DirectoryType::USER_THEMES);
+  auto themes_dir =
+    dynamic_cast<ZrythmApplication *> (qApp)->get_directory_manager ().get_dir (
+      IDirectoryManager::DirectoryType::USER_THEMES);
   if (!fs::is_directory (themes_dir))
     {
       return;

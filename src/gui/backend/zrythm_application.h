@@ -57,10 +57,10 @@ public:
   void launch_engine_process ();
 
   DirectoryManager    &get_directory_manager () const { return *dir_manager_; }
-  AlertManager *    get_alert_manager () const;
-  SettingsManager * get_settings_manager () const;
-  ThemeManager *    get_theme_manager () const;
-  ProjectManager *  get_project_manager () const;
+  AlertManager *       get_alert_manager () const;
+  SettingsManager *    get_settings_manager () const;
+  ThemeManager *       get_theme_manager () const;
+  ProjectManager *     get_project_manager () const;
   TranslationManager * get_translation_manager () const;
 
   QQmlApplicationEngine * get_qml_engine () const { return qml_engine_; }
@@ -87,11 +87,11 @@ private:
   QLocalSocket * socket_ = nullptr;
 
   std::unique_ptr<DirectoryManager> dir_manager_;
-  AlertManager *    alert_manager_ = nullptr;
-  SettingsManager * settings_manager_ = nullptr;
-  ThemeManager *    theme_manager_ = nullptr;
-  ProjectManager *  project_manager_ = nullptr;
-  TranslationManager * translation_manager_ = nullptr;
+  AlertManager *                    alert_manager_ = nullptr;
+  SettingsManager *                 settings_manager_ = nullptr;
+  ThemeManager *                    theme_manager_ = nullptr;
+  ProjectManager *                  project_manager_ = nullptr;
+  TranslationManager *              translation_manager_ = nullptr;
 
   /**
    * @brief Engine process handle.

@@ -5,6 +5,7 @@
 #define __UTILS_JSON_H__
 
 #include "utils/string.h"
+
 #include <yyjson.h>
 
 namespace zrythm::utils::json

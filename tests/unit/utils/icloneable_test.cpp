@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <QObject>
-
 #include "utils/gtest_wrapper.h"
 #include "utils/icloneable.h"
+
+#include <QObject>
 
 // Test class implementing ICloneable
 class SimpleCloneable final : public ICloneable<SimpleCloneable>

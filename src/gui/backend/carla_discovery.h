@@ -11,9 +11,9 @@
 #if HAVE_CARLA
 
 #  include "gui/dsp/plugin_descriptor.h"
+#  include "utils/types.h"
 
 #  include "carla_wrapper.h"
-#  include "utils/types.h"
 
 namespace zrythm::gui::old_dsp::plugins
 {

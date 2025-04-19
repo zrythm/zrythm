@@ -4,7 +4,6 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/region.h"
 #include "gui/dsp/region_owned_object.h"
-
 #include "utils/gtest_wrapper.h"
 
 void

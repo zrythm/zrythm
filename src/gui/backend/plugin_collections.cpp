@@ -4,7 +4,6 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/plugin_collections.h"
 #include "gui/backend/zrythm_application.h"
-
 #include "utils/directory_manager.h"
 #include "utils/io.h"
 #include "utils/string.h"

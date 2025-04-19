@@ -3,11 +3,11 @@
 
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/zrythm_application.h"
-
-#include "./cached_plugin_descriptors.h"
 #include "utils/directory_manager.h"
 #include "utils/io.h"
 #include "utils/string.h"
+
+#include "./cached_plugin_descriptors.h"
 
 constexpr const char * CACHED_PLUGIN_DESCRIPTORS_JSON_FILENAME =
   "cached-plugins.json";

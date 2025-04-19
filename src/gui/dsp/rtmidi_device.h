@@ -7,7 +7,6 @@
 #include "zrythm-config.h"
 
 #include "gui/dsp/midi_event.h"
-
 #include "utils/ring_buffer.h"
 
 #if HAVE_RTMIDI

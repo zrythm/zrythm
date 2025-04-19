@@ -1,20 +1,20 @@
 // SPDX-FileCopyrightText: © 2021-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/zrythm_application.h"
-# include "gui/dsp/audio_bus_track.h"
-# include "gui/dsp/channel_track.h"
-# include "gui/dsp/tracklist.h"
-#include "gui/dsp/plugin_descriptor.h"
-#include "utils/directory_manager.h"
-#include "utils/gtest_wrapper.h"
-#include "utils/io.h"
-#include "utils/string.h"
 #include "gui/backend/backend/actions/port_connection_action.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/settings/plugin_settings.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/backend/zrythm_application.h"
+#include "gui/dsp/audio_bus_track.h"
+#include "gui/dsp/channel_track.h"
+#include "gui/dsp/plugin_descriptor.h"
+#include "gui/dsp/tracklist.h"
+#include "utils/directory_manager.h"
+#include "utils/gtest_wrapper.h"
+#include "utils/io.h"
+#include "utils/string.h"
 
 using namespace zrythm;
 
@@ -315,20 +315,18 @@ PluginSetting::activate_finish (bool autoroute_multiout, bool has_stereo_outputs
               auto port = pl_audio_outs[l_index];
 
               /* route left port to audio fx */
-              UNDO_MANAGER->perform (
-                new gui::actions::PortConnectionConnectAction (
-                  port->get_uuid (),
-                  fx_track->processor_->get_stereo_in_ports().first.get_uuid ()));
+              UNDO_MANAGER->perform (new gui::actions::PortConnectionConnectAction (
+                port->get_uuid (),
+                fx_track->processor_->get_stereo_in_ports ().first.get_uuid ()));
               num_actions++;
 
               int r_index = has_stereo_outputs ? i * 2 + 1 : i;
               port = pl_audio_outs[r_index];
 
               /* route right port to audio fx */
-              UNDO_MANAGER->perform (
-                new gui::actions::PortConnectionConnectAction (
-                  port->get_uuid (),
-                  fx_track->processor_->get_stereo_in_ports().second.get_uuid ()));
+              UNDO_MANAGER->perform (new gui::actions::PortConnectionConnectAction (
+                port->get_uuid (),
+                fx_track->processor_->get_stereo_in_ports ().second.get_uuid ()));
               num_actions++;
             }
 
@@ -449,7 +447,8 @@ PluginSetting::increment_num_instantiations ()
 fs::path
 PluginSettings::get_file_path ()
 {
-  auto & dir_mgr = dynamic_cast<gui::ZrythmApplication*>(qApp)->get_directory_manager();
+  auto &dir_mgr =
+    dynamic_cast<gui::ZrythmApplication *> (qApp)->get_directory_manager ();
   auto zrythm_dir = dir_mgr.get_dir (DirectoryManager::DirectoryType::USER_TOP);
   z_return_val_if_fail (!zrythm_dir.empty (), "");
 

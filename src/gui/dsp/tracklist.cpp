@@ -1281,8 +1281,8 @@ Tracklist::handle_click (TrackUuid track_id, bool ctrl, bool shift, bool dragged
 {
   const auto track_var_opt = get_track (track_id);
   z_return_if_fail (track_var_opt.has_value ());
-  auto       span = get_track_span ();
-  auto       selected_tracks =
+  auto span = get_track_span ();
+  auto selected_tracks =
     std::views::filter (span, TrackRegistrySpan::selected_projection)
     | std::ranges::to<std::vector> ();
   bool is_selected = get_selection_manager ().is_selected (track_id);

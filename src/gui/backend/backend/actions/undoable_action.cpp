@@ -15,8 +15,8 @@
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/engine.h"
-
 #include "utils/logger.h"
+
 #include <fmt/format.h>
 
 using namespace zrythm::gui::actions;

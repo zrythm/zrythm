@@ -32,7 +32,8 @@ public:
    */
   AudioLane (LanedTrackImpl<AudioLane> * track);
 
-  void init_after_cloning (const AudioLane &other, ObjectCloneType clone_type) override;
+  void init_after_cloning (const AudioLane &other, ObjectCloneType clone_type)
+    override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 };

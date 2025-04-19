@@ -9,12 +9,12 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/io/file_descriptor.h"
 #include "gui/dsp/exporter.h"
+#include "utils/chromaprint.h"
+#include "utils/progress_info.h"
 
 #include "helpers/plugin_manager.h"
 #include "tests/helpers/zrythm_helper.h"
 
-#include "utils/chromaprint.h"
-#include "utils/progress_info.h"
 #include <sndfile.h>
 
 constexpr midi_byte_t DUMMY_NOTE_PITCH = 70;

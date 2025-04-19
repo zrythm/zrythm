@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/cyaml_schemas/dsp/control_room.h"
-
 #include "utils/objects.h"
 
 ControlRoom_v2 *

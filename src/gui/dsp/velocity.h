@@ -6,7 +6,6 @@
 
 #include "gui/dsp/arranger_object.h"
 #include "gui/dsp/region_owned_object.h"
-
 #include "utils/icloneable.h"
 
 class MidiNote;

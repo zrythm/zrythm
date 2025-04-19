@@ -27,8 +27,8 @@ struct CurvePreset final
   static std::vector<CurvePreset> get_fade_presets ();
 
   zrythm::dsp::CurveOptions opts_;
-  std::string  id_;
-  QString      label_;
+  std::string               id_;
+  QString                   label_;
 };
 
 #if 0

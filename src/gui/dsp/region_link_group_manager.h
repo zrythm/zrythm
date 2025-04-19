@@ -5,7 +5,6 @@
 #define __AUDIO_REGION_LINK_GROUP_MANAGER_H__
 
 #include "gui/dsp/region_link_group.h"
-
 #include "utils/format.h"
 
 /**

@@ -157,7 +157,7 @@ ArrangerSelectionsAction::init_loaded_impl ()
         }
     }
 
-    #if 0
+#if 0
   for (const auto&[r1_var, r2_var] : std::views::zip(r1_, r2_))
     {
       std::visit (
@@ -167,7 +167,7 @@ ArrangerSelectionsAction::init_loaded_impl ()
         },
         r1_var, r2_var);
     }
-    #endif
+#endif
 
   if (region_before_)
     {
@@ -353,8 +353,8 @@ EditArrangerSelectionsAction::create (
 
 EditArrangerSelectionsAction::EditArrangerSelectionsAction (
   ArrangerObjectSpanVariant sel_before_var,
-  MidiFunction::Type          midi_func_type,
-  MidiFunction::Options          opts)
+  MidiFunction::Type        midi_func_type,
+  MidiFunction::Options     opts)
     : EditArrangerSelectionsAction (
         sel_before_var,
         std::nullopt,
@@ -367,7 +367,7 @@ EditArrangerSelectionsAction::EditArrangerSelectionsAction (
 
 EditArrangerSelectionsAction::EditArrangerSelectionsAction (
   ArrangerObjectSpanVariant sel_before_var,
-  AutomationFunction::Type    automation_func_type)
+  AutomationFunction::Type  automation_func_type)
     : EditArrangerSelectionsAction (
         sel_before_var,
         std::nullopt,
@@ -393,8 +393,8 @@ EditArrangerSelectionsAction::EditArrangerSelectionsAction (
         EditType::EditorFunction,
         false)
 {
-  clip_editor_region_id_  = region_id;
-  selected_positions_in_audio_editor_ = std::make_pair(sel_start, sel_end);
+  clip_editor_region_id_ = region_id;
+  selected_positions_in_audio_editor_ = std::make_pair (sel_start, sel_end);
 
   z_debug ("saving file before applying audio func...");
   audio_function_apply (
@@ -530,9 +530,9 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
     do_it ? delta_normalized_amount_ : -delta_normalized_amount_;
 
   /* this is used for automation points to keep track of which automation
-    * point in the project matches which automation point in the cached
-    * selections key: project object, value: own object (from sel_->objects_)
-    */
+   * point in the project matches which automation point in the cached
+   * selections key: project object, value: own object (from sel_->objects_)
+   */
   std::unordered_map<AutomationPoint *, AutomationPoint *> obj_map;
 
   if (!first_run_)
@@ -545,8 +545,7 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
               own_obj_ptr->flags_ |= ArrangerObject::Flags::NonProject;
 
               /* get the actual object from the project */
-              auto prj_obj =
-                std::get<ObjT *> (*own_obj_ptr->find_in_project ());
+              auto prj_obj = std::get<ObjT *> (*own_obj_ptr->find_in_project ());
 
               /* remember if automation point */
               if constexpr (std::is_same_v<ObjT, AutomationPoint>)
@@ -613,8 +612,7 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
                     {
                       auto cur_at = prj_obj->get_automation_track ();
                       z_return_if_fail (cur_at);
-                      auto port_var =
-                        PROJECT->find_port_by_id (*target_port_);
+                      auto port_var = PROJECT->find_port_by_id (*target_port_);
                       z_return_if_fail (
                         port_var
                         && std::holds_alternative<ControlPort *> (*port_var));
@@ -676,7 +674,7 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
         }
 
       /* if moving automation points, re-sort the region and remember the
-        * new indices */
+       * new indices */
       auto first_own_obj_var = sel_->front ();
       std::visit (
         [&] (auto &&first_own_obj) {
@@ -1214,8 +1212,8 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
         own_obj_var);
     }
 
-      /* if copy-moving automation points, re-sort the region and remember the
-       * new indices */
+  /* if copy-moving automation points, re-sort the region and remember the
+   * new indices */
   if (std::holds_alternative<AutomationPoint *> (sel_after_->front ()))
     {
       /* get the actual object from the project */
@@ -1229,30 +1227,30 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
           for (auto &pair : ap_map)
             {
               // const auto * prj_ap = pair.first;
-              auto *       cached_ap = pair.second;
+              auto * cached_ap = pair.second;
               cached_ap->set_region_and_index (*region);
             }
         }
     }
 
-      /* validate */
-      P_MARKER_TRACK->validate ();
-      P_CHORD_TRACK->validate ();
-      REGION_LINK_GROUP_MANAGER.validate ();
-      CLIP_EDITOR->get_region ();
+  /* validate */
+  P_MARKER_TRACK->validate ();
+  P_CHORD_TRACK->validate ();
+  REGION_LINK_GROUP_MANAGER.validate ();
+  CLIP_EDITOR->get_region ();
 
-      if (do_it)
-        {
-          TRANSPORT->recalculate_total_bars (ArrangerObjectSpan{ *sel_after_ });
+  if (do_it)
+    {
+      TRANSPORT->recalculate_total_bars (ArrangerObjectSpan{ *sel_after_ });
 
-          /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CREATED, sel); */
-        }
-      else
-        {
-          /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_REMOVED, sel); */
-        }
+      /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CREATED, sel); */
+    }
+  else
+    {
+      /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_REMOVED, sel); */
+    }
 
-      first_run_ = false;
+  first_run_ = false;
 }
 
 void
@@ -1407,7 +1405,8 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
 
                   // TODO: add the corresponding object to the project
                   auto prj_obj = std::get<ObjT *> (
-                    get_arranger_object_registry().find_by_id_or_throw(own_after_obj->get_uuid()));
+                    get_arranger_object_registry ().find_by_id_or_throw (
+                      own_after_obj->get_uuid ()));
 
                   /* select it */
                   ArrangerObjectFactory::get_instance ()
@@ -1426,8 +1425,7 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
               std::visit (
                 [&] (auto &&own_before_obj) {
                   using ObjT = base_type<decltype (own_before_obj)>;
-                  own_before_obj->flags_ |=
-                    ArrangerObject::Flags::NonProject;
+                  own_before_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
                   /* get the actual object from the project */
                   auto obj =
@@ -1468,8 +1466,7 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
               std::visit (
                 [&] (auto &&own_before_obj) {
                   using ObjT = base_type<decltype (own_before_obj)>;
-                  own_before_obj->flags_ |=
-                    ArrangerObject::Flags::NonProject;
+                  own_before_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
                   /* add a clone to the project */
                   auto prj_obj = std::get<ObjT *> (
@@ -1509,26 +1506,26 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
 
   if (!first_run_)
     {
-      if (selected_positions_in_audio_editor_.has_value())
+      if (selected_positions_in_audio_editor_.has_value ())
         {
           z_return_if_fail (edit_type_ == EditType::EditorFunction);
           auto src_audio_sel = dest_sel;
-          auto r = std::get<AudioRegion*>(get_arranger_object_registry().find_by_id_or_throw(*clip_editor_region_id_));
+          auto r = std::get<AudioRegion *> (
+            get_arranger_object_registry ().find_by_id_or_throw (
+              *clip_editor_region_id_));
           auto src_clip = AUDIO_POOL->get_clip (r->get_clip_id ());
           z_return_if_fail (src_clip);
 
           /* adjust the positions */
           auto [start, end] = *selected_positions_in_audio_editor_;
-          start.add_frames (-r->pos_->frames_, get_ticks_per_frame());
-          end.add_frames (-r->pos_->frames_, get_ticks_per_frame());
+          start.add_frames (-r->pos_->frames_, get_ticks_per_frame ());
+          end.add_frames (-r->pos_->frames_, get_ticks_per_frame ());
           auto num_frames =
             static_cast<unsigned_frame_t> (end.frames_ - start.frames_);
           z_return_if_fail (
-            num_frames
-            == (unsigned_frame_t) src_clip->get_num_frames ());
+            num_frames == (unsigned_frame_t) src_clip->get_num_frames ());
 
-          auto src_clip_path =
-            AUDIO_POOL->get_clip_path (*src_clip, false);
+          auto src_clip_path = AUDIO_POOL->get_clip_path (*src_clip, false);
           z_debug (
             "replacing audio region {} frames with {} frames", r->get_name (),
             src_clip_path);
@@ -1540,111 +1537,91 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
           for (int i = 0; i < buf.getNumChannels (); ++i)
             {
               buf.copyFrom (
-                i, 0, src_clip->get_samples (), i, start.frames_,
-                num_frames);
+                i, 0, src_clip->get_samples (), i, start.frames_, num_frames);
             }
           r->replace_frames (buf, start.frames_);
         }
       else /* not audio function */
         {
-          for (const auto& [own_src_obj_var, own_dest_obj_var]
-          : std::views::zip(*src_sel, *dest_sel))
+          for (
+            const auto &[own_src_obj_var, own_dest_obj_var] :
+            std::views::zip (*src_sel, *dest_sel))
             {
               std::visit (
                 [&] (auto &&own_src_obj, auto &&own_dest_obj) {
                   using ObjT = base_type<decltype (own_src_obj)>;
                   if constexpr (
-                    std::is_same_v<
-                      base_type<decltype (own_dest_obj)>, ObjT>)
+                    std::is_same_v<base_type<decltype (own_dest_obj)>, ObjT>)
                     {
-                      own_src_obj->flags_ |=
-                        ArrangerObject::Flags::NonProject;
-                      own_dest_obj->flags_ |=
-                        ArrangerObject::Flags::NonProject;
+                      own_src_obj->flags_ |= ArrangerObject::Flags::NonProject;
+                      own_dest_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
                       /* find the actual object */
-                      auto obj = std::get<ObjT *> (
-                        *own_src_obj->find_in_project ());
+                      auto obj =
+                        std::get<ObjT *> (*own_src_obj->find_in_project ());
 
                       /* change the parameter */
                       switch (edit_type_)
                         {
                         case EditType::Name:
                           {
-                            if constexpr (
-                              std::derived_from<ObjT, NamedObject>)
+                            if constexpr (std::derived_from<ObjT, NamedObject>)
                               {
                                 obj->set_name (own_dest_obj->get_name ());
                               }
                             else
                               {
-                                throw ZrythmException (
-                                  "Not a nameable object");
+                                throw ZrythmException ("Not a nameable object");
                               }
                           }
                           break;
                         case EditType::Position:
                           obj->pos_ = own_dest_obj->pos_;
-                          if constexpr (
-                            std::derived_from<ObjT, BoundedObject>)
+                          if constexpr (std::derived_from<ObjT, BoundedObject>)
                             {
                               obj->end_pos_ = own_dest_obj->end_pos_;
                             }
-                          if constexpr (
-                            std::derived_from<ObjT, LoopableObject>)
+                          if constexpr (std::derived_from<ObjT, LoopableObject>)
                             {
                               obj->loop_start_pos_ =
                                 own_dest_obj->loop_start_pos_;
-                              obj->loop_end_pos_ =
-                                own_dest_obj->loop_end_pos_;
+                              obj->loop_end_pos_ = own_dest_obj->loop_end_pos_;
                               obj->clip_start_pos_ =
                                 own_dest_obj->clip_start_pos_;
                             }
                           break;
                         case EditType::Fades:
-                          if constexpr (
-                            std::derived_from<ObjT, FadeableObject>)
+                          if constexpr (std::derived_from<ObjT, FadeableObject>)
                             {
-                              obj->fade_in_pos_ =
-                                own_dest_obj->fade_in_pos_;
-                              obj->fade_out_pos_ =
-                                own_dest_obj->fade_out_pos_;
-                              obj->fade_in_opts_ =
-                                own_dest_obj->fade_in_opts_;
-                              obj->fade_out_opts_ =
-                                own_dest_obj->fade_out_opts_;
+                              obj->fade_in_pos_ = own_dest_obj->fade_in_pos_;
+                              obj->fade_out_pos_ = own_dest_obj->fade_out_pos_;
+                              obj->fade_in_opts_ = own_dest_obj->fade_in_opts_;
+                              obj->fade_out_opts_ = own_dest_obj->fade_out_opts_;
                             }
                           break;
                         case EditType::Primitive:
-                          if constexpr (
-                            std::derived_from<ObjT, MuteableObject>)
+                          if constexpr (std::derived_from<ObjT, MuteableObject>)
                             {
                               obj->muted_ = own_dest_obj->muted_;
                             }
-                          if constexpr (
-                            std::derived_from<ObjT, ColoredObject>)
+                          if constexpr (std::derived_from<ObjT, ColoredObject>)
                             {
                               obj->color_ = own_dest_obj->color_;
                               obj->use_color_ = own_dest_obj->use_color_;
                             }
-                          if constexpr (
-                            std::is_same_v<ObjT, AudioRegion>)
+                          if constexpr (std::is_same_v<ObjT, AudioRegion>)
                             {
-                              obj->musical_mode_ =
-                                own_dest_obj->musical_mode_;
+                              obj->musical_mode_ = own_dest_obj->musical_mode_;
                               obj->gain_ = own_dest_obj->gain_;
                             }
                           if constexpr (std::is_same_v<ObjT, MidiNote>)
                             {
                               obj->pitch_ = own_dest_obj->pitch_;
-                              obj->vel_->set_val (
-                                own_dest_obj->vel_->vel_);
+                              obj->vel_->set_val (own_dest_obj->vel_->vel_);
                             }
-                          if constexpr (
-                            std::is_same_v<ObjT, AutomationPoint>)
+                          if constexpr (std::is_same_v<ObjT, AutomationPoint>)
                             {
-                              obj->curve_opts_ =
-                                own_dest_obj->curve_opts_;
+                              obj->curve_opts_ = own_dest_obj->curve_opts_;
                               obj->fvalue_ = own_dest_obj->fvalue_;
                               obj->normalized_val_ =
                                 own_dest_obj->normalized_val_;
@@ -1652,37 +1629,30 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
                           break;
                         case EditType::EditorFunction:
                           obj->pos_ = own_dest_obj->pos_;
-                          if constexpr (
-                            std::derived_from<ObjT, BoundedObject>)
+                          if constexpr (std::derived_from<ObjT, BoundedObject>)
                             {
                               obj->end_pos_ = own_dest_obj->end_pos_;
                             }
-                          if constexpr (
-                            std::derived_from<ObjT, LoopableObject>)
+                          if constexpr (std::derived_from<ObjT, LoopableObject>)
                             {
                               obj->clip_start_pos_ =
                                 own_dest_obj->clip_start_pos_;
                               obj->loop_start_pos_ =
                                 own_dest_obj->loop_start_pos_;
-                              obj->loop_end_pos_ =
-                                own_dest_obj->loop_end_pos_;
+                              obj->loop_end_pos_ = own_dest_obj->loop_end_pos_;
                             }
-                          if constexpr (
-                            std::derived_from<ObjT, MuteableObject>)
+                          if constexpr (std::derived_from<ObjT, MuteableObject>)
                             {
                               obj->muted_ = own_dest_obj->muted_;
                             }
                           if constexpr (std::is_same_v<ObjT, MidiNote>)
                             {
                               obj->pitch_ = own_dest_obj->pitch_;
-                              obj->vel_->set_val (
-                                own_dest_obj->vel_->vel_);
+                              obj->vel_->set_val (own_dest_obj->vel_->vel_);
                             }
-                          if constexpr (
-                            std::is_same_v<ObjT, AutomationPoint>)
+                          if constexpr (std::is_same_v<ObjT, AutomationPoint>)
                             {
-                              obj->curve_opts_ =
-                                own_dest_obj->curve_opts_;
+                              obj->curve_opts_ = own_dest_obj->curve_opts_;
                               obj->fvalue_ = own_dest_obj->fvalue_;
                               obj->normalized_val_ =
                                 own_dest_obj->normalized_val_;
@@ -1690,8 +1660,7 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
                           break;
                         case EditType::Scale:
                           {
-                            if constexpr (
-                              std::is_same_v<ObjT, ScaleObject>)
+                            if constexpr (std::is_same_v<ObjT, ScaleObject>)
                               {
                                 obj->scale_ = own_dest_obj->scale_;
                               }
@@ -1724,8 +1693,8 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
 
   // auto sel = get_actual_arranger_selections ();
   /* EVENTS_PUSH
-    * (EventType::ET_ARRANGER_SELECTIONS_CHANGED_REDRAW_EVERYTHING, sel);
-    */
+   * (EventType::ET_ARRANGER_SELECTIONS_CHANGED_REDRAW_EVERYTHING, sel);
+   */
 
   first_run_ = false;
 }
@@ -1771,9 +1740,9 @@ ArrangerSelectionsAction::do_or_undo_automation_fill (bool do_it)
         .append_to_selection (prj_obj->get_uuid ());
 
       /* remember new info */
-      ArrangerObjectSpan::copy_arranger_object_identifier(std::get<AutomationRegion *> (do_it ? *region_after_ : *region_before_)
-        , prj_obj);
-
+      ArrangerObjectSpan::copy_arranger_object_identifier (
+        std::get<AutomationRegion *> (do_it ? *region_after_ : *region_before_),
+        prj_obj);
     }
 
   first_run_ = false;
@@ -1782,7 +1751,7 @@ ArrangerSelectionsAction::do_or_undo_automation_fill (bool do_it)
 void
 ArrangerSelectionsAction::do_or_undo_split (bool do_it)
 {
-  for (const auto &[index, own_obj_var] : std::views::enumerate(*sel_))
+  for (const auto &[index, own_obj_var] : std::views::enumerate (*sel_))
     {
       std::visit (
         [&] (auto &&own_obj) {
@@ -1795,46 +1764,56 @@ ArrangerSelectionsAction::do_or_undo_split (bool do_it)
                   /* remove the original object from the project */
                   auto obj = std::get<ObjT *> (*own_obj->find_in_project ());
                   z_return_if_fail (obj);
-                  obj->remove_from_project(true);
+                  obj->remove_from_project (true);
 
-                  if (first_run_) {
-                  /* split */
-                  auto [r1, r2] = ArrangerObjectSpan::split_bounded_object (
-                    *obj, *ArrangerObjectFactory::get_instance (), pos_,
-                    frames_per_tick_);
+                  if (first_run_)
+                    {
+                      /* split */
+                      auto [r1, r2] = ArrangerObjectSpan::split_bounded_object (
+                        *obj, *ArrangerObjectFactory::get_instance (), pos_,
+                        frames_per_tick_);
 
-                  // TODO: re-add the additional logic that was removed from
-                  // BoundedObject::split()
-                  // to add the objects into the project
+                      // TODO: re-add the additional logic that was removed from
+                      // BoundedObject::split()
+                      // to add the objects into the project
 
-                  r1_[index] = r1.id ();
-                  r2_[index] = r2.id ();
-                  }
-                  else {
-                    for (const auto&[r1_var, r2_var] :
-                      std::views::zip(ArrangerObjectRegistrySpan{get_arranger_object_registry(), r1_}, ArrangerObjectRegistrySpan{get_arranger_object_registry(), r2_}))
-                      {
-                        auto* r1 = std::get<ObjT *> (r1_var);
-                        auto* r2 = std::get<ObjT *> (r2_var);
-                        (void) r1;
-                        (void) r2;
-                        // TODO: add r1 & r2 to the project
-                      }
-                  }
+                      r1_[index] = r1.id ();
+                      r2_[index] = r2.id ();
+                    }
+                  else
+                    {
+                      for (
+                        const auto &[r1_var, r2_var] : std::views::zip (
+                          ArrangerObjectRegistrySpan{
+                            get_arranger_object_registry (), r1_ },
+                          ArrangerObjectRegistrySpan{
+                            get_arranger_object_registry (), r2_ }))
+                        {
+                          auto * r1 = std::get<ObjT *> (r1_var);
+                          auto * r2 = std::get<ObjT *> (r2_var);
+                          (void) r1;
+                          (void) r2;
+                          // TODO: add r1 & r2 to the project
+                        }
+                    }
                 }
               /* else if undoing split */
               else
                 {
                   /* find the actual objects and remove from project */
-                  auto* r1 = std::get<ObjT *> (get_arranger_object_registry().find_by_id_or_throw(r1_.at (index)));
-                  auto* r2 = std::get<ObjT *> (
+                  auto * r1 = std::get<ObjT *> (
+                    get_arranger_object_registry ().find_by_id_or_throw (
+                      r1_.at (index)));
+                  auto * r2 = std::get<ObjT *> (
                     get_arranger_object_registry ().find_by_id_or_throw (
                       r2_.at (index)));
                   r1->remove_from_project (true);
                   r2->remove_from_project (true);
 
                   /* re-insert original object at its original position */
-                  auto prj_obj = std::get<ObjT*>(get_arranger_object_registry().find_by_id_or_throw(own_obj->get_uuid()));
+                  auto prj_obj = std::get<ObjT *> (
+                    get_arranger_object_registry ().find_by_id_or_throw (
+                      own_obj->get_uuid ()));
                   // TODO: insert to project
                   (void) prj_obj;
                 }
@@ -1843,11 +1822,10 @@ ArrangerSelectionsAction::do_or_undo_split (bool do_it)
         own_obj_var);
     }
 
+  // ArrangerSelections * sel = get_actual_arranger_selections ();
+  /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, sel); */
 
-      // ArrangerSelections * sel = get_actual_arranger_selections ();
-      /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_CHANGED, sel); */
-
-      first_run_ = false;
+  first_run_ = false;
 }
 
 void
@@ -1856,7 +1834,7 @@ ArrangerSelectionsAction::do_or_undo_merge (bool do_it)
   /* if first run, merge */
   if (first_run_)
     {
-      sel_after_.emplace(std::vector<ArrangerObjectPtrVariant>());
+      sel_after_.emplace (std::vector<ArrangerObjectPtrVariant> ());
 // TODO
 #if 0
       sel_after_->push_back(get_arranger_object_registry().find_by_id_or_throw(ArrangerObjectSpan{*sel_}.merge(get_frames_per_tick())));
@@ -1870,8 +1848,7 @@ ArrangerSelectionsAction::do_or_undo_merge (bool do_it)
   auto &after_objs = do_it ? *sel_after_ : *sel_;
 
   /* remove the before objects from the project */
-  for (
-    auto &own_before_obj_var : std::ranges::reverse_view (before_objs))
+  for (auto &own_before_obj_var : std::ranges::reverse_view (before_objs))
     {
       std::visit (
         [&] (auto &&own_before_obj) {
@@ -1879,8 +1856,7 @@ ArrangerSelectionsAction::do_or_undo_merge (bool do_it)
           own_before_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
           /* find the actual object */
-          auto prj_obj =
-            std::get<ObjT *> (*own_before_obj->find_in_project ());
+          auto prj_obj = std::get<ObjT *> (*own_before_obj->find_in_project ());
 
           /* remove */
           prj_obj->remove_from_project (true);
@@ -1896,11 +1872,12 @@ ArrangerSelectionsAction::do_or_undo_merge (bool do_it)
           using ObjT = base_type<decltype (own_after_obj)>;
           own_after_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
-          auto prj_obj = std::get<ObjT *> (
-            own_after_obj->add_clone_to_project (false));
+          auto prj_obj =
+            std::get<ObjT *> (own_after_obj->add_clone_to_project (false));
 
           /* remember positions */
-          ArrangerObjectSpan::copy_arranger_object_identifier(own_after_obj, prj_obj);
+          ArrangerObjectSpan::copy_arranger_object_identifier (
+            own_after_obj, prj_obj);
         },
         own_after_obj_var);
     }
@@ -1922,14 +1899,13 @@ ArrangerSelectionsAction::do_or_undo_resize (bool do_it)
       set_after_selections (ArrangerObjectSpan{ *sel_ });
     }
 
-
   auto &objs_before = *sel_;
   auto &objs_after = *sel_after_;
 
   double ticks = do_it ? ticks_ : -ticks_;
 
   /* if objects are already edited and this is the first run nothing needs
-    * to be done */
+   * to be done */
   if (!sel_after_existed || !first_run_)
     {
       for (size_t i = 0; i < objs_before.size (); i++)
@@ -1942,8 +1918,7 @@ ArrangerSelectionsAction::do_or_undo_resize (bool do_it)
               if constexpr (
                 std::is_same_v<ObjT, base_type<decltype (own_obj_after)>>)
                 {
-                  own_obj_before->flags_ |=
-                    ArrangerObject::Flags::NonProject;
+                  own_obj_before->flags_ |= ArrangerObject::Flags::NonProject;
                   own_obj_after->flags_ |= ArrangerObject::Flags::NonProject;
 
                   /* find the actual object */
@@ -1988,7 +1963,7 @@ ArrangerSelectionsAction::do_or_undo_resize (bool do_it)
                     }
 
                   /* on first do, resize both the project object and our own
-                    * "after" object */
+                   * "after" object */
                   if (do_it && first_run_)
                     {
                       if constexpr (std::derived_from<ObjT, BoundedObject>)
@@ -2004,7 +1979,7 @@ ArrangerSelectionsAction::do_or_undo_resize (bool do_it)
                     } /* endif do and first run */
 
                   /* remove the project object and add a clone of our
-                    * corresponding object */
+                   * corresponding object */
                   obj->remove_from_project (true);
                   obj = nullptr;
                   auto new_obj = std::get<ObjT *> (
@@ -2106,8 +2081,8 @@ ArrangerSelectionsAction::do_or_undo_quantize (bool do_it)
         own_obj_var);
     }
 
-      // ArrangerSelections * sel = get_actual_arranger_selections ();
-      /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_QUANTIZED, sel); */
+  // ArrangerSelections * sel = get_actual_arranger_selections ();
+  /* EVENTS_PUSH (EventType::ET_ARRANGER_SELECTIONS_QUANTIZED, sel); */
 
   first_run_ = false;
 }
@@ -2208,8 +2183,10 @@ ArrangerSelectionsAction::contains_clip (const AudioClip &clip) const
     }
 
   if (
-    ArrangerObjectRegistrySpan{ get_arranger_object_registry(), r1_ }.contains_clip (clip)
-    || ArrangerObjectRegistrySpan{ get_arranger_object_registry(), r2_ }.contains_clip (clip))
+    ArrangerObjectRegistrySpan{ get_arranger_object_registry (), r1_ }
+      .contains_clip (clip)
+    || ArrangerObjectRegistrySpan{ get_arranger_object_registry (), r2_ }
+         .contains_clip (clip))
     {
       return true;
     }

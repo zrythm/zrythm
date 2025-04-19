@@ -845,7 +845,7 @@ public:
   /**
    * Removes all objects recursively from the track.
    */
-  virtual void clear_objects () {};
+  virtual void clear_objects () { };
 
   /**
    * Verifies the identifiers on a live Track (in the project, not a clone).

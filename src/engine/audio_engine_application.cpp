@@ -6,12 +6,13 @@
 
 // #include "gui/dsp/engine.h"
 
-#include <QDir>
-
-#include "engine/audio_engine_application.h"
 #include "utils/backtrace.h"
 #include "utils/format.h"
 #include "utils/logger.h"
+
+#include <QDir>
+
+#include "engine/audio_engine_application.h"
 
 using namespace Qt::StringLiterals;
 

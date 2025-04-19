@@ -3,6 +3,7 @@
 
 #include "utils/exceptions.h"
 #include "utils/logger.h"
+
 #include <fmt/format.h>
 
 ZrythmException::ZrythmException (const char * message)

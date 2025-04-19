@@ -5,7 +5,6 @@
 #define __ACTIONS_TRANSPORT_ACTION_H__
 
 #include "gui/backend/backend/actions/undoable_action.h"
-
 #include "utils/icloneable.h"
 #include "utils/types.h"
 

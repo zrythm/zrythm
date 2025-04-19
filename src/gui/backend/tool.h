@@ -4,11 +4,11 @@
 #ifndef __GUI_BACKEND_TOOL_H__
 #define __GUI_BACKEND_TOOL_H__
 
-#include <QObject>
-#include <QtQmlIntegration>
-
 #include "utils/icloneable.h"
 #include "utils/iserializable.h"
+
+#include <QObject>
+#include <QtQmlIntegration>
 
 namespace zrythm::gui::backend
 {

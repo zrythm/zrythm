@@ -6,7 +6,6 @@
 #include "gui/dsp/control_room.h"
 #include "gui/dsp/engine.h"
 #include "gui/dsp/fader.h"
-
 #include "utils/gtest_wrapper.h"
 
 using namespace zrythm;

@@ -6,11 +6,10 @@
 
 #include <vector>
 
+#include "dsp/position.h"
 #include "gui/dsp/laned_track.h"
 #include "gui/dsp/midi_region.h"
 #include "gui/dsp/recordable_track.h"
-
-#include "dsp/position.h"
 #include "utils/types.h"
 
 class MidiEvents;

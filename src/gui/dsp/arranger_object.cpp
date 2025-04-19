@@ -12,11 +12,8 @@
 #include "gui/dsp/marker.h"
 #include "gui/dsp/marker_track.h"
 #include "gui/dsp/midi_region.h"
-#include "gui/dsp/router.h"
 #include "gui/dsp/tracklist.h"
 #include "utils/debug.h"
-#include "utils/gtest_wrapper.h"
-#include "utils/logger.h"
 #include "utils/rt_thread_id.h"
 
 using namespace zrythm;
@@ -523,10 +520,7 @@ ArrangerObject::are_members_valid (
   if (!is_position_valid (
         *pos_, PositionType::Start, dsp::to_ticks_per_frame (frames_per_tick)))
     {
-      if (ZRYTHM_TESTING)
-        {
-          z_info ("invalid start pos {}", *pos_);
-        }
+      z_trace ("invalid start pos {}", *pos_);
       return false;
     }
   return true;
@@ -563,4 +557,4 @@ ArrangerObject::copy_members_from (
 }
 
 void
-ArrangerObject::init_loaded_base () {};
+ArrangerObject::init_loaded_base () { };

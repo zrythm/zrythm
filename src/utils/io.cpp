@@ -48,12 +48,13 @@
 #  include <windows.h>
 #endif
 
-#include <QUrl>
-
-#include "juce_wrapper.h"
 #include "utils/datetime.h"
 #include "utils/io.h"
 #include "utils/string.h"
+
+#include <QUrl>
+
+#include "juce_wrapper.h"
 #include <fmt/format.h>
 
 #if defined(__APPLE__) && ZRYTHM_IS_INSTALLER_VER

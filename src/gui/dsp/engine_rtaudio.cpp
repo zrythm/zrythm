@@ -12,9 +12,9 @@
 #  include "gui/backend/backend/zrythm.h"
 #  include "gui/dsp/engine.h"
 #  include "gui/dsp/engine_rtaudio.h"
-
 #  include "utils/dsp.h"
 #  include "utils/string.h"
+
 #  include <rtaudio_c.h>
 
 using namespace zrythm;

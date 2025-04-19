@@ -5,7 +5,6 @@
 
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
-
 #include "utils/gtest_wrapper.h"
 
 #if HAVE_JACK

@@ -21,9 +21,7 @@ MidiPort::MidiPort (std::string label, PortFlow flow)
 MidiPort::~MidiPort () = default;
 
 void
-MidiPort::init_after_cloning (
-  const MidiPort &other,
-  ObjectCloneType clone_type)
+MidiPort::init_after_cloning (const MidiPort &other, ObjectCloneType clone_type)
 {
   Port::copy_members_from (other, clone_type);
 }
@@ -51,7 +49,7 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
 
   const auto &id = id_;
   const auto  owner_type = id->owner_type_;
-  auto &events = midi_events_.active_events_;
+  auto       &events = midi_events_.active_events_;
 
   /* if piano roll keys, add the notes to the piano roll "current notes" (to
    * show pressed keys in the UI) */

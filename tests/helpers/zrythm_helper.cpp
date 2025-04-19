@@ -35,11 +35,11 @@
 
 #define DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL
 
+#include "gui/backend/backend/project/project_init_flow_manager.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 #include "utils/pcg_rand.h"
 #include "utils/rt_thread_id.h"
-#include "gui/backend/backend/project/project_init_flow_manager.h"
 
 #include "tests/helpers/zrythm_helper.h"
 // #include "gui/backend/gtk_widgets/gtk_wrapper.h"

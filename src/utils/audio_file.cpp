@@ -110,7 +110,7 @@ AudioFile::read_samples_interleaved (
 
   zrythm::utils::audio::AudioBuffer buffer (
     metadata_.channels, num_frames_to_read);
-  bool                    success =
+  bool success =
     reader_->read (&buffer, 0, num_frames_to_read, start_from, true, true);
   if (!success)
     {

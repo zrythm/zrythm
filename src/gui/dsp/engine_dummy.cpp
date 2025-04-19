@@ -8,7 +8,6 @@
 #include "gui/dsp/port.h"
 #include "gui/dsp/tempo_track.h"
 #include "gui/dsp/tracklist.h"
-
 #include "utils/dsp.h"
 #include "utils/dsp_context.h"
 

@@ -1,14 +1,13 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/position.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/ui.h"
 #include "gui/dsp/automatable_track.h"
 #include "gui/dsp/automation_point.h"
 #include "gui/dsp/automation_region.h"
-
-#include "dsp/position.h"
 
 AutomationRegion::AutomationRegion (
   ArrangerObjectRegistry &obj_registry,

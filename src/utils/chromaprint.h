@@ -18,6 +18,7 @@
 #if HAVE_CHROMAPRINT
 
 #  include "utils/types.h"
+
 #  include <chromaprint.h>
 
 /**

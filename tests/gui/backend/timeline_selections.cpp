@@ -5,9 +5,9 @@
 
 #include <random>
 
-# include "gui/dsp/track.h"
-#include "utils/gtest_wrapper.h"
 #include "gui/backend/backend/timeline_selections.h"
+#include "gui/dsp/track.h"
+#include "utils/gtest_wrapper.h"
 
 #include "helpers/project_helper.h"
 #include "helpers/zrythm_helper.h"

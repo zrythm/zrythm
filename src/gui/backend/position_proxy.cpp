@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/dsp/engine.h"
 #include "gui/backend/backend/project.h"
-#include "gui/dsp/tempo_track.h"
-#include "utils/math.h"
-
 #include "gui/backend/position_proxy.h"
 #include "gui/backend/realtime_updater.h"
+#include "gui/dsp/engine.h"
+#include "gui/dsp/tempo_track.h"
+#include "utils/math.h"
 
 PositionProxy::PositionProxy (
   QObject *        parent,
@@ -73,7 +72,8 @@ PositionProxy::getStringDisplay (
   const TempoTrack * tempo_track) const
 {
   return QString::fromStdString (to_string (
-    tempo_track->get_beats_per_bar(), transport->sixteenths_per_beat_, transport->project_->audio_engine_->frames_per_tick_, 0));
+    tempo_track->get_beats_per_bar (), transport->sixteenths_per_beat_,
+    transport->project_->audio_engine_->frames_per_tick_, 0));
 }
 
 void

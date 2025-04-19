@@ -119,7 +119,7 @@ MixerSelectionsAction::define_fields (const Context &ctx)
   using T = ISerializable<MixerSelectionsAction>;
   T::serialize_fields (
     ctx, T::make_field ("type", mixer_selections_action_type_),
-     T::make_field ("toSlot", to_slot_),
+    T::make_field ("toSlot", to_slot_),
     T::make_field ("toTrackNameHash", to_track_uuid_),
     T::make_field ("newChannel", new_channel_),
     T::make_field ("numPlugins", num_plugins_),

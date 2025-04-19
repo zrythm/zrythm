@@ -398,7 +398,7 @@ public:
     auto vec = self.get_children_vector ();
     for (auto &obj : vec)
       {
-        self.remove_object (obj.id());
+        self.remove_object (obj.id ());
       }
   }
 

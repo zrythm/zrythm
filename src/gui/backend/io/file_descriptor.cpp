@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/io/file_descriptor.h"
-
 #include "utils/audio_file.h"
 #include "utils/exceptions.h"
 #include "utils/format.h"
