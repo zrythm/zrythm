@@ -46,7 +46,8 @@ protected:
   void
   copy_members_from (const FadeableObject &other, ObjectCloneType clone_type);
 
-  bool are_members_valid (bool is_project, double frames_per_tick) const;
+  bool
+  are_members_valid (bool is_project, dsp::FramesPerTick frames_per_tick) const;
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

@@ -79,7 +79,7 @@ ChordRegion::data (const QModelIndex &index, int role) const
 // ========================================================================
 
 bool
-ChordRegion::validate (bool is_project, double frames_per_tick) const
+ChordRegion::validate (bool is_project, dsp::FramesPerTick frames_per_tick) const
 {
 #if 0
   int idx = 0;

@@ -67,7 +67,10 @@ public:
 
   UndoableAction () = default;
   UndoableAction (Type type);
-  UndoableAction (Type type, double frames_per_tick, sample_rate_t sample_rate);
+  UndoableAction (
+    Type               type,
+    dsp::FramesPerTick frames_per_tick,
+    sample_rate_t      sample_rate);
   ~UndoableAction () override = default;
 
   /**
@@ -135,7 +138,10 @@ public:
   get_plugins (std::vector<gui::old_dsp::plugins::Plugin *> &plugins) {};
 
   auto get_frames_per_tick () const { return frames_per_tick_; }
-  auto get_ticks_per_frame () const { return 1.0 / frames_per_tick_; }
+  auto get_ticks_per_frame () const
+  {
+    return to_ticks_per_frame (get_frames_per_tick ());
+  }
 
   /**
    * Sets the number of actions for this action.
@@ -192,7 +198,7 @@ public:
   Type undoable_action_type_{};
 
   /** A snapshot of AudioEngine.frames_per_tick when the action is executed. */
-  double frames_per_tick_ = 0.0;
+  dsp::FramesPerTick frames_per_tick_;
 
   /**
    * Sample rate of this action.

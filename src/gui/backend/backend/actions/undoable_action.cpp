@@ -21,12 +21,13 @@
 
 using namespace zrythm::gui::actions;
 
-UndoableAction::
-  UndoableAction (Type type, double frames_per_tick, sample_rate_t sample_rate)
+UndoableAction::UndoableAction (
+  Type               type,
+  dsp::FramesPerTick frames_per_tick,
+  sample_rate_t      sample_rate)
     : undoable_action_type_ (type), frames_per_tick_ (frames_per_tick),
       sample_rate_ (sample_rate)
 {
-  z_return_if_fail (!std::isnan (frames_per_tick));
 }
 
 UndoableAction::UndoableAction (Type type)
@@ -68,7 +69,8 @@ void
 UndoableAction::init_loaded (sample_rate_t engine_sample_rate)
 {
   double sample_rate_ratio = (double) engine_sample_rate / (double) sample_rate_;
-  frames_per_tick_ = frames_per_tick_ * sample_rate_ratio;
+  frames_per_tick_ =
+    dsp::FramesPerTick (type_safe::get (frames_per_tick_) * sample_rate_ratio);
   sample_rate_ = engine_sample_rate;
 
   /* call the virtual implementation */

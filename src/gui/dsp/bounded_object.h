@@ -54,8 +54,9 @@ public:
    * The setter is for use in e.g. the digital meters whereas the set_pos func
    * is used during arranger actions.
    */
-  void
-  end_position_setter_validated (const dsp::Position &pos, double ticks_per_frame)
+  void end_position_setter_validated (
+    const dsp::Position &pos,
+    dsp::TicksPerFrame   ticks_per_frame)
   {
     set_position (pos, PositionType::End, true, ticks_per_frame);
   }
@@ -102,12 +103,13 @@ public:
    */
   template <typename SelfT>
   void set_start_pos_full_size (
-    this SelfT     &self,
-    const Position &pos,
-    double          frames_per_tick)
+    this SelfT        &self,
+    const Position    &pos,
+    dsp::FramesPerTick frames_per_tick)
     requires (FinalArrangerObjectSubclass<SelfT>)
   {
-    self.position_setter_validated (pos, 1.0 / frames_per_tick);
+    self.position_setter_validated (
+      pos, dsp::to_ticks_per_frame (frames_per_tick));
     self.set_loop_and_fade_positions_from_length (frames_per_tick);
     assert (pos.frames_ == self.pos_->frames_);
   }
@@ -120,10 +122,11 @@ public:
   void set_end_pos_full_size (
     this SelfT          &self,
     const dsp::Position &pos,
-    double               frames_per_tick)
+    dsp::FramesPerTick   frames_per_tick)
     requires (FinalArrangerObjectSubclass<SelfT>)
   {
-    self.end_position_setter_validated (pos, 1.0 / frames_per_tick);
+    self.end_position_setter_validated (
+      pos, dsp::to_ticks_per_frame (frames_per_tick));
     self.set_loop_and_fade_positions_from_length (frames_per_tick);
     assert (pos.frames_ == self.end_pos_->frames_);
   }
@@ -250,7 +253,8 @@ protected:
 
   void init_loaded_base ();
 
-  bool are_members_valid (bool is_project, double frames_per_tick) const;
+  bool
+  are_members_valid (bool is_project, dsp::FramesPerTick frames_per_tick) const;
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
@@ -261,8 +265,8 @@ private:
    */
   template <typename SelfT>
   void set_loop_and_fade_positions_from_length (
-    this SelfT &self,
-    double      frames_per_tick)
+    this SelfT        &self,
+    dsp::FramesPerTick frames_per_tick)
     requires (FinalArrangerObjectSubclass<SelfT>)
   {
     // note: not sure if using ticks is OK here, maybe getting the length in

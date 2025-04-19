@@ -133,9 +133,9 @@ ArrangerObject::get_position_ptr (PositionType pos_type)
 
 bool
 ArrangerObject::is_position_valid (
-  const Position &pos,
-  PositionType    pos_type,
-  double          ticks_per_frame) const
+  const Position    &pos,
+  PositionType       pos_type,
+  dsp::TicksPerFrame ticks_per_frame) const
 {
   auto obj_var = convert_to_variant<ArrangerObjectPtrVariant> (this);
   return std::visit (
@@ -266,10 +266,10 @@ ArrangerObject::is_position_valid (
 
 bool
 ArrangerObject::set_position (
-  const Position &pos,
-  PositionType    pos_type,
-  const bool      validate,
-  double          ticks_per_frame)
+  const Position    &pos,
+  PositionType       pos_type,
+  const bool         validate,
+  dsp::TicksPerFrame ticks_per_frame)
 {
   /* return if validate is on and position is invalid */
   if (validate && !is_position_valid (pos, pos_type, ticks_per_frame))
@@ -286,9 +286,11 @@ ArrangerObject::set_position (
 }
 
 void
-ArrangerObject::move (const double ticks, const double frames_per_tick)
+ArrangerObject::move (
+  const double             ticks,
+  const dsp::FramesPerTick frames_per_tick)
 {
-  const double ticks_per_frame = 1.0 / frames_per_tick;
+  const auto ticks_per_frame = dsp::to_ticks_per_frame (frames_per_tick);
   std::visit (
     [&] (auto &&self) {
       using ObjT = base_type<decltype (self)>;
@@ -329,15 +331,15 @@ ArrangerObject::move (const double ticks, const double frames_per_tick)
 }
 
 void
-ArrangerObject::
-  update_positions (bool from_ticks, bool bpm_change, double frames_per_tick)
+ArrangerObject::update_positions (
+  bool               from_ticks,
+  bool               bpm_change,
+  dsp::FramesPerTick frames_per_tick)
 {
-  z_return_if_fail (frames_per_tick > 1e-10);
-
-  const auto ticks_per_frame = 1.0 / frames_per_tick;
+  z_return_if_fail (type_safe::get (frames_per_tick) > 1e-10);
 
   std::visit (
-    [from_ticks, bpm_change, frames_per_tick, ticks_per_frame] (auto &&obj) {
+    [from_ticks, bpm_change, frames_per_tick] (auto &&obj) {
       using ObjT = base_type<decltype (obj)>;
       signed_frame_t frames_len_before = 0;
       if constexpr (std::derived_from<ObjT, BoundedObject>)
@@ -348,30 +350,35 @@ ArrangerObject::
             }
         }
 
-      const double ratio = from_ticks ? frames_per_tick : 1.0 / frames_per_tick;
+      const auto update_position =
+        [frames_per_tick, from_ticks] (dsp::Position &pos) {
+          const auto ticks_per_frame = dsp::to_ticks_per_frame (frames_per_tick);
 
-      obj->pos_->update (from_ticks, ratio);
+          if (from_ticks)
+            {
+              pos.update_frames_from_ticks (frames_per_tick);
+            }
+          else
+            {
+              pos.update_ticks_from_frames (ticks_per_frame);
+            }
+        };
+
+      update_position (*obj->pos_);
       if constexpr (std::derived_from<ObjT, BoundedObject>)
         {
-          obj->end_pos_->update (from_ticks, ratio);
-
-          if (ROUTER->is_processing_kickoff_thread ())
-            {
-              /* do some validation */
-              z_return_if_fail (obj->is_position_valid (
-                *obj->end_pos_, PositionType::End, ticks_per_frame));
-            }
+          update_position (*obj->end_pos_);
         }
       if constexpr (std::derived_from<ObjT, LoopableObject>)
         {
-          obj->clip_start_pos_.update (from_ticks, ratio);
-          obj->loop_start_pos_.update (from_ticks, ratio);
-          obj->loop_end_pos_.update (from_ticks, ratio);
+          update_position (obj->clip_start_pos_);
+          update_position (obj->loop_start_pos_);
+          update_position (obj->loop_end_pos_);
         }
       if constexpr (std::derived_from<ObjT, FadeableObject>)
         {
-          obj->fade_in_pos_.update (from_ticks, ratio);
-          obj->fade_out_pos_.update (from_ticks, ratio);
+          update_position (obj->fade_in_pos_);
+          update_position (obj->fade_out_pos_);
         }
 
       if constexpr (std::is_same_v<ObjT, AudioRegion>)
@@ -382,7 +389,8 @@ ArrangerObject::
               if (bpm_change && frames_len_after != frames_len_before)
                 {
                   double ticks =
-                    (frames_len_before - frames_len_after) * ticks_per_frame;
+                    static_cast<double> (frames_len_before - frames_len_after)
+                    * type_safe::get (dsp::to_ticks_per_frame (frames_per_tick));
                   try
                     {
                       obj->resize (
@@ -409,7 +417,8 @@ ArrangerObject::
               while (local_frames == (signed_frame_t) clip->get_num_frames ())
                 {
                   z_debug ("adjusting for rounding error");
-                  double ticks = -ticks_per_frame;
+                  double ticks =
+                    -type_safe::get (dsp::to_ticks_per_frame (frames_per_tick));
                   z_debug ("ticks {:f}", ticks);
                   try
                     {
@@ -434,7 +443,8 @@ ArrangerObject::
         {
           for (auto * cur_obj : obj->get_children_view ())
             {
-              cur_obj->update_positions (from_ticks, bpm_change, ratio);
+              cur_obj->update_positions (
+                from_ticks, bpm_change, frames_per_tick);
             }
         }
     },
@@ -495,8 +505,8 @@ ArrangerObject::edit_position_finish () const
 
 void
 ArrangerObject::position_setter_validated (
-  const Position &pos,
-  double          ticks_per_frame)
+  const Position    &pos,
+  dsp::TicksPerFrame ticks_per_frame)
 {
   bool success = set_position (pos, PositionType::Start, true, ticks_per_frame);
   if (!success)
@@ -506,9 +516,12 @@ ArrangerObject::position_setter_validated (
 }
 
 bool
-ArrangerObject::are_members_valid (bool is_project, double frames_per_tick) const
+ArrangerObject::are_members_valid (
+  bool               is_project,
+  dsp::FramesPerTick frames_per_tick) const
 {
-  if (!is_position_valid (*pos_, PositionType::Start, 1.0 / frames_per_tick))
+  if (!is_position_valid (
+        *pos_, PositionType::Start, dsp::to_ticks_per_frame (frames_per_tick)))
     {
       if (ZRYTHM_TESTING)
         {

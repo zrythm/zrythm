@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021, 2023-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef ZRYTHM_COMMON_DSP_POSITION_H
@@ -9,6 +9,73 @@
 
 namespace zrythm::dsp
 {
+
+struct FramesPerTick
+    : type_safe::strong_typedef<FramesPerTick, double>,
+      type_safe::strong_typedef_op::equality_comparison<FramesPerTick>,
+      type_safe::strong_typedef_op::relational_comparison<FramesPerTick>,
+      utils::serialization::ISerializable<FramesPerTick>
+{
+  using FramesPerTickTag = void; // used by the fmt formatter below
+  using type_safe::strong_typedef<FramesPerTick, double>::strong_typedef;
+
+  explicit FramesPerTick () = default;
+
+  explicit FramesPerTick (double frames_per_tick)
+      : type_safe::strong_typedef<FramesPerTick, double> (frames_per_tick)
+  {
+  }
+
+  static_assert (StrongTypedef<FramesPerTick>);
+
+  void
+  define_fields (const utils::serialization::ISerializableBase::Context &ctx)
+  {
+    using T = utils::serialization::ISerializable<FramesPerTick>;
+    T::serialize_fields (
+      ctx, T::make_field ("framesPerTick", type_safe::get (*this)));
+  }
+};
+static_assert (std::regular<FramesPerTick>);
+
+struct TicksPerFrame
+    : type_safe::strong_typedef<TicksPerFrame, double>,
+      type_safe::strong_typedef_op::equality_comparison<TicksPerFrame>,
+      type_safe::strong_typedef_op::relational_comparison<TicksPerFrame>,
+      utils::serialization::ISerializable<TicksPerFrame>
+{
+  using TicksPerFrameTag = void; // used by the fmt formatter below
+  using type_safe::strong_typedef<TicksPerFrame, double>::strong_typedef;
+
+  explicit TicksPerFrame () = default;
+
+  explicit TicksPerFrame (double frames_per_tick)
+      : type_safe::strong_typedef<TicksPerFrame, double> (frames_per_tick)
+  {
+  }
+
+  static_assert (StrongTypedef<TicksPerFrame>);
+
+  void
+  define_fields (const utils::serialization::ISerializableBase::Context &ctx)
+  {
+    using T = utils::serialization::ISerializable<TicksPerFrame>;
+    T::serialize_fields (
+      ctx, T::make_field ("ticksPerFrame", type_safe::get (*this)));
+  }
+};
+static_assert (std::regular<TicksPerFrame>);
+
+static constexpr TicksPerFrame
+to_ticks_per_frame (const FramesPerTick &frames_per_tick)
+{
+  return TicksPerFrame (1.0 / type_safe::get (frames_per_tick));
+}
+static constexpr FramesPerTick
+to_frames_per_tick (const TicksPerFrame &ticks_per_frame)
+{
+  return FramesPerTick (1.0 / type_safe::get (ticks_per_frame));
+}
 
 /**
  * @brief Represents the position of an object.
@@ -34,9 +101,6 @@ public:
   static constexpr double TICKS_PER_NINETYSIXTH_NOTE_DBL = 40.0;
   static constexpr int    POSITION_MAX_BAR = 160000;
 
-  using frames_per_tick_t = double;
-  using ticks_per_frame_t = double;
-
 public:
   // Rule of 0
   Position () = default;
@@ -47,19 +111,19 @@ public:
    * @throw ZrythmException if the string is invalid.
    */
   Position (
-    const char *      str,
-    int               beats_per_bar,
-    int               sixteenths_per_beat,
-    frames_per_tick_t frames_per_tick);
+    const char *  str,
+    int           beats_per_bar,
+    int           sixteenths_per_beat,
+    FramesPerTick frames_per_tick);
 
   /** Construct from total number of ticks.*/
-  Position (double ticks, double frames_per_tick)
+  Position (double ticks, dsp::FramesPerTick frames_per_tick)
   {
     from_ticks (ticks, frames_per_tick);
   }
 
   /** Construct from total number of frames. */
-  Position (signed_frame_t frames, double ticks_per_frame)
+  Position (signed_frame_t frames, TicksPerFrame ticks_per_frame)
   {
     from_frames (frames, ticks_per_frame);
   }
@@ -146,13 +210,14 @@ public:
   /**
    * Sets position to given bar.
    */
-  void set_to_bar (int bar, int ticks_per_bar, double frames_per_tick);
+  void
+  set_to_bar (int bar, int ticks_per_bar, dsp::FramesPerTick frames_per_tick);
 
   /**
    * Adds the frames to the position and updates the rest of the fields, and
    * makes sure the frames are still accurate.
    */
-  void add_frames (signed_frame_t frames, double ticks_per_frame)
+  void add_frames (signed_frame_t frames, TicksPerFrame ticks_per_frame)
   {
     frames_ += frames;
     update_ticks_from_frames (ticks_per_frame);
@@ -161,10 +226,12 @@ public:
   /**
    * Converts seconds to position and puts the result in the given Position.
    */
-  void
-  from_seconds (double secs, sample_rate_t sample_rate, double ticks_per_frame);
+  void from_seconds (
+    double        secs,
+    sample_rate_t sample_rate,
+    TicksPerFrame ticks_per_frame);
 
-  void from_frames (const signed_frame_t frames, double ticks_per_frame)
+  void from_frames (const signed_frame_t frames, TicksPerFrame ticks_per_frame)
   {
     frames_ = frames;
     update_ticks_from_frames (ticks_per_frame);
@@ -173,35 +240,40 @@ public:
   /**
    * Sets position to the given total tick count.
    */
-  void from_ticks (double ticks, double frames_per_tick)
+  void from_ticks (double ticks, dsp::FramesPerTick frames_per_tick)
   {
     ticks_ = ticks;
     update_frames_from_ticks (frames_per_tick);
   }
 
-  void
-  from_ms (const double ms, sample_rate_t sample_rate, double ticks_per_frame)
+  void from_ms (
+    const double  ms,
+    sample_rate_t sample_rate,
+    TicksPerFrame ticks_per_frame)
   {
     zero ();
     add_ms (ms, sample_rate, ticks_per_frame);
   }
 
-  void from_bars (int bars, int ticks_per_bar, double frames_per_tick)
+  void
+  from_bars (int bars, int ticks_per_bar, dsp::FramesPerTick frames_per_tick)
   {
     zero ();
     add_bars (bars, ticks_per_bar, frames_per_tick);
   }
 
-  void add_bars (int bars, int ticks_per_bar, double frames_per_tick);
+  void
+  add_bars (int bars, int ticks_per_bar, dsp::FramesPerTick frames_per_tick);
 
-  void add_beats (int beats, int ticks_per_beat, double frames_per_tick);
+  void
+  add_beats (int beats, int ticks_per_beat, dsp::FramesPerTick frames_per_tick);
 
-  void add_sixteenths (int sixteenths, double frames_per_tick)
+  void add_sixteenths (int sixteenths, dsp::FramesPerTick frames_per_tick)
   {
     add_ticks (sixteenths * TICKS_PER_SIXTEENTH_NOTE_DBL, frames_per_tick);
   }
 
-  void add_ticks (double ticks, double frames_per_tick)
+  void add_ticks (double ticks, dsp::FramesPerTick frames_per_tick)
   {
     ticks_ += ticks;
     update_frames_from_ticks (frames_per_tick);
@@ -215,7 +287,7 @@ public:
   static signed_frame_t ms_to_frames (double ms, sample_rate_t sample_rate);
 
   static double
-  ms_to_ticks (double ms, sample_rate_t sample_rate, double ticks_per_frame)
+  ms_to_ticks (double ms, sample_rate_t sample_rate, TicksPerFrame ticks_per_frame)
   {
     /* FIXME simplify - this is a roundabout way not suitable for realtime
      * calculations */
@@ -225,12 +297,14 @@ public:
     return tmp.ticks_;
   }
 
-  void add_ms (double ms, sample_rate_t sample_rate, double ticks_per_frame)
+  void
+  add_ms (double ms, sample_rate_t sample_rate, TicksPerFrame ticks_per_frame)
   {
     add_frames (ms_to_frames (ms, sample_rate), ticks_per_frame);
   }
 
-  void add_minutes (int mins, sample_rate_t sample_rate, double ticks_per_frame)
+  void
+  add_minutes (int mins, sample_rate_t sample_rate, TicksPerFrame ticks_per_frame)
   {
     add_frames (ms_to_frames (mins * 60 * 1'000, sample_rate), ticks_per_frame);
   }
@@ -238,7 +312,7 @@ public:
   void add_seconds (
     signed_sec_t  seconds,
     sample_rate_t sample_rate,
-    double        ticks_per_frame)
+    TicksPerFrame ticks_per_frame)
   {
     add_frames (ms_to_frames (seconds * 1'000, sample_rate), ticks_per_frame);
   }
@@ -249,7 +323,7 @@ public:
    * @param ticks_per_frame If zero, AudioEngine.ticks_per_frame
    *   will be used instead.
    */
-  [[gnu::hot]] void update_ticks_from_frames (double ticks_per_frame);
+  [[gnu::hot]] void update_ticks_from_frames (TicksPerFrame ticks_per_frame);
 
   /**
    * Converts ticks to frames.
@@ -258,24 +332,12 @@ public:
    *   will be used instead.
    */
   static signed_frame_t
-  get_frames_from_ticks (double ticks, double frames_per_tick);
+  get_frames_from_ticks (double ticks, dsp::FramesPerTick frames_per_tick);
 
   /**
    * Updates frames.
-   *
-   * @param frames_per_tick If zero, AudioEngine.frames_per_tick
-   *   will be used instead.
    */
-  [[gnu::hot]] void update_frames_from_ticks (double frames_per_tick);
-
-  /* FIXME DELETE since update_rtsafe exists !!!!!!!!!!!!!!!!!!!!!!!!!!! */
-  void update (bool from_ticks, double ratio)
-  {
-    if (from_ticks)
-      update_frames_from_ticks (ratio);
-    else
-      update_ticks_from_frames (ratio);
-  }
+  [[gnu::hot]] void update_frames_from_ticks (FramesPerTick frames_per_tick);
 
   /**
    * @brief Sets the position to the midway point between the two given
@@ -283,54 +345,43 @@ public:
    *
    * @param pos Position to set to.
    */
-  void set_to_midway_pos (const Position &start_pos, const Position &end_pos)
+  void set_to_midway_pos (
+    const Position &start_pos,
+    const Position &end_pos,
+    FramesPerTick   frames_per_tick)
   {
     ticks_ = start_pos.ticks_ + (end_pos.ticks_ - start_pos.ticks_) / 2.0;
-    update_frames_from_ticks (0.0);
+    update_frames_from_ticks (frames_per_tick);
   }
-
-#if 0
-  /**
-   * Returns the difference in ticks between the two Position's, snapped based
-   * on the given SnapGrid (if any).
-   *
-   * @param end_pos End position.
-   * @param start_pos Start Position.
-   * @param sg SnapGrid to snap with, or NULL to not snap.
-   */
-  static double get_ticks_diff (
-    const Position  &end_pos,
-    const Position  &start_pos,
-    const SnapGrid * sg);
-#endif
 
   /**
    * Creates a string in the form of "0.0.0.0" from the given position.
    */
   std::string to_string (
-    int    beats_per_bar,
-    int    sixteenths_per_beat,
-    double frames_per_tick,
-    int    decimal_places = 4) const;
+    int           beats_per_bar,
+    int           sixteenths_per_beat,
+    FramesPerTick frames_per_tick,
+    int           decimal_places = 4) const;
 
   [[gnu::nonnull]] void to_string (
-    int    beats_per_bar,
-    int    sixteenths_per_beat,
-    double frames_per_tick,
-    char * buf,
-    int    decimal_places = 4) const;
+    int           beats_per_bar,
+    int           sixteenths_per_beat,
+    FramesPerTick frames_per_tick,
+    char *        buf,
+    int           decimal_places = 4) const;
 
   /**
    * Prints the Position in the "0.0.0.0" form.
    */
-  void
-  print (int beats_per_bar, int sixteenths_per_beat, double frames_per_tick)
-    const;
+  void print (
+    int           beats_per_bar,
+    int           sixteenths_per_beat,
+    FramesPerTick frames_per_tick) const;
 
   static void print_range (
     int             beats_per_bar,
     int             sixteenths_per_beat,
-    double          frames_per_tick,
+    FramesPerTick   frames_per_tick,
     const Position &p1,
     const Position &p2);
 
@@ -340,9 +391,10 @@ public:
    * @param include_current Whether to count the current beat if it is at the
    * beat start.
    */
-  int
-  get_total_bars (bool include_current, int ticks_per_bar, double frames_per_tick)
-    const;
+  int get_total_bars (
+    bool          include_current,
+    int           ticks_per_bar,
+    FramesPerTick frames_per_tick) const;
 
   /**
    * Returns the total number of beats.
@@ -351,15 +403,17 @@ public:
    * beat start.
    */
   int get_total_beats (
-    bool   include_current,
-    int    beats_per_bar,
-    int    ticks_per_beat,
-    double frames_per_tick) const;
+    bool          include_current,
+    int           beats_per_bar,
+    int           ticks_per_beat,
+    FramesPerTick frames_per_tick) const;
 
   /**
    * Returns the total number of sixteenths not including the current one.
    */
-  int get_total_sixteenths (bool include_current, double frames_per_tick) const;
+  int
+  get_total_sixteenths (bool include_current, dsp::FramesPerTick frames_per_tick)
+    const;
 
   /**
    * @brief Changes the sign of the position.
@@ -399,17 +453,17 @@ public:
    * @param start_at_one Start at 1 or -1 instead of 0.
    */
   int get_sixteenths (
-    bool   start_at_one,
-    int    beats_per_bar,
-    int    sixteenths_per_beat,
-    double frames_per_tick) const;
+    bool          start_at_one,
+    int           beats_per_bar,
+    int           sixteenths_per_beat,
+    FramesPerTick frames_per_tick) const;
 
   /**
    * Gets the ticks of the position.
    *
    * Ie, if the position is equivalent to 4.1.2.42, this will return 42.
    */
-  double get_ticks_part (double frames_per_tick) const;
+  double get_ticks_part (FramesPerTick frames_per_tick) const;
 
   void set_to_pos (const Position &pos)
   {
@@ -435,6 +489,17 @@ public:
     return p2;
   }
 
+  /** Note: only checks frames.*/
+  friend auto operator<=> (const Position &lhs, const Position &rhs)
+  {
+    return lhs.frames_ <=> rhs.frames_;
+  }
+
+  friend bool operator== (const Position &lhs, const Position &rhs)
+  {
+    return (lhs <=> rhs) == 0;
+  }
+
 public:
   /** Precise total number of ticks. */
   double ticks_ = 0.0;
@@ -456,19 +521,6 @@ public:
    */
   // double precise_frames;
 };
-
-/** Note: only checks frames.*/
-inline auto
-operator<=> (const Position &lhs, const Position &rhs)
-{
-  return lhs.frames_ <=> rhs.frames_;
-}
-
-inline bool
-operator== (const Position &lhs, const Position &rhs)
-{
-  return (lhs <=> rhs) == 0;
-}
 
 // Other comparison operators are automatically generated by the spaceship
 // operator

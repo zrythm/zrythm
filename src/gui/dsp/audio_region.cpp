@@ -381,7 +381,7 @@ AudioRegion::get_musical_mode () const
 }
 
 bool
-AudioRegion::fix_positions (double frames_per_tick)
+AudioRegion::fix_positions (dsp::FramesPerTick frames_per_tick)
 {
   AudioClip * clip = get_clip ();
   z_return_val_if_fail (clip, false);
@@ -433,7 +433,7 @@ AudioRegion::fix_positions (double frames_per_tick)
 }
 
 bool
-AudioRegion::validate (bool is_project, double frames_per_tick) const
+AudioRegion::validate (bool is_project, dsp::FramesPerTick frames_per_tick) const
 {
   if (PROJECT->loaded_ && !AUDIO_ENGINE->updating_frames_per_tick_)
     {

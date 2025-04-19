@@ -174,7 +174,8 @@ ChordTrack::validate () const
   bool valid = std::ranges::all_of (
     ArrangerObjectOwner<ChordRegion>::get_children_view (),
     [&] (const auto * region) {
-      return region->validate (Track::is_in_active_project (), 0);
+      return region->validate (
+        Track::is_in_active_project (), AUDIO_ENGINE->frames_per_tick_);
     });
   z_return_val_if_fail (valid, false);
 

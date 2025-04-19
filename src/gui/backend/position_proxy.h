@@ -73,31 +73,27 @@ public:
 public:
   // RT-safe wrappers
 
-  void set_frames_rtsafe (signed_frame_t frames, double ticks_per_frame = 0.0)
+  void
+  set_frames_rtsafe (signed_frame_t frames, dsp::TicksPerFrame ticks_per_frame)
   {
     from_frames (frames, ticks_per_frame);
     has_update_.store (true, std::memory_order_release);
   }
-  void set_ticks_rtsafe (double ticks, double frames_per_tick = 0.0)
+  void set_ticks_rtsafe (double ticks, dsp::FramesPerTick frames_per_tick)
   {
     from_ticks (ticks, frames_per_tick);
     has_update_.store (true, std::memory_order_release);
   }
 
-  /**
-   * Updates the position from ticks or frames.
-   *
-   * @param from_ticks Whether to update the position based on ticks (true) or
-   * frames (false).
-   * @param ratio Frames per tick when @ref from_ticks is true and ticks per
-   * frame when false.
-   */
-  void update_rtsafe (bool from_ticks, double ratio)
+  void update_from_ticks_rtsafe (dsp::FramesPerTick frames_per_tick)
   {
-    if (from_ticks)
-      update_frames_from_ticks (ratio);
-    else
-      update_ticks_from_frames (ratio);
+    update_frames_from_ticks (frames_per_tick);
+    has_update_.store (true, std::memory_order_release);
+  }
+
+  void update_from_frames_rtsafe (dsp::TicksPerFrame ticks_per_frame)
+  {
+    update_ticks_from_frames (ticks_per_frame);
     has_update_.store (true, std::memory_order_release);
   }
 
@@ -111,7 +107,8 @@ public:
     has_update_.store (true, std::memory_order_release);
   }
 
-  void add_frames_rtsafe (signed_frame_t frames, double ticks_per_frame)
+  void
+  add_frames_rtsafe (signed_frame_t frames, dsp::TicksPerFrame ticks_per_frame)
   {
     if (frames == 0)
       return;
@@ -126,23 +123,21 @@ public:
   init_after_cloning (const PositionProxy &other, ObjectCloneType clone_type)
     override;
 
+  friend auto operator<=> (const PositionProxy &lhs, const PositionProxy &rhs)
+  {
+    return static_cast<const zrythm::dsp::Position &> (lhs)
+           <=> static_cast<const zrythm::dsp::Position &> (rhs);
+  }
+
+  friend bool operator== (const PositionProxy &lhs, const PositionProxy &rhs)
+  {
+    return (lhs <=> rhs) == 0;
+  }
+
 private:
   std::atomic<bool> has_update_{ false };
   bool              realtime_updateable_;
 };
-
-inline auto
-operator<=> (const PositionProxy &lhs, const PositionProxy &rhs)
-{
-  return static_cast<const zrythm::dsp::Position &> (lhs)
-         <=> static_cast<const zrythm::dsp::Position &> (rhs);
-}
-
-inline bool
-operator== (const PositionProxy &lhs, const PositionProxy &rhs)
-{
-  return (lhs <=> rhs) == 0;
-}
 
 DEFINE_OBJECT_FORMATTER (PositionProxy, PositionProxy, [] (const auto &obj) {
   return Position_to_string(obj);

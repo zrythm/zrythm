@@ -58,8 +58,8 @@ protected:
       .WillByDefault (Return (Position{}));
     ON_CALL (*transport_, get_loop_enabled ()).WillByDefault (Return (false));
     ON_CALL (*transport_, get_loop_range_positions ())
-      .WillByDefault (Return (
-        std::make_pair (Position{}, Position{ 1920.0, 22.675736961451247 })));
+      .WillByDefault (Return (std::make_pair (
+        Position{}, Position{ 1920.0, FramesPerTick{ 22.675736961451247 } })));
 
     ON_CALL (*processable_, get_node_name ())
       .WillByDefault (Return ("test_node"));

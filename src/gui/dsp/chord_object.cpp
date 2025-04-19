@@ -111,7 +111,7 @@ ChordObject::gen_human_friendly_name () const
 }
 
 bool
-ChordObject::validate (bool is_project, double frames_per_tick) const
+ChordObject::validate (bool is_project, dsp::FramesPerTick frames_per_tick) const
 {
   // TODO
   return true;

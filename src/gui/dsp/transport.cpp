@@ -485,8 +485,9 @@ Transport::requestRoll (bool with_wait)
       PrerollCountBars bars = ENUM_INT_TO_VALUE (
         PrerollCountBars, gui::SettingsManager::metronomeCountIn ());
       int    num_bars = preroll_count_bars_enum_to_int (bars);
-      double frames_per_bar =
-        audio_engine_->frames_per_tick_ * (double) ticks_per_bar_;
+      auto   frames_per_bar =
+        type_safe::get (audio_engine_->frames_per_tick_)
+        * (double) ticks_per_bar_;
       countin_frames_remaining_ = (long) ((double) num_bars * frames_per_bar);
       if (metronome_enabled_)
         {
@@ -641,19 +642,16 @@ Transport::get_ppqn () const
 void
 Transport::update_positions (bool update_from_ticks)
 {
+  assert (update_from_ticks); // only works this way for now
+
   auto * audio_engine_ = project_->audio_engine_.get ();
 
-  playhead_pos_->update_rtsafe (
-    update_from_ticks, audio_engine_->frames_per_tick_);
-  cue_pos_->update_rtsafe (update_from_ticks, audio_engine_->frames_per_tick_);
-  loop_start_pos_->update_rtsafe (
-    update_from_ticks, audio_engine_->frames_per_tick_);
-  loop_end_pos_->update_rtsafe (
-    update_from_ticks, audio_engine_->frames_per_tick_);
-  punch_in_pos_->update_rtsafe (
-    update_from_ticks, audio_engine_->frames_per_tick_);
-  punch_out_pos_->update_rtsafe (
-    update_from_ticks, audio_engine_->frames_per_tick_);
+  playhead_pos_->update_from_ticks_rtsafe (audio_engine_->frames_per_tick_);
+  cue_pos_->update_from_ticks_rtsafe (audio_engine_->frames_per_tick_);
+  loop_start_pos_->update_from_ticks_rtsafe (audio_engine_->frames_per_tick_);
+  loop_end_pos_->update_from_ticks_rtsafe (audio_engine_->frames_per_tick_);
+  punch_in_pos_->update_from_ticks_rtsafe (audio_engine_->frames_per_tick_);
+  punch_out_pos_->update_from_ticks_rtsafe (audio_engine_->frames_per_tick_);
 }
 
 #if 0

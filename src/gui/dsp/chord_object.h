@@ -90,7 +90,8 @@ public:
 
   friend bool operator== (const ChordObject &lhs, const ChordObject &rhs);
 
-  bool validate (bool is_project, double frames_per_tick) const override;
+  bool
+  validate (bool is_project, dsp::FramesPerTick frames_per_tick) const override;
 
   void init_after_cloning (const ChordObject &other, ObjectCloneType clone_type)
     override;

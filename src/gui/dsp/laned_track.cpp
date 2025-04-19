@@ -114,7 +114,8 @@ LanedTrackImpl<TrackLaneT>::validate_base () const
       auto lane = std::get<TrackLaneT *> (lane_var);
       for (auto * region : lane->get_children_view ())
         {
-          region->validate (is_in_active_project (), 0);
+          region->validate (
+            is_in_active_project (), AUDIO_ENGINE->frames_per_tick_);
         }
     }
 

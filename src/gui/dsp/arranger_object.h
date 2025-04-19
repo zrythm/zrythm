@@ -226,8 +226,9 @@ public:
    *
    * @note This validates the position.
    */
-  void
-  position_setter_validated (const dsp::Position &pos, double ticks_per_frame);
+  void position_setter_validated (
+    const dsp::Position &pos,
+    dsp::TicksPerFrame   ticks_per_frame);
 
   void set_position_unvalidated (const dsp::Position &pos)
   {
@@ -241,10 +242,10 @@ public:
    * @param pos The position to set to.
    * @param pos_type The type of Position to set in the ArrangerObject.
    */
-  [[nodiscard, gnu::hot]] bool is_position_valid (
+  bool is_position_valid (
     const dsp::Position &pos,
     PositionType         pos_type,
-    double               ticks_per_frame) const;
+    dsp::TicksPerFrame   ticks_per_frame) const;
 
   /**
    * Sets the given position on the object, optionally attempting to validate
@@ -260,12 +261,12 @@ public:
     const dsp::Position &pos,
     PositionType         pos_type,
     bool                 validate,
-    double               ticks_per_frame);
+    dsp::TicksPerFrame   ticks_per_frame);
 
   /**
    * Moves the object by the given amount of ticks.
    */
-  void move (double ticks, double frames_per_tick);
+  void move (double ticks, dsp::FramesPerTick frames_per_tick);
 
   void set_track_id (TrackUuid track_id) { track_id_ = track_id; }
 
@@ -277,8 +278,10 @@ public:
    * @param frames_per_tick This will be used when doing position conversions via
    * dependency injection instead of relying on the current project's transport.
    */
-  void
-  update_positions (bool from_ticks, bool bpm_change, double frames_per_tick);
+  void update_positions (
+    bool               from_ticks,
+    bool               bpm_change,
+    dsp::FramesPerTick frames_per_tick);
 
   /**
    * Returns the Track this ArrangerObject is in.
@@ -296,7 +299,8 @@ public:
    *
    * Must only be implemented by final objects.
    */
-  virtual bool validate (bool is_project, double frames_per_tick) const = 0;
+  virtual bool
+  validate (bool is_project, dsp::FramesPerTick frames_per_tick) const = 0;
 
   /**
    * Returns the project ArrangerObject matching this.
@@ -368,7 +372,8 @@ protected:
   /**
    * @brief To be called by @ref validate() implementations.
    */
-  bool are_members_valid (bool is_project, double frames_per_tick) const;
+  bool
+  are_members_valid (bool is_project, dsp::FramesPerTick frames_per_tick) const;
 
 private:
   dsp::Position * get_position_ptr (PositionType type);

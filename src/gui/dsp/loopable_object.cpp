@@ -45,9 +45,11 @@ LoopableObject::get_num_loops (bool count_incomplete) const
 }
 
 bool
-LoopableObject::are_members_valid (bool is_project, double frames_per_tick) const
+LoopableObject::are_members_valid (
+  bool               is_project,
+  dsp::FramesPerTick frames_per_tick) const
 {
-  const double ticks_per_frame = 1.0 / frames_per_tick;
+  const auto ticks_per_frame = zrythm::dsp::to_ticks_per_frame (frames_per_tick);
   if (!is_position_valid (
         loop_start_pos_, PositionType::LoopStart, ticks_per_frame))
     {

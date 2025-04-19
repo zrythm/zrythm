@@ -100,7 +100,7 @@ Velocity::find_in_project () const
 }
 
 bool
-Velocity::validate (bool is_project, double frames_per_tick) const
+Velocity::validate (bool is_project, dsp::FramesPerTick frames_per_tick) const
 {
   // TODO
   return true;

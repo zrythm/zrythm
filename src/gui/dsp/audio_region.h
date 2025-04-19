@@ -119,9 +119,10 @@ public:
    *
    * @return Whether positions were adjusted.
    */
-  bool fix_positions (double frames_per_tick);
+  bool fix_positions (dsp::FramesPerTick frames_per_tick);
 
-  bool validate (bool is_project, double frames_per_tick) const override;
+  bool
+  validate (bool is_project, dsp::FramesPerTick frames_per_tick) const override;
 
   void init_after_cloning (const AudioRegion &other, ObjectCloneType clone_type)
     override;

@@ -493,7 +493,7 @@ Project::add_default_tracks ()
   const auto add_default_markers =
     [] (
       auto &marker_track, const auto &factory, const int ticks_per_bar,
-      const double frames_per_tick) {
+      const auto frames_per_tick) {
       {
         auto          marker_name = fmt::format ("[{}]", QObject::tr ("start"));
         dsp::Position pos;
@@ -564,7 +564,8 @@ Project::validate () const
 bool
 Project::fix_audio_regions ()
 {
-  return tracklist_->get_track_span ().fix_audio_regions ();
+  return tracklist_->get_track_span ().fix_audio_regions (
+    audio_engine_->frames_per_tick_);
 }
 
 #if 0

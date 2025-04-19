@@ -580,7 +580,10 @@ Track::validate_base () const
 }
 
 void
-Track::update_positions (bool from_ticks, bool bpm_change, double frames_per_tick)
+Track::update_positions (
+  bool               from_ticks,
+  bool               bpm_change,
+  dsp::FramesPerTick frames_per_tick)
 {
   /* not ready yet */
   if (!PROJECT || !AUDIO_ENGINE->pre_setup_)

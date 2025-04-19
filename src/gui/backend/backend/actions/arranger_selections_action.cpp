@@ -138,7 +138,7 @@ ArrangerSelectionsAction::init_loaded_impl ()
             o->fix_positions (frames_per_tick_);
             o->validate (false, frames_per_tick_);
           }
-        o->validate (false, 0);
+        o->validate (false, frames_per_tick_);
       }
   };
 
@@ -414,7 +414,7 @@ ArrangerSelectionsAction::SplitAction::SplitAction (
     : ArrangerSelectionsAction (sel, Type::Split)
 {
   pos_ = pos;
-  pos_.update_frames_from_ticks (0.0);
+  pos_.update_frames_from_ticks (frames_per_tick_);
 }
 
 ArrangerSelectionsAction::ResizeAction::ResizeAction (

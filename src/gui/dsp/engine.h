@@ -545,12 +545,12 @@ public:
   sample_rate_t sample_rate_ = 0;
 
   /** Number of frames/samples per tick. */
-  double frames_per_tick_ = 0.0;
+  dsp::FramesPerTick frames_per_tick_;
 
   /**
    * Reciprocal of @ref frames_per_tick_.
    */
-  double ticks_per_frame_ = 0.0;
+  dsp::TicksPerFrame ticks_per_frame_;
 
   /** True iff buffer size callback fired. */
   int buf_size_set_ = 0;

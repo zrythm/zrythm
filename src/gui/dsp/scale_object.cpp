@@ -76,7 +76,7 @@ ScaleObject::insert_clone_to_project () const
 }
 
 bool
-ScaleObject::validate (bool is_project, double frames_per_tick) const
+ScaleObject::validate (bool is_project, dsp::FramesPerTick frames_per_tick) const
 {
   // TODO
   return true;

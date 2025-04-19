@@ -13,10 +13,10 @@ namespace zrythm::dsp
 {
 
 Position::Position (
-  const char *      str,
-  int               beats_per_bar,
-  int               sixteenths_per_beat,
-  frames_per_tick_t frames_per_tick)
+  const char *  str,
+  int           beats_per_bar,
+  int           sixteenths_per_beat,
+  FramesPerTick frames_per_tick)
 {
   static const std::regex position_regex (
     R"((-?\d+)\.(\d+)\.(\d+)\.(\d+(?:\.\d+)?))");
@@ -58,24 +58,22 @@ Position::Position (
 }
 
 void
-Position::update_ticks_from_frames (double ticks_per_frame)
+Position::update_ticks_from_frames (TicksPerFrame ticks_per_frame)
 {
-  z_return_if_fail (ticks_per_frame > 0);
-  ticks_ = (double) frames_ * ticks_per_frame;
+  z_return_if_fail (type_safe::get (ticks_per_frame) > 0);
+  ticks_ = (double) frames_ * type_safe::get (ticks_per_frame);
 }
 
-/**
- * Converts ticks to frames.
- */
 signed_frame_t
-Position::get_frames_from_ticks (double ticks, double frames_per_tick)
+Position::get_frames_from_ticks (double ticks, dsp::FramesPerTick frames_per_tick)
 {
-  assert (frames_per_tick > 0);
-  return utils::math::round_to_signed_frame_t ((ticks * frames_per_tick));
+  assert (type_safe::get (frames_per_tick) > 0);
+  return utils::math::round_to_signed_frame_t (
+    (ticks * type_safe::get (frames_per_tick)));
 }
 
 void
-Position::update_frames_from_ticks (double frames_per_tick)
+Position::update_frames_from_ticks (FramesPerTick frames_per_tick)
 {
   frames_ = get_frames_from_ticks (ticks_, frames_per_tick);
 
@@ -91,7 +89,8 @@ Position::update_frames_from_ticks (double frames_per_tick)
 }
 
 void
-Position::set_to_bar (int bar, int ticks_per_bar, double frames_per_tick)
+Position::
+  set_to_bar (int bar, int ticks_per_bar, dsp::FramesPerTick frames_per_tick)
 {
   z_return_if_fail (
     ticks_per_bar > 0
@@ -135,8 +134,10 @@ Position::ms_to_frames (double ms, sample_rate_t sample_rate)
 }
 
 void
-Position::
-  from_seconds (double secs, sample_rate_t sample_rate, double ticks_per_frame)
+Position::from_seconds (
+  double        secs,
+  sample_rate_t sample_rate,
+  TicksPerFrame ticks_per_frame)
 {
   from_frames (
     juce::roundToInt (secs * static_cast<double> (sample_rate)),
@@ -144,14 +145,16 @@ Position::
 }
 
 void
-Position::add_bars (int bars, int ticks_per_bar, double frames_per_tick)
+Position::
+  add_bars (int bars, int ticks_per_bar, dsp::FramesPerTick frames_per_tick)
 {
   z_warn_if_fail (ticks_per_bar > 0);
   add_ticks (bars * ticks_per_bar, frames_per_tick);
 }
 
 void
-Position::add_beats (int beats, int ticks_per_beat, double frames_per_tick)
+Position::
+  add_beats (int beats, int ticks_per_beat, dsp::FramesPerTick frames_per_tick)
 {
   if (ticks_per_beat <= 0)
     {
@@ -160,35 +163,12 @@ Position::add_beats (int beats, int ticks_per_beat, double frames_per_tick)
   add_ticks (beats * ticks_per_beat, frames_per_tick);
 }
 
-#if 0
-double
-Position::get_ticks_diff (
-  const Position  &end_pos,
-  const Position  &start_pos,
-  const SnapGrid * sg)
-{
-  double   ticks_diff = end_pos.ticks_ - start_pos.ticks_;
-  int      is_negative = ticks_diff < 0.0;
-  Position diff_pos;
-  diff_pos.add_ticks (fabs (ticks_diff));
-  if (sg && sg->any_snap ())
-    {
-      diff_pos.snap (nullptr, nullptr, nullptr, *sg);
-    }
-  ticks_diff = diff_pos.ticks_;
-  if (is_negative)
-    ticks_diff = -ticks_diff;
-
-  return ticks_diff;
-}
-#endif
-
 std::string
 Position::to_string (
-  int    beats_per_bar,
-  int    sixteenths_per_beat,
-  double frames_per_tick,
-  int    decimal_places) const
+  int           beats_per_bar,
+  int           sixteenths_per_beat,
+  FramesPerTick frames_per_tick,
+  int           decimal_places) const
 {
   char buf[80];
   to_string (
@@ -198,11 +178,11 @@ Position::to_string (
 
 void
 Position::to_string (
-  int    beats_per_bar,
-  int    sixteenths_per_beat,
-  double frames_per_tick,
-  char * buf,
-  int    decimal_places) const
+  int           beats_per_bar,
+  int           sixteenths_per_beat,
+  FramesPerTick frames_per_tick,
+  char *        buf,
+  int           decimal_places) const
 {
   int bars = get_bars (
     true, beats_per_bar * sixteenths_per_beat * TICKS_PER_SIXTEENTH_NOTE);
@@ -228,9 +208,9 @@ Position::to_string (
 
 void
 Position::print (
-  int    beats_per_bar,
-  int    sixteenths_per_beat,
-  double frames_per_tick) const
+  int           beats_per_bar,
+  int           sixteenths_per_beat,
+  FramesPerTick frames_per_tick) const
 {
   z_debug (fmt::format (
     "{} ({} frames | {} ticks)",
@@ -242,7 +222,7 @@ void
 Position::print_range (
   int             beats_per_bar,
   int             sixteenths_per_beat,
-  double          frames_per_tick,
+  FramesPerTick   frames_per_tick,
   const Position &p1,
   const Position &p2)
 {
@@ -256,9 +236,9 @@ Position::print_range (
 
 int
 Position::get_total_bars (
-  bool   include_current,
-  int    ticks_per_bar,
-  double frames_per_tick) const
+  bool          include_current,
+  int           ticks_per_bar,
+  FramesPerTick frames_per_tick) const
 {
   int bars = get_bars (false, ticks_per_bar);
   int cur_bars = get_bars (true, ticks_per_bar);
@@ -281,10 +261,10 @@ Position::get_total_bars (
 
 int
 Position::get_total_beats (
-  bool   include_current,
-  int    beats_per_bar,
-  int    ticks_per_beat,
-  double frames_per_tick) const
+  bool          include_current,
+  int           beats_per_bar,
+  int           ticks_per_beat,
+  FramesPerTick frames_per_tick) const
 {
   int beats = get_beats (false, beats_per_bar, ticks_per_beat);
   int bars = get_bars (false, ticks_per_beat * beats_per_bar);
@@ -307,7 +287,9 @@ Position::get_total_beats (
 }
 
 int
-Position::get_total_sixteenths (bool include_current, double frames_per_tick) const
+Position::get_total_sixteenths (
+  bool          include_current,
+  FramesPerTick frames_per_tick) const
 {
   int ret;
   if (ticks_ >= 0)
@@ -393,10 +375,10 @@ Position::get_beats (bool start_at_one, int beats_per_bar, int ticks_per_beat)
 
 int
 Position::get_sixteenths (
-  bool   start_at_one,
-  int    beats_per_bar,
-  int    sixteenths_per_beat,
-  double frames_per_tick) const
+  bool          start_at_one,
+  int           beats_per_bar,
+  int           sixteenths_per_beat,
+  FramesPerTick frames_per_tick) const
 {
   z_return_val_if_fail (sixteenths_per_beat > 0, -1);
 
@@ -431,7 +413,7 @@ Position::get_sixteenths (
 }
 
 double
-Position::get_ticks_part (double frames_per_tick) const
+Position::get_ticks_part (FramesPerTick frames_per_tick) const
 {
   double total_sixteenths = get_total_sixteenths (true, frames_per_tick);
   /*z_debug ("total sixteenths {:f}", total_sixteenths);*/

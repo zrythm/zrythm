@@ -442,7 +442,7 @@ MidiRegion::get_velocities_in_range (
 }
 
 bool
-MidiRegion::validate (bool is_project, double frames_per_tick) const
+MidiRegion::validate (bool is_project, dsp::FramesPerTick frames_per_tick) const
 {
   if (
     !Region::are_members_valid (is_project, frames_per_tick)

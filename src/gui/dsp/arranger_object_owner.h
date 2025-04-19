@@ -71,7 +71,7 @@ public:
            });
   }
 
-  void add_ticks_to_children (double ticks, double frames_per_tick)
+  void add_ticks_to_children (double ticks, dsp::FramesPerTick frames_per_tick)
   {
     for (auto * child : get_children_view ())
       {

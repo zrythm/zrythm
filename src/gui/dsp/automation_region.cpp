@@ -274,7 +274,8 @@ AutomationRegion::init_after_cloning (
 }
 
 bool
-AutomationRegion::validate (bool is_project, double frames_per_tick) const
+AutomationRegion::validate (bool is_project, dsp::FramesPerTick frames_per_tick)
+  const
 {
 #if 0
   for (const auto &[index, ap] : std::views::enumerate (get_children_view ()))

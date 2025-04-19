@@ -12,8 +12,8 @@ protected:
   void SetUp () override
   {
     sample_rate_ = 44100;
-    frames_per_tick_ = 22.675736961451247;
-    ticks_per_frame_ = 1.0 / frames_per_tick_;
+    frames_per_tick_ = FramesPerTick{ 22.675736961451247 };
+    ticks_per_frame_ = to_ticks_per_frame (frames_per_tick_);
     beats_per_bar_ = 4;
     sixteenths_per_beat_ = 4;
     ticks_per_bar_ =
@@ -21,8 +21,8 @@ protected:
   }
 
   sample_rate_t sample_rate_{};
-  double        frames_per_tick_{};
-  double        ticks_per_frame_{};
+  FramesPerTick frames_per_tick_;
+  TicksPerFrame ticks_per_frame_;
   int           beats_per_bar_{};
   int           sixteenths_per_beat_{};
   int           ticks_per_bar_{};

@@ -296,7 +296,7 @@ SampleProcessor::queue_metronome_countin ()
   int num_beats = beats_per_bar * num_bars;
 
   double frames_per_bar =
-    AUDIO_ENGINE->frames_per_tick_
+    type_safe::get (AUDIO_ENGINE->frames_per_tick_)
     * static_cast<double> (TRANSPORT->ticks_per_bar_);
   for (int i = 0; i < num_bars; i++)
     {
@@ -307,7 +307,7 @@ SampleProcessor::queue_metronome_countin ()
     }
 
   double frames_per_beat =
-    AUDIO_ENGINE->frames_per_tick_
+    type_safe::get (AUDIO_ENGINE->frames_per_tick_)
     * static_cast<double> (TRANSPORT->ticks_per_beat_);
   for (int i = 0; i < num_beats; i++)
     {

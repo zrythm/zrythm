@@ -331,7 +331,7 @@ audio_function_apply (
     }
 
   auto nudge_frames = (unsigned_frame_t) Position::get_frames_from_ticks (
-    ArrangerObject::DEFAULT_NUDGE_TICKS, 0.0);
+    ArrangerObject::DEFAULT_NUDGE_TICKS, AUDIO_ENGINE->frames_per_tick_);
   unsigned_frame_t num_frames_excl_nudge;
   z_debug ("num frames {}, nudge_frames {}", num_frames, nudge_frames);
   z_return_if_fail_cmp (nudge_frames, >, 0);

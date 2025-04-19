@@ -117,7 +117,7 @@ public:
    * clones).
    * @param frames_per_tick Frames per tick to use in position conversions.
    */
-  void init_loaded (bool project, double frames_per_tick);
+  void init_loaded (bool project, dsp::FramesPerTick frames_per_tick);
 
   std::vector<VariantType>
   create_snapshots (const auto &object_factory, QObject &owner) const
@@ -202,7 +202,7 @@ public:
   /**
    * Code to run after deserializing a span of objects.
    */
-  void post_deserialize (double frames_per_tick)
+  void post_deserialize (dsp::FramesPerTick frames_per_tick)
   {
     const auto post_deserialize_obj = [frames_per_tick] (auto * obj) {
       /* TODO: this acts as if a BPM change happened (and is only effective if
@@ -271,7 +271,8 @@ public:
    *
    * @note All selections must be on the same lane.
    */
-  auto merge (double frames_per_tick) const -> ArrangerObjectUuidReference;
+  auto merge (dsp::FramesPerTick frames_per_tick) const
+    -> ArrangerObjectUuidReference;
 
   /**
    * Returns if the selections can be pasted at the current place/playhead.
@@ -375,10 +376,10 @@ public:
     const BoundedObjectT &self,
     const auto           &factory,
     const Position       &global_pos,
-    double                frames_per_tick)
+    dsp::FramesPerTick    frames_per_tick)
     -> std::pair<ArrangerObjectUuidReference, ArrangerObjectUuidReference>
   {
-    const double ticks_per_frame = 1.0 / frames_per_tick;
+    const auto ticks_per_frame = dsp::to_ticks_per_frame (frames_per_tick);
 
     /* create the new objects as new identities */
     auto       new_object1_ref = factory.clone_new_object_identity (self);

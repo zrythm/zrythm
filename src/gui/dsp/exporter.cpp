@@ -231,7 +231,7 @@ Exporter::export_audio (Settings &info)
       const double nticks =
         end_pos.ticks_ - TRANSPORT->playhead_pos_->getTicks ();
       const nframes_t nframes = (nframes_t) std::min (
-        (long) ceil (AUDIO_ENGINE->frames_per_tick_ * nticks),
+        (long) ceil (type_safe::get (AUDIO_ENGINE->frames_per_tick_) * nticks),
         (long) AUDIO_ENGINE->block_length_);
       z_return_if_fail (nframes > 0);
 
@@ -278,7 +278,7 @@ Exporter::export_audio (Settings &info)
           throw ZrythmException ("Failed to write audio data");
         }
 
-      covered_ticks += AUDIO_ENGINE->ticks_per_frame_ * nframes;
+      covered_ticks += type_safe::get (AUDIO_ENGINE->ticks_per_frame_) * nframes;
 
       progress_info_->update_progress (
         (TRANSPORT->playhead_pos_->getTicks () - start_pos.ticks_) / total_ticks,

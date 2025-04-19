@@ -43,7 +43,7 @@ public:
    */
   void clip_start_position_setter_validated (
     const dsp::Position &pos,
-    double               ticks_per_frame)
+    dsp::TicksPerFrame   ticks_per_frame)
   {
     set_position (
       pos, ArrangerObject::PositionType::ClipStart, true, ticks_per_frame);
@@ -55,7 +55,7 @@ public:
    */
   void loop_start_position_setter_validated (
     const dsp::Position &pos,
-    double               ticks_per_frame)
+    dsp::TicksPerFrame   ticks_per_frame)
   {
     set_position (
       pos, ArrangerObject::PositionType::LoopStart, true, ticks_per_frame);
@@ -67,7 +67,7 @@ public:
    */
   void loop_end_position_setter_validated (
     const dsp::Position &pos,
-    double               ticks_per_frame)
+    dsp::TicksPerFrame   ticks_per_frame)
   {
     set_position (
       pos, ArrangerObject::PositionType::LoopEnd, true, ticks_per_frame);
@@ -125,7 +125,8 @@ protected:
 
   void init_loaded_base ();
 
-  bool are_members_valid (bool is_project, double frames_per_tick) const;
+  bool
+  are_members_valid (bool is_project, dsp::FramesPerTick frames_per_tick) const;
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

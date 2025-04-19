@@ -145,7 +145,8 @@ double
 SnapGrid::get_snap_frames () const
 {
   int snap_ticks = get_snap_ticks ();
-  return AUDIO_ENGINE->frames_per_tick_ * static_cast<double> (snap_ticks);
+  return type_safe::get (AUDIO_ENGINE->frames_per_tick_)
+         * static_cast<double> (snap_ticks);
 }
 
 int

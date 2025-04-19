@@ -72,7 +72,7 @@ Marker::insert_clone_to_project () const
 }
 
 bool
-Marker::validate (bool is_project, double frames_per_tick) const
+Marker::validate (bool is_project, dsp::FramesPerTick frames_per_tick) const
 {
   if (
     !ArrangerObject::are_members_valid (is_project, frames_per_tick)

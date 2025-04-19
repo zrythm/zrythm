@@ -32,9 +32,9 @@ public:
    */
   template <typename SelfT>
   void get_global_start_pos (
-    this const SelfT &self,
-    dsp::Position    &pos,
-    double            frames_per_tick)
+    this const SelfT  &self,
+    dsp::Position     &pos,
+    dsp::FramesPerTick frames_per_tick)
   {
     auto r = self.get_region ();
     pos = *static_cast<Position *> (self.pos_);

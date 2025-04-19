@@ -135,7 +135,8 @@ public:
 
   ArrangerObjectPtrVariant insert_clone_to_project () const override;
 
-  bool validate (bool is_project, double frames_per_tick) const override;
+  bool
+  validate (bool is_project, dsp::FramesPerTick frames_per_tick) const override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

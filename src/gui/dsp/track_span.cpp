@@ -69,7 +69,7 @@ TrackSpanImpl<Range>::reconnect_ext_input_ports (AudioEngine &engine)
 
 template <utils::UuidIdentifiableObjectPtrVariantRange Range>
 bool
-TrackSpanImpl<Range>::fix_audio_regions ()
+TrackSpanImpl<Range>::fix_audio_regions (dsp::FramesPerTick frames_per_tick)
 {
   z_debug ("fixing audio region positions...");
 
@@ -83,7 +83,7 @@ TrackSpanImpl<Range>::fix_audio_regions ()
             const auto * lane = std::get<AudioLane *> (lane_var);
             for (auto * region : lane->get_children_view ())
               {
-                if (region->fix_positions (0))
+                if (region->fix_positions (frames_per_tick))
                   ++num_fixed;
               }
           }

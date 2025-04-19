@@ -59,7 +59,8 @@ public:
 
   void init_loaded () override;
 
-  bool validate (bool is_project, double frames_per_tick) const override;
+  bool
+  validate (bool is_project, dsp::FramesPerTick frames_per_tick) const override;
 
   Location get_location (const ChordObject &) const override
   {

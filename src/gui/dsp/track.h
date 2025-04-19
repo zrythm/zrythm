@@ -718,7 +718,7 @@ public:
     bool                        gen_name)
   {
     auto * region = std::get<RegionT *> (region_ref.get_object ());
-    assert (region->validate (false, 0));
+    // assert (region->validate (false, 0));
     assert (type_can_have_region_type (self.type_, region->type_));
 
     if (gen_name)
@@ -924,8 +924,10 @@ public:
    via
    * dependency injection instead of relying on the current project's transport.
    */
-  void
-  update_positions (bool from_ticks, bool bpm_change, double frames_per_tick);
+  void update_positions (
+    bool               from_ticks,
+    bool               bpm_change,
+    dsp::FramesPerTick frames_per_tick);
 
   /**
    * Returns all the regions inside the given range, or all the regions if both

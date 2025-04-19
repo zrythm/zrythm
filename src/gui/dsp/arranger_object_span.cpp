@@ -7,7 +7,7 @@
 
 template <utils::UuidIdentifiableObjectPtrVariantRange Range>
 auto
-ArrangerObjectSpanImpl<Range>::merge (double frames_per_tick) const
+ArrangerObjectSpanImpl<Range>::merge (dsp::FramesPerTick frames_per_tick) const
   -> ArrangerObjectUuidReference
 {
   bool is_timeline = std::ranges::all_of (
@@ -23,8 +23,8 @@ ArrangerObjectSpanImpl<Range>::merge (double frames_per_tick) const
         }
 
       auto ticks_length = get_length_in_ticks ();
-      auto num_frames =
-        static_cast<unsigned_frame_t> (ceil (frames_per_tick * ticks_length));
+      auto num_frames = static_cast<unsigned_frame_t> (
+        ceil (type_safe::get (frames_per_tick) * ticks_length));
       auto [first_obj_var, pos] = get_first_object_and_pos (true);
       Position end_pos{ pos.ticks_ + ticks_length, frames_per_tick };
 
@@ -214,7 +214,9 @@ ArrangerObjectSpanImpl<Range>::get_first_and_last_track () const
 
 template <utils::UuidIdentifiableObjectPtrVariantRange Range>
 void
-ArrangerObjectSpanImpl<Range>::init_loaded (bool project, double frames_per_tick)
+ArrangerObjectSpanImpl<Range>::init_loaded (
+  bool               project,
+  dsp::FramesPerTick frames_per_tick)
 {
   for (auto &obj_variant : *this)
     {
@@ -242,7 +244,7 @@ ArrangerObjectSpanImpl<Range>::init_loaded (bool project, double frames_per_tick
                       o->fix_positions (frames_per_tick);
                       o->validate (project, frames_per_tick);
                     }
-                  o->validate (project, 0);
+                  o->validate (project, frames_per_tick);
                 }
             }
         },

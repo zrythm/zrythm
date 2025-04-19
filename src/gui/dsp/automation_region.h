@@ -107,7 +107,8 @@ public:
     bool       before_only,
     bool       use_snapshots);
 
-  bool validate (bool is_project, double frames_per_tick) const override;
+  bool
+  validate (bool is_project, dsp::FramesPerTick frames_per_tick) const override;
 
   /**
    * Sets the automation track.

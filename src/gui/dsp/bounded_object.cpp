@@ -39,9 +39,12 @@ BoundedObject::init_loaded_base ()
 }
 
 bool
-BoundedObject::are_members_valid (bool is_project, double frames_per_tick) const
+BoundedObject::are_members_valid (
+  bool               is_project,
+  dsp::FramesPerTick frames_per_tick) const
 {
-  if (!is_position_valid (*end_pos_, PositionType::End, 1.0 / frames_per_tick))
+  const auto ticks_per_frame = to_ticks_per_frame (frames_per_tick);
+  if (!is_position_valid (*end_pos_, PositionType::End, ticks_per_frame))
     {
       if (ZRYTHM_TESTING)
         {

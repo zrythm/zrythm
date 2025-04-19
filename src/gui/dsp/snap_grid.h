@@ -45,7 +45,7 @@ public:
 
   static constexpr int DEFAULT_MAX_BAR = 10000;
 
-  using FramesPerTickProvider = std::function<double (void)>;
+  using FramesPerTickProvider = std::function<dsp::FramesPerTick (void)>;
   using TicksPerBarProvider = std::function<int (void)>;
   using TicksPerBeatProvider = std::function<int (void)>;
   using Position = zrythm::dsp::Position;
@@ -86,7 +86,7 @@ public:
   /**
    * @brief Returns whether any snapping is enabled.
    */
-  inline bool any_snap () const { return snap_to_grid_ || snap_to_events_; }
+  bool any_snap () const { return snap_to_grid_ || snap_to_events_; }
 
   static int get_ticks_from_length_and_type (
     utils::NoteLength length,

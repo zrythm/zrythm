@@ -17,10 +17,12 @@ FadeableObject::copy_members_from (
 }
 
 bool
-FadeableObject::are_members_valid (bool is_project, double frames_per_tick) const
+FadeableObject::are_members_valid (
+  bool               is_project,
+  dsp::FramesPerTick frames_per_tick) const
 {
-  if (!is_position_valid (
-        fade_in_pos_, PositionType::FadeIn, 1.0 / frames_per_tick))
+  const auto ticks_per_frame = dsp::to_ticks_per_frame (frames_per_tick);
+  if (!is_position_valid (fade_in_pos_, PositionType::FadeIn, ticks_per_frame))
     {
       if (ZRYTHM_TESTING)
         {
@@ -28,8 +30,7 @@ FadeableObject::are_members_valid (bool is_project, double frames_per_tick) cons
         }
       return false;
     }
-  if (!is_position_valid (
-        fade_out_pos_, PositionType::FadeOut, 1.0 / frames_per_tick))
+  if (!is_position_valid (fade_out_pos_, PositionType::FadeOut, ticks_per_frame))
     {
       if (ZRYTHM_TESTING)
         {

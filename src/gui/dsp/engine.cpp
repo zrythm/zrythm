@@ -171,18 +171,18 @@ AudioEngine::update_frames_per_tick (
 
   z_debug (
     "frames per tick before: {:f} | ticks per frame before: {:f}",
-    frames_per_tick_, ticks_per_frame_);
+    type_safe::get (frames_per_tick_), type_safe::get (ticks_per_frame_));
 
-  frames_per_tick_ =
+  frames_per_tick_ = dsp::FramesPerTick (
     (static_cast<double> (sample_rate) * 60.0
      * static_cast<double> (beats_per_bar))
-    / (static_cast<double> (bpm) * static_cast<double> (project_->transport_->ticks_per_bar_));
-  z_return_if_fail (frames_per_tick_ > 1.0);
-  ticks_per_frame_ = 1.0 / frames_per_tick_;
+    / (static_cast<double> (bpm) * static_cast<double> (project_->transport_->ticks_per_bar_)));
+  z_return_if_fail (type_safe::get (frames_per_tick_) > 1.0);
+  ticks_per_frame_ = dsp::to_ticks_per_frame (frames_per_tick_);
 
   z_debug (
     "frames per tick after: {:f} | ticks per frame after: {:f}",
-    frames_per_tick_, ticks_per_frame_);
+    type_safe::get (frames_per_tick_), type_safe::get (ticks_per_frame_));
 
   /* update positions */
   project_->transport_->update_positions (update_from_ticks);
@@ -945,7 +945,7 @@ AudioEngine::resume (State &state)
   if (state.playing_)
     {
       project_->transport_->playhead_before_pause_.update_frames_from_ticks (
-        0.0);
+        frames_per_tick_);
       project_->transport_->move_playhead (
         &project_->transport_->playhead_before_pause_, false, false, false);
       project_->transport_->requestRoll (true);

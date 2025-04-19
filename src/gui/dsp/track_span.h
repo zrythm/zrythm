@@ -357,7 +357,7 @@ public:
   /**
    * @brief Fixes audio regions and returns whether positions were adjusted.
    */
-  bool fix_audio_regions ();
+  bool fix_audio_regions (dsp::FramesPerTick frames_per_tick);
 
   /**
    * Activate or deactivate all plugins.

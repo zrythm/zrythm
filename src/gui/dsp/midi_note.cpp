@@ -208,7 +208,7 @@ MidiNote::find_in_project () const
 }
 
 bool
-MidiNote::validate (bool is_project, double frames_per_tick) const
+MidiNote::validate (bool is_project, dsp::FramesPerTick frames_per_tick) const
 {
   // TODO
   return true;

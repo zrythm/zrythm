@@ -22,20 +22,20 @@ class ArrangerObjectFactory : public QObject
 public:
   ArrangerObjectFactory () = delete;
   ArrangerObjectFactory (
-    ArrangerObjectRegistry         &registry,
-    gui::SettingsManager           &settings_mgr,
-    std::function<double ()>        frames_per_tick_getter,
-    gui::SnapGrid                  &snap_grid_timeline,
-    gui::SnapGrid                  &snap_grid_editor,
-    AudioClipResolverFunc           clip_resolver,
-    RegisterNewAudioClipFunc        clip_registration_func,
-    std::function<sample_rate_t ()> sample_rate_provider,
-    std::function<bpm_t ()>         bpm_provider,
-    ArrangerObjectSelectionManager  timeline_selections_manager,
-    ArrangerObjectSelectionManager  midi_selections_manager,
-    ArrangerObjectSelectionManager  chord_selections_manager,
-    ArrangerObjectSelectionManager  automation_selections_manager,
-    QObject *                       parent = nullptr)
+    ArrangerObjectRegistry              &registry,
+    gui::SettingsManager                &settings_mgr,
+    std::function<dsp::FramesPerTick ()> frames_per_tick_getter,
+    gui::SnapGrid                       &snap_grid_timeline,
+    gui::SnapGrid                       &snap_grid_editor,
+    AudioClipResolverFunc                clip_resolver,
+    RegisterNewAudioClipFunc             clip_registration_func,
+    std::function<sample_rate_t ()>      sample_rate_provider,
+    std::function<bpm_t ()>              bpm_provider,
+    ArrangerObjectSelectionManager       timeline_selections_manager,
+    ArrangerObjectSelectionManager       midi_selections_manager,
+    ArrangerObjectSelectionManager       chord_selections_manager,
+    ArrangerObjectSelectionManager       automation_selections_manager,
+    QObject *                            parent = nullptr)
       : QObject (parent), object_registry_ (registry),
         settings_manager_ (settings_mgr),
         frames_per_tick_getter_ (std::move (frames_per_tick_getter)),
@@ -69,7 +69,7 @@ public:
       return *this;
     }
 
-    Builder &with_frames_per_tick (double framesPerTick)
+    Builder &with_frames_per_tick (dsp::FramesPerTick framesPerTick)
     {
       frames_per_tick_ = framesPerTick;
       return *this;
@@ -179,7 +179,7 @@ public:
                 dsp::Position{
                   obj->pos_->getFrames ()
                     + clip_resolver_.value () (*clip_id_)->get_num_frames (),
-                  1.0 / *frames_per_tick_ },
+                  to_ticks_per_frame (*frames_per_tick_) },
                 *frames_per_tick_);
             }
         }
@@ -222,7 +222,7 @@ public:
             }
           obj->position_setter_validated (
             dsp::Position (*start_ticks_, *frames_per_tick_),
-            1.0 / *frames_per_tick_);
+            to_ticks_per_frame (*frames_per_tick_));
         }
 
       if (name_)
@@ -286,7 +286,7 @@ public:
   private:
     ArrangerObjectRegistry                   &registry_;
     OptionalRef<gui::SettingsManager>         settings_manager_;
-    std::optional<double>                     frames_per_tick_;
+    std::optional<dsp::FramesPerTick>         frames_per_tick_;
     std::optional<AudioClipResolverFunc>      clip_resolver_;
     std::optional<AudioClip::Uuid>            clip_id_;
     std::optional<double>                     start_ticks_;
@@ -663,7 +663,7 @@ public:
 private:
   ArrangerObjectRegistry         &object_registry_;
   gui::SettingsManager           &settings_manager_;
-  std::function<double ()>        frames_per_tick_getter_;
+  std::function<dsp::FramesPerTick ()> frames_per_tick_getter_;
   gui::SnapGrid                  &snap_grid_timeline_;
   gui::SnapGrid                  &snap_grid_editor_;
   AudioClipResolverFunc           clip_resolver_func_;

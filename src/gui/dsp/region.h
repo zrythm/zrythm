@@ -499,7 +499,8 @@ public:
    */
   void unlink ();
 
-  bool are_members_valid (bool is_project, double frames_per_tick) const;
+  bool
+  are_members_valid (bool is_project, dsp::FramesPerTick frames_per_tick) const;
 
   /**
    * Moves the Region to the given Track, maintaining the selection

@@ -167,7 +167,8 @@ RegionImpl<RegionT>::fill_midi_events (
           {
             obj_end_frames = utils::math::round_to_signed_frame_t (
               obj.pos_->frames_
-              + TRANSPORT->ticks_per_beat_ * AUDIO_ENGINE->frames_per_tick_);
+              + TRANSPORT->ticks_per_beat_
+                  * type_safe::get (AUDIO_ENGINE->frames_per_tick_));
           }
 
         /* if note ends within the cycle */
@@ -559,8 +560,9 @@ RegionImpl<RegionT>::stretch (double ratio)
 
 template <typename RegionT>
 bool
-RegionImpl<RegionT>::are_members_valid (bool is_project, double frames_per_tick)
-  const
+RegionImpl<RegionT>::are_members_valid (
+  bool               is_project,
+  dsp::FramesPerTick frames_per_tick) const
 {
   z_return_val_if_fail (loop_start_pos_ < loop_end_pos_, false);
 
