@@ -120,7 +120,7 @@ TEST_F (ZrythmFixture, FullExport)
 
     r->pos_.add_ticks (1920.0);
     r->end_pos_.add_ticks (960.0);
-    r->clip_start_pos_setter (&clip_start_pos);
+    r->clip_start_position_setter_validated (&clip_start_pos);
   };
 
   setup_region_for_full_export (region);
@@ -145,8 +145,8 @@ TEST_F (ZrythmFixture, FullExport)
       loop_start_pos.from_ticks (full_export_test_loop_positions[iter * 2]);
       loop_end_pos.from_ticks (full_export_test_loop_positions[iter * 2 + 1]);
 
-      region->loop_start_pos_setter (&loop_start_pos);
-      region->loop_end_pos_setter (&loop_end_pos);
+      region->loop_start_position_setter_validated (&loop_start_pos);
+      region->loop_end_position_setter_validated (&loop_end_pos);
 
       auto export_file_name = fmt::format ("loopbase{}.mid", iter);
       auto export_filepath = Glib::build_filename (export_dir, export_file_name);

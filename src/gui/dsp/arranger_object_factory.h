@@ -220,7 +220,9 @@ public:
                     *frames_per_tick_);
                 }
             }
-          obj->pos_setter (dsp::Position (*start_ticks_, *frames_per_tick_));
+          obj->position_setter_validated (
+            dsp::Position (*start_ticks_, *frames_per_tick_),
+            1.0 / *frames_per_tick_);
         }
 
       if (name_)

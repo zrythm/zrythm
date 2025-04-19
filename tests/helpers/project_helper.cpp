@@ -88,11 +88,11 @@ BootstrapTimelineFixture::SetUp ()
     /* add 2 chords to the region */
     auto co = std::make_shared<ChordObject> (chord_r->id_, 0, 1);
     chord_r->append_object (co);
-    co->pos_setter (&p1_);
+    co->position_setter_validated (&p1_);
     CHORD_SELECTIONS->add_object_ref (co);
     co = std::make_shared<ChordObject> (chord_r->id_, 0, 1);
     chord_r->append_object (co);
-    co->pos_setter (&p2_);
+    co->position_setter_validated (&p2_);
     CHORD_SELECTIONS->add_object_ref (co);
   }
 
@@ -102,7 +102,7 @@ BootstrapTimelineFixture::SetUp ()
     P_MARKER_TRACK->add_marker (m);
     ASSERT_EQ (m->marker_track_index_, 2);
     TL_SELECTIONS->add_object_ref (m);
-    m->pos_setter (&p1_);
+    m->position_setter_validated (&p1_);
   }
 
   {
@@ -111,7 +111,7 @@ BootstrapTimelineFixture::SetUp ()
     auto         s = std::make_shared<ScaleObject> (ms);
     P_CHORD_TRACK->add_scale (s);
     TL_SELECTIONS->add_object_ref (s);
-    s->pos_setter (&p1_);
+    s->position_setter_validated (&p1_);
   }
 
   {

@@ -45,9 +45,11 @@ LoopableObject::get_num_loops (bool count_incomplete) const
 }
 
 bool
-LoopableObject::are_members_valid (bool is_project) const
+LoopableObject::are_members_valid (bool is_project, double frames_per_tick) const
 {
-  if (!is_position_valid (loop_start_pos_, PositionType::LoopStart))
+  const double ticks_per_frame = 1.0 / frames_per_tick;
+  if (!is_position_valid (
+        loop_start_pos_, PositionType::LoopStart, ticks_per_frame))
     {
       if (ZRYTHM_TESTING)
         {
@@ -55,7 +57,7 @@ LoopableObject::are_members_valid (bool is_project) const
         }
       return false;
     }
-  if (!is_position_valid (loop_end_pos_, PositionType::LoopEnd))
+  if (!is_position_valid (loop_end_pos_, PositionType::LoopEnd, ticks_per_frame))
     {
       if (ZRYTHM_TESTING)
         {
@@ -63,7 +65,8 @@ LoopableObject::are_members_valid (bool is_project) const
         }
       return false;
     }
-  if (!is_position_valid (clip_start_pos_, PositionType::ClipStart))
+  if (!is_position_valid (
+        clip_start_pos_, PositionType::ClipStart, ticks_per_frame))
     {
       if (ZRYTHM_TESTING)
         {

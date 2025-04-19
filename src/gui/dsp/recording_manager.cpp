@@ -500,7 +500,8 @@ RecordingManager::handle_pause_event (const RecordingEvent &ev)
                                 MidiNote * mn;
                                 while ((mn = r->pop_unended_note (-1)))
                                   {
-                                    mn->end_pos_setter (pause_pos);
+                                    mn->end_position_setter_validated (
+                                      pause_pos, AUDIO_ENGINE->ticks_per_frame_);
                                   }
                               }
                           }
@@ -683,7 +684,8 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                                 region->pos_->ticks_ - resume_pos.ticks_;
                               region->set_start_pos_full_size (
                                 resume_pos, AUDIO_ENGINE->frames_per_tick_);
-                              region->add_ticks_to_children (ticks_delta);
+                              region->add_ticks_to_children (
+                                ticks_delta, AUDIO_ENGINE->frames_per_tick_);
                             }
                           if (end_pos > *region->end_pos_)
                             {
@@ -928,9 +930,7 @@ RecordingManager::handle_midi_event (const RecordingEvent &ev)
                           auto co =
                             ArrangerObjectFactory::get_instance ()->addChordObject (
                               region, local_pos.ticks_, chord_idx);
-                          co->set_position (
-                            local_pos, ArrangerObject::PositionType::Start,
-                            false);
+                          co->set_position_unvalidated (local_pos);
                         }
                     }
                   /* else if not chord track */
@@ -949,7 +949,8 @@ RecordingManager::handle_midi_event (const RecordingEvent &ev)
                             midi_get_note_number (buf));
                           if (mn)
                             {
-                              mn->end_pos_setter (local_end_pos);
+                              mn->end_position_setter_validated (
+                                local_end_pos, AUDIO_ENGINE->ticks_per_frame_);
                             }
                         }
                       else

@@ -505,7 +505,7 @@ RegionImpl<RegionT>::stretch (double ratio)
           double        before_ticks = obj->pos_->ticks_;
           double        new_ticks = before_ticks * ratio;
           dsp::Position tmp (new_ticks, AUDIO_ENGINE->frames_per_tick_);
-          obj->pos_setter (tmp);
+          obj->position_setter_validated (tmp, AUDIO_ENGINE->ticks_per_frame_);
 
           if constexpr (std::derived_from<ObjT, BoundedObject>)
             {
@@ -513,7 +513,8 @@ RegionImpl<RegionT>::stretch (double ratio)
               before_ticks = obj->end_pos_->ticks_;
               new_ticks = before_ticks * ratio;
               tmp = dsp::Position (new_ticks, AUDIO_ENGINE->frames_per_tick_);
-              obj->end_pos_setter (tmp);
+              obj->end_position_setter_validated (
+                tmp, AUDIO_ENGINE->ticks_per_frame_);
             }
         }
     }
@@ -543,9 +544,10 @@ RegionImpl<RegionT>::stretch (double ratio)
       dsp::Position new_end_pos (
         static_cast<signed_frame_t> (num_frames_per_channel),
         AUDIO_ENGINE->ticks_per_frame_);
-      set_position (new_end_pos, ArrangerObject::PositionType::LoopEnd, false);
+
+      set_loop_end_position_unvalidated (new_end_pos);
       new_end_pos.add_frames (pos_->frames_, AUDIO_ENGINE->ticks_per_frame_);
-      set_position (new_end_pos, ArrangerObject::PositionType::End, false);
+      set_end_position_unvalidated (new_end_pos);
     }
   else
     {
@@ -557,9 +559,9 @@ RegionImpl<RegionT>::stretch (double ratio)
 
 template <typename RegionT>
 bool
-RegionImpl<RegionT>::are_members_valid (bool is_project) const
+RegionImpl<RegionT>::are_members_valid (bool is_project, double frames_per_tick)
+  const
 {
-
   z_return_val_if_fail (loop_start_pos_ < loop_end_pos_, false);
 
   return true;

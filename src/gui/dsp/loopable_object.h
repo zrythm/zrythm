@@ -41,27 +41,49 @@ public:
    * The setter is for use in e.g. the digital meters whereas the set_pos func
    * is used during arranger actions.
    */
-  void clip_start_pos_setter (const dsp::Position &pos)
+  void clip_start_position_setter_validated (
+    const dsp::Position &pos,
+    double               ticks_per_frame)
   {
-    set_position (pos, ArrangerObject::PositionType::ClipStart, true);
+    set_position (
+      pos, ArrangerObject::PositionType::ClipStart, true, ticks_per_frame);
   }
 
   /**
    * The setter is for use in e.g. the digital meters whereas the set_pos func
    * is used during arranger actions.
    */
-  void loop_start_pos_setter (const dsp::Position &pos)
+  void loop_start_position_setter_validated (
+    const dsp::Position &pos,
+    double               ticks_per_frame)
   {
-    set_position (pos, ArrangerObject::PositionType::LoopStart, true);
+    set_position (
+      pos, ArrangerObject::PositionType::LoopStart, true, ticks_per_frame);
   }
 
   /**
    * The setter is for use in e.g. the digital meters whereas the set_pos func
    * is used during arranger actions.
    */
-  void loop_end_pos_setter (const dsp::Position &pos)
+  void loop_end_position_setter_validated (
+    const dsp::Position &pos,
+    double               ticks_per_frame)
   {
-    set_position (pos, ArrangerObject::PositionType::LoopEnd, true);
+    set_position (
+      pos, ArrangerObject::PositionType::LoopEnd, true, ticks_per_frame);
+  }
+
+  void set_loop_start_position_unvalidated (const dsp::Position &pos)
+  {
+    loop_start_pos_ = pos;
+  }
+  void set_loop_end_position_unvalidated (const dsp::Position &pos)
+  {
+    loop_end_pos_ = pos;
+  }
+  void set_clip_start_position_unvalidated (const dsp::Position &pos)
+  {
+    clip_start_pos_ = pos;
   }
 
   /**
@@ -103,7 +125,7 @@ protected:
 
   void init_loaded_base ();
 
-  bool are_members_valid (bool is_project) const;
+  bool are_members_valid (bool is_project, double frames_per_tick) const;
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

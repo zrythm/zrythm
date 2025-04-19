@@ -71,7 +71,7 @@ TEST_F (ZrythmFixture, MidiFilePlayback)
       Position tmp;
       tmp = start_pos;
       tmp.add_frames (BUFFER_SIZE * 32 + BUFFER_SIZE / 3);
-      region->end_pos_setter (&tmp);
+      region->end_position_setter_validated (&tmp);
 
       /* start filling events to see if any warnings occur */
       for (

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/dsp/fadeable_object.h"
@@ -17,9 +17,10 @@ FadeableObject::copy_members_from (
 }
 
 bool
-FadeableObject::are_members_valid (bool is_project) const
+FadeableObject::are_members_valid (bool is_project, double frames_per_tick) const
 {
-  if (!is_position_valid (fade_in_pos_, PositionType::FadeIn))
+  if (!is_position_valid (
+        fade_in_pos_, PositionType::FadeIn, 1.0 / frames_per_tick))
     {
       if (ZRYTHM_TESTING)
         {
@@ -27,7 +28,8 @@ FadeableObject::are_members_valid (bool is_project) const
         }
       return false;
     }
-  if (!is_position_valid (fade_out_pos_, PositionType::FadeOut))
+  if (!is_position_valid (
+        fade_out_pos_, PositionType::FadeOut, 1.0 / frames_per_tick))
     {
       if (ZRYTHM_TESTING)
         {

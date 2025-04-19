@@ -31,11 +31,22 @@ public:
    */
   void get_fade_out_pos (Position * pos) const { *pos = fade_out_pos_; }
 
+  void set_fade_in_position_unvalidated (const dsp::Position &pos)
+  {
+    // FIXME qobject updates...
+    *static_cast<dsp::Position *> (&fade_in_pos_) = pos;
+  }
+  void set_fade_out_position_unvalidated (const dsp::Position &pos)
+  {
+    // FIXME qobject updates...
+    *static_cast<dsp::Position *> (&fade_out_pos_) = pos;
+  }
+
 protected:
   void
   copy_members_from (const FadeableObject &other, ObjectCloneType clone_type);
 
-  bool are_members_valid (bool is_project) const;
+  bool are_members_valid (bool is_project, double frames_per_tick) const;
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

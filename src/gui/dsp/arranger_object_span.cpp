@@ -57,7 +57,9 @@ ArrangerObjectSpanImpl<Range>::merge (double frames_per_tick) const
                             ArrangerObjectFactory::get_instance ()
                               ->clone_new_object_identity (*mn);
                           std::visit (
-                            [&] (auto &&m) { m->move (ticks_diff); },
+                            [&] (auto &&m) {
+                              m->move (ticks_diff, frames_per_tick);
+                            },
                             new_mn.get_object ());
                           get_new_r (new_r)->add_object (new_mn);
                         }

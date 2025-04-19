@@ -445,14 +445,14 @@ bool
 MidiRegion::validate (bool is_project, double frames_per_tick) const
 {
   if (
-    !Region::are_members_valid (is_project)
-    || !TimelineObject::are_members_valid (is_project)
-    || !NamedObject::are_members_valid (is_project)
-    || !LoopableObject::are_members_valid (is_project)
-    || !MuteableObject::are_members_valid (is_project)
-    || !BoundedObject::are_members_valid (is_project)
-    || !ColoredObject::are_members_valid (is_project)
-    || !ArrangerObject::are_members_valid (is_project))
+    !Region::are_members_valid (is_project, frames_per_tick)
+    || !TimelineObject::are_members_valid (is_project, frames_per_tick)
+    || !NamedObject::are_members_valid (is_project, frames_per_tick)
+    || !LoopableObject::are_members_valid (is_project, frames_per_tick)
+    || !MuteableObject::are_members_valid (is_project, frames_per_tick)
+    || !BoundedObject::are_members_valid (is_project, frames_per_tick)
+    || !ColoredObject::are_members_valid (is_project, frames_per_tick)
+    || !ArrangerObject::are_members_valid (is_project, frames_per_tick))
     {
       return false;
     }

@@ -146,10 +146,12 @@ MidiFile::into_region (
               auto * mn = region.pop_unended_note (msg.getNoteNumber ());
               if (mn != nullptr)
                 {
-                  mn->end_pos_setter (pos);
+                  mn->end_position_setter_validated (
+                    pos, AUDIO_ENGINE->ticks_per_frame_);
                   if (global_pos > *region.end_pos_)
                     {
-                      region.end_pos_setter (global_pos);
+                      region.end_position_setter_validated (
+                        global_pos, AUDIO_ENGINE->ticks_per_frame_);
                     }
                 }
               else
@@ -186,5 +188,6 @@ MidiFile::into_region (
   Position loop_end_pos_to_set (
     region.end_pos_->ticks_ - region.pos_->ticks_,
     AUDIO_ENGINE->frames_per_tick_);
-  region.loop_end_pos_setter (loop_end_pos_to_set);
+  region.loop_end_position_setter_validated (
+    loop_end_pos_to_set, AUDIO_ENGINE->ticks_per_frame_);
 }

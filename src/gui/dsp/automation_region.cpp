@@ -167,44 +167,24 @@ AutomationRegion::get_prev_ap (const AutomationPoint &ap) const
 }
 
 AutomationPoint *
-AutomationRegion::get_next_ap (
-  const AutomationPoint &ap,
-  bool                   check_positions,
-  bool                   check_transients) const
+AutomationRegion::get_next_ap (const AutomationPoint &ap, bool check_positions)
+  const
 {
   if (check_positions)
     {
-      check_transients =
-        ZRYTHM_HAVE_UI /* && MW_AUTOMATION_ARRANGER
-        && MW_AUTOMATION_ARRANGER->action == UiOverlayAction::MovingCopy */
-        ;
       AutomationPoint * next_ap = nullptr;
-      const int         loop_times = check_transients ? 2 : 1;
       for (auto * cur_ap_outer : get_children_view ())
         {
-          for (const auto j : std::views::iota (0, loop_times))
+          AutomationPoint * cur_ap = cur_ap_outer;
+
+          if (cur_ap->get_uuid () == ap.get_uuid ())
+            continue;
+
+          if (
+            cur_ap->pos_ >= ap.pos_
+            && ((next_ap == nullptr) || cur_ap->pos_ < next_ap->pos_))
             {
-              AutomationPoint * cur_ap = cur_ap_outer;
-              if (j == 1)
-                {
-                  if (cur_ap->transient_)
-                    {
-                      cur_ap = dynamic_cast<AutomationPoint *> (
-                        cur_ap->get_transient ());
-                    }
-                  else
-                    continue;
-                }
-
-              if (cur_ap->get_uuid () == ap.get_uuid ())
-                continue;
-
-              if (
-                cur_ap->pos_ >= ap.pos_
-                && ((next_ap == nullptr) || cur_ap->pos_ < next_ap->pos_))
-                {
-                  next_ap = cur_ap;
-                }
+              next_ap = cur_ap;
             }
         }
       return next_ap;
@@ -304,14 +284,14 @@ AutomationRegion::validate (bool is_project, double frames_per_tick) const
 #endif
 
   if (
-    !Region::are_members_valid (is_project)
-    || !TimelineObject::are_members_valid (is_project)
-    || !NamedObject::are_members_valid (is_project)
-    || !LoopableObject::are_members_valid (is_project)
-    || !MuteableObject::are_members_valid (is_project)
-    || !BoundedObject::are_members_valid (is_project)
-    || !ColoredObject::are_members_valid (is_project)
-    || !ArrangerObject::are_members_valid (is_project))
+    !Region::are_members_valid (is_project, frames_per_tick)
+    || !TimelineObject::are_members_valid (is_project, frames_per_tick)
+    || !NamedObject::are_members_valid (is_project, frames_per_tick)
+    || !LoopableObject::are_members_valid (is_project, frames_per_tick)
+    || !MuteableObject::are_members_valid (is_project, frames_per_tick)
+    || !BoundedObject::are_members_valid (is_project, frames_per_tick)
+    || !ColoredObject::are_members_valid (is_project, frames_per_tick)
+    || !ArrangerObject::are_members_valid (is_project, frames_per_tick))
     {
       return false;
     }

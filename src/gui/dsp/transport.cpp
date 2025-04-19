@@ -915,12 +915,11 @@ Transport::recalculate_total_bars (
                   Position pos;
                   if constexpr (std::derived_from<ObjT, BoundedObject>)
                     {
-                      obj->get_position_from_type (
-                        &pos, ArrangerObject::PositionType::End);
+                      pos = obj->get_end_position ();
                     }
                   else
                     {
-                      obj->get_pos (&pos);
+                      pos = obj->get_position ();
                     }
                   int pos_bars = pos.get_total_bars (
                     true, ticks_per_bar_,

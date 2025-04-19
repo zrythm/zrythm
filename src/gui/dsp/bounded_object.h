@@ -43,9 +43,9 @@ public:
   /**
    * Getter.
    */
-  void get_end_pos (dsp::Position * pos) const
+  auto get_end_position () const
   {
-    *pos = *static_cast<dsp::Position *> (end_pos_);
+    return *static_cast<dsp::Position *> (end_pos_);
   }
 
   void parent_base_qproperties (QObject &derived);
@@ -54,9 +54,16 @@ public:
    * The setter is for use in e.g. the digital meters whereas the set_pos func
    * is used during arranger actions.
    */
-  void end_pos_setter (const dsp::Position &pos)
+  void
+  end_position_setter_validated (const dsp::Position &pos, double ticks_per_frame)
   {
-    set_position (pos, PositionType::End, true);
+    set_position (pos, PositionType::End, true, ticks_per_frame);
+  }
+
+  void set_end_position_unvalidated (const dsp::Position &pos)
+  {
+    // FIXME qobject updates...
+    *static_cast<dsp::Position *> (end_pos_) = pos;
   }
 
   /**
@@ -100,7 +107,7 @@ public:
     double          frames_per_tick)
     requires (FinalArrangerObjectSubclass<SelfT>)
   {
-    self.pos_setter (pos);
+    self.position_setter_validated (pos, 1.0 / frames_per_tick);
     self.set_loop_and_fade_positions_from_length (frames_per_tick);
     assert (pos.frames_ == self.pos_->frames_);
   }
@@ -116,7 +123,7 @@ public:
     double               frames_per_tick)
     requires (FinalArrangerObjectSubclass<SelfT>)
   {
-    self.end_pos_setter (pos);
+    self.end_position_setter_validated (pos, 1.0 / frames_per_tick);
     self.set_loop_and_fade_positions_from_length (frames_per_tick);
     assert (pos.frames_ == self.end_pos_->frames_);
   }
@@ -243,7 +250,7 @@ protected:
 
   void init_loaded_base ();
 
-  bool are_members_valid (bool is_project) const;
+  bool are_members_valid (bool is_project, double frames_per_tick) const;
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

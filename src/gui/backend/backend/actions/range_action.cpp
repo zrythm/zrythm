@@ -181,7 +181,8 @@ RangeAction::perform_impl ()
 
                           /* move part2 by the range amount */
                           std::get<ObjT *> (part2.get_object ())
-                            ->move (range_size_ticks);
+                            ->move (
+                              range_size_ticks, AUDIO_ENGINE->frames_per_tick_);
 
                           /* remove previous object */
                           obj->remove_from_project (true);
@@ -201,7 +202,8 @@ RangeAction::perform_impl ()
                   /* object starts at or after range start - only needs a move */
                   else
                     {
-                      obj->move (range_size_ticks);
+                      obj->move (
+                        range_size_ticks, AUDIO_ENGINE->frames_per_tick_);
                       objects_moved_.push_back (obj->get_uuid ());
                       z_debug ("moved to object: {}", *obj);
                     }
@@ -285,7 +287,9 @@ RangeAction::perform_impl ()
                               if (part2_opt)
                                 {
                                   std::get<ObjT *> (part2_ref.get_object ())
-                                    ->move (-range_size_ticks);
+                                    ->move (
+                                      -range_size_ticks,
+                                      AUDIO_ENGINE->frames_per_tick_);
                                 }
 
                               /* remove previous object */
@@ -326,7 +330,9 @@ RangeAction::perform_impl ()
                               // project
                               // TODO: actually add
                               std::get<ObjT *> (part2.get_object ())
-                                ->move (-range_size_ticks);
+                                ->move (
+                                  -range_size_ticks,
+                                  AUDIO_ENGINE->frames_per_tick_);
                               objects_added_.push_back (part2.id ());
 
                               // TODO: actually remove object
@@ -344,7 +350,8 @@ RangeAction::perform_impl ()
                        * move */
                       else
                         {
-                          obj->move (-range_size_ticks);
+                          obj->move (
+                            -range_size_ticks, AUDIO_ENGINE->frames_per_tick_);
                           objects_moved_.push_back (obj->get_uuid ());
 
                           /* move objects to bar 1 if negative pos */
@@ -352,7 +359,9 @@ RangeAction::perform_impl ()
                           if (*obj->pos_ < init_pos)
                             {
                               z_debug ("moving object back");
-                              obj->move (-obj->pos_->ticks_);
+                              obj->move (
+                                -obj->pos_->ticks_,
+                                AUDIO_ENGINE->frames_per_tick_);
                             }
 
                           ArrangerObjectFactory::get_instance ()
@@ -407,7 +416,11 @@ RangeAction::undo_impl ()
     const auto &obj_var : std::ranges::reverse_view (ArrangerObjectRegistrySpan{
       PROJECT->get_arranger_object_registry (), objects_moved_ }))
     {
-      std::visit ([&] (auto &&obj) { obj->move (-range_size_ticks); }, obj_var);
+      std::visit (
+        [&] (auto &&obj) {
+          obj->move (-range_size_ticks, AUDIO_ENGINE->frames_per_tick_);
+        },
+        obj_var);
     }
   // add back objects taht were removed
   for (

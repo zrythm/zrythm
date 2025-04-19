@@ -891,11 +891,11 @@ Track::get_total_bars (const Transport &transport, int total_bars) const
           Position end_pos;
           if constexpr (std::derived_from<ObjT, BoundedObject>)
             {
-              obj->get_end_pos (&end_pos);
+              end_pos = obj->get_end_position ();
             }
           else
             {
-              obj->get_pos (&end_pos);
+              end_pos = obj->get_position ();
             }
           if (end_pos > pos)
             {

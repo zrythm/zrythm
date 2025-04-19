@@ -83,13 +83,9 @@ public:
    *
    * @param check_positions Compare positions instead of just getting the next
    * index.
-   * @param check_transients Also check the transient of each object. This
-   * only matters if @p check_positions is true.
    */
-  [[gnu::hot]] AutomationPoint * get_next_ap (
-    const AutomationPoint &ap,
-    bool                   check_positions,
-    bool                   check_transients) const;
+  [[gnu::hot]] AutomationPoint *
+  get_next_ap (const AutomationPoint &ap, bool check_positions) const;
 
   /**
    * Returns the automation points since the last recorded automation point

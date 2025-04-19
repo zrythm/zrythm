@@ -24,7 +24,7 @@ TEST_F (ZrythmFixture, AddMarker)
       auto     marker = std::make_shared<Marker> ("start");
       Position pos;
       pos.set_to_bar (1);
-      marker->pos_setter (&pos);
+      marker->position_setter_validated (&pos);
       marker->marker_type_ = Marker::Type::Start;
 
       track->add_marker (marker);

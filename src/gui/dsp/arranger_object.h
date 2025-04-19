@@ -218,35 +218,7 @@ public:
   /**
    * Getter.
    */
-  void get_pos (dsp::Position * pos) const
-  {
-    *pos = *static_cast<dsp::Position *> (pos_);
-  };
-
-  void get_position_from_type (dsp::Position * pos, PositionType type) const;
-
-  template <typename T = ArrangerObject> T * get_transient () const
-  {
-    return dynamic_cast<T *> (transient_);
-  };
-
-  /**
-   * Callback when beginning to edit the object.
-   *
-   * This saves a clone of its current state to its arranger.
-   */
-  void edit_begin () const;
-
-  /**
-   * Callback when finishing editing the object.
-   *
-   * This performs an undoable action.
-   *
-   * @param action_edit_type A @ref ArrangerSelectionsAction::EditType.
-   */
-  void edit_finish (int action_edit_type) const;
-
-  void edit_position_finish () const;
+  auto get_position () const { return *static_cast<dsp::Position *> (pos_); };
 
   /**
    * The setter is for use in e.g. the digital meters whereas the set_pos func
@@ -254,7 +226,14 @@ public:
    *
    * @note This validates the position.
    */
-  void pos_setter (const dsp::Position &pos);
+  void
+  position_setter_validated (const dsp::Position &pos, double ticks_per_frame);
+
+  void set_position_unvalidated (const dsp::Position &pos)
+  {
+    // FIXME qobject updates...
+    *static_cast<dsp::Position *> (pos_) = pos;
+  }
 
   /**
    * Returns if the given Position is valid.
@@ -262,8 +241,10 @@ public:
    * @param pos The position to set to.
    * @param pos_type The type of Position to set in the ArrangerObject.
    */
-  [[nodiscard, gnu::hot]] bool
-  is_position_valid (const dsp::Position &pos, PositionType pos_type) const;
+  [[nodiscard, gnu::hot]] bool is_position_valid (
+    const dsp::Position &pos,
+    PositionType         pos_type,
+    double               ticks_per_frame) const;
 
   /**
    * Sets the given position on the object, optionally attempting to validate
@@ -275,13 +256,16 @@ public:
    *
    * @return Whether the position was set (false if invalid).
    */
-  bool
-  set_position (const dsp::Position &pos, PositionType pos_type, bool validate);
+  bool set_position (
+    const dsp::Position &pos,
+    PositionType         pos_type,
+    bool                 validate,
+    double               ticks_per_frame);
 
   /**
    * Moves the object by the given amount of ticks.
    */
-  void move (double ticks);
+  void move (double ticks, double frames_per_tick);
 
   void set_track_id (TrackUuid track_id) { track_id_ = track_id; }
 
@@ -302,12 +286,6 @@ public:
   [[gnu::hot]] virtual TrackPtrVariant get_track () const;
 
   TrackUuid get_track_id () const { return track_id_; }
-
-  /**
-   * @brief Performs some post-deserialization logic, like adjusting positions
-   * to BPM changes.
-   */
-  void post_deserialize ();
 
   /**
    * Validates the arranger object.
@@ -362,13 +340,6 @@ public:
   std::optional<ArrangerObjectPtrVariant>
   remove_from_project (bool free_obj, bool fire_events = false);
 
-  /**
-   * Returns whether the arranger object is part of a frozen track.
-   *
-   * @note Currently unused.
-   */
-  bool is_frozen () const;
-
   void set_selection_status_getter (SelectionStatusGetter getter)
   {
     selection_status_getter_ = getter;
@@ -397,7 +368,7 @@ protected:
   /**
    * @brief To be called by @ref validate() implementations.
    */
-  bool are_members_valid (bool is_project) const;
+  bool are_members_valid (bool is_project, double frames_per_tick) const;
 
 private:
   dsp::Position * get_position_ptr (PositionType type);
@@ -419,22 +390,7 @@ public:
   TrackUuid track_id_;
 
   /** Track this object belongs to (cache to be set during graph calculation). */
-  OptionalTrackPtrVariant track_;
-
-  /**
-   * A copy ArrangerObject corresponding to this, such as when ctrl+dragging.
-   *
-   * This is generated when an object is added to the project selections.
-   *
-   * This will be the clone object saved in the cloned arranger selections in
-   * each arranger during actions, and would get drawn separately.
-   */
-  ArrangerObject * transient_ = nullptr;
-
-  /**
-   * The opposite of the above. This will be set on the transient objects.
-   */
-  ArrangerObject * main_ = nullptr;
+  // OptionalTrackPtrVariant track_;
 
   /**
    * Whether deleted with delete tool.
@@ -442,12 +398,10 @@ public:
    * This is used to simply hide these objects until the action finishes so
    * that they can be cloned for the actions.
    */
-  bool deleted_temporarily_ = false;
+  // bool deleted_temporarily_ = false;
 
   /** Flags. */
   Flags flags_{};
-
-  // bool selected_{};
 
   /**
    * Whether part of an auditioner track. */

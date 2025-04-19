@@ -71,11 +71,11 @@ public:
            });
   }
 
-  void add_ticks_to_children (double ticks)
+  void add_ticks_to_children (double ticks, double frames_per_tick)
   {
     for (auto * child : get_children_view ())
       {
-        child->move (ticks);
+        child->move (ticks, frames_per_tick);
       }
   }
 
@@ -160,14 +160,6 @@ public:
       clearing_ = false;
     }
     list_model_->end_reset_model ();
-  }
-
-  void post_deserialize_children (this auto &self)
-  {
-    for (auto * obj : self.get_children_view ())
-      {
-        obj->post_deserialize ();
-      }
   }
 
   /**

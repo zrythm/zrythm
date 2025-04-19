@@ -417,8 +417,8 @@ TEST_F (ZrythmFixture, BounceRegionWithFirstNote)
 
   pos.zero ();
   pos.add_beats (3);
-  region->loop_start_pos_setter (&pos);
-  region->clip_start_pos_setter (&pos);
+  region->loop_start_position_setter_validated (&pos);
+  region->clip_start_position_setter_validated (&pos);
 
   while (region->midi_notes_.size () > 1)
     {

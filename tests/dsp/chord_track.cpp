@@ -29,7 +29,7 @@ TEST_F (BootstrapTimelineFixture, GetChordAtPos)
   co2->chord_index_ = 2;
   r->set_end_pos_full_size (&p2);
   r->set_start_pos_full_size (&p1);
-  r->loop_end_pos_setter (&loop);
+  r->loop_end_position_setter_validated (&loop);
   r->print ();
 
   Position pos;

@@ -200,9 +200,33 @@ public:
   void paste_to_pos (const Position &pos, bool undoable);
 
   /**
-   * Code to run after deserializing.
+   * Code to run after deserializing a span of objects.
    */
-  void post_deserialize ();
+  void post_deserialize (double frames_per_tick)
+  {
+    const auto post_deserialize_obj = [frames_per_tick] (auto * obj) {
+      /* TODO: this acts as if a BPM change happened (and is only effective if
+       * so), so if no BPM change happened this is unnecessary, so this should
+       * be refactored in the future. this was added to fix copy-pasting audio
+       * regions after changing the BPM (see #4993) */
+      obj->update_positions (true, true, frames_per_tick);
+    };
+    for (const auto &var : *this)
+      {
+        std::visit (
+          [&] (auto &&obj) {
+            using ObjT = base_type<decltype (obj)>;
+
+            post_deserialize_obj (obj);
+            if constexpr (DerivedFromTemplatedBase<ObjT, ArrangerObjectOwner>)
+              {
+                std::ranges::for_each (
+                  obj->get_children_view (), post_deserialize_obj);
+              }
+          },
+          var);
+      }
+  }
 
   /**
    * @brief Used for debugging.
@@ -383,9 +407,11 @@ public:
      * - end pos
      * - fade out pos
      */
-    get_derived_object (new_object1_ref)->end_pos_setter (global_pos);
     get_derived_object (new_object1_ref)
-      ->set_position (local_pos, ArrangerObject::PositionType::FadeOut, false);
+      ->end_position_setter_validated (global_pos, ticks_per_frame);
+    get_derived_object (new_object1_ref)
+      ->set_position (
+        local_pos, ArrangerObject::PositionType::FadeOut, false, ticks_per_frame);
 
     if constexpr (std::derived_from<BoundedObjectT, LoopableObject>)
       {
@@ -393,7 +419,8 @@ public:
          * also */
         if (!self.is_looped ())
           {
-            get_derived_object (new_object1_ref)->loop_end_pos_setter (local_pos);
+            get_derived_object (new_object1_ref)
+              ->loop_end_position_setter_validated (local_pos, ticks_per_frame);
 
             if constexpr (std::is_same_v<BoundedObjectT, AudioRegion>)
               {
@@ -449,9 +476,11 @@ public:
      */
     if constexpr (std::derived_from<BoundedObjectT, LoopableObject>)
       {
-        get_derived_object (new_object2_ref)->clip_start_pos_setter (local_pos);
+        get_derived_object (new_object2_ref)
+          ->clip_start_position_setter_validated (local_pos, ticks_per_frame);
       }
-    get_derived_object (new_object2_ref)->pos_setter (global_pos);
+    get_derived_object (new_object2_ref)
+      ->position_setter_validated (global_pos, ticks_per_frame);
     Position r2_local_end = *get_derived_object (new_object2_ref)->end_pos_;
     r2_local_end.add_ticks (
       -get_derived_object (new_object2_ref)->pos_->ticks_, frames_per_tick);
@@ -459,7 +488,8 @@ public:
       {
         get_derived_object (new_object2_ref)
           ->set_position (
-            r2_local_end, ArrangerObject::PositionType::FadeOut, false);
+            r2_local_end, ArrangerObject::PositionType::FadeOut, false,
+            ticks_per_frame);
       }
 
     /* if original object was not looped, make the new object unlooped also */
@@ -469,11 +499,12 @@ public:
           {
             Position init_pos;
             get_derived_object (new_object2_ref)
-              ->clip_start_pos_setter (init_pos);
+              ->clip_start_position_setter_validated (init_pos, ticks_per_frame);
             get_derived_object (new_object2_ref)
-              ->loop_start_pos_setter (init_pos);
+              ->loop_start_position_setter_validated (init_pos, ticks_per_frame);
             get_derived_object (new_object2_ref)
-              ->loop_end_pos_setter (r2_local_end);
+              ->loop_end_position_setter_validated (
+                r2_local_end, ticks_per_frame);
 
             if constexpr (RegionSubclass<BoundedObjectT>)
               {
@@ -481,7 +512,8 @@ public:
                   {
                     /* move all objects backwards */
                     get_derived_object (new_object2_ref)
-                      ->add_ticks_to_children (-local_pos.ticks_);
+                      ->add_ticks_to_children (
+                        -local_pos.ticks_, frames_per_tick);
                   }
 
                 /* if audio region, create a new region */

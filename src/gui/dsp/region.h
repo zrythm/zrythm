@@ -438,31 +438,6 @@ public:
     self.endInsertRows ();
   }
 
-#if 0
-  /**
-   * @see insert_object().
-   */
-  void append_object (this RegionT &self, auto obj_id)
-    requires RegionWithChildren<RegionT>
-  {
-    auto &objects = self.get_children_vector ();
-    self.insert_object (obj_id, objects.size ());
-  }
-
-  /**
-   * @brief Removes the given object from this region.
-   */
-  void remove_object (const ArrangerObject::Uuid &child_id)
-    requires RegionWithChildren<RegionT>;
-
-  void post_deserialize_children (this RegionT &self)
-    requires RegionWithChildren<RegionT>
-  {
-    for (auto * obj : self.get_children_view ())
-      obj->post_deserialize ();
-  }
-#endif
-
   bool get_muted (bool check_parent) const override;
 
   ArrangerObjectPtrVariant add_clone_to_project (bool fire_events) const final
@@ -524,7 +499,7 @@ public:
    */
   void unlink ();
 
-  bool are_members_valid (bool is_project) const;
+  bool are_members_valid (bool is_project, double frames_per_tick) const;
 
   /**
    * Moves the Region to the given Track, maintaining the selection

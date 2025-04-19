@@ -39,9 +39,9 @@ BoundedObject::init_loaded_base ()
 }
 
 bool
-BoundedObject::are_members_valid (bool is_project) const
+BoundedObject::are_members_valid (bool is_project, double frames_per_tick) const
 {
-  if (!is_position_valid (*end_pos_, PositionType::End))
+  if (!is_position_valid (*end_pos_, PositionType::End, 1.0 / frames_per_tick))
     {
       if (ZRYTHM_TESTING)
         {
@@ -77,20 +77,20 @@ BoundedObject::resize (
                 {
                   tmp = self->fade_in_pos_;
                   tmp.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
-                  set_position (tmp, PositionType::FadeIn, false);
+                  self->set_fade_in_position_unvalidated (tmp);
                 }
             }
           else
             {
               tmp = *static_cast<Position *> (pos_);
               tmp.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
-              set_position (tmp, PositionType::Start, false);
+              self->set_position_unvalidated (tmp);
 
               if constexpr (std::derived_from<ObjT, FadeableObject>)
                 {
                   tmp = self->fade_out_pos_;
                   tmp.add_ticks (-ticks, AUDIO_ENGINE->frames_per_tick_);
-                  set_position (tmp, PositionType::FadeOut, false);
+                  self->set_fade_out_position_unvalidated (tmp);
                 }
 
               if (type == ResizeType::Loop)
@@ -114,7 +114,8 @@ BoundedObject::resize (
                               clip_start_pos.add_ticks (
                                 loop_len, AUDIO_ENGINE->frames_per_tick_);
                             }
-                          self->clip_start_pos_setter (clip_start_pos);
+                          self->clip_start_position_setter_validated (
+                            clip_start_pos, AUDIO_ENGINE->ticks_per_frame_);
                         }
 
                       /* make sure clip start goes back to loop start if it
@@ -125,19 +126,21 @@ BoundedObject::resize (
                           clip_start_pos.add_ticks (
                             -loop_len, AUDIO_ENGINE->frames_per_tick_);
                         }
-                      self->clip_start_pos_setter (clip_start_pos);
+                      self->clip_start_position_setter_validated (
+                        clip_start_pos, AUDIO_ENGINE->ticks_per_frame_);
                     }
                 }
               else if constexpr (std::derived_from<ObjT, LoopableObject>)
                 {
                   tmp = self->loop_end_pos_;
                   tmp.add_ticks (-ticks, AUDIO_ENGINE->frames_per_tick_);
-                  set_position (tmp, PositionType::LoopEnd, false);
+                  self->set_loop_end_position_unvalidated (tmp);
 
                   /* move containing items */
                   if constexpr (RegionWithChildren<ObjT>)
                     {
-                      self->add_ticks_to_children (-ticks);
+                      self->add_ticks_to_children (
+                        -ticks, AUDIO_ENGINE->frames_per_tick_);
                     }
                 }
             }
@@ -151,7 +154,7 @@ BoundedObject::resize (
                 {
                   tmp = self->fade_out_pos_;
                   tmp.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
-                  set_position (tmp, PositionType::FadeOut, false);
+                  self->set_fade_out_position_unvalidated (tmp);
                 }
             }
           else
@@ -159,7 +162,10 @@ BoundedObject::resize (
               tmp = *end_pos_;
               Position prev_end_pos = tmp;
               tmp.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
-              set_position (tmp, PositionType::End, false);
+              if constexpr (std::derived_from<ObjT, BoundedObject>)
+                {
+                  self->set_end_position_unvalidated (tmp);
+                }
 
               double change_ratio =
                 (get_length_in_ticks ()) / (prev_end_pos.ticks_ - pos_->ticks_);
@@ -182,7 +188,7 @@ BoundedObject::resize (
                           tmp.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
                         }
                       z_return_if_fail (tmp.is_positive ());
-                      set_position (tmp, PositionType::LoopEnd, false);
+                      self->set_loop_end_position_unvalidated (tmp);
                       z_return_if_fail (self->loop_end_pos_.is_positive ());
 
                       /* if stretching, also stretch loop start */
@@ -195,7 +201,7 @@ BoundedObject::resize (
                             tmp.ticks_ * change_ratio,
                             AUDIO_ENGINE->frames_per_tick_);
                           z_return_if_fail (tmp.is_positive ());
-                          set_position (tmp, PositionType::LoopStart, false);
+                          self->set_loop_start_position_unvalidated (tmp);
                           z_return_if_fail (
                             self->loop_start_pos_.is_positive ());
                         }
@@ -217,7 +223,7 @@ BoundedObject::resize (
                       tmp.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
                     }
                   z_return_if_fail (tmp.is_positive ());
-                  set_position (tmp, PositionType::FadeOut, false);
+                  self->set_fade_out_position_unvalidated (tmp);
                   z_return_if_fail (self->fade_out_pos_.is_positive ());
 
                   /* if stretching, also stretch fade in */
@@ -230,7 +236,7 @@ BoundedObject::resize (
                         tmp.ticks_ * change_ratio,
                         AUDIO_ENGINE->frames_per_tick_);
                       z_return_if_fail (tmp.is_positive ());
-                      set_position (tmp, PositionType::FadeIn, false);
+                      self->set_fade_in_position_unvalidated (tmp);
                       z_return_if_fail (self->fade_in_pos_.is_positive ());
                     }
                 }

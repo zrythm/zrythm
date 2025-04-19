@@ -97,7 +97,7 @@ bool
 AutomationPoint::curves_up () const
 {
   auto              region = dynamic_cast<AutomationRegion *> (get_region ());
-  AutomationPoint * next_ap = region->get_next_ap (*this, true, true);
+  AutomationPoint * next_ap = region->get_next_ap (*this, true);
 
   if (!next_ap)
     return false;
@@ -178,10 +178,13 @@ AutomationPoint::set_fvalue_with_action (const std::string &fval_str)
       return;
     }
 
+// TODO
+#if 0
   edit_begin ();
   set_fvalue (val, false);
   edit_finish (
     (int) gui::actions::ArrangerSelectionsAction::EditType::Primitive);
+#endif
 }
 
 double
@@ -196,7 +199,7 @@ AutomationPoint::get_normalized_value_in_curve (
       region = dynamic_cast<AutomationRegion *> (get_region ());
     }
   z_return_val_if_fail (region, 0.0);
-  AutomationPoint * next_ap = region->get_next_ap (*this, true, true);
+  AutomationPoint * next_ap = region->get_next_ap (*this, true);
   if (!next_ap)
     {
       return fvalue_;

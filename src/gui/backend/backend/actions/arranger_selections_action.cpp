@@ -557,10 +557,10 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
               if (!utils::math::floats_equal (ticks, 0.0))
                 {
                   /* shift the actual object */
-                  prj_obj->move (ticks);
+                  prj_obj->move (ticks, AUDIO_ENGINE->frames_per_tick_);
 
                   /* also shift the copy */
-                  own_obj_ptr->move (ticks);
+                  own_obj_ptr->move (ticks, AUDIO_ENGINE->frames_per_tick_);
                 }
 
               if (delta_tracks != 0 || delta_lanes != 0)
@@ -864,8 +864,8 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
               /* ticks */
               if (!utils::math::floats_equal (ticks_, 0.0))
                 {
-                  obj->move (-ticks_);
-                  own_obj->move (-ticks_);
+                  obj->move (-ticks_, AUDIO_ENGINE->frames_per_tick_);
+                  own_obj->move (-ticks_, AUDIO_ENGINE->frames_per_tick_);
                 }
 
               /* tracks & lanes */
@@ -1166,7 +1166,7 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
               /* set the copies back to original state */
               if (!utils::math::floats_equal (ticks, 0.0))
                 {
-                  own_obj->move (ticks);
+                  own_obj->move (ticks, AUDIO_ENGINE->frames_per_tick_);
                 }
               if (delta_tracks != 0)
                 {
@@ -2074,10 +2074,12 @@ ArrangerSelectionsAction::do_or_undo_quantize (bool do_it)
                           opts_->quantize_position (obj->end_pos_);
                         }
                     }
-                  obj->pos_setter (*obj->pos_);
+                  obj->position_setter_validated (
+                    *obj->pos_, AUDIO_ENGINE->ticks_per_frame_);
                   if constexpr (std::derived_from<ObjT, BoundedObject>)
                     {
-                      obj->end_pos_setter (*obj->end_pos_);
+                      obj->end_position_setter_validated (
+                        *obj->end_pos_, AUDIO_ENGINE->ticks_per_frame_);
                     }
 
                   /* remember the quantized position so we can find the
@@ -2091,10 +2093,12 @@ ArrangerSelectionsAction::do_or_undo_quantize (bool do_it)
               else
                 {
                   /* unquantize it */
-                  obj->pos_setter (*own_obj->pos_);
+                  obj->position_setter_validated (
+                    *own_obj->pos_, AUDIO_ENGINE->ticks_per_frame_);
                   if constexpr (std::derived_from<ObjT, BoundedObject>)
                     {
-                      obj->end_pos_setter (*own_obj->end_pos_);
+                      obj->end_position_setter_validated (
+                        *own_obj->end_pos_, AUDIO_ENGINE->ticks_per_frame_);
                     }
                 }
             }

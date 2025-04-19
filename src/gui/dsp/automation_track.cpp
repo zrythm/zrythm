@@ -413,7 +413,7 @@ AutomationTrack::get_val_at_pos (
       : pos.frames_,
     true);
 
-  auto next_ap = region->get_next_ap (*ap, false, false);
+  auto next_ap = region->get_next_ap (*ap, false);
 
   /* return value at last ap */
   if (!next_ap)

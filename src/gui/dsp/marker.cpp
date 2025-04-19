@@ -75,8 +75,8 @@ bool
 Marker::validate (bool is_project, double frames_per_tick) const
 {
   if (
-    !ArrangerObject::are_members_valid (is_project)
-    || !NamedObject::are_members_valid (is_project))
+    !ArrangerObject::are_members_valid (is_project, frames_per_tick)
+    || !NamedObject::are_members_valid (is_project, frames_per_tick))
     return false;
 
   return true;
