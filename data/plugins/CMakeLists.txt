@@ -32,7 +32,7 @@ foreach(plugin_info ${plugins})
   list(GET plugin_info_list 0 pl_name)
   list(GET plugin_info_list 1 pl_descr)
   list(GET plugin_info_list 2 pl_type)
-  
+
   string(REPLACE " " "_" pl_underscored_name ${pl_name})
   string(TOLOWER ${pl_underscored_name} pl_underscored_name)
 

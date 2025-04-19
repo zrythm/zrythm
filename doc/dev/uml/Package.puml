@@ -1,3 +1,6 @@
+' SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+' SPDX-License-Identifier: CC0-1.0
+
 @startuml Zrythm Package
 package "GUI executable" as gui {
   package "C++ backend" as cpp_backend {

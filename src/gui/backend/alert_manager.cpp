@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
 #include "alert_manager.h"
 
 using namespace zrythm::gui;

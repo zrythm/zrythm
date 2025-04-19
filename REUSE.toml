@@ -244,6 +244,12 @@ SPDX-FileCopyrightText = "2016-2020 Jonathan Müller"
 SPDX-License-Identifier = "MIT"
 
 [[annotations]]
+path = ["ext/juce_clap_hosting/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2022 Jatin Chowdhury"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
 path = "data/org.zrythm.Zrythm-mime.xml"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2019 Alexandros Theodotou <alex@zrythm.org>"
