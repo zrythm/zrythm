@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -16,7 +16,7 @@ class MidiLane final
 {
   Q_OBJECT
   QML_ELEMENT
-  DEFINE_TRACK_LANE_QML_PROPERTIES (MidiLane)
+  DEFINE_TRACK_LANE_QML_PROPERTIES (MidiLane, MidiRegion)
 
 public:
   using RegionT = MidiRegion;

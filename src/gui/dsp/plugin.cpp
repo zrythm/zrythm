@@ -908,14 +908,14 @@ Plugin::move_automation (
       z_return_if_fail (port->at_ == at);
 
       /* delete from prev channel */
-      auto   num_regions_before = at->region_list_->regions_.size ();
+      auto   num_regions_before = at->get_children_vector ().size ();
       auto * removed_at = prev_atl.remove_at (*at, false, false);
 
       /* add to new channel */
       auto added_at = atl.add_automation_track (*removed_at);
       z_return_if_fail (
         added_at == atl.get_automation_track_at (added_at->index_)
-        && added_at->region_list_->regions_.size () == num_regions_before);
+        && added_at->get_children_vector ().size () == num_regions_before);
     }
 }
 

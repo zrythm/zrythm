@@ -16,7 +16,7 @@ class AudioLane final
 {
   Q_OBJECT
   QML_ELEMENT
-  DEFINE_TRACK_LANE_QML_PROPERTIES (AudioLane)
+  DEFINE_TRACK_LANE_QML_PROPERTIES (AudioLane, AudioRegion)
 
 public:
   using RegionT = AudioRegion;

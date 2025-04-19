@@ -50,7 +50,7 @@ MidiRegion::MidiRegion (ArrangerObjectRegistry &obj_registry, QObject * parent)
     : ArrangerObject (Type::MidiRegion), Region (obj_registry),
       QAbstractListModel (parent)
 {
-  ArrangerObject::parent_base_qproperties (*this);
+  ArrangerObject::set_parent_on_base_qproperties (*this);
   BoundedObject::parent_base_qproperties (*this);
   init_colored_object ();
   unended_notes_.reserve (12000);
@@ -61,7 +61,7 @@ MidiRegion::init_loaded ()
 {
   ArrangerObject::init_loaded_base ();
   NamedObject::init_loaded_base ();
-  for (auto * note : get_object_ptrs_view ())
+  for (auto * note : get_children_view ())
     {
       note->init_loaded ();
     }
@@ -72,16 +72,6 @@ MidiRegion::init_after_cloning (
   const MidiRegion &other,
   ObjectCloneType   clone_type)
 {
-  midi_notes_.reserve (other.midi_notes_.size ());
-// TODO
-#if 0
-  for (const auto &note : other.get_object_ptrs_view ())
-    {
-      auto * clone = note->clone_raw_ptr ();
-      clone->setParent (this);
-      midi_notes_.push_back (clone->get_uuid ());
-    }
-#endif
   LaneOwnedObject::copy_members_from (other, clone_type);
   Region::copy_members_from (other, clone_type);
   TimelineObject::copy_members_from (other, clone_type);
@@ -91,6 +81,7 @@ MidiRegion::init_after_cloning (
   BoundedObject::copy_members_from (other, clone_type);
   ColoredObject::copy_members_from (other, clone_type);
   ArrangerObject::copy_members_from (other, clone_type);
+  ArrangerObjectOwner::copy_members_from (other, clone_type);
 }
 
 // ========================================================================
@@ -107,18 +98,20 @@ MidiRegion::roleNames () const
 int
 MidiRegion::rowCount (const QModelIndex &parent) const
 {
-  return static_cast<int> (midi_notes_.size ());
+  return static_cast<int> (get_children_vector ().size ());
 }
 
 QVariant
 MidiRegion::data (const QModelIndex &index, int role) const
 {
-  if (index.row () < 0 || index.row () >= static_cast<int> (midi_notes_.size ()))
+  if (
+    index.row () < 0
+    || index.row () >= static_cast<int> (get_children_vector ().size ()))
     return {};
 
   if (role == MidiNotePtrRole)
     {
-      return QVariant::fromValue (get_object_ptrs_view ()[index.row ()]);
+      return QVariant::fromValue (get_children_view ()[index.row ()]);
     }
   return {};
 }
@@ -128,7 +121,7 @@ MidiRegion::data (const QModelIndex &index, int role) const
 void
 MidiRegion::print_midi_notes () const
 {
-  for (const auto &mn : get_object_ptrs_view ())
+  for (const auto &mn : get_children_view ())
     {
       z_info ("Note");
       mn->print ();
@@ -162,20 +155,20 @@ MidiRegion::pop_unended_note (int pitch)
 MidiNote *
 MidiRegion::get_first_midi_note ()
 {
-  return midi_notes_.empty () ? nullptr : get_object_ptrs_view ().front ();
+  return get_children_vector ().empty () ? nullptr : get_children_view ().front ();
 }
 
 MidiNote *
 MidiRegion::get_last_midi_note ()
 {
-  auto notes = get_object_ptrs_view ();
+  auto notes = get_children_view ();
   return (*std::ranges::max_element (notes, {}, &MidiNote::end_pos_));
 }
 
 MidiNote *
 MidiRegion::get_highest_midi_note ()
 {
-  auto notes = get_object_ptrs_view ();
+  auto notes = get_children_view ();
   return (*std::ranges::max_element (notes, [] (const auto &a, const auto &b) {
     return a->pitch_ < b->pitch_;
   }));
@@ -184,7 +177,7 @@ MidiRegion::get_highest_midi_note ()
 MidiNote *
 MidiRegion::get_lowest_midi_note ()
 {
-  auto notes = get_object_ptrs_view ();
+  auto notes = get_children_view ();
   return (*std::ranges::min_element (notes, [] (const auto &a, const auto &b) {
     return a->pitch_ < b->pitch_;
   }));
@@ -220,7 +213,7 @@ MidiRegion::start_unended_note (
       .with_pitch (pitch)
       .with_velocity (vel)
       .build ();
-  append_object (mn);
+  add_object (mn);
 
   /* add to unended notes */
   unended_notes_.push_back (std::get<MidiNote *> (mn.get_object ()));
@@ -370,7 +363,7 @@ MidiRegion::add_events (
     (get_length_in_ticks () - loop_start_pos_.ticks_ + clip_start_pos_.ticks_)
     / loop_length_in_ticks);
 
-  for (const auto * mn : get_object_ptrs_view ())
+  for (const auto * mn : get_children_view ())
     {
       if (full && !is_note_playable (*mn))
         {
@@ -437,7 +430,7 @@ MidiRegion::get_velocities_in_range (
   bool                     inside)
 {
   Position global_start_pos;
-  for (const auto * mn : get_object_ptrs_view ())
+  for (const auto * mn : get_children_view ())
     {
       mn->get_global_start_pos (
         global_start_pos, AUDIO_ENGINE->frames_per_tick_);

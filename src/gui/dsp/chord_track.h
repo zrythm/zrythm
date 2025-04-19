@@ -1,17 +1,13 @@
 // SPDX-FileCopyrightText: © 2018-2020, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_CHORD_TRACK_H__
-#define __AUDIO_CHORD_TRACK_H__
+#ifndef GUI_DSP_CHORD_TRACK_H
+#define GUI_DSP_CHORD_TRACK_H
 
-#include <memory>
-#include <ranges>
-#include <vector>
-
+#include "gui/dsp/arranger_object_owner.h"
 #include "gui/dsp/channel_track.h"
 #include "gui/dsp/chord_region.h"
 #include "gui/dsp/recordable_track.h"
-#include "gui/dsp/region_owner.h"
 #include "gui/dsp/scale_object.h"
 
 /**
@@ -39,10 +35,11 @@
  * RegionOwner.
  */
 class ChordTrack final
-    : public QAbstractListModel,
+    : public QObject,
       public RecordableTrack,
       public ChannelTrack,
-      public RegionOwner<ChordRegion>,
+      public ArrangerObjectOwner<ChordRegion>,
+      public ArrangerObjectOwner<ScaleObject>,
       public ICloneable<ChordTrack>,
       public zrythm::utils::serialization::ISerializable<ChordTrack>,
       public utils::InitializableObject
@@ -52,7 +49,11 @@ class ChordTrack final
   DEFINE_TRACK_QML_PROPERTIES (ChordTrack)
   DEFINE_AUTOMATABLE_TRACK_QML_PROPERTIES (ChordTrack)
   DEFINE_CHANNEL_TRACK_QML_PROPERTIES (ChordTrack)
-  DEFINE_REGION_OWNER_QML_PROPERTIES (ChordTrack)
+  DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (ChordTrack, regions, ChordRegion)
+  DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
+    ChordTrack,
+    scaleObjects,
+    ScaleObject)
   DEFINE_RECORDABLE_TRACK_QML_PROPERTIES (ChordTrack)
 
   friend class InitializableObject;
@@ -62,22 +63,6 @@ class ChordTrack final
 public:
   using ScaleObjectPtr = ScaleObject *;
 
-  // =========================================================================
-  // QML Interface
-  // =========================================================================
-
-  enum Role
-  {
-    ScaleObjectPtrRole = Qt::UserRole + 1,
-  };
-
-  QHash<int, QByteArray> roleNames () const override;
-  int rowCount (const QModelIndex &parent = QModelIndex ()) const override;
-  QVariant
-  data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
-
-  // =========================================================================
-
   void
   init_loaded (PluginRegistry &plugin_registry, PortRegistry &port_registry)
     override;
@@ -85,42 +70,6 @@ public:
   bool is_in_active_project () const override
   {
     return Track::is_in_active_project ();
-  }
-
-  bool is_auditioner () const override { return Track::is_auditioner (); }
-
-  /**
-   * Inserts a scale object to the track.
-   *
-   * This takes ownership of the scale object.
-   */
-  void insert_scale (ArrangerObjectUuidReference scale_ref, int index);
-
-  /**
-   * Adds a scale to the track.
-   */
-  void add_scale (auto scale_ref)
-  {
-    return insert_scale (scale_ref, scales_.size ());
-  }
-
-  /**
-   * Removes a scale from the chord Track.
-   */
-  void remove_scale (const ArrangerObject::Uuid &scale_id);
-
-  auto get_scales_view ()
-  {
-    return scales_ | std::views::transform ([&] (const auto &id) {
-             return std::get<ScaleObject *> (id.get_object ());
-           });
-  }
-
-  auto get_scales_view () const
-  {
-    return scales_ | std::views::transform ([&] (const auto &id) {
-             return std::get<ScaleObject *> (id.get_object ());
-           });
   }
 
   ScaleObject * get_scale_at (size_t index) const;
@@ -162,22 +111,33 @@ public:
   void
   append_ports (std::vector<Port *> &ports, bool include_plugins) const final;
 
+  ArrangerObjectOwner<ChordRegion>::Location
+  get_location (const ChordRegion &) const override
+  {
+    return { .track_id_ = get_uuid () };
+  }
+  ArrangerObjectOwner<ScaleObject>::Location
+  get_location (const ScaleObject &) const override
+  {
+    return { .track_id_ = get_uuid () };
+  }
+
+  std::string
+  get_field_name_for_serialization (const ChordRegion *) const override
+  {
+    return "regions";
+  }
+  std::string
+  get_field_name_for_serialization (const ScaleObject *) const override
+  {
+    return "scales";
+  }
+
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
   bool initialize ();
   void set_playback_caches () override;
-
-public:
-  ArrangerObjectRegistry &object_registry_;
-
-  /**
-   * @note These must always be sorted by Position.
-   */
-  std::vector<ArrangerObjectUuidReference> scales_;
-
-  /** Snapshots used during playback TODO unimplemented. */
-  std::vector<std::unique_ptr<ScaleObject>> scale_snapshots_;
 };
 
 /**

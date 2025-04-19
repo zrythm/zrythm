@@ -30,7 +30,7 @@ AutomationPoint::AutomationPoint (
     : ArrangerObject (Type::AutomationPoint), QObject (parent),
       RegionOwnedObject (obj_registry)
 {
-  ArrangerObject::parent_base_qproperties (*this);
+  ArrangerObject::set_parent_on_base_qproperties (*this);
 }
 
 void

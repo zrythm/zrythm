@@ -317,10 +317,8 @@ Transport::prepare_audio_regions_for_stretch (
           for (auto &lane_var : track->lanes_)
             {
               auto * lane = std::get<AudioLane *> (lane_var);
-              for (
-                const auto &region_var : lane->region_list_->get_region_vars ())
+              for (auto * region : lane->get_children_view ())
                 {
-                  auto * region = std::get<AudioRegion *> (region_var);
                   region->before_length_ = region->get_length_in_ticks ();
                 }
             }
@@ -372,10 +370,8 @@ Transport::stretch_regions (
           for (auto &lane_var : track->lanes_)
             {
               auto * lane = std::get<AudioLane *> (lane_var);
-              for (
-                const auto &region_var : lane->region_list_->get_region_vars ())
+              for (auto * region : lane->get_children_view ())
                 {
-                  auto * region = std::get<AudioRegion *> (region_var);
                   /* don't stretch regions with musical mode off */
                   if (!region->get_musical_mode ())
                     continue;
@@ -586,18 +582,15 @@ Transport::move_playhead (
             {
               using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
               auto lane = std::get<TrackLaneT *> (lane_var);
-              for (
-                const auto &region_var : lane->region_list_->get_region_vars ())
+              for (auto * region : lane->get_children_view ())
                 {
-                  auto * region =
-                    std::get<typename TrackLaneT::RegionT *> (region_var);
                   if (!region->is_hit (playhead_pos_->frames_, true))
                     continue;
 
                   if constexpr (
                     std::is_same_v<typename TrackLaneT::RegionT, MidiRegion>)
                     {
-                      for (auto * midi_note : region->get_object_ptrs_view ())
+                      for (auto * midi_note : region->get_children_view ())
                         {
                           if (midi_note->is_hit (playhead_pos_->frames_))
                             {
@@ -715,7 +708,7 @@ Transport::goto_prev_marker ()
 {
   /* gather all markers */
   std::vector<Position> markers;
-  for (auto * marker : P_MARKER_TRACK->get_markers ())
+  for (auto * marker : P_MARKER_TRACK->get_children_view ())
     {
       markers.push_back (*marker->pos_);
     }
@@ -752,7 +745,7 @@ Transport::goto_next_marker ()
 {
   /* gather all markers */
   std::vector<Position> markers;
-  for (auto * marker : P_MARKER_TRACK->get_markers ())
+  for (auto * marker : P_MARKER_TRACK->get_children_view ())
     {
       markers.push_back (*marker->pos_);
     }

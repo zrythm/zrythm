@@ -15,7 +15,6 @@
 class Marker;
 class TempoTrack;
 class Project;
-TYPEDEF_STRUCT_UNDERSCORED (ArrangerWidget);
 
 /**
  * @addtogroup dsp

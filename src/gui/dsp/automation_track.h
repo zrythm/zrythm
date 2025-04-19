@@ -8,9 +8,9 @@
 
 #include "dsp/position.h"
 #include "gui/dsp/arranger_object_all.h"
+#include "gui/dsp/arranger_object_owner.h"
 #include "gui/dsp/automation_point.h"
 #include "gui/dsp/port.h"
-#include "gui/dsp/region_owner.h"
 
 #include <QtQmlIntegration>
 
@@ -44,7 +44,7 @@ DEFINE_ENUM_FORMATTER (
 class AutomationTrack final
     : public QObject,
       public ICloneable<AutomationTrack>,
-      public RegionOwner<AutomationRegion>,
+      public ArrangerObjectOwner<AutomationRegion>,
       public zrythm::utils::serialization::ISerializable<AutomationTrack>
 {
   Q_OBJECT
@@ -57,7 +57,10 @@ class AutomationTrack final
   Q_PROPERTY (
     int recordMode READ getRecordMode WRITE setRecordMode NOTIFY
       recordModeChanged)
-  DEFINE_REGION_OWNER_QML_PROPERTIES (AutomationTrack)
+  DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
+    AutomationTrack,
+    regions,
+    AutomationRegion)
 
 public:
   using Position = dsp::Position;
@@ -80,8 +83,6 @@ public:
     ArrangerObjectRegistry  &obj_registry,
     TrackGetter              track_getter,
     const ControlPort::Uuid &port_id);
-
-  using RegionOwnerImplType = RegionOwner<AutomationRegion>;
 
 public:
   // ========================================================================
@@ -111,9 +112,6 @@ public:
   void init_loaded ();
 
   bool validate () const;
-
-  bool is_in_active_project () const override;
-  bool is_auditioner () const override;
 
   /**
    * @note This is expensive and should only be used
@@ -263,9 +261,17 @@ public:
 
   void set_caches (CacheType types);
 
-  bool contains_automation () const { return !region_list_->regions_.empty (); }
+  bool contains_automation () const { return !get_children_vector ().empty (); }
 
   bool verify () const;
+
+  Location get_location (const AutomationRegion &) const override;
+
+  std::string
+  get_field_name_for_serialization (const AutomationRegion *) const override
+  {
+    return "regions";
+  }
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 

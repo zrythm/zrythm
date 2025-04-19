@@ -200,19 +200,6 @@ public:
   void paste_to_pos (const Position &pos, bool undoable);
 
   /**
-   * Adds a clone of each object in the selection to the given region (if
-   * applicable).
-   */
-  void add_to_region (Region &region);
-
-  /**
-   * Moves the selections by the given amount of ticks.
-   *
-   * @param ticks Ticks to add.
-   */
-  void add_ticks (double ticks);
-
-  /**
    * Code to run after deserializing.
    */
   void post_deserialize ();
@@ -303,6 +290,29 @@ public:
   };
 
   bool can_split_at_pos (Position pos) const;
+
+  /**
+   * Returns the region at the given position, or NULL.
+   *
+   * @param include_region_end Whether to include the region's end in the
+   * calculation.
+   */
+  std::optional<VariantType>
+  get_bounded_object_at_pos (dsp::Position pos, bool include_region_end = false)
+    const
+  {
+    auto view =
+      *this
+      | std::views::filter (
+        Base::template derived_from_type_projection<BoundedObject>);
+    auto it = std::ranges::find_if (view, [&] (const auto &r_var) {
+      auto r =
+        Base::template derived_from_type_transformation<BoundedObject> (r_var);
+      return *r->pos_ <= pos
+             && r->end_pos_->frames_ + (include_region_end ? 1 : 0) > pos.frames_;
+    });
+    return it != view.end () ? std::make_optional (*it) : std::nullopt;
+  }
 
   /**
    * Sets the listen status of notes on and off based on changes in the previous
@@ -418,7 +428,7 @@ public:
               {
                 /* remove objects starting after the end */
                 auto children =
-                  get_derived_object (new_object1_ref)->get_objects_vector ();
+                  get_derived_object (new_object1_ref)->get_children_vector ();
                 for (const auto &child_id : children)
                   {
                     const auto &child = child_id.get_object ();

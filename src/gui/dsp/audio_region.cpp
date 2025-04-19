@@ -35,7 +35,7 @@ AudioRegion::AudioRegion (
     : ArrangerObject (Type::AudioRegion), Region (obj_registry),
       QObject (parent), clip_resolver_ (clip_resolver)
 {
-  ArrangerObject::parent_base_qproperties (*this);
+  ArrangerObject::set_parent_on_base_qproperties (*this);
   BoundedObject::parent_base_qproperties (*this);
   init_colored_object ();
 }

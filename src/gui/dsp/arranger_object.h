@@ -153,11 +153,6 @@ public:
   using ArrangerObjectPtr = ArrangerObject *;
 
   /**
-   * @brief Generate @ref transient_.
-   */
-  void generate_transient ();
-
-  /**
    * @brief Returns whether the object is hovered in the corresponding arranger.
    *
    * @return true
@@ -217,7 +212,7 @@ public:
            && (range_end_inclusive ? (pos_->frames_ <= global_frames_end) : (pos_->frames_ < global_frames_end));
   }
 
-  void parent_base_qproperties (QObject &derived);
+  void set_parent_on_base_qproperties (QObject &derived);
 
   /**
    * @brief Prints the given object to a string.

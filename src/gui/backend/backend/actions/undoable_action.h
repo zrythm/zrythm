@@ -189,7 +189,7 @@ private:
 
 public:
   /** Undoable action type. */
-  Type undoable_action_type_ = (Type) 0;
+  Type undoable_action_type_{};
 
   /** A snapshot of AudioEngine.frames_per_tick when the action is executed. */
   double frames_per_tick_ = 0.0;
@@ -201,13 +201,6 @@ public:
    * loaded under a new samplerate.
    */
   sample_rate_t sample_rate_ = 0;
-
-  /**
-   * Index in the stack.
-   *
-   * Used during deserialization.
-   */
-  // int stack_idx_ = 0;
 
   /**
    * Number of actions to perform.

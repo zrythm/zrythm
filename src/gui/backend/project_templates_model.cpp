@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/project_manager.h"
 #include "project_templates_model.h"
@@ -22,9 +24,8 @@ ProjectTemplatesModel::get_templates ()
   ret.emplace_back (std::make_unique<ProjectInfo> ());
   ret.back ()->setName (tr ("Blank Project"));
 
-  std::transform (
-    list.begin (), list.end (), std::back_inserter (ret),
-    [] (const auto &pathstr) {
+  std::ranges::transform (
+    list, std::back_inserter (ret), [] (const auto &pathstr) {
       return std::make_unique<ProjectInfo> (pathstr);
     });
 

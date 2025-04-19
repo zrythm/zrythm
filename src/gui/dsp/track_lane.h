@@ -4,8 +4,8 @@
 #pragma once
 
 #include "gui/dsp/arranger_object_all.h"
+#include "gui/dsp/arranger_object_owner.h"
 #include "gui/dsp/midi_event.h"
-#include "gui/dsp/region_owner.h"
 
 using MIDI_FILE = void;
 class MidiLane;
@@ -20,8 +20,8 @@ template <typename TrackLaneT> class LanedTrackImpl;
  * @{
  */
 
-#define DEFINE_TRACK_LANE_QML_PROPERTIES(ClassType) \
-  DEFINE_REGION_OWNER_QML_PROPERTIES (ClassType) \
+#define DEFINE_TRACK_LANE_QML_PROPERTIES(ClassType, RegionType) \
+  DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (ClassType, regions, RegionType) \
 public: \
   /* ================================================================ */ \
   /* name */ \
@@ -130,7 +130,7 @@ public:
 template <typename RegionT>
 class TrackLaneImpl
     : public TrackLane,
-      public RegionOwner<RegionT>,
+      public ArrangerObjectOwner<RegionT>,
       public zrythm::utils::serialization::ISerializable<TrackLaneImpl<RegionT>>
 {
 public:
@@ -157,9 +157,9 @@ public:
    */
   TrackLaneImpl (LanedTrackT * track) : track_ (track) { }
 
-  bool is_in_active_project () const override;
+  bool is_in_active_project () const;
 
-  bool is_auditioner () const override;
+  bool is_auditioner () const;
 
   void init_loaded (LanedTrackT * track);
 
@@ -251,6 +251,17 @@ public:
    */
   std::unique_ptr<TrackLaneT> gen_snapshot () const;
 
+  ArrangerObjectOwner<RegionT>::Location
+  get_location (const RegionT &) const override
+  {
+    return { .track_id_ = track_->get_uuid (), .owner_ = get_index_in_track () };
+  }
+
+  std::string get_field_name_for_serialization (const RegionT *) const override
+  {
+    return "regions";
+  }
+
 protected:
   void
   copy_members_from (const TrackLaneImpl &other, ObjectCloneType clone_type);
@@ -258,7 +269,9 @@ protected:
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
 private:
-  void after_remove_region () final;
+  // TODO make sure this gets called when regions are removed from
+  // ArrangerObjectOwner
+  void after_remove_region ();
 
 public:
   /** Owner track. */

@@ -161,9 +161,9 @@ AutomationTracklist::add_automation_track (AutomationTrack &at)
   port.id_->set_track_id (track_.get_uuid ());
 
   /* move automation track regions */
-  for (const auto &region_var : at_ref->region_list_->get_region_vars ())
+  for (auto * region : at_ref->get_children_view ())
     {
-      std::get<AutomationRegion *> (region_var)->set_automation_track (*at_ref);
+      region->set_automation_track (*at_ref);
     }
 
   return at_ref;
@@ -274,7 +274,13 @@ AutomationTracklist::unselect_all ()
 {
   for (auto &at : ats_)
     {
-      at->unselect_all ();
+      for (auto * child : at->get_children_view ())
+        {
+          auto sel_mgr =
+            ArrangerObjectFactory::get_instance ()
+              ->get_selection_manager_for_object (*child);
+          sel_mgr.remove_from_selection (child->get_uuid ());
+        }
     }
 }
 
@@ -283,7 +289,7 @@ AutomationTracklist::clear_objects ()
 {
   for (auto &at : ats_)
     {
-      at->clear_regions ();
+      at->clear_objects ();
     }
 }
 
@@ -456,7 +462,7 @@ AutomationTracklist::
     {
       /* this needs to be called before removing the automation track in case
        * the region is referenced elsewhere (e.g., clip editor) */
-      at.clear_regions ();
+      at.clear_objects ();
     }
 
   auto it = std::ranges::find_if (ats_, [&at] (const auto &ptr) {
@@ -477,9 +483,8 @@ AutomationTracklist::
     {
       auto &cur_at = *cur_it;
       cur_at->index_ = std::distance (ats_.begin (), cur_it);
-      for (auto region_var : cur_at->region_list_->get_region_vars ())
+      for (auto * region : cur_at->get_children_view ())
         {
-          auto * region = std::get<AutomationRegion *> (region_var);
           region->set_automation_track (*cur_at);
         }
     }
@@ -526,10 +531,7 @@ AutomationTracklist::append_objects (std::vector<ArrangerObject *> objects) cons
 {
   for (auto &at : ats_)
     {
-      for (const auto &r : at->region_list_->get_region_vars ())
-        {
-          objects.push_back (std::get<AutomationRegion *> (r));
-        }
+      std::ranges::copy (at->get_children_view (), std::back_inserter (objects));
     }
 }
 
@@ -578,10 +580,11 @@ AutomationTracklist::validate () const
 int
 AutomationTracklist::get_num_regions () const
 {
-  return std::accumulate (
-    ats_.begin (), ats_.end (), 0, [] (int sum, const auto &at) {
-      return sum + at->region_list_->regions_.size ();
-    });
+  return std::ranges::fold_left (
+    ats_ | std::views::transform ([] (const auto &at) {
+      return at->get_children_vector ().size ();
+    }),
+    0, std::plus{});
 }
 
 void
@@ -623,12 +626,12 @@ AutomationTracklist::print_regions () const
 
   for (const auto &[index, at] : std::views::enumerate (ats_))
     {
-      if (at->region_list_->regions_.empty ())
+      if (at->get_children_vector ().empty ())
         continue;
 
       str += fmt::format (
         "\n  [{}] port '{}': {} regions", index, at->getLabel (),
-        at->region_list_->regions_.size ());
+        at->get_children_vector ().size ());
     }
 
   z_info (str);

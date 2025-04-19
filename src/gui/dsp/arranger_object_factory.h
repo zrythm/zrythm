@@ -400,7 +400,7 @@ private:
         builder.with_chord_descriptor (std::get<int> (value));
       }
     auto obj_ref = builder.build ();
-    region.append_object (obj_ref);
+    region.add_object (obj_ref);
     auto obj = std::get<ChildT *> (obj_ref.get_object ());
     {
       auto sel_mgr = get_selection_manager_for_object (*obj);
@@ -441,7 +441,7 @@ public:
         .with_start_ticks (start_ticks)
         .with_scale (scale)
         .build ();
-    chord_track.add_scale (obj_ref);
+    chord_track.ArrangerObjectOwner<ScaleObject>::add_object (obj_ref);
     return std::get<ScaleObject *> (obj_ref.get_object ());
   }
 
@@ -458,7 +458,7 @@ public:
             return markerTrack->validate_marker_name (name);
           })
         .build ();
-    markerTrack->add_marker (marker_ref);
+    markerTrack->add_object (marker_ref);
     return std::get<Marker *> (marker_ref.get_object ());
   }
 

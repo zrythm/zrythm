@@ -121,11 +121,11 @@ ProcessableTrack::fill_events_common (
     [&] (auto &&track) {
       using TrackT = base_type<decltype (track)>;
 
-      auto process_single_region = [&] (const auto &r) {
+      auto process_single_region = [&] (const auto * r) {
         using RegionT = base_type<decltype (r)>;
 
         /* skip region if muted */
-        if (r.get_muted (true))
+        if (r->get_muted (true))
           {
             return;
           }
@@ -133,14 +133,14 @@ ProcessableTrack::fill_events_common (
         /* skip if in bounce mode and the region should not be bounced */
         if (
           AUDIO_ENGINE->bounce_mode_ != BounceMode::BOUNCE_OFF
-          && (!r.bounce_ || !bounce_))
+          && (!r->bounce_ || !bounce_))
           {
             return;
           }
 
         /* skip if region is not hit (inclusive of its last point) */
         if (
-          !r.is_hit_by_range (
+          !r->is_hit_by_range (
             (signed_frame_t) time_nfo.g_start_frame_w_offset_,
             (signed_frame_t) (midi_events ? g_end_frames : (g_end_frames - 1)),
             true))
@@ -149,7 +149,8 @@ ProcessableTrack::fill_events_common (
           }
 
         signed_frame_t num_frames_to_process = std::min (
-          r.end_pos_->frames_ - (signed_frame_t) time_nfo.g_start_frame_w_offset_,
+          r->end_pos_->frames_
+            - (signed_frame_t) time_nfo.g_start_frame_w_offset_,
           (signed_frame_t) time_nfo.nframes_);
         nframes_t frames_processed = 0;
 
@@ -164,7 +165,7 @@ ProcessableTrack::fill_events_common (
 
             bool           is_loop_end;
             signed_frame_t cur_num_frames_till_next_r_loop_or_end;
-            r.get_frames_till_next_loop_or_end (
+            r->get_frames_till_next_loop_or_end (
               (signed_frame_t) cur_g_start_frame_w_offset,
               &cur_num_frames_till_next_r_loop_or_end, &is_loop_end);
 
@@ -182,7 +183,7 @@ ProcessableTrack::fill_events_common (
             const bool is_region_end =
               (signed_frame_t) time_nfo.g_start_frame_w_offset_
                 + num_frames_to_process
-              == r.end_pos_->frames_;
+              == r->end_pos_->frames_;
 
             const bool is_transport_end =
               TRANSPORT->is_looping ()
@@ -214,7 +215,7 @@ ProcessableTrack::fill_events_common (
             if constexpr (RegionTypeWithMidiEvents<RegionT>)
               {
                 z_return_if_fail (midi_events);
-                r.fill_midi_events (
+                r->fill_midi_events (
                   nfo, need_note_off,
                   !is_transport_end && (is_loop_end || is_region_end),
                   *midi_events);
@@ -222,11 +223,11 @@ ProcessableTrack::fill_events_common (
             else if constexpr (std::is_same_v<RegionT, AudioRegion>)
               {
                 z_return_if_fail (stereo_ports);
-                r.fill_stereo_ports (nfo, *stereo_ports);
+                r->fill_stereo_ports (nfo, *stereo_ports);
               }
             else
               {
-                [[maybe_unused]] typedef typename RegionT::something_made_up X;
+                DEBUG_TEMPLATE_PARAM (RegionT)
               }
 
             frames_processed += cur_num_frames_till_next_r_loop_or_end;
@@ -240,17 +241,16 @@ ProcessableTrack::fill_events_common (
         {
           if (use_caches)
             {
-              for (auto &region : track->region_snapshots_)
-                {
-                  process_single_region (*region);
-                }
+              std::ranges::for_each (
+                track->ArrangerObjectOwner<
+                  ChordRegion>::get_children_snapshots_view (),
+                process_single_region);
             }
           else
             {
-              for (const auto &region : track->region_list_->get_region_vars ())
-                {
-                  process_single_region (*std::get<ChordRegion *> (region));
-                }
+              std::ranges::for_each (
+                track->ArrangerObjectOwner<ChordRegion>::get_children_view (),
+                process_single_region);
             }
         }
       else if constexpr (std::derived_from<TrackT, LanedTrack>)
@@ -259,10 +259,8 @@ ProcessableTrack::fill_events_common (
             {
               for (auto &lane : track->lane_snapshots_)
                 {
-                  for (auto &region : lane->region_snapshots_)
-                    {
-                      process_single_region (*region);
-                    }
+                  std::ranges::for_each (
+                    lane->get_children_snapshots_view (), process_single_region);
                 }
             }
           else
@@ -271,12 +269,8 @@ ProcessableTrack::fill_events_common (
                 {
                   using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
                   auto lane = std::get<TrackLaneT *> (lane_var);
-                  for (
-                    const auto &region : lane->region_list_->get_region_vars ())
-                    {
-                      process_single_region (
-                        *std::get<typename TrackLaneT::RegionT *> (region));
-                    }
+                  std::ranges::for_each (
+                    lane->get_children_view (), process_single_region);
                 }
             }
         }

@@ -11,7 +11,7 @@ ChordRegion::ChordRegion (ArrangerObjectRegistry &obj_registry, QObject * parent
     : ArrangerObject (Type::ChordRegion), Region (obj_registry),
       QAbstractListModel (parent)
 {
-  ArrangerObject::parent_base_qproperties (*this);
+  ArrangerObject::set_parent_on_base_qproperties (*this);
   BoundedObject::parent_base_qproperties (*this);
   init_colored_object ();
 }
@@ -21,7 +21,7 @@ ChordRegion::init_loaded ()
 {
   ArrangerObject::init_loaded_base ();
   NamedObject::init_loaded_base ();
-  for (const auto &chord : get_object_ptrs_view ())
+  for (const auto &chord : get_children_view ())
     {
       chord->init_loaded ();
     }
@@ -32,17 +32,6 @@ ChordRegion::init_after_cloning (
   const ChordRegion &other,
   ObjectCloneType    clone_type)
 {
-  // init (
-  // *other.pos_, *other.end_pos_, other.id_.track_name_hash_, 0, other.id_.idx_);
-  chord_objects_.reserve (other.chord_objects_.size ());
-// TODO
-#if 0
-  for (const auto * chord : get_object_ptrs_view ())
-    {
-      auto * new_chord = chord->clone_and_register (object_registry_);
-      chord_objects_.push_back (new_chord->get_uuid ());
-    }
-#endif
   RegionT::copy_members_from (other, clone_type);
   TimelineObject::copy_members_from (other, clone_type);
   NamedObject::copy_members_from (other, clone_type);
@@ -51,6 +40,7 @@ ChordRegion::init_after_cloning (
   BoundedObject::copy_members_from (other, clone_type);
   ColoredObject::copy_members_from (other, clone_type);
   ArrangerObject::copy_members_from (other, clone_type);
+  ArrangerObjectOwner::copy_members_from (other, clone_type);
 }
 
 // ========================================================================
@@ -67,7 +57,7 @@ ChordRegion::roleNames () const
 int
 ChordRegion::rowCount (const QModelIndex &parent) const
 {
-  return chord_objects_.size ();
+  return get_children_vector ().size ();
 }
 
 QVariant
@@ -75,13 +65,13 @@ ChordRegion::data (const QModelIndex &index, int role) const
 {
   if (
     index.row () < 0
-    || index.row () >= static_cast<int> (chord_objects_.size ()))
+    || index.row () >= static_cast<int> (get_children_vector ().size ()))
     return {};
 
   if (role == ChordObjectPtrRole)
     {
       return QVariant::fromValue<ChordObject *> (
-        get_object_ptrs_view ()[index.row ()]);
+        get_children_view ()[index.row ()]);
     }
   return {};
 }
@@ -93,7 +83,7 @@ ChordRegion::validate (bool is_project, double frames_per_tick) const
 {
 #if 0
   int idx = 0;
-  for (const auto &chord : get_object_ptrs_view ())
+  for (const auto &chord : get_children_view ())
     {
       z_return_val_if_fail (chord->index_ == idx++, false);
     }

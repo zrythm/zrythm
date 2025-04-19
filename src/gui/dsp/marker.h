@@ -55,14 +55,8 @@ public:
     NameValidator           name_validator,
     QObject *               parent = nullptr);
 
-  // Marker (const std::string &name, QObject * parent = nullptr);
-
   bool is_start () const { return marker_type_ == Type::Start; }
   bool is_end () const { return marker_type_ == Type::End; }
-
-  void set_marker_track_index (int index) { marker_track_index_ = index; }
-
-  // static Marker * find_by_name (const std::string &name);
 
   bool is_deletable () const override
   {
@@ -90,9 +84,6 @@ public:
 public:
   /** Marker type. */
   Type marker_type_ = Type::Custom;
-
-  /** Index in the marker track. */
-  int marker_track_index_ = -1;
 };
 
 inline bool
@@ -104,12 +95,11 @@ operator== (const Marker &lhs, const Marker &rhs)
               == static_cast<const NamedObject &> (rhs)
          && static_cast<const ArrangerObject &> (lhs)
               == static_cast<const ArrangerObject &> (rhs)
-         && lhs.marker_type_ == rhs.marker_type_
-         && lhs.marker_track_index_ == rhs.marker_track_index_;
+         && lhs.marker_type_ == rhs.marker_type_;
 }
 
 DEFINE_OBJECT_FORMATTER (Marker, Marker, [] (const Marker &m) {
-  return fmt::format ("Marker[marker_track_index_: {}]", m.marker_track_index_);
+  return fmt::format ("Marker[name: {}]", m.get_name ());
 })
 
 /**

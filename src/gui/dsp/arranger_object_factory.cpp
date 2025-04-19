@@ -35,7 +35,7 @@ ArrangerObjectFactory::addMidiRegionFromChordDescriptor (
               .with_start_ticks (0)
               .with_end_ticks (mn_len_ticks)
               .build ();
-          mr->append_object (mn);
+          mr->add_object (mn);
         }
     }
 

@@ -16,7 +16,7 @@ AutomationRegion::AutomationRegion (
     : ArrangerObject (Type::AutomationRegion), Region (obj_registry),
       QAbstractListModel (parent)
 {
-  ArrangerObject::parent_base_qproperties (*this);
+  ArrangerObject::set_parent_on_base_qproperties (*this);
   BoundedObject::parent_base_qproperties (*this);
   init_colored_object ();
 }
@@ -27,7 +27,7 @@ AutomationRegion::init_loaded ()
   ArrangerObject::init_loaded_base ();
   TimelineObject::init_loaded_base ();
   NamedObject::init_loaded_base ();
-  for (auto * ap : get_object_ptrs_view ())
+  for (auto * ap : get_children_view ())
     {
       ap->init_loaded ();
     }
@@ -47,18 +47,20 @@ AutomationRegion::roleNames () const
 int
 AutomationRegion::rowCount (const QModelIndex &parent) const
 {
-  return aps_.size ();
+  return get_children_vector ().size ();
 }
 
 QVariant
 AutomationRegion::data (const QModelIndex &index, int role) const
 {
-  if (index.row () < 0 || index.row () >= static_cast<int> (aps_.size ()))
+  if (
+    index.row () < 0
+    || index.row () >= static_cast<int> (get_children_vector ().size ()))
     return {};
 
   if (role == AutomationPointPtrRole)
     {
-      return QVariant::fromValue (aps_.at (index.row ()));
+      return QVariant::fromValue (get_children_vector ().at (index.row ()));
     }
   return {};
 }
@@ -68,7 +70,7 @@ AutomationRegion::data (const QModelIndex &index, int role) const
 void
 AutomationRegion::print_automation () const
 {
-  for (const auto &[index, ap] : std::views::enumerate (get_object_ptrs_view ()))
+  for (const auto &[index, ap] : std::views::enumerate (get_children_view ()))
     {
       z_debug ("[{}] {} : {}", index, ap->fvalue_, *ap->pos_);
     }
@@ -133,14 +135,15 @@ AutomationRegion::get_muted (bool check_parent) const
 void
 AutomationRegion::force_sort ()
 {
-  std::ranges::sort (aps_, [&] (const auto &a_id, const auto &b_id) {
-    const auto a = std::get<AutomationPoint *> (a_id.get_object ());
-    const auto b = std::get<AutomationPoint *> (b_id.get_object ());
-    return *a < *b;
-  });
+  std::ranges::sort (
+    get_children_vector (), [&] (const auto &a_id, const auto &b_id) {
+      const auto a = std::get<AutomationPoint *> (a_id.get_object ());
+      const auto b = std::get<AutomationPoint *> (b_id.get_object ());
+      return *a < *b;
+    });
 
   /* refresh indices */
-  for (const auto &ap : get_object_ptrs_view ())
+  for (const auto &ap : get_children_view ())
     {
       ap->set_region_and_index (*this);
     }
@@ -149,11 +152,12 @@ AutomationRegion::force_sort ()
 AutomationPoint *
 AutomationRegion::get_prev_ap (const AutomationPoint &ap) const
 {
-  auto it =
-    std::ranges::find (aps_, ap.get_uuid (), &ArrangerObjectUuidReference::id);
+  auto it = std::ranges::find (
+    get_children_vector (), ap.get_uuid (), &ArrangerObjectUuidReference::id);
 
   // if found and not the first element
-  if (it != aps_.end () && it != aps_.begin ())
+  if (
+    it != get_children_vector ().end () && it != get_children_vector ().begin ())
     {
       return std::get<AutomationPoint *> (
         (*std::ranges::prev (it)).get_object ());
@@ -176,7 +180,7 @@ AutomationRegion::get_next_ap (
         ;
       AutomationPoint * next_ap = nullptr;
       const int         loop_times = check_transients ? 2 : 1;
-      for (auto * cur_ap_outer : get_object_ptrs_view ())
+      for (auto * cur_ap_outer : get_children_view ())
         {
           for (const auto j : std::views::iota (0, loop_times))
             {
@@ -206,11 +210,13 @@ AutomationRegion::get_next_ap (
       return next_ap;
     }
 
-  auto it =
-    std::ranges::find (aps_, ap.get_uuid (), &ArrangerObjectUuidReference::id);
+  auto it = std::ranges::find (
+    get_children_vector (), ap.get_uuid (), &ArrangerObjectUuidReference::id);
 
   // if found and not the last element
-  if (it != aps_.end () && std::ranges::next (it) != aps_.end ())
+  if (
+    it != get_children_vector ().end ()
+    && std::ranges::next (it) != get_children_vector ().end ())
     {
 
       return std::get<AutomationPoint *> (
@@ -230,7 +236,7 @@ AutomationRegion::get_aps_since_last_recorded (
   if ((last_recorded_ap_ == nullptr) || pos <= *last_recorded_ap_->pos_)
     return;
 
-  for (auto * ap : get_object_ptrs_view ())
+  for (auto * ap : get_children_view ())
     {
       if (ap->pos_ > last_recorded_ap_->pos_ && *ap->pos_ <= pos)
         {
@@ -274,16 +280,7 @@ AutomationRegion::init_after_cloning (
   const AutomationRegion &other,
   ObjectCloneType         clone_type)
 {
-  aps_.reserve (other.aps_.size ());
-  // TODO
-#if 0
-  for (const auto &ap : other.get_object_ptrs_view ())
-    {
-      const auto * clone =
-        ap->clone_and_register (get_arranger_object_registry ());
-      aps_.push_back (clone->get_uuid ());
-    }
-#endif
+
   RegionImpl::copy_members_from (other, clone_type);
   TimelineObject::copy_members_from (other, clone_type);
   NamedObject::copy_members_from (other, clone_type);
@@ -292,6 +289,7 @@ AutomationRegion::init_after_cloning (
   BoundedObject::copy_members_from (other, clone_type);
   ColoredObject::copy_members_from (other, clone_type);
   ArrangerObject::copy_members_from (other, clone_type);
+  ArrangerObjectOwner::copy_members_from (other, clone_type);
   force_sort ();
 }
 
@@ -299,7 +297,7 @@ bool
 AutomationRegion::validate (bool is_project, double frames_per_tick) const
 {
 #if 0
-  for (const auto &[index, ap] : std::views::enumerate (get_object_ptrs_view ()))
+  for (const auto &[index, ap] : std::views::enumerate (get_children_view ()))
     {
       z_return_val_if_fail (ap->index_ == index, false);
     }

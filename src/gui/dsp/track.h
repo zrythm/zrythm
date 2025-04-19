@@ -210,19 +210,6 @@ public: \
   } \
 \
   /* ================================================================ */ \
-  /* hasChannel */ \
-  /* ================================================================ */ \
-  Q_PROPERTY (bool isRegionOwner READ getIsRegionOwner CONSTANT) \
-  bool getIsRegionOwner () const \
-  { \
-    if constexpr (DerivedFromTemplatedBase<ClassType, RegionOwner>) \
-      { \
-        return true; \
-      } \
-    return false; \
-  } \
-\
-  /* ================================================================ */ \
   /* isAutomatable */ \
   /* ================================================================ */ \
   Q_PROPERTY (bool isAutomatable READ getIsAutomatable CONSTANT) \
@@ -757,11 +744,11 @@ public:
           self.lanes_.at (*lane_pos));
         if (idx.has_value ())
           {
-            lane->insert_region (region_ref, *idx);
+            lane->insert_object (region_ref, *idx);
           }
         else
           {
-            lane->add_region (region_ref);
+            lane->add_object (region_ref);
           }
       }
     else if constexpr (std::is_same_v<RegionT, AutomationRegion>)
@@ -769,11 +756,11 @@ public:
         assert (at != nullptr);
         if (idx.has_value ())
           {
-            at->insert_region (region_ref, *idx);
+            at->insert_object (region_ref, *idx);
           }
         else
           {
-            at->add_region (region_ref);
+            at->add_object (region_ref);
           }
       }
     else if constexpr (
@@ -781,11 +768,12 @@ public:
       {
         if (idx.has_value ())
           {
-            self.RegionOwner<ChordRegion>::insert_region (region_ref, *idx);
+            self.ArrangerObjectOwner<ChordRegion>::insert_object (
+              region_ref, *idx);
           }
         else
           {
-            self.RegionOwner<ChordRegion>::add_region (region_ref);
+            self.ArrangerObjectOwner<ChordRegion>::add_object (region_ref);
           }
       }
 
@@ -1076,21 +1064,18 @@ public:
               {
                 using LaneT = SelfT::TrackLaneType;
                 auto lane = std::get<LaneT *> (lane_var);
-                for (
-                  const auto &region_var :
-                  lane->region_list_->get_region_vars ())
+                for (auto * region : lane->get_children_view ())
                   {
-                    auto region =
-                      std::get<typename LaneT::RegionTPtr> (region_var);
                     region->bounce_ = bounce;
                   }
               }
           }
 
         if constexpr (std::is_same_v<SelfT, ChordTrack>)
-          for (const auto &region_var : self.region_list_->get_region_vars ())
+          for (
+            auto * region :
+            self.ArrangerObjectOwner<ChordRegion>::get_children_view ())
             {
-              auto region = std::get<ChordRegion *> (region_var);
               region->bounce_ = bounce;
             }
       }

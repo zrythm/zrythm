@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "gui/dsp/arranger_object_owner.h"
 #include "gui/dsp/audio_bus_track.h"
 #include "gui/dsp/audio_group_track.h"
 #include "gui/dsp/audio_region.h"
@@ -17,7 +18,6 @@
 #include "gui/dsp/midi_region.h"
 #include "gui/dsp/midi_track.h"
 #include "gui/dsp/modulator_track.h"
-#include "gui/dsp/region_owner.h"
 #include "gui/dsp/tempo_track.h"
 #include "gui/dsp/track.h"
 #include "gui/dsp/track_lane.h"
@@ -56,38 +56,11 @@ LanedTrackImpl<AudioLane>::define_base_fields (const Context &);
 
 template <typename RegionT>
 void
-RegionOwner<RegionT>::define_base_fields (
-  const utils::serialization::ISerializableBase::Context &ctx)
-{
-  using T = utils::serialization::ISerializable<RegionOwner<RegionT>>;
-  T::serialize_fields (ctx, T::make_field ("regionList", region_list_));
-}
-
-void
-RegionList::define_fields (const ISerializableBase::Context &ctx)
-{
-  serialize_fields (ctx, make_field ("regions", regions_));
-}
-
-template void
-RegionOwner<MidiRegion>::define_base_fields (const ISerializableBase::Context &);
-template void
-RegionOwner<AudioRegion>::define_base_fields (
-  const ISerializableBase::Context &);
-template void
-RegionOwner<AutomationRegion>::define_base_fields (
-  const ISerializableBase::Context &);
-template void
-RegionOwner<ChordRegion>::define_base_fields (
-  const ISerializableBase::Context &);
-
-template <typename RegionT>
-void
 TrackLaneImpl<RegionT>::define_base_fields (
   const utils::serialization::ISerializableBase::Context &ctx)
 {
   using T = utils::serialization::ISerializable<TrackLaneImpl<RegionT>>;
-  T::template call_all_base_define_fields<RegionOwner<RegionT>> (ctx);
+  T::template call_all_base_define_fields<ArrangerObjectOwner<RegionT>> (ctx);
   T::serialize_fields (
     ctx, T::make_field ("name", name_), T::make_field ("height", height_),
     T::make_field ("mute", mute_), T::make_field ("solo", solo_),
@@ -126,10 +99,9 @@ void
 AutomationTrack::define_fields (const Context &ctx)
 {
   using T = ISerializable<AutomationTrack>;
-  T::call_all_base_define_fields<RegionOwnerImplType> (ctx);
+  T::call_all_base_define_fields<ArrangerObjectOwner> (ctx);
   T::serialize_fields (
     ctx, T::make_field ("index", index_), T::make_field ("portId", port_id_),
-    T::make_field ("regionList", region_list_),
     T::make_field ("created", created_),
     T::make_field ("automationMode", automation_mode_),
     T::make_field ("recordMode", record_mode_),
@@ -197,8 +169,7 @@ void
 MarkerTrack::define_fields (const Context &ctx)
 {
   using T = ISerializable<MarkerTrack>;
-  T::call_all_base_define_fields<Track> (ctx);
-  T::serialize_fields (ctx, T::make_field ("markers", markers_));
+  T::call_all_base_define_fields<Track, ArrangerObjectOwner> (ctx);
 }
 
 void
@@ -300,8 +271,7 @@ ChordTrack::define_fields (const Context &ctx)
   using T = ISerializable<ChordTrack>;
   T::call_all_base_define_fields<
     Track, ProcessableTrack, AutomatableTrack, ChannelTrack, RecordableTrack,
-    RegionOwner<ChordRegion>> (ctx);
-  T::serialize_fields (ctx, T::make_field ("scaleObjects", scales_));
+    ArrangerObjectOwner<ChordRegion>, ArrangerObjectOwner<ScaleObject>> (ctx);
 }
 
 void

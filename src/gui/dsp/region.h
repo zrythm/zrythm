@@ -28,7 +28,7 @@ class ChordRegion;
 class ChordObject;
 class AudioRegion;
 class AutomationRegion;
-template <typename RegionT> class RegionOwner;
+class AutomatableTrack;
 
 /**
  * @addtogroup dsp
@@ -299,7 +299,7 @@ public:
   append_children (this RegionT &self, std::vector<RegionOwnedObject *> &children)
     requires RegionWithChildren<RegionT>
   {
-    for (auto * obj : self.get_object_ptrs_view ())
+    for (auto * obj : self.get_children_view ())
       {
         children.push_back (obj);
       }
@@ -354,73 +354,40 @@ public:
     return std::get<ChildT *> (id.get_object ());
   }
 
-  auto &get_objects_vector (this RegionT &self)
-    requires RegionWithChildren<RegionT>
+  auto * get_region_owner (this const RegionT &self)
   {
-    if constexpr (is_automation ())
+    if constexpr (is_laned ())
       {
-        return self.aps_;
+        auto &lane = self.get_lane ();
+        return std::addressof (lane);
+      }
+    else if constexpr (is_automation ())
+      {
+        return std::visit (
+          [&] (auto &&automatable_track) -> AutomationTrack * {
+            using TrackT = base_type<decltype (automatable_track)>;
+            if constexpr (std::derived_from<TrackT, AutomatableTrack>)
+              {
+                auto * at =
+                  automatable_track->get_automation_tracklist ()
+                    .get_automation_track_by_port_id (self.automatable_port_id_);
+                return at;
+              }
+            else
+              {
+                throw std::runtime_error ("Invalid track");
+              }
+          },
+          self.get_track ());
       }
     else if constexpr (is_chord ())
       {
-        return self.chord_objects_;
-      }
-    else if constexpr (is_midi ())
-      {
-        return self.midi_notes_;
-      }
-    else
-      {
-        DEBUG_TEMPLATE_PARAM (RegionT)
+        return std::get<ChordTrack *> (self.get_track ());
       }
   }
-
-  auto &get_objects_vector (this const RegionT &self)
-    requires RegionWithChildren<RegionT>
-  {
-    if constexpr (is_automation ())
-      {
-        return self.aps_;
-      }
-    else if constexpr (is_chord ())
-      {
-        return self.chord_objects_;
-      }
-    else if constexpr (is_midi ())
-      {
-        return self.midi_notes_;
-      }
-    else
-      {
-        DEBUG_TEMPLATE_PARAM (RegionT)
-      }
-  }
-
-  auto get_object_ptrs_view (this const RegionT &self)
-    requires RegionWithChildren<RegionT>
-  {
-    auto &vec_ref = self.get_objects_vector ();
-    return vec_ref | std::views::transform ([&] (const auto &id) {
-             return std::get<ChildT *> (id.get_object ());
-           });
-  }
-
-  RegionOwner<RegionT> * get_region_owner () const;
 
   auto &get_arranger_object_registry () const { return object_registry_; }
   auto &get_arranger_object_registry () { return object_registry_; }
-
-  /**
-   * Adds the given ticks to each included object.
-   */
-  void add_ticks_to_children (this RegionT &self, double ticks)
-    requires RegionWithChildren<RegionT>
-  {
-    for (auto * child : self.get_object_ptrs_view ())
-      {
-        child->move (ticks);
-      }
-  }
 
   /**
    * Removes all children objects from the region.
@@ -430,7 +397,7 @@ public:
   {
     z_debug ("removing all children from {} ", self.get_name ());
 
-    auto vec = self.get_objects_vector ();
+    auto vec = self.get_children_vector ();
     for (auto &obj : vec)
       {
         self.remove_object (obj.id());
@@ -457,7 +424,7 @@ public:
     requires RegionWithChildren<RegionT>
   {
     z_debug ("inserting {} at index {}", obj_id, index);
-    auto &objects = self.get_objects_vector ();
+    auto &objects = self.get_children_vector ();
 
     self.beginInsertRows ({}, index, index);
     // don't allow duplicates
@@ -473,13 +440,14 @@ public:
     self.endInsertRows ();
   }
 
+#if 0
   /**
    * @see insert_object().
    */
   void append_object (this RegionT &self, auto obj_id)
     requires RegionWithChildren<RegionT>
   {
-    auto &objects = self.get_objects_vector ();
+    auto &objects = self.get_children_vector ();
     self.insert_object (obj_id, objects.size ());
   }
 
@@ -492,9 +460,10 @@ public:
   void post_deserialize_children (this RegionT &self)
     requires RegionWithChildren<RegionT>
   {
-    for (auto * obj : self.get_object_ptrs_view ())
+    for (auto * obj : self.get_children_view ())
       obj->post_deserialize ();
   }
+#endif
 
   bool get_muted (bool check_parent) const override;
 
@@ -521,8 +490,7 @@ public:
    *
    * Does not free the Region or its children's resources.
    */
-  void disconnect ();
-  void disconnect_region ();
+  // void disconnect_region ();
 
   /**
    * To be called every time the identifier changes to update the
@@ -536,7 +504,7 @@ public:
     // track_id_ = id_.track_uuid_;
     if constexpr (RegionWithChildren<RegionT>)
       {
-        for (auto * obj : self.get_object_ptrs_view ())
+        for (auto * obj : self.get_children_view ())
           {
             obj->set_region_and_index (self);
           }

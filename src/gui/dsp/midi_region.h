@@ -1,9 +1,10 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_MIDI_REGION_H__
 #define __AUDIO_MIDI_REGION_H__
 
+#include "gui/dsp/arranger_object_owner.h"
 #include "gui/dsp/lane_owned_object.h"
 #include "gui/dsp/midi_note.h"
 #include "gui/dsp/region.h"
@@ -37,6 +38,7 @@ class MidiRegion final
     : public QAbstractListModel,
       public LaneOwnedObject,
       public RegionImpl<MidiRegion>,
+      public ArrangerObjectOwner<MidiNote>,
       public ICloneable<MidiRegion>,
       public zrythm::utils::serialization::ISerializable<MidiRegion>
 {
@@ -44,6 +46,7 @@ class MidiRegion final
   QML_ELEMENT
   DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (MidiRegion)
   DEFINE_REGION_QML_PROPERTIES (MidiRegion)
+  DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (MidiRegion, midiNotes, MidiNote)
 
   friend class RegionImpl<MidiRegion>;
   friend class ArrangerObjectFactory;
@@ -236,14 +239,19 @@ public:
    */
   bool is_note_export_start_pos_in_full_region (Position start_pos) const;
 
+  Location get_location (const MidiNote &) const override
+  {
+    return { .track_id_ = track_id_, .owner_ = get_uuid () };
+  }
+
+  std::string get_field_name_for_serialization (const MidiNote *) const override
+  {
+    return "midiNotes";
+  }
+
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 public:
-  /**
-   * MIDI notes.
-   */
-  std::vector<ArrangerObjectUuidReference> midi_notes_;
-
   /**
    * Unended notes started in recording with MIDI NOTE ON signal but haven't
    * received a NOTE OFF yet.

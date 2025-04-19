@@ -30,104 +30,10 @@ ArrangerObject::ArrangerObject (Type type)
 }
 
 void
-ArrangerObject::parent_base_qproperties (QObject &derived)
+ArrangerObject::set_parent_on_base_qproperties (QObject &derived)
 {
   pos_->setParent (&derived);
 }
-
-void
-ArrangerObject::generate_transient ()
-{
-// TODO
-#if 0
-  std::visit (
-    [this] (auto &&obj_ptr) {
-      using ObjT = base_type<decltype (obj_ptr)>;
-      if (obj_ptr->transient_)
-        {
-          dynamic_cast<ObjT *> (obj_ptr->transient_)->deleteLater ();
-        }
-      obj_ptr->transient_ = obj_ptr->clone_raw_ptr ();
-      dynamic_cast<ObjT *> (obj_ptr->transient_)->setParent (obj_ptr);
-      obj_ptr->transient_->main_ = this;
-    },
-    convert_to_variant<ArrangerObjectPtrVariant> (this));
-#endif
-}
-
-#if 0
-void
-ArrangerObject::select (
-  const ArrangerObjectPtr &base_obj,
-  bool                     select,
-  bool                     append,
-  bool                     fire_events)
-{
-  std::visit (
-    [&] (auto &&obj) {
-      using ObjT = base_type<decltype (obj)>;
-      /* if velocity, do the selection on the owner MidiNote instead */
-      if constexpr (std::is_same_v<ObjT, Velocity>)
-        {
-          auto * obj_to_select = obj->get_midi_note ();
-          z_return_if_fail (obj_to_select);
-          ArrangerObject::select (obj_to_select, select, append, fire_events);
-          return;
-        }
-      else
-        {
-
-          auto selections = ArrangerObject::get_selections_for_type<
-            ArrangerSelections> (obj->type_);
-
-          /* if nothing to do, return */
-          bool is_selected = obj->is_selected ();
-          if ((is_selected && select && append) || (!is_selected && !select))
-            {
-              return;
-            }
-
-          if (select)
-            {
-              if (!append)
-                {
-                  selections->clear (fire_events);
-                }
-              selections->add_object_ref (*obj);
-            }
-          else
-            {
-              selections->remove_object (*obj);
-            }
-
-          if (ZRYTHM_HAVE_UI)
-            {
-              bool autoselect_track = gui::SettingsManager::autoSelectTracks ();
-              if (autoselect_track)
-                {
-                  auto track_var = obj->get_track ();
-                  std::visit (
-                    [&] (auto &&track) {
-                      if (track->is_in_active_project ())
-                        {
-                          TRACKLIST->get_track_span ().select_single (
-                            track->get_uuid ());
-                        }
-                    },
-                    track_var);
-                }
-            }
-
-          if (fire_events)
-            {
-              // EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CHANGED, obj.get ());
-            }
-        }
-    },
-    convert_to_variant<ArrangerObjectPtrVariant> (
-      const_cast<ArrangerObject *> (base_obj)));
-}
-#endif
 
 std::optional<ArrangerObjectPtrVariant>
 ArrangerObject::remove_from_project (bool free_obj, bool fire_events)
@@ -580,7 +486,7 @@ ArrangerObject::
 
       else if constexpr (RegionWithChildren<ObjT>)
         {
-          for (auto * cur_obj : obj->get_object_ptrs_view ())
+          for (auto * cur_obj : obj->get_children_view ())
             {
               cur_obj->update_positions (from_ticks, bpm_change, ratio);
             }

@@ -742,12 +742,12 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                   if (at->should_be_recording (cur_time, true))
                     {
                       while (
-                        new_region->aps_.size () > 0
-                        && *new_region->get_object_ptrs_view ().front ()->pos_
+                        new_region->get_children_vector ().size () > 0
+                        && *new_region->get_children_view ().front ()->pos_
                              == resume_pos)
                         {
                           new_region->remove_object (
-                            new_region->aps_.front ().id ());
+                            new_region->get_children_vector ().front ().id ());
                         }
 
                       /* create/replace ap at loop start */
@@ -893,7 +893,7 @@ RecordingManager::handle_midi_event (const RecordingEvent &ev)
                         {
                           for (
                             const auto &mn :
-                            region->get_object_ptrs_view () | std::views::reverse)
+                            region->get_children_view () | std::views::reverse)
                             {
                               if (
                                 mn->is_hit_by_range (

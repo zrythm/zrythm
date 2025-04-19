@@ -81,10 +81,11 @@ TrackSpanImpl<Range>::fix_audio_regions ()
         for (const auto &lane_var : track->lanes_)
           {
             const auto * lane = std::get<AudioLane *> (lane_var);
-            lane->foreach_region ([&] (auto &region) {
-              if (region.fix_positions (0))
-                ++num_fixed;
-            });
+            for (auto * region : lane->get_children_view ())
+              {
+                if (region->fix_positions (0))
+                  ++num_fixed;
+              }
           }
       }
   });

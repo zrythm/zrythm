@@ -14,7 +14,7 @@
 ScaleObject::ScaleObject (ArrangerObjectRegistry &obj_registry, QObject * parent)
     : ArrangerObject (ArrangerObject::Type::ScaleObject), QObject (parent)
 {
-  ArrangerObject::parent_base_qproperties (*this);
+  ArrangerObject::set_parent_on_base_qproperties (*this);
 }
 
 void

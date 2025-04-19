@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
@@ -20,9 +20,8 @@ void
 TrackLaneImpl<RegionT>::init_loaded (LanedTrackT * track)
 {
   track_ = track;
-  for (const auto &region_var : this->region_list_->get_region_vars ())
+  for (auto * region : this->get_children_view ())
     {
-      auto region = std::get<RegionT *> (region_var);
       region->init_loaded ();
     }
 }
@@ -38,9 +37,8 @@ template <typename RegionT>
 void
 TrackLaneImpl<RegionT>::unselect_all ()
 {
-  for (const auto &region_var : this->region_list_->get_region_vars ())
+  for (auto * region : this->get_children_view ())
     {
-      auto region = std::get<RegionT *> (region_var);
       auto selection_mgr =
         ArrangerObjectFactory::get_instance ()
           ->get_selection_manager_for_object (*region);
@@ -140,7 +138,7 @@ TrackLaneImpl<RegionT>::after_remove_region ()
   auto track = get_track ();
   z_return_if_fail (track);
   if (
-    !RegionOwner<RegionT>::clearing_
+    !ArrangerObjectOwner<RegionT>::clearing_
     && !track->block_auto_creation_and_deletion_)
     {
       track->remove_empty_last_lanes ();
@@ -262,9 +260,8 @@ TrackLaneImpl<RegionT>::write_to_midi_file (
       midiTrackAddText (mf, midi_track_pos, textTrackName, midi_track_name);
     }
 
-  for (const auto &region_var : this->region_list_->get_region_vars ())
+  for (auto * region : this->get_children_view ())
     {
-      auto region = std::get<RegionT *> (region_var);
       /* skip regions not inside the given range */
       if (start)
         {
@@ -298,9 +295,8 @@ TrackLaneImpl<RegionT>::copy_members_from (
   height_ = other.height_;
   mute_ = other.mute_;
   solo_ = other.solo_;
-  for (const auto &region_var : this->region_list_->get_region_vars ())
+  for (auto * region : this->get_children_view ())
     {
-      auto region = std::get<RegionT *> (region_var);
       region->is_auditioner_ = is_auditioner ();
       region->set_lane (dynamic_cast<TrackLaneT *> (this));
       region->gen_name (region->get_name (), nullptr, nullptr);

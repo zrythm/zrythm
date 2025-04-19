@@ -1,10 +1,5 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
-#include <cmath>
-#include <cstddef>
-#include <ranges>
-#include <utility>
 
 #include "dsp/port_identifier.h"
 #include "gui/backend/backend/project.h"
@@ -47,9 +42,9 @@ void
 AutomationTrack::init_loaded ()
 {
   /* init regions */
-  for (auto region : region_list_->get_region_vars ())
+  for (auto * region : get_children_view ())
     {
-      std::get<AutomationRegion *> (region)->init_loaded ();
+      region->init_loaded ();
     }
 }
 
@@ -108,20 +103,6 @@ AutomationTrack::set_port_id (const PortUuid &id)
 }
 
 bool
-AutomationTrack::is_in_active_project () const
-{
-  return std::visit (
-    [&] (auto &&track) { return track->is_in_active_project (); }, get_track ());
-}
-
-bool
-AutomationTrack::is_auditioner () const
-{
-  return std::visit (
-    [&] (auto &&track) { return track->is_auditioner (); }, get_track ());
-}
-
-bool
 AutomationTrack::validate () const
 {
   /* this is expensive so only do this during tests */
@@ -139,18 +120,9 @@ AutomationTrack::validate () const
         }
     }
 
-  // int j = -1;
-  for (auto region_var : region_list_->get_region_vars ())
+  for (auto * region : get_children_view ())
     {
-      auto * region = std::get<AutomationRegion *> (region_var);
-      // ++j;
-#if 0
-      z_return_val_if_fail (
-        region->id_.track_uuid_ == atl_->track_->get_uuid ()
-          && region->id_.at_idx_ == index_ && region->id_.idx_ == j,
-        false);
-#endif
-      for (const auto &ap : region->get_object_ptrs_view ())
+      for (const auto &ap : region->get_children_view ())
         {
           z_return_val_if_fail (
             ap->get_track_id () == TrackSpan::uuid_projection (track_getter_ ()),
@@ -188,18 +160,8 @@ AutomationTrack::get_region_before_pos (
   auto process_regions = [=] (const auto &regions) {
     if (ends_after)
       {
-        for (const auto &region_var : std::views::reverse (regions))
+        for (const auto &region : std::views::reverse (regions))
           {
-            AutomationRegion * region = nullptr;
-            if constexpr (
-              std::is_same_v<base_type<decltype (region_var)>, AutomationRegion>)
-              {
-                region = region_var.get ();
-              }
-            else
-              {
-                region = std::get<AutomationRegion *> (region_var);
-              }
             if (*region->pos_ <= pos && *region->end_pos_ >= pos)
               return region;
           }
@@ -209,18 +171,8 @@ AutomationTrack::get_region_before_pos (
         AutomationRegion * latest_r = nullptr;
         signed_frame_t     latest_distance =
           std::numeric_limits<signed_frame_t>::min ();
-        for (const auto &region_var : std::views::reverse (regions))
+        for (const auto &region : std::views::reverse (regions))
           {
-            AutomationRegion * region = nullptr;
-            if constexpr (
-              std::is_same_v<base_type<decltype (region_var)>, AutomationRegion>)
-              {
-                region = region_var.get ();
-              }
-            else
-              {
-                region = std::get<AutomationRegion *> (region_var);
-              }
             signed_frame_t distance_from_r_end =
               region->end_pos_->frames_ - pos.frames_;
             if (*region->pos_ <= pos && distance_from_r_end > latest_distance)
@@ -235,8 +187,8 @@ AutomationTrack::get_region_before_pos (
   };
 
   return use_snapshots
-           ? process_regions (region_snapshots_)
-           : process_regions (region_list_->get_region_vars ());
+           ? process_regions (get_children_snapshots_view ())
+           : process_regions (get_children_view ());
 }
 
 AutomationPoint *
@@ -259,7 +211,7 @@ AutomationTrack::get_ap_before_pos (
       : pos.frames_,
     true);
 
-  for (auto * ap : std::ranges::reverse_view (r->get_object_ptrs_view ()))
+  for (auto * ap : std::ranges::reverse_view (r->get_children_view ()))
     {
       if (ap->pos_->frames_ <= local_pos)
         {
@@ -415,12 +367,19 @@ AutomationTrack::set_index (int index)
 {
   index_ = index;
 
-  for (const auto &region_var : region_list_->get_region_vars ())
+  for (auto * region : get_children_view ())
     {
-      auto * region = std::get<AutomationRegion *> (region_var);
       // region->id_.at_idx_ = index;
       region->update_identifier ();
     }
+}
+
+AutomationTrack::Location
+AutomationTrack::get_location (const AutomationRegion &) const
+{
+  return {
+    .track_id_ = TrackSpan::uuid_projection (track_getter_ ()), .owner_ = port_id_
+  };
 }
 
 float
@@ -508,11 +467,9 @@ AutomationTrack::get_val_at_pos (
 bool
 AutomationTrack::verify () const
 {
-  for (const auto &region_var : region_list_->get_region_vars ())
+  for (const auto * region : get_children_view ())
     {
-      for (
-        const auto &ap :
-        std::get<AutomationRegion *> (region_var)->get_object_ptrs_view ())
+      for (const auto * ap : region->get_children_view ())
         {
           if (ZRYTHM_TESTING)
             {
@@ -533,7 +490,7 @@ AutomationTrack::set_caches (CacheType types)
 {
   if (ENUM_BITSET_TEST (types, CacheType::PlaybackSnapshots))
     {
-      region_snapshots_.clear ();
+      get_children_snapshots_vector ().clear ();
 // TODO
 #if 0
       for (const auto &r_var : region_list_->regions_)
@@ -557,7 +514,7 @@ AutomationTrack::init_after_cloning (
   const AutomationTrack &other,
   ObjectCloneType        clone_type)
 {
-  RegionOwner<AutomationRegion>::copy_members_from (other, clone_type);
+  ArrangerObjectOwner::copy_members_from (other, clone_type);
   visible_ = other.visible_;
   created_ = other.created_;
   index_ = other.index_;

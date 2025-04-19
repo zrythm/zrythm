@@ -182,7 +182,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
                   auto found_at = port->at_;
                   z_return_val_if_fail (found_at, nullptr);
                   if (
-                    found_at->region_list_->regions_.empty ()
+                    found_at->get_children_vector ().empty ()
                     && port->srcs_.empty ())
                     {
                       return nullptr;

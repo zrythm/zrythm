@@ -34,12 +34,12 @@ LanedTrackImpl<TrackLaneT>::remove_empty_last_lanes ()
       auto prev_lane = std::get<TrackLaneT *> (lanes_.at (i - 1));
       z_return_if_fail (lane && prev_lane);
 
-      if (!lane->region_list_->regions_.empty ())
+      if (!lane->get_children_vector ().empty ())
         break;
 
       if (
-        lane->region_list_->regions_.empty ()
-        && prev_lane->region_list_->regions_.empty ())
+        lane->get_children_vector ().empty ()
+        && prev_lane->get_children_vector ().empty ())
         {
           z_info ("removing lane {}", i);
           lanes_.erase (i);
@@ -61,12 +61,11 @@ LanedTrackImpl<TrackLaneT>::clear_objects ()
 {
   while (!lanes_.empty ())
     {
-      std::get<TrackLaneT *> (lanes_.back ())->clear_regions ();
+      std::get<TrackLaneT *> (lanes_.back ())->clear_objects ();
       // lane might have been deleted above
       if (
         !lanes_.empty ()
-        && std::get<TrackLaneT *> (lanes_.back ())
-             ->region_list_->regions_.empty ())
+        && std::get<TrackLaneT *> (lanes_.back ())->get_children_vector ().empty ())
         {
           lanes_.pop_back ();
         }
@@ -113,10 +112,9 @@ LanedTrackImpl<TrackLaneT>::validate_base () const
   for (const auto &lane_var : lanes_)
     {
       auto lane = std::get<TrackLaneT *> (lane_var);
-      for (const auto &region_var : lane->region_list_->get_region_vars())
+      for (auto * region : lane->get_children_view ())
         {
-          std::get<typename TrackLaneT::RegionT *> (region_var)
-            ->validate (is_in_active_project (), 0);
+          region->validate (is_in_active_project (), 0);
         }
     }
 
@@ -193,10 +191,9 @@ LanedTrackImpl<TrackLaneT>::get_regions_in_range (
     {
       std::visit (
         [&] (auto &&l) {
-          for (const auto &region_var : l->region_list_->get_region_vars ())
+          for (auto * region : l->get_children_view ())
             {
-              add_region_if_in_range (
-                p1, p2, regions, std::get<RegionT *> (region_var));
+              add_region_if_in_range (p1, p2, regions, region);
             }
         },
         lane);

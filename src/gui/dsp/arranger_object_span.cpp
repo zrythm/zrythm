@@ -51,7 +51,7 @@ ArrangerObjectSpanImpl<Range>::merge (double frames_per_tick) const
                       double ticks_diff =
                         r->pos_->ticks_ - first_r->pos_->ticks_;
 
-                      for (auto * mn : r->get_object_ptrs_view ())
+                      for (auto * mn : r->get_children_view ())
                         {
                           auto new_mn =
                             ArrangerObjectFactory::get_instance ()
@@ -59,7 +59,7 @@ ArrangerObjectSpanImpl<Range>::merge (double frames_per_tick) const
                           std::visit (
                             [&] (auto &&m) { m->move (ticks_diff); },
                             new_mn.get_object ());
-                          get_new_r (new_r)->append_object (new_mn);
+                          get_new_r (new_r)->add_object (new_mn);
                         }
                     }
                 }
@@ -116,7 +116,7 @@ ArrangerObjectSpanImpl<Range>::merge (double frames_per_tick) const
                         {
                           auto new_co = co->clone_raw_ptr ();
                           new_co->move (ticks_diff);
-                          new_r->append_object (new_co, false);
+                          new_r->add_object (new_co, false);
                         }
                     }
 #endif
@@ -138,7 +138,7 @@ ArrangerObjectSpanImpl<Range>::merge (double frames_per_tick) const
                         {
                           auto * new_ap = ap->clone_raw_ptr ();
                           new_ap->move (ticks_diff);
-                          new_r->append_object (new_ap, false);
+                          new_r->add_object (new_ap, false);
                         }
                     }
 #endif
@@ -346,10 +346,6 @@ ArrangerObjectSpanImpl<Range>::copy_arranger_object_identifier (
       if constexpr (std::is_same_v<ObjT, ChordObject>)
         {
           dest->chord_index_ = src->chord_index_;
-        }
-      if constexpr (std::is_same_v<ObjT, Marker>)
-        {
-          dest->marker_track_index_ = src->marker_track_index_;
         }
       if constexpr (std::is_same_v<ObjT, ScaleObject>)
         {

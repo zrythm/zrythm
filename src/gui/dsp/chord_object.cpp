@@ -14,7 +14,7 @@ ChordObject::ChordObject (ArrangerObjectRegistry &obj_registry, QObject * parent
     : ArrangerObject (Type::ChordObject), QObject (parent),
       RegionOwnedObject (obj_registry)
 {
-  ArrangerObject::parent_base_qproperties (*this);
+  ArrangerObject::set_parent_on_base_qproperties (*this);
 }
 void
 ChordObject::init_after_cloning (

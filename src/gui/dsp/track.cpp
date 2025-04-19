@@ -529,48 +529,31 @@ Track::append_objects (std::vector<ArrangerObjectPtrVariant> &objs) const
             {
               using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
               auto lane = std::get<TrackLaneT *> (lane_var);
-              for (
-                const auto &region_var : lane->region_list_->get_region_vars ())
-                {
-                  auto * region =
-                    std::get<typename TrackLaneT::RegionT *> (region_var);
-                  objs.push_back (region);
-                }
-            }
-        }
-
-      if constexpr (DerivedFromTemplatedBase<TrackT, RegionOwner>)
-        {
-          for (const auto &region_var : self->region_list_->get_region_vars ())
-            {
-              auto * region = std::get<typename TrackT::RegionTPtr> (region_var);
-              objs.push_back (region);
+              std::ranges::copy (
+                lane->get_children_view (), std::back_inserter (objs));
             }
         }
 
       if constexpr (std::is_same_v<TrackT, ChordTrack>)
         {
-          for (auto *scale : self->get_scales_view())
-            {
-              objs.push_back (scale);
-            }
+          std::ranges::copy (
+            self->ArrangerObjectOwner<ChordRegion>::get_children_view (),
+            std::back_inserter (objs));
+          std::ranges::copy (
+            self->ArrangerObjectOwner<ScaleObject>::get_children_view (),
+            std::back_inserter (objs));
         }
       else if constexpr (std::is_same_v<TrackT, MarkerTrack>)
         {
-          for (auto *marker : self->get_markers())
-            {
-              objs.push_back (marker);
-            }
+          std::ranges::copy (
+            self->get_children_view (), std::back_inserter (objs));
         }
       if constexpr (std::derived_from<TrackT, AutomatableTrack>)
         {
           for (auto *at : self->get_automation_tracklist ().get_automation_tracks())
             {
-              for (const auto &region_var : at->region_list_->get_region_vars ())
-                {
-                  auto * region = std::get<AutomationRegion *> (region_var);
-                  objs.push_back (region);
-                }
+              std::ranges::copy (
+                at->get_children_view (), std::back_inserter (objs));
             }
         }
     },
@@ -612,11 +595,7 @@ Track::update_positions (bool from_ticks, bool bpm_change, double frames_per_tic
     {
       std::visit (
         [&] (auto &&obj) {
-          if (ZRYTHM_TESTING)
-            obj->validate (is_in_active_project (), 0);
           obj->update_positions (from_ticks, bpm_change, frames_per_tick);
-          if (ZRYTHM_TESTING)
-            obj->validate (is_in_active_project (), 0);
         },
         obj_var);
     }

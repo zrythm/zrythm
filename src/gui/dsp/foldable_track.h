@@ -6,8 +6,6 @@
 
 #include "gui/dsp/track.h"
 
-TYPEDEF_STRUCT_UNDERSCORED (FolderChannelWidget);
-
 /**
  * @brief Abstract base for a foldable track.
  */
@@ -71,7 +69,7 @@ public:
   /** Whether currently folded. */
   bool folded_ = false;
 
-  FolderChannelWidget * folder_ch_widget_ = nullptr;
+  // FolderChannelWidget * folder_ch_widget_ = nullptr;
 };
 
 #endif /* __AUDIO_FOLDABLE_TRACK_H__ */

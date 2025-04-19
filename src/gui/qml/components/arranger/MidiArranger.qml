@@ -161,12 +161,13 @@ Arranger {
 
         anchors.fill: parent
 
-        model: region
+        model: region.midiNotes
 
         delegate: Loader {
           id: midiNoteLoader
 
-          required property var midiNote
+          required property var arrangerObject
+          property var midiNote: arrangerObject
           readonly property real midiNoteX: midiNote.position.ticks * root.ruler.pxPerTick
           readonly property real midiNoteY: (127 - midiNote.pitch) * root.pianoRoll.keyHeight
           readonly property real midiNoteEndX: midiNote.endPosition.ticks * root.ruler.pxPerTick

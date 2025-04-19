@@ -11,7 +11,7 @@
 #define __GUI_BACKEND_PIANO_ROLL_H__
 
 #include "gui/backend/backend/editor_settings.h"
-#include "gui/dsp/arranger_object_all.h"
+#include "gui/dsp/arranger_object.h"
 #include "utils/icloneable.h"
 
 class Track;

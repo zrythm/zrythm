@@ -601,7 +601,7 @@ Tracklist::clear_selections_for_object_siblings (
       if constexpr (std::derived_from<ObjT, RegionOwnedObject>)
         {
           auto region = obj->get_region ();
-          for (auto * child : region->get_object_ptrs_view ())
+          for (auto * child : region->get_children_view ())
             {
               auto selection_mgr =
                 ArrangerObjectFactory::get_instance ()

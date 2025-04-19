@@ -89,8 +89,7 @@ MidiRegion::define_fields (const Context &ctx)
   using T = ISerializable<MidiRegion>;
   T::call_all_base_define_fields<
     ArrangerObject, BoundedObject, LoopableObject, MuteableObject, NamedObject,
-    ColoredObject, Region> (ctx);
-  T::serialize_fields (ctx, T::make_field ("midiNotes", midi_notes_));
+    ColoredObject, Region, ArrangerObjectOwner> (ctx);
 }
 
 void
@@ -155,17 +154,10 @@ AudioRegion::define_fields (const Context &ctx)
 void
 ChordRegion::define_fields (const Context &ctx)
 {
-  ArrangerObject::define_base_fields (ctx);
-  BoundedObject::define_base_fields (ctx);
-  LoopableObject::define_base_fields (ctx);
-  MuteableObject::define_base_fields (ctx);
-  NamedObject::define_base_fields (ctx);
-  ColoredObject::define_base_fields (ctx);
-  Region::define_base_fields (ctx);
-
-  ISerializable<ChordRegion>::serialize_fields (
-    ctx,
-    ISerializable<ChordRegion>::make_field ("chordObjects", chord_objects_));
+  using T = ISerializable<ChordRegion>;
+  T::call_all_base_define_fields<
+    ArrangerObject, BoundedObject, LoopableObject, MuteableObject, NamedObject,
+    ColoredObject, Region, ArrangerObjectOwner> (ctx);
 }
 
 void
@@ -174,9 +166,7 @@ AutomationRegion::define_fields (const Context &ctx)
   using T = ISerializable<AutomationRegion>;
   T::call_all_base_define_fields<
     ArrangerObject, BoundedObject, LoopableObject, MuteableObject, NamedObject,
-    ColoredObject, Region> (ctx);
-
-  T::serialize_fields (ctx, T::make_field ("automationPoints", aps_));
+    ColoredObject, Region, ArrangerObjectOwner> (ctx);
 }
 
 void
@@ -197,6 +187,5 @@ Marker::define_fields (const Context &ctx)
   NamedObject::define_base_fields (ctx);
 
   ISerializable<Marker>::serialize_fields (
-    ctx, ISerializable<Marker>::make_field ("markerType", marker_type_),
-    ISerializable<Marker>::make_field ("markerTrackIndex", marker_track_index_));
+    ctx, ISerializable<Marker>::make_field ("markerType", marker_type_));
 }

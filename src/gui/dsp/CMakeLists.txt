@@ -8,6 +8,8 @@ target_sources(zrythm_gui_lib
     arranger_object_all.h
     arranger_object_factory.h
     arranger_object_factory.cpp
+    arranger_object_owner.h
+    arranger_object_list_model.h
     arranger_object_span.h
     arranger_object_span.cpp
     arranger_object_fwd.h
@@ -177,12 +179,8 @@ target_sources(zrythm_gui_lib
     region_link_group.cpp
     region_link_group_manager.h
     region_link_group_manager.cpp
-    region_list.h
-    region_list.cpp
     region_owned_object.h
     region_owned_object.cpp
-    region_owner.h
-    region_owner.cpp
     router.h
     router.cpp
     rtaudio_device.h

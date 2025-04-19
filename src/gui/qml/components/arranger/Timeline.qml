@@ -283,12 +283,13 @@ Arranger {
                         sourceComponent: Repeater {
                             id: scalesRepeater
 
-                            model: trackDelegate.track
+                            model: trackDelegate.track.scaleObjects
 
                             delegate: Loader {
                                 id: scaleLoader
 
-                                required property var scaleObject
+                                required property var arrangerObject
+                                property var scaleObject: arrangerObject
                                 readonly property real scaleX: scaleObject.position.ticks * root.ruler.pxPerTick
 
                                 active: scaleX + 100 + Style.scrollLoaderBufferPx >= root.scrollX && scaleX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
@@ -325,12 +326,13 @@ Arranger {
                         sourceComponent: Repeater {
                             id: markersRepeater
 
-                            model: trackDelegate.track
+                            model: trackDelegate.track.markers
 
                             delegate: Loader {
                                 id: markerLoader
 
-                                required property var marker
+                                required property var arrangerObject
+                                property var marker: arrangerObject
                                 readonly property real markerX: marker.position.ticks * root.ruler.pxPerTick
 
                                 active: markerX + 100 + Style.scrollLoaderBufferPx >= root.scrollX && markerX <= (root.scrollX + root.scrollViewWidth + Style.scrollLoaderBufferPx)
@@ -455,7 +457,8 @@ Arranger {
                                     id: mainTrackRegionLoader
 
                                     readonly property var trackLane: mainTrackLaneRegionsRepeater.trackLane
-                                    required property var region
+                                    required property var arrangerObject
+                                    property var region: arrangerObject
                                     readonly property real regionX: region.position.ticks * root.ruler.pxPerTick
                                     readonly property real regionEndX: region.endPosition.ticks * root.ruler.pxPerTick
                                     readonly property real regionWidth: regionEndX - regionX

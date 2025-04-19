@@ -43,10 +43,6 @@ using namespace magic_enum::bitwise_operators;
  * @{
  */
 
-#define TYPEDEF_STRUCT(s) typedef struct s s
-
-#define TYPEDEF_STRUCT_UNDERSCORED(s) using s = struct _##s
-
 // qint64
 using RtTimePoint = int64_t;
 using RtDuration = int64_t;

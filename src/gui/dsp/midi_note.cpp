@@ -15,7 +15,7 @@ MidiNote::MidiNote (ArrangerObjectRegistry &obj_registry, QObject * parent)
     : ArrangerObject (Type::MidiNote), QObject (parent),
       RegionOwnedObject (obj_registry), vel_ (new Velocity (this))
 {
-  ArrangerObject::parent_base_qproperties (*this);
+  ArrangerObject::set_parent_on_base_qproperties (*this);
   BoundedObject::parent_base_qproperties (*this);
 }
 

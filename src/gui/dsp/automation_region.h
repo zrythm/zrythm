@@ -4,6 +4,7 @@
 #ifndef __AUDIO_AUTOMATION_REGION_H__
 #define __AUDIO_AUTOMATION_REGION_H__
 
+#include "gui/dsp/arranger_object_owner.h"
 #include "gui/dsp/region.h"
 
 /**
@@ -20,6 +21,7 @@
 class AutomationRegion final
     : public QAbstractListModel,
       public RegionImpl<AutomationRegion>,
+      public ArrangerObjectOwner<AutomationPoint>,
       public ICloneable<AutomationRegion>,
       public zrythm::utils::serialization::ISerializable<AutomationRegion>
 {
@@ -121,6 +123,17 @@ public:
    */
   AutomationTrack * get_automation_track () const;
 
+  Location get_location (const AutomationPoint &) const override
+  {
+    return { .track_id_ = track_id_, .owner_ = get_uuid () };
+  }
+
+  std::string
+  get_field_name_for_serialization (const AutomationPoint *) const override
+  {
+    return "automationPoints";
+  }
+
   void
   init_after_cloning (const AutomationRegion &other, ObjectCloneType clone_type)
     override;
@@ -128,15 +141,6 @@ public:
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 public:
-  /**
-   * The automation points this region contains.
-   *
-   * Could also be used in audio regions for volume automation.
-   *
-   * Must always stay sorted by position.
-   */
-  std::vector<ArrangerObjectUuidReference> aps_;
-
   /** Last recorded automation point. */
   AutomationPoint * last_recorded_ap_ = nullptr;
 

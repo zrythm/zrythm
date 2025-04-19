@@ -19,9 +19,8 @@ RecentProjectsModel::get_recent_projects ()
   // list.append ("test 2");
 
   std::vector<std::unique_ptr<ProjectInfo>> ret;
-  std::transform (
-    list.begin (), list.end (), std::back_inserter (ret),
-    [] (const auto &pathstr) {
+  std::ranges::transform (
+    list, std::back_inserter (ret), [] (const auto &pathstr) {
       return std::make_unique<ProjectInfo> (fs::path (pathstr.toStdString ()));
     });
 

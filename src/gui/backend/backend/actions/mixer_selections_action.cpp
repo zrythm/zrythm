@@ -170,7 +170,7 @@ MixerSelectionsAction::
                     }
 #endif
                           count++;
-                          regions_count += at->region_list_->regions_.size ();
+                          regions_count += at->get_children_vector ().size ();
                         }
                     },
                     pl_var);
@@ -191,25 +191,25 @@ MixerSelectionsAction::copy_at_regions (
   AutomationTrack       &dest,
   const AutomationTrack &src)
 {
+  // TODO
+#if 0
   dest.region_list_->regions_.clear ();
   dest.region_list_->regions_.reserve (src.region_list_->regions_.size ());
 
   src.foreach_region ([&] (auto &src_r) {
-// TODO
-#if 0
     auto dest_region = src_r.clone_raw_ptr ();
     dest_region->set_automation_track (dest);
     dest_region->setParent (&dest);
     dest.region_list_->regions_.push_back (dest_region);
-#endif
   });
 
   if (!dest.region_list_->regions_.empty ())
-    {
-      z_debug (
-        "reverted {} regions for automation track {}:",
-        dest.region_list_->regions_.size (), dest.index_);
+  {
+    z_debug (
+      "reverted {} regions for automation track {}:",
+      dest.region_list_->regions_.size (), dest.index_);
     }
+#endif
 }
 
 void
@@ -246,7 +246,7 @@ MixerSelectionsAction::revert_automation (
         atl->get_plugin_at (slot, port_id.port_index_, port_id.get_symbol ());
 
       copy_at_regions (*actual_at, *cloned_at);
-      num_reverted_regions += actual_at->region_list_->regions_.size ();
+      num_reverted_regions += actual_at->get_children_vector ().size ();
       num_reverted_ats++;
     }
 
@@ -893,15 +893,15 @@ MixerSelectionsAction::do_or_undo_move_or_copy (bool do_it, bool copy)
                                           new_port->get_uuid ());
                                       if (prev_at && new_at)
                                         {
+                                    // TODO
+#if 0
                                           prev_at->foreach_region (
                                             [&] (auto &prev_region) {
-// TODO
-#if 0
                                               to_tr->Track::add_region (
                                                 prev_region.clone_raw_ptr (),
                                                 new_at, std::nullopt, false);
+                                              });
 #endif
-                                            });
                                         }
                                     }
                                 },

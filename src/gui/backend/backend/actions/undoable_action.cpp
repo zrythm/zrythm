@@ -101,7 +101,7 @@ UndoableAction::do_or_undo (bool perform)
       AUDIO_ENGINE->wait_for_pause (state, false, true);
     }
 
-  std::string str_to_print =
+  const auto str_to_print =
     fmt::format ("{} ({})", ENUM_NAME (undoable_action_type_), to_string ());
   std::exception_ptr saved_exception = nullptr;
   try

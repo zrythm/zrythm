@@ -88,7 +88,7 @@ RegionImpl<RegionT>::send_note_offs (
     {
       if constexpr (is_midi ())
         {
-          for (const auto &mn : region->get_object_ptrs_view ())
+          for (const auto &mn : region->get_children_view ())
             {
               if (mn->is_hit (frame_for_note_off))
                 {
@@ -205,24 +205,13 @@ RegionImpl<RegionT>::fill_midi_events (
       };
 
       /* process each object */
-      if constexpr (std::is_same_v<RegionT, MidiRegion>)
+      if constexpr (
+        std::is_same_v<RegionT, MidiRegion>
+        || std::is_same_v<RegionT, ChordRegion>)
         {
-          for (
-            const auto &mn :
-            ArrangerObjectUuidReferenceSpan{ get_derived ().midi_notes_ }
-              .as_type<MidiNote> ())
+          for (const auto &obj : get_derived ().get_children_view ())
             {
-              process_object (*mn);
-            }
-        }
-      else if constexpr (std::is_same_v<RegionT, ChordRegion>)
-        {
-          for (
-            const auto &co :
-            ArrangerObjectUuidReferenceSpan{ get_derived ().chord_objects_ }
-              .as_type<ChordObject> ())
-            {
-              process_object (*co);
+              process_object (*obj);
             }
         }
     },
@@ -508,7 +497,7 @@ RegionImpl<RegionT>::stretch (double ratio)
   if constexpr (is_midi () || is_automation () || is_chord ())
     {
       auto &self = get_derived ();
-      auto  objs = self.get_object_ptrs_view ();
+      auto  objs = self.get_children_view ();
       for (auto * obj : objs)
         {
           using ObjT = base_type<decltype (obj)>;
@@ -785,51 +774,6 @@ Region::update_link_group ()
 
 template <typename RegionT>
 void
-RegionImpl<RegionT>::remove_object (const ArrangerObject::Uuid &child_id)
-  requires RegionWithChildren<RegionT>
-{
-  auto &self = get_derived ();
-  auto  obj = get_object_ptr (child_id);
-  /* deselect the object */
-  ArrangerObjectFactory::get_instance ()
-    ->get_selection_manager_for_object (*obj)
-    .remove_from_selection (obj->get_uuid ());
-
-  if constexpr (std::is_same_v<ChildT, AutomationPoint>)
-    {
-      if (self.last_recorded_ap_ == obj)
-        {
-          self.last_recorded_ap_ = nullptr;
-        }
-    }
-
-  auto &objects = self.get_objects_vector ();
-
-  /* find the object in the list */
-  auto it =
-    std::ranges::find (objects, child_id, &ArrangerObjectUuidReference::id);
-  assert (it != objects.end ());
-
-  /* get a shared pointer before erasing to possibly keep it alive */
-  auto ret = *it;
-
-  /* erase it */
-  size_t erase_index = std::distance (objects.begin (), it);
-  self.beginRemoveRows ({}, erase_index, erase_index);
-  it = objects.erase (it);
-
-  /* set region and index for all objects after the erased one */
-  for (size_t index = erase_index; it != objects.end (); ++index, ++it)
-    {
-      auto cur_obj = get_object_ptr (*it);
-      cur_obj->set_region_and_index (*this);
-    }
-
-  self.endRemoveRows ();
-}
-
-template <typename RegionT>
-void
 RegionImpl<RegionT>::copy_children (const RegionImpl &other)
   requires RegionWithChildren<RegionT>
 {
@@ -842,7 +786,7 @@ RegionImpl<RegionT>::copy_children (const RegionImpl &other)
 // TODO
 #if 0
   auto &self = get_derived ();
-  for (auto * obj : self.get_object_ptrs_view ())
+  for (auto * obj : self.get_children_view ())
     {
       append_object (
         obj->clone_and_register (get_arranger_object_registry ())->get_uuid ());
@@ -872,16 +816,15 @@ RegionImpl<RegionT>::at_position (
   const dsp::Position     pos)
 {
   auto region_is_at_pos = [&pos] (const auto &region) {
-    return *std::get<RegionT *> (region)->pos_ <= pos
-           && *std::get<RegionT *> (region)->end_pos_ >= pos;
+    return *region->pos_ <= pos && *region->end_pos_ >= pos;
   };
 
   if constexpr (is_automation ())
     {
       z_return_val_if_fail (at, nullptr);
-      auto region_vars = at->region_list_->get_region_vars ();
-      auto it = std::ranges::find_if (region_vars, region_is_at_pos);
-      return it != region_vars.end () ? std::get<RegionT *> (*it) : nullptr;
+      auto regions = at->get_children_view ();
+      auto it = std::ranges::find_if (regions, region_is_at_pos);
+      return it != regions.end () ? (*it) : nullptr;
     }
   else
     {
@@ -895,16 +838,18 @@ RegionImpl<RegionT>::at_position (
               using TrackT = base_type<decltype (track_ptr)>;
               if constexpr (std::derived_from<TrackT, LanedTrack>)
                 {
-                  for (auto &lane_var : track_ptr->lanes_)
+                  using TrackLaneT = TrackT::TrackLaneType;
+                  if constexpr (
+                    std::is_same_v<RegionT, typename TrackLaneT::RegionT>)
                     {
-                      using TrackLaneT = TrackT::TrackLaneType;
-                      auto lane = std::get<TrackLaneT *> (lane_var);
-                      auto region_vars = lane->region_list_->get_region_vars ();
-                      auto it =
-                        std::ranges::find_if (region_vars, region_is_at_pos);
-                      return it != region_vars.end ()
-                               ? std::get<RegionT *> (*it)
-                               : nullptr;
+                      for (auto &lane_var : track_ptr->lanes_)
+                        {
+                          auto lane = std::get<TrackLaneT *> (lane_var);
+                          auto regions = lane->get_children_view ();
+                          auto it =
+                            std::ranges::find_if (regions, region_is_at_pos);
+                          return it != regions.end () ? (*it) : nullptr;
+                        }
                     }
                 }
               throw std::runtime_error ("track is not laned");
@@ -913,9 +858,10 @@ RegionImpl<RegionT>::at_position (
         }
       else if constexpr (is_chord ())
         {
-          auto region_vars = P_CHORD_TRACK->region_list_->get_region_vars ();
-          auto it = std::ranges::find_if (region_vars, region_is_at_pos);
-          return it != region_vars.end () ? std::get<RegionT *> (*it) : nullptr;
+          auto regions = P_CHORD_TRACK->ArrangerObjectOwner<
+            ChordRegion>::get_children_view ();
+          auto it = std::ranges::find_if (regions, region_is_at_pos);
+          return it != regions.end () ? (*it) : nullptr;
         }
     }
 
@@ -998,6 +944,7 @@ Region::is_recording ()
   return std::ranges::contains (RECORDING_MANAGER->recorded_ids_, get_uuid ());
 }
 
+#if 0
 template <typename RegionT>
 void
 RegionImpl<RegionT>::disconnect_region ()
@@ -1020,7 +967,7 @@ RegionImpl<RegionT>::disconnect_region ()
 
   if constexpr (RegionWithChildren<RegionT>)
     {
-      for (auto * obj : get_derived ().get_object_ptrs_view ())
+      for (auto * obj : get_derived ().get_children_view ())
         {
           auto selection_mgr =
             ArrangerObjectFactory::get_instance ()
@@ -1029,7 +976,7 @@ RegionImpl<RegionT>::disconnect_region ()
         }
     }
 
-#if 0
+#  if 0
   if (ZRYTHM_HAVE_UI && MAIN_WINDOW)
     {
       ArrangerWidget * arranger = get_arranger ();
@@ -1038,8 +985,9 @@ RegionImpl<RegionT>::disconnect_region ()
           arranger->hovered_object.reset ();
         }
     }
-#endif
+#  endif
 }
+#endif
 
 std::optional<ArrangerObjectPtrVariant>
 Region::get_at_pos (
@@ -1062,7 +1010,7 @@ Region::get_at_pos (
             throw std::runtime_error ("expected region");
           }
       },
-      region_var);
+      region_var.get_object ());
   };
 
   if (track)
@@ -1076,25 +1024,28 @@ Region::get_at_pos (
                 {
                   using TrackLaneT = TrackT::LanedTrackImpl::TrackLaneType;
                   auto lane = std::get<TrackLaneT *> (lane_var);
-                  auto ret = lane->get_region_at_pos (pos, include_region_end);
-                  if (ret)
-                    return ret;
+                  auto ret_var =
+                    ArrangerObjectUuidReferenceSpan{ lane->get_children_vector () }
+                      .get_bounded_object_at_pos (pos, include_region_end);
+                  if (ret_var)
+                    return std::get<typename TrackLaneT::RegionT *> (*ret_var);
 
-                  auto region_vars = lane->region_list_->get_region_vars ();
+                  auto region_vars = lane->get_children_vector ();
                   auto it = std::ranges::find_if (region_vars, is_at_pos);
                   if (it != region_vars.end ())
                     {
-                      return (*it);
+                      return (*it).get_object ();
                     }
                 }
             }
           if constexpr (std::is_same_v<TrackT, ChordTrack>)
             {
-              auto region_vars = track_derived->region_list_->get_region_vars ();
+              auto region_vars = track_derived->ArrangerObjectOwner<
+                ChordRegion>::get_children_vector ();
               auto it = std::ranges::find_if (region_vars, is_at_pos);
               if (it != region_vars.end ())
                 {
-                  return (*it);
+                  return (*it).get_object ();
                 }
             }
           return std::nullopt;
@@ -1103,50 +1054,15 @@ Region::get_at_pos (
     }
   if (at)
     {
-      auto region_vars = at->region_list_->get_region_vars ();
+      auto region_vars = at->get_children_vector ();
       auto it = std::ranges::find_if (region_vars, is_at_pos);
       if (it != region_vars.end ())
         {
-          return *it;
+          return (*it).get_object ();
         }
       return std::nullopt;
     }
   z_return_val_if_reached (std::nullopt);
-}
-
-template <typename RegionT>
-RegionOwner<RegionT> *
-RegionImpl<RegionT>::get_region_owner () const
-{
-  auto * self = dynamic_cast<const RegionT *> (this);
-  if constexpr (is_laned ())
-    {
-      auto &lane = self->get_lane ();
-      return std::addressof (lane);
-    }
-  else if constexpr (is_automation ())
-    {
-      return std::visit (
-        [&] (auto &&automatable_track) -> RegionOwner<RegionT> * {
-          using TrackT = base_type<decltype (automatable_track)>;
-          if constexpr (std::derived_from<TrackT, AutomatableTrack>)
-            {
-              auto * at =
-                automatable_track->get_automation_tracklist ()
-                  .get_automation_track_by_port_id (self->automatable_port_id_);
-              return at;
-            }
-          else
-            {
-              throw std::runtime_error ("Invalid track");
-            }
-        },
-        get_track ());
-    }
-  else if constexpr (is_chord ())
-    {
-      return std::get<ChordTrack *> (get_track ());
-    }
 }
 
 template class RegionImpl<MidiRegion>;

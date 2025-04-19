@@ -1,9 +1,10 @@
-// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_CHORD_REGION_H__
 #define __AUDIO_CHORD_REGION_H__
 
+#include "gui/dsp/arranger_object_owner.h"
 #include "gui/dsp/chord_object.h"
 #include "gui/dsp/region.h"
 
@@ -16,6 +17,7 @@
 class ChordRegion final
     : public QAbstractListModel,
       public RegionImpl<ChordRegion>,
+      public ArrangerObjectOwner<ChordObject>,
       public ICloneable<ChordRegion>,
       public zrythm::utils::serialization::ISerializable<ChordRegion>
 {
@@ -23,6 +25,10 @@ class ChordRegion final
   QML_ELEMENT
   DEFINE_ARRANGER_OBJECT_QML_PROPERTIES (ChordRegion)
   DEFINE_REGION_QML_PROPERTIES (ChordRegion)
+  DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
+    ChordRegion,
+    chordObjects,
+    ChordObject)
 
   friend class RegionImpl<ChordRegion>;
 
@@ -55,14 +61,21 @@ public:
 
   bool validate (bool is_project, double frames_per_tick) const override;
 
+  Location get_location (const ChordObject &) const override
+  {
+    return { .track_id_ = track_id_, .owner_ = get_uuid () };
+  }
+
+  std::string
+  get_field_name_for_serialization (const ChordObject *) const override
+  {
+    return "chordObjects";
+  }
+
   void init_after_cloning (const ChordRegion &other, ObjectCloneType clone_type)
     override;
 
   DECLARE_DEFINE_FIELDS_METHOD ();
-
-public:
-  /** ChordObject's in this Region. */
-  std::vector<ArrangerObjectUuidReference> chord_objects_;
 };
 
 inline bool

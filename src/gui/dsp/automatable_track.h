@@ -88,9 +88,10 @@ public:
     auto &atl = get_automation_tracklist ();
     for (auto &at : atl.get_automation_tracks ())
       {
-        at->foreach_region ([&] (auto &r) {
-          add_region_if_in_range (p1, p2, regions, &r);
-        });
+        for (auto * r : at->get_children_view ())
+          {
+            add_region_if_in_range (p1, p2, regions, r);
+          }
       }
   }
 

@@ -164,10 +164,8 @@ Project::is_audio_clip_in_use (const AudioClip &clip, bool check_undo_stack) con
                 for (auto &lane_var : track->lanes_)
                   {
                     auto * lane = std::get<AudioLane *> (lane_var);
-                    for (
-                      auto region_var : lane->region_list_->get_region_vars ())
+                    for (auto * region : lane->get_children_view ())
                       {
-                        auto * region = std::get<AudioRegion *> (region_var);
                         if (region->get_clip_id () == clip.get_uuid ())
                           return true;
                       }

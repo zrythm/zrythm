@@ -27,8 +27,7 @@ ChordTrack::ChordTrack (
       AutomatableTrack (port_registry, new_identity),
       ProcessableTrack (port_registry, new_identity),
       RecordableTrack (port_registry, new_identity),
-      ChannelTrack (track_registry, plugin_registry, port_registry, new_identity),
-      object_registry_ (obj_registry)
+      ChannelTrack (track_registry, plugin_registry, port_registry, new_identity)
 {
   if (new_identity)
     {
@@ -36,45 +35,7 @@ ChordTrack::ChordTrack (
       icon_name_ = "gnome-icon-library-library-music-symbolic";
     }
   automation_tracklist_->setParent (this);
-  RegionOwner::parent_base_qproperties (*this);
 }
-
-// =========================================================================
-// QML Interface
-// =========================================================================
-
-QHash<int, QByteArray>
-ChordTrack::roleNames () const
-{
-  QHash<int, QByteArray> roles;
-  roles[ScaleObjectPtrRole] = "scaleObject";
-  return roles;
-}
-
-int
-ChordTrack::rowCount (const QModelIndex &parent) const
-{
-  return static_cast<int> (scales_.size ());
-}
-
-QVariant
-ChordTrack::data (const QModelIndex &index, int role) const
-{
-  if (!index.isValid ())
-    return {};
-
-  auto * scale = get_scale_at (index.row ());
-
-  switch (role)
-    {
-    case ScaleObjectPtrRole:
-      return QVariant::fromValue (scale);
-    default:
-      return {};
-    }
-}
-
-// =========================================================================
 
 void
 ChordTrack::init_after_cloning (
@@ -86,16 +47,8 @@ ChordTrack::init_after_cloning (
   ProcessableTrack::copy_members_from (other, clone_type);
   RecordableTrack::copy_members_from (other, clone_type);
   ChannelTrack::copy_members_from (other, clone_type);
-  RegionOwner::copy_members_from (other, clone_type);
-  scales_.reserve (other.scales_.size ());
-// TODO
-#if 0
-  for (const auto &scale : get_scales_view())
-    {
-      scales_.push_back (scale->clone_raw_ptr ());
-      scales_.back ()->setParent (this);
-    }
-#endif
+  ArrangerObjectOwner<ChordRegion>::copy_members_from (other, clone_type);
+  ArrangerObjectOwner<ScaleObject>::copy_members_from (other, clone_type);
 }
 
 void
@@ -122,21 +75,8 @@ ChordTrack::initialize ()
 void
 ChordTrack::clear_objects ()
 {
-  beginResetModel ();
-  clear_regions ();
-  if (is_in_active_project ())
-    {
-      for (auto scale_id : std::ranges::reverse_view (scales_))
-        {
-          remove_scale (scale_id.id ());
-        }
-    }
-  else
-    {
-      scales_.clear ();
-    }
-  scale_snapshots_.clear ();
-  endResetModel ();
+  ArrangerObjectOwner<ChordRegion>::clear_objects ();
+  ArrangerObjectOwner<ScaleObject>::clear_objects ();
 }
 
 void
@@ -170,45 +110,27 @@ ChordTrack::init_loaded (
   AutomatableTrack::init_loaded (plugin_registry, port_registry);
   ProcessableTrack::init_loaded (plugin_registry, port_registry);
   RecordableTrack::init_loaded (plugin_registry, port_registry);
-  for (auto * scale : get_scales_view ())
+  for (auto * region : ArrangerObjectOwner<ChordRegion>::get_children_view ())
+    {
+      region->init_loaded ();
+    }
+  for (auto * scale : ArrangerObjectOwner<ScaleObject>::get_children_view ())
     {
       scale->init_loaded ();
     }
-
-  foreach_region ([&] (auto &chord_region) {
-    chord_region.track_id_ = get_uuid ();
-    chord_region.init_loaded ();
-  });
 }
 
 ScaleObject *
 ChordTrack::get_scale_at (size_t index) const
 {
-  return std::get<ScaleObject *> (scales_.at (index).get_object ());
-}
-
-void
-ChordTrack::insert_scale (ArrangerObjectUuidReference scale_ref, int idx)
-{
-  z_return_if_fail (idx >= 0);
-  z_return_if_fail (!get_uuid ().is_null ());
-  beginInsertRows ({}, idx, idx);
-  auto * scale = std::get<ScaleObject *> (scale_ref.get_object ());
-  scale->set_track_id (get_uuid ());
-  scales_.insert (scales_.begin () + idx, scale_ref);
-  for (const auto &[index, s] : std::views::enumerate (get_scales_view ()))
-    {
-      s->set_index_in_chord_track (index);
-    }
-  endInsertRows ();
-
-  // EVENTS_PUSH (EventType::ET_ARRANGER_OBJECT_CREATED, ret.get ());
+  return ArrangerObjectOwner<ScaleObject>::get_children_view ()[index];
 }
 
 ScaleObject *
 ChordTrack::get_scale_at_pos (const Position pos) const
 {
-  auto view = std::ranges::reverse_view (get_scales_view ());
+  auto view = std::ranges::reverse_view (
+    ArrangerObjectOwner<ScaleObject>::get_children_view ());
   auto it = std::ranges::find_if (view, [&pos] (const auto &scale) {
     return *scale->pos_ <= pos;
   });
@@ -219,56 +141,26 @@ ChordTrack::get_scale_at_pos (const Position pos) const
 ChordObject *
 ChordTrack::get_chord_at_pos (const Position pos) const
 {
-  auto region = get_region_at_pos (pos, false);
-  if (!region)
+  auto region_var =
+    ArrangerObjectUuidReferenceSpan{
+      ArrangerObjectOwner<ChordRegion>::get_children_vector ()
+    }
+      .get_bounded_object_at_pos (pos, false);
+  if (!region_var)
     {
       return nullptr;
     }
+  const auto * region = std::get<ChordRegion *> (*region_var);
 
-  auto local_frames =
-    (signed_frame_t) region->timeline_frames_to_local (pos.frames_, true);
+  const auto local_frames = region->timeline_frames_to_local (pos.frames_, true);
 
-  auto chord_objects_view =
-    region->get_object_ptrs_view () | std::views::reverse;
+  auto chord_objects_view = region->get_children_view () | std::views::reverse;
   auto it =
     std::ranges::find_if (chord_objects_view, [local_frames] (const auto &co) {
       return co->pos_->frames_ <= local_frames;
     });
 
   return it != chord_objects_view.end () ? (*it) : nullptr;
-}
-
-void
-ChordTrack::remove_scale (const ArrangerObject::Uuid &scale_id)
-{
-  // Find and remove the scale from the vector
-  auto it =
-    std::ranges::find (scales_, scale_id, &ArrangerObjectUuidReference::id);
-  z_return_if_fail (it != scales_.end ());
-
-  // Deselect the scale
-  auto   scale_ref = *it;
-  auto * scale = std::get<ScaleObject *> (scale_ref.get_object ());
-  scale->unset_selection_status_getter ();
-  // FIXME: use of global variable. this should be dependency-injected
-  ArrangerObjectFactory::get_instance ()
-    ->get_selection_manager_for_object (*scale)
-    .remove_from_selection (scale_id);
-
-  scale->index_in_chord_track_ = -1;
-  int pos = std::distance (scales_.begin (), it);
-  beginRemoveRows ({}, pos, pos);
-  scales_.erase (it);
-
-  // Update indices of remaining scales
-  for (const auto &[index, s] : std::views::enumerate (get_scales_view ()))
-    {
-      s->set_index_in_chord_track (static_cast<int> (index));
-    }
-  endRemoveRows ();
-
-  /* EVENTS_PUSH (
-    EventType::ET_ARRANGER_OBJECT_REMOVED, ArrangerObject::Type::ScaleObject); */
 }
 
 bool
@@ -279,14 +171,11 @@ ChordTrack::validate () const
     || !AutomatableTrack::validate_base ())
     return false;
 
-  bool valid = true;
-  foreach_region ([&] (auto &region) {
-    bool inner_valid = region.validate (Track::is_in_active_project (), 0);
-    if (!inner_valid)
-      {
-        valid = false;
-      }
-  });
+  bool valid = std::ranges::all_of (
+    ArrangerObjectOwner<ChordRegion>::get_children_view (),
+    [&] (const auto * region) {
+      return region->validate (Track::is_in_active_project (), 0);
+    });
   z_return_val_if_fail (valid, false);
 
 #if 0
