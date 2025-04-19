@@ -286,12 +286,6 @@ ArrangerObject::
 }
 
 void
-ArrangerObject::print () const
-{
-  z_debug (print_to_str ());
-}
-
-void
 ArrangerObject::move (const double ticks)
 {
   std::visit (
@@ -614,13 +608,6 @@ ArrangerObject::is_frozen () const
 {
   return std::visit (
     [&] (auto &&track) { return track->is_frozen (); }, get_track ());
-}
-
-bool
-ArrangerObject::is_hovered () const
-{
-  // return arranger_object_is_hovered (this, nullptr);
-  return false;
 }
 
 void

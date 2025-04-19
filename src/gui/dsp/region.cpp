@@ -317,7 +317,7 @@ RegionImpl<
   std::visit (
     [&] (auto &&region_track) {
       z_debug ("moving region {} to track {}", name_, track->get_name ());
-      z_debug ("before: {}", print_to_str ());
+      z_debug ("before: {}", get_derived ());
 
       auto * self = dynamic_cast<RegionT *> (this);
 
@@ -476,7 +476,7 @@ RegionImpl<
             .append_to_selection (self->get_uuid ());
         }
 
-      z_debug ("after: {}", print_to_str ());
+      z_debug ("after: {}", get_derived ());
 
       if (ZRYTHM_TESTING)
         {
@@ -619,11 +619,11 @@ RegionImpl<RegionT>::create_link_group_if_none ()
 
   if (!has_link_group ())
     {
-      z_debug ("creating link group for region: {}", print_to_str ());
+      z_debug ("creating link group for region: {}", get_derived ());
       int new_group = REGION_LINK_GROUP_MANAGER.add_group ();
       set_link_group (new_group, true);
 
-      z_debug ("after link group ({}): {}", new_group, print_to_str ());
+      z_debug ("after link group ({}): {}", new_group, get_derived ());
     }
 }
 
@@ -792,20 +792,6 @@ RegionImpl<RegionT>::copy_children (const RegionImpl &other)
         obj->clone_and_register (get_arranger_object_registry ())->get_uuid ());
     }
 #endif
-}
-
-std::string
-Region::print_to_str () const
-{
-  return fmt::format (
-    "{} [{}] - track name hash {} - "
-    // "lane pos {} - idx {} - "
-    "address {} - <{}> to <{}> ({} frames, {} ticks) - "
-    "loop end <{}> - link group {}",
-    name_, type_, get_track_id (),
-    // id_.lane_pos_, id_.idx_,
-    fmt::ptr (this), *pos_, *end_pos_, end_pos_->frames_ - pos_->frames_,
-    end_pos_->ticks_ - pos_->ticks_, loop_end_pos_, link_group_);
 }
 
 template <typename RegionT>

@@ -127,8 +127,6 @@ public:
   bool is_automation () const { return get_type () == Type::AutomationRegion; }
   bool is_chord () const { return get_type () == Type::ChordRegion; }
 
-  std::string print_to_str () const override;
-
   /**
    * Returns the region's link group.
    */
@@ -599,6 +597,16 @@ DEFINE_ENUM_FORMATTER (
   QT_TRANSLATE_NOOP_UTF8 ("MusicalMode", "Inherit"),
   QT_TRANSLATE_NOOP_UTF8 ("MusicalMode", "Off"),
   QT_TRANSLATE_NOOP_UTF8 ("MusicalMode", "On"));
+
+DEFINE_OBJECT_FORMATTER (Region, Region, [] (const Region &r) {
+  return fmt::format (
+    "Region[id: {}, name: {}, "
+    "<{}> to <{}> ({} frames, {} ticks) - loop end <{}> - link group {}"
+    "]",
+    r.get_uuid (), r.get_name (), *r.pos_, *r.end_pos_,
+    r.end_pos_->frames_ - r.pos_->frames_, r.end_pos_->ticks_ - r.pos_->ticks_,
+    r.loop_end_pos_, r.link_group_);
+})
 
 inline bool
 operator== (const Region &lhs, const Region &rhs)

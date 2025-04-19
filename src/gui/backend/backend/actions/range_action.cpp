@@ -166,9 +166,7 @@ RangeAction::perform_impl ()
               std::visit (
                 [&] (auto &&obj) {
                   using ObjT = base_type<decltype (obj)>;
-                  z_debug (
-                    "looping backwards. current object {}:",
-                    obj->print_to_str ());
+                  z_debug ("looping backwards. current object {}:", *obj);
 
                   /* if need split, split at range start */
                   if (need_to_split_object_at_pos (*obj, start_pos_))
@@ -205,8 +203,7 @@ RangeAction::perform_impl ()
                     {
                       obj->move (range_size_ticks);
                       objects_moved_.push_back (obj->get_uuid ());
-                      z_debug ("moved to object:");
-                      obj->print ();
+                      z_debug ("moved to object: {}", *obj);
                     }
                 },
                 obj_var);
@@ -222,9 +219,7 @@ RangeAction::perform_impl ()
                   std::visit (
                     [&] (auto &&obj) {
                       using ObjT = base_type<decltype (obj)>;
-                      z_debug (
-                        "looping backwards. current object {}",
-                        obj->print_to_str ());
+                      z_debug ("looping backwards. current object {}", *obj);
 
                       bool ends_inside_range = false;
                       if constexpr (std::derived_from<ObjT, BoundedObject>)

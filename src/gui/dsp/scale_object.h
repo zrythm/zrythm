@@ -19,9 +19,6 @@
 
 using namespace zrythm;
 
-constexpr int SCALE_OBJECT_MAGIC = 13187994;
-#define IS_SCALE_OBJECT(tr) (tr && tr->magic_ == SCALE_OBJECT_MAGIC)
-
 class ScaleObject final
     : public QObject,
       public TimelineObject,
@@ -62,13 +59,9 @@ public:
 
   void init_loaded () override;
 
-  void set_index_in_chord_track (int index);
-
   void set_scale (const MusicalScale &scale) { scale_ = scale; }
 
   std::string gen_human_friendly_name () const override;
-
-  std::string print_to_str () const override;
 
   std::optional<ArrangerObjectPtrVariant> find_in_project () const override;
 
@@ -86,11 +79,6 @@ public:
 public:
   /** The scale descriptor. */
   MusicalScale scale_;
-
-  /** The index of the scale in the chord tack. */
-  int index_in_chord_track_ = -1;
-
-  int magic_ = SCALE_OBJECT_MAGIC;
 };
 
 inline bool
@@ -102,13 +90,11 @@ operator== (const ScaleObject &a, const ScaleObject &b)
               == static_cast<const MuteableObject &> (b)
          && static_cast<const ArrangerObject &> (a)
               == static_cast<const ArrangerObject &> (b)
-         && a.scale_ == b.scale_
-         && a.index_in_chord_track_ == b.index_in_chord_track_;
+         && a.scale_ == b.scale_;
 }
 
 DEFINE_OBJECT_FORMATTER (ScaleObject, ScaleObject, [] (const ScaleObject &so) {
-  return fmt::format (
-    "ScaleObject[index_in_chord_track_: {}]", so.index_in_chord_track_);
+  return fmt::format ("ScaleObject[position: {}]", *so.pos_);
 })
 
 /**

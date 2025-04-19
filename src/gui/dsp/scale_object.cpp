@@ -22,7 +22,6 @@ ScaleObject::init_after_cloning (
   const ScaleObject &other,
   ObjectCloneType    clone_type)
 {
-  index_in_chord_track_ = other.index_in_chord_track_;
   scale_ = other.scale_;
   TimelineObject::copy_members_from (other, clone_type);
   MuteableObject::copy_members_from (other, clone_type);
@@ -33,12 +32,6 @@ void
 ScaleObject::init_loaded ()
 {
   ArrangerObject::init_loaded_base ();
-}
-
-std::string
-ScaleObject::print_to_str () const
-{
-  return fmt::format ("ScaleObject: {} | {}", "TODO print scale", *pos_);
 }
 
 std::optional<ArrangerObjectPtrVariant>
@@ -80,12 +73,6 @@ ScaleObject::insert_clone_to_project () const
   P_CHORD_TRACK->insert_scale (*clone, index_in_chord_track_);
   return clone;
 #endif
-}
-
-void
-ScaleObject::set_index_in_chord_track (int index)
-{
-  index_in_chord_track_ = index;
 }
 
 bool

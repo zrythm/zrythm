@@ -68,8 +68,6 @@ public:
   void
   init_after_cloning (const Marker &other, ObjectCloneType clone_type) override;
 
-  std::string print_to_str () const override;
-
   std::optional<ArrangerObjectPtrVariant> find_in_project () const override;
 
   ArrangerObjectPtrVariant
@@ -99,7 +97,9 @@ operator== (const Marker &lhs, const Marker &rhs)
 }
 
 DEFINE_OBJECT_FORMATTER (Marker, Marker, [] (const Marker &m) {
-  return fmt::format ("Marker[name: {}]", m.get_name ());
+  return fmt::format (
+    "Marker[name: {}, type: {}, position: {}]", m.get_name (),
+    ENUM_NAME (m.marker_type_), *m.pos_);
 })
 
 /**

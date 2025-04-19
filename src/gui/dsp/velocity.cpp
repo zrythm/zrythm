@@ -99,12 +99,6 @@ Velocity::find_in_project () const
   return prj_mn->vel_;
 }
 
-std::string
-Velocity::print_to_str () const
-{
-  return fmt::format ("Velocity: {}", vel_);
-}
-
 bool
 Velocity::validate (bool is_project, double frames_per_tick) const
 {

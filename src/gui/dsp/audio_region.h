@@ -184,7 +184,8 @@ operator== (const AudioRegion &lhs, const AudioRegion &rhs)
 }
 
 DEFINE_OBJECT_FORMATTER (AudioRegion, AudioRegion, [] (const AudioRegion &ar) {
-  return fmt::format ("AudioRegion[id: {}]", ar.get_uuid ());
+  return fmt::format (
+    "AudioRegion[id: {}, {}]", ar.get_uuid (), static_cast<const Region &> (ar));
 })
 
 /**

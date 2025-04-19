@@ -105,12 +105,6 @@ ChordObject::insert_clone_to_project () const
 }
 
 std::string
-ChordObject::print_to_str () const
-{
-  return fmt::format ("ChordObject: {} {}", get_uuid (), chord_index_);
-}
-
-std::string
 ChordObject::gen_human_friendly_name () const
 {
   return getChordDescriptor ()->to_string ();

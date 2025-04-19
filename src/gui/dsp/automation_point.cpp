@@ -40,14 +40,6 @@ AutomationPoint::init_loaded ()
   RegionOwnedObject::init_loaded_base ();
 }
 
-std::string
-AutomationPoint::print_to_str () const
-{
-  return fmt::format (
-    "AutomationPoint(fvalue={}, normalized_val={}, pos={})", fvalue_,
-    normalized_val_, *pos_);
-}
-
 std::optional<ArrangerObjectPtrVariant>
 AutomationPoint::find_in_project () const
 {

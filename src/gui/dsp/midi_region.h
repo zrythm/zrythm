@@ -207,11 +207,6 @@ public:
     std::vector<Velocity *> &velocities,
     bool                     inside);
 
-  /**
-   * @copydoc ArrangerObject::print_to_str()
-   */
-  std::string print_to_str () const override;
-
   bool validate (bool is_project, double frames_per_tick) const override;
 
   void init_after_cloning (const MidiRegion &other, ObjectCloneType clone_type)
@@ -285,7 +280,8 @@ operator== (const MidiRegion &lhs, const MidiRegion &rhs)
 }
 
 DEFINE_OBJECT_FORMATTER (MidiRegion, MidiRegion, [] (const MidiRegion &mr) {
-  return fmt::format ("MidiRegion[id: {}]", mr.get_uuid ());
+  return fmt::format (
+    "MidiRegion[id: {}, {}]", mr.get_uuid (), static_cast<const Region &> (mr));
 })
 
 /**

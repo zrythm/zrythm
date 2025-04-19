@@ -123,16 +123,8 @@ MidiRegion::print_midi_notes () const
 {
   for (const auto &mn : get_children_view ())
     {
-      z_info ("Note");
-      mn->print ();
+      z_info ("Note: {}", *mn);
     }
-}
-
-std::string
-MidiRegion::print_to_str () const
-{
-  // TODO
-  return "";
 }
 
 MidiNote *

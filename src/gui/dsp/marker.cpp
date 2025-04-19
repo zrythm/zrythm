@@ -34,14 +34,6 @@ Marker::init_after_cloning (const Marker &other, ObjectCloneType clone_type)
   ArrangerObject::copy_members_from (other, clone_type);
 }
 
-std::string
-Marker::print_to_str () const
-{
-  return fmt::format (
-    "Marker: name: {}, type: {},  position: {}", name_,
-    ENUM_NAME (marker_type_), *pos_);
-}
-
 std::optional<ArrangerObjectPtrVariant>
 Marker::find_in_project () const
 {

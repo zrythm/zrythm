@@ -99,8 +99,6 @@ public:
   [[gnu::hot]] double
   get_normalized_value_in_curve (AutomationRegion * region, double x) const;
 
-  std::string print_to_str () const override;
-
   /**
    * Sets the curviness of the AutomationPoint.
    */

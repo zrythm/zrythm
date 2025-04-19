@@ -107,8 +107,6 @@ public:
 
   std::optional<ArrangerObjectPtrVariant> find_in_project () const override;
 
-  std::string print_to_str () const override;
-
   ArrangerObjectPtrVariant
   add_clone_to_project (bool fire_events) const override;
 

@@ -99,7 +99,8 @@ operator== (const ChordRegion &lhs, const ChordRegion &rhs)
 }
 
 DEFINE_OBJECT_FORMATTER (ChordRegion, ChordRegion, [] (const ChordRegion &cr) {
-  return fmt::format ("ChordRegion[id: {}]", cr.get_uuid ());
+  return fmt::format (
+    "ChordRegion[id: {}, {}]", cr.get_uuid (), static_cast<const Region &> (cr));
 })
 
 /**

@@ -338,18 +338,9 @@ ArrangerObjectSpanImpl<Range>::copy_arranger_object_identifier (
           dest->set_name (src->get_name ());
         }
 
-      if constexpr (std::derived_from<ObjT, Region>)
-        {
-          // dest->id_ = src->id_;
-        }
-
       if constexpr (std::is_same_v<ObjT, ChordObject>)
         {
           dest->chord_index_ = src->chord_index_;
-        }
-      if constexpr (std::is_same_v<ObjT, ScaleObject>)
-        {
-          dest->index_in_chord_track_ = src->index_in_chord_track_;
         }
     },
     dest_var);

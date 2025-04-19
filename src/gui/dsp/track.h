@@ -787,7 +787,7 @@ public:
           }
       }
 
-    z_debug ("inserted: {}", region->print_to_str ());
+    z_debug ("inserted: {}", *region);
   }
 
   // FIXME: break this dependency on AudioPool

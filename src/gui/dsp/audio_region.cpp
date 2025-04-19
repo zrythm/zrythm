@@ -407,8 +407,7 @@ AudioRegion::fix_positions (double frames_per_tick)
        * problem exists */
       if (extra_loop_frames == 1)
         {
-          z_debug (
-            "fixing position for audio region. before: {}", print_to_str ());
+          z_debug ("fixing position for audio region. before: {}", *this);
           if (loop_len == region_len)
             {
               end_pos_->add_frames (-1, AUDIO_ENGINE->ticks_per_frame_);
@@ -418,8 +417,7 @@ AudioRegion::fix_positions (double frames_per_tick)
                 }
             }
           loop_end_pos_.add_frames (-1, AUDIO_ENGINE->ticks_per_frame_);
-          z_debug (
-            "fixed position for audio region. after: {}", print_to_str ());
+          z_debug ("fixed position for audio region. after: {}", *this);
           return true;
         }
       else

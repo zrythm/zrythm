@@ -174,7 +174,9 @@ DEFINE_OBJECT_FORMATTER (
   AutomationRegion,
   AutomationRegion,
   [] (const AutomationRegion &ar) {
-    return fmt::format ("AutomationRegion[id: {}]", ar.get_uuid ());
+    return fmt::format (
+      "AutomationRegion[id: {}, {}]", ar.get_uuid (),
+      static_cast<const Region &> (ar));
   })
 
 /**

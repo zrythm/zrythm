@@ -153,14 +153,6 @@ public:
   using ArrangerObjectPtr = ArrangerObject *;
 
   /**
-   * @brief Returns whether the object is hovered in the corresponding arranger.
-   *
-   * @return true
-   * @return false
-   */
-  bool is_hovered () const;
-
-  /**
    * Generates a human readable name for the object.
    *
    * If the object has a name, this returns a copy of the name, otherwise
@@ -212,19 +204,16 @@ public:
            && (range_end_inclusive ? (pos_->frames_ <= global_frames_end) : (pos_->frames_ < global_frames_end));
   }
 
-  void set_parent_on_base_qproperties (QObject &derived);
-
   /**
-   * @brief Prints the given object to a string.
-   */
-  virtual std::string print_to_str () const = 0;
-
-  /**
-   * @brief Prints debug information about the given object.
+   * @brief Set the parent on QObject's that are children of this class.
    *
-   * Uses @ref print_to_str() internally.
+   * This is needed because we can only inherit from QObject on final classes,
+   * and this is not a final class, so final classes deriving from this are
+   * expected to call this method to establish the parent-child relationship.
+   *
+   * @param derived The derived class instance.
    */
-  void print () const;
+  void set_parent_on_base_qproperties (QObject &derived);
 
   /**
    * Getter.

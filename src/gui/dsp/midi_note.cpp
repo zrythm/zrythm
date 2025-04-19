@@ -26,17 +26,6 @@ MidiNote::init_loaded ()
   RegionOwnedObject::init_loaded_base ();
 }
 
-std::string
-MidiNote::print_to_str () const
-{
-  auto r = get_region ();
-  auto region = r ? r->get_name () : "unknown";
-  auto lane = r ? r->get_lane ().get_name () : "unknown";
-  return fmt::format (
-    "[Region '{}' : Lane '{}'] => MidiNote #{}: {} ~ {} | pitch: {} | velocity: {}",
-    region, lane, get_uuid (), *pos_, *end_pos_, pitch_, vel_->vel_);
-}
-
 ArrangerObjectPtrVariant
 MidiNote::add_clone_to_project (bool fire_events) const
 {

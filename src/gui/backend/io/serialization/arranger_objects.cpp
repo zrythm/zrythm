@@ -137,18 +137,12 @@ ChordObject::define_fields (const Context &ctx)
 void
 AudioRegion::define_fields (const Context &ctx)
 {
-  ArrangerObject::define_base_fields (ctx);
-  BoundedObject::define_base_fields (ctx);
-  LoopableObject::define_base_fields (ctx);
-  FadeableObject::define_base_fields (ctx);
-  MuteableObject::define_base_fields (ctx);
-  NamedObject::define_base_fields (ctx);
-  ColoredObject::define_base_fields (ctx);
-  Region::define_base_fields (ctx);
-
-  ISerializable<AudioRegion>::serialize_fields (
-    ctx, ISerializable<AudioRegion>::make_field ("clipId", clip_id_),
-    ISerializable<AudioRegion>::make_field ("gain", gain_));
+  using T = ISerializable<AudioRegion>;
+  T::call_all_base_define_fields<
+    ArrangerObject, BoundedObject, LoopableObject, FadeableObject,
+    MuteableObject, NamedObject, ColoredObject, Region> (ctx);
+  T::serialize_fields (
+    ctx, T::make_field ("clipId", clip_id_), T::make_field ("gain", gain_));
 }
 
 void
@@ -172,20 +166,15 @@ AutomationRegion::define_fields (const Context &ctx)
 void
 ScaleObject::define_fields (const Context &ctx)
 {
-  ArrangerObject::define_base_fields (ctx);
-  MuteableObject::define_base_fields (ctx);
-
-  ISerializable<ScaleObject>::serialize_fields (
-    ctx, ISerializable<ScaleObject>::make_field ("index", index_in_chord_track_),
-    ISerializable<ScaleObject>::make_field ("scale", scale_));
+  using T = ISerializable<ScaleObject>;
+  T::call_all_base_define_fields<ArrangerObject, MuteableObject> (ctx);
+  T::serialize_fields (ctx, T::make_field ("scale", scale_));
 }
 
 void
 Marker::define_fields (const Context &ctx)
 {
-  ArrangerObject::define_base_fields (ctx);
-  NamedObject::define_base_fields (ctx);
-
-  ISerializable<Marker>::serialize_fields (
-    ctx, ISerializable<Marker>::make_field ("markerType", marker_type_));
+  using T = ISerializable<Marker>;
+  T::call_all_base_define_fields<ArrangerObject, NamedObject> (ctx);
+  T::serialize_fields (ctx, T::make_field ("markerType", marker_type_));
 }
