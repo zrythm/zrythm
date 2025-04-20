@@ -157,7 +157,6 @@ clang-format-check:
   extends: .gnu-linux-template
   stage: check
   needs: []
-  cache: []
   script:
     - python3 scripts/run_clang_format.py --dry-run
 
@@ -165,7 +164,6 @@ reuse-check:
   extends: .gnu-linux-template
   stage: check
   needs: []
-  cache: []
   script:
    - reuse lint
 
@@ -173,7 +171,6 @@ exif-check:
   extends: .gnu-linux-template
   stage: check
   needs: []
-  cache: []
   script:
    - scripts/exif_check.sh
 

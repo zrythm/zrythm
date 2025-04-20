@@ -25,10 +25,10 @@ Color::Color (float r, float g, float b, float a)
 Color &
 Color::operator= (const GdkRGBA &color)
 {
-  red_ = color.red;
-  green_ = color.green;
-  blue_ = color.blue;
-  alpha_ = color.alpha;
+  red_ = static_cast<float> (color.red);
+  green_ = static_cast<float> (color.green);
+  blue_ = static_cast<float> (color.blue);
+  alpha_ = static_cast<float> (color.alpha);
   return *this;
 }
 
@@ -140,8 +140,9 @@ Color::morph (const Color &other, float amt) const
 
   float amt_inv = 1.f - amt;
   return {
-    amt_inv * red_ + amt * other.red_, amt_inv * green_ + amt * other.green_,
-    amt_inv * blue_ + amt * other.blue_, alpha_
+    (amt_inv * red_) + (amt * other.red_),
+    (amt_inv * green_) + (amt * other.green_),
+    (amt_inv * blue_) + (amt * other.blue_), alpha_
   };
 }
 
@@ -177,10 +178,10 @@ Color
 Color::get_mid_color (const Color &c1, const Color &c2, const float transition)
 {
   return {
-    c1.red_ * transition + c2.red_ * (1.f - transition),
-    c1.green_ * transition + c2.green_ * (1.f - transition),
-    c1.blue_ * transition + c2.blue_ * (1.f - transition),
-    c1.alpha_ * transition + c2.alpha_ * (1.f - transition)
+    (c1.red_ * transition) + (c2.red_ * (1.f - transition)),
+    (c1.green_ * transition) + (c2.green_ * (1.f - transition)),
+    (c1.blue_ * transition) + (c2.blue_ * (1.f - transition)),
+    (c1.alpha_ * transition) + (c2.alpha_ * (1.f - transition))
   };
 }
 

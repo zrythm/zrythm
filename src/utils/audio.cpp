@@ -273,17 +273,15 @@ AudioBuffer::
 void
 AudioBuffer::interleave_samples ()
 {
-  const int numChannels = getNumChannels ();
-  const int numSamples = getNumSamples ();
-
   // Create a temporary buffer to hold the interleaved data
-  zrythm::utils::audio::AudioBuffer tempBuffer (1, numChannels * numSamples);
+  zrythm::utils::audio::AudioBuffer tempBuffer (
+    1, getNumChannels () * getNumSamples ());
 
   // Interleave the channels
   int writeIndex = 0;
-  for (int sample = 0; sample < numSamples; ++sample)
+  for (const int sample : std::views::iota (0, getNumSamples ()))
     {
-      for (int channel = 0; channel < numChannels; ++channel)
+      for (const int channel : std::views::iota (0, getNumChannels ()))
         {
           tempBuffer.setSample (0, writeIndex++, getSample (channel, sample));
         }
