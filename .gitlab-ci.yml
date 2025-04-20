@@ -122,7 +122,7 @@ configure:mac-arm:
     - >-
       cmake -B $BUILDDIR $COMMON_CMAKE_OPTIONS
       -G "Xcode"
-      "-DCMAKE_PREFIX_PATH=/opt/zrythm-deps-installed:/opt/Qt6.9"
+      "-DCMAKE_PREFIX_PATH=/opt/zrythm-deps-installed;/opt/Qt6.9"
       -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
 
 configure:windows:
