@@ -83,11 +83,6 @@ default:
     paths:
       - venv
       - "$BUILDDIR/_deps/*-src"
-  # Short-term cache for build dir (pipeline-scoped)
-  - key: cache-$CI_PIPELINE_ID
-    paths:
-      - $BUILDDIR
-    when: on_success
 
 configure:gnu/linux:
   extends: .gnu-linux-template
@@ -103,6 +98,12 @@ configure:gnu/linux:
       -DCMAKE_C_COMPILER=gcc
       -DCMAKE_CXX_COMPILER=g++
       -DCMAKE_PREFIX_PATH=/opt/Qt6.9
+  artifacts:
+    paths:
+      - $BUILDDIR
+    exclude:
+      - "**/.git"
+    expire_in: 3 days
 
 configure:mac-arm:
   extends: .mac-arm-template
@@ -117,6 +118,12 @@ configure:mac-arm:
       -G "Xcode"
       "-DCMAKE_PREFIX_PATH=/opt/zrythm-deps-installed;/opt/Qt6.9"
       -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+  artifacts:
+    paths:
+      - $BUILDDIR
+    exclude:
+      - "**/.git"
+    expire_in: 3 days
 
 configure:windows:
   extends: .windows-template
@@ -139,11 +146,18 @@ configure:windows:
       -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreadedDLL"
       -DCMAKE_BUILD_TYPE=Debug
       "-DCMAKE_INSTALL_PREFIX=${PWD}\${env:INSTALLDIR}"
+  artifacts:
+    paths:
+      - $BUILDDIR
+    exclude:
+      - "**/.git"
+    expire_in: 3 days
 
 clang-format-check:
   extends: .gnu-linux-template
   stage: check
   needs: []
+  cache: []
   script:
     - python3 scripts/run_clang_format.py --dry-run
 
@@ -151,6 +165,7 @@ reuse-check:
   extends: .gnu-linux-template
   stage: check
   needs: []
+  cache: []
   script:
    - reuse lint
 
@@ -158,6 +173,7 @@ exif-check:
   extends: .gnu-linux-template
   stage: check
   needs: []
+  cache: []
   script:
    - scripts/exif_check.sh
 
@@ -176,6 +192,10 @@ build:gnu/linux:
       | python3 /usr/share/clang/clang-tidy-diff.py -p1
       -path ./builddir_cmake -config-file .clang-tidy
       -use-color || true # ignore errors for now
+  artifacts:
+    paths:
+      - $BUILDDIR
+    expire_in: 3 days
 
 build:mac-arm:
   extends: .mac-arm-template
