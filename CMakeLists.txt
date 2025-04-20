@@ -188,7 +188,7 @@ option(ZRYTHM_WITH_VALGRIND "Compile with valgrind lib (only for debugging)" OFF
 # Required Programs
 #==============================================================================
 
-find_package(Gettext REQUIRED)
+find_package(Gettext)
 include(FindPython3)
 if (${ZRYTHM_SHELL_COMPLETIONS})
   find_program(FLEX_EXECUTABLE "flex" REQUIRED)
