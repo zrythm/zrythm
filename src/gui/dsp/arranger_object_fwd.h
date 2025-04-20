@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
 #pragma once
 
 class ArrangerObject;
@@ -10,7 +13,6 @@ class ChordObject;
 class ScaleObject;
 class AutomationPoint;
 class Marker;
-class Velocity;
 using ArrangerObjectVariant = std::variant<
   MidiNote,
   ChordObject,

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
 #ifndef TRACK_FILTER_PROXY_MODEL_H
 #define TRACK_FILTER_PROXY_MODEL_H
 

@@ -82,8 +82,4 @@ operator== (const RegionOwnedObject &lhs, const RegionOwnedObject &rhs)
 template <typename T>
 concept RegionOwnedObjectSubclass = std::derived_from<T, RegionOwnedObject>;
 
-using RegionOwnedObjectVariant =
-  std::variant<Velocity, MidiNote, ChordObject, AutomationPoint>;
-using RegionOwnedObjectPtrVariant = to_pointer_variant<RegionOwnedObjectVariant>;
-
 #endif // __DSP_REGION_OWNED_OBJECT_H__

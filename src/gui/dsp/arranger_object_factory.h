@@ -1,6 +1,7 @@
-#pragma once
+// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <utility>
+#pragma once
 
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/dsp/arranger_object_all.h"
