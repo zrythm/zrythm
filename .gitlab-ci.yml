@@ -108,11 +108,9 @@ configure:gnu/linux:
     - >-
       cmake -B $BUILDDIR $COMMON_CMAKE_OPTIONS
       -G "Ninja"
-      -DCMAKE_C_COMPILER_LAUNCHER=ccache
-      -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       -DCMAKE_C_COMPILER=gcc
       -DCMAKE_CXX_COMPILER=g++
-      -DCMAKE_PREFIX_PATH=/opt/gtk-for-zrythm
+      -DCMAKE_PREFIX_PATH=/opt/Qt6.9
 
 configure:mac-arm:
   extends: .mac-arm-template
@@ -125,11 +123,8 @@ configure:mac-arm:
     - >-
       cmake -B $BUILDDIR $COMMON_CMAKE_OPTIONS
       -G "Xcode"
-      -DCMAKE_C_COMPILER_LAUNCHER=ccache
-      -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
-      -DCMAKE_C_COMPILER=clang
-      -DCMAKE_CXX_COMPILER=clang++
-      "-DCMAKE_PREFIX_PATH=/opt/zrythm-deps-installed;/Users/alex/gtk/inst"
+      "-DCMAKE_PREFIX_PATH=/opt/zrythm-deps-installed:/opt/Qt6.9"
+      -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
 
 configure:windows:
   extends: .windows-template
@@ -148,14 +143,11 @@ configure:windows:
       -DZRYTHM_TESTS=OFF
       -DZRYTHM_BENCHMARKS=OFF
       -DZRYTHM_FFTW3_THREADS_SEPARATE=FALSE
-      "-DCMAKE_PREFIX_PATH=C:\zrythm-deps-installed;C:\gtk-plus;C:\lv2;C:\gtk-build\gtk\x64\release"
+      "-DCMAKE_PREFIX_PATH=C:\zrythm-deps-installed;C:\Qt\Qt-6.9.0;C:\lv2"
       -G "Visual Studio 17 2022"
       -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreadedDLL"
       -DCMAKE_BUILD_TYPE=Debug
       "-DCMAKE_INSTALL_PREFIX=${PWD}\${env:INSTALLDIR}"
-      -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl
-      -DCMAKE_C_COMPILER_LAUNCHER=ccache
-      -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
 
 clang-format-check:
   extends: .gnu-linux-template

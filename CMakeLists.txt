@@ -934,6 +934,12 @@ endif()
 
 pkg_check_modules(RUBBERBAND rubberband REQUIRED IMPORTED_TARGET)
 
+if(MSVC)
+  find_package(Boost REQUIRED)
+else()
+  find_package(Boost REQUIRED CONFIG)
+endif()
+
 find_package(GTest REQUIRED)
 
 find_package(Qt6
@@ -980,6 +986,7 @@ list(APPEND zrythm_link_libs
   fmt::fmt
   spdlog::spdlog
   type_safe
+  Boost::boost
   Qt6::Core
   Qt6::Gui
   Qt6::Widgets

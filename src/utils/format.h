@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UTILS_FORMAT_H__
-#define __UTILS_FORMAT_H__
+#pragma once
 
 #include "zrythm-config.h"
 
@@ -14,6 +13,7 @@
 #include <QString>
 
 #include "juce_wrapper.h"
+#include <boost/describe.hpp>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 #include <magic_enum.hpp>
@@ -226,8 +226,75 @@ struct fmt::formatter<std::optional<T>> : fmt::formatter<std::string_view>
   }
 };
 
+// Universal formatter for all types described by BOOST_DESCRIBE_STRUCT or
+// BOOST_DESCRIBE_CLASS.
+template <class T>
+struct fmt::formatter<
+  T,
+  char,
+  std::enable_if_t<
+    boost::describe::has_describe_bases<T>::value
+    && boost::describe::has_describe_members<T>::value && !std::is_union_v<T>>>
+{
+  constexpr auto parse (format_parse_context &ctx)
+  {
+    const auto * it = ctx.begin ();
+    const auto * end = ctx.end ();
+
+    if (it != end && *it != '}')
+      {
+        throw std::format_error ("invalid format");
+      }
+
+    return it;
+  }
+
+  auto format (T const &t, format_context &ctx) const
+  {
+    using namespace boost::describe;
+
+    using Bd = describe_bases<T, mod_any_access>;
+    using Md = describe_members<T, mod_any_access>;
+
+    auto out = ctx.out ();
+
+    *out++ = '{';
+
+    bool first = true;
+
+    boost::mp11::mp_for_each<Bd> ([&] (auto D) {
+      if (!first)
+        {
+          *out++ = ',';
+        }
+
+      first = false;
+
+      out = fmt::format_to (out, " {}", (typename decltype (D)::type const &) t);
+    });
+
+    boost::mp11::mp_for_each<Md> ([&] (auto D) {
+      if (!first)
+        {
+          *out++ = ',';
+        }
+
+      first = false;
+
+      out = fmt::format_to (out, " .{}={}", D.name, t.*D.pointer);
+    });
+
+    if (!first)
+      {
+        *out++ = ' ';
+      }
+
+    *out++ = '}';
+
+    return out;
+  }
+};
+
 /**
  * @}
  */
-
-#endif

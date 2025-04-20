@@ -146,6 +146,8 @@ public:
 
   static std::string rgb_to_hex (float r, float g, float b);
 
+  friend bool operator== (const Color &lhs, const Color &rhs);
+
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 public:
@@ -154,9 +156,6 @@ public:
   float blue_ = 0.f;   ///< Blue.
   float alpha_ = 1.0f; ///< Alpha.
 };
-
-bool
-operator== (const Color &lhs, const Color &rhs);
 
 }; // namespace zrythm::utils
 
