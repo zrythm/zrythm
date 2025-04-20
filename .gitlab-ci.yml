@@ -88,7 +88,6 @@ default:
     paths:
       - $BUILDDIR
     when: on_success
-    expire_in: 4 hours
 
 configure:gnu/linux:
   extends: .gnu-linux-template
