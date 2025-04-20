@@ -21,11 +21,6 @@ struct FramesPerTick
 
   explicit FramesPerTick () = default;
 
-  explicit FramesPerTick (double frames_per_tick)
-      : type_safe::strong_typedef<FramesPerTick, double> (frames_per_tick)
-  {
-  }
-
   static_assert (StrongTypedef<FramesPerTick>);
 
   void
@@ -48,11 +43,6 @@ struct TicksPerFrame
   using type_safe::strong_typedef<TicksPerFrame, double>::strong_typedef;
 
   explicit TicksPerFrame () = default;
-
-  explicit TicksPerFrame (double frames_per_tick)
-      : type_safe::strong_typedef<TicksPerFrame, double> (frames_per_tick)
-  {
-  }
 
   static_assert (StrongTypedef<TicksPerFrame>);
 

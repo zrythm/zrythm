@@ -30,15 +30,9 @@ public:
     using UuidTag = void; // used by the fmt formatter below
     using type_safe::strong_typedef<Uuid, QUuid>::strong_typedef;
 
-    explicit Uuid () : type_safe::strong_typedef<Uuid, QUuid> () { }
-
-    explicit Uuid (const QUuid &uuid)
-        : type_safe::strong_typedef<Uuid, QUuid> (uuid)
-    {
-    }
+    explicit Uuid () = default;
 
     static_assert (StrongTypedef<Uuid>);
-    // static_assert (!IsStrongTypedef<EngineProcessTimeInfo>);
     // static_assert (type_safe::is_strong_typedef<Uuid>::value);
     // static_assert (std::is_same_v<type_safe::underlying_type<Uuid>, QUuid>);
 

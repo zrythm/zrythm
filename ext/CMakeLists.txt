@@ -19,34 +19,36 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(juce)
 
-FetchContent_Declare(
-  clap
-  GIT_REPOSITORY https://github.com/free-audio/clap.git
-  GIT_TAG 27f20f81dec40b930d79ef429fd35dcc2d45db5b # 1.2.2
-)
-FetchContent_MakeAvailable(clap)
-FetchContent_Declare(
-  clap-helpers
-  GIT_REPOSITORY https://github.com/free-audio/clap-helpers.git
-  GIT_TAG 59791394dc26637d9425c2745233a979602be2a7 # main branch
-)
-FetchContent_MakeAvailable(clap-helpers)
-
-juce_add_module(juce_clap_hosting)
-add_library(juce_clap_hosting_lib STATIC)
-target_link_libraries(juce_clap_hosting_lib
-  PRIVATE
-    juce_clap_hosting
-    juce_lib
+if(ZRYTHM_WITH_JUCE_CLAP_HOSTING)
+  FetchContent_Declare(
     clap
+    GIT_REPOSITORY https://github.com/free-audio/clap.git
+    GIT_TAG 27f20f81dec40b930d79ef429fd35dcc2d45db5b # 1.2.2
+  )
+  FetchContent_MakeAvailable(clap)
+  FetchContent_Declare(
     clap-helpers
-  PUBLIC
-    juce::juce_recommended_config_flags
-    juce::juce_recommended_lto_flags
-)
-target_include_directories(juce_clap_hosting_lib
-  INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/juce_clap_hosting"
-)
+    GIT_REPOSITORY https://github.com/free-audio/clap-helpers.git
+    GIT_TAG 59791394dc26637d9425c2745233a979602be2a7 # main branch
+  )
+  FetchContent_MakeAvailable(clap-helpers)
+
+  juce_add_module(juce_clap_hosting)
+  add_library(juce_clap_hosting_lib STATIC)
+  target_link_libraries(juce_clap_hosting_lib
+    PRIVATE
+      juce_clap_hosting
+      juce_lib
+      clap
+      clap-helpers
+    PUBLIC
+      juce::juce_recommended_config_flags
+      juce::juce_recommended_lto_flags
+  )
+  target_include_directories(juce_clap_hosting_lib
+    INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/juce_clap_hosting"
+  )
+endif()
 
 target_link_libraries(juce_lib
   PRIVATE
@@ -66,6 +68,7 @@ target_include_directories(juce_lib
   # FIXME should be private
   PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/ladspa"
 )
+
 target_compile_definitions(juce_lib
   PUBLIC
     JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1
@@ -73,9 +76,12 @@ target_compile_definitions(juce_lib
     JUCE_WEB_BROWSER=0
     JUCE_PLUGINHOST_VST3=1
     JUCE_PLUGINHOST_LADSPA=1
-    JUCE_PLUGINHOST_LV2=1
     JUCE_DISABLE_JUCE_VERSION_PRINTING=1
 )
+if(ZRYTHM_WITH_JUCE_LV2_HOSTING)
+  target_compile_definitions(juce_lib PUBLIC JUCE_PLUGINHOST_LV2=1)
+endif()
+
 if(IS_DEBUG_BUILD)
   target_compile_definitions(juce_lib PUBLIC JUCE_DEBUG=1 DEBUG=1)
 else()
@@ -88,8 +94,10 @@ endif()
 # sord/serd don't play well with UBSan
 if(ZRYTHM_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR)
   foreach(cur_lib juce_lib juce_clap_hosting_lib)
-    target_compile_options(${cur_lib} PRIVATE -fno-sanitize=undefined)
-    target_link_options(${cur_lib} PRIVATE -fno-sanitize=undefined)
+    if(TARGET ${cur_lib})
+      target_compile_options(${cur_lib} PRIVATE -fno-sanitize=undefined)
+      target_link_options(${cur_lib} PRIVATE -fno-sanitize=undefined)
+    endif()
   endforeach()
 endif()
 

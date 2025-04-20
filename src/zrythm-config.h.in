@@ -158,6 +158,9 @@
 
 #define USER_MANUAL_URL "@user_manual_url@"
 
+#cmakedefine01 ZRYTHM_WITH_JUCE_CLAP_HOSTING
+#cmakedefine01 ZRYTHM_WITH_JUCE_LV2_HOSTING
+
 #define ZRYTHM_PREFIX "@CMAKE_INSTALL_PREFIX@"
 
 // target major version (what this branch targets)

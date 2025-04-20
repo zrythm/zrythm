@@ -160,7 +160,9 @@ PluginScannerSubprocess::initialise (const juce::String &commandLineParameters)
   // formats must be initialized before starting to receive messages
   juce::Logger::writeToLog ("Adding default formats");
   format_manager_.addDefaultFormats ();
+#if ZRYTHM_WITH_JUCE_CLAP_HOSTING
   format_manager_.addFormat (new juce::CLAPPluginFormat ());
+#endif
   for (auto * format : format_manager_.getFormats ())
     {
       juce::Logger::writeToLog ("Found format: " + format->getName ());

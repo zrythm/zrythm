@@ -218,7 +218,9 @@ Worker::process ()
   // Initialize the format manager
   juce::AudioPluginFormatManager formatManager;
   formatManager.addDefaultFormats ();
+#if ZRYTHM_WITH_JUCE_CLAP_HOSTING
   formatManager.addFormat (new juce::CLAPPluginFormat ());
+#endif
 
   // Iterate through available formats
   for (auto * format : formatManager.getFormats ())

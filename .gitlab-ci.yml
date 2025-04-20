@@ -180,6 +180,12 @@ exif-check:
 build:gnu/linux:
   extends: .gnu-linux-template
   stage: build
+  needs:
+    - job: configure:gnu/linux
+      artifacts: true
+    - job: exif-check
+    - job: reuse-check
+    - job: clang-format-check
   script:
     - cmake --build $BUILDDIR
     - *unix_test_cmd

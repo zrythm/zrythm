@@ -91,6 +91,12 @@ else()
   set(OS_GNU OFF)
 endif()
 
+if(NOT APPLE)
+  set(OS_NOT_APPLE ON)
+else()
+  set(OS_NOT_APPLE OFF)
+endif()
+
 if(WIN32 AND MINGW)
   set(WIN_MINGW ON)
 else()
@@ -149,6 +155,8 @@ set(ZRYTHM_PACKAGE_VERSION "Version to use/force (when making an installer packa
 option(ZRYTHM_PROFILING "Build with profiling (for gprof)" OFF)
 option(ZRYTHM_MANPAGE "Build and install manpage" ${OS_GNU})
 option(ZRYTHM_SHELL_COMPLETIONS "Build and install shell completions" ${UNIX})
+option(ZRYTHM_WITH_JUCE_CLAP_HOSTING "Include JUCE clap hosting module (doesn't build on mac)" ${OS_NOT_APPLE})
+option(ZRYTHM_WITH_JUCE_LV2_HOSTING "Include JUCE LV2 hosting module (doesn't build on MSVC)" ${UNIX})
 option(ZRYTHM_USER_MANUAL "Build and install user manual" OFF)
 cmake_dependent_option(ZRYTHM_STRICT_SPHINX_OPTS "Use strict sphinx options (for docs, fail on warnings)" OFF "ZRYTHM_USER_MANUAL" OFF)
 option(ZRYTHM_STRICT "Compile and link with strict flags (warnings as errors, etc.)" OFF)
@@ -981,7 +989,6 @@ list(APPEND zrythm_link_libs
   yyjson::yyjson
   magic_enum::magic_enum
   juce_lib
-  juce_clap_hosting_lib
   backward_cpp::backward_cpp
   fmt::fmt
   spdlog::spdlog
@@ -998,6 +1005,10 @@ list(APPEND zrythm_link_libs
   Qt6::Concurrent
   GTest::GTest
 )
+
+if(ZRYTHM_WITH_JUCE_CLAP_HOSTING)
+  list(APPEND zrythm_link_libs juce_clap_hosting_lib)
+endif()
 
 if(ZRYTHM_YAML_PROJECT_COMPATIBILITY)
   list(APPEND zrythm_link_libs cyaml::cyaml)

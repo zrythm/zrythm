@@ -4,6 +4,8 @@
 #ifndef __ZRYTHM_JUCE_H__
 #define __ZRYTHM_JUCE_H__
 
+#include "zrythm-config.h"
+
 #ifdef __GNUC__
 #  pragma GCC diagnostic push
 #  pragma GCC diagnostic ignored "-Wundef"
@@ -19,7 +21,9 @@
 // #include "ext/juce/modules/juce_dsp/juce_dsp.h"
 #include "juce_audio_formats/juce_audio_formats.h"
 #include "juce_audio_processors/juce_audio_processors.h"
+#if ZRYTHM_WITH_JUCE_CLAP_HOSTING
 #include "juce_clap_hosting.h"
+#endif
 // clang-format on
 
 #ifdef __GNUC__
