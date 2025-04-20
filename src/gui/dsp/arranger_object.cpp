@@ -536,6 +536,3 @@ ArrangerObject::copy_members_from (
   type_ = other.type_;
   track_id_ = other.track_id_;
 }
-
-void
-ArrangerObject::init_loaded_base () { };

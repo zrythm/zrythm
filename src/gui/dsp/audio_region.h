@@ -59,8 +59,6 @@ public:
     AudioClipResolverFunc   clip_resolver,
     QObject *               parent = nullptr);
 
-  void init_loaded () override;
-
   /**
    * Returns the audio clip associated with the Region.
    */

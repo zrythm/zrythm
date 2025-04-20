@@ -19,12 +19,6 @@ NamedObject::gen_escaped_name ()
 }
 
 void
-NamedObject::init_loaded_base ()
-{
-  gen_escaped_name ();
-}
-
-void
 NamedObject::set_name_with_action (const std::string &name)
 {
   /* validate */

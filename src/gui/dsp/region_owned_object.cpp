@@ -15,11 +15,6 @@ RegionOwnedObject::copy_members_from (
 }
 
 void
-RegionOwnedObject::init_loaded_base ()
-{
-}
-
-void
 RegionOwnedObject::set_region_and_index (const Region &region)
 {
   region_id_ = region.get_uuid ();

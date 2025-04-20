@@ -20,17 +20,6 @@ ChordRegion::ChordRegion (
 }
 
 void
-ChordRegion::init_loaded ()
-{
-  ArrangerObject::init_loaded_base ();
-  NamedObject::init_loaded_base ();
-  for (const auto &chord : get_children_view ())
-    {
-      chord->init_loaded ();
-    }
-}
-
-void
 ChordRegion::init_after_cloning (
   const ChordRegion &other,
   ObjectCloneType    clone_type)

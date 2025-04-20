@@ -10,8 +10,3 @@ TimelineObject::copy_members_from (
   ObjectCloneType       clone_type)
 {
 }
-
-void
-TimelineObject::init_loaded_base ()
-{
-}

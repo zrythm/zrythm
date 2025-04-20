@@ -16,11 +16,6 @@ LoopableObject::copy_members_from (
   loop_end_pos_ = other.loop_end_pos_;
 }
 
-void
-LoopableObject::init_loaded_base ()
-{
-}
-
 int
 LoopableObject::get_num_loops (bool count_incomplete) const
 {

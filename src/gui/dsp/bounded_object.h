@@ -254,8 +254,6 @@ protected:
   void
   copy_members_from (const BoundedObject &other, ObjectCloneType clone_type);
 
-  void init_loaded_base ();
-
   bool
   are_members_valid (bool is_project, dsp::FramesPerTick frames_per_tick) const;
 

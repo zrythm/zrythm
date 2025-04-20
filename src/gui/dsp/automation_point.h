@@ -119,8 +119,6 @@ public:
   init_after_cloning (const AutomationPoint &other, ObjectCloneType clone_type)
     override;
 
-  void init_loaded () override;
-
   ArrangerObjectPtrVariant
   add_clone_to_project (bool fire_events) const override;
 

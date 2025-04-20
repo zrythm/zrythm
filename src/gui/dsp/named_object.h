@@ -52,8 +52,6 @@ public:
   Q_DISABLE_COPY_MOVE (NamedObject)
   ~NamedObject () override = default;
 
-  void init_loaded_base ();
-
   /**
    * Returns the name of the object.
    */

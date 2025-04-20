@@ -172,11 +172,6 @@ public:
   };
 
   /**
-   * Initializes the object after loading a Project.
-   */
-  virtual void init_loaded () = 0;
-
-  /**
    * Returns whether the given object is hit by the given  range.
    *
    * @param start Start position.
@@ -373,8 +368,6 @@ protected:
 
   void
   copy_members_from (const ArrangerObject &other, ObjectCloneType clone_type);
-
-  void init_loaded_base ();
 
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 

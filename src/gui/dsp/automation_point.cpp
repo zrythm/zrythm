@@ -35,13 +35,6 @@ AutomationPoint::AutomationPoint (
 }
 
 void
-AutomationPoint::init_loaded ()
-{
-  ArrangerObject::init_loaded_base ();
-  RegionOwnedObject::init_loaded_base ();
-}
-
-void
 AutomationPoint::init_after_cloning (
   const AutomationPoint &other,
   ObjectCloneType        clone_type)

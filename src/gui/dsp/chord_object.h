@@ -89,8 +89,6 @@ public:
   void init_after_cloning (const ChordObject &other, ObjectCloneType clone_type)
     override;
 
-  void init_loaded () override;
-
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 public:

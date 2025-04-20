@@ -22,18 +22,6 @@ AutomationRegion::AutomationRegion (
 }
 
 void
-AutomationRegion::init_loaded ()
-{
-  ArrangerObject::init_loaded_base ();
-  TimelineObject::init_loaded_base ();
-  NamedObject::init_loaded_base ();
-  for (auto * ap : get_children_view ())
-    {
-      ap->init_loaded ();
-    }
-}
-
-void
 AutomationRegion::print_automation () const
 {
   for (const auto &[index, ap] : std::views::enumerate (get_children_view ()))

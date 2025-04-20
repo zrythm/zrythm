@@ -57,8 +57,6 @@ public:
 public:
   DECLARE_FINAL_ARRANGER_OBJECT_CONSTRUCTORS (MidiRegion)
 
-  void init_loaded () override;
-
   /**
    * Starts an unended note with the given pitch and velocity and adds it to
    * @ref midi_notes_.

@@ -40,10 +40,6 @@ MarkerTrack::init_loaded (
   PluginRegistry &plugin_registry,
   PortRegistry   &port_registry)
 {
-  for (auto * marker : get_children_view ())
-    {
-      marker->init_loaded ();
-    }
 }
 
 Marker *

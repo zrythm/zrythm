@@ -22,13 +22,6 @@ MidiNote::MidiNote (
   BoundedObject::parent_base_qproperties (*this);
 }
 
-void
-MidiNote::init_loaded ()
-{
-  ArrangerObject::init_loaded_base ();
-  RegionOwnedObject::init_loaded_base ();
-}
-
 ArrangerObjectPtrVariant
 MidiNote::add_clone_to_project (bool fire_events) const
 {

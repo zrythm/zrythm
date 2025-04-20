@@ -35,8 +35,6 @@ class AutomationRegion final
 public:
   DECLARE_FINAL_ARRANGER_OBJECT_CONSTRUCTORS (AutomationRegion)
 
-  void init_loaded () override;
-
   /**
    * Prints the automation in this Region.
    */

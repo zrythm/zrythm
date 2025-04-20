@@ -239,7 +239,6 @@ ArrangerObjectSpanImpl<Range>::init_loaded (
             }
           else /* else if not project */
             {
-              o->init_loaded ();
               o->update_positions (true, false, frames_per_tick);
               if constexpr (std::derived_from<ObjectT, Region>)
                 {

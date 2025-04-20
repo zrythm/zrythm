@@ -32,12 +32,6 @@ ScaleObject::init_after_cloning (
   ArrangerObject::copy_members_from (other, clone_type);
 }
 
-void
-ScaleObject::init_loaded ()
-{
-  ArrangerObject::init_loaded_base ();
-}
-
 std::string
 ScaleObject::gen_human_friendly_name () const
 {

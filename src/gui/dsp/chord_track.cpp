@@ -110,14 +110,6 @@ ChordTrack::init_loaded (
   AutomatableTrack::init_loaded (plugin_registry, port_registry);
   ProcessableTrack::init_loaded (plugin_registry, port_registry);
   RecordableTrack::init_loaded (plugin_registry, port_registry);
-  for (auto * region : ArrangerObjectOwner<ChordRegion>::get_children_view ())
-    {
-      region->init_loaded ();
-    }
-  for (auto * scale : ArrangerObjectOwner<ScaleObject>::get_children_view ())
-    {
-      scale->init_loaded ();
-    }
 }
 
 ScaleObject *

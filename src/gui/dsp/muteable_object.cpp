@@ -15,11 +15,6 @@ MuteableObject::copy_members_from (
 }
 
 void
-MuteableObject::init_loaded_base ()
-{
-}
-
-void
 MuteableObject::set_muted (bool muted, bool fire_events)
 {
   muted_ = muted;

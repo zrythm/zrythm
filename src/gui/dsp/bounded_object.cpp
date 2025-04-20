@@ -32,11 +32,6 @@ BoundedObject::copy_members_from (
     }
 }
 
-void
-BoundedObject::init_loaded_base ()
-{
-}
-
 bool
 BoundedObject::are_members_valid (
   bool               is_project,

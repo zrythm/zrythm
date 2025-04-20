@@ -59,8 +59,6 @@ protected:
   void
   copy_members_from (const RegionOwnedObject &other, ObjectCloneType clone_type);
 
-  void init_loaded_base ();
-
   DECLARE_DEFINE_BASE_FIELDS_METHOD ();
 
 public:

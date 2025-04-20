@@ -57,8 +57,12 @@ MuteableObject::define_base_fields (const Context &ctx)
 void
 NamedObject::define_base_fields (const Context &ctx)
 {
-  ISerializable<NamedObject>::serialize_fields (
-    ctx, ISerializable<NamedObject>::make_field ("name", name_));
+  using T = ISerializable<NamedObject>;
+  T::serialize_fields (ctx, T::make_field ("name", name_));
+  if (ctx.is_deserializing ())
+    {
+      gen_escaped_name ();
+    }
 }
 
 void

@@ -37,8 +37,6 @@ public:
 
   using RegionT = RegionImpl<ChordRegion>;
 
-  void init_loaded () override;
-
   bool
   validate (bool is_project, dsp::FramesPerTick frames_per_tick) const override;
 

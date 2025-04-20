@@ -41,11 +41,6 @@ AutomationTrack::AutomationTrack (
 void
 AutomationTrack::init_loaded ()
 {
-  /* init regions */
-  for (auto * region : get_children_view ())
-    {
-      region->init_loaded ();
-    }
 }
 
 // ========================================================================

@@ -464,14 +464,6 @@ AudioRegion::validate (bool is_project, dsp::FramesPerTick frames_per_tick) cons
 }
 
 void
-AudioRegion::init_loaded ()
-{
-  ArrangerObject::init_loaded_base ();
-  NamedObject::init_loaded_base ();
-  z_return_if_fail (get_clip ());
-}
-
-void
 AudioRegion::init_after_cloning (
   const AudioRegion &other,
   ObjectCloneType    clone_type)

@@ -65,8 +65,6 @@ public:
     return marker_type_ != Type::Start && marker_type_ != Type::End;
   }
 
-  void init_loaded () override;
-
   void
   init_after_cloning (const Marker &other, ObjectCloneType clone_type) override;
 

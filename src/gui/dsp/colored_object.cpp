@@ -13,11 +13,6 @@ ColoredObject::copy_members_from (
   use_color_ = other.use_color_;
 }
 
-void
-ColoredObject::init_loaded_base ()
-{
-}
-
 QColor
 ColoredObject::get_effective_color () const
 {

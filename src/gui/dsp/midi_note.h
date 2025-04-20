@@ -65,8 +65,6 @@ public:
 
   // ========================================================================
 
-  void init_loaded () override;
-
   void set_cache_val (const uint8_t val) { cache_pitch_ = val; }
 
   /**

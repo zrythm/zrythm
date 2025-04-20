@@ -30,14 +30,6 @@ ChordObject::init_after_cloning (
   chord_index_ = other.chord_index_;
 }
 
-void
-ChordObject::init_loaded ()
-{
-  ArrangerObject::init_loaded_base ();
-  RegionOwnedObject::init_loaded_base ();
-  MuteableObject::init_loaded_base ();
-}
-
 /**
  * Returns the ChordDescriptor associated with this ChordObject.
  */

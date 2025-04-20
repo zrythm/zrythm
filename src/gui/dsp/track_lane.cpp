@@ -20,10 +20,6 @@ void
 TrackLaneImpl<RegionT>::init_loaded (LanedTrackT * track)
 {
   track_ = track;
-  for (auto * region : this->get_children_view ())
-    {
-      region->init_loaded ();
-    }
 }
 
 template <typename RegionT>

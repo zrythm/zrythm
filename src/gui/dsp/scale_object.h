@@ -52,8 +52,6 @@ public:
   void init_after_cloning (const ScaleObject &other, ObjectCloneType clone_type)
     override;
 
-  void init_loaded () override;
-
   void set_scale (const MusicalScale &scale) { scale_ = scale; }
 
   std::string gen_human_friendly_name () const override;

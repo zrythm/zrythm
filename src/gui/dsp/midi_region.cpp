@@ -60,17 +60,6 @@ MidiRegion::MidiRegion (
 }
 
 void
-MidiRegion::init_loaded ()
-{
-  ArrangerObject::init_loaded_base ();
-  NamedObject::init_loaded_base ();
-  for (auto * note : get_children_view ())
-    {
-      note->init_loaded ();
-    }
-}
-
-void
 MidiRegion::init_after_cloning (
   const MidiRegion &other,
   ObjectCloneType   clone_type)

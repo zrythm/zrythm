@@ -19,13 +19,6 @@ Marker::Marker (
 }
 
 void
-Marker::init_loaded ()
-{
-  ArrangerObject::init_loaded_base ();
-  NamedObject::init_loaded_base ();
-}
-
-void
 Marker::init_after_cloning (const Marker &other, ObjectCloneType clone_type)
 
 {

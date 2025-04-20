@@ -74,8 +74,6 @@ protected:
   void
   copy_members_from (const ColoredObject &other, ObjectCloneType clone_type);
 
-  void init_loaded_base ();
-
   template <typename Derived> void init_colored_object (this Derived &self)
   {
     const auto update_eff_color = [&self] () {

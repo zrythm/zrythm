@@ -129,7 +129,6 @@ ArrangerSelectionsAction::init_loaded_impl ()
 {
   const auto object_init_loaded_visitor = [&] (auto &&o) {
     using ObjectT = base_type<decltype (o)>;
-    o->init_loaded ();
     o->update_positions (true, false, frames_per_tick_);
     if constexpr (std::derived_from<ObjectT, Region>)
       {
@@ -168,16 +167,6 @@ ArrangerSelectionsAction::init_loaded_impl ()
         r1_var, r2_var);
     }
 #endif
-
-  if (region_before_)
-    {
-      std::visit (
-        [&] (auto &&r) { r->init_loaded (); }, region_before_.value ());
-    }
-  if (region_after_)
-    {
-      std::visit ([&] (auto &&r) { r->init_loaded (); }, region_after_.value ());
-    }
 }
 
 void
