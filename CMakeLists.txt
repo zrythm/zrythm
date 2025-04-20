@@ -1158,8 +1158,11 @@ add_subdirectory(po)
 add_subdirectory(data)
 add_subdirectory(src)
 
-qt_add_translations(TARGETS zrythm
+set(QT_NO_MISSING_CATALOG_LANGUAGE_WARNING ON)
+qt_add_translations(zrythm
   TS_FILE_DIR i18n
+  MERGE_QT_TRANSLATIONS
+  QT_TRANSLATION_CATALOGS qtbase
 )
 
 message(STATUS "Zrythm compile definitions: ${zrythm_definitions}")
