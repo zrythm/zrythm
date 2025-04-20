@@ -51,13 +51,6 @@ stages:
     BUILDDIR: "build_gnu_linux"
   before_script:
     - *unix-activate-venv
-  artifacts:
-    paths:
-      - $BUILDDIR
-    exclude:
-      - "**/.git"
-      - "**/_deps/*-src"
-    expire_in: 3 days
 
 .mac-arm-template:
   tags:
@@ -66,13 +59,6 @@ stages:
     BUILDDIR: "build_mac_arm"
   before_script:
     - *unix-activate-venv
-  artifacts:
-    paths:
-      - $BUILDDIR
-    exclude:
-      - "**/.git"
-      - "**/_deps/*-src"
-    expire_in: 3 days
 
 .windows-template:
   tags:
@@ -89,13 +75,6 @@ stages:
   before_script:
     - *windows-enable-vs-env
     - *windows-activate-venv
-  artifacts:
-    paths:
-      - $BUILDDIR
-    exclude:
-      - "**/.git"
-      - "**/_deps/*-src"
-    expire_in: 3 days
 
 default:
   cache:
@@ -104,6 +83,12 @@ default:
     paths:
       - venv
       - "$BUILDDIR/_deps/*-src"
+  # Short-term cache for build dir (pipeline-scoped)
+  - key: cache-$CI_PIPELINE_ID
+    paths:
+      - $BUILDDIR
+    when: on_success
+    expire_in: 4 hours
 
 configure:gnu/linux:
   extends: .gnu-linux-template
