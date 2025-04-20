@@ -968,7 +968,6 @@ target_compile_definitions(Qt6::Core INTERFACE
 list(APPEND zrythm_link_libs
   zita-resampler::zita-resampler
   SndFile::sndfile
-  cyaml::cyaml
   soxr::soxr
   # PkgConfig::CARLA
   # PkgConfig::RTAUDIO
@@ -999,6 +998,10 @@ list(APPEND zrythm_link_libs
   Qt6::Concurrent
   GTest::GTest
 )
+
+if(ZRYTHM_YAML_PROJECT_COMPATIBILITY)
+  list(APPEND zrythm_link_libs cyaml::cyaml)
+endif()
 
 if(CHROMAPRINT_FOUND)
   list(APPEND zrythm_link_libs PkgConfig::CHROMAPRINT)
