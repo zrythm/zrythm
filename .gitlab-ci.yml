@@ -146,7 +146,7 @@ configure:windows:
       -DZRYTHM_STRICT=ON
       -DZRYTHM_YAML_PROJECT_COMPATIBILITY=ON
       -DZRYTHM_TESTS=OFF
-      -DZRYTHM_BENCHMARKS=OFF 
+      -DZRYTHM_BENCHMARKS=OFF
       -DZRYTHM_FFTW3_THREADS_SEPARATE=FALSE
       "-DCMAKE_PREFIX_PATH=C:\zrythm-deps-installed;C:\gtk-plus;C:\lv2;C:\gtk-build\gtk\x64\release"
       -G "Visual Studio 17 2022"
@@ -189,8 +189,8 @@ build:gnu/linux:
     - *unix_test_cmd
     - ctest --test-dir $BUILDDIR -V --overwrite MemoryCheckCommand=valgrind --overwrite MemoryCheckCommandOptions="--undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1" -T memcheck || (cat "$BUILDDIR/Testing/Temporary/MemoryChecker.*.log" && exit 1)
     - >-
-      git diff -U0 HEAD^ 
-      | python3 /usr/share/clang/clang-tidy-diff.py -p1 
+      git diff -U0 HEAD^
+      | python3 /usr/share/clang/clang-tidy-diff.py -p1
       -path ./builddir_cmake -config-file .clang-tidy
       -use-color || true # ignore errors for now
 

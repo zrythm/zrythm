@@ -97,7 +97,7 @@ foreach(plugin_info ${plugins})
     target_link_libraries(${pl_underscored_name} PRIVATE ${pl_deps})
     target_link_options(${pl_underscored_name} PRIVATE ${pl_link_args})
     # target_compile_options(${pl_underscored_name} PRIVATE
-    # doesn't work on msvc  
+    # doesn't work on msvc
     # ${full_optimization_args}
     # )
     set_property(TARGET ${pl_underscored_name} PROPERTY CXX_STANDARD 11)

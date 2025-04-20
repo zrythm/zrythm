@@ -24,6 +24,8 @@ set(VERSION_UPDATE_FROM_GIT ${GIT_FOUND})
 set(PROJECT_NAME ZRYTHM) # set this temporarily to get the version
 include(GetVersionFromGitTag)
 
+include(CCache)
+
 #==============================================================================
 # Project Configuration
 #==============================================================================
