@@ -56,6 +56,7 @@ stages:
       - $BUILDDIR
     exclude:
       - "**/.git"
+      - "**/_deps/*-src"
     expire_in: 3 days
 
 .mac-arm-template:
@@ -70,6 +71,7 @@ stages:
       - $BUILDDIR
     exclude:
       - "**/.git"
+      - "**/_deps/*-src"
     expire_in: 3 days
 
 .windows-template:
@@ -92,6 +94,7 @@ stages:
       - $BUILDDIR
     exclude:
       - "**/.git"
+      - "**/_deps/*-src"
     expire_in: 3 days
 
 default:
