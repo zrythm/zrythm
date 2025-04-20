@@ -5,6 +5,7 @@
 # Resources & QML
 # ==============================================================================================
 
+set(MACOSX_BUNDLE_GUI_IDENTIFIER ${bundle_identifier})
 qt_add_executable(zrythm WIN32 MACOSX_BUNDLE)
 
 # add_subdirectory(resources)

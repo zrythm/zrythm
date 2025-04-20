@@ -203,6 +203,7 @@ find_program(ITSTOOL_EXECUTABLE itstool)
 
 set(prog_name "Zrythm")
 set(prog_name_lowercase "zrythm")
+set(bundle_identifier "org.zrythm.Zrythm")
 set(copyright_name "The Zrythm contributors")
 set(copyright_years "2018-2024")
 set(main_repo_url "https://gitlab.zrythm.org/zrythm/zrythm")

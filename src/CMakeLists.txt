@@ -80,7 +80,9 @@ set_target_properties(zrythm PROPERTIES
   WIN32_EXECUTABLE TRUE
 )
 
-install(TARGETS zrythm RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS zrythm
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 add_subdirectory(engine)
 add_dependencies(zrythm zrythm-engine plugin-scanner)
