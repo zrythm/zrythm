@@ -164,7 +164,7 @@ endif()
 option(ZRYTHM_CHECK_UPDATES "Check for updates on startup" ON)
 option(ZRYTHM_IS_FLATPAK "Whether building for a Flatpak" OFF)
 cmake_dependent_option(ZRYTHM_FOR_FLATHUB "Build for FlatHub (for packaging)" OFF "ZRYTHM_IS_FLATPAK" OFF)
-option(ZRYTHM_YAML_PROJECT_COMPATIBILITY "Compatibility with old CYAML-based projects (requires libcyaml)." ON)
+option(ZRYTHM_YAML_PROJECT_COMPATIBILITY "Compatibility with old CYAML-based projects (requires libcyaml)." OFF)
 option(ZRYTHM_RECORD_SWITCHES "Record compiler switches for debugging (if supported)" OFF)
 # Whether to look for fftw3_threads pkgconfig files (or libs directly if not found) separate from the main fftw3 one
 option(ZRYTHM_FFTW3_THREADS_SEPARATE "Look for fftw3_threads separately" ON)
