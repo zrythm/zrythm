@@ -30,7 +30,7 @@ TEST (AudioFileTest, ReadSamplesInterleaved)
   bool has_nonzero = false;
   for (float sample : samples)
     {
-      if (sample != 0.0f)
+      if (!utils::math::floats_near (sample, 0.0f, 0.0001f))
         {
           has_nonzero = true;
           break;

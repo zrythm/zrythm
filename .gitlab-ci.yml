@@ -203,6 +203,9 @@ build:gnu/linux:
 build:mac-arm:
   extends: .mac-arm-template
   stage: build
+  needs:
+    - job: configure:mac-arm
+      artifacts: true
   script:
     - cmake --build $BUILDDIR --config Debug
     - *unix_test_cmd
@@ -210,6 +213,9 @@ build:mac-arm:
 build:windows:
   extends: .windows-template
   stage: build
+  needs:
+    - job: configure:windows
+      artifacts: true
   script:
     - cmake --build ${env:BUILDDIR} --config Debug --verbose
     - ctest --test-dir ${env:BUILDDIR} -V; if (-not $?) { Get-Content ${env:BUILDDIR}/Testing/Temporary/LastTest.log; exit 1 }
