@@ -60,7 +60,12 @@ Project::Project (QObject * parent)
 
         )),
       timeline_ (new Timeline (this)),
-      clip_editor_ (new ClipEditor (*arranger_object_registry_, this)),
+      clip_editor_ (new ClipEditor (
+        *arranger_object_registry_,
+        [&] (const Track::Uuid &id) {
+          return get_track_registry ().find_by_id_or_throw (id);
+        },
+        this)),
       midi_mappings_ (std::make_unique<MidiMappings> ()),
       tracklist_ (new Tracklist (
         *this,
@@ -70,6 +75,9 @@ Project::Project (QObject * parent)
       undo_manager_ (new gui::actions::UndoManager (this)),
       arranger_object_factory_ (new ArrangerObjectFactory (
         *arranger_object_registry_,
+        [&] (const Track::Uuid &id) {
+          return get_track_registry ().find_by_id_or_throw (id);
+        },
         *gui::SettingsManager::get_instance (),
         [&] () { return audio_engine_->frames_per_tick_; },
         *snap_grid_timeline_,
@@ -1257,7 +1265,9 @@ Project::init_after_cloning (const Project &other, ObjectCloneType clone_type)
   audio_engine_ = other.audio_engine_->clone_unique (clone_type, this);
   tracklist_ = other.tracklist_->clone_qobject (this);
   clip_editor_ = other.clip_editor_->clone_qobject (
-    this, clone_type, *arranger_object_registry_);
+    this, clone_type, *arranger_object_registry_, [&] (const Track::Uuid &id) {
+      return get_track_registry ().find_by_id_or_throw (id);
+    });
   timeline_ = other.timeline_->clone_qobject (this);
   snap_grid_timeline_ = std::make_unique<SnapGrid> (*other.snap_grid_timeline_);
   snap_grid_editor_ = std::make_unique<SnapGrid> (*other.snap_grid_editor_);

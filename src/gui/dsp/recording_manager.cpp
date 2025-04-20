@@ -409,7 +409,8 @@ RecordingManager::delete_automation_points (
         }
 
       Position adj_pos = pos;
-      adj_pos.add_ticks (-region.pos_->ticks_, AUDIO_ENGINE->frames_per_tick_);
+      adj_pos.add_ticks (
+        -region.get_position ().ticks_, AUDIO_ENGINE->frames_per_tick_);
       auto * ap = ArrangerObjectFactory::get_instance ()->addAutomationPoint (
         &region, adj_pos.ticks_, prev_fvalue);
       region.last_recorded_ap_ = ap;
@@ -431,12 +432,13 @@ RecordingManager::create_automation_point (
     }
 
   Position adj_pos = pos;
-  adj_pos.add_ticks (-region.pos_->ticks_, AUDIO_ENGINE->frames_per_tick_);
+  adj_pos.add_ticks (
+    -region.get_position ().ticks_, AUDIO_ENGINE->frames_per_tick_);
   if (
     region.last_recorded_ap_
     && utils::math::floats_equal (
       region.last_recorded_ap_->normalized_val_, normalized_val)
-    && *region.last_recorded_ap_->pos_ == adj_pos)
+    && region.last_recorded_ap_->get_position () == adj_pos)
     {
       /* this block is used to avoid duplicate automation points */
       /* TODO this shouldn't happen and needs investigation */
@@ -678,10 +680,11 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                       if constexpr (
                         RegionWithChildren<base_type<decltype (region)>>)
                         {
-                          if (resume_pos < *region->pos_)
+                          if (resume_pos < region->get_position ())
                             {
-                              double ticks_delta =
-                                region->pos_->ticks_ - resume_pos.ticks_;
+                              const double ticks_delta =
+                                region->get_position ().ticks_
+                                - resume_pos.ticks_;
                               region->set_start_pos_full_size (
                                 resume_pos, AUDIO_ENGINE->frames_per_tick_);
                               region->add_ticks_to_children (
@@ -745,7 +748,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                     {
                       while (
                         new_region->get_children_vector ().size () > 0
-                        && *new_region->get_children_view ().front ()->pos_
+                        && new_region->get_children_view ().front ()->get_position ()
                              == resume_pos)
                         {
                           new_region->remove_object (
@@ -796,11 +799,11 @@ RecordingManager::handle_audio_event (const RecordingEvent &ev)
   region->set_end_pos_full_size (end_pos, AUDIO_ENGINE->frames_per_tick_);
 
   signed_frame_t r_obj_len_frames =
-    (region->end_pos_->frames_ - region->pos_->frames_);
+    (region->get_end_position ().frames_ - region->get_position ().frames_);
   z_return_if_fail_cmp (r_obj_len_frames, >=, 0);
 
   region->loop_end_pos_.from_frames (
-    region->end_pos_->frames_ - region->pos_->frames_,
+    region->get_end_position ().frames_ - region->get_position ().frames_,
     AUDIO_ENGINE->ticks_per_frame_);
   region->fade_out_pos_ = region->loop_end_pos_;
 
@@ -882,9 +885,11 @@ RecordingManager::handle_midi_event (const RecordingEvent &ev)
                   Position local_pos = start_pos;
                   Position local_end_pos = end_pos;
                   local_pos.add_ticks (
-                    -region->pos_->ticks_, AUDIO_ENGINE->frames_per_tick_);
+                    -region->get_position ().ticks_,
+                    AUDIO_ENGINE->frames_per_tick_);
                   local_end_pos.add_ticks (
-                    -region->pos_->ticks_, AUDIO_ENGINE->frames_per_tick_);
+                    -region->get_position ().ticks_,
+                    AUDIO_ENGINE->frames_per_tick_);
 
                   /* if overwrite mode, clear any notes inside the range */
                   if (
@@ -1025,7 +1030,7 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
               Position pos_to_end_new_r;
               if (region_at_end)
                 {
-                  pos_to_end_new_r = *region_at_end->pos_;
+                  pos_to_end_new_r = region_at_end->get_position ();
                 }
               else
                 {

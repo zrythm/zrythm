@@ -37,8 +37,8 @@ public:
     dsp::FramesPerTick frames_per_tick)
   {
     auto r = self.get_region ();
-    pos = *static_cast<Position *> (self.pos_);
-    pos.add_ticks (r->pos_->ticks_, frames_per_tick);
+    pos = self.get_position ();
+    pos.add_ticks (r->get_position ().ticks_, frames_per_tick);
   }
 
   /**

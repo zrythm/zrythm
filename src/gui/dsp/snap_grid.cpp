@@ -293,7 +293,7 @@ SnapGrid::get_prev_or_next_snap_point (
                   auto lane = std::get<TrackLaneT *> (lane_var);
                   for (auto * r : lane->get_children_view ())
                     {
-                      snap_point = *r->pos_;
+                      snap_point = r->get_position ();
                       if (
                         get_prev_point
                           ? (snap_point <= pivot_pos && snap_point > out_pos)
@@ -302,7 +302,7 @@ SnapGrid::get_prev_or_next_snap_point (
                           out_pos = snap_point;
                           snapped = true;
                         }
-                      snap_point = *r->end_pos_;
+                      snap_point = r->get_end_position ();
                       if (
                         get_prev_point
                           ? (snap_point <= pivot_pos && snap_point > out_pos)

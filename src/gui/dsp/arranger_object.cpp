@@ -18,8 +18,9 @@
 
 using namespace zrythm;
 
-ArrangerObject::ArrangerObject (Type type)
-    : pos_ (new PositionProxy ()), type_ (type)
+ArrangerObject::ArrangerObject (Type type, TrackResolver track_resolver)
+    : track_resolver_ (std::move (track_resolver)), pos_ (new PositionProxy ()),
+      type_ (type)
 {
 }
 
@@ -524,26 +525,6 @@ ArrangerObject::are_members_valid (
       return false;
     }
   return true;
-}
-
-TrackPtrVariant
-ArrangerObject::get_track () const
-{
-  if (track_id_.is_null ()) [[unlikely]]
-    {
-      throw ZrythmException ("track_name_hash_ is 0");
-    }
-
-  const auto &tracklist =
-    is_auditioner_ ? *SAMPLE_PROCESSOR->tracklist_ : *TRACKLIST;
-
-  auto track_opt = tracklist.get_track (track_id_);
-  if (!track_opt) [[unlikely]]
-    {
-      throw ZrythmException ("track not found");
-    }
-
-  return track_opt.value ();
 }
 
 void

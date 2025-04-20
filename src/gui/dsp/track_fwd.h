@@ -43,4 +43,6 @@ using OptionalTrackPtrVariant = std::optional<TrackPtrVariant>;
 
 using TrackUuid = utils::UuidIdentifiableObject<Track>::Uuid;
 
+using TrackResolver = std::function<TrackPtrVariant (const TrackUuid &)>;
+
 DEFINE_UUID_HASH_SPECIALIZATION (TrackUuid);

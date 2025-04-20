@@ -216,7 +216,7 @@ ProcessableTrack::fill_events_common (
               {
                 z_return_if_fail (midi_events);
                 r->fill_midi_events (
-                  nfo, need_note_off,
+                  track, nfo, need_note_off,
                   !is_transport_end && (is_loop_end || is_region_end),
                   *midi_events);
               }

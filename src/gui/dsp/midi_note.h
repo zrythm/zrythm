@@ -41,11 +41,7 @@ class MidiNote final
 public:
   using RegionT = MidiRegion;
 
-  MidiNote (const DeserializationDependencyHolder &dh)
-      : MidiNote (dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get ())
-  {
-  }
-  MidiNote (ArrangerObjectRegistry &obj_registry, QObject * parent = nullptr);
+  DECLARE_FINAL_ARRANGER_OBJECT_CONSTRUCTORS (MidiNote)
 
   Q_DISABLE_COPY_MOVE (MidiNote)
   ~MidiNote () override = default;
@@ -105,8 +101,6 @@ public:
    */
   void set_pitch (uint8_t val);
 
-  std::optional<ArrangerObjectPtrVariant> find_in_project () const override;
-
   ArrangerObjectPtrVariant
   add_clone_to_project (bool fire_events) const override;
 
@@ -158,8 +152,8 @@ operator== (const MidiNote &lhs, const MidiNote &rhs)
 
 DEFINE_OBJECT_FORMATTER (MidiNote, MidiNote, [] (const MidiNote &mn) {
   return fmt::format (
-    "MidiNote [{} ~ {}]: note {}, vel {}", *mn.pos_, *mn.end_pos_, mn.pitch_,
-    mn.vel_->vel_);
+    "MidiNote [{} ~ {}]: note {}, vel {}", mn.get_position (),
+    mn.get_end_position (), mn.pitch_, mn.vel_->vel_);
 });
 
 /**

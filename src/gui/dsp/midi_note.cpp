@@ -11,8 +11,11 @@
 
 #include <fmt/format.h>
 
-MidiNote::MidiNote (ArrangerObjectRegistry &obj_registry, QObject * parent)
-    : ArrangerObject (Type::MidiNote), QObject (parent),
+MidiNote::MidiNote (
+  ArrangerObjectRegistry &obj_registry,
+  TrackResolver           track_resolver,
+  QObject *               parent)
+    : ArrangerObject (Type::MidiNote, track_resolver), QObject (parent),
       RegionOwnedObject (obj_registry), vel_ (new Velocity (this))
 {
   ArrangerObject::set_parent_on_base_qproperties (*this);
@@ -190,21 +193,6 @@ MidiNote::init_after_cloning (const MidiNote &other, ObjectCloneType clone_type)
   MuteableObject::copy_members_from (other, clone_type);
   RegionOwnedObject::copy_members_from (other, clone_type);
   ArrangerObject::copy_members_from (other, clone_type);
-}
-
-std::optional<ArrangerObjectPtrVariant>
-MidiNote::find_in_project () const
-{
-  // TODO remove this method
-  return std::nullopt;
-#if 0
-  auto * r =
-    std::get<MidiRegion *> (*PROJECT->find_arranger_object_by_id (region_id_));
-  z_return_val_if_fail (
-    r && static_cast<int> (r->midi_notes_.size ()) > index_, std::nullopt);
-
-  return r->midi_notes_[index_];
-#endif
 }
 
 bool

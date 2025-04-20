@@ -42,14 +42,7 @@ class AutomationPoint final
 public:
   using RegionT = AutomationRegion;
 
-  AutomationPoint (const DeserializationDependencyHolder &dh)
-      : AutomationPoint (
-          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get ())
-  {
-  }
-  AutomationPoint (
-    ArrangerObjectRegistry &obj_registry,
-    QObject *               parent = nullptr);
+  DECLARE_FINAL_ARRANGER_OBJECT_CONSTRUCTORS (AutomationPoint)
   Q_DISABLE_COPY_MOVE (AutomationPoint)
   ~AutomationPoint () override;
 
@@ -122,8 +115,6 @@ public:
    */
   bool curves_up () const;
 
-  std::optional<ArrangerObjectPtrVariant> find_in_project () const override;
-
   void
   init_after_cloning (const AutomationPoint &other, ObjectCloneType clone_type)
     override;
@@ -138,6 +129,27 @@ public:
   bool
   validate (bool is_project, dsp::FramesPerTick frames_per_tick) const override;
 
+  friend bool operator< (const AutomationPoint &a, const AutomationPoint &b)
+  {
+#if 0
+  if (a.pos_ == b.pos_) [[unlikely]]
+    {
+      return a.index_ < b.index_;
+    }
+#endif
+
+    return a.pos_ < b.pos_;
+  }
+
+  friend bool operator== (const AutomationPoint &a, const AutomationPoint &b)
+  {
+    /* note: we don't care about the index, only the position and the value */
+    /* note2: previously, this code was comparing position ticks, now it only
+     * compares frames. TODO: if no problems are caused delete this note */
+    return a.pos_ == b.pos_
+           && utils::math::floats_near (a.fvalue_, b.fvalue_, 0.001f);
+  }
+
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 public:
@@ -149,29 +161,6 @@ public:
 
   dsp::CurveOptions curve_opts_{};
 };
-
-inline bool
-operator< (const AutomationPoint &a, const AutomationPoint &b)
-{
-#if 0
-  if (a.pos_ == b.pos_) [[unlikely]]
-    {
-      return a.index_ < b.index_;
-    }
-#endif
-
-  return a.pos_ < b.pos_;
-}
-
-inline bool
-operator== (const AutomationPoint &a, const AutomationPoint &b)
-{
-  /* note: we don't care about the index, only the position and the value */
-  /* note2: previously, this code was comparing position ticks, now it only
-   * compares frames. TODO: if no problems are caused delete this note */
-  return a.pos_ == b.pos_
-         && utils::math::floats_near (a.fvalue_, b.fvalue_, 0.001f);
-}
 
 /**
  * @brief FIXME: move to a more appropriate place.
@@ -200,8 +189,8 @@ DEFINE_OBJECT_FORMATTER (
   AutomationPoint,
   [] (const AutomationPoint &ap) {
     return fmt::format (
-      "AutomationPoint [{}]: val {}, normalized val {}", *ap.pos_, ap.fvalue_,
-      ap.normalized_val_);
+      "AutomationPoint [{}]: val {}, normalized val {}", ap.get_position (),
+      ap.fvalue_, ap.normalized_val_);
   });
 
 /**

@@ -882,6 +882,182 @@ Tracklist::import_regions (
 }
 
 void
+Tracklist::move_region_to_track (
+  ArrangerObjectPtrVariant region_var,
+  const Track::Uuid       &to_track_id,
+  int                      lane_or_at_index,
+  int                      index)
+{
+  auto to_track_var = get_track (to_track_id);
+  assert (to_track_var);
+
+  std::visit (
+    [&] (auto &&to_track, auto &&region) {
+      using RegionT = base_type<decltype (region)>;
+      if constexpr (std::derived_from<RegionT, Region>)
+        {
+          auto from_track_var = *get_track (*region->get_track_id ());
+          std::visit (
+            [&] (auto &&region_track) {
+              z_debug (
+                "moving region {} to track {}", region->get_name (),
+                to_track->get_name ());
+
+              const bool selected = region->getSelected ();
+              auto       clip_editor_region = CLIP_EDITOR->get_region ();
+
+          // TODO remove region from owner
+
+// TODO
+#if 0
+      int lane_pos = lane_or_at_index >= 0 ? lane_or_at_index : id_.lane_pos_;
+      int at_pos = lane_or_at_index >= 0 ? lane_or_at_index : id_.at_idx_;
+
+      if constexpr (is_automation ())
+        {
+          auto  automatable_track = dynamic_cast<AutomatableTrack *> (track);
+          auto &at = automatable_track->automation_tracklist_->ats_[at_pos];
+
+          /* convert the automation points to match the new automatable */
+          auto port_var = PROJECT->find_port_by_id (at->port_id_);
+          z_return_if_fail (
+            port_var.has_value ()
+            && std::holds_alternative<ControlPort *> (port_var.value ()));
+          auto * port = std::get<ControlPort *> (port_var.value ());
+          z_return_if_fail (port);
+          for (auto &ap : get_derived ().aps_)
+            {
+              ap->fvalue_ = port->normalized_val_to_real (ap->normalized_val_);
+            }
+
+          /* add the region to its new track */
+          try
+            {
+              if (index >= 0)
+                {
+                  track->insert_region (
+                    shared_this, at, -1, index, false, false);
+                }
+              else
+                {
+                  track->add_region (shared_this, at, -1, false, false);
+                }
+            }
+          catch (const ZrythmException &e)
+            {
+              e.handle ("Failed to add region to track");
+              return;
+            }
+
+          z_warn_if_fail (id_.at_idx_ == at->index_);
+          get_derived ().set_automation_track (*at);
+        }
+      else
+        {
+          if constexpr (is_laned ())
+            {
+              /* create lanes if they don't exist */
+              auto laned_track = dynamic_cast<LanedTrackImpl<
+                typename LaneOwnedObject<RegionT>::TrackLaneT> *> (track);
+              z_return_if_fail (laned_track);
+              laned_track->create_missing_lanes (lane_pos);
+            }
+
+          /* add the region to its new track */
+          try
+            {
+              if (index >= 0)
+                {
+                  track->insert_region (
+                    shared_this, nullptr, lane_pos, index, false, false);
+                }
+              else
+                {
+                  track->add_region (
+                    shared_this, nullptr, lane_pos, false, false);
+                }
+            }
+          catch (const ZrythmException &e)
+            {
+              e.handle ("Failed to add region to track");
+              return;
+            }
+
+          z_return_if_fail (id_.lane_pos_ == lane_pos);
+
+          if constexpr (is_laned ())
+            {
+              using TrackLaneT = typename LaneOwnedObject<RegionT>::TrackLaneT;
+              auto laned_track =
+                dynamic_cast<LanedTrackImpl<TrackLaneT> *> (track);
+              auto lane =
+                std::get<TrackLaneT *> (laned_track->lanes_.at (lane_pos));
+              z_return_if_fail (
+                !lane->region_list_->regions_.empty ()
+                && std::get<RegionT *> (lane->region_list_->regions_.at (id_.idx_))
+                     == dynamic_cast<RegionT *> (this));
+              get_derived ().set_lane (*lane);
+
+              laned_track->create_missing_lanes (lane_pos);
+
+              if (region_track)
+                {
+                  /* remove empty lanes if the region was the last on its track
+                   * lane
+                   */
+                  auto region_laned_track = dynamic_cast<LanedTrackImpl<
+                    typename LaneOwnedObject<RegionT>::TrackLaneT> *> (
+                    region_track);
+                  region_laned_track->remove_empty_last_lanes ();
+                }
+            }
+
+          if (link_group)
+            {
+              link_group->add_region (*this);
+            }
+        }
+#endif
+
+              /* reset the clip editor region because track_remove_region clears
+               * it */
+              if (
+                clip_editor_region.has_value ()
+                && std::holds_alternative<RegionT *> (
+                  clip_editor_region.value ()))
+                {
+                  if (
+                    std::get<RegionT *> (clip_editor_region.value ())
+                    == dynamic_cast<RegionT *> (this))
+                    {
+                      {
+                        CLIP_EDITOR->set_region (region->get_uuid ());
+                      }
+                    }
+                }
+
+              /* reselect if necessary */
+              if (selected)
+                {
+                  ArrangerObjectFactory::get_instance ()
+                    ->get_selection_manager_for_object (*region)
+                    .append_to_selection (region->get_uuid ());
+                }
+
+              // z_debug ("after: {}", get_derived ());
+
+              if (ZRYTHM_TESTING)
+                {
+                  REGION_LINK_GROUP_MANAGER.validate ();
+                }
+            },
+            from_track_var);
+        }
+    },
+    *to_track_var, region_var);
+}
+
+void
 Tracklist::import_files (
   const StringArray *    uri_list,
   const FileDescriptor * orig_file,

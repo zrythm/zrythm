@@ -132,7 +132,7 @@ ChordTrack::get_scale_at_pos (const Position pos) const
   auto view = std::ranges::reverse_view (
     ArrangerObjectOwner<ScaleObject>::get_children_view ());
   auto it = std::ranges::find_if (view, [&pos] (const auto &scale) {
-    return *scale->pos_ <= pos;
+    return scale->get_position () <= pos;
   });
 
   return it != view.end () ? (*it) : nullptr;
@@ -157,7 +157,7 @@ ChordTrack::get_chord_at_pos (const Position pos) const
   auto chord_objects_view = region->get_children_view () | std::views::reverse;
   auto it =
     std::ranges::find_if (chord_objects_view, [local_frames] (const auto &co) {
-      return co->pos_->frames_ <= local_frames;
+      return co->get_position ().frames_ <= local_frames;
     });
 
   return it != chord_objects_view.end () ? (*it) : nullptr;

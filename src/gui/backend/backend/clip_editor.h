@@ -44,11 +44,15 @@ class ClipEditor final
 public:
   ClipEditor (const DeserializationDependencyHolder &dh)
       : ClipEditor (
-          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get ())
+          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get (),
+          dh.get<TrackResolver> ())
   {
   }
 
-  ClipEditor (ArrangerObjectRegistry &reg, QObject * parent = nullptr);
+  ClipEditor (
+    ArrangerObjectRegistry &reg,
+    TrackResolver           track_resolver,
+    QObject *               parent = nullptr);
 
   // ============================================================================
   // QML Interface
@@ -132,6 +136,9 @@ public:
   }
 
 public:
+  ArrangerObjectRegistry &object_registry_;
+  TrackResolver           track_resolver_;
+
   /** Region currently attached to the clip editor. */
   std::optional<ArrangerObject::Uuid> region_id_;
 
@@ -144,8 +151,6 @@ public:
   // std::optional<RegionPtrVariant> region_;
 
   std::optional<TrackPtrVariant> track_;
-
-  ArrangerObjectRegistry &object_registry_;
 };
 
 /**

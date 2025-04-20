@@ -97,12 +97,12 @@ QuantizeOptions::to_string (NoteLength note_length, NoteType note_type)
 }
 
 const QuantizeOptions::Position *
-QuantizeOptions::get_prev_point (Position * pos) const
+QuantizeOptions::get_prev_point (const Position &pos) const
 {
-  z_return_val_if_fail (pos->is_positive (), nullptr);
+  z_return_val_if_fail (pos.is_positive (), nullptr);
 
   auto result = utils::algorithms::binary_search_nearby (
-    *pos, std::span (q_points_), true, true);
+    pos, std::span (q_points_), true, true);
   return result ? &result->get () : nullptr;
   // Position * prev_point = (Position *) algorithms_binary_search_nearby (
   //   pos, q_points_.data (), q_points_.size (), sizeof (Position),
@@ -112,21 +112,21 @@ QuantizeOptions::get_prev_point (Position * pos) const
 }
 
 const QuantizeOptions::Position *
-QuantizeOptions::get_next_point (Position * pos) const
+QuantizeOptions::get_next_point (const Position &pos) const
 {
-  z_return_val_if_fail (pos->is_positive (), nullptr);
+  z_return_val_if_fail (pos.is_positive (), nullptr);
 
   auto result = utils::algorithms::binary_search_nearby (
-    *pos, std::span (q_points_), false, true);
+    pos, std::span (q_points_), false, true);
   return result ? &result->get () : nullptr;
 }
 
-double
-QuantizeOptions::quantize_position (Position * pos)
+std::pair<dsp::Position, double>
+QuantizeOptions::quantize_position (const Position &pos)
 {
   auto prev_point = get_prev_point (pos);
   auto next_point = get_next_point (pos);
-  z_return_val_if_fail (prev_point && next_point, 0);
+  assert (prev_point && next_point);
 
   const double upper = rand_ticks_;
   const double lower = -rand_ticks_;
@@ -136,14 +136,14 @@ QuantizeOptions::quantize_position (Position * pos)
 
   /* if previous point is closer */
   double diff;
-  if (pos->ticks_ - prev_point->ticks_ <= next_point->ticks_ - pos->ticks_)
+  if (pos.ticks_ - prev_point->ticks_ <= next_point->ticks_ - pos.ticks_)
     {
-      diff = prev_point->ticks_ - pos->ticks_;
+      diff = prev_point->ticks_ - pos.ticks_;
     }
   /* if next point is closer */
   else
     {
-      diff = next_point->ticks_ - pos->ticks_;
+      diff = next_point->ticks_ - pos.ticks_;
     }
 
   /* multiply by amount */
@@ -153,9 +153,10 @@ QuantizeOptions::quantize_position (Position * pos)
   diff += rand_ticks;
 
   /* quantize position */
-  pos->add_ticks (diff, AUDIO_ENGINE->frames_per_tick_);
+  auto ret_pos = pos;
+  ret_pos.add_ticks (diff, AUDIO_ENGINE->frames_per_tick_);
 
-  return diff;
+  return { ret_pos, diff };
 }
 
 }; // namespace zrythm::gui::old_dsp

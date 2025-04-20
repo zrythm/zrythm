@@ -499,7 +499,7 @@ ArrangerSelectionsAction::update_region_link_groups (const auto &objects)
         [&] (auto &&_obj) {
           using ObjT = base_type<decltype (_obj)>;
           /* get the actual object from the project */
-          auto obj_var = _obj->find_in_project ();
+          auto obj_var = PROJECT->find_arranger_object_by_id (_obj->get_uuid ());
           z_return_if_fail (obj_var);
           const auto * obj = std::get<ObjT *> (*obj_var);
 
@@ -545,7 +545,8 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
               own_obj_ptr->flags_ |= ArrangerObject::Flags::NonProject;
 
               /* get the actual object from the project */
-              auto prj_obj = std::get<ObjT *> (*own_obj_ptr->find_in_project ());
+              auto prj_obj = std::get<ObjT *> (
+                *PROJECT->find_arranger_object_by_id (own_obj_ptr->get_uuid ()));
 
               /* remember if automation point */
               if constexpr (std::is_same_v<ObjT, AutomationPoint>)
@@ -631,7 +632,8 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
                               z_return_if_fail (at);
 
                               /* move the actual object */
-                              prj_obj->move_to_track (track, at->index_, -1);
+                              TRACKLIST->move_region_to_track (
+                                prj_obj, track->get_uuid (), at->index_, -1);
 
                               target_port_ = cur_at->port_id_;
                             }
@@ -682,7 +684,8 @@ ArrangerSelectionsAction::do_or_undo_move (bool do_it)
           if constexpr (std::is_same_v<ObjT, AutomationPoint>)
             {
               auto obj = std::get<AutomationPoint *> (
-                *first_own_obj->find_in_project ());
+                *PROJECT->find_arranger_object_by_id (
+                  first_own_obj->get_uuid ()));
               z_return_if_fail (obj);
 
               auto region =
@@ -734,7 +737,8 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
         {
           if constexpr (std::derived_from<ObjT, Region>)
             {
-              const auto track_before_var = obj->get_track ();
+              const auto track_before_var =
+                *PROJECT->find_track_by_id (*obj->get_track_id ());
               std::visit (
                 [&] (auto &&track_before) {
                   auto _track_to_move_to =
@@ -753,13 +757,13 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
                   if (ENUM_BITSET_TEST (
                         obj->flags_, ArrangerObject::Flags::NonProject))
                     {
-                      obj->track_id_ = track_to_move_to->get_uuid ();
+                      obj->set_track_id (track_to_move_to->get_uuid ());
                       z_trace ("Updated track name hash for non-project object");
                     }
                   else
                     {
-                      obj->move_to_track (
-                        track_to_move_to, -1,
+                      TRACKLIST->move_region_to_track (
+                        obj, track_to_move_to->get_uuid (), -1,
                         use_index_in_prev_lane ? index_in_prev_lane : -1);
                       z_trace ("Moved project object to track");
                     }
@@ -796,13 +800,13 @@ ArrangerSelectionsAction::move_obj_by_tracks_and_lanes (
                               r_track->create_missing_lanes (new_lane_pos);
                               z_trace (
                                 "Created missing lanes up to {}", new_lane_pos);
-                              obj->move_to_track (
-                                r_track, new_lane_pos,
+                              TRACKLIST->move_region_to_track (
+                                obj, r_track->get_uuid (), new_lane_pos,
                                 use_index_in_prev_lane ? index_in_prev_lane : -1);
                               z_trace ("Moved project object to new lane");
                             }
                         },
-                        obj->get_track ());
+                        *PROJECT->find_track_by_id (*obj->get_track_id ()));
                     }
                 }
             }
@@ -855,7 +859,8 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
            * backwards (the project object too) */
           if (do_it && first_run_)
             {
-              auto obj = std::get<ObjT *> (*own_obj->find_in_project ());
+              auto obj = std::get<ObjT *> (
+                *PROJECT->find_arranger_object_by_id (own_obj->get_uuid ()));
 
               z_debug ("{} moving original object backwards", index);
 
@@ -1139,7 +1144,8 @@ ArrangerSelectionsAction::do_or_undo_duplicate_or_link (bool link, bool do_it)
           else /* if undo */
             {
               /* find the actual object */
-              auto obj = std::get<ObjT *> (*own_obj->find_in_project ());
+              auto obj = std::get<ObjT *> (
+                *PROJECT->find_arranger_object_by_id (own_obj->get_uuid ()));
 
               /* if the object was created with linking, delete the links */
               if constexpr (RegionSubclass<ObjT>)
@@ -1303,7 +1309,8 @@ ArrangerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
               else
                 {
                   /* get the actual object from the project */
-                  auto obj_opt = own_obj->find_in_project ();
+                  auto obj_opt =
+                    PROJECT->find_arranger_object_by_id (own_obj->get_uuid ());
                   z_return_if_fail (obj_opt);
                   auto obj = std::get<ObjT *> (*obj_opt);
 
@@ -1429,7 +1436,8 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
 
                   /* get the actual object from the project */
                   auto obj =
-                    std::get<ObjT *> (*own_before_obj->find_in_project ());
+                    std::get<ObjT *> (*PROJECT->find_arranger_object_by_id (
+                      own_before_obj->get_uuid ()));
 
                   /* remove it */
                   obj->remove_from_project (true);
@@ -1450,7 +1458,8 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
                   own_after_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
                   /* get the actual object from the project */
-                  auto obj_opt = own_after_obj->find_in_project ();
+                  auto obj_opt = PROJECT->find_arranger_object_by_id (
+                    own_after_obj->get_uuid ());
                   z_return_if_fail (obj_opt);
                   auto * obj = std::get<ObjT *> (*obj_opt);
 
@@ -1518,8 +1527,8 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
 
           /* adjust the positions */
           auto [start, end] = *selected_positions_in_audio_editor_;
-          start.add_frames (-r->pos_->frames_, get_ticks_per_frame ());
-          end.add_frames (-r->pos_->frames_, get_ticks_per_frame ());
+          start.add_frames (-r->get_position ().frames_, get_ticks_per_frame ());
+          end.add_frames (-r->get_position ().frames_, get_ticks_per_frame ());
           auto num_frames =
             static_cast<unsigned_frame_t> (end.frames_ - start.frames_);
           z_return_if_fail (
@@ -1558,7 +1567,8 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
 
                       /* find the actual object */
                       auto obj =
-                        std::get<ObjT *> (*own_src_obj->find_in_project ());
+                        std::get<ObjT *> (*PROJECT->find_arranger_object_by_id (
+                          own_src_obj->get_uuid ()));
 
                       /* change the parameter */
                       switch (edit_type_)
@@ -1576,7 +1586,8 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
                           }
                           break;
                         case EditType::Position:
-                          obj->pos_ = own_dest_obj->pos_;
+                          obj->set_position_unvalidated (
+                            own_dest_obj->get_position ());
                           if constexpr (std::derived_from<ObjT, BoundedObject>)
                             {
                               obj->end_pos_ = own_dest_obj->end_pos_;
@@ -1628,7 +1639,8 @@ ArrangerSelectionsAction::do_or_undo_edit (bool do_it)
                             }
                           break;
                         case EditType::EditorFunction:
-                          obj->pos_ = own_dest_obj->pos_;
+                          obj->set_position_unvalidated (
+                            own_dest_obj->get_position ());
                           if constexpr (std::derived_from<ObjT, BoundedObject>)
                             {
                               obj->end_pos_ = own_dest_obj->end_pos_;
@@ -1709,10 +1721,11 @@ ArrangerSelectionsAction::do_or_undo_automation_fill (bool do_it)
         ArrangerObjectSpan::uuid_projection (sel_->front ()));
 
       /* get the actual object from the project */
-      auto region = std::get<AutomationRegion *> (*(
+      auto region = std::get<
+        AutomationRegion *> (*PROJECT->find_arranger_object_by_id (
         std::get<AutomationRegion *> (
           do_it ? region_before_.value () : region_after_.value ())
-          ->find_in_project ()));
+          ->get_uuid ()));
       z_return_if_fail (region);
 
       /* remove link */
@@ -1762,7 +1775,8 @@ ArrangerSelectionsAction::do_or_undo_split (bool do_it)
               if (do_it)
                 {
                   /* remove the original object from the project */
-                  auto obj = std::get<ObjT *> (*own_obj->find_in_project ());
+                  auto obj = std::get<ObjT *> (
+                    *PROJECT->find_arranger_object_by_id (own_obj->get_uuid ()));
                   z_return_if_fail (obj);
                   obj->remove_from_project (true);
 
@@ -1856,7 +1870,8 @@ ArrangerSelectionsAction::do_or_undo_merge (bool do_it)
           own_before_obj->flags_ |= ArrangerObject::Flags::NonProject;
 
           /* find the actual object */
-          auto prj_obj = std::get<ObjT *> (*own_before_obj->find_in_project ());
+          auto prj_obj = std::get<ObjT *> (
+            *PROJECT->find_arranger_object_by_id (own_before_obj->get_uuid ()));
 
           /* remove */
           prj_obj->remove_from_project (true);
@@ -1923,8 +1938,11 @@ ArrangerSelectionsAction::do_or_undo_resize (bool do_it)
 
                   /* find the actual object */
                   auto obj = std::get<ObjT *> (*(
-                    do_it ? own_obj_before->find_in_project ()
-                          : own_obj_after->find_in_project ()));
+                    do_it
+                      ? PROJECT->find_arranger_object_by_id (
+                          own_obj_before->get_uuid ())
+                      : PROJECT->find_arranger_object_by_id (
+                          own_obj_after->get_uuid ())));
 
                   auto type = ArrangerObject::ResizeType::Normal;
                   bool left = false;
@@ -2036,7 +2054,9 @@ ArrangerSelectionsAction::do_or_undo_quantize (bool do_it)
                   /* quantize it */
                   if (opts_->adj_start_)
                     {
-                      double ticks = opts_->quantize_position (obj->pos_);
+                      const auto &[new_pos, ticks] =
+                        opts_->quantize_position (obj->get_position ());
+                      obj->set_position_unvalidated (new_pos);
                       if constexpr (std::derived_from<ObjT, BoundedObject>)
                         {
                           obj->end_pos_->add_ticks (ticks, frames_per_tick_);
@@ -2046,11 +2066,13 @@ ArrangerSelectionsAction::do_or_undo_quantize (bool do_it)
                     {
                       if constexpr (std::derived_from<ObjT, BoundedObject>)
                         {
-                          opts_->quantize_position (obj->end_pos_);
+                          const auto &[new_pos, _] =
+                            opts_->quantize_position (obj->get_end_position ());
+                          obj->set_end_position_unvalidated (new_pos);
                         }
                     }
                   obj->position_setter_validated (
-                    *obj->pos_, AUDIO_ENGINE->ticks_per_frame_);
+                    obj->get_position (), AUDIO_ENGINE->ticks_per_frame_);
                   if constexpr (std::derived_from<ObjT, BoundedObject>)
                     {
                       obj->end_position_setter_validated (
@@ -2059,7 +2081,8 @@ ArrangerSelectionsAction::do_or_undo_quantize (bool do_it)
 
                   /* remember the quantized position so we can find the
                    * object when undoing */
-                  own_quantized_obj->pos_->set_to_pos (*obj->pos_);
+                  own_quantized_obj->get_position ().set_to_pos (
+                    obj->get_position ());
                   if constexpr (std::derived_from<ObjT, BoundedObject>)
                     {
                       own_quantized_obj->end_pos_->set_to_pos (*obj->end_pos_);
@@ -2069,11 +2092,12 @@ ArrangerSelectionsAction::do_or_undo_quantize (bool do_it)
                 {
                   /* unquantize it */
                   obj->position_setter_validated (
-                    *own_obj->pos_, AUDIO_ENGINE->ticks_per_frame_);
+                    own_obj->get_position (), AUDIO_ENGINE->ticks_per_frame_);
                   if constexpr (std::derived_from<ObjT, BoundedObject>)
                     {
                       obj->end_position_setter_validated (
-                        *own_obj->end_pos_, AUDIO_ENGINE->ticks_per_frame_);
+                        own_obj->get_end_position (),
+                        AUDIO_ENGINE->ticks_per_frame_);
                     }
                 }
             }

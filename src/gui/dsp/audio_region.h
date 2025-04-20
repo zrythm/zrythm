@@ -54,9 +54,10 @@ public:
 public:
   AudioRegion (const DeserializationDependencyHolder &dh);
   AudioRegion (
-    ArrangerObjectRegistry      &obj_registry,
-    const AudioClipResolverFunc &clip_resolver,
-    QObject *                    parent = nullptr);
+    ArrangerObjectRegistry &obj_registry,
+    TrackResolver           track_resolver,
+    AudioClipResolverFunc   clip_resolver,
+    QObject *               parent = nullptr);
 
   void init_loaded () override;
 

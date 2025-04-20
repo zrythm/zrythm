@@ -44,7 +44,7 @@ public:
   static Position position_projection (const VariantType &obj_var)
   {
     return std::visit (
-      [&] (auto &&obj) -> Position { return *obj->pos_; }, obj_var);
+      [&] (auto &&obj) -> Position { return obj->get_position (); }, obj_var);
   }
   static Position end_position_with_start_position_fallback_projection (
     const VariantType &obj_var)
@@ -54,11 +54,11 @@ public:
         using ObjT = base_type<decltype (obj)>;
         if constexpr (std::derived_from<ObjT, BoundedObject>)
           {
-            return *obj->end_pos_;
+            return obj->get_end_position ();
           }
         else
           {
-            return *obj->pos_;
+            return obj->get_position ();
           }
       },
       obj_var);
@@ -336,7 +336,7 @@ public:
     auto it = std::ranges::find_if (view, [&] (const auto &r_var) {
       auto r =
         Base::template derived_from_type_transformation<BoundedObject> (r_var);
-      return *r->pos_ <= pos
+      return r->get_position () <= pos
              && r->end_pos_->frames_ + (include_region_end ? 1 : 0) > pos.frames_;
     });
     return it != view.end () ? std::make_optional (*it) : std::nullopt;
@@ -450,7 +450,7 @@ public:
                     get_derived_object (prev_r1_ref)->get_lane (), frames,
                     prev_r1_clip->get_bit_depth (),
                     get_derived_object (prev_r1_ref)->get_name (),
-                    get_derived_object (prev_r1_ref)->pos_->ticks_);
+                    get_derived_object (prev_r1_ref)->get_position ().ticks_);
                 assert (
                   get_derived_object (new_object1_ref)->get_clip_id ()
                   != get_derived_object (prev_r1_ref)->get_clip_id ());
@@ -487,7 +487,8 @@ public:
       ->position_setter_validated (global_pos, ticks_per_frame);
     Position r2_local_end = *get_derived_object (new_object2_ref)->end_pos_;
     r2_local_end.add_ticks (
-      -get_derived_object (new_object2_ref)->pos_->ticks_, frames_per_tick);
+      -get_derived_object (new_object2_ref)->get_position ().ticks_,
+      frames_per_tick);
     if constexpr (std::derived_from<BoundedObjectT, FadeableObject>)
       {
         get_derived_object (new_object2_ref)
@@ -563,7 +564,7 @@ public:
                       ->append_children (children);
                     for (auto * child : children)
                       {
-                        if (child->pos_->frames_ < 0)
+                        if (child->get_position ().frames_ < 0)
                           get_derived_object (new_object2_ref)
                             ->remove_object (child->get_uuid ());
                       }
@@ -584,9 +585,9 @@ public:
                 at = self.get_automation_track ();
               }
             get_derived_object (new_object1_ref)
-              ->gen_name (self.get_name (), at, track);
+              ->generate_name (self.get_name (), at, track);
             get_derived_object (new_object2_ref)
-              ->gen_name (self.get_name (), at, track);
+              ->generate_name (self.get_name (), at, track);
           },
           track_var);
       }

@@ -61,12 +61,14 @@ public:
 
   friend Derived;
 
+private:
   constexpr Derived * get_derived () { return static_cast<Derived *> (this); }
   constexpr const Derived * get_derived () const
   {
     return static_cast<const Derived *> (this);
   }
 
+public:
   template <typename... Args>
   std::unique_ptr<Derived> clone_unique (
     ObjectCloneType clone_type = ObjectCloneType::Snapshot,

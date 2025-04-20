@@ -162,7 +162,9 @@ AutomationTrack::get_region_before_pos (
       {
         for (const auto &region : std::views::reverse (regions))
           {
-            if (*region->pos_ <= pos && *region->end_pos_ >= pos)
+            if (
+              region->get_position () <= pos
+              && region->get_end_position () >= pos)
               return region;
           }
       }
@@ -175,7 +177,9 @@ AutomationTrack::get_region_before_pos (
           {
             signed_frame_t distance_from_r_end =
               region->end_pos_->frames_ - pos.frames_;
-            if (*region->pos_ <= pos && distance_from_r_end > latest_distance)
+            if (
+              region->get_position () <= pos
+              && distance_from_r_end > latest_distance)
               {
                 latest_distance = distance_from_r_end;
                 latest_r = region;
@@ -213,7 +217,7 @@ AutomationTrack::get_ap_before_pos (
 
   for (auto * ap : std::ranges::reverse_view (r->get_children_view ()))
     {
-      if (ap->pos_->frames_ <= local_pos)
+      if (ap->get_position ().frames_ <= local_pos)
         {
           return ap;
         }
@@ -426,8 +430,8 @@ AutomationTrack::get_val_at_pos (
     std::abs (ap->normalized_val_ - next_ap->normalized_val_);
 
   /* ratio of how far in we are in the curve */
-  signed_frame_t ap_frames = ap->pos_->frames_;
-  signed_frame_t next_ap_frames = next_ap->pos_->frames_;
+  signed_frame_t ap_frames = ap->get_position ().frames_;
+  signed_frame_t next_ap_frames = next_ap->get_position ().frames_;
   double         ratio = 1.0;
   signed_frame_t numerator = localp - ap_frames;
   signed_frame_t denominator = next_ap_frames - ap_frames;

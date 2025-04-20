@@ -45,8 +45,6 @@ public: \
   /* helpers */ \
   /* ================================================================ */
 
-constexpr const char * REGION_PRINTF_FILENAME = "%s_%s.mid";
-
 template <typename RegionT> struct RegionChildType;
 
 template <> struct RegionChildType<MidiRegion>
@@ -120,8 +118,6 @@ class Region
 public:
   ~Region () override = default;
 
-  auto get_type () const { return type_; }
-
   bool is_midi () const { return get_type () == Type::MidiRegion; }
   bool is_audio () const { return get_type () == Type::AudioRegion; }
   bool is_automation () const { return get_type () == Type::AutomationRegion; }
@@ -164,25 +160,9 @@ public:
     bool *           is_loop) const;
 
   /**
-   * Generates a name for the Region, either using the given
-   * AutomationTrack or Track, or appending to the given base name.
-   */
-  void gen_name (
-    std::optional<std::string> base_name,
-    AutomationTrack *          at,
-    Track *                    track);
-
-  /**
    * Updates all other regions in the region link group, if any.
    */
   void update_link_group ();
-
-  // static std::optional<RegionPtrVariant> find (const RegionIdentifier &id);
-
-  /**
-   * Generates the filename for this region.
-   */
-  std::string generate_filename ();
 
   /**
    * Returns if this region is currently being recorded onto.
@@ -304,17 +284,6 @@ public:
   }
 
   /**
-   * Looks for the Region matching the identifier.
-   */
-  // [[gnu::hot]] static RegionTPtr find (const RegionIdentifier &id);
-
-  std::optional<ArrangerObjectPtrVariant> find_in_project () const final
-  {
-    // TODO remove this method
-    return std::nullopt;
-  }
-
-  /**
    * @brief Fills MIDI event queue from this MIDI or Chord region.
    *
    * The events are dequeued right after the call to this function.
@@ -334,6 +303,7 @@ public:
    * Port for example).
    */
   void fill_midi_events (
+    TrackPtrVariant              track_var,
     const EngineProcessTimeInfo &time_nfo,
     bool                         note_off_at_end,
     bool                         is_note_off_for_loop_or_region_end,
@@ -352,6 +322,7 @@ public:
     return std::get<ChildT *> (id.get_object ());
   }
 
+#if 0
   auto * get_region_owner (this const RegionT &self)
   {
     if constexpr (is_laned ())
@@ -383,6 +354,7 @@ public:
         return std::get<ChordTrack *> (self.get_track ());
       }
   }
+#endif
 
   auto &get_arranger_object_registry () const { return object_registry_; }
   auto &get_arranger_object_registry () { return object_registry_; }
@@ -400,42 +372,6 @@ public:
       {
         self.remove_object (obj.id ());
       }
-  }
-
-  /**
-   * Clones and copies all children from @p src to @p dest.
-   */
-  void copy_children (const RegionImpl &other)
-    requires RegionWithChildren<RegionT>;
-
-  /**
-   * @brief Inserts the given object to this region (if this region has
-   * children).
-   *
-   * @param obj The object to insert.
-   * @param index The index to insert at.
-   * @param fire_events Whether to fire UI events.
-   * @return RegionOwnedObject& The inserted object.
-   */
-  void
-  insert_object (this RegionT &self, ArrangerObjectUuidReference obj_id, int index)
-    requires RegionWithChildren<RegionT>
-  {
-    z_debug ("inserting {} at index {}", obj_id, index);
-    auto &objects = self.get_children_vector ();
-
-    self.beginInsertRows ({}, index, index);
-    // don't allow duplicates
-    z_return_if_fail (!std::ranges::contains (objects, obj_id));
-
-    objects.insert (objects.begin () + index, obj_id);
-    for (const auto &cur_obj_id : std::span (objects).subspan (index))
-      {
-        auto cur_obj = std::get<ChildT *> (cur_obj_id.get_object ());
-        cur_obj->set_region_and_index (self);
-      }
-
-    self.endInsertRows ();
   }
 
   bool get_muted (bool check_parent) const override;
@@ -503,25 +439,6 @@ public:
   are_members_valid (bool is_project, dsp::FramesPerTick frames_per_tick) const;
 
   /**
-   * Moves the Region to the given Track, maintaining the selection
-   * status of the Region.
-   *
-   * Assumes that the Region is already in a TrackLane or
-   * AutomationTrack.
-   *
-   * @param lane_or_at_index If MIDI or audio, lane position.
-   *   If automation, automation track index in the automation
-   * tracklist. If -1, the track lane or automation track index will be
-   * inferred from the region.
-   * @param index If MIDI or audio, index in lane in the new track to
-   * insert the region to, or -1 to append. If automation, index in the
-   * automation track.
-   *
-   * @throw ZrythmException on error.
-   */
-  void move_to_track (Track * track, int lane_or_at_index, int index);
-
-  /**
    * Stretch the region's contents.
    *
    * This should be called right after changing the region's size.
@@ -579,9 +496,10 @@ DEFINE_OBJECT_FORMATTER (Region, Region, [] (const Region &r) {
     "Region[id: {}, name: {}, "
     "<{}> to <{}> ({} frames, {} ticks) - loop end <{}> - link group {}"
     "]",
-    r.get_uuid (), r.get_name (), *r.pos_, *r.end_pos_,
-    r.end_pos_->frames_ - r.pos_->frames_, r.end_pos_->ticks_ - r.pos_->ticks_,
-    r.loop_end_pos_, r.link_group_);
+    r.get_uuid (), r.get_name (), r.get_position (), *r.end_pos_,
+    r.end_pos_->frames_ - r.get_position ().frames_,
+    r.end_pos_->ticks_ - r.get_position ().ticks_, r.loop_end_pos_,
+    r.link_group_);
 })
 
 inline bool

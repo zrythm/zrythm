@@ -9,10 +9,11 @@
 
 Marker::Marker (
   ArrangerObjectRegistry &obj_registry,
+  TrackResolver           track_resolver,
   NameValidator           validator,
   QObject *               parent)
-    : ArrangerObject (ArrangerObject::Type::Marker), QObject (parent),
-      NamedObject (validator)
+    : ArrangerObject (ArrangerObject::Type::Marker, track_resolver),
+      QObject (parent), NamedObject (validator)
 {
   ArrangerObject::set_parent_on_base_qproperties (*this);
 }
@@ -32,21 +33,6 @@ Marker::init_after_cloning (const Marker &other, ObjectCloneType clone_type)
   NamedObject::copy_members_from (other, clone_type);
   TimelineObject::copy_members_from (other, clone_type);
   ArrangerObject::copy_members_from (other, clone_type);
-}
-
-std::optional<ArrangerObjectPtrVariant>
-Marker::find_in_project () const
-{
-  // TODO
-  return std::nullopt;
-#if 0
-  z_return_val_if_fail (
-    (int) P_MARKER_TRACK->markers_.size () > marker_track_index_, std::nullopt);
-
-  auto * marker = P_MARKER_TRACK->get_markers ()[marker_track_index_];
-  z_return_val_if_fail (*marker == *this, std::nullopt);
-  return marker;
-#endif
 }
 
 ArrangerObjectPtrVariant

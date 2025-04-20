@@ -77,6 +77,39 @@ public:
     Q_EMIT self.nameChanged (QString::fromStdString (name));
   }
 
+  void generate_name_from_automation_track (
+    this auto  &self,
+    const auto &track,
+    const auto &at)
+  {
+    self.set_name (fmt::format ("{} - {}", track.get_name (), at.getLabel ()));
+  }
+  void generate_name_from_track (this auto &self, const auto &track)
+  {
+    self.set_name (track.get_name ());
+  }
+
+  void generate_name (
+    this auto                 &self,
+    std::optional<std::string> base_name,
+    const auto *               at,
+    const auto *               track)
+  {
+    if (base_name)
+      {
+        self.set_name (*base_name);
+      }
+    else if (at)
+      {
+        self.generate_name_from_automation_track (*track, *at);
+        return;
+      }
+    else
+      {
+        self.generate_name_from_track (*track);
+      }
+  }
+
   /**
    * Changes the name and adds an action to the undo stack.
    *

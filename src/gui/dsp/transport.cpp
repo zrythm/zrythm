@@ -456,7 +456,7 @@ Transport::requestPause (bool with_wait)
     && gui::SettingsManager::transportReturnToCue ())
     {
       auto tmp = cue_pos_->get_position ();
-      move_playhead (&tmp, true, false, true);
+      move_playhead (tmp, true, false, true);
     }
 
   if (with_wait)
@@ -559,10 +559,10 @@ Transport::can_user_move_playhead () const
 
 void
 Transport::move_playhead (
-  const Position * target,
-  bool             panic,
-  bool             set_cue_point,
-  bool             fire_events)
+  const Position &target,
+  bool            panic,
+  bool            set_cue_point,
+  bool            fire_events)
 {
   /* if currently recording, do nothing */
   if (!can_user_move_playhead ())
@@ -608,12 +608,12 @@ Transport::move_playhead (
     }
 
   /* move to new pos */
-  playhead_pos_->set_position_rtsafe (*target);
+  playhead_pos_->set_position_rtsafe (target);
 
   if (set_cue_point)
     {
       /* move cue point */
-      cue_pos_->set_position_rtsafe (*target);
+      cue_pos_->set_position_rtsafe (target);
     }
 
   if (fire_events)
@@ -668,7 +668,7 @@ Transport::move_to_marker_or_pos_and_fire_events (
   const Marker *   marker,
   const Position * pos)
 {
-  move_playhead (marker ? marker->pos_ : pos, true, true, true);
+  move_playhead (marker ? marker->get_position () : *pos, true, true, true);
 
   if (ZRYTHM_HAVE_UI)
     {
@@ -708,13 +708,13 @@ Transport::goto_prev_marker ()
   std::vector<Position> markers;
   for (auto * marker : P_MARKER_TRACK->get_children_view ())
     {
-      markers.push_back (*marker->pos_);
+      markers.push_back (marker->get_position ());
     }
   markers.emplace_back (cue_pos_->get_position ());
   markers.emplace_back (loop_start_pos_->get_position ());
   markers.emplace_back (loop_end_pos_->get_position ());
   markers.emplace_back ();
-  std::sort (markers.begin (), markers.end ());
+  std::ranges::sort (markers);
 
   for (int i = (int) markers.size () - 1; i >= 0; i--)
     {
@@ -745,7 +745,7 @@ Transport::goto_next_marker ()
   std::vector<Position> markers;
   for (auto * marker : P_MARKER_TRACK->get_children_view ())
     {
-      markers.push_back (*marker->pos_);
+      markers.push_back (marker->get_position ());
     }
   markers.push_back (cue_pos_->get_position ());
   markers.push_back (loop_start_pos_->get_position ());
@@ -1010,7 +1010,7 @@ Transport::move_backward (bool with_wait)
       ret = SNAP_GRID_TIMELINE->get_nearby_snap_point (pos, tmp, true);
       z_return_if_fail (ret);
     }
-  move_playhead (&pos, true, true, true);
+  move_playhead (pos, true, true, true);
 }
 
 void
@@ -1031,7 +1031,7 @@ Transport::move_forward (bool with_wait)
   bool     ret =
     SNAP_GRID_TIMELINE->get_nearby_snap_point (pos, *playhead_pos_, false);
   z_return_if_fail (ret);
-  move_playhead (&pos, true, true, true);
+  move_playhead (pos, true, true, true);
 }
 
 /**

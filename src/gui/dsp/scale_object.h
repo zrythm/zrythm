@@ -35,12 +35,7 @@ public:
   using MusicalScale = dsp::MusicalScale;
 
 public:
-  ScaleObject (const DeserializationDependencyHolder &dh)
-      : ScaleObject (
-          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get ())
-  {
-  }
-  ScaleObject (ArrangerObjectRegistry &obj_registry, QObject * parent = nullptr);
+  DECLARE_FINAL_ARRANGER_OBJECT_CONSTRUCTORS (ScaleObject)
 
   // =========================================================
   // QML Interface
@@ -62,8 +57,6 @@ public:
   void set_scale (const MusicalScale &scale) { scale_ = scale; }
 
   std::string gen_human_friendly_name () const override;
-
-  std::optional<ArrangerObjectPtrVariant> find_in_project () const override;
 
   ArrangerObjectPtrVariant
   add_clone_to_project (bool fire_events) const override;
@@ -95,7 +88,7 @@ operator== (const ScaleObject &a, const ScaleObject &b)
 }
 
 DEFINE_OBJECT_FORMATTER (ScaleObject, ScaleObject, [] (const ScaleObject &so) {
-  return fmt::format ("ScaleObject[position: {}]", *so.pos_);
+  return fmt::format ("ScaleObject[position: {}]", so.get_position ());
 })
 
 /**

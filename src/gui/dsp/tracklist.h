@@ -321,6 +321,29 @@ public:
     TracksReadyCallback                                ready_cb);
 
   /**
+   * Moves the Region to the given Track, maintaining the selection
+   * status of the Region.
+   *
+   * Assumes that the Region is already in a TrackLane or
+   * AutomationTrack.
+   *
+   * @param lane_or_at_index If MIDI or audio, lane position.
+   *   If automation, automation track index in the automation
+   * tracklist. If -1, the track lane or automation track index will be
+   * inferred from the region.
+   * @param index If MIDI or audio, index in lane in the new track to
+   * insert the region to, or -1 to append. If automation, index in the
+   * automation track.
+   *
+   * @throw ZrythmException on error.
+   */
+  void move_region_to_track (
+    ArrangerObjectPtrVariant region,
+    const Track::Uuid       &to_track_id,
+    int                      lane_or_at_index,
+    int                      index);
+
+  /**
    * Begins file import Handles a file drop inside the timeline or in empty
    * space in the tracklist.
    *

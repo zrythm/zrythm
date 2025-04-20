@@ -10,8 +10,11 @@
 
 #include <fmt/format.h>
 
-ChordObject::ChordObject (ArrangerObjectRegistry &obj_registry, QObject * parent)
-    : ArrangerObject (Type::ChordObject), QObject (parent),
+ChordObject::ChordObject (
+  ArrangerObjectRegistry &obj_registry,
+  TrackResolver           track_resolver,
+  QObject *               parent)
+    : ArrangerObject (Type::ChordObject, track_resolver), QObject (parent),
       RegionOwnedObject (obj_registry)
 {
   ArrangerObject::set_parent_on_base_qproperties (*this);
@@ -60,26 +63,6 @@ void
 ChordObject::set_chord_descriptor (int index)
 {
   chord_index_ = index;
-}
-
-std::optional<ArrangerObjectPtrVariant>
-ChordObject::find_in_project () const
-{
-#if 0
-  /* get actual region - clone's region might be an unused clone */
-  auto r = RegionImpl<ChordRegion>::find (region_id_);
-  z_return_val_if_fail (r, std::nullopt);
-
-  z_return_val_if_fail (
-    r && r->chord_objects_.size () > (size_t) index_, std::nullopt);
-  z_return_val_if_fail_cmp (index_, >=, 0, std::nullopt);
-
-  auto &co = r->chord_objects_[index_];
-  z_return_val_if_fail (co, std::nullopt);
-  z_return_val_if_fail (*co == *this, std::nullopt);
-  return co;
-#endif
-  return std::nullopt;
 }
 
 ArrangerObjectPtrVariant

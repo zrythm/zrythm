@@ -47,11 +47,13 @@ public:
   Marker (const DeserializationDependencyHolder &dh)
       : Marker (
           dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get (),
+          dh.get<TrackResolver> (),
           dh.get<NameValidator> ())
   {
   }
   Marker (
     ArrangerObjectRegistry &obj_registry,
+    TrackResolver           track_resolver,
     NameValidator           name_validator,
     QObject *               parent = nullptr);
 
@@ -67,8 +69,6 @@ public:
 
   void
   init_after_cloning (const Marker &other, ObjectCloneType clone_type) override;
-
-  std::optional<ArrangerObjectPtrVariant> find_in_project () const override;
 
   ArrangerObjectPtrVariant
   add_clone_to_project (bool fire_events) const override;
@@ -100,7 +100,7 @@ operator== (const Marker &lhs, const Marker &rhs)
 DEFINE_OBJECT_FORMATTER (Marker, Marker, [] (const Marker &m) {
   return fmt::format (
     "Marker[name: {}, type: {}, position: {}]", m.get_name (),
-    ENUM_NAME (m.marker_type_), *m.pos_);
+    ENUM_NAME (m.marker_type_), m.get_position ());
 })
 
 /**

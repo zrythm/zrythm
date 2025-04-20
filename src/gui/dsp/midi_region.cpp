@@ -46,9 +46,12 @@
 #include "midilib/src/midifile.h"
 #include "midilib/src/midiutil.h"
 
-MidiRegion::MidiRegion (ArrangerObjectRegistry &obj_registry, QObject * parent)
-    : ArrangerObject (Type::MidiRegion), Region (obj_registry),
-      QAbstractListModel (parent)
+MidiRegion::MidiRegion (
+  ArrangerObjectRegistry &obj_registry,
+  TrackResolver           track_resolver,
+  QObject *               parent)
+    : ArrangerObject (Type::MidiRegion, track_resolver), Region (obj_registry),
+      QObject (parent)
 {
   ArrangerObject::set_parent_on_base_qproperties (*this);
   BoundedObject::parent_base_qproperties (*this);
@@ -83,40 +86,6 @@ MidiRegion::init_after_cloning (
   ArrangerObject::copy_members_from (other, clone_type);
   ArrangerObjectOwner::copy_members_from (other, clone_type);
 }
-
-// ========================================================================
-// QML Interface
-// ========================================================================
-
-QHash<int, QByteArray>
-MidiRegion::roleNames () const
-{
-  QHash<int, QByteArray> roles;
-  roles[MidiNotePtrRole] = "midiNote";
-  return roles;
-}
-int
-MidiRegion::rowCount (const QModelIndex &parent) const
-{
-  return static_cast<int> (get_children_vector ().size ());
-}
-
-QVariant
-MidiRegion::data (const QModelIndex &index, int role) const
-{
-  if (
-    index.row () < 0
-    || index.row () >= static_cast<int> (get_children_vector ().size ()))
-    return {};
-
-  if (role == MidiNotePtrRole)
-    {
-      return QVariant::fromValue (get_children_view ()[index.row ()]);
-    }
-  return {};
-}
-
-// ========================================================================
 
 void
 MidiRegion::print_midi_notes () const
@@ -289,8 +258,10 @@ MidiRegion::is_note_playable (const MidiNote &midi_note) const
     }
 
   if (
-    !midi_note.pos_->is_between_excl_2nd (loop_start_pos_, loop_end_pos_)
-    && !midi_note.pos_->is_between_excl_2nd (clip_start_pos_, loop_start_pos_))
+    !midi_note.get_position ().is_between_excl_2nd (
+      loop_start_pos_, loop_end_pos_)
+    && !midi_note.get_position ().is_between_excl_2nd (
+      clip_start_pos_, loop_start_pos_))
     {
       return false;
     }
@@ -367,12 +338,13 @@ MidiRegion::add_events (
 
       do
         {
-          Position mn_pos = *static_cast<Position *> (mn->pos_);
-          Position mn_end_pos = *mn->end_pos_;
+          Position mn_pos = mn->get_position ();
+          Position mn_end_pos = mn->get_end_position ();
 
           if (full)
             {
-              if (mn->pos_->is_between_excl_2nd (loop_start_pos_, loop_end_pos_))
+              if (mn->get_position ().is_between_excl_2nd (
+                    loop_start_pos_, loop_end_pos_))
                 {
                   write_only_once = false;
                 }

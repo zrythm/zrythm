@@ -719,11 +719,18 @@ public:
   {
     auto * region = std::get<RegionT *> (region_ref.get_object ());
     // assert (region->validate (false, 0));
-    assert (type_can_have_region_type (self.type_, region->type_));
+    assert (type_can_have_region_type (self.type_, region->get_type ()));
 
     if (gen_name)
       {
-        region->gen_name (std::nullopt, at, &self);
+        if (at)
+          {
+            region->generate_name_from_automation_track (self, *at);
+          }
+        else
+          {
+            region->generate_name_from_track (self);
+          }
       }
 
     assert (region->get_name ().length () > 0);

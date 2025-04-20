@@ -11,9 +11,10 @@
 
 AutomationRegion::AutomationRegion (
   ArrangerObjectRegistry &obj_registry,
+  TrackResolver           track_resolver,
   QObject *               parent)
-    : ArrangerObject (Type::AutomationRegion), Region (obj_registry),
-      QAbstractListModel (parent)
+    : ArrangerObject (Type::AutomationRegion, track_resolver),
+      Region (obj_registry), QObject (parent)
 {
   ArrangerObject::set_parent_on_base_qproperties (*this);
   BoundedObject::parent_base_qproperties (*this);
@@ -32,46 +33,12 @@ AutomationRegion::init_loaded ()
     }
 }
 
-// ========================================================================
-// QML Interface
-// ========================================================================
-
-QHash<int, QByteArray>
-AutomationRegion::roleNames () const
-{
-  QHash<int, QByteArray> roles;
-  roles[AutomationPointPtrRole] = "automationPoint";
-  return roles;
-}
-int
-AutomationRegion::rowCount (const QModelIndex &parent) const
-{
-  return get_children_vector ().size ();
-}
-
-QVariant
-AutomationRegion::data (const QModelIndex &index, int role) const
-{
-  if (
-    index.row () < 0
-    || index.row () >= static_cast<int> (get_children_vector ().size ()))
-    return {};
-
-  if (role == AutomationPointPtrRole)
-    {
-      return QVariant::fromValue (get_children_vector ().at (index.row ()));
-    }
-  return {};
-}
-
-// ========================================================================
-
 void
 AutomationRegion::print_automation () const
 {
   for (const auto &[index, ap] : std::views::enumerate (get_children_view ()))
     {
-      z_debug ("[{}] {} : {}", index, ap->fvalue_, *ap->pos_);
+      z_debug ("[{}] {} : {}", index, ap->fvalue_, ap->get_position ());
     }
 }
 
@@ -180,8 +147,8 @@ AutomationRegion::get_next_ap (const AutomationPoint &ap, bool check_positions)
             continue;
 
           if (
-            cur_ap->pos_ >= ap.pos_
-            && ((next_ap == nullptr) || cur_ap->pos_ < next_ap->pos_))
+            cur_ap->get_position () >= ap.get_position ()
+            && ((next_ap == nullptr) || cur_ap->get_position () < next_ap->get_position ()))
             {
               next_ap = cur_ap;
             }
@@ -212,12 +179,15 @@ AutomationRegion::get_aps_since_last_recorded (
 {
   aps.clear ();
 
-  if ((last_recorded_ap_ == nullptr) || pos <= *last_recorded_ap_->pos_)
+  if (
+    (last_recorded_ap_ == nullptr) || pos <= last_recorded_ap_->get_position ())
     return;
 
   for (auto * ap : get_children_view ())
     {
-      if (ap->pos_ > last_recorded_ap_->pos_ && *ap->pos_ <= pos)
+      if (
+        ap->get_position () > last_recorded_ap_->get_position ()
+        && ap->get_position () <= pos)
         {
           aps.push_back (ap);
         }
@@ -235,7 +205,7 @@ AutomationRegion::get_ap_around (
   pos = *_pos;
   AutomationTrack * at = get_automation_track ();
   AutomationPoint * ap = at->get_ap_before_pos (pos, true, use_snapshots);
-  if (ap && pos.ticks_ - ap->pos_->ticks_ <= (double) delta_ticks)
+  if (ap && pos.ticks_ - ap->get_position ().ticks_ <= (double) delta_ticks)
     {
       return ap;
     }
@@ -245,7 +215,7 @@ AutomationRegion::get_ap_around (
       ap = at->get_ap_before_pos (pos, true, use_snapshots);
       if (ap)
         {
-          double diff = ap->pos_->ticks_ - _pos->ticks_;
+          double diff = ap->get_position ().ticks_ - _pos->ticks_;
           if (diff >= 0.0)
             return ap;
         }

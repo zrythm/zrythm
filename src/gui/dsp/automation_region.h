@@ -19,7 +19,7 @@
  * recorded automation point is also stored.
  */
 class AutomationRegion final
-    : public QAbstractListModel,
+    : public QObject,
       public RegionImpl<AutomationRegion>,
       public ArrangerObjectOwner<AutomationPoint>,
       public ICloneable<AutomationRegion>,
@@ -33,29 +33,7 @@ class AutomationRegion final
   friend class RegionImpl<AutomationRegion>;
 
 public:
-  AutomationRegion (const DeserializationDependencyHolder &dh)
-      : AutomationRegion (
-          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get ())
-  {
-  }
-  AutomationRegion (
-    ArrangerObjectRegistry &obj_registry,
-    QObject *               parent = nullptr);
-
-  // ========================================================================
-  // QML Interface
-  // ========================================================================
-  enum AutomationRegionRoles
-  {
-    AutomationPointPtrRole = Qt::UserRole + 1,
-  };
-
-  QHash<int, QByteArray> roleNames () const override;
-  int rowCount (const QModelIndex &parent = QModelIndex ()) const override;
-  QVariant
-  data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
-
-  // ========================================================================
+  DECLARE_FINAL_ARRANGER_OBJECT_CONSTRUCTORS (AutomationRegion)
 
   void init_loaded () override;
 

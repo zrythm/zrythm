@@ -64,16 +64,16 @@ public:
    * done already and it ignores the adjust_start and
    * adjust_end options.
    *
-   * @return The amount of ticks moved (negative for
+   * @return The resulting position and amount of ticks moved (negative for
    *   backwards).
    */
-  double quantize_position (Position * pos);
+  std::pair<dsp::Position, double> quantize_position (const Position &pos);
 
   DECLARE_DEFINE_FIELDS_METHOD ();
 
 private:
-  const Position * get_prev_point (Position * pos) const;
-  const Position * get_next_point (Position * pos) const;
+  const Position * get_prev_point (const Position &pos) const;
+  const Position * get_next_point (const Position &pos) const;
 
 public:
   /**

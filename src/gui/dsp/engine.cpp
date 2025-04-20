@@ -947,7 +947,7 @@ AudioEngine::resume (State &state)
       project_->transport_->playhead_before_pause_.update_frames_from_ticks (
         frames_per_tick_);
       project_->transport_->move_playhead (
-        &project_->transport_->playhead_before_pause_, false, false, false);
+        project_->transport_->playhead_before_pause_, false, false, false);
       project_->transport_->requestRoll (true);
     }
   else

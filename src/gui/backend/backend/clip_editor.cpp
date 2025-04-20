@@ -6,11 +6,16 @@
 #include "gui/dsp/track_all.h"
 #include "utils/rt_thread_id.h"
 
-ClipEditor::ClipEditor (ArrangerObjectRegistry &reg, QObject * parent)
-    : QObject (parent), piano_roll_ (new PianoRoll (this)),
+ClipEditor::ClipEditor (
+  ArrangerObjectRegistry &reg,
+  TrackResolver           track_resolver,
+  QObject *               parent)
+    : QObject (parent), object_registry_ (reg),
+      track_resolver_ (std::move (track_resolver)),
+      piano_roll_ (new PianoRoll (this)),
       audio_clip_editor_ (new AudioClipEditor (this)),
       automation_editor_ (new AutomationEditor (this)),
-      chord_editor_ (new ChordEditor (this)), object_registry_ (reg)
+      chord_editor_ (new ChordEditor (this))
 {
   // connect regionChanged so that trackChanged is emitted too
   connect (this, &ClipEditor::regionChanged, this, &ClipEditor::trackChanged);
@@ -179,7 +184,15 @@ ClipEditor::get_track () const
     return std::nullopt;
 
   return std::visit (
-    [&] (auto &&region) -> TrackPtrVariant { return region->get_track (); },
+    [&] (auto &&region) -> OptionalTrackPtrVariant {
+      const auto id = region->get_track_id ();
+      if (id)
+        {
+          return track_resolver_ (*id);
+        }
+
+      return std::nullopt;
+    },
     *get_region ());
 }
 

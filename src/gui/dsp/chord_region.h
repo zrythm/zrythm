@@ -15,7 +15,7 @@
  */
 
 class ChordRegion final
-    : public QAbstractListModel,
+    : public QObject,
       public RegionImpl<ChordRegion>,
       public ArrangerObjectOwner<ChordObject>,
       public ICloneable<ChordRegion>,
@@ -33,29 +33,9 @@ class ChordRegion final
   friend class RegionImpl<ChordRegion>;
 
 public:
-  ChordRegion (const DeserializationDependencyHolder &dh)
-      : ChordRegion (
-          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get ())
-  {
-  }
-  ChordRegion (ArrangerObjectRegistry &obj_registry, QObject * parent = nullptr);
+  DECLARE_FINAL_ARRANGER_OBJECT_CONSTRUCTORS (ChordRegion)
 
   using RegionT = RegionImpl<ChordRegion>;
-
-  // ========================================================================
-  // QML Interface
-  // ========================================================================
-  enum ChordRegionRoles
-  {
-    ChordObjectPtrRole = Qt::UserRole + 1,
-  };
-
-  QHash<int, QByteArray> roleNames () const override;
-  int rowCount (const QModelIndex &parent = QModelIndex ()) const override;
-  QVariant
-  data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
-
-  // ========================================================================
 
   void init_loaded () override;
 

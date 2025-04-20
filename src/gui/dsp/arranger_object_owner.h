@@ -42,7 +42,7 @@ public:
    */
   struct Location
   {
-    TrackUuid track_id_;
+    std::optional<TrackUuid> track_id_;
 
     // Either lane index, region ID or control port ID (for automation regions)
     std::optional<std::variant<ArrangerObjectUuid, int, PortUuid>> owner_;
@@ -207,6 +207,11 @@ public:
       aps_.push_back (clone->get_uuid ());
     }
 #endif
+  }
+
+  void copy_children (const ArrangerObjectOwner &other)
+  {
+    // TODO
   }
 
 private:

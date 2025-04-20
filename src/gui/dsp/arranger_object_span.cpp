@@ -52,7 +52,8 @@ ArrangerObjectSpanImpl<Range>::merge (dsp::FramesPerTick frames_per_tick) const
                     {
                       auto * r = std::get<MidiRegion *> (obj);
                       double ticks_diff =
-                        r->pos_->ticks_ - first_r->pos_->ticks_;
+                        r->get_position ().ticks_
+                        - first_r->get_position ().ticks_;
 
                       for (auto * mn : r->get_children_view ())
                         {
@@ -81,7 +82,8 @@ ArrangerObjectSpanImpl<Range>::merge (dsp::FramesPerTick frames_per_tick) const
                     {
                       auto * r = std::get<AudioRegion *> (obj);
                       long   frames_diff =
-                        r->pos_->frames_ - first_r->pos_->frames_;
+                        r->get_position ().frames_
+                        - first_r->get_position ().frames_;
                       long r_frames_length = r->get_length_in_frames ();
 
                       auto * clip = r->get_clip ();
@@ -149,8 +151,7 @@ ArrangerObjectSpanImpl<Range>::merge (dsp::FramesPerTick frames_per_tick) const
 #endif
                 }
 
-              get_new_r (new_r)->gen_name (
-                first_r->get_name (), nullptr, nullptr);
+              get_new_r (new_r)->set_name (first_r->get_name ());
               return *new_r;
             }
           else
@@ -271,7 +272,7 @@ ArrangerObjectSpanImpl<Range>::get_first_object_and_pos (bool global) const
             {
               auto region = obj->get_region ();
               ret_pos.add_ticks (
-                region->pos_->ticks_, AUDIO_ENGINE->frames_per_tick_);
+                region->get_position ().ticks_, AUDIO_ENGINE->frames_per_tick_);
             }
         },
         ret_obj);
@@ -301,7 +302,7 @@ ArrangerObjectSpanImpl<Range>::get_last_object_and_pos (
             {
               auto region = obj->get_region ();
               ret_pos.add_ticks (
-                region->pos_->ticks_, AUDIO_ENGINE->frames_per_tick_);
+                region->get_position ().ticks_, AUDIO_ENGINE->frames_per_tick_);
             }
         },
         ret_obj);
@@ -330,7 +331,7 @@ ArrangerObjectSpanImpl<Range>::copy_arranger_object_identifier (
     [&] (auto &&dest) {
       using ObjT = base_type<decltype (dest)>;
       auto src = std::get<ObjT *> (src_var);
-      dest->track_id_ = src->track_id_;
+      dest->set_track_id (src->get_track_id ());
       // TODO?
       // dest->uuid_ = src->get_uuid();
 

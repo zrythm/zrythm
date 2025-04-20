@@ -26,8 +26,9 @@ using namespace zrythm;
 
 AutomationPoint::AutomationPoint (
   ArrangerObjectRegistry &obj_registry,
+  TrackResolver           track_resolver,
   QObject *               parent)
-    : ArrangerObject (Type::AutomationPoint), QObject (parent),
+    : ArrangerObject (Type::AutomationPoint, track_resolver), QObject (parent),
       RegionOwnedObject (obj_registry)
 {
   ArrangerObject::set_parent_on_base_qproperties (*this);
@@ -38,13 +39,6 @@ AutomationPoint::init_loaded ()
 {
   ArrangerObject::init_loaded_base ();
   RegionOwnedObject::init_loaded_base ();
-}
-
-std::optional<ArrangerObjectPtrVariant>
-AutomationPoint::find_in_project () const
-{
-  return std::get<AutomationPoint *> (
-    *PROJECT->find_arranger_object_by_id (get_uuid ()));
 }
 
 void

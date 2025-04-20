@@ -129,7 +129,7 @@ MidiFile::into_region (
           /* convert time to zrythm time */
           double ticks = ((double) msg.getTimeStamp () * transport_ppqn) / ppqn;
           Position pos{ ticks, AUDIO_ENGINE->frames_per_tick_ };
-          Position global_pos = *region.pos_;
+          auto     global_pos = region.get_position ();
           global_pos.add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
           z_trace (
             "event at {}: {} ", msg.getTimeStamp (), msg.getDescription ());
@@ -180,12 +180,12 @@ MidiFile::into_region (
         }
     }
 
-  if (region.end_pos_ == region.pos_)
+  if (region.get_end_position () == region.get_position ())
     {
       throw ZrythmException ("No events in MIDI region");
     }
   Position loop_end_pos_to_set (
-    region.end_pos_->ticks_ - region.pos_->ticks_,
+    region.end_pos_->ticks_ - region.get_position ().ticks_,
     AUDIO_ENGINE->frames_per_tick_);
   region.loop_end_position_setter_validated (
     loop_end_pos_to_set, AUDIO_ENGINE->ticks_per_frame_);

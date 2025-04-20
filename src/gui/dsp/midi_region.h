@@ -35,7 +35,7 @@ using MIDI_FILE = void;
  * constructed from a MIDI file or a chord descriptor.
  */
 class MidiRegion final
-    : public QAbstractListModel,
+    : public QObject,
       public LaneOwnedObject,
       public RegionImpl<MidiRegion>,
       public ArrangerObjectOwner<MidiNote>,
@@ -55,27 +55,7 @@ public:
   using ChordDescriptor = zrythm::dsp::ChordDescriptor;
 
 public:
-  MidiRegion (const DeserializationDependencyHolder &dh)
-      : MidiRegion (
-          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get ())
-  {
-  }
-  MidiRegion (ArrangerObjectRegistry &obj_registry, QObject * parent = nullptr);
-
-  // ========================================================================
-  // QML Interface
-  // ========================================================================
-  enum MidiRegionRoles
-  {
-    MidiNotePtrRole = Qt::UserRole + 1,
-  };
-
-  QHash<int, QByteArray> roleNames () const override;
-  int rowCount (const QModelIndex &parent = QModelIndex ()) const override;
-  QVariant
-  data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
-
-  // ========================================================================
+  DECLARE_FINAL_ARRANGER_OBJECT_CONSTRUCTORS (MidiRegion)
 
   void init_loaded () override;
 
@@ -284,6 +264,20 @@ DEFINE_OBJECT_FORMATTER (MidiRegion, MidiRegion, [] (const MidiRegion &mr) {
   return fmt::format (
     "MidiRegion[id: {}, {}]", mr.get_uuid (), static_cast<const Region &> (mr));
 })
+
+/**
+ * @brief Generates a filename for the given MIDI region.
+ *
+ * @param track The track that owns the region.
+ * @param mr The MIDI region.
+ * @return constexpr std::string
+ */
+constexpr std::string
+generate_filename_for_midi_region (const auto &track, const MidiRegion &mr)
+{
+  constexpr const char * REGION_PRINTF_FILENAME = "{}_{}.mid";
+  return fmt::format (REGION_PRINTF_FILENAME, track.get_name (), mr.get_name ());
+}
 
 /**
  * @}

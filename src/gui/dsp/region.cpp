@@ -37,28 +37,6 @@ Region::copy_members_from (const Region &other, ObjectCloneType clone_type)
   bounce_ = other.bounce_;
 }
 
-void
-Region::gen_name (
-  std::optional<std::string> base_name,
-  AutomationTrack *          at,
-  Track *                    track)
-{
-  /* Name to try to assign */
-  std::string orig_name;
-  if (base_name)
-    orig_name = *base_name;
-  else if (at)
-    orig_name = fmt::format ("{} - {}", track->get_name (), at->getLabel ());
-  else
-    orig_name = track->get_name ();
-
-  z_return_if_fail (orig_name.length () > 0);
-
-  std::visit (
-    [&] (auto &&region) { region->set_name (orig_name); },
-    convert_to_variant<RegionPtrVariant> (this));
-}
-
 template <typename RegionT>
 void
 RegionImpl<RegionT>::send_note_offs (
@@ -107,6 +85,7 @@ RegionImpl<RegionT>::send_note_offs (
 template <typename RegionT>
 void
 RegionImpl<RegionT>::fill_midi_events (
+  TrackPtrVariant              track_var,
   const EngineProcessTimeInfo &time_nfo,
   bool                         note_off_at_end,
   bool                         is_note_off_for_loop_or_region_end,
@@ -138,13 +117,15 @@ RegionImpl<RegionT>::fill_midi_events (
           }
 
         /* if object starts inside the current range */
+        const auto obj_start_pos = obj.get_position ();
         if (
-          obj.pos_->frames_ >= 0 && obj.pos_->frames_ >= r_local_pos
-          && obj.pos_->frames_ < r_local_pos + (signed_frame_t) time_nfo.nframes_)
+          obj_start_pos.frames_ >= 0 && obj_start_pos.frames_ >= r_local_pos
+          && obj_start_pos.frames_
+               < r_local_pos + (signed_frame_t) time_nfo.nframes_)
           {
             auto _time =
               (midi_time_t) (time_nfo.local_offset_
-                             + (obj.pos_->frames_ - r_local_pos));
+                             + (obj_start_pos.frames_ - r_local_pos));
 
             if constexpr (std::is_same_v<RegionT, MidiRegion>)
               {
@@ -166,7 +147,7 @@ RegionImpl<RegionT>::fill_midi_events (
         else if constexpr (std::is_same_v<ObjectType, ChordObject>)
           {
             obj_end_frames = utils::math::round_to_signed_frame_t (
-              obj.pos_->frames_
+              obj_start_pos.frames_
               + TRANSPORT->ticks_per_beat_
                   * type_safe::get (AUDIO_ENGINE->frames_per_tick_));
           }
@@ -216,7 +197,7 @@ RegionImpl<RegionT>::fill_midi_events (
             }
         }
     },
-    get_track ());
+    track_var);
 }
 
 template <typename RegionT>
@@ -310,185 +291,6 @@ RegionImpl<RegionT>::insert_clone_to_project_at_index (
 
 template <typename RegionT>
 void
-RegionImpl<
-  RegionT>::move_to_track (Track * track, int lane_or_at_index, int index)
-{
-  z_return_if_fail (track);
-
-  std::visit (
-    [&] (auto &&region_track) {
-      z_debug ("moving region {} to track {}", name_, track->get_name ());
-      z_debug ("before: {}", get_derived ());
-
-      auto * self = dynamic_cast<RegionT *> (this);
-
-      RegionLinkGroup * link_group{};
-      if (has_link_group ())
-        {
-          link_group = get_link_group ();
-          z_return_if_fail (link_group);
-          link_group->remove_region (*this, false, true);
-        }
-
-      const bool selected = self->getSelected ();
-      auto       clip_editor_region = CLIP_EDITOR->get_region ();
-
-      /* keep alive while moving*/
-      auto * shared_this = dynamic_cast<RegionT *> (this);
-      z_return_if_fail (shared_this);
-
-      if (region_track)
-        {
-          /* remove the region from its old track */
-          remove_from_project (false);
-        }
-
-// TODO
-#if 0
-      int lane_pos = lane_or_at_index >= 0 ? lane_or_at_index : id_.lane_pos_;
-      int at_pos = lane_or_at_index >= 0 ? lane_or_at_index : id_.at_idx_;
-
-      if constexpr (is_automation ())
-        {
-          auto  automatable_track = dynamic_cast<AutomatableTrack *> (track);
-          auto &at = automatable_track->automation_tracklist_->ats_[at_pos];
-
-          /* convert the automation points to match the new automatable */
-          auto port_var = PROJECT->find_port_by_id (at->port_id_);
-          z_return_if_fail (
-            port_var.has_value ()
-            && std::holds_alternative<ControlPort *> (port_var.value ()));
-          auto * port = std::get<ControlPort *> (port_var.value ());
-          z_return_if_fail (port);
-          for (auto &ap : get_derived ().aps_)
-            {
-              ap->fvalue_ = port->normalized_val_to_real (ap->normalized_val_);
-            }
-
-          /* add the region to its new track */
-          try
-            {
-              if (index >= 0)
-                {
-                  track->insert_region (
-                    shared_this, at, -1, index, false, false);
-                }
-              else
-                {
-                  track->add_region (shared_this, at, -1, false, false);
-                }
-            }
-          catch (const ZrythmException &e)
-            {
-              e.handle ("Failed to add region to track");
-              return;
-            }
-
-          z_warn_if_fail (id_.at_idx_ == at->index_);
-          get_derived ().set_automation_track (*at);
-        }
-      else
-        {
-          if constexpr (is_laned ())
-            {
-              /* create lanes if they don't exist */
-              auto laned_track = dynamic_cast<LanedTrackImpl<
-                typename LaneOwnedObject<RegionT>::TrackLaneT> *> (track);
-              z_return_if_fail (laned_track);
-              laned_track->create_missing_lanes (lane_pos);
-            }
-
-          /* add the region to its new track */
-          try
-            {
-              if (index >= 0)
-                {
-                  track->insert_region (
-                    shared_this, nullptr, lane_pos, index, false, false);
-                }
-              else
-                {
-                  track->add_region (
-                    shared_this, nullptr, lane_pos, false, false);
-                }
-            }
-          catch (const ZrythmException &e)
-            {
-              e.handle ("Failed to add region to track");
-              return;
-            }
-
-          z_return_if_fail (id_.lane_pos_ == lane_pos);
-
-          if constexpr (is_laned ())
-            {
-              using TrackLaneT = typename LaneOwnedObject<RegionT>::TrackLaneT;
-              auto laned_track =
-                dynamic_cast<LanedTrackImpl<TrackLaneT> *> (track);
-              auto lane =
-                std::get<TrackLaneT *> (laned_track->lanes_.at (lane_pos));
-              z_return_if_fail (
-                !lane->region_list_->regions_.empty ()
-                && std::get<RegionT *> (lane->region_list_->regions_.at (id_.idx_))
-                     == dynamic_cast<RegionT *> (this));
-              get_derived ().set_lane (*lane);
-
-              laned_track->create_missing_lanes (lane_pos);
-
-              if (region_track)
-                {
-                  /* remove empty lanes if the region was the last on its track
-                   * lane
-                   */
-                  auto region_laned_track = dynamic_cast<LanedTrackImpl<
-                    typename LaneOwnedObject<RegionT>::TrackLaneT> *> (
-                    region_track);
-                  region_laned_track->remove_empty_last_lanes ();
-                }
-            }
-
-          if (link_group)
-            {
-              link_group->add_region (*this);
-            }
-        }
-#endif
-
-      /* reset the clip editor region because track_remove_region clears it */
-      if (
-        clip_editor_region.has_value ()
-        && std::holds_alternative<RegionT *> (clip_editor_region.value ()))
-        {
-          if (
-            std::get<RegionT *> (clip_editor_region.value ())
-            == dynamic_cast<RegionT *> (this))
-            {
-              {
-                CLIP_EDITOR->set_region (self->get_uuid ());
-              }
-            }
-        }
-
-      /* reselect if necessary */
-      if (selected)
-        {
-          ArrangerObjectFactory::get_instance ()
-            ->get_selection_manager_for_object (*self)
-            .append_to_selection (self->get_uuid ());
-        }
-
-      z_debug ("after: {}", get_derived ());
-
-      if (ZRYTHM_TESTING)
-        {
-          REGION_LINK_GROUP_MANAGER.validate ();
-        }
-    },
-    get_track ());
-}
-
-template <typename RegionT>
-void
 RegionImpl<RegionT>::stretch (double ratio)
 {
   z_debug ("stretching region {} (ratio {:f})", fmt::ptr (this), ratio);
@@ -503,7 +305,7 @@ RegionImpl<RegionT>::stretch (double ratio)
         {
           using ObjT = base_type<decltype (obj)>;
           /* set start pos */
-          double        before_ticks = obj->pos_->ticks_;
+          double        before_ticks = obj->get_position ().ticks_;
           double        new_ticks = before_ticks * ratio;
           dsp::Position tmp (new_ticks, AUDIO_ENGINE->frames_per_tick_);
           obj->position_setter_validated (tmp, AUDIO_ENGINE->ticks_per_frame_);
@@ -654,117 +456,6 @@ RegionImpl<RegionT>::unlink ()
   get_derived ().update_identifier ();
 }
 
-#if 0
-std::optional<RegionPtrVariant>
-Region::find (const RegionIdentifier &id)
-{
-  std::optional<RegionPtrVariant> result;
-
-  auto try_find = [&]<typename RegionT> () {
-    auto found = RegionImpl<RegionT>::find (id);
-    if (!result && found)
-      {
-        result = found;
-      }
-  };
-
-  try_find.operator()<MidiRegion> ();
-  try_find.operator()<AudioRegion> ();
-  try_find.operator()<AutomationRegion> ();
-  try_find.operator()<ChordRegion> ();
-
-  return result;
-}
-
-template <typename RegionT>
-RegionImpl<RegionT>::RegionTPtr
-RegionImpl<RegionT>::find (const RegionIdentifier &id)
-{
-  if constexpr (is_laned ())
-    {
-      z_return_val_if_fail (id.is_audio () || id.is_midi (), nullptr);
-      auto track_var = *TRACKLIST->get_track (id.track_uuid_);
-
-      return std::visit (
-        [&] (auto &&track) -> RegionTPtr {
-          using TrackT = base_type<decltype (track)>;
-          if constexpr (std::derived_from<TrackT, LanedTrack>)
-            {
-              if (id.lane_pos_ >= (int) track->lanes_.size ())
-                {
-                  z_error (
-                    "given lane pos {} is greater than track '{}' ({}) number of lanes {}",
-                    id.lane_pos_, track->name_, track->pos_,
-                    track->lanes_.size ());
-                  return nullptr;
-                }
-              auto lane_var = track->lanes_.at (id.lane_pos_);
-              return std::visit (
-                [&] (auto &&lane) -> RegionTPtr {
-                  z_return_val_if_fail (lane, nullptr);
-
-                  return std::get<RegionT *> (
-                    lane->region_list_->regions_.at (id.idx_));
-                },
-                lane_var);
-            }
-          else
-            {
-              z_error ("Track {} is not a LanedTrack", track->name_);
-              return nullptr;
-            }
-        },
-        track_var);
-    }
-  else if constexpr (is_automation ())
-    {
-      z_return_val_if_fail (id.is_automation (), nullptr);
-      auto track_var = *TRACKLIST->get_track (id.track_uuid_);
-      return std::visit (
-        [&] (auto &&track) -> RegionTPtr {
-          using TrackT = base_type<decltype (track)>;
-          if constexpr (std::derived_from<TrackT, AutomationTrack>)
-            {
-              auto &atl = track->automation_tracklist_;
-              z_return_val_if_fail (
-                id.at_idx_ < (int) atl->ats_.size (), nullptr);
-              auto &at = atl->ats_[id.at_idx_];
-              z_return_val_if_fail (at, nullptr);
-
-              if (id.idx_ >= (int) at->regions_.size ())
-                {
-                  atl->print_regions ();
-                  z_error (
-                    "Automation track for {} has less regions ({}) than the given index {}",
-                    at->port_id_->get_label (), at->regions_.size (), id.idx_);
-                  return nullptr;
-                }
-
-              return std::dynamic_pointer_cast<RegionT> (at->regions_[id.idx_]);
-            }
-          else
-            {
-              z_error ("Track {} is not an AutomationTrack", track->name_);
-              return nullptr;
-            }
-        },
-        track_var);
-    }
-  else if constexpr (is_chord ())
-    {
-      z_return_val_if_fail (id.is_chord (), nullptr);
-      auto * track = P_CHORD_TRACK;
-      z_return_val_if_fail (track, nullptr);
-
-      return std::get<RegionT *> (track->region_list_->regions_.at (id.idx_));
-    }
-  else
-    {
-      [[maybe_unused]] typedef typename RegionT::something_made_up X;
-    }
-}
-#endif
-
 void
 Region::update_link_group ()
 {
@@ -774,28 +465,6 @@ Region::update_link_group ()
       auto group = get_link_group ();
       group->update (*this);
     }
-}
-
-template <typename RegionT>
-void
-RegionImpl<RegionT>::copy_children (const RegionImpl &other)
-  requires RegionWithChildren<RegionT>
-{
-  z_return_if_fail (type_ == other.type_);
-
-  z_debug (
-    "copying children from [{}] '{}' to [{}] '{}'", other.get_uuid (),
-    other.name_, get_uuid (), name_);
-
-// TODO
-#if 0
-  auto &self = get_derived ();
-  for (auto * obj : self.get_children_view ())
-    {
-      append_object (
-        obj->clone_and_register (get_arranger_object_registry ())->get_uuid ());
-    }
-#endif
 }
 
 template <typename RegionT>
@@ -913,16 +582,6 @@ Region::get_frames_till_next_loop_or_end (
 
   *is_loop = frames_till_next_loop < frames_till_end;
   *ret_frames = std::min (frames_till_end, frames_till_next_loop);
-}
-
-std::string
-Region::generate_filename ()
-{
-  return std::visit (
-    [&] (auto &&track) {
-      return fmt::sprintf (REGION_PRINTF_FILENAME, track->get_name (), name_);
-    },
-    get_track ());
 }
 
 bool

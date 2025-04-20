@@ -76,7 +76,8 @@ MidiFunction::apply (ArrangerObjectSpanVariant sel_var, Type type, Options opts)
             double total_ticks = last_pos.ticks_ - first_pos.ticks_;
             for (auto * mn : sel.template get_elements_by_type<MidiNote> ())
               {
-                double mn_ticks_from_start = mn->pos_->ticks_ - first_pos.ticks_;
+                double mn_ticks_from_start =
+                  mn->get_position ().ticks_ - first_pos.ticks_;
                 double vel_multiplier = curve_opts.get_normalized_y (
                   mn_ticks_from_start / total_ticks,
                   opts.start_vel_ > opts.end_vel_);
@@ -159,7 +160,7 @@ MidiFunction::apply (ArrangerObjectSpanVariant sel_var, Type type, Options opts)
               ArrangerObjectSpan{ copies }
                 .template get_elements_by_type<MidiNote> ())
               {
-                poses.push_back (*mn->pos_);
+                poses.push_back (mn->get_position ());
               }
             int i = 0;
             for (
@@ -168,10 +169,8 @@ MidiFunction::apply (ArrangerObjectSpanVariant sel_var, Type type, Options opts)
                 .template get_elements_by_type<MidiNote> ())
               {
                 double ticks = mn->get_length_in_ticks ();
-                *static_cast<Position *> (mn->pos_) =
-                  poses[(copies.size () - i) - 1];
-                *static_cast<Position *> (mn->end_pos_) =
-                  *static_cast<Position *> (mn->pos_);
+                mn->set_position_unvalidated (poses[(copies.size () - i) - 1]);
+                mn->set_end_position_unvalidated (mn->get_position ());
                 mn->end_pos_->add_ticks (ticks, AUDIO_ENGINE->frames_per_tick_);
                 ++i;
               }
@@ -186,9 +185,11 @@ MidiFunction::apply (ArrangerObjectSpanVariant sel_var, Type type, Options opts)
               {
                 auto mn = std::get<MidiNote *> (*it);
                 auto next_mn = std::get<MidiNote *> (*(it + 1));
-                mn->end_pos_ = next_mn->pos_;
+                mn->set_end_position_unvalidated (next_mn->get_position ());
                 /* make sure the note has a length */
-                if (mn->end_pos_->ticks_ - mn->pos_->ticks_ < 1.0)
+                if (
+                  mn->get_end_position ().ticks_ - mn->get_position ().ticks_
+                  < 1.0)
                   {
                     mn->end_pos_->add_ms (
                       40.0, AUDIO_ENGINE->sample_rate_,
@@ -208,15 +209,16 @@ MidiFunction::apply (ArrangerObjectSpanVariant sel_var, Type type, Options opts)
               {
                 auto mn = std::get<MidiNote *> (*it);
                 auto next_mn = std::get<MidiNote *> (*(it + 1));
-                mn->end_pos_ = next_mn->pos_;
+                mn->set_end_position_unvalidated (next_mn->get_position ());
                 mn->end_pos_->add_ms (
                   -80.0, AUDIO_ENGINE->sample_rate_,
                   AUDIO_ENGINE->ticks_per_frame_);
                 /* make sure the note has a length */
-                if (mn->end_pos_->ticks_ - mn->pos_->ticks_ < 1.0)
+                if (
+                  mn->get_end_position ().ticks_ - mn->get_position ().ticks_
+                  < 1.0)
                   {
-                    *static_cast<Position *> (mn->end_pos_) =
-                      *static_cast<Position *> (next_mn->pos_);
+                    mn->set_end_position_unvalidated (next_mn->get_position ());
                     mn->end_pos_->add_ms (
                       40.0, AUDIO_ENGINE->sample_rate_,
                       AUDIO_ENGINE->ticks_per_frame_);
@@ -229,8 +231,7 @@ MidiFunction::apply (ArrangerObjectSpanVariant sel_var, Type type, Options opts)
             for (auto it = sel.begin (); it < (sel.end () - 1); ++it)
               {
                 auto mn = std::get<MidiNote *> (*it);
-                *static_cast<dsp::Position *> (mn->end_pos_) =
-                  *static_cast<dsp::Position *> (mn->pos_);
+                mn->set_end_position_unvalidated (mn->get_position ());
                 mn->end_pos_->add_ms (
                   140.0, AUDIO_ENGINE->sample_rate_,
                   AUDIO_ENGINE->ticks_per_frame_);
@@ -266,15 +267,13 @@ MidiFunction::apply (ArrangerObjectSpanVariant sel_var, Type type, Options opts)
                 double ms_to_add = ms_multiplier * opts.time_;
                 z_trace ("multi {:f}, ms {:f}", ms_multiplier, ms_to_add);
                 double len_ticks = mn->get_length_in_ticks ();
-                *static_cast<dsp::Position *> (mn->pos_) =
-                  *static_cast<dsp::Position *> (
-                    first_mn->pos_); // FIXME!!!!!!! setting pointers instead of
-                                     // assigning position !!!!! fix others
-                                     // above too
-                mn->pos_->add_ms (
+                mn->set_position_unvalidated (first_mn->get_position ());
+                auto tmp_pos = mn->get_position ();
+                tmp_pos.add_ms (
                   ms_to_add, AUDIO_ENGINE->sample_rate_,
                   AUDIO_ENGINE->ticks_per_frame_);
-                mn->end_pos_ = mn->pos_;
+                mn->set_position_unvalidated (tmp_pos);
+                mn->set_end_position_unvalidated (mn->get_position ());
                 mn->end_pos_->add_ticks (
                   len_ticks, AUDIO_ENGINE->frames_per_tick_);
               }

@@ -300,7 +300,7 @@ audio_function_apply (
   z_return_if_fail (orig_clip);
 
   Position init_pos;
-  if (sel_start < *r->pos_ || sel_end > *r->end_pos_)
+  if (sel_start < r->get_position () || sel_end > r->get_end_position ())
     {
       throw ZrythmException (
         QObject::tr ("Invalid positions - skipping function"));
@@ -309,8 +309,8 @@ audio_function_apply (
   /* adjust the positions */
   Position start = sel_start;
   Position end = sel_end;
-  start.add_frames (-r->pos_->frames_, AUDIO_ENGINE->ticks_per_frame_);
-  end.add_frames (-r->pos_->frames_, AUDIO_ENGINE->ticks_per_frame_);
+  start.add_frames (-r->get_position ().frames_, AUDIO_ENGINE->ticks_per_frame_);
+  end.add_frames (-r->get_position ().frames_, AUDIO_ENGINE->ticks_per_frame_);
 
   /* create a copy of the frames to be replaced */
   auto num_frames = (unsigned_frame_t) (end.frames_ - start.frames_);

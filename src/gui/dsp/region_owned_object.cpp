@@ -23,7 +23,7 @@ void
 RegionOwnedObject::set_region_and_index (const Region &region)
 {
   region_id_ = region.get_uuid ();
-  track_id_ = region.track_id_;
+  set_track_id (region.get_track_id ());
 
 #if 0
   /* note: this was only done for automation points, not sure why */

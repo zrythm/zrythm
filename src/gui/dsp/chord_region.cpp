@@ -7,9 +7,12 @@
 #include "gui/dsp/chord_track.h"
 #include "gui/dsp/tracklist.h"
 
-ChordRegion::ChordRegion (ArrangerObjectRegistry &obj_registry, QObject * parent)
-    : ArrangerObject (Type::ChordRegion), Region (obj_registry),
-      QAbstractListModel (parent)
+ChordRegion::ChordRegion (
+  ArrangerObjectRegistry &obj_registry,
+  TrackResolver           track_resolver,
+  QObject *               parent)
+    : ArrangerObject (Type::ChordRegion, track_resolver), Region (obj_registry),
+      QObject (parent)
 {
   ArrangerObject::set_parent_on_base_qproperties (*this);
   BoundedObject::parent_base_qproperties (*this);
@@ -42,41 +45,6 @@ ChordRegion::init_after_cloning (
   ArrangerObject::copy_members_from (other, clone_type);
   ArrangerObjectOwner::copy_members_from (other, clone_type);
 }
-
-// ========================================================================
-// QML Interface
-// ========================================================================
-
-QHash<int, QByteArray>
-ChordRegion::roleNames () const
-{
-  QHash<int, QByteArray> roles;
-  roles[ChordObjectPtrRole] = "chordObject";
-  return roles;
-}
-int
-ChordRegion::rowCount (const QModelIndex &parent) const
-{
-  return get_children_vector ().size ();
-}
-
-QVariant
-ChordRegion::data (const QModelIndex &index, int role) const
-{
-  if (
-    index.row () < 0
-    || index.row () >= static_cast<int> (get_children_vector ().size ()))
-    return {};
-
-  if (role == ChordObjectPtrRole)
-    {
-      return QVariant::fromValue<ChordObject *> (
-        get_children_view ()[index.row ()]);
-    }
-  return {};
-}
-
-// ========================================================================
 
 bool
 ChordRegion::validate (bool is_project, dsp::FramesPerTick frames_per_tick) const

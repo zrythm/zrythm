@@ -59,12 +59,7 @@ public:
   static constexpr int WIDGET_TRIANGLE_WIDTH = 10;
 
 public:
-  ChordObject (const DeserializationDependencyHolder &dh)
-      : ChordObject (
-          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get ())
-  {
-  }
-  ChordObject (ArrangerObjectRegistry &obj_registry, QObject * parent = nullptr);
+  DECLARE_FINAL_ARRANGER_OBJECT_CONSTRUCTORS (ChordObject)
 
   // ========================================================================
   // QML Interface
@@ -78,8 +73,6 @@ public:
   // ========================================================================
 
   void set_chord_descriptor (int index);
-
-  std::optional<ArrangerObjectPtrVariant> find_in_project () const override;
 
   ArrangerObjectPtrVariant
   add_clone_to_project (bool fire_events) const override;
@@ -119,7 +112,7 @@ operator== (const ChordObject &lhs, const ChordObject &rhs)
 
 DEFINE_OBJECT_FORMATTER (ChordObject, ChordObject, [] (const ChordObject &co) {
   return fmt::format (
-    "ChordObject [{}]: chord ID {}", *co.pos_, co.chord_index_);
+    "ChordObject [{}]: chord ID {}", co.get_position (), co.chord_index_);
 });
 
 /**

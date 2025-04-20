@@ -229,13 +229,14 @@ RangeAction::perform_impl ()
                       if constexpr (std::derived_from<ObjT, BoundedObject>)
                         {
                           ends_inside_range =
-                            *obj->pos_ >= start_pos_
+                            obj->get_position () >= start_pos_
                             && *obj->end_pos_ < end_pos_;
                         }
                       else
                         {
                           ends_inside_range =
-                            *obj->pos_ >= start_pos_ && *obj->pos_ < end_pos_;
+                            obj->get_position () >= start_pos_
+                            && obj->get_position () < end_pos_;
                         }
 
                       /* object starts before the range and ends after the range
@@ -358,11 +359,11 @@ RangeAction::perform_impl ()
 
                           /* move objects to bar 1 if negative pos */
                           const Position init_pos;
-                          if (*obj->pos_ < init_pos)
+                          if (obj->get_position () < init_pos)
                             {
                               z_debug ("moving object back");
                               obj->move (
-                                -obj->pos_->ticks_,
+                                -obj->get_position ().ticks_,
                                 AUDIO_ENGINE->frames_per_tick_);
                             }
 

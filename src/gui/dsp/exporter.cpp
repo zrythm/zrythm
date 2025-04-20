@@ -101,7 +101,7 @@ Exporter::Settings::get_export_time_range () const
       {
         auto start = P_MARKER_TRACK->get_start_marker ();
         auto end = P_MARKER_TRACK->get_end_marker ();
-        return { *start->pos_, *end->pos_ };
+        return { start->get_position (), end->get_position () };
       }
     case Exporter::TimeRange::Loop:
       return {
@@ -317,7 +317,7 @@ Exporter::export_audio (Settings &info)
 
   AUDIO_ENGINE->bounce_mode_ = BounceMode::BOUNCE_OFF;
   AUDIO_ENGINE->bounce_with_parents_ = false;
-  TRANSPORT->move_playhead (&prev_playhead_pos, true, false, false);
+  TRANSPORT->move_playhead (prev_playhead_pos, true, false, false);
 
   /* if cancelled, delete */
   if (progress_info_->pending_cancellation ())
@@ -452,8 +452,8 @@ Exporter::Settings::set_bounce_defaults (
       {
         auto start = P_MARKER_TRACK->get_start_marker ();
         auto end = P_MARKER_TRACK->get_end_marker ();
-        custom_start_ = *start->pos_;
-        custom_end_ = *end->pos_;
+        custom_start_ = start->get_position ();
+        custom_end_ = end->get_position ();
       }
       break;
     }

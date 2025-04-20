@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <memory>
-
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/dsp/audio_region.h"
@@ -24,16 +22,18 @@ using namespace zrythm;
 AudioRegion::AudioRegion (const DeserializationDependencyHolder &dh)
     : AudioRegion (
         dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get (),
-        dh.get<std::reference_wrapper<AudioClipResolverFunc>> ().get ())
+        dh.get<TrackResolver> (),
+        dh.get<AudioClipResolverFunc> ())
 {
 }
 
 AudioRegion::AudioRegion (
-  ArrangerObjectRegistry      &obj_registry,
-  const AudioClipResolverFunc &clip_resolver,
-  QObject *                    parent)
-    : ArrangerObject (Type::AudioRegion), Region (obj_registry),
-      QObject (parent), clip_resolver_ (clip_resolver)
+  ArrangerObjectRegistry &obj_registry,
+  TrackResolver           track_resolver,
+  AudioClipResolverFunc   clip_resolver,
+  QObject *               parent)
+    : ArrangerObject (Type::AudioRegion, track_resolver), Region (obj_registry),
+      QObject (parent), clip_resolver_ (std::move (clip_resolver))
 {
   ArrangerObject::set_parent_on_base_qproperties (*this);
   BoundedObject::parent_base_qproperties (*this);

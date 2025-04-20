@@ -23,6 +23,7 @@ public:
   ArrangerObjectFactory () = delete;
   ArrangerObjectFactory (
     ArrangerObjectRegistry              &registry,
+    TrackResolver                        track_resolver,
     gui::SettingsManager                &settings_mgr,
     std::function<dsp::FramesPerTick ()> frames_per_tick_getter,
     gui::SnapGrid                       &snap_grid_timeline,
@@ -37,6 +38,7 @@ public:
     ArrangerObjectSelectionManager       automation_selections_manager,
     QObject *                            parent = nullptr)
       : QObject (parent), object_registry_ (registry),
+        track_resolver_ (std::move (track_resolver)),
         settings_manager_ (settings_mgr),
         frames_per_tick_getter_ (std::move (frames_per_tick_getter)),
         snap_grid_timeline_ (snap_grid_timeline),
@@ -59,7 +61,10 @@ public:
     friend class ArrangerObjectFactory;
 
   private:
-    explicit Builder (ArrangerObjectRegistry &registry) : registry_ (registry)
+    explicit Builder (
+      ArrangerObjectRegistry &registry,
+      TrackResolver           track_resolver)
+        : registry_ (registry), track_resolver_ (std::move (track_resolver))
     {
     }
 
@@ -157,15 +162,17 @@ public:
       auto obj_ref = [&] () {
         if constexpr (std::is_same_v<ObjT, AudioRegion>)
           {
-            return registry_.create_object<ObjT> (registry_, *clip_resolver_);
+            return registry_.create_object<ObjT> (
+              registry_, track_resolver_, *clip_resolver_);
           }
         else if constexpr (std::is_same_v<ObjT, Marker>)
           {
-            return registry_.create_object<ObjT> (registry_, *name_validator_);
+            return registry_.create_object<ObjT> (
+              registry_, track_resolver_, *name_validator_);
           }
         else
           {
-            return registry_.create_object<ObjT> (registry_);
+            return registry_.create_object<ObjT> (registry_, track_resolver_);
           }
       }();
 
@@ -177,7 +184,7 @@ public:
               obj->set_clip_id (*clip_id_);
               obj->set_end_pos_full_size (
                 dsp::Position{
-                  obj->pos_->getFrames ()
+                  obj->get_position ().frames_
                     + clip_resolver_.value () (*clip_id_)->get_num_frames (),
                   to_ticks_per_frame (*frames_per_tick_) },
                 *frames_per_tick_);
@@ -285,6 +292,7 @@ public:
 
   private:
     ArrangerObjectRegistry                   &registry_;
+    TrackResolver                             track_resolver_;
     OptionalRef<gui::SettingsManager>         settings_manager_;
     std::optional<dsp::FramesPerTick>         frames_per_tick_;
     std::optional<AudioClipResolverFunc>      clip_resolver_;
@@ -303,7 +311,7 @@ public:
   template <typename ObjT> auto get_builder () const
   {
     auto builder =
-      Builder<ObjT> (object_registry_)
+      Builder<ObjT> (object_registry_, track_resolver_)
         .with_frames_per_tick (frames_per_tick_getter_ ())
         .with_clip_resolver (clip_resolver_func_)
         .with_settings_manager (settings_manager_);
@@ -593,11 +601,12 @@ public:
     if constexpr (std::is_same_v<ObjT, AudioRegion>)
       {
         return object_registry_.clone_object (
-          other, object_registry_, clip_resolver_func_);
+          other, object_registry_, track_resolver_, clip_resolver_func_);
       }
     else
       {
-        return object_registry_.clone_object (other, object_registry_);
+        return object_registry_.clone_object (
+          other, object_registry_, track_resolver_);
       }
   }
 
@@ -609,19 +618,19 @@ public:
       {
         // TODO
         new_obj = other.clone_qobject (
-          &owner, ObjectCloneType::Snapshot, object_registry_,
+          &owner, ObjectCloneType::Snapshot, object_registry_, track_resolver_,
           clip_resolver_func_);
       }
     else if constexpr (std::is_same_v<ObjT, Marker>)
       {
         new_obj = other.clone_qobject (
-          &owner, ObjectCloneType::Snapshot, object_registry_,
+          &owner, ObjectCloneType::Snapshot, object_registry_, track_resolver_,
           [] (const std::string &name) { return true; });
       }
     else
       {
         new_obj = other.clone_qobject (
-          &owner, ObjectCloneType::Snapshot, object_registry_);
+          &owner, ObjectCloneType::Snapshot, object_registry_, track_resolver_);
       }
     return new_obj;
   }
@@ -662,6 +671,7 @@ public:
 
 private:
   ArrangerObjectRegistry              &object_registry_;
+  TrackResolver                        track_resolver_;
   gui::SettingsManager                &settings_manager_;
   std::function<dsp::FramesPerTick ()> frames_per_tick_getter_;
   gui::SnapGrid                       &snap_grid_timeline_;

@@ -20,7 +20,7 @@ public: \
   Q_PROPERTY (int type READ getType CONSTANT) \
   int getType () const \
   { \
-    return ENUM_VALUE_TO_INT (type_); \
+    return ENUM_VALUE_TO_INT (get_type ()); \
   } \
   /* ================================================================ */ \
   /* hasLength */ \
@@ -56,6 +56,20 @@ public: \
   /* ================================================================ */ \
   Q_SIGNAL void addedToProject (); \
   Q_SIGNAL void removedFromProject ();
+
+#define DECLARE_FINAL_ARRANGER_OBJECT_CONSTRUCTORS(ClassType) \
+public: \
+  ClassType (const DeserializationDependencyHolder &dh) \
+      : ClassType ( \
+          dh.get<std::reference_wrapper<ArrangerObjectRegistry>> ().get (), \
+          dh.get<TrackResolver> ()) \
+  { \
+  } \
+\
+public: \
+  ClassType ( \
+    ArrangerObjectRegistry &obj_registry, TrackResolver track_resolver, \
+    QObject * parent = nullptr);
 
 /**
  * @brief Base class for all objects in the arranger.
@@ -138,11 +152,11 @@ public:
   using Position = zrythm::dsp::Position;
 
 public:
-  ArrangerObject (Type type);
-
   ~ArrangerObject () override = default;
 
   using ArrangerObjectPtr = ArrangerObject *;
+
+  auto get_type () const { return type_; }
 
   /**
    * Generates a human readable name for the object.
@@ -260,7 +274,12 @@ public:
    */
   void move (double ticks, dsp::FramesPerTick frames_per_tick);
 
-  void set_track_id (TrackUuid track_id) { track_id_ = track_id; }
+  void set_track_id (const TrackUuid &track_id) { track_id_ = track_id; }
+  void set_track_id (std::optional<TrackUuid> track_id)
+  {
+    track_id_ = track_id;
+  }
+  void unset_track_id () { track_id_ = std::nullopt; }
 
   /**
    * Updates the positions in each child recursively.
@@ -278,9 +297,13 @@ public:
   /**
    * Returns the Track this ArrangerObject is in.
    */
-  [[gnu::hot]] virtual TrackPtrVariant get_track () const;
+  [[gnu::hot]] auto get_track () const
+  {
+    assert (track_id_);
+    return track_resolver_ (*track_id_);
+  }
 
-  TrackUuid get_track_id () const { return track_id_; }
+  std::optional<TrackUuid> get_track_id () const { return track_id_; }
 
   /**
    * Validates the arranger object.
@@ -293,14 +316,6 @@ public:
    */
   virtual bool
   validate (bool is_project, dsp::FramesPerTick frames_per_tick) const = 0;
-
-  /**
-   * Returns the project ArrangerObject matching this.
-   *
-   * This should be called when we have a copy or a clone, to get the actual
-   * region in the project.
-   */
-  virtual std::optional<ArrangerObjectPtrVariant> find_in_project () const = 0;
 
   /**
    * Appends the ArrangerObject to where it belongs in the project (eg, a
@@ -354,6 +369,8 @@ public:
   }
 
 protected:
+  ArrangerObject (Type type, TrackResolver track_resolver);
+
   void
   copy_members_from (const ArrangerObject &other, ObjectCloneType clone_type);
 
@@ -370,21 +387,24 @@ protected:
 private:
   dsp::Position * get_position_ptr (PositionType type);
 
-public:
+protected:
+  TrackResolver track_resolver_;
+
   /**
    * Position (or start Position if the object has length).
-   *
-   * For audio/MIDI, the material starts at this frame.
-   *
-   * Midway Position between previous and next AutomationPoint's, if
-   * AutomationCurve.
    */
   PositionProxy * pos_ = nullptr;
 
+private:
   Type type_{};
 
-  /** ID of the track this object belongs to. */
-  TrackUuid track_id_;
+protected:
+  /**
+   * @brief ID of the track this object belongs to.
+   *
+   * If this is null, then this object is not part of a track.
+   */
+  std::optional<TrackUuid> track_id_;
 
   /** Track this object belongs to (cache to be set during graph calculation). */
   // OptionalTrackPtrVariant track_;
@@ -397,12 +417,14 @@ public:
    */
   // bool deleted_temporarily_ = false;
 
+public:
   /** Flags. */
   Flags flags_{};
 
+protected:
   /**
    * Whether part of an auditioner track. */
-  bool is_auditioner_ = false;
+  // bool is_auditioner_ = false;
 
   std::optional<SelectionStatusGetter> selection_status_getter_;
 };

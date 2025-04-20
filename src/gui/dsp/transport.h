@@ -358,10 +358,10 @@ public:
    * @param set_cue_point Also set the cue point at this position.
    */
   void move_playhead (
-    const Position * target,
-    bool             panic,
-    bool             set_cue_point,
-    bool             fire_events);
+    const Position &target,
+    bool            panic,
+    bool            set_cue_point,
+    bool            fire_events);
 
   /**
    * Enables or disables loop.

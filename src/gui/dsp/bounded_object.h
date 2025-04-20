@@ -72,7 +72,10 @@ public:
    *
    * (End Position - start Position).
    */
-  auto get_length_in_ticks () const { return end_pos_->ticks_ - pos_->ticks_; }
+  auto get_length_in_ticks () const
+  {
+    return end_pos_->ticks_ - get_position ().ticks_;
+  }
 
   /**
    * Returns the length in frames.
@@ -81,7 +84,7 @@ public:
    */
   auto get_length_in_frames () const
   {
-    return end_pos_->frames_ - pos_->frames_;
+    return end_pos_->frames_ - get_position ().frames_;
   }
 
   /**
@@ -154,7 +157,7 @@ public:
   bool
   is_hit (const signed_frame_t frames, bool object_end_pos_inclusive = false) const
   {
-    signed_frame_t obj_start = pos_->frames_;
+    signed_frame_t obj_start = get_position ().frames_;
     signed_frame_t obj_end =
       object_end_pos_inclusive ? end_pos_->frames_ : end_pos_->frames_ - 1;
 
@@ -216,7 +219,7 @@ public:
       range_start_inclusive ? global_frames_start : global_frames_start + 1;
     signed_frame_t range_end =
       range_end_inclusive ? global_frames_end : global_frames_end - 1;
-    signed_frame_t obj_start = pos_->frames_;
+    signed_frame_t obj_start = get_position ().frames_;
     signed_frame_t obj_end =
       object_end_pos_inclusive ? end_pos_->frames_ : end_pos_->frames_ - 1;
 
@@ -240,9 +243,9 @@ public:
   virtual bool
   is_inside_range (const dsp::Position &start, const dsp::Position &end) const
   {
-    return pos_->is_between_excl_both (start, end)
+    return get_position ().is_between_excl_both (start, end)
            || end_pos_->is_between_excl_both (start, end)
-           || (*pos_ < start && *end_pos_ >= end);
+           || (get_position () < start && *end_pos_ >= end);
   }
 
   friend bool operator== (const BoundedObject &lhs, const BoundedObject &rhs);

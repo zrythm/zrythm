@@ -265,12 +265,12 @@ TrackLaneImpl<RegionT>::write_to_midi_file (
       /* skip regions not inside the given range */
       if (start)
         {
-          if (*region->end_pos_ < *start)
+          if (region->get_end_position () < *start)
             continue;
         }
       if (end)
         {
-          if (*region->pos_ > *end)
+          if (region->get_position () > *end)
             continue;
         }
 
@@ -297,9 +297,8 @@ TrackLaneImpl<RegionT>::copy_members_from (
   solo_ = other.solo_;
   for (auto * region : this->get_children_view ())
     {
-      region->is_auditioner_ = is_auditioner ();
+      // region->is_auditioner_ = is_auditioner ();
       region->set_lane (dynamic_cast<TrackLaneT *> (this));
-      region->gen_name (region->get_name (), nullptr, nullptr);
     }
 }
 

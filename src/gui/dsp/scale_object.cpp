@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2019, 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2019, 2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/position.h"
@@ -11,8 +11,12 @@
 
 #include <fmt/format.h>
 
-ScaleObject::ScaleObject (ArrangerObjectRegistry &obj_registry, QObject * parent)
-    : ArrangerObject (ArrangerObject::Type::ScaleObject), QObject (parent)
+ScaleObject::ScaleObject (
+  ArrangerObjectRegistry &obj_registry,
+  TrackResolver           track_resolver,
+  QObject *               parent)
+    : ArrangerObject (ArrangerObject::Type::ScaleObject, track_resolver),
+      QObject (parent)
 {
   ArrangerObject::set_parent_on_base_qproperties (*this);
 }
@@ -32,19 +36,6 @@ void
 ScaleObject::init_loaded ()
 {
   ArrangerObject::init_loaded_base ();
-}
-
-std::optional<ArrangerObjectPtrVariant>
-ScaleObject::find_in_project () const
-{
-  return {};
-#if 0
-  z_return_val_if_fail (
-    index_in_chord_track_ < (int) P_CHORD_TRACK->scales_.size (), std::nullopt);
-  auto &ret = P_CHORD_TRACK->scales_.at (index_in_chord_track_);
-  z_return_val_if_fail (*ret == *this, std::nullopt);
-  return ret;
-#endif
 }
 
 std::string
