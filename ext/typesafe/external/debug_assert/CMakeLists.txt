@@ -2,7 +2,7 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.10)
 project(DEBUG_ASSERT)
 
 # Determine if debug_assert is built as a subproject (using add_subdirectory)
