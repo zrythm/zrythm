@@ -53,8 +53,8 @@ TEST_F (StretcherTest, BasicStretching)
 
   for (size_t i = 0; i < num_samples; i++)
     {
-      float t = static_cast<float> (i) / sample_rate_;
-      in_samples_l[i] = std::sin (2.0f * M_PI * 440.0f * t);
+      float t = static_cast<float> (i) / static_cast<float> (sample_rate_);
+      in_samples_l[i] = std::sin (2.0f * std::numbers::pi_v<float> * 440.0f * t);
       in_samples_r[i] = in_samples_l[i];
     }
 

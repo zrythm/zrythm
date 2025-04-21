@@ -30,7 +30,7 @@ TEST_F (KMeterDspTest, InitializationState)
 TEST_F (KMeterDspTest, ProcessSilence)
 {
   std::vector<float> silence (1024, 0.0f);
-  meter_.process (silence.data (), silence.size ());
+  meter_.process (silence.data (), (int) silence.size ());
   auto [rms, peak] = meter_.read ();
   EXPECT_NEAR (rms, 0.0f, EPSILON);
   EXPECT_NEAR (peak, 0.0f, EPSILON);
@@ -39,7 +39,7 @@ TEST_F (KMeterDspTest, ProcessSilence)
 TEST_F (KMeterDspTest, ProcessConstantSignal)
 {
   std::vector<float> signal (1024, 1.0f);
-  meter_.process (signal.data (), signal.size ());
+  meter_.process (signal.data (), (int) signal.size ());
   auto [rms, peak] = meter_.read ();
   EXPECT_GT (rms, 0.0f);
   EXPECT_GT (peak, 0.0f);
@@ -50,7 +50,7 @@ TEST_F (KMeterDspTest, ProcessConstantSignal)
 TEST_F (KMeterDspTest, Reset)
 {
   std::vector<float> signal (1024, 1.0f);
-  meter_.process (signal.data (), signal.size ());
+  meter_.process (signal.data (), (int) signal.size ());
   meter_.reset ();
   auto [rms, peak] = meter_.read ();
   EXPECT_NEAR (rms, 0.0f, EPSILON);
@@ -74,12 +74,12 @@ TEST_F (KMeterDspTest, PeakHoldBehavior)
             / static_cast<float> (signal.size () / 2);
     }
 
-  meter_.process (signal.data (), signal.size ());
+  meter_.process (signal.data (), (int) signal.size ());
   auto [rms1, peak1] = meter_.read ();
 
   // Process silence and verify peak holds
   std::vector<float> silence (1024, 0.0f);
-  meter_.process (silence.data (), silence.size ());
+  meter_.process (silence.data (), (int) silence.size ());
   auto [rms2, peak2] = meter_.read ();
 
   EXPECT_GT (peak2, 0.0f);
@@ -90,15 +90,16 @@ TEST_F (KMeterDspTest, RMSCalculation)
 {
   // Test with a sine wave
   std::vector<float> signal (1024);
-  for (size_t i = 0; i < signal.size (); ++i)
+  for (const auto i : std::views::iota (0zu, signal.size ()))
     {
-      signal[i] = std::sin (2.0f * M_PI * static_cast<float> (i) / 32.0f);
+      signal[i] = std::sin (
+        2.0f * std::numbers::pi_v<float> * static_cast<float> (i) / 32.0f);
     }
 
   // Process multiple blocks to allow the ballistic filter to settle
   for (int i = 0; i < 10; ++i)
     {
-      meter_.process (signal.data (), signal.size ());
+      meter_.process (signal.data (), static_cast<int> (signal.size ()));
     }
 
   float rms = meter_.read_f ();
@@ -116,7 +117,7 @@ TEST_F (KMeterDspTest, EdgeCases)
   invalid_signal[1] = -std::numeric_limits<float>::infinity ();
   invalid_signal[2] = std::numeric_limits<float>::quiet_NaN ();
 
-  meter_.process (invalid_signal.data (), invalid_signal.size ());
+  meter_.process (invalid_signal.data (), (int) invalid_signal.size ());
   auto [rms, peak] = meter_.read ();
 
   EXPECT_TRUE (std::isfinite (rms));

@@ -34,7 +34,8 @@ WarningsAsErrors: >
   clang-diagnostic-reorder-ctor,
   clang-analyzer-deadcode.DeadStores,
   cppcoreguidelines-pro-type-static-cast-downcast,
-  cppcoreguidelines-avoid-const-or-ref-data-members
+  cppcoreguidelines-avoid-const-or-ref-data-members,
+  cppcoreguidelines-narrowing-conversions
 FormatStyle: file
 CheckOptions:
   - key: cert-dcl16-c.NewSuffixes

@@ -10,6 +10,10 @@
 
 #undef ERROR // windows.h defines ERROR unless NOGDI is defined
 
+#if __cplusplus < 202302L
+#  error "This project requires C++23 or later."
+#endif
+
 #include <algorithm>
 #include <atomic>
 #include <cinttypes>

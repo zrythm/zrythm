@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/true_peak_dsp.h"
@@ -30,7 +30,7 @@ TEST_F (TruePeakDspTest, InitializationState)
 TEST_F (TruePeakDspTest, ProcessSilence)
 {
   std::vector<float> silence (1024, 0.0f);
-  meter_.process (silence.data (), silence.size ());
+  meter_.process (silence.data (), (int) silence.size ());
   auto [rms, peak] = meter_.read ();
   EXPECT_NEAR (rms, 0.0f, EPSILON);
   EXPECT_NEAR (peak, 0.0f, EPSILON);
@@ -39,7 +39,7 @@ TEST_F (TruePeakDspTest, ProcessSilence)
 TEST_F (TruePeakDspTest, ProcessConstantSignal)
 {
   std::vector<float> signal (1024, 0.5f);
-  meter_.process (signal.data (), signal.size ());
+  meter_.process (signal.data (), (int) signal.size ());
   auto [rms, peak] = meter_.read ();
   EXPECT_GT (rms, 0.0f);
   EXPECT_GT (peak, 0.0f);
@@ -49,7 +49,7 @@ TEST_F (TruePeakDspTest, ProcessMaxValue)
 {
   std::vector<float> signal (1024, 0.0f);
   signal[512] = 1.0f; // Single maximum value
-  meter_.process_max (signal.data (), signal.size ());
+  meter_.process_max (signal.data (), (int) signal.size ());
   float max_val = meter_.read_f ();
   EXPECT_GT (max_val, 0.0f);
   EXPECT_LE (max_val, 1.0f);
@@ -58,7 +58,7 @@ TEST_F (TruePeakDspTest, ProcessMaxValue)
 TEST_F (TruePeakDspTest, Reset)
 {
   std::vector<float> signal (1024, 0.5f);
-  meter_.process (signal.data (), signal.size ());
+  meter_.process (signal.data (), (int) signal.size ());
   meter_.reset ();
   auto [rms, peak] = meter_.read ();
   EXPECT_NEAR (rms, 0.0f, EPSILON);
@@ -71,10 +71,11 @@ TEST_F (TruePeakDspTest, InterpolatedPeakDetection)
   std::vector<float> signal (1024, 0.0f);
   for (size_t i = 0; i < signal.size (); i++)
     {
-      signal[i] = std::sin (2.0f * M_PI * static_cast<float> (i) / 4.0f);
+      signal[i] = std::sin (
+        2.0f * std::numbers::pi_v<float> * static_cast<float> (i) / 4.0f);
     }
 
-  meter_.process (signal.data (), signal.size ());
+  meter_.process (signal.data (), (int) signal.size ());
   auto [rms, peak] = meter_.read ();
 
   // Due to 4x oversampling, peak should detect intersample peaks
@@ -87,19 +88,25 @@ TEST_F (TruePeakDspTest, ConsecutiveReads)
   std::vector<float> signal (1024, 0.0f);
   for (size_t i = 0; i < signal.size (); i++)
     {
-      signal[i] = 0.5f * std::sin (2.0f * M_PI * static_cast<float> (i) / 32.0f);
+      signal[i] =
+        0.5f
+        * std::sin (
+          2.0f * std::numbers::pi_v<float> * static_cast<float> (i) / 32.0f);
     }
 
-  meter_.process (signal.data (), signal.size ());
+  meter_.process (signal.data (), (int) signal.size ());
   auto [rms1, peak1] = meter_.read ();
 
   // Process different signal before second read
   for (size_t i = 0; i < signal.size (); i++)
     {
-      signal[i] = 0.7f * std::sin (2.0f * M_PI * static_cast<float> (i) / 16.0f);
+      signal[i] =
+        0.7f
+        * std::sin (
+          2.0f * std::numbers::pi_v<float> * static_cast<float> (i) / 16.0f);
     }
 
-  meter_.process (signal.data (), signal.size ());
+  meter_.process (signal.data (), (int) signal.size ());
   auto [rms2, peak2] = meter_.read ();
 
   EXPECT_GT (peak2, peak1);
@@ -115,11 +122,14 @@ TEST_F (TruePeakDspTest, DifferentSampleRates)
   std::vector<float> signal (1024);
   for (size_t i = 0; i < signal.size (); i++)
     {
-      signal[i] = 0.5f * std::sin (2.0f * M_PI * static_cast<float> (i) / 8.0f);
+      signal[i] =
+        0.5f
+        * std::sin (
+          2.0f * std::numbers::pi_v<float> * static_cast<float> (i) / 8.0f);
     }
 
-  meter1.process (signal.data (), signal.size ());
-  meter2.process (signal.data (), signal.size ());
+  meter1.process (signal.data (), (int) signal.size ());
+  meter2.process (signal.data (), (int) signal.size ());
 
   float peak1 = meter1.read_f ();
   float peak2 = meter2.read_f ();
