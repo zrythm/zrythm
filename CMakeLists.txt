@@ -521,19 +521,21 @@ if(ZRYTHM_STRICT)
       #-Werror=conversion
 
       -Werror=disabled-optimization
-      -Werror=float-equal
       -Werror=pointer-arith
       -Werror=enum-conversion
       # this interferes with gresources generated C file
       # and I don't know how to turn this off just for that file
       # -Werror=overlength-strings
-      -Werror=missing-declarations
+
+      # errors on qml/intermediate files
+      # -Werror=missing-declarations
+      # -Werror=float-equal
+
       # -Werror=int-to-pointer-cast
 
       # maybe not needed but keep for future reference
       #-Werror=double-promotion
 
-      #-Werror=redundant-decls
       -Werror=shadow
       -Werror=address
       -Werror=undef
@@ -576,7 +578,7 @@ if(ZRYTHM_STRICT)
       -Werror=redundant-decls
       -Werror=sizeof-array-argument
       -Werror=odr
-      -Werror=mismatched-tags
+      # -Werror=mismatched-tags # note: broken in gcc 14.2.1
       -Werror=narrowing
       -Werror=overloaded-virtual
       # -Werror=effc++

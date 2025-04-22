@@ -15,7 +15,7 @@ add_library(juce_lib STATIC)
 FetchContent_Declare(
   juce
   GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
-  GIT_TAG 5179f4e720d8406ebd1b5401c86aea8da6cc83c9  # 8.0.3
+  GIT_TAG 10a589619b452c261b2940767eb253171eb5a823  # 8.0.7
 )
 FetchContent_MakeAvailable(juce)
 
@@ -83,9 +83,9 @@ if(ZRYTHM_WITH_JUCE_LV2_HOSTING)
 endif()
 
 if(IS_DEBUG_BUILD)
-  target_compile_definitions(juce_lib PUBLIC _DEBUG=1 DEBUG=1)
+  target_compile_definitions(juce_lib PUBLIC JUCE_DEBUG=1 DEBUG=1)
 else()
-  target_compile_definitions(juce_lib PUBLIC DEBUG=0)
+  target_compile_definitions(juce_lib PUBLIC JUCE_DEBUG=0 DEBUG=0)
 endif()
 if(OS_GNU)
   find_package(CURL REQUIRED)

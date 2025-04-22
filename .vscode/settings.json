@@ -18,7 +18,8 @@
     ],
     "cmake.environment": {
         "VIRTUAL_ENV": "${workspaceFolder}/venv",
-        "PATH": "${workspaceFolder}/venv/bin:${env:PATH}"
+        "LANG": "C",
+        "PATH": "/home/alex/opt/Qt6.9:${workspaceFolder}/venv/bin:${env:PATH}"
     },
     "cmake.clearOutputBeforeBuild": false,
     "clang-tidy.buildPath": "builddir_cmake",
