@@ -360,7 +360,7 @@ PluginDescriptor::generate_context_menu () const
   /* TODO */
 #  if 0
   /* add option for native generic LV2 UI */
-  if (this->protocol == PluginProtocol::LV2
+  if (this->protocol == ProtocolType::LV2
       &&
       this->min_bridge_mode_ == zrythm::gui::old_dsp::plugins::CarlaBridgeMode::None)
     {

@@ -270,11 +270,11 @@ Zrythm::init_user_dirs_and_files ()
       DirectoryManager::DirectoryType::USER_GDB,
       DirectoryManager::DirectoryType::USER_BACKTRACE })
     {
-      std::string dir = dir_mgr.get_dir (dir_type);
+      const auto dir = dir_mgr.get_dir (dir_type);
       z_return_if_fail (!dir.empty ());
       try
         {
-          utils::io::mkdir (dir);
+          utils::io::mkdir (dir.string ());
         }
       catch (const ZrythmException &e)
         {

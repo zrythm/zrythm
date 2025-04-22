@@ -35,7 +35,7 @@ calculate_panning (PanLaw law, PanAlgorithm algo, float pan)
 
     case PanAlgorithm::SineLaw:
       // Convert pan [0,1] to radians [0,π/2]
-      const float angle = pan * M_PI_2f;
+      const float angle = pan * (std::numbers::pi_v<float> / 2.f);
       left_gain = std::cos (angle);
       right_gain = std::sin (angle);
       break;

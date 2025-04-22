@@ -94,7 +94,7 @@ ZCarlaDiscovery::create_au_descriptor_from_info (
   ret->category_str_ = zrythm::gui::old_dsp::plugins::PluginDescriptor::
     category_to_string (ret->category_);
 
-  ret->protocol_ = PluginProtocol::AU;
+  ret->protocol_ = ProtocolType::AU;
   ret->arch_ = PluginArchitecture::ARCH_64_BIT;
   ret->path_ = "";
   ret->min_bridge_mode_ = ret->get_min_bridge_mode ();
@@ -114,10 +114,10 @@ ZCarlaDiscovery::descriptor_from_discovery_info (
   auto descr = std::make_unique<PluginDescriptor> ();
   descr->protocol_ = zrythm::gui::old_dsp::plugins::PluginDescriptor::
     get_protocol_from_carla_plugin_type (info->ptype);
-  z_return_val_if_fail (descr->protocol_ > PluginProtocol::DUMMY, nullptr);
+  z_return_val_if_fail (descr->protocol_ > ProtocolType::DUMMY, nullptr);
   std::string path;
   std::string uri;
-  if (descr->protocol_ == PluginProtocol::SFZ)
+  if (descr->protocol_ == ProtocolType::SFZ)
     {
       path = info->label;
       uri = meta->name;

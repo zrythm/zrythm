@@ -268,12 +268,15 @@ Exporter::export_audio (Settings &info)
       /* apply dither */
       if (info.dither_)
         {
-          ditherer.process (buffer.getWritePointer (0), nframes);
-          ditherer.process (buffer.getWritePointer (1), nframes);
+          ditherer.process (
+            buffer.getWritePointer (0), static_cast<int> (nframes));
+          ditherer.process (
+            buffer.getWritePointer (1), static_cast<int> (nframes));
         }
 
       /* write the frames for the current cycle */
-      if (!writer->writeFromAudioSampleBuffer (buffer, 0, nframes))
+      if (!writer->writeFromAudioSampleBuffer (
+            buffer, 0, static_cast<int> (nframes)))
         {
           throw ZrythmException ("Failed to write audio data");
         }
@@ -483,7 +486,8 @@ Exporter::Settings::set_bounce_defaults (
       tmp_dir->setAutoRemove (false);
       const char * ext = format_get_ext (format_);
       std::string  filename = bounce_name + "." + ext;
-      file_uri_ = fs::path (tmp_dir->path ().toStdString ()) / filename;
+      file_uri_ =
+        (fs::path (tmp_dir->path ().toStdString ()) / filename).string ();
     }
 }
 

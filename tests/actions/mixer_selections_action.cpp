@@ -191,8 +191,8 @@ _test_create_plugins (
 
   switch (prot)
     {
-    case PluginProtocol::LV2:
-    case PluginProtocol::VST:
+    case ProtocolType::LV2:
+    case ProtocolType::VST:
       setting =
         test_plugin_manager_get_plugin_setting (pl_bundle, pl_uri, with_carla);
       break;
@@ -284,7 +284,7 @@ TEST_F (ZrythmFixture, CreatePlugins)
 #if HAVE_CARLA
 #  ifdef HAVE_NOIZEMAKER
           _test_create_plugins (
-            PluginProtocol::VST, NOIZEMAKER_PATH, nullptr, true, i);
+            ProtocolType::VST, NOIZEMAKER_PATH, nullptr, true, i);
 #  endif
 #else
           break;
@@ -295,25 +295,23 @@ TEST_F (ZrythmFixture, CreatePlugins)
 #  if 0
       /* need to refactor the error handling code because this is expected to fail */
       _test_create_plugins (
-        PluginProtocol::LV2, SHERLOCK_ATOM_INSPECTOR_BUNDLE,
+        ProtocolType::LV2, SHERLOCK_ATOM_INSPECTOR_BUNDLE,
         SHERLOCK_ATOM_INSPECTOR_URI, false, i);
 #  endif
 #endif
       _test_create_plugins (
-        PluginProtocol::LV2, TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, i);
+        ProtocolType::LV2, TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, i);
 #ifdef HAVE_LSP_COMPRESSOR
       _test_create_plugins (
-        PluginProtocol::LV2, LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, false,
-        i);
+        ProtocolType::LV2, LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, false, i);
 #endif
 #if HAVE_CARLA_RACK
       _test_create_plugins (
-        PluginProtocol::LV2, CARLA_RACK_BUNDLE, CARLA_RACK_URI, true, i);
+        ProtocolType::LV2, CARLA_RACK_BUNDLE, CARLA_RACK_URI, true, i);
 #endif
 #if defined(HAVE_CALF_COMPRESSOR)
       _test_create_plugins (
-        PluginProtocol::LV2, CALF_COMPRESSOR_BUNDLE, CALF_COMPRESSOR_URI, true,
-        i);
+        ProtocolType::LV2, CALF_COMPRESSOR_BUNDLE, CALF_COMPRESSOR_URI, true, i);
 #endif
     }
 }
@@ -954,8 +952,8 @@ _test_replace_instrument (
 
   switch (prot)
     {
-    case PluginProtocol::LV2:
-    case PluginProtocol::VST:
+    case ProtocolType::LV2:
+    case ProtocolType::VST:
       setting =
         test_plugin_manager_get_plugin_setting (pl_bundle, pl_uri, with_carla);
       break;
@@ -1172,7 +1170,7 @@ TEST_F (ZrythmFixture, ReplaceInstrument)
 #if HAVE_CARLA
 #  ifdef HAVE_NOIZEMAKER
           _test_replace_instrument (
-            PluginProtocol::VST, NOIZEMAKER_PATH, nullptr, i);
+            ProtocolType::VST, NOIZEMAKER_PATH, nullptr, i);
 #  endif
 #else
           break;
@@ -1180,10 +1178,10 @@ TEST_F (ZrythmFixture, ReplaceInstrument)
         }
 
       _test_replace_instrument (
-        PluginProtocol::LV2, TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, i);
+        ProtocolType::LV2, TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, i);
 #if HAVE_CARLA_RACK
       _test_replace_instrument (
-        PluginProtocol::LV2, CARLA_RACK_BUNDLE, CARLA_RACK_URI, i);
+        ProtocolType::LV2, CARLA_RACK_BUNDLE, CARLA_RACK_URI, i);
 #endif
     }
 }

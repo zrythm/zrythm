@@ -336,12 +336,12 @@ copy_dir (
 void
 copy_file (const fs::path &destfile, const fs::path &srcfile)
 {
-  auto src_file = QFile (QString::fromStdString (srcfile));
+  auto src_file = QFile (QString::fromStdString (srcfile.string ()));
   if (!src_file.copy (QString::fromStdString (destfile.string ())))
     {
       throw ZrythmException (fmt::format (
-        "Failed to copy '{}' to '{}': {}", srcfile, destfile,
-        src_file.errorString ()));
+        "Failed to copy '{}' to '{}': {}", srcfile.string (),
+        destfile.string (), src_file.errorString ()));
     }
 }
 
@@ -495,7 +495,7 @@ path_exists (const fs::path &path)
 }
 
 bool
-reflink_file (const std::string &dest, const std::string &src)
+reflink_file (const fs::path &dest, const fs::path &src)
 {
 #ifdef __linux__
   int src_fd = open (src.c_str (), O_RDONLY);
@@ -547,7 +547,7 @@ set_file_contents (const fs::path &path, const char * contents, size_t size)
   QFile file (path);
   if (file.open (QIODevice::WriteOnly))
     {
-      file.write (contents, size);
+      file.write (contents, static_cast<qint64> (size));
     }
   else
     {

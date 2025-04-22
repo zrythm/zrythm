@@ -14,7 +14,8 @@ class LoopableObject
       public zrythm::utils::serialization::ISerializable<LoopableObject>
 {
 public:
-  ~LoopableObject () override = default;
+  LoopableObject () noexcept = default;
+  ~LoopableObject () noexcept override = default;
 
   /**
    * Returns the number of loops in the ArrangerObject, optionally including

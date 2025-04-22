@@ -49,13 +49,14 @@ ProjectManager::init_templates ()
 
   auto &dir_mgr =
     dynamic_cast<ZrythmApplication *> (qApp)->get_directory_manager ();
-  std::string user_templates_dir =
+  const auto user_templates_dir =
     dir_mgr.get_dir (IDirectoryManager::DirectoryType::USER_TEMPLATES);
   if (fs::is_directory (user_templates_dir))
     {
       try
         {
-          auto files = utils::io::get_files_in_dir (user_templates_dir);
+          auto files =
+            utils::io::get_files_in_dir (user_templates_dir.string ());
           std::ranges::transform (
             files, std::back_inserter (templates_),
             [] (const auto &p) { return fs::path (p.toStdString ()); });
@@ -63,18 +64,20 @@ ProjectManager::init_templates ()
       catch (const ZrythmException &e)
         {
           z_warning (
-            "Failed to init user templates from {}", user_templates_dir);
+            "Failed to init user templates from {}",
+            user_templates_dir.string ());
         }
     }
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
-      std::string system_templates_dir =
+      const auto system_templates_dir =
         dir_mgr.get_dir (IDirectoryManager::DirectoryType::SYSTEM_TEMPLATES);
       if (fs::is_directory (system_templates_dir))
         {
           try
             {
-              auto files = utils::io::get_files_in_dir (system_templates_dir);
+              auto files =
+                utils::io::get_files_in_dir (system_templates_dir.string ());
               std::ranges::transform (
                 files, std::back_inserter (templates_),
                 [] (const auto &p) { return fs::path (p.toStdString ()); });
@@ -82,7 +85,8 @@ ProjectManager::init_templates ()
           catch (const ZrythmException &e)
             {
               z_warning (
-                "Failed to init system templates from {}", system_templates_dir);
+                "Failed to init system templates from {}",
+                system_templates_dir.string ());
             }
         }
     }
@@ -90,7 +94,7 @@ ProjectManager::init_templates ()
   for (auto &tmpl : this->templates_)
     {
       z_info ("Template found: {}", tmpl);
-      if (juce::String (tmpl).contains ("demo_zsong01"))
+      if (juce::String (tmpl.string ()).contains ("demo_zsong01"))
         {
           demo_template_ = tmpl;
         }

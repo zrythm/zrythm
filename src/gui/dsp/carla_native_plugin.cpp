@@ -784,30 +784,30 @@ CarlaNativePlugin::get_descriptor_from_cached (
     {
 #  if 0
     case CarlalBackend::PLUGIN_INTERNAL:
-      descr->protocol = PluginProtocol::CARLA_INTERNAL;
+      descr->protocol = ProtocolType::CARLA_INTERNAL;
       break;
     case CarlalBackend::PLUGIN_LADSPA:
-      descr->protocol = PluginProtocol::LADSPA;
+      descr->protocol = ProtocolType::LADSPA;
       break;
     case CarlalBackend::PLUGIN_DSSI:
-      descr->protocol = PluginProtocol::DSSI;
+      descr->protocol = ProtocolType::DSSI;
       break;
 #  endif
     case CarlaBackend::PLUGIN_LV2:
-      descr->protocol_ = PluginProtocol::LV2;
+      descr->protocol_ = ProtocolType::LV2;
       break;
     case CarlaBackend::PLUGIN_VST2:
-      descr->protocol_ = PluginProtocol::VST;
+      descr->protocol_ = ProtocolType::VST;
       break;
 #  if 0
     case CarlalBackend::PLUGIN_SF2:
-      descr->protocol = PluginProtocol::SF2;
+      descr->protocol = ProtocolType::SF2;
       break;
     case CarlalBackend::PLUGIN_SFZ:
-      descr->protocol = PluginProtocol::SFZ;
+      descr->protocol = ProtocolType::SFZ;
       break;
     case CarlalBackend::PLUGIN_JACK:
-      descr->protocol = PluginProtocol::JACK;
+      descr->protocol = ProtocolType::JACK;
       break;
 #  endif
     default:
@@ -1156,8 +1156,8 @@ CarlaNativePlugin::add_internal_plugin_from_descr (
     {
       switch (descr.protocol_)
         {
-        case PluginProtocol::LV2:
-        case PluginProtocol::AU:
+        case ProtocolType::LV2:
+        case ProtocolType::AU:
           z_debug ("uri {}", descr.uri_);
           added = carla_add_plugin (
             host_handle_,
@@ -1167,8 +1167,8 @@ CarlaNativePlugin::add_internal_plugin_from_descr (
             type, nullptr, descr.name_.c_str (), descr.uri_.c_str (), 0,
             nullptr, CarlaBackend::PLUGIN_OPTIONS_NULL);
           break;
-        case PluginProtocol::VST:
-        case PluginProtocol::VST3:
+        case ProtocolType::VST:
+        case ProtocolType::VST3:
           added = carla_add_plugin (
             host_handle_,
             descr.arch_ == PluginArchitecture::ARCH_64_BIT
@@ -1178,21 +1178,21 @@ CarlaNativePlugin::add_internal_plugin_from_descr (
             descr.name_.c_str (), descr.unique_id_, nullptr,
             CarlaBackend::PLUGIN_OPTIONS_NULL);
           break;
-        case PluginProtocol::DSSI:
-        case PluginProtocol::LADSPA:
+        case ProtocolType::DSSI:
+        case ProtocolType::LADSPA:
           added = carla_add_plugin (
             host_handle_, CarlaBackend::BINARY_NATIVE, type,
             descr.path_.string ().c_str (), descr.name_.c_str (),
             descr.uri_.c_str (), 0, nullptr, CarlaBackend::PLUGIN_OPTIONS_NULL);
           break;
-        case PluginProtocol::SFZ:
-        case PluginProtocol::SF2:
+        case ProtocolType::SFZ:
+        case ProtocolType::SF2:
           added = carla_add_plugin (
             host_handle_, CarlaBackend::BINARY_NATIVE, type,
             descr.path_.string ().c_str (), descr.name_.c_str (),
             descr.name_.c_str (), 0, nullptr, CarlaBackend::PLUGIN_OPTIONS_NULL);
           break;
-        case PluginProtocol::JSFX:
+        case ProtocolType::JSFX:
           {
             /* the URI is a relative path - make it absolute */
             auto pl_path =
@@ -1208,7 +1208,7 @@ CarlaNativePlugin::add_internal_plugin_from_descr (
               CarlaBackend::PLUGIN_OPTIONS_NULL);
           }
           break;
-        case PluginProtocol::CLAP:
+        case ProtocolType::CLAP:
           added = carla_add_plugin (
             host_handle_,
             descr.arch_ == PluginArchitecture::ARCH_64_BIT
@@ -1702,13 +1702,13 @@ CarlaNativePlugin::open_custom_ui (bool show)
 
   switch (get_protocol ())
     {
-    case PluginProtocol::VST:
-    case PluginProtocol::VST3:
-    case PluginProtocol::DSSI:
-    case PluginProtocol::LV2:
-    case PluginProtocol::AU:
-    case PluginProtocol::CLAP:
-    case PluginProtocol::JSFX:
+    case ProtocolType::VST:
+    case ProtocolType::VST3:
+    case ProtocolType::DSSI:
+    case ProtocolType::LV2:
+    case ProtocolType::AU:
+    case ProtocolType::CLAP:
+    case ProtocolType::JSFX:
       {
         if (show)
           {

@@ -96,17 +96,16 @@ PluginSetting::validate (bool print_result)
     }
 #endif
 
+  using zrythm::gui::old_dsp::plugins::Protocol;
   const auto prot = get_descriptor ()->protocol_;
   if (
-    prot == zrythm::gui::old_dsp::plugins::Protocol::ProtocolType::VST
-    || prot == zrythm::gui::old_dsp::plugins::Protocol::ProtocolType::VST3
-    || prot == zrythm::gui::old_dsp::plugins::Protocol::ProtocolType::AudioUnit
-    || prot == zrythm::gui::old_dsp::plugins::Protocol::ProtocolType::SFZ
-    || prot == zrythm::gui::old_dsp::plugins::Protocol::ProtocolType::SF2
-    || prot == zrythm::gui::old_dsp::plugins::Protocol::ProtocolType::DSSI
-    || prot == zrythm::gui::old_dsp::plugins::Protocol::ProtocolType::LADSPA
-    || prot == zrythm::gui::old_dsp::plugins::Protocol::ProtocolType::JSFX
-    || prot == zrythm::gui::old_dsp::plugins::Protocol::ProtocolType::CLAP)
+    prot == Protocol::ProtocolType::VST || prot == Protocol::ProtocolType::VST3
+    || prot == Protocol::ProtocolType::AudioUnit
+    || prot == Protocol::ProtocolType::SFZ || prot == Protocol::ProtocolType::SF2
+    || prot == Protocol::ProtocolType::DSSI
+    || prot == Protocol::ProtocolType::LADSPA
+    || prot == Protocol::ProtocolType::JSFX
+    || prot == Protocol::ProtocolType::CLAP)
     {
       this->open_with_carla_ = true;
 #if !HAVE_CARLA
@@ -116,9 +115,9 @@ PluginSetting::validate (bool print_result)
 #endif
     }
 
-#if defined(_WIN32) && defined(HAVE_CARLA)
+#if defined(_WIN32) && HAVE_CARLA
   /* open all LV2 plugins with custom UIs using carla */
-  if (descr_.has_custom_ui_ && !force_generic_ui_)
+  if (get_descriptor->has_custom_ui_ && !force_generic_ui_)
     {
       open_with_carla_ = true;
     }

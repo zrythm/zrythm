@@ -316,7 +316,7 @@ is_file_hidden (const fs::path &file);
  * @return Whether successful.
  */
 [[nodiscard]] bool
-reflink_file (const std::string &dest, const std::string &src);
+reflink_file (const fs::path &dest, const fs::path &src);
 
 /**
  * @brief Reads the contents of a file into a QByteArray.

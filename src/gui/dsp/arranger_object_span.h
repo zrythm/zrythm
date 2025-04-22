@@ -528,10 +528,7 @@ public:
                     auto prev_r2_clip =
                       get_derived_object (prev_r2_ref)->get_clip ();
                     assert (prev_r2_clip);
-                    size_t num_frames =
-                      (size_t) r2_local_end.frames_
-                      * prev_r2_clip->get_num_channels ();
-                    assert (num_frames > 0);
+                    assert ((size_t) r2_local_end.frames_ > 0);
                     utils::audio::AudioBuffer tmp{
                       prev_r2_clip->get_num_channels (),
                       (int) r2_local_end.frames_

@@ -71,11 +71,11 @@ Protocol::is_supported (ProtocolType protocol)
     return false;
 #endif
 #if defined(_WIN32) || defined(__APPLE__)
-  if (protocol == PluginProtocol::LADSPA || protocol == PluginProtocol::DSSI)
+  if (protocol == ProtocolType::LADSPA || protocol == ProtocolType::DSSI)
     return false;
 #endif
 #ifndef CARLA_HAVE_CLAP_SUPPORT
-  if (protocol == PluginProtocol::CLAP)
+  if (protocol == ProtocolType::CLAP)
     return false;
 #endif
   return true;

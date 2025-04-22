@@ -674,7 +674,7 @@ ChordPresetPackManager::serialize ()
       auto pack_path = pack_dir / UserPackJsonFilename;
       try
         {
-          utils::io::mkdir (pack_dir);
+          utils::io::mkdir (pack_dir.string ());
 
           auto pack_json = pack->serialize_to_json_string ();
           utils::io::set_file_contents (pack_path, pack_json.c_str ());
