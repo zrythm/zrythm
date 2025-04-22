@@ -169,7 +169,7 @@ fast_log10 (const float val)
  * 0.0 to 2.0 (+6 dbFS).
  */
 [[gnu::const]]
-constexpr sample_t
+static inline sample_t
 get_fader_val_from_amp (sample_t amp)
 {
   constexpr float fader_coefficient1 =
@@ -191,10 +191,10 @@ get_fader_val_from_amp (sample_t amp)
       amp = 1.f + 1e-20f;
     }
   sample_t fader =
-    powf (
+    std::powf (
       /* note: don't use fast_log here - it causes
        * weirdness in faders */
-      6.f * std::logf (amp) + fader_coefficient1, 8.f)
+      (6.f * std::logf (amp)) + fader_coefficient1, 8.f)
     / fader_coefficient2;
   return fader;
 }
@@ -203,7 +203,7 @@ get_fader_val_from_amp (sample_t amp)
  * Returns amp value 0.0 to 2.0 (+6 dbFS) from fader value 0.0 to 1.0.
  */
 [[gnu::const]]
-constexpr sample_t
+static inline sample_t
 get_amp_val_from_fader (sample_t fader)
 {
   constexpr float val1 = 1.f / 6.f;
@@ -215,7 +215,7 @@ get_amp_val_from_fader (sample_t fader)
  * Convert from amplitude 0.0 to 2.0 to dbFS.
  */
 [[gnu::const]]
-constexpr sample_t
+static inline sample_t
 amp_to_dbfs (sample_t amp)
 {
   return 20.f * std::log10f (amp);
@@ -244,7 +244,7 @@ calculate_rms_db (const sample_t * buf, nframes_t nframes)
  * Convert form dbFS to amplitude 0.0 to 2.0.
  */
 [[gnu::const]]
-constexpr sample_t
+static inline sample_t
 dbfs_to_amp (sample_t dbfs)
 {
   return std::powf (10.f, (dbfs / 20.f));
@@ -254,7 +254,7 @@ dbfs_to_amp (sample_t dbfs)
  * Convert form dbFS to fader val 0.0 to 1.0.
  */
 [[gnu::const]]
-constexpr sample_t
+static inline sample_t
 dbfs_to_fader_val (sample_t dbfs)
 {
   return get_fader_val_from_amp (dbfs_to_amp (dbfs));

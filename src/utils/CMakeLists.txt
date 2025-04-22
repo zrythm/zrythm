@@ -87,10 +87,6 @@ target_sources(zrythm_utils_lib
     # vamp.h
     # vamp.cpp
     variant_helpers.h
-    windows.h
-    windows.cpp
-    windows_errors.h
-    windows_errors.cpp
     yaml.h
     yaml.cpp)
 
