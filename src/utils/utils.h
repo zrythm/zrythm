@@ -47,6 +47,4 @@
 #include "./string_array.h"
 #include "./symap.h"
 #include "./variant_helpers.h"
-#include "./windows.h"
-#include "./windows_errors.h"
 #include "./yaml.h"
