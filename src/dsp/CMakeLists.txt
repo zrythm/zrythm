@@ -52,7 +52,7 @@ target_precompile_headers(zrythm_dsp_lib PUBLIC
 target_link_libraries(zrythm_dsp_lib
   PUBLIC
     ${zrythm_link_libs}
-    zrythm_utils_lib
+    zrythm::utils_lib
     zrythm_include_dirs
 )
 target_compile_options(zrythm_dsp_lib PUBLIC ${zrythm_compile_args})

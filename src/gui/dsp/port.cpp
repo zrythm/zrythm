@@ -204,7 +204,7 @@ Port::set_expose_to_backend (AudioEngine &engine, bool expose)
         case AudioBackend::AUDIO_BACKEND_DUMMY:
           z_debug ("called with dummy audio backend");
           return;
-#if HAVE_JACK
+#ifdef HAVE_JACK
         case AudioBackend::AUDIO_BACKEND_JACK:
           if (
             !backend_
@@ -273,7 +273,7 @@ Port::set_expose_to_backend (AudioEngine &engine, bool expose)
         case MidiBackend::MIDI_BACKEND_DUMMY:
           z_debug ("called with MIDI dummy backend");
           return;
-#if HAVE_JACK
+#ifdef HAVE_JACK
         case MidiBackend::MIDI_BACKEND_JACK:
           if (
             !backend_

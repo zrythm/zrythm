@@ -32,10 +32,6 @@ list(APPEND zrythm_link_libs
   kissfft::kissfft
 )
 
-if(USE_WEAK_JACK)
-  list(APPEND zrythm_link_libs weakjack::weakjack)
-endif()
-
 if(WIN32)
   # There are problems if added to zrythm_srcs directly
   target_sources(zrythm_gui_lib PRIVATE ${win_res})

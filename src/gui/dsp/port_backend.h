@@ -14,7 +14,7 @@
 #include "utils/jack.h"
 #include "utils/monotonic_time_provider.h"
 
-#if HAVE_JACK
+#ifdef HAVE_JACK
 #  include "weakjack/weak_libjack.h"
 #endif
 
@@ -97,7 +97,7 @@ public:
   virtual bool is_exposed () const = 0;
 };
 
-#if HAVE_JACK
+#ifdef HAVE_JACK
 class JackPortBackend : public PortBackend
 {
 public:

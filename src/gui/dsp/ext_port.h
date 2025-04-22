@@ -16,7 +16,7 @@
 #include "utils/iserializable.h"
 #include "utils/types.h"
 
-#if HAVE_JACK
+#ifdef HAVE_JACK
 #  include "weakjack/weak_libjack.h"
 #endif
 
@@ -59,9 +59,9 @@ public:
 
 public:
   ExtPort () = default;
-#if HAVE_JACK
+#ifdef HAVE_JACK
   ExtPort (jack_port_t * jport);
-#endif /* HAVE_JACK */
+#endif /* defined(HAVE_JACK) */
 
   bool is_in_active_project () const override;
 
@@ -171,7 +171,7 @@ connect (
 
 public:
 /** JACK port. */
-#if HAVE_JACK
+#ifdef HAVE_JACK
   jack_port_t * jport_ = nullptr;
 #else
   void * jport_ = nullptr;

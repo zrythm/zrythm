@@ -14,7 +14,7 @@
 #include "utils/dsp.h"
 #include "utils/string.h"
 
-#if HAVE_JACK
+#ifdef HAVE_JACK
 #  include "weakjack/weak_libjack.h"
 #endif
 
@@ -42,7 +42,7 @@ ExtPort::get_buffer (nframes_t nframes) const
 {
   switch (type_)
     {
-#if HAVE_JACK
+#ifdef HAVE_JACK
     case Type::JACK:
       return static_cast<float *> (jack_port_get_buffer (jport_, nframes));
 #endif
@@ -105,7 +105,7 @@ ExtPort::activate (Port * port, bool activate)
         {
           switch (AUDIO_ENGINE->midi_backend_)
             {
-#if HAVE_JACK
+#ifdef HAVE_JACK
             case MidiBackend::MIDI_BACKEND_JACK:
               {
                 if (type_ != Type::JACK)
@@ -204,7 +204,7 @@ ExtPort::activate (Port * port, bool activate)
         {
           switch (AUDIO_ENGINE->audio_backend_)
             {
-#if HAVE_JACK
+#ifdef HAVE_JACK
             case AudioBackend::AUDIO_BACKEND_JACK:
               {
                 if (type_ != Type::JACK)
@@ -300,7 +300,7 @@ ExtPort::matches_backend () const
     {
       switch (AUDIO_ENGINE->audio_backend_)
         {
-#if HAVE_JACK
+#ifdef HAVE_JACK
         case AudioBackend::AUDIO_BACKEND_JACK:
           return type_ == Type::JACK;
 #endif
@@ -325,7 +325,7 @@ ExtPort::matches_backend () const
     {
       switch (AUDIO_ENGINE->midi_backend_)
         {
-#if HAVE_JACK
+#ifdef HAVE_JACK
         case MidiBackend::MIDI_BACKEND_JACK:
           return type_ == Type::JACK;
 #endif
@@ -350,7 +350,7 @@ ExtPort::matches_backend () const
   return false;
 }
 
-#if HAVE_JACK
+#ifdef HAVE_JACK
 ExtPort::ExtPort (jack_port_t * jport)
     : jport_ (jport), full_name_ (jack_port_name (jport)),
       short_name_ (jack_port_short_name (jport)), type_ (Type::JACK)
@@ -568,7 +568,7 @@ ExtPort::ext_ports_get (
     {
       switch (engine.audio_backend_)
         {
-#if HAVE_JACK
+#ifdef HAVE_JACK
         case AudioBackend::AUDIO_BACKEND_JACK:
           get_ext_ports_from_jack (type, flow, hw, ports, engine);
           break;
@@ -595,7 +595,7 @@ ExtPort::ext_ports_get (
     {
       switch (engine.midi_backend_)
         {
-#if HAVE_JACK
+#ifdef HAVE_JACK
         case MidiBackend::MIDI_BACKEND_JACK:
           get_ext_ports_from_jack (type, flow, hw, ports, engine);
           break;

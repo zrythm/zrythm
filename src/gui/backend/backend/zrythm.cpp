@@ -112,7 +112,7 @@ Zrythm::get_version_with_capabilities (char * buf, bool include_system_info)
     "    +carla\n"
 #endif
 
-#if HAVE_JACK2
+#ifdef HAVE_JACK2
     "    +jack2\n"
 #elifdef HAVE_JACK
     "    +jack1\n"

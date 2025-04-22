@@ -99,3 +99,5 @@ target_link_libraries(zrythm_utils_lib
   zrythm_include_dirs
   ${zrythm_link_libs}
 )
+
+add_library(zrythm::utils_lib ALIAS zrythm_utils_lib)

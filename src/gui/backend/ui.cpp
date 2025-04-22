@@ -508,7 +508,7 @@ ui_gen_audio_backends_combo_row (bool with_signal)
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_ALSA_RTAUDIO),
 #    endif
 #  endif /* HAVE_ALSA */
-#  if HAVE_JACK
+#  if defined(HAVE_JACK)
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_JACK),
 #    ifdef HAVE_LIBSOUNDIO
     AudioBackend_to_string (AudioBackend::AUDIO_BACKEND_JACK_LIBSOUNDIO),
@@ -517,7 +517,7 @@ ui_gen_audio_backends_combo_row (bool with_signal)
   /* unnecessary */
   /*AudioBackend_to_string(AudioBackend::AUDIO_BACKEND_JACK_RTAUDIO),*/
 #    endif
-#  endif /* HAVE_JACK */
+#  endif /* defined(HAVE_JACK) */
 #  if HAVE_PULSEAUDIO
   /* use rtaudio version - this has known issues */
   /*AudioBackend_to_string(AudioBackend::AUDIO_BACKEND_PULSEAUDIO),*/
@@ -609,7 +609,7 @@ ui_gen_midi_backends_combo_row (bool with_signal)
     MidiBackend_to_string (MidiBackend::MIDI_BACKEND_ALSA_RTMIDI),
 #    endif
 #  endif
-#  if HAVE_JACK
+#  if defined(HAVE_JACK)
     MidiBackend_to_string (MidiBackend::MIDI_BACKEND_JACK),
 #    if HAVE_RTMIDI
   /* unnecessary */

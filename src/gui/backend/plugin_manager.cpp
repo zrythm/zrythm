@@ -121,10 +121,10 @@ PluginManager::supports_protocol (Protocol::ProtocolType protocol)
 
   // Map of protocols to their corresponding Carla feature names
   const auto feature_map = std::map<PluginProtocol, std::string>{
-    { PluginProtocol::SF2,  "sf2"  },
-    { PluginProtocol::DSSI, "osc"  },
-    { PluginProtocol::VST3, "vst3" },
-    { PluginProtocol::AU,   "au"   }
+    { ProtocolType::SF2,  "sf2"  },
+    { ProtocolType::DSSI, "osc"  },
+    { ProtocolType::VST3, "vst3" },
+    { ProtocolType::AU,   "au"   }
   };
 
   // Check if the protocol is in the feature map
@@ -241,8 +241,8 @@ PluginManager::beginScan ()
 
 #if 0
   for (
-    size_t i = ENUM_VALUE_TO_INT (PluginProtocol::LV2);
-    i <= ENUM_VALUE_TO_INT (PluginProtocol::JSFX); i++)
+    size_t i = ENUM_VALUE_TO_INT (ProtocolType::LV2);
+    i <= ENUM_VALUE_TO_INT (ProtocolType::JSFX); i++)
     {
       PluginProtocol cur = ENUM_INT_TO_VALUE (PluginProtocol, i);
       if (!supports_protocol (cur))

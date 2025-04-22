@@ -33,7 +33,7 @@
 #include "gui/dsp/engine.h"
 #include "gui/dsp/project_graph_builder.h"
 #include "utils/debug.h"
-#if HAVE_JACK
+#ifdef HAVE_JACK
 #  include "gui/dsp/engine_jack.h"
 #endif
 #ifdef HAVE_PORT_AUDIO
@@ -48,7 +48,7 @@
 #include "gui/dsp/track_processor.h"
 #include "gui/dsp/tracklist.h"
 
-#if HAVE_JACK
+#ifdef HAVE_JACK
 #  include "weakjack/weak_libjack.h"
 #endif
 

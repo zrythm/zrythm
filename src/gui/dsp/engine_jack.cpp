@@ -7,7 +7,7 @@
 #include "gui/backend/backend/zrythm.h"
 #include "utils/gtest_wrapper.h"
 
-#if HAVE_JACK
+#ifdef HAVE_JACK
 
 #  include <cmath>
 
@@ -130,7 +130,7 @@ void
 engine_jack_handle_buf_size_change (AudioEngine * self, uint32_t frames)
 {
   AUDIO_ENGINE->realloc_port_buffers (frames);
-#  if HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE
+#  if defined(HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE)
   AUDIO_ENGINE->midi_buf_size_ = jack_port_type_get_buffer_size (
     AUDIO_ENGINE->client_, JACK_DEFAULT_MIDI_TYPE);
 #  endif
@@ -404,7 +404,7 @@ engine_jack_midi_setup (AudioEngine * self)
   /* case 2 - jack client exists, just attach to
    * it */
   self->midi_buf_size_ = 4096;
-#  if HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE
+#  if defined(HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE)
   self->midi_buf_size_ =
     jack_port_type_get_buffer_size (self->client_, JACK_DEFAULT_MIDI_TYPE);
 #  endif
@@ -764,4 +764,4 @@ engine_jack_is_pipewire (AudioEngine * self)
 #  endif
 }
 
-#endif /* HAVE_JACK */
+#endif // HAVE_JACK

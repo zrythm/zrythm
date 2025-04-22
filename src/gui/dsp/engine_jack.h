@@ -8,7 +8,7 @@
 
 #include "gui/dsp/engine.h"
 
-#if HAVE_JACK
+#ifdef HAVE_JACK
 
 #  include <cstdlib>
 
@@ -111,5 +111,5 @@ engine_jack_buffer_size_cb (uint32_t nframes, AudioEngine * self);
 bool
 engine_jack_is_pipewire (AudioEngine * self);
 
-#endif /* HAVE_JACK */
+#endif // HAVE_JACK
 #endif /* header guard */

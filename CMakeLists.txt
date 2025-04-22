@@ -340,7 +340,6 @@ set(gtk_req "4.14.0")
 set(glib_req "2.74.0")
 
 check_symbol_exists(mlock "sys/mman.h" HAVE_MLOCK)
-message(STATUS "HAVE_MLOCK: ${HAVE_MLOCK}")
 
 add_library(zrythm_include_dirs INTERFACE)
 target_include_directories(zrythm_include_dirs
@@ -349,33 +348,6 @@ target_include_directories(zrythm_include_dirs
   "${CMAKE_SOURCE_DIR}/ext"
   "${CMAKE_BINARY_DIR}/src"
 )
-
-if(${ZRYTHM_WITH_JACK})
-  if (WIN32 OR ${ZRYTHM_IS_INSTALLER_VER})
-    set(USE_WEAK_JACK ON)
-  else()
-    set(USE_WEAK_JACK OFF)
-  endif()
-
-  # prefer jack1
-  pkg_check_modules(JACK IMPORTED_TARGET jack<1.0)
-  if(NOT JACK_FOUND)
-    pkg_check_modules(JACK REQUIRED IMPORTED_TARGET jack>=1.0)
-    set(HAVE_JACK2 ON)
-  endif()
-  set(HAVE_JACK ON)
-
-  if(USE_WEAK_JACK)
-    target_include_directories(zrythm_include_dirs INTERFACE ${JACK_INCLUDE_DIRS})
-  else()
-    list(APPEND zrythm_link_libs PkgConfig::JACK)
-  endif()
-
-  set(CMAKE_REQUIRED_INCLUDES ${JACK_INCLUDE_DIRS})
-  set(CMAKE_REQUIRED_LIBRARIES ${JACK_LIBRARIES})
-  check_library_exists("${JACK_LIBRARIES}" jack_set_property "" HAVE_JACK_SET_PROPERTY)
-  check_library_exists("${JACK_LIBRARIES}" jack_port_type_get_buffer_size "" HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE)
-endif()
 
 #==============================================================================
 # Global Flags
@@ -570,7 +542,10 @@ if(ZRYTHM_STRICT)
       -Werror=nonnull
       -Werror=tautological-compare
       -Werror=unused-result
-      -Werror=unused-variable
+
+      # this gets triggered on asserts on gcc...
+      # -Werror=unused-variable
+
       #-Wanalyzer-too-complex
       #-Werror=analyzer-too-complex
       -Werror=inline
@@ -989,7 +964,7 @@ list(APPEND zrythm_link_libs
   xxHash::xxhash
   yyjson::yyjson
   magic_enum::magic_enum
-  juce_lib
+  zrythm::juce_lib
   backward_cpp::backward_cpp
   fmt::fmt
   spdlog::spdlog
@@ -1007,8 +982,13 @@ list(APPEND zrythm_link_libs
   GTest::GTest
 )
 
+if(ZRYTHM_WITH_JACK)
+  include(FindJACK)
+  list(APPEND zrythm_link_libs zrythm::jack)
+endif()
+
 if(ZRYTHM_WITH_JUCE_CLAP_HOSTING)
-  list(APPEND zrythm_link_libs juce_clap_hosting_lib)
+  list(APPEND zrythm_link_libs zrythm::juce_clap_hosting_lib)
 endif()
 
 if(ZRYTHM_YAML_PROJECT_COMPATIBILITY)

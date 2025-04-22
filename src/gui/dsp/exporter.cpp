@@ -14,7 +14,7 @@
 #include "gui/dsp/tracklist.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/logger.h"
-#if HAVE_JACK
+#ifdef HAVE_JACK
 #  include "gui/dsp/engine_jack.h"
 #endif
 #include "dsp/position.h"
@@ -189,7 +189,7 @@ Exporter::export_audio (Settings &info)
   AUDIO_ENGINE->bounce_with_parents_ = info.bounce_with_parents_;
 
   /* set jack freewheeling mode and temporarily disable transport link */
-#if HAVE_JACK
+#ifdef HAVE_JACK
   AudioEngine::JackTransportType transport_type = AUDIO_ENGINE->transport_type_;
   if (AUDIO_ENGINE->audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
     {
@@ -304,7 +304,7 @@ Exporter::export_audio (Settings &info)
   progress_info_->update_progress (1.0, "");
 
   /* set jack freewheeling mode and transport type */
-#if HAVE_JACK
+#ifdef HAVE_JACK
   if (AUDIO_ENGINE->audio_backend_ == AudioBackend::AUDIO_BACKEND_JACK)
     {
       /* FIXME this is not how freewheeling should

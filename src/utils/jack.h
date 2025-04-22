@@ -5,7 +5,7 @@
 
 #include "zrythm-config.h"
 
-#if HAVE_JACK
+#ifdef HAVE_JACK
 
 #  include "weakjack/weak_libjack.h"
 
@@ -76,4 +76,4 @@ get_error_message (jack_status_t status)
 }
 }
 
-#endif // HAVE_JACK
+#endif // defined(HAVE_JACK)

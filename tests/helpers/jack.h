@@ -10,7 +10,7 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/engine.h"
 
-#if HAVE_JACK
+#ifdef HAVE_JACK
 
 #  include <jack/jack.h>
 
@@ -42,4 +42,4 @@ test_jack_port_exists (const std::string &port_name)
 #  define assert_jack_port_exists(name) \
     ASSERT_TRUE (test_jack_port_exists (name))
 
-#endif // HAVE_JACK
+#endif // defined(HAVE_JACK)

@@ -14,7 +14,7 @@ class LoopableObject
       public zrythm::utils::serialization::ISerializable<LoopableObject>
 {
 public:
-  LoopableObject () noexcept = default;
+  LoopableObject () noexcept { };
   ~LoopableObject () noexcept override = default;
 
   /**

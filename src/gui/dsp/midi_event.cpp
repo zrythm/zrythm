@@ -358,7 +358,7 @@ MidiEventVector::write_to_midi_file (MIDI_FILE * mf, int midi_track) const
     }
 }
 
-#if HAVE_JACK
+#ifdef HAVE_JACK
 void
 MidiEventVector::copy_to_jack (
   const nframes_t local_start_frames,

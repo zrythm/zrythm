@@ -29,7 +29,7 @@
 #include "utils/object_pool.h"
 #include "utils/types.h"
 
-#if HAVE_JACK
+#ifdef HAVE_JACK
 #  include "weakjack/weak_libjack.h"
 #endif
 
@@ -509,7 +509,7 @@ public:
    */
   std::atomic_uint64_t cycle_ = 0;
 
-#if HAVE_JACK
+#ifdef HAVE_JACK
   /** JACK client. */
   jack_client_t * client_ = nullptr;
 #else
