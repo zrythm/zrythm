@@ -4,6 +4,7 @@
 #ifndef __GUI_BACKEND_EDITOR_SETTINGS_H__
 #define __GUI_BACKEND_EDITOR_SETTINGS_H__
 
+#include "utils/icloneable.h"
 #include "utils/iserializable.h"
 #include "utils/math.h"
 

@@ -17,7 +17,7 @@ Color::Color (const std::string &str)
   alpha_ = qc.alphaF ();
 }
 
-Color::Color (float r, float g, float b, float a)
+Color::Color (float r, float g, float b, float a) noexcept
     : red_ (r), green_ (g), blue_ (b), alpha_ (a)
 {
 }
@@ -254,7 +254,7 @@ Color::to_hex () const
 }
 
 void
-Color::define_fields (const Context &ctx)
+Color::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("red", red_), make_field ("green", green_),

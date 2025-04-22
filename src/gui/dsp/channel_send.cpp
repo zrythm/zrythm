@@ -54,7 +54,7 @@ ChannelSend::ChannelSend (
 }
 
 void
-ChannelSend::define_fields (const Context &ctx)
+ChannelSend::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("slot", slot_), make_field ("amount", amount_id_),

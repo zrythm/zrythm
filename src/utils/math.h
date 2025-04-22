@@ -30,7 +30,9 @@
 
 #include <cfloat>
 #include <cmath>
-#include <cstdint>
+#include <limits>
+#include <numbers>
+#include <string>
 
 #include "utils/types.h"
 
@@ -149,14 +151,14 @@ fast_log2 (float val)
 }
 
 [[gnu::const]]
-constexpr float
+constexpr auto
 fast_log (const float val)
 {
   return (fast_log2 (val) * std::numbers::ln2_v<float>);
 }
 
 [[gnu::const]]
-constexpr float
+constexpr auto
 fast_log10 (const float val)
 {
   return fast_log2 (val) / 3.312500f;

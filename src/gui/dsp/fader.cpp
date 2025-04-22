@@ -199,7 +199,7 @@ Fader::Fader (
 
   {
     const auto create_swap_phase_port =
-      [] (PortRegistry &port_registry, bool passthrough) {
+      [&port_registry, passthrough] () {
         auto swap_phase = port_registry.create_object<ControlPort> (
           passthrough
             ? QObject::tr ("Prefader Swap Phase").toStdString ()
@@ -215,8 +215,7 @@ Fader::Fader (
       };
 
     /* set swap phase */
-    swap_phase_id_ =
-      create_swap_phase_port (port_registry_.value (), passthrough);
+    swap_phase_id_ = create_swap_phase_port ();
     auto &swap_phase_port = get_swap_phase_port ();
     swap_phase_port.set_toggled (false, false);
     swap_phase_port.set_owner (*this);

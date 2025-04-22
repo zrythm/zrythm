@@ -24,6 +24,9 @@
 #ifndef ZRYTHM_DSP_TRUE_PEAK_DSP
 #define ZRYTHM_DSP_TRUE_PEAK_DSP
 
+#include <memory>
+#include <vector>
+
 namespace zrythm::dsp
 {
 

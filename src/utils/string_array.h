@@ -53,7 +53,7 @@ public:
   }
   const char * operator[] (size_t i)
   {
-    return arr_.getReference (i).toRawUTF8 ();
+    return arr_.getReference (static_cast<int> (i)).toRawUTF8 ();
   };
   void removeString (const char * s)
   {
@@ -94,8 +94,6 @@ public:
 
 private:
   juce::StringArray arr_;
-
-  JUCE_HEAVYWEIGHT_LEAK_DETECTOR (StringArray)
 };
 
 /**

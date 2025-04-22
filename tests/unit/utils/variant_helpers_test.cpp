@@ -4,7 +4,7 @@
 #include "utils/gtest_wrapper.h"
 #include "utils/variant_helpers.h"
 
-using namespace zrythm::utils;
+// using namespace zrythm::utils;
 
 TEST (VariantUtilsTest, BasicTypeConversion)
 {

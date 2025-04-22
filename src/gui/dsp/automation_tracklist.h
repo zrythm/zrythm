@@ -4,6 +4,7 @@
 #ifndef __AUDIO_AUTOMATION_TRACKLIST_H__
 #define __AUDIO_AUTOMATION_TRACKLIST_H__
 
+#include "dsp/plugin_slot.h"
 #include "gui/dsp/automation_track.h"
 
 #include <QAbstractListModel>

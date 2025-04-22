@@ -6,9 +6,11 @@
 
 #include "zrythm-config.h"
 
+#include "dsp/graph_node.h"
 #include "dsp/port_identifier.h"
 #include "gui/dsp/port_backend.h"
 #include "gui/dsp/port_connection.h"
+#include "utils/audio.h"
 #include "utils/ring_buffer.h"
 #include "utils/types.h"
 #include "utils/uuid_identifiable_object.h"

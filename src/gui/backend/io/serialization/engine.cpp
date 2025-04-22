@@ -4,7 +4,7 @@
 #include "gui/dsp/engine.h"
 
 void
-Transport::define_fields (const Context &ctx)
+Transport::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("totalBars", total_bars_),
@@ -21,25 +21,25 @@ Transport::define_fields (const Context &ctx)
 }
 
 void
-AudioPool::define_fields (const Context &ctx)
+AudioPool::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (ctx, make_field ("clips", clips_));
 }
 
 void
-ControlRoom::define_fields (const Context &ctx)
+ControlRoom::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (ctx, make_field ("monitorFader", monitor_fader_));
 }
 
 void
-SampleProcessor::define_fields (const Context &ctx)
+SampleProcessor::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (ctx, make_field ("fader", fader_));
 }
 
 void
-HardwareProcessor::define_fields (const Context &ctx)
+HardwareProcessor::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("isInput", is_input_),
@@ -50,7 +50,7 @@ HardwareProcessor::define_fields (const Context &ctx)
 }
 
 void
-AudioEngine::define_fields (const Context &ctx)
+AudioEngine::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("transportType", transport_type_),

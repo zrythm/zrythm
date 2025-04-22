@@ -93,7 +93,7 @@ PortIdentifier::get_hash () const
 }
 
 void
-PortIdentifier::define_fields (const Context &ctx)
+PortIdentifier::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("label", label_, true), make_field ("symbol", sym_, true),

@@ -222,7 +222,7 @@ ChordDescriptor::is_key_in_chord (MusicalNote key) const
 }
 
 void
-ChordDescriptor::define_fields (const Context &ctx)
+ChordDescriptor::define_fields (const utils::serialization::Context &ctx)
 {
   using T = utils::serialization::ISerializable<ChordDescriptor>;
   T::serialize_fields (

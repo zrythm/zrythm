@@ -4,7 +4,7 @@
 #include "gui/backend/backend/clipboard.h"
 
 void
-Clipboard::define_fields (const Context &ctx)
+Clipboard::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<Clipboard>;
   T::serialize_fields (

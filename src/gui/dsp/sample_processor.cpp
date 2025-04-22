@@ -220,7 +220,7 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
 
                   track->processor_->clear_buffers ();
 
-                  EngineProcessTimeInfo time_nfo = {
+                  EngineProcessTimeInfo inner_time_nfo = {
                     .g_start_frame_ =
                       static_cast<unsigned_frame_t> (playhead_.frames_),
                     .g_start_frame_w_offset_ =
@@ -234,7 +234,7 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
                   const float * audio_data_r = nullptr;
                   if constexpr (std::is_same_v<TrackT, AudioTrack>)
                     {
-                      track->processor_->process (time_nfo);
+                      track->processor_->process (inner_time_nfo);
                       auto processor_stereo_outs =
                         track->processor_->get_stereo_out_ports ();
                       audio_data_l = processor_stereo_outs.first.buf_.data ();
@@ -242,7 +242,7 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
                     }
                   else if constexpr (std::is_same_v<TrackT, MidiTrack>)
                     {
-                      track->processor_->process (time_nfo);
+                      track->processor_->process (inner_time_nfo);
                       midi_events_->active_events_.append (
                         track->processor_->get_midi_out_port ()
                           .midi_events_.active_events_,
@@ -258,7 +258,7 @@ SampleProcessor::process_block (EngineProcessTimeInfo time_nfo)
                           ins->prepare_process ();
                           ins->midi_in_port_->midi_events_.active_events_.append (
                             midi_events_->active_events_, cycle_offset, nframes);
-                          ins->process_block (time_nfo);
+                          ins->process_block (inner_time_nfo);
                           audio_data_l = ins->l_out_->buf_.data ();
                           audio_data_r = ins->r_out_->buf_.data ();
                         },
@@ -398,7 +398,8 @@ SampleProcessor::queue_file_or_chord_preset (
     track->set_name (*tracklist_, "Sample Processor Master", false);
     tracklist_->master_track_ = track;
     tracklist_->insert_track (
-      track_ref, tracklist_->track_count (), *AUDIO_ENGINE, false, false);
+      track_ref, static_cast<int> (tracklist_->track_count ()), *AUDIO_ENGINE,
+      false, false);
   }
 
   if (file && file->is_audio ())
@@ -413,8 +414,8 @@ SampleProcessor::queue_file_or_chord_preset (
         std::get<AudioTrack *> (audio_track_ref.get_object ());
       audio_track->set_name (*tracklist_, "Sample processor audio", false);
       tracklist_->insert_track (
-        audio_track_ref, tracklist_->track_count (), *AUDIO_ENGINE, false,
-        false);
+        audio_track_ref, static_cast<int> (tracklist_->track_count ()),
+        *AUDIO_ENGINE, false, false);
 
       /* create an audio region & add to track */
       try
@@ -445,8 +446,8 @@ SampleProcessor::queue_file_or_chord_preset (
       instrument_track->set_name (
         *tracklist_, "Sample processor instrument", false);
       tracklist_->insert_track (
-        instrument_track_ref, tracklist_->track_count (), *AUDIO_ENGINE, false,
-        false);
+        instrument_track_ref, static_cast<int> (tracklist_->track_count ()),
+        *AUDIO_ENGINE, false, false);
       try
         {
           auto pl_ref = PROJECT->getPluginFactory ()->create_plugin_from_setting (
@@ -477,8 +478,8 @@ SampleProcessor::queue_file_or_chord_preset (
               midi_track->set_name (
                 *tracklist_, fmt::format ("Sample processor MIDI {}", i), false);
               tracklist_->insert_track (
-                midi_track_ref, tracklist_->track_count (), *AUDIO_ENGINE,
-                false, false);
+                midi_track_ref, static_cast<int> (tracklist_->track_count ()),
+                *AUDIO_ENGINE, false, false);
 
               /* route track to instrument */
               instrument_track->add_child (
@@ -545,7 +546,8 @@ SampleProcessor::queue_file_or_chord_preset (
                                 {
                                   auto * mn =
                                     ArrangerObjectFactory::get_instance ()
-                                      ->addMidiNote (mr, cur_pos.ticks_, k + 36);
+                                      ->addMidiNote (
+                                        mr, cur_pos.ticks_, (int) k + 36);
                                   mn->set_end_pos_full_size (
                                     cur_end_pos, AUDIO_ENGINE->frames_per_tick_);
                                 }

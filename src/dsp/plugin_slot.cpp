@@ -7,7 +7,7 @@ namespace zrythm::dsp
 {
 
 void
-PluginSlot::define_fields (const Context &ctx)
+PluginSlot::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("type", type_), make_field ("index", slot_));

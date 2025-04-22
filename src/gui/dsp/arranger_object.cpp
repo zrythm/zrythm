@@ -18,9 +18,9 @@
 
 using namespace zrythm;
 
-ArrangerObject::ArrangerObject (Type type, TrackResolver track_resolver)
-    : track_resolver_ (std::move (track_resolver)), pos_ (new PositionProxy ()),
-      type_ (type)
+ArrangerObject::ArrangerObject (Type type, TrackResolver track_resolver) noexcept
+    : track_resolver_ (std::move (track_resolver)),
+      pos_ (new (std::nothrow) PositionProxy ()), type_ (type)
 {
 }
 

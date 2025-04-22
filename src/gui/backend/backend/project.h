@@ -121,7 +121,6 @@ public:
   using TrackUuid = Track::Uuid;
   using PluginPtrVariant = gui::old_dsp::plugins::PluginPtrVariant;
   using PluginRegistry = gui::old_dsp::plugins::PluginRegistry;
-  using ArrangerObjectRegistry = ArrangerObjectRegistry;
 
 public:
   Project (QObject * parent = nullptr);

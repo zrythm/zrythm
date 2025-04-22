@@ -31,7 +31,7 @@ AudioRegion::AudioRegion (
   ArrangerObjectRegistry &obj_registry,
   TrackResolver           track_resolver,
   AudioClipResolverFunc   clip_resolver,
-  QObject *               parent)
+  QObject *               parent) noexcept
     : ArrangerObject (Type::AudioRegion, track_resolver), Region (obj_registry),
       QObject (parent), clip_resolver_ (std::move (clip_resolver))
 {
@@ -190,7 +190,9 @@ AudioRegion::fill_stereo_ports (
        * point in the audio clip */
       if (needs_rt_timestretch)
         {
-          buff_index = (decltype (buff_index)) (buff_index * timestretch_ratio);
+          buff_index =
+            (decltype (buff_index)) (static_cast<double> (buff_index)
+                                     * timestretch_ratio);
           if (buff_index < (decltype (buff_index)) buff_index_start)
             {
               z_info (
@@ -236,11 +238,12 @@ AudioRegion::fill_stereo_ports (
                 buff_index, clip->get_num_frames (), clip->get_name ());
               return;
             }
-          lbuf_after_ts[j] = clip_frames.getSample (0, buff_index);
+          lbuf_after_ts[j] =
+            clip_frames.getSample (0, static_cast<int> (buff_index));
           rbuf_after_ts[j] =
             clip->get_num_channels () == 1
-              ? clip_frames.getSample (0, buff_index)
-              : clip_frames.getSample (1, buff_index);
+              ? clip_frames.getSample (0, static_cast<int> (buff_index))
+              : clip_frames.getSample (1, static_cast<int> (buff_index));
         }
     }
 

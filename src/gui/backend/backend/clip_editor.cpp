@@ -127,7 +127,7 @@ ClipEditor::set_region (
 }
 #endif
 
-std::optional<Region::TrackUuid>
+std::optional<TrackUuid>
 ClipEditor::get_track_id () const
 {
   if (!has_region ())
@@ -139,7 +139,7 @@ ClipEditor::get_track_id () const
 }
 
 void
-ClipEditor::unset_region_if_belongs_to_track (const Region::TrackUuid &track_id)
+ClipEditor::unset_region_if_belongs_to_track (const TrackUuid &track_id)
 {
   if (!region_id_.has_value ())
     {

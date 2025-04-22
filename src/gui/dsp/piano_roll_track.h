@@ -29,7 +29,8 @@ class PianoRollTrack
 {
   Z_DISABLE_COPY_MOVE (PianoRollTrack)
 protected:
-  PianoRollTrack () = default;
+  // = default deletes it for some reason on gcc
+  PianoRollTrack () noexcept { }
 
 public:
   ~PianoRollTrack () override = default;

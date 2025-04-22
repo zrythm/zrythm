@@ -428,7 +428,7 @@ Position::validate () const
 }
 
 void
-dsp::Position::define_fields (const Context &ctx)
+dsp::Position::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("ticks", ticks_), make_field ("frames", frames_));

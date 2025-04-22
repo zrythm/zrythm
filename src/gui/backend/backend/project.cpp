@@ -259,7 +259,7 @@ Project::make_project_dirs (bool is_backup)
       ProjectPath::PLUGIN_EXT_COPIES, ProjectPath::PLUGIN_EXT_LINKS })
     {
       std::string dir = get_path (type, is_backup);
-      z_return_if_fail (dir.length () > 0);
+      assert (!dir.empty ());
       try
         {
           utils::io::mkdir (dir);
@@ -291,7 +291,7 @@ Project::compress_or_decompress (
   switch (src_type)
     {
     case ProjectCompressionFlag::PROJECT_COMPRESS_DATA:
-      src.setRawData (_src, _src_size);
+      src.setRawData (_src, static_cast<qsizetype> (_src_size));
       break;
     case ProjectCompressionFlag::PROJECT_COMPRESS_FILE:
       {
@@ -500,14 +500,14 @@ Project::add_default_tracks ()
     add_track.operator()<MarkerTrack> (QObject::tr ("Markers"));
   const auto add_default_markers =
     [] (
-      auto &marker_track, const auto &factory, const int ticks_per_bar,
+      auto &marker_track_inner, const auto &factory, const int ticks_per_bar,
       const auto frames_per_tick) {
       {
         auto          marker_name = fmt::format ("[{}]", QObject::tr ("start"));
         dsp::Position pos;
         pos.set_to_bar (1, ticks_per_bar, frames_per_tick);
         auto * marker = factory->addMarker (
-          marker_track, QString::fromStdString (marker_name), pos.ticks_);
+          marker_track_inner, QString::fromStdString (marker_name), pos.ticks_);
         marker->marker_type_ = Marker::Type::Start;
       }
 
@@ -516,7 +516,7 @@ Project::add_default_tracks ()
         dsp::Position pos;
         pos.set_to_bar (129, ticks_per_bar, frames_per_tick);
         auto * marker = factory->addMarker (
-          marker_track, QString::fromStdString (marker_name), pos.ticks_);
+          marker_track_inner, QString::fromStdString (marker_name), pos.ticks_);
         marker->marker_type_ = Marker::Type::End;
       }
     };

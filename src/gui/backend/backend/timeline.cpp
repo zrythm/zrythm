@@ -14,7 +14,7 @@ Timeline::init_after_cloning (const Timeline &other, ObjectCloneType clone_type)
 }
 
 void
-Timeline::define_fields (const Context &ctx)
+Timeline::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<Timeline>;
   T::call_all_base_define_fields<EditorSettings> (ctx);

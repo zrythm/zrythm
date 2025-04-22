@@ -6,7 +6,6 @@ qt_add_library(zrythm_utils_lib STATIC)
 target_sources(zrythm_utils_lib
   PRIVATE
     algorithms.h
-    algorithms.cpp
     audio.h
     audio.cpp
     audio_file.h

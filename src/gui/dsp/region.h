@@ -4,9 +4,6 @@
 #ifndef __DSP_REGION_H__
 #define __DSP_REGION_H__
 
-#include <format>
-#include <memory>
-
 #include "dsp/position.h"
 #include "gui/dsp/arranger_object.h"
 #include "gui/dsp/automation_point.h"

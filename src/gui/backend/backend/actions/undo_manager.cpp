@@ -83,8 +83,8 @@ UndoManager::do_undo_redo (bool is_undo)
       for (int i = 0; i < num_actions; ++i)
         {
           z_info ("[ACTION {}/{}]", i + 1, num_actions);
-          auto action_opt = main_stack.pop ();
-          z_return_if_fail (action_opt.has_value ());
+          auto action_opt_inner = main_stack.pop ();
+          z_return_if_fail (action_opt_inner.has_value ());
 
           std::visit (
             [&] (auto &&inner_action) {
@@ -95,7 +95,7 @@ UndoManager::do_undo_redo (bool is_undo)
 
               do_or_undo_action (inner_action, main_stack, opposite_stack);
             },
-            action_opt.value ());
+            action_opt_inner.value ());
         }
 
       if (ZRYTHM_HAVE_UI)

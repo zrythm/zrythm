@@ -12,11 +12,12 @@
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/actions/transport_action.h"
 #include "gui/backend/backend/actions/undo_stack.h"
+#include "gui/dsp/track_all.h"
 
 using namespace zrythm::gui::actions;
 
 void
-UndoStack::define_fields (const Context &ctx)
+UndoStack::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<UndoStack>;
   T::serialize_fields (
@@ -75,7 +76,7 @@ UndoStack::define_fields (const Context &ctx)
 }
 
 void
-UndoableAction::define_base_fields (const Context &ctx)
+UndoableAction::define_base_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("undoableActionType", undoable_action_type_),
@@ -87,7 +88,8 @@ UndoableAction::define_base_fields (const Context &ctx)
 }
 
 void
-ArrangerSelectionsAction::define_fields (const Context &ctx)
+ArrangerSelectionsAction::define_fields (
+  const utils::serialization::Context &ctx)
 {
   UndoableAction::define_base_fields (ctx);
 
@@ -112,7 +114,7 @@ ArrangerSelectionsAction::define_fields (const Context &ctx)
 }
 
 void
-MixerSelectionsAction::define_fields (const Context &ctx)
+MixerSelectionsAction::define_fields (const utils::serialization::Context &ctx)
 {
   UndoableAction::define_base_fields (ctx);
 
@@ -134,7 +136,8 @@ MixerSelectionsAction::define_fields (const Context &ctx)
 }
 
 void
-TracklistSelectionsAction::define_fields (const Context &ctx)
+TracklistSelectionsAction::define_fields (
+  const utils::serialization::Context &ctx)
 {
   UndoableAction::define_base_fields (ctx);
 
@@ -170,7 +173,7 @@ TracklistSelectionsAction::define_fields (const Context &ctx)
 }
 
 void
-ChannelSendAction::define_fields (const Context &ctx)
+ChannelSendAction::define_fields (const utils::serialization::Context &ctx)
 {
   UndoableAction::define_base_fields (ctx);
 
@@ -183,7 +186,7 @@ ChannelSendAction::define_fields (const Context &ctx)
 }
 
 void
-PortConnectionAction::define_fields (const Context &ctx)
+PortConnectionAction::define_fields (const utils::serialization::Context &ctx)
 {
   UndoableAction::define_base_fields (ctx);
 
@@ -195,7 +198,7 @@ PortConnectionAction::define_fields (const Context &ctx)
 }
 
 void
-PortAction::define_fields (const Context &ctx)
+PortAction::define_fields (const utils::serialization::Context &ctx)
 {
   UndoableAction::define_base_fields (ctx);
 
@@ -206,7 +209,7 @@ PortAction::define_fields (const Context &ctx)
 }
 
 void
-MidiMappingAction::define_fields (const Context &ctx)
+MidiMappingAction::define_fields (const utils::serialization::Context &ctx)
 {
   UndoableAction::define_base_fields (ctx);
 
@@ -219,7 +222,7 @@ MidiMappingAction::define_fields (const Context &ctx)
 }
 
 void
-RangeAction::define_fields (const Context &ctx)
+RangeAction::define_fields (const utils::serialization::Context &ctx)
 {
   UndoableAction::define_base_fields (ctx);
 
@@ -235,7 +238,7 @@ RangeAction::define_fields (const Context &ctx)
 }
 
 void
-TransportAction::define_fields (const Context &ctx)
+TransportAction::define_fields (const utils::serialization::Context &ctx)
 {
   UndoableAction::define_base_fields (ctx);
 
@@ -249,7 +252,7 @@ TransportAction::define_fields (const Context &ctx)
 }
 
 void
-ChordAction::define_fields (const Context &ctx)
+ChordAction::define_fields (const utils::serialization::Context &ctx)
 {
   UndoableAction::define_base_fields (ctx);
 

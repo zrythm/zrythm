@@ -28,6 +28,8 @@
 #ifndef ZRYTHM_DSP_PEAK_DSP
 #define ZRYTHM_DSP_PEAK_DSP
 
+#include <utility>
+
 namespace zrythm::dsp
 {
 

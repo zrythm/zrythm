@@ -86,7 +86,6 @@ class ArrangerObject
   Q_DISABLE_COPY_MOVE (ArrangerObject)
 
 public:
-  using TrackUuid = TrackUuid;
   using SelectionStatusGetter = std::function<bool (const Uuid &)>;
 
   static constexpr double DEFAULT_NUDGE_TICKS = 0.1;
@@ -152,7 +151,7 @@ public:
   using Position = zrythm::dsp::Position;
 
 public:
-  ~ArrangerObject () override = default;
+  ~ArrangerObject () noexcept override = default;
 
   using ArrangerObjectPtr = ArrangerObject *;
 
@@ -364,7 +363,7 @@ public:
   }
 
 protected:
-  ArrangerObject (Type type, TrackResolver track_resolver);
+  ArrangerObject (Type type, TrackResolver track_resolver) noexcept;
 
   void
   copy_members_from (const ArrangerObject &other, ObjectCloneType clone_type);

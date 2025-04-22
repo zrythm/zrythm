@@ -27,7 +27,7 @@ CachedPluginDescriptors::get_file_path ()
 }
 
 void
-CachedPluginDescriptors::define_fields (const Context &ctx)
+CachedPluginDescriptors::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<CachedPluginDescriptors>;
   T::serialize_fields (

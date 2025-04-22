@@ -221,7 +221,7 @@ public:
             using ObjT = base_type<decltype (obj)>;
 
             post_deserialize_obj (obj);
-            if constexpr (DerivedFromTemplatedBase<ObjT, ArrangerObjectOwner>)
+            if constexpr (DerivedFromCRTPBase<ObjT, ArrangerObjectOwner>)
               {
                 std::ranges::for_each (
                   obj->get_children_view (), post_deserialize_obj);

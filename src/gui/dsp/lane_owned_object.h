@@ -16,8 +16,9 @@ class LaneOwnedObject : virtual public TimelineObject
 public:
   // using TrackLaneUuid = utils::UuidIdentifiableObject<TrackLane>::Uuid;
 
-  LaneOwnedObject () = default;
-  ~LaneOwnedObject () override = default;
+  // = default deletes it for some reason on gcc
+  LaneOwnedObject () noexcept { };
+  ~LaneOwnedObject () noexcept override = default;
   Z_DISABLE_COPY_MOVE (LaneOwnedObject);
 
   bool is_inserted_in_lane () const { return owner_lane_.has_value (); }

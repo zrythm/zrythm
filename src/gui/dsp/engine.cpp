@@ -1251,8 +1251,8 @@ AudioEngine::receive_midi_events (uint32_t nframes)
 {
   if (midi_in_->backend_ && midi_in_->backend_->is_exposed ())
     {
-      midi_in_->backend_->sum_data (
-        midi_in_->midi_events_, { 0, nframes },
+      midi_in_->backend_->sum_midi_data (
+        midi_in_->midi_events_, { .start_frame = 0, .nframes = nframes },
         [] (midi_byte_t) { return true; });
     }
 }

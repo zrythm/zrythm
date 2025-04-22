@@ -110,7 +110,7 @@ AudioPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
     {
       if (backend_ && backend_->is_exposed ())
         {
-          backend_->sum_data (
+          backend_->sum_audio_data (
             buf_.data (),
             { .start_frame = time_nfo.local_offset_,
               .nframes = time_nfo.nframes_ });

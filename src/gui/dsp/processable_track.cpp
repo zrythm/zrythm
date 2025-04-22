@@ -29,10 +29,10 @@ ProcessableTrack::ProcessableTrack (const DeserializationDependencyHolder &dh)
 }
 
 void
-ProcessableTrack::define_base_fields (const Context &ctx)
+ProcessableTrack::define_base_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<ProcessableTrack>;
-  Context new_ctx = ctx;
+  auto new_ctx = ctx;
   if (ctx.is_deserializing ())
     {
       new_ctx.dependency_holder_.put (std::ref (*this));

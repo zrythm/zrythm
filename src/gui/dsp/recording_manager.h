@@ -138,7 +138,7 @@ private:
    */
   void handle_automation_event (const RecordingEvent &ev);
 
-  static constexpr std::string
+  static std::string
   gen_name_for_recording_clip (const std::string &track_name, int lane)
   {
     return fmt::format (

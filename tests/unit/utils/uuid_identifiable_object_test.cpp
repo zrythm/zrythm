@@ -5,6 +5,7 @@
 #include "utils/uuid_identifiable_object.h"
 
 #include "./uuid_identifiable_object_test.h"
+#include "gmock/gmock.h"
 
 using namespace zrythm::utils;
 
@@ -24,11 +25,10 @@ TEST (UuidIdentifiableObjectTest, Creation)
 TEST (UuidIdentifiableObjectTest, Serialization)
 {
   BaseTestObject obj1;
-  auto json = obj1.ISerializable<BaseTestObject>::serialize_to_json_string ();
+  auto           json = obj1.serialize_to_json_string ();
 
   BaseTestObject obj2;
-  obj2.ISerializable<BaseTestObject>::deserialize_from_json_string (
-    json.c_str ());
+  obj2.deserialize_from_json_string (json.c_str ());
 
   EXPECT_EQ (obj2.get_uuid (), obj1.get_uuid ());
 }
@@ -178,6 +178,68 @@ TEST_F (UuidIdentifiableObjectRegistryTest, SpanEdgeCases)
   auto                  span =
     utils::UuidIdentifiableObjectSpan<TestRegistry> (registry_, single);
   EXPECT_THROW (span.at (1), std::out_of_range);
+}
+
+TEST_F (UuidIdentifiableObjectRegistryTest, CompatibleSpanWithUuidReferences)
+{
+  // Create vector of UuidReferences
+  std::vector<utils::UuidReference<TestRegistry>> refs;
+  refs.emplace_back (obj1_->get_uuid (), registry_);
+  refs.emplace_back (obj2_->get_uuid (), registry_);
+  refs.emplace_back (obj3_->get_uuid (), registry_);
+
+  // Create span wrapper
+  using TestUuidRefSpan = utils::UuidIdentifiableObjectSpan<
+    TestRegistry, utils::UuidReference<TestRegistry>>;
+
+  // Create compatible span
+  utils::UuidIdentifiableObjectCompatibleSpan<TestUuidRefSpan, TestRegistry>
+    compatible_span (refs);
+
+  // Verify basic span properties
+  EXPECT_EQ (compatible_span.size (), 3);
+  EXPECT_FALSE (compatible_span.empty ());
+
+  // Verify object access through span
+  std::vector<DerivedTestObject *> objects;
+  for (const auto &var : compatible_span)
+    {
+      auto * obj = std::visit ([] (auto * o) { return o; }, var);
+      objects.push_back (obj);
+    }
+
+  // Should contain all test objects in original order
+  EXPECT_THAT (objects, testing::ElementsAre (obj1_, obj2_, obj3_));
+
+  // Test UUID projections
+  auto uuid_projection = [] (const auto &var) {
+    return std::visit ([] (auto * obj) { return obj->get_uuid (); }, var);
+  };
+  std::vector<TestUuid> span_uuids;
+  std::ranges::transform (
+    compatible_span, std::back_inserter (span_uuids), uuid_projection);
+
+  EXPECT_THAT (
+    span_uuids,
+    testing::UnorderedElementsAre (
+      obj1_->get_uuid (), obj2_->get_uuid (), obj3_->get_uuid ()));
+
+  // Test type filtering
+  auto derived_ptrs =
+    compatible_span.template get_elements_by_type<DerivedTestObject> ();
+  EXPECT_EQ (std::ranges::distance (derived_ptrs), 3);
+  for (auto * ptr : derived_ptrs)
+    {
+      EXPECT_THAT (ptr, testing::AnyOf (obj1_, obj2_, obj3_));
+    }
+
+  // Test base type access
+  auto base_ptrs = compatible_span.as_base_type ();
+  EXPECT_EQ (base_ptrs.size (), 3);
+  for (auto * base_ptr : base_ptrs)
+    {
+      EXPECT_NE (dynamic_cast<DerivedTestObject *> (base_ptr), nullptr);
+    }
 }
 
 TEST_F (UuidIdentifiableObjectRegistryTest, ObjectCreation)

@@ -123,7 +123,7 @@ TrackProcessor::TrackProcessor (
 }
 
 void
-TrackProcessor::define_fields (const Context &ctx)
+TrackProcessor::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("mono", mono_id_, true),

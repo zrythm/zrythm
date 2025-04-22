@@ -16,10 +16,10 @@ class Color final : public serialization::ISerializable<Color>
 public:
   static constexpr auto DEFAULT_BRIGHTEN_VAL = 0.1f;
 
-  Color () = default;
-  Color (const GdkRGBA &color) { *this = color; }
-  Color (const QColor &color) { *this = color; }
-  Color (float r, float g, float b, float a = 1.0f);
+  Color () noexcept = default;
+  Color (const GdkRGBA &color) noexcept { *this = color; }
+  Color (const QColor &color) noexcept { *this = color; }
+  Color (float r, float g, float b, float a = 1.0f) noexcept;
 
   /**
    * @brief Construct a new Color object by parsing the color string.

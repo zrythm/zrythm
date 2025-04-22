@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <QElapsedTimer>
+
 namespace zrythm::utils
 {
 using MonotonicTime = qint64;

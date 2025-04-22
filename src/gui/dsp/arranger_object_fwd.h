@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "utils/uuid_identifiable_object.h"
+
 class ArrangerObject;
 class MidiNote;
 class MidiRegion;

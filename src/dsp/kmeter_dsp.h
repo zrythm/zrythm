@@ -30,6 +30,8 @@
 #ifndef ZRYTHM_DSP_KMETER_DSP
 #define ZRYTHM_DSP_KMETER_DSP
 
+#include <utility>
+
 namespace zrythm::dsp
 {
 

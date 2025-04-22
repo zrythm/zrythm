@@ -57,7 +57,7 @@ public:
     ArrangerObjectRegistry &obj_registry,
     TrackResolver           track_resolver,
     AudioClipResolverFunc   clip_resolver,
-    QObject *               parent = nullptr);
+    QObject *               parent = nullptr) noexcept;
 
   /**
    * Returns the audio clip associated with the Region.

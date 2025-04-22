@@ -463,7 +463,7 @@ MusicalScale::to_string () const
 }
 
 void
-MusicalScale::define_fields (const Context &ctx)
+MusicalScale::define_fields (const utils::serialization::Context &ctx)
 {
   ISerializable<MusicalScale>::serialize_fields (
     ctx, ISerializable<MusicalScale>::make_field ("type", type_),

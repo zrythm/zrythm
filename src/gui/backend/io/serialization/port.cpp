@@ -11,7 +11,7 @@
 #include "gui/dsp/port_connections_manager.h"
 
 void
-PortRange::define_fields (const Context &ctx)
+PortRange::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("minf", minf_), make_field ("maxf", maxf_),
@@ -19,7 +19,7 @@ PortRange::define_fields (const Context &ctx)
 }
 
 void
-Port::define_base_fields (const Context &ctx)
+Port::define_base_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<Port>;
   T::serialize_fields (
@@ -28,7 +28,7 @@ Port::define_base_fields (const Context &ctx)
 }
 
 void
-ControlPort::define_fields (const Context &ctx)
+ControlPort::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<ControlPort>;
   T::call_all_base_define_fields<Port> (ctx);
@@ -45,14 +45,14 @@ ControlPort::define_fields (const Context &ctx)
 }
 
 void
-MidiPort::define_fields (const Context &ctx)
+MidiPort::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<MidiPort>;
   T::call_all_base_define_fields<Port> (ctx);
 }
 
 void
-CVPort::define_fields (const Context &ctx)
+CVPort::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<CVPort>;
   T::call_all_base_define_fields<Port> (ctx);
@@ -60,7 +60,7 @@ CVPort::define_fields (const Context &ctx)
 }
 
 void
-AudioPort::define_fields (const Context &ctx)
+AudioPort::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<AudioPort>;
   T::call_all_base_define_fields<Port> (ctx);
@@ -110,7 +110,7 @@ CVPort::deserialize (Context ctx)
 #endif
 
 void
-ExtPort::define_fields (const Context &ctx)
+ExtPort::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<ExtPort>;
   T::serialize_fields (
@@ -125,7 +125,7 @@ ExtPort::define_fields (const Context &ctx)
 }
 
 void
-PortConnection::define_fields (const Context &ctx)
+PortConnection::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<PortConnection>;
   T::serialize_fields (
@@ -137,7 +137,7 @@ PortConnection::define_fields (const Context &ctx)
 }
 
 void
-PortConnectionsManager::define_fields (const Context &ctx)
+PortConnectionsManager::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<PortConnectionsManager>;
   T::serialize_fields (ctx, T::make_field ("connections", connections_));

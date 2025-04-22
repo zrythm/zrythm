@@ -90,8 +90,9 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
     is_input () && backend_ && backend_->is_exposed ()
     && owner_->should_sum_data_from_backend ())
     {
-      backend_->sum_data (
-        midi_events_, { time_nfo.local_offset_, time_nfo.nframes_ },
+      backend_->sum_midi_data (
+        midi_events_,
+        { .start_frame = time_nfo.local_offset_, .nframes = time_nfo.nframes_ },
         [this] (midi_byte_t channel) {
           return owner_->are_events_on_midi_channel_approved (channel);
         });

@@ -7,14 +7,14 @@
 using namespace zrythm;
 
 void
-gui::backend::Tool::define_fields (const Context &ctx)
+gui::backend::Tool::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<Tool>;
   T::serialize_fields (ctx, T::make_field ("toolValue", tool_));
 }
 
 void
-RegionLinkGroup::define_fields (const Context &ctx)
+RegionLinkGroup::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<RegionLinkGroup>;
   T::serialize_fields (
@@ -22,14 +22,14 @@ RegionLinkGroup::define_fields (const Context &ctx)
 }
 
 void
-RegionLinkGroupManager::define_fields (const Context &ctx)
+RegionLinkGroupManager::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<RegionLinkGroupManager>;
   T::serialize_fields (ctx, T::make_field ("groups", groups_));
 }
 
 void
-MidiMapping::define_fields (const Context &ctx)
+MidiMapping::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<MidiMapping>;
   T::serialize_fields (
@@ -39,14 +39,15 @@ MidiMapping::define_fields (const Context &ctx)
 }
 
 void
-MidiMappings::define_fields (const Context &ctx)
+MidiMappings::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<MidiMappings>;
   T::serialize_fields (ctx, T::make_field ("mappings", mappings_));
 }
 
 void
-gui::actions::UndoManager::define_fields (const Context &ctx)
+gui::actions::UndoManager::define_fields (
+  const utils::serialization::Context &ctx)
 {
   using T = ISerializable<UndoManager>;
   T::serialize_fields (
@@ -55,10 +56,10 @@ gui::actions::UndoManager::define_fields (const Context &ctx)
 }
 
 void
-Project::define_fields (const Context &ctx)
+Project::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<Project>;
-  Context new_ctx = ctx;
+  auto new_ctx = ctx;
 
   // first serialize/deserialize the registries
   T::serialize_fields (

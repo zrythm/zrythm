@@ -1535,7 +1535,7 @@ Tracklist::handle_click (TrackUuid track_id, bool ctrl, bool shift, bool dragged
 }
 
 void
-Tracklist::define_fields (const Context &ctx)
+Tracklist::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<Tracklist>;
   T::serialize_fields (

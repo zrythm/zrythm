@@ -58,9 +58,9 @@ class ColoredObject
       public zrythm::utils::serialization::ISerializable<ColoredObject>
 {
 public:
-  ColoredObject () = default;
-  ~ColoredObject () override = default;
-  Q_DISABLE_COPY_MOVE (ColoredObject)
+  // = default deletes it for some reason on gcc
+  ColoredObject () noexcept { }
+  ~ColoredObject () noexcept override = default;
 
   using Color = zrythm::utils::Color;
 

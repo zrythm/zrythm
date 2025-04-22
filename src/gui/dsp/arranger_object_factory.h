@@ -465,8 +465,8 @@ public:
         .with_start_ticks (startTicks)
         .with_name (
           name,
-          [markerTrack] (const std::string &name) {
-            return markerTrack->validate_marker_name (name);
+          [markerTrack] (const std::string &inner_name) {
+            return markerTrack->validate_marker_name (inner_name);
           })
         .build ();
     markerTrack->add_object (marker_ref);

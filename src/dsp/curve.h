@@ -93,7 +93,7 @@ public:
   // Rule of 0
   CurveOptions () = default;
   CurveOptions (double curviness, Algorithm algo);
-  ~CurveOptions () noexcept override;
+  ~CurveOptions () override = default;
 
   /**
    * Returns the Y value on a curve.

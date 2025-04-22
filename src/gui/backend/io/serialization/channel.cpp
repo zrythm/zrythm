@@ -6,7 +6,7 @@
 #include "gui/dsp/carla_native_plugin.h"
 
 void
-Fader::define_fields (const Context &ctx)
+Fader::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("type", type_), make_field ("volume", volume_),
@@ -26,7 +26,7 @@ Fader::define_fields (const Context &ctx)
 }
 
 void
-zrythm::gui::Channel::define_fields (const Context &ctx)
+zrythm::gui::Channel::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<Channel>;
 

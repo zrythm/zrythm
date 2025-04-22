@@ -112,11 +112,11 @@ public:
 
   std::optional<TrackPtrVariant> get_track () const;
 
-  std::optional<Region::TrackUuid> get_track_id () const;
+  std::optional<TrackUuid> get_track_id () const;
   /**
    * @brief Unsets the region if it belongs to the given track.
    */
-  void unset_region_if_belongs_to_track (const Region::TrackUuid &track_id);
+  void unset_region_if_belongs_to_track (const TrackUuid &track_id);
 
   /**
    * To be called when recalculating the graph.

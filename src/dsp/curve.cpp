@@ -205,13 +205,11 @@ CurveOptions::get_normalized_y (double x, bool start_higher) const
 }
 
 void
-CurveOptions::define_fields (const Context &ctx)
+CurveOptions::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("algorithm", algo_), make_field ("curviness", curviness_));
 }
-
-CurveOptions::~CurveOptions () noexcept = default;
 
 bool
 operator== (const CurveOptions &a, const CurveOptions &b)

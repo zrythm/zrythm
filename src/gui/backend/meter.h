@@ -1,14 +1,14 @@
-// SPDX-FileCopyrightText: © 2020, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_METER_H__
-#define __AUDIO_METER_H__
+#ifndef GUI_BACKEND_METER_H
+#define GUI_BACKEND_METER_H
 
 #include "dsp/kmeter_dsp.h"
 #include "dsp/peak_dsp.h"
 #include "dsp/true_peak_dsp.h"
-#include "utils/traits.h"
 #include "utils/types.h"
+#include "utils/variant_helpers.h"
 
 #include <QtQmlIntegration>
 

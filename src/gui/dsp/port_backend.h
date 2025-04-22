@@ -5,10 +5,14 @@
 
 #include "zrythm-config.h"
 
+#include "dsp/port_identifier.h"
 #include "gui/dsp/midi_event.h"
 #include "gui/dsp/rtaudio_device.h"
 #include "gui/dsp/rtmidi_device.h"
+#include "utils/concurrency.h"
+#include "utils/dsp.h"
 #include "utils/jack.h"
+#include "utils/monotonic_time_provider.h"
 
 #if HAVE_JACK
 #  include "weakjack/weak_libjack.h"
@@ -54,7 +58,7 @@ public:
    *
    * @param buf The buffer to sum into.
    */
-  virtual void sum_data (float * buf, FrameRange range) { }
+  virtual void sum_audio_data (float * buf, FrameRange range) { }
 
   /**
    * @brief
@@ -62,7 +66,7 @@ public:
    * @note MIDI timings are assumed to be at the correct positions in the
    * current cycle (ie, already added the start_frames in this cycle).
    */
-  virtual void sum_data (
+  virtual void sum_midi_data (
     MidiEvents               &midi_events,
     FrameRange                range,
     IsMidiChannelAcceptedFunc approve_func)
@@ -108,7 +112,7 @@ public:
     }
   }
 
-  void sum_data (float * buf, FrameRange range) override
+  void sum_audio_data (float * buf, FrameRange range) override
   {
     const auto * in = reinterpret_cast<const float *> (
       jack_port_get_buffer (port_, range.start_frame + range.nframes));
@@ -117,7 +121,7 @@ public:
       &buf[range.start_frame], &in[range.start_frame], range.nframes);
   }
 
-  void sum_data (
+  void sum_midi_data (
     MidiEvents               &midi_events,
     FrameRange                range,
     IsMidiChannelAcceptedFunc approve_func) override
@@ -287,7 +291,7 @@ public:
 
   bool is_exposed () const override { return !rtmidi_ins_.empty (); }
 
-  void sum_data (
+  void sum_midi_data (
     MidiEvents               &midi_events,
     FrameRange                range,
     IsMidiChannelAcceptedFunc approve_func) override

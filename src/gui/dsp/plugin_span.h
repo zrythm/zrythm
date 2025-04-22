@@ -16,7 +16,6 @@ class PluginSpanImpl
     : public utils::UuidIdentifiableObjectCompatibleSpan<Range, PluginRegistry>
 {
 public:
-  using PluginRegistry = PluginRegistry;
   using Base =
     utils::UuidIdentifiableObjectCompatibleSpan<Range, PluginRegistry>;
   using VariantType = typename Base::value_type;
@@ -133,16 +132,14 @@ public:
 using PluginSpan = PluginSpanImpl<
   std::span<const zrythm::gui::old_dsp::plugins::PluginPtrVariant>>;
 using PluginRegistrySpan =
-  PluginSpanImpl<utils::UuidIdentifiableObjectSpan<PluginSpan::PluginRegistry>>;
-using PluginUuidReferenceSpan = PluginSpanImpl<utils::UuidIdentifiableObjectSpan<
-  PluginSpan::PluginRegistry,
-  PluginUuidReference>>;
+  PluginSpanImpl<utils::UuidIdentifiableObjectSpan<PluginRegistry>>;
+using PluginUuidReferenceSpan = PluginSpanImpl<
+  utils::UuidIdentifiableObjectSpan<PluginRegistry, PluginUuidReference>>;
 extern template class PluginSpanImpl<std::span<const PluginSpan::VariantType>>;
 extern template class PluginSpanImpl<
-  utils::UuidIdentifiableObjectSpan<PluginSpan::PluginRegistry>>;
-extern template class PluginSpanImpl<utils::UuidIdentifiableObjectSpan<
-  PluginSpan::PluginRegistry,
-  PluginUuidReference>>;
+  utils::UuidIdentifiableObjectSpan<PluginRegistry>>;
+extern template class PluginSpanImpl<
+  utils::UuidIdentifiableObjectSpan<PluginRegistry, PluginUuidReference>>;
 
 static_assert (std::ranges::random_access_range<PluginSpan>);
 static_assert (std::ranges::random_access_range<PluginRegistrySpan>);

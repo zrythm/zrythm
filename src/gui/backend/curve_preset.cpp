@@ -137,5 +137,3 @@ CurvePreset::get_fade_presets ()
 
   return presets;
 }
-
-CurvePreset::~CurvePreset () noexcept { }

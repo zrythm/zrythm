@@ -112,7 +112,7 @@ private:
 class StereoPorts final
 {
 public:
-  static constexpr std::pair<std::string, std::string>
+  static std::pair<std::string, std::string>
   get_name_and_symbols (bool left, std::string name, std::string symbol)
   {
     return std::make_pair (

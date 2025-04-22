@@ -4,6 +4,7 @@
 #pragma once
 
 #include "utils/format.h"
+#include "utils/icloneable.h"
 #include "utils/initializable_object.h"
 #include "utils/iserializable.h"
 
@@ -43,7 +44,7 @@ public:
 
     void set_null () { type_safe::get (*this) = QUuid (); }
 
-    void define_fields (const serialization::ISerializableBase::Context &ctx)
+    DECLARE_DEFINE_FIELDS_METHOD ()
     {
       using T = serialization::ISerializable<Uuid>;
       T::serialize_fields (ctx, T::make_field ("uuid", type_safe::get (*this)));
@@ -69,7 +70,7 @@ public:
     uuid_ = other.uuid_;
   }
 
-  void define_base_fields (const serialization::ISerializableBase::Context &ctx)
+  DECLARE_DEFINE_BASE_FIELDS_METHOD ()
   {
     using T = UuidIdentifiableObject;
     T::serialize_fields (ctx, T::make_field ("id", uuid_));
@@ -185,7 +186,7 @@ public:
       get_object ());
   }
 
-  void define_fields (const serialization::ISerializableBase::Context &ctx)
+  DECLARE_DEFINE_FIELDS_METHOD ()
   {
     using T = serialization::ISerializable<UuidReference>;
     T::serialize_fields (ctx, T::make_field ("uuid", id_));
@@ -407,7 +408,7 @@ public:
 
   size_t size () const { return objects_by_id_.size (); }
 
-  void define_fields (const serialization::ISerializableBase::Context &ctx)
+  DECLARE_DEFINE_FIELDS_METHOD ()
   {
     using T = serialization::ISerializable<OwningObjectRegistry>;
     T::serialize_fields (ctx, T::make_field ("objectsById", objects_by_id_));

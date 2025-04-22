@@ -296,11 +296,12 @@ HardwareProcessor::process (nframes_t nframes)
           {
             if constexpr (std::is_same_v<PortType, AudioPort>)
               {
-                port->backend_->sum_data (port->buf_.data (), { 0, nframes });
+                port->backend_->sum_audio_data (
+                  port->buf_.data (), { 0, nframes });
               }
             else if constexpr (std::is_same_v<PortType, MidiPort>)
               {
-                port->backend_->sum_data (
+                port->backend_->sum_midi_data (
                   port->midi_events_, { 0, nframes },
                   [] (midi_byte_t) { return true; });
               }

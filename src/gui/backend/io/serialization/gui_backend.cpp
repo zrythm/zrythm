@@ -14,7 +14,7 @@
 #include "gui/dsp/snap_grid.h"
 
 void
-EditorSettings::define_base_fields (const Context &ctx)
+EditorSettings::define_base_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("scrollStartX", scroll_start_x_),
@@ -23,7 +23,7 @@ EditorSettings::define_base_fields (const Context &ctx)
 }
 
 void
-PianoRoll::define_fields (const Context &ctx)
+PianoRoll::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<PianoRoll>;
   T::call_all_base_define_fields<EditorSettings> (ctx);
@@ -33,14 +33,14 @@ PianoRoll::define_fields (const Context &ctx)
 }
 
 void
-AutomationEditor::define_fields (const Context &ctx)
+AutomationEditor::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<AutomationEditor>;
   T::call_all_base_define_fields<EditorSettings> (ctx);
 }
 
 void
-ChordEditor::define_fields (const Context &ctx)
+ChordEditor::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<ChordEditor>;
   T::call_all_base_define_fields<EditorSettings> (ctx);
@@ -48,14 +48,14 @@ ChordEditor::define_fields (const Context &ctx)
 }
 
 void
-AudioClipEditor::define_fields (const Context &ctx)
+AudioClipEditor::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<AudioClipEditor>;
   T::call_all_base_define_fields<EditorSettings> (ctx);
 }
 
 void
-ClipEditor::define_fields (const Context &ctx)
+ClipEditor::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<ClipEditor>;
   T::serialize_fields (
@@ -67,7 +67,7 @@ ClipEditor::define_fields (const Context &ctx)
 }
 
 void
-zrythm::gui::SnapGrid::define_fields (const Context &ctx)
+zrythm::gui::SnapGrid::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<SnapGrid>;
   T::serialize_fields (
@@ -85,7 +85,8 @@ zrythm::gui::SnapGrid::define_fields (const Context &ctx)
 }
 
 void
-zrythm::gui::old_dsp::QuantizeOptions::define_fields (const Context &ctx)
+zrythm::gui::old_dsp::QuantizeOptions::define_fields (
+  const utils::serialization::Context &ctx)
 {
   using T = ISerializable<QuantizeOptions>;
   T::serialize_fields (

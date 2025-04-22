@@ -161,10 +161,26 @@ concept DerivedButNotBase =
   std::derived_from<Derived, Base> && !std::same_as<Derived, Base>;
 
 template <typename Derived, template <typename> class BaseTemplate>
-concept DerivedFromTemplatedBase = requires {
-  []<typename T> (const BaseTemplate<T> *) {
-  }(static_cast<Derived *> (nullptr));
+concept DerivedFromCRTPBase = std::is_base_of_v<BaseTemplate<Derived>, Derived>;
+
+namespace detail_test
+{
+template <typename T> class CRTPBase
+{
 };
+class Derived : public CRTPBase<Derived>
+{
+};
+class NonDerived
+{
+};
+class OtherNonDerived : public CRTPBase<NonDerived>
+{
+};
+static_assert (DerivedFromCRTPBase<Derived, CRTPBase>);
+static_assert (!DerivedFromCRTPBase<NonDerived, CRTPBase>);
+static_assert (!DerivedFromCRTPBase<OtherNonDerived, CRTPBase>);
+}; // namespace detail_test
 
 template <typename T>
 concept IsVariant = requires {

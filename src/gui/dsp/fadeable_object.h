@@ -17,8 +17,9 @@ class FadeableObject
       public zrythm::utils::serialization::ISerializable<FadeableObject>
 {
 public:
-  FadeableObject () = default;
-  ~FadeableObject () override = default;
+  // = default deletes it for some reason on gcc
+  FadeableObject () noexcept { };
+  ~FadeableObject () noexcept override = default;
   Q_DISABLE_COPY_MOVE (FadeableObject)
 
   /**

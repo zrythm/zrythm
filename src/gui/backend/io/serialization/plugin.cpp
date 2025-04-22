@@ -11,7 +11,7 @@
 using namespace zrythm::gui::old_dsp::plugins;
 
 void
-PluginDescriptor::define_fields (const Context &ctx)
+PluginDescriptor::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("author", author_, true), make_field ("name", name_, true),
@@ -33,7 +33,7 @@ PluginDescriptor::define_fields (const Context &ctx)
 }
 
 void
-PluginSetting::define_fields (const Context &ctx)
+PluginSetting::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("desriptor", descr_),
@@ -43,14 +43,15 @@ PluginSetting::define_fields (const Context &ctx)
 }
 
 void
-PluginSettings::define_fields (const Context &ctx)
+PluginSettings::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<PluginSettings>;
   T::serialize_fields (ctx, make_field ("settings", settings_));
 }
 
 void
-Plugin::PresetIdentifier::define_fields (const Context &ctx)
+Plugin::PresetIdentifier::define_fields (
+  const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("index", idx_), make_field ("bankIndex", bank_idx_),
@@ -58,7 +59,7 @@ Plugin::PresetIdentifier::define_fields (const Context &ctx)
 }
 
 void
-Plugin::Preset::define_fields (const Context &ctx)
+Plugin::Preset::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("name", name_), make_field ("uri", uri_, true),
@@ -66,7 +67,7 @@ Plugin::Preset::define_fields (const Context &ctx)
 }
 
 void
-Plugin::Bank::define_fields (const Context &ctx)
+Plugin::Bank::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("name", name_), make_field ("presets", presets_),
@@ -74,7 +75,7 @@ Plugin::Bank::define_fields (const Context &ctx)
 }
 
 void
-Plugin::define_base_fields (const Context &ctx)
+Plugin::define_base_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<zrythm::gui::old_dsp::plugins::Plugin>;
   T::call_all_base_define_fields<UuidIdentifiableObject> (ctx);
@@ -89,7 +90,7 @@ Plugin::define_base_fields (const Context &ctx)
 }
 
 void
-PluginCollection::define_fields (const Context &ctx)
+PluginCollection::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("name", name_),
@@ -98,13 +99,13 @@ PluginCollection::define_fields (const Context &ctx)
 }
 
 void
-PluginCollections::define_fields (const Context &ctx)
+PluginCollections::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (ctx, make_field ("collections", collections_));
 }
 
 void
-CarlaNativePlugin::define_fields (const Context &ctx)
+CarlaNativePlugin::define_fields (const utils::serialization::Context &ctx)
 {
   ISerializable<CarlaNativePlugin>::call_all_base_define_fields<
     zrythm::gui::old_dsp::plugins::Plugin> (ctx);

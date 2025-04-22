@@ -16,6 +16,7 @@
 #include <cstdint>
 #include <cstring>
 
+#include "dsp/chord_descriptor.h"
 #include "utils/types.h"
 
 #include "crill/spin_mutex.h"

@@ -19,7 +19,6 @@ struct CurvePreset final
     QString                              label,
     zrythm::dsp::CurveOptions::Algorithm algo,
     double                               curviness);
-  ~CurvePreset () noexcept;
 
   /**
    * Returns an array of CurveFadePreset.

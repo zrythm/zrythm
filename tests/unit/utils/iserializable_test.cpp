@@ -4,6 +4,7 @@
 #include "utils/gtest_wrapper.h"
 #include "utils/iserializable.h"
 
+using namespace zrythm;
 using namespace zrythm::utils::serialization;
 
 // Test class with basic types
@@ -22,7 +23,7 @@ public:
 };
 
 void
-SimpleObject::define_fields (const ISerializableBase::Context &ctx)
+SimpleObject::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("int", int_value), make_field ("str", str_value),
@@ -44,7 +45,7 @@ public:
 };
 
 void
-ContainerObject::define_fields (const ISerializableBase::Context &ctx)
+ContainerObject::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("int_vec", int_vec), make_field ("float_arr", float_arr),
@@ -65,7 +66,7 @@ public:
 };
 
 void
-NestedObject::define_fields (const ISerializableBase::Context &ctx)
+NestedObject::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("simple", simple), make_field ("simple_vec", simple_vec),

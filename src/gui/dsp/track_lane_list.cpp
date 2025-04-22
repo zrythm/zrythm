@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "track_lane_list.h"
@@ -33,15 +33,15 @@ TrackLaneList::data (const QModelIndex &index, int role) const
   if (!index.isValid () || index.row () >= static_cast<int> (lanes_.size ()))
     return {};
 
-  auto lane = lanes_.at (index.row ());
+  auto lane_var = lanes_.at (index.row ());
 
   switch (role)
     {
     case TrackLanePtrRole:
-      return QVariant::fromStdVariant (lane);
+      return QVariant::fromStdVariant (lane_var);
     case Qt::DisplayRole:
       return QString::fromStdString (
-        std::visit ([&] (auto &&lane) { return lane->get_name (); }, lane));
+        std::visit ([&] (auto &&lane) { return lane->get_name (); }, lane_var));
     default:
       return {};
     }

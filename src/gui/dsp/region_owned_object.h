@@ -13,11 +13,11 @@ class RegionOwnedObject
       public zrythm::utils::serialization::ISerializable<RegionOwnedObject>
 {
 public:
-  RegionOwnedObject (ArrangerObjectRegistry &obj_registry)
+  RegionOwnedObject (ArrangerObjectRegistry &obj_registry) noexcept
       : object_registry_ (obj_registry)
   {
   }
-  ~RegionOwnedObject () noexcept override = default;
+  ~RegionOwnedObject () override = default;
   Q_DISABLE_COPY_MOVE (RegionOwnedObject)
 
   /**

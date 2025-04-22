@@ -399,7 +399,7 @@ AudioClip::edit_in_ext_program ()
 }
 
 void
-AudioClip::define_fields (const Context &ctx)
+AudioClip::define_fields (const utils::serialization::Context &ctx)
 {
   using T = utils::serialization::ISerializable<AudioClip>;
   T::call_all_base_define_fields<UuidIdentifiableObject> (ctx);

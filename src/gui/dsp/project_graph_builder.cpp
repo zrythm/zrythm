@@ -42,7 +42,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
   /* add the hardware input processor */
   add_node_for_processable (*hw_in_processor);
 
-  auto add_plugin = [&] (auto &graph, auto &pl) {
+  auto add_plugin = [&] (auto &pl) {
     z_return_if_fail (!pl.deleting_);
     std::visit (
       [&] (auto &&plugin) {
@@ -76,7 +76,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
                       if (pl->deleting_)
                         return;
 
-                      add_plugin (graph, *pl);
+                      add_plugin (*pl);
                     },
                     pl_var);
                 }
@@ -108,7 +108,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
                   if (!pl || pl->deleting_)
                     continue;
 
-                  add_plugin (graph, *pl);
+                  add_plugin (*pl);
                 }
 
               /* add sends */
@@ -130,7 +130,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
 
   auto add_port =
     [&] (
-      auto &graph, PortPtrVariant port_var, PortConnectionsManager &mgr,
+      PortPtrVariant port_var, PortConnectionsManager &mgr,
       const bool drop_if_unnecessary) {
       return std::visit (
         [&] (auto &&port) -> dsp::GraphNode * {
@@ -237,7 +237,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
         }
 
       add_port (
-        graph, convert_to_variant<PortPtrVariant> (port),
+        convert_to_variant<PortPtrVariant> (port),
         *project.port_connections_manager_, drop_unnecessary_ports);
     }
 
@@ -246,9 +246,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
    * ======================== */
 
   auto connect_plugin =
-    [&] (
-      auto &graph, gui::old_dsp::plugins::Plugin &pl,
-      bool drop_unnecessary_ports) {
+    [&] (gui::old_dsp::plugins::Plugin &pl) {
       z_return_if_fail (!pl.deleting_);
       auto * pl_node = graph.get_nodes ().find_node_for_processable (pl);
       z_return_if_fail (pl_node);
@@ -503,7 +501,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
                     [&] (auto &&pl) {
                       if (pl && !pl->deleting_)
                         {
-                          connect_plugin (graph, *pl, drop_unnecessary_ports);
+                          connect_plugin (*pl);
                           for (auto &pl_port_var : pl->get_input_port_span ())
                             {
                               std::visit (
@@ -670,7 +668,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
                 {
                   if (pl && !pl->deleting_)
                     {
-                      connect_plugin (graph, *pl, drop_unnecessary_ports);
+                      connect_plugin (*pl);
                     }
                 }
 

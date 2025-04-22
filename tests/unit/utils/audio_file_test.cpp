@@ -3,7 +3,9 @@
 
 #include "utils/audio_file.h"
 #include "utils/gtest_wrapper.h"
+#include "utils/math.h"
 
+using namespace zrythm;
 using namespace zrythm::utils::audio;
 
 TEST (AudioFileTest, ReadMetadata)

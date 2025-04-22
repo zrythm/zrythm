@@ -4,6 +4,8 @@
 #include "utils/gtest_wrapper.h"
 #include "utils/monotonic_time_provider.h"
 
+#include <QThread>
+
 using namespace zrythm::utils;
 
 TEST (MonotonicTimeProviderTest, TimeIncrements)

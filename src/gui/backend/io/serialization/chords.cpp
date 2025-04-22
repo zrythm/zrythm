@@ -6,14 +6,14 @@
 #include "gui/backend/backend/settings/chord_preset_pack.h"
 
 void
-ChordPreset::define_fields (const Context &ctx)
+ChordPreset::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("name", name_), make_field ("descriptors", descr_));
 }
 
 void
-ChordPresetPack::define_fields (const Context &ctx)
+ChordPresetPack::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("name", name_), make_field ("presets", presets_),

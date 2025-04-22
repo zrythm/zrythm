@@ -10,7 +10,6 @@
 #ifndef __IO_SERIALIZATION_ISERIALIZABLE_H__
 #define __IO_SERIALIZATION_ISERIALIZABLE_H__
 
-#include <any>
 #include <filesystem>
 #include <memory>
 #include <string>
@@ -23,6 +22,7 @@
 #include "utils/logger.h"
 #include "utils/string.h"
 #include "utils/traits.h"
+#include "utils/types.h"
 #include "utils/variant_helpers.h"
 
 #include <QUuid>
@@ -52,112 +52,109 @@ concept QHashType = requires {
                type_safe::underlying_type<typename T::key_type>, QUuid>;
 };
 
-class ISerializableBase
+struct Context
 {
-public:
-  virtual ~ISerializableBase () = default;
+  Context () = default;
 
-  struct Context
+  /**
+   * @brief Used for serialization.
+   */
+  Context (
+    yyjson_mut_doc *   mut_doc,
+    yyjson_mut_val *   mut_obj,
+    const std::string &document_type,
+    int                format_major_version,
+    int                format_minor_version)
+      : Context ()
   {
-    Context () = default;
+    mut_doc_ = mut_doc;
+    mut_obj_ = mut_obj;
+    document_type_ = document_type;
+    format_major_version_ = format_major_version;
+    format_minor_version_ = format_minor_version;
+  }
 
-    /**
-     * @brief Used for serialization.
-     */
-    Context (
-      yyjson_mut_doc *   mut_doc,
-      yyjson_mut_val *   mut_obj,
-      const std::string &document_type,
-      int                format_major_version,
-      int                format_minor_version)
-        : Context ()
-    {
-      mut_doc_ = mut_doc;
-      mut_obj_ = mut_obj;
-      document_type_ = document_type;
-      format_major_version_ = format_major_version;
-      format_minor_version_ = format_minor_version;
-    }
+  /**
+   * @brief Used for deserialization.
+   */
+  Context (
+    yyjson_val *       obj,
+    const std::string &document_type,
+    int                format_major_version,
+    int                format_minor_version)
+      : Context ()
+  {
+    obj_ = obj;
+    document_type_ = document_type;
+    format_major_version_ = format_major_version;
+    format_minor_version_ = format_minor_version;
+  }
 
-    /**
-     * @brief Used for deserialization.
-     */
-    Context (
-      yyjson_val *       obj,
-      const std::string &document_type,
-      int                format_major_version,
-      int                format_minor_version)
-        : Context ()
-    {
-      obj_ = obj;
-      document_type_ = document_type;
-      format_major_version_ = format_major_version;
-      format_minor_version_ = format_minor_version;
-    }
+  Context (
+    yyjson_mut_doc *                     mut_doc,
+    yyjson_mut_val *                     mut_obj,
+    const utils::serialization::Context &other)
+      : Context ()
+  {
+    // FIXME use parameters?
+    mut_doc_ = other.mut_doc_;
+    mut_obj_ = other.mut_obj_;
+    document_type_ = other.document_type_;
+    format_major_version_ = other.format_major_version_;
+    format_minor_version_ = other.format_minor_version_;
+  }
 
-    Context (
-      yyjson_mut_doc * mut_doc,
-      yyjson_mut_val * mut_obj,
-      const Context   &other)
-        : Context ()
-    {
-      // FIXME use parameters?
-      mut_doc_ = other.mut_doc_;
-      mut_obj_ = other.mut_obj_;
-      document_type_ = other.document_type_;
-      format_major_version_ = other.format_major_version_;
-      format_minor_version_ = other.format_minor_version_;
-    }
+  Context (yyjson_val * obj, const utils::serialization::Context &other)
+      : Context ()
+  {
+    // FIXME use parameters?
+    obj_ = obj;
+    document_type_ = other.document_type_;
+    format_major_version_ = other.format_major_version_;
+    format_minor_version_ = other.format_minor_version_;
+    dependency_holder_ = other.dependency_holder_;
+  }
 
-    Context (yyjson_val * obj, const Context &other) : Context ()
-    {
-      // FIXME use parameters?
-      obj_ = obj;
-      document_type_ = other.document_type_;
-      format_major_version_ = other.format_major_version_;
-      format_minor_version_ = other.format_minor_version_;
-      dependency_holder_ = other.dependency_holder_;
-    }
+  template <typename T> void add_dependency (T &&dependency)
+  {
+    dependency_holder_.put (std::forward<T> (dependency));
+  }
 
-    template <typename T> void add_dependency (T &&dependency)
-    {
-      dependency_holder_.put (std::forward<T> (dependency));
-    }
+  constexpr bool is_serializing () const { return mut_doc_ != nullptr; }
+  constexpr bool is_deserializing () const { return obj_ != nullptr; }
 
-    constexpr bool is_serializing () const { return mut_doc_ != nullptr; }
-    constexpr bool is_deserializing () const { return obj_ != nullptr; }
+  /**
+   * @brief Type of document being (de)serialized.
+   *
+   * If this causes performance issues, use Symap and store an int instead.
+   */
+  std::string document_type_;
 
-    /**
-     * @brief Type of document being (de)serialized.
-     *
-     * If this causes performance issues, use Symap and store an int instead.
-     */
-    std::string document_type_;
+  /** Major version of the document format. */
+  int format_major_version_ = 0;
 
-    /** Major version of the document format. */
-    int format_major_version_ = 0;
+  /** Minor version of the document format. */
+  int format_minor_version_ = 0;
 
-    /** Minor version of the document format. */
-    int format_minor_version_ = 0;
+  /* used during serialization */
+  yyjson_mut_doc * mut_doc_ = nullptr;
+  yyjson_mut_val * mut_obj_ = nullptr;
 
-    /* used during serialization */
-    yyjson_mut_doc * mut_doc_ = nullptr;
-    yyjson_mut_val * mut_obj_ = nullptr;
+  /* used during deserialization */
+  yyjson_val * obj_ = nullptr;
 
-    /* used during deserialization */
-    yyjson_val * obj_ = nullptr;
-
-    /** Dependency storage */
-    DeserializationDependencyHolder dependency_holder_;
-  };
+  /** Dependency storage */
+  DeserializationDependencyHolder dependency_holder_;
 };
+
+template <typename Derived> class ISerializable;
 
 template <typename T>
 concept VariantOfSerializablePointers = requires {
   []<typename... Ts> (std::variant<Ts...> *) {
     static_assert (
       (((IsRawPointer<Ts>
-         && std::derived_from<std::remove_pointer_t<Ts>, ISerializableBase>) )
+         && DerivedFromCRTPBase<std::remove_pointer_t<Ts>, ISerializable>) )
        && ...),
       "All types in the variant must be pointers to classes deriving from ISerializable");
   }(static_cast<T *> (nullptr));
@@ -207,7 +204,7 @@ static_assert (!HasEmplaceBack<std::unordered_set<int>>);
  *
  * public:
  *     void define_fields(const Context& ctx) {
- *         if (ctx.mut_doc_) {
+ *         if (ctx.is_serializing()) {
  *             // Custom logic for serialization
  *             process_data_for_serialization();
  *         }
@@ -217,7 +214,7 @@ static_assert (!HasEmplaceBack<std::unordered_set<int>>);
  *             make_field("processed_data", processed_data_)
  *         );
  *
- *         if (!ctx.mut_doc_) {
+ *         if (ctx.is_deserializing()) {
  *             // Custom logic for deserialization
  *             post_process_deserialized_data();
  *         }
@@ -236,11 +233,10 @@ static_assert (!HasEmplaceBack<std::unordered_set<int>>);
  *
  * @tparam Derived The derived class implementing this interface
  */
-template <typename Derived>
-class ISerializable : virtual public ISerializableBase
+template <typename Derived> class ISerializable
 {
 public:
-  ~ISerializable () override = default;
+  virtual ~ISerializable () noexcept = default;
 
   template <typename T>
   using is_serializable = std::is_base_of<ISerializable<T>, T>;
@@ -270,7 +266,7 @@ public:
     {
       if constexpr (StdArray<U> && std::rank_v<U> == 1 && std::extent_v<U> == M)
         {
-          return is_serializable_pointer<std::remove_extent_t<U>>::value;
+          return is_serializable_pointer_v<std::remove_extent_t<U>>;
         }
       else
         {
@@ -403,7 +399,7 @@ public:
         else
           {
             return static_cast<bool> (
-              std::derived_from<FieldT, ISerializableBase> || QHashType<FieldT>
+              DerivedFromCRTPBase<FieldT, ISerializable> || QHashType<FieldT>
               || StrongTypedef<FieldT> || std::is_same_v<FieldT, QUuid>
               || is_serializable_pointer_v<FieldT> || std::is_integral_v<FieldT>
               || std::is_floating_point_v<FieldT> || std::is_same_v<FieldT, bool>
@@ -421,8 +417,9 @@ public:
               || is_container_of_optional_serializable_objects_v<FieldT>
               || is_container_of_serializable_pointers_v<FieldT>
               || VariantOfSerializablePointers<FieldT> || std::is_enum_v<FieldT>
-              || OptionalVariantOfSerializablePointers<FieldT> // note: probably
-                                                               // not needed
+              || OptionalVariantOfSerializablePointers<FieldT> // note:
+                                                               // probably not
+                                                               // needed
                                                                // anymore since
                                                                // the else if
                                                                // added below
@@ -499,42 +496,46 @@ public:
     return false;
   }
 
-  template <std::derived_from<ISerializableBase> Base>
-  void call_base_define_fields (const Context &ctx)
+  template <DerivedFromCRTPBase<ISerializable> Base>
+  void call_base_define_fields (const utils::serialization::Context &ctx)
   {
     dynamic_cast<Base *> (this)->Base::define_base_fields (ctx);
   }
 
   template <typename... Bases>
-  void call_all_base_define_fields (const Context &ctx)
+  void call_all_base_define_fields (const utils::serialization::Context &ctx)
   {
     (call_base_define_fields<Bases> (ctx), ...);
   }
 
   template <typename SerializeFunc>
-  void serialize_with_custom (const Context &ctx, SerializeFunc &&func) const
+  void serialize_with_custom (
+    const utils::serialization::Context &ctx,
+    SerializeFunc                      &&func) const
   {
     func (ctx);
   }
 
   template <typename DeserializeFunc>
-  void deserialize_with_custom (const Context &ctx, DeserializeFunc &&func)
+  void deserialize_with_custom (
+    const utils::serialization::Context &ctx,
+    DeserializeFunc                    &&func)
   {
     func (ctx);
   }
 
-  void serialize (const Context &ctx) const
+  void serialize (const utils::serialization::Context &ctx) const
   {
-    serialize_with_custom (ctx, [this] (const Context &c) {
+    serialize_with_custom (ctx, [this] (const utils::serialization::Context &c) {
       // FIXME: const cast is a hack
       const_cast<Derived *> (dynamic_cast<const Derived *> (this))
         ->define_fields (c);
     });
   }
 
-  void deserialize (const Context &ctx)
+  void deserialize (const utils::serialization::Context &ctx)
   {
-    deserialize_with_custom (ctx, [this] (const Context &c) {
+    deserialize_with_custom (ctx, [this] (const utils::serialization::Context &c) {
       dynamic_cast<Derived *> (this)->define_fields (c);
     });
   }
@@ -542,8 +543,9 @@ public:
   /**
    * Serializes the object to a JSON string.
    *
-   * Note that we are using a CStringRAII wrapper here because std::string would
-   * allocate more memory than a C-style string and we expect huge strings here.
+   * Note that we are using a CStringRAII wrapper here because std::string
+   * would allocate more memory than a C-style string and we expect huge
+   * strings here.
    *
    * @param ctx The context of the serialization.
    * @throw ZrythmException if an error occurred.
@@ -1132,7 +1134,8 @@ public:
       }
   }
 
-  template <typename T> std::unique_ptr<T> create_object (const Context &ctx)
+  template <typename T>
+  std::unique_ptr<T> create_object (const utils::serialization::Context &ctx)
   {
     std::unique_ptr<T> obj;
     if constexpr (utils::Initializable<T>)
@@ -1161,7 +1164,9 @@ public:
   }
 
   template <typename Variant>
-  auto create_object_at_variant_index (size_t index, const Context &ctx)
+  auto create_object_at_variant_index (
+    size_t                               index,
+    const utils::serialization::Context &ctx)
   {
     auto creator = [&]<size_t... I> (std::index_sequence<I...>) {
       using Result = std::variant<typename std::remove_pointer_t<
@@ -1828,7 +1833,9 @@ public:
 
 protected:
   template <typename... Field>
-  void serialize_fields (const Context &ctx, Field &&... field) const
+  void
+  serialize_fields (const utils::serialization::Context &ctx, Field &&... field)
+    const
   {
     if (ctx.mut_doc_)
       {
@@ -1888,14 +1895,12 @@ protected:
 
 #define DECLARE_DEFINE_BASE_FIELDS_METHOD() \
 public: \
-  friend class zrythm::utils::serialization::ISerializableBase; \
-  void define_base_fields ( \
-    const zrythm::utils::serialization::ISerializableBase::Context &ctx)
+  /*friend class zrythm::utils::serialization::ISerializable;*/ \
+  void define_base_fields (const zrythm::utils::serialization::Context &ctx)
 
 #define DECLARE_DEFINE_FIELDS_METHOD() \
 public: \
-  void define_fields ( \
-    const zrythm::utils::serialization::ISerializableBase::Context &ctx)
+  void define_fields (const zrythm::utils::serialization::Context &ctx)
 
 }; // namespace zrythm::utils::serialization
 

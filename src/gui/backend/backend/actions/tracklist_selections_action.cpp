@@ -77,7 +77,7 @@ TracklistSelectionsAction::copy_track_positions_from_selections (
       for (const auto &track_var : selections)
         {
           track_positions.push_back (
-            std::visit (selections.position_projection, track_var));
+            std::visit (TrackSpan::position_projection, track_var));
         }
       std::ranges::sort (track_positions);
     },
@@ -1115,7 +1115,7 @@ TracklistSelectionsAction::
                       track->children_.clear ();
                     }
 
-                  int target_pos = track_pos_ + index;
+                  auto target_pos = track_pos_ + index;
                   if (inside)
                     target_pos++;
 
@@ -1240,7 +1240,7 @@ TracklistSelectionsAction::
             std::views::iota (0zu, tls_before_->size ()) | std::views::reverse)
             {
               /* get the track from the inserted pos */
-              int target_pos = track_pos_ + i;
+              auto target_pos = track_pos_ + i;
               if (inside)
                 target_pos++;
 

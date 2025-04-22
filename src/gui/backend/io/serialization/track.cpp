@@ -23,7 +23,7 @@
 #include "gui/dsp/track_lane.h"
 
 void
-Track::define_base_fields (const Context &ctx)
+Track::define_base_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<Track>;
   T::call_all_base_define_fields<utils::UuidIdentifiableObject<Track>> (ctx);
@@ -41,7 +41,8 @@ Track::define_base_fields (const Context &ctx)
 
 template <typename TrackLaneT>
 void
-LanedTrackImpl<TrackLaneT>::define_base_fields (const Context &ctx)
+LanedTrackImpl<TrackLaneT>::define_base_fields (
+  const utils::serialization::Context &ctx)
 {
   using T = ISerializable<LanedTrackImpl<TrackLaneT>>;
   T::serialize_fields (
@@ -50,14 +51,16 @@ LanedTrackImpl<TrackLaneT>::define_base_fields (const Context &ctx)
 }
 
 template void
-LanedTrackImpl<MidiLane>::define_base_fields (const Context &);
+LanedTrackImpl<MidiLane>::define_base_fields (
+  const utils::serialization::Context &);
 template void
-LanedTrackImpl<AudioLane>::define_base_fields (const Context &);
+LanedTrackImpl<AudioLane>::define_base_fields (
+  const utils::serialization::Context &);
 
 template <typename RegionT>
 void
 TrackLaneImpl<RegionT>::define_base_fields (
-  const utils::serialization::ISerializableBase::Context &ctx)
+  const utils::serialization::Context &ctx)
 {
   using T = utils::serialization::ISerializable<TrackLaneImpl<RegionT>>;
   T::template call_all_base_define_fields<ArrangerObjectOwner<RegionT>> (ctx);
@@ -69,34 +72,34 @@ TrackLaneImpl<RegionT>::define_base_fields (
 
 template void
 TrackLaneImpl<MidiRegion>::define_base_fields (
-  const ISerializableBase::Context &);
+  const utils::serialization::Context &);
 template void
 TrackLaneImpl<AudioRegion>::define_base_fields (
-  const ISerializableBase::Context &);
+  const utils::serialization::Context &);
 
 void
-MidiLane::define_fields (const Context &ctx)
+MidiLane::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<MidiLane>;
   T::call_all_base_define_fields<TrackLaneImpl<MidiRegion>> (ctx);
 }
 
 void
-AudioLane::define_fields (const Context &ctx)
+AudioLane::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<AudioLane>;
   T::call_all_base_define_fields<TrackLaneImpl<AudioRegion>> (ctx);
 }
 
 void
-TrackLaneList::define_fields (const Context &ctx)
+TrackLaneList::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<TrackLaneList>;
   T::serialize_fields (ctx, T::make_field ("lanes", lanes_));
 }
 
 void
-AutomationTrack::define_fields (const Context &ctx)
+AutomationTrack::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<AutomationTrack>;
   T::call_all_base_define_fields<ArrangerObjectOwner> (ctx);
@@ -109,14 +112,14 @@ AutomationTrack::define_fields (const Context &ctx)
 }
 
 void
-AutomationTracklist::define_fields (const Context &ctx)
+AutomationTracklist::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<AutomationTracklist>;
   T::serialize_fields (ctx, T::make_field ("automationTracks", ats_));
 }
 
 void
-AutomatableTrack::define_base_fields (const Context &ctx)
+AutomatableTrack::define_base_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<AutomatableTrack>;
   T::serialize_fields (
@@ -125,14 +128,14 @@ AutomatableTrack::define_base_fields (const Context &ctx)
 }
 
 void
-ChannelTrack::define_base_fields (const Context &ctx)
+ChannelTrack::define_base_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<ChannelTrack>;
   T::serialize_fields (ctx, T::make_field ("channel", channel_));
 }
 
 void
-PianoRollTrack::define_base_fields (const Context &ctx)
+PianoRollTrack::define_base_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<PianoRollTrack>;
   T::serialize_fields (
@@ -142,7 +145,7 @@ PianoRollTrack::define_base_fields (const Context &ctx)
 }
 
 void
-RecordableTrack::define_base_fields (const Context &ctx)
+RecordableTrack::define_base_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<RecordableTrack>;
   T::serialize_fields (
@@ -151,14 +154,14 @@ RecordableTrack::define_base_fields (const Context &ctx)
 }
 
 void
-GroupTargetTrack::define_base_fields (const Context &ctx)
+GroupTargetTrack::define_base_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<GroupTargetTrack>;
   T::serialize_fields (ctx, T::make_field ("children", children_));
 }
 
 void
-FoldableTrack::define_base_fields (const Context &ctx)
+FoldableTrack::define_base_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<FoldableTrack>;
   T::serialize_fields (
@@ -166,14 +169,14 @@ FoldableTrack::define_base_fields (const Context &ctx)
 }
 
 void
-MarkerTrack::define_fields (const Context &ctx)
+MarkerTrack::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<MarkerTrack>;
   T::call_all_base_define_fields<Track, ArrangerObjectOwner> (ctx);
 }
 
 void
-ModulatorTrack::define_fields (const Context &ctx)
+ModulatorTrack::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<ModulatorTrack>;
   T::call_all_base_define_fields<Track, ProcessableTrack, AutomatableTrack> (
@@ -185,7 +188,7 @@ ModulatorTrack::define_fields (const Context &ctx)
 }
 
 void
-MidiTrack::define_fields (const Context &ctx)
+MidiTrack::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<MidiTrack>;
   T::call_all_base_define_fields<
@@ -194,7 +197,7 @@ MidiTrack::define_fields (const Context &ctx)
 }
 
 void
-InstrumentTrack::define_fields (const Context &ctx)
+InstrumentTrack::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<InstrumentTrack>;
   T::call_all_base_define_fields<
@@ -203,7 +206,7 @@ InstrumentTrack::define_fields (const Context &ctx)
 }
 
 void
-TempoTrack::define_fields (const Context &ctx)
+TempoTrack::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<TempoTrack>;
   T::call_all_base_define_fields<Track, AutomatableTrack> (ctx);
@@ -214,7 +217,7 @@ TempoTrack::define_fields (const Context &ctx)
 }
 
 void
-AudioTrack::define_fields (const Context &ctx)
+AudioTrack::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<AudioTrack>;
   T::call_all_base_define_fields<
@@ -223,7 +226,7 @@ AudioTrack::define_fields (const Context &ctx)
 }
 
 void
-AudioBusTrack::define_fields (const Context &ctx)
+AudioBusTrack::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<AudioBusTrack>;
   T::call_all_base_define_fields<
@@ -231,7 +234,7 @@ AudioBusTrack::define_fields (const Context &ctx)
 }
 
 void
-MidiBusTrack::define_fields (const Context &ctx)
+MidiBusTrack::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<MidiBusTrack>;
   T::call_all_base_define_fields<
@@ -239,7 +242,7 @@ MidiBusTrack::define_fields (const Context &ctx)
 }
 
 void
-AudioGroupTrack::define_fields (const Context &ctx)
+AudioGroupTrack::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<AudioGroupTrack>;
   T::call_all_base_define_fields<
@@ -248,7 +251,7 @@ AudioGroupTrack::define_fields (const Context &ctx)
 }
 
 void
-MidiGroupTrack::define_fields (const Context &ctx)
+MidiGroupTrack::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<MidiGroupTrack>;
   T::call_all_base_define_fields<
@@ -257,7 +260,7 @@ MidiGroupTrack::define_fields (const Context &ctx)
 }
 
 void
-MasterTrack::define_fields (const Context &ctx)
+MasterTrack::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<MasterTrack>;
   T::call_all_base_define_fields<
@@ -266,7 +269,7 @@ MasterTrack::define_fields (const Context &ctx)
 }
 
 void
-ChordTrack::define_fields (const Context &ctx)
+ChordTrack::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<ChordTrack>;
   T::call_all_base_define_fields<
@@ -275,7 +278,7 @@ ChordTrack::define_fields (const Context &ctx)
 }
 
 void
-FolderTrack::define_fields (const Context &ctx)
+FolderTrack::define_fields (const utils::serialization::Context &ctx)
 {
   using T = ISerializable<FolderTrack>;
   T::call_all_base_define_fields<

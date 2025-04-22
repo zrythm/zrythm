@@ -15,6 +15,11 @@ class BaseTestObject
       public serialization::ISerializable<BaseTestObject>
 {
 public:
+  // for disambiguation on g++
+  using serialization::ISerializable<BaseTestObject>::serialize_to_json_string;
+  using serialization::ISerializable<
+    BaseTestObject>::deserialize_from_json_string;
+
   BaseTestObject () = default;
   explicit BaseTestObject (Uuid id)
       : UuidIdentifiableObject<BaseTestObject> (id)
@@ -27,9 +32,10 @@ public:
   BaseTestObject &operator= (BaseTestObject &&) = default;
 
   std::string get_document_type () const override { return "TestObject"; }
-  void        define_fields (const ISerializableBase::Context &ctx)
+  DECLARE_DEFINE_FIELDS_METHOD ()
   {
-    UuidIdentifiableObject::define_base_fields (ctx);
+    using T = ISerializable<BaseTestObject>;
+    T::call_all_base_define_fields<UuidIdentifiableObject> (ctx);
   }
 };
 

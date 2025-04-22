@@ -11,7 +11,7 @@
 
 #include "utils/initializable_object.h"
 #include "utils/traits.h"
-#include "utils/types.h"
+#include "utils/variant_helpers.h"
 
 /**
  * @addtogroup utils

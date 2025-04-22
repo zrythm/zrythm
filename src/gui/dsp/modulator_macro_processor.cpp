@@ -72,7 +72,7 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
 }
 
 void
-ModulatorMacroProcessor::define_fields (const Context &ctx)
+ModulatorMacroProcessor::define_fields (const utils::serialization::Context &ctx)
 {
   serialize_fields (
     ctx, make_field ("name", name_), make_field ("cvIn", cv_in_id_),

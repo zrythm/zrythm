@@ -23,8 +23,7 @@ struct FramesPerTick
 
   static_assert (StrongTypedef<FramesPerTick>);
 
-  void
-  define_fields (const utils::serialization::ISerializableBase::Context &ctx)
+  DECLARE_DEFINE_FIELDS_METHOD ()
   {
     using T = utils::serialization::ISerializable<FramesPerTick>;
     T::serialize_fields (
@@ -46,8 +45,7 @@ struct TicksPerFrame
 
   static_assert (StrongTypedef<TicksPerFrame>);
 
-  void
-  define_fields (const utils::serialization::ISerializableBase::Context &ctx)
+  DECLARE_DEFINE_FIELDS_METHOD ()
   {
     using T = utils::serialization::ISerializable<TicksPerFrame>;
     T::serialize_fields (
@@ -304,7 +302,9 @@ public:
     sample_rate_t sample_rate,
     TicksPerFrame ticks_per_frame)
   {
-    add_frames (ms_to_frames (seconds * 1'000, sample_rate), ticks_per_frame);
+    add_frames (
+      ms_to_frames (static_cast<double> (seconds * 1'000), sample_rate),
+      ticks_per_frame);
   }
 
   /**

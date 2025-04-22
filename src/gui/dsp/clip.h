@@ -11,6 +11,7 @@
 #include "utils/iserializable.h"
 #include "utils/monotonic_time_provider.h"
 #include "utils/types.h"
+#include "utils/uuid_identifiable_object.h"
 
 using namespace zrythm;
 
