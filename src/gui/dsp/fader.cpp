@@ -198,21 +198,19 @@ Fader::Fader (
   }
 
   {
-    const auto create_swap_phase_port =
-      [&port_registry, passthrough] () {
-        auto swap_phase = port_registry.create_object<ControlPort> (
-          passthrough
-            ? QObject::tr ("Prefader Swap Phase").toStdString ()
-            : QObject::tr ("Fader Swap Phase").toStdString ());
-        auto * swap_phase_ptr =
-          std::get<ControlPort *> (swap_phase.get_object ());
-        swap_phase_ptr->id_->sym_ =
-          passthrough ? "prefader_swap_phase" : "fader_swap_phase";
-        swap_phase_ptr->id_->flags2_ |=
-          dsp::PortIdentifier::Flags2::FaderSwapPhase;
-        swap_phase_ptr->id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
-        return swap_phase;
-      };
+    const auto create_swap_phase_port = [&port_registry, passthrough] () {
+      auto swap_phase = port_registry.create_object<ControlPort> (
+        passthrough
+          ? QObject::tr ("Prefader Swap Phase").toStdString ()
+          : QObject::tr ("Fader Swap Phase").toStdString ());
+      auto * swap_phase_ptr = std::get<ControlPort *> (swap_phase.get_object ());
+      swap_phase_ptr->id_->sym_ =
+        passthrough ? "prefader_swap_phase" : "fader_swap_phase";
+      swap_phase_ptr->id_->flags2_ |=
+        dsp::PortIdentifier::Flags2::FaderSwapPhase;
+      swap_phase_ptr->id_->flags_ |= dsp::PortIdentifier::Flags::Toggle;
+      return swap_phase;
+    };
 
     /* set swap phase */
     swap_phase_id_ = create_swap_phase_port ();

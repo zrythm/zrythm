@@ -245,43 +245,42 @@ ProjectGraphBuilder::build_graph_impl (dsp::Graph &graph)
    * now connect them
    * ======================== */
 
-  auto connect_plugin =
-    [&] (gui::old_dsp::plugins::Plugin &pl) {
-      z_return_if_fail (!pl.deleting_);
-      auto * pl_node = graph.get_nodes ().find_node_for_processable (pl);
-      z_return_if_fail (pl_node);
-      for (const auto port_var : pl.get_input_port_span ())
-        {
-          std::visit (
-            [&] (auto &&port) {
-              using PortT = base_type<decltype (port)>;
-              // z_return_if_fail (port->get_plugin (true) != nullptr);
-              auto * port_node =
-                graph.get_nodes ().find_node_for_processable (*port);
-              if (
-                drop_unnecessary_ports && (port_node == nullptr)
-                && std::is_same_v<PortT, ControlPort>)
-                {
-                  return;
-                }
-              z_return_if_fail (port_node);
-              port_node->connect_to (*pl_node);
-            },
-            port_var);
-        }
-      for (const auto port_var : pl.get_output_port_span ())
-        {
-          std::visit (
-            [&] (auto &&port) {
-              // z_return_if_fail (port->get_plugin (true) != nullptr);
-              auto * port_node =
-                graph.get_nodes ().find_node_for_processable (*port);
-              z_return_if_fail (port_node);
-              pl_node->connect_to (*port_node);
-            },
-            port_var);
-        }
-    };
+  auto connect_plugin = [&] (gui::old_dsp::plugins::Plugin &pl) {
+    z_return_if_fail (!pl.deleting_);
+    auto * pl_node = graph.get_nodes ().find_node_for_processable (pl);
+    z_return_if_fail (pl_node);
+    for (const auto port_var : pl.get_input_port_span ())
+      {
+        std::visit (
+          [&] (auto &&port) {
+            using PortT = base_type<decltype (port)>;
+            // z_return_if_fail (port->get_plugin (true) != nullptr);
+            auto * port_node =
+              graph.get_nodes ().find_node_for_processable (*port);
+            if (
+              drop_unnecessary_ports && (port_node == nullptr)
+              && std::is_same_v<PortT, ControlPort>)
+              {
+                return;
+              }
+            z_return_if_fail (port_node);
+            port_node->connect_to (*pl_node);
+          },
+          port_var);
+      }
+    for (const auto port_var : pl.get_output_port_span ())
+      {
+        std::visit (
+          [&] (auto &&port) {
+            // z_return_if_fail (port->get_plugin (true) != nullptr);
+            auto * port_node =
+              graph.get_nodes ().find_node_for_processable (*port);
+            z_return_if_fail (port_node);
+            pl_node->connect_to (*port_node);
+          },
+          port_var);
+      }
+  };
 
   /* connect the sample processor */
   {
