@@ -44,10 +44,13 @@ endif()
 set_target_properties(zrythm_gui_lib PROPERTIES
   OUTPUT_NAME zrythm_gui_lib
 )
-target_include_directories(zrythm_gui_lib PUBLIC ${zrythm_include_dirs})
-target_compile_definitions(zrythm_gui_lib PUBLIC ${zrythm_definitions})
 target_compile_options(zrythm_gui_lib PUBLIC ${zrythm_compile_args})
-target_link_libraries(zrythm_gui_lib PUBLIC ${zrythm_link_libs} zrythm_dsp_lib)
+target_link_libraries(zrythm_gui_lib
+  PUBLIC
+    ${zrythm_link_libs}
+    zrythm_dsp_lib
+    zrythm_include_dirs
+)
 target_precompile_headers(zrythm_gui_lib REUSE_FROM zrythm_dsp_lib)
 
 target_sources(zrythm PRIVATE main.cpp)

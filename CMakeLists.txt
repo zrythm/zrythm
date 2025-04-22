@@ -59,6 +59,8 @@ set(CMAKE_PCH_INSTANTIATE_TEMPLATES ON)
 # See https://opensource.stackexchange.com/a/7187
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
 
+set_property(GLOBAL PROPERTY USE_FOLDERS YES)
+
 message(STATUS "Project version: ${PROJECT_VERSION} (${ZRYTHM_VERSION_STRING_FULL})")
 
 #==============================================================================
@@ -340,11 +342,13 @@ set(glib_req "2.74.0")
 check_symbol_exists(mlock "sys/mman.h" HAVE_MLOCK)
 message(STATUS "HAVE_MLOCK: ${HAVE_MLOCK}")
 
-set(zrythm_include_dirs
+add_library(zrythm_include_dirs INTERFACE)
+target_include_directories(zrythm_include_dirs
+  INTERFACE
   "${CMAKE_SOURCE_DIR}/src"
   "${CMAKE_SOURCE_DIR}/ext"
   "${CMAKE_BINARY_DIR}/src"
-  )
+)
 
 if(${ZRYTHM_WITH_JACK})
   if (WIN32 OR ${ZRYTHM_IS_INSTALLER_VER})
@@ -362,7 +366,7 @@ if(${ZRYTHM_WITH_JACK})
   set(HAVE_JACK ON)
 
   if(USE_WEAK_JACK)
-    list(APPEND zrythm_include_dirs ${JACK_INCLUDE_DIRS})
+    target_include_directories(zrythm_include_dirs INTERFACE ${JACK_INCLUDE_DIRS})
   else()
     list(APPEND zrythm_link_libs PkgConfig::JACK)
   endif()
@@ -384,11 +388,6 @@ if (${WIN_MINGW})
   # see https://stackoverflow.com/questions/11267877/mingw-multiple-definition-of-unwind-resume
   add_link_options(-lssp)
 endif()
-
-# Zrythm-specific compile definitions
-set(zrythm_definitions)
-
-list(APPEND zrythm_definitions GETTEXT_PACKAGE="zrythm")
 
 if(WIN32)
   add_compile_definitions(
@@ -1180,11 +1179,6 @@ if(NOT XCODE)
     QT_TRANSLATION_CATALOGS qtbase
   )
 endif()
-
-message(STATUS "Zrythm compile definitions: ${zrythm_definitions}")
-message(STATUS "Zrythm compile args: ${zrythm_compile_args}")
-message(STATUS "Zrythm link libs: ${zrythm_link_libs}")
-message(STATUS "Zrythm link args: ${zrythm_link_args}")
 
 # clang-format integration
 find_package(Python3 COMPONENTS Interpreter REQUIRED)

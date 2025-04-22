@@ -36,7 +36,6 @@
 #include "gui/backend/plugin_manager.h"
 #include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
-#include "utils/windows.h"
 
 #include <QtConcurrent>
 
