@@ -102,7 +102,10 @@ if(ZRYTHM_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR)
 endif()
 
 add_library(zrythm::juce_lib ALIAS juce_lib)
-add_library(zrythm::juce_clap_hosting_lib ALIAS juce_clap_hosting_lib)
+
+if(ZRYTHM_WITH_JUCE_CLAP_HOSTING)
+  add_library(zrythm::juce_clap_hosting_lib ALIAS juce_clap_hosting_lib)
+endif()
 
 add_subdirectory(kissfft)
 add_subdirectory(midilib)
