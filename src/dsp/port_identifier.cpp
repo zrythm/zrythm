@@ -59,7 +59,7 @@ PortIdentifier::get_hash () const
   // on every project... we need a better hashing style
   // same goes for other classes too (like PluginIdentifier)
   // TODO look into std::hash and provide a hash_combine helper
-  uint32_t hash = 0;
+  size_t hash{};
   if (!sym_.empty ())
     {
       hash = hash ^ qHash (sym_);
@@ -89,7 +89,8 @@ PortIdentifier::get_hash () const
     hash = hash ^ qHash (type_safe::get (track_id_.value ()));
   hash = hash ^ qHash (port_index_);
   // z_trace ("hash for {}: {}", sym_, hash);
-  return hash;
+  assert (hash < std::numeric_limits<uint32_t>::max ());
+  return static_cast<uint32_t> (hash);
 }
 
 void

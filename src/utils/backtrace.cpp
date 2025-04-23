@@ -7,10 +7,7 @@
 #include "utils/datetime.h"
 #include "utils/io.h"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wundef"
-#include "backward-cpp/backward.hpp"
-#pragma GCC diagnostic pop
+#include <backward.hpp>
 
 namespace zrythm::utils
 {
@@ -25,7 +22,7 @@ Backtrace::init_signal_handlers ()
 }
 
 std::string
-Backtrace::get_backtrace (std::string prefix, int depth, bool write_to_file)
+Backtrace::get_backtrace (std::string prefix, size_t depth, bool write_to_file)
 {
   // Create a backward::StackTrace object
   backward::StackTrace st;

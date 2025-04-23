@@ -14,10 +14,11 @@ namespace zrythm::utils::compression
 QByteArray
 compress_to_base64_str (const QByteArray &src)
 {
-  size_t compress_bound = ZSTD_compressBound (src.size ());
+  size_t compress_bound = ZSTD_compressBound (static_cast<size_t> (src.size ()));
   char * dest = static_cast<char *> (malloc (compress_bound));
-  size_t dest_size =
-    ZSTD_compress (dest, compress_bound, src.constData (), src.size (), 1);
+  size_t dest_size = ZSTD_compress (
+    dest, compress_bound, src.constData (), static_cast<size_t> (src.size ()),
+    1);
   if (ZSTD_isError (dest_size))
     {
       free (dest);
@@ -26,7 +27,8 @@ compress_to_base64_str (const QByteArray &src)
         fmt::format ("Failed to compress: {}", ZSTD_getErrorName (dest_size)));
     }
 
-  auto ret = utils::base64::encode (QByteArray (dest, dest_size));
+  auto ret = utils::base64::encode (
+    QByteArray (dest, static_cast<qsizetype> (dest_size)));
 
   free (dest);
 
@@ -42,16 +44,17 @@ decompress_string_from_base64 (const QByteArray &b64)
     ZSTD_getDecompressedSize (src.constData (), src.size ());
   if (frame_content_size == 0)
 #else
-  unsigned long long const frame_content_size =
-    ZSTD_getFrameContentSize (src.constData (), src.size ());
+  unsigned long long const frame_content_size = ZSTD_getFrameContentSize (
+    src.constData (), static_cast<size_t> (src.size ()));
   if (frame_content_size == ZSTD_CONTENTSIZE_ERROR)
 #endif
     {
       throw ZrythmException ("String not compressed by zstd");
     }
   auto   dest = static_cast<char *> (malloc ((size_t) frame_content_size));
-  size_t dest_size =
-    ZSTD_decompress (dest, frame_content_size, src.constData (), src.size ());
+  size_t dest_size = ZSTD_decompress (
+    dest, frame_content_size, src.constData (),
+    static_cast<size_t> (src.size ()));
   if (ZSTD_isError (dest_size))
     {
       free (dest);

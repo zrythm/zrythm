@@ -19,8 +19,8 @@ escape_html (const std::string &str)
 juce::String
 string_view_to_juce_string (std::string_view sv)
 {
-  juce::String juce_str =
-    juce::String::createStringFromData (sv.data (), sv.size ());
+  juce::String juce_str = juce::String::createStringFromData (
+    sv.data (), static_cast<int> (sv.size ()));
   return juce_str;
 }
 
@@ -143,7 +143,7 @@ get_regex_group (const std::string &str, const std::string &regex, int group)
     std::regex_search (str.c_str (), match, re)
     && group < static_cast<decltype (group)> (match.size ()))
     {
-      return match[group].str ();
+      return match[static_cast<size_t> (group)].str ();
     }
 
   z_warning ("not found: regex '{}', str '{}'", regex, str);

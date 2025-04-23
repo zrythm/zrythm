@@ -32,15 +32,20 @@
  */
 struct ChromaprintFingerprint
 {
+  ChromaprintFingerprint () noexcept = default;
+  ~ChromaprintFingerprint ()
+  {
+    if (fp)
+      chromaprint_dealloc (fp);
+    if (compressed_str)
+      chromaprint_dealloc (compressed_str);
+  }
   uint32_t * fp;
   int        size;
   char *     compressed_str;
 };
 
-void
-z_chromaprint_fingerprint_free (ChromaprintFingerprint * self);
-
-ChromaprintFingerprint *
+std::unique_ptr<ChromaprintFingerprint>
 z_chromaprint_get_fingerprint (const char * file1, unsigned_frame_t max_frames);
 
 /**

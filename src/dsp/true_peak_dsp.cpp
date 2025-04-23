@@ -28,7 +28,7 @@
 #include "dsp/true_peak_dsp.h"
 #include "utils/dsp.h"
 
-#include "zita-resampler/resampler.h"
+#include <zita-resampler/resampler.h>
 
 namespace zrythm::dsp
 {

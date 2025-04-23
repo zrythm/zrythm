@@ -54,7 +54,7 @@ AudioFile::ensure_file_is_open ()
   else
     {
       reader_ = std::unique_ptr<juce::AudioFormatReader> (
-        format_mgr.createReaderFor (juce::File (filepath_)));
+        format_mgr.createReaderFor (juce::File (filepath_.string ())));
       if (reader_ == nullptr)
         {
           throw ZrythmException (
@@ -72,10 +72,10 @@ AudioFile::read_metadata ()
   ensure_file_is_open ();
 
   /* obtain metadata */
-  metadata_.channels = reader_->numChannels;
+  metadata_.channels = static_cast<int> (reader_->numChannels);
   metadata_.num_frames = reader_->lengthInSamples;
   metadata_.samplerate = (int) reader_->sampleRate;
-  metadata_.bit_depth = reader_->bitsPerSample;
+  metadata_.bit_depth = static_cast<int> (reader_->bitsPerSample);
   metadata_.bit_rate =
     metadata_.bit_depth * metadata_.channels * metadata_.samplerate;
   metadata_.length =
@@ -106,12 +106,14 @@ AudioFile::read_samples_interleaved (
   read_metadata ();
 
   start_from = in_parts ? start_from : 0;
-  num_frames_to_read = in_parts ? num_frames_to_read : metadata_.num_frames;
+  num_frames_to_read =
+    in_parts ? num_frames_to_read : static_cast<size_t> (metadata_.num_frames);
 
   zrythm::utils::audio::AudioBuffer buffer (
-    metadata_.channels, num_frames_to_read);
-  bool success =
-    reader_->read (&buffer, 0, num_frames_to_read, start_from, true, true);
+    metadata_.channels, static_cast<int> (num_frames_to_read));
+  bool success = reader_->read (
+    &buffer, 0, static_cast<int> (num_frames_to_read),
+    static_cast<int64_t> (start_from), true, true);
   if (!success)
     {
       throw ZrythmException (fmt::format (
@@ -120,7 +122,8 @@ AudioFile::read_samples_interleaved (
 
   buffer.interleave_samples ();
   float_ranges::copy (
-    samples, buffer.getReadPointer (0), num_frames_to_read * metadata_.channels);
+    samples, buffer.getReadPointer (0),
+    num_frames_to_read * static_cast<size_t> (metadata_.channels));
 }
 
 void
@@ -132,18 +135,20 @@ AudioFile::read_full (
 
   /* read frames in file's sample rate */
   zrythm::utils::audio::AudioBuffer interleaved_buffer (
-    1, metadata_.channels * (size_t) metadata_.num_frames);
+    1, metadata_.channels * static_cast<int> (metadata_.num_frames));
 
   read_samples_interleaved (
-    false, interleaved_buffer.getWritePointer (0), 0, metadata_.num_frames);
-  interleaved_buffer.deinterleave_samples (metadata_.channels);
+    false, interleaved_buffer.getWritePointer (0), 0,
+    static_cast<size_t> (metadata_.num_frames));
+  interleaved_buffer.deinterleave_samples (
+    static_cast<size_t> (metadata_.channels));
 
   if (samplerate.has_value () && samplerate != metadata_.samplerate)
     {
       /* resample to project's sample rate */
       Resampler r (
-        interleaved_buffer, metadata_.samplerate, *samplerate,
-        Resampler::Quality::VeryHigh);
+        interleaved_buffer, metadata_.samplerate,
+        static_cast<double> (*samplerate), Resampler::Quality::VeryHigh);
       while (!r.is_done ())
         {
           r.process ();

@@ -16,11 +16,12 @@ PluginSlot::define_fields (const utils::serialization::Context &ctx)
 uint32_t
 PluginSlot::get_hash () const
 {
-  uint32_t hash = 0;
+  size_t hash{};
   if (slot_.has_value ())
     hash = hash ^ qHash (slot_.value ());
   hash = hash ^ qHash (type_);
-  return hash;
+  assert (hash < std::numeric_limits<uint32_t>::max ());
+  return static_cast<uint32_t> (hash);
 }
 
 };

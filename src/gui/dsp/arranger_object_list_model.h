@@ -45,7 +45,8 @@ public:
 
     if (role == ArrangerObjectPtrRole)
       {
-        return QVariant::fromStdVariant (objects_[index.row ()].get_object ());
+        return QVariant::fromStdVariant (
+          objects_[static_cast<size_t> (index.row ())].get_object ());
       }
 
     return {};

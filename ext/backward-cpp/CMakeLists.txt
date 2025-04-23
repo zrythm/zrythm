@@ -8,7 +8,7 @@ set(backward_cpp_libs Threads::Threads)
 if(${OS_GNU})
   pkg_check_modules(LIBDW REQUIRED IMPORTED_TARGET libdw)
   list(APPEND backward_cpp_libs PkgConfig::LIBDW)
-  list(APPEND backward_cpp_compile_defs 
+  list(APPEND backward_cpp_compile_defs
     BACKWARD_HAS_DW=1
     BACKWARD_HAS_UNWIND=1)
 elseif(APPLE)
@@ -18,7 +18,7 @@ elseif(WIN32)
 endif()
 
 add_library(backward_cpp INTERFACE)
-target_include_directories(backward_cpp INTERFACE ${backward_cpp_include_dirs})
+target_include_directories(backward_cpp SYSTEM INTERFACE ${backward_cpp_include_dirs})
 target_link_libraries(backward_cpp INTERFACE ${backward_cpp_libs})
 target_compile_definitions(backward_cpp INTERFACE ${backward_cpp_compile_defs})
 add_library(backward_cpp::backward_cpp ALIAS backward_cpp)

@@ -112,27 +112,7 @@ public:
 
   [[nodiscard]] auto end () const noexcept { return lanes_.end (); }
 
-  void erase (const size_t pos)
-  {
-    if (pos < lanes_.size ())
-      {
-        beginRemoveRows (
-          QModelIndex (), static_cast<int> (pos), static_cast<int> (pos));
-        auto &lane = lanes_.at (pos);
-        std::visit (
-          [&] (auto &&l) {
-            l->setParent (nullptr);
-            lanes_.erase (lanes_.begin () + pos);
-            l->deleteLater ();
-          },
-          lane);
-        endRemoveRows ();
-      }
-    else
-      {
-        z_error ("position {} out of range ({})", pos, lanes_.size ());
-      }
-  }
+  void erase (size_t pos);
 
   [[nodiscard]] auto front () noexcept { return lanes_.front (); }
 

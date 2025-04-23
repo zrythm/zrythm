@@ -134,7 +134,7 @@ GraphThread::on_reached_terminal_node ()
 
       /* reset terminal reference count */
       scheduler_.terminal_refcnt_.store (
-        scheduler_.graph_nodes_.terminal_nodes_.size ());
+        static_cast<int> (scheduler_.graph_nodes_.terminal_nodes_.size ()));
 
       /* and start the initial nodes */
       for (auto node : scheduler_.graph_nodes_.trigger_nodes_)
@@ -332,7 +332,7 @@ get_stack_size ()
   size_t pt_min_stack = 16384;
 
 #  ifdef PTHREAD_STACK_MIN
-  pt_min_stack = PTHREAD_STACK_MIN;
+  pt_min_stack = static_cast<size_t> (PTHREAD_STACK_MIN);
 #  endif
 
   void * handle = dlopen (nullptr, RTLD_LAZY);

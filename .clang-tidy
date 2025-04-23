@@ -31,6 +31,7 @@ WarningsAsErrors: >
   modernize-use-constraints,
   cppcoreguidelines-pro-type-member-init,
   readability-redundant-string-cstr,
+  readability-redundant-casting,
   clang-diagnostic-reorder-ctor,
   clang-analyzer-deadcode.DeadStores,
   cppcoreguidelines-pro-type-static-cast-downcast,

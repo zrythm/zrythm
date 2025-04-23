@@ -189,6 +189,7 @@ Stretcher::stretch (
   float *       out_samples_r,
   size_t        out_samples_wanted)
 {
+  using rubberband_int_t = unsigned int;
   z_info ("{}: in samples size: {}", __func__, in_samples_size);
   z_return_val_if_fail (in_samples_l, -1);
 
@@ -206,17 +207,20 @@ Stretcher::stretch (
   if (pimpl_->is_realtime)
     {
       rubberband_set_max_process_size (
-        pimpl_->rubberband_state, in_samples_size);
+        pimpl_->rubberband_state,
+        static_cast<rubberband_int_t> (in_samples_size));
     }
   else
     {
       /* tell rubberband how many input samples it
        * will receive */
       rubberband_set_expected_input_duration (
-        pimpl_->rubberband_state, in_samples_size);
+        pimpl_->rubberband_state,
+        static_cast<rubberband_int_t> (in_samples_size));
 
       rubberband_study (
-        pimpl_->rubberband_state, in_samples.data (), in_samples_size, 1);
+        pimpl_->rubberband_state, in_samples.data (),
+        static_cast<rubberband_int_t> (in_samples_size), 1);
     }
   unsigned int samples_required =
     rubberband_get_samples_required (pimpl_->rubberband_state);
@@ -224,7 +228,8 @@ Stretcher::stretch (
     "samples required: {}, latency: {}", samples_required,
     rubberband_get_latency (pimpl_->rubberband_state));
   rubberband_process (
-    pimpl_->rubberband_state, in_samples.data (), in_samples_size, false);
+    pimpl_->rubberband_state, in_samples.data (),
+    static_cast<rubberband_int_t> (in_samples_size), false);
 
   /* get the output data */
   int avail = rubberband_available (pimpl_->rubberband_state);
@@ -239,7 +244,8 @@ Stretcher::stretch (
 
   z_debug ("samples wanted {} (avail {})", out_samples_wanted, avail);
   size_t retrieved_out_samples = rubberband_retrieve (
-    pimpl_->rubberband_state, out_samples.data (), out_samples_wanted);
+    pimpl_->rubberband_state, out_samples.data (),
+    static_cast<rubberband_int_t> (out_samples_wanted));
   z_warn_if_fail (retrieved_out_samples == out_samples_wanted);
 
   z_debug ("out samples size: {}", retrieved_out_samples);
@@ -262,30 +268,38 @@ Stretcher::get_latency () const
 zrythm::utils::audio::AudioBuffer
 Stretcher::stretch_interleaved (zrythm::utils::audio::AudioBuffer &in_samples)
 {
-  z_return_val_if_fail (in_samples.getNumSamples () % pimpl_->channels == 0, {});
-  z_return_val_if_fail (in_samples.getNumChannels () == 1, {});
-  auto in_samples_per_channel = in_samples.getNumSamples () / pimpl_->channels;
+  using rubberband_int_t = unsigned int;
+  assert (
+    in_samples.getNumSamples () % static_cast<int> (pimpl_->channels) == 0);
+  assert (in_samples.getNumChannels () == 1);
+  const auto in_samples_per_channel =
+    in_samples.getNumSamples () / static_cast<int> (pimpl_->channels);
   z_debug ("num input samples: {}", in_samples_per_channel);
 
   /* create the de-interleaved array */
   unsigned int       channels = pimpl_->channels;
-  std::vector<float> in_buffers_l (in_samples_per_channel, 0.f);
-  std::vector<float> in_buffers_r (in_samples_per_channel, 0.f);
-  for (size_t i = 0; i < in_samples_per_channel; i++)
+  std::vector<float> in_buffers_l (
+    static_cast<size_t> (in_samples_per_channel), 0.f);
+  std::vector<float> in_buffers_r (
+    static_cast<size_t> (in_samples_per_channel), 0.f);
+  for (const auto i : std::views::iota (0, in_samples_per_channel))
     {
-      in_buffers_l[i] = in_samples.getSample (0, i * channels);
+      in_buffers_l[static_cast<size_t> (i)] = in_samples.getSample (
+        0, static_cast<int> (i) * static_cast<int> (channels));
       if (channels == 2)
-        in_buffers_r[i] = in_samples.getSample (0, i * channels + 1);
+        in_buffers_r[static_cast<size_t> (i)] = in_samples.getSample (
+          0, static_cast<int> (i) * static_cast<int> (channels) + 1);
     }
   const float * in_buffers[2] = { in_buffers_l.data (), in_buffers_r.data () };
 
   /* tell rubberband how many input samples it will
    * receive */
   rubberband_set_expected_input_duration (
-    pimpl_->rubberband_state, in_samples_per_channel);
+    pimpl_->rubberband_state,
+    static_cast<rubberband_int_t> (in_samples_per_channel));
 
   /* study first */
-  size_t samples_to_read = in_samples_per_channel;
+  auto samples_to_read = static_cast<size_t> (in_samples_per_channel);
   while (samples_to_read > 0)
     {
       /* samples to read now */
@@ -304,19 +318,21 @@ Stretcher::stretch_interleaved (zrythm::utils::audio::AudioBuffer &in_samples)
 
   /* create the out sample arrays */
   // float * out_samples[channels];
-  size_t out_samples_size = (size_t) utils::math::round_to_signed_64 (
+  auto out_samples_size = static_cast<size_t> (utils::math::round_to_signed_64 (
     rubberband_get_time_ratio (pimpl_->rubberband_state)
-    * in_samples_per_channel);
-  zrythm::utils::audio::AudioBuffer out_samples (channels, out_samples_size);
+    * in_samples_per_channel));
+  zrythm::utils::audio::AudioBuffer out_samples (
+    static_cast<int> (channels), static_cast<int> (out_samples_size));
 
   /* process */
   size_t processed = 0;
   size_t total_out_frames = 0;
-  while (processed < in_samples_per_channel)
+  while (processed < static_cast<size_t> (in_samples_per_channel))
     {
       size_t in_chunk_size =
         rubberband_get_samples_required (pimpl_->rubberband_state);
-      size_t samples_left = in_samples_per_channel - processed;
+      const auto samples_left =
+        static_cast<size_t> (in_samples_per_channel) - processed;
 
       if (samples_left < in_chunk_size)
         {
@@ -330,7 +346,8 @@ Stretcher::stretch_interleaved (zrythm::utils::audio::AudioBuffer &in_samples)
 
       /* process */
       rubberband_process (
-        pimpl_->rubberband_state, tmp_in_arrays, in_chunk_size,
+        pimpl_->rubberband_state, tmp_in_arrays,
+        static_cast<rubberband_int_t> (in_chunk_size),
         samples_left == in_chunk_size);
 
       processed += in_chunk_size;
@@ -338,22 +355,25 @@ Stretcher::stretch_interleaved (zrythm::utils::audio::AudioBuffer &in_samples)
       /*z_debug ("processed {}, in samples {}",*/
       /*processed, in_samples_size);*/
 
-      size_t avail = (size_t) rubberband_available (pimpl_->rubberband_state);
+      const auto avail =
+        (size_t) rubberband_available (pimpl_->rubberband_state);
 
       /* retrieve the output data in temporary arrays */
       std::vector<float> tmp_out_l (avail);
       std::vector<float> tmp_out_r (avail);
       float * tmp_out_arrays[2] = { tmp_out_l.data (), tmp_out_r.data () };
-      size_t  out_chunk_size =
-        rubberband_retrieve (pimpl_->rubberband_state, tmp_out_arrays, avail);
+      size_t             out_chunk_size = rubberband_retrieve (
+        pimpl_->rubberband_state, tmp_out_arrays,
+        static_cast<rubberband_int_t> (avail));
 
       /* save the result */
-      for (size_t i = 0; i < channels; i++)
+      for (const auto i : std::views::iota (0zu, channels))
         {
-          for (size_t j = 0; j < out_chunk_size; j++)
+          for (const auto j : std::views::iota (0zu, out_chunk_size))
             {
               out_samples.setSample (
-                i, j + total_out_frames, tmp_out_arrays[i][j]);
+                static_cast<int> (i), static_cast<int> (j + total_out_frames),
+                tmp_out_arrays[i][j]);
             }
         }
 

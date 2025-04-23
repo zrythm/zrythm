@@ -115,11 +115,6 @@ else()
   set(OPEN_DIR_CMD ${XDG_OPEN_EXECUTABLE})
 endif()
 
-if(CMAKE_BUILD_TYPE MATCHES "Debug|RelWithDebInfo")
-  set(ZRYTHM_DEBUG_BUILD ON)
-else()
-  set(ZRYTHM_DEBUG_BUILD OFF)
-endif()
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(ZRYTHM_DEV_BUILD ON)
 endif()
@@ -234,7 +229,6 @@ set(docdir "${CMAKE_INSTALL_FULL_DATADIR}/doc/${prog_name_lowercase}")
 set(zrythm_libdir "${CMAKE_INSTALL_FULL_LIBDIR}/${prog_name_lowercase}")
 set(gschemas_dir "${CMAKE_INSTALL_FULL_DATADIR}/glib-2.0/schemas")
 set(fontsdir "${CMAKE_INSTALL_FULL_DATADIR}/fonts/${prog_name_lowercase}")
-set(IS_DEBUG_BUILD ${ZRYTHM_DEBUG_BUILD})
 set(CHECK_UPDATES ${ZRYTHM_CHECK_UPDATES})
 set(FLATPAK_BUILD ${ZRYTHM_IS_FLATPAK})
 set(FOR_FLATHUB ${ZRYTHM_FOR_FLATHUB})
@@ -328,7 +322,7 @@ endforeach()
 string(JOIN " " locales_str ${locales_list})
 message(STATUS "Locales: ${locales_str}")
 
-if(${compiler_gnulike})
+if(compiler_gnulike)
   set(full_optimization_args "-O3")
 endif()
 
@@ -345,7 +339,6 @@ add_library(zrythm_include_dirs INTERFACE)
 target_include_directories(zrythm_include_dirs
   INTERFACE
   "${CMAKE_SOURCE_DIR}/src"
-  "${CMAKE_SOURCE_DIR}/ext"
   "${CMAKE_BINARY_DIR}/src"
 )
 
@@ -373,9 +366,7 @@ endif()
 # compile args
 set(zrythm_compile_args)
 if(compiler_gnulike)
-  list(APPEND zrythm_compile_args -Wall -Wextra
-  #  -Weffc++
-  )
+  list(APPEND zrythm_compile_args -Wall -Wextra -Weffc++)
   if(compiler_is_clang)
     # list(APPEND zrythm_compile_args -Weverything)
   endif()
@@ -384,7 +375,7 @@ elseif(MSVC)
 endif()
 
 # disable some warnings added by -Wextra
-if(${compiler_gnulike})
+if(compiler_gnulike)
   list(APPEND zrythm_compile_args
     -Wformat=2
     -Wno-missing-field-initializers
@@ -397,13 +388,13 @@ if(ZRYTHM_RECORD_SWITCHES AND compiler_is_gcc AND NOT WIN32)
 endif()
 
 if(ZRYTHM_NATIVE_OPTIMIZATIONS)
-  if(${compiler_gnulike})
+  if(compiler_gnulike)
     list(APPEND zrythm_compile_args -march=native -mtune=native)
   endif()
 endif()
 
 if(ZRYTHM_PROFILING)
-  if(${compiler_gnulike})
+  if(compiler_gnulike)
     list(APPEND zrythm_compile_args -pg no-pie)
   endif()
   if(${ZRYTHM_EXTRA_OPTIMIZATIONS})
@@ -412,7 +403,7 @@ if(ZRYTHM_PROFILING)
 endif()
 
 if(ZRYTHM_EXTRA_OPTIMIZATIONS)
-  if(${compiler_gnulike})
+  if(compiler_gnulike)
     list(APPEND zrythm_compile_args
       -ffast-math -DPIC -freciprocal-math
       -fsingle-precision-constant
@@ -422,16 +413,14 @@ if(ZRYTHM_EXTRA_OPTIMIZATIONS)
       list(APPEND zrythm_compile_args -fprefetch-loop-arrays)
     endif()
 
-    if(IS_DEBUG_BUILD)
-      # -O1 turns this on, but it may break backtraces so explicitly turn it
-      # off on builds supposed to be debuggable
-      list(APPEND zrythm_compile_args -fno-omit-frame-pointer)
-    endif()
+    # -O1 turns this on, but it may break backtraces so explicitly turn it
+    # off on builds supposed to be debuggable
+    list(APPEND zrythm_compile_args -fno-omit-frame-pointer)
   endif()
 endif()
 
 if(ZRYTHM_EXTRA_EXTRA_OPTIMIZATIONS)
-  if(${compiler_gnulike})
+  if(compiler_gnulike)
     # TODO check
     # -Ofast -fgraphite-identity -floop-nest-optimize -fdevirtualize-at-ltrans -fipa-pta -fno-semantic-interposition -flto=4 -fuse-linker-plugin -pipe -falign-functions=32 -floop-nest-optimize -floop-parallelize-all -ftree-parallelize-loops=4
 
@@ -488,8 +477,9 @@ if(ZRYTHM_STRICT)
     list(APPEND zrythm_compile_args
       -Werror=alloca
       #-Werror=cast-qual
-      # FIXME enable and fix all reported errors
-      #-Werror=conversion
+
+      # TODO: re-enable and fix errors
+      # -Werror=conversion
 
       -Werror=disabled-optimization
       -Werror=pointer-arith
@@ -555,12 +545,17 @@ if(ZRYTHM_STRICT)
       # -Werror=mismatched-tags # note: broken in gcc 14.2.1
       -Werror=narrowing
       -Werror=overloaded-virtual
+
+      # disabled because it wants all class members initialized in the
+      # constructor initializer list
       # -Werror=effc++
+
       -Werror=reorder
       -Werror=sequence-point
       -Werror=invalid-constexpr
       -Werror=pessimizing-move
       -pedantic-errors
+      -Werror=pedantic
     )
     endif()
   if(compiler_is_gcc)
@@ -949,6 +944,21 @@ target_compile_definitions(Qt6::Core INTERFACE
   "QT_NO_KEYWORDS"
 )
 
+add_library(qt_libs INTERFACE)
+target_link_libraries(qt_libs
+  INTERFACE
+  Qt6::Core
+  Qt6::Gui
+  Qt6::Widgets
+  Qt6::Quick
+  Qt6::QuickControls2
+  # for qmltc
+  Qt6::QmlPrivate
+  Qt6::QuickPrivate
+  Qt6::Concurrent
+)
+add_library(zrythm::qt_libs ALIAS qt_libs)
+
 list(APPEND zrythm_link_libs
   zita-resampler::zita-resampler
   SndFile::sndfile
@@ -964,31 +974,20 @@ list(APPEND zrythm_link_libs
   xxHash::xxhash
   yyjson::yyjson
   magic_enum::magic_enum
-  zrythm::juce_lib
+  zrythm::juce_libs
   backward_cpp::backward_cpp
+  crill::crill
   fmt::fmt
   spdlog::spdlog
   type_safe
   Boost::boost
-  Qt6::Core
-  Qt6::Gui
-  Qt6::Widgets
-  Qt6::Quick
-  Qt6::QuickControls2
-  # for qmltc
-  Qt6::QmlPrivate
-  Qt6::QuickPrivate
-  Qt6::Concurrent
+  zrythm::qt_libs
   GTest::GTest
 )
 
 if(ZRYTHM_WITH_JACK)
   include(FindJACK)
   list(APPEND zrythm_link_libs zrythm::jack)
-endif()
-
-if(ZRYTHM_WITH_JUCE_CLAP_HOSTING)
-  list(APPEND zrythm_link_libs zrythm::juce_clap_hosting_lib)
 endif()
 
 if(ZRYTHM_YAML_PROJECT_COMPATIBILITY)
@@ -1006,7 +1005,14 @@ elseif(APPLE)
   find_library(FOUNDATION_LIBRARY Foundation REQUIRED)
   find_library(COCOA_LIBRARY Cocoa REQUIRED)
   find_library(APPKIT_LIBRARY AppKit REQUIRED)
-  list(APPEND zrythm_link_libs ${FOUNDATION_LIBRARY} ${COCOA_LIBRARY} ${APPKIT_LIBRARY})
+  add_library(zrythm_apple_libs INTERFACE)
+  target_link_libraries(zrythm_apple_libs
+    INTERFACE
+      ${FOUNDATION_LIBRARY}
+      ${COCOA_LIBRARY}
+      ${APPKIT_LIBRARY}
+  )
+  list(APPEND zrythm_link_libs zrythm_apple_libs)
 endif()
 
 if(ZRYTHM_WITH_X11)

@@ -55,8 +55,9 @@ public:
 
     soxr_error_t serror;
     priv_ = soxr_create (
-      input_rate, output_rate, in_frames_.getNumChannels (), &serror, &io_spec,
-      &quality_spec, nullptr);
+      input_rate, output_rate,
+      static_cast<unsigned int> (in_frames_.getNumChannels ()), &serror,
+      &io_spec, &quality_spec, nullptr);
 
     if (serror)
       {
@@ -85,20 +86,26 @@ public:
     z_return_val_if_fail_cmp (
       self->in_frames_.getNumSamples (), >=, (int) self->frames_read_, 0);
     size_t len_to_provide = std::min (
-      self->in_frames_.getNumSamples () - self->frames_read_, requested_len);
+      static_cast<size_t> (self->in_frames_.getNumSamples ())
+        - self->frames_read_,
+      requested_len);
 
     if (len_to_provide == 0)
       {
         return 0;
       }
 
-    self->interleaved_in_.resize (len_to_provide * num_channels);
+    self->interleaved_in_.resize (
+      len_to_provide * static_cast<size_t> (num_channels));
     for (size_t i = 0; i < len_to_provide; ++i)
       {
-        for (int channel = 0; channel < num_channels; ++channel)
+        for (const auto channel : std::views::iota (0, num_channels))
           {
-            self->interleaved_in_[i * num_channels + channel] =
-              self->in_frames_.getSample (channel, self->frames_read_ + i);
+            self->interleaved_in_
+              [i * static_cast<size_t> (num_channels)
+               + static_cast<size_t> (channel)] =
+              self->in_frames_.getSample (
+                channel, static_cast<int> (self->frames_read_ + i));
           }
       }
     *data = self->interleaved_in_.data ();
@@ -165,12 +172,13 @@ Resampler::Impl::process ()
 
   // prepare interlaved buffer
   const int num_channels = in_frames_.getNumChannels ();
-  interleaved_out_.resize (frames_to_write_this_time * num_channels);
+  interleaved_out_.resize (
+    frames_to_write_this_time * static_cast<size_t> (num_channels));
 
-  size_t frames_written_now = soxr_output (
-    (soxr_t) priv_, interleaved_out_.data (), frames_to_write_this_time);
+  size_t frames_written_now =
+    soxr_output (priv_, interleaved_out_.data (), frames_to_write_this_time);
 
-  soxr_error_t serror = soxr_error ((soxr_t) priv_);
+  soxr_error_t serror = soxr_error (priv_);
   if (serror)
     {
       throw ZrythmException (fmt::format ("soxr_process() error: {}", serror));
@@ -178,25 +186,28 @@ Resampler::Impl::process ()
 
   // De-interleave the output data into out_frames_
   out_frames_.setSize (
-    num_channels, frames_written_ + frames_written_now, true, false, true);
+    num_channels, static_cast<int> (frames_written_ + frames_written_now), true,
+    false, true);
   for (size_t i = 0; i < frames_written_now; ++i)
     {
-      for (int channel = 0; channel < num_channels; ++channel)
+      for (const auto channel : std::views::iota (0, num_channels))
         {
           out_frames_.setSample (
-            channel, frames_written_ + i,
-            interleaved_out_[i * num_channels + channel]);
+            channel, static_cast<int> (frames_written_ + i),
+            interleaved_out_
+              [i * static_cast<size_t> (num_channels)
+               + static_cast<size_t> (channel)]);
         }
     }
 
   if (utils::math::floats_equal (input_rate_, output_rate_))
     {
-      for (int i = 0; i < num_channels; ++i)
+      for (const auto i : std::views::iota (0, num_channels))
         {
           zrythm::utils::audio::frames_equal (
-            in_frames_.getReadPointer (i, frames_written_),
-            out_frames_.getReadPointer (i, frames_written_), frames_written_now,
-            0.00000001f);
+            in_frames_.getReadPointer (i, static_cast<int> (frames_written_)),
+            out_frames_.getReadPointer (i, static_cast<int> (frames_written_)),
+            frames_written_now, 0.00000001f);
         }
     }
 

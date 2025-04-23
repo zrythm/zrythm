@@ -108,8 +108,6 @@
 
 #define ISSUE_TRACKER_URL "@issue_tracker_url@"
 
-#cmakedefine01 IS_DEBUG_BUILD
-
 #define LIB_SUFFIX "@CMAKE_SHARED_LIBRARY_SUFFIX@"
 
 #define LICENSE_URL "@license_url@"

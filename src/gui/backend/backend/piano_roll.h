@@ -142,7 +142,7 @@ public:
    */
   Q_INVOKABLE static constexpr bool isBlackKey (int note)
   {
-    return BLACK_NOTES.at (note % 12);
+    return BLACK_NOTES.at (static_cast<size_t> (note) % 12);
   }
   Q_INVOKABLE static constexpr bool isWhiteKey (int note)
   {
@@ -219,7 +219,7 @@ public:
   {
     vec.clear ();
 
-    for (int i = 0; i < 128; i++)
+    for (const auto i : std::views::iota (0zu, 128zu))
       {
         MidiNoteDescriptor * descr;
         if (drum_mode)

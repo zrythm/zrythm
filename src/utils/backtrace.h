@@ -27,7 +27,8 @@ public:
    *
    * @param write_to_file Whether to write the backtrace to a file.
    */
-  std::string get_backtrace (std::string prefix, int depth, bool write_to_file);
+  std::string
+  get_backtrace (std::string prefix, size_t depth, bool write_to_file);
 };
 
 }; // namespace zrythm::utils

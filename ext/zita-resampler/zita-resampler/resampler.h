@@ -46,13 +46,13 @@ public:
     unsigned int hlen,
     double       frel);
 
-  void   clear (void);
-  int    reset (void);
-  int    nchan (void) const { return _nchan; }
-  int    filtlen (void) const { return inpsize (); } // Deprecated
-  int    inpsize (void) const;
-  double inpdist (void) const;
-  int    process (void);
+  void   clear ();
+  int    reset ();
+  int    nchan () const { return static_cast<int> (_nchan); }
+  int    filtlen () const { return inpsize (); } // Deprecated
+  int    inpsize () const;
+  double inpdist () const;
+  int    process ();
 
   unsigned int inp_count;
   unsigned int out_count;

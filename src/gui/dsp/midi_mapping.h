@@ -105,13 +105,17 @@ public:
     Port                      &dest_port,
     bool                       fire_events)
   {
-    bind_at (buf, dev_port, dest_port, mappings_.size (), fire_events);
+    bind_at (
+      buf, dev_port, dest_port, static_cast<int> (mappings_.size ()),
+      fire_events);
   }
 
   void
   bind_track (std::array<midi_byte_t, 3> buf, Port &dest_port, bool fire_events)
   {
-    bind_at (buf, nullptr, dest_port, mappings_.size (), fire_events);
+    bind_at (
+      buf, nullptr, dest_port, static_cast<int> (mappings_.size ()),
+      fire_events);
   }
 
   int get_mapping_index (const MidiMapping &mapping) const;

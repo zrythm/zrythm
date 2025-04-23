@@ -33,9 +33,12 @@ invert_chord (auto &notes, int inversion)
     }
   else if (inversion < 0)
     {
-      for (int i = 0; i < -inversion; i++)
+      for (const auto _ : std::views::iota (0, -inversion))
         {
-          for (int j = ChordDescriptor::MAX_NOTES - 1; j >= 12; j--)
+          for (
+            const auto j :
+            std::views::iota (12zu, ChordDescriptor::MAX_NOTES)
+              | std::views::reverse)
             {
               if (notes[j])
                 {
@@ -59,8 +62,8 @@ ChordDescriptor::update_notes ()
   if (type_ == ChordType::None)
     return;
 
-  int root = ENUM_VALUE_TO_INT (root_note_);
-  int bass = ENUM_VALUE_TO_INT (bass_note_);
+  const auto root = static_cast<size_t> (ENUM_VALUE_TO_INT (root_note_));
+  const auto bass = static_cast<size_t> (ENUM_VALUE_TO_INT (bass_note_));
 
   /* add bass note */
   if (has_bass_)
@@ -106,7 +109,8 @@ ChordDescriptor::update_notes ()
   unsigned int min_seventh_sems = type_ == ChordType::Diminished ? 9 : 10;
 
   /* add accents */
-  unsigned int root_note_int = ENUM_VALUE_TO_INT (root_note_);
+  const auto root_note_int =
+    static_cast<size_t> (ENUM_VALUE_TO_INT (root_note_));
   switch (accent_)
     {
     case ChordAccent::None:
@@ -185,13 +189,14 @@ ChordDescriptor::note_to_string (MusicalNote note)
 std::string_view
 ChordDescriptor::chord_type_to_string (ChordType type)
 {
-  return chord_type_strings.at (ENUM_VALUE_TO_INT (type));
+  return chord_type_strings.at (static_cast<size_t> (ENUM_VALUE_TO_INT (type)));
 }
 
 std::string_view
 ChordDescriptor::chord_accent_to_string (ChordAccent accent)
 {
-  return chord_accent_strings.at (ENUM_VALUE_TO_INT (accent));
+  return chord_accent_strings.at (
+    static_cast<size_t> (ENUM_VALUE_TO_INT (accent)));
 }
 
 bool

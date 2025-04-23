@@ -135,9 +135,13 @@ public:
   /**
    * Gets the control value for an integer port.
    */
-  static constexpr int get_int_from_val (float val)
+  static int get_int_from_val (float val)
   {
-    return utils::math::round_to_signed_32 (val);
+    const auto s32 = utils::math::round_to_signed_32 (val);
+    assert (
+      s32 >= std::numeric_limits<int>::min ()
+      && s32 <= std::numeric_limits<int>::max ());
+    return static_cast<int> (s32);
   }
 
   /**
@@ -247,12 +251,11 @@ public:
    *
    * @param normalize Whether to get the value normalized or not.
    */
-  [[gnu::hot]] float get_control_value (const bool normalize) const;
+  [[gnu::hot]] float get_control_value (bool normalize) const;
 
   void allocate_bufs () override { }
 
-  void
-  process (const EngineProcessTimeInfo time_nfo, const bool noroll) override;
+  void process (EngineProcessTimeInfo time_nfo, bool noroll) override;
 
   void clear_buffer (AudioEngine &engine) override { }
 

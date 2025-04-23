@@ -1,7 +1,8 @@
-# SPDX-FileCopyrightText: © 2019-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2020, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_subdirectory(backward-cpp)
+add_subdirectory(crill)
 add_subdirectory(dirent)
 
 set(JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED ON)
@@ -82,11 +83,10 @@ if(ZRYTHM_WITH_JUCE_LV2_HOSTING)
   target_compile_definitions(juce_lib PUBLIC JUCE_PLUGINHOST_LV2=1)
 endif()
 
-if(IS_DEBUG_BUILD)
-  target_compile_definitions(juce_lib PUBLIC JUCE_DEBUG=1 _DEBUG=1 DEBUG=1)
-else()
-  target_compile_definitions(juce_lib PUBLIC JUCE_DEBUG=0 _NDEBUG=1 NDEBUG=1)
-endif()
+target_compile_definitions(juce_lib
+  PUBLIC
+    $<IF:$<CONFIG:Debug>,JUCE_DEBUG=1;_DEBUG=1;DEBUG=1,JUCE_DEBUG=0;_NDEBUG=1;NDEBUG=1>
+)
 if(OS_GNU)
   find_package(CURL REQUIRED)
   target_link_libraries(juce_lib PRIVATE CURL::libcurl)
@@ -101,10 +101,13 @@ if(ZRYTHM_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR)
   endforeach()
 endif()
 
-add_library(zrythm::juce_lib ALIAS juce_lib)
+add_library(_juce_libs INTERFACE)
+target_link_libraries(_juce_libs INTERFACE juce_lib)
 if(ZRYTHM_WITH_JUCE_CLAP_HOSTING)
-  add_library(zrythm::juce_clap_hosting_lib ALIAS juce_clap_hosting_lib)
+  target_link_libraries(_juce_libs INTERFACE juce_clap_hosting_lib)
 endif()
+
+add_library(zrythm::juce_libs ALIAS _juce_libs)
 
 add_subdirectory(kissfft)
 add_subdirectory(midilib)

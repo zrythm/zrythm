@@ -19,8 +19,8 @@
 #include "dsp/chord_descriptor.h"
 #include "utils/types.h"
 
-#include "crill/spin_mutex.h"
-#include "midilib/src/midifile.h"
+#include <crill/spin_mutex.h>
+#include <midilib/src/midifile.h>
 
 using namespace zrythm;
 

@@ -63,10 +63,10 @@ linear_fade_out_to (
 {
   // TODO check juce::AudioSampleBuffer::applyGainRamp ()
 
-  for (size_t i = 0; i < size; i++)
+  for (const auto i : std::views::iota (0zu, size))
     {
       float k =
-        (float) (total_frames_to_fade - (i + (size_t) start_offset) - 1)
+        (float) ((size_t) total_frames_to_fade - (i + (size_t) start_offset) - 1)
         / (float) (total_frames_to_fade - 1);
       k = fade_to_multiplier + (1.f - fade_to_multiplier) * k;
       dest[i] *= k;

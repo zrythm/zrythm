@@ -33,7 +33,7 @@ TrackLaneList::data (const QModelIndex &index, int role) const
   if (!index.isValid () || index.row () >= static_cast<int> (lanes_.size ()))
     return {};
 
-  auto lane_var = lanes_.at (index.row ());
+  auto lane_var = lanes_.at (static_cast<size_t> (index.row ()));
 
   switch (role)
     {
@@ -47,6 +47,31 @@ TrackLaneList::data (const QModelIndex &index, int role) const
     }
 
   return {};
+}
+
+void
+TrackLaneList::erase (const size_t pos)
+{
+  if (pos < lanes_.size ())
+    {
+      beginRemoveRows (
+        QModelIndex (), static_cast<int> (pos), static_cast<int> (pos));
+      auto &lane = lanes_.at (pos);
+      std::visit (
+        [&] (auto &&l) {
+          l->setParent (nullptr);
+          lanes_.erase (
+            lanes_.begin ()
+            + static_cast<decltype (lanes_)::difference_type> (pos));
+          l->deleteLater ();
+        },
+        lane);
+      endRemoveRows ();
+    }
+  else
+    {
+      z_error ("position {} out of range ({})", pos, lanes_.size ());
+    }
 }
 
 void

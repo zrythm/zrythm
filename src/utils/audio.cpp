@@ -80,6 +80,7 @@ audio_files_equal (
   size_t       num_frames,
   float        epsilon)
 {
+  using num_frames_t = decltype (num_frames);
   try
     {
       AudioFile c1{ f1 };
@@ -98,7 +99,7 @@ audio_files_equal (
         {
           if (buf1.getNumSamples () == buf2.getNumSamples ())
             {
-              num_frames = buf1.getNumSamples ();
+              num_frames = static_cast<num_frames_t> (buf1.getNumSamples ());
             }
           else
             {
@@ -151,8 +152,8 @@ audio_file_is_silent (const fs::path &filepath)
   SNDFILE * sndfile = sf_open (filepath.string ().c_str (), SFM_READ, &sfinfo);
   z_return_val_if_fail (sndfile && sfinfo.frames > 0, true);
 
-  long               buf_size = sfinfo.frames * sfinfo.channels;
-  std::vector<float> data (buf_size);
+  const auto         buf_size = sfinfo.frames * sfinfo.channels;
+  std::vector<float> data (static_cast<size_t> (buf_size));
   sf_count_t frames_read = sf_readf_float (sndfile, data.data (), sfinfo.frames);
   EXPECT_EQ (frames_read, sfinfo.frames);
   z_return_val_if_fail (frames_read == sfinfo.frames, true);
@@ -248,7 +249,7 @@ get_num_cores ()
   if (num_cores > 0)
     return num_cores;
 
-  num_cores = std::thread::hardware_concurrency ();
+  num_cores = static_cast<int> (std::thread::hardware_concurrency ());
 
   z_info ("Number of CPU cores found: {}", num_cores);
 
@@ -265,7 +266,7 @@ AudioBuffer::
     }
   std::unique_ptr<AudioBuffer> buf =
     std::make_unique<AudioBuffer> (1, num_frames * num_channels);
-  buf->copyFrom (0, 0, src, num_frames * num_channels);
+  buf->copyFrom (0, 0, src, static_cast<int> (num_frames * num_channels));
   buf->deinterleave_samples (num_channels);
   return buf;
 }
@@ -294,18 +295,21 @@ AudioBuffer::interleave_samples ()
 void
 AudioBuffer::deinterleave_samples (size_t num_channels)
 {
-  const size_t total_samples = getNumSamples () / num_channels;
+  const auto total_samples = getNumSamples () / (int) num_channels;
 
   // Create a temporary buffer to hold the deinterleaved data
-  zrythm::utils::audio::AudioBuffer tempBuffer (num_channels, total_samples);
+  zrythm::utils::audio::AudioBuffer tempBuffer (
+    (int) num_channels, total_samples);
 
   // Deinterleave the channels
-  size_t read_index = 0;
-  for (size_t sample = 0; sample < total_samples; ++sample)
+  int read_index = 0;
+  for (const auto sample : std::views::iota (0, total_samples))
     {
-      for (size_t channel = 0; channel < num_channels; ++channel)
+      for (const auto channel : std::views::iota (0zu, num_channels))
         {
-          tempBuffer.setSample (channel, sample, getSample (0, read_index++));
+          tempBuffer.setSample (
+            static_cast<int> (channel), static_cast<int> (sample),
+            getSample (0, read_index++));
         }
     }
 
@@ -316,19 +320,21 @@ AudioBuffer::deinterleave_samples (size_t num_channels)
 void
 AudioBuffer::invert_phase ()
 {
-  for (int i = 0; i < getNumChannels (); ++i)
+  for (const auto i : std::views::iota (0, getNumChannels ()))
     {
-      utils::float_ranges::mul_k2 (getWritePointer (i), -1.f, getNumSamples ());
+      utils::float_ranges::mul_k2 (
+        getWritePointer (i), -1.f, static_cast<size_t> (getNumSamples ()));
     }
 }
 
 void
 AudioBuffer::normalize_peak ()
 {
-  for (int i = 0; i < getNumChannels (); ++i)
+  for (const auto i : std::views::iota (0, getNumChannels ()))
     {
-      auto write_ptr = getWritePointer (i);
-      utils::float_ranges::normalize (write_ptr, write_ptr, getNumSamples ());
+      auto * write_ptr = getWritePointer (i);
+      utils::float_ranges::normalize (
+        write_ptr, write_ptr, static_cast<size_t> (getNumSamples ()));
     }
 }
 

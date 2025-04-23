@@ -77,7 +77,8 @@ GraphScheduler::rechain_from_node_collection (dsp::GraphNodeCollection &&nodes)
         }
     }
 
-  terminal_refcnt_.store (graph_nodes_.terminal_nodes_.size ());
+  terminal_refcnt_.store (
+    static_cast<int> (graph_nodes_.terminal_nodes_.size ()));
 
   trigger_queue_.reserve (graph_nodes_.graph_nodes_.size ());
 

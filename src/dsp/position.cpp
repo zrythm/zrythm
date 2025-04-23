@@ -385,8 +385,8 @@ Position::get_sixteenths (
 
   auto total_beats = (double) get_total_beats (
     true, beats_per_bar,
-    utils::math::round_to_signed_64 (
-      TICKS_PER_SIXTEENTH_NOTE_DBL * (double) sixteenths_per_beat),
+    static_cast<int> (utils::math::round_to_signed_64 (
+      TICKS_PER_SIXTEENTH_NOTE_DBL * (double) sixteenths_per_beat)),
     frames_per_tick);
   /*z_info ("total beats {:f}", total_beats);*/
   double total_sixteenths = ticks_ / TICKS_PER_SIXTEENTH_NOTE_DBL;

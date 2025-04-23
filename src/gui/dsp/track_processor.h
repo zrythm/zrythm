@@ -209,22 +209,28 @@ public:
   ControlPort &get_midi_cc_port (int channel_index, int cc_index) const
   {
     return *std::get<ControlPort *> (
-      (*midi_cc_ids_).at ((channel_index * 128) + cc_index).get_object ());
+      (*midi_cc_ids_)
+        .at (static_cast<size_t> ((channel_index * 128) + cc_index))
+        .get_object ());
   }
   ControlPort &get_pitch_bend_port (int channel_index) const
   {
     return *std::get<ControlPort *> (
-      (*pitch_bend_ids_).at (channel_index).get_object ());
+      (*pitch_bend_ids_).at (static_cast<size_t> (channel_index)).get_object ());
   }
   ControlPort &get_poly_key_pressure_port (int channel_index) const
   {
     return *std::get<ControlPort *> (
-      (*poly_key_pressure_ids_).at (channel_index).get_object ());
+      (*poly_key_pressure_ids_)
+        .at (static_cast<size_t> (channel_index))
+        .get_object ());
   }
   ControlPort &get_channel_pressure_port (int channel_index) const
   {
     return *std::get<ControlPort *> (
-      (*channel_pressure_ids_).at (channel_index).get_object ());
+      (*channel_pressure_ids_)
+        .at (static_cast<size_t> (channel_index))
+        .get_object ());
   }
 
   DECLARE_DEFINE_FIELDS_METHOD ();
