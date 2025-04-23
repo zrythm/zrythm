@@ -366,7 +366,7 @@ endif()
 # compile args
 set(zrythm_compile_args)
 if(compiler_gnulike)
-  list(APPEND zrythm_compile_args -Wall -Wextra -Weffc++)
+  list(APPEND zrythm_compile_args -Wall -Wextra) # -Weffc++)
   if(compiler_is_clang)
     # list(APPEND zrythm_compile_args -Weverything)
   endif()

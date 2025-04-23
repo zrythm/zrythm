@@ -362,7 +362,7 @@ Stretcher::stretch_interleaved (zrythm::utils::audio::AudioBuffer &in_samples)
       std::vector<float> tmp_out_l (avail);
       std::vector<float> tmp_out_r (avail);
       float * tmp_out_arrays[2] = { tmp_out_l.data (), tmp_out_r.data () };
-      size_t             out_chunk_size = rubberband_retrieve (
+      size_t  out_chunk_size = rubberband_retrieve (
         pimpl_->rubberband_state, tmp_out_arrays,
         static_cast<rubberband_int_t> (avail));
 
