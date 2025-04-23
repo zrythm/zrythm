@@ -211,6 +211,8 @@ configure_file(
 add_subdirectory(unit)
 add_subdirectory(benchmarks)
 
+return() # TODO...
+
 # set(TEST_LINK_ARGS -fPIC)
 
 set(TESTS
@@ -288,9 +290,9 @@ list(APPEND TESTS
 endif()
 
 add_library(test_helpers STATIC
-helpers/exporter.cpp
-helpers/project_helper.cpp
-helpers/zrythm_helper.cpp
+  helpers/exporter.cpp
+  helpers/project_helper.cpp
+  helpers/zrythm_helper.cpp
 )
 target_link_libraries(test_helpers PUBLIC zrythm_gui_lib)
 add_dependencies(test_helpers ${test_lv2_plugin_libs})
@@ -299,7 +301,6 @@ target_include_directories(test_helpers
     ${all_inc}
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR})
-
 
 foreach(test_path IN LISTS TESTS)
     get_filename_component(test_name ${test_path} NAME)

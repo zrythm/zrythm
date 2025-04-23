@@ -9,13 +9,13 @@
 #include "gui/backend/backend/zrythm.h"
 #include "utils/gtest_wrapper.h"
 
-#include "tests/helpers/exporter.h"
+#include "helpers/exporter.h"
 
 std::string
 test_exporter_export_audio (Exporter::TimeRange time_range, Exporter::Mode mode)
 {
   EXPECT_FALSE (TRANSPORT->isRolling ());
-  EXPECT_EQ (TRANSPORT->playhead_pos_.frames_, 0);
+  EXPECT_EQ (TRANSPORT->playhead_pos_->frames_, 0);
 
   constexpr auto filename = "test_export.wav";
 
@@ -24,18 +24,18 @@ test_exporter_export_audio (Exporter::TimeRange time_range, Exporter::Mode mode)
   settings.artist_ = "Test Artist";
   settings.title_ = "Test Title";
   settings.genre_ = "Test Genre";
-  settings.depth_ = BitDepth::BIT_DEPTH_16;
+  settings.depth_ = Exporter::BitDepth::BIT_DEPTH_16;
   settings.time_range_ = time_range;
   if (mode == Exporter::Mode::Full)
     {
       settings.mode_ = Exporter::Mode::Full;
-      TRACKLIST->mark_all_tracks_for_bounce (false);
+      TRACKLIST->get_track_span ().mark_all_tracks_for_bounce (false);
       settings.bounce_with_parents_ = false;
     }
   else
     {
       settings.mode_ = Exporter::Mode::Tracks;
-      TRACKLIST->mark_all_tracks_for_bounce (true);
+      TRACKLIST->get_track_span ().mark_all_tracks_for_bounce (true);
       settings.bounce_with_parents_ = true;
     }
   auto exports_dir = PROJECT->get_path (ProjectPath::EXPORTS, false);
