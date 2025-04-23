@@ -183,7 +183,8 @@ TrackProcessor::init_common ()
                * [1] = controller
                * [2] (unused) = control */
               std::array<midi_byte_t, 3> buf{};
-              buf[0] = (midi_byte_t) (MIDI_CH1_CTRL_CHANGE | (midi_byte_t) i);
+              buf[0] =
+                (midi_byte_t) (utils::midi::MIDI_CH1_CTRL_CHANGE | (midi_byte_t) i);
               buf[1] = (midi_byte_t) j;
               buf[2] = 0;
 
@@ -258,8 +259,8 @@ TrackProcessor::init_midi_cc_ports ()
       for (const auto j : std::views::iota (0, 128))
         {
           (*midi_cc_ids_)[(i * 128) + j] =
-            port_registry_.create_object<ControlPort> (
-              fmt::format ("Ch{} {}", channel, midi_get_controller_name (j)));
+            port_registry_.create_object<ControlPort> (fmt::format (
+              "Ch{} {}", channel, utils::midi::midi_get_controller_name (j)));
           auto * cc = std::get<ControlPort *> (
             (*midi_cc_ids_)[(i * 128) + j].get_object ());
           cc->set_owner (*this);

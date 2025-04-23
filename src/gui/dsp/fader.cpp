@@ -1078,7 +1078,7 @@ Fader::process_block (const EngineProcessTimeInfo time_nfo)
                         &stereo_out.second
                            .buf_[time_nfo.local_offset_ + faded_out_frames],
                         mute_amp, remaining_frames);
-                      faded_out_frames += (size_t) remaining_frames;
+                      faded_out_frames += remaining_frames;
                     }
                 }
             }
@@ -1185,10 +1185,10 @@ Fader::process_block (const EngineProcessTimeInfo time_nfo)
                 {
                   if (
                     midi_mode_ == MidiFaderMode::MIDI_FADER_MODE_VEL_MULTIPLIER
-                    && midi_is_note_on (ev.raw_buffer_.data ()))
+                    && utils::midi::midi_is_note_on (ev.raw_buffer_))
                     {
                       const midi_byte_t prev_vel =
-                        midi_get_velocity (ev.raw_buffer_.data ());
+                        utils::midi::midi_get_velocity (ev.raw_buffer_);
                       const auto new_vel =
                         (midi_byte_t) ((float) prev_vel * amp_val);
                       ev.set_velocity (

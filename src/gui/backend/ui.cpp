@@ -864,28 +864,20 @@ ui_get_detail_level (void)
   return UiDetail::High;
 }
 
-/**
- * Returns an appropriate string representation of the given
- * dB value.
- */
-void
-ui_get_db_value_as_string (float val, char * buf)
+std::string
+ui_get_db_value_as_string (float val)
 {
   if (val < -98.f)
     {
-      strcpy (buf, "-∞");
+      return { "-∞" };
     }
-  else
+
+  if (val < -10.)
     {
-      if (val < -10.)
-        {
-          sprintf (buf, "%.0f", val);
-        }
-      else
-        {
-          sprintf (buf, "%.1f", val);
-        }
+      return fmt::format ("{:.0f}", val);
     }
+
+  return fmt::format ("{:.1f}", val);
 }
 
 UiCaches::UiCaches ()

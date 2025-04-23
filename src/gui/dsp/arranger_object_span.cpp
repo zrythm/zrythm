@@ -15,7 +15,7 @@ ArrangerObjectSpanImpl<Range>::merge (dsp::FramesPerTick frames_per_tick) const
 {
   bool is_timeline = std::ranges::all_of (
     *this, Base::template derived_from_type_projection<Region>);
-  bool is_midi =
+  [[maybe_unused]] bool is_midi =
     std::ranges::all_of (*this, Base::template type_projection<MidiNote>);
   assert (is_timeline || is_midi);
   if (is_timeline)

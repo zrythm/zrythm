@@ -42,6 +42,9 @@
  * @{
  */
 
+namespace zrythm::utils::midi
+{
+
 /* see http://www.onicos.com/staff/iz/formats/midi-event.html */
 static constexpr uint8_t MIDI_CH1_NOTE_ON = 0x90;
 static constexpr uint8_t MIDI_CH1_NOTE_OFF = 0x80;
@@ -72,8 +75,8 @@ midi_max_sysex_size ()
  * Return the name of the given cc (0-127).
  */
 [[gnu::const]]
-const char *
-midi_get_controller_name (const midi_byte_t cc);
+std::string_view
+midi_get_controller_name (midi_byte_t cc);
 
 /**
  * Used for MIDI controls whose values are split
@@ -83,19 +86,24 @@ midi_get_controller_name (const midi_byte_t cc);
  * @param msb Second byte (pos 2).
  */
 void
-midi_get_bytes_from_combined (
-  const uint32_t val,
-  midi_byte_t *  lsb,
-  midi_byte_t *  msb);
+midi_get_bytes_from_combined (uint32_t val, midi_byte_t * lsb, midi_byte_t * msb);
 
 /**
- * Saves a string representation of the given
- * control change event in the given buffer.
- *
- * @return The MIDI channel
+ * Returns a string representation of the given control change event, if control
+ * change.
  */
-int
-midi_ctrl_change_get_ch_and_description (midi_byte_t * ctrl_change, char * buf);
+std::optional<std::string>
+midi_ctrl_change_get_description (std::span<const midi_byte_t> ctrl_change);
+
+/**
+ * @brief Returns the MIDI channel of the given control change event, if control
+ * change.
+ *
+ * @param ctrl_change
+ * @return int
+ */
+std::optional<int>
+midi_ctrl_change_get_channel (std::span<const midi_byte_t> ctrl_change);
 
 /**
  * Returns the length of the MIDI message based on
@@ -151,20 +159,20 @@ midi_get_octave_number (const uint8_t note)
  */
 static inline bool
 midi_is_short_message_type (
-  const midi_byte_t short_msg[3],
-  const midi_byte_t type)
+  std::span<const midi_byte_t> short_msg,
+  const midi_byte_t            type)
 {
   return (short_msg[0] & 0xf0) == type;
 }
 
 static inline midi_byte_t
-midi_get_note_number (const midi_byte_t short_msg[3])
+midi_get_note_number (std::span<const midi_byte_t> short_msg)
 {
   return short_msg[1];
 }
 
 static inline midi_byte_t
-midi_get_velocity (const midi_byte_t short_msg[3])
+midi_get_velocity (std::span<const midi_byte_t> short_msg)
 {
   return short_msg[2];
 }
@@ -173,58 +181,58 @@ midi_get_velocity (const midi_byte_t short_msg[3])
  * Returns the note name (eg, "C") for a value between 0 and 127.
  */
 [[gnu::const]]
-const char *
-midi_get_note_name (const midi_byte_t note);
+std::string_view
+midi_get_note_name (midi_byte_t note);
 
-void
-midi_get_note_name_with_octave (const midi_byte_t short_msg[3], char * buf);
+std::string
+midi_get_note_name_with_octave (std::span<const midi_byte_t> short_msg);
 
 static inline bool
-midi_is_note_on (const midi_byte_t short_msg[3])
+midi_is_note_on (std::span<const midi_byte_t> short_msg)
 {
   return midi_is_short_message_type (short_msg, MIDI_CH1_NOTE_ON)
          && midi_get_velocity (short_msg) != 0;
 }
 
 static inline bool
-midi_is_note_off (const midi_byte_t short_msg[3])
+midi_is_note_off (std::span<const midi_byte_t> short_msg)
 {
   return midi_is_short_message_type (short_msg, MIDI_CH1_NOTE_OFF)
          || (midi_is_short_message_type (short_msg, MIDI_CH1_NOTE_ON) && midi_get_velocity (short_msg) == 0);
 }
 
 static inline bool
-midi_is_program_change (const midi_byte_t short_msg[3])
+midi_is_program_change (std::span<const midi_byte_t> short_msg)
 {
   return midi_is_short_message_type (short_msg, MIDI_CH1_PROG_CHANGE);
 }
 
 static inline midi_byte_t
-midi_get_program_change_number (const midi_byte_t short_msg[3])
+midi_get_program_change_number (std::span<const midi_byte_t> short_msg)
 {
   return short_msg[1];
 }
 
 static inline bool
-midi_is_pitch_wheel (const midi_byte_t short_msg[3])
+midi_is_pitch_wheel (std::span<const midi_byte_t> short_msg)
 {
   return midi_is_short_message_type (short_msg, MIDI_CH1_PITCH_WHEEL_RANGE);
 }
 
 static inline bool
-midi_is_aftertouch (const midi_byte_t short_msg[3])
+midi_is_aftertouch (std::span<const midi_byte_t> short_msg)
 {
   return midi_is_short_message_type (short_msg, MIDI_CH1_POLY_AFTERTOUCH);
 }
 
 static inline bool
-midi_is_channel_pressure (const midi_byte_t short_msg[3])
+midi_is_channel_pressure (std::span<const midi_byte_t> short_msg)
 {
   return midi_is_short_message_type (short_msg, MIDI_CH1_CHAN_AFTERTOUCH);
 }
 
 static inline bool
-midi_is_controller (const midi_byte_t short_msg[3])
+midi_is_controller (std::span<const midi_byte_t> short_msg)
 {
   return midi_is_short_message_type (short_msg, MIDI_CH1_CTRL_CHANGE);
 }
@@ -238,172 +246,170 @@ midi_is_controller (const midi_byte_t short_msg[3])
  * @return A value between 0 and 0x4000 (16384).
  */
 static inline uint32_t
-midi_get_14_bit_value (const midi_byte_t short_msg[3])
+midi_get_14_bit_value (std::span<const midi_byte_t> short_msg)
 {
   return short_msg[1] | ((uint32_t) short_msg[2] << 7);
 }
 
 static inline midi_byte_t
-midi_get_channel_0_to_15 (const midi_byte_t short_msg[3])
+midi_get_channel_0_to_15 (std::span<const midi_byte_t> short_msg)
 {
   return short_msg[0] & 0x0f;
 }
 
 static inline midi_byte_t
-midi_get_channel_1_to_16 (const midi_byte_t short_msg[3])
+midi_get_channel_1_to_16 (std::span<const midi_byte_t> short_msg)
 {
   return midi_get_channel_0_to_15 (short_msg) + 1u;
 }
 
 static inline uint32_t
-midi_get_pitchwheel_value (const midi_byte_t short_msg[3])
+midi_get_pitchwheel_value (std::span<const midi_byte_t> short_msg)
 {
   return midi_get_14_bit_value (short_msg);
 }
 
 static inline midi_byte_t
-midi_get_aftertouch_value (const midi_byte_t short_msg[3])
+midi_get_aftertouch_value (std::span<const midi_byte_t> short_msg)
 {
   return short_msg[2];
 }
 
 static inline midi_byte_t
-midi_get_channel_pressure_value (const midi_byte_t short_msg[3])
+midi_get_channel_pressure_value (std::span<const midi_byte_t> short_msg)
 {
   return short_msg[1];
 }
 
 static inline midi_byte_t
-midi_get_controller_number (const midi_byte_t short_msg[3])
+midi_get_controller_number (std::span<const midi_byte_t> short_msg)
 {
   return short_msg[1];
 }
 
 static inline midi_byte_t
-midi_get_controller_value (const midi_byte_t short_msg[3])
+midi_get_controller_value (std::span<const midi_byte_t> short_msg)
 {
   return short_msg[2];
 }
 
 static inline bool
-midi_is_all_notes_off (const midi_byte_t short_msg[3])
+midi_is_all_notes_off (std::span<const midi_byte_t> short_msg)
 {
   return midi_is_controller (short_msg)
          && midi_get_controller_number (short_msg) == 123;
 }
 
 static inline bool
-midi_is_all_sound_off (const midi_byte_t short_msg[3])
+midi_is_all_sound_off (std::span<const midi_byte_t> short_msg)
 {
   return midi_is_controller (short_msg)
          && midi_get_controller_number (short_msg) == 120;
 }
 
 static inline bool
-midi_is_quarter_frame (const midi_byte_t short_msg[3])
+midi_is_quarter_frame (std::span<const midi_byte_t> short_msg)
 {
   return short_msg[0] == 0xf1;
 }
 
 static inline bool
-midi_is_clock (const midi_byte_t short_msg[3])
+midi_is_clock (std::span<const midi_byte_t> short_msg)
 {
   return short_msg[0] == 0xf8;
 }
 
 static inline bool
-midi_is_start (const midi_byte_t short_msg[3])
+midi_is_start (std::span<const midi_byte_t> short_msg)
 {
   return short_msg[0] == 0xfa;
 }
 
 static inline bool
-midi_is_continue (const midi_byte_t short_msg[3])
+midi_is_continue (std::span<const midi_byte_t> short_msg)
 {
   return short_msg[0] == 0xfb;
 }
 
 static inline bool
-midi_is_stop (const midi_byte_t short_msg[3])
+midi_is_stop (std::span<const midi_byte_t> short_msg)
 {
   return short_msg[0] == 0xfc;
 }
 
 static inline bool
-midi_is_active_sense (const midi_byte_t short_msg[3])
+midi_is_active_sense (std::span<const midi_byte_t> short_msg)
 {
   return short_msg[0] == 0xfe;
 }
 
 static inline bool
-midi_is_song_position_pointer (const midi_byte_t short_msg[3])
+midi_is_song_position_pointer (std::span<const midi_byte_t> short_msg)
 {
   return short_msg[0] == 0xf2;
 }
 
 static inline uint32_t
-midi_get_song_position_pointer_value (const midi_byte_t short_msg[3])
+midi_get_song_position_pointer_value (std::span<const midi_byte_t> short_msg)
 {
   return midi_get_14_bit_value (short_msg);
 }
 
-void
-midi_get_hex_str (const midi_byte_t * msg, const size_t msg_sz, char * buf);
+std::string
+midi_get_hex_str (std::span<const midi_byte_t> msg);
+
+std::string
+midi_print_to_str (std::span<const midi_byte_t> msg);
 
 void
-midi_print_to_str (const midi_byte_t * msg, const size_t msg_sz, char * buf);
-
-void
-midi_print (const midi_byte_t * msg, const size_t msg_sz);
+midi_print (std::span<const midi_byte_t> msg);
 
 static inline bool
-midi_is_short_msg (const midi_byte_t * msg, const size_t msg_sz)
+midi_is_short_msg (std::span<const midi_byte_t> msg)
 {
-  z_return_val_if_fail (msg_sz > 0, false);
+  assert (!msg.empty ());
 
-  if (msg_sz > 3)
+  if (msg.size () > 3)
     return false;
 
   return msg[0] != MIDI_SYSTEM_MESSAGE && msg[0] != MIDI_META_EVENT;
 }
 
 static inline bool
-midi_is_sysex (const midi_byte_t * msg, const size_t msg_sz)
+midi_is_sysex (std::span<const midi_byte_t> msg)
 {
-  return msg_sz > 1 && msg[0] == MIDI_SYSTEM_MESSAGE;
+  return msg.size () > 1 && msg[0] == MIDI_SYSTEM_MESSAGE;
 }
 
 static inline bool
-midi_is_meta_event (const midi_byte_t * msg, const size_t msg_sz)
+midi_is_meta_event (std::span<const midi_byte_t> msg)
 {
-  return msg_sz > 2 && msg[0] == MIDI_META_EVENT;
+  return msg.size () > 2 && msg[0] == MIDI_META_EVENT;
 }
 
 static inline bool
-midi_is_short_msg_meta_event (const midi_byte_t short_msg[3])
+midi_is_short_msg_meta_event (std::span<const midi_byte_t> short_msg)
 {
-  return midi_is_meta_event (short_msg, 3);
+  return midi_is_meta_event (short_msg);
 }
 
 static inline bool
 midi_is_meta_event_of_type (
-  const midi_byte_t * msg,
-  const size_t        msg_sz,
-  const midi_byte_t   type)
+  std::span<const midi_byte_t> msg,
+  const midi_byte_t            type)
 {
-  return msg_sz > 2 && msg[1] == type && msg[0] == MIDI_META_EVENT;
+  return msg.size () > 2 && msg[1] == type && msg[0] == MIDI_META_EVENT;
 }
 
 static inline midi_byte_t
-midi_get_meta_event_type (const midi_byte_t * msg, const size_t msg_sz)
+midi_get_meta_event_type (std::span<const midi_byte_t> msg)
 {
-  z_return_val_if_fail (midi_is_meta_event (msg, msg_sz), 0);
-
+  assert (midi_is_meta_event (msg));
   return msg[1];
 }
 
-void
-midi_get_meta_event_type_name (char * buf, const midi_byte_t type);
+std::string
+midi_get_meta_event_type_name (midi_byte_t type);
 
 /**
  * FIXME NOT TESTED
@@ -422,7 +428,7 @@ midi_get_meta_event_data (
   const midi_byte_t *  msg,
   const size_t         msg_sz)
 {
-  z_return_val_if_fail (midi_is_meta_event (msg, msg_sz), 0);
+  assert (midi_is_meta_event (std::span (msg, msg_sz)));
 
   /* malformed data */
   if (msg_sz < 4)
@@ -451,6 +457,8 @@ midi_get_meta_event_data (
   *data = &msg[content_start];
   return content_len;
 }
+
+} // namespace zrythm::utils::midi
 
 /**
  * @}

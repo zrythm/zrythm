@@ -811,8 +811,10 @@ RecordingManager::handle_audio_event (const RecordingEvent &ev)
   utils::audio::AudioBuffer buf_to_append{
     clip->get_num_channels (), (int) ev.nframes_
   };
-  buf_to_append.copyFrom (0, 0, ev.lbuf_.data (), ev.nframes_);
-  buf_to_append.copyFrom (1, 0, ev.rbuf_.data (), ev.nframes_);
+  buf_to_append.copyFrom (
+    0, 0, ev.lbuf_.data (), static_cast<int> (ev.nframes_));
+  buf_to_append.copyFrom (
+    1, 0, ev.rbuf_.data (), static_cast<int> (ev.nframes_));
   clip->expand_with_frames (buf_to_append);
 
   /* write to pool if enough time passed since last write */
@@ -918,14 +920,14 @@ RecordingManager::handle_midi_event (const RecordingEvent &ev)
                   /* convert MIDI data to midi notes */
                   MidiNote *  mn;
                   const auto &mev = ev.midi_event_;
-                  const auto &buf = mev.raw_buffer_.data ();
+                  const auto &buf = mev.raw_buffer_;
 
                   if constexpr (std::is_same_v<RegionT, ChordRegion>)
                     {
-                      if (midi_is_note_on (buf))
+                      if (utils::midi::midi_is_note_on (buf))
                         {
                           const midi_byte_t note_number =
-                            midi_get_note_number (buf);
+                            utils::midi::midi_get_note_number (buf);
                           const dsp::ChordDescriptor * descr =
                             CHORD_EDITOR->get_chord_from_note_number (
                               note_number);
@@ -941,17 +943,17 @@ RecordingManager::handle_midi_event (const RecordingEvent &ev)
                   /* else if not chord track */
                   else if constexpr (std::is_same_v<RegionT, MidiRegion>)
                     {
-                      if (midi_is_note_on (buf))
+                      if (utils::midi::midi_is_note_on (buf))
                         {
                           region->start_unended_note (
                             &local_pos, &local_end_pos,
-                            midi_get_note_number (buf), midi_get_velocity (buf),
-                            true);
+                            utils::midi::midi_get_note_number (buf),
+                            utils::midi::midi_get_velocity (buf), true);
                         }
-                      else if (midi_is_note_off (buf))
+                      else if (utils::midi::midi_is_note_off (buf))
                         {
                           mn = region->pop_unended_note (
-                            midi_get_note_number (buf));
+                            utils::midi::midi_get_note_number (buf));
                           if (mn)
                             {
                               mn->end_position_setter_validated (

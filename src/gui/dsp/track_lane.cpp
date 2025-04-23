@@ -249,11 +249,10 @@ TrackLaneImpl<RegionT>::write_to_midi_file (
   /* add track name */
   if (lanes_as_tracks && use_track_or_lane_pos)
     {
-      char midi_track_name[1000];
-      sprintf (
-        midi_track_name, "%s - %s", track->get_name ().c_str (),
-        get_name ().c_str ());
-      midiTrackAddText (mf, midi_track_pos, textTrackName, midi_track_name);
+      const auto midi_track_name =
+        fmt::format ("{} - {}", track->get_name (), get_name ());
+      midiTrackAddText (
+        mf, midi_track_pos, textTrackName, midi_track_name.c_str ());
     }
 
   for (auto * region : this->get_children_view ())

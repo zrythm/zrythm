@@ -723,8 +723,8 @@ ui_get_normalized_draggable_value (
  * Returns an appropriate string representation of the given
  * dB value.
  */
-void
-ui_get_db_value_as_string (float val, char * buf);
+std::string
+ui_get_db_value_as_string (float val);
 
 /**
  * @}

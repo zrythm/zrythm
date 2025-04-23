@@ -1,8 +1,10 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/gtest_wrapper.h"
 #include "utils/midi.h"
+
+using namespace zrythm::utils::midi;
 
 TEST (MidiTest, NoteConversion)
 {
@@ -72,10 +74,9 @@ TEST (MidiTest, MessageLength)
 
 TEST (MidiTest, NoteNames)
 {
-  midi_byte_t note_msg[3] = { MIDI_CH1_NOTE_ON, 60, 100 }; // Middle C
-  char        note_name[128];
-  midi_get_note_name_with_octave (note_msg, note_name);
-  EXPECT_STREQ (note_name, "C3");
+  std::array<midi_byte_t, 3> note_msg{ MIDI_CH1_NOTE_ON, 60, 100 }; // Middle C
+  const auto note_name = midi_get_note_name_with_octave (note_msg);
+  EXPECT_EQ (note_name, "C3");
 }
 
 TEST (MidiTest, CombinedValues)
@@ -91,5 +92,5 @@ TEST (MidiTest, CombinedValues)
   EXPECT_EQ (msb, 95);
 
   std::array<midi_byte_t, 3> buf{ MIDI_CH1_PITCH_WHEEL_RANGE, 120, 95 };
-  EXPECT_EQ (midi_get_14_bit_value (buf.data ()), 12280);
+  EXPECT_EQ (midi_get_14_bit_value (buf), 12280);
 }

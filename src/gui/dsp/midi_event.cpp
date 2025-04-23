@@ -40,6 +40,8 @@
 
 #include <fmt/format.h>
 
+using namespace zrythm;
+
 /**
  * Type of MIDI event.
  *
@@ -103,24 +105,26 @@ MidiEventVector::transform_chord_and_append (
         /* make sure there is enough space */
         z_return_if_fail (size () < MAX_MIDI_EVENTS - 6);
 
-        const uint8_t * buf = src_ev.raw_buffer_.data ();
+        const auto &buf = src_ev.raw_buffer_;
 
-        if (!midi_is_note_on (buf) && !midi_is_note_off (buf))
+        if (
+          !utils::midi::midi_is_note_on (buf)
+          && !utils::midi::midi_is_note_off (buf))
           continue;
 
         /* only use middle octave */
-        midi_byte_t note_number = midi_get_note_number (buf);
+        midi_byte_t note_number = utils::midi::midi_get_note_number (buf);
         const auto &descr =
           CHORD_EDITOR->get_chord_from_note_number (note_number);
         if (!descr)
           continue;
 
-        if (midi_is_note_on (buf))
+        if (utils::midi::midi_is_note_on (buf))
           {
             add_note_ons_from_chord_descr (
               *descr, 1, VELOCITY_DEFAULT, src_ev.time_);
           }
-        else if (midi_is_note_off (buf))
+        else if (utils::midi::midi_is_note_off (buf))
           {
             add_note_offs_from_chord_descr (*descr, 1, src_ev.time_);
           }
@@ -305,9 +309,9 @@ MidiEventVector::
   z_return_if_fail (channel > 0 && channel <= 16);
 
   MidiEvent ev (
-    (midi_byte_t) (MIDI_CH1_CTRL_CHANGE | (channel - 1)), MIDI_ALL_NOTES_OFF,
-    0x00, time);
-  z_return_if_fail (midi_is_all_notes_off (ev.raw_buffer_.data ()));
+    (midi_byte_t) (utils::midi::MIDI_CH1_CTRL_CHANGE | (channel - 1)),
+    utils::midi::MIDI_ALL_NOTES_OFF, 0x00, time);
+  z_return_if_fail (utils::midi::midi_is_all_notes_off (ev.raw_buffer_));
 
   if (with_lock)
     {
@@ -395,8 +399,9 @@ MidiEventVector::
 {
   z_return_if_fail (channel > 0);
   MidiEvent ev (
-    (midi_byte_t) (MIDI_CH1_NOTE_OFF | (channel - 1)), note_pitch, 90, time);
-  z_return_if_fail (midi_is_note_off (ev.raw_buffer_.data ()));
+    (midi_byte_t) (utils::midi::MIDI_CH1_NOTE_OFF | (channel - 1)), note_pitch,
+    90, time);
+  z_return_if_fail (utils::midi::midi_is_note_off (ev.raw_buffer_));
   push_back (ev);
 }
 
@@ -404,7 +409,7 @@ void
 MidiEventVector::add_song_pos (int64_t total_sixteenths, midi_time_t time)
 {
   add_simple (
-    MIDI_SONG_POSITION, total_sixteenths & 0x7f /* LSB */,
+    utils::midi::MIDI_SONG_POSITION, total_sixteenths & 0x7f /* LSB */,
     (total_sixteenths >> 7) & 0x7f /* MSB */, time);
 }
 
@@ -413,7 +418,7 @@ MidiEventVector::add_raw (uint8_t * buf, size_t buf_sz, midi_time_t time)
 {
   if (buf_sz > 3)
     {
-      midi_print (buf, buf_sz);
+      utils::midi::midi_print ({ buf, buf_sz });
       z_return_if_reached ();
     }
 
@@ -435,8 +440,8 @@ MidiEventVector::add_control_change (
   midi_time_t time)
 {
   add_simple (
-    (midi_byte_t) (MIDI_CH1_CTRL_CHANGE | (channel - 1)), controller, control,
-    time);
+    (midi_byte_t) (utils::midi::MIDI_CH1_CTRL_CHANGE | (channel - 1)),
+    controller, control, time);
 }
 
 void
@@ -447,8 +452,9 @@ MidiEventVector::
 
   MidiEvent ev;
   ev.time_ = time;
-  ev.raw_buffer_[0] = (midi_byte_t) (MIDI_CH1_PITCH_WHEEL_RANGE | (channel - 1));
-  midi_get_bytes_from_combined (
+  ev.raw_buffer_[0] =
+    (midi_byte_t) (utils::midi::MIDI_CH1_PITCH_WHEEL_RANGE | (channel - 1));
+  utils::midi::midi_get_bytes_from_combined (
     pitchbend, &ev.raw_buffer_[1], &ev.raw_buffer_[2]);
   ev.raw_buffer_sz_ = 3;
 
@@ -465,7 +471,8 @@ MidiEventVector::add_channel_pressure (
 
   MidiEvent ev;
   ev.time_ = time;
-  ev.raw_buffer_[0] = (midi_byte_t) (MIDI_CH1_CHAN_AFTERTOUCH | (channel - 1));
+  ev.raw_buffer_[0] =
+    (midi_byte_t) (utils::midi::MIDI_CH1_CHAN_AFTERTOUCH | (channel - 1));
   ev.raw_buffer_[1] = value;
   ev.raw_buffer_sz_ = 2;
 
@@ -473,30 +480,29 @@ MidiEventVector::add_channel_pressure (
 }
 
 static inline MidiEventType
-get_event_type (const std::array<midi_byte_t, 3> _short_msg)
+get_event_type (const std::array<midi_byte_t, 3> short_msg)
 {
-  const auto short_msg = _short_msg.data ();
-  if (midi_is_note_off (short_msg))
+  if (utils::midi::midi_is_note_off (short_msg))
     return MidiEventType::MIDI_EVENT_TYPE_NOTE_OFF;
-  else if (midi_is_note_on (short_msg))
+  else if (utils::midi::midi_is_note_on (short_msg))
     return MidiEventType::MIDI_EVENT_TYPE_NOTE_ON;
   /* note: this is also a controller */
-  else if (midi_is_all_notes_off (short_msg))
+  else if (utils::midi::midi_is_all_notes_off (short_msg))
     return MidiEventType::MIDI_EVENT_TYPE_ALL_NOTES_OFF;
   /* note: this is also a controller */
-  else if (midi_is_pitch_wheel (short_msg))
+  else if (utils::midi::midi_is_pitch_wheel (short_msg))
     return MidiEventType::MIDI_EVENT_TYPE_PITCHBEND;
-  else if (midi_is_controller (short_msg))
+  else if (utils::midi::midi_is_controller (short_msg))
     return MidiEventType::MIDI_EVENT_TYPE_CONTROLLER;
-  else if (midi_is_song_position_pointer (short_msg))
+  else if (utils::midi::midi_is_song_position_pointer (short_msg))
     return MidiEventType::MIDI_EVENT_TYPE_SONG_POS;
-  else if (midi_is_start (short_msg))
+  else if (utils::midi::midi_is_start (short_msg))
     return MidiEventType::MIDI_EVENT_TYPE_START;
-  else if (midi_is_stop (short_msg))
+  else if (utils::midi::midi_is_stop (short_msg))
     return MidiEventType::MIDI_EVENT_TYPE_STOP;
-  else if (midi_is_continue (short_msg))
+  else if (utils::midi::midi_is_continue (short_msg))
     return MidiEventType::MIDI_EVENT_TYPE_CONTINUE;
-  else if (midi_is_clock (short_msg))
+  else if (utils::midi::midi_is_clock (short_msg))
     return MidiEventType::MIDI_EVENT_TYPE_CLOCK;
   else
     return MidiEventType::MIDI_EVENT_TYPE_RAW;
@@ -507,23 +513,21 @@ MidiEventVector::sort ()
 {
   const std::lock_guard<crill::spin_mutex> lock (lock_);
 
-  std::sort (
-    events_.begin (), events_.end (),
-    [] (const MidiEvent &a, const MidiEvent &b) {
-      if (a.time_ == b.time_) [[unlikely]]
-        {
-          MidiEventType a_type = get_event_type (a.raw_buffer_);
-          MidiEventType b_type = get_event_type (b.raw_buffer_);
-          (void) midi_event_type_strings;
+  std::ranges::sort (events_, [] (const MidiEvent &a, const MidiEvent &b) {
+    if (a.time_ == b.time_) [[unlikely]]
+      {
+        MidiEventType a_type = get_event_type (a.raw_buffer_);
+        MidiEventType b_type = get_event_type (b.raw_buffer_);
+        (void) midi_event_type_strings;
 #if 0
       z_debug ("a type {}, b type {}",
         midi_event_type_strings[a_type],
         midi_event_type_strings[b_type]);
 #endif
-          return (int) a_type < (int) b_type;
-        }
-      return a.time_ < b.time_;
-    });
+        return (int) a_type < (int) b_type;
+      }
+    return a.time_ < b.time_;
+  });
 }
 
 void
@@ -540,9 +544,9 @@ MidiEventVector::add_note_on (
 #endif
 
   MidiEvent ev (
-    (midi_byte_t) (MIDI_CH1_NOTE_ON | (channel - 1)), note_pitch, velocity,
-    time);
-  z_return_if_fail (midi_is_note_on (ev.raw_buffer_.data ()));
+    (midi_byte_t) (utils::midi::MIDI_CH1_NOTE_ON | (channel - 1)), note_pitch,
+    velocity, time);
+  z_return_if_fail (utils::midi::midi_is_note_on (ev.raw_buffer_));
 
   push_back (ev);
 }
@@ -606,24 +610,28 @@ MidiEventVector::
   auto        channel = (midi_byte_t) ((buf[0] & 0xf) + 1);
   switch (type)
     {
-    case MIDI_CH1_NOTE_ON:
+    case utils::midi::MIDI_CH1_NOTE_ON:
       /* velocity == 0 means note off */
       if (buf[2] == 0)
         goto note_off;
 
       add_note_on (channel, buf[1], buf[2], time);
       break;
-    case MIDI_CH1_NOTE_OFF:
+    case utils::midi::MIDI_CH1_NOTE_OFF:
 note_off:
       add_note_off (channel, buf[1], time);
       break;
-    case MIDI_CH1_PITCH_WHEEL_RANGE:
-      add_pitchbend (channel, midi_get_14_bit_value (buf), time);
+    case utils::midi::MIDI_CH1_PITCH_WHEEL_RANGE:
+      add_pitchbend (
+        channel,
+        utils::midi::midi_get_14_bit_value (
+          { buf, static_cast<size_t> (buf_size) }),
+        time);
       break;
-    case MIDI_CH1_CHAN_AFTERTOUCH:
+    case utils::midi::MIDI_CH1_CHAN_AFTERTOUCH:
       add_channel_pressure (channel, buf[1], time);
       break;
-    case MIDI_SYSTEM_MESSAGE:
+    case utils::midi::MIDI_SYSTEM_MESSAGE:
       /* ignore active sensing */
       if (buf[0] != 0xFE)
         {
@@ -632,10 +640,10 @@ note_off:
 #endif
         }
       break;
-    case MIDI_CH1_CTRL_CHANGE:
+    case utils::midi::MIDI_CH1_CTRL_CHANGE:
       add_control_change (1, buf[1], buf[2], time);
       break;
-    case MIDI_CH1_POLY_AFTERTOUCH:
+    case utils::midi::MIDI_CH1_POLY_AFTERTOUCH:
       /* TODO unimplemented */
       /* fallthrough */
     default:
@@ -653,8 +661,7 @@ MidiEvent::set_velocity (midi_byte_t vel)
 void
 MidiEvent::print () const
 {
-  char msg[400];
-  midi_print_to_str (raw_buffer_.data (), raw_buffer_sz_, msg);
+  const auto msg = utils::midi::midi_print_to_str (raw_buffer_);
   z_info ("{} | time: {}", msg, time_);
 }
 

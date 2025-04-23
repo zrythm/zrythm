@@ -63,18 +63,19 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
       for (auto &ev : events)
         {
           auto &buf = ev.raw_buffer_;
-          if (midi_is_note_on (buf.data ()))
+          if (utils::midi::midi_is_note_on (buf))
             {
-              PIANO_ROLL->add_current_note (midi_get_note_number (buf.data ()));
+              PIANO_ROLL->add_current_note (
+                utils::midi::midi_get_note_number (buf));
               events_processed = true;
             }
-          else if (midi_is_note_off (buf.data ()))
+          else if (utils::midi::midi_is_note_off (buf))
             {
               PIANO_ROLL->remove_current_note (
-                midi_get_note_number (buf.data ()));
+                utils::midi::midi_get_note_number (buf));
               events_processed = true;
             }
-          else if (midi_is_all_notes_off (buf.data ()))
+          else if (utils::midi::midi_is_all_notes_off (buf))
             {
               PIANO_ROLL->current_notes_.clear ();
               events_processed = true;
@@ -138,17 +139,17 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
         TRANSPORT->isRolling () && !AUDIO_ENGINE->pos_nfo_before_.is_rolling_;
       if (start)
         {
-          uint8_t start_msg = MIDI_CLOCK_CONTINUE;
+          uint8_t start_msg = utils::midi::MIDI_CLOCK_CONTINUE;
           if (PLAYHEAD.frames_ == 0)
             {
-              start_msg = MIDI_CLOCK_START;
+              start_msg = utils::midi::MIDI_CLOCK_START;
             }
           events.add_raw (&start_msg, 1, 0);
         }
       else if (
         !TRANSPORT->isRolling () && AUDIO_ENGINE->pos_nfo_before_.is_rolling_)
         {
-          uint8_t stop_msg = MIDI_CLOCK_STOP;
+          uint8_t stop_msg = utils::midi::MIDI_CLOCK_STOP;
           events.add_raw (&stop_msg, 1, 0);
         }
 
@@ -182,7 +183,7 @@ MidiPort::process (const EngineProcessTimeInfo time_nfo, const bool noroll)
                 midi_time >= time_nfo.local_offset_
                 && midi_time < time_nfo.local_offset_ + time_nfo.nframes_)
                 {
-                  uint8_t beat_msg = MIDI_CLOCK_BEAT;
+                  uint8_t beat_msg = utils::midi::MIDI_CLOCK_BEAT;
                   events.add_raw (&beat_msg, 1, midi_time);
 #if 0
                   z_debug ("(i = {}) time {} / {}", i, midi_time, time_nfo.local_offset + time_nfo.nframes_);

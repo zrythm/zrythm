@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <memory>
@@ -10,6 +10,8 @@
 #include "gui/dsp/midi_mapping.h"
 #include "utils/midi.h"
 #include "utils/rt_thread_id.h"
+
+using namespace zrythm;
 
 MidiMapping::MidiMapping (QObject * parent) : QObject (parent) { }
 
@@ -57,9 +59,7 @@ MidiMappings::bind_at (
 
   mappings_.insert (mappings_.begin () + idx, std::move (mapping));
 
-  char str[100];
-  midi_ctrl_change_get_ch_and_description (buf.data (), str);
-
+  auto str = utils::midi::midi_ctrl_change_get_description (buf);
   if (!(ENUM_BITSET_TEST (
         dest_port.id_->flags_, dsp::PortIdentifier::Flags::MidiAutomatable)))
     {
@@ -88,9 +88,9 @@ MidiMappings::unbind (int idx, bool fire_events)
 int
 MidiMappings::get_mapping_index (const MidiMapping &mapping) const
 {
-  auto it = std::find_if (
-    mappings_.begin (), mappings_.end (),
-    [&mapping] (const auto &m) { return m.get () == &mapping; });
+  auto it = std::ranges::find_if (mappings_, [&mapping] (const auto &m) {
+    return m.get () == &mapping;
+  });
   return it != mappings_.end () ? std::distance (mappings_.begin (), it) : -1;
 }
 
@@ -163,10 +163,11 @@ MidiMappings::apply_from_cc_events (MidiEventVector &events)
 {
   for (const auto &ev : events)
     {
-      if (midi_is_controller (ev.raw_buffer_.data ()))
+      if (utils::midi::midi_is_controller (ev.raw_buffer_))
         {
-          auto channel = midi_get_channel_1_to_16 (ev.raw_buffer_.data ());
-          auto controller = midi_get_controller_number (ev.raw_buffer_.data ());
+          auto channel = utils::midi::midi_get_channel_1_to_16 (ev.raw_buffer_);
+          auto controller =
+            utils::midi::midi_get_controller_number (ev.raw_buffer_);
           auto &mapping = mappings_[(channel - 1) * 128 + controller];
           mapping->apply (ev.raw_buffer_);
         }

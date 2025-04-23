@@ -166,27 +166,31 @@ static const char * note_labels[12] = {
   "F\u266F", "G",       "A\u266D", "A",       "B\u266D", "B"
 };
 
+namespace zrythm::utils::midi
+{
+
 /**
  * Return the name of the given cc (0-127).
  */
-const char *
-midi_get_controller_name (uint8_t cc)
+std::string_view
+midi_get_controller_name (const midi_byte_t cc)
 {
   return midi_cc_names[cc];
 }
 
-/**
- * Saves a string representation of the given
- * control change event in the given buffer.
- *
- * @param buf The string buffer to fill, or NULL
- *   to only get the channel.
- *
- * @return The MIDI channel, or -1 if not ctrl
- *   change.
- */
-int
-midi_ctrl_change_get_ch_and_description (midi_byte_t * ctrl_change, char * buf)
+std::optional<int>
+midi_ctrl_change_get_channel (std::span<const midi_byte_t> ctrl_change)
+{
+  /* assert the given event is a ctrl change event */
+  if (ctrl_change[0] < 0xB0 || ctrl_change[0] > 0xBF)
+    {
+      return std::nullopt;
+    }
+  return (ctrl_change[0] - 0xB0) + 1;
+}
+
+std::optional<std::string>
+midi_ctrl_change_get_description (std::span<const midi_byte_t> ctrl_change)
 {
   /* FIXME is there a reason this is not using
    * get_controller_name() ? */
@@ -194,62 +198,56 @@ midi_ctrl_change_get_ch_and_description (midi_byte_t * ctrl_change, char * buf)
   /* assert the given event is a ctrl change event */
   if (ctrl_change[0] < 0xB0 || ctrl_change[0] > 0xBF)
     {
-      return -1;
+      return std::nullopt;
     }
 
-  if (buf)
+  if (ctrl_change[1] >= 0x08 && ctrl_change[1] <= 0x1F)
     {
-      if (ctrl_change[1] >= 0x08 && ctrl_change[1] <= 0x1F)
-        {
-          sprintf (buf, "Continuous controller #%u", ctrl_change[1]);
-        }
-      else if (ctrl_change[1] >= 0x28 && ctrl_change[1] <= 0x3F)
-        {
-          sprintf (buf, "Continuous controller #%u", ctrl_change[1] - 0x28);
-        }
-      else
-        {
-          switch (ctrl_change[1])
-            {
-            case 0x00:
-            case 0x20:
-              strcpy (buf, "Continuous controller #0");
-              break;
-            case 0x01:
-            case 0x21:
-              strcpy (buf, "Modulation wheel");
-              break;
-            case 0x02:
-            case 0x22:
-              strcpy (buf, "Breath control");
-              break;
-            case 0x03:
-            case 0x23:
-              strcpy (buf, "Continuous controller #3");
-              break;
-            case 0x04:
-            case 0x24:
-              strcpy (buf, "Foot controller");
-              break;
-            case 0x05:
-            case 0x25:
-              strcpy (buf, "Portamento time");
-              break;
-            case 0x06:
-            case 0x26:
-              strcpy (buf, "Data Entry");
-              break;
-            case 0x07:
-            case 0x27:
-              strcpy (buf, "Main Volume");
-              break;
-            default:
-              strcpy (buf, "Unknown");
-              break;
-            }
-        }
+      return fmt::format ("Continuous controller #{}", ctrl_change[1]);
     }
-  return (ctrl_change[0] - 0xB0) + 1;
+  if (ctrl_change[1] >= 0x28 && ctrl_change[1] <= 0x3F)
+    {
+      return fmt::format ("Continuous controller #{}", ctrl_change[1] - 0x28);
+    }
+
+  switch (ctrl_change[1])
+    {
+    case 0x00:
+    case 0x20:
+      return std::string ("Continuous controller #0");
+      break;
+    case 0x01:
+    case 0x21:
+      return std::string ("Modulation wheel");
+      break;
+    case 0x02:
+    case 0x22:
+      return std::string ("Breath control");
+      break;
+    case 0x03:
+    case 0x23:
+      return std::string ("Continuous controller #3");
+      break;
+    case 0x04:
+    case 0x24:
+      return std::string ("Foot controller");
+      break;
+    case 0x05:
+    case 0x25:
+      return std::string ("Portamento time");
+      break;
+    case 0x06:
+    case 0x26:
+      return std::string ("Data Entry");
+      break;
+    case 0x07:
+    case 0x27:
+      return std::string ("Main Volume");
+      break;
+    default:
+      return std::string ("Unknown");
+      break;
+    }
 }
 
 /**
@@ -319,237 +317,232 @@ midi_get_msg_length (const uint8_t status_byte)
  * Returns the note name (eg, "C") for a value
  * between 0 and 127.
  */
-const char *
+std::string_view
 midi_get_note_name (const midi_byte_t note)
 {
-  return note_labels[note % 12];
+  return { note_labels[note % 12] };
 }
 
-void
-midi_get_note_name_with_octave (const midi_byte_t short_msg[3], char * buf)
+std::string
+midi_get_note_name_with_octave (std::span<const midi_byte_t> short_msg)
 {
   midi_byte_t note = midi_get_note_number (short_msg);
   midi_byte_t note_idx = midi_get_chromatic_scale_index (note);
   midi_byte_t octave = midi_get_octave_number (note);
-  sprintf (buf, "%s%u", midi_get_note_name (note_idx), octave);
+  return fmt::format ("{}{}", midi_get_note_name (note_idx), octave);
 }
 
-void
-midi_get_meta_event_type_name (char * buf, const midi_byte_t type)
+std::string
+midi_get_meta_event_type_name (const midi_byte_t type)
 {
   switch (type)
     {
     case 0x00:
-      strcpy (buf, "Sequence number");
+      return { "Sequence number" };
       break;
     case 0x01:
-      strcpy (buf, "Text");
+      return { "Text" };
       break;
     case 0x02:
-      strcpy (buf, "Copyright notice");
+      return { "Copyright notice" };
       break;
     case 0x03:
-      strcpy (buf, "Track name");
+      return { "Track name" };
       break;
     case 0x04:
-      strcpy (buf, "Instrument name");
+      return { "Instrument name" };
       break;
     case 0x05:
-      strcpy (buf, "Lyrics");
+      return { "Lyrics" };
       break;
     case 0x06:
-      strcpy (buf, "Marker");
+      return { "Marker" };
       break;
     case 0x07:
-      strcpy (buf, "Cue point");
+      return { "Cue point" };
       break;
     case 0x20:
-      strcpy (buf, "Channel prefix");
+      return { "Channel prefix" };
       break;
     case 0x2F:
-      strcpy (buf, "End of track");
+      return { "End of track" };
       break;
     case 0x51:
-      strcpy (buf, "Set tempo");
+      return { "Set tempo" };
       break;
     case 0x54:
-      strcpy (buf, "SMPTE offset");
+      return { "SMPTE offset" };
       break;
     case 0x58:
-      strcpy (buf, "Time signature");
+      return { "Time signature" };
       break;
     case 0x59:
-      strcpy (buf, "Key signature");
+      return { "Key signature" };
       break;
     case 0x7F:
-      strcpy (buf, "Sequencer specific");
+      return { "Sequencer specific" };
       break;
     default:
-      sprintf (buf, "Unknown type %hhx", type);
+      return fmt::format ("Unknown type {:02x}", type);
       break;
     }
 }
 
-void
-midi_get_hex_str (const midi_byte_t * msg, const size_t msg_sz, char * buf)
+std::string
+midi_get_hex_str (std::span<const midi_byte_t> msg)
 {
-  buf[0] = '\0';
-  for (size_t i = 0; i < msg_sz; i++)
+  std::string ret{};
+  for (const auto &cur_byte : msg)
     {
-      char tmp[6];
-      sprintf (tmp, "%hhx", msg[i]);
-      strcat (buf, tmp);
-      if (i + 1 < msg_sz)
-        strcat (buf, " ");
+      ret += fmt::format ("{:02x}", cur_byte);
+      if (cur_byte != msg.back ())
+        {
+          ret += " ";
+        }
     }
+  return ret;
 }
 
-static void
-midi_print_short_msg_to_str (const midi_byte_t short_msg[3], char * buf)
+static std::string
+midi_print_short_msg_to_str (std::span<const midi_byte_t> short_msg)
 {
   midi_byte_t channel = midi_get_channel_1_to_16 (short_msg);
 
   if (midi_is_note_on (short_msg))
     {
-      char note[40];
-      midi_get_note_name_with_octave (short_msg, note);
-      sprintf (
-        buf, "Note-On %s: Velocity: %u", note, midi_get_velocity (short_msg));
+      const auto note = midi_get_note_name_with_octave (short_msg);
+      return fmt::format (
+        "Note-On {}: Velocity: {}", note, midi_get_velocity (short_msg));
     }
   else if (midi_is_note_off (short_msg))
     {
-      char note[40];
-      midi_get_note_name_with_octave (short_msg, note);
-      sprintf (
-        buf, "Note-Off %s: Velocity: %u", note, midi_get_velocity (short_msg));
+      const auto note = midi_get_note_name_with_octave (short_msg);
+      return fmt::format (
+        "Note-Off {}: Velocity: {}", note, midi_get_velocity (short_msg));
     }
   else if (midi_is_aftertouch (short_msg))
     {
-      char note[40];
-      midi_get_note_name_with_octave (short_msg, note);
-      sprintf (
-        buf, "Aftertouch %s: %u", note, midi_get_aftertouch_value (short_msg));
+      const auto note = midi_get_note_name_with_octave (short_msg);
+      return fmt::format (
+        "Aftertouch {}: {}", note, midi_get_aftertouch_value (short_msg));
     }
   else if (midi_is_pitch_wheel (short_msg))
     {
-      sprintf (
-        buf, "Pitch Wheel: %u (Ch%u)", midi_get_pitchwheel_value (short_msg),
+      return fmt::format (
+        "Pitch Wheel: {} (Ch{})", midi_get_pitchwheel_value (short_msg),
         channel);
     }
   else if (midi_is_channel_pressure (short_msg))
     {
-      sprintf (
-        buf, "Channel Pressure: %u (Ch%u)",
+      return fmt::format (
+        "Channel Pressure: {} (Ch{})",
         midi_get_channel_pressure_value (short_msg), channel);
     }
   else if (midi_is_controller (short_msg))
     {
-      sprintf (
-        buf, "Controller (Ch%u): %s=%u", channel,
+      return fmt::format (
+        "Controller (Ch{}): {}={}", channel,
         midi_get_controller_name (midi_get_controller_number (short_msg)),
         midi_get_controller_value (short_msg));
     }
   else if (midi_is_program_change (short_msg))
     {
-      sprintf (
-        buf, "Program Change: %u (Ch%u)",
-        midi_get_program_change_number (short_msg), channel);
+      return fmt::format (
+        "Program Change: {} (Ch{})", midi_get_program_change_number (short_msg),
+        channel);
     }
   else if (midi_is_all_notes_off (short_msg))
     {
-      sprintf (buf, "All Notes Off: (Ch%u)", channel);
+      return fmt::format ("All Notes Off: (Ch{})", channel);
     }
   else if (midi_is_all_sound_off (short_msg))
     {
-      sprintf (buf, "All Sound Off: (Ch%u)", channel);
+      return fmt::format ("All Sound Off: (Ch{})", channel);
     }
   else if (midi_is_quarter_frame (short_msg))
     {
-      strcpy (buf, "Quarter Frame");
+      return { "Quarter Frame" };
     }
   else if (midi_is_clock (short_msg))
     {
-      strcpy (buf, "Clock");
+      return { "Clock" };
     }
   else if (midi_is_start (short_msg))
     {
-      strcpy (buf, "Start");
+      return { "Start" };
     }
   else if (midi_is_continue (short_msg))
     {
-      strcpy (buf, "Continue");
+      return { "Continue" };
     }
   else if (midi_is_stop (short_msg))
     {
-      strcpy (buf, "Stop");
+      return { "Stop" };
     }
   else if (midi_is_short_msg_meta_event (short_msg))
     {
-      sprintf (
-        buf, "Meta-Event Type: %u", midi_get_meta_event_type (short_msg, 3));
+      return fmt::format (
+        "Meta-Event Type: {}", midi_get_meta_event_type (short_msg));
     }
   else if (midi_is_song_position_pointer (short_msg))
     {
-      sprintf (
-        buf, "Song Position: %u",
-        midi_get_song_position_pointer_value (short_msg));
+      return fmt::format (
+        "Song Position: {}", midi_get_song_position_pointer_value (short_msg));
     }
   else
     {
-      char hex[3 * 4];
-      midi_get_hex_str (short_msg, 3, hex);
-      sprintf (buf, "Unknown MIDI Message: %s", hex);
+      const auto hex = midi_get_hex_str (short_msg);
+      return fmt::format ("Unknown MIDI Message: {}", hex);
     }
 }
 
-void
-midi_print_to_str (const midi_byte_t * msg, const size_t msg_sz, char * buf)
+std::string
+midi_print_to_str (std::span<const midi_byte_t> msg)
 {
-  if (midi_is_short_msg (msg, msg_sz))
+  if (midi_is_short_msg (msg))
     {
-      midi_print_short_msg_to_str (msg, buf);
+      return midi_print_short_msg_to_str (msg);
     }
-  else if (midi_is_sysex (msg, msg_sz))
+  else if (midi_is_sysex (msg))
     {
-      std::vector<char> hex (msg_sz * 4);
-      midi_get_hex_str (msg, msg_sz, hex.data ());
-      sprintf (buf, "Sysex: %s", hex.data ());
+      const auto hex = midi_get_hex_str (msg);
+      return fmt::format ("Sysex: {}", hex);
     }
-  else if (midi_is_meta_event (msg, msg_sz))
+  else if (midi_is_meta_event (msg))
     {
-      const midi_byte_t * data = NULL;
-      size_t data_sz = midi_get_meta_event_data (&data, msg, msg_sz);
+      const midi_byte_t * data{};
+      size_t              data_sz =
+        midi_get_meta_event_data (&data, msg.data (), msg.size ());
       if (data_sz == 0)
         {
-          strcpy (buf, "Invalid meta event");
+          return { "Invalid meta event" };
         }
       else
         {
-          midi_byte_t meta_event_type = midi_get_meta_event_type (msg, msg_sz);
-          char        meta_event_name[600];
-          midi_get_meta_event_type_name (meta_event_name, meta_event_type);
-          std::vector<char> hex (data_sz * 4);
-          midi_get_hex_str (data, data_sz, hex.data ());
-          sprintf (
-            buf,
-            "Meta-event: %s\n"
-            "  length: %zu\n"
-            "  data: %s",
-            meta_event_name, data_sz, hex.data ());
+          const midi_byte_t meta_event_type = midi_get_meta_event_type (msg);
+          const auto        meta_event_name =
+            midi_get_meta_event_type_name (meta_event_type);
+          const auto hex =
+            midi_get_hex_str (std::span<const midi_byte_t>{ data, data_sz });
+          return fmt::format (
+            "Meta-event: {}\n"
+            "  length: {}\n"
+            "  data: {}",
+            meta_event_name, data_sz, hex);
         }
     }
   else
     {
-      std::vector<char> hex (msg_sz * 4);
-      midi_get_hex_str (msg, msg_sz, hex.data ());
-      sprintf (buf, "Unknown MIDI event of size %zu: %s", msg_sz, hex.data ());
+      return fmt::format (
+        "Unknown MIDI event of size {}: {}", msg.size (),
+        midi_get_hex_str (msg));
     }
 }
 
 void
-midi_print (const midi_byte_t * msg, const size_t msg_sz)
+midi_print (std::span<const midi_byte_t> msg)
 {
-  char str[600];
-  midi_print_to_str (msg, msg_sz, str);
-  z_info ("{}", str);
+  z_info ("{}", midi_print_to_str (msg));
 }
+
+} // namespace zrythm::utils::midi

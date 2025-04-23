@@ -195,14 +195,14 @@ Position::to_string (
   z_return_if_fail (bars > -80000);
   if (ZRYTHM_TESTING)
     {
-      sprintf (
-        buf, "%d.%d.%d.%03.*f (%" SIGNED_FRAME_FORMAT ")", bars, abs (beats),
-        abs (sixteenths), decimal_places, fabs (ticks), frames_);
+      snprintf (
+        buf, 100, "%d.%d.%d.%03.*f (%" SIGNED_FRAME_FORMAT ")", bars,
+        abs (beats), abs (sixteenths), decimal_places, fabs (ticks), frames_);
     }
   else
     {
-      sprintf (
-        buf, "%d.%d.%d.%03.*f", bars, abs (beats), abs (sixteenths),
+      snprintf (
+        buf, 100, "%d.%d.%d.%03.*f", bars, abs (beats), abs (sixteenths),
         decimal_places, fabs (ticks));
     }
 }

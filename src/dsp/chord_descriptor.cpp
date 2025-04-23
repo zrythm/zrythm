@@ -183,7 +183,7 @@ static constexpr std::array<std::string_view, 10> chord_accent_strings = {
 std::string_view
 ChordDescriptor::note_to_string (MusicalNote note)
 {
-  return midi_get_note_name ((midi_byte_t) note);
+  return utils::midi::midi_get_note_name ((midi_byte_t) note);
 }
 
 std::string_view
