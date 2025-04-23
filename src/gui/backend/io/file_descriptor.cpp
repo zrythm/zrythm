@@ -83,7 +83,7 @@ FileDescriptor::get_type_description (FileType type)
 FileType
 FileDescriptor::get_type_from_path (const fs::path &file)
 {
-  const auto ext = utils::io::file_get_ext (file);
+  const auto ext = utils::io::file_get_ext (file.string ());
   FileType   type = FileType::Other;
 
   if (fs::is_directory (file))

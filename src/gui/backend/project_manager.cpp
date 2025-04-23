@@ -132,7 +132,7 @@ ProjectManager::getNextAvailableProjectName (
     directory.toDisplayString ());
   auto tmp =
     fs::path (directory.toLocalFile ().toStdString ()) / name.toStdString ();
-  auto dir = utils::io::get_next_available_filepath (tmp);
+  auto dir = utils::io::get_next_available_filepath (tmp.string ());
   auto ret = QString::fromStdString (fs::path (dir).filename ().string ());
   z_debug ("Next available untitled project name for '{}': {}", tmp, ret);
   return ret;

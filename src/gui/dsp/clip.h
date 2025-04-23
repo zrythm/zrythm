@@ -242,7 +242,7 @@ private:
    * @throw ZrythmException on I/O error.
    */
   void init_from_file (
-    const std::string   &full_path,
+    const fs::path      &full_path,
     sample_rate_t        project_sample_rate,
     std::optional<bpm_t> bpm_to_set);
 

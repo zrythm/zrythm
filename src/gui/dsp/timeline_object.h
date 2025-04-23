@@ -16,8 +16,12 @@
  */
 class TimelineObject : virtual public ArrangerObject
 {
+protected:
+  TimelineObject () noexcept { }
+
 public:
-  ~TimelineObject () override = default;
+  ~TimelineObject () noexcept override = default;
+  Z_DISABLE_COPY_MOVE (TimelineObject)
 
 protected:
   void

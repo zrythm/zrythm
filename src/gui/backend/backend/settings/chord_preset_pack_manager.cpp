@@ -12,7 +12,7 @@
 
 using namespace zrythm;
 
-std::string
+fs::path
 ChordPresetPackManager::get_user_packs_path ()
 {
   auto zrythm_dir =
@@ -462,8 +462,8 @@ ChordPresetPackManager::add_user_packs ()
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       /* add user preset packs */
-      fs::path main_path = get_user_packs_path ();
-      z_debug ("Reading user chord packs from {}...", main_path);
+      const auto main_path = get_user_packs_path ();
+      z_debug ("Reading user chord packs from {}...", main_path.string ());
 
       StringArray pack_paths;
       if (fs::is_directory (main_path))
@@ -471,13 +471,13 @@ ChordPresetPackManager::add_user_packs ()
           try
             {
               pack_paths = utils::io::get_files_in_dir_ending_in (
-                main_path, true, ".json");
+                main_path.string (), true, ".json");
             }
           catch (const ZrythmException &e)
             {
               z_warning (
-                "Could not read user chord packs from {}: {}", main_path,
-                e.what ());
+                "Could not read user chord packs from {}: {}",
+                main_path.string (), e.what ());
             }
         }
       if (!pack_paths.isEmpty ())
@@ -592,10 +592,9 @@ ChordPresetPackManager::get_pack_for_preset (const ChordPreset &pset)
 int
 ChordPresetPackManager::get_pack_index (const ChordPresetPack &pack) const
 {
-  auto it =
-    std::find_if (packs_.begin (), packs_.end (), [&pack] (const auto &p) {
-      return *p == pack;
-    });
+  auto it = std::ranges::find_if (packs_, [&pack] (const auto &p) {
+    return *p == pack;
+  });
   if (it != packs_.end ())
     return it - packs_.begin ();
   else
@@ -658,9 +657,9 @@ ChordPresetPackManager::serialize ()
   /* TODO backup existing packs first */
 
   z_debug ("Serializing user preset packs...");
-  std::string main_path = get_user_packs_path ();
-  z_return_if_fail (!main_path.empty () && main_path.length () > 2);
-  z_debug ("Writing user chord packs to {}...", main_path);
+  const auto main_path = get_user_packs_path ();
+  z_return_if_fail (!main_path.empty () && main_path.string ().length () > 2);
+  z_debug ("Writing user chord packs to {}...", main_path.string ());
 
   for (const auto &pack : packs_)
     {
@@ -669,9 +668,8 @@ ChordPresetPackManager::serialize ()
 
       z_return_if_fail (!pack->name_.isEmpty ());
 
-      auto pack_dir =
-        fs::path (main_path) / fs::path (pack->name_.toStdString ());
-      auto pack_path = pack_dir / UserPackJsonFilename;
+      const auto pack_dir = main_path / fs::path (pack->name_.toStdString ());
+      const auto pack_path = pack_dir / UserPackJsonFilename;
       try
         {
           utils::io::mkdir (pack_dir.string ());

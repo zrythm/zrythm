@@ -55,7 +55,7 @@ public:
    * @param filepath Path to the file.
    * @param for_writing Whether to create the file for writing.
    */
-  AudioFile (std::string filepath, bool for_writing = false)
+  AudioFile (fs::path filepath, bool for_writing = false)
       : filepath_ (std::move (filepath)), for_writing_ (for_writing)
   {
   }
@@ -114,7 +114,7 @@ private:
 
 public:
   /** Absolute path. */
-  std::string filepath_;
+  fs::path filepath_;
 
   AudioFileMetadata metadata_;
 

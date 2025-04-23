@@ -1722,6 +1722,7 @@ public:
                       }
                     else
                       {
+                        DEBUG_TEMPLATE_PARAM (T)
                         static_assert (false);
                       }
                   }

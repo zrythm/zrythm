@@ -24,10 +24,11 @@ class GroupTargetTrack
       public zrythm::utils::serialization::ISerializable<GroupTargetTrack>
 {
 protected:
-  // GroupTargetTrack () = default;
+  GroupTargetTrack () noexcept { };
 
 public:
   ~GroupTargetTrack () override = default;
+  Z_DISABLE_COPY_MOVE (GroupTargetTrack)
 
   /**
    * Updates the track's children.

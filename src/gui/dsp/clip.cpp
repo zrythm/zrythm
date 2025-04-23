@@ -58,7 +58,7 @@ AudioClip::AudioClip (
 
 void
 AudioClip::init_from_file (
-  const std::string   &full_path,
+  const fs::path      &full_path,
   sample_rate_t        project_sample_rate,
   std::optional<bpm_t> bpm_to_set)
 {
@@ -90,7 +90,8 @@ AudioClip::init_from_file (
         fmt::format ("Failed to read frames from file '{}'", full_path));
     }
 
-  name_ = juce::File (full_path).getFileNameWithoutExtension ().toStdString ();
+  name_ =
+    juce::File (full_path.string ()).getFileNameWithoutExtension ().toStdString ();
   if (bpm_to_set.has_value ())
     {
       bpm_ = bpm_to_set.value ();

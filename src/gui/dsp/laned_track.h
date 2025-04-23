@@ -48,12 +48,15 @@ public: \
 class LanedTrack : virtual public Track
 {
 public:
-  ~LanedTrack () override = default;
+  ~LanedTrack () noexcept override = default;
 
   /**
    * Set lanes visible and fire events.
    */
   void set_lanes_visible (bool visible);
+
+protected:
+  LanedTrack () noexcept { }
 
 public:
   /** Flag to set lanes visible or not. */

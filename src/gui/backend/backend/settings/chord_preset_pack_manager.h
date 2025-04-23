@@ -78,7 +78,7 @@ public:
 private:
   void                          add_standard_packs ();
   void                          add_user_packs ();
-  static std::string            get_user_packs_path ();
+  static fs::path               get_user_packs_path ();
   static constexpr const char * UserPacksDirName = "chord-preset-packs";
   static constexpr const char * UserPackJsonFilename = "chord-presets.json";
 

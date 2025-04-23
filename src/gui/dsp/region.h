@@ -232,8 +232,12 @@ public:
  */
 template <typename RegionT> class RegionImpl : virtual public Region
 {
+protected:
+  RegionImpl () noexcept { }
+
 public:
   ~RegionImpl () override = default;
+  Z_DISABLE_COPY_MOVE (RegionImpl)
 
   using RegionTPtr = RegionT *;
 

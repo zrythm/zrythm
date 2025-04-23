@@ -23,9 +23,9 @@ public:
   };
 
 public:
-  // Rule of 0
-
-  virtual ~FoldableTrack () = default;
+  FoldableTrack () noexcept { }
+  ~FoldableTrack () noexcept override = default;
+  Z_DISABLE_COPY_MOVE (FoldableTrack)
 
   /**
    * Used to check if soloed/muted/etc.

@@ -312,7 +312,7 @@ PluginProtocolPaths::get_dssi_paths ()
     {
       /* no paths given - use default */
 #if defined(FLATPAK_BUILD)
-      ret.add ("/app/extensions/Plugins/dssi");
+      ret->add_path ("/app/extensions/Plugins/dssi");
 #else /* non-flatpak UNIX */
       {
         auto home_dssi = utils::io::get_home_path () / ".dssi";
@@ -414,12 +414,12 @@ PluginProtocolPaths::get_clap_paths ()
     {
       /* no paths given - use default */
 #ifdef _WIN32
-      ret->add ("C:\\Program Files\\Common Files\\CLAP");
-      ret->add ("C:\\Program Files (x86)\\Common Files\\CLAP");
+      ret->add_path ("C:\\Program Files\\Common Files\\CLAP");
+      ret->add_path ("C:\\Program Files (x86)\\Common Files\\CLAP");
 #elifdef __APPLE__
-      ret->add ("/Library/Audio/Plug-ins/CLAP");
+      ret->add_path ("/Library/Audio/Plug-ins/CLAP");
 #elifdef FLATPAK_BUILD
-      ret->add ("/app/extensions/Plugins/clap");
+      ret->add_path ("/app/extensions/Plugins/clap");
 #else /* non-flatpak UNIX */
       {
         auto home_clap = utils::io::get_home_path () / ".clap";
