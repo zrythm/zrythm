@@ -330,9 +330,6 @@ endif()
 # Required Packages
 #==============================================================================
 
-set(gtk_req "4.14.0")
-set(glib_req "2.74.0")
-
 check_symbol_exists(mlock "sys/mman.h" HAVE_MLOCK)
 
 add_library(zrythm_include_dirs INTERFACE)
