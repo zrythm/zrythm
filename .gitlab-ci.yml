@@ -49,6 +49,7 @@ stages:
     - archlinux
   variables:
     BUILDDIR: "build_gnu_linux"
+    QT_QPA_PLATFORM: "offscreen"
   before_script:
     - *unix-activate-venv
 
