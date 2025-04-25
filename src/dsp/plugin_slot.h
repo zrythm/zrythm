@@ -87,7 +87,7 @@ public:
     return PluginSlot (type_, slot_.value () + n);
   }
 
-  uint32_t get_hash () const;
+  size_t get_hash () const;
 
   bool is_modulator () const { return type_ == PluginSlotType::Modulator; }
 

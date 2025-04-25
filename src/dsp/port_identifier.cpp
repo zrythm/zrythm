@@ -52,7 +52,7 @@ PortIdentifier::validate () const
   return true;
 }
 
-uint32_t
+size_t
 PortIdentifier::get_hash () const
 {
   // FIXME this hashing is very very weak, there are guaranteed many collisions
@@ -88,9 +88,8 @@ PortIdentifier::get_hash () const
   if (track_id_.has_value ())
     hash = hash ^ qHash (type_safe::get (track_id_.value ()));
   hash = hash ^ qHash (port_index_);
-  // z_trace ("hash for {}: {}", sym_, hash);
-  assert (hash < std::numeric_limits<uint32_t>::max ());
-  return static_cast<uint32_t> (hash);
+  // z_debug ("hash for {}: {}", sym_, hash);
+  return hash;
 }
 
 void

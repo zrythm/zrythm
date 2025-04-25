@@ -9,8 +9,6 @@
 #include "utils/logger.h"
 #include "utils/math.h"
 
-#include <sndfile.h>
-
 #if defined(__FreeBSD__)
 #  include <sys/sysctl.h>
 #endif
@@ -25,46 +23,21 @@ namespace zrythm::utils::audio
 unsigned_frame_t
 get_num_frames (const fs::path &filepath)
 {
-  SF_INFO sfinfo;
-  memset (&sfinfo, 0, sizeof (sfinfo));
-  sfinfo.format = sfinfo.format | SF_FORMAT_PCM_16;
-  SNDFILE * sndfile = sf_open (filepath.string ().c_str (), SFM_READ, &sfinfo);
-  if (!sndfile)
-    {
-      const char * err_str = sf_strerror (sndfile);
-      z_error ("sndfile null: {}", err_str);
-      return 0;
-    }
-  z_return_val_if_fail (sfinfo.frames > 0, 0);
-  unsigned_frame_t frames = static_cast<unsigned_frame_t> (sfinfo.frames);
-
-  int ret = sf_close (sndfile);
-  z_return_val_if_fail (ret == 0, 0);
-
-  return frames;
+  AudioFile  audio_file{ filepath };
+  const auto metadata = audio_file.read_metadata ();
+  return static_cast<unsigned_frame_t> (metadata.num_frames);
 }
 
-/**
- * Returns whether the frame buffers are equal.
- */
 bool
 frames_equal (
-  const float * src1,
-  const float * src2,
-  size_t        num_frames,
-  float         epsilon)
+  std::span<const float> src1,
+  std::span<const float> src2,
+  float                  epsilon)
 {
-  for (size_t i = 0; i < num_frames; i++)
-    {
-      if (!utils::math::floats_near (src1[i], src2[i], epsilon))
-        {
-          z_debug (
-            "[{}] {:f} != {:f}", i, static_cast<double> (src1[i]),
-            static_cast<double> (src2[i]));
-          return false;
-        }
-    }
-  return true;
+  z_return_val_if_fail (src1.size () == src2.size (), false);
+  return std::ranges::equal (src1, src2, [epsilon] (float a, float b) {
+    return utils::math::floats_near (a, b, epsilon);
+  });
 }
 
 /**
@@ -112,8 +85,8 @@ audio_files_equal (
         {
           if (
             !frames_equal (
-              buf1.getReadPointer (i), buf2.getReadPointer (i), num_frames,
-              epsilon))
+              { buf1.getReadPointer (i), num_frames },
+              { buf2.getReadPointer (i), num_frames }, epsilon))
             return false;
         }
 
@@ -130,9 +103,9 @@ audio_files_equal (
  * Returns whether the frame buffer is empty (zero).
  */
 bool
-frames_empty (const float * src, size_t num_frames)
+frames_silent (std::span<const float> src)
 {
-  for (size_t i = 0; i < num_frames; i++)
+  for (size_t i = 0; i < src.size (); i++)
     {
       if (!utils::math::floats_equal (src[i], 0.f))
         {
@@ -146,24 +119,12 @@ frames_empty (const float * src, size_t num_frames)
 bool
 audio_file_is_silent (const fs::path &filepath)
 {
-  SF_INFO sfinfo;
-  memset (&sfinfo, 0, sizeof (sfinfo));
-  sfinfo.format = sfinfo.format | SF_FORMAT_PCM_16;
-  SNDFILE * sndfile = sf_open (filepath.string ().c_str (), SFM_READ, &sfinfo);
-  z_return_val_if_fail (sndfile && sfinfo.frames > 0, true);
-
-  const auto         buf_size = sfinfo.frames * sfinfo.channels;
-  std::vector<float> data (static_cast<size_t> (buf_size));
-  sf_count_t frames_read = sf_readf_float (sndfile, data.data (), sfinfo.frames);
-  EXPECT_EQ (frames_read, sfinfo.frames);
-  z_return_val_if_fail (frames_read == sfinfo.frames, true);
-  z_debug ("read {} frames for {}", frames_read, filepath);
-
-  bool is_empty = frames_empty (data.data (), static_cast<size_t> (buf_size));
-  int  ret = sf_close (sndfile);
-  z_return_val_if_fail (ret == 0, true);
-
-  return is_empty;
+  AudioFile   audio_file{ filepath };
+  AudioBuffer buf;
+  audio_file.read_full (buf, std::nullopt);
+  buf.interleave_samples ();
+  return frames_silent (
+    { buf.getReadPointer (0), static_cast<size_t> (buf.getNumSamples ()) });
 }
 
 float

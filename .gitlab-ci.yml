@@ -81,7 +81,7 @@ stages:
 default:
   cache:
   # this number must be bumped every time these subprojects are updated
-  - key: cache-7-$CI_RUNNER_DESCRIPTION
+  - key: cache-8-$CI_RUNNER_DESCRIPTION
     paths:
       - venv
       - "$BUILDDIR/_deps/*-src"
@@ -142,7 +142,7 @@ configure:windows:
       -DZRYTHM_STRICT=ON
       -DZRYTHM_TESTS=OFF
       -DZRYTHM_BENCHMARKS=OFF
-      -DDFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
+      -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
       -DZRYTHM_FFTW3_THREADS_SEPARATE=FALSE
       "-DCMAKE_PREFIX_PATH=C:\zrythm-deps-installed;C:\Qt\Qt-6.9.0;C:\lv2"
       -G "Visual Studio 17 2022"

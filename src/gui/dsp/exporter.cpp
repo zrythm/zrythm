@@ -32,8 +32,7 @@
 #include "utils/progress_info.h"
 
 #include "juce_wrapper.h"
-#include "midilib/src/midifile.h"
-#include <sndfile.h>
+#include <midilib/src/midifile.h>
 
 using namespace zrythm;
 

@@ -72,10 +72,9 @@ get_num_frames (const fs::path &filepath);
  */
 bool
 frames_equal (
-  const float * src1,
-  const float * src2,
-  size_t        num_frames,
-  float         epsilon);
+  std::span<const float> src1,
+  std::span<const float> src2,
+  float                  epsilon);
 
 /**
  * Returns whether the file contents are equal.
@@ -94,7 +93,7 @@ audio_files_equal (
  * Returns whether the frame buffer is empty (zero).
  */
 bool
-frames_empty (const float * src, size_t num_frames);
+frames_silent (std::span<const float> src);
 
 /**
  * Detect BPM.

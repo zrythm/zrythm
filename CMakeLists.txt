@@ -49,6 +49,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++23")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_AUTOUIC OFF)
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5) # avoid cmake errors on older projects
 # Enable precompiled headers
 set(CMAKE_PCH_INSTANTIATE_TEMPLATES ON)
 
@@ -711,7 +712,17 @@ if(ZRYTHM_YAML_PROJECT_COMPATIBILITY)
   set(HAVE_CYAML TRUE)
 endif()
 
-find_package(SndFile 1.0.29 REQUIRED)
+set(BUILD_EXAMPLES OFF)
+set(BUILD_TESTING OFF)
+set(ENABLE_EXTERNAL_LIBS ON)
+FetchContent_Declare(
+  SndFile
+  GIT_REPOSITORY https://github.com/libsndfile/libsndfile
+  # 1.2.2
+  GIT_TAG 72f6af15e8f85157bd622ed45b979025828b7001
+  FIND_PACKAGE_ARGS NAMES SndFile 1.0.29 REQUIRED
+)
+FetchContent_MakeAvailable(sndfile)
 set(HAVE_OPUS TRUE)
 
 find_package(soxr QUIET)
@@ -746,7 +757,15 @@ endif()
 # pkg_check_modules(SRATOM sratom-0>=0.4.0 REQUIRED IMPORTED_TARGET)
 pkg_check_modules(LILV lilv-0>=0.24.6 REQUIRED IMPORTED_TARGET)
 
-include(FindFFTW3)
+# include(FindFFTW3)
+FetchContent_Declare(
+  fftw3
+  URL       http://fftw.org/fftw-3.3.10.tar.gz
+  URL_HASH  MD5=8ccbf6a5ea78a16dbc3e1306e234cc5c)
+FetchContent_MakeAvailable(fftw3)
+add_library(fftw3_libs INTERFACE)
+target_link_libraries(fftw3_libs INTERFACE fftw3 fftw3f)
+add_library(zrythm::fftw3_libs ALIAS fftw3_libs)
 
 pkg_check_modules(CHROMAPRINT libchromaprint IMPORTED_TARGET)
 if(CHROMAPRINT_FOUND)
@@ -818,13 +837,13 @@ FetchContent_Declare(
   GIT_TAG bbb27a5efb85b92a0486cf361a8635715a53f6ba
   SOURCE_SUBDIR cmake_unofficial
 )
-pkg_check_modules(XXHASH libxxhash>=0.8 IMPORTED_TARGET)
-if(XXHASH_FOUND)
-  add_library(xxHash::xxhash ALIAS PkgConfig::XXHASH)
-else()
+# pkg_check_modules(XXHASH libxxhash>=0.8 IMPORTED_TARGET)
+# if(XXHASH_FOUND)
+  # add_library(xxHash::xxhash ALIAS PkgConfig::XXHASH)
+# else()
   set(XXHASH_BUILD_XXHSUM OFF)
   FetchContent_MakeAvailable(xxHash)
-endif()
+# endif()
 
 # not used, might use in the future
 if(0)
@@ -857,8 +876,8 @@ if(NOT magic_enum_FOUND)
 endif()
 
 # fmt
-find_package(fmt QUIET)
-if(NOT fmt_FOUND)
+# find_package(fmt QUIET)
+# if(NOT fmt_FOUND)
   FetchContent_Declare(
     fmt
     GIT_REPOSITORY https://github.com/fmtlib/fmt.git
@@ -866,25 +885,25 @@ if(NOT fmt_FOUND)
     GIT_TAG 0c9fce2ffefecfdce794e1859584e25877b7b592
   )
   FetchContent_MakeAvailable(fmt)
-endif()
+# endif()
 
 # spdlog
-find_package(spdlog QUIET)
-if(spdlog_FOUND)
-  target_compile_definitions(spdlog::spdlog INTERFACE
-    SPDLOG_FMT_EXTERNAL
-    SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE
-  )
-  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
-    target_compile_definitions(spdlog::spdlog INTERFACE
-      SPDLOG_FUNCTION=__PRETTY_FUNCTION__
-    )
-  else()
-    target_compile_definitions(spdlog::spdlog INTERFACE
-      SPDLOG_FUNCTION=__FUNCTION__
-    )
-  endif()
-else()
+# find_package(spdlog QUIET)
+# if(spdlog_FOUND)
+#   target_compile_definitions(spdlog::spdlog INTERFACE
+#     SPDLOG_FMT_EXTERNAL
+#     SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE
+#   )
+#   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+#     target_compile_definitions(spdlog::spdlog INTERFACE
+#       SPDLOG_FUNCTION=__PRETTY_FUNCTION__
+#     )
+#   else()
+#     target_compile_definitions(spdlog::spdlog INTERFACE
+#       SPDLOG_FUNCTION=__FUNCTION__
+#     )
+#   endif()
+# else()
   FetchContent_Declare(
     spdlog
     GIT_REPOSITORY https://github.com/gabime/spdlog.git
@@ -906,7 +925,7 @@ else()
       SPDLOG_FUNCTION=__FUNCTION__
     )
   endif()
-endif()
+# endif()
 
 
 pkg_check_modules(RUBBERBAND rubberband REQUIRED IMPORTED_TARGET)
@@ -958,7 +977,7 @@ add_library(zrythm::qt_libs ALIAS qt_libs)
 
 list(APPEND zrythm_link_libs
   zita-resampler::zita-resampler
-  SndFile::sndfile
+  # SndFile::sndfile
   soxr::soxr
   # PkgConfig::CARLA
   # PkgConfig::RTAUDIO
@@ -967,7 +986,7 @@ list(APPEND zrythm_link_libs
   Threads::Threads
   PkgConfig::RUBBERBAND
   ${CMAKE_DL_LIBS}
-  FFTW3::FFTW3
+  zrythm::fftw3_libs
   xxHash::xxhash
   yyjson::yyjson
   magic_enum::magic_enum

@@ -205,9 +205,11 @@ Resampler::Impl::process ()
       for (const auto i : std::views::iota (0, num_channels))
         {
           zrythm::utils::audio::frames_equal (
-            in_frames_.getReadPointer (i, static_cast<int> (frames_written_)),
-            out_frames_.getReadPointer (i, static_cast<int> (frames_written_)),
-            frames_written_now, 0.00000001f);
+            { in_frames_.getReadPointer (i, static_cast<int> (frames_written_)),
+              frames_written_now },
+            { out_frames_.getReadPointer (i, static_cast<int> (frames_written_)),
+              frames_written_now },
+            0.00000001f);
         }
     }
 

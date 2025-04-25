@@ -322,7 +322,7 @@ public:
   /**
    * Generates a hash for a given port.
    */
-  uint32_t get_hash () const;
+  size_t get_hash () const;
 
   bool     has_label () const { return !id_->label_.empty (); }
   PortType get_type () const { return id_->type_; }

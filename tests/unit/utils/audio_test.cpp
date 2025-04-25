@@ -25,17 +25,17 @@ TEST (AudioTest, GetNumFrames)
 
 TEST (AudioTest, FrameComparison)
 {
-  float buf1[1024];
-  float buf2[1024];
+  std::array<float, 1024> buf1{};
+  std::array<float, 1024> buf2{};
 
   // Test equal buffers
-  std::fill_n (buf1, 1024, 0.5f);
-  std::fill_n (buf2, 1024, 0.5f);
-  EXPECT_TRUE (frames_equal (buf1, buf2, 1024, 0.0001f));
+  std::ranges::fill (buf1, 0.5f);
+  std::ranges::fill (buf2, 0.5f);
+  EXPECT_TRUE (frames_equal (buf1, buf2, 0.0001f));
 
   // Test different buffers
   buf2[500] = 0.6f;
-  EXPECT_FALSE (frames_equal (buf1, buf2, 1024, 0.0001f));
+  EXPECT_FALSE (frames_equal (buf1, buf2, 0.0001f));
 }
 
 TEST (AudioTest, AudioFileComparison)
@@ -47,10 +47,10 @@ TEST (AudioTest, AudioFileComparison)
 TEST (AudioTest, FramesEmpty)
 {
   float buf[1024] = { 0.f };
-  EXPECT_TRUE (frames_empty (buf, 1024));
+  EXPECT_TRUE (frames_silent (buf, 1024));
 
   buf[500] = 0.1f;
-  EXPECT_FALSE (frames_empty (buf, 1024));
+  EXPECT_FALSE (frames_silent (buf, 1024));
 }
 
 // TODO

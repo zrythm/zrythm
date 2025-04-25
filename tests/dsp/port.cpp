@@ -147,16 +147,16 @@ TEST_F (ZrythmFixture, GetPortHash)
   AudioPort port2 ("test-port", PortFlow::Output);
   AudioPort port3 ("test-port3", PortFlow::Output);
 
-  unsigned int hash1 = port1.get_hash ();
-  unsigned int hash2 = port2.get_hash ();
-  unsigned int hash3 = port3.get_hash ();
+  const auto hash1 = port1.get_hash ();
+  const auto hash2 = port2.get_hash ();
+  const auto hash3 = port3.get_hash ();
   ASSERT_NE (hash1, hash2);
   ASSERT_NE (hash1, hash3);
 
   /* hash again and check equal */
-  unsigned int hash11 = port1.get_hash ();
-  unsigned int hash22 = port2.get_hash ();
-  unsigned int hash33 = port3.get_hash ();
+  const auto hash11 = port1.get_hash ();
+  const auto hash22 = port2.get_hash ();
+  const auto hash33 = port3.get_hash ();
   ASSERT_EQ (hash1, hash11);
   ASSERT_EQ (hash2, hash22);
   ASSERT_EQ (hash3, hash33);

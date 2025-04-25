@@ -171,7 +171,7 @@ AudioClip::replace_frames (
   for (int i = 0; i < src_frames.getNumChannels (); ++i)
     {
       ch_frames_.copyFrom (
-        i, start_frame, src_frames.getReadPointer (i, 0),
+        i, static_cast<int> (start_frame), src_frames.getReadPointer (i, 0),
         src_frames.getNumSamples ());
     }
 }
@@ -250,7 +250,8 @@ AudioClip::write_to_file (const std::string &filepath, bool parts)
           z_return_if_fail (writer_ != nullptr);
         }
       writer_->writeFromAudioSampleBuffer (
-        ch_frames_, frames_written_, nframes_to_write_this_time);
+        ch_frames_, static_cast<int> (frames_written_),
+        nframes_to_write_this_time);
 
       frames_written_ = num_frames;
       last_write_ = get_monotonic_time_usecs ();
@@ -282,8 +283,11 @@ AudioClip::verify_recorded_file (
   constexpr float epsilon = 0.0001f;
   z_return_val_if_fail (
     utils::audio::frames_equal (
-      ch_frames_.getReadPointer (0), new_clip.ch_frames_.getReadPointer (0),
-      (size_t) new_clip.get_num_frames (), epsilon),
+      { ch_frames_.getReadPointer (0),
+        static_cast<size_t> (new_clip.get_num_frames ()) },
+      { new_clip.ch_frames_.getReadPointer (0),
+        static_cast<size_t> (new_clip.get_num_frames ()) },
+      epsilon),
     false);
 
   return true;

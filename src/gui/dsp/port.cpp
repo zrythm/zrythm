@@ -351,7 +351,7 @@ Port::clear_external_buffer ()
   backend_->clear_backend_buffer (id_->type_, AUDIO_ENGINE->block_length_);
 }
 
-uint32_t
+size_t
 Port::get_hash () const
 {
   return utils::hash::get_object_hash (*this);

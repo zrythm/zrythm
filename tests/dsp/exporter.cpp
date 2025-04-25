@@ -15,8 +15,6 @@
 #include "helpers/plugin_manager.h"
 #include "tests/helpers/zrythm_helper.h"
 
-#include <sndfile.h>
-
 constexpr midi_byte_t DUMMY_NOTE_PITCH = 70;
 constexpr midi_byte_t DUMMY_NOTE_VELOCITY = 70;
 
