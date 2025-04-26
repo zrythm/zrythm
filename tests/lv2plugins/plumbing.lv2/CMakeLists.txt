@@ -23,7 +23,7 @@ set_target_properties(plumbing_lv2 PROPERTIES
 )
 
 target_link_libraries(plumbing_lv2 PRIVATE
-  PkgConfig::LV2)
+  zrythm::lv2)
 
 list(APPEND test_lv2_plugin_libs plumbing_lv2)
 list(APPEND test_lv2_plugins

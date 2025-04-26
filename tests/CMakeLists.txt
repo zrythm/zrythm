@@ -17,6 +17,11 @@ add_subdirectory(lv2plugins)
 find_package(GTest REQUIRED)
 find_package(benchmark REQUIRED)
 
+add_subdirectory(unit)
+add_subdirectory(benchmarks)
+
+return() # TODO...
+
 find_program(PIPEWIRE_EXECUTABLE pipewire)
 
 set(TEST_ENV
@@ -207,11 +212,6 @@ configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/zrythm-test-config.h.in
   ${CMAKE_CURRENT_BINARY_DIR}/zrythm-test-config.h
 )
-
-add_subdirectory(unit)
-add_subdirectory(benchmarks)
-
-return() # TODO...
 
 # set(TEST_LINK_ARGS -fPIC)
 

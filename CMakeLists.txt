@@ -731,15 +731,19 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(sndfile)
 set(HAVE_OPUS TRUE)
 
-pkg_check_modules(LV2 lv2>=1.16.0 REQUIRED IMPORTED_TARGET)
-if(${LV2_VERSION} VERSION_GREATER_EQUAL 1.18.0)
+add_library(lv2_lib INTERFACE)
+target_include_directories(lv2_lib
+  INTERFACE ${juce_SOURCE_DIR}/modules/juce_audio_processors/format_types/LV2_SDK/lv2)
+# pkg_check_modules(LV2 lv2>=1.16.0 REQUIRED IMPORTED_TARGET)
+# if(${LV2_VERSION} VERSION_GREATER_EQUAL 1.18.0)
   set(HAVE_LV2_1_18 TRUE)
-endif()
+# endif()
+add_library(zrythm::lv2 ALIAS lv2_lib)
 # pkg_check_modules(ZIX zix-0>=0.4.0 REQUIRED IMPORTED_TARGET)
 # pkg_check_modules(SERD serd-0>=0.30.0 REQUIRED IMPORTED_TARGET)
 # pkg_check_modules(SORD sord-0>=0.14.0 REQUIRED IMPORTED_TARGET)
 # pkg_check_modules(SRATOM sratom-0>=0.4.0 REQUIRED IMPORTED_TARGET)
-pkg_check_modules(LILV lilv-0>=0.24.6 REQUIRED IMPORTED_TARGET)
+# pkg_check_modules(LILV lilv-0>=0.24.6 REQUIRED IMPORTED_TARGET)
 
 # include(FindFFTW3)
 FetchContent_Declare(
@@ -955,7 +959,6 @@ add_library(zrythm::qt_libs ALIAS qt_libs)
 
 list(APPEND zrythm_link_libs
   zita-resampler::zita-resampler
-  # SndFile::sndfile
   zrythm::soxr
   # PkgConfig::CARLA
   # PkgConfig::RTAUDIO

@@ -19,7 +19,7 @@ set_target_properties(sigabrt_lv2 PROPERTIES
   OUTPUT_NAME "sigabrt")
 
 target_link_libraries(sigabrt_lv2 PRIVATE
-  PkgConfig::LV2)
+  zrythm::lv2)
 
 list(APPEND test_lv2_plugin_libs sigabrt_lv2)
 list(APPEND test_lv2_plugins

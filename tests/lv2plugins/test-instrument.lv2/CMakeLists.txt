@@ -19,7 +19,7 @@ set_target_properties(test_instrument_lv2 PROPERTIES
   OUTPUT_NAME "test-instrument")
 
 target_link_libraries(test_instrument_lv2 PRIVATE
-  PkgConfig::LV2)
+  zrythm::lv2)
 
 list(APPEND test_lv2_plugin_libs test_instrument_lv2)
 list(APPEND test_lv2_plugins

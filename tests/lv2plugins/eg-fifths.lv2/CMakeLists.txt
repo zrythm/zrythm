@@ -19,4 +19,4 @@ set_target_properties(eg_fifths_lv2 PROPERTIES
   OUTPUT_NAME "fifths")
 
 target_link_libraries(eg_fifths_lv2 PRIVATE
-  PkgConfig::LV2)
+  zrythm::lv2)

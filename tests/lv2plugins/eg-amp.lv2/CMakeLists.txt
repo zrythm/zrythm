@@ -19,7 +19,7 @@ set_target_properties(eg_amp_lv2 PROPERTIES
   OUTPUT_NAME "amp")
 
 target_link_libraries(eg_amp_lv2 PRIVATE
-  PkgConfig::LV2)
+  zrythm::lv2)
 
 list(APPEND test_lv2_plugin_libs eg_amp_lv2)
 list(APPEND test_lv2_plugins

@@ -72,7 +72,7 @@ foreach(plugin_info ${plugins})
     set(pl_cpp_args)
     set(pl_deps
       Boost::boost
-      PkgConfig::LV2
+      zrythm::lv2
     )
     if(compiler_is_gcc AND OS_GNU AND ZRYTHM_BUNDLED_PLUGINS_WITH_STATIC_LINKING)
       list(APPEND pl_link_args -static-libgcc -static-libstdc++)
