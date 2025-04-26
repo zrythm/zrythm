@@ -915,7 +915,7 @@ add_library(zrythm::spdlog ALIAS spdlog_lib)
 
 # pkg_check_modules(RUBBERBAND rubberband REQUIRED IMPORTED_TARGET)
 
-if(MSVC)
+if(MSVC OR APPLE)
   find_package(Boost REQUIRED)
 else()
   find_package(Boost REQUIRED CONFIG)
