@@ -44,13 +44,14 @@ TEST (AudioTest, AudioFileComparison)
     audio_files_equal (TEST_WAV_FILE_PATH, TEST_WAV_FILE_PATH, 0, 0.0001f));
 }
 
-TEST (AudioTest, FramesEmpty)
+TEST (AudioTest, FramesSilent)
 {
-  float buf[1024] = { 0.f };
-  EXPECT_TRUE (frames_silent (buf, 1024));
+  std::array<float, 1024> buf{};
+  std::ranges::fill (buf, 0.f);
+  EXPECT_TRUE (frames_silent (buf));
 
   buf[500] = 0.1f;
-  EXPECT_FALSE (frames_silent (buf, 1024));
+  EXPECT_FALSE (frames_silent (buf));
 }
 
 // TODO

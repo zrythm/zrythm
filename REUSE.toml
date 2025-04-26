@@ -517,3 +517,8 @@ SPDX-License-Identifier = "MIT"
 path = "ext/crill/**/*.h"
 SPDX-FileCopyrightText = "Copyright (c) 2022 - Timur Doumler and Fabian Renn-Giles"
 SPDX-License-Identifier = "BSL-1.0"
+
+[[annotations]]
+path = "ext/soxr/**"
+SPDX-FileCopyrightText = "Copyright (c) 2007-18 robs@users.sourceforge.net"
+SPDX-License-Identifier = "LGPL-2.1-or-later"

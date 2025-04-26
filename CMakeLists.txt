@@ -633,11 +633,13 @@ if(WIN32)
 endif()
 
 # Sanitizers
+add_library(_sanitizers_lib INTERFACE)
 if(compiler_gnulike)
   set(sanitizers)
   if(ZRYTHM_ENABLE_SANITIZER_ADDRESS)
     list(APPEND sanitizers "address")
-    add_compile_options(
+    target_compile_options(
+      _sanitizers_lib INTERFACE
       -fsanitize-address-use-after-scope
     )
   endif()
@@ -652,8 +654,8 @@ if(compiler_gnulike)
   endif()
   if(ZRYTHM_ENABLE_SANITIZER_MEMORY)
     list(APPEND sanitizers "memory")
-    add_compile_options(
-      # "-fsanitize-blacklist=${CMAKE_SOURCE_DIR}/tools/san-blacklist.txt"
+    target_compile_options(
+      _sanitizers_lib INTERFACE
       -fsanitize-memory-track-origins
     )
   endif()
@@ -661,17 +663,21 @@ if(compiler_gnulike)
   list(JOIN sanitizers "," sanitizers_list)
   if(sanitizers_list)
     if(NOT "${sanitizers_list}" STREQUAL "")
-      add_compile_options(
+      target_compile_options(
+        _sanitizers_lib INTERFACE
         -fsanitize=${sanitizers_list}
+        # -fsanitize-blacklist=${CMAKE_CURRENT_SOURCE_DIR}/tools/san-blacklist.txt
         -fno-omit-frame-pointer
         -fno-optimize-sibling-calls
       )
-      add_link_options(
+      target_link_options(
+        _sanitizers_lib INTERFACE
         -fsanitize=${sanitizers_list}
       )
     endif()
   endif()
 endif()
+add_library(zrythm::sanitizers ALIAS _sanitizers_lib)
 
 ##############################################################
 # More dependencies
@@ -724,28 +730,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(sndfile)
 set(HAVE_OPUS TRUE)
-
-find_package(soxr QUIET)
-if(NOT soxr_FOUND)
-  pkg_check_modules(SOXR soxr IMPORTED_TARGET)
-  if(SOXR_FOUND)
-    add_library(soxr::soxr ALIAS PkgConfig::SOXR)
-  else()
-    find_library(SOXR_LIB soxr
-      PATHS ${SOXR_LIB_SEARCH_DIR}
-      REQUIRED
-    )
-    find_path(SOXR_INCLUDE_DIR soxr.h
-      PATHS ${SOXR_INCLUDE_DIR_SEARCH_DIR}
-      REQUIRED
-    )
-    add_library(soxr::soxr UNKNOWN IMPORTED)
-    set_target_properties(soxr::soxr PROPERTIES
-      INTERFACE_INCLUDE_DIRECTORIES "${SOXR_INCLUDE_DIR}"
-      IMPORTED_LOCATION "${SOXR_LIB}"
-    )
-  endif()
-endif()
 
 pkg_check_modules(LV2 lv2>=1.16.0 REQUIRED IMPORTED_TARGET)
 if(${LV2_VERSION} VERSION_GREATER_EQUAL 1.18.0)
@@ -828,7 +812,24 @@ if(RTMIDI_VERSION VERSION_GREATER_EQUAL 6.0.0)
 endif()
 set(HAVE_RTMIDI TRUE)
 
-find_package(zstd REQUIRED)
+set(ZSTD_BUILD_STATIC ON)
+set(ZSTD_BUILD_SHARED OFF)
+set(ZSTD_LEGACY_SUPPORT OFF)
+set(ZSTD_BUILD_PROGRAMS OFF)
+set(ZSTD_BUILD_CONTRIB OFF)
+set(ZSTD_BUILD_TESTS OFF)
+FetchContent_Declare(
+    zstd
+    GIT_REPOSITORY https://github.com/facebook/zstd
+    # 1.5.7
+    GIT_TAG f8745da6ff1ad1e7bab384bd1f9d742439278e99
+    SOURCE_SUBDIR build/cmake
+    FIND_PACKAGE_ARGS zstd REQUIRED
+)
+FetchContent_MakeAvailable(zstd)
+add_library(_zstd_lib INTERFACE)
+target_link_libraries(_zstd_lib INTERFACE libzstd_static)
+add_library(zrythm::zstd ALIAS _zstd_lib)
 
 FetchContent_Declare(
   xxHash
@@ -836,14 +837,10 @@ FetchContent_Declare(
   # 0.8.2
   GIT_TAG bbb27a5efb85b92a0486cf361a8635715a53f6ba
   SOURCE_SUBDIR cmake_unofficial
+  FIND_PACKAGE_ARGS NAMES xxHash 0.8 REQUIRED
 )
-# pkg_check_modules(XXHASH libxxhash>=0.8 IMPORTED_TARGET)
-# if(XXHASH_FOUND)
-  # add_library(xxHash::xxhash ALIAS PkgConfig::XXHASH)
-# else()
-  set(XXHASH_BUILD_XXHSUM OFF)
-  FetchContent_MakeAvailable(xxHash)
-# endif()
+set(XXHASH_BUILD_XXHSUM OFF)
+FetchContent_MakeAvailable(xxHash)
 
 # not used, might use in the future
 if(0)
@@ -869,64 +866,45 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/Neargye/magic_enum.git
   # 0.9.6
   GIT_TAG dd6a39d0ba1852cf06907e0f0573a2a10d23c2ad
+  FIND_PACKAGE_ARGS NAMES magic_enum 0.9.5 REQUIRED
 )
-find_package(magic_enum 0.9.5)
-if(NOT magic_enum_FOUND)
-  FetchContent_MakeAvailable(magic_enum)
-endif()
+FetchContent_MakeAvailable(magic_enum)
 
 # fmt
-# find_package(fmt QUIET)
-# if(NOT fmt_FOUND)
-  FetchContent_Declare(
-    fmt
-    GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-    # 11.0.2
-    GIT_TAG 0c9fce2ffefecfdce794e1859584e25877b7b592
-  )
-  FetchContent_MakeAvailable(fmt)
-# endif()
+FetchContent_Declare(
+  fmt
+  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+  # 11.0.2
+  GIT_TAG 0c9fce2ffefecfdce794e1859584e25877b7b592
+  FIND_PACKAGE_ARGS NAMES fmt REQUIRED
+)
+FetchContent_MakeAvailable(fmt)
 
 # spdlog
-# find_package(spdlog QUIET)
-# if(spdlog_FOUND)
-#   target_compile_definitions(spdlog::spdlog INTERFACE
-#     SPDLOG_FMT_EXTERNAL
-#     SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE
-#   )
-#   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
-#     target_compile_definitions(spdlog::spdlog INTERFACE
-#       SPDLOG_FUNCTION=__PRETTY_FUNCTION__
-#     )
-#   else()
-#     target_compile_definitions(spdlog::spdlog INTERFACE
-#       SPDLOG_FUNCTION=__FUNCTION__
-#     )
-#   endif()
-# else()
-  FetchContent_Declare(
-    spdlog
-    GIT_REPOSITORY https://github.com/gabime/spdlog.git
-    # 1.15.0
-    GIT_TAG 8e5613379f5140fefb0b60412fbf1f5406e7c7f8
+FetchContent_Declare(
+  spdlog
+  GIT_REPOSITORY https://github.com/gabime/spdlog.git
+  # 1.15.0
+  GIT_TAG 8e5613379f5140fefb0b60412fbf1f5406e7c7f8
+  FIND_PACKAGE_ARGS NAMES spdlog REQUIRED
+)
+FetchContent_MakeAvailable(spdlog)
+add_library(spdlog_lib INTERFACE)
+target_link_libraries(spdlog_lib INTERFACE spdlog::spdlog)
+target_compile_definitions(spdlog_lib INTERFACE
+  SPDLOG_FMT_EXTERNAL
+  SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE
+)
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+  target_compile_definitions(spdlog_lib INTERFACE
+    SPDLOG_FUNCTION=__PRETTY_FUNCTION__
   )
-  set(SPDLOG_FMT_EXTERNAL ON)
-  FetchContent_MakeAvailable(spdlog)
-  target_compile_definitions(spdlog INTERFACE
-    SPDLOG_FMT_EXTERNAL
-    SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE
+else()
+  target_compile_definitions(spdlog_lib INTERFACE
+    SPDLOG_FUNCTION=__FUNCTION__
   )
-  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
-    target_compile_definitions(spdlog INTERFACE
-      SPDLOG_FUNCTION=__PRETTY_FUNCTION__
-    )
-  else()
-    target_compile_definitions(spdlog INTERFACE
-      SPDLOG_FUNCTION=__FUNCTION__
-    )
-  endif()
-# endif()
-
+endif()
+add_library(zrythm::spdlog ALIAS spdlog_lib)
 
 pkg_check_modules(RUBBERBAND rubberband REQUIRED IMPORTED_TARGET)
 
@@ -978,11 +956,11 @@ add_library(zrythm::qt_libs ALIAS qt_libs)
 list(APPEND zrythm_link_libs
   zita-resampler::zita-resampler
   # SndFile::sndfile
-  soxr::soxr
+  zrythm::soxr
   # PkgConfig::CARLA
   # PkgConfig::RTAUDIO
   PkgConfig::RTMIDI
-  zstd::libzstd_shared
+  zrythm::zstd
   Threads::Threads
   PkgConfig::RUBBERBAND
   ${CMAKE_DL_LIBS}
@@ -994,11 +972,12 @@ list(APPEND zrythm_link_libs
   backward_cpp::backward_cpp
   crill::crill
   fmt::fmt
-  spdlog::spdlog
+  zrythm::spdlog
   type_safe
   Boost::boost
   zrythm::qt_libs
   GTest::GTest
+  zrythm::sanitizers
 )
 
 if(ZRYTHM_WITH_JACK)

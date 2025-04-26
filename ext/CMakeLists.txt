@@ -112,6 +112,11 @@ add_library(zrythm::juce_libs ALIAS _juce_libs)
 add_subdirectory(kissfft)
 add_subdirectory(midilib)
 add_subdirectory(qm-dsp)
+
+set(WITH_OPENMP OFF)
+add_subdirectory(soxr)
+add_library(zrythm::soxr ALIAS soxr)
+
 add_subdirectory(weakjack)
 add_subdirectory(whereami)
 add_subdirectory(zita-resampler)

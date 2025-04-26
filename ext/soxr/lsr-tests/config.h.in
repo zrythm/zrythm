@@ -1,0 +1,24 @@
+/* SoX Resampler Library      Copyright (c) 2007-16 robs@users.sourceforge.net
+ * Licence for this file: LGPL v2.1                  See LICENCE for details. */
+
+#if !defined soxsrc_lsr_tests_config_included
+#define soxsrc_lsr_tests_config_included
+
+#cmakedefine01 HAVE_ALARM
+#cmakedefine01 HAVE_FFTW3
+#cmakedefine01 HAVE_LRINTF
+#cmakedefine01 HAVE_LRINT
+#cmakedefine01 HAVE_SIGNAL
+#cmakedefine01 HAVE_SNDFILE
+#cmakedefine01 HAVE_SYS_TIMES_H
+
+#if HAVE_SIGNAL
+  #include <signal.h>
+  #if defined SIGALRM
+    #define HAVE_SIGALRM 1
+  #else
+    #define HAVE_SIGALRM 0
+  #endif
+#endif
+
+#endif

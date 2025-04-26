@@ -1,0 +1,4 @@
+# SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: FSFAP
+
+#fun:yyjson_mut_write_opts
