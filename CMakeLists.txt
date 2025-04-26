@@ -14,6 +14,9 @@ if(APPLE)
     execute_process(COMMAND xcrun --show-sdk-path OUTPUT_VARIABLE CMAKE_OSX_SYSROOT OUTPUT_STRIP_TRAILING_WHITESPACE)
   endif()
   message(STATUS "Using SDK: ${CMAKE_OSX_SYSROOT}")
+
+  # universal build
+  set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64")
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -47,18 +50,20 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++23")
+set(CMAKE_XCODE_ATTRIBUTE_CLANG_WARN_DOCUMENTATION_COMMENTS "NO")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_AUTOUIC OFF)
 set(CMAKE_POLICY_VERSION_MINIMUM 3.24)
 # Enable precompiled headers
 set(CMAKE_PCH_INSTANTIATE_TEMPLATES ON)
+# set(CMAKE_DISABLE_PRECOMPILE_HEADERS ON)
 
 # Set the release runtime library for all targets to make our life easier
 # (all dependencies must use the same runtime library, so build all
 # dependencies against the release runtime library first)
 # Note: only DLL is allowed, and it must not be redistributed
 # See https://opensource.stackexchange.com/a/7187
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS YES)
 

@@ -120,7 +120,6 @@ configure:mac-arm:
       cmake -B $BUILDDIR $COMMON_CMAKE_OPTIONS
       -G "Xcode"
       "-DCMAKE_PREFIX_PATH=/opt/homebrew/Cellar/lv2/1.18.10;/opt/Qt6.9"
-      -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
   artifacts:
     paths:
       - $BUILDDIR
