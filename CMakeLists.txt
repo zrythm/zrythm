@@ -362,6 +362,10 @@ if(WIN32)
   )
 endif()
 
+if(APPLE AND CMAKE_C_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wno-documentation)
+endif()
+
 # compile args
 add_library(_zrythm_compile_options INTERFACE)
 add_library(_zrythm_warning_flags INTERFACE)
@@ -710,9 +714,6 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(yyjson)
 if(NOT TARGET yyjson::yyjson)
   add_library(yyjson::yyjson ALIAS yyjson)
-endif()
-if(APPLE)
-  target_compile_options(yyjson PRIVATE -Wno-documentation)
 endif()
 
 add_subdirectory(ext)

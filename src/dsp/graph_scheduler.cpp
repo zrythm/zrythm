@@ -180,10 +180,14 @@ GraphScheduler::terminate_threads ()
   main_thread_->signalThreadShouldExit ();
 
   /* wait for all threads to go idle */
+  constexpr auto max_tries = 100;
+  auto           tries = 0;
   while (idle_thread_cnt_.load () != static_cast<int> (threads_.size ()))
     {
       z_info ("waiting for threads to go idle...");
       std::this_thread::sleep_for (std::chrono::milliseconds (1));
+      if (++tries > max_tries)
+        break;
     }
 
   /* wake-up sleeping threads */
