@@ -59,6 +59,7 @@ stages:
     - mac-arm
   variables:
     BUILDDIR: "build_mac_arm"
+    BOOST_ROOT: "/opt/boost/boost_1_88_0/installed"
   before_script:
     - *unix-activate-venv
 
