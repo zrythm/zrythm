@@ -809,17 +809,19 @@ endif()
 set(HAVE_CARLA FALSE)
 
 if(0)
-pkg_search_module(RTAUDIO librtaudio>=5.1.0 rtaudio>=5.1.0 REQUIRED IMPORTED_TARGET)
-set(HAVE_RTAUDIO TRUE)
-string(REGEX MATCH "^([0-9]+)\\.([0-9]+)" _ ${RTAUDIO_VERSION})
-set(RTAUDIO_MAJOR_VER ${CMAKE_MATCH_1})
-set(RTAUDIO_MINOR_VER ${CMAKE_MATCH_2})
+  pkg_search_module(RTAUDIO librtaudio>=5.1.0 rtaudio>=5.1.0 REQUIRED IMPORTED_TARGET)
+  set(HAVE_RTAUDIO TRUE)
+  string(REGEX MATCH "^([0-9]+)\\.([0-9]+)" _ ${RTAUDIO_VERSION})
+  set(RTAUDIO_MAJOR_VER ${CMAKE_MATCH_1})
+  set(RTAUDIO_MINOR_VER ${CMAKE_MATCH_2})
 endif()
-pkg_search_module(RTMIDI librtmidi>=5.0.0 rtmidi>=5.0.0 REQUIRED IMPORTED_TARGET)
-if(RTMIDI_VERSION VERSION_GREATER_EQUAL 6.0.0)
-  set(HAVE_RTMIDI_6 TRUE)
+if(0)
+  pkg_search_module(RTMIDI librtmidi>=5.0.0 rtmidi>=5.0.0 REQUIRED IMPORTED_TARGET)
+  if(RTMIDI_VERSION VERSION_GREATER_EQUAL 6.0.0)
+    set(HAVE_RTMIDI_6 TRUE)
+  endif()
+  set(HAVE_RTMIDI TRUE)
 endif()
-set(HAVE_RTMIDI TRUE)
 
 set(ZSTD_BUILD_STATIC ON)
 set(ZSTD_BUILD_SHARED OFF)
@@ -1001,7 +1003,7 @@ list(APPEND zrythm_link_libs
   zrythm::soxr
   # PkgConfig::CARLA
   # PkgConfig::RTAUDIO
-  PkgConfig::RTMIDI
+  # PkgConfig::RTMIDI
   zrythm::zstd
   Threads::Threads
   zrythm::rubberband
