@@ -921,7 +921,16 @@ else()
   find_package(Boost REQUIRED CONFIG)
 endif()
 
-find_package(GTest REQUIRED)
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest
+  # 1.16.0
+  GIT_TAG 6910c9d9165801d8827d628cb72eb7ea9dd538c5
+  FIND_PACKAGE_ARGS NAMES GTest REQUIRED
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 
 find_package(Qt6
   COMPONENTS
