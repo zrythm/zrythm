@@ -931,6 +931,7 @@ FetchContent_Declare(
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
+add_library(zrythm::gtest ALIAS gtest)
 
 find_package(Qt6
   COMPONENTS
@@ -991,7 +992,7 @@ list(APPEND zrythm_link_libs
   type_safe
   Boost::boost
   zrythm::qt_libs
-  GTest::GTest
+  zrythm::gtest
   zrythm::sanitizers
 )
 
