@@ -748,6 +748,7 @@ add_library(zrythm::lv2 ALIAS lv2_lib)
 # include(FindFFTW3)
 set(ENABLE_THREADS ON)
 set(WITH_COMBINED_THREADS ON)
+set(BUILD_TESTS OFF)
 FetchContent_Declare(
   fftw3
   URL       http://fftw.org/fftw-3.3.10.tar.gz
