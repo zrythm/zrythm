@@ -537,12 +537,14 @@ if(ZRYTHM_STRICT)
       #-Wanalyzer-too-complex
       #-Werror=analyzer-too-complex
       -Werror=inline
-      -Werror=redundant-decls
       -Werror=sizeof-array-argument
       -Werror=odr
       # -Werror=mismatched-tags # note: broken in gcc 14.2.1
       -Werror=narrowing
-      -Werror=overloaded-virtual
+
+      # these interfere with gbenchmark
+      # -Werror=overloaded-virtual
+      # -Werror=redundant-decls
 
       # disabled because it wants all class members initialized in the
       # constructor initializer list
@@ -931,7 +933,31 @@ FetchContent_Declare(
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
-add_library(zrythm::gtest ALIAS gtest)
+add_library(_gtest_libs INTERFACE)
+target_link_libraries(_gtest_libs INTERFACE gtest)
+add_library(_gtest_main_libs INTERFACE)
+target_link_libraries(_gtest_main_libs INTERFACE gtest_main gmock_main)
+add_library(zrythm::gtest ALIAS _gtest_libs)
+add_library(zrythm::gtest_for_tests ALIAS _gtest_main_libs)
+
+FetchContent_Declare(
+  benchmark
+  GIT_REPOSITORY https://github.com/google/benchmark
+  # 1.9.2
+  GIT_TAG afa23b7699c17f1e26c88cbf95257b20d78d6247
+  FIND_PACKAGE_ARGS NAMES benchmark REQUIRED
+)
+set(BENCHMARK_ENABLE_TESTING OFF)
+set(CMAKE_BUILD_TYPE_BEFORE ${CMAKE_BUILD_TYPE})
+set(CMAKE_BUILD_TYPE Release)
+FetchContent_MakeAvailable(benchmark)
+set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE_BEFORE})
+add_library(_benchmark_libs INTERFACE)
+target_link_libraries(_benchmark_libs INTERFACE benchmark::benchmark_main gmock)
+if(compiler_gnulike)
+  target_compile_options(_benchmark_libs INTERFACE -Wno-error=overloaded-virtual -Wno-error=redundant-decls)
+endif()
+add_library(zrythm::benchmark ALIAS _benchmark_libs)
 
 find_package(Qt6
   COMPONENTS

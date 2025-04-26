@@ -37,8 +37,7 @@ set_target_properties(utils_unit_tests PROPERTIES
 )
 
 target_link_libraries(utils_unit_tests PRIVATE
-  GTest::gtest_main
-  GTest::gmock_main
+  zrythm::gtest_for_tests
   zrythm::utils_lib
 )
 target_compile_definitions(utils_unit_tests PRIVATE

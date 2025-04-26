@@ -14,9 +14,6 @@ set(test_lv2_plugins)
 set(test_lv2_plugin_libs)
 add_subdirectory(lv2plugins)
 
-find_package(GTest REQUIRED)
-find_package(benchmark REQUIRED)
-
 add_subdirectory(unit)
 add_subdirectory(benchmarks)
 

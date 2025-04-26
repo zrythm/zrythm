@@ -26,8 +26,7 @@ set_target_properties(dsp_unit_tests PROPERTIES
 )
 
 target_link_libraries(dsp_unit_tests PRIVATE
-  GTest::gtest_main
-  GTest::gmock_main
+  zrythm::gtest_for_tests
   zrythm_dsp_lib
 )
 target_compile_definitions(dsp_unit_tests PRIVATE

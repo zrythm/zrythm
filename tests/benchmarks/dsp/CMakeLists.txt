@@ -10,10 +10,7 @@ set_target_properties(dsp_benchmarks PROPERTIES
 )
 
 target_link_libraries(dsp_benchmarks PRIVATE
-  # GTest::gtest_main
-  GTest::gmock_main
-  benchmark::benchmark
-  benchmark::benchmark_main
+  zrythm::benchmark
   zrythm_dsp_lib
 )
 target_compile_definitions(dsp_benchmarks PRIVATE
