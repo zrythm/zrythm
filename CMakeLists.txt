@@ -711,7 +711,9 @@ FetchContent_MakeAvailable(yyjson)
 if(NOT TARGET yyjson::yyjson)
   add_library(yyjson::yyjson ALIAS yyjson)
 endif()
-target_compile_options(yyjson PRIVATE -Wno-documentation)
+if(APPLE)
+  target_compile_options(yyjson PRIVATE -Wno-documentation)
+endif()
 
 add_subdirectory(ext)
 
@@ -749,14 +751,11 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(sndfile)
 set(HAVE_OPUS TRUE)
 
-add_library(lv2_lib INTERFACE)
-target_include_directories(lv2_lib
-  INTERFACE ${juce_SOURCE_DIR}/modules/juce_audio_processors/format_types/LV2_SDK/lv2)
-# pkg_check_modules(LV2 lv2>=1.16.0 REQUIRED IMPORTED_TARGET)
-# if(${LV2_VERSION} VERSION_GREATER_EQUAL 1.18.0)
-  set(HAVE_LV2_1_18 TRUE)
-# endif()
-add_library(zrythm::lv2 ALIAS lv2_lib)
+# add_library(lv2_lib INTERFACE)
+# target_include_directories(lv2_lib
+  # INTERFACE ${juce_SOURCE_DIR}/modules/juce_audio_processors/format_types/LV2_SDK/lv2)
+pkg_check_modules(LV2 lv2>=1.18.0 REQUIRED IMPORTED_TARGET)
+add_library(zrythm::lv2 ALIAS PkgConfig::LV2)
 # pkg_check_modules(ZIX zix-0>=0.4.0 REQUIRED IMPORTED_TARGET)
 # pkg_check_modules(SERD serd-0>=0.30.0 REQUIRED IMPORTED_TARGET)
 # pkg_check_modules(SORD sord-0>=0.14.0 REQUIRED IMPORTED_TARGET)

@@ -134,8 +134,12 @@ GraphScheduler::start_threads (std::optional<int> num_threads)
   auto start_thread = [&] (auto &thread) {
     try
       {
-        thread->startRealtimeThread (
+        const auto success = thread->startRealtimeThread (
           juce::Thread::RealtimeOptions ().withPriority (9));
+        if (!success)
+          {
+            throw ZrythmException ("startRealtimeThread failed");
+          }
       }
     catch (const ZrythmException &e)
       {

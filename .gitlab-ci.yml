@@ -82,7 +82,7 @@ stages:
 default:
   cache:
   # this number must be bumped every time these subprojects are updated
-  - key: cache-9-$CI_RUNNER_DESCRIPTION
+  - key: cache-10-$CI_RUNNER_DESCRIPTION
     paths:
       - venv
       - "$BUILDDIR/_deps/*-src"
@@ -119,7 +119,7 @@ configure:mac-arm:
     - >-
       cmake -B $BUILDDIR $COMMON_CMAKE_OPTIONS
       -G "Xcode"
-      "-DCMAKE_PREFIX_PATH=/opt/zrythm-deps-installed;/opt/Qt6.9"
+      "-DCMAKE_PREFIX_PATH=/opt/homebrew/Cellar/lv2/1.18.10;/opt/Qt6.9"
       -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
   artifacts:
     paths:

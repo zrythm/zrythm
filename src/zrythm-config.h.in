@@ -82,8 +82,6 @@
 
 #cmakedefine01 HAVE_CYAML
 
-#cmakedefine01 HAVE_LV2_1_18
-
 #cmakedefine01 HAVE_MLOCK
 
 #cmakedefine01 HAVE_OPUS
