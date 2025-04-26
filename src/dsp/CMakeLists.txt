@@ -53,6 +53,7 @@ target_link_libraries(zrythm_dsp_lib
   PUBLIC
     ${zrythm_link_libs}
     zrythm::utils_lib
-    zrythm_include_dirs
+    zrythm::include_dirs
+    zrythm::all_compile_options
 )
-target_compile_options(zrythm_dsp_lib PUBLIC ${zrythm_compile_args})
+add_library(zrythm::dsp_lib ALIAS zrythm_dsp_lib)

@@ -333,12 +333,13 @@ endif()
 
 check_symbol_exists(mlock "sys/mman.h" HAVE_MLOCK)
 
-add_library(zrythm_include_dirs INTERFACE)
-target_include_directories(zrythm_include_dirs
+add_library(_zrythm_include_dirs INTERFACE)
+target_include_directories(_zrythm_include_dirs
   INTERFACE
   "${CMAKE_SOURCE_DIR}/src"
   "${CMAKE_BINARY_DIR}/src"
 )
+add_library(zrythm::include_dirs ALIAS _zrythm_include_dirs)
 
 #==============================================================================
 # Global Flags
@@ -362,38 +363,41 @@ if(WIN32)
 endif()
 
 # compile args
-set(zrythm_compile_args)
+add_library(_zrythm_compile_options INTERFACE)
+add_library(_zrythm_warning_flags INTERFACE)
 if(compiler_gnulike)
-  list(APPEND zrythm_compile_args -Wall -Wextra) # -Weffc++)
+  target_compile_options(_zrythm_warning_flags INTERFACE -Wall -Wextra) # -Weffc++)
   if(compiler_is_clang)
-    # list(APPEND zrythm_compile_args -Weverything)
+    # target_compile_options(_zrythm_compile_options INTERFACE -Weverything)
   endif()
 elseif(MSVC)
-  list(APPEND zrythm_compile_args /W3)
+  target_compile_options(_zrythm_warning_flags INTERFACE /W3)
 endif()
 
 # disable some warnings added by -Wextra
 if(compiler_gnulike)
-  list(APPEND zrythm_compile_args
-    -Wformat=2
-    -Wno-missing-field-initializers
-    -Wno-unused-parameter
-    -Wno-cast-function-type)
+  target_compile_options(_zrythm_warning_flags
+    INTERFACE
+      -Wformat=2
+      -Wno-missing-field-initializers
+      -Wno-unused-parameter
+      -Wno-cast-function-type
+  )
 endif()
 
 if(ZRYTHM_RECORD_SWITCHES AND compiler_is_gcc AND NOT WIN32)
-  list(APPEND zrythm_compile_args -frecord-gcc-switches)
+  target_compile_options(_zrythm_compile_options INTERFACE -frecord-gcc-switches)
 endif()
 
 if(ZRYTHM_NATIVE_OPTIMIZATIONS)
   if(compiler_gnulike)
-    list(APPEND zrythm_compile_args -march=native -mtune=native)
+    target_compile_options(_zrythm_compile_options INTERFACE -march=native -mtune=native)
   endif()
 endif()
 
 if(ZRYTHM_PROFILING)
   if(compiler_gnulike)
-    list(APPEND zrythm_compile_args -pg no-pie)
+    target_compile_options(_zrythm_compile_options INTERFACE -pg no-pie)
   endif()
   if(${ZRYTHM_EXTRA_OPTIMIZATIONS})
     message(FATAL_ERROR "Profiling and extra optimizations are incompatible")
@@ -402,18 +406,18 @@ endif()
 
 if(ZRYTHM_EXTRA_OPTIMIZATIONS)
   if(compiler_gnulike)
-    list(APPEND zrythm_compile_args
+    target_compile_options(_zrythm_compile_options INTERFACE
       -ffast-math -DPIC -freciprocal-math
       -fsingle-precision-constant
       # the following 2 taken from DISTRHO-Ports, need testing
       -ftree-vectorize -funroll-loops)
     if(NOT APPLE)
-      list(APPEND zrythm_compile_args -fprefetch-loop-arrays)
+      target_compile_options(_zrythm_compile_options INTERFACE -fprefetch-loop-arrays)
     endif()
 
     # -O1 turns this on, but it may break backtraces so explicitly turn it
     # off on builds supposed to be debuggable
-    list(APPEND zrythm_compile_args -fno-omit-frame-pointer)
+    target_compile_options(_zrythm_compile_options INTERFACE -fno-omit-frame-pointer)
   endif()
 endif()
 
@@ -422,7 +426,7 @@ if(ZRYTHM_EXTRA_EXTRA_OPTIMIZATIONS)
     # TODO check
     # -Ofast -fgraphite-identity -floop-nest-optimize -fdevirtualize-at-ltrans -fipa-pta -fno-semantic-interposition -flto=4 -fuse-linker-plugin -pipe -falign-functions=32 -floop-nest-optimize -floop-parallelize-all -ftree-parallelize-loops=4
 
-    list(APPEND zrythm_compile_args
+    target_compile_options(_zrythm_compile_options INTERFACE
       # not allowed on clang + C
       #'-fallow-store-data-races',
       -ffinite-math-only
@@ -436,7 +440,7 @@ endif()
 
 if(ZRYTHM_EXTRA_DEBUG_INFO)
   if(compiler_gnulike)
-    list(APPEND zrythm_compile_args
+    target_compile_options(_zrythm_compile_options INTERFACE
       -g3
       -rdynamic
       -funwind-tables
@@ -450,10 +454,10 @@ endif()
 if(WIN32)
   if(MSVC)
     add_compile_options(/utf-8)
-    list(APPEND zrythm_compile_args "/Zc:__cplusplus")
+    target_compile_options(_zrythm_compile_options INTERFACE "/Zc:__cplusplus")
   else() # mingw
     add_compile_options(-fno-ms-extensions)
-    list(APPEND zrythm_compile_args
+    target_compile_options(_zrythm_compile_options INTERFACE
       -mms-bitfields
       -mwindows
       #-mstackrealign
@@ -462,17 +466,18 @@ if(WIN32)
   endif()
 endif()
 
+add_library(_zrythm_strict_warning_flags INTERFACE)
 if(ZRYTHM_STRICT)
   if(compiler_gnulike)
     if(NOT APPLE) # apple clang doesn't understand these
-      list(APPEND zrythm_compile_args
+      target_compile_options(_zrythm_strict_warning_flags INTERFACE
         -Werror=format-overflow
         -Werror=format-truncation
         -Werror=return-local-addr
       )
     endif()
 
-    list(APPEND zrythm_compile_args
+    target_compile_options(_zrythm_strict_warning_flags INTERFACE
       -Werror=alloca
       #-Werror=cast-qual
 
@@ -559,7 +564,7 @@ if(ZRYTHM_STRICT)
     )
     endif()
   if(compiler_is_gcc)
-    list(APPEND zrythm_compile_args
+    target_compile_options(_zrythm_strict_warning_flags INTERFACE
       -ftemplate-backtrace-limit=0
       #-Wsuggest-attribute=pure
       #-Wsuggest-attribute=const
@@ -608,7 +613,7 @@ if(ZRYTHM_STRICT)
       -Werror=analyzer-fd-leak
     )
   elseif(compiler_is_clang)
-    list(APPEND zrythm_compile_args
+    target_compile_options(_zrythm_strict_warning_flags INTERFACE
       -Werror=vla-cxx-extension
       -Werror=sentinel
       -Werror=return-stack-address
@@ -618,6 +623,16 @@ if(ZRYTHM_STRICT)
     )
   endif()
 endif()
+add_library(zrythm::compile_options ALIAS _zrythm_compile_options)
+add_library(zrythm::warning_flags ALIAS _zrythm_warning_flags)
+add_library(zrythm::strict_warning_flags ALIAS _zrythm_strict_warning_flags)
+add_library(_zrythm_all_compile_options INTERFACE)
+target_link_libraries(_zrythm_all_compile_options INTERFACE
+  zrythm::compile_options
+  zrythm::warning_flags
+  zrythm::strict_warning_flags
+)
+add_library(zrythm::all_compile_options ALIAS _zrythm_all_compile_options)
 
 # Linker libs/flags
 set(zrythm_link_args)
@@ -696,6 +711,7 @@ FetchContent_MakeAvailable(yyjson)
 if(NOT TARGET yyjson::yyjson)
   add_library(yyjson::yyjson ALIAS yyjson)
 endif()
+target_compile_options(yyjson PRIVATE -Wno-documentation)
 
 add_subdirectory(ext)
 

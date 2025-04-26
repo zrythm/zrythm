@@ -474,8 +474,7 @@ TrackProcessor::append_ports (std::vector<Port *> &ports)
   if (stereo_in_left_id_ && stereo_in_right_id_)
     {
       iterate_tuple (
-        [&] (auto &port) { ports.push_back (std::addressof (port)); },
-        get_stereo_in_ports ());
+        [&] (auto &port) { ports.push_back (&port); }, get_stereo_in_ports ());
     }
   if (mono_id_)
     {
@@ -496,8 +495,7 @@ TrackProcessor::append_ports (std::vector<Port *> &ports)
   if (stereo_out_left_id_ && stereo_out_right_id_)
     {
       iterate_tuple (
-        [&] (auto &port) { ports.push_back (std::addressof (port)); },
-        get_stereo_out_ports ());
+        [&] (auto &port) { ports.push_back (&port); }, get_stereo_out_ports ());
     }
   if (midi_in_id_)
     {

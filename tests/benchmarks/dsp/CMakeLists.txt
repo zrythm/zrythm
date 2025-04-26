@@ -11,7 +11,7 @@ set_target_properties(dsp_benchmarks PROPERTIES
 
 target_link_libraries(dsp_benchmarks PRIVATE
   zrythm::benchmark
-  zrythm_dsp_lib
+  zrythm::dsp_lib
 )
 target_compile_definitions(dsp_benchmarks PRIVATE
   TEST_WAV_FILE_PATH="${CMAKE_SOURCE_DIR}/tests/test.wav"

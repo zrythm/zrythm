@@ -7,7 +7,7 @@ qt_add_executable(zrythm-engine
   audio_engine_application.cpp
 )
 
-target_link_libraries(zrythm-engine PRIVATE zrythm_dsp_lib)
+target_link_libraries(zrythm-engine PRIVATE zrythm::dsp_lib)
 target_link_options(zrythm-engine PRIVATE ${zrythm_link_args})
 
 install(TARGETS zrythm-engine RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

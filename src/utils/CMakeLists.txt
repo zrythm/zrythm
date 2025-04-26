@@ -93,11 +93,11 @@ target_sources(zrythm_utils_lib
 target_precompile_headers(zrythm_utils_lib PUBLIC
   $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/utils.h>)
 
-target_compile_options(zrythm_utils_lib PUBLIC ${zrythm_compile_args})
 target_link_libraries(zrythm_utils_lib
   PUBLIC
-  zrythm_include_dirs
+  zrythm::include_dirs
   ${zrythm_link_libs}
+  zrythm::all_compile_options
 )
 
 add_library(zrythm::utils_lib ALIAS zrythm_utils_lib)
